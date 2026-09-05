@@ -414,12 +414,44 @@ public class IndustrialAgentV2 : AgentBase
     ///   /model auto        → 恢复自动
     ///   /model verify &lt;id&gt; → 目录参数真实性校验 (假 key 探测, C.6.5)
     ///   /balance [id]      → 余额查询 (scheme 分派, 诚实报错)
+    ///   /official-key &lt;k&gt;  → 官方通道 key 注入 (内存; 需求1 — ⚠ 指令名代拟, 用户未定名)
+    ///   /official-key off  → 清除
     /// 返回 null = 非本组指令 (放行主链)。
     /// </summary>
     private AgentResponse? HandleModelCommand(string input, long elapsedMs)
     {
         var parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
         var head = parts[0].ToLowerInvariant();
+
+        if (head == "/official-key")
+        {
+            if (_modelRouter is null)
+            {
+                return MakeJsonResponse(new ModelCommandPayload
+                {
+                    Command = "official_key", Ok = false, Error = "model_queue_not_configured",
+                }, elapsedMs);
+            }
+            // 无参 → 查询注入状态 (不回显 key 本身 — 凭据铁律)
+            if (parts.Length == 1)
+            {
+                return MakeJsonResponse(new ModelCommandPayload
+                {
+                    Command = "official_key",
+                    Ok = true,
+                    OfficialKeyPresent = _modelRouter.OfficialKeys.IsAvailable(),
+                }, elapsedMs);
+            }
+            var isOff = parts[1].Equals("off", StringComparison.OrdinalIgnoreCase);
+            _modelRouter.SetOfficialKey(isOff ? null : parts[1]);
+            return MakeJsonResponse(new ModelCommandPayload
+            {
+                Command = "official_key",
+                Ok = true,
+                OfficialKeyPresent = !isOff,
+                Verdict = isOff ? "official_key_cleared" : "official_key_set (memory only)",
+            }, elapsedMs);
+        }
 
         if (head == "/model")
         {

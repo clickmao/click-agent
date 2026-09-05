@@ -65,6 +65,12 @@ public sealed class ModelQueueRouter : IModelQueueCaller
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly Microsoft.Extensions.Logging.ILogger _logger;
 
+    /// <summary>需求1: 官方 key 仓库 (CLI --official-key / /official-key 注入; 永不落盘)</summary>
+    public OfficialKeyStore OfficialKeys { get; } = new();
+
+    /// <summary>需求1: 三通道调度 (本地&gt;官方&gt;远端; 并发数托管)</summary>
+    public ChannelScheduler Scheduler { get; }
+
     /// <summary>手动覆盖 (null = 自动); /model &lt;id&gt; 设置, /model auto 清除</summary>
     private string? _manualOverride;
 
@@ -85,12 +91,23 @@ public sealed class ModelQueueRouter : IModelQueueCaller
     public ModelQueueRouter(
         ModelCatalog catalog,
         IHttpClientFactory httpClientFactory,
-        Microsoft.Extensions.Logging.ILogger logger)
+        Microsoft.Extensions.Logging.ILogger logger,
+        ChannelScheduler? scheduler = null)
     {
         _catalog = catalog;
         _policy = new ModelSelectionPolicy();
         _httpClientFactory = httpClientFactory;
         _logger = logger;
+        Scheduler = scheduler ?? new ChannelScheduler();
+        // 官方通道可用性 = key 已注入 (注入/撤销时由指令处理刷新)
+        Scheduler.SetAvailable(ModelChannel.Official, OfficialKeys.IsAvailable());
+    }
+
+    /// <summary>官方 key 注入入口 (CLI 启动参数/指令 — 同步刷新官方通道可用性)</summary>
+    public void SetOfficialKey(string? key)
+    {
+        OfficialKeys.Set(key);
+        Scheduler.SetAvailable(ModelChannel.Official, OfficialKeys.IsAvailable());
     }
 
     /// <summary>当前活跃模型条目 (null = 目录空)</summary>
@@ -135,9 +152,11 @@ public sealed class ModelQueueRouter : IModelQueueCaller
 
     public async Task<QueueResponse> CallAsync(QueuePrompt prompt, TaskKindHint kind, string intent, CancellationToken ct = default)
     {
+        // 需求1 混合调度: 手动/粘性优先 → 通道优先级 (官方 key 在 → 官方可作候选; 远端目录在 → 远端)
         var entry = _catalog.Find(_manualOverride ?? _activeModelId)
                     ?? _policy.Select(null, kind, intent,
-                        prompt.EstimatedTokens, prompt.EstimatedTokens / 3, _catalog);
+                        prompt.EstimatedTokens, prompt.EstimatedTokens / 3, _catalog)
+                    ?? SelectByChannelPriority(kind, intent, prompt.EstimatedTokens);
         if (entry is null)
         {
             return new QueueResponse
@@ -224,10 +243,46 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         }
     }
 
+    /// <summary>
+    /// 需求1 通道优先级选模 (本地由宿主 LocalLlamaCaller 在 adapter 层直跑, 不占远端并发;
+    /// 此处处理官方/远端): 官方 key 在 → 官方通道 RankCandidates 选优; 否则远端目录选优。
+    /// 通道满 (AcquireChannel=null) → 不阻塞主链, 退回目录首模型由其自身失败语义兜底。
+    /// </summary>
+    private ModelCatalogEntry? SelectByChannelPriority(TaskKindHint kind, string intent, int estimatedTokens)
+    {
+        if (OfficialKeys.IsAvailable())
+        {
+            var channel = Scheduler.AcquireChannel();
+            if (channel is ModelChannel.Official or null)
+            {
+                if (channel is not null)
+                    Scheduler.ReleaseChannel(channel.Value);
+                var ranked = Scheduler.RankCandidates(OfficialModels.Models, kind, estimatedTokens);
+                if (ranked.Count > 0)
+                {
+                    LastSelectionBasis = $"channel:official:{ranked[0].Model.Id}";
+                    return ranked[0].Model;
+                }
+            }
+            else
+            {
+                Scheduler.ReleaseChannel(channel.Value);
+            }
+        }
+        var remoteRanked = Scheduler.RankCandidates(_catalog.Models, kind, estimatedTokens);
+        if (remoteRanked.Count == 0)
+            return null;
+        LastSelectionBasis = $"channel:remote:{remoteRanked[0].Model.Id}";
+        return remoteRanked[0].Model;
+    }
+
     /// <summary>按目录条目真实调用 OpenAI 兼容 chat completions (endpoint/keyEnv 来自目录)</summary>
     private async Task<QueueResponse> CallEntryAsync(ModelCatalogEntry entry, QueuePrompt prompt, CancellationToken ct)
     {
-        var apiKey = Environment.GetEnvironmentVariable(entry.ApiKeyEnv);
+        // official 通道 key 只从内存仓库取 (永不落盘); 其余通道从环境变量
+        var apiKey = entry.Provider == "official"
+            ? OfficialKeys.Get()
+            : Environment.GetEnvironmentVariable(entry.ApiKeyEnv);
         if (string.IsNullOrEmpty(apiKey))
         {
             return new QueueResponse

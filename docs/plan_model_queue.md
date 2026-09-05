@@ -175,3 +175,49 @@ models:
 - 校验法: 向 endpoint 发最小 chat completions 请求 (max_tokens=1), api-key 随意填 ("sk-invalid-probe") —
   期望 401/403 (地址正确+鉴权拒绝) = 合法; 404/DNS 失败/超时 = 参数错误
 - 校验命令 /model verify <id> (JSON 输出), 结果写入目录校验时间戳
+
+
+---
+
+## C.7 "官方"模型通道与三通道混合调度 (需求1, v7.15 落地)
+
+> 用户原话要点: "官方"模型=硬编码集合**不进 yaml**; api-key 由 CLI 启动参数或专用指令传递
+> (指令名未定 → 代拟 `/official-key`, ⚠ 待用户确认); "自动"模式下多任务模型混合调用;
+> 并发数可配; 优先级恒 本地 > 官方 > 远端; 子任务按 并发数/推理能力/推理速度/价格 综合选模。
+
+### C.7.1 落点
+- `src/agent.modelqueue/OfficialModels.cs`:
+  - `OfficialModels.Models` — 硬编码官方模型集合 (official-gpt-4o / official-gpt-4o-mini),
+    与目录同构 (`ModelCatalogEntry`) 但 provider="official"、不走 yaml
+  - `OfficialKeyStore` — 官方 key 内存仓库 (Set/Get/IsAvailable), 进程退出即销毁, 永不落盘
+- `src/agent.modelqueue/ChannelScheduler.cs`:
+  - 三通道 (Local/Official/Remote) 并发数托管: `AcquireChannel()` 按优先级遍历, 未达上限即接任务
+  - `RankCandidates()` 子任务综合打分: 推理能力 0.4 × 速度 0.3 × 价格 0.3
+    (轻任务 kind — KeywordTagging/IntentClassification/ContextCompression/TendencyAnalysis —
+    自动加大速度权重 1.5x, 减半推理权重)
+- `ModelQueueRouter`:
+  - `SetOfficialKey(key)` — 注入并同步官方通道可用性
+  - `CallAsync` 选模链: 手动 > 粘性 > `SelectByChannelPriority()` (官方 key 在 → 官方 Rank;
+    否则远端目录 Rank)
+  - `CallEntryAsync`: provider=="official" → key 取自 `OfficialKeyStore`; 其余 → 环境变量
+
+### C.7.2 传递通道
+1. CLI 启动参数: `--official-key <key>` (agent.host/Program.cs 解析 → Router 注入 → 引用即释放)
+2. 运行中指令: `/official-key <key>` 注入; `/official-key off` 清除; `/official-key` 查询状态
+   (JSON 只回 `official_key_present: true/false`, **不回显 key 本身**)
+
+### C.7.3 通道职责与本地模型
+- 本地通道 (LocalLlamaCaller) 由 agent 侧 adapter 直接执行 — 不经 HTTP, 不占远端并发
+- 官方/远端经 `CallEntryAsync` HTTP 调用, 并发数由 `ChannelScheduler` 托管
+- 子任务分派顺序 (需求1 原文逐条落地):
+  1. 本地模型满足推理能力与速度 → 本地跑
+  2. 无本地且官方 key 在 → 官方
+  3. 其他并行子任务 → 远端 API (目录)
+  4. 无远端 → 全由本地/官方兜底
+
+### C.7.4 验收
+- [x] 官方模型硬编码不在 yaml (OfficialModels.Models)
+- [x] key 仅 CLI/指令传递, 内存态 (OfficialKeyStore; /official-key 查询不回显)
+- [x] 三通道并发托管 + 优先级本地>官方>远端 (ChannelScheduler.AcquireChannel)
+- [x] 子任务综合选模 (RankCandidates: 并发余量前置 + 能力/速度/价格加权)
+- [ ] 真实多通道并发调用 (待多 provider key 环境联调 — 目录 6 模型 verify 已过 4/6)

@@ -25,6 +25,7 @@ internal class Program
         // ── 参数解析 ──
         string? logPath = null;
         string? oneShot = null;
+        string? officialKey = null; // v7.15 需求1: 官方通道 key (CLI 传递, 内存态, 永不落盘)
         var smoke = args.Length == 0 || args.Contains("--smoke");
         var outputMode = agent.output.OutputMode.Markdown;
         for (var i = 0; i < args.Length; i++)
@@ -33,6 +34,8 @@ internal class Program
                 logPath = args[++i];
             else if (args[i] == "-q" && i + 1 < args.Length)
                 oneShot = args[++i];
+            else if (args[i] == "--official-key" && i + 1 < args.Length)
+                officialKey = args[++i];
             else if (args[i] == "--output-mode" && i + 1 < args.Length)
                 outputMode = args[++i] == "text"
                     ? agent.output.OutputMode.PlainText
@@ -45,6 +48,14 @@ internal class Program
 
         await using var provider = services.BuildServiceProvider();
         var entryAgent = provider.GetRequiredService<IAgent>();
+
+        // v7.15 需求1: CLI 启动参数注入官方 key (立即释放命令行引用 — 避免进程参数驻留)
+        if (officialKey != null)
+        {
+            var router = provider.GetRequiredService<agent.modelqueue.ModelQueueRouter>();
+            router.SetOfficialKey(officialKey);
+            officialKey = null;
+        }
 
         IOutputSink sink = logPath != null
             ? new TeeOutputSink(new ConsoleOutputSink(), new FileOutputSink(logPath))
