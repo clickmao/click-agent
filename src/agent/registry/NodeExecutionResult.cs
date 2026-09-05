@@ -104,80 +104,127 @@ public class TaskPlanExecutor
                 foreach (var cl in node.Clarifications)
                     _preferences.ApplyTo(cl);
 
-        foreach (var node in order)
+        // ── 层批调度 (v7.15 并发化): 同 Level 批内并发, 跨层顺序等待 ──
+        // 依赖正确性由 Level 计算保证 (批内节点互不依赖); 单节点批走串行路径零行为变化。
+        foreach (var levelGroup in order.GroupBy(n => n.Level).OrderBy(g => g.Key))
         {
-            // 节点边界: 检查用户插入的强制指令
-            var injection = pollInjections?.Invoke();
-            if (injection != null && injection.Kind == InjectedInstructionKind.Cancel)
+            var batch = levelGroup.ToList();
+
+            // 层边界: 检查用户插入的强制指令 (保持层粒度, 不在并发内轮询)
+            var layerInjection = pollInjections?.Invoke();
+            if (layerInjection != null && layerInjection.Kind == InjectedInstructionKind.Cancel)
             {
                 run.State = TaskPlanRunState.Cancelled;
-                run.PauseReason = $"用户插入停止指令: {injection.Text}";
-                SkipRemaining(order, run.NodeStates, node.Id);
+                run.PauseReason = $"用户插入停止指令: {layerInjection.Text}";
+                SkipRemaining(order, run.NodeStates, batch[0].Id);
                 return run;
             }
 
-            // 依赖未完成 (前序失败/被跳过) → 本节点连带跳过
-            var failedDep = node.DependsOn
-                .Any(d => run.NodeStates.TryGetValue(d, out var s) &&
-                          s is PlanNodeState.Failed or PlanNodeState.Skipped);
-            if (failedDep)
+            // 依赖未完成 (前层失败/被跳过) → 本层全部连带跳过
+            if (batch.All(n => n.DependsOn.Any(d =>
+                    run.NodeStates.TryGetValue(d, out var s) &&
+                    s is PlanNodeState.Failed or PlanNodeState.Skipped)) &&
+                batch.Any(n => n.DependsOn.Count > 0))
             {
-                run.NodeStates[node.Id] = PlanNodeState.Skipped;
+                foreach (var n in batch)
+                    run.NodeStates[n.Id] = PlanNodeState.Skipped;
                 continue;
             }
 
-            // 敏感意图 → 全计划暂停等审批 (优先于澄清: 敏感节点连参数带执行都需审批)
-            if (InjectedInstructionClassifier.IsSensitiveIntent(node.Intent))
+            // 层内预检: 敏感节点 → 暂停等审批 (先跑完已启动的非敏感语义不在本层发生 — 保守起步)
+            var sensitive = batch.FirstOrDefault(n => InjectedInstructionClassifier.IsSensitiveIntent(n.Intent));
+            if (sensitive != null)
             {
                 run.State = TaskPlanRunState.PausedForApproval;
-                run.PendingSensitiveNodeId = node.Id;
-                run.PauseReason = $"敏感任务「{node.Text}」({node.Intent}) 等待审批";
-                run.NodeStates[node.Id] = PlanNodeState.AwaitingApproval;
+                run.PendingSensitiveNodeId = sensitive.Id;
+                run.PauseReason = $"敏感任务「{sensitive.Text}」({sensitive.Intent}) 等待审批";
+                run.NodeStates[sensitive.Id] = PlanNodeState.AwaitingApproval;
                 return run;
             }
 
-            // 问询未答 → 编排循环里真实驱动批量问询 (v7.13.2):
-            //   有发起者通道 (prompts) → 按组一次问全 (批量协议), 合法答案写回参数槽并解除等待;
-            //   无通道 (纯编排/测试) 或用户放弃 → 保持 AwaitingClarification, 不阻断后续无关节点。
-            if (!node.IsExecutable)
+            // 问询未答节点: 编排层驱动批量问询 (不进并发批 — 问询有用户交互不能并行)
+            var executable = new List<PlanNode>();
+            foreach (var node in batch)
             {
-                if (_prompts != null && await TryAskNodeClarificationsAsync(node, run, ct))
+                if (!node.IsExecutable)
                 {
-                    // 答案已回流: 参数槽填充 → 本轮继续执行该节点 (不等下一轮)
+                    if (_prompts != null && await TryAskNodeClarificationsAsync(node, run, ct))
+                        executable.Add(node);
+                    else
+                        run.NodeStates[node.Id] = PlanNodeState.AwaitingClarification;
                 }
                 else
                 {
-                    run.NodeStates[node.Id] = PlanNodeState.AwaitingClarification;
-                    continue;
+                    executable.Add(node);
                 }
             }
+            if (executable.Count == 0)
+                continue;
 
-            run.NodeStates[node.Id] = PlanNodeState.Running;
-            NodeExecutionResult result;
-            try
+            // 执行: 单节点串行 (零行为变化); 多节点按 MaxParallelism 分片并发
+            if (executable.Count == 1 || plan.MaxParallelism <= 1)
             {
-                result = await _nodeRunner(node, ct);
+                var verdict = await RunNodeCoreAsync(executable[0], order, run, ct);
+                if (verdict != null)
+                    return verdict; // Cancelled / FailFast 终止
             }
-            catch (OperationCanceledException)
+            else
             {
-                run.NodeStates[node.Id] = PlanNodeState.Skipped;
-                run.State = TaskPlanRunState.Cancelled;
-                return run;
-            }
-
-            run.NodeStates[node.Id] = result.FinalState;
-            if (result.FinalState == PlanNodeState.Failed)
-            {
-                // FailFast: 单节点失败停止计划 (重试策略后续迭代)
-                run.PauseReason = $"节点「{node.Text}」失败: {result.Error}";
-                SkipRemaining(order, run.NodeStates, node.Id);
-                run.State = TaskPlanRunState.Finished;
-                return run;
+                var stopped = false;
+                foreach (var shard in executable.Chunk(plan.MaxParallelism))
+                {
+                    var results = await Task.WhenAll(
+                        shard.Select(n => RunNodeCoreAsync(n, order, run, ct)));
+                    var stop = results.FirstOrDefault(v => v != null);
+                    if (stop != null)
+                    {
+                        // Cancelled / FailFast: 本批已全部落终态 (WhenAll 等待), 终止计划
+                        run.State = stop.State;
+                        run.PauseReason = stop.PauseReason;
+                        stopped = true;
+                        break;
+                    }
+                }
+                if (stopped)
+                    return run;
             }
         }
 
         run.State = TaskPlanRunState.Finished;
         return run;
+    }
+
+    /// <summary>
+    /// 单节点核心执行 (预检已完成): 置 Running → nodeRunner → 落终态。
+    /// 返回 null = 继续; 返回非 null = 计划终止 (Cancelled/Finished), 调用方直接 return。
+    /// 并发注意: 只写本节点状态与 run 终态字段, 不碰其他节点 — 批内节点互不依赖, 状态字典写入不冲突。
+    /// </summary>
+    private async Task<TaskPlanRun?> RunNodeCoreAsync(
+        PlanNode node, List<PlanNode> order, TaskPlanRun run, CancellationToken ct)
+    {
+        run.NodeStates[node.Id] = PlanNodeState.Running;
+        NodeExecutionResult result;
+        try
+        {
+            result = await _nodeRunner(node, ct);
+        }
+        catch (OperationCanceledException)
+        {
+            run.NodeStates[node.Id] = PlanNodeState.Skipped;
+            run.State = TaskPlanRunState.Cancelled;
+            return run;
+        }
+
+        run.NodeStates[node.Id] = result.FinalState;
+        if (result.FinalState == PlanNodeState.Failed)
+        {
+            // FailFast: 单节点失败停止计划 (重试策略后续迭代)
+            run.PauseReason = $"节点「{node.Text}」失败: {result.Error}";
+            SkipRemaining(order, run.NodeStates, node.Id);
+            run.State = TaskPlanRunState.Finished;
+            return run;
+        }
+        return null;
     }
 
     /// <summary>

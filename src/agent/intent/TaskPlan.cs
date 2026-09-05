@@ -7,6 +7,9 @@ namespace agent.intent;
 /// </summary>
 public class TaskPlan
 {
+
+    /// <summary>同层最大并发节点数 (v7.15 执行器并发化; 1 = 完全串行等价旧行为)。</summary>
+    public int MaxParallelism { get; set; } = 4;
     public string PlanId { get; set; } = Guid.NewGuid().ToString("N")[..12];
 
     /// <summary>原始用户输入</summary>
