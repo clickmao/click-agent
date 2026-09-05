@@ -43,6 +43,10 @@ src/agent/modelqueue/
 ```
 
 ### C.3.2 配置文件 (本地 JSON, `data/config/model_queue.json`)
+
+> **⚠ v7.15 更新**: 《全模块 YAML 配置开发规范》(见 plan_yaml_config.md) 生效后, 本配置改存
+> `config/base/model_queue.yaml` (L1) + `config/modules/model_queue.yaml` (L3 同名覆盖),
+> 读取走 ConfigSnapshot 分层契约 — 下述 JSON 结构仅保留为字段语义参考, 载体格式以 YAML 规范为准。
 ```jsonc
 {
   "activeProfile": "default",

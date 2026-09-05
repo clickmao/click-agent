@@ -26,12 +26,14 @@
 
 ## T.2 归拢决策 (待开发时确认的开放问题标 ⚠)
 
-1. **agent.planner 去留** ⚠: 建议**删除项目** (V1 遗留 + V2 零引用 + 功能被 TaskPlan* 完全覆盖)。
-   开发时先 `grep -rn "agent.planner"` 全量复核引用面, 确认测试无依赖后 `git rm -r src/agent.planner` +
-   清 DI 注册 (extensions/ServiceCollectionExtensions.cs 168) + 清 V1 IndustrialAgent。
-   若 V1 本身也判定遗留, 一并处置 (V1/V2 去留是独立决策, 见 T.4 ⚠)。
+1. **agent.planner: 删除 (已定案, v7.15 最新版口径)** — V1 遗留 + V2 零引用 + 功能被 TaskPlan* 完全覆盖,
+   不再评估保留。开发时先 `grep -rn "agent.planner"` 全量复核引用面, 确认测试无依赖后
+   `git rm -r src/agent.planner` + 清 DI 注册 (extensions/ServiceCollectionExtensions.cs 168)。
+   V1 `IndustrialAgent` 随同一决策废弃 (宿主自 v7.14 起只注册 V2), 其 HandleTaskPlanningAsync 等
+   planner 调用点一并移除; 若 V1 其余代码仍被测试引用则仅保留编译面并在类头标 `[Obsolete]` 指向 V2。
 2. **TaskPlan* 为唯一计划体系**: 保留 intent/TaskPlan* + registry/TaskPlanExecutor, 删 planner 后双体系消失。
-3. **TaskPlanRunState.WaitingClarification**: 删除枚举值或接线 (计划级暂停语义), 二选一, 开发时定 ⚠。
+3. **TaskPlanRunState.WaitingClarification**: 删除 (已定案) — 节点级 AwaitingClarification 已完整表达该语义,
+   计划级枚举值零赋值无存在必要; 开发时直接从枚举移除并同步 source-gen。
 4. **执行链接线 V2 主链**: 现状 subTasks 直接进上下文装配; 接线 = V2 调 `TaskPlanBuilder.Build` 产出计划 →
    `TaskPlanExecutor.ExecuteAsync` 按图执行节点。这是行为变更, 分两步: 先 Build+Execute 并行跑 (影子模式, 只记录不采纳),
    对比结果一致后再切主路 (参考 v7.13.1 VulkanSupport 双判据的保守风格)。
@@ -44,11 +46,13 @@
 | 节点级重试策略 | [plan_node_retry.md](plan_node_retry.md) | 同上 |
 | V2 执行链接线 (影子模式→主路) | **本文 T.2-4 即计划** (不足以独立成文) | 依赖 T.2-1 planner 处置完成 |
 | 模型队列 + /balance | [plan_model_queue.md](plan_model_queue.md) | 独立, 不依赖本链 |
+| 全模块 YAML 分层配置体系 | [plan_yaml_config.md](plan_yaml_config.md) | 独立; 硬编码收编会触及 TaskPlanExecutor/模型队列的常量 |
+| Skill 调度模块 | [plan_skill_dispatch.md](plan_skill_dispatch.md) | 依赖 YAML 配置体系; 编排复用 TaskPlan 不添第二引擎 |
 | 隔离任务子 agent | [plan_isolated_task.md](plan_isolated_task.md) | 依赖 SessionMemory.GoalProfile (v7.14 ③ 已就绪) |
 
 ## T.4 开放问题 (下次开发时必须先确认, 否则上下文断裂)
 
-1. ⚠ V1 IndustrialAgent 是否一并废弃? (宿主已只注册 V2; V1 若废弃, agent.planner 随之删, T.2-1 变简单)
+1. ~~V1 IndustrialAgent 是否一并废弃~~ → **已定案: 废弃** (随 T.2-1, 见上); 本条保留仅作决策记录。
 2. ⚠ 影子模式的一致性判据: 计划执行结果与 V2 直连结果"一致"如何定义 (最终回答语义等价? 节点输出逐条对比?)
 3. ⚠ 开发计划 JSON (`docs/plans/v715_dev_plan.taskplan.json`) 是否需要代码加载入口
    (如 `TaskPlanBuilder.FromDevPlanJson` → 开发任务也可以被 agent 自己执行)? 当前无入口, 纯文档。

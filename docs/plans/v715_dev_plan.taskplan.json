@@ -1,6 +1,6 @@
 {
   "PlanId": "devplan715",
-  "SourceText": "v7.15 开发计划: TaskPlan 体系归拢 + 执行器并发化 + 节点重试 + 隔离任务 + 模型队列与余额查询",
+  "SourceText": "v7.15 开发计划: TaskPlan 体系归拢 + 执行器并发化 + 节点重试 + 隔离任务 + 模型队列与余额查询 + YAML 分层配置体系 + Skill 调度模块",
   "CreatedAt": "2026-09-06T12:00:00Z",
   "Nodes": [
     {
@@ -57,6 +57,26 @@
       "Level": 0,
       "ParallelGroup": 0,
       "DocRef": "docs/plan_isolated_task.md",
+      "Parameters": [],
+      "Confidence": 1.0
+    },
+    {
+      "Id": "dev-yaml-config",
+      "Text": "全模块 YAML 分层配置体系: base/env/modules/runtime 四级覆盖 + 同名 module 覆盖 base 契约 + 热更新 + 现有硬编码收编",
+      "Intent": "code_generation",
+      "Level": 0,
+      "ParallelGroup": 0,
+      "DocRef": "docs/plan_yaml_config.md",
+      "Parameters": [],
+      "Confidence": 1.0
+    },
+    {
+      "Id": "dev-skill",
+      "Text": "Skill 调度模块: 领域能力封装/注册/三级触发匹配/生命周期/上下文隔离沙箱/口径强约束, 参数全走 YAML 分层配置",
+      "Intent": "code_generation",
+      "Level": 1,
+      "ParallelGroup": 2,
+      "DocRef": "docs/plan_skill_dispatch.md",
       "Parameters": [],
       "Confidence": 1.0
     }

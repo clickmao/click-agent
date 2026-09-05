@@ -155,11 +155,13 @@ click-agent/
 ### 🗺 下一步开发计划 (v7.15 候选)
 每个开发计划独立成文（单个模块一个文档，无需加载全上下文）；无法在计划期确定的事项已在各文档内标注**待确认**留给下次开发核实。
 
-0. **TaskPlan 体系归拢**：代码库存在两套并行任务计划体系（遗留 `agent.planner` vs 现役 `TaskPlan*`），且现役主链一条都不跑执行器（`TaskPlanExecutor` 生产零构造、仅测试调用；`TaskPlanBuilder.Build` 生产零调用；`WaitingClarification` 死状态零赋值）。本项先裁定双体系去留、删除遗留、再把 V2 主链接入计划执行（影子模式→主路）。详见 [plan_taskplan_consolidation.md](docs/plan_taskplan_consolidation.md)。
+0. **TaskPlan 体系归拢**：代码库存在两套并行任务计划体系（遗留 `agent.planner` vs 现役 `TaskPlan*`），且现役主链一条都不跑执行器（`TaskPlanExecutor` 生产零构造、仅测试调用；`TaskPlanBuilder.Build` 生产零调用；`WaitingClarification` 死状态零赋值）。本项**定案：删除遗留 `agent.planner` 项目与 V1 残留（不再评估保留）**，再把 V2 主链接入计划执行（影子模式→主路）。详见 [plan_taskplan_consolidation.md](docs/plan_taskplan_consolidation.md)。
 1. **执行器同层并发化**：`TaskPlanExecutor.ExecuteAsync` 现为逐节点串行 await（源码注释自认"同层并行留给并发化迭代"）；`Level/ParallelGroup` 算法**已存在**（`ComputeLevelsAndParallelGroups`），本项只补执行端：同层并发（`Task.WhenAll` + `MaxParallelism` 上限分片）、跨层等待上游、保留全部现有失败/暂停/问询语义。详见 [plan_executor_parallel.md](docs/plan_executor_parallel.md)。
 2. **节点级重试策略**：单节点失败现直接 FailFast 放弃全计划（源码注释自认"重试策略后续迭代"）；补 `MaxRetries` + 指数退避 + 瞬态/永久失败分类 + 重试审计进 `TaskPlanRun`，取消永不重试。详见 [plan_node_retry.md](docs/plan_node_retry.md)。
 3. **隔离任务**：主 agent 任务循环中收到**与当前目标无关的新提问**（如计算器开发中突然要求"查天气"）→ 纯规则打分判定（实体重叠/指代词/意图类别，锚=`SessionMemory.GoalProfile.KeyEntities`）→ 额外开**隔离边界的子 agent** 执行（独立会话/不写主记忆/不污染主画像/静默问询），完成即销毁。详见 [plan_isolated_task.md](docs/plan_isolated_task.md)。
 4. **模型队列 + Token 余额查询**：独立模块 `src/agent/modelqueue/`；本地 JSON config（`data/config/model_queue.json`）存主/次模型（key 只存环境变量名）；手动 `/model` 指定 + 自动模式（主模型连续 N 败切副模型，取消永不触发切换）+ 计价策略路由（上下文压缩等性能不敏感功能自动走便宜模型）；新增本地指令 `/balance` 查询 token 账户余额（双通道 JSON 输出，不支持的端点诚实报错）。详见 [plan_model_queue.md](docs/plan_model_queue.md)。
+5. **全模块 YAML 分层配置体系**：新模块 `src/agent.config/`——`config/base|env|modules|runtime` 四级分层，**模块只调 `ConfigSnapshot.Get<T>()`，base 配置被同名 module 配置增量覆盖**（用户钦定核心契约：深合并、未定义字段继承低层）；启动强校验失败即失败、缺失兜底默认值、`@dynamic immediate/next-turn` 热更新标注；现有硬编码（EvidenceGate 疑问数、搜索熔断、源配额、模型队列参数等）收编为 6 个 base yaml；配置类 JSON 废弃转 YAML（运行时**数据**落盘仍 JSON 不动）；AOT 风险项：YamlDotNet 反射 vs NativeAOT，开发第一步先 POC，失败则启用零反射 YAML 子集解析器备选。详见 [plan_yaml_config.md](docs/plan_yaml_config.md)。
+6. **Skill 调度模块**：新模块 `src/agent.skills/`（依据《Skill 模块技术设计文档 v1.0》）——领域级能力封装与口径管控：注册中心（skills/ 目录 yaml 定义）+ 三级触发匹配（前缀树预匹配→意图/正则/语义精匹配→上下文匹配，**疑似命中即激活**，插在 V2 推理前）+ 生命周期状态机（会话缓存/连续两轮脱域自动卸载/挂起恢复）+ 上下文隔离沙箱（白名单读/写回卷/中间数据不入历史）+ 执行调度（超时/幂等重试/熔断）+ 标准化输出（`force_use` 强制口径禁模型篡改）；失败自动降级普通推理不阻塞主链；全部阈值走第 5 项 YAML 分层配置；多 Skill 编排映射 TaskPlan 不新建执行引擎。详见 [plan_skill_dispatch.md](docs/plan_skill_dispatch.md)。
 
 > 计划总图：`docs/plans/v715_dev_plan.taskplan.json`（TaskPlan 结构 + 每节点 DocRef 标注文档，防漂移测试 `DevPlanDocRefTests` 固化）
 
