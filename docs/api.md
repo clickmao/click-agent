@@ -1050,3 +1050,26 @@ w.WriteStreamBlock("行1", "行2");// 显式块
 
 协议常量: `ChatboxPrefix`=`@chatbox:`、`StreamBeginMarker`=`@stream begin`、`StreamEndMarker`=`@stream end`。
 指令清单与输出契约见 [CLI指令说明.md](CLI指令说明.md)。
+
+
+### ConfigWriter (v7.15 需求4: 公开配置读写)
+
+`agent.config` 内新增 — 与 `ConfigSnapshot` 配对的写入口 (外部 C# 项目可直接引用 agent.config):
+
+```csharp
+var snapshot = new ConfigSnapshot("./config");
+// 快速读取 (dot-path): 模块 → 嵌套路径
+int max = ConfigWriter.GetValue(snapshot, "model_queue", "router.max_failures", 3);
+
+var writer = new ConfigWriter("./config");
+writer.SetRuntime("model_queue", "router.max_failures", 5);   // L4 runtime/dynamic.yaml (@dynamic)
+writer.UpdateModule("model_queue", new Dictionary<string, object?>
+{
+    ["router"] = new Dictionary<string, object?> { ["sticky"] = false },  // L3 深合并
+});
+writer.ResetModule("model_queue");                             // 清 L3 覆盖, 回落 L1
+```
+
+- 写只落 L3 (`modules/{module}.yaml` 同名覆盖) / L4 (`runtime/dynamic.yaml`) — L1 base 永不直改
+- 文件内容顶层 key = 模块名 (分层契约); 深合并语义; null 覆盖项 = 删除回落
+- 全部走 MiniYaml (零反射 AOT 安全)

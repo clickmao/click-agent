@@ -14,7 +14,8 @@
 ### C.1.1 需求2 原文 (2026-09-06 补充, 逐字 — 意图选模)
 "关于'自动'选择LLM时，应根据其意图选择不同模型，有的适合flash版本有的适合全量版，再用户填写模型配置时应该标注推理和编码任务能力，然后'自动'选择根据意图来预估总任务周期（大概会消费多少token)、和需要的推理能力以及配置内模型预估费用做综合判断选择使用哪个模型， ①【推理能力】需要一个标准值 ②需要一个基础配置覆盖大部分知名模型，并填入除了API-KEY 以外的参数，如模型名称、API请求地址，余额查询配置【注意该配置与/balance指令相关，不同模型提供商可能查询方案不同，需要总结后再设计该配置方案，如果全部都一致则不需要】，预估费用，推理能力，适合用途等，这些都将成为选择使用哪个模型的依据 ③添加的模型默认参数一定是要真实正确的，这个可以通过网络搜索并一定要做实际http请求校验是否合法，测试合法性的时候api-key可以随意填写，应该会返回失败状态也可以校验地址是否正确"
 1. **单独写一个模块** — 不塞进 IndustrialAgentV2, 独立目录 `src/agent/modelqueue/`
-2. **可用模型队列可配置, 本地 JSON config 储存** — `data/config/model_queue.json`
+2. **可用模型队列可配置** — ~~本地 JSON config 储存 `data/config/model_queue.json`~~
+   **(v7.15 修订: YAML 分层配置生效后改存 `config/base/models.yaml` L1 + `config/modules/` L3 同名覆盖, JSON 方案废弃)**
 3. **分主/次模型** — Primary / Secondary 分级
 4. **手动选择** — 用户可指定执行 agent 所用模型
 5. **自动模式** — 先用主模型, 连续多次失败 → 自动切副模型
@@ -44,7 +45,11 @@ src/agent/modelqueue/
   BalanceQueryService.cs   — 余额查询 (OpenAI 兼容 /dashboard/billing 或 /v1/dashboard)
 ```
 
-### C.3.2 配置文件 (本地 JSON, `data/config/model_queue.json`)
+### C.3.2 配置文件 (**已修订 v7.15**: YAML 分层 — 原 JSON 方案 `data/config/model_queue.json` 废弃)
+
+> **生效载体**: `config/base/models.yaml` (L1, 模型目录) + `config/base/core.yaml` (超时/重试等)
+> + `config/modules/model_queue.yaml` (L3 同名覆盖) + `config/runtime/dynamic.yaml` (L4 运行时动态项)。
+> 读写唯一入口: `ConfigSnapshot.Get<T>()` (读) / `ConfigWriter` (写, L3/L4); 模块禁止自读 yaml 文件。
 
 > **⚠ v7.15 更新**: 《全模块 YAML 配置开发规范》(见 plan_yaml_config.md) 生效后, 本配置改存
 > `config/base/model_queue.yaml` (L1) + `config/modules/model_queue.yaml` (L3 同名覆盖),
@@ -118,7 +123,7 @@ SelectModel(taskKind):
 - **凭据零落盘**: key 只从 `apiKeyEnv` 指向的环境变量读, 与偏好库铁律一致
 
 ## C.4 验收标准
-- [ ] 配置往返: 写 model_queue.json → Router 加载 → 主/次/价格字段全对; 坏 JSON → 默认值+告警不抛
+- [x] 配置往返 (v7.15 YAML 版): config/base/models.yaml → ModelCatalog.Load(ConfigSnapshot) → 主/次/价格字段全对; 坏 yaml → 跳过+告警不抛 (ConfigSnapshot.MergeFile); ConfigWriterTests 覆盖 L3/L4 写入与回退
 - [ ] 自动切换: primary 连续 3 败 (mock caller) → 副模型接手, 审计记录切换事件
 - [ ] 手动模式: `/model deepseek-chat` → 后续全部走该模型; `/model auto` 恢复
 - [ ] 计价路由: 压缩类调用 (taskKind=context_compression) 走 secondary, 主回答走 primary
