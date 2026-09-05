@@ -380,57 +380,54 @@ public class IndustrialAgentV2 : AgentBase
         {
             if (_modelRouter is null)
             {
-                return MakeJsonResponse(new Dictionary<string, object>
+                return MakeJsonResponse(new ModelCommandPayload
                 {
-                    { "command", "model" }, { "ok", false }, { "error", "model_queue_not_configured" },
+                    Command = "model", Ok = false, Error = "model_queue_not_configured",
                 }, elapsedMs);
             }
             if (parts.Length == 1)
             {
                 var active = _modelRouter.ActiveModel;
-                return MakeJsonResponse(new Dictionary<string, object>
+                return MakeJsonResponse(new ModelCommandPayload
                 {
-                    { "command", "model" },
-                    { "ok", true },
-                    { "active", active?.Id ?? "(empty)" },
-                    { "provider", active?.Provider ?? "" },
-                    { "reasoning_score", active?.ReasoningScore ?? 0 },
-                    { "coding_score", active?.CodingScore ?? 0 },
-                    { "last_selection", _modelRouter.LastSelectionBasis },
-                    { "switches", _modelRouter.Switches.Count },
+                    Command = "model",
+                    Ok = true,
+                    Active = active?.Id ?? "(empty)",
+                    Provider = active?.Provider,
+                    ReasoningScore = active?.ReasoningScore ?? 0,
+                    CodingScore = active?.CodingScore ?? 0,
+                    LastSelection = _modelRouter.LastSelectionBasis,
+                    Switches = _modelRouter.Switches.Count,
                 }, elapsedMs);
             }
             if (parts[1].Equals("verify", StringComparison.OrdinalIgnoreCase) && parts.Length >= 3)
             {
                 var v = _verifyService?.VerifyAsync(parts[2]).GetAwaiter().GetResult();
-                return MakeJsonResponse(new Dictionary<string, object>
+                return MakeJsonResponse(new ModelCommandPayload
                 {
-                    { "command", "model_verify" },
-                    { "ok", v?.Ok ?? false },
-                    { "model", v?.Model ?? parts[2] },
-                    { "http_status", v?.HttpStatusCode ?? 0 },
-                    { "verdict", v?.Verdict ?? v?.Error ?? "verify_service_unavailable" },
+                    Command = "model_verify",
+                    Ok = v?.Ok ?? false,
+                    Active = v?.Model ?? parts[2],
+                    HttpStatusCode = v?.HttpStatusCode ?? 0,
+                    Verdict = v?.Verdict ?? v?.Error ?? "verify_service_unavailable",
                 }, elapsedMs);
             }
             var target = parts[1];
             var okSet = _modelRouter.SetManualOverride(target);
             if (okSet)
             {
-                return MakeJsonResponse(new Dictionary<string, object>
+                return MakeJsonResponse(new ModelCommandPayload
                 {
-                    { "command", "model" },
-                    { "ok", true },
-                    { "target", target },
-                    { "active", target },
+                    Command = "model", Ok = true, Target = target, Active = target,
                 }, elapsedMs);
             }
-            return MakeJsonResponse(new Dictionary<string, object>
+            return MakeJsonResponse(new ModelCommandPayload
             {
-                { "command", "model" },
-                { "ok", false },
-                { "target", target },
-                { "active", _modelRouter.ActiveModel?.Id ?? "(empty)" },
-                { "error", "unknown_model_id (见 config/base/models.yaml)" },
+                Command = "model",
+                Ok = false,
+                Target = target,
+                Active = _modelRouter.ActiveModel?.Id ?? "(empty)",
+                Error = "unknown_model_id (见 config/base/models.yaml)",
             }, elapsedMs);
         }
 
@@ -438,46 +435,39 @@ public class IndustrialAgentV2 : AgentBase
         {
             if (_balanceService is null)
             {
-                return MakeJsonResponse(new Dictionary<string, object>
+                return MakeJsonResponse(new ModelCommandPayload
                 {
-                    { "command", "balance" }, { "ok", false }, { "error", "model_queue_not_configured" },
+                    Command = "balance", Ok = false, Error = "model_queue_not_configured",
                 }, elapsedMs);
             }
             var b = _balanceService.QueryAsync(parts.Length >= 2 ? parts[1] : null)
                 .GetAwaiter().GetResult();
-            var dict = new Dictionary<string, object>
+            return MakeJsonResponse(new ModelCommandPayload
             {
-                { "command", "balance" },
-                { "ok", b.Ok },
-                { "model", b.Model },
-                { "provider", b.Provider ?? "" },
-            };
-            if (b.TotalGranted is double g) dict["total_granted"] = g;
-            if (b.TotalUsed is double u) dict["total_used"] = u;
-            if (b.TotalRemaining is double r) dict["total_remaining"] = r;
-            if (b.Error != null) dict["error"] = b.Error;
-            if (b.Note != null) dict["note"] = b.Note;
-            return MakeJsonResponse(dict, elapsedMs);
+                Command = "balance",
+                Ok = b.Ok,
+                Active = b.Model,
+                Provider = b.Provider,
+                TotalGranted = b.TotalGranted,
+                TotalUsed = b.TotalUsed,
+                TotalRemaining = b.TotalRemaining,
+                Error = b.Error,
+                Note = b.Note,
+            }, elapsedMs);
         }
 
         return null;
     }
 
-    /// <summary>全 JSON 输出的统一响应 (面板/CLI 惯例)</summary>
-    private AgentResponse MakeJsonResponse(Dictionary<string, object> payload, long elapsedMs)
+    /// <summary>模型队列指令统一响应 (强类型 payload — source-gen 序列化, AOT 铁律)</summary>
+    private AgentResponse MakeJsonResponse(ModelCommandPayload payload, long elapsedMs)
     {
         var json = System.Text.Json.JsonSerializer.Serialize(
-            payload,
-            new System.Text.Json.JsonSerializerOptions
-            {
-                WriteIndented = false,
-                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
-            });
+            payload, ModelCommandJsonContext.Default.ModelCommandPayload);
         return new AgentResponse
         {
-            Success = payload.TryGetValue("ok", out var ok) && ok is true,
+            Success = payload.Ok,
             Content = json,
-            Data = payload,
             ExecutionTimeMs = elapsedMs,
         };
     }
