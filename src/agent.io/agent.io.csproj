@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    agent.io - Agent 输入/输出协议库 (用户需求2, v0.9.0):
+    面向前端/宿主的独立读取与写入层 — 前端 Console.ReadLine() 一整行发指令,
+    agent 输出按行协议解析 (单行事件 + 多行流式块)。
+    netstandard2.1: 可被 .NET Core/.NET 5+/Xamarin/Unity 宿主引用。
+    零依赖 (无 LLamaSharp/MAF/JSON 库 — 解析手写, 兼容 AOT)。
+  -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>8.0</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RootNamespace>agent.io</RootNamespace>
+    <AssemblyName>agent.io</AssemblyName>
+  </PropertyGroup>
+
+</Project>

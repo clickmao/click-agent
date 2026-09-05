@@ -3,6 +3,7 @@
 ## 目录
 
 > v7.11-v7.12 新增章节: 13 Agent 注册与下轮预估 / 14 本地强制指令 / 15 区段标记 / 16 任务计划执行器 / 17 本地推理
+> v7.15 新增章节: 18 agent.io 输入输出协议库 (需求2) — 详见 [CLI指令说明.md](CLI指令说明.md)
 
 1. [核心接口](#1-核心接口)
 2. [记忆系统](#2-记忆系统)
@@ -1011,3 +1012,41 @@ services.AddAgentFramework(options =>
 ## 示例
 
 更多示例请参考 [readme.md](../readme.md) 与 [架构文档](architecture.md)。
+
+
+---
+
+## 18. agent.io 输入输出协议库 (v7.15 需求2)
+
+独立项目 `src/agent.io` — **netstandard2.1**、零依赖, 供任意前端/宿主引用。
+
+### AgentReportReaderBase (输出读取基类)
+
+行协议状态机: 单行事件 (Text / ChatboxDirective / Json) + 多行流式块 (StreamBegin/Chunk/End)。
+
+```csharp
+AgentReportReaderBase reader = new TextReportReader(Console.In);
+ReportEvent? e = reader.ReadEvent();          // 聚合一个完整语义事件
+List<string>? block = reader.ReadStreamBlock(); // 聚合下一个流式块
+List<ReportEvent> all = reader.ReadAll();      // 读到流结束
+```
+
+| ReportEventKind | 触发 |
+|---|---|
+| Text | 普通行 |
+| ChatboxDirective | `@chatbox:{json}` |
+| StreamBegin / StreamChunk / StreamEnd | `@stream begin` … `@stream end` 块 |
+| Json | `{…}` 单行 fast-path |
+| Eof | 流结束 |
+
+### AgentRequestWriterBase / AgentRequestWriter (请求写入)
+
+```csharp
+AgentRequestWriterBase w = new AgentRequestWriter(Console.Out);
+w.WriteRequest("/status");       // 单行
+w.WriteRequest("多行\n内容");    // 自动流式块
+w.WriteStreamBlock("行1", "行2");// 显式块
+```
+
+协议常量: `ChatboxPrefix`=`@chatbox:`、`StreamBeginMarker`=`@stream begin`、`StreamEndMarker`=`@stream end`。
+指令清单与输出契约见 [CLI指令说明.md](CLI指令说明.md)。
