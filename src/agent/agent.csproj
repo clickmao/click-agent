@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>agent</RootNamespace>
+    <AssemblyName>agent</AssemblyName>
+    <Version>1.0.0</Version>
+    <Authors>agent Team</Authors>
+    <Description>Enterprise-grade intelligent Agent framework with WebReaper integration</Description>
+    <Copyright>Copyright 2026</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryType>git</RepositoryType>
+    <!-- 工业级 AOT 前置: 可空警告升级为错误, 禁止隐式反射序列化 -->
+    <WarningsAsErrors>nullable</WarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Microsoft Extensions (net10.0 对齐) -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.8" />
+    <!-- WebReaper 库直引 (net10.0 对齐): 搜索结果全文增强引擎 (AOT clean, 上游 CLI 同链路自证) -->
+    <PackageReference Include="WebReaper" Version="11.3.1" />
+    <!-- 本地推理 (v7.12): LLamaSharp (llama.cpp 绑定) + CPU 后端 (本机可用, 无 vulkan 内嵌产物)。
+         Vulkan loader 统一策略: 不引 LLamaSharp.Backend.Vulkan (空壳零产物), 显式引 Silk.NET.Vulkan —
+         libggml-vulkan.so 的 DT_NEEDED=libvulkan.so.1 与 Silk.NET 加载的 loader 是同一动态库 (readelf 已核)。 -->
+    <PackageReference Include="LLamaSharp" Version="0.27.0" />
+    <PackageReference Include="LLamaSharp.Backend.Cpu" Version="0.27.0" />
+    <PackageReference Include="Silk.NET.Vulkan" Version="2.23.0" />
+    <!-- Serialization: System.Text.Json 内置于 net10.0 (AOT source-gen, 零反射) -->
+    <!-- Regex: GeneratedRegex source generator (AOT 零反射) -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../agent.core/agent.core.csproj" />
+    <ProjectReference Include="../agent.rag/agent.rag.csproj" />
+    <ProjectReference Include="../agent.codegen/agent.codegen.csproj" />
+    <ProjectReference Include="../agent.vectormemory/agent.vectormemory.csproj" />
+    <ProjectReference Include="../agent.planner/agent.planner.csproj" />
+    <ProjectReference Include="../agent.workspace/agent.workspace.csproj" />
+    <ProjectReference Include="../agent.recovery/agent.recovery.csproj" />
+  </ItemGroup>
+
+</Project>
