@@ -120,6 +120,38 @@ Interlocked.Increment(ref _cacheMisses);
             {
                 recallTasks.Add(RecallFromUserTendencyAsync(request, ct));
             }
+
+            if (request.EnabledSources.Contains(DataSourceType.SessionMemory) &&
+                request.SessionMemoryBlock != null)
+            {
+                // 会话长期记忆 + 目标画像 (v7.14): 宿主预渲染好的记忆块 (SessionMemory.RenderForPrompt)
+                recallTasks.Add(Task.FromResult(new List<ContextSnippet>
+                {
+                    new()
+                    {
+                        SourceType = DataSourceType.SessionMemory,
+                        SourceName = "session_memory",
+                        Content = request.SessionMemoryBlock,
+                        RelevanceScore = 0.95, // 方向指示优先级最高
+                    }
+                }));
+            }
+
+            if (request.EnabledSources.Contains(DataSourceType.AgentContext) &&
+                request.AgentContextBlock != null)
+            {
+                // Agent 画像 + 能力清单 (v7.14): 宿主预渲染 (AgentProfile.RenderForPrompt + CapabilityScanner.RenderForPrompt)
+                recallTasks.Add(Task.FromResult(new List<ContextSnippet>
+                {
+                    new()
+                    {
+                        SourceType = DataSourceType.AgentContext,
+                        SourceName = "agent_context",
+                        Content = request.AgentContextBlock,
+                        RelevanceScore = 0.9,
+                    }
+                }));
+            }
             
             // 等待所有召回完成
             var recallResults = await Task.WhenAll(recallTasks);
@@ -662,11 +694,20 @@ Interlocked.Increment(ref _cacheMisses);
     {
         var compressed = new List<ContextSnippet>();
         
+        // v7.14: 会话记忆/Agent 上下文是"目标锚"块 — RenderForPrompt 已自控体积 (记忆≤1000 字符),
+        // 压缩会破坏 [目标]/[约束] 结构与画像统计, 且它们相关性最高 (0.95/0.9), 压缩收益为负
+        var pinnedSources = new HashSet<DataSourceType>
+        {
+            DataSourceType.SessionMemory,
+            DataSourceType.AgentContext,
+        };
+
         foreach (var snippet in snippets)
         {
             var quota = allocation.GetValueOrDefault(snippet.SourceType, 500);
-            
-            if (snippet.EstimatedTokens > quota / 10) // 超过配额的 1/10 才压缩
+
+            if (!pinnedSources.Contains(snippet.SourceType) &&
+                snippet.EstimatedTokens > quota / 10) // 超过配额的 1/10 才压缩
             {
                 var options = new CompressionOptions
                 {
@@ -705,9 +746,15 @@ Interlocked.Increment(ref _cacheMisses);
         // 避免双重包装污染最终 Prompt
         
         // 按数据源分组
+        // v7.14: pinned 源 (会话记忆/Agent 上下文) 恒入选, 其余按相关性补足 — 方向锚不因预算被挤掉
+        var pinnedTypes = new HashSet<DataSourceType>
+        {
+            DataSourceType.SessionMemory,
+            DataSourceType.AgentContext,
+        };
         var grouped = snippets.GroupBy(s => s.SourceType)
-            .OrderByDescending(g => g.Max(s => s.RelevanceScore))
-            .Take(3) // 最多3个数据源
+            .OrderByDescending(g => pinnedTypes.Contains(g.Key) ? 2.0 : g.Max(s => s.RelevanceScore))
+            .Take(5) // 最多5个数据源 (3→5: pinned 占 2 席后其余源仍有 3 席)
             .ToList();
         
         for (int i = 0; i < grouped.Count; i++)
@@ -725,8 +772,11 @@ Interlocked.Increment(ref _cacheMisses);
                     ? snippet.CompressedContent
                     : snippet.Content;
                 
-                // 基于 Token 截断而非字符数
-                var truncated = TruncateByTokens(content, 200); // 每条最多200 tokens
+                // v7.14: pinned 源 (记忆/画像) 内容自控体积, 整块保留;
+                // 其余基于 Token 截断
+                var truncated = pinnedTypes.Contains(group.Key)
+                    ? content
+                    : TruncateByTokens(content, 200); // 每条最多200 tokens
                 sb.AppendLine(truncated);
             }
             

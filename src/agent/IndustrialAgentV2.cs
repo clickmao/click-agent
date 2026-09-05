@@ -39,6 +39,7 @@ public class IndustrialAgentV2 : AgentBase
     private readonly agent.registry.AgentRegistry _agentRegistry;
     private readonly agent.registry.ResponseSegmentRouter _segmentRouter;
     private readonly agent.registry.ClarificationService _clarificationService;
+    private readonly agent.userinteraction.IUserPromptService? _promptService; // v7.14: EvidenceGate→批量问询驱动 (null=静默跳过)
     private readonly string _dataStoragePath;
     private readonly IRecoverySystem _recoverySystem;
     private readonly IVectorStore _vectorStore;
@@ -49,6 +50,9 @@ public class IndustrialAgentV2 : AgentBase
     private readonly ISessionManager _sessionManager;
     private readonly IUserInteraction _userInteraction;
     private readonly IContextAssembler _contextAssembler;
+    private readonly agent.session.JsonSessionMemoryStore _sessionMemoryStore; // v7.14 会话长期记忆落盘
+    private readonly agent.registry.AgentProfileStore _agentProfileStore;      // v7.14 agent 画像
+    private readonly agent.registry.CapabilityScanner _capabilityScanner;      // v7.14 能力清单 (扫描一次)
     private readonly ITendencyAnalyzer _tendencyAnalyzer;
     
     // ✅ 新增：Prompt 构建器
@@ -81,8 +85,10 @@ public class IndustrialAgentV2 : AgentBase
         agent.registry.AgentRegistry agentRegistry,
         agent.registry.ResponseSegmentRouter segmentRouter,
         agent.registry.ClarificationService clarificationService,
-        string dataStoragePath = "./data") : base(logger, handlers)
+        string dataStoragePath = "./data",
+        agent.userinteraction.IUserPromptService? promptService = null) : base(logger, handlers)
     {
+        _promptService = promptService;
         _workspace = workspace;
         _codeGenerator = codeGenerator;
         _recoverySystem = recoverySystem;
@@ -101,6 +107,10 @@ public class IndustrialAgentV2 : AgentBase
         _segmentRouter = segmentRouter;
         _clarificationService = clarificationService;
         _dataStoragePath = dataStoragePath;
+        _sessionMemoryStore = new agent.session.JsonSessionMemoryStore(_dataStoragePath);
+        _agentProfileStore = new agent.registry.AgentProfileStore(_dataStoragePath);
+        _capabilityScanner = new agent.registry.CapabilityScanner();
+        _capabilityScanner.Scan(); // 启动时探嗅一次 (⑤)
         
         Name = "IndustrialAgentV2";
         InitializeCapabilities();
@@ -147,6 +157,15 @@ public class IndustrialAgentV2 : AgentBase
                     subTasks.Count, intent, string.Join(",", subTasks.Select(t => t.Intent)));
             }
             
+            // 1.5 EvidenceGate 裁定 → ClarificationBatch 真实批量问询 (v7.14 ①):
+            // 低置信子任务生成疑问 → REPL 弹批量问题 → 答案并入本轮任务描述 (不带疑问硬执行)
+            var clarifiedAddendum = await RunEvidenceGateAsync(message, subTasks, ct);
+            if (!string.IsNullOrEmpty(clarifiedAddendum))
+            {
+                message.Content = $"{message.Content}\n[用户补充说明]\n{clarifiedAddendum}";
+                _logger.LogInformation("EvidenceGate 补充了 {Count} 字用户说明", clarifiedAddendum.Length);
+            }
+
             // 2. 多数据源上下文组装（失败时降级为空上下文，不阻断对话）
             var contextResult = await AssembleContextAsync(message, intent, subTasks, ct);
             if (!contextResult.Success)
@@ -189,7 +208,31 @@ public class IndustrialAgentV2 : AgentBase
             
             // 7. 存储到记忆
             await StoreToMemoryAsync(message, llmResponse, intent, ct);
-            
+
+            // 7.5 会话长期记忆回写 (v7.14): 每轮摘要入滚动记忆, 目标句从首轮任务锚定
+            try
+            {
+                var memSession = await _sessionManager.GetOrCreateSessionAsync(message.SessionId, message.SenderId);
+                var mem = memSession.Memory;
+                if (string.IsNullOrEmpty(mem.Goal?.GoalText))
+                    mem.SetGoal(message.Content.Length > 200 ? message.Content[..200] + "…" : message.Content);
+                mem.Remember($"[{intent}] {(llmResponse.Success ? "完成" : "失败")}: " +
+                    (message.Content.Length > 120 ? message.Content[..120] + "…" : message.Content));
+                if (llmResponse.Success)
+                    mem.AddMilestone(intent);
+                _sessionMemoryStore.Save(memSession.Id, mem);
+
+                // agent 画像动态学习 (④): 任务类别胜率 + 工具亲和
+                var learnUid = message.SenderId is { Length: > 0 } ? message.SenderId : "main";
+                _agentProfileStore.GetOrCreate(learnUid)
+                    .RecordTaskOutcome(intent, llmResponse.Success);
+                _agentProfileStore.Save();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "会话记忆回写失败 (不影响本轮响应)");
+            }
+
             if (!llmResponse.Success)
             {
                 response.Content = string.Empty;
@@ -229,6 +272,50 @@ public class IndustrialAgentV2 : AgentBase
     
     #region Core Methods
     
+    /// <summary>
+    /// EvidenceGate 裁定 → ClarificationBatch 真实批量问询 (v7.14 ①)。
+    /// 低置信子任务 (置信度<阈值 或 MissingParameter) 生成疑问组; 有问询服务时 REPL 弹批量问题,
+    /// 用户答案 (模式化, 绝不落凭据) 记入偏好库并拼为补充说明; 无服务/无疑问/问询失败 → 原样放行 (不阻断)。
+    /// </summary>
+    private async Task<string> RunEvidenceGateAsync(
+        Message message, IReadOnlyList<IntentDecomposer.SubTask> subTasks, CancellationToken ct)
+    {
+        if (_promptService == null || subTasks.Count == 0)
+            return string.Empty;
+        try
+        {
+            var gate = new agent.registry.EvidenceGate();
+            var verdict = gate.Evaluate(subTasks);
+            if (verdict.ToAsk.Count == 0)
+                return string.Empty;
+
+            // 批量问询: 同组问题一次给出 (组=子任务), 符合"按内部分组直接给出多个或一个"铁律
+            var prefs = new agent.registry.ClarificationPreferenceStore(_dataStoragePath);
+            var answers = new List<string>();
+            foreach (var req in verdict.ToAsk)
+            {
+                if (req.Questions.Count == 0)
+                    continue;
+                var batch = await agent.registry.ClarificationBatch.AskAsync(
+                    _promptService, $"EvidenceGate/{req.SubTask.Intent}", req.Questions,
+                    preferences: prefs, ct: ct);
+                foreach (var a in batch.Answers)
+                {
+                    if (a.Answered && !string.IsNullOrWhiteSpace(a.Value))
+                        answers.Add($"{a.Item.Question} → {a.Value}");
+                }
+            }
+            return answers.Count > 0 ? string.Join("; ", answers) : string.Empty;
+        }
+        catch (OperationCanceledException) { throw; }
+        catch (Exception ex)
+        {
+            // 问询链故障绝不阻断主流程 (降级: 带疑问直接执行, 与无 v7.14 行为一致)
+            _logger.LogWarning(ex, "EvidenceGate 问询失败, 降级为直接执行");
+            return string.Empty;
+        }
+    }
+
     private async Task<ContextAssemblyResult> AssembleContextAsync(
         Message message,
         string intent,
@@ -252,6 +339,49 @@ public class IndustrialAgentV2 : AgentBase
                 ? IntentDecomposer.AggregateSources(subTasks)
                 : IntentSourceMapping.GetSources(intent)
         };
+
+        // v7.14: 会话长期记忆 + 目标画像预渲染 (③) — 上下文压缩的方向锚 (⑥)
+        try
+        {
+            var session = await _sessionManager.GetOrCreateSessionAsync(
+                message.SessionId, message.SenderId);
+            var mem = session.Memory;
+            var rendered = mem.RenderForPrompt();
+            if (!string.IsNullOrEmpty(rendered))
+            {
+                request.SessionMemoryBlock = rendered;
+                if (!request.EnabledSources.Contains(agent.context.DataSourceType.SessionMemory))
+                    request.EnabledSources.Add(agent.context.DataSourceType.SessionMemory);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "会话记忆块渲染失败 (降级: 不注入)");
+        }
+
+        // v7.14: agent 画像 + 能力清单预渲染 (④⑤)
+        try
+        {
+            var agentUid = message.SenderId is { Length: > 0 } ? message.SenderId : "main";
+            var profile = _agentProfileStore.GetOrCreate(agentUid);
+            var blocks = new List<string>();
+            var profileRendered = profile.RenderForPrompt();
+            if (!string.IsNullOrEmpty(profileRendered))
+                blocks.Add(profileRendered);
+            var capRendered = _capabilityScanner.RenderForPrompt();
+            if (!string.IsNullOrEmpty(capRendered))
+                blocks.Add(capRendered);
+            if (blocks.Count > 0)
+            {
+                request.AgentContextBlock = string.Join("\n\n", blocks);
+                if (!request.EnabledSources.Contains(agent.context.DataSourceType.AgentContext))
+                    request.EnabledSources.Add(agent.context.DataSourceType.AgentContext);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Agent 上下文块渲染失败 (降级: 不注入)");
+        }
         
         return await _contextAssembler.AssembleAsync(request, ct);
     }

@@ -1,4 +1,5 @@
 using agent.intent;
+using agent.userinteraction;
 
 namespace agent.registry;
 
@@ -36,12 +37,16 @@ public class TaskPlanExecutor
     public TaskPlanExecutor(
         Func<PlanNode, CancellationToken, Task<NodeExecutionResult>> nodeRunner,
         EvidenceGate? evidenceGate = null,
-        ClarificationPreferenceStore? preferences = null)
+        ClarificationPreferenceStore? preferences = null,
+        IUserPromptService? prompts = null)
     {
         _nodeRunner = nodeRunner;
         _evidenceGate = evidenceGate ?? new EvidenceGate();
         _preferences = preferences;
+        _prompts = prompts;
     }
+
+    private readonly IUserPromptService? _prompts;
 
     /// <summary>
     /// 执行计划: 拓扑序逐节点。
@@ -131,11 +136,20 @@ public class TaskPlanExecutor
                 return run;
             }
 
-            // 问询未答 → 保持等待 (不阻断后续无关节点)
+            // 问询未答 → 编排循环里真实驱动批量问询 (v7.13.2):
+            //   有发起者通道 (prompts) → 按组一次问全 (批量协议), 合法答案写回参数槽并解除等待;
+            //   无通道 (纯编排/测试) 或用户放弃 → 保持 AwaitingClarification, 不阻断后续无关节点。
             if (!node.IsExecutable)
             {
-                run.NodeStates[node.Id] = PlanNodeState.AwaitingClarification;
-                continue;
+                if (_prompts != null && await TryAskNodeClarificationsAsync(node, run, ct))
+                {
+                    // 答案已回流: 参数槽填充 → 本轮继续执行该节点 (不等下一轮)
+                }
+                else
+                {
+                    run.NodeStates[node.Id] = PlanNodeState.AwaitingClarification;
+                    continue;
+                }
             }
 
             run.NodeStates[node.Id] = PlanNodeState.Running;
@@ -164,6 +178,39 @@ public class TaskPlanExecutor
 
         run.State = TaskPlanRunState.Finished;
         return run;
+    }
+
+    /// <summary>
+    /// 对单个节点的待澄清条目跑一轮批量问询 (v7.13.2 编排接线):
+    /// 按问询协议分组打包 → 用户一次回答全部 → 合法答案写回参数槽 (Name 匹配) 并移除已答条目。
+    /// 返回 true = 该节点已可执行 (Clarifications 清空)。
+    /// </summary>
+    private async Task<bool> TryAskNodeClarificationsAsync(PlanNode node, TaskPlanRun run, CancellationToken ct)
+    {
+        var groups = ClarificationBatch.Group(node.Clarifications);
+        var allAnswered = true;
+        foreach (var group in groups)
+        {
+            var result = await ClarificationBatch.AskAsync(
+                _prompts!, $"任务「{node.Text}」参数确认", group,
+                preferences: _preferences, ct: ct);
+            if (!result.AllAnswered)
+                allAnswered = false;
+            foreach (var ans in result.Answers)
+            {
+                if (!ans.Answered)
+                    continue;
+                // 答案落地: 同名参数槽写值; 没有对应参数槽的答案 (证据补充类) 挂到节点文本说明
+                var slot = node.Parameters.FirstOrDefault(p2 =>
+                    string.Equals(p2.Name, ans.Item.ParameterName, StringComparison.OrdinalIgnoreCase));
+                if (slot != null)
+                    slot.Value = ans.Value;
+                node.Clarifications.Remove(ans.Item);
+            }
+        }
+        if (!allAnswered)
+            run.PauseReason = $"节点「{node.Text}」部分参数未确认, 继续等待澄清";
+        return node.IsExecutable;
     }
 
     private static void SkipRemaining(IEnumerable<PlanNode> order, Dictionary<string, PlanNodeState> states, string stoppedAtId)

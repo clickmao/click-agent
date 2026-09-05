@@ -27,7 +27,13 @@ public enum DataSourceType
     WorkspaceFiles,
     
     /// <summary>外部工具输出</summary>
-    ToolOutput
+    ToolOutput,
+
+    /// <summary>会话长期记忆 + 任务目标画像 (v7.14)</summary>
+    SessionMemory,
+
+    /// <summary>Agent 画像 + 能力清单 (v7.14)</summary>
+    AgentContext
 }
 
 /// <summary>
@@ -105,7 +111,9 @@ public class ContextAssemblyRequest
         { DataSourceType.WebSearch, 1500 },
         { DataSourceType.UserTendency, 500 },
         { DataSourceType.WorkspaceFiles, 1000 },
-        { DataSourceType.ToolOutput, 500 }
+        { DataSourceType.ToolOutput, 500 },
+        { DataSourceType.SessionMemory, 400 },
+        { DataSourceType.AgentContext, 300 }
     };
     
     /// <summary>相关性阈值（低于此分数的片段将被过滤）</summary>
@@ -123,6 +131,12 @@ public class ContextAssemblyRequest
     
     /// <summary>是否包含高优先级上下文（如错误信息）</summary>
     public bool IncludeHighPriority { get; set; } = true;
+
+    /// <summary>会话长期记忆+目标画像预渲染块 (v7.14; null = 不注入)</summary>
+    public string? SessionMemoryBlock { get; set; }
+
+    /// <summary>Agent 画像+能力清单预渲染块 (v7.14; null = 不注入)</summary>
+    public string? AgentContextBlock { get; set; }
 }
 
 /// <summary>

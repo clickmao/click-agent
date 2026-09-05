@@ -67,11 +67,18 @@ internal class Program
     {
         var sessionMgr = provider.GetRequiredService<ISessionManager>();
         var session = new CliSession(sink, "./data");
+        // 面板数据服务 (v7.14): /status 与 /session 家族全部输出格式化 JSON (程序可解析)
+        var panel = new agent.registry.PanelDataService(
+            sessionMgr,
+            new agent.session.JsonSessionMemoryStore("./data"),
+            new agent.registry.AgentProfileStore("./data"),
+            new agent.registry.CapabilityScanner(),
+            "./data");
         var turnCount = 0;
         string? lastIntent = null, lastTendency = null;
 
         sink.Write(CliRenderer.Bold("AgentFramework CLI"));
-        sink.Write(CliRenderer.Dim("  /status 状态查询  /plan 计划 JSON  /stop 停止  /reset 重置  /exit 退出" +
+        sink.Write(CliRenderer.Dim("  /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit" +
                                    (logPath != null ? $"  [log → {logPath}]" : "")));
 
         // 单条模式或 REPL
@@ -100,10 +107,33 @@ internal class Program
 
             // CLI 本地命令 (非 LLM 强制指令的路由分流: /status /plan 由 CLI 消费, 其余进 V2 拦截层)
             var trimmed = input.Trim();
-            if (trimmed == "/status")
+            if (trimmed == "/status" || trimmed.StartsWith("/status ", StringComparison.Ordinal))
             {
-                session.RenderStatus(turnCount, lastIntent, lastTendency,
-                    BuildPreferenceSummary("./data"));
+                // v7.14: 全 JSON 输出 (程序可解析); 带 agent_uid 时输出该 agent 画像/记忆/上下文
+                var arg = trimmed.Length > "/status".Length
+                    ? trimmed["/status".Length..].Trim()
+                    : null;
+                sink.Write(arg != null
+                    ? panel.RenderAgentStatus(arg)
+                    : panel.RenderGlobalStatus(turnCount, lastIntent, lastTendency,
+                        BuildPreferenceSummary("./data")));
+                if (oneShot != null) return 0;
+                continue;
+            }
+            if (trimmed == "/session" || trimmed.StartsWith("/session ", StringComparison.Ordinal))
+            {
+                // v7.14: /session <agent_uid> [index] — 历史会话数量+摘要 / 指定会话详情, 全 JSON
+                var parts = trimmed.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length < 2)
+                {
+                    sink.Write("{\"error\": \"用法: /session <agent_uid> [index]\", \"found\": false}");
+                    if (oneShot != null) return 2;
+                    continue;
+                }
+                var uid = parts[1];
+                sink.Write(parts.Length >= 3 && int.TryParse(parts[2], out var idx)
+                    ? panel.RenderSessionDetail(uid, idx)
+                    : panel.RenderSessionList(uid));
                 if (oneShot != null) return 0;
                 continue;
             }

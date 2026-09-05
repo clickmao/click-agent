@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using System.Text.Json.Serialization;
 
 namespace agent.session;
 
@@ -51,6 +52,24 @@ public class Session
     /// 元数据
     /// </summary>
     public Dictionary<string, object> Metadata { get; set; } = new();
+
+    /// <summary>会话长期记忆 + 任务目标画像 (v7.14, 懒创建; 上限由 MemoryMaxChars 控制)</summary>
+    [JsonIgnore]
+    public SessionMemory Memory
+    {
+        get
+        {
+            if (_memory == null)
+            {
+                var cap = Metadata.TryGetValue("memoryMaxChars", out var v) && v is int i ? i : SessionMemory.DefaultMaxChars;
+                _memory = new SessionMemory(cap);
+            }
+            return _memory;
+        }
+    }
+
+    [JsonIgnore]
+    private SessionMemory? _memory;
 
     /// <summary>
     /// ✅ 添加用户消息
@@ -200,6 +219,11 @@ public class SessionConfig
     public TimeSpan Timeout { get; set; } = TimeSpan.FromHours(1);
     
     /// <summary>
+    /// 会话长期记忆上限字符数 (v7.14): 默认 1000, 可配置 (100..10000)
+    /// </summary>
+    public int MaxMemoryChars { get; set; } = SessionMemory.DefaultMaxChars;
+
+    /// <summary>
     /// 是否自动保存
     /// </summary>
     public bool AutoSave { get; set; } = true;
@@ -249,6 +273,11 @@ public interface ISessionManager
     /// 获取用户的所有会话
     /// </summary>
     Task<IEnumerable<Session>> GetUserSessionsAsync(string userId);
+
+    /// <summary>
+    /// 获取全部会话 (v7.14 面板: /session 需要跨用户枚举)
+    /// </summary>
+    Task<IEnumerable<Session>> GetAllSessionsAsync();
 }
 
 /// <summary>
@@ -397,7 +426,8 @@ public class SessionManager : ISessionManager
             Metadata = new Dictionary<string, object>
             {
                 { "maxTokens", config.MaxTokens },
-                { "timeout", config.Timeout }
+                { "timeout", config.Timeout },
+                { "memoryMaxChars", config.MaxMemoryChars }
             }
         };
         
@@ -506,6 +536,15 @@ public class SessionManager : ISessionManager
                 .Where(s => s.UserId == userId)
                 .OrderByDescending(s => s.LastActivityAt);
             
+            return Task.FromResult<IEnumerable<Session>>(sessions.ToList());
+        }
+    }
+
+    public Task<IEnumerable<Session>> GetAllSessionsAsync()
+    {
+        lock (_lock)
+        {
+            var sessions = _sessions.Values.OrderByDescending(s => s.LastActivityAt);
             return Task.FromResult<IEnumerable<Session>>(sessions.ToList());
         }
     }

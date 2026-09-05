@@ -81,6 +81,10 @@ public static class VulkanSupport
                 if (!IsLoaderAvailable())
                     throw new InvalidOperationException(
                         $"Vulkan 模式要求系统安装 vulkan loader ({DescribeLoader()})。安装 vulkan 驱动或改用 CPU 模式。");
+                // ggml-vulkan 默认过滤 CPU 类型实现 (lavapipe/llvmpipe): 全软设备时自动放开,
+                // 否则 ggml_vulkan 报 "No devices found" 直接回退 CPU 分配 (v7.13 真机验证发现的坑)。
+                // 用户显式设置过 GGML_VK_VISIBLE_DEVICES 时不覆盖。
+                EnsureGgmlVulkanDeviceVisible();
                 NativeLibraryConfig.LLama
                     .WithVulkan(true)
                     .WithAutoFallback(false)   // 强制 vulkan — 失败就报错, 不静默滑回 CPU
@@ -102,6 +106,8 @@ public static class VulkanSupport
                 // 且 ggml-vulkan 默认过滤 CPU 类型实现 (lavapipe 场景需 GGML_VK_VISIBLE_DEVICES=0)。
                 // 判据: loader dlopen OK && vulkaninfo --summary 能枚举出设备 → Vulkan, 否则 CPU。
                 var useVulkan = IsLoaderAvailable() && HasVulkanDevice();
+                if (useVulkan)
+                    EnsureGgmlVulkanDeviceVisible();
                 NativeLibraryConfig.LLama
                     .WithVulkan(useVulkan)
                     .WithAutoFallback(true);   // Auto: ggml-vulkan 产物缺失时允许回落 CPU
@@ -122,6 +128,65 @@ public static class VulkanSupport
             return true;
         if (!IsVulkanInfoAvailable())
             return false;
+        var output = RunVulkanInfoSummary();
+        // GPU0: 段落出现 = 至少枚举到一个物理设备
+        return output != null && output.Contains("GPU", StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>
+    /// ggml-vulkan 只认非 CPU 类型 vulkan 设备。系统只有软件实现 (lavapipe/llvmpipe) 时,
+    /// 自动设置 GGML_VK_VISIBLE_DEVICES=0 让它可见 (用户显式设置过则尊重用户)。
+    /// </summary>
+    private static void EnsureGgmlVulkanDeviceVisible()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            return; // Windows 无此过滤问题
+        if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("GGML_VK_VISIBLE_DEVICES")))
+            return; // 用户显式控制, 不覆盖
+        var summary = RunVulkanInfoSummary();
+        if (summary == null)
+            return;
+        // 有 PHYSICAL_DEVICE_TYPE_CPU 之外的设备 (INTEGRATED_GPU/DISCRETE_GPU/VIRTUAL) → 真硬件在, 无需干预
+        var hasRealGpu = summary.Contains("PHYSICAL_DEVICE_TYPE_GPU", StringComparison.Ordinal) ||
+                         summary.Contains("PHYSICAL_DEVICE_TYPE_INTEGRATED", StringComparison.Ordinal) ||
+                         summary.Contains("PHYSICAL_DEVICE_TYPE_DISCRETE", StringComparison.Ordinal) ||
+                         summary.Contains("PHYSICAL_DEVICE_TYPE_VIRTUAL", StringComparison.Ordinal);
+        if (hasRealGpu)
+            return;
+        // 只有 CPU 型设备 (或枚举不到类型) → 放开第一个设备给 ggml
+        // ⚠️ 必须走 libc setenv: ggml-vulkan 是 native 层用 getenv 读,
+        // .NET Environment.SetEnvironmentVariable 只写托管 env block, native 读不到 (真机判决实验证实)。
+        NativeEnv.Set("GGML_VK_VISIBLE_DEVICES", "0");
+    }
+
+    /// <summary>
+    /// native 可见的环境变量写入 (v7.14): libc setenv + 托管双写。
+    /// </summary>
+    private static class NativeEnv
+    {
+        [System.Runtime.InteropServices.DllImport("libc", SetLastError = true, CharSet = System.Runtime.InteropServices.CharSet.Ansi)]
+        [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.LPStr)]
+        private static extern string? setenv(string name, string value, int overwrite);
+
+        /// <summary>写入进程级 env (native getenv 与 .NET GetEnvironmentVariable 都可见)</summary>
+        public static void Set(string name, string value)
+        {
+            try
+            {
+                setenv(name, value, 1);
+            }
+            catch
+            {
+                // libc 不可用 (非 Unix) → 退回托管写
+            }
+            Environment.SetEnvironmentVariable(name, value);
+        }
+    }
+
+    private static string? RunVulkanInfoSummary()
+    {
+        if (!IsVulkanInfoAvailable())
+            return null;
         try
         {
             using var p = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
@@ -133,15 +198,14 @@ public static class VulkanSupport
                 UseShellExecute = false,
             });
             if (p == null)
-                return false;
+                return null;
             var output = p.StandardOutput.ReadToEnd();
             p.WaitForExit(8000);
-            // GPU0: 段落出现 = 至少枚举到一个物理设备
-            return output.Contains("GPU", StringComparison.OrdinalIgnoreCase);
+            return p.ExitCode == 0 ? output : null;
         }
         catch
         {
-            return false;
+            return null;
         }
     }
 
