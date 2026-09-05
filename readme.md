@@ -151,6 +151,11 @@ click-agent/
 - [API 文档](docs/api.md)
 - [改进记录](docs/improvements.md) — v7.4 → v7.12 每轮真实执行证据
 - [任务循环](docs/task_loop.md)
+- [开发计划: 依赖拓扑任务图 × 隔离任务](docs/plan_taskgraph_and_isolated_task.md) — 待开发子模块，独立成文无需加载全上下文
+
+### 🗺 下一步开发计划 (v7.15 候选)
+1. **依赖拓扑任务图**：`TaskPlanBuilder` 按 `SubTask.Dependencies` 将子任务拆解为 Level 分层 + ParallelGroup 并行组 → 执行器按层执行，同层并发、跨层等待上游（Kahn 分层，环检测报错）。详见计划文档模块 A。
+2. **隔离任务**：主 agent 任务循环中收到**与当前目标无关的新提问**（如计算器开发中突然要求"查天气"）→ 纯规则判定无关（实体重叠/指代词/意图类别，锚=`SessionMemory.GoalProfile.KeyEntities`）→ 额外开**隔离边界的子 agent** 执行（独立会话/不写主记忆/不污染主画像/静默问询），完成即销毁。详见计划文档模块 B。
 
 ## 配置
 
