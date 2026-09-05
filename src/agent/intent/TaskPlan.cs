@@ -10,6 +10,9 @@ public class TaskPlan
 
     /// <summary>同层最大并发节点数 (v7.15 执行器并发化; 1 = 完全串行等价旧行为)。</summary>
     public int MaxParallelism { get; set; } = 4;
+
+    /// <summary>节点级默认重试次数 (v7.15 FailRetry; PlanNode.MaxRetries 未显式设置时用此值)。</summary>
+    public int DefaultMaxRetries { get; set; } = 0;
     public string PlanId { get; set; } = Guid.NewGuid().ToString("N")[..12];
 
     /// <summary>原始用户输入</summary>
@@ -33,6 +36,9 @@ public class TaskPlan
 /// <summary>计划节点 = 一个子任务</summary>
 public class PlanNode
 {
+
+    /// <summary>本节点最大重试次数 (v7.15 FailRetry; null = 用 TaskPlan.DefaultMaxRetries)。</summary>
+    public int? MaxRetries { get; set; }
     public string Id { get; set; } = "n" + Guid.NewGuid().ToString("N")[..8];
 
     /// <summary>子任务原文片段</summary>

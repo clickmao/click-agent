@@ -208,6 +208,7 @@ public static class TaskPlanBuilder
 [JsonSerializable(typeof(ClarificationItem))]
 [JsonSerializable(typeof(TaskPlanRun))]
 [JsonSerializable(typeof(InjectedInstruction))]
+[JsonSerializable(typeof(NodeRetryRecord))]
 [JsonSourceGenerationOptions(WriteIndented = true, DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
 public partial class TaskPlanJsonContext : JsonSerializerContext
 {

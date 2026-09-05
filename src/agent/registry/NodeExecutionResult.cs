@@ -4,6 +4,19 @@ using agent.userinteraction;
 namespace agent.registry;
 
 /// <summary>单个节点的执行结果</summary>
+/// <summary>失败种类 (v7.15 重试策略): 决定节点失败是否值得重试。</summary>
+public enum NodeFailureKind
+{
+    /// <summary>未失败</summary>
+    None,
+
+    /// <summary>瞬态失败 (网络/超时/LLM 5xx) — 可重试 (默认保守分类)</summary>
+    Transient,
+
+    /// <summary>永久失败 (参数校验/敏感拒绝/逻辑错误) — 重试无意义</summary>
+    Permanent,
+}
+
 public class NodeExecutionResult
 {
     public string NodeId { get; init; } = string.Empty;
@@ -14,6 +27,9 @@ public class NodeExecutionResult
     public string? Output { get; init; }
 
     public string? Error { get; init; }
+
+    /// <summary>失败种类 (v7.15): 默认 Transient — nodeRunner 实现方负责细分, Unknown 按可重试处理</summary>
+    public NodeFailureKind FailureKind { get; init; } = NodeFailureKind.Transient;
 }
 
 /// <summary>
@@ -164,7 +180,7 @@ public class TaskPlanExecutor
             // 执行: 单节点串行 (零行为变化); 多节点按 MaxParallelism 分片并发
             if (executable.Count == 1 || plan.MaxParallelism <= 1)
             {
-                var verdict = await RunNodeCoreAsync(executable[0], order, run, ct);
+                var verdict = await RunNodeCoreAsync(executable[0], order, run, plan, ct);
                 if (verdict != null)
                     return verdict; // Cancelled / FailFast 终止
             }
@@ -174,7 +190,7 @@ public class TaskPlanExecutor
                 foreach (var shard in executable.Chunk(plan.MaxParallelism))
                 {
                     var results = await Task.WhenAll(
-                        shard.Select(n => RunNodeCoreAsync(n, order, run, ct)));
+                        shard.Select(n => RunNodeCoreAsync(n, order, run, plan, ct)));
                     var stop = results.FirstOrDefault(v => v != null);
                     if (stop != null)
                     {
@@ -200,26 +216,62 @@ public class TaskPlanExecutor
     /// 并发注意: 只写本节点状态与 run 终态字段, 不碰其他节点 — 批内节点互不依赖, 状态字典写入不冲突。
     /// </summary>
     private async Task<TaskPlanRun?> RunNodeCoreAsync(
-        PlanNode node, List<PlanNode> order, TaskPlanRun run, CancellationToken ct)
+        PlanNode node, List<PlanNode> order, TaskPlanRun run, TaskPlan plan, CancellationToken ct)
     {
         run.NodeStates[node.Id] = PlanNodeState.Running;
+
+        // ── FailRetry (v7.15): 瞬态失败按 MaxRetries 重试 (指数退避 500ms×2^n 上限 4s), 耗尽才收敛 ──
+        var maxRetries = node.MaxRetries ?? plan.DefaultMaxRetries;
         NodeExecutionResult result;
-        try
+        var attempt = 0;
+        while (true)
         {
-            result = await _nodeRunner(node, ct);
-        }
-        catch (OperationCanceledException)
-        {
-            run.NodeStates[node.Id] = PlanNodeState.Skipped;
-            run.State = TaskPlanRunState.Cancelled;
-            return run;
+            try
+            {
+                result = await _nodeRunner(node, ct);
+            }
+            catch (OperationCanceledException)
+            {
+                // 取消永不重试 (B.3 约束 2)
+                run.NodeStates[node.Id] = PlanNodeState.Skipped;
+                run.State = TaskPlanRunState.Cancelled;
+                return run;
+            }
+
+            var retryable = result.FinalState == PlanNodeState.Failed &&
+                            result.FailureKind != NodeFailureKind.Permanent &&
+                            attempt < maxRetries;
+            if (!retryable)
+                break;
+
+            var waitMs = Math.Min(500 * (1 << attempt), 4000);
+            run.Retries.Add(new NodeRetryRecord
+            {
+                NodeId = node.Id,
+                Attempt = attempt + 1,
+                Error = result.Error,
+                WaitedMs = waitMs,
+            });
+            try
+            {
+                await Task.Delay(waitMs, ct);
+            }
+            catch (OperationCanceledException)
+            {
+                // 重试等待中取消 → 立即返回 Cancelled (B.4-4)
+                run.NodeStates[node.Id] = PlanNodeState.Skipped;
+                run.State = TaskPlanRunState.Cancelled;
+                return run;
+            }
+            attempt++;
         }
 
         run.NodeStates[node.Id] = result.FinalState;
         if (result.FinalState == PlanNodeState.Failed)
         {
-            // FailFast: 单节点失败停止计划 (重试策略后续迭代)
-            run.PauseReason = $"节点「{node.Text}」失败: {result.Error}";
+            // 重试耗尽/永久失败 → 原有 FailFast 收敛语义 (下游 Skipped + 计划 Finished)
+            var retriedNote = attempt > 0 ? $" (已重试 {attempt} 次)" : string.Empty;
+            run.PauseReason = $"节点「{node.Text}」失败{retriedNote}: {result.Error}";
             SkipRemaining(order, run.NodeStates, node.Id);
             run.State = TaskPlanRunState.Finished;
             return run;
