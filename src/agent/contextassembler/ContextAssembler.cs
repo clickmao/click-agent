@@ -686,6 +686,37 @@ Interlocked.Increment(ref _cacheMisses);
     /// <summary>
     /// 压缩片段
     /// </summary>
+    private readonly agent.contextgradient.ContextGradientCompressor _gradientCompressor = new();
+
+    /// <summary>锚词提取 (P1 启发式: 取出现 ≥2 次的 2-8 字中英词段, 前 8 个; P3 向量版替换)</summary>
+    private static List<string> ExtractAnchorWords(string content)
+    {
+        var words = new Dictionary<string, int>(StringComparer.Ordinal);
+        // 英文词
+        foreach (System.Text.RegularExpressions.Match m in
+                 System.Text.RegularExpressions.Regex.Matches(content, "[A-Za-z]{3,}"))
+        {
+            var w = m.Value.ToLowerInvariant();
+            words[w] = words.GetValueOrDefault(w) + 1;
+        }
+        // 中文 2-4 字词 (滑动窗, 出现 ≥2 次)
+        for (var len = 2; len <= 4; len++)
+        {
+            for (var i = 0; i + len <= content.Length; i++)
+            {
+                if (!char.IsLetter(content[i]) || content[i] < 0x4E00 || content[i] > 0x9FFF)
+                    continue;
+                var w = content.Substring(i, len);
+                words[w] = words.GetValueOrDefault(w) + 1;
+            }
+        }
+        return words.Where(kv => kv.Value >= 2)
+            .OrderByDescending(kv => kv.Value)
+            .Take(8)
+            .Select(kv => kv.Key)
+            .ToList();
+    }
+
     private async Task<List<ContextSnippet>> CompressSnippetsAsync(
         List<ContextSnippet> snippets,
         Dictionary<DataSourceType, int> allocation,
@@ -709,16 +740,20 @@ Interlocked.Increment(ref _cacheMisses);
             if (!pinnedSources.Contains(snippet.SourceType) &&
                 snippet.EstimatedTokens > quota / 10) // 超过配额的 1/10 才压缩
             {
-                var options = new CompressionOptions
+                // v7.15: 梯度压缩优先 (相关性分层 L0-L3 + 锚词防漂移内置回退)
+                // 锚词 = 片段内容中提取的实词 (简单启发: 高频中英词), P3 换向量匹配
+                var anchors = ExtractAnchorWords(snippet.Content);
+                var gradient = _gradientCompressor.Compress(new agent.contextgradient.GradientRequest
                 {
-                    MaxTokens = quota / Math.Max(1, snippets.Count(s => s.SourceType == snippet.SourceType)),
-                    Strategy = request.CompressionStrategy,
-                    PreserveStructure = true,
-                    PreserveKeywords = true
-                };
-                
-                var compressedContent = await _tokenCompressor.CompressAsync(snippet.Content, options);
-                
+                    Content = snippet.Content,
+                    RelevanceScore = snippet.RelevanceScore,
+                    TokenBudget = quota / Math.Max(1, snippets.Count(s => s.SourceType == snippet.SourceType)),
+                    AnchorWords = anchors,
+                });
+                var compressedContent = gradient.DriftCheckPassed || gradient.Level == agent.contextgradient.GradientLevel.Full
+                    ? gradient.Content
+                    : snippet.Content; // 漂移校验失败且非全文 → 保原文 (宁大不歪)
+
                 snippet.CompressedContent = compressedContent;
                 snippet.IsCompressed = compressedContent != snippet.Content;
                 snippet.EstimatedTokens = await _tokenCompressor.CountTokensAsync(compressedContent);
