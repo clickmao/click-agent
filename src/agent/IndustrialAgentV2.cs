@@ -65,6 +65,7 @@ public class IndustrialAgentV2 : AgentBase
     private readonly agent.modelqueue.BalanceQueryService? _balanceService;
     private readonly agent.modelqueue.ModelVerifyService? _verifyService;
     private readonly agent.logging.LogRouter? _logRouter;
+    private readonly agent.skills.SkillDispatcher? _skillDispatcher;
     
     private readonly List<string> _capabilities = new();
     
@@ -96,13 +97,15 @@ public class IndustrialAgentV2 : AgentBase
         agent.modelqueue.ModelQueueRouter? modelRouter = null,
         agent.modelqueue.BalanceQueryService? balanceService = null,
         agent.modelqueue.ModelVerifyService? verifyService = null,
-        agent.logging.LogRouter? logRouter = null) : base(logger, handlers)
+        agent.logging.LogRouter? logRouter = null,
+        agent.skills.SkillDispatcher? skillDispatcher = null) : base(logger, handlers)
     {
         _isolatedTaskRunner = isolatedTaskRunner;
         _modelRouter = modelRouter;
         _balanceService = balanceService;
         _verifyService = verifyService;
         _logRouter = logRouter;
+        _skillDispatcher = skillDispatcher;
         _promptService = promptService;
         _workspace = workspace;
         _codeGenerator = codeGenerator;
@@ -185,6 +188,23 @@ public class IndustrialAgentV2 : AgentBase
                 {
                     return cmdResp;
                 }
+            }
+
+            // 0.-3 Skill 调度 (v7.15 S.3 阶段一): 推理前激活判定 — 命中即走 Skill 流程 (force_use 承载口径)
+            if (_skillDispatcher != null &&
+                !trimmedCmd.StartsWith('/'))  // 本地指令不走 Skill
+            {
+                var skillResult = await _skillDispatcher.DispatchAsync(message.Content, ct);
+                if (skillResult != null && skillResult.Success && skillResult.ForceUse)
+                {
+                    _logger.LogInformation("Skill {SkillId} activated (force_use, {Ms}ms)",
+                        skillResult.SkillId, skillResult.ElapsedMs);
+                    response.Success = true;
+                    response.Content = skillResult.Content;
+                    response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
+                    return response;
+                }
+                // 未命中/失败/禁语拦截 → 静默降级普通推理 (S.5: 用户无感)
             }
 
             // 0. 非 LLM 本地强制指令拦截 (v7.11): /stop /continue 等, 不进意图识别/LLM

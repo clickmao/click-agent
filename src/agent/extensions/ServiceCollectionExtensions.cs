@@ -198,6 +198,11 @@ public static class ServiceCollectionExtensions
             sp.GetRequiredService<agent.modelqueue.ModelCatalog>(),
             sp.GetRequiredService<IHttpClientFactory>()));
 
+        // v7.15 Skill 调度 (P1): skills/ 目录静态加载 + 触发匹配 + 口径承载
+        services.AddSingleton(sp => agent.skills.SkillRegistry.LoadFromDirectory("skills"));
+        services.AddSingleton(sp => new agent.skills.SkillDispatcher(
+            sp.GetRequiredService<agent.skills.SkillRegistry>()));
+
         // v7.15 日志四通道: LogRouter (flags 默认全开 — config/base/logging.yaml 分层可覆盖)
         services.AddSingleton(sp => new agent.logging.MemoryLogBuffer(2000));
         services.AddSingleton(sp => new agent.logging.LogRouter(
