@@ -163,6 +163,11 @@ click-agent/
 
 > 计划总图：`docs/plans/v715_dev_plan.taskplan.json`（TaskPlan 结构 + 每节点 DocRef 标注文档，防漂移测试 `DevPlanDocRefTests` 固化）
 
+### 📐 依赖拓扑任务图 × 隔离任务 — 原 plan_taskgraph_and_isolated_task.md 计划简要
+原合并计划文档（v7.14 落档）已按"每个开发计划隔离单文档"拆分归拢为独立文档，其计划要点：
+- **依赖拓扑任务图**：`TaskPlanBuilder` 按 `SubTask.Dependencies` 将子任务拆解为 Level 分层 + ParallelGroup 并行组 → 执行器按层执行，同层并发、跨层等待上游。核实修正：Level/ParallelGroup 计算算法**已存在**（`TaskPlanBuilder.ComputeLevelsAndParallelGroups`），真实缺口仅在执行端（逐节点串行 await）→ 演进为上方第 1 项 [plan_executor_parallel.md](docs/plan_executor_parallel.md)。
+- **隔离任务**：主 agent 任务循环中收到**与当前目标无关的新提问**（如计算器开发中突然要求"查天气"）→ 纯规则打分判定无关（实体重叠/指代词/意图类别，锚=`SessionMemory.GoalProfile.KeyEntities`）→ 额外开**隔离边界的子 agent** 执行（独立会话/不写主记忆/不污染主画像/静默问询），完成即销毁 → 独立为上方第 3 项 [plan_isolated_task.md](docs/plan_isolated_task.md)；双计划体系（遗留 `agent.planner` vs `TaskPlan*`）去留与执行链接线见第 0 项 [plan_taskplan_consolidation.md](docs/plan_taskplan_consolidation.md)。
+
 ## 配置
 
 ```json
