@@ -31,6 +31,6 @@ public class NullLlmCallerTests
         var caller = new NullLLMCaller();
         var response = await caller.CallAsync(new Prompt { UserMessage = "x" });
 
-        Assert.Contains("ApiKey", response.Error);
+        Assert.Contains("AGENT_OPENAI_KEY", response.Error);
     }
 }

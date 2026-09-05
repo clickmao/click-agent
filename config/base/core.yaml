@@ -1,0 +1,98 @@
+# ==============================================
+# Agent 框架核心基础配置 (L1 base, 随版本发布, 禁止本地修改)
+# 作用: 全局运行时基础参数, 所有模块共享
+# 规范: 《全模块 YAML 配置开发规范》§4 (注释/命名/类型/格式)
+# ==============================================
+
+# 框架主体配置 (原 appsettings.json AgentFramework 段平移)
+agentframework:
+
+  # Agent 运行参数
+  agent:
+    # Agent 显示名
+    agent_name: MainAgent
+    # 全局默认 Token 预算 (单位: token)
+    max_token_budget: 100000
+    # 全局超时时间 (单位: 毫秒)
+    default_timeout_ms: 300000
+    # 最大子 agent 并发数
+    max_sub_agents: 4
+    # 是否启用搜索缓存
+    enable_search_cache: true
+    # 摘要触发轮次 (单位: 轮)
+    summarize_after_turns: 10
+
+  # 长期/短期记忆
+  memory:
+    long_term:
+      # 存储提供者: File/SQLite
+      provider: File
+      # 存储路径
+      path: ./data/memory
+      # 是否启用索引
+      enable_index: true
+    short_term:
+      # 最大条目数
+      max_entries: 1000
+      # 摘要触发轮次 (单位: 轮)
+      summarize_after_turns: 10
+
+  # 模板存储
+  template:
+    storage_path: ./data/templates
+    enable_auto_save: true
+    success_rate_threshold: 0.8
+
+  # 搜索
+  search:
+    provider: WebReaper
+    endpoint: http://localhost:8080
+    enable_cache: true
+    cache_duration_seconds: 3600
+    max_results: 10
+
+  # MAF 集成
+  maf:
+    enable: false
+    endpoint: http://localhost:5000
+    api_key: ${MAF_API_KEY}
+
+  # 会话
+  session:
+    enable_auto_save: true
+    save_interval_seconds: 60
+    max_concurrent_sessions: 100
+
+  # 倾向分析
+  tendency:
+    enable: true
+    update_interval_seconds: 5
+    min_sample_size: 10
+
+# Agent 运行参数 (顶层, 原 Agent:* 键 — 用户示例配置的正式载体)
+agent:
+  # Agent 显示名
+  agent_name: MainAgent
+  # 最大子 agent 并发数
+  max_sub_agents: 4
+  # 是否启用搜索缓存
+  enable_search_cache: true
+  # 摘要触发轮次 (单位: 轮)
+  summarize_after_turns: 10
+
+# OpenAI 兼容 LLM 管道 (顶层, 原 OpenAI:* 键)
+# ApiKey 不落配置 — 只存环境变量名, 运行时从环境读取 (v7.14 凭据铁律)
+openai:
+  # API Key 的环境变量名 (不是 Key 本身!)
+  api_key_env: AGENT_OPENAI_KEY
+  # 默认模型 ID
+  model: gpt-4
+  # 兼容端点 (留空 = 官方/由 env 覆盖)
+  endpoint: ""
+
+# 日志
+logging:
+  # 日志级别: DEBUG/INFO/WARN/ERROR
+  log_level: INFO
+  enable_console: true
+  include_scopes: true

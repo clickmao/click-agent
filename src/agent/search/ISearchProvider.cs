@@ -118,7 +118,7 @@ public class ProviderHealthSnapshot
 }
 
 /// <summary>
-/// 搜索插件配置 (来自 appsettings Search 节 / 环境变量)
+/// 搜索插件配置 (来自 config/ 分层 YAML / 环境变量)
 /// </summary>
 public class SearchProvidersOptions
 {

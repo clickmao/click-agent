@@ -162,32 +162,36 @@ click-agent/
 4. **模型队列 + Token 余额查询**：独立模块 `src/agent/modelqueue/`；本地 JSON config（`data/config/model_queue.json`）存主/次模型（key 只存环境变量名）；手动 `/model` 指定 + 自动模式（主模型连续 N 败切副模型，取消永不触发切换）+ 计价策略路由（上下文压缩等性能不敏感功能自动走便宜模型）；新增本地指令 `/balance` 查询 token 账户余额（双通道 JSON 输出，不支持的端点诚实报错）。详见 [plan_model_queue.md](docs/plan_model_queue.md)。
 5. **全模块 YAML 分层配置体系**：新模块 `src/agent.config/`——`config/base|env|modules|runtime` 四级分层，**模块只调 `ConfigSnapshot.Get<T>()`，base 配置被同名 module 配置增量覆盖**（用户钦定核心契约：深合并、未定义字段继承低层）；启动强校验失败即失败、缺失兜底默认值、`@dynamic immediate/next-turn` 热更新标注；现有硬编码（EvidenceGate 疑问数、搜索熔断、源配额、模型队列参数等）收编为 6 个 base yaml；配置类 JSON 废弃转 YAML（运行时**数据**落盘仍 JSON 不动）；AOT 风险项：YamlDotNet 反射 vs NativeAOT，开发第一步先 POC，失败则启用零反射 YAML 子集解析器备选。详见 [plan_yaml_config.md](docs/plan_yaml_config.md)。
 6. **Skill 调度模块**：新模块 `src/agent.skills/`（依据《Skill 模块技术设计文档 v1.0》）——领域级能力封装与口径管控：注册中心（skills/ 目录 yaml 定义）+ 三级触发匹配（前缀树预匹配→意图/正则/语义精匹配→上下文匹配，**疑似命中即激活**，插在 V2 推理前）+ 生命周期状态机（会话缓存/连续两轮脱域自动卸载/挂起恢复）+ 上下文隔离沙箱（白名单读/写回卷/中间数据不入历史）+ 执行调度（超时/幂等重试/熔断）+ 标准化输出（`force_use` 强制口径禁模型篡改）；失败自动降级普通推理不阻塞主链；全部阈值走第 5 项 YAML 分层配置；多 Skill 编排映射 TaskPlan 不新建执行引擎。详见 [plan_skill_dispatch.md](docs/plan_skill_dispatch.md)。
+7. **上下文梯度压缩与防漂移**：新模块 `src/agent.context/`（依据《上下文梯度压缩与防漂移子系统技术设计文档 v1.0》）——L0 原文/L1 轻摘/L2 结构化索引/L3 归档四层梯度（近详远略）+ P0-P3 分级锚点（P0 永不压缩，召回率强制 100%）+ 主题域增量聚类（语义×0.7+实体×0.3，每 10 轮巡检合并/拆分）+ 三重漂移校验（锚点召回/语义相似度 0.92/事实三元组）不过即回滚（版本链 10 版，连续失败降级）+ **重复确认驱动弹性校正**（四类信号→仅目标主题域提层，3/5/8 轮阶梯冷却回落）+ **跨进程持久化复用**（fragments/topics/versions/essence 落盘 `data/context/`，重启重建索引，essence 注入新会话初始锚——用户点名）；P1 规则版先行（实体 Jaccard 聚类），P3 接 bge 真向量（`/home/agentuser/models/bge-small-*.gguf`，当前 EmbeddingConfig 是空壳）；全部阈值走第 5 项 YAML 配置（规范文档 5.3 节参数表）。详见 [plan_context_compression.md](docs/plan_context_compression.md)。
 
 > 计划总图：`docs/plans/v715_dev_plan.taskplan.json`（TaskPlan 结构 + 每节点 DocRef 标注文档，防漂移测试 `DevPlanDocRefTests` 固化）
 
-### 📐 依赖拓扑任务图 × 隔离任务 — 原 plan_taskgraph_and_isolated_task.md 计划简要
-原合并计划文档（v7.14 落档）已按"每个开发计划隔离单文档"拆分归拢为独立文档，其计划要点：
-- **依赖拓扑任务图**：`TaskPlanBuilder` 按 `SubTask.Dependencies` 将子任务拆解为 Level 分层 + ParallelGroup 并行组 → 执行器按层执行，同层并发、跨层等待上游。核实修正：Level/ParallelGroup 计算算法**已存在**（`TaskPlanBuilder.ComputeLevelsAndParallelGroups`），真实缺口仅在执行端（逐节点串行 await）→ 演进为上方第 1 项 [plan_executor_parallel.md](docs/plan_executor_parallel.md)。
-- **隔离任务**：主 agent 任务循环中收到**与当前目标无关的新提问**（如计算器开发中突然要求"查天气"）→ 纯规则打分判定无关（实体重叠/指代词/意图类别，锚=`SessionMemory.GoalProfile.KeyEntities`）→ 额外开**隔离边界的子 agent** 执行（独立会话/不写主记忆/不污染主画像/静默问询），完成即销毁 → 独立为上方第 3 项 [plan_isolated_task.md](docs/plan_isolated_task.md)；双计划体系（遗留 `agent.planner` vs `TaskPlan*`）去留与执行链接线见第 0 项 [plan_taskplan_consolidation.md](docs/plan_taskplan_consolidation.md)。
-
 ## 配置
 
-```json
-{
-  "Agent": {
-    "AgentName": "MainAgent",
-    "MaxSubAgents": 4,
-    "EnableSearchCache": true,
-    "SummarizeAfterTurns": 10
-  },
-  "OpenAI": {
-    "ApiKey": "${OPENAI_API_KEY}",
-    "Model": "gpt-4"
-  }
-}
+配置类文件**统一 YAML**（`config/` 四级分层，依据《全模块 YAML 配置开发规范》），`appsettings.json` 已弃用（迁移期兼容读取并告警）：
+
+```
+config/
+├── base/            # L1 基础默认 (随版本发布, 禁止本地修改): core.yaml
+├── env/             # L2 环境覆盖: development.yaml / production.yaml (AGENTFRAMEWORK_ENV 选择)
+├── modules/         # L3 模块定制: 同名文件覆盖 base 同名节 (增量覆盖, 未写字段继承)
+└── runtime/         # L4 动态配置: dynamic.yaml (热更新, 仅 @dynamic 项生效)
 ```
 
-API Key 优先走环境变量 `AGENT_OPENAI_KEY`；未配置时走 `NullLLMCaller` 明确报错路径，不静默伪造。
+```yaml
+# config/base/core.yaml (节选, 完整见文件)
+agent:
+  agent_name: MainAgent
+  max_sub_agents: 4
+  enable_search_cache: true
+  summarize_after_turns: 10
+
+openai:
+  api_key_env: AGENT_OPENAI_KEY   # 只存环境变量名, Key 本身不落配置
+  model: gpt-4
+```
+
+**覆盖优先级**：`runtime/dynamic.yaml` > `modules/{module}.yaml`（同名覆盖 base，用户钦定契约）> `env/{env}.yaml` > `base/{module}.yaml`；深合并、未定义字段自动继承低层。API Key 优先走环境变量 `AGENT_OPENAI_KEY`；未配置时走 `NullLLMCaller` 明确报错路径，不静默伪造。模块代码只调 `agent.config.ConfigSnapshot`，禁止自行读 yaml 文件。
 
 ## 许可证
 

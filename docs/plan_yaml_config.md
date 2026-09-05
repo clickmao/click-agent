@@ -63,12 +63,18 @@ src/agent.config/
 对应"上下文梯度压缩与防漂移子系统"——该子系统当前只有雏形 (SessionMemory 滚动), 其完整参数表随该子系统开发时收编,
 首期只落已有真实参数, **不预写没有代码对应的配置节** (防配置漂移成摆设)。
 
-## Y.3 YAML 解析技术选型 (AOT 硬约束下的决策)
-- **首选**: YamlDotNet + 显式类型绑定 (`DeserializerBuilder.WithTypeConverter` 逐节绑定, 禁用反射节点工厂) — 需 POC 验证 AOT 0 警
-- **备选 (若 YamlDotNet AOT 失败)**: 内嵌极简 YAML 子集解析器 — 只支持规范用到的特性: 2 空格缩进映射、
-  标量 (string/int/double/bool)、`-` 列表、`#` 注释、**不支持**锚点/多行块/流式集合 (规范 4.4 本就禁止跨文件锚点;
-  列表行内数组已禁) — 子集解析器可做到零反射 AOT 安全
-- ⚠ 待确认 (开发时第一步): YamlDotNet 16.x + net10 AOT 实测 publish 0 IL 警与否, 用 1 个样本 yaml + 绑定类验证, 结论写回本文档
+## Y.3 YAML 解析技术选型 (AOT 硬约束下的决策 — **POC 已完成, 2026-09-06**)
+- **YamlDotNet POC 结论 (实测)**: 16.3.0/18.1.0 反射 DeserializerBuilder 均报 IL3050
+  ("builder configures the deserializer to use reflection which is not compatible with AOT");
+  18.1.0 的 StaticDeserializerBuilder/StaticContext 是抽象类, 需配套 source generator,
+  但**主包无 analyzers 目录, 官方/第三方 generator 包均不存在** (Vecc.YamlDotNet.Analyzer 经官方
+  search API 验证 totalHits=0, 系 search 截断排版误导; 镜像源 BlobNotFound)。
+  **YamlDotNet 路线判死**。
+- **定案: 自研 YAML 子集解析器** (零反射, AOT 安全) — 只支持规范用到的特性: 2 空格缩进映射、
+  标量 (string/int/double/bool)、`-` 列表、`#` 注释与行内注释、同文件锚点不需要 (规范 4.4 禁跨文件,
+  本项目连同文件锚点也不实现)、**不支持**多行块/流式集合 (行内数组规范 4.3 已禁)。
+  解析目标: yaml 文本 → Dictionary<string, object> (字典/列表/标量), 合并与校验在其上做。
+- 新增依赖: **零** (POC 中 YamlDotNet 18.1.0 已还原到本机, 但不进项目)
 
 ## Y.4 关键约束
 1. **@dynamic 标注语义**: `@dynamic immediate` 仅对已在内存的 ConfigSnapshot 可变节生效 (FileSystemWatcher 回调重载后原地替换节对象);

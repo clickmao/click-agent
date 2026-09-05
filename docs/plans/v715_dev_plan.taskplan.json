@@ -1,6 +1,6 @@
 {
   "PlanId": "devplan715",
-  "SourceText": "v7.15 开发计划: TaskPlan 体系归拢 + 执行器并发化 + 节点重试 + 隔离任务 + 模型队列与余额查询 + YAML 分层配置体系 + Skill 调度模块",
+  "SourceText": "v7.15 开发计划: TaskPlan 体系归拢 + 执行器并发化 + 节点重试 + 隔离任务 + 模型队列与余额查询 + YAML 分层配置体系 + Skill 调度模块 + 上下文梯度压缩与防漂移",
   "CreatedAt": "2026-09-06T12:00:00Z",
   "Nodes": [
     {
@@ -77,6 +77,16 @@
       "Level": 1,
       "ParallelGroup": 2,
       "DocRef": "docs/plan_skill_dispatch.md",
+      "Parameters": [],
+      "Confidence": 1.0
+    },
+    {
+      "Id": "dev-context-compression",
+      "Text": "上下文梯度压缩与防漂移子系统: L0-L3 分层/锚点 P0-P3/主题域聚类/三重漂移校验/弹性校正/跨进程持久化复用",
+      "Intent": "code_generation",
+      "Level": 1,
+      "ParallelGroup": 3,
+      "DocRef": "docs/plan_context_compression.md",
       "Parameters": [],
       "Confidence": 1.0
     }

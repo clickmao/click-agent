@@ -22,16 +22,23 @@ class Program
         try
         {
             // 构建配置
+            // v7.15: 配置类文件转 YAML 分层 (config/base ← env ← modules ← runtime, 规范 §3)。
+            // appsettings.json 已弃用: 仍读取一版供迁移期兼容 (存在时打弃用告警), 新配置一律进 config/。
+            if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json")))
+                Console.WriteLine("[Config][WARN] appsettings.json 已弃用 (规范: YAML 唯一格式), 配置请迁移至 config/base/core.yaml");
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true)
                 .AddEnvironmentVariables()
                 .AddCommandLine(args)
                 .Build();
+
+            // 分层配置快照 (base+同名 module 覆盖, agent.config 模块)
+            var configSnapshot = new agent.config.ConfigSnapshot();
             
             // 构建服务容器
             var services = new ServiceCollection();
-            ConfigureServices(services, configuration);
+            ConfigureServices(services, configuration, configSnapshot);
             
             var serviceProvider = services.BuildServiceProvider();
             
@@ -67,7 +74,7 @@ class Program
         }
     }
     
-    static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
+    static void ConfigureServices(IServiceCollection services, IConfiguration configuration, agent.config.ConfigSnapshot snapshot)
     {
         // 添加日志
         services.AddLogging(builder =>
@@ -78,20 +85,30 @@ class Program
         
         // 添加配置
         services.AddSingleton(configuration);
+        services.AddSingleton(snapshot);
         
         // 添加AgentFramework
+        // v7.15: 读值链 = YAML 分层 (base←env←modules←runtime) → 旧 IConfiguration 键 → 代码默认
         services.AddAgentFramework(options =>
         {
-            options.AgentName = configuration["Agent:Name"] ?? "MainAgent";
-            options.MaxSubAgents = int.Parse(configuration["Agent:MaxSubAgents"] ?? "4");
-            options.EnableMAF = bool.Parse(configuration["Agent:EnableMAF"] ?? "false");
-            options.EnableSearchCache = bool.Parse(configuration["Agent:EnableSearchCache"] ?? "true");
-            options.SummarizeAfterTurns = int.Parse(configuration["Agent:SummarizeAfterTurns"] ?? "10");
+            options.AgentName = snapshot.Get("agent", "agent_name",
+                configuration["Agent:Name"] ?? "MainAgent");
+            options.MaxSubAgents = snapshot.Get("agent", "max_sub_agents",
+                int.TryParse(configuration["Agent:MaxSubAgents"], out var msa) ? msa : 4);
+            options.EnableMAF = bool.TryParse(configuration["Agent:EnableMAF"], out var maf) && maf;
+            options.EnableSearchCache = snapshot.Get("agent", "enable_search_cache",
+                bool.TryParse(configuration["Agent:EnableSearchCache"], out var sc) ? sc : true);
+            options.SummarizeAfterTurns = snapshot.Get("agent", "summarize_after_turns",
+                int.TryParse(configuration["Agent:SummarizeAfterTurns"], out var sat) ? sat : 10);
             options.DataStoragePath = configuration["Storage:Path"] ?? "./data";
         });
         
-        // ✅ 添加 OpenAI LLM Caller（需要配置 API Key）
-        var openAiKey = configuration["OpenAI:ApiKey"];
+        // ✅ 添加 OpenAI LLM Caller (v7.15: Key 不落配置, 只存环境变量名 — openai.api_key_env)
+        var apiKeyEnvName = snapshot.Get("openai", "api_key_env", "AGENT_OPENAI_KEY");
+        var openAiKey = Environment.GetEnvironmentVariable(apiKeyEnvName)
+                        ?? configuration["OpenAI:ApiKey"]; // 迁移期兼容旧键
+        var openAiModel = snapshot.Get("openai", "model",
+            configuration["OpenAI:Model"] ?? "gpt-4");
         if (!string.IsNullOrEmpty(openAiKey))
         {
             services.AddSingleton<ILLMCaller>(sp =>
@@ -100,7 +117,7 @@ class Program
                 return new OpenAILLMCaller(
                     httpClientFactory.CreateClient("openai"),
                     openAiKey,
-                    configuration["OpenAI:Model"] ?? "gpt-4");
+                    openAiModel);
             });
         }
         else

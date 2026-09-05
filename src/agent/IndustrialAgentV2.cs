@@ -729,7 +729,7 @@ public class NullLLMCaller : ILLMCaller
         {
             Success = false,
             Content = string.Empty,
-            Error = "LLM 未配置: 请在 appsettings.json 或环境变量中设置 OpenAI:ApiKey 后重启。",
+            Error = "LLM 未配置: 请设置环境变量 AGENT_OPENAI_KEY (或在 config/base/core.yaml 的 openai.api_key_env 指定变量名) 后重启。",
             Model = "none",
             TokensUsed = 0,
             LatencyMs = 0,
