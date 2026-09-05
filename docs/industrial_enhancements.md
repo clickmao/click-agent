@@ -1,208 +1,74 @@
-# click-agent 工业级能力增强计划
+# click-agent 工业级能力增强计划 (v0.9.0 口径)
 
-## 当前框架 vs 工业级需求分析
+> 本文档为活文档: 记录当前项目总体状态、与 Claude Code / Codex 级核心能力的差距、
+> 以及差距的收敛路线。每轮迭代后同步更新 (用户钦定)。
 
-### Claude Code / Codex 级别的核心能力
+## 一、当前项目总体状态 (2026-09-06)
 
-| 能力模块 | 当前状态 | 工业级需求 | 优先级 |
-|----------|----------|------------|--------|
-| **工作区管理** | ❌ 缺失 | 完整的文件系统操作、git集成 | P0 |
-| **代码生成** | ❌ 基础占位 | 模板化的代码生成、代码补全 | P0 |
-| **任务规划** | ⚠️ 简单拆分 | 多层次规划、依赖分析、回溯 | P0 |
-| **记忆系统** | ⚠️ 简单存储 | 向量检索、语义理解、持续学习 | P0 |
-| **错误恢复** | ❌ 缺失 | 自动重试、修复建议、人工确认 | P1 |
-| **用户交互** | ⚠️ 基础确认 | 多模态交互、实时反馈、可视化 | P1 |
-| **测试集成** | ❌ 缺失 | 测试生成、运行、覆盖率分析 | P1 |
-| **代码审查** | ❌ 缺失 | 静态分析、安全扫描、风格检查 | P2 |
-| **多Agent协作** | ⚠️ 简单池 | 智能调度、通信协议、冲突解决 | P1 |
+- **版本口径**: v0.9.0 (工业 1.0 前打磨线)
+- **质量基线**: 322/322 测试全绿; Release 编译 0 警; NativeAOT publish 0 IL 警; 全图冒烟通过
+- **架构**: 17 个项目模块 (agent 核心粒 + config / core / io / logging / modelqueue / skills /
+  contextgradient / rag / vectormemory / recovery / workspace / output / codegen / planner / host / tests)
+- **本轮新增 (需求1-6)**:
+  1. 官方模型通道 (硬编码不进 yaml) + 三通道混合调度 (本地>官方>远端, 并发数托管, 子任务综合选模)
+  2. `agent.io` (netstandard2.1 零依赖): AgentReportReaderBase 行协议状态机 + AgentRequestWriterBase —
+     前端单行指令 / 多行流式块双态解析; [CLI指令说明.md](CLI指令说明.md) 全指令契约
+  3. 会话中断恢复: ExecutionCheckpoint (原子写/损坏容忍) + 执行器层界检查点 + 恢复裁定 + /status recovery 面板
+  4. 公开配置读写: ConfigWriter (dot-path 读 / L3 深合并 / L4 runtime / Reset 回落)
+  5. 版本迁移 v0.9.0 (全模块 csproj 统一)
+  6. 能力插件接口 ICapabilityPlugin (本文件三行 ❌ 条目的收敛载体)
 
----
+## 二、Claude Code / Codex 级别的核心能力对照
 
-## 需要新增的核心模块
+> 语义: ✅ 已达成 / ⚠️ 部分达成 (有真实实现, 覆盖或深度不足) / 🔌 插件接口预留 (框架只定义契约,
+> 内部功能由开发者实现注册 — 同 WebSearch 数据源模式) / ❌ 缺失。
 
-### 1. 工作区管理 (Workspace)
+| 能力模块 | 当前状态 | 说明 / 收敛路径 | 优先级 |
+|----------|----------|------------------------|--------|
+| **任务规划** | ✅ 达成 | TaskPlan 拓扑分层 + 同层并发 + 节点重试(瞬态分类) + 影子演练 + 问询/审批语义 | P0 |
+| **记忆系统** | ✅ 达成 | RAG + 向量检索 (bge 384 维真机验证) + 会话滚动摘要 + 跨进程持久化 + AgentProfile 学习 | P0 |
+| **模型调度** | ✅ 达成 | 三通道 (本地/官方/远端) 混合调度 + 并发托管 + 主备切换 + 意图/价格/速度综合选模 + 余额查询 | P0 |
+| **上下文工程** | ✅ 达成 | 梯度压缩 L0-L3 + DriftGuard 防漂移 + bge 语义相似度回退 | P0 |
+| **错误恢复** | ✅ 达成 | FailRetry + 会话中断检查点复原 + /status recovery 面板 | P1 |
+| **可观测** | ✅ 达成 | 日志四通道单路径路由 + thinking 流协议 + /log dump + /status /session 全 JSON | P1 |
+| **IO 协议** | ✅ 达成 | agent.io 单行事件 + 流式块双态读写 (netstandard2.1, 前端可嵌) | P1 |
+| **配置体系** | ✅ 达成 | 四层 YAML 深合并 + ConfigSnapshot/ConfigWriter 读写分离 + 凭据铁律 | P1 |
+| **Skill 调度** | ⚠️ 部分达成 | 生命周期状态机+沙箱+熔断已落地 (P2); P3 语义匹配 (向量) 未接 | P2 |
+| **多Agent协作** | ⚠️ 部分达成 | 隔离子任务 (独立会话/并发上限/相关性判定) 已落地; 通信协议/冲突解决未做 | P1 |
+| **工作区管理** | 🔌 插件接口预留 | `ICapabilityPlugin` + `CapabilityPluginRegistry` (agent.registry); 文件系统操作、git 集成由开发者实现 (agent.workspace 骨架已有基础类型) | P0 |
+| **测试集成** | 🔌 插件接口预留 | 同上契约; 测试生成、运行、覆盖率分析由开发者实现 (框架自身测试基建即参考实现样本) | P1 |
+| **代码审查** | 🔌 插件接口预留 | 同上契约; 静态分析、安全扫描、风格检查由开发者实现 | P2 |
+| **代码生成** | ⚠️ 基础占位 | 模板引擎+CodeGenerator 存在; 补全/多文件重构未做 | P0 |
+| **用户交互** | ⚠️ 部分达成 | 批量问询+偏好库+证据门槛已落地; 多模态/实时可视化未做 (chatbox 传输通道已定案待实现) | P1 |
 
-```
-AgentFramework.Workspace/
-├── IWorkspace.cs           - 工作区接口
-├── FileSystem.cs          - 文件系统操作
-├── GitIntegration.cs      - Git集成
-├── WorkspaceContext.cs    - 工作区上下文
-└── FileWatcher.cs         - 文件监控
-```
+## 三、插件接口约定 (需求6 定案)
 
-### 2. 代码生成引擎 (CodeGen)
+工作区管理、测试集成、代码审查**不再作为框架内置模块排期**, 统一收敛到插件契约:
 
-```
-AgentFramework.CodeGen/
-├── ICodeGenerator.cs      - 代码生成器接口
-├── TemplateEngine.cs      - 模板引擎
-├── CodeCompletion.cs      - 代码补全
-├── CodeModification.cs     - 代码修改
-├── CodeFormatter.cs       - 代码格式化
-└── LanguageDetector.cs    - 语言检测
-```
-
-### 3. 任务规划器 (Planner)
-
-```
-AgentFramework.Planner/
-├── ITaskPlanner.cs       - 规划器接口
-├── TaskGraph.cs          - 任务图
-├── DependencyAnalyzer.cs - 依赖分析
-├── PlanExecutor.cs       - 计划执行
-├── PlanValidator.cs      - 计划验证
-└── PlanRecovery.cs       - 计划恢复
-```
-
-### 4. 向量记忆系统 (VectorMemory)
-
-```
-AgentFramework.VectorMemory/
-├── IVectorStore.cs       - 向量存储接口
-├── EmbeddingService.cs   - Embedding服务
-├── SemanticSearch.cs     - 语义搜索
-├── MemoryConsolidator.cs - 记忆整合
-└── MemoryRecall.cs       - 记忆召回
+```csharp
+public interface ICapabilityPlugin
+{
+    string Name { get; }                                  // 注册表唯一键
+    string Description { get; }
+    IReadOnlyList<string> ProvidedCapabilities { get; }   // 如 workspace.read_file
+    Task InitializeAsync(CancellationToken ct = default);
+    Task<PluginExecutionResult> ExecuteAsync(string capabilityId, string args, CancellationToken ct = default);
+}
 ```
 
-### 5. 错误恢复系统 (Recovery)
+- 注册: `CapabilityPluginRegistry.Register(plugin)` (同名拒绝, 不覆盖)
+- 分发: `ExecuteAsync("插件名.能力id", args)` — 未注册/未提供/插件内异常一律结构化 Fail, 不打断主链
+- 参考实现方向: agent.workspace (Workspace/WorkspaceState 基础类型已有) 可演进为首个 workspace 插件
+- 与 WebSearch 同模式: 接口与分发在框架, 能力实现在外部/开发者侧
 
-```
-AgentFramework.Recovery/
-├── IRecoveryStrategy.cs  - 恢复策略接口
-├── AutoRetry.cs         - 自动重试
-├── FixSuggestion.cs      - 修复建议
-├── RollbackManager.cs   - 回滚管理
-└── ErrorClassifier.cs   - 错误分类
-```
+## 四、v0.9.0 总结与工业 1.0 门槛
 
-### 6. 测试集成 (Testing)
+**已达成的工业级特征**: 真实编译/测试/AOT 三重验证纪律; 伪实现零容忍 (能力扫描删反射改 PATH 探嗅);
+配置分层契约 + 凭据永不落盘; 会话可恢复; 模型调用可观测可审计; IO 协议前端可编程。
 
-```
-AgentFramework.Testing/
-├── ITestGenerator.cs     - 测试生成器
-├── TestRunner.cs         - 测试运行器
-├── CoverageAnalyzer.cs   - 覆盖率分析
-├── TestFramework.cs      - 测试框架适配
-└── AssertionLibrary.cs   - 断言库
-```
-
----
-
-## 核心架构增强
-
-### Agent 能力矩阵
-
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                         Main Agent                                       │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐ │
-│  │ Workspace  │  │   Planner   │  │   CodeGen   │  │   Memory    │ │
-│  │  Manager   │  │             │  │   Engine    │  │   (Vector)  │ │
-│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘ │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐ │
-│  │   Testing  │  │  Recovery  │  │   Review   │  │    Tools    │ │
-│  │  Integration│  │  System    │  │   Engine   │  │   Executor   │ │
-│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘ │
-└─────────────────────────────────────────────────────────────────────────┘
-```
-
-### SubAgent 专业分工
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                         Agent Pool                                     │
-├─────────────────┬─────────────────┬─────────────────┬─────────────────┤
-│   Coder Agent   │  Tester Agent  │   Reviewer    │   Researcher    │
-│                 │                 │    Agent      │     Agent       │
-├─────────────────┼─────────────────┼─────────────────┼─────────────────┤
-│ • 代码生成      │ • 单元测试      │ • 代码审查     │ • 信息检索      │
-│ • 代码修改      │ • 集成测试      │ • 安全扫描     │ • 文档生成      │
-│ • 重构          │ • 性能测试      │ • 风格检查     │ • 示例查找      │
-│ • 补全          │ • 覆盖率分析    │ • Bug检测      │ • API研究       │
-└─────────────────┴─────────────────┴─────────────────┴─────────────────┘
-```
-
----
-
-## 数据流增强
-
-```
-User Request
-     │
-     ▼
-┌──────────────┐     ┌──────────────┐     ┌──────────────┐
-│   Intent     │────▶│   Planner    │────▶│   Executor    │
-│   Parser     │     │              │     │              │
-└──────────────┘     └──────────────┘     └──────────────┘
-                           │                       │
-                           ▼                       ▼
-                    ┌──────────────┐     ┌──────────────┐
-                    │   Memory     │◀────▶│  Workspace    │
-                    │  (Vector)    │     │              │
-                    └──────────────┘     └──────────────┘
-                           │                       │
-                           ▼                       ▼
-                    ┌──────────────┐     ┌──────────────┐
-                    │   Recovery   │     │    Tools     │
-                    │   System     │     │   Executor    │
-                    └──────────────┘     └──────────────┘
-```
-
----
-
-## 实施计划
-
-### Phase 1: 核心能力 (P0)
-
-1. **工作区管理** - 文件读写、Git操作、文件监控
-2. **代码生成引擎** - 模板生成、代码修改、格式化
-3. **任务规划器** - 任务图构建、依赖分析、执行验证
-
-### Phase 2: 智能增强 (P1)
-
-4. **向量记忆系统** - Embedding集成、语义搜索
-5. **错误恢复系统** - 自动重试、修复建议、回滚
-6. **测试集成** - 测试生成、运行、覆盖率
-
-### Phase 3: 高级功能 (P2)
-
-7. **代码审查引擎** - 静态分析、安全扫描
-8. **多Agent协作** - 智能调度、通信协议
-9. **持续学习** - 从反馈中学习、模式识别
-
----
-
-## 质量指标
-
-| 指标 | 目标值 | 测量方法 |
-|------|--------|----------|
-| 代码生成准确率 | ≥85% | 模板匹配率 |
-| 任务完成率 | ≥90% | 端到端测试 |
-| 错误恢复成功率 | ≥80% | 故障注入测试 |
-| Token效率 | ≥70% | 压缩率 |
-| 用户满意度 | ≥4.5/5 | 用户反馈 |
-
----
-
-## 参考实现
-
-### Claude Code 核心能力
-
-1. **流式输出** - 实时显示生成进度
-2. **文件diff** - 显示代码变更差异
-3. **命令执行** - 安全执行shell命令
-4. **测试验证** - 自动运行测试验证
-5. **上下文窗口** - 智能上下文管理
-6. **多文件编辑** - 原子性批量修改
-
-### Codex 核心能力
-
-1. **代码补全** - 智能代码建议
-2. **函数生成** - 完整函数实现
-3. **测试生成** - 基于代码的测试
-4. **代码翻译** - 跨语言转换
-5. **文档生成** - 注释和文档
-6. **重构建议** - 代码优化建议
-
+**工业 1.0 前必须收敛 (按序)**:
+1. chatbox 推送传输实体化 (websocket/面板 — 传输通道接口 IChatboxSink 已定案)
+2. Skill P3 语义匹配接 bge 向量 (P2 生命周期已落地)
+3. 多 Agent 通信协议与冲突解决 (隔离任务已落地)
+4. 插件生态首批参考实现 (workspace 插件起步)
+5. LLM 全链路真实推理验收 (当前部分链路走失败路径兜底)

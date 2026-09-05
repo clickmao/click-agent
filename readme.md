@@ -1,8 +1,16 @@
-# click-agent
+# click-agent (v0.9.0)
 
-基于微软 MAF (Microsoft Agent Framework) 与 WebReaper 的工业级 C# 智能体框架。net10.0 / NativeAOT 零警告 / 202 项测试全绿。
+基于微软 MAF (Microsoft Agent Framework) 与 WebReaper 的工业级 C# 智能体框架。net10.0 / NativeAOT 零警告 / 322 项测试全绿。
+版本口径: v0.9.x — 工业 1.0 前打磨线 (本轮需求1-6: 官方通道混合调度 / agent.io 协议库 / 会话中断恢复 / 公开配置读写 / 版本对齐)。
 
 ## 核心特性
+
+### 🚀 v0.9.0 能力总览 (需求1-6)
+- **三通道模型调度**: 本地模型 > 官方通道 > 远端 API, 优先级恒定; 通道并发数托管; 子任务按 并发余量×推理能力×推理速度×价格 综合选模; 官方模型硬编码 (不进 yaml), key 仅 CLI `--official-key` / `/official-key` 注入 (内存态)
+- **agent.io 协议库**: netstandard2.1 零依赖; 单行事件 (文本/chatbox 指令/JSON) + `@stream` 多行流式块双态读写, 前端 `Console.ReadLine()` 逐行即可解析
+- **会话中断恢复**: 任务步骤检查点 (原子落盘) — 意外中断后启动直接复原执行进度
+- **公开配置读写**: ConfigWriter (dot-path / L3 深合并 / L4 runtime), 与 ConfigSnapshot 读写分离
+- **能力插件接口**: ICapabilityPlugin — 工作区管理/测试集成/代码审查由开发者实现注册 (框架定契约, 参考 [能力增强计划](docs/industrial_enhancements.md))
 
 ### 💬 智能问询 (v7.13)
 - 18 类问询数据类型枚举 + 纯规则校验 (数字/日期/选单/路径…)
