@@ -60,6 +60,7 @@ public class IndustrialAgentV2 : AgentBase
     
     // ✅ 新增：LLM 调用器（示例接口）
     private readonly ILLMCaller _llmCaller;
+    private readonly agent.subagent.IsolatedTaskRunner? _isolatedTaskRunner;
     
     private readonly List<string> _capabilities = new();
     
@@ -86,8 +87,10 @@ public class IndustrialAgentV2 : AgentBase
         agent.registry.ResponseSegmentRouter segmentRouter,
         agent.registry.ClarificationService clarificationService,
         string dataStoragePath = "./data",
-        agent.userinteraction.IUserPromptService? promptService = null) : base(logger, handlers)
+        agent.userinteraction.IUserPromptService? promptService = null,
+        agent.subagent.IsolatedTaskRunner? isolatedTaskRunner = null) : base(logger, handlers)
     {
+        _isolatedTaskRunner = isolatedTaskRunner;
         _promptService = promptService;
         _workspace = workspace;
         _codeGenerator = codeGenerator;
@@ -174,6 +177,38 @@ public class IndustrialAgentV2 : AgentBase
                     subTasks.Count, intent, string.Join(",", subTasks.Select(t => t.Intent)));
             }
             
+            // 1.4 隔离任务判定 (v7.15 I.2): 单任务 + 判定与主目标无关 → 隔离子执行, 不进主链
+            // (首轮无 GoalProfile 锚 → 不隔离; 多子任务=当前目标链的一部分 → 不隔离)
+            if (_isolatedTaskRunner != null && subTasks.Count == 1)
+            {
+                var goalMemory = _sessionMemoryStore.Load(message.SessionId);
+                var goal = goalMemory?.Goal;
+                var goalEntities = goal?.KeyEntities ?? new List<string>();
+                // 首轮 (无目标锚) 不隔离 — 无"当前任务"可言
+                if (goal != null && goalEntities.Count > 0)
+                {
+                    var (isIsolated, score, reason) = agent.intent.TaskRelevanceChecker.Check(
+                        goalEntities, goal.GoalText, message.Content, subTasks[0].Intent);
+                    if (isIsolated)
+                    {
+                        _logger.LogInformation(
+                            "IsolatedTask triggered: score={Score} reason={Reason} task={Task}",
+                            score, reason, message.Content);
+                        var isolated = await _isolatedTaskRunner.ExecuteAsync(message.Content, $"{score}:{reason}", ct);
+                        response.Success = isolated.Success;
+                        response.Content = $"[隔离任务] {isolated.Answer ?? isolated.Error ?? "(无返回)"}";
+                        response.Data = new Dictionary<string, object>
+                        {
+                            { "isolatedTask", true },
+                            { "isolatedSessionId", isolated.IsolatedSessionId },
+                            { "relevanceScore", score },
+                        };
+                        response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
+                        return response;
+                    }
+                }
+            }
+
             // 1.5 EvidenceGate 裁定 → ClarificationBatch 真实批量问询 (v7.14 ①):
             // 低置信子任务生成疑问 → REPL 弹批量问题 → 答案并入本轮任务描述 (不带疑问硬执行)
             var clarifiedAddendum = await RunEvidenceGateAsync(message, subTasks, ct);
