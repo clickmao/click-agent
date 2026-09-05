@@ -3,6 +3,9 @@
 # 每模型: 除 API-KEY 外全部参数 (key 只存环境变量名, 凭据铁律)
 # 参数真实性 (C.6.5): 目录内模型均经实际 http 校验 (假 key 期望 401 = 地址合法),
 # 校验命令 /model verify <id>; 价格为公开牌价 (USD/每百万 token), 变动以 provider 官网为准
+# 校验记录 (2026-09-06 全目录真机探测): deepseek/bigmodel 4/6 端点 401=合法;
+# api.openai.com 在当前部署网络被 RST (与 github smart-http 同类网络策略), 2/6 不可达 —
+# 目录参数保留 (公网可达环境正常), verify 命令在可达环境如实报 VALID/UNREACHABLE
 # ==============================================
 models:
   # ── OpenAI ──

@@ -231,8 +231,14 @@ public static class ServiceCollectionExtensions
 
         // v7.15 日志四通道: LogRouter (flags 默认全开 — config/base/logging.yaml 分层可覆盖)
         services.AddSingleton(sp => new agent.logging.MemoryLogBuffer(2000));
+        // v7.15 L.6 定案: chatbox 推送通道出口 — CLI=控制台单行 JSON 协议行 (@chatbox: 前缀);
+        // websocket/面板宿主注入各自 IChatboxSink 实现, agent 层零改动
+        services.AddSingleton<agent.logging.IChatboxSink, agent.logging.ConsoleChatboxSink>();
         services.AddSingleton(sp => new agent.logging.LogRouter(
-            agent.logging.LogFlags.All, sp.GetRequiredService<agent.logging.MemoryLogBuffer>()));
+            agent.logging.LogFlags.All, sp.GetRequiredService<agent.logging.MemoryLogBuffer>())
+        {
+            ChatboxSink = sp.GetRequiredService<agent.logging.IChatboxSink>(),
+        });
 
         // 优先注册 V2；MainAgent 保留为简单回显的 fallback
         services.AddSingleton<IndustrialAgentV2>();

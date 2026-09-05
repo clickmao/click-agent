@@ -65,6 +65,23 @@ public sealed class LogRouter
         _sessionId = sessionId;
     }
 
+    /// <summary>L.6 定案: chatbox 推送通道出口 (CLI=ConsoleChatboxSink; websocket 宿主注入各自实现)</summary>
+    public IChatboxSink? ChatboxSink { get; set; }
+
+    /// <summary>推送: sink 出口 + 缓存 (缓存保证 /log dump 与测试可回放); sink 异常吞掉 — 推送永不打断主链</summary>
+    private void PushDirective(FrontendDirective directive)
+    {
+        Directives.Add(directive);
+        try
+        {
+            ChatboxSink?.Push(directive);
+        }
+        catch
+        {
+            // 推送失败只影响前端显示 (第三方 sink 未守约时双重防御)
+        }
+    }
+
     /// <summary>写一条日志 (四 flag 在同一条路径上完成)</summary>
     public void Write(
         string module, string level, LogChannel channel, string msg,
@@ -95,7 +112,7 @@ public sealed class LogRouter
         if (channel == LogChannel.Thinking && flags.ChatboxThinking)
         {
             // 指令 1 (首轮发 switch 由 ThinkingStreamScope 负责); 分片持续可推送
-            Directives.Add(new FrontendDirective
+            PushDirective(new FrontendDirective
             {
                 Type = "thinking_page_switch",
                 SessionId = _sessionId,
@@ -106,7 +123,7 @@ public sealed class LogRouter
         if (channel == LogChannel.Output && flags.ChatboxOutput)
         {
             // 输出页内容 (前端接线后直达 chatbox; 现阶段缓存可测)
-            Directives.Add(new FrontendDirective
+            PushDirective(new FrontendDirective
             {
                 Type = "output_append",
                 SessionId = _sessionId,
@@ -121,7 +138,7 @@ public sealed class LogRouter
     /// <summary>指令 2: 思考结束 (前端关闭思考步骤显示并折叠)</summary>
     public void EmitThinkingEnd(int summaryLength)
     {
-        Directives.Add(new FrontendDirective
+        PushDirective(new FrontendDirective
         {
             Type = "thinking_end",
             SessionId = _sessionId,

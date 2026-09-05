@@ -53,4 +53,6 @@ logging:
 - 不做日志远程上报/集中式收集; 不做前端 UI 本体; 不改既有 ILogger 使用点语义 (flags 路由在 sink 层)
 
 ## L.6 待确认 ⚠
-- chatbox 推送的实际传输通道 (面板轮询 /status? websocket?) — 开发时与宿主面板方案一起定
+- ~~chatbox 推送的实际传输通道~~ → **已定案 (v7.15)**: `IChatboxSink` 出口抽象 + CLI 默认
+  `ConsoleChatboxSink` (`@chatbox:{json}` 单行协议行到 stdout, `AgentReportReaderBase` 按行解析);
+  websocket/面板宿主实现同一接口注入 LogRouter, agent 层零改动。Directives 缓存保留 (回放/测试)。
