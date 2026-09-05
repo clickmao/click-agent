@@ -38,6 +38,9 @@ public sealed class GradientResult
     /// <summary>防漂移校验通过</summary>
     public bool DriftCheckPassed { get; set; }
 
+    /// <summary>语义相似度 (P3: embedder 就绪时 = cos(原,压); 否则 null)</summary>
+    public double? SemanticSimilarity { get; set; }
+
     /// <summary>原始长度 → 压缩后长度</summary>
     public int OriginalChars { get; set; }
     public int CompressedChars { get; set; }

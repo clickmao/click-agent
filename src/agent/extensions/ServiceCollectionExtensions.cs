@@ -178,7 +178,27 @@ public static class ServiceCollectionExtensions
         
         // ContextAssembler - 多数据源上下文组装
         services.AddSingleton<IRAGRecall, RAGRecall>();
-        services.AddSingleton<IContextAssembler, ContextAssembler>();
+        // v7.15 P3: bge 嵌入器 (压缩语义漂移校验) — 模型路径走配置, 缺失 → NullTextEmbedder (锚词模式, 行为兼容)
+        services.AddSingleton<agent.contextgradient.ITextEmbedder>(sp =>
+        {
+            var cfg = sp.GetRequiredService<agent.config.ConfigSnapshot>();
+            var modelPath = cfg.Get("embedding", "model_path", "");
+            return File.Exists(modelPath)
+                ? new agent.llamalocal.BgeEmbedder(modelPath)
+                : new agent.contextgradient.NullTextEmbedder();
+        });
+        services.AddSingleton<IContextAssembler>(sp =>
+        {
+            var embedder = sp.GetRequiredService<agent.contextgradient.ITextEmbedder>();
+            return new ContextAssembler(
+                sp.GetRequiredService<ILogger<ContextAssembler>>(),
+                sp.GetRequiredService<IRAGRecall>(),
+                sp.GetRequiredService<ISessionManager>(),
+                sp.GetRequiredService<ITendencyAnalyzer>(),
+                sp.GetRequiredService<ISearchService>(),
+                sp.GetRequiredService<ITokenCompressor>(),
+                embedder.IsAvailable ? embedder : null);
+        });
         services.AddSingleton<IFeedbackPersistence, FeedbackPersistence>();
         
         // 主Agent: IndustrialAgentV2 是完整管线（意图识别→多源上下文组装→PromptBuilder→LLM→记忆/会话存储）

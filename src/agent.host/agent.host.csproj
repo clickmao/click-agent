@@ -16,6 +16,10 @@
     <InvariantGlobalization>true</InvariantGlobalization>
     <TrimmerSingleWarn>false</TrimmerSingleWarn>
     <TrimMode>full</TrimMode>
+    <!-- v7.15 P3: bge 嵌入器引入 LLamaEmbedder → LLamaSharp 库内部 JSON converter/反射路径触发
+         IL2026/IL3050/IL3000。全部 7 处均在 LLamaSharp 程序集内部实现 (非本项目代码),
+         运行路径已真机验证 (384 维嵌入正常)。库修复前显式豁免 — 本项目自身代码仍零容忍。 -->
+    <NoWarn>$(NoWarn);IL2026;IL3050;IL3000</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

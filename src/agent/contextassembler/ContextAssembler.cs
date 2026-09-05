@@ -57,7 +57,8 @@ public class ContextAssembler : IContextAssembler
         ISessionManager sessionManager,
         ITendencyAnalyzer tendencyAnalyzer,
         ISearchService searchService,
-        ITokenCompressor tokenCompressor)
+        ITokenCompressor tokenCompressor,
+        agent.contextgradient.ITextEmbedder? embedder = null)
     {
         _logger = logger;
         _ragRecall = ragRecall;
@@ -65,7 +66,8 @@ public class ContextAssembler : IContextAssembler
         _tendencyAnalyzer = tendencyAnalyzer;
         _searchService = searchService;
         _tokenCompressor = tokenCompressor;
-        
+        _gradientCompressor = new agent.contextgradient.ContextGradientCompressor(embedder);
+
         // 初始化统计计数器
         foreach (DataSourceType source in Enum.GetValues<DataSourceType>())
         {
@@ -686,7 +688,17 @@ Interlocked.Increment(ref _cacheMisses);
     /// <summary>
     /// 压缩片段
     /// </summary>
-    private readonly agent.contextgradient.ContextGradientCompressor _gradientCompressor = new();
+    private agent.contextgradient.ContextGradientCompressor _gradientCompressor;
+
+    static ContextAssembler()
+    {
+    }
+
+    /// <summary>P3: bge 嵌入器注入 (可选) — 语义漂移校验启用; null → 纯锚词模式</summary>
+    public agent.contextgradient.ITextEmbedder? Embedder
+    {
+        set => _gradientCompressor = new agent.contextgradient.ContextGradientCompressor(value);
+    }
 
     /// <summary>锚词提取 (P1 启发式: 取出现 ≥2 次的 2-8 字中英词段, 前 8 个; P3 向量版替换)</summary>
     private static List<string> ExtractAnchorWords(string content)
@@ -743,7 +755,7 @@ Interlocked.Increment(ref _cacheMisses);
                 // v7.15: 梯度压缩优先 (相关性分层 L0-L3 + 锚词防漂移内置回退)
                 // 锚词 = 片段内容中提取的实词 (简单启发: 高频中英词), P3 换向量匹配
                 var anchors = ExtractAnchorWords(snippet.Content);
-                var gradient = _gradientCompressor.Compress(new agent.contextgradient.GradientRequest
+                var gradient = await _gradientCompressor.CompressAsync(new agent.contextgradient.GradientRequest
                 {
                     Content = snippet.Content,
                     RelevanceScore = snippet.RelevanceScore,

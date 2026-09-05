@@ -6,12 +6,38 @@ namespace agent.contextgradient;
 /// </summary>
 public sealed class ContextGradientCompressor
 {
+    private readonly ITextEmbedder? _embedder;
+    private readonly double _semanticThreshold;
+
+    /// <summary>embedder 注入 → 语义漂移校验启用 (cos ≥ threshold); 未注入 → 纯锚词 (P1 行为)</summary>
+    public ContextGradientCompressor(ITextEmbedder? embedder = null, double semanticThreshold = 0.92)
+    {
+        _embedder = embedder;
+        _semanticThreshold = semanticThreshold;
+    }
+
     /// <summary>句子切分 (中英混排: 。！？.!?)</summary>
     private static readonly char[] SentenceEnders = { '。', '！', '？', '.', '!', '?' };
 
     public GradientResult Compress(GradientRequest request)
     {
+        return CompressCore(request, null, CancellationToken.None);
+    }
+
+    /// <summary>P3 语义版: embedder 就绪时对非 Full 级产物做 cosine 漂移校验 (原文三重校验的语义分量);
+    /// embedder 不可用/失败 → 退锚词 (Compress 语义), 行为兼容。</summary>
+    public async Task<GradientResult> CompressAsync(GradientRequest request, CancellationToken ct = default)
+    {
+        if (_embedder is null || !_embedder.IsAvailable)
+            return Compress(request);
+        var originalEmbedding = await _embedder.EmbedAsync(request.Content, ct);
+        return CompressCore(request, originalEmbedding, ct);
+    }
+
+    private GradientResult CompressCore(GradientRequest request, float[]? originalEmbedding, CancellationToken ct)
+    {
         var content = request.Content ?? string.Empty;
+        double? semanticSim = null;
         var score = request.RelevanceScore;
 
         // 层级选择
@@ -29,14 +55,27 @@ public sealed class ContextGradientCompressor
             _ => content,
         };
 
-        // 防漂移: 锚词保持校验 — 不过则回退上一级 (Full 为锚点终点)
+        // 防漂移第一重: 锚词保持 — 不过则回退全文 (Full 为锚点终点)
         var passed = DriftGuard.Check(result, request.AnchorWords);
         if (!passed && level != GradientLevel.Full)
         {
             level = GradientLevel.Full;
             result = content;
-            passed = true; // 全文必含锚词 (锚词来自原文的话); 若原文本身缺锚, 如实报未过
             passed = DriftGuard.Check(result, request.AnchorWords);
+        }
+
+        // 防漂移第二重: 语义相似度 (P3, embedder 就绪且产物非全文时) — cos < 阈值 → 回退全文
+        if (originalEmbedding is not null && level != GradientLevel.Full &&
+            result.Length < content.Length)
+        {
+            var compressedEmbedding = _embedder!.EmbedAsync(result, ct).GetAwaiter().GetResult();
+            var cosine = VectorMath.Cosine(originalEmbedding, compressedEmbedding);
+            semanticSim = cosine;
+            if (cosine < _semanticThreshold)
+            {
+                level = GradientLevel.Full;
+                result = content;
+            }
         }
 
         return new GradientResult
@@ -44,6 +83,7 @@ public sealed class ContextGradientCompressor
             Level = level,
             Content = result,
             DriftCheckPassed = passed,
+            SemanticSimilarity = semanticSim,
             OriginalChars = content.Length,
             CompressedChars = result.Length,
         };

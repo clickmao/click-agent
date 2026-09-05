@@ -80,6 +80,13 @@ agent:
   # 摘要触发轮次 (单位: 轮)
   summarize_after_turns: 10
 
+# 本地嵌入 (v7.15 P3: 上下文梯度压缩语义漂移校验)
+embedding:
+  # bge gguf 模型路径 (文件缺失 → 自动退锚词模式, 行为兼容)
+  model_path: /home/agentuser/models/bge-small-en-v1.5-q4_k_m.gguf
+  # 语义漂移阈值 (cos 下限, 原文三重校验)
+  drift_threshold: 0.92
+
 # OpenAI 兼容 LLM 管道 (顶层, 原 OpenAI:* 键)
 # ApiKey 不落配置 — 只存环境变量名, 运行时从环境读取 (v7.14 凭据铁律)
 openai:
