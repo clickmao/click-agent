@@ -97,14 +97,78 @@ public static class VulkanSupport
 
             case LlamaBackendMode.Auto:
             default:
-                var useVulkan = IsLoaderAvailable();
+                // Auto 探测 (v7.13 真机验证后修正): 只看 loader 存在是不够的 —
+                // LLamaSharp 内部还要求 vulkaninfo 探测到设备 (SystemInfo.VulkanVersion),
+                // 且 ggml-vulkan 默认过滤 CPU 类型实现 (lavapipe 场景需 GGML_VK_VISIBLE_DEVICES=0)。
+                // 判据: loader dlopen OK && vulkaninfo --summary 能枚举出设备 → Vulkan, 否则 CPU。
+                var useVulkan = IsLoaderAvailable() && HasVulkanDevice();
                 NativeLibraryConfig.LLama
                     .WithVulkan(useVulkan)
                     .WithAutoFallback(true);   // Auto: ggml-vulkan 产物缺失时允许回落 CPU
-                logger.LogInformation("LLamaSharp 后端: {Mode} (loader={Loader})",
-                    useVulkan ? "Vulkan" : "CPU", DescribeLoader());
+                logger.LogInformation("LLamaSharp 后端: {Mode} (loader={Loader}, device={Device})",
+                    useVulkan ? "Vulkan" : "CPU", DescribeLoader(),
+                    useVulkan ? "已枚举" : "未枚举到");
                 return useVulkan ? LlamaBackendMode.Vulkan : LlamaBackendMode.Cpu;
         }
+    }
+
+    /// <summary>
+    /// 是否存在可枚举的 vulkan 设备 (vulkaninfo --summary 探测 — 与 LLamaSharp SystemInfo 同一判据)。
+    /// Windows 上不做此探测 (loader 存在即认为有设备, WDDM 体系无此歧义)。
+    /// </summary>
+    public static bool HasVulkanDevice()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            return true;
+        if (!IsVulkanInfoAvailable())
+            return false;
+        try
+        {
+            using var p = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = "vulkaninfo",
+                Arguments = "--summary",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+            });
+            if (p == null)
+                return false;
+            var output = p.StandardOutput.ReadToEnd();
+            p.WaitForExit(8000);
+            // GPU0: 段落出现 = 至少枚举到一个物理设备
+            return output.Contains("GPU", StringComparison.OrdinalIgnoreCase);
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private static bool? _vkInfoAvailable;
+
+    private static bool IsVulkanInfoAvailable()
+    {
+        if (_vkInfoAvailable.HasValue)
+            return _vkInfoAvailable.Value;
+        _vkInfoAvailable = TryOpenExecutable("vulkaninfo");
+        return _vkInfoAvailable.Value;
+    }
+
+    private static bool TryOpenExecutable(string name)
+    {
+        foreach (var dir in (Environment.GetEnvironmentVariable("PATH") ?? string.Empty).Split(':'))
+        {
+            if (string.IsNullOrWhiteSpace(dir))
+                continue;
+            try
+            {
+                if (File.Exists(Path.Combine(dir.Trim(), name)))
+                    return true;
+            }
+            catch { /* 路径异常忽略 */ }
+        }
+        return false;
     }
 
     private static bool TryOpen(string name)

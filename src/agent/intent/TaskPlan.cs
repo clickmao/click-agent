@@ -55,6 +55,13 @@ public class PlanNode
 
     /// <summary>并行组号 (同 level 且互不依赖共享组号; UI 可按组着色)</summary>
     public int ParallelGroup { get; set; }
+
+    /// <summary>拆解置信度 (v7.13): EvidenceGate 裁定依据 (Builder 从 SubTask 透传)</summary>
+    public double Confidence { get; set; } = 1.0;
+
+    /// <summary>置信度扣分信号 (v7.13): 指代不清/弱意图/缺参数等 (Builder 从 SubTask 透传)</summary>
+    public IntentDecomposer.ConfidenceFlags ConfidenceFlags { get; set; }
+        = IntentDecomposer.ConfidenceFlags.None;
 }
 
 /// <summary>子任务参数槽 — 问询协议的拆解侧载体 (复用 AnswerAuthority 语义)</summary>

@@ -67,7 +67,8 @@ public sealed class CliSession
     }
 
     /// <summary>/status: 当前状态面板</summary>
-    public void RenderStatus(int turnCount, string? lastIntent, string? forecastTendency)
+    public void RenderStatus(int turnCount, string? lastIntent, string? forecastTendency,
+        IReadOnlyList<string>? preferenceSummary = null)
     {
         _out.Write(CliRenderer.Bold("── 状态 " + new string('─', 46)));
         _out.Write($"  会话: {SessionId}   轮次: {turnCount}   最近意图: {lastIntent ?? "-"}");
@@ -75,5 +76,13 @@ public sealed class CliSession
         _out.Write($"  本轮步骤数: {_steps.Count}");
         for (var i = 0; i < _steps.Count; i++)
             _out.Write($"    {CliRenderer.Dim($"[{i + 1:00}]")} {_steps[i]}");
+
+        // 问询偏好库 (v7.13): 只展示模式特征摘要, 绝不回显原始答案/凭据
+        _out.Write(CliRenderer.Bold("── 问询偏好 " + new string('─', 40)));
+        if (preferenceSummary == null || preferenceSummary.Count == 0)
+            _out.Write(CliRenderer.Dim("  (暂无偏好记录 — 回答问询后自动积累)"));
+        else
+            foreach (var line in preferenceSummary)
+                _out.Write($"  {line}");
     }
 }

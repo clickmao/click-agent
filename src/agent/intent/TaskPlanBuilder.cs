@@ -52,6 +52,8 @@ public static class TaskPlanBuilder
             {
                 Text = st.Text,
                 Intent = st.Intent,
+                Confidence = st.Confidence,             // v7.13: 证据门槛裁定依据
+                ConfidenceFlags = st.Flags,
             };
 
             // 依赖接线 (v7.12 关系分级):
@@ -103,7 +105,13 @@ public static class TaskPlanBuilder
         PlanNode? last = null;
         foreach (var st in subTasks)
         {
-            var node = new PlanNode { Text = st.Text, Intent = st.Intent };
+            var node = new PlanNode
+            {
+                Text = st.Text,
+                Intent = st.Intent,
+                Confidence = st.Confidence,
+                ConfidenceFlags = st.Flags,
+            };
             if (st.DependsOnPrevious && last != null)
                 node.DependsOn.Add(last.Id);
             else if (afterNodeId != null)

@@ -102,7 +102,8 @@ internal class Program
             var trimmed = input.Trim();
             if (trimmed == "/status")
             {
-                session.RenderStatus(turnCount, lastIntent, lastTendency);
+                session.RenderStatus(turnCount, lastIntent, lastTendency,
+                    BuildPreferenceSummary("./data"));
                 if (oneShot != null) return 0;
                 continue;
             }
@@ -251,4 +252,32 @@ internal class Program
         Console.WriteLine("AgentFramework host: OK (full-graph AOT smoke passed)");
         return 0;
     }
+
+    /// <summary>
+    /// /status 面板的偏好库摘要 (v7.13): 只展示 DataType→模式特征/命中数,
+    /// 绝不回显原始答案或凭据 (偏好库本身也不存, 双保险)。
+    /// </summary>
+    private static List<string> BuildPreferenceSummary(string dataDir)
+    {
+        var lines = new List<string>();
+        try
+        {
+            var store = new agent.registry.ClarificationPreferenceStore(dataDir);
+            var prefs = store.Snapshot();
+            foreach (var pf in prefs)
+            {
+                var choicePart = pf.ChoiceOrder.Count > 0
+                    ? $" 偏好选项: {string.Join(" > ", pf.ChoiceOrder.Take(3))}"
+                    : "";
+                lines.Add($"{pf.DataTypeName} → {pf.PreferredPattern}  {choicePart}" +
+                          CliRenderer.Dim($"  [命中 {pf.HitCount} 次]"));
+            }
+        }
+        catch
+        {
+            // 偏好库读取失败不阻断 /status — 面板降级为空 (诚实显示无记录)
+        }
+        return lines;
+    }
+
 }

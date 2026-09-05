@@ -27,6 +27,9 @@ public class TaskPlanRun
     /// <summary>等待审批的敏感节点 (State=PausedForApproval 时非空)</summary>
     public string? PendingSensitiveNodeId { get; set; }
 
+    /// <summary>证据疑问超限节点 (v7.13): 低置信但疑问数已达上限, 走兜底不静默 (编排层可见)</summary>
+    public List<string> DroppedForEvidenceLimit { get; set; } = new();
+
     public DateTime StartedAt { get; set; } = DateTime.UtcNow;
 }
 

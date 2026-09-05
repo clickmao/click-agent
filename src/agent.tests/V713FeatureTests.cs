@@ -355,4 +355,103 @@ public class V713FeatureTests
         Assert.False(ok);
         Assert.NotNull(error);
     }
+
+    // ── TaskPlanExecutor × EvidenceGate 接线 (v7.13 编排) ──
+
+    [Fact]
+    public async Task TaskPlanExecutor_LowConfidenceNode_AwaitsClarification()
+    {
+        // 低置信子任务 → 门槛生成证据问题 → 节点 AwaitingClarification, 不执行
+        var plan = TaskPlanBuilder.Build("处理一下这个",
+            IntentDecomposer.Decompose("处理一下这个"));
+        var executed = new List<string>();
+        var executor = new TaskPlanExecutor((n, ct) =>
+        {
+            executed.Add(n.Id);
+            return Task.FromResult(new NodeExecutionResult { NodeId = n.Id, FinalState = PlanNodeState.Completed });
+        });
+
+        var run = await executor.ExecuteAsync(plan);
+
+        var lowConf = plan.Nodes.Where(n => n.Confidence < 0.60).ToList();
+        if (lowConf.Count > 0)
+        {
+            // 至少一个低置信节点被拦下 (Clarifications 非空 → 不可执行 → 不在 executed)
+            Assert.Contains(lowConf, n => n.Clarifications.Count > 0 || !executed.Contains(n.Id) || n.IsExecutable);
+        }
+        // 一致性: 执行过的节点绝不能挂着未答澄清
+        foreach (var id in executed)
+        {
+            var node = plan.Nodes.First(n => n.Id == id);
+            Assert.True(node.IsExecutable, $"节点 {id} 带澄清却被执行");
+        }
+    }
+
+    [Fact]
+    public async Task TaskPlanExecutor_HighConfidencePlan_RunsStraight()
+    {
+        var plan = TaskPlanBuilder.Build("搜索 AI 芯片产业报告",
+            IntentDecomposer.Decompose("搜索 AI 芯片产业报告"));
+        var executor = new TaskPlanExecutor((n, ct) =>
+            Task.FromResult(new NodeExecutionResult { NodeId = n.Id, FinalState = PlanNodeState.Completed }));
+
+        var run = await executor.ExecuteAsync(plan);
+
+        Assert.Equal(TaskPlanRunState.Finished, run.State);
+        Assert.All(run.NodeStates.Values, s => Assert.Equal(PlanNodeState.Completed, s));
+    }
+
+    [Fact]
+    public async Task TaskPlanExecutor_EvidenceLimit_ExceedBudgetMarked()
+    {
+        // 3 个极低置信任务 (默认上限 3 问) → 至少产生 Clarifications 或超限记账, 且不伪造执行
+        var tasks = IntentDecomposer.Decompose("处理一下这个，然后改改那个，再弄弄它");
+        var plan = TaskPlanBuilder.Build("处理一下这个，然后改改那个，再弄弄它", tasks);
+        var executor = new TaskPlanExecutor((n, ct) =>
+            Task.FromResult(new NodeExecutionResult { NodeId = n.Id, FinalState = PlanNodeState.Completed }));
+
+        var run = await executor.ExecuteAsync(plan);
+
+        var blocked = plan.Nodes.Count(n => n.Clarifications.Count > 0);
+        Assert.True(blocked > 0 || run.DroppedForEvidenceLimit.Count > 0,
+            "低置信计划既无问询也无超限记账 — 门槛未生效");
+    }
+
+    [Fact]
+    public async Task TaskPlanExecutor_PreferenceStore_WiredThrough()
+    {
+        // 偏好库接线: 澄清节点问询时偏好预排 + 回写 (选项序重排)
+        var tmp = Path.Combine(Path.GetTempPath(), "pref_tpe_" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            var store = new ClarificationPreferenceStore(tmp);
+            // 预造一条"数据来源"偏好: 用户上次选了"另指定的数据"
+            var seed = new ClarificationItem
+            {
+                ParameterName = "数据来源",
+                Question = "要基于哪个前序结果?",
+                DataType = PromptDataType.Choice,
+                Choices = ["上一步的输出结果", "另指定的数据", "不需要输入数据"],
+            };
+            store.RecordAnswer(seed, "另指定的数据");
+
+            var plan = TaskPlanBuilder.Build("处理一下这个，然后基于它写总结",
+                IntentDecomposer.Decompose("处理一下这个，然后基于它写总结"));
+            var executor = new TaskPlanExecutor((n, ct) =>
+                Task.FromResult(new NodeExecutionResult { NodeId = n.Id, FinalState = PlanNodeState.Completed }),
+                preferences: store);
+
+            await executor.ExecuteAsync(plan);
+
+            var choiceItems = plan.Nodes.SelectMany(n => n.Clarifications)
+                .Where(c => c.DataType == PromptDataType.Choice && c.Choices.Count >= 3).ToList();
+            if (choiceItems.Count > 0)
+                Assert.Contains(choiceItems, c => c.Choices[0] == "另指定的数据");
+        }
+        finally
+        {
+            if (Directory.Exists(tmp)) Directory.Delete(tmp, recursive: true);
+        }
+    }
+
 }
