@@ -54,12 +54,42 @@ public class TaskPlanExecutor
         Func<PlanNode, CancellationToken, Task<NodeExecutionResult>> nodeRunner,
         EvidenceGate? evidenceGate = null,
         ClarificationPreferenceStore? preferences = null,
-        IUserPromptService? prompts = null)
+        IUserPromptService? prompts = null,
+        agent.recovery.CheckpointStore? checkpointStore = null,
+        string checkpointSessionId = "")
     {
         _nodeRunner = nodeRunner;
         _evidenceGate = evidenceGate ?? new EvidenceGate();
         _preferences = preferences;
         _prompts = prompts;
+        _checkpoints = checkpointStore;
+        _checkpointSessionId = checkpointSessionId;
+    }
+
+    private readonly agent.recovery.CheckpointStore? _checkpoints;
+    private readonly string _checkpointSessionId;
+
+    /// <summary>
+    /// 检查点落盘 (需求3): 每层批结束/计划终态时保存节点状态快照。
+    /// store 未注入或 sessionId 为空 → 零开销跳过 (旧行为不变)。
+    /// </summary>
+    private void SaveCheckpoint(TaskPlanRun run)
+    {
+        if (_checkpoints is null || string.IsNullOrEmpty(_checkpointSessionId))
+            return;
+        _checkpoints.Save(new agent.recovery.ExecutionCheckpoint
+        {
+            SessionId = _checkpointSessionId,
+            PlanId = run.PlanId,
+            RunId = run.RunId,
+            NodeStates = run.NodeStates.ToDictionary(
+                kv => kv.Key, kv => kv.Value.ToString(), StringComparer.Ordinal),
+            LastCompletedNodeId = run.NodeStates
+                .Where(kv => kv.Value == PlanNodeState.Completed)
+                .Select(kv => kv.Key)
+                .LastOrDefault(),
+            PauseReason = run.PauseReason,
+        });
     }
 
     private readonly IUserPromptService? _prompts;
@@ -133,6 +163,7 @@ public class TaskPlanExecutor
                 run.State = TaskPlanRunState.Cancelled;
                 run.PauseReason = $"用户插入停止指令: {layerInjection.Text}";
                 SkipRemaining(order, run.NodeStates, batch[0].Id);
+                SaveCheckpoint(run);
                 return run;
             }
 
@@ -155,6 +186,7 @@ public class TaskPlanExecutor
                 run.PendingSensitiveNodeId = sensitive.Id;
                 run.PauseReason = $"敏感任务「{sensitive.Text}」({sensitive.Intent}) 等待审批";
                 run.NodeStates[sensitive.Id] = PlanNodeState.AwaitingApproval;
+                SaveCheckpoint(run);
                 return run;
             }
 
@@ -202,11 +234,18 @@ public class TaskPlanExecutor
                     }
                 }
                 if (stopped)
+                {
+                    SaveCheckpoint(run);
                     return run;
+                }
             }
+
+            // 层批完成 → 检查点 (需求3: 每层粒度复原)
+            SaveCheckpoint(run);
         }
 
         run.State = TaskPlanRunState.Finished;
+        SaveCheckpoint(run);
         return run;
     }
 

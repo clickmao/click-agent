@@ -17,18 +17,22 @@ public sealed class PanelDataService
     private readonly CapabilityScanner _capabilities;
     private readonly string _dataPath;
 
+    private readonly agent.recovery.CheckpointStore _checkpoints;
+
     public PanelDataService(
         ISessionManager sessions,
         JsonSessionMemoryStore memoryStore,
         AgentProfileStore profiles,
         CapabilityScanner capabilities,
-        string dataPath = "data")
+        string dataPath = "data",
+        agent.recovery.CheckpointStore? checkpoints = null)
     {
         _sessions = sessions;
         _memoryStore = memoryStore;
         _profiles = profiles;
         _capabilities = capabilities;
         _dataPath = dataPath;
+        _checkpoints = checkpoints ?? new agent.recovery.CheckpointStore(dataPath);
     }
 
     /// <summary>
@@ -52,6 +56,22 @@ public sealed class PanelDataService
                 Name = c.Name, Description = c.Description, Source = c.Source,
             }).ToList(),
         };
+
+        // 需求3: 主会话检查点恢复裁定 (cli-main 会话; 无检查点 → null 不输出)
+        var checkpoint = _checkpoints.Load("cli-main");
+        if (checkpoint != null)
+        {
+            var recovery = agent.recovery.CheckpointRecovery.BuildRecoveryPlan(checkpoint);
+            payload.Recovery = new RecoveryPanel
+            {
+                Resumable = recovery.Resumable,
+                PlanId = recovery.PlanId,
+                ResumeFromNodeId = recovery.ResumeFromNodeId,
+                CompletedNodes = recovery.CompletedNodeIds.Count,
+                Summary = recovery.Summary,
+            };
+        }
+
         return System.Text.Json.JsonSerializer.Serialize(payload, PanelJsonContext.Default.GlobalStatusPanel);;
     }
 
@@ -215,6 +235,19 @@ public sealed class GlobalStatusPanel
     public int SessionCount { get; set; }
     public int AgentCount { get; set; }
     public List<CapabilityEntry> Capabilities { get; set; } = new();
+
+    /// <summary>需求3: 会话中断恢复裁定 (null = 无检查点)</summary>
+    public RecoveryPanel? Recovery { get; set; }
+}
+
+/// <summary>会话恢复面板 (需求3: 检查点 → 恢复计划)</summary>
+public sealed class RecoveryPanel
+{
+    public bool Resumable { get; set; }
+    public string PlanId { get; set; } = string.Empty;
+    public string ResumeFromNodeId { get; set; } = string.Empty;
+    public int CompletedNodes { get; set; }
+    public string Summary { get; set; } = string.Empty;
 }
 
 public sealed class CapabilityEntry

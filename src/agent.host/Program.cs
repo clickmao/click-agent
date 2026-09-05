@@ -64,6 +64,16 @@ internal class Program
         var agentCtx = new AgentContext(provider) { SessionId = "cli-main", UserId = "cli-user" };
         await entryAgent.InitializeAsync(agentCtx);
 
+        // v7.15 需求3: 会话中断恢复 — 启动时检查上次执行检查点, 有未完成计划直接提示恢复点
+        var checkpointStore = new agent.recovery.CheckpointStore("./data");
+        var lastCheckpoint = checkpointStore.Load("cli-main");
+        if (lastCheckpoint != null)
+        {
+            var recovery = agent.recovery.CheckpointRecovery.BuildRecoveryPlan(lastCheckpoint);
+            if (recovery.Resumable)
+                Console.WriteLine($"[recovery] {recovery.Summary}");
+        }
+
         if (smoke && oneShot == null)
             return await RunSmokeAsync(provider, entryAgent);
 
