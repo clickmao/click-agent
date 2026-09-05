@@ -61,6 +61,9 @@ public class IndustrialAgentV2 : AgentBase
     // ✅ 新增：LLM 调用器（示例接口）
     private readonly ILLMCaller _llmCaller;
     private readonly agent.subagent.IsolatedTaskRunner? _isolatedTaskRunner;
+    private readonly agent.modelqueue.ModelQueueRouter? _modelRouter;
+    private readonly agent.modelqueue.BalanceQueryService? _balanceService;
+    private readonly agent.modelqueue.ModelVerifyService? _verifyService;
     
     private readonly List<string> _capabilities = new();
     
@@ -88,9 +91,15 @@ public class IndustrialAgentV2 : AgentBase
         agent.registry.ClarificationService clarificationService,
         string dataStoragePath = "./data",
         agent.userinteraction.IUserPromptService? promptService = null,
-        agent.subagent.IsolatedTaskRunner? isolatedTaskRunner = null) : base(logger, handlers)
+        agent.subagent.IsolatedTaskRunner? isolatedTaskRunner = null,
+        agent.modelqueue.ModelQueueRouter? modelRouter = null,
+        agent.modelqueue.BalanceQueryService? balanceService = null,
+        agent.modelqueue.ModelVerifyService? verifyService = null) : base(logger, handlers)
     {
         _isolatedTaskRunner = isolatedTaskRunner;
+        _modelRouter = modelRouter;
+        _balanceService = balanceService;
+        _verifyService = verifyService;
         _promptService = promptService;
         _workspace = workspace;
         _codeGenerator = codeGenerator;
@@ -150,6 +159,18 @@ public class IndustrialAgentV2 : AgentBase
                 response.Data = new Dictionary<string, object> { { "localCommand", "plan" } };
                 response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
                 return response;
+            }
+
+            // 0.-2 /model 与 /balance (v7.15 模型队列): 切换/恢复自动 + 余额查询 + 目录校验 (全 JSON 输出)
+            var trimmedCmd = message.Content.Trim();
+            if (trimmedCmd.StartsWith("/model", StringComparison.OrdinalIgnoreCase) ||
+                trimmedCmd.Equals("/balance", StringComparison.OrdinalIgnoreCase))
+            {
+                var cmdResp = HandleModelCommand(trimmedCmd, (long)(DateTime.UtcNow - startTime).TotalMilliseconds);
+                if (cmdResp != null)
+                {
+                    return cmdResp;
+                }
             }
 
             // 0. 非 LLM 本地强制指令拦截 (v7.11): /stop /continue 等, 不进意图识别/LLM
@@ -341,6 +362,126 @@ public class IndustrialAgentV2 : AgentBase
     /// 影子一致性判据 (T.4-2 定案): 本阶段只验证"计划结构可执行+问询需求已知",
     /// 节点输出对比在执行器并发化 (plan_executor_parallel) 接真 nodeRunner 后进行。
     /// </summary>
+    /// <summary>
+    /// /model 与 /balance 指令处理 (v7.15 模型队列): 全 JSON 输出。
+    ///   /model             → 当前活跃模型 + 选模依据 (JSON)
+    ///   /model &lt;id&gt;       → 手动指定 (目录校验)
+    ///   /model auto        → 恢复自动
+    ///   /model verify &lt;id&gt; → 目录参数真实性校验 (假 key 探测, C.6.5)
+    ///   /balance [id]      → 余额查询 (scheme 分派, 诚实报错)
+    /// 返回 null = 非本组指令 (放行主链)。
+    /// </summary>
+    private AgentResponse? HandleModelCommand(string input, long elapsedMs)
+    {
+        var parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        var head = parts[0].ToLowerInvariant();
+
+        if (head == "/model")
+        {
+            if (_modelRouter is null)
+            {
+                return MakeJsonResponse(new Dictionary<string, object>
+                {
+                    { "command", "model" }, { "ok", false }, { "error", "model_queue_not_configured" },
+                }, elapsedMs);
+            }
+            if (parts.Length == 1)
+            {
+                var active = _modelRouter.ActiveModel;
+                return MakeJsonResponse(new Dictionary<string, object>
+                {
+                    { "command", "model" },
+                    { "ok", true },
+                    { "active", active?.Id ?? "(empty)" },
+                    { "provider", active?.Provider ?? "" },
+                    { "reasoning_score", active?.ReasoningScore ?? 0 },
+                    { "coding_score", active?.CodingScore ?? 0 },
+                    { "last_selection", _modelRouter.LastSelectionBasis },
+                    { "switches", _modelRouter.Switches.Count },
+                }, elapsedMs);
+            }
+            if (parts[1].Equals("verify", StringComparison.OrdinalIgnoreCase) && parts.Length >= 3)
+            {
+                var v = _verifyService?.VerifyAsync(parts[2]).GetAwaiter().GetResult();
+                return MakeJsonResponse(new Dictionary<string, object>
+                {
+                    { "command", "model_verify" },
+                    { "ok", v?.Ok ?? false },
+                    { "model", v?.Model ?? parts[2] },
+                    { "http_status", v?.HttpStatusCode ?? 0 },
+                    { "verdict", v?.Verdict ?? v?.Error ?? "verify_service_unavailable" },
+                }, elapsedMs);
+            }
+            var target = parts[1];
+            var okSet = _modelRouter.SetManualOverride(target);
+            if (okSet)
+            {
+                return MakeJsonResponse(new Dictionary<string, object>
+                {
+                    { "command", "model" },
+                    { "ok", true },
+                    { "target", target },
+                    { "active", target },
+                }, elapsedMs);
+            }
+            return MakeJsonResponse(new Dictionary<string, object>
+            {
+                { "command", "model" },
+                { "ok", false },
+                { "target", target },
+                { "active", _modelRouter.ActiveModel?.Id ?? "(empty)" },
+                { "error", "unknown_model_id (见 config/base/models.yaml)" },
+            }, elapsedMs);
+        }
+
+        if (head == "/balance")
+        {
+            if (_balanceService is null)
+            {
+                return MakeJsonResponse(new Dictionary<string, object>
+                {
+                    { "command", "balance" }, { "ok", false }, { "error", "model_queue_not_configured" },
+                }, elapsedMs);
+            }
+            var b = _balanceService.QueryAsync(parts.Length >= 2 ? parts[1] : null)
+                .GetAwaiter().GetResult();
+            var dict = new Dictionary<string, object>
+            {
+                { "command", "balance" },
+                { "ok", b.Ok },
+                { "model", b.Model },
+                { "provider", b.Provider ?? "" },
+            };
+            if (b.TotalGranted is double g) dict["total_granted"] = g;
+            if (b.TotalUsed is double u) dict["total_used"] = u;
+            if (b.TotalRemaining is double r) dict["total_remaining"] = r;
+            if (b.Error != null) dict["error"] = b.Error;
+            if (b.Note != null) dict["note"] = b.Note;
+            return MakeJsonResponse(dict, elapsedMs);
+        }
+
+        return null;
+    }
+
+    /// <summary>全 JSON 输出的统一响应 (面板/CLI 惯例)</summary>
+    private AgentResponse MakeJsonResponse(Dictionary<string, object> payload, long elapsedMs)
+    {
+        var json = System.Text.Json.JsonSerializer.Serialize(
+            payload,
+            new System.Text.Json.JsonSerializerOptions
+            {
+                WriteIndented = false,
+                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
+            });
+        return new AgentResponse
+        {
+            Success = payload.TryGetValue("ok", out var ok) && ok is true,
+            Content = json,
+            Data = payload,
+            ExecutionTimeMs = elapsedMs,
+        };
+    }
+
     private async Task<TaskPlanRun?> RunShadowPlanAsync(
         string sourceText, IReadOnlyList<IntentDecomposer.SubTask> subTasks, CancellationToken ct)
     {
@@ -703,14 +844,18 @@ public class OpenAILLMCaller : ILLMCaller
     private readonly string _apiKey;
     private readonly string _model;
     
+    private readonly string _baseUrl;
+
     public OpenAILLMCaller(
         HttpClient httpClient,
         string apiKey,
-        string model = "gpt-4")
+        string model = "gpt-4",
+        string baseUrl = "https://api.openai.com/v1")
     {
         _httpClient = httpClient;
         _apiKey = apiKey;
         _model = model;
+        _baseUrl = baseUrl.TrimEnd('/');
     }
     
     public async Task<LLMResponse> CallAsync(Prompt prompt, CancellationToken ct = default)
@@ -753,7 +898,7 @@ public class OpenAILLMCaller : ILLMCaller
                 temperature = 0.7
             };
             
-            var request = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/chat/completions");
+            var request = new HttpRequestMessage(HttpMethod.Post, _baseUrl + "/chat/completions");
             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _apiKey);
             request.Content = new StringContent(
                 JsonSerializer.Serialize(requestBody, LLMJsonContext.Default.OpenAIChatRequest),

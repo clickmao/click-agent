@@ -1,0 +1,86 @@
+# ==============================================
+# 模型目录 (L1 base, models.yaml) — C.6.2
+# 每模型: 除 API-KEY 外全部参数 (key 只存环境变量名, 凭据铁律)
+# 参数真实性 (C.6.5): 目录内模型均经实际 http 校验 (假 key 期望 401 = 地址合法),
+# 校验命令 /model verify <id>; 价格为公开牌价 (USD/每百万 token), 变动以 provider 官网为准
+# ==============================================
+models:
+  # ── OpenAI ──
+  - id: gpt-4o
+    provider: openai
+    endpoint: https://api.openai.com/v1/chat/completions
+    api_key_env: AGENT_OPENAI_KEY
+    price_in_per_m: 2.50
+    price_out_per_m: 10.00
+    reasoning_score: 8
+    coding_score: 8
+    context_window: 128000
+    suited_for: [general, coding, reasoning, planning]
+
+  - id: gpt-4o-mini
+    provider: openai
+    endpoint: https://api.openai.com/v1/chat/completions
+    api_key_env: AGENT_OPENAI_KEY
+    price_in_per_m: 0.15
+    price_out_per_m: 0.60
+    reasoning_score: 6
+    coding_score: 6
+    context_window: 128000
+    suited_for: [general, chat, summary, classify]
+
+  # ── DeepSeek ──
+  - id: deepseek-chat
+    provider: deepseek
+    endpoint: https://api.deepseek.com/v1/chat/completions
+    api_key_env: DEEPSEEK_KEY
+    price_in_per_m: 0.27
+    price_out_per_m: 1.10
+    reasoning_score: 7
+    coding_score: 8
+    context_window: 64000
+    suited_for: [general, coding, summary]
+
+  - id: deepseek-reasoner
+    provider: deepseek
+    endpoint: https://api.deepseek.com/v1/chat/completions
+    api_key_env: DEEPSEEK_KEY
+    price_in_per_m: 0.55
+    price_out_per_m: 2.19
+    reasoning_score: 9
+    coding_score: 8
+    context_window: 64000
+    suited_for: [reasoning, planning, debug]
+
+  # ── 智普 GLM ──
+  - id: glm-4-flash
+    provider: zhipu
+    endpoint: https://open.bigmodel.cn/api/paas/v4/chat/completions
+    api_key_env: ZHIPU_KEY
+    price_in_per_m: 0.10
+    price_out_per_m: 0.10
+    reasoning_score: 5
+    coding_score: 5
+    context_window: 128000
+    suited_for: [chat, summary, classify]
+
+  - id: glm-4-plus
+    provider: zhipu
+    endpoint: https://open.bigmodel.cn/api/paas/v4/chat/completions
+    api_key_env: ZHIPU_KEY
+    price_in_per_m: 7.00
+    price_out_per_m: 7.00
+    reasoning_score: 8
+    coding_score: 7
+    context_window: 128000
+    suited_for: [general, reasoning, planning]
+
+# ── 余额查询方案 (C.6.4) ──
+# 调研结论 (2026-09-06): 各 provider 余额/账单接口差异大 (OpenAI=credit_grants 依赖项目账单迁移,
+# DeepSeek=/user/balance, 智普=无公开余额 API) → scheme 枚举按 provider 分派, 未知 provider 诚实报错
+balance_schemes:
+  openai:
+    endpoint: https://api.openai.com/v1/dashboard/billing/subscription
+    note: credit_grants 已随账单迁移废弃, 用 subscription 端点取 hard_limit_usd 作额度上界
+  deepseek:
+    endpoint: https://api.deepseek.com/user/balance
+    note: GET + Bearer; balance 字段 USD
