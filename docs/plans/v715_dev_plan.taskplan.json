@@ -1,0 +1,64 @@
+{
+  "PlanId": "devplan715",
+  "SourceText": "v7.15 开发计划: TaskPlan 体系归拢 + 执行器并发化 + 节点重试 + 隔离任务 + 模型队列与余额查询",
+  "CreatedAt": "2026-09-06T12:00:00Z",
+  "Nodes": [
+    {
+      "Id": "dev-consolidate",
+      "Text": "TaskPlan 体系归拢: 裁定 agent.planner 遗留去留、删双体系、V2 主链接入计划执行 (影子模式→主路)",
+      "Intent": "code_generation",
+      "Level": 0,
+      "ParallelGroup": 0,
+      "DocRef": "docs/plan_taskplan_consolidation.md",
+      "Parameters": [],
+      "Confidence": 1.0
+    },
+    {
+      "Id": "dev-parallel",
+      "Text": "执行器同层并发化: TaskPlanExecutor 按 Level/ParallelGroup 并发执行同层无关节点",
+      "Intent": "code_generation",
+      "Level": 1,
+      "ParallelGroup": 1,
+      "DocRef": "docs/plan_executor_parallel.md",
+      "Parameters": [],
+      "Confidence": 1.0
+    },
+    {
+      "Id": "dev-retry",
+      "Text": "节点级重试策略: MaxRetries+指数退避, 瞬态/永久失败分类, 重试审计进 TaskPlanRun",
+      "Intent": "code_generation",
+      "Level": 1,
+      "ParallelGroup": 1,
+      "DocRef": "docs/plan_node_retry.md",
+      "Parameters": [],
+      "Confidence": 1.0
+    },
+    {
+      "Id": "dev-modelqueue",
+      "Text": "模型队列模块: 本地 JSON 配置主次模型+手动/自动切换+计价路由+/balance 余额查询指令",
+      "Intent": "code_generation",
+      "Level": 0,
+      "ParallelGroup": 0,
+      "DocRef": "docs/plan_model_queue.md",
+      "Parameters": [
+        {
+          "Name": "module_dir",
+          "DisplayName": "模块目录",
+          "Value": "src/agent/modelqueue",
+          "IsRequired": true
+        }
+      ],
+      "Confidence": 1.0
+    },
+    {
+      "Id": "dev-isolated",
+      "Text": "隔离任务: 无关新提问规则判定→隔离子 agent 执行后销毁 (6 项隔离边界)",
+      "Intent": "code_generation",
+      "Level": 0,
+      "ParallelGroup": 0,
+      "DocRef": "docs/plan_isolated_task.md",
+      "Parameters": [],
+      "Confidence": 1.0
+    }
+  ]
+}

@@ -56,6 +56,10 @@ public class PlanNode
     /// <summary>并行组号 (同 level 且互不依赖共享组号; UI 可按组着色)</summary>
     public int ParallelGroup { get; set; }
 
+    /// <summary>对应设计/开发文档路径 (相对仓库根, 如 docs/plan_model_queue.md)。
+    /// 开发计划型任务节点标注其模块文档; 日常用户任务无文档时为 null。AOT 纯数据字段。</summary>
+    public string? DocRef { get; set; }
+
     /// <summary>拆解置信度 (v7.13): EvidenceGate 裁定依据 (Builder 从 SubTask 透传)</summary>
     public double Confidence { get; set; } = 1.0;
 

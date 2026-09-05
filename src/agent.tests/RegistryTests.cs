@@ -237,7 +237,7 @@ public class RegistryTests : IDisposable
         var html = segs.First(s => s.Language == "html");
         Assert.Equal(SegmentKind.Code, html.Kind);
         Assert.Equal("<div>hi</div>", html.Content.Trim());
-        Assert.True(text[html.StartIndex..(html.StartIndex + html.Length)].Contains("div")); // 坐标对齐原文
+        Assert.Contains("div", text[html.StartIndex..(html.StartIndex + html.Length)]); // 坐标对齐原文
 
         Assert.Contains(segs, s => s.Kind == SegmentKind.InlineCode && s.Content == "var x");
         Assert.Contains(segs, s => s.Kind == SegmentKind.Code && s.Language == "csharp");
