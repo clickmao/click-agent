@@ -89,6 +89,30 @@
       "DocRef": "docs/plan_context_compression.md",
       "Parameters": [],
       "Confidence": 1.0
+    },
+    {
+      "Id": "9",
+      "Title": "日志细分通道与前端思考流协议",
+      "Level": 1,
+      "ParallelGroup": "B",
+      "Status": "Pending",
+      "DocRef": "docs/plan_log_channels.md",
+      "DependsOn": [
+        "8"
+      ],
+      "Summary": "LogFlags 四位 {console/chatbox思考/chatbox输出/file} 独立路由; MemoryLogBuffer CLI 日志缓存+/log dump 存档; thinking_page_switch/thinking_end 前端 JSON 指令; LogEntry 底层格式"
+    },
+    {
+      "Id": "10",
+      "Title": "模型目录与意图选模 (并入模型队列模块)",
+      "Level": 1,
+      "ParallelGroup": "B",
+      "Status": "Pending",
+      "DocRef": "docs/plan_model_queue.md",
+      "DependsOn": [
+        "8"
+      ],
+      "Summary": "C.6: ReasoningScore/CodingScore 1-10 标准值; config/base/models.yaml 目录 (知名模型全参数, key 只存 env 名); 意图×token预估×费用 综合选模; 余额方案调研后定 scheme; /model verify 真实 http 校验 (假 key 期望 401)"
     }
   ]
 }
