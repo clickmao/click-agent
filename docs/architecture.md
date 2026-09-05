@@ -1245,24 +1245,31 @@ click-agent/
 │   └── search_research.md
 └── src/
     ├── agent/                  # 核心 Agent: 意图拆解/任务计划/注册表/区段路由/本地推理
-    │   ├── intent/             # IntentDecomposer / TaskPlanBuilder / TaskPlanRun
-    │   ├── registry/           # AgentRegistry / NextTurnForecast / LocalCommandRouter
-    │   │                       # TaskPlanExecutor / ResponseSegmentRouter / ClarificationService
-    │   ├── llamalocal/         # LocalLlamaCaller (LLamaSharp)
+    │   ├── intent/             # IntentDecomposer / IntentRecognizer / TaskPlanBuilder / TaskPlan
+    │   ├── registry/           # AgentRegistry / ForecastRecord / LocalCommandRouter / TaskPlanExecutor
+    │   │                       # ResponseSegmentRouter / ClarificationService / ClarificationBatch
+    │   │                       # EvidenceGate / ClarificationPreferenceStore (v7.13 问询偏好)
+    │   ├── llamalocal/         # LocalLlamaCaller / VulkanSupport (vulkan 模式加载)
     │   ├── contextassembler/   # 多源上下文装配
     │   ├── session/            # SessionManager
     │   ├── search/             # 搜索故障转移 (主备槽)
     │   ├── templates/          # 模板系统
     │   └── extensions/         # DI 注册 (AddAgentFramework)
     ├── agent.core/             # 基础契约: Message / AgentContext / IAgent / IUserPromptService
-    ├── agent.host/             # CLI 宿主 (NativeAOT): Program.cs / clirenderer.cs / clisession.cs
+    │   └── userinteraction/    # PromptOrigin / PromptDataType (v7.13 问询数据类型枚举)
+    ├── agent.output/           # v7.13 输出管道: AgentOutputMessage / OutputFormatter / SpectreOutputRenderer
+    ├── agent.host/             # CLI 宿主 (NativeAOT): Program / CliRenderer / CliSession (--output-mode)
     ├── agent.planner/          # TaskExecutionEngine
     ├── agent.codegen/          # CodeGenerator
     ├── agent.recovery/         # RecoverySystem
     ├── agent.rag/              # RAG 召回
     ├── agent.vectormemory/     # 向量记忆
     ├── agent.workspace/        # 工作区
-    └── agent.tests/            # 173 项测试 (xunit)
+    └── agent.tests/            # 202 项测试 (xunit)
+```
+
+> 命名约定 (用户钦定): 文件夹与命名空间全小写 (`agent.registry`), 类文件与类型名 PascalCase
+> (`AgentRegistry.cs` / `ClarificationBatch.cs`)。
 ```
 
 ---
@@ -1270,23 +1277,24 @@ click-agent/
 ## 11. 依赖项
 
 ```xml
-<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
-<PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
-<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
-<PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
-<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
-<PackageReference Include="System.Text.Json" Version="8.0.0" />
-<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-<PackageReference Include="Serilog" Version="3.1.1" />
-<PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
-<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+<!-- agent 核心库 (net10.0 对齐) -->
+<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.8" />
+<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.8" />
+<PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.8" />
+<PackageReference Include="WebReaper" Version="11.3.1" />
+<!-- 本地推理: LLamaSharp + CPU/Vulkan 后端; vulkan loader 复用系统 libvulkan.so.1 (Silk.NET 同款) -->
+<PackageReference Include="LLamaSharp" Version="0.27.0" />
+<PackageReference Include="LLamaSharp.Backend.Cpu" Version="0.27.0" />
+<PackageReference Include="LLamaSharp.Backend.Vulkan" Version="0.27.0" />
+<PackageReference Include="Silk.NET.Vulkan" Version="2.23.0" />
+
+<!-- agent.output (v7.13 控制台美化) -->
+<PackageReference Include="Spectre.Console" Version="0.57.2" />
 
 <!-- Test -->
-<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
-<PackageReference Include="xunit" Version="2.6.4" />
-<PackageReference Include="xunit.runner.visualstudio" Version="2.5.6" />
-<PackageReference Include="Moq" Version="4.20.70" />
-<PackageReference Include="FluentAssertions" Version="6.12.0" />
+<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+<PackageReference Include="xunit" Version="2.9.3" />
+<PackageReference Include="xunit.runner.visualstudio" Version="3.1.0" />
 ```
 
 ---

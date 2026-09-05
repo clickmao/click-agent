@@ -95,6 +95,16 @@ public class ClarificationItem
     public string Authority { get; set; } = "MainAgentAllowed";
 
     public List<string> SuggestedValues { get; set; } = new();
+
+    /// <summary>答案数据类型约束 (v7.13): 回答必须通过 PromptDataValidator 校验</summary>
+    public agent.userinteraction.PromptDataType DataType { get; set; } =
+        agent.userinteraction.PromptDataType.String;
+
+    /// <summary>Choice/MultiChoice 的完整选项列表 (选单选择必须给全所有选项)</summary>
+    public List<string> Choices { get; set; } = new();
+
+    /// <summary>批量分组键 (v7.13): 同组问询一次性打包给出, 不一条一条问</summary>
+    public string GroupId { get; set; } = string.Empty;
 }
 
 /// <summary>澄清类型 flag 常量 (序列化友好; 凭据类沿用 CredentialRequestKind 语义字符串)</summary>

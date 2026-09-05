@@ -1,5 +1,6 @@
 using System.Text.Json;
 using agent.core;
+using agent.output;
 
 namespace agent.host;
 
@@ -12,6 +13,8 @@ public sealed class CliSession
 {
     private readonly IOutputSink _out;
     private readonly string _dataPath;
+    private readonly OutputMode _mode;
+    private readonly SpectreOutputRenderer _renderer;
     private readonly List<string> _steps = new();
 
     public string SessionId { get; } = "cli-" + Guid.NewGuid().ToString("N")[..8];
@@ -19,26 +22,39 @@ public sealed class CliSession
     /// <summary>本轮步骤明细 (执行后可查)</summary>
     public IReadOnlyList<string> Steps => _steps;
 
-    public CliSession(IOutputSink output, string dataPath)
+    /// <param name="mode">输出模式 (v7.13): Markdown=全格式美化 / PlainText=平铺着色 (默认 markdown)</param>
+    public CliSession(IOutputSink output, string dataPath, OutputMode mode = OutputMode.Markdown)
     {
         _out = output;
         _dataPath = dataPath;
+        _mode = mode;
+        _renderer = new SpectreOutputRenderer();
     }
 
     public void RecordStep(string what) => _steps.Add($"[{DateTime.Now:HH:mm:ss}] {what}");
 
-    /// <summary>渲染一轮响应: 步骤明细 → markdown 正文 → Data 摘要</summary>
-    public void RenderResponse(AgentResponse response, string intent)
+    /// <summary>渲染一轮响应: 步骤明细 → 底层消息 (双模式) → Data 摘要</summary>
+    public void RenderResponse(AgentResponse response, string intent, List<AgentOutputSegment>? segments = null)
     {
         _out.Write("");
         _out.Write(CliRenderer.Bold("── 回复 " + new string('─', 44)));
         if (!response.Success)
         {
-            _out.Write(CliRenderer.Red("✗ 失败: " + (response.Error ?? "(无错误信息)")));
+            // 错误也走底层格式 (统一管道, 控制台着色)
+            _renderer.Render(new AgentOutputMessage
+            {
+                Kind = AgentOutputKind.Error,
+                Mode = _mode,
+                Content = "失败: " + (response.Error ?? "(无错误信息)"),
+                Source = "CliSession",
+            });
             return;
         }
 
-        _out.WriteMarkdown(response.Content);
+        // v7.13: LLM 内容 → 底层 AgentOutputMessage → 双模式渲染 (markdown 全格式 / 纯文本平铺, 控制台均着色)
+        var message = AgentOutputMessage.FromLlmAnswer(response.Content, "pipeline", segments);
+        message.Mode = _mode;
+        _renderer.Render(message);
 
         if (response.Data.Count > 0)
         {

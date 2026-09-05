@@ -860,6 +860,137 @@ LLMResponse resp = await llama.CallAsync(prompt, ct);
 
 ---
 
+## 18. 问询数据类型与校验 (v7.13)
+
+```csharp
+using agent.userinteraction;
+
+// 18 类问询数据类型 (枚举固定)
+public enum PromptDataType
+{
+    String, Integer, Number, Date, Time, DateTime,
+    Choice, MultiChoice, Boolean,
+    Path, Url, Email, CodeExpression, Multiline,
+    IpAddress, Port, KeyValue,
+}
+
+// 纯规则校验 + 规范化 (微秒级)
+var (ok, normalized, error) = PromptDataValidator.Validate(
+    PromptDataType.Date, "2026年9月6日");
+// ok=true, normalized="2026-09-06"
+
+// Choice 必须给全选项
+var (ok2, val, err) = PromptDataValidator.Validate(
+    PromptDataType.Choice, "写文档",
+    new[] { "搜索资料", "写文档", "执行命令" });
+```
+
+## 19. 批量问询 (v7.13)
+
+```csharp
+using agent.registry;
+
+// 分组: 按 GroupId (空则按 NodeId) — 同组一次问完, 不一条一条问
+List<List<ClarificationItem>> groups = ClarificationBatch.Group(clarificationItems);
+
+// 执行一批 (内部: 偏好复用 → 打包问询 → DataType 校验 → 失败重问 → 审计)
+BatchResult result = await ClarificationBatch.AskAsync(
+    prompts, "task-plan", groups[0],
+    maxRetries: 2,
+    preferences: preferenceStore);   // 传偏好库自动复用+回写
+
+// 结果: Answered/Value/Error — 不伪造答案
+foreach (var ans in result.Answers)
+    Console.WriteLine($"{ans.Item.ParameterName}: {ans.Value ?? ans.Error}");
+```
+
+## 20. 子任务置信度与证据门槛 (v7.13)
+
+```csharp
+using agent.intent;
+using agent.registry;
+
+// 拆解即评估 (纯规则, 零 LLM 调用): SubTask 带 Confidence + Flags
+List<IntentDecomposer.SubTask> tasks = IntentDecomposer.Decompose("处理一下这个文件，然后写总结");
+foreach (var t in tasks)
+    Console.WriteLine($"{t.Text} conf={t.Confidence} flags={t.Flags}");
+
+// 证据门槛: 低置信 → 向发起者索要证据; 最大疑问数限制 (默认 3)
+var gate = new EvidenceGate(maxQuestions: 3, confidenceThreshold: 0.60);
+EvidenceGate.GateResult verdict = gate.Evaluate(tasks);
+
+foreach (var req in verdict.ToAsk)          // 上限内, 按优先级排好
+    Console.WriteLine($"问: {req.SubTask.Text} ({req.Questions.Count} 问)");
+foreach (var dropped in verdict.DroppedForLimit) // 超限 → 走兜底不静默
+    Console.WriteLine($"兜底: {dropped.Text}");
+```
+
+## 21. 问询偏好库 (v7.13)
+
+```csharp
+using agent.registry;
+
+// 偏好 = 模式特征, 不是凭据/不是本次输入值
+var store = new ClarificationPreferenceStore("data");   // 落盘 data/clarification_preferences.json
+
+// 记录: 合法答案 → 规范化模式 (path→"absolute"; choice→选项序); ApiKey 类拒收
+store.RecordAnswer(clarificationItem, normalizedAnswer);
+
+// 复用: 同类新问题 (同指纹) → SuggestedValues 注入偏好 / 选项序重排
+store.ApplyTo(newItem);
+
+// 指纹: 意图类别 + 数据类型 (剔除具体值)
+string fp = ClarificationFingerprint.Build("保存到哪个路径?", "output", PromptDataType.Path);
+```
+
+## 22. 双模式输出 (v7.13)
+
+```csharp
+using agent.output;
+
+// 底层结构化格式: 一切返回内容统一此格式
+var message = AgentOutputMessage.FromLlmAnswer(markdownContent, source, segments);
+
+// 双模式
+message.Mode = OutputMode.Markdown;   // 全人性化格式 (文件日志/富界面)
+message.Mode = OutputMode.PlainText;  // 纯文本平铺 (控制台/管道)
+
+// 纯规则双向转换
+string plain = OutputFormatter.ToPlainText(markdown);
+
+// Spectre.Console 渲染 (第三方库美化, 按消息种类着色; 非 TTY 自动降级)
+var renderer = new SpectreOutputRenderer();
+renderer.Render(message);
+```
+
+CLI: `agenthost --output-mode text "..."` (默认 markdown)。
+
+## 23. Vulkan 模式加载 (v7.13)
+
+```csharp
+using agent.llamalocal;
+
+// 后端模式: Auto (探测 loader) / Cpu / Vulkan
+// Vulkan 模式复用系统 libvulkan.so.1 (与 Silk.NET.Vulkan P/Invoke 同一动态库)
+var caller = new LocalLlamaCaller(logger, modelPath,
+    contextSize: 4096,
+    backendMode: LlamaBackendMode.Auto,   // 有 vulkan loader + 产物 → vulkan, 否则 CPU
+    gpuLayers: 16);                        // vulkan 模式 GPU offload 层数
+
+// 底层: NativeLibraryConfig.LLama.WithVulkan(true) 在 LoadFromFile 前配置 (VulkanSupport.Configure)
+// 强制 Vulkan 而 loader 缺失 → InvalidOperationException (不静默滑回 CPU)
+```
+
+## 24. agent 间问询静默 (v7.13)
+
+```csharp
+// IUserPromptService 新增开关
+prompts.SilentInterAgent = true;
+
+// 之后 MainAgentAllowed 问询: 不打印控制台, 主 agent 空值占位代答 (不编造) + 审计
+// 凭据/敏感项 (Kind=ApiKey 或 Sensitive) 不受开关影响 — 永远问真人
+```
+
 ## 依赖注入扩展
 
 ```csharp
@@ -879,4 +1010,4 @@ services.AddAgentFramework(options =>
 
 ## 示例
 
-更多示例请参考 `examples/` 目录。
+更多示例请参考 [readme.md](../readme.md) 与 [架构文档](architecture.md)。

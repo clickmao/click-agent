@@ -12,6 +12,7 @@ namespace agent.host;
 ///   agenthost                 → 交互 REPL (任务执行步骤明细, /status /plan /stop 可查询/控制)
 ///   agenthost -q "问题"       → 单条问答
 ///   agenthost --log run.log   → 任务输出日志保存为 markdown 文件
+///   agenthost --output-mode text → 纯文本模式 (默认 markdown; 控制台均着色)
 ///   agenthost --smoke         → AOT 冒烟 (原 Program 行为保留)
 /// 返回内容经区段插件处理 (html 标记/代码审查) 后输出; markdown 渲染重点。
 /// </summary>
@@ -25,12 +26,17 @@ internal class Program
         string? logPath = null;
         string? oneShot = null;
         var smoke = args.Length == 0 || args.Contains("--smoke");
+        var outputMode = agent.output.OutputMode.Markdown;
         for (var i = 0; i < args.Length; i++)
         {
             if (args[i] == "--log" && i + 1 < args.Length)
                 logPath = args[++i];
             else if (args[i] == "-q" && i + 1 < args.Length)
                 oneShot = args[++i];
+            else if (args[i] == "--output-mode" && i + 1 < args.Length)
+                outputMode = args[++i] == "text"
+                    ? agent.output.OutputMode.PlainText
+                    : agent.output.OutputMode.Markdown;
         }
 
         var services = new ServiceCollection();
@@ -50,13 +56,14 @@ internal class Program
         if (smoke && oneShot == null)
             return await RunSmokeAsync(provider, entryAgent);
 
-        return await RunCliAsync(provider, entryAgent, sink, oneShot, logPath);
+        return await RunCliAsync(provider, entryAgent, sink, oneShot, logPath, outputMode);
     }
 
     // ─────────────────────────── CLI REPL ───────────────────────────
 
     private static async Task<int> RunCliAsync(
-        ServiceProvider provider, IAgent agent, IOutputSink sink, string? oneShot, string? logPath)
+        ServiceProvider provider, IAgent agent, IOutputSink sink, string? oneShot, string? logPath,
+        agent.output.OutputMode mode = agent.output.OutputMode.Markdown)
     {
         var sessionMgr = provider.GetRequiredService<ISessionManager>();
         var session = new CliSession(sink, "./data");

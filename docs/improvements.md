@@ -104,7 +104,7 @@ agent.sln 0 错 0 警; 测试 143/143 (+13); AOT 宿主 E2E 全绿 0 IL/TR 警
 2. **_taskPlanner 注入但从未调用**: V2 持有字段但 OnProcessAsync 零引用 (注入即用的假象)
 3. planner.DecomposeIntoSubTasks 是模板式 (按动词大类给固定 4 步), 非真拆解
 
-### 🔧 实现: agent/intent/intentdecomposer.cs
+### 🔧 实现: agent/intent/IntentDecomposer.cs
 - 连接词切分: 19 个中英文顺序连接词 (首先/然后/接着/.../then/after that/also)
 - **单字连接词安全切分**: "先/再/还/并" 前后必须贴近非汉字才切 —
   "再次检查" 不被 "再" 误切, "先搜索" 不被 "先" 误切
@@ -521,3 +521,60 @@ NullLLMCaller 路径 (无 Key) 期望 Success=false 而非异常 — 结果暴�
 
 ### 验证
 - `--no-incremental` 0 错 0 警; 173/173 Passed; AOT publish 0 IL/TR 警; 冒烟 11/11 DI + 多轮会话绿
+
+## v7.13 (2026-09-06) — 命名规范化 + 问询协议升级 + 偏好复用 + 双模式输出 + Vulkan 内置
+
+### 命名规范化 (用户钦定)
+- 全量 100 个 .cs 类文件改名 PascalCase (`intentdecomposer.cs` → `IntentDecomposer.cs` 等), git mv 保留历史
+- 文件夹与命名空间保持全小写 (agent.registry / agent.core.userinteraction) — 小写命名空间 + PascalCase 类型
+- agent.sln 修复 agent.core 项目声明行语法错误; 新增 agent.output 项目入 sln
+
+### 问询数据类型 + 批量问询 (用户钦定: "数据要求用枚举固定")
+- `PromptDataType` 枚举 (18 类): String/Number/Integer/Date/Time/DateTime/Choice/MultiChoice/Boolean/
+  Path/Url/Email/CodeExpression/Multiline/IpAddress/Port/KeyValue — 覆盖绝大部分问询面
+- `PromptDataValidator` 纯规则校验器: 中文日期 (2026年9月6日)/千分位数字/中英文布尔/选项白名单 全支持,
+  校验+规范化微秒级 (不调 LLM, 保证响应速度); 返回 (合法, 规范化值, 错误说明)
+- `ClarificationBatch` 批量问询: 按 GroupId/节点分组一次给出全部问题 (不再一条一条问),
+  校验失败只重问出错条目 (maxRetries), 重试耗尽诚实报错不伪造
+
+### 子任务置信度 + 证据补充 + 疑问上限 (用户钦定)
+- IntentDecomposer 纯规则置信度评估 (AssessConfidence): 指代词/意图弱命中/子句过短/疑似省略依赖/缺参数
+  五类扣分信号 (ConfidenceFlags), 拆解路径零 LLM 调用 — 响应速度不变
+- `EvidenceGate`: 置信度低于阈值 (0.60) 的子任务向发起者索要证据补充; 问题按优先级排队
+  (MissingParameter > AmbiguousReference > 弱意图 > 疑似依赖); **最大疑问数量限制** (默认 3):
+  超限子任务不问, 走 SuggestedValues 兜底并记入 DroppedForLimit — 不静默吞掉
+
+### 问询偏好库 (用户钦定: "记录偏好而非凭据/本次输入")
+- `ClarificationFingerprint`: 问询指纹 = 意图语义类别 + 数据类型 (刻意剔除具体值/数字/引号内容 —
+  指纹是"问的什么事", 不是"问了什么值")
+- `ClarificationPreferenceStore`: 只记规范化模式特征 (path→absolute, bool→prefer-yes, number→量级,
+  choice→选项偏好序), **绝不存原始答案**; 凭据类 (Kind=ApiKey) 双重拒收 (RecordAnswer 拒收 + ApplyTo 跳过)
+- 复用路径: 同类新问题 → ApplyTo 注入偏好建议/重排选项序 (用户上次选过的排最前);
+  落盘 clarification_preferences.json (source-gen JSON, AOT 安全, 跨会话)
+
+### 双模式输出 + Spectre.Console 美化 (用户钦定)
+- `AgentOutputMessage` 底层结构化格式: 一切返回内容 (LLM 回答/问询/日志/审批/错误/状态) 统一
+  {Kind, Mode, Content, Segments, Source, Timestamp} — 内部管道只流转这一种格式
+- `OutputMode` 双模式: **Markdown** (全人性化格式) / **PlainText** (去格式平铺); `OutputFormatter`
+  纯规则双向转换 (围栏/标题/粗斜体/表格线/行内代码剥离)
+- `SpectreOutputRenderer` (第三方库 Spectre.Console 0.57.2, 用户钦定): 按消息种类着色渲染 —
+  回答区段/问询黄框/审批红标/日志灰阶; 非 TTY 自动降级无 ANSI
+- CLI `--output-mode text|markdown` 参数接线; agent.output 独立项目 (Spectre 依赖隔离在输出层)
+
+### agent 间问询静默 (用户钦定: "向其他 agent 问询应该是静默状态")
+- `IUserPromptService.SilentInterAgent` 开关: 开启后 MainAgentAllowed 问询不打印控制台,
+  主 agent 空值占位代答 (不编造值, 走缺参降级) + prompt_audit.jsonl 审计 (answered_by=MainAgentSilent)
+- 凭据/敏感项不受开关影响 — 永远问真人 (fail-closed 语义不变)
+
+### LLamaSharp Vulkan 模式内置 (用户钦定: "复用 Silk.NET 的 vulkan dll")
+- `VulkanSupport`: dlopen 探测系统 vulkan loader (libvulkan.so.1 / vulkan-1.dll — 与 Silk.NET.Vulkan
+  P/Invoke 同一动态库); `LlamaBackendMode` (Auto/Cpu/Vulkan) + `NativeLibraryConfig.LLama.WithVulkan(true)`
+  在 LoadFromFile 前统一配置; Vulkan 强制模式 loader 缺失时 InvalidOperationException (不静默滑回 CPU)
+- LLamaSharp.Backend.Vulkan + Vulkan.Linux 包入 csproj (libggml-vulkan.so 产物);
+  LocalLlamaCaller 接入 backendMode/gpuLayers 参数 (vulkan 模式 GPU offload 层数可配)
+
+### 验证基线 (v7.13)
+- `--no-incremental` 全量编译: **0 错 0 警**
+- 测试: **202/202** (v7.12 173 → +29: Validator 12/置信度+门槛 4/偏好库 4/双模式输出 5/批量分组 2/指纹隔离 2)
+- AOT publish (linux-x64): **0 IL / 0 TR 警告**; 冒烟 DI 11/11 + Ready
+- CLI 实测: `--output-mode text -q "/status"` 绿

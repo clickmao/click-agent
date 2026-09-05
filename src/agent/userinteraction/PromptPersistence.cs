@@ -92,6 +92,10 @@ public sealed class ConsoleUserPromptService : IUserPromptService
 
     public SupervisionLevel Supervision { get; }
 
+    /// <summary>agent 间问询静默 (v7.13, 用户钦定): 开启后 MainAgentAllowed 的问询不打印到控制台,
+    /// 由主 agent 静默代答并审计 — 面向 subagent 编排场景, 用户界面零打扰。凭据类仍强制问真人。</summary>
+    public bool SilentInterAgent { get; set; }
+
     public ConsoleUserPromptService(
         ILogger<ConsoleUserPromptService> logger,
         string dataDir,
@@ -116,6 +120,24 @@ public sealed class ConsoleUserPromptService : IUserPromptService
         // 陷阱的防御: 宁可多问真人, 不可让 agent 编造 Key)。
         if (request.Origin.Authority != AnswerAuthority.RealUserOnly)
             request.Origin.Authority = AnswerAuthority.RealUserOnly;
+
+        // v7.13 静默代答: agent 间问询 (非敏感项) 不打扰用户 — 主 agent 给占位确认并审计。
+        // 含敏感项 (Sensitive) 时静默不可用, 必须真人。
+        if (SilentInterAgent && !request.Items.Any(it => it.Sensitive))
+        {
+            var silentAnswers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var item in request.Items)
+                silentAnswers[item.Key] = string.Empty; // 空串=主 agent 无依据, 不编造值 (走缺参降级, 不伪造)
+            PromptPersistence.AppendAudit(_dataDir, new PromptAuditEntry
+            {
+                Kind = $"credential:{request.Kind}",
+                Service = request.ServiceName,
+                AnsweredBy = "MainAgentSilent",
+                Approved = true,
+                Detail = $"agent 间静默问询: {silentAnswers.Count} 项置空 (不编造, 走降级)",
+            });
+            return Task.FromResult<Dictionary<string, string>?>(silentAnswers);
+        }
 
         Console.WriteLine();
         Console.WriteLine("┌── 需要你的输入 ──────────────────────────────");

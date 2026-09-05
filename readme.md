@@ -1,8 +1,19 @@
 # click-agent
 
-基于微软 MAF (Microsoft Agent Framework) 与 WebReaper 的工业级 C# 智能体框架。net10.0 / NativeAOT 零警告 / 173 项测试全绿。
+基于微软 MAF (Microsoft Agent Framework) 与 WebReaper 的工业级 C# 智能体框架。net10.0 / NativeAOT 零警告 / 202 项测试全绿。
 
 ## 核心特性
+
+### 💬 智能问询 (v7.13)
+- 18 类问询数据类型枚举 + 纯规则校验 (数字/日期/选单/路径…)
+- 批量问询: 按组一次问全, 不一条一条打断
+- 子任务置信度 + 证据补充 + 最大疑问数限制
+- 问询偏好库: 记录**偏好模式** (非凭据/非原值) 跨会话复用
+
+### 🎨 双模式输出 (v7.13)
+- Markdown / 纯文本双模式, Spectre.Console 控制台着色美化
+- 一切返回内容 (回答/问询/日志/审批) 统一底层结构化格式
+- agent 间问询静默模式 (用户界面零打扰)
 
 ### 🎯 意图分析与子任务拆解
 - **IntentDecomposer**: 复合句按连接词切分为子任务序列，四级关系标注——`Sequential`（然后/接着，保执行序）、`Parallel`（同时/以及，同层并行）、`DependsOnOutput`（基于/根据，数据依赖）；依赖词本身就是切分点，句中误切由边界保护拦截

@@ -221,4 +221,10 @@ public interface IUserPromptService
 
     /// <summary>当前托管级别 (来自配置 Agent:Supervision)</summary>
     SupervisionLevel Supervision { get; }
+
+    /// <summary>
+    /// agent 间问询静默 (v7.13): true 时 MainAgentAllowed 的问询不打印到控制台,
+    /// 由主 agent 静默代答 (空值占位 + 审计), 用户界面零打扰。凭据/敏感项不受此开关影响。
+    /// </summary>
+    bool SilentInterAgent { get; set; }
 }

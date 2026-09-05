@@ -20,10 +20,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.8" />
+    <!-- v7.13: 控制台美化 (用户钦定第三方库) — Spectre.Console 官方支持 NativeAOT/trimming -->
+    <PackageReference Include="Spectre.Console" Version="0.57.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="../agent/agent.csproj" />
+    <ProjectReference Include="..\agent.output\agent.output.csproj" />
   </ItemGroup>
 
 </Project>

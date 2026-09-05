@@ -31,11 +31,14 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.8" />
     <!-- WebReaper 库直引 (net10.0 对齐): 搜索结果全文增强引擎 (AOT clean, 上游 CLI 同链路自证) -->
     <PackageReference Include="WebReaper" Version="11.3.1" />
-    <!-- 本地推理 (v7.12): LLamaSharp (llama.cpp 绑定) + CPU 后端 (本机可用, 无 vulkan 内嵌产物)。
-         Vulkan loader 统一策略: 不引 LLamaSharp.Backend.Vulkan (空壳零产物), 显式引 Silk.NET.Vulkan —
-         libggml-vulkan.so 的 DT_NEEDED=libvulkan.so.1 与 Silk.NET 加载的 loader 是同一动态库 (readelf 已核)。 -->
+    <!-- 本地推理 (v7.12→v7.13 内置 vulkan 模式):
+         LLamaSharp 绑定 + CPU 后端 + Vulkan 后端产物 (libggml-vulkan.so)。
+         Vulkan loader 复用策略 (用户钦定): libggml-vulkan.so 的 DT_NEEDED=libvulkan.so.1,
+         Silk.NET.Vulkan P/Invoke 的也是同一系统 loader — 系统装一份 loader 全局共用,
+         运行时由 VulkanSupport.Configure 统一启用 (探测 loader → WithVulkan(true)), 无第二副本。 -->
     <PackageReference Include="LLamaSharp" Version="0.27.0" />
     <PackageReference Include="LLamaSharp.Backend.Cpu" Version="0.27.0" />
+    <PackageReference Include="LLamaSharp.Backend.Vulkan" Version="0.27.0" />
     <PackageReference Include="Silk.NET.Vulkan" Version="2.23.0" />
     <!-- Serialization: System.Text.Json 内置于 net10.0 (AOT source-gen, 零反射) -->
     <!-- Regex: GeneratedRegex source generator (AOT 零反射) -->

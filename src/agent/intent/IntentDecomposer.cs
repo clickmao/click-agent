@@ -29,8 +29,31 @@ public static class IntentDecomposer
         DependsOnOutput,
     }
 
-    /// <summary>子任务: 原文片段 + 独立意图 + 关系标记</summary>
-    public sealed record SubTask(string Text, string Intent, bool DependsOnPrevious, int Order, TaskRelation Relation = TaskRelation.None);
+    /// <summary>子任务: 原文片段 + 独立意图 + 关系标记 + 规则置信度</summary>
+    public sealed record SubTask(string Text, string Intent, bool DependsOnPrevious, int Order, TaskRelation Relation = TaskRelation.None,
+        double Confidence = 1.0, ConfidenceFlags Flags = ConfidenceFlags.None);
+
+    /// <summary>置信度扣分项 (可组合): 哪些信号导致不确定 — 证据补充请求的依据</summary>
+    [Flags]
+    public enum ConfidenceFlags
+    {
+        None = 0,
+
+        /// <summary>意图词命中弱 (仅兜底规则命中, 无强特征)</summary>
+        WeakIntent = 1,
+
+        /// <summary>数据边界不清 (指代词/省略宾语: "这个/它/上面的文件")</summary>
+        AmbiguousReference = 2,
+
+        /// <summary>必需参数缺失 (意图要求的参数在子句中找不到)</summary>
+        MissingParameter = 4,
+
+        /// <summary>子句过短 (信息量不足, 如 "处理一下")</summary>
+        TooVague = 8,
+
+        /// <summary>与前序子任务存在未指明的数据关系 (疑似省略 "基于结果")</summary>
+        SuspiciousDependency = 16,
+    }
 
     /// <summary>
     /// 顺序连接词 (中英文)。切分后丢弃连接词本身, 保留两侧子句。
@@ -82,7 +105,8 @@ public static class IntentDecomposer
                 : TaskRelation.Parallel;
 
             var intent = IntentRecognizer.Recognize(clause);
-            tasks.Add(new SubTask(clause, intent, relation == TaskRelation.DependsOnOutput, tasks.Count, relation));
+            var (confidence, flags) = AssessConfidence(clause, intent, i, tasks);
+            tasks.Add(new SubTask(clause, intent, relation == TaskRelation.DependsOnOutput, tasks.Count, relation, confidence, flags));
         }
 
         if (tasks.Count == 0)
@@ -106,6 +130,79 @@ public static class IntentDecomposer
     /// <summary>主意图 = 首个子任务的意图 (向后兼容: 模板选择仍由首意图驱动)</summary>
     public static string PrimaryIntent(IReadOnlyList<SubTask> tasks) =>
         tasks.Count > 0 ? tasks[0].Intent : IntentRecognizer.Intents.General;
+
+    /// <summary>
+    /// 指代词/省略宾语 — 数据边界不清的信号 ("这个/它/该文件/上面的")。
+    /// 这类子任务的输入对象不明确 → 需要向发起者索要证据补充。
+    /// </summary>
+    private static readonly string[] AmbiguousReferences =
+    [
+        "这个", "那个", "它", "它们", "该文件", "此文件", "上面的文件", "那个文件",
+        "这个数据", "该数据", "上述", "之前那个", "刚才那个", "it", "this", "that",
+    ];
+
+    /// <summary>意图强特征词: 命中这些说明意图判定有据 (抽样核对 IntentRecognizer 词表核心)</summary>
+    private static readonly string[] StrongIntentMarkers =
+    [
+        "搜索", "查", "写", "读", "删除", "创建", "修改", "执行", "翻译", "总结", "分析",
+        "search", "write", "read", "delete", "create", "run", "translate", "summarize",
+    ];
+
+    /// <summary>
+    /// 置信度评估 (纯规则): 从 1.0 起, 按扣分项递减。
+    /// 设计约束: 不调 LLM — 拆解是每次输入的必经路径, 必须微秒级。
+    /// </summary>
+    private static (double Confidence, ConfidenceFlags Flags) AssessConfidence(
+        string clause, string intent, int index, List<SubTask> prior)
+    {
+        var flags = ConfidenceFlags.None;
+        double confidence = 1.0;
+
+        // ① 子句过短 (<4 字符且非纯参数): 信息量不足
+        if (clause.Trim().Length < 4)
+        {
+            flags |= ConfidenceFlags.TooVague;
+            confidence -= 0.35;
+        }
+
+        // ② 指代词: 数据边界不清
+        var ambig = AmbiguousReferences.FirstOrDefault(r =>
+            clause.Contains(r, StringComparison.OrdinalIgnoreCase));
+        if (ambig != null)
+        {
+            flags |= ConfidenceFlags.AmbiguousReference;
+            confidence -= 0.25;
+        }
+
+        // ③ 意图弱命中: general 兜底且无强特征词
+        if (intent == IntentRecognizer.Intents.General &&
+            !StrongIntentMarkers.Any(m => clause.Contains(m, StringComparison.OrdinalIgnoreCase)))
+        {
+            flags |= ConfidenceFlags.WeakIntent;
+            confidence -= 0.20;
+        }
+
+        // ④ 疑似省略依赖: 非首任务、无显式依赖标记, 但含 "结果/输出/内容" 等产物词
+        if (index > 0 && relation(prior, index) != TaskRelation.DependsOnOutput &&
+            (clause.Contains("结果") || clause.Contains("输出") || clause.Contains("返回的内容")))
+        {
+            flags |= ConfidenceFlags.SuspiciousDependency;
+            confidence -= 0.15;
+        }
+
+        // ⑤ 必需参数缺失: 文件操作无路径对象, 代码生成无语言/目标 (轻量启发)
+        if (intent == IntentRecognizer.Intents.FileOperation &&
+            !clause.Contains("文件") && !clause.Contains("路径") && !clause.Contains("/"))
+        {
+            flags |= ConfidenceFlags.MissingParameter;
+            confidence -= 0.20;
+        }
+
+        return (Math.Max(0.0, confidence), flags);
+    }
+
+    private static TaskRelation relation(List<SubTask> tasks, int index) =>
+        index > 0 && tasks.Count >= index ? tasks[index - 1].Relation : TaskRelation.None;
 
     /// <summary>连接词切分: 返回 (子句, 连接词类型 "seq"/"par"/"") 序列 (首段 kind="" 无连接词)</summary>
     private static List<(string Clause, string Kind)> SplitClauses(string content)

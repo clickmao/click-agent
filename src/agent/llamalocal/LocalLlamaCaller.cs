@@ -19,6 +19,8 @@ public sealed class LocalLlamaCaller : ILLMCaller, IDisposable
     private readonly ILogger<LocalLlamaCaller> _logger;
     private readonly string _modelPath;
     private readonly uint _contextSize;
+    private readonly LlamaBackendMode _backendMode;
+    private readonly uint _gpuLayers;
     private readonly object _lock = new();
 
     private LLamaWeights? _weights;
@@ -27,11 +29,15 @@ public sealed class LocalLlamaCaller : ILLMCaller, IDisposable
 
     public string ModelName => $"llama.cpp:{Path.GetFileName(_modelPath)}";
 
-    public LocalLlamaCaller(ILogger<LocalLlamaCaller> logger, string modelPath, uint contextSize = 2048)
+    /// <summary>backendMode: Auto (探测 vulkan loader) / Cpu / Vulkan; gpuLayers: offload 到 GPU 的层数 (vulkan 模式 &gt;0 加速)</summary>
+    public LocalLlamaCaller(ILogger<LocalLlamaCaller> logger, string modelPath, uint contextSize = 2048,
+        LlamaBackendMode backendMode = LlamaBackendMode.Auto, uint gpuLayers = 0)
     {
         _logger = logger;
         _modelPath = modelPath;
         _contextSize = contextSize;
+        _backendMode = backendMode;
+        _gpuLayers = gpuLayers;
     }
 
     /// <summary>模型文件是否就绪 (CLI /status 展示)</summary>
@@ -100,11 +106,14 @@ public sealed class LocalLlamaCaller : ILLMCaller, IDisposable
             if (_initialized)
                 return;
 
+            // v7.13: 原生后端配置必须在 LoadFromFile 之前 — vulkan 模式复用 Silk.NET 同款系统 loader
+            var effective = VulkanSupport.Configure(_backendMode, _logger);
+
             var parameters = new ModelParams(_modelPath)
             {
                 ContextSize = _contextSize,
                 Threads = Math.Max(2, Environment.ProcessorCount / 2),
-                GpuLayerCount = 0, // CPU 后端; vulkan 后端部署时由用户环境决定
+                GpuLayerCount = effective == LlamaBackendMode.Vulkan ? (int)_gpuLayers : 0,
             };
             _weights = LLamaWeights.LoadFromFile(parameters);
             var context = _weights.CreateContext(parameters);
