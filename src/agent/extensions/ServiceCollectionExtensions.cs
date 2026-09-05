@@ -17,7 +17,6 @@ using agent.codegen;
 using agent.workspace;
 using agent.vectormemory;
 using agent.recovery;
-using agent.planner;
 using agent.keywordannotation;
 using agent.tendency;
 
@@ -165,12 +164,9 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IRecoverySystem, RecoverySystem>();
         
         // ✅ 任务规划
-        services.AddSingleton<ITaskPlanner, TaskPlanner>();
         services.AddSingleton<ITaskPipeline, TaskPipeline>();
         
         // ✅ 交互管理
-        services.AddSingleton<IInteractionManager, InteractionManager>();
-        services.AddSingleton<IFeedbackStore, FeedbackStore>();
         
         // ✅ 记忆系统
         services.AddSingleton<IVectorMemoryRecall, VectorMemoryRecall>();
@@ -210,7 +206,6 @@ public static class ServiceCollectionExtensions
             return sp.GetRequiredService<MainAgent>();
         });
         // 同时保留 IAgent 的默认解析（无 LLM 配置时也可手动获取 V2）
-        services.AddSingleton<IndustrialAgent>();
         
         return services;
     }

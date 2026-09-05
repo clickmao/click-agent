@@ -235,7 +235,6 @@ internal class Program
             typeof(agent.memory.IAgentMemoryStore),
             typeof(agent.rag.IRAGRecall),
             typeof(agent.workspace.IWorkspace),
-            typeof(agent.planner.ITaskPlanner),
             typeof(agent.recovery.IRecoverySystem),
             typeof(agent.vectormemory.IVectorMemoryRecall),
             typeof(agent.templates.ITemplateStore),

@@ -2,7 +2,6 @@ using Microsoft.Extensions.Logging;
 using agent.core;
 using agent.workspace;
 using agent.codegen;
-using agent.planner;
 using agent.recovery;
 using agent.vectormemory;
 using agent.memory;
@@ -15,6 +14,7 @@ using agent.context;
 using agent.rag;
 using agent.tendency;
 using agent.tokencompression;
+using agent.registry;
 
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -132,6 +132,23 @@ public class IndustrialAgentV2 : AgentBase
         
         try
         {
+            // 0.-1 /plan 计划查询 (v7.15 T.4-4): 输出最近一次影子计划 TaskPlanRun JSON (面板全 JSON 惯例)
+            if (message.Content.Trim().Equals("/plan", StringComparison.OrdinalIgnoreCase))
+            {
+                response.Success = true;
+                if (_lastShadowRun is null)
+                {
+                    response.Content = "{\"plan\": null, \"hint\": \"\u5c1a\u65e0\u8ba1\u5212\u6f14\u7ec3\u8bb0\u5f55 \u2014 \u53d1\u9001\u4e00\u6761\u591a\u5b50\u4efb\u52a1\u6d88\u606f\u540e\u518d\u67e5\"}";
+                }
+                else
+                {
+                    response.Content = TaskPlanJsonContext.ToJson(_lastShadowRun);
+                }
+                response.Data = new Dictionary<string, object> { { "localCommand", "plan" } };
+                response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
+                return response;
+            }
+
             // 0. 非 LLM 本地强制指令拦截 (v7.11): /stop /continue 等, 不进意图识别/LLM
             var localCommand = agent.registry.LocalCommandRouter.TryRoute(message.Content);
             if (localCommand.Handled)
@@ -165,6 +182,9 @@ public class IndustrialAgentV2 : AgentBase
                 message.Content = $"{message.Content}\n[用户补充说明]\n{clarifiedAddendum}";
                 _logger.LogInformation("EvidenceGate 补充了 {Count} 字用户说明", clarifiedAddendum.Length);
             }
+
+            // 1.6 影子计划演练 (v7.15 归拢 T.2-4): Build+Execute 调度语义, 只记录不采纳, 不阻断主链
+            _lastShadowRun = await RunShadowPlanAsync(message.Content, subTasks, ct);
 
             // 2. 多数据源上下文组装（失败时降级为空上下文，不阻断对话）
             var contextResult = await AssembleContextAsync(message, intent, subTasks, ct);
@@ -277,6 +297,45 @@ public class IndustrialAgentV2 : AgentBase
     /// 低置信子任务 (置信度<阈值 或 MissingParameter) 生成疑问组; 有问询服务时 REPL 弹批量问题,
     /// 用户答案 (模式化, 绝不落凭据) 记入偏好库并拼为补充说明; 无服务/无疑问/问询失败 → 原样放行 (不阻断)。
     /// </summary>
+
+    /// <summary>
+    /// 1.6 影子计划 (v7.15 归拢接线 T.2-4 第一步):
+    /// TaskPlanBuilder.Build + TaskPlanExecutor 以哑 nodeRunner 演练计划调度语义
+    /// (依赖拓扑/敏感审批/取消/问询需求), 只记录不采纳 — 主链行为不变。
+    /// 演练结果: 日志摘要 (节点数/终态); /plan JSON 可读 TaskPlanRun。
+    /// 影子一致性判据 (T.4-2 定案): 本阶段只验证"计划结构可执行+问询需求已知",
+    /// 节点输出对比在执行器并发化 (plan_executor_parallel) 接真 nodeRunner 后进行。
+    /// </summary>
+    private async Task<TaskPlanRun?> RunShadowPlanAsync(
+        string sourceText, IReadOnlyList<IntentDecomposer.SubTask> subTasks, CancellationToken ct)
+    {
+        try
+        {
+            var plan = TaskPlanBuilder.Build(sourceText, subTasks);
+            var executor = new TaskPlanExecutor(
+                // 哑执行体: 影子不产真输出, 节点标 Skipped (只演练调度语义, 不烧 LLM)
+                (node, _) => Task.FromResult(new NodeExecutionResult
+                {
+                    NodeId = node.Id, FinalState = PlanNodeState.Skipped, Output = null
+                }));
+            var run = await executor.ExecuteAsync(plan, pollInjections: null, ct);
+            _logger.LogInformation(
+                "Shadow plan {PlanId}: {Nodes} nodes → {State}; awaiting={Awaiting}, dropped={Dropped}",
+                plan.PlanId, plan.Nodes.Count, run.State,
+                run.NodeStates.Values.Count(s => s == PlanNodeState.AwaitingClarification),
+                run.DroppedForEvidenceLimit.Count);
+            return run;
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            // 影子失败不影响主链 (演练性质)
+            _logger.LogWarning(ex, "Shadow plan failed (non-fatal)");
+            return null;
+        }
+    }
+
+    private TaskPlanRun? _lastShadowRun;
+
     private async Task<string> RunEvidenceGateAsync(
         Message message, IReadOnlyList<IntentDecomposer.SubTask> subTasks, CancellationToken ct)
     {

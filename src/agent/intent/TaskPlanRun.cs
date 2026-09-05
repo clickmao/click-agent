@@ -42,9 +42,6 @@ public enum TaskPlanRunState
     /// <summary>敏感节点等待用户审批 — 全计划暂停 (不可跳过继续)</summary>
     PausedForApproval,
 
-    /// <summary>等待用户澄清参数</summary>
-    WaitingClarification,
-
     /// <summary>全部节点终态 (Completed/Failed/Skipped)</summary>
     Finished,
 
