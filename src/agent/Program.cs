@@ -104,33 +104,8 @@ class Program
         });
         
         // ✅ 添加 OpenAI LLM Caller (v7.15: Key 不落配置, 只存环境变量名 — openai.api_key_env)
-        // v7.15: 模型队列路由器接管 ILLMCaller (主/备切换 + 手动 /model + 意图选模 + /balance)
-        // key 职责下沉到目录 (models.yaml api_key_env 指向的环境变量), DI 层不再预读 key
-        services.AddSingleton(sp =>
-        {
-            var catalog = agent.modelqueue.ModelCatalog.Load(snapshot);
-            return agent.modelqueue.ModelCatalogLoadResult.Wrap(catalog, snapshot);
-        });
-        services.AddSingleton<agent.modelqueue.ModelQueueRouter>(sp =>
-        {
-            var loader = sp.GetRequiredService<agent.modelqueue.ModelCatalogLoadResult>();
-            return new agent.modelqueue.ModelQueueRouter(
-                loader.Catalog,
-                sp.GetRequiredService<IHttpClientFactory>(),
-                sp.GetRequiredService<ILogger<IndustrialAgentV2>>());
-        });
-        services.AddSingleton<agent.modelqueue.BalanceQueryService>(sp =>
-            new agent.modelqueue.BalanceQueryService(
-                sp.GetRequiredService<agent.modelqueue.ModelCatalogLoadResult>().Catalog,
-                sp.GetRequiredService<IHttpClientFactory>()));
-        services.AddSingleton<agent.modelqueue.ModelVerifyService>(sp =>
-            new agent.modelqueue.ModelVerifyService(
-                sp.GetRequiredService<agent.modelqueue.ModelCatalogLoadResult>().Catalog,
-                sp.GetRequiredService<IHttpClientFactory>()));
-        // ILLMCaller = 队列适配器 (V2/隔离任务全走队列; 协议转换 router↔agent)
-        services.AddSingleton<ModelQueueAdapter>();
-        services.AddSingleton<ILLMCaller>(sp => sp.GetRequiredService<ModelQueueAdapter>());
-        services.AddSingleton<agent.subagent.ILLMCallerForIsolated>(sp => sp.GetRequiredService<ModelQueueAdapter>());
+// 模型队列 DI 见 extensions/ServiceCollectionExtensions.cs (v7.15 单一事实源)
+
         
         // ✅ HTTP Client 配置
         services.AddHttpClient("openai", client =>

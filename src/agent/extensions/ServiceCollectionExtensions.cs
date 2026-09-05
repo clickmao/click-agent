@@ -181,17 +181,27 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IFeedbackPersistence, FeedbackPersistence>();
         
         // 主Agent: IndustrialAgentV2 是完整管线（意图识别→多源上下文组装→PromptBuilder→LLM→记忆/会话存储）
-        // LLM 调用器: 配置了 Key 用真实实现, 否则 NullLLMCaller (返回明确错误, 管线仍可构造)
-        var apiKey = Environment.GetEnvironmentVariable("AGENT_OPENAI_KEY");
-        if (!string.IsNullOrWhiteSpace(apiKey))
-        {
-            services.AddSingleton<ILLMCaller>(sp => new OpenAILLMCaller(
-                sp.GetRequiredService<HttpClient>(), apiKey));
-        }
-        else
-        {
-            services.AddSingleton<ILLMCaller, NullLLMCaller>();
-        }
+        // LLM 调用器: v7.15 模型队列接管 (目录 config/base/models.yaml — 主备切换/意图选模/手动覆盖)
+        services.AddSingleton(sp =>
+            agent.modelqueue.ModelCatalog.Load(sp.GetRequiredService<agent.config.ConfigSnapshot>()));
+        services.AddSingleton(sp => new agent.modelqueue.ModelQueueRouter(
+            sp.GetRequiredService<agent.modelqueue.ModelCatalog>(),
+            sp.GetRequiredService<IHttpClientFactory>(),
+            sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<IndustrialAgentV2>>()));
+        services.AddSingleton<ModelQueueAdapter>();
+        services.AddSingleton<ILLMCaller>(sp => sp.GetRequiredService<ModelQueueAdapter>());
+        services.AddSingleton<agent.subagent.ILLMCallerForIsolated>(sp => sp.GetRequiredService<ModelQueueAdapter>());
+        services.AddSingleton(sp => new agent.modelqueue.BalanceQueryService(
+            sp.GetRequiredService<agent.modelqueue.ModelCatalog>(),
+            sp.GetRequiredService<IHttpClientFactory>()));
+        services.AddSingleton(sp => new agent.modelqueue.ModelVerifyService(
+            sp.GetRequiredService<agent.modelqueue.ModelCatalog>(),
+            sp.GetRequiredService<IHttpClientFactory>()));
+
+        // v7.15 日志四通道: LogRouter (flags 默认全开 — config/base/logging.yaml 分层可覆盖)
+        services.AddSingleton(sp => new agent.logging.MemoryLogBuffer(2000));
+        services.AddSingleton(sp => new agent.logging.LogRouter(
+            agent.logging.LogFlags.All, sp.GetRequiredService<agent.logging.MemoryLogBuffer>()));
 
         // 优先注册 V2；MainAgent 保留为简单回显的 fallback
         services.AddSingleton<IndustrialAgentV2>();

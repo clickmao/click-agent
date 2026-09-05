@@ -27,6 +27,7 @@ public static class LocalCommandRouter
     private static readonly HashSet<string> Known = new(StringComparer.OrdinalIgnoreCase)
     {
         "/model", "/balance",  // v7.15 模型队列: 切换/查询 (V2 拦截层特判, router 落地)
+        "/log",  // v7.15 日志四通道: /log dump → MemoryLogBuffer 存档文件 (JSON 行)
         "/stop", "/continue", "/pause", "/status", "/reset",
     };
 

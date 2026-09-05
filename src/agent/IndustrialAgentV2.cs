@@ -64,6 +64,7 @@ public class IndustrialAgentV2 : AgentBase
     private readonly agent.modelqueue.ModelQueueRouter? _modelRouter;
     private readonly agent.modelqueue.BalanceQueryService? _balanceService;
     private readonly agent.modelqueue.ModelVerifyService? _verifyService;
+    private readonly agent.logging.LogRouter? _logRouter;
     
     private readonly List<string> _capabilities = new();
     
@@ -94,12 +95,14 @@ public class IndustrialAgentV2 : AgentBase
         agent.subagent.IsolatedTaskRunner? isolatedTaskRunner = null,
         agent.modelqueue.ModelQueueRouter? modelRouter = null,
         agent.modelqueue.BalanceQueryService? balanceService = null,
-        agent.modelqueue.ModelVerifyService? verifyService = null) : base(logger, handlers)
+        agent.modelqueue.ModelVerifyService? verifyService = null,
+        agent.logging.LogRouter? logRouter = null) : base(logger, handlers)
     {
         _isolatedTaskRunner = isolatedTaskRunner;
         _modelRouter = modelRouter;
         _balanceService = balanceService;
         _verifyService = verifyService;
+        _logRouter = logRouter;
         _promptService = promptService;
         _workspace = workspace;
         _codeGenerator = codeGenerator;
@@ -163,6 +166,17 @@ public class IndustrialAgentV2 : AgentBase
 
             // 0.-2 /model 与 /balance (v7.15 模型队列): 切换/恢复自动 + 余额查询 + 目录校验 (全 JSON 输出)
             var trimmedCmd = message.Content.Trim();
+            if (trimmedCmd.Equals("/log", StringComparison.OrdinalIgnoreCase) ||
+                trimmedCmd.StartsWith("/log ", StringComparison.OrdinalIgnoreCase))
+            {
+                var logResp = HandleLogCommand(trimmedCmd, message.SessionId,
+                    (long)(DateTime.UtcNow - startTime).TotalMilliseconds);
+                if (logResp != null)
+                {
+                    return logResp;
+                }
+            }
+
             if (trimmedCmd.StartsWith("/model", StringComparison.OrdinalIgnoreCase) ||
                 trimmedCmd.Equals("/balance", StringComparison.OrdinalIgnoreCase))
             {
@@ -276,8 +290,19 @@ public class IndustrialAgentV2 : AgentBase
                 prompt.EstimatedTokens,
                 EstimateTokens(prompt.ContextPrompt));
             
+            // 4.5 思考流 (v7.15 L.2.2): 推理前发 page_switch + 构建摘要分片; LLM 返回后发 thinking_end
+            if (_logRouter != null)
+            {
+                _logRouter.Write("IndustrialAgentV2", "info", agent.logging.LogChannel.Thinking,
+                    $"prompt 构建完成: ~{prompt.EstimatedTokens} tokens, 意图={intent}",
+                    contentFingerprint: FnvHash(prompt.UserMessage), contentLength: prompt.UserMessage.Length);
+            }
+
             // 5. ✅ 调用 LLM（传入完整 Prompt）
             var llmResponse = await _llmCaller.CallAsync(prompt, ct);
+
+            // 5.1 思考结束指令 (L.2.2 指令 2 — 前端关闭思考步骤显示并折叠)
+            _logRouter?.EmitThinkingEnd(llmResponse.Content.Length);
             
             // 6. ✅ 将消息添加到会话
             await AddToSessionAsync(message, llmResponse, ct);
@@ -457,6 +482,47 @@ public class IndustrialAgentV2 : AgentBase
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// /log 指令 (v7.15 L.2.1): /log dump → MemoryLogBuffer 快照存档 JSON 行文件 (data/logs/log-{ts}.jsonl)。
+    /// </summary>
+    private AgentResponse? HandleLogCommand(string input, string sessionId, long elapsedMs)
+    {
+        var parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length < 2 || !parts[1].Equals("dump", StringComparison.OrdinalIgnoreCase))
+        {
+            return MakeJsonResponse(new ModelCommandPayload
+            {
+                Command = "log", Ok = false,
+                Error = "用法: /log dump (子命令: dump)",
+            }, elapsedMs);
+        }
+        if (_logRouter is null)
+        {
+            return MakeJsonResponse(new ModelCommandPayload
+            {
+                Command = "log", Ok = false, Error = "log_router_not_configured",
+            }, elapsedMs);
+        }
+        var entries = _logRouter.SnapshotEntries();
+        var dir = System.IO.Path.Combine(_dataStoragePath, "logs");
+        System.IO.Directory.CreateDirectory(dir);
+        var file = System.IO.Path.Combine(dir,
+            $"log-{DateTime.UtcNow:yyyyMMdd-HHmmss}.jsonl");
+        using (var writer = new System.IO.StreamWriter(file, append: false))
+        {
+            foreach (var e in entries)
+            {
+                writer.WriteLine(System.Text.Json.JsonSerializer.Serialize(
+                    e, agent.logging.LogJsonContext.Default.LogEntry));
+            }
+        }
+        return MakeJsonResponse(new ModelCommandPayload
+        {
+            Command = "log", Ok = true, Active = file,
+            Switches = entries.Count,
+        }, elapsedMs);
     }
 
     /// <summary>模型队列指令统一响应 (强类型 payload — source-gen 序列化, AOT 铁律)</summary>
@@ -746,6 +812,18 @@ public class IndustrialAgentV2 : AgentBase
         }
     }
     
+    /// <summary>FNV-1a 32bit 内容摘要 (日志只记哈希不记全文 — L.3 凭据/长度约束)</summary>
+    private static string FnvHash(string text)
+    {
+        uint hash = 2166136261;
+        foreach (var ch in text)
+        {
+            hash ^= ch;
+            hash *= 16777619;
+        }
+        return hash.ToString("x8", System.Globalization.CultureInfo.InvariantCulture);
+    }
+
     private int EstimateTokens(string text)
     {
         if (string.IsNullOrEmpty(text)) return 0;
