@@ -2,6 +2,8 @@
 
 ## 目录
 
+> v7.11-v7.12 新增章节: 13 Agent 注册与下轮预估 / 14 本地强制指令 / 15 区段标记 / 16 任务计划执行器 / 17 本地推理
+
 1. [核心接口](#1-核心接口)
 2. [记忆系统](#2-记忆系统)
 3. [模板系统](#3-模板系统)
@@ -795,6 +797,69 @@ public interface IMAFAgentHost
 
 ---
 
+## 13. Agent 注册与下轮预估 (v7.11)
+
+```csharp
+using agent.registry;
+
+// 持久化身份: 主/子 Agent UID + 从属关系, 落盘 DataStoragePath 下跨进程复用
+var registry = new AgentRegistry("./data");
+var child = registry.Register("search-worker", parentUid: registry.Main.Uid);
+var found = registry.Get(child.Uid);            // 按 UID 查
+var kids  = registry.ChildrenOf(registry.Main.Uid);
+
+// 下轮预估: 任务循环完成后 Save; 下次对话 Load 读回 → ToPromptHeader 注入 LLM 提示头
+ForecastRecord rec = NextTurnForecast.Save("./data", agentUid, taskText, intent);
+ForecastRecord? prev = NextTurnForecast.Load("./data", agentUid);
+string header = NextTurnForecast.ToPromptHeader(prev);
+```
+
+## 14. 本地强制指令 (v7.11)
+
+```csharp
+// 非 LLM 指令: 进入意图识别前拦截, 零 token
+LocalCommandResult r = LocalCommandRouter.TryRoute("/stop");
+// r.Handled=true, r.Command=LocalCommand.Stop (支持 /stop /continue /pause /status /reset)
+```
+
+## 15. 返回后处理区段标记 (v7.11)
+
+```csharp
+// 快速标记: fenced 区段识别 (```html → UI, 代码块 → 审查服务等), 路由插件化
+var router = new ResponseSegmentRouter(provider.GetServices<IResponseSegmentPlugin>());
+string processed = await router.ProcessAsync(llmOutput, ct);
+
+// 纯切分 (不路由): 
+List<ResponseSegment> segs = ResponseSegmenter.Segment(llmOutput);
+// Segment: Kind (PlainText/Code/Json/Fenced), Language, StartLine/EndLine
+```
+
+## 16. 任务计划执行器 (v7.11)
+
+```csharp
+// 逐子任务顺序调度: 依赖拓扑 + 敏感暂停 (PausedForApproval) + 注入指令合并
+var executor = new TaskPlanExecutor(async (node, ct) =>
+{
+    // 每个 PlanNode 的真实执行体
+    return new NodeExecutionResult { NodeId = node.Id, FinalState = PlanNodeState.Completed };
+});
+TaskPlanRun run = await executor.ExecuteAsync(plan);
+// run.State: Running / PausedForApproval / Cancelled / Finished
+// run.NodeStates / run.PendingSensitiveNodeId / run.PauseReason
+```
+
+## 17. 本地推理 (v7.12)
+
+```csharp
+using agent.llamalocal;
+
+// LLamaSharp 0.27.0 + Backend.CPU; 模型文件缺失时诚实报错
+var llama = new LocalLlamaCaller(logger, modelPath: "./models/qwen2.5-0.5b-q4.gguf");
+LLMResponse resp = await llama.CallAsync(prompt, ct);
+```
+
+---
+
 ## 依赖注入扩展
 
 ```csharp
@@ -805,9 +870,10 @@ services.AddAgentFramework();
 services.AddAgentFramework(options =>
 {
     options.MaxSubAgents = 8;
-    options.DefaultTokenBudget = 150000;
+    options.MaxTokenBudget = 150000;
     options.EnableMAF = true;
     options.EnableSearchCache = true;
+    options.DataStoragePath = "./data";
 });
 ```
 

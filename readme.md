@@ -1,232 +1,165 @@
-# AgentFramework
+# click-agent
 
-基于微软MAF (Microsoft Agent Framework) 和 WebReaper 的企业级智能Agent框架。
-
-## 项目概述
-
-AgentFramework 是一个模块化的、可扩展的智能Agent框架，集成了：
-- **微软MAF框架**: 作为核心Agent宿主，提供标准化的Agent生命周期管理
-- **WebReaper**: 作为内置网络搜索服务，提供实时信息检索能力
+基于微软 MAF (Microsoft Agent Framework) 与 WebReaper 的工业级 C# 智能体框架。net10.0 / NativeAOT 零警告 / 173 项测试全绿。
 
 ## 核心特性
 
-### 🎯 智能任务处理
-- **任务拆分**: 自动将复杂任务拆分为可管理的子任务
-- **SubAgent池**: 支持多Agent并行处理，提高效率
-- **任务边界评估**: 精确控制子任务的输入、输出和资源限制
+### 🎯 意图分析与子任务拆解
+- **IntentDecomposer**: 复合句按连接词切分为子任务序列，四级关系标注——`Sequential`（然后/接着，保执行序）、`Parallel`（同时/以及，同层并行）、`DependsOnOutput`（基于/根据，数据依赖）；依赖词本身就是切分点，句中误切由边界保护拦截
+- **19 个中英连接词**，英文按词边界匹配（`and` 不切 `android`），单字连接词前后贴非汉字才切（"再次检查"不误切）
 
-### 🧠 记忆系统
-- **长期记忆**: 持久化存储模板、示例、模式
-- **短期记忆**: 会话级临时数据
-- **智能摘要**: 自动压缩上下文，减少Token消耗
-- **多数据源上下文注入**: Memory + Session + Web + UserTendency 自动组装
+### 📋 任务计划图 (TaskPlan)
+- `TaskPlanBuilder` 将子任务拆解为依赖拓扑图（Level 分层 + ParallelGroup 并行组）
+- **UI JSON 契约**：节点含 `Text/Intent/DependsOn/Level/ParallelGroup/Parameters/Clarifications/IsExecutable`，source-gen 序列化（AOT 安全），可直接供外部 UI 绘制
+- 敏感意图（文件操作/git 操作）默认 `PausedForApproval`，全计划暂停等审批
+- 参数缺失生成 `Clarification` 问询节点，**参数无关节点不联动阻塞**
 
-### 📋 模板系统
-- **模板存储**: 正确用例、错误用例、模式定义
-- **数据召回**: 基于关键词和时间的数据检索
-- **趋势分析**: 分析用户偏好，个性化响应
+### 🔌 问询协议
+- `IUserPromptService` 统一问询：凭据请求（`CredentialRequestKind`）、审批请求、参数澄清
+- `AnswerAuthority` 权威分级：普通参数主 Agent 可代答，敏感操作必须真实用户（`RealUserOnly`）
+- 非交互环境（管道/CI）自动降级，诚实跳过不伪造
 
-### 🔍 搜索集成
-- **WebReaper集成**: 实时网络搜索
-- **内容提取**: 智能解析搜索结果
-- **缓存管理**: 避免重复搜索
+### 🛠 本地强制指令 (非 LLM)
+- `LocalCommandRouter` 在意图识别前拦截：`/stop` `/continue` `/pause` `/status` `/reset`，零 token 消耗
 
-### 🔄 会话循环
-- **状态管理**: 完整的会话生命周期
-- **用户确认**: 关键操作需要用户参与
-- **权限控制**: 细粒度的权限管理
+### 📦 持久化身份与下轮预估
+- `AgentRegistry`：主/子 Agent 持久化 UID + 从属关系，跨进程复用
+- `NextTurnForecast`：任务循环完成后生成下轮预估落盘，关闭程序后下次对话读回，指示 LLM 用户输入倾向；按 Agent UID 隔离存储
+
+### 🧩 返回后处理区段标记 (插件化)
+- `ResponseSegmenter` 快速标记 LLM 返回内容中的 fenced 区段（```html → UI 消费，代码块 → 审查服务等）
+- 路由规则插件化，`IResponseSegmentPlugin` 注册即用，不写死
+
+### 🧠 记忆与上下文
+- 多数据源上下文注入：Memory + Session + Web + UserTendency 自动组装
+- 关键词召回算法经性能治理：10k 消息下 `GetRecentMessages` **5424µs → 256µs (21.2x)**，语义等价逐条验证
+- 会话历史 Trim 上限治理，无界增长清剿
+
+### 🔍 搜索集成 (主备槽)
+- 内置多搜索源插件 + 主备故障转移（3 败熔断 2 分钟，槽序持久化 `search_slots.json` 复用）
+- WebReaper 11.3.1 库直引，搜索结果全文增强
+
+### 🦙 本地推理
+- LLamaSharp 0.27.0 + Backend.CPU 内置，`LocalLlamaCaller : ILLMCaller` 云端失败兜底；Vulkan loader 与 Silk.NET 统一
+- 模型文件缺失时诚实报错，不伪造回复
 
 ## 快速开始
 
-### 安装
-
 ```bash
-# 克隆项目
-git clone https://github.com/your-org/AgentFramework.git
-cd AgentFramework
-
-# 恢复依赖
+git clone https://github.com/clickmao/click-agent.git
+cd click-agent
 dotnet restore
-
-# 构建
 dotnet build
 ```
 
-### 基本使用
+### CLI 使用
+
+```bash
+cd src/agent.host
+
+# 交互 REPL（步骤明细 + /status 状态查询 + markdown 渲染）
+dotnet run
+
+# 单条模式
+dotnet run -- -q "先搜索AOT资料，然后写总结文档"
+
+# 输出日志保存为 markdown 文件
+dotnet run -- --log run.md -q "你的任务"
+```
+
+CLI 内置命令：`/status`（当前状态/步骤明细/下轮预估）、`/reset`、`/exit`；每轮执行显示 `[01] 意图分析 → [02] 子任务 → [03] 管线 → [04] 区段标记` 步骤链。
+
+### 代码使用
 
 ```csharp
-using AgentFramework;
-using AgentFramework.Core;
-using AgentFramework.Memory;
-using AgentFramework.Search;
+using Microsoft.Extensions.DependencyInjection;
+using agent;            // IndustrialAgentV2 / AgentContext
+using agent.core;       // Message / MessageRole
 
-// 创建服务容器
 var services = new ServiceCollection();
-services.AddAgentFramework();
-var provider = services.BuildServiceProvider();
+services.AddAgentFramework(o =>
+{
+    o.DataStoragePath = "./data";
+    o.MaxSubAgents = 4;
+});
+await using var provider = services.BuildServiceProvider();
 
-// 获取Agent实例
 var agent = provider.GetRequiredService<IAgent>();
+var ctx = new AgentContext(provider) { SessionId = "s1", UserId = "u1" };
+await agent.InitializeAsync(ctx);
 
-// 初始化Agent
-await agent.InitializeAsync(new AgentContext
+var reply = await agent.ProcessAsync(new Message
 {
-    SessionId = Guid.NewGuid().ToString(),
-    UserId = "user_001",
-    TokenBudget = 100000
-});
-
-// 发送消息
-var response = await agent.ProcessAsync(new Message
-{
-    Content = "帮我创建一个简单的计算器类",
-    Role = MessageRole.User
-});
-
-Console.WriteLine(response.Content);
+    Role = MessageRole.User,
+    Content = "先搜索 .NET 10 新特性，然后基于结果写总结",
+    SessionId = "s1"
+}, CancellationToken.None);
+Console.WriteLine(reply.Content);
 ```
 
-### Web搜索示例
+### 模板查询
 
 ```csharp
-var searchService = provider.GetRequiredService<ISearchService>();
+using agent.templates;
 
-var results = await searchService.SearchAsync(
-    "C# async best practices",
-    new SearchOptions { MaxResults = 5 }
-);
-
-foreach (var result in results)
-{
-    Console.WriteLine($"{result.Title}: {result.Snippet}");
-}
-```
-
-### 使用模板
-
-```csharp
-var templateStore = provider.GetRequiredService<ITemplateStore>();
-
-// 查询模板
-var templates = await templateStore.QueryAsync(new TemplateQuery
-{
-    Category = "DSL",
-    Pattern = "parser"
-});
-
-// 使用模板生成代码
-var template = templates.First();
-var generated = await templateStore.ApplyTemplateAsync(template, context);
-```
-
-### 上下文注入示例
-
-```csharp
-// 创建带上下文注入的 Agent
-var agent = provider.GetRequiredService<IndustrialAgentV2>();
-
-// 用户提问 - Agent 自动从多数据源召回上下文
-var response = await agent.ProcessAsync(new Message
-{
-    Content = "帮我修改上次写的代码",
-    SessionId = sessionId
-});
-
-// Agent 会自动：
-// 1. 识别意图 (code_modification)
-// 2. 召回 Memory/Session 中的相关代码
-// 3. 组装 Prompt 并调用 LLM
-// 4. 返回上下文感知的回答
+var templates = provider.GetRequiredService<ITemplateStore>();
+var found = await templates.QueryAsync(new TemplateQuery { Category = "DSL" });
 ```
 
 ## 项目结构
 
 ```
-AgentFramework/
+click-agent/
+├── agent.sln
 ├── src/
-│   └── AgentFramework/
-│       ├── Core/           # 核心接口和基类
-│       ├── Memory/         # 记忆系统
-│       ├── Templates/      # 模板系统
-│       ├── Search/         # 搜索服务
-│       ├── SubAgent/       # 子Agent管理
-│       ├── Session/        # 会话管理
-│       ├── UserInteraction/# 用户交互
-│       ├── Pipeline/       # 任务管道
-│       ├── TokenCompression/  # Token压缩
-│       ├── DataStore/      # 数据存储
-│       ├── KeywordAnnotation/  # 关键词标注
-│       ├── Tendency/       # 趋势分析
-│       └── MAF/            # MAF集成
-├── tests/
-│   └── AgentFramework.Tests/
-├── examples/
-│   ├── basic/
-│   ├── advanced/
-│   └── web-search/
-└── docs/
+│   ├── agent/               # 核心：意图拆解/任务计划/注册表/区段路由/本地推理
+│   ├── agent.core/          # 基础契约：Message/AgentContext/IAgent
+│   ├── agent.host/          # CLI 宿主 (NativeAOT 发布)
+│   ├── agent.planner/       # 任务执行引擎
+│   ├── agent.codegen/       # 代码生成
+│   ├── agent.recovery/      # 故障恢复
+│   ├── agent.rag/           # RAG 召回
+│   ├── agent.vectormemory/  # 向量记忆
+│   ├── agent.workspace/     # 工作区
+│   └── agent.tests/         # 173 项测试
+└── docs/                    # 架构/API/改进记录
 ```
 
-## 配置
+## 验证基线
 
-### appsettings.json
+| 项 | 结果 |
+|---|---|
+| 编译 (--no-incremental) | 0 错误 0 警告 |
+| 测试 | 173/173 Passed |
+| NativeAOT (linux-x64) | 0 IL/TR 警告，2.9MB 单文件 |
+| 端到端冒烟 | DI 全图 11/11 解析 + 多轮会话断言 |
+
+## 文档
+
+- [架构文档](docs/architecture.md)
+- [API 文档](docs/api.md)
+- [改进记录](docs/improvements.md) — v7.4 → v7.12 每轮真实执行证据
+- [任务循环](docs/task_loop.md)
+
+## 配置
 
 ```json
 {
   "Agent": {
-    "Name": "MainAgent",
+    "AgentName": "MainAgent",
     "MaxSubAgents": 4,
-    "EnableMAF": false,
     "EnableSearchCache": true,
     "SummarizeAfterTurns": 10
   },
   "OpenAI": {
     "ApiKey": "${OPENAI_API_KEY}",
     "Model": "gpt-4"
-  },
-  "Storage": {
-    "Path": "./data"
   }
 }
 ```
 
-## 文档
-
-- [架构文档](docs/ARCHITECTURE.md) - 详细系统架构
-- [API文档](docs/API.md) - 接口和类参考
-- [故障排除](docs/TROUBLESHOOTING.md) - 常见问题
-
-## 开发
-
-### 构建
-
-```bash
-# Debug构建
-./scripts/build.ps1 -Configuration Debug
-
-# Release构建
-./scripts/build.ps1 -Configuration Release
-```
-
-### 测试
-
-```bash
-# 运行所有测试
-./scripts/test.ps1
-
-# 运行特定测试
-dotnet test --filter "FullyQualifiedName~MemoryTests"
-```
+API Key 优先走环境变量 `AGENT_OPENAI_KEY`；未配置时走 `NullLLMCaller` 明确报错路径，不静默伪造。
 
 ## 许可证
 
-MIT License - 详见 [LICENSE](LICENSE) 文件
-
-## 贡献
-
-欢迎提交Issue和Pull Request！
-
-## 联系方式
-
-- GitHub Issues: [链接]
-- 邮箱: support@agentframework.dev
+MIT License

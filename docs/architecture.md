@@ -1,4 +1,4 @@
-# AgentFramework 架构设计文档
+# click-agent 架构设计文档
 
 ## 1. 项目概述
 
@@ -1231,120 +1231,38 @@ public class ConfirmOption
 ## 10. 项目结构
 
 ```
-AgentFramework/
-├── src/
-│   └── AgentFramework/
-│       ├── AgentFramework.csproj
-│       ├── Program.cs
-│       ├── appsettings.json
-│       │
-│       ├── Core/
-│       │   ├── IAgent.cs
-│       │   ├── IAgentContext.cs
-│       │   ├── AgentBase.cs
-│       │   ├── Message.cs
-│       │   ├── AgentResponse.cs
-│       │   ├── AgentState.cs
-│       │   └── Events/
-│       │
-│       ├── Memory/
-│       │   ├── IMemoryStore.cs
-│       │   ├── LongTermMemory.cs
-│       │   ├── ShortTermMemory.cs
-│       │   ├── MemoryEntry.cs
-│       │   ├── MemoryQuery.cs
-│       │   └── Summarizer.cs
-│       │
-│       ├── Templates/
-│       │   ├── ITemplateStore.cs
-│       │   ├── Template.cs
-│       │   ├── TemplateManager.cs
-│       │   ├── TemplateMatcher.cs
-│       │   ├── CorrectExample.cs
-│       │   └── IncorrectExample.cs
-│       │
-│       ├── Search/
-│       │   ├── ISearchService.cs
-│       │   ├── WebSearchService.cs
-│       │   ├── WebReaperAdapter.cs
-│       │   └── SearchResult.cs
-│       │
-│       ├── SubAgent/
-│       │   ├── ISubAgentPool.cs
-│       │   ├── SubAgent.cs
-│       │   ├── SubAgentTask.cs
-│       │   └── TaskBoundary.cs
-│       │
-│       ├── Session/
-│       │   ├── ISessionManager.cs
-│       │   ├── Session.cs
-│       │   └── SessionLoop.cs
-│       │
-│       ├── UserInteraction/
-│       │   ├── IUserInteraction.cs
-│       │   ├── UserConfirmRequest.cs
-│       │   └── ConfirmationResult.cs
-│       │
-│       ├── Pipeline/
-│       │   ├── ITaskPipeline.cs
-│       │   ├── TaskDecomposer.cs
-│       │   └── PipelineContext.cs
-│       │
-│       ├── TokenCompression/
-│       │   ├── ITokenCompressor.cs
-│       │   └── ContextSummarizer.cs
-│       │
-│       ├── DataStore/
-│       │   ├── IDataStore.cs
-│       │   ├── DataEntry.cs
-│       │   └── QueryEngine.cs
-│       │
-│       ├── KeywordAnnotation/
-│       │   ├── KeywordTagger.cs
-│       │   └── KeywordIndex.cs
-│       │
-│       ├── Tendency/
-│       │   ├── TendencyAnalyzer.cs
-│       │   └── TendencyData.cs
-│       │
-│       ├── MAF/
-│       │   ├── MAFAgentHost.cs
-│       │   ├── MAFService.cs
-│       │   └── MAFConfiguration.cs
-│       │
-│       └── Extensions/
-│           └── ServiceCollectionExtensions.cs
-│
-├── tests/
-│   └── AgentFramework.Tests/
-│       ├── AgentFramework.Tests.csproj
-│       ├── MemoryTests.cs
-│       ├── TemplateTests.cs
-│       ├── SubAgentTests.cs
-│       ├── SessionTests.cs
-│       └── IntegrationTests/
-│
-├── examples/
-│   ├── basic/
-│   ├── advanced/
-│   └── web-search/
-│
+click-agent/
+├── agent.sln
+├── readme.md
+├── .gitignore
 ├── docs/
-│   ├── ARCHITECTURE.md
-│   ├── API.md
-│   └── TROUBLESHOOTING.md
-│
-├── scripts/
-│   ├── build.ps1
-│   └── test.ps1
-│
-├── .github/
-│   └── workflows/
-│       └── ci.yml
-│
-├── AgentFramework.sln
-├── README.md
-└── .gitignore
+│   ├── architecture.md
+│   ├── api.md
+│   ├── improvements.md
+│   ├── task_loop.md
+│   ├── context_injection_comparison.md
+│   ├── industrial_enhancements.md
+│   └── search_research.md
+└── src/
+    ├── agent/                  # 核心 Agent: 意图拆解/任务计划/注册表/区段路由/本地推理
+    │   ├── intent/             # IntentDecomposer / TaskPlanBuilder / TaskPlanRun
+    │   ├── registry/           # AgentRegistry / NextTurnForecast / LocalCommandRouter
+    │   │                       # TaskPlanExecutor / ResponseSegmentRouter / ClarificationService
+    │   ├── llamalocal/         # LocalLlamaCaller (LLamaSharp)
+    │   ├── contextassembler/   # 多源上下文装配
+    │   ├── session/            # SessionManager
+    │   ├── search/             # 搜索故障转移 (主备槽)
+    │   ├── templates/          # 模板系统
+    │   └── extensions/         # DI 注册 (AddAgentFramework)
+    ├── agent.core/             # 基础契约: Message / AgentContext / IAgent / IUserPromptService
+    ├── agent.host/             # CLI 宿主 (NativeAOT): Program.cs / clirenderer.cs / clisession.cs
+    ├── agent.planner/          # TaskExecutionEngine
+    ├── agent.codegen/          # CodeGenerator
+    ├── agent.recovery/         # RecoverySystem
+    ├── agent.rag/              # RAG 召回
+    ├── agent.vectormemory/     # 向量记忆
+    ├── agent.workspace/        # 工作区
+    └── agent.tests/            # 173 项测试 (xunit)
 ```
 
 ---

@@ -1,4 +1,4 @@
-# AgentFramework 工业级能力增强计划
+# click-agent 工业级能力增强计划
 
 ## 当前框架 vs 工业级需求分析
 
