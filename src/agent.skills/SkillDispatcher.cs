@@ -12,14 +12,22 @@ public sealed class SkillDispatcher
 {
     private readonly SkillRegistry _registry;
     private readonly TriggerMatcher _matcher;
+    private readonly SkillExecutor _executor;
+
+    /// <summary>生命周期状态机 (P2: 缓存/话题切换卸载/熔断托管)</summary>
+    public SkillLifecycle Lifecycle { get; }
 
     /// <summary>executive 执行委托注册表 (entry → 委托; P1 仅注册制, 不做文件加载)</summary>
     private readonly Dictionary<string, Func<string, CancellationToken, Task<string>>> _entries = new();
 
-    public SkillDispatcher(SkillRegistry registry, TriggerMatcher? matcher = null)
+    public SkillDispatcher(SkillRegistry registry, TriggerMatcher? matcher = null,
+        Func<string, string, int, int>? getConfig = null)
     {
         _registry = registry;
         _matcher = matcher ?? new TriggerMatcher();
+        Func<string, string, int, int> cfg = getConfig ?? new Func<string, string, int, int>((_, _, fallback) => fallback); // 未注入配置 → 兜底默认 (测试兼容)
+        Lifecycle = new SkillLifecycle(cfg);
+        _executor = new SkillExecutor(Lifecycle, cfg);
     }
 
     public void RegisterEntry(string skillId, Func<string, CancellationToken, Task<string>> entry) =>
@@ -35,10 +43,19 @@ public sealed class SkillDispatcher
         {
             var hits = _matcher.Match(input, _registry.All);
             if (hits.Count == 0)
+            {
+                Lifecycle.ReportRound(false); // 未命中任何域 → Active 项脱域计数
                 return null;
+            }
 
             var top = hits[0];
+
+            // P2 熔断: 开启期 → 静默降级普通推理
+            if (Lifecycle.IsBreakerOpen(top.Skill.SkillId))
+                return null;
+
             var sw = System.Diagnostics.Stopwatch.StartNew();
+            Lifecycle.Activate(top.Skill);
 
             string content;
             var forceUse = false;
@@ -52,10 +69,14 @@ public sealed class SkillDispatcher
             }
             else
             {
-                // 执行型: entry 委托
+                // 执行型: entry 委托 → 经 Executor (超时/幂等重试/熔断上报)
                 if (!_entries.TryGetValue(top.Skill.SkillId, out var entry))
                     return null;
-                content = await entry(input, ct);
+                var executed = await _executor.ExecuteAsync(top.Skill,
+                    token => entry(input, token), ct);
+                if (executed is null)
+                    return null; // 失败/超时/熔断 → 降级普通推理
+                content = executed;
             }
 
             // 禁语校验 (normative 口径保护)
@@ -73,6 +94,8 @@ public sealed class SkillDispatcher
                     };
                 }
             }
+
+            Lifecycle.ReportRound(true, top.Skill.SkillId);
 
             return new SkillResult
             {

@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using agent.core;
@@ -198,10 +199,15 @@ public static class ServiceCollectionExtensions
             sp.GetRequiredService<agent.modelqueue.ModelCatalog>(),
             sp.GetRequiredService<IHttpClientFactory>()));
 
+        // v7.15 P2: ConfigSnapshot 统一注册 (宿主未注册时兜底 — Skill/ModelCatalog DI 依赖)
+        services.TryAddSingleton(sp => new agent.config.ConfigSnapshot());
+
         // v7.15 Skill 调度 (P1): skills/ 目录静态加载 + 触发匹配 + 口径承载
         services.AddSingleton(sp => agent.skills.SkillRegistry.LoadFromDirectory("skills"));
         services.AddSingleton(sp => new agent.skills.SkillDispatcher(
-            sp.GetRequiredService<agent.skills.SkillRegistry>()));
+            sp.GetRequiredService<agent.skills.SkillRegistry>(),
+            getConfig: (module, key, fallback) => sp.GetRequiredService<agent.config.ConfigSnapshot>()
+                .Get(module, key, fallback)));
 
         // v7.15 日志四通道: LogRouter (flags 默认全开 — config/base/logging.yaml 分层可覆盖)
         services.AddSingleton(sp => new agent.logging.MemoryLogBuffer(2000));

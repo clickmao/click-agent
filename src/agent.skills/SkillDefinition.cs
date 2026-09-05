@@ -42,6 +42,12 @@ public sealed class SkillDefinition
 
     /// <summary>执行超时 (秒, 默认 30)</summary>
     public int TimeoutSeconds { get; set; } = 30;
+
+    /// <summary>权限白名单 (P2 沙箱: 允许读写的共享字段; 空 = 无权限)</summary>
+    public List<string> Permissions { get; set; } = new();
+
+    /// <summary>幂等 (P2 执行调度: true 才允许重试)</summary>
+    public bool Idempotent { get; set; }
 }
 
 /// <summary>标准化输出 (原文 §4.6)</summary>
