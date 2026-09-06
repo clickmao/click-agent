@@ -158,6 +158,7 @@ Interlocked.Increment(ref _cacheMisses);
                         SourceName = "agent_context",
                         Content = request.AgentContextBlock,
                         RelevanceScore = 0.9,
+                        EstimatedTokens = EstimateTokens(request.AgentContextBlock),
                     }
                 }));
             }
@@ -450,13 +451,15 @@ Interlocked.Increment(ref _cacheMisses);
                         continue;
 
                     var excerpt = hitLine.Length > 400 ? hitLine[..400] + "…" : hitLine;
+                    var workspaceContent = $"[工作区文件 {Path.GetRelativePath(request.WorkspaceRoot!, file)}]\n{excerpt}";
                     snippets.Add(new ContextSnippet
                     {
                         Id = file,
                         SourceType = DataSourceType.WorkspaceFiles,
                         SourceName = Path.GetFileName(file),
-                        Content = $"[工作区文件 {Path.GetRelativePath(request.WorkspaceRoot!, file)}]\n{excerpt}",
+                        Content = workspaceContent,
                         RelevanceScore = 0.7,
+                        EstimatedTokens = EstimateTokens(workspaceContent), // v0.11.0 R29: 补 token 估算 (0tok 显示瑕疵真因)
                         CreatedAt = info.LastWriteTimeUtc,
                     });
                 }

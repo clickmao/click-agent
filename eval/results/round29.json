@@ -1,0 +1,159 @@
+{
+ "round": "round29",
+ "label": "R29 snippet token 估算补全 (真 bug 23)",
+ "ts": "2026-09-06T17:06:49+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 3561,
+ "prompt_total": 1080,
+ "completion_total": 2481,
+ "wall_total_ms": 70083,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组分区递归排序的高效分治算法，平均时间复杂度 O(n log n)。",
+   "wall_ms": 7162,
+   "points": 10,
+   "llm_calls": 1,
+   "prompt_tokens": 316,
+   "completion_tokens": 30,
+   "total_tokens": 346,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 6273,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/79tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 70,
+   "from_cache": false,
+   "prompt_total_tokens": 430,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "说明：当前上下文中无向量数据库实测资料，以下基于通用知识给出选型概要。\n\n结论要点\n· 已有 PostgreSQL / 千万级以内：**pgvector** —— 零新增运维，性价比最高\n· 自建、高性能、亿级规模：**Qdrant**（轻量易部署）或 **Milvus**（分布式、生态全）\n· 全托管免运维：**Pinecone** / 云厂商托管版 —— 成本偏高\n\n关键依据\n1. 数据规模：百万级 pgvector 足够；亿级需分布式方案\n2. 部署形态：自建 vs 托管，直接决定运维成本\n3. 混合检索：标量过滤 + 向量，Qdrant/Weaviate 较强\n4. 生态：主流框架各家均已集成，差异不大\n\n需确认以细化推荐\n· 预计向量规模与 QPS？\n· 是否已有 PG/ES 可复用？\n· 云上托管还是私有化部署？\n\n确认后可展开完整对比报告。",
+   "wall_ms": 16571,
+   "points": 10,
+   "llm_calls": 1,
+   "prompt_tokens": 339,
+   "completion_tokens": 1204,
+   "total_tokens": 1543,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 15651,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/139tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 42,
+   "from_cache": false,
+   "prompt_total_tokens": 482,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (604ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1531,
+   "points": 5,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "核心原理：把查找从“逐行扫描”变成“按结构定位”\n\n无索引：查询只能全表扫描，逐行读取并判断条件，I/O 次数与数据量成正比，复杂度 O(N)。\n\n有索引：借助预建的有序数据结构（如 B+ 树），定位到目标行的复杂度降为 O(log N) 甚至 O(1)。\n\n具体加速机制\n\n1. 缩小搜索范围\n   索引本质是按键排序的树结构，每次节点比较都能排除一半候选（类似二分查找），千万行数据在 B+ 树中只需 3~4 层即可定位。\n\n2. 大幅减少磁盘 I/O\n   I/O 是数据库最大的瓶颈。索引只存储键值 + 行指针，远小于整行数据，一页能容纳更多键，因此树更“矮胖”——定位一条记录通常只需 3~4 次页读取，而非扫描成千上万页。\n\n3. 利用有序性优化范围查询\n   B+ 树的叶子节点通过链表相连且有序。范围查询（如 WHERE id > 100）只需定位起点后顺序遍历叶子；ORDER BY",
+   "wall_ms": 44819,
+   "points": 10,
+   "llm_calls": 1,
+   "prompt_tokens": 425,
+   "completion_tokens": 1247,
+   "total_tokens": 1672,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 43922,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/122tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 42,
+   "from_cache": false,
+   "prompt_total_tokens": 588,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}
