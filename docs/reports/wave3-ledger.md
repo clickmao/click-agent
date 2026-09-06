@@ -60,6 +60,11 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
   路径 CWD 优先 + AppContext 回退。实证: 进程1 记忆 → index.jsonl → 进程2 召回 1snip/56tok/r0.45
 - R80 AOT 常态化: 手写 JSON 落盘过 AOT (0 警), AOT 二进制落盘 5→6 行 + wordcount 489ms 正常
 
+## R81-R82 追加 (第十四轮循环 — 评测隔离)
+- R81: run_round 评测隔离 — R79 落盘使前轮记忆泄入本轮 (C01 prompt 342→752 实测污染)。
+  每轮启动前清 RAG 索引+会话记忆; **真机持久化功能不受影响** (这是评测口径修正, 非功能回退)
+- 隔离后 mass_44 3105 (恢复 3000 带); round82 10/10 4212; 十一批 172/172
+
 ## 已知边界 (诚实标注)
 - Session 源设计性禁用; ToolOutput 预留; PausedForApproval 仅影子计划
 - CNY→USD 固定汇率 7.2 (env 可配)

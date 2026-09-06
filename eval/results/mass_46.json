@@ -1,0 +1,159 @@
+{
+ "round": "mass_46",
+ "label": "R82 batch11 46",
+ "ts": "2026-09-06T20:21:53+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 4525,
+ "prompt_total": 1390,
+ "completion_total": 3135,
+ "wall_total_ms": 94914,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选定基准元素将数组分区递归排序的高效分治排序算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 3795,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 341,
+   "completion_tokens": 31,
+   "total_tokens": 372,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 2857,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 57,
+   "from_cache": false,
+   "prompt_total_tokens": 474,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "先确认一个关键点：你们的数据规模（百万/千万/亿级）、部署方式（自建/托管）和现有技术栈（是否已有 PostgreSQL 或 ES）是什么？\n\n未说明的话，我先按「千万级向量、自建与托管兼顾」给默认口径的结论与依据：\n\n主流方案关键依据\n· **Qdrant**：Rust 实现，性能/易用性均衡，轻量自建首选\n· **Milvus**：开源分布式，亿级规模首选，但运维较重\n· **pgvector**：复用现有 PostgreSQL，百万级内最省事\n· **Weaviate**：内置混合检索（向量+BM25），适合语义搜索场景\n· **Pinecone**：全托管免运维，代价是闭源、成本较高\n· **Elasticsearch**：已有 ES 栈可顺带用，向量能力非强项\n\n默认推荐\n· 已有 PostgreSQL、中小规模 → **pgvector**\n· 中大规模自建 → **Qdran",
+   "wall_ms": 49974,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 364,
+   "completion_tokens": 1760,
+   "total_tokens": 2124,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 49078,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/91tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 52,
+   "from_cache": false,
+   "prompt_total_tokens": 512,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (660ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1566,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 660,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "核心原因：把“逐行扫描”变成“按结构定位”\n\n1. 复杂度降级\n\n· 无索引：全表扫描，O(n)，每一行都要读出并判断\n· B+ 树索引：O(log n)，像查字典一样逐层缩小范围，千万行数据树高通常只有 3~4 层\n· 哈希索引：等值查询直接 O(1) 定位\n\n2. 减少 I/O——这才是根本\n\n数据库查询的瓶颈通常在磁盘 I/O 而非 CPU：\n\n· 全表扫描 = 读所有数据页；走索引 = 只读树高数量级的几个页 + 命中的数据页\n· 索引只存**键值 + 行指针**，比整行数据窄得多，单个页能放更多条目，整棵索引更容易常驻内存\n· 命中内存意味着避免昂贵的磁盘随机读\n\n3. 有序性带来的额外收益\n\n· **范围查询**：B+ 树叶子节点有序且链表相连，`WHERE id BETWEEN a AND b` 是顺序读，避免随机 I/O\n· **排序免计算**：`ORDER BY 索引列`",
+   "wall_ms": 39579,
+   "points": 14,
+   "llm_calls": 1,
+   "prompt_tokens": 685,
+   "completion_tokens": 1344,
+   "total_tokens": 2029,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 38674,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:1snip/271tok/r0.45rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/148tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 1158,
+   "from_cache": false,
+   "prompt_total_tokens": 893,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}
