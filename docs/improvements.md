@@ -40,13 +40,13 @@
 - Release 编译: 0 错 0 警
 - NativeAOT publish: 0 IL 警; agenthost 12MB ELF 真机运行
 - AOT 冒烟: `/model list` (6 模型目录加载 ✓) / `/model 3` (序号→manual ✓) / `/token stats` (全 JSON ✓) / `/forecast` (null 提示 ✓)
+- GitHub 推送: ✓ main → clickmao/click-agent @ 387bfb1 (经 ghproxy 通道; upload-github.sh 已改为环境变量取 token)
 
 ### 📋 下一版本 (v0.11.0) 计划
 1. **Skill 全球通用开放规范落地** (新需求5): skills/ 目录按 Anthropic Agent-Skills Open Standard 重构 — SKILL.md 包格式 (yaml front-matter + scripts/references/assets 目录), 兼容 OpenAI 等 Agent 框架; SkillRegistry 加载器适配 + 用例改造
 2. **readme 双语页内切换完善**: 初始化中文 + 锚点切换交互优化
 3. **余额阈值切模实战验证**: 真实 API key 环境下 E2E (当前无 key, 逻辑测试覆盖)
 4. **Chatbox websocket 宿主**: IChatboxSink 已就绪, 补一个真实 websocket 宿主实现 (面板对接)
-5. **GitHub 上传**: 用户 token 就绪后推送 (token 待用户提供)
 
 ---
 

@@ -228,7 +228,7 @@ click-agent/
 3. **Skill 执行型脚本调度**: SKILL.md 包 `scripts/` 目录执行体接入 SkillExecutor (解析/沙箱/超时已有, 缺脚本进程调度)
 4. **上下文压缩 P3 向量化**: L1 轻摘/聚类接 BgeEmbedder 真向量 (P1 规则版已落地, bge 已接入 Skill 语义匹配)
 5. **模型目录 verify 补全**: 全目录 6 模型真机校验 (api.openai.com 本网络 RST, 需代理环境复测)
-6. **GitHub 开源发布**: LICENSE/CI 工作流/徽章/英文 README 精简版
+6. **开源发布收尾** (代码已推送 @ 387bfb1): LICENSE 文件/CI 工作流/徽章/英文 README 精简版
 
 > **v0.10.0 基线**：341/341 测试全绿 · Release 编译 0 警 0 错 · NativeAOT 0 IL 警 · agenthost 12MB ELF 真机冒烟通过。
 
@@ -502,7 +502,7 @@ click-agent/
 3. **Skill executive script dispatch**: SKILL.md package `scripts/` directory execution wiring into SkillExecutor (parsing/sandbox/timeout done, script process scheduling missing)
 4. **Context compression P3 vectorization**: L1 summaries/clustering onto BgeEmbedder real vectors (P1 rule version landed; bge already wired into Skill semantic matching)
 5. **Model catalog verify completion**: full 6-model real-device verification (api.openai.com RST on this network, retest via proxy)
-6. **GitHub open-source release**: LICENSE/CI workflows/badges/condensed English README
+6. **Open-source release polish** (code pushed @ 387bfb1): LICENSE file/CI workflows/badges/condensed English README
 
 > **v0.10.0 baseline**: 341/341 tests green / Release build 0 warnings 0 errors / NativeAOT 0 IL warnings / agenthost 12MB ELF device smoke passed.
 
