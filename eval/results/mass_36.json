@@ -1,0 +1,159 @@
+{
+ "round": "mass_36",
+ "label": "R78 batch9 36",
+ "ts": "2026-09-06T20:02:55+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 3120,
+ "prompt_total": 1118,
+ "completion_total": 2002,
+ "wall_total_ms": 49277,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组划分为较小和较大两部分、再递归排序的高效分治排序算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 4281,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 352,
+   "completion_tokens": 37,
+   "total_tokens": 389,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 3379,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 49,
+   "from_cache": false,
+   "prompt_total_tokens": 482,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "结论：通用场景推荐 Qdrant 或 Milvus（自建生产）、Pinecone（免运维托管）、Chroma/FAISS（轻量原型）。以下基于通用公开信息（当前上下文无实时评测数据）。\n\n关键对比要点\n· **Milvus**：开源、分布式架构，支持亿级向量、高吞吐；但组件多、运维成本较高\n· **Qdrant**：开源、Rust 实现，元数据过滤检索强，中等规模部署简单\n· **Pinecone**：全托管 SaaS，零运维、按量付费；数据托管在境外，需合规评估\n· **Chroma**：嵌入式轻量数据库，API 友好，适合原型与百万级以下数据\n· **FAISS**：检索库（非数据库），本地性能极强，但无持久化与过滤生态\n\n推荐逻辑\n1. 快速原型 / 个人项目 → Chroma 或 FAISS\n2. 自建生产、数据敏感 → Qdrant（中规模）或 Milvus（大规模）\n3. 不想",
+   "wall_ms": 18063,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 364,
+   "completion_tokens": 1191,
+   "total_tokens": 1555,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 17180,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/91tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 49,
+   "from_cache": false,
+   "prompt_total_tokens": 522,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (649ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1568,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 649,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "数据库索引能加速查询，核心原理是用预排序的专用数据结构，把全表扫描变成精准定位。\n\n1. 无索引 vs 有索引\n\n· **无索引**：查询只能全表扫描（Full Table Scan），逐行判断条件，时间复杂度 O(n)。数据量百万级时，需要读大量磁盘页。\n· **有索引**：B+ 树查找，时间复杂度 O(log n)。百万行数据通常只需 3~4 次树节点访问。\n\n2. 关键机制\n\n① 有序结构替代无序遍历\nB+ 树的键值有序存储，查找时每次比较可排除一半候选（类似二分），而非逐行比对。\n\n② 减少磁盘 I/O（最关键的收益）\n· 数据库最慢的操作是磁盘 I/O。B+ 树节点大小设计为对齐页（如 16KB），每个节点能装大量键，树高极低。\n· 查一条百万行表的数据，无索引可能读几百上千个数据页，有索引只读 3~4 个页。\n\n③ 覆盖索引避免回表\n如果查询的列都包含在索引中（如 INDEX(",
+   "wall_ms": 25365,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 402,
+   "completion_tokens": 774,
+   "total_tokens": 1176,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 24436,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/95tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 48,
+   "from_cache": false,
+   "prompt_total_tokens": 568,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}

@@ -1,0 +1,159 @@
+{
+ "round": "mass_39",
+ "label": "R78 batch9 39",
+ "ts": "2026-09-06T20:05:05+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 2753,
+ "prompt_total": 1107,
+ "completion_total": 1646,
+ "wall_total_ms": 38765,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种分治排序算法，通过选取基准值将数组划分为“小于”和“大于”基准的两部分，再递归排序子部分，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 3303,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 342,
+   "completion_tokens": 44,
+   "total_tokens": 386,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 2375,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 49,
+   "from_cache": false,
+   "prompt_total_tokens": 474,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "结论先行：通用场景下首选 Qdrant（自建）或 Milvus（大规模）；已有 PostgreSQL 用 pgvector；免运维选 Pinecone。\n\n关键对比\n\n| 选项 | 优势 | 短板 |\n| Milvus | 分布式、亿级向量、生态成熟 | 部署运维较重 |\n| Qdrant | Rust 高性能、过滤强、部署轻 | 超大规模生态略弱 |\n| Pinecone | 全托管、零运维 | 闭源、成本高 |\n| pgvector | 复用现有 PG、事务一致 | 性能上限低于专用库 |\n| Chroma | 原型开发极快 | 不适合生产大规模 |\n| Weaviate | 混合检索（BM25+向量） | 资源占用偏高 |\n\n推荐\n· 原型/POC → Chroma\n· 已有 PostgreSQL → pgvector\n· 中等规模自建 → Qdrant\n· 亿级/高可用 → Mil",
+   "wall_ms": 22650,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 373,
+   "completion_tokens": 925,
+   "total_tokens": 1298,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 21721,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/111tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 49,
+   "from_cache": false,
+   "prompt_total_tokens": 539,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (666ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1575,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 666,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "索引加速查询的核心原理：用有序的、小体积的辅助数据结构，把全表扫描变成有目标的查找。\n\n1. 避免全表扫描\n· 无索引时，查询需逐行读取全部数据，时间复杂度 O(n)，数据量越大越慢\n· 有索引时，主流的 B+ 树查找复杂度为 O(log n)，百万级数据通常只需 3~4 次比较即可定位\n\n2. 大幅减少磁盘 I/O\n· 数据库瓶颈主要在磁盘 I/O。B+ 树每个节点对应一次页读取，树高 3~4 层意味着定位一行数据只需 3~4 次 I/O\n· 节点内存储大量键值（每个页存上百个键），扇出极大，因此树很“矮胖”\n\n3. 索引体积小、易缓存\n· 索引只存“索引列的值 + 行指针”，远小于整行数据\n· 小体积意味着更多索引页能驻留内存（Buffer Pool），高层节点几乎总是命中内存，实际磁盘 I/O 更少\n\n4. 有序性带来的额外收益\n· 索引键有序，范围查询（`WHERE id BETW",
+   "wall_ms": 11237,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 392,
+   "completion_tokens": 677,
+   "total_tokens": 1069,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 10332,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/111tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 49,
+   "from_cache": false,
+   "prompt_total_tokens": 569,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}
