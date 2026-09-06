@@ -31,6 +31,10 @@ public interface IPromptBuilder
 /// </summary>
 public class Prompt
 {
+    /// <summary>v0.11.0 R21: 推理档位建议 (null=模型默认)。主链按意图启发式设置,
+    /// LLM caller 消费 (glm reasoning_effort=low 轻思考: 简单题 reasoning 0 vs 8910ch)。</summary>
+    public string? ReasoningEffort { get; set; }
+
     /// <summary>
     /// 系统 Prompt（包含指令）
     /// </summary>

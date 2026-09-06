@@ -67,6 +67,23 @@ public class IndustrialAgentV2 : AgentBase
     private readonly agent.modelqueue.TokenUsageService? _tokenUsageService;
     private readonly agent.modelqueue.ModelVerifyService? _verifyService;
     private readonly agent.logging.LogRouter? _logRouter;
+
+    /// <summary>
+    /// R21: 简单意图启发式 — 问候/闲聊/单句解释/事实问答走轻思考 (省 reasoning token 与延迟)。
+    /// 复杂信号 (多步/代码/分析/对比/计划/长输入) 一律保留默认深推理, 宁可多花不可降智。
+    /// </summary>
+    private static bool IsSimpleIntentForReasoning(string intent, string userMessage)
+    {
+        // 复杂信号优先: 命中即深推理
+        if (userMessage.Contains("分析") || userMessage.Contains("对比") || userMessage.Contains("设计") ||
+            userMessage.Contains("实现") || userMessage.Contains("写一个") || userMessage.Contains("调研") ||
+            userMessage.Contains("计划") || userMessage.Contains("为什么") || userMessage.Contains("原因") ||
+            userMessage.Contains("优化") || userMessage.Contains("报告") || userMessage.Contains("步骤") ||
+            userMessage.Length > 120)
+            return false;
+        // 简单意图: general/小任务 (解释/转换/查询类短句)
+        return intent is "general" or "smalltalk" or "search" && userMessage.Length <= 120;
+    }
     private readonly agent.skills.SkillDispatcher? _skillDispatcher;
     
     private readonly List<string> _capabilities = new();
@@ -394,6 +411,9 @@ public class IndustrialAgentV2 : AgentBase
             }
 
             // 5. ✅ 调用 LLM（传入完整 Prompt）
+            // v0.11.0 R21: 推理档位路由 — 简单任务轻思考省 token/延迟, 复杂任务保留默认深推理。
+            // 实测 (glm-5.3-flash): 简单题 reasoning 0 vs 8910ch; 复杂题 low 档 wall -55%。
+            prompt.ReasoningEffort = IsSimpleIntentForReasoning(intent, prompt.UserMessage) ? "low" : null;
             var llmResponse = await _llmCaller.CallAsync(prompt, ct);
 
             // 5.1 思考结束指令 (L.2.2 指令 2 — 前端关闭思考步骤显示并折叠)
@@ -1174,6 +1194,12 @@ public sealed class OpenAIChatRequest
 
     [JsonPropertyName("temperature")]
     public double Temperature { get; set; } = 0.7;
+
+    /// <summary>v0.11.0 R21: glm 推理档位 (low=轻思考)。null=模型默认 (复杂任务保留深推理)。
+    /// 实测: 简单题 compl 49tok vs 默认 8910ch reasoning; 复杂题 low 档 wall -55%。
+    /// null 时 JSON 忽略 (LLMJsonContext 全局 WhenWritingNull)。</summary>
+    [JsonPropertyName("reasoning_effort")]
+    public string? ReasoningEffort { get; set; }
 }
 
 public sealed class OpenAIChatMessage
@@ -1268,15 +1294,17 @@ public class OpenAILLMCaller : ILLMCaller
             // Current message
             messages.Add(new OpenAIChatMessage { Role = "user", Content = prompt.UserMessage });
             
-            var requestBody = new
+            // v0.11.0 R21: 显式 DTO (source-gen 零反射) + 推理档位 (简单任务 low 档轻思考)
+            var requestBody = new OpenAIChatRequest
             {
-                model = _model,
-                messages = messages,
+                Model = _model,
+                Messages = messages,
                 // v0.11.0 R19 修复: reasoning 模型 (glm/deepseek) 的思维链计入 max_tokens,
                 // 2000 曾被 reasoning 吃满 → content 空回复 (C03 实测 2000 tok 全 reasoning)。
                 // 上限只是截断保护, 实际输出长度由 System Prompt 输出纪律约束。
-                max_tokens = 8192,
-                temperature = 0.7
+                MaxTokens = 8192,
+                Temperature = 0.7,
+                ReasoningEffort = prompt.ReasoningEffort,
             };
             
             var request = new HttpRequestMessage(HttpMethod.Post, _baseUrl + "/chat/completions");
