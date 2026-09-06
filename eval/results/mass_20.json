@@ -1,0 +1,159 @@
+{
+ "round": "mass_20",
+ "label": "R57 batch4 20",
+ "ts": "2026-09-06T19:02:58+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 2963,
+ "prompt_total": 1107,
+ "completion_total": 1856,
+ "wall_total_ms": 65576,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组分区递归排序的高效分治排序算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 3040,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 342,
+   "completion_tokens": 31,
+   "total_tokens": 373,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 2110,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 48,
+   "from_cache": false,
+   "prompt_total_tokens": 474,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "结论：优先推荐 Qdrant（中小规模/轻量自建）或 Milvus（大规模/分布式）；免运维场景选 Pinecone。\n\n关键依据（要点式）：\n\n· **Milvus**：开源、支持十亿级向量、分布式架构成熟、社区生态最活跃；缺点是部署运维复杂\n· **Qdrant**：Rust 编写，性能优、单二进制部署轻量，原生支持带过滤的向量检索；适合中小规模\n· **Pinecone**：全托管免运维、开箱即用；成本较高、数据不出自建环境\n· **pgvector**：已有 PostgreSQL 时成本最低，千万级向量内够用，支持混合 SQL 查询\n· **Weaviate**：擅长混合检索（BM25 + 向量），内置模块化向量化\n· **Elasticsearch/OpenSearch**：已有 ES 技术栈可直接复用，精确过滤强，但向量检索性能非最优\n\n选型核心维度：数据规模、过滤/混合检索需",
+   "wall_ms": 26240,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 373,
+   "completion_tokens": 757,
+   "total_tokens": 1130,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 25299,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/111tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 49,
+   "from_cache": false,
+   "prompt_total_tokens": 539,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (658ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1560,
+   "points": 5,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "为什么索引能加速查询\n\n核心原理：用额外的空间和写入开销，把“逐行扫描”变成“按结构定位”，将查询复杂度从 O(N) 降到 O(log N) 甚至 O(1)。\n\n无索引时：全表扫描\n数据在磁盘上按主键/插入顺序存放，查询条件（如 WHERE name = 'x'）无法利用存储顺序，只能逐行读取并比对，百万行数据就要做百万次判断，且每次磁盘 I/O 都很昂贵。\n\n有索引时：结构化查找\n以最常见的 B+ 树为例：\n\n1. 有序 + 高扇出：索引键有序排列，每个节点可容纳上百个键，树非常“矮胖”——千万级数据通常只需 3~4 层。\n2. I/O 次数 ≈ 树高：每下降一层对应一次磁盘页读取，即只需 3~4 次 I/O 就能定位到目标行，而磁盘 I/O 是查询开销的大头。\n3. 叶子节点有序链表：范围查询（BETWEEN、ORDER BY）沿叶子链表顺序读取即可，无需再排序。\n4. 哈希索引：等值",
+   "wall_ms": 34736,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 392,
+   "completion_tokens": 1068,
+   "total_tokens": 1460,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 33786,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/111tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 54,
+   "from_cache": false,
+   "prompt_total_tokens": 569,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}
