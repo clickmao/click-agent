@@ -223,7 +223,7 @@ click-agent/
 - [Architecture Document](docs/architecture.md)
 - [API Document](docs/api.md)
 - [CLI Command Instructions](docs/CLI指令说明.md) — All commands + agent.io line protocol (requirement 2)
-- [Improvement Records](docs/improvements.md) — v7.4 → v0.11.0 real execution evidence & plan archive
+- [Improvement Records](docs/improvements.md) — historical release notes & plan archive
 - [Task Loop](docs/task_loop.md)
 
 ### 🗺 Next Development Plan (v0.11.0)
