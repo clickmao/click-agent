@@ -302,7 +302,7 @@ proxy:
 # gguf 对话模型路径 (文件缺失 → 本地通道诚实降级为不可用, 不伪造; RemoteCatalog 照常服务)
 # bge 嵌入模型见 core.yaml embedding 段 — 两者独立
 local:
-  model_path: /home/agentuser/models/llama-dialog.gguf   # 占位: 放置真实对话 gguf 后本地通道生效
+  model_path: /home/agentuser/models/qwen2.5-0.5b-instruct-q4_k_m.gguf  # R104: 真对话模型 (Qwen2.5-0.5B-Instruct q4_k_m)
   context_size: 4096
   gpu_layers: 0        # vulkan offload 层数 (0 = 纯 CPU)
 

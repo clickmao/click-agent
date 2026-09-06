@@ -104,3 +104,17 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
   本地 ONNX embedding 违反轻量/AOT 原则 → 词面召回 + 内容命中下限 (R44) 为当前最优解,
   语义反转 (喜欢/不喜欢) 为已知接受边界
 - kimi key 认证失败 (负样本保留); round11/16/21/22/24 波动已归因方差
+
+## R103-R104 (2026-09-07): 多 CLI 共享 LLM + bge 优先路由 (用户钦定)
+- **共享 LLM 服务化** (多 CLI 实例不重复加载): `--llm-service` 守护进程单次加载 chat+bge, UDS 帧协议 (4B 长度+STJ source-gen JSON, AOT 零反射), ping/chat/embed 三操作; 客户端短连接 + IsAlive 互斥 (二次启动 exit 3)。LocalLlamaCaller 服务优先/进程内兜底。+7 单测 (376/376)。
+- **E2E 实证**: 服务单实例加载后, CLI 提问 0 次进程内加载 ("本地模型加载完成"0 次), native 推理日志在服务侧; 二实例启动被拒; embed 同句 cos=1.0000。
+- **EmbeddingRouter** (bge 首选/词袋兜底, 用户钦定): BgeModeDecision — LLM 已加载→CPU 档, 独立+真 GPU→vulkan, llvmpipe 软设备→CPU; RAG DI 接线。
+- **native 布局修复**: 0.29 统一二进制事实 — libggml.so 所有变体 DT_NEEDED libggml-vulkan.so → 每变体目录必须含 libggml-vulkan.so (NATIVE-LAYOUT.md); csproj 复制 target 布齐运行输出 5 变体。
+- **缺陷 38** (真): 本地通道无 llm_call 打点 = PGO 盲区, harness llm_calls=0 误判失败 → 对齐云端路径补打点 (ModelQueueRouter.cs:196-213), 实证 provider=local 落盘。
+- **台账补账**: mass_64-70 (批 16+17a) 全绿入账; 待真对话 gguf (qwen2.5-0.5b q4 下载中) 后批 17 续跑。
+
+### R104 补记: 批 17 完成 + qwen 本地通道
+- 批 17 (mass_69-73): **25/25 全绿**, 均值 3890 tok (批16 3690, +5.4% REVIEW=LLM 波动 CV21.5%); wall 48-125s。
+- 本地通道真模型: qwen2.5-0.5b-instruct q4_k_m (491MB, hf-mirror) 接入 models.yaml; **ChatML 模板修复** (裸拼接 0.5B 复读垃圾→'2' 正确) — LlmServiceHost chat 分支。
+- AGENTFRAMEWORK_LOCAL_DISABLED=1 批测开关 (qwen CPU 71s/轮不适合千轮批, local 保留 failover 语义)。
+- 全链真机: CLI→共享服务→qwen→回复 "2" (70s)。

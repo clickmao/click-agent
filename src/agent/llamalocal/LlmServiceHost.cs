@@ -149,15 +149,15 @@ public sealed class LlmServiceHost
 
                 case LlmServiceProtocol.OpChat:
                 default:
-                    var input = string.IsNullOrEmpty(req.System)
-                        ? req.Text ?? ""
-                        : req.System + "\n\n" + req.Text;
+                    // v0.11.0 R104: ChatML 模板 (Qwen2.5/ChatML 系指令模型需结构化 prompt 才有可用输出;
+                    // 裸拼接实测 0.5B 输出复读垃圾 — 00:2x 真机实证)。anti-prompt 含 im_end 正确截停。
+                    var input = $"<|im_start|>system\n{req.System ?? "你是有用的助手。"}<|im_end|>\n<|im_start|>user\n{req.Text ?? ""}<|im_end|>\n<|im_start|>assistant\n";
                     var sb = new System.Text.StringBuilder();
                     foreach (var token in executor.InferAsync(input, new InferenceParams
                     {
                         TokensKeep = 0,
                         MaxTokens = req.MaxTokens > 0 ? req.MaxTokens : 512,
-                        AntiPrompts = new List<string> { "用户:", "User:" },
+                        AntiPrompts = new List<string> { "<|im_end|>", "用户:", "User:" },
                     }).WaitToCompletion())
                         sb.Append(token);
                     var content = sb.ToString().Trim();

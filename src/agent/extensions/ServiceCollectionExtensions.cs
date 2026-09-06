@@ -247,6 +247,10 @@ public static class ServiceCollectionExtensions
         services.AddSingleton(sp =>
         {
             var localCfg = sp.GetRequiredService<agent.modelqueue.ModelCatalog>().LocalChannel;
+            // v0.11.0 R104: 批测开关 — AGENTFRAMEWORK_LOCAL_DISABLED=1 时返回不存在路径, local 通道诚实降级关闭
+            // (qwen 0.5b CPU 71s/轮, 千轮批必须走云端; 本地通道保留为 failover/E2E 语义验证)。
+            if (Environment.GetEnvironmentVariable("AGENTFRAMEWORK_LOCAL_DISABLED") == "1")
+                localCfg.ModelPath = "/nonexistent-local-disabled.gguf";
             return new agent.llamalocal.LocalLlamaCaller(
                 Microsoft.Extensions.Logging.LoggerFactory.Create(b => { }).CreateLogger<agent.llamalocal.LocalLlamaCaller>(),
                 localCfg.ModelPath,
