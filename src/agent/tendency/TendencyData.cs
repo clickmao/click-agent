@@ -80,6 +80,10 @@ public class TendencyAnalyzer : ITendencyAnalyzer
     private readonly Dictionary<string, List<TendencyData>> _userData = new();
     private readonly TendencyConfig _config;
     private readonly object _lock = new();
+    // v0.11.0 R34 (真 bug 24): _userData 纯内存 — 进程重启丢光, 跨会话 UserTendency 恒 0。
+    // 落盘 data/tendency/{userId-safe}.json, 构造时惰性加载 (与 SessionMemory 落盘模式一致)。
+    private readonly string _storeDir;
+    private bool _loaded;
     
     // 预定义主题
     private static readonly Dictionary<string, string[]> TopicKeywords = new()
@@ -89,6 +93,12 @@ public class TendencyAnalyzer : ITendencyAnalyzer
         { "Database", new[] { "sql", "mysql", "postgresql", "mongodb", "database" } },
         { "Testing", new[] { "test", "xunit", "nunit", "mock", "assert" } },
         { "DevOps", new[] { "docker", "kubernetes", "ci", "cd", "pipeline" } },
+        // v0.11.0 R34: 语言/系统主题扩充 (打点实证 "Rust" 信号 0 → 偏好画像空)
+        { "Rust", new[] { "rust", "cargo", "rustc" } },
+        { "Python", new[] { "python", "pip", "pytest", "django", "flask" } },
+        { "Go", new[] { "golang", " go ", "goroutine" } },
+        { "Frontend", new[] { "javascript", "typescript", "react", "vue", "css" } },
+        { "AI/LLM", new[] { "llm", "agent", "prompt", "embedding", "rag" } },
     };
     
     // 预定义风格
@@ -100,9 +110,87 @@ public class TendencyAnalyzer : ITendencyAnalyzer
         { "code_only", new[] { "代码", "实现", "code", "only" } },
     };
     
-    public TendencyAnalyzer()
+    public TendencyAnalyzer() : this("data/tendency") { }
+
+    public TendencyAnalyzer(string storeDir)
     {
         _config = new TendencyConfig();
+        _storeDir = storeDir;
+        LoadAll();
+    }
+
+    /// <summary>v0.11.0 R34: 进程启动加载已落盘的倾向数据 (跨会话画像连续性)</summary>
+    private void LoadAll()
+    {
+        try
+        {
+            if (!Directory.Exists(_storeDir))
+                return;
+            foreach (var file in Directory.EnumerateFiles(_storeDir, "*.json"))
+            {
+                using var doc = System.Text.Json.JsonDocument.Parse(File.ReadAllText(file));
+                var list = new List<TendencyData>();
+                foreach (var el in doc.RootElement.EnumerateArray())
+                {
+                    var d = new TendencyData
+                    {
+                        UserId = el.TryGetProperty("UserId", out var u) ? (u.GetString() ?? "anonymous") : "anonymous",
+                        Timestamp = el.TryGetProperty("Timestamp", out var t) && t.ValueKind == System.Text.Json.JsonValueKind.String
+                            ? DateTime.TryParse(t.GetString(), null, System.Globalization.DateTimeStyles.RoundtripKind, out var dt) ? dt : DateTime.UtcNow
+                            : DateTime.UtcNow,
+                    };
+                    if (el.TryGetProperty("TopicScores", out var tp) && tp.ValueKind == System.Text.Json.JsonValueKind.Object)
+                        foreach (var p in tp.EnumerateObject())
+                            d.TopicScores[p.Name] = p.Value.GetDouble();
+                    if (el.TryGetProperty("StyleScores", out var sp) && sp.ValueKind == System.Text.Json.JsonValueKind.Object)
+                        foreach (var p in sp.EnumerateObject())
+                            d.StyleScores[p.Name] = p.Value.GetDouble();
+                    list.Add(d);
+                }
+                if (list is { Count: > 0 } && list[0].UserId is { Length: > 0 } uid)
+                    _userData[uid] = list;
+            }
+        }
+        catch { /* 倾向加载失败不阻断 — 内存态继续可用 */ }
+    }
+
+    /// <summary>v0.11.0 R34: 写入后落盘 (整体快照, 单用户一文件)。
+    /// 手写 JSON — 全局禁反射序列化 (AOT), TendencyData 仅字典+标量, 手写可控。</summary>
+    private static string EscapeJson(string t) => t
+        .Replace("\\", "\\\\").Replace("\"", "\\\"")
+        .Replace("\n", "\\n").Replace("\r", "\\r").Replace("\t", "\\t");
+
+    private static string SerializeScores(Dictionary<string, double> d) => "{" +
+        string.Join(",", d.Select(kv => $"\"{EscapeJson(kv.Key)}\":{kv.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)}")) + "}";
+
+    private void Persist(string userId)
+    {
+        try
+        {
+            Directory.CreateDirectory(_storeDir);
+            var safe = string.Concat(userId.Select(c => char.IsLetterOrDigit(c) ? c : '_'));
+            var sb = new System.Text.StringBuilder("[");
+            var first = true;
+            foreach (var d in _userData[userId])
+            {
+                if (!first) sb.Append(',');
+                first = false;
+                sb.Append("{\"UserId\":\"").Append(EscapeJson(d.UserId ?? ""));
+                sb.Append("\",\"Timestamp\":\"").Append(d.Timestamp.ToString("O"))
+                  .Append("\",\"TopicScores\":").Append(SerializeScores(d.TopicScores))
+                  .Append(",\"StyleScores\":").Append(SerializeScores(d.StyleScores))
+                  .Append('}');
+            }
+            sb.Append(']');
+            File.WriteAllText(Path.Combine(_storeDir, safe + ".json"), sb.ToString());
+            agent.config.AgentTelemetry.Emit("tendency", "TendencyAnalyzer",
+                ("op", "persist"), ("ok", true), ("user", safe), ("count", _userData[userId].Count));
+        }
+        catch (Exception pEx)
+        {
+            agent.config.AgentTelemetry.Emit("tendency", "TendencyAnalyzer",
+                ("op", "persist"), ("ok", false), ("error", pEx.GetType().Name + ": " + pEx.Message));
+        }
     }
 
     /// <summary>
@@ -202,6 +290,8 @@ public class TendencyAnalyzer : ITendencyAnalyzer
             {
                 _userData[userId].RemoveAt(0);
             }
+
+            Persist(userId); // v0.11.0 R34: 落盘 (锁内快照, 防并发写坏)
         }
         
         return Task.CompletedTask;

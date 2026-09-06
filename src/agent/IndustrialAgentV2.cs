@@ -442,8 +442,10 @@ public class IndustrialAgentV2 : AgentBase
                     // v0.11.0 (打点驱动修复): goal 锚定时抽取关键实体 — 实体空导致隔离判定永不触发
                     mem.SetGoal(goalText, agent.intent.TaskRelevanceChecker.ExtractEntities(goalText), intent);
                 }
-                mem.Remember($"[{intent}] {(llmResponse.Success ? "完成" : "失败")}: " +
-                    (message.Content.Length > 120 ? message.Content[..120] + "…" : message.Content));
+                // v0.11.0 R33: 记录用户信息本身 (前 60 字) — 意图/状态后置;
+                // 旧格式 "[general] 完成: 记住我最喜欢的颜色是蓝色" 让偏好检索时被流水账前缀淹没
+                var brief = message.Content.Length > 60 ? message.Content[..60] + "…" : message.Content;
+                mem.Remember($"{brief} ({(llmResponse.Success ? $"{intent} 完成" : $"{intent} 失败")})");
                 if (llmResponse.Success)
                     mem.AddMilestone(intent);
                 _sessionMemoryStore.Save(memSession.Id, mem);
@@ -477,23 +479,28 @@ public class IndustrialAgentV2 : AgentBase
                 var saved = agent.registry.NextTurnForecast.Save(_dataStoragePath, identity.Uid, message.Content, intent);
 
                 // v0.11.0 R14: 用户倾向写入链路修复 — 此前 UpdateTendencyAsync 无人调用, UserTendency 源恒 0
-                _ = Task.Run(() =>
+                // v0.11.0 R34: 改同步 await — fire-and-forget 在 /exit 快速退出时被杀,
+                // 落盘永不及写 (真机实测 2 轮皆空); 纯内存计算 <1ms, 不值得异步化。
+                try
                 {
-                    try
+                    var tendency = new agent.tendency.TendencyData
                     {
-                        var tendency = new agent.tendency.TendencyData
-                        {
-                            UserId = message.SenderId ?? "anonymous",
-                            Timestamp = DateTime.UtcNow,
-                        };
-                        foreach (var kv in agent.tendency.TendencyAnalyzer.ExtractSignals(message.Content))
-                        {
-                            tendency.TopicScores[kv.Key] = kv.Value;
-                        }
-                        return _tendencyAnalyzer.UpdateTendencyAsync(tendency.UserId, tendency);
+                        UserId = message.SenderId ?? "anonymous",
+                        Timestamp = DateTime.UtcNow,
+                    };
+                    foreach (var kv in agent.tendency.TendencyAnalyzer.ExtractSignals(message.Content))
+                    {
+                        tendency.TopicScores[kv.Key] = kv.Value;
                     }
-                    catch { return Task.CompletedTask; } // 倾向写入失败不阻断主链
-                });
+                    await _tendencyAnalyzer.UpdateTendencyAsync(tendency.UserId, tendency);
+                    agent.config.AgentTelemetry.Emit("tendency", "IndustrialAgentV2",
+                        ("op", "update"), ("ok", true), ("signals", tendency.TopicScores.Count));
+                }
+                catch (Exception tenEx)
+                {
+                    agent.config.AgentTelemetry.Emit("tendency", "IndustrialAgentV2",
+                        ("op", "update"), ("ok", false), ("error", tenEx.GetType().Name));
+                }
                 response.Data = new Dictionary<string, object>
                 {
                     { "intent", intent },

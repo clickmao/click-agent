@@ -125,6 +125,7 @@ public class ModelQueueTests
         var port = FreeTcpPort();
         listener.Prefixes.Add($"http://127.0.0.1:{port}/v1/");
         listener.Start();
+        var hitCount = 0;
         var serverTask = Task.Run(async () =>
         {
             while (listener.IsListening)
@@ -132,8 +133,24 @@ public class ModelQueueTests
                 try
                 {
                     var ctx = await listener.GetContextAsync();
-                    ctx.Response.StatusCode = 500;
-                    ctx.Response.Close();
+                    var n = System.Threading.Interlocked.Increment(ref hitCount);
+                    if (n <= 3)
+                    {
+                        // 主模型: 首次 + 请求内重试 2 次 = 3 个 500 (v0.11.0 R23 语义)
+                        ctx.Response.StatusCode = 500;
+                        ctx.Response.Close();
+                    }
+                    else
+                    {
+                        // 备模型 (切备后): 返回合法 chat 响应
+                        var body = "{\"id\":\"1\",\"choices\":[{\"message\":{\"role\":\"assistant\",\"content\":\"ok\"}}],\"usage\":{\"prompt_tokens\":1,\"completion_tokens\":1}}";
+                        var bytes = System.Text.Encoding.UTF8.GetBytes(body);
+                        ctx.Response.StatusCode = 200;
+                        ctx.Response.ContentType = "application/json";
+                        ctx.Response.ContentLength64 = bytes.Length;
+                        ctx.Response.OutputStream.Write(bytes, 0, bytes.Length);
+                        ctx.Response.Close();
+                    }
                 }
                 catch (Exception) { break; }
             }
@@ -143,22 +160,23 @@ public class ModelQueueTests
             var catalog = TestCatalog();
             catalog.Models[0].Endpoint = $"http://127.0.0.1:{port}/v1/chat/completions";
             catalog.Models[0].ApiKeyEnv = "MQ_TEST_KEY";
+            catalog.Models[1].ApiKeyEnv = "MQ_TEST_BACKUP"; // v0.11.0 R23: 备选需 key 可用 (过滤规则), 给备 key 才能切
+            catalog.Models[1].Endpoint = $"http://127.0.0.1:{port}/v1/chat/completions"; // 备模型同端点: 前 3 次 500 后成功
             Environment.SetEnvironmentVariable("MQ_TEST_KEY", "k");
+            Environment.SetEnvironmentVariable("MQ_TEST_BACKUP", "k2");
             try
             {
                 var router = new ModelQueueRouter(catalog, new HttpClientFactoryStub(),
                     Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance);
-                // 主模型连续 3 败 → 备模型接手 (返回非 Success 但来自备模型; 此处备也无 key → 诚实 Error)
-                var r1 = await router.CallAsync(new QueuePrompt { UserMessage = "hi" }, TaskKindHint.General, "general");
-                var r2 = await router.CallAsync(new QueuePrompt { UserMessage = "hi" }, TaskKindHint.General, "general");
-                var r3 = await router.CallAsync(new QueuePrompt { UserMessage = "hi" }, TaskKindHint.General, "general");
-                // 第 3 次失败触发切换: 审计里有 consecutive_failures 事件, 活跃模型变了
-                Assert.Contains(router.Switches, s => s.Reason == "consecutive_failures");
+                // 主模型瞬态失败 → 请求内重试后切备 (v0.11.0 R23 failover 增强)
+                await router.CallAsync(new QueuePrompt { UserMessage = "hi" }, TaskKindHint.General, "general");
+                Assert.Contains(router.Switches, s => s.Reason == "transient_failover");
                 Assert.NotEqual("gpt-4o", router.ActiveModel?.Id);
             }
             finally
             {
                 Environment.SetEnvironmentVariable("MQ_TEST_KEY", null);
+                Environment.SetEnvironmentVariable("MQ_TEST_BACKUP", null);
             }
         }
         finally
