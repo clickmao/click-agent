@@ -71,7 +71,8 @@ internal class Program
         {
             var recovery = agent.recovery.CheckpointRecovery.BuildRecoveryPlan(lastCheckpoint);
             if (recovery.Resumable)
-                Console.WriteLine($"[recovery] {recovery.Summary}");
+                provider.GetRequiredService<ILogger<Program>>()
+                    .LogInformation("[recovery] {Summary}", recovery.Summary);
         }
 
         if (smoke && oneShot == null)
@@ -245,7 +246,8 @@ internal class Program
 
     private static async Task<int> RunSmokeAsync(ServiceProvider provider, IAgent entryAgent)
     {
-        Console.WriteLine("AgentFramework host (NativeAOT) starting...");
+        var sink = provider.GetRequiredService<IOutputSink>();
+        sink.Write("AgentFramework host (NativeAOT) starting...");
         var logger = provider.GetRequiredService<ILogger<Program>>();
         var probeTypes = new Type[]
         {
@@ -266,11 +268,11 @@ internal class Program
             provider.GetRequiredService(t);
             ok++;
         }
-        Console.WriteLine($"DI graph: {ok}/{probeTypes.Length} resolved");
+        sink.Write($"DI graph: {ok}/{probeTypes.Length} resolved");
 
         var agentCtx = new AgentContext(provider) { SessionId = "aot-smoke", UserId = "host" };
         await entryAgent.InitializeAsync(agentCtx);
-        Console.WriteLine($"Agent state after init: {entryAgent.State}");
+        sink.Write($"Agent state after init: {entryAgent.State}");
 
         var msg = new Message
         {
@@ -279,9 +281,9 @@ internal class Program
             SessionId = "aot-smoke"
         };
         var reply = await entryAgent.ProcessAsync(msg, CancellationToken.None);
-        Console.WriteLine($"E2E: Success={reply.Success} Content={Truncate(reply.Content, 80)} Error={Truncate(reply.Error, 60)}");
+        sink.Write($"E2E: Success={reply.Success} Content={Truncate(reply.Content, 80)} Error={Truncate(reply.Error, 60)}");
         if (reply.Success)
-            Console.WriteLine("WARN: Success=true without API key — check ILLMCaller registration");
+            sink.Write("WARN: Success=true without API key — check ILLMCaller registration");
 
         var sessionMgr = provider.GetRequiredService<agent.session.ISessionManager>();
         var round2 = await entryAgent.ProcessAsync(new Message
@@ -292,14 +294,15 @@ internal class Program
         }, CancellationToken.None);
         var session = await sessionMgr.GetSessionAsync("aot-smoke");
         var userMsgs = session?.Messages.Count(m => m.Role == MessageRole.User) ?? 0;
-        Console.WriteLine($"Multi-turn: session={session?.Id ?? "NULL"} userMsgs={userMsgs} round2Success={round2.Success}");
+        sink.Write($"Multi-turn: session={session?.Id ?? "NULL"} userMsgs={userMsgs} round2Success={round2.Success}");
         if (session == null || userMsgs != 2)
         {
-            Console.Error.WriteLine($"FATAL: multi-turn session broken (expected session with 2 user messages, got {session?.Id ?? "NULL"} / {userMsgs})");
+            provider.GetRequiredService<ILogger<Program>>()
+                .LogError("FATAL: multi-turn session broken (expected session with 2 user messages, got {Session} / {UserMsgs})", session?.Id ?? "NULL", userMsgs);
             return 1;
         }
 
-        Console.WriteLine("AgentFramework host: OK (full-graph AOT smoke passed)");
+        sink.Write("AgentFramework host: OK (full-graph AOT smoke passed)");
         return 0;
     }
 

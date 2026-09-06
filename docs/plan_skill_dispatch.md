@@ -1,5 +1,7 @@
 # 子模块开发计划: Skill 调度模块 (领域技能封装与口径管控)
 
+> **[v0.10.0 落地注记]** P1/P2 已落地; P3 语义匹配已接 bge (TriggerMatcher 语义层 cos≥0.45); Skill 定义支持 SKILL.md 目录包 (Anthropic Agent-Skills Open Standard, 见 Skill全球通用开放规范.md) 与 legacy yaml 并存。
+
 > 独立计划文档 — 阅读本文件即可开发, 不需加载全部项目上下文。
 > 状态: 待开发 (v7.15 候选) · 前置基线: v7.14 (`953efef`)
 >

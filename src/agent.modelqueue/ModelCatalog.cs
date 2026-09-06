@@ -34,6 +34,22 @@ public sealed class ModelCatalogEntry
 }
 
 /// <summary>余额查询方案 (C.6.4 — provider 差异大, scheme 枚举分派)</summary>
+/// <summary>本地推理通道配置 (models.yaml local 段 — gguf 路径/上下文/GPU 层数)</summary>
+public sealed class LocalChannelConfig
+{
+    /// <summary>gguf 对话模型路径 (空/文件缺失 → 本地通道不可用)</summary>
+    public string ModelPath { get; set; } = string.Empty;
+
+    /// <summary>上下文窗口大小</summary>
+    public int ContextSize { get; set; } = 4096;
+
+    /// <summary>vulkan offload 层数 (0 = 纯 CPU)</summary>
+    public int GpuLayers { get; set; }
+
+    /// <summary>配置路径非空且文件存在 = 通道就绪</summary>
+    public bool IsReady => !string.IsNullOrEmpty(ModelPath) && File.Exists(ModelPath);
+}
+
 public sealed class BalanceScheme
 {
     public string Endpoint { get; set; } = string.Empty;
@@ -49,6 +65,9 @@ public sealed class BalanceScheme
 public sealed class ModelCatalog
 {
     public List<ModelCatalogEntry> Models { get; set; } = new();
+    /// <summary>本地通道配置 (models.yaml local 段; 缺省 = 本地通道关闭)</summary>
+    public LocalChannelConfig LocalChannel { get; set; } = new();
+
     public Dictionary<string, BalanceScheme> BalanceSchemes { get; set; } =
         new(StringComparer.OrdinalIgnoreCase);
 
@@ -56,7 +75,18 @@ public sealed class ModelCatalog
     public static ModelCatalog Load(ConfigSnapshot snapshot)
     {
         var catalog = new ModelCatalog();
-        var section = snapshot.GetSection("models");
+        // v0.10.0 修复: models.yaml 顶层 models 是列表键 — GetSection 只服务 dict 节,
+        // 用 TryGetTopLevel 取原始值 (真实 bug: 运行时目录一直为空, 测试全用内联目录未暴露)
+        object? modelsRoot = snapshot.TryGetTopLevel("models", out var mv) ? mv : null;
+        if (modelsRoot is Dictionary<string, object?> dictRoot)
+        {
+            // 容错: models: 下再嵌 models: 列表 (历史格式)
+            if (dictRoot.TryGetValue("models", out var nested) && nested is List<object?> nestedList)
+                modelsRoot = nestedList;
+        }
+        var section = modelsRoot is List<object?> ml
+            ? WrapAsSection(ml, snapshot)
+            : snapshot.GetSection("models");
         if (section.TryGetValue("models", out var raw) && raw is List<object?> list)
         {
             foreach (var item in list)
@@ -80,6 +110,15 @@ public sealed class ModelCatalog
                 });
             }
         }
+        if (section.TryGetValue("local", out var lc) && lc is Dictionary<string, object?> ld)
+        {
+            catalog.LocalChannel = new LocalChannelConfig
+            {
+                ModelPath = AsString(ld, "model_path"),
+                ContextSize = (int)AsDouble(ld, "context_size"),
+                GpuLayers = (int)AsDouble(ld, "gpu_layers"),
+            };
+        }
         if (section.TryGetValue("balance_schemes", out var bs) && bs is Dictionary<string, object?> schemes)
         {
             foreach (var (k, v) in schemes)
@@ -94,6 +133,19 @@ public sealed class ModelCatalog
             }
         }
         return catalog;
+    }
+
+    /// <summary>顶层列表包装为节 dict (models 键 → 列表) — Load 内部形态适配</summary>
+    private static Dictionary<string, object?> WrapAsSection(List<object?> models, ConfigSnapshot snapshot)
+    {
+        var d = new Dictionary<string, object?>();
+        d["models"] = models;
+        // local/balance_schemes 仍是顶层 dict 键 — 从 snapshot 原始顶层取出
+        if (snapshot.TryGetTopLevel("local", out var lc) && lc is Dictionary<string, object?> lcd)
+            d["local"] = lcd;
+        if (snapshot.TryGetTopLevel("balance_schemes", out var bs) && bs is Dictionary<string, object?> bsd)
+            d["balance_schemes"] = bsd;
+        return d;
     }
 
     public ModelCatalogEntry? Find(string? id) =>

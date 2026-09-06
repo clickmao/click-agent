@@ -1,5 +1,7 @@
 # 子模块开发计划: 模型队列 (Model Queue) + Token 余额查询
 
+> **[v0.10.0 落地注记]** 本模块已全部落地: ModelQueueRouter 三通道 (本地实跑+测试) / TokenUsageService 余额三段式同步+不足切模 / /model list 序号选择 / Token 统计 / 官方端点代理 (models.yaml proxy)。验收最后一项「真实多通道并发调用」仍需多 provider key 环境联调。
+
 > 独立计划文档 — 阅读本文件即可开发, 不需加载全部项目上下文。
 > 状态: 待开发 (v7.15 候选) · 前置基线: v7.14 (`953efef`)
 >

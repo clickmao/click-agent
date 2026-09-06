@@ -1,9 +1,61 @@
-# click-agent (v0.9.0)
+# click-agent (v0.10.0)
 
-基于微软 MAF (Microsoft Agent Framework) 与 WebReaper 的工业级 C# 智能体框架。net10.0 / NativeAOT 零警告 / 322 项测试全绿。
-版本口径: v0.9.x — 工业 1.0 前打磨线 (本轮需求1-6: 官方通道混合调度 / agent.io 协议库 / 会话中断恢复 / 公开配置读写 / 版本对齐)。
+基于微软 MAF (Microsoft Agent Framework) 与 WebReaper 的 C# 智能体框架 — 全场景覆盖, 100% 托管代码。net10.0 / NativeAOT 零警告 / 341 项测试全绿。
+版本口径: v0.10.x — 本轮: Yamlify YAML 解析 / Token 统计与余额联动切模 / Skill 语义匹配 (bge) / 统一输出收口。
 
-## 核心特性
+## 语言切换 | Language Switch
+
+[🇨🇳 中文](#中文版本) | [🇺🇸 English](#english-version)
+
+---
+
+## 中文版本 | Chinese Version
+
+### 🆕 v0.10.0 新增能力
+- **Yamlify YAML 解析**: 换用 SourceGenerator 级库 (零反射, NativeAOT 实测零警告), YAML 1.2 全规范; `MiniYaml.Parse` API 兼容不变
+- **Token 使用统计 + 余额联动**: 初始化真实 API 同步 → 本地累计 → 阈值再同步; 余额不足自动切换其他模型 + `model:xxx flags:余额不足` 前端提示; `/token stats` 全 JSON 统计
+- **Skill 语义匹配 (bge)**: 词面未命中 → 384 维语义余弦疑似判定, 嵌入器不可用自动回退
+- **官方端点可配置代理**: `models.yaml proxy` 段, 留空直连
+- **统一输出收口**: 全部输出 (日志/审批/前端指令/步骤状态) 走 IOutputSink 统一底层接口, 库内零 Console 直写
+- **/forecast 指令**: 下轮预估 (v7.11 机制) 前端可见化
+- **/model list 序号选择**: 序号 1-N, `/model 3` ≡ `/model <id>`; auto/manual 双模式指令切换
+
+### 🧭 系统能力全景 (v0.10.0)
+
+**推理与任务**
+- 意图分析与子任务拆解: 19 个中英连接词切分, Sequential/Parallel/DependsOnOutput 关系标注
+- TaskPlan 依赖拓扑执行: 分层并发 (Task.WhenAll + MaxParallelism)、节点级重试 (指数退避+瞬态分类)、敏感意图 (文件/git) PausedForApproval 审批暂停
+- 隔离任务: 无关提问 → 独立子 agent 执行 (独立会话/不污染主记忆), 完成即销毁
+- 敏感意图审批: 文件操作/git 操作默认 PausedForApproval, 全计划暂停等审批
+
+**模型调度 (agent.modelqueue)**
+- 三通道混合调度: 本地 (LocalLlamaCaller 实跑) > 官方 (硬编码+内存态 key) > 远端 API
+- 模型目录: 6 模型 (价格/推理分/编码分/上下文窗), 意图×token 预估×费用综合选模
+- auto/manual 双模式: `/model list` 序号 1-N 选择; 连续失败自动切换
+- Token 统计+余额联动: 初始化 API 同步→本地累计→阈值再同步; 不足切模+`flags:余额不足`
+- 官方端点可配置代理 (models.yaml proxy 段)
+
+**Skill 调度 (agent.skills)**
+- SKILL.md 目录包 (Anthropic Agent-Skills Open Standard) + legacy yaml 双格式
+- 四级触发: 关键词→正则→领域词→bge 语义 (cos≥0.45), 疑似即激活
+- 生命周期状态机 (LRU/脱域卸载/熔断) + 沙箱上下文 + 超时/幂等重试
+
+**上下文与记忆 (agent.contextgradient)**
+- 梯度压缩: L0 原文/L1 轻摘/L2 索引/L3 归档; P0-P3 锚点 (P0 永不压缩)
+- 主题域聚类 + 三重漂移校验 (不过即回滚, 版本链 10 版) + 跨进程持久化
+- 会话记忆滚动 + GoalProfile + AgentProfile 动态学习 + 下轮预估落盘
+
+**配置与输出**
+- 四层 YAML 分层配置 (base/env/modules/runtime): 深合并、@dynamic 热更新、启动强校验
+- YAML 解析: Yamlify (SourceGenerator 级, 零反射, AOT 零警告)
+- 统一输出: IOutputSink 全出口收口 (日志/审批/前端指令/步骤状态), 库内零 Console 直写
+- 日志四通道开关 + thinking 分片流 (`@chatbox:` JSON 协议行)
+
+**工程化**
+- agent.io 协议库 (netstandard2.1 零依赖): 单行事件 + @stream 流式块读写
+- 会话中断恢复: ExecutionCheckpoint 原子落盘, 重启复原执行进度
+- NativeAOT: 全链路 0 IL 警告, 12MB 单文件 ELF
+- 能力插件接口: ICapabilityPlugin (工作区/测试/审查由开发者实现)
 
 ### 🚀 v0.9.0 能力总览 (需求1-6)
 - **三通道模型调度**: 本地模型 > 官方通道 > 远端 API, 优先级恒定; 通道并发数托管; 子任务按 并发余量×推理能力×推理速度×价格 综合选模; 官方模型硬编码 (不进 yaml), key 仅 CLI `--official-key` / `/official-key` 注入 (内存态)
@@ -25,7 +77,7 @@
 
 ### 🎯 意图分析与子任务拆解
 - **IntentDecomposer**: 复合句按连接词切分为子任务序列，四级关系标注——`Sequential`（然后/接着，保执行序）、`Parallel`（同时/以及，同层并行）、`DependsOnOutput`（基于/根据，数据依赖）；依赖词本身就是切分点，句中误切由边界保护拦截
-- **19 个中英连接词**，英文按词边界匹配（`and` 不切 `android`），单字连接词前后贴非汉字才切（"再次检查"不误切）
+- **19 个中英连接词**，英文按词边界匹配（`and` 不切 `android`），单字连接词前后贴非汉字才切（\"再次检查\"不误切）
 
 ### 📋 任务计划图 (TaskPlan)
 - `TaskPlanBuilder` 将子任务拆解为依赖拓扑图（Level 分层 + ParallelGroup 并行组）
@@ -133,15 +185,21 @@ click-agent/
 ├── src/
 │   ├── agent/               # 核心：意图拆解/任务计划/注册表/区段路由/本地推理
 │   ├── agent.core/          # 基础契约：Message/AgentContext/IAgent
-│   ├── agent.host/          # CLI 宿主 (NativeAOT 发布)
-│   ├── agent.planner/       # 任务执行引擎
+│   ├── agent.config/        # 四层 YAML 分层配置：ConfigSnapshot/ConfigWriter/MiniYaml (Yamlify 门面)
+│   ├── agent.modelqueue/    # 模型队列：Router/Catalog/ChannelScheduler/BalanceQuery/TokenUsage
+│   ├── agent.skills/        # Skill 调度：Registry/TriggerMatcher (bge)/PackageLoader (SKILL.md 规范)
+│   ├── agent.contextgradient/ # 梯度压缩：分层/锚点/聚类/漂移校验 + BgeEmbedder
+│   ├── agent.logging/       # 日志四通道 + IChatboxSink (@chatbox: 协议行)
+│   ├── agent.io/            # 协议库 (netstandard2.1)：行协议/流式块读写
+│   ├── agent.output/        # 输出管道：Formatter/Spectre 渲染
+│   ├── agent.host/          # CLI 宿主 (NativeAOT, IOutputSink)
 │   ├── agent.codegen/       # 代码生成
-│   ├── agent.recovery/      # 故障恢复
+│   ├── agent.recovery/      # 会话中断恢复：ExecutionCheckpoint
 │   ├── agent.rag/           # RAG 召回
 │   ├── agent.vectormemory/  # 向量记忆
 │   ├── agent.workspace/     # 工作区
-│   └── agent.tests/         # 173 项测试
-└── docs/                    # 架构/API/改进记录
+│   └── agent.tests/         # 341 项测试
+└── docs/                    # 架构/API/改进记录/计划文档
 ```
 
 ## 验证基线
@@ -149,9 +207,9 @@ click-agent/
 | 项 | 结果 |
 |---|---|
 | 编译 (--no-incremental) | 0 错误 0 警告 |
-| 测试 | 173/173 Passed |
-| NativeAOT (linux-x64) | 0 IL/TR 警告，2.9MB 单文件 |
-| 端到端冒烟 | DI 全图 11/11 解析 + 多轮会话断言 |
+| 测试 | 341/341 Passed |
+| NativeAOT (linux-x64) | 0 IL/TR 警告，12MB 单文件 |
+| 端到端冒烟 | DI 全图解析 + 多轮会话断言 + `/model list` 6 模型 + `/token stats` + `/forecast` |
 
 ## 文档
 
@@ -161,24 +219,18 @@ click-agent/
 - [改进记录](docs/improvements.md) — v7.4 → v7.12 每轮真实执行证据
 - [任务循环](docs/task_loop.md)
 
-### 🗺 开发计划 (v7.15 — 全部节点已落地)
-每个开发计划独立成文（单个模块一个文档，无需加载全上下文）；无法在计划期确定的事项已在各文档内标注**待确认**留给下次开发核实。
+### 🗺 下一步开发计划 (v0.11.0)
 
-0. ✅ **TaskPlan 体系归拢**（`d46e735`）：代码库存在两套并行任务计划体系（遗留 `agent.planner` vs 现役 `TaskPlan*`），且现役主链一条都不跑执行器（`TaskPlanExecutor` 生产零构造、仅测试调用；`TaskPlanBuilder.Build` 生产零调用；`WaitingClarification` 死状态零赋值）。本项**定案：删除遗留 `agent.planner` 项目与 V1 残留（不再评估保留）**，再把 V2 主链接入计划执行（影子模式→主路）。详见 [plan_taskplan_consolidation.md](docs/plan_taskplan_consolidation.md)。
-1. ✅ **执行器同层并发化**（`45f762e`）：`TaskPlanExecutor.ExecuteAsync` 现为逐节点串行 await（源码注释自认"同层并行留给并发化迭代"）；`Level/ParallelGroup` 算法**已存在**（`ComputeLevelsAndParallelGroups`），本项只补执行端：同层并发（`Task.WhenAll` + `MaxParallelism` 上限分片）、跨层等待上游、保留全部现有失败/暂停/问询语义。详见 [plan_executor_parallel.md](docs/plan_executor_parallel.md)。
-2. ✅ **节点级重试策略**（`2e6cd5d`）：单节点失败现直接 FailFast 放弃全计划（源码注释自认"重试策略后续迭代"）；补 `MaxRetries` + 指数退避 + 瞬态/永久失败分类 + 重试审计进 `TaskPlanRun`，取消永不重试。详见 [plan_node_retry.md](docs/plan_node_retry.md)。
-3. ✅ **隔离任务**（`e5bbb9c`）：主 agent 任务循环中收到**与当前目标无关的新提问**（如计算器开发中突然要求"查天气"）→ 纯规则打分判定（实体重叠/指代词/意图类别，锚=`SessionMemory.GoalProfile.KeyEntities`）→ 额外开**隔离边界的子 agent** 执行（独立会话/不写主记忆/不污染主画像/静默问询），完成即销毁。详见 [plan_isolated_task.md](docs/plan_isolated_task.md)。
-4. ✅ **模型队列 + Token 余额查询**（`4645c89`）：独立模块 `src/agent/modelqueue/`；本地 JSON config（`data/config/model_queue.json`）存主/次模型（key 只存环境变量名）；手动 `/model` 指定 + 自动模式（主模型连续 N 败切副模型，取消永不触发切换）+ 计价策略路由（上下文压缩等性能不敏感功能自动走便宜模型）；新增本地指令 `/balance` 查询 token 账户余额（双通道 JSON 输出，不支持的端点诚实报错）。详见 [plan_model_queue.md](docs/plan_model_queue.md)。
-5. ✅ **全模块 YAML 分层配置体系**（P1, `e1f8078`）：新模块 `src/agent.config/`——`config/base|env|modules|runtime` 四级分层，**模块只调 `ConfigSnapshot.Get<T>()`，base 配置被同名 module 配置增量覆盖**（用户钦定核心契约：深合并、未定义字段继承低层）；启动强校验失败即失败、缺失兜底默认值、`@dynamic immediate/next-turn` 热更新标注；现有硬编码（EvidenceGate 疑问数、搜索熔断、源配额、模型队列参数等）收编为 6 个 base yaml；配置类 JSON 废弃转 YAML（运行时**数据**落盘仍 JSON 不动）；AOT 风险项：YamlDotNet 反射 vs NativeAOT，开发第一步先 POC，失败则启用零反射 YAML 子集解析器备选。详见 [plan_yaml_config.md](docs/plan_yaml_config.md)。
-6. ✅ **Skill 调度模块**（P1, `036da83`）：新模块 `src/agent.skills/`（依据《Skill 模块技术设计文档 v1.0》）——领域级能力封装与口径管控：注册中心（skills/ 目录 yaml 定义）+ 三级触发匹配（前缀树预匹配→意图/正则/语义精匹配→上下文匹配，**疑似命中即激活**，插在 V2 推理前）+ 生命周期状态机（会话缓存/连续两轮脱域自动卸载/挂起恢复）+ 上下文隔离沙箱（白名单读/写回卷/中间数据不入历史）+ 执行调度（超时/幂等重试/熔断）+ 标准化输出（`force_use` 强制口径禁模型篡改）；失败自动降级普通推理不阻塞主链；全部阈值走第 5 项 YAML 分层配置；多 Skill 编排映射 TaskPlan 不新建执行引擎。详见 [plan_skill_dispatch.md](docs/plan_skill_dispatch.md)。
-7. ✅ **日志细分通道与前端思考流协议**（`d286471`）：LogFlags 四位独立开关 {显示到控制台/显示到chatbox思考/显示到chatbox输出/记录到日志}；CLI 日志缓存 `/log dump` 存档；`thinking_page_switch` / `thinking_end` 前端 JSON 指令（思考分片推送防前端全量加载）。详见 [plan_log_channels.md](docs/plan_log_channels.md)。
-8. ✅ **模型目录与意图选模**（`4645c89`）：推理/编码能力 1-10 标准值；`config/base/models.yaml` 知名模型目录（除 API-KEY 外全参数 + 余额查询方案）；"自动"按意图×token 预估×费用综合选模（重推理→全量版，轻意图→flash）；新增模型强制真实 http 校验（假 key 期望 401 = 地址合法）。详见 [plan_model_queue.md](docs/plan_model_queue.md) C.6。
-9. ✅ **上下文梯度压缩与防漂移**（P1 规则版, `6efe75f`）：新模块 `src/agent.context/`（依据《上下文梯度压缩与防漂移子系统技术设计文档 v1.0》）——L0 原文/L1 轻摘/L2 结构化索引/L3 归档四层梯度（近详远略）+ P0-P3 分级锚点（P0 永不压缩，召回率强制 100%）+ 主题域增量聚类（语义×0.7+实体×0.3，每 10 轮巡检合并/拆分）+ 三重漂移校验（锚点召回/语义相似度 0.92/事实三元组）不过即回滚（版本链 10 版，连续失败降级）+ **重复确认驱动弹性校正**（四类信号→仅目标主题域提层，3/5/8 轮阶梯冷却回落）+ **跨进程持久化复用**（fragments/topics/versions/essence 落盘 `data/context/`，重启重建索引，essence 注入新会话初始锚——用户点名）；P1 规则版先行（实体 Jaccard 聚类），P3 接 bge 真向量（`/home/agentuser/models/bge-small-*.gguf`，当前 EmbeddingConfig 是空壳）；全部阈值走第 5 项 YAML 配置（规范文档 5.3 节参数表）。详见 [plan_context_compression.md](docs/plan_context_compression.md)。
+> 历史计划 (v7.15 十节点 — 全部已落地) 已归档至 [improvements.md](docs/improvements.md); 各模块设计细节见 docs/plan_*.md。
 
-> 计划总图：`docs/plans/v715_dev_plan.taskplan.json`（TaskPlan 结构 + 每节点 DocRef 标注文档，防漂移测试 `DevPlanDocRefTests` 固化）
->
-> **v7.15 基线**：276/276 测试全绿 · Release 全量编译 0 警 0 错 · NativeAOT publish 0 IL 警 · 冒烟通过。
-> 遗留迭代点（各计划文档 ⚠ 待确认节）：Skill P2 生命周期/执行调度、Skill P3 语义匹配、压缩 P3 向量化、chatbox 推送传输通道。
+1. **Chatbox WebSocket 宿主**: IChatboxSink 协议行已就绪 (`@chatbox:` JSON), 补真实 WebSocket 传输实现与前端面板对接 (当前仅 Console 落地)
+2. **余额阈值切模 E2E**: TokenUsageService 余额联动逻辑已测试覆盖, 需真实 API key 环境跑通端到端切模与 `flags:余额不足` 前端提示
+3. **Skill 执行型脚本调度**: SKILL.md 包 `scripts/` 目录执行体接入 SkillExecutor (解析/沙箱/超时已有, 缺脚本进程调度)
+4. **上下文压缩 P3 向量化**: L1 轻摘/聚类接 BgeEmbedder 真向量 (P1 规则版已落地, bge 已接入 Skill 语义匹配)
+5. **模型目录 verify 补全**: 全目录 6 模型真机校验 (api.openai.com 本网络 RST, 需代理环境复测)
+6. **GitHub 开源发布**: LICENSE/CI 工作流/徽章/英文 README 精简版
+
+> **v0.10.0 基线**：341/341 测试全绿 · Release 编译 0 警 0 错 · NativeAOT 0 IL 警 · agenthost 12MB ELF 真机冒烟通过。
 
 ## 配置
 
@@ -207,6 +259,280 @@ openai:
 
 **覆盖优先级**：`runtime/dynamic.yaml` > `modules/{module}.yaml`（同名覆盖 base，用户钦定契约）> `env/{env}.yaml` > `base/{module}.yaml`；深合并、未定义字段自动继承低层。API Key 优先走环境变量 `AGENT_OPENAI_KEY`；未配置时走 `NullLLMCaller` 明确报错路径，不静默伪造。模块代码只调 `agent.config.ConfigSnapshot`，禁止自行读 yaml 文件。
 
-## 许可证
+## 依赖库 | Dependencies
+
+### 核心依赖 | Core Dependencies
+| 库名称 | 版本 | 用途 | 链接 |
+|--------|------|------|------|
+| **Microsoft.Extensions.*** | 10.0.8 | .NET 生态系统核心依赖 | [Microsoft.Extensions](https://docs.microsoft.com/dotnet/api/microsoft.extensions) |
+| **WebReaper** | 11.3.1 | 搜索结果全文增强引擎 | [WebReaper](https://github.com/WebReaper/WebReaper) |
+| **LLamaSharp** | 0.27.0 | 本地大语言模型推理 (含 bge 嵌入语义匹配) | [LLamaSharp](https://github.com/SciSharp/LLamaSharp) |
+| **Silk.NET.Vulkan** | 2.23.0 | Vulkan 图形API绑定 | [Silk.NET](https://github.com/dotnet/Silk.NET) |
+| **Spectre.Console** | 0.57.2 | 控制台美化与渲染 | [Spectre.Console](https://spectreconsole.net/) |
+| **Yamlify** | 1.8.0 | YAML 1.2 解析/序列化 (SourceGenerator 级, 零反射, AOT 兼容) | [Yamlify](https://github.com/SwissLife-OSS/Yamlify) |
+
+### 开发工具 | Development Tools
+| 工具类型 | 工具名称 | 用途 |
+|----------|----------|------|
+| **构建工具** | .NET 10.0 | 主要开发与运行时环境 |
+| **包管理器** | NuGet | .NET 包管理 |
+| **测试框架** | xUnit | 单元测试与集成测试 |
+| **代码分析** | SonarCloud | 代码质量分析 |
+
+### 许可证 | License
+MIT License - 详见 [LICENSE](LICENSE) 文件
+
+---
+
+## English Version
+
+### 🆕 v0.10.0 New Capabilities
+- **Yamlify YAML parsing**: SourceGenerator-level library (zero reflection, AOT verified zero warnings), full YAML 1.2; `MiniYaml.Parse` API unchanged
+- **Token usage stats + balance linkage**: real-API sync -> local accumulation -> threshold re-sync; auto model switching + `model:xxx flags:balance-insufficient` hint; `/token stats`
+- **Skill semantic matching (bge)**: lexical miss -> 384-dim cosine suspected match (cos>=0.45), silent fallback
+- **Configurable proxy**: `models.yaml proxy` section (ConfigurePrimaryHttpMessageHandler)
+- **Unified output**: IOutputSink all exits; zero direct Console writes in libraries; agent/Program.cs dead code removed
+- **/forecast**: next-turn forecast surfaced to frontend
+- **SKILL.md packages**: Anthropic Agent-Skills Open Standard loader (dir name = front-matter name) + 2 example packages
+
+### 🧭 Full Capability Panorama (v0.10.0)
+
+**Reasoning & Tasks**
+- Intent analysis & sub-task decomposition: 19 CN/EN connectives, Sequential/Parallel/DependsOnOutput relations
+- TaskPlan topological execution: level concurrency (Task.WhenAll + MaxParallelism), node retry (exponential backoff + transient classification), sensitive intents (file/git) PausedForApproval
+- Isolated tasks: unrelated questions spawn boundary-isolated sub-agents (independent session, no main-memory pollution), destroyed on completion
+
+**Model Scheduling (agent.modelqueue)**
+- Three-channel hybrid: Local (LocalLlamaCaller real runs) > Official (hardcoded + in-memory keys) > Remote API
+- Model catalog: 6 models (price/inference/coding scores/context window), intent x token-estimate x cost ranking
+- auto/manual dual-mode: `/model list` index 1-N; auto-switch on consecutive failures
+- Token stats + balance linkage: initial API sync -> local accumulation -> threshold re-sync; insufficient balance switches model + `flags:balance-insufficient`
+- Configurable proxy for official endpoints (models.yaml proxy section)
+
+**Skill Dispatch (agent.skills)**
+- SKILL.md directory packages (Anthropic Agent-Skills Open Standard) + legacy yaml coexistence
+- Four-level triggering: keywords -> regex -> domain words -> bge semantic (cos >= 0.45), suspected-hit activates
+- Lifecycle state machine (LRU/off-domain unload/circuit breaker) + sandboxed context + timeout/idempotent retry
+
+**Context & Memory (agent.contextgradient)**
+- Gradient compression: L0 raw/L1 digest/L2 index/L3 archive; P0-P3 anchors (P0 never compressed)
+- Topic clustering + triple drift verification (rollback on failure, 10-version chain) + cross-process persistence
+- Rolling session memory + GoalProfile + AgentProfile dynamic learning + next-turn forecast persistence
+
+**Config & Output**
+- Four-layer YAML config (base/env/modules/runtime): deep merge, @dynamic hot-reload, startup strict validation
+- YAML parsing: Yamlify (SourceGenerator-level, zero reflection, AOT zero warnings)
+- Unified output: IOutputSink all exits (logs/approvals/frontend directives/step status), zero direct Console writes in libraries
+- Log 4-channel switches + thinking stream chunks (`@chatbox:` JSON protocol lines)
+
+**Engineering**
+- agent.io protocol library (netstandard2.1, zero deps): single-line events + @stream blocks
+- Session interruption recovery: ExecutionCheckpoint atomic persistence, restart restores progress
+- NativeAOT: 0 IL warnings end-to-end, 12MB single-file ELF
+- Capability plugin interface: ICapabilityPlugin (workspace/tests/review by developers)
+
+### 🚀 v0.9.0 Capability Overview (Requirements 1-6)
+- **Three-channel Model Scheduling**: Local model > Official channel > Remote API, fixed priority; Channel concurrency management; Sub-tasks selected by concurrency margin × inference capability × inference speed × price; Official models hardcoded (not in yaml), keys only injected via CLI `--official-key` / `/official-key` (in-memory)
+- **agent.io Protocol Library**: netstandard2.1 zero dependency; Single-line events (text/chatbox directives/JSON) + `@stream` multi-line stream block dual-mode read/write, frontend `Console.ReadLine()` line-by-line parsing
+- **Session Interruption Recovery**: Task step checkpoints (atomic disk persistence) — Direct execution progress restoration after unexpected interruption
+- **Public Configuration Read/Write**: ConfigWriter (dot-path / L3 deep merge / L4 runtime), separated from ConfigSnapshot read/write
+- **Capability Plugin Interface**: ICapabilityPlugin — Workspace management/test integration/code review implemented by developers (framework defines contract, see [Capability Enhancement Plan](docs/industrial_enhancements.md))
+
+### 💬 Intelligent Inquiry (v7.13)
+- 18 inquiry data type enumerations + pure rule validation (numbers/dates/selections/paths...)
+- Batch inquiry: Ask all at once by group, not one by one
+- Sub-task confidence + evidence supplementation + maximum question limit
+- Inquiry preference library: Record **preference patterns** (not credentials/original values) cross-session reuse
+
+### 🎨 Dual-mode Output (v7.13)
+- Markdown / Plain text dual modes, Spectre.Console console color beautification
+- All return content (answers/inquiries/logs/approvals) unified underlying structured format
+- Inter-agent inquiry silent mode (zero user interface disturbance)
+
+### 🎯 Intent Analysis and Sub-task Decomposition
+- **IntentDecomposer**: Complex sentences split into sub-task sequences by connectors, four-level relationship annotation — `Sequential` (then/next, preserve execution order), `Parallel` (simultaneously/and, same-level parallel), `DependsOnOutput` (based on, data dependency); Connectors themselves are splitting points, sentence mis-splitting intercepted by boundary protection
+- **19 Chinese-English connectors**, English word boundary matching (`and` doesn't split `android`), single-character connectors must attach to non-Chinese characters on both sides to split ("再次检查" not mis-split)
+
+### 📋 Task Plan Diagram (TaskPlan)
+- `TaskPlanBuilder` decomposes sub-tasks into dependency topology graph (Level分层 + ParallelGroup parallel groups)
+- **UI JSON Contract**: Nodes contain `Text/Intent/DependsOn/Level/ParallelGroup/Parameters/Clarifications/IsExecutable`, source-gen serialized (AOT safe), directly available for external UI rendering
+- Sensitive intents (file operations/git operations) default to `PausedForApproval`, full plan pause pending approval
+- Parameter missing generates `Clarification` inquiry nodes, **parameter-independent nodes don't block联动**
+
+### 🔌 Inquiry Protocol
+- `IUserPromptService` unified inquiry: Credential requests (`CredentialRequestKind`), approval requests, parameter clarification
+- `AnswerAuthority` authority hierarchy: Normal parameters MainAgent can answer, sensitive operations must real user (`RealUserOnly`)
+- Non-interactive environments (pipe/CI) automatically degrade, honestly skip without fabrication
+
+### 🛠 Local Mandatory Commands (non-LLM)
+- `LocalCommandRouter` intercepts before intent recognition: `/stop` `/continue` `/pause` `/status` `/reset`, zero token consumption
+
+### 📦 Persistent Identity and Next-turn Forecast
+- `AgentRegistry`: Main/sub-agent persistent UID + subordination relationship, cross-process reuse
+- `NextTurnForecast`: Generate next-turn forecast after task cycle completion, read back on next conversation after shutdown, indicates LLM user input tendency; isolated by Agent UID
+
+### 🧩 Post-processing Segment Marking (pluginized)
+- `ResponseSegmenter` quickly marks fenced segments in LLM return content (```html → UI consumption, code blocks → review services, etc.)
+- Routing rules pluginized, `IResponseSegmentPlugin` register-to-use, not hardcoded
+
+### 🧠 Memory and Context
+- Multi-data source context injection: Memory + Session + Web + UserTendency automatic assembly
+- Keyword recall algorithm performance governance: 10k messages `GetRecentMessages` **5424µs → 256µs (21.2x)**, semantic equivalent逐条验证
+- Session history Trim upper limit governance, unbounded growth eradication
+
+### 🔍 Search Integration (main backup slots)
+- Built-in multi-search source plugins + main backup failover (3 failures熔断 2 minutes, slot sequence persistent `search_slots.json` reuse)
+- WebReaper 11.3.1 library direct引用, search results full-text enhancement
+
+### 🦙 Local Inference
+- LLamaSharp 0.27.0 + Backend.CPU built-in, `LocalLlamaCaller : ILLMCaller` cloud failure fallback; Vulkan loader unified with Silk.NET
+- Honest error reporting when model files missing, no fabricated replies
+
+## Quick Start
+
+```bash
+git clone https://github.com/clickmao/click-agent.git
+cd click-agent
+dotnet restore
+dotnet build
+```
+
+### CLI Usage
+
+```bash
+cd src/agent.host
+
+# Interactive REPL (step details + /status status query + markdown rendering)
+dotnet run
+
+# Single mode
+dotnet run -- -q "First search AOT materials, then write summary document"
+
+# Output log save as markdown file
+dotnet run -- --log run.md -q "your task"
+```
+
+CLI built-in commands: `/status` (current status/step details/next-turn forecast), `/reset`, `/exit`; each execution shows `[01] Intent Analysis → [02] Sub-tasks → [03] Pipeline → [04] Segment Marking` step chain.
+
+### Code Usage
+
+```csharp
+using Microsoft.Extensions.DependencyInjection;
+using agent;            // IndustrialAgentV2 / AgentContext
+using agent.core;       // Message / MessageRole
+
+var services = new ServiceCollection();
+services.AddAgentFramework(o =>
+{
+    o.DataStoragePath = "./data";
+    o.MaxSubAgents = 4;
+});
+await using var provider = services.BuildServiceProvider();
+
+var agent = provider.GetRequiredService<IAgent>();
+var ctx = new AgentContext(provider) { SessionId = "s1", UserId = "u1" };
+await agent.InitializeAsync(ctx);
+
+var reply = await agent.ProcessAsync(new Message
+{
+    Role = MessageRole.User,
+    Content = "First search .NET 10 new features, then write summary based on results",
+    SessionId = "s1"
+}, CancellationToken.None);
+Console.WriteLine(reply.Content);
+```
+
+### Template Query
+
+```csharp
+using agent.templates;
+
+var templates = provider.GetRequiredService<ITemplateStore>();
+var found = await templates.QueryAsync(new TemplateQuery { Category = "DSL" });
+```
+
+## Project Structure
+
+```
+click-agent/
+├── agent.sln
+├── src/
+│   ├── agent/               # Core: Intent decomposition/Task planning/Registry/Segment routing/Local inference
+│   ├── agent.core/          # Base contracts: Message/AgentContext/IAgent
+│   ├── agent.config/        # 4-layer YAML config: ConfigSnapshot/ConfigWriter/MiniYaml (Yamlify facade)
+│   ├── agent.modelqueue/    # Model queue: Router/Catalog/ChannelScheduler/BalanceQuery/TokenUsage
+│   ├── agent.skills/        # Skill dispatch: Registry/TriggerMatcher (bge)/PackageLoader (SKILL.md spec)
+│   ├── agent.contextgradient/ # Gradient compression: layers/anchors/clustering/drift check + BgeEmbedder
+│   ├── agent.logging/       # Log 4-channels + IChatboxSink (@chatbox: protocol lines)
+│   ├── agent.io/            # Protocol library (netstandard2.1): line protocol/stream blocks
+│   ├── agent.output/        # Output pipeline: Formatter/Spectre rendering
+│   ├── agent.host/          # CLI host (NativeAOT, IOutputSink)
+│   ├── agent.codegen/       # Code generation
+│   ├── agent.recovery/      # Session recovery: ExecutionCheckpoint
+│   ├── agent.rag/           # RAG recall
+│   ├── agent.vectormemory/  # Vector memory
+│   ├── agent.workspace/     # Workspace
+│   └── agent.tests/         # 341 tests
+└── docs/                    # Architecture/API/improvement records/plans
+```
+
+## Validation Baseline
+
+| Item | Result |
+|---|---|
+| Compilation (--no-incremental) | 0 errors 0 warnings |
+| Tests | 341/341 Passed |
+| NativeAOT (linux-x64) | 0 IL/TR warnings, 12MB single file |
+| End-to-end smoke test | DI full graph 11/11 parsing + multi-session assertions |
+
+## Documentation
+
+- [Architecture Document](docs/architecture.md)
+- [API Document](docs/api.md)
+- [CLI Command Instructions](docs/CLI指令说明.md) — All commands + agent.io line protocol (requirement 2)
+- [Improvement Records](docs/improvements.md) — v7.4 → v7.12 each round real execution evidence
+- [Task Loop](docs/task_loop.md)
+
+### 🗺 Next Development Plan (v0.11.0)
+
+> Historical plan (v7.15 ten nodes - all landed) archived in [improvements.md](docs/improvements.md); per-module design details in docs/plan_*.md.
+
+1. **Chatbox WebSocket host**: IChatboxSink protocol lines ready (`@chatbox:` JSON), add real WebSocket transport + frontend panel integration (Console only now)
+2. **Balance-threshold switching E2E**: TokenUsageService balance linkage unit-tested; needs real API key end-to-end switching + `flags:balance-insufficient` frontend hint
+3. **Skill executive script dispatch**: SKILL.md package `scripts/` directory execution wiring into SkillExecutor (parsing/sandbox/timeout done, script process scheduling missing)
+4. **Context compression P3 vectorization**: L1 summaries/clustering onto BgeEmbedder real vectors (P1 rule version landed; bge already wired into Skill semantic matching)
+5. **Model catalog verify completion**: full 6-model real-device verification (api.openai.com RST on this network, retest via proxy)
+6. **GitHub open-source release**: LICENSE/CI workflows/badges/condensed English README
+
+> **v0.10.0 baseline**: 341/341 tests green / Release build 0 warnings 0 errors / NativeAOT 0 IL warnings / agenthost 12MB ELF device smoke passed.
+
+## Configuration
+
+Configuration files **unified YAML** (`config/` four-level分层, based on "Full Module YAML Configuration Development Specification"), `appsettings.json` deprecated (migration period compatible reading and warning):
+
+```
+config/
+├── base/            # L1基础默认 (随版本发布,禁止本地修改): core.yaml
+├── env/             # L2环境覆盖: development.yaml / production.yaml (AGENTFRAMEWORK_ENV选择)
+├── modules/         # L3模块定制: 同名文件覆盖base同名节 (增量覆盖,未写字段继承)
+└── runtime/         # L4动态配置: dynamic.yaml (热更新,仅 @dynamic项生效)
+```
+
+```yaml
+# config/base/core.yaml (节选,完整见文件)
+agent:
+  agent_name: MainAgent
+  max_sub_agents: 4
+  enable_search_cache: true
+  summarize_after_turns: 10
+
+openai:
+  api_key_env: AGENT_OPENAI_KEY   # 只存环境变量名, Key本身不落配置
+  model: gpt-4
+```
+
+**Override priority**: `runtime/dynamic.yaml` > `modules/{module}.yaml` (同名覆盖base,用户钦定契约) > `env/{env}.yaml` > `base/{module}.yaml`; deep merge, undefined fields automatically inherit lower层. API Key优先走环境变量 `AGENT_OPENAI_KEY`;未配置时走 `NullLLMCaller`明确报错路径,不静默伪造.模块代码只调 `agent.config.ConfigSnapshot`,禁止自行读 yaml文件.
+
+## License
 
 MIT License

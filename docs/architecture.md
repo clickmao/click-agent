@@ -742,6 +742,31 @@ public class MemoryEntry
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
+### 3.x v0.10.0 新增模块
+
+#### agent.config (配置中枢)
+- `ConfigSnapshot`: L1 base→L2 env→L3 modules→L4 runtime 四层深合并快照; `Get<T>(module, key, fallback)` 类型安全读;
+  `TryGetTopLevel` 顶层键原始值 (models 列表); 启动强校验失败即失败; `@dynamic` 热更新 (immediate/next-turn)
+- `MiniYaml`: **Yamlify 1.8.0 门面** (SourceGenerator 级, 运行时零反射, AOT 零 IL 警) — `Parse` API 签名不变
+- `ConfigWriter`: SetRuntime (L4) / UpdateModule (L3 深合并) / ResetModule (回落 L1)
+
+#### agent.modelqueue (模型调度)
+- `ModelQueueRouter.CallAsync`: 本地 (LocalLlamaCaller 实跑) > 官方 > 远端 三通道优先级;
+  余额检查在主链 (LastBalanceFlag `model:xxx flags:余额不足`); `SetManualOverride` / `Catalog`
+- `TokenUsageService`: InitializeAsync (真实 API 同步) → RecordUsage (本地累计) → NeedsResync (10 万 token 阈值) → TryResyncAsync;
+  `EstimateBalance` 预估 → `GetStats` 全 JSON 统计
+- `ModelCatalog`: 6 模型 (价格/推理分/编码分/上下文窗); `BalanceQueryService` 按 provider scheme 分派
+
+#### agent.skills (Skill 调度)
+- `SkillPackageLoader`: **SKILL.md 目录包** (Anthropic Agent-Skills Open Standard) — 目录名=front-matter name 铁律,
+  keywords/regex/priority 扩展字段双向兼容; 与 legacy yaml 并存加载
+- `TriggerMatcher`: 关键词→正则→领域词→**bge 语义** (cos≥0.45 疑似) 四级; ITextEmbedder 可选注入, 失败静默回退词面
+- `SkillDispatcher`: DispatchAsync (疑似即激活) + RegisterEntry (执行体) + SkillLifecycle (状态机)
+
+#### agent.logging / agent.output / agent.host (输出链)
+- `IChatboxSink` (@chatbox: JSON 协议行) → LogRouter 四通道开关 {控制台/chatbox思考/chatbox输出/日志文件}
+- host: `IOutputSink` 统一出口 (ConsoleOutputSink/FileOutputSink) — CLI 会话逻辑与终端解耦 (WebSocket 前端实现此接口即可复用)
+
 ---
 
 ## 4. 接口设计
@@ -1238,10 +1263,13 @@ click-agent/
 ├── docs/
 │   ├── architecture.md
 │   ├── api.md
-│   ├── improvements.md
+│   ├── improvements.md           # 版本改进记录 + 历史开发计划归档
+│   ├── CLI指令说明.md              # 全部指令 + agent.io 协议
+│   ├── Skill全球通用开放规范.md     # SKILL.md 包格式 (Anthropic Open Standard)
 │   ├── task_loop.md
 │   ├── context_injection_comparison.md
 │   ├── industrial_enhancements.md
+│   ├── plan_*.md                  # 各模块开发计划 (10 篇)
 │   └── search_research.md
 └── src/
     ├── agent/                  # 核心 Agent: 意图拆解/任务计划/注册表/区段路由/本地推理
@@ -1257,15 +1285,20 @@ click-agent/
     │   └── extensions/         # DI 注册 (AddAgentFramework)
     ├── agent.core/             # 基础契约: Message / AgentContext / IAgent / IUserPromptService
     │   └── userinteraction/    # PromptOrigin / PromptDataType (v7.13 问询数据类型枚举)
+    ├── agent.config/           # 四层 YAML 分层配置: ConfigSnapshot / ConfigWriter / MiniYaml (Yamlify 门面, 零反射)
+    ├── agent.modelqueue/       # 模型队列: ModelQueueRouter / ModelCatalog / ChannelScheduler / BalanceQueryService / TokenUsageService / LocalInferenceAdapter
+    ├── agent.skills/           # Skill 调度: SkillRegistry / TriggerMatcher (bge 语义层) / SkillPackageLoader (SKILL.md) / SkillDispatcher / SkillLifecycle
+    ├── agent.contextgradient/  # 梯度压缩: 分层/锚点/聚类/漂移校验 + ITextEmbedder / BgeEmbedder (384 维)
+    ├── agent.logging/          # 日志四通道 + IChatboxSink (@chatbox: 前端指令协议行) / LogRouter
+    ├── agent.io/               # 协议库 (netstandard2.1 零依赖): AgentReportReaderBase / AgentRequestWriterBase / @stream 块
     ├── agent.output/           # v7.13 输出管道: AgentOutputMessage / OutputFormatter / SpectreOutputRenderer
-    ├── agent.host/             # CLI 宿主 (NativeAOT): Program / CliRenderer / CliSession (--output-mode)
-    ├── agent.planner/          # TaskExecutionEngine
+    ├── agent.host/             # CLI 宿主 (NativeAOT): Program / CliRenderer / CliSession / IOutputSink
     ├── agent.codegen/          # CodeGenerator
-    ├── agent.recovery/         # RecoverySystem
+    ├── agent.recovery/         # 会话中断恢复: ExecutionCheckpoint 原子落盘 + CheckpointRecovery
     ├── agent.rag/              # RAG 召回
     ├── agent.vectormemory/     # 向量记忆
     ├── agent.workspace/        # 工作区
-    └── agent.tests/            # 202 项测试 (xunit)
+    └── agent.tests/            # 341 项测试 (xunit)
 ```
 
 > 命名约定 (用户钦定): 文件夹与命名空间全小写 (`agent.registry`), 类文件与类型名 PascalCase
@@ -1299,10 +1332,36 @@ click-agent/
 
 ---
 
-## 12. 下一步
+## 12. 下一步 (v0.11.0)
 
-1. 等待子任务完成项目代码生成
-2. 审查生成的代码结构
-3. 运行构建验证
-4. 补充单元测试
-5. 编写使用文档和示例
+1. Chatbox WebSocket 宿主: IChatboxSink 协议行已就绪, 补真实 WebSocket 传输与面板对接
+2. 余额阈值切模 E2E: 真实 API key 环境跑通端到端切模 + `flags:余额不足` 提示
+3. Skill 执行型脚本调度: SKILL.md 包 scripts/ 目录接入 SkillExecutor
+4. 上下文压缩 P3 向量化: L1 摘要/聚类接 BgeEmbedder 真向量
+5. 模型目录 verify 补全: 6 模型真机校验 (需代理环境复测 api.openai.com)
+6. GitHub 开源发布: LICENSE/CI/徽章
+
+> 历史版本完成记录: [improvements.md](improvements.md)。
+
+## v0.10.0 (2026-09-06) — 架构变更实录 (与代码对齐)
+
+### 模块级变更
+- **agent.config**: MiniYaml 重写为 Yamlify 1.8.0 门面 (SourceGenerator 级, 运行时零反射, AOT 零 IL 警);
+  API 签名不变 5 消费者零改动; 修复顶层列表键 GetSection 返回空真 bug (TryGetTopLevel);
+  配置根解析 AGENTFRAMEWORK_CONFIG env + cwd/BaseDirectory 上溯 8 级探测
+- **agent.modelqueue**: +TokenUsageService (初始化 API 同步→本地累计→10 万 token 阈值再同步;
+  EstimateBalance 预估不足→SelectAlternativeByBalance 切模+LastBalanceFlag); Router 主链接余额检查
+- **agent.skills**: TriggerMatcher +语义层 (ITextEmbedder 注入, 词面全未命中→bge cos≥0.45 疑似);
+  +SkillPackageLoader (SKILL.md 目录包, Anthropic Agent-Skills Open Standard, 目录名=front-matter name 铁律)
+- **agent.host**: IOutputSink 全出口收口 (ConsoleOutputSink/FileOutputSink), 8 处 Console 直写清理
+- **config/base/models.yaml**: +proxy 段 (官方端点可配置代理, ConfigurePrimaryHttpMessageHandler)
+
+### 关键架构决策
+| 决策 | 依据 |
+|---|---|
+| Yamlify 替代自研 MiniYaml 内核 | YAML 1.2 全规范 + 零反射 + AOT 实测零警告 + 零依赖 |
+| Token 余额三段式同步 | 初始化真实 API→本地累计→阈值再同步 (避免每请求远端查询) |
+| SKILL.md 目录包双格式并存 | 开放标准互操作 + legacy identity.yaml 零迁移成本 |
+
+### 基线 (真实执行)
+341/341 测试 · Release 0 警 0 错 · NativeAOT 0 IL 警 · agenthost 12MB ELF 冒烟全过

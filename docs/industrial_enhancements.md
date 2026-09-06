@@ -1,11 +1,11 @@
-# click-agent 工业级能力增强计划 (v0.9.0 口径)
+# click-agent 能力增强计划 (v0.10.0 口径)
 
 > 本文档为活文档: 记录当前项目总体状态、与 Claude Code / Codex 级核心能力的差距、
 > 以及差距的收敛路线。每轮迭代后同步更新 (用户钦定)。
 
 ## 一、当前项目总体状态 (2026-09-06)
 
-- **版本口径**: v0.9.0 (工业 1.0 前打磨线)
+- **版本口径**: v0.10.0
 - **质量基线**: 322/322 测试全绿; Release 编译 0 警; NativeAOT publish 0 IL 警; 全图冒烟通过
 - **架构**: 17 个项目模块 (agent 核心粒 + config / core / io / logging / modelqueue / skills /
   contextgradient / rag / vectormemory / recovery / workspace / output / codegen / planner / host / tests)
@@ -33,7 +33,7 @@
 | **可观测** | ✅ 达成 | 日志四通道单路径路由 + thinking 流协议 + /log dump + /status /session 全 JSON | P1 |
 | **IO 协议** | ✅ 达成 | agent.io 单行事件 + 流式块双态读写 (netstandard2.1, 前端可嵌) | P1 |
 | **配置体系** | ✅ 达成 | 四层 YAML 深合并 + ConfigSnapshot/ConfigWriter 读写分离 + 凭据铁律 | P1 |
-| **Skill 调度** | ⚠️ 部分达成 | 生命周期状态机+沙箱+熔断已落地 (P2); P3 语义匹配 (向量) 未接 | P2 |
+| **Skill 调度** | ✅ 达成 | 生命周期状态机+沙箱+熔断 (P2); P3 bge 语义匹配已接 (cos≥0.45) + SKILL.md 开放规范包 (v0.10.0) | — |
 | **多Agent协作** | ⚠️ 部分达成 | 隔离子任务 (独立会话/并发上限/相关性判定) 已落地; 通信协议/冲突解决未做 | P1 |
 | **工作区管理** | 🔌 插件接口预留 | `ICapabilityPlugin` + `CapabilityPluginRegistry` (agent.registry); 文件系统操作、git 集成由开发者实现 (agent.workspace 骨架已有基础类型) | P0 |
 | **测试集成** | 🔌 插件接口预留 | 同上契约; 测试生成、运行、覆盖率分析由开发者实现 (框架自身测试基建即参考实现样本) | P1 |
@@ -63,12 +63,14 @@ public interface ICapabilityPlugin
 
 ## 四、v0.9.0 总结与工业 1.0 门槛
 
+> v0.10.0 增补: 上表「未达成」项已全部落地 (语义匹配/Token 统计/统一输出/配置代理), 下一版本计划见 readme v0.11.0 节。
+
 **已达成的工业级特征**: 真实编译/测试/AOT 三重验证纪律; 伪实现零容忍 (能力扫描删反射改 PATH 探嗅);
 配置分层契约 + 凭据永不落盘; 会话可恢复; 模型调用可观测可审计; IO 协议前端可编程。
 
 **工业 1.0 前必须收敛 (按序)**:
 1. chatbox 推送传输实体化 (websocket/面板 — 传输通道接口 IChatboxSink 已定案)
-2. Skill P3 语义匹配接 bge 向量 (P2 生命周期已落地)
+2. ~~Skill P3 语义匹配接 bge 向量~~ ✅ v0.10.0 已落地 (TriggerMatcher 语义层 + SKILL.md 包格式)
 3. 多 Agent 通信协议与冲突解决 (隔离任务已落地)
 4. 插件生态首批参考实现 (workspace 插件起步)
 5. LLM 全链路真实推理验收 (当前部分链路走失败路径兜底)

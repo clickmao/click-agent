@@ -77,6 +77,21 @@ models:
     context_window: 128000
     suited_for: [general, reasoning, planning]
 
+# ── 官方端点代理 (v0.10.0 需求③: 官方/远端 API 出网代理 — 可配置) ──
+# 留空 = 直连; http://user:pass@host:port 认证代理也支持。
+# 官方通道 (openai 等被 RST 的端点) 经代理出网 — 启动时读取一次 (改后需重启)
+proxy:
+  url: ""            # 例: http://127.0.0.1:7890
+  bypass_local: true # 本地/内网地址不走代理
+
+# ── 本地推理通道 (v0.10.0 需求①: 本地模型真接入混合调度) ──
+# gguf 对话模型路径 (文件缺失 → 本地通道诚实降级为不可用, 不伪造; RemoteCatalog 照常服务)
+# bge 嵌入模型见 core.yaml embedding 段 — 两者独立
+local:
+  model_path: /home/agentuser/models/llama-dialog.gguf   # 占位: 放置真实对话 gguf 后本地通道生效
+  context_size: 4096
+  gpu_layers: 0        # vulkan offload 层数 (0 = 纯 CPU)
+
 # ── 余额查询方案 (C.6.4) ──
 # 调研结论 (2026-09-06): 各 provider 余额/账单接口差异大 (OpenAI=credit_grants 依赖项目账单迁移,
 # DeepSeek=/user/balance, 智普=无公开余额 API) → scheme 枚举按 provider 分派, 未知 provider 诚实报错

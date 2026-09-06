@@ -29,6 +29,9 @@ public sealed class LocalLlamaCaller : ILLMCaller, IDisposable
 
     public string ModelName => $"llama.cpp:{Path.GetFileName(_modelPath)}";
 
+    /// <summary>gguf 模型文件绝对路径 (需求①: LocalInferenceAdapter 桥接可用性判定)</summary>
+    public string ModelFilePath => _modelPath;
+
     /// <summary>backendMode: Auto (探测 vulkan loader) / Cpu / Vulkan; gpuLayers: offload 到 GPU 的层数 (vulkan 模式 &gt;0 加速)</summary>
     public LocalLlamaCaller(ILogger<LocalLlamaCaller> logger, string modelPath, uint contextSize = 2048,
         LlamaBackendMode backendMode = LlamaBackendMode.Auto, uint gpuLayers = 0)

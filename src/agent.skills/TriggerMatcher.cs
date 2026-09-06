@@ -16,18 +16,32 @@ public sealed class SkillMatch
 
 /// <summary>
 /// 三级触发匹配 (原文 §5): 一级关键词 → 二级正则精匹配 → 领域词疑似。
+/// v0.10.0 P3 语义层: 关键词/正则/领域词全未命中时, 注入 ITextEmbedder (bge) 用
+/// 余弦相似度判疑似 (cos ≥ SemanticThreshold = 0.45) — 语义近邻触发。
 /// 裁决: 排他 > 优先级 > 精确度 (S.5 冲突四组合覆盖)。
 /// </summary>
 public sealed class TriggerMatcher
 {
     private readonly bool _suspectedTrigger;
+    private readonly agent.contextgradient.ITextEmbedder? _embedder;
+    private readonly double _semanticThreshold;
 
-    public TriggerMatcher(bool suspectedTrigger = true) => _suspectedTrigger = suspectedTrigger;
+    public TriggerMatcher(bool suspectedTrigger = true) : this(null, suspectedTrigger) { }
+
+    /// <summary>v0.10.0 P3: 语义匹配构造 (bge 嵌入器 + 相似度阈值, 默认 0.45)</summary>
+    public TriggerMatcher(agent.contextgradient.ITextEmbedder? embedder, bool suspectedTrigger = true,
+        double semanticThreshold = 0.45)
+    {
+        _suspectedTrigger = suspectedTrigger;
+        _embedder = embedder;
+        _semanticThreshold = semanticThreshold;
+    }
 
     /// <summary>返回全部命中 (已按裁决排序; 空 = 未命中)</summary>
-    public List<SkillMatch> Match(string input, List<SkillDefinition> skills)
+    public List<SkillMatch> Match(string input, List<SkillDefinition> skills, CancellationToken ct = default)
     {
         var hits = new List<SkillMatch>();
+        float[]? semanticCos = null; // 本轮输入向量缓存 (惰性嵌入一次)
         foreach (var s in skills)
         {
             var level = 0;
@@ -68,6 +82,42 @@ public sealed class TriggerMatcher
                 precision = 0.3;
             }
 
+            // v0.10.0 P3 语义层: 全部词面未命中 → bge 余弦相似度疑似判定
+            // (嵌入器不可用/嵌入失败 → 静默跳过, 行为兼容; 语义命中 precision 介于领域词与关键词之间)
+            if (level == 0 && _suspectedTrigger && _embedder is { IsAvailable: true } && semanticCos is null)
+            {
+                try
+                {
+                    var inputVec = _embedder.EmbedAsync(input, ct).GetAwaiter().GetResult();
+                    semanticCos = inputVec; // 缓存本轮输入向量 (多 skill 复用一次嵌入)
+                }
+                catch
+                {
+                    semanticCos = Array.Empty<float>(); // 失败 → 本轮不再尝试语义
+                }
+            }
+            if (level == 0 && _suspectedTrigger && semanticCos is { Length: > 0 } vec)
+            {
+                var text = SemanticText(s);
+                if (text.Length > 0)
+                {
+                    try
+                    {
+                        var skillVec = _embedder!.EmbedAsync(text, ct).GetAwaiter().GetResult();
+                        var cos = agent.contextgradient.VectorMath.Cosine(vec, skillVec);
+                        if (cos >= _semanticThreshold)
+                        {
+                            level = 1;                       // 语义命中 = 疑似级
+                            precision = 0.30 + 0.25 * Math.Min(1.0, (cos - _semanticThreshold) / 0.5);
+                        }
+                    }
+                    catch
+                    {
+                        // 嵌入失败跳过 — 词面匹配语义不变
+                    }
+                }
+            }
+
             if (level > 0)
                 hits.Add(new SkillMatch { Skill = s, Level = level, Precision = precision });
         }
@@ -77,7 +127,18 @@ public sealed class TriggerMatcher
             .OrderByDescending(m => m.Skill.Exclusive)
             .ThenByDescending(m => m.Skill.Priority)
             .ThenByDescending(m => m.Precision)
-            .ThenByDescending(m => m.Level)
+.ThenByDescending(m => m.Level)
             .ToList();
+    }
+
+
+    /// <summary>Skill 语义代表文本 (bge 嵌入目标): 名称 + 领域 + 关键词串接</summary>
+    private static string SemanticText(SkillDefinition s)
+    {
+        var parts = new List<string>();
+        if (s.Name.Length > 0) parts.Add(s.Name);
+        if (s.Domain.Length > 0) parts.Add(s.Domain);
+        if (s.Keywords.Count > 0) parts.Add(string.Join(", ", s.Keywords));
+        return string.Join(" ", parts);
     }
 }

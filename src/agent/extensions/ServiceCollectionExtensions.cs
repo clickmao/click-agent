@@ -42,6 +42,23 @@ public static class ServiceCollectionExtensions
         
         // HttpClient (OpenAILLMCaller/搜索插件共享)
         services.AddHttpClient();
+        // v0.10.0 需求③: 官方/远端端点可配置代理 (models.yaml proxy 段)
+        // 留空直连; 配置后 modelqueue 命名客户端全走代理 (主调用/余额/verify 共用)。
+        // 正确形态: ConfigurePrimaryHttpMessageHandler 替换主处理器 (configure action 不能换 client 实例)。
+        services.AddHttpClient("modelqueue")
+            .ConfigurePrimaryHttpMessageHandler(sp =>
+            {
+                var cfg = sp.GetRequiredService<agent.config.ConfigSnapshot>();
+                var url = cfg.Get("proxy", "url", "");
+                var bypassLocal = cfg.Get("proxy", "bypass_local", true);
+                if (string.IsNullOrWhiteSpace(url))
+                    return new HttpClientHandler(); // 直连 (默认行为)
+                return new HttpClientHandler
+                {
+                    Proxy = new System.Net.WebProxy(url) { BypassProxyOnLocal = bypassLocal },
+                    UseProxy = true,
+                };
+            });
 
         // 核心服务
         services.AddSingleton<IMemoryStore, MemoryStore>();
@@ -205,10 +222,27 @@ public static class ServiceCollectionExtensions
         // LLM 调用器: v7.15 模型队列接管 (目录 config/base/models.yaml — 主备切换/意图选模/手动覆盖)
         services.AddSingleton(sp =>
             agent.modelqueue.ModelCatalog.Load(sp.GetRequiredService<agent.config.ConfigSnapshot>()));
+        // v0.10.0 需求①: 本地推理通道 — LocalLlamaCaller 按 models.yaml local 段构造
+        // (gguf 文件缺失 → LocalInferenceAdapter.IsAvailable=false, 本地通道诚实降级, 不伪造)
+        services.AddSingleton(sp =>
+        {
+            var localCfg = sp.GetRequiredService<agent.modelqueue.ModelCatalog>().LocalChannel;
+            return new agent.llamalocal.LocalLlamaCaller(
+                Microsoft.Extensions.Logging.LoggerFactory.Create(b => { }).CreateLogger<agent.llamalocal.LocalLlamaCaller>(),
+                localCfg.ModelPath,
+                (uint)Math.Max(512, localCfg.ContextSize),
+                gpuLayers: (uint)Math.Max(0, localCfg.GpuLayers));
+        });
+        services.AddSingleton(sp => new agent.modelqueue.TokenUsageService(
+            sp.GetRequiredService<agent.modelqueue.BalanceQueryService>(),
+            sp.GetRequiredService<agent.modelqueue.ModelCatalog>()));
         services.AddSingleton(sp => new agent.modelqueue.ModelQueueRouter(
             sp.GetRequiredService<agent.modelqueue.ModelCatalog>(),
             sp.GetRequiredService<IHttpClientFactory>(),
-            sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<IndustrialAgentV2>>()));
+            sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<IndustrialAgentV2>>(),
+            localInference: new agent.modelqueue.LocalInferenceAdapter(
+                sp.GetRequiredService<agent.llamalocal.LocalLlamaCaller>()),
+            tokenUsage: sp.GetRequiredService<agent.modelqueue.TokenUsageService>()));
         services.AddSingleton<ModelQueueAdapter>();
         services.AddSingleton<ILLMCaller>(sp => sp.GetRequiredService<ModelQueueAdapter>());
         services.AddSingleton<agent.subagent.ILLMCallerForIsolated>(sp => sp.GetRequiredService<ModelQueueAdapter>());
@@ -226,6 +260,8 @@ public static class ServiceCollectionExtensions
         services.AddSingleton(sp => agent.skills.SkillRegistry.LoadFromDirectory("skills"));
         services.AddSingleton(sp => new agent.skills.SkillDispatcher(
             sp.GetRequiredService<agent.skills.SkillRegistry>(),
+            new agent.skills.TriggerMatcher(
+                sp.GetRequiredService<agent.contextgradient.ITextEmbedder>()),
             getConfig: (module, key, fallback) => sp.GetRequiredService<agent.config.ConfigSnapshot>()
                 .Get(module, key, fallback)));
 

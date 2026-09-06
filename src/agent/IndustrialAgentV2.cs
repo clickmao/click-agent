@@ -63,6 +63,7 @@ public class IndustrialAgentV2 : AgentBase
     private readonly agent.subagent.IsolatedTaskRunner? _isolatedTaskRunner;
     private readonly agent.modelqueue.ModelQueueRouter? _modelRouter;
     private readonly agent.modelqueue.BalanceQueryService? _balanceService;
+    private readonly agent.modelqueue.TokenUsageService? _tokenUsageService;
     private readonly agent.modelqueue.ModelVerifyService? _verifyService;
     private readonly agent.logging.LogRouter? _logRouter;
     private readonly agent.skills.SkillDispatcher? _skillDispatcher;
@@ -96,6 +97,7 @@ public class IndustrialAgentV2 : AgentBase
         agent.subagent.IsolatedTaskRunner? isolatedTaskRunner = null,
         agent.modelqueue.ModelQueueRouter? modelRouter = null,
         agent.modelqueue.BalanceQueryService? balanceService = null,
+        agent.modelqueue.TokenUsageService? tokenUsageService = null,
         agent.modelqueue.ModelVerifyService? verifyService = null,
         agent.logging.LogRouter? logRouter = null,
         agent.skills.SkillDispatcher? skillDispatcher = null) : base(logger, handlers)
@@ -103,6 +105,7 @@ public class IndustrialAgentV2 : AgentBase
         _isolatedTaskRunner = isolatedTaskRunner;
         _modelRouter = modelRouter;
         _balanceService = balanceService;
+        _tokenUsageService = tokenUsageService;
         _verifyService = verifyService;
         _logRouter = logRouter;
         _skillDispatcher = skillDispatcher;
@@ -167,6 +170,33 @@ public class IndustrialAgentV2 : AgentBase
                 return response;
             }
 
+            // 0.-1b /forecast 下轮预估查询 (v0.10.0 新需求4): 读回上轮落盘的下轮预估
+            // (NextTurnForecast v7.11 内部机制 — 用户钦定补前端指令; 无记录 → 诚实 null 提示)
+            if (message.Content.Trim().Equals("/forecast", StringComparison.OrdinalIgnoreCase))
+            {
+                var forecastIdentity = _agentRegistry.Get(message.SenderId is { Length: > 0 } ? message.SenderId : "main")
+                                ?? _agentRegistry.Main;
+                var fc = agent.registry.NextTurnForecast.Load(_dataStoragePath, forecastIdentity.Uid);
+                response.Success = true;
+                response.Content = fc is null
+                    ? "{\"forecast\": null, \"hint\": \"\u5c1a\u65e0\u4e0b\u8f6e\u9884\u4f30 \u2014 \u5b8c\u6210\u4e00\u8f6e\u4efb\u52a1\u540e\u81ea\u52a8\u751f\u6210\"}"
+                    : System.Text.Json.JsonSerializer.Serialize(
+                        new ForecastPayload
+                        {
+                            AgentUid = fc.AgentUid,
+                            TaskSummary = fc.TaskSummary,
+                            LastIntent = fc.LastIntent,
+                            Tendency = fc.Tendency,
+                            ContinuationHint = fc.ContinuationHint,
+                            LikelyContinues = fc.LikelyContinues,
+                            TurnCount = fc.TurnCount,
+                            UpdatedAt = fc.UpdatedAt,
+                        }, ModelCommandJsonContext.Default.ForecastPayload);
+                response.Data = new Dictionary<string, object> { { "localCommand", "forecast" } };
+                response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
+                return response;
+            }
+
             // 0.-2 /model 与 /balance (v7.15 模型队列): 切换/恢复自动 + 余额查询 + 目录校验 (全 JSON 输出)
             var trimmedCmd = message.Content.Trim();
             if (trimmedCmd.Equals("/log", StringComparison.OrdinalIgnoreCase) ||
@@ -181,6 +211,7 @@ public class IndustrialAgentV2 : AgentBase
             }
 
             if (trimmedCmd.StartsWith("/model", StringComparison.OrdinalIgnoreCase) ||
+                trimmedCmd.StartsWith("/token", StringComparison.OrdinalIgnoreCase) ||
                 trimmedCmd.Equals("/balance", StringComparison.OrdinalIgnoreCase))
             {
                 var cmdResp = HandleModelCommand(trimmedCmd, (long)(DateTime.UtcNow - startTime).TotalMilliseconds);
@@ -475,6 +506,64 @@ public class IndustrialAgentV2 : AgentBase
                     CodingScore = active?.CodingScore ?? 0,
                     LastSelection = _modelRouter.LastSelectionBasis,
                     Switches = _modelRouter.Switches.Count,
+                    Mode = _modelRouter.ManualOverride is null ? "auto" : "manual",
+                }, elapsedMs);
+            }
+
+            // /model list: 可用模型列表 (序号 1-N — 序号可直接用于 /model <序号>)
+            if (parts[1].Equals("list", StringComparison.OrdinalIgnoreCase))
+            {
+                var activeNow = _modelRouter.ActiveModel;
+                return MakeJsonResponse(new ModelCommandPayload
+                {
+                    Command = "model_list",
+                    Ok = true,
+                    Active = activeNow?.Id ?? "(empty)",
+                    Mode = _modelRouter.ManualOverride is null ? "auto" : "manual",
+                    Models = _modelRouter.Catalog.Models.Select((m, i) => new ModelListItem
+                    {
+                        Index = i + 1,
+                        Id = m.Id,
+                        Provider = m.Provider,
+                        PriceInPerM = m.PriceInPerM,
+                        PriceOutPerM = m.PriceOutPerM,
+                        ReasoningScore = m.ReasoningScore,
+                        CodingScore = m.CodingScore,
+                        ContextWindow = m.ContextWindow,
+                        IsActive = m.Id == activeNow?.Id,
+                    }).ToList(),
+                }, elapsedMs);
+            }
+
+            // /model <序号>: 按列表序号指定模型 (1-N; 序号即 /model list 的 Index)
+            if (int.TryParse(parts[1], System.Globalization.NumberStyles.Integer,
+                    System.Globalization.CultureInfo.InvariantCulture, out var idx) && idx >= 1)
+            {
+                var list = _modelRouter.Catalog.Models;
+                if (idx <= list.Count)
+                {
+                    var chosen = list[idx - 1];
+                    var okIdx = _modelRouter.SetManualOverride(chosen.Id);
+                    if (okIdx)
+                    {
+                        return MakeJsonResponse(new ModelCommandPayload
+                        {
+                            Command = "model",
+                            Ok = true,
+                            Target = chosen.Id,
+                            Active = chosen.Id,
+                            Provider = chosen.Provider,
+                            Mode = "manual",
+                            Note = $"selected_by_index:{idx}",
+                        }, elapsedMs);
+                    }
+                }
+                return MakeJsonResponse(new ModelCommandPayload
+                {
+                    Command = "model",
+                    Ok = false,
+                    Target = parts[1],
+                    Error = $"index_out_of_range (1-{list.Count}, 见 /model list)",
                 }, elapsedMs);
             }
             if (parts[1].Equals("verify", StringComparison.OrdinalIgnoreCase) && parts.Length >= 3)
@@ -505,6 +594,38 @@ public class IndustrialAgentV2 : AgentBase
                 Target = target,
                 Active = _modelRouter.ActiveModel?.Id ?? "(empty)",
                 Error = "unknown_model_id (见 config/base/models.yaml)",
+            }, elapsedMs);
+        }
+
+        // v0.10.0: /token stats — 用量统计 (总 token/按模型/按 provider/预估成本/余额快照)
+        if (head == "/token" && parts.Length >= 2 && parts[1].Equals("stats", StringComparison.OrdinalIgnoreCase))
+        {
+            if (_tokenUsageService is null)
+            {
+                return MakeJsonResponse(new ModelCommandPayload
+                {
+                    Command = "token_stats", Ok = false, Error = "token_usage_not_configured",
+                }, elapsedMs);
+            }
+            var st = _tokenUsageService.GetStats();
+            return MakeJsonResponse(new TokenStatsPayload
+            {
+                Command = "token_stats",
+                Ok = true,
+                TotalTokens = st.TotalTokens,
+                TokensByModel = st.TokensByModel,
+                TokensByProvider = st.TokensByProvider,
+                EstimatedCostUsd = Math.Round(st.EstimatedCostUsd, 4),
+                Balances = st.Balances.ToDictionary(
+                    kv => kv.Key,
+                    kv => new BalanceEntryPayload
+                    {
+                        Provider = kv.Value.Provider,
+                        Remaining = kv.Value.TotalRemaining,
+                        At = kv.Value.At,
+                        FromApi = kv.Value.FromApi,
+                    }),
+                BalanceFlag = _modelRouter?.LastBalanceFlag,
             }, elapsedMs);
         }
 
@@ -582,6 +703,19 @@ public class IndustrialAgentV2 : AgentBase
     {
         var json = System.Text.Json.JsonSerializer.Serialize(
             payload, ModelCommandJsonContext.Default.ModelCommandPayload);
+        return new AgentResponse
+        {
+            Success = payload.Ok,
+            Content = json,
+            ExecutionTimeMs = elapsedMs,
+        };
+    }
+
+    /// <summary>v0.10.0: /token stats 专用 JSON 出口 (TokenStatsPayload 上下文)</summary>
+    private AgentResponse MakeJsonResponse(TokenStatsPayload payload, long elapsedMs)
+    {
+        var json = System.Text.Json.JsonSerializer.Serialize(
+            payload, ModelCommandJsonContext.Default.TokenStatsPayload);
         return new AgentResponse
         {
             Success = payload.Ok,

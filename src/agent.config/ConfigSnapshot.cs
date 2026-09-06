@@ -18,8 +18,43 @@ public sealed class ConfigSnapshot
 
     public ConfigSnapshot(string? configRoot = null)
     {
-        _configRoot = string.IsNullOrWhiteSpace(configRoot) ? Path.Combine(".", "config") : configRoot;
+        _configRoot = string.IsNullOrWhiteSpace(configRoot) ? ResolveDefaultConfigRoot() : configRoot;
         _merged = LoadAll();
+    }
+
+    /// <summary>
+    /// 默认 config 根解析 (v0.10.0 修复: -q 一次性模式从任意 cwd 启动也能加载配置)。
+    /// 候选顺序: ./config → 程序集基目录/config → 程序集基目录/../config → 基目录向上两级。
+    /// 全部缺失 → "./config" (保留原行为: 空配置, 调用方默认值兜底)。
+    /// </summary>
+    private static string ResolveDefaultConfigRoot()
+    {
+        // 0. 显式 env 覆盖 (部署首选): AGENTFRAMEWORK_CONFIG=/path/to/config
+        var env = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_CONFIG");
+        if (!string.IsNullOrWhiteSpace(env))
+            return env;
+
+        // 1. cwd 向上 8 级 (仓库内任意子目录启动均命中)
+        var candidates = new List<string>();
+        var cwd = Directory.GetCurrentDirectory();
+        for (var i = 0; i <= 8; i++)
+        {
+            var dir = i == 0 ? cwd : Path.GetFullPath(Path.Combine(cwd, string.Concat(Enumerable.Repeat("..", i))));
+            candidates.Add(Path.Combine(dir, "config"));
+            if (dir == Path.GetPathRoot(dir)) break;
+        }
+        // 2. AppContext.BaseDirectory 向上 8 级 (AOT/单文件: Assembly.Location 不可靠, BaseDirectory 可靠)
+        var baseDir = AppContext.BaseDirectory;
+        for (var i = 0; i <= 8; i++)
+        {
+            var dir = i == 0 ? baseDir : Path.GetFullPath(Path.Combine(baseDir, string.Concat(Enumerable.Repeat("..", i))));
+            candidates.Add(Path.Combine(dir, "config"));
+            if (dir == Path.GetPathRoot(dir)) break;
+        }
+        foreach (var c in candidates)
+            if (Directory.Exists(Path.Combine(c, "base")))
+                return c;
+        return Path.Combine(".", "config");
     }
 
     /// <summary>加载四层并合并。任何一层缺失都跳过 (默认值兜底由调用方/ConfigKeys 提供, 规范 §6.4)。</summary>
@@ -88,6 +123,21 @@ public sealed class ConfigSnapshot
 
     private static readonly IReadOnlyDictionary<string, object?> EmptyDict =
         new Dictionary<string, object?>();
+
+    /// <summary>
+    /// 顶层键原始值读取 (v0.10.0): 顶层值可为 dict 或 list (如 models.yaml 的 models 列表)。
+    /// GetSection 只服务 dict 节 — 顶层列表键用本方法, 消费方自行类型判定。
+    /// </summary>
+    public bool TryGetTopLevel(string key, out object? value)
+    {
+        if (_merged.TryGetValue(key, out var v))
+        {
+            value = v;
+            return true;
+        }
+        value = null;
+        return false;
+    }
 
     /// <summary>类型化标量读取: 缺失/类型不符 → 返回默认值 (规范 §6.4-3)。</summary>
     public T Get<T>(string module, string key, T fallback)

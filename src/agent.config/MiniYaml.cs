@@ -4,205 +4,98 @@ using System.Text;
 namespace agent.config;
 
 /// <summary>
-/// 极简 YAML 子集解析器 (零反射, NativeAOT 安全) — 全框架配置读取的地基。
-/// 支持特性 (《全模块 YAML 配置开发规范》实际使用的子集):
-///   - 2 空格缩进的嵌套映射 (dict)
-///   - 标量: string / int / long / double / bool(true|false) / null(空值)
-///   - "- " 开头的列表项 (列表元素为标量或嵌套映射)
-///   - # 注释 (整行 + 行尾) 与空行
-/// 不支持 (规范禁止或未用): 锚点/别名、多行块 |&gt;、流式 {} []、Tab 缩进、引号内 #。
-/// 引号 ("..." / '...') 仅在字符串首尾成对出现时剥离 (保留内部内容原样)。
-/// 输出: Dictionary&lt;string, object?&gt; / List&lt;object?&gt; / 标量。
+/// YAML 解析门面 (零反射, NativeAOT 安全) — 全框架配置读取的地基。
+/// v0.10.0 新需求1: 内部实现由自研子集解析器替换为 Yamlify 1.8.0 (SwissLife-OSS, MIT)。
+///   - Yamlify: SourceGenerator 级库, 运行时零反射, NativeAOT 实测零 IL 警告
+///   - YAML 1.2 全规范 (原子集: 锚点/流式/多行块标量等均不支持, 现全支持)
+///   - 输出契约不变: Dictionary&lt;string, object?&gt; / List&lt;object?&gt; / 标量
+///     (标量按原 MiniYaml 契约解析: bool/int/long/double/null, 其余为 string)
+/// 5 个消费者 (ConfigSnapshot/SkillRegistry/ConfigWriter/测试) API 零改动。
 /// </summary>
 public static class MiniYaml
 {
+    /// <summary>解析 YAML 文本 → 弱类型树。FormatException 语义与原实现一致 (调用方捕获回退)。</summary>
     public static Dictionary<string, object?> Parse(string yamlText)
     {
-        var lines = Preprocess(yamlText);
-        var pos = 0;
-        var root = ParseDict(lines, ref pos, indentLevel: 0);
-        return root;
-    }
-
-    private static Dictionary<string, object?> ParseDict(List<(int Indent, string Text)> lines, ref int pos, int indentLevel)
-    {
-        var dict = new Dictionary<string, object?>();
-        int? blockIndent = null;
-        while (pos < lines.Count)
+        try
         {
-            var (indent, text) = lines[pos];
-            if (indent < indentLevel) break;
-            if (indent > indentLevel) throw new FormatException($"MiniYaml: 意外的缩进 (行 {pos + 1}: '{text}')");
-
-            blockIndent ??= indent;
-            if (text.StartsWith("- ", StringComparison.Ordinal) || text == "-")
-            {
-                // 映射节点下的列表是非法结构 (列表须挂在 key 下) — 防御性报错
-                throw new FormatException($"MiniYaml: 映射内出现裸列表项 (行 {pos + 1}: '{text}')");
-            }
-
-            var sep = text.IndexOf(':');
-            if (sep <= 0) throw new FormatException($"MiniYaml: 缺少 key: 分隔 (行 {pos + 1}: '{text}')");
-            var key = Unquote(text[..sep].Trim());
-            var rest = text[(sep + 1)..].Trim();
-
-            if (rest.Length == 0)
-            {
-                // 嵌套节点: 看下一行缩进决定是 dict 还是 list
-                pos++;
-                if (pos < lines.Count && lines[pos].Indent > indent)
-                {
-                    if (IsListLine(lines[pos].Text))
-                        dict[key] = ParseList(lines, ref pos, lines[pos].Indent);
-                    else
-                        dict[key] = ParseDict(lines, ref pos, lines[pos].Indent);
-                }
-                else
-                {
-                    dict[key] = null; // 空值节点
-                }
-            }
-            else if (IsListLine(rest))
-            {
-                // 行内列表头 (key: 后直接跟 - 项的写法不支持, 规范禁止行内数组)
-                throw new FormatException($"MiniYaml: key 后跟列表项不支持 (行 {pos + 1}: '{text}')");
-            }
-            else
-            {
-                dict[key] = ParseScalar(rest);
-                pos++;
-            }
+            var docs = Yamlify.Nodes.YamlStream.Load(yamlText);
+            if (docs.Count == 0)
+                throw new FormatException("MiniYaml: 文档为空");
+            if (docs[0].RootNode is not Yamlify.Nodes.YamlMappingNode root)
+                throw new FormatException($"MiniYaml: 根节点须为映射 (实际: {docs[0].RootNode?.NodeType})");
+            var result = new Dictionary<string, object?>();
+            foreach (var (keyNode, valueNode) in IterateMapping(root))
+                result[KeyToString(keyNode)] = ToTree(valueNode);
+            return result;
         }
-        return dict;
-    }
-
-    private static List<object?> ParseList(List<(int Indent, string Text)> lines, ref int pos, int indentLevel)
-    {
-        var list = new List<object?>();
-        while (pos < lines.Count)
+        catch (FormatException)
         {
-            var (indent, text) = lines[pos];
-            if (indent < indentLevel) break;
-            if (indent > indentLevel) throw new FormatException($"MiniYaml: 列表项缩进异常 (行 {pos + 1}: '{text}')");
-            if (!IsListLine(text)) break;
-
-            var item = text[2..].Trim();
-            if (item.Length == 0)
-            {
-                // "- " 后空: 下一行更深缩进开始的映射作为元素
-                pos++;
-                if (pos < lines.Count && lines[pos].Indent > indent)
-                    list.Add(ParseDict(lines, ref pos, lines[pos].Indent));
-                else
-                    list.Add(null);
-            }
-            else if (item.Contains(':'))
-            {
-                // "- k: v" 开头的映射元素: 首键来自本行 "- " 后内容,
-                // 后续行首缩进 > 本行行首缩进的键都并入同一元素 (映射后续键)
-                var elem = new Dictionary<string, object?>();
-                var sep = item.IndexOf(':');
-                var k = Unquote(item[..sep].Trim());
-                var rest = item[(sep + 1)..].Trim();
-                elem[k] = rest.Length == 0 ? null : ParseScalar(rest);
-                pos++;
-                // 吞并属于该元素的后续键 (缩进更深或同深且非列表行 — 同深也属于: "- a: 1" 后
-                // "  b: 2" 的行首缩进 = 行首+2 > 行首)
-                while (pos < lines.Count && lines[pos].Indent > indent && !IsListLine(lines[pos].Text))
-                {
-                    var (i2, t2) = lines[pos];
-                    var s2 = t2.IndexOf(':');
-                    if (s2 <= 0) throw new FormatException($"MiniYaml: 列表映射元素内缺少 key: (行 {pos + 1}: '{t2}')");
-                    var r2 = t2[(s2 + 1)..].Trim();
-                    elem[Unquote(t2[..s2].Trim())] = r2.Length == 0 ? null : ParseScalar(r2);
-                    pos++;
-                }
-                list.Add(elem);
-            }
-            else
-            {
-                list.Add(ParseScalar(item));
-                pos++;
-            }
+            throw; // 本层语义错误直接抛
         }
-        return list;
-    }
-
-    private static bool IsListLine(string text) =>
-        text.StartsWith("- ", StringComparison.Ordinal) || text == "-";
-
-    private static object? ParseScalar(string raw)
-    {
-        var s = Unquote(raw.Trim());
-        if (s.Length == 0 || s == "null" || s == "~") return null;
-        if (s == "true") return true;
-        if (s == "false") return false;
-        // 数字: int/long
-        if (long.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out var l)) return l;
-        // 浮点 (含科学计数)
-        if (double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out var d)) return d;
-        return s;
-    }
-
-    private static string Unquote(string s)
-    {
-        if (s.Length >= 2)
+        catch (Exception ex)
         {
-            var first = s[0];
-            var last = s[^1];
-            if ((first == '"' && last == '"') || (first == '\'' && last == '\''))
-                return s[1..^1];
+            throw new FormatException($"MiniYaml: YAML 解析失败 ({ex.Message})", ex);
         }
-        return s;
     }
 
-    private static List<(int Indent, string Text)> Preprocess(string yamlText)
+    private static System.Collections.Generic.IEnumerable<(Yamlify.Nodes.YamlNode Key, Yamlify.Nodes.YamlNode Value)> IterateMapping(Yamlify.Nodes.YamlMappingNode map)
     {
-        var result = new List<(int, string)>();
-        var rawLines = yamlText.Replace("\r\n", "\n").Split('\n');
-        foreach (var raw in rawLines)
+        var keys = map.Keys.ToList();
+        var values = map.Values.ToList();
+        for (var i = 0; i < keys.Count; i++)
+            yield return (keys[i], values[i]);
+    }
+
+    private static string KeyToString(Yamlify.Nodes.YamlNode key)
+        => key switch
         {
-            // 整行注释/空行跳过
-            var noComment = StripComment(raw);
-            if (noComment.Trim().Length == 0) continue;
-            if (noComment.Contains('\t')) throw new FormatException("MiniYaml: 禁止 Tab 缩进 (规范 4.4)");
-            var indent = CountIndent(noComment);
-            var text = noComment.TrimEnd();
-            result.Add((indent, text.Trim()));
-        }
-        return result;
-    }
+            Yamlify.Nodes.YamlScalarNode s => s.Value ?? string.Empty,
+            _ => throw new FormatException("MiniYaml: 映射 key 须为标量"),
+        };
 
-    private static string StripComment(string line)
+    /// <summary>DOM 节点 → 弱类型树 (嵌套 dict/list/标量)</summary>
+    private static object? ToTree(Yamlify.Nodes.YamlNode node)
     {
-        // 引号外第一个 # 起为注释 (简单状态机, 引号不成对则视为无注释行尾)
-        var inQuote = false;
-        var quoteChar = '"';
-        var sb = new StringBuilder();
-        foreach (var ch in line)
+        switch (node)
         {
-            if (inQuote)
-            {
-                if (ch == quoteChar) inQuote = false;
-            }
-            else if (ch == '"' || ch == '\'')
-            {
-                inQuote = true;
-                quoteChar = ch;
-            }
-            else if (ch == '#')
-            {
-                break;
-            }
-            sb.Append(ch);
+            case Yamlify.Nodes.YamlMappingNode map:
+                var d = new Dictionary<string, object?>();
+                foreach (var (k, v) in IterateMapping(map))
+                    d[KeyToString(k)] = ToTree(v);
+                return d;
+            case Yamlify.Nodes.YamlSequenceNode seq:
+                var l = new List<object?>();
+                foreach (var item in seq)
+                    l.Add(ToTree(item));
+                return l;
+            case Yamlify.Nodes.YamlScalarNode sc:
+                return ParseScalar(sc.Value, sc.Style);
+            default:
+                return null;
         }
-        return sb.ToString();
     }
 
-    private static int CountIndent(string line)
+    /// <summary>标量解析 (契约兼容原 MiniYaml): bool/int/long/double/null/其余 string</summary>
+    private static object? ParseScalar(string? value, Yamlify.ScalarStyle style)
     {
-        var i = 0;
-        while (i < line.Length && line[i] == ' ') i++;
-        return i;
+        if (value is null) return null;
+        // 引号标量: 原样保留字符串 (不剥引号 — Yamlify DOM 已剥)
+        
+        return ParseScalarText(value, style);
+    }
+
+    private static object? ParseScalarText(string value, Yamlify.ScalarStyle style)
+    {
+        // 显式引号强制 string (即使内容像数字)
+        if (style == Yamlify.ScalarStyle.SingleQuoted || style == Yamlify.ScalarStyle.DoubleQuoted)
+            return value;
+        // 隐式标量类型推断 (与原 MiniYaml 契约一致)
+        if (value == "null" || value == "~" || value.Length == 0) return null;
+        if (value == "true") return true;
+        if (value == "false") return false;
+        if (long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var l)) return l;
+        if (double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var d)) return d;
+        return value;
     }
 }

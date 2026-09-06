@@ -17,6 +17,10 @@ public sealed class SkillRegistry
         var registry = new SkillRegistry();
         if (!Directory.Exists(skillRoot))
             return registry;
+        // v0.10.0 新需求5: 开放规范包优先 (skill-name/SKILL.md 目录包格式)
+        foreach (var pkg in SkillPackageLoader.LoadPackages(skillRoot))
+            registry.Register(pkg);
+        // legacy 平文件 (*.yaml) 兼容并存 (identity.yaml 等存量技能)
         foreach (var file in Directory.EnumerateFiles(skillRoot, "*.y*ml"))
         {
             try

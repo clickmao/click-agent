@@ -33,6 +33,9 @@ public sealed class QueueResponse
     public string Model { get; set; } = "unknown";
     public int PromptTokens { get; set; }
     public int TokensUsed { get; set; }
+
+    /// <summary>v0.10.0: 输出 token 数 (TokensUsed = prompt + completion)</summary>
+    public int CompletionTokens => Math.Max(0, TokensUsed - PromptTokens);
 }
 
 /// <summary>模型队列调用端口 (adapter 在 agent 主程序集实现 ILLMCaller 时消费)</summary>
@@ -65,6 +68,10 @@ public sealed class ModelQueueRouter : IModelQueueCaller
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly Microsoft.Extensions.Logging.ILogger _logger;
 
+    /// <summary>需求①: 本地推理桥 (宿主注入; null = 无本地模型, 通道自动不可用)</summary>
+    private readonly ILocalInference? _localInference;
+    private readonly TokenUsageService? _tokenUsage;
+
     /// <summary>需求1: 官方 key 仓库 (CLI --official-key / /official-key 注入; 永不落盘)</summary>
     public OfficialKeyStore OfficialKeys { get; } = new();
 
@@ -92,13 +99,19 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         ModelCatalog catalog,
         IHttpClientFactory httpClientFactory,
         Microsoft.Extensions.Logging.ILogger logger,
-        ChannelScheduler? scheduler = null)
+        ChannelScheduler? scheduler = null,
+        ILocalInference? localInference = null,
+        TokenUsageService? tokenUsage = null)
     {
         _catalog = catalog;
         _policy = new ModelSelectionPolicy();
         _httpClientFactory = httpClientFactory;
         _logger = logger;
+        _localInference = localInference;
+        _tokenUsage = tokenUsage;
         Scheduler = scheduler ?? new ChannelScheduler();
+        // 本地通道可用性 = 桥接的本地模型就绪 (ChannelScheduler 已默认 Local 可用, 这里按事实修正)
+        Scheduler.SetAvailable(ModelChannel.Local, localInference?.IsAvailable ?? false);
         // 官方通道可用性 = key 已注入 (注入/撤销时由指令处理刷新)
         Scheduler.SetAvailable(ModelChannel.Official, OfficialKeys.IsAvailable());
     }
@@ -109,6 +122,15 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         OfficialKeys.Set(key);
         Scheduler.SetAvailable(ModelChannel.Official, OfficialKeys.IsAvailable());
     }
+
+    /// <summary>当前手动覆盖模型 id (null = auto 自动选模模式) — /model 指令与 /status 展示</summary>
+    public string? ManualOverride => _manualOverride;
+
+    /// <summary>v0.10.0: 最近一次余额不足提示 (model:xxx flags:余额不足 协议 — 前端展示用)</summary>
+    public string? LastBalanceFlag { get; private set; }
+
+    /// <summary>模型目录 (只读暴露: /model list 序号化列表的数据源)</summary>
+    public ModelCatalog Catalog => _catalog;
 
     /// <summary>当前活跃模型条目 (null = 目录空)</summary>
     public ModelCatalogEntry? ActiveModel
@@ -152,6 +174,43 @@ public sealed class ModelQueueRouter : IModelQueueCaller
 
     public async Task<QueueResponse> CallAsync(QueuePrompt prompt, TaskKindHint kind, string intent, CancellationToken ct = default)
     {
+        // 需求① 本地通道真跑: 无手动覆盖/粘性时, 本地优先 (并发余量内) — LocalInferenceAdapter 实跑子任务
+        bool useLocal = false;
+        lock (_lock)
+        {
+            if (_manualOverride is null && _activeModelId is null &&
+                _localInference is not null && _localInference.IsAvailable)
+            {
+                var localChannel = Scheduler.AcquireChannel();
+                if (localChannel == ModelChannel.Local)
+                {
+                    useLocal = true;
+                    LastSelectionBasis = $"channel:local:{_localInference.ModelName}";
+                }
+                else if (localChannel is not null)
+                    Scheduler.ReleaseChannel(localChannel.Value); // 首选非 Local (本地满) → 按其通道语义继续
+            }
+        }
+        if (useLocal)
+        {
+            try
+            {
+                var localResp = await _localInference!.CallAsync(prompt, ct).ConfigureAwait(false);
+                Scheduler.ReleaseChannel(ModelChannel.Local);
+                return localResp;
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                Scheduler.ReleaseChannel(ModelChannel.Local);
+                return new QueueResponse
+                {
+                    Success = false,
+                    Error = $"本地模型调用失败: {ex.Message}",
+                    Model = _localInference!.ModelName,
+                };
+            }
+        }
+
         // 需求1 混合调度: 手动/粘性优先 → 通道优先级 (官方 key 在 → 官方可作候选; 远端目录在 → 远端)
         var entry = _catalog.Find(_manualOverride ?? _activeModelId)
                     ?? _policy.Select(null, kind, intent,
@@ -166,10 +225,42 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             };
         }
 
+        // v0.10.0: 余额预估检查 — 不足 → 切换其他模型 + flags:余额不足 提示
+        if (_tokenUsage is not null)
+        {
+            var (remaining, sufficient) = _tokenUsage.EstimateBalance(entry.Provider, prompt.EstimatedTokens);
+            if (!sufficient)
+            {
+                var alt = SelectAlternativeByBalance(entry, prompt.EstimatedTokens);
+                if (alt is not null && alt.Id != entry.Id)
+                {
+                    Switches.Add(new ModelSwitchRecord
+                        { From = entry.Id, To = alt.Id, Reason = "insufficient_balance" });
+                    _activeModelId = alt.Id;
+                    LastSelectionBasis = $"balance_fallback:{alt.Id} ({entry.Id} 余额不足)";
+                    LastBalanceFlag = $"model:{alt.Id} flags:余额不足 (原 {entry.Id} 预估余额 ${remaining:F2})";
+                    _logger.LogWarning("ModelQueue: {From} 余额不足 (${Remain:F2}) → 切换 {To}",
+                        entry.Id, remaining ?? 0, alt.Id);
+                    entry = alt;
+                }
+                else
+                {
+                    // 无备选 → 继续原模型但带上提示
+                    LastBalanceFlag = $"model:{entry.Id} flags:余额不足 (预估剩余 ${remaining:F2}, 无备选继续)";
+                    _logger.LogWarning("ModelQueue: {Id} 余额不足但无备选 — 继续原模型", entry.Id);
+                }
+            }
+        }
+
         try
         {
             var resp = await CallEntryAsync(entry, prompt, ct);
             lock (_lock) _consecutiveFailures = 0;
+            // v0.10.0: 用量本地累计
+            _tokenUsage?.RecordUsage(resp.Model, entry.Provider, resp.PromptTokens, resp.CompletionTokens);
+            // 阈值再同步 (fire-and-forget, 不阻塞主链)
+            if (_tokenUsage is not null && _tokenUsage.NeedsResync(entry.Provider))
+                _ = _tokenUsage.TryResyncAsync(entry.Provider, CancellationToken.None);
             return resp;
         }
         catch (HttpRequestException ex)
@@ -241,6 +332,25 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                 Model = _activeModelId,
             };
         }
+    }
+
+    /// <summary>
+    /// v0.10.0 余额不足备选: 同目录排除当前模型, 按 (余额充足, 分数) 选最优。
+    /// 本地通道可用 → 本地优先 (无余额概念, 天然充足)。
+    /// </summary>
+    private ModelCatalogEntry? SelectAlternativeByBalance(ModelCatalogEntry current, int estimatedTokens)
+    {
+        // 本地通道可用 → 本地承接 (本地模型无余额限制)
+        if (_localInference is not null && _localInference.IsAvailable)
+            return null; // 本地走 CallAsync 本地分支, 此处不重复
+        if (_tokenUsage is null) return null;
+        var candidates = _catalog.Models
+            .Where(m => !string.Equals(m.Id, current.Id, StringComparison.OrdinalIgnoreCase))
+            .Select(m => (Model: m, Est: _tokenUsage.EstimateBalance(m.Provider, estimatedTokens)))
+            .Where(t => t.Est.Sufficient)
+            .OrderByDescending(t => t.Model.ReasoningScore + t.Model.CodingScore)
+            .ToList();
+        return candidates.Count == 0 ? null : candidates[0].Model;
     }
 
     /// <summary>

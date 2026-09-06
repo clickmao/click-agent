@@ -48,6 +48,18 @@ public sealed class SkillDefinition
 
     /// <summary>幂等 (P2 执行调度: true 才允许重试)</summary>
     public bool Idempotent { get; set; }
+
+    /// <summary>v0.10.0 开放规范包: 包目录绝对路径 (null = legacy 平文件 skill.yaml)</summary>
+    public string? PackageDir { get; set; }
+
+    /// <summary>开放规范包: scripts/ 目录存在 (可执行脚本)</summary>
+    public bool HasScripts { get; set; }
+
+    /// <summary>开放规范包: references/ 目录存在 (大段参考文档)</summary>
+    public bool HasReferences { get; set; }
+
+    /// <summary>开放规范包: assets/ 目录存在 (模板/静态资源)</summary>
+    public bool HasAssets { get; set; }
 }
 
 /// <summary>标准化输出 (原文 §4.6)</summary>
