@@ -89,6 +89,15 @@ def main():
             print(f"平滑: {worst['id']} 近3轮均值 {base_avg:.0f}→{cur_avg:.0f} "
                   f"(单轮 {worst.get('dtokens', 0):+d} 可能是 LLM 波动)")
 
+    # v0.11.0 R95: JSON 格式合规率统计 (PGO 新维度, 注意点 3) — C11 哨兵全批口径:
+    json_sent = [x for x in cur["results"] if "json_valid" in x.get("expect_expect", {}) or x["id"].startswith("C11")]
+    if json_sent:
+        jok = sum(1 for x in json_sent if x.get("pass"))
+        jrate = jok / len(json_sent) * 100
+        print(f"json_format_rate: {jok}/{len(json_sent)} ({jrate:.0f}%)")
+        if jrate < 100:
+            verdict = "REVIEW" if verdict == "KEEP" else verdict
+
     entry = {"round": cur_r, "base": base_r, "label": cur.get("label", ""),
              "passed": f"{cur['passed']}/{cur['cases']}", "tokens": cur["tokens_total"],
              "verdict": verdict, **d}
