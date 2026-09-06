@@ -1,0 +1,159 @@
+{
+ "round": "mass_42",
+ "label": "R81 batch10 42",
+ "ts": "2026-09-06T20:15:53+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 4206,
+ "prompt_total": 2321,
+ "completion_total": 1885,
+ "wall_total_ms": 51258,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组分区递归排序的分治算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 8024,
+   "points": 19,
+   "llm_calls": 1,
+   "prompt_tokens": 742,
+   "completion_tokens": 28,
+   "total_tokens": 770,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 7137,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 13,
+   "sources_recall": "Memory:9snip/1672tok/r0.45rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 5110,
+   "from_cache": false,
+   "prompt_total_tokens": 996,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "结论先行：千万级以内自部署推荐 Qdrant；已有 PostgreSQL 选 pgvector；功能全/超大规模选 Milvus；免运维选云托管 Pinecone。\n\n关键对比要点：\n· **Qdrant**：Rust 编写，性能与资源占用平衡最佳，API 友好，适合快速上线\n· **Milvus**：混合检索、标量过滤、GPU 加速功能最全，社区活跃，但运维复杂度较高\n· **pgvector**：复用现有 PG 生态，运维成本最低，适合中小规模\n· **Pinecone**：Serverless 免运维，按量付费，但成本随规模上升快且存在厂商锁定\n\n选型依据维度：数据规模（百万/千万/亿级）、QPS 要求、是否需要混合检索与标量过滤、运维能力、现有技术栈。\n\n如需完整对比报告（含性能基准、定价明细、部署方式），请确认目标数据规模与部署环境，我再展开生成。",
+   "wall_ms": 18997,
+   "points": 20,
+   "llm_calls": 1,
+   "prompt_tokens": 776,
+   "completion_tokens": 622,
+   "total_tokens": 1398,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 18115,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 11,
+   "sources_recall": "Memory:7snip/1900tok/r0.45rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/91tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 6422,
+   "from_cache": false,
+   "prompt_total_tokens": 1050,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (593ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1473,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 593,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "为什么索引能加速查询\n\n核心原因：把全表扫描 O(N) 变成树形查找 O(log N)，并大幅减少磁盘 I/O。\n\n1. 无索引 vs 有索引\n\n| | 无索引 | 有索引（B+ 树） |\n| 查找方式 | 逐行扫描全表 | 沿树导航 |\n| 复杂度 | O(N) | O(log N) |\n| 1000 万行约需 | 读全部数据页 | 3~4 次页访问 |\n\n2. 关键机制\n\n① 有序的树形结构\nB+ 树将键值排序存储，每次比较可排除约一半候选数据。千万级数据树高仅 3~4 层，查找路径极短。\n\n② 减少磁盘 I/O\n· I/O 次数 ≈ 树高，因为每访问一个节点对应一次页读取\n· 节点大小按页（如 16KB）设计，单节点容纳数百个键，树保持“矮胖”，I/O 次数被压到最低\n\n③ 范围查询高效\nB+ 树叶子节点通过链表串联，定位到起点后顺序扫描即可，无需重新遍历树。\n\n④ 覆盖索引避免回表",
+   "wall_ms": 22764,
+   "points": 21,
+   "llm_calls": 1,
+   "prompt_tokens": 803,
+   "completion_tokens": 1235,
+   "total_tokens": 2038,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 21855,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 12,
+   "sources_recall": "Memory:8snip/2117tok/r0.45rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/104tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 7161,
+   "from_cache": false,
+   "prompt_total_tokens": 1079,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}

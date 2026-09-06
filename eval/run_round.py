@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Round 跑批 harness — 每用例独立 dotnet run 进程, 采集回复 + telemetry JSONL → rounds/<round>.json"""
-import json, os, re, subprocess, sys, time, urllib.parse
+import glob, json, os, re, subprocess, sys, time, urllib.parse
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
@@ -140,6 +140,13 @@ def main():
         all_cases = [c for c in all_cases if c["id"].startswith(keep)]
     cases = all_cases
     env = load_env()
+    # v0.11.0 R81: 评测隔离 — R79 RAG 索引落盘会让前轮记忆泄入本轮 (真机是功能, 评测是污染),
+    # 每轮启动前清空 RAG 落盘 + 会话记忆, 保证轮间独立可比。
+    for stale in ("data/rag/index.jsonl",):
+        if os.path.exists(stale):
+            os.remove(stale)
+    for sess in glob.glob("data/sessions/cli-*_memory.json"):
+        os.remove(sess)
     results = []
     for c in cases:
         r = run_case(c, env)
