@@ -1,0 +1,196 @@
+{
+ "round": "mass_65",
+ "label": "R96 batch16 65",
+ "ts": "2026-09-06T21:54:47+0800",
+ "cases": 5,
+ "passed": 5,
+ "tokens_total": 3323,
+ "prompt_total": 1820,
+ "completion_total": 1503,
+ "wall_total_ms": 45031,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组分区递归排序的高效分治排序算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 3407,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 351,
+   "completion_tokens": 31,
+   "total_tokens": 382,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 2490,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 49,
+   "from_cache": false,
+   "prompt_total_tokens": 479,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "结论：通用 RAG 场景下——中小规模首选 Qdrant，大规模/自建首选 Milvus，免运维托管选 Pinecone，已有 PostgreSQL 且数据量 < 千万级可用 pgvector。\n\n关键对比（要点）：\n· **Milvus**：开源、分布式、亿级向量性能强；运维复杂度高\n· **Qdrant**：Rust 实现、轻量易部署、标量过滤强；适合中小规模\n· **Pinecone**：全托管免运维；成本高、数据不出私有环境\n· **Weaviate**：原生混合检索（向量+关键词）；社区相对小\n· **pgvector**：复用现有 PG、零新增组件；超大规模性能受限\n\n推荐：\n1. 快速原型 / <1000 万向量 → Qdrant 或 pgvector\n2. 生产级大规模 / 高可用 → Milvus\n3. 无运维团队、预算充足 → Pinecone\n\n以上为默认通用场景结论",
+   "wall_ms": 12892,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 375,
+   "completion_tokens": 859,
+   "total_tokens": 1234,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 11942,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/103tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 52,
+   "from_cache": false,
+   "prompt_total_tokens": 540,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (654ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1532,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 654,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "核心原因：索引把查询从“全表扫描 O(N)”降为“树查找 O(log N)”，大幅减少磁盘 I/O。\n\n关键机制（要点）：\n\n1. 避免全表扫描\n   无索引时，查询需逐行读取所有数据页；有索引时，直接按结构定位到目标行，读取的页数从“全部”降到“几页”。\n\n2. B+ 树的多路平衡结构\n· 每个节点可容纳大量键（多叉），树高极矮——千万级数据通常仅 3~4 层\n· 树高即磁盘 I/O 次数，3~4 次 I/O 就能定位一条记录\n· 这是对磁盘特性（随机 I/O 慢）的针对性优化\n\n3. 有序性支持快速定位与范围查询\n· 索引键有序，可二分查找\n· 叶子节点通过链表串联，范围查询（`BETWEEN`、`>`、`<`）只需找到起点后顺序扫描\n\n4. 哈希索引：等值查询 O(1)\n   键直接映射到存储位置，等值匹配最快，但不支持范围和排序。\n\n5. 覆盖索引避免回表\n   查询列都在索引中时",
+   "wall_ms": 21430,
+   "points": 14,
+   "llm_calls": 1,
+   "prompt_tokens": 583,
+   "completion_tokens": 594,
+   "total_tokens": 1177,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 20527,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:1snip/256tok/r0.45rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/103tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 1030,
+   "from_cache": false,
+   "prompt_total_tokens": 800,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C11_json_format",
+   "input": "用JSON格式返回：字段name填fastapi，字段lang填python，只返回JSON不要其他文字",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"name\": \"fastapi\", \"lang\": \"python\"}",
+   "wall_ms": 5770,
+   "points": 14,
+   "llm_calls": 1,
+   "prompt_tokens": 511,
+   "completion_tokens": 19,
+   "total_tokens": 530,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.37322757895009184
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 4882,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/206tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 828,
+   "from_cache": false,
+   "prompt_total_tokens": 700,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}

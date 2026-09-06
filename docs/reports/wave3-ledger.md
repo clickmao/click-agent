@@ -86,6 +86,11 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - R93 **覆盖扩展** (用户注意点 1): cases 10→14 (+C11 JSON 格式返回+平衡块校验器 / +C12 负样本极短输入 /
   +C13 git 敏感 / +C09b glm 余额 as-is); round91 14/14; 批 14 ×5 20/20 (CV 5.0% 稳定)
 
+- R94 **quick 集 4→5** (+C11 JSON 格式哨兵 — 每批产出格式合规率维度); 批 15 ×5 25/25 (CV 11.7%,
+  每用例均值 788 优于批 14 的 836); 隔离/pivot E2E 复验 ✓ (pivot 后正常作诗, 旧 goal 零拦截)
+- R95 analyze.py 加 **json_format_rate** PGO 维度 (<100% 触发 REVIEW); ToolOutput 源码审计确认预留边界
+- R96 批 16 ×5 25/25 (CV 12.7%, 批15→16 同集 Δ -6.3% 稳定); **C11 JSON 合规累计 10/10 (100%)**
+
 ## 已知边界 (诚实标注)
 - Session 源设计性禁用; ToolOutput 预留; PausedForApproval 仅影子计划
 - CNY→USD 固定汇率 7.2 (env 可配)
