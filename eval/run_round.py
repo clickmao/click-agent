@@ -131,7 +131,14 @@ def check_expect(case, reply, agg, raw_tail):
 def main():
     rnd = sys.argv[1] if len(sys.argv) > 1 else "baseline"
     label = sys.argv[2] if len(sys.argv) > 2 else ""
-    cases = json.load(open("eval/cases.json"))
+    # v0.11.0 R27: --quick 高频回归模式 — 4 关键用例 (普通/多步/executive/推理),
+    # 约 25s 一轮 (全量 70-140s), 供千轮级循环高频迭代; 全量轮仍用默认模式。
+    quick = "--quick" in sys.argv
+    all_cases = json.load(open("eval/cases.json"))
+    if quick:
+        keep = ("C01", "C03", "C06", "C08")
+        all_cases = [c for c in all_cases if c["id"].startswith(keep)]
+    cases = all_cases
     env = load_env()
     results = []
     for c in cases:
