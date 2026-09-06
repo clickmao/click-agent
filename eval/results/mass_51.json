@@ -1,0 +1,159 @@
+{
+ "round": "mass_51",
+ "label": "R87 batch13 51",
+ "ts": "2026-09-06T20:36:50+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 2704,
+ "prompt_total": 1274,
+ "completion_total": 1430,
+ "wall_total_ms": 62248,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组分成“小于”和“大于”两部分并递归排序的高效分治排序算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 3446,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 335,
+   "completion_tokens": 40,
+   "total_tokens": 375,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 2563,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 49,
+   "from_cache": false,
+   "prompt_total_tokens": 474,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "推荐结论：通用生产场景首选 Milvus；轻量部署/原型选 Qdrant 或 Chroma；已有 PostgreSQL 可用 pgvector；想免运维选云托管 Pinecone。\n\n关键对比依据（要点）：\n· **Milvus**：开源、分布式、支持十亿级向量，生态成熟（LangChain/LlamaIndex 均原生支持），代价是运维复杂度较高\n· **Qdrant**：Rust 实现，性能与内存效率好，过滤查询强，单机部署轻量\n· **Chroma**：开箱即用，适合原型验证与中小规模\n· **pgvector**：零新增组件，复用现有 PG 运维体系，适合千万级以下、混合查询场景\n· **Pinecone**：全托管免运维，弹性好，但成本高且有数据出域顾虑\n\n说明：上下文中无具体评测数据，以上基于公开资料通识。\n\n问询：这份报告面向生产选型还是技术预览？默认按“生产选型”生成完整对",
+   "wall_ms": 37656,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 366,
+   "completion_tokens": 749,
+   "total_tokens": 1115,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 36773,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/111tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 51,
+   "from_cache": false,
+   "prompt_total_tokens": 539,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (589ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1474,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 589,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "核心原理：把“逐行扫描”变成“有序结构查找”，大幅减少需要读取的数据量。\n\n1. 无索引 = 全表扫描，O(n)\n没有索引时，查询必须逐行读取并判断条件，数据量越大越慢，且每行都可能触发一次磁盘 I/O。\n\n2. 有索引 = 有序数据结构，O(log n) 甚至 O(1)\n· **B+Tree**（最常见）：数据按键值有序组织，查找只需从根节点走一条路径。千万行数据约 3~4 层，即 3~4 次节点访问就能定位，而不是读几百万行。叶子节点用链表串联，还天然支持范围查询（`BETWEEN`、`>`、`<`）和排序。\n· **Hash 索引**：哈希后直接定位，等值查询 O(1)，但不支持范围查询。\n\n3. 减少 I/O 是关键收益\n索引只存储“索引列 + 行指针”，体积远小于整表。磁盘 I/O 是数据库最大瓶颈，读 10 个索引页远快于读 10 万个数据页。\n\n4. 附带收益\n· **避免排",
+   "wall_ms": 19672,
+   "points": 14,
+   "llm_calls": 1,
+   "prompt_tokens": 573,
+   "completion_tokens": 641,
+   "total_tokens": 1214,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 18775,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:1snip/277tok/r0.45rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/97tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 1158,
+   "from_cache": false,
+   "prompt_total_tokens": 798,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}

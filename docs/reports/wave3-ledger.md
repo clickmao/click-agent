@@ -71,6 +71,10 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
   实证: '把100光年转成摄氏度' 裸错误 JSON → 友好解释 ("光年是距离单位，摄氏度是温度单位"); wordcount 正例不回归
 - R84 全量 10/10 (4952, completion 方差带内, prompt 全正常); AOT 0 警
 
+## R85-R87 追加 (第十六轮循环)
+- R86 (缺陷 35): /help 未注册送 LLM 浪费一轮 → 本地应答 (0.98s / 0 LLM 实证)
+- 千轮批 12-13 (24/24, 十三批 196/196); 阶段判定改善 (tokens/wall 均 -38.2%)
+
 ## 已知边界 (诚实标注)
 - Session 源设计性禁用; ToolOutput 预留; PausedForApproval 仅影子计划
 - CNY→USD 固定汇率 7.2 (env 可配)
