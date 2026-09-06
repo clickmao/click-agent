@@ -18,6 +18,10 @@ public sealed class QueueChatRequest
 
     [JsonPropertyName("temperature")]
     public double Temperature { get; set; } = 0.7;
+
+    /// <summary>v0.11.0 R22: 推理档位 (glm/deepseek 实测 low 档 reasoning 大降)。null=默认。</summary>
+    [JsonPropertyName("reasoning_effort")]
+    public string? ReasoningEffort { get; set; }
 }
 
 public sealed class QueueChatMessage

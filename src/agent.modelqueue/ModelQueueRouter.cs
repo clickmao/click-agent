@@ -16,6 +16,9 @@ public sealed class QueuePrompt
 
     /// <summary>预估输入 token (费用估算/选模)</summary>
     public int EstimatedTokens { get; set; }
+
+    /// <summary>v0.11.0 R22: 推理档位建议 (null=默认深推理; low=轻思考)。</summary>
+    public string? ReasoningEffort { get; set; }
 }
 
 public sealed class QueueHistoryMessage
@@ -425,7 +428,7 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             messages.Add(new QueueChatMessage { Role = msg.Role, Content = msg.Content });
         messages.Add(new QueueChatMessage { Role = "user", Content = prompt.UserMessage });
 
-        var request = new QueueChatRequest { Model = entry.Id, Messages = messages };
+        var request = new QueueChatRequest { Model = entry.Id, Messages = messages, ReasoningEffort = prompt.ReasoningEffort };
         using var http = new HttpRequestMessage(HttpMethod.Post, entry.Endpoint)
         {
             Content = new StringContent(

@@ -23,6 +23,8 @@ public sealed class ModelQueueAdapter : ILLMCaller, agent.subagent.ILLMCallerFor
             ContextPrompt = prompt.ContextPrompt,
             UserMessage = prompt.UserMessage,
             EstimatedTokens = prompt.EstimatedTokens,
+            // v0.11.0 R22: 推理档位透传 (deepseek 实测 low 档 reasoning 24ch vs 90ch)
+            ReasoningEffort = prompt.ReasoningEffort,
         };
         foreach (var msg in prompt.History)
             qp.History.Add(new QueueHistoryMessage
