@@ -34,5 +34,8 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 
 ## 已知边界 (诚实标注)
 - Session 源设计性禁用; ToolOutput 预留; PausedForApproval 仅影子计划
-- CNY→USD 固定汇率 7.2 (env 可配); 词面召回的语义反转 (喜欢/不喜欢) 待 P3 向量化
+- CNY→USD 固定汇率 7.2 (env 可配)
+- **P3 向量化已评估不可行** (R58): glm coding 端点与 deepseek 均无 embedding 模型 (API 实测);
+  本地 ONNX embedding 违反轻量/AOT 原则 → 词面召回 + 内容命中下限 (R44) 为当前最优解,
+  语义反转 (喜欢/不喜欢) 为已知接受边界
 - kimi key 认证失败 (负样本保留); round11/16/21/22/24 波动已归因方差
