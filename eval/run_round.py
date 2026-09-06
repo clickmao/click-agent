@@ -57,7 +57,9 @@ def summarize_points(points):
     s = {"points": len(points), "llm_calls": 0, "prompt_tokens": 0, "completion_tokens": 0,
          "total_tokens": 0, "llm_ms_est": None, "skill_hits": [], "skill_force": None,
          "intent": None, "subtasks": 0, "assembly_ok": None, "loop_success": None,
-         "loop_ms": None, "models": []}
+         "loop_ms": None, "models": [],
+         "snippets": 0, "sources_recall": "", "assembly_ms": None, "from_cache": None,
+         "prompt_total_tokens": None, "history_tokens": None, "gate_to_ask": None}
     for pt in points:
         kv = pt.get("kv", {}) or {}
         tag = pt.get("point")
@@ -76,6 +78,15 @@ def summarize_points(points):
             s["subtasks"] = kv.get("subtask_count", 0)
         elif tag == "assembly":
             s["assembly_ok"] = kv.get("success")
+            s["snippets"] = kv.get("snippets", 0)
+            s["sources_recall"] = kv.get("sources", "")
+            s["assembly_ms"] = kv.get("assembly_ms")
+            s["from_cache"] = kv.get("from_cache")
+        elif tag == "prompt_build":
+            s["prompt_total_tokens"] = kv.get("total_tokens")
+            s["history_tokens"] = kv.get("history_tokens")
+        elif tag == "evidence_gate":
+            s["gate_to_ask"] = kv.get("to_ask")
         elif tag == "loop_turn":
             s["loop_success"] = kv.get("success")
             s["loop_ms"] = kv.get("total_ms")
