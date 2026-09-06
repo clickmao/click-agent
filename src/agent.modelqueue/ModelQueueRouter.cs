@@ -200,11 +200,21 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             {
                 var localResp = await _localInference!.CallAsync(prompt, ct).ConfigureAwait(false);
                 Scheduler.ReleaseChannel(ModelChannel.Local);
+                // v0.11.0 R104 (真缺陷 38): 本地通道无 llm_call 打点 = PGO 盲区 — harness llm_calls=0 误判,
+                // token 统计/反馈速度指标也全部缺失。与云端路径 (271/284) 对齐补齐。
+                agent.config.AgentTelemetry.Emit("llm_call", "ModelQueueRouter",
+                    ("model", localResp.Model), ("provider", "local"),
+                    ("prompt_tokens", localResp.PromptTokens), ("completion_tokens", localResp.CompletionTokens),
+                    ("total_tokens", localResp.TokensUsed), ("success", localResp.Success),
+                    ("content_len", localResp.Content?.Length ?? 0));
                 return localResp;
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 Scheduler.ReleaseChannel(ModelChannel.Local);
+                agent.config.AgentTelemetry.Emit("llm_call", "ModelQueueRouter",
+                    ("model", _localInference!.ModelName), ("provider", "local"),
+                    ("success", false), ("error_kind", "local"), ("error", ex.Message));
                 return new QueueResponse
                 {
                     Success = false,
