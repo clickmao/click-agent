@@ -180,7 +180,8 @@ def main():
     quick = "--quick" in sys.argv
     all_cases = json.load(open("eval/cases.json"))
     if quick:
-        keep = ("C01", "C03", "C06", "C08")
+        # v0.11.0 R94: quick 4→5 — 加 C11 JSON 格式哨兵 (每批产出格式合规率, PGO 新维度)
+        keep = ("C01", "C03", "C06", "C08", "C11")
         all_cases = [c for c in all_cases if c["id"].startswith(keep)]
     cases = all_cases
     env = load_env()

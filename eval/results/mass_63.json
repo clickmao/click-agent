@@ -1,0 +1,196 @@
+{
+ "round": "mass_63",
+ "label": "R94 batch15 63",
+ "ts": "2026-09-06T21:48:31+0800",
+ "cases": 5,
+ "passed": 5,
+ "tokens_total": 4355,
+ "prompt_total": 1843,
+ "completion_total": 2512,
+ "wall_total_ms": 72409,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"name\": \"fastapi\", \"lang\": \"python\"}",
+   "wall_ms": 2827,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 356,
+   "completion_tokens": 19,
+   "total_tokens": 375,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 1949,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 53,
+   "from_cache": false,
+   "prompt_total_tokens": 479,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "先确认一句：你的场景是 RAG、以图搜图还是推荐？以下按默认假设（RAG、百万级向量、可自部署）给出结论：\n\n简要对比\n· **Qdrant**：Rust 实现，性能强、标量过滤好，部署简单，综合性价比高\n· **Milvus**：功能最全、生态成熟，适合亿级大规模，但组件多、运维较重\n· **pgvector**：已有 PostgreSQL 时零成本引入，百万级以下够用\n· **Pinecone**：全托管免运维，上手快，但成本高且有厂商锁定\n· **Chroma**：轻量嵌入式，适合原型验证\n\n推荐结论\n· 原型/小项目：Chroma\n· 百万级自部署生产：**Qdrant（首选）**\n· 亿级或需强生态团队：Milvus\n· 已用 PG 且量小：pgvector\n\n需要完整报告（含性能基准、社区活跃度、成本明细表）可告知，我再展开。",
+   "wall_ms": 32957,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 373,
+   "completion_tokens": 1292,
+   "total_tokens": 1665,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 32046,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/111tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 75,
+   "from_cache": false,
+   "prompt_total_tokens": 539,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (594ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1496,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 594,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "核心原因：把查询从“全表扫描 O(N)”降为“按结构定位 O(log N)”，而磁盘 I/O 次数的大幅减少才是加速的本质。\n\n1. 缩小扫描范围\n· 无索引：逐行读取全表数据页，逐条比对条件\n· 有索引：通过有序结构直接跳到目标数据位置，只读少量页\n\n2. B+ 树结构带来的 I/O 优化\n· 有序多路平衡树，树高仅 3~4 层即可覆盖千万级行；每层访问对应一次页读取，磁盘 I/O 从“百万次级”降到“个位数”\n· 叶子节点有序且用链表相连，范围查询（`>`、`BETWEEN`）和 `ORDER BY` 无需额外排序\n· 哈希索引则可做到等值查询 O(1)，但不支持范围扫描\n\n3. 读取数据量更少\n· 索引只存关键列 + 行指针，体积远小于全表\n· 覆盖索引场景下，查询列全在索引中，连回表都省了\n\n4. 代价（为什么不给每列都建索引）\n· 写入/更新需同步维护索引结构，拖慢写性能\n· 占",
+   "wall_ms": 30943,
+   "points": 14,
+   "llm_calls": 1,
+   "prompt_tokens": 571,
+   "completion_tokens": 1182,
+   "total_tokens": 1753,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 29981,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:1snip/252tok/r0.45rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/111tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 964,
+   "from_cache": false,
+   "prompt_total_tokens": 809,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C11_json_format",
+   "input": "用JSON格式返回：字段name填fastapi，字段lang填python，只返回JSON不要其他文字",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"name\": \"fastapi\", \"lang\": \"python\"}",
+   "wall_ms": 4186,
+   "points": 15,
+   "llm_calls": 1,
+   "prompt_tokens": 543,
+   "completion_tokens": 19,
+   "total_tokens": 562,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.37322757895009184
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 3291,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:1snip/14tok/r0.45rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/277tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 1442,
+   "from_cache": false,
+   "prompt_total_tokens": 722,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}
