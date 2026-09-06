@@ -524,6 +524,7 @@ public class IndustrialAgentV2 : AgentBase
                     {
                         Index = i + 1,
                         Id = m.Id,
+                        Description = m.Description,
                         Provider = m.Provider,
                         PriceInPerM = m.PriceInPerM,
                         PriceOutPerM = m.PriceOutPerM,
@@ -569,14 +570,24 @@ public class IndustrialAgentV2 : AgentBase
             if (parts[1].Equals("verify", StringComparison.OrdinalIgnoreCase) && parts.Length >= 3)
             {
                 var v = _verifyService?.VerifyAsync(parts[2]).GetAwaiter().GetResult();
-                return MakeJsonResponse(new ModelCommandPayload
+                // v0.11.0: 命令执行恒成功 (Success=true) — 校验结论在 Ok/Verdict 字段,
+                // 不可达端点也如实输出 JSON (Ok:false + UNREACHABLE) 而非吞进失败渲染
+                var payload = new ModelCommandPayload
                 {
                     Command = "model_verify",
                     Ok = v?.Ok ?? false,
                     Active = v?.Model ?? parts[2],
                     HttpStatusCode = v?.HttpStatusCode ?? 0,
-                    Verdict = v?.Verdict ?? v?.Error ?? "verify_service_unavailable",
-                }, elapsedMs);
+                    Verdict = NonEmpty(v?.Verdict, v?.Error, "verify_service_unavailable"),
+                };
+                var json = System.Text.Json.JsonSerializer.Serialize(
+                    payload, ModelCommandJsonContext.Default.ModelCommandPayload);
+                return new AgentResponse
+                {
+                    Success = true,
+                    Content = json,
+                    ExecutionTimeMs = elapsedMs,
+                };
             }
             var target = parts[1];
             var okSet = _modelRouter.SetManualOverride(target);
@@ -699,6 +710,17 @@ public class IndustrialAgentV2 : AgentBase
     }
 
     /// <summary>模型队列指令统一响应 (强类型 payload — source-gen 序列化, AOT 铁律)</summary>
+    /// <summary>首个非空字符串 (verify 判定展示: Verdict 优先, Error 兜底)</summary>
+    private static string NonEmpty(params string?[] values)
+    {
+        foreach (var v in values)
+        {
+            if (!string.IsNullOrWhiteSpace(v))
+                return v;
+        }
+        return string.Empty;
+    }
+
     private AgentResponse MakeJsonResponse(ModelCommandPayload payload, long elapsedMs)
     {
         var json = System.Text.Json.JsonSerializer.Serialize(

@@ -6,6 +6,9 @@ namespace agent.contextgradient;
 /// </summary>
 public sealed class ContextGradientCompressor
 {
+    /// <summary>嵌入器只读暴露 (v0.11.0: ContextAssembler 相关性打分复用同一 bge 实例 — 避免重复加载模型)</summary>
+    public ITextEmbedder? Embedder => _embedder is { IsAvailable: true } ? _embedder : null;
+
     private readonly ITextEmbedder? _embedder;
     private readonly double _semanticThreshold;
 

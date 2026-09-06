@@ -478,6 +478,10 @@ Interlocked.Increment(ref _cacheMisses);
             
             // 获取相关历史消息（基于关键词匹配; keywords 一次提取供过滤与打分共用, v7.8 消 M 次重复提取）
             var userMessageKeywords = ExtractKeywords(request.UserMessage);
+
+            // v0.11.0 P3: 查询向量一次嵌入 (多消息复用); embedder 不可用/失败 → 纯词面 (P1 兼容)
+            _queryEmbedding = await agent.contextgradient.MessageRelevanceScorer.TryEmbedQueryAsync(
+                _gradientCompressor.Embedder, request.UserMessage, ct).ConfigureAwait(false);
             
             var matched = new List<Message>();
             foreach (var m in session.Messages)
@@ -516,7 +520,8 @@ Interlocked.Increment(ref _cacheMisses);
             for (int i = 0; i < relevantMessages.Count; i++)
             {
                 var msg = relevantMessages[i];
-                var relevanceScore = CalculateMessageRelevance(msg, request.UserMessage, userMessageKeywords);
+                var relevanceScore = await CalculateMessageRelevanceAsync(
+                    msg, request.UserMessage, userMessageKeywords, ct).ConfigureAwait(false);
                 
                 var snippet = new ContextSnippet
                 {
@@ -985,21 +990,23 @@ Interlocked.Increment(ref _cacheMisses);
     }
     
     /// <summary>
-    /// 计算消息相关性
+    /// 计算消息相关性 (v0.11.0 P3 向量化: 关键词词面 + bge 向量余弦混合打分)
+    /// embedder 不可用 → 纯词面 (P1 行为兼容); 可用 → 0.6×词面 + 0.4×语义 (词面精确命中保底, 语义补足同义改写)
     /// </summary>
-    private double CalculateMessageRelevance(Message message, string query, List<string>? precomputedKeywords = null)
-    {
-        var keywords = precomputedKeywords ?? ExtractKeywords(query);
-        var matches = 0;
-        foreach (var k in keywords)
-        {
-            if (message.Content.Contains(k, StringComparison.OrdinalIgnoreCase))
-                matches++;
-        }
-        
-        return matches > 0 ? (double)matches / keywords.Count : 0.1;
-    }
+    private Task<double> CalculateMessageRelevanceAsync(
+        Message message, string query, List<string>? precomputedKeywords = null, CancellationToken ct = default)
+        => agent.contextgradient.MessageRelevanceScorer.ScoreAsync(
+            message.Content, query, _queryEmbedding, precomputedKeywords, ct);
+
+    /// <summary>本轮查询向量缓存 (RecallFromSessionAsync 内一次嵌入多消息复用; null = 未嵌入/不可用)</summary>
+    private float[]? _queryEmbedding;
     
+    /// <summary>测试入口 (internal): 混合相关性打分 — 直接走静态纯函数 (零 DI 依赖)。</summary>
+    internal static Task<double> CalculateMessageRelevanceForTest(
+        Message message, string query, agent.contextgradient.ITextEmbedder? embedder)
+        => agent.contextgradient.MessageRelevanceScorer.ScoreWithEmbedderAsync(
+            message.Content, query, embedder, CancellationToken.None);
+
     /// <summary>
     /// 判断是否需要网络搜索
     /// </summary>

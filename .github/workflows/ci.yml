@@ -1,0 +1,54 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore
+        working-directory: .
+
+      - name: Build (Release)
+        run: dotnet build -c Release --no-restore -warnaserror
+        working-directory: .
+
+      - name: Test
+        run: dotnet test src/agent.tests/agentframework.tests.csproj -c Release --no-build --logger "console;verbosity=normal"
+        working-directory: .
+
+  aot-publish:
+    runs-on: ubuntu-latest
+    needs: build-test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: NativeAOT publish (linux-x64)
+        run: dotnet publish src/agent.host/agent.host.csproj -c Release -r linux-x64 --self-contained
+        working-directory: .
+
+      - name: Smoke model list
+        run: |
+          BINARY=src/agent.host/bin/Release/net10.0/linux-x64/publish/agenthost
+          OUT=$($BINARY -q "/model list")
+          echo "$OUT" | grep -q '"Command":"model_list"'
+          COUNT=$(echo "$OUT" | grep -o '"Index":' | wc -l)
+          echo "models: $COUNT"
+          test "$COUNT" -ge 18

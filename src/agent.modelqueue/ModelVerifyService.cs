@@ -105,7 +105,13 @@ public sealed class ModelVerifyService
         catch (TaskCanceledException) when (!ct.IsCancellationRequested)
         {
             result.Ok = false;
-            result.Error = "校验请求 15s 超时 (端点不可达或过慢)";
+            result.Error = "校验请求 15s 超时 (端点不可达/过慢/DNS 阻塞)";
+        }
+        catch (Exception ex)
+        {
+            // 兜底: RST/TLS 断/DNS 等一切网络异常 → 归一 UNREACHABLE (verify 契约: 恒返回结果, 不冒泡)
+            result.Ok = false;
+            result.Error = $"网络不可达: {ex.GetType().Name}: {ex.Message}";
         }
         return result;
     }
