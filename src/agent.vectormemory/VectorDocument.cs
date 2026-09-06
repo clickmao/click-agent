@@ -118,11 +118,14 @@ public class VectorStore : IVectorStore
     private readonly Dictionary<string, VectorDocument> _store = new();
     private readonly EmbeddingConfig _config;
     private readonly object _lock = new();
-    
-    public VectorStore(ILogger<VectorStore> logger, EmbeddingConfig? config = null)
+    // v0.11.0 R100: embedding 提供者可插拔 (默认词频 hash 行为不变; JIT 形态可注册 BgeEmbeddingProvider)
+    private readonly IEmbeddingProvider _embeddingProvider;
+
+    public VectorStore(ILogger<VectorStore> logger, EmbeddingConfig? config = null, IEmbeddingProvider? embeddingProvider = null)
     {
         _logger = logger;
         _config = config ?? new EmbeddingConfig();
+        _embeddingProvider = embeddingProvider ?? new HashEmbeddingProvider(_config.Dimension);
     }
     
     public Task<string> StoreAsync(VectorDocument entry)
@@ -287,30 +290,9 @@ public class VectorStore : IVectorStore
     
     private float[] GenerateEmbedding(string text)
     {
-        // 简化的embedding实现：基于词频的简单向量
-        // 实际应使用专门的embedding服务
-        var words = text.ToLowerInvariant()
-            .Split(new[] { ' ', '\t', '\n', '\r', '.', ',', '!', '?' }, StringSplitOptions.RemoveEmptyEntries)
-            .GroupBy(w => w)
-            .ToDictionary(g => g.Key, g => g.Count());
-        
-        var dimension = _config.Dimension;
-        var embedding = new float[dimension];
-        var index = 0;
-        
-        foreach (var (word, count) in words.OrderBy(kvp => kvp.Key))
-        {
-            if (index >= dimension) break;
-            
-            // 简单的hash来分配维度
-            var hash = word.GetHashCode();
-            var targetIndex = Math.Abs(hash % dimension);
-            
-            embedding[targetIndex] = count;
-            index++;
-        }
-        
-        // 归一化
+        // v0.11.0 R100: 委托给 IEmbeddingProvider (默认 hash provider 行为与原词频实现一致)
+        var embedding = _embeddingProvider.Embed(text);
+        // 归一化 (保持原行为)
         var magnitude = (float)Math.Sqrt(embedding.Sum(e => e * e));
         if (magnitude > 0)
         {
@@ -319,7 +301,6 @@ public class VectorStore : IVectorStore
                 embedding[i] /= magnitude;
             }
         }
-        
         return embedding;
     }
     
