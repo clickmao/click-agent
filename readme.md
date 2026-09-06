@@ -6,6 +6,8 @@
 ![Tests](https://img.shields.io/badge/tests-355%2F355-brightgreen)
 ![NativeAOT](https://img.shields.io/badge/NativeAOT-zero%20warnings-blueviolet)
 
+> CI 工作流文件已就绪 (`.github/workflows/ci.yml`), 待具有 `workflow` 权限的 token 推送后徽章生效。
+
 基于微软 MAF (Microsoft Agent Framework) 与 WebReaper 的 C# 智能体框架 — 全场景覆盖, 100% 托管代码。net10.0 / NativeAOT 零警告 / 355 项测试全绿。
 版本口径: v0.11.0 — 本轮: 统一命令协议 (@cmd) + 三传输 / Skill 执行型脚本 / 相关性向量化混合打分 / 19 模型目录。
 
