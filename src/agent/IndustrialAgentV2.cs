@@ -43,6 +43,7 @@ public class IndustrialAgentV2 : AgentBase
     private readonly string _dataStoragePath;
     private readonly IRecoverySystem _recoverySystem;
     private readonly IVectorStore _vectorStore;
+    private readonly IRAGRecall? _ragRecall;  // v0.11.0 R6: 存储召回同源修复
     private readonly IVectorMemoryRecall _memoryRecall;
     private readonly ITemplateStore _templateStore;
     private readonly ISearchService _searchService;
@@ -100,7 +101,8 @@ public class IndustrialAgentV2 : AgentBase
         agent.modelqueue.TokenUsageService? tokenUsageService = null,
         agent.modelqueue.ModelVerifyService? verifyService = null,
         agent.logging.LogRouter? logRouter = null,
-        agent.skills.SkillDispatcher? skillDispatcher = null) : base(logger, handlers)
+        agent.skills.SkillDispatcher? skillDispatcher = null,
+        IRAGRecall? ragRecall = null) : base(logger, handlers)
     {
         _isolatedTaskRunner = isolatedTaskRunner;
         _modelRouter = modelRouter;
@@ -115,6 +117,7 @@ public class IndustrialAgentV2 : AgentBase
         _recoverySystem = recoverySystem;
         _vectorStore = vectorStore;
         _memoryRecall = memoryRecall;
+        _ragRecall = ragRecall;
         _templateStore = templateStore;
         _searchService = searchService;
         _subAgentPool = subAgentPool;
@@ -357,6 +360,13 @@ public class IndustrialAgentV2 : AgentBase
                 "Built prompt: {Tokens} tokens (Context: {ContextTokens})",
                 prompt.EstimatedTokens,
                 EstimateTokens(prompt.ContextPrompt));
+
+            // v0.11.0: prompt 构成打点 (历史/上下文/系统占比 — token 治理对比数据)
+            agent.config.AgentTelemetry.Emit("prompt_build", "IndustrialAgentV2",
+                ("total_tokens", prompt.EstimatedTokens),
+                ("history_msgs", prompt.History.Count),
+                ("history_tokens", prompt.History.Sum(h => EstimateTokens(h.Content))),
+                ("context_tokens", EstimateTokens(prompt.ContextPrompt)));
             
             // 4.5 思考流 (v7.15 L.2.2): 推理前发 page_switch + 构建摘要分片; LLM 返回后发 thinking_end
             if (_logRouter != null)
@@ -975,6 +985,21 @@ public class IndustrialAgentV2 : AgentBase
             };
 
             await _vectorStore.StoreAsync(entry);
+
+            // v0.11.0 R6 (召回率定量发现): 双存储割裂修复 — ContextAssembler.Memory 源读 IRAGRecall,
+            // 只写 IVectorStore 导致召回率恒 0%。双写保证召回链路有数据。
+            if (_ragRecall != null)
+            {
+                await _ragRecall.IndexAsync(new rag.RAGDocument
+                {
+                    Id = entry.Id,
+                    Content = entry.Content,
+                    Summary = entry.Summary,
+                    Keywords = entry.Keywords.ToList(),
+                    Metadata = entry.Metadata,
+                    DocumentType = "conversation",
+                });
+            }
         }
         catch (Exception ex)
         {

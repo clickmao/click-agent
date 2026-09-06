@@ -415,6 +415,19 @@ public class RAGRecall : IRAGRecall
             {
                 tokens.Add(word);
             }
+
+            // v0.11.0 R6 (打点驱动修复): 中文无分词导致整句成一个 token — 词面/嵌入全部失效。
+            // 轻量修复: 中文段 2-gram 滑窗补充 token (英文词已由上面的整词覆盖)。
+            for (var i = 0; i + 2 <= word.Length; i++)
+            {
+                var gram = word.Substring(i, 2);
+                if (gram[0] >= 0x4e00 && gram[0] <= 0x9fff &&
+                    gram[1] >= 0x4e00 && gram[1] <= 0x9fff &&
+                    !_config.StopWords.Contains(gram))
+                {
+                    tokens.Add(gram);
+                }
+            }
         }
         
         return tokens;

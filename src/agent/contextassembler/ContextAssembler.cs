@@ -774,6 +774,12 @@ Interlocked.Increment(ref _cacheMisses);
                 snippet.CompressedContent = compressedContent;
                 snippet.IsCompressed = compressedContent != snippet.Content;
                 snippet.EstimatedTokens = await _tokenCompressor.CountTokensAsync(compressedContent);
+                // v0.11.0: 压缩打点 (压缩率对比数据 — level/漂移校验/语义相似度/前后字符)
+                agent.config.AgentTelemetry.Emit("compression", "ContextGradientCompressor",
+                    ("level", (int)gradient.Level),
+                    ("drift_ok", gradient.DriftCheckPassed),
+                    ("semantic", gradient.SemanticSimilarity is { } sem ? Math.Round(sem, 3) : -1),
+                    ("chars", gradient.OriginalChars + "->" + gradient.CompressedChars));
             }
             
             compressed.Add(snippet);

@@ -177,6 +177,25 @@ public class PromptBuilder : IPromptBuilder
             .ToList();
         
         var historyTokens = 0;
+        // v0.11.0 R5: 老消息滚动摘要 — >6 条时把更早的合并为单条摘要, 保最近 6 条完整 (token 治理)
+        const int RecentFullCount = 6;
+        if (historyMessages.Count > RecentFullCount)
+        {
+            var older = historyMessages.Take(historyMessages.Count - RecentFullCount).ToList();
+            var digest = string.Join(" | ", older.Select(m =>
+            {
+                var c = m.Content.Replace("\n", " ").Trim();
+                return (m.Role == MessageRole.User ? "问:" : "答:") + (c.Length > 40 ? c[..40] + "…" : c);
+            }));
+            prompt.History.Add(new PromptMessage
+            {
+                Role = MessageRole.System,
+                Content = "【早前对话摘要】" + digest,
+                Timestamp = older[0].Timestamp,
+            });
+            historyTokens += EstimateTokens(digest) + 10;
+            historyMessages = historyMessages.Skip(historyMessages.Count - RecentFullCount).ToList();
+        }
         foreach (var msg in historyMessages)
         {
             var msgTokens = EstimateTokens(msg.Content);
