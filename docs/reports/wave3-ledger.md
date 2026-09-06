@@ -39,6 +39,13 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - 千轮五批 92/92 全绿 (3243→3098→2981→3128→3314, CV 稳定带)
 - R63 analyze round60/round51 对比: +2.8% 方差带内 KEEP
 
+## R64-R71 追加 (第十轮循环 — 画像链路三连修)
+- R65 (真缺陷 28): git 词表补中文动作 ("推送到/推送/上传到/检出") — "把代码推送到github" sensitive False→True 实证
+- R66 (真缺陷 29): Milestones 记消息摘要而非意图名 ('general' → 实际任务描述)
+- R70 (真缺陷 30): SetGoal constraints 死代码链修复 — ExtractConstraints 规则提取, 跨轮注入 prompt 【约束】行 ("继续" 轮遵守标准库约束实证), +3 单测
+- round67 3831tok / round71 3817tok 连续新低 (-48% vs baseline)
+- 千轮六批 112/112 全绿 (批6 CV 6.4% 历史最稳)
+
 ## 已知边界 (诚实标注)
 - Session 源设计性禁用; ToolOutput 预留; PausedForApproval 仅影子计划
 - CNY→USD 固定汇率 7.2 (env 可配)
