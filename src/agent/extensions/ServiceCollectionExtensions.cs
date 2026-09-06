@@ -45,7 +45,14 @@ public static class ServiceCollectionExtensions
         // v0.10.0 需求③: 官方/远端端点可配置代理 (models.yaml proxy 段)
         // 留空直连; 配置后 modelqueue 命名客户端全走代理 (主调用/余额/verify 共用)。
         // 正确形态: ConfigurePrimaryHttpMessageHandler 替换主处理器 (configure action 不能换 client 实例)。
-        services.AddHttpClient("modelqueue")
+        services.AddHttpClient("modelqueue", (sp, c) =>
+            {
+                // v0.11.0 R24: reasoning 模型长输出 (C03 报告类 60-100s) 需要超时余量;
+                // 默认 100s 偶发掐断 3 子任务报告生成 (超时是重试/failover 的最大来源)。
+                var llmTimeoutSec = sp.GetRequiredService<agent.config.ConfigSnapshot>()
+                    .Get("llm", "timeout_seconds", 180);
+                c.Timeout = TimeSpan.FromSeconds(llmTimeoutSec);
+            })
             .ConfigurePrimaryHttpMessageHandler(sp =>
             {
                 var cfg = sp.GetRequiredService<agent.config.ConfigSnapshot>();
