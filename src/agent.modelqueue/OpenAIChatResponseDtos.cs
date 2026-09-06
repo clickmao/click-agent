@@ -11,8 +11,10 @@ public sealed class QueueChatRequest
     [JsonPropertyName("messages")]
     public List<QueueChatMessage> Messages { get; set; } = new();
 
+    // v0.11.0 R19: reasoning 模型思维链计入 max_tokens — 2000 曾被 reasoning 吃满致 content 空 (C03 实测)。
+    // 上限只是截断保护, 实际输出长度由 System Prompt 输出纪律约束。
     [JsonPropertyName("max_tokens")]
-    public int MaxTokens { get; set; } = 2000;
+    public int MaxTokens { get; set; } = 8192;
 
     [JsonPropertyName("temperature")]
     public double Temperature { get; set; } = 0.7;

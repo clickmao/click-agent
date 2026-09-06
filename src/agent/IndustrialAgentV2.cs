@@ -1272,7 +1272,10 @@ public class OpenAILLMCaller : ILLMCaller
             {
                 model = _model,
                 messages = messages,
-                max_tokens = 2000,
+                // v0.11.0 R19 修复: reasoning 模型 (glm/deepseek) 的思维链计入 max_tokens,
+                // 2000 曾被 reasoning 吃满 → content 空回复 (C03 实测 2000 tok 全 reasoning)。
+                // 上限只是截断保护, 实际输出长度由 System Prompt 输出纪律约束。
+                max_tokens = 8192,
                 temperature = 0.7
             };
             

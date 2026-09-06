@@ -261,7 +261,9 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             agent.config.AgentTelemetry.Emit("llm_call", "ModelQueueRouter",
                 ("model", entry.Id), ("provider", entry.Provider),
                 ("prompt_tokens", resp.PromptTokens), ("completion_tokens", resp.CompletionTokens),
-                ("total_tokens", resp.TokensUsed), ("success", true));
+                ("total_tokens", resp.TokensUsed), ("success", true),
+                // v0.11.0 R19: 内容长度诊断 (C03 曾现 completion 2000 tok 但回复渲染空 — 定位内容丢在链路哪段)
+                ("content_len", resp.Content?.Length ?? 0));
             // 阈值再同步 (fire-and-forget, 不阻塞主链)
             if (_tokenUsage is not null && _tokenUsage.NeedsResync(entry.Provider))
                 _ = _tokenUsage.TryResyncAsync(entry.Provider, CancellationToken.None);
