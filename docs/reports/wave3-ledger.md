@@ -153,3 +153,9 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - 修复: AGENTFRAMEWORK_TELEMETRY env 支持**绝对目录**覆写 (off/on 语义保留); harness 每用例独立目录 case_{id}/host.jsonl, 读侧对应改。
 - 复验: mass_101-105 **5 连 5/5**, 4311 tok (+13.7% vs 批21, glm 上行波动); 379/379 全绿; 批 99 系 RETIRED 不作口径。
 - cross_validate 双模型抽检 2 题 agree=true (glm+ds)。
+
+### R110b: 缺陷 43 (评测单实例互斥) — 并行 tick 双 runner 实证
+- **缺陷 43 (真)**: 两 cron tick 并行各起一个 run_round.py → 共享全局资源 (遥测路径/轮间 RAG+会话清理) 互删 → mass_95/96 假 llm_calls=0 假 REVERT (批 95-100 RETIRED 口径外), 比单点缺陷 42 更大面积污染。两 tick 独立收敛同一根因 (本 tick 经 A/B 对照 + /proc 抓幽灵 runner 实证)。
+- 修复: run_round.py 入口 fcntl LOCK_EX|LOCK_NB 抢 data/eval_run.lock, 失败诚实退出 3 (与 llm-service IsAlive exit 3 同语义), 排队会焊死时间轴 — 故不等待。验证: 持锁时第二实例 rc=3 零写入; 空闲时正常跑通。
+- **第二张面孔**: AOT publish (R110 验证) 重建 bin/ 为 linux-x64 布局并清掉 JIT bin → 窗口内 eval 用例 CLI 启动失败 0/5 (wall 650ms/例)。修复: publish 后 `dotnet build -c Release` 恢复 JIT bin (评测用, 3.6s); AOT publish 与 eval 并发仍需锁外协调。AOT 冒烟复验 OK (publish/agenthost 12.7MB)。
+- 未决: 锁验证正例一次 4/5 (证据随清理删除, 无法归因); 同代码 sibling 批 22 25/25 — 待下批 ledger 佐证或复现。

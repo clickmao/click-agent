@@ -2,6 +2,11 @@
 """Round 跑批 harness — 每用例独立 dotnet run 进程, 采集回复 + telemetry JSONL → rounds/<round>.json"""
 import glob, json, os, re, subprocess, sys, time, urllib.parse
 
+try:
+    import fcntl  # Unix 单实例互斥 (评测环境 Linux)
+except ImportError:
+    fcntl = None  # Windows 退化无锁 (评测不跑 Windows)
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 TELEMETRY = "data/telemetry/host.jsonl"
@@ -178,6 +183,18 @@ def try_parse_json_reply(reply):
         return None, str(e)[:60]
 
 def main():
+    # v0.11.0 R110 (真缺陷 43): 单实例互斥 — 遥测路径与轮间清理 (RAG 落盘/会话记忆删除) 是
+    # 全仓库全局资源, 并发 runner 互相删除/覆盖对方打点 (2026-09-07 实证: 双 tick 并行 →
+    # mass_95/96 假 llm_calls=0 → 假 REVERT, 批 95-100 全 RETIRED)。fcntl 非阻塞独占锁:
+    # 抢不到 = 另一 runner 在跑 → 诚实退出 3 (与 llm-service IsAlive 互斥同语义), 不等待
+    # 不重试 (排队会把两批数据在时间轴上焊死, 比失败更糟)。
+    lockf = open("data/eval_run.lock", "w")
+    if fcntl is not None:
+        try:
+            fcntl.flock(lockf.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            print("eval_run: 另一 runner 实例运行中 (data/eval_run.lock 被占) — 本实例诚实退出, 不写任何数据")
+            return 3
     # v0.11.0 R107 (真缺陷 39): --quick 是 flag 不是位置参数 — argv[1] 被它占用时轮名错位
     # (实测 "round=--quick" 落盘 --quick.json, 轮名丢失)。
     # v0.11.0 R110 (真缺陷 42): 39 的修复只硬编码过滤了 --quick 一个 flag — 实证复发:
@@ -235,4 +252,4 @@ def main():
     print(f"\n=== round={rnd} passed={summary['passed']}/{summary['cases']} tokens={summary['tokens_total']} wall={summary['wall_total_ms']}ms → {path}")
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
