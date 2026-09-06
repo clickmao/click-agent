@@ -1,0 +1,159 @@
+{
+ "round": "mass_30",
+ "label": "R73 batch7 30",
+ "ts": "2026-09-06T19:53:57+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 2852,
+ "prompt_total": 1221,
+ "completion_total": 1631,
+ "wall_total_ms": 30141,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组分区递归排序的高效分治排序算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 3885,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 341,
+   "completion_tokens": 31,
+   "total_tokens": 372,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 2954,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 51,
+   "from_cache": false,
+   "prompt_total_tokens": 474,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "结论：通用场景下，中小规模推荐 pgvector（复用现有 Postgres，运维成本最低），大规模/高性能推荐 Milvus（开源、支持亿级、索引丰富），免运维托管选 Pinecone 或 Qdrant Cloud。\n\n关键依据（要点）：\n\n· **Milvus**：开源、亿级向量、多种索引（HNSW/IVF/GPU），需自运维\n· **Qdrant**：Rust 实现、性能强、支持过滤与混合检索，部署轻量\n· **Pinecone**：全托管免运维、按量计费，适合快速上线，数据在第三方\n· **pgvector**：千万级以内够用，与现有 PG 生态无缝集成\n· **Weaviate**：内置向量化模块，适合需要开箱即用检索管道的场景\n\n选型建议：\n\n| 场景 | 推荐 |\n| 已有 Postgres、<千万级 | pgvector |\n| 自托管、亿级、高并发 | Milvus |\n",
+   "wall_ms": 14420,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 364,
+   "completion_tokens": 1013,
+   "total_tokens": 1377,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 13486,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/91tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 50,
+   "from_cache": false,
+   "prompt_total_tokens": 512,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (633ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1527,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 633,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "数据库索引加速查询的原理\n\n核心：把全表扫描 O(n) 变为树查找 O(log n)，并大幅减少磁盘 I/O 次数。\n\n关键机制：\n\n1. 有序数据结构\n· B+ 树索引将数据按键值有序组织，查找走树形路径，千万级数据只需 3~4 层即可定位，避免逐行扫描。\n\n2. 减少磁盘 I/O\n· B+ 树节点大小对齐磁盘页（如 16KB），树高即 I/O 次数；一次查询通常只需几次 I/O，而全表扫描需读取所有数据页。\n· 索引体积远小于全表（仅存键值+指针），同样 I/O 次数下能“带出”更多有效数据。\n\n3. 支持范围与排序优化\n· 叶子节点有序且通过链表相连，`BETWEEN`、`ORDER BY`、`LIMIT` 等可直接顺序读取，无需额外排序。\n\n4. 覆盖索引避免回表\n· 若查询字段全在索引中（如 `SELECT name FROM users WHERE name = 'x'`），直",
+   "wall_ms": 10309,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 516,
+   "completion_tokens": 587,
+   "total_tokens": 1103,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 9368,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/134tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 71,
+   "from_cache": false,
+   "prompt_total_tokens": 644,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}

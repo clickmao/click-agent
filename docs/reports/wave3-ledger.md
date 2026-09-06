@@ -46,6 +46,12 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - round67 3831tok / round71 3817tok 连续新低 (-48% vs baseline)
 - 千轮六批 112/112 全绿 (批6 CV 6.4% 历史最稳)
 
+## R72-R73 追加 (第十一轮循环 — pivot 死区)
+- R72 (真缺陷 31): pivot 重锚死区 — 隔离判定 (321 行) 先于重锚 (455 行), "不要之前的目标写诗"
+  零重叠轮被先行拦截, 重锚代码永远不执行。三段修复: 词表+7 标记 / pivot 脱离 IsGoalWorthy /
+  判定前 pivotRequested 跳过。实证: 隔离→主链 + goal pivot 打点 + 后续轮正常。+4 单测 369 绿
+- 千轮批 7 ×3 (12/12); AOT 0 警
+
 ## 已知边界 (诚实标注)
 - Session 源设计性禁用; ToolOutput 预留; PausedForApproval 仅影子计划
 - CNY→USD 固定汇率 7.2 (env 可配)
