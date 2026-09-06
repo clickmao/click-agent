@@ -1084,10 +1084,19 @@ public class IndustrialAgentV2 : AgentBase
                     Id = entry.Id,
                     Content = entry.Content,
                     Summary = entry.Summary,
-                    Keywords = entry.Keywords.ToList(),
+                    // v0.11.0 R44 (真缺陷 27): Keywords 只传 {intent} → 查询 Jaccard 恒 0 (关键词分失活);
+                    // 留空让 RAGRecall 自动 ExtractKeywords(内容) — 内容词 (如 rust) 才能与查询相交
+                    Keywords = new List<string>(),
                     Metadata = entry.Metadata,
                     DocumentType = "conversation",
                 });
+                agent.config.AgentTelemetry.Emit("memory", "IndustrialAgentV2",
+                    ("op", "store"), ("rag", true), ("len", entry.Content.Length));
+            }
+            else
+            {
+                agent.config.AgentTelemetry.Emit("memory", "IndustrialAgentV2",
+                    ("op", "store"), ("rag", false), ("len", entry.Content.Length));
             }
         }
         catch (Exception ex)

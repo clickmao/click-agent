@@ -236,7 +236,15 @@ public class RAGRecall : IRAGRecall
                     var finalScore = _config.EnableHybridSearch 
                         ? semanticScore * 0.7 + keywordScore * 0.3 
                         : semanticScore;
-                    
+
+                    // v0.11.0 R44 (真缺陷 27): 词袋哈希 embedding 被长答案稀释 — 查询词命中文档内容
+                    // 是强相关信号, 却可能整体得分 0.29 < 0.3 被砍 (实测 "Rust" 命中文档 0.291)。
+                    // 直接内容命中 → 相关性下限 0.45 (比降阈值更精准: 不放噪声, 只保真命中)。
+                    var contentHit = queryKeywords.Any(k =>
+                        k.Length >= 2 && doc.Content.Contains(k, StringComparison.OrdinalIgnoreCase));
+                    if (contentHit)
+                        finalScore = Math.Max(finalScore, 0.45);
+
                     if (request.MinScore.HasValue && finalScore < request.MinScore.Value)
                         continue;
                     
@@ -411,9 +419,30 @@ public class RAGRecall : IRAGRecall
         
         foreach (var word in words)
         {
-            if (!_config.StopWords.Contains(word) && word.Length >= 2)
+            // v0.11.0 R44 (真缺陷 27 根因): 中英混写黏连 ("rust的所有权" 一个 token) —
+            // 词面/嵌入/命中全失效。按 ascii↔非 ascii 边界再切:
+            var segments = new List<string>();
+            var sb = new System.Text.StringBuilder();
+            var prevAscii = false;
+            foreach (var ch in word)
             {
-                tokens.Add(word);
+                var isAscii = ch < 0x80;
+                if (sb.Length > 0 && isAscii != prevAscii)
+                {
+                    segments.Add(sb.ToString());
+                    sb.Clear();
+                }
+                sb.Append(ch);
+                prevAscii = isAscii;
+            }
+            if (sb.Length > 0) segments.Add(sb.ToString());
+
+            foreach (var seg in segments)
+            {
+                if (!_config.StopWords.Contains(seg) && seg.Length >= 2)
+                {
+                    tokens.Add(seg);
+                }
             }
 
             // v0.11.0 R6 (打点驱动修复): 中文无分词导致整句成一个 token — 词面/嵌入全部失效。
