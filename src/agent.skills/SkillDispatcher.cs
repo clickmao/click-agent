@@ -117,6 +117,16 @@ public sealed class SkillDispatcher
                             ("skill", top.Skill.SkillId), ("result", "null"));
                         return null; // 失败/超时/熔断 → 降级普通推理
                     }
+                    // v0.11.0 R83 (真缺陷 34): 脚本自身报错 ({"error":...}) 不得当成功结果直出 —
+                    // 原样承载会把错误 JSON 给用户 ("把100光年转成摄氏度" 实测直出 no_pattern_match)。
+                    // 视为失败 → 降级 LLM 解释/友好提示。
+                    var trimmedOut = scriptOut.TrimStart();
+                    if (trimmedOut.StartsWith("{") && trimmedOut.Contains("\"error\""))
+                    {
+                        agent.config.AgentTelemetry.Emit("skill_exec", "SkillDispatcher",
+                            ("skill", top.Skill.SkillId), ("result", "script_error_degraded"));
+                        return null;
+                    }
                     agent.config.AgentTelemetry.Emit("skill_exec", "SkillDispatcher",
                         ("skill", top.Skill.SkillId), ("out", scriptOut));
                     content = scriptOut;

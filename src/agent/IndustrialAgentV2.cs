@@ -270,6 +270,8 @@ public class IndustrialAgentV2 : AgentBase
                 var skillResult = await _skillDispatcher.DispatchAsync(message.Content, ct);
                 // v0.11.0 (打点驱动修复): executive 脚本成功输出同样直接承载 —
                 // 原 ForceUse-only 导致脚本输出被丢弃、静默降级 LLM (实测 wordcount 链路)
+                // v0.11.0 R83 (真缺陷 34): 失败 skill 的错误 JSON (Content 非空但 Success=false) 原样直出
+                // 给用户 ({"error":"no_pattern_match"}) — 失败必须静默降级 LLM, 成功才承载。
                 if (skillResult is { Success: true } && (skillResult.ForceUse || skillResult.Content.Length > 0))
                 {
                     _logger.LogInformation("Skill {SkillId} activated ({Mode}, {Ms}ms)",

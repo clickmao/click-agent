@@ -1,0 +1,159 @@
+{
+ "round": "round83",
+ "label": "R83 skill 失败降级验证",
+ "ts": "2026-09-06T20:27:15+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 3099,
+ "prompt_total": 1392,
+ "completion_total": 1707,
+ "wall_total_ms": 45546,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种分治排序算法：选取一个基准元素，将数组分为小于和大于基准的两部分，再递归地对两部分排序。",
+   "wall_ms": 3815,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 382,
+   "completion_tokens": 32,
+   "total_tokens": 414,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 2867,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/84tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 51,
+   "from_cache": false,
+   "prompt_total_tokens": 516,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "说明：提供的上下文中没有向量数据库相关资料，以下基于通用知识给出精简版结论；完整报告需您确认后我再展开。\n\n核心结论（默认方案：自建开源、中等规模）\n\n| 产品 | 类型 | 优势 | 短板 |\n| Milvus | 开源分布式 | 亿级规模、生态成熟 | 运维复杂 |\n| Qdrant | 开源轻量 | 部署简单、Rust 性能好 | 超大规模需集群方案 |\n| Pinecone | 云托管 | 免运维、开箱即用 | 闭源、成本高、数据出域 |\n| pgvector | PG 插件 | 复用现有 PG、事务强 | 千万级以下性能可，更大则吃力 |\n| Elasticsearch | 检索引擎 | 混合检索（BM25+向量） | 向量性能非最优 |\n\n推荐结论\n· 数据 <1000万条、已有 PostgreSQL → **pgvector**，成本最低\n· 中等规模、需自建 → **Qdr",
+   "wall_ms": 12165,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 426,
+   "completion_tokens": 647,
+   "total_tokens": 1073,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 11267,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:1snip/64tok/r0.3rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/117tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 58,
+   "from_cache": false,
+   "prompt_total_tokens": 644,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (614ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1551,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 614,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "核心一句话：索引把查询从全表扫描 O(N) 变成树查找 O(log N)，本质是用空间和有序性换 I/O 次数。\n\n机制分解（以最常见的 B+ 树为例）\n\n1. 有序存储，支持二分定位\n   索引将键值排序保存。无索引时查一条记录要逐行比对 N 次；有索引时可像查字典一样二分跳转，比较次数从 N 降到 log N。\n\n2. 高扇出、矮树高 → 磁盘 I/O 极少\n   B+ 树每个节点（一个数据页，通常 16KB）可容纳数百个键。千万行数据的树高仅 3~4 层，意味着定位任意一条记录只需 3~4 次磁盘 I/O，而全表扫描可能要读几十万页。\n\n3. 只读必要数据，而非全部数据\n   查询走索引路径时，只加载树路径上的少数页和目标行所在页，其他数据完全不碰。这是加速的根本来源——数据库瓶颈在磁盘 I/O，读得少就快。\n\n4. 叶子节点有序链表 → 范围查询高效\n   WHERE id BET",
+   "wall_ms": 28015,
+   "points": 14,
+   "llm_calls": 1,
+   "prompt_tokens": 584,
+   "completion_tokens": 1028,
+   "total_tokens": 1612,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 27107,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:1snip/280tok/r0.45rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/117tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 1029,
+   "from_cache": false,
+   "prompt_total_tokens": 864,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}
