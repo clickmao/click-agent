@@ -1,0 +1,159 @@
+{
+ "round": "stability_3",
+ "label": "R28 稳定性采样 3",
+ "ts": "2026-09-06T17:03:22+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 3401,
+ "prompt_total": 1081,
+ "completion_total": 2320,
+ "wall_total_ms": 52681,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组递归划分为“小于”和“大于”两部分来实现排序的分治算法，平均时间复杂度 O(n log n)。",
+   "wall_ms": 4080,
+   "points": 10,
+   "llm_calls": 1,
+   "prompt_tokens": 317,
+   "completion_tokens": 37,
+   "total_tokens": 354,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 3201,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/0tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/0tok/r0.9rel",
+   "assembly_ms": 51,
+   "from_cache": false,
+   "prompt_total_tokens": 441,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "先说明：当前提供的上下文中没有向量数据库相关资料，以下基于通用经验给出初步结论，最终报告需结合你的场景确认。\n\n初步选型建议\n· 已有 PostgreSQL、规模千万级内 → **pgvector**（复用现有栈，运维最省）\n· 大规模自建、高并发 → **Milvus**（分布式成熟、社区活跃）\n· 中小规模 / 嵌入式部署 → **Qdrant**（单二进制、性能好）\n· 全托管免运维 → **Pinecone**（成本换省心）\n\n决策关键维度：数据量级、QPS、自建 vs 托管、混合检索（关键词+向量）与标量过滤需求、现有技术栈。\n\n需澄清的问题（直接影响结论）：\n1. 预计向量规模与查询 QPS？\n2. 自建还是云托管？有无成本约束？\n3. 是否需要混合检索？\n4. 现有是否已有 PG / ES 可复用？\n\n确认后我可用 curl / python3 拉取各项目最新版本与 benc",
+   "wall_ms": 36024,
+   "points": 10,
+   "llm_calls": 1,
+   "prompt_tokens": 339,
+   "completion_tokens": 1575,
+   "total_tokens": 1914,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 35086,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/0tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/0tok/r0.9rel",
+   "assembly_ms": 56,
+   "from_cache": false,
+   "prompt_total_tokens": 482,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (598ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1523,
+   "points": 5,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "核心原因：索引把查找从“全表扫描”降为“对数级定位”，大幅减少磁盘 I/O。\n\n具体机制：\n\n1. 复杂度差异\n· 无索引：全表扫描，逐行读取，时间复杂度 O(N)，N 是行数\n· 有索引（B+ 树）：O(log N)，千万级数据通常只需 3~4 层树高即可定位\n\n2. 减少磁盘 I/O 是关键\n· 数据库瓶颈通常在磁盘而非 CPU。B+ 树每个节点对应一个页（如 16KB），树高 3 层意味着最多 3~4 次页读取就能找到目标行，而全表扫描可能要读成千上万个页\n\n3. B+ 树的结构优势\n· 内部节点只存键值，扇出大（一个节点可存上千个键），树更矮\n· 数据都在叶子节点，且叶子节点间有链表相连，范围查询（`BETWEEN`、`>`、`<`）可以顺序遍历，不用回溯树\n\n4. 有序性带来的附加收益\n· 索引本身有序，`ORDER BY` 可直接按索引顺序读取，避免额外的排序（filesort",
+   "wall_ms": 11054,
+   "points": 10,
+   "llm_calls": 1,
+   "prompt_tokens": 425,
+   "completion_tokens": 708,
+   "total_tokens": 1133,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 10116,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/0tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/0tok/r0.9rel",
+   "assembly_ms": 42,
+   "from_cache": false,
+   "prompt_total_tokens": 588,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}

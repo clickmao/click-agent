@@ -1,0 +1,159 @@
+{
+ "round": "stability_1",
+ "label": "R28 稳定性采样 1",
+ "ts": "2026-09-06T17:01:43+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 3161,
+ "prompt_total": 1081,
+ "completion_total": 2080,
+ "wall_total_ms": 70783,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组分区递归排序的分治算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 3190,
+   "points": 10,
+   "llm_calls": 1,
+   "prompt_tokens": 317,
+   "completion_tokens": 28,
+   "total_tokens": 345,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 2304,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/0tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/0tok/r0.9rel",
+   "assembly_ms": 79,
+   "from_cache": false,
+   "prompt_total_tokens": 441,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "说明：当前工作区上下文无向量库相关数据，以下为通识性结论；正式报告需先确认几个前提。\n\n初步推荐\n· 数据 < 千万级、已有 PostgreSQL → **pgvector**（零新增运维）\n· 中等规模、需高性能过滤与混合检索 → **Qdrant**\n· 亿级向量、分布式自托管 → **Milvus**（Apache-2.0）\n· 不想运维 → 托管服务：Pinecone / Zilliz Cloud\n\n关键对比维度\n· 规模与性能：Milvus/Qdrant 支持亿级；pgvector 适合中小量\n· 运维复杂度：Milvus 组件多（依赖 etcd/MinIO）；Qdrant 单二进制，最简\n· 混合检索：Qdrant、Weaviate 原生支持标量过滤+稀疏向量；pgvector 需配合全文检索\n· 生态：主流库均被 LangChain/LlamaIndex 覆盖\n· Licen",
+   "wall_ms": 31955,
+   "points": 10,
+   "llm_calls": 1,
+   "prompt_tokens": 339,
+   "completion_tokens": 930,
+   "total_tokens": 1269,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 31018,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/0tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/0tok/r0.9rel",
+   "assembly_ms": 49,
+   "from_cache": false,
+   "prompt_total_tokens": 482,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (622ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1506,
+   "points": 5,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "为什么索引能加速查询\n\n核心原理：把“无序逐行扫描”变成“有序结构化查找”，大幅减少磁盘 IO 次数。\n\n1. 复杂度变化\n· **无索引**：只能全表扫描，逐行判断条件，时间复杂度 O(N)\n· **B+ 树索引**：按键值有序组织，查找复杂度 O(log N)，千万级数据通常只需 3~4 层树高\n\n2. 磁盘 IO 次数骤减（关键）\n数据库查询的瓶颈通常是磁盘 IO 而非 CPU：\n· B+ 树的一个节点对应一个页（如 InnoDB 16KB），可容纳数百个键，树形“矮胖”\n· 全表扫描可能读几千个数据页；索引查找只沿树路径读 3~4 个页即可定位\n\n3. 有序性带来的额外收益\n· **范围查询**：B+ 树叶子节点有序且链表相连，定位起点后顺序遍历即可\n· **覆盖索引**：查询所需字段全在索引中时，无需按主键回表取行，再省一次 IO\n· **哈希索引**：等值查询可做到 O(1)，",
+   "wall_ms": 34132,
+   "points": 10,
+   "llm_calls": 1,
+   "prompt_tokens": 425,
+   "completion_tokens": 1122,
+   "total_tokens": 1547,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 33243,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/0tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/0tok/r0.9rel",
+   "assembly_ms": 54,
+   "from_cache": false,
+   "prompt_total_tokens": 588,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}

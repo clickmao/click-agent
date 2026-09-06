@@ -1,0 +1,159 @@
+{
+ "round": "stability_2",
+ "label": "R28 稳定性采样 2",
+ "ts": "2026-09-06T17:02:29+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 4033,
+ "prompt_total": 1081,
+ "completion_total": 2952,
+ "wall_total_ms": 46744,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选定基准元素将数组递归划分为“小于”和“大于”两部分，从而实现平均 O(n log n) 时间复杂度的分治排序算法。",
+   "wall_ms": 3235,
+   "points": 10,
+   "llm_calls": 1,
+   "prompt_tokens": 317,
+   "completion_tokens": 39,
+   "total_tokens": 356,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 2343,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/0tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/0tok/r0.9rel",
+   "assembly_ms": 52,
+   "from_cache": false,
+   "prompt_total_tokens": 441,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "向量数据库选型：结论先行\n\n推荐（按场景）：\n· 已用 PostgreSQL、百万级以内 → **pgvector**（零新增组件，成本最低）\n· 自托管、千万级、需标量过滤 → **Qdrant**（轻量、Rust 高性能、部署简单）\n· 亿级、分布式、高可用 → **Milvus**（生态最全，但 K8s 部署复杂）\n· 免运维、接受云服务 → **Pinecone / Zilliz Cloud**\n\n关键对比：\n\n| 维度 | pgvector | Qdrant | Milvus | Pinecone |\n| 规模 | 百万级 | 千万级 | 亿级+ | 云端弹性 |\n| 部署难度 | 极低 | 低 | 高 | 无 |\n| 混合检索 | 弱 | ✅ | ✅ | ✅ |\n| 成本 | 最低 | 低 | 中 | 按量较贵 |\n\n说明：\n1. 当前提供的上下文中没有向量数据库实测或选型资料",
+   "wall_ms": 25859,
+   "points": 10,
+   "llm_calls": 1,
+   "prompt_tokens": 339,
+   "completion_tokens": 1897,
+   "total_tokens": 2236,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 24972,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/0tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/0tok/r0.9rel",
+   "assembly_ms": 42,
+   "from_cache": false,
+   "prompt_total_tokens": 482,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (596ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1508,
+   "points": 5,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "数据库索引加速查询的原理\n\n核心一句话：索引把查询从“全表逐行扫描 O(n)”变成“按树结构定位 O(log n)”，用有序结构换掉了线性遍历。\n\n1. 无索引时的困境\n没有索引，数据库只能全表扫描：逐行读取数据页、逐行判断条件。数据量到百万级时，每次查询都要读大量磁盘页，I/O 次数与数据量成正比。\n\n2. 索引的本质：额外的有序数据结构\n索引是独立于表数据的一份键值 + 行指针的副本，按特定结构组织（最常见是 B+ 树）：\n\n· **高扇出**：每个节点可容纳上百个键，树非常“矮胖”\n· **矮树高**：千万级数据通常只需 3~4 层，即 **3~4 次磁盘 I/O** 就能定位到目标行\n· **叶子节点有序且链表相连**：支持高效的范围查询（`BETWEEN`、`>`、`<`）\n\n3. 减少 I/O 是关键\n数据库瓶颈主要在磁盘 I/O（内存访问约 100ns，SSD 约 100μs",
+   "wall_ms": 16142,
+   "points": 10,
+   "llm_calls": 1,
+   "prompt_tokens": 425,
+   "completion_tokens": 1016,
+   "total_tokens": 1441,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 15220,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/0tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/0tok/r0.9rel",
+   "assembly_ms": 42,
+   "from_cache": false,
+   "prompt_total_tokens": 588,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}
