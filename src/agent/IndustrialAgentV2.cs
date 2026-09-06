@@ -323,8 +323,13 @@ public class IndustrialAgentV2 : AgentBase
                 var goalMemory = _sessionMemoryStore.Load(message.SessionId);
                 var goal = goalMemory?.Goal;
                 var goalEntities = goal?.KeyEntities ?? new List<string>();
+                // v0.11.0 R72 (真缺陷 31): 显式放弃旧目标 ("不要之前…/算了改…/放弃…") 的轮次
+                // 必须跳过隔离 — 否则零重叠判定先行拦截, 455 行的 pivot 重锚永远执行不到 (死区)。
+                string[] pivotSkipMarkers = { "不要之前", "不用之前", "放弃", "重新开始", "取消之前", "先不做", "不管之前",
+                    "算了", "改成", "改为", "换成", "不要了", "还是做", "换一个" };
+                var pivotRequested = pivotSkipMarkers.Any(m => message.Content.Contains(m, StringComparison.Ordinal));
                 // 首轮 (无目标锚) 不隔离 — 无"当前任务"可言
-                if (goal != null && goalEntities.Count > 0)
+                if (!pivotRequested && goal != null && goalEntities.Count > 0)
                 {
                     // v0.11.0 R14 修复: 第2参是 goalIntent, 原传 GoalText 原文 → 意图相同也误判"意图不同"+1
                     var (isIsolated, score, reason) = agent.intent.TaskRelevanceChecker.Check(
@@ -445,7 +450,10 @@ public class IndustrialAgentV2 : AgentBase
                 // ("算了改成X")后新方向与旧 goal 实体零重叠, 后续轮全被误隔离 (实测爬虫→API 4轮中2轮被隔离)。
                 // 现策略: 任务转向显式标记 → 重新锚定 goal 跟随最新任务方向。
                 var goalText = message.Content.Length > 200 ? message.Content[..200] + "…" : message.Content;
-                string[] pivotMarkers = { "算了", "改成", "改为", "换成", "不要了", "还是做", "换一个" };
+                // v0.11.0 R72 (真缺陷 31): 词表覆盖漏洞 — "不要之前的目标" 不含 "不要了" → 未 pivot → 明确
+                // 放弃旧目标的请求被误隔离。补: 不要之前/放弃/重新开始/取消之前/先不做 + "写首诗/做个X" 显式新任务词
+                string[] pivotMarkers = { "算了", "改成", "改为", "换成", "不要了", "还是做", "换一个",
+                    "不要之前", "不用之前", "放弃", "重新开始", "取消之前", "先不做", "不管之前" };
                 var isPivot = pivotMarkers.Any(m => message.Content.Contains(m, StringComparison.Ordinal));
                 // v0.11.0 R70 (真缺陷 30): SetGoal constraints 参数从未传入 (死代码链) — 约束陈述
                 // ("只能用X/不许用Y/必须Z") 提取为结构化 Constraints, 注入 prompt 【约束】行
@@ -455,7 +463,9 @@ public class IndustrialAgentV2 : AgentBase
                     // v0.11.0 (打点驱动修复): goal 锚定时抽取关键实体 — 实体空导致隔离判定永不触发
                     mem.SetGoal(goalText, agent.intent.TaskRelevanceChecker.ExtractEntities(goalText), intent, constraints);
                 }
-                else if (isPivot && IsGoalWorthy(message.Content))
+                // v0.11.0 R72b: pivot 不受 IsGoalWorthy 门槛 — 显式放弃旧目标本身即强重锚信号
+                // ("不要之前的目标了，给我写首诗" 无 taskMarker 曾被短路跳过 → 新任务全被误隔离)
+                else if (isPivot && message.Content.Length >= 4)
                 {
                     mem.SetGoal(goalText, agent.intent.TaskRelevanceChecker.ExtractEntities(goalText), intent, constraints);
                     agent.config.AgentTelemetry.Emit("goal", "IndustrialAgentV2",

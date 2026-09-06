@@ -1,0 +1,159 @@
+{
+ "round": "round72",
+ "label": "R72 pivot 死区修复全量验证",
+ "ts": "2026-09-06T19:49:20+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 3472,
+ "prompt_total": 1228,
+ "completion_total": 2244,
+ "wall_total_ms": 66628,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组递归划分为“小于”和“大于”两部分，从而实现平均 O(n log n) 时间复杂度的分治排序算法。",
+   "wall_ms": 4280,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 353,
+   "completion_tokens": 39,
+   "total_tokens": 392,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 3338,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/71tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 72,
+   "from_cache": false,
+   "prompt_total_tokens": 490,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "结论先行：默认推荐如下——\n\n· **已有 PostgreSQL、千万级向量以内** → 直接用 **pgvector**，零新增运维，性价比最高\n· **新项目、自托管、需要高性能过滤检索** → **Qdrant**（Rust 实现，HNSW，部署轻，gRPC/REST 齐全）\n· **十亿级、高并发、分布式需求** → **Milvus**（功能最全，但运维和资源成本高）\n· **不想运维、接受数据上云** → **Pinecone**（全托管，按量付费偏贵）\n\n关键依据（要点式对比）：\n\n| 维度 | pgvector | Qdrant | Milvus | Pinecone |\n| 规模上限 | ~千万级 | 亿级 | 十亿级 | 亿级 |\n| 运维成本 | 极低 | 低 | 高 | 零（托管） |\n| 混合检索/过滤 | 基础 | 强 | 强 | 中 |\n| 生态成熟度 | 高",
+   "wall_ms": 34317,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 369,
+   "completion_tokens": 1154,
+   "total_tokens": 1523,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 33415,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/77tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 50,
+   "from_cache": false,
+   "prompt_total_tokens": 525,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (606ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1537,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 606,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "核心：索引把“逐行扫描”变成“按结构定位”，复杂度从 O(N) 降到 O(log N)。\n\n具体机制：\n\n1. 有序性缩小搜索空间\n   无索引时只能全表扫描，逐行比对。索引（如 B+ 树）按键值有序组织数据，查找时每一步可排除大半候选——原理与工作区里的 BinarySearch 相同：有序数组二分查找 100 万条数据只需约 20 次比较，而线性扫描要 100 万次。\n\n2. 大幅减少磁盘 I/O\n   数据库瓶颈主要在磁盘 I/O。B+ 树一个节点对应一个页（约 16KB），可容纳数百个键，因此千万级数据的树高仅 3~4 层——定位一行数据约 3~4 次 I/O；全表扫描则可能上万次。\n\n3. 天然支持范围查询\n   B+ 树叶子节点有序且以链表串联，WHERE age BETWEEN 20 AND 30 只需定位到起点后顺序遍历，完全跳过无关数据。\n\n4. 哈希索引的补充\n   等",
+   "wall_ms": 26494,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 506,
+   "completion_tokens": 1051,
+   "total_tokens": 1557,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 25604,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/137tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 49,
+   "from_cache": false,
+   "prompt_total_tokens": 635,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}
