@@ -116,6 +116,14 @@ public sealed class ChannelScheduler
             var avgPrice = (m.PriceInPerM + m.PriceOutPerM) / 2;
             var priceScore = 1.0 - Math.Min(1.0, avgPrice / 10.0);
 
+            // v0.11.0 (打点驱动修复): key 未配置的模型不可用 → 强降权 (打点实测曾选 gpt-4o-mini 而其 env 缺失)
+            // official 通道由 OfficialKeys 统一供 key, 不按 env 判
+            if (m.Provider != "official" &&
+                string.IsNullOrEmpty(Environment.GetEnvironmentVariable(m.ApiKeyEnv)))
+            {
+                priceScore = 0; // 无 key = 无法调用, 排序沉底 (不删除: 留给显式 /model 指定)
+            }
+
             // 速度分: 轻模型偏好 (suited_for 含轻任务标签 + 价格低即快)
             var isSpeedy = m.SuitedFor.Any(s => s is "chat" or "summary" or "classify");
             var speedScore = isSpeedy ? 1.0 : priceScore * 0.8;

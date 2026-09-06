@@ -68,9 +68,20 @@ public sealed class ModelSelectionPolicy
         }
 
         // 3. 自动: 意图×能力×费用综合打分 (C.6.3-2)
+        // v0.11.0 (打点驱动修复): key 未配置的模型不可调用 → 先过滤 (曾实测选 gpt-4o-mini 而其 env 缺失 → 整轮失败)
+        var callable = new List<ModelCatalogEntry>();
+        foreach (var m in catalog.Models)
+        {
+            if (m.Provider != "official" &&
+                string.IsNullOrEmpty(Environment.GetEnvironmentVariable(m.ApiKeyEnv)))
+                continue;
+            callable.Add(m);
+        }
+        // 全部无 key → 回退全目录 (让调用失败语义给出明确报错, 而非静默无模型)
+        var pool = callable.Count > 0 ? callable : catalog.Models;
         ModelCatalogEntry? best = null;
         var bestScore = double.MinValue;
-        foreach (var m in catalog.Models)
+        foreach (var m in pool)
         {
             // fitness: suited_for 命中意图 +2; 推理/编码需求按意图权重
             var fitness = m.SuitedFor.Contains(intent, StringComparer.OrdinalIgnoreCase) ? 2.0 : 0.0;

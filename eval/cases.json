@@ -1,0 +1,84 @@
+[
+ {
+  "id": "C01_general_qa",
+  "input": "用一句话介绍快速排序算法",
+  "expect": {
+   "intent": "general",
+   "llm": true,
+   "min_reply_chars": 20
+  }
+ },
+ {
+  "id": "C02_coding",
+  "input": "用C#写一个二分查找函数",
+  "expect": {
+   "intent": "code_generation",
+   "llm": true,
+   "min_reply_chars": 30
+  }
+ },
+ {
+  "id": "C03_subtask",
+  "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+  "expect": {
+   "min_subtasks": 2,
+   "llm": true
+  }
+ },
+ {
+  "id": "C04_skill_identity",
+  "input": "你是谁",
+  "expect": {
+   "skill_force": "identity_statement",
+   "llm": false
+  }
+ },
+ {
+  "id": "C05_skill_wordcount",
+  "input": "帮我统计字数：这是一段测试文本用来验证技能脚本执行",
+  "expect": {
+   "skill": "wordcount",
+   "llm": false
+  }
+ },
+ {
+  "id": "C06_negative_identity",
+  "input": "把36.6摄氏度转换成华氏度是多少",
+  "expect": {
+   "llm": true,
+   "min_reply_chars": 10
+  }
+ },
+ {
+  "id": "C07_memory_followup",
+  "input": "还记得我上一条消息说了什么吗",
+  "expect": {
+   "llm": true,
+   "session_aware": true
+  }
+ },
+ {
+  "id": "C08_reasoning",
+  "input": "分析一下为什么数据库索引能加速查询",
+  "expect": {
+   "intent": "general",
+   "llm": true
+  }
+ },
+ {
+  "id": "C09_balance_cmd",
+  "input": "/balance deepseek-v4-flash",
+  "expect": {
+   "cmd_json": true,
+   "ok": true
+  }
+ },
+ {
+  "id": "C10_model_list",
+  "input": "/model list",
+  "expect": {
+   "cmd_json": true,
+   "min_models": 20
+  }
+ }
+]

@@ -263,6 +263,37 @@ modules:
 # ── 官方端点代理 (v0.10.0 需求③: 官方/远端 API 出网代理 — 可配置) ──
 # 留空 = 直连; http://user:pass@host:port 认证代理也支持。
 # 官方通道 (openai 等被 RST 的端点) 经代理出网 — 启动时读取一次 (改后需重启)
+  - name: glm-5.3-flash
+    description: 智谱 GLM-5.3-Flash — 编码端点, 速度快, 主力轻任务通道
+    provider: zhipu
+    request_address: https://open.bigmodel.cn/api/coding/paas/v4/chat/completions
+    api_key: AGENTFRAMEWORK_KEYS_BIGMODEL
+    context_window: 131072
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 0.75
+    coding_score: 0.80
+  - name: deepseek-v4-flash
+    description: DeepSeek V4 Flash — 通用对话/代码, 性价比主力
+    provider: deepseek
+    request_address: https://api.deepseek.com/v1/chat/completions
+    api_key: AGENTFRAMEWORK_KEYS_DEEPSEEK
+    context_window: 131072
+    price_in_per_m: 0.27
+    price_out_per_m: 1.10
+    reasoning_score: 0.82
+    coding_score: 0.86
+  - name: kimi-k3
+    description: Kimi K3 — 月之暗面编码端点 (当前凭据不可用/负样本链路验证点)
+    provider: moonshot
+    request_address: https://api.kimi.com/coding/v1/chat/completions
+    api_key: AGENTFRAMEWORK_KEYS_KIMI
+    context_window: 131072
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 0.80
+    coding_score: 0.82
+
 proxy:
   url: ""            # 例: http://127.0.0.1:7890
   bypass_local: true # 本地/内网地址不走代理

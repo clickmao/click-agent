@@ -258,6 +258,10 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             lock (_lock) _consecutiveFailures = 0;
             // v0.10.0: 用量本地累计
             _tokenUsage?.RecordUsage(resp.Model, entry.Provider, resp.PromptTokens, resp.CompletionTokens);
+            agent.config.AgentTelemetry.Emit("llm_call", "ModelQueueRouter",
+                ("model", entry.Id), ("provider", entry.Provider),
+                ("prompt_tokens", resp.PromptTokens), ("completion_tokens", resp.CompletionTokens),
+                ("total_tokens", resp.TokensUsed), ("success", true));
             // 阈值再同步 (fire-and-forget, 不阻塞主链)
             if (_tokenUsage is not null && _tokenUsage.NeedsResync(entry.Provider))
                 _ = _tokenUsage.TryResyncAsync(entry.Provider, CancellationToken.None);
@@ -265,6 +269,8 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         }
         catch (HttpRequestException ex)
         {
+            agent.config.AgentTelemetry.Emit("llm_call", "ModelQueueRouter",
+                ("model", entry.Id), ("provider", entry.Provider), ("success", false), ("error_kind", "http"), ("error", ex.Message));
             return await OnTransientFailureAsync(entry, prompt, kind, intent, ct, $"网络错误: {ex.Message}").ConfigureAwait(false);
         }
         catch (OperationCanceledException) when (!ct.IsCancellationRequested)

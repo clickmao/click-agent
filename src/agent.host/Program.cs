@@ -45,6 +45,8 @@ internal class Program
         var services = new ServiceCollection();
         services.AddLogging(b => b.AddSimpleConsole().SetMinimumLevel(LogLevel.Warning));
         services.AddAgentFramework(o => { o.DataStoragePath = "./data"; });
+        agent.config.AgentTelemetry.Configure("host", "./data/telemetry");
+        agent.config.AgentTelemetry.Emit("boot", "Program", ("probe", true));
 
         await using var provider = services.BuildServiceProvider();
         var entryAgent = provider.GetRequiredService<IAgent>();

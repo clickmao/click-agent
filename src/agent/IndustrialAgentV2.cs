@@ -212,7 +212,8 @@ public class IndustrialAgentV2 : AgentBase
 
             if (trimmedCmd.StartsWith("/model", StringComparison.OrdinalIgnoreCase) ||
                 trimmedCmd.StartsWith("/token", StringComparison.OrdinalIgnoreCase) ||
-                trimmedCmd.Equals("/balance", StringComparison.OrdinalIgnoreCase))
+                trimmedCmd.Equals("/balance", StringComparison.OrdinalIgnoreCase) || 
+                trimmedCmd.StartsWith("/balance ", StringComparison.OrdinalIgnoreCase))
             {
                 var cmdResp = HandleModelCommand(trimmedCmd, (long)(DateTime.UtcNow - startTime).TotalMilliseconds);
                 if (cmdResp != null)
@@ -226,10 +227,12 @@ public class IndustrialAgentV2 : AgentBase
                 !trimmedCmd.StartsWith('/'))  // 本地指令不走 Skill
             {
                 var skillResult = await _skillDispatcher.DispatchAsync(message.Content, ct);
-                if (skillResult != null && skillResult.Success && skillResult.ForceUse)
+                // v0.11.0 (打点驱动修复): executive 脚本成功输出同样直接承载 —
+                // 原 ForceUse-only 导致脚本输出被丢弃、静默降级 LLM (实测 wordcount 链路)
+                if (skillResult is { Success: true } && (skillResult.ForceUse || skillResult.Content.Length > 0))
                 {
-                    _logger.LogInformation("Skill {SkillId} activated (force_use, {Ms}ms)",
-                        skillResult.SkillId, skillResult.ElapsedMs);
+                    _logger.LogInformation("Skill {SkillId} activated ({Mode}, {Ms}ms)",
+                        skillResult.SkillId, skillResult.ForceUse ? "force_use" : "executive", skillResult.ElapsedMs);
                     response.Success = true;
                     response.Content = skillResult.Content;
                     response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
@@ -256,6 +259,9 @@ public class IndustrialAgentV2 : AgentBase
             // 1. 意图识别 + 子任务拆解 (v7.9): 复合句拆为有序子任务, 主意图驱动模板选择
             var subTasks = IntentDecomposer.Decompose(message.Content);
             var intent = IntentDecomposer.PrimaryIntent(subTasks);
+            agent.config.AgentTelemetry.Emit("intent", "IndustrialAgentV2",
+                ("primary", intent), ("subtask_count", subTasks.Count),
+                ("input_chars", message.Content.Length));
             if (subTasks.Count > 1)
             {
                 _logger.LogInformation(
@@ -277,6 +283,8 @@ public class IndustrialAgentV2 : AgentBase
                         goalEntities, goal.GoalText, message.Content, subTasks[0].Intent);
                     if (isIsolated)
                     {
+                        agent.config.AgentTelemetry.Emit("subagent", "IsolatedTaskRunner",
+                            ("isolated", true), ("relevance_score", score), ("reason", reason));
                         _logger.LogInformation(
                             "IsolatedTask triggered: score={Score} reason={Reason} task={Task}",
                             score, reason, message.Content);
@@ -309,6 +317,15 @@ public class IndustrialAgentV2 : AgentBase
 
             // 2. 多数据源上下文组装（失败时降级为空上下文，不阻断对话）
             var contextResult = await AssembleContextAsync(message, intent, subTasks, ct);
+            // v0.11.0: source 级召回统计 (对比数据 — 召回率/压缩率/延迟)
+            var sourceStats = string.Join(",", contextResult.SourceStats.Select(kv =>
+                kv.Key + ":" + kv.Value.SnippetCount + "snip/" + kv.Value.TotalTokens + "tok/r" + Math.Round(kv.Value.AvgRelevanceScore, 2) + "rel"));
+            agent.config.AgentTelemetry.Emit("assembly", "ContextAssembler",
+                ("success", contextResult.Success), ("error", contextResult.Error),
+                ("sources", sourceStats), ("snippets", contextResult.Snippets.Count),
+                ("total_tokens", contextResult.TotalTokens),
+                ("budget_usage", Math.Round(contextResult.TokenBudgetUsage, 3)),
+                ("assembly_ms", contextResult.AssemblyTimeMs), ("from_cache", contextResult.FromCache));
             if (!contextResult.Success)
             {
                 _logger.LogWarning(
@@ -367,7 +384,11 @@ public class IndustrialAgentV2 : AgentBase
                 var memSession = await _sessionManager.GetOrCreateSessionAsync(message.SessionId, message.SenderId);
                 var mem = memSession.Memory;
                 if (string.IsNullOrEmpty(mem.Goal?.GoalText))
-                    mem.SetGoal(message.Content.Length > 200 ? message.Content[..200] + "…" : message.Content);
+                {
+                    var goalText = message.Content.Length > 200 ? message.Content[..200] + "…" : message.Content;
+                    // v0.11.0 (打点驱动修复): goal 锚定时抽取关键实体 — 实体空导致隔离判定永不触发
+                    mem.SetGoal(goalText, agent.intent.TaskRelevanceChecker.ExtractEntities(goalText));
+                }
                 mem.Remember($"[{intent}] {(llmResponse.Success ? "完成" : "失败")}: " +
                     (message.Content.Length > 120 ? message.Content[..120] + "…" : message.Content));
                 if (llmResponse.Success)
@@ -419,6 +440,9 @@ public class IndustrialAgentV2 : AgentBase
         }
         
         response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
+        agent.config.AgentTelemetry.Emit("loop_turn", "IndustrialAgentV2",
+            ("total_ms", response.ExecutionTimeMs), ("success", response.Success),
+            ("reply_chars", response.Content.Length));
         return response;
     }
     
@@ -651,7 +675,9 @@ public class IndustrialAgentV2 : AgentBase
             }
             var b = _balanceService.QueryAsync(parts.Length >= 2 ? parts[1] : null)
                 .GetAwaiter().GetResult();
-            return MakeJsonResponse(new ModelCommandPayload
+            // v0.11.0: 命令执行恒 Success=true — 余额结论在 Ok/TotalRemaining/Error 字段,
+            // 查询失败 (无 scheme/无 key/网络) 也如实 JSON 输出而非吞进失败渲染
+            var json = System.Text.Json.JsonSerializer.Serialize(new ModelCommandPayload
             {
                 Command = "balance",
                 Ok = b.Ok,
@@ -662,7 +688,13 @@ public class IndustrialAgentV2 : AgentBase
                 TotalRemaining = b.TotalRemaining,
                 Error = b.Error,
                 Note = b.Note,
-            }, elapsedMs);
+            }, ModelCommandJsonContext.Default.ModelCommandPayload);
+            return new AgentResponse
+            {
+                Success = true,
+                Content = json,
+                ExecutionTimeMs = elapsedMs,
+            };
         }
 
         return null;

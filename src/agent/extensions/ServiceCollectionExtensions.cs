@@ -246,6 +246,11 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ModelQueueAdapter>();
         services.AddSingleton<ILLMCaller>(sp => sp.GetRequiredService<ModelQueueAdapter>());
         services.AddSingleton<agent.subagent.ILLMCallerForIsolated>(sp => sp.GetRequiredService<ModelQueueAdapter>());
+        // v0.11.0 (打点驱动修复): IsolatedTaskRunner DI 缺注册 — 隔离子代理链路整体休眠 (1.4 判定恒跳过)
+        services.AddSingleton(sp => new agent.subagent.IsolatedTaskRunner(
+            sp.GetRequiredService<ISessionManager>(),
+            sp.GetRequiredService<agent.subagent.ILLMCallerForIsolated>(),
+            sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<IndustrialAgentV2>>()));
         services.AddSingleton(sp => new agent.modelqueue.BalanceQueryService(
             sp.GetRequiredService<agent.modelqueue.ModelCatalog>(),
             sp.GetRequiredService<IHttpClientFactory>()));
@@ -258,12 +263,18 @@ public static class ServiceCollectionExtensions
 
         // v7.15 Skill 调度 (P1): skills/ 目录静态加载 + 触发匹配 + 口径承载
         services.AddSingleton(sp => agent.skills.SkillRegistry.LoadFromDirectory("skills"));
+        // v0.11.0 (打点驱动补全): executive skill 包内脚本执行链路 — DI 缺 scriptRunner 注入,
+        // 实测 wordcount 正则命中后静默降级 LLM (脚本从未运行)
+        services.AddSingleton(sp => new agent.skills.SkillScriptRunner(
+            getConfig: (module, key, fallback) => sp.GetRequiredService<agent.config.ConfigSnapshot>()
+                .Get(module, key, fallback)));
         services.AddSingleton(sp => new agent.skills.SkillDispatcher(
             sp.GetRequiredService<agent.skills.SkillRegistry>(),
             new agent.skills.TriggerMatcher(
                 sp.GetRequiredService<agent.contextgradient.ITextEmbedder>()),
             getConfig: (module, key, fallback) => sp.GetRequiredService<agent.config.ConfigSnapshot>()
-                .Get(module, key, fallback)));
+                .Get(module, key, fallback),
+            scriptRunner: sp.GetRequiredService<agent.skills.SkillScriptRunner>()));
 
         // v7.15 日志四通道: LogRouter (flags 默认全开 — config/base/logging.yaml 分层可覆盖)
         services.AddSingleton(sp => new agent.logging.MemoryLogBuffer(2000));

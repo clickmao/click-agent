@@ -100,13 +100,17 @@ public sealed class BalanceQueryService
                 }
                 case "deepseek":
                 {
-                    // /user/balance: balance_infos[0].balance (字符串 USD)
+                    // /user/balance 真实 shape (2026-09-06 真机溯源):
+                    // {"is_available":true,"balance_infos":[{"currency":"CNY","total_balance":"9.49",...}]}
+                    // v0.11.0 修复: 字段是 total_balance (旧代码读 balance → 永远 shape 失配); currency 透出 Note
                     if (doc.RootElement.TryGetProperty("balance_infos", out var infos) &&
                         infos.ValueKind == JsonValueKind.Array && infos.GetArrayLength() > 0 &&
-                        infos[0].TryGetProperty("balance", out var bal) &&
+                        infos[0].TryGetProperty("total_balance", out var bal) &&
                         double.TryParse(bal.GetString(), System.Globalization.CultureInfo.InvariantCulture, out var v))
                     {
                         result.TotalRemaining = v;
+                        if (infos[0].TryGetProperty("currency", out var cur))
+                            result.Note = $"币种 {cur.GetString()} (原始值未换算)";
                     }
                     else
                     {

@@ -1,0 +1,295 @@
+{
+ "round": "baseline3",
+ "label": "harness断言修正后的干净基线",
+ "ts": "2026-09-06T12:40:48+0800",
+ "cases": 10,
+ "passed": 9,
+ "tokens_total": 7590,
+ "prompt_total": 1070,
+ "completion_total": 6520,
+ "wall_total_ms": 142497,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种基于分治思想的高效排序算法，它通过选取一个基准元素将数组划分为“小于基准”和“大于基准”两部分，再递归地对两部分排序，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 6821,
+   "points": 8,
+   "llm_calls": 1,
+   "prompt_tokens": 166,
+   "completion_tokens": 384,
+   "total_tokens": 550,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 5883,
+   "models": [
+    "glm-5.3-flash"
+   ]
+  },
+  {
+   "id": "C02_coding",
+   "input": "用C#写一个二分查找函数",
+   "pass": true,
+   "notes": [],
+   "reply": "C# 二分查找实现\n\n前置假设：输入数组已按升序排序（二分查找的前提条件）。以下代码可直接用 dotnet run 编译运行。\n\n完整代码\n\nC# 二分查找实现\n\n前置假设：输入数组已按升序排序（二分查找的前提条件）。以下代码可直接用 dotnet run 编译运行。\n\n完整代码\n\nusing System;\n\nnamespace Algorithms.Search\n{\n    /// <summary>\n    /// 二分查找算法实现（迭代版本，O(1) 额外空间）。\n    /// 前提条件：输入数组必须已按升序排序。\n    /// </summary>\n    public static class BinarySearcher\n    {\n        /// <summary>\n        /// 在已排序数组中查找目标值的索引。\n        /// </summa",
+   "wall_ms": 37817,
+   "points": 8,
+   "llm_calls": 1,
+   "prompt_tokens": 187,
+   "completion_tokens": 2000,
+   "total_tokens": 2187,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.3970583590614756
+    }
+   ],
+   "skill_force": null,
+   "intent": "code_generation",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 36847,
+   "models": [
+    "glm-5.3-flash"
+   ]
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "",
+   "wall_ms": 56055,
+   "points": 8,
+   "llm_calls": 1,
+   "prompt_tokens": 178,
+   "completion_tokens": 2000,
+   "total_tokens": 2178,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 55130,
+   "models": [
+    "glm-5.3-flash"
+   ]
+  },
+  {
+   "id": "C04_skill_identity",
+   "input": "你是谁",
+   "pass": true,
+   "notes": [],
+   "reply": "我是 AgentFramework 工业级智能体, 一个可编排、可审计、可扩展的 AI 助手。\n  (603ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1475,
+   "points": 4,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 3,
+     "precision": 0.95
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": []
+  },
+  {
+   "id": "C05_skill_wordcount",
+   "input": "帮我统计字数：这是一段测试文本用来验证技能脚本执行",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"wordcount\", \"chars\": 25, \"words\": 1}\n  (605ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1564,
+   "points": 5,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "wordcount",
+     "level": 3,
+     "precision": 0.95
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": []
+  },
+  {
+   "id": "C06_negative_identity",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "36.6 摄氏度转换成华氏度的结果是 97.88°F。\n\n换算公式：\n\n$$°F = °C \\times \\frac{9}{5} + 32$$\n\n计算过程：\n\n· 36.6 × 9/5 = 65.88\n· 65.88 + 32 = **97.88°F**\n\n顺便一提，36.6°C 通常是正常体温的参考值，对应约 97.88°F，略低于美国常用的 98.6°F（即 37°C）这个标准。\n\n---\n\n另外注意到，您之前有一个「向量数据库选型对比报告」的任务尚未完成，如果需要继续推进该任务（如对比分析或撰写报告结论），请随时告诉我。",
+   "wall_ms": 6525,
+   "points": 8,
+   "llm_calls": 1,
+   "prompt_tokens": 198,
+   "completion_tokens": 390,
+   "total_tokens": 588,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41885162103581053
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 5601,
+   "models": [
+    "glm-5.3-flash"
+   ]
+  },
+  {
+   "id": "C07_memory_followup",
+   "input": "还记得我上一条消息说了什么吗",
+   "pass": true,
+   "notes": [],
+   "reply": "记得！您上一条消息的问题是：“把36.6摄氏度转换成华氏度是多少”。\n\n顺便帮您把答案补充完整：\n\n温度转换结果\n\n36.6°C ≈ 97.88°F\n\n计算过程：\n· 换算公式：°F = °C × 9/5 + 32\n· 36.6 × 9/5 + 32 = 65.88 + 32 = **97.88°F**\n\n💡 小知识：36.6°C 接近人体的正常体温范围（36.1°C～37.2°C），对应华氏度约在 97°F～99°F 之间。\n\n还有什么需要我帮忙的吗？",
+   "wall_ms": 11750,
+   "points": 8,
+   "llm_calls": 1,
+   "prompt_tokens": 172,
+   "completion_tokens": 419,
+   "total_tokens": 591,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.431853027194236
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 10846,
+   "models": [
+    "glm-5.3-flash"
+   ]
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "为什么数据库索引能加速查询\n\n核心原理：把“线性扫描”变成“对数查找”\n\n没有索引时，数据库查找一条记录需要全表扫描——逐行遍历所有数据，时间复杂度是 O(n)。比如 1000 万行的表，最坏要比较 1000 万次。\n\n有了索引后，查询变成在一棵有序树结构上的查找，时间复杂度降到 O(log n)，只需 3~4 次操作就能定位目标。\n\n索引加速的关键机制（以 B+ 树为例）\n\n1. 有序性 → 支持二分式定位\n索引按列值排序存储。查找时从根节点出发，每一步都能排除大量不符合范围的数据，类似二分查找。\n\n2. 多路分叉 → 树高极低\nB+ 树的每个节点可以容纳成百上千个键（因为单个节点对应一个磁盘页，如 InnoDB 的 16KB）：\n\n1000 万行数据，树高通常只有 3 层\n根节点:  ~1000 个分支\n中间层:  ~1000 × 1000\n叶子层:  存储实际数据引用\n\n树高 3 意",
+   "wall_ms": 18370,
+   "points": 8,
+   "llm_calls": 1,
+   "prompt_tokens": 169,
+   "completion_tokens": 1327,
+   "total_tokens": 1496,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 17450,
+   "models": [
+    "glm-5.3-flash"
+   ]
+  },
+  {
+   "id": "C09_balance_cmd",
+   "input": "/balance deepseek-v4-flash",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"Command\":\"balance\",\"Ok\":true,\"Active\":\"deepseek-v4-flash\",\"Provider\":\"deepseek\",\"ReasoningScore\":0,\"CodingScore\":0,\"Switches\":0,\"HttpStatusCode\":0,\"TotalRemaining\":9.49,\"Note\":\"\\u5E01\\u79CD CNY (\\u539F\\u59CB\\u503C\\u672A\\u6362\\u7B97)\"}\n  (0ms, intent=general)",
+   "wall_ms": 1153,
+   "points": 2,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": []
+  },
+  {
+   "id": "C10_model_list",
+   "input": "/model list",
+   "pass": false,
+   "notes": [
+    "FAIL:models 0 < 20"
+   ],
+   "reply": "{\"Command\":\"model_list\",\"Ok\":true,\"Active\":\"gpt-4o\",\"ReasoningScore\":0,\"CodingScore\":0,\"Switches\":0,\"HttpStatusCode\":0,\"Models\":[{\"Index\":1,\"Id\":\"gpt-4o\",\"Description\":\"OpenAI \\u65D7\\u8230\\u591A\\u6A21\\u6001, \\u7EFC\\u5408\\u5747\\u8861\",\"Provider\":\"openai\",\"PriceInPerM\":2.5,\"PriceOutPerM\":10,\"ReasoningScore\":8,\"CodingScore\":8,\"ContextWindow\":128000,\"IsActive\":true},{\"Index\":2,\"Id\":\"gpt-4o-mini\",\"Desc",
+   "wall_ms": 967,
+   "points": 2,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": []
+  }
+ ]
+}

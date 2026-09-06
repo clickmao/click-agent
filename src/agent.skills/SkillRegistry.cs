@@ -20,6 +20,8 @@ public sealed class SkillRegistry
         // v0.10.0 新需求5: 开放规范包优先 (skill-name/SKILL.md 目录包格式)
         foreach (var pkg in SkillPackageLoader.LoadPackages(skillRoot))
             registry.Register(pkg);
+        agent.config.AgentTelemetry.Emit("skill_load", "SkillRegistry",
+            ("root", System.IO.Path.GetFullPath(skillRoot)), ("cwd", System.Environment.CurrentDirectory), ("count", registry.All.Count), ("ids", string.Join(",", registry.All.Select(x => x.SkillId))));
         // legacy 平文件 (*.yaml) 兼容并存 (identity.yaml 等存量技能)
         foreach (var file in Directory.EnumerateFiles(skillRoot, "*.y*ml"))
         {

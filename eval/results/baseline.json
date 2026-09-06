@@ -1,0 +1,315 @@
+{
+ "round": "baseline",
+ "label": "round1 基线: 打点层+key过滤修复后",
+ "ts": "2026-09-06T12:18:39+0800",
+ "cases": 10,
+ "passed": 2,
+ "tokens_total": 8213,
+ "prompt_total": 1247,
+ "completion_total": 6966,
+ "wall_total_ms": 155359,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": false,
+   "notes": [
+    "FAIL:reply 0 < 20"
+   ],
+   "reply": "",
+   "wall_ms": 9203,
+   "points": 6,
+   "llm_calls": 1,
+   "prompt_tokens": 162,
+   "completion_tokens": 333,
+   "total_tokens": 495,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 8213,
+   "models": [
+    "glm-5.3-flash"
+   ]
+  },
+  {
+   "id": "C02_coding",
+   "input": "用C#写一个二分查找函数",
+   "pass": false,
+   "notes": [
+    "FAIL:intent=code_generation want coding",
+    "FAIL:reply 0 < 30"
+   ],
+   "reply": "",
+   "wall_ms": 34517,
+   "points": 6,
+   "llm_calls": 1,
+   "prompt_tokens": 185,
+   "completion_tokens": 2000,
+   "total_tokens": 2185,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.3970583590614756
+    }
+   ],
+   "skill_force": null,
+   "intent": "code_generation",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 33575,
+   "models": [
+    "glm-5.3-flash"
+   ]
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": false,
+   "notes": [
+    "FAIL:intent=general want planning"
+   ],
+   "reply": "",
+   "wall_ms": 67321,
+   "points": 6,
+   "llm_calls": 1,
+   "prompt_tokens": 178,
+   "completion_tokens": 2000,
+   "total_tokens": 2178,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 66395,
+   "models": [
+    "glm-5.3-flash"
+   ]
+  },
+  {
+   "id": "C04_skill_identity",
+   "input": "你是谁",
+   "pass": true,
+   "notes": [],
+   "reply": "",
+   "wall_ms": 1489,
+   "points": 2,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 3,
+     "precision": 0.95
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": []
+  },
+  {
+   "id": "C05_skill_wordcount",
+   "input": "帮我统计字数：这是一段测试文本用来验证技能脚本执行",
+   "pass": false,
+   "notes": [
+    "FAIL:llm_calls=1 want 0",
+    "FAIL:skill wordcount not hit"
+   ],
+   "reply": "",
+   "wall_ms": 8436,
+   "points": 6,
+   "llm_calls": 1,
+   "prompt_tokens": 200,
+   "completion_tokens": 615,
+   "total_tokens": 815,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4260462684377936
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 7532,
+   "models": [
+    "glm-5.3-flash"
+   ]
+  },
+  {
+   "id": "C06_negative_identity",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": false,
+   "notes": [
+    "FAIL:reply 0 < 10"
+   ],
+   "reply": "",
+   "wall_ms": 5669,
+   "points": 6,
+   "llm_calls": 1,
+   "prompt_tokens": 181,
+   "completion_tokens": 321,
+   "total_tokens": 502,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41885162103581053
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 4772,
+   "models": [
+    "glm-5.3-flash"
+   ]
+  },
+  {
+   "id": "C07_memory_followup",
+   "input": "还记得我上一条消息说了什么吗",
+   "pass": true,
+   "notes": [],
+   "reply": "",
+   "wall_ms": 8946,
+   "points": 6,
+   "llm_calls": 1,
+   "prompt_tokens": 172,
+   "completion_tokens": 410,
+   "total_tokens": 582,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.431853027194236
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 8084,
+   "models": [
+    "glm-5.3-flash"
+   ]
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": false,
+   "notes": [
+    "FAIL:intent=general want reasoning"
+   ],
+   "reply": "",
+   "wall_ms": 17693,
+   "points": 6,
+   "llm_calls": 1,
+   "prompt_tokens": 169,
+   "completion_tokens": 1287,
+   "total_tokens": 1456,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 16825,
+   "models": [
+    "glm-5.3-flash"
+   ]
+  },
+  {
+   "id": "C09_balance_cmd",
+   "input": "/balance deepseek-v4-flash",
+   "pass": false,
+   "notes": [
+    "FAIL:cmd output not JSON: ''",
+    "FAIL:cmd ok!=true: ''"
+   ],
+   "reply": "",
+   "wall_ms": 1156,
+   "points": 1,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": []
+  },
+  {
+   "id": "C10_model_list",
+   "input": "/model list",
+   "pass": false,
+   "notes": [
+    "FAIL:cmd output not JSON: ''",
+    "FAIL:models 0 < 20"
+   ],
+   "reply": "",
+   "wall_ms": 929,
+   "points": 1,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": []
+  }
+ ]
+}

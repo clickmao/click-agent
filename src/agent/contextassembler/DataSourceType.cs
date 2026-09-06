@@ -169,7 +169,7 @@ public class ContextAssemblyResult
     public bool Success { get; set; }
     
     /// <summary>本次结果来自缓存 (重复请求直接复用)</summary>
-    public bool FromCache { get; set; } = true;
+    public bool FromCache { get; set; }  // 默认 false — 未命中缓存的结果不应标缓存 (打点统计真实性)
     
     /// <summary>错误信息</summary>
     public string? Error { get; set; }

@@ -47,10 +47,14 @@ public static class SkillPackageLoader
                 var skill = ParseSkillMd(File.ReadAllText(skillMd), dir);
                 if (skill is not null)
                     results.Add(skill);
+                else
+                    agent.config.AgentTelemetry.Emit("skill_parse", "SkillPackageLoader",
+                        ("dir", Path.GetFileName(dir)), ("result", "null"));
             }
-            catch
+            catch (Exception ex)
             {
-                // 单包坏不阻断其他包 (S.5 降级原则)
+                agent.config.AgentTelemetry.Emit("skill_parse", "SkillPackageLoader",
+                    ("dir", Path.GetFileName(dir)), ("error", ex.Message));
             }
         }
         return results;

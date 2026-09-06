@@ -130,12 +130,14 @@ public sealed class TriggerMatcher
                 hits.Add(new SkillMatch { Skill = s, Level = level, Precision = precision });
         }
 
-        // 裁决: 排他 > 优先级 > 精确度 > 匹配级别
+        // 裁决: 匹配级别 > 排他 > 优先级 > 精确度
+        // v0.11.0 (打点驱动修复): 词面强命中 (正则3/关键词2) 不被语义疑似(L1)+排他 抢占 —
+        // 实测 bge 短文本基线 cos 偏高 (~0.73), identity 排他恒 top, 淹没 wordcount 正则命中
         return hits
-            .OrderByDescending(m => m.Skill.Exclusive)
+            .OrderByDescending(m => m.Level)
+            .ThenByDescending(m => m.Skill.Exclusive)
             .ThenByDescending(m => m.Skill.Priority)
             .ThenByDescending(m => m.Precision)
-.ThenByDescending(m => m.Level)
             .ToList();
     }
 

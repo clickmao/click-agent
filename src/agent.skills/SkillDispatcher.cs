@@ -57,14 +57,20 @@ public sealed class SkillDispatcher
     {
         try
         {
+            agent.config.AgentTelemetry.Emit("skill_scan", "SkillDispatcher",
+                ("input_len", input.Length), ("registry_count", _registry.All.Count));
             var hits = await _matcher.MatchAsync(input, _registry.All, ct);
             if (hits.Count == 0)
             {
                 Lifecycle.ReportRound(false); // 未命中任何域 → Active 项脱域计数
+                agent.config.AgentTelemetry.Emit("skill", "SkillDispatcher", ("matched", "(none)"));
                 return null;
             }
 
             var top = hits[0];
+            agent.config.AgentTelemetry.Emit("skill", "SkillDispatcher",
+                ("matched", top.Skill.SkillId), ("level", top.Level),
+                ("precision", top.Precision));
 
             // P2 熔断: 开启期 → 静默降级普通推理
             if (Lifecycle.IsBreakerOpen(top.Skill.SkillId))
@@ -78,7 +84,10 @@ public sealed class SkillDispatcher
             if (top.Skill.Type == SkillType.Normative)
             {
                 // 口径型: force_template 原样承载 (S.6: 模型只做合规润色, 不改口径)
-                if (string.IsNullOrEmpty(top.Skill.ForceTemplate))
+                // v0.11.0 修复 (打点驱动): 仅词面命中 (关键词/正则, level>=2) 才 force_use 独占 —
+                // bge 语义疑似 (level=1, cos>=0.45) 曾把 "介绍快速排序" 误判为身份说明并吞掉提问;
+                // 语义疑似属于弱信号 → 不拦截, 降级普通推理
+                if (string.IsNullOrEmpty(top.Skill.ForceTemplate) || top.Level < 2)
                     return null;
                 content = top.Skill.ForceTemplate.Replace("{input}", input);
                 forceUse = true;
@@ -91,10 +100,25 @@ public sealed class SkillDispatcher
                     // v0.11.0: 无显式注册 → 尝试包内脚本 (SKILL.md scripts/; 进程实跑 + @cmd 命令转发)
                     if (_scriptRunner is null || top.Skill.PackageDir is null)
                         return null;
-                    var scriptOut = await _executor.ExecuteAsync(top.Skill,
-                        token => _scriptRunner.RunAsync(top.Skill, DefaultScriptName(top.Skill), input, token), ct);
+                    string? scriptOut = null;
+                    try
+                    {
+                        scriptOut = await _executor.ExecuteAsync(top.Skill,
+                            token => _scriptRunner.RunAsync(top.Skill, DefaultScriptName(top.Skill), input, token), ct);
+                    }
+                    catch (Exception ex)
+                    {
+                        agent.config.AgentTelemetry.Emit("skill_exec", "SkillDispatcher",
+                            ("skill", top.Skill.SkillId), ("error", ex.Message));
+                    }
                     if (scriptOut is null)
+                    {
+                        agent.config.AgentTelemetry.Emit("skill_exec", "SkillDispatcher",
+                            ("skill", top.Skill.SkillId), ("result", "null"));
                         return null; // 失败/超时/熔断 → 降级普通推理
+                    }
+                    agent.config.AgentTelemetry.Emit("skill_exec", "SkillDispatcher",
+                        ("skill", top.Skill.SkillId), ("out", scriptOut));
                     content = scriptOut;
                 }
                 else

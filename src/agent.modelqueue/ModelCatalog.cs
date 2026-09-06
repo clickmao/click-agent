@@ -138,7 +138,7 @@ public sealed class ModelCatalog
                     continue;
                 catalog.BalanceSchemes[k] = new BalanceScheme
                 {
-                    Endpoint = AsString(sd, "endpoint"),
+                    Endpoint = OrStr(sd, "request_address", "endpoint"),
                     Note = AsString(sd, "note"),
                 };
             }

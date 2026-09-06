@@ -1,0 +1,297 @@
+{
+ "round": "round2",
+ "label": "裁决修复+executive DI 承载修复后",
+ "ts": "2026-09-06T12:38:02+0800",
+ "cases": 10,
+ "passed": 8,
+ "tokens_total": 7615,
+ "prompt_total": 1073,
+ "completion_total": 6542,
+ "wall_total_ms": 99502,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序（QuickSort）是一种基于分治思想的高效排序算法，它通过选定一个基准元素将数组划分为“小于基准”和“大于基准”两部分，再递归地对两部分排序，平均时间复杂度为 O(n log n)。\n\n> 说明：上下文中未包含快速排序的相关资料，以上回答基于通用算法知识。",
+   "wall_ms": 7463,
+   "points": 8,
+   "llm_calls": 1,
+   "prompt_tokens": 169,
+   "completion_tokens": 484,
+   "total_tokens": 653,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 6577,
+   "models": [
+    "glm-5.3-flash"
+   ]
+  },
+  {
+   "id": "C02_coding",
+   "input": "用C#写一个二分查找函数",
+   "pass": true,
+   "notes": [],
+   "reply": "以下是基于「升序有序数组」这一常见前提实现的 C# 二分查找（含迭代与递归两种版本，采用泛型以支持多种类型，时间复杂度 O(log n)）：\n\n核心实现\n\nusing System;\n\nnamespace Algorithms.Search\n{\n    /// <summary>\n    /// 二分查找算法实现。\n    /// 前置条件：输入数组必须已按升序排序。\n    /// </summary>\n    public static class BinarySearch\n    {\n        /// <summary>\n        /// 迭代版二分查找（推荐，空间复杂度 O(1)）。\n        /// </summary>\n        /// <typeparam name=\"T\">元素类型，需实现 <see cref=\"IComparable{T}\"/></",
+   "wall_ms": 22188,
+   "points": 8,
+   "llm_calls": 1,
+   "prompt_tokens": 187,
+   "completion_tokens": 2000,
+   "total_tokens": 2187,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.3970583590614756
+    }
+   ],
+   "skill_force": null,
+   "intent": "code_generation",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 21277,
+   "models": [
+    "glm-5.3-flash"
+   ]
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "",
+   "wall_ms": 27012,
+   "points": 8,
+   "llm_calls": 1,
+   "prompt_tokens": 178,
+   "completion_tokens": 2000,
+   "total_tokens": 2178,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 26139,
+   "models": [
+    "glm-5.3-flash"
+   ]
+  },
+  {
+   "id": "C04_skill_identity",
+   "input": "你是谁",
+   "pass": true,
+   "notes": [],
+   "reply": "我是 AgentFramework 工业级智能体, 一个可编排、可审计、可扩展的 AI 助手。\n  (609ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1512,
+   "points": 4,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 3,
+     "precision": 0.95
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": []
+  },
+  {
+   "id": "C05_skill_wordcount",
+   "input": "帮我统计字数：这是一段测试文本用来验证技能脚本执行",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"wordcount\", \"chars\": 25, \"words\": 1}\n  (580ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1506,
+   "points": 5,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "wordcount",
+     "level": 3,
+     "precision": 0.95
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": []
+  },
+  {
+   "id": "C06_negative_identity",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "36.6 摄氏度转换为华氏度的计算如下：\n\n换算公式：°F = °C × 9/5 + 32\n\n计算过程：\n36.6 × 9/5 + 32 = 65.88 + 32 = 97.88 ℉\n\n所以 36.6℃ 约等于 97.88℉。\n\n顺便一提，36.6℃ 是接近人体正常体温的数值（正常体温约为 36℃~37℃，对应华氏度约 96.8℉~98.6℉）。",
+   "wall_ms": 5756,
+   "points": 8,
+   "llm_calls": 1,
+   "prompt_tokens": 198,
+   "completion_tokens": 322,
+   "total_tokens": 520,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41885162103581053
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 4860,
+   "models": [
+    "glm-5.3-flash"
+   ]
+  },
+  {
+   "id": "C07_memory_followup",
+   "input": "还记得我上一条消息说了什么吗",
+   "pass": true,
+   "notes": [],
+   "reply": "根据我收到的上下文信息，你上一条消息的问题是：把36.6摄氏度转换成华氏度是多少。\n\n顺便把这个转换结果补充给你：\n\n温度转换：36.6°C → °F\n\n使用转换公式：\n\n$$°F = °C \\times \\frac{9}{5} + 32$$\n\n计算过程：\n\n$$°F = 36.6 \\times 1.8 + 32 = 65.88 + 32 = 97.88$$\n\n结果：36.6°C = 97.88°F\n\n💡 这个温度略低于人体正常体温（37°C ≈ 98.6°F），是常见的体温测量参考值。\n\n需要我帮你做其他温度转换吗？",
+   "wall_ms": 14741,
+   "points": 8,
+   "llm_calls": 1,
+   "prompt_tokens": 172,
+   "completion_tokens": 549,
+   "total_tokens": 721,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.431853027194236
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 13857,
+   "models": [
+    "glm-5.3-flash"
+   ]
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "数据库索引加速查询的原理分析\n\n> 说明：当前提供的上下文中没有关于数据库索引的具体资料，以下回答基于通用的数据库技术知识。\n\n一、核心问题：没有索引时的查询\n\n没有索引时，数据库执行全表扫描（Full Table Scan）：\n· 逐行读取所有数据，逐条比对条件\n· 时间复杂度为 **O(n)**，数据量越大越慢\n· 磁盘 I/O 次数与表大小成正比\n\n二、索引加速的关键机制\n\n1. 有序数据结构（通常为 B+ 树）\n\n| 特性 | 带来的好处 |\n| 多路平衡树 | 树高极低（3~4 层可支撑千万级数据），查找复杂度降为 O(log n) |\n| 节点按页存储 | 一次磁盘 I/O 读入整个节点，大幅减少 I/O 次数 |\n| 叶子节点有序且以链表相连 | 范围查询（BETWEEN、>、<、ORDER BY）效率极高 |\n\n2. 减少磁盘 I/O —— 性能的本质瓶颈\n\n· 磁盘 I/",
+   "wall_ms": 17154,
+   "points": 8,
+   "llm_calls": 1,
+   "prompt_tokens": 169,
+   "completion_tokens": 1187,
+   "total_tokens": 1356,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 16202,
+   "models": [
+    "glm-5.3-flash"
+   ]
+  },
+  {
+   "id": "C09_balance_cmd",
+   "input": "/balance deepseek-v4-flash",
+   "pass": false,
+   "notes": [
+    "FAIL:cmd ok!=true: '{\"Command\":\"balance\",\"Ok\":true,\"Active\":\"deepseek-v4-flash\",\"Provider\":\"deepseek'"
+   ],
+   "reply": "{\"Command\":\"balance\",\"Ok\":true,\"Active\":\"deepseek-v4-flash\",\"Provider\":\"deepseek\",\"ReasoningScore\":0,\"CodingScore\":0,\"Switches\":0,\"HttpStatusCode\":0,\"TotalRemaining\":9.49,\"Note\":\"\\u5E01\\u79CD CNY (\\u539F\\u59CB\\u503C\\u672A\\u6362\\u7B97)\"}\n  (0ms, intent=general)",
+   "wall_ms": 1206,
+   "points": 2,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": []
+  },
+  {
+   "id": "C10_model_list",
+   "input": "/model list",
+   "pass": false,
+   "notes": [
+    "FAIL:models 0 < 20"
+   ],
+   "reply": "{\"Command\":\"model_list\",\"Ok\":true,\"Active\":\"gpt-4o\",\"ReasoningScore\":0,\"CodingScore\":0,\"Switches\":0,\"HttpStatusCode\":0,\"Models\":[{\"Index\":1,\"Id\":\"gpt-4o\",\"Description\":\"OpenAI \\u65D7\\u8230\\u591A\\u6A21\\u6001, \\u7EFC\\u5408\\u5747\\u8861\",\"Provider\":\"openai\",\"PriceInPerM\":2.5,\"PriceOutPerM\":10,\"ReasoningScore\":8,\"CodingScore\":8,\"ContextWindow\":128000,\"IsActive\":true},{\"Index\":2,\"Id\":\"gpt-4o-mini\",\"Desc",
+   "wall_ms": 964,
+   "points": 2,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": []
+  }
+ ]
+}
