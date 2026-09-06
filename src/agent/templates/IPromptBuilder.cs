@@ -313,10 +313,17 @@ public class IntentPromptTemplates
     };
     
     /// <summary>
+    /// 输出纪律 (v0.11.0 R18): 打点实测 C08 reasoning completion 1875 tok 偏冗长;
+    /// 统一附加长度约束 — 直接回答优先, 展开细节仅按需。
+    /// </summary>
+    private const string OutputDiscipline =
+        "\n5. 输出纪律：直接回答问题本身，不重复用户问题；无需要时不主动展开背景、对比表或延伸建议；默认简洁，用户追问再展开。";
+
+    /// <summary>
     /// 获取意图对应的 System Prompt
     /// </summary>
     public static string GetSystemPrompt(string intent)
     {
-        return _templates.GetValueOrDefault(intent, _templates["general"]);
+        return _templates.GetValueOrDefault(intent, _templates["general"]) + OutputDiscipline;
     }
 }
