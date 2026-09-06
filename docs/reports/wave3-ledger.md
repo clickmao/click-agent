@@ -159,3 +159,9 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - 修复: run_round.py 入口 fcntl LOCK_EX|LOCK_NB 抢 data/eval_run.lock, 失败诚实退出 3 (与 llm-service IsAlive exit 3 同语义), 排队会焊死时间轴 — 故不等待。验证: 持锁时第二实例 rc=3 零写入; 空闲时正常跑通。
 - **第二张面孔**: AOT publish (R110 验证) 重建 bin/ 为 linux-x64 布局并清掉 JIT bin → 窗口内 eval 用例 CLI 启动失败 0/5 (wall 650ms/例)。修复: publish 后 `dotnet build -c Release` 恢复 JIT bin (评测用, 3.6s); AOT publish 与 eval 并发仍需锁外协调。AOT 冒烟复验 OK (publish/agenthost 12.7MB)。
 - 未决: 锁验证正例一次 4/5 (证据随清理删除, 无法归因); 同代码 sibling 批 22 25/25 — 待下批 ledger 佐证或复现。
+
+### R111: AOT 重发布 (fix#41/42 后) + 批 23
+- **AOT 全链复验**: 强刷 publish (rm bin/obj) → "Generating native code" 真判据 + 0 IL 警告; 5 native 变体 × 6 so 全齐 (0.29 铁律: 每变体 libggml+libggml-vulkan 同目录可达); 冒烟 E2E Success=True + round2Success=True + exit 0 (20s 云端 glm)。
+- 冒烟 WARN "Success=true without API key" 提示文案与实际 (env key 已加载) 不符 — 观察项, 不修。
+- 批 23 (mass_108-112): 25/25 全绿, **3889 tok (-9.8% vs 批22)** — 批22 4311 确认单批 glm 波动峰值, 连续 3 批 >4100 治理条件未触发。
+- mass_106-107 RETIRED (AOT 强刷删 bin → harness --no-build 环境事故, 非代码; 教训: publish 强刷后必须先 dotnet build CLI 产物再批测)。

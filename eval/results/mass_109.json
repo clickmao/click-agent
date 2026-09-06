@@ -1,0 +1,203 @@
+{
+ "round": "mass_109",
+ "label": "R111 batch23 109",
+ "ts": "2026-09-07T05:43:58+0800",
+ "cases": 5,
+ "passed": 5,
+ "tokens_total": 4397,
+ "prompt_total": 1717,
+ "completion_total": 2680,
+ "wall_total_ms": 79858,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种分治排序算法，通过选取基准值将数组划分为“小于基准”和“大于基准”两部分，再递归地对两部分排序，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 6856,
+   "points": 17,
+   "llm_calls": 1,
+   "prompt_tokens": 356,
+   "completion_tokens": 44,
+   "total_tokens": 400,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41518095082488204
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 5918,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 51,
+   "from_cache": false,
+   "prompt_total_tokens": 479,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "结论先行（简版）\n\n· 生产大规模场景：**Milvus**（分布式、十亿级向量、生态成熟）\n· 中小规模自托管：**Qdrant**（Rust 实现、高性能、过滤检索强）\n· 已有 PostgreSQL：**pgvector**（免新增组件、事务一致性）\n· 快速原型：**Chroma**（嵌入式、上手最快）\n\n核心对比\n\n| 维度 | Milvus | Qdrant | Pinecone | Weaviate | pgvector | Chroma |\n| 部署 | 自托管/云 | 自托管/云 | 纯托管 | 自托管/云 | 复用 PG | 本地嵌入 |\n| 规模 | 十亿级 | 亿级 | 大规模 | 亿级 | 千万级 | 百万级 |\n| 运维成本 | 高 | 中 | 低 | 中 | 低 | 极低 |\n| 开源 | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |\n| 混合检索 | ✅ ",
+   "wall_ms": 26471,
+   "points": 17,
+   "llm_calls": 1,
+   "prompt_tokens": 373,
+   "completion_tokens": 1793,
+   "total_tokens": 2166,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4271060887559994
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 25529,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/111tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 53,
+   "from_cache": false,
+   "prompt_total_tokens": 539,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (3476ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 4383,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 3476,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "核心原理：把线性查找变成对数查找\n\n无索引：查询只能全表扫描（Full Table Scan），逐行读取判断是否匹配，时间复杂度 O(n)。100 万行就要检查 100 万条。\n\n有索引：本质是“用空间换时间”——把某列的值排序后组织成查找结构（最常见是 B+ 树），将复杂度降为 O(log n)。\n\nB+ 树为何高效\n\n1. 矮胖的树高：每个节点存放大量键值（通常按数据页 16KB 设计，一个节点可容纳上百个键）。100 万行数据树高仅约 3 层，即 3~4 次磁盘 I/O 就能定位到目标行，而全表扫描可能要读上千个数据页。\n\n2. 匹配磁盘特性：磁盘 I/O 按页读写，逐页随机读是最大瓶颈。B+ 树每层读一个页，I/O 次数 = 树高，大幅减少随机读。\n\n3. 叶子节点有序 + 链表相连：天然支持范围查询（WHERE id BETWEEN 10 AND 100），找到起点后顺序遍历即可",
+   "wall_ms": 35644,
+   "points": 33,
+   "llm_calls": 3,
+   "prompt_tokens": 598,
+   "completion_tokens": 831,
+   "total_tokens": 1429,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40487451681990605
+    },
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4256250932641714
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": false,
+   "loop_ms": 4272,
+   "models": [
+    "glm-5.3-flash",
+    "gpt-4o-mini",
+    "gpt-4o-mini"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/72tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:1snip/15tok/r0.95rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 316,
+   "from_cache": false,
+   "prompt_total_tokens": 571,
+   "history_tokens": 14,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C11_json_format",
+   "input": "用JSON格式返回：字段name填fastapi，字段lang填python，只返回JSON不要其他文字",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"name\":\"fastapi\",\"lang\":\"python\"}",
+   "wall_ms": 6504,
+   "points": 17,
+   "llm_calls": 1,
+   "prompt_tokens": 390,
+   "completion_tokens": 12,
+   "total_tokens": 402,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.3732391006324334
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 5558,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/93tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 57,
+   "from_cache": false,
+   "prompt_total_tokens": 510,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}
