@@ -1,0 +1,159 @@
+{
+ "round": "round66",
+ "label": "R66 milestone 修复验证",
+ "ts": "2026-09-06T19:24:06+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 4271,
+ "prompt_total": 1161,
+ "completion_total": 3110,
+ "wall_total_ms": 67169,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组分区递归排序的高效分治算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 4377,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 388,
+   "completion_tokens": 30,
+   "total_tokens": 418,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 3399,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/71tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 54,
+   "from_cache": false,
+   "prompt_total_tokens": 545,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "选型强依赖场景——方便说下数据规模（百万/亿级）、QPS 要求和部署偏好（自建/云托管）吗？\n\n默认按「千万级向量 + RAG 检索 + 可自建」给出结论：\n\n结论：首选 Milvus，轻量场景选 Qdrant，最小成本选 PGVector\n\n关键对比：\n· **Milvus**：功能全面，支持十亿级，生态成熟；运维成本较高\n· **Qdrant**：Rust 实现，性能与 API 设计优秀；超大规模（十亿级）能力弱于 Milvus\n· **Weaviate**：内置混合检索（向量+关键词）；资源占用偏高\n· **PGVector**：复用现有 Postgres，零额外运维；适合百万~千万级以内\n· **Pinecone / Zilliz Cloud**：全托管免运维，按量付费；需评估数据合规\n\n推荐路径：\n· 快速验证 / 百万级以下 → PGVector\n· 千万~亿级、有运维能力 →",
+   "wall_ms": 21004,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 377,
+   "completion_tokens": 1541,
+   "total_tokens": 1918,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 20123,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/117tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 50,
+   "from_cache": false,
+   "prompt_total_tokens": 552,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (594ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1472,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 594,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "核心结论\n\n索引加速的本质：把“逐行全表扫描”变成“按结构定位”，将查询复杂度从 O(n) 降到 O(log n) 或 O(1)，大幅减少磁盘 I/O。\n\n具体分析\n\n1. 数据结构带来对数级查找\n主流索引用 B+ 树，多叉平衡结构、树高极低（千万级数据通常仅 3~4 层）。查找时从根节点逐层向下，每层即可排除大量数据。\n\n2. I/O 次数骤减（关键收益）\n数据库瓶颈主要在磁盘 I/O。B+ 树节点大小与磁盘页对齐（如 InnoDB 的 16KB），单个节点存上百个键，一次 I/O 就能大幅缩小搜索范围。查一行数据通常只需 3~4 次页读取，而全表扫描可能读几十万页。\n\n3. 有序性支持范围查询与排序\n索引按 key 排序，叶节点间链表串联：\n· 范围查询（`BETWEEN`、`>`、`<`）：定位到起点后顺序扫描即可，无需逐行判断\n· `ORDER BY`：直接按索引序输出，避免 fi",
+   "wall_ms": 40316,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 396,
+   "completion_tokens": 1539,
+   "total_tokens": 1935,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 39373,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/117tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 49,
+   "from_cache": false,
+   "prompt_total_tokens": 582,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}

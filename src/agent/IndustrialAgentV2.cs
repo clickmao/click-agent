@@ -462,8 +462,9 @@ public class IndustrialAgentV2 : AgentBase
                 // 旧格式 "[general] 完成: 记住我最喜欢的颜色是蓝色" 让偏好检索时被流水账前缀淹没
                 var brief = message.Content.Length > 60 ? message.Content[..60] + "…" : message.Content;
                 mem.Remember($"{brief} ({(llmResponse.Success ? $"{intent} 完成" : $"{intent} 失败")})");
+                // v0.11.0 R66 (真缺陷 29): 里程碑记意图名 ('general') 零信息量 — 记消息摘要才有进度画像价值
                 if (llmResponse.Success)
-                    mem.AddMilestone(intent);
+                    mem.AddMilestone(brief);
                 _sessionMemoryStore.Save(memSession.Id, mem);
 
                 // agent 画像动态学习 (④): 任务类别胜率 + 工具亲和
