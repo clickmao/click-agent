@@ -1,0 +1,159 @@
+{
+ "round": "mass_2",
+ "label": "R41 千轮批量 2",
+ "ts": "2026-09-06T17:53:11+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 3078,
+ "prompt_total": 1019,
+ "completion_total": 2059,
+ "wall_total_ms": 36090,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选定基准元素将数组分区递归排序的高效分治排序算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 3436,
+   "points": 12,
+   "llm_calls": 1,
+   "prompt_tokens": 319,
+   "completion_tokens": 31,
+   "total_tokens": 350,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 2544,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 48,
+   "from_cache": false,
+   "prompt_total_tokens": 429,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "结论先行：自建大规模生产选 Milvus，中小规模重过滤选 Qdrant，已有 PostgreSQL 选 pgvector，无运维团队选 Pinecone。\n\n核心对比：\n\n| 选项 | 优势 | 短板 |\n| Milvus | 分布式、十亿级向量、混合检索生态成熟 | 部署复杂（依赖 etcd/MinIO/Pulsar） |\n| Qdrant | Rust 实现、低延迟、payload 过滤强、单二进制易部署 | 生态相对较浅 |\n| Weaviate | 原生 BM25+向量混合检索、模块化集成 | 性能中等 |\n| pgvector | 零新增组件、与现有 PG 栈融合 | 规模受限，高并发下有瓶颈 |\n| Pinecone | 全托管 Serverless、零运维 | 成本高、数据出内网 |\n| Chroma | 极轻量，适合原型验证 | 不适合生产 |\n\n推荐结论：\n1. 原型/",
+   "wall_ms": 15928,
+   "points": 12,
+   "llm_calls": 1,
+   "prompt_tokens": 331,
+   "completion_tokens": 1102,
+   "total_tokens": 1433,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 15006,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/94tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 49,
+   "from_cache": false,
+   "prompt_total_tokens": 468,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (591ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1497,
+   "points": 5,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "核心原因：把全表扫描 O(n) 变成树查找 O(log n)\n\n1. 无索引时的代价\n\n查询只能顺序扫描整张表，逐行判断条件。表有千万行时，意味着读千万行数据、大量随机磁盘 I/O。\n\n2. 有索引时的原理（以 B+ 树为例）\n\n· 索引是**有序的数据结构**，键值排序存储，查找走的是二分/树路径而非逐行比对\n· B+ 树是多路平衡树，**扇出极大**（单节点可存上百个键），3~4 层就能索引上千万行\n· 因此一次点查只需 **3~4 次磁盘 I/O**（读树的根→中间→叶子），对比全表扫描的数千次 I/O，这是数量级的差距\n\n3. I/O 是关键瓶颈\n\n数据库性能瓶颈通常在磁盘 I/O 而非 CPU。索引的本质是用额外空间换 I/O 次数：\n\n· 索引比表小得多（只存键 + 行指针），读的数据页更少\n· 树的每一层都快速排除大量不匹配的数据，搜索空间指数级收缩\n\n4. 附带加速效果\n\n",
+   "wall_ms": 15229,
+   "points": 12,
+   "llm_calls": 1,
+   "prompt_tokens": 369,
+   "completion_tokens": 926,
+   "total_tokens": 1295,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 14288,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/117tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 70,
+   "from_cache": false,
+   "prompt_total_tokens": 515,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}

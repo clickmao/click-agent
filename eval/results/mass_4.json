@@ -1,0 +1,159 @@
+{
+ "round": "mass_4",
+ "label": "R41 千轮批量 4",
+ "ts": "2026-09-06T17:55:28+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 2969,
+ "prompt_total": 1008,
+ "completion_total": 1961,
+ "wall_total_ms": 63835,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组分区递归排序的高效分治算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 3037,
+   "points": 12,
+   "llm_calls": 1,
+   "prompt_tokens": 309,
+   "completion_tokens": 30,
+   "total_tokens": 339,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 2143,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 48,
+   "from_cache": false,
+   "prompt_total_tokens": 421,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "结论先行\n\n通用推荐：自建首选 Qdrant / Milvus，快速原型用 Chroma 或 pgvector，托管服务选 Pinecone。\n\n关键对比（要点）\n\n· **Milvus**：分布式、十亿级向量性能强，生态成熟；部署运维较重\n· **Qdrant**：Rust 实现，性能好、部署简单、过滤检索优秀；适合中小规模自建\n· **pgvector**：复用现有 PostgreSQL，事务与结构化数据同库；千万级以下够用\n· **Chroma**：轻量，适合原型/小项目；不具备生产级扩展\n· **Pinecone**：全托管、免运维；成本高、数据在云端\n· **Elasticsearch/OpenSearch**：向量+全文混合检索强；适合已有 ES 技术栈\n\n选型依据\n\n| 因素 | 建议 |\n| 数据量 | <1000万 → pgvector；大规模 → Milvus |\n| ",
+   "wall_ms": 20959,
+   "points": 12,
+   "llm_calls": 1,
+   "prompt_tokens": 340,
+   "completion_tokens": 751,
+   "total_tokens": 1091,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 20028,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/111tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 65,
+   "from_cache": false,
+   "prompt_total_tokens": 485,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (659ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1542,
+   "points": 5,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "核心原因：把 O(N) 的全表扫描变成 O(log N) 的有序查找，大幅减少磁盘 I/O。\n\n1. 数据结构有序化\n   索引（如 B+ 树）按键值排序存储。无索引时查一条记录需逐行比对（全表扫描）；有索引时从根节点逐层下钻，千万行数据通常只需 3~4 次节点访问即可定位，复杂度从 O(N) 降到 O(log N)。\n\n2. 减少 I/O 次数（最关键）\n   数据库查询瓶颈主要在磁盘/内存读取。B+ 树每个节点对应一个数据页，一次 I/O 读一页；树高 3~4 层意味着定位一行只需 3~4 次 I/O，而全表扫描要读所有页。\n\n3. 缩小扫描范围\n· 等值查询：直达目标行；\n· 范围查询（如 `WHERE id BETWEEN ...`）：叶子节点有序且链表相连，顺序读取一段区间即可，无需碰无关数据。\n\n4. 覆盖索引避免回表\n   若查询所需的列都包含在索引中，直接从索引返回结果，连",
+   "wall_ms": 38297,
+   "points": 12,
+   "llm_calls": 1,
+   "prompt_tokens": 359,
+   "completion_tokens": 1180,
+   "total_tokens": 1539,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 37415,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/111tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 47,
+   "from_cache": false,
+   "prompt_total_tokens": 516,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}

@@ -1,0 +1,159 @@
+{
+ "round": "mass_3",
+ "label": "R41 千轮批量 3",
+ "ts": "2026-09-06T17:54:24+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 3856,
+ "prompt_total": 1008,
+ "completion_total": 2848,
+ "wall_total_ms": 73257,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组分区递归排序的高效分治排序算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 3849,
+   "points": 12,
+   "llm_calls": 1,
+   "prompt_tokens": 309,
+   "completion_tokens": 31,
+   "total_tokens": 340,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 2919,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 67,
+   "from_cache": false,
+   "prompt_total_tokens": 421,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "结论先行\n· 免运维、快速上线 → **Pinecone**（全托管，成本较高）\n· 中小规模（百万级内）、性能好且部署简单 → **Qdrant**\n· 大规模（亿级）、开源自建 → **Milvus**\n· 已有 PostgreSQL、数据量小 → **pgvector**（零新增组件）\n\n关键依据（要点）\n· Milvus：分布式架构，支持十亿级向量，社区生态成熟；需一定运维投入\n· Qdrant：Rust 实现，标量过滤检索强，单机/容器部署轻量\n· Pinecone：Serverless 托管，SDK 集成好；闭源、按量计费\n· Weaviate：内置混合检索（BM25+向量），模块化扩展\n· pgvector：复用现有 PG 运维体系；性能上限较低，适合 <千万级\n\n下一步\n请告知：① 预估数据量与 QPS ② 云托管还是自建 ③ 预算约束。确认后我可输出完整对比报告（含指标压",
+   "wall_ms": 49119,
+   "points": 12,
+   "llm_calls": 1,
+   "prompt_tokens": 340,
+   "completion_tokens": 1530,
+   "total_tokens": 1870,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 48167,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/96tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 48,
+   "from_cache": false,
+   "prompt_total_tokens": 485,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (601ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1520,
+   "points": 5,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "> 说明：工作区上下文（向量数据库选型任务）中没有直接相关资料，以下基于通用数据库原理回答。\n\n核心原理一句话：索引用额外的空间和维护成本，把查询从“全表扫描”变成“在有序结构上定位”，从而大幅减少需要读取的数据量和磁盘 I/O。\n\n具体机制：\n\n1. 降低查找复杂度\n· 无索引：逐行扫描，复杂度 O(n)。\n· B+树索引：树形定位，复杂度 O(log n)；哈希索引等值查询接近 O(1)。\n\n2. 减少磁盘 I/O（最关键的实际收益）\n· 磁盘 I/O 通常是查询的主要瓶颈，数据库按“页”（如 InnoDB 16KB）读写。\n· B+树每个节点可容纳大量键，树高通常仅 3~4 层即可支撑千万级数据——即定位一行数据只需 3~4 次页读取，而全表扫描可能要读数千个数据页。\n\n3. 有序性支持范围查询与排序\n· B+树叶子节点按键有序并用链表串联，`WHERE id BETWEEN x A",
+   "wall_ms": 18769,
+   "points": 12,
+   "llm_calls": 1,
+   "prompt_tokens": 359,
+   "completion_tokens": 1287,
+   "total_tokens": 1646,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 17856,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/100tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 48,
+   "from_cache": false,
+   "prompt_total_tokens": 516,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}

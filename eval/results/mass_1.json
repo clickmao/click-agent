@@ -1,0 +1,159 @@
+{
+ "round": "mass_1",
+ "label": "R41 千轮批量 1",
+ "ts": "2026-09-06T17:52:35+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 3203,
+ "prompt_total": 1110,
+ "completion_total": 2093,
+ "wall_total_ms": 53464,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种分治排序算法：通过选取基准元素将数组划分为“小于基准”和“大于基准”两部分，再递归地对两部分排序，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 3158,
+   "points": 12,
+   "llm_calls": 1,
+   "prompt_tokens": 306,
+   "completion_tokens": 44,
+   "total_tokens": 350,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 2296,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 50,
+   "from_cache": false,
+   "prompt_total_tokens": 403,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "向量数据库选型：结论与关键依据\n\n推荐结论（按场景）\n· **快速原型 / 小规模**：**Chroma** 或 **pgvector** — 零运维、嵌入即用\n· **生产自建（中大规模）**：**Qdrant**（首选）或 **Milvus** — 高性能、支持分布式\n· **托管云服务**：**Pinecone** — 免运维，成本较高\n· **已有 PostgreSQL 技术栈**：**pgvector** — 复用现有设施，10M 级向量以下够用\n\n核心对比要点\n\n| 维度 | Qdrant | Milvus | Pinecone | pgvector | Chroma |\n| 部署复杂度 | 低（单二进制） | 高（组件多） | 无（SaaS） | 极低（PG 插件） | 极低 |\n| 性能/规模 | 高 | 很高（亿级） | 高 | 中 | 低-中 |\n| 混合检索/过滤 |",
+   "wall_ms": 17307,
+   "points": 12,
+   "llm_calls": 1,
+   "prompt_tokens": 332,
+   "completion_tokens": 1210,
+   "total_tokens": 1542,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 16412,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/74tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 57,
+   "from_cache": false,
+   "prompt_total_tokens": 467,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (605ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1535,
+   "points": 5,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "为什么索引能加速查询\n\n核心原因：索引把查找从“逐行扫描”变成“按结构定位”，用 O(log N) 或 O(1) 代替 O(N)。\n\n1. 无索引的代价\n· 全表扫描：查询条件只能逐行比对，数据量 N 越大越慢。\n· 磁盘 IO 是瓶颈：每读一页数据都可能是一次磁盘访问，全表扫描 IO 次数与数据量成正比。\n\n2. 索引做了什么\n· **有序化**：B+ 树索引按键值排序存储，类似有序数组上的二分查找（工作区 round36 里的 BinarySearch 就是这个原理——有序 + 折半，每步排除一半候选）。\n· **矮胖树结构**：B+ 树每个节点存大量键，千万行数据通常只需 3~4 层，即 3~4 次 IO 就能定位到目标行。\n· **哈希索引**：等值查询直接哈希定位，接近 O(1)。\n\n3. 额外收益\n· **范围查询高效**：B+ 树叶子节点有序且链表相连，范围扫描只需顺链遍历。",
+   "wall_ms": 31464,
+   "points": 12,
+   "llm_calls": 1,
+   "prompt_tokens": 472,
+   "completion_tokens": 839,
+   "total_tokens": 1311,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 30528,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/134tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 51,
+   "from_cache": false,
+   "prompt_total_tokens": 573,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}
