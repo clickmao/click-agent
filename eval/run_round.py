@@ -108,6 +108,9 @@ def check_expect(case, reply, agg, raw_tail):
     if "llm" in exp:
         req(agg["llm_calls"] >= 1 if exp["llm"] else agg["llm_calls"] == 0,
             f"llm_calls={agg['llm_calls']} want {'≥1' if exp['llm'] else '0'}")
+    if "reply_contains" in exp:
+        req(exp["reply_contains"].lower() in (reply or "").lower(),
+            f"reply 缺少 '{exp['reply_contains']}'")
     if "min_reply_chars" in exp:
         req(len(reply) >= exp["min_reply_chars"], f"reply {len(reply)} < {exp['min_reply_chars']}")
     if "skill" in exp:
