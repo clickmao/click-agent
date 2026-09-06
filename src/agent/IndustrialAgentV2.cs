@@ -302,7 +302,8 @@ public class IndustrialAgentV2 : AgentBase
             var intent = IntentDecomposer.PrimaryIntent(subTasks);
             agent.config.AgentTelemetry.Emit("intent", "IndustrialAgentV2",
                 ("primary", intent), ("subtask_count", subTasks.Count),
-                ("input_chars", message.Content.Length));
+                ("input_chars", message.Content.Length),
+                ("sensitive", agent.intent.InjectedInstructionClassifier.IsSensitiveIntent(intent)));
             if (subTasks.Count > 1)
             {
                 _logger.LogInformation(
