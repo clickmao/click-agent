@@ -48,7 +48,7 @@ public static partial class IntentRecognizer
 
         // 2. Git 操作 ("git" 词边界: gitignore 不算; push/pull/commit 词边界)
         (Intents.GitOperation,
-            ["提交代码", "拉取代码", "分支", "合并分支", "版本回退", "提交到"],
+            ["提交代码", "拉取代码", "分支", "合并分支", "版本回退", "提交到", "推送到", "推送代码", "推送", "上传到", "代码回退", "检出"],
             [@"\bgit\b", @"\bcommit\b", @"\bpush\b", @"\bpull\b", @"\bbranch\b", @"\bmerge\b", @"\brebase\b"]),
 
         // 3. 代码生成 (中文动词限定: "写代码/写个/写一个/实现" 而非裸 "写")
