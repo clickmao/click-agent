@@ -30,6 +30,7 @@ public static class LocalCommandRouter
         "/official-key",  // v7.15 需求1: 官方通道 key 注入 (⚠ 指令名代拟 — 用户未定名; 内存态)
         "/log",  // v7.15 日志四通道: /log dump → MemoryLogBuffer 存档文件 (JSON 行)
         "/stop", "/continue", "/pause", "/status", "/reset",
+        "/help",  // v0.11.0 R86: 帮助菜单本地应答 — 原未注册送 LLM 浪费一轮
     };
 
     /// <summary>尝试拦截。非命令 (null/不以 / 开头/未知命令) → Handled=false 正常进管线。</summary>
@@ -52,6 +53,11 @@ public static class LocalCommandRouter
             {
                 Handled = true, Command = "stop", Argument = arg,
                 Reply = "⛔ 已停止当前任务计划; 未完成子任务标记为 Skipped。",
+            },
+            "/help" => new LocalCommandResult
+            {
+                Handled = true, Command = "help", Argument = arg,
+                Reply = "📖 本地命令: /status /session <uid> [n] /plan /stop /reset /model /balance /log dump /official-key /help — 其余输入直接对话。",
             },
             "/pause" => new LocalCommandResult
             {
