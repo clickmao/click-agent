@@ -52,6 +52,14 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
   判定前 pivotRequested 跳过。实证: 隔离→主链 + goal pivot 打点 + 后续轮正常。+4 单测 369 绿
 - 千轮批 7 ×3 (12/12); AOT 0 警
 
+## R76-R80 追加 (第十三轮循环 — RAG 持久化闭环)
+- R76 (真缺陷 32): cross_validate 数值前缀精度归一 (3.14159 vs 3.14 误判 disagree, R41 遗留闭环); 负例不误放
+- R78 千轮批 9 ×5 (20/20, 九批 156/156)
+- **R79 (真缺陷 33)**: RAGRecall 索引落盘持久化 — 内存索引重启全丢 (与 R34 Tendency 同类)。
+  手写 JSONL (零反射), 写侧 IndexAsync 后 Persist (512 上限), 读侧构造 LoadPersisted。
+  路径 CWD 优先 + AppContext 回退。实证: 进程1 记忆 → index.jsonl → 进程2 召回 1snip/56tok/r0.45
+- R80 AOT 常态化: 手写 JSON 落盘过 AOT (0 警), AOT 二进制落盘 5→6 行 + wordcount 489ms 正常
+
 ## 已知边界 (诚实标注)
 - Session 源设计性禁用; ToolOutput 预留; PausedForApproval 仅影子计划
 - CNY→USD 固定汇率 7.2 (env 可配)
