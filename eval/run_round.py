@@ -173,11 +173,14 @@ def try_parse_json_reply(reply):
         return None, str(e)[:60]
 
 def main():
-    rnd = sys.argv[1] if len(sys.argv) > 1 else "baseline"
-    label = sys.argv[2] if len(sys.argv) > 2 else ""
+    # v0.11.0 R107 (真缺陷 39): --quick 是 flag 不是位置参数 — argv[1] 被它占用时轮名错位
+    # (实测 "round=--quick" 落盘 --quick.json, 轮名丢失)。
+    args = [a for a in sys.argv[1:] if a != "--quick"]
+    quick = "--quick" in sys.argv
+    rnd = args[0] if args else "baseline"
+    label = args[1] if len(args) > 1 else ""
     # v0.11.0 R27: --quick 高频回归模式 — 4 关键用例 (普通/多步/executive/推理),
     # 约 25s 一轮 (全量 70-140s), 供千轮级循环高频迭代; 全量轮仍用默认模式。
-    quick = "--quick" in sys.argv
     all_cases = json.load(open("eval/cases.json"))
     if quick:
         # v0.11.0 R94: quick 4→5 — 加 C11 JSON 格式哨兵 (每批产出格式合规率, PGO 新维度)
@@ -185,6 +188,13 @@ def main():
         all_cases = [c for c in all_cases if c["id"].startswith(keep)]
     cases = all_cases
     env = load_env()
+    # v0.11.0 R107 (真缺陷 40): 本地通道批测泄漏 — qwen gguf 就绪后 llm-service 守护使 local
+    # IsAvailable=true, 批测未设 AGENTFRAMEWORK_LOCAL_DISABLED=1 时全部用例被 local 优先抢走
+    # (tokens=0, 0.5B CPU 71s/轮, C11 ctx 4096 溢出真失败, 2026-09-07 实证 mass_79 retired)。
+    # harness 层强制兜底: 本地通道对评测是确定性污染源, 不依赖调用方记得设环境变量。
+    env.setdefault("AGENTFRAMEWORK_LOCAL_DISABLED", "1")
+    if os.environ.get("AGENTFRAMEWORK_EVAL_ALLOW_LOCAL") == "1":
+        env.pop("AGENTFRAMEWORK_LOCAL_DISABLED", None)  # 显式逃生口: 本地通道专项评测时用
     # v0.11.0 R81: 评测隔离 — R79 RAG 索引落盘会让前轮记忆泄入本轮 (真机是功能, 评测是污染),
     # 每轮启动前清空 RAG 落盘 + 会话记忆, 保证轮间独立可比。
     for stale in ("data/rag/index.jsonl",):

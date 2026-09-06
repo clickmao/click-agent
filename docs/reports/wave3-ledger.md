@@ -124,3 +124,16 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - **bge AOT 复验**: publish 布局下区分度维持 (无关对 cos 0.20-0.23) — AOT 铁律下 bge 可用定论。
 - 批 18 (mass_74-78): **25/25 全绿**, 均值 4119 tok (批17 3890, +5.9% 波动带内, C03 单轮+859 平滑持平)。
 - 千轮累计: 18 批 291/291 无漂移。
+
+### R107: 批 19 + harness 双缺陷修复 (环境漂移实证)
+- **批 19 (mass_79-84): 30/30 全绿**, 均值 3618 tok (批18 4119, **-12.2% 无劣化**, CV 11.2%); wall 78-119s。
+- **真缺陷 39** (harness): `--quick` 是 flag 却占 argv[1] → 轮名错位, 实测落盘 `--quick.json` 轮名丢失。
+  修复: 位置参数过滤 flag 后解析 (run_round.py main)。
+- **真缺陷 40** (评测污染/环境漂移): qwen2.5-0.5b gguf 下载就绪 (00:14) + llm-service 守护重启 (00:15)
+  → local 通道 IsAvailable=true; 首跑 mass_79 (14 用例全量) 未设 AGENTFRAMEWORK_LOCAL_DISABLED=1,
+  **全部用例被 local 优先抢走**: tokens=0 (本地通道无 token 打点), 0.5B CPU 慢 (C02 173s),
+  C11 长指令撑爆 local ctx 4096 → "The context window is full" 真实失败 (13/14)。
+  证据存档 eval/results/mass_79_localctx_fail.json (RETIRED, 不入千轮统计)。
+  修复: harness 层 env.setdefault 强制 LOCAL_DISABLED=1 (不依赖调用方记得设);
+  逃生口 AGENTFRAMEWORK_EVAL_ALLOW_LOCAL=1 供本地通道专项评测。
+- 千轮累计: 19 批 321/321。教训: 环境态 (模型文件/守护) 变化是评测最大漂移源, harness 应自防御。
