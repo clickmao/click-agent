@@ -1,0 +1,196 @@
+{
+ "round": "mass_87",
+ "label": "R108 batch20 87 cloud",
+ "ts": "2026-09-07T04:18:08+0800",
+ "cases": 5,
+ "passed": 5,
+ "tokens_total": 3706,
+ "prompt_total": 1869,
+ "completion_total": 1837,
+ "wall_total_ms": 96539,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组递归划分为“小于”和“大于”两部分，从而实现平均时间复杂度 O(n log n) 的分治排序算法。",
+   "wall_ms": 6714,
+   "points": 17,
+   "llm_calls": 1,
+   "prompt_tokens": 356,
+   "completion_tokens": 40,
+   "total_tokens": 396,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41518095082488204
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 5786,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 98,
+   "from_cache": false,
+   "prompt_total_tokens": 479,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "结论：推荐 Milvus(大规模自建)或 Qdrant / pgvector(中小规模);追求免运维可考虑 Pinecone。\n\n关键依据(要点式):\n\n· **Milvus**:开源、分布式，支持十亿级向量，生态成熟；运维成本较高\n· **Qdrant**:Rust 实现，性能好，标量过滤强，部署轻量，适合千万级\n· **pgvector**:复用现有 PostgreSQL,千万级以内够用，迁移成本最低；功能相对简单\n· **Pinecone**:全托管免运维，按量付费；数据私有化受限、成本随量增长\n· **Weaviate**:内置混合检索(BM25+向量)，适合语义搜索场景\n\n选型建议:\n| 场景 | 推荐 |\n| 快速验证 / 百万级 | pgvector |\n| 中等规模 / 需过滤 | Qdrant |\n| 大规模生产 / 自建 | Milvus |\n| 不想运维 / 云原生 ",
+   "wall_ms": 23820,
+   "points": 17,
+   "llm_calls": 1,
+   "prompt_tokens": 373,
+   "completion_tokens": 733,
+   "total_tokens": 1106,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4271060887559994
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 22860,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/91tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 98,
+   "from_cache": false,
+   "prompt_total_tokens": 539,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (3396ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 4358,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 3396,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "核心原理：索引把查询从“逐行全表扫描 O(n)”变成“有序结构上的定位 O(log n)”，本质是用预排序 + 额外存储，换取 I/O 次数的数量级下降。\n\n关键机制（以最常见的 B+ 树为例）：\n\n1. 扫描数据量骤减\n   索引只存“键值 + 行指针”，体积远小于整表。查 1 条记录无需读全部数据页，只读索引上的少数几个节点。\n\n2. 有序性支持快速定位\n   B+ 树按 key 排序，查找类似字典目录：从根节点逐层向下比较即可锁定位置，而全表扫描只能一行行试。\n\n3. 树高极矮，I/O 次数极少\n   B+ 树扇出很大（一个节点可存数百上千个键），千万行数据树高通常只有 3~4 层——即3~4 次磁盘 I/O 就能定位任意一行；全表扫描则可能读几十万页。磁盘 I/O 是数据库查询的最大瓶颈，这才是加速的根本来源。\n\n4. 附加收益\n· **范围查询**：B+ 树叶子节点串成链表，范围",
+   "wall_ms": 41290,
+   "points": 18,
+   "llm_calls": 1,
+   "prompt_tokens": 575,
+   "completion_tokens": 1045,
+   "total_tokens": 1620,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40487451681990605
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 40330,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:1snip/266tok/r0.45rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/104tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 12165,
+   "from_cache": false,
+   "prompt_total_tokens": 809,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C11_json_format",
+   "input": "用JSON格式返回：字段name填fastapi，字段lang填python，只返回JSON不要其他文字",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"name\": \"fastapi\", \"lang\": \"python\"}",
+   "wall_ms": 20357,
+   "points": 18,
+   "llm_calls": 1,
+   "prompt_tokens": 565,
+   "completion_tokens": 19,
+   "total_tokens": 584,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.3732391006324334
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 19383,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:1snip/332tok/r0.45rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/88tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 13632,
+   "from_cache": false,
+   "prompt_total_tokens": 784,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}
