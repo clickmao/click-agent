@@ -81,5 +81,41 @@
       "cmd_json": true,
       "min_models": 20
     }
+  },
+  {
+    "id": "C11_json_format",
+    "input": "用JSON格式返回：字段name填fastapi，字段lang填python，只返回JSON不要其他文字",
+    "expect": {
+      "llm": true,
+      "json_valid": true,
+      "json_fields": {
+        "name": "fastapi",
+        "lang": "python"
+      }
+    }
+  },
+  {
+    "id": "C12_negative_empty",
+    "input": "嗯",
+    "expect": {
+      "llm": true,
+      "min_reply_chars": 1
+    }
+  },
+  {
+    "id": "C13_git_sensitive",
+    "input": "帮我把代码推送到github",
+    "expect": {
+      "llm": true,
+      "min_reply_chars": 10
+    }
+  },
+  {
+    "id": "C09b_balance_glm",
+    "input": "/balance glm-5.3-flash",
+    "expect": {
+      "cmd_json": true,
+      "ok": false
+    }
   }
 ]

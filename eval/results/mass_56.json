@@ -1,0 +1,159 @@
+{
+ "round": "mass_56",
+ "label": "R93 batch14 56",
+ "ts": "2026-09-06T21:31:24+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 3273,
+ "prompt_total": 1107,
+ "completion_total": 2166,
+ "wall_total_ms": 73582,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选定基准元素将数组划分为“小于基准”和“大于基准”两部分，再递归排序各部分的分治排序算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 3643,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 342,
+   "completion_tokens": 43,
+   "total_tokens": 385,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 2753,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 48,
+   "from_cache": false,
+   "prompt_total_tokens": 474,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "推荐结论（默认方案）：中小规模自建首选 Qdrant；大规模/高并发选 Milvus；已有 PostgreSQL 直接用 pgvector；追求零运维用托管型 Pinecone。\n\n关键依据：\n· **Milvus**：开源分布式，亿级向量性能强，生态成熟，但运维复杂度高\n· **Qdrant**：Rust 实现，性能与内存效率优秀，部署简单，带过滤条件的检索强\n· **Pinecone**：全托管零运维，按量计费偏贵，国内访问与数据合规有风险\n· **Weaviate**：支持混合检索（向量+关键词），适合语义搜索+全文并重场景\n· **pgvector**：复用现有 PG 生态，上手最快，适合千万级以内\n· **Chroma**：轻量嵌入式，仅适合原型验证\n\n需要确认一下：你的数据量级、QPS 和部署方式（自建/托管）是什么？按默认中小规模自建场景，上表选型即可。\n\n如需完整对比报告（",
+   "wall_ms": 36008,
+   "points": 12,
+   "llm_calls": 1,
+   "prompt_tokens": 373,
+   "completion_tokens": 1259,
+   "total_tokens": 1632,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 35087,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/91tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 59,
+   "from_cache": false,
+   "prompt_total_tokens": 539,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (587ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1469,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 587,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "核心结论\n\n索引把查询从全表扫描 O(n) 转变为结构化查找 O(log n) 甚至 O(1)，本质是用额外的存储空间和维护成本，换取“跳过无关数据、直达目标数据”的能力。\n\n关键机制\n\n1. 有序数据结构替代线性扫描\n\n以最常见的 B+ 树为例：\n\n· 无索引时，查询需逐行比对每一行数据（全表扫描）\n· 有索引时，索引键是有序存储的，可以像二分查找一样逐层收敛，百万行数据通常只需 3~4 次节点访问\n\n2. 大幅减少磁盘 I/O\n\n磁盘 I/O 是数据库查询的主要瓶颈。B+ 树设计为此优化：\n\n· 节点“矮胖”（高扇出），树高很低，一次查询的 I/O 次数少\n· 非叶节点只存键值和指针，单个页能容纳大量键，进一步压低树高\n\n3. 缩小扫描范围（选择性）\n\n索引让引擎能快速定位数据的边界（如 WHERE age > 25 直接跳到第一个满足条件的叶子节点），后续只需顺序读一小段，而非处理全",
+   "wall_ms": 32462,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 392,
+   "completion_tokens": 864,
+   "total_tokens": 1256,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 31538,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/125tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 54,
+   "from_cache": false,
+   "prompt_total_tokens": 569,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}

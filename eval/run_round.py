@@ -126,7 +126,51 @@ def check_expect(case, reply, agg, raw_tail):
     if exp.get("cmd_json") and "min_models" in exp:
         n = len(re.findall(r'"[iI]d"\s*:', reply))
         req(n >= exp["min_models"], f"models {n} < {exp['min_models']}")
+    # v0.11.0 R93: JSON 格式返回校验器 (用户注意点 1 — 格式正确性额外打点):
+    if "json_valid" in exp or "json_fields" in exp:
+        parsed, jerr = try_parse_json_reply(reply or "")
+        if "json_valid" in exp:
+            req(parsed is not None, f"reply 非合法 JSON ({jerr}): {reply[:80]!r}")
+        if parsed is not None and "json_fields" in exp:
+            for k, v in exp["json_fields"].items():
+                req(str(parsed.get(k, "")).strip().lower() == str(v).lower(),
+                    f"json 字段 {k}={parsed.get(k)!r} want {v!r}")
     return ok, notes
+
+def try_parse_json_reply(reply):
+    """从回复中提取首个 JSON 对象 (容错 markdown 代码块/前后缀文字) → (dict|None, err)"""
+    text = reply.strip()
+    # 剥 markdown 代码块
+    m = re.search(r'```(?:json)?\s*(\{.*?\})\s*```', text, re.S)
+    if m:
+        text = m.group(1)
+    else:
+        # 提取首个 {...} 平衡块
+        i = text.find('{')
+        if i < 0:
+            return None, "no '{' in reply"
+        depth, end = 0, -1
+        in_str = False
+        for j in range(i, len(text)):
+            c = text[j]
+            if c == '"' and text[j-1] != '\\':
+                in_str = not in_str
+            if in_str:
+                continue
+            if c == '{':
+                depth += 1
+            elif c == '}':
+                depth -= 1
+                if depth == 0:
+                    end = j
+                    break
+        if end < 0:
+            return None, "unbalanced braces"
+        text = text[i:end+1]
+    try:
+        return json.loads(text), ""
+    except Exception as e:
+        return None, str(e)[:60]
 
 def main():
     rnd = sys.argv[1] if len(sys.argv) > 1 else "baseline"
