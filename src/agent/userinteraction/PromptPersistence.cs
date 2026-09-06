@@ -176,6 +176,20 @@ public sealed class ConsoleUserPromptService : IUserPromptService
             }
             else
             {
+                // v0.11.0 R20 修复: 管道/非交互 stdin 下禁止阻塞问询 — 曾吞掉 REPL 下一轮输入
+                // (实测: T2 行被当凭据读走, 主循环只执行 T1)。诚实返回 null → 调用方走 declined 降级。
+                if (Console.IsInputRedirected)
+                {
+                    PromptPersistence.AppendAudit(_dataDir, new PromptAuditEntry
+                    {
+                        Kind = $"credential:{request.Kind}",
+                        Service = request.ServiceName,
+                        AnsweredBy = "RealUser",
+                        Approved = false,
+                        Detail = "非交互环境 (管道/CI) 自动拒绝凭据问询, 走降级路径",
+                    });
+                    return Task.FromResult<Dictionary<string, string>?>(null);
+                }
                 var input = Console.ReadLine();
                 if (string.IsNullOrWhiteSpace(input))
                 {
@@ -294,6 +308,20 @@ public sealed class ConsoleUserPromptService : IUserPromptService
         Console.WriteLine($"│ 摘要: {request.Summary}");
         Console.WriteLine($"│ 细节: {request.Details}");
         Console.Write("│ 批准? [y/N]: ");
+
+        // v0.11.0 R20 修复: 非交互 stdin 下自动拒绝 (防吞 REPL 后续输入)
+        if (Console.IsInputRedirected)
+        {
+            Console.WriteLine("│ (非交互环境: 自动拒绝, 走降级路径)");
+            Console.WriteLine("└──────────────────────────────────────────────");
+            Audit(request, PromptAnswerSource.RealUser, approved: false);
+            return new OperationApprovalResult
+            {
+                Approved = false,
+                AnsweredBy = PromptAnswerSource.RealUser,
+                Reason = "非交互环境 (管道/CI) 自动拒绝",
+            };
+        }
 
         var input = Console.ReadLine();
         var approved = input is not null &&

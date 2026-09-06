@@ -35,6 +35,7 @@ public class ConsoleUserInteraction : IUserInteraction
 
         Console.Write("请选择选项序号: ");
         var input = Console.ReadLine()?.Trim();
+        Console.Error.WriteLine($"[dbg] CUI:37 RequestConfirmation read: {input}");
 
         var result = new ConfirmationResult
         {
@@ -124,7 +125,8 @@ public class ConsoleUserInteraction : IUserInteraction
             Console.Write($"(默认: {request.DefaultValue}) ");
         }
 
-        var input = Console.ReadLine();
+        // v0.11.0 R20 修复: 非交互 stdin 下不读输入 (防吞 REPL 后续输入), 用默认值
+        var input = Console.IsInputRedirected ? null : Console.ReadLine();
 
         if (string.IsNullOrEmpty(input) && !string.IsNullOrEmpty(request.DefaultValue))
         {
