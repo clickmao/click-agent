@@ -32,6 +32,13 @@ run_round.py (--quick 60s/轮+reply_contains)、analyze.py (3 轮平滑)、
 phase_report.py (阶段对比)、cross_validate.py (双 LLM 校验)、
 AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 
+## R58-R63 追加 (第九轮循环 — 可行性闭环与度量补全)
+- R59 跨进程记忆恢复实证 ("项目代号 Alpha")
+- R60 阶段全量 10/10 4011tok (阶段判定改善)
+- R62 loop_turn 加 asked/executive 度量 + executive 直达补打点 (度量盲区消除, 实测 wordcount 466ms 直达可见)
+- 千轮五批 92/92 全绿 (3243→3098→2981→3128→3314, CV 稳定带)
+- R63 analyze round60/round51 对比: +2.8% 方差带内 KEEP
+
 ## 已知边界 (诚实标注)
 - Session 源设计性禁用; ToolOutput 预留; PausedForApproval 仅影子计划
 - CNY→USD 固定汇率 7.2 (env 可配)
