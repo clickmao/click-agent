@@ -119,6 +119,16 @@
   行为级防护复验: git push 请求 → LLM 主动要求确认不盲执行
 - **round32 全量**: 10/10, 4937 tok (vs baseline_final -33%)
 
+## 4.11 R33-R35 追加 (第六轮循环 — 画像持久化)
+
+- **R33 会话记忆格式**: LongTermMemory "[intent] 完成: X" 流水账 → 内容优先 (前60字+状态后置);
+  双轮真机: 偏好陈述后 SessionMemory 1snip/rel0.95
+- **R34 真 bug 24**: TendencyAnalyzer 内存字典跨进程丢光 (UserTendency 恒 0 的真因之一) →
+  落盘 data/tendency/; 反射序列化被全局禁用 (打点确诊 InvalidOperationException) → 手写 JSON
+  (零反射约束下字典+标量手写可控); fire-and-forget 在 /exit 快退时被杀 → 同步化
+- **跨进程实战**: 进程1 Rust 偏好 (信号 2) → 落盘 → **独立进程2 召回 UserTendency 1snip/rel0.33**
+- **AOT**: 手写序列化路径 0 IL 警; 358 全绿 (+TendencyPersistenceTests); round35 10/10 4401tok
+
 ## 5. 已知边界 (诚实标注)
 
 1. deepseek 余额 CNY vs 配置价格 USD 混用 — 换算率未硬编码, EstimateBalance 标注币种
