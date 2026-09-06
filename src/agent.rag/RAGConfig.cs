@@ -11,6 +11,10 @@ public class RAGConfig
 {
     public int MaxRecallResults { get; set; } = 10;
     public double MinSimilarityScore { get; set; } = 0.3;
+
+    // v0.11.0 R101: 本地向量召回 (bge) — null=纯词面 (默认, AOT 安全);
+    // JIT 部署形态由 host 注入 embedding 函数 (BgeEmbeddingProvider.Embed), RAG 层零 LLamaSharp 依赖。
+    public Func<string, float[]>? EmbeddingFunction { get; set; }
     public int EmbeddingDimension { get; set; } = 384;
     public bool EnableHybridSearch { get; set; } = true;
     public List<string> StopWords { get; set; } = new() { "的", "了", "在", "是", "我", "有", "和", "就", "不", "人" };
@@ -469,6 +473,11 @@ public class RAGRecall : IRAGRecall
     
     private float[] GenerateEmbedding(string text)
     {
+        // v0.11.0 R101: 注入式向量召回 — host 提供 EmbeddingFunction (bge) 时优先走向量档;
+        // null (默认) 走词袋哈希 (AOT 安全, 行为不变)。
+        if (_config.EmbeddingFunction != null)
+            return _config.EmbeddingFunction(text);
+
         // 改进的 embedding 实现：为每个词分配一个维度位置
         var words = Tokenize(text);
         var dimension = _config.EmbeddingDimension;

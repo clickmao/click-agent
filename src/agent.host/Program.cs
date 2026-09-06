@@ -45,6 +45,13 @@ internal class Program
         var services = new ServiceCollection();
         services.AddLogging(b => b.AddSimpleConsole().SetMinimumLevel(LogLevel.Warning));
         services.AddAgentFramework(o => { o.DataStoragePath = "./data"; });
+        // v0.11.0 R101 (真缺陷 37): IOutputSink 从未注册进 DI — RunSmokeAsync (v0.10 引入)
+        // 的 GetRequiredService<IOutputSink> 必然抛 InvalidOperationException, AOT 冒烟闸门
+        // 实际失效。此处先按命令行 logPath 决策 sink 并注册 (Main 后段复用同一实例, 不再二次构建)。
+        IOutputSink earlySink = logPath != null
+            ? new TeeOutputSink(new ConsoleOutputSink(), new FileOutputSink(logPath))
+            : new ConsoleOutputSink();
+        services.AddSingleton<IOutputSink>(earlySink);
         agent.config.AgentTelemetry.Configure("host", "./data/telemetry");
         agent.config.AgentTelemetry.Emit("boot", "Program", ("probe", true));
 
@@ -59,9 +66,7 @@ internal class Program
             officialKey = null;
         }
 
-        IOutputSink sink = logPath != null
-            ? new TeeOutputSink(new ConsoleOutputSink(), new FileOutputSink(logPath))
-            : new ConsoleOutputSink();
+        IOutputSink sink = earlySink; // R101 (缺陷 37): 复用 DI 注册实例 (smoke/CLI 同源)
 
         var agentCtx = new AgentContext(provider) { SessionId = "cli-main", UserId = "cli-user" };
         await entryAgent.InitializeAsync(agentCtx);

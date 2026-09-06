@@ -18,27 +18,24 @@
 
   <ItemGroup>
     <!-- Microsoft Extensions (net10.0 对齐) -->
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.8" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.8" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.8" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="10.0.8" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="10.0.8" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.8" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.8" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.8" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.8" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.8" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.10" />
     <!-- WebReaper 库直引 (net10.0 对齐): 搜索结果全文增强引擎 (AOT clean, 上游 CLI 同链路自证) -->
     <PackageReference Include="WebReaper" Version="11.3.1" />
-    <!-- 本地推理 (v7.12→v7.13 内置 vulkan 模式):
-         LLamaSharp 绑定 + CPU 后端 + Vulkan 后端产物 (libggml-vulkan.so)。
+    <!-- 本地推理 (R100 换 vendored LLamaSharp 0.29 fork, 独立 repo ProjectReference):
+         0.27 nuget native 在本容器 segfault, 0.29 (deps.zip 815a2a5 选择性解压) JIT 实测 OK。
          Vulkan loader 复用策略 (用户钦定): libggml-vulkan.so 的 DT_NEEDED=libvulkan.so.1,
          Silk.NET.Vulkan P/Invoke 的也是同一系统 loader — 系统装一份 loader 全局共用,
          运行时由 VulkanSupport.Configure 统一启用 (探测 loader → WithVulkan(true)), 无第二副本。 -->
-    <PackageReference Include="LLamaSharp" Version="0.27.0" />
-    <PackageReference Include="LLamaSharp.Backend.Cpu" Version="0.27.0" />
-    <PackageReference Include="LLamaSharp.Backend.Vulkan" Version="0.27.0" />
     <PackageReference Include="Silk.NET.Vulkan" Version="2.23.0" />
     <!-- Serialization: System.Text.Json 内置于 net10.0 (AOT source-gen, 零反射) -->
     <!-- Regex: GeneratedRegex source generator (AOT 零反射) -->
