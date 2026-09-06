@@ -1,0 +1,159 @@
+{
+ "round": "mass_25",
+ "label": "R69 batch6 25",
+ "ts": "2026-09-06T19:28:27+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 2899,
+ "prompt_total": 1210,
+ "completion_total": 1689,
+ "wall_total_ms": 46864,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组分区递归排序的分治算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 3312,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 336,
+   "completion_tokens": 28,
+   "total_tokens": 364,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 2430,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 48,
+   "from_cache": false,
+   "prompt_total_tokens": 474,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "推荐结论：通用生产场景首选 Milvus；轻量部署/原型验证选 Qdrant 或 Chroma；免运维托管选 Pinecone；已有 PostgreSQL 且规模中等（千万级内）直接用 pgvector。\n\n关键依据（要点式）：\n\n· **Milvus**：分布式架构、支持十亿级向量、GPU 加速、社区生态最成熟；缺点是运维复杂度高\n· **Qdrant**：Rust 编写、单机性能优秀、过滤查询强、部署简单；分布式能力较新\n· **Pinecone**：全托管免运维、秒级扩缩；数据出境合规与长期成本是主要顾虑\n· **pgvector**：零新增组件、事务一致性好；超大规模下性能受限\n· **Chroma**：仅适合本地开发/小规模原型\n\n选型三问：\n1. 数据规模？<1000万条 → pgvector 足够；亿级 → Milvus\n2. 是否必须自托管（数据合规）？是 → 排除 Pin",
+   "wall_ms": 11712,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 359,
+   "completion_tokens": 700,
+   "total_tokens": 1059,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 10826,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/71tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 48,
+   "from_cache": false,
+   "prompt_total_tokens": 512,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (600ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1525,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 600,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "数据库索引加速查询的核心原理是：把“逐行扫描”变成“在有序结构中查找”，用空间和写入开销换取读取效率。\n\n1. 复杂度从 O(n) 降到 O(log n)\n· 无索引：查询需全表扫描，逐行比对，1 亿行就要比对 1 亿次。\n· 有索引：主流 B+ 树索引保持键值有序，查找过程类似二分查找（你上下文里那段 `BinarySearch` 正是这个原理）——每次比较排除一半数据，1 亿行约 27 次比较即可定位。\n\n2. 大幅减少磁盘 I/O（这才是实际瓶颈）\n· B+ 树每个节点对应一个磁盘页（约 16KB），且“矮胖”：树高通常只有 3~4 层。\n· 这意味着一次索引查找只需 3~4 次页读取；若全表扫描，可能要读几十万个页。\n· 树高只由扇出决定：非叶子节点存几千个键没问题，所以数据量增长 100 倍，树高几乎不变。\n\n3. 有序性带来的额外收益\n· 范围查询（`BETWEEN`、`>`、",
+   "wall_ms": 30315,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 515,
+   "completion_tokens": 961,
+   "total_tokens": 1476,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 29381,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/171tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 64,
+   "from_cache": false,
+   "prompt_total_tokens": 650,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}

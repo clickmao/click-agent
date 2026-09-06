@@ -1,0 +1,159 @@
+{
+ "round": "mass_26",
+ "label": "R69 batch6 26",
+ "ts": "2026-09-06T19:29:05+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 2705,
+ "prompt_total": 1107,
+ "completion_total": 1598,
+ "wall_total_ms": 38572,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组分区递归排序的高效分治排序算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 3094,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 342,
+   "completion_tokens": 31,
+   "total_tokens": 373,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 2145,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 53,
+   "from_cache": false,
+   "prompt_total_tokens": 474,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "结论：无特殊约束时，生产大规模选 Milvus，中小规模/快速上手选 Qdrant，已有 PostgreSQL 且数据量百万级以内可直接用 pgvector。\n\n关键对比依据（要点）：\n\n· **Milvus**：分布式架构，支持十亿级向量，索引类型丰富（HNSW/IVF/DiskANN）；缺点是组件多、运维成本高\n· **Qdrant**：Rust 实现，性能好、单二进制部署简单，过滤检索能力强；超大规模分布式能力弱于 Milvus\n· **Weaviate**：内置混合检索（BM25+向量）、模块化 embedding 集成；吞吐略逊于前两者\n· **Pinecone**：全托管免运维，适合无运维团队；成本高、数据需出域\n· **pgvector**：零新增组件、事务一致性好；性能和索引上限有限，不适合亿级\n· **Faiss**：是库不是服务，需自行封装增删改和持久化，适合嵌入自研引",
+   "wall_ms": 22200,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 373,
+   "completion_tokens": 847,
+   "total_tokens": 1220,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 21314,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/91tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 49,
+   "from_cache": false,
+   "prompt_total_tokens": 539,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (598ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1542,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 598,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "核心原理：把“全表扫描”变成“有序结构查找”，大幅减少磁盘 I/O。\n\n关键点：\n\n1. 数据结构降复杂度\n· 无索引：逐行扫描，O(N)，百万行就要读百万次。\n· B+ 树索引：多路平衡树，树高通常仅 3~4 层，千万级数据也只需 3~4 次 I/O 即可定位，复杂度 O(log N)；Hash 索引等值查询甚至可达 O(1)。\n\n2. 减少 I/O 量\n· 索引只存“索引列 + 行指针/主键”，体积远小于整行数据。\n· 每读一个树节点对应一次页读取，节点可缓存进内存，热查询几乎不碰磁盘。\n\n3. 有序性带来的额外收益\n· B+ 树叶子节点按序链接，范围查询（BETWEEN、>、<）和 ORDER BY 可直接顺序读取，免去排序。\n· 最左前缀匹配让联合索引覆盖多列过滤条件。\n· 覆盖索引（查询列都在索引中）可完全回表，进一步省 I/O。\n\n一句话总结：索引用空间和写放大换取读性能，本质",
+   "wall_ms": 11736,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 392,
+   "completion_tokens": 720,
+   "total_tokens": 1112,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 10831,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/141tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 50,
+   "from_cache": false,
+   "prompt_total_tokens": 569,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}
