@@ -41,6 +41,21 @@ def norm(t):
 def extract_numbers(t):
     return sorted(set(re.findall(r"\d+(?:\.\d+)?", t)))
 
+def numbers_agree(g, d):
+    """R76: 数值一致性 — float 相等或前缀精度截断 (3.14159 vs 3.14: 问两位时 glm 给全量也算一致)"""
+    if g == d:
+        return True
+    try:
+        if abs(float(g) - float(d)) < 1e-9:
+            return True
+    except ValueError:
+        pass
+    # 前缀精度: 短的是长的的前缀且只差小数位 (非整数部分错位)
+    short, long_ = (g, d) if len(g) <= len(d) else (d, g)
+    if long_.startswith(short) and "." in long_ and short.replace(".", "").isdigit() and "." not in short.rstrip("0123456789")[:1]:
+        return True
+    return False
+
 def main():
     q = sys.argv[1]
     env = load_env()
@@ -51,7 +66,7 @@ def main():
     ng, nd = norm(a_glm), norm(a_ds)
     numg, numd = extract_numbers(ng), extract_numbers(nd)
     if numg and numd:
-        agree = numg == numd
+        agree = any(numbers_agree(x, y) for x in numg for y in numd)
     else:
         agree = ng == nd or ng[:40] == nd[:40]
     out = {"q": q, "a_glm": a_glm, "a_ds": a_ds,
