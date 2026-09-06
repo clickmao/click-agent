@@ -1,0 +1,159 @@
+{
+ "round": "mass_8",
+ "label": "R43 batch2 8",
+ "ts": "2026-09-06T18:23:32+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 3595,
+ "prompt_total": 1125,
+ "completion_total": 2470,
+ "wall_total_ms": 84589,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种分治排序算法，通过选取基准值将数组划分为“小于”和“大于”两部分，再递归排序各部分，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 4195,
+   "points": 12,
+   "llm_calls": 1,
+   "prompt_tokens": 348,
+   "completion_tokens": 42,
+   "total_tokens": 390,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 3265,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 49,
+   "from_cache": false,
+   "prompt_total_tokens": 476,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "结论：中小规模选 Qdrant 或 pgvector；大规模自托管选 Milvus；免运维托管选 Pinecone。\n\n核心对比（要点）：\n\n· **pgvector**：Postgres 插件，百万级向量够用，运维成本最低，适合已有 PG 技术栈\n· **Qdrant**：Rust 实现，性能好、标量过滤强，中小规模性价比高\n· **Weaviate**：内置向量+关键词混合检索，天然适合 RAG 场景\n· **Milvus**：开源，支持十亿级、GPU 加速、生态成熟，但需自行运维\n· **Pinecone / Zilliz**：全托管 SaaS，免运维、按量付费，适合快速上线\n· **Elasticsearch 8.x**：适合已有 ES 栈复用，但纯向量性能一般\n\n推荐决策：\n\n1. 数据量 < 千万级、已有 Postgres → pgvector\n2. 中等规模、需要混合检索 →",
+   "wall_ms": 36584,
+   "points": 12,
+   "llm_calls": 1,
+   "prompt_tokens": 379,
+   "completion_tokens": 1219,
+   "total_tokens": 1598,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 35661,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/111tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 49,
+   "from_cache": false,
+   "prompt_total_tokens": 540,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (598ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1517,
+   "points": 5,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "数据库索引加速查询的核心原因可以归结为以下几点：\n\n1. 改变查找方式：从“逐行扫描”到“结构化定位”\n· **无索引**：查询只能全表扫描，逐行判断条件，时间复杂度 O(N)。\n· **有索引**：数据按 B+ 树等有序结构组织，查找复杂度降为 **O(log N)**。千万级数据只需 20~30 次节点比较，而非遍历全部行。\n· **哈希索引**：等值查询甚至可做到近似 O(1)。\n\n2. 大幅减少磁盘 I/O\n· 数据库性能瓶颈通常在磁盘 I/O 而非 CPU。\n· 索引只存储“键值 + 行指针”，体积远小于整表，**更容易常驻内存缓存**，命中后仅需回表读取少量数据页。\n· B+ 树的矮胖结构（通常 3~4 层）意味着一次查询只需 3~4 次页读取。\n\n3. 利用有序性加速范围与排序操作\n· B+ 树叶子节点通过链表串联且天然有序，`WHERE age BETWEEN 20 AND",
+   "wall_ms": 42293,
+   "points": 12,
+   "llm_calls": 1,
+   "prompt_tokens": 398,
+   "completion_tokens": 1209,
+   "total_tokens": 1607,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 41374,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/111tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 48,
+   "from_cache": false,
+   "prompt_total_tokens": 571,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}

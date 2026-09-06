@@ -1,0 +1,159 @@
+{
+ "round": "mass_6",
+ "label": "R43 batch2 6",
+ "ts": "2026-09-06T18:20:59+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 3018,
+ "prompt_total": 1104,
+ "completion_total": 1914,
+ "wall_total_ms": 31562,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组分区递归排序的高效分治算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 2974,
+   "points": 12,
+   "llm_calls": 1,
+   "prompt_tokens": 341,
+   "completion_tokens": 30,
+   "total_tokens": 371,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 2094,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/87tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 47,
+   "from_cache": false,
+   "prompt_total_tokens": 476,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "先问一句：你的场景是 RAG 检索、推荐还是语义搜索？数据量级和部署方式（云托管/自托管）？——默认按「百万级向量 + 自托管 + RAG」给出结论。\n\n结论（默认方案）\n\n推荐 Qdrant（首选）或 Milvus（大规模备选）。\n\n关键对比要点\n\n| 候选 | 优势 | 局限 |\n| Qdrant | Rust 实现、性能强、单二进制部署轻量、过滤检索成熟 | 超大规模分布式能力弱于 Milvus |\n| Milvus | 亿级向量分布式架构成熟、功能最全 | 运维复杂、依赖组件多（etcd/MinIO） |\n| Pinecone | 全托管零运维、快速上线 | 成本高、数据私有性受限 |\n| pgvector | 复用现有 PG 技术栈、无新组件 | 千万级以下适用、高并发性能一般 |\n| Weaviate | 内置混合检索（向量+BM25）、模块化 | 资源占用偏高 |\n\n选型逻辑",
+   "wall_ms": 14608,
+   "points": 12,
+   "llm_calls": 1,
+   "prompt_tokens": 372,
+   "completion_tokens": 1045,
+   "total_tokens": 1417,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 13676,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/91tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 58,
+   "from_cache": false,
+   "prompt_total_tokens": 540,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (596ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1511,
+   "points": 5,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "数据库索引加速查询的原理\n\n核心一句话：索引通过额外的有序数据结构（如 B+ 树），把查询从“逐行全表扫描 O(n)”降为“树中定位 O(log n)”，大幅减少磁盘 I/O 次数。\n\n关键机制\n\n1. 避免全表扫描\n· 无索引：查询需读取每一行数据逐条比对，数据量越大越慢\n· 有索引：沿树结构快速定位目标行，MySQL InnoDB 中一棵 3~4 层的 B+ 树即可支撑千万级数据\n\n2. 减少磁盘 I/O（本质瓶颈）\n· 磁盘 I/O 是数据库最昂贵的操作，B+ 树“矮胖”结构将 I/O 次数压缩到树的高度级\n· 非叶节点只存键不存数据，单个 16KB 页可容纳大量键，进一步压低树高\n\n3. 有序性带来的额外收益\n· 数据按索引键有序存放，天然支持范围查询（`BETWEEN`、`>`、`<`）\n· `ORDER BY` 可直接按索引顺序返回，避免代价高昂的 filesort\n\n4. 多",
+   "wall_ms": 12469,
+   "points": 12,
+   "llm_calls": 1,
+   "prompt_tokens": 391,
+   "completion_tokens": 839,
+   "total_tokens": 1230,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 11548,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/111tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 49,
+   "from_cache": false,
+   "prompt_total_tokens": 571,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}

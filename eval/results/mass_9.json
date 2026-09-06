@@ -1,0 +1,159 @@
+{
+ "round": "mass_9",
+ "label": "R43 batch2 9",
+ "ts": "2026-09-06T18:24:01+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 2777,
+ "prompt_total": 1125,
+ "completion_total": 1652,
+ "wall_total_ms": 29510,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组分区递归排序的高效分治排序算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 3372,
+   "points": 12,
+   "llm_calls": 1,
+   "prompt_tokens": 348,
+   "completion_tokens": 31,
+   "total_tokens": 379,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 2465,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 60,
+   "from_cache": false,
+   "prompt_total_tokens": 476,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "推荐结论（默认场景：百万级向量、自托管）：\n· 中小规模 → **Qdrant**（性能好、部署简单）\n· 已有 PostgreSQL → **pgvector**（零新增运维）\n· 十亿级/高并发 → **Milvus**\n· 免运维云服务 → **Pinecone**\n\n核心对比要点：\n\n| 产品 | 优势 | 短板 |\n| Qdrant | Rust 编写性能强，单二进制易部署，过滤检索好 | 分布式能力弱于 Milvus |\n| pgvector | 复用现有 PG，事务/生态无缝 | 千万级以上性能下降明显 |\n| Milvus | 分布式，超大规模，社区活跃 | 组件多（依赖 etcd/MinIO），运维重 |\n| Weaviate | 内置混合检索（向量+BM25），模块生态丰富 | 资源占用偏高 |\n| Pinecone | 全托管，弹性伸缩 | 成本高，数据出域 |\n| ",
+   "wall_ms": 14337,
+   "points": 12,
+   "llm_calls": 1,
+   "prompt_tokens": 379,
+   "completion_tokens": 1022,
+   "total_tokens": 1401,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 13403,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/111tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 49,
+   "from_cache": false,
+   "prompt_total_tokens": 540,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (593ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1503,
+   "points": 5,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "数据库索引加速查询的核心原理是用有序数据结构把全表扫描变成快速定位，具体体现在三点：\n\n1. 把 O(N) 降为 O(log N)\n· 无索引时，查询只能逐行扫描全表，时间随数据量线性增长\n· 主流索引（如 B+ 树）是有序树结构，查找时每次比较排除一半数据，百万行数据只需约 20 次比较即可定位\n\n2. 减少磁盘 I/O\n· 磁盘读写是数据库最大的性能瓶颈\n· 索引只包含索引列+行指针，数据量远小于整行，同样的 I/O 次数能覆盖更多候选行\n· B+ 树节点按页（如 16KB）组织，树高通常 3~4 层，意味着定位一条数据只需 3~4 次页读取\n\n3. 支持范围查询和覆盖索引\n· 索引列有序，`WHERE age BETWEEN 20 AND 30` 这类范围查询可直接定位起点后顺序读取，无需逐行判断\n· 若查询的字段全部在索引中（覆盖索引），甚至不需要回表读原始数据，省掉最后一层 I/",
+   "wall_ms": 10298,
+   "points": 12,
+   "llm_calls": 1,
+   "prompt_tokens": 398,
+   "completion_tokens": 599,
+   "total_tokens": 997,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 9369,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/111tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 51,
+   "from_cache": false,
+   "prompt_total_tokens": 571,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}
