@@ -53,3 +53,9 @@ LLamaSharp 修复 AOT interop（NativeLibraryUtils 改 AppContext.BaseDirectory 
 q8_0（26MB / 512 维 / 6-21ms / 区分度 3.9×）是成熟接入路径 — 探针代码已验证可跑。
 
 词面召回（2-gram + content_hit floor）继续作为主通道；"喜欢/不喜欢"语义反转维持已知接受边界。
+
+
+## R100-R102 修正 (2026-09-06)
+- 0.27 nuget native segfault ≠ LLamaSharp 全版本不可用: **v0.29.0 vendored native JIT 实测可用**（bge q8_0 385ms/512dim/区分度 4.3×）
+- 召回对比: 词袋 hash 1/6 vs bge 6/6 (top-1 同集同查询) — R58 结论前提收窄为"无本地 embedding 时词面最优"
+- 架构落点: RAGConfig.EmbeddingFunction 注入位 + BgeEmbeddingProvider; JIT 部署形态启用向量召回, AOT 形态保持词面 (LLamaSharp AOT interop 红线不变)

@@ -91,6 +91,12 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - R95 analyze.py 加 **json_format_rate** PGO 维度 (<100% 触发 REVIEW); ToolOutput 源码审计确认预留边界
 - R96 批 16 ×5 25/25 (CV 12.7%, 批15→16 同集 Δ -6.3% 稳定); **C11 JSON 合规累计 10/10 (100%)**
 
+### R100-R102 (v0.11.0 vendored LLamaSharp 接入段)
+- R100 **LLamaSharp fork 独立 repo**（v0.29.0 tarball→/home/agentuser/LLamaSharp，git init 3 commits，推 clickmao/LLamaSharp）: AOT 补丁（Assembly.Location→ProcessPath/BaseDirectory 优先，Silk.NET 式解析）；native 获取=deps.zip(570MB) 拒绝全量下载，**中央目录选择性解压**（EOCD/CD Range 拉取+本地解压，15 条目 22.5MB，avx2/vulkan/noavx linux-x64）→ sentinel+deps/ 伪布局绕过 csproj 570MB 下载
+- R100 **P3 关键实测**: 0.27 native segfault → **0.29 native JIT 加载成功**（bge q8_0 dim=512 装载 385ms，相似句 0.9469 vs 无关 0.20-0.23，**区分度 4.3×** 优于 0.20 的 3.9×）；BgeEmbeddingProvider（LLamaEmbedder，CPU 档 GpuLayerCount=0，L2 归一）+ IEmbeddingProvider 抽象（hash 默认行为不变）
+- R101 **真缺陷 37**: IOutputSink 从未注册 DI — RunSmokeAsync(v0.10 引入) GetRequiredService 必抛，**AOT 冒烟闸门自 v0.10 起实际失效**；修=BuildProvider 前注册+Main 复用同实例。实证: smoke 从必崩→DI 10/10+Agent Ready+E2E 走通。RAGConfig.EmbeddingFunction 注入位（null=词面，AOT 安全默认）；Logging 系包统一 10.0.10
+- R102 **召回对比实验**（同 8 文档集同 6 查询 top-1）: 词袋 hash **1/6** vs bge 向量 **6/6**；R58"词面最优"前提更新=仅"无本地 embedding"时成立。诚实边界: 探针 hash 为简化复刻（无 R44 content_hit floor/R76 归一），生产管线强于探针；bge 仅 JIT 形态启用，AOT 形态仍词面（红线不破）
+
 ## 已知边界 (诚实标注)
 - Session 源设计性禁用; ToolOutput 预留; PausedForApproval 仅影子计划
 - CNY→USD 固定汇率 7.2 (env 可配)
