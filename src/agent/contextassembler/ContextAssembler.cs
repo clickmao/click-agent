@@ -432,7 +432,10 @@ Interlocked.Increment(ref _cacheMisses);
                 .Where(f => !f.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}") &&
                             !f.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}") &&
                             !f.Contains($"{Path.DirectorySeparatorChar}node_modules{Path.DirectorySeparatorChar}"))
-                .Take(300) // 扫描上限 — 大仓库防慢
+                // v0.11.0 R30: 大仓库防慢上限保留, 但按修改时间降序 — 最近工作优先,
+                // 避免目录序恰好漏掉最新文件 (数据边界: 扫描上限内的召回质量)
+                .OrderByDescending(f => { try { return File.GetLastWriteTimeUtc(f); } catch { return DateTime.MinValue; } })
+                .Take(300)
                 .ToList();
 
             foreach (var file in files)
