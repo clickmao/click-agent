@@ -18,12 +18,13 @@ def load_env():
                 env[k] = v
     return env
 
-def read_telemetry():
-    """读打点 JSONL (容错解析)"""
+def read_telemetry(path=None):
+    """读打点 JSONL (容错解析); R110: 支持每用例独立文件路径"""
     points = []
-    if not os.path.exists(TELEMETRY):
+    path = path or TELEMETRY
+    if not os.path.exists(path):
         return points
-    for line in open(TELEMETRY, encoding="utf-8-sig"):
+    for line in open(path, encoding="utf-8-sig"):
         line = line.strip()
         if not line:
             continue
@@ -35,8 +36,12 @@ def read_telemetry():
 
 def run_case(case, env):
     """跑单用例 → {reply, points, wall_ms}"""
-    if os.path.exists(TELEMETRY):
-        os.remove(TELEMETRY)
+    # v0.11.0 R110 (fix#42): 每用例独立 telemetry 文件 (绝对路径 env 覆写) —
+    # 共享单文件的 remove→append→read 时序竞争曾致间歇 llm_calls=0 误判 (mass_99/99b/99c/99d)。
+    case_tel = os.path.abspath("data/telemetry/host.jsonl")  # CLI 固定写 host.jsonl, 每用例独占目录
+    env["AGENTFRAMEWORK_TELEMETRY"] = os.path.dirname(case_tel)
+    if os.path.exists(case_tel):
+        os.remove(case_tel)
     t0 = time.time()
     p = subprocess.run(
         ["dotnet", "run", "--project", "src/agent.host", "-c", "Release", "--no-build", "--", "-q", case["input"]],
@@ -49,7 +54,7 @@ def run_case(case, env):
     # 过滤 chatbox 协议行 / thinking 日志行
     reply = "\n".join(l for l in reply.split("\n")
                       if not l.startswith("@chatbox:") and "[20" not in l[:26])
-    points = read_telemetry()
+    points = read_telemetry(case_tel)
     return {"reply": reply, "raw_tail": out[-300:], "points": points, "wall_ms": wall_ms}
 
 def summarize_points(points):
@@ -175,7 +180,11 @@ def try_parse_json_reply(reply):
 def main():
     # v0.11.0 R107 (真缺陷 39): --quick 是 flag 不是位置参数 — argv[1] 被它占用时轮名错位
     # (实测 "round=--quick" 落盘 --quick.json, 轮名丢失)。
-    args = [a for a in sys.argv[1:] if a != "--quick"]
+    # v0.11.0 R110 (真缺陷 42): 39 的修复只硬编码过滤了 --quick 一个 flag — 实证复发:
+    # 批跑包装脚本把 "--batch mass_71" 传进来, "--batch" 被当轮名落盘 --batch.json
+    # (2026-09-07 00:06, 数据 1 case tokens=0)。改为通用规则: 所有 '-' 开头的 argv
+    # 一律不算位置参数 (当前接口仅 --quick 无值 flag; 引入带值 flag 时须同步改此处)。
+    args = [a for a in sys.argv[1:] if not a.startswith("-")]
     quick = "--quick" in sys.argv
     rnd = args[0] if args else "baseline"
     label = args[1] if len(args) > 1 else ""

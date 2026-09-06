@@ -36,6 +36,10 @@ public static class AgentTelemetry
                 if (!_enabled)
                     return;
                 _sessionId = Sanitize(sessionId);
+                // v0.11.0 R110 (fix#42): env 指定绝对目录时覆写默认 dir — 批测每用例独立打点文件,
+                // 根除共享单文件的删除/追加时序竞争 (mass_99 系间歇 llm_calls=0 误判根因)。
+                if (!string.IsNullOrWhiteSpace(env) && !string.Equals(env, "on", StringComparison.OrdinalIgnoreCase))
+                    telemetryDir = env;
                 Directory.CreateDirectory(telemetryDir);
                 _writer?.Dispose();
                 var path = Path.Combine(telemetryDir, _sessionId + ".jsonl");

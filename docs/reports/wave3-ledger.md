@@ -143,3 +143,13 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - 修复: 归一化内容指纹 (字母数字+小写, FNV-1a 64bit 零反射) 命中 → 复用既有 Id (更新语义); 附带 PersistPathOverride (评测隔离可注入落盘路径)。
 - +3 单测 (去重 3 语义), **379/379 全绿**。批 20 (mass_85-89) 25/25, 3961 tok (+7.6% 带内)。
 - 漂移归因定论: prompt 侧确定性无漂移 (C01 356=356 逐字节), completion 侧 LLM 风格波动是唯一漂移源。
+
+### R109b: 批 21 (fix#41 后验证)
+- 批 21 (mass_90-94) 25/25, mean 3793 tok (-4.3% vs 批 20 3961); C11 Memory tok 349→325 — **语料线性增长停止, 去重修复在千轮负载下实证有效** (ledger.jsonl 5×KEEP)。千轮累计: 21 批 371/371。
+- 运维注记: dotnet 不在非登录 shell PATH (FileNotFoundError 实证), 需 export PATH=$HOME/.dotnet:$PATH + DOTNET_ROOT; ghfast.top 首推 TLS 中断 (既往 >8min 属正常, 本例 2min10s 断), 重推。
+
+### R110: 缺陷 42 (telemetry 单文件竞争) + 批 22
+- **缺陷 42 (真)**: harness 共享单 telemetry 文件 remove→append→read 时序竞争 — 间歇 llm_calls=0 误判 (mass_99/99b/99c/99d 失败用例漂移: C11→C01, 无并发下仍现)。诊断过程并发手动复现曾污染数据 (自我警示: 批测期间禁并发手动 CLI)。
+- 修复: AGENTFRAMEWORK_TELEMETRY env 支持**绝对目录**覆写 (off/on 语义保留); harness 每用例独立目录 case_{id}/host.jsonl, 读侧对应改。
+- 复验: mass_101-105 **5 连 5/5**, 4311 tok (+13.7% vs 批21, glm 上行波动); 379/379 全绿; 批 99 系 RETIRED 不作口径。
+- cross_validate 双模型抽检 2 题 agree=true (glm+ds)。
