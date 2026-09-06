@@ -51,6 +51,22 @@ public static class TaskRelevanceChecker
         return entities.Distinct().ToList();
     }
 
+    /// <summary>v0.11.0 R39b: 两 token 是否共享 ascii 4-gram (连写技术名交叉匹配, 忽略大小写)。</summary>
+    private static bool SharesAsciiGram(string a, string b)
+    {
+        if (a.Length < 4 || b.Length < 4)
+            return false;
+        if (!a.Any(char.IsAsciiLetter) || !b.Any(char.IsAsciiLetter))
+            return false;
+        var gramsA = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        for (var i = 0; i + 4 <= a.Length; i++)
+            gramsA.Add(a.Substring(i, 4));
+        for (var i = 0; i + 4 <= b.Length; i++)
+            if (gramsA.Contains(b.Substring(i, 4)))
+                return true;
+        return false;
+    }
+
     private static bool IsStopword(string w) =>
         w is "可以" or "这个" or "那个" or "什么" or "怎么" or "如果" or "但是" or "或者" or "需要" or "帮我";
 
@@ -69,16 +85,26 @@ public static class TaskRelevanceChecker
         if (DeixisWords.Any(w => incomingMessage.Contains(w, StringComparison.Ordinal)))
             return (false, 0, "含指代词, 依赖上文");
 
+        // v0.11.0 R39c (真缺陷 26): 技术细节追问 ("用 X 怎么写/怎么实现") 实体上常与任务标题零重叠
+        // (requests vs 爬虫标题) — 但语义上强依赖上文。实现询问标记 + 短消息 → 一票否决。
+        string[] howToMarkers = { "怎么写", "怎么实现", "怎么做", "怎么配", "如何写", "如何实现", "如何做", "怎么用", "如何用" };
+        if (incomingMessage.Length <= 30 && howToMarkers.Any(w => incomingMessage.Contains(w, StringComparison.Ordinal)))
+            return (false, 0, "实现询问, 依赖上文任务");
+
         var score = 0;
         var reasons = new List<string>();
 
         // 实体重叠: 目标 KeyEntities ∩ 新消息实体 = 0 → +2
+        // v0.11.0 R39b: ascii 长词含连写技术名 (RESTAPI vs FastAPI) 互不 Contains → 误判零重叠。
+        // 补充 4-gram 交叉匹配: 两词共享 ≥1 个 ascii 4-gram 即视为重叠 (RESTAPI∩FastAPI = {"stap","tapi"}→"stap"? 
+        // restapi 4grams: rest,esta,stap,tapi; fastapi: fast,asta,stap,tapi → 共享 stap/tapi ✓)
         var incomingEntities = ExtractEntities(incomingMessage);
         var overlap = goalKeyEntities.Count == 0 || incomingEntities.Count == 0
             ? 0
             : goalKeyEntities.Count(e => incomingEntities.Any(i =>
                 i.Contains(e, StringComparison.OrdinalIgnoreCase) ||
-                e.Contains(i, StringComparison.OrdinalIgnoreCase)));
+                e.Contains(i, StringComparison.OrdinalIgnoreCase) ||
+                SharesAsciiGram(e, i)));
         if (goalKeyEntities.Count > 0 && overlap == 0 && incomingEntities.Count > 0)
         {
             score += 2;

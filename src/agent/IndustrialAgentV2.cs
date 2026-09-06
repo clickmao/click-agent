@@ -436,11 +436,22 @@ public class IndustrialAgentV2 : AgentBase
             {
                 var memSession = await _sessionManager.GetOrCreateSessionAsync(message.SessionId, message.SenderId);
                 var mem = memSession.Memory;
+                // v0.11.0 R39 (真缺陷 25): goal 只在空时锚定且永不更新 — 用户任务转向
+                // ("算了改成X")后新方向与旧 goal 实体零重叠, 后续轮全被误隔离 (实测爬虫→API 4轮中2轮被隔离)。
+                // 现策略: 任务转向显式标记 → 重新锚定 goal 跟随最新任务方向。
+                var goalText = message.Content.Length > 200 ? message.Content[..200] + "…" : message.Content;
+                string[] pivotMarkers = { "算了", "改成", "改为", "换成", "不要了", "还是做", "换一个" };
+                var isPivot = pivotMarkers.Any(m => message.Content.Contains(m, StringComparison.Ordinal));
                 if (string.IsNullOrEmpty(mem.Goal?.GoalText) && IsGoalWorthy(message.Content))
                 {
-                    var goalText = message.Content.Length > 200 ? message.Content[..200] + "…" : message.Content;
                     // v0.11.0 (打点驱动修复): goal 锚定时抽取关键实体 — 实体空导致隔离判定永不触发
                     mem.SetGoal(goalText, agent.intent.TaskRelevanceChecker.ExtractEntities(goalText), intent);
+                }
+                else if (isPivot && IsGoalWorthy(message.Content))
+                {
+                    mem.SetGoal(goalText, agent.intent.TaskRelevanceChecker.ExtractEntities(goalText), intent);
+                    agent.config.AgentTelemetry.Emit("goal", "IndustrialAgentV2",
+                        ("op", "pivot"), ("goal", goalText.Length > 40 ? goalText[..40] + "…" : goalText));
                 }
                 // v0.11.0 R33: 记录用户信息本身 (前 60 字) — 意图/状态后置;
                 // 旧格式 "[general] 完成: 记住我最喜欢的颜色是蓝色" 让偏好检索时被流水账前缀淹没
