@@ -1,0 +1,159 @@
+{
+ "round": "mass_50",
+ "label": "R85 batch12 50",
+ "ts": "2026-09-06T20:32:37+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 3061,
+ "prompt_total": 1288,
+ "completion_total": 1773,
+ "wall_total_ms": 44320,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种分治排序算法：选取一个基准值，将数组分为比它小和比它大的两部分，再递归地对两部分排序，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 3127,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 342,
+   "completion_tokens": 43,
+   "total_tokens": 385,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 2238,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 48,
+   "from_cache": false,
+   "prompt_total_tokens": 474,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "结论：默认推荐 Milvus（自建、亿级规模首选）；千万级以内且已用 PostgreSQL 选 pgvector；免运维优先选 Pinecone。\n\n核心对比：\n· **Milvus**：开源、分布式、亿级向量性能强；运维成本高\n· **Qdrant**：开源、Rust 实现、延迟低、过滤检索优秀；生态较新\n· **Pinecone**：全托管免运维、上手快；成本高、数据在第三方\n· **pgvector**：复用现有 PG、架构简单；千万级以上性能受限\n· **Weaviate**：内置向量+关键词混合检索，适合 RAG 场景\n\n选型维度：向量规模、QPS/延迟要求、自建 vs 托管、标量过滤需求、成本预算。\n\n问询：方便确认向量条数、QPS 和部署方式吗？默认按“千万级、自建、成本敏感”给出上述结论，确认后可输出完整对比报告（含详细评分表）。",
+   "wall_ms": 13737,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 373,
+   "completion_tokens": 972,
+   "total_tokens": 1345,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 12796,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/91tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 66,
+   "from_cache": false,
+   "prompt_total_tokens": 539,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (598ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1532,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 598,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "核心原因：索引把全表扫描 O(N) 变成了树查找 O(log N)，本质是大幅减少磁盘 I/O 次数。\n\n1. 无索引：全表扫描\n查询只能从第一行逐条读取并比对，数据量越大越慢，且几乎每行都要从磁盘读取。\n\n2. 有索引：有序数据结构（通常 B+ 树）\n· 数据按键值有序组织，查找类似二分，只需沿树从根走到叶子；\n· B+ 树扇出大（每个节点存数百个键），3~4 层即可覆盖千万级数据，即**几次 I/O 就能定位到目标行**；\n· 范围查询可直接在叶子节点的有序链表上顺序读取。\n\n3. 索引体积小 → 更容易进内存\n索引只存“键 + 行指针”，远小于整表，热点索引常驻内存后查找几乎无磁盘开销。\n\n4. 附带收益\n· **覆盖索引**：查询字段都在索引里，无需回表取行；\n· **避免排序**：ORDER BY / GROUP BY 直接利用索引有序性，省掉 filesort。\n\n类比到向量检",
+   "wall_ms": 25924,
+   "points": 14,
+   "llm_calls": 1,
+   "prompt_tokens": 573,
+   "completion_tokens": 758,
+   "total_tokens": 1331,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 24983,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:1snip/258tok/r0.45rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/140tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 1015,
+   "from_cache": false,
+   "prompt_total_tokens": 800,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}

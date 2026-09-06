@@ -1,0 +1,159 @@
+{
+ "round": "mass_48",
+ "label": "R85 batch12 48",
+ "ts": "2026-09-06T20:31:21+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 3976,
+ "prompt_total": 1408,
+ "completion_total": 2568,
+ "wall_total_ms": 53286,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组分区递归排序的高效分治算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 3104,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 335,
+   "completion_tokens": 30,
+   "total_tokens": 365,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 2170,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 48,
+   "from_cache": false,
+   "prompt_total_tokens": 474,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "结论先行：多数场景推荐 Qdrant（轻量、高性能）或 Milvus（超大规模）；小规模直接用 PGVector；要免运维托管则选 Pinecone。\n\n关键对比要点：\n· **Qdrant**：Rust 编写，单二进制/Docker 部署简单，带过滤的检索性能好，适合中小规模\n· **Milvus**：功能全、社区大，支持十亿级向量，但依赖 etcd/MinIO，运维成本高\n· **PGVector**：复用现有 PostgreSQL，百万级内够用，零新增运维；超大规模性能受限\n· **Pinecone**：全托管、开箱即用，按量付费；数据在第三方云，成本偏高\n· 其他：Weaviate（内置向量化模块）、Chroma（适合原型验证/嵌入式场景）\n\n说明：当前上下文中无向量数据库相关资料，以上基于通用知识，未做实时基准测试。\n\n问询：你的数据规模和部署方式（自建 or 云托管）是什么？\n",
+   "wall_ms": 21803,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 352,
+   "completion_tokens": 1602,
+   "total_tokens": 1954,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 20899,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/51tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 50,
+   "from_cache": false,
+   "prompt_total_tokens": 484,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (591ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1479,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 591,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "核心原因：把 O(N) 的全表扫描变成 O(log N) 的树查找\n\n1. 没有索引时：全表扫描\n查询条件无法定位数据位置，存储引擎只能从头到尾逐行读取并比对，数据量 N 越大越慢，且每次磁盘 I/O 都很昂贵。\n\n2. 有索引时：有序结构 + 稀疏定位\n主流索引（B+ 树）本质是把键值排序后组织成多叉树。原理和你工作区里那个二分查找一样——有序数据可以跳着找，不用挨个看：\n\n· 二分查找：有序数组上每次排除一半 → O(log N)\n· B+ 树：把它推广到磁盘场景，一个节点存几百个键，**树变得“矮胖”**——千万级数据树高也只有 3~4 层，即一次查询只需 3~4 次磁盘 I/O（无索引可能要读成千上万次 I/O）\n\n3. 顺带的加速收益\n· **范围查询快**：叶子节点是链表，`WHERE id BETWEEN a AND b` 找到起点后顺序扫即可\n· **避免额外排序**：数据",
+   "wall_ms": 26900,
+   "points": 14,
+   "llm_calls": 1,
+   "prompt_tokens": 721,
+   "completion_tokens": 936,
+   "total_tokens": 1657,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 25961,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:1snip/285tok/r0.45rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/162tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 1183,
+   "from_cache": false,
+   "prompt_total_tokens": 882,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}
