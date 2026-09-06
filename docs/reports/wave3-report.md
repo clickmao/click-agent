@@ -83,6 +83,19 @@
   复验 content 1756 字完整报告
 - round15 基线: 10/10 KEEP, wall 88s (最快), 357 测试全绿, AOT 0 警
 
+## 4.8 R20-R22 追加 (第三轮循环 — token/延迟双降)
+
+- **R20 REPL 吞输入 (真 bug, 探针法确诊)**: 管道多轮第二轮静默丢失 — T1 处理期间
+  SearchFailoverService 对未配置源发起凭据问询, Console.ReadLine 同步吞掉用户下一轮输入。
+  修复: IsInputRedirected 保护 (凭据/确认/问询 全部非交互自动拒绝/默认值, 审计留痕);
+  R14 隔离双向结论复验成立
+- **R21 推理档位路由**: 实测 bigmodel glm-5.3-flash 支持 reasoning_effort=low
+  (thinking.type=disabled 被拒); 简单意图轻思考 (简单题 reasoning 0 vs 8910ch),
+  复杂信号词/长输入优先保留深推理不降智; round18 tokens -27%
+- **R22 档位透传全链**: deepseek 同样支持; QueuePrompt/QueueChatRequest/Adapter
+  全链透传 (source-gen WhenWritingNull, 不支持 provider 零影响)
+- **round19 vs baseline_final**: tokens 7354→4909 (-33%), wall 154s→68.8s (-55%), 10/10 KEEP
+
 ## 5. 已知边界 (诚实标注)
 
 1. deepseek 余额 CNY vs 配置价格 USD 混用 — 换算率未硬编码, EstimateBalance 标注币种
