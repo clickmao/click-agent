@@ -65,6 +65,12 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
   每轮启动前清 RAG 索引+会话记忆; **真机持久化功能不受影响** (这是评测口径修正, 非功能回退)
 - 隔离后 mass_44 3105 (恢复 3000 带); round82 10/10 4212; 十一批 172/172
 
+## R83-R84 追加 (第十五轮循环 — skill 失败降级)
+- **R83 (真缺陷 34)**: skill 脚本错误 JSON ({"error":...}) 被当成功结果直出用户 (Content 非空 + Success=true)。
+  修: dispatcher 检测输出含 "error" JSON → script_error_degraded → 降级 LLM。
+  实证: '把100光年转成摄氏度' 裸错误 JSON → 友好解释 ("光年是距离单位，摄氏度是温度单位"); wordcount 正例不回归
+- R84 全量 10/10 (4952, completion 方差带内, prompt 全正常); AOT 0 警
+
 ## 已知边界 (诚实标注)
 - Session 源设计性禁用; ToolOutput 预留; PausedForApproval 仅影子计划
 - CNY→USD 固定汇率 7.2 (env 可配)
