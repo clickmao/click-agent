@@ -142,6 +142,7 @@ Interlocked.Increment(ref _cacheMisses);
                         SourceName = "session_memory",
                         Content = request.SessionMemoryBlock,
                         RelevanceScore = 0.95, // 方向指示优先级最高
+                        EstimatedTokens = EstimateTokens(request.SessionMemoryBlock), // v0.11.0 R48: R29 漏网 — 本源同样缺估算
                     }
                 }));
             }
