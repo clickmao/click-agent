@@ -118,3 +118,9 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - 本地通道真模型: qwen2.5-0.5b-instruct q4_k_m (491MB, hf-mirror) 接入 models.yaml; **ChatML 模板修复** (裸拼接 0.5B 复读垃圾→'2' 正确) — LlmServiceHost chat 分支。
 - AGENTFRAMEWORK_LOCAL_DISABLED=1 批测开关 (qwen CPU 71s/轮不适合千轮批, local 保留 failover 语义)。
 - 全链真机: CLI→共享服务→qwen→回复 "2" (70s)。
+
+### R105: AOT 全链 (带 LLamaSharp) + 批 18
+- **AOT 全链发布**: 0 IL 警告; publish 目录布 native 6+6 so; --smoke exit 0 (E2E Success=True, 多轮 round2Success=True, qwen 本地链路在 AOT 下完整)。
+- **bge AOT 复验**: publish 布局下区分度维持 (无关对 cos 0.20-0.23) — AOT 铁律下 bge 可用定论。
+- 批 18 (mass_74-78): **25/25 全绿**, 均值 4119 tok (批17 3890, +5.9% 波动带内, C03 单轮+859 平滑持平)。
+- 千轮累计: 18 批 291/291 无漂移。
