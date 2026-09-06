@@ -1,0 +1,293 @@
+{
+ "round": "round6",
+ "label": "evidence_gate 打点 (问询触发率观测)",
+ "ts": "2026-09-06T13:35:15+0800",
+ "cases": 10,
+ "passed": 10,
+ "tokens_total": 8241,
+ "prompt_total": 1119,
+ "completion_total": 7122,
+ "wall_total_ms": 149923,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种基于分治思想的高效排序算法，它通过选取一个基准元素将数组划分为“小于基准”和“大于基准”两部分，再递归地对两部分排序，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 8848,
+   "points": 10,
+   "llm_calls": 1,
+   "prompt_tokens": 210,
+   "completion_tokens": 333,
+   "total_tokens": 543,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 7970,
+   "models": [
+    "glm-5.3-flash"
+   ]
+  },
+  {
+   "id": "C02_coding",
+   "input": "用C#写一个二分查找函数",
+   "pass": true,
+   "notes": [],
+   "reply": "C# 二分查找实现\n\n以下是一个泛型、防溢出、支持区间查找的二分查找实现：\n\nC# 二分查找实现\n\n以下是一个泛型、防溢出、支持区间查找的二分查找实现：\n\nusing System;\n\nnamespace Algorithms.Search\n{\n    /// <summary>\n    /// 二分查找算法实现（要求输入数组按升序排列）。\n    /// </summary>\n    public static class BinarySearch\n    {\n        /// <summary>\n        /// 在升序数组中查找目标值（迭代实现）。\n        /// 时间复杂度 O(log n)，空间复杂度 O(1)。\n        /// </summary>\n        /// <typeparam name=\"T\">元素类型，须实现 <see cref=",
+   "wall_ms": 40064,
+   "points": 10,
+   "llm_calls": 1,
+   "prompt_tokens": 188,
+   "completion_tokens": 2000,
+   "total_tokens": 2188,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.3970583590614756
+    }
+   ],
+   "skill_force": null,
+   "intent": "code_generation",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 39187,
+   "models": [
+    "glm-5.3-flash"
+   ]
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "",
+   "wall_ms": 25173,
+   "points": 10,
+   "llm_calls": 1,
+   "prompt_tokens": 179,
+   "completion_tokens": 2000,
+   "total_tokens": 2179,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 24253,
+   "models": [
+    "glm-5.3-flash"
+   ]
+  },
+  {
+   "id": "C04_skill_identity",
+   "input": "你是谁",
+   "pass": true,
+   "notes": [],
+   "reply": "我是 AgentFramework 工业级智能体, 一个可编排、可审计、可扩展的 AI 助手。\n  (585ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1452,
+   "points": 4,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 3,
+     "precision": 0.95
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": []
+  },
+  {
+   "id": "C05_skill_wordcount",
+   "input": "帮我统计字数：这是一段测试文本用来验证技能脚本执行",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"wordcount\", \"chars\": 25, \"words\": 1}\n  (631ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1533,
+   "points": 5,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "wordcount",
+     "level": 3,
+     "precision": 0.95
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": []
+  },
+  {
+   "id": "C06_negative_identity",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "36.6°C 转换为华氏度的计算如下：\n\n换算公式：°F = °C × 9/5 + 32\n\n计算过程：\n· 36.6 × 9/5 = 65.88\n· 65.88 + 32 = **97.88°F**\n\n所以 36.6°C = 97.88°F（约 97.9 华氏度）。\n\n顺带一提：36.6°C 常被用作人体正常体温的参考值（尤其在俄罗斯等地区），换算成华氏度约等于 98°F，与美式常用的 98.6°F（即 37°C）非常接近。",
+   "wall_ms": 11713,
+   "points": 10,
+   "llm_calls": 1,
+   "prompt_tokens": 199,
+   "completion_tokens": 354,
+   "total_tokens": 553,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41885162103581053
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 10836,
+   "models": [
+    "glm-5.3-flash"
+   ]
+  },
+  {
+   "id": "C07_memory_followup",
+   "input": "还记得我上一条消息说了什么吗",
+   "pass": true,
+   "notes": [],
+   "reply": "记得的。你上一条消息问的是：把 36.6 摄氏度转换成华氏度是多少。\n\n顺便把答案也给你：\n\n摄氏度 → 华氏度 转换\n\n公式： °F = °C × 9/5 + 32\n\n计算过程：\n\n$$36.6 × \\frac{9}{5} + 32 = 65.88 + 32 = 97.88$$\n\n结果： 36.6°C ≈ 97.88°F\n\n顺带一提，36.6°C 接近人体的正常体温（约 36.5~37.2°C），所以这个数值在测量体温时很常见。\n\n还有什么需要帮忙的吗？😊",
+   "wall_ms": 6478,
+   "points": 10,
+   "llm_calls": 1,
+   "prompt_tokens": 173,
+   "completion_tokens": 435,
+   "total_tokens": 608,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.431853027194236
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 5562,
+   "models": [
+    "glm-5.3-flash"
+   ]
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "> 说明：本轮提供的上下文中没有数据库相关的资料，以下回答基于通用技术",
+   "wall_ms": 52578,
+   "points": 10,
+   "llm_calls": 1,
+   "prompt_tokens": 170,
+   "completion_tokens": 2000,
+   "total_tokens": 2170,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 51726,
+   "models": [
+    "glm-5.3-flash"
+   ]
+  },
+  {
+   "id": "C09_balance_cmd",
+   "input": "/balance deepseek-v4-flash",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"Command\":\"balance\",\"Ok\":true,\"Active\":\"deepseek-v4-flash\",\"Provider\":\"deepseek\",\"ReasoningScore\":0,\"CodingScore\":0,\"Switches\":0,\"HttpStatusCode\":0,\"TotalRemaining\":9.49,\"Note\":\"\\u5E01\\u79CD CNY (\\u539F\\u59CB\\u503C\\u672A\\u6362\\u7B97)\"}\n  (0ms, intent=general)",
+   "wall_ms": 1172,
+   "points": 2,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": []
+  },
+  {
+   "id": "C10_model_list",
+   "input": "/model list",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"Command\":\"model_list\",\"Ok\":true,\"Active\":\"gpt-4o\",\"ReasoningScore\":0,\"CodingScore\":0,\"Switches\":0,\"HttpStatusCode\":0,\"Models\":[{\"Index\":1,\"Id\":\"gpt-4o\",\"Description\":\"OpenAI \\u65D7\\u8230\\u591A\\u6A21\\u6001, \\u7EFC\\u5408\\u5747\\u8861\",\"Provider\":\"openai\",\"PriceInPerM\":2.5,\"PriceOutPerM\":10,\"ReasoningScore\":8,\"CodingScore\":8,\"ContextWindow\":128000,\"IsActive\":true},{\"Index\":2,\"Id\":\"gpt-4o-mini\",\"Desc",
+   "wall_ms": 912,
+   "points": 2,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": []
+  }
+ ]
+}

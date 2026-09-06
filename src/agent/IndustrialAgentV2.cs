@@ -827,6 +827,12 @@ public class IndustrialAgentV2 : AgentBase
         {
             var gate = new agent.registry.EvidenceGate();
             var verdict = gate.Evaluate(subTasks);
+            // v0.11.0: evidence gate 打点 (问询触发率对比数据)
+            agent.config.AgentTelemetry.Emit("evidence_gate", "IndustrialAgentV2",
+                ("subtasks", subTasks.Count),
+                ("suspects", subTasks.Count(t => t.Confidence < 0.60)),
+                ("to_ask", verdict.ToAsk.Count),
+                ("confidences", string.Join(",", subTasks.Select(t => Math.Round(t.Confidence, 2)))));
             if (verdict.ToAsk.Count == 0)
                 return string.Empty;
 
