@@ -75,6 +75,17 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - R86 (缺陷 35): /help 未注册送 LLM 浪费一轮 → 本地应答 (0.98s / 0 LLM 实证)
 - 千轮批 12-13 (24/24, 十三批 196/196); 阶段判定改善 (tokens/wall 均 -38.2%)
 
+## R89-R93 追加 (新指令验收轮)
+- **R89 (真缺陷 36)**: auto 选模成功后 _activeModelId 不更新 → /model /balance 查询落目录首项 gpt-4o 与实际调用 glm 脱节;
+  /balance 无参改查实际活跃模型。3 端点 E2E: glm chat✓ (reasoning_effort=low, c=3) / ds✓ 余额 9.48 CNY +
+  MIN_BALANCE=20 阈值切模 glm 实证 / kimi 负样本复测 invalid_authentication_error (as-is)
+- R90 **P3 重测闭环** (用户指定): LLamaSharp 0.20+bge-small-zh q8_0 JIT 可行 (26MB/512dim/6-21ms/区分度 3.9×),
+  **AOT SIGSEGV 不可用** (0.27 容器 segfault 坑同记) → AOT 红线下维持 R58 结论, 报告 docs/reports/p3-retest-feasibility.md
+- R92 **STJ source-gen** (用户注意点 2): RAG 落盘手写拼 JSON+手写解析 → JsonSourceGenerator
+  (STJ v10 JsonSerializerContext 在 Serialization 命名空间坑记录); 落盘格式兼容, 跨进程恢复召回实证, AOT 0 警
+- R93 **覆盖扩展** (用户注意点 1): cases 10→14 (+C11 JSON 格式返回+平衡块校验器 / +C12 负样本极短输入 /
+  +C13 git 敏感 / +C09b glm 余额 as-is); round91 14/14; 批 14 ×5 20/20 (CV 5.0% 稳定)
+
 ## 已知边界 (诚实标注)
 - Session 源设计性禁用; ToolOutput 预留; PausedForApproval 仅影子计划
 - CNY→USD 固定汇率 7.2 (env 可配)
