@@ -1,0 +1,159 @@
+{
+ "round": "stability_5",
+ "label": "R38 稳定性采样 5 (R33-R34 后)",
+ "ts": "2026-09-06T17:35:36+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 3301,
+ "prompt_total": 1016,
+ "completion_total": 2285,
+ "wall_total_ms": 59638,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选定基准元素将数组划分为“小于基准”和“大于基准”两部分、再递归排序各部分的高效分治排序算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 3995,
+   "points": 12,
+   "llm_calls": 1,
+   "prompt_tokens": 319,
+   "completion_tokens": 45,
+   "total_tokens": 364,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 3064,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 47,
+   "from_cache": false,
+   "prompt_total_tokens": 429,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "结论：无特殊约束时的默认推荐——生产环境用 Qdrant（自托管）或 Pinecone（全托管），原型开发用 Chroma。\n\n关键对比（要点式）：\n· **Milvus**：开源，分布式架构，十亿级向量场景强，但运维复杂度高\n· **Qdrant**：开源（Rust），性能好、API 友好，中小规模自托管首选\n· **Weaviate**：开源，内置混合检索（向量 + BM25），模块化设计\n· **Pinecone**：全托管 Serverless，零运维，但闭源、成本较高\n· **Chroma / FAISS**：轻量级，适合本地原型与嵌入式测试，不宜大规模生产\n\n推荐分档：\n· 大规模生产 + 自托管 → Milvus；中小规模 → Qdrant\n· 零运维 + 预算充足 → Pinecone\n· 原型 / 小项目 → Chroma\n\n说明：当前工作区上下文仅含评估日志，无向量库相",
+   "wall_ms": 40238,
+   "points": 12,
+   "llm_calls": 1,
+   "prompt_tokens": 337,
+   "completion_tokens": 1386,
+   "total_tokens": 1723,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 39351,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/88tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 48,
+   "from_cache": false,
+   "prompt_total_tokens": 480,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (593ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1512,
+   "points": 5,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "说明：当前上下文（向量数据库调研任务）不涉及索引原理，以下基于通用数据库知识作答。\n\n核心原因：索引把查询从「全表扫描」变成「结构化定位」，降低时间复杂度和磁盘 I/O。\n\n1. 复杂度下降：无索引时需逐行扫描，复杂度 O(N)；有索引后通过 B+ 树查找降为 O(log N)，哈希索引甚至接近 O(1)。\n\n2. 磁盘 I/O 大幅减少：B+ 树是多路平衡树，千万级数据树高仅 3~4 层，意味着定位一条记录只需 3~4 次页读取；而全表扫描可能需要读几十万页。\n\n3. 数据量小、易缓存：索引只存键值 + 行指针，体积远小于整表，更容易常驻内存/缓存，命中后无需读磁盘。\n\n4. 有序性支持范围查询：B+ 树叶子节点按序链接，WHERE age BETWEEN 20 AND 30 这类范围查询可直接定位起点后顺序扫描，无需遍历全部数据。\n\n一句话总结：索引本质是用空间和写入开销，换取有序的、",
+   "wall_ms": 13893,
+   "points": 12,
+   "llm_calls": 1,
+   "prompt_tokens": 360,
+   "completion_tokens": 854,
+   "total_tokens": 1214,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 12954,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/90tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 48,
+   "from_cache": false,
+   "prompt_total_tokens": 508,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}

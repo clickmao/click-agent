@@ -1,0 +1,159 @@
+{
+ "round": "stability_4",
+ "label": "R38 稳定性采样 4 (R33-R34 后)",
+ "ts": "2026-09-06T17:34:37+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 2817,
+ "prompt_total": 1012,
+ "completion_total": 1805,
+ "wall_total_ms": 42984,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组分区递归排序的高效分治排序算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 3689,
+   "points": 12,
+   "llm_calls": 1,
+   "prompt_tokens": 314,
+   "completion_tokens": 31,
+   "total_tokens": 345,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 2809,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 48,
+   "from_cache": false,
+   "prompt_total_tokens": 429,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "结论先行：向量数据库无绝对最优，按场景选型：\n\n· 中小规模（<千万级）、已有 Postgres → **pgvector**（运维成本低，复用 SQL 生态）\n· 千万~十亿级、自建部署 → **Milvus**（分布式成熟）或 **Qdrant**（Rust 实现，过滤与性能均衡）\n· 全托管免运维 → **Pinecone** / Zilliz Cloud\n· 原型验证 → **Chroma** / FAISS\n\n关键对比维度：部署方式、规模上限、混合检索（BM25+向量）、标量过滤、生态集成（LangChain 等）、成本。\n\n说明：当前上下文无向量库相关资料，以上基于通用知识。如需我可调用搜索补充最新版本与性能基准，并展开完整对比报告（含选型表格、迁移成本分析）——回复“展开”即可。",
+   "wall_ms": 24602,
+   "points": 12,
+   "llm_calls": 1,
+   "prompt_tokens": 328,
+   "completion_tokens": 981,
+   "total_tokens": 1309,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 23715,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/88tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 47,
+   "from_cache": false,
+   "prompt_total_tokens": 463,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (666ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1567,
+   "points": 5,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "数据库索引加速查询的核心原理是：用额外的存储空间换取查找时间的数量级下降，本质是把“线性扫描”变成“对数级/常数级查找”。\n\n1. 无索引时的查询方式\n\n没有索引时，查询只能全表扫描：逐行读取所有数据页，逐条判断条件是否满足，时间复杂度为 O(N)。数据量达到百万、千万行时，I/O 次数和比较次数都非常可观。\n\n2. 有索引时的查询方式\n\n索引将列的值与其行的物理位置（主键或 Row ID）建立映射，并按有序结构组织：\n\n· **B+ 树索引（最常见）**：有序多路平衡树。单个节点存大量键值（高扇出），树高通常只有 3~4 层，意味着一次查询只需 3~4 次磁盘 I/O，复杂度 O(log N)。例如 1 亿行数据，B+ 树约 3 层即可定位。\n· **哈希索引**：键经哈希函数直接定位存储桶，等值查询 O(1)，但不支持范围查询。\n· **跳表、LSM 等结构**：在 NoSQL/存储引",
+   "wall_ms": 13126,
+   "points": 12,
+   "llm_calls": 1,
+   "prompt_tokens": 370,
+   "completion_tokens": 793,
+   "total_tokens": 1163,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 12179,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/90tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 49,
+   "from_cache": false,
+   "prompt_total_tokens": 507,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}
