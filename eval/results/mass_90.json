@@ -1,0 +1,196 @@
+{
+ "round": "mass_90",
+ "label": "R109 batch21 90 post-fix41",
+ "ts": "2026-09-07T04:29:47+0800",
+ "cases": 5,
+ "passed": 5,
+ "tokens_total": 3770,
+ "prompt_total": 1667,
+ "completion_total": 2103,
+ "wall_total_ms": 78235,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组分区递归排序的高效分治排序算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 6982,
+   "points": 17,
+   "llm_calls": 1,
+   "prompt_tokens": 345,
+   "completion_tokens": 31,
+   "total_tokens": 376,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41518095082488204
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 6021,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/49tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 98,
+   "from_cache": false,
+   "prompt_total_tokens": 469,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "结论：优先 Qdrant，备选 pgvector。\n\n关键依据（结合项目现状：.NET + AOT 安全要求 + 本地 bge 向量召回）：\n\n· **Qdrant**：官方 C# 客户端，单二进制部署简单，性能好，社区活跃；注意 gRPC 客户端需验证 AOT 兼容性\n· **pgvector**：若已有 Postgres 则零新增组件，Npgsql 纯 SQL 调用，AOT 最稳，百万级向量无压力\n· **Milvus**：功能全但架构重、运维成本高，与当前项目体量不匹配\n· **Chroma**：C# 生态弱（仅 REST 封装），无优势\n\n推荐：已有 PG → pgvector；全新部署 → Qdrant。\n\n问询：报告是对内技术评审还是对外发布？默认按内部评审口径，需要完整报告（含压测数据、部署方案）时说一声即可。",
+   "wall_ms": 20266,
+   "points": 17,
+   "llm_calls": 1,
+   "prompt_tokens": 372,
+   "completion_tokens": 1139,
+   "total_tokens": 1511,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4271060887559994
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 19290,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/70tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 98,
+   "from_cache": false,
+   "prompt_total_tokens": 499,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (3395ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 4354,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 3395,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "为什么索引能加速查询\n\n核心原因：把“逐行扫描 O(N)”变成“按结构定位 O(log N)”，大幅减少磁盘 I/O。\n\n无索引 vs 有索引\n\n| | 无索引 | 有索引 |\n| 查找方式 | 全表扫描，逐行判断 | B+ 树逐层定位 |\n| 复杂度 | O(N) | O(log N) |\n| I/O 次数 | 读全表所有数据页 | 只读树高的次数（通常 3~4 页）|\n\n关键机制\n\n1. 有序数据结构（B+ 树）\n· 索引按键值排序存储，节点扇出极大（一个 16KB 页可存数百个键），千万级数据树高也只有 3~4 层\n· 一次查询 = 3~4 次页读取，而非扫描百万行\n\n2. 减少随机 I/O\n· 无索引时即使只找 1 行，也可能要读几万个数据页；索引直接跳到目标页\n\n3. 范围查询免排序免扫描\n· B+ 树叶子节点是双向链表，`BETWEEN`/`ORDER BY` 直接沿链表顺序读",
+   "wall_ms": 39890,
+   "points": 18,
+   "llm_calls": 1,
+   "prompt_tokens": 590,
+   "completion_tokens": 910,
+   "total_tokens": 1500,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40487451681990605
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 38915,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:1snip/229tok/r0.45rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/72tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 10473,
+   "from_cache": false,
+   "prompt_total_tokens": 786,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C11_json_format",
+   "input": "用JSON格式返回：字段name填fastapi，字段lang填python，只返回JSON不要其他文字",
+   "pass": true,
+   "notes": [],
+   "reply": "{\n  \"name\": \"fastapi\",\n  \"lang\": \"python\"\n}",
+   "wall_ms": 6743,
+   "points": 17,
+   "llm_calls": 1,
+   "prompt_tokens": 360,
+   "completion_tokens": 23,
+   "total_tokens": 383,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.3732391006324334
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 5793,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/73tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 104,
+   "from_cache": false,
+   "prompt_total_tokens": 503,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}
