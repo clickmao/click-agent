@@ -129,6 +129,19 @@
 - **跨进程实战**: 进程1 Rust 偏好 (信号 2) → 落盘 → **独立进程2 召回 UserTendency 1snip/rel0.33**
 - **AOT**: 手写序列化路径 0 IL 警; 358 全绿 (+TendencyPersistenceTests); round35 10/10 4401tok
 
+## 4.12 R36-R40 追加 (第七轮循环 — 目标演化与隔离精修)
+
+- **R37 阶段级对比固化**: eval/phase_report.py (早期 R3-R15 vs 近期 R17-R36:
+  tokens -26.5%, wall -22.8%, 判定: 改善); 修正 glob 字典序 → 轮次数值序
+- **R38 稳定性批 2**: ×3 quick 采样 6/6 全绿, tokens -13.4% vs 批 1 (无回归漂移)
+- **R39 真缺陷 25/26 — goal 演化与隔离精修** (长会话实测驱动):
+  - goal 永不更新: 任务转向 ("算了改成X") 后新方向全误隔离 → 转向标记词 pivot 重锚 + goal 打点
+  - ascii 连写技术名 (RESTAPI vs FastAPI) 互不 Contains 误判零重叠 → 4-gram 交叉匹配
+  - 技术细节追问 ("用 requests 怎么写") 与任务标题实体零重叠 → 实现询问 ≤30 字一票否决
+  - 实战: 任务转向场景隔离 2→0; 真隔离 (离题诗) 保留
+- **round36**: 10/10, 3977 tok — **新低, vs baseline_final -46%**
+- **R40**: TaskRelevanceCheckerTests ×3 单测; 361 全绿; AOT 0 警
+
 ## 5. 已知边界 (诚实标注)
 
 1. deepseek 余额 CNY vs 配置价格 USD 混用 — 换算率未硬编码, EstimateBalance 标注币种
