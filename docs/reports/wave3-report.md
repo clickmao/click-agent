@@ -71,6 +71,18 @@
   CalculateTendencyScore 样本计数→关键词命中占比×衰减
 - **双向实测**: 偏好陈述→技术问题 不隔离+倾向召回 ✓; 任务锚→离题诗 隔离保留 score=2 ✓
 
+## 4.7 R15-R19 追加 (第二轮循环)
+
+- **R15 币种链**: deepseek 余额 CNY 被当 USD 比价 (差 7.2 倍) → BalanceSnapshot.Currency +
+  EstimateBalance 换算 (FX env 可覆写) + ChannelScheduler.BalanceProbe 余额感知排序 +
+  MIN_BALANCE env; 教训: 测试假绿 (旧 DLL), no-incremental 强编后 357 全绿
+- **R16 触发链**: unit-convert regex 动词组 "转换成" 不命中 → C06 executive 直达 0 LLM (749tok→0)
+- **R18 输出纪律**: System Prompt 统一附加简洁约束 — C08 completion -25~35%, round14 总 token -18.7%
+- **R19 截断修复 (打点确诊)**: glm/deepseek reasoning 模型思维链计入 max_tokens, 2000 被
+  reasoning 吃满 → C03 空白回复 (26.8s/2000tok, content_len=0) → 8192 + content_len 打点;
+  复验 content 1756 字完整报告
+- round15 基线: 10/10 KEEP, wall 88s (最快), 357 测试全绿, AOT 0 警
+
 ## 5. 已知边界 (诚实标注)
 
 1. deepseek 余额 CNY vs 配置价格 USD 混用 — 换算率未硬编码, EstimateBalance 标注币种
