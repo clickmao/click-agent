@@ -158,6 +158,15 @@
   (早期→近期 tokens -29.9%, wall -29.2%)
 - **R47**: AOT 0 警 + 冒烟 495ms; 362 全绿
 
+## 4.5 R64-R76 (第十一~十二轮循环 — 度量补全/画像三连修/pivot 死区)
+- **R62** loop_turn 加 asked/executive/skill 度量 + executive 直达补打点 (原提前 return 造成度量盲区, wordcount 466ms 直达不可见)
+- **R65 (缺 28)** git 词表补中文动作 — "把代码推送到github" sensitive False→True 实证
+- **R66 (缺 29)** Milestones 记消息摘要而非意图名 ('general' → 实际任务描述)
+- **R70 (缺 30)** SetGoal constraints 死代码链修复: ExtractConstraints 规则提取 (约束：/只能/不许/必须/避免), 跨轮注入 prompt 【约束】行实证 ("继续" 轮遵守标准库约束); +3 单测
+- **R72 (缺 31)** pivot 死区三段修: 隔离判定 (321 行) 先于重锚 (455 行), "不要之前的目标写诗" 被先行拦截。词表+7 标记 / pivot 脱离 IsGoalWorthy / 判定前 pivotRequested 跳过; +4 单测
+- **R76 (缺 32)** cross_validate 数值前缀精度归一 (3.14159 vs 3.14 误判 disagree, R41 遗留闭环); 负例不误放
+- 性能: round67 3831 / round71 3817 连续新低 (-48%); 千轮八批 136/136; 369 全绿; AOT 0 警
+
 ## 5. 已知边界 (诚实标注)
 
 1. deepseek 余额 CNY vs 配置价格 USD 混用 — 换算率未硬编码, EstimateBalance 标注币种
