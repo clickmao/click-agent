@@ -59,6 +59,18 @@
 - 召回覆盖 (round8): 6/10 用例有上下文片段 (4 指令类无需上下文), 总片段 24
 - 历史治理 (R5): 7 轮长会话历史 token 封顶 (滚动摘要), 摘要化后信息保留实测正确
 
+## 4.5 R12-R14 追加 (同日第二轮)
+
+- **多源召回率定量** (round8 全指标采集): 6/10 用例有上下文片段 (4 指令类无需), 总片段 24;
+  各源命中 — WorkspaceFiles+AgentContext 常规命中, Memory 按需, Session 设计性禁用
+  (历史走 BuildWithHistory 专用通道, 双路注入浪费 token — 架构决策非缺陷)
+- **R14 用户倾向全链路** (写入断链修复): 消息→ExtractSignals→UpdateTendencyAsync (fire-and-forget)
+  →画像→GetContextBiasAsync 融合历史→UserTendency 召回 0→1snip/rel0.8
+- **隔离判定 3 修**: Check 第2参 GoalText 原文→GoalIntent (意图相同误判 +1);
+  goal 锚定收窄 IsGoalWorthy (偏好陈述"我喜欢简洁"不再锚成项目目标 → 误隔离修复);
+  CalculateTendencyScore 样本计数→关键词命中占比×衰减
+- **双向实测**: 偏好陈述→技术问题 不隔离+倾向召回 ✓; 任务锚→离题诗 隔离保留 score=2 ✓
+
 ## 5. 已知边界 (诚实标注)
 
 1. deepseek 余额 CNY vs 配置价格 USD 混用 — 换算率未硬编码, EstimateBalance 标注币种
