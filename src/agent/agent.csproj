@@ -58,4 +58,19 @@
   <ItemGroup>
     <InternalsVisibleTo Include="agentframework.tests" />
   </ItemGroup>
+  <ItemGroup>
+    <!-- v0.11.0 R103: vendored LLamaSharp 0.29 native (deps.zip 选择性解压产物) 复制进运行输出 —
+         布局 = LLamaSharp 0.29 加载器约定 runtimes/linux-x64/native/{变体}/ (bge-probe AOT/JIT 实测) -->
+    <None Include="/home/agentuser/LLamaSharp/LLama/runtimes/native-x64/avx2/*.so" CopyToOutputDirectory="PreserveNewest"
+          Link="runtimes/linux-x64/native/avx2/%(Filename)%(Extension)" />
+    <None Include="/home/agentuser/LLamaSharp/LLama/runtimes/native-x64/vulkan/*.so" CopyToOutputDirectory="PreserveNewest"
+          Link="runtimes/linux-x64/native/vulkan/%(Filename)%(Extension)" />
+    <None Include="/home/agentuser/LLamaSharp/LLama/runtimes/native-x64/avx2/*.so" CopyToOutputDirectory="PreserveNewest"
+          Link="runtimes/linux-x64/native/avx512/%(Filename)%(Extension)" Visible="false" />
+    <None Include="/home/agentuser/LLamaSharp/LLama/runtimes/native-x64/avx2/*.so" CopyToOutputDirectory="PreserveNewest"
+          Link="runtimes/linux-x64/native/avx/%(Filename)%(Extension)" Visible="false" />
+    <None Include="/home/agentuser/LLamaSharp/LLama/runtimes/native-x64/avx2/*.so" CopyToOutputDirectory="PreserveNewest"
+          Link="runtimes/linux-x64/native/noavx/%(Filename)%(Extension)" Visible="false" />
+  </ItemGroup>
+
 </Project>
