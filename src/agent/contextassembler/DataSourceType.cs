@@ -100,6 +100,9 @@ public class ContextAssemblyRequest
         DataSourceType.UserTendency
     };
     
+    /// <summary>v0.11.0 R11: 工作区根路径 (WorkspaceFiles 源召回用; null=不启用)</summary>
+    public string? WorkspaceRoot { get; set; }
+
     /// <summary>最大Token预算</summary>
     public int MaxTokenBudget { get; set; } = 8000;
     

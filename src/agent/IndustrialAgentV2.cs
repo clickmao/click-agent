@@ -884,7 +884,10 @@ public class IndustrialAgentV2 : AgentBase
             // 多子任务时数据源取并集 (search+code_gen 复合句 → 网搜+记忆全开)
             EnabledSources = subTasks.Count > 1
                 ? IntentDecomposer.AggregateSources(subTasks)
-                : IntentSourceMapping.GetSources(intent)
+                : IntentSourceMapping.GetSources(intent),
+            // v0.11.0 R11: 工作区根传给装配器 (WorkspaceFiles 源)。
+            // Workspace.Initialize 无人调用 (R11b 修复) — RootPath 空 → fallback 当前目录 (host 由 cwd 决定)。
+            WorkspaceRoot = _workspace is { RootPath: { Length: > 0 } root } ? root : Environment.CurrentDirectory
         };
 
         // v7.14: 会话长期记忆 + 目标画像预渲染 (③) — 上下文压缩的方向锚 (⑥)

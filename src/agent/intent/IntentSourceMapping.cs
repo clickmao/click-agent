@@ -29,6 +29,15 @@ public static class IntentSourceMapping
             sources.Add(DataSourceType.WebSearch);
         }
 
+        // v0.11.0 R11: 文件相关意图启用工作区文件源
+        if (intent == IntentRecognizer.Intents.FileOperation ||
+            intent == IntentRecognizer.Intents.CodeGeneration ||
+            intent == IntentRecognizer.Intents.Search ||
+            intent == IntentRecognizer.Intents.General)
+        {
+            sources.Add(DataSourceType.WorkspaceFiles);
+        }
+
         return sources;
     }
 

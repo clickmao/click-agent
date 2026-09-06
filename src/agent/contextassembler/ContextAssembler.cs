@@ -123,6 +123,13 @@ Interlocked.Increment(ref _cacheMisses);
                 recallTasks.Add(RecallFromUserTendencyAsync(request, ct));
             }
 
+            // v0.11.0 R11: 工作区文件召回 — 之前只有配额定义无实现, 源恒空
+            if (request.EnabledSources.Contains(DataSourceType.WorkspaceFiles) &&
+                !string.IsNullOrEmpty(request.WorkspaceRoot) && Directory.Exists(request.WorkspaceRoot))
+            {
+                recallTasks.Add(RecallFromWorkspaceAsync(request, ct));
+            }
+
             if (request.EnabledSources.Contains(DataSourceType.SessionMemory) &&
                 request.SessionMemoryBlock != null)
             {
@@ -399,6 +406,108 @@ Interlocked.Increment(ref _cacheMisses);
     /// <summary>
     /// 从 Memory 召回
     /// </summary>
+    /// <summary>
+    /// v0.11.0 R11: 工作区文件召回 — 轻量关键词匹配 (无索引), 查询词命中文件行 → 携上下文成片段。
+    /// 上限 3 文件 / 每文件 1 片段, 防淹没 prompt。
+    /// </summary>
+    private async Task<List<ContextSnippet>> RecallFromWorkspaceAsync(
+        ContextAssemblyRequest request, CancellationToken ct)
+    {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        var snippets = new List<ContextSnippet>();
+        try
+        {
+            var keywords = ExtractQueryKeywords(request.UserMessage);
+            if (keywords.Count == 0)
+                return snippets;
+
+            var extensions = new[] { ".md", ".txt", ".cs", ".json", ".py", ".yaml", ".yml" };
+            var files = Directory.EnumerateFiles(request.WorkspaceRoot!, "*.*", SearchOption.AllDirectories)
+                .Where(f =>
+                {
+                    var ext = Path.GetExtension(f).ToLowerInvariant();
+                    return extensions.Contains(ext);
+                })
+                .Where(f => !f.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}") &&
+                            !f.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}") &&
+                            !f.Contains($"{Path.DirectorySeparatorChar}node_modules{Path.DirectorySeparatorChar}"))
+                .Take(300) // 扫描上限 — 大仓库防慢
+                .ToList();
+
+            foreach (var file in files)
+            {
+                if (snippets.Count >= 3)
+                    break;
+                ct.ThrowIfCancellationRequested();
+                try
+                {
+                    var info = new FileInfo(file);
+                    if (info.Length > 200 * 1024)
+                        continue;
+                    var content = await File.ReadAllTextAsync(file, ct);
+                    var hitLine = FindKeywordLine(content, keywords);
+                    if (hitLine == null)
+                        continue;
+
+                    var excerpt = hitLine.Length > 400 ? hitLine[..400] + "…" : hitLine;
+                    snippets.Add(new ContextSnippet
+                    {
+                        Id = file,
+                        SourceType = DataSourceType.WorkspaceFiles,
+                        SourceName = Path.GetFileName(file),
+                        Content = $"[工作区文件 {Path.GetRelativePath(request.WorkspaceRoot!, file)}]\n{excerpt}",
+                        RelevanceScore = 0.7,
+                        CreatedAt = info.LastWriteTimeUtc,
+                    });
+                }
+                catch (IOException) { /* 文件被占用等 — 跳过 */ }
+                catch (UnauthorizedAccessException) { /* 无权限 — 跳过 */ }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Workspace recall failed");
+        }
+
+        _sourceStopwatch = stopwatch.ElapsedMilliseconds;
+        return snippets;
+    }
+
+    private static List<string> ExtractQueryKeywords(string text)
+    {
+        // 复用 2-gram 中文 + 英文词的轻量提取
+        var words = text.Split(new[] { ' ', '\t', '\n', '\r', '.', ',', '!', '?', ';', ':', '，', '。', '？', '：', '；', '的', '了', '吗', '呢', '吧', '啊' },
+            StringSplitOptions.RemoveEmptyEntries);
+        var kws = new List<string>();
+        foreach (var w in words)
+        {
+            var t = w.Trim();
+            if (t.Length >= 2 && t.Length <= 30)
+                kws.Add(t);
+            for (var i = 0; i + 2 <= t.Length; i++)
+            {
+                if (t[i] >= 0x4e00 && t[i] <= 0x9fff && t[i + 1] >= 0x4e00 && t[i + 1] <= 0x9fff)
+                    kws.Add(t.Substring(i, 2));
+            }
+        }
+        return kws.Distinct().ToList();
+    }
+
+    private static string? FindKeywordLine(string content, List<string> keywords)
+    {
+        foreach (var line in content.Split('\n'))
+        {
+            foreach (var kw in keywords)
+            {
+                if (line.Contains(kw, StringComparison.OrdinalIgnoreCase))
+                    return line.Trim();
+            }
+        }
+        return null;
+    }
+
+    private long? _sourceStopwatch;
+
     private async Task<List<ContextSnippet>> RecallFromMemoryAsync(
         ContextAssemblyRequest request,
         CancellationToken ct)
