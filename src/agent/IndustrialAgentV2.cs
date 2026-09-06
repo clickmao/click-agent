@@ -277,6 +277,11 @@ public class IndustrialAgentV2 : AgentBase
                     response.Success = true;
                     response.Content = skillResult.Content;
                     response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
+                    // v0.11.0 R62: executive 直达同样进 loop_turn 打点 (原提前 return 造成度量盲区)
+                    agent.config.AgentTelemetry.Emit("loop_turn", "IndustrialAgentV2",
+                        ("total_ms", response.ExecutionTimeMs), ("success", true),
+                        ("reply_chars", response.Content.Length), ("asked", false),
+                        ("executive", true), ("skill", skillResult.SkillId));
                     return response;
                 }
                 // 未命中/失败/禁语拦截 → 静默降级普通推理 (S.5: 用户无感)
@@ -530,9 +535,12 @@ public class IndustrialAgentV2 : AgentBase
         }
         
         response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
+        // v0.11.0 R62: 台账度量字段 — 问询数 (回复含问句) 与 executive 直达标记
+        var asked = response.Content.Contains('？') || response.Content.Contains('?');
         agent.config.AgentTelemetry.Emit("loop_turn", "IndustrialAgentV2",
             ("total_ms", response.ExecutionTimeMs), ("success", response.Success),
-            ("reply_chars", response.Content.Length));
+            ("reply_chars", response.Content.Length), ("asked", asked),
+            ("executive", response.Content.StartsWith('{') && response.Content.Contains("\"skill\"")));
         return response;
     }
     
