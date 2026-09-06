@@ -142,6 +142,22 @@
 - **round36**: 10/10, 3977 tok — **新低, vs baseline_final -46%**
 - **R40**: TaskRelevanceCheckerTests ×3 单测; 361 全绿; AOT 0 警
 
+## 4.13 R41-R47 追加 (第八轮循环 — 问询纪律与 RAG 召回破壁)
+
+- **R41 千轮批量**: 批1 ×5 quick 20/20 全绿 (tokens 3243±318 CV 9.8%)
+- **R42 问询纪律**: 澄清场景一句话问询+默认方案一句话, 不预铺长清单;
+  A/B "帮我搞一下" wall 6.0→5.1s (-15%), 回复更聚焦
+- **R43 千轮批2**: ×5 20/20 全绿 (3098, -4.5% vs 批1) — R42 无回归
+- **R44 真缺陷 27 — RAG 跨轮召回恒 0 三层根因** (探针单测定位):
+  ① Tokenize 中英混写黏连 ("rust的所有权" 一个 token) → ascii 词面失效
+  ② 词袋哈希 embedding 被长答案稀释, 相关文档 0.291 < 0.3 阈值
+  ③ IndexAsync Keywords 只传 {intent}, 查询 Jaccard 恒 0
+  修复: 中英边界切分 + 内容命中相关性下限 0.45 + 留空自动提词;
+  实测 Memory 源 0→1snip/29tok/rel0.45 (Rust 偏好跨轮召回)
+- **round45**: 10/10, 4249 tok / 55.8s (wall 历史最低); 阶段判定: 改善
+  (早期→近期 tokens -29.9%, wall -29.2%)
+- **R47**: AOT 0 警 + 冒烟 495ms; 362 全绿
+
 ## 5. 已知边界 (诚实标注)
 
 1. deepseek 余额 CNY vs 配置价格 USD 混用 — 换算率未硬编码, EstimateBalance 标注币种
