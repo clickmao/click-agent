@@ -826,7 +826,10 @@ public class IndustrialAgentV2 : AgentBase
                     Command = "balance", Ok = false, Error = "model_queue_not_configured",
                 }, elapsedMs);
             }
-            var b = _balanceService.QueryAsync(parts.Length >= 2 ? parts[1] : null)
+            // v0.11.0 R89b (真缺陷 36 关联): /balance 无参应查当前实际活跃模型 —
+            // 原传 null 落目录首项 (gpt-4o, 无 key), 与 auto 实际调用模型脱节。
+            var balTarget = parts.Length >= 2 ? parts[1] : _modelRouter?.ActiveModel?.Id;
+            var b = _balanceService.QueryAsync(balTarget)
                 .GetAwaiter().GetResult();
             // v0.11.0: 命令执行恒 Success=true — 余额结论在 Ok/TotalRemaining/Error 字段,
             // 查询失败 (无 scheme/无 key/网络) 也如实 JSON 输出而非吞进失败渲染

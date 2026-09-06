@@ -258,7 +258,14 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         try
         {
             var resp = await CallEntryAsync(entry, prompt, ct);
-            lock (_lock) _consecutiveFailures = 0;
+            lock (_lock)
+            {
+                _consecutiveFailures = 0;
+                // v0.11.0 R89 (真缺陷 36): auto 选模成功后同步粘性 id — 原 _activeModelId 只在
+                // failover/手动切换时更新, /model 与 /balance 查询时 ActiveModel getter
+                // 落到目录首项 (gpt-4o), 与实际调用模型 (glm) 不一致 (真机 /model 实证)。
+                if (_manualOverride is null) _activeModelId = entry.Id;
+            }
             // v0.10.0: 用量本地累计
             _tokenUsage?.RecordUsage(resp.Model, entry.Provider, resp.PromptTokens, resp.CompletionTokens);
             agent.config.AgentTelemetry.Emit("llm_call", "ModelQueueRouter",
