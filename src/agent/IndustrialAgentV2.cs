@@ -174,10 +174,15 @@ public class IndustrialAgentV2 : AgentBase
     {
         if (string.IsNullOrWhiteSpace(content) || content.Length < 8)
             return false;
+        // v0.11.0 R26 (真 bug 22): 记忆性/偏好性陈述不是任务目标 — "记住我的项目名是X"
+        // 曾因裸词"项目"命中被锚成 goal, 导致后续 8 轮全部"实体零重叠"误隔离 (长会话实测)。
+        string[] memoryMarkers = { "记住", "记一下", "记着", "我喜欢", "我的名字", "我叫" };
+        if (memoryMarkers.Any(m => content.Contains(m, StringComparison.Ordinal)))
+            return false;
         string[] taskMarkers =
         {
-            "帮我", "请帮我", "需要你", "做一个", "开发一个", "实现一个", "项目", "目标是",
-            "计划", "任务", "写一个", "修复", "重构", "部署", "上线", "排查", "设计一个",
+            "帮我", "请帮我", "需要你", "做一个", "开发一个", "实现一个", "项目目标", "项目需求",
+            "这个项目", "目标是", "计划", "任务", "写一个", "修复", "重构", "部署", "上线", "排查", "设计一个",
         };
         return taskMarkers.Any(m => content.Contains(m, StringComparison.Ordinal));
     }
