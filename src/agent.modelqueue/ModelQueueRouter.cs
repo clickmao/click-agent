@@ -290,59 +290,100 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         }
     }
 
-    private async Task<QueueResponse> OnTransientFailureAsync(ModelCatalogEntry entry, QueuePrompt prompt, TaskKindHint kind, string intent, CancellationToken ct, string why)
+    private async Task<QueueResponse> OnTransientFailureAsync(
+        ModelCatalogEntry entry, QueuePrompt prompt, TaskKindHint kind, string intent,
+        CancellationToken ct, string why, int attempt = 1)
     {
+        // v0.11.0 R23 修复 (真 bug 21): 原"连续失败"计数跨请求, 单请求瞬态失败 (超时/网络抖动)
+        // 直接报错给用户且从不切备 — failover 名存实亡 (实测 C03 三子任务超时 101s 后空手而归)。
+        // 现策略: 同请求内 ①同模型重试 1 次 (attempt 1→2) ②仍败切备选模型重试 1 次 ③备选也败才返回失败。
+        if (attempt <= 2)
+        {
+            _logger.LogWarning("ModelQueue: {Model} 瞬态失败 ({Why}) — 请求内重试 {Attempt}/2", entry.Id, why, attempt);
+            agent.config.AgentTelemetry.Emit("llm_retry", "ModelQueueRouter",
+                ("model", entry.Id), ("attempt", attempt), ("why", why));
+            try
+            {
+                var retried = await CallEntryAsync(entry, prompt, ct).ConfigureAwait(false);
+                if (retried.Success)
+                {
+                    lock (_lock) _consecutiveFailures = 0;
+                    LastSelectionBasis = $"retry_ok:{entry.Id} (attempt {attempt + 1})";
+                    _tokenUsage?.RecordUsage(retried.Model, entry.Provider, retried.PromptTokens, retried.CompletionTokens);
+                    return retried;
+                }
+                // 软失败 (Success=false 但未抛异常) 也算本次失败, 继续走切备
+                return await OnTransientFailureAsync(entry, prompt, kind, intent, ct,
+                    retried.Error ?? "重试仍失败", attempt + 1).ConfigureAwait(false);
+            }
+            catch (HttpRequestException ex2)
+            {
+                return await OnTransientFailureAsync(entry, prompt, kind, intent, ct, $"重试网络错误: {ex2.Message}", attempt + 1).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) when (!ct.IsCancellationRequested)
+            {
+                return await OnTransientFailureAsync(entry, prompt, kind, intent, ct, "重试超时", attempt + 1).ConfigureAwait(false);
+            }
+        }
+
+        // 重试耗尽 → 切备选模型 (同目录下一个不同 id、key 可用的模型)
+        ModelCatalogEntry? backup;
         lock (_lock)
         {
             _consecutiveFailures++;
-            if (_consecutiveFailures < MaxConsecutiveFailures)
+            backup = _catalog.Models.FirstOrDefault(m =>
+                !string.Equals(m.Id, entry.Id, StringComparison.OrdinalIgnoreCase) &&
+                (m.ApiKeyEnv is null ||
+                 !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(m.ApiKeyEnv))));
+        }
+        if (backup is not null)
+        {
+            _logger.LogWarning("ModelQueue: {From} 重试耗尽 → 切备 {To}", entry.Id, backup.Id);
+            agent.config.AgentTelemetry.Emit("llm_failover", "ModelQueueRouter",
+                ("from", entry.Id), ("to", backup.Id), ("why", why));
+            try
             {
-                LastSelectionBasis = $"primary:{entry.Id} (失败 {_consecutiveFailures}/{MaxConsecutiveFailures})";
+                var backupResp = await CallEntryAsync(backup, prompt, ct).ConfigureAwait(false);
+                if (backupResp.Success)
+                {
+                    lock (_lock)
+                    {
+                        Switches.Add(new ModelSwitchRecord
+                            { From = entry.Id, To = backup.Id, Reason = "transient_failover" });
+                        _activeModelId = backup.Id;
+                        _manualOverride = null;
+                        _consecutiveFailures = 0;
+                        LastSelectionBasis = $"failover:{backup.Id} (原 {entry.Id} 瞬态失败)";
+                    }
+                    _tokenUsage?.RecordUsage(backupResp.Model, backup.Provider, backupResp.PromptTokens, backupResp.CompletionTokens);
+                    return backupResp;
+                }
+                return backupResp; // 备选也软失败, 如实返回
+            }
+            catch (Exception ex3) when (ex3 is HttpRequestException
+                || (ex3 is OperationCanceledException oce && !ct.IsCancellationRequested))
+            {
                 return new QueueResponse
                 {
                     Success = false,
-                    Error = $"模型 {entry.Id} 调用失败 ({_consecutiveFailures}/{MaxConsecutiveFailures}): {why}",
-                    Model = entry.Id,
+                    Error = $"主模型 {entry.Id} 与备选 {backup.Id} 均失败: {ex3.Message}",
+                    Model = backup.Id,
                 };
             }
-
-            // 连续失败达上限 → 切备 (同目录中下一个不同 id 的模型)
-            var backup = _catalog.Models.FirstOrDefault(m =>
-                !string.Equals(m.Id, entry.Id, StringComparison.OrdinalIgnoreCase));
-            if (backup is null)
-            {
-                LastSelectionBasis = $"primary:{entry.Id} (无备选)";
-                return new QueueResponse
-                {
-                    Success = false,
-                    Error = $"模型 {entry.Id} 连续失败 {MaxConsecutiveFailures} 次且目录无备选: {why}",
-                    Model = entry.Id,
-                };
-            }
-            Switches.Add(new ModelSwitchRecord
-                { From = entry.Id, To = backup.Id, Reason = "consecutive_failures" });
-            _activeModelId = backup.Id;
-            _manualOverride = null; // 失败切换后回到自动粘性
-            _consecutiveFailures = 0;
-            LastSelectionBasis = $"failover:{backup.Id} (原 {entry.Id} 连续 {MaxConsecutiveFailures} 败)";
-            _logger.LogWarning("ModelQueue: {From} 连续失败 → 切换到 {To}", entry.Id, backup.Id);
         }
 
-        // 备模型立即接手本次调用 (不再内嵌重试 — 计划级重试由 TaskPlanExecutor 负责)
-        try
+        // v0.11.0 R23: 重试耗尽且无可用备选 — 保守计数后如实返回失败
+        lock (_lock)
         {
-            var backupEntry = _catalog.Find(_activeModelId)!;
-            return await CallEntryAsync(backupEntry, prompt, ct).ConfigureAwait(false);
+            _consecutiveFailures++;
+            LastSelectionBasis = $"primary:{entry.Id} (重试耗尽, 无可用备选: {why})";
         }
-        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
+        return new QueueResponse
         {
-            return new QueueResponse
-            {
-                Success = false,
-                Error = $"备模型也失败: {ex.Message}",
-                Model = _activeModelId,
-            };
-        }
+            Success = false,
+            Error = $"模型 {entry.Id} 调用失败 (请求内重试+备选均不可用): {why}",
+            Model = entry.Id,
+        };
     }
 
     /// <summary>
