@@ -201,6 +201,19 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IPromptBuilder, PromptBuilder>();
         
         // ContextAssembler - 多数据源上下文组装
+        // v0.11.0 R103: RAG 注入 EmbeddingRouter (bge 首选/词袋兜底, 用户钦定优先级;
+        // 模式决策: LLM 已加载→CPU 档, 未加载+真 GPU→vulkan)。工厂走 DI 让 bge 感知共享服务状态。
+        services.AddSingleton<RAGConfig>(sp =>
+        {
+            var cfg = new RAGConfig();
+            var llmSvc = new agent.llamalocal.LlmServiceClient(
+                agent.llamalocal.LlmServiceProtocol.SocketPath("./data"));
+            var llmLoaded = llmSvc.IsAvailable(); // 共享服务在 → LLM 已加载 (进程外)
+            cfg.EmbeddingFunction = text => new agent.llamalocal.EmbeddingRouter(
+                Environment.GetEnvironmentVariable("AGENTFRAMEWORK_BGE_MODEL"),
+                llmLoaded).Embed(text);
+            return cfg;
+        });
         services.AddSingleton<IRAGRecall, RAGRecall>();
         // v7.15 P3: bge 嵌入器 (压缩语义漂移校验) — 模型路径走配置, 缺失 → NullTextEmbedder (锚词模式, 行为兼容)
         services.AddSingleton<agent.contextgradient.ITextEmbedder>(sp =>
