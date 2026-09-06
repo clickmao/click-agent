@@ -1,0 +1,159 @@
+{
+ "round": "mass_11",
+ "label": "R49 batch3 11",
+ "ts": "2026-09-06T18:41:38+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 3634,
+ "prompt_total": 1108,
+ "completion_total": 2526,
+ "wall_total_ms": 66028,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选定基准元素将数组递归划分为“小于基准”和“大于基准”两部分，从而实现排序的分治算法，平均时间复杂度为 O(n log n)。\n\n（关于你提到的堆排序，需要展开介绍吗？）",
+   "wall_ms": 4050,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 356,
+   "completion_tokens": 55,
+   "total_tokens": 411,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 3152,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/53tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 75,
+   "from_cache": false,
+   "prompt_total_tokens": 462,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "默认假设：通用 RAG 场景、自部署、百万级向量。若你的规模/部署方式不同，请告知。\n\n推荐结论\n· **首选 Qdrant**：Rust 实现，性能与标量过滤均衡，单二进制/Docker 部署轻量。\n· 已有 PostgreSQL → **pgvector**：零新增组件，千万级内够用。\n· 十亿级/高并发 → **Milvus**：分布式最成熟，但运维成本高。\n· 完全不想运维 → **Pinecone / Zilliz Cloud**（托管付费）。\n\n关键对比\n\n| 维度 | Qdrant | pgvector | Milvus | Weaviate |\n| 适用规模 | 千万~亿 | <千万 | 十亿+ | 千万~亿 |\n| 混合检索 | 需自建 | 弱 | 稀疏向量支持 | 内置 BM25 |\n| 运维成本 | 低 | 极低 | 高 | 中 |\n| 生态 | REST/gRPC，",
+   "wall_ms": 41274,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 357,
+   "completion_tokens": 1120,
+   "total_tokens": 1477,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 40380,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/58tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 50,
+   "from_cache": false,
+   "prompt_total_tokens": 499,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (588ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1491,
+   "points": 5,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "为什么索引能加速查询\n\n核心结论：索引用“有序的专用数据结构”替代全表扫描，把查找复杂度从 O(n) 降到 O(log n)，并大幅减少磁盘 I/O。\n\n关键机制：\n\n1. 树形查找替代逐行扫描：B+ 树按键有序组织数据，千万行数据的树高通常只有 3~4 层，即约 3~4 次节点访问即可定位目标行，而全表扫描需逐行比对。\n2. 减少磁盘 I/O：索引只存“键值 + 行指针”，体积远小于整表，读取的页数更少；且树的上层节点常驻内存，实际磁盘 I/O 往往只有 1~2 次。\n3. 有序性支持范围查询：B+ 树叶子节点通过链表相连，BETWEEN、>、< 等范围条件可直接顺序遍历，无需额外排序。\n4. 覆盖索引免回表：若查询所需的列都包含在索引中，直接从索引返回结果，省去一次主表查找。\n5. 结构变体各有所长：哈希索引等值查询近 O(1)；位图索引适合低基数列。\n\n代价（一句带过）：写入时需同步",
+   "wall_ms": 19213,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 395,
+   "completion_tokens": 1351,
+   "total_tokens": 1746,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 18327,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/111tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 49,
+   "from_cache": false,
+   "prompt_total_tokens": 546,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}

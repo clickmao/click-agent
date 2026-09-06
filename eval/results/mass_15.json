@@ -1,0 +1,159 @@
+{
+ "round": "mass_15",
+ "label": "R49 batch3 15",
+ "ts": "2026-09-06T18:44:40+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 3010,
+ "prompt_total": 1125,
+ "completion_total": 1885,
+ "wall_total_ms": 48764,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种分治排序算法：选取一个基准元素，将数组划分为比它小和大的两部分，再递归排序，平均时间复杂度 O(n log n)。",
+   "wall_ms": 3228,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 348,
+   "completion_tokens": 39,
+   "total_tokens": 387,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 2332,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 48,
+   "from_cache": false,
+   "prompt_total_tokens": 476,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "结论：无特殊约束时，中小规模（百万~千万级）推荐 Qdrant，大规模生产推荐 Milvus，已有 PostgreSQL 则优先 pgvector。\n\n关键依据：\n· **Milvus**：分布式架构，支持十亿级向量，社区活跃，生产案例多\n· **Qdrant**：Rust 实现，延迟低，部署轻量，支持量化压缩\n· **Pinecone**：全托管免运维，快速上线，但闭源且成本较高\n· **pgvector**：复用现有 PG，运维成本最低，亿级以下够用\n· **Weaviate**：混合检索（向量+关键词）能力突出\n\n核心选型维度：数据规模、QPS/延迟要求、元数据过滤、部署方式（自建/托管）、成本。\n\n需要澄清一点：您的数据量级和部署方式（自建/云托管）是什么？默认按“百万级、自建”评估。\n\n确认后我可生成完整对比报告（架构、性能、功能、成本详表及推荐理由）。",
+   "wall_ms": 13499,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 379,
+   "completion_tokens": 849,
+   "total_tokens": 1228,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 12581,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/111tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 49,
+   "from_cache": false,
+   "prompt_total_tokens": 540,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (651ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1543,
+   "points": 5,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "数据库索引加速查询的核心原因可归结为以下几点：\n\n1. 数据结构：从线性查找降到对数查找\n\n· **无索引**：查询只能全表扫描，逐行比对，时间复杂度 O(N)。千万级数据就要比对千万次。\n· **有索引（B+树）**：通过树的层级导航定位数据，复杂度 O(log N)。千万行数据 B+树高度通常仅 3~4 层。\n\n2. 大幅减少磁盘 I/O（最关键的实际收益）\n\n磁盘 I/O 比内存计算慢几个数量级，索引优化的本质是减少 I/O 次数：\n\n· B+树的每个节点对应一个磁盘页（如 16KB），一次 I/O 读取整个节点，一次性比对几十上百个键。\n· 树高 3 层意味着定位任意一行只需约 **3 次磁盘 I/O**，而全表扫描可能需要读成千上万个数据页。\n· B+树的叶子节点通过链表串联，非叶子节点只存键不存数据，单页能容纳更多键，进一步压低树高。\n\n3. 有序性带来的额外加速\n\n索引键是有",
+   "wall_ms": 30494,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 398,
+   "completion_tokens": 997,
+   "total_tokens": 1395,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 29576,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/111tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 50,
+   "from_cache": false,
+   "prompt_total_tokens": 571,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}
