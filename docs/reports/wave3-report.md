@@ -96,6 +96,18 @@
   全链透传 (source-gen WhenWritingNull, 不支持 provider 零影响)
 - **round19 vs baseline_final**: tokens 7354→4909 (-33%), wall 154s→68.8s (-55%), 10/10 KEEP
 
+## 4.9 R23-R26 追加 (第四轮循环 — 可靠性+长会话)
+
+- **R23 failover (真 bug 21)**: 瞬态失败计数跨请求致单请求超时直接报错、从不切备 →
+  请求内重试 1 次 + 切 key 可用备选; llm_retry/llm_failover 打点; 注入实测 glm 不可达→
+  deepseek 接管 3.1s 真答
+- **R24 超时余量**: HttpClient 100s 偶发掐断 reasoning 长输出 → 180s (llm.timeout_seconds 可配)
+- **R25 输出方差治理**: C03 同题 completion 948↔3946 (4 倍) → 多步任务"先结论+要点 ≤500 字"
+  (对照实验: 字数约束比 temperature 更有效)
+- **R26 goal 误锚 (真 bug 22)**: 裸词"项目"命中"记住我的项目名是X" → 长会话 8/10 轮误隔离;
+  记忆性陈述显式排除; 10 轮长会话复验隔离 0、history 0→7 条封顶 tokens 431 (滚动摘要实证)
+- **round26 基线**: 10/10, 4373 tok (vs baseline_final 7354: **-40%**), wall 69s (**-55%**)
+
 ## 5. 已知边界 (诚实标注)
 
 1. deepseek 余额 CNY vs 配置价格 USD 混用 — 换算率未硬编码, EstimateBalance 标注币种
