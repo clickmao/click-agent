@@ -108,6 +108,17 @@
   记忆性陈述显式排除; 10 轮长会话复验隔离 0、history 0→7 条封顶 tokens 431 (滚动摘要实证)
 - **round26 基线**: 10/10, 4373 tok (vs baseline_final 7354: **-40%**), wall 69s (**-55%**)
 
+## 4.10 R27-R32 追加 (第五轮循环 — 快测基建+边界)
+
+- **R27 --quick 模式**: 4 关键用例 ~60s/轮 (全量 70-140s) — 千轮级高频回归可行
+- **R28 稳定性采样 ×3**: 4/4 全绿, tokens CV 12.8% (LLM 方差正常), wall 均值 57s
+- **R29 真 bug 23**: workspace/agent_context snippet 缺 EstimatedTokens (0tok 显示瑕疵真因)
+  → 打点/配额/压缩判定真实化 (82tok/22tok)
+- **R30 数据边界**: workspace 扫描 300 上限改按修改时间降序 — 最近工作优先
+- **R31 敏感可观测**: intent 打点带 sensitive 标记 (git push 请求实测 sensitive:true);
+  行为级防护复验: git push 请求 → LLM 主动要求确认不盲执行
+- **round32 全量**: 10/10, 4937 tok (vs baseline_final -33%)
+
 ## 5. 已知边界 (诚实标注)
 
 1. deepseek 余额 CNY vs 配置价格 USD 混用 — 换算率未硬编码, EstimateBalance 标注币种
