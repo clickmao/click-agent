@@ -1,0 +1,196 @@
+{
+ "round": "mass_74",
+ "label": "R105 batch18 74 cloud",
+ "ts": "2026-09-07T00:42:34+0800",
+ "cases": 5,
+ "passed": 5,
+ "tokens_total": 5115,
+ "prompt_total": 1687,
+ "completion_total": 3428,
+ "wall_total_ms": 101371,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选定基准元素将数组递归划分为“小于”和“大于”两部分从而实现排序的高效分治算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 7267,
+   "points": 17,
+   "llm_calls": 1,
+   "prompt_tokens": 345,
+   "completion_tokens": 40,
+   "total_tokens": 385,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41518095082488204
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 6224,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 52,
+   "from_cache": false,
+   "prompt_total_tokens": 470,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "先问一句：主要场景（RAG / 推荐 / 图像检索）、数据量级、部署偏好（自建 / 云托管）是什么？\n\n未指定时按「千万级向量、RAG 场景、可自建」给出快照结论：\n\n· **首选 Milvus**：开源、支持混合检索与标量过滤，千万~十亿级可弹性扩展\n· **轻量 / 原型**：Qdrant（部署简单、HNSW 性能好）；pgvector（已有 Postgres、1000 万向量以内最省事）\n· **免运维托管**：Pinecone 或云厂商托管版，适合无专职运维团队\n· **已有 ES 栈**：Elasticsearch 8.x kNN 可直接复用，不必引入新组件\n\n选型核心看三点：数据规模、是否需要混合检索/标量过滤、运维成本。\n\n需要完整对比报告（架构、性能、生态、成本四维表格 + 推荐结论）请回复「生成完整报告」。",
+   "wall_ms": 30995,
+   "points": 17,
+   "llm_calls": 1,
+   "prompt_tokens": 366,
+   "completion_tokens": 2092,
+   "total_tokens": 2458,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4271060887559994
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 30052,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/91tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 53,
+   "from_cache": false,
+   "prompt_total_tokens": 511,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (3393ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 4328,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 3393,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "核心：把“逐行扫描”变成“按结构定位”，大幅减少需要读取的数据量和 I/O 次数。\n\n无索引时：全表扫描 O(N)——每一行所在的数据页都要从磁盘读出、逐行判断是否匹配，千万行就是千万次判断加上大量随机磁盘 I/O。\n\n有索引时（以最常见的 B+ 树为例）：\n\n1. 有序 + 二分定位：索引按键有序组织，查找沿树路径走，复杂度 O(log N)，而不是逐行比对。\n2. 为磁盘设计，I/O 次数极少：B+ 树节点大小对齐磁盘页（如 16KB），单个节点可容纳数百个键，树非常高瘦——千万级数据树高通常只有 3~4 层，即定位一条记录只需 3~4 次页 I/O。\n3. 索引体量小，易缓存：索引只存键值 + 行指针，远小于全表，更容易常驻内存（buffer pool），命中缓存时几乎零磁盘 I/O。\n4. 范围查询走顺序 I/O：B+ 树叶子节点用链表串联，BETWEEN、ORDER BY 这类查",
+   "wall_ms": 49741,
+   "points": 18,
+   "llm_calls": 1,
+   "prompt_tokens": 594,
+   "completion_tokens": 1277,
+   "total_tokens": 1871,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40487451681990605
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 48841,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:1snip/262tok/r0.45rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/104tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 10953,
+   "from_cache": false,
+   "prompt_total_tokens": 819,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C11_json_format",
+   "input": "用JSON格式返回：字段name填fastapi，字段lang填python，只返回JSON不要其他文字",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"name\": \"fastapi\", \"lang\": \"python\"}",
+   "wall_ms": 9040,
+   "points": 17,
+   "llm_calls": 1,
+   "prompt_tokens": 382,
+   "completion_tokens": 19,
+   "total_tokens": 401,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.3732391006324334
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 8085,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/88tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 53,
+   "from_cache": false,
+   "prompt_total_tokens": 518,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}

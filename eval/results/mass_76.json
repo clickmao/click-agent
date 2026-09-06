@@ -1,0 +1,196 @@
+{
+ "round": "mass_76",
+ "label": "R105 batch18 76 cloud",
+ "ts": "2026-09-07T00:46:04+0800",
+ "cases": 5,
+ "passed": 5,
+ "tokens_total": 3633,
+ "prompt_total": 1957,
+ "completion_total": 1676,
+ "wall_total_ms": 98678,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组分区递归排序的高效分治算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 6890,
+   "points": 17,
+   "llm_calls": 1,
+   "prompt_tokens": 356,
+   "completion_tokens": 30,
+   "total_tokens": 386,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41518095082488204
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 6005,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 53,
+   "from_cache": false,
+   "prompt_total_tokens": 479,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "结论先行：无绝对最优，按规模与运维能力选型——\n\n· **Qdrant**：Rust 实现、性能与部署易用性均衡，中小规模（百万~千万级）首选\n· **Milvus**：分布式架构，亿级向量、高 QPS 生产场景首选，但运维复杂度高\n· **Pinecone**：全托管 Serverless 免运维，适合快速上线，成本较高且有数据合规顾虑\n· **pgvector**：复用现有 PostgreSQL，千万级以下 + 强事务/关联查询场景最省事\n· **Chroma / FAISS**：轻量嵌入式，适合原型验证与单机小数据\n\n选型关键依据：数据规模、QPS 与召回率要求、是否需托管服务、预算、团队运维能力。\n\n如需完整长文报告（含性能基准、定价、API 生态对比表），请明确说明，我再展开。",
+   "wall_ms": 30006,
+   "points": 17,
+   "llm_calls": 1,
+   "prompt_tokens": 373,
+   "completion_tokens": 912,
+   "total_tokens": 1285,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4271060887559994
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 29091,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/91tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 57,
+   "from_cache": false,
+   "prompt_total_tokens": 539,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (3385ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 4335,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 3385,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "核心原理：把“逐行全表扫描”变成“在有序结构中定位”，查询成本从 O(n) 降到 O(log n) 甚至 O(1)。\n\n具体机制：\n\n1. 有序数据结构减少查找次数\n· 无索引时，查询需扫描全表每一行判断是否匹配\n· B+ 树索引将数据按序组织，查找只需沿树向下比较，千万级数据通常仅 3~4 层，即约 3~4 次磁盘 I/O\n\n2. 减少磁盘 I/O\n· 数据库瓶颈主要在磁盘 I/O。B+ 树“矮胖”设计让每个节点容纳大量键，树高极低，I/O 次数大幅减少\n· 哈希索引更进一步：等值查询直接算出位置，接近 O(1)\n\n3. 利用有序性加速范围查询与排序\n· B+ 树叶子节点按序链接，`WHERE id > 100` 这类范围查询可顺序读取一段连续区间，`ORDER BY` 也无需额外排序\n\n4. 覆盖索引避免回表\n· 若索引已包含查询所需全部列，直接从索引返回结果，省去访问主表的开销\n\n代",
+   "wall_ms": 27825,
+   "points": 18,
+   "llm_calls": 1,
+   "prompt_tokens": 571,
+   "completion_tokens": 715,
+   "total_tokens": 1286,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40487451681990605
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 26908,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:1snip/250tok/r0.45rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/104tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 10872,
+   "from_cache": false,
+   "prompt_total_tokens": 814,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C11_json_format",
+   "input": "用JSON格式返回：字段name填fastapi，字段lang填python，只返回JSON不要其他文字",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"name\": \"fastapi\", \"lang\": \"python\"}",
+   "wall_ms": 29622,
+   "points": 19,
+   "llm_calls": 1,
+   "prompt_tokens": 657,
+   "completion_tokens": 19,
+   "total_tokens": 676,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.3732391006324334
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 28672,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:1snip/333tok/r0.45rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/160tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 21888,
+   "from_cache": false,
+   "prompt_total_tokens": 896,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}
