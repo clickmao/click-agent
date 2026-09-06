@@ -236,13 +236,20 @@ public static class ServiceCollectionExtensions
         services.AddSingleton(sp => new agent.modelqueue.TokenUsageService(
             sp.GetRequiredService<agent.modelqueue.BalanceQueryService>(),
             sp.GetRequiredService<agent.modelqueue.ModelCatalog>()));
-        services.AddSingleton(sp => new agent.modelqueue.ModelQueueRouter(
-            sp.GetRequiredService<agent.modelqueue.ModelCatalog>(),
-            sp.GetRequiredService<IHttpClientFactory>(),
-            sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<IndustrialAgentV2>>(),
-            localInference: new agent.modelqueue.LocalInferenceAdapter(
-                sp.GetRequiredService<agent.llamalocal.LocalLlamaCaller>()),
-            tokenUsage: sp.GetRequiredService<agent.modelqueue.TokenUsageService>()));
+        services.AddSingleton(sp =>
+        {
+            var tokenUsageLocal = sp.GetRequiredService<agent.modelqueue.TokenUsageService>();
+            var routerLocal = new agent.modelqueue.ModelQueueRouter(
+                sp.GetRequiredService<agent.modelqueue.ModelCatalog>(),
+                sp.GetRequiredService<IHttpClientFactory>(),
+                sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<IndustrialAgentV2>>(),
+                localInference: new agent.modelqueue.LocalInferenceAdapter(
+                    sp.GetRequiredService<agent.llamalocal.LocalLlamaCaller>()),
+                tokenUsage: tokenUsageLocal);
+            // v0.11.0 R15: auto 选模主路径余额感知 — EstimateBalance (含 CNY→USD 换算) 注入排序强降权
+            routerLocal.Scheduler.BalanceProbe = tokenUsageLocal.EstimateBalance;
+            return routerLocal;
+        });
         services.AddSingleton<ModelQueueAdapter>();
         services.AddSingleton<ILLMCaller>(sp => sp.GetRequiredService<ModelQueueAdapter>());
         services.AddSingleton<agent.subagent.ILLMCallerForIsolated>(sp => sp.GetRequiredService<ModelQueueAdapter>());

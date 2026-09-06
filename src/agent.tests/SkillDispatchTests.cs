@@ -58,9 +58,10 @@ public class SkillDispatchTests
     {
         var dispatcher = new SkillDispatcher(new SkillRegistry(), new TriggerMatcher(suspectedTrigger: true));
         dispatcher.Register(IdentitySkill());
-        // 无关键词/正则命中, 仅领域词 "身份" → 疑似命中仍激活
+        // v0.11.0 语义变更 (打点驱动修复): 疑似命中 (仅领域词, level=1) 不再 force 吞掉提问 —
+        // 降级返回 null, 由主链走 LLM 普通推理 ("介绍快速排序" 曾被身份模板误吞)
         var result = await dispatcher.DispatchAsync("帮我看看这个身份信息怎么填");
-        Assert.NotNull(result);
+        Assert.Null(result);
     }
 
     [Fact]

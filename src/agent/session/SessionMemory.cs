@@ -66,7 +66,7 @@ public sealed class SessionMemory
     /// <summary>
     /// 设置/更新任务目标画像 (方向指示)。目标句同步进长期记忆 (goalRelated, 最后裁)。
     /// </summary>
-    public void SetGoal(string goalText, IEnumerable<string>? keyEntities, string? goalIntent = null,
+    public void SetGoal(string goalText, IEnumerable<string>? keyEntities = null, string? goalIntent = null,
         IEnumerable<string>? constraints = null)
     {
         if (string.IsNullOrWhiteSpace(goalText))

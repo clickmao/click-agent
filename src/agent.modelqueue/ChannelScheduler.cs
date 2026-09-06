@@ -37,6 +37,12 @@ public sealed class ChannelScheduler
     public double SpeedWeight { get; set; } = 0.3;
     public double PriceWeight { get; set; } = 0.3;
 
+    /// <summary>
+    /// v0.11.0 R15: 余额判定服务 (可选, 由宿主装配后赋值)。
+    /// EstimateBalance.Sufficient=false 的模型在排序中强降权 — auto 主路径不再选余额不足的模型。
+    /// </summary>
+    public Func<string, int, (double? Remaining, bool Sufficient)>? BalanceProbe { get; set; }
+
     public ChannelScheduler(int localMax = 2, int officialMax = 4, int remoteMax = 4)
     {
         _localMaxConcurrency = localMax;
@@ -122,6 +128,14 @@ public sealed class ChannelScheduler
                 string.IsNullOrEmpty(Environment.GetEnvironmentVariable(m.ApiKeyEnv)))
             {
                 priceScore = 0; // 无 key = 无法调用, 排序沉底 (不删除: 留给显式 /model 指定)
+            }
+
+            // v0.11.0 R15: 余额不足 (换算后低于判定线) → 同样强降权 (auto 不选将失败的模型)
+            if (BalanceProbe is not null)
+            {
+                var est = BalanceProbe(m.Provider, estimatedTokens);
+                if (!est.Sufficient)
+                    priceScore = 0;
             }
 
             // 速度分: 轻模型偏好 (suited_for 含轻任务标签 + 价格低即快)

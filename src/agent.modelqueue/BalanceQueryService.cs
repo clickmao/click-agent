@@ -15,6 +15,9 @@ public sealed class BalanceResult
     public double? TotalUsed { get; set; }
     public double? TotalRemaining { get; set; }
 
+    /// <summary>v0.11.0 R15: 原始币种 (USD/CNY/…) — 空串=未声明 (按 USD 处理并标注)</summary>
+    public string Currency { get; set; } = string.Empty;
+
     public string? Error { get; set; }
 
     /// <summary>provider 不支持时的调研备注 (目录 balance_schemes.note)</summary>
@@ -110,7 +113,10 @@ public sealed class BalanceQueryService
                     {
                         result.TotalRemaining = v;
                         if (infos[0].TryGetProperty("currency", out var cur))
-                            result.Note = $"币种 {cur.GetString()} (原始值未换算)";
+                        {
+                            result.Currency = cur.GetString() ?? string.Empty;
+                            result.Note = $"币种 {result.Currency}";
+                        }
                     }
                     else
                     {

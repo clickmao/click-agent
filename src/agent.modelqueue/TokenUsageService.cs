@@ -7,7 +7,9 @@ namespace agent.modelqueue;
 public sealed record UsageRecord(string ModelId, string Provider, int PromptTokens, int CompletionTokens, DateTime At);
 
 /// <summary>模型余额快照 (真实 API 查询结果或本地推算)</summary>
-public sealed record BalanceSnapshot(string Provider, double? TotalRemaining, DateTime At, bool FromApi);
+public sealed record BalanceSnapshot(
+    string Provider, double? TotalRemaining, DateTime At, bool FromApi,
+    string Currency = "USD"); // v0.11.0 R15: 原始币种 (默认 USD 兼容旧调用)
 
 /// <summary>
 /// v0.10.0 Token 使用统计服务 — 用户钦定契约:
@@ -38,6 +40,10 @@ public sealed class TokenUsageService
         _balance = balance;
         _catalog = catalog;
         _resyncThresholdTokens = Math.Max(1_000, resyncThresholdTokens);
+        // v0.11.0 R15: 判定线支持 env 覆写 (阈值切模实战注入用)
+        var envMin = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_MIN_BALANCE_USD");
+        if (double.TryParse(envMin, System.Globalization.CultureInfo.InvariantCulture, out var parsedMin) && parsedMin >= 0)
+            minBalanceUsd = parsedMin;
         _minBalanceUsd = minBalanceUsd;
     }
 
@@ -58,7 +64,7 @@ public sealed class TokenUsageService
                 {
                     lock (_sync)
                     {
-                        _balances[p] = new BalanceSnapshot(p, r.TotalRemaining.Value, DateTime.UtcNow, FromApi: true);
+                        _balances[p] = new BalanceSnapshot(p, r.TotalRemaining.Value, DateTime.UtcNow, FromApi: true, r.Currency);
                         _tokensSinceSync[p] = 0;
                     }
                 }
@@ -97,12 +103,32 @@ public sealed class TokenUsageService
             var priceOut = _catalog.Models
                 .Where(m => string.Equals(m.Provider, provider, StringComparison.OrdinalIgnoreCase))
                 .Select(m => m.PriceOutPerM).DefaultIfEmpty(0).Min();
+            // v0.11.0 R15: 余额币种 ≠ 记价币种 (USD) 时先换算再比较 (原实现 CNY 余额直接当 USD 比价, 差 ~7.2 倍)
+            var rate = CurrencyToUsdRate(snap.Currency);
+            var balanceUsd = snap.TotalRemaining.Value * rate;
             var spentSinceSync = (_tokensSinceSync.TryGetValue(provider, out var s) ? s : 0) * priceOut / 1_000_000.0;
-            var remaining = snap.TotalRemaining.Value - spentSinceSync;
+            var remaining = balanceUsd - spentSinceSync;
             var estCost = estimatedTokens * priceOut / 1_000_000.0;
             return (remaining, remaining - estCost >= _minBalanceUsd);
             // remaining - estCost >= minBalanceUsd: 预估完成本次调用后仍高于判定线
         }
+    }
+
+    /// <summary>
+    /// v0.11.0 R15: 原始币种→USD 汇率。AGENTFRAMEWORK_FX_RATE_CNY_USD 环境变量可覆写 (默认 7.2);
+    /// 未知币种返回 1.0 并由调用方语义保持 (记账侧只统计不判定)。
+    /// </summary>
+    public static double CurrencyToUsdRate(string currency)
+    {
+        if (string.IsNullOrWhiteSpace(currency) || string.Equals(currency, "USD", StringComparison.OrdinalIgnoreCase))
+            return 1.0;
+        if (string.Equals(currency, "CNY", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(currency, "RMB", StringComparison.OrdinalIgnoreCase))
+        {
+            var env = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_FX_RATE_CNY_USD");
+            return double.TryParse(env, System.Globalization.CultureInfo.InvariantCulture, out var r) && r > 0 ? r : 7.2;
+        }
+        return 1.0; // 未知币种: 诚实按 1:1 (不编造汇率), Note 标注
     }
 
     /// <summary>是否需要再同步 (阈值触发: provider 累计超阈值)</summary>
@@ -121,7 +147,7 @@ public sealed class TokenUsageService
             if (r is not { Ok: true, TotalRemaining: not null }) return false;
             lock (_sync)
             {
-                _balances[provider] = new BalanceSnapshot(provider, r.TotalRemaining.Value, DateTime.UtcNow, true);
+                _balances[provider] = new BalanceSnapshot(provider, r.TotalRemaining.Value, DateTime.UtcNow, true, r.Currency);
                 _tokensSinceSync[provider] = 0;
             }
             return true;
