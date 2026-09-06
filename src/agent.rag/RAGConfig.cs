@@ -183,77 +183,25 @@ public class RAGRecall : IRAGRecall
         }
     }
 
-    /// <summary>v0.11.0 R79: 手写 JSON 解析一行 (零反射约束禁 System.Text.Json 反射路径)</summary>
+    /// <summary>v0.11.0 R92: STJ source-gen 反序列化 (替换 R79 手写解析 — 零反射保持, AOT 官方路径)</summary>
     private static RAGDocument? ParsePersistedDocument(string json)
     {
         try
         {
-            var doc = new RAGDocument();
-            doc.Id = JsonGetString(json, "id") ?? doc.Id;
-            doc.Content = JsonGetString(json, "content") ?? string.Empty;
-            doc.DocumentType = JsonGetString(json, "type") ?? "general";
-            if (doc.Content.Length == 0) return null;
-            var emb = JsonGetFloatArray(json, "embedding");
-            if (emb != null) doc.Embedding = emb;
-            var kws = JsonGetStringArray(json, "keywords");
-            if (kws != null) doc.Keywords = kws;
-            return doc;
+            var dto = System.Text.Json.JsonSerializer.Deserialize(json, RAGPersistJsonContext.Default.RAGPersistDoc);
+            if (dto is null || dto.Content.Length == 0) return null;
+            return new RAGDocument
+            {
+                Id = dto.Id,
+                Content = dto.Content,
+                DocumentType = string.IsNullOrEmpty(dto.Type) ? "general" : dto.Type,
+                Embedding = dto.Embedding.Count > 0 ? dto.Embedding.ToArray() : null,
+                Keywords = dto.Keywords,
+            };
         }
         catch { return null; }
     }
-
-    private static string? JsonGetString(string json, string key)
-    {
-        var pat = "\"" + key + "\":\"";
-        var i = json.IndexOf(pat, StringComparison.Ordinal);
-        if (i < 0) return null;
-        var start = i + pat.Length;
-        var sb = new System.Text.StringBuilder();
-        for (var j = start; j < json.Length; j++)
-        {
-            var c = json[j];
-            if (c == '\\' && j + 1 < json.Length) { j++; sb.Append(json[j] switch { 'n' => '\n', 'r' => '\r', 't' => '\t', _ => json[j] }); continue; }
-            if (c == '"') break;
-            sb.Append(c);
-        }
-        return sb.ToString();
-    }
-
-    private static float[]? JsonGetFloatArray(string json, string key)
-    {
-        var pat = "\"" + key + "\":[";
-        var i = json.IndexOf(pat, StringComparison.Ordinal);
-        if (i < 0) return null;
-        var start = i + pat.Length;
-        var end = json.IndexOf(']', start);
-        if (end < 0) return null;
-        var parts = json[start..end].Split(',');
-        var list = new List<float>(parts.Length);
-        foreach (var p in parts)
-        {
-            if (float.TryParse(p.Trim(), System.Globalization.CultureInfo.InvariantCulture, out var v))
-                list.Add(v);
-        }
-        return list.Count > 0 ? list.ToArray() : null;
-    }
-
-    private static List<string>? JsonGetStringArray(string json, string key)
-    {
-        var pat = "\"" + key + "\":[";
-        var i = json.IndexOf(pat, StringComparison.Ordinal);
-        if (i < 0) return null;
-        var start = i + pat.Length;
-        var end = json.IndexOf(']', start);
-        if (end < 0) return null;
-        var list = new List<string>();
-        foreach (var seg in json[start..end].Split('"'))
-        {
-            if (seg.Length > 0 && seg != ",") list.Add(seg);
-        }
-        return list.Count > 0 ? list : null;
-    }
-
-    /// <summary>v0.11.0 R79: 写侧落盘 — 手写 JSON 行 (零反射); 追加写, 上限 512 文档裁剪</summary>
+    /// <summary>v0.11.0 R92: 写侧落盘 — STJ source-gen (零反射); 追加写, 上限 512 文档裁剪</summary>
     private void PersistDocument(RAGDocument doc)
     {
         try
@@ -262,13 +210,16 @@ public class RAGRecall : IRAGRecall
             var dir = Path.GetDirectoryName(path);
             if (!string.IsNullOrEmpty(dir)) Directory.CreateDirectory(dir);
             var emb = doc.Embedding ?? GenerateEmbedding(doc.Content);
-            var kw = string.Join(",", doc.Keywords.Select(k => "\"" + k.Replace("\"", "'") + "\""));
-            var content = doc.Content.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", "\\n").Replace("\r", "");
-            var type = (doc.DocumentType ?? "general").Replace("\"", "'");
-            var line = "{\"id\":\"" + doc.Id + "\",\"type\":\"" + type +
-                       "\",\"keywords\":[" + kw + "],\"embedding\":[" +
-                       string.Join(",", emb.Select(v => v.ToString("R", System.Globalization.CultureInfo.InvariantCulture))) +
-                       "],\"content\":\"" + content + "\"}\n";
+            // v0.11.0 R92: STJ source-gen 序列化 (替换 R79 手写拼 JSON — 用户注意点 2, 零反射保持)
+            var dto = new RAGPersistDoc
+            {
+                Id = doc.Id,
+                Type = doc.DocumentType ?? "general",
+                Keywords = doc.Keywords,
+                Embedding = emb.ToList(),
+                Content = doc.Content,
+            };
+            var line = System.Text.Json.JsonSerializer.Serialize(dto, RAGPersistJsonContext.Default.RAGPersistDoc) + "\n";
             File.AppendAllText(path, line);
             // 上限裁剪: 超 512 行重建 (保留最新)
             var lines = File.ReadAllLines(path);
