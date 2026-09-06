@@ -1,0 +1,159 @@
+{
+ "round": "mass_23",
+ "label": "R63 batch5 23",
+ "ts": "2026-09-06T19:12:11+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 2755,
+ "prompt_total": 1133,
+ "completion_total": 1622,
+ "wall_total_ms": 46967,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组递归划分为“小于”和“大于”两部分，从而实现平均时间复杂度 O(n log n) 的高效排序算法。",
+   "wall_ms": 3206,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 342,
+   "completion_tokens": 40,
+   "total_tokens": 382,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 2260,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/71tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 49,
+   "from_cache": false,
+   "prompt_total_tokens": 474,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "先问一句：数据规模（百万级/亿级）和部署方式（自托管/云托管）是什么？\n\n默认方案：以下按中小规模（千万级以内）、自托管、RAG 场景给出初步结论。\n\n主流选型要点：\n\n· **Qdrant**：Rust 实现，性能与内存效率优秀，API 友好 —— 中小规模首选\n· **pgvector**：复用现有 PostgreSQL，运维成本最低 —— 已有 PG 时首选，千万级以内够用\n· **Milvus**：功能最全、分布式成熟 —— 亿级大规模首选，但运维较复杂\n· **Weaviate**：内置向量+关键词混合检索 —— RAG 场景有优势\n· **Pinecone**：全托管免运维 —— 不想管基础设施的团队，成本较高\n· **Chroma**：轻量易上手 —— 适合原型验证和小项目\n\n推荐结论：无特殊约束选 Qdrant；已有 PostgreSQL 选 pgvector；亿级规模选 ",
+   "wall_ms": 21951,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 399,
+   "completion_tokens": 943,
+   "total_tokens": 1342,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 21026,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/144tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 49,
+   "from_cache": false,
+   "prompt_total_tokens": 583,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (623ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1536,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 623,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "索引加速查询的核心原理：把全表扫描（O(n)）变成有序结构中的定向查找（O(log n) 或 O(1)）。\n\n关键机制：\n\n1. 避免全表扫描\n· 无索引时，查询需逐行读取全部数据页，行数越多越慢。\n· 有索引时，直接在索引结构中定位目标，只读少量页。\n\n2. B+ 树的有序性（最常用）\n· 索引键有序存储，查找类似二分查找，千万级数据通常只需 3~4 次树高访问。\n· 叶子节点用链表串联，天然支持范围查询（`BETWEEN`、`>`、`<`）。\n\n3. 减少 I/O 量\n· 索引只存键值 + 行指针，体积远小于整表，更多部分能驻留内存（buffer pool），内存查找比磁盘 I/O 快几个数量级。\n\n4. Hash 索引的极致等值查询\n· 键直接哈希定位，O(1)，但只支持精确匹配，不支持范围和排序。\n\n5. 附加收益\n· 覆盖索引：查询字段全在索引中，无需回表。\n· 索引本身有序，`",
+   "wall_ms": 20274,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 392,
+   "completion_tokens": 639,
+   "total_tokens": 1031,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 19336,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/117tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 71,
+   "from_cache": false,
+   "prompt_total_tokens": 569,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}

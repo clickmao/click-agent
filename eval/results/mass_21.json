@@ -1,0 +1,159 @@
+{
+ "round": "mass_21",
+ "label": "R63 batch5 21",
+ "ts": "2026-09-06T19:10:19+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 3560,
+ "prompt_total": 1221,
+ "completion_total": 2339,
+ "wall_total_ms": 75864,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组 partition 分治、平均时间复杂度 O(n log n) 的高效排序算法。\n\n如需代码示例或与归并排序对比，请告诉我。",
+   "wall_ms": 4675,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 355,
+   "completion_tokens": 44,
+   "total_tokens": 399,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 3697,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/71tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 51,
+   "from_cache": false,
+   "prompt_total_tokens": 491,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "说明：所给上下文（工作区代码与评测文件）与向量数据库无关，以下基于通用知识给出要点式结论。\n\n初步选型结论\n· **Milvus**：亿级规模首选，分布式架构、生态与社区成熟\n· **Qdrant**：千万级性价比高，Rust 实现，过滤/混合检索强\n· **Pinecone**：全托管免运维，适合快速上线，成本偏高\n· **pgvector**：已有 PostgreSQL 栈时最省事，百万级够用\n· **Chroma / FAISS**：原型验证与单机小规模场景\n· **Elasticsearch**：已有 ES 栈可顺手加向量能力，性能非最优\n\n关键评估维度：数据规模、QPS/延迟要求、过滤与混合检索需求、自部署 vs 托管、运维与成本。\n\n问询：你们的预期数据规模（百万/千万/亿级）和部署方式（自部署/云托管）是什么？\n默认按“千万级向量、自部署优先”生成完整对比报告，确认或回复“按",
+   "wall_ms": 42106,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 369,
+   "completion_tokens": 1585,
+   "total_tokens": 1954,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 41191,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/77tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 61,
+   "from_cache": false,
+   "prompt_total_tokens": 525,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (634ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1524,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 634,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "索引加速查询的本质是把无序的线性查找变成有序的结构化查找，核心机制如下：\n\n1. 降低查找复杂度\n· 无索引：全表扫描，逐行比对，复杂度 O(n)\n· 有索引：B+ 树查找，复杂度 O(log n)。千万级数据只需 3~4 层树高，即 3~4 次磁盘 I/O 即可定位\n\n2. B+ 树契合磁盘特性\n· 多叉“矮胖”结构：每个节点存大量键值，树高极低，直接减少昂贵的磁盘 I/O 次数（I/O 才是瓶颈，CPU 比较反而是小事）\n· 叶子节点有序且用链表串联：范围查询（`BETWEEN`、`ORDER BY`）只需定位起点后顺序遍历\n\n3. 有序性带来剪枝能力\n数据按 key 排序后，每次比较可排除一半候选数据（类似二分），而全表扫描无法利用任何先验信息。\n\n4. 哈希索引的特殊情况\n等值查询可做到 O(1)，但不支持范围和排序，仅适合 = / IN 场景。\n\n代价（空间换时间）\n· 额外存储",
+   "wall_ms": 27559,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 497,
+   "completion_tokens": 710,
+   "total_tokens": 1207,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 26616,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/143tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 48,
+   "from_cache": false,
+   "prompt_total_tokens": 632,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}

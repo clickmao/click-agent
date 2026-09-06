@@ -1,0 +1,159 @@
+{
+ "round": "mass_22",
+ "label": "R63 batch5 22",
+ "ts": "2026-09-06T19:11:24+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 3627,
+ "prompt_total": 1173,
+ "completion_total": 2454,
+ "wall_total_ms": 65273,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组递归划分为“小于基准”和“大于基准”两部分来实现排序的高效分治算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 3593,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 362,
+   "completion_tokens": 41,
+   "total_tokens": 403,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 2709,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/71tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 49,
+   "from_cache": false,
+   "prompt_total_tokens": 503,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "先澄清一句：你们的场景是什么规模与部署方式（数据量/QPS、云托管还是自托管）？\n\n默认方案一句话：若按“中小规模、自托管、兼顾生态”的常见场景，我将以 Milvus、Qdrant、Weaviate、pgvector、Chroma 五款为对象，从性能、扩展性、运维成本、生态四个维度对比，并给出推荐结论。\n\n回复“用默认”或补充规模信息后，我即输出完整对比报告（要点式，500 字内）。",
+   "wall_ms": 12311,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 409,
+   "completion_tokens": 702,
+   "total_tokens": 1111,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 11373,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/124tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 68,
+   "from_cache": false,
+   "prompt_total_tokens": 596,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (661ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1554,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 661,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "核心原因：索引把查询从“逐行全表扫描”变成“按有序结构快速定位”，本质是用空间和写入开销换取 I/O 次数的大幅减少。\n\n关键分析：\n\n1. 数据结构变化：无索引时全表扫描为 O(n)；B+ 树索引为 O(log n)，且树高通常只有 3~4 层。\n\n2. I/O 次数骤减（根本原因）：磁盘 I/O 是查询的主要开销。B+ 树节点扇出很大（一个节点可存数百个键），百万行数据定位一条记录只需 3~4 次页读取，而全表扫描可能要读几万页。\n\n3. 有序性带来的额外收益：\n· 索引键有序，支持二分查找和高效范围查询（叶子节点通过链表相连）；\n· `ORDER BY` 索引列时可直接按索引顺序读取，省去排序步骤。\n\n4. 覆盖索引：查询所需列全部在索引中时，无需回表读取原始数据，进一步减少 I/O。\n\n代价（为什么不能无脑加索引）：写入时需同步维护索引（INSERT/UPDATE/DELETE 变",
+   "wall_ms": 47815,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 402,
+   "completion_tokens": 1711,
+   "total_tokens": 2113,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 46883,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/130tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 58,
+   "from_cache": false,
+   "prompt_total_tokens": 582,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}
