@@ -447,14 +447,17 @@ public class IndustrialAgentV2 : AgentBase
                 var goalText = message.Content.Length > 200 ? message.Content[..200] + "…" : message.Content;
                 string[] pivotMarkers = { "算了", "改成", "改为", "换成", "不要了", "还是做", "换一个" };
                 var isPivot = pivotMarkers.Any(m => message.Content.Contains(m, StringComparison.Ordinal));
+                // v0.11.0 R70 (真缺陷 30): SetGoal constraints 参数从未传入 (死代码链) — 约束陈述
+                // ("只能用X/不许用Y/必须Z") 提取为结构化 Constraints, 注入 prompt 【约束】行
+                var constraints = ExtractConstraints(message.Content);
                 if (string.IsNullOrEmpty(mem.Goal?.GoalText) && IsGoalWorthy(message.Content))
                 {
                     // v0.11.0 (打点驱动修复): goal 锚定时抽取关键实体 — 实体空导致隔离判定永不触发
-                    mem.SetGoal(goalText, agent.intent.TaskRelevanceChecker.ExtractEntities(goalText), intent);
+                    mem.SetGoal(goalText, agent.intent.TaskRelevanceChecker.ExtractEntities(goalText), intent, constraints);
                 }
                 else if (isPivot && IsGoalWorthy(message.Content))
                 {
-                    mem.SetGoal(goalText, agent.intent.TaskRelevanceChecker.ExtractEntities(goalText), intent);
+                    mem.SetGoal(goalText, agent.intent.TaskRelevanceChecker.ExtractEntities(goalText), intent, constraints);
                     agent.config.AgentTelemetry.Emit("goal", "IndustrialAgentV2",
                         ("op", "pivot"), ("goal", goalText.Length > 40 ? goalText[..40] + "…" : goalText));
                 }
@@ -545,6 +548,45 @@ public class IndustrialAgentV2 : AgentBase
         return response;
     }
     
+    /// <summary>
+    /// v0.11.0 R70 (真缺陷 30): 从任务陈述提取约束子句 ("约束：X"/"只能X"/"不许Y"/"必须Z"/"避免W")。
+    /// 零 LLM 纯规则; 每约束截 60 字; 上限 8 条 (防噪声)。
+    /// </summary>
+    internal static List<string> ExtractConstraints(string text)
+    {
+        var constraints = new List<string>();
+        if (string.IsNullOrWhiteSpace(text)) return constraints;
+        // 冒号显式标记: "约束：..." / "限制：..." 整段
+        var markers = new[] { "约束", "限制", "要求" };
+        foreach (var m in markers)
+        {
+            var idx = text.IndexOf(m + "：", StringComparison.Ordinal);
+            if (idx < 0) idx = text.IndexOf(m + ":", StringComparison.Ordinal);
+            if (idx >= 0)
+            {
+                var seg = text[(idx + m.Length + 1)..];
+                var end = seg.IndexOfAny(new[] { '。', '；', ';', '\n' });
+                var constraint = (end > 0 ? seg[..end] : seg).Trim();
+                if (constraint.Length > 0)
+                    constraints.Add(constraint.Length > 60 ? constraint[..60] + "…" : constraint);
+            }
+        }
+        // 助动词模式: "只能/不许/不准/必须/避免" + 分隔
+        string[] auxMarkers = { "只能", "不许", "不准", "必须", "避免" };
+        foreach (var aux in auxMarkers)
+        {
+            var idx = text.IndexOf(aux, StringComparison.Ordinal);
+            if (idx < 0) continue;
+            var seg = text[idx..];
+            var end = seg.IndexOfAny(new[] { '。', '，', '；', ';', '\n' });
+            var constraint = (end > 0 ? seg[..end] : seg).Trim();
+            if (constraint.Length > 1 && !constraints.Any(c => constraint.Contains(c) || c.Contains(constraint)))
+                constraints.Add(constraint.Length > 60 ? constraint[..60] + "…" : constraint);
+            if (constraints.Count >= 8) break;
+        }
+        return constraints;
+    }
+
     #region Core Methods
     
     /// <summary>
