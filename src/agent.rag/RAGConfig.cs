@@ -134,10 +134,153 @@ public class RAGRecall : IRAGRecall
     // 文档类型索引
     private readonly Dictionary<string, HashSet<string>> _typeIndex = new();
     
+    // v0.11.0 R79 (真缺陷 33): RAG 索引落盘路径 — 进程重启后恢复 (与 TendencyData 同类缺陷修复)
+    private static readonly string PersistPath = Path.Combine(
+        AppContext.BaseDirectory, "..", "..", "..", "..", "..", "..", "data", "rag", "index.jsonl");
+    private static string ResolvePersistPath()
+    {
+        // CWD 优先 (仓库根运行 = 真机标准形态), 回退 AppContext 推导 (AOT 独立运行)
+        var cwdPath = Path.GetFullPath("data/rag/index.jsonl");
+        var usePath = File.Exists(cwdPath) || Directory.Exists("data") ? cwdPath : PersistPath;
+        return usePath;
+    }
+
     public RAGRecall(ILogger<RAGRecall> logger, RAGConfig? config = null)
     {
         _logger = logger;
         _config = config ?? new RAGConfig();
+        // v0.11.0 R79: 构造时恢复上次落盘索引 (跨进程召回)
+        LoadPersisted();
+    }
+
+    /// <summary>v0.11.0 R79: 读侧恢复 — JSONL 每行一文档 (手写解析, 零反射)</summary>
+    private void LoadPersisted()
+    {
+        try
+        {
+            var path = ResolvePersistPath();
+            if (!File.Exists(path)) return;
+            var loaded = 0;
+            foreach (var line in File.ReadLines(path))
+            {
+                if (string.IsNullOrWhiteSpace(line)) continue;
+                var doc = ParsePersistedDocument(line);
+                if (doc == null) continue;
+                lock (_lock)
+                {
+                    UpdateKeywordIndex(doc);
+                    UpdateTypeIndex(doc);
+                    _documents[doc.Id] = doc;
+                }
+                loaded++;
+            }
+            if (loaded > 0)
+                _logger.LogInformation("RAG index restored: {Count} documents from {Path}", loaded, path);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "RAG index restore failed (non-fatal)");
+        }
+    }
+
+    /// <summary>v0.11.0 R79: 手写 JSON 解析一行 (零反射约束禁 System.Text.Json 反射路径)</summary>
+    private static RAGDocument? ParsePersistedDocument(string json)
+    {
+        try
+        {
+            var doc = new RAGDocument();
+            doc.Id = JsonGetString(json, "id") ?? doc.Id;
+            doc.Content = JsonGetString(json, "content") ?? string.Empty;
+            doc.DocumentType = JsonGetString(json, "type") ?? "general";
+            if (doc.Content.Length == 0) return null;
+            var emb = JsonGetFloatArray(json, "embedding");
+            if (emb != null) doc.Embedding = emb;
+            var kws = JsonGetStringArray(json, "keywords");
+            if (kws != null) doc.Keywords = kws;
+            return doc;
+        }
+        catch { return null; }
+    }
+
+    private static string? JsonGetString(string json, string key)
+    {
+        var pat = "\"" + key + "\":\"";
+        var i = json.IndexOf(pat, StringComparison.Ordinal);
+        if (i < 0) return null;
+        var start = i + pat.Length;
+        var sb = new System.Text.StringBuilder();
+        for (var j = start; j < json.Length; j++)
+        {
+            var c = json[j];
+            if (c == '\\' && j + 1 < json.Length) { j++; sb.Append(json[j] switch { 'n' => '\n', 'r' => '\r', 't' => '\t', _ => json[j] }); continue; }
+            if (c == '"') break;
+            sb.Append(c);
+        }
+        return sb.ToString();
+    }
+
+    private static float[]? JsonGetFloatArray(string json, string key)
+    {
+        var pat = "\"" + key + "\":[";
+        var i = json.IndexOf(pat, StringComparison.Ordinal);
+        if (i < 0) return null;
+        var start = i + pat.Length;
+        var end = json.IndexOf(']', start);
+        if (end < 0) return null;
+        var parts = json[start..end].Split(',');
+        var list = new List<float>(parts.Length);
+        foreach (var p in parts)
+        {
+            if (float.TryParse(p.Trim(), System.Globalization.CultureInfo.InvariantCulture, out var v))
+                list.Add(v);
+        }
+        return list.Count > 0 ? list.ToArray() : null;
+    }
+
+    private static List<string>? JsonGetStringArray(string json, string key)
+    {
+        var pat = "\"" + key + "\":[";
+        var i = json.IndexOf(pat, StringComparison.Ordinal);
+        if (i < 0) return null;
+        var start = i + pat.Length;
+        var end = json.IndexOf(']', start);
+        if (end < 0) return null;
+        var list = new List<string>();
+        foreach (var seg in json[start..end].Split('"'))
+        {
+            if (seg.Length > 0 && seg != ",") list.Add(seg);
+        }
+        return list.Count > 0 ? list : null;
+    }
+
+    /// <summary>v0.11.0 R79: 写侧落盘 — 手写 JSON 行 (零反射); 追加写, 上限 512 文档裁剪</summary>
+    private void PersistDocument(RAGDocument doc)
+    {
+        try
+        {
+            var path = ResolvePersistPath();
+            var dir = Path.GetDirectoryName(path);
+            if (!string.IsNullOrEmpty(dir)) Directory.CreateDirectory(dir);
+            var emb = doc.Embedding ?? GenerateEmbedding(doc.Content);
+            var kw = string.Join(",", doc.Keywords.Select(k => "\"" + k.Replace("\"", "'") + "\""));
+            var content = doc.Content.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", "\\n").Replace("\r", "");
+            var type = (doc.DocumentType ?? "general").Replace("\"", "'");
+            var line = "{\"id\":\"" + doc.Id + "\",\"type\":\"" + type +
+                       "\",\"keywords\":[" + kw + "],\"embedding\":[" +
+                       string.Join(",", emb.Select(v => v.ToString("R", System.Globalization.CultureInfo.InvariantCulture))) +
+                       "],\"content\":\"" + content + "\"}\n";
+            File.AppendAllText(path, line);
+            // 上限裁剪: 超 512 行重建 (保留最新)
+            var lines = File.ReadAllLines(path);
+            if (lines.Length > 512)
+            {
+                File.WriteAllLines(path, lines[^512..]);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "RAG index persist failed (non-fatal)");
+        }
     }
     
     public Task IndexAsync(RAGDocument document)
@@ -172,6 +315,7 @@ public class RAGRecall : IRAGRecall
         }
         
         _logger.LogDebug("Indexed document {DocumentId}", document.Id);
+        PersistDocument(document);
         
         return Task.CompletedTask;
     }

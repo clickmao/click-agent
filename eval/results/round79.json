@@ -1,0 +1,159 @@
+{
+ "round": "round79",
+ "label": "R79 RAG 持久化验证",
+ "ts": "2026-09-06T20:11:23+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 3329,
+ "prompt_total": 1697,
+ "completion_total": 1632,
+ "wall_total_ms": 62769,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组分区递归排序的高效分治排序算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 3967,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 348,
+   "completion_tokens": 31,
+   "total_tokens": 379,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 3026,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/3tok/r0.52rel,WorkspaceFiles:3snip/49tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 54,
+   "from_cache": false,
+   "prompt_total_tokens": 461,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "结论先行：中小规模（千万级以内）自部署场景，推荐 Qdrant 或 Milvus；已有 PostgreSQL 则选 pgvector；免运维需求选云托管 Pinecone。\n\n关键对比要点：\n· **Qdrant**：Rust 编写，性能好、资源占用低、部署轻量，API 友好，适合快速落地\n· **Milvus**：功能最全（混合检索、标量过滤、GPU 加速），社区活跃，但运维复杂度较高\n· **pgvector**：复用现有 PG 生态，运维成本最低，适合亿级以下、不想引入新组件\n· **Pinecone**：全托管免运维，但成本高、数据不出自有环境\n\n推荐（默认假设：中小规模、自部署）：\n1. 首选 Qdrant——性能与易用性均衡，且与你偏好的 Rust 技术栈契合\n2. 若后续需超大规模/复杂过滤，迁移至 Milvus\n\n需要澄清：你的数据量级（千万级以内/亿级以上）和部署方式（自",
+   "wall_ms": 34630,
+   "points": 14,
+   "llm_calls": 1,
+   "prompt_tokens": 582,
+   "completion_tokens": 920,
+   "total_tokens": 1502,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 33704,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 6,
+   "sources_recall": "Memory:1snip/210tok/r0.45rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/3tok/r0.54rel,WorkspaceFiles:3snip/111tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 920,
+   "from_cache": false,
+   "prompt_total_tokens": 790,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (603ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1538,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 603,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "为什么索引能加速查询\n\n核心原因：把全表扫描（O(N)）变成树形查找（O(log N)），并大幅减少磁盘 I/O。\n\n1. 无索引 vs 有索引\n\n| | 无索引 | 有索引（B+ 树） |\n| 查找方式 | 逐行扫描全表 | 沿树导航 |\n| 复杂度 | O(N) | O(log N) |\n| 1000 万行约需 | 读全部数据页 | 3~4 次页访问 |\n\n2. 关键机制\n\n① 有序的树形结构\nB+ 树将键值排序存储，查找时每次比较可排除约一半数据，千万级数据树高仅 3~4 层。\n\n② 减少磁盘 I/O（最本质的原因）\n· 磁盘 I/O 是数据库的主要瓶颈，比内存操作慢几个数量级\n· B+ 树节点大小 = 页大小（通常 16KB），每个节点一次 I/O 可加载上百个键\n· 树矮 → I/O 次数少 → 查询快\n\n③ 叶子节点有序且链表相连\n范围查询（WHERE id BETWEEN 1",
+   "wall_ms": 22634,
+   "points": 15,
+   "llm_calls": 1,
+   "prompt_tokens": 767,
+   "completion_tokens": 681,
+   "total_tokens": 1448,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 21683,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 7,
+   "sources_recall": "Memory:2snip/492tok/r0.45rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/3tok/r0.57rel,WorkspaceFiles:3snip/84tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 1897,
+   "from_cache": false,
+   "prompt_total_tokens": 1018,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}
