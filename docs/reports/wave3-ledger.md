@@ -137,3 +137,9 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
   修复: harness 层 env.setdefault 强制 LOCAL_DISABLED=1 (不依赖调用方记得设);
   逃生口 AGENTFRAMEWORK_EVAL_ALLOW_LOCAL=1 供本地通道专项评测。
 - 千轮累计: 19 批 321/321。教训: 环境态 (模型文件/守护) 变化是评测最大漂移源, harness 应自防御。
+
+### R109: 缺陷 41 (RAG 同内容重复入库) + 批 20
+- **缺陷 41 (真)**: IndexAsync 无去重 — 千轮循环同题记忆反复写入, 召回 rel 并列 (0.45/0.45) 区分度退化, 同题召回 token 随库线性涨 (C11 Memory 126→465tok, round91→round106 实测)。
+- 修复: 归一化内容指纹 (字母数字+小写, FNV-1a 64bit 零反射) 命中 → 复用既有 Id (更新语义); 附带 PersistPathOverride (评测隔离可注入落盘路径)。
+- +3 单测 (去重 3 语义), **379/379 全绿**。批 20 (mass_85-89) 25/25, 3961 tok (+7.6% 带内)。
+- 漂移归因定论: prompt 侧确定性无漂移 (C01 356=356 逐字节), completion 侧 LLM 风格波动是唯一漂移源。

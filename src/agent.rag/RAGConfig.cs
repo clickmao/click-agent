@@ -9,6 +9,9 @@ namespace agent.rag;
 /// </summary>
 public class RAGConfig
 {
+    /// <summary>v0.11.0 R109: 落盘路径覆写 (评测隔离用; null = 默认 CWD/BaseDirectory 解析)</summary>
+    public string? PersistPathOverride { get; set; }
+
     public int MaxRecallResults { get; set; } = 10;
     public double MinSimilarityScore { get; set; } = 0.3;
 
@@ -131,6 +134,9 @@ public class RAGRecall : IRAGRecall
     private readonly RAGConfig _config;
     private readonly Dictionary<string, RAGDocument> _documents = new();
     private readonly object _lock = new();
+    // v0.11.0 R109 (fix#41): 内容去重索引 (归一化哈希 → 既有文档 Id)
+    private readonly object _dedupLock = new();
+    private readonly Dictionary<string, string> _contentDedup = new(StringComparer.Ordinal);
     
     // 倒排索引
     private readonly Dictionary<string, HashSet<string>> _keywordIndex = new();
@@ -141,9 +147,10 @@ public class RAGRecall : IRAGRecall
     // v0.11.0 R79 (真缺陷 33): RAG 索引落盘路径 — 进程重启后恢复 (与 TendencyData 同类缺陷修复)
     private static readonly string PersistPath = Path.Combine(
         AppContext.BaseDirectory, "..", "..", "..", "..", "..", "..", "data", "rag", "index.jsonl");
-    private static string ResolvePersistPath()
+    private string ResolvePersistPath()
     {
-        // CWD 优先 (仓库根运行 = 真机标准形态), 回退 AppContext 推导 (AOT 独立运行)
+        // v0.11.0 R109: 覆写优先 (评测隔离) → CWD 优先 (仓库根运行 = 真机标准形态) → AppContext 推导 (AOT 独立运行)
+        if (!string.IsNullOrEmpty(_config.PersistPathOverride)) return _config.PersistPathOverride;
         var cwdPath = Path.GetFullPath("data/rag/index.jsonl");
         var usePath = File.Exists(cwdPath) || Directory.Exists("data") ? cwdPath : PersistPath;
         return usePath;
@@ -247,6 +254,23 @@ public class RAGRecall : IRAGRecall
         
         document.CreatedAt = DateTime.UtcNow;
         document.UpdatedAt = DateTime.UtcNow;
+        
+        // v0.11.0 R109 (fix#41): 同内容去重 — 千轮循环场景同题记忆反复写入, 召回 rel 并列退化、
+        // token 随库线性涨 (实测 C11 Memory 126→465tok)。归一化内容哈希命中 → 复用既有 Id (更新语义)。
+        var contentKey = NormalizeForDedup(document.Content);
+        lock (_dedupLock)
+        {
+            if (_contentDedup.TryGetValue(contentKey, out var existingId)
+                && _documents.ContainsKey(existingId))
+            {
+                document.Id = existingId;
+                _logger.LogDebug("Dedup hit for document {DocumentId}", existingId);
+            }
+            else
+            {
+                _contentDedup[contentKey] = document.Id;
+            }
+        }
         
         // 生成embedding
         if (document.Embedding == null)
@@ -630,6 +654,24 @@ public class RAGRecall : IRAGRecall
         return result.Length > 500 ? result[..500] + "..." : result;
     }
     
+    /// <summary>R109 fix#41: 归一化内容指纹 — 小写/压空白/去标点差异, 用于同内容写入去重</summary>
+    private static string NormalizeForDedup(string content)
+    {
+        if (string.IsNullOrWhiteSpace(content)) return string.Empty;
+        // 只保留字母数字 (Unicode 类别), 丢弃空白+全部标点 (全角/半角差异一并归零) — 防同内容因标点变体漏判
+        var buf = new char[content.Length];
+        int n = 0;
+        foreach (var ch in content)
+        {
+            if (char.IsLetterOrDigit(ch)) buf[n++] = char.ToLowerInvariant(ch);
+        }
+        var normalized = new string(buf, 0, n);
+        // 64-bit FNV-1a — 零反射、无 crypto 依赖 (AOT)
+        ulong h = 14695981039346656037UL;
+        foreach (var c in normalized) { h ^= c; h *= 1099511628211UL; }
+        return h.ToString(System.Globalization.CultureInfo.InvariantCulture);
+    }
+
     private void UpdateKeywordIndex(RAGDocument doc)
     {
         RemoveFromKeywordIndex(doc);
