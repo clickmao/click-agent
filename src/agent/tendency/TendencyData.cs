@@ -104,6 +104,37 @@ public class TendencyAnalyzer : ITendencyAnalyzer
     {
         _config = new TendencyConfig();
     }
+
+    /// <summary>
+    /// v0.11.0 R14: 从用户消息提取主题/风格信号 (静态纯函数, 写入侧用)。
+    /// 命中关键词计 1.0, 未命中不计 — 与 CalculateTendencyScore 的关键词表共用数据。
+    /// </summary>
+    public static Dictionary<string, double> ExtractSignals(string text)
+    {
+        var result = new Dictionary<string, double>();
+        if (string.IsNullOrWhiteSpace(text))
+            return result;
+        var lower = text.ToLowerInvariant();
+        foreach (var (topic, keywords) in TopicKeywords)
+        {
+            var hitKw = keywords.FirstOrDefault(k => lower.Contains(k, StringComparison.Ordinal));
+            if (hitKw != null)
+            {
+                result[topic] = 1.0;
+                result[hitKw] = 1.0; // 关键词本身也入信号 (CalculateTendencyScore 相交判定用)
+            }
+        }
+        foreach (var (style, keywords) in StyleKeywords)
+        {
+            var hitKw = keywords.FirstOrDefault(k => lower.Contains(k, StringComparison.Ordinal));
+            if (hitKw != null)
+            {
+                result[style] = 1.0;
+                result[hitKw] = 1.0;
+            }
+        }
+        return result;
+    }
     
     public Task<TendencyProfile> AnalyzeUserTendencyAsync(string userId)
     {
@@ -129,7 +160,7 @@ public class TendencyAnalyzer : ITendencyAnalyzer
         // 计算风格倾向
         foreach (var (style, keywords) in StyleKeywords)
         {
-            var score = CalculateTendencyScore(dataList, keywords);
+            var score = CalculateTendencyScore(dataList, new[] { style });
             if (score > 0.3)
             {
                 profile.StyleTendencies[style] = score;
@@ -196,6 +227,30 @@ public class TendencyAnalyzer : ITendencyAnalyzer
             }
         }
         
+        // v0.11.0 R14 修复: 原实现只看当前查询关键词命中 (用户历史倾向完全没用上)。
+        // 融合 AnalyzeUserTendencyAsync 的历史 profile: 历史风格/主题倾向 ≥0.3 的条目注入 BiasScores。
+        try
+        {
+            var profile = AnalyzeUserTendencyAsync(userId).GetAwaiter().GetResult();
+            if (profile.SampleSize > 0)
+            {
+                foreach (var (style, score) in profile.StyleTendencies)
+                {
+                    if (score >= 0.3 && !bias.BiasScores.ContainsKey(style))
+                        bias.BiasScores[style] = score * 0.8; // 历史信号略降权, 当前查询优先
+                }
+                foreach (var (topic, score) in profile.TopicTendencies)
+                {
+                    if (score >= 0.3 && !bias.BiasScores.ContainsKey(topic))
+                        bias.BiasScores[topic] = score * 0.8;
+                }
+            }
+        }
+        catch
+        {
+            // 历史倾向读取失败不阻断 — 保持纯当前查询行为
+        }
+
         // 计算总体置信度
         bias.OverallConfidence = bias.BiasScores.Values.DefaultIfEmpty(0).Average();
         
@@ -204,16 +259,27 @@ public class TendencyAnalyzer : ITendencyAnalyzer
     
     private double CalculateTendencyScore(List<TendencyData> dataList, string[] keywords)
     {
-        var totalScore = 0.0;
-        var weights = 1.0;
-        
-        // 按时间递减权重
-        foreach (var data in dataList.TakeLast(_config.MinSampleSize))
+        // v0.11.0 R14 修复: 原实现只按样本计数 (与 keywords 无关, 需 6 条才过 0.3 阈值),
+        // 改为 "关键词命中占比 × 时间衰减权重" — 新用户少量样本即可反映倾向。
+        var recent = dataList.TakeLast(_config.MinSampleSize).ToList();
+        if (recent.Count == 0)
+            return 0.0;
+
+        var weight = 1.0;
+        var weightedHit = 0.0;
+        var weightSum = 0.0;
+        foreach (var data in recent)
         {
-            totalScore += weights;
-            weights *= _config.DecayFactor;
+            // 命中判定: 信号字典直接含主题名, 或原始信号任一关键词与目标关键词表相交
+            var allKeys = data.TopicScores.Keys.Concat(data.StyleScores.Keys).ToList();
+            var hit = keywords.Any(kw => allKeys.Contains(kw, StringComparer.OrdinalIgnoreCase)) ||
+                      allKeys.Any(k => keywords.Any(kw => k.Contains(kw, StringComparison.OrdinalIgnoreCase)));
+            if (hit)
+                weightedHit += weight;
+            weightSum += weight;
+            weight *= _config.DecayFactor;
         }
-        
-        return Math.Min(1.0, totalScore / 20.0);
+
+        return weightSum > 0 ? Math.Min(1.0, weightedHit / weightSum * 1.2) : 0.0;
     }
 }

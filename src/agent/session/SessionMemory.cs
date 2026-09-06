@@ -66,7 +66,7 @@ public sealed class SessionMemory
     /// <summary>
     /// 设置/更新任务目标画像 (方向指示)。目标句同步进长期记忆 (goalRelated, 最后裁)。
     /// </summary>
-    public void SetGoal(string goalText, IEnumerable<string>? keyEntities = null,
+    public void SetGoal(string goalText, IEnumerable<string>? keyEntities, string? goalIntent = null,
         IEnumerable<string>? constraints = null)
     {
         if (string.IsNullOrWhiteSpace(goalText))
@@ -76,6 +76,7 @@ public sealed class SessionMemory
             Goal = new GoalProfile
             {
                 GoalText = MemorySanitizer.StripSecrets(goalText.Trim()),
+                GoalIntent = goalIntent ?? string.Empty,
                 KeyEntities = (keyEntities ?? Enumerable.Empty<string>())
                     .Select(e => e.Trim())
                     .Where(e => e.Length > 0)
@@ -186,6 +187,9 @@ public sealed class GoalProfile
 {
     /// <summary>目标一句话 (用户最新钦定的总方向)</summary>
     public string GoalText { get; set; } = string.Empty;
+
+    /// <summary>v0.11.0 R14: 锚定时的意图名 (相关性判定的 goalIntent 参数; 空串=未知不参与判定)</summary>
+    public string GoalIntent { get; set; } = string.Empty;
 
     /// <summary>关键实体 (项目名/模块名/组件名, 12 上限)</summary>
     public List<string> KeyEntities { get; set; } = new();

@@ -149,6 +149,22 @@ public class IndustrialAgentV2 : AgentBase
         });
     }
     
+    /// <summary>
+    /// v0.11.0 R14: goal 锚定收窄 — 偏好陈述/寒暄 ("我喜欢简洁") 不该锚成项目目标,
+    /// 否则后续正常问题全部"实体零重叠"被误隔离。仅任务性消息锚定。
+    /// </summary>
+    private static bool IsGoalWorthy(string content)
+    {
+        if (string.IsNullOrWhiteSpace(content) || content.Length < 8)
+            return false;
+        string[] taskMarkers =
+        {
+            "帮我", "请帮我", "需要你", "做一个", "开发一个", "实现一个", "项目", "目标是",
+            "计划", "任务", "写一个", "修复", "重构", "部署", "上线", "排查", "设计一个",
+        };
+        return taskMarkers.Any(m => content.Contains(m, StringComparison.Ordinal));
+    }
+
     protected override async Task<AgentResponse> OnProcessAsync(Message message, CancellationToken ct)
     {
         var startTime = DateTime.UtcNow;
@@ -282,8 +298,9 @@ public class IndustrialAgentV2 : AgentBase
                 // 首轮 (无目标锚) 不隔离 — 无"当前任务"可言
                 if (goal != null && goalEntities.Count > 0)
                 {
+                    // v0.11.0 R14 修复: 第2参是 goalIntent, 原传 GoalText 原文 → 意图相同也误判"意图不同"+1
                     var (isIsolated, score, reason) = agent.intent.TaskRelevanceChecker.Check(
-                        goalEntities, goal.GoalText, message.Content, subTasks[0].Intent);
+                        goalEntities, goal.GoalIntent, message.Content, subTasks[0].Intent);
                     if (isIsolated)
                     {
                         agent.config.AgentTelemetry.Emit("subagent", "IsolatedTaskRunner",
@@ -393,11 +410,11 @@ public class IndustrialAgentV2 : AgentBase
             {
                 var memSession = await _sessionManager.GetOrCreateSessionAsync(message.SessionId, message.SenderId);
                 var mem = memSession.Memory;
-                if (string.IsNullOrEmpty(mem.Goal?.GoalText))
+                if (string.IsNullOrEmpty(mem.Goal?.GoalText) && IsGoalWorthy(message.Content))
                 {
                     var goalText = message.Content.Length > 200 ? message.Content[..200] + "…" : message.Content;
                     // v0.11.0 (打点驱动修复): goal 锚定时抽取关键实体 — 实体空导致隔离判定永不触发
-                    mem.SetGoal(goalText, agent.intent.TaskRelevanceChecker.ExtractEntities(goalText));
+                    mem.SetGoal(goalText, agent.intent.TaskRelevanceChecker.ExtractEntities(goalText), intent);
                 }
                 mem.Remember($"[{intent}] {(llmResponse.Success ? "完成" : "失败")}: " +
                     (message.Content.Length > 120 ? message.Content[..120] + "…" : message.Content));
@@ -432,6 +449,25 @@ public class IndustrialAgentV2 : AgentBase
 
                 // 任务循环完成 → 下轮预估落盘 (v7.11): 工作目录 + 按 agent UID 隔离
                 var saved = agent.registry.NextTurnForecast.Save(_dataStoragePath, identity.Uid, message.Content, intent);
+
+                // v0.11.0 R14: 用户倾向写入链路修复 — 此前 UpdateTendencyAsync 无人调用, UserTendency 源恒 0
+                _ = Task.Run(() =>
+                {
+                    try
+                    {
+                        var tendency = new agent.tendency.TendencyData
+                        {
+                            UserId = message.SenderId ?? "anonymous",
+                            Timestamp = DateTime.UtcNow,
+                        };
+                        foreach (var kv in agent.tendency.TendencyAnalyzer.ExtractSignals(message.Content))
+                        {
+                            tendency.TopicScores[kv.Key] = kv.Value;
+                        }
+                        return _tendencyAnalyzer.UpdateTendencyAsync(tendency.UserId, tendency);
+                    }
+                    catch { return Task.CompletedTask; } // 倾向写入失败不阻断主链
+                });
                 response.Data = new Dictionary<string, object>
                 {
                     { "intent", intent },
