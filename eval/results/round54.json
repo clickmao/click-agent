@@ -1,0 +1,159 @@
+{
+ "round": "round54",
+ "label": "R53b 恢复禁令句",
+ "ts": "2026-09-06T18:54:27+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 3447,
+ "prompt_total": 1237,
+ "completion_total": 2210,
+ "wall_total_ms": 71109,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组分区递归排序的高效分治排序算法，平均时间复杂度 O(n log n)。",
+   "wall_ms": 5019,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 318,
+   "completion_tokens": 31,
+   "total_tokens": 349,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 3495,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/72tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 72,
+   "from_cache": false,
+   "prompt_total_tokens": 438,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "结论：中小规模自部署推荐 Qdrant；已有 PostgreSQL 优先 pgvector；十亿级选 Milvus；免托管选 Pinecone。\n\n说明：工作区与上下文中无向量库实测资料，以下基于通用认知，未做基准测试。\n\n关键对比要点：\n· **Qdrant**：Rust 实现，性能/过滤检索强，API 友好，部署轻\n· **Milvus**：分布式，十亿级规模与高可用强；运维重\n· **pgvector**：融入现有 PG，零额外运维；高 QPS/超大规模弱\n· **Weaviate**：混合检索（向量+BM25）好；资源占用偏高\n· **Chroma**：轻量，适合原型；生产可靠性一般\n· **Pinecone**：全托管免运维；成本高，数据出网受限\n· **FAISS**：是库非服务，需自行封装\n\n推荐：\n· 原型/MVP：Chroma 或 pgvector\n· 千万级自部署：Qd",
+   "wall_ms": 36999,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 319,
+   "completion_tokens": 1161,
+   "total_tokens": 1480,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 35568,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/51tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 86,
+   "from_cache": false,
+   "prompt_total_tokens": 432,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (596ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1521,
+   "points": 5,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": null,
+   "loop_ms": null,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "核心原理：以空间换时间，把全表扫描 O(n) 变为树查找 O(log n)。\n\n关键机制：\n\n1. 有序性带来剪枝能力：索引键有序存储，每次比较可排除一半候选空间——与二分查找同理（如工作区中 BinarySearch 的 mid = left + (right-left)/2），千万级数据只需约 23 次比较即可定位，而全表扫描要逐行比对。\n\n2. B+ 树的“矮胖”结构减少磁盘 I/O：磁盘随机读写是查询的主要瓶颈。B+ 树是多叉树，千万行数据树高仅 3~4 层，即 3~4 次 I/O 就能定位到目标行；叶子节点还以链表相连，天然支持范围查询。\n\n3. 覆盖索引避免回表：若查询列都包含在索引中，可直接从索引取值返回，省去再查主表的二次 I/O。\n\n代价（为什么不给所有列建索引）：每次写入需同步维护索引结构，且占用额外存储。",
+   "wall_ms": 27570,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 600,
+   "completion_tokens": 1018,
+   "total_tokens": 1618,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 26619,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/178tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 51,
+   "from_cache": false,
+   "prompt_total_tokens": 661,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}
