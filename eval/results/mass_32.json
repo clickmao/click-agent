@@ -1,0 +1,159 @@
+{
+ "round": "mass_32",
+ "label": "R75 batch8 32",
+ "ts": "2026-09-06T19:57:29+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 3135,
+ "prompt_total": 1194,
+ "completion_total": 1941,
+ "wall_total_ms": 69265,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组分区递归排序的高效分治算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 3341,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 334,
+   "completion_tokens": 30,
+   "total_tokens": 364,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 2464,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 47,
+   "from_cache": false,
+   "prompt_total_tokens": 467,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "推荐结论（默认场景：百万级数据、自托管、RAG 检索）：首选 Milvus（功能全面、社区活跃、可扩展性强）；已有 Postgres 技术栈则直接用 pgvector，运维成本最低。\n\n关键对比要点：\n· **Milvus**：分布式架构，支持十亿级向量，索引类型全（HNSW/IVF/DiskANN），但运维较重\n· **Qdrant**：Rust 实现，性能优秀，标量过滤强，API 设计友好，适合中等规模\n· **Weaviate**：内置混合检索（向量+BM25），模块化 embedding 集成\n· **pgvector**：复用现有数据库，千万级以内够用，事务一致性最好，超大规模性能受限\n· **Pinecone / 云托管类**：免运维、弹性好，但成本高、数据出境顾虑\n\n需要澄清一点：你的数据规模（万级/百万级/亿级）和部署偏好（云托管还是自托管）是什么？\n默认按上表结论执行；若",
+   "wall_ms": 26848,
+   "points": 12,
+   "llm_calls": 1,
+   "prompt_tokens": 354,
+   "completion_tokens": 986,
+   "total_tokens": 1340,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 25958,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/91tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 68,
+   "from_cache": false,
+   "prompt_total_tokens": 512,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (587ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1475,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 587,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "索引加速查询的核心原理\n\n1. 从全表扫描变为定位查找\n· 无索引：逐行扫描全部数据，时间复杂度 O(n)\n· 有索引（如 B+ 树）：按键值导航定位，复杂度 O(log n)。这与工作区中二分查找的原理一致——在有序结构上每次比较排除一半数据，百万行数据只需约 20 次比较\n\n2. 树高极低，I/O 次数少\n· B+ 树节点按页存储，每个节点可容纳数百个键，千万行数据的树高通常仅 3~4 层\n· 意味着一次查询只需 3~4 次磁盘 I/O（根节点还常驻内存）\n\n3. 索引体积小，读取量少\n· 索引只存键值 + 行指针（主键/RowID），远小于整行数据\n· 同样一个 I/O 页，索引能携带更多有效信息，减少无效数据读取\n\n4. 覆盖索引可免回表\n· 若查询字段全部包含在索引中（如 `SELECT name FROM users WHERE name = 'x'`），直接从索引返回结果，完",
+   "wall_ms": 37601,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 506,
+   "completion_tokens": 925,
+   "total_tokens": 1431,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 36710,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/134tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 72,
+   "from_cache": false,
+   "prompt_total_tokens": 644,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}

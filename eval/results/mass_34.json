@@ -1,0 +1,159 @@
+{
+ "round": "mass_34",
+ "label": "R75 batch8 34",
+ "ts": "2026-09-06T19:58:52+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 2902,
+ "prompt_total": 1107,
+ "completion_total": 1795,
+ "wall_total_ms": 48829,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组分区递归排序的高效分治排序算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 3508,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 342,
+   "completion_tokens": 31,
+   "total_tokens": 373,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 2614,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 49,
+   "from_cache": false,
+   "prompt_total_tokens": 474,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "推荐结论：多数场景首选 Qdrant；亿级规模选 Milvus；已有 ES/PG 则复用 pgvector/ES kNN。\n\n关键依据：\n· **Qdrant**：Rust 实现，QPS 与召回表现均衡，标量过滤强，部署轻量，适合中小规模\n· **Milvus**：云原生分布式架构，支持亿级向量与多租户，社区生态成熟，但运维成本较高\n· **pgvector / Elasticsearch**：复用现有数据库设施，性能中等，适合数据量不大、不想新增组件的场景\n· **Pinecone**：全托管免运维，适合无运维团队，但成本高且有数据合规顾虑\n\n选型核心维度：性能（QPS/召回率）、数据规模与扩展性、元数据过滤、部署/运维成本、生态兼容性。\n\n需要的话我可以展开完整对比报告（含详细参数与场景化建议）。",
+   "wall_ms": 15081,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 373,
+   "completion_tokens": 489,
+   "total_tokens": 862,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 14182,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/91tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 49,
+   "from_cache": false,
+   "prompt_total_tokens": 539,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (604ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1518,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 604,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "核心结论：索引把查询从“全表逐行扫描”变成“在有序的专用数据结构上定位”，将复杂度从 O(N) 降到 O(log N) 甚至 O(1)。\n\n关键机制：\n\n1. 有序结构支持快速定位（B+ 树）\n· 无索引时只能逐行扫描，I/O 次数随数据量线性增长\n· B+ 树按索引键排序，逐层下钻即可定位；千万级数据通常只有 3~4 层，即 3~4 次磁盘 I/O 就能命中目标行\n\n2. 减少 I/O 量\n· 索引只存“键值 + 行指针”，体积远小于整表，需要读入的页数大幅减少\n· 叶子节点按页顺序存放，范围查询（如 `age BETWEEN 20 AND 30`）可顺序读取连续叶子节点，避免随机 I/O\n\n3. 哈希索引：O(1) 精确匹配\n· 等值查询直接哈希定位，不逐层比较，速度极快（代价是不支持范围查询和排序）\n\n4. 覆盖索引免回表\n· 若查询列全部包含在索引中（如索引 `(name, age",
+   "wall_ms": 28722,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 392,
+   "completion_tokens": 1275,
+   "total_tokens": 1667,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 27771,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/134tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 49,
+   "from_cache": false,
+   "prompt_total_tokens": 569,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}

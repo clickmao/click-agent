@@ -1,0 +1,159 @@
+{
+ "round": "mass_33",
+ "label": "R75 batch8 33",
+ "ts": "2026-09-06T19:58:03+0800",
+ "cases": 4,
+ "passed": 4,
+ "tokens_total": 2592,
+ "prompt_total": 1206,
+ "completion_total": 1386,
+ "wall_total_ms": 33907,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选定基准元素将数组递归划分为“小于基准”和“大于基准”两部分，从而实现高效排序的分治算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 3801,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 336,
+   "completion_tokens": 42,
+   "total_tokens": 378,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41470294364400073
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 2919,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 48,
+   "from_cache": false,
+   "prompt_total_tokens": 474,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "结论先行：无单一最优解，按规模选型——原型用 Chroma/pgvector，中等规模用 Qdrant，大规模生产用 Milvus（自建）或 Pinecone（托管）。\n\n关键对比要点：\n\n| 数据库 | 类型 | 优势 | 局限 |\n| Milvus | 开源分布式 | 十亿级向量、性能强 | 部署运维复杂 |\n| Pinecone | 全托管 SaaS | 零运维、开箱即用 | 闭源、成本高 |\n| Qdrant | 开源（Rust） | 性能好、轻量、API 友好 | 生态较新 |\n| Weaviate | 开源 | 内置向量化、混合检索 | 资源占用偏高 |\n| Chroma | 开源轻量 | 极简、适合原型 | 不适合生产大规模 |\n| pgvector | PG 扩展 | 复用现有 PG、事务支持 | 超大规模性能受限 |\n\n推荐结论：\n· 快速验证/小数据量：**Chroma",
+   "wall_ms": 11480,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 359,
+   "completion_tokens": 726,
+   "total_tokens": 1085,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4268791059302247
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 10548,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/91tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 50,
+   "from_cache": false,
+   "prompt_total_tokens": 512,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (590ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 1519,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 590,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "为什么索引能加速查询\n\n核心原因：把全表扫描 O(n) 降为树查找 O(log n)，并大幅减少磁盘 I/O。\n\n1. 避免全表扫描\n· 无索引时，查询需逐行读取全部数据页判断条件，数据量越大越慢。\n· 有索引时，直接沿索引结构定位目标，只访问极少数页。\n\n2. B+ 树结构带来高效的磁盘访问\n· 数据库索引普遍采用 B+ 树：多叉、矮胖，千万级数据通常仅 3~4 层。\n· 每访问一个节点约等于一次磁盘 I/O，因此一次查询往往只需 3~4 次 I/O，而全表扫描可能是几十万次。\n\n3. 索引体积小，I/O 成本低\n· 索引只存键值 + 行指针（或主键），远小于整行数据。\n· 一次 I/O 读取的页能装下更多索引项，单个节点扇出很大（如数百），树自然更矮。\n\n4. 有序性支持范围查询\n· B+ 树叶子节点按序排列且用链表相连，`BETWEEN`、`ORDER BY`、前缀匹配可直接顺序读取",
+   "wall_ms": 17107,
+   "points": 13,
+   "llm_calls": 1,
+   "prompt_tokens": 511,
+   "completion_tokens": 618,
+   "total_tokens": 1129,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40511632996181224
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 16208,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/134tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 61,
+   "from_cache": false,
+   "prompt_total_tokens": 644,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}
