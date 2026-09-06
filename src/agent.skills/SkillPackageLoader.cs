@@ -25,6 +25,13 @@ public static class SkillPackageLoader
     /// 扫描 skillRoot 下全部子目录: 含 SKILL.md 的目录按开放规范包加载。
     /// 兼容并存: 同目录下 legacy *.yaml 平文件由 SkillRegistry.LoadFromDirectory 处理。
     /// </summary>
+    /// <summary>加载单个 SKILL.md 包 (测试/动态注册; 目录名=front-matter name 铁律同 LoadPackages)。</summary>
+    public static SkillDefinition? LoadPackage(string packageDir)
+    {
+        var skillMd = Path.Combine(packageDir, "SKILL.md");
+        return File.Exists(skillMd) ? ParseSkillMd(File.ReadAllText(skillMd), packageDir) : null;
+    }
+
     public static List<SkillDefinition> LoadPackages(string skillRoot)
     {
         var results = new List<SkillDefinition>();

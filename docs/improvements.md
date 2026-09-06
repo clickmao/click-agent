@@ -4,6 +4,21 @@
 
 ---
 
+## v0.11.0 (2026-09-06) — 统一命令协议 + 三传输 + Skill 脚本执行 (进行中)
+
+### ✅ 已完成 (真实执行)
+- **agent.io 统一命令协议**: `AgentCommand` 信封 (@cmd name key=value 行协议, 百分号转义手写编解码 — 零依赖 AOT 安全) + `AgentCommandWriter/Reader` 工具类 (组合 WriterBase/ReaderBase); AgentReportReaderBase 加 Command 事件分类
+- **三种传输**: Console.IO (已有 Text 对) / 共享内存 (`SharedMemoryRequestWriter/ReportReader` — 文件-backed mmap 环形区, 背压可见) / TCP Socket (`SocketChannelServer/Connect` — 跨机)
+- **LogRouter 双通道**: thinking/输出指令同时镜像 IChatboxSink + @cmd (前端二选一解析)
+- **SkillScriptRunner**: SKILL.md 包 scripts/ 真进程调度 (python/bash/node PATH 探测; cwd=包目录沙箱; 环境变量白名单; 超时杀进程树; 退出码非 0 stderr 附加); 脚本 @cmd 命令 → AgentCommandWriter 转发 (skill 附参) — 脚本即最小前端, 与面板同契约
+- **SkillDispatcher 接线**: executive 无显式 entry → 包脚本自动执行 (RegisterEntry 优先)
+- **性能修复 (sync-over-async 清剿)**: ModelQueueRouter.OnTransientFailure → async 链; TriggerMatcher.MatchAsync (语义嵌入 await 化); ContextGradientCompressor.CompressCoreAsync
+- **模型目录 6 → 18**: +Anthropic (sonnet-4.5/haiku-4.5) +Google (gemini-2.5-pro/flash) +xAI (grok-4/fast) +Moonshot (kimi-k2) +Qwen (qwen3-max/coder-plus) +DeepSeek v3.2 +OpenAI (gpt-5/o4-mini) +GLM-4.5 — 全部公开牌价, /model verify 可校验
+
+### 📊 基线
+- 测试: **351/351 全绿** (+10: 命令协议 6 + 脚本执行 4 — python 真进程实跑)
+- AOT: publish 0 警 0 IL 警; /model list 18 模型真机确认
+
 ## v0.10.0 (2026-09-06) — Yamlify 换库 + Token 统计/余额联动 + Skill 语义 + 全链路实跑
 
 ### 🎯 主题 (用户指令): YAML 库换 Yamlify / Token 使用统计+余额不足切模 / Skill P3 语义匹配接 bge / 统一输出收口 / 指令补全

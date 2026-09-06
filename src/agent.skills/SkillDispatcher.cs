@@ -1,3 +1,4 @@
+using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -20,14 +21,18 @@ public sealed class SkillDispatcher
     /// <summary>executive 执行委托注册表 (entry → 委托; P1 仅注册制, 不做文件加载)</summary>
     private readonly Dictionary<string, Func<string, CancellationToken, Task<string>>> _entries = new();
 
+    /// <summary>v0.11.0: 执行型脚本调度器 (SKILL.md 包 scripts/ 目录; null = 未启用脚本执行)</summary>
+    private readonly SkillScriptRunner? _scriptRunner;
+
     public SkillDispatcher(SkillRegistry registry, TriggerMatcher? matcher = null,
-        Func<string, string, int, int>? getConfig = null)
+        Func<string, string, int, int>? getConfig = null, SkillScriptRunner? scriptRunner = null)
     {
         _registry = registry;
         _matcher = matcher ?? new TriggerMatcher();
         Func<string, string, int, int> cfg = getConfig ?? new Func<string, string, int, int>((_, _, fallback) => fallback); // 未注入配置 → 兜底默认 (测试兼容)
         Lifecycle = new SkillLifecycle(cfg);
         _executor = new SkillExecutor(Lifecycle, cfg);
+        _scriptRunner = scriptRunner;
     }
 
     public void RegisterEntry(string skillId, Func<string, CancellationToken, Task<string>> entry) =>
@@ -36,12 +41,23 @@ public sealed class SkillDispatcher
     /// <summary>便捷注册 (转发 Registry — 测试/动态注册同 API)</summary>
     public void Register(SkillDefinition skill) => _registry.Register(skill);
 
+    /// <summary>包脚本默认入口名 (scripts/main.py → main.sh → main.js 顺序探测)。</summary>
+    private static string DefaultScriptName(SkillDefinition skill)
+    {
+        foreach (var name in new[] { "main.py", "main.sh", "main.js" })
+        {
+            if (File.Exists(Path.Combine(skill.PackageDir ?? string.Empty, "scripts", name)))
+                return name;
+        }
+        return "main.py"; // 不存在时由 ScriptRunner 抛 FileNotFoundException (诚实报错)
+    }
+
     /// <summary>调度入口 (V2 主链阶段一: 推理前调用)。返回 null = 未命中/降级 → 走普通推理。</summary>
     public async Task<SkillResult?> DispatchAsync(string input, CancellationToken ct = default)
     {
         try
         {
-            var hits = _matcher.Match(input, _registry.All);
+            var hits = await _matcher.MatchAsync(input, _registry.All, ct);
             if (hits.Count == 0)
             {
                 Lifecycle.ReportRound(false); // 未命中任何域 → Active 项脱域计数
@@ -71,12 +87,24 @@ public sealed class SkillDispatcher
             {
                 // 执行型: entry 委托 → 经 Executor (超时/幂等重试/熔断上报)
                 if (!_entries.TryGetValue(top.Skill.SkillId, out var entry))
-                    return null;
-                var executed = await _executor.ExecuteAsync(top.Skill,
-                    token => entry(input, token), ct);
-                if (executed is null)
-                    return null; // 失败/超时/熔断 → 降级普通推理
-                content = executed;
+                {
+                    // v0.11.0: 无显式注册 → 尝试包内脚本 (SKILL.md scripts/; 进程实跑 + @cmd 命令转发)
+                    if (_scriptRunner is null || top.Skill.PackageDir is null)
+                        return null;
+                    var scriptOut = await _executor.ExecuteAsync(top.Skill,
+                        token => _scriptRunner.RunAsync(top.Skill, DefaultScriptName(top.Skill), input, token), ct);
+                    if (scriptOut is null)
+                        return null; // 失败/超时/熔断 → 降级普通推理
+                    content = scriptOut;
+                }
+                else
+                {
+                    var executed = await _executor.ExecuteAsync(top.Skill,
+                        token => entry(input, token), ct);
+                    if (executed is null)
+                        return null; // 失败/超时/熔断 → 降级普通推理
+                    content = executed;
+                }
             }
 
             // 禁语校验 (normative 口径保护)

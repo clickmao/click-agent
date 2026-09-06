@@ -39,6 +39,14 @@ public sealed class TriggerMatcher
 
     /// <summary>返回全部命中 (已按裁决排序; 空 = 未命中)</summary>
     public List<SkillMatch> Match(string input, List<SkillDefinition> skills, CancellationToken ct = default)
+        // sync 边界 (保留兼容): async 主链请用 MatchAsync — 本方法语义等价, 内部一次 GetResult
+        => MatchCoreAsync(input, skills, ct).GetAwaiter().GetResult();
+
+    /// <summary>async 匹配主链 (v0.11.0 性能修复: 语义嵌入 await 化, 不再逐 skill GetResult 阻塞线程池线程)。</summary>
+    public async Task<List<SkillMatch>> MatchAsync(string input, List<SkillDefinition> skills, CancellationToken ct = default)
+        => await MatchCoreAsync(input, skills, ct).ConfigureAwait(false);
+
+    private async Task<List<SkillMatch>> MatchCoreAsync(string input, List<SkillDefinition> skills, CancellationToken ct)
     {
         var hits = new List<SkillMatch>();
         float[]? semanticCos = null; // 本轮输入向量缓存 (惰性嵌入一次)
@@ -88,7 +96,7 @@ public sealed class TriggerMatcher
             {
                 try
                 {
-                    var inputVec = _embedder.EmbedAsync(input, ct).GetAwaiter().GetResult();
+                    var inputVec = await _embedder.EmbedAsync(input, ct).ConfigureAwait(false);
                     semanticCos = inputVec; // 缓存本轮输入向量 (多 skill 复用一次嵌入)
                 }
                 catch
@@ -103,7 +111,7 @@ public sealed class TriggerMatcher
                 {
                     try
                     {
-                        var skillVec = _embedder!.EmbedAsync(text, ct).GetAwaiter().GetResult();
+                        var skillVec = await _embedder!.EmbedAsync(text, ct).ConfigureAwait(false);
                         var cos = agent.contextgradient.VectorMath.Cosine(vec, skillVec);
                         if (cos >= _semanticThreshold)
                         {

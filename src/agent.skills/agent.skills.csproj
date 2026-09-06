@@ -1,13 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <Version>0.10.0</Version>
+    <Version>0.11.0</Version>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../agent.config/agent.config.csproj" />
+    <ProjectReference Include="../agent.io/agent.io.csproj" />
   </ItemGroup>
   <ItemGroup>
     <!-- v0.10.0 P3: Skill 语义触发接 bge (ITextEmbedder 抽象 — agent.llamalocal 的 BgeEmbedder 注入) -->

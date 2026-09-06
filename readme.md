@@ -1,6 +1,6 @@
 # click-agent (v0.10.0)
 
-基于微软 MAF (Microsoft Agent Framework) 与 WebReaper 的 C# 智能体框架 — 全场景覆盖, 100% 托管代码。net10.0 / NativeAOT 零警告 / 341 项测试全绿。
+基于微软 MAF (Microsoft Agent Framework) 与 WebReaper 的 C# 智能体框架 — 全场景覆盖, 100% 托管代码。net10.0 / NativeAOT 零警告 / 351 项测试全绿。
 版本口径: v0.10.x — 本轮: Yamlify YAML 解析 / Token 统计与余额联动切模 / Skill 语义匹配 (bge) / 统一输出收口。
 
 ## 语言切换 | Language Switch
@@ -17,7 +17,7 @@
 - **Skill 语义匹配 (bge)**: 词面未命中 → 384 维语义余弦疑似判定, 嵌入器不可用自动回退
 - **官方端点可配置代理**: `models.yaml proxy` 段, 留空直连
 - **统一输出收口**: 全部输出 (日志/审批/前端指令/步骤状态) 走 IOutputSink 统一底层接口, 库内零 Console 直写
-- **/forecast 指令**: 下轮预估 (v7.11 机制) 前端可见化
+- **/forecast 指令**: 下轮预估机制前端可见化
 - **/model list 序号选择**: 序号 1-N, `/model 3` ≡ `/model <id>`; auto/manual 双模式指令切换
 
 ### 🧭 系统能力全景 (v0.10.0)
@@ -30,7 +30,7 @@
 
 **模型调度 (agent.modelqueue)**
 - 三通道混合调度: 本地 (LocalLlamaCaller 实跑) > 官方 (硬编码+内存态 key) > 远端 API
-- 模型目录: 6 模型 (价格/推理分/编码分/上下文窗), 意图×token 预估×费用综合选模
+- 模型目录: 18 模型 (OpenAI/Anthropic/Google/xAI/DeepSeek/智谱/Qwen/Moonshot), 意图×token 预估×费用综合选模
 - auto/manual 双模式: `/model list` 序号 1-N 选择; 连续失败自动切换
 - Token 统计+余额联动: 初始化 API 同步→本地累计→阈值再同步; 不足切模+`flags:余额不足`
 - 官方端点可配置代理 (models.yaml proxy 段)
@@ -64,13 +64,13 @@
 - **公开配置读写**: ConfigWriter (dot-path / L3 深合并 / L4 runtime), 与 ConfigSnapshot 读写分离
 - **能力插件接口**: ICapabilityPlugin — 工作区管理/测试集成/代码审查由开发者实现注册 (框架定契约, 参考 [能力增强计划](docs/industrial_enhancements.md))
 
-### 💬 智能问询 (v7.13)
+### 💬 智能问询
 - 18 类问询数据类型枚举 + 纯规则校验 (数字/日期/选单/路径…)
 - 批量问询: 按组一次问全, 不一条一条打断
 - 子任务置信度 + 证据补充 + 最大疑问数限制
 - 问询偏好库: 记录**偏好模式** (非凭据/非原值) 跨会话复用
 
-### 🎨 双模式输出 (v7.13)
+### 🎨 双模式输出
 - Markdown / 纯文本双模式, Spectre.Console 控制台着色美化
 - 一切返回内容 (回答/问询/日志/审批) 统一底层结构化格式
 - agent 间问询静默模式 (用户界面零打扰)
@@ -198,7 +198,7 @@ click-agent/
 │   ├── agent.rag/           # RAG 召回
 │   ├── agent.vectormemory/  # 向量记忆
 │   ├── agent.workspace/     # 工作区
-│   └── agent.tests/         # 341 项测试
+│   └── agent.tests/         # 351 项测试
 └── docs/                    # 架构/API/改进记录/计划文档
 ```
 
@@ -207,7 +207,7 @@ click-agent/
 | 项 | 结果 |
 |---|---|
 | 编译 (--no-incremental) | 0 错误 0 警告 |
-| 测试 | 341/341 Passed |
+| 测试 | 351/351 Passed |
 | NativeAOT (linux-x64) | 0 IL/TR 警告，12MB 单文件 |
 | 端到端冒烟 | DI 全图解析 + 多轮会话断言 + `/model list` 6 模型 + `/token stats` + `/forecast` |
 
@@ -216,7 +216,7 @@ click-agent/
 - [架构文档](docs/architecture.md)
 - [API 文档](docs/api.md)
 - [CLI 指令说明](docs/CLI指令说明.md) — 全部指令+agent.io 行协议 (需求2)
-- [改进记录](docs/improvements.md) — v7.4 → v7.12 每轮真实执行证据
+- [改进记录](docs/improvements.md) — v7.4 → v0.10.0 每轮真实执行证据与历史计划归档
 - [任务循环](docs/task_loop.md)
 
 ### 🗺 下一步开发计划 (v0.11.0)
@@ -230,7 +230,7 @@ click-agent/
 5. **模型目录 verify 补全**: 全目录 6 模型真机校验 (api.openai.com 本网络 RST, 需代理环境复测)
 6. **开源发布收尾** (代码已推送 @ 387bfb1): LICENSE 文件/CI 工作流/徽章/英文 README 精简版
 
-> **v0.10.0 基线**：341/341 测试全绿 · Release 编译 0 警 0 错 · NativeAOT 0 IL 警 · agenthost 12MB ELF 真机冒烟通过。
+> **v0.11.0 基线**：351/351 测试全绿 · Release 编译 0 警 0 错 · NativeAOT 0 IL 警 · agenthost 12MB ELF 真机冒烟通过。
 
 ## 配置
 
@@ -304,7 +304,7 @@ MIT License - 详见 [LICENSE](LICENSE) 文件
 
 **Model Scheduling (agent.modelqueue)**
 - Three-channel hybrid: Local (LocalLlamaCaller real runs) > Official (hardcoded + in-memory keys) > Remote API
-- Model catalog: 6 models (price/inference/coding scores/context window), intent x token-estimate x cost ranking
+- Model catalog: 18 models (OpenAI/Anthropic/Google/xAI/DeepSeek/Zhipu/Qwen/Moonshot), intent x token-estimate x cost ranking
 - auto/manual dual-mode: `/model list` index 1-N; auto-switch on consecutive failures
 - Token stats + balance linkage: initial API sync -> local accumulation -> threshold re-sync; insufficient balance switches model + `flags:balance-insufficient`
 - Configurable proxy for official endpoints (models.yaml proxy section)
@@ -338,13 +338,13 @@ MIT License - 详见 [LICENSE](LICENSE) 文件
 - **Public Configuration Read/Write**: ConfigWriter (dot-path / L3 deep merge / L4 runtime), separated from ConfigSnapshot read/write
 - **Capability Plugin Interface**: ICapabilityPlugin — Workspace management/test integration/code review implemented by developers (framework defines contract, see [Capability Enhancement Plan](docs/industrial_enhancements.md))
 
-### 💬 Intelligent Inquiry (v7.13)
+### 💬 Intelligent Inquiry
 - 18 inquiry data type enumerations + pure rule validation (numbers/dates/selections/paths...)
 - Batch inquiry: Ask all at once by group, not one by one
 - Sub-task confidence + evidence supplementation + maximum question limit
 - Inquiry preference library: Record **preference patterns** (not credentials/original values) cross-session reuse
 
-### 🎨 Dual-mode Output (v7.13)
+### 🎨 Dual-mode Output
 - Markdown / Plain text dual modes, Spectre.Console console color beautification
 - All return content (answers/inquiries/logs/approvals) unified underlying structured format
 - Inter-agent inquiry silent mode (zero user interface disturbance)
@@ -472,7 +472,7 @@ click-agent/
 │   ├── agent.rag/           # RAG recall
 │   ├── agent.vectormemory/  # Vector memory
 │   ├── agent.workspace/     # Workspace
-│   └── agent.tests/         # 341 tests
+│   └── agent.tests/         # 351 tests
 └── docs/                    # Architecture/API/improvement records/plans
 ```
 
@@ -481,7 +481,7 @@ click-agent/
 | Item | Result |
 |---|---|
 | Compilation (--no-incremental) | 0 errors 0 warnings |
-| Tests | 341/341 Passed |
+| Tests | 351/351 Passed |
 | NativeAOT (linux-x64) | 0 IL/TR warnings, 12MB single file |
 | End-to-end smoke test | DI full graph 11/11 parsing + multi-session assertions |
 
@@ -490,21 +490,21 @@ click-agent/
 - [Architecture Document](docs/architecture.md)
 - [API Document](docs/api.md)
 - [CLI Command Instructions](docs/CLI指令说明.md) — All commands + agent.io line protocol (requirement 2)
-- [Improvement Records](docs/improvements.md) — v7.4 → v7.12 each round real execution evidence
+- [Improvement Records](docs/improvements.md) — v7.4 → v0.10.0 real execution evidence & plan archive
 - [Task Loop](docs/task_loop.md)
 
 ### 🗺 Next Development Plan (v0.11.0)
 
 > Historical plan (v7.15 ten nodes - all landed) archived in [improvements.md](docs/improvements.md); per-module design details in docs/plan_*.md.
 
-1. **Chatbox WebSocket host**: IChatboxSink protocol lines ready (`@chatbox:` JSON), add real WebSocket transport + frontend panel integration (Console only now)
+1. **Chatbox panel extension (optional)**: io protocol output (`@chatbox:` lines) already covers CLI/script integration; WebSocket host only if a browser panel is needed (IChatboxSink unchanged)
 2. **Balance-threshold switching E2E**: TokenUsageService balance linkage unit-tested; needs real API key end-to-end switching + `flags:balance-insufficient` frontend hint
 3. **Skill executive script dispatch**: SKILL.md package `scripts/` directory execution wiring into SkillExecutor (parsing/sandbox/timeout done, script process scheduling missing)
 4. **Context compression P3 vectorization**: L1 summaries/clustering onto BgeEmbedder real vectors (P1 rule version landed; bge already wired into Skill semantic matching)
 5. **Model catalog verify completion**: full 6-model real-device verification (api.openai.com RST on this network, retest via proxy)
 6. **Open-source release polish** (code pushed @ 387bfb1): LICENSE file/CI workflows/badges/condensed English README
 
-> **v0.10.0 baseline**: 341/341 tests green / Release build 0 warnings 0 errors / NativeAOT 0 IL warnings / agenthost 12MB ELF device smoke passed.
+> **v0.10.0 baseline**: 351/351 tests green / Release build 0 warnings 0 errors / NativeAOT 0 IL warnings / agenthost 12MB ELF device smoke passed.
 
 ## Configuration
 

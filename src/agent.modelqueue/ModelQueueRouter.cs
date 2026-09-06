@@ -265,12 +265,12 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         }
         catch (HttpRequestException ex)
         {
-            return OnTransientFailure(entry, prompt, kind, intent, ct, $"网络错误: {ex.Message}");
+            return await OnTransientFailureAsync(entry, prompt, kind, intent, ct, $"网络错误: {ex.Message}").ConfigureAwait(false);
         }
         catch (OperationCanceledException) when (!ct.IsCancellationRequested)
         {
             // HttpClient 超时 (非用户取消) = 瞬态
-            return OnTransientFailure(entry, prompt, kind, intent, ct, "请求超时");
+            return await OnTransientFailureAsync(entry, prompt, kind, intent, ct, "请求超时").ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {
@@ -279,7 +279,7 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         }
     }
 
-    private QueueResponse OnTransientFailure(ModelCatalogEntry entry, QueuePrompt prompt, TaskKindHint kind, string intent, CancellationToken ct, string why)
+    private async Task<QueueResponse> OnTransientFailureAsync(ModelCatalogEntry entry, QueuePrompt prompt, TaskKindHint kind, string intent, CancellationToken ct, string why)
     {
         lock (_lock)
         {
@@ -321,7 +321,7 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         try
         {
             var backupEntry = _catalog.Find(_activeModelId)!;
-            return CallEntryAsync(backupEntry, prompt, ct).GetAwaiter().GetResult();
+            return await CallEntryAsync(backupEntry, prompt, ct).ConfigureAwait(false);
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {

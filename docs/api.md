@@ -2,10 +2,6 @@
 
 ## 目录
 
-> v7.11-v7.13 新增章节: 13 Agent 注册与下轮预估 / 14 本地强制指令 / 15 区段标记 / 16 任务计划执行器 / 17 本地推理 / 18 问询与双模式输出
-> v7.15 新增章节: agent.io 输入输出协议库 / ConfigWriter — 详见 [CLI指令说明.md](CLI指令说明.md)
-> v0.10.0 新增章节: 24 模型队列与 Token 统计 / 25 Skill 开放规范包 / 26 统一输出接口
-
 1. [核心接口](#1-核心接口)
 2. [记忆系统](#2-记忆系统)
 3. [模板系统](#3-模板系统)
@@ -18,20 +14,26 @@
 10. [数据存储](#10-数据存储)
 11. [趋势分析](#11-趋势分析)
 12. [MAF集成](#12-maf集成)
-13. [Agent 注册与下轮预估 (v7.11)](#13-agent-注册与下轮预估-v711)
-14. [本地强制指令 (v7.11)](#14-本地强制指令-v711)
-15. [返回后处理区段标记 (v7.11)](#15-返回后处理区段标记-v711)
-16. [任务计划执行器 (v7.11)](#16-任务计划执行器-v711)
-17. [本地推理 (v7.12)](#17-本地推理-v712)
-18. [问询数据类型与校验 (v7.13)](#18-问询数据类型与校验-v713)
-19. [批量问询 (v7.13)](#19-批量问询-v713)
-20. [子任务置信度与证据门槛 (v7.13)](#20-子任务置信度与证据门槛-v713)
-21. [问询偏好库 (v7.13)](#21-问询偏好库-v713)
-22. [双模式输出 (v7.13)](#22-双模式输出-v713)
-23. [Vulkan 模式加载 (v7.13)](#23-vulkan-模式加载-v713)
-24. [模型队列与 Token 统计 (v0.10.0)](#24-模型队列与-token-统计-v0100)
-25. [Skill 开放规范包 (v0.10.0)](#25-skill-开放规范包-v0100)
-26. [统一输出接口 (v0.10.0)](#26-统一输出接口-v0100)
+13. [Agent 注册与下轮预估](#13-agent-注册与下轮预估)
+14. [本地强制指令](#14-本地强制指令)
+15. [返回后处理区段标记](#15-返回后处理区段标记)
+16. [任务计划执行器](#16-任务计划执行器)
+17. [本地推理](#17-本地推理)
+18. [问询数据类型与校验](#18-问询数据类型与校验)
+19. [批量问询](#19-批量问询)
+20. [子任务置信度与证据门槛](#20-子任务置信度与证据门槛)
+21. [问询偏好库](#21-问询偏好库)
+22. [双模式输出](#22-双模式输出)
+23. [Vulkan 模式加载](#23-vulkan-模式加载)
+24. [agent 间问询静默](#24-agent-间问询静默)
+25. [Skill 开放规范包](#25-skill-开放规范包)
+26. [统一输出接口](#26-统一输出接口)
+27. [agent.io 输入输出协议库](#27-agentio-输入输出协议库)
+28. [模型队列与 Token 统计](#28-模型队列与-token-统计)
+29. [Skill 调度器与触发匹配](#29-skill-调度器与触发匹配)
+30. [ConfigWriter 公开配置读写](#30-configwriter-公开配置读写)
+
+> 附: [依赖注入扩展](#依赖注入扩展) · [示例](#示例) · 指令用法见 [CLI指令说明.md](CLI指令说明.md)
 
 ---
 
@@ -813,7 +815,7 @@ public interface IMAFAgentHost
 
 ---
 
-## 13. Agent 注册与下轮预估 (v7.11)
+## 13. Agent 注册与下轮预估
 
 ```csharp
 using agent.registry;
@@ -830,7 +832,7 @@ ForecastRecord? prev = NextTurnForecast.Load("./data", agentUid);
 string header = NextTurnForecast.ToPromptHeader(prev);
 ```
 
-## 14. 本地强制指令 (v7.11)
+## 14. 本地强制指令
 
 ```csharp
 // 非 LLM 指令: 进入意图识别前拦截, 零 token
@@ -838,7 +840,7 @@ LocalCommandResult r = LocalCommandRouter.TryRoute("/stop");
 // r.Handled=true, r.Command=LocalCommand.Stop (支持 /stop /continue /pause /status /reset)
 ```
 
-## 15. 返回后处理区段标记 (v7.11)
+## 15. 返回后处理区段标记
 
 ```csharp
 // 快速标记: fenced 区段识别 (```html → UI, 代码块 → 审查服务等), 路由插件化
@@ -850,7 +852,7 @@ List<ResponseSegment> segs = ResponseSegmenter.Segment(llmOutput);
 // Segment: Kind (PlainText/Code/Json/Fenced), Language, StartLine/EndLine
 ```
 
-## 16. 任务计划执行器 (v7.11)
+## 16. 任务计划执行器
 
 ```csharp
 // 逐子任务顺序调度: 依赖拓扑 + 敏感暂停 (PausedForApproval) + 注入指令合并
@@ -864,7 +866,7 @@ TaskPlanRun run = await executor.ExecuteAsync(plan);
 // run.NodeStates / run.PendingSensitiveNodeId / run.PauseReason
 ```
 
-## 17. 本地推理 (v7.12)
+## 17. 本地推理
 
 ```csharp
 using agent.llamalocal;
@@ -876,7 +878,7 @@ LLMResponse resp = await llama.CallAsync(prompt, ct);
 
 ---
 
-## 18. 问询数据类型与校验 (v7.13)
+## 18. 问询数据类型与校验
 
 ```csharp
 using agent.userinteraction;
@@ -901,7 +903,7 @@ var (ok2, val, err) = PromptDataValidator.Validate(
     new[] { "搜索资料", "写文档", "执行命令" });
 ```
 
-## 19. 批量问询 (v7.13)
+## 19. 批量问询
 
 ```csharp
 using agent.registry;
@@ -920,7 +922,7 @@ foreach (var ans in result.Answers)
     Console.WriteLine($"{ans.Item.ParameterName}: {ans.Value ?? ans.Error}");
 ```
 
-## 20. 子任务置信度与证据门槛 (v7.13)
+## 20. 子任务置信度与证据门槛
 
 ```csharp
 using agent.intent;
@@ -941,7 +943,7 @@ foreach (var dropped in verdict.DroppedForLimit) // 超限 → 走兜底不静�
     Console.WriteLine($"兜底: {dropped.Text}");
 ```
 
-## 21. 问询偏好库 (v7.13)
+## 21. 问询偏好库
 
 ```csharp
 using agent.registry;
@@ -959,7 +961,7 @@ store.ApplyTo(newItem);
 string fp = ClarificationFingerprint.Build("保存到哪个路径?", "output", PromptDataType.Path);
 ```
 
-## 22. 双模式输出 (v7.13)
+## 22. 双模式输出
 
 ```csharp
 using agent.output;
@@ -981,7 +983,7 @@ renderer.Render(message);
 
 CLI: `agenthost --output-mode text "..."` (默认 markdown)。
 
-## 23. Vulkan 模式加载 (v7.13)
+## 23. Vulkan 模式加载
 
 ```csharp
 using agent.llamalocal;
@@ -997,7 +999,7 @@ var caller = new LocalLlamaCaller(logger, modelPath,
 // 强制 Vulkan 而 loader 缺失 → InvalidOperationException (不静默滑回 CPU)
 ```
 
-## 24. agent 间问询静默 (v7.13)
+## 24. agent 间问询静默
 
 ```csharp
 // IUserPromptService 新增开关
@@ -1031,13 +1033,142 @@ services.AddAgentFramework(options =>
 
 ---
 
-## 18. agent.io 输入输出协议库 (v7.15 需求2)
+## 28. 模型队列与 Token 统计
+
+### ModelQueueRouter (agent.modelqueue)
+
+```csharp
+// 三通道调度: 本地 (LocalLlamaCaller 实跑) > 官方 > 远端; 余额检查在主链
+QueuePrompt prompt = new()
+{
+    SystemPrompt = "...",
+    History = new List<QueueHistoryMessage> { new() { Role = "user", Content = "..." } },
+    UserMessage = "...",
+    EstimatedTokens = 500,
+};
+QueueResponse resp = await router.CallAsync(prompt, TaskKindHint.General, intent: "coding");
+
+resp.Success;        // bool
+resp.Content;        // 回复文本
+resp.Model;          // 实际执行模型
+resp.PromptTokens;   // 用量 (本地累计进 TokenUsageService)
+router.SetManualOverride("deepseek-chat");  // manual 模式 (≡ /model <id|序号>)
+router.SetManualOverride(null);             // ≡ /model auto
+router.Catalog;      // ModelCatalog (6 模型: 价格/推理分/编码分/上下文窗)
+```
+
+### TokenUsageService (余额三段式 + 切模)
+
+```csharp
+await tokenUsage.InitializeAsync(ct);       // ① 初始化: 真实 API 余额同步一次
+tokenUsage.RecordUsage(model, provider, promptTk, completionTk);  // ② 每次调用本地累计
+tokenUsage.NeedsResync(provider);           // ③ 超阈值 (默认 10 万 token) → TryResyncAsync
+var (remaining, sufficient) = tokenUsage.EstimateBalance(provider, estimatedTokens);
+UsageStatsSnapshot stats = tokenUsage.GetStats();   // ≡ /token stats (全 JSON)
+```
+
+余额不足 → Router 主链自动 `SelectAlternativeByBalance` 切换其他模型, `LastBalanceFlag`
+携带 `model:xxx flags:余额不足` 协议行 (前端展示)。
+
+### 配套配置 (config/base/models.yaml)
+
+- `balance_schemes`: 按 provider 的余额查询端点/解析路径 (openai/deepseek 已配)
+- `proxy`: 官方端点 HTTP 代理 (留空直连; ConfigurePrimaryHttpMessageHandler 实现)
+- `local`: 本地 gguf 路径; 缺失时 LocalLlamaCaller.IsAvailable=false 诚实降级
+
+## 29. Skill 开放规范包
+
+### SkillPackageLoader (agent.skills)
+
+```csharp
+// SKILL.md 目录包 (Anthropic Agent-Skills Open Standard):
+//   skill-name/SKILL.md  — front-matter (name 必填, =目录名) + Markdown 正文
+//   scripts/ references/ assets/  — 可选目录
+List<SkillDefinition> pkgs = SkillPackageLoader.LoadPackages("skills/");
+
+// SkillRegistry.LoadFromDirectory 同时加载: 开放规范包 + legacy *.yaml (并存, 同名包优先)
+SkillRegistry registry = SkillRegistry.LoadFromDirectory("skills/");
+```
+
+front-matter 字段映射: `name`→SkillId (目录名必须相等, 不符拒绝); `description`→Domain (语义匹配文本);
+扩展字段 keywords/regex_patterns/domain_words/priority/exclusive/force_template/forbidden_words 双向兼容
+(外部生态包缺省时走纯语义/关键词调度)。
+
+### TriggerMatcher 语义层
+
+```csharp
+// 词面 (关键词/正则/领域词) 全未命中 → bge 嵌入余弦 cos≥0.45 疑似命中 (level 1)
+// ITextEmbedder 可选注入; 不可用/失败静默回退词面 (行为兼容)
+var matcher = new TriggerMatcher(definition, embedder: bgeEmbedder);
+TriggerResult r = matcher.Match(userInput);   // r.Level / r.Precision
+```
+
+## 30. 统一输出接口 (v0.10.0)
+
+### IOutputSink (agent.host)
+
+```csharp
+public interface IOutputSink
+{
+    void Write(string text);
+    void WriteMarkdown(string text);
+    void Step(int no, string what, string detail = "");
+}
+// 实现: ConsoleOutputSink (默认终端) / FileOutputSink (--log)
+// 扩展点: WebSocket/IPC 前端实现此接口即复用整个 CliSession 逻辑
+```
+
+库内纪律: agent 库零 Console 直写 (审计: 仅 userinteraction 的 ConsoleUserInteraction 保留 —
+其本身即控制台交互实现); 日志/审批/前端指令/步骤状态全部经 IOutputSink / ILogger / IChatboxSink。
+
+### IChatboxSink (agent.logging)
+
+```csharp
+sink.Push(new FrontendDirective { Type = "thinking_page_switch", ... });  // @chatbox:{json} 协议行
+// 前端 Console.ReadLine() 逐行解析; 协议详见 CLI指令说明.md
+```
+
+---
+
+## 27. agent.io 输入输出协议库
 
 独立项目 `src/agent.io` — **netstandard2.1**、零依赖, 供任意前端/宿主引用。
+
+### 统一命令协议 (v0.11.0 — @cmd 行协议)
+
+agent → 前端方向一致命令接口: 余额不足/思考切页/输出追加/模型切换/Skill 进度全部收敛为
+`AgentCommand` 信封, 经 `AgentCommandWriter` (组合任意 WriterBase 传输) 写出,
+前端用 `AgentCommandReader` (组合任意 ReaderBase 传输) 读取。
+
+```csharp
+// 写侧 (agent): 余额不足 → 前端
+var commands = new AgentCommandWriter(new AgentRequestWriter(Console.Out));
+commands.Send(AgentCommandNames.BalanceInsufficient,
+    ("model", "deepseek-chat"), ("from", "gpt-4o"), ("remaining", "$1.24"));
+// 线上: @cmd balance_insufficient model=deepseek-chat from=gpt-4o remaining=%241.24
+
+// 读侧 (前端): 逐事件解析
+var reader = new AgentCommandReader(new TextReportReader(Console.In));
+AgentCommand? cmd;
+while ((cmd = reader.ReadCommand(ev => HandleOther(ev))) != null)
+{
+    if (cmd.Name == AgentCommandNames.BalanceInsufficient)
+        ShowBanner($"模型 {cmd.Get("from")} 余额不足 → 已切换 {cmd.Get("model")}");
+}
+```
+
+已知命令名 (`AgentCommandNames`): `balance_insufficient` / `thinking_page_switch` /
+`thinking_end` / `output_append` / `model_switch` / `skill_progress` / `skill_done`。
+未知命令名前向兼容 (前端自行忽略或处理)。值转义: 空格 %20、= %3D、% %25、换行 %0A。
 
 ### AgentReportReaderBase (输出读取基类)
 
 行协议状态机: 单行事件 (Text / ChatboxDirective / Json) + 多行流式块 (StreamBegin/Chunk/End)。
+
+三种传输实现 (命令层无感切换 — 同一 AgentCommandWriter/Reader 组合任意一对):
+- **Console.IO**: `AgentRequestWriter(TextWriter)` + `TextReportReader(TextReader)` — stdin/stdout/文件
+- **共享内存**: `SharedMemoryRequestWriter/ReportReader` (文件-backed mmap 环形区; Linux 建议 /dev/shm — 同机进程零拷贝)
+- **Socket (TCP)**: `SocketChannelServer` (agent 侧监听) + `SocketChannel.Connect` (前端侧) — 跨机/容器
 
 ```csharp
 AgentReportReaderBase reader = new TextReportReader(Console.In);
@@ -1088,98 +1219,3 @@ writer.ResetModule("model_queue");                             // 清 L3 覆盖,
 - 写只落 L3 (`modules/{module}.yaml` 同名覆盖) / L4 (`runtime/dynamic.yaml`) — L1 base 永不直改
 - 文件内容顶层 key = 模块名 (分层契约); 深合并语义; null 覆盖项 = 删除回落
 - 全部走 MiniYaml (零反射 AOT 安全)
-
-## 24. 模型队列与 Token 统计 (v0.10.0)
-
-### ModelQueueRouter (agent.modelqueue)
-
-```csharp
-// 三通道调度: 本地 (LocalLlamaCaller 实跑) > 官方 > 远端; 余额检查在主链
-QueuePrompt prompt = new()
-{
-    SystemPrompt = "...",
-    History = new List<QueueHistoryMessage> { new() { Role = "user", Content = "..." } },
-    UserMessage = "...",
-    EstimatedTokens = 500,
-};
-QueueResponse resp = await router.CallAsync(prompt, TaskKindHint.General, intent: "coding");
-
-resp.Success;        // bool
-resp.Content;        // 回复文本
-resp.Model;          // 实际执行模型
-resp.PromptTokens;   // 用量 (本地累计进 TokenUsageService)
-router.SetManualOverride("deepseek-chat");  // manual 模式 (≡ /model <id|序号>)
-router.SetManualOverride(null);             // ≡ /model auto
-router.Catalog;      // ModelCatalog (6 模型: 价格/推理分/编码分/上下文窗)
-```
-
-### TokenUsageService (余额三段式 + 切模)
-
-```csharp
-await tokenUsage.InitializeAsync(ct);       // ① 初始化: 真实 API 余额同步一次
-tokenUsage.RecordUsage(model, provider, promptTk, completionTk);  // ② 每次调用本地累计
-tokenUsage.NeedsResync(provider);           // ③ 超阈值 (默认 10 万 token) → TryResyncAsync
-var (remaining, sufficient) = tokenUsage.EstimateBalance(provider, estimatedTokens);
-UsageStatsSnapshot stats = tokenUsage.GetStats();   // ≡ /token stats (全 JSON)
-```
-
-余额不足 → Router 主链自动 `SelectAlternativeByBalance` 切换其他模型, `LastBalanceFlag`
-携带 `model:xxx flags:余额不足` 协议行 (前端展示)。
-
-### 配套配置 (config/base/models.yaml)
-
-- `balance_schemes`: 按 provider 的余额查询端点/解析路径 (openai/deepseek 已配)
-- `proxy`: 官方端点 HTTP 代理 (留空直连; ConfigurePrimaryHttpMessageHandler 实现)
-- `local`: 本地 gguf 路径; 缺失时 LocalLlamaCaller.IsAvailable=false 诚实降级
-
-## 25. Skill 开放规范包 (v0.10.0)
-
-### SkillPackageLoader (agent.skills)
-
-```csharp
-// SKILL.md 目录包 (Anthropic Agent-Skills Open Standard):
-//   skill-name/SKILL.md  — front-matter (name 必填, =目录名) + Markdown 正文
-//   scripts/ references/ assets/  — 可选目录
-List<SkillDefinition> pkgs = SkillPackageLoader.LoadPackages("skills/");
-
-// SkillRegistry.LoadFromDirectory 同时加载: 开放规范包 + legacy *.yaml (并存, 同名包优先)
-SkillRegistry registry = SkillRegistry.LoadFromDirectory("skills/");
-```
-
-front-matter 字段映射: `name`→SkillId (目录名必须相等, 不符拒绝); `description`→Domain (语义匹配文本);
-扩展字段 keywords/regex_patterns/domain_words/priority/exclusive/force_template/forbidden_words 双向兼容
-(外部生态包缺省时走纯语义/关键词调度)。
-
-### TriggerMatcher 语义层
-
-```csharp
-// 词面 (关键词/正则/领域词) 全未命中 → bge 嵌入余弦 cos≥0.45 疑似命中 (level 1)
-// ITextEmbedder 可选注入; 不可用/失败静默回退词面 (行为兼容)
-var matcher = new TriggerMatcher(definition, embedder: bgeEmbedder);
-TriggerResult r = matcher.Match(userInput);   // r.Level / r.Precision
-```
-
-## 26. 统一输出接口 (v0.10.0)
-
-### IOutputSink (agent.host)
-
-```csharp
-public interface IOutputSink
-{
-    void Write(string text);
-    void WriteMarkdown(string text);
-    void Step(int no, string what, string detail = "");
-}
-// 实现: ConsoleOutputSink (默认终端) / FileOutputSink (--log)
-// 扩展点: WebSocket/IPC 前端实现此接口即复用整个 CliSession 逻辑
-```
-
-库内纪律: agent 库零 Console 直写 (审计: 仅 userinteraction 的 ConsoleUserInteraction 保留 —
-其本身即控制台交互实现); 日志/审批/前端指令/步骤状态全部经 IOutputSink / ILogger / IChatboxSink。
-
-### IChatboxSink (agent.logging)
-
-```csharp
-sink.Push(new FrontendDirective { Type = "thinking_page_switch", ... });  // @chatbox:{json} 协议行
-// 前端 Console.ReadLine() 逐行解析; 协议详见 CLI指令说明.md
-```

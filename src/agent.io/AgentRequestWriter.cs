@@ -41,6 +41,9 @@ public abstract class AgentRequestWriterBase
     /// <summary>写一条 chatbox 事件 (agent → 前端方向; 供测试/回放使用对称写法)。</summary>
     public void WriteChatboxDirective(string json) =>
         WriteLineCore(AgentReportReaderBase.ChatboxPrefix + json);
+
+    /// <summary>公开单行写入口 (v0.11.0: AgentCommandWriter 组合用 — 命令层经此写, 不必继承)。</summary>
+    public void WriteLineCorePublic(string line) => WriteLineCore(line);
 }
 
 /// <summary>TextWriter 实现 (stdout / 文件 / StringWriter)。</summary>

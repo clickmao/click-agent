@@ -68,6 +68,9 @@ public sealed class LogRouter
     /// <summary>L.6 定案: chatbox 推送通道出口 (CLI=ConsoleChatboxSink; websocket 宿主注入各自实现)</summary>
     public IChatboxSink? ChatboxSink { get; set; }
 
+    /// <summary>v0.11.0 统一命令出口 (可选注入): thinking/输出指令同步走 @cmd 行协议 — 与 IChatboxSink 并行 (前端二选一解析)</summary>
+    public agent.io.AgentCommandWriter? CommandWriter { get; set; }
+
     /// <summary>推送: sink 出口 + 缓存 (缓存保证 /log dump 与测试可回放); sink 异常吞掉 — 推送永不打断主链</summary>
     private void PushDirective(FrontendDirective directive)
     {
@@ -80,6 +83,34 @@ public sealed class LogRouter
         {
             // 推送失败只影响前端显示 (第三方 sink 未守约时双重防御)
         }
+        // v0.11.0: 同一指令镜像到统一命令通道 (@cmd 行协议 — AgentCommandIO 工具类, 前端 AgentCommandReader 读取)
+        try
+        {
+            if (CommandWriter is not null)
+                CommandWriter.Send(MapToCommand(directive));
+        }
+        catch
+        {
+            // 命令通道失败同 sink — 不打断主链
+        }
+    }
+
+    /// <summary>FrontendDirective → 统一命令映射 (thinking_page_switch/thinking_end/output_append; 其余忽略 — 前向兼容)。</summary>
+    private static agent.io.AgentCommand MapToCommand(FrontendDirective d)
+    {
+        var name = d.Type switch
+        {
+            "thinking_page_switch" => agent.io.AgentCommandNames.ThinkingPageSwitch,
+            "thinking_end" => agent.io.AgentCommandNames.ThinkingEnd,
+            "output_append" => agent.io.AgentCommandNames.OutputAppend,
+            _ => d.Type,
+        };
+        return new agent.io.AgentCommand(name, new Dictionary<string, string>
+        {
+            ["seq"] = d.Seq.ToString(System.Globalization.CultureInfo.InvariantCulture),
+            ["session"] = d.SessionId ?? string.Empty,
+            ["summary_length"] = d.SummaryLength.ToString(System.Globalization.CultureInfo.InvariantCulture),
+        });
     }
 
     /// <summary>写一条日志 (四 flag 在同一条路径上完成)</summary>

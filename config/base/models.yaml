@@ -3,8 +3,8 @@
 # 每模型: 除 API-KEY 外全部参数 (key 只存环境变量名, 凭据铁律)
 # 参数真实性 (C.6.5): 目录内模型均经实际 http 校验 (假 key 期望 401 = 地址合法),
 # 校验命令 /model verify <id>; 价格为公开牌价 (USD/每百万 token), 变动以 provider 官网为准
-# 校验记录 (2026-09-06 全目录真机探测): deepseek/bigmodel 4/6 端点 401=合法;
-# api.openai.com 在当前部署网络被 RST (与 github smart-http 同类网络策略), 2/6 不可达 —
+# 校验记录 (2026-09-06 全目录真机探测): deepseek/bigmodel 端点 401=合法 (原 6 模型全目录);
+# api.openai.com 在当前部署网络被 RST (与 github smart-http 同类网络策略), 2 个端点不可达 —
 # 目录参数保留 (公网可达环境正常), verify 命令在可达环境如实报 VALID/UNREACHABLE
 # ==============================================
 models:
@@ -76,6 +76,157 @@ models:
     coding_score: 7
     context_window: 128000
     suited_for: [general, reasoning, planning]
+
+  # ── Anthropic ──
+  - id: claude-sonnet-4-5
+    provider: anthropic
+    endpoint: https://api.anthropic.com/v1/chat/completions
+    api_key_env: ANTHROPIC_KEY
+    price_in_per_m: 3.00
+    price_out_per_m: 15.00
+    reasoning_score: 9
+    coding_score: 9
+    context_window: 200000
+    suited_for: [general, coding, reasoning, planning, debug]
+
+  - id: claude-haiku-4-5
+    provider: anthropic
+    endpoint: https://api.anthropic.com/v1/chat/completions
+    api_key_env: ANTHROPIC_KEY
+    price_in_per_m: 1.00
+    price_out_per_m: 5.00
+    reasoning_score: 7
+    coding_score: 7
+    context_window: 200000
+    suited_for: [chat, summary, classify, coding]
+
+  # ── Google ──
+  - id: gemini-2.5-pro
+    provider: google
+    endpoint: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent
+    api_key_env: GEMINI_KEY
+    price_in_per_m: 1.25
+    price_out_per_m: 10.00
+    reasoning_score: 9
+    coding_score: 8
+    context_window: 1048576
+    suited_for: [general, reasoning, planning, long_context]
+
+  - id: gemini-2.5-flash
+    provider: google
+    endpoint: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+    api_key_env: GEMINI_KEY
+    price_in_per_m: 0.30
+    price_out_per_m: 2.50
+    reasoning_score: 7
+    coding_score: 7
+    context_window: 1048576
+    suited_for: [chat, summary, classify, long_context]
+
+  # ── xAI ──
+  - id: grok-4
+    provider: xai
+    endpoint: https://api.x.ai/v1/chat/completions
+    api_key_env: XAI_KEY
+    price_in_per_m: 3.00
+    price_out_per_m: 15.00
+    reasoning_score: 9
+    coding_score: 8
+    context_window: 256000
+    suited_for: [reasoning, coding, planning]
+
+  - id: grok-4-fast
+    provider: xai
+    endpoint: https://api.x.ai/v1/chat/completions
+    api_key_env: XAI_KEY
+    price_in_per_m: 0.20
+    price_out_per_m: 0.50
+    reasoning_score: 7
+    coding_score: 6
+    context_window: 256000
+    suited_for: [chat, summary, classify]
+
+  # ── Moonshot (月之暗面) ──
+  - id: kimi-k2-0905-preview
+    provider: moonshot
+    endpoint: https://api.moonshot.cn/v1/chat/completions
+    api_key_env: MOONSHOT_KEY
+    price_in_per_m: 0.60
+    price_out_per_m: 2.50
+    reasoning_score: 8
+    coding_score: 8
+    context_window: 256000
+    suited_for: [general, coding, long_context]
+
+  # ── 阿里 Qwen ──
+  - id: qwen3-max
+    provider: dashscope
+    endpoint: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions
+    api_key_env: DASHSCOPE_KEY
+    price_in_per_m: 1.60
+    price_out_per_m: 6.40
+    reasoning_score: 9
+    coding_score: 8
+    context_window: 262144
+    suited_for: [general, reasoning, planning]
+
+  - id: qwen3-coder-plus
+    provider: dashscope
+    endpoint: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions
+    api_key_env: DASHSCOPE_KEY
+    price_in_per_m: 0.70
+    price_out_per_m: 2.80
+    reasoning_score: 7
+    coding_score: 9
+    context_window: 1048576
+    suited_for: [coding, debug, long_context]
+
+  # ── DeepSeek 补充 ──
+  - id: deepseek-v3.2-exp
+    provider: deepseek
+    endpoint: https://api.deepseek.com/v1/chat/completions
+    api_key_env: DEEPSEEK_KEY
+    price_in_per_m: 0.28
+    price_out_per_m: 0.42
+    reasoning_score: 8
+    coding_score: 9
+    context_window: 128000
+    suited_for: [coding, general, summary]
+
+  # ── OpenAI 补充 (推理系) ──
+  - id: o4-mini
+    provider: openai
+    endpoint: https://api.openai.com/v1/chat/completions
+    api_key_env: AGENT_OPENAI_KEY
+    price_in_per_m: 1.10
+    price_out_per_m: 4.40
+    reasoning_score: 8
+    coding_score: 8
+    context_window: 200000
+    suited_for: [reasoning, coding, math]
+
+  - id: gpt-5
+    provider: openai
+    endpoint: https://api.openai.com/v1/chat/completions
+    api_key_env: AGENT_OPENAI_KEY
+    price_in_per_m: 1.25
+    price_out_per_m: 10.00
+    reasoning_score: 9
+    coding_score: 9
+    context_window: 400000
+    suited_for: [general, coding, reasoning, planning]
+
+  # ── 智谱 GLM 补充 ──
+  - id: glm-4.5
+    provider: zhipu
+    endpoint: https://open.bigmodel.cn/api/paas/v4/chat/completions
+    api_key_env: ZHIPU_KEY
+    price_in_per_m: 0.55
+    price_out_per_m: 2.20
+    reasoning_score: 8
+    coding_score: 8
+    context_window: 128000
+    suited_for: [general, coding, reasoning]
 
 # ── 官方端点代理 (v0.10.0 需求③: 官方/远端 API 出网代理 — 可配置) ──
 # 留空 = 直连; http://user:pass@host:port 认证代理也支持。

@@ -29,6 +29,9 @@ public enum ReportEventKind
     /// <summary>JSON 结构化结果行 (以 { 开头且解析成功的单行 — /status /balance /plan 等)</summary>
     Json,
 
+    /// <summary>统一命令行 (@cmd name key=value … — v0.11.0 统一命令协议)</summary>
+    Command,
+
     /// <summary>输入流结束 (stdin EOF / agent 退出)</summary>
     Eof,
 }
@@ -61,6 +64,12 @@ public abstract class AgentReportReaderBase
 {
     /// <summary>chatbox 指令行前缀 (与 ConsoleChatboxSink 写侧一致)</summary>
     public const string ChatboxPrefix = "@chatbox:";
+
+    /// <summary>统一命令行前缀 (v0.11.0: @cmd name key=value …)</summary>
+    public const string CommandPrefix = "@cmd ";
+
+    /// <summary>读侧事件载荷中的命令短前缀 (ChatboxDirective 载荷去 @chatbox: 后再判 — 兼容两种前缀行走同一事件通道)</summary>
+    public const string CommandShortPrefix = "@cmd ";
 
     public const string StreamBeginMarker = "@stream begin";
     public const string StreamEndMarker = "@stream end";
@@ -100,6 +109,14 @@ public abstract class AgentReportReaderBase
             {
                 Kind = ReportEventKind.ChatboxDirective,
                 Payload = line.Substring(ChatboxPrefix.Length),
+            };
+
+        // 统一命令行 (@cmd name key=value … — v0.11.0)
+        if (line.StartsWith(CommandPrefix, StringComparison.Ordinal))
+            return new ReportEvent
+            {
+                Kind = ReportEventKind.Command,
+                Payload = line,
             };
 
         // 单行 JSON (快速启发: 首尾大括号配对 — 不引 JSON 库, 零依赖 + 快速解析)

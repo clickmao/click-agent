@@ -20,9 +20,7 @@ public sealed class ContextGradientCompressor
     private static readonly char[] SentenceEnders = { '。', '！', '？', '.', '!', '?' };
 
     public GradientResult Compress(GradientRequest request)
-    {
-        return CompressCore(request, null, CancellationToken.None);
-    }
+        => CompressCoreAsync(request, null, CancellationToken.None).GetAwaiter().GetResult(); // sync 边界兼容 (async 版请用 CompressAsync)
 
     /// <summary>P3 语义版: embedder 就绪时对非 Full 级产物做 cosine 漂移校验 (原文三重校验的语义分量);
     /// embedder 不可用/失败 → 退锚词 (Compress 语义), 行为兼容。</summary>
@@ -31,10 +29,10 @@ public sealed class ContextGradientCompressor
         if (_embedder is null || !_embedder.IsAvailable)
             return Compress(request);
         var originalEmbedding = await _embedder.EmbedAsync(request.Content, ct);
-        return CompressCore(request, originalEmbedding, ct);
+        return await CompressCoreAsync(request, originalEmbedding, ct).ConfigureAwait(false);
     }
 
-    private GradientResult CompressCore(GradientRequest request, float[]? originalEmbedding, CancellationToken ct)
+    private async Task<GradientResult> CompressCoreAsync(GradientRequest request, float[]? originalEmbedding, CancellationToken ct)
     {
         var content = request.Content ?? string.Empty;
         double? semanticSim = null;
@@ -68,7 +66,7 @@ public sealed class ContextGradientCompressor
         if (originalEmbedding is not null && level != GradientLevel.Full &&
             result.Length < content.Length)
         {
-            var compressedEmbedding = _embedder!.EmbedAsync(result, ct).GetAwaiter().GetResult();
+            var compressedEmbedding = await _embedder!.EmbedAsync(result, ct).ConfigureAwait(false);
             var cosine = VectorMath.Cosine(originalEmbedding, compressedEmbedding);
             semanticSim = cosine;
             if (cosine < _semanticThreshold)
