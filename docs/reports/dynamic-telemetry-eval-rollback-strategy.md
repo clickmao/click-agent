@@ -145,7 +145,8 @@ done
 - **最近五批审计（批61-65）**：50/50；768 tok/case 均值；drift 全 1.0；suspects 3→0（must_contain 内容断言接管后）。
 - **R149 用户质疑结论**：TaskRelevanceChecker 组件能力真实（全量批 50/53 isolated=True score=2 实测）但判定空心成立——既往 C14/C15 expect 只有 llm:true，通过率对组件无证明力。修复后 C14 真断言批69-72 四连验 isolated=True score=2 PASS (4/4)。
 - **R151 (pivot 判定闭环)**：C15 pivot_reanchor 升级为三重真断言 (不隔离+pivot_n≥1+新任务链产出)；pivot_n 打点消费建成 (goal/op=pivot, 真缺陷 45: init 缺键 KeyError——batch76 首跑 15/19 后死亡实证, 与 R142 compression 同源教训)；批76 全量 19/19 复证 pivot_n=1 真重锚。
-- **in-flight**：R151 收尾 → R152+ 候选：① 批 77+（quick-11 常态）② K1 注入后回复质量纵向跟踪 (C02 全量批语言选择分析) ③ 批 80 五批审计点 ④ 阶段汇报点 3。
+- **README 30 批滚动制度 (R152b 用户钦定)**：README 能力段只显示最新 2 批，历史按轮段归档 docs/CHANGELOG-v0.11.0-R103-R127/R133-R142/R143-R152.md；批次趋势行只留最新 2 批 + 归档链接；下次滚动: 批108。
+- **in-flight**：R152 收尾 → R153+ 候选：① 批 79+（quick-11 常态）② 批 80 五批审计 ③ K1 质量纵向 ④ 持续。
 - **环境事实**（防重查）：bge=`/home/agentuser/.agentframework/models/bge-q8.gguf`（env `AGENTFRAMEWORK_BGE_MODEL`，缺失→词袋 dim256）；3 key：kimi 负样本/glm 可用/deepseek 7.61 CNY；github 直连断→ghfast.top 代理推（>8min 假死勿中断）；telemetry 读用 utf-8-sig；`execute_code` 300s 上限→批测逐轮后台跑。
 - **千轮口径**：RETIRED 轮诚实标注；全绿口径=排除 RETIRED；轮号唯一；每轮落盘+镜像。
 
