@@ -117,5 +117,29 @@
       "cmd_json": true,
       "ok": false
     }
+  },
+  {
+    "id": "C14_isolated_multi",
+    "repl": [
+      "帮我制定一个Redis缓存优化方案，重点看热点key",
+      "今天天气怎么样? 随便聊聊",
+      "/exit"
+    ],
+    "expect": {
+      "llm": true,
+      "note": "轮1锚 goal → 轮2 无关话题应触发隔离 (subagent isolated=true)"
+    }
+  },
+  {
+    "id": "C15_pivot_multi",
+    "repl": [
+      "帮我制定一个Redis缓存优化方案",
+      "算了，不要之前的方案了，帮我写一首关于秋天的短诗",
+      "/exit"
+    ],
+    "expect": {
+      "llm": true,
+      "note": "轮2 pivot 重锚 → 不应被隔离误吞, 应产出新任务链"
+    }
   }
 ]

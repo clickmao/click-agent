@@ -1,0 +1,196 @@
+{
+ "round": "mass_123",
+ "label": "R115 batch26 123 post-balance-fix",
+ "ts": "2026-09-07T10:06:13+0800",
+ "cases": 5,
+ "passed": 5,
+ "tokens_total": 3939,
+ "prompt_total": 1863,
+ "completion_total": 2076,
+ "wall_total_ms": 84114,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组分区递归排序的高效分治排序算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 6714,
+   "points": 19,
+   "llm_calls": 1,
+   "prompt_tokens": 332,
+   "completion_tokens": 31,
+   "total_tokens": 363,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41518095082488204
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 5849,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 130,
+   "from_cache": false,
+   "prompt_total_tokens": 474,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "推荐结论（默认场景：中小规模、自部署 RAG）：首选 Qdrant；已有 PostgreSQL 则选 pgvector；十亿级大规模选 Milvus。\n\n对比要点：\n· **Qdrant**：Rust 实现，性能与标量过滤强，单二进制部署轻量，API 友好\n· **pgvector**：复用现有 PG，运维成本近零，千万级数据内够用\n· **Milvus**：功能最全、支持超大规模与多索引，但依赖 etcd/MinIO 等，运维重\n· **Weaviate**：内置向量化模块与混合检索，适合快速原型\n· **Pinecone**：全托管免运维，但成本高、有数据合规顾虑\n\n核心选型维度：数据规模、过滤需求、运维投入、现有技术栈。\n\n说明：当前上下文与工作区文件中无向量数据库相关资料，以上为通用知识结论；完整报告（含评分表与测试方法）可按需生成。\n\n需要澄清：您的数据量级与部署方式（自托管/云",
+   "wall_ms": 21194,
+   "points": 19,
+   "llm_calls": 1,
+   "prompt_tokens": 365,
+   "completion_tokens": 1209,
+   "total_tokens": 1574,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4271060887559994
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 20255,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/79tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 107,
+   "from_cache": false,
+   "prompt_total_tokens": 500,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (3410ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 4340,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 3410,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "核心原因：索引把“全表扫描 O(n)”变成“树形查找 O(log n)”，瓶颈在磁盘 I/O，而 I/O 次数被大幅削减。\n\n具体机制：\n\n· **有序数据结构（B+树）**\n  无索引时查询只能逐行扫全表；索引按列值排序组织成 B+ 树，查找沿树根→叶逐层下钻，千万级数据树高通常仅 3~4 层。\n\n· **减少磁盘 I/O 次数**\n  数据库性能瓶颈主要在磁盘 I/O。B+ 树节点大小与页对齐（如 InnoDB 16KB），每层只需一次 I/O；树高 3 层 ≈ 3 次 I/O 定位任意一行，而全表扫描可能要读成千上万个页。\n\n· **叶子节点链表支持范围查询**\n  B+ 树叶子有序且首尾相连，BETWEEN、>、< 这类范围条件只需定位起点后顺序遍历，不用扫无关数据。\n\n· **避免排序（消除 filesort）**\n  ORDER BY 列命中索引时，天然按序返回，省去额外排序步",
+   "wall_ms": 31125,
+   "points": 20,
+   "llm_calls": 1,
+   "prompt_tokens": 580,
+   "completion_tokens": 817,
+   "total_tokens": 1397,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40487451681990605
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 30223,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:1snip/299tok/r0.45rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/79tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 13616,
+   "from_cache": false,
+   "prompt_total_tokens": 778,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C11_json_format",
+   "input": "用JSON格式返回：字段name填fastapi，字段lang填python，只返回JSON不要其他文字",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"name\": \"fastapi\", \"lang\": \"python\"}",
+   "wall_ms": 20741,
+   "points": 20,
+   "llm_calls": 1,
+   "prompt_tokens": 586,
+   "completion_tokens": 19,
+   "total_tokens": 605,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.3732391006324334
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 19835,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:1snip/321tok/r0.45rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/78tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 13516,
+   "from_cache": false,
+   "prompt_total_tokens": 792,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}

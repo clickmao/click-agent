@@ -62,6 +62,31 @@ def run_case(case, env):
     points = read_telemetry(case_tel)
     return {"reply": reply, "raw_tail": out[-300:], "points": points, "wall_ms": wall_ms}
 
+def run_case_repl(case, env):
+    """R116: 多轮 REPL 用例 — 单进程多轮 stdin, 断言聚焦最后一轮 (隔离/pivot/长会话覆盖)。
+    telemetry 为全程聚合; reply 取最后一个非命令轮的回复。"""
+    case_tel = os.path.abspath("data/telemetry/host.jsonl")
+    env["AGENTFRAMEWORK_TELEMETRY"] = os.path.dirname(case_tel)
+    if os.path.exists(case_tel):
+        os.remove(case_tel)
+    t0 = time.time()
+    stdin_text = "\n".join(case["repl"]) + "\n"
+    p = subprocess.run(
+        ["dotnet", "run", "--project", "src/agent.host", "-c", "Release", "--no-build", "--", "--log", "/tmp/repl-case.log"],
+        input=stdin_text, capture_output=True, text=True, timeout=300, env=env)
+    wall_ms = int((time.time() - t0) * 1000)
+    out = p.stdout
+    blocks = re.findall(r"──+\s*回复\s*──+\n(.*?)(?:\n  · intent=|\n\n❯|\n──+)", out, re.S)
+    replies = []
+    for b in blocks:
+        b = "\n".join(l for l in b.split("\n")
+                      if not l.startswith("@chatbox:") and "[20" not in l[:26]).strip()
+        if b:
+            replies.append(b)
+    reply = replies[-1] if replies else ""
+    points = read_telemetry(case_tel)
+    return {"reply": reply, "raw_tail": out[-300:], "points": points, "wall_ms": wall_ms,
+            "replies": replies}
 def summarize_points(points):
     """聚合打点 → 指标 dict"""
     s = {"points": len(points), "llm_calls": 0, "prompt_tokens": 0, "completion_tokens": 0,
@@ -69,7 +94,8 @@ def summarize_points(points):
          "intent": None, "subtasks": 0, "assembly_ok": None, "loop_success": None,
          "loop_ms": None, "models": [],
          "snippets": 0, "sources_recall": "", "assembly_ms": None, "from_cache": None,
-         "prompt_total_tokens": None, "history_tokens": None, "gate_to_ask": None}
+         "prompt_total_tokens": None, "history_tokens": None, "gate_to_ask": None,
+         "isolated": None, "isolated_score": None, "bge_provider": None, "bge_ms": None}
     for pt in points:
         kv = pt.get("kv", {}) or {}
         tag = pt.get("point")
@@ -100,6 +126,14 @@ def summarize_points(points):
         elif tag == "loop_turn":
             s["loop_success"] = kv.get("success")
             s["loop_ms"] = kv.get("total_ms")
+        elif tag == "subagent":
+            # R116: 隔离维度 (无关话题隔离 E2E 判定)
+            s["isolated"] = bool(kv.get("isolated"))
+            s["isolated_score"] = kv.get("relevance_score")
+        elif tag == "bge_embed":
+            # R116: P3 真链维度 (bge-local=真向量 / hash-fallback=词袋)
+            s["bge_provider"] = kv.get("provider")
+            s["bge_ms"] = kv.get("ms")
     return s
 
 def check_expect(case, reply, agg, raw_tail):
@@ -240,10 +274,11 @@ def main():
         os.remove(sess)
     results = []
     for c in cases:
-        r = run_case(c, env)
+        # R116: repl 型用例 (多轮会话) → run_case_repl
+        r = run_case_repl(c, env) if c.get("repl") else run_case(c, env)
         agg = summarize_points(r["points"])
         ok, notes = check_expect(c, r["reply"], agg, r["raw_tail"])
-        results.append({"id": c["id"], "input": c["input"], "pass": ok, "notes": notes,
+        results.append({"id": c["id"], "input": c.get("input") or " | ".join(c.get("repl", [])), "pass": ok, "notes": notes,
                         "reply": r["reply"][:400], "wall_ms": r["wall_ms"], **agg})
         status = "PASS" if ok else "FAIL"
         print(f"[{status}] {c['id']}  wall={r['wall_ms']}ms tokens={agg['total_tokens']} intent={agg['intent']} skill={len(agg['skill_hits'])}")

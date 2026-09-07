@@ -41,6 +41,12 @@ public static partial class IntentRecognizer
     /// </summary>
     private static readonly (string Intent, string[] CnKeywords, string[] EnWordPatterns)[] Rules =
     {
+        // 0. 创作类 (必须在代码生成前: "写首诗/写文章/写故事" 是创作不是代码 — R116 真缺陷 47:
+        //    "帮我写一首关于秋天的短诗" 曾命中 "帮我写" → code_generation → forecast/技能路由全偏)
+        (Intents.General,
+            ["写一首", "写首诗", "写一篇", "写篇文章", "写个故事", "写一个故事", "写故事", "写首歌词", "写一首诗", "作一首", "填一首", "写一副对联", "写对联", "写首俳句", "写段歌词"],
+            [@"\bwrite\s+(a\s+)?(poem|story|essay|song)\b"]),
+
         // 1. 测试生成 (必须在代码生成前: "写测试" 是测试不是代码)
         (Intents.TestGeneration,
             ["写测试", "单元测试", "测试用例", "生成测试", "补测试"],

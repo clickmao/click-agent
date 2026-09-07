@@ -191,3 +191,13 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - **缺陷 46**: SelectAlternativeByBalance 候选未过滤 key 未配置模型 (曾切到 claude-sonnet-4-5 而 ANTHROPIC_KEY 未设 → 必败)。修: 候选 key 过滤。
 - **切模实战实证**: MIN_BALANCE_USD=100 注入 → 手动 deepseek → "余额不足 ($1.25) → 切换 glm-5.3-flash" → 对话实际用 glm ✓。
 - balance_sync 打点 (ok/model/remaining/error) 补齐; BalanceThresholdTests ×2 (374 绿); 批 26 (mass_123-127) 25/25, 3623 tok (-15% vs 批25)。
+
+### R116: 创作类意图缺陷 47 + 多轮隔离/pivot E2E 真断言 (P3 bge 真链)
+- **缺陷 47 (真)**: "帮我写一首关于秋天的短诗" 命中 "帮我写" → code_generation (C15 pivot 实测暴露) → 创作类规则 0 (规则表首位, 在测试生成/代码生成前) 修复 → IntentCreativeTests ×5 (含 C15 确切输入)。379/379 绿 (374+5)。
+- **harness 扩展**: run_case_repl (多轮 REPL 用例执行器 — 单进程 stdin 顺序喂 repl 行, 逐轮回复块解析, telemetry 全程聚合); summarize_points +4 维度 (isolated/isolated_score/bge_provider/bge_ms); cases.json 16 用例 (+C14_isolated_multi/C15_pivot_multi)。
+- **C14/C15 E2E 真断言** (mass_128 内, 真实 glm): C14 轮1 锚 Redis → 轮2 天气 → **isolated=true relevance_score=2 (实体零重叠), 独立 session 14.4s 秒回** ✓; C15 轮2 "算了...写诗" pivot → **未被隔离误吞, 新任务链产出真实诗歌, intent=general (fx47 生效)** ✓。两用例 PASS (llm=2)。
+- **P3 bge 真链**: bge_embed provider=bge-local dim=512 (修复前 hash-fallback 词袋) — 进程内直连真向量。
+- **批 27 = mass_128 full-16: 16/16 全绿, 13428 tok, 422.9s** (全量含 13 旧 + C09b + 2 新 repl 用例)。千轮累计: 26 批口径 496/496 + full-16 轮。
+- **ledger.jsonl 回填**: 批 26 (mass_123-127, R115 commit 后中断遗漏) 6 行补齐 (25/25, 均值 3623 tok)。
+- **运维**: 清理 R113 退场后遗留的 llm-service 僵死守护 (pid 1139857, 2h25m 孤儿监听 data/llm.sock) + sock 死文件; 双 tick 重复 runner (10:40 旧 bin 失真 → 杀; 10:48 新 bin 有效 → 让其跑完 mass_128 后接力收尾)。
+- **AOT 复核**: publish 强刷 0 IL 警告 (R116 C# 改动 = 规则表, 铁律复验)。
