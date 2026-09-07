@@ -830,10 +830,16 @@ Interlocked.Increment(ref _cacheMisses);
             }
             // v0.11.0 R133 (T3 观测): tendency 点位首次回答 "召回几条/被拦几条/置信多少" —
             // 断链期该源永远静默, 无打点则修复后也无法验证行为变化。
-            agent.config.AgentTelemetry.Emit("phase_timing", "ContextAssembler",
-                ("phase", "recall_tendency"), ("ms", stopwatch.ElapsedMilliseconds),
-                ("user", request.UserId), ("signals", bias?.BiasScores.Count ?? 0),
-                ("confidence", bias?.OverallConfidence ?? 0), ("snippets", snippets.Count));
+            // 注意: 仅在 analyzer 真实返回 bias 时打点 (bias==null 是 mock/未配置, 零观测价值) —
+            // 无条件 Emit 会让 mock 测试每轮灌 AgentTelemetry pending ring (上限 32),
+            // 与 TelemetryPendingTests 并行时挤掉 pre_boot_probe → 全仓测试 flaky (R133 实证)。
+            if (bias != null)
+            {
+                agent.config.AgentTelemetry.Emit("phase_timing", "ContextAssembler",
+                    ("phase", "recall_tendency"), ("ms", stopwatch.ElapsedMilliseconds),
+                    ("user", request.UserId), ("signals", bias.BiasScores.Count),
+                    ("confidence", bias.OverallConfidence), ("snippets", snippets.Count));
+            }
         }
         catch (Exception ex)
         {

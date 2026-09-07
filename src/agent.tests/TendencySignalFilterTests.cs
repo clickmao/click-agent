@@ -85,15 +85,20 @@ public class TendencySignalFilterTests
         var dir = TempDir("bias");
         try
         {
-            var analyzer = new TendencyAnalyzer(dir);
+            Directory.CreateDirectory(dir);
+            // 直接落盘构造 15 条 python/api 信号记录 (不走 UpdateTendencyAsync —
+            // Update 会触发 Persist→AgentTelemetry.Emit, 未 Configure 时进 pending ring 上限 32,
+            // 与 TelemetryPendingTests 并行会挤掉 pre_boot_probe → 全仓测试 flaky。写文件零打点。)
+            var sb = new System.Text.StringBuilder("[");
             for (var i = 0; i < 15; i++)
             {
-                var d = new TendencyData { UserId = "u3", Timestamp = DateTime.UtcNow.AddMinutes(i) };
-                d.TopicScores["python"] = 1.0;
-                d.TopicScores["api"] = 1.0;
-                analyzer.UpdateTendencyAsync("u3", d).Wait();
+                if (i > 0) sb.Append(',');
+                sb.Append("{\"UserId\":\"u3\",\"Timestamp\":\"2026-09-07T00:01:00Z\",\"TopicScores\":{\"Python\":1,\"python\":1,\"Web API\":1,\"api\":1},\"StyleScores\":{}}");
             }
+            sb.Append(']');
+            File.WriteAllText(Path.Combine(dir, "u3.json"), sb.ToString());
 
+            var analyzer = new TendencyAnalyzer(dir);
             var bias = analyzer.GetContextBiasAsync("u3", "帮我写 python api 客户端").GetAwaiter().GetResult();
             Assert.NotNull(bias);
             Assert.True(bias.OverallConfidence > 0.3,

@@ -112,8 +112,12 @@ public static class AgentTelemetry
                     _writer.Write(sb.ToString());
                 else
                 {
-                    // Configure 前的点位: 缓存待 flush (上限 32, 超出丢弃并计数 — 可见化)
-                    if (_pendingBeforeConfigure.Count < 32)
+                    // Configure 前的点位: 缓存待 flush (上限 256, 超出丢弃并计数 — 可见化)。
+                    // v0.11.0 R133b: 上限 32→256 — 测试并行 (xUnit 多类并发) 下 ContextAssembler
+                    // phase_timing 打点 + tendency 写入可轻松 >32, 挤掉 TelemetryPendingTests 的
+                    // pre_boot_probe 断言 → 全仓测试间歇 flaky (实证 5/6 失败)。产品运行时 Configure
+                    // 在进程启动即调用, ring 极少超 32; 放宽只影响极端并发, 丢点计数仍可见。
+                    if (_pendingBeforeConfigure.Count < 256)
                         _pendingBeforeConfigure.Add(sb.ToString());
                     _droppedTotal++;
                 }
