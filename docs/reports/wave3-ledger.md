@@ -225,3 +225,7 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - **缺陷 51 防御** (mass_151 假阴性候选机制): Emit 在 Configure 前/_writer=null 时静默丢点 → 改 pending ring (上限 32, seq 原序) + Configure flush + DroppedTotal 可见化计数。单测 2 (Emit-before-Configure flush + DroppedTotal 单调), 384 绿。
 - **批32** (mass_171-175) 25/25 全绿 avg 3855tok (波动带)。
 - AOT 0IL + 冒烟 ✓ (pending flush 在 AOT 下生效)。
+
+### R122: 批 33 + 阶段趋势 (R116-R121 汇总)
+- **批33** (mass_181-185) 25/25 avg 3597tok。批27-33 序列: 4024/4248/4106/3636/3656/3855/3597 — 治理后稳定 3400-4250 波动带, 无上行漂移。
+- R116-R121 六轮累计: 缺陷 47/48/49/50/51 五连修 (创作意图拦截/bge 真链 env/Memory 体积预算/Workspace rel 比例化/telemetry pending 缓存), C11 prompt 808→608-656 稳态, 379→384 测试, mass_128 全量 16/16 (含 C14/C15/C16 隔离+pivot+回锚), AOT 三次 0IL 复验。
