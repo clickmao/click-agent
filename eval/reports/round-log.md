@@ -78,3 +78,9 @@
 - **KPI**: in-band (基准轮数 5)
 - **per-case**: C01_general_qa 436tok 6.6s Δ-17 | C03_subtask 1069tok 17.3s Δ-301 | C06_executive_unit_convert 0tok 4.3s | C08_reasoning 1285tok 29.6s Δ+81 | C11_json_format 683tok 7.4s Δ-27
 
+## mass_269 — R140 batch53 full-19 new-band first (2026-09-07T16:54:58+0800)
+
+- **判定**: 19/19 passed, tokens_total=20185 (avg 1062), wall=413709ms (avg 21.8s)
+- **KPI**: in-band (基准轮数 19)
+- **per-case**: C01_general_qa 451tok 7.8s Δ+1 | C02_coding 1353tok 25.9s Δ+570 | C03_subtask 1959tok 52.1s Δ-36 | C04_skill_identity 0tok 4.6s | C05_skill_wordcount 0tok 4.3s | C06_executive_unit_convert 0tok 4.2s | C07_memory_followup 573tok 9.1s Δ+64 | C08_reasoning 1282tok 14.8s Δ+78 | C09_balance_cmd 0tok 1.1s | C10_model_list 0tok 0.9s | C11_json_format 829tok 7.2s Δ+15 | C12_negative_empty 405tok 8.2s Δ-22 | C13_git_sensitive 1187tok 24.7s Δ-606 | C09b_balance_glm 0tok 0.9s | C14_isolated_multi 1769tok 39.4s Δ+108 | C15_pivot_multi 2684tok 53.6s Δ-72 | C16_longsession_4turn 6215tok 130.1s Δ-484 | C17_neg_hallucination_bait 779tok 11.3s Δ-348 | C18_neg_format_trap 699tok 13.6s Δ+19
+
