@@ -69,12 +69,9 @@
           Link="runtimes/linux-x64/native/avx2/%(Filename)%(Extension)" />
     <None Include="/home/agentuser/LLamaSharp/LLama/runtimes/native-x64/vulkan/*.so" CopyToOutputDirectory="PreserveNewest"
           Link="runtimes/linux-x64/native/vulkan/%(Filename)%(Extension)" />
-    <None Include="/home/agentuser/LLamaSharp/LLama/runtimes/native-x64/avx2/*.so" CopyToOutputDirectory="PreserveNewest"
-          Link="runtimes/linux-x64/native/avx512/%(Filename)%(Extension)" Visible="false" />
-    <None Include="/home/agentuser/LLamaSharp/LLama/runtimes/native-x64/avx2/*.so" CopyToOutputDirectory="PreserveNewest"
-          Link="runtimes/linux-x64/native/avx/%(Filename)%(Extension)" Visible="false" />
-    <None Include="/home/agentuser/LLamaSharp/LLama/runtimes/native-x64/avx2/*.so" CopyToOutputDirectory="PreserveNewest"
-          Link="runtimes/linux-x64/native/noavx/%(Filename)%(Extension)" Visible="false" />
+    <!-- v0.11.0 R117: 删除 avx512/avx/noavx 假变体目录 — 它们复制的是 avx2 二进制 (标签撒谎:
+         noavx 机器 fallback 到假 noavx/ 会 SIGILL)。R114 单入口快路径走顶层, fallback 语义由
+         TryFindPath 原名回退 (顶层命中) 承接, 假目录无正向价值。 -->
   </ItemGroup>
 
 </Project>

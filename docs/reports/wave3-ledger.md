@@ -200,4 +200,9 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - **批 27 = mass_128 full-16: 16/16 全绿, 13428 tok, 422.9s** (全量含 13 旧 + C09b + 2 新 repl 用例)。千轮累计: 26 批口径 496/496 + full-16 轮。
 - **ledger.jsonl 回填**: 批 26 (mass_123-127, R115 commit 后中断遗漏) 6 行补齐 (25/25, 均值 3623 tok)。
 - **运维**: 清理 R113 退场后遗留的 llm-service 僵死守护 (pid 1139857, 2h25m 孤儿监听 data/llm.sock) + sock 死文件; 双 tick 重复 runner (10:40 旧 bin 失真 → 杀; 10:48 新 bin 有效 → 让其跑完 mass_128 后接力收尾)。
-- **AOT 复核**: publish 强刷 0 IL 警告 (R116 C# 改动 = 规则表, 铁律复验)。
+- **AOT 复核**: publish 强刷 0 IL 警告 (R116 C# 改动 = 规则表, 铁律复验)。\n
+### R117: Vulkan 硬件结论 + csproj 布局精简 + 缺陷 49 Memory 源体积治理
+- **Vulkan 真 GPU**: 本机仅 llvmpipe 软渲染 (Cirrus GD5446 虚拟 VGA, 无 NVIDIA) — 真 GPU 硬件路径本环境不可实测, bge-mode 决策语义已正确覆盖 (检测→CPU 档)。
+- **csproj 布局精简**: 删 avx512/avx/noavx 假变体目录 (复制的是 avx2 二进制 — noavx 机器 fallback 会 SIGILL 的假绿雷; R114 顶层快路径 + TryFindPath 原名回退已覆盖 fallback 语义)。runtimes 169M→精简。
+- **缺陷 49** (打点驱动): Memory 源召回无 per-source 体积预算 — bge 真链后语义分带变密, C11 prompt 604→808 (+34%, 3snip/708tok/rel0.35 低相关大片段)。治理: 相关性降序 + 500tok 预算截断 + rel<0.4 只留 best 1。**A/B: C11 808→664 avg (-18%)**, 批 prompt 总量 2256→2037 (-10%)。
+- 批27 (129-130 有效, 131-133 被批28 覆盖) + 批28 (131-135) 25/25+15/15... 记账: 129/130/131/132/133/134/135 全 5/5 KEEP; 批28 avg 4248tok; C11 664; cross_validate 双 LLM agree=true; 379 绿; AOT 0 IL 警 + 冒烟 ✓。

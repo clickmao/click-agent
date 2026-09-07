@@ -534,8 +534,26 @@ Interlocked.Increment(ref _cacheMisses);
             };
             
             var results = await _ragRecall.RecallAsync(ragRequest);
-            
-            foreach (var result in results)
+
+            // v0.11.0 R117 (真缺陷 49): Memory 源无 per-source 体积预算 — bge 真链 (R116) 后语义分
+            // 带变密, 低相关 (rel~0.35) 大片段 (708tok/3snip) 整体挤进 prompt (C11 +34%)。
+            // 治理: 相关性降序 → 逐段累加, 超出 per-source 预算 (500tok) 即停; rel<0.4 只保留 best 1 段。
+            var ordered = results.OrderByDescending(r => r.Score).ToList();
+            var budgetTokens = 500;
+            var usedTokens = 0;
+            var keptCount = 0;
+            var selected = new List<(rag.RecallResult Result, int Tokens)>();
+            foreach (var result in ordered)
+            {
+                var approx = Math.Max(1, (result.HighlightedContent ?? result.Document.Content ?? "").Length / 3);
+                if (result.Score < 0.4 && keptCount >= 1) continue; // 低相关只留 best
+                if (usedTokens + approx > budgetTokens && selected.Count > 0) break; // 预算截断
+                selected.Add((result, approx));
+                usedTokens += approx;
+                keptCount++;
+            }
+
+            foreach (var (result, _) in selected)
             {
                 var snippet = new ContextSnippet
                 {
