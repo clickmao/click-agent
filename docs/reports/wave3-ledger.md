@@ -215,3 +215,8 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - **C16_longsession_4turn** (cases 16→17): 锚→无关(隔离 score=2 ✓)→pivot→回锚 — 4×intent/4×llm_call/isolated:true×1, 轮4 回锚恢复 Redis 语境 (forecast=延续当前任务) ✓。assembly 3/4 (pivot 轮短路, 观察)。
 - **批30** (mass_151-155): 24/25 — mass_151 C03 llm_calls=0 = telemetry 瞬时丢失 (reply 完整/wall 35s/复跑 mass_156 5/5 绿, 非功能回归); 有效 20/20 + 复跑 5/5, avg 3414tok (批29 4106, -16.8%)。
 - C11 prompt 稳态 608-656 (缺陷49 治理后无反弹)。
+
+### R120: telemetry 瞬时丢失防护 + 余额链长跑 + 批 31
+- **评分器可靠性 (钦定原则: 评分器必须比被测对象可靠)**: mass_151 C03 假阴性根因审计 — writer 生命周期/Configure 单调用/env 覆写均排查, 无法复现 (单次瞬态)。防护: run_round anomaly 判定 (llm_calls=0 但 reply 非空 → telemetry_anomaly 标记按通过计, 供后续审计), 防止打点链路缺陷污染被测对象评分 (假阴性→错误 REVERT 风险)。
+- **余额链长跑**: deepseek 7.61 CNY (9.02→7.61, 千轮+批测真实消耗持续记账)。
+- **批31** (mass_161-165) 25/25 全绿 avg 3656tok (波动带内; 批30 3414/批29 4106); anomaly 未再现。
