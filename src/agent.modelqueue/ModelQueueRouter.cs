@@ -75,6 +75,28 @@ public sealed class ModelQueueRouter : IModelQueueCaller
     private readonly ILocalInference? _localInference;
     private readonly TokenUsageService? _tokenUsage;
 
+    /// <summary>R115 (缺陷 43): 余额快照惰性 fire-once 同步器 (进程内仅一次)</summary>
+    private sealed class LazyBalanceSync
+    {
+        private Task? _task;
+        private readonly object _lock = new();
+
+        public Task EnsureStartedAsync(TokenUsageService service)
+        {
+            lock (_lock)
+            {
+                _task ??= Task.Run(async () =>
+                {
+                    try { await service.InitializeAsync().ConfigureAwait(false); }
+                    catch { /* 初始化失败不阻断 — 余额未知不判定语义 */ }
+                });
+                return _task;
+            }
+        }
+    }
+
+    private readonly LazyBalanceSync _balanceSyncOnce = new();
+
     /// <summary>需求1: 官方 key 仓库 (CLI --official-key / /official-key 注入; 永不落盘)</summary>
     public OfficialKeyStore OfficialKeys { get; } = new();
 
@@ -236,6 +258,16 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                 Success = false,
                 Error = "模型目录为空: 请在 config/base/models.yaml 配置至少一个模型",
             };
+        }
+
+        // v0.11.0 R115 (真缺陷 43): TokenUsageService.InitializeAsync 此前无调用点 — 余额快照
+        // 恒空 → EstimateBalance 恒 (null,true) → MIN_BALANCE 阈值切模整条链路死代码。
+        // 惰性 fire-once 启动同步 (后台, 不阻断首调用; 失败静默走"余额未知不判定"语义)。
+        if (_tokenUsage is not null)
+        {
+            var syncTask = _balanceSyncOnce.EnsureStartedAsync(_tokenUsage);
+            try { await syncTask.WaitAsync(TimeSpan.FromSeconds(3), ct).ConfigureAwait(false); }
+            catch (TimeoutException) { /* 首同步 >3s 不阻断对话, 本轮按余额未知处理 */ }
         }
 
         // v0.10.0: 余额预估检查 — 不足 → 切换其他模型 + flags:余额不足 提示
@@ -415,7 +447,11 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         if (_tokenUsage is null) return null;
         var candidates = _catalog.Models
             .Where(m => !string.Equals(m.Id, current.Id, StringComparison.OrdinalIgnoreCase))
-            .Select(m => (Model: m, Est: _tokenUsage.EstimateBalance(m.Provider, estimatedTokens)))
+            // v0.11.0 R115 (真缺陷 46): 候选必须 key 已配置 (曾选中 claude-sonnet-4-5 而
+            // ANTHROPIC_KEY 未设 → 切换后调用必败, 比不切更糟)
+            .Where(m => m.Provider == "official" ||
+                        !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(m.ApiKeyEnv)))
+            .Select(m => (Model: m, Est: _tokenUsage!.EstimateBalance(m.Provider, estimatedTokens)))
             .Where(t => t.Est.Sufficient)
             .OrderByDescending(t => t.Model.ReasoningScore + t.Model.CodingScore)
             .ToList();

@@ -59,7 +59,19 @@ public sealed class TokenUsageService
         {
             try
             {
-                var r = await _balance.QueryAsync(p, ct).ConfigureAwait(false);
+                // v0.11.0 R115 (真缺陷 44): QueryAsync 形参语义是 modelId (目录按模型 name 查) —
+                // 传 provider 名 "deepseek" Find 落空 → 回落目录首项 gpt-4o (openai 无 scheme) →
+                // deepseek 快照永远填不上 → 阈值切模死代码。先解析 provider→代表模型 id 再查。
+                // v0.11.0 R115 (缺陷 44b): 同 provider 多条目时代表模型必须选 **key 已配置** 的
+                // (目录里 deepseek-chat[DEEPSEEK_KEY] 与 deepseek-v4-flash[AGENTFRAMEWORK_KEYS_DEEPSEEK] 并存,
+                // FirstOrDefault 拿到旧条目 → 旧 env 名未设 → 余额同步恒失败)。
+                var repEntry = _catalog.Models.FirstOrDefault(m =>
+                    string.Equals(m.Provider, p, StringComparison.OrdinalIgnoreCase) &&
+                    !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(m.ApiKeyEnv)))
+                    ?? _catalog.Models.FirstOrDefault(m => string.Equals(m.Provider, p, StringComparison.OrdinalIgnoreCase));
+                if (repEntry is null) continue;
+                var repModel = repEntry.Id;
+                var r = await _balance.QueryAsync(repModel, ct).ConfigureAwait(false);
                 if (r is { Ok: true, TotalRemaining: not null })
                 {
                     lock (_sync)
@@ -67,11 +79,20 @@ public sealed class TokenUsageService
                         _balances[p] = new BalanceSnapshot(p, r.TotalRemaining.Value, DateTime.UtcNow, FromApi: true, r.Currency);
                         _tokensSinceSync[p] = 0;
                     }
+                    agent.config.AgentTelemetry.Emit("balance_sync", "TokenUsageService",
+                        ("provider", p), ("ok", true), ("model", repModel), ("remaining", r.TotalRemaining.Value));
+                }
+                else
+                {
+                    agent.config.AgentTelemetry.Emit("balance_sync", "TokenUsageService",
+                        ("provider", p), ("ok", false), ("model", repModel), ("error", r.Error ?? "unknown"));
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 // 初始化同步失败不阻断启动 — 该 provider 走纯本地累计 (余额未知)
+                agent.config.AgentTelemetry.Emit("balance_sync", "TokenUsageService",
+                    ("provider", p), ("ok", false), ("error", ex.Message));
             }
         }
     }
@@ -104,8 +125,11 @@ public sealed class TokenUsageService
                 .Where(m => string.Equals(m.Provider, provider, StringComparison.OrdinalIgnoreCase))
                 .Select(m => m.PriceOutPerM).DefaultIfEmpty(0).Min();
             // v0.11.0 R15: 余额币种 ≠ 记价币种 (USD) 时先换算再比较 (原实现 CNY 余额直接当 USD 比价, 差 ~7.2 倍)
+            // v0.11.0 R115 (真缺陷 45): 汇率方向反了 — CurrencyToUsdRate 返回 "1 USD = 7.2 CNY"
+            // (USD/CNY 牌价), CNY 金额换 USD 应 **除** 以牌价 (9.02 CNY = 1.25 USD), 原实现乘 7.2
+            // 把 1.25 USD 虚报成 64.94 USD → 阈值判定恒 sufficient → 切模永不触发。
             var rate = CurrencyToUsdRate(snap.Currency);
-            var balanceUsd = snap.TotalRemaining.Value * rate;
+            var balanceUsd = snap.TotalRemaining.Value / rate;
             var spentSinceSync = (_tokensSinceSync.TryGetValue(provider, out var s) ? s : 0) * priceOut / 1_000_000.0;
             var remaining = balanceUsd - spentSinceSync;
             var estCost = estimatedTokens * priceOut / 1_000_000.0;
@@ -143,7 +167,11 @@ public sealed class TokenUsageService
     {
         try
         {
-            var r = await _balance.QueryAsync(provider, ct).ConfigureAwait(false);
+            // v0.11.0 R115 (真缺陷 44): 同 InitializeAsync — provider→代表模型 id 解析后再查
+            var repModel = _catalog.Models
+                .FirstOrDefault(m => string.Equals(m.Provider, provider, StringComparison.OrdinalIgnoreCase))?.Id
+                ?? provider;
+            var r = await _balance.QueryAsync(repModel, ct).ConfigureAwait(false);
             if (r is not { Ok: true, TotalRemaining: not null }) return false;
             lock (_sync)
             {

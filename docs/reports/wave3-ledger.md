@@ -182,4 +182,12 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - **fork 补丁** (ed89226): NativeLibraryUtils.TryLoadLibrary 加 Linux 快路径 (description.Path 为空时单入口 dlopen 顶层 libllama.so, 失败自然 fallback 旧选型策略); NativeLibrarySingleEntry 新类; TryFindPath 的 ProcessPath 加 NET6 防护 (netstandard2.0 target 修复)。deps.zip 入 gitignore (252b68f)。
 - **主仓**: agent.csproj 顶层 runtimes/linux-x64/native/ 全量 so 复制 (变体目录保留为 fallback); probes/llama-r114-probe (JIT+AOT 双验收探针)。
 - **验收 (全部真实执行)**: JIT — bge CPU 384 维 cos 0.728/0.478 ✓ + qwen chat success=True ✓ + [loader] "R114 single-entry load" 日志实锤 ✓; AOT (probe PublishAot 强刷) — "Generating native code" + 0 IL 警 + 同套验收全通 exit 0 ✓; 主 host AOT 冒烟 E2E+多轮 ✓; 372/372 绿。
-- Vulkan 语义: 系统唯一 libvulkan.so.1 + fork vendored libggml-vulkan.so 同目录 — 无副本、无变体复制、无 deps。
+- Vulkan 语义: 系统唯一 libvulkan.so.1 + fork vendored libggml-vulkan.so 同目录 — 无副本、无变体复制、无 deps。\n
+### R115: 3 真实 key 余额链 E2E + 阈值切模实战 (用户钦定) — 4 真缺陷 (43/44/44b/45/46)
+- **E2E (全部真实 API)**: glm-5.3-flash 直连 ✓ (1+1=2, JSON 格式跟随 ✓); deepseek-v4-flash 真余额 9.02→9.01 CNY (真实扣费) ✓; kimi-k3 负样本诚实报错 ✓; glm 无 scheme 诚实报 provider_not_supported ✓。
+- **缺陷 43**: TokenUsageService.InitializeAsync 无调用点 (R15 引入) → 余额快照恒空 → 阈值切模死代码。修复: LazyBalanceSync fire-once (首调用 bounded-wait 3s)。
+- **缺陷 44/44b**: QueryAsync 形参语义是 modelId 但传 provider 名 → Find 落空回落 gpt-4o (openai) → deepseek 快照永远填不上; 修: provider→代表模型解析 + 代表条目按 key 可用性优先 (新旧 deepseek 条目并存, 旧条目 env 名未设)。
+- **缺陷 45**: 汇率方向反 — CNY→USD 用乘 7.2 (9.02 CNY 虚报 $64.94), 应除 (=$1.25)。打点立功: balance_sync ok=true 但切模日志 remaining=$64.87 暴露。
+- **缺陷 46**: SelectAlternativeByBalance 候选未过滤 key 未配置模型 (曾切到 claude-sonnet-4-5 而 ANTHROPIC_KEY 未设 → 必败)。修: 候选 key 过滤。
+- **切模实战实证**: MIN_BALANCE_USD=100 注入 → 手动 deepseek → "余额不足 ($1.25) → 切换 glm-5.3-flash" → 对话实际用 glm ✓。
+- balance_sync 打点 (ok/model/remaining/error) 补齐; BalanceThresholdTests ×2 (374 绿); 批 26 (mass_123-127) 25/25, 3623 tok (-15% vs 批25)。
