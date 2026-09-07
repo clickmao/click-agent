@@ -141,10 +141,10 @@ done
 
 ## 7. 迭代状态快照（恢复迭代从这里开始）
 
-- **主线进度**：R138-R149。R146 K1 窗口修复（TakeLast 10→100, conf 0.296→0.8, A/B 开关实证）；R147 C07 内容断言接管；**R149 用户质疑整改**：TaskRelevanceChecker 判定空心修复（C14/C15 expect 绑定 isolated_true/pivot_reanchor 真断言 + quick 10→11 C14 进常态 + 10 测试对抗族 399 绿）。下一轮号 **mass_286**。
+- **主线进度**：R138-R149。R146 K1 窗口修复（TakeLast 10→100, conf 0.296→0.8, A/B 开关实证）；R147 C07 内容断言接管；**R149 用户质疑整改**：TaskRelevanceChecker 判定空心修复（C14/C15 expect 绑定 isolated_true/pivot_reanchor 真断言 + quick 10→11 C14 进常态 + 10 测试对抗族 399 绿）。下一轮号 **mass_289**。
 - **最近五批审计（批61-65）**：50/50；768 tok/case 均值；drift 全 1.0；suspects 3→0（must_contain 内容断言接管后）。
-- **R149 用户质疑结论**：TaskRelevanceChecker 组件能力真实（全量批 50/53 isolated=True score=2 实测）但判定空心成立——既往 C14/C15 expect 只有 llm:true，通过率对组件无证明力。修复后 C14 真断言批69 首验 isolated=True PASS。
-- **in-flight**：R149 收尾 → R150+ 候选：① 批 70+（quick-11 常态）② C15 pivot_reanchor 连续验证 ③ K1 注入后回复质量纵向跟踪 ④ 批 70 五批审计点。
+- **R149 用户质疑结论**：TaskRelevanceChecker 组件能力真实（全量批 50/53 isolated=True score=2 实测）但判定空心成立——既往 C14/C15 expect 只有 llm:true，通过率对组件无证明力。修复后 C14 真断言批69-72 四连验 isolated=True score=2 PASS (4/4)。
+- **in-flight**：R150 收尾 → R151+ 候选：① 批 73+（quick-11 常态）② C15 pivot_reanchor 连续验证 ③ K1 注入后回复质量纵向跟踪 ④ 批 75 五批审计点。
 - **环境事实**（防重查）：bge=`/home/agentuser/.agentframework/models/bge-q8.gguf`（env `AGENTFRAMEWORK_BGE_MODEL`，缺失→词袋 dim256）；3 key：kimi 负样本/glm 可用/deepseek 7.61 CNY；github 直连断→ghfast.top 代理推（>8min 假死勿中断）；telemetry 读用 utf-8-sig；`execute_code` 300s 上限→批测逐轮后台跑。
 - **千轮口径**：RETIRED 轮诚实标注；全绿口径=排除 RETIRED；轮号唯一；每轮落盘+镜像。
 
