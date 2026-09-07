@@ -145,7 +145,7 @@ done
 - **最近五批审计（批76-80）**：63/63 全绿（quick-11 子集 44/44）；tok/case 941→939→928→860 递降带内（全量批 1165 口径不同）；drift 全 1.0；suspects 0；D4 rel 修复前 n=0（缺陷 57）/修复后 n=11 avg 0.631。
 - **R149 用户质疑结论**：TaskRelevanceChecker 组件能力真实（全量批 50/53 isolated=True score=2 实测）但判定空心成立——既往 C14/C15 expect 只有 llm:true，通过率对组件无证明力。修复后 C14 真断言批69-72 四连验 isolated=True score=2 PASS (4/4)。
 - **R151 (pivot 判定闭环)**：C15 pivot_reanchor 升级为三重真断言 (不隔离+pivot_n≥1+新任务链产出)；pivot_n 打点消费建成 (goal/op=pivot, 真缺陷 45: init 缺键 KeyError——batch76 首跑 15/19 后死亡实证, 与 R142 compression 同源教训)；批76 全量 19/19 复证 pivot_n=1 真重锚。
-- **README 30 批滚动制度 (R152b 用户钦定)**：README 能力段只显示最新 2 批，历史按轮段归档 docs/changelogs/ (CHANGELOG-v0.11.0-RXXX-RXXX.md 格式, v7.14 亦在其中)；批次趋势行只留最新 2 批 + 归档链接；下次滚动: 批108。
+- **README 30 批滚动制度 (R152b 用户钦定)**：README 能力段只保留最新 2 个轮段（整段完整能力列表），更早轮段整段撤出、按轮段归档 docs/changelogs/ (CHANGELOG-v0.11.0-RXXX-RXXX.md 格式, v7.14 亦在其中)；批次趋势行只留最新 2 批 + 归档链接；下次滚动: 批108。
 - **R154-R155 (harness 可靠性双修)**：真缺陷 58 (dotnet PATH 依赖未自兜底, 批83 首跑半途崩) → main 入口 fail-fast 探测; must_not_contain 扩 string|list (C15 三重断言: pivot_n≥1+无[隔离任务]+≥30ch, 复用 R138 机制); 批85 全量 19/19 复证 (C15 pivot_n=1 + 真诗回复)。mass_298 RETIRED (缺陷58 受害者, 轮号报废)。
 - **五批审计 86-90**: 55/55 全绿, 均值 806 tok/case, CV 1.8% (历史最稳窗口), 零 suspect (C03 0.499 边缘由 min_reply_chars 内容锚接管, 阈值不动)。
 - **五批审计 91-95 (55/55 avg 867) + 96-100 (55/55 avg 908)**: suspects 全部定性假阳性 (C12 JSON 输出/C16 长会话总结, 结构性低 rel, 断言判定兜住)。

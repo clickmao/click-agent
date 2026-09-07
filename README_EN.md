@@ -29,32 +29,34 @@ Release line: v0.11.0 — unified @cmd command protocol + 3 transports / Skill e
 - **/forecast**: next-turn forecast surfaced to frontend
 - **SKILL.md packages**: Anthropic Agent-Skills Open Standard loader (dir name = front-matter name) + 2 example packages
 
-### 🆕 R143-R152 Additions — latest 2 batches
-- **R151 pivot_n real-reanchor assertion**: goal/op=pivot telemetry consumption + triple assertion — C15 re-anchor now provable (defect 45 init-key KeyError fixed)
-- **R149 TaskRelevance hollow-verdict fix**: C14/C15 bound to isolated_true/pivot_reanchor real assertions + 10 adversarial tests (389→399 green); quick 10→11
-- <details><summary>Full list + batch 56-78 details</summary>
+### 🆕 R153-R168 Additions
+
+- **Defect 58 fix (R154)**: harness dotnet PATH probe fail-fast — forgetting `export PATH` in a new shell crashed the whole batch with FileNotFoundError (batch83 first-run evidence); mass_298 round retired
+- **C15 pivot assert hardening (R155)**: must_not_contain string|list + triple assert (pivot_n≥1 + no isolation prefix + ≥30ch) — full batch 19/19 re-verified true re-anchor
+- **Defect 57 fix (R153)**: D4 gate read os.environ while bge path lived in .env.local → reply_rel silently n=0; gate unified to load_env()
+- **C03 content anchor (R158)**: rel=0.499 edge false-positive handled by min_reply_chars=100, rel threshold untouched (no inflation)
+- **README 30-batch rolling policy live (R169, batch108 point)**: bilingual trend line keeps latest 2 batches + archive links; all changelogs consolidated under docs/changelogs/
+
+  <details><summary>Batch 79-108 full details</summary>
+
+  [docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md)
+
+  </details>
+### 🆕 R143-R152 Additions
+
+- **quick 5→10→11 expansion** (R143/R149): memory-chain/negative-family/skill-chain/TaskRelevance all in regular rotation
+- **TaskRelevance empty-verdict fix** (R149): C14/C15 bound to isolated_true/pivot_reanchor real asserts + 10 adversarial unit tests (389→399 green)
+- **pivot_n true re-anchor assert** (R151): goal/op=pivot telemetry consumption + triple assert (real defect 45 fixed)
+- **K1 aggregation break fix** (R146): TakeLast 10→100, conf 0.296→0.8 (A/B switch proven)
+- **D4 memory-class threshold tier 0.4** (R144): C07/C14/C15 rel demoted to reference, verdicts carried by content asserts (R150)
+- **Docs deep review round 2** (R143b): api.md/task_loop/industrial_enhancements calibrated + archived
+
+  <details><summary>Batch 56-78 full details</summary>
 
   [docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md)
 
   </details>
 
-### 🆕 R133-R142 Additions (5-KPI full observability) — latest 2 batches
-- **R141-142 anti-drift & intent indices in reports**: compression_index + intent_index — historical gap close; 15-dimension ledger
-- **R141 profile snippet made actionable**: tendency snip 4→11 tok behavioral hints (A/B diff verified)
-- <details><summary>Full list (4 more: R133-R140)</summary>
-
-  [docs/changelogs/CHANGELOG-v0.11.0-R133-R142.md](docs/changelogs/CHANGELOG-v0.11.0-R133-R142.md)
-
-  </details>
-
-### 🆕 R103-R127 Additions (thousand-round loop) — latest 2 batches
-- **R126-127 rule-8 explanation output discipline + thousand-round report / PGO v2 (D1-D5)**: C08 completion -23%; bilingual README
-- **R125 balance reconciliation automation**: 7.61 CNY verified, zero extra spend
-- <details><summary>Full list (4 more: R103-R124)</summary>
-
-  [docs/changelogs/CHANGELOG-v0.11.0-R103-R127.md](docs/changelogs/CHANGELOG-v0.11.0-R103-R127.md)
-
-  </details>
 ### 📊 Thousand-Round Eval (PGO-driven)
 - **1034/1056 = 97.92%** case pass (215 rounds landed); quick-batch tokens **7354 → ~3969 avg**; C08 reasoning completion **1875 → 479 (-74%)**; 55 real defects fixed, all telemetry-driven.
 - Batch trend: **batch107 (mass_323)** 11/11 quick-11 9794tok (890/case) / **batch108 (mass_324)** 11/11 quick-11 8667tok (787/case) — 26 consecutive green batches since defect58 fix (batch83-108), KPI in-band. Batches 42-78: [docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md); batches 79-108: [docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md). README batch details roll every 30 batches (next: batch138).

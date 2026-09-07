@@ -13,30 +13,31 @@ C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / Na
 
 ---
 
-### 🆕 v0.11.0 R143-R152 新增能力 — 最新 2 批
-- **R151 pivot_n 真重锚断言**: goal/op=pivot 打点消费 + 三重断言 — C15 重锚真实发生可证明 (真缺陷 45 init 缺键实证修复)
-- **R149 TaskRelevance 判定空心修复**: C14/C15 绑定 isolated_true/pivot_reanchor 真断言 + 10 对抗单测 (389→399 绿); quick 10→11
-- <details><summary>完整能力清单 + 批 56-78 全部明细</summary>
+### 🆕 v0.11.0 R153-R168 新增能力
+
+- **缺陷 58 修复 (R154)**: harness dotnet PATH 探测 fail-fast — 新 shell 忘 export PATH 时整批 FileNotFoundError 崩溃 (批83 首跑实证); mass_298 轮号报废登记
+- **C15 pivot 断言强化 (R155)**: must_not_contain string|list 扩展 + 三重断言 (pivot_n≥1 + 无隔离前缀 + ≥30ch) — 全量批 19/19 复证真重锚
+- **缺陷 57 修复 (R153)**: D4 gate 读 os.environ 而 bge 路径只在 .env.local → reply_rel 静默 n=0; gate 统一 load_env()
+- **C03 内容锚 (R158)**: rel=0.499 边缘假阳性由 min_reply_chars=100 接管, rel 阈值不动 (防通胀)
+- **README 30 批滚动制度落地 (R169, 批108 点)**: 双语趋势行只留最新 2 批 + 归档链接; changelog 全部集中 docs/changelogs/
+
+  <details><summary>批 79-108 全部明细</summary>
+
+  [docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md)
+
+  </details>
+### 🆕 v0.11.0 R143-R152 新增能力
+
+- **quick 5→10→11 扩容** (R143/R149): 记忆链/负面族/skill 链/TaskRelevance 全部常态采集
+- **TaskRelevance 判定空心修复** (R149): C14/C15 绑定 isolated_true/pivot_reanchor 真断言 + 10 对抗单测 (389→399 绿)
+- **pivot_n 真重锚断言** (R151): goal/op=pivot 打点消费 + 三重断言 (真缺陷 45 实证修复)
+- **K1 聚合断链收口** (R146): TakeLast 10→100, conf 0.296→0.8 (A/B 开关实证)
+- **D4 记忆类阈值分层 0.4** (R144): C07/C14/C15 rel 降为参考值, 判定由内容断言承担 (R150)
+- **文档二轮深度审查** (R143b): api.md/task_loop/industrial_enhancements 校准 + 归档
+
+  <details><summary>批 56-78 全部明细</summary>
 
   [docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md)
-
-  </details>
-
-### 🆕 v0.11.0 R133-R142 新增能力 (5 KPI 全维度可观测) — 最新 2 批
-- **R141-142 防漂移/意图指数入报告**: compression_index (drift_pass_rate/semantic_avg/chars_ratio) + intent_index (ms_avg/dist) — 历史缺口回接; 15 维度总账建档
-- **R141 画像 snip 可执行化**: tendency snip 4→11tok 行为指导 (A/B 差分实证)
-- <details><summary>完整能力清单 (K1 断链/K4 盲区/D4 语义质量/负面 21%/健康带分带 等 4 条)</summary>
-
-  [docs/changelogs/CHANGELOG-v0.11.0-R133-R142.md](docs/changelogs/CHANGELOG-v0.11.0-R133-R142.md)
-
-  </details>
-
-### 🆕 v0.11.0 R103-R127 新增能力 — 最新 2 批
-- **R126-127 规则8 解释类输出纪律 + 千轮报告/PGO v2 (D1-D5)**: C08 completion -23%; README 双语
-- **R125 余额对账自动化**: 7.61 CNY 对账零额外消耗 (真 key 余额链持续验证)
-- <details><summary>完整能力清单 (R103-R124 等 4 条)</summary>
-
-  [docs/changelogs/CHANGELOG-v0.11.0-R103-R127.md](docs/changelogs/CHANGELOG-v0.11.0-R103-R127.md)
 
   </details>
 
