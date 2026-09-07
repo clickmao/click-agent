@@ -96,7 +96,11 @@ def summarize_points(points):
          "snippets": 0, "sources_recall": "", "assembly_ms": None, "from_cache": None,
          "prompt_total_tokens": None, "history_tokens": None, "gate_to_ask": None,
          "isolated": None, "isolated_score": None, "bge_provider": None, "bge_ms": None,
-         "intent_ms": None, "llm_ms_total": 0, "phase_llm_ms": None}
+         "intent_ms": None, "llm_ms_total": 0, "phase_llm_ms": None,
+         # R142 (用户钦定历史缺口回接): compression 防漂移指数 — 打点 2026-09 R129 起就有,
+         # 但 summarize_points 从未消费 → 轮 JSON/报告层不可见 (数据蒸发)。
+         "compress_n": 0, "compress_drift_ok": 0, "compress_semantic": [],
+         "compress_chars_in": 0, "compress_chars_out": 0}
     for pt in points:
         kv = pt.get("kv", {}) or {}
         tag = pt.get("point")
@@ -150,6 +154,19 @@ def summarize_points(points):
             # R116: P3 真链维度 (bge-local=真向量 / hash-fallback=词袋)
             s["bge_provider"] = kv.get("provider")
             s["bge_ms"] = kv.get("ms")
+        elif tag == "compression":
+            # R142: 防漂移指数聚合 — drift_ok 通过率 / 语义相似度均值 / 字符压缩率
+            s["compress_n"] += 1
+            if kv.get("drift_ok"):
+                s["compress_drift_ok"] += 1
+            if isinstance(kv.get("semantic"), (int, float)) and kv["semantic"] >= 0:
+                s["compress_semantic"].append(kv["semantic"])
+            chars = str(kv.get("chars", ""))
+            if "->" in chars:
+                a, b = chars.split("->")
+                if a.isdigit() and b.isdigit():
+                    s["compress_chars_in"] += int(a)
+                    s["compress_chars_out"] += int(b)
     return s
 
 def check_expect(case, reply, agg, raw_tail):
@@ -398,6 +415,27 @@ def main():
         x["delta_wall_vs_hist"] = round(x["wall_ms"] - w) if w else None
     summary["kpi_breaches"] = breaches
     summary["hist_base_rounds"] = len(tok_base)
+    # R142 (防漂移/意图指数, 用户钦定历史缺口回接): 轮级派生 —
+    # drift_rate=锚词校验通过率, semantic_avg=bge 语义保真均值, compress_ratio=字符压缩率
+    cn = sum(x.get("compress_n", 0) for x in results)
+    dok = sum(x.get("compress_drift_ok", 0) for x in results)
+    sems = [v for x in results for v in x.get("compress_semantic", [])]
+    cin = sum(x.get("compress_chars_in", 0) for x in results)
+    cout = sum(x.get("compress_chars_out", 0) for x in results)
+    summary["compression_index"] = {
+        "segments": cn,
+        "drift_pass_rate": round(dok / cn, 3) if cn else None,
+        "semantic_avg": round(sum(sems) / len(sems), 3) if sems else None,
+        "chars_ratio": round(cout / cin, 3) if cin else None,
+    }
+    int_ms = [x["intent_ms"] for x in results if x.get("intent_ms") is not None]
+    summary["intent_index"] = {
+        "n": len(int_ms),
+        "ms_avg": round(sum(int_ms) / len(int_ms), 1) if int_ms else None,
+        "dist": {},  # 下面填
+    }
+    from collections import Counter as _C
+    summary["intent_index"]["dist"] = dict(_C(x.get("intent") for x in results if x.get("intent")))
     path = f"{ROUNDS}/{rnd}.json"
     json.dump(summary, open(path, "w"), ensure_ascii=False, indent=1)
     print(f"\n=== round={rnd} passed={summary['passed']}/{summary['cases']} tokens={summary['tokens_total']} wall={summary['wall_total_ms']}ms → {path}")
@@ -426,6 +464,17 @@ def main():
                     f"wall={summary['wall_total_ms']}ms (avg {avg_wall/1000:.1f}s)\n")
             f.write(f"- **KPI**: {'; '.join(breaches) if breaches else 'in-band'}"
                     f" (基准轮数 {summary.get('hist_base_rounds', 0)})\n")
+            # R142: 防漂移/意图指数入报告 (用户钦定历史缺口回接)
+            ci = summary.get("compression_index") or {}
+            if ci.get("segments"):
+                f.write(f"- **防漂移指数**: segments={ci['segments']}, "
+                        f"drift_pass={ci['drift_pass_rate']}, "
+                        f"semantic_avg={ci['semantic_avg']}, "
+                        f"chars_ratio={ci['chars_ratio']}\n")
+            ii = summary.get("intent_index") or {}
+            if ii.get("n"):
+                f.write(f"- **意图指数**: n={ii['n']}, ms_avg={ii['ms_avg']}, "
+                        f"dist={ii.get('dist', {})}\n")
             f.write(f"- **per-case**: ")
             f.write(" | ".join(
                 f"{x['id']} {x['total_tokens']}tok {x['wall_ms']/1000:.1f}s"
