@@ -362,6 +362,29 @@ def main():
         shutil.copy2(path, f"eval/results/{rnd}.json")
     except OSError as e:
         print(f"WARN: results mirror failed: {e}")
+    # R132 (用户钦定): eval/reports 每轮数据记录 — 人类可读的批测战报 (随轮追加, 一轮一节)
+    try:
+        os.makedirs("eval/reports", exist_ok=True)
+        rp = "eval/reports/round-log.md"
+        exists = os.path.exists(rp)
+        with open(rp, "a", encoding="utf-8") as f:
+            if not exists:
+                f.write("# 千轮批测数据记录 (自动追加, 一轮一节)\n\n")
+            f.write(f"## {rnd} — {label or 'unlabeled'} ({summary['ts'] if 'ts' in summary else ''})\n\n")
+            f.write(f"- **判定**: {summary['passed']}/{summary['cases']} passed, "
+                    f"tokens_total={summary['tokens_total']} (avg {avg_tok:.0f}), "
+                    f"wall={summary['wall_total_ms']}ms (avg {avg_wall/1000:.1f}s)\n")
+            f.write(f"- **KPI**: {'; '.join(breaches) if breaches else 'in-band'}"
+                    f" (基准轮数 {summary.get('hist_base_rounds', 0)})\n")
+            f.write(f"- **per-case**: ")
+            f.write(" | ".join(
+                f"{x['id']} {x['total_tokens']}tok {x['wall_ms']/1000:.1f}s"
+                + (f" Δ{delta:+d}" if (delta := x.get("delta_tokens_vs_hist")) is not None else "")
+                for x in results))
+            f.write("\n\n")
+        print(f"report appended → {rp}")
+    except OSError as e:
+        print(f"WARN: report append failed: {e}")
 
 if __name__ == "__main__":
     sys.exit(main())
