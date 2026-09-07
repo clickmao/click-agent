@@ -399,3 +399,19 @@
 - **意图指数**: n=9, ms_avg=0.1, dist={'general': 7, 'git_operation': 1, 'search': 1}
 - **per-case**: C01_general_qa 521tok 8.4s Δ+74 | C03_subtask 2646tok 54.0s Δ+1031 | C04_skill_identity 0tok 4.7s | C06_executive_unit_convert 0tok 4.3s | C07_memory_followup 591tok 7.5s Δ+113 | C08_reasoning 920tok 10.3s Δ-210 | C11_json_format 593tok 7.2s Δ-103 | C13_git_sensitive 1642tok 32.8s Δ+332 | C14_isolated_multi 2347tok 32.8s Δ-194 | C17_neg_hallucination_bait 801tok 8.9s Δ+116 | C18_neg_format_trap 736tok 9.7s Δ+39
 
+## mass_310 — R160 batch94 quick-11 regular (2026-09-08T01:50:58+0800)
+
+- **判定**: 11/11 passed, tokens_total=8805 (avg 800), wall=136558ms (avg 12.4s)
+- **KPI**: in-band (基准轮数 11)
+- **防漂移指数**: segments=4, drift_pass=1.0, semantic_avg=0.993, chars_ratio=0.928
+- **意图指数**: n=9, ms_avg=0.1, dist={'general': 7, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 530tok 8.7s Δ+82 | C03_subtask 1509tok 28.3s Δ-50 | C04_skill_identity 0tok 4.7s | C06_executive_unit_convert 0tok 4.3s | C07_memory_followup 515tok 18.2s Δ+33 | C08_reasoning 1146tok 11.2s Δ+40 | C11_json_format 601tok 7.7s Δ-40 | C13_git_sensitive 1067tok 10.6s Δ-223 | C14_isolated_multi 1972tok 24.4s Δ-400 | C17_neg_hallucination_bait 676tok 8.8s Δ-27 | C18_neg_format_trap 789tok 9.5s Δ+74
+
+## mass_311 — R160 batch95 quick-11 regular (2026-09-08T01:56:21+0800)
+
+- **判定**: 11/11 passed, tokens_total=9081 (avg 826), wall=167856ms (avg 15.3s)
+- **KPI**: in-band (基准轮数 11)
+- **防漂移指数**: segments=6, drift_pass=1.0, semantic_avg=0.993, chars_ratio=0.941
+- **意图指数**: n=9, ms_avg=0.1, dist={'general': 7, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 513tok 10.7s Δ+35 | C03_subtask 1185tok 13.1s Δ-727 | C04_skill_identity 0tok 4.8s | C06_executive_unit_convert 0tok 4.3s | C07_memory_followup 512tok 18.8s Δ-8 | C08_reasoning 1174tok 13.5s Δ+119 | C11_json_format 754tok 7.7s Δ+115 | C13_git_sensitive 1614tok 36.0s Δ+87 | C14_isolated_multi 1923tok 38.8s Δ-419 | C17_neg_hallucination_bait 673tok 9.4s Δ-76 | C18_neg_format_trap 733tok 10.7s Δ+12
+
