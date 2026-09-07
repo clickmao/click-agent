@@ -1,0 +1,231 @@
+{
+ "round": "mass_251",
+ "label": "R128 batch40 d5-d2",
+ "ts": "2026-09-07T13:42:52+0800",
+ "cases": 5,
+ "passed": 5,
+ "tokens_total": 6867,
+ "prompt_total": 2228,
+ "completion_total": 4639,
+ "wall_total_ms": 174466,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组划分为“小于”和“大于”两部分并递归排序的高效分治排序算法，平均时间复杂度 O(n log n)。",
+   "wall_ms": 7141,
+   "points": 19,
+   "llm_calls": 1,
+   "prompt_tokens": 438,
+   "completion_tokens": 40,
+   "total_tokens": 478,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41518095082488204
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 6283,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/98tok/r0.67rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 195,
+   "from_cache": false,
+   "prompt_total_tokens": 606,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 258,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "> 说明：当前上下文（工作区/记忆）未包含向量数据库资料，以下基于通用知识给出。\n\n先确认一点：主要场景是 RAG 检索还是推荐/多模态搜索？——默认按「中小规模 RAG、百万级向量、自部署」给结论。\n\n推荐结论（按默认场景）：\n· 首选 **Qdrant**：Rust 实现，向量+标量混合过滤强，单二进制部署轻量\n· 已有 PostgreSQL → **pgvector**：复用现有运维，HNSW 索引，千万级内够用\n· 亿级/需分布式扩展 → **Milvus**，功能全但运维成本高\n· 要全托管免运维 → **Pinecone**，成本偏高且需评估数据出域\n· 仅原型验证 → **Chroma**，上手快但生产稳定性一般\n\n下一步：确认场景与量级后，可将五维度（性能/生态/部署/许可/成本）完整对比报告写入 docs/reports/vector-db-comparison.md。",
+   "wall_ms": 99317,
+   "points": 19,
+   "llm_calls": 1,
+   "prompt_tokens": 553,
+   "completion_tokens": 3804,
+   "total_tokens": 4357,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4271060887559994
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 98396,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:1snip/70tok/r0.33rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/107tok/r0.57rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 240,
+   "from_cache": false,
+   "prompt_total_tokens": 741,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 1036,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (3439ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 4337,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 3439,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": null,
+   "bge_ms": null,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "结论：索引本质是空间换时间——用额外的有序数据结构，把查询从“逐行全表扫描”降为“按结构定位”，复杂度从 O(n) 降到 O(log n) 甚至 O(1)。\n\n要点：\n1. 有序结构减少比较与磁盘 I/O：B+ 树按键有序组织数据，查询只需沿树走 3~4 层（对应 3~4 次页读取）即可定位；哈希索引的等值查询更是一步命中。\n2. 提前过滤、避免回表：索引先按 where/范围/order by 条件筛出少量行，避免逐行判断；覆盖索引甚至能在索引内直接取到结果，连数据表都不用访问。\n3. 代价与边界：索引占额外存储，且增删改需同步维护结构导致写入变慢，因此只适合对高频查询列建索引，而非越多越好。",
+   "wall_ms": 45076,
+   "points": 20,
+   "llm_calls": 1,
+   "prompt_tokens": 621,
+   "completion_tokens": 772,
+   "total_tokens": 1393,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40487451681990605
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 44149,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:1snip/270tok/r0.48rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/109tok/r0.5rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 12043,
+   "from_cache": false,
+   "prompt_total_tokens": 880,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 858,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  },
+  {
+   "id": "C11_json_format",
+   "input": "用JSON格式返回：字段name填fastapi，字段lang填python，只返回JSON不要其他文字",
+   "pass": true,
+   "notes": [],
+   "reply": "{\n  \"name\": \"fastapi\",\n  \"lang\": \"python\"\n}",
+   "wall_ms": 18595,
+   "points": 20,
+   "llm_calls": 1,
+   "prompt_tokens": 616,
+   "completion_tokens": 23,
+   "total_tokens": 639,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.3732391006324334
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 17684,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:1snip/264tok/r0.38rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/100tok/r0.63rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 11702,
+   "from_cache": false,
+   "prompt_total_tokens": 862,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 210,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  }
+ ],
+ "kpi_breaches": [
+  "tokens_per_case=1373 out (500, 950)",
+  "wall_per_case_ms=34893 out (12000, 30000)"
+ ],
+ "hist_base_rounds": 0
+}

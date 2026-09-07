@@ -297,9 +297,54 @@ def main():
                "completion_total": sum(x["completion_tokens"] for x in results),
                "wall_total_ms": sum(x["wall_ms"] for x in results),
                "results": results}
+    # v0.11.0 R128 (PGO v2 D5): 对比基准自动化 — 落盘前读历史轮 (同 quick 口径), 计算 per-case
+    # 平滑均值 delta + 全轮 KPI 健康带判定 (D2)。analyze.py 消费 delta 字段, 无需人工对表。
+    def _hist_delta(field):
+        """近 3 轮同用例均值 → {case_id: base_avg}"""
+        hist = {}
+        # R128 缺陷 53: 字典序让 stability_* 等老轮排最后 — 按轮内 ts 排序 (ISO 时间戳字典序=时间序)
+        def _ts(f):
+            try:
+                return json.load(open(os.path.join(ROUNDS, f))).get("ts", "")
+            except Exception:
+                return ""
+        fs = sorted((f for f in os.listdir(ROUNDS) if f.endswith(".json")), key=_ts)
+        for f in (fs[-6:-1] if len(fs) > 6 else fs[:-1]):  # 最近若干轮 (不含本轮)
+            try:
+                d = json.load(open(os.path.join(ROUNDS, f)))
+                if d.get("cases") != len(results):
+                    continue  # quick/全量口径不一致 → 跳过
+                for x in d["results"]:
+                    hist.setdefault(x["id"], []).append(x.get(field) or 0)
+            except Exception:
+                pass
+        return {k: sum(v[-3:]) / min(3, len(v)) for k, v in hist.items() if v}
+    tok_base = _hist_delta("total_tokens")
+    wall_base = _hist_delta("wall_ms")
+    # KPI 健康带 (D2): 来自批26-39 基线 — 越界即标记, 连续越界由 analyze 判 WATCH
+    KPI = {"tokens_per_case": (500, 950), "wall_per_case_ms": (12000, 30000)}
+    breaches = []
+    n = max(1, len(results))
+    avg_tok = summary["tokens_total"] / n
+    avg_wall = summary["wall_total_ms"] / n
+    if not (KPI["tokens_per_case"][0] <= avg_tok <= KPI["tokens_per_case"][1]):
+        breaches.append(f"tokens_per_case={avg_tok:.0f} out {KPI['tokens_per_case']}")
+    if not (KPI["wall_per_case_ms"][0] <= avg_wall <= KPI["wall_per_case_ms"][1]):
+        breaches.append(f"wall_per_case_ms={avg_wall:.0f} out {KPI['wall_per_case_ms']}")
+    for x in results:
+        b = tok_base.get(x["id"])
+        x["delta_tokens_vs_hist"] = round(x["total_tokens"] - b) if b else None
+        w = wall_base.get(x["id"])
+        x["delta_wall_vs_hist"] = round(x["wall_ms"] - w) if w else None
+    summary["kpi_breaches"] = breaches
+    summary["hist_base_rounds"] = len(tok_base)
     path = f"{ROUNDS}/{rnd}.json"
     json.dump(summary, open(path, "w"), ensure_ascii=False, indent=1)
     print(f"\n=== round={rnd} passed={summary['passed']}/{summary['cases']} tokens={summary['tokens_total']} wall={summary['wall_total_ms']}ms → {path}")
+    if breaches:
+        print(f"KPI_BREACH: {'; '.join(breaches)}")
+    else:
+        print("KPI: in-band")
 
 if __name__ == "__main__":
     sys.exit(main())

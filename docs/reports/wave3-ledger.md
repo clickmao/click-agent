@@ -254,3 +254,9 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - **批39** (mass_241-245) 25/25 avg 3671tok; **C08 completion 治理轨迹: 943 (批36) → 726 (批38) → 479 (批39, -49%)**。
 - **千轮迭代优化报告**: docs/reports/thousand-round-report.md (PGO 方法论/52 缺陷台账/专项验证/D1-D5 动态打点 v2 策略/未完成事项/执行方案)。
 - **README 双语**: 新增 README.md 中文完整版; README_EN.md 更新 (徽章 386/千轮 99.89%/R103-R127 能力段/验证基线/下一步)。
+
+### R128: PGO v2 D2+D5 落地 (harness 层)
+- **D5 对比基准自动化**: run_round.py 落盘前自动读历史 5 轮 (按 ts 排序), 计算 per-case 平滑均值 delta → 轮 JSON (`delta_tokens_vs_hist`/`delta_wall_vs_hist`), analyze.py 直接消费。
+- **缺陷 53 (打点链自身)**: ①`[-6:-0]` 空切片 (-0==0) → delta 恒 None; ②字典序让 stability_* 老轮排最后 → 改按 ts 排序。
+- **D2 KPI 健康带**: tokens/case ∈[500,950], wall/case ∈[12s,30s] — mass_251 首次捕获越界 (C03 4357tok/99s), 复跑 mass_252 in-band (3732tok/107s) = LLM 单轮波动, breach 只标记不判 FAIL (防误回退)。
+- mass_251/252: 5/5+5/5 全绿。
