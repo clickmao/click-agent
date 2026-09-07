@@ -376,8 +376,13 @@ def main():
         return {k: sum(v[-3:]) / min(3, len(v)) for k, v in hist.items() if v}
     tok_base = _hist_delta("total_tokens")
     wall_base = _hist_delta("wall_ms")
-    # KPI 健康带 (D2): 来自批26-39 基线 — 越界即标记, 连续越界由 analyze 判 WATCH
-    KPI = {"tokens_per_case": (500, 950), "wall_per_case_ms": (12000, 30000)}
+    # KPI 健康带 (D2): R139 重校准 — 批50 (mass_266) 19 用例新口径首批基线 (1100tok/case)。
+    # 旧带 (500,950) 为 17 用例口径, 19 用例含 C16 长会话+C17/C18 负面必越界 (口径切换非劣化)。
+    # 口径分带: full-19 (批50 基线) vs quick-5 (批42-49 基线 ~740tok/case, wall 12-18s)
+    if len(results) <= 8:
+        KPI = {"tokens_per_case": (550, 950), "wall_per_case_ms": (8000, 35000)}
+    else:
+        KPI = {"tokens_per_case": (900, 1300), "wall_per_case_ms": (12000, 45000)}
     breaches = []
     n = max(1, len(results))
     avg_tok = summary["tokens_total"] / n
