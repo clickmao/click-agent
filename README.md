@@ -13,21 +13,32 @@ C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / Na
 
 ---
 
-### 🆕 v0.11.0 R133-R142 新增能力 (5 KPI 全维度可观测)
-- **K1 被提问概率链路修复+深化** (缺陣55): UserTendency 聚合断链 (max-merge + max-conf) — 0→1snip; 画像 snip 可执行化 (4→11tok 行为指导, A/B 差分实证)
-- **K4 SKILL 盲区补全**: skill_match (top1/precision/runner_up_gap) + skill_trigger (no_hit/degrade_semantic/force) + 双低压制闭环 (批45 实证 4/5 误吸被压制)
-- **K3 语义质量 D4**: reply_rel (bge 512dim 余弦, --embed 子命令) + 阈值分层校准 (模板 0.3/LLM 0.5) + quality_suspect 标记
-- **负面样本 21%**: N5 幻觉诱饵 C17 (must_not_contain 防编造断言) + N4 格式陷阱 C18, 批50 全量 19/19 (C17 rel=0.82 未编造)
-- **防漂移/意图指数入报告**: compression_index (drift_pass_rate/semantic_avg/chars_ratio) + intent_index (ms_avg/dist) — R142 历史缺口回接
-- **D2 健康带口径分带**: quick-5 (550-950tok) / full-19 (900-1300tok) 独立健康带, 19 用例口径批53 in-band
+### 🆕 v0.11.0 R143-R152 新增能力 — 最新 2 批
+- **R151 pivot_n 真重锚断言**: goal/op=pivot 打点消费 + 三重断言 — C15 重锚真实发生可证明 (真缺陷 45 init 缺键实证修复)
+- **R149 TaskRelevance 判定空心修复**: C14/C15 绑定 isolated_true/pivot_reanchor 真断言 + 10 对抗单测 (389→399 绿); quick 10→11
+- <details><summary>完整能力清单 + 批 56-78 全部明细</summary>
 
-### 🆕 v0.11.0 R103-R127 新增能力
-- **PGO 式全链路打点体系**: 12+ 类点位 (intent/assembly 8 源召回/llm_call/skill/loop_turn/isolated/tendency/balance_sync/compression/bge_embed/sensitive), JSONL 落盘 + Configure 前点位 pending ring (R121) + DroppedTotal 丢失可见化 — 每一轮优化由打点对比数据驱动
-- **3 真实 key 余额链 E2E**: deepseek 真余额查询 (9.02→7.61 CNY) / 阈值切模实战实证 (MIN_BALANCE=100 → deepseek $1.25 不足 → 切 glm) / glm 无 scheme 诚实报错 / kimi 负样本诚实报错
-- **P3 bge 真向量链**: AGENTFRAMEWORK_BGE_MODEL → EmbeddingRouter bge 优先/词袋兜底, dim512, JIT+AOT 双验收; RAG/ContextGradient/语义漂移 cos 校验全真链
-- **LLamaSharp Vulkan 单入口** (fork ed89226+252b68f): dlopen libllama.so + $ORIGIN RUNPATH 自动解析全部依赖, Silk.NET.Vulkan 零 native
-- **多轮会话评测 harness**: run_case_repl (REPL 型多轮用例) + 隔离/pivot/回锚全实证 (C14/C15/C16 四轮长会话) + anomaly 防护 (评分器可靠性 R120)
-- **双 LLM 交叉校验**: cross_validate (glm+deepseek agree=true)
+  [docs/CHANGELOG-v0.11.0-R143-R152.md](docs/CHANGELOG-v0.11.0-R143-R152.md)
+
+  </details>
+
+### 🆕 v0.11.0 R133-R142 新增能力 (5 KPI 全维度可观测) — 最新 2 批
+- **R141-142 防漂移/意图指数入报告**: compression_index (drift_pass_rate/semantic_avg/chars_ratio) + intent_index (ms_avg/dist) — 历史缺口回接; 15 维度总账建档
+- **R141 画像 snip 可执行化**: tendency snip 4→11tok 行为指导 (A/B 差分实证)
+- <details><summary>完整能力清单 (K1 断链/K4 盲区/D4 语义质量/负面 21%/健康带分带 等 4 条)</summary>
+
+  [docs/CHANGELOG-v0.11.0-R133-R142.md](docs/CHANGELOG-v0.11.0-R133-R142.md)
+
+  </details>
+
+### 🆕 v0.11.0 R103-R127 新增能力 — 最新 2 批
+- **R126-127 规则8 解释类输出纪律 + 千轮报告/PGO v2 (D1-D5)**: C08 completion -23%; README 双语
+- **R125 余额对账自动化**: 7.61 CNY 对账零额外消耗 (真 key 余额链持续验证)
+- <details><summary>完整能力清单 (R103-R124 等 4 条)</summary>
+
+  [docs/CHANGELOG-v0.11.0-R103-R127.md](docs/CHANGELOG-v0.11.0-R103-R127.md)
+
+  </details>
 
 ### 📊 千轮迭代评测 (PGO 对比数据驱动)
 
@@ -39,7 +50,7 @@ C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / Na
 | 单元测试 | 325 | **389** | +64 |
 | 真缺陷修复 | — | **55 项** (全部打点驱动) | #21-#55 |
 
-批次趋势 (批42-78): quick-5 口径批42-55 = 4271→3673 tok/批 (12 批); R143 quick-10 批56-65 = 902/884/815/631/601/783/601/735/888/720 tok/case; R149 quick-11 批66-78 = 822/935/991/961/917/896/821/936/941 tok/case (八连绿) + 全量批74/76 19/19 (1118/1165 tok/case) — 近 37 批全绿 KPI in-band (CV 15.4%, 健康带 600-1100)
+批次趋势: **批77 (mass_293)** 11/11 quick-11 10357tok (941/case) / **批78 (mass_294)** 11/11 quick-11 10331tok (939/case) — 近 37 批全绿 KPI in-band (CV 15.4%, 健康带 600-1100)。完整 37 批明细: [docs/CHANGELOG-v0.11.0-R143-R152.md](docs/CHANGELOG-v0.11.0-R143-R152.md) (批42-65 在 R133-R142/R103-R127 归档)。README 批次明细每 30 批滚动更新一次 (下次: 批108)。
 专项验证: 多来源召回率 (100 用例轮统计) / 无关话题隔离 (score=2 触发独立 session) / session 长期记忆 (跨进程落盘) / JSON 格式跟随 (哨兵用例) / 双 LLM 校验 — 全部 ✓。
 
 完整报告: [千轮迭代优化报告](docs/reports/thousand-round-report.md) · 阶段台账: [wave3-ledger](docs/reports/wave3-ledger.md)

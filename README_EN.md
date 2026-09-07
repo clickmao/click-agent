@@ -29,25 +29,35 @@ Release line: v0.11.0 — unified @cmd command protocol + 3 transports / Skill e
 - **/forecast**: next-turn forecast surfaced to frontend
 - **SKILL.md packages**: Anthropic Agent-Skills Open Standard loader (dir name = front-matter name) + 2 example packages
 
-### 🆕 R133-R142 Additions (5-KPI full observability)
-- **K1 question-probability link fixed & deepened** (defect 55): UserTendency aggregation break (max-merge + max-conf) — 0→1 snippet; profile snippet made actionable (4→11 tok behavioral hints, A/B diff verified)
-- **K4 SKILL blind spot closed**: skill_match (top1/precision/runner_up_gap) + skill_trigger decisions + dual-low suppression loop (batch 45: 4/5 false absorptions suppressed)
-- **K3 semantic quality D4**: reply_rel (bge 512-dim cosine, --embed subcommand) + tiered thresholds (template 0.3 / LLM 0.5)
-- **Negative cases 21%**: N5 hallucination bait C17 (must_not_contain anti-fabrication) + N4 format trap C18; batch 50 full 19/19
-- **Anti-drift & intent indices in reports**: compression_index + intent_index — R142 historical gap close
-- **D2 health-band split**: quick-5 / full-19 independent bands, batch 53 in-band
+### 🆕 R143-R152 Additions — latest 2 batches
+- **R151 pivot_n real-reanchor assertion**: goal/op=pivot telemetry consumption + triple assertion — C15 re-anchor now provable (defect 45 init-key KeyError fixed)
+- **R149 TaskRelevance hollow-verdict fix**: C14/C15 bound to isolated_true/pivot_reanchor real assertions + 10 adversarial tests (389→399 green); quick 10→11
+- <details><summary>Full list + batch 56-78 details</summary>
 
-### 🆕 R103-R127 Additions (thousand-round loop)
-- **PGO-style full-chain telemetry**: 12+ point types (intent / assembly 8-source recall / llm_call / skill / loop_turn / isolated / tendency / balance_sync / compression / bge_embed / sensitive), JSONL landing + pre-Configure pending ring (R121) + DroppedTotal loss visibility — every optimization round is driven by telemetry deltas
-- **3 real-key balance chain E2E**: deepseek real balance query (9.02→7.61 CNY) / threshold switching live-fire (MIN_BALANCE=100 → deepseek $1.25 insufficient → switched to glm) / honest provider_not_supported for glm / honest error for kimi negative sample
-- **P3 bge real-vector chain**: AGENTFRAMEWORK_BGE_MODEL → EmbeddingRouter bge-first / bag-fallback, dim512, JIT+AOT dual acceptance; RAG / ContextGradient / semantic-drift cos verification all real
-- **LLamaSharp Vulkan single-entry** (fork ed89226+252b68f): dlopen libllama.so + $ORIGIN RUNPATH auto-resolves all deps; Silk.NET.Vulkan zero native
-- **Multi-turn eval harness**: run_case_repl + isolation/pivot/re-anchor fully proven (C14/C15/C16 four-turn session) + anomaly guard (scorer reliability, R120)
-- **Dual-LLM cross validation**: cross_validate (glm+deepseek agree=true)
+  [docs/CHANGELOG-v0.11.0-R143-R152.md](docs/CHANGELOG-v0.11.0-R143-R152.md)
 
+  </details>
+
+### 🆕 R133-R142 Additions (5-KPI full observability) — latest 2 batches
+- **R141-142 anti-drift & intent indices in reports**: compression_index + intent_index — historical gap close; 15-dimension ledger
+- **R141 profile snippet made actionable**: tendency snip 4→11 tok behavioral hints (A/B diff verified)
+- <details><summary>Full list (4 more: R133-R140)</summary>
+
+  [docs/CHANGELOG-v0.11.0-R133-R142.md](docs/CHANGELOG-v0.11.0-R133-R142.md)
+
+  </details>
+
+### 🆕 R103-R127 Additions (thousand-round loop) — latest 2 batches
+- **R126-127 rule-8 explanation output discipline + thousand-round report / PGO v2 (D1-D5)**: C08 completion -23%; bilingual README
+- **R125 balance reconciliation automation**: 7.61 CNY verified, zero extra spend
+- <details><summary>Full list (4 more: R103-R124)</summary>
+
+  [docs/CHANGELOG-v0.11.0-R103-R127.md](docs/CHANGELOG-v0.11.0-R103-R127.md)
+
+  </details>
 ### 📊 Thousand-Round Eval (PGO-driven)
 - **1034/1056 = 97.92%** case pass (215 rounds landed); quick-batch tokens **7354 → ~3969 avg**; C08 reasoning completion **1875 → 479 (-74%)**; 55 real defects fixed, all telemetry-driven.
-- Batch trend (batch42-78): quick-5 batch42-55 = 4271→3673 tok/batch (12); quick-10 (R143) batch56-65 = 902/884/815/631/601/783/601/735/888/720 tok/case; quick-11 (R149) batch66-78 = 822/935/991/961/917/896/821/936/941 tok/case (8-in-a-row green) + full batch74/76 19/19 (1118/1165 tok/case) — last 37 batches all green, KPI in-band (CV 15.4%, band 600-1100)
+- Batch trend: **batch77 (mass_293)** 11/11 quick-11 10357tok (941/case) / **batch78 (mass_294)** 11/11 quick-11 10331tok (939/case) — last 37 batches all green, KPI in-band (CV 15.4%, band 600-1100). Full 37-batch details: [docs/CHANGELOG-v0.11.0-R143-R152.md](docs/CHANGELOG-v0.11.0-R143-R152.md). README batch details roll every 30 batches (next: batch108).
 - Full report: [Thousand-Round Report](docs/reports/thousand-round-report.md) · ledger: [wave3-ledger](docs/reports/wave3-ledger.md)
 
 ### 🧭 Full Capability Panorama (v0.11.0)
