@@ -319,13 +319,18 @@ def main():
         vecs = {}
         for c in cases:
             vecs[c["id"]] = (_embed(c.get("input", c.get("query", ""))), None)
+        exp_llm = {c["id"]: c.get("expect", {}).get("llm", True) for c in cases}
         for x in results:
             qv = vecs.get(x["id"], (None,))[0]
             rv = _embed(x.get("reply", "")) if x.get("reply") else None
             if qv and rv and len(qv) == len(rv):
                 dot = sum(a*b for a, b in zip(qv, rv))
                 x["reply_rel"] = round(dot / ((sum(a*a for a in qv) ** 0.5) * (sum(b*b for b in rv) ** 0.5) or 1), 4)
-                if x["reply_rel"] < 0.5:
+                # R136 校准 (批46 实证): executive 模板回复 ("97.88°F") 与自然语言问句结构性低余弦
+                # (0.436 假阳性) — 阈值分层: LLM 回复 <0.5 suspect, 模板回复 <0.3 才 suspect。
+                is_template = (exp_llm.get(x["id"], True) is False) or x.get("total_tokens", 0) == 0
+                thr = 0.3 if is_template else 0.5
+                if x["reply_rel"] < thr:
                     x["quality_suspect"] = True
             else:
                 x["reply_rel"] = None
