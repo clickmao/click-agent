@@ -362,7 +362,15 @@ def main():
                 is_template = (exp_llm.get(x["id"], True) is False) or x.get("total_tokens", 0) == 0
                 is_session_aware = bool(cases_by_id.get(x["id"], {}).get("expect", {}).get("session_aware"))
                 thr = 0.3 if is_template else (0.35 if is_session_aware else 0.5)
-                if x["reply_rel"] < thr:
+                # R148 (第 3 次假阳性批67 0.3458 根治): session_aware 判定改内容命中 —
+                # "元问题 vs 复述" 余弦信噪比不足 (正确回复波动带 0.345-0.60, 三次校准均追波动),
+                # rel 保留为参考打点, suspect 判定改由 must_contain 关键词命中承担 (真实内容断言)。
+                if is_session_aware:
+                    kws = cases_by_id.get(x["id"], {}).get("expect", {}).get("must_contain", [])
+                    reply_l = (x.get("reply") or "").lower()
+                    if kws and not any(k.lower() in reply_l for k in kws):
+                        x["quality_suspect"] = True
+                elif x["reply_rel"] < thr:
                     x["quality_suspect"] = True
             else:
                 x["reply_rel"] = None
