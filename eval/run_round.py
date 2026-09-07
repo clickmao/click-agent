@@ -377,7 +377,11 @@ def main():
                 # R148 (第 3 次假阳性批67 0.3458 根治): session_aware 判定改内容命中 —
                 # "元问题 vs 复述" 余弦信噪比不足 (正确回复波动带 0.345-0.60, 三次校准均追波动),
                 # rel 保留为参考打点, suspect 判定改由 must_contain 关键词命中承担 (真实内容断言)。
-                if is_session_aware:
+                # R150: C14 隔离用例的 rel 天然低 (离题消息 vs 任务锚, 语义本就远) — suspect 判定
+                # 已由 isolated_true 真断言承担, rel 同 C07 一样降为纯参考。
+                has_real_assert = bool(cases_by_id.get(x["id"], {}).get("expect", {}).get("isolated_true")) or \
+                    bool(cases_by_id.get(x["id"], {}).get("expect", {}).get("pivot_reanchor"))
+                if is_session_aware or has_real_assert:
                     kws = cases_by_id.get(x["id"], {}).get("expect", {}).get("must_contain", [])
                     reply_l = (x.get("reply") or "").lower()
                     if kws and not any(k.lower() in reply_l for k in kws):
