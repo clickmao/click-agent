@@ -48,11 +48,18 @@ def run_case(case, env):
     if os.path.exists(case_tel):
         os.remove(case_tel)
     t0 = time.time()
-    p = subprocess.run(
-        ["dotnet", "run", "--project", "src/agent.host", "-c", "Release", "--no-build", "--", "-q", case["input"]],
-        capture_output=True, text=True, timeout=180, env=env)
+    # v0.11.0 R172 (真缺陷 59): per-case 超时容错 — 此前 TimeoutExpired 直接冒泡,
+    # 一个用例 180s 超时 = 整批崩死、后续用例全不跑、轮 JSON 不落盘 (批113 死于 C13 实证)。
+    try:
+        p = subprocess.run(
+            ["dotnet", "run", "--project", "src/agent.host", "-c", "Release", "--no-build", "--", "-q", case["input"]],
+            capture_output=True, text=True, timeout=180, env=env)
+    except subprocess.TimeoutExpired:
+        wall_ms = 180_000
+        p = None
+        print(f"[TIMEOUT] {case['id']} wall=180s — repl 子进程超时, 记 FAIL 批继续", flush=True)
     wall_ms = int((time.time() - t0) * 1000)
-    out = p.stdout
+    out = p.stdout if p is not None else ""
     # 提取回复正文 (── 回复 ── 与 · intent= 之间)
     m = re.search(r"──+\s*回复\s*──+\n(.*?)(?:\n  · intent=|\n──+|$)", out, re.S)
     reply = m.group(1).strip() if m else ""
