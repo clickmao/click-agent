@@ -48,3 +48,15 @@
 - **KPI**: in-band (基准轮数 5)
 - **per-case**: C01_general_qa 457tok 7.5s Δ-22 | C03_subtask 1444tok 20.1s Δ-104 | C06_executive_unit_convert 0tok 4.2s | C08_reasoning 1118tok 24.0s Δ-214 | C11_json_format 654tok 7.5s Δ-62
 
+## mass_264 — R137 batch48 C03-rel-trend-watch (2026-09-07T16:21:58+0800)
+
+- **判定**: 5/5 passed, tokens_total=4130 (avg 826), wall=85633ms (avg 17.1s)
+- **KPI**: in-band (基准轮数 5)
+- **per-case**: C01_general_qa 456tok 7.9s Δ-53 | C03_subtask 1506tok 38.1s Δ-49 | C06_executive_unit_convert 0tok 4.2s | C08_reasoning 1341tok 27.8s Δ+95 | C11_json_format 827tok 7.6s Δ+109
+
+## mass_265 — R137 batch49 5-batch-audit post (2026-09-07T16:23:14+0800)
+
+- **判定**: 5/5 passed, tokens_total=3408 (avg 682), wall=54210ms (avg 10.8s)
+- **KPI**: wall_per_case_ms=10842 out (12000, 30000) (基准轮数 5)
+- **per-case**: C01_general_qa 446tok 7.9s Δ-41 | C03_subtask 1159tok 17.8s Δ-348 | C06_executive_unit_convert 0tok 4.4s | C08_reasoning 1154tok 15.6s Δ+1 | C11_json_format 649tok 8.6s Δ-67
+

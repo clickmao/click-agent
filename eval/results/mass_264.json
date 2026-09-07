@@ -1,0 +1,291 @@
+{
+ "round": "mass_264",
+ "label": "R137 batch48 C03-rel-trend-watch",
+ "ts": "2026-09-07T16:21:58+0800",
+ "cases": 5,
+ "passed": 5,
+ "tokens_total": 4130,
+ "prompt_total": 2387,
+ "completion_total": 1743,
+ "wall_total_ms": 85633,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组递归划分为小于和大于基准的两部分，从而实现排序的高效分治算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 7936,
+   "points": 26,
+   "llm_calls": 1,
+   "prompt_tokens": 417,
+   "completion_tokens": 39,
+   "total_tokens": 456,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41518095082488204
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.4152,
+    "runner_up_gap": 0.0706
+   },
+   "skill_decisions": [
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 7080,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/4tok/r0.8rel,WorkspaceFiles:3snip/89tok/r0.8rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 192,
+   "from_cache": false,
+   "prompt_total_tokens": 555,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 221,
+   "intent_ms": 0,
+   "llm_ms_total": 2131,
+   "phase_llm_ms": 2430,
+   "reply_rel": 0.7788,
+   "delta_tokens_vs_hist": -53,
+   "delta_wall_vs_hist": -1049
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "推荐结论（简版）：自部署首选 Qdrant（性能好、过滤检索强、运维简单）；已用 PostgreSQL 的团队直接上 pgvector 最省事；十亿级超大规模选 Milvus；免运维托管选 Pinecone。\n\n关键对比要点：\n· **Qdrant**：Rust 实现，低延迟，过滤 + 向量检索组合强，单二进制易部署\n· **pgvector**：与现有库共存、无新增组件，HNSW 索引，适合百万级以内数据\n· **Milvus**：分布式架构，支持十亿级向量和多索引类型，但运维复杂度高\n· **Pinecone**：全托管、免运维，按量计费，规模增长后成本上升较快\n· **Weaviate / Chroma**：前者混合检索（BM25+向量）突出；后者轻量，适合原型验证\n\n选型核心依据：数据规模、私有化要求、过滤/混合检索需求、运维能力、预算。\n\n⚠️ 说明：工作区文件 eval/res",
+   "wall_ms": 38094,
+   "points": 26,
+   "llm_calls": 1,
+   "prompt_tokens": 517,
+   "completion_tokens": 989,
+   "total_tokens": 1506,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4271060887559994
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.4271,
+    "runner_up_gap": 0.0573
+   },
+   "skill_decisions": [
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 37222,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 6,
+   "sources_recall": "Memory:1snip/72tok/r0.33rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/4tok/r0.8rel,WorkspaceFiles:3snip/86tok/r0.67rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 244,
+   "from_cache": false,
+   "prompt_total_tokens": 723,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 1334,
+   "intent_ms": 1,
+   "llm_ms_total": 30814,
+   "phase_llm_ms": 31118,
+   "reply_rel": 0.5793,
+   "delta_tokens_vs_hist": -49,
+   "delta_wall_vs_hist": 4543
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (3343ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 4211,
+   "points": 7,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "unit-convert",
+    "level": 2,
+    "precision": 0.6,
+    "runner_up_gap": 0.1806
+   },
+   "skill_decisions": [],
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 3343,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": null,
+   "bge_ms": null,
+   "intent_ms": null,
+   "llm_ms_total": 0,
+   "phase_llm_ms": null,
+   "reply_rel": 0.435,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": 3
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "结论：索引把对全表的线性扫描（O(n)）变成对有序数据结构的定向查找（约 O(log n)），从而大幅减少需要检查的数据量和磁盘 I/O。\n\n关键要点：\n\n1. 有序结构替代遍历：主流索引用 B+ 树，数据按键有序组织。在千万行中定位一条记录只需约 20 余次节点比较，而非逐行扫描。\n2. 减少磁盘 I/O：B+ 树高扇出、树身矮（通常 3~4 层即可覆盖千万级数据），每层仅读一页，I/O 次数从“万次级”降到“个位数”。\n3. 支持范围查询与免回表：有序性使范围扫描可直接定位起点顺序读取；若查询字段全在索引中（覆盖索引），甚至无需回表取数据。\n\n代价是写入时需维护索引结构、占用额外存储，所以并非越多越好。",
+   "wall_ms": 27786,
+   "points": 27,
+   "llm_calls": 1,
+   "prompt_tokens": 645,
+   "completion_tokens": 696,
+   "total_tokens": 1341,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40487451681990605
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.4049,
+    "runner_up_gap": 0.0517
+   },
+   "skill_decisions": [
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 26926,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 6,
+   "sources_recall": "Memory:1snip/267tok/r0.46rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/4tok/r0.8rel,WorkspaceFiles:3snip/77tok/r0.63rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 211,
+   "from_cache": false,
+   "prompt_total_tokens": 871,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 892,
+   "intent_ms": 0,
+   "llm_ms_total": 21300,
+   "phase_llm_ms": 21523,
+   "reply_rel": 0.6751,
+   "delta_tokens_vs_hist": 95,
+   "delta_wall_vs_hist": 7180
+  },
+  {
+   "id": "C11_json_format",
+   "input": "用JSON格式返回：字段name填fastapi，字段lang填python，只返回JSON不要其他文字",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"name\": \"fastapi\", \"lang\": \"python\"}",
+   "wall_ms": 7606,
+   "points": 29,
+   "llm_calls": 1,
+   "prompt_tokens": 808,
+   "completion_tokens": 19,
+   "total_tokens": 827,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.3732391006324334
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.3732,
+    "runner_up_gap": 0.025
+   },
+   "skill_decisions": [
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 6741,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 7,
+   "sources_recall": "Memory:2snip/527tok/r0.45rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/4tok/r0.8rel,WorkspaceFiles:3snip/99tok/r0.83rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 263,
+   "from_cache": false,
+   "prompt_total_tokens": 1089,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 172,
+   "intent_ms": 0,
+   "llm_ms_total": 1400,
+   "phase_llm_ms": 1727,
+   "reply_rel": 0.8268,
+   "delta_tokens_vs_hist": 109,
+   "delta_wall_vs_hist": 174
+  }
+ ],
+ "kpi_breaches": [],
+ "hist_base_rounds": 5
+}
