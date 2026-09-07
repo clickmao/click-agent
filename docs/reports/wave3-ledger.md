@@ -343,3 +343,16 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - **范围**: origin/main 落后 3 commits — dc13413 (R152b) / 1f8ff13 (R152c) / 9a6d89a (R153)。R152b/c 未推送系前 tick 遗留, 本 tick 才经 API 实证定位根因
 - **凭据卫生核查**: push 用一次性 URL, 推完即弃; `git config --list | grep -c ghp_` = 0; branch.main.remote=origin 未污染; 本机无其它有效 token (skills 文档仅占位文本)
 - **处置**: 待用户签发新 PAT (需 repo write scope) 后, 用一次性 URL 重推 3 commits, API 验 sha 收尾 — 与 R138 "推送待新 token" 同型
+  **[已解]**: 新 token 生效 (~/.hermes/.env, 一次性 URL), R153-R155c 已推 (remote=8a3aa52, API 核实)
+
+### R154-R156 补账 (记账在 commit message, 台账文件漏更, 本条补齐)
+- **R154 (缺陷 58, 真)**: harness dotnet PATH 依赖未自兜底 → 批83 首跑半途崩; 修 main 入口 fail-fast 探测; + C15 断言硬化 (must_not_contain [隔离任务] + min_reply_chars 30, 复用 R138 机制)。
+- **R155 (缺陷 59, 真)**: must_not_contain 只吃 string, list 直接 AttributeError → 扩 string|list; 批85 首跑 15 PASS 后 C15 崩。R155b 批85 重跑 **全量 19/19** (C15 pivot_n≥1 + 无隔离前缀 + ≥30ch 全绿, 1076/c in-band); mass_298 RETIRED (缺陷58 受害者)。R155c master-report S7 roll。
+- **R156**: 批86/87 双批 11/11 (十连绿); K1 纵向定论 — C02 语言选择对 profile 不敏感 (LLM 话题偏好), K1 效应用 A/B 字符差 + conf 注入闸门度量, 语言维度移出 KPI。
+
+### R157: batch88/89 双批接力 + 并发守卫实证 (2026-09-08)
+- **并发场景**: 本 tick 启动时 sibling tick runner 正持锁跑 batch89 (mass_305, pid 1497476, fcntl eval_run.lock) — 遵守 R110b 缺陷43 互斥语义, 本 tick 不抢跑, 等待完成后接力收尾; runner 于检查间隙自然完成, 零冲突。**锁机制在真实双 tick 并发下第二次实证有效**。
+- **batch88 (mass_304)**: 11/11 全绿, 8917tok (811/c), wall 167.0s (15.2s/c); C01 421 (Δ-34)。
+- **batch89 (mass_305)**: 11/11 全绿, 9039tok (822/c), wall 149.4s (13.6s/c); D4 reply_rel n=11 avg 0.618 (R153 缺陷57 修复后连续第 4 批正常), 0 suspect, KPI in-band, breach 空。
+- **绿批连击**: batch86-89 四连, 千轮累计口径内 +22 用例 (双批 quick-11)。
+- **推送恢复**: R156 (6a92de1) 因 tick 间窗口未推, 本 tick 连同 R157 一并补推 (一次性 URL, 推后验证 token 零残留)。
