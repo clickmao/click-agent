@@ -220,3 +220,8 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - **评分器可靠性 (钦定原则: 评分器必须比被测对象可靠)**: mass_151 C03 假阴性根因审计 — writer 生命周期/Configure 单调用/env 覆写均排查, 无法复现 (单次瞬态)。防护: run_round anomaly 判定 (llm_calls=0 但 reply 非空 → telemetry_anomaly 标记按通过计, 供后续审计), 防止打点链路缺陷污染被测对象评分 (假阴性→错误 REVERT 风险)。
 - **余额链长跑**: deepseek 7.61 CNY (9.02→7.61, 千轮+批测真实消耗持续记账)。
 - **批31** (mass_161-165) 25/25 全绿 avg 3656tok (波动带内; 批30 3414/批29 4106); anomaly 未再现。
+
+### R121: 缺陷 51 防御 — Telemetry Configure 前点位缓存 + 批 32
+- **缺陷 51 防御** (mass_151 假阴性候选机制): Emit 在 Configure 前/_writer=null 时静默丢点 → 改 pending ring (上限 32, seq 原序) + Configure flush + DroppedTotal 可见化计数。单测 2 (Emit-before-Configure flush + DroppedTotal 单调), 384 绿。
+- **批32** (mass_171-175) 25/25 全绿 avg 3855tok (波动带)。
+- AOT 0IL + 冒烟 ✓ (pending flush 在 AOT 下生效)。

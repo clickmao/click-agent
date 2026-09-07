@@ -23,6 +23,10 @@ public static class AgentTelemetry
     private static string _sessionId = "default";
     private static bool _enabled = true;
     private static long _seq;
+    // v0.11.0 R121 (真缺陷 51 防御): Configure 前发射的点位原为静默丢失 (mass_151 C03 llm_calls=0
+    // 而 reply 完整的假阴性候选机制)。改: 先缓存 (ring 上限 32), Configure 后 flush, 丢失可见。
+    private static readonly List<string> _pendingBeforeConfigure = new();
+    private static long _droppedTotal;
 
     /// <summary>会话启动时调用: 设定 telemetry 输出流 (data/telemetry/{sessionId}.jsonl)</summary>
     public static void Configure(string sessionId, string telemetryDir)
@@ -44,6 +48,13 @@ public static class AgentTelemetry
                 _writer?.Dispose();
                 var path = Path.Combine(telemetryDir, _sessionId + ".jsonl");
                 _writer = new StreamWriter(path, append: true, Encoding.UTF8) { AutoFlush = true };
+                // R121: flush Configure 前缓存的点位 (保持 seq 原序)
+                if (_pendingBeforeConfigure.Count > 0)
+                {
+                    foreach (var line in _pendingBeforeConfigure)
+                        _writer.Write(line);
+                    _pendingBeforeConfigure.Clear();
+                }
             }
             catch
             {
@@ -97,14 +108,26 @@ public static class AgentTelemetry
             sb.Append("}\n");
             lock (Lock)
             {
-                _writer?.Write(sb.ToString());
+                if (_writer is not null)
+                    _writer.Write(sb.ToString());
+                else
+                {
+                    // Configure 前的点位: 缓存待 flush (上限 32, 超出丢弃并计数 — 可见化)
+                    if (_pendingBeforeConfigure.Count < 32)
+                        _pendingBeforeConfigure.Add(sb.ToString());
+                    _droppedTotal++;
+                }
             }
         }
         catch
         {
             // 打点失败绝不影响主链路
+            Interlocked.Increment(ref _droppedTotal);
         }
     }
+
+    /// <summary>R121: 已丢弃点位总数 (Emit 在 Configure 前 / 写盘异常) — 诊断用, 不影响主链路</summary>
+    public static long DroppedTotal => Interlocked.Read(ref _droppedTotal);
 
     private static string Sanitize(string s)
     {
