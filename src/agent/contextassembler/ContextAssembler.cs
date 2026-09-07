@@ -828,6 +828,12 @@ Interlocked.Increment(ref _cacheMisses);
                 
                 snippets.Add(snippet);
             }
+            // v0.11.0 R133 (T3 观测): tendency 点位首次回答 "召回几条/被拦几条/置信多少" —
+            // 断链期该源永远静默, 无打点则修复后也无法验证行为变化。
+            agent.config.AgentTelemetry.Emit("phase_timing", "ContextAssembler",
+                ("phase", "recall_tendency"), ("ms", stopwatch.ElapsedMilliseconds),
+                ("user", request.UserId), ("signals", bias?.BiasScores.Count ?? 0),
+                ("confidence", bias?.OverallConfidence ?? 0), ("snippets", snippets.Count));
         }
         catch (Exception ex)
         {

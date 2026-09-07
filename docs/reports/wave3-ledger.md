@@ -280,3 +280,10 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - **批40** (mass_256, quick 5 用例): 5/5 passed, 4291tok, wall 75.6s, KPI in-band (基准 5 轮); C06 0tok=expect.llm=false 本地执行器设计正确
 - **准则入档**: master-plan §0-0 宪法八条 + §0-1 五 KPI 维度 (1cbbb07)
 - K1 靶向: UserTendency 聚合断链 = R133 第一靶点
+
+### R133: K1 被提问概率断链修复 (缺陷55: 置信度双断点) — 5 KPI 靶向第一战
+- **断点A** (TendencyData.cs GetContextBiasAsync): 防覆盖逻辑 !ContainsKey 让历史高分 (0.341) 被当前查询低分 (0.2) 屏蔽 → avg 稀释 0.2 恒被 0.3 阈值拦截
+- **断点B**: OverallConfidence 用 avg — 画像条目越多稀释越重 (信号质量与条目数成反比, 语义颠倒); 单主题用户反易通过
+- **修复**: 历史与当前取 max (同信号两观测取强, 历史 0.8 降权保留) + conf 改 max-based + weak/strong_count 诊断 + tendency_bias 新点位 (立项卡 T5/K1)
+- **实证**: 真机 'python api 测试' UserTendency 0snip→1snip/r0.8; 批41 mass_257 4/4 LLM 用例全通 (C06 本地执行器设计性无召回); 389 测试全绿 (+3)
+- **K2 副产**: 3596tok vs 批40 4291 (-16.3%), KPI in-band

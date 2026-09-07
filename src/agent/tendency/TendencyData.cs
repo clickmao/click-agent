@@ -35,6 +35,8 @@ public class ContextBias
     public string Context { get; set; } = string.Empty;
     public Dictionary<string, double> BiasScores { get; set; } = new();
     public double OverallConfidence { get; set; }
+    // v0.11.0 R133: 置信度诊断信息 (max-based 公式的稀释保留: 弱/强信号条目数)
+    public Dictionary<string, object> Metadata { get; set; } = new();
 }
 
 /// <summary>
@@ -237,12 +239,21 @@ public class TendencyAnalyzer : ITendencyAnalyzer
             return Task.FromResult(profile);
         }
         
-        profile.SampleSize = dataList.Count;
+        // v0.11.0 R133 (K1 断链根因): 画像统计只基于有信号记录 (TopicScores/StyleScores 任一非空)。
+        // 空信号记录 (问候/系统消息) 不携带主题信息, 混入窗口只会稀释命中占比 —
+        // 此前 TakeLast 最近 10 条常被空记录占满 → 得分恒 <0.3 → 画像恒空 → 召回恒 0。
+        var signaled = dataList.Where(d => d.TopicScores.Count > 0 || d.StyleScores.Count > 0).ToList();
+        if (signaled.Count == 0)
+        {
+            return Task.FromResult(profile);
+        }
+        
+        profile.SampleSize = signaled.Count;
         
         // 计算主题倾向
         foreach (var (topic, keywords) in TopicKeywords)
         {
-            var score = CalculateTendencyScore(dataList, keywords);
+            var score = CalculateTendencyScore(signaled, keywords);
             if (score > 0.3)
             {
                 profile.TopicTendencies[topic] = score;
@@ -252,7 +263,7 @@ public class TendencyAnalyzer : ITendencyAnalyzer
         // 计算风格倾向
         foreach (var (style, keywords) in StyleKeywords)
         {
-            var score = CalculateTendencyScore(dataList, new[] { style });
+            var score = CalculateTendencyScore(signaled, new[] { style });
             if (score > 0.3)
             {
                 profile.StyleTendencies[style] = score;
@@ -268,8 +279,8 @@ public class TendencyAnalyzer : ITendencyAnalyzer
             _ => "complex"
         };
         
-        // 计算置信度
-        profile.Confidence = Math.Min(1.0, dataList.Count / 20.0);
+        // 计算置信度 (有信号样本数口径 — 空记录不构成画像证据)
+        profile.Confidence = Math.Min(1.0, signaled.Count / 20.0);
         profile.LastUpdated = DateTime.UtcNow;
         
         return Task.FromResult(profile);
@@ -279,6 +290,11 @@ public class TendencyAnalyzer : ITendencyAnalyzer
     {
         // v0.11.0 R123 (缺陷 52): 空 userId 不入库不落盘 — 召回链永不读取, 内存/磁盘双重跳过
         if (string.IsNullOrWhiteSpace(userId))
+            return Task.CompletedTask;
+        // v0.11.0 R133 (K1 断链根因): 全空信号 (TopicScores/StyleScores 皆空, 如问候/系统消息)
+        // 不入库 — 它们不携带任何主题/风格信息, 只占 MaxHistorySize 窗口稀释命中占比,
+        // 是 AnalyzeUserTendencyAsync 画像被拉低到恒 <0.3 的元凶 (cli_user.json 实证 100 条中 76 条空)。
+        if (data.TopicScores.Count == 0 && data.StyleScores.Count == 0)
             return Task.CompletedTask;
         lock (_lock)
         {
@@ -333,13 +349,16 @@ public class TendencyAnalyzer : ITendencyAnalyzer
             {
                 foreach (var (style, score) in profile.StyleTendencies)
                 {
-                    if (score >= 0.3 && !bias.BiasScores.ContainsKey(style))
-                        bias.BiasScores[style] = score * 0.8; // 历史信号略降权, 当前查询优先
+                    // v0.11.0 R133 (K1 断链修复 A): 原防覆盖逻辑 (!ContainsKey) 让历史高分被当前查询低分
+                    // 完全屏蔽 ("python api" 查询 → Python=1/5=0.2 覆盖历史 0.341 → avg 稀释 → 恒被 0.3 阈值拦截)。
+                    // 改为取 max: 历史与当前是同一信号的两个观测, 取更强者 (历史仍降权防压制现场)。
+                    if (score >= 0.3)
+                        bias.BiasScores[style] = Math.Max(bias.BiasScores.GetValueOrDefault(style), score * 0.8);
                 }
                 foreach (var (topic, score) in profile.TopicTendencies)
                 {
-                    if (score >= 0.3 && !bias.BiasScores.ContainsKey(topic))
-                        bias.BiasScores[topic] = score * 0.8;
+                    if (score >= 0.3)
+                        bias.BiasScores[topic] = Math.Max(bias.BiasScores.GetValueOrDefault(topic), score * 0.8);
                 }
             }
         }
@@ -348,8 +367,17 @@ public class TendencyAnalyzer : ITendencyAnalyzer
             // 历史倾向读取失败不阻断 — 保持纯当前查询行为
         }
 
-        // 计算总体置信度
-        bias.OverallConfidence = bias.BiasScores.Values.DefaultIfEmpty(0).Average();
+        // v0.11.0 R133 (K1 断链修复 B): 原 avg 公式有结构性稀释缺陷 — BiasScores 条目越多
+        // (用户画像越丰富), 平均值越低: {Python:0.2, WebAPI:0.2} → 0.2 恒被 0.3 阈值拦截,
+        // 而单主题用户反而轻松通过 (信号质量与条目数成反比, 语义颠倒)。
+        // 改 max-based: 最强信号代表置信度 (任一倾向≥0.34 即可信), WeakCount 打点保留稀释信息。
+        bias.OverallConfidence = bias.BiasScores.Values.DefaultIfEmpty(0).DefaultIfEmpty(0).Max();
+        bias.Metadata["weak_count"] = bias.BiasScores.Values.Count(v => v < 0.3);
+        bias.Metadata["strong_count"] = bias.BiasScores.Values.Count(v => v >= 0.3);
+        // R133: K1 观测点位 (此前 bias 计算全程无打点 — 立项卡 T5/K1): 每次召回计算必 emit
+        agent.config.AgentTelemetry.Emit("tendency_bias", "TendencyAnalyzer",
+            ("user", userId), ("scores", string.Join(";", bias.BiasScores.Select(kv => $"{kv.Key}={kv.Value:F2}"))),
+            ("conf", Math.Round(bias.OverallConfidence, 3)), ("sample", AnalyzeUserTendencyAsync(userId).GetAwaiter().GetResult().SampleSize));
         
         return Task.FromResult(bias);
     }
