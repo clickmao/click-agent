@@ -1,0 +1,196 @@
+{
+ "round": "mass_121",
+ "label": "R113 batch25 121 post-llmservice-removal",
+ "ts": "2026-09-07T08:45:52+0800",
+ "cases": 5,
+ "passed": 5,
+ "tokens_total": 4367,
+ "prompt_total": 1973,
+ "completion_total": 2394,
+ "wall_total_ms": 144337,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组分成大小两部分并递归排序的高效分治排序算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 6727,
+   "points": 17,
+   "llm_calls": 1,
+   "prompt_tokens": 356,
+   "completion_tokens": 34,
+   "total_tokens": 390,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41518095082488204
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 5833,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/57tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 95,
+   "from_cache": false,
+   "prompt_total_tokens": 479,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "结论先给（默认按通用 RAG 场景）：中小规模优先 Qdrant（自托管）或 Pinecone/Zilliz Cloud（托管）；超大规模选 Milvus；轻量场景用 pgvector 即可。\n\n关键依据：\n· **Milvus**：分布式、支持十亿级向量，但运维复杂、资源占用高\n· **Qdrant**：Rust 实现、性能好、过滤检索强，部署轻量，社区活跃\n· **pgvector**：已有 PostgreSQL 则零新增组件，够用到千万级；性能与索引类型有上限\n· **Pinecone**：全托管免运维，成本高、数据不出自有环境\n· **Chroma**：嵌入式，适合原型和 Demo，不建议生产大规模\n· **Weaviate**：内置混合检索（向量+关键词），性能中等\n\n推荐路径：多数团队从 pgvector 或 Qdrant 起步验证，数据量过亿或需多副本高可用时迁移到 Milv",
+   "wall_ms": 46124,
+   "points": 17,
+   "llm_calls": 1,
+   "prompt_tokens": 373,
+   "completion_tokens": 1227,
+   "total_tokens": 1600,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4271060887559994
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 45217,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/111tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 97,
+   "from_cache": false,
+   "prompt_total_tokens": 539,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (3439ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 4323,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 3439,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "核心原因：把“全表扫描 O(n)”变成“按结构查找 O(log n)”\n\n没有索引时，查询只能逐行读取整张表；有了索引，相当于给数据建了一套预先排好序的查找结构，可以像查字典一样快速定位。\n\n关键机制\n\n1. B+ 树：矮胖的多路平衡树\n· 索引按 key 排序组织成多叉树，每个节点对应一个数据页（如 InnoDB 16KB）\n· 树高通常只有 3~4 层，就能覆盖千万级数据\n· 查一次 = 沿树走 3~4 步，每步一次磁盘 I/O → 只需 3~4 次 I/O 而非扫描全表\n\n2. 磁盘 I/O 是瓶颈，索引减少了 I/O 次数\n· 全表扫描要读成千上万个页；索引定位只读路径上的少数几个页，这是加速的最主要来源\n\n3. 有序性带来的额外收益\n· 范围查询（`WHERE id > 100`）：直接二分定位起点，顺序读，无需逐行判断\n· `ORDER BY` / `GROUP BY`：数据已",
+   "wall_ms": 51560,
+   "points": 18,
+   "llm_calls": 1,
+   "prompt_tokens": 579,
+   "completion_tokens": 1114,
+   "total_tokens": 1693,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40487451681990605
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 50651,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:1snip/264tok/r0.45rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/111tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 12737,
+   "from_cache": false,
+   "prompt_total_tokens": 799,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  },
+  {
+   "id": "C11_json_format",
+   "input": "用JSON格式返回：字段name填fastapi，字段lang填python，只返回JSON不要其他文字",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"name\": \"fastapi\", \"lang\": \"python\"}",
+   "wall_ms": 35603,
+   "points": 20,
+   "llm_calls": 1,
+   "prompt_tokens": 665,
+   "completion_tokens": 19,
+   "total_tokens": 684,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.3732391006324334
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 34665,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:1snip/318tok/r0.45rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/204tok/r0.7rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 28194,
+   "from_cache": false,
+   "prompt_total_tokens": 906,
+   "history_tokens": 0,
+   "gate_to_ask": 0
+  }
+ ]
+}

@@ -60,26 +60,6 @@ public sealed class LocalLlamaCaller : ILLMCaller, IDisposable
 
         try
         {
-            // v0.11.0 R103: 共享服务优先 — 多 CLI 实例不重复加载模型。
-            // 服务不可用才走进程内加载 (独占兜底, 语义与 v0.10 前一致)。
-            var client = new LlmServiceClient(LlmServiceProtocol.SocketPath());
-            var viaService = await client.ChatAsync(prompt.SystemPrompt ?? "", prompt.UserMessage, 512);
-            if (viaService != null)
-            {
-                if (!viaService.Ok)
-                {
-                    response.Success = false;
-                    response.Error = viaService.Error;
-                    return response;
-                }
-                response.Success = true;
-                response.Content = viaService.Content ?? "";
-                response.CompletionTokens = viaService.Tokens;
-                _logger.LogInformation("共享 LLM 服务完成: {Tokens} tokens in {Ms}ms (multi-CLI shared)",
-                    viaService.Tokens, viaService.Ms);
-                return response;
-            }
-
             EnsureInitialized();
             var input = string.IsNullOrEmpty(prompt.SystemPrompt)
                 ? prompt.UserMessage

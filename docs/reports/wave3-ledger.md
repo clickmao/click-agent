@@ -171,3 +171,9 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - **缺陷 44 (真, 运维实证)**: llm-service **双守护并存互斥绕过** — 两实例 (04:57/05:44 起, 同父 Hermes gateway=并行 tick 各自重启) 同时 LISTEN 同一 sockaddr, 且 fs 上 data/llm.sock inode 与两守护 listen inode 全不符 = 客户端 connect ECONNREFUSED, **服务实际不可达** (IsAlive 探测 stale 文件 false → 新实例删 stale bind 新 inode 成功 → 旧实例孤儿监听)。处置: 杀双实例 + 删 stale sock + 重启单实例 (pid 1139857) → ping/embed(384维)/chat("OK", 6.5s qwen) 全通, fs inode == listen inode 单一归属。**根因未代码修**: bind 后 sock 路径条目被外部删除即触发 (R110 重启协调未覆盖), 观察项, 再发则给 LlmServiceHost 加 bind 后自检 (fs inode == 本进程 listen inode 否则退出)。
 - **run_round.py --help 防护**: 无位置参数默认 rnd="baseline" 且 flag 过滤吞掉 --help → `run_round.py --help` 真跑全量 baseline 180s 被杀 (实测浪费 + 扰动 eval 隔离态)。修: -h/--help/? 零副作用打印用法 exit 0。
 - 守护环境核实: AGENTFRAMEWORK_BGE_MODEL=bge-small-en-v1.5-q4_k_m.gguf (384 维, 与 R102 记录 bge-small-zh 512 维不同 — 模型文件实际仅 en-v1.5 存在, 历史记录偏差, 当前以 env 实证为准)。
+
+### R113: CLI 共享 LLM 服务整体退场 (用户钦定 2026-09-07)
+- 删除: LlmServiceProtocol/LlmServiceHost/LlmServiceClient.cs + LlmServiceTests.cs (7 测试) + Program.cs --llm-service 参数与守护块 + LocalLlamaCaller 服务探测块 (回进程内直连) + ServiceCollectionExtensions 服务探测 (llmLoaded 恒 false, bge 决策按未加载档)。
+- EmbeddingRouter/BgeModeDecision 的 llmLoaded 入参保留 (与共享服务解耦的通用决策参数)。
+- 验证: 372/372 绿 (379-7); CLI E2E glm 直连 ✓ ('2'); data/llm.sock 死文件清除; AOT 强刷 0 IL 警 + 冒烟 E2E/多轮 pass (12.8s)。
+- 批 25 (mass_118-122): 25/25 全绿, 4260 tok (+22.1% vs 批24, prompt 侧 356/373 稳定 = 波动在 glm completion, 非删除回归)。

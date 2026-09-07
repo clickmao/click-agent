@@ -206,9 +206,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<RAGConfig>(sp =>
         {
             var cfg = new RAGConfig();
-            var llmSvc = new agent.llamalocal.LlmServiceClient(
-                agent.llamalocal.LlmServiceProtocol.SocketPath("./data"));
-            var llmLoaded = llmSvc.IsAvailable(); // 共享服务在 → LLM 已加载 (进程外)
+            var llmLoaded = false; // v0.11.0 R113: 共享 LLM 服务已废弃 — bge 决策按本进程未加载处理 (CPU/独立档)
             cfg.EmbeddingFunction = text => new agent.llamalocal.EmbeddingRouter(
                 Environment.GetEnvironmentVariable("AGENTFRAMEWORK_BGE_MODEL"),
                 llmLoaded).Embed(text);

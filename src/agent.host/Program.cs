@@ -27,7 +27,6 @@ internal class Program
         string? logPath = null;
         string? oneShot = null;
         string? officialKey = null; // v7.15 需求1: 官方通道 key (CLI 传递, 内存态, 永不落盘)
-        var llmService = args.Contains("--llm-service");
         var smoke = args.Length == 0 || args.Contains("--smoke");
         var outputMode = agent.output.OutputMode.Markdown;
         for (var i = 0; i < args.Length; i++)
@@ -42,37 +41,6 @@ internal class Program
                 outputMode = args[++i] == "text"
                     ? agent.output.OutputMode.PlainText
                     : agent.output.OutputMode.Markdown;
-        }
-
-        // v0.11.0 R103: --llm-service 守护模式 — 本进程独占加载模型, 其他 CLI 实例经 socket 共享。
-        // 多实例防重: socket 可连即退出 (错误码 3), 由调用方决定"等待/回落客户端模式"。
-        if (llmService)
-        {
-            var sockPath = LlmServiceProtocol.SocketPath("./data");
-            var bgePath = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_BGE_MODEL");
-            var chatPath = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_LOCAL_MODEL") ?? "/home/agentuser/models/llama-dialog.gguf";
-            if (!File.Exists(chatPath))
-            {
-                Console.Error.WriteLine($"llm-service: chat 模型不存在: {chatPath}");
-                return 2;
-            }
-            var logger = LoggerFactory.Create(b => b.AddSimpleConsole().SetMinimumLevel(LogLevel.Information))
-                                       .CreateLogger("llm-service");
-            var host = new agent.llamalocal.LlmServiceHost(
-                logger, sockPath, chatPath, bgePath,
-                contextSize: 4096, gpuLayers: 0, backendMode: LlamaBackendMode.Auto);
-            var cts = new CancellationTokenSource();
-            Console.CancelKeyPress += (_, e) => { e.Cancel = true; cts.Cancel(); };
-            try
-            {
-                await host.RunAsync(cts.Token);
-                return 0;
-            }
-            catch (InvalidOperationException ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return 3;
-            }
         }
 
         var services = new ServiceCollection();
