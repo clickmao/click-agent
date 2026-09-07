@@ -1,0 +1,216 @@
+{
+ "round": "mass_222",
+ "label": "R126 batch37 steady",
+ "ts": "2026-09-07T13:08:25+0800",
+ "cases": 5,
+ "passed": 5,
+ "tokens_total": 3733,
+ "prompt_total": 2173,
+ "completion_total": 1560,
+ "wall_total_ms": 115059,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选取基准元素将数组划分为较小和较大两部分、再递归排序各部分的分治排序算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 12185,
+   "points": 19,
+   "llm_calls": 1,
+   "prompt_tokens": 389,
+   "completion_tokens": 37,
+   "total_tokens": 426,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41518095082488204
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 10893,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/87tok/r0.8rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 234,
+   "from_cache": false,
+   "prompt_total_tokens": 541,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 408
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "结论：默认推荐 Milvus（自托管、大规模首选）或 Pinecone（托管、快速上线）；已用 PostgreSQL 且规模百万级以内可直接用 pgvector。\n\n关键对比：\n· **Milvus**：开源、支持十亿级向量、分布式架构，运维成本较高\n· **Qdrant**：Rust 实现、性能好，支持混合检索，社区活跃\n· **Pinecone**：全托管免运维、按量付费，数据需出本地\n· **pgvector**：复用现有 PG、零新增组件，适合中小规模\n· **Weaviate**：内置向量化模块与 GraphQL 接口，模块化强\n\n选型核心维度：数据规模、QPS/延迟要求、标量过滤需求、部署方式（自托管 vs SaaS）、成本预算。\n\n如需精确推荐，请告知你的数据规模与部署偏好（自托管/云托管）？默认按“百万级、自托管优先”给出上述结论；如需完整版对比报告（含性能基准、价格明细）",
+   "wall_ms": 33098,
+   "points": 19,
+   "llm_calls": 1,
+   "prompt_tokens": 460,
+   "completion_tokens": 1057,
+   "total_tokens": 1517,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4271060887559994
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 31778,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:1snip/69tok/r0.32rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/138tok/r0.87rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 238,
+   "from_cache": false,
+   "prompt_total_tokens": 705,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 1573
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (6389ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 7990,
+   "points": 6,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 6389,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": null,
+   "bge_ms": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "一句话结论：索引通过预构建的有序数据结构（如 B+ 树），把查询从“逐行扫描全表”变成“沿树快速定位”，复杂度从 O(n) 降到 O(log n)。\n\n关键原因：\n· **有序结构快速定位**：B+ 树查找只需沿树走几层即可锁定目标行，避免全表逐行比对。\n· **大幅减少磁盘 I/O**：树高通常仅 3~4 层，只需读少量数据页；而全表扫描要读所有数据页，I/O 是查询的主要瓶颈。\n· **支持范围查询与排序**：叶子节点有序且链表相连，范围查询和 ORDER BY 可直接按序遍历，无需额外排序。",
+   "wall_ms": 44081,
+   "points": 21,
+   "llm_calls": 1,
+   "prompt_tokens": 733,
+   "completion_tokens": 443,
+   "total_tokens": 1176,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40487451681990605
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 42894,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 6,
+   "sources_recall": "Memory:2snip/512tok/r0.55rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/98tok/r0.77rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 25147,
+   "from_cache": false,
+   "prompt_total_tokens": 1045,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 708
+  },
+  {
+   "id": "C11_json_format",
+   "input": "用JSON格式返回：字段name填fastapi，字段lang填python，只返回JSON不要其他文字",
+   "pass": true,
+   "notes": [],
+   "reply": "{\n  \"name\": \"fastapi\",\n  \"lang\": \"python\"\n}",
+   "wall_ms": 17705,
+   "points": 20,
+   "llm_calls": 1,
+   "prompt_tokens": 591,
+   "completion_tokens": 23,
+   "total_tokens": 614,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.3732391006324334
+    }
+   ],
+   "skill_force": null,
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 16803,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:1snip/241tok/r0.45rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/93tok/r0.9rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 10132,
+   "from_cache": false,
+   "prompt_total_tokens": 841,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 211
+  }
+ ]
+}
