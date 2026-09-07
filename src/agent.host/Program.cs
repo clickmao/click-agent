@@ -29,6 +29,7 @@ internal class Program
         string? officialKey = null; // v7.15 需求1: 官方通道 key (CLI 传递, 内存态, 永不落盘)
         var smoke = args.Length == 0 || args.Contains("--smoke");
         var outputMode = agent.output.OutputMode.Markdown;
+        string? embedText = null;
         for (var i = 0; i < args.Length; i++)
         {
             if (args[i] == "--log" && i + 1 < args.Length)
@@ -41,6 +42,24 @@ internal class Program
                 outputMode = args[++i] == "text"
                     ? agent.output.OutputMode.PlainText
                     : agent.output.OutputMode.Markdown;
+            else if (args[i] == "--embed" && i + 1 < args.Length)
+                embedText = args[++i];
+        }
+
+        // R136 (D4 reply_rel 基础设施): --embed 直连 BgeEmbedder 输出向量 JSON —
+        // harness 离线算 (question, reply) 余弦, 不走 LLM/DI 全链。模型缺失 → exit 3 + stderr (诚实失败)。
+        if (embedText is not null)
+        {
+            var modelPath = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_BGE_MODEL");
+            if (string.IsNullOrEmpty(modelPath) || !File.Exists(modelPath))
+            {
+                Console.Error.WriteLine("embed_model_missing");
+                return 3;
+            }
+            using var embedder = new agent.llamalocal.BgeEmbedder(modelPath);
+            var vec = await embedder.EmbedAsync(embedText, CancellationToken.None);
+            Console.WriteLine("[" + string.Join(",", vec.Select(v => v.ToString("R", System.Globalization.CultureInfo.InvariantCulture))) + "]");
+            return 0;
         }
 
         var services = new ServiceCollection();
