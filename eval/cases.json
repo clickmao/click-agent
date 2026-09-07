@@ -131,7 +131,8 @@
     ],
     "expect": {
       "llm": true,
-      "note": "轮1锚 goal → 轮2 无关话题应触发隔离 (subagent isolated=true)"
+      "note": "轮1锚 goal → 轮2 无关话题应触发隔离 (subagent isolated=true)",
+      "isolated_true": true
     }
   },
   {
@@ -143,7 +144,8 @@
     ],
     "expect": {
       "llm": true,
-      "note": "轮2 pivot 重锚 → 不应被隔离误吞, 应产出新任务链"
+      "note": "轮2 pivot 重锚 → 不应被隔离误吞, 应产出新任务链",
+      "pivot_reanchor": true
     }
   },
   {

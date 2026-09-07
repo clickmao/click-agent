@@ -212,6 +212,16 @@ def check_expect(case, reply, agg, raw_tail):
     if exp.get("cmd_json") and "min_models" in exp:
         n = len(re.findall(r'"[iI]d"\s*:', reply))
         req(n >= exp["min_models"], f"models {n} < {exp['min_models']}")
+    # v0.11.0 R149 (用户质疑核实: TaskRelevance 判定空心): C14/C15 既往 expect 只有 llm:true —
+    # "隔离是否真的发生"从未绑定到 pass, 通过率对 TaskRelevanceChecker 无证明力 (判定空心)。
+    # 补真实断言族: isolated_true/false 消费 telemetry isolated 打点, pivot_reanchor 消费回复。
+    if "isolated_true" in exp:
+        req(agg["isolated"] is True, f"isolated={agg['isolated']} (score={agg['isolated_score']}) want True")
+    if "isolated_false" in exp:
+        req(agg["isolated"] is not True, f"isolated={agg['isolated']} (score={agg['isolated_score']}) want False")
+    if "pivot_reanchor" in exp:
+        req(agg["isolated"] is not True, f"pivot 轮被隔离误吞 (isolated={agg['isolated']} score={agg['isolated_score']})")
+        req(len(reply) >= 10, f"pivot 后回复过短 ({len(reply)}ch, 未产出新任务链)")
     # v0.11.0 R93: JSON 格式返回校验器 (用户注意点 1 — 格式正确性额外打点):
     if "json_valid" in exp or "json_fields" in exp:
         parsed, jerr = try_parse_json_reply(reply or "")
@@ -299,7 +309,9 @@ def main():
         # v0.11.0 R143 (用户钦定): quick 5→10 + 广泛度扩展 — 5 关键 + 5 多样性
         # (记忆 C07 / 敏感 C13 / 幻觉诱饵 C17 / 格式陷阱 C18 / skill 身份 C04):
         # 每批覆盖 10/19 用例 → 记忆链/负面族/skill 链进常态采集, 不再只在全量批可见。
-        keep = ("C01", "C03", "C04", "C06", "C07", "C08", "C11", "C13", "C17", "C18")
+        # v0.11.0 R149 (用户质疑 TaskRelevance 覆盖空心): quick 10→11 — C14 隔离用例进常态
+        # (isolated_true 断言绑定后, TaskRelevanceChecker 每批真实验证, 健康带口径随之 quick-11)。
+        keep = ("C01", "C03", "C04", "C06", "C07", "C08", "C11", "C13", "C14", "C17", "C18")
         all_cases = [c for c in all_cases if c["id"].startswith(keep)]
     cases = all_cases
     env = load_env()
@@ -417,7 +429,8 @@ def main():
     # 口径分带: full-19 (批50 基线) vs quick-10 (R143 扩容: 5 关键+5 多样性含负面/skill/记忆)
     # quick-10 估 tok/case ≈ 780 (批49 全量 per-case 推导); wall 上限放宽 (C13/C17 LLM 用例拖尾)
     if len(results) <= 12:
-        KPI = {"tokens_per_case": (600, 1100), "wall_per_case_ms": (8000, 40000)}
+        # R149: quick-11 口径 (+C14 repl 双轮) — tok 均值摊薄带不变; C14 双 LLM 轮 wall 拖尾 → 上限 40→55s
+        KPI = {"tokens_per_case": (600, 1100), "wall_per_case_ms": (8000, 55000)}
     else:
         KPI = {"tokens_per_case": (900, 1300), "wall_per_case_ms": (12000, 45000)}
     breaches = []
