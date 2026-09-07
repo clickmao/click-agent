@@ -98,3 +98,11 @@
 - **意图指数**: n=4, ms_avg=0.2, dist={'general': 4}
 - **per-case**: C01_general_qa 482tok 8.0s Δ+19 | C03_subtask 1923tok 52.0s Δ+333 | C06_executive_unit_convert 0tok 4.3s | C08_reasoning 1095tok 14.5s Δ-128 | C11_json_format 701tok 7.8s Δ+36
 
+## mass_272 — R143 batch56 quick-10 expanded-coverage (2026-09-07T17:26:23+0800)
+
+- **判定**: 10/10 passed, tokens_total=9024 (avg 902), wall=153423ms (avg 15.3s)
+- **KPI**: in-band (基准轮数 0)
+- **防漂移指数**: segments=4, drift_pass=1.0, semantic_avg=0.996, chars_ratio=0.951
+- **意图指数**: n=8, ms_avg=0.1, dist={'general': 6, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 531tok 7.2s | C03_subtask 1929tok 26.6s | C04_skill_identity 0tok 4.7s | C06_executive_unit_convert 0tok 4.3s | C07_memory_followup 671tok 17.1s | C08_reasoning 1307tok 14.2s | C11_json_format 681tok 7.9s | C13_git_sensitive 2172tok 50.8s | C17_neg_hallucination_bait 987tok 11.6s | C18_neg_format_trap 746tok 9.0s
+

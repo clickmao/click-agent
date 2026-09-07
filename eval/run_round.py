@@ -296,7 +296,10 @@ def main():
     all_cases = json.load(open("eval/cases.json"))
     if quick:
         # v0.11.0 R94: quick 4→5 — 加 C11 JSON 格式哨兵 (每批产出格式合规率, PGO 新维度)
-        keep = ("C01", "C03", "C06", "C08", "C11")
+        # v0.11.0 R143 (用户钦定): quick 5→10 + 广泛度扩展 — 5 关键 + 5 多样性
+        # (记忆 C07 / 敏感 C13 / 幻觉诱饵 C17 / 格式陷阱 C18 / skill 身份 C04):
+        # 每批覆盖 10/19 用例 → 记忆链/负面族/skill 链进常态采集, 不再只在全量批可见。
+        keep = ("C01", "C03", "C04", "C06", "C07", "C08", "C11", "C13", "C17", "C18")
         all_cases = [c for c in all_cases if c["id"].startswith(keep)]
     cases = all_cases
     env = load_env()
@@ -395,9 +398,10 @@ def main():
     wall_base = _hist_delta("wall_ms")
     # KPI 健康带 (D2): R139 重校准 — 批50 (mass_266) 19 用例新口径首批基线 (1100tok/case)。
     # 旧带 (500,950) 为 17 用例口径, 19 用例含 C16 长会话+C17/C18 负面必越界 (口径切换非劣化)。
-    # 口径分带: full-19 (批50 基线) vs quick-5 (批42-49 基线 ~740tok/case, wall 12-18s)
-    if len(results) <= 8:
-        KPI = {"tokens_per_case": (550, 950), "wall_per_case_ms": (8000, 35000)}
+    # 口径分带: full-19 (批50 基线) vs quick-10 (R143 扩容: 5 关键+5 多样性含负面/skill/记忆)
+    # quick-10 估 tok/case ≈ 780 (批49 全量 per-case 推导); wall 上限放宽 (C13/C17 LLM 用例拖尾)
+    if len(results) <= 12:
+        KPI = {"tokens_per_case": (600, 1100), "wall_per_case_ms": (8000, 40000)}
     else:
         KPI = {"tokens_per_case": (900, 1300), "wall_per_case_ms": (12000, 45000)}
     breaches = []

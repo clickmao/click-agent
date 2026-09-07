@@ -3,8 +3,8 @@
 [![ci](https://github.com/clickmao/click-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/clickmao/click-agent/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)
-![Tests](https://img.shields.io/badge/tests-386%2F386-brightgreen)
-![Eval](https://img.shields.io/badge/thousand--round%20eval-872%2F873-success)
+![Tests](https://img.shields.io/badge/tests-389%2F389-brightgreen)
+![Eval](https://img.shields.io/badge/thousand--round%20eval-1034%2F1056-success)
 ![NativeAOT](https://img.shields.io/badge/NativeAOT-zero%20warnings-blueviolet)
 
 > CI workflow file is ready (`.github/workflows/ci.yml`); badge activates once pushed with a `workflow`-scoped token.
@@ -29,6 +29,14 @@ Release line: v0.11.0 — unified @cmd command protocol + 3 transports / Skill e
 - **/forecast**: next-turn forecast surfaced to frontend
 - **SKILL.md packages**: Anthropic Agent-Skills Open Standard loader (dir name = front-matter name) + 2 example packages
 
+### 🆕 R133-R142 Additions (5-KPI full observability)
+- **K1 question-probability link fixed & deepened** (defect 55): UserTendency aggregation break (max-merge + max-conf) — 0→1 snippet; profile snippet made actionable (4→11 tok behavioral hints, A/B diff verified)
+- **K4 SKILL blind spot closed**: skill_match (top1/precision/runner_up_gap) + skill_trigger decisions + dual-low suppression loop (batch 45: 4/5 false absorptions suppressed)
+- **K3 semantic quality D4**: reply_rel (bge 512-dim cosine, --embed subcommand) + tiered thresholds (template 0.3 / LLM 0.5)
+- **Negative cases 21%**: N5 hallucination bait C17 (must_not_contain anti-fabrication) + N4 format trap C18; batch 50 full 19/19
+- **Anti-drift & intent indices in reports**: compression_index + intent_index — R142 historical gap close
+- **D2 health-band split**: quick-5 / full-19 independent bands, batch 53 in-band
+
 ### 🆕 R103-R127 Additions (thousand-round loop)
 - **PGO-style full-chain telemetry**: 12+ point types (intent / assembly 8-source recall / llm_call / skill / loop_turn / isolated / tendency / balance_sync / compression / bge_embed / sensitive), JSONL landing + pre-Configure pending ring (R121) + DroppedTotal loss visibility — every optimization round is driven by telemetry deltas
 - **3 real-key balance chain E2E**: deepseek real balance query (9.02→7.61 CNY) / threshold switching live-fire (MIN_BALANCE=100 → deepseek $1.25 insufficient → switched to glm) / honest provider_not_supported for glm / honest error for kimi negative sample
@@ -38,8 +46,8 @@ Release line: v0.11.0 — unified @cmd command protocol + 3 transports / Skill e
 - **Dual-LLM cross validation**: cross_validate (glm+deepseek agree=true)
 
 ### 📊 Thousand-Round Eval (PGO-driven)
-- **872/873 = 99.89%** case pass (184 rounds landed); quick-batch tokens **7354 → ~3671 (-50%)**; C08 reasoning completion **1875 → 479 (-74%)**; 52 real defects fixed, all telemetry-driven.
-- Batch trend (26-39): 3623/4024/4248/4106/3636/3656/3855/3597/4145/4035/3778/3765/3709/3671 — 14 batches × 25 cases all green, no upward drift.
+- **1034/1056 = 97.92%** case pass (215 rounds landed); quick-batch tokens **7354 → ~3969 avg**; C08 reasoning completion **1875 → 479 (-74%)**; 55 real defects fixed, all telemetry-driven.
+- Batch trend (42-55, quick-5): 4271/3875/4169/4182/3734/3673/4130/3408/4941/3473/3683/4201 — 12 batches all green, KPI in-band.
 - Full report: [Thousand-Round Report](docs/reports/thousand-round-report.md) · ledger: [wave3-ledger](docs/reports/wave3-ledger.md)
 
 ### 🧭 Full Capability Panorama (v0.11.0)
@@ -219,7 +227,7 @@ click-agent/
 │   ├── agent.rag/           # RAG recall
 │   ├── agent.vectormemory/  # Vector memory
 │   ├── agent.workspace/     # Workspace
-│   └── agent.tests/         # 386 tests
+│   └── agent.tests/         # 389 tests
 └── docs/                    # Architecture/API/improvement records/plans
 ```
 
@@ -228,9 +236,9 @@ click-agent/
 | Item | Result |
 |---|---|
 | Compilation (--no-incremental) | 0 errors 0 warnings |
-| Tests | 386/386 Passed |
+| Tests | 389/389 Passed |
 | NativeAOT (linux-x64) | 0 IL/TR warnings (re-verified 6x) + AOT smoke pass |
-| Thousand-round eval | 872/873 = 99.89% (184 rounds landed) |
+| Thousand-round eval | 1034/1056 = 97.92% (215 rounds landed) |
 | Real 3-endpoint E2E | glm/deepseek chat+balance OK; kimi negative sample honest error |
 | Threshold switching | live-fire proven (deepseek $1.25 → glm) |
 | bge real chain | JIT+AOT dual acceptance (dim512, 282ms) |
@@ -240,21 +248,22 @@ click-agent/
 - [Architecture Document](docs/architecture.md)
 - [API Document](docs/api.md)
 - [CLI Command Instructions](docs/CLI指令说明.md) — All commands + agent.io line protocol (requirement 2)
+- [Iteration Master Plan](docs/reports/iteration-master-plan.md) — methodology: constitution / 5 KPI / triggers / negative-data design / authenticity defenses (living doc)
+- [Main Report · Dynamic Telemetry & Rollback](docs/reports/dynamic-telemetry-eval-rollback-strategy.md) — status layer (living doc, updated per round)
+- [Test Dimensions Ledger](docs/reports/test-dimensions-ledger.md) — 15-dimension panorama + negative family + anti-forgetting policy
 - [Improvement Records](docs/improvements.md) — historical release notes & plan archive
-- [Task Loop](docs/task_loop.md)
+- [Task Loop](docs/task_loop.md) · Historical plans: docs/archive/
 
 ### 🗺 Next Development Plan (v0.11.0)
 
-> Historical plan (v7.15 ten nodes - all landed) archived in [improvements.md](docs/improvements.md); per-module design details in docs/plan_*.md.
+> Historical plan (v7.15 ten nodes - all landed) archived in [improvements.md](docs/improvements.md); per-module design details in docs/archive/.
 
-1. **Chatbox panel extension (optional)**: io protocol output (`@chatbox:` lines) already covers CLI/script integration; WebSocket host only if a browser panel is needed (IChatboxSink unchanged)
-2. **Balance-threshold switching E2E**: TokenUsageService balance linkage unit-tested; needs real API key end-to-end switching + `flags:balance-insufficient` frontend hint
-3. **Skill executive script dispatch**: SKILL.md package `scripts/` directory execution wiring into SkillExecutor (parsing/sandbox/timeout done, script process scheduling missing)
-4. **Context compression P3 vectorization**: L1 summaries/clustering onto BgeEmbedder real vectors (P1 rule version landed; bge already wired into Skill semantic matching)
-5. **Model catalog verify completion**: full 6-model real-device verification (api.openai.com RST on this network, retest via proxy)
-6. **Open-source release polish** (code pushed @ 387bfb1): LICENSE file/CI workflows/badges/condensed English README
+1. **K1 effect closed loop**: profile-driven reply-quality diff (with/without persona rel comparison) — snippet actionable since R141, LLM behavioral benefit pending verification
+2. **Batch 56+ thousand-round loop** (quick-10 expanded coverage) + semantic_avg tier observation + per-5-batch audit
+3. **K4 long-horizon watch**: skill false-absorption suppression stability + negative-family expansion (8-class checklist toward 25%)
+4. **Real-GPU Vulkan test** (needs real GPU; llvmpipe only on this host)
 
-> **Current baseline (R127)**: 386/386 tests green / Release build 0 warnings 0 errors / NativeAOT 0 IL warnings / thousand-round eval 99.89% — next: PGO v2 dynamic telemetry (D1-D5), batch 40+, boundary fuzz cases, 10+ turn long sessions, real-GPU Vulkan test.
+> **Current baseline (R142)**: 389/389 tests green / NativeAOT 0 IL warnings / thousand-round eval 97.92% (215 rounds) / 5-KPI full observability — next: K1 effect verification (profile-driven reply diff), semantic_avg tier observation, negative-family expansion.
 
 ## Configuration
 

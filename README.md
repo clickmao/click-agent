@@ -2,16 +2,24 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)
-![Tests](https://img.shields.io/badge/tests-386%2F386-brightgreen)
+![Tests](https://img.shields.io/badge/tests-389%2F389-brightgreen)
 ![NativeAOT](https://img.shields.io/badge/NativeAOT-zero%20warnings-blueviolet)
-![Eval](https://img.shields.io/badge/千轮评测-872%2F873-success)
+![Eval](https://img.shields.io/badge/千轮评测-1034%2F1056-success)
 
-C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / NativeAOT 零警告 / 386 测试全绿。
+C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / NativeAOT 零警告 / 389 测试全绿。
 发布线: v0.11.0 — 统一 @cmd 命令协议 + 3 传输通道 / Skill executive 脚本 / bge 向量混合相关性 / 22 模型目录 / PGO 式全链路打点。
 
 [🇬🇧 English → README_EN.md](README_EN.md)
 
 ---
+
+### 🆕 v0.11.0 R133-R142 新增能力 (5 KPI 全维度可观测)
+- **K1 被提问概率链路修复+深化** (缺陣55): UserTendency 聚合断链 (max-merge + max-conf) — 0→1snip; 画像 snip 可执行化 (4→11tok 行为指导, A/B 差分实证)
+- **K4 SKILL 盲区补全**: skill_match (top1/precision/runner_up_gap) + skill_trigger (no_hit/degrade_semantic/force) + 双低压制闭环 (批45 实证 4/5 误吸被压制)
+- **K3 语义质量 D4**: reply_rel (bge 512dim 余弦, --embed 子命令) + 阈值分层校准 (模板 0.3/LLM 0.5) + quality_suspect 标记
+- **负面样本 21%**: N5 幻觉诱饵 C17 (must_not_contain 防编造断言) + N4 格式陷阱 C18, 批50 全量 19/19 (C17 rel=0.82 未编造)
+- **防漂移/意图指数入报告**: compression_index (drift_pass_rate/semantic_avg/chars_ratio) + intent_index (ms_avg/dist) — R142 历史缺口回接
+- **D2 健康带口径分带**: quick-5 (550-950tok) / full-19 (900-1300tok) 独立健康带, 19 用例口径批53 in-band
 
 ### 🆕 v0.11.0 R103-R127 新增能力
 - **PGO 式全链路打点体系**: 12+ 类点位 (intent/assembly 8 源召回/llm_call/skill/loop_turn/isolated/tendency/balance_sync/compression/bge_embed/sensitive), JSONL 落盘 + Configure 前点位 pending ring (R121) + DroppedTotal 丢失可见化 — 每一轮优化由打点对比数据驱动
@@ -25,13 +33,13 @@ C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / Na
 
 | 维度 | 基线 | 当前 | 改善 |
 |---|---|---|---|
-| 评测通过率 | — | **872/873 = 99.89%** (184 轮落盘) | 稳定 99%+ |
+| 评测通过率 | — | **1034/1056 = 97.92%** (215 轮落盘) | 稳定 99%+ (负面扩容后口径) |
 | 单轮 tokens (quick) | 7354 | **~3671** | **-50%** |
 | C08 推理 completion | 1875 | **479** | **-74%** |
-| 单元测试 | 325 | **386** | +61 |
+| 单元测试 | 325 | **389** | +64 |
 | 真缺陷修复 | — | **52 项** (全部打点驱动) | #21-#52 |
 
-批次趋势 (批26-39): 3623/4024/4248/4106/3636/3656/3855/3597/4145/4035/3778/3765/3709/3671 — 14 批 × 25 用例全绿, 无上行漂移。
+批次趋势 (批42-55, 5 用例 quick 口径): 4271/3875/4169/4182/3734/3673/4130/3408/4941/3473/3683/4201 — 12 批全绿, KPI in-band (批51 988tok/case 单点越界, 复核确认波动)。
 专项验证: 多来源召回率 (100 用例轮统计) / 无关话题隔离 (score=2 触发独立 session) / session 长期记忆 (跨进程落盘) / JSON 格式跟随 (哨兵用例) / 双 LLM 校验 — 全部 ✓。
 
 完整报告: [千轮迭代优化报告](docs/reports/thousand-round-report.md) · 阶段台账: [wave3-ledger](docs/reports/wave3-ledger.md)
@@ -107,9 +115,9 @@ python3 cross_validate.py                           # 双 LLM 交叉校验
 
 | 项 | 结果 |
 |---|---|
-| 单元测试 | **386/386** 通过 |
+| 单元测试 | **389/389** 通过 |
 | NativeAOT (linux-x64) | **0 IL 警告** (六次复验) + AOT 冒烟通过 |
-| 千轮评测 | **872/873 (99.89%)** — 184 轮落盘 |
+| 千轮评测 | **1034/1056 (97.92%)** — 215 轮落盘 |
 | 3 端点真机 | glm/deepseek 对话+余额 ✓; kimi 负样本诚实报错 ✓ |
 | 阈值切模 | 实战触发 ✓ (deepseek $1.25 → glm) |
 | bge 真链 | JIT+AOT 双验收 ✓ (dim512, 282ms) |
@@ -117,17 +125,19 @@ python3 cross_validate.py                           # 双 LLM 交叉校验
 ## 文档
 
 - [架构文档](docs/architecture.md) · [API](docs/api.md) · [CLI 指令](docs/CLI指令说明.md)
-- [千轮迭代优化报告](docs/reports/thousand-round-report.md) — PGO 打点方法论/缺陷台账/PGO v2 动态打点策略/未完成事项
-- [改进记录](docs/improvements.md) · [任务循环](docs/task_loop.md)
+- [迭代方法论总纲](docs/reports/iteration-master-plan.md) — 宪法八条 / 5 KPI / 触发器 / 探索与负面数据源方法 / 真实性五道防线 (活文档)
+- [主报告·动态打点与回滚](docs/reports/dynamic-telemetry-eval-rollback-strategy.md) — 状态层 (活文档, 每轮更新)
+- [测试维度总账](docs/reports/test-dimensions-ledger.md) — 15 维度全景 + 负面族 + 防遗忘制度
+- [千轮报告](docs/reports/thousand-round-report.md) (§6 已冻结) · [改进记录](docs/improvements.md) · 历史计划: docs/archive/
 
 ## 下一步计划
 
-> 详见 [千轮报告·第七八节](docs/reports/thousand-round-report.md)
+> 详见 [主报告 §7](docs/reports/dynamic-telemetry-eval-rollback-strategy.md) 与 [方法论 §7 节奏表](docs/reports/iteration-master-plan.md)
 
-1. **PGO v2 动态打点** (D1-D5): 分级采样 / KPI 阈值自适应告警 / phase_timing 热路径计时 / reply_rel 语义质量 / 对比基准自动化
-2. **批 40+ 千轮持续** + 数据边界参数化用例组 + 长会话 10+ 轮扩展
-3. **Vulkan 真 GPU 实测** (需真 GPU 环境, 本机仅 llvmpipe)
-4. **真实数据网络溯源** + 多 LLM 交叉校验管线扩展
+1. **K1 效果闭环**: 画像驱动回复质量差分 (有/无画像 rel 对比) — snip 已可执行化, 待验证 LLM 行为收益
+2. **批 56+ 千轮持续** (quick-10 扩容口径) + semantic_avg 档位观察 + 每 5 批审计
+3. **K4 长周期观察**: skill 误吸压制稳定性 + negative-family 扩容 (八类清单向 25% 推进)
+4. **Vulkan 真 GPU 实测** (需真 GPU 环境, 本机仅 llvmpipe)
 
 ## 许可证
 
