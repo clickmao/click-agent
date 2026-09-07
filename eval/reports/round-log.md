@@ -36,3 +36,15 @@
 - **KPI**: in-band (基准轮数 5)
 - **per-case**: C01_general_qa 466tok 8.3s Δ-12 | C03_subtask 1798tok 44.1s Δ+278 | C06_executive_unit_convert 0tok 4.2s | C08_reasoning 1256tok 16.9s Δ+53 | C11_json_format 662tok 8.0s Δ-51
 
+## mass_262 — R136 batch46 D4 reply_rel first (2026-09-07T16:16:49+0800)
+
+- **判定**: 5/5 passed, tokens_total=3734 (avg 747), wall=66019ms (avg 13.2s)
+- **KPI**: in-band (基准轮数 5)
+- **per-case**: C01_general_qa 538tok 7.9s Δ+49 | C03_subtask 1278tok 30.2s Δ-334 | C06_executive_unit_convert 0tok 4.2s | C08_reasoning 1085tok 16.5s Δ-207 | C11_json_format 833tok 7.2s Δ+120
+
+## mass_263 — R136 batch47 D4 calibrated (2026-09-07T16:18:30+0800)
+
+- **判定**: 5/5 passed, tokens_total=3673 (avg 735), wall=63328ms (avg 12.7s)
+- **KPI**: in-band (基准轮数 5)
+- **per-case**: C01_general_qa 457tok 7.5s Δ-22 | C03_subtask 1444tok 20.1s Δ-104 | C06_executive_unit_convert 0tok 4.2s | C08_reasoning 1118tok 24.0s Δ-214 | C11_json_format 654tok 7.5s Δ-62
+

@@ -304,3 +304,10 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - 批44 信号 (T2 触发): 泛查询 top1=identity prec 0.37-0.43 & gap 0.02-0.07 全靠 degrade_semantic 兜底 → 压制阈值 prec<0.45 && gap<0.10 → decision=low_confidence 直接跳过
 - 批45 (mass_261) 5/5 4182tok (+0.3% K2 中性) 389 绿 — 4/5 low_confidence 生效, C06 level=2 强判别不受影响
 - K4 现状: 期望 skill 用例 (C04/C05) force 路径已有断言; 泛查询误吸率从"隐藏"变为可观测可治理
+
+### R136: D4 reply_rel 语义质量打点落地 (K3 从"部分"转"可观测") + 新 token 生效
+- 基础设施: agenthost --embed 子命令 (BgeEmbedder 直连 512dim JSON, 模型缺失 exit3 诚实失败; cos 自测 0.853/0.222)
+- harness: 批后离线 (question,reply) 余弦 → reply_rel 字段; <阈值 → quality_suspect
+- 校准 (批46→47): executive 模板回复结构性低余弦假阳性 (C06 0.436) → 阈值分层 模板0.3 / LLM 0.5
+- 批47 (mass_263): 5/5 3673tok, rel 分布 0.436-0.827, 0 suspect — K3 口径就绪
+- 推送链: 7deaf94 (新 ghp token 首用, [REDACTED] 零残留)
