@@ -541,7 +541,6 @@ Interlocked.Increment(ref _cacheMisses);
         return (best, bestHits);
     }
 
-    private long? _sourceStopwatch;
 
     private async Task<List<ContextSnippet>> RecallFromMemoryAsync(
         ContextAssemblyRequest request,
