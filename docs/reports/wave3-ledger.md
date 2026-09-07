@@ -293,3 +293,9 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - **根因**: AgentTelemetry pending ring 上限 32 太小 — R129 D3 后 ContextAssemblerTests phase_timing 打点 (≥27) + R133 tendency 写入 (15) 并行灌满 ring, Configure 前 Emit 被丢
 - **修复**: ①ring 32→256 (产品运行 Configure 启动即调, ring 极少超 32; 放宽仅影响极端并发, 丢点计数仍可见) ②recall_tendency 打点加 bias!=null 守卫 (mock 测试零 Emit) ③TendencySignalFilterTests GetContextBias 用例改直接落盘构造 (0 Emit)
 - **验证**: 389 测试 6/6 连续全绿; AOT publish 0 IL 警 + full-graph smoke OK
+
+### R134: K4 SKILL 调用准确性盲区补全 (5 KPI 第 4 维度点亮)
+- 新点位: skill_match (top1/level/precision/runner_up_gap/candidates 候选质量) + skill_trigger (no_hit/degrade_semantic/force 决策) — 立项卡 T5/K4
+- harness: skill_match/skill_decisions 入轮 JSON per-case; K4 口径 = 期望 skill 用例的 force 命中率 + 泛查询误吸率 (degrade_semantic 频率)
+- 批42/43 波折: sibling 会话并行 commit 覆盖工作区未提交 patch (K4 两度丢失) → 教训: 单仓多会话必须小步 commit; 批44 (mass_260) 5/5 4169tok in-band K4 数据首通
+- K4 首批信号: 泛查询 top1=identity_statement (prec 0.37-0.43, gap 0.02-0.07) 全部 degrade_semantic 正确降级; C06 unit-convert level=2 prec 0.6 gap 0.18 强判别
