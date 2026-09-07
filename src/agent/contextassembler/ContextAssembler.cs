@@ -799,14 +799,24 @@ Interlocked.Increment(ref _cacheMisses);
             if (bias != null && bias.OverallConfidence > 0.3)
             {
                 var content = new System.Text.StringBuilder();
-                content.AppendLine("### User Preferences");
+                content.AppendLine("### User Profile (from history, for personalization)");
                 
                 if (bias.BiasScores.Any())
                 {
-                    content.AppendLine("**Detected Preferences:**");
-                    foreach (var kvp in bias.BiasScores.OrderByDescending(x => x.Value).Take(5))
+                    // v0.11.0 R141 (K1 深化): 百分比列表对 LLM 无指导意义 —
+                    // 升级为可执行行为指导 (主题→行为映射), A/B 差分实证 snip 仅 4-6tok 时 LLM 收益≈0。
+                    content.AppendLine("**Observed interests (user frequently works with these):**");
+                    foreach (var kvp in bias.BiasScores.OrderByDescending(x => x.Value).Take(3))
                     {
-                        content.AppendLine($"- {kvp.Key}: {kvp.Value:P0}");
+                        var hint = kvp.Key switch
+                        {
+                            "Python" or "python" => "prefers Python examples when giving code",
+                            "Web API" or "api" => "often builds/Tests Web APIs — include endpoint examples",
+                            "C#" or "csharp" or ".NET" => "prefers C#/.NET examples when giving code",
+                            "test" or "测试" => "values testing — include test snippets where relevant",
+                            _ => $"recently focused on {kvp.Key}",
+                        };
+                        content.AppendLine($"- {kvp.Key} ({kvp.Value:P0} of recent activity): {hint}");
                     }
                 }
                 
