@@ -162,3 +162,19 @@
 - **意图指数**: n=8, ms_avg=0.1, dist={'general': 6, 'git_operation': 1, 'search': 1}
 - **per-case**: C01_general_qa 478tok 8.1s Δ+27 | C03_subtask 1768tok 26.6s Δ+351 | C04_skill_identity 0tok 4.7s | C06_executive_unit_convert 0tok 4.2s | C07_memory_followup 531tok 9.2s Δ-17 | C08_reasoning 1541tok 32.5s Δ+325 | C11_json_format 857tok 7.4s Δ+193 | C13_git_sensitive 1359tok 24.4s Δ+446 | C17_neg_hallucination_bait 788tok 12.9s Δ-16 | C18_neg_format_trap 675tok 14.8s Δ-29
 
+## mass_280 — R147 batch64 quick-10 regular (2026-09-07T19:03:21+0800)
+
+- **判定**: 10/10 passed, tokens_total=7352 (avg 735), wall=144699ms (avg 14.5s)
+- **KPI**: in-band (基准轮数 10)
+- **防漂移指数**: segments=4, drift_pass=1.0, semantic_avg=None, chars_ratio=0.994
+- **意图指数**: n=8, ms_avg=0.1, dist={'general': 6, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 496tok 9.4s Δ+39 | C03_subtask 1424tok 35.9s Δ-37 | C04_skill_identity 0tok 4.8s | C06_executive_unit_convert 0tok 4.3s | C07_memory_followup 552tok 9.1s Δ+0 | C08_reasoning 1355tok 28.3s Δ+148 | C11_json_format 857tok 7.8s Δ+200 | C13_git_sensitive 1054tok 19.4s Δ+81 | C17_neg_hallucination_bait 820tok 14.4s Δ+73 | C18_neg_format_trap 794tok 11.3s Δ+100
+
+## mass_281 — R147 batch65 five-batch-audit-2 (2026-09-07T19:07:58+0800)
+
+- **判定**: 10/10 passed, tokens_total=8878 (avg 888), wall=138899ms (avg 13.9s)
+- **KPI**: in-band (基准轮数 10)
+- **防漂移指数**: segments=3, drift_pass=1.0, semantic_avg=None, chars_ratio=0.994
+- **意图指数**: n=8, ms_avg=0.1, dist={'general': 6, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 574tok 8.8s Δ+104 | C03_subtask 2298tok 28.8s Δ+658 | C04_skill_identity 0tok 4.7s | C06_executive_unit_convert 0tok 4.3s | C07_memory_followup 552tok 9.4s Δ-3 | C08_reasoning 1233tok 14.1s Δ-114 | C11_json_format 828tok 7.4s Δ+88 | C13_git_sensitive 1721tok 38.7s Δ+569 | C17_neg_hallucination_bait 845tok 10.0s Δ+64 | C18_neg_format_trap 827tok 12.7s Δ+103
+
