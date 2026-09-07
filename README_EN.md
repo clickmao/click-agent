@@ -34,7 +34,7 @@ Release line: v0.11.0 — unified @cmd command protocol + 3 transports / Skill e
 - **R149 TaskRelevance hollow-verdict fix**: C14/C15 bound to isolated_true/pivot_reanchor real assertions + 10 adversarial tests (389→399 green); quick 10→11
 - <details><summary>Full list + batch 56-78 details</summary>
 
-  [docs/CHANGELOG-v0.11.0-R143-R152.md](docs/CHANGELOG-v0.11.0-R143-R152.md)
+  [docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md)
 
   </details>
 
@@ -43,7 +43,7 @@ Release line: v0.11.0 — unified @cmd command protocol + 3 transports / Skill e
 - **R141 profile snippet made actionable**: tendency snip 4→11 tok behavioral hints (A/B diff verified)
 - <details><summary>Full list (4 more: R133-R140)</summary>
 
-  [docs/CHANGELOG-v0.11.0-R133-R142.md](docs/CHANGELOG-v0.11.0-R133-R142.md)
+  [docs/changelogs/CHANGELOG-v0.11.0-R133-R142.md](docs/changelogs/CHANGELOG-v0.11.0-R133-R142.md)
 
   </details>
 
@@ -52,12 +52,12 @@ Release line: v0.11.0 — unified @cmd command protocol + 3 transports / Skill e
 - **R125 balance reconciliation automation**: 7.61 CNY verified, zero extra spend
 - <details><summary>Full list (4 more: R103-R124)</summary>
 
-  [docs/CHANGELOG-v0.11.0-R103-R127.md](docs/CHANGELOG-v0.11.0-R103-R127.md)
+  [docs/changelogs/CHANGELOG-v0.11.0-R103-R127.md](docs/changelogs/CHANGELOG-v0.11.0-R103-R127.md)
 
   </details>
 ### 📊 Thousand-Round Eval (PGO-driven)
 - **1034/1056 = 97.92%** case pass (215 rounds landed); quick-batch tokens **7354 → ~3969 avg**; C08 reasoning completion **1875 → 479 (-74%)**; 55 real defects fixed, all telemetry-driven.
-- Batch trend: **batch77 (mass_293)** 11/11 quick-11 10357tok (941/case) / **batch78 (mass_294)** 11/11 quick-11 10331tok (939/case) — last 37 batches all green, KPI in-band (CV 15.4%, band 600-1100). Full 37-batch details: [docs/CHANGELOG-v0.11.0-R143-R152.md](docs/CHANGELOG-v0.11.0-R143-R152.md). README batch details roll every 30 batches (next: batch108).
+- Batch trend: **batch77 (mass_293)** 11/11 quick-11 10357tok (941/case) / **batch78 (mass_294)** 11/11 quick-11 10331tok (939/case) — last 37 batches all green, KPI in-band (CV 15.4%, band 600-1100). Full 37-batch details: [docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md). README batch details roll every 30 batches (next: batch108).
 - Full report: [Thousand-Round Report](docs/reports/thousand-round-report.md) · ledger: [wave3-ledger](docs/reports/wave3-ledger.md)
 
 ### 🧭 Full Capability Panorama (v0.11.0)

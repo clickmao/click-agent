@@ -18,7 +18,7 @@ C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / Na
 - **R149 TaskRelevance 判定空心修复**: C14/C15 绑定 isolated_true/pivot_reanchor 真断言 + 10 对抗单测 (389→399 绿); quick 10→11
 - <details><summary>完整能力清单 + 批 56-78 全部明细</summary>
 
-  [docs/CHANGELOG-v0.11.0-R143-R152.md](docs/CHANGELOG-v0.11.0-R143-R152.md)
+  [docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md)
 
   </details>
 
@@ -27,7 +27,7 @@ C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / Na
 - **R141 画像 snip 可执行化**: tendency snip 4→11tok 行为指导 (A/B 差分实证)
 - <details><summary>完整能力清单 (K1 断链/K4 盲区/D4 语义质量/负面 21%/健康带分带 等 4 条)</summary>
 
-  [docs/CHANGELOG-v0.11.0-R133-R142.md](docs/CHANGELOG-v0.11.0-R133-R142.md)
+  [docs/changelogs/CHANGELOG-v0.11.0-R133-R142.md](docs/changelogs/CHANGELOG-v0.11.0-R133-R142.md)
 
   </details>
 
@@ -36,7 +36,7 @@ C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / Na
 - **R125 余额对账自动化**: 7.61 CNY 对账零额外消耗 (真 key 余额链持续验证)
 - <details><summary>完整能力清单 (R103-R124 等 4 条)</summary>
 
-  [docs/CHANGELOG-v0.11.0-R103-R127.md](docs/CHANGELOG-v0.11.0-R103-R127.md)
+  [docs/changelogs/CHANGELOG-v0.11.0-R103-R127.md](docs/changelogs/CHANGELOG-v0.11.0-R103-R127.md)
 
   </details>
 
@@ -50,7 +50,7 @@ C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / Na
 | 单元测试 | 325 | **389** | +64 |
 | 真缺陷修复 | — | **55 项** (全部打点驱动) | #21-#55 |
 
-批次趋势: **批80 (mass_296)** 11/11 quick-11 9468tok (860/case, 新低) / **批81 (mass_297)** 11/11 quick-11 10334tok (939/case, D4 reply_rel 修复后恢复 n=11 avg 0.631) — 近 40 批全绿 KPI in-band (健康带 600-1100)。批42-78 明细: [docs/CHANGELOG-v0.11.0-R143-R152.md](docs/CHANGELOG-v0.11.0-R143-R152.md) (批42-65 更早在 R133-R142/R103-R127 归档); 批79-81 见 [docs/reports/wave3-ledger.md](docs/reports/wave3-ledger.md) R153 段。README 批次明细每 30 批滚动更新一次 (下次: 批108)。
+批次趋势: **批80 (mass_296)** 11/11 quick-11 9468tok (860/case, 新低) / **批81 (mass_297)** 11/11 quick-11 10334tok (939/case, D4 reply_rel 修复后恢复 n=11 avg 0.631) — 近 40 批全绿 KPI in-band (健康带 600-1100)。批42-78 明细: [docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md) (批42-65 更早在 R133-R142/R103-R127 归档); 批79-81 见 [docs/reports/wave3-ledger.md](docs/reports/wave3-ledger.md) R153 段。README 批次明细每 30 批滚动更新一次 (下次: 批108)。
 专项验证: 多来源召回率 (100 用例轮统计) / 无关话题隔离 (score=2 触发独立 session) / session 长期记忆 (跨进程落盘) / JSON 格式跟随 (哨兵用例) / 双 LLM 校验 — 全部 ✓。
 
 完整报告: [千轮迭代优化报告](docs/reports/thousand-round-report.md) · 阶段台账: [wave3-ledger](docs/reports/wave3-ledger.md)
