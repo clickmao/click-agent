@@ -99,8 +99,11 @@ def summarize_points(points):
          "intent_ms": None, "llm_ms_total": 0, "phase_llm_ms": None,
          # R142 (用户钦定历史缺口回接): compression 防漂移指数 — 打点 2026-09 R129 起就有,
          # 但 summarize_points 从未消费 → 轮 JSON/报告层不可见 (数据蒸发)。
+         # R151 (真缺陷 56): pivot_n 缺初始化 — C15 pivot_reanchor 全量批一跑即 KeyError
+         # (quick-11 不含 C15 所以 batch75 侥幸通过; 与 R142 compression 同源教训:
+         #  新增打点消费必须同步补 init 键)。
          "compress_n": 0, "compress_drift_ok": 0, "compress_semantic": [],
-         "compress_chars_in": 0, "compress_chars_out": 0}
+         "compress_chars_in": 0, "compress_chars_out": 0, "pivot_n": 0}
     for pt in points:
         kv = pt.get("kv", {}) or {}
         tag = pt.get("point")
