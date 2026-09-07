@@ -183,6 +183,16 @@ def try_parse_json_reply(reply):
         return None, str(e)[:60]
 
 def main():
+    # v0.11.0 R113: -h/--help 防护 — 无位置参数时默认 rnd="baseline" 会真跑全量轮
+    # (2026-09-07 实证: `run_round.py --help` 被 flag 过滤吞掉 → 真跑 baseline 180s 被杀,
+    #  浪费 + 扰动 eval 隔离态)。帮助请求必须零副作用退出。
+    if any(a in ("-h", "--help", "/?") for a in sys.argv[1:]):
+        print(__doc__)
+        print("用法: python3 eval/run_round.py [--quick] <round> [label]")
+        print("  --quick   高频回归模式 (C01/C03/C06/C08/C11 五用例)")
+        print("  <round>   落盘名 (如 mass_118); 无则 baseline")
+        print("  label     账本标签 (如 'R113 batch25 118')")
+        return 0
     # v0.11.0 R110 (真缺陷 43): 单实例互斥 — 遥测路径与轮间清理 (RAG 落盘/会话记忆删除) 是
     # 全仓库全局资源, 并发 runner 互相删除/覆盖对方打点 (2026-09-07 实证: 双 tick 并行 →
     # mass_95/96 假 llm_calls=0 → 假 REVERT, 批 95-100 全 RETIRED)。fcntl 非阻塞独占锁:

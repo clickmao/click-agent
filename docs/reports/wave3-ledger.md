@@ -165,3 +165,9 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - 冒烟 WARN "Success=true without API key" 提示文案与实际 (env key 已加载) 不符 — 观察项, 不修。
 - 批 23 (mass_108-112): 25/25 全绿, **3889 tok (-9.8% vs 批22)** — 批22 4311 确认单批 glm 波动峰值, 连续 3 批 >4100 治理条件未触发。
 - mass_106-107 RETIRED (AOT 强刷删 bin → harness --no-build 环境事故, 非代码; 教训: publish 强刷后必须先 dotnet build CLI 产物再批测)。
+
+### R113: 批 25 + 缺陷 44 (llm-service 双守护互斥绕过) + run_round --help 防护
+- **批 25 (mass_118-122): 25/25 全绿**, 均值 3865 tok (批24 3490, +10.7% 单批波动, mass_119 +18.9% REVIEW 前后轮回落佐证 LLM 波动; 批22 峰值 4311 后下行序列内)。C11 JSON 合规 100% 保持。千轮累计: 25 批 **471/471** (口径内, 99系/95-100系/106-107 RETIRED 除外; 批21 累计371 + 批22 25 + 批23 25 + 批24 25 + 批25 25)。
+- **缺陷 44 (真, 运维实证)**: llm-service **双守护并存互斥绕过** — 两实例 (04:57/05:44 起, 同父 Hermes gateway=并行 tick 各自重启) 同时 LISTEN 同一 sockaddr, 且 fs 上 data/llm.sock inode 与两守护 listen inode 全不符 = 客户端 connect ECONNREFUSED, **服务实际不可达** (IsAlive 探测 stale 文件 false → 新实例删 stale bind 新 inode 成功 → 旧实例孤儿监听)。处置: 杀双实例 + 删 stale sock + 重启单实例 (pid 1139857) → ping/embed(384维)/chat("OK", 6.5s qwen) 全通, fs inode == listen inode 单一归属。**根因未代码修**: bind 后 sock 路径条目被外部删除即触发 (R110 重启协调未覆盖), 观察项, 再发则给 LlmServiceHost 加 bind 后自检 (fs inode == 本进程 listen inode 否则退出)。
+- **run_round.py --help 防护**: 无位置参数默认 rnd="baseline" 且 flag 过滤吞掉 --help → `run_round.py --help` 真跑全量 baseline 180s 被杀 (实测浪费 + 扰动 eval 隔离态)。修: -h/--help/? 零副作用打印用法 exit 0。
+- 守护环境核实: AGENTFRAMEWORK_BGE_MODEL=bge-small-en-v1.5-q4_k_m.gguf (384 维, 与 R102 记录 bge-small-zh 512 维不同 — 模型文件实际仅 en-v1.5 存在, 历史记录偏差, 当前以 env 实证为准)。
