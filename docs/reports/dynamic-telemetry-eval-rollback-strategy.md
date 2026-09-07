@@ -141,13 +141,10 @@ done
 
 ## 7. 迭代状态快照（恢复迭代从这里开始）
 
-- **主线进度**：R138-R145（负面 2→4、健康带分带、K1 snip 可执行化、防漂移/意图指数常态采集、quick 5→10、双轮 doc 审计、D4 记忆阈值校准；详见台账与 git log）。下一轮号 **mass_277**。
-- **最近五批审计（批56-60, quick-10 口径 R143-R145）**：50/50 全绿；902/884/815/631/601 tok/case（五批均值 766, 批59-60 连续新低）；drift_pass 全 1.0；chars_ratio 0.951→0.994；rel_avg 0.625→0.661 上行；suspects 3→0（R144 session-aware 阈值 0.4 校准后 C07 假阳性消除）。
-- **in-flight**：R145 收尾（本快照+README 趋势行+推送）→ R146+ 候选（按优先级）：
-  1. 批 61+（quick-10 常态持续；tok 连续下行观察地板）
-  2. K1 效果闭环（同 query 有/无画像 A/B 回复质量差分，snip 11tok 版效果待证）
-  3. semantic_avg 样本扩量（现仅 drift 触发档，rel 0.5-0.8 样本仍少）
-  4. 下一阶段汇报点 = 批65（每 5 批节奏）
+- **主线进度**：R138-R149。R146 K1 窗口修复（TakeLast 10→100, conf 0.296→0.8, A/B 开关实证）；R147 C07 内容断言接管；**R149 用户质疑整改**：TaskRelevanceChecker 判定空心修复（C14/C15 expect 绑定 isolated_true/pivot_reanchor 真断言 + quick 10→11 C14 进常态 + 10 测试对抗族 399 绿）。下一轮号 **mass_286**。
+- **最近五批审计（批61-65）**：50/50；768 tok/case 均值；drift 全 1.0；suspects 3→0（must_contain 内容断言接管后）。
+- **R149 用户质疑结论**：TaskRelevanceChecker 组件能力真实（全量批 50/53 isolated=True score=2 实测）但判定空心成立——既往 C14/C15 expect 只有 llm:true，通过率对组件无证明力。修复后 C14 真断言批69 首验 isolated=True PASS。
+- **in-flight**：R149 收尾 → R150+ 候选：① 批 70+（quick-11 常态）② C15 pivot_reanchor 连续验证 ③ K1 注入后回复质量纵向跟踪 ④ 批 70 五批审计点。
 - **环境事实**（防重查）：bge=`/home/agentuser/.agentframework/models/bge-q8.gguf`（env `AGENTFRAMEWORK_BGE_MODEL`，缺失→词袋 dim256）；3 key：kimi 负样本/glm 可用/deepseek 7.61 CNY；github 直连断→ghfast.top 代理推（>8min 假死勿中断）；telemetry 读用 utf-8-sig；`execute_code` 300s 上限→批测逐轮后台跑。
 - **千轮口径**：RETIRED 轮诚实标注；全绿口径=排除 RETIRED；轮号唯一；每轮落盘+镜像。
 
