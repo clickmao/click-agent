@@ -176,4 +176,10 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - 删除: LlmServiceProtocol/LlmServiceHost/LlmServiceClient.cs + LlmServiceTests.cs (7 测试) + Program.cs --llm-service 参数与守护块 + LocalLlamaCaller 服务探测块 (回进程内直连) + ServiceCollectionExtensions 服务探测 (llmLoaded 恒 false, bge 决策按未加载档)。
 - EmbeddingRouter/BgeModeDecision 的 llmLoaded 入参保留 (与共享服务解耦的通用决策参数)。
 - 验证: 372/372 绿 (379-7); CLI E2E glm 直连 ✓ ('2'); data/llm.sock 死文件清除; AOT 强刷 0 IL 警 + 冒烟 E2E/多轮 pass (12.8s)。
-- 批 25 (mass_118-122): 25/25 全绿, 4260 tok (+22.1% vs 批24, prompt 侧 356/373 稳定 = 波动在 glm completion, 非删除回归)。
+- 批 25 (mass_118-122): 25/25 全绿, 4260 tok (+22.1% vs 批24, prompt 侧 356/373 稳定 = 波动在 glm completion, 非删除回归)。\n
+### R114: LLamaSharp Vulkan 加载重构 — Silk.NET 式单入口 (用户钦定)
+- **实证**: libllama.so/libggml.so 均带 RUNPATH=$ORIGIN → 单入口 dlopen 后系统加载器自动解析全部 DT_NEEDED (libggml/libggml-base/libggml-cpu/libggml-vulkan→libvulkan.so.1); deps.zip 不需要 (无需重编译 C++)。
+- **fork 补丁** (ed89226): NativeLibraryUtils.TryLoadLibrary 加 Linux 快路径 (description.Path 为空时单入口 dlopen 顶层 libllama.so, 失败自然 fallback 旧选型策略); NativeLibrarySingleEntry 新类; TryFindPath 的 ProcessPath 加 NET6 防护 (netstandard2.0 target 修复)。deps.zip 入 gitignore (252b68f)。
+- **主仓**: agent.csproj 顶层 runtimes/linux-x64/native/ 全量 so 复制 (变体目录保留为 fallback); probes/llama-r114-probe (JIT+AOT 双验收探针)。
+- **验收 (全部真实执行)**: JIT — bge CPU 384 维 cos 0.728/0.478 ✓ + qwen chat success=True ✓ + [loader] "R114 single-entry load" 日志实锤 ✓; AOT (probe PublishAot 强刷) — "Generating native code" + 0 IL 警 + 同套验收全通 exit 0 ✓; 主 host AOT 冒烟 E2E+多轮 ✓; 372/372 绿。
+- Vulkan 语义: 系统唯一 libvulkan.so.1 + fork vendored libggml-vulkan.so 同目录 — 无副本、无变体复制、无 deps。
