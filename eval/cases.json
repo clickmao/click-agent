@@ -145,7 +145,11 @@
     "expect": {
       "llm": true,
       "note": "轮2 pivot 重锚 → 不应被隔离误吞, 应产出新任务链",
-      "pivot_reanchor": true
+      "pivot_reanchor": true,
+      "min_reply_chars": 30,
+      "must_not_contain": [
+        "[隔离任务]"
+      ]
     }
   },
   {

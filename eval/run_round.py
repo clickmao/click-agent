@@ -307,6 +307,13 @@ def main():
     # 一律不算位置参数 (当前接口仅 --quick 无值 flag; 引入带值 flag 时须同步改此处)。
     args = [a for a in sys.argv[1:] if not a.startswith("-")]
     quick = "--quick" in sys.argv
+    # v0.11.0 R154 (真缺陷 58): harness 对 dotnet 的 PATH 依赖自兜底 — 新 shell/cron 忘 export
+    # PATH 时 repl 用例 FileNotFoundError 半途崩批 (批83 首跑实证), fail-fast 带修复提示。
+    import shutil as _sh
+    if not _sh.which("dotnet"):
+        _hint = os.path.expanduser("~/.dotnet")
+        print(f"FATAL: dotnet not on PATH — repl 用例无法启动。修复: export PATH=\"{_hint}:$PATH\" (或 source .env.local 前先 export)", file=sys.stderr)
+        sys.exit(2)
     rnd = args[0] if args else "baseline"
     label = args[1] if len(args) > 1 else ""
     # v0.11.0 R27: --quick 高频回归模式 — 4 关键用例 (普通/多步/executive/推理),
