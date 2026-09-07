@@ -66,3 +66,15 @@
 - **KPI**: tokens_per_case=1100 out (500, 950) (基准轮数 0)
 - **per-case**: C01_general_qa 450tok 8.3s | C02_coding 783tok 10.3s | C03_subtask 1995tok 47.1s | C04_skill_identity 0tok 4.6s | C05_skill_wordcount 0tok 4.3s | C06_executive_unit_convert 0tok 4.2s | C07_memory_followup 509tok 9.4s | C08_reasoning 1204tok 15.7s | C09_balance_cmd 0tok 1.2s | C10_model_list 0tok 0.9s | C11_json_format 814tok 8.0s | C12_negative_empty 427tok 7.6s | C13_git_sensitive 1793tok 39.5s | C09b_balance_glm 0tok 0.9s | C14_isolated_multi 1661tok 29.8s | C15_pivot_multi 2756tok 33.3s | C16_longsession_4turn 6699tok 147.6s | C17_neg_hallucination_bait 1127tok 13.8s | C18_neg_format_trap 680tok 9.7s
 
+## mass_267 — R139 batch51 band-recalibrated quick (2026-09-07T16:45:55+0800)
+
+- **判定**: 5/5 passed, tokens_total=4941 (avg 988), wall=106560ms (avg 21.3s)
+- **KPI**: tokens_per_case=988 out (550, 950) (基准轮数 5)
+- **per-case**: C01_general_qa 508tok 8.6s Δ+55 | C03_subtask 2541tok 62.6s Δ+1171 | C06_executive_unit_convert 0tok 4.2s | C08_reasoning 1230tok 23.5s Δ+26 | C11_json_format 662tok 7.7s Δ-48
+
+## mass_268 — R139 batch52 C03-inflation watch-2 (2026-09-07T16:47:25+0800)
+
+- **判定**: 5/5 passed, tokens_total=3473 (avg 695), wall=65282ms (avg 13.1s)
+- **KPI**: in-band (基准轮数 5)
+- **per-case**: C01_general_qa 436tok 6.6s Δ-17 | C03_subtask 1069tok 17.3s Δ-301 | C06_executive_unit_convert 0tok 4.3s | C08_reasoning 1285tok 29.6s Δ+81 | C11_json_format 683tok 7.4s Δ-27
+
