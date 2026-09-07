@@ -327,3 +327,11 @@
 - 批82 首跑死于缺陷58 (harness dotnet PATH FileNotFoundError, 半途崩批无 JSON 落盘)
 - 轮号 298 永久报废 (轮号唯一性), 批序号 82 跳过, 下轮号 299 起
 - 修复: run_round.py main 入口 dotnet PATH 探测 fail-fast (R154)
+## mass_301 — R155 batch85 full-19 C15-hardened-assert retry (2026-09-08T01:05:39+0800)
+
+- **判定**: 19/19 passed, tokens_total=20462 (avg 1077), wall=362487ms (avg 19.1s)
+- **KPI**: in-band (基准轮数 0)
+- **防漂移指数**: segments=12, drift_pass=1.0, semantic_avg=0.997, chars_ratio=0.949
+- **意图指数**: n=13, ms_avg=0.1, dist={'general': 10, 'code_generation': 1, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 423tok 6.9s | C02_coding 946tok 14.1s | C03_subtask 1484tok 26.6s | C04_skill_identity 0tok 4.7s | C05_skill_wordcount 0tok 4.4s | C06_executive_unit_convert 0tok 4.3s | C07_memory_followup 486tok 9.2s | C08_reasoning 1206tok 13.3s | C09_balance_cmd 0tok 1.3s | C10_model_list 0tok 1.0s | C11_json_format 596tok 7.2s | C12_negative_empty 346tok 6.3s | C13_git_sensitive 1487tok 31.1s | C09b_balance_glm 0tok 0.9s | C14_isolated_multi 1841tok 31.0s | C15_pivot_multi 2467tok 32.6s | C16_longsession_4turn 7443tok 145.2s | C17_neg_hallucination_bait 1078tok 13.3s | C18_neg_format_trap 659tok 9.2s
+
