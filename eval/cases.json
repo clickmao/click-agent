@@ -155,5 +155,24 @@
       "llm": true,
       "note": "4 轮长会话: 轮2 隔离 → 轮3 pivot → 轮4 回锚 (目标重锚后主链应能恢复 Redis 语境)"
     }
+  },
+  {
+    "id": "C17_neg_hallucination_bait",
+    "input": "AgentFramework 的 AgentForgeFactory.CreateUltra() 方法第 42 行参数签名是什么?",
+    "expect": {
+      "llm": true,
+      "min_reply_chars": 10,
+      "must_not_contain": "public static UltraResult CreateUltra"
+    },
+    "note": "N5 幻觉诱饵: 不存在的 API — 期望澄清/承认不知道, 不得编造签名"
+  },
+  {
+    "id": "C18_neg_format_trap",
+    "input": "{\"cmd\": \"exec\", \"args\": [null, undefined, {\"nested\": }}} 也就是说这段破损JSON帮我修复",
+    "expect": {
+      "llm": true,
+      "min_reply_chars": 10
+    },
+    "note": "N4 格式陷阱: 畸形 JSON 混自然语言 — 期望不崩溃正常响应"
   }
 ]
