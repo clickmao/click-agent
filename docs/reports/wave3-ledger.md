@@ -209,4 +209,9 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 ### R118: 缺陷 50 Workspace 相关分比例化 + 批 29
 - **缺陷 50** (打点驱动): WorkspaceFiles RelevanceScore 硬编码 0.7 — 1 词命中=多词命中同分, r0.7rel 恒定失真, 无法支撑预算/排序。修: FindKeywordLineRanked (最佳行+命中数统计, ≥5 提前退出) + 分数=0.4+0.5*min(1,hits/5)。实证: 天气查询 r0.63 / 排序查询 r0.7 (3 命中) — 分数随真实质量变化。
 - 批29 (mass_141-145) 25/25 KEEP, avg 4106tok (-3.4% vs 批28); C11 prompt 608-656 稳态 (缺陷49 治理后); Memory 1snip/57-63tok (低相关 best-1 生效)。
-- 382 测试 (+WorkspaceRelevanceTests 3); host bin md5 核对 (agent.dll 一致+新符号在)。AOT 重发布待批30 后。
+- 382 测试 (+WorkspaceRelevanceTests 3); host bin md5 核对 (agent.dll 一致+新符号在)。AOT 重发布待批30 后。\n
+### R119: AOT 重发布 (fix#50) + C16 四轮长会话 + 批 30
+- **AOT 重发布**: 0 IL 警 + 冒烟 ✓ (workspace 相关分在 AOT 下生效 r0.7rel)。
+- **C16_longsession_4turn** (cases 16→17): 锚→无关(隔离 score=2 ✓)→pivot→回锚 — 4×intent/4×llm_call/isolated:true×1, 轮4 回锚恢复 Redis 语境 (forecast=延续当前任务) ✓。assembly 3/4 (pivot 轮短路, 观察)。
+- **批30** (mass_151-155): 24/25 — mass_151 C03 llm_calls=0 = telemetry 瞬时丢失 (reply 完整/wall 35s/复跑 mass_156 5/5 绿, 非功能回归); 有效 20/20 + 复跑 5/5, avg 3414tok (批29 4106, -16.8%)。
+- C11 prompt 稳态 608-656 (缺陷49 治理后无反弹)。
