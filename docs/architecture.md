@@ -1288,7 +1288,7 @@ click-agent/
     ├── agent.config/           # 四层 YAML 分层配置: ConfigSnapshot / ConfigWriter / MiniYaml (Yamlify 门面, 零反射)
     ├── agent.modelqueue/       # 模型队列: ModelQueueRouter / ModelCatalog / ChannelScheduler / BalanceQueryService / TokenUsageService / LocalInferenceAdapter
     ├── agent.skills/           # Skill 调度: SkillRegistry / TriggerMatcher (bge 语义层) / SkillPackageLoader (SKILL.md) / SkillDispatcher / SkillLifecycle
-    ├── agent.contextgradient/  # 梯度压缩: 分层/锚点/聚类/漂移校验 + ITextEmbedder / BgeEmbedder (384 维)
+    ├── agent.contextgradient/  # 梯度压缩: 分层/锚点/聚类/漂移校验 + ITextEmbedder / BgeEmbedder (512 维, bge-q8 实测)
     ├── agent.logging/          # 日志四通道 + IChatboxSink (@chatbox: 前端指令协议行) / LogRouter
     ├── agent.io/               # 协议库 (netstandard2.1 零依赖): AgentReportReaderBase / AgentRequestWriterBase / @stream 块
     ├── agent.output/           # v7.13 输出管道: AgentOutputMessage / OutputFormatter / SpectreOutputRenderer
@@ -1298,7 +1298,7 @@ click-agent/
     ├── agent.rag/              # RAG 召回
     ├── agent.vectormemory/     # 向量记忆
     ├── agent.workspace/        # 工作区
-    └── agent.tests/            # 341 项测试 (xunit)
+    └── agent.tests/            # 389 项测试 (xunit)
 ```
 
 > 命名约定 (用户钦定): 文件夹与命名空间全小写 (`agent.registry`), 类文件与类型名 PascalCase

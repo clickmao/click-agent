@@ -34,10 +34,10 @@ C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / Na
 | 维度 | 基线 | 当前 | 改善 |
 |---|---|---|---|
 | 评测通过率 | — | **1034/1056 = 97.92%** (215 轮落盘) | 稳定 99%+ (负面扩容后口径) |
-| 单轮 tokens (quick) | 7354 | **~3671** | **-50%** |
+| 单轮 tokens (全量 10 用例基线 vs 现 quick-10) | 7354 | **9024** (含 5 个新增广泛度用例) | -50% (可比 quick-5 口径 ~3671) |
 | C08 推理 completion | 1875 | **479** | **-74%** |
 | 单元测试 | 325 | **389** | +64 |
-| 真缺陷修复 | — | **52 项** (全部打点驱动) | #21-#52 |
+| 真缺陷修复 | — | **55 项** (全部打点驱动) | #21-#55 |
 
 批次趋势 (批42-55, 5 用例 quick 口径): 4271/3875/4169/4182/3734/3673/4130/3408/4941/3473/3683/4201 — 12 批全绿, KPI in-band (批51 988tok/case 单点越界, 复核确认波动)。
 专项验证: 多来源召回率 (100 用例轮统计) / 无关话题隔离 (score=2 触发独立 session) / session 长期记忆 (跨进程落盘) / JSON 格式跟随 (哨兵用例) / 双 LLM 校验 — 全部 ✓。
@@ -45,6 +45,8 @@ C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / Na
 完整报告: [千轮迭代优化报告](docs/reports/thousand-round-report.md) · 阶段台账: [wave3-ledger](docs/reports/wave3-ledger.md)
 
 ### 🧭 能力全景
+
+**工程总览**: 16 csproj — agent (主链 22 子模块: intent/registry/memory/contextassembler/tendency/session/search/llamalocal/maf/pipeline/subagent 等) / core / config / contextgradient / modelqueue / skills / rag / vectormemory / workspace / io / logging / output / recovery / codegen / host / tests。
 
 **推理与任务**
 - 意图分析与子任务细分: 19 中英连接词, Sequential/Parallel/DependsOnOutput 关系; 创作类拦截 (写诗≠写代码, R116)

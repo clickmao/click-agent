@@ -25,6 +25,7 @@
 | `/token stats` | — | Token 用量统计 (总量/按模型/按 provider/预估成本/余额快照) | JSON | V2 拦截 |
 | `/forecast` | — | 下轮预估读回 (上轮任务摘要/倾向/延续提示; v7.11 机制前端化) | JSON | V2 拦截 |
 | `/log dump` | — | 内存日志环形缓冲 (2000 条) 存档 JSON 行文件 | JSON | V2 拦截 |
+| `/help` | — | 本地命令帮助菜单 (R86: 原送 LLM 浪费一轮, 现本地应答) | 本地 | LocalCommandRouter |
 | `/stop` | — | 停止当前执行 | 本地 | LocalCommandRouter |
 | `/pause` | — | 暂停 | 本地 | LocalCommandRouter |
 | `/continue` | — | 继续 | 本地 | LocalCommandRouter |
