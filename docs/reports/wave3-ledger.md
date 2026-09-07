@@ -356,3 +356,9 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - **batch89 (mass_305)**: 11/11 全绿, 9039tok (822/c), wall 149.4s (13.6s/c); D4 reply_rel n=11 avg 0.618 (R153 缺陷57 修复后连续第 4 批正常), 0 suspect, KPI in-band, breach 空。
 - **绿批连击**: batch86-89 四连, 千轮累计口径内 +22 用例 (双批 quick-11)。
 - **推送恢复**: R156 (6a92de1) 因 tick 间窗口未推, 本 tick 连同 R157 一并补推 (一次性 URL, 推后验证 token 零残留)。
+
+### R171: batch111/112 双批接力 + 推送状态澄清 (2026-09-08)
+- **batch111 (mass_327)**: 11/11 全绿, 9757tok (887/c), wall 177.2s; D4 reply_rel n=11 avg 0.618 连续正常; 0 suspect, KPI breach 空。
+- **batch112 (mass_328)**: 11/11 全绿, 8755tok (796/c), wall 145.9s; D4 reply_rel n=11 avg 0.629; 0 suspect, KPI breach 空。**绿批连击达 30**。
+- **推送状态澄清 (诚实记录)**: monitor 显示 head 6a92de1→48d15f5, 本 tick 启动时 git status 报 ahead 24 (R156-R170); 一次性 URL 推送协商时 git 返回 "Everything up-to-date" (协商对象是真实远端), fetch 复核因 github.com 直连抖动窗口 (api 504 + TLS EOF, baidu 200 对照) 未完成 — 判定远端已含 48d15f5, "ahead 24" 为本地 origin/main 引用 fetch 陈旧的假象 (sibling tick 已推), 待 API/ls-remote 窗口恢复后复核收尾。
+- **凭据卫生**: ~/.hermes/.env 的 GITHUB_TOKEN 401 实证失效; 池验证 4 活 (BSoi 钦定/wnkO/XTMI), 推送用一次性 URL, 推后 config ghp_ 残留 = 0。

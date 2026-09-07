@@ -535,3 +535,19 @@
 - **意图指数**: n=9, ms_avg=0.1, dist={'general': 7, 'git_operation': 1, 'search': 1}
 - **per-case**: C01_general_qa 423tok 7.2s Δ-8 | C03_subtask 1509tok 29.3s Δ-467 | C04_skill_identity 0tok 4.7s | C06_executive_unit_convert 0tok 4.3s | C07_memory_followup 494tok 18.3s Δ+6 | C08_reasoning 1332tok 21.2s Δ+98 | C11_json_format 608tok 7.0s Δ-13 | C13_git_sensitive 894tok 9.4s Δ-427 | C14_isolated_multi 1970tok 28.8s Δ+14 | C17_neg_hallucination_bait 655tok 8.0s Δ-65 | C18_neg_format_trap 683tok 10.1s Δ-35
 
+## mass_327 — R171 batch111 mass_327 (2026-09-08T04:04:08+0800)
+
+- **判定**: 11/11 passed, tokens_total=9757 (avg 887), wall=177234ms (avg 16.1s)
+- **KPI**: in-band (基准轮数 11)
+- **防漂移指数**: segments=4, drift_pass=1.0, semantic_avg=None, chars_ratio=0.989
+- **意图指数**: n=9, ms_avg=0.1, dist={'general': 7, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 436tok 7.3s Δ-18 | C03_subtask 1633tok 37.0s Δ+43 | C04_skill_identity 0tok 4.7s | C06_executive_unit_convert 0tok 4.2s | C07_memory_followup 495tok 9.6s Δ-48 | C08_reasoning 1268tok 15.0s Δ-72 | C11_json_format 550tok 7.6s Δ-74 | C13_git_sensitive 1573tok 27.7s Δ+425 | C14_isolated_multi 2144tok 30.1s Δ-44 | C17_neg_hallucination_bait 854tok 12.6s Δ+62 | C18_neg_format_trap 804tok 21.4s Δ+30
+
+## mass_328 — R171 batch112 mass_328 (2026-09-08T04:14:21+0800)
+
+- **判定**: 11/11 passed, tokens_total=8755 (avg 796), wall=145891ms (avg 13.3s)
+- **KPI**: in-band (基准轮数 11)
+- **防漂移指数**: segments=6, drift_pass=1.0, semantic_avg=None, chars_ratio=0.992
+- **意图指数**: n=9, ms_avg=0.1, dist={'general': 7, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 422tok 9.1s Δ-32 | C03_subtask 1050tok 13.7s Δ-477 | C04_skill_identity 0tok 4.6s | C06_executive_unit_convert 0tok 4.2s | C07_memory_followup 472tok 11.3s Δ-70 | C08_reasoning 1127tok 15.8s Δ-183 | C11_json_format 614tok 10.4s Δ-2 | C13_git_sensitive 1644tok 16.9s Δ+779 | C14_isolated_multi 1754tok 27.4s Δ-473 | C17_neg_hallucination_bait 1066tok 22.4s Δ+308 | C18_neg_format_trap 606tok 10.0s Δ-139
+
