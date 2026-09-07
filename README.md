@@ -50,7 +50,7 @@ C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / Na
 | 单元测试 | 325 | **389** | +64 |
 | 真缺陷修复 | — | **55 项** (全部打点驱动) | #21-#55 |
 
-批次趋势: **批80 (mass_296)** 11/11 quick-11 9468tok (860/case, 新低) / **批81 (mass_297)** 11/11 quick-11 10334tok (939/case, D4 reply_rel 修复后恢复 n=11 avg 0.631) — 近 40 批全绿 KPI in-band (健康带 600-1100)。批42-78 明细: [docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md) (批42-65 更早在 R133-R142/R103-R127 归档); 批79-81 见 [docs/reports/wave3-ledger.md](docs/reports/wave3-ledger.md) R153 段。README 批次明细每 30 批滚动更新一次 (下次: 批108)。
+批次趋势: **批98 (mass_314)** 11/11 quick-11 9876tok (897/case) / **批99 (mass_315)** 11/11 quick-11 8591tok (781/case) — 自缺陷58 修复后 16 批连续全绿 (批83-99), KPI in-band (健康带 600-1100)。批42-78 明细: [docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md); 批79-99 见 [docs/reports/wave3-ledger.md](docs/reports/wave3-ledger.md)。README 批次明细每 30 批滚动更新一次 (下次: 批108)。
 专项验证: 多来源召回率 (100 用例轮统计) / 无关话题隔离 (score=2 触发独立 session) / session 长期记忆 (跨进程落盘) / JSON 格式跟随 (哨兵用例) / 双 LLM 校验 — 全部 ✓。
 
 完整报告: [千轮迭代优化报告](docs/reports/thousand-round-report.md) · 阶段台账: [wave3-ledger](docs/reports/wave3-ledger.md)
