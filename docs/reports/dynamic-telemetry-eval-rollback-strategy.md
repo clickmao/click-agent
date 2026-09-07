@@ -147,7 +147,8 @@ done
 - **R151 (pivot 判定闭环)**：C15 pivot_reanchor 升级为三重真断言 (不隔离+pivot_n≥1+新任务链产出)；pivot_n 打点消费建成 (goal/op=pivot, 真缺陷 45: init 缺键 KeyError——batch76 首跑 15/19 后死亡实证, 与 R142 compression 同源教训)；批76 全量 19/19 复证 pivot_n=1 真重锚。
 - **README 30 批滚动制度 (R152b 用户钦定)**：README 能力段只显示最新 2 批，历史按轮段归档 docs/changelogs/ (CHANGELOG-v0.11.0-RXXX-RXXX.md 格式, v7.14 亦在其中)；批次趋势行只留最新 2 批 + 归档链接；下次滚动: 批108。
 - **R154-R155 (harness 可靠性双修)**：真缺陷 58 (dotnet PATH 依赖未自兜底, 批83 首跑半途崩) → main 入口 fail-fast 探测; must_not_contain 扩 string|list (C15 三重断言: pivot_n≥1+无[隔离任务]+≥30ch, 复用 R138 机制); 批85 全量 19/19 复证 (C15 pivot_n=1 + 真诗回复)。mass_298 RETIRED (缺陷58 受害者, 轮号报废)。
-- **in-flight**：R156 → ① 批 86+（quick-11 常态）② 批 86-90 五批审计 ③ K1 质量纵向 ④ 持续。
+- **五批审计 86-90**: 55/55 全绿, 均值 806 tok/case, CV 1.8% (历史最稳窗口), 零 suspect (C03 0.499 边缘由 min_reply_chars 内容锚接管, 阈值不动)。
+- **in-flight**：R159 → ① 批 94+（quick-11 常态）② 阶段汇报点 4 已交付 ③ 下个全量批回归 ④ 持续。
 - **推送状态（R153c 已解）**：新 PAT 验证 200 OK scope=repo；积压 dc13413/1f8ff13/9a6d89a 已推上 remote (1f8ff13..424f2e6)，API 复核 remote=HEAD=424f2e6；一次性 URL 流程，config 零残留。旧 PAT 失效 (401) 弃用。
 - **环境事实**（防重查）：bge=`/home/agentuser/.agentframework/models/bge-q8.gguf`（`.env.local` `AGENTFRAMEWORK_BGE_MODEL`，**cron/新 shell 须 export PATH="$HOME/.dotnet:$PATH" 否则 runner FileNotFoundError**；bge 路径勿依赖 os.environ——缺陷 57 教训，harness 统一走 load_env()）；3 key：kimi 负样本/glm 可用/deepseek 7.61 CNY；github 直连断→ghfast.top 代理推（>8min 假死勿中断）；telemetry 读用 utf-8-sig；`execute_code` 300s 上限→批测逐轮后台跑；**llm-service/llm.sock 已 R113 退场，sock 缺失=正常态勿重启**。
 - **千轮口径**：RETIRED 轮诚实标注；全绿口径=排除 RETIRED；轮号唯一；每轮落盘+镜像。
