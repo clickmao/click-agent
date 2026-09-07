@@ -19,7 +19,13 @@
 ### 阈值切模实战
 MIN_BALANCE_USD=100 → deepseek $1.25 不足 → 自动切 glm-5.3-flash → 对话实际用 glm ✓
 
-## R116: P3 embedding 真链 + 全功能 E2E (进行中)
+## R116: P3 embedding 真链 + 全功能 E2E (完成)
+
+### mass_128 全量 16/16 PASS (13428tok / 423s)
+- C14 隔离实战: isolated=true score=2 (实体零重叠) 独立 session ✓
+- C15 pivot: 重锚成功未被误隔离 ✓
+- 全部用例 bge_provider=bge-local (P3 真向量全量生效)
+- AOT 复验: Generating native code + 0 IL 警 + bge-local dim=512 ms=113 (AOT 下) ✓
 
 ### P3 bge 真链打通 (打点实证)
 - 修复前: `bge_embed provider=hash-fallback dim=256` (词袋兜底 — AGENTFRAMEWORK_BGE_MODEL 未设)
