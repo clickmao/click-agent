@@ -35,7 +35,7 @@ Release line: v0.11.0 — unified @cmd command protocol + 3 transports / Skill e
 - **C15 pivot assert hardening (R155)**: must_not_contain string|list + triple assert (pivot_n≥1 + no isolation prefix + ≥30ch) — full batch 19/19 re-verified true re-anchor
 - **Defect 57 fix (R153)**: D4 gate read os.environ while bge path lived in .env.local → reply_rel silently n=0; gate unified to load_env()
 - **C03 content anchor (R158)**: rel=0.499 edge false-positive handled by min_reply_chars=100, rel threshold untouched (no inflation)
-- **README 30-batch rolling policy live (R169, batch108 point)**: bilingual trend line keeps latest 2 batches + archive links; all changelogs consolidated under docs/changelogs/
+- **README 30-batch rolling policy live (R169, batch108 point)**: capability sections keep latest 2 wheel-segments (full lists), trend line keeps latest 2 batches; all changelogs under docs/changelogs/
 
   <details><summary>Batch 79-108 full details</summary>
 

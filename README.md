@@ -19,7 +19,7 @@ C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / Na
 - **C15 pivot 断言强化 (R155)**: must_not_contain string|list 扩展 + 三重断言 (pivot_n≥1 + 无隔离前缀 + ≥30ch) — 全量批 19/19 复证真重锚
 - **缺陷 57 修复 (R153)**: D4 gate 读 os.environ 而 bge 路径只在 .env.local → reply_rel 静默 n=0; gate 统一 load_env()
 - **C03 内容锚 (R158)**: rel=0.499 边缘假阳性由 min_reply_chars=100 接管, rel 阈值不动 (防通胀)
-- **README 30 批滚动制度落地 (R169, 批108 点)**: 双语趋势行只留最新 2 批 + 归档链接; changelog 全部集中 docs/changelogs/
+- **README 30 批滚动制度落地 (R169, 批108 点)**: 能力段只保留最新 2 个轮段（完整列表），趋势行只留最新 2 批；changelog 全部集中 docs/changelogs/
 
   <details><summary>批 79-108 全部明细</summary>
 
