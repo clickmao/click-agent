@@ -314,3 +314,16 @@
 - **意图指数**: n=9, ms_avg=0.1, dist={'general': 7, 'git_operation': 1, 'search': 1}
 - **per-case**: C01_general_qa 429tok 7.0s Δ-68 | C03_subtask 1312tok 29.4s Δ-250 | C04_skill_identity 0tok 4.8s | C06_executive_unit_convert 0tok 4.3s | C07_memory_followup 647tok 16.6s Δ+48 | C08_reasoning 1198tok 18.8s Δ-209 | C11_json_format 607tok 7.4s Δ-93 | C13_git_sensitive 858tok 15.4s Δ-724 | C14_isolated_multi 1903tok 31.0s Δ-378 | C17_neg_hallucination_bait 914tok 8.9s Δ+223 | C18_neg_format_trap 574tok 10.2s Δ-110
 
+## mass_300 — R154 batch84 quick-11 C15-assert-live (2026-09-08T00:52:38+0800)
+
+- **判定**: 11/11 passed, tokens_total=9835 (avg 894), wall=177089ms (avg 16.1s)
+- **KPI**: in-band (基准轮数 11)
+- **防漂移指数**: segments=1, drift_pass=1.0, semantic_avg=None, chars_ratio=0.99
+- **意图指数**: n=9, ms_avg=0.1, dist={'general': 7, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 506tok 14.3s Δ+34 | C03_subtask 1998tok 20.7s Δ+425 | C04_skill_identity 0tok 4.7s | C06_executive_unit_convert 0tok 4.2s | C07_memory_followup 459tok 8.2s Δ-108 | C08_reasoning 1184tok 13.9s Δ-91 | C11_json_format 578tok 7.1s Δ-94 | C13_git_sensitive 1057tok 28.6s Δ-715 | C14_isolated_multi 2534tok 55.9s Δ+184 | C17_neg_hallucination_bait 818tok 10.0s Δ+151 | C18_neg_format_trap 701tok 9.4s Δ+47
+
+
+### mass_298 RETIRED (R154)
+- 批82 首跑死于缺陷58 (harness dotnet PATH FileNotFoundError, 半途崩批无 JSON 落盘)
+- 轮号 298 永久报废 (轮号唯一性), 批序号 82 跳过, 下轮号 299 起
+- 修复: run_round.py main 入口 dotnet PATH 探测 fail-fast (R154)

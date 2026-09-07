@@ -201,8 +201,13 @@ def check_expect(case, reply, agg, raw_tail):
             f"reply 缺少 '{exp['reply_contains']}'")
     if "must_not_contain" in exp:
         # R138 (N5 幻觉防线): 诱饵用例 — 回复不得包含编造的具体内容 (如不存在的 API 签名)
-        req(exp["must_not_contain"].lower() not in (reply or "").lower(),
-            f"reply 编造了 '{exp['must_not_contain'][:40]}...'")
+        # R155: 支持字符串或列表 (C15 隔离前缀多模式拒绝断言)
+        _mnc = exp["must_not_contain"]
+        if isinstance(_mnc, str):
+            _mnc = [_mnc]
+        for _pat in _mnc:
+            req(_pat.lower() not in (reply or "").lower(),
+                f"reply 命中禁止模式 '{_pat[:40]}'")
     if "min_reply_chars" in exp:
         req(len(reply) >= exp["min_reply_chars"], f"reply {len(reply)} < {exp['min_reply_chars']}")
     if "skill" in exp:
