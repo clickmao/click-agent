@@ -3,7 +3,8 @@
 [![ci](https://github.com/clickmao/click-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/clickmao/click-agent/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)
-![Tests](https://img.shields.io/badge/tests-355%2F355-brightgreen)
+![Tests](https://img.shields.io/badge/tests-386%2F386-brightgreen)
+![Eval](https://img.shields.io/badge/thousand--round%20eval-872%2F873-success)
 ![NativeAOT](https://img.shields.io/badge/NativeAOT-zero%20warnings-blueviolet)
 
 > CI workflow file is ready (`.github/workflows/ci.yml`); badge activates once pushed with a `workflow`-scoped token.
@@ -11,7 +12,7 @@
 C# agent framework built on Microsoft MAF (Microsoft Agent Framework) & WebReaper — full-scenario coverage, 100% managed code. net10.0 / NativeAOT zero warnings / 355 tests green.
 Release line: v0.11.0 — unified @cmd command protocol + 3 transports / Skill executive scripts / vector-blended relevance scoring / 19-model catalog.
 
-[🇨🇳 中文 → readme.md](readme.md)
+[🇨🇳 中文 → README.md](README.md)
 
 ---
 
@@ -27,6 +28,19 @@ Release line: v0.11.0 — unified @cmd command protocol + 3 transports / Skill e
 - **Unified output**: IOutputSink all exits; zero direct Console writes in libraries; agent/Program.cs dead code removed
 - **/forecast**: next-turn forecast surfaced to frontend
 - **SKILL.md packages**: Anthropic Agent-Skills Open Standard loader (dir name = front-matter name) + 2 example packages
+
+### 🆕 R103-R127 Additions (thousand-round loop)
+- **PGO-style full-chain telemetry**: 12+ point types (intent / assembly 8-source recall / llm_call / skill / loop_turn / isolated / tendency / balance_sync / compression / bge_embed / sensitive), JSONL landing + pre-Configure pending ring (R121) + DroppedTotal loss visibility — every optimization round is driven by telemetry deltas
+- **3 real-key balance chain E2E**: deepseek real balance query (9.02→7.61 CNY) / threshold switching live-fire (MIN_BALANCE=100 → deepseek $1.25 insufficient → switched to glm) / honest provider_not_supported for glm / honest error for kimi negative sample
+- **P3 bge real-vector chain**: AGENTFRAMEWORK_BGE_MODEL → EmbeddingRouter bge-first / bag-fallback, dim512, JIT+AOT dual acceptance; RAG / ContextGradient / semantic-drift cos verification all real
+- **LLamaSharp Vulkan single-entry** (fork ed89226+252b68f): dlopen libllama.so + $ORIGIN RUNPATH auto-resolves all deps; Silk.NET.Vulkan zero native
+- **Multi-turn eval harness**: run_case_repl + isolation/pivot/re-anchor fully proven (C14/C15/C16 four-turn session) + anomaly guard (scorer reliability, R120)
+- **Dual-LLM cross validation**: cross_validate (glm+deepseek agree=true)
+
+### 📊 Thousand-Round Eval (PGO-driven)
+- **872/873 = 99.89%** case pass (184 rounds landed); quick-batch tokens **7354 → ~3671 (-50%)**; C08 reasoning completion **1875 → 479 (-74%)**; 52 real defects fixed, all telemetry-driven.
+- Batch trend (26-39): 3623/4024/4248/4106/3636/3656/3855/3597/4145/4035/3778/3765/3709/3671 — 14 batches × 25 cases all green, no upward drift.
+- Full report: [Thousand-Round Report](docs/reports/thousand-round-report.md) · ledger: [wave3-ledger](docs/reports/wave3-ledger.md)
 
 ### 🧭 Full Capability Panorama (v0.11.0)
 
@@ -118,7 +132,7 @@ Release line: v0.11.0 — unified @cmd command protocol + 3 transports / Skill e
 - WebReaper 11.3.1 library direct引用, search results full-text enhancement
 
 ### 🦙 Local Inference
-- LLamaSharp 0.27.0 + Backend.CPU built-in, `LocalLlamaCaller : ILLMCaller` cloud failure fallback; Vulkan loader unified with Silk.NET
+- Vendored LLamaSharp fork (ed89226) single-entry loader, `LocalLlamaCaller : ILLMCaller` cloud failure fallback; Vulkan loader unified with Silk.NET
 - Honest error reporting when model files missing, no fabricated replies
 
 ## Quick Start
@@ -205,7 +219,7 @@ click-agent/
 │   ├── agent.rag/           # RAG recall
 │   ├── agent.vectormemory/  # Vector memory
 │   ├── agent.workspace/     # Workspace
-│   └── agent.tests/         # 355 tests
+│   └── agent.tests/         # 386 tests
 └── docs/                    # Architecture/API/improvement records/plans
 ```
 
@@ -214,9 +228,12 @@ click-agent/
 | Item | Result |
 |---|---|
 | Compilation (--no-incremental) | 0 errors 0 warnings |
-| Tests | 355/355 Passed |
-| NativeAOT (linux-x64) | 0 IL/TR warnings, 12MB single file |
-| End-to-end smoke test | DI full graph 11/11 parsing + multi-session assertions |
+| Tests | 386/386 Passed |
+| NativeAOT (linux-x64) | 0 IL/TR warnings (re-verified 6x) + AOT smoke pass |
+| Thousand-round eval | 872/873 = 99.89% (184 rounds landed) |
+| Real 3-endpoint E2E | glm/deepseek chat+balance OK; kimi negative sample honest error |
+| Threshold switching | live-fire proven (deepseek $1.25 → glm) |
+| bge real chain | JIT+AOT dual acceptance (dim512, 282ms) |
 
 ## Documentation
 
@@ -237,7 +254,7 @@ click-agent/
 5. **Model catalog verify completion**: full 6-model real-device verification (api.openai.com RST on this network, retest via proxy)
 6. **Open-source release polish** (code pushed @ 387bfb1): LICENSE file/CI workflows/badges/condensed English README
 
-> **v0.11.0 baseline**: 355/355 tests green / Release build 0 warnings 0 errors / NativeAOT 0 IL warnings / agenthost 12MB ELF device smoke passed.
+> **Current baseline (R127)**: 386/386 tests green / Release build 0 warnings 0 errors / NativeAOT 0 IL warnings / thousand-round eval 99.89% — next: PGO v2 dynamic telemetry (D1-D5), batch 40+, boundary fuzz cases, 10+ turn long sessions, real-GPU Vulkan test.
 
 ## Configuration
 

@@ -248,3 +248,9 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - **规则 8** (R18 输出纪律扩展): 解释/分析类问题按「一句话结论 + ≤3 要点」结构, 300 字以内 — 打点驱动 (批36 C08 completion 860-1027 = 总 tokens ~25% 最大靶点)。
 - **A/B 实证**: C08 completion 943 → 726 avg (-23%), content_len 266 字 ≤300 ✓; wall 30-48s → 31-38s。
 - **批37** (mass_221-225) 25/25 3765tok; **批38** (mass_231-235) 25/25 3709tok。
+
+### R127: AOT 重发布 (规则8) + 批 39 + 千轮报告
+- **AOT**: 0 IL 警 (规则8 后强制重发布) + 冒烟 content_len=310。
+- **批39** (mass_241-245) 25/25 avg 3671tok; **C08 completion 治理轨迹: 943 (批36) → 726 (批38) → 479 (批39, -49%)**。
+- **千轮迭代优化报告**: docs/reports/thousand-round-report.md (PGO 方法论/52 缺陷台账/专项验证/D1-D5 动态打点 v2 策略/未完成事项/执行方案)。
+- **README 双语**: 新增 README.md 中文完整版; README_EN.md 更新 (徽章 386/千轮 99.89%/R103-R127 能力段/验证基线/下一步)。
