@@ -205,4 +205,8 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - **Vulkan 真 GPU**: 本机仅 llvmpipe 软渲染 (Cirrus GD5446 虚拟 VGA, 无 NVIDIA) — 真 GPU 硬件路径本环境不可实测, bge-mode 决策语义已正确覆盖 (检测→CPU 档)。
 - **csproj 布局精简**: 删 avx512/avx/noavx 假变体目录 (复制的是 avx2 二进制 — noavx 机器 fallback 会 SIGILL 的假绿雷; R114 顶层快路径 + TryFindPath 原名回退已覆盖 fallback 语义)。runtimes 169M→精简。
 - **缺陷 49** (打点驱动): Memory 源召回无 per-source 体积预算 — bge 真链后语义分带变密, C11 prompt 604→808 (+34%, 3snip/708tok/rel0.35 低相关大片段)。治理: 相关性降序 + 500tok 预算截断 + rel<0.4 只留 best 1。**A/B: C11 808→664 avg (-18%)**, 批 prompt 总量 2256→2037 (-10%)。
-- 批27 (129-130 有效, 131-133 被批28 覆盖) + 批28 (131-135) 25/25+15/15... 记账: 129/130/131/132/133/134/135 全 5/5 KEEP; 批28 avg 4248tok; C11 664; cross_validate 双 LLM agree=true; 379 绿; AOT 0 IL 警 + 冒烟 ✓。
+- 批27 (129-130 有效, 131-133 被批28 覆盖) + 批28 (131-135) 25/25+15/15... 记账: 129/130/131/132/133/134/135 全 5/5 KEEP; 批28 avg 4248tok; C11 664; cross_validate 双 LLM agree=true; 379 绿; AOT 0 IL 警 + 冒烟 ✓。\n
+### R118: 缺陷 50 Workspace 相关分比例化 + 批 29
+- **缺陷 50** (打点驱动): WorkspaceFiles RelevanceScore 硬编码 0.7 — 1 词命中=多词命中同分, r0.7rel 恒定失真, 无法支撑预算/排序。修: FindKeywordLineRanked (最佳行+命中数统计, ≥5 提前退出) + 分数=0.4+0.5*min(1,hits/5)。实证: 天气查询 r0.63 / 排序查询 r0.7 (3 命中) — 分数随真实质量变化。
+- 批29 (mass_141-145) 25/25 KEEP, avg 4106tok (-3.4% vs 批28); C11 prompt 608-656 稳态 (缺陷49 治理后); Memory 1snip/57-63tok (低相关 best-1 生效)。
+- 382 测试 (+WorkspaceRelevanceTests 3); host bin md5 核对 (agent.dll 一致+新符号在)。AOT 重发布待批30 后。

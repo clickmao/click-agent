@@ -450,19 +450,22 @@ Interlocked.Increment(ref _cacheMisses);
                     if (info.Length > 200 * 1024)
                         continue;
                     var content = await File.ReadAllTextAsync(file, ct);
-                    var hitLine = FindKeywordLine(content, keywords);
+                    var (hitLine, hitCount) = FindKeywordLineRanked(content, keywords);
                     if (hitLine == null)
                         continue;
 
                     var excerpt = hitLine.Length > 400 ? hitLine[..400] + "…" : hitLine;
                     var workspaceContent = $"[工作区文件 {Path.GetRelativePath(request.WorkspaceRoot!, file)}]\n{excerpt}";
+                    // v0.11.0 R118 (真缺陷 50): 相关分原硬编码 0.7 — 1 词命中与多词命中同分,
+                    // 打点 r0.7rel 恒定失真, 无法支撑后续预算/排序。改按命中关键词数比例化。
+                    var relevance = 0.4 + 0.5 * Math.Min(1.0, hitCount / 5.0);
                     snippets.Add(new ContextSnippet
                     {
                         Id = file,
                         SourceType = DataSourceType.WorkspaceFiles,
                         SourceName = Path.GetFileName(file),
                         Content = workspaceContent,
-                        RelevanceScore = 0.7,
+                        RelevanceScore = Math.Round(relevance, 2),
                         EstimatedTokens = EstimateTokens(workspaceContent), // v0.11.0 R29: 补 token 估算 (0tok 显示瑕疵真因)
                         CreatedAt = info.LastWriteTimeUtc,
                     });
@@ -511,6 +514,29 @@ Interlocked.Increment(ref _cacheMisses);
             }
         }
         return null;
+    }
+
+    /// <summary>R118: 找最佳命中行并统计该行命中的关键词数 (缺陷 50 — 相关分按真实命中质量)</summary>
+    private static (string? Line, int Hits) FindKeywordLineRanked(string content, List<string> keywords)
+    {
+        string? best = null;
+        var bestHits = 0;
+        foreach (var line in content.Split('\n'))
+        {
+            var hits = 0;
+            foreach (var kw in keywords)
+            {
+                if (line.Contains(kw, StringComparison.OrdinalIgnoreCase))
+                    hits++;
+            }
+            if (hits > bestHits)
+            {
+                bestHits = hits;
+                best = line.Trim();
+                if (bestHits >= 5) break; // 满分档提前退出
+            }
+        }
+        return (best, bestHits);
     }
 
     private long? _sourceStopwatch;
