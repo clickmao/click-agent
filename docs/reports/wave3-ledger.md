@@ -299,3 +299,8 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - harness: skill_match/skill_decisions 入轮 JSON per-case; K4 口径 = 期望 skill 用例的 force 命中率 + 泛查询误吸率 (degrade_semantic 频率)
 - 批42/43 波折: sibling 会话并行 commit 覆盖工作区未提交 patch (K4 两度丢失) → 教训: 单仓多会话必须小步 commit; 批44 (mass_260) 5/5 4169tok in-band K4 数据首通
 - K4 首批信号: 泛查询 top1=identity_statement (prec 0.37-0.43, gap 0.02-0.07) 全部 degrade_semantic 正确降级; C06 unit-convert level=2 prec 0.6 gap 0.18 强判别
+
+### R135: K4 信号→动作闭环 (低判别压制) — 点位驱动优化首个完整循环
+- 批44 信号 (T2 触发): 泛查询 top1=identity prec 0.37-0.43 & gap 0.02-0.07 全靠 degrade_semantic 兜底 → 压制阈值 prec<0.45 && gap<0.10 → decision=low_confidence 直接跳过
+- 批45 (mass_261) 5/5 4182tok (+0.3% K2 中性) 389 绿 — 4/5 low_confidence 生效, C06 level=2 强判别不受影响
+- K4 现状: 期望 skill 用例 (C04/C05) force 路径已有断言; 泛查询误吸率从"隐藏"变为可观测可治理

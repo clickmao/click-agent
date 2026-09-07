@@ -30,3 +30,9 @@
 - **KPI**: in-band (基准轮数 5)
 - **per-case**: C01_general_qa 524tok 10.8s Δ+28 | C03_subtask 1589tok 26.3s Δ-131 | C06_executive_unit_convert 0tok 4.2s | C08_reasoning 1398tok 28.4s Δ+230 | C11_json_format 658tok 7.1s Δ-11
 
+## mass_261 — R135 batch45 K4 low-conf suppression (2026-09-07T16:08:41+0800)
+
+- **判定**: 5/5 passed, tokens_total=4182 (avg 836), wall=81502ms (avg 16.3s)
+- **KPI**: in-band (基准轮数 5)
+- **per-case**: C01_general_qa 466tok 8.3s Δ-12 | C03_subtask 1798tok 44.1s Δ+278 | C06_executive_unit_convert 0tok 4.2s | C08_reasoning 1256tok 16.9s Δ+53 | C11_json_format 662tok 8.0s Δ-51
+
