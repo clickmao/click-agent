@@ -274,3 +274,9 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 ### R131: 迭代优化总体方案文档 (用户点名: 单独成文)
 - 新建 `docs/reports/iteration-master-plan.md` (方法论总纲, 与主报告分工: 方法 vs 状态): ①点位新增五触发器 (T1 wall 疑点无点位/T2 breach 连批/T3 新功能无观测/T4 审计空白/T5 主题盲区) + 点位立项卡 (commit message 载体) ②点位探索两手段 (差分探查: 字段变异系数+wall 残差墙; 极端采样: 最长/最深/最快/最空四压力画像) ③测试数据源: 用例分类学现状 (负面 12% 目标 20%) + 七维入册检查 + 负面八类清单 (N1-N8, N8 画像派生程序化生成) + 四层数据源分层 ④跑测真实性五道防线 (过程证据链/阳性抽查/阴性探针红队自检/双模型交叉/RETIRED 诚实制度) + TRUTH-INCIDENT 响应 ⑤回滚原子性铁律 (点位与功能同 commit) + 三特殊情况 (打点开销/LLM 漂移/基础设施) ⑥每 5 批审计脚本化清单 + 节奏表 (轮/批/5批/月/50轮)。
 - 主报告+千轮报告互链 master-plan (导航闭环)。推 c2f86c9→本次。
+
+### R132: 批40 (mass_256) — eval/reports 机制上线 + K1 靶向启动
+- **机制**: run_round.py 每轮自动追加 eval/reports/round-log.md (用户钦定: 跑测后输出数据记录); dry-run 验证 ✓
+- **批40** (mass_256, quick 5 用例): 5/5 passed, 4291tok, wall 75.6s, KPI in-band (基准 5 轮); C06 0tok=expect.llm=false 本地执行器设计正确
+- **准则入档**: master-plan §0-0 宪法八条 + §0-1 五 KPI 维度 (1cbbb07)
+- K1 靶向: UserTendency 聚合断链 = R133 第一靶点
