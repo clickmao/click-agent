@@ -150,6 +150,9 @@ def summarize_points(points):
             # R116: 隔离维度 (无关话题隔离 E2E 判定)
             s["isolated"] = bool(kv.get("isolated"))
             s["isolated_score"] = kv.get("relevance_score")
+        elif tag == "goal" and kv.get("op") == "pivot":
+            # R151: pivot 重锚打点消费 (打点源 IndustrialAgentV2 goal/pivot; 防 C15 断言空心 — 同 R142 compression 教训)
+            s["pivot_n"] += 1
         elif tag == "bge_embed":
             # R116: P3 真链维度 (bge-local=真向量 / hash-fallback=词袋)
             s["bge_provider"] = kv.get("provider")
@@ -221,6 +224,8 @@ def check_expect(case, reply, agg, raw_tail):
         req(agg["isolated"] is not True, f"isolated={agg['isolated']} (score={agg['isolated_score']}) want False")
     if "pivot_reanchor" in exp:
         req(agg["isolated"] is not True, f"pivot 轮被隔离误吞 (isolated={agg['isolated']} score={agg['isolated_score']})")
+        # R151: 重锚必须真实发生 (op=pivot 打点) — 防判定空心 (None 伪装"未隔离")
+        req((agg.get("pivot_n") or 0) >= 1, f"pivot 重锚未发生 (pivot_n={agg.get('pivot_n')})")
         req(len(reply) >= 10, f"pivot 后回复过短 ({len(reply)}ch, 未产出新任务链)")
     # v0.11.0 R93: JSON 格式返回校验器 (用户注意点 1 — 格式正确性额外打点):
     if "json_valid" in exp or "json_fields" in exp:

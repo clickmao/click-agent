@@ -22,7 +22,7 @@
 
 | # | 维度 | 字段 | 用例 | 建档轮 | 备注 |
 |---|------|------|------|--------|------|
-| 11 | 隔离 | isolated/isolated_score | C14/C16 多轮 | R36 | score≥2 隔离判定 |
+| 11 | 隔离 | isolated/isolated_score | C14/C16 多轮 | R36 | score≥2 隔离判定; **R149 判定空心修复**: C14 expect 绑 isolated_true 真断言 (不再只 llm:true), quick-11 起常态采集 |
 | 12 | bge 真链 | bge_provider/bge_ms | 全局 | R116 | bge-local vs hash-fallback |
 | 13 | 语义质量 | reply_rel/quality_suspect | LLM 用例 | R136 | 阈值分层: 模板 0.3 / LLM 0.5 |
 | 14 | 历史对比 | delta_tokens_vs_hist/delta_wall_vs_hist | 有基准轮 | R132 | D5 |
