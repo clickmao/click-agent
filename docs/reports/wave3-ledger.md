@@ -287,3 +287,9 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - **修复**: 历史与当前取 max (同信号两观测取强, 历史 0.8 降权保留) + conf 改 max-based + weak/strong_count 诊断 + tendency_bias 新点位 (立项卡 T5/K1)
 - **实证**: 真机 'python api 测试' UserTendency 0snip→1snip/r0.8; 批41 mass_257 4/4 LLM 用例全通 (C06 本地执行器设计性无召回); 389 测试全绿 (+3)
 - **K2 副产**: 3596tok vs 批40 4291 (-16.3%), KPI in-band
+
+### R133b: 全仓测试 flaky 根除 (R133 引入回归的顺带修复)
+- **症状**: 389 测试间歇失败 (实证 5/6 fail) — TelemetryPendingTests pre_boot_probe 断言丢失
+- **根因**: AgentTelemetry pending ring 上限 32 太小 — R129 D3 后 ContextAssemblerTests phase_timing 打点 (≥27) + R133 tendency 写入 (15) 并行灌满 ring, Configure 前 Emit 被丢
+- **修复**: ①ring 32→256 (产品运行 Configure 启动即调, ring 极少超 32; 放宽仅影响极端并发, 丢点计数仍可见) ②recall_tendency 打点加 bias!=null 守卫 (mock 测试零 Emit) ③TendencySignalFilterTests GetContextBias 用例改直接落盘构造 (0 Emit)
+- **验证**: 389 测试 6/6 连续全绿; AOT publish 0 IL 警 + full-graph smoke OK
