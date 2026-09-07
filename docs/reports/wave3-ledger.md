@@ -337,3 +337,9 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - 批79 (mass_295): 11/11 10209tok (928/c, 近期新低) — 修复前 rel=None
 - 批80 (mass_296): 11/11 9468tok (860/c, 新低) — 修复前 rel=None
 - 批81 (mass_297): 11/11 10334tok (939/c) — 修复后 rel n=11 avg 0.631
+
+### R153b: 推送阻塞 (诚实边界) — GITHUB_TOKEN 失效, 3 commits 本地待发
+- **实证**: API 直连 `GET /user` → HTTP 401 Bad credentials (非镜像假象; upload-github.sh 中唯一 token); ghfast 镜像 push 同报 403 (上游鉴权失败的一致表现)
+- **范围**: origin/main 落后 3 commits — dc13413 (R152b) / 1f8ff13 (R152c) / 9a6d89a (R153)。R152b/c 未推送系前 tick 遗留, 本 tick 才经 API 实证定位根因
+- **凭据卫生核查**: push 用一次性 URL, 推完即弃; `git config --list | grep -c ghp_` = 0; branch.main.remote=origin 未污染; 本机无其它有效 token (skills 文档仅占位文本)
+- **处置**: 待用户签发新 PAT (需 repo write scope) 后, 用一次性 URL 重推 3 commits, API 验 sha 收尾 — 与 R138 "推送待新 token" 同型
