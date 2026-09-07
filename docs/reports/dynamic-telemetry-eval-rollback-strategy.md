@@ -141,13 +141,13 @@ done
 
 ## 7. 迭代状态快照（恢复迭代从这里开始）
 
-- **主线进度**：R138-R149。R146 K1 窗口修复（TakeLast 10→100, conf 0.296→0.8, A/B 开关实证）；R147 C07 内容断言接管；**R149 用户质疑整改**：TaskRelevanceChecker 判定空心修复（C14/C15 expect 绑定 isolated_true/pivot_reanchor 真断言 + quick 10→11 C14 进常态 + 10 测试对抗族 399 绿）。下一轮号 **mass_293**。
-- **最近五批审计（批61-65）**：50/50；768 tok/case 均值；drift 全 1.0；suspects 3→0（must_contain 内容断言接管后）。
+- **主线进度**：R138-R153。R149 用户质疑整改（真断言族）；R151 pivot 判定闭环（真缺陷 56 KeyError 修复）；R152 收尾（phase report 3: batch62-78 187/187 + README 30 批滚动制度）；**R153 真缺陷 57 修复**：D4 gate 读 os.environ 致 reply_rel 整块静默失效（批79/80 n=0 实证，诚实缺省未破）→ gate 同源 load_env()，批81 同环境复验 n=11 avg 0.631 恢复。下一轮号 **mass_298**。
+- **最近五批审计（批76-80）**：63/63 全绿（quick-11 子集 44/44）；tok/case 941→939→928→860 递降带内（全量批 1165 口径不同）；drift 全 1.0；suspects 0；D4 rel 修复前 n=0（缺陷 57）/修复后 n=11 avg 0.631。
 - **R149 用户质疑结论**：TaskRelevanceChecker 组件能力真实（全量批 50/53 isolated=True score=2 实测）但判定空心成立——既往 C14/C15 expect 只有 llm:true，通过率对组件无证明力。修复后 C14 真断言批69-72 四连验 isolated=True score=2 PASS (4/4)。
 - **R151 (pivot 判定闭环)**：C15 pivot_reanchor 升级为三重真断言 (不隔离+pivot_n≥1+新任务链产出)；pivot_n 打点消费建成 (goal/op=pivot, 真缺陷 45: init 缺键 KeyError——batch76 首跑 15/19 后死亡实证, 与 R142 compression 同源教训)；批76 全量 19/19 复证 pivot_n=1 真重锚。
 - **README 30 批滚动制度 (R152b 用户钦定)**：README 能力段只显示最新 2 批，历史按轮段归档 docs/CHANGELOG-v0.11.0-R103-R127/R133-R142/R143-R152.md；批次趋势行只留最新 2 批 + 归档链接；下次滚动: 批108。
-- **in-flight**：R152 收尾 → R153+ 候选：① 批 79+（quick-11 常态）② 批 80 五批审计 ③ K1 质量纵向 ④ 持续。
-- **环境事实**（防重查）：bge=`/home/agentuser/.agentframework/models/bge-q8.gguf`（env `AGENTFRAMEWORK_BGE_MODEL`，缺失→词袋 dim256）；3 key：kimi 负样本/glm 可用/deepseek 7.61 CNY；github 直连断→ghfast.top 代理推（>8min 假死勿中断）；telemetry 读用 utf-8-sig；`execute_code` 300s 上限→批测逐轮后台跑。
+- **in-flight**：R153 收尾 → R154+ 候选：① 批 82+（quick-11 常态）② 批 85 五批审计 ③ K1 质量纵向 ④ 全量 19 批回归（批77 后首全量, 验 C15/pivot 链）⑤ 持续。
+- **环境事实**（防重查）：bge=`/home/agentuser/.agentframework/models/bge-q8.gguf`（`.env.local` `AGENTFRAMEWORK_BGE_MODEL`，**cron/新 shell 须 export PATH="$HOME/.dotnet:$PATH" 否则 runner FileNotFoundError**；bge 路径勿依赖 os.environ——缺陷 57 教训，harness 统一走 load_env()）；3 key：kimi 负样本/glm 可用/deepseek 7.61 CNY；github 直连断→ghfast.top 代理推（>8min 假死勿中断）；telemetry 读用 utf-8-sig；`execute_code` 300s 上限→批测逐轮后台跑；**llm-service/llm.sock 已 R113 退场，sock 缺失=正常态勿重启**。
 - **千轮口径**：RETIRED 轮诚实标注；全绿口径=排除 RETIRED；轮号唯一；每轮落盘+镜像。
 
 ## 8. 本报告的更新纪律

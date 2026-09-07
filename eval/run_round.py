@@ -352,7 +352,10 @@ def main():
     # R136 (D4 reply_rel): 离线语义质量打点 — 每用例 (question, reply) bge 余弦 <0.5 → quality_suspect。
     # 用 --embed 子命令 (bge 真链, 512dim), 模型缺失 → 全部 rel=None (诚实缺省, 不造假数据)。
     host_dll = "src/agent.host/bin/Release/net10.0/agenthost.dll"
-    if os.path.exists(host_dll) and os.environ.get("AGENTFRAMEWORK_BGE_MODEL"):
+    # v0.11.0 R153 (真缺陷 57): gate 读 os.environ 但 bge 路径只在 .env.local → 未 export 的
+    # 启动环境 (cron/新 shell) 下 D4 整块静默跳过, reply_rel 全 None (批79/80 实证 n=0)。
+    # 修: gate 与子进程同源 — 都读 load_env() 合并后的 env (.env.local 兜底)。
+    if os.path.exists(host_dll) and env.get("AGENTFRAMEWORK_BGE_MODEL"):
         def _embed(text):
             try:
                 p = subprocess.run(["dotnet", host_dll, "--embed", text[:2000]],

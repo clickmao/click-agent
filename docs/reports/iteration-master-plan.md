@@ -34,10 +34,10 @@
 
 | # | KPI 维度 | 定义 | 当前观测载体 | 状态 |
 |---|---|---|---|---|
-| K1 | **被提问概率**（用户话题倾向） | agent 主动澄清/追问的触发是否踩中用户真实意图；话题画像驱动上下文偏置 | UserTendency 画像（data/tendency/*.json）+ clarification 链路 | ⚠ **断链待修**：画像真实但 GetContextBiasAsync confidence≤0.3 阈值拦截→恒 0 召回（R132 第一靶点） |
+| K1 | **被提问概率**（用户话题倾向） | agent 主动澄清/追问的触发是否踩中用户真实意图；话题画像驱动上下文偏置 | UserTendency 画像（data/tendency/*.json）+ clarification 链路 + tendency_bias 探针 | ✓ 链路已通（R133 缺陷55 修复 + R146 K1 窗口修复 TakeLast 10→100, conf 0.296→0.8 A/B 实证, 0→1snip/rel0.8）；持续项=质量纵向观测 |
 | K2 | **token 使用量** | 单轮/单任务 token 消耗（含 prompt 膨胀与 completion 冗余） | 轮 JSON prompt/completion tokens + D2 KPI 健康带 + D5 per-case delta + 规则8 输出纪律 | ✓ 治理中：C08 943→479（-49%），批均值 3671-4217 带内 |
-| K3 | **问题回答准确性** | 回复与问题的语义相关性；事实依据充分性 | D4 reply_rel（bge 余弦，规划中）+ EvidenceGate 0.60 + 用例 expected 校验 | ⚠ 部分：EvidenceGate 已上线，D4 语义打点未落地 |
-| K4 | **SKILL 调用准确性** | 该调 Skill 时调用、不该调时不调、选中正确 Skill | **尚无打点**——需新增 skill_match/skill_trigger 点位（立项卡待填） | ✗ 盲区 |
+| K3 | **问题回答准确性** | 回复与问题的语义相关性；事实依据充分性 | D4 reply_rel（bge 余弦，run_round.py 批后离线打点）+ EvidenceGate 0.60 + 用例真断言族（isolated_true/pivot_reanchor/must_contain） | ✓ 已落地（R136 agenthost --embed + 阈值分层 0.3/0.5，批47 校准 0 suspect；R149/R151 真断言接管）；持续项=rel 分布观测 |
+| K4 | **SKILL 调用准确性** | 该调 Skill 时调用、不该调时不调、选中正确 Skill | skill_match/skill_decisions 打点（SkillDispatcher，harness 已消费）+ 期望 skill 用例 force 断言（C04/C05/C06） | ✓ 已落地（R135 信号→动作闭环: low_confidence 压制 prec<0.45&&gap<0.10, 批45 4/5 生效且 C06 强判别不受影响）；持续项=泛查询误吸率治理 |
 | K5 | **基础能力** | 文件/工作区/RAG/记忆/git 等底座功能正确性 | 17 用例分类覆盖 + 386 单测 + 负面八类（§3，扩充中） | ✓ 常青维护 |
 
 **三条使用规则：**

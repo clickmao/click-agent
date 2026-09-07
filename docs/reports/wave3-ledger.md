@@ -324,3 +324,16 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - **修复**: 51d30ab init 补 `pivot_n: 0` + 单元验证 pivot/无pivot 两路径 (summarize_points 直调, 1/0 双 OK)
 - **验证**: batch76 重跑 (mass_292, 修复后代码) — 结果见当轮台账
 - **编号勘误**: 初版误标"缺陷45", 全仓核查后 45 未占用但 51-55 已连号, 顺延改 **56**
+
+### R153: 真缺陷 57 — D4 gate 读 os.environ 致 reply_rel 整块静默失效 (环境漂移族) + 批79-81
+- **症状**: 批79/80 (mass_295/296, quick-11 11/11 in-band) `D4 reply_rel` n=0 — K3 语义质量打点整块消失; 同代码批76-78 (mass_292-294) n=11/19 avg 0.582-0.622 正常
+- **根因**: run_round.py D4 块 gate 读 `os.environ.get("AGENTFRAMEWORK_BGE_MODEL")`, 但 bge 路径只写在 `.env.local`, 由 `load_env()` 合并进**子进程** env — 父进程 os.environ 从未合并。此前 runner 均在已 export 的 shell 会话启动, cron 新 shell 无 export → gate false → else 分支全 rel=None。诚实缺省未破 (不造假数据), 但 K3 观测静默失明; 与 R151b 同族教训: **打点消费链路的前提假设 (env 来源) 必须与生产者一致**
+- **修复**: gate 与子进程同源 — `os.environ.get` → `env.get` (load_env() 合并后, .env.local 兜底), 1 行
+- **验证**: 批81 (mass_297) 修复后代码、同一未 export 环境重跑 — 11/11 10334tok (939/c) in-band, **D4 reply_rel n=11 avg=0.631 恢复**
+- **启动器事故 (诚实记录, 零数据影响)**: ① 本 tick 首次启动 PATH 缺 dotnet → FileNotFoundError 崩溃 (首用例前死, 无轮文件无锁残留影响); ② 一次全量误启动 (漏 --quick, R107 缺陷39 同族的手工失误) 在轮 JSON 落盘前 kill, mass_295 号未被污染, 修正后重新占用
+- **运维事实更正**: cron 守卫中"data/llm.sock 未运行则重启"条款作废 — llm-service 已 R113 从代码退场 (回进程内直连), sock 缺失是正常态
+- **5批审计 (批76-80, mass_292-296)**: 63/63 全绿 (quick-11 子集 44/44); tok/case 941→939→928→860 递降 (健康带内, 全量批 1165 口径不同); suspects 0; drift 全 1.0
+- **master-plan §0-1 KPI 表对齐**: K1 "断链待修"→✓ (R133 缺陷55 + R146 窗口修复, b65a128), K3 "D4 未落地"→✓ (R136), K4 "盲区"→✓ (R135 low_confidence 闭环) — 表述落后代码 3 轮, 防恢复会话误判重复立项
+- 批79 (mass_295): 11/11 10209tok (928/c, 近期新低) — 修复前 rel=None
+- 批80 (mass_296): 11/11 9468tok (860/c, 新低) — 修复前 rel=None
+- 批81 (mass_297): 11/11 10334tok (939/c) — 修复后 rel n=11 avg 0.631
