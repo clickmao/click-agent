@@ -270,3 +270,7 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - 新建 `docs/reports/dynamic-telemetry-eval-rollback-strategy.md`: 打点体系全景 (25 点位分层) + D1-D5 策略 + 明确评测方案 (批测入口/健康带/回滚机制: 真 FAIL 复跑 2 次或连续 2 批劣化>10% → git revert 点位与代码同 commit 原子回滚) + UserTendency 断链=主题第一靶点 + 迭代状态快照 (上下文丢失恢复入口)。
 - run_round.py 落盘后自动镜像 eval/results/ (历史手工 cp 常漏)。
 - AOT 重发布 (缺陷54 后铁律) ✓; mass_252-255 补镜像。
+
+### R131: 迭代优化总体方案文档 (用户点名: 单独成文)
+- 新建 `docs/reports/iteration-master-plan.md` (方法论总纲, 与主报告分工: 方法 vs 状态): ①点位新增五触发器 (T1 wall 疑点无点位/T2 breach 连批/T3 新功能无观测/T4 审计空白/T5 主题盲区) + 点位立项卡 (commit message 载体) ②点位探索两手段 (差分探查: 字段变异系数+wall 残差墙; 极端采样: 最长/最深/最快/最空四压力画像) ③测试数据源: 用例分类学现状 (负面 12% 目标 20%) + 七维入册检查 + 负面八类清单 (N1-N8, N8 画像派生程序化生成) + 四层数据源分层 ④跑测真实性五道防线 (过程证据链/阳性抽查/阴性探针红队自检/双模型交叉/RETIRED 诚实制度) + TRUTH-INCIDENT 响应 ⑤回滚原子性铁律 (点位与功能同 commit) + 三特殊情况 (打点开销/LLM 漂移/基础设施) ⑥每 5 批审计脚本化清单 + 节奏表 (轮/批/5批/月/50轮)。
+- 主报告+千轮报告互链 master-plan (导航闭环)。推 c2f86c9→本次。

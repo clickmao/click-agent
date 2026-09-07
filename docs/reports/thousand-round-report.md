@@ -72,6 +72,7 @@ R115-R126 六轮: #43 InitializeAsync 无调用点 (切模死链) / #44+44b prov
 > **⚠️ 本节为 R127 时的设计快照，已停止单独更新。实施状态与完整策略（含评测方案/回滚机制）以主报告为准：**
 > **`docs/reports/dynamic-telemetry-eval-rollback-strategy.md`**（R130 起的千轮主控报告，随每轮同 commit 更新）。
 > 实施进度：**D2 ✅ R128 / D3 ✅ R129（首战锁定缺陷54）/ D5 ✅ R128**（缺陷53：harness 空切片+字典序）；**D1、D4 设计完成未实施**。
+> 点位增删触发器/点位探索方法/测试数据源设计（含负面八类）/跑测真实性五道防线 → **`docs/reports/iteration-master-plan.md`**。
 
 在现有 12+ 静态点位之上, 下一阶段升级为**动态智能打点**:
 
