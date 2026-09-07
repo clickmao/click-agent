@@ -86,6 +86,17 @@ public sealed class SkillDispatcher
             if (Lifecycle.IsBreakerOpen(top.Skill.SkillId))
                 return null;
 
+            // R135 (K4 优化, 批44 数据驱动): 双低信号压制 — prec<0.45 且 runner_up_gap<0.10 时
+            // 候选判别度不足 (identity 泛误吸 4/5 实证), 直接降级普通推理, 省 phase 开销。
+            // skill_trigger 仍 emit (decision=low_confidence) 保持 K4 观测连续性。
+            if (top.Level < 2 && top.Precision < 0.45 && top.Precision - (hits.Count > 1 ? hits[1].Precision : 0.0) < 0.10)
+            {
+                agent.config.AgentTelemetry.Emit("skill_trigger", "SkillDispatcher",
+                    ("decision", "low_confidence"), ("skill", top.Skill.SkillId),
+                    ("precision", Math.Round(top.Precision, 4)));
+                return null;
+            }
+
             var sw = System.Diagnostics.Stopwatch.StartNew();
             Lifecycle.Activate(top.Skill);
 
