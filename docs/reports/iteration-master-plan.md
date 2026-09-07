@@ -271,6 +271,10 @@ python3 eval/run_round.py <新轮号> "revert-verify <原commit>" --quick   # �
 
 ---
 
+## 6.5 测试维度总账
+
+历史维度/负面族/数据蒸发教训 → `test-dimensions-ledger.md`（R142 建档，用户钦定防遗忘制度：新维度必登记、删维度必注明；常驻维度每轮批测自动覆盖）。
+
 ## 7. 迭代节奏与角色分工
 
 | 节奏 | 动作 |
