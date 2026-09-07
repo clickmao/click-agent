@@ -114,3 +114,11 @@
 - **意图指数**: n=8, ms_avg=0.1, dist={'general': 6, 'git_operation': 1, 'search': 1}
 - **per-case**: C01_general_qa 487tok 8.1s | C03_subtask 1816tok 43.4s | C04_skill_identity 0tok 4.6s | C06_executive_unit_convert 0tok 4.4s | C07_memory_followup 552tok 8.3s | C08_reasoning 1143tok 17.9s | C11_json_format 714tok 7.4s | C13_git_sensitive 2457tok 56.3s | C17_neg_hallucination_bait 912tok 12.5s | C18_neg_format_trap 764tok 9.1s
 
+## mass_274 — R144 batch58 quick-10 regular (2026-09-07T18:11:25+0800)
+
+- **判定**: 10/10 passed, tokens_total=8152 (avg 815), wall=140156ms (avg 14.0s)
+- **KPI**: in-band (基准轮数 10)
+- **防漂移指数**: segments=3, drift_pass=1.0, semantic_avg=None, chars_ratio=0.991
+- **意图指数**: n=8, ms_avg=0.1, dist={'general': 6, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 480tok 8.5s Δ-51 | C03_subtask 1703tok 35.3s Δ-226 | C04_skill_identity 0tok 4.7s | C06_executive_unit_convert 0tok 4.3s | C07_memory_followup 620tok 8.9s Δ-51 | C08_reasoning 1371tok 14.9s Δ+64 | C11_json_format 803tok 9.7s Δ+122 | C13_git_sensitive 1460tok 27.5s Δ-712 | C17_neg_hallucination_bait 1066tok 12.9s Δ+79 | C18_neg_format_trap 649tok 13.3s Δ-97
+

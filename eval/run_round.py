@@ -341,6 +341,7 @@ def main():
             except Exception:
                 return None
         vecs = {}
+        cases_by_id = {c["id"]: c for c in cases}
         for c in cases:
             vecs[c["id"]] = (_embed(c.get("input", c.get("query", ""))), None)
         exp_llm = {c["id"]: c.get("expect", {}).get("llm", True) for c in cases}
@@ -352,8 +353,12 @@ def main():
                 x["reply_rel"] = round(dot / ((sum(a*a for a in qv) ** 0.5) * (sum(b*b for b in rv) ** 0.5) or 1), 4)
                 # R136 校准 (批46 实证): executive 模板回复 ("97.88°F") 与自然语言问句结构性低余弦
                 # (0.436 假阳性) — 阈值分层: LLM 回复 <0.5 suspect, 模板回复 <0.3 才 suspect。
+                # R144 校准 (批50/53/56/57 四批实证): 记忆元问题 (session_aware) 的 rel 0.40-0.44 —
+                # "问记不记得" vs "复述内容" 词汇面无重叠但回复正确 (人工核对 C07 四批全对),
+                # 阈值降 0.4: 会话感知类假阳性消除, 真记忆丢失 (<0.4) 仍能抓到。
                 is_template = (exp_llm.get(x["id"], True) is False) or x.get("total_tokens", 0) == 0
-                thr = 0.3 if is_template else 0.5
+                is_session_aware = bool(cases_by_id.get(x["id"], {}).get("expect", {}).get("session_aware"))
+                thr = 0.3 if is_template else (0.4 if is_session_aware else 0.5)
                 if x["reply_rel"] < thr:
                     x["quality_suspect"] = True
             else:
