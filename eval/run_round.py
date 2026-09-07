@@ -55,9 +55,16 @@ def run_case(case, env):
             ["dotnet", "run", "--project", "src/agent.host", "-c", "Release", "--no-build", "--", "-q", case["input"]],
             capture_output=True, text=True, timeout=180, env=env)
     except subprocess.TimeoutExpired:
-        wall_ms = 180_000
-        p = None
-        print(f"[TIMEOUT] {case['id']} wall=180s — repl 子进程超时, 记 FAIL 批继续", flush=True)
+        # R174: LLM 瞬态挂起 (C08/C13 实证, 历史 wall 12-22s) — 重试 1 次; 再超时才记 FAIL (保留首次事实)。
+        print(f"[TIMEOUT] {case['id']} wall=180s — 重试 1/1 (LLM 瞬态假设)", flush=True)
+        try:
+            p = subprocess.run(
+                ["dotnet", "run", "--project", "src/agent.host", "-c", "Release", "--no-build", "--", "-q", case["input"]],
+                capture_output=True, text=True, timeout=180, env=env)
+        except subprocess.TimeoutExpired:
+            wall_ms = 180_000
+            p = None
+            print(f"[TIMEOUT] {case['id']} 重试仍 180s — 记 FAIL 批继续", flush=True)
     wall_ms = int((time.time() - t0) * 1000)
     out = p.stdout if p is not None else ""
     # 提取回复正文 (── 回复 ── 与 · intent= 之间)
