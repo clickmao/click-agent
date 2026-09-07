@@ -260,3 +260,13 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - **缺陷 53 (打点链自身)**: ①`[-6:-0]` 空切片 (-0==0) → delta 恒 None; ②字典序让 stability_* 老轮排最后 → 改按 ts 排序。
 - **D2 KPI 健康带**: tokens/case ∈[500,950], wall/case ∈[12s,30s] — mass_251 首次捕获越界 (C03 4357tok/99s), 复跑 mass_252 in-band (3732tok/107s) = LLM 单轮波动, breach 只标记不判 FAIL (防误回退)。
 - mass_251/252: 5/5+5/5 全绿。
+
+### R129: D3 phase_timing + 缺陷 54 (assembly 20s)
+- **D3 上线** (5 处 phase_timing): intent_ms/llm ms/recall_memory/recall_workspace/compress — 首战即发现 assembly 11-13s (C08/C11)。
+- **缺陷 54 三层治理**: ①54a EmbeddingRouter 共享 bge 单例 (ConcurrentDictionary by modelPath|mode) ②54b GradientCompressor: Full(≥0.8)与 Rule/TitleOnly(<0.5) 档跳过 originalEmbedding (语义校验仅 SummarySentences 0.5-0.8 需要) ③54c EmbeddingFunction 每 call new → 共享后单进程单次加载。
+- **战果 (mass_255 批测口径)**: assembly 210/245ms (-98%), compress <200ms, C08 wall 34.0→13.3s, 批 wall 94→65.6s (**-30%**)。386 测试全绿, AOT 0 IL 警 (NU1510 非 IL)。
+
+### R130: 动态打点评测回滚策略主报告 (用户钦定)
+- 新建 `docs/reports/dynamic-telemetry-eval-rollback-strategy.md`: 打点体系全景 (25 点位分层) + D1-D5 策略 + 明确评测方案 (批测入口/健康带/回滚机制: 真 FAIL 复跑 2 次或连续 2 批劣化>10% → git revert 点位与代码同 commit 原子回滚) + UserTendency 断链=主题第一靶点 + 迭代状态快照 (上下文丢失恢复入口)。
+- run_round.py 落盘后自动镜像 eval/results/ (历史手工 cp 常漏)。
+- AOT 重发布 (缺陷54 后铁律) ✓; mass_252-255 补镜像。

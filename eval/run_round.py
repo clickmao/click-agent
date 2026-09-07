@@ -95,7 +95,8 @@ def summarize_points(points):
          "loop_ms": None, "models": [],
          "snippets": 0, "sources_recall": "", "assembly_ms": None, "from_cache": None,
          "prompt_total_tokens": None, "history_tokens": None, "gate_to_ask": None,
-         "isolated": None, "isolated_score": None, "bge_provider": None, "bge_ms": None}
+         "isolated": None, "isolated_score": None, "bge_provider": None, "bge_ms": None,
+         "intent_ms": None, "llm_ms_total": 0, "phase_llm_ms": None}
     for pt in points:
         kv = pt.get("kv", {}) or {}
         tag = pt.get("point")
@@ -105,6 +106,12 @@ def summarize_points(points):
             s["completion_tokens"] += kv.get("completion_tokens", 0) or 0
             s["total_tokens"] += kv.get("total_tokens", 0) or 0
             s["models"].append(kv.get("model"))
+            # R129 (D3): LLM 真耗时累计 (成功/失败均含)
+            if kv.get("ms") is not None:
+                s["llm_ms_total"] += kv.get("ms") or 0
+        elif tag == "phase_timing" and kv.get("phase") == "llm":
+            # R129 (D3): LLM 全段 (含路由) — 与 llm_ms_total 差值 = 路由/重试开销
+            s["phase_llm_ms"] = (s["phase_llm_ms"] or 0) + (kv.get("ms") or 0)
         elif tag == "skill":
             mid = kv.get("matched")
             if mid and mid != "(none)":
@@ -112,6 +119,9 @@ def summarize_points(points):
         elif tag == "intent":
             s["intent"] = kv.get("primary")
             s["subtasks"] = kv.get("subtask_count", 0)
+            # R129 (D3): 意图阶段热路径耗时
+            if kv.get("ms") is not None:
+                s["intent_ms"] = kv.get("ms")
         elif tag == "assembly":
             s["assembly_ok"] = kv.get("success")
             s["snippets"] = kv.get("snippets", 0)
@@ -345,6 +355,13 @@ def main():
         print(f"KPI_BREACH: {'; '.join(breaches)}")
     else:
         print("KPI: in-band")
+    # R130: eval/results 自动镜像 — 报告可恢复迭代的数据源 (历史靠手工 cp 常漏)
+    try:
+        import shutil
+        os.makedirs("eval/results", exist_ok=True)
+        shutil.copy2(path, f"eval/results/{rnd}.json")
+    except OSError as e:
+        print(f"WARN: results mirror failed: {e}")
 
 if __name__ == "__main__":
     sys.exit(main())

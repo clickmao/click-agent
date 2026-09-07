@@ -479,7 +479,9 @@ Interlocked.Increment(ref _cacheMisses);
             _logger.LogWarning(ex, "Workspace recall failed");
         }
 
-        _sourceStopwatch = stopwatch.ElapsedMilliseconds;
+        // R129 D3: per-source 耗时可见化 (workspace 目录扫描+全文读取嫌疑)
+        agent.config.AgentTelemetry.Emit("phase_timing", "ContextAssembler",
+            ("phase", "recall_workspace"), ("ms", stopwatch.ElapsedMilliseconds));
         return snippets;
     }
 
@@ -609,7 +611,10 @@ Interlocked.Increment(ref _cacheMisses);
         }
         
         _recallCountBySource.AddOrUpdate(DataSourceType.Memory, stopwatch.ElapsedMilliseconds, (_, v) => v + stopwatch.ElapsedMilliseconds);
-        
+        // R129 D3: per-source 耗时可见化 (assembly 13s 定位用)
+        agent.config.AgentTelemetry.Emit("phase_timing", "ContextAssembler",
+            ("phase", "recall_memory"), ("ms", stopwatch.ElapsedMilliseconds));
+
         return snippets;
     }
     
@@ -710,7 +715,10 @@ Interlocked.Increment(ref _cacheMisses);
         }
         
         _recallCountBySource.AddOrUpdate(DataSourceType.Session, stopwatch.ElapsedMilliseconds, (_, v) => v + stopwatch.ElapsedMilliseconds);
-        
+        // R129 D3: per-source 耗时可见化
+        agent.config.AgentTelemetry.Emit("phase_timing", "ContextAssembler",
+            ("phase", "recall_session"), ("ms", stopwatch.ElapsedMilliseconds), ("msgs", snippets.Count));
+
         return snippets;
     }
     
@@ -901,6 +909,8 @@ Interlocked.Increment(ref _cacheMisses);
         CancellationToken ct)
     {
         var compressed = new List<ContextSnippet>();
+        // R129 D3: 压缩段总耗时
+        var compressSw = System.Diagnostics.Stopwatch.StartNew();
         
         // v7.14: 会话记忆/Agent 上下文是"目标锚"块 — RenderForPrompt 已自控体积 (记忆≤1000 字符),
         // 压缩会破坏 [目标]/[约束] 结构与画像统计, 且它们相关性最高 (0.95/0.9), 压缩收益为负
@@ -944,7 +954,10 @@ Interlocked.Increment(ref _cacheMisses);
             
             compressed.Add(snippet);
         }
-        
+        compressSw.Stop();
+        agent.config.AgentTelemetry.Emit("phase_timing", "ContextAssembler",
+            ("phase", "compress"), ("ms", compressSw.ElapsedMilliseconds), ("n", snippets.Count));
+
         return compressed;
     }
     

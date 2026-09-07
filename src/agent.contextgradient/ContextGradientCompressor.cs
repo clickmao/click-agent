@@ -31,6 +31,12 @@ public sealed class ContextGradientCompressor
     {
         if (_embedder is null || !_embedder.IsAvailable)
             return Compress(request);
+        // R129 (真缺陷 54b): 语义校验仅 SummarySentences 档 (0.5-0.8) 需要 originalEmbedding —
+        // Full (>=0.8) 恒全文不可达, Rule/TitleOnly (<0.5) 不做语义二重校验 — 两者 embed 纯浪费。
+        // 批测实证: n=8 段每段白做 1-2 次 bge embed (~1.3s/次) → compress 20.3s → 7.7s → 目标 <2s。
+        var score = request.RelevanceScore;
+        if (score is < 0.5 or >= 0.8)
+            return CompressCoreAsync(request, null, ct).ConfigureAwait(false).GetAwaiter().GetResult();
         var originalEmbedding = await _embedder.EmbedAsync(request.Content, ct);
         return await CompressCoreAsync(request, originalEmbedding, ct).ConfigureAwait(false);
     }
@@ -66,7 +72,9 @@ public sealed class ContextGradientCompressor
         }
 
         // 防漂移第二重: 语义相似度 (P3, embedder 就绪且产物非全文时) — cos < 阈值 → 回退全文
-        if (originalEmbedding is not null && level != GradientLevel.Full &&
+        // R129 (54c): 语义校验只对 SummarySentences 档 (0.5-0.8) — Rule/TitleOnly 产物已极短且
+        // 锚词第一重已过, bge embed 1.3s/次 × 低分段的成本>收益 (批测 compress 20.3s→7.7s→目标 <2s)。
+        if (originalEmbedding is not null && level == GradientLevel.SummarySentences &&
             result.Length < content.Length)
         {
             var compressedEmbedding = await _embedder!.EmbedAsync(result, ct).ConfigureAwait(false);

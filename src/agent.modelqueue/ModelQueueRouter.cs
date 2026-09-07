@@ -297,9 +297,13 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             }
         }
 
+        // v0.11.0 R129 (PGO v2 D3): 热路径计时 — llm_call 真耗时 (成功/失败均打), 与 wall 的差值
+        // 即排队/路由开销; 依据 assembly 打点既有 ms 风格 (IndustrialAgentV2.cs:383)。
+        var llmSw = System.Diagnostics.Stopwatch.StartNew();
         try
         {
             var resp = await CallEntryAsync(entry, prompt, ct);
+            llmSw.Stop();
             lock (_lock)
             {
                 _consecutiveFailures = 0;
@@ -315,7 +319,9 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                 ("prompt_tokens", resp.PromptTokens), ("completion_tokens", resp.CompletionTokens),
                 ("total_tokens", resp.TokensUsed), ("success", true),
                 // v0.11.0 R19: 内容长度诊断 (C03 曾现 completion 2000 tok 但回复渲染空 — 定位内容丢在链路哪段)
-                ("content_len", resp.Content?.Length ?? 0));
+                ("content_len", resp.Content?.Length ?? 0),
+                // v0.11.0 R129 (D3): LLM 真耗时 ms
+                ("ms", llmSw.ElapsedMilliseconds));
             // 阈值再同步 (fire-and-forget, 不阻塞主链)
             if (_tokenUsage is not null && _tokenUsage.NeedsResync(entry.Provider))
                 _ = _tokenUsage.TryResyncAsync(entry.Provider, CancellationToken.None);
@@ -323,13 +329,19 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         }
         catch (HttpRequestException ex)
         {
+            llmSw.Stop();
             agent.config.AgentTelemetry.Emit("llm_call", "ModelQueueRouter",
-                ("model", entry.Id), ("provider", entry.Provider), ("success", false), ("error_kind", "http"), ("error", ex.Message));
+                ("model", entry.Id), ("provider", entry.Provider), ("success", false), ("error_kind", "http"), ("error", ex.Message),
+                ("ms", llmSw.ElapsedMilliseconds));
             return await OnTransientFailureAsync(entry, prompt, kind, intent, ct, $"网络错误: {ex.Message}").ConfigureAwait(false);
         }
         catch (OperationCanceledException) when (!ct.IsCancellationRequested)
         {
             // HttpClient 超时 (非用户取消) = 瞬态
+            llmSw.Stop();
+            agent.config.AgentTelemetry.Emit("llm_call", "ModelQueueRouter",
+                ("model", entry.Id), ("provider", entry.Provider), ("success", false), ("error_kind", "timeout"),
+                ("ms", llmSw.ElapsedMilliseconds));
             return await OnTransientFailureAsync(entry, prompt, kind, intent, ct, "请求超时").ConfigureAwait(false);
         }
         catch (OperationCanceledException)

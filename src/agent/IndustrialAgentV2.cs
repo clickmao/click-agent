@@ -305,12 +305,16 @@ public class IndustrialAgentV2 : AgentBase
             }
 
             // 1. 意图识别 + 子任务拆解 (v7.9): 复合句拆为有序子任务, 主意图驱动模板选择
+            // v0.11.0 R129 (PGO v2 D3): 意图阶段热路径计时
+            var intentSw = System.Diagnostics.Stopwatch.StartNew();
             var subTasks = IntentDecomposer.Decompose(message.Content);
             var intent = IntentDecomposer.PrimaryIntent(subTasks);
+            intentSw.Stop();
             agent.config.AgentTelemetry.Emit("intent", "IndustrialAgentV2",
                 ("primary", intent), ("subtask_count", subTasks.Count),
                 ("input_chars", message.Content.Length),
-                ("sensitive", agent.intent.InjectedInstructionClassifier.IsSensitiveIntent(intent)));
+                ("sensitive", agent.intent.InjectedInstructionClassifier.IsSensitiveIntent(intent)),
+                ("ms", intentSw.ElapsedMilliseconds));
             if (subTasks.Count > 1)
             {
                 _logger.LogInformation(
@@ -432,7 +436,12 @@ public class IndustrialAgentV2 : AgentBase
             // v0.11.0 R21: 推理档位路由 — 简单任务轻思考省 token/延迟, 复杂任务保留默认深推理。
             // 实测 (glm-5.3-flash): 简单题 reasoning 0 vs 8910ch; 复杂题 low 档 wall -55%。
             prompt.ReasoningEffort = IsSimpleIntentForReasoning(intent, prompt.UserMessage) ? "low" : null;
+            // v0.11.0 R129 (PGO v2 D3): LLM 全段耗时 (含队列路由/余额检查; 与 llm_call.ms 差值 = 路由开销)
+            var llmSegSw = System.Diagnostics.Stopwatch.StartNew();
             var llmResponse = await _llmCaller.CallAsync(prompt, ct);
+            llmSegSw.Stop();
+            agent.config.AgentTelemetry.Emit("phase_timing", "IndustrialAgentV2",
+                ("phase", "llm"), ("ms", llmSegSw.ElapsedMilliseconds), ("intent", intent));
 
             // 5.1 思考结束指令 (L.2.2 指令 2 — 前端关闭思考步骤显示并折叠)
             _logRouter?.EmitThinkingEnd(llmResponse.Content.Length);

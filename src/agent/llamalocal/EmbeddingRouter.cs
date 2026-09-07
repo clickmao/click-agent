@@ -109,6 +109,11 @@ public sealed class EmbeddingRouter : agent.vectormemory.IEmbeddingProvider
     private readonly bool _llmLoaded;
     private readonly object _lock = new();
     private agent.vectormemory.IEmbeddingProvider? _bge;
+
+    // v0.11.0 R129 (真缺陷 54): 工厂每次调用都 new EmbeddingRouter → 每次都重新加载 bge gguf
+    // (BgeEmbeddingProvider 实例级懒加载, 打点实证 assembly_ms 11-13s @ C08/C11 双链路 embed)。
+    // 同 modelPath+mode 共享单例 — 模型加载一次, Embed 走缓存实例。打点 bge_mode 每 new 仍打 (诊断保留)。
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, agent.vectormemory.IEmbeddingProvider> _sharedBge = new();
     private agent.vectormemory.IEmbeddingProvider BgeOrDefault
     {
         get
@@ -117,7 +122,8 @@ public sealed class EmbeddingRouter : agent.vectormemory.IEmbeddingProvider
             lock (_lock)
             {
                 if (_bge != null) return _bge;
-                _bge = CreateBge() ?? new HashEmbeddingProvider();
+                var key = $"{_modelPath}|{_llmLoaded}";
+                _bge = _sharedBge.GetOrAdd(key, _ => CreateBge() ?? new HashEmbeddingProvider());
                 return _bge;
             }
         }
