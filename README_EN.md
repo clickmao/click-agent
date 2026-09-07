@@ -47,7 +47,7 @@ Release line: v0.11.0 — unified @cmd command protocol + 3 transports / Skill e
 
 ### 📊 Thousand-Round Eval (PGO-driven)
 - **1034/1056 = 97.92%** case pass (215 rounds landed); quick-batch tokens **7354 → ~3969 avg**; C08 reasoning completion **1875 → 479 (-74%)**; 55 real defects fixed, all telemetry-driven.
-- Batch trend (42-55, quick-5): 4271/3875/4169/4182/3734/3673/4130/3408/4941/3473/3683/4201 — 12 batches all green, KPI in-band.
+- Batch trend (42-60): quick-5 batches 42-55 = 4271/3875/4169/4182/3734/3673/4130/3408/4941/3473/3683/4201 tok/batch; R143+ quick-10 batches 56-60 = 902/884/815/631/601 tok/case — 19 batches all green, KPI in-band (batch51 988/case single-point excursion re-verified; batches 59-60 consecutive new lows after R144 D4 memory-threshold calibration).
 - Full report: [Thousand-Round Report](docs/reports/thousand-round-report.md) · ledger: [wave3-ledger](docs/reports/wave3-ledger.md)
 
 ### 🧭 Full Capability Panorama (v0.11.0)

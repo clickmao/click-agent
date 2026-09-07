@@ -141,13 +141,13 @@ done
 
 ## 7. 迭代状态快照（恢复迭代从这里开始）
 
-- **主线进度**：R103-R130（缺陷 #43-54 全修；52→53→54 链见 `docs/reports/wave3-ledger.md`）。批26-39 全绿（avg 3597-4248 带内）。下一轮号 **mass_256**。
-- **HEAD 语义**：见 `git log --oneline -5`，每轮一 commit（`v0.11.0 R1xx: 描述`）。
-- **in-flight**：R130 收尾（本报告+推送）→ R131 候选（按优先级）：
-  1. **UserTendency 聚合断链修复**（主题第一靶点，§5）
-  2. 批40（缺陷54 后首轮全量对比，验证 wall -30% 在 25 用例口径成立）
-  3. D4 reply_rel 语义质量打点
-  4. D1 采样降本
+- **主线进度**：R138-R145（负面 2→4、健康带分带、K1 snip 可执行化、防漂移/意图指数常态采集、quick 5→10、双轮 doc 审计、D4 记忆阈值校准；详见台账与 git log）。下一轮号 **mass_277**。
+- **最近五批审计（批56-60, quick-10 口径 R143-R145）**：50/50 全绿；902/884/815/631/601 tok/case（五批均值 766, 批59-60 连续新低）；drift_pass 全 1.0；chars_ratio 0.951→0.994；rel_avg 0.625→0.661 上行；suspects 3→0（R144 session-aware 阈值 0.4 校准后 C07 假阳性消除）。
+- **in-flight**：R145 收尾（本快照+README 趋势行+推送）→ R146+ 候选（按优先级）：
+  1. 批 61+（quick-10 常态持续；tok 连续下行观察地板）
+  2. K1 效果闭环（同 query 有/无画像 A/B 回复质量差分，snip 11tok 版效果待证）
+  3. semantic_avg 样本扩量（现仅 drift 触发档，rel 0.5-0.8 样本仍少）
+  4. 下一阶段汇报点 = 批65（每 5 批节奏）
 - **环境事实**（防重查）：bge=`/home/agentuser/.agentframework/models/bge-q8.gguf`（env `AGENTFRAMEWORK_BGE_MODEL`，缺失→词袋 dim256）；3 key：kimi 负样本/glm 可用/deepseek 7.61 CNY；github 直连断→ghfast.top 代理推（>8min 假死勿中断）；telemetry 读用 utf-8-sig；`execute_code` 300s 上限→批测逐轮后台跑。
 - **千轮口径**：RETIRED 轮诚实标注；全绿口径=排除 RETIRED；轮号唯一；每轮落盘+镜像。
 
