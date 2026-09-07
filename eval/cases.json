@@ -164,7 +164,11 @@
     ],
     "expect": {
       "llm": true,
-      "note": "4 轮长会话: 轮2 隔离 → 轮3 pivot → 轮4 回锚 (目标重锚后主链应能恢复 Redis 语境)"
+      "note": "4 轮长会话: 轮2 隔离 → 轮3 pivot → 轮4 回锚 (目标重锚后主链应能恢复 Redis 语境)",
+      "must_contain": [
+        "热点"
+      ],
+      "min_reply_chars": 300
     }
   },
   {
