@@ -422,7 +422,11 @@ def main():
                     kws = cases_by_id.get(x["id"], {}).get("expect", {}).get("must_contain", [])
                     reply_l = (x.get("reply") or "").lower()
                     if kws and not any(k.lower() in reply_l for k in kws):
+                        # R180 (R149 判定空心原则的收口): must_contain 观察期结束 —
+                        # C07 批337-339 内容断言 4 轮实证全对, 批340 记忆丢失 (回复"没收到") 被 suspect 放过 = 判定空心复发。
+                        # 未命中关键词 = 真断言 FAIL (不再只是 suspect)。
                         x["quality_suspect"] = True
+                        req(False, f"must_contain 未命中 {kws[:3]} — 内容断言真判定 (R180)")
                 elif x["reply_rel"] < thr:
                     x["quality_suspect"] = True
             else:
