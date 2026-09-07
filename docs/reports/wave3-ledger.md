@@ -234,3 +234,7 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - **召回率专项** (批29-33, 100 用例轮): WorkspaceFiles 3snip/轮 100% rel0.84 (主力); AgentContext 1snip/轮 100% rel0.90 (稳定); Memory 75% 命中 rel0.29 (缺陷49 质量换体积预期); SessionMemory 按需 r0.95; **UserTendency 冷启动 0 = 设计语义** (CalculateTendencyScore 只看最近 10 条 MinSampleSize 窗口, 近期无相关话题→confidence≤0.3 不注入; 100 条聚合画像 Python:25 正常积累)。
 - **缺陷 52**: 空 userId 信号持久化到 ".json" 空文件名 (召回链永不读取) → UpdateTendencyAsync 入口+Persist 双拦。2 单测, 386 绿。
 - **批34** (mass_191-195) 25/25 avg 4145tok (上行 1/3, C11 prompt 432-606 稳好, 上行在 completion 侧=glm 波动)。
+
+### R124: AOT 重发布 (fix#52) + 批 35
+- **AOT**: 0 IL 警 (缺陷52 后强制重发布)。
+- **批35** (mass_201-205) 25/25 avg 4035tok → 波动计数归零 (批34 4145=1/3 未连续)。
