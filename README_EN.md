@@ -3,7 +3,7 @@
 [![ci](https://github.com/clickmao/click-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/clickmao/click-agent/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)
-![Tests](https://img.shields.io/badge/tests-389%2F389-brightgreen)
+![Tests](https://img.shields.io/badge/tests-399%2F399-brightgreen)
 ![Eval](https://img.shields.io/badge/thousand--round%20eval-1034%2F1056-success)
 ![NativeAOT](https://img.shields.io/badge/NativeAOT-zero%20warnings-blueviolet)
 
@@ -47,7 +47,7 @@ Release line: v0.11.0 — unified @cmd command protocol + 3 transports / Skill e
 
 ### 📊 Thousand-Round Eval (PGO-driven)
 - **1034/1056 = 97.92%** case pass (215 rounds landed); quick-batch tokens **7354 → ~3969 avg**; C08 reasoning completion **1875 → 479 (-74%)**; 55 real defects fixed, all telemetry-driven.
-- Batch trend (42-60): quick-5 batches 42-55 = 4271/3875/4169/4182/3734/3673/4130/3408/4941/3473/3683/4201 tok/batch; R143+ quick-10 batches 56-60 = 902/884/815/631/601 tok/case — 19 batches all green, KPI in-band (batch51 988/case single-point excursion re-verified; batches 59-60 consecutive new lows after R144 D4 memory-threshold calibration).
+- Batch trend (batch42-78): quick-5 batch42-55 = 4271→3673 tok/batch (12); quick-10 (R143) batch56-65 = 902/884/815/631/601/783/601/735/888/720 tok/case; quick-11 (R149) batch66-78 = 822/935/991/961/917/896/821/936/941 tok/case (8-in-a-row green) + full batch74/76 19/19 (1118/1165 tok/case) — last 37 batches all green, KPI in-band (CV 15.4%, band 600-1100)
 - Full report: [Thousand-Round Report](docs/reports/thousand-round-report.md) · ledger: [wave3-ledger](docs/reports/wave3-ledger.md)
 
 ### 🧭 Full Capability Panorama (v0.11.0)
@@ -227,7 +227,7 @@ click-agent/
 │   ├── agent.rag/           # RAG recall
 │   ├── agent.vectormemory/  # Vector memory
 │   ├── agent.workspace/     # Workspace
-│   └── agent.tests/         # 389 tests
+│   └── agent.tests/         # 399 tests
 └── docs/                    # Architecture/API/improvement records/plans
 ```
 
@@ -236,7 +236,7 @@ click-agent/
 | Item | Result |
 |---|---|
 | Compilation (--no-incremental) | 0 errors 0 warnings |
-| Tests | 389/389 Passed |
+| Tests | 399/399 Passed |
 | NativeAOT (linux-x64) | 0 IL/TR warnings (re-verified 6x) + AOT smoke pass |
 | Thousand-round eval | 1034/1056 = 97.92% (215 rounds landed) |
 | Real 3-endpoint E2E | glm/deepseek chat+balance OK; kimi negative sample honest error |
@@ -263,7 +263,7 @@ click-agent/
 3. **K4 long-horizon watch**: skill false-absorption suppression stability + negative-family expansion (8-class checklist toward 25%)
 4. **Real-GPU Vulkan test** (needs real GPU; llvmpipe only on this host)
 
-> **Current baseline (R142)**: 389/389 tests green / NativeAOT 0 IL warnings / thousand-round eval 97.92% (215 rounds) / 5-KPI full observability — next: K1 effect verification (profile-driven reply diff), semantic_avg tier observation, negative-family expansion.
+> **Current baseline (R151)**: 399/399 tests green / NativeAOT 0 IL warnings / thousand-round eval 97.92% (215 rounds) / 5-KPI full observability — next: K1 effect verification (profile-driven reply diff), semantic_avg tier observation, negative-family expansion.
 
 ## Configuration
 

@@ -2,11 +2,11 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)
-![Tests](https://img.shields.io/badge/tests-389%2F389-brightgreen)
+![Tests](https://img.shields.io/badge/tests-399%2F399-brightgreen)
 ![NativeAOT](https://img.shields.io/badge/NativeAOT-zero%20warnings-blueviolet)
 ![Eval](https://img.shields.io/badge/千轮评测-1034%2F1056-success)
 
-C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / NativeAOT 零警告 / 389 测试全绿。
+C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / NativeAOT 零警告 / 399 测试全绿。
 发布线: v0.11.0 — 统一 @cmd 命令协议 + 3 传输通道 / Skill executive 脚本 / bge 向量混合相关性 / 22 模型目录 / PGO 式全链路打点。
 
 [🇬🇧 English → README_EN.md](README_EN.md)
@@ -39,7 +39,7 @@ C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / Na
 | 单元测试 | 325 | **389** | +64 |
 | 真缺陷修复 | — | **55 项** (全部打点驱动) | #21-#55 |
 
-批次趋势 (批42-60): quick-5 口径批42-55 = 4271/3875/4169/4182/3734/3673/4130/3408/4941/3473/3683/4201 tok/批; R143 起 quick-10 扩容口径批56-60 = 902/884/815/631/601 tok/case — 19 批全绿 KPI in-band (批51 988/case 单点越界已复核; 批59-60 连续新低, R144 D4 记忆阈值校准生效)。
+批次趋势 (批42-78): quick-5 口径批42-55 = 4271→3673 tok/批 (12 批); R143 quick-10 批56-65 = 902/884/815/631/601/783/601/735/888/720 tok/case; R149 quick-11 批66-78 = 822/935/991/961/917/896/821/936/941 tok/case (八连绿) + 全量批74/76 19/19 (1118/1165 tok/case) — 近 37 批全绿 KPI in-band (CV 15.4%, 健康带 600-1100)
 专项验证: 多来源召回率 (100 用例轮统计) / 无关话题隔离 (score=2 触发独立 session) / session 长期记忆 (跨进程落盘) / JSON 格式跟随 (哨兵用例) / 双 LLM 校验 — 全部 ✓。
 
 完整报告: [千轮迭代优化报告](docs/reports/thousand-round-report.md) · 阶段台账: [wave3-ledger](docs/reports/wave3-ledger.md)
@@ -117,7 +117,7 @@ python3 cross_validate.py                           # 双 LLM 交叉校验
 
 | 项 | 结果 |
 |---|---|
-| 单元测试 | **389/389** 通过 |
+| 单元测试 | **399/399** 通过 |
 | NativeAOT (linux-x64) | **0 IL 警告** (六次复验) + AOT 冒烟通过 |
 | 千轮评测 | **1034/1056 (97.92%)** — 215 轮落盘 |
 | 3 端点真机 | glm/deepseek 对话+余额 ✓; kimi 负样本诚实报错 ✓ |
