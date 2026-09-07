@@ -356,9 +356,12 @@ def main():
                 # R144 校准 (批50/53/56/57 四批实证): 记忆元问题 (session_aware) 的 rel 0.40-0.44 —
                 # "问记不记得" vs "复述内容" 词汇面无重叠但回复正确 (人工核对 C07 四批全对),
                 # 阈值降 0.4: 会话感知类假阳性消除, 真记忆丢失 (<0.4) 仍能抓到。
+                # R147 再校准 (批56-65 十批): C07 rel 波动带 0.37-0.60 (内容全对), 0.4 仍截出 2 假阳性
+                # (批63 0.3716/批65 0.399) — 阈值 0.35 (正确回复实测最低 0.37 之下留 0.02 裕度,
+                # 真丢失=复述不出上文内容, 语义面完全跑偏才会 <0.35)。
                 is_template = (exp_llm.get(x["id"], True) is False) or x.get("total_tokens", 0) == 0
                 is_session_aware = bool(cases_by_id.get(x["id"], {}).get("expect", {}).get("session_aware"))
-                thr = 0.3 if is_template else (0.4 if is_session_aware else 0.5)
+                thr = 0.3 if is_template else (0.35 if is_session_aware else 0.5)
                 if x["reply_rel"] < thr:
                     x["quality_suspect"] = True
             else:
