@@ -138,3 +138,27 @@
 - **意图指数**: n=8, ms_avg=0.1, dist={'general': 6, 'git_operation': 1, 'search': 1}
 - **per-case**: C01_general_qa 437tok 8.3s Δ-62 | C03_subtask 1230tok 27.2s Δ-586 | C04_skill_identity 0tok 4.7s | C06_executive_unit_convert 0tok 4.3s | C07_memory_followup 522tok 12.0s Δ-92 | C08_reasoning 1121tok 18.7s Δ-153 | C11_json_format 608tok 7.4s Δ-125 | C13_git_sensitive 821tok 9.9s Δ-1209 | C17_neg_hallucination_bait 686tok 11.5s Δ-302 | C18_neg_format_trap 585tok 8.9s Δ-135
 
+## mass_277 — R146 batch61 quick-10 regular (2026-09-07T18:33:24+0800)
+
+- **判定**: 10/10 passed, tokens_total=7830 (avg 783), wall=126989ms (avg 12.7s)
+- **KPI**: in-band (基准轮数 10)
+- **防漂移指数**: segments=4, drift_pass=1.0, semantic_avg=0.993, chars_ratio=0.926
+- **意图指数**: n=8, ms_avg=0.1, dist={'general': 6, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 495tok 10.8s Δ+32 | C03_subtask 2000tok 26.1s Δ+487 | C04_skill_identity 0tok 4.6s | C06_executive_unit_convert 0tok 4.4s | C07_memory_followup 598tok 18.2s Δ+32 | C08_reasoning 1349tok 18.5s Δ+119 | C11_json_format 752tok 7.4s Δ+36 | C13_git_sensitive 880tok 12.0s Δ-771 | C17_neg_hallucination_bait 850tok 11.0s Δ-102 | C18_neg_format_trap 906tok 14.1s Δ+228
+
+## mass_278 — R146 batch62 quick-10 regular (2026-09-07T18:43:16+0800)
+
+- **判定**: 10/10 passed, tokens_total=6400 (avg 640), wall=135752ms (avg 13.6s)
+- **KPI**: in-band (基准轮数 10)
+- **防漂移指数**: segments=4, drift_pass=1.0, semantic_avg=0.993, chars_ratio=0.926
+- **意图指数**: n=8, ms_avg=0.1, dist={'general': 6, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 438tok 7.5s Δ-8 | C03_subtask 1152tok 31.6s Δ-166 | C04_skill_identity 0tok 4.8s | C06_executive_unit_convert 0tok 4.3s | C07_memory_followup 536tok 22.4s Δ-20 | C08_reasoning 1150tok 14.7s Δ-73 | C11_json_format 612tok 7.2s Δ-69 | C13_git_sensitive 1218tok 22.9s Δ+112 | C17_neg_hallucination_bait 704tok 8.8s Δ-172 | C18_neg_format_trap 590tok 11.5s Δ-29
+
+## mass_279 — R146 batch63 quick-10 post-K1-window-fix (2026-09-07T18:55:12+0800)
+
+- **判定**: 10/10 passed, tokens_total=7997 (avg 800), wall=144810ms (avg 14.5s)
+- **KPI**: in-band (基准轮数 10)
+- **防漂移指数**: segments=4, drift_pass=1.0, semantic_avg=None, chars_ratio=0.994
+- **意图指数**: n=8, ms_avg=0.1, dist={'general': 6, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 478tok 8.1s Δ+27 | C03_subtask 1768tok 26.6s Δ+351 | C04_skill_identity 0tok 4.7s | C06_executive_unit_convert 0tok 4.2s | C07_memory_followup 531tok 9.2s Δ-17 | C08_reasoning 1541tok 32.5s Δ+325 | C11_json_format 857tok 7.4s Δ+193 | C13_git_sensitive 1359tok 24.4s Δ+446 | C17_neg_hallucination_bait 788tok 12.9s Δ-16 | C18_neg_format_trap 675tok 14.8s Δ-29
+

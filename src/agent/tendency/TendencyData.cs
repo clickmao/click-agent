@@ -386,7 +386,11 @@ public class TendencyAnalyzer : ITendencyAnalyzer
     {
         // v0.11.0 R14 修复: 原实现只按样本计数 (与 keywords 无关, 需 6 条才过 0.3 阈值),
         // 改为 "关键词命中占比 × 时间衰减权重" — 新用户少量样本即可反映倾向。
-        var recent = dataList.TakeLast(_config.MinSampleSize).ToList();
+        // v0.11.0 R146 (K1 门槛卡点修复): TakeLast(MinSampleSize=10) 只看最近 10 条 —
+        // cli_user.json 实证 64 条有信号历史中 AI/LLM 最近 10 条窗口恰 0.2965, 差 0.004 被门 0.3 拦截
+        // (画像明明稳定, 却因窗口过窄波动在门槛两侧) → 改为全量有信号历史, 旧信号由 DecayFactor=0.95^k
+        // 自然降权 (10 条前权重已 <0.6, 30 条前 <0.21), 窗口语义由"最近倾向"回归"带衰减的稳定画像"。
+        var recent = dataList.TakeLast(_config.MaxHistorySize).ToList();
         if (recent.Count == 0)
             return 0.0;
 
