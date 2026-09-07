@@ -90,7 +90,7 @@ def run_case_repl(case, env):
 def summarize_points(points):
     """聚合打点 → 指标 dict"""
     s = {"points": len(points), "llm_calls": 0, "prompt_tokens": 0, "completion_tokens": 0,
-         "total_tokens": 0, "llm_ms_est": None, "skill_hits": [], "skill_force": None,
+         "total_tokens": 0, "llm_ms_est": None, "skill_hits": [], "skill_force": None, "skill_match": None, "skill_decisions": [],
          "intent": None, "subtasks": 0, "assembly_ok": None, "loop_success": None,
          "loop_ms": None, "models": [],
          "snippets": 0, "sources_recall": "", "assembly_ms": None, "from_cache": None,
@@ -112,6 +112,12 @@ def summarize_points(points):
         elif tag == "phase_timing" and kv.get("phase") == "llm":
             # R129 (D3): LLM 全段 (含路由) — 与 llm_ms_total 差值 = 路由/重试开销
             s["phase_llm_ms"] = (s["phase_llm_ms"] or 0) + (kv.get("ms") or 0)
+        elif tag == "skill_match":
+            if s.get("skill_match") is None:
+                s["skill_match"] = {"top1": kv.get("top1"), "level": kv.get("level"),
+                                     "precision": kv.get("precision"), "runner_up_gap": kv.get("runner_up_gap")}
+        elif tag == "skill_trigger":
+            s.setdefault("skill_decisions", []).append(kv.get("decision"))
         elif tag == "skill":
             mid = kv.get("matched")
             if mid and mid != "(none)":

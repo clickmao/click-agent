@@ -63,11 +63,21 @@ public sealed class SkillDispatcher
             if (hits.Count == 0)
             {
                 Lifecycle.ReportRound(false); // 未命中任何域 → Active 项脱域计数
+                // R134 (K4 点位): 决策观测 — 未命中也是决策 (no_hit), harness 据此算 K4 命中率分母
+                agent.config.AgentTelemetry.Emit("skill_trigger", "SkillDispatcher",
+                    ("decision", "no_hit"), ("candidates", 0));
                 agent.config.AgentTelemetry.Emit("skill", "SkillDispatcher", ("matched", "(none)"));
                 return null;
             }
 
             var top = hits[0];
+            // R134 (K4 点位): 候选质量 — top1 强度 + runner-up 差距 (判别度), 服务 K4 SKILL 调用准确性
+            var runnerUp = hits.Count > 1 ? hits[1].Precision : 0.0;
+            agent.config.AgentTelemetry.Emit("skill_match", "SkillDispatcher",
+                ("top1", top.Skill.SkillId), ("level", top.Level),
+                ("precision", Math.Round(top.Precision, 4)),
+                ("runner_up_gap", Math.Round(top.Precision - runnerUp, 4)),
+                ("candidates", hits.Count));
             agent.config.AgentTelemetry.Emit("skill", "SkillDispatcher",
                 ("matched", top.Skill.SkillId), ("level", top.Level),
                 ("precision", top.Precision));
@@ -88,7 +98,14 @@ public sealed class SkillDispatcher
                 // bge 语义疑似 (level=1, cos>=0.45) 曾把 "介绍快速排序" 误判为身份说明并吞掉提问;
                 // 语义疑似属于弱信号 → 不拦截, 降级普通推理
                 if (string.IsNullOrEmpty(top.Skill.ForceTemplate) || top.Level < 2)
+                {
+                    // R134 (K4 点位): 语义疑似降级决策 — level<2 不独占 (历史误吞提问教训), 观测其频率
+                    agent.config.AgentTelemetry.Emit("skill_trigger", "SkillDispatcher",
+                        ("decision", "degrade_semantic"), ("skill", top.Skill.SkillId), ("level", top.Level));
                     return null;
+                }
+                agent.config.AgentTelemetry.Emit("skill_trigger", "SkillDispatcher",
+                    ("decision", "force"), ("skill", top.Skill.SkillId), ("level", top.Level));
                 content = top.Skill.ForceTemplate.Replace("{input}", input);
                 forceUse = true;
             }
