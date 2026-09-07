@@ -426,7 +426,10 @@ def main():
                         # C07 批337-339 内容断言 4 轮实证全对, 批340 记忆丢失 (回复"没收到") 被 suspect 放过 = 判定空心复发。
                         # 未命中关键词 = 真断言 FAIL (不再只是 suspect)。
                         x["quality_suspect"] = True
-                        req(False, f"must_contain 未命中 {kws[:3]} — 内容断言真判定 (R180)")
+                        # R181 (真缺陷 60): R180 误用 check_expect 作用域的 req() 于 summarize 区 → NameError 崩批
+                        # (批128 首跑实证)。此处直接置 pass=False + fail_reason (passed 计数消费 x["pass"])。
+                        x["pass"] = False
+                        x["fail_reason"] = f"must_contain 未命中 {kws[:3]} — 内容断言真判定 (R180)"
                 elif x["reply_rel"] < thr:
                     x["quality_suspect"] = True
             else:
