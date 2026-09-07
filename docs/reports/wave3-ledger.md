@@ -311,3 +311,9 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - 校准 (批46→47): executive 模板回复结构性低余弦假阳性 (C06 0.436) → 阈值分层 模板0.3 / LLM 0.5
 - 批47 (mass_263): 5/5 3673tok, rel 分布 0.436-0.827, 0 suspect — K3 口径就绪
 - 推送链: 7deaf94 (新 ghp token 首用, [REDACTED] 零残留)
+
+### R138: 负面用例扩容 2→4 (12%→21%) — N5 幻觉诱饵/N4 格式陷阱入册
+- C17_neg_hallucination_bait: 伪 API 签名问询 + must_not_contain 断言 (新 harness 防编造断言) — 实测 0.8214 rel 未编造
+- C18_neg_format_trap: 畸形 JSON 混自然语言 — 实测 9.7s 正常响应
+- 批50 (mass_266, 全量 19 用例): 19/19 20898tok; KPI_BREACH×2 = 19 用例新口径 vs 旧带 (500-950→1100) — 口径切换必然, 待重校准
+- 教训: execute_code 前台 290s 超时杀不死 run_round (锁占用诚实退出机制双向起效) — 长批一律 background+轮询

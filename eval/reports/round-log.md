@@ -60,3 +60,9 @@
 - **KPI**: wall_per_case_ms=10842 out (12000, 30000) (基准轮数 5)
 - **per-case**: C01_general_qa 446tok 7.9s Δ-41 | C03_subtask 1159tok 17.8s Δ-348 | C06_executive_unit_convert 0tok 4.4s | C08_reasoning 1154tok 15.6s Δ+1 | C11_json_format 649tok 8.6s Δ-67
 
+## mass_266 — R138 batch50 full-19 negative-expanded (2026-09-07T16:33:39+0800)
+
+- **判定**: 19/19 passed, tokens_total=20898 (avg 1100), wall=396255ms (avg 20.9s)
+- **KPI**: tokens_per_case=1100 out (500, 950) (基准轮数 0)
+- **per-case**: C01_general_qa 450tok 8.3s | C02_coding 783tok 10.3s | C03_subtask 1995tok 47.1s | C04_skill_identity 0tok 4.6s | C05_skill_wordcount 0tok 4.3s | C06_executive_unit_convert 0tok 4.2s | C07_memory_followup 509tok 9.4s | C08_reasoning 1204tok 15.7s | C09_balance_cmd 0tok 1.2s | C10_model_list 0tok 0.9s | C11_json_format 814tok 8.0s | C12_negative_empty 427tok 7.6s | C13_git_sensitive 1793tok 39.5s | C09b_balance_glm 0tok 0.9s | C14_isolated_multi 1661tok 29.8s | C15_pivot_multi 2756tok 33.3s | C16_longsession_4turn 6699tok 147.6s | C17_neg_hallucination_bait 1127tok 13.8s | C18_neg_format_trap 680tok 9.7s
+
