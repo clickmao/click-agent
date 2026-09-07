@@ -305,6 +305,36 @@ def main():
         print(f"[{status}] {c['id']}  wall={r['wall_ms']}ms tokens={agg['total_tokens']} intent={agg['intent']} skill={len(agg['skill_hits'])}")
         for n in notes:
             print("    ", n)
+    # R136 (D4 reply_rel): 离线语义质量打点 — 每用例 (question, reply) bge 余弦 <0.5 → quality_suspect。
+    # 用 --embed 子命令 (bge 真链, 512dim), 模型缺失 → 全部 rel=None (诚实缺省, 不造假数据)。
+    host_dll = "src/agent.host/bin/Release/net10.0/agenthost.dll"
+    if os.path.exists(host_dll) and os.environ.get("AGENTFRAMEWORK_BGE_MODEL"):
+        def _embed(text):
+            try:
+                p = subprocess.run(["dotnet", host_dll, "--embed", text[:2000]],
+                                   capture_output=True, text=True, timeout=60, env=env)
+                return json.loads(p.stdout.strip()) if p.returncode == 0 and p.stdout.strip().startswith("[") else None
+            except Exception:
+                return None
+        vecs = {}
+        for c in cases:
+            vecs[c["id"]] = (_embed(c.get("input", c.get("query", ""))), None)
+        for x in results:
+            qv = vecs.get(x["id"], (None,))[0]
+            rv = _embed(x.get("reply", "")) if x.get("reply") else None
+            if qv and rv and len(qv) == len(rv):
+                dot = sum(a*b for a, b in zip(qv, rv))
+                x["reply_rel"] = round(dot / ((sum(a*a for a in qv) ** 0.5) * (sum(b*b for b in rv) ** 0.5) or 1), 4)
+                if x["reply_rel"] < 0.5:
+                    x["quality_suspect"] = True
+            else:
+                x["reply_rel"] = None
+        rels = [x["reply_rel"] for x in results if x.get("reply_rel") is not None]
+        print(f"D4 reply_rel: n={len(rels)} avg={sum(rels)/len(rels):.3f}" if rels else "D4 reply_rel: unavailable (model missing)")
+    else:
+        for x in results:
+            x["reply_rel"] = None
+
     # round 汇总
     summary = {"round": rnd, "label": label, "ts": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
                "cases": len(results), "passed": sum(1 for x in results if x["pass"]),
