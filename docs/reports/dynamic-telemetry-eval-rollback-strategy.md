@@ -152,7 +152,8 @@ done
 - **R161-R165**: 全量批97 19/19 (C15 pivot_n=1/C03 锚/C14 iso 三断言全稳); README 双语趋势行滚动至批98/99; 批83-102 **20 连绿** (缺陷58 修复后零非绿)。
 - **R169 README 30 批滚动点 (批108)**: 双语趋势行→批107/108; 新归档 CHANGELOG-v0.11.0-R153-R168.md (批79-108 全明细, 断链 0); 下次滚动批138。
 - **R171 batch111/112 双批**: mass_327/328 11/11 x2 (887/796 tok/c), D4 rel 0.618/0.629, 0 suspect, breach 空 — **30 连绿** (batch83-112)。
-- **in-flight**：R171 → ① 批 113+（quick-11 常态）② 批 111-115 五批审计 ③ README 滚动点批138 ④ 持续。
+- **R172-R177 (稳定性基建三连)**: 缺陷59 per-case 超时容错 (一个用例 180s 挂起不再崩整批, C13 批113 首证) + 超时重试 1/1 (LLM 端点瞬态挂起 5 用例各中招一次 C08/C13/C01/C17/C03, 重试全 PASS 3/3+2/2 实证) + C16 长会话真断言 (must_contain 热点 + ≥300ch, 锚定批113 回复实证 — "Redis" 字面量断言会误杀好回复, 断言先行必须查历史样本)。
+- **in-flight**：R177 → ① 批 123+（quick-11 常态）② 五批审计 116-120 ③ README 滚动点批138 ④ 持续。
 - **推送状态（R171 已解+复核）**：R156-R170 系 sibling tick 已推（git push 协商回执证明 remote 原位=48d15f5，本地 "ahead 24" 为 fetch 陈旧假象——教训：ahead 判定前先 fetch）；R171 (3f61b2e) 本 tick 一次性 URL 推送（git 回执 48d15f5..3f61b2e）+ API 复核 remote=HEAD=3f61b2e；config 零残留。~/.hermes/.env PAT 401 失效弃用；池验证 4 活（BSoi 钦定 / wnkO / XTMI，state.db 候选池）。github 直连抖动窗口仍间歇（api 504 + TLS EOF，baidu 200 对照；git push 自身握手成功率高，重试惯例有效）。
 - **环境事实**（防重查）：bge=`/home/agentuser/.agentframework/models/bge-q8.gguf`（`.env.local` `AGENTFRAMEWORK_BGE_MODEL`，**cron/新 shell 须 export PATH="$HOME/.dotnet:$PATH" 否则 runner FileNotFoundError**；bge 路径勿依赖 os.environ——缺陷 57 教训，harness 统一走 load_env()）；3 key：kimi 负样本/glm 可用/deepseek 7.61 CNY；github 直连断→ghfast.top 代理推（>8min 假死勿中断）；telemetry 读用 utf-8-sig；`execute_code` 300s 上限→批测逐轮后台跑；**llm-service/llm.sock 已 R113 退场，sock 缺失=正常态勿重启**。
 - **千轮口径**：RETIRED 轮诚实标注；全绿口径=排除 RETIRED；轮号唯一；每轮落盘+镜像。
