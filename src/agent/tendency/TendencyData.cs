@@ -167,6 +167,10 @@ public class TendencyAnalyzer : ITendencyAnalyzer
     {
         try
         {
+            // v0.11.0 R123 (真缺陷 52): 空 userId 信号持久化到 ".json" (Sanitize 后空文件名) —
+            // 召回链 (GetContextBiasAsync→AnalyzeUserTendencyAsync) 永不读取它, 纯无意义写盘。跳过。
+            if (string.IsNullOrWhiteSpace(userId))
+                return;
             Directory.CreateDirectory(_storeDir);
             var safe = string.Concat(userId.Select(c => char.IsLetterOrDigit(c) ? c : '_'));
             var sb = new System.Text.StringBuilder("[");
@@ -273,6 +277,9 @@ public class TendencyAnalyzer : ITendencyAnalyzer
     
     public Task UpdateTendencyAsync(string userId, TendencyData data)
     {
+        // v0.11.0 R123 (缺陷 52): 空 userId 不入库不落盘 — 召回链永不读取, 内存/磁盘双重跳过
+        if (string.IsNullOrWhiteSpace(userId))
+            return Task.CompletedTask;
         lock (_lock)
         {
             data.UserId = userId;

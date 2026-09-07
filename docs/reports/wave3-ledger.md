@@ -229,3 +229,8 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 ### R122: 批 33 + 阶段趋势 (R116-R121 汇总)
 - **批33** (mass_181-185) 25/25 avg 3597tok。批27-33 序列: 4024/4248/4106/3636/3656/3855/3597 — 治理后稳定 3400-4250 波动带, 无上行漂移。
 - R116-R121 六轮累计: 缺陷 47/48/49/50/51 五连修 (创作意图拦截/bge 真链 env/Memory 体积预算/Workspace rel 比例化/telemetry pending 缓存), C11 prompt 808→608-656 稳态, 379→384 测试, mass_128 全量 16/16 (含 C14/C15/C16 隔离+pivot+回锚), AOT 三次 0IL 复验。
+
+### R123: 多来源召回率专项 + 缺陷 52 (空 userId 落盘) + 批 34
+- **召回率专项** (批29-33, 100 用例轮): WorkspaceFiles 3snip/轮 100% rel0.84 (主力); AgentContext 1snip/轮 100% rel0.90 (稳定); Memory 75% 命中 rel0.29 (缺陷49 质量换体积预期); SessionMemory 按需 r0.95; **UserTendency 冷启动 0 = 设计语义** (CalculateTendencyScore 只看最近 10 条 MinSampleSize 窗口, 近期无相关话题→confidence≤0.3 不注入; 100 条聚合画像 Python:25 正常积累)。
+- **缺陷 52**: 空 userId 信号持久化到 ".json" 空文件名 (召回链永不读取) → UpdateTendencyAsync 入口+Persist 双拦。2 单测, 386 绿。
+- **批34** (mass_191-195) 25/25 avg 4145tok (上行 1/3, C11 prompt 432-606 稳好, 上行在 completion 侧=glm 波动)。
