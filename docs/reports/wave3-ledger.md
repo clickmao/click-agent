@@ -317,3 +317,10 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - C18_neg_format_trap: 畸形 JSON 混自然语言 — 实测 9.7s 正常响应
 - 批50 (mass_266, 全量 19 用例): 19/19 20898tok; KPI_BREACH×2 = 19 用例新口径 vs 旧带 (500-950→1100) — 口径切换必然, 待重校准
 - 教训: execute_code 前台 290s 超时杀不死 run_round (锁占用诚实退出机制双向起效) — 长批一律 background+轮询
+
+### R151b: 真缺陷 56 — pivot_n KeyError 全量批崩溃 (R151 打点消费引入)
+- **症状**: batch76 (全量 19) 15/19 PASS 后 KeyError: 'pivot_n' 崩溃死亡 — summarize_points 走到 C15 (第一个 pivot 打点用例) 时 `s["pivot_n"] += 1` 撞上 init 字典缺键; 轮 JSON 未落盘 (崩溃在写盘前), C16-C19 数据蒸发
+- **根因**: R151 (8cfe5ab) 加 pivot_n 打点消费 (goal/op=pivot) + pivot_reanchor 硬化断言时, init 字典未同步补键 — 与 R142 compression 消费同源教训: **新增打点消费必须同步补 init 键**; quick-11 不含 C15 → batch75 侥幸通过, 盲区只在全量批暴露
+- **修复**: 51d30ab init 补 `pivot_n: 0` + 单元验证 pivot/无pivot 两路径 (summarize_points 直调, 1/0 双 OK)
+- **验证**: batch76 重跑 (mass_292, 修复后代码) — 结果见当轮台账
+- **编号勘误**: 初版误标"缺陷45", 全仓核查后 45 未占用但 51-55 已连号, 顺延改 **56**
