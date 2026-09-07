@@ -315,6 +315,23 @@ public interface ISummarizer
 
 ---
 
+### IFeedbackPersistence (RAG 用户反馈持久化, task_loop.md §4 机制的真实契约)
+
+```csharp
+public interface IFeedbackPersistence
+{
+    Task SaveAsync(UserFeedback feedback);
+    Task<List<RecallResult>> QuerySimilarAsync(string query, int topK = 5);   // 相似反馈召回 (RAG 链)
+    Task<List<UserFeedback>> GetByTaskAsync(string taskId);
+    Task<List<UserFeedback>> GetBySessionAsync(string sessionId);
+    Task UpdateOutcomeAsync(string feedbackId, string outcome, double? satisfaction = null);
+}
+
+public class FeedbackPersistence : IFeedbackPersistence   // 实现: RAGConfig.cs
+```
+
+---
+
 ## 3. 模板系统
 
 ### ITemplateStore
@@ -565,11 +582,14 @@ public class TaskBoundary
 ```csharp
 public interface ISessionManager
 {
-    Task<ISession> CreateSessionAsync(string userId, SessionConfig? config = null);
-    Task<ISession> GetSessionAsync(string sessionId);
-    Task UpdateSessionAsync(ISession session);
+    Task<Session> CreateSessionAsync(string userId, SessionConfig? config = null);
+    Task<Session?> GetSessionAsync(string sessionId);
+    Task<Session> GetOrCreateSessionAsync(string sessionId, string userId);   // 幂等: 不存在则以该 Id 创建
+    Task UpdateSessionAsync(Session session);
     Task EndSessionAsync(string sessionId);
-    Task<ISessionLoop> GetSessionLoopAsync(string sessionId);
+    Task<SessionLoop> GetSessionLoopAsync(string sessionId);
+    Task<IEnumerable<Session>> GetUserSessionsAsync(string userId);
+    Task<IEnumerable<Session>> GetAllSessionsAsync();                          // v7.14 /session 面板
 }
 ```
 

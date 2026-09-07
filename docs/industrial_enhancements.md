@@ -1,22 +1,20 @@
-# click-agent 能力增强计划 (v0.10.0 口径)
+# click-agent 能力增强计划 (v0.11.0 口径)
 
 > 本文档为活文档: 记录当前项目总体状态、与 Claude Code / Codex 级核心能力的差距、
 > 以及差距的收敛路线。每轮迭代后同步更新 (用户钦定)。
 
-## 一、当前项目总体状态 (2026-09-06)
+## 一、当前项目总体状态 (2026-09-07, R143b 审查校准)
 
-- **版本口径**: v0.10.0
-- **质量基线**: 322/322 测试全绿; Release 编译 0 警; NativeAOT publish 0 IL 警; 全图冒烟通过
-- **架构**: 17 个项目模块 (agent 核心粒 + config / core / io / logging / modelqueue / skills /
-  contextgradient / rag / vectormemory / recovery / workspace / output / codegen / planner / host / tests)
-- **本轮新增 (需求1-6)**:
-  1. 官方模型通道 (硬编码不进 yaml) + 三通道混合调度 (本地>官方>远端, 并发数托管, 子任务综合选模)
-  2. `agent.io` (netstandard2.1 零依赖): AgentReportReaderBase 行协议状态机 + AgentRequestWriterBase —
-     前端单行指令 / 多行流式块双态解析; [CLI指令说明.md](CLI指令说明.md) 全指令契约
-  3. 会话中断恢复: ExecutionCheckpoint (原子写/损坏容忍) + 执行器层界检查点 + 恢复裁定 + /status recovery 面板
-  4. 公开配置读写: ConfigWriter (dot-path 读 / L3 深合并 / L4 runtime / Reset 回落)
-  5. 版本迁移 v0.9.0 (全模块 csproj 统一)
-  6. 能力插件接口 ICapabilityPlugin (本文件三行 ❌ 条目的收敛载体)
+- **版本口径**: v0.11.0 (千轮迭代 R143)
+- **质量基线**: 389/389 测试全绿; NativeAOT publish 0 IL 警; 千轮评测 1034/1056 (97.92%, 215 轮); 55 项真缺陷修复 (打点驱动)
+- **架构**: 16 个 csproj — agent 主链 22 子模块 + core / config / contextgradient / modelqueue / skills / rag / vectormemory / workspace / io / logging / output / recovery / codegen / host / tests (planner 已并入 agent/intent)
+- **v0.11.0 关键能力**:
+  1. 5 KPI 全维度可观测 (K1 被提问/K2 token/K3 语义质量/K4 SKILL/K5 基础) + 15 维度测试总账
+  2. PGO 式打点 12+ 点位 (含 compression 防漂移指数/intent 指数入报告)
+  3. bge 512 维真向量链 (RAG/ContextGradient/语义漂移/reply_rel 全真链)
+  4. 22 模型目录 + 3 端点真机余额链 + 阈值切模
+  5. Skill 四级触发 (关键词→正则→领域词→bge 语义 cos≥0.45) + executive 脚本真进程
+  6. 评测体系: quick-10 扩容口径 + 19 用例全量 + 负面 21% + 防幻觉 must_not_contain
 
 ## 二、Claude Code / Codex 级别的核心能力对照
 
@@ -26,7 +24,7 @@
 | 能力模块 | 当前状态 | 说明 / 收敛路径 | 优先级 |
 |----------|----------|------------------------|--------|
 | **任务规划** | ✅ 达成 | TaskPlan 拓扑分层 + 同层并发 + 节点重试(瞬态分类) + 影子演练 + 问询/审批语义 | P0 |
-| **记忆系统** | ✅ 达成 | RAG + 向量检索 (bge 384 维真机验证) + 会话滚动摘要 + 跨进程持久化 + AgentProfile 学习 | P0 |
+| **记忆系统** | ✅ 达成 | RAG + 向量检索 (bge 512 维真机验证) + 会话滚动摘要 + 跨进程持久化 + UserTendency 画像 (R133 断链修复, snip 可执行化) | P0 |
 | **模型调度** | ✅ 达成 | 三通道 (本地/官方/远端) 混合调度 + 并发托管 + 主备切换 + 意图/价格/速度综合选模 + 余额查询 | P0 |
 | **上下文工程** | ✅ 达成 | 梯度压缩 L0-L3 + DriftGuard 防漂移 + bge 语义相似度回退 | P0 |
 | **错误恢复** | ✅ 达成 | FailRetry + 会话中断检查点复原 + /status recovery 面板 | P1 |

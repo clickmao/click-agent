@@ -65,7 +65,7 @@ public class PlanNode
     /// <summary>并行组号 (同 level 且互不依赖共享组号; UI 可按组着色)</summary>
     public int ParallelGroup { get; set; }
 
-    /// <summary>对应设计/开发文档路径 (相对仓库根, 如 docs/plan_model_queue.md)。
+    /// <summary>对应设计/开发文档路径 (相对仓库根, 如 docs/archive/plan_model_queue.md)。
     /// 开发计划型任务节点标注其模块文档; 日常用户任务无文档时为 null。AOT 纯数据字段。</summary>
     public string? DocRef { get; set; }
 

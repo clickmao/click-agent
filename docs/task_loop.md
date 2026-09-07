@@ -408,8 +408,11 @@ public async Task<Response> HandleQueryAsync(string query)
 
 | 文件 | 作用 |
 |------|------|
-| `InteractionManager.cs` | 管理用户交互点 |
-| `TaskExecutionEngine.cs` | 任务执行引擎 |
-| `RAGRecall.cs` | RAG 召回系统 |
-| `FeedbackPersistence.cs` | 反馈持久化 |
-| `FeedbackStore.cs` | 反馈存储 |
+| `src/agent/userinteraction/ConsoleUserInteraction.cs` | 用户交互实现 (确认/选择/输入交互点) |
+| `src/agent/userinteraction/PromptPersistence.cs` | 问询偏好持久化 |
+| `src/agent/intent/TaskPlanRun.cs` | 任务计划运行与执行控制 (含 PausedForApproval) |
+| `src/agent/intent/IntentDecomposer.cs` | 意图拆解 (子任务细分) |
+| `src/agent.rag/RAGConfig.cs` | RAG 召回 + 反馈索引/相似查询 |
+| `src/agent.rag/UserFeedback.cs` | 用户反馈数据结构 |
+
+> 注: 本文档为设计叙述, §7 代码示例为伪代码示意 (实际类型以 api.md 契约为准); 反馈召回链路在 RAGConfig.RecallAsync 真实实现。

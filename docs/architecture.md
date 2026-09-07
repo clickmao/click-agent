@@ -1267,7 +1267,7 @@ click-agent/
 │   ├── CLI指令说明.md              # 全部指令 + agent.io 协议
 │   ├── Skill全球通用开放规范.md     # SKILL.md 包格式 (Anthropic Open Standard)
 │   ├── task_loop.md
-│   ├── context_injection_comparison.md
+│   ├── (V1/V2 对比已归档 docs/archive/)
 │   ├── industrial_enhancements.md
 │   ├── plan_*.md                  # 各模块开发计划 (10 篇)
 │   └── search_research.md
