@@ -150,7 +150,8 @@ done
 - **五批审计 86-90**: 55/55 全绿, 均值 806 tok/case, CV 1.8% (历史最稳窗口), 零 suspect (C03 0.499 边缘由 min_reply_chars 内容锚接管, 阈值不动)。
 - **五批审计 91-95 (55/55 avg 867) + 96-100 (55/55 avg 908)**: suspects 全部定性假阳性 (C12 JSON 输出/C16 长会话总结, 结构性低 rel, 断言判定兜住)。
 - **R161-R165**: 全量批97 19/19 (C15 pivot_n=1/C03 锚/C14 iso 三断言全稳); README 双语趋势行滚动至批98/99; 批83-102 **20 连绿** (缺陷58 修复后零非绿)。
-- **in-flight**：R165 → ① 阶段汇报点 5 已交付 ② 批 103+（quick-11 常态）③ 批 108 README 30 批滚动点 ④ 持续。
+- **R169 README 30 批滚动点 (批108)**: 双语趋势行→批107/108; 新归档 CHANGELOG-v0.11.0-R153-R168.md (批79-108 全明细, 断链 0); 下次滚动批138。
+- **in-flight**：R170 → ① 批 109+（quick-11 常态）② 批 106-110 五批审计 ③ 持续。
 - **推送状态（R153c 已解）**：新 PAT 验证 200 OK scope=repo；积压 dc13413/1f8ff13/9a6d89a 已推上 remote (1f8ff13..424f2e6)，API 复核 remote=HEAD=424f2e6；一次性 URL 流程，config 零残留。旧 PAT 失效 (401) 弃用。
 - **环境事实**（防重查）：bge=`/home/agentuser/.agentframework/models/bge-q8.gguf`（`.env.local` `AGENTFRAMEWORK_BGE_MODEL`，**cron/新 shell 须 export PATH="$HOME/.dotnet:$PATH" 否则 runner FileNotFoundError**；bge 路径勿依赖 os.environ——缺陷 57 教训，harness 统一走 load_env()）；3 key：kimi 负样本/glm 可用/deepseek 7.61 CNY；github 直连断→ghfast.top 代理推（>8min 假死勿中断）；telemetry 读用 utf-8-sig；`execute_code` 300s 上限→批测逐轮后台跑；**llm-service/llm.sock 已 R113 退场，sock 缺失=正常态勿重启**。
 - **千轮口径**：RETIRED 轮诚实标注；全绿口径=排除 RETIRED；轮号唯一；每轮落盘+镜像。
