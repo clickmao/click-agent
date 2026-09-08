@@ -1556,3 +1556,11 @@
 - **意图指数**: n=9, ms_avg=0.1, dist={'general': 7, 'git_operation': 1, 'search': 1}
 - **per-case**: C01_general_qa 458tok 15.5s Δ-3 | C03_subtask 2318tok 36.3s Δ+372 | C04_skill_identity 0tok 4.7s | C06_executive_unit_convert 0tok 4.3s | C07_memory_followup 2372tok 35.3s Δ-647 | C08_reasoning 1224tok 14.4s Δ-65 | C11_json_format 803tok 7.1s Δ+214 | C13_git_sensitive 2328tok 26.8s Δ+745 | C14_isolated_multi 2328tok 30.0s Δ+239 | C17_neg_hallucination_bait 696tok 8.7s Δ+78 | C18_neg_format_trap 639tok 9.4s Δ-75
 
+## mass_448 — R262 batch228 quick-11 regular + compression-defense (2026-09-09T06:58:59+0800)
+
+- **判定**: 11/11 passed, tokens_total=11592 (avg 1054), wall=185507ms (avg 16.9s)
+- **KPI**: in-band (基准轮数 11)
+- **防漂移指数**: segments=9, drift_pass=1.0, semantic_avg=None, chars_ratio=0.992
+- **意图指数**: n=9, ms_avg=0.1, dist={'general': 7, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 466tok 17.9s Δ+10 | C03_subtask 1271tok 25.2s Δ-655 | C04_skill_identity 0tok 8.2s | C06_executive_unit_convert 0tok 6.1s | C07_memory_followup 2514tok 32.1s Δ-247 | C08_reasoning 1121tok 13.5s Δ-159 | C11_json_format 593tok 7.3s Δ-6 | C13_git_sensitive 1704tok 22.0s Δ+128 | C14_isolated_multi 2482tok 34.6s Δ+292 | C17_neg_hallucination_bait 809tok 8.8s Δ+231 | C18_neg_format_trap 632tok 9.7s Δ-122
+
