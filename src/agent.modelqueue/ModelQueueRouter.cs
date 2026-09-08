@@ -19,6 +19,9 @@ public sealed class QueuePrompt
 
     /// <summary>v0.11.0 R22: 推理档位建议 (null=默认深推理; low=轻思考)。</summary>
     public string? ReasoningEffort { get; set; }
+
+    /// <summary>v0.12.0 A2: 图像附件数 (URL/base64) — >0 时路由强制云端 (本地 qwen 无视觉)。</summary>
+    public int ImageCount { get; set; }
 }
 
 public sealed class QueueHistoryMessage
@@ -203,7 +206,11 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         bool useLocal = false;
         lock (_lock)
         {
-            if (_manualOverride is null && _activeModelId is null &&
+            // v0.12.0 A2 (真缺陷 62): 首调本地优先策略未考虑多模态 —
+            // qwen 0.5b 文本模型收到图像请求 → 推理挂起 (smoke/vision E2E 双实证)。
+            // 带图请求强制走云端 (capabilities 路由: 本地 qwen image_input=false)。
+            var hasImagePayload = prompt.ImageCount > 0;
+            if (_manualOverride is null && _activeModelId is null && !hasImagePayload &&
                 _localInference is not null && _localInference.IsAvailable)
             {
                 var localChannel = Scheduler.AcquireChannel();

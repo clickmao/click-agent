@@ -24,19 +24,22 @@ Release line: v0.11.0 — unified @cmd command protocol + 3 transports / Skill e
 - **VisionChat DTO**: dual-form content (string|parts[]) hand-written AOT-safe converter, backward compatible, 5 adversarial tests
 - **Plan**: docs/plans/v0.12.0-vision-plan.md (R2 — doubao thread verified + real-machine evidence, zcode convergence loop: understand→generate→verify→regen on FAIL)
 
-### 🆕 R153-R168 Additions
+### 🆕 v0.11.0 R169-R204 Additions
 
-- **Defect 58 fix (R154)**: harness dotnet PATH probe fail-fast — forgetting `export PATH` in a new shell crashed the whole batch with FileNotFoundError (batch83 first-run evidence); mass_298 round retired
-- **C15 pivot assert hardening (R155)**: must_not_contain string|list + triple assert (pivot_n≥1 + no isolation prefix + ≥30ch) — full batch 19/19 re-verified true re-anchor
-- **Defect 57 fix (R153)**: D4 gate read os.environ while bge path lived in .env.local → reply_rel silently n=0; gate unified to load_env()
-- **C03 content anchor (R158)**: rel=0.499 edge false-positive handled by min_reply_chars=100, rel threshold untouched (no inflation)
-- **README 30-batch rolling policy live (R169, batch108 point)**: capability sections keep latest 2 wheel-segments (full lists), trend line keeps latest 2 batches; all changelogs under docs/changelogs/
+- **Defect 59 fix (R172)**: harness per-case timeout tolerance — one case hanging 180s no longer kills the batch (batch113 C13 evidence); transient retry 1/1 (5 cases covered)
+- **Defect 60 fix (R180)**: must_contain hard-FAIL mistakenly called out-of-scope req() → NameError crash; replaced with x[pass]=False
+- **Defect 61 fix (R182)**: memory-recall deixis words missing → C07 repl turn-2 falsely isolated (batch130); +8 words one-vote veto
+- **C07 memory-chain root fix (R182)**: source identified as cross-process forecast.json single-slot overwritten racy by intermediate cases (batch340 loss evidence chain); case converted to 2-turn repl real session chain
+- **Normalization generalization (R183)**: whitespace/punct/fullwidth normalize layer + language-agnostic structural signals (pure-interrogative veto / short-question score-1) — immune to inserted spaces & other languages
+- **v0.12.0 started (R199-R200)**: capabilities modality matrix 25/25 models; CogViewClient (real-machine 8.1s); OpenAIMultimodalMessage dual-form DTO (AOT-safe); glm-5.3-flash vision real-verified (4.6s)
 
-  <details><summary>Batch 79-108 full details</summary>
+  <details><summary>Batch 109-167 details</summary>
 
-  [docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md)
+  [docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md) ·
+  [docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md)
 
   </details>
+
 ### 📊 Thousand-Round Eval (PGO-driven)
 - **1034/1056 = 97.92%** case pass (215 rounds landed); quick-batch tokens **7354 → ~3969 avg**; C08 reasoning completion **1875 → 479 (-74%)**; 55 real defects fixed, all telemetry-driven.
 - Batch trend: **batch166 (mass_382)** 11/11 quick-11 10517tok (956/case) / **batch167 (mass_383)** 11/11 quick-11 10607tok (964/case) — band ≤1250 after C07 2-turn conversion, 22 consecutive green. Batches 42-78: [R143-R152](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md); 79-108: [R153-R168](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md); 109-138: [R169-R185](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md); 139-167: [R186-R204](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md). Roll every 30 batches (next: batch168).

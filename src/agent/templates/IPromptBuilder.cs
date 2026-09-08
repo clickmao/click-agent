@@ -54,6 +54,12 @@ public class Prompt
     /// 当前用户消息
     /// </summary>
     public string UserMessage { get; set; } = string.Empty;
+
+    /// <summary>
+    /// v0.12.0 A2: 图像附件 (URL 或本地路径 — 本地路径由 LLM caller 转 base64 data URL)。
+    /// 非空时 user 消息序列化为多段 content (text + image_url × N)。
+    /// </summary>
+    public List<string> ImageUrls { get; set; } = new();
     
     /// <summary>
     /// 完整的组合 Prompt
@@ -170,7 +176,13 @@ public class PromptBuilder : IPromptBuilder
         IEnumerable<Message> conversationHistory)
     {
         var prompt = Build(userMessage, context, systemPrompt);
-        
+
+        // v0.12.0 A2: 图像附件透传 (CLI -img / Message.ImageAttachments) → LLM caller 多段 content
+        File.AppendAllText("/tmp/vision_debug.log", $"BuildWithHistory attachments={userMessage.ImageAttachments.Count}\n");
+        prompt.ImageUrls = userMessage.ImageAttachments;
+        if (prompt.ImageUrls.Count > 0)
+            Console.Error.WriteLine($"[vision-a2] prompt.ImageUrls={prompt.ImageUrls.Count} first={prompt.ImageUrls[0][..Math.Min(40, prompt.ImageUrls[0].Length)]}");
+
         // 收集历史消息（从后往前取，保持最近的消息）
         // 注意：当前消息不在 history 中（因为还没添加）
         var historyMessages = conversationHistory

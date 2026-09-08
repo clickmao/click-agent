@@ -42,6 +42,12 @@ public class Message
     /// </summary>
     [JsonPropertyName("type")]
     public MessageType Type { get; set; } = MessageType.Text;
+
+    /// <summary>
+    /// v0.12.0 A2: 图像附件 (路径或 URL) — 非空时 vision 链 (capabilities.image_input 路由)。
+    /// </summary>
+    [JsonPropertyName("image_attachments")]
+    public List<string> ImageAttachments { get; set; } = new();
     
     /// <summary>
     /// 时间戳

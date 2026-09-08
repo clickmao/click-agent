@@ -1310,6 +1310,7 @@ public sealed class OpenAIChatRequest
     public string? ReasoningEffort { get; set; }
 }
 
+[JsonConverter(typeof(agent.ChatMessagePartsConverter))]
 public sealed class OpenAIChatMessage
 {
     [JsonPropertyName("role")]
@@ -1317,6 +1318,16 @@ public sealed class OpenAIChatMessage
 
     [JsonPropertyName("content")]
     public string Content { get; set; } = string.Empty;
+
+    /// <summary>
+    /// v0.12.0 A2: 图像附件 (image_url/base64 data URL) — 非空时该消息序列化为 parts[] 多段形态
+    /// (由 VisionJsonContext + OpenAIMultimodalMessage 承担, 本字段不直接序列化)。
+    /// </summary>
+    [JsonIgnore]
+    public List<string>? ImageUrls { get; set; }
+
+    [JsonIgnore]
+    public bool HasImages => ImageUrls is { Count: > 0 };
 }
 
 /// <summary>
@@ -1400,7 +1411,17 @@ public class OpenAILLMCaller : ILLMCaller
             }
             
             // Current message
-            messages.Add(new OpenAIChatMessage { Role = "user", Content = prompt.UserMessage });
+            // v0.12.0 A2: 图像附件 → user 消息多段 content (text + image_url × N)
+            var userMsg = new OpenAIChatMessage { Role = "user", Content = prompt.UserMessage };
+            if (prompt.ImageUrls.Count > 0)
+            {
+                userMsg.ImageUrls = prompt.ImageUrls
+                    .Select(u => u.StartsWith("data:") || u.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                        ? u
+                        : VisionChatHelper.ToDataUrl(u))
+                    .ToList();
+            }
+            messages.Add(userMsg);
             
             // v0.11.0 R21: 显式 DTO (source-gen 零反射) + 推理档位 (简单任务 low 档轻思考)
             var requestBody = new OpenAIChatRequest
@@ -1415,12 +1436,19 @@ public class OpenAILLMCaller : ILLMCaller
                 ReasoningEffort = prompt.ReasoningEffort,
             };
             
+            // v0.12.0 A2: 任一消息带图 → 多段形态序列化 (VisionJsonContext, 手写 converter AOT 安全)
+            string jsonBody;
+            if (messages.Any(m => m.HasImages))
+            {
+                jsonBody = JsonSerializer.Serialize(requestBody, VisionJsonContext.Default.OpenAIChatRequest);
+            }
+            else
+            {
+                jsonBody = JsonSerializer.Serialize(requestBody, LLMJsonContext.Default.OpenAIChatRequest);
+            }
             var request = new HttpRequestMessage(HttpMethod.Post, _baseUrl + "/chat/completions");
             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _apiKey);
-            request.Content = new StringContent(
-                JsonSerializer.Serialize(requestBody, LLMJsonContext.Default.OpenAIChatRequest),
-                Encoding.UTF8,
-                "application/json");
+            request.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
             
             var httpResponse = await _httpClient.SendAsync(request, ct);
             var responseJson = await httpResponse.Content.ReadAsStringAsync(ct);

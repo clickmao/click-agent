@@ -21,19 +21,22 @@ C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / Na
 - **VisionChat DTO**: content 双形态 (string|parts[]) 手写 AOT 安全 converter, 向后兼容纯文本链路, 5 对抗单测
 - **开发计划**: docs/plans/v0.12.0-vision-plan.md (R2 版 — doubao thread 核实 + 真机证据, zcode 收敛环: 理解→生成→校验→FAIL 重生成)
 
-### 🆕 v0.11.0 R153-R168 新增能力
+### 🆕 v0.11.0 R169-R204 新增能力
 
-- **缺陷 58 修复 (R154)**: harness dotnet PATH 探测 fail-fast — 新 shell 忘 export PATH 时整批 FileNotFoundError 崩溃 (批83 首跑实证); mass_298 轮号报废登记
-- **C15 pivot 断言强化 (R155)**: must_not_contain string|list 扩展 + 三重断言 (pivot_n≥1 + 无隔离前缀 + ≥30ch) — 全量批 19/19 复证真重锚
-- **缺陷 57 修复 (R153)**: D4 gate 读 os.environ 而 bge 路径只在 .env.local → reply_rel 静默 n=0; gate 统一 load_env()
-- **C03 内容锚 (R158)**: rel=0.499 边缘假阳性由 min_reply_chars=100 接管, rel 阈值不动 (防通胀)
-- **README 30 批滚动制度落地 (R169, 批108 点)**: 能力段只保留最新 2 个轮段（完整列表），趋势行只留最新 2 批；changelog 全部集中 docs/changelogs/
+- **真缺陷 59 修复 (R172)**: harness per-case 超时容错 — 单用例 180s 挂起不再崩整批 (批113 C13 实证); LLM 瞬态重试 1/1 (5 用例实测全覆盖)
+- **真缺陷 60 修复 (R180)**: must_contain 升级硬 FAIL 过程中误用作用域外 req() → NameError 崩批; 改 x[pass]=False
+- **真缺陷 61 修复 (R182)**: 记忆回指词 (还记得/上一条/上次…) 缺失导致 C07 repl 轮2 误隔离 (批130 实证) — +8 词一票否决
+- **C07 记忆链根修 (R182)**: 记忆源破案 = 跨进程 forecast.json 单槽被中间用例竞态覆盖 (批340 丢失实证链); 用例改 repl 双轮真 session 链
+- **归一化泛化 (R183)**: 去空白/标点/全半角归一化层 + 语言无关结构信号 (纯疑问短语一票否决/短问句减分) — 空格插入/其他语言免疫
+- **v0.12.0 开工 (R199-R200)**: capabilities 模态矩阵 25/25 模型回填; CogViewClient 生图客户端 (真机 8.1s); OpenAIMultimodalMessage 双形态 DTO (AOT 安全); 5.3-flash 图像理解真机验证 (4.6s)
 
-  <details><summary>批 79-108 全部明细</summary>
+  <details><summary>批 109-167 全部明细</summary>
 
-  [docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md)
+  [docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md) ·
+  [docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md)
 
   </details>
+
 ### 📊 千轮迭代评测 (PGO 对比数据驱动)
 
 | 维度 | 基线 | 当前 | 改善 |

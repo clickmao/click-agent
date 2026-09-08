@@ -26,6 +26,7 @@ internal class Program
         // ── 参数解析 ──
         string? logPath = null;
         string? oneShot = null;
+        var imageArgs = new List<string>(); // v0.12.0 A2: -img 图像附件 (路径/URL, 可多次)
         string? officialKey = null; // v7.15 需求1: 官方通道 key (CLI 传递, 内存态, 永不落盘)
         var smoke = args.Length == 0 || args.Contains("--smoke");
         var outputMode = agent.output.OutputMode.Markdown;
@@ -44,6 +45,9 @@ internal class Program
                     : agent.output.OutputMode.Markdown;
             else if (args[i] == "--embed" && i + 1 < args.Length)
                 embedText = args[++i];
+            // v0.12.0 A2: 图像附件 (可多次) — 路径或 URL, 走 vision 链
+            else if (args[i] == "-img" && i + 1 < args.Length)
+                imageArgs.Add(args[++i]);
         }
 
         // R136 (D4 reply_rel 基础设施): --embed 直连 BgeEmbedder 输出向量 JSON —
@@ -105,14 +109,15 @@ internal class Program
         if (smoke && oneShot == null)
             return await RunSmokeAsync(provider, entryAgent);
 
-        return await RunCliAsync(provider, entryAgent, sink, oneShot, logPath, outputMode);
+        return await RunCliAsync(provider, entryAgent, sink, oneShot, logPath, outputMode, imageArgs);
     }
 
     // ─────────────────────────── CLI REPL ───────────────────────────
 
     private static async Task<int> RunCliAsync(
         ServiceProvider provider, IAgent agent, IOutputSink sink, string? oneShot, string? logPath,
-        agent.output.OutputMode mode = agent.output.OutputMode.Markdown)
+        agent.output.OutputMode mode = agent.output.OutputMode.Markdown,
+        List<string>? imageAttachments = null)
     {
         var sessionMgr = provider.GetRequiredService<ISessionManager>();
         var session = new CliSession(sink, "./data");
@@ -204,6 +209,7 @@ internal class Program
                 {
                     Role = MessageRole.User,
                     Content = input,
+                    ImageAttachments = imageAttachments ?? new List<string>(),
                     SessionId = session.SessionId,
                     SenderId = "cli-user",
                 };
