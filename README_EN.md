@@ -59,7 +59,7 @@ Release line: v0.11.0 — unified @cmd command protocol + 3 transports / Skill e
 
 ### 📊 Thousand-Round Eval (PGO-driven)
 - **1034/1056 = 97.92%** case pass (215 rounds landed); quick-batch tokens **7354 → ~3969 avg**; C08 reasoning completion **1875 → 479 (-74%)**; 55 real defects fixed, all telemetry-driven.
-- Batch trend: **batch107 (mass_323)** 11/11 quick-11 9794tok (890/case) / **batch108 (mass_324)** 11/11 quick-11 8667tok (787/case) — 26 consecutive green batches since defect58 fix (batch83-108), KPI in-band. Batches 42-78: [docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md); batches 79-108: [docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md). README batch details roll every 30 batches (next: batch138).
+- Batch trend: **batch137 (mass_353)** 11/11 quick-11 11868tok (1078/case) / **batch138 (mass_354)** 11/11 quick-11 10163tok (923/case) — band ≤1250 after C07 2-turn conversion, 1 transient FAIL in last 26 batches (retry-covered). Batches 42-78: [R143-R152 archive](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md); 79-108: [R153-R168 archive](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md); 109-138: [R169-R185 archive](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md). Roll every 30 batches (next: batch168).
 - Full report: [Thousand-Round Report](docs/reports/thousand-round-report.md) · ledger: [wave3-ledger](docs/reports/wave3-ledger.md)
 
 ### 🧭 Full Capability Panorama (v0.11.0)
