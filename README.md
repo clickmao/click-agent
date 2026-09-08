@@ -2,16 +2,24 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)
-![Tests](https://img.shields.io/badge/tests-399%2F399-brightgreen)
+![Tests](https://img.shields.io/badge/tests-409%2F409-brightgreen)
 ![NativeAOT](https://img.shields.io/badge/NativeAOT-zero%20warnings-blueviolet)
 ![Eval](https://img.shields.io/badge/千轮评测-1034%2F1056-success)
 
-C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / NativeAOT 零警告 / 399 测试全绿。
+C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / NativeAOT 零警告 / 409 测试全绿。
 发布线: v0.11.0 — 统一 @cmd 命令协议 + 3 传输通道 / Skill executive 脚本 / bge 向量混合相关性 / 22 模型目录 / PGO 式全链路打点。
 
 [🇬🇧 English → README_EN.md](README_EN.md)
 
 ---
+
+### 🚧 v0.12.0 开发中 — 视觉理解/图像生成/无头浏览器插件
+
+- **glm-5.3-flash 图像理解** (真机验证 2026-09-08): v4 标准端点 + image_url/base64, 多图, 1M 上下文 — 4.6s 准确描述 CogView 生成图
+- **capabilities 模态能力矩阵**: models.yaml 25/25 模型回填 (text/image/video/audio/pdf/xlsx/image_output) — 文本模型收图明确报错
+- **CogViewClient 生图客户端**: cogview-3-flash 真机 8.1s 1024x1024 (免费档) + image_gen 打点 + 空图校验
+- **VisionChat DTO**: content 双形态 (string|parts[]) 手写 AOT 安全 converter, 向后兼容纯文本链路, 5 对抗单测
+- **开发计划**: docs/plans/v0.12.0-vision-plan.md (R2 版 — doubao thread 核实 + 真机证据, zcode 收敛环: 理解→生成→校验→FAIL 重生成)
 
 ### 🆕 v0.11.0 R153-R168 新增能力
 
@@ -26,21 +34,6 @@ C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / Na
   [docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md)
 
   </details>
-### 🆕 v0.11.0 R143-R152 新增能力
-
-- **quick 5→10→11 扩容** (R143/R149): 记忆链/负面族/skill 链/TaskRelevance 全部常态采集
-- **TaskRelevance 判定空心修复** (R149): C14/C15 绑定 isolated_true/pivot_reanchor 真断言 + 10 对抗单测 (389→399 绿)
-- **pivot_n 真重锚断言** (R151): goal/op=pivot 打点消费 + 三重断言 (真缺陷 45 实证修复)
-- **K1 聚合断链收口** (R146): TakeLast 10→100, conf 0.296→0.8 (A/B 开关实证)
-- **D4 记忆类阈值分层 0.4** (R144): C07/C14/C15 rel 降为参考值, 判定由内容断言承担 (R150)
-- **文档二轮深度审查** (R143b): api.md/task_loop/industrial_enhancements 校准 + 归档
-
-  <details><summary>批 56-78 全部明细</summary>
-
-  [docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md)
-
-  </details>
-
 ### 📊 千轮迭代评测 (PGO 对比数据驱动)
 
 | 维度 | 基线 | 当前 | 改善 |
@@ -51,7 +44,7 @@ C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / Na
 | 单元测试 | 325 | **389** | +64 |
 | 真缺陷修复 | — | **55 项** (全部打点驱动) | #21-#55 |
 
-批次趋势: **批137 (mass_353)** 11/11 quick-11 11868tok (1078/case) / **批138 (mass_354)** 11/11 quick-11 10163tok (923/case) — C07 repl 化后带宽 ≤1250, 近 26 批仅 1 次 LLM 瞬态 FAIL (重试机制覆盖)。批42-78: [docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md); 批79-108: [docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md); 批109-138: [docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md)。README 批次明细每 30 批滚动更新一次 (下次: 批168)。
+批次趋势: **批166 (mass_382)** 11/11 quick-11 10517tok (956/case) / **批167 (mass_383)** 11/11 quick-11 10607tok (964/case) — C07 repl 化后带宽 ≤1250, 近 22 批 22 绿。批42-78: [docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md); 批79-108: [docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md); 批109-138: [docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md); 批139-167: [docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md)。README 批次明细每 30 批滚动更新一次 (下次: 批168)。
 专项验证: 多来源召回率 (100 用例轮统计) / 无关话题隔离 (score=2 触发独立 session) / session 长期记忆 (跨进程落盘) / JSON 格式跟随 (哨兵用例) / 双 LLM 校验 — 全部 ✓。
 
 完整报告: [千轮迭代优化报告](docs/reports/thousand-round-report.md) · 阶段台账: [wave3-ledger](docs/reports/wave3-ledger.md)

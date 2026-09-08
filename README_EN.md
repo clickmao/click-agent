@@ -3,7 +3,7 @@
 [![ci](https://github.com/clickmao/click-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/clickmao/click-agent/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)
-![Tests](https://img.shields.io/badge/tests-399%2F399-brightgreen)
+![Tests](https://img.shields.io/badge/tests-409%2F409-brightgreen)
 ![Eval](https://img.shields.io/badge/thousand--round%20eval-1034%2F1056-success)
 ![NativeAOT](https://img.shields.io/badge/NativeAOT-zero%20warnings-blueviolet)
 
@@ -16,18 +16,13 @@ Release line: v0.11.0 — unified @cmd command protocol + 3 transports / Skill e
 
 ---
 
-### 🆕 v0.11.0 New Capabilities
-- **Unified command protocol (`@cmd`)**: all frontend directives (balance-insufficient / thinking page-switch / model-switch / skill progress) as one `AgentCommand` envelope over any transport; three transports: Console.IO / shared-memory (file-backed mmap ring) / TCP socket — reader/writer utility classes compose over WriterBase/ReaderBase
-- **Skill executive scripts**: real-process execution of SKILL.md `scripts/` (python/bash/node), package-dir sandbox, env whitelist, timeout kill-tree, script `@cmd` lines forwarded to the panel with skill param
-- **Vector-blended relevance scoring (P3)**: message relevance = 0.6 lexical + 0.4 bge cosine, strong-semantic floor 0.8; pure-lexical fallback when embedder absent (P1 compatible)
-- **19-model catalog**: `modules:` array (name/description/request_address/api_key env/cost & capability estimates); `/model list` shows description per model
-- **Yamlify YAML parsing**: SourceGenerator-level library (zero reflection, AOT verified zero warnings), full YAML 1.2; `MiniYaml.Parse` API unchanged
-- **Token usage stats + balance linkage**: real-API sync -> local accumulation -> threshold re-sync; auto model switching + `model:xxx flags:balance-insufficient` hint; `/token stats`
-- **Skill semantic matching (bge)**: lexical miss -> 384-dim cosine suspected match (cos>=0.45), silent fallback
-- **Configurable proxy**: `models.yaml proxy` section (ConfigurePrimaryHttpMessageHandler)
-- **Unified output**: IOutputSink all exits; zero direct Console writes in libraries; agent/Program.cs dead code removed
-- **/forecast**: next-turn forecast surfaced to frontend
-- **SKILL.md packages**: Anthropic Agent-Skills Open Standard loader (dir name = front-matter name) + 2 example packages
+### 🚧 v0.12.0 In Development — Vision / Image Generation / Headless Browser Plugin
+
+- **glm-5.3-flash image understanding** (real-verified 2026-09-08): v4 standard endpoint + image_url/base64, multi-image, 1M context — 4.6s accurate description of a CogView-generated image
+- **capabilities modality matrix**: models.yaml 25/25 models backfilled (text/image/video/audio/pdf/xlsx/image_output) — text-only models reject images with explicit error
+- **CogViewClient**: cogview-3-flash real-machine 8.1s 1024x1024 (free tier) + image_gen telemetry + empty-image guard
+- **VisionChat DTO**: dual-form content (string|parts[]) hand-written AOT-safe converter, backward compatible, 5 adversarial tests
+- **Plan**: docs/plans/v0.12.0-vision-plan.md (R2 — doubao thread verified + real-machine evidence, zcode convergence loop: understand→generate→verify→regen on FAIL)
 
 ### 🆕 R153-R168 Additions
 
@@ -42,24 +37,9 @@ Release line: v0.11.0 — unified @cmd command protocol + 3 transports / Skill e
   [docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md)
 
   </details>
-### 🆕 R143-R152 Additions
-
-- **quick 5→10→11 expansion** (R143/R149): memory-chain/negative-family/skill-chain/TaskRelevance all in regular rotation
-- **TaskRelevance empty-verdict fix** (R149): C14/C15 bound to isolated_true/pivot_reanchor real asserts + 10 adversarial unit tests (389→399 green)
-- **pivot_n true re-anchor assert** (R151): goal/op=pivot telemetry consumption + triple assert (real defect 45 fixed)
-- **K1 aggregation break fix** (R146): TakeLast 10→100, conf 0.296→0.8 (A/B switch proven)
-- **D4 memory-class threshold tier 0.4** (R144): C07/C14/C15 rel demoted to reference, verdicts carried by content asserts (R150)
-- **Docs deep review round 2** (R143b): api.md/task_loop/industrial_enhancements calibrated + archived
-
-  <details><summary>Batch 56-78 full details</summary>
-
-  [docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md)
-
-  </details>
-
 ### 📊 Thousand-Round Eval (PGO-driven)
 - **1034/1056 = 97.92%** case pass (215 rounds landed); quick-batch tokens **7354 → ~3969 avg**; C08 reasoning completion **1875 → 479 (-74%)**; 55 real defects fixed, all telemetry-driven.
-- Batch trend: **batch137 (mass_353)** 11/11 quick-11 11868tok (1078/case) / **batch138 (mass_354)** 11/11 quick-11 10163tok (923/case) — band ≤1250 after C07 2-turn conversion, 1 transient FAIL in last 26 batches (retry-covered). Batches 42-78: [R143-R152 archive](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md); 79-108: [R153-R168 archive](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md); 109-138: [R169-R185 archive](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md). Roll every 30 batches (next: batch168).
+- Batch trend: **batch166 (mass_382)** 11/11 quick-11 10517tok (956/case) / **batch167 (mass_383)** 11/11 quick-11 10607tok (964/case) — band ≤1250 after C07 2-turn conversion, 22 consecutive green. Batches 42-78: [R143-R152](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md); 79-108: [R153-R168](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md); 109-138: [R169-R185](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md); 139-167: [R186-R204](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md). Roll every 30 batches (next: batch168).
 - Full report: [Thousand-Round Report](docs/reports/thousand-round-report.md) · ledger: [wave3-ledger](docs/reports/wave3-ledger.md)
 
 ### 🧭 Full Capability Panorama (v0.11.0)
@@ -239,7 +219,7 @@ click-agent/
 │   ├── agent.rag/           # RAG recall
 │   ├── agent.vectormemory/  # Vector memory
 │   ├── agent.workspace/     # Workspace
-│   └── agent.tests/         # 399 tests
+│   └── agent.tests/         # 409 tests
 └── docs/                    # Architecture/API/improvement records/plans
 ```
 
@@ -248,7 +228,7 @@ click-agent/
 | Item | Result |
 |---|---|
 | Compilation (--no-incremental) | 0 errors 0 warnings |
-| Tests | 399/399 Passed |
+| Tests | 409/409 Passed |
 | NativeAOT (linux-x64) | 0 IL/TR warnings (re-verified 6x) + AOT smoke pass |
 | Thousand-round eval | 1034/1056 = 97.92% (215 rounds landed) |
 | Real 3-endpoint E2E | glm/deepseek chat+balance OK; kimi negative sample honest error |
@@ -275,7 +255,7 @@ click-agent/
 3. **K4 long-horizon watch**: skill false-absorption suppression stability + negative-family expansion (8-class checklist toward 25%)
 4. **Real-GPU Vulkan test** (needs real GPU; llvmpipe only on this host)
 
-> **Current baseline (R151)**: 399/399 tests green / NativeAOT 0 IL warnings / thousand-round eval 97.92% (215 rounds) / 5-KPI full observability — next: K1 effect verification (profile-driven reply diff), semantic_avg tier observation, negative-family expansion.
+> **Current baseline (R151)**: 409/409 tests green / NativeAOT 0 IL warnings / thousand-round eval 97.92% (215 rounds) / 5-KPI full observability — next: K1 effect verification (profile-driven reply diff), semantic_avg tier observation, negative-family expansion.
 
 ## Configuration
 
