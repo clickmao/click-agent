@@ -45,6 +45,21 @@ public sealed class ForecastPayload
     public DateTime UpdatedAt { get; set; }
 }
 
+/// <summary>/rag 查询载荷 (v0.13.0 用户钦定: RAG 数据文件路径可见化)</summary>
+public sealed class RagInfoPayload
+{
+    public string CurrentPath { get; set; } = string.Empty;
+    public string? Override { get; set; }
+}
+
+/// <summary>/rag &lt;path&gt; 切换结果载荷</summary>
+public sealed class RagSwitchPayload
+{
+    public string Path { get; set; } = string.Empty;
+    public bool Reloaded { get; set; }
+    public string Hint { get; set; } = string.Empty;
+}
+
 /// <summary>/token stats 载荷 (v0.10.0: 用量统计 + 余额快照 + 余额不足 flags)</summary>
 public sealed class TokenStatsPayload
 {
@@ -93,6 +108,8 @@ public sealed class ModelListItem
 [System.Text.Json.Serialization.JsonSerializable(typeof(TokenStatsPayload))]
 [System.Text.Json.Serialization.JsonSerializable(typeof(BalanceEntryPayload))]
 [System.Text.Json.Serialization.JsonSerializable(typeof(ForecastPayload))]
+[System.Text.Json.Serialization.JsonSerializable(typeof(RagInfoPayload))]
+[System.Text.Json.Serialization.JsonSerializable(typeof(RagSwitchPayload))]
 [System.Text.Json.Serialization.JsonSourceGenerationOptions(
     DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
 public partial class ModelCommandJsonContext : System.Text.Json.Serialization.JsonSerializerContext

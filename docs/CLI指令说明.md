@@ -122,3 +122,21 @@ agenthost -img /path/to/image.png "你的问题"
 - 作用: 附带本地图像文件启动对话, 走视觉理解链 (glm-5.3-flash v4 端点, data URL base64)。
 - 约束: 带图请求强制云端 (本地 qwen 不支持); text-only 模型自动重路由。
 - 多轮: repl 会话内图像仅首轮生效; 目录/链接探索见 v0.13.0 计划文档。
+
+## /rag RAG 数据文件 (v0.13.0, 用户钦定)
+
+```
+/rag            # 查询当前 RAG 数据文件路径 (JSON)
+/rag <path>     # 切换 RAG 数据文件 (进程内生效; 历史索引重载需重启 — 诚实提示)
+```
+
+CLI 启动参数 (等价):
+
+```
+agenthost -rag /path/to/index.jsonl -q "问题"
+agenthost -rag /path/to/index.jsonl   # repl 会话
+```
+
+- 作用: 指定 RAG 索引落盘/恢复文件 (默认 `data/rag/index.jsonl`), 支持多库隔离 (评测/项目/个人)。
+- 语义: 切换后新文档落新路径; 历史索引恢复按启动时路径 (诚实提示, 不静默重载)。
+- env 等价: `AGENTFRAMEWORK_RAG_PATH=<path>` (CLI/任务内都落到此钩子)。

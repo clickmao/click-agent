@@ -211,6 +211,42 @@ public class IndustrialAgentV2 : AgentBase
                 return response;
             }
 
+            // 0.-1c /rag (v0.13.0 用户钦定): RAG 数据文件查询/切换
+            //   /rag          → 当前 RAG 数据文件路径 (JSON)
+            //   /rag <path>   → 切换 RAG 数据文件 (设置 env 钩子 + DI 单例 override; 新文档落盘到新路径;
+            //                    历史索引重载需重启进程 — 诚实提示)
+            var trimmedRag = message.Content.Trim();
+            if (trimmedRag.Equals("/rag", StringComparison.OrdinalIgnoreCase) ||
+                trimmedRag.StartsWith("/rag ", StringComparison.OrdinalIgnoreCase))
+            {
+                var ragRecall = _ragRecall;
+                var arg = trimmedRag.Length > 5 ? trimmedRag[5..].Trim() : "";
+                if (arg.Length == 0)
+                {
+                    response.Success = true;
+                    var currentPath = ragRecall?.CurrentPersistPath() ?? "";
+                    response.Content = System.Text.Json.JsonSerializer.Serialize(
+                        new RagInfoPayload { CurrentPath = currentPath, Override = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_RAG_PATH") ?? currentPath },
+                        ModelCommandJsonContext.Default.RagInfoPayload);
+                    response.Data = new Dictionary<string, object> { { "localCommand", "rag" } };
+                    response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
+                    return response;
+                }
+                var fullRag = System.IO.Path.GetFullPath(arg);
+                var ragDir = System.IO.Path.GetDirectoryName(fullRag);
+                if (ragDir is not null && !System.IO.Directory.Exists(ragDir))
+                    System.IO.Directory.CreateDirectory(ragDir);
+                Environment.SetEnvironmentVariable("AGENTFRAMEWORK_RAG_PATH", fullRag);
+                if (ragRecall is not null) ragRecall.SetPersistOverride(fullRag);
+                response.Success = true;
+                response.Content = System.Text.Json.JsonSerializer.Serialize(
+                    new RagSwitchPayload { Path = fullRag, Reloaded = false, Hint = "RAG 数据文件已切换; 历史索引重载需重启进程 (诚实语义)" },
+                    ModelCommandJsonContext.Default.RagSwitchPayload);
+                response.Data = new Dictionary<string, object> { { "localCommand", "rag" } };
+                response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
+                return response;
+            }
+
             // 0.-1b /forecast 下轮预估查询 (v0.10.0 新需求4): 读回上轮落盘的下轮预估
             // (NextTurnForecast v7.11 内部机制 — 用户钦定补前端指令; 无记录 → 诚实 null 提示)
             if (message.Content.Trim().Equals("/forecast", StringComparison.OrdinalIgnoreCase))

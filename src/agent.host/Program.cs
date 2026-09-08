@@ -12,6 +12,7 @@ namespace agent.host;
 /// AgentFramework CLI (v7.12):
 ///   agenthost                 → 交互 REPL (任务执行步骤明细, /status /plan /stop 可查询/控制)
 ///   agenthost -q "问题"       → 单条问答
+///   agenthost -rag <path>     → 指定 RAG 数据文件 (v0.13.0, 用户钦定)
 ///   agenthost --log run.log   → 任务输出日志保存为 markdown 文件
 ///   agenthost --output-mode text → 纯文本模式 (默认 markdown; 控制台均着色)
 ///   agenthost --smoke         → AOT 冒烟 (原 Program 行为保留)
@@ -31,6 +32,7 @@ internal class Program
         var smoke = args.Length == 0 || args.Contains("--smoke");
         var outputMode = agent.output.OutputMode.Markdown;
         string? embedText = null;
+        string? ragPath = null; // v0.13.0: -rag RAG 数据文件路径 (用户钦定)
         for (var i = 0; i < args.Length; i++)
         {
             if (args[i] == "--log" && i + 1 < args.Length)
@@ -48,6 +50,9 @@ internal class Program
             // v0.12.0 A2: 图像附件 (可多次) — 路径或 URL, 走 vision 链
             else if (args[i] == "-img" && i + 1 < args.Length)
                 imageArgs.Add(args[++i]);
+            // v0.13.0 (用户钦定): -rag <path> 指定 RAG 数据文件 (index.jsonl 路径, 可自定义库)
+            else if (args[i] == "-rag" && i + 1 < args.Length)
+                ragPath = args[++i];
         }
 
         // R136 (D4 reply_rel 基础设施): --embed 直连 BgeEmbedder 输出向量 JSON —
@@ -65,6 +70,10 @@ internal class Program
             Console.WriteLine("[" + string.Join(",", vec.Select(v => v.ToString("R", System.Globalization.CultureInfo.InvariantCulture))) + "]");
             return 0;
         }
+
+        // v0.13.0 (用户钦定): -rag 指定 RAG 数据文件 → env 钩子 (DI 工厂读取; 进程内生效, 不落盘)
+        if (!string.IsNullOrEmpty(ragPath))
+            Environment.SetEnvironmentVariable("AGENTFRAMEWORK_RAG_PATH", Path.GetFullPath(ragPath));
 
         var services = new ServiceCollection();
         services.AddLogging(b => b.AddSimpleConsole().SetMinimumLevel(LogLevel.Warning));

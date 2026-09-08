@@ -206,6 +206,10 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<RAGConfig>(sp =>
         {
             var cfg = new RAGConfig();
+            // v0.13.0 (用户钦定): RAG 数据文件可由用户指定 — CLI -rag <path> 或任务内 /rag <path>
+            // 都落到此 env 钩子 (启动期设置, 进程内生效); 未设 → 既有解析序 (覆写/CWD/AppContext)。
+            var ragOverride = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_RAG_PATH");
+            if (!string.IsNullOrEmpty(ragOverride)) cfg.PersistPathOverride = ragOverride;
             var llmLoaded = false; // v0.11.0 R113: 共享 LLM 服务已废弃 — bge 决策按本进程未加载处理 (CPU/独立档)
             cfg.EmbeddingFunction = text => new agent.llamalocal.EmbeddingRouter(
                 Environment.GetEnvironmentVariable("AGENTFRAMEWORK_BGE_MODEL"),

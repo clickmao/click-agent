@@ -76,6 +76,12 @@ public class RecallResult
 /// </summary>
 public interface IRAGRecall
 {
+    /// <summary>v0.13.0 (用户钦定): 当前 RAG 数据文件路径 (/rag 查询)</summary>
+    string CurrentPersistPath();
+
+    /// <summary>v0.13.0 (用户钦定): 运行时切换 RAG 数据文件 (/rag &lt;path&gt;)</summary>
+    void SetPersistOverride(string path);
+
     /// <summary>
     /// 索引文档
     /// </summary>
@@ -154,6 +160,16 @@ public class RAGRecall : IRAGRecall
         var cwdPath = Path.GetFullPath("data/rag/index.jsonl");
         var usePath = File.Exists(cwdPath) || Directory.Exists("data") ? cwdPath : PersistPath;
         return usePath;
+    }
+
+    /// <summary>v0.13.0 (用户钦定): 当前 RAG 数据文件路径 (/rag 查询用)</summary>
+    public string CurrentPersistPath() => ResolvePersistPath();
+
+    /// <summary>v0.13.0 (用户钦定): 运行时切换 RAG 数据文件 (/rag <path>; 新文档落新路径; 历史重载需重启)</summary>
+    public void SetPersistOverride(string path)
+    {
+        _config.PersistPathOverride = path;
+        _logger.LogInformation("RAG persist path override set: {Path}", path);
     }
 
     public RAGRecall(ILogger<RAGRecall> logger, RAGConfig? config = null)
