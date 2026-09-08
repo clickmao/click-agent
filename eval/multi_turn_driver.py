@@ -27,19 +27,21 @@ try:
         p.stdin.flush()
         time.sleep(1)
         # 读取到下一提示符 (简单策略: 3s 窗口收集)
+        # R268 修正: 阻塞 readline 会卡死 (提示符后无更多输出时 readline 永等) —
+        # 改时间窗 + 非阻塞轮询 (select):
+        import select
         out = []
-        deadline = time.time() + 60
+        deadline = time.time() + 90
         while time.time() < deadline:
+            rl, _, _ = select.select([p.stdout], [], [], 2.0)
+            if not rl:
+                if out and time.time() > deadline - 88:  # 已有输出且 2s 无新行 → 本轮结束
+                    break
+                continue
             line = p.stdout.readline()
             if not line:
                 break
             out.append(line)
-            if "── 回复" in line or line.startswith(">"):
-                # 再收 2 行 (回复正文)
-                for _ in range(2):
-                    l2 = p.stdout.readline()
-                    if l2: out.append(l2)
-                break
         text = "".join(out)
         ok = f"第{i}轮" in text or f"项目{i}" in text or "已" in text
         results.append({"turn": i, "chars_in": len(msg), "ok_hint": ok, "out_head": text[:120]})
