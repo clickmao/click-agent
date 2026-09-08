@@ -513,10 +513,15 @@ public class RAGRecall : IRAGRecall
     
     private float[] GenerateEmbedding(string text)
     {
-        // v0.11.0 R101: 注入式向量召回 — host 提供 EmbeddingFunction (bge) 时优先走向量档;
-        // null (默认) 走词袋哈希 (AOT 安全, 行为不变)。
+        // v0.13.3 真缺陷 69 修复 (bge 召回测量实证): bge ctx=512, 全文 (~730tok/500tok 样本) 超窗 →
+        // LLamaSharp ArgumentException → IndexAsync 失败/静默回退词袋。修复: embedding 输入截断至
+        // 安全窗 (440ch ≈ 460tok), 与 RAG chunking 语义一致 (首块优先); 词袋档无窗口限制不截断。
         if (_config.EmbeddingFunction != null)
-            return _config.EmbeddingFunction(text);
+        {
+            const int maxEmbedChars = 440;
+            var embedInput = text.Length > maxEmbedChars ? text[..maxEmbedChars] : text;
+            return _config.EmbeddingFunction(embedInput);
+        }
 
         // 改进的 embedding 实现：为每个词分配一个维度位置
         var words = Tokenize(text);
