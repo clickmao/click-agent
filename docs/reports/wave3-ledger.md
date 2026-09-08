@@ -405,3 +405,14 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - **R233 batch203 (本 tick 实跑 quick-11, mass_419)**: 11/11 全绿, 12935tok (avg 1176), wall 207s, KPI in-band — 数据被 sibling 226e016 收编 (commit message 未标注 batch 数据, 台账此处澄清归属: quick-11 由本 tick 实跑, 已随 226e016 推送远端)。**轮号撞号处置**: sibling FULL-23 (T-V01-04 视觉族) 同选 mass_419, 跑至 16/23 被宿主 300s 超时连带杀, JSON 未落盘 (round-log RETIRED 登记) — sibling 已改名 mass_420 batch203r 重跑; 本 tick quick-11 数据合法保留, 零丢失。
 - **凭据卫生**: token 池 state.db 提取 + API 验活 (dmud 现行, login=clickmao); 一次性 URL 推送不入 config, 推后复核 config ghp_ 残留 = 0。
 - **运维更正确认**: llm.sock 缺失=正常态 (R113 已退场), 未重启。
+
+
+### R234-R241 补账 + R241 复核接力 (2026-09-08 21:5x)
+- **R234-R239 (sibling 连跑, 1535757/ab76008/1d31df5)**: v0.13.3 A1/A2 压缩底座 audit — ground-truth 生成器 (80 docs × 4 tok 档 500/1000/2000/3000, 嵌入键: 实体/数值/日期/因果/指令) + host --compression-audit (真 ContextGradientCompressor, AOT source-gen); 首审数据: RuleCompressed 全档 100% 键保留 = 安全主档, SummarySentences 2000/3000 档因果/指令保留 0-15% = 用户假设实锤 REAL RISK; R239b isolation 长上下文/键丢失稳定性铁律入档 (P0 分层); A6 micro-step isolation 设计 + B1 基线数据先行 (396 cases batch164-210 prompt_total 100% <2k, mean 692, 触发率 0% 修正语义, 今日零行为变更)。
+- **R240 A3 修复 (sibling, d25f95a)**: TakeSentences 关键句保护 — 旧"取前 N 句"截掉随机分布的因果/指令句 (audit 实证 2000/3000 档保留 0-20%); 新评分: 因果标记 +3 / 指令标记 +3 / 数值密度 +2 / 锚词 +2 / 同分保序重拼; 修复后审计 SummarySentences 全档 key/causal/instruction 100%, 压缩率基本不变 (80-97%); 462 tests 全绿, AOT republish 0 IL 警。
+- **R241 (本 tick 实做复核)**: batch210 (mass_428, sibling 跑) 11/11 全绿 13712tok (1247/c 带内); **A3 独立复核**: 本 tick 以 --compression-audit groundtruth 重跑 → SummarySentences 500-3000 全档 key/causal/instr 保留率 100% (与 sibling after-a3 双向一致, 复核产物 eval/results/compression-audit-after-a3-verify.json); **五批审计 206-210 (mass_424-428)**: 55/55 全绿, avg 1102 tok/c 带内 (prompt_avg 586, >2000 breach 0), D4 rel 0.612 (n=55), kpi_breaches 空, wall avg ~207s/批。
+- **互斥纪律**: 本 tick 初误判批测未跑而尝试启动 mass_428 (nohup 静默失败未成进程), 核实 sibling 持锁连跑 428/429 后立即停手未抢跑 — 零撞号 (无 R211 型竞态)。
+- **推送状态**: 启动时 origin/main..HEAD=5 疑似未推, fetch 后消除 (陈旧假象第 5 次先例), origin/main=eda2dc1=local — sibling 已推, 本 tick 无需补推代码。
+- **凭据卫生**: state.db 流式提取 7 候选 → API 验活 4 活 (j6o5/dmud/xqI5/BSoi, login=clickmao), 3 dead (WAL 伪影 401 勿用); config ghp_ 残留 = 0。
+- **运维更正确认**: llm.sock 缺失=正常态 (R113 已退场), 共享 LLM 服务未运行属预期, 未重启; 云 LLM 批测链正常 (428/429 连续落盘为证)。
+- **诚实边界**: 本 tick 未改 src (纯复核 + 台账 + 审计); 本 tick 批测未跑成 (互斥让位 sibling, 无数据损失 — 429 由 sibling 完成后下 tick 收编)。
