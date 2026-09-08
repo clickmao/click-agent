@@ -478,7 +478,8 @@ def main():
     # quick-10 估 tok/case ≈ 780 (批49 全量 per-case 推导); wall 上限放宽 (C13/C17 LLM 用例拖尾)
     if len(results) <= 12:
         # R149: quick-11 口径 (+C14 repl 双轮) — tok 均值摊薄带不变; C14 双 LLM 轮 wall 拖尾 → 上限 40→55s
-        KPI = {"tokens_per_case": (600, 1100), "wall_per_case_ms": (8000, 55000)}
+        # R182: C07 改 repl 双轮 (真缺陷 61 修复配套) → +1 轮 LLM 成本, tok 上界 1100→1250 (批131 1193 实证锚定)
+        KPI = {"tokens_per_case": (600, 1250), "wall_per_case_ms": (8000, 55000)}
     else:
         KPI = {"tokens_per_case": (900, 1300), "wall_per_case_ms": (12000, 45000)}
     breaches = []

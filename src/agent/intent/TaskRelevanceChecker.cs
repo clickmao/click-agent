@@ -11,6 +11,9 @@ public static class TaskRelevanceChecker
     private static readonly string[] DeixisWords =
     {
         "它", "他们", "这个", "那个", "刚才", "继续", "上面", "刚才说的", "前面的", "再", "接着", "然后",
+        // R182 (真缺陷 61): 记忆回指词 — "还记得/上一条/上次/之前" 必然依赖上文 (deixis 定义),
+        // 缺失导致 C07 repl 轮2 被误隔离 (批130 实证 score=2, "[隔离任务] 不记得")。
+        "记得", "上一条", "上一句", "上次", "之前说的", "之前", "刚才那条", "你说过",
     };
 
     /// <summary>显式无关信号词 — "顺便/另外/帮我查" 提出新话题</summary>

@@ -19,6 +19,24 @@ public class TaskRelevanceCheckerTests
     }
 
     [Fact]
+    public void Memory_Recall_Deixis_Vetoes_Isolation()
+    {
+        // R182 (真缺陷 61): "还记得上一条消息" — 记忆回指必然依赖上文, 一票否决隔离
+        var goal = new List<string> { "向量数据库", "对比报告" };
+        var (isolated, score, reason) = agent.intent.TaskRelevanceChecker.Check(goal, "coding", "还记得我上一条消息说了什么吗", "general");
+        Assert.False(isolated);
+    }
+
+    [Fact]
+    public void Last_Message_Deixis_Vetoes_Isolation()
+    {
+        // "上一条消息" 变体覆盖
+        var goal = new List<string> { "Redis", "缓存" };
+        var (isolated, score, reason) = agent.intent.TaskRelevanceChecker.Check(goal, "coding", "你上次说的方案继续展开一下", "general");
+        Assert.False(isolated);
+    }
+
+    [Fact]
     public void HowTo_Short_Message_Vetoes_Isolation()
     {
         // "用 requests 库怎么写" — 实现询问 + 短消息 → 一票否决 (即使与爬虫标题零重叠)
