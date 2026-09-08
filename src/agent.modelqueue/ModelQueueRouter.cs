@@ -20,8 +20,9 @@ public sealed class QueuePrompt
     /// <summary>v0.11.0 R22: 推理档位建议 (null=默认深推理; low=轻思考)。</summary>
     public string? ReasoningEffort { get; set; }
 
-    /// <summary>v0.12.0 A2: 图像附件数 (URL/base64) — >0 时路由强制云端 (本地 qwen 无视觉)。</summary>
-    public int ImageCount { get; set; }
+    /// <summary>v0.12.0 A2: 图像附件 (URL/base64 data URL) — 非空时路由强制云端 + user 消息 parts[] 形态。</summary>
+    public List<string> ImageUrls { get; set; } = new();
+    public int ImageCount => ImageUrls.Count;
 }
 
 public sealed class QueueHistoryMessage
@@ -511,6 +512,64 @@ public sealed class ModelQueueRouter : IModelQueueCaller
     }
 
     /// <summary>按目录条目真实调用 OpenAI 兼容 chat completions (endpoint/keyEnv 来自目录)</summary>
+
+    /// <summary>
+    /// v0.12.0 A2: 请求序列化 — 无 parts 走 source-gen (原路); 任一消息 HasParts → 手写
+    /// Utf8JsonWriter 输出 parts[] 形态 (source-gen 对 union 不友好, 手写 AOT 安全)。
+    /// </summary>
+    private static string SerializeChatRequest(QueueChatRequest request)
+    {
+        if (!request.Messages.Any(m => m.HasParts))
+            return JsonSerializer.Serialize(request, ModelQueueJsonContext.Default.QueueChatRequest);
+        using var ms = new System.IO.MemoryStream();
+        using (var w = new Utf8JsonWriter(ms))
+        {
+            w.WriteStartObject();
+            w.WriteString("model", request.Model);
+            w.WritePropertyName("messages");
+            w.WriteStartArray();
+            foreach (var m in request.Messages)
+            {
+                w.WriteStartObject();
+                w.WriteString("role", m.Role);
+                if (m.HasParts)
+                {
+                    w.WritePropertyName("content");
+                    w.WriteStartArray();
+                    foreach (var p in m.ContentParts!)
+                    {
+                        w.WriteStartObject();
+                        w.WriteString("type", p.Type);
+                        if (p.Type == "text")
+                            w.WriteString("text", p.Text ?? string.Empty);
+                        else if (p.Type == "image_url" && p.ImageUrl != null)
+                        {
+                            w.WritePropertyName("image_url");
+                            w.WriteStartObject();
+                            w.WriteString("url", p.ImageUrl.Url);
+                            w.WriteEndObject();
+                        }
+                        w.WriteEndObject();
+                    }
+                    w.WriteEndArray();
+                }
+                else
+                {
+                    w.WriteString("content", m.Content);
+                }
+                w.WriteEndObject();
+            }
+            w.WriteEndArray();
+            if (!string.IsNullOrEmpty(request.ReasoningEffort))
+            {
+                w.WriteString("reasoning_effort", request.ReasoningEffort);
+            }
+            w.WriteEndObject();
+        }
+                var debugJson = System.Text.Encoding.UTF8.GetString(ms.ToArray());
+        try { System.IO.File.WriteAllText("/tmp/vision_request_debug.json", debugJson); } catch { }return System.Text.Encoding.UTF8.GetString(ms.ToArray());
+    }
+
     private async Task<QueueResponse> CallEntryAsync(ModelCatalogEntry entry, QueuePrompt prompt, CancellationToken ct)
     {
         // official 通道 key 只从内存仓库取 (永不落盘); 其余通道从环境变量
@@ -539,13 +598,23 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             });
         foreach (var msg in prompt.History)
             messages.Add(new QueueChatMessage { Role = msg.Role, Content = msg.Content });
-        messages.Add(new QueueChatMessage { Role = "user", Content = prompt.UserMessage });
+        // v0.12.0 A2: 带图 user 消息 → parts[] 多段 (text + image_url × N)
+        if (prompt.ImageUrls.Count > 0)
+        {
+            var parts = new List<QueueContentPart> { new() { Type = "text", Text = prompt.UserMessage } };
+            parts.AddRange(prompt.ImageUrls.Select(u => new QueueContentPart { Type = "image_url", ImageUrl = new QueueImageUrl { Url = u } }));
+            messages.Add(new QueueChatMessage { Role = "user", Content = prompt.UserMessage, ContentParts = parts });
+        }
+        else
+        {
+            messages.Add(new QueueChatMessage { Role = "user", Content = prompt.UserMessage });
+        }
 
         var request = new QueueChatRequest { Model = entry.Id, Messages = messages, ReasoningEffort = prompt.ReasoningEffort };
         using var http = new HttpRequestMessage(HttpMethod.Post, entry.Endpoint)
         {
             Content = new StringContent(
-                JsonSerializer.Serialize(request, ModelQueueJsonContext.Default.QueueChatRequest),
+                SerializeChatRequest(request),
                 System.Text.Encoding.UTF8, "application/json"),
         };
         http.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);

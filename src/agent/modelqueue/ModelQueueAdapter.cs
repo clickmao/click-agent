@@ -25,8 +25,8 @@ public sealed class ModelQueueAdapter : ILLMCaller, agent.subagent.ILLMCallerFor
             EstimatedTokens = prompt.EstimatedTokens,
             // v0.11.0 R22: 推理档位透传 (deepseek 实测 low 档 reasoning 24ch vs 90ch)
             ReasoningEffort = prompt.ReasoningEffort,
-            // v0.12.0 A2: 图像附件数透传 (Router 带图强制云端 — 本地 qwen 无视觉, 缺陷 62)
-            ImageCount = prompt.ImageUrls.Count,
+            // v0.12.0 A2: 图像附件透传 (Router 带图强制云端 + parts[] — 本地 qwen 无视觉, 缺陷 62)
+            ImageUrls = prompt.ImageUrls,
         };
         foreach (var msg in prompt.History)
             qp.History.Add(new QueueHistoryMessage

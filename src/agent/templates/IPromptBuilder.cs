@@ -178,7 +178,6 @@ public class PromptBuilder : IPromptBuilder
         var prompt = Build(userMessage, context, systemPrompt);
 
         // v0.12.0 A2: 图像附件透传 (CLI -img / Message.ImageAttachments) → LLM caller 多段 content
-        File.AppendAllText("/tmp/vision_debug.log", $"BuildWithHistory attachments={userMessage.ImageAttachments.Count}\n");
         prompt.ImageUrls = userMessage.ImageAttachments;
         if (prompt.ImageUrls.Count > 0)
             Console.Error.WriteLine($"[vision-a2] prompt.ImageUrls={prompt.ImageUrls.Count} first={prompt.ImageUrls[0][..Math.Min(40, prompt.ImageUrls[0].Length)]}");

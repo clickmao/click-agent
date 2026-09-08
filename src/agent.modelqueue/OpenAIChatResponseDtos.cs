@@ -31,6 +31,32 @@ public sealed class QueueChatMessage
 
     [JsonPropertyName("content")]
     public string Content { get; set; } = string.Empty;
+
+    /// <summary>v0.12.0 A2: 多段 content (text + image_url) — 非空时序列化为数组形态。</summary>
+    [JsonIgnore]
+    public List<QueueContentPart>? ContentParts { get; set; }
+
+    [JsonIgnore]
+    public bool HasParts => ContentParts is { Count: > 0 };
+}
+
+/// <summary>v0.12.0 A2: content part (text | image_url)</summary>
+public sealed class QueueContentPart
+{
+    [JsonPropertyName("type")]
+    public string Type { get; set; } = "text";
+
+    [JsonPropertyName("text")]
+    public string? Text { get; set; }
+
+    [JsonPropertyName("image_url")]
+    public QueueImageUrl? ImageUrl { get; set; }
+}
+
+public sealed class QueueImageUrl
+{
+    [JsonPropertyName("url")]
+    public string Url { get; set; } = string.Empty;
 }
 
 /// <summary>OpenAI 兼容 chat completions 响应 (C.3.3 — 非流式, source-gen AOT)</summary>

@@ -193,5 +193,17 @@
       "min_reply_chars": 10
     },
     "note": "N4 格式陷阱: 畸形 JSON 混自然语言 — 期望不崩溃正常响应"
+  },
+  {
+    "id": "T-V01_vision_qa",
+    "input": "用一句话说出图中主体物体与颜色",
+    "image": "data/eval-assets/testimg-apple.png",
+    "expect": {
+      "llm": true,
+      "must_contain": [
+        "苹果"
+      ],
+      "note": "v0.12.0 T-V01: vision 链 — CogView 生成红苹果图 → 5.3-flash 视觉 QA; 断言绑定生成图的真实内容 (真机已验 4.6s 描述准确)"
+    }
   }
 ]

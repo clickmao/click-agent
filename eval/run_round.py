@@ -50,16 +50,18 @@ def run_case(case, env):
     t0 = time.time()
     # v0.11.0 R172 (真缺陷 59): per-case 超时容错 — 此前 TimeoutExpired 直接冒泡,
     # 一个用例 180s 超时 = 整批崩死、后续用例全不跑、轮 JSON 不落盘 (批113 死于 C13 实证)。
+    # v0.12.0 A2: 图像用例 (case["image"]) → -img 传给 CLI vision 链
+    img_args = ["-img", case["image"]] if case.get("image") else []
     try:
         p = subprocess.run(
-            ["dotnet", "run", "--project", "src/agent.host", "-c", "Release", "--no-build", "--", "-q", case["input"]],
+            ["dotnet", "run", "--project", "src/agent.host", "-c", "Release", "--no-build", "--", "-q", case["input"], *img_args],
             capture_output=True, text=True, timeout=180, env=env)
     except subprocess.TimeoutExpired:
         # R174: LLM 瞬态挂起 (C08/C13 实证, 历史 wall 12-22s) — 重试 1 次; 再超时才记 FAIL (保留首次事实)。
         print(f"[TIMEOUT] {case['id']} wall=180s — 重试 1/1 (LLM 瞬态假设)", flush=True)
         try:
             p = subprocess.run(
-                ["dotnet", "run", "--project", "src/agent.host", "-c", "Release", "--no-build", "--", "-q", case["input"]],
+                ["dotnet", "run", "--project", "src/agent.host", "-c", "Release", "--no-build", "--", "-q", case["input"], *img_args],
                 capture_output=True, text=True, timeout=180, env=env)
         except subprocess.TimeoutExpired:
             wall_ms = 180_000
