@@ -12,5 +12,28 @@
   }
  },
  "honest_analysis": "keys 99% (1 nested-list SN-number miss), instruction 85% (punctuation-less style swallowed by sentence splitter) — user's coverage challenge VALIDATED; not yet 100% on diverse set",
- "next": "per-batch spot-check + 10-batch full audit cadence; sentence-splitter fix for punctuation-less style; keep monitoring every round"
+ "next": "per-batch spot-check + 10-batch full audit cadence; sentence-splitter fix for punctuation-less style; keep monitoring every round",
+ "after_a3b": {
+  "500": {
+   "keys": 0.9939,
+   "causal": 1,
+   "instr": 0.8462
+  },
+  "1000": {
+   "keys": 0.9939,
+   "causal": 1,
+   "instr": 0.8462
+  },
+  "2000": {
+   "keys": 0.9939,
+   "causal": 1,
+   "instr": 0.8462
+  },
+  "3000": {
+   "keys": 0.9939,
+   "causal": 1,
+   "instr": 0.8462
+  }
+ },
+ "a3b_change": "SplitSentences fallback chunking for punctuation-less text (>=120ch split at connective markers)"
 }

@@ -56,7 +56,9 @@ public sealed class ContextGradientCompressor
         string result = level switch
         {
             GradientLevel.Full => content,
-            GradientLevel.SummarySentences => TakeSentences(content, 4),
+            // v0.13.3 A3c (audit 实证): 无标点长文本 chunks 多, 固定 4 句装不下关键句 —
+            // 配额自适应: 4 句起步, 长文按 chunk 总数放大 (上限 12):
+            GradientLevel.SummarySentences => TakeSentences(content, Math.Min(12, Math.Max(4, SplitSentences(content).Count / 8))),
             GradientLevel.RuleCompressed => RuleCompress(content, request.TokenBudget),
             GradientLevel.TitleOnly => TitleOnly(content),
             _ => content,
@@ -124,8 +126,12 @@ public sealed class ContextGradientCompressor
         var score = 0;
         foreach (var w in new[] { "因为", "因此", "由于", "导致", "所以", "原因是" })
             if (s.Contains(w, StringComparison.Ordinal)) { score += 3; break; }
+        // A3c (audit 85% 实证): 指令句权重上调 — 无标点样本 chunk 摘句竞争中指令句败给因果句;
+        // 指令句是多标记叠加 (必须+不得+务必), 单标记 +3 不足以保入选:
+        var instrHits = 0;
         foreach (var w in new[] { "必须", "注意", "不得", "禁止", "先经", "应当", "务必" })
-            if (s.Contains(w, StringComparison.Ordinal)) { score += 3; break; }
+            if (s.Contains(w, StringComparison.Ordinal)) instrHits++;
+        score += instrHits switch { >= 2 => 7, 1 => 3, _ => 0 };
         var digitCount = s.Count(char.IsDigit);
         if (digitCount >= 4) score += 2;
         else if (digitCount > 0) score += 1;
@@ -149,6 +155,37 @@ public sealed class ContextGradientCompressor
         }
         if (start < content.Length)
             parts.Add(content[start..]);
+        // v0.13.3 A3b (audit 多样态实证): 无标点样式整段一句 → 句切分失效, 摘句丢关键句
+        // (instruction 85% 根因)。二次切分: 超长段 (≥120ch) 按 maxSentences 粒度均分 chunk,
+        // 保证关键句保护在无标点文本上也有操作粒度:
+        if (parts.Count == 1 && parts[0].Length >= 120)
+        {
+            var chunked = new List<string>();
+            var chunkSize = Math.Max(80, parts[0].Length / 4);
+            var rest = parts[0];
+            var keepMarkers = new[] { "必须", "不得", "禁止", "务必", "先经", "签字", "应当" };
+            while (rest.Length > chunkSize * 2)
+            {
+                // 优先在连接词处切 (因为/因此/所以/注意/必须 — 关键句边界):
+                var cut = chunkSize;
+                foreach (var w in new[] { "因为", "因此", "所以", "注意", "由于" })
+                {
+                    var idx = rest.IndexOf(w, chunkSize / 2, StringComparison.Ordinal);
+                    if (idx > 0) { cut = idx; break; }
+                }
+                // 防切断关键标记词内部 (A3b 实证: "必须先经过" 被硬切 → Contains 失败):
+                foreach (var mk in keepMarkers)
+                {
+                    var mkIdx = rest.IndexOf(mk, StringComparison.Ordinal);
+                    if (mkIdx > 0 && Math.Abs(mkIdx - cut) < mk.Length)
+                        cut = mkIdx > cut ? mkIdx : Math.Max(0, mkIdx - 20); // 切点让位到标记词边界外
+                }
+                chunked.Add(rest[..cut]);
+                rest = rest[cut..];
+            }
+            chunked.Add(rest);
+            return chunked.Where(p => !string.IsNullOrWhiteSpace(p)).ToList();
+        }
         return parts.Where(p => !string.IsNullOrWhiteSpace(p)).ToList();
     }
 

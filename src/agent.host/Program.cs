@@ -93,7 +93,7 @@ if (args.Length >= 2 && args[0] == "--compression-audit")
         };
         foreach (var grp in docs.GroupBy(d => d.TargetTokens).OrderBy(g => g.Key))
         {
-            int keepTotal = 0, keyTotal = 0, causalKeep = 0, instrKeep = 0;
+            int keepTotal = 0, keyTotal = 0, causalKeep = 0, instrKeep = 0, instrKeepTotal = 0;
             long msTotal = 0; double ratioSum = 0; int n = 0;
             foreach (var d in grp)
             {
@@ -118,7 +118,19 @@ if (args.Length >= 2 && args[0] == "--compression-audit")
                     if (result.Content.Contains(kv.Value, StringComparison.Ordinal)) keepTotal++;
                 }
                 if (result.Content.Contains(d.CausalSentence.Split('，')[0].Replace("因为", ""), StringComparison.Ordinal)) causalKeep++;
-                if (result.Content.Contains("必须先经过", StringComparison.Ordinal)) instrKeep++;
+                // v0.13.3 A3d (audit 判定缺陷实证): 硬编码 "必须先经过" 只匹配 2/6 样式 —
+                // nested_list (审批:必须由)、multi_hop (必须由…协调)、zh_en (must)、number_dense (无指令) 全误判丢。
+                // 改: 指令判定 = instruction_sentence 含"必须"起的 12ch 核心片段在压缩产物中;
+                // 无指令句样本 (number_dense) → instrKeep 分母不计 (诚实: 无从判定)。
+                if (!string.IsNullOrEmpty(d.InstructionSentence))
+                {
+                    var mi = d.InstructionSentence.IndexOf("必须", StringComparison.Ordinal);
+                    var coreMark = mi >= 0
+                        ? d.InstructionSentence.Substring(mi, Math.Min(12, d.InstructionSentence.Length - mi))
+                        : d.InstructionSentence[..Math.Min(12, d.InstructionSentence.Length)];
+                    if (result.Content.Contains(coreMark, StringComparison.Ordinal)) instrKeep++;
+                    instrKeepTotal++;
+                }
             }
             report.Add(new AuditRow
             {
