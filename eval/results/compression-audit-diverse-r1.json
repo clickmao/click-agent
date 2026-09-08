@@ -1,0 +1,16 @@
+{
+ "date": "2026-09-08",
+ "diverse_expansion": "+24 styles (long_sentences/nested_list/multi_hop_causal/zh_en_mixed/number_dense/punctuation_less), 104 docs total",
+ "results_after_diverse": {
+  "SummarySentences": {
+   "keys": 0.99,
+   "causal": 1.0,
+   "instruction": 0.85
+  },
+  "RuleCompressed": {
+   "keys": 1.0
+  }
+ },
+ "honest_analysis": "keys 99% (1 nested-list SN-number miss), instruction 85% (punctuation-less style swallowed by sentence splitter) — user's coverage challenge VALIDATED; not yet 100% on diverse set",
+ "next": "per-batch spot-check + 10-batch full audit cadence; sentence-splitter fix for punctuation-less style; keep monitoring every round"
+}

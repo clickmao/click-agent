@@ -541,6 +541,12 @@ def main():
     path = f"{ROUNDS}/{rnd}.json"
     json.dump(summary, open(path, "w"), ensure_ascii=False, indent=1)
     print(f"\n=== round={rnd} passed={summary['passed']}/{summary['cases']} tokens={summary['tokens_total']} wall={summary['wall_total_ms']}ms → {path}")
+    # v0.13.3 (KPI-2 承诺③): history/prompt 构成单列 — 上下文注入膨胀的观测点:
+    _pts = [x.get("prompt_total_tokens") or 0 for x in results if x.get("prompt_total_tokens")]
+    _hts = [x.get("history_tokens") or 0 for x in results if x.get("history_tokens")]
+    if _pts:
+        _hist_share = (sum(_hts) / sum(_pts) * 100) if _hts and sum(_pts) > 0 else 0
+        print(f"token-breakdown: prompt={sum(_pts)} history={sum(_hts)} ({_hist_share:.0f}%) completion={sum(x.get('completion_tokens') or 0 for x in results)}")
     if breaches:
         print(f"KPI_BREACH: {'; '.join(breaches)}")
     else:
