@@ -59,6 +59,18 @@ C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / Na
 - 22 模型目录: 意图 × token 估算 × 成本排序; auto/manual 双模; 粘性同步 (R89)
 - **余额链**: 真 API 同步 → 本地累计 → 阈值再同步; 余额不足自动切模 (候选过滤: 有 key + sufficient, #46) + `flags:balance-insufficient` 提示; 汇率 CNY÷7.2 (#45)
 
+**视觉与图像 (v0.12.0 已验收)**
+- 视觉理解链: CLI `-img` → base64 data URL → glm-5.3-flash v4 (1M ctx); text-only 自动重路由 + coding 端点改写; 双形态 DTO (AOT-safe)
+- 图像渲染插件: IImageRenderPlugin (SkiaSharp 默认可边缘停编 / SVG 文本兜底) + LocalSvgRenderer DSL; 收敛环 E2E (DSL→渲染→视觉校验→FAIL 重生成→PASS)
+- 用例族 T-V01~04 (含负样本诱饵) full 批 23/23; 验收基线 docs/reports/v012-acceptance-baseline.md
+
+**探索与思考链 (v0.13.x 开发中, 用户钦定)**
+- 渐进式探索: ExplorationPlanner (每上下文区/文本/URL/目录最大步数 config; 上下文内 URL > 上下文外目录优先级)
+- 思考链收敛: ComplexityGate + EvidenceScorer (多源对比, 单源封顶 medium) + ThinkMemory RAG 联想 (相似问题优先历史高置信链接, 引用后 +0.05 置信)
+- 兜底粘性路由: FallbackConfig (config 开关+性价比序+逐个兜底校验) + StickyRouteMemory (相似问题首用成功模型; 三门判定防形近意远)
+- 格式修复收敛环: IFormatRepairPlugin (①块内检测→②查找→③校验→④本地修复→⑤LLM 循环; max_llm_rounds; 技能-校验矩阵)
+- RAG 数据文件用户指定: CLI `-rag <path>` / 任务内 `/rag` / env 三入口 (多库隔离)
+
 **Skill 调度 (agent.skills)**
 - SKILL.md 目录包 (Anthropic Agent-Skills Open Standard) + executive 真进程脚本执行 (python/bash/node, 沙箱/超时 kill-tree)
 - 四级触发: 关键词 → 正则 → 领域词 → bge 语义 (cos≥0.45)

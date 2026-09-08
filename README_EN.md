@@ -52,6 +52,18 @@ Archived → [CHANGELOG-v0.11.0-R169-R185.md](docs/changelogs/CHANGELOG-v0.11.0-
 - Token stats + balance linkage: initial API sync -> local accumulation -> threshold re-sync; insufficient balance switches model + `flags:balance-insufficient`
 - Configurable proxy for official endpoints (models.yaml proxy section)
 
+**Vision & Image (v0.12.0 accepted)**
+- Vision chain: CLI `-img` -> base64 data URL -> glm-5.3-flash v4 (1M ctx); text-only auto-reroute + coding-endpoint rewrite; dual-form DTO (AOT-safe)
+- Render plugins: IImageRenderPlugin (SkiaSharp default w/ edge-opt-out / SVG-text fallback) + LocalSvgRenderer DSL; convergence loop E2E (DSL->render->vision-verify->regenerate->pass)
+- Case family T-V01~04 (incl. negative bait) full-23 23/23; baseline docs/reports/v012-acceptance-baseline.md
+
+**Exploration & Think-Chain (v0.13.x in dev, user-directed)**
+- Progressive exploration: ExplorationPlanner (max steps per context-block/text/url/dir via config; in-context URL outranks external dir)
+- Think-chain convergence: ComplexityGate + EvidenceScorer (multi-source, single-source capped medium) + ThinkMemory RAG association (prefer high-confidence history links, +0.05 citation boost)
+- Sticky fallback routing: FallbackConfig (config switch + cost-quality order + sequential fallback verification) + StickyRouteMemory (similar questions reuse successful model; triple-gate)
+- Format-repair loop: IFormatRepairPlugin (fenced->search->validate->local-fix->LLM round; max_llm_rounds; skill-matrix)
+- RAG data file user-selectable: CLI `-rag <path>` / task `/rag` / env (multi-library isolation)
+
 **Skill Dispatch (agent.skills)**
 - SKILL.md directory packages (Anthropic Agent-Skills Open Standard) + legacy yaml coexistence
 - Four-level triggering: keywords -> regex -> domain words -> bge semantic (cos >= 0.45), suspected-hit activates
