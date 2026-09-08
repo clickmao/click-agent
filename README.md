@@ -40,7 +40,7 @@ C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / Na
 | 单元测试 | 325 | **389** | +64 |
 | 真缺陷修复 | — | **55 项** (全部打点驱动) | #21-#55 |
 
-批次趋势: **批204 (mass_422)** 11/11 quick-11 915/case / **批205 (mass_423)** 11/11 quick-11 995/case — full-23 (含视觉族 T-V01-04) 23/23 首验; 修复真缺陷 65/66/67/68 后回归稳定。归档: [42-78](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md) · [79-108](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md) · [109-138](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md) · [139-167](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md) · [168-177](docs/changelogs/CHANGELOG-v0.11.0-R205-R218.md) · [178-187](docs/changelogs/CHANGELOG-v0.11.0-R219-R228.md)。每 30 批滚动 (下次: 批228)。
+批次趋势: **批214 (mass_432)** 11/11 quick-11 861/case / **批215 (mass_433)** 11/11 quick-11 1026/case — 底座能力优化期: 压缩 audit 关键句保护修复 (SummarySentences 保留率 33-53%→多样态 99%/85% 指令) + 429 感知调度 (跳过同模型重试直切备) + token-breakdown 观测行; 每批 KPI 小报制执行中。归档: [42-78](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md) · [79-108](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md) · [109-138](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md) · [139-167](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md) · [168-177](docs/changelogs/CHANGELOG-v0.11.0-R205-R218.md) · [178-187](docs/changelogs/CHANGELOG-v0.11.0-R219-R228.md)。每 30 批滚动 (下次: 批228)。
 专项验证: 多来源召回率 (100 用例轮统计) / 无关话题隔离 (score=2 触发独立 session) / session 长期记忆 (跨进程落盘) / JSON 格式跟随 (哨兵用例) / 双 LLM 校验 — 全部 ✓。
 
 完整报告: [千轮迭代优化报告](docs/reports/thousand-round-report.md) · 阶段台账: [wave3-ledger](docs/reports/wave3-ledger.md)
@@ -70,6 +70,9 @@ C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / Na
 - 兜底粘性路由: FallbackConfig (config 开关+性价比序+逐个兜底校验) + StickyRouteMemory (相似问题首用成功模型; 三门判定防形近意远)
 - 格式修复收敛环: IFormatRepairPlugin (①块内检测→②查找→③校验→④本地修复→⑤LLM 循环; max_llm_rounds; 技能-校验矩阵)
 - RAG 数据文件用户指定: CLI `-rag <path>` / 任务内 `/rag` / env 三入口 (多库隔离)
+- **压缩底座 audit** (v0.13.3): `--compression-audit` 分档校验 (500/1000/2000/3000 tok × 级别 → 关键信息保留率/压缩率/耗时); ground-truth 104 篇多样态; A3 关键句保护修复 (SummarySentences 因果/指令保留 0-20%→100% 单样/85% 多样态); 每批抽查+10 批全量 cadence
+- **429 感知调度**: 限流跳过同模型重试直切备 (省 ~1000 tok/次重发)
+- **微步骤隔离设计 A6**: 阈值门控 (未达阈值走常规, 更正2); 触发率基线 0% (批164-210 实测)
 
 **Skill 调度 (agent.skills)**
 - SKILL.md 目录包 (Anthropic Agent-Skills Open Standard) + executive 真进程脚本执行 (python/bash/node, 沙箱/超时 kill-tree)

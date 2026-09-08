@@ -35,7 +35,7 @@ Archived → [CHANGELOG-v0.11.0-R169-R185.md](docs/changelogs/CHANGELOG-v0.11.0-
 
 ### 📊 Thousand-Round Eval (PGO-driven)
 - **1034/1056 = 97.92%** case pass (215 rounds landed); quick-batch tokens **7354 → ~3969 avg**; C08 reasoning completion **1875 → 479 (-74%)**; 55 real defects fixed, all telemetry-driven.
-- Batch trend: **batch204 (mass_422)** 11/11 quick-11 915/case / **batch205 (mass_423)** 11/11 quick-11 995/case — full-23 (vision family T-V01-04) 23/23 first pass; stable after defect 65/66/67/68 fixes. Archives: [42-78](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md) · [79-108](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md) · [109-138](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md) · [139-167](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md) · [168-177](docs/changelogs/CHANGELOG-v0.11.0-R205-R218.md) · [178-187](docs/changelogs/CHANGELOG-v0.11.0-R219-R228.md). Roll every 30 batches (next: batch228).
+- Batch trend: **batch214 (mass_432)** 11/11 861/case / **batch215 (mass_433)** 11/11 1026/case — foundational-capability optimization: compression audit key-sentence protection (SummarySentences keep 33-53% -> 99%/85% diverse) + 429-aware scheduling (skip same-model retry) + token-breakdown observation line; per-batch KPI mini-report cadence. Archives: [42-78](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md) · [79-108](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md) · [109-138](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md) · [139-167](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md) · [168-177](docs/changelogs/CHANGELOG-v0.11.0-R205-R218.md) · [178-187](docs/changelogs/CHANGELOG-v0.11.0-R219-R228.md). Roll every 30 batches (next: batch228).
 - Full report: [Thousand-Round Report](docs/reports/thousand-round-report.md) · ledger: [wave3-ledger](docs/reports/wave3-ledger.md)
 
 ### 🧭 Full Capability Panorama (v0.11.0)
@@ -63,6 +63,9 @@ Archived → [CHANGELOG-v0.11.0-R169-R185.md](docs/changelogs/CHANGELOG-v0.11.0-
 - Sticky fallback routing: FallbackConfig (config switch + cost-quality order + sequential fallback verification) + StickyRouteMemory (similar questions reuse successful model; triple-gate)
 - Format-repair loop: IFormatRepairPlugin (fenced->search->validate->local-fix->LLM round; max_llm_rounds; skill-matrix)
 - RAG data file user-selectable: CLI `-rag <path>` / task `/rag` / env (multi-library isolation)
+- **Compression audit** (v0.13.3): `--compression-audit` bucketed verification (500/1000/2000/3000 tok x level -> key-retention/ratio/ms); 104 diverse ground-truth docs; A3 key-sentence protection (SummarySentences causal/instruction 0-20% -> 100% single-style / 85% diverse); per-batch spot-check + 10-batch full audit
+- **429-aware scheduling**: rate-limit skips same-model retry -> straight fallback (saves ~1000 tok resend)
+- **Micro-step isolation design A6**: threshold-gated (below threshold -> normal per correction-2); trigger baseline 0% (batch164-210 measured)
 
 **Skill Dispatch (agent.skills)**
 - SKILL.md directory packages (Anthropic Agent-Skills Open Standard) + legacy yaml coexistence
