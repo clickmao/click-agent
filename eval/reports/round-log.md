@@ -1373,3 +1373,11 @@
 2. **C07 repl 轮2 prompt 瘦身**: 轮2 只带必要记忆锚 (省 ~300 tok/次)
 3. history_tokens 单列入报告 (观测补全)
 4. 恢复每 5 批 KPI 专项小报 (不再等阶段汇报)
+## mass_426 — R239 batch208 quick-11 regular (2026-09-08T21:17:51+0800)
+
+- **判定**: 11/11 passed, tokens_total=12041 (avg 1095), wall=211208ms (avg 19.2s)
+- **KPI**: in-band (基准轮数 11)
+- **防漂移指数**: segments=9, drift_pass=1.0, semantic_avg=None, chars_ratio=0.994
+- **意图指数**: n=9, ms_avg=0.1, dist={'general': 7, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 449tok 8.6s Δ+6 | C03_subtask 2141tok 39.2s Δ+828 | C04_skill_identity 0tok 4.8s | C06_executive_unit_convert 0tok 4.4s | C07_memory_followup 2639tok 41.6s Δ+280 | C08_reasoning 1297tok 18.9s Δ+116 | C11_json_format 691tok 9.6s Δ+103 | C13_git_sensitive 1677tok 26.5s Δ+141 | C14_isolated_multi 1854tok 34.3s Δ-194 | C17_neg_hallucination_bait 652tok 10.6s Δ-69 | C18_neg_format_trap 641tok 12.8s Δ-18
+
