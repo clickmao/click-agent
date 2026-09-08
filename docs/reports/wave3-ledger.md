@@ -398,3 +398,10 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - **轮号冲突处置 (诚实记录)**: 本 tick 启动批 mass_386 (full-20) 时 sibling 并行 R210 批也用 mass_386 (quick-11) 先落盘并入库; 本 tick full-20 完成后数据改名存 mass_387, mass_386.json 恢复 quick-11 原版, round-log 标题同步修正 — 同号双跑竞态, 数据零丢失。
 - **互斥遵守**: 本 tick 启动与批跑全程无 eval_run.lock 冲突 (sibling 批 14:34:54 完成释放后本 tick 才持锁); 批跑期间 HEAD 两次推进 (R210 14:28 / R211 14:36) 均未造成代码冲突。
 - **凭据卫生**: 全程未触碰 token; 本 tick 数据 commit (mass_387 + 台账) 独立 push, 一次性 URL 用后即焚, config ghp_ 残留 = 0。
+
+### R213-R233 补账 (sibling ticks + 本 tick 接力, 2026-09-08 19:4x)
+- **R213-R230 (sibling 连跑)**: v0.12.0 视觉链成熟 + v0.13.0 M1 progressive-exploration planner (ExplorationConfig/Planner, 7 tests, 426 total) + T3 think-chain design doc — 见 commits e747076/c8d53f4 与 round-log batch198-200 数据; 台账按 R154-R156 先例周期性补账。
+- **R231/R232 (sibling)**: batch201 (mass_417 quick-11: 11/11, 11043tok, 207s) + batch202 (mass_418 quick-11: 11/11, 11784tok, 228s) 全绿, KPI in-band。
+- **R233 batch203 (本 tick 实跑 quick-11, mass_419)**: 11/11 全绿, 12935tok (avg 1176), wall 207s, KPI in-band — 数据被 sibling 226e016 收编 (commit message 未标注 batch 数据, 台账此处澄清归属: quick-11 由本 tick 实跑, 已随 226e016 推送远端)。**轮号撞号处置**: sibling FULL-23 (T-V01-04 视觉族) 同选 mass_419, 跑至 16/23 被宿主 300s 超时连带杀, JSON 未落盘 (round-log RETIRED 登记) — sibling 已改名 mass_420 batch203r 重跑; 本 tick quick-11 数据合法保留, 零丢失。
+- **凭据卫生**: token 池 state.db 提取 + API 验活 (dmud 现行, login=clickmao); 一次性 URL 推送不入 config, 推后复核 config ghp_ 残留 = 0。
+- **运维更正确认**: llm.sock 缺失=正常态 (R113 已退场), 未重启。
