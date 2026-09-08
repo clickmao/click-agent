@@ -25,6 +25,10 @@
 | `/token stats` | — | Token 用量统计 (总量/按模型/按 provider/预估成本/余额快照) | JSON | V2 拦截 |
 | `/forecast` | — | 下轮预估读回 (上轮任务摘要/倾向/延续提示; v7.11 机制前端化) | JSON | V2 拦截 |
 | `/log dump` | — | 内存日志环形缓冲 (2000 条) 存档 JSON 行文件 | JSON | V2 拦截 |
+| `/rag` | — | 当前 RAG 数据文件路径查询 | JSON | V2 拦截 (v0.13.0) |
+| `/rag <path>` | 文件路径 | 切换 RAG 数据文件 (进程内生效; 历史重载需重启 — 诚实提示) | JSON | V2 拦截 (v0.13.0) |
+| `--embed <text>` | 文本 | 直连 BgeEmbedder 输出向量 JSON (评测离线算 reply_rel, 不走 LLM/DI 全链) | stdout | host (R136) |
+| `--compression-audit <path>` | groundtruth.json | 压缩底座 audit: 分档校验矩阵 (档×级别→关键信息保留率/压缩率/耗时), 落 eval/results/ | JSON | host (v0.13.3) |
 | `/help` | — | 本地命令帮助菜单 (R86: 原送 LLM 浪费一轮, 现本地应答) | 本地 | LocalCommandRouter |
 | `/stop` | — | 停止当前执行 | 本地 | LocalCommandRouter |
 | `/pause` | — | 暂停 | 本地 | LocalCommandRouter |
@@ -140,3 +144,11 @@ agenthost -rag /path/to/index.jsonl   # repl 会话
 - 作用: 指定 RAG 索引落盘/恢复文件 (默认 `data/rag/index.jsonl`), 支持多库隔离 (评测/项目/个人)。
 - 语义: 切换后新文档落新路径; 历史索引恢复按启动时路径 (诚实提示, 不静默重载)。
 - env 等价: `AGENTFRAMEWORK_RAG_PATH=<path>` (CLI/任务内都落到此钩子)。
+## /plan /log /balance 快查 (V2 拦截)
+
+| 指令 | 功能 | 备注 |
+|---|---|---|
+| `/plan` | 最近一次影子计划 TaskPlanRun JSON (面板惯例) | 无记录 → `{"plan": null}` 诚实提示 |
+| `/log dump` | 内存日志环形缓冲 (2000 条) 存档 JSON 行文件 | 路径见返回 JSON |
+| `/balance [id]` | token 余额查询 (provider scheme 分派: openai=subscription, deepseek=balance) | 智谱无公开余额 API → 诚实报错 |
+
