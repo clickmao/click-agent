@@ -1596,3 +1596,11 @@
 - **意图指数**: n=9, ms_avg=0.1, dist={'general': 7, 'git_operation': 1, 'search': 1}
 - **per-case**: C01_general_qa 500tok 7.6s Δ+40 | C03_subtask 1689tok 26.6s Δ+230 | C04_skill_identity 0tok 4.7s | C06_executive_unit_convert 0tok 4.2s | C07_memory_followup 3133tok 35.1s Δ+605 | C08_reasoning 1523tok 17.5s Δ+384 | C11_json_format 686tok 7.3s Δ+105 | C13_git_sensitive 1238tok 14.2s Δ-512 | C14_isolated_multi 1893tok 26.0s Δ-268 | C17_neg_hallucination_bait 1072tok 9.1s Δ+311 | C18_neg_format_trap 634tok 8.7s Δ-66
 
+## mass_453 — R270 xl-suite second pass chunk-coverage (2026-09-09T07:56:36+0800)
+
+- **判定**: 7/7 passed, tokens_total=49057 (avg 7008), wall=331693ms (avg 47.4s)
+- **KPI**: tokens_per_case=7008 out (600, 1250) (基准轮数 0)
+- **防漂移指数**: segments=18, drift_pass=1.0, semantic_avg=0.915, chars_ratio=0.911
+- **意图指数**: n=7, ms_avg=6.0, dist={'general': 5, 'file_operation': 1, 'search': 1}
+- **per-case**: XL-01_long_doc_qa 5845tok 36.6s | XL-02_cross_doc 6496tok 42.5s | XL-03_code_summary 7740tok 59.7s | XL-04_heavy 8826tok 60.6s | XL-F01_isolation_longctx 3735tok 39.3s | XL-F02_compression_number 6530tok 40.5s | MS-X01_gate_over_warn 9885tok 52.5s
+
