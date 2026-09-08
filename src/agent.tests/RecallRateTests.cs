@@ -29,7 +29,10 @@ var docs = JsonSerializer.Deserialize<List<GtDoc>>(File.ReadAllText(Path.Combine
         int hit5 = 0, qn = 0; double mrr = 0;
         foreach (var d in docs.Take(20))
         {
-            var q = $"{d.GroundTruth["entity_product"]} {d.GroundTruth["entity_person"]}";
+            // R267 判别力修正: 产品/人名池小 (4×5), 20 篇必有重复 → 2 词查询无判别力。
+            // 改用全局唯一 SN 编号 (每篇 1 个) — 判别力对抗测量的正确姿势:
+            var sn = d.Content.Split("SN-")[^1].Split(' ')[0].Split('\n')[0].TrimEnd('，', ',', '。');
+            var q = $"SN-{sn} 记录";
             var results = await recall.RecallAsync(new RecallRequest { Query = q, TopK = 5, MinScore = 0 });
             qn++;
             _out.WriteLine($"q{qn} expect={d.Id} got=[{string.Join(", ", results.Take(5).Select(r => $"{r.Document?.Id}:{r.Score:F2}:{r.MatchType}"))}]");

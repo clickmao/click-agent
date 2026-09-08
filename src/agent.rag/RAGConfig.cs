@@ -429,7 +429,20 @@ public class RAGRecall : IRAGRecall
                     var contentHit = queryKeywords.Any(k =>
                         k.Length >= 2 && doc.Content.Contains(k, StringComparison.OrdinalIgnoreCase));
                     if (contentHit)
-                        finalScore = Math.Max(finalScore, 0.45);
+                    {
+                        // v0.13.3 R267 (B 期靶点: 短查询判别力 0.45→): 稀缺词 IDF 加权 —
+                        // query 词命中数 × log(N/df): 每篇都有的模板词 (df≈N) 加权≈0, 稀缺词 (df=1-2) 加权高。
+                        var totalDocs = Math.Max(1, _documents.Count);
+                        var rarityBoost = 0.0;
+                        foreach (var k in queryKeywords)
+                        {
+                            if (k.Length < 2 || !doc.Content.Contains(k, StringComparison.OrdinalIgnoreCase)) continue;
+                            var df = _keywordIndex.TryGetValue(k, out var ids) ? ids.Count : 0;
+                            if (df == 0) df = 1; // keywordIndex 未收录但内容命中的词 — 视为极稀缺
+                            rarityBoost += Math.Log(1 + (double)totalDocs / df) * 0.08;
+                        }
+                        finalScore = Math.Max(finalScore, 0.45 + Math.Min(0.35, rarityBoost));
+                    }
 
                     if (request.MinScore.HasValue && finalScore < request.MinScore.Value)
                         continue;
