@@ -379,3 +379,14 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - **推送复核 (R179b 教训执行)**: 本 tick 启动时 git status 报 ahead 6 (R180b..R183) — API 复核实证远端已含 dd15851, ahead 为 origin/main fetch 陈旧假象 (R171 同型第三次); 直连 push 前 2 次连接超时 (TLS -110 同型抖动), 第 3 次 "Everything up-to-date" + **API + ls-remote 双通道复核 remote main = local HEAD = dd15851**。token 池重验: state.db 流式提取 17 候选, 5 活 (dmud 钦定/BSoi/wnkO/j6o5/XTMI), WAL 截断伪影 (len=41 / …j 后缀) 全部 401 正确过滤; 一次性 URL + 用后即焚, config ghp_ 残留 = 0。
 - **运维更正确认**: cron 守卫 "llm.sock 未运行则重启" 条款按 L334 作废执行 (R113 已退场, sock 缺失=正常态), 本 tick 未重启。
 - **诚实边界**: R183 归一化/结构信号改动仅过单测 404 + quick-11 双批, 未跑全量 19 用例批 (下 tick 候选); batch128/R180 NameError 期间无批数据损失 (RETIRED 不涉及, JSON 未落盘属批前丢失)。
+
+
+### R185-R198 补账 (sibling ticks 连续冲刺, 台账漏更按 R154-R156 先例补齐) + R199 接力 (2026-09-08)
+- **R185-R198 (sibling 快节奏段, 9b4eb2c..dd7a6a5)**: 批 135-159 连续由 sibling tick 直提数据 commit (台账缺 R185-R197 段, 本条补齐); 关键事件: R186 README 30 批滚动点批138 (归档 CHANGELOG R169-R185, 下次批168); R187/R194/R196 五批审计 136-140/146-150/150-154 各 55/55; R189b 全量 19/19 (R183 归一化泛化完整回归验证, C07 repl + C14/C15/C16 真断言稳定); R191-R193 smoke 归因推进 (qwen 0.5b 加载但 eval 未启动, bigmodel→local fallback 链嫌疑观察名单); v0.12.0 双规划 (b0c0e14 vision GLM-4.5V / cdf32e4 CogView 图像生成, glm-5.3-flash 无视觉/无图像能力均真机验证).
+- **R199 (本 tick 接力, 部分数据由本 tick runner 实跑)**: 本 tick 启动时 sibling 正持锁跑 batch155 (mass_371), 按互斥纪律未抢跑; sibling 收编本 tick 实跑 mass_373 (batch157) 入 c171322; sibling 后连跑 batch158/159/160 (mass_374/375/376) 全绿.
+- **五批审计 155-159 (mass_371-375, 本 tick 实算)**: 55/55 全绿, avg 1022 tok/c 带内 (≤1250), wall avg 168s, D4 rel 0.611 (n=55), 0 suspect, breach 空. 复核窗 152-156 (mass_368-372) 55/55, 1047/c, rel 0.610 — 双窗互证零异常.
+- **本 tick 实跑 batch157 (mass_373)**: 11/11, 11591tok (1053/c 带内), wall 160s, rel 0.602 (n=11), C07 repl 2-turn 2558tok/32.9s 正常, C14 isolated 真断言 pass. (数据由 sibling c171322 收编提交, 口径一致.)
+- **推送状态 (本 tick 复核)**: 启动时 ahead 28 → API+ls-remote 双通道复核 remote main=local=79fa32a (R171 同型 fetch 陈旧假象第 4 次, fetch 后假象消除); sibling 经 ghfast 推 dd7a6a5 成功 (c171322..dd7a6a5 main->main); sibling R199 push (c1b9e93 batch160) 失败实录: ghfast.top 连接超时 curl 28 (133s) — 本 tick 接力重推.
+- **凭据卫生**: token 池 state.db 流式提取 + API 筛活 (dmud 钦定/BSoi/wnkO/j6o5/XTMI 五活池, 本次 WAL 轮转抽验 3-5 活变化属正常); 一次性 URL 推送不入 config, 推后复核 config ghp_ 残留 = 0.
+- **运维更正确认**: llm.sock 缺失=正常态 (R113 已退场), 未重启.
+- **诚实边界**: 本 tick 未改 src (纯接力跑批+台账+审计); smoke 本地推理通道挂死观察名单持续 (不影响云 LLM 批测链).
