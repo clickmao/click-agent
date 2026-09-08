@@ -73,6 +73,30 @@ public static class TaskRelevanceChecker
     private static bool IsStopword(string w) =>
         w is "可以" or "这个" or "那个" or "什么" or "怎么" or "如果" or "但是" or "或者" or "需要" or "帮我";
 
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, string> _normCache = new();
+
+    /// <summary>词表项归一化 (缓存) — 词表项本身无空白, 主要吞全角/大小写。</summary>
+    private static string NormCache(string w) => _normCache.GetOrAdd(w, Normalize);
+
+    /// <summary>
+    /// R183 归一化: 去空白/标点/符号 + 全角→半角 + 小写。
+    /// 使词表匹配对"空格/标点插入、全半角混排"机械免疫。
+    /// </summary>
+    private static string Normalize(string text)
+    {
+        var sb = new System.Text.StringBuilder(text.Length);
+        foreach (var ch in text)
+        {
+            var c = ch;
+            if (c == 0x3000) c = ' ';                                   // 全角空格
+            else if (c >= 0xFF01 && c <= 0xFF5E) c = (char)(c - 0xFEE0); // 全角 ASCII → 半角
+            if (char.IsWhiteSpace(c) || char.IsPunctuation(c) || char.IsSymbol(c))
+                continue;                                                // 中英文标点统一消失
+            sb.Append(char.ToLowerInvariant(c));
+        }
+        return sb.ToString();
+    }
+
     /// <summary>
     /// 无关性判定。返回 (isIsolated, score, reason) 供审计。
     /// score 越高越可能无关: 实体重叠 0 +2 / 意图类别不同 +1 / 显式离题词 +1; 指代词一票否决 (score 清零)。
@@ -84,14 +108,19 @@ public static class TaskRelevanceChecker
         if (string.IsNullOrWhiteSpace(incomingMessage))
             return (false, 0, "空消息");
 
-        // 强信号: 指代词 → 相关 (一票否决)
-        if (DeixisWords.Any(w => incomingMessage.Contains(w, StringComparison.Ordinal)))
+        // R183 (泛化改造, 用户质疑: 空格/标点插入漏匹配 + 其他语言/新词覆盖不足):
+        // 归一化层 — 去空白/标点/符号 + 全角→半角 + 小写。词表/标记匹配全部在归一化文本上:
+        // "刚 才 那个"/"记，得"/全角"？" 机械免疫; 简繁/新词由短问句结构信号兜底。
+        var normalized = Normalize(incomingMessage);
+
+        // 强信号: 指代词 → 相关 (一票否决; 归一化文本上匹配)
+        if (DeixisWords.Any(w => normalized.Contains(NormCache(w), StringComparison.Ordinal)))
             return (false, 0, "含指代词, 依赖上文");
 
         // v0.11.0 R39c (真缺陷 26): 技术细节追问 ("用 X 怎么写/怎么实现") 实体上常与任务标题零重叠
         // (requests vs 爬虫标题) — 但语义上强依赖上文。实现询问标记 + 短消息 → 一票否决。
         string[] howToMarkers = { "怎么写", "怎么实现", "怎么做", "怎么配", "如何写", "如何实现", "如何做", "怎么用", "如何用" };
-        if (incomingMessage.Length <= 30 && howToMarkers.Any(w => incomingMessage.Contains(w, StringComparison.Ordinal)))
+        if (normalized.Length <= 30 && howToMarkers.Any(w => normalized.Contains(NormCache(w), StringComparison.Ordinal)))
             return (false, 0, "实现询问, 依赖上文任务");
 
         var score = 0;
@@ -127,11 +156,25 @@ public static class TaskRelevanceChecker
             reasons.Add($"意图不同 {goalIntent}→{incomingIntent}");
         }
 
-        // 显式离题词 → +1
-        if (OffTopicMarkers.Any(w => incomingMessage.Contains(w, StringComparison.Ordinal)))
+        // 显式离题词 → +1 (归一化文本)
+        if (OffTopicMarkers.Any(w => normalized.Contains(NormCache(w), StringComparison.Ordinal)))
         {
             score += 1;
             reasons.Add("显式离题信号词");
+        }
+
+        // R183 结构信号 (语言无关): 归一化后极短 + 以问号结尾 = 元问询 (对历史的追问),
+        // 不是新任务 → 减 1。对任何语言/新词生效 (不依赖词表); 长任务句不受影响。
+        var isQuestion = incomingMessage.TrimEnd().EndsWith("?", StringComparison.Ordinal)
+                      || incomingMessage.TrimEnd().EndsWith("？", StringComparison.Ordinal);
+        var interrogative = new[] { "为什么", "怎么", "什么", "哪", "吗", "么", "是否", "能不能", "会不会" };
+        // 纯疑问短语 (归一化 ≤4 字且由疑问词构成) → 不含任何任务信息, 一票否决 (deixis 同级)
+        if (normalized.Length <= 4 && interrogative.Any(w => normalized == w))
+            return (false, 0, "纯疑问短语, 无任务信息");
+        if ((isQuestion && normalized.Length <= 12) || (normalized.Length <= 8 && interrogative.Any(w => normalized.Contains(w))))
+        {
+            score -= 1;
+            reasons.Add("短问句元问询信号");
         }
 
         var isolated = score >= threshold;

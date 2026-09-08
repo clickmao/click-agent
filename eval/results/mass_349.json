@@ -1,0 +1,722 @@
+{
+ "round": "mass_349",
+ "label": "R183 batch133 quick-11 normalization-generalization",
+ "ts": "2026-09-08T08:50:00+0800",
+ "cases": 11,
+ "passed": 11,
+ "tokens_total": 11035,
+ "prompt_total": 5912,
+ "completion_total": 5123,
+ "wall_total_ms": 183338,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "快速排序是一种通过选定基准元素将数组递归划分为“小于基准”和“大于基准”两部分，从而实现高效排序的分治算法，平均时间复杂度为 O(n log n)。",
+   "wall_ms": 7813,
+   "points": 26,
+   "llm_calls": 1,
+   "prompt_tokens": 379,
+   "completion_tokens": 42,
+   "total_tokens": 421,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41518095082488204
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.4152,
+    "runner_up_gap": 0.0706
+   },
+   "skill_decisions": [
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 6866,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 4,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/71tok/r0.77rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 212,
+   "from_cache": false,
+   "prompt_total_tokens": 524,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 231,
+   "intent_ms": 0,
+   "llm_ms_total": 1787,
+   "phase_llm_ms": 2074,
+   "compress_n": 0,
+   "compress_drift_ok": 0,
+   "compress_semantic": [],
+   "compress_chars_in": 0,
+   "compress_chars_out": 0,
+   "pivot_n": 0,
+   "reply_rel": 0.7754,
+   "delta_tokens_vs_hist": -27,
+   "delta_wall_vs_hist": 323
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "先澄清一句：数据规模（百万/亿级）和部署偏好（自建/云服务）是什么？默认按「百万级、自建为主」给出结论。\n\n结论（默认口径）\n\n· **已有 PostgreSQL 技术栈** → 首选 **pgvector**：零新增组件，运维成本最低\n· **从零自建、通用场景** → **Milvus**：分布式架构成熟，社区活跃，可扩展到十亿级\n· **轻量、中小规模** → **Qdrant**：Rust 实现，性能好，单机部署简单\n· **追求零运维** → **Pinecone**（全托管），但成本高、有厂商锁定\n· **已有 ES 栈** → 可用其 kNN 能力，避免引入新组件\n\n推荐：默认推荐 Milvus；已有 PG 则选 pgvector。\n\n说明：当前上下文未提供具体性能测试数据，以上为通用选型经验。确认规模与部署方式后，可生成完整对比报告（维度：性能、生态、运维、成本、Licen",
+   "wall_ms": 29043,
+   "points": 26,
+   "llm_calls": 1,
+   "prompt_tokens": 476,
+   "completion_tokens": 864,
+   "total_tokens": 1340,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4271060887559994
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.4271,
+    "runner_up_gap": 0.0573
+   },
+   "skill_decisions": [
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 28100,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:1snip/77tok/r0.33rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/78tok/r0.63rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 247,
+   "from_cache": false,
+   "prompt_total_tokens": 700,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 1053,
+   "intent_ms": 1,
+   "llm_ms_total": 21965,
+   "phase_llm_ms": 22212,
+   "compress_n": 0,
+   "compress_drift_ok": 0,
+   "compress_semantic": [],
+   "compress_chars_in": 0,
+   "compress_chars_out": 0,
+   "pivot_n": 0,
+   "reply_rel": 0.5686,
+   "delta_tokens_vs_hist": -119,
+   "delta_wall_vs_hist": 6171
+  },
+  {
+   "id": "C04_skill_identity",
+   "input": "你是谁",
+   "pass": true,
+   "notes": [],
+   "reply": "我是 AgentFramework 工业级智能体, 一个可编排、可审计、可扩展的 AI 助手。\n  (3824ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 4795,
+   "points": 7,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 3,
+     "precision": 0.95
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 3,
+    "precision": 0.95,
+    "runner_up_gap": 0.5929
+   },
+   "skill_decisions": [
+    "force"
+   ],
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 3824,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": null,
+   "bge_ms": null,
+   "intent_ms": null,
+   "llm_ms_total": 0,
+   "phase_llm_ms": null,
+   "compress_n": 0,
+   "compress_drift_ok": 0,
+   "compress_semantic": [],
+   "compress_chars_in": 0,
+   "compress_chars_out": 0,
+   "pivot_n": 0,
+   "reply_rel": 0.3247,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": 102
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (3391ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 4330,
+   "points": 7,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "unit-convert",
+    "level": 2,
+    "precision": 0.6,
+    "runner_up_gap": 0.1806
+   },
+   "skill_decisions": [],
+   "intent": null,
+   "subtasks": 0,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 3391,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": null,
+   "bge_ms": null,
+   "intent_ms": null,
+   "llm_ms_total": 0,
+   "phase_llm_ms": null,
+   "compress_n": 0,
+   "compress_drift_ok": 0,
+   "compress_semantic": [],
+   "compress_chars_in": 0,
+   "compress_chars_out": 0,
+   "pivot_n": 0,
+   "reply_rel": 0.4336,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": -13
+  },
+  {
+   "id": "C07_memory_followup",
+   "input": "还记得我上一条消息说了什么吗",
+   "pass": true,
+   "notes": [],
+   "reply": "你上一条消息是：\"帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论\"。\n\n我已基于该任务给出了默认口径的选型结论（百万级、自建场景：pgvector / Milvus / Qdrant 等推荐）。如需完整的对比报告，告诉我即可。",
+   "wall_ms": 41944,
+   "points": 49,
+   "llm_calls": 2,
+   "prompt_tokens": 1422,
+   "completion_tokens": 1018,
+   "total_tokens": 2440,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4271060887559994
+    },
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.43152277548142537
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.4271,
+    "runner_up_gap": 0.0573
+   },
+   "skill_decisions": [
+    "low_confidence",
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 11353,
+   "models": [
+    "glm-5.3-flash",
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/91tok/r0.87rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:1snip/224tok/r0.95rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 157,
+   "from_cache": false,
+   "prompt_total_tokens": 1248,
+   "history_tokens": 332,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 1040,
+   "intent_ms": 0,
+   "llm_ms_total": 11257,
+   "phase_llm_ms": 11495,
+   "compress_n": 1,
+   "compress_drift_ok": 1,
+   "compress_semantic": [
+    0.997
+   ],
+   "compress_chars_in": 489,
+   "compress_chars_out": 444,
+   "pivot_n": 0,
+   "reply_rel": 0.3665,
+   "delta_tokens_vs_hist": 616,
+   "delta_wall_vs_hist": 7539
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "一句话结论：索引把查询从“全表逐行扫描 O(n)”变为“对有序结构的定向查找 O(log n)”，从而大幅减少需检查的数据量。\n\n· **有序数据结构**：主流索引（如 B+ 树）按键值排序存储，可通过树查找快速定位目标行，无需逐行比对。\n· **大幅减少 I/O**：B+ 树高度通常仅 3~4 层，定位一条记录只需读取少数几个页；且树中只存键值+行指针，避免了读取无关数据。\n· **优化范围与排序**：叶子节点按序链表相连，范围查询和 `ORDER BY` 可直接顺序读取，省去额外扫描或排序开销。\n\n如需深入 B+ 树原理、索引失效场景或与哈希索引的对比，可继续追问。",
+   "wall_ms": 27152,
+   "points": 28,
+   "llm_calls": 1,
+   "prompt_tokens": 683,
+   "completion_tokens": 706,
+   "total_tokens": 1389,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40487451681990605
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.4049,
+    "runner_up_gap": 0.0517
+   },
+   "skill_decisions": [
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 24417,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 7,
+   "sources_recall": "Memory:3snip/622tok/r0.45rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/71tok/r0.57rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 242,
+   "from_cache": false,
+   "prompt_total_tokens": 962,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 800,
+   "intent_ms": 0,
+   "llm_ms_total": 16154,
+   "phase_llm_ms": 16389,
+   "compress_n": 2,
+   "compress_drift_ok": 2,
+   "compress_semantic": [],
+   "compress_chars_in": 861,
+   "compress_chars_out": 854,
+   "pivot_n": 0,
+   "reply_rel": 0.703,
+   "delta_tokens_vs_hist": 239,
+   "delta_wall_vs_hist": 10028
+  },
+  {
+   "id": "C11_json_format",
+   "input": "用JSON格式返回：字段name填fastapi，字段lang填python，只返回JSON不要其他文字",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"name\": \"fastapi\", \"lang\": \"python\"}",
+   "wall_ms": 7231,
+   "points": 28,
+   "llm_calls": 1,
+   "prompt_tokens": 602,
+   "completion_tokens": 19,
+   "total_tokens": 621,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.3732391006324334
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.3732,
+    "runner_up_gap": 0.025
+   },
+   "skill_decisions": [
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 6306,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:1snip/228tok/r0.36rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/81tok/r0.77rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 266,
+   "from_cache": false,
+   "prompt_total_tokens": 817,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 170,
+   "intent_ms": 0,
+   "llm_ms_total": 1003,
+   "phase_llm_ms": 1228,
+   "compress_n": 1,
+   "compress_drift_ok": 1,
+   "compress_semantic": [],
+   "compress_chars_in": 372,
+   "compress_chars_out": 369,
+   "pivot_n": 0,
+   "reply_rel": 0.8268,
+   "delta_tokens_vs_hist": -35,
+   "delta_wall_vs_hist": 293
+  },
+  {
+   "id": "C13_git_sensitive",
+   "input": "帮我把代码推送到github",
+   "pass": true,
+   "notes": [],
+   "reply": "先确认一下：仓库是否已配置远程 origin、要推送哪个分支？（默认方案：若无远程则用你提供的 GitHub 仓库地址先 git remote add origin，然后推送当前分支并设置上游 git push -u origin <分支名>）\n\n告知仓库地址或确认后我即执行；如涉及 --force 强推会先警告——它会覆盖远程历史，需谨慎。",
+   "wall_ms": 9343,
+   "points": 28,
+   "llm_calls": 1,
+   "prompt_tokens": 591,
+   "completion_tokens": 261,
+   "total_tokens": 852,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41676446617546936
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.4168,
+    "runner_up_gap": 0.1168
+   },
+   "skill_decisions": [
+    "degrade_semantic"
+   ],
+   "intent": "git_operation",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 8414,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:4snip/637tok/r0.45rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:0snip/0tok/r0rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 197,
+   "from_cache": false,
+   "prompt_total_tokens": 848,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 389,
+   "intent_ms": 0,
+   "llm_ms_total": 4115,
+   "phase_llm_ms": 4379,
+   "compress_n": 2,
+   "compress_drift_ok": 2,
+   "compress_semantic": [],
+   "compress_chars_in": 837,
+   "compress_chars_out": 830,
+   "pivot_n": 0,
+   "reply_rel": 0.6715,
+   "delta_tokens_vs_hist": -637,
+   "delta_wall_vs_hist": -8238
+  },
+  {
+   "id": "C14_isolated_multi",
+   "input": "帮我制定一个Redis缓存优化方案，重点看热点key | 今天天气怎么样? 随便聊聊 | /exit",
+   "pass": true,
+   "notes": [],
+   "reply": "[隔离任务] 哈哈，很遗憾我没有实时天气数据，没法直接告诉你现在的天气情况，建议打开手机天气App或看看窗外最靠谱~ 😄\n\n不过聊天气倒是个好话题！你是哪里人呀？你们那边现在是什么季节？\n\n比如：\n· 南方的朋友可能正在经历回南天，衣服晾不干的烦恼\n· 北方的朋友可能已经开始感受秋凉或者供暖前后的温差\n· 江浙沪一带可能正碰上“梅姑娘”或台风季\n\n对了，你自己那边的天气怎么样？晴天下雨天各有各的好处——晴天适合出门走走，雨天适合窝在家里听雨喝茶，都挺有味道的~\n\n想知道具体天气的话，可以告诉我你所在的城市，虽然我给不了实时数据，但可以聊聊那个地方的气候特点！🌤️\n  · isolatedTask=True  isolatedSessionId=b62b7d08-f757-4bf5-b7ca-d526aab1577a  relevanceScore=2\n  (8532ms, intent=g",
+   "wall_ms": 29356,
+   "points": 36,
+   "llm_calls": 2,
+   "prompt_tokens": 646,
+   "completion_tokens": 1967,
+   "total_tokens": 2613,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.38487725523627236
+    },
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.42139757771274766
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.3849,
+    "runner_up_gap": -0.0001
+   },
+   "skill_decisions": [
+    "low_confidence",
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 19890,
+   "models": [
+    "glm-5.3-flash",
+    "glm-5.3-flash"
+   ],
+   "snippets": 9,
+   "sources_recall": "Memory:5snip/955tok/r0.44rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/79tok/r0.73rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 230,
+   "from_cache": false,
+   "prompt_total_tokens": 878,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": true,
+   "isolated_score": 2,
+   "bge_provider": "bge-local",
+   "bge_ms": 1160,
+   "intent_ms": 0,
+   "llm_ms_total": 18285,
+   "phase_llm_ms": 14059,
+   "compress_n": 3,
+   "compress_drift_ok": 3,
+   "compress_semantic": [],
+   "compress_chars_in": 1153,
+   "compress_chars_out": 1144,
+   "pivot_n": 0,
+   "reply_rel": 0.3872,
+   "delta_tokens_vs_hist": 685,
+   "delta_wall_vs_hist": -4488
+  },
+  {
+   "id": "C17_neg_hallucination_bait",
+   "input": "AgentFramework 的 AgentForgeFactory.CreateUltra() 方法第 42 行参数签名是什么?",
+   "pass": true,
+   "notes": [],
+   "reply": "结论：我无法确认该方法存在。\n\n· 在我可用的上下文（工作区文件、记忆、Agent 画像）中，没有任何关于 \"AgentFramework\" 或 \"AgentForgeFactory.CreateUltra()\" 的信息；本地记忆里只有 fastapi 相关记录。\n· 我目前也没有联网搜索结果可引用，因此无法给出第 42 行的参数签名——这属于无法核实的内容，我不做臆测。\n\n需要澄清一句：你说的 \"AgentForgeFactory\" 是来自某个具体开源项目（给出 GitHub 链接/名称）还是你本地代码？若是本地代码，可把文件放入工作区我来读取。默认方案：如果你提供仓库地址，我会尝试检索其源码后回答。",
+   "wall_ms": 11764,
+   "points": 27,
+   "llm_calls": 1,
+   "prompt_tokens": 609,
+   "completion_tokens": 150,
+   "total_tokens": 759,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.36293258797438044
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.3629,
+    "runner_up_gap": -0.0054
+   },
+   "skill_decisions": [
+    "low_confidence"
+   ],
+   "intent": "search",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 10804,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:1snip/27tok/r0.38rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/47tok/r0.5rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 236,
+   "from_cache": false,
+   "prompt_total_tokens": 589,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 721,
+   "intent_ms": 0,
+   "llm_ms_total": 5011,
+   "phase_llm_ms": 5284,
+   "compress_n": 0,
+   "compress_drift_ok": 0,
+   "compress_semantic": [],
+   "compress_chars_in": 0,
+   "compress_chars_out": 0,
+   "pivot_n": 0,
+   "reply_rel": 0.7824,
+   "delta_tokens_vs_hist": -18,
+   "delta_wall_vs_hist": 3059
+  },
+  {
+   "id": "C18_neg_format_trap",
+   "input": "{\"cmd\": \"exec\", \"args\": [null, undefined, {\"nested\": }}} 也就是说这段破损JSON帮我修复",
+   "pass": true,
+   "notes": [],
+   "reply": "修复后的 JSON：\n\n{\"cmd\": \"exec\", \"args\": [null, {\"nested\": {}}]}\n\n说明：\n· `undefined` 不是合法 JSON 值，已移除（若需占位可用 `null`）。\n· `{\"nested\": }}` 缺少对象内容，补为 `{}`。\n\n如果你希望保留三个参数位，可改为 [null, null, {\"nested\": {}}]。",
+   "wall_ms": 10567,
+   "points": 27,
+   "llm_calls": 1,
+   "prompt_tokens": 504,
+   "completion_tokens": 96,
+   "total_tokens": 600,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.3994989329942714
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.3995,
+    "runner_up_gap": 0.0221
+   },
+   "skill_decisions": [
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 9631,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:1snip/27tok/r0.51rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:0snip/0tok/r0rel,WorkspaceFiles:3snip/70tok/r0.5rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel",
+   "assembly_ms": 302,
+   "from_cache": false,
+   "prompt_total_tokens": 620,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 510,
+   "intent_ms": 0,
+   "llm_ms_total": 3669,
+   "phase_llm_ms": 3976,
+   "compress_n": 0,
+   "compress_drift_ok": 0,
+   "compress_semantic": [],
+   "compress_chars_in": 0,
+   "compress_chars_out": 0,
+   "pivot_n": 0,
+   "reply_rel": 0.8623,
+   "delta_tokens_vs_hist": -77,
+   "delta_wall_vs_hist": 2360
+  }
+ ],
+ "kpi_breaches": [],
+ "hist_base_rounds": 11,
+ "compression_index": {
+  "segments": 9,
+  "drift_pass_rate": 1.0,
+  "semantic_avg": 0.997,
+  "chars_ratio": 0.981
+ },
+ "intent_index": {
+  "n": 9,
+  "ms_avg": 0.1,
+  "dist": {
+   "general": 7,
+   "git_operation": 1,
+   "search": 1
+  }
+ }
+}

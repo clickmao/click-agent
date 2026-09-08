@@ -19,6 +19,33 @@ public class TaskRelevanceCheckerTests
     }
 
     [Fact]
+    public void Deixis_With_Inserted_Spaces_Still_Vetoes()
+    {
+        // R183 泛化: "刚才 那个" 空格/标点插入 → 归一化后仍命中词表 (用户指出的脆弱点)
+        var goal = new List<string> { "向量数据库", "对比报告" };
+        var (isolated, _, _) = agent.intent.TaskRelevanceChecker.Check(goal, "coding", "刚才 那个方案再讲一下", "general");
+        Assert.False(isolated);
+    }
+
+    [Fact]
+    public void Deixis_With_Punctuation_Inserted_Still_Vetoes()
+    {
+        // "记，得" — 中文标点插入同样免疫 (归一化去标点)
+        var goal = new List<string> { "Redis", "缓存" };
+        var (isolated, _, _) = agent.intent.TaskRelevanceChecker.Check(goal, "coding", "还记，得上次说了什么吗？", "general");
+        Assert.False(isolated);
+    }
+
+    [Fact]
+    public void FullWidth_Punct_Short_Question_Structural_Signal()
+    {
+        // 全角"？"+ 短问句 → 结构信号 (语言无关) 减分, 不隔离
+        var goal = new List<string> { "Redis", "缓存" };
+        var (isolated, score, reason) = agent.intent.TaskRelevanceChecker.Check(goal, "coding", "为什么？", "general");
+        Assert.False(isolated);
+    }
+
+    [Fact]
     public void Memory_Recall_Deixis_Vetoes_Isolation()
     {
         // R182 (真缺陷 61): "还记得上一条消息" — 记忆回指必然依赖上文, 一票否决隔离
