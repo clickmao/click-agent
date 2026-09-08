@@ -1266,3 +1266,11 @@
 
 ## RETIRED 轮号登记
 - mass_416 (批200 首跑): 10/11 PASS 后宿主 kernel 超时连带杀进程, JSON 未落盘 — RETIRED, 数据无效。重跑=mass_417 (批201)。
+## mass_417 — R231 batch201 quick-11 regular (2026-09-08T19:15:18+0800)
+
+- **判定**: 11/11 passed, tokens_total=11043 (avg 1004), wall=207437ms (avg 18.9s)
+- **KPI**: in-band (基准轮数 11)
+- **防漂移指数**: segments=5, drift_pass=1.0, semantic_avg=None, chars_ratio=0.993
+- **意图指数**: n=9, ms_avg=0.1, dist={'general': 7, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 428tok 8.0s Δ-18 | C03_subtask 1947tok 25.6s Δ+350 | C04_skill_identity 0tok 4.8s | C06_executive_unit_convert 0tok 4.4s | C07_memory_followup 2661tok 49.2s Δ+142 | C08_reasoning 1192tok 23.6s Δ-7 | C11_json_format 606tok 7.5s Δ-46 | C13_git_sensitive 973tok 15.8s Δ-363 | C14_isolated_multi 1968tok 39.6s Δ-457 | C17_neg_hallucination_bait 662tok 12.5s Δ-386 | C18_neg_format_trap 606tok 16.5s Δ-137
+
