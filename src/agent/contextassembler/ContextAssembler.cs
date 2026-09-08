@@ -883,6 +883,7 @@ Interlocked.Increment(ref _cacheMisses);
     /// 压缩片段
     /// </summary>
     private agent.contextgradient.ContextGradientCompressor _gradientCompressor;
+    private readonly agent.contextgradient.CompressionBreaker _compressionBreaker = new(); // v0.13.3 D4
 
     static ContextAssembler()
     {
@@ -953,6 +954,15 @@ Interlocked.Increment(ref _cacheMisses);
                 var anchors = ExtractAnchorWords(snippet.Content);
                 string compressedContent;
                 agent.contextgradient.GradientResult? gradient = null;
+                if (!_compressionBreaker.AllowAttempt)
+                {
+                    // v0.13.3 D4 熔断中: 直通原文 (M1 降级链终点), 打点
+                    agent.config.AgentTelemetry.Emit("compression_breaker", "ContextAssembler",
+                        ("state", "open"), ("action", "passthrough"));
+                    snippet.CompressedContent = snippet.Content;
+                    snippet.IsCompressed = false;
+                    continue;
+                }
                 try
                 {
                     gradient = await _gradientCompressor.CompressAsync(new agent.contextgradient.GradientRequest
@@ -994,6 +1004,8 @@ Interlocked.Increment(ref _cacheMisses);
                             ("lost_n", gradient.SentinelLosses.Count),
                             ("samples", string.Join(",", gradient.SentinelLosses.Take(3))),
                             ("level", (int)gradient.Level));
+                    // v0.13.3 D4: 熔断器记录 — 哨兵丢失也计失败 (关键信息丢失 = 压缩失败语义)
+                    _compressionBreaker.Record(gradient.SentinelLosses.Count == 0);
                 }
             }
             
