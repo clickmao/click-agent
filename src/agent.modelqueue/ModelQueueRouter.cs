@@ -436,12 +436,20 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         lock (_lock)
         {
             _consecutiveFailures++;
-            backup = _catalog.Models.FirstOrDefault(m =>
+            // v0.12.0 R226 (真缺陷 66): 备选 = 目录序 FirstOrDefault → 文本请求落到视觉模型
+            // glm-4.5v (¥0.6/1.8 每百万 token), 而同 provider 的 glm-4-flash 免费 —
+            // 纯成本倒挂 (批190-192 实测 C11/C13/C18 文本用例链含 4.5v)。
+            // 排序: ①带图请求 → 视觉优先 (缺陷64 语义不变); ②文本请求 → 文本模型优先, 同档内目录序。
+            var candidates = _catalog.Models.Where(m =>
                 !string.Equals(m.Id, entry.Id, StringComparison.OrdinalIgnoreCase) &&
-                // v0.12.0 A3 (真缺陷 64): 带图请求备选也必须是视觉模型 (text-only 备选必败)
                 (prompt.ImageUrls.Count == 0 || m.Capabilities.ImageInput) &&
                 (m.ApiKeyEnv is null ||
                  !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(m.ApiKeyEnv))));
+            backup = prompt.ImageUrls.Count > 0
+                ? candidates.FirstOrDefault()
+                : candidates.OrderByDescending(m => m.Capabilities.ImageInput == false)
+                            .ThenBy(m => m.Id, StringComparer.OrdinalIgnoreCase)
+                            .FirstOrDefault();
         }
         if (backup is not null)
         {
