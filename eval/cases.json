@@ -203,7 +203,46 @@
       "must_contain": [
         "苹果"
       ],
-      "note": "v0.12.0 T-V01: vision 链 — CogView 生成红苹果图 → 5.3-flash 视觉 QA; 断言绑定生成图的真实内容 (真机已验 4.6s 描述准确)"
+      "note": "v0.12.0 T-V01: vision 链; 资产内容锚: 红苹果居中偏下+棕色果柄+右下角AI生成水印+左上空白 (独立视角确认 2026-09-08 审计)"
+    }
+  },
+  {
+    "id": "T-V02_vision_corner",
+    "input": "图中右下角是什么物体? 一句话。",
+    "image": "data/eval-assets/testimg-apple.png",
+    "expect": {
+      "llm": true,
+      "must_contain": [
+        "AI生成"
+      ],
+      "note": "v0.12.0 覆盖审计: 同图二次提问; 已知答案=AI生成灰色水印 (独立视角+真机 1467tok 双确认)"
+    }
+  },
+  {
+    "id": "T-V03_vision_position",
+    "input": "图中主体物体是什么, 位于画面什么位置? 一句话。",
+    "image": "data/eval-assets/testimg-apple.png",
+    "expect": {
+      "llm": true,
+      "must_contain": [
+        "苹果"
+      ],
+      "note": "已知答案=红苹果中央偏下 (独立视角确认); 位置词不硬断言 (模型措辞浮动), 主体词硬断言"
+    }
+  },
+  {
+    "id": "T-V04_vision_negbait",
+    "input": "图中右下角的苹果是什么颜色? 如实回答, 如右下角不是苹果请直接说明。",
+    "image": "data/eval-assets/testimg-apple.png",
+    "expect": {
+      "llm": true,
+      "must_contain": [
+        "没有"
+      ],
+      "must_not_contain": [
+        "右下角的苹果是红"
+      ],
+      "note": "负样本: 预设陷阱 (右下角无苹果); 真机复证模型识破 (回答'右下角没有苹果')"
     }
   }
 ]

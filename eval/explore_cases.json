@@ -1,0 +1,129 @@
+{
+  "suite": "explore",
+  "version": "0.1.0",
+  "note": "v0.13.0 T3 独立跑测样本集 — 有效性=断言真机预验证; N=正常样本 F=负样本",
+  "cases": [
+    {
+      "id": "TC-N01",
+      "input": "1+1等于几?",
+      "complexity_expect": "simple",
+      "explore_expect": {
+        "min_steps": 0
+      },
+      "must_contain": [
+        "2"
+      ],
+      "must_not_contain": [
+        "不确定"
+      ]
+    },
+    {
+      "id": "TC-N02",
+      "input": "阅读 https://example.com 并概括其主题",
+      "complexity_expect": "complex",
+      "explore_expect": {
+        "min_steps": 1,
+        "kinds": [
+          "url"
+        ]
+      },
+      "must_contain": [
+        "example"
+      ],
+      "must_not_contain": []
+    },
+    {
+      "id": "TC-N03",
+      "input": "查看 eval/ 目录里有哪些文件并分类说明",
+      "complexity_expect": "complex",
+      "explore_expect": {
+        "min_steps": 2,
+        "kinds": [
+          "dir",
+          "file"
+        ]
+      },
+      "must_contain": [
+        "run_round"
+      ],
+      "must_not_contain": [
+        "不存在"
+      ]
+    },
+    {
+      "id": "TC-N05",
+      "input": "对比 https://example.com/a 与 https://example.com/b 两个页面的差异",
+      "complexity_expect": "complex",
+      "explore_expect": {
+        "min_steps": 2,
+        "min_distinct_domains": 1
+      },
+      "must_contain": [],
+      "must_not_contain": [
+        "无法访问"
+      ]
+    },
+    {
+      "id": "TC-F01",
+      "input": "阅读 https://nonexistent-domain-zz9.example/deep/path 并总结",
+      "complexity_expect": "complex",
+      "explore_expect": {
+        "min_steps": 1,
+        "allow_fail": true
+      },
+      "must_contain": [
+        "无法",
+        "不可达",
+        "失败",
+        "错误"
+      ],
+      "must_not_contain": [
+        "根据该网页内容"
+      ]
+    },
+    {
+      "id": "TC-F02",
+      "input": "查看 /nonexistent_dir_zz9/ 下的文件并逐一说明",
+      "complexity_expect": "complex",
+      "explore_expect": {
+        "min_steps": 1,
+        "allow_fail": true
+      },
+      "must_contain": [
+        "不存在",
+        "无法",
+        "找不到",
+        "没有"
+      ],
+      "must_not_contain": [
+        "文件列表如下"
+      ]
+    },
+    {
+      "id": "TC-F04",
+      "input": "只依据 https://one-source.example/aurora 判断极光成因",
+      "complexity_expect": "complex",
+      "explore_expect": {
+        "min_steps": 1,
+        "expect_grade_max": "medium"
+      },
+      "must_contain": [
+        "单"
+      ],
+      "must_not_contain": [
+        "证据充分"
+      ]
+    },
+    {
+      "id": "TC-F05",
+      "input": "反复阅读 https://example.com 然后总结 https://example.com 的要点 (注意重复)",
+      "complexity_expect": "complex",
+      "explore_expect": {
+        "min_steps": 1,
+        "max_steps": 3
+      },
+      "must_contain": [],
+      "must_not_contain": []
+    }
+  ]
+}
