@@ -47,7 +47,7 @@ C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / Na
 | 单元测试 | 325 | **389** | +64 |
 | 真缺陷修复 | — | **55 项** (全部打点驱动) | #21-#55 |
 
-批次趋势: **批166 (mass_382)** 11/11 quick-11 10517tok (956/case) / **批167 (mass_383)** 11/11 quick-11 10607tok (964/case) — C07 repl 化后带宽 ≤1250, 近 22 批 22 绿。批42-78: [docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md); 批79-108: [docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md); 批109-138: [docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md); 批139-167: [docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md)。README 批次明细每 30 批滚动更新一次 (下次: 批168)。
+批次趋势: **批176 (mass_392)** 11/11 quick-11 8805tok (800/case) / **批177 (mass_393)** 11/11 quick-11 10386tok (944/case) — C07 repl 化后带宽 ≤1250, 近 25 批 25 绿 (含 full-20 vision 首验)。批42-78: [docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md); 批79-108: [docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md); 批109-138: [docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md); 批139-167: [docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md); 批168-177: [docs/changelogs/CHANGELOG-v0.11.0-R205-R218.md](docs/changelogs/CHANGELOG-v0.11.0-R205-R218.md)。README 批次明细每 30 批滚动更新一次 (下次: 批198)。
 专项验证: 多来源召回率 (100 用例轮统计) / 无关话题隔离 (score=2 触发独立 session) / session 长期记忆 (跨进程落盘) / JSON 格式跟随 (哨兵用例) / 双 LLM 校验 — 全部 ✓。
 
 完整报告: [千轮迭代优化报告](docs/reports/thousand-round-report.md) · 阶段台账: [wave3-ledger](docs/reports/wave3-ledger.md)

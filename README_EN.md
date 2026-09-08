@@ -42,7 +42,7 @@ Release line: v0.11.0 — unified @cmd command protocol + 3 transports / Skill e
 
 ### 📊 Thousand-Round Eval (PGO-driven)
 - **1034/1056 = 97.92%** case pass (215 rounds landed); quick-batch tokens **7354 → ~3969 avg**; C08 reasoning completion **1875 → 479 (-74%)**; 55 real defects fixed, all telemetry-driven.
-- Batch trend: **batch166 (mass_382)** 11/11 quick-11 10517tok (956/case) / **batch167 (mass_383)** 11/11 quick-11 10607tok (964/case) — band ≤1250 after C07 2-turn conversion, 22 consecutive green. Batches 42-78: [R143-R152](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md); 79-108: [R153-R168](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md); 109-138: [R169-R185](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md); 139-167: [R186-R204](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md). Roll every 30 batches (next: batch168).
+- Batch trend: **batch176 (mass_392)** 11/11 quick-11 8805tok (800/case) / **batch177 (mass_393)** 11/11 quick-11 10386tok (944/case) — band ≤1250, 25 consecutive green (incl full-20 vision first-pass). Archives: [42-78](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md) · [79-108](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md) · [109-138](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md) · [139-167](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md) · [168-177](docs/changelogs/CHANGELOG-v0.11.0-R205-R218.md). Roll every 30 batches (next: batch198).
 - Full report: [Thousand-Round Report](docs/reports/thousand-round-report.md) · ledger: [wave3-ledger](docs/reports/wave3-ledger.md)
 
 ### 🧭 Full Capability Panorama (v0.11.0)
