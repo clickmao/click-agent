@@ -112,3 +112,13 @@ List<string>? block = reader.ReadStreamBlock(); // 聚合下一个流式块
 设计要点: 前端每次 `Console.ReadLine()` 一整行 → `ReadEvent()` 一次聚合一个完整语义事件;
 多行流式返回由基类内部状态机 (`_inStreamBlock`) 跨行聚合, 单行指令零开销直通 —
 满足"指令单行、内容多行"的双态要求。
+
+## -img 图像输入 (v0.12.0)
+
+```
+agenthost -img /path/to/image.png "你的问题"
+```
+
+- 作用: 附带本地图像文件启动对话, 走视觉理解链 (glm-5.3-flash v4 端点, data URL base64)。
+- 约束: 带图请求强制云端 (本地 qwen 不支持); text-only 模型自动重路由。
+- 多轮: repl 会话内图像仅首轮生效; 目录/链接探索见 v0.13.0 计划文档。

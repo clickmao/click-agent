@@ -1239,3 +1239,23 @@ writer.ResetModule("model_queue");                             // 清 L3 覆盖,
 - 写只落 L3 (`modules/{module}.yaml` 同名覆盖) / L4 (`runtime/dynamic.yaml`) — L1 base 永不直改
 - 文件内容顶层 key = 模块名 (分层契约); 深合并语义; null 覆盖项 = 删除回落
 - 全部走 MiniYaml (零反射 AOT 安全)
+
+## 19. 视觉理解链 (v0.12.0)
+
+### 19.1 图像输入链路
+- CLI: `agenthost -img /path/to/img.png "描述这张图"` → `Message.ImageAttachments` → `QueuePrompt.ImageUrls` → Router 组装 parts[]。
+- 带图请求: content = `[{type:"text"},{type:"image_url",image_url:{url:"data:image/png;base64,..."}}]` (本地路径自动转 data URL, 真缺陷 63)。
+- 路由: text-only 模型自动重路由到 image_input 模型 (真缺陷 64); coding 端点不收图像 → 改写标准 v4 端点。
+- DTO: `OpenAIMultimodalMessage` 双形态 (string content | parts[]), AOT-safe 手写 converter (source-gen 不支持 union)。
+
+### 19.2 图像渲染插件 (v0.12.0 收敛环)
+- 契约: `IImageRenderPlugin { Name, OutputExtension, IsAvailable, Render(shapes, w, h, path, ct) → ImageRenderResult }`。
+- 实现: `SkiaSharpRenderPlugin` (默认, PNG; 构建边缘选项 `-p:DisableSkiaRenderer=true` 停编) + `SvgTextRenderPlugin` (恒可用兜底)。
+- 注册表: `ImageRenderPluginRegistry.HasRenderer == false` → image-gen 流程跳过后续环节。
+- 渲染器: `LocalSvgRenderer` (DSL: rect/circle/line/text, XML 转义, 词表外跳过)。
+- 收敛环: LLM 生成 DSL → 渲染 → 5.3-flash 视觉校验 → FAIL 重生成 → PASS。
+
+## 20. 渐进式探索 (v0.13.0 开发中)
+- `ExplorationConfig`: 每上下文区/文本/URL/目录最大探索步 + 全局预算 + URL 深度 + 源优先级 (上下文内 URL > 上下文外目录)。
+- `ExplorationPlanner`: 优先级队列 + per-ref 预算 + 去重 + 发现链。
+- 详见 docs/plans/v0.13.0-progressive-exploration.md。
