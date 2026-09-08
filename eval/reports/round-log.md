@@ -1485,3 +1485,11 @@
 - **意图指数**: n=7, ms_avg=6.4, dist={'general': 5, 'file_operation': 1, 'search': 1}
 - **per-case**: XL-01_long_doc_qa 5615tok 6.5s | XL-02_cross_doc 6767tok 14.6s | XL-03_code_summary 7180tok 9.7s | XL-04_heavy 8493tok 11.4s | XL-F01_isolation_longctx 3429tok 14.9s | XL-F02_compression_number 5982tok 5.3s | MS-X01_gate_over_warn 9178tok 13.4s
 
+## mass_440 — R254 batch220 quick-11 regular (2026-09-08T23:56:27+0800)
+
+- **判定**: 11/11 passed, tokens_total=12294 (avg 1118), wall=272864ms (avg 24.8s)
+- **KPI**: in-band (基准轮数 11)
+- **防漂移指数**: segments=19, drift_pass=1.0, semantic_avg=0.792, chars_ratio=0.997
+- **意图指数**: n=9, ms_avg=0.1, dist={'general': 7, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 470tok 10.3s Δ-34 | C03_subtask 1491tok 33.8s Δ-135 | C04_skill_identity 0tok 4.9s | C06_executive_unit_convert 0tok 4.3s | C07_memory_followup 2788tok 60.6s Δ-163 | C08_reasoning 1458tok 32.1s Δ+193 | C11_json_format 618tok 8.5s Δ-64 | C13_git_sensitive 1463tok 18.7s Δ-79 | C14_isolated_multi 2484tok 42.1s Δ-1458 | C17_neg_hallucination_bait 706tok 41.7s Δ+37 | C18_neg_format_trap 816tok 15.8s Δ+46
+

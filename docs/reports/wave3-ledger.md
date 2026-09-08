@@ -416,3 +416,13 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - **凭据卫生**: state.db 流式提取 7 候选 → API 验活 4 活 (j6o5/dmud/xqI5/BSoi, login=clickmao), 3 dead (WAL 伪影 401 勿用); config ghp_ 残留 = 0。
 - **运维更正确认**: llm.sock 缺失=正常态 (R113 已退场), 共享 LLM 服务未运行属预期, 未重启; 云 LLM 批测链正常 (428/429 连续落盘为证)。
 - **诚实边界**: 本 tick 未改 src (纯复核 + 台账 + 审计); 本 tick 批测未跑成 (互斥让位 sibling, 无数据损失 — 429 由 sibling 完成后下 tick 收编)。
+
+### R242-R254 补账 + R254b 六批审计 + batch220 双跑复核 (本 tick, 2026-09-08 24:0x)
+
+- **R242-R253 (sibling 连跑, e0f3976..0ec8bc9 13 commits)**: KPI-2 优化 #1 = 429-aware scheduling (同模型重试必再撞 429 → 直落 fallback 链, Router 8 tests); 长期观察制度建立 (R246: 7 observables, 无截止日); compression-audit 100% 保留率遭用户挑战 → +24 多样风格 docs (104 总) 复审: causal 100%, instruction 85% (无标点长句被 splitter 吞), keys 99% — 挑战成立, 保留率不得外推为 100%; M2/M4 ContextBudgetGate 入 V2 主链 (WARN 6000/HARD 9000, 首穿反演 bug 由 python replay 抓出修复, 6 tests); baseline renewal (L1-L5 分层, cases-xl.json 7 用例 4-13k 注入); B2/B-period MicroStepSession 语义 4 tests + RECALL RATE 首测 R@5=0.70 (wordbag tier, Id binding bug 修复实证); M4 XL-suite 首跑 7/7 (mass_439, 6663 tok/case, gate 三态分布 IsolatedMicro x3 / HardDrop x3 / Normal x1); docs 全审 (53 md, 6 归档, 0 断链); 473 tests total。
+- **R254 batch220 双跑复核 (本 tick 实测, mass_440)**: sibling 0ec8bc9 已收编 mass_438 (R252 batch220 quick-11, 11/11, 1027/case); 本 tick 复跑同号 batch220 → mass_440: 11/11 全绿, 12294tok (1117/c), wall 272.9s, D4 rel 0.616 (n=11), kpi_breaches 空 — 双跑均值 1063/1117 = 波动带内, **batch220 号被双份占用属既成事实 (R252 与 R254 同号), 数据零冲突 (两 JSON 独立落盘), 无 RETIRED 需要**。
+- **六批审计 batch216-220 (mass_434-438 + 440)**: mass_434-438 五批 55/55 全绿, 66722tok (avg 1213/c, 带内 600-1250), D4 rel 0.609 (n=55), kpi_breaches 1 (b218 C14 1608/c 单点, 已定性); prompt_total >2000 仅 1 例 (C14 6787, compress_n=2, isolated_multi 设计内); 加本 tick mass_440 (batch220r) → 六份 quick-11 批次 66/66 全绿, 均值带内。
+- **推送状态**: fetch origin TLS 抖动 (GnuTLS -110, 已知模式); origin/main=0ec8bc9, local HEAD=632d452 (mass_439 commit) — 本 tick 补账后一并推送。
+- **凭据卫生**: state.db 流式提取 7 候选 → API 验活 4 活 (dmud 现行/j6o5/xqI5/BSoi, login=clickmao); 一次性 URL 推送不入 config, 推后复核 config ghp_ 残留 = 0。
+- **运维更正确认**: llm.sock 缺失=正常态 (R113 已退场), 未重启。
+- **诚实边界**: 本 tick 未改 src (纯接力跑批 + 台账补账 + 审计); mass_440 系 batch220 重复标号复跑, 编号语义上应记 batch221, 下批从 221 续。
