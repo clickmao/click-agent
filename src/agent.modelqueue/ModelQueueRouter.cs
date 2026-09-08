@@ -387,17 +387,34 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         // 现策略: 同请求内 ①同模型重试 1 次 (attempt 1→2) ②仍败切备选模型重试 1 次 ③备选也败才返回失败。
         if (attempt <= 2)
         {
+            // v0.12.0 R223 (真缺陷 65 配套): 429 限流是速率窗口问题 — 立即重试大概率再 429
+            // (批187 实测 7/9 用例首调 429; 直探连续请求 429/20s 交替)。短退避让窗口恢复:
+            // attempt1→2s, attempt2→4s, 节省 18-20s/条的重试链浪费。
+            if (why.Contains("429") || why.Contains("Too Many Requests"))
+                await Task.Delay(TimeSpan.FromSeconds(attempt * 2), ct).ConfigureAwait(false);
             _logger.LogWarning("ModelQueue: {Model} 瞬态失败 ({Why}) — 请求内重试 {Attempt}/2", entry.Id, why, attempt);
             agent.config.AgentTelemetry.Emit("llm_retry", "ModelQueueRouter",
                 ("model", entry.Id), ("attempt", attempt), ("why", why));
             try
             {
+                // v0.12.0 R223 (真缺陷 65): 请求内重试成功路径此前不补 llm_call 打点 —
+                // bigmodel 429/瞬态 首调失败→重试成功时, telemetry 只剩失败点 (ms≈200/tokens=0),
+                // KPI tok/case 被系统性低估 (批187 实测 7/9 用例首调 429 → 126/case 假性 KPI_BREACH)。
+                // 补成功打点 (attempt=2) — 用量/耗时/模型三观与主成功路径对齐。
+                var retrySw = System.Diagnostics.Stopwatch.StartNew();
                 var retried = await CallEntryAsync(entry, prompt, ct).ConfigureAwait(false);
+                retrySw.Stop();
                 if (retried.Success)
                 {
                     lock (_lock) _consecutiveFailures = 0;
                     LastSelectionBasis = $"retry_ok:{entry.Id} (attempt {attempt + 1})";
                     _tokenUsage?.RecordUsage(retried.Model, entry.Provider, retried.PromptTokens, retried.CompletionTokens);
+                    agent.config.AgentTelemetry.Emit("llm_call", "ModelQueueRouter",
+                        ("model", entry.Id), ("provider", entry.Provider),
+                        ("prompt_tokens", retried.PromptTokens), ("completion_tokens", retried.CompletionTokens),
+                        ("total_tokens", retried.TokensUsed), ("success", true),
+                        ("content_len", retried.Content?.Length ?? 0),
+                        ("ms", retrySw.ElapsedMilliseconds), ("attempt", attempt + 1));
                     return retried;
                 }
                 // 软失败 (Success=false 但未抛异常) 也算本次失败, 继续走切备
@@ -433,7 +450,10 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                 ("from", entry.Id), ("to", backup.Id), ("why", why));
             try
             {
+                // v0.12.0 R223 (真缺陷 65): 切备成功路径同样补 llm_call 成功打点 (attempt=failover)。
+                var backupSw = System.Diagnostics.Stopwatch.StartNew();
                 var backupResp = await CallEntryAsync(backup, prompt, ct).ConfigureAwait(false);
+                backupSw.Stop();
                 if (backupResp.Success)
                 {
                     lock (_lock)
@@ -446,6 +466,12 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                         LastSelectionBasis = $"failover:{backup.Id} (原 {entry.Id} 瞬态失败)";
                     }
                     _tokenUsage?.RecordUsage(backupResp.Model, backup.Provider, backupResp.PromptTokens, backupResp.CompletionTokens);
+                    agent.config.AgentTelemetry.Emit("llm_call", "ModelQueueRouter",
+                        ("model", backup.Id), ("provider", backup.Provider),
+                        ("prompt_tokens", backupResp.PromptTokens), ("completion_tokens", backupResp.CompletionTokens),
+                        ("total_tokens", backupResp.TokensUsed), ("success", true),
+                        ("content_len", backupResp.Content?.Length ?? 0),
+                        ("ms", backupSw.ElapsedMilliseconds), ("attempt", "failover"));
                     return backupResp;
                 }
                 return backupResp; // 备选也软失败, 如实返回
