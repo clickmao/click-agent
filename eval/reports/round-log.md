@@ -1255,3 +1255,14 @@
 - **意图指数**: n=9, ms_avg=0.1, dist={'general': 7, 'git_operation': 1, 'search': 1}
 - **per-case**: C01_general_qa 423tok 10.4s Δ-23 | C03_subtask 1276tok 29.6s Δ-619 | C04_skill_identity 0tok 4.8s | C06_executive_unit_convert 0tok 4.4s | C07_memory_followup 2395tok 48.2s Δ+249 | C08_reasoning 1187tok 25.8s Δ-9 | C11_json_format 624tok 10.1s Δ+26 | C13_git_sensitive 1628tok 39.3s Δ+545 | C14_isolated_multi 1917tok 50.8s Δ+506 | C17_neg_hallucination_bait 696tok 14.8s Δ-22 | C18_neg_format_trap 770tok 14.6s Δ+123
 
+## mass_415 — R229 batch199 quick-11 regular + v0130 kickoff (2026-09-08T19:03:08+0800)
+
+- **判定**: 11/11 passed, tokens_total=11268 (avg 1024), wall=230120ms (avg 20.9s)
+- **KPI**: in-band (基准轮数 11)
+- **防漂移指数**: segments=8, drift_pass=1.0, semantic_avg=None, chars_ratio=0.993
+- **意图指数**: n=9, ms_avg=0.1, dist={'general': 7, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 422tok 9.8s Δ-38 | C03_subtask 1604tok 31.0s Δ-404 | C04_skill_identity 0tok 4.8s | C06_executive_unit_convert 0tok 4.4s | C07_memory_followup 2395tok 44.7s Δ+186 | C08_reasoning 1187tok 22.3s Δ-31 | C11_json_format 656tok 14.4s Δ+33 | C13_git_sensitive 1390tok 21.2s Δ+195 | C14_isolated_multi 2133tok 51.0s Δ-256 | C17_neg_hallucination_bait 689tok 14.0s Δ-369 | C18_neg_format_trap 792tok 12.4s Δ+61
+
+
+## RETIRED 轮号登记
+- mass_416 (批200 首跑): 10/11 PASS 后宿主 kernel 超时连带杀进程, JSON 未落盘 — RETIRED, 数据无效。重跑=mass_417 (批201)。
