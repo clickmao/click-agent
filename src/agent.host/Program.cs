@@ -205,7 +205,6 @@ internal class Program
                 var step = 0;
                 sink.Write(CliRenderer.Dim($"── 执行中 (turn {++turnCount}) " + new string('─', 30)));
 
-                System.IO.File.AppendAllText("/tmp/cli_debug.log", $"RunCliAsync imgs={imageAttachments?.Count ?? -1} input={input[..Math.Min(20, input.Length)]}\n");
                 var msg = new Message
                 {
                     Role = MessageRole.User,

@@ -268,6 +268,25 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             };
         }
 
+        // v0.12.0 A3 (真缺陷 64): 带图请求必须落在 image_input 模型 —
+        // 手动/粘性/策略选中 text-only 模型 (glm-4-plus/deepseek 等) 时重路由到首个可用视觉模型
+        // (视觉模型 key 可用性同 policy 判据; 无视觉候选 → 保持原 entry, 让 API 错误如实暴露)。
+        if (prompt.ImageUrls.Count > 0 && !entry.Capabilities.ImageInput)
+        {
+            var vision = _catalog.Models.FirstOrDefault(m =>
+                m.Capabilities.ImageInput &&
+                (m.ApiKeyEnv is null ||
+                 !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(m.ApiKeyEnv))));
+            if (vision is not null)
+            {
+                Switches.Add(new ModelSwitchRecord
+                    { From = entry.Id, To = vision.Id, Reason = "vision_required" });
+                LastSelectionBasis = $"vision_required:{vision.Id} (原 {entry.Id} 无 image_input, 带图请求)";
+                _logger.LogWarning("ModelQueue: {From} 无 image_input 且请求带图 → 重路由 {To}", entry.Id, vision.Id);
+                entry = vision;
+            }
+        }
+
         // v0.11.0 R115 (真缺陷 43): TokenUsageService.InitializeAsync 此前无调用点 — 余额快照
         // 恒空 → EstimateBalance 恒 (null,true) → MIN_BALANCE 阈值切模整条链路死代码。
         // 惰性 fire-once 启动同步 (后台, 不阻断首调用; 失败静默走"余额未知不判定"语义)。
@@ -402,6 +421,8 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             _consecutiveFailures++;
             backup = _catalog.Models.FirstOrDefault(m =>
                 !string.Equals(m.Id, entry.Id, StringComparison.OrdinalIgnoreCase) &&
+                // v0.12.0 A3 (真缺陷 64): 带图请求备选也必须是视觉模型 (text-only 备选必败)
+                (prompt.ImageUrls.Count == 0 || m.Capabilities.ImageInput) &&
                 (m.ApiKeyEnv is null ||
                  !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(m.ApiKeyEnv))));
         }
@@ -566,8 +587,7 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             }
             w.WriteEndObject();
         }
-                var debugJson = System.Text.Encoding.UTF8.GetString(ms.ToArray());
-        try { System.IO.File.WriteAllText("/tmp/vision_request_debug.json", debugJson); } catch { }return System.Text.Encoding.UTF8.GetString(ms.ToArray());
+        return System.Text.Encoding.UTF8.GetString(ms.ToArray());
     }
 
     private async Task<QueueResponse> CallEntryAsync(ModelCatalogEntry entry, QueuePrompt prompt, CancellationToken ct)
@@ -602,7 +622,12 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         if (prompt.ImageUrls.Count > 0)
         {
             var parts = new List<QueueContentPart> { new() { Type = "text", Text = prompt.UserMessage } };
-            parts.AddRange(prompt.ImageUrls.Select(u => new QueueContentPart { Type = "image_url", ImageUrl = new QueueImageUrl { Url = u } }));
+            // v0.12.0 A3 (真缺陷 63): 本地路径 → base64 data URL (云端无法读本地文件, 真机 400/1210 实证)
+            parts.AddRange(prompt.ImageUrls.Select(u => new QueueContentPart
+            {
+                Type = "image_url",
+                ImageUrl = new QueueImageUrl { Url = VisionPayload.ToDataUrl(u) },
+            }));
             messages.Add(new QueueChatMessage { Role = "user", Content = prompt.UserMessage, ContentParts = parts });
         }
         else
@@ -610,8 +635,11 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             messages.Add(new QueueChatMessage { Role = "user", Content = prompt.UserMessage });
         }
 
+        // v0.12.0 A3 (真缺陷 64): coding 端点不收图像 (HTTP 400 1210 真机实证) —
+        // 带图请求改写标准 v4 chat 端点 (glm-5.3-flash 视觉走 v4, data URL 真机已验 1445tok)。
+        var targetEndpoint = prompt.ImageUrls.Count > 0 ? VisionPayload.ToChatEndpoint(entry.Endpoint) : entry.Endpoint;
         var request = new QueueChatRequest { Model = entry.Id, Messages = messages, ReasoningEffort = prompt.ReasoningEffort };
-        using var http = new HttpRequestMessage(HttpMethod.Post, entry.Endpoint)
+        using var http = new HttpRequestMessage(HttpMethod.Post, targetEndpoint)
         {
             Content = new StringContent(
                 SerializeChatRequest(request),

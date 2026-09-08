@@ -179,8 +179,6 @@ public class PromptBuilder : IPromptBuilder
 
         // v0.12.0 A2: 图像附件透传 (CLI -img / Message.ImageAttachments) → LLM caller 多段 content
         prompt.ImageUrls = userMessage.ImageAttachments;
-        if (prompt.ImageUrls.Count > 0)
-            Console.Error.WriteLine($"[vision-a2] prompt.ImageUrls={prompt.ImageUrls.Count} first={prompt.ImageUrls[0][..Math.Min(40, prompt.ImageUrls[0].Length)]}");
 
         // 收集历史消息（从后往前取，保持最近的消息）
         // 注意：当前消息不在 history 中（因为还没添加）

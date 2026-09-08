@@ -1412,7 +1412,6 @@ public class OpenAILLMCaller : ILLMCaller
             
             // Current message
             // v0.12.0 A2: 图像附件 → user 消息多段 content (text + image_url × N)
-            System.IO.File.AppendAllText("/tmp/caller_debug.log", $"CallAsync imgs={prompt.ImageUrls.Count} user={prompt.UserMessage[..Math.Min(15, prompt.UserMessage.Length)]}\n");
             var userMsg = new OpenAIChatMessage { Role = "user", Content = prompt.UserMessage };
             if (prompt.ImageUrls.Count > 0)
             {
