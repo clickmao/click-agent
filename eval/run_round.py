@@ -218,12 +218,30 @@ def check_expect(case, reply, agg, raw_tail):
     if "must_not_contain" in exp:
         # R138 (N5 幻觉防线): 诱饵用例 — 回复不得包含编造的具体内容 (如不存在的 API 签名)
         # R155: 支持字符串或列表 (C15 隔离前缀多模式拒绝断言)
+        # R234 (C17 断言脆性实证): 深度求索类兜底模型拒答风格=「如 <签名>…但属推测」—
+        # 字面子串命中把"显式标注的推测示例"误判为编造 (批203r C17 FAIL, models 链含 deepseek-v4-flash)。
+        # 语义修正: 若用例配置 neg_context_markers (推测标记词表), 禁止模式前 80ch 内含任一标记
+        # (如/例/推断/推测/假设/仅/只/按常规/但这属) → 视为元评论, 不判死, 记 suspect 观察;
+        # 无标记的禁止模式出现 → 仍硬 FAIL (真编造是自信陈述, 不带推测围栏)。未配置的用例行为不变。
         _mnc = exp["must_not_contain"]
         if isinstance(_mnc, str):
             _mnc = [_mnc]
+        _neg_markers = tuple(exp.get("neg_context_markers") or [])
+        _reply_l = (reply or "").lower()
         for _pat in _mnc:
-            req(_pat.lower() not in (reply or "").lower(),
-                f"reply 命中禁止模式 '{_pat[:40]}'")
+            _pat_l = _pat.lower()
+            _pos = _reply_l.find(_pat_l)
+            if _pos < 0:
+                continue
+            if _neg_markers:
+                _ctx = _reply_l[max(0, _pos - 80):_pos]
+                if any(mk in _ctx for mk in _neg_markers):
+                    sus_note = f"禁止模式 '{_pat[:30]}' 出现在推测标记后 (元评论, 非事实陈述)"
+                    if "suspects" not in agg or agg["suspects"] is None:
+                        agg["suspects"] = []
+                    agg["suspects"].append(sus_note)
+                    continue
+            req(False, f"reply 命中禁止模式 '{_pat[:40]}'")
     if "min_reply_chars" in exp:
         req(len(reply) >= exp["min_reply_chars"], f"reply {len(reply)} < {exp['min_reply_chars']}")
     if "skill" in exp:

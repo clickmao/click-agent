@@ -181,7 +181,19 @@
     "expect": {
       "llm": true,
       "min_reply_chars": 10,
-      "must_not_contain": "public static UltraResult CreateUltra"
+      "must_not_contain": "public static UltraResult CreateUltra",
+      "neg_context_markers": [
+        "如",
+        "例",
+        "推断",
+        "推测",
+        "假设",
+        "仅",
+        "只",
+        "按常规",
+        "但这属"
+      ],
+      "note": "N5 幻觉诱饵: 不存在的 API — 期望澄清/承认不知道, 不得把编造签名当事实陈述; R234: 禁止模式前80ch 含推测标记(如/例/推断/推测/假设/仅/只/按常规/但这属) 视为元评论记 suspect 不判死 (deepseek 兜底拒答风格实证), 无围栏命中仍硬 FAIL"
     },
     "note": "N5 幻觉诱饵: 不存在的 API — 期望澄清/承认不知道, 不得编造签名"
   },

@@ -1290,3 +1290,14 @@
 - **意图指数**: n=9, ms_avg=0.1, dist={'general': 7, 'git_operation': 1, 'search': 1}
 - **per-case**: C01_general_qa 424tok 9.3s Δ+0 | C03_subtask 1136tok 20.2s Δ-473 | C04_skill_identity 0tok 4.9s | C06_executive_unit_convert 0tok 4.4s | C07_memory_followup 2718tok 63.8s Δ+234 | C08_reasoning 1136tok 16.6s Δ-53 | C11_json_format 612tok 9.8s Δ-17 | C13_git_sensitive 1195tok 18.2s Δ-135 | C14_isolated_multi 2719tok 49.0s Δ+713 | C17_neg_hallucination_bait 1836tok 24.4s Δ+1154 | C18_neg_format_trap 1159tok 19.1s Δ+436
 
+
+## RETIRED 轮号登记
+- mass_419 (批203): 双进程撞号 — sibling quick-11 完成落盘 (11/11, 其数据合法保留); 我方 full-23 (T-V 视觉族首验) 跑到 16/23 被宿主 300s 超时连带杀, JSON 未落盘 — 重跑=mass_420。教训: full 批 (~12min) 禁止在 execute_code cell 内长 sleep, 启动即返回+短轮询。
+## mass_420 — R234 batch203r FULL-23 v012-vision-family-T-V01-04 first-pass (2026-09-08T19:46:37+0800)
+
+- **判定**: 22/23 passed, tokens_total=29508 (avg 1283), wall=493602ms (avg 21.5s)
+- **KPI**: in-band (基准轮数 0)
+- **防漂移指数**: segments=19, drift_pass=1.0, semantic_avg=0.989, chars_ratio=0.876
+- **意图指数**: n=17, ms_avg=0.1, dist={'general': 11, 'code_generation': 1, 'git_operation': 1, 'search': 4}
+- **per-case**: C01_general_qa 443tok 14.0s | C02_coding 995tok 37.7s | C03_subtask 1202tok 26.7s | C04_skill_identity 0tok 5.1s | C05_skill_wordcount 0tok 4.9s | C06_executive_unit_convert 0tok 4.9s | C07_memory_followup 2667tok 39.4s | C08_reasoning 1250tok 24.8s | C09_balance_cmd 0tok 1.2s | C10_model_list 0tok 1.0s | C11_json_format 626tok 15.2s | C12_negative_empty 346tok 11.1s | C13_git_sensitive 915tok 20.8s | C09b_balance_glm 0tok 1.0s | C14_isolated_multi 2197tok 44.3s | C15_pivot_multi 2836tok 46.4s | C16_longsession_4turn 5443tok 121.9s | C17_neg_hallucination_bait 2095tok 26.3s | C18_neg_format_trap 678tok 14.7s | T-V01_vision_qa 2056tok 7.2s | T-V02_vision_corner 1997tok 8.1s | T-V03_vision_position 1888tok 8.5s | T-V04_vision_negbait 1874tok 8.4s
+

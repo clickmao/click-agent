@@ -124,6 +124,56 @@
       },
       "must_contain": [],
       "must_not_contain": []
+    },
+    {
+      "id": "TC-N04",
+      "input": "我昨天问过总结 https://example.com 的问题, 今天再问类似的: 概括 https://example.com 的核心论点",
+      "complexity_expect": "complex",
+      "explore_expect": {
+        "min_steps": 1,
+        "think_memory_hit": true
+      },
+      "must_contain": [],
+      "must_not_contain": []
+    },
+    {
+      "id": "TC-N06",
+      "input": "https://example.com 是什么网站? 查证后回答",
+      "complexity_expect": "complex",
+      "explore_expect": {
+        "min_steps": 1
+      },
+      "must_contain": [],
+      "must_not_contain": [
+        "我不确定"
+      ]
+    },
+    {
+      "id": "TC-F03",
+      "input": "阅读 https://example.com/irrelevant 并回答: 这道数学题 2+2 等于几?",
+      "complexity_expect": "complex",
+      "explore_expect": {
+        "min_steps": 0,
+        "allow_fail": true
+      },
+      "must_contain": [
+        "4"
+      ],
+      "must_not_contain": []
+    },
+    {
+      "id": "TC-F06",
+      "input": "听说苹果是蓝色的 (诱饵), 请阅读 https://example.com/apple 核实苹果真实颜色",
+      "complexity_expect": "complex",
+      "explore_expect": {
+        "min_steps": 1
+      },
+      "must_contain": [
+        "红"
+      ],
+      "must_not_contain": [
+        "蓝"
+      ]
     }
   ]
 }
