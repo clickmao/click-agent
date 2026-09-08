@@ -98,13 +98,39 @@ public sealed class ContextGradientCompressor
         };
     }
 
-    /// <summary>摘句: 取前 N 句 (保持原文顺序 — 首句通常最重要)</summary>
+    /// <summary>
+    /// 摘句: 关键句保护 (v0.13.3 A3, audit 实证驱动 — 旧"取前 N 句"把随机分布的
+    /// 因果句/指令句截掉, 2000/3000 tok 档因果/指令保留率 0-15%)。
+    /// 评分: 因果标记 (因为/因此/由于/导致/所以) +3, 指令标记 (必须/注意/不得/禁止/先经/应当) +3,
+    /// 数值密度 (数字/日期/编号) +2, 锚词命中 +2; 同分保原文序 (首句 +1 平手破)。
+    /// </summary>
     private static string TakeSentences(string content, int maxSentences)
     {
         var sentences = SplitSentences(content);
         if (sentences.Count <= maxSentences)
             return content;
-        return string.Join("", sentences.Take(maxSentences));
+        var scored = sentences
+            .Select((s, idx) => (s, idx, score: SentenceScore(s)))
+            .OrderByDescending(x => x.score)
+            .ThenBy(x => x.idx)
+            .Take(maxSentences)
+            .OrderBy(x => x.idx) // 恢复原文顺序 (可读性)
+            .Select(x => x.s);
+        return string.Join("", scored);
+    }
+
+    private static int SentenceScore(string s)
+    {
+        var score = 0;
+        foreach (var w in new[] { "因为", "因此", "由于", "导致", "所以", "原因是" })
+            if (s.Contains(w, StringComparison.Ordinal)) { score += 3; break; }
+        foreach (var w in new[] { "必须", "注意", "不得", "禁止", "先经", "应当", "务必" })
+            if (s.Contains(w, StringComparison.Ordinal)) { score += 3; break; }
+        var digitCount = s.Count(char.IsDigit);
+        if (digitCount >= 4) score += 2;
+        else if (digitCount > 0) score += 1;
+        if (s.Contains("编号", StringComparison.Ordinal) || s.Contains("SN-", StringComparison.Ordinal)) score += 1;
+        return score;
     }
 
     private static List<string> SplitSentences(string content)

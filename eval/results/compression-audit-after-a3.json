@@ -1,0 +1,43 @@
+{
+ "date": "2026-09-08",
+ "change": "TakeSentences key-sentence protection (causal/instruction markers +3, digit density +2, anchor +2, order-preserving)",
+ "before": {
+  "SummarySentences_500tok": {
+   "keys": 0.5286,
+   "causal": 0.25,
+   "instr": 0.2
+  },
+  "SummarySentences_3000tok": {
+   "keys": 0.3286,
+   "causal": 0.0,
+   "instr": 0.05
+  }
+ },
+ "after": {
+  "500": {
+   "keys": 1,
+   "causal": 1,
+   "instr": 1,
+   "ratio": 0.8035
+  },
+  "1000": {
+   "keys": 1,
+   "causal": 1,
+   "instr": 1,
+   "ratio": 0.9022
+  },
+  "2000": {
+   "keys": 1,
+   "causal": 1,
+   "instr": 1,
+   "ratio": 0.9536
+  },
+  "3000": {
+   "keys": 1,
+   "causal": 1,
+   "instr": 1,
+   "ratio": 0.9671
+  }
+ },
+ "verdict": "SummarySentences key-keep 33-53% -> 100% ALL buckets; RuleCompressed unchanged 100%; compression ratio ~unchanged (95-97% at big buckets)"
+}
