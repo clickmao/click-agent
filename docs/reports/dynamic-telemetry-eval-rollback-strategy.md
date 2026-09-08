@@ -141,7 +141,7 @@ done
 
 ## 7. 迭代状态快照（恢复迭代从这里开始）
 
-- **主线进度**：R138-R153。R149 用户质疑整改（真断言族）；R151 pivot 判定闭环（真缺陷 56 KeyError 修复）；R152 收尾（phase report 3: batch62-78 187/187 + README 30 批滚动制度）；**R153 真缺陷 57 修复**：D4 gate 读 os.environ 致 reply_rel 整块静默失效（批79/80 n=0 实证，诚实缺省未破）→ gate 同源 load_env()，批81 同环境复验 n=11 avg 0.631 恢复。下一轮号 **mass_298**。
+- **主线进度**：R138-R153。R149 用户质疑整改（真断言族）；R151 pivot 判定闭环（真缺陷 56 KeyError 修复）；R152 收尾（phase report 3: batch62-78 187/187 + README 30 批滚动制度）；**R153 真缺陷 57 修复**：D4 gate 读 os.environ 致 reply_rel 整块静默失效（批79/80 n=0 实证，诚实缺省未破）→ gate 同源 load_env()，批81 同环境复验 n=11 avg 0.631 恢复。下一轮号 **mass_351**（R180-R184 进度与接力细节见下方对应条目及台账 R180-R184）。
 - **最近五批审计（批76-80）**：63/63 全绿（quick-11 子集 44/44）；tok/case 941→939→928→860 递降带内（全量批 1165 口径不同）；drift 全 1.0；suspects 0；D4 rel 修复前 n=0（缺陷 57）/修复后 n=11 avg 0.631。
 - **R149 用户质疑结论**：TaskRelevanceChecker 组件能力真实（全量批 50/53 isolated=True score=2 实测）但判定空心成立——既往 C14/C15 expect 只有 llm:true，通过率对组件无证明力。修复后 C14 真断言批69-72 四连验 isolated=True score=2 PASS (4/4)。
 - **R151 (pivot 判定闭环)**：C15 pivot_reanchor 升级为三重真断言 (不隔离+pivot_n≥1+新任务链产出)；pivot_n 打点消费建成 (goal/op=pivot, 真缺陷 45: init 缺键 KeyError——batch76 首跑 15/19 后死亡实证, 与 R142 compression 同源教训)；批76 全量 19/19 复证 pivot_n=1 真重锚。
@@ -154,8 +154,9 @@ done
 - **R171 batch111/112 双批**: mass_327/328 11/11 x2 (887/796 tok/c), D4 rel 0.618/0.629, 0 suspect, breach 空 — **30 连绿** (batch83-112)。
 - **R172-R177 (稳定性基建三连)**: 缺陷59 per-case 超时容错 (一个用例 180s 挂起不再崩整批, C13 批113 首证) + 超时重试 1/1 (LLM 端点瞬态挂起 5 用例各中招一次 C08/C13/C01/C17/C03, 重试全 PASS 3/3+2/2 实证) + C16 长会话真断言 (must_contain 热点 + ≥300ch, 锚定批113 回复实证 — "Redis" 字面量断言会误杀好回复, 断言先行必须查历史样本)。
 - **R180-R182 (C07 记忆链三连修)**: 真缺陷 60 (must_contain 硬判定误用 req() → NameError 崩批, 改 x[pass]=False); C07 记忆源破案 (跨进程 forecast.json 单槽被中间用例竞态覆盖 → 批340 丢失实证链: forecast Save→prompt header 注入→LLM 消费); 真缺陷 61 (记忆回指词缺 deixis 表 → repl 轮2 误隔离, +8 词一票否决 +2 单测 401 绿); C07 改 repl 双轮真 session 链 (批131 验证 pass+不隔离); 健康带 quick tok 上界 1100→1250 (C07 双轮成本口径登记)。
-- **in-flight**：R182 → ① 批 132+（quick-11 常态）② 批 126-130 五批审计 ③ README 滚动点批138 ④ 持续。
-- **推送状态（R171 已解+复核）**：R156-R170 系 sibling tick 已推（git push 协商回执证明 remote 原位=48d15f5，本地 "ahead 24" 为 fetch 陈旧假象——教训：ahead 判定前先 fetch）；R171 (3f61b2e) 本 tick 一次性 URL 推送（git 回执 48d15f5..3f61b2e）+ API 复核 remote=HEAD=3f61b2e；config 零残留。~/.hermes/.env PAT 401 失效弃用；池验证 4 活（BSoi 钦定 / wnkO / XTMI，state.db 候选池）。github 直连抖动窗口仍间歇（api 504 + TLS EOF，baidu 200 对照；git push 自身握手成功率高，重试惯例有效）。
+- **R183 (用户质疑驱动泛化加固, dd15851)**：TaskRelevanceChecker 归一化层（去空白/标点/符号 + 全角→半角 + 小写）使词表匹配对插入变体机械免疫；语言无关结构信号（纯疑问短语一票否决 + 短问句减分）兜底其他语言/新词；+3 对抗测试 404 绿。R184 本 tick 接力 batch134 (mass_350) 11/11 1096 tok/c 带内, D4 rel 0.616, 0 suspect。
+- **in-flight**：R184 → ① 批 135+（quick-11 常态）② R183 归一化改动的全量 19 用例验证 ③ 批 131-135 五批审计 ④ README 滚动点批138 ⑤ 持续。
+- **推送状态（R184 已复核）**：R156-R170 系 sibling tick 已推（git push 协商回执证明 remote 原位=48d15f5，本地 "ahead 24" 为 fetch 陈旧假象——教训：ahead 判定前先 fetch）；R171 (3f61b2e) 一次性 URL 推送 + API 复核；R179b 补推 13 commits 至 780cd0d（双通道复核）；R184 复核 R180b..R183 六提交 remote=local=dd15851（"ahead 6" 亦为 fetch 陈旧假象，R171 同型第三次）。config ghp_ 残留恒 0；~/.hermes/.env PAT 401 失效弃用；池验证 5 活（dmud 钦定 / BSoi / wnkO / j6o5 / XTMI，state.db 流式提取 + API 筛活，WAL 截断伪影 len=41/…j 全 401 过滤）。github 直连抖动窗口仍间歇（连接超时 135s×2 实录；git push 重试惯例有效，第 3 次必复核 sha）。
 - **环境事实**（防重查）：bge=`/home/agentuser/.agentframework/models/bge-q8.gguf`（`.env.local` `AGENTFRAMEWORK_BGE_MODEL`，**cron/新 shell 须 export PATH="$HOME/.dotnet:$PATH" 否则 runner FileNotFoundError**；bge 路径勿依赖 os.environ——缺陷 57 教训，harness 统一走 load_env()）；3 key：kimi 负样本/glm 可用/deepseek 7.61 CNY；github 直连断→ghfast.top 代理推（>8min 假死勿中断）；telemetry 读用 utf-8-sig；`execute_code` 300s 上限→批测逐轮后台跑；**llm-service/llm.sock 已 R113 退场，sock 缺失=正常态勿重启**。
 - **千轮口径**：RETIRED 轮诚实标注；全绿口径=排除 RETIRED；轮号唯一；每轮落盘+镜像。
 

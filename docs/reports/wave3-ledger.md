@@ -369,3 +369,13 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - **推送实况**: 直连 github.com 第 1 次 TLS -110 (R156 同型抖动), 第 2 次连接挂起超时; 第 2 轮重试返回 "Everything up-to-date"。**API + ls-remote 双通道复核: remote main = local HEAD = 780cd0d, 13 个欠账提交全部上远端**。教训固化: "Everything up-to-date" 必须 API 复核 sha 后才可判定成功。
 - **凭据卫生**: 一次性 URL + 临时脚本用后即删, config/.git/config ghp_ 残留 = 0, 令牌全程未入对话与文档。
 - **互斥遵守**: 本 tick 启动时 sibling runner 正持 eval_run.lock 跑 batch124 (mass_340, R178 完成后接力), 本 tick 未抢跑; 其后 sibling 自行完成 R179 (batch124/125 + 五批审计 55/55) 并由本 tick 补推上远端。
+
+### R180-R183 补账 (sibling ticks, 台账漏更按 R154-R156 先例补齐) + R184: R183 泛化双批接力 + 推送复核 (2026-09-08)
+- **R180 (05ce90b, 真缺陷 60)**: must_contain 升级硬判定时在 summarize 块误用了 check_expect 作用域的 req() → NameError 崩批 (batch128 后处理死, JSON 丢), 改 x[pass]=False + fail_reason; C07 batch340 重分类: 召回正常 (4 snips) 但 LLM 无视注入 = injection≠consumption 下游靶点。batch127 (mass_343) 11/11 9842tok。
+- **R181 (batch128 重试, mass_344)**: 缺陷 60 修复后批跑后处理存活, 11/11 8381tok 复证。
+- **R182 (33e2ce7, C07 破案)**: 记忆源是跨进程 forecast.json 单槽 — 被中间 skill/executive 用例竞态覆盖 → batch340 丢失; 证据链闭合 (forecast Save→prompt header 注入→LLM 消费); C07 改 2-turn repl (真 session 链, 确定性)。R182b (65ecda3, 真缺陷 61): 记忆回指词缺 deixis 表 → repl 轮2 误隔离 score=2 (batch130 唯一非绿), +8 词一票否决 +2 单测 (401 绿); KPI 带 quick tok 1100→1250 (C07 双轮成本口径登记); batch131 (mass_347) 11/11。R182c (d1f6a28): AOT 重发布 0 IL 警 + smoke EXIT=0 (发布形态含 deixis 修复); batch132 (mass_348) 11/11 12787tok (1066/c 新带内)。
+- **R183 (dd15851, sibling tick, 用户质疑驱动泛化加固)**: TaskRelevanceChecker 归一化层 (去空白/标点/符号 + 全角→半角 + 小写) 使 deixis/离题/实现询问匹配对 "刚 才 那个"/"记，得"/全半角混排机械免疫; 语言无关结构信号 (纯疑问短语 ≤4 字一票否决 + 短问句减分) 兜底其他语言/新词, 不依赖词表; +3 对抗测试 (404 绿)。batch133 (mass_349) 11/11 11035tok (1003/c 带内)。
+- **R184 (本 tick 接力)**: 互斥实证第三次生效 — 本 tick 首跑 mass_349 全量批撞 sibling runner 持锁, 诚实退出 3 零污染; sibling 完成 R183 (dd15851) 后, 本 tick 复跑同 bin 口径批134 (mass_350): **11/11 全绿, 12054tok (1096/c 带内), wall 251.5s, D4 rel n=11 avg 0.616, 0 suspect, KPI breach 空** (C07 2443tok 52.4s 双轮正常, C14 真断言过)。
+- **推送复核 (R179b 教训执行)**: 本 tick 启动时 git status 报 ahead 6 (R180b..R183) — API 复核实证远端已含 dd15851, ahead 为 origin/main fetch 陈旧假象 (R171 同型第三次); 直连 push 前 2 次连接超时 (TLS -110 同型抖动), 第 3 次 "Everything up-to-date" + **API + ls-remote 双通道复核 remote main = local HEAD = dd15851**。token 池重验: state.db 流式提取 17 候选, 5 活 (dmud 钦定/BSoi/wnkO/j6o5/XTMI), WAL 截断伪影 (len=41 / …j 后缀) 全部 401 正确过滤; 一次性 URL + 用后即焚, config ghp_ 残留 = 0。
+- **运维更正确认**: cron 守卫 "llm.sock 未运行则重启" 条款按 L334 作废执行 (R113 已退场, sock 缺失=正常态), 本 tick 未重启。
+- **诚实边界**: R183 归一化/结构信号改动仅过单测 404 + quick-11 双批, 未跑全量 19 用例批 (下 tick 候选); batch128/R180 NameError 期间无批数据损失 (RETIRED 不涉及, JSON 未落盘属批前丢失)。
