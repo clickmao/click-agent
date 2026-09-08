@@ -3,6 +3,26 @@ using agent.config;
 namespace agent.modelqueue;
 
 /// <summary>模型目录条目 (C.6.2) — 除 API-KEY 外全部参数; key 只存环境变量名。</summary>
+/// <summary>capabilities: 字段解析 (v0.12.0 — 缺失时保守默认 text-only)</summary>
+public static class ModelCapabilitiesParser
+{
+    public static ModelCapabilities Parse(Dictionary<string, object?> d)
+    {
+        var c = new ModelCapabilities();
+        if (!d.TryGetValue("capabilities", out var raw) || raw is not Dictionary<string, object?> cd)
+            return c;
+        bool? Get(string k) => cd.TryGetValue(k, out var v) && v is bool b ? b : null;
+        c.Text = Get("text") ?? true;
+        c.ImageInput = Get("image_input") ?? false;
+        c.VideoInput = Get("video_input") ?? false;
+        c.AudioInput = Get("audio_input") ?? false;
+        c.FilePdf = Get("file_pdf") ?? false;
+        c.FileXlsx = Get("file_xlsx") ?? false;
+        c.ImageOutput = Get("image_output") ?? false;
+        return c;
+    }
+}
+
 public sealed class ModelCatalogEntry
 {
     public string Id { get; set; } = string.Empty;
@@ -35,6 +55,24 @@ public sealed class ModelCatalogEntry
 
     /// <summary>适合用途 (意图匹配: general/coding/reasoning/planning/chat/summary/classify/debug)</summary>
     public List<string> SuitedFor { get; set; } = new();
+
+    /// <summary>
+    /// v0.12.0 模态能力矩阵 (计划1 §2) — 路由层消费: 文本模型收图 → 明确报错;
+    /// image_output=true → CogView 生图通道。
+    /// </summary>
+    public ModelCapabilities Capabilities { get; set; } = new();
+}
+
+/// <summary>v0.12.0 模态能力矩阵 (yaml capabilities: 字段, 缺省全 false/text=true 保守值)</summary>
+public sealed class ModelCapabilities
+{
+    public bool Text { get; set; } = true;
+    public bool ImageInput { get; set; }
+    public bool VideoInput { get; set; }
+    public bool AudioInput { get; set; }
+    public bool FilePdf { get; set; }
+    public bool FileXlsx { get; set; }
+    public bool ImageOutput { get; set; }
 }
 
 /// <summary>余额查询方案 (C.6.4 — provider 差异大, scheme 枚举分派)</summary>
@@ -118,6 +156,7 @@ public sealed class ModelCatalog
                     SuitedFor = d.TryGetValue("suited_for", out var sf) && sf is List<object?> sl
                         ? sl.Where(x => x is string).Select(x => (string)x!).ToList()
                         : new List<string>(),
+                    Capabilities = ModelCapabilitiesParser.Parse(d),
                 });
             }
         }
