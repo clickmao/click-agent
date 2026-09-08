@@ -426,3 +426,9 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - **凭据卫生**: state.db 流式提取 7 候选 → API 验活 4 活 (dmud 现行/j6o5/xqI5/BSoi, login=clickmao); 一次性 URL 推送不入 config, 推后复核 config ghp_ 残留 = 0。
 - **运维更正确认**: llm.sock 缺失=正常态 (R113 已退场), 未重启。
 - **诚实边界**: 本 tick 未改 src (纯接力跑批 + 台账补账 + 审计); mass_440 系 batch220 重复标号复跑, 编号语义上应记 batch221, 下批从 221 续。
+
+### R255 batch221 续跑 (本 tick 第二批, 2026-09-09 00:2x)
+
+- **mass_441**: 11/11 全绿, 12371tok (1125/c), wall 209s, D4 rel 0.614 (n=11), kpi_breaches 空 — 带内; 批216-221 累计 7 份 quick-11 全绿 77/77 (b220 双跑各算一份)。
+- **label 瑕疵 (诚实记录)**: 本 tick 启动时多词 label 未加引号, run_round.py 只取首个词, JSON label 落 "R255" (完整语义 = R255 batch221 quick-11 regular, 以本条为准); 后续启动 label 必须 single-quoted。
+- **runner 启动注意**: 前台裸 shell 启动报 FATAL "dotnet not on PATH" — 正确姿势 = export PATH="$HOME/.dotnet:$PATH" + set -a/. ./.env.local/set +a 后再跑; 本 tick 首启败退 (pid 2010778, 未持锁未落盘) 后带环境重启成功 (pid 2010964), 批号零损失。
