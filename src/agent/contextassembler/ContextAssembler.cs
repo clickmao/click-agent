@@ -951,26 +951,50 @@ Interlocked.Increment(ref _cacheMisses);
                 // v7.15: 梯度压缩优先 (相关性分层 L0-L3 + 锚词防漂移内置回退)
                 // 锚词 = 片段内容中提取的实词 (简单启发: 高频中英词), P3 换向量匹配
                 var anchors = ExtractAnchorWords(snippet.Content);
-                var gradient = await _gradientCompressor.CompressAsync(new agent.contextgradient.GradientRequest
+                string compressedContent;
+                agent.contextgradient.GradientResult? gradient = null;
+                try
                 {
-                    Content = snippet.Content,
-                    RelevanceScore = snippet.RelevanceScore,
-                    TokenBudget = quota / Math.Max(1, snippets.Count(s => s.SourceType == snippet.SourceType)),
-                    AnchorWords = anchors,
-                });
-                var compressedContent = gradient.DriftCheckPassed || gradient.Level == agent.contextgradient.GradientLevel.Full
-                    ? gradient.Content
-                    : snippet.Content; // 漂移校验失败且非全文 → 保原文 (宁大不歪)
+                    gradient = await _gradientCompressor.CompressAsync(new agent.contextgradient.GradientRequest
+                    {
+                        Content = snippet.Content,
+                        RelevanceScore = snippet.RelevanceScore,
+                        TokenBudget = quota / Math.Max(1, snippets.Count(s => s.SourceType == snippet.SourceType)),
+                        AnchorWords = anchors,
+                    });
+                    compressedContent = gradient.DriftCheckPassed || gradient.Level == agent.contextgradient.GradientLevel.Full
+                        ? gradient.Content
+                        : snippet.Content; // 漂移校验失败且非全文 → 保原文 (宁大不歪)
+                }
+                catch (Exception ex) when (ex is not OperationCanceledException)
+                {
+                    // v0.13.3 D1 (用户问询驱动: 压缩失败后续防护): 压缩器异常 (bge 崩/LLama 异常)
+                    // 不再炸整轮组装 — 该 snippet 回退原文 + error 打点 (M1 分级降级链第一环)。
+                    agent.config.AgentTelemetry.Emit("compression_error", "ContextAssembler",
+                        ("source", snippet.SourceType.ToString()),
+                        ("ex_type", ex.GetType().Name),
+                        ("msg", ex.Message.Length > 80 ? ex.Message[..80] : ex.Message));
+                    compressedContent = snippet.Content;
+                }
 
                 snippet.CompressedContent = compressedContent;
                 snippet.IsCompressed = compressedContent != snippet.Content;
                 snippet.EstimatedTokens = await _tokenCompressor.CountTokensAsync(compressedContent);
                 // v0.11.0: 压缩打点 (压缩率对比数据 — level/漂移校验/语义相似度/前后字符)
-                agent.config.AgentTelemetry.Emit("compression", "ContextGradientCompressor",
-                    ("level", (int)gradient.Level),
-                    ("drift_ok", gradient.DriftCheckPassed),
-                    ("semantic", gradient.SemanticSimilarity is { } sem ? Math.Round(sem, 3) : -1),
-                    ("chars", gradient.OriginalChars + "->" + gradient.CompressedChars));
+                if (gradient is not null)
+                {
+                    agent.config.AgentTelemetry.Emit("compression", "ContextGradientCompressor",
+                        ("level", (int)gradient.Level),
+                        ("drift_ok", gradient.DriftCheckPassed),
+                        ("semantic", gradient.SemanticSimilarity is { } sem ? Math.Round(sem, 3) : -1),
+                        ("chars", gradient.OriginalChars + "->" + gradient.CompressedChars));
+                    // v0.13.3 D2: 哨兵丢失打点 (关键信息校验 — semantic 盲区补丁)
+                    if (gradient.SentinelLosses.Count > 0)
+                        agent.config.AgentTelemetry.Emit("compression_sentinel", "ContextAssembler",
+                            ("lost_n", gradient.SentinelLosses.Count),
+                            ("samples", string.Join(",", gradient.SentinelLosses.Take(3))),
+                            ("level", (int)gradient.Level));
+                }
             }
             
             compressed.Add(snippet);

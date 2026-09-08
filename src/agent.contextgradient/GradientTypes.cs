@@ -43,5 +43,8 @@ public sealed class GradientResult
 
     /// <summary>原始长度 → 压缩后长度</summary>
     public int OriginalChars { get; set; }
+
+    /// <summary>v0.13.3 D2: 哨兵丢失清单 (空 = 无丢失; 宿主负责打点 compression_sentinel)</summary>
+    public List<string> SentinelLosses { get; set; } = new();
     public int CompressedChars { get; set; }
 }

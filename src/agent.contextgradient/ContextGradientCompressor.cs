@@ -73,7 +73,29 @@ public sealed class ContextGradientCompressor
             passed = DriftGuard.Check(result, request.AnchorWords);
         }
 
-        // 防漂移第二重: 语义相似度 (P3, embedder 就绪且产物非全文时) — cos < 阈值 → 回退全文
+                // v0.13.3 D2 (用户问询驱动): 关键信息哨兵 (M3) — 数字串/日期/编号 压缩前提取,
+        // 产物缺失任一 → 逐级降级 (当前级别 → RuleCompress → 全文); 补 semantic 盲区
+        // (audit 实证: cos 0.996 下数字/指令仍可丢)。
+        var sentinels = ExtractSentinels(content);
+        var sentinelLosses = new List<string>();
+        if (sentinels.Count > 0 && level != GradientLevel.Full)
+        {
+            var lost = sentinels.Where(sk => !result.Contains(sk, StringComparison.Ordinal)).ToList();
+            if (lost.Count > 0)
+            {
+                // 降级一档: SummarySentences/TitleOnly 丢失 → RuleCompress (保关键句评分语义);
+                result = RuleCompress(content, request.TokenBudget);
+                lost = sentinels.Where(sk => !result.Contains(sk, StringComparison.Ordinal)).ToList();
+                if (lost.Count > 0)
+                {
+                    level = GradientLevel.Full;
+                    result = content; // 终极回退: 宁大不歪
+                }
+                sentinelLosses = lost;
+            }
+        }
+
+// 防漂移第二重: 语义相似度 (P3, embedder 就绪且产物非全文时) — cos < 阈值 → 回退全文
         // R129 (54c): 语义校验只对 SummarySentences 档 (0.5-0.8) — Rule/TitleOnly 产物已极短且
         // 锚词第一重已过, bge embed 1.3s/次 × 低分段的成本>收益 (批测 compress 20.3s→7.7s→目标 <2s)。
         if (originalEmbedding is not null && level == GradientLevel.SummarySentences &&
@@ -97,6 +119,7 @@ public sealed class ContextGradientCompressor
             SemanticSimilarity = semanticSim,
             OriginalChars = content.Length,
             CompressedChars = result.Length,
+            SentinelLosses = sentinelLosses,
         };
     }
 
@@ -138,6 +161,24 @@ public sealed class ContextGradientCompressor
         if (s.Contains("编号", StringComparison.Ordinal) || s.Contains("SN-", StringComparison.Ordinal)) score += 1;
         return score;
     }
+
+
+    /// <summary>v0.13.3 D2: 关键信息哨兵提取 — 数字串(≥3位)/日期/SN 编号/引号内实体</summary>
+    internal static List<string> ExtractSentinels(string content)
+    {
+        var sentinels = new List<string>();
+        foreach (System.Text.RegularExpressions.Match m in
+                 System.Text.RegularExpressions.Regex.Matches(content, @"\d{3,}"))
+            if (m.Value.Length >= 3 && !sentinels.Contains(m.Value)) sentinels.Add(m.Value);
+        foreach (System.Text.RegularExpressions.Match m in
+                 System.Text.RegularExpressions.Regex.Matches(content, @"\d{4}-\d{2}-\d{2}"))
+            if (!sentinels.Contains(m.Value)) sentinels.Add(m.Value);
+        foreach (System.Text.RegularExpressions.Match m in
+                 System.Text.RegularExpressions.Regex.Matches(content, @"SN-\d+"))
+            if (!sentinels.Contains(m.Value)) sentinels.Add(m.Value);
+        return sentinels;
+    }
+
 
     private static List<string> SplitSentences(string content)
     {
