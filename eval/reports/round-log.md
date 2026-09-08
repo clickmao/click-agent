@@ -1175,3 +1175,19 @@
 - **意图指数**: n=9, ms_avg=0.1, dist={'general': 7, 'git_operation': 1, 'search': 1}
 - **per-case**: C01_general_qa 432tok 7.9s Δ-32 | C03_subtask 2039tok 70.6s Δ+452 | C04_skill_identity 0tok 4.7s | C06_executive_unit_convert 0tok 4.3s | C07_memory_followup 2461tok 53.0s Δ+539 | C08_reasoning 1009tok 91.0s Δ-210 | C11_json_format 624tok 13.5s Δ-41 | C13_git_sensitive 2093tok 43.5s Δ+397 | C14_isolated_multi 2197tok 83.3s Δ+1271 | C17_neg_hallucination_bait 925tok 36.5s Δ+480 | C18_neg_format_trap 972tok 25.0s Δ+720
 
+## mass_405 — R224 batch189 quick-11 regular (2026-09-08T17:30:22+0800)
+
+- **判定**: 11/11 passed, tokens_total=10876 (avg 989), wall=319185ms (avg 29.0s)
+- **KPI**: in-band (基准轮数 11)
+- **防漂移指数**: segments=9, drift_pass=1.0, semantic_avg=1.0, chars_ratio=0.99
+- **意图指数**: n=9, ms_avg=0.1, dist={'general': 7, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 422tok 10.9s Δ+138 | C03_subtask 1411tok 33.9s Δ+396 | C04_skill_identity 0tok 4.7s | C06_executive_unit_convert 0tok 4.2s | C07_memory_followup 2465tok 50.9s Δ+1356 | C08_reasoning 1106tok 21.1s Δ+321 | C11_json_format 670tok 14.5s Δ+265 | C13_git_sensitive 1032tok 27.0s Δ+60 | C14_isolated_multi 2317tok 60.6s Δ+1732 | C17_neg_hallucination_bait 693tok 12.2s Δ+461 | C18_neg_format_trap 760tok 79.2s Δ+520
+
+## mass_406 — R224 batch190 quick-11 regular (2026-09-08T17:35:45+0800)
+
+- **判定**: 11/11 passed, tokens_total=10073 (avg 916), wall=225181ms (avg 20.5s)
+- **KPI**: in-band (基准轮数 11)
+- **防漂移指数**: segments=5, drift_pass=1.0, semantic_avg=None, chars_ratio=0.996
+- **意图指数**: n=9, ms_avg=0.1, dist={'general': 7, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 429tok 8.5s Δ+144 | C03_subtask 907tok 30.7s Δ-230 | C04_skill_identity 0tok 4.7s | C06_executive_unit_convert 0tok 4.4s | C07_memory_followup 2129tok 38.9s Δ+940 | C08_reasoning 1291tok 25.8s Δ+560 | C11_json_format 649tok 12.6s Δ+238 | C13_git_sensitive 1108tok 22.7s Δ-160 | C14_isolated_multi 1962tok 49.5s Δ+780 | C17_neg_hallucination_bait 837tok 12.8s Δ+529 | C18_neg_format_trap 761tok 14.6s Δ+197
+
