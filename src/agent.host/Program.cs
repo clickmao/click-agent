@@ -1,3 +1,5 @@
+using agent.contextgradient;
+using System.Text.Json;
 using agent.llamalocal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -70,6 +72,75 @@ internal class Program
             Console.WriteLine("[" + string.Join(",", vec.Select(v => v.ToString("R", System.Globalization.CultureInfo.InvariantCulture))) + "]");
             return 0;
         }
+
+// v0.13.3 A2 (用户钦定) — 压缩底座 audit (用户钦定) — 压缩底座 audit: ground-truth 样本 × 真实 ContextGradientCompressor
+// → 关键信息保留率 / 压缩率 / semantic / 耗时 矩阵 (JSON 输出 → eval/results/)。
+// 用法: agenthost --compression-audit <groundtruth.json>
+if (args.Length >= 2 && args[0] == "--compression-audit")
+{
+    var docs = JsonSerializer.Deserialize(File.ReadAllText(args[1]),
+        CompressionAuditJsonContext.Default.ListGtDoc);
+    if (docs is null || docs.Count == 0) { Console.Error.WriteLine("no_samples"); return 3; }
+    var compressor = new ContextGradientCompressor(); // NullTextEmbedder 锚词模式 (语义校验降级为锚词, 真机批测同形态)
+    var report = new List<AuditRow>();
+    foreach (var levelName in new[] { "SummarySentences", "RuleCompressed", "TitleOnly" })
+    {
+        var level = levelName switch
+        {
+            "SummarySentences" => GradientLevel.SummarySentences,
+            "RuleCompressed" => GradientLevel.RuleCompressed,
+            _ => GradientLevel.TitleOnly,
+        };
+        foreach (var grp in docs.GroupBy(d => d.TargetTokens).OrderBy(g => g.Key))
+        {
+            int keepTotal = 0, keyTotal = 0, causalKeep = 0, instrKeep = 0;
+            long msTotal = 0; double ratioSum = 0; int n = 0;
+            foreach (var d in grp)
+            {
+                var request = new GradientRequest
+                {
+                    Content = d.Content,
+                    RelevanceScore = levelName switch { "SummarySentences" => 0.6, "RuleCompressed" => 0.4, _ => 0.1 },
+                    TokenBudget = d.TargetTokens / 2,
+                    AnchorWords = new List<string> { d.GroundTruth["entity_product"], d.GroundTruth["entity_person"] },
+                };
+                var sw = System.Diagnostics.Stopwatch.StartNew();
+                var result = compressor.Compress(request);
+                sw.Stop();
+                msTotal += sw.ElapsedMilliseconds;
+                n++;
+                var outChars = result.Content.Length;
+                ratioSum += d.Content.Length > 0 ? 1.0 - (double)outChars / d.Content.Length : 0;
+                // ground truth 逐项核对 (保留率):
+                foreach (var kv in d.GroundTruth)
+                {
+                    keyTotal++;
+                    if (result.Content.Contains(kv.Value, StringComparison.Ordinal)) keepTotal++;
+                }
+                if (result.Content.Contains(d.CausalSentence.Split('，')[0].Replace("因为", ""), StringComparison.Ordinal)) causalKeep++;
+                if (result.Content.Contains("必须先经过", StringComparison.Ordinal)) instrKeep++;
+            }
+            report.Add(new AuditRow
+            {
+                Level = levelName,
+                BucketTokens = grp.Key,
+                Samples = n,
+                KeyKeepRate = Math.Round((double)keepTotal / Math.Max(1, keyTotal), 4),
+                CausalKeepRate = Math.Round((double)causalKeep / Math.Max(1, n), 4),
+                InstructionKeepRate = Math.Round((double)instrKeep / Math.Max(1, n), 4),
+                CompressRatio = Math.Round(ratioSum / Math.Max(1, n), 4),
+                AvgMs = msTotal / Math.Max(1, n),
+            });
+        }
+    }
+    var json = JsonSerializer.Serialize(report, CompressionAuditJsonContext.Default.ListAuditRow);
+    Console.WriteLine(json);
+    var outPath = "eval/results/compression-audit-latest.json";
+    Directory.CreateDirectory("eval/results");
+    File.WriteAllText(outPath, json);
+    return 0;
+}
+
 
         // v0.13.0 (用户钦定): -rag 指定 RAG 数据文件 → env 钩子 (DI 工厂读取; 进程内生效, 不落盘)
         if (!string.IsNullOrEmpty(ragPath))
@@ -375,4 +446,42 @@ internal class Program
         return lines;
     }
 
+}
+
+/// <summary>压缩 audit ground-truth 样本 (v0.13.3 A2)</summary>
+/// <summary>压缩 audit ground-truth 样本 (v0.13.3 A2)</summary>
+public sealed class GtDoc
+{
+    [System.Text.Json.Serialization.JsonPropertyName("id")]
+    public string Id { get; set; } = string.Empty;
+    [System.Text.Json.Serialization.JsonPropertyName("target_tokens")]
+    public int TargetTokens { get; set; }
+    [System.Text.Json.Serialization.JsonPropertyName("content")]
+    public string Content { get; set; } = string.Empty;
+    [System.Text.Json.Serialization.JsonPropertyName("ground_truth")]
+    public Dictionary<string, string> GroundTruth { get; set; } = new();
+    [System.Text.Json.Serialization.JsonPropertyName("causal_sentence")]
+    public string CausalSentence { get; set; } = string.Empty;
+    [System.Text.Json.Serialization.JsonPropertyName("instruction_sentence")]
+    public string InstructionSentence { get; set; } = string.Empty;
+}
+
+/// <summary>audit 矩阵行</summary>
+public sealed class AuditRow
+{
+    public string Level { get; set; } = string.Empty;
+    public int BucketTokens { get; set; }
+    public int Samples { get; set; }
+    public double KeyKeepRate { get; set; }
+    public double CausalKeepRate { get; set; }
+    public double InstructionKeepRate { get; set; }
+    public double CompressRatio { get; set; }
+    public long AvgMs { get; set; }
+}
+
+/// <summary>AOT source-gen (v0.13.3 audit — 禁反射铁律)</summary>
+[System.Text.Json.Serialization.JsonSerializable(typeof(List<GtDoc>))]
+[System.Text.Json.Serialization.JsonSerializable(typeof(List<AuditRow>))]
+internal sealed partial class CompressionAuditJsonContext : System.Text.Json.Serialization.JsonSerializerContext
+{
 }
