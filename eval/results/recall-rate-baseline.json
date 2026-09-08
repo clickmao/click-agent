@@ -1,0 +1,16 @@
+{
+ "date": "2026-09-08",
+ "measurement": "bge-q8 semantic tier vs wordbag tier (20 ground-truth docs)",
+ "bge_semantic": {
+  "recall_at_5": 0.95,
+  "hit_at_1": "12/20",
+  "mrr": 0.724,
+  "embedding_input": "truncated 440ch (defect-69: ctx 512)"
+ },
+ "wordbag_fallback": {
+  "recall_at_5": 0.7,
+  "note": "top-5 competition"
+ },
+ "conclusion": "EmbeddingRouter semantic-first strategy empirically validated (0.95 >> 0.70)",
+ "defect_69": "bge ctx window 512 — full-doc embedding overflows; production RAG must chunk before embed (RAG chunking path to verify)"
+}
