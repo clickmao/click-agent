@@ -76,3 +76,18 @@
 
 ## v7.14 (2026-09-05) — 归档
 EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / SessionMemory 滚动 / AgentProfile 动态学习 / CapabilityScanner 重构 / 目标锚免压缩 / 面板全 JSON。基线 218/218。
+
+## v0.12.0 (2026-09-08, 已验收)
+
+- 视觉理解链 (CLI -img → data URL → glm-5.3-flash v4; 真缺陷 63/64 修复; 双形态 DTO AOT-safe)
+- 图像渲染插件体系 (IImageRenderPlugin: SkiaSharp 默认+边缘停编 / SVG 兜底; LocalSvgRenderer DSL)
+- 收敛环 E2E 一轮 PASS; T-V01~04 视觉用例族 full-23 23/23 (含负样本诱饵识破)
+- 验收基线 docs/reports/v012-acceptance-baseline.md
+
+## v0.13.x (2026-09-08, 开发中)
+
+- v0.13.0: 渐进式探索 (ExplorationPlanner+分档预算) / 思考链 T3 (ComplexityGate+EvidenceScorer+ThinkMemory) / RAG 路径用户指定 (CLI -rag + /rag)
+- v0.13.1: 兜底粘性路由 (FallbackConfig 逐个兜底校验 + StickyRouteMemory 三门判定)
+- v0.13.2: 格式修复收敛环 (IFormatRepairPlugin ①→⑤状态机 + 技能-校验矩阵; JsonRepairPlugin 用户实例回放)
+- v0.13.3: 底座能力长期观察 (压缩 audit 104 篇多样态; A3 关键句保护修复 SummarySentences 33-53%→99%/85%; 429 感知调度; token-breakdown 行; 微步骤隔离设计)
+- 真缺陷 65/66/67/68 全修 (重试打点黑洞/视觉备选成本倒挂/Text 硬过滤/断言脆性围栏)
