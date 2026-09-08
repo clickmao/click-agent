@@ -390,11 +390,17 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         // 现策略: 同请求内 ①同模型重试 1 次 (attempt 1→2) ②仍败切备选模型重试 1 次 ③备选也败才返回失败。
         if (attempt <= 2)
         {
-            // v0.12.0 R223 (真缺陷 65 配套): 429 限流是速率窗口问题 — 立即重试大概率再 429
-            // (批187 实测 7/9 用例首调 429; 直探连续请求 429/20s 交替)。短退避让窗口恢复:
-            // attempt1→2s, attempt2→4s, 节省 18-20s/条的重试链浪费。
+            // v0.13.3 R242 (KPI-2 优化①, audit 数据驱动): 429 限流 = 速率窗口问题, 窗口内同模型
+            // 重试必再 429 (直探 429/20s 交替实证) 且重发全 prompt (~1000 tok/次浪费, KPI-2 报告:
+            // C07 2355 tok 中 ~1000 是重试链)。改为: 429 跳过同模型重试直接进切备链 —
+            // 备模型不同 key/端点, 不受该窗口影响。非 429 瞬态 (网络/超时) 仍同模型重试。
             if (why.Contains("429") || why.Contains("Too Many Requests"))
-                await Task.Delay(TimeSpan.FromSeconds(attempt * 2), ct).ConfigureAwait(false);
+            {
+                agent.config.AgentTelemetry.Emit("llm_retry", "ModelQueueRouter",
+                    ("model", entry.Id), ("attempt", attempt), ("why", why), ("skipped", true));
+                return await OnTransientFailureAsync(entry, prompt, kind, intent, ct, why + " (429 跳过同模型重试)", attempt + 2)
+                    .ConfigureAwait(false);
+            }
             _logger.LogWarning("ModelQueue: {Model} 瞬态失败 ({Why}) — 请求内重试 {Attempt}/2", entry.Id, why, attempt);
             agent.config.AgentTelemetry.Emit("llm_retry", "ModelQueueRouter",
                 ("model", entry.Id), ("attempt", attempt), ("why", why));
