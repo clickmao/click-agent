@@ -440,15 +440,18 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             // glm-4.5v (¥0.6/1.8 每百万 token), 而同 provider 的 glm-4-flash 免费 —
             // 纯成本倒挂 (批190-192 实测 C11/C13/C18 文本用例链含 4.5v)。
             // 排序: ①带图请求 → 视觉优先 (缺陷64 语义不变); ②文本请求 → 文本模型优先, 同档内目录序。
+            // v0.12.0 R227 (真缺陷 67): 上一版排序漏 capability 硬过滤 — cogview-3-flash
+            // (text:false 生图模型) 因 Id 字母序排到文本备选首位 → C07 repl 轮2 打到生图端点
+            // HTTP 400 1213 "未正常接收到prompt参数" (批195 C07 FAIL 实证)。
+            // 修正: 文本请求硬过滤 Text 能力; 带图请求硬过滤 ImageInput (缺陷64 原语义)。
             var candidates = _catalog.Models.Where(m =>
                 !string.Equals(m.Id, entry.Id, StringComparison.OrdinalIgnoreCase) &&
-                (prompt.ImageUrls.Count == 0 || m.Capabilities.ImageInput) &&
+                (prompt.ImageUrls.Count > 0 ? m.Capabilities.ImageInput : m.Capabilities.Text) &&
                 (m.ApiKeyEnv is null ||
                  !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(m.ApiKeyEnv))));
             backup = prompt.ImageUrls.Count > 0
                 ? candidates.FirstOrDefault()
-                : candidates.OrderByDescending(m => m.Capabilities.ImageInput == false)
-                            .ThenBy(m => m.Id, StringComparer.OrdinalIgnoreCase)
+                : candidates.OrderBy(m => m.Id, StringComparer.OrdinalIgnoreCase)
                             .FirstOrDefault();
         }
         if (backup is not null)
