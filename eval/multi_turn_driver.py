@@ -16,7 +16,12 @@ env = dict(os.environ)
 env["AGENTFRAMEWORK_LOCAL_DISABLED"] = "1"
 env.setdefault("AGENTFRAMEWORK_BGE_MODEL", os.path.expanduser("~/.agentframework/models/bge-q8.gguf"))
 bin_path = "./src/agent.host/bin/Release/net10.0/agenthost"
-p = subprocess.Popen([bin_path], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+# R268 修正: 无参 = smoke 模式 (跑完即退 code 0) — repl 需至少一个非 smoke 参数 (--log 空路径不可, 用 --log 临时文件):
+import tempfile
+_log_tmp = tempfile.NamedTemporaryFile(suffix=".log", delete=False)
+_log_tmp.close()
+repl_args = [bin_path, "--log", _log_tmp.name]
+p = subprocess.Popen(repl_args, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                      stderr=subprocess.DEVNULL, text=True, env=env, cwd=".")
 # 跳过 banner (等首个提示输出超时保护 — 改为直接喂, 面板容错)
 results = []
