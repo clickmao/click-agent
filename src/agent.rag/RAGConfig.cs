@@ -293,6 +293,42 @@ public class RAGRecall : IRAGRecall
         {
             document.Embedding = GenerateEmbedding(document.Content);
         }
+
+        // v0.13.3 缺陷69 根治 (B 期召回全量化): 长文档 (>440ch) 单向量只覆盖首块 —
+        // 切多 chunk (每 chunk ≤440ch, 独立向量), chunk 文档 Id=base#cN + Metadata[parent_id]=base。
+        // 召回命中 chunk → RecalAsync 层映射回父文档 (全文浮出)。主文档 Embedding = 首块向量。
+        var chunkDocs = new List<RAGDocument>();
+        if (document.Content.Length > 440)
+        {
+            var chunkSize = 440;
+            var chunkIdx = 0;
+            for (var pos = 0; pos < document.Content.Length; pos += chunkSize)
+            {
+                var chunkText = document.Content.Substring(pos, Math.Min(chunkSize, document.Content.Length - pos));
+                if (chunkIdx == 0)
+                {
+                    // 首块 = 主文档向量 (已生成); 记 parent_id:
+                    document.Metadata["parent_id"] = document.Id;
+                }
+                else
+                {
+                    var cd = new RAGDocument
+                    {
+                        Id = $"{document.Id}#c{chunkIdx}",
+                        Content = chunkText,
+                        DocumentType = document.DocumentType ?? "general",
+                        CreatedAt = document.CreatedAt,
+                        UpdatedAt = document.UpdatedAt,
+                        Keywords = document.Keywords.Any() ? document.Keywords : ExtractKeywords(chunkText),
+                    };
+                    cd.Metadata["parent_id"] = document.Id;
+                    cd.Metadata["chunk_count"] = (document.Content.Length + chunkSize - 1) / chunkSize;
+                    cd.Embedding = GenerateEmbedding(chunkText);
+                    chunkDocs.Add(cd);
+                }
+                chunkIdx++;
+            }
+        }
         
         // 提取关键词
         if (!document.Keywords.Any())
@@ -309,7 +345,18 @@ public class RAGRecall : IRAGRecall
             _documents[document.Id] = document;
         }
         
-        _logger.LogDebug("Indexed document {DocumentId}", document.Id);
+        // v0.13.3 缺陷69 根治: chunk 文档入索引 (关键词/类型索引复用主文档的 — chunk 检索靠向量):
+        foreach (var cd in chunkDocs)
+        {
+            lock (_lock)
+            {
+                UpdateKeywordIndex(cd);
+                UpdateTypeIndex(cd);
+                _documents[cd.Id] = cd;
+            }
+        }
+        
+        _logger.LogDebug("Indexed document {DocumentId} (+{ChunkN} chunks)", document.Id, chunkDocs.Count);
         PersistDocument(document);
         
         return Task.CompletedTask;
@@ -448,9 +495,44 @@ public class RAGRecall : IRAGRecall
             finalResults[i].Document.LastAccessedAt = DateTime.UtcNow;
         }
         
-        _logger.LogInformation("Recall returned {Count} results for query: {Query}", finalResults.Count, request.Query);
+        // v0.13.3 缺陷69 根治 (chunk→parent 归并): 所有结果按父 Id 归并取最高分 —
+        // 主文档与它的 chunks 会同时命中 (诊断实证: 同 Id 两条 0.45/0.90 占坑), 不归并 → 重复占坑挤掉其他文档。
+        // 词袋档补偿: chunk 分数 × chunk 数 ≈ 全文粒度分数。
+        var bestByParent = new Dictionary<string, RecallResult>(StringComparer.Ordinal);
+        foreach (var r in finalResults)
+        {
+            var docId = r.Document?.Id ?? string.Empty;
+            var hashIdx = docId.IndexOf("#c", StringComparison.Ordinal);
+            var parentId = hashIdx > 0 ? docId[..hashIdx] : docId;
+            RecallResult effective;
+            if (hashIdx > 0 && _documents.TryGetValue(parentId, out var parent))
+            {
+                // A3e (诊断实证): 补偿倍增 (×chunk_count) 让弱相关 chunk 压过强相关主文档 (q1 实证:
+                // 无关文档 chunk 1.35 分压过期望文档 0.90) — chunk 分数不放大, 与主文档分数同池取 max。
+                effective = new RecallResult
+                {
+                    Document = parent,
+                    Score = r.Score,
+                    HighlightedContent = r.HighlightedContent,
+                    Rank = r.Rank,
+                    MatchType = r.MatchType + "+chunk",
+                };
+            }
+            else
+            {
+                effective = r;
+            }
+            if (!bestByParent.TryGetValue(parentId, out var prev) || effective.Score > prev.Score)
+                bestByParent[parentId] = effective;
+        }
+        var parentMapped = bestByParent.Values
+            .OrderByDescending(r => r.Score)
+            .ToList();
+        for (int i = 0; i < parentMapped.Count; i++) parentMapped[i].Rank = i + 1;
         
-        return Task.FromResult(finalResults);
+        _logger.LogInformation("Recall returned {Count} results for query: {Query}", parentMapped.Count, request.Query);
+        
+        return Task.FromResult(parentMapped);
     }
     
     public Task<RAGDocument?> GetAsync(string id)

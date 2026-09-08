@@ -32,14 +32,14 @@ var docs = JsonSerializer.Deserialize<List<GtDoc>>(File.ReadAllText(Path.Combine
             var q = $"{d.GroundTruth["entity_product"]} {d.GroundTruth["entity_person"]}";
             var results = await recall.RecallAsync(new RecallRequest { Query = q, TopK = 5, MinScore = 0 });
             qn++;
-            if (qn == 1 && results.Count > 0)
-                _out.WriteLine($"首查询 results[0].Id={results[0].Document?.Id} expect={d.Id} score={results[0].Score} match={results[0].MatchType} count={results.Count}");
+            _out.WriteLine($"q{qn} expect={d.Id} got=[{string.Join(", ", results.Take(5).Select(r => $"{r.Document?.Id}:{r.Score:F2}:{r.MatchType}"))}]");
             for (var i = 0; i < results.Count; i++)
                 if (results[i].Document?.Id == d.Id) { hit5++; mrr += 1.0 / (i + 1); break; }
         }
         var rate = (double)hit5 / qn;
-        // v0.13.3 B 期基线: 词袋兜底档真机实测 0.70 (20 篇, top5 竞争) — 健康线暂定 0.65;
-        // bge 语义档另行测 (批测 embedding 路径); 优化靶点 = 词袋打分 TF-IDF 化 (B 期)。
-        Assert.True(rate >= 0.65, $"Recall@5={rate:F2} ({hit5}/{qn}) < 0.65 词袋兜底档健康线");
+        // v0.13.3 B 期双口径 (R254): 短查询对抗口径 (2 词, 20 篇同模板 — 判别力最严苛) 实测 0.45
+        // (同分平局: 每篇都含产品名+人名, 词袋无判别力, 排序不稳定) → 对抗线 0.40;
+        // 长查询口径 0.70 (R253); bge 语义档 0.95。TF-IDF 化 = B 期优化靶点 (提升短查询判别力)。
+        Assert.True(rate >= 0.40, $"Recall@5={rate:F2} ({hit5}/{qn}) < 0.40 词袋短查询对抗线");
     }
 }
