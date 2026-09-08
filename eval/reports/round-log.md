@@ -1477,3 +1477,11 @@
 - **意图指数**: n=9, ms_avg=0.1, dist={'general': 7, 'git_operation': 1, 'search': 1}
 - **per-case**: C01_general_qa 522tok 13.8s Δ+29 | C03_subtask 1720tok 23.5s Δ+113 | C04_skill_identity 0tok 4.8s | C06_executive_unit_convert 0tok 4.4s | C07_memory_followup 2710tok 61.0s Δ-264 | C08_reasoning 1184tok 15.8s Δ-210 | C11_json_format 752tok 13.1s Δ+22 | C13_git_sensitive 1340tok 16.8s Δ-302 | C14_isolated_multi 2015tok 42.1s Δ-1896 | C17_neg_hallucination_bait 585tok 11.3s Δ-148 | C18_neg_format_trap 870tok 11.1s Δ+169
 
+## mass_439 — R253 xl-suite first harness pass (2026-09-08T23:21:32+0800)
+
+- **判定**: 7/7 passed, tokens_total=46644 (avg 6663), wall=75789ms (avg 10.8s)
+- **KPI**: tokens_per_case=6663 out (600, 1250) (基准轮数 0)
+- **防漂移指数**: segments=3, drift_pass=1.0, semantic_avg=0.908, chars_ratio=1.0
+- **意图指数**: n=7, ms_avg=6.4, dist={'general': 5, 'file_operation': 1, 'search': 1}
+- **per-case**: XL-01_long_doc_qa 5615tok 6.5s | XL-02_cross_doc 6767tok 14.6s | XL-03_code_summary 7180tok 9.7s | XL-04_heavy 8493tok 11.4s | XL-F01_isolation_longctx 3429tok 14.9s | XL-F02_compression_number 5982tok 5.3s | MS-X01_gate_over_warn 9178tok 13.4s
+
