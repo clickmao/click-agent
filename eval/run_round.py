@@ -119,7 +119,8 @@ def summarize_points(points):
          # (quick-11 不含 C15 所以 batch75 侥幸通过; 与 R142 compression 同源教训:
          #  新增打点消费必须同步补 init 键)。
          "compress_n": 0, "compress_drift_ok": 0, "compress_semantic": [],
-         "compress_chars_in": 0, "compress_chars_out": 0, "pivot_n": 0}
+         "compress_chars_in": 0, "compress_chars_out": 0, "pivot_n": 0,
+         "gate_mode": None, "gate_est": None}
     for pt in points:
         kv = pt.get("kv", {}) or {}
         tag = pt.get("point")
@@ -162,6 +163,10 @@ def summarize_points(points):
             s["history_tokens"] = kv.get("history_tokens")
         elif tag == "evidence_gate":
             s["gate_to_ask"] = kv.get("to_ask")
+        elif tag == "context_gate":
+            # v0.13.3 M4: 上下文预算门 (normal/isolated_micro/hard_drop) — 微隔离触发观测点
+            s["gate_mode"] = kv.get("mode")
+            s["gate_est"] = kv.get("est_tokens")
         elif tag == "loop_turn":
             s["loop_success"] = kv.get("success")
             s["loop_ms"] = kv.get("total_ms")
@@ -346,6 +351,11 @@ def main():
     # 一律不算位置参数 (当前接口仅 --quick 无值 flag; 引入带值 flag 时须同步改此处)。
     args = [a for a in sys.argv[1:] if not a.startswith("-")]
     quick = "--quick" in sys.argv
+    # v0.13.3 M4 (用户钦定 Baseline 换血): --suite=xl — 大上下文/微隔离触发族 (cases-xl.json)
+    suite = "default"
+    for a in sys.argv[1:]:
+        if a.startswith("--suite="):
+            suite = a.split("=", 1)[1]
     # v0.11.0 R154 (真缺陷 58): harness 对 dotnet 的 PATH 依赖自兜底 — 新 shell/cron 忘 export
     # PATH 时 repl 用例 FileNotFoundError 半途崩批 (批83 首跑实证), fail-fast 带修复提示。
     import shutil as _sh
@@ -357,7 +367,10 @@ def main():
     label = args[1] if len(args) > 1 else ""
     # v0.11.0 R27: --quick 高频回归模式 — 4 关键用例 (普通/多步/executive/推理),
     # 约 25s 一轮 (全量 70-140s), 供千轮级循环高频迭代; 全量轮仍用默认模式。
-    all_cases = json.load(open("eval/cases.json"))
+    if suite == "xl":
+        all_cases = json.load(open("eval/cases-xl.json"))
+    else:
+        all_cases = json.load(open("eval/cases.json"))
     if quick:
         # v0.11.0 R94: quick 4→5 — 加 C11 JSON 格式哨兵 (每批产出格式合规率, PGO 新维度)
         # v0.11.0 R143 (用户钦定): quick 5→10 + 广泛度扩展 — 5 关键 + 5 多样性

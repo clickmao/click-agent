@@ -44,6 +44,7 @@ public class IndustrialAgentV2 : AgentBase
     private readonly IRecoverySystem _recoverySystem;
     private readonly IVectorStore _vectorStore;
     private readonly IRAGRecall? _ragRecall;  // v0.11.0 R6: 存储召回同源修复
+    private readonly agent.exploration.ContextBudgetGate _contextGate = new();  // v0.13.3 M2: 上下文预算门
     private readonly IVectorMemoryRecall _memoryRecall;
     private readonly ITemplateStore _templateStore;
     private readonly ISearchService _searchService;
@@ -460,6 +461,15 @@ public class IndustrialAgentV2 : AgentBase
                 ("history_tokens", prompt.History.Sum(h => EstimateTokens(h.Content))),
                 ("context_tokens", EstimateTokens(prompt.ContextPrompt)));
             
+            // v0.13.3 M2 (用户钦定 Baseline 换血): 上下文预算门 — est 与 WARN/HARD 比较,
+            // normal/isolated_micro/hard_drop 三态打点 (微隔离触发的前置观测点; 判定器在 agent.exploration)。
+            var gateVerdict = _contextGate.Evaluate(prompt.EstimatedTokens);
+            agent.config.AgentTelemetry.Emit("context_gate", "IndustrialAgentV2",
+                ("est_tokens", gateVerdict.EstimatedTokens),
+                ("warn", gateVerdict.WarnThreshold),
+                ("hard", gateVerdict.HardThreshold),
+                ("mode", gateVerdict.Mode.ToString()));
+
             // 4.5 思考流 (v7.15 L.2.2): 推理前发 page_switch + 构建摘要分片; LLM 返回后发 thinking_end
             if (_logRouter != null)
             {
