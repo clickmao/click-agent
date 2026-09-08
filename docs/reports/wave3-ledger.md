@@ -433,6 +433,15 @@ AgentTelemetry 25+ 点位 (goal pivot/memory store/sensitive/tendency…)
 - **label 瑕疵 (诚实记录)**: 本 tick 启动时多词 label 未加引号, run_round.py 只取首个词, JSON label 落 "R255" (完整语义 = R255 batch221 quick-11 regular, 以本条为准); 后续启动 label 必须 single-quoted。
 - **runner 启动注意**: 前台裸 shell 启动报 FATAL "dotnet not on PATH" — 正确姿势 = export PATH="$HOME/.dotnet:$PATH" + set -a/. ./.env.local/set +a 后再跑; 本 tick 首启败退 (pid 2010778, 未持锁未落盘) 后带环境重启成功 (pid 2010964), 批号零损失。
 
+### R257 batch224 收尾 + A3 句切分器闭环 (2026-09-09 02:0x)
+
+- **上下文还原**: 本 tick 启动时工作树含 R246 靶点①三修 (SplitSentences 无标点二次切分 + 摘句配额自适应 + 指令句多标记加权 + audit 判定 coreMark 化) 未闭环; sibling 会话于本 tick 中段 (01:55-02:0x) 先行提交同批改动 (15b8da8 A3d 判定缺陷修复) + batch223 数据 (360778e), 本 tick 剩余价值 = 对已提交 HEAD 的独立闭环验证 + batch224 数据 (R211 撞车协议零冲突)。monitor 基线 `busy:runner-alive` 判定为 sibling runner 尾批 (01:59:30 落盘 mass_443 后退出), 判断正确。
+- **A3 修复验收**: 压缩审计 latest InstructionKeepRate **0.85→0.9615** (≥0.95 目标达成), KeyKeepRate 1.0, CausalKeepRate 1.0, 全 12 行 (4 bucket × 3 level) 零回退; A3d 判定缺陷修复后 nested_list/multi_hop/zh_en 样式不再误判丢失。
+- **R257 闭环证据**: build 0 err (30 已知 warn) → 单测 **473/473** (16s) → AOT publish native ELF (agenthost stripped, **0 IL 警**, 仅既有 NU1510/CS0169) → 批测 **mass_444: 11/11 全绿, 10527tok (957/c 带内), wall 161s, D4 rel 0.611 (n=11), KPI 零 breach, drift 1.0** — 压缩修复对 5 KPI 面零回退实证。
+- **轮号碰撞事故 (诚实登记)**: 本 tick 首启误用轮号 mass_443 (sibling R256 已占用且其 runner 仍在写), 二启后 15s 发现 ts 冲突立即 kill — 覆写未遂 (文件完好, mtime 未变), 改用 mass_444 零损失。教训入台账: **runner 锁检查须含 ts/mtime 比对, 轮号占用判定不能只看锁文件**。
+- **批次状态**: mass_443 (R256 batch223 遗产) + mass_444 (R257 batch224) 均 11/11; quick-11 近 4 批 tok/c 1117→1125→963→957 带内平稳。
+- **R246 靶点①状态**: 句切分器修复闭环完成, 多样态 instr 0.85→0.9615 (目标 95+ 达成); 靶点② (audit 每批抽查自动化) 接力为下轮候选。
+
 ### R256 batch222 续跑 (本 tick 第三批, 2026-09-09 00:3x)
 
 - **mass_442**: 11/11 全绿, 10599tok (963/c), wall 180s, D4 rel 0.629 (n=11), kpi_breaches 空 — 带内; label 引号修正生效 (完整语义落盘)。
