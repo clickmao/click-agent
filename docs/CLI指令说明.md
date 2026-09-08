@@ -5,12 +5,10 @@
 > 一次读一行即可快速解析; 流式/多行内容走 `@stream begin … @stream end` 定界块
 > (读写协议见 `agent.io` 库, 下文 [IO 协议](#io-协议-agentio))。
 
-## 指令总表
+## 会话指令总表 (repl 内 `/` 命令 — V2 拦截层)
 
 | 指令 | 参数 | 功能 | 输出 | 实现层 |
 |---|---|---|---|---|
-| `/status [agent_uid]` | 可选 uid | 会话/模型/通道状态总览 | JSON | host (PanelDataService) |
-| `/session <agent_uid> [index]` | uid, 可选序号 | 会话详情/历史遍历 | JSON | host (PanelDataService) |
 | `/plan` | — | 任务计划 (影子计划/TaskPlan 状态) | JSON | V2 拦截 |
 | `/model` | — | 当前活跃模型+选模依据+当前模式 (auto/manual) | JSON | V2 拦截 |
 | `/model <id>` | 目录模型 id | 手动指定模型 | JSON | V2 拦截 |
@@ -23,12 +21,15 @@
 | `/official-key <key>` | key 字面量 | 注入官方通道 key (仅内存, 永不落盘) | JSON | V2 拦截 |
 | `/official-key off` | — | 清除官方通道 key | JSON | V2 拦截 |
 | `/token stats` | — | Token 用量统计 (总量/按模型/按 provider/预估成本/余额快照) | JSON | V2 拦截 |
-| `/forecast` | — | 下轮预估读回 (上轮任务摘要/倾向/延续提示; v7.11 机制前端化) | JSON | V2 拦截 |
+| `/forecast` | — | 下轮预估读回 (上轮任务摘要/倾向/延续提示) | JSON | V2 拦截 |
 | `/log dump` | — | 内存日志环形缓冲 (2000 条) 存档 JSON 行文件 | JSON | V2 拦截 |
 | `/rag` | — | 当前 RAG 数据文件路径查询 | JSON | V2 拦截 (v0.13.0) |
 | `/rag <path>` | 文件路径 | 切换 RAG 数据文件 (进程内生效; 历史重载需重启 — 诚实提示) | JSON | V2 拦截 (v0.13.0) |
-| `--embed <text>` | 文本 | 直连 BgeEmbedder 输出向量 JSON (评测离线算 reply_rel, 不走 LLM/DI 全链) | stdout | host (R136) |
-| `--compression-audit <path>` | groundtruth.json | 压缩底座 audit: 分档校验矩阵 (档×级别→关键信息保留率/压缩率/耗时), 落 eval/results/ | JSON | host (v0.13.3) |
+
+### 本地命令 (LocalCommandRouter — 不进 LLM)
+
+| 指令 | 功能 | 实现层 |
+|---|---|---|
 | `/help` | — | 本地命令帮助菜单 (R86: 原送 LLM 浪费一轮, 现本地应答) | 本地 | LocalCommandRouter |
 | `/stop` | — | 停止当前执行 | 本地 | LocalCommandRouter |
 | `/pause` | — | 暂停 | 本地 | LocalCommandRouter |
@@ -36,15 +37,19 @@
 | `/reset` | — | 重置会话 | 本地/host | 双层 |
 | `/exit` | — | 退出 CLI | — | host |
 
-### CLI 启动参数 (非指令)
+## 启动参数总表 (进程启动 CLI flags — host)
 
-| 参数 | 说明 |
-|---|---|
-| `--smoke` | 冒烟自检 (全图 AOT 校验) |
-| `--log <path>` | 输出 tee 到文件 |
-| `-q "<msg>"` | 单条模式 (不进 REPL) |
-| `--output-mode text\|markdown` | 输出渲染模式 |
-| `--official-key <key>` | 启动时注入官方通道 key (内存态; 需求1; 注入后命令行引用立即释放) |
+| 参数 | 参数值 | 功能 | 输出 | 实现层 |
+|---|---|---|---|---|
+| `-q "<msg>"` | 消息文本 | 单条模式 (不进 REPL) | 回复 | host |
+| `-img <path>` | 图像路径 (可多次) | 附带图像走视觉理解链 (v0.12.0) | 回复 | host |
+| `-rag <path>` | index.jsonl 路径 | 指定 RAG 数据文件 (v0.13.0; ≡ /rag 或 env AGENTFRAMEWORK_RAG_PATH) | — | host |
+| `--log <path>` | 文件路径 | 输出 tee 到文件 | — | host |
+| `--output-mode text\|markdown` | 模式 | 输出渲染模式 | — | host |
+| `--official-key <key>` | key 字面量 | 启动注入官方通道 key (内存态; 命令行引用立即释放) | — | host |
+| `--embed <text>` | 文本 | 直连 BgeEmbedder 输出向量 JSON (评测离线算 reply_rel, 不走 LLM/DI 全链) | stdout | host (R136) |
+| `--compression-audit <path>` | groundtruth.json | 压缩底座 audit: 分档校验矩阵 (档×级别→关键信息保留率/压缩率/耗时), 落 eval/results/ | JSON | host (v0.13.3) |
+| `--smoke` | — | 冒烟自检 (全图 AOT 校验) | 日志 | host |
 
 ## /model list 与序号选择 (v0.10.0)
 
