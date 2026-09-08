@@ -1259,3 +1259,8 @@ writer.ResetModule("model_queue");                             // 清 L3 覆盖,
 - `ExplorationConfig`: 每上下文区/文本/URL/目录最大探索步 + 全局预算 + URL 深度 + 源优先级 (上下文内 URL > 上下文外目录)。
 - `ExplorationPlanner`: 优先级队列 + per-ref 预算 + 去重 + 发现链。
 - 详见 docs/plans/v0.13.0-progressive-exploration.md。
+
+## 21. 兜底粘性路由 (v0.13.1)
+- `FallbackConfig` (models.yaml `fallback:` 段): `enabled` 总开关 / `order: cost_quality` 性价比序 (=auto 同源判据: 质量档降序+同档低价优先) / `per_request_max_fallbacks` 单请求兜底上限 / `verify_fallback_reply` 兜底回复校验 (非空+长度+错误模板特征)。
+- Router 兜底链: 重试耗尽后按序逐个尝试备选, 每个过 `VerifyReply` 校验 — 校验失败继续下一个, 全部耗尽如实返回失败 (不降级硬跑)。打点: `fallback_attempt` / `fallback_verify_fail`。
+- `StickyRouteMemory` (RAG route-memory): 成功/失败请求记录 (问题 embedding + 意图 + 实体指纹 + 模型 + outcome); 相似问题 (三门: 余弦 ≥0.80 + 意图一致 + 实体指纹一致) 首用成功模型 / 避开已知失败模型; TTL 72h。打点: `sticky_route_hit` / `sticky_route_avoid`。

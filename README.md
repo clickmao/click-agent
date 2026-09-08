@@ -13,29 +13,22 @@ C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / Na
 
 ---
 
-### 🚧 v0.12.0 开发中 — 视觉理解/图像生成/无头浏览器插件
+### 🚧 v0.13.0/v0.13.1 开发中 — 思考链收敛 / 渐进式探索 / 兜底粘性路由
+- **渐进式探索** (用户钦定): ExplorationConfig (每上下文区/文本/URL/目录最大探索步 + 全局预算 + URL 深度) + ExplorationPlanner (优先级队列, 上下文内 URL > 上下文外目录) — 7 单测。
+- **思考链收敛 T3** (用户钦定): ComplexityGate (复杂度判定) + EvidenceScorer (多源对比, 单源封顶 medium) + ThinkMemory RAG 联想 (相似问题优先阅览历史高置信链接, 引用后 +0.05 置信, 负样本降权, 30 天衰减) + ThinkChainSession (收敛判据: 多源一致/预算耗尽/无新发现/自评) — 12 单测。
+- **兜底粘性路由 v0.13.1** (用户钦定): FallbackConfig (config 开关, 性价比序=auto 同源判据, 逐个兜底+回复校验) + StickyRouteMemory (相似问题首用成功模型; 三门判定: embedding 相似+意图一致+实体指纹; 形近意远不粘; TTL 72h) — Router 逐个兜底链已落地, 11 单测。
+- 设计文档: docs/plans/v0.13.0-progressive-exploration.md · v0.13.0-think-chain-convergence.md · v0.13.1-fallback-sticky-routing.md
 
-- **glm-5.3-flash 图像理解** (真机验证 2026-09-08): v4 标准端点 + image_url/base64, 多图, 1M 上下文 — 4.6s 准确描述 CogView 生成图
-- **capabilities 模态能力矩阵**: models.yaml 25/25 模型回填 (text/image/video/audio/pdf/xlsx/image_output) — 文本模型收图明确报错
-- **CogViewClient 生图客户端**: cogview-3-flash 真机 8.1s 1024x1024 (免费档) + image_gen 打点 + 空图校验
-- **VisionChat DTO**: content 双形态 (string|parts[]) 手写 AOT 安全 converter, 向后兼容纯文本链路, 5 对抗单测
-- **开发计划**: docs/plans/v0.12.0-vision-plan.md (R2 版 — doubao thread 核实 + 真机证据, zcode 收敛环: 理解→生成→校验→FAIL 重生成)
+### ✅ v0.12.0 新增能力 — 视觉理解 / 渲染插件 / 收敛环 (已验收)
+- **视觉理解链**: CLI `-img` → data URL base64 → glm-5.3-flash v4 端点 (1M ctx); text-only 模型自动重路由 + coding 端点改写 (真缺陷 63/64 修复); OpenAIMultimodalMessage 双形态 DTO (AOT-safe, 禁反射)。
+- **真机验收**: T-V01~T-V04 视觉用例族 full-23 首验全绿 (含负样本诱饵: 模型识破"右下角苹果"预设陷阱); 四问真机复证 (主体/角落/位置/否定); 验收基线 docs/reports/v012-acceptance-baseline.md。
+- **图像渲染插件体系** (用户钦定收敛环服务化): IImageRenderPlugin + SkiaSharpRenderPlugin (默认, 边缘选项 -p:DisableSkiaRenderer=true 停编) + SvgTextRenderPlugin (零依赖兜底) + Registry (无可用插件 → 跳过后续环节); LocalSvgRenderer DSL (rect/circle/line/text, XML 转义)。
+- **收敛环 E2E**: LLM 生成 DSL → 渲染 → 5.3-flash 视觉校验 → 真机一轮 PASS (DSL 1039ch → SVG 843ch → 校验 6/6, 6.4s)。
+- **能力矩阵**: models.yaml 25/25 模型 capabilities 回填; CogViewClient 保留 (生成路径按用户钦定弃用)。
 
-### 🆕 v0.11.0 R169-R204 新增能力
+### 📦 v0.11.0 R169-R204 能力
 
-- **真缺陷 59 修复 (R172)**: harness per-case 超时容错 — 单用例 180s 挂起不再崩整批 (批113 C13 实证); LLM 瞬态重试 1/1 (5 用例实测全覆盖)
-- **真缺陷 60 修复 (R180)**: must_contain 升级硬 FAIL 过程中误用作用域外 req() → NameError 崩批; 改 x[pass]=False
-- **真缺陷 61 修复 (R182)**: 记忆回指词 (还记得/上一条/上次…) 缺失导致 C07 repl 轮2 误隔离 (批130 实证) — +8 词一票否决
-- **C07 记忆链根修 (R182)**: 记忆源破案 = 跨进程 forecast.json 单槽被中间用例竞态覆盖 (批340 丢失实证链); 用例改 repl 双轮真 session 链
-- **归一化泛化 (R183)**: 去空白/标点/全半角归一化层 + 语言无关结构信号 (纯疑问短语一票否决/短问句减分) — 空格插入/其他语言免疫
-- **v0.12.0 开工 (R199-R200)**: capabilities 模态矩阵 25/25 模型回填; CogViewClient 生图客户端 (真机 8.1s); OpenAIMultimodalMessage 双形态 DTO (AOT 安全); 5.3-flash 图像理解真机验证 (4.6s)
-
-  <details><summary>批 109-167 全部明细</summary>
-
-  [docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md) ·
-  [docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md)
-
-  </details>
+已归档 → [docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md) · [CHANGELOG-v0.11.0-R186-R204.md](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md)
 
 ### 📊 千轮迭代评测 (PGO 对比数据驱动)
 
@@ -47,7 +40,7 @@ C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / Na
 | 单元测试 | 325 | **389** | +64 |
 | 真缺陷修复 | — | **55 项** (全部打点驱动) | #21-#55 |
 
-批次趋势: **批197 (mass_413)** 11/11 quick-11 1239/case / **批198 (mass_414)** 11/11 quick-11 992/case — C07 repl 化后带宽 ≤1250; 缺陷65 (重试打点黑洞)/66 (视觉备选成本倒挂)/67 (Text 硬过滤) 修复后 8 连绿。批42-78: [docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md); 批79-108: [docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md); 批109-138: [docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md); 批139-167: [docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md); 批168-177: [docs/changelogs/CHANGELOG-v0.11.0-R205-R218.md](docs/changelogs/CHANGELOG-v0.11.0-R205-R218.md); 批178-187: [docs/changelogs/CHANGELOG-v0.11.0-R219-R228.md](docs/changelogs/CHANGELOG-v0.11.0-R219-R228.md)。README 批次明细每 30 批滚动更新一次 (下次: 批228)。
+批次趋势: **批204 (mass_422)** 11/11 quick-11 915/case / **批205 (mass_423)** 11/11 quick-11 995/case — full-23 (含视觉族 T-V01-04) 23/23 首验; 修复真缺陷 65/66/67/68 后回归稳定。归档: [42-78](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md) · [79-108](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md) · [109-138](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md) · [139-167](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md) · [168-177](docs/changelogs/CHANGELOG-v0.11.0-R205-R218.md) · [178-187](docs/changelogs/CHANGELOG-v0.11.0-R219-R228.md)。每 30 批滚动 (下次: 批228)。
 专项验证: 多来源召回率 (100 用例轮统计) / 无关话题隔离 (score=2 触发独立 session) / session 长期记忆 (跨进程落盘) / JSON 格式跟随 (哨兵用例) / 双 LLM 校验 — 全部 ✓。
 
 完整报告: [千轮迭代优化报告](docs/reports/thousand-round-report.md) · 阶段台账: [wave3-ledger](docs/reports/wave3-ledger.md)

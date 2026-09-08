@@ -1,4 +1,4 @@
-# click-agent (v0.11.0)
+# click-agent (v0.13.0-dev)
 
 [![ci](https://github.com/clickmao/click-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/clickmao/click-agent/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -16,33 +16,26 @@ Release line: v0.11.0 — unified @cmd command protocol + 3 transports / Skill e
 
 ---
 
-### 🚧 v0.12.0 In Development — Vision / Image Generation / Headless Browser Plugin
+### 🚧 v0.13.0/v0.13.1 In Development — Think-Chain Convergence / Progressive Exploration / Sticky Fallback Routing
+- **Progressive exploration** (user-directed): ExplorationConfig (max steps per context-block/text/url/dir + global budget + URL depth) + ExplorationPlanner (priority queue; URL found in context outranks external directory) — 7 tests.
+- **Think-chain T3** (user-directed): ComplexityGate + EvidenceScorer (multi-source required for high; single source capped medium) + ThinkMemory RAG association (preferentially browse high-confidence history links, +0.05 citation boost, negative-outcome penalty, 30d decay) + ThinkChainSession convergence criteria — 12 tests.
+- **Sticky fallback routing v0.13.1** (user-directed): FallbackConfig (config switch, cost-quality order = auto-sourced ranking, per-fallback reply verification) + StickyRouteMemory (similar questions reuse the previously successful model; triple-gate: embedding similarity + intent + entity fingerprint; TTL 72h) — Router sequential fallback chain landed, 11 tests.
+- Design docs: docs/plans/v0.13.0-progressive-exploration.md · v0.13.0-think-chain-convergence.md · v0.13.1-fallback-sticky-routing.md
 
-- **glm-5.3-flash image understanding** (real-verified 2026-09-08): v4 standard endpoint + image_url/base64, multi-image, 1M context — 4.6s accurate description of a CogView-generated image
-- **capabilities modality matrix**: models.yaml 25/25 models backfilled (text/image/video/audio/pdf/xlsx/image_output) — text-only models reject images with explicit error
-- **CogViewClient**: cogview-3-flash real-machine 8.1s 1024x1024 (free tier) + image_gen telemetry + empty-image guard
-- **VisionChat DTO**: dual-form content (string|parts[]) hand-written AOT-safe converter, backward compatible, 5 adversarial tests
-- **Plan**: docs/plans/v0.12.0-vision-plan.md (R2 — doubao thread verified + real-machine evidence, zcode convergence loop: understand→generate→verify→regen on FAIL)
+### ✅ v0.12.0 Additions — Vision / Render Plugins / Convergence Loop (Accepted)
+- **Vision chain**: CLI `-img` → data URL base64 → glm-5.3-flash v4 endpoint (1M ctx); text-only model auto-reroute + coding-endpoint rewrite (defects 63/64 fixed); OpenAIMultimodalMessage dual-form DTO (AOT-safe).
+- **Live acceptance**: T-V01~T-V04 vision family first full-23 pass ALL GREEN (incl. negative bait: model rejected the false "apple at bottom-right" premise); four-question live verification; baseline doc docs/reports/v012-acceptance-baseline.md.
+- **Image render plugin system** (user-directed): IImageRenderPlugin + SkiaSharpRenderPlugin (default, edge option -p:DisableSkiaRenderer=true) + SvgTextRenderPlugin (zero-dependency fallback) + Registry (no renderer → skip downstream); LocalSvgRenderer DSL.
+- **Convergence loop E2E**: LLM DSL → render → 5.3-flash vision verification — one-round live PASS (1039ch DSL → 843ch SVG → 6/6 checks, 6.4s).
+- **Capability matrix**: 25/25 models in models.yaml; CogViewClient retained (generation path deprecated per user directive).
 
-### 🆕 v0.11.0 R169-R204 Additions
+### 📦 v0.11.0 R169-R204 Additions
 
-- **Defect 59 fix (R172)**: harness per-case timeout tolerance — one case hanging 180s no longer kills the batch (batch113 C13 evidence); transient retry 1/1 (5 cases covered)
-- **Defect 60 fix (R180)**: must_contain hard-FAIL mistakenly called out-of-scope req() → NameError crash; replaced with x[pass]=False
-- **Defect 61 fix (R182)**: memory-recall deixis words missing → C07 repl turn-2 falsely isolated (batch130); +8 words one-vote veto
-- **C07 memory-chain root fix (R182)**: source identified as cross-process forecast.json single-slot overwritten racy by intermediate cases (batch340 loss evidence chain); case converted to 2-turn repl real session chain
-- **Normalization generalization (R183)**: whitespace/punct/fullwidth normalize layer + language-agnostic structural signals (pure-interrogative veto / short-question score-1) — immune to inserted spaces & other languages
-- **v0.12.0 started (R199-R200)**: capabilities modality matrix 25/25 models; CogViewClient (real-machine 8.1s); OpenAIMultimodalMessage dual-form DTO (AOT-safe); glm-5.3-flash vision real-verified (4.6s)
-
-  <details><summary>Batch 109-167 details</summary>
-
-  [docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md) ·
-  [docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md)
-
-  </details>
+Archived → [CHANGELOG-v0.11.0-R169-R185.md](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md) · [CHANGELOG-v0.11.0-R186-R204.md](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md)
 
 ### 📊 Thousand-Round Eval (PGO-driven)
 - **1034/1056 = 97.92%** case pass (215 rounds landed); quick-batch tokens **7354 → ~3969 avg**; C08 reasoning completion **1875 → 479 (-74%)**; 55 real defects fixed, all telemetry-driven.
-- Batch trend: **batch197 (mass_413)** 11/11 1239/case / **batch198 (mass_414)** 11/11 992/case — band ≤1250; 8 green after defect 65/66/67 fixes. Archives: [42-78](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md) · [79-108](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md) · [109-138](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md) · [139-167](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md) · [168-177](docs/changelogs/CHANGELOG-v0.11.0-R205-R218.md) · [178-187](docs/changelogs/CHANGELOG-v0.11.0-R219-R228.md). Roll every 30 batches (next: batch228).
+- Batch trend: **batch204 (mass_422)** 11/11 quick-11 915/case / **batch205 (mass_423)** 11/11 quick-11 995/case — full-23 (vision family T-V01-04) 23/23 first pass; stable after defect 65/66/67/68 fixes. Archives: [42-78](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md) · [79-108](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md) · [109-138](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md) · [139-167](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md) · [168-177](docs/changelogs/CHANGELOG-v0.11.0-R205-R218.md) · [178-187](docs/changelogs/CHANGELOG-v0.11.0-R219-R228.md). Roll every 30 batches (next: batch228).
 - Full report: [Thousand-Round Report](docs/reports/thousand-round-report.md) · ledger: [wave3-ledger](docs/reports/wave3-ledger.md)
 
 ### 🧭 Full Capability Panorama (v0.11.0)

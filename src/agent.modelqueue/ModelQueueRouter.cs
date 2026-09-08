@@ -78,6 +78,7 @@ public sealed class ModelQueueRouter : IModelQueueCaller
     /// <summary>需求①: 本地推理桥 (宿主注入; null = 无本地模型, 通道自动不可用)</summary>
     private readonly ILocalInference? _localInference;
     private readonly TokenUsageService? _tokenUsage;
+    private readonly FallbackConfig _fallback;
 
     /// <summary>R115 (缺陷 43): 余额快照惰性 fire-once 同步器 (进程内仅一次)</summary>
     private sealed class LazyBalanceSync
@@ -130,8 +131,10 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         Microsoft.Extensions.Logging.ILogger logger,
         ChannelScheduler? scheduler = null,
         ILocalInference? localInference = null,
-        TokenUsageService? tokenUsage = null)
+        TokenUsageService? tokenUsage = null,
+        FallbackConfig? fallbackConfig = null)
     {
+        _fallback = fallbackConfig ?? new FallbackConfig();
         _catalog = catalog;
         _policy = new ModelSelectionPolicy();
         _httpClientFactory = httpClientFactory;
@@ -431,41 +434,42 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             }
         }
 
-        // 重试耗尽 → 切备选模型 (同目录下一个不同 id、key 可用的模型)
-        ModelCatalogEntry? backup;
+        // 重试耗尽 → 切备选模型链 (v0.13.1 F1 用户钦定: 存在备选时启用兜底服务,
+        // 逐个按性价比序 (cost_quality=auto 同源判据: 质量档降序, 同档低价优先; catalog=旧目录序)
+        // 失败兜底, 每个兜底回复过 FallbackConfig.VerifyReply 校验; 校验失败继续链内下一个 —
+        // 最多 PerRequestMaxFallbacks 个。capability 硬过滤语义不变 (R226 文本优先 / R227 硬过滤)。
+        lock (_lock) _consecutiveFailures++;
+        List<ModelCatalogEntry> backupChain;
         lock (_lock)
         {
-            _consecutiveFailures++;
-            // v0.12.0 R226 (真缺陷 66): 备选 = 目录序 FirstOrDefault → 文本请求落到视觉模型
-            // glm-4.5v (¥0.6/1.8 每百万 token), 而同 provider 的 glm-4-flash 免费 —
-            // 纯成本倒挂 (批190-192 实测 C11/C13/C18 文本用例链含 4.5v)。
-            // 排序: ①带图请求 → 视觉优先 (缺陷64 语义不变); ②文本请求 → 文本模型优先, 同档内目录序。
-            // v0.12.0 R227 (真缺陷 67): 上一版排序漏 capability 硬过滤 — cogview-3-flash
-            // (text:false 生图模型) 因 Id 字母序排到文本备选首位 → C07 repl 轮2 打到生图端点
-            // HTTP 400 1213 "未正常接收到prompt参数" (批195 C07 FAIL 实证)。
-            // 修正: 文本请求硬过滤 Text 能力; 带图请求硬过滤 ImageInput (缺陷64 原语义)。
             var candidates = _catalog.Models.Where(m =>
                 !string.Equals(m.Id, entry.Id, StringComparison.OrdinalIgnoreCase) &&
                 (prompt.ImageUrls.Count > 0 ? m.Capabilities.ImageInput : m.Capabilities.Text) &&
                 (m.ApiKeyEnv is null ||
                  !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(m.ApiKeyEnv))));
-            backup = prompt.ImageUrls.Count > 0
-                ? candidates.FirstOrDefault()
-                : candidates.OrderBy(m => m.Id, StringComparer.OrdinalIgnoreCase)
-                            .FirstOrDefault();
+            if (string.Equals(_fallback.Order, "cost_quality", StringComparison.OrdinalIgnoreCase))
+                candidates = candidates
+                    .OrderByDescending(m => m.Capabilities.ImageInput == false)
+                    .ThenByDescending(m => m.ReasoningScore + m.CodingScore)
+                    .ThenBy(m => m.PriceInPerM + m.PriceOutPerM);
+            backupChain = candidates.Take(_fallback.PerRequestMaxFallbacks).ToList();
         }
-        if (backup is not null)
+        QueueResponse? lastFail = null;
+        foreach (var backup in backupChain)
         {
-            _logger.LogWarning("ModelQueue: {From} 重试耗尽 → 切备 {To}", entry.Id, backup.Id);
-            agent.config.AgentTelemetry.Emit("llm_failover", "ModelQueueRouter",
-                ("from", entry.Id), ("to", backup.Id), ("why", why));
+            var attemptN = backupChain.IndexOf(backup) + 1;
+            _logger.LogWarning("ModelQueue: {From} 重试耗尽 → 切备 {To} (兜底链 {N}/{Max})",
+                entry.Id, backup.Id, attemptN, backupChain.Count);
+            agent.config.AgentTelemetry.Emit("fallback_attempt", "ModelQueueRouter",
+                ("from", entry.Id), ("to", backup.Id),
+                ("attempt_n", attemptN), ("chain_size", backupChain.Count), ("why", why));
             try
             {
-                // v0.12.0 R223 (真缺陷 65): 切备成功路径同样补 llm_call 成功打点 (attempt=failover)。
                 var backupSw = System.Diagnostics.Stopwatch.StartNew();
                 var backupResp = await CallEntryAsync(backup, prompt, ct).ConfigureAwait(false);
                 backupSw.Stop();
-                if (backupResp.Success)
+                // v0.13.1 F1 兜底校验: 失败 = 此备选无效 → 继续下一个 (用户钦定"逐个...兜底"):
+                if (_fallback.VerifyReply(backupResp))
                 {
                     lock (_lock)
                     {
@@ -474,7 +478,7 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                         _activeModelId = backup.Id;
                         _manualOverride = null;
                         _consecutiveFailures = 0;
-                        LastSelectionBasis = $"failover:{backup.Id} (原 {entry.Id} 瞬态失败)";
+                        LastSelectionBasis = $"failover:{backup.Id} (原 {entry.Id} 瞬态失败, 兜底 {attemptN}/{backupChain.Count})";
                     }
                     _tokenUsage?.RecordUsage(backupResp.Model, backup.Provider, backupResp.PromptTokens, backupResp.CompletionTokens);
                     agent.config.AgentTelemetry.Emit("llm_call", "ModelQueueRouter",
@@ -485,18 +489,28 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                         ("ms", backupSw.ElapsedMilliseconds), ("attempt", "failover"));
                     return backupResp;
                 }
-                return backupResp; // 备选也软失败, 如实返回
+                agent.config.AgentTelemetry.Emit("fallback_verify_fail", "ModelQueueRouter",
+                    ("model", backup.Id), ("success", backupResp.Success),
+                    ("content_len", backupResp.Content?.Length ?? 0));
+                lastFail = backupResp.Success ? null : backupResp;
+                if (lastFail is null)
+                    lastFail = new QueueResponse { Success = false, Error = $"备选 {backup.Id} 回复未通过兜底校验", Model = backup.Id };
             }
             catch (Exception ex3) when (ex3 is HttpRequestException
                 || (ex3 is OperationCanceledException oce && !ct.IsCancellationRequested))
             {
-                return new QueueResponse
+                lastFail = new QueueResponse
                 {
                     Success = false,
-                    Error = $"主模型 {entry.Id} 与备选 {backup.Id} 均失败: {ex3.Message}",
+                    Error = $"备选 {backup.Id} 失败: {ex3.Message}",
                     Model = backup.Id,
                 };
             }
+        }
+        if (lastFail is not null)
+        {
+            // 兜底链耗尽 — 如实返回最后失败 (不降级硬跑):
+            return lastFail;
         }
 
         // v0.11.0 R23: 重试耗尽且无可用备选 — 保守计数后如实返回失败
