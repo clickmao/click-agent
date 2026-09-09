@@ -1812,3 +1812,19 @@
 - **意图指数**: n=17, ms_avg=0.1, dist={'general': 14, 'code_generation': 1, 'git_operation': 1, 'search': 4}
 - **per-case**: C01_general_qa 506tok 7.9s | C02_coding 991tok 23.4s | C03_subtask 1437tok 19.7s | C04_skill_identity 0tok 4.8s | C05_skill_wordcount 0tok 4.5s | C06_executive_unit_convert 0tok 4.4s | C07_memory_followup 2561tok 43.4s | C08_reasoning 1223tok 37.3s | C09_balance_cmd 0tok 1.3s | C10_model_list 0tok 1.0s | C11_json_format 956tok 8.7s | C12_negative_empty 539tok 10.1s | C13_git_sensitive 1422tok 40.7s | C09b_balance_glm 0tok 1.0s | C14_isolated_multi 2085tok 41.8s | C15_pivot_multi 3574tok 32.8s | C16_longsession_4turn 7141tok 109.9s | C17_neg_hallucination_bait 850tok 11.2s | C18_neg_format_trap 749tok 11.4s | T-V01_vision_qa 2216tok 8.4s | T-V02_vision_corner 2043tok 17.0s | T-V03_vision_position 1951tok 15.6s | T-V04_vision_negbait 2125tok 16.4s
 
+## mass_482 — R317 batch262 quick-12 c19-first (2026-09-09T21:32:19+0800)
+
+- **判定**: 11/12 passed, tokens_total=21051 (avg 1754), wall=338544ms (avg 28.2s)
+- **KPI**: tokens_per_case=1754 out (600, 1250) (基准轮数 0)
+- **防漂移指数**: segments=17, drift_pass=1.0, semantic_avg=0.982, chars_ratio=0.924
+- **意图指数**: n=10, ms_avg=0.1, dist={'general': 10, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 480tok 7.7s | C03_subtask 1281tok 20.2s | C04_skill_identity 0tok 4.8s | C06_executive_unit_convert 0tok 4.5s | C07_memory_followup 3189tok 33.5s | C08_reasoning 1251tok 34.2s | C11_json_format 937tok 26.9s | C13_git_sensitive 1534tok 34.9s | C14_isolated_multi 2241tok 53.1s | C17_neg_hallucination_bait 762tok 19.2s | C18_neg_format_trap 696tok 11.0s | C19_topic_clarify_6turn 8680tok 88.6s
+
+## mass_483 — R317 batch263 c19-assert-fix (2026-09-09T21:40:27+0800)
+
+- **判定**: 12/12 passed, tokens_total=20507 (avg 1709), wall=266101ms (avg 22.2s)
+- **KPI**: tokens_per_case=1709 out (600, 1250) (基准轮数 0)
+- **防漂移指数**: segments=14, drift_pass=1.0, semantic_avg=0.916, chars_ratio=0.914
+- **意图指数**: n=10, ms_avg=0.1, dist={'general': 10, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 499tok 7.8s | C03_subtask 1293tok 18.8s | C04_skill_identity 0tok 4.9s | C06_executive_unit_convert 0tok 4.5s | C07_memory_followup 2257tok 21.3s | C08_reasoning 1304tok 26.4s | C11_json_format 778tok 9.2s | C13_git_sensitive 2160tok 33.8s | C14_isolated_multi 2439tok 45.7s | C17_neg_hallucination_bait 702tok 17.1s | C18_neg_format_trap 882tok 10.8s | C19_topic_clarify_6turn 8193tok 65.8s
+

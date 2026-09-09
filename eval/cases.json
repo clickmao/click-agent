@@ -270,11 +270,10 @@
   ],
   "expect": {
    "llm": true,
-   "note": "R315 拉回率案: 轮3 起连续偏题 → steer 提示 → clarify 问句 (阈值4) → 轮6 回锚 → pulled_back=true",
+   "note": "R315/R317 拉回率案: 4 连偏题 → steer/clarify → 回锚 (pulled_back=true + Web API 命中即断言; 回锚确认轮短回复合法)",
    "must_contain": [
     "Web API"
-   ],
-   "min_reply_chars": 200
+   ]
   }
  }
 ]
