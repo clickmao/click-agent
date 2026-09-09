@@ -17,7 +17,8 @@ os.chdir(ROOT)
 
 SUITE = json.load(open("eval/explore_cases.json", encoding="utf-8"))
 CASES = SUITE["cases"]
-BIN = "./src/agent.host/bin/Release/net10.0/agenthost"
+BIN = "./src/agent.host/bin/Release/net10.0/agenthost"  # 保留 (AOT 路径, 需 DOTNET_ROOT)
+DLL = "./src/agent.host/bin/Release/net10.0/agenthost.dll"
 
 
 def load_env():
@@ -31,10 +32,12 @@ def load_env():
 
 
 def run_single(case_input: str, timeout_s: int = 120) -> dict:
-    """单次 -q 调用, 返回 {reply, tokens, wall_ms}"""
+    """单次 -q 调用, 返回 {reply, tokens, wall_ms}
+    R310: 执行方式对齐 run_round (dotnet dll) — 原直调 AOT apphost 是 framework-dependent,
+    无 DOTNET_ROOT 的 shell 里秒退 (hit 0.0 wall 1ms 假跑, R310 实证)。"""
     t0 = time.time()
     try:
-        r = subprocess.run([BIN, "-q", case_input], capture_output=True, text=True,
+        r = subprocess.run(["dotnet", DLL, "-q", case_input], capture_output=True, text=True,
                            timeout=timeout_s, errors="replace")
         wall = int((time.time() - t0) * 1000)
         return {"reply": r.stdout[-3000:], "exit": r.returncode, "wall_ms": wall,
