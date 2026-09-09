@@ -1,0 +1,30 @@
+{
+ "label": "R301",
+ "cases": 3,
+ "behavior_hits_with": 3,
+ "behavior_hits_without": 3,
+ "rows": [
+  {
+   "id": "K1-B01",
+   "hit_with": true,
+   "hit_without": true,
+   "head_with": "一句话结论： 你最近集中在 Web API 开发方向，并结合向量数据库选型做学习实践。\n\n要点：\n· 近期约 80% 的活动是 Web API 的构建与测试\n·",
+   "head_without": "一句话结论： 你最近集中在 Web API 开发方向，并结合向量数据库选型做学习实践。\n\n要点：\n· 近期约 80% 的活动是 Web API 的构建与测试\n·"
+  },
+  {
+   "id": "K1-B02",
+   "hit_with": true,
+   "hit_without": true,
+   "head_with": "一句话结论： 你目前的技术画像是一名偏 Web API 开发的工程师/学习者，正在向「Web API + 向量数据库的智能检索应用」方向拓展。\n\n要点：\n· *",
+   "head_without": "一句话结论： 你是一名偏后端的工程师/学习者，主攻 Web API 开发，正向「向量检索 + AI 应用」方向拓展。\n\n要点：\n· **核心技能**：约 80%"
+  },
+  {
+   "id": "K1-B03",
+   "hit_with": true,
+   "hit_without": true,
+   "head_with": "一句话结论：推荐学习主题主要依据两个来源——历史交互中你的行为画像 + 工作区/记忆中的项目上下文。\n\n依据要点：\n1. 用户画像（来源：历史交互统计）——记录",
+   "head_without": "一句话结论：推荐主题主要基于两个依据——你的历史交互画像 + 记忆/工作区中的项目上下文。\n\n依据要点：\n1. 用户行为画像（来源：历史交互统计）——近期约 8"
+  }
+ ],
+ "honest_verdict": "BOTH arms 3/3: K1_DISABLE only gates the tendency source; profile facts still flow via SessionMemory/Memory sources (without-arm context_tokens 812 > with-arm 751, replies near-identical). Real architecture semantics: profile injection is REDUNDANT REINFORCEMENT over memory sources, not sole information path. True isolation requires gating memory sources too (queued) — current finding: tendency source adds no UNIQUE information on these questions."
+}
