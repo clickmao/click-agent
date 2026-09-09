@@ -43,10 +43,36 @@ def run_single(case_input: str, timeout_s: int = 120) -> dict:
         return {"reply": "", "exit": 124, "wall_ms": timeout_s * 1000, "tokens_est": 0}
 
 
+def extract_reply(stdout: str) -> str:
+    """R273 修正: 只取回复正文 (── 回复 ── 与 · intent= 之间) — 整个 stdout 含用户输入回显,
+    must_not_contain 扫全文会误报 (TC-F06 实证: 回显里的『蓝』触发误判)。"""
+    import re as _re
+    m = _re.search(r"──+\s*回复\s*──+\n(.*?)(?:\n  · intent=|\n──+|$)", stdout, _re.S)
+    reply = m.group(1).strip() if m else stdout[-1500:]
+    return "\n".join(l for l in reply.split("\n") if not l.strip().startswith("["))
+
+
 def score_case(case: dict, result: dict, explore_on: bool) -> dict:
-    reply = result["reply"]
+    reply = extract_reply(result["reply"])
     mc = [k for k in case.get("must_contain", []) if k in reply]
-    mnc = [k for k in case.get("must_not_contain", []) if k in reply]
+    # R273 围栏语义 (缺陷 68 explore 版): 禁词出现在否定/纠错上下文 = 正确拒诱饵, 不判死
+    neg = ("不是", "并非", "没有", "不是的", " incorrect", "false", "错误", "不会", "并非是")
+    mnc = []
+    for k in case.get("must_not_contain", []):
+        start = 0
+        violated = False
+        while True:
+            i = reply.find(k, start)
+            if i < 0:
+                break
+            ctx = reply[max(0, i - 20):i]
+            if any(n in ctx for n in neg):
+                start = i + len(k)
+                continue
+            violated = True
+            break
+        if violated:
+            mnc.append(k)
     # complexity 判定符合: 从 telemetry 抓 complexity 事件 (B 轮才有) — A 轮记 None
     return {
         "id": case["id"],
