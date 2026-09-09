@@ -1852,3 +1852,10 @@
 - **意图指数**: n=3, ms_avg=0.0, dist={'general': 3}
 - **per-case**: C22_task_route_supplement 642tok 11.7s | C23_task_route_isolate 982tok 12.1s | C24_task_route_pivot 868tok 15.0s
 
+## mass_487 — R323 batch267 route-cases-retry (2026-09-09T23:15:09+0800)
+
+- **判定**: 3/3 passed, tokens_total=2554 (avg 851), wall=31897ms (avg 10.6s)
+- **KPI**: in-band (基准轮数 0)
+- **意图指数**: n=3, ms_avg=0.0, dist={'general': 3}
+- **per-case**: C22_task_route_supplement 764tok 13.1s | C23_task_route_isolate 934tok 9.5s | C24_task_route_pivot 856tok 9.3s
+

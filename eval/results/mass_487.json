@@ -1,0 +1,244 @@
+{
+ "round": "mass_487",
+ "label": "R323 batch267 route-cases-retry",
+ "ts": "2026-09-09T23:15:09+0800",
+ "cases": 3,
+ "passed": 3,
+ "tokens_total": 2554,
+ "prompt_total": 2178,
+ "completion_total": 376,
+ "wall_total_ms": 31897,
+ "results": [
+  {
+   "id": "C22_task_route_supplement",
+   "input": "顺便把登录的日志级别调成 warning | /exit",
+   "pass": true,
+   "notes": [],
+   "reply": "好的，我来调整日志级别。需要确认一点：日志配置在哪？是 appsettings.json 里的 Logging 节，还是代码里的 logger 配置？\n\n如无特殊说明，我默认按 ASP.NET Core 的 appsettings.json 处理：\n\n\"Logging\": {\n  \"LogLevel\": {\n    \"Default\": \"Information\",\n    \"YourNamespace.LoginController\": \"Warning\"\n  }\n}\n\n请告知具体文件路径或确认默认方案，我即可执行修改。",
+   "wall_ms": 13143,
+   "points": 37,
+   "llm_calls": 1,
+   "prompt_tokens": 616,
+   "completion_tokens": 148,
+   "total_tokens": 764,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.3753107693669381
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.3753,
+    "runner_up_gap": -0.0007
+   },
+   "skill_decisions": [
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 12041,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/8tok/r0.8rel,WorkspaceFiles:3snip/43tok/r0.63rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel",
+   "assembly_ms": 200,
+   "from_cache": false,
+   "prompt_total_tokens": 549,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 456,
+   "intent_ms": 0,
+   "llm_ms_total": 6101,
+   "phase_llm_ms": 6418,
+   "compress_n": 0,
+   "compress_drift_ok": 0,
+   "compress_semantic": [],
+   "compress_chars_in": 0,
+   "compress_chars_out": 0,
+   "pivot_n": 0,
+   "topic_relevance_score": 1,
+   "topic_relevance_verdict": "SteerHint",
+   "topic_drift_n": 1,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [
+    "Supplement@0"
+   ],
+   "gate_mode": "Normal",
+   "gate_est": 1061,
+   "reply_rel": 0.3535,
+   "quality_suspect": true,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  },
+  {
+   "id": "C23_task_route_isolate",
+   "input": "今天天气怎么样? 随便聊聊 | /exit",
+   "pass": true,
+   "notes": [],
+   "reply": "无法提供实时天气——我没有你所在位置的天气数据，且搜索结果只有日期信息。\n\n如需查询，告诉我你所在的城市即可，我可以尝试搜索实时天气。顺便分享今天的信息：2026年9月9日，星期三，农历七月廿八，白露第三天，正值初秋转凉时节。🌤️",
+   "wall_ms": 9482,
+   "points": 39,
+   "llm_calls": 1,
+   "prompt_tokens": 862,
+   "completion_tokens": 72,
+   "total_tokens": 934,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.42139757771274766
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.4214,
+    "runner_up_gap": 0.0526
+   },
+   "skill_decisions": [
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 8451,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 6,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:1snip/31tok/r0.8rel,UserTendency:1snip/8tok/r0.8rel,WorkspaceFiles:3snip/54tok/r0.9rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel",
+   "assembly_ms": 564,
+   "from_cache": false,
+   "prompt_total_tokens": 621,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 342,
+   "intent_ms": 0,
+   "llm_ms_total": 2185,
+   "phase_llm_ms": 2338,
+   "compress_n": 0,
+   "compress_drift_ok": 0,
+   "compress_semantic": [],
+   "compress_chars_in": 0,
+   "compress_chars_out": 0,
+   "pivot_n": 0,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": "SteerHint",
+   "topic_drift_n": 1,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [
+    "Isolate@3"
+   ],
+   "gate_mode": "Normal",
+   "gate_est": 1133,
+   "reply_rel": 0.352,
+   "quality_suspect": true,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  },
+  {
+   "id": "C24_task_route_pivot",
+   "input": "算了 改成做注册接口 | /exit",
+   "pass": true,
+   "notes": [],
+   "reply": "好的，切换到注册接口。先确认一点：项目是现有的 ASP.NET Core Web API 吗？注册接口路径希望是 POST /api/auth/register 吗？\n\n如无特殊说明，我默认按以下方案实现：\n\n· **端点**：`POST /api/auth/register`\n· **请求体**：`{ \"username\": \"...\", \"password\": \"...\" }`\n· **逻辑**：校验参数 → 检查用户名是否已存在 → 密码哈希存储 → 返回注册结果\n· **响应**：`200` 成功；`400` 参数缺失；`409` 用户名已存在\n\n请提供项目路径或确认默认方案，我即可开始编写代码。",
+   "wall_ms": 9272,
+   "points": 38,
+   "llm_calls": 1,
+   "prompt_tokens": 700,
+   "completion_tokens": 156,
+   "total_tokens": 856,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41599481287286666
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.416,
+    "runner_up_gap": 0.0391
+   },
+   "skill_decisions": [
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 8250,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 6,
+   "sources_recall": "Memory:1snip/98tok/r0.36rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/8tok/r0.8rel,WorkspaceFiles:3snip/73tok/r0.63rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel",
+   "assembly_ms": 182,
+   "from_cache": false,
+   "prompt_total_tokens": 734,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 623,
+   "intent_ms": 0,
+   "llm_ms_total": 2437,
+   "phase_llm_ms": 2677,
+   "compress_n": 0,
+   "compress_drift_ok": 0,
+   "compress_semantic": [],
+   "compress_chars_in": 0,
+   "compress_chars_out": 0,
+   "pivot_n": 1,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": "NoAnchor",
+   "topic_drift_n": 0,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [
+    "Pivot@-1"
+   ],
+   "gate_mode": "Normal",
+   "gate_est": 1246,
+   "reply_rel": 0.3327,
+   "quality_suspect": true,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  }
+ ],
+ "kpi_breaches": [],
+ "hist_base_rounds": 0,
+ "compression_index": {
+  "segments": 0,
+  "drift_pass_rate": null,
+  "semantic_avg": null,
+  "chars_ratio": null
+ },
+ "intent_index": {
+  "n": 3,
+  "ms_avg": 0.0,
+  "dist": {
+   "general": 3
+  }
+ }
+}
