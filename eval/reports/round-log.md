@@ -1716,3 +1716,11 @@
 - **意图指数**: n=9, ms_avg=0.1, dist={'general': 7, 'git_operation': 1, 'search': 1}
 - **per-case**: C01_general_qa 521tok 9.7s Δ-27 | C03_subtask 1865tok 26.4s Δ+61 | C04_skill_identity 0tok 4.8s | C06_executive_unit_convert 0tok 4.4s | C07_memory_followup 2734tok 33.8s Δ-354 | C08_reasoning 1328tok 26.2s Δ+480 | C11_json_format 924tok 25.1s Δ+77 | C13_git_sensitive 2090tok 35.0s Δ+456 | C14_isolated_multi 2069tok 41.2s Δ-46 | C17_neg_hallucination_bait 782tok 10.3s Δ-144 | C18_neg_format_trap 790tok 13.8s Δ+79
 
+## mass_469 — R308 batch249 explore-suite rotation (2026-09-09T17:30:44+0800)
+
+- **判定**: 23/24 passed, tokens_total=27412 (avg 1142), wall=277458ms (avg 11.6s)
+- **KPI**: wall_per_case_ms=11561 out (12000, 45000) (基准轮数 24)
+- **防漂移指数**: segments=1, drift_pass=1.0, semantic_avg=None, chars_ratio=1.0
+- **意图指数**: n=24, ms_avg=0.0, dist={'general': 22, 'search': 2}
+- **per-case**: TC-N01 569tok 8.6s Δ+27 | TC-N02 0tok 15.6s Δ-583 | TC-N03 553tok 8.5s Δ-341 | TC-N05 1676tok 24.2s Δ+63 | TC-F01 998tok 10.7s Δ-80 | TC-F02 924tok 9.7s Δ-50 | TC-F04 1225tok 9.1s Δ-67 | TC-F05 1147tok 10.2s Δ+58 | TC-N04 1610tok 11.2s Δ+74 | TC-N06 1271tok 10.9s Δ-65 | TC-F03 1139tok 8.8s Δ-67 | TC-F06 1003tok 10.3s Δ-53 | TC-R01 1171tok 11.7s Δ-150 | TC-R02 1174tok 10.2s Δ-17 | TC-R03 1206tok 9.4s Δ-85 | TC-R04 1221tok 9.8s Δ+8 | TC-R05 1224tok 12.2s Δ-218 | TC-R06 1235tok 9.8s Δ-42 | TC-R07 1595tok 16.9s Δ-428 | TC-R08 1107tok 10.1s Δ+15 | TC-R09 1213tok 9.9s Δ-15 | TC-R10 1751tok 18.8s Δ-32 | TC-R11 1212tok 9.7s Δ-107 | TC-R12 1188tok 11.2s Δ+40
+

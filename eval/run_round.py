@@ -248,7 +248,7 @@ def check_expect(case, reply, agg, raw_tail):
                     continue
             # R299 (缺陷 68 围栏语义一般化; explore_eval 同源): 否定/纠错围栏 — 禁词出现在
             # 否定上下文 ("不是蓝色的/并非/没有") = 正确拒诱饵, 不是误信。用例无需配置。
-            _neg_ctx = _reply_l[max(0, _pos - 20):_pos]
+            _neg_ctx = _reply_l[max(0, _pos - 40):_pos]  # R308b: 40ch (长引用句式 "该说法...是蓝色的" 否定词距禁词更远)
             if any(nk in _neg_ctx for nk in ("不是", "并非", "没有", "错误", "不会", "无法", "并非是", "incorrect", "false", "不是的")):
                 if "suspects" not in agg or agg["suspects"] is None:
                     agg["suspects"] = []
