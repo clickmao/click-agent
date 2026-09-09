@@ -168,11 +168,15 @@ def summarize_points(points):
             s["gate_mode"] = kv.get("mode")
             s["gate_est"] = kv.get("est_tokens")
         elif tag == "topic_relevance":
-            # R308b: 合并判定打点消费 (score/verdict/drift 计数 — 牵引与隔离的批测观测面)
-            s["topic_relevance_score"] = kv.get("score") or 0
-            s["topic_relevance_verdict"] = kv.get("verdict")
-            if kv.get("verdict") == "SteerHint" or kv.get("drift"):
-                s["topic_drift_n"] += 1
+            # R308c: 合并判定打点消费 — no-anchor 轮也记 (stage 字段区分, 消除观测盲区)
+            if kv.get("stage") == "no-anchor":
+                s["topic_relevance_verdict"] = "NoAnchor"
+                s["topic_drift_n"] += 1 if kv.get("drift") else 0
+            else:
+                s["topic_relevance_score"] = kv.get("score") or 0
+                s["topic_relevance_verdict"] = kv.get("verdict")
+                if kv.get("verdict") == "SteerHint":
+                    s["topic_drift_n"] += 1
         elif tag == "loop_turn":
             s["loop_success"] = kv.get("success")
             s["loop_ms"] = kv.get("total_ms")
