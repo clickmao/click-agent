@@ -1316,3 +1316,40 @@ AOT 安全); 落盘 `./data/think-memory.json`; 宿主启动加载 (缺失/损�
 
 语义锚: 链接文档 audit URL 键全档 100% (RuleCompressed/TitleOnly 触发全文回退 = 宁大不歪)。
 `CompressionBreaker`: 6 单测 (阈值触发/open 拒绝/半开放行/成功复位)。
+
+## 23. 外部 C# 项目配置读写接口 (R306b — 强类型 Model 绑定)
+
+外部项目引用 `agent.config` 项目即可读写本框架 yaml 配置, 全程强类型 Model 实例, 无需手写 yaml:
+
+```csharp
+using agent.config;
+
+// 1. 定义你的配置 Model (POCO, 属性名与 yaml snake_case 键自动互转):
+public sealed class ModelQueueConfig
+{
+    public RouterSection Router { get; set; } = new();
+    public sealed class RouterSection
+    {
+        public int MaxFailures { get; set; } = 3;      // ← yaml: max_failures
+        public int CooldownMs { get; set; } = 30000;   // ← yaml: cooldown_ms
+    }
+}
+
+// 2. 读 (yaml → Model 实例; 缺失键 = POCO 默认值):
+var snapshot = new ConfigSnapshot("./config");
+var cfg = ConfigModelBinder.Get<ModelQueueConfig>(snapshot, "model_queue");
+
+// 3. 改 + 存 (Model → L3 覆盖 modules/{module}.yaml, base 层永不动):
+var writer = new ConfigWriter("./config");
+cfg.Router.MaxFailures = 5;
+ConfigModelBinder.Save(writer, "model_queue", cfg);
+
+// 4. 一步到位 (读+改+存):
+ConfigModelBinder.Update<ModelQueueConfig>(snapshot, writer, "model_queue", m => m.Router.MaxFailures = 5);
+
+// 5. 校验持久化 (重载快照):
+var reloaded = ConfigModelBinder.Get<ModelQueueConfig>(new ConfigSnapshot("./config"), "model_queue");
+```
+
+层级语义: 读 = 四层合并视图 (base → env → modules → runtime); 写 = 只落 L3 `modules/{module}.yaml`
+(L1 base 永不改, 发布物安全); 清空某模块覆盖回落 L1 用 `writer.ResetModule(module)`。
