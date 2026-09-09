@@ -96,8 +96,31 @@ def run_suite(mode: str, explore_on: bool) -> list:
     return rows
 
 
+def start_fixture():
+    """R288: 本地可达 URL 夹具 — explore A/B 的 B 轮需要真实 fetch 成功才有增益信号。"""
+    import threading, http.server, socketserver
+    PAGES = {
+        "/portal": "<html><title>Portal</title><body>规范入口页, 指向 <a href='http://127.0.0.1:8932/critical-42'>关键文档42</a> 和 <a href='http://127.0.0.1:8932/critical-43'>关键文档43</a></body></html>",
+        "/critical-42": "<html><title>Doc42</title><body>关键文档42: 苹果是红色品种为主, 极少数观赏品种呈蓝色, 需经入口页核实。</body></html>",
+        "/critical-43": "<html><title>Doc43</title><body>关键文档43: 补充规范, 极光由太阳风粒子激发高层大气氧氮分子产生。</body></html>",
+        "/aurora": "<html><title>Aurora</title><body>极光成因: 太阳风粒子被地球磁场导向极区, 激发高层大气中的氧和氮分子发光。</body></html>",
+    }
+    class H(http.server.BaseHTTPRequestHandler):
+        def do_GET(self):
+            body = PAGES.get(self.path, "<html><title>404</title><body>not found</body></html>").encode("utf-8")
+            self.send_response(200 if self.path in PAGES else 404)
+            self.send_header("Content-Type", "text/html")
+            self.end_headers()
+            self.wfile.write(body)
+        def log_message(self, *a): pass
+    srv = socketserver.TCPServer(("127.0.0.1", 8932), H)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    return srv
+
+
 def main():
     load_env()
+    fixture = start_fixture()
     print(f"=== M-D explore A/B eval — {ROUND_LABEL} — {len(CASES)} cases ===", flush=True)
     a_rows = run_suite("A-explore-off", explore_on=False)
     b_rows = run_suite("B-explore-on", explore_on=True)
