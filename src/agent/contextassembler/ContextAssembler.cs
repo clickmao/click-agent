@@ -996,7 +996,13 @@ Interlocked.Increment(ref _cacheMisses);
         set => _gradientCompressor = new agent.contextgradient.ContextGradientCompressor(value);
     }
 
-    /// <summary>锚词提取 (P1 启发式: 取出现 ≥2 次的 2-8 字中英词段, 前 8 个; P3 向量版替换)</summary>
+    /// <summary>锚词提取 (P1 启发式: 取出现 ≥2 次的 2-8 字中英词段, 前 8 个; P3 向量版替换)
+    /// v0.16.4 R333 (P10): 中文 2/3/4 字滑窗每位置 3 次 Substring 短串分配 (压缩热路径, 每超限
+    /// snippet 一次) → CJK 均在 BMP (≤0xFFFF, UTF-16 单单元) → 窗口直接编码 long key
+    /// (每 char 16bit 顺序拼; 起点必 CJK 高 16bit 非零 → 不同 len 键域天然不冲突) 零分配计数,
+    /// 仅对最终 count≥2 候选解码 string。语义与原版完全等价: 同窗同计数同过滤; 稳定排序
+    /// OrderByDescending 下英文先填 (正则先跑) 保同序; 代理对 char 16bit 照存, 解码重建
+    /// char 序列与 Substring 一致。</summary>
     private static List<string> ExtractAnchorWords(string content)
     {
         var words = new Dictionary<string, int>(StringComparer.Ordinal);
@@ -1007,22 +1013,54 @@ Interlocked.Increment(ref _cacheMisses);
             var w = m.Value.ToLowerInvariant();
             words[w] = words.GetValueOrDefault(w) + 1;
         }
-        // 中文 2-4 字词 (滑动窗, 出现 ≥2 次)
-        for (var len = 2; len <= 4; len++)
+        // 中文 2-4 字词 (滑动窗, 出现 ≥2 次) — long 编码键零分配。每 len 独立字典:
+        // 编码低位=窗首字 (chars[0]), 解码按固定 len 正向移位取回 — 避免歧义与反序。
+        var cjkWords2 = new Dictionary<long, int>();
+        var cjkWords3 = new Dictionary<long, int>();
+        var cjkWords4 = new Dictionary<long, int>();
+        for (var i = 0; i + 2 <= content.Length; i++)
         {
-            for (var i = 0; i + len <= content.Length; i++)
+            var c0 = content[i];
+            if (!char.IsLetter(c0) || c0 < 0x4E00 || c0 > 0x9FFF)
+                continue;
+            long k2 = content[i] | ((long)content[i + 1] << 16);
+            cjkWords2[k2] = cjkWords2.GetValueOrDefault(k2) + 1;
+            if (i + 3 <= content.Length)
             {
-                if (!char.IsLetter(content[i]) || content[i] < 0x4E00 || content[i] > 0x9FFF)
-                    continue;
-                var w = content.Substring(i, len);
-                words[w] = words.GetValueOrDefault(w) + 1;
+                long k3 = k2 | ((long)content[i + 2] << 32);
+                cjkWords3[k3] = cjkWords3.GetValueOrDefault(k3) + 1;
+                if (i + 4 <= content.Length)
+                {
+                    long k4 = k3 | ((long)content[i + 3] << 48);
+                    cjkWords4[k4] = cjkWords4.GetValueOrDefault(k4) + 1;
+                }
             }
         }
+        AddDecoded(cjkWords2, 2, words);
+        AddDecoded(cjkWords3, 3, words);
+        AddDecoded(cjkWords4, 4, words);
         return words.Where(kv => kv.Value >= 2)
             .OrderByDescending(kv => kv.Value)
             .Take(8)
             .Select(kv => kv.Key)
             .ToList();
+    }
+
+    private static void AddDecoded(Dictionary<long, int> src, int len, Dictionary<string, int> dst)
+    {
+        foreach (var kv in src)
+        {
+            if (kv.Value < 2)
+                continue;
+            var chars = new char[len];
+            var k = kv.Key;
+            for (var j = 0; j < len; j++)
+            {
+                chars[j] = (char)(k & 0xFFFF);
+                k >>= 16;
+            }
+            dst[new string(chars)] = kv.Value;
+        }
     }
 
     private async Task<List<ContextSnippet>> CompressSnippetsAsync(
