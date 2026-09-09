@@ -55,9 +55,11 @@ def extract_reply(stdout: str) -> str:
 def score_case(case: dict, result: dict, explore_on: bool) -> dict:
     reply = extract_reply(result["reply"])
     mc = [k for k in case.get("must_contain", []) if k in reply]
-    # R273 围栏语义 (缺陷 68 explore 版): 禁词出现在否定/纠错上下文 = 正确拒诱饵, 不判死
-    neg = ("不是", "并非", "没有", "不是的", " incorrect", "false", "错误", "不会", "并非是")
+    # R273 围栏语义 (缺陷 68 explore 版); R308f 与 run_round 同源统一: 窗口 40ch + 10 词表 +
+    # suspect 降级语义 (否定上下文 → suspects 列表不判死, 与 run_round 判定器一致)
+    neg = ("不是", "并非", "没有", "不能", "错误", "不会", "无法", "并非是", " incorrect", "false", "不是的")
     mnc = []
+    suspects = []
     for k in case.get("must_not_contain", []):
         start = 0
         violated = False
@@ -65,8 +67,9 @@ def score_case(case: dict, result: dict, explore_on: bool) -> dict:
             i = reply.find(k, start)
             if i < 0:
                 break
-            ctx = reply[max(0, i - 20):i]
+            ctx = reply[max(0, i - 40):i]
             if any(n in ctx for n in neg):
+                suspects.append(f"{k} @否定上下文")
                 start = i + len(k)
                 continue
             violated = True
@@ -79,6 +82,7 @@ def score_case(case: dict, result: dict, explore_on: bool) -> dict:
         "must_contain_hit": f"{len(mc)}/{len(case.get('must_contain', []))}",
         "must_contain_all": len(mc) == len(case.get("must_contain", [])) and len(mc) > 0,
         "must_not_violations": mnc,
+        "suspects": suspects,
         "wall_ms": result["wall_ms"],
         "exit": result["exit"],
     }

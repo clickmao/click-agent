@@ -48,8 +48,9 @@ C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / Na
 
 ### 批次趋势 (滚动窗口 — 最新 2 批)
 
-**批240 (mass_460)** 11/11 quick-11 920/case / **批239 (mass_459)** 11/11 quick-11 974/case —
-v0.13.3 宿主执行期: 思考链宿主链路 (think_chain 打点) + 探索 A/B 增益 +39pt + think-memory 跨进程持久化 +
+**批253 (mass_473)** 11/11 quick-11 1061/case / **批250 (mass_470)** 11/11 quick-11 1172/case —
+v0.13.3 合并判定期: TopicRelevanceEvaluator 单点 (隔离/牵引/打点三路消费) + 围栏双脚本同源 (40ch+11 词+can't) +
+缺陷 72 登记 (skill 直达路径打点盲区) + think-memory 跨进程持久化 +
 LinkRegistry 激活链挂载; 批234 1402/case 单批离群定性 (C03 completion 波动非回归); 批236 XL 7/7 7008/case
 (gate 三态稳定); 批238 10/11 C08 意图单批抖动 (3 连真机复现 general, 观察关闭)。
 
