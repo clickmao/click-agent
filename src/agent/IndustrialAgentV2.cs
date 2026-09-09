@@ -591,6 +591,38 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                         ("error", ex.Message[..Math.Min(60, ex.Message.Length)]));
                 }
             }
+            // v0.13.3 R282: LinkRegistry 宿主挂载 — 上下文中的 URL 登记 + 三信号预判 + 激活打点
+            // (设计稿 §7.2: 递进未进入时不靠召回笼统索引, 凭锚定/结构/递进判定关键文档)。
+            try
+            {
+                var urlMatches = System.Text.RegularExpressions.Regex.Matches(
+                    message.Content + " " + prompt.ContextPrompt, @"https?://[^\s,，。;；)" + "\"" + "'" + "]+");
+                var urls = urlMatches.Select(m2 => m2.Value.TrimEnd('.', ',', ')', '}', ']'))
+                    .Where(u => u.Length > 8).Distinct().Take(20).ToList();
+                if (urls.Count > 0)
+                {
+                    string? parent = null;
+                    var activatedAny = new List<string>();
+                    foreach (var u in urls)
+                    {
+                        var entry = _linkRegistry.Register(u, parent);
+                        var score = _linkRegistry.PreJudge(u, message.Content, urls, inThinkMemory: false);
+                        var guarded = _linkRegistry.ActivateIfWorthy(entry, score, message.Content, urls, inThinkMemory: false);
+                        if (guarded.Count > 0) activatedAny.AddRange(guarded);
+                        parent = u; // 链式: 文档内先后 URL 视为父子候选
+                    }
+                    agent.config.AgentTelemetry.Emit("link_activation", "IndustrialAgentV2",
+                        ("urls", urls.Count),
+                        ("activated", activatedAny.Distinct().Count()),
+                        ("registry", _linkRegistry.Count));
+                }
+            }
+            catch (Exception ex)
+            {
+                agent.config.AgentTelemetry.Emit("link_activation", "IndustrialAgentV2",
+                    ("error", ex.Message[..Math.Min(60, ex.Message.Length)]));
+            }
+
             if (_textEmbedder is { IsAvailable: true } && _thinkMemory is not null)
             {
                 try
