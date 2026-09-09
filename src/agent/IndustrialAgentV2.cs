@@ -837,12 +837,18 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             // R309b: 牵引触发阈值 config 化 (env AGENTFRAMEWORK_TOPIC_STEER_THRESHOLD, 默认 2)
             var _steerThreshold = int.TryParse(Environment.GetEnvironmentVariable("AGENTFRAMEWORK_TOPIC_STEER_THRESHOLD"), out var _st) && _st >= 1 ? _st : 2;
             var steeringPending = _consecutiveDrift >= _steerThreshold && !string.IsNullOrEmpty(coreTopic);
+            // R314 (L3 主动澄清): 连续偏题达更高阈值 → 提示升级为二选一问句 (把"是否回锚"变显式对话状态)。
+            // 阈值 env AGENTFRAMEWORK_TOPIC_CLARIFY_THRESHOLD (默认 4); 开关 AGENTFRAMEWORK_TOPIC_CLARIFY=0 关闭。
+            var clarifyEnabled = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_TOPIC_CLARIFY") != "0";
+            var clarifyThreshold = int.TryParse(Environment.GetEnvironmentVariable("AGENTFRAMEWORK_TOPIC_CLARIFY_THRESHOLD"), out var _ct2) && _ct2 >= _steerThreshold ? _ct2 : _steerThreshold + 2;
+            var clarifyPending = clarifyEnabled && steeringPending && _consecutiveDrift >= clarifyThreshold;
             if (steeringPending && topicVerdict is not null)
             {
                 // R308b: steering 并入 topic_relevance 打点 (steering 标志位 — 不再独立点位)。
                 agent.config.AgentTelemetry.Emit("topic_relevance", "IndustrialAgentV2",
                     ("verdict", "SteerHint"), ("core", coreTopic),
-                    ("consecutive", _consecutiveDrift), ("stage", "steering"));
+                    ("consecutive", _consecutiveDrift),
+                    ("stage", clarifyPending ? "clarify" : "steering"));
             }
             
             // 6. ✅ 将消息添加到会话
@@ -914,7 +920,9 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 // 返回后处理 (v7.11): 区段快速标记 → 插件路由 (UI 捕获/审查服务等, 不写死)
                 response.Content = await _segmentRouter.ProcessAsync(llmResponse.Content, ct);
                 // R307 (L1 轻牵引): 连续 ≥2 轮偏题 → 回复尾追加衔接提示 (区段路由后追加, 防被路由过滤)。
-                if (steeringPending)
+                if (clarifyPending)
+                    response.Content += $"\n\n> 💡 需要我回到「{coreTopic}」继续, 还是继续当前话题? 直接说一声即可。";
+                else if (steeringPending)
                     response.Content += $"\n\n> 💡 提示: 本轮话题与近期核心主题「{coreTopic}」有所偏离 — 如需继续核心任务随时说一声。";
                 response.Success = true;
 
