@@ -41,6 +41,12 @@ public class ContextAssembler : IContextAssembler
     private readonly System.Collections.Concurrent.ConcurrentDictionary<string, CachedResult> _resultCache = new();
     private static readonly TimeSpan CacheTtl = TimeSpan.FromMinutes(5);
 
+    // P4 (R330): 工作区召回防慢预算 — 单文件整读阈值 (≤200KB 语义保留) + 整轮累计字节预算。
+    // 预算与 Take(300) 同类扫描窗口 (文件按修改时间降序 → 超预算丢的是最旧文件), 防单轮最多 ~60MB 全量读入。
+    // 非 readonly: 单测反射注入小预算验证截断路径 (产品代码只读, 无并发写路径)。
+    private static long WorkspaceMaxFileBytes = 200 * 1024;
+    private static long WorkspaceRecallBytesBudget = 4 * 1024 * 1024;
+
     private static string ComputeCacheKey(ContextAssemblyRequest request)
     {
         var sources = string.Join(",", request.EnabledSources.OrderBy(s => s.ToString()));
@@ -476,6 +482,9 @@ Interlocked.Increment(ref _cacheMisses);
                 .Take(300)
                 .ToList();
 
+            // P4 (R330): 整轮累计已读字节 (流式扫描近似) — 超 WorkspaceRecallBytesBudget 即停
+            long totalBytesRead = 0;
+
             foreach (var file in files)
             {
                 if (snippets.Count >= 3)
@@ -484,10 +493,20 @@ Interlocked.Increment(ref _cacheMisses);
                 try
                 {
                     var info = new FileInfo(file);
-                    if (info.Length > 200 * 1024)
+                    if (info.Length > WorkspaceMaxFileBytes)
                         continue;
-                    var content = await File.ReadAllTextAsync(file, ct);
-                    var (hitLine, hitCount) = FindKeywordLineRanked(content, keywords);
+                    if (info.Length <= 0)
+                        continue; // P4 (R330): 空文件跳过, 免开流
+                    // P4 (R330): 整轮字节预算 — 若读该文件将超预算则停止扫描剩余 (文件按修改时间
+                    // 降序, 丢的是最旧文件; 与 Take(300) 同哲学: 扫描窗口内的召回质量)。
+                    if (totalBytesRead + info.Length > WorkspaceRecallBytesBudget)
+                        break;
+                    // P4 (R330): 原 ReadAllTextAsync 整读 + Split 全行数组 (数千短 string 分配/文件,
+                    // ≤200KB/文件 × ≤300 文件 → 单轮最多 ~60MB 文本读入) → StreamReader 逐行流式:
+                    // 峰值内存 = 单行; 满分档 (5 hits) 命中即停, 免读文件剩余。
+                    var (hitLine, hitCount, bytesScanned) =
+                        await FindKeywordLineRankedStreamingAsync(file, keywords, ct);
+                    totalBytesRead += bytesScanned;
                     if (hitLine == null)
                         continue;
 
@@ -509,7 +528,6 @@ Interlocked.Increment(ref _cacheMisses);
 
 
                 }
-
                 catch (IOException) { /* 文件被占用等 — 跳过 */ }
                 catch (UnauthorizedAccessException) { /* 无权限 — 跳过 */ }
 
@@ -559,19 +577,16 @@ Interlocked.Increment(ref _cacheMisses);
         return null;
     }
 
-    /// <summary>R118: 找最佳命中行并统计该行命中的关键词数 (缺陷 50 — 相关分按真实命中质量)</summary>
+    /// <summary>R118: 找最佳命中行并统计该行命中的关键词数 (缺陷 50 — 相关分按真实命中质量)。
+    /// 字符串内存版 — 保留供 WorkspaceRelevanceTests 反射锚定 + 小内容场景。
+    /// P4 (R330): 行命中计数抽到 CountKeywordHitsInLine, 与流式版共享同一语义。</summary>
     private static (string? Line, int Hits) FindKeywordLineRanked(string content, List<string> keywords)
     {
         string? best = null;
         var bestHits = 0;
         foreach (var line in content.Split('\n'))
         {
-            var hits = 0;
-            foreach (var kw in keywords)
-            {
-                if (line.Contains(kw, StringComparison.OrdinalIgnoreCase))
-                    hits++;
-            }
+            var hits = CountKeywordHitsInLine(line, keywords);
             if (hits > bestHits)
             {
                 bestHits = hits;
@@ -580,6 +595,42 @@ Interlocked.Increment(ref _cacheMisses);
             }
         }
         return (best, bestHits);
+    }
+
+    /// <summary>P4 (R330): 流式逐行版 — 工作区召回用。峰值内存 = 单行 (原 ReadAllText + Split 全行数组)。
+    /// 语义与字符串版完全一致: 全文件范围最佳命中行 (无前缀截断, 尾部命中不丢); 满分档 (5 hits) 提前停读。
+    /// bytes 为已读行字符近似 (UTF-8 中文 3 字节/字符 — 预算为粗粒度防慢, 不追求精确)。</summary>
+    private static async Task<(string? Line, int Hits, long Bytes)> FindKeywordLineRankedStreamingAsync(
+        string filePath, List<string> keywords, CancellationToken ct)
+    {
+        string? best = null;
+        var bestHits = 0;
+        long bytes = 0;
+        using var reader = new StreamReader(filePath);
+        while (await reader.ReadLineAsync(ct) is { } line)
+        {
+            bytes += line.Length + 2; // 行字符 + 换行近似
+            var hits = CountKeywordHitsInLine(line, keywords);
+            if (hits > bestHits)
+            {
+                bestHits = hits;
+                best = line.Trim();
+                if (bestHits >= 5) break; // 满分档提前退出 → 免读文件剩余
+            }
+        }
+        return (best, bestHits, bytes);
+    }
+
+    /// <summary>P4 (R330): 单行关键词命中计数 (字符串版与流式版共享, 防两处语义漂移)。</summary>
+    private static int CountKeywordHitsInLine(string line, List<string> keywords)
+    {
+        var hits = 0;
+        foreach (var kw in keywords)
+        {
+            if (line.Contains(kw, StringComparison.OrdinalIgnoreCase))
+                hits++;
+        }
+        return hits;
     }
 
 

@@ -1996,3 +1996,11 @@
 - **意图指数**: n=11, ms_avg=0.5, dist={'general': 11, 'git_operation': 1, 'search': 1}
 - **per-case**: C01_general_qa 552tok 12.1s Δ-8 | C03_subtask 1398tok 37.6s Δ-1076 | C04_skill_identity 0tok 7.0s | C06_executive_unit_convert 0tok 6.6s | C07_memory_followup 3289tok 48.0s Δ+517 | C08_reasoning 1363tok 44.3s Δ-63 | C11_json_format 1022tok 40.8s Δ+215 | C13_git_sensitive 2419tok 46.6s Δ+1199 | C14_isolated_multi 2644tok 57.9s Δ+293 | C17_neg_hallucination_bait 808tok 13.5s Δ-156 | C18_neg_format_trap 768tok 12.2s Δ-33 | C19_topic_clarify_6turn 8877tok 74.2s Δ+1563 | C26_critic_no_false_positive 1259tok 22.0s Δ+9
 
+## 505 — R330-v0.16.2-workspace-recall-budget-quick13 (2026-09-10T04:11:11+0800)
+
+- **判定**: 13/13 passed, tokens_total=26051 (avg 2004), wall=475567ms (avg 36.6s)
+- **KPI**: tokens_per_case=2004 out (900, 1300) (基准轮数 13)
+- **防漂移指数**: segments=19, drift_pass=1.0, semantic_avg=0.976, chars_ratio=0.989
+- **意图指数**: n=11, ms_avg=1.3, dist={'general': 11, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 526tok 10.8s Δ-34 | C03_subtask 1502tok 30.7s Δ-972 | C04_skill_identity 0tok 7.0s | C06_executive_unit_convert 0tok 6.7s | C07_memory_followup 3108tok 46.6s Δ+336 | C08_reasoning 1408tok 47.4s Δ-18 | C11_json_format 953tok 40.9s Δ+146 | C13_git_sensitive 2616tok 56.7s Δ+1396 | C14_isolated_multi 4291tok 99.9s Δ+1940 | C17_neg_hallucination_bait 990tok 21.1s Δ+26 | C18_neg_format_trap 785tok 13.1s Δ-16 | C19_topic_clarify_6turn 8523tok 84.1s Δ+1209 | C26_critic_no_false_positive 1349tok 10.7s Δ+99
+
