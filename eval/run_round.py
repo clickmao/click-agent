@@ -418,7 +418,9 @@ def main():
         # 每批覆盖 10/19 用例 → 记忆链/负面族/skill 链进常态采集, 不再只在全量批可见。
         # v0.11.0 R149 (用户质疑 TaskRelevance 覆盖空心): quick 10→11 — C14 隔离用例进常态
         # (isolated_true 断言绑定后, TaskRelevanceChecker 每批真实验证, 健康带口径随之 quick-11)。
-        keep = ("C01", "C03", "C04", "C06", "C07", "C08", "C11", "C13", "C14", "C17", "C18")
+        # v0.13.3 R317 (拉回率进常态): quick 11→12 — C19 clarify 6 轮案 (pulled_back 每批观测,
+        # 与 R149 同理由: L3 牵引链真断言, 批均 token 带宽 +6 轮 repl ~2.4k)。
+        keep = ("C01", "C03", "C04", "C06", "C07", "C08", "C11", "C13", "C14", "C17", "C18", "C19")
         all_cases = [c for c in all_cases if c["id"].startswith(keep)]
     cases = all_cases
     env = load_env()

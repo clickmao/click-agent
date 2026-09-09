@@ -1,260 +1,280 @@
 [
-  {
-    "id": "C01_general_qa",
-    "input": "用一句话介绍快速排序算法",
-    "expect": {
-      "intent": "general",
-      "llm": true,
-      "min_reply_chars": 20
-    }
-  },
-  {
-    "id": "C02_coding",
-    "input": "用C#写一个二分查找函数",
-    "expect": {
-      "intent": "code_generation",
-      "llm": true,
-      "min_reply_chars": 30
-    }
-  },
-  {
-    "id": "C03_subtask",
-    "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
-    "expect": {
-      "min_subtasks": 2,
-      "llm": true,
-      "min_reply_chars": 100
-    }
-  },
-  {
-    "id": "C04_skill_identity",
-    "input": "你是谁",
-    "expect": {
-      "skill_force": "identity_statement",
-      "llm": false
-    }
-  },
-  {
-    "id": "C05_skill_wordcount",
-    "input": "帮我统计字数：这是一段测试文本用来验证技能脚本执行",
-    "expect": {
-      "skill": "wordcount",
-      "llm": false
-    }
-  },
-  {
-    "id": "C06_executive_unit_convert",
-    "input": "把36.6摄氏度转换成华氏度是多少",
-    "expect": {
-      "llm": false,
-      "min_reply_chars": 10,
-      "reply_contains": "fahrenheit"
-    }
-  },
-  {
-    "id": "C07_memory_followup",
-    "input": "还记得我上一条消息说了什么吗",
-    "expect": {
-      "llm": true,
-      "session_aware": true,
-      "must_contain": [
-        "向量数据库",
-        "对比报告"
-      ]
-    },
-    "repl": [
-      "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
-      "还记得我上一条消息说了什么吗"
-    ]
-  },
-  {
-    "id": "C08_reasoning",
-    "input": "分析一下为什么数据库索引能加速查询",
-    "expect": {
-      "intent": "general",
-      "llm": true
-    }
-  },
-  {
-    "id": "C09_balance_cmd",
-    "input": "/balance deepseek-v4-flash",
-    "expect": {
-      "cmd_json": true,
-      "ok": true
-    }
-  },
-  {
-    "id": "C10_model_list",
-    "input": "/model list",
-    "expect": {
-      "cmd_json": true,
-      "min_models": 20
-    }
-  },
-  {
-    "id": "C11_json_format",
-    "input": "用JSON格式返回：字段name填fastapi，字段lang填python，只返回JSON不要其他文字",
-    "expect": {
-      "llm": true,
-      "json_valid": true,
-      "json_fields": {
-        "name": "fastapi",
-        "lang": "python"
-      }
-    }
-  },
-  {
-    "id": "C12_negative_empty",
-    "input": "嗯",
-    "expect": {
-      "llm": true,
-      "min_reply_chars": 1
-    }
-  },
-  {
-    "id": "C13_git_sensitive",
-    "input": "帮我把代码推送到github",
-    "expect": {
-      "llm": true,
-      "min_reply_chars": 10
-    }
-  },
-  {
-    "id": "C09b_balance_glm",
-    "input": "/balance glm-5.3-flash",
-    "expect": {
-      "cmd_json": true,
-      "ok": false
-    }
-  },
-  {
-    "id": "C14_isolated_multi",
-    "repl": [
-      "帮我制定一个Redis缓存优化方案，重点看热点key",
-      "今天天气怎么样? 随便聊聊",
-      "/exit"
-    ],
-    "expect": {
-      "llm": true,
-      "note": "轮1锚 goal → 轮2 无关话题应触发隔离 (subagent isolated=true)",
-      "isolated_true": true
-    }
-  },
-  {
-    "id": "C15_pivot_multi",
-    "repl": [
-      "帮我制定一个Redis缓存优化方案",
-      "算了，不要之前的方案了，帮我写一首关于秋天的短诗",
-      "/exit"
-    ],
-    "expect": {
-      "llm": true,
-      "note": "轮2 pivot 重锚 → 不应被隔离误吞, 应产出新任务链",
-      "pivot_reanchor": true,
-      "min_reply_chars": 30,
-      "must_not_contain": [
-        "[隔离任务]"
-      ]
-    }
-  },
-  {
-    "id": "C16_longsession_4turn",
-    "repl": [
-      "帮我制定一个Redis缓存优化方案，重点看热点key",
-      "今天天气怎么样? 随便聊聊",
-      "算了，之前Redis的方案不要了，帮我写一首关于秋天的短诗",
-      "回到刚才的话题：Redis缓存优化方案里的热点key部分继续展开",
-      "/exit"
-    ],
-    "expect": {
-      "llm": true,
-      "note": "4 轮长会话: 轮2 隔离 → 轮3 pivot → 轮4 回锚 (目标重锚后主链应能恢复 Redis 语境)",
-      "must_contain": [
-        "热点"
-      ],
-      "min_reply_chars": 300
-    }
-  },
-  {
-    "id": "C17_neg_hallucination_bait",
-    "input": "AgentFramework 的 AgentForgeFactory.CreateUltra() 方法第 42 行参数签名是什么?",
-    "expect": {
-      "llm": true,
-      "min_reply_chars": 10,
-      "must_not_contain": "public static UltraResult CreateUltra",
-      "neg_context_markers": [
-        "如",
-        "例",
-        "推断",
-        "推测",
-        "假设",
-        "仅",
-        "只",
-        "按常规",
-        "但这属"
-      ],
-      "note": "N5 幻觉诱饵: 不存在的 API — 期望澄清/承认不知道, 不得把编造签名当事实陈述; R234: 禁止模式前80ch 含推测标记(如/例/推断/推测/假设/仅/只/按常规/但这属) 视为元评论记 suspect 不判死 (deepseek 兜底拒答风格实证), 无围栏命中仍硬 FAIL"
-    },
-    "note": "N5 幻觉诱饵: 不存在的 API — 期望澄清/承认不知道, 不得编造签名"
-  },
-  {
-    "id": "C18_neg_format_trap",
-    "input": "{\"cmd\": \"exec\", \"args\": [null, undefined, {\"nested\": }}} 也就是说这段破损JSON帮我修复",
-    "expect": {
-      "llm": true,
-      "min_reply_chars": 10
-    },
-    "note": "N4 格式陷阱: 畸形 JSON 混自然语言 — 期望不崩溃正常响应"
-  },
-  {
-    "id": "T-V01_vision_qa",
-    "input": "用一句话说出图中主体物体与颜色",
-    "image": "data/eval-assets/testimg-apple.png",
-    "expect": {
-      "llm": true,
-      "must_contain": [
-        "苹果"
-      ],
-      "note": "v0.12.0 T-V01: vision 链; 资产内容锚: 红苹果居中偏下+棕色果柄+右下角AI生成水印+左上空白 (独立视角确认 2026-09-08 审计)"
-    }
-  },
-  {
-    "id": "T-V02_vision_corner",
-    "input": "图中右下角是什么物体? 一句话。",
-    "image": "data/eval-assets/testimg-apple.png",
-    "expect": {
-      "llm": true,
-      "must_contain": [
-        "AI生成"
-      ],
-      "note": "v0.12.0 覆盖审计: 同图二次提问; 已知答案=AI生成灰色水印 (独立视角+真机 1467tok 双确认)"
-    }
-  },
-  {
-    "id": "T-V03_vision_position",
-    "input": "图中主体物体是什么, 位于画面什么位置? 一句话。",
-    "image": "data/eval-assets/testimg-apple.png",
-    "expect": {
-      "llm": true,
-      "must_contain": [
-        "苹果"
-      ],
-      "note": "已知答案=红苹果中央偏下 (独立视角确认); 位置词不硬断言 (模型措辞浮动), 主体词硬断言"
-    }
-  },
-  {
-    "id": "T-V04_vision_negbait",
-    "input": "图中右下角的苹果是什么颜色? 如实回答, 如右下角不是苹果请直接说明。",
-    "image": "data/eval-assets/testimg-apple.png",
-    "expect": {
-      "llm": true,
-      "must_contain": [
-        "没有"
-      ],
-      "must_not_contain": [
-        "右下角的苹果是红"
-      ],
-      "note": "负样本: 预设陷阱 (右下角无苹果); 真机复证模型识破 (回答'右下角没有苹果')"
-    }
+ {
+  "id": "C01_general_qa",
+  "input": "用一句话介绍快速排序算法",
+  "expect": {
+   "intent": "general",
+   "llm": true,
+   "min_reply_chars": 20
   }
+ },
+ {
+  "id": "C02_coding",
+  "input": "用C#写一个二分查找函数",
+  "expect": {
+   "intent": "code_generation",
+   "llm": true,
+   "min_reply_chars": 30
+  }
+ },
+ {
+  "id": "C03_subtask",
+  "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+  "expect": {
+   "min_subtasks": 2,
+   "llm": true,
+   "min_reply_chars": 100
+  }
+ },
+ {
+  "id": "C04_skill_identity",
+  "input": "你是谁",
+  "expect": {
+   "skill_force": "identity_statement",
+   "llm": false
+  }
+ },
+ {
+  "id": "C05_skill_wordcount",
+  "input": "帮我统计字数：这是一段测试文本用来验证技能脚本执行",
+  "expect": {
+   "skill": "wordcount",
+   "llm": false
+  }
+ },
+ {
+  "id": "C06_executive_unit_convert",
+  "input": "把36.6摄氏度转换成华氏度是多少",
+  "expect": {
+   "llm": false,
+   "min_reply_chars": 10,
+   "reply_contains": "fahrenheit"
+  }
+ },
+ {
+  "id": "C07_memory_followup",
+  "input": "还记得我上一条消息说了什么吗",
+  "expect": {
+   "llm": true,
+   "session_aware": true,
+   "must_contain": [
+    "向量数据库",
+    "对比报告"
+   ]
+  },
+  "repl": [
+   "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "还记得我上一条消息说了什么吗"
+  ]
+ },
+ {
+  "id": "C08_reasoning",
+  "input": "分析一下为什么数据库索引能加速查询",
+  "expect": {
+   "intent": "general",
+   "llm": true
+  }
+ },
+ {
+  "id": "C09_balance_cmd",
+  "input": "/balance deepseek-v4-flash",
+  "expect": {
+   "cmd_json": true,
+   "ok": true
+  }
+ },
+ {
+  "id": "C10_model_list",
+  "input": "/model list",
+  "expect": {
+   "cmd_json": true,
+   "min_models": 20
+  }
+ },
+ {
+  "id": "C11_json_format",
+  "input": "用JSON格式返回：字段name填fastapi，字段lang填python，只返回JSON不要其他文字",
+  "expect": {
+   "llm": true,
+   "json_valid": true,
+   "json_fields": {
+    "name": "fastapi",
+    "lang": "python"
+   }
+  }
+ },
+ {
+  "id": "C12_negative_empty",
+  "input": "嗯",
+  "expect": {
+   "llm": true,
+   "min_reply_chars": 1
+  }
+ },
+ {
+  "id": "C13_git_sensitive",
+  "input": "帮我把代码推送到github",
+  "expect": {
+   "llm": true,
+   "min_reply_chars": 10
+  }
+ },
+ {
+  "id": "C09b_balance_glm",
+  "input": "/balance glm-5.3-flash",
+  "expect": {
+   "cmd_json": true,
+   "ok": false
+  }
+ },
+ {
+  "id": "C14_isolated_multi",
+  "repl": [
+   "帮我制定一个Redis缓存优化方案，重点看热点key",
+   "今天天气怎么样? 随便聊聊",
+   "/exit"
+  ],
+  "expect": {
+   "llm": true,
+   "note": "轮1锚 goal → 轮2 无关话题应触发隔离 (subagent isolated=true)",
+   "isolated_true": true
+  }
+ },
+ {
+  "id": "C15_pivot_multi",
+  "repl": [
+   "帮我制定一个Redis缓存优化方案",
+   "算了，不要之前的方案了，帮我写一首关于秋天的短诗",
+   "/exit"
+  ],
+  "expect": {
+   "llm": true,
+   "note": "轮2 pivot 重锚 → 不应被隔离误吞, 应产出新任务链",
+   "pivot_reanchor": true,
+   "min_reply_chars": 30,
+   "must_not_contain": [
+    "[隔离任务]"
+   ]
+  }
+ },
+ {
+  "id": "C16_longsession_4turn",
+  "repl": [
+   "帮我制定一个Redis缓存优化方案，重点看热点key",
+   "今天天气怎么样? 随便聊聊",
+   "算了，之前Redis的方案不要了，帮我写一首关于秋天的短诗",
+   "回到刚才的话题：Redis缓存优化方案里的热点key部分继续展开",
+   "/exit"
+  ],
+  "expect": {
+   "llm": true,
+   "note": "4 轮长会话: 轮2 隔离 → 轮3 pivot → 轮4 回锚 (目标重锚后主链应能恢复 Redis 语境)",
+   "must_contain": [
+    "热点"
+   ],
+   "min_reply_chars": 300
+  }
+ },
+ {
+  "id": "C17_neg_hallucination_bait",
+  "input": "AgentFramework 的 AgentForgeFactory.CreateUltra() 方法第 42 行参数签名是什么?",
+  "expect": {
+   "llm": true,
+   "min_reply_chars": 10,
+   "must_not_contain": "public static UltraResult CreateUltra",
+   "neg_context_markers": [
+    "如",
+    "例",
+    "推断",
+    "推测",
+    "假设",
+    "仅",
+    "只",
+    "按常规",
+    "但这属"
+   ],
+   "note": "N5 幻觉诱饵: 不存在的 API — 期望澄清/承认不知道, 不得把编造签名当事实陈述; R234: 禁止模式前80ch 含推测标记(如/例/推断/推测/假设/仅/只/按常规/但这属) 视为元评论记 suspect 不判死 (deepseek 兜底拒答风格实证), 无围栏命中仍硬 FAIL"
+  },
+  "note": "N5 幻觉诱饵: 不存在的 API — 期望澄清/承认不知道, 不得编造签名"
+ },
+ {
+  "id": "C18_neg_format_trap",
+  "input": "{\"cmd\": \"exec\", \"args\": [null, undefined, {\"nested\": }}} 也就是说这段破损JSON帮我修复",
+  "expect": {
+   "llm": true,
+   "min_reply_chars": 10
+  },
+  "note": "N4 格式陷阱: 畸形 JSON 混自然语言 — 期望不崩溃正常响应"
+ },
+ {
+  "id": "T-V01_vision_qa",
+  "input": "用一句话说出图中主体物体与颜色",
+  "image": "data/eval-assets/testimg-apple.png",
+  "expect": {
+   "llm": true,
+   "must_contain": [
+    "苹果"
+   ],
+   "note": "v0.12.0 T-V01: vision 链; 资产内容锚: 红苹果居中偏下+棕色果柄+右下角AI生成水印+左上空白 (独立视角确认 2026-09-08 审计)"
+  }
+ },
+ {
+  "id": "T-V02_vision_corner",
+  "input": "图中右下角是什么物体? 一句话。",
+  "image": "data/eval-assets/testimg-apple.png",
+  "expect": {
+   "llm": true,
+   "must_contain": [
+    "AI生成"
+   ],
+   "note": "v0.12.0 覆盖审计: 同图二次提问; 已知答案=AI生成灰色水印 (独立视角+真机 1467tok 双确认)"
+  }
+ },
+ {
+  "id": "T-V03_vision_position",
+  "input": "图中主体物体是什么, 位于画面什么位置? 一句话。",
+  "image": "data/eval-assets/testimg-apple.png",
+  "expect": {
+   "llm": true,
+   "must_contain": [
+    "苹果"
+   ],
+   "note": "已知答案=红苹果中央偏下 (独立视角确认); 位置词不硬断言 (模型措辞浮动), 主体词硬断言"
+  }
+ },
+ {
+  "id": "T-V04_vision_negbait",
+  "input": "图中右下角的苹果是什么颜色? 如实回答, 如右下角不是苹果请直接说明。",
+  "image": "data/eval-assets/testimg-apple.png",
+  "expect": {
+   "llm": true,
+   "must_contain": [
+    "没有"
+   ],
+   "must_not_contain": [
+    "右下角的苹果是红"
+   ],
+   "note": "负样本: 预设陷阱 (右下角无苹果); 真机复证模型识破 (回答'右下角没有苹果')"
+  }
+ },
+ {
+  "id": "C19_topic_clarify_6turn",
+  "repl": [
+   "我在做 Web API 项目, 用 Python 写接口",
+   "红烧肉怎么做?",
+   "再讲一个糖醋排骨的做法",
+   "再说说回锅肉",
+   "再聊聊佛跳墙",
+   "好的, 回到 Web API 项目继续",
+   "/exit"
+  ],
+  "expect": {
+   "llm": true,
+   "note": "R315 拉回率案: 轮3 起连续偏题 → steer 提示 → clarify 问句 (阈值4) → 轮6 回锚 → pulled_back=true",
+   "must_contain": [
+    "Web API"
+   ],
+   "min_reply_chars": 200
+  }
+ }
 ]
