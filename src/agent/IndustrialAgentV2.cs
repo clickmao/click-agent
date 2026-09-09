@@ -64,7 +64,9 @@ public class IndustrialAgentV2 : AgentBase
         }
     }
     /// <summary>v0.13.3 R282: 探索链接登记表 (进程级) — 上下文 URL 三信号预判+激活打点。</summary>
-    private static readonly agent.exploration.LinkRegistry _linkRegistry = new();  // v0.11.0 R6: 存储召回同源修复
+    private static readonly agent.exploration.LinkRegistry _linkRegistry = new();
+    /// <summary>R307 (L1): 连续偏题轮计数 (≥2 触发轻牵引提示; 回归主题轮清零)。</summary>
+    private static int _consecutiveDrift;  // v0.11.0 R6: 存储召回同源修复
     private readonly agent.exploration.ContextBudgetGate _contextGate = new();  // v0.13.3 M2: 上下文预算门
     private readonly IVectorMemoryRecall _memoryRecall;
     private readonly ITemplateStore _templateStore;
@@ -639,18 +641,21 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             agent.config.AgentTelemetry.Emit("micro_decision", "IndustrialAgentV2",
                 ("mode", gateVerdict.Mode.ToString()), ("subtasks", subTasks.Count));
 
-            // R304 (牵引 L2): topic_drift 观测 — 当前轮主题 vs 会话核心主题 (画像 top-1) 的偏离检测。
-            // 数据先行 (L2 观测档): 只打点不干预, 攒轨迹后定阈值 (L1 牵引/L3 澄清的依据)。
+            // R304 (牵引 L2)+R307 (L1 轻牵引): topic_drift 检测 + 连续偏题计数。
+            // L2: 打点; L1: 连续 ≥2 轮偏题 → 回复尾追加牵引提示 (不改答案本体);
+            // L3 (主动澄清) 待 L1 数据后再进。
+            var isDrift = false;
+            var coreTopic = "";
             try
             {
                 var biasScores = _tendencyAnalyzer.GetContextBiasAsync(message.SenderId ?? "cli-user", message.Content)
                     .GetAwaiter().GetResult().BiasScores;
-                var coreTopic = biasScores.OrderByDescending(kv => kv.Value).FirstOrDefault().Key ?? "";
+                coreTopic = biasScores.OrderByDescending(kv => kv.Value).FirstOrDefault().Key ?? "";
                 var msgLower = message.Content.ToLowerInvariant();
-                var drift = !string.IsNullOrEmpty(coreTopic) &&
-                            !coreTopic.ToLowerInvariant().Split(' ', '-', '_').Any(t => t.Length > 1 && msgLower.Contains(t));
+                isDrift = !string.IsNullOrEmpty(coreTopic) &&
+                          !coreTopic.ToLowerInvariant().Split(' ', '-', '_').Any(t => t.Length > 1 && msgLower.Contains(t));
                 agent.config.AgentTelemetry.Emit("topic_drift", "IndustrialAgentV2",
-                    ("core", coreTopic), ("drift", drift), ("intent", intent));
+                    ("core", coreTopic), ("drift", isDrift), ("intent", intent));
             }
             catch (Exception ex)
             {
@@ -769,6 +774,16 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
 
             // 5.1 思考结束指令 (L.2.2 指令 2 — 前端关闭思考步骤显示并折叠)
             _logRouter?.EmitThinkingEnd(llmResponse.Content.Length);
+
+            // R307 (L1 轻牵引): 连续 ≥2 轮偏题 → 回复尾追加一句衔接提示 (不改答案本体,
+            // 提示与核心主题的衔接点 — 消费 K1 画像偏置, 实现会话内牵引不偏离核心主题)。
+            _consecutiveDrift = isDrift ? _consecutiveDrift + 1 : 0;
+            var steeringPending = _consecutiveDrift >= 2 && !string.IsNullOrEmpty(coreTopic);
+            if (steeringPending)
+            {
+                agent.config.AgentTelemetry.Emit("topic_steering", "IndustrialAgentV2",
+                    ("core", coreTopic), ("consecutive", _consecutiveDrift));
+            }
             
             // 6. ✅ 将消息添加到会话
             await AddToSessionAsync(message, llmResponse, ct);
@@ -838,6 +853,9 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             {
                 // 返回后处理 (v7.11): 区段快速标记 → 插件路由 (UI 捕获/审查服务等, 不写死)
                 response.Content = await _segmentRouter.ProcessAsync(llmResponse.Content, ct);
+                // R307 (L1 轻牵引): 连续 ≥2 轮偏题 → 回复尾追加衔接提示 (区段路由后追加, 防被路由过滤)。
+                if (steeringPending)
+                    response.Content += $"\n\n> 💡 提示: 本轮话题与近期核心主题「{coreTopic}」有所偏离 — 如需继续核心任务随时说一声。";
                 response.Success = true;
 
                 // 任务循环完成 → 下轮预估落盘 (v7.11): 工作目录 + 按 agent UID 隔离
