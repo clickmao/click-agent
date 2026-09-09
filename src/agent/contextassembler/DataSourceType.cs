@@ -33,7 +33,10 @@ public enum DataSourceType
     SessionMemory,
 
     /// <summary>Agent 画像 + 能力清单 (v7.14)</summary>
-    AgentContext
+    AgentContext,
+
+    /// <summary>修法记忆 (v0.14.0 T2d — 输出侧经验: 反模式→修法, 评审反馈/自审锚定沉淀)</summary>
+    FixMemory
 }
 
 /// <summary>
@@ -102,6 +105,9 @@ public class ContextAssemblyRequest
     
     /// <summary>v0.11.0 R11: 工作区根路径 (WorkspaceFiles 源召回用; null=不启用)</summary>
     public string? WorkspaceRoot { get; set; }
+
+    /// <summary>v0.14.0 T2d: 修法记忆块 (宿主从 FixMemory recall 预渲染; null=不启用该源)</summary>
+    public string? FixMemoryBlock { get; set; }
 
     /// <summary>最大Token预算</summary>
     public int MaxTokenBudget { get; set; } = 8000;

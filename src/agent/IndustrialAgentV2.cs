@@ -69,6 +69,8 @@ public class IndustrialAgentV2 : AgentBase
     private static int _consecutiveDrift;
         // R315 (拉回率度量): clarify 问句发出后置位; 用户回锚轮 (≤2 轮内 isDrift=false) 时 Emit pulled_back。
         private static bool _clarifyArmed;
+        // v0.14.0 T2d: 修法记忆 (进程级单例, data/fix-memory.json 持久化)
+        private static agent.critique.FixMemory? _fixMemory;
         private static int _clarifyTurnsLeft;  // v0.11.0 R6: 存储召回同源修复
     private readonly agent.exploration.ContextBudgetGate _contextGate = new();  // v0.13.3 M2: 上下文预算门
     private readonly IVectorMemoryRecall _memoryRecall;
@@ -1460,6 +1462,7 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             sources.Remove(DataSourceType.Memory);
             sources.Remove(DataSourceType.Session);
             sources.Remove(DataSourceType.UserTendency);
+            sources.Remove(DataSourceType.FixMemory); // v0.14.0: 自审修法记忆属经验注入, K1 对照实验须剔除
             agent.config.AgentTelemetry.Emit("k1_isolation", "IndustrialAgentV2",
                 ("remaining", string.Join(",", sources)));
         }
@@ -1510,6 +1513,31 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "会话记忆块渲染失败 (降级: 不注入)");
+        }
+
+        // v0.14.0 T2d: 修法记忆预渲染 (输出侧经验 — 生成前少样本注入; R302 同款 K1 隔离门)
+        try
+        {
+            var fixMem = _fixMemory ?? agent.critique.FixMemory.Load(
+                Path.Combine(_dataStoragePath, "fix-memory.json"));
+            var anchorText = message.Content;
+            var hits = fixMem.Recall(anchorText, topK: 3);
+            if (hits.Count > 0
+                && Environment.GetEnvironmentVariable("AGENTFRAMEWORK_K1_FULL_ISOLATION") != "1")
+            {
+                var sbFix = new StringBuilder("已确认修法 (历史评审反馈, 生成时避免重蹈):\n");
+                foreach (var h in hits)
+                    sbFix.Append($"- 模式『{h.Pattern}』: {h.Mechanism} → {h.Fix}\n");
+                request.FixMemoryBlock = sbFix.ToString();
+                if (!request.EnabledSources.Contains(agent.context.DataSourceType.FixMemory))
+                    request.EnabledSources.Add(agent.context.DataSourceType.FixMemory);
+                agent.config.AgentTelemetry.Emit("fix_memory", "IndustrialAgentV2",
+                    ("recall_hits", hits.Count), ("anchor_chars", anchorText.Length));
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "修法记忆渲染失败 (降级: 不注入)");
         }
 
         // v7.14: agent 画像 + 能力清单预渲染 (④⑤)

@@ -163,6 +163,24 @@ Interlocked.Increment(ref _cacheMisses);
                     }
                 }));
             }
+
+            if (request.EnabledSources.Contains(DataSourceType.FixMemory) &&
+                request.FixMemoryBlock != null)
+            {
+                // v0.14.0 T2d: 修法记忆 (输出侧经验 — 反模式→修法, 生成前少样本注入)
+                recallTasks.Add(Task.FromResult(new List<ContextSnippet>
+                {
+                    new()
+                    {
+                        SourceType = DataSourceType.FixMemory,
+                        SourceName = "fix_memory",
+                        Content = request.FixMemoryBlock,
+                        RelevanceScore = 0.92,
+                        EstimatedTokens = EstimateTokens(request.FixMemoryBlock),
+                    }
+                }));
+            }
+
             
             // 等待所有召回完成
             var recallResults = await Task.WhenAll(recallTasks);
@@ -469,6 +487,8 @@ Interlocked.Increment(ref _cacheMisses);
                         EstimatedTokens = EstimateTokens(workspaceContent), // v0.11.0 R29: 补 token 估算 (0tok 显示瑕疵真因)
                         CreatedAt = info.LastWriteTimeUtc,
                     });
+
+
                 }
                 catch (IOException) { /* 文件被占用等 — 跳过 */ }
                 catch (UnauthorizedAccessException) { /* 无权限 — 跳过 */ }
