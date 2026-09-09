@@ -1314,6 +1314,24 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
         }
     }
 
+    /// <summary>R302: 数据源选择 + K1 全隔离 (env AGENTFRAMEWORK_K1_FULL_ISOLATION=1 → 剔除画像回流源)。</summary>
+    private HashSet<DataSourceType> BuildEnabledSources(
+        IReadOnlyList<IntentDecomposer.SubTask> subTasks, string intent)
+    {
+        var sources = subTasks.Count > 1
+            ? new HashSet<DataSourceType>(IntentDecomposer.AggregateSources(subTasks))
+            : new HashSet<DataSourceType>(IntentSourceMapping.GetSources(intent));
+        if (Environment.GetEnvironmentVariable("AGENTFRAMEWORK_K1_FULL_ISOLATION") == "1")
+        {
+            sources.Remove(DataSourceType.Memory);
+            sources.Remove(DataSourceType.Session);
+            sources.Remove(DataSourceType.UserTendency);
+            agent.config.AgentTelemetry.Emit("k1_isolation", "IndustrialAgentV2",
+                ("remaining", string.Join(",", sources)));
+        }
+        return sources;
+    }
+
     private async Task<ContextAssemblyResult> AssembleContextAsync(
         Message message,
         string intent,
@@ -1333,9 +1351,7 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             // Session 历史不在此处注入: GetConversationHistoryAsync + BuildWithHistory 是专用通道,
             // 双路注入同一批消息会浪费 token 并让 LLM 看到重复内容
             // 多子任务时数据源取并集 (search+code_gen 复合句 → 网搜+记忆全开)
-            EnabledSources = subTasks.Count > 1
-                ? IntentDecomposer.AggregateSources(subTasks)
-                : IntentSourceMapping.GetSources(intent),
+            EnabledSources = BuildEnabledSources(subTasks, intent),
             // v0.11.0 R11: 工作区根传给装配器 (WorkspaceFiles 源)。
             // Workspace.Initialize 无人调用 (R11b 修复) — RootPath 空 → fallback 当前目录 (host 由 cwd 决定)。
             WorkspaceRoot = _workspace is { RootPath: { Length: > 0 } root } ? root : Environment.CurrentDirectory
@@ -1348,7 +1364,9 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 message.SessionId, message.SenderId);
             var mem = session.Memory;
             var rendered = mem.RenderForPrompt();
-            if (!string.IsNullOrEmpty(rendered))
+            // R302 (K1 全隔离): 隔离时 SessionMemory 也不注入 (R301 实证: 画像事实经此通道回流)。
+            var k1FullIso = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_K1_FULL_ISOLATION") == "1";
+            if (!string.IsNullOrEmpty(rendered) && !k1FullIso)
             {
                 request.SessionMemoryBlock = rendered;
                 if (!request.EnabledSources.Contains(agent.context.DataSourceType.SessionMemory))

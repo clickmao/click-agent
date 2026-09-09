@@ -1,0 +1,30 @@
+{
+ "label": "R302-fulliso",
+ "cases": 3,
+ "behavior_hits_with": 3,
+ "behavior_hits_without": 2,
+ "rows": [
+  {
+   "id": "K1-B01",
+   "hit_with": true,
+   "hit_without": true,
+   "head_with": "一句话结论：你最近集中在 .NET / C# 的 Web API 开发，并围绕向量数据库与 AI 检索（RAG）做选型学习。\n\n要点：\n· 约 80% 的近期活",
+   "head_without": "一句话结论：你最近集中在 Web API 开发方向，并结合向量数据库做选型与学习实践。\n\n要点：\n· 近期约 80% 的交互活动围绕 Web API 的构建与测"
+  },
+  {
+   "id": "K1-B02",
+   "hit_with": true,
+   "hit_without": false,
+   "head_with": "一句话结论： 你是偏后端的工程师/学习者，核心是 Web API 开发，正向「向量检索 + AI 应用」方向拓展。\n\n要点：\n· **核心技能**：约 80% ",
+   "head_without": "一句话结论：当前会话没有可用的历史交互记录，无法构建你的技术画像。\n\n要点：\n· 上下文中仅含环境信息（可用工具：git、dotnet、curl、python3"
+  },
+  {
+   "id": "K1-B03",
+   "hit_with": true,
+   "hit_without": true,
+   "head_with": "一句话结论：推荐主题主要依据两个来源——历史交互中的行为画像 + 记忆/工作区中的项目上下文。\n\n依据要点：\n1. 用户画像（来源：历史交互统计）——约 80%",
+   "head_without": "一句话结论：推荐学习主题的依据主要来自「历史交互中的行为画像」+「工作区/记忆中的项目上下文」。\n\n依据要点：\n1. 用户画像（来源：历史交互统计）——你问过什"
+  }
+ ],
+ "honest_verdict": "full-isolation arm: with 3/3 vs without 2/3 (B02 flipped — 80% fact lost without profile); B03 anchor is behavioral-word (loose, generalization hits it too) — tight-fact anchors (80%) show 2/2 vs 1/2; signal direction correct, sample n=3 too small for significance; needs question-family expansion (queued)"
+}

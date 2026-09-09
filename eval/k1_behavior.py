@@ -16,7 +16,9 @@ CASES = json.load(open("eval/k1-behavior-cases.json"))
 def run_one(q, disable):
     env = dict(os.environ)
     if disable:
+        # R302: 全隔离臂 (tendency + memory + session + SessionMemory 全断 — R301 实证单关 tendency 不够)
         env["AGENTFRAMEWORK_K1_DISABLE"] = "1"
+        env["AGENTFRAMEWORK_K1_FULL_ISOLATION"] = "1"
     r = subprocess.run(["dotnet", "src/agent.host/bin/Release/net10.0/agenthost.dll", "-q", q],
                        capture_output=True, text=True, timeout=120, errors="replace", env=env)
     m = re.search(r"──+\s*回复\s*──+\n(.*?)(?:\n  · intent=|\n──+|$)", r.stdout, re.S)
@@ -27,7 +29,11 @@ for c in CASES:
     rep_with = run_one(c["input"], disable=False); time.sleep(1)
     rep_without = run_one(c["input"], disable=True); time.sleep(1)
     def behavior_hit(rep):
-        return any(kw.lower() in rep.lower() for kw in c["must_contain_behavior"])
+        # R302 修正: 行为锚 = **画像独有事实** (80% 比例数字), 不用 "Web API" 宽词
+        # (系统提示含框架描述, 宽词在零画像臂也命中 — R301 实证)。
+        strong = [w for w in c["must_contain_behavior"] if any(ch.isdigit() for ch in w)]
+        return any(w.lower() in rep.lower() for w in strong) if strong else \
+            any(kw.lower() in rep.lower() for kw in c["must_contain_behavior"])
     hit_with, hit_without = behavior_hit(rep_with), behavior_hit(rep_without)
     rows.append({"id": c["id"], "hit_with": hit_with, "hit_without": hit_without,
                  "head_with": rep_with[:80], "head_without": rep_without[:80]})
