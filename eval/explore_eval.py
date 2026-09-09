@@ -103,10 +103,12 @@ def main():
     b_rows = run_suite("B-explore-on", explore_on=True)
 
     def agg(rows):
-        hit = sum(1 for r in rows if r["must_contain_all"])
+        assertable = [r for r in rows if r["must_contain_hit"] != "0/0"]  # 有 must_contain 断言的样本
+        hit = sum(1 for r in assertable if r["must_contain_all"])
         viol = sum(1 for r in rows if r["must_not_violations"])
         wall = sum(r["wall_ms"] for r in rows) / max(1, len(rows))
-        return {"hit_rate": hit / max(1, len(rows)), "violations": viol, "avg_wall_ms": int(wall)}
+        return {"hit_rate": hit / max(1, len(assertable)), "assertable": len(assertable),
+                "violations": viol, "avg_wall_ms": int(wall)}
 
     summary = {"round": ROUND_LABEL, "cases": len(CASES),
                "A": agg(a_rows), "B": agg(b_rows), "rows": a_rows + b_rows}
