@@ -630,6 +630,25 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             agent.config.AgentTelemetry.Emit("micro_decision", "IndustrialAgentV2",
                 ("mode", gateVerdict.Mode.ToString()), ("subtasks", subTasks.Count));
 
+            // R304 (牵引 L2): topic_drift 观测 — 当前轮主题 vs 会话核心主题 (画像 top-1) 的偏离检测。
+            // 数据先行 (L2 观测档): 只打点不干预, 攒轨迹后定阈值 (L1 牵引/L3 澄清的依据)。
+            try
+            {
+                var biasScores = _tendencyAnalyzer.GetContextBiasAsync(message.SenderId ?? "cli-user", message.Content)
+                    .GetAwaiter().GetResult().BiasScores;
+                var coreTopic = biasScores.OrderByDescending(kv => kv.Value).FirstOrDefault().Key ?? "";
+                var msgLower = message.Content.ToLowerInvariant();
+                var drift = !string.IsNullOrEmpty(coreTopic) &&
+                            !coreTopic.ToLowerInvariant().Split(' ', '-', '_').Any(t => t.Length > 1 && msgLower.Contains(t));
+                agent.config.AgentTelemetry.Emit("topic_drift", "IndustrialAgentV2",
+                    ("core", coreTopic), ("drift", drift), ("intent", intent));
+            }
+            catch (Exception ex)
+            {
+                agent.config.AgentTelemetry.Emit("topic_drift", "IndustrialAgentV2",
+                    ("error", ex.Message[..Math.Min(50, ex.Message.Length)]));
+            }
+
             // v0.13.3 R286 (思考链任务1 宿主收口): 上下文含 URL/目录线索且非 HardDrop 时, 思考链探索
             // (预算: deadline 4s + 步数≤4 — user 钦定 per-source 最大渐进探索步骤 config 语义)。
             // 探索 digest 进 exploreDigest, 与 microRestore 同通道回注。
@@ -751,7 +770,7 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             // 7.5 会话长期记忆回写 (v7.14): 每轮摘要入滚动记忆, 目标句从首轮任务锚定
             try
             {
-                var memSession = await _sessionManager.GetOrCreateSessionAsync(message.SessionId, message.SenderId);
+                var memSession = await _sessionManager.GetOrCreateSessionAsync(message.SessionId, message.SenderId ?? "cli-user");
                 var mem = memSession.Memory;
                 // v0.11.0 R39 (真缺陷 25): goal 只在空时锚定且永不更新 — 用户任务转向
                 // ("算了改成X")后新方向与旧 goal 实体零重叠, 后续轮全被误隔离 (实测爬虫→API 4轮中2轮被隔离)。
