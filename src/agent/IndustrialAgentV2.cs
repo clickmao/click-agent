@@ -528,6 +528,55 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     subTasks.Count, intent, string.Join(",", subTasks.Select(t => t.Intent)));
             }
             
+            // 1.39 v0.15.1-a (任务进行中新输入路由): TaskCharter 活跃时按章程锚三态路由 —
+            // 相关补充 → pending_inputs (下轮循环注入依据); 无关任务 → 隔离子 (既有链);
+            // 换任务语义 → pivot (既有重锚)。判定器全复用 TopicRelevanceEvaluator (R308)。
+            // 无活动章程 → 既有行为 (本块零干预)。
+            try
+            {
+                var charter = agent.tasks.TaskCharter.LoadActive(_dataStoragePath);
+                if (charter is { IsRunning: true })
+                {
+                    // pivot 语义判定 (与 1.4 块同词表 — 用户转向/放弃类输入优先路由 Pivot)
+                    string[] routePivotMarkers = { "不要之前", "不用之前", "放弃", "重新开始", "取消之前", "先不做", "算了", "改成", "改为", "换成", "不要了", "还是做", "换一个" };
+                    var pivotInput = routePivotMarkers.Any(m => message.Content.Contains(m, StringComparison.Ordinal));
+                    var routeVerdict = agent.intent.TopicRelevanceEvaluator.Evaluate(
+                        message.Content,
+                        charter.KeyEntities.AsReadOnly(),
+                        charter.GoalText,
+                        intent,
+                        coreTopic: "");  // v0.15.1-a: 章程锚已含主题语义, 词面偏离不参与路由 (Isolate/Supplement 二态即可)
+                    var route = routeVerdict.Action switch
+                    {
+                        _ when pivotInput => agent.tasks.TaskCharter.InputRoute.Pivot,
+                        agent.intent.TopicRelevanceEvaluator.Recommendation.Isolate => agent.tasks.TaskCharter.InputRoute.Isolate,
+                        _ => agent.tasks.TaskCharter.InputRoute.Supplement,
+                    };
+                    agent.config.AgentTelemetry.Emit("task_input", "IndustrialAgentV2",
+                        ("route", route.ToString()), ("charter", charter.Id),
+                        ("score", routeVerdict.Score));
+                    switch (route)
+                    {
+                        case agent.tasks.TaskCharter.InputRoute.Supplement:
+                            // 主题补充: 暂存下轮注入 (持久化 — 跨进程/跨轮)
+                            charter.PendingInputs.Add(message.Content);
+                            charter.Save(_dataStoragePath);
+                            break;
+                        case agent.tasks.TaskCharter.InputRoute.Pivot:
+                            // 换任务: 章程归档 failed (用户转向) — pivot 既有机制接管重锚
+                            charter.Archive(_dataStoragePath, "failed");
+                            break;
+                        case agent.tasks.TaskCharter.InputRoute.Isolate:
+                            // 无关任务: 走既有隔离子 (下方 1.4 隔离判定承接, 此处仅打点路由去向)
+                            break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "任务路由判定失败 (降级: 既有行为)");
+            }
+
             // 1.4 隔离任务判定 (v7.15 I.2): 单任务 + 判定与主目标无关 → 隔离子执行, 不进主链
             // (首轮无 GoalProfile 锚 → 不隔离; 多子任务=当前目标链的一部分 → 不隔离)
             // R308b (合并判定收口): TopicRelevanceEvaluator 一次计算 — 隔离/牵引/打点三路消费同一 verdict。

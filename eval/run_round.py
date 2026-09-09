@@ -121,7 +121,7 @@ def summarize_points(points):
          "compress_n": 0, "compress_drift_ok": 0, "compress_semantic": [],
          "compress_chars_in": 0, "compress_chars_out": 0, "pivot_n": 0,
          "topic_relevance_score": 0, "topic_relevance_verdict": None, "topic_drift_n": 0,
-         "topic_clarify_pulled": 0,
+         "topic_clarify_pulled": 0, "task_input_routes": [],
          "gate_mode": None, "gate_est": None}
     for pt in points:
         kv = pt.get("kv", {}) or {}
@@ -169,6 +169,9 @@ def summarize_points(points):
             # v0.13.3 M4: 上下文预算门 (normal/isolated_micro/hard_drop) — 微隔离触发观测点
             s["gate_mode"] = kv.get("mode")
             s["gate_est"] = kv.get("est_tokens")
+        elif tag == "task_input":
+            # v0.15.1: 任务进行中新输入路由观测 (supplement/isolate/pivot)
+            s["task_input_routes"].append(f"{kv.get('route')}@{kv.get('score')}")
         elif tag == "topic_clarify":
             # R315: L3 拉回率观测 (clarify 问句后 ≤2 轮回锚)
             if kv.get("pulled_back"):
