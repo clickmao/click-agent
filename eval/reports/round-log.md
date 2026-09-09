@@ -1844,3 +1844,11 @@
 - **意图指数**: n=10, ms_avg=0.1, dist={'general': 10, 'git_operation': 1, 'search': 1}
 - **per-case**: C01_general_qa 551tok 8.0s Δ+62 | C03_subtask 1303tok 19.1s Δ+16 | C04_skill_identity 0tok 4.8s | C06_executive_unit_convert 0tok 4.4s | C07_memory_followup 2835tok 27.2s Δ+112 | C08_reasoning 1410tok 33.4s Δ+132 | C11_json_format 744tok 9.6s Δ-114 | C13_git_sensitive 1920tok 36.9s Δ+73 | C14_isolated_multi 2420tok 63.7s Δ+80 | C17_neg_hallucination_bait 841tok 21.6s Δ+109 | C18_neg_format_trap 680tok 10.4s Δ-109 | C19_topic_clarify_6turn 9114tok 59.1s Δ+678
 
+## mass_486 — R323 batch266 route-cases-precise (2026-09-09T23:06:49+0800)
+
+- **判定**: 0/3 passed, tokens_total=2492 (avg 831), wall=38839ms (avg 12.9s)
+- **KPI**: in-band (基准轮数 0)
+- **防漂移指数**: segments=1, drift_pass=1.0, semantic_avg=0.989, chars_ratio=0.792
+- **意图指数**: n=3, ms_avg=0.0, dist={'general': 3}
+- **per-case**: C22_task_route_supplement 642tok 11.7s | C23_task_route_isolate 982tok 12.1s | C24_task_route_pivot 868tok 15.0s
+

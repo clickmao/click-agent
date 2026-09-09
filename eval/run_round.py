@@ -39,40 +39,42 @@ def read_telemetry(path=None):
             pass
     return points
 
-def run_case(case, env):
-    """跑单用例 → {reply, points, wall_ms}"""
-    # v0.15.1-a (R322): 用例级章程 fixture — setup.charter 存在则预写 active.json (用例后清理)。
-    # 使路由案 (C22-C24) 可精准测: 章程状态是路由判定的前置条件 (无 setup = 无章程 = 既有行为)。
-    _charter_setup = (case.get("setup") or {}).get("charter")
+def _apply_charter_setup(case):
+    """v0.15.1-a (R322): 用例级章程 fixture — setup.charter 预写 active.json; 返回还原函数。"""
+    charter_setup = (case.get("setup") or {}).get("charter")
+    if not charter_setup:
+        return lambda: None
+    import json as _j
     _charters_dir = os.path.abspath("data/task-charters")
     _charter_active = os.path.join(_charters_dir, "active.json")
-    _charter_backup = None
-    if _charter_setup:
-        os.makedirs(_charters_dir, exist_ok=True)
-        if os.path.exists(_charter_active):
-            _charter_backup = open(_charter_active, encoding="utf-8").read()
-        import json as _j
-        _c = dict(_charter_setup)
-        _c.setdefault("Id", f"tc{int(time.time()*1000)%10**12:012d}")
-        _c.setdefault("Status", "running")
-        _c.setdefault("PendingInputs", [])
-        _c.setdefault("KeyEntities", [])
-        _c.setdefault("AcceptanceCriteria", [])
-        _c.setdefault("ScopeOut", [])
-        _c.setdefault("CreatedUtc", "2026-09-09T00:00:00Z")
-        open(_charter_active, "w", encoding="utf-8").write(_j.dumps(_c, ensure_ascii=False))
+    os.makedirs(_charters_dir, exist_ok=True)
+    backup = open(_charter_active, encoding="utf-8").read() if os.path.exists(_charter_active) else None
+    c = dict(charter_setup)
+    c.setdefault("Id", f"tc{int(time.time()*1000)%10**12:012d}")
+    c.setdefault("Status", "running")
+    for k, v in (("PendingInputs", []), ("KeyEntities", []), ("AcceptanceCriteria", []), ("ScopeOut", [])):
+        c.setdefault(k, v)
+    c.setdefault("CreatedUtc", "2026-09-09T00:00:00Z")
+    open(_charter_active, "w", encoding="utf-8").write(_j.dumps(c, ensure_ascii=False))
+    def restore():
+        if backup is not None:
+            open(_charter_active, "w", encoding="utf-8").write(backup)
+        elif os.path.exists(_charter_active):
+            os.remove(_charter_active)
+    return restore
+
+
+def run_case_with_setup(case, env):
+    """统一入口: setup 钩子 (repl/非 repl 通用) → 原执行函数。"""
+    restore = _apply_charter_setup(case)
     try:
-        return _run_case_inner(case, env)
+        return run_case_repl(case, env) if case.get("repl") else run_case(case, env)
     finally:
-        if _charter_setup:
-            if _charter_backup is not None:
-                open(_charter_active, "w", encoding="utf-8").write(_charter_backup)
-            elif os.path.exists(_charter_active):
-                os.remove(_charter_active)
+        restore()
 
 
-def _run_case_inner(case, env):
-    """跑单用例 → {reply, points, wall_ms} (原 run_case 主体)"""
+def run_case(case, env):
+    """跑单用例 → {reply, points, wall_ms}"""
     # v0.11.0 R110 (fix#42): 每用例独立 telemetry 文件 (绝对路径 env 覆写) —
     # 共享单文件的 remove→append→read 时序竞争曾致间歇 llm_calls=0 误判 (mass_99/99b/99c/99d)。
     case_tel = os.path.abspath("data/telemetry/host.jsonl")  # CLI 固定写 host.jsonl, 每用例独占目录
@@ -491,7 +493,7 @@ def main():
     results = []
     for c in cases:
         # R116: repl 型用例 (多轮会话) → run_case_repl
-        r = run_case_repl(c, env) if c.get("repl") else run_case(c, env)
+        r = run_case_with_setup(c, env)
         agg = summarize_points(r["points"])
         ok, notes = check_expect(c, r["reply"], agg, r["raw_tail"])
         results.append({"id": c["id"], "input": c.get("input") or " | ".join(c.get("repl", [])), "pass": ok, "notes": notes,
