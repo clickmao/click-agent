@@ -16,6 +16,8 @@ public sealed class BgeEmbedder : ITextEmbedder, IDisposable
     private LLamaEmbedder? _embedder;
     private bool _initialized;
 
+
+
     public bool IsAvailable => File.Exists(_modelPath) && new FileInfo(_modelPath).Length > 0;
 
     public BgeEmbedder(string modelPath) => _modelPath = modelPath;
@@ -38,13 +40,16 @@ public sealed class BgeEmbedder : ITextEmbedder, IDisposable
         {
             if (_initialized)
                 return;
-            var parameters = new ModelParams(_modelPath)
+            _embedder = agent.vectormemory.SharedEmbedderRegistry.GetOrCreate(_modelPath, () =>
             {
-                ContextSize = 512,
-                Threads = Math.Max(2, Environment.ProcessorCount / 2),
-            };
-            var weights = LLamaWeights.LoadFromFile(parameters);
-            _embedder = new LLamaEmbedder(weights, parameters);
+                var parameters = new ModelParams(_modelPath)
+                {
+                    ContextSize = 512,
+                    Threads = Math.Max(2, Environment.ProcessorCount / 2),
+                };
+                var weights = LLamaWeights.LoadFromFile(parameters);
+                return new LLamaEmbedder(weights, parameters);
+            });
             _initialized = true;
         }
     }

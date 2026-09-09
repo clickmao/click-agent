@@ -22,16 +22,21 @@ public class BgeEmbeddingProvider : IEmbeddingProvider
     /// <summary>加载 bge gguf 模型 (CPU 变体 native; 共享 native 由解析器复用)</summary>
     public static BgeEmbeddingProvider Create(string modelPath, int gpuLayerCount = 0)
     {
-        var parameters = new LLama.Common.ModelParams(modelPath)
+        // v0.15.3 T-B (R-3): 走 BgeEmbedder 共享注册表 — 同 modelPath 复用 LLamaEmbedder
+        // (消除第二份模型驻留; 参数差异以先到者为准 — Batch/UBatch 是吞吐参数不改向量)。
+        var embedder = SharedEmbedderRegistry.GetOrCreate(modelPath, () =>
         {
-            ContextSize = 512,
-            GpuLayerCount = gpuLayerCount,
-            Threads = Math.Max(1, Environment.ProcessorCount / 2),
-            BatchSize = 512,
-            UBatchSize = 512,
-        };
-        var weights = LLamaWeights.LoadFromFile(parameters);
-        var embedder = new LLamaEmbedder(weights, parameters);
+            var parameters = new LLama.Common.ModelParams(modelPath)
+            {
+                ContextSize = 512,
+                GpuLayerCount = gpuLayerCount,
+                Threads = Math.Max(1, Environment.ProcessorCount / 2),
+                BatchSize = 512,
+                UBatchSize = 512,
+            };
+            var weights = LLamaWeights.LoadFromFile(parameters);
+            return new LLamaEmbedder(weights, parameters);
+        });
         return new BgeEmbeddingProvider(embedder);
     }
 

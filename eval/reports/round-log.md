@@ -1964,3 +1964,11 @@
 - **意图指数**: n=3, ms_avg=0.0, dist={'code_generation': 2, 'general': 1}
 - **per-case**: C33_code_antipattern_bait 2087tok 18.3s | C34_asyncvoid_bait 2263tok 16.8s | C35_stringconcat_bait 2583tok 17.0s
 
+## mass_501 — R326 batch278 skill-version-full-acceptance (2026-09-10T01:30:27+0800)
+
+- **判定**: 37/37 passed, tokens_total=69965 (avg 1891), wall=865348ms (avg 23.4s)
+- **KPI**: tokens_per_case=1891 out (900, 1300) (基准轮数 0)
+- **防漂移指数**: segments=53, drift_pass=1.0, semantic_avg=0.94, chars_ratio=0.905
+- **意图指数**: n=31, ms_avg=0.2, dist={'general': 24, 'code_generation': 5, 'git_operation': 1, 'search': 4}
+- **per-case**: C01_general_qa 593tok 9.4s | C02_coding 2234tok 16.5s | C03_subtask 1582tok 22.1s | C04_skill_identity 0tok 6.2s | C05_skill_wordcount 0tok 5.9s | C06_executive_unit_convert 0tok 5.8s | C07_memory_followup 2744tok 30.5s | C08_reasoning 1320tok 14.8s | C09_balance_cmd 0tok 1.3s | C10_model_list 0tok 1.0s | C11_json_format 1102tok 34.0s | C12_negative_empty 446tok 8.3s | C13_git_sensitive 1404tok 41.4s | C09b_balance_glm 0tok 1.0s | C14_isolated_multi 1623tok 39.1s | C15_pivot_multi 4241tok 59.7s | C16_longsession_4turn 7427tok 111.2s | C17_neg_hallucination_bait 877tok 12.0s | C18_neg_format_trap 802tok 22.4s | T-V01_vision_qa 2256tok 10.4s | T-V02_vision_corner 2047tok 15.8s | T-V03_vision_position 1977tok 15.4s | T-V04_vision_negbait 2185tok 23.5s | C19_topic_clarify_6turn 7978tok 62.3s | C22_task_route_supplement 1156tok 17.0s | C23_task_route_isolate 1191tok 11.6s | C24_task_route_pivot 684tok 15.9s | C26_critic_no_false_positive 1121tok 10.4s | C27_guardrail_inject_code 3895tok 40.9s | C28_guardrail_not_cross_domain 1353tok 9.9s | C29_guardrail_exception_honored 1141tok 22.8s | C30_guardrail_habituation 4581tok 43.2s | C31_guardrail_write 848tok 10.0s | C32_guardrail_ab_control 2401tok 27.1s | C33_code_antipattern_bait 2967tok 32.8s | C34_asyncvoid_bait 2816tok 34.5s | C35_stringconcat_bait 2973tok 19.2s
+

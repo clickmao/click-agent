@@ -640,8 +640,9 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             agent.intent.TopicRelevanceEvaluator.TopicRelevanceVerdict? topicVerdict = null;
             try
             {
-                var biasScores = _tendencyAnalyzer.GetContextBiasAsync(
-                    message.SenderId ?? "cli-user", message.Content).GetAwaiter().GetResult().BiasScores;
+                // v0.15.3 T-A3 (P2): GetAwaiter().GetResult() → await (每消息热路径阻塞消除; T-A1 后内层已无阻塞)
+                var biasScores = (await _tendencyAnalyzer.GetContextBiasAsync(
+                    message.SenderId ?? "cli-user", message.Content)).BiasScores;
                 coreTopic = biasScores.OrderByDescending(kv => kv.Value).FirstOrDefault().Key ?? "";
             }
             catch (Exception ex)

@@ -320,7 +320,7 @@ public class TendencyAnalyzer : ITendencyAnalyzer
         return Task.CompletedTask;
     }
     
-    public Task<ContextBias> GetContextBiasAsync(string userId, string context)
+    public async Task<ContextBias> GetContextBiasAsync(string userId, string context)
     {
         var bias = new ContextBias
         {
@@ -342,9 +342,11 @@ public class TendencyAnalyzer : ITendencyAnalyzer
         
         // v0.11.0 R14 修复: 原实现只看当前查询关键词命中 (用户历史倾向完全没用上)。
         // 融合 AnalyzeUserTendencyAsync 的历史 profile: 历史风格/主题倾向 ≥0.3 的条目注入 BiasScores。
+        // v0.15.3 T-A1: profile 提升到方法级 (L380 打点复用, 消除第 3 次调用); await 化 (P1 阻塞消除)。
+        TendencyProfile? profile = null;
         try
         {
-            var profile = AnalyzeUserTendencyAsync(userId).GetAwaiter().GetResult();
+            profile = await AnalyzeUserTendencyAsync(userId);
             if (profile.SampleSize > 0)
             {
                 foreach (var (style, score) in profile.StyleTendencies)
@@ -377,9 +379,9 @@ public class TendencyAnalyzer : ITendencyAnalyzer
         // R133: K1 观测点位 (此前 bias 计算全程无打点 — 立项卡 T5/K1): 每次召回计算必 emit
         agent.config.AgentTelemetry.Emit("tendency_bias", "TendencyAnalyzer",
             ("user", userId), ("scores", string.Join(";", bias.BiasScores.Select(kv => $"{kv.Key}={kv.Value:F2}"))),
-            ("conf", Math.Round(bias.OverallConfidence, 3)), ("sample", AnalyzeUserTendencyAsync(userId).GetAwaiter().GetResult().SampleSize));
+            ("conf", Math.Round(bias.OverallConfidence, 3)), ("sample", profile?.SampleSize ?? 0));
         
-        return Task.FromResult(bias);
+        return bias;
     }
     
     private double CalculateTendencyScore(List<TendencyData> dataList, string[] keywords)
