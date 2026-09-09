@@ -648,18 +648,27 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             var coreTopic = "";
             try
             {
+                // R308: 合并判定 API (TopicRelevanceEvaluator) — 隔离+牵引一次计算多路消费。
                 var biasScores = _tendencyAnalyzer.GetContextBiasAsync(message.SenderId ?? "cli-user", message.Content)
                     .GetAwaiter().GetResult().BiasScores;
                 coreTopic = biasScores.OrderByDescending(kv => kv.Value).FirstOrDefault().Key ?? "";
-                var msgLower = message.Content.ToLowerInvariant();
-                isDrift = !string.IsNullOrEmpty(coreTopic) &&
-                          !coreTopic.ToLowerInvariant().Split(' ', '-', '_').Any(t => t.Length > 1 && msgLower.Contains(t));
-                agent.config.AgentTelemetry.Emit("topic_drift", "IndustrialAgentV2",
-                    ("core", coreTopic), ("drift", isDrift), ("intent", intent));
+                var k1Session = await _sessionManager.GetOrCreateSessionAsync(
+                    message.SessionId, message.SenderId ?? "cli-user");
+                var goal = k1Session.Memory?.Goal;
+                var verdict = agent.intent.TopicRelevanceEvaluator.Evaluate(
+                    message.Content,
+                    goal?.KeyEntities ?? (IReadOnlyList<string>)Array.Empty<string>(),
+                    goal?.GoalIntent ?? "",
+                    intent,
+                    coreTopic);
+                isDrift = verdict.IsDrift && verdict.Action == agent.intent.TopicRelevanceEvaluator.Recommendation.SteerHint;
+                agent.config.AgentTelemetry.Emit("topic_relevance", "IndustrialAgentV2",
+                    ("score", verdict.Score), ("verdict", verdict.Action.ToString()),
+                    ("core", coreTopic), ("signals", string.Join(";", verdict.Signals)[..Math.Min(120, string.Join(";", verdict.Signals).Length)]));
             }
             catch (Exception ex)
             {
-                agent.config.AgentTelemetry.Emit("topic_drift", "IndustrialAgentV2",
+                agent.config.AgentTelemetry.Emit("topic_relevance", "IndustrialAgentV2",
                     ("error", ex.Message[..Math.Min(50, ex.Message.Length)]));
             }
 

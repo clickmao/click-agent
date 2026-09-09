@@ -207,3 +207,29 @@ done
 - tendency 注入 = 冗余强化 (SessionMemory/记忆源天然带画像) + 少量独有事实 (80% 比例)
 - 行为差分口径确立: 画像独有事实锚 (非宽词), 全隔离臂对照 (context 812→176tok)
 - 待做: 问题族扩容 (3→10) 显著性复测; L2 topic_drift 打点
+
+### 8.4 R308: 牵引判定 vs 无关隔离判定 — 共性分析与合并判定 API (用户问询驱动)
+
+**用户问题**: L1 牵引与"无关问题启动 subagent 隔离"在会话输入判定上是否有共同之处? 能否合并为一个 API?
+
+**现状两判定对比** (实码核查):
+
+| 维度 | 隔离判定 (TaskRelevanceChecker.Check, V2 L535) | 牵引判定 (topic_drift, V2 L780s) |
+|---|---|---|
+| 锚 | Goal.KeyEntities + GoalIntent (目标实体) | tendency_bias coreTopic (画像 top-1, 词面) |
+| 输入 | message.Content + incomingIntent | message.Content |
+| 信号 | 实体重叠 (±2) / 意图不同 (+1) / 离题词 (+1) / 指代词一票否决 / 结构信号 (-1) | 词面包含 (coreTopic 分词全不命中 → drift) |
+| 阈值 | score ≥ 2 → Isolated | bool (无分档) |
+| 时序 | LLM 前 (主循环 L535) | LLM 前 (micro_decision 后) |
+| 消费 | subagent 隔离执行 (IsolatedTaskRunner) | L1 轻牵引提示 (R307) |
+| 打点 | subagent{...} | topic_drift{core,drift} |
+
+**共性**: 同一输入 (当前轮消息), 同类锚 (会话主题/目标), 同语义轴 (当前输入与会话核心的相关度)。
+**差异**: ①锚源不同 (Goal 实体 vs 画像词面) ②评分结构 (Check 多信号加权 vs drift 二值) ③阈值/消费不同。
+
+**合并判定 API 设计 (R308 落地)**:
+`TopicRelevanceEvaluator.Evaluate(message, goalEntities, goalIntent, coreTopic, incomingIntent)` →
+`TopicRelevanceVerdict { Score, IsIsolated, IsDrift, Signals[], Recommendation (Isolate/SteerHint/Normal) }`
+- 统一在**一处**算相关度: 实体重叠 (强) + 意图差 (中) + 离题词 + 画像词面 (弱, 替换原二值 drift)
+- 消费映射: score ≥ 2 → Isolate (subagent); 0 < score < 2 → SteerHint (L1 提示); ≤ 0 → Normal
+- 好处: 一次判定多消费, 信号共享可观测 (单一打点 topic_relevance{score,verdict,signals}), 阈值集中可配
