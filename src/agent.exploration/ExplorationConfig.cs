@@ -27,6 +27,9 @@ public enum ExploreSourceKind
 /// </summary>
 public sealed class ExplorationConfig
 {
+    /// <summary>v0.13.3 M-D (R273): 探索链总开关 (env AGENTFRAMEWORK_EXPLORE, 默认开) — A/B 跑测用。</summary>
+    public bool Enabled { get; set; } = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_EXPLORE") != "0";
+
     public int MaxStepsPerContextBlock { get; set; } = 4;
     public int MaxStepsPerText { get; set; } = 2;
     public int MaxStepsPerUrl { get; set; } = 3;

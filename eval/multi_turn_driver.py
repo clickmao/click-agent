@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """v0.13.3 R268 — 多轮长对话 driver: 10 轮 repl 会话, 每轮注入材料, 观测压缩/上下文增长。
 用法: python3 eval/multi_turn_driver.py <round_label>"""
-import json, os, subprocess, sys, time
+import json, glob, os, subprocess, sys, time
 
 ROUND_LABEL = sys.argv[1] if len(sys.argv) > 1 else "mt-test"
 TURNS = 10
@@ -58,6 +58,26 @@ finally:
     except Exception:
         p.kill()
 
+# R272: 压缩遥测聚合 — 会话 telemetry jsonl 里抓 compression/compression_sentinel/compression_error/compression_breaker 事件
+tel_events = {"compression": 0, "compression_sentinel": 0, "compression_error": 0, "compression_breaker": 0}
+tel_details = []
+start_ts = time.time() - 3600  # 1h 窗口内的会话文件都扫
+for tf in sorted(glob.glob("data/telemetry/*.jsonl"), key=os.path.getmtime)[-3:]:
+    if os.path.getmtime(tf) < start_ts:
+        continue
+    for line in open(tf, encoding="utf-8-sig", errors="replace"):
+        try:
+            ev = json.loads(line)
+        except Exception:
+            continue
+        name = ev.get("point") or ev.get("event") or ev.get("name") or ""
+        if name in tel_events:
+            tel_events[name] += 1
+            kv = ev.get("kv") or {}
+            if name != "compression" or len(tel_details) < 12:
+                tel_details.append({k: kv.get(k) for k in ("level", "drift_ok", "semantic", "chars", "state", "reason", "losses") if kv.get(k) is not None})
+
 out_path = f"eval/results/multi-turn-{ROUND_LABEL}.json"
-json.dump({"round": ROUND_LABEL, "turns": results}, open(out_path, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+json.dump({"round": ROUND_LABEL, "turns": results, "compression_telemetry": {"events": tel_events, "details": tel_details}}, open(out_path, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 print(f"saved → {out_path}")
+print("compression telemetry:", tel_events)
