@@ -27,7 +27,7 @@ public class OutputCriticTests
     [Fact]
     public void R01_RefLocal_Negative()
     {
-        // R0071 转正修法形态 — 不应命中
+        // 反模式反例形态 (ref 局部变量取双操作数) — 不应命中
         var code = """
             ref var nn = ref g.N[id];
             var a0 = g.Resolve(nn.In0);
