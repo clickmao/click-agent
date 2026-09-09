@@ -518,6 +518,20 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             
             // 1.4 隔离任务判定 (v7.15 I.2): 单任务 + 判定与主目标无关 → 隔离子执行, 不进主链
             // (首轮无 GoalProfile 锚 → 不隔离; 多子任务=当前目标链的一部分 → 不隔离)
+            // R308b (合并判定收口): TopicRelevanceEvaluator 一次计算 — 隔离/牵引/打点三路消费同一 verdict。
+            string coreTopic = "";
+            agent.intent.TopicRelevanceEvaluator.TopicRelevanceVerdict? topicVerdict = null;
+            try
+            {
+                var biasScores = _tendencyAnalyzer.GetContextBiasAsync(
+                    message.SenderId ?? "cli-user", message.Content).GetAwaiter().GetResult().BiasScores;
+                coreTopic = biasScores.OrderByDescending(kv => kv.Value).FirstOrDefault().Key ?? "";
+            }
+            catch (Exception ex)
+            {
+                agent.config.AgentTelemetry.Emit("topic_relevance", "IndustrialAgentV2",
+                    ("error", ex.Message[..Math.Min(50, ex.Message.Length)]));
+            }
             if (_isolatedTaskRunner != null && subTasks.Count == 1)
             {
                 var goalMemory = _sessionMemoryStore.Load(message.SessionId);
@@ -531,9 +545,11 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 // 首轮 (无目标锚) 不隔离 — 无"当前任务"可言
                 if (!pivotRequested && goal != null && goalEntities.Count > 0)
                 {
-                    // v0.11.0 R14 修复: 第2参是 goalIntent, 原传 GoalText 原文 → 意图相同也误判"意图不同"+1
-                    var (isIsolated, score, reason) = agent.intent.TaskRelevanceChecker.Check(
-                        goalEntities, goal.GoalIntent, message.Content, subTasks[0].Intent);
+                    // R308b (合并判定收口): 隔离消费走统一 evaluator (与牵引/打点同源)。
+                    topicVerdict = agent.intent.TopicRelevanceEvaluator.Evaluate(
+                        message.Content, goalEntities, goal.GoalIntent, subTasks[0].Intent, coreTopic);
+                    var (isIsolated, score, reason) = (topicVerdict.IsIsolated,
+                        topicVerdict.Score, string.Join(";", topicVerdict.Signals));
                     if (isIsolated)
                     {
                         agent.config.AgentTelemetry.Emit("subagent", "IsolatedTaskRunner",
@@ -641,35 +657,18 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             agent.config.AgentTelemetry.Emit("micro_decision", "IndustrialAgentV2",
                 ("mode", gateVerdict.Mode.ToString()), ("subtasks", subTasks.Count));
 
-            // R304 (牵引 L2)+R307 (L1 轻牵引): topic_drift 检测 + 连续偏题计数。
-            // L2: 打点; L1: 连续 ≥2 轮偏题 → 回复尾追加牵引提示 (不改答案本体);
-            // L3 (主动澄清) 待 L1 数据后再进。
-            var isDrift = false;
-            var coreTopic = "";
-            try
-            {
-                // R308: 合并判定 API (TopicRelevanceEvaluator) — 隔离+牵引一次计算多路消费。
-                var biasScores = _tendencyAnalyzer.GetContextBiasAsync(message.SenderId ?? "cli-user", message.Content)
-                    .GetAwaiter().GetResult().BiasScores;
-                coreTopic = biasScores.OrderByDescending(kv => kv.Value).FirstOrDefault().Key ?? "";
-                var k1Session = await _sessionManager.GetOrCreateSessionAsync(
-                    message.SessionId, message.SenderId ?? "cli-user");
-                var goal = k1Session.Memory?.Goal;
-                var verdict = agent.intent.TopicRelevanceEvaluator.Evaluate(
-                    message.Content,
-                    goal?.KeyEntities ?? (IReadOnlyList<string>)Array.Empty<string>(),
-                    goal?.GoalIntent ?? "",
-                    intent,
-                    coreTopic);
-                isDrift = verdict.IsDrift && verdict.Action == agent.intent.TopicRelevanceEvaluator.Recommendation.SteerHint;
-                agent.config.AgentTelemetry.Emit("topic_relevance", "IndustrialAgentV2",
-                    ("score", verdict.Score), ("verdict", verdict.Action.ToString()),
-                    ("core", coreTopic), ("signals", string.Join(";", verdict.Signals)[..Math.Min(120, string.Join(";", verdict.Signals).Length)]));
-            }
-            catch (Exception ex)
+            // R308b (合并判定): topic_relevance 单点 — 隔离/牵引/打点三路消费同一 verdict
+            // (TopicRelevanceEvaluator, 见 L520 隔离判定处的一次计算)。
+            // R308b: 复用隔离点已算的 topicVerdict (一次计算 — 无重复评估); 无锚轮 (verdict null)
+            // 退化为纯画像词面 drift (原 L2 行为)。
+            var isDrift = topicVerdict is { IsDrift: true } &&
+                          topicVerdict.Action == agent.intent.TopicRelevanceEvaluator.Recommendation.SteerHint;
+            if (topicVerdict is not null)
             {
                 agent.config.AgentTelemetry.Emit("topic_relevance", "IndustrialAgentV2",
-                    ("error", ex.Message[..Math.Min(50, ex.Message.Length)]));
+                    ("score", topicVerdict.Score), ("verdict", topicVerdict.Action.ToString()),
+                    ("core", coreTopic),
+                    ("signals", string.Join(";", topicVerdict.Signals)[..Math.Min(120, string.Join(";", topicVerdict.Signals).Length)]));
             }
 
             // v0.13.3 R286 (思考链任务1 宿主收口): 上下文含 URL/目录线索且非 HardDrop 时, 思考链探索
@@ -788,10 +787,12 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             // 提示与核心主题的衔接点 — 消费 K1 画像偏置, 实现会话内牵引不偏离核心主题)。
             _consecutiveDrift = isDrift ? _consecutiveDrift + 1 : 0;
             var steeringPending = _consecutiveDrift >= 2 && !string.IsNullOrEmpty(coreTopic);
-            if (steeringPending)
+            if (steeringPending && topicVerdict is not null)
             {
-                agent.config.AgentTelemetry.Emit("topic_steering", "IndustrialAgentV2",
-                    ("core", coreTopic), ("consecutive", _consecutiveDrift));
+                // R308b: steering 并入 topic_relevance 打点 (steering 标志位 — 不再独立点位)。
+                agent.config.AgentTelemetry.Emit("topic_relevance", "IndustrialAgentV2",
+                    ("verdict", "SteerHint"), ("core", coreTopic),
+                    ("consecutive", _consecutiveDrift), ("stage", "steering"));
             }
             
             // 6. ✅ 将消息添加到会话
