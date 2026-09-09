@@ -523,6 +523,20 @@ def main():
         os.remove(sess)
     results = []
     for c in cases:
+        # R332 (eval per-case isolation hardening): case 间状态隔离 — 原清理只在轮级
+        # (R81), case N 的落盘会话记忆/RAG 会泄入 case N+1 的新子进程: CLI 每次起进程都
+        # 读+写 data/sessions/cli-*_memory.json (追加语义), 前 case 多轮历史/倾向成为后
+        # case turn1 锚定上下文 → C14 isolated=None 两次 12/13 flake (rounds 506/506b,
+        # R331 调查: 同 binary standalone 2/2 PASS + OLD A/B 13/13 PASS, 失败仅现于整批
+        # 窗口 = cross-case leakage 时序累积, 非确定性代码缺陷)。
+        # 每 case 前清: 会话记忆 + RAG 落盘 (case 无 rag 预置依赖 — setup 键仅
+        # charter/guardrails, 且 fixture 在 run_case_with_setup 内应用 → 清理先于 setup 安全)。
+        # repl 型 case 内部多轮共享同进程状态, 清在 case 边界不影响其语义。
+        for stale in ("data/rag/index.jsonl",):
+            if os.path.exists(stale):
+                os.remove(stale)
+        for sess in glob.glob("data/sessions/cli-*_memory.json"):
+            os.remove(sess)
         # R116: repl 型用例 (多轮会话) → run_case_repl
         r = run_case_with_setup(c, env)
         agg = summarize_points(r["points"])
