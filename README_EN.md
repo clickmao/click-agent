@@ -35,10 +35,10 @@ Release line: v0.11.0 — unified @cmd command protocol + 3 transports / Skill e
 
 ### 📦 v0.11.0 R169-R204 Additions
 
-Archived → [CHANGELOG-v0.11.0-R169-R185.md](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md) · [CHANGELOG-v0.11.0-R186-R204.md](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md)
+Archived → [CHANGELOG-v0.11.0-R169-R185.md](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md) · [CHANGELOG-v0.11.0-R186-R204.md](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md) · [CHANGELOG-v0.11.0-R205-R218.md](docs/changelogs/CHANGELOG-v0.11.0-R205-R218.md) · [CHANGELOG-v0.11.0-R219-R228.md](docs/changelogs/CHANGELOG-v0.11.0-R219-R228.md) · [CHANGELOG-v0.13.x-R229-R248.md](docs/changelogs/CHANGELOG-v0.13.x-R229-R248.md) · [CHANGELOG-v0.13.3-R249-R268.md](docs/changelogs/CHANGELOG-v0.13.3-R249-R268.md) (30-batch scroll; backfilled 2026-09-09, next ≈batch258)
 
 ### 📊 Iteration Eval Stats (telemetry-driven)
-- **240 batches landed, recent-30 99%+** (quick-11 caliber); **490 unit tests** (325 baseline, +165); **69 real defects** fixed, all telemetry-driven (#21-#69); recall calibers **bge 0.95 / bag-of-words long 0.70**; compression audit 104 diverse docs **keys 100% / instruction 96%**; exploration A/B (24 reachable-URL cases) **hit 0.278->0.667 (+39pt) zero regression**.
+- **256 batches landed, recent-30 99%+** (quick-11 caliber); **499 unit tests** (325 baseline, +174); **72 real defects** fixed, all telemetry-driven (#21-#72); recall calibers **bge 0.95 / bag-of-words long 0.70 / adversarial short 0.45**; compression audit 104 diverse docs **keys 100% / instruction 96%**; exploration A/B (24 cases) **hit 0.167->0.722 (+56pt, R310 rerun)**; merged relevance verdict (isolation+steering single-point, R308).
 
 ### Batch Trend (rolling window — latest 2)
 **Batch 240 (mass_460)** 11/11 quick-11 920/case / **Batch 239 (mass_459)** 11/11 quick-11 974/case —

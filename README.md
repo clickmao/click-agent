@@ -2,12 +2,12 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)
-![Tests](https://img.shields.io/badge/tests-490%2F490-brightgreen)
+![Tests](https://img.shields.io/badge/tests-499%2F499-brightgreen)
 ![NativeAOT](https://img.shields.io/badge/NativeAOT-zero%20warnings-blueviolet)
 ![Eval](https://img.shields.io/badge/迭代评测-240批%2099%25%2B-success)
 
-C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / NativeAOT 零警告 / 490 测试全绿。
-发布线: v0.13.3 — 思考链+渐进式探索 (A/B +39pt) / 兜底粘性路由 / 格式修复收敛环 / 压缩失败防护 D1-D4 /
+C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / NativeAOT 零警告 / 499 测试全绿。
+发布线: v0.13.3 — 思考链+渐进式探索 (A/B +56pt) / 兜底粘性路由 / 格式修复收敛环 / 压缩失败防护 D1-D4 /
 微步骤隔离 / think-memory 跨进程联想 / 视觉理解 / bge 向量召回 0.95 / 22 模型目录 / 全链路打点。
 
 [🇬🇧 English → README_EN.md](README_EN.md)
@@ -40,11 +40,11 @@ C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / Na
 | 维度 | 基线 | 当前 (2026-09-09) | 改善 |
 |---|---|---|---|
 | 评测通过率 | 7354tok 基线 10 用例 | **240 批落盘, 近 30 批 99%+** (quick-11 口径) | 负面扩容后稳定 |
-| 单元测试 | 325 | **490** | +165 |
-| 真缺陷修复 | — | **69 项** (全部打点驱动, #21-#69) | 缺陷台账 |
+| 单元测试 | 325 | **499** | +174 |
+| 真缺陷修复 | — | **72 项** (全部打点驱动, #21-#72) | 缺陷台账 |
 | 召回率 (RAG) | 词袋 0.45 (缺陷 69 前) | **bge 0.95 / 词袋长查询 0.70** | 三口径基线 |
 | 压缩关键信息保留 | SummarySentences 33-53% | **keys 100% / 指令 96%** (104 篇多样态 audit) | 健康线 ≥95% |
-| 探索 A/B (可达 URL 24 案) | — | **hit 0.278→0.667 (+39pt) 零回归** | v0.13.3 探索链 |
+| 探索 A/B (可达 URL 24 案) | — | **hit 0.167→0.722 (+56pt, R310 复跑) 零回归** | v0.13.3 探索链 |
 
 ### 批次趋势 (滚动窗口 — 最新 2 批)
 
@@ -54,7 +54,7 @@ v0.13.3 合并判定期: TopicRelevanceEvaluator 单点 (隔离/牵引/打点三
 LinkRegistry 激活链挂载; 批234 1402/case 单批离群定性 (C03 completion 波动非回归); 批236 XL 7/7 7008/case
 (gate 三态稳定); 批238 10/11 C08 意图单批抖动 (3 连真机复现 general, 观察关闭)。
 
-归档: [42-78](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md) · [79-108](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md) · [109-138](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md) · [139-167](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md) · [168-177](docs/changelogs/CHANGELOG-v0.11.0-R205-R218.md) · [178-187](docs/changelogs/CHANGELOG-v0.11.0-R219-R228.md)。每 30 批滚动。
+归档: [42-78](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md) · [79-108](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md) · [109-138](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md) · [139-167](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md) · [168-177](docs/changelogs/CHANGELOG-v0.11.0-R205-R218.md) · [178-187](docs/changelogs/CHANGELOG-v0.11.0-R219-R228.md) · [188-217](docs/changelogs/CHANGELOG-v0.13.x-R229-R248.md) · [218-247](docs/changelogs/CHANGELOG-v0.13.3-R249-R268.md)。每 30 批滚动 (2026-09-09 补账, 下一点≈批258)。
 
 专项验证: 多来源召回率 / 无关话题隔离 (score=2 独立 session) / session 长期记忆 (跨进程落盘) / JSON 格式跟随 / 双 LLM 校验 / XL 三态 gate — 全部 ✓。
 
@@ -148,11 +148,11 @@ python3 cross_validate.py                           # 双 LLM 交叉校验
 
 | 项 | 结果 |
 |---|---|
-| 单元测试 | **490/490** 通过 |
+| 单元测试 | **499/499** 通过 |
 | NativeAOT (linux-x64) | **0 IL 警告** (多次复验) + full-graph AOT 冒烟通过 |
 | 迭代评测 | **240 批落盘, 近 30 批 99%+** (quick-11 口径) |
 | XL 大上下文族 | 7/7 通过 (gate 三态: IsolatedMicro×3 / HardDrop×3 / Normal×1) |
-| 探索 A/B (可达 URL 24 案) | hit **0.278→0.667 (+39pt) 零回归** |
+| 探索 A/B (可达 URL 24 案) | hit **0.167→0.722 (+56pt, R310 复跑) 零回归** |
 | think-memory 持久化 | 跨进程 recall hit top_sim 0.970 ✓ |
 | 压缩 audit | 104 篇多样态: keys 100% / 因果 100% / 指令 96% / 压缩率 79-92% |
 | 3 端点真机 | glm/deepseek 对话+余额 ✓ (2026-09-09 复验: deepseek-v4-flash 0.5s, 余额 48.95 CNY); kimi 负样本诚实报错 ✓ |

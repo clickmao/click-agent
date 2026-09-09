@@ -68,9 +68,13 @@ public static class TopicRelevanceEvaluator
         var deixisVeto = signals.Any(sg => sg.Contains("指代词"));
         var howToVeto = signals.Any(sg => sg.Contains("实现询问"));
         var noOverlapFact = HasNoEntityOverlap(incomingMessage, goalKeyEntities);
+        // R312: 无锚模式 (goalKeyEntities 空) — noOverlapFact 无法判定 (恒 false), 短询问 veto
+        // 会把真离题新话题 ("红烧肉怎么做?") 误判追问 → 词面偏离本身充当 novelty 事实:
+        // 指代词 veto 保留 (绝对), 短询问 veto 仅在"有锚且重叠"时生效。
+        var anchorlessMode = goalKeyEntities.Count == 0;
         // R308 分级: 指代词 → 绝对追问 (无条件 veto — "那个/刚才" 必然指上文);
         // 短询问 → 零重叠事实在场时不 veto ("红烧肉怎么做?" 是真离题新话题, "怎么优化" 才是追问):
-        var vetoed = deixisVeto || (howToVeto && !noOverlapFact);
+        var vetoed = deixisVeto || (howToVeto && !anchorlessMode && !noOverlapFact);
         if (vetoed) isDrift = false;
 
         if (isDrift && !isIsolated)

@@ -558,6 +558,17 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     // R308b (合并判定收口): 隔离消费走统一 evaluator (与牵引/打点同源)。
                     topicVerdict = agent.intent.TopicRelevanceEvaluator.Evaluate(
                         message.Content, goalEntities, goal.GoalIntent, subTasks[0].Intent, coreTopic);
+                    // R312 (合并回归修复): 有锚轮 verdict 由此产生;
+                    // 无锚轮的 verdict 在下方 else 分支 (纯画像词面模式) — R308b 删词面退路导致
+                    // 无锚会话牵引失效 (R312 probe 实证: 5 轮全 no-anchor, drift 恒 false)。
+                }
+                else if (goal == null && !pivotRequested && !string.IsNullOrEmpty(coreTopic))
+                {
+                    // R312: 无 goal 锚轮 — 纯词面 verdict (goalEntities 空 → 隔离恒 false,
+                    // 词面偏离 → IsDrift)。恢复 R307 L1 行为, 保持单源 evaluator。
+                    topicVerdict = agent.intent.TopicRelevanceEvaluator.Evaluate(
+                        message.Content,
+                        (IReadOnlyList<string>)Array.Empty<string>(), "", subTasks.Count > 0 ? subTasks[0].Intent : "general", coreTopic);
                     var (isIsolated, score, reason) = (topicVerdict.IsIsolated,
                         topicVerdict.Score, string.Join(";", topicVerdict.Signals));
                     if (isIsolated)
