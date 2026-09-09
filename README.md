@@ -40,7 +40,7 @@ C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / Na
 | 单元测试 | 325 | **389** | +64 |
 | 真缺陷修复 | — | **55 项** (全部打点驱动) | #21-#55 |
 
-批次趋势: **批214 (mass_432)** 11/11 quick-11 861/case / **批215 (mass_433)** 11/11 quick-11 1026/case — 底座能力优化期: 压缩 audit 关键句保护修复 (SummarySentences 保留率 33-53%→多样态 99%/85% 指令) + 429 感知调度 (跳过同模型重试直切备) + token-breakdown 观测行; 每批 KPI 小报制执行中。归档: [42-78](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md) · [79-108](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md) · [109-138](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md) · [139-167](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md) · [168-177](docs/changelogs/CHANGELOG-v0.11.0-R205-R218.md) · [178-187](docs/changelogs/CHANGELOG-v0.11.0-R219-R228.md)。每 30 批滚动 (下次: 批228)。
+批次趋势: **批237 (mass_457)** 11/11 quick-11 1087/case / **批233 (mass_452)** 11/11 quick-11 1124/case — v0.13.3 底座深化期: 压缩失败防护 (D1 异常隔离/D2 数字哨兵/D3 降级链/D4 熔断器) + 微步骤隔离 B2 宿主链 (IsolatedMicro→微问询→回注) + think-memory bge 联想 (hits top_sim 0.977) + LinkRegistry 激活链 + TF-IDF 词袋 (短查询判别力恢复); 批234 1402/case 单批离群定性 (C03 completion 波动非回归); 批236 XL 7/7 7008/case (gate 三态稳定)。归档: 归档: [42-78](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md) · [79-108](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md) · [109-138](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md) · [139-167](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md) · [168-177](docs/changelogs/CHANGELOG-v0.11.0-R205-R218.md) · [178-187](docs/changelogs/CHANGELOG-v0.11.0-R219-R228.md)。每 30 批滚动 (下次: 批228)。
 专项验证: 多来源召回率 (100 用例轮统计) / 无关话题隔离 (score=2 触发独立 session) / session 长期记忆 (跨进程落盘) / JSON 格式跟随 (哨兵用例) / 双 LLM 校验 — 全部 ✓。
 
 完整报告: [千轮迭代优化报告](docs/archive/reports/thousand-round-report.md) · 阶段台账: [wave3-ledger](docs/reports/wave3-ledger.md)
