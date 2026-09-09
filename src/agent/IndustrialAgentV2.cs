@@ -71,6 +71,9 @@ public class IndustrialAgentV2 : AgentBase
         private static bool _clarifyArmed;
         // v0.14.0 T2d: 修法记忆 (进程级单例, data/fix-memory.json 持久化)
         private static agent.critique.FixMemory? _fixMemory;
+        // v0.15.2: 警告/铁律记忆 (guardrails.json 持久化) + 同会话去重集 (habituation 防护)
+        private static agent.critique.GuardrailMemory? _guardrailMemory;
+        private static readonly HashSet<string> _injectedGuardrails = new();
         private static int _clarifyTurnsLeft;  // v0.11.0 R6: 存储召回同源修复
     private readonly agent.exploration.ContextBudgetGate _contextGate = new();  // v0.13.3 M2: 上下文预算门
     private readonly IVectorMemoryRecall _memoryRecall;
@@ -528,6 +531,37 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     subTasks.Count, intent, string.Join(",", subTasks.Select(t => t.Intent)));
             }
             
+            // 1.38 v0.15.2-b (警告语义写入链): 用户主动警告 ("不要/禁止/别再/记住/警告你" + 指向性)
+            // → 提取逻辑三元组入 GuardrailMemory (source=human_warning, 最高秩)。
+            // 规则先行 (词表), LLM 辅助解析待标定 (plan 待确认项)。域锚 = GoalText (既有锚定)。
+            try
+            {
+                var warningMarkers = new[] { "不要", "禁止", "别再", "不要再", "警告你", "记住了", "以后别", "禁止再" };
+                var hitMarker = warningMarkers.FirstOrDefault(w => message.Content.Contains(w, StringComparison.Ordinal));
+                if (hitMarker != null && message.Content.Length >= 8)
+                {
+                    _guardrailMemory ??= agent.critique.GuardrailMemory.Load(
+                        Path.Combine(_dataStoragePath, "guardrails.json"));
+                    var goal = _sessionMemoryStore.Load(message.SessionId)?.Goal;
+                    var domain = goal?.GoalText ?? "general";
+                    // 规则解析 (最小可行): 禁令 = 警告词后片段 (≤40ch); pattern = 内容名词化 (意图关键词);
+                    var afterIdx = message.Content.IndexOf(hitMarker, StringComparison.Ordinal) + hitMarker.Length;
+                    var prohibition = message.Content[afterIdx..].TrimStart(' ', ',', '，')[..Math.Min(40, message.Content[afterIdx..].TrimStart(' ', ',', '，').Length)];
+                    var patternWords = agent.intent.TaskRelevanceChecker.ExtractEntities(message.Content);
+                    var pattern = string.Join(" ", patternWords.Take(3));
+                    if (prohibition.Length >= 2 && pattern.Length >= 2)
+                    {
+                        var entry = _guardrailMemory.Write(domain, pattern, "", prohibition, "", message.Content[..Math.Min(60, message.Content.Length)], "human_warning");
+                        agent.config.AgentTelemetry.Emit("guardrail_write", "IndustrialAgentV2",
+                            ("id", (object)entry.Id), ("marker", (object)hitMarker));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "警告语义写入失败 (不影响本轮)");
+            }
+
             // 1.39 v0.15.1-a (任务进行中新输入路由): TaskCharter 活跃时按章程锚三态路由 —
             // 相关补充 → pending_inputs (下轮循环注入依据); 无关任务 → 隔离子 (既有链);
             // 换任务语义 → pivot (既有重锚)。判定器全复用 TopicRelevanceEvaluator (R308)。
@@ -1587,6 +1621,34 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "修法记忆渲染失败 (降级: 不注入)");
+        }
+
+        // v0.15.2: 警告/铁律预渲染 (GuardrailMemory — 逻辑三元组, 域+模式双键 recall;
+        // 心理学: 前置注入优于事后纠正; 同会话去重防 habituation — _injectedGuardrails)
+        try
+        {
+            _guardrailMemory ??= agent.critique.GuardrailMemory.Load(
+                Path.Combine(_dataStoragePath, "guardrails.json"));
+            // 领域锚: GoalText 优先 (任务域) — coreTopic 在 L535 区已算但此作用域可见性待查, 直接用 Goal
+            var grDomain = _sessionMemoryStore.Load(message.SessionId)?.Goal?.GoalText ?? "";
+            var grHits = _guardrailMemory.Recall(grDomain, message.Content, topK: 2);
+            var fresh = grHits.Where(h => !_injectedGuardrails.Contains(h.Id)).ToList();
+            if (fresh.Count > 0
+                && Environment.GetEnvironmentVariable("AGENTFRAMEWORK_K1_FULL_ISOLATION") != "1")
+            {
+                request.GuardrailBlock = agent.critique.GuardrailMemory.Render(fresh);
+                if (!request.EnabledSources.Contains(agent.context.DataSourceType.GuardrailMemory))
+                    request.EnabledSources.Add(agent.context.DataSourceType.GuardrailMemory);
+                foreach (var h in fresh)
+                    _injectedGuardrails.Add(h.Id); // 同会话去重 (habituation 防护)
+                agent.config.AgentTelemetry.Emit("guardrail", "IndustrialAgentV2",
+                    ("injected", (object)fresh.Count),
+                    ("domain", (object)grDomain[..Math.Min(30, grDomain.Length)]));
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "警告铁律渲染失败 (降级: 不注入)");
         }
 
         // v7.14: agent 画像 + 能力清单预渲染 (④⑤)

@@ -88,12 +88,17 @@ public sealed class GuardrailMemory
 
     private static bool MatchesDomain(GuardrailEntry e, string normDomain)
     {
-        if (string.IsNullOrEmpty(e.Domain) || string.IsNullOrEmpty(normDomain))
-            return false; // 无领域信息 → 不触发 (跨域不泛扰是特性)
+        // R324b: "general" 域条目 = 通用警告 (用户未在任务上下文发的警告) → 全域触发。
+        // 有域条目 + 当前无域 → 不触发 (跨域不泛扰是特性 — 无锚会话不吃领域警告)。
+        var eNorm = (e.Domain ?? "").Trim().ToLowerInvariant();
+        if (eNorm is "general" or "")
+            return true;
+        if (string.IsNullOrEmpty(normDomain))
+            return false;
         // 双向词面: 条目域词任一出现在当前域串, 或当前域词出现在条目域
-        var eWords = e.Domain.Split(new[] { ' ', '|', '/' }, StringSplitOptions.RemoveEmptyEntries);
+        var eWords = eNorm.Split(new[] { ' ', '|', '/' }, StringSplitOptions.RemoveEmptyEntries);
         return eWords.Any(w => w.Length > 1 && normDomain.Contains(w, StringComparison.OrdinalIgnoreCase))
-            || normDomain.Split(' ').Any(w => w.Length > 1 && e.Domain.Contains(w, StringComparison.OrdinalIgnoreCase));
+            || normDomain.Split(' ').Any(w => w.Length > 1 && eNorm.Contains(w, StringComparison.OrdinalIgnoreCase));
     }
 
     private static bool MatchesPattern(GuardrailEntry e, string text)

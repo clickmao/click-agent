@@ -36,7 +36,10 @@ public enum DataSourceType
     AgentContext,
 
     /// <summary>修法记忆 (v0.14.0 T2d — 输出侧经验: 反模式→修法, 评审反馈/自审锚定沉淀)</summary>
-    FixMemory
+    FixMemory,
+
+    /// <summary>警告/铁律记忆 (v0.15.2 — 用户主动警告的逻辑三元组, 领域性联想抑制)</summary>
+    GuardrailMemory
 }
 
 /// <summary>
@@ -108,6 +111,9 @@ public class ContextAssemblyRequest
 
     /// <summary>v0.14.0 T2d: 修法记忆块 (宿主从 FixMemory recall 预渲染; null=不启用该源)</summary>
     public string? FixMemoryBlock { get; set; }
+
+    /// <summary>v0.15.2: 警告/铁律块 (宿主从 GuardrailMemory recall 预渲染; null=不启用该源)</summary>
+    public string? GuardrailBlock { get; set; }
 
     /// <summary>最大Token预算</summary>
     public int MaxTokenBudget { get; set; } = 8000;

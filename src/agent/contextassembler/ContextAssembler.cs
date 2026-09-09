@@ -181,6 +181,24 @@ Interlocked.Increment(ref _cacheMisses);
                 }));
             }
 
+            if (request.EnabledSources.Contains(DataSourceType.GuardrailMemory) &&
+                request.GuardrailBlock != null)
+            {
+                // v0.15.2: 警告/铁律记忆 (用户主动警告的三元组 — 前置注入, 领域性联想抑制)
+                recallTasks.Add(Task.FromResult(new List<ContextSnippet>
+                {
+                    new()
+                    {
+                        SourceType = DataSourceType.GuardrailMemory,
+                        SourceName = "guardrail_memory",
+                        Content = request.GuardrailBlock,
+                        RelevanceScore = 0.95,
+                        EstimatedTokens = EstimateTokens(request.GuardrailBlock),
+                    }
+                }));
+            }
+
+
             
             // 等待所有召回完成
             var recallResults = await Task.WhenAll(recallTasks);
@@ -490,8 +508,10 @@ Interlocked.Increment(ref _cacheMisses);
 
 
                 }
+
                 catch (IOException) { /* 文件被占用等 — 跳过 */ }
                 catch (UnauthorizedAccessException) { /* 无权限 — 跳过 */ }
+
             }
         }
         catch (Exception ex)
