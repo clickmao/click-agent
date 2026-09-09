@@ -79,6 +79,9 @@ public class IndustrialAgentV2 : AgentBase
         private static agent.critique.FixMemory? _fixMemory;
         // v0.15.2: 警告/铁律记忆 (guardrails.json 持久化) + 同会话去重集 (habituation 防护)
         private static agent.critique.GuardrailMemory? _guardrailMemory;
+        // R326-f: KnowledgeHint skill 知识注入 (本轮待注入, prompt 装配时消费)
+        private static string _pendingSkillKnowledge = string.Empty;
+        private static int _skillKnowledgeInjected;
         private static readonly HashSet<string> _injectedGuardrails = new();
         private static int _clarifyTurnsLeft;  // v0.11.0 R6: 存储召回同源修复
     private readonly agent.exploration.ContextBudgetGate _contextGate = new();  // v0.13.3 M2: 上下文预算门
@@ -482,6 +485,19 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 // 给用户 ({"error":"no_pattern_match"}) — 失败必须静默降级 LLM, 成功才承载。
                 if (skillResult is { Success: true } && (skillResult.ForceUse || skillResult.Content.Length > 0))
                 {
+                    // R326-f (KnowledgeHint): 知识提示型命中 → SKILL.md body 作系统侧知识注入, 回复仍走主链 LLM
+                    if (skillResult.IsKnowledgeHint)
+                    {
+                        _skillKnowledgeInjected += skillResult.Content.Length;
+                        _logger.LogInformation("Skill {SkillId} knowledge-hint injected ({Chars}ch)",
+                            skillResult.SkillId, skillResult.Content.Length);
+                        agent.config.AgentTelemetry.Emit("skill_knowledge", "IndustrialAgentV2",
+                            ("skill", skillResult.SkillId), ("chars", skillResult.Content.Length));
+                        // 注入到 prompt 知识区: 记入待注入变量, 主链装配时加 (见 prompt 构建处)
+                        _pendingSkillKnowledge = skillResult.Content;
+                    }
+                    else if (skillResult.Success && (skillResult.ForceUse || !string.IsNullOrEmpty(skillResult.Content)))
+                    {
                     _logger.LogInformation("Skill {SkillId} activated ({Mode}, {Ms}ms)",
                         skillResult.SkillId, skillResult.ForceUse ? "force_use" : "executive", skillResult.ElapsedMs);
                     response.Success = true;
@@ -500,6 +516,7 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                         ("subtask_count", _execSubTasks.Count),
                         ("input_chars", message.Content.Length), ("executive", true));
                     return response;
+                    }
                 }
                 // 未命中/失败/禁语拦截 → 静默降级普通推理 (S.5: 用户无感)
             }
@@ -748,6 +765,12 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             var forecastHeader = agent.registry.NextTurnForecast.ToPromptHeader(forecast);
             if (forecastHeader.Length > 0)
                 systemPrompt = systemPrompt + "\n" + forecastHeader;
+            // R326-f: KnowledgeHint skill 知识注入 (命中后 systemPrompt 尾挂知识参考; 本轮一次)
+            if (_pendingSkillKnowledge.Length > 0)
+            {
+                systemPrompt = systemPrompt + "\n\n[技能知识参考]\n" + _pendingSkillKnowledge;
+                _pendingSkillKnowledge = string.Empty;
+            }
 
             var prompt = _promptBuilder.BuildWithHistory(
                 message,

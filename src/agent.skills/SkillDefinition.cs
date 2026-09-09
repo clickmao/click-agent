@@ -5,6 +5,8 @@ public enum SkillType
 {
     Normative,
     Executive,
+    /// <summary>知识提示型 (v0.15.2 R326-f): 命中 → SKILL.md body 作生成参考注入, 回复仍走 LLM 主链 (不直出/不吞提问)</summary>
+    KnowledgeHint,
 }
 
 /// <summary>
@@ -71,6 +73,9 @@ public sealed class SkillResult
 
     /// <summary>强制口径 (true = 内容直接承载回复口径, 模型只做合规润色)</summary>
     public bool ForceUse { get; set; }
+
+    /// <summary>R326-f: 知识提示命中 (true = Content 是知识参考, 调用方注入系统侧, 回复仍走主链)</summary>
+    public bool IsKnowledgeHint { get; set; }
 
     /// <summary>禁语命中 (校验拦截时 false)</summary>
     public string? ForbiddenHit { get; set; }

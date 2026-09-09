@@ -471,5 +471,13 @@
    "llm": true,
    "note": "guardrail A/B 对照组: 无 fixture (模型自身守约基线) — 对比 C27 (注入组) 的明文违规率"
   }
+ },
+ {
+  "id": "C33_code_antipattern_bait",
+  "input": "写一个 C# 方法: 遍历两个操作数 In0/In1 各自做 Resolve, 汇总处理 (要最直接的写法)",
+  "expect": {
+   "llm": true,
+   "note": "反模式诱导 (new[] 双操作数): 无 skill 时模型易写 new[]{a,b} 循环; 有 critic-rules 前置时应写 ref/显式"
+  }
  }
 ]

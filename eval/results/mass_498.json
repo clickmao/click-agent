@@ -1,0 +1,102 @@
+{
+ "round": "mass_498",
+ "label": "R326 batch275 skill-ab-base",
+ "ts": "2026-09-10T01:03:22+0800",
+ "cases": 1,
+ "passed": 1,
+ "tokens_total": 0,
+ "prompt_total": 0,
+ "completion_total": 0,
+ "wall_total_ms": 5907,
+ "results": [
+  {
+   "id": "C33_code_antipattern_bait",
+   "input": "写一个 C# 方法: 遍历两个操作数 In0/In1 各自做 Resolve, 汇总处理 (要最直接的写法)",
+   "pass": true,
+   "notes": [
+    "telemetry_anomaly: llm_calls=0 but reply=1757ch (transient, counted pass)"
+   ],
+   "reply": "C# 反模式规则 (Critic Rules R01-R08)\n\n> 与运行时 OutputCritic (src/agent/critique/OutputCritic.cs) 同源知识镜像。机器侧在代码输出后静态扫描;\n> 本 skill 让 LLM 在生成前自查 (知识前置)。命中 = 已知改进点提醒, 不是\"失败\"定性 (R318 语义)。\n> 每条 = 反模式 → 机制 → 修法 → 正反例。\n\nR01 循环内堆分配代替取值 ★最易犯\n\n· **反模式**: `foreach (var input in new[] { a.In0, a.In1 })` — 每次迭代堆分配数组, 仅为了取两个栈上字段。\n· **机制**: GC 压力 (每次迭代一个短命分配); 语义是\"取值稳定\", 分配是纯副作用。\n· **修法**: `ref var nn = ref g.N[id]; var",
+   "wall_ms": 5907,
+   "points": 10,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "critic-rules",
+     "level": 3,
+     "precision": 0.95
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "critic-rules",
+    "level": 3,
+    "precision": 0.95,
+    "runner_up_gap": 0.5849
+   },
+   "skill_decisions": [
+    "force"
+   ],
+   "intent": "code_generation",
+   "subtasks": 1,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 4741,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": null,
+   "bge_ms": null,
+   "intent_ms": null,
+   "llm_ms_total": 0,
+   "phase_llm_ms": null,
+   "compress_n": 0,
+   "compress_drift_ok": 0,
+   "compress_semantic": [],
+   "compress_chars_in": 0,
+   "compress_chars_out": 0,
+   "pivot_n": 0,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": null,
+   "topic_drift_n": 0,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [],
+   "gate_mode": null,
+   "gate_est": null,
+   "guardrail_injected": 0,
+   "guardrail_writes": 0,
+   "reply_rel": 0.6778,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  }
+ ],
+ "kpi_breaches": [
+  "tokens_per_case=0 out (600, 1250)",
+  "wall_per_case_ms=5907 out (8000, 55000)"
+ ],
+ "hist_base_rounds": 1,
+ "compression_index": {
+  "segments": 0,
+  "drift_pass_rate": null,
+  "semantic_avg": null,
+  "chars_ratio": null
+ },
+ "intent_index": {
+  "n": 0,
+  "ms_avg": null,
+  "dist": {
+   "code_generation": 1
+  }
+ }
+}

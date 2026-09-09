@@ -84,6 +84,8 @@ public static class SkillPackageLoader
         // type: 开放规范无此字段; license/metadata 忽略 — 本框架扩展字段全兼容
         if (Str(doc, "type").Equals("executive", StringComparison.OrdinalIgnoreCase))
             s.Type = SkillType.Executive;
+        if (Str(doc, "type").Equals("knowledge_hint", StringComparison.OrdinalIgnoreCase))
+            s.Type = SkillType.KnowledgeHint; // R326-f: 知识提示型 (命中注入不直出)
         if (doc.TryGetValue("priority", out var p)) s.Priority = Convert.ToInt32(p);
         if (doc.TryGetValue("exclusive", out var ex)) s.Exclusive = Convert.ToBoolean(ex);
         if (doc.TryGetValue("timeout_seconds", out var to)) s.TimeoutSeconds = Convert.ToInt32(to);

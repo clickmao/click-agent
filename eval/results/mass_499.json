@@ -1,0 +1,101 @@
+{
+ "round": "mass_499",
+ "label": "R326 batch276 skill-knowledgehint",
+ "ts": "2026-09-10T01:09:12+0800",
+ "cases": 1,
+ "passed": 1,
+ "tokens_total": 2233,
+ "prompt_total": 1417,
+ "completion_total": 816,
+ "wall_total_ms": 20486,
+ "results": [
+  {
+   "id": "C33_code_antipattern_bait",
+   "input": "写一个 C# 方法: 遍历两个操作数 In0/In1 各自做 Resolve, 汇总处理 (要最直接的写法)",
+   "pass": true,
+   "notes": [],
+   "reply": "/// <summary>\n/// 遍历 In0/In1 两个操作数，各自 Resolve 后汇总处理。\n/// 最直接写法：两次取值，不走数组循环（规避 R01 循环内堆分配）。\n/// </summary>\npublic void ProcessOperands(Graph g, int id)\n{\n    ref var nn = ref g.N[id];\n    var a0 = g.Resolve(nn.In0);\n    var a1 = g.Resolve(nn.In1);\n\n    Handle(a0);\n    Handle(a1);\n}\n\nprivate void Handle(Node resolved) { /* 汇总逻辑 */ }\n\n要点：\n· 直接两个局部变量，零分配、零循环开销，`ref` 取节点避免结构体拷贝。\n· 若两个操作数后续都要用且顺序无依赖，此写法",
+   "wall_ms": 20486,
+   "points": 39,
+   "llm_calls": 1,
+   "prompt_tokens": 1417,
+   "completion_tokens": 816,
+   "total_tokens": 2233,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "critic-rules",
+     "level": 3,
+     "precision": 0.95
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "critic-rules",
+    "level": 3,
+    "precision": 0.95,
+    "runner_up_gap": 0.5849
+   },
+   "skill_decisions": [
+    "knowledge_hint"
+   ],
+   "intent": "code_generation",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 19312,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/11tok/r0.56rel,WorkspaceFiles:3snip/85tok/r0.57rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:0snip/0tok/r0rel",
+   "assembly_ms": 287,
+   "from_cache": false,
+   "prompt_total_tokens": 1703,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 176,
+   "intent_ms": 0,
+   "llm_ms_total": 11282,
+   "phase_llm_ms": 11513,
+   "compress_n": 0,
+   "compress_drift_ok": 0,
+   "compress_semantic": [],
+   "compress_chars_in": 0,
+   "compress_chars_out": 0,
+   "pivot_n": 0,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": "SteerHint",
+   "topic_drift_n": 1,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [],
+   "gate_mode": "Normal",
+   "gate_est": 2215,
+   "guardrail_injected": 0,
+   "guardrail_writes": 0,
+   "reply_rel": 0.8384,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  }
+ ],
+ "kpi_breaches": [
+  "tokens_per_case=2233 out (600, 1250)"
+ ],
+ "hist_base_rounds": 1,
+ "compression_index": {
+  "segments": 0,
+  "drift_pass_rate": null,
+  "semantic_avg": null,
+  "chars_ratio": null
+ },
+ "intent_index": {
+  "n": 1,
+  "ms_avg": 0.0,
+  "dist": {
+   "code_generation": 1
+  }
+ }
+}

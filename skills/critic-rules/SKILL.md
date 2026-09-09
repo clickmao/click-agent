@@ -19,6 +19,7 @@ domain_words:
   - dotnet
   - .NET
 priority: 4
+type: knowledge_hint
 ---
 
 # C# 反模式规则 (Critic Rules R01-R08)

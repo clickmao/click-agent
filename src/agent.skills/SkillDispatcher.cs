@@ -102,7 +102,22 @@ public sealed class SkillDispatcher
 
             string content;
             var forceUse = false;
-            if (top.Skill.Type == SkillType.Normative)
+            if (top.Skill.Type == SkillType.KnowledgeHint)
+            {
+                // R326-f: 知识提示型 — 命中把 SKILL.md body (ForceTemplate) 作为知识参考注入,
+                // 不直出/不吞提问; V2 收到 IsKnowledgeHint=true 走系统侧注入路径。
+                if (top.Level < 2)
+                {
+                    agent.config.AgentTelemetry.Emit("skill_trigger", "SkillDispatcher",
+                        ("decision", "degrade_semantic"), ("skill", top.Skill.SkillId), ("level", top.Level));
+                    return null;
+                }
+                agent.config.AgentTelemetry.Emit("skill_trigger", "SkillDispatcher",
+                    ("decision", "knowledge_hint"), ("skill", top.Skill.SkillId), ("level", top.Level));
+                content = top.Skill.ForceTemplate ?? string.Empty;
+                forceUse = false;
+            }
+            else if (top.Skill.Type == SkillType.Normative)
             {
                 // 口径型: force_template 原样承载 (S.6: 模型只做合规润色, 不改口径)
                 // v0.11.0 修复 (打点驱动): 仅词面命中 (关键词/正则, level>=2) 才 force_use 独占 —
@@ -193,6 +208,7 @@ public sealed class SkillDispatcher
                 Success = true,
                 Content = content,
                 ForceUse = forceUse,
+                IsKnowledgeHint = top.Skill.Type == SkillType.KnowledgeHint,
                 ElapsedMs = sw.ElapsedMilliseconds,
             };
         }

@@ -1943,3 +1943,16 @@
 - **意图指数**: n=3, ms_avg=0.0, dist={'general': 3}
 - **per-case**: C15_pivot_multi 1949tok 22.7s | C22_task_route_supplement 1030tok 9.3s | C24_task_route_pivot 922tok 10.2s
 
+## mass_498 — R326 batch275 skill-ab-base (2026-09-10T01:03:22+0800)
+
+- **判定**: 1/1 passed, tokens_total=0 (avg 0), wall=5907ms (avg 5.9s)
+- **KPI**: tokens_per_case=0 out (600, 1250); wall_per_case_ms=5907 out (8000, 55000) (基准轮数 1)
+- **per-case**: C33_code_antipattern_bait 0tok 5.9s
+
+## mass_499 — R326 batch276 skill-knowledgehint (2026-09-10T01:09:12+0800)
+
+- **判定**: 1/1 passed, tokens_total=2233 (avg 2233), wall=20486ms (avg 20.5s)
+- **KPI**: tokens_per_case=2233 out (600, 1250) (基准轮数 1)
+- **意图指数**: n=1, ms_avg=0.0, dist={'code_generation': 1}
+- **per-case**: C33_code_antipattern_bait 2233tok 20.5s
+
