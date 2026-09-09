@@ -275,5 +275,79 @@
     "Web API"
    ]
   }
+ },
+ {
+  "id": "C22_task_route_supplement",
+  "repl": [
+   "顺便把登录的日志级别调成 warning",
+   "/exit"
+  ],
+  "setup": {
+   "charter": {
+    "GoalText": "实现用户登录接口",
+    "KeyEntities": [
+     "登录",
+     "接口"
+    ]
+   }
+  },
+  "expect": {
+   "llm": true,
+   "task_route": "Supplement",
+   "note": "章程活跃+实体相关补充 → Supplement 路由 (pending 持久化)"
+  }
+ },
+ {
+  "id": "C23_task_route_isolate",
+  "repl": [
+   "今天天气怎么样? 随便聊聊",
+   "/exit"
+  ],
+  "setup": {
+   "charter": {
+    "GoalText": "实现用户登录接口",
+    "KeyEntities": [
+     "登录",
+     "接口"
+    ]
+   }
+  },
+  "expect": {
+   "llm": true,
+   "task_route": "Isolate",
+   "note": "章程活跃+无关闲聊 → Isolate 路由 (隔离子承接)"
+  }
+ },
+ {
+  "id": "C24_task_route_pivot",
+  "repl": [
+   "算了 改成做注册接口",
+   "/exit"
+  ],
+  "setup": {
+   "charter": {
+    "GoalText": "实现用户登录接口",
+    "KeyEntities": [
+     "登录",
+     "接口"
+    ]
+   }
+  },
+  "expect": {
+   "llm": true,
+   "task_route": "Pivot",
+   "note": "章程活跃+转向词标 → Pivot (章程归档 failed)"
+  }
+ },
+ {
+  "id": "C26_critic_no_false_positive",
+  "input": "用一句话说明什么是 REST",
+  "expect": {
+   "llm": true,
+   "must_not_contain": [
+    "自审"
+   ],
+   "note": "无代码块回复 → OutputCritic/SelfCritic 零触发 (负样本: 无假阳性自审提示)"
+  }
  }
 ]

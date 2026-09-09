@@ -41,6 +41,38 @@ def read_telemetry(path=None):
 
 def run_case(case, env):
     """跑单用例 → {reply, points, wall_ms}"""
+    # v0.15.1-a (R322): 用例级章程 fixture — setup.charter 存在则预写 active.json (用例后清理)。
+    # 使路由案 (C22-C24) 可精准测: 章程状态是路由判定的前置条件 (无 setup = 无章程 = 既有行为)。
+    _charter_setup = (case.get("setup") or {}).get("charter")
+    _charters_dir = os.path.abspath("data/task-charters")
+    _charter_active = os.path.join(_charters_dir, "active.json")
+    _charter_backup = None
+    if _charter_setup:
+        os.makedirs(_charters_dir, exist_ok=True)
+        if os.path.exists(_charter_active):
+            _charter_backup = open(_charter_active, encoding="utf-8").read()
+        import json as _j
+        _c = dict(_charter_setup)
+        _c.setdefault("Id", f"tc{int(time.time()*1000)%10**12:012d}")
+        _c.setdefault("Status", "running")
+        _c.setdefault("PendingInputs", [])
+        _c.setdefault("KeyEntities", [])
+        _c.setdefault("AcceptanceCriteria", [])
+        _c.setdefault("ScopeOut", [])
+        _c.setdefault("CreatedUtc", "2026-09-09T00:00:00Z")
+        open(_charter_active, "w", encoding="utf-8").write(_j.dumps(_c, ensure_ascii=False))
+    try:
+        return _run_case_inner(case, env)
+    finally:
+        if _charter_setup:
+            if _charter_backup is not None:
+                open(_charter_active, "w", encoding="utf-8").write(_charter_backup)
+            elif os.path.exists(_charter_active):
+                os.remove(_charter_active)
+
+
+def _run_case_inner(case, env):
+    """跑单用例 → {reply, points, wall_ms} (原 run_case 主体)"""
     # v0.11.0 R110 (fix#42): 每用例独立 telemetry 文件 (绝对路径 env 覆写) —
     # 共享单文件的 remove→append→read 时序竞争曾致间歇 llm_calls=0 误判 (mass_99/99b/99c/99d)。
     case_tel = os.path.abspath("data/telemetry/host.jsonl")  # CLI 固定写 host.jsonl, 每用例独占目录
@@ -274,6 +306,13 @@ def check_expect(case, reply, agg, raw_tail):
                 agg["suspects"].append(f"禁止模式 '{_pat[:30]}' 出现在否定上下文 (正确拒诱饵)")
                 continue
             req(False, f"reply 命中禁止模式 '{_pat[:40]}'")
+    if "task_route" in exp:
+        # v0.15.1-a (R149 真断言): 章程路由判定的批测断言 — task_input_routes 含指定 route
+        routes = agg.get("task_input_routes") or []
+        want = exp["task_route"]
+        if not any(r.startswith(want + "@") for r in routes):
+            req(False, f"task_route={routes} want {want}")
+
     if "min_reply_chars" in exp:
         req(len(reply) >= exp["min_reply_chars"], f"reply {len(reply)} < {exp['min_reply_chars']}")
     if "skill" in exp:
@@ -414,7 +453,14 @@ def main():
             })
     else:
         all_cases = json.load(open("eval/cases.json"))
-    if quick:
+    ids_filter = None
+    for a in list(sys.argv[1:]):
+        if a.startswith("--ids="):
+            sys.argv.remove(a)
+            ids_filter = tuple(a[6:].split(","))
+    if ids_filter:
+        all_cases = [c for c in all_cases if c["id"].startswith(ids_filter) or c["id"] in ids_filter]
+    if quick and not ids_filter:
         # v0.11.0 R94: quick 4→5 — 加 C11 JSON 格式哨兵 (每批产出格式合规率, PGO 新维度)
         # v0.11.0 R143 (用户钦定): quick 5→10 + 广泛度扩展 — 5 关键 + 5 多样性
         # (记忆 C07 / 敏感 C13 / 幻觉诱饵 C17 / 格式陷阱 C18 / skill 身份 C04):
@@ -423,7 +469,8 @@ def main():
         # (isolated_true 断言绑定后, TaskRelevanceChecker 每批真实验证, 健康带口径随之 quick-11)。
         # v0.13.3 R317 (拉回率进常态): quick 11→12 — C19 clarify 6 轮案 (pulled_back 每批观测,
         # 与 R149 同理由: L3 牵引链真断言, 批均 token 带宽 +6 轮 repl ~2.4k)。
-        keep = ("C01", "C03", "C04", "C06", "C07", "C08", "C11", "C13", "C14", "C17", "C18", "C19")
+        # v0.15.1-b (R322): quick 12→13 — C26 critic 假阳性负样本 (无代码块零触发, R149 真断言)
+        keep = ("C01", "C03", "C04", "C06", "C07", "C08", "C11", "C13", "C14", "C17", "C18", "C19", "C26")
         all_cases = [c for c in all_cases if c["id"].startswith(keep)]
     cases = all_cases
     env = load_env()
