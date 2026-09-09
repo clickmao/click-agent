@@ -123,7 +123,8 @@ public sealed class EmbeddingRouter : agent.vectormemory.IEmbeddingProvider
             {
                 if (_bge != null) return _bge;
                 var key = $"{_modelPath}|{_llmLoaded}";
-                _bge = _sharedBge.GetOrAdd(key, _ => CreateBge() ?? new HashEmbeddingProvider());
+                // v0.16.1 R329 (T-B4): llamalocal 256 版退役 → 统一 vectormemory.HashEmbeddingProvider (384)
+                _bge = _sharedBge.GetOrAdd(key, _ => CreateBge() ?? new agent.vectormemory.HashEmbeddingProvider());
                 return _bge;
             }
         }
@@ -186,26 +187,3 @@ public sealed class EmbeddingRouter : agent.vectormemory.IEmbeddingProvider
     }
 }
 
-/// <summary>词袋 hash embedding (R58 语义, 兜底永不失败) — 与 RAG GenerateEmbedding 同款逻辑。</summary>
-public sealed class HashEmbeddingProvider : agent.vectormemory.IEmbeddingProvider
-{
-    public int Dimension => 256;
-    public string Name => "hash-fallback";
-
-    public float[] Embed(string text)
-    {
-        var emb = new float[256];
-        foreach (var word in text.Split(' ', '，', '。', '、', '\n'))
-        {
-            if (word.Length == 0) continue;
-            var h = Math.Abs(word.GetHashCode());
-            for (int seed = 0; seed < 3; seed++)
-                emb[(h + seed * 31337) % 256] += 1f;
-        }
-        var mag = System.Math.Sqrt(emb.Sum(e => (double)e * e));
-        if (mag > 0)
-            for (int i = 0; i < emb.Length; i++)
-                emb[i] /= (float)mag;
-        return emb;
-    }
-}
