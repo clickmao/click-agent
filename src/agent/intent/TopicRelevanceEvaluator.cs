@@ -72,9 +72,22 @@ public static class TopicRelevanceEvaluator
         // 会把真离题新话题 ("红烧肉怎么做?") 误判追问 → 词面偏离本身充当 novelty 事实:
         // 指代词 veto 保留 (绝对), 短询问 veto 仅在"有锚且重叠"时生效。
         var anchorlessMode = goalKeyEntities.Count == 0;
+        // R313: 单字衔接副词精修 — Check 词表含 "再" (单字), "再讲一个糖醋排骨" 这类
+        // 衔接副词 + 全新话题实体 会被误判指代 (绝对 veto → drift 恒 false, L1 牵引失效)。
+        // 判据: 消息仅以单字副词 ("再"/"然后"/"接着") 开头衔接 + 词面偏离已成立 (isDrift 原始值 true)
+        // → 该"指代"只是句式衔接, 不构成上文依赖, veto 不适用。
+        // 复合指代 ("再说说刚才那个") 因同时命中复合词 (刚才/那个) 不受此修影响 (Check 归一化
+        // Contains 命中任意复合词 → 仍绝对 veto — 真回指安全)。
+        var conjunctionPrefix = incomingMessage.TrimStart().StartsWith("再") ||
+                                incomingMessage.TrimStart().StartsWith("然后") ||
+                                incomingMessage.TrimStart().StartsWith("接着");
+        var complexDeixisPresent = new[] { "它", "他们", "这个", "那个", "刚才", "上面", "前面", "记得",
+            "上一条", "上一句", "上次", "之前", "你说过" }
+            .Any(w => incomingMessage.Contains(w, StringComparison.Ordinal));
+        var deixisVetoEffective = deixisVeto && !(conjunctionPrefix && !complexDeixisPresent && isDrift);
         // R308 分级: 指代词 → 绝对追问 (无条件 veto — "那个/刚才" 必然指上文);
         // 短询问 → 零重叠事实在场时不 veto ("红烧肉怎么做?" 是真离题新话题, "怎么优化" 才是追问):
-        var vetoed = deixisVeto || (howToVeto && !anchorlessMode && !noOverlapFact);
+        var vetoed = deixisVetoEffective || (howToVeto && !anchorlessMode && !noOverlapFact);
         if (vetoed) isDrift = false;
 
         if (isDrift && !isIsolated)

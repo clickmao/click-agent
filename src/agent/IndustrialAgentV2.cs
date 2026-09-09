@@ -558,9 +558,30 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     // R308b (合并判定收口): 隔离消费走统一 evaluator (与牵引/打点同源)。
                     topicVerdict = agent.intent.TopicRelevanceEvaluator.Evaluate(
                         message.Content, goalEntities, goal.GoalIntent, subTasks[0].Intent, coreTopic);
-                    // R312 (合并回归修复): 有锚轮 verdict 由此产生;
-                    // 无锚轮的 verdict 在下方 else 分支 (纯画像词面模式) — R308b 删词面退路导致
-                    // 无锚会话牵引失效 (R312 probe 实证: 5 轮全 no-anchor, drift 恒 false)。
+                    // R313 (重构事故修复): R312 插入 else 分支时把有锚隔离执行链误删 —
+                    // C14 类用例 verdict=Isolate 但 subagent 打点/ExecuteAsync 全灭 (批477 首败实锤)。
+                    // 恢复: 有锚 isIsolated → subagent 打点 + 隔离执行 (与 R307 前行为一致)。
+                    if (topicVerdict.IsIsolated)
+                    {
+                        var (scoreI, reasonI) = (topicVerdict.Score,
+                            string.Join(";", topicVerdict.Signals));
+                        agent.config.AgentTelemetry.Emit("subagent", "IsolatedTaskRunner",
+                            ("isolated", true), ("relevance_score", scoreI), ("reason", reasonI));
+                        _logger.LogInformation(
+                            "IsolatedTask triggered: score={Score} reason={Reason} task={Task}",
+                            scoreI, reasonI, message.Content);
+                        var isolated = await _isolatedTaskRunner.ExecuteAsync(message.Content, $"{scoreI}:{reasonI}", ct);
+                        response.Success = isolated.Success;
+                        response.Content = $"[隔离任务] {isolated.Answer ?? isolated.Error ?? "(无返回)"}";
+                        response.Data = new Dictionary<string, object>
+                        {
+                            { "isolatedTask", true },
+                            { "isolatedSessionId", isolated.IsolatedSessionId },
+                            { "relevanceScore", scoreI },
+                        };
+                        response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
+                        return response;
+                    }
                 }
                 else if (goal == null && !pivotRequested && !string.IsNullOrEmpty(coreTopic))
                 {
