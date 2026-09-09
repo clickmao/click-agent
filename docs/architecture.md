@@ -1271,10 +1271,12 @@ click-agent/
 │   ├── improvements.md           # 版本改进记录 + 历史开发计划归档
 │   ├── CLI指令说明.md              # 全部指令 + agent.io 协议
 │   ├── Skill全球通用开放规范.md     # SKILL.md 包格式 (Anthropic Open Standard)
-│   ├── task_loop.md
+│   ├── (task_loop.md → docs/archive/reports-archived/)
 │   ├── (V1/V2 对比已归档 docs/archive/)
+│   ├── reports/                   # 主报告 (§7 滚动) / master-plan / 维度台账
+│   ├── changelogs/                # 历史轮段归档 (R103-R228)
+│   ├── archive/                   # 过期计划/报告归档 (plans/ 11 篇 + reports-archived/ 2026-09-09 梳理)
 │   ├── industrial_enhancements.md
-│   ├── plan_*.md                  # 各模块开发计划 (10 篇)
 │   └── search_research.md
 └── src/
     ├── agent/                  # 核心 Agent: 意图拆解/任务计划/注册表/区段路由/本地推理
@@ -1303,7 +1305,8 @@ click-agent/
     ├── agent.rag/              # RAG 召回
     ├── agent.vectormemory/     # 向量记忆
     ├── agent.workspace/        # 工作区
-    └── agent.tests/            # 389 项测试 (xunit)
+    ├── agent.exploration/      # v0.13 探索/思考链: Planner/ThinkChainSession/HostExploreExecutor/LinkRegistry/MicroStepSession/ThinkMemory/JsonRepair/StickyRoute
+    └── agent.tests/            # 490 项测试 (xunit)
 ```
 
 > 命名约定 (用户钦定): 文件夹与命名空间全小写 (`agent.registry`), 类文件与类型名 PascalCase
@@ -1370,3 +1373,27 @@ click-agent/
 
 ### 基线 (真实执行)
 341/341 测试 · Release 0 警 0 错 · NativeAOT 0 IL 警 · agenthost 12MB ELF 冒烟全过
+
+---
+
+## 11. v0.13 组件层 (R205-R288 落地, 2026-09-09 梳理)
+
+**agent.exploration** (探索/思考链, 零宿主反向依赖):
+- `ExplorationPlanner`: 五源 (ContextBlock/Text/Url/Directory/File) 优先级队列; per-source 最大步 (config) + 全局预算
+- `ThinkChainSession`: ExecuteStepAsync (执行+Record+引用 citation-boost) + EvaluateConvergence (自评/预算/无新发现×2/证据分)
+- `HostExploreExecutor`: URL 只读 GET (title+正文 digest ≤2KB, 页内 URL 发现≤5, Content-Type 白名单) + Directory/File (workspace 路径穿越防护) + Text 直返
+- `LinkRegistry`: 关键文档激活链 — 三信号 (锚定/稀缺出链/路径递进) ≥3 激活 + 父链保护列表
+- `MicroStepSession`: 微问题编排 + 回注预算 (≤200 tok/条) + 连续失败升级联动
+- `ThinkMemory`: bge 向量联想 (MinSimilarity 0.75, 负样本降权, 30 天衰减) + STJ source-gen 持久化
+- `ComplexityGate` / `EvidenceScorer` (单源封顶 medium) / `JsonRepairPlugin` (栈感知) / `StickyRouteMemory` (三门+TTL 72h)
+
+**agent.contextgradient**:
+- `ContextGradientCompressor`: 四档梯度 + A3 关键句保护 (因果/指令标记+数值密度) + 二次切分 + 配额自适应 cap 12 + D1-D4 防护 (异常隔离/数字+URL 哨兵/降级链/熔断器) + DriftGuard 双校验
+
+**agent.modelqueue**:
+- `ModelQueueRouter`: 429 感知调度 + F1 逐个兜底+校验 + CallEntryAsync parts 手写序列化 (视觉)
+- `ModelSelectionPolicy`: auto 三层 (性能不敏感→最便宜 / fitness+推理+编码−费用 / key 过滤)
+- `LocalSvgRenderer` (v0.12.0) / `CogViewClient`
+
+**打点面** (AgentTelemetry → data/telemetry/host.jsonl, `point` 字段):
+context_gate / micro_decision / micro_step / micro_session / think_chain / link_activation / think_memory / compression (+sentinel/error/breaker) / phase_timing / prompt_build / bge_mode / intent / evidence_gate / skill*

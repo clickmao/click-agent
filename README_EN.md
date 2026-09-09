@@ -1,9 +1,9 @@
-# click-agent (v0.13.0-dev)
+# click-agent (v0.13.3)
 
 [![ci](https://github.com/clickmao/click-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/clickmao/click-agent/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)
-![Tests](https://img.shields.io/badge/tests-409%2F409-brightgreen)
+![Tests](https://img.shields.io/badge/tests-490%2F490-brightgreen)
 ![Eval](https://img.shields.io/badge/thousand--round%20eval-1034%2F1056-success)
 ![NativeAOT](https://img.shields.io/badge/NativeAOT-zero%20warnings-blueviolet)
 
@@ -28,7 +28,7 @@ Release line: v0.11.0 — unified @cmd command protocol + 3 transports / Skill e
 
 ### ✅ v0.12.0 Additions — Vision / Render Plugins / Convergence Loop (Accepted)
 - **Vision chain**: CLI `-img` → data URL base64 → glm-5.3-flash v4 endpoint (1M ctx); text-only model auto-reroute + coding-endpoint rewrite (defects 63/64 fixed); OpenAIMultimodalMessage dual-form DTO (AOT-safe).
-- **Live acceptance**: T-V01~T-V04 vision family first full-23 pass ALL GREEN (incl. negative bait: model rejected the false "apple at bottom-right" premise); four-question live verification; baseline doc docs/reports/v012-acceptance-baseline.md.
+- **Live acceptance**: T-V01~T-V04 vision family first full-23 pass ALL GREEN (incl. negative bait: model rejected the false "apple at bottom-right" premise); four-question live verification; baseline doc docs/archive/reports-archived/v012-acceptance-baseline.md.
 - **Image render plugin system** (user-directed): IImageRenderPlugin + SkiaSharpRenderPlugin (default, edge option -p:DisableSkiaRenderer=true) + SvgTextRenderPlugin (zero-dependency fallback) + Registry (no renderer → skip downstream); LocalSvgRenderer DSL.
 - **Convergence loop E2E**: LLM DSL → render → 5.3-flash vision verification — one-round live PASS (1039ch DSL → 843ch SVG → 6/6 checks, 6.4s).
 - **Capability matrix**: 25/25 models in models.yaml; CogViewClient retained (generation path deprecated per user directive).
@@ -40,9 +40,9 @@ Archived → [CHANGELOG-v0.11.0-R169-R185.md](docs/changelogs/CHANGELOG-v0.11.0-
 ### 📊 Thousand-Round Eval (PGO-driven)
 - **1034/1056 = 97.92%** case pass (215 rounds landed); quick-batch tokens **7354 → ~3969 avg**; C08 reasoning completion **1875 → 479 (-74%)**; 55 real defects fixed, all telemetry-driven.
 Batch trend: **Batch 237 (mass_457)** 11/11 quick-11 1087/case / **Batch 233 (mass_452)** 11/11 quick-11 1124/case — v0.13.3 foundation deepening: compression failure defense (D1 exception isolation/D2 numeric sentinel/D3 degradation chain/D4 circuit breaker) + micro-step isolation B2 host chain (IsolatedMicro->micro-query->re-injection) + think-memory bge association (hits top_sim 0.977) + LinkRegistry activation chain + TF-IDF bag-of-words (short-query discrimination restored); batch234 1402/case single-batch outlier (C03 completion variance, not regression); batch236 XL 7/7 7008/case (gate three-state stable).
-- Full report: [Thousand-Round Report](docs/archive/reports/thousand-round-report.md) · ledger: [wave3-ledger](docs/reports/wave3-ledger.md)
+- Full report: [Thousand-Round Report](docs/archive/reports/thousand-round-report.md) · ledger: [wave3-ledger](docs/archive/reports-archived/wave3-ledger.md)
 
-### 🧭 Full Capability Panorama (v0.11.0)
+### 🧭 Full Capability Panorama (v0.13.3)
 
 **Reasoning & Tasks**
 - Intent analysis & sub-task decomposition: 19 CN/EN connectives, Sequential/Parallel/DependsOnOutput relations
@@ -59,7 +59,7 @@ Batch trend: **Batch 237 (mass_457)** 11/11 quick-11 1087/case / **Batch 233 (ma
 **Vision & Image (v0.12.0 accepted)**
 - Vision chain: CLI `-img` -> base64 data URL -> glm-5.3-flash v4 (1M ctx); text-only auto-reroute + coding-endpoint rewrite; dual-form DTO (AOT-safe)
 - Render plugins: IImageRenderPlugin (SkiaSharp default w/ edge-opt-out / SVG-text fallback) + LocalSvgRenderer DSL; convergence loop E2E (DSL->render->vision-verify->regenerate->pass)
-- Case family T-V01~04 (incl. negative bait) full-23 23/23; baseline docs/reports/v012-acceptance-baseline.md
+- Case family T-V01~04 (incl. negative bait) full-23 23/23; baseline docs/archive/reports-archived/v012-acceptance-baseline.md
 
 **Exploration & Think-Chain (v0.13.x in dev, user-directed)**
 - Progressive exploration: ExplorationPlanner (max steps per context-block/text/url/dir via config; in-context URL outranks external dir)
@@ -234,7 +234,7 @@ click-agent/
 │   ├── agent.rag/           # RAG recall
 │   ├── agent.vectormemory/  # Vector memory
 │   ├── agent.workspace/     # Workspace
-│   └── agent.tests/         # 409 tests
+│   └── agent.tests/         # 490 tests
 └── docs/                    # Architecture/API/improvement records/plans
 ```
 
@@ -243,7 +243,7 @@ click-agent/
 | Item | Result |
 |---|---|
 | Compilation (--no-incremental) | 0 errors 0 warnings |
-| Tests | 409/409 Passed |
+| Tests | 490/490 Passed |
 | NativeAOT (linux-x64) | 0 IL/TR warnings (re-verified 6x) + AOT smoke pass |
 | Thousand-round eval | 1034/1056 = 97.92% (215 rounds landed) |
 | Real 3-endpoint E2E | glm/deepseek chat+balance OK; kimi negative sample honest error |
@@ -259,9 +259,9 @@ click-agent/
 - [Main Report · Dynamic Telemetry & Rollback](docs/reports/dynamic-telemetry-eval-rollback-strategy.md) — status layer (living doc, updated per round)
 - [Test Dimensions Ledger](docs/reports/test-dimensions-ledger.md) — 15-dimension panorama + negative family + anti-forgetting policy
 - [Improvement Records](docs/improvements.md) — historical release notes & plan archive
-- [Task Loop](docs/task_loop.md) · Historical plans: docs/archive/
+- [Task Loop](docs/archive/reports-archived/task_loop.md) · Historical plans: docs/archive/
 
-### 🗺 Next Development Plan (v0.11.0)
+### 🗺 Next Development Plan (v0.13.x)
 
 > Historical plan (v7.15 ten nodes - all landed) archived in [improvements.md](docs/improvements.md); per-module design details in docs/archive/.
 
@@ -270,7 +270,7 @@ click-agent/
 3. **K4 long-horizon watch**: skill false-absorption suppression stability + negative-family expansion (8-class checklist toward 25%)
 4. **Real-GPU Vulkan test** (needs real GPU; llvmpipe only on this host)
 
-> **Current baseline (R151)**: 409/409 tests green / NativeAOT 0 IL warnings / thousand-round eval 97.92% (215 rounds) / 5-KPI full observability — next: K1 effect verification (profile-driven reply diff), semantic_avg tier observation, negative-family expansion.
+> **Current baseline (R151)**: 490/490 tests green / NativeAOT 0 IL warnings / thousand-round eval 97.92% (215 rounds) / 5-KPI full observability — next: K1 effect verification (profile-driven reply diff), semantic_avg tier observation, negative-family expansion.
 
 ## Configuration
 

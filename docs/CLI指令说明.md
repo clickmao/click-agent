@@ -43,13 +43,23 @@
 |---|---|---|---|---|
 | `-q "<msg>"` | 消息文本 | 单条模式 (不进 REPL) | 回复 | host |
 | `-img <path>` | 图像路径 (可多次) | 附带图像走视觉理解链 (v0.12.0) | 回复 | host |
-| `-rag <path>` | index.jsonl 路径 | 指定 RAG 数据文件 (v0.13.0; ≡ /rag 或 env AGENTFRAMEWORK_RAG_PATH) | — | host |
+| `-rag <path>` | index.jsonl 路径 | 指定 RAG 数据文件 (v0.13.0 已落地; ≡ /rag 或 env AGENTFRAMEWORK_RAG_PATH) | — | host |
 | `--log <path>` | 文件路径 | 输出 tee 到文件 | — | host |
 | `--output-mode text\|markdown` | 模式 | 输出渲染模式 | — | host |
 | `--official-key <key>` | key 字面量 | 启动注入官方通道 key (内存态; 命令行引用立即释放) | — | host |
 | `--embed <text>` | 文本 | 直连 BgeEmbedder 输出向量 JSON (评测离线算 reply_rel, 不走 LLM/DI 全链) | stdout | host (R136) |
 | `--compression-audit <path>` | groundtruth.json | 压缩底座 audit: 分档校验矩阵 (档×级别→关键信息保留率/压缩率/耗时), 落 eval/results/ | JSON | host (v0.13.3) |
 | `--smoke` | — | 冒烟自检 (全图 AOT 校验) | 日志 | host |
+
+### 探索/思考链环境开关 (v0.13.3 R287)
+
+| 环境变量 | 值 | 语义 |
+|---|---|---|
+| `AGENTFRAMEWORK_EXPLORE` | 未设/`1` = 开 (默认) / `0` = 全关 | 思考链探索总开关 (RunThinkChainAsync 入口短路; explore_eval A/B 对照组语义) |
+| `AGENTFRAMEWORK_RAG_PATH` | index.jsonl 路径 | RAG 数据文件 (≡ -rag / /rag) |
+| `AGENTFRAMEWORK_LOCAL_DISABLED` | `1` | 批测禁本地模型 (qwen 路径) |
+| `AGENTFRAMEWORK_BGE_MODEL` | gguf 路径 | bge 嵌入模型路径 |
+| `AGENTFRAMEWORK_TELEMETRY` | 目录 | telemetry jsonl 输出目录 (run_round per-case 隔离) |
 
 ## /model list 与序号选择 (v0.10.0)
 

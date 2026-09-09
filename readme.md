@@ -225,7 +225,7 @@ click-agent/
 - [API 文档](docs/api.md)
 - [CLI 指令说明](docs/CLI指令说明.md) — 全部指令+agent.io 行协议 (需求2)
 - [改进记录](docs/improvements.md) — 历史版本改进与计划归档
-- [任务循环](docs/task_loop.md)
+- [任务循环](docs/archive/reports-archived/task_loop.md)
 
 ### 🗺 下一步开发计划 (v0.11.0)
 

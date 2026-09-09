@@ -315,7 +315,7 @@ public interface ISummarizer
 
 ---
 
-### IFeedbackPersistence (RAG 用户反馈持久化, task_loop.md §4 机制的真实契约)
+### IFeedbackPersistence (RAG 用户反馈持久化, docs/archive/reports-archived/task_loop.md §4 机制的真实契约)
 
 ```csharp
 public interface IFeedbackPersistence
@@ -1255,10 +1255,10 @@ writer.ResetModule("model_queue");                             // 清 L3 覆盖,
 - 渲染器: `LocalSvgRenderer` (DSL: rect/circle/line/text, XML 转义, 词表外跳过)。
 - 收敛环: LLM 生成 DSL → 渲染 → 5.3-flash 视觉校验 → FAIL 重生成 → PASS。
 
-## 20. 渐进式探索 (v0.13.0 开发中)
+## 20. 渐进式探索 (v0.13.0 已落地, 宿主执行 R286)
 - `ExplorationConfig`: 每上下文区/文本/URL/目录最大探索步 + 全局预算 + URL 深度 + 源优先级 (上下文内 URL > 上下文外目录)。
 - `ExplorationPlanner`: 优先级队列 + per-ref 预算 + 去重 + 发现链。
-- 详见 docs/plans/v0.13.0-progressive-exploration.md。
+- 详见 docs/archive/plans/v0.13.0-progressive-exploration.md。
 
 ## 21. 兜底粘性路由 (v0.13.1)
 - `FallbackConfig` (models.yaml `fallback:` 段): `enabled` 总开关 / `order: cost_quality` 性价比序 (=auto 同源判据: 质量档降序+同档低价优先) / `per_request_max_fallbacks` 单请求兜底上限 / `verify_fallback_reply` 兜底回复校验 (非空+长度+错误模板特征)。
@@ -1269,3 +1269,50 @@ writer.ResetModule("model_queue");                             // 清 L3 覆盖,
 - `IRAGRecall.CurrentPersistPath()` / `SetPersistOverride(path)` — 路径可见化+运行时切换。
 - CLI `-rag <path>` / 任务内 `/rag <path>` / env `AGENTFRAMEWORK_RAG_PATH` 三入口, 全部落 DI 工厂钩子。
 - 切换语义: 新文档落新路径; 历史索引恢复需重启 (诚实提示)。
+
+## 22. v0.13.3 底座防护与思考链执行 API (R274-R288 已落地)
+
+### 22.1 思考链宿主执行 (agent.exploration)
+
+| 类型 | 职责 | 关键成员 |
+|---|---|---|
+| `IExploreExecutor` | 探索执行抽象 | `Task<ExploreStepResult> ExecuteAsync(ExploreNode, CancellationToken)` |
+| `HostExploreExecutor` | 宿主实现 (agent.exploration 项目, 零宿主反向依赖) | URL GET (title+正文 digest ≤2KB, 页内 URL 发现≤5) / Directory+File (workspace 路径穿越防护) / Text 直返 |
+| `ExplorationPlanner` | 优先级队列 + per-source/全局步数预算 | `Seed` / `TryDequeueNext` / `Record` / `BudgetExhausted` |
+| `ThinkChainSession` | 循环 + 收敛判定 | `ExecuteStepAsync` / `EvaluateConvergence` (多源一致/预算/无新发现/自评) |
+
+V2 挂载: `RunThinkChainAsync` — 消息+上下文 URL 播种 (example.com 排除), 4s/4 步预算, 首败即停,
+digest 与微步骤结论合并回注 (`[探索与微步骤结论回注]`); 开关 `AGENTFRAMEWORK_EXPLORE=0` 全关。
+打点: `think_chain{seeded,steps,ms,digest_len}`。
+真机 KPI (可达 URL 24 案 A/B): hit **0.278→0.667 (+39pt) 零回归**。
+
+### 22.2 关键文档激活链 (LinkRegistry)
+
+三信号预判 (递进未进入时不靠召回笼统索引): 锚定 (URL 出现在 query +2 / ThinkMemory +1) +
+结构 (同父出链 ≤1 → +2, ≤3 → +1) + 递进 (同域同目录前缀 +2, 同域 +1); ≥3 激活并返回**父链保护列表**
+(压缩哨兵挂载面)。打点: `link_activation{urls,activated,registry}`。
+真机: link-structure 问题 `urls=5 activated=5 registry=5`。
+
+### 22.3 微步骤隔离 (MicroStepSession, B2)
+
+gate=IsolatedMicro → subTasks → `MicroQuestion` (隔离语义: 不复制主上下文) → 独立微 prompt 逐条问询 →
+`MicroStepSession.Record` (失败计数/升级联动) → `BuildRestoreSummary` (≤200 tok/条) 回注主 prompt。
+打点: `micro_step{id,ok,tokens,ms}` / `micro_session{count,failures}`。E2E: XL-01 est 8023 → ok 2860ms。
+
+### 22.4 think-memory 联想持久化 (ThinkMemory)
+
+进程级单例 + `Save(path)` / `Load(path)` (STJ source-gen `ExplorationJsonContext`, 流式序列化零反射,
+AOT 安全); 落盘 `./data/think-memory.json`; 宿主启动加载 (缺失/损坏 → 空库, 行为兼容)。
+真机: 新进程 recall hit top_sim **0.9701**。
+
+### 22.5 压缩失败防护 (D1-D4, 工业模式 M1-M6 对应)
+
+| 防护 | 机制 | 打点 |
+|---|---|---|
+| D1 异常隔离 | per-snippet try/catch → 回退原文 | `compression_error` |
+| D2 关键信息哨兵 | 数字串/日期/SN/**URL (R281)** 压缩前提取; 缺失 → 逐级降级 RuleCompress→原文 | `compression_sentinel` |
+| D3 降级链 | 内嵌于 D2 (当前级→RuleCompress→Full) | — |
+| D4 熔断器 | 阈值/冷却/半开 (CompressionBreaker) | `compression_breaker` |
+
+语义锚: 链接文档 audit URL 键全档 100% (RuleCompressed/TitleOnly 触发全文回退 = 宁大不歪)。
+`CompressionBreaker`: 6 单测 (阈值触发/open 拒绝/半开放行/成功复位)。

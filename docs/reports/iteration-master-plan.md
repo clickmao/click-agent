@@ -18,7 +18,7 @@
 5. 隔离 subagent 长上下文稳定性 (T-V05 用例, 每 5 批): 底座失效时隔离判定/零污染/销毁必须依旧正确;
 6. 微步骤隔离触发率 (现 0%, 探索/思考链上线后观察);
 7. 任一底座指标破线 → 按打分<上版即回退铁律处置 (config 快照回退)。
-数据落 eval/results/ (compression-audit-*.json / micro-step-baseline.json); 计划文档: v0.13.3-compression-recall-audit-plan.md + v0.13.3-micro-step-isolation-plan.md。
+数据落 eval/results/ (compression-audit-*.json / micro-step-baseline.json); 计划文档: (已归档) docs/archive/plans/v0.13.3-compression-recall-audit-plan.md + v0.13.3-micro-step-isolation-plan.md。
 ## 0-0. 原始钦定准则（千轮任务源头指令，本文档与 cron 守卫之上最高优先级）
 
 **总纲（用户原始指令，2026-09-05/06）：**

@@ -1,13 +1,14 @@
-# click-agent (v0.11.0)
+# click-agent (v0.13.3)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)
-![Tests](https://img.shields.io/badge/tests-409%2F409-brightgreen)
+![Tests](https://img.shields.io/badge/tests-490%2F490-brightgreen)
 ![NativeAOT](https://img.shields.io/badge/NativeAOT-zero%20warnings-blueviolet)
-![Eval](https://img.shields.io/badge/千轮评测-1034%2F1056-success)
+![Eval](https://img.shields.io/badge/迭代评测-240批%2099%25%2B-success)
 
-C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / NativeAOT 零警告 / 409 测试全绿。
-发布线: v0.11.0 — 统一 @cmd 命令协议 + 3 传输通道 / Skill executive 脚本 / bge 向量混合相关性 / 22 模型目录 / PGO 式全链路打点。
+C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / NativeAOT 零警告 / 490 测试全绿。
+发布线: v0.13.3 — 思考链+渐进式探索 (A/B +39pt) / 兜底粘性路由 / 格式修复收敛环 / 压缩失败防护 D1-D4 /
+微步骤隔离 / think-memory 跨进程联想 / 视觉理解 / bge 向量召回 0.95 / 22 模型目录 / 全链路打点。
 
 [🇬🇧 English → README_EN.md](README_EN.md)
 
@@ -25,7 +26,7 @@ C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / Na
 
 ### ✅ v0.12.0 新增能力 — 视觉理解 / 渲染插件 / 收敛环 (已验收)
 - **视觉理解链**: CLI `-img` → data URL base64 → glm-5.3-flash v4 端点 (1M ctx); text-only 模型自动重路由 + coding 端点改写 (真缺陷 63/64 修复); OpenAIMultimodalMessage 双形态 DTO (AOT-safe, 禁反射)。
-- **真机验收**: T-V01~T-V04 视觉用例族 full-23 首验全绿 (含负样本诱饵: 模型识破"右下角苹果"预设陷阱); 四问真机复证 (主体/角落/位置/否定); 验收基线 docs/reports/v012-acceptance-baseline.md。
+- **真机验收**: T-V01~T-V04 视觉用例族 full-23 首验全绿 (含负样本诱饵: 模型识破"右下角苹果"预设陷阱); 四问真机复证 (主体/角落/位置/否定); 验收基线 docs/archive/reports-archived/v012-acceptance-baseline.md。
 - **图像渲染插件体系** (用户钦定收敛环服务化): IImageRenderPlugin + SkiaSharpRenderPlugin (默认, 边缘选项 -p:DisableSkiaRenderer=true 停编) + SvgTextRenderPlugin (零依赖兜底) + Registry (无可用插件 → 跳过后续环节); LocalSvgRenderer DSL (rect/circle/line/text, XML 转义)。
 - **收敛环 E2E**: LLM 生成 DSL → 渲染 → 5.3-flash 视觉校验 → 真机一轮 PASS (DSL 1039ch → SVG 843ch → 校验 6/6, 6.4s)。
 - **能力矩阵**: models.yaml 25/25 模型 capabilities 回填; CogViewClient 保留 (生成路径按用户钦定弃用)。
@@ -34,20 +35,29 @@ C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / Na
 
 已归档 → [docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md) · [CHANGELOG-v0.11.0-R186-R204.md](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md)
 
-### 📊 千轮迭代评测 (PGO 对比数据驱动)
+### 📊 迭代评测统计 (打点对比数据驱动)
 
-| 维度 | 基线 | 当前 | 改善 |
+| 维度 | 基线 | 当前 (2026-09-09) | 改善 |
 |---|---|---|---|
-| 评测通过率 | — | **1034/1056 = 97.92%** (215 轮落盘) | 稳定 99%+ (负面扩容后口径) |
-| 单轮 tokens (全量 10 用例基线 vs 现 quick-10) | 7354 | **9024** (含 5 个新增广泛度用例) | -50% (可比 quick-5 口径 ~3671) |
-| C08 推理 completion | 1875 | **479** | **-74%** |
-| 单元测试 | 325 | **389** | +64 |
-| 真缺陷修复 | — | **55 项** (全部打点驱动) | #21-#55 |
+| 评测通过率 | 7354tok 基线 10 用例 | **240 批落盘, 近 30 批 99%+** (quick-11 口径) | 负面扩容后稳定 |
+| 单元测试 | 325 | **490** | +165 |
+| 真缺陷修复 | — | **69 项** (全部打点驱动, #21-#69) | 缺陷台账 |
+| 召回率 (RAG) | 词袋 0.45 (缺陷 69 前) | **bge 0.95 / 词袋长查询 0.70** | 三口径基线 |
+| 压缩关键信息保留 | SummarySentences 33-53% | **keys 100% / 指令 96%** (104 篇多样态 audit) | 健康线 ≥95% |
+| 探索 A/B (可达 URL 24 案) | — | **hit 0.278→0.667 (+39pt) 零回归** | v0.13.3 探索链 |
 
-批次趋势: **批237 (mass_457)** 11/11 quick-11 1087/case / **批233 (mass_452)** 11/11 quick-11 1124/case — v0.13.3 底座深化期: 压缩失败防护 (D1 异常隔离/D2 数字哨兵/D3 降级链/D4 熔断器) + 微步骤隔离 B2 宿主链 (IsolatedMicro→微问询→回注) + think-memory bge 联想 (hits top_sim 0.977) + LinkRegistry 激活链 + TF-IDF 词袋 (短查询判别力恢复); 批234 1402/case 单批离群定性 (C03 completion 波动非回归); 批236 XL 7/7 7008/case (gate 三态稳定)。归档: 归档: [42-78](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md) · [79-108](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md) · [109-138](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md) · [139-167](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md) · [168-177](docs/changelogs/CHANGELOG-v0.11.0-R205-R218.md) · [178-187](docs/changelogs/CHANGELOG-v0.11.0-R219-R228.md)。每 30 批滚动 (下次: 批228)。
-专项验证: 多来源召回率 (100 用例轮统计) / 无关话题隔离 (score=2 触发独立 session) / session 长期记忆 (跨进程落盘) / JSON 格式跟随 (哨兵用例) / 双 LLM 校验 — 全部 ✓。
+### 批次趋势 (滚动窗口 — 最新 2 批)
 
-完整报告: [千轮迭代优化报告](docs/archive/reports/thousand-round-report.md) · 阶段台账: [wave3-ledger](docs/reports/wave3-ledger.md)
+**批240 (mass_460)** 11/11 quick-11 920/case / **批239 (mass_459)** 11/11 quick-11 974/case —
+v0.13.3 宿主执行期: 思考链宿主链路 (think_chain 打点) + 探索 A/B 增益 +39pt + think-memory 跨进程持久化 +
+LinkRegistry 激活链挂载; 批234 1402/case 单批离群定性 (C03 completion 波动非回归); 批236 XL 7/7 7008/case
+(gate 三态稳定); 批238 10/11 C08 意图单批抖动 (3 连真机复现 general, 观察关闭)。
+
+归档: [42-78](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md) · [79-108](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md) · [109-138](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md) · [139-167](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md) · [168-177](docs/changelogs/CHANGELOG-v0.11.0-R205-R218.md) · [178-187](docs/changelogs/CHANGELOG-v0.11.0-R219-R228.md)。每 30 批滚动。
+
+专项验证: 多来源召回率 / 无关话题隔离 (score=2 独立 session) / session 长期记忆 (跨进程落盘) / JSON 格式跟随 / 双 LLM 校验 / XL 三态 gate — 全部 ✓。
+
+完整报告: [主报告 §7](docs/reports/dynamic-telemetry-eval-rollback-strategy.md) · 阶段台账: [wave3-ledger (归档)](docs/archive/reports-archived/wave3-ledger.md)
 
 ### 🧭 能力全景
 
@@ -66,7 +76,7 @@ C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / Na
 **视觉与图像 (v0.12.0 已验收)**
 - 视觉理解链: CLI `-img` → base64 data URL → glm-5.3-flash v4 (1M ctx); text-only 自动重路由 + coding 端点改写; 双形态 DTO (AOT-safe)
 - 图像渲染插件: IImageRenderPlugin (SkiaSharp 默认可边缘停编 / SVG 文本兜底) + LocalSvgRenderer DSL; 收敛环 E2E (DSL→渲染→视觉校验→FAIL 重生成→PASS)
-- 用例族 T-V01~04 (含负样本诱饵) full 批 23/23; 验收基线 docs/reports/v012-acceptance-baseline.md
+- 用例族 T-V01~04 (含负样本诱饵) full 批 23/23; 验收基线 docs/archive/reports-archived/v012-acceptance-baseline.md
 
 **探索与思考链 (v0.13.x 开发中, 用户钦定)**
 - 渐进式探索: ExplorationPlanner (每上下文区/文本/URL/目录最大步数 config; 上下文内 URL > 上下文外目录优先级)
@@ -133,16 +143,19 @@ python3 analyze.py mass_1000 mass_999               # 批间对比
 python3 cross_validate.py                           # 双 LLM 交叉校验
 ```
 
-## 验证基线 (2026-09-07)
+## 验证基线 (2026-09-09)
 
 | 项 | 结果 |
 |---|---|
-| 单元测试 | **399/399** 通过 |
-| NativeAOT (linux-x64) | **0 IL 警告** (六次复验) + AOT 冒烟通过 |
-| 千轮评测 | **1034/1056 (97.92%)** — 215 轮落盘 |
+| 单元测试 | **490/490** 通过 |
+| NativeAOT (linux-x64) | **0 IL 警告** (多次复验) + full-graph AOT 冒烟通过 |
+| 迭代评测 | **240 批落盘, 近 30 批 99%+** (quick-11 口径) |
+| XL 大上下文族 | 7/7 通过 (gate 三态: IsolatedMicro×3 / HardDrop×3 / Normal×1) |
+| 探索 A/B (可达 URL 24 案) | hit **0.278→0.667 (+39pt) 零回归** |
+| think-memory 持久化 | 跨进程 recall hit top_sim 0.970 ✓ |
+| 压缩 audit | 104 篇多样态: keys 100% / 因果 100% / 指令 96% / 压缩率 79-92% |
 | 3 端点真机 | glm/deepseek 对话+余额 ✓; kimi 负样本诚实报错 ✓ |
-| 阈值切模 | 实战触发 ✓ (deepseek $1.25 → glm) |
-| bge 真链 | JIT+AOT 双验收 ✓ (dim512, 282ms) |
+| bge 真链 | JIT+AOT 双验收 ✓ |
 
 ## 文档
 
