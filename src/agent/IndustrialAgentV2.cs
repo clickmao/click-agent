@@ -66,7 +66,10 @@ public class IndustrialAgentV2 : AgentBase
     /// <summary>v0.13.3 R282: 探索链接登记表 (进程级) — 上下文 URL 三信号预判+激活打点。</summary>
     private static readonly agent.exploration.LinkRegistry _linkRegistry = new();
     /// <summary>R307 (L1): 连续偏题轮计数 (≥2 触发轻牵引提示; 回归主题轮清零)。</summary>
-    private static int _consecutiveDrift;  // v0.11.0 R6: 存储召回同源修复
+    private static int _consecutiveDrift;
+        // R315 (拉回率度量): clarify 问句发出后置位; 用户回锚轮 (≤2 轮内 isDrift=false) 时 Emit pulled_back。
+        private static bool _clarifyArmed;
+        private static int _clarifyTurnsLeft;  // v0.11.0 R6: 存储召回同源修复
     private readonly agent.exploration.ContextBudgetGate _contextGate = new();  // v0.13.3 M2: 上下文预算门
     private readonly IVectorMemoryRecall _memoryRecall;
     private readonly ITemplateStore _templateStore;
@@ -834,6 +837,22 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             // R307 (L1 轻牵引): 连续 ≥2 轮偏题 → 回复尾追加一句衔接提示 (不改答案本体,
             // 提示与核心主题的衔接点 — 消费 K1 画像偏置, 实现会话内牵引不偏离核心主题)。
             _consecutiveDrift = isDrift ? _consecutiveDrift + 1 : 0;
+            // R315 (拉回率): clarify 已发 + 本轮回锚 (drift=false) → pulled_back 打点并撤防;
+            // 超过 2 轮未回锚 → 过期撤防 (不 emit false — 只度量成功回锚, 避免噪声)。
+            if (_clarifyArmed)
+            {
+                if (!isDrift && _clarifyTurnsLeft > 0)
+                {
+                    agent.config.AgentTelemetry.Emit("topic_clarify", "IndustrialAgentV2",
+                        ("pulled_back", true), ("turns_left", _clarifyTurnsLeft));
+                    _clarifyArmed = false;
+                }
+                else
+                {
+                    _clarifyTurnsLeft--;
+                    if (_clarifyTurnsLeft <= 0) _clarifyArmed = false;
+                }
+            }
             // R309b: 牵引触发阈值 config 化 (env AGENTFRAMEWORK_TOPIC_STEER_THRESHOLD, 默认 2)
             var _steerThreshold = int.TryParse(Environment.GetEnvironmentVariable("AGENTFRAMEWORK_TOPIC_STEER_THRESHOLD"), out var _st) && _st >= 1 ? _st : 2;
             var steeringPending = _consecutiveDrift >= _steerThreshold && !string.IsNullOrEmpty(coreTopic);
@@ -849,6 +868,7 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     ("verdict", "SteerHint"), ("core", coreTopic),
                     ("consecutive", _consecutiveDrift),
                     ("stage", clarifyPending ? "clarify" : "steering"));
+                if (clarifyPending) { _clarifyArmed = true; _clarifyTurnsLeft = 2; }  // R315
             }
             
             // 6. ✅ 将消息添加到会话
