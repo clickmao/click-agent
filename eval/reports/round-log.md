@@ -1867,3 +1867,11 @@
 - **意图指数**: n=11, ms_avg=0.1, dist={'general': 11, 'git_operation': 1, 'search': 1}
 - **per-case**: C01_general_qa 521tok 8.1s | C03_subtask 1748tok 32.1s | C04_skill_identity 0tok 4.9s | C06_executive_unit_convert 0tok 4.4s | C07_memory_followup 2422tok 43.8s | C08_reasoning 1470tok 36.2s | C11_json_format 1164tok 33.7s | C13_git_sensitive 2477tok 39.1s | C14_isolated_multi 2765tok 47.1s | C17_neg_hallucination_bait 938tok 16.6s | C18_neg_format_trap 692tok 11.2s | C19_topic_clarify_6turn 8331tok 61.4s | C26_critic_no_false_positive 1422tok 8.3s
 
+## mass_489 — R325 batch269 guardrail-wiring (2026-09-09T23:54:24+0800)
+
+- **判定**: 13/13 passed, tokens_total=23059 (avg 1774), wall=311841ms (avg 24.0s)
+- **KPI**: tokens_per_case=1774 out (900, 1300) (基准轮数 0)
+- **防漂移指数**: segments=16, drift_pass=1.0, semantic_avg=0.991, chars_ratio=0.968
+- **意图指数**: n=11, ms_avg=0.1, dist={'general': 11, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 551tok 10.6s | C03_subtask 2301tok 29.6s | C04_skill_identity 0tok 4.9s | C06_executive_unit_convert 0tok 4.4s | C07_memory_followup 2728tok 27.9s | C08_reasoning 1268tok 33.7s | C11_json_format 694tok 15.6s | C13_git_sensitive 1907tok 40.1s | C14_isolated_multi 2337tok 51.1s | C17_neg_hallucination_bait 880tok 11.7s | C18_neg_format_trap 812tok 12.3s | C19_topic_clarify_6turn 8257tok 61.9s | C26_critic_no_false_positive 1324tok 8.0s
+

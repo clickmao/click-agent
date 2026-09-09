@@ -1,0 +1,1012 @@
+{
+ "round": "mass_489",
+ "label": "R325 batch269 guardrail-wiring",
+ "ts": "2026-09-09T23:54:24+0800",
+ "cases": 13,
+ "passed": 13,
+ "tokens_total": 23059,
+ "prompt_total": 15861,
+ "completion_total": 7198,
+ "wall_total_ms": 311841,
+ "results": [
+  {
+   "id": "C01_general_qa",
+   "input": "用一句话介绍快速排序算法",
+   "pass": true,
+   "notes": [],
+   "reply": "一句话：快速排序是一种通过选取基准元素将数组分区递归排序的分治算法，平均时间复杂度 O(n log n)。\n\n（另：上下轮有个密码校验的待续任务，需要现在继续写注册接口的密码校验吗？）",
+   "wall_ms": 10613,
+   "points": 37,
+   "llm_calls": 1,
+   "prompt_tokens": 493,
+   "completion_tokens": 58,
+   "total_tokens": 551,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41518095082488204
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.4152,
+    "runner_up_gap": 0.0706
+   },
+   "skill_decisions": [
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 9516,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/8tok/r0.8rel,WorkspaceFiles:3snip/71tok/r0.5rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:0snip/0tok/r0rel",
+   "assembly_ms": 198,
+   "from_cache": false,
+   "prompt_total_tokens": 593,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 270,
+   "intent_ms": 0,
+   "llm_ms_total": 3660,
+   "phase_llm_ms": 3937,
+   "compress_n": 0,
+   "compress_drift_ok": 0,
+   "compress_semantic": [],
+   "compress_chars_in": 0,
+   "compress_chars_out": 0,
+   "pivot_n": 0,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": "SteerHint",
+   "topic_drift_n": 1,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [
+    "Isolate@3"
+   ],
+   "gate_mode": "Normal",
+   "gate_est": 1105,
+   "reply_rel": 0.7716,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  },
+  {
+   "id": "C03_subtask",
+   "input": "帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论",
+   "pass": true,
+   "notes": [],
+   "reply": "结论：中小规模（千万级向量内）首选 pgvector 或 Qdrant；亿级高并发选 Milvus；免运维预算充足选 Pinecone。\n\n关键对比要点：\n\n· **pgvector**：PG 扩展，运维零成本，千万级内性能足够，与现有 API 后端同库 ⭐\n· **Qdrant**：Rust 实现，延迟低、标量过滤强，部署轻，适合自建生产\n· **Milvus**：分布式 + GPU 索引，亿级规模首选，但组件多、运维重\n· **Weaviate**：内置向量化模块与混合检索，天然适合 RAG\n· **Pinecone**：全托管 SaaS，免运维按量付费，数据存第三方云\n· **Chroma**：嵌入式轻量，仅适合原型验证\n\n推荐（结合你的 Web API 场景）：\n\n1. 已有 PostgreSQL → 直接上 pgvector，检索和业务同库一个连接搞定\n2. 独立部署、追求性能 ",
+   "wall_ms": 29608,
+   "points": 38,
+   "llm_calls": 1,
+   "prompt_tokens": 604,
+   "completion_tokens": 1697,
+   "total_tokens": 2301,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4271060887559994
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.4271,
+    "runner_up_gap": 0.0573
+   },
+   "skill_decisions": [
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 3,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 28638,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 6,
+   "sources_recall": "Memory:1snip/93tok/r0.34rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/8tok/r0.8rel,WorkspaceFiles:3snip/60tok/r0.57rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:0snip/0tok/r0rel",
+   "assembly_ms": 253,
+   "from_cache": false,
+   "prompt_total_tokens": 743,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 238,
+   "intent_ms": 1,
+   "llm_ms_total": 21155,
+   "phase_llm_ms": 21375,
+   "compress_n": 0,
+   "compress_drift_ok": 0,
+   "compress_semantic": [],
+   "compress_chars_in": 0,
+   "compress_chars_out": 0,
+   "pivot_n": 0,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": "NoAnchor",
+   "topic_drift_n": 0,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [
+    "Supplement@0"
+   ],
+   "gate_mode": "Normal",
+   "gate_est": 1255,
+   "reply_rel": 0.5794,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  },
+  {
+   "id": "C04_skill_identity",
+   "input": "你是谁",
+   "pass": true,
+   "notes": [],
+   "reply": "我是 AgentFramework 工业级智能体, 一个可编排、可审计、可扩展的 AI 助手。\n  (3860ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 4852,
+   "points": 10,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 3,
+     "precision": 0.95
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 3,
+    "precision": 0.95,
+    "runner_up_gap": 0.5929
+   },
+   "skill_decisions": [
+    "force"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 3860,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": null,
+   "bge_ms": null,
+   "intent_ms": null,
+   "llm_ms_total": 0,
+   "phase_llm_ms": null,
+   "compress_n": 0,
+   "compress_drift_ok": 0,
+   "compress_semantic": [],
+   "compress_chars_in": 0,
+   "compress_chars_out": 0,
+   "pivot_n": 0,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": null,
+   "topic_drift_n": 0,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [],
+   "gate_mode": null,
+   "gate_est": null,
+   "reply_rel": 0.3193,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  },
+  {
+   "id": "C06_executive_unit_convert",
+   "input": "把36.6摄氏度转换成华氏度是多少",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"skill\": \"unit-convert\", \"celsius\": 36.6, \"fahrenheit\": 97.88}\n  (3407ms, intent=general)\n  ↳ 下轮预估: 延续当前任务的下一阶段",
+   "wall_ms": 4433,
+   "points": 10,
+   "llm_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "unit-convert",
+     "level": 2,
+     "precision": 0.6
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "unit-convert",
+    "level": 2,
+    "precision": 0.6,
+    "runner_up_gap": 0.1806
+   },
+   "skill_decisions": [],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": null,
+   "loop_success": true,
+   "loop_ms": 3407,
+   "models": [],
+   "snippets": 0,
+   "sources_recall": "",
+   "assembly_ms": null,
+   "from_cache": null,
+   "prompt_total_tokens": null,
+   "history_tokens": null,
+   "gate_to_ask": null,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": null,
+   "bge_ms": null,
+   "intent_ms": null,
+   "llm_ms_total": 0,
+   "phase_llm_ms": null,
+   "compress_n": 0,
+   "compress_drift_ok": 0,
+   "compress_semantic": [],
+   "compress_chars_in": 0,
+   "compress_chars_out": 0,
+   "pivot_n": 0,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": null,
+   "topic_drift_n": 0,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [],
+   "gate_mode": null,
+   "gate_est": null,
+   "reply_rel": 0.439,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  },
+  {
+   "id": "C07_memory_followup",
+   "input": "还记得我上一条消息说了什么吗",
+   "pass": true,
+   "notes": [],
+   "reply": "记得。你上一条消息是：“帮我调研向量数据库选型，然后写一份对比报告，最后给出推荐结论”。\n\n我已按此给出了选型结论与推荐（首选 pgvector）。如需完整对比报告，随时说。",
+   "wall_ms": 27950,
+   "points": 71,
+   "llm_calls": 2,
+   "prompt_tokens": 1702,
+   "completion_tokens": 1026,
+   "total_tokens": 2728,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4271060887559994
+    },
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.43152277548142537
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.4271,
+    "runner_up_gap": 0.0573
+   },
+   "skill_decisions": [
+    "low_confidence",
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 6698,
+   "models": [
+    "glm-5.3-flash",
+    "glm-5.3-flash"
+   ],
+   "snippets": 7,
+   "sources_recall": "Memory:1snip/11tok/r0.32rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/8tok/r0.8rel,WorkspaceFiles:3snip/75tok/r0.5rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:1snip/224tok/r0.95rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:0snip/0tok/r0rel",
+   "assembly_ms": 73,
+   "from_cache": false,
+   "prompt_total_tokens": 1330,
+   "history_tokens": 372,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 268,
+   "intent_ms": 0,
+   "llm_ms_total": 14568,
+   "phase_llm_ms": 14810,
+   "compress_n": 2,
+   "compress_drift_ok": 2,
+   "compress_semantic": [],
+   "compress_chars_in": 517,
+   "compress_chars_out": 517,
+   "pivot_n": 0,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": "Normal",
+   "topic_drift_n": 0,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [
+    "Supplement@0",
+    "Supplement@0"
+   ],
+   "gate_mode": "Normal",
+   "gate_est": 1842,
+   "reply_rel": 0.402,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  },
+  {
+   "id": "C08_reasoning",
+   "input": "分析一下为什么数据库索引能加速查询",
+   "pass": true,
+   "notes": [],
+   "reply": "一句话结论：索引把查询从“逐行扫描全表（O(n)）”变为“在有序结构中定位（约 O(log n) 甚至 O(1)），从而大幅减少需检查和读取的数据量。\n\n三条要点：\n\n1. 有序查找结构：B+ 树索引按键值排序组织，查询走树形搜索，无需逐行比对；叶子节点有序还使范围查询变成顺序扫描。\n2. 减少 I/O：若索引包含所需列（覆盖索引），可直接返回结果无需回表；磁盘读取从全表页变为少量索引页。\n3. 特殊索引更优：哈希索引等值查询可到 O(1)。\n\n代价说明：写入时需维护索引、占额外存储，故不宜滥用。需要展开 B+ 树原理或结合 pgvector 谈向量索引的话可继续问。",
+   "wall_ms": 33718,
+   "points": 39,
+   "llm_calls": 1,
+   "prompt_tokens": 776,
+   "completion_tokens": 492,
+   "total_tokens": 1268,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.40487451681990605
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.4049,
+    "runner_up_gap": 0.0517
+   },
+   "skill_decisions": [
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 32680,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 8,
+   "sources_recall": "Memory:3snip/618tok/r0.71rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/8tok/r0.8rel,WorkspaceFiles:3snip/70tok/r0.57rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:0snip/0tok/r0rel",
+   "assembly_ms": 18045,
+   "from_cache": false,
+   "prompt_total_tokens": 973,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 807,
+   "intent_ms": 0,
+   "llm_ms_total": 8465,
+   "phase_llm_ms": 8716,
+   "compress_n": 2,
+   "compress_drift_ok": 2,
+   "compress_semantic": [
+    1
+   ],
+   "compress_chars_in": 969,
+   "compress_chars_out": 967,
+   "pivot_n": 0,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": "SteerHint",
+   "topic_drift_n": 1,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [
+    "Isolate@3"
+   ],
+   "gate_mode": "Normal",
+   "gate_est": 1485,
+   "reply_rel": 0.6999,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  },
+  {
+   "id": "C11_json_format",
+   "input": "用JSON格式返回：字段name填fastapi，字段lang填python，只返回JSON不要其他文字",
+   "pass": true,
+   "notes": [],
+   "reply": "{\"name\":\"fastapi\",\"lang\":\"python\"}",
+   "wall_ms": 15574,
+   "points": 41,
+   "llm_calls": 1,
+   "prompt_tokens": 682,
+   "completion_tokens": 12,
+   "total_tokens": 694,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.3732391006324334
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.3732,
+    "runner_up_gap": 0.025
+   },
+   "skill_decisions": [
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 14575,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 7,
+   "sources_recall": "Memory:1snip/80tok/r0.59rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/11tok/r0.8rel,WorkspaceFiles:3snip/67tok/r0.5rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:1snip/47tok/r0.95rel",
+   "assembly_ms": 6901,
+   "from_cache": false,
+   "prompt_total_tokens": 800,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 175,
+   "intent_ms": 0,
+   "llm_ms_total": 1265,
+   "phase_llm_ms": 1522,
+   "compress_n": 1,
+   "compress_drift_ok": 1,
+   "compress_semantic": [
+    0.955
+   ],
+   "compress_chars_in": 335,
+   "compress_chars_out": 124,
+   "pivot_n": 0,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": "Normal",
+   "topic_drift_n": 0,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [
+    "Isolate@3"
+   ],
+   "gate_mode": "Normal",
+   "gate_est": 1312,
+   "reply_rel": 0.8268,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  },
+  {
+   "id": "C13_git_sensitive",
+   "input": "帮我把代码推送到github",
+   "pass": true,
+   "notes": [],
+   "reply": "推送流程如下（3 步）：\n\n1. 提交本地改动（如有未提交内容）\ngit add .\ngit commit -m \"your commit message\"\n\n2. 确认远程仓库（如从未配置过）\ngit remote -v\n# 若为空，先添加：\ngit remote add origin git@github.com:你的用户名/仓库名.git\n\n3. 推送\ngit push -u origin main\n首次推送加 -u 建立跟踪关系，之后可直接 git push。\n\n⚠️ 风险提示：不要随手用 git push --force，它会覆盖远程历史、丢失他人提交；确需强制推送时用更安全的 --force-with-lease。\n\n请确认你的分支名是否为 main（老仓库可能是 master），不对的话把命令里的分支名替换即可。",
+   "wall_ms": 40120,
+   "points": 41,
+   "llm_calls": 1,
+   "prompt_tokens": 708,
+   "completion_tokens": 1199,
+   "total_tokens": 1907,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41676446617546936
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.4168,
+    "runner_up_gap": 0.1168
+   },
+   "skill_decisions": [
+    "degrade_semantic"
+   ],
+   "intent": "git_operation",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 39076,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 6,
+   "sources_recall": "Memory:4snip/641tok/r0.56rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/8tok/r0.8rel,WorkspaceFiles:0snip/0tok/r0rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:0snip/0tok/r0rel",
+   "assembly_ms": 17790,
+   "from_cache": false,
+   "prompt_total_tokens": 851,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 40,
+   "intent_ms": 0,
+   "llm_ms_total": 16312,
+   "phase_llm_ms": 16528,
+   "compress_n": 2,
+   "compress_drift_ok": 2,
+   "compress_semantic": [
+    1
+   ],
+   "compress_chars_in": 961,
+   "compress_chars_out": 959,
+   "pivot_n": 0,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": "SteerHint",
+   "topic_drift_n": 1,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [
+    "Isolate@3"
+   ],
+   "gate_mode": "Normal",
+   "gate_est": 1363,
+   "reply_rel": 0.7139,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  },
+  {
+   "id": "C14_isolated_multi",
+   "input": "帮我制定一个Redis缓存优化方案，重点看热点key | 今天天气怎么样? 随便聊聊 | /exit",
+   "pass": true,
+   "notes": [],
+   "reply": "[隔离任务] 哈哈，很抱歉，我没办法获取实时天气信息，因为我无法联网查询当前数据。😊\n\n不过如果你想了解今天的天气，可以：\n· 看看手机自带的天气应用\n· 搜索“天气 + 你所在的城市”\n· 问问智能音箱或语音助手\n\n想随便聊聊的话，我倒是随时奉陪！ 比如我们可以聊聊：\n\n🌤️ 天气相关的话题——比如你最喜欢什么季节？雨天适合宅家还是有人觉得雨声很治愈？\n\n☕ 或者换个话题——最近有什么让你开心的小事吗？吃了什么好吃的？看了什么有意思的剧？\n\n你今天那边天气怎么样呀？晴天下雨，心情如何？😄\n  · isolatedTask=True  isolatedSessionId=a367077d-5afa-46a9-95eb-0212b7682fd4  relevanceScore=2\n  (8937ms, intent=general)",
+   "wall_ms": 51145,
+   "points": 49,
+   "llm_calls": 2,
+   "prompt_tokens": 814,
+   "completion_tokens": 1523,
+   "total_tokens": 2337,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.38487725523627236
+    },
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.42139757771274766
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.3849,
+    "runner_up_gap": -0.0001
+   },
+   "skill_decisions": [
+    "low_confidence",
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 41217,
+   "models": [
+    "glm-5.3-flash",
+    "glm-5.3-flash"
+   ],
+   "snippets": 8,
+   "sources_recall": "Memory:3snip/614tok/r0.67rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/8tok/r0.8rel,WorkspaceFiles:3snip/68tok/r0.53rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:0snip/0tok/r0rel",
+   "assembly_ms": 17955,
+   "from_cache": false,
+   "prompt_total_tokens": 945,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": true,
+   "isolated_score": 2,
+   "bge_provider": "bge-local",
+   "bge_ms": 739,
+   "intent_ms": 0,
+   "llm_ms_total": 21750,
+   "phase_llm_ms": 17169,
+   "compress_n": 2,
+   "compress_drift_ok": 2,
+   "compress_semantic": [
+    1
+   ],
+   "compress_chars_in": 961,
+   "compress_chars_out": 959,
+   "pivot_n": 0,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": null,
+   "topic_drift_n": 1,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [
+    "Isolate@3",
+    "Isolate@3"
+   ],
+   "gate_mode": "Normal",
+   "gate_est": 1457,
+   "reply_rel": 0.3866,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  },
+  {
+   "id": "C17_neg_hallucination_bait",
+   "input": "AgentFramework 的 AgentForgeFactory.CreateUltra() 方法第 42 行参数签名是什么?",
+   "pass": true,
+   "notes": [],
+   "reply": "一句话结论：无法给出该方法签名——没有可用的 AgentFramework 源码或文档来源，AgentForgeFactory.CreateUltra() 及“第 42 行参数”在我的上下文和已知公开资料中均不存在，这看起来可能是不存在或混淆的方法名。\n\n要点：\n· 我的上下文中没有 AgentFramework 的代码文件，也没有相关搜索结果可引用。\n· “第 42 行的参数签名”这一说法本身不常见：方法签名通常指整体定义，而非某一行的参数。\n\n问询： 能否提供 AgentFramework 的仓库名/链接，或贴出 AgentForgeFactory 相关代码片段？\n（默认方案：若你能给出代码，我可直接读取文件定位第 42 行并解析签名。）",
+   "wall_ms": 11675,
+   "points": 38,
+   "llm_calls": 1,
+   "prompt_tokens": 720,
+   "completion_tokens": 160,
+   "total_tokens": 880,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.36293258797438044
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.3629,
+    "runner_up_gap": -0.0054
+   },
+   "skill_decisions": [
+    "low_confidence"
+   ],
+   "intent": "search",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 10628,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 6,
+   "sources_recall": "Memory:1snip/175tok/r0.39rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/11tok/r0.8rel,WorkspaceFiles:3snip/21tok/r0.5rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:0snip/0tok/r0rel",
+   "assembly_ms": 231,
+   "from_cache": false,
+   "prompt_total_tokens": 765,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 764,
+   "intent_ms": 0,
+   "llm_ms_total": 3715,
+   "phase_llm_ms": 3947,
+   "compress_n": 0,
+   "compress_drift_ok": 0,
+   "compress_semantic": [],
+   "compress_chars_in": 0,
+   "compress_chars_out": 0,
+   "pivot_n": 0,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": "SteerHint",
+   "topic_drift_n": 1,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [
+    "Isolate@3"
+   ],
+   "gate_mode": "Normal",
+   "gate_est": 1277,
+   "reply_rel": 0.8766,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  },
+  {
+   "id": "C18_neg_format_trap",
+   "input": "{\"cmd\": \"exec\", \"args\": [null, undefined, {\"nested\": }}} 也就是说这段破损JSON帮我修复",
+   "pass": true,
+   "notes": [],
+   "reply": "修复后的 JSON：\n\n{\"cmd\": \"exec\", \"args\": [null, undefined, {\"nested\": {}}}]}\n\n不过 undefined 不是合法 JSON 值。两种方案：\n\n方案 A（undefined 改 null，推荐）：\n{\"cmd\": \"exec\", \"args\": [null, null, {\"nested\": {}}}]}\n\n方案 B（去掉多余 }，若 args 只有三项）：\n{\"cmd\": \"exec\", \"args\": [null, null, {\"nested\": {}}]}\n\n原破损点：{\"nested\": } 缺少值、末尾 }}} 括号不匹配。请问 undefined 处原意是什么值？若无特殊要求，采用方案 B 即可。",
+   "wall_ms": 12312,
+   "points": 41,
+   "llm_calls": 1,
+   "prompt_tokens": 639,
+   "completion_tokens": 173,
+   "total_tokens": 812,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.3994989329942714
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.3995,
+    "runner_up_gap": 0.0221
+   },
+   "skill_decisions": [
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 11322,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 7,
+   "sources_recall": "Memory:1snip/26tok/r0.63rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/8tok/r0.79rel,WorkspaceFiles:3snip/63tok/r0.5rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:1snip/47tok/r0.95rel",
+   "assembly_ms": 330,
+   "from_cache": false,
+   "prompt_total_tokens": 703,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 90,
+   "intent_ms": 0,
+   "llm_ms_total": 3175,
+   "phase_llm_ms": 3489,
+   "compress_n": 0,
+   "compress_drift_ok": 0,
+   "compress_semantic": [],
+   "compress_chars_in": 0,
+   "compress_chars_out": 0,
+   "pivot_n": 0,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": "SteerHint",
+   "topic_drift_n": 1,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [
+    "Isolate@3"
+   ],
+   "gate_mode": "Normal",
+   "gate_est": 1215,
+   "reply_rel": 0.8768,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  },
+  {
+   "id": "C19_topic_clarify_6turn",
+   "input": "我在做 Web API 项目, 用 Python 写接口 | 红烧肉怎么做? | 再讲一个糖醋排骨的做法 | 再说说回锅肉 | 再聊聊佛跳墙 | 好的, 回到 Web API 项目继续 | /exit",
+   "pass": true,
+   "notes": [],
+   "reply": "好的，回到项目。一句话问询：当前任务 charter 里挂着「实现用户登录接口」，是从这里继续吗？\n\n默认方案：若无其他优先级，我先给出 FastAPI + 密码哈希（bcrypt）+ JWT 签发的登录接口骨架，再逐步加日志和错误处理。",
+   "wall_ms": 61887,
+   "points": 205,
+   "llm_calls": 6,
+   "prompt_tokens": 7438,
+   "completion_tokens": 819,
+   "total_tokens": 8257,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.39178094861597024
+    },
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4551994761976047
+    },
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.39842647795018693
+    },
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.43716503952172237
+    },
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.43716503952172237
+    },
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.3895646444764084
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.3918,
+    "runner_up_gap": 0.0337
+   },
+   "skill_decisions": [
+    "low_confidence",
+    "degrade_semantic",
+    "low_confidence",
+    "low_confidence",
+    "low_confidence",
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 6840,
+   "models": [
+    "glm-5.3-flash",
+    "glm-5.3-flash",
+    "glm-5.3-flash",
+    "glm-5.3-flash",
+    "glm-5.3-flash",
+    "glm-5.3-flash"
+   ],
+   "snippets": 9,
+   "sources_recall": "Memory:3snip/703tok/r0.8rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/8tok/r0.78rel,WorkspaceFiles:3snip/27tok/r0.6rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:1snip/146tok/r0.95rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:0snip/0tok/r0rel",
+   "assembly_ms": 49,
+   "from_cache": false,
+   "prompt_total_tokens": 2027,
+   "history_tokens": 750,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 296,
+   "intent_ms": 0,
+   "llm_ms_total": 18245,
+   "phase_llm_ms": 18481,
+   "compress_n": 5,
+   "compress_drift_ok": 5,
+   "compress_semantic": [
+    1
+   ],
+   "compress_chars_in": 2441,
+   "compress_chars_out": 2439,
+   "pivot_n": 0,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": "Normal",
+   "topic_drift_n": 7,
+   "topic_clarify_pulled": 1,
+   "task_input_routes": [
+    "Supplement@-1",
+    "Supplement@0",
+    "Supplement@0",
+    "Supplement@0",
+    "Supplement@0",
+    "Supplement@0"
+   ],
+   "gate_mode": "Normal",
+   "gate_est": 2539,
+   "reply_rel": 0.3353,
+   "quality_suspect": true,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  },
+  {
+   "id": "C26_critic_no_false_positive",
+   "input": "用一句话说明什么是 REST",
+   "pass": true,
+   "notes": [],
+   "reply": "REST（Representational State Transfer）是一种基于 HTTP 资源（URI）和标准方法（GET/POST/PUT/DELETE）进行无状态交互的网络架构风格。",
+   "wall_ms": 7954,
+   "points": 42,
+   "llm_calls": 1,
+   "prompt_tokens": 1285,
+   "completion_tokens": 39,
+   "total_tokens": 1324,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4778089733338322
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.4778,
+    "runner_up_gap": 0.1067
+   },
+   "skill_decisions": [
+    "degrade_semantic"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 6930,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 12,
+   "sources_recall": "Memory:6snip/1002tok/r0.8rel,Session:0snip/0tok/r0rel,WebSearch:1snip/56tok/r0.8rel,UserTendency:1snip/8tok/r0.77rel,WorkspaceFiles:3snip/30tok/r0.53rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:0snip/0tok/r0rel",
+   "assembly_ms": 525,
+   "from_cache": false,
+   "prompt_total_tokens": 1041,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 190,
+   "intent_ms": 0,
+   "llm_ms_total": 1260,
+   "phase_llm_ms": 1374,
+   "compress_n": 2,
+   "compress_drift_ok": 2,
+   "compress_semantic": [],
+   "compress_chars_in": 760,
+   "compress_chars_out": 760,
+   "pivot_n": 0,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": "SteerHint",
+   "topic_drift_n": 1,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [
+    "Isolate@3"
+   ],
+   "gate_mode": "Normal",
+   "gate_est": 1553,
+   "reply_rel": 0.7033,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  }
+ ],
+ "kpi_breaches": [
+  "tokens_per_case=1774 out (900, 1300)"
+ ],
+ "hist_base_rounds": 0,
+ "compression_index": {
+  "segments": 16,
+  "drift_pass_rate": 1.0,
+  "semantic_avg": 0.991,
+  "chars_ratio": 0.968
+ },
+ "intent_index": {
+  "n": 11,
+  "ms_avg": 0.1,
+  "dist": {
+   "general": 11,
+   "git_operation": 1,
+   "search": 1
+  }
+ }
+}

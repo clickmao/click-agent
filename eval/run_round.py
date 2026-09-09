@@ -40,28 +40,47 @@ def read_telemetry(path=None):
     return points
 
 def _apply_charter_setup(case):
-    """v0.15.1-a (R322): 用例级章程 fixture — setup.charter 预写 active.json; 返回还原函数。"""
-    charter_setup = (case.get("setup") or {}).get("charter")
-    if not charter_setup:
+    """v0.15.1-a (R322): 用例级 fixture — setup.charter 预写 active.json + setup.guardrails 预置 guardrails.json;
+    返回还原函数 (同时还原两文件)。"""
+    setup = case.get("setup") or {}
+    charter_setup = setup.get("charter")
+    guardrails = setup.get("guardrails")
+    if not charter_setup and not guardrails:
         return lambda: None
     import json as _j
-    _charters_dir = os.path.abspath("data/task-charters")
-    _charter_active = os.path.join(_charters_dir, "active.json")
-    os.makedirs(_charters_dir, exist_ok=True)
-    backup = open(_charter_active, encoding="utf-8").read() if os.path.exists(_charter_active) else None
-    c = dict(charter_setup)
-    c.setdefault("Id", f"tc{int(time.time()*1000)%10**12:012d}")
-    c.setdefault("Status", "running")
-    for k, v in (("PendingInputs", []), ("KeyEntities", []), ("AcceptanceCriteria", []), ("ScopeOut", [])):
-        c.setdefault(k, v)
-    c.setdefault("CreatedUtc", "2026-09-09T00:00:00Z")
-    open(_charter_active, "w", encoding="utf-8").write(_j.dumps(c, ensure_ascii=False))
-    def restore():
-        if backup is not None:
-            open(_charter_active, "w", encoding="utf-8").write(backup)
-        elif os.path.exists(_charter_active):
-            os.remove(_charter_active)
-    return restore
+    restores = []
+    if charter_setup:
+        _charters_dir = os.path.abspath("data/task-charters")
+        _charter_active = os.path.join(_charters_dir, "active.json")
+        os.makedirs(_charters_dir, exist_ok=True)
+        backup = open(_charter_active, encoding="utf-8").read() if os.path.exists(_charter_active) else None
+        c = dict(charter_setup)
+        c.setdefault("Id", f"tc{int(time.time()*1000)%10**12:012d}")
+        c.setdefault("Status", "running")
+        for k, v in (("PendingInputs", []), ("KeyEntities", []), ("AcceptanceCriteria", []), ("ScopeOut", [])):
+            c.setdefault(k, v)
+        c.setdefault("CreatedUtc", "2026-09-09T00:00:00Z")
+        open(_charter_active, "w", encoding="utf-8").write(_j.dumps(c, ensure_ascii=False))
+        def restore_charter():
+            if backup is not None:
+                open(_charter_active, "w", encoding="utf-8").write(backup)
+            elif os.path.exists(_charter_active):
+                os.remove(_charter_active)
+        restores.append(restore_charter)
+    if guardrails:
+        _gr_path = os.path.abspath("data/guardrails.json")
+        gr_backup = open(_gr_path, encoding="utf-8").read() if os.path.exists(_gr_path) else None
+        open(_gr_path, "w", encoding="utf-8").write(_j.dumps(guardrails, ensure_ascii=False))
+        def restore_guardrails():
+            if gr_backup is not None:
+                open(_gr_path, "w", encoding="utf-8").write(gr_backup)
+            elif os.path.exists(_gr_path):
+                os.remove(_gr_path)
+        restores.append(restore_guardrails)
+    def restore_all():
+        for fn in restores:
+            fn()
+    return restore_all
 
 
 def run_case_with_setup(case, env):
@@ -156,7 +175,8 @@ def summarize_points(points):
          "compress_chars_in": 0, "compress_chars_out": 0, "pivot_n": 0,
          "topic_relevance_score": 0, "topic_relevance_verdict": None, "topic_drift_n": 0,
          "topic_clarify_pulled": 0, "task_input_routes": [],
-         "gate_mode": None, "gate_est": None}
+         "gate_mode": None, "gate_est": None,
+         "guardrail_injected": 0, "guardrail_writes": 0}
     for pt in points:
         kv = pt.get("kv", {}) or {}
         tag = pt.get("point")
@@ -203,6 +223,10 @@ def summarize_points(points):
             # v0.13.3 M4: 上下文预算门 (normal/isolated_micro/hard_drop) — 微隔离触发观测点
             s["gate_mode"] = kv.get("mode")
             s["gate_est"] = kv.get("est_tokens")
+        elif tag == "guardrail":
+            s["guardrail_injected"] = kv.get("injected") or 0
+        elif tag == "guardrail_write":
+            s["guardrail_writes"] += 1
         elif tag == "task_input":
             # v0.15.1: 任务进行中新输入路由观测 (supplement/isolate/pivot)
             s["task_input_routes"].append(f"{kv.get('route')}@{kv.get('score')}")
@@ -308,6 +332,13 @@ def check_expect(case, reply, agg, raw_tail):
                 agg["suspects"].append(f"禁止模式 '{_pat[:30]}' 出现在否定上下文 (正确拒诱饵)")
                 continue
             req(False, f"reply 命中禁止模式 '{_pat[:40]}'")
+    if "guardrail_injected" in exp:
+        got = agg.get("guardrail_injected") or 0
+        req(got >= exp["guardrail_injected"], f"guardrail_injected={got} want >={exp['guardrail_injected']}")
+    if "guardrail_write" in exp:
+        got_w = agg.get("guardrail_writes") or 0
+        req(got_w >= exp["guardrail_write"], f"guardrail_write={got_w} want >={exp['guardrail_write']}")
+
     if "task_route" in exp:
         # v0.15.1-a (R149 真断言): 章程路由判定的批测断言 — task_input_routes 含指定 route
         routes = agg.get("task_input_routes") or []

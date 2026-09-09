@@ -349,5 +349,119 @@
    ],
    "note": "无代码块回复 → OutputCritic/SelfCritic 零触发 (负样本: 无假阳性自审提示)"
   }
+ },
+ {
+  "id": "C27_guardrail_inject_code",
+  "repl": [
+   "帮我写用户登录接口的密码校验代码",
+   "/exit"
+  ],
+  "setup": {
+   "guardrails": [
+    {
+     "Domain": "用户登录接口",
+     "Pattern": "密码",
+     "Condition": "处理密码时",
+     "Prohibition": "不要明文存储密码",
+     "Exception": "",
+     "OriginCase": "曾明文输出密码",
+     "Source": "human_warning",
+     "Confirmations": 1
+    }
+   ]
+  },
+  "expect": {
+   "llm": true,
+   "must_not_contain": [
+    "明文存储密码",
+    "password 明文"
+   ],
+   "note": "guardrail 预置+同域提问 → 前置注入 (回复遵守禁令不写明文)"
+  }
+ },
+ {
+  "id": "C28_guardrail_not_cross_domain",
+  "input": "教我怎么做红烧肉",
+  "setup": {
+   "guardrails": [
+    {
+     "Domain": "用户登录接口",
+     "Pattern": "密码",
+     "Condition": "处理密码时",
+     "Prohibition": "不要明文存储密码",
+     "Exception": "",
+     "OriginCase": "曾明文输出密码",
+     "Source": "human_warning",
+     "Confirmations": 1
+    }
+   ]
+  },
+  "expect": {
+   "llm": true,
+   "note": "guardrail 登录域预置+菜谱域提问 → 跨域不注入 (零干扰)"
+  }
+ },
+ {
+  "id": "C29_guardrail_exception_honored",
+  "repl": [
+   "写用户登录接口密码校验, 这是内部工具可以明文",
+   "/exit"
+  ],
+  "setup": {
+   "guardrails": [
+    {
+     "Domain": "用户登录接口",
+     "Pattern": "密码",
+     "Condition": "处理密码时",
+     "Prohibition": "不要明文存储密码",
+     "Exception": "内部工具场景可豁免",
+     "OriginCase": "曾明文输出密码",
+     "Source": "human_warning",
+     "Confirmations": 1
+    }
+   ]
+  },
+  "expect": {
+   "llm": true,
+   "note": "例外情境 (内部工具) → guardrail 例外 honoring, 不机械抑制"
+  }
+ },
+ {
+  "id": "C30_guardrail_habituation",
+  "repl": [
+   "写登录接口密码校验",
+   "再优化一下登录接口的密码存储",
+   "/exit"
+  ],
+  "setup": {
+   "guardrails": [
+    {
+     "Domain": "用户登录接口",
+     "Pattern": "密码",
+     "Condition": "处理密码时",
+     "Prohibition": "不要明文存储密码",
+     "Exception": "",
+     "OriginCase": "曾明文输出密码",
+     "Source": "human_warning",
+     "Confirmations": 1
+    }
+   ]
+  },
+  "expect": {
+   "llm": true,
+   "note": "同会话两轮同域 → 注入去重 (guardrail injected 仅 1 次)"
+  }
+ },
+ {
+  "id": "C31_guardrail_write",
+  "repl": [
+   "警告你 记住了 不要在接口里明文存储密码",
+   "/exit"
+  ],
+  "expect": {
+   "llm": true,
+   "guardrail_write": 1,
+   "note": "用户警告语义消息 → 三元组写入 (guardrail_write 打点)"
+  }
  }
 ]
