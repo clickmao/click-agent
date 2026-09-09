@@ -73,7 +73,64 @@ public class IndustrialAgentV2 : AgentBase
     /// R21: 简单意图启发式 — 问候/闲聊/单句解释/事实问答走轻思考 (省 reasoning token 与延迟)。
     /// 复杂信号 (多步/代码/分析/对比/计划/长输入) 一律保留默认深推理, 宁可多花不可降智。
     /// </summary>
-    private static bool IsSimpleIntentForReasoning(string intent, string userMessage)
+        /// <summary>
+    /// v0.13.3 B2 (R274): 微步骤隔离执行宿主链。子任务 → MicroQuestion (回注上下文=空, 主上下文不复制)
+    /// → 独立微 prompt 逐条问询 (与主链同一 LLM 通道, 但 prompt 只有微问题本身 — 隔离语义) →
+    /// MicroStepSession.Record (失败计数/升级联动) → 回注摘要 (≤200 tok/条)。
+    /// 打点: micro_step (per-micro: ok/tokens/ms) + micro_session (汇总)。
+    /// </summary>
+    private async Task<string> RunMicroStepsAsync(IReadOnlyList<IntentDecomposer.SubTask> subTasks, string intent, CancellationToken ct)
+    {
+        var session = new agent.exploration.MicroStepSession();
+        var sb = new System.Text.StringBuilder();
+        foreach (var st in subTasks)
+        {
+            var mq = new agent.exploration.MicroQuestion
+            {
+                Question = st.Text,
+                ForwardRefs = new List<string>(),
+                InjectedContext = string.Empty,
+            };
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            string answer;
+            try
+            {
+                var microPrompt = new Prompt
+                {
+                    UserMessage = $"[微步骤隔离问询] {mq.Question}\n(只回答本微问题, 不引申)",
+                    SystemPrompt = "你是隔离执行的微步骤助手: 只回答给出的微问题本身, 不引用任何外部会话历史。",
+                    EstimatedTokens = 100,
+                };
+                var resp = await _llmCaller.CallAsync(microPrompt, ct);
+                answer = resp.Content ?? string.Empty;
+            }
+            catch (OperationCanceledException) { throw; }
+            catch (Exception ex)
+            {
+                answer = string.Empty;
+                agent.config.AgentTelemetry.Emit("micro_step", "IndustrialAgentV2",
+                    ("id", mq.Id), ("ok", false), ("error", ex.Message[..Math.Min(80, ex.Message.Length)]));
+            }
+            sw.Stop();
+            var result = new agent.exploration.MicroStepResult
+            {
+                MicroId = mq.Id,
+                Ok = answer.Length > 0,
+                Answer = answer,
+                Ms = (int)sw.ElapsedMilliseconds,
+            };
+            session.Record(result);
+            agent.config.AgentTelemetry.Emit("micro_step", "IndustrialAgentV2",
+                ("id", mq.Id), ("ok", result.Ok), ("tokens", result.TokensUsed), ("ms", result.Ms));
+            var summary = session.BuildRestoreSummary(result);
+            if (summary.Length > 0) sb.AppendLine(summary);
+        }
+        agent.config.AgentTelemetry.Emit("micro_session", "IndustrialAgentV2",
+            ("count", subTasks.Count), ("failures", session.ConsecutiveFailures));
+        return sb.ToString();
+    }
+
+private static bool IsSimpleIntentForReasoning(string intent, string userMessage)
     {
         // 复杂信号优先: 命中即深推理
         if (userMessage.Contains("分析") || userMessage.Contains("对比") || userMessage.Contains("设计") ||
@@ -478,10 +535,23 @@ public class IndustrialAgentV2 : AgentBase
                     contentFingerprint: FnvHash(prompt.UserMessage), contentLength: prompt.UserMessage.Length);
             }
 
+            // v0.13.3 B2 (R274): 微步骤隔离执行 — gate 判 IsolatedMicro 时, 子任务转微问题经独立
+            // 微 prompt 逐条问询 (不带主上下文), 结果按回注预算拼进主 prompt (A5 语义: 主记忆零污染)。
+            var microRestore = string.Empty;
+            if (gateVerdict.Mode == agent.exploration.ContextGateMode.IsolatedMicro && subTasks.Count > 0)
+            {
+                microRestore = await RunMicroStepsAsync(subTasks, intent, ct);
+            }
+
             // 5. ✅ 调用 LLM（传入完整 Prompt）
             // v0.11.0 R21: 推理档位路由 — 简单任务轻思考省 token/延迟, 复杂任务保留默认深推理。
             // 实测 (glm-5.3-flash): 简单题 reasoning 0 vs 8910ch; 复杂题 low 档 wall -55%。
             prompt.ReasoningEffort = IsSimpleIntentForReasoning(intent, prompt.UserMessage) ? "low" : null;
+            if (!string.IsNullOrEmpty(microRestore))
+            {
+                // 回注摘要拼在用户消息尾 (预算已按 200 tok/条封顶 — MicroStepSession.BuildRestoreSummary)
+                prompt.UserMessage = prompt.UserMessage + "\n\n[微步骤结论回注]\n" + microRestore;
+            }
             // v0.11.0 R129 (PGO v2 D3): LLM 全段耗时 (含队列路由/余额检查; 与 llm_call.ms 差值 = 路由开销)
             var llmSegSw = System.Diagnostics.Stopwatch.StartNew();
             var llmResponse = await _llmCaller.CallAsync(prompt, ct);
