@@ -145,6 +145,48 @@ public sealed class ThinkMemory
         lock (_lock)
             return _records.Where(r => r.AvgConfidence < _config.ArchiveBelow).Select(r => r.Id).ToList();
     }
+    /// <summary>
+    /// v0.13.3 R283: 持久化 — 联想库进程重启后保留 (STJ source-gen, AOT 铁律)。
+    /// 保存路径由宿主给 (./data/think-memory.json); 失败静默 (联想库非关键路径)。
+    /// </summary>
+    public void Save(string path)
+    {
+        try
+        {
+            List<ThinkRecord> snapshot;
+            lock (_lock) snapshot = new List<ThinkRecord>(_records);
+            var dir = Path.GetDirectoryName(path);
+            if (!string.IsNullOrEmpty(dir)) Directory.CreateDirectory(dir);
+            using var fs = File.Create(path);
+            System.Text.Json.JsonSerializer.Serialize(fs, snapshot, ExplorationJsonContext.Default.ListThinkRecord);
+        }
+        catch
+        {
+            // 联想库非关键路径 — 写失败不影响主链 (打点在宿主侧)
+        }
+    }
+
+    /// <summary>加载 (宿主启动时调用; 文件缺失/损坏 → 空库启动, 行为兼容)。</summary>
+    public static ThinkMemory Load(string path)
+    {
+        var mem = new ThinkMemory();
+        try
+        {
+            if (!File.Exists(path)) return mem;
+            using var fs = File.OpenRead(path);
+            var records = System.Text.Json.JsonSerializer.Deserialize(fs, ExplorationJsonContext.Default.ListThinkRecord);
+            if (records != null)
+            {
+                lock (mem._lock) mem._records.AddRange(records);
+            }
+        }
+        catch
+        {
+            // 损坏文件 → 空库启动
+        }
+        return mem;
+    }
+
 
     private static double Cosine(float[] a, float[] b)
     {
