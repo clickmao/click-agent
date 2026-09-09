@@ -7,10 +7,24 @@ ROUND_LABEL = sys.argv[1] if len(sys.argv) > 1 else "mt-test"
 TURNS = 10
 
 # 每轮材料 (递增注入 — 模拟长任务): 事实 + 填充
+SCENARIOS = {
+    # A: 事实累积 (压缩反复触发主战场 — 多轮历史增长)
+    "A": lambda i: f"第{i}轮关键事实: 项目{i}的负责人是{i}号工程师, 截止日期 2026-09-{10+i}, 数量 {100*i} 件, 编号 SN-{7000+i}。"
+                   + "相关背景: 例行巡检正常。班车时刻见公告栏。库存盘点顺利推进。" * 30
+                   + f"\n请记录以上第{i}轮要点并简短确认。",
+    # B: 数字密集 (哨兵保护主战场 — 数值/日期/SN 编号)
+    "B": lambda i: f"第{i}轮数据点: 合同金额 {12345*i} 元, 合格率 {95+i}.{i}%, 故障件 {7*i} 个, 批次号 B{2026}{i:02d}, 交付日 2026-10-{(i%28)+1:02d}。"
+                   + "附录: 历史基线数据见年报。" * 35
+                   + f"\n请记录第{i}轮全部数字并简短确认。",
+    # C: URL 链 (激活链主战场 — 文档内链接入口)
+    "C": lambda i: f"第{i}轮调研入口: 主文档在 https://docs.example.com/round{i}/portal, 其中深层链接指向 https://docs.example.com/round{i}/critical-{i}, 必须经由入口页二次跳转访问。"
+                   + "注: 页面访问需内网权限。" * 35
+                   + f"\n请记录第{i}轮链接入口并简短确认。",
+}
+
 def turn_input(i):
-    fact = f"第{i}轮关键事实: 项目{i}的负责人是{i}号工程师, 截止日期 2026-09-{10+i}, 数量 {100*i} 件, 编号 SN-{7000+i}。"
-    filler = "相关背景: 例行巡检正常。班车时刻见公告栏。库存盘点顺利推进。" * 30
-    return fact + filler + f"\n请记录以上第{i}轮要点并简短确认。"
+    scene = os.environ.get("MT_SCENARIO", "A")
+    return SCENARIOS.get(scene, SCENARIOS["A"])(i)
 
 env = dict(os.environ)
 env["AGENTFRAMEWORK_LOCAL_DISABLED"] = "1"
@@ -77,7 +91,8 @@ for tf in sorted(glob.glob("data/telemetry/*.jsonl"), key=os.path.getmtime)[-3:]
             if name != "compression" or len(tel_details) < 12:
                 tel_details.append({k: kv.get(k) for k in ("level", "drift_ok", "semantic", "chars", "state", "reason", "losses") if kv.get(k) is not None})
 
-out_path = f"eval/results/multi-turn-{ROUND_LABEL}.json"
+scene = os.environ.get("MT_SCENARIO", "A")
+out_path = f"eval/results/multi-turn-{ROUND_LABEL}-s{scene}.json"
 json.dump({"round": ROUND_LABEL, "turns": results, "compression_telemetry": {"events": tel_events, "details": tel_details}}, open(out_path, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 print(f"saved → {out_path}")
 print("compression telemetry:", tel_events)
