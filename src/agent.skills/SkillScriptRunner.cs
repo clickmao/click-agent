@@ -217,8 +217,9 @@ namespace agent.skills
             return interpreters?.FirstOrDefault(i => FindOnPath(i) is not null);
         }
 
-        /// <summary>PATH 探测可执行文件 (Linux/macOS: 逐目录 File.Exists; 返回全路径或 null)。</summary>
-        private static string? FindOnPath(string name)
+        /// <summary>PATH 探测可执行文件 (Linux/macOS: 逐目录 File.Exists; 返回全路径或 null)。
+        /// v0.17.2-b: internal — ScriptPluginRunner/PythonScriptValidator 共用解释器探测。</summary>
+        internal static string? FindOnPath(string name)
         {
             var pathEnv = Environment.GetEnvironmentVariable("PATH");
             if (string.IsNullOrEmpty(pathEnv))
@@ -241,8 +242,9 @@ namespace agent.skills
             return null;
         }
 
-        /// <summary>杀进程树 (kill 主进程 + 子进程; Linux 用 pkill -P 逐层 — 轻量且无 P/Invoke)。</summary>
-        private static void KillTree(Process process)
+        /// <summary>杀进程树 (kill 主进程 + 子进程; Linux 用 pkill -P 逐层 — 轻量且无 P/Invoke)。
+        /// v0.17.2-b: internal — ScriptPluginRunner 超时/取消共用。</summary>
+        internal static void KillTree(Process process)
         {
             try
             {

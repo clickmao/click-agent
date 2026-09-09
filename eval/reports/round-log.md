@@ -2088,3 +2088,10 @@
 - **意图指数**: n=11, ms_avg=0.0, dist={'general': 11, 'git_operation': 1, 'search': 1}
 - **per-case**: C01_general_qa 544tok 13.3s Δ-23 | C03_subtask 1602tok 33.8s Δ+172 | C04_skill_identity 0tok 7.1s | C06_executive_unit_convert 0tok 6.8s | C07_memory_followup 2814tok 43.4s Δ+167 | C08_reasoning 1326tok 25.0s Δ+226 | C11_json_format 627tok 11.2s Δ-1 | C13_git_sensitive 2684tok 34.6s Δ-115 | C14_isolated_multi 3192tok 54.7s Δ+535 | C17_neg_hallucination_bait 776tok 16.9s Δ-4 | C18_neg_format_trap 938tok 15.2s Δ+136 | C19_topic_clarify_6turn 7919tok 70.7s Δ-448 | C26_critic_no_false_positive 1131tok 10.6s Δ+53
 
+## 514 — 批287-v0.17.2b脚本插件协议条件定时 (2026-09-10T07:29:19+0800)
+
+- **判定**: 13/13 passed, tokens_total=21336 (avg 1641), wall=312391ms (avg 24.0s)
+- **KPI**: tokens_per_case=1641 out (900, 1300) (基准轮数 13)
+- **意图指数**: n=11, ms_avg=0.0, dist={'general': 11, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 550tok 10.9s Δ-18 | C03_subtask 1637tok 32.5s Δ+70 | C04_skill_identity 0tok 7.1s | C06_executive_unit_convert 0tok 6.6s | C07_memory_followup 2260tok 35.1s Δ-270 | C08_reasoning 940tok 18.9s Δ-139 | C11_json_format 652tok 11.0s Δ+27 | C13_git_sensitive 2893tok 39.6s Δ+137 | C14_isolated_multi 2001tok 41.1s Δ-356 | C17_neg_hallucination_bait 708tok 13.2s Δ-74 | C18_neg_format_trap 863tok 15.6s Δ+90 | C19_topic_clarify_6turn 7680tok 68.8s Δ-520 | C26_critic_no_false_positive 1152tok 11.9s Δ+69
+

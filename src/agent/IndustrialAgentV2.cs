@@ -253,6 +253,20 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
     private agent.activity.ActivityService Activity()
         => _activity ??= new agent.activity.ActivityService();
 
+    // v0.17.2-b/c (R337): 脚本插件服务 + 条件定时调度器 (惰性; 教训 sink → 真实 ExecutorLessonMemory 落盘)
+    private agent.skills.ScriptPluginRunner? _scriptPlugin;
+    private agent.skills.ConditionalScriptScheduler? _scriptScheduler;
+    private agent.skills.ScriptPluginRunner ScriptPlugin()
+        => _scriptPlugin ??= new agent.skills.ScriptPluginRunner(lessonSink: RecordScriptLesson);
+    private agent.skills.ConditionalScriptScheduler ScriptScheduler()
+        => _scriptScheduler ??= new agent.skills.ConditionalScriptScheduler(
+            ScriptPlugin(), () => { try { return Activity().IsOtherAgentBusy(); } catch { return false; } });
+    private static void RecordScriptLesson(string pattern, string summary, string? solution, string? context)
+    {
+        try { agent.execution.ExecutorLessonMemory.Default.Record(pattern, summary, solution, context); }
+        catch { /* 教训持久化失败不阻塞主链 */ }
+    }
+
     /// <summary>v0.17.2-a (R336): 进程优雅退出时清自身活动心跳文件 (host finally 调用; kill -9 由 TTL 兜底)。</summary>
     public void ClearActivity()
     {
@@ -633,6 +647,47 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 {
                     response.Success = true;
                     response.Content = Activity().Render();
+                    response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
+                    return response;
+                }
+                // v0.17.2-b/c (R337): /schedule-run 条件定时执行 py 插件脚本 —
+                // 用法: /schedule-run <延时秒> <py脚本路径> [目标描述]; 到期且无其他 agent 忙则执行
+                // (v0.17.2-b 事件流协议; 坏 py 拒绝 + 教训落盘)。v1 延时上限 60s (长延时/跨重启调度交互语义待用户裁定)。
+                if (localCommand.Command == "schedule-run")
+                {
+                    response.Success = true;
+                    var arg = (localCommand.Argument ?? string.Empty).Trim();
+                    var parts = arg.Split(' ', 3, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                    if (parts.Length < 2 || !int.TryParse(parts[0], System.Globalization.NumberStyles.None,
+                        System.Globalization.CultureInfo.InvariantCulture, out var dueSecs) || dueSecs < 0)
+                    {
+                        response.Content = "用法: /schedule-run <延时秒> <py脚本路径> [目标描述]\n到期且无其他 agent 忙则执行 (脚本须符合 v0.17.2-b JSON Lines 事件流协议; py_compile 验证拒绝则记教训不执行)。";
+                    }
+                    else if (dueSecs > 60)
+                    {
+                        response.Content = "v1 延时上限 60s (更长延时/跨重启调度 = 下轮候选, 交互语义待用户裁定)。";
+                    }
+                    else
+                    {
+                        try
+                        {
+                            var scriptPath = parts[1];
+                            var goal = parts.Length > 2 ? parts[2] : scriptPath;
+                            var payload = new agent.skills.ScriptTaskPayload
+                            {
+                                Id = Guid.NewGuid().ToString("N"),
+                                Goal = goal.Length > 200 ? goal[..200] : goal,
+                                OutputDir = Path.Combine(Environment.CurrentDirectory, "data", "script-plugin", "outputs"),
+                            };
+                            var verdict = await ScriptScheduler().RunWhenIdleAfterAsync(
+                                scriptPath, payload, TimeSpan.FromSeconds(dueSecs), ct).ConfigureAwait(false);
+                            response.Content = verdict.Render();
+                        }
+                        catch (Exception ex)
+                        {
+                            response.Content = $"schedule-run 失败: {ex.Message}";
+                        }
+                    }
                     response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
                     return response;
                 }

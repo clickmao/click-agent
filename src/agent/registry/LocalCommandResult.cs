@@ -33,6 +33,7 @@ public static class LocalCommandRouter
         "/skills", "/skills-only", "/skills-exclude",  // v0.16.0-c/b: skills 查询/动态 whitelist/blacklist (V2 特判渲染)
         "/staged", "/approve", "/reject", "/cleanup",  // v0.17.1 (R335): 离线变更审批 (V2 特判渲染)
         "/activity",  // v0.17.2-a (R336): 活动 agent/任务查询 (V2 特判渲染)
+        "/schedule-run",  // v0.17.2-b/c (R337): 条件定时执行 py 插件脚本 (V2 特判渲染)
         "/help",  // v0.11.0 R86: 帮助菜单本地应答 — 原未注册送 LLM 浪费一轮
     };
 
@@ -115,6 +116,11 @@ public static class LocalCommandRouter
             "/activity" => new LocalCommandResult
             {
                 Handled = true, Command = "activity",
+            },
+            // v0.17.2-b/c: 条件定时执行 py 插件脚本 (V2 特判渲染, 需 ScriptPluginRunner/ConditionalScriptScheduler)
+            "/schedule-run" => new LocalCommandResult
+            {
+                Handled = true, Command = "schedule-run", Argument = arg,
             },
             _ => NotCommand,
         };
