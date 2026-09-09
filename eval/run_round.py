@@ -120,6 +120,7 @@ def summarize_points(points):
          #  新增打点消费必须同步补 init 键)。
          "compress_n": 0, "compress_drift_ok": 0, "compress_semantic": [],
          "compress_chars_in": 0, "compress_chars_out": 0, "pivot_n": 0,
+         "topic_relevance_score": 0, "topic_relevance_verdict": None, "topic_drift_n": 0,
          "gate_mode": None, "gate_est": None}
     for pt in points:
         kv = pt.get("kv", {}) or {}

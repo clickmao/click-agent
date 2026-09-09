@@ -478,6 +478,13 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                         ("total_ms", response.ExecutionTimeMs), ("success", true),
                         ("reply_chars", response.Content.Length), ("asked", false),
                         ("executive", true), ("skill", skillResult.SkillId));
+                    // R309 (缺陷 72 修复): executive 直达补 intent 打点 — 原 return 在 intent 打点 (L507) 前,
+                    // C04/C06 类用例 summarize intent=None (批244 起的结构性观测盲区)。
+                    var _execSubTasks = IntentDecomposer.Decompose(message.Content);
+                    agent.config.AgentTelemetry.Emit("intent", "IndustrialAgentV2",
+                        ("primary", IntentDecomposer.PrimaryIntent(_execSubTasks)),
+                        ("subtask_count", _execSubTasks.Count),
+                        ("input_chars", message.Content.Length), ("executive", true));
                     return response;
                 }
                 // 未命中/失败/禁语拦截 → 静默降级普通推理 (S.5: 用户无感)
@@ -795,7 +802,9 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             // R307 (L1 轻牵引): 连续 ≥2 轮偏题 → 回复尾追加一句衔接提示 (不改答案本体,
             // 提示与核心主题的衔接点 — 消费 K1 画像偏置, 实现会话内牵引不偏离核心主题)。
             _consecutiveDrift = isDrift ? _consecutiveDrift + 1 : 0;
-            var steeringPending = _consecutiveDrift >= 2 && !string.IsNullOrEmpty(coreTopic);
+            // R309b: 牵引触发阈值 config 化 (env AGENTFRAMEWORK_TOPIC_STEER_THRESHOLD, 默认 2)
+            var _steerThreshold = int.TryParse(Environment.GetEnvironmentVariable("AGENTFRAMEWORK_TOPIC_STEER_THRESHOLD"), out var _st) && _st >= 1 ? _st : 2;
+            var steeringPending = _consecutiveDrift >= _steerThreshold && !string.IsNullOrEmpty(coreTopic);
             if (steeringPending && topicVerdict is not null)
             {
                 // R308b: steering 并入 topic_relevance 打点 (steering 标志位 — 不再独立点位)。
