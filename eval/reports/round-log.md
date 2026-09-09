@@ -1935,3 +1935,11 @@
 - **意图指数**: n=11, ms_avg=0.1, dist={'general': 11, 'git_operation': 1, 'search': 1}
 - **per-case**: C01_general_qa 548tok 8.3s | C03_subtask 1098tok 15.4s | C04_skill_identity 0tok 4.8s | C06_executive_unit_convert 0tok 4.5s | C07_memory_followup 2252tok 22.8s | C08_reasoning 1266tok 33.8s | C11_json_format 1005tok 28.7s | C13_git_sensitive 1699tok 32.0s | C14_isolated_multi 2056tok 40.3s | C17_neg_hallucination_bait 946tok 10.9s | C18_neg_format_trap 978tok 12.2s | C19_topic_clarify_6turn 8493tok 70.0s | C26_critic_no_false_positive 1306tok 8.3s
 
+## mass_497 — R326 batch274 release-prep-pivot-regression (2026-09-10T00:57:20+0800)
+
+- **判定**: 3/3 passed, tokens_total=3901 (avg 1300), wall=42155ms (avg 14.1s)
+- **KPI**: tokens_per_case=1300 out (600, 1250) (基准轮数 0)
+- **防漂移指数**: segments=1, drift_pass=1.0, semantic_avg=None, chars_ratio=1.0
+- **意图指数**: n=3, ms_avg=0.0, dist={'general': 3}
+- **per-case**: C15_pivot_multi 1949tok 22.7s | C22_task_route_supplement 1030tok 9.3s | C24_task_route_pivot 922tok 10.2s
+

@@ -1,0 +1,256 @@
+{
+ "round": "mass_497",
+ "label": "R326 batch274 release-prep-pivot-regression",
+ "ts": "2026-09-10T00:57:20+0800",
+ "cases": 3,
+ "passed": 3,
+ "tokens_total": 3901,
+ "prompt_total": 3043,
+ "completion_total": 858,
+ "wall_total_ms": 42155,
+ "results": [
+  {
+   "id": "C15_pivot_multi",
+   "input": "帮我制定一个Redis缓存优化方案 | 算了，不要之前的方案了，帮我写一首关于秋天的短诗 | /exit",
+   "pass": true,
+   "notes": [],
+   "reply": "好的，放弃原方案。再为你写一首秋天的短诗：\n\n《落叶辞》\n\n一片叶子松开了手\n不是告别，是托付——\n把它借给风的旅程\n\n霜在草尖练习书法\n写得极慢，极轻\n像怕惊动沉睡的根\n\n而柿子提着小小的灯\n照亮秋天\n最后一寸甜",
+   "wall_ms": 22665,
+   "points": 70,
+   "llm_calls": 2,
+   "prompt_tokens": 1371,
+   "completion_tokens": 578,
+   "total_tokens": 1949,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4062963528715736
+    },
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4182457355741367
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.4063,
+    "runner_up_gap": 0.0221
+   },
+   "skill_decisions": [
+    "low_confidence",
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 8173,
+   "models": [
+    "glm-5.3-flash",
+    "glm-5.3-flash"
+   ],
+   "snippets": 8,
+   "sources_recall": "Memory:1snip/96tok/r0.56rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/11tok/r0.56rel,WorkspaceFiles:3snip/139tok/r0.73rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:1snip/129tok/r0.95rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:1snip/62tok/r0.95rel",
+   "assembly_ms": 111,
+   "from_cache": false,
+   "prompt_total_tokens": 1117,
+   "history_tokens": 135,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 325,
+   "intent_ms": 0,
+   "llm_ms_total": 10043,
+   "phase_llm_ms": 10273,
+   "compress_n": 1,
+   "compress_drift_ok": 1,
+   "compress_semantic": [],
+   "compress_chars_in": 75,
+   "compress_chars_out": 75,
+   "pivot_n": 1,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": "NoAnchor",
+   "topic_drift_n": 1,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [],
+   "gate_mode": "Normal",
+   "gate_est": 1629,
+   "guardrail_injected": 1,
+   "guardrail_writes": 1,
+   "reply_rel": 0.4043,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  },
+  {
+   "id": "C22_task_route_supplement",
+   "input": "顺便把登录的日志级别调成 warning | /exit",
+   "pass": true,
+   "notes": [],
+   "reply": "需要确认一下：登录接口在哪个项目里（Python/其它）？我先给默认方案——若为 Python，通常这样调整：\n\nimport logging\nlogging.getLogger(\"login\").setLevel(logging.WARNING)\n\n若方便，把登录模块的文件路径发我，我直接帮你改。",
+   "wall_ms": 9288,
+   "points": 37,
+   "llm_calls": 1,
+   "prompt_tokens": 927,
+   "completion_tokens": 103,
+   "total_tokens": 1030,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.3753107693669381
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.3753,
+    "runner_up_gap": -0.0007
+   },
+   "skill_decisions": [
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 8253,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 6,
+   "sources_recall": "Memory:1snip/96tok/r0.33rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/11tok/r0.56rel,WorkspaceFiles:3snip/24tok/r0.5rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:0snip/0tok/r0rel",
+   "assembly_ms": 194,
+   "from_cache": false,
+   "prompt_total_tokens": 702,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 319,
+   "intent_ms": 0,
+   "llm_ms_total": 2556,
+   "phase_llm_ms": 2781,
+   "compress_n": 0,
+   "compress_drift_ok": 0,
+   "compress_semantic": [],
+   "compress_chars_in": 0,
+   "compress_chars_out": 0,
+   "pivot_n": 0,
+   "topic_relevance_score": 1,
+   "topic_relevance_verdict": "SteerHint",
+   "topic_drift_n": 1,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [
+    "Supplement@0"
+   ],
+   "gate_mode": "Normal",
+   "gate_est": 1214,
+   "guardrail_injected": 0,
+   "guardrail_writes": 0,
+   "reply_rel": 0.3394,
+   "quality_suspect": true,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  },
+  {
+   "id": "C24_task_route_pivot",
+   "input": "算了 改成做注册接口 | /exit",
+   "pass": true,
+   "notes": [],
+   "reply": "好的，放弃登录接口，改为注册接口。先确认一下：用 Python（FastAPI/Flask） 还是其它框架？默认方案给 FastAPI 版：\n\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass RegisterRequest(BaseModel):\n    username: str\n    password: str\n\n@app.post(\"/register\")\nasync def register(req: RegisterRequest):\n    # TODO: 检查用户名是否已存在；密码哈希后入库\n    return {\"message\": \"注册成功\", \"username\": req.username}\n\n生产实现还需：密码哈希（如 bcrypt）、唯一性校",
+   "wall_ms": 10202,
+   "points": 40,
+   "llm_calls": 1,
+   "prompt_tokens": 745,
+   "completion_tokens": 177,
+   "total_tokens": 922,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41599481287286666
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.416,
+    "runner_up_gap": 0.0391
+   },
+   "skill_decisions": [
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 9169,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 7,
+   "sources_recall": "Memory:2snip/195tok/r0.56rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/11tok/r0.56rel,WorkspaceFiles:3snip/124tok/r0.53rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:0snip/0tok/r0rel",
+   "assembly_ms": 179,
+   "from_cache": false,
+   "prompt_total_tokens": 917,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 61,
+   "intent_ms": 0,
+   "llm_ms_total": 3356,
+   "phase_llm_ms": 3578,
+   "compress_n": 0,
+   "compress_drift_ok": 0,
+   "compress_semantic": [],
+   "compress_chars_in": 0,
+   "compress_chars_out": 0,
+   "pivot_n": 1,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": "NoAnchor",
+   "topic_drift_n": 0,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [
+    "Pivot@-1"
+   ],
+   "gate_mode": "Normal",
+   "gate_est": 1429,
+   "guardrail_injected": 0,
+   "guardrail_writes": 0,
+   "reply_rel": 0.3349,
+   "quality_suspect": true,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  }
+ ],
+ "kpi_breaches": [
+  "tokens_per_case=1300 out (600, 1250)"
+ ],
+ "hist_base_rounds": 0,
+ "compression_index": {
+  "segments": 1,
+  "drift_pass_rate": 1.0,
+  "semantic_avg": null,
+  "chars_ratio": 1.0
+ },
+ "intent_index": {
+  "n": 3,
+  "ms_avg": 0.0,
+  "dist": {
+   "general": 3
+  }
+ }
+}
