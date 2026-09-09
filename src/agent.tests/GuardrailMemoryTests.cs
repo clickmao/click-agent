@@ -39,7 +39,8 @@ public class GuardrailMemoryTests : IDisposable
     {
         var m = GuardrailMemory.Load(_path);
         m.Write("", "登录接口", "", "禁令", "", "", "human_warning"); // 无域条目
-        Assert.Empty(m.Recall("用户登录接口", "登录接口相关文本")); // 无域条目永不触发 (设计: 域缺失=不泛扰)
+        // R324b: 无域条目 = general (通用警告) → 全域触发 — 语义已从"永不触发"改为"全域触发"
+        Assert.Single(m.Recall("用户登录接口", "登录接口相关文本"));
     }
 
     [Fact]

@@ -1,0 +1,103 @@
+{
+ "round": "mass_494",
+ "label": "R326 guardrail-AB control-3",
+ "ts": "2026-09-10T00:14:38+0800",
+ "cases": 1,
+ "passed": 1,
+ "tokens_total": 1581,
+ "prompt_total": 512,
+ "completion_total": 1069,
+ "wall_total_ms": 21978,
+ "results": [
+  {
+   "id": "C32_guardrail_ab_control",
+   "input": "帮我写用户登录接口的密码校验代码",
+   "pass": true,
+   "notes": [],
+   "reply": "以下是 ASP.NET Core (C#) 的密码校验实现，使用内置 PBKDF2（无需外部依赖），包含防时序攻击的恒定时间比较。\n\n1. 密码哈希服务\n\nusing System.Security.Cryptography;\n\nnamespace Auth.Services;\n\n/// <summary>\n/// 密码哈希与校验服务（PBKDF2-SHA256, 内置实现）\n/// </summary>\npublic class PasswordHasher\n{\n    private const int SaltSize = 16;        // 128-bit 盐\n    private const int HashSize = 32;        // 256-bit 哈希\n    private const int Iterations = 100_000; // 迭代次",
+   "wall_ms": 21978,
+   "points": 48,
+   "llm_calls": 1,
+   "prompt_tokens": 512,
+   "completion_tokens": 1069,
+   "total_tokens": 1581,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.44284868033804226
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.4428,
+    "runner_up_gap": 0.0814
+   },
+   "skill_decisions": [
+    "low_confidence"
+   ],
+   "intent": "code_generation",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 20986,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/8tok/r0.76rel,WorkspaceFiles:3snip/55tok/r0.77rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:0snip/0tok/r0rel",
+   "assembly_ms": 209,
+   "from_cache": false,
+   "prompt_total_tokens": 612,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 601,
+   "intent_ms": 0,
+   "llm_ms_total": 12412,
+   "phase_llm_ms": 12633,
+   "compress_n": 0,
+   "compress_drift_ok": 0,
+   "compress_semantic": [],
+   "compress_chars_in": 0,
+   "compress_chars_out": 0,
+   "pivot_n": 0,
+   "topic_relevance_score": 1,
+   "topic_relevance_verdict": "SteerHint",
+   "topic_drift_n": 1,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [
+    "Supplement@0"
+   ],
+   "gate_mode": "Normal",
+   "gate_est": 1124,
+   "guardrail_injected": 0,
+   "guardrail_writes": 0,
+   "reply_rel": 0.6479,
+   "delta_tokens_vs_hist": -685,
+   "delta_wall_vs_hist": -9101
+  }
+ ],
+ "kpi_breaches": [
+  "tokens_per_case=1581 out (600, 1250)"
+ ],
+ "hist_base_rounds": 1,
+ "compression_index": {
+  "segments": 0,
+  "drift_pass_rate": null,
+  "semantic_avg": null,
+  "chars_ratio": null
+ },
+ "intent_index": {
+  "n": 1,
+  "ms_avg": 0.0,
+  "dist": {
+   "code_generation": 1
+  }
+ }
+}
