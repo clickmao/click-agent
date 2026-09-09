@@ -37,7 +37,8 @@ public class ContextAssembler : IContextAssembler
     private readonly System.Collections.Concurrent.ConcurrentDictionary<DataSourceType, long> _recallCountBySource = new();
 
     private sealed record CachedResult(ContextAssemblyResult Result, DateTime CachedAt);
-    private readonly Dictionary<string, CachedResult> _resultCache = new();
+    // R326 (P17): Dictionary 无锁并发写不安全 (DI 单例 + subagent/多会话并发装配) → ConcurrentDictionary
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<string, CachedResult> _resultCache = new();
     private static readonly TimeSpan CacheTtl = TimeSpan.FromMinutes(5);
 
     private static string ComputeCacheKey(ContextAssemblyRequest request)
@@ -275,7 +276,7 @@ Interlocked.Increment(ref _cacheMisses);
                     .Where(kv => DateTime.UtcNow - kv.Value.CachedAt >= CacheTtl)
                     .Select(kv => kv.Key).ToList();
                 foreach (var k in expiredKeys)
-                    _resultCache.Remove(k);
+                    _resultCache.TryRemove(k, out _);
             }
         }
         catch (Exception ex)
@@ -684,7 +685,7 @@ Interlocked.Increment(ref _cacheMisses);
             var userMessageKeywords = ExtractKeywords(request.UserMessage);
 
             // v0.11.0 P3: 查询向量一次嵌入 (多消息复用); embedder 不可用/失败 → 纯词面 (P1 兼容)
-            _queryEmbedding = await agent.contextgradient.MessageRelevanceScorer.TryEmbedQueryAsync(
+            var queryEmbedding = await agent.contextgradient.MessageRelevanceScorer.TryEmbedQueryAsync(
                 _gradientCompressor.Embedder, request.UserMessage, ct).ConfigureAwait(false);
             
             var matched = new List<Message>();
@@ -725,7 +726,7 @@ Interlocked.Increment(ref _cacheMisses);
             {
                 var msg = relevantMessages[i];
                 var relevanceScore = await CalculateMessageRelevanceAsync(
-                    msg, request.UserMessage, userMessageKeywords, ct).ConfigureAwait(false);
+                    msg, request.UserMessage, queryEmbedding, userMessageKeywords, ct).ConfigureAwait(false);
                 
                 var snippet = new ContextSnippet
                 {
@@ -1279,12 +1280,12 @@ Interlocked.Increment(ref _cacheMisses);
     /// embedder 不可用 → 纯词面 (P1 行为兼容); 可用 → 0.6×词面 + 0.4×语义 (词面精确命中保底, 语义补足同义改写)
     /// </summary>
     private Task<double> CalculateMessageRelevanceAsync(
-        Message message, string query, List<string>? precomputedKeywords = null, CancellationToken ct = default)
+        Message message, string query, float[]? queryEmbedding,
+        List<string>? precomputedKeywords = null, CancellationToken ct = default)
         => agent.contextgradient.MessageRelevanceScorer.ScoreAsync(
-            message.Content, query, _queryEmbedding, precomputedKeywords, ct);
+            message.Content, query, queryEmbedding, precomputedKeywords, ct);
 
-    /// <summary>本轮查询向量缓存 (RecallFromSessionAsync 内一次嵌入多消息复用; null = 未嵌入/不可用)</summary>
-    private float[]? _queryEmbedding;
+    // R326 (P16): _queryEmbedding 实例字段已消除 — RecallFromSessionAsync 内局部变量 (DI 单例并发串话修复)
     
     /// <summary>测试入口 (internal): 混合相关性打分 — 直接走静态纯函数 (零 DI 依赖)。</summary>
     internal static Task<double> CalculateMessageRelevanceForTest(

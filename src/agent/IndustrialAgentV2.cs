@@ -69,6 +69,12 @@ public class IndustrialAgentV2 : AgentBase
     private static int _consecutiveDrift;
         // R315 (拉回率度量): clarify 问句发出后置位; 用户回锚轮 (≤2 轮内 isDrift=false) 时 Emit pulled_back。
         private static bool _clarifyArmed;
+        // R326 (R-1 收敛): pivot/转向词表单一来源 (原 3 份拷贝已发散 — "不管之前" 仅 1.4 有)。
+        private static readonly string[] PivotMarkers =
+        {
+            "不要之前", "不用之前", "放弃", "重新开始", "取消之前", "先不做", "不管之前",
+            "算了", "改成", "改为", "换成", "不要了", "还是做", "换一个",
+        };
         // v0.14.0 T2d: 修法记忆 (进程级单例, data/fix-memory.json 持久化)
         private static agent.critique.FixMemory? _fixMemory;
         // v0.15.2: 警告/铁律记忆 (guardrails.json 持久化) + 同会话去重集 (habituation 防护)
@@ -572,8 +578,7 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 if (charter is { IsRunning: true })
                 {
                     // pivot 语义判定 (与 1.4 块同词表 — 用户转向/放弃类输入优先路由 Pivot)
-                    string[] routePivotMarkers = { "不要之前", "不用之前", "放弃", "重新开始", "取消之前", "先不做", "算了", "改成", "改为", "换成", "不要了", "还是做", "换一个" };
-                    var pivotInput = routePivotMarkers.Any(m => message.Content.Contains(m, StringComparison.Ordinal));
+                    var pivotInput = PivotMarkers.Any(m => message.Content.Contains(m, StringComparison.Ordinal));
                     var routeVerdict = agent.intent.TopicRelevanceEvaluator.Evaluate(
                         message.Content,
                         charter.KeyEntities.AsReadOnly(),
@@ -634,9 +639,7 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 var goalEntities = goal?.KeyEntities ?? new List<string>();
                 // v0.11.0 R72 (真缺陷 31): 显式放弃旧目标 ("不要之前…/算了改…/放弃…") 的轮次
                 // 必须跳过隔离 — 否则零重叠判定先行拦截, 455 行的 pivot 重锚永远执行不到 (死区)。
-                string[] pivotSkipMarkers = { "不要之前", "不用之前", "放弃", "重新开始", "取消之前", "先不做", "不管之前",
-                    "算了", "改成", "改为", "换成", "不要了", "还是做", "换一个" };
-                var pivotRequested = pivotSkipMarkers.Any(m => message.Content.Contains(m, StringComparison.Ordinal));
+                var pivotRequested = PivotMarkers.Any(m => message.Content.Contains(m, StringComparison.Ordinal));
                 agent.config.AgentTelemetry.Emit("topic_relevance", "IndustrialAgentV2",
                     ("stage", "isolation-point"), ("core", coreTopic),
                     ("goal_entities", goalEntities.Count), ("subtasks", subTasks.Count));
@@ -973,9 +976,7 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 var goalText = message.Content.Length > 200 ? message.Content[..200] + "…" : message.Content;
                 // v0.11.0 R72 (真缺陷 31): 词表覆盖漏洞 — "不要之前的目标" 不含 "不要了" → 未 pivot → 明确
                 // 放弃旧目标的请求被误隔离。补: 不要之前/放弃/重新开始/取消之前/先不做 + "写首诗/做个X" 显式新任务词
-                string[] pivotMarkers = { "算了", "改成", "改为", "换成", "不要了", "还是做", "换一个",
-                    "不要之前", "不用之前", "放弃", "重新开始", "取消之前", "先不做", "不管之前" };
-                var isPivot = pivotMarkers.Any(m => message.Content.Contains(m, StringComparison.Ordinal));
+                var isPivot = PivotMarkers.Any(m => message.Content.Contains(m, StringComparison.Ordinal));
                 // v0.11.0 R70 (真缺陷 30): SetGoal constraints 参数从未传入 (死代码链) — 约束陈述
                 // ("只能用X/不许用Y/必须Z") 提取为结构化 Constraints, 注入 prompt 【约束】行
                 var constraints = ExtractConstraints(message.Content);
