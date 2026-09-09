@@ -70,7 +70,7 @@ def score_case(case: dict, result: dict, explore_on: bool) -> dict:
             i = reply.find(k, start)
             if i < 0:
                 break
-            ctx = reply[max(0, i - 40):i]
+            ctx = reply[max(0, i - 40):i] + reply[i + len(k):i + len(k) + 20]  # R311: 双向窗口
             if any(n in ctx for n in neg):
                 suspects.append(f"{k} @否定上下文")
                 start = i + len(k)
