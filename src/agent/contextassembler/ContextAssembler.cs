@@ -788,6 +788,13 @@ Interlocked.Increment(ref _cacheMisses);
         
         try
         {
+            // R300 (K1 行为收益差分): A/B 开关 — =1 时跳过画像注入 (对照组语义, 与 explore A/B 同构)。
+            if (Environment.GetEnvironmentVariable("AGENTFRAMEWORK_K1_DISABLE") == "1")
+            {
+                agent.config.AgentTelemetry.Emit("tendency_bias", "ContextAssembler",
+                    ("disabled", true));
+                return snippets;
+            }
             if (string.IsNullOrEmpty(request.UserId))
             {
                 return snippets;

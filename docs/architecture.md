@@ -1263,7 +1263,6 @@ public class ConfirmOption
 ```
 click-agent/
 ├── agent.sln
-├── readme.md
 ├── .gitignore
 ├── docs/
 │   ├── architecture.md

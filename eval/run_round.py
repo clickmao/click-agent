@@ -246,6 +246,14 @@ def check_expect(case, reply, agg, raw_tail):
                         agg["suspects"] = []
                     agg["suspects"].append(sus_note)
                     continue
+            # R299 (缺陷 68 围栏语义一般化; explore_eval 同源): 否定/纠错围栏 — 禁词出现在
+            # 否定上下文 ("不是蓝色的/并非/没有") = 正确拒诱饵, 不是误信。用例无需配置。
+            _neg_ctx = _reply_l[max(0, _pos - 20):_pos]
+            if any(nk in _neg_ctx for nk in ("不是", "并非", "没有", "错误", "不会", "无法", "并非是", "incorrect", "false", "不是的")):
+                if "suspects" not in agg or agg["suspects"] is None:
+                    agg["suspects"] = []
+                agg["suspects"].append(f"禁止模式 '{_pat[:30]}' 出现在否定上下文 (正确拒诱饵)")
+                continue
             req(False, f"reply 命中禁止模式 '{_pat[:40]}'")
     if "min_reply_chars" in exp:
         req(len(reply) >= exp["min_reply_chars"], f"reply {len(reply)} < {exp['min_reply_chars']}")

@@ -1048,7 +1048,7 @@ services.AddAgentFramework(options =>
 
 ## 示例
 
-更多示例请参考 [readme.md](../readme.md) 与 [架构文档](architecture.md)。
+更多示例请参考 [README.md](../README.md) 与 [架构文档](architecture.md)。
 
 
 ---
