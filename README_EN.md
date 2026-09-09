@@ -37,9 +37,12 @@ Release line: v0.11.0 — unified @cmd command protocol + 3 transports / Skill e
 
 Archived → [CHANGELOG-v0.11.0-R169-R185.md](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md) · [CHANGELOG-v0.11.0-R186-R204.md](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md)
 
-### 📊 Thousand-Round Eval (PGO-driven)
-- **1034/1056 = 97.92%** case pass (215 rounds landed); quick-batch tokens **7354 → ~3969 avg**; C08 reasoning completion **1875 → 479 (-74%)**; 55 real defects fixed, all telemetry-driven.
-Batch trend: **Batch 237 (mass_457)** 11/11 quick-11 1087/case / **Batch 233 (mass_452)** 11/11 quick-11 1124/case — v0.13.3 foundation deepening: compression failure defense (D1 exception isolation/D2 numeric sentinel/D3 degradation chain/D4 circuit breaker) + micro-step isolation B2 host chain (IsolatedMicro->micro-query->re-injection) + think-memory bge association (hits top_sim 0.977) + LinkRegistry activation chain + TF-IDF bag-of-words (short-query discrimination restored); batch234 1402/case single-batch outlier (C03 completion variance, not regression); batch236 XL 7/7 7008/case (gate three-state stable).
+### 📊 Iteration Eval Stats (telemetry-driven)
+- **240 batches landed, recent-30 99%+** (quick-11 caliber); **490 unit tests** (325 baseline, +165); **69 real defects** fixed, all telemetry-driven (#21-#69); recall calibers **bge 0.95 / bag-of-words long 0.70**; compression audit 104 diverse docs **keys 100% / instruction 96%**; exploration A/B (24 reachable-URL cases) **hit 0.278->0.667 (+39pt) zero regression**.
+
+### Batch Trend (rolling window — latest 2)
+**Batch 240 (mass_460)** 11/11 quick-11 920/case / **Batch 239 (mass_459)** 11/11 quick-11 974/case —
+v0.13.3 host-execution period: think-chain host chain (think_chain telemetry) + exploration A/B +39pt gain + think-memory cross-process persistence + LinkRegistry activation wiring; batch234 1402/case single-batch outlier (C03 completion variance, not regression); batch236 XL 7/7 7008/case (gate three-state stable); batch238 10/11 C08 intent single-batch drift (3x live replay all general, watch closed).
 - Full report: [Thousand-Round Report](docs/archive/reports/thousand-round-report.md) · ledger: [wave3-ledger](docs/archive/reports-archived/wave3-ledger.md)
 
 ### 🧭 Full Capability Panorama (v0.13.3)
@@ -245,7 +248,7 @@ click-agent/
 | Compilation (--no-incremental) | 0 errors 0 warnings |
 | Tests | 490/490 Passed |
 | NativeAOT (linux-x64) | 0 IL/TR warnings (re-verified 6x) + AOT smoke pass |
-| Thousand-round eval | 1034/1056 = 97.92% (215 rounds landed) |
+| Iteration eval | 240 batches landed, recent-30 99%+ |
 | Real 3-endpoint E2E | glm/deepseek chat+balance OK; kimi negative sample honest error |
 | Threshold switching | live-fire proven (deepseek $1.25 → glm) |
 | bge real chain | JIT+AOT dual acceptance (dim512, 282ms) |
