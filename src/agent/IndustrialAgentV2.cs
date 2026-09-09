@@ -323,6 +323,15 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             return false;
         // v0.11.0 R26 (真 bug 22): 记忆性/偏好性陈述不是任务目标 — "记住我的项目名是X"
         // 曾因裸词"项目"命中被锚成 goal, 导致后续 8 轮全部"实体零重叠"误隔离 (长会话实测)。
+        // R306 (L1 GoalText 锚定修复): 复合句 "做一个X项目, 记住这个背景" — 任务标记在场时
+        // 任务优先 (记忆注记只是附带), 不被 memoryMarkers 误杀 (牵引实验轮1 实证 GoalText 空)。
+        string[] taskMarkersPre =
+        {
+            "帮我", "请帮我", "需要你", "做一个", "开发一个", "实现一个", "项目目标", "项目需求",
+            "这个项目", "目标是", "计划", "写一个", "修复", "重构", "部署", "上线", "排查", "设计一个",
+        };
+        if (taskMarkersPre.Any(m => content.Contains(m, StringComparison.Ordinal)))
+            return true;
         string[] memoryMarkers = { "记住", "记一下", "记着", "我喜欢", "我的名字", "我叫" };
         if (memoryMarkers.Any(m => content.Contains(m, StringComparison.Ordinal)))
             return false;

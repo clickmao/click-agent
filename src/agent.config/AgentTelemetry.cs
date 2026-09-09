@@ -48,6 +48,7 @@ public static class AgentTelemetry
                 _writer?.Dispose();
                 var path = Path.Combine(telemetryDir, _sessionId + ".jsonl");
                 _writer = new StreamWriter(path, append: true, Encoding.UTF8) { AutoFlush = true };
+                _configured = true;
                 // R121: flush Configure 前缓存的点位 (保持 seq 原序)
                 if (_pendingBeforeConfigure.Count > 0)
                 {
@@ -69,14 +70,16 @@ public static class AgentTelemetry
     /// 会让 Configure 撞文件锁 → _writer=null → 后续 Emit 全丢 (C08 intent=None/llm_calls=0 假象)。</summary>
     public static long WriterNullDrops => Interlocked.Read(ref _writerNullDrops);
     private static long _writerNullDrops;
+    private static bool _configured;
 
     public static void Emit(string point, string module, params (string Key, object? Value)[] kv)
     {
         if (!_enabled)
             return;
-        if (_writer is null)
+        if (_writer is null && _configured)
         {
-            // Configure 失败 (_writer=null) 时不再静默 — 计数可见 (进程退出前宿主可上报)。
+            // R305: Configure 已成功但 writer 丢失 (批测中并行 build 撞文件锁等) —
+            // 不再静默, 计数可见 (进程退出前宿主可上报)。未 Configure 的路径走下方 R121 pending。
             Interlocked.Increment(ref _writerNullDrops);
             return;
         }
