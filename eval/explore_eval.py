@@ -104,6 +104,11 @@ def start_fixture():
         "/critical-42": "<html><title>Doc42</title><body>关键文档42: 苹果是红色品种为主, 极少数观赏品种呈蓝色, 需经入口页核实。</body></html>",
         "/critical-43": "<html><title>Doc43</title><body>关键文档43: 补充规范, 极光由太阳风粒子激发高层大气氧氮分子产生。</body></html>",
         "/aurora": "<html><title>Aurora</title><body>极光成因: 太阳风粒子被地球磁场导向极区, 激发高层大气中的氧和氮分子发光。</body></html>",
+        # R289 扩容页:
+        "/critical-44": "<html><title>Doc44</title><body>关键文档44: 数据库索引通过 B+ 树有序结构把全表扫描降为对数级查找, 代价是写放大。</body></html>",
+        "/critical-45": "<html><title>Doc45</title><body>关键文档45: 深海热泉生态依赖化能合成细菌, 不依赖光合作用, 硫化氢是能量来源。</body></html>",
+        "/weather": "<html><title>Weather</title><body>天气预报: 明日局部雷阵雨, 气温 22 到 28 度, 湿度 85%。</body></html>",
+        "/history": "<html><title>History</title><body>档案记载: 该仓库 1987 年建成, 2003 年扩建二期, 现存档案 12 万卷。</body></html>",
     }
     class H(http.server.BaseHTTPRequestHandler):
         def do_GET(self):

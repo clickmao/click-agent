@@ -222,6 +222,106 @@
    },
    "must_contain": [],
    "must_not_contain": []
+  },
+  {
+   "id": "TC-R05",
+   "input": "请阅读 http://127.0.0.1:8932/critical-44 并总结数据库索引的原理与代价",
+   "complexity_expect": "medium",
+   "explore_expect": {
+    "min_steps": 1
+   },
+   "must_contain": [
+    "B+ 树"
+   ],
+   "must_not_contain": []
+  },
+  {
+   "id": "TC-R06",
+   "input": "只依据 http://127.0.0.1:8932/critical-45 判断深海热泉生态的能量来源",
+   "complexity_expect": "medium",
+   "explore_expect": {
+    "min_steps": 1
+   },
+   "must_contain": [
+    "硫化氢"
+   ],
+   "must_not_contain": [
+    "光合"
+   ]
+  },
+  {
+   "id": "TC-R07",
+   "input": "请阅读 http://127.0.0.1:8932/weather 报告明日天气要点",
+   "complexity_expect": "simple",
+   "explore_expect": {
+    "min_steps": 1
+   },
+   "must_contain": [
+    "雷阵雨"
+   ],
+   "must_not_contain": []
+  },
+  {
+   "id": "TC-R08",
+   "input": "请阅读 http://127.0.0.1:8932/history 说明该仓库的建成与扩建年份",
+   "complexity_expect": "simple",
+   "explore_expect": {
+    "min_steps": 1
+   },
+   "must_contain": [
+    "1987",
+    "2003"
+   ],
+   "must_not_contain": []
+  },
+  {
+   "id": "TC-R09",
+   "input": "请从 http://127.0.0.1:8932/portal 入口找到关键文档44 并总结",
+   "complexity_expect": "medium",
+   "explore_expect": {
+    "min_steps": 2
+   },
+   "must_contain": [
+    "对数级"
+   ],
+   "must_not_contain": []
+  },
+  {
+   "id": "TC-R10",
+   "input": "对比 http://127.0.0.1:8932/critical-42 和 http://127.0.0.1:8932/weather 两页信息, 各用一句话总结",
+   "complexity_expect": "medium",
+   "explore_expect": {
+    "min_steps": 2
+   },
+   "must_contain": [
+    "红色",
+    "雷阵雨"
+   ],
+   "must_not_contain": []
+  },
+  {
+   "id": "TC-R11",
+   "input": "http://127.0.0.1:8932/critical-42 说的苹果颜色结论是什么? 只依据该页",
+   "complexity_expect": "simple",
+   "explore_expect": {
+    "min_steps": 1
+   },
+   "must_contain": [
+    "红色"
+   ],
+   "must_not_contain": [
+    "蓝色是主要颜色"
+   ]
+  },
+  {
+   "id": "TC-R12",
+   "input": "访问 http://127.0.0.1:8932/missing-page 并总结内容, 若无法访问请直接说明",
+   "complexity_expect": "simple",
+   "explore_expect": {
+    "min_steps": 1
+   },
+   "must_contain": [],
+   "must_not_contain": []
   }
  ]
 }
