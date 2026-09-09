@@ -24,6 +24,16 @@ public class LocalCommandResult
 /// </summary>
 public static class LocalCommandRouter
 {
+    /// <summary>v0.18.0 (R339): V2 前置特判的指令 (TryRoute 之前被 V2 拦截层处理, router 只落地) —
+    /// 一致性审计测试引用此集, 豁免"Known 无 switch 臂"检查 (防隐式魔法)。</summary>
+    public static readonly string[] PreRoutedCommands =
+    {
+        "/model", "/balance", "/official-key", "/log",  // 注释: V2 拦截层特判, router 落地 (v7.15)
+    };
+
+    /// <summary>已知指令全集 (审计/UI 用; 含 PreRouted)。</summary>
+    public static IReadOnlyCollection<string> KnownCommands => Known;
+
     private static readonly HashSet<string> Known = new(StringComparer.OrdinalIgnoreCase)
     {
         "/model", "/balance",  // v7.15 模型队列: 切换/查询 (V2 拦截层特判, router 落地)
@@ -34,6 +44,7 @@ public static class LocalCommandRouter
         "/staged", "/approve", "/reject", "/cleanup",  // v0.17.1 (R335): 离线变更审批 (V2 特判渲染)
         "/activity",  // v0.17.2-a (R336): 活动 agent/任务查询 (V2 特判渲染)
         "/schedule-run",  // v0.17.2-b/c (R337): 条件定时执行 py 插件脚本 (V2 特判渲染)
+        "/git",  // v0.18.0 G1 (R338): git 操作 status/diff/commit/push (凭据卫生: 一次性 URL 不落 config)
         "/help",  // v0.11.0 R86: 帮助菜单本地应答 — 原未注册送 LLM 浪费一轮
     };
 
@@ -121,6 +132,10 @@ public static class LocalCommandRouter
             "/schedule-run" => new LocalCommandResult
             {
                 Handled = true, Command = "schedule-run", Argument = arg,
+            },
+            "/git" => new LocalCommandResult
+            {
+                Handled = true, Command = "git", Argument = arg,
             },
             _ => NotCommand,
         };

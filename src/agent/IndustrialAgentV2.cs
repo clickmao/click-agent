@@ -253,6 +253,10 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
     private agent.activity.ActivityService Activity()
         => _activity ??= new agent.activity.ActivityService();
 
+    private static string RenderGit(agent.gitops.GitOperations.GitResult r)
+        => r.Ok ? (string.IsNullOrWhiteSpace(r.StdOut) ? "(ok, 无输出)" : r.StdOut.Trim())
+                : $"✗ git 失败 (exit {r.ExitCode}): {r.ErrorSummary}";
+
     // v0.17.2-b/c (R337): 脚本插件服务 + 条件定时调度器 (惰性; 教训 sink → 真实 ExecutorLessonMemory 落盘)
     private agent.skills.ScriptPluginRunner? _scriptPlugin;
     private agent.skills.ConditionalScriptScheduler? _scriptScheduler;
@@ -553,6 +557,27 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
 
             // 0. 非 LLM 本地强制指令拦截 (v7.11): /stop /continue 等, 不进意图识别/LLM
             var localCommand = agent.registry.LocalCommandRouter.TryRoute(message.Content);
+            // v0.18.0 T2 (R339, 用户钦定防幻觉假执行): fail-closed 硬闸 — Known 指令若 TryRoute 未路由
+            // (拦截链断裂: Known 加了忘 switch 臂/豁免) → 返回内部错误,**绝不送 LLM** (模型会假装执行
+            // 并编造假输出 — /skills 首版 + /git AOT 首测两度实证)。记录教训供下次注入。
+            if (!localCommand.Handled)
+            {
+                var breakInput = message.Content.Trim();
+                var firstWord = breakInput.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "";
+                if (firstWord.StartsWith('/') && agent.registry.LocalCommandRouter.KnownCommands.Contains(firstWord))
+                {
+                    agent.config.AgentTelemetry.Emit("route_break", "IndustrialAgentV2",
+                        ("cmd", firstWord), ("input_len", breakInput.Length));
+                    agent.execution.ExecutorLessonMemory.Default.Record($"route-break:{firstWord}",
+                        $"本地指令 {firstWord} 路由断裂 (Known 含但 TryRoute NotCommand) — 已硬闸阻止送 LLM",
+                        "检查 Known/switch 臂/PreRoutedCommands 三表一致性 (v0.18.0 T1 审计测试)",
+                        "曾发生: /skills 与 /git 断裂 → LLM 幻觉假执行输出");
+                    response.Content = $"⚠ 本地指令 {firstWord} 路由异常 (内部错误) — 已阻止送 LLM 防假执行。三表一致性见 v0.18.0 审计。";
+                    response.Success = true;
+                    response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
+                    return response;
+                }
+            }
             if (localCommand.Handled)
             {
                 // v0.16.0-c (用户钦定): /skills 查询当前激活 (可匹配) 的全部 skills;
@@ -639,6 +664,31 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     {
                         response.Content = $"staging 操作失败: {ex.Message}";
                     }
+                    response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
+                    return response;
+                }
+                // v0.18.0 G1 (R338): /git status|diff|commit <msg>|push <一次性url>
+                if (localCommand.Command == "git")
+                {
+                    response.Success = true;
+                    try
+                    {
+                        var git = new agent.gitops.GitOperations(Environment.CurrentDirectory);
+                        var arg2 = (localCommand.Argument ?? "").Trim();
+                        if (arg2 == "status") response.Content = RenderGit(git.Status());
+                        else if (arg2 == "diff") response.Content = RenderGit(git.DiffStat()) + "\n" + RenderGit(git.Diff());
+                        else if (arg2.StartsWith("commit ", StringComparison.Ordinal))
+                            response.Content = RenderGit(git.StageAndCommit(arg2["commit ".Length..].Trim()));
+                        else if (arg2.StartsWith("push ", StringComparison.Ordinal))
+                        {
+                            var url = arg2["push ".Length..].Trim();
+                            var p = git.PushOnce(url);
+                            var verify = git.VerifyPush(url);
+                            response.Content = RenderGit(p) + "\n复核: " + verify + "\n(一次性 URL 已用; 凭据卫生: 未写入 git config)";
+                        }
+                        else response.Content = "用法: /git status|diff|commit <msg>|push <一次性url>";
+                    }
+                    catch (Exception ex) { response.Content = $"git 操作失败: {ex.Message}"; }
                     response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
                     return response;
                 }
