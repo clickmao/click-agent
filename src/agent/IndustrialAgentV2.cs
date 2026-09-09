@@ -538,6 +538,8 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             // v0.13.3 B2 (R274): 微步骤隔离执行 — gate 判 IsolatedMicro 时, 子任务转微问题经独立
             // 微 prompt 逐条问询 (不带主上下文), 结果按回注预算拼进主 prompt (A5 语义: 主记忆零污染)。
             var microRestore = string.Empty;
+            agent.config.AgentTelemetry.Emit("micro_decision", "IndustrialAgentV2",
+                ("mode", gateVerdict.Mode.ToString()), ("subtasks", subTasks.Count));
             if (gateVerdict.Mode == agent.exploration.ContextGateMode.IsolatedMicro && subTasks.Count > 0)
             {
                 microRestore = await RunMicroStepsAsync(subTasks, intent, ct);
