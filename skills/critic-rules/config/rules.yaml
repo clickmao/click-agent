@@ -1,0 +1,35 @@
+# critic-rules 规则配置 (v1.0.0)
+# 与 src/agent/critique/OutputCritic.cs 规则数组同源; 本文件供 skill 引擎/人读, 不驱动机器扫描。
+rules:
+  - id: R01
+    pattern_desc: 循环内 new[]/new List 字面量取少量固定字段
+    severity: high
+    domains: [csharp, dotnet]
+  - id: R02
+    pattern_desc: 循环内 string += 拼接
+    severity: medium
+    domains: [csharp]
+  - id: R03
+    pattern_desc: async void 非事件处理器
+    severity: high
+    domains: [csharp, dotnet]
+  - id: R04
+    pattern_desc: .Result / .Wait() 阻塞 async 链
+    severity: high
+    domains: [csharp, dotnet]
+  - id: R05
+    pattern_desc: 空 catch 吞异常
+    severity: medium
+    domains: [csharp]
+  - id: R06
+    pattern_desc: Count() > 0 判空
+    severity: low
+    domains: [csharp]
+  - id: R07
+    pattern_desc: 浮点 == 直接比较
+    severity: medium
+    domains: [csharp]
+  - id: R08
+    pattern_desc: Dispose 型对象未 using
+    severity: high
+    domains: [csharp, dotnet]
