@@ -1927,3 +1927,11 @@
 - **意图指数**: n=28, ms_avg=0.0, dist={'general': 23, 'code_generation': 3, 'git_operation': 1, 'search': 4}
 - **per-case**: C01_general_qa 627tok 22.7s | C02_coding 1680tok 20.2s | C03_subtask 1423tok 20.1s | C04_skill_identity 0tok 4.7s | C05_skill_wordcount 0tok 4.6s | C06_executive_unit_convert 0tok 4.4s | C07_memory_followup 2497tok 34.0s | C08_reasoning 1422tok 34.2s | C09_balance_cmd 0tok 1.2s | C10_model_list 0tok 1.1s | C11_json_format 996tok 8.8s | C12_negative_empty 476tok 7.3s | C13_git_sensitive 1332tok 16.2s | C09b_balance_glm 0tok 1.0s | C14_isolated_multi 2182tok 48.4s | C15_pivot_multi 3126tok 25.4s | C16_longsession_4turn 7587tok 117.7s | C17_neg_hallucination_bait 1190tok 29.1s | C18_neg_format_trap 822tok 12.3s | T-V01_vision_qa 2287tok 22.2s | T-V02_vision_corner 2133tok 27.9s | T-V03_vision_position 2013tok 28.8s | T-V04_vision_negbait 2130tok 10.1s | C19_topic_clarify_6turn 8367tok 73.2s | C22_task_route_supplement 1065tok 9.6s | C23_task_route_isolate 1111tok 9.5s | C24_task_route_pivot 932tok 19.8s | C26_critic_no_false_positive 1312tok 8.2s | C27_guardrail_inject_code 2345tok 30.6s | C28_guardrail_not_cross_domain 1272tok 8.7s | C29_guardrail_exception_honored 1067tok 12.4s | C30_guardrail_habituation 2973tok 32.1s | C31_guardrail_write 1011tok 12.8s | C32_guardrail_ab_control 2601tok 33.3s
 
+## mass_496 — R326 batch273 fence-bu-regression (2026-09-10T00:40:41+0800)
+
+- **判定**: 13/13 passed, tokens_total=21647 (avg 1665), wall=291987ms (avg 22.5s)
+- **KPI**: tokens_per_case=1665 out (900, 1300) (基准轮数 0)
+- **防漂移指数**: segments=14, drift_pass=1.0, semantic_avg=1.0, chars_ratio=1.0
+- **意图指数**: n=11, ms_avg=0.1, dist={'general': 11, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 548tok 8.3s | C03_subtask 1098tok 15.4s | C04_skill_identity 0tok 4.8s | C06_executive_unit_convert 0tok 4.5s | C07_memory_followup 2252tok 22.8s | C08_reasoning 1266tok 33.8s | C11_json_format 1005tok 28.7s | C13_git_sensitive 1699tok 32.0s | C14_isolated_multi 2056tok 40.3s | C17_neg_hallucination_bait 946tok 10.9s | C18_neg_format_trap 978tok 12.2s | C19_topic_clarify_6turn 8493tok 70.0s | C26_critic_no_false_positive 1306tok 8.3s
+
