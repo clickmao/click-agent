@@ -996,22 +996,65 @@ Interlocked.Increment(ref _cacheMisses);
         set => _gradientCompressor = new agent.contextgradient.ContextGradientCompressor(value);
     }
 
+    private static readonly System.Text.RegularExpressions.Regex EnglishWordRegex = new("[A-Za-z]{3,}");
+
     /// <summary>锚词提取 (P1 启发式: 取出现 ≥2 次的 2-8 字中英词段, 前 8 个; P3 向量版替换)
-    /// v0.16.4 R333 (P10): 中文 2/3/4 字滑窗每位置 3 次 Substring 短串分配 (压缩热路径, 每超限
-    /// snippet 一次) → CJK 均在 BMP (≤0xFFFF, UTF-16 单单元) → 窗口直接编码 long key
-    /// (每 char 16bit 顺序拼; 起点必 CJK 高 16bit 非零 → 不同 len 键域天然不冲突) 零分配计数,
-    /// 仅对最终 count≥2 候选解码 string。语义与原版完全等价: 同窗同计数同过滤; 稳定排序
-    /// OrderByDescending 下英文先填 (正则先跑) 保同序; 代理对 char 16bit 照存, 解码重建
-    /// char 序列与 Substring 一致。</summary>
+    /// v0.16.4 R333 (P10 首段): CJK 2/3/4 字滑窗每位置 Substring → long key 零分配计数。
+    /// v0.17.3 R338 (P10 收尾): English 提取 Regex.Matches (每匹配 m.Value+ToLowerInvariant
+    /// = 2 短串分配 + MatchCollection) → Regex.EnumerateMatches(span) 零匹配对象 + ≤7 字符词
+    /// 8bit/char long 键零分配计数 (ASCII 字母 |0x20 即小写; 8×7=56bit 无歧义), >7 词 string
+    /// 兜底; 两路 distinct 首见登记 = match 序 = 内容首见序, 计数毕按登记序解码 count≥2 候选
+    /// → 与原实现 (English match 序先、CJK len-major 后) 同插入序, 稳定排序输出全等。</summary>
     private static List<string> ExtractAnchorWords(string content)
     {
         var words = new Dictionary<string, int>(StringComparer.Ordinal);
-        // 英文词
-        foreach (System.Text.RegularExpressions.Match m in
-                 System.Text.RegularExpressions.Regex.Matches(content, "[A-Za-z]{3,}"))
+        // English 词 ≤7 字符 → 8bit/char long 键零分配 (ASCII 字母 |0x20 即小写; 8×7=56bit
+        // 无歧义); >7 → string 兜底 (长词稀有)。两路 distinct 首见登记 enOrder (EnumerateMatches
+        // 枚举序 = match 序 = 内容首见序), 计数毕按登记序并入 words — count 相同的稳定排序
+        // 输出与原实现 (每 match 立即入 string 字典) 完全一致。
+        var enLong = new Dictionary<long, int>();
+        var enStr = new Dictionary<string, int>(StringComparer.Ordinal);
+        var enOrder = new List<(long Key, string? Word)>();
+        foreach (var m in EnglishWordRegex.EnumerateMatches(content.AsSpan()))
         {
-            var w = m.Value.ToLowerInvariant();
-            words[w] = words.GetValueOrDefault(w) + 1;
+            if (m.Length <= 7)
+            {
+                long key = 0;
+                for (var j = 0; j < m.Length; j++)
+                    key |= (long)(content[m.Index + j] | 0x20) << (8 * j);
+                if (!enLong.ContainsKey(key))
+                    enOrder.Add((key, null));
+                enLong[key] = enLong.GetValueOrDefault(key) + 1;
+            }
+            else
+            {
+                var w = content.Substring(m.Index, m.Length).ToLowerInvariant();
+                if (!enStr.ContainsKey(w))
+                    enOrder.Add((0, w));
+                enStr[w] = enStr.GetValueOrDefault(w) + 1;
+            }
+        }
+        Span<char> chars = stackalloc char[7]; // 8bit/char; 移出循环复用同栈槽 (CA2014), new string 即拷贝
+        foreach (var (key, word) in enOrder)
+        {
+            if (word is not null)
+            {
+                if (enStr[word] >= 2)
+                    words[word] = enStr[word];
+                continue;
+            }
+            var count = enLong[key];
+            if (count < 2)
+                continue;
+            var k = key;
+            var len = 0;
+            while (k != 0 && len < chars.Length)
+            {
+                chars[len] = (char)(k & 0xFF);
+                k >>= 8;
+                len++;
+            }
+            words[new string(chars[..len])] = count;
         }
         // 中文 2-4 字词 (滑动窗, 出现 ≥2 次) — long 编码键零分配。每 len 独立字典:
         // 编码低位=窗首字 (chars[0]), 解码按固定 len 正向移位取回 — 避免歧义与反序。

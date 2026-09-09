@@ -7,9 +7,10 @@ using Xunit;
 
 namespace agentframework.tests;
 
-/// <summary>R333 (P10): ExtractAnchorWords long-key 零分配重写的语义等价性 — 反射调用 private
-/// 新实现 vs 内联旧算法 (Substring 全滑窗), 随机 CJK/ASCII/标点/emoji 混合文本 × 40 断言全等。
-/// 旧算法 (v0.15.2-A 版原文): 每位置 3 次 Substring + string 字典。</summary>
+/// <summary>R333/R338 (P10): ExtractAnchorWords long-key 零分配重写的语义等价性 — 反射调用 private
+/// 新实现 vs 内联旧算法 (Substring 全滑窗 + string 字典), 随机 CJK/ASCII/标点/emoji 混合文本 × 40 断言全等。
+/// 旧算法 (v0.15.2-A 版原文): 每位置 3 次 Substring + string 字典; R338 追加 English >7 词/大小写折叠/
+/// 7-8 边界用例 (R333 随机语料英文词全 ≤7 字符, 未覆盖 >7 兜底路径)。</summary>
 public class ExtractAnchorWordsEquivalenceTests
 {
     private static readonly MethodInfo NewMethod = typeof(agent.context.ContextAssembler)
@@ -53,6 +54,11 @@ public class ExtractAnchorWordsEquivalenceTests
     [InlineData("中")]
     [InlineData("中a英b文c混d排e")]
     [InlineData("重复词重复词不重复单次词")]
+    [InlineData("abcdefghij abcdefghij elephant elephant cat cat")]   // >7 重复 + ≤7 同 count 交错序
+    [InlineData("dog cat dog elephant bird bird")]                     // 短长混合首见序
+    [InlineData("abcdefg abcdefg abcdefgh abcdefgh")]                  // 7/8 边界同 count 保首见序
+    [InlineData("AbcdefghIJ AbcdefghIJ AbcDefghij abc ABC")]           // >7 大小写折叠 + 短词折叠
+    [InlineData("AbcdefG abcdefgh AbcdefG abcdefgh")]                // 7 大写折叠(long 键)与 8(string) 交替
     public void Equivalence_KnownSamples(string s)
         => Assert.Equal(OldExtractAnchorWords(s), NewExtractAnchorWords(s));
 

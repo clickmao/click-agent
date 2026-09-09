@@ -12,6 +12,16 @@
 
 ---
 
+## R338 v0.17.3 P10 锚词 Span 化收尾 (批288 quick-13 13/13)
+
+- **立项**: improvements.md 下轮候选 — R333 (v0.16.4) 完成 P10 中文 2/3/4 字窗 long-key 零分配后遗留 **English 段未动** (function-map-R326 P10: 压缩热路径锚词提取)。可选性: c 收口/dormant 退役均需用户裁定 → 本轮唯一可执行候选。
+- **现状代码事实** (src/agent/contextassembler/ContextAssembler.cs, ExtractAnchorWords L1006+): CJK 窗 R333 已零分配; English 段仍 `Regex.Matches(content, "[A-Za-z]{3,}")` + 每匹配 `m.Value.ToLowerInvariant()` = **每 English 词 2 次短串分配 + MatchCollection/Match 分配**; 压缩热路径每超限 snippet 触发一次 (代码/英文片段词数×2 分配)。
+- **修法**: English 提取 → `Regex.EnumerateMatches(content.AsSpan())` (零 Match 对象) + **≤7 字符词 8bit/char long 键零分配计数** (ASCII 字母 `|0x20` 即小写; 8×7=56bit 键域无歧义; 字母编码无中间零字节 → decode 移位归零即末字节; 复用栈槽免 CA2014); >7 字符词 string 兜底 (长词稀有); 两路 distinct 首见登记 enOrder (枚举序=match 序=内容首见序), 计数毕按登记序解码 count≥2 候选入 words — 与原实现 (English match 序先、CJK len-major 后) **同插入序**, count 相同下稳定排序输出全等。
+- **验收**: **624 单测绿** (+5 ExtractAnchorWordsEquivalence InlineData: R333 随机语料英文词全 ≤7 字符未覆盖 >7 兜底路径 — 补 >7 重复/短长混合首见序/7-8 边界同 count 保序/>7 大小写折叠/7 大写折叠×8 string 交替); AOT publish agenthost 13.5MB **0 IL 警告** (仅预存在 CS0649/CS0169/xUnit1030); 批288 (round 515) quick-13 **13/13** tok/case 1806 (KPI_BREACH 带外 — C19 重案 8023 tok 已知方差同 R337/R331 判型, 通过率主口径零回归; 改动为压缩路径纯函数不进 LLM 链)。
+- 收益: English 主路径 (≤7 词, 绝大多数) 每匹配 2 短串+MatchCollection → **零分配**; >7 仅兜底; 与 R333 CJK 段合拢 P10 "单遍扫描 + Span/字典" 全部建议。
+- 诚实边界: 片段级锚词缓存 (function-map P10 建议) 未做 (收益需跨 snippet 重复片段真实命中分布, 候选中); >7 词每 occ 仍 Substring+ToLower 与旧版同 (未回退)。
+- 下轮候选: c 收口 (/schedule 持久化 + 外部 cron 挂钩 + 定时 skill — 需用户裁定) / 片段锚词缓存 (需命中分布) / RAGConfig 内联 hash 收敛 (需加 rag→vectormemory 引用) / dormant 退役 (需裁定)。
+
 ## R337 v0.17.2-b/c 脚本插件协议 + 条件定时 (批287 quick-13 13/13)
 
 - **立项**: 用户钦定 (执行层自需脚本一律 py 编写 → CLI 验证 py 正确后交插件服务执行; 明确对接协议: 定期反馈/结束前返回/长执行心跳) + plan docs/plans/v0.17.2-activity-script-plan.md §2/§3 (b 脚本插件协议 + c 条件定时, 依赖 a 的 IsOtherAgentBusy 条件原语)。
