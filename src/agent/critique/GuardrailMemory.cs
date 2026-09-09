@@ -140,7 +140,26 @@ public sealed class GuardrailMemory
     {
         var dir = Path.GetDirectoryName(_path);
         if (!string.IsNullOrEmpty(dir)) Directory.CreateDirectory(dir);
-        File.WriteAllText(_path, JsonSerializer.Serialize(_entries, GuardrailJsonCtx.Default.ListGuardrailEntry));
+        var json = JsonSerializer.Serialize(_entries, GuardrailJsonCtx.Default.ListGuardrailEntry);
+        // v0.17.0 T4 (R334): 跨进程加锁写 — guardrails.json 是多实例/多 agent 高频写点 (双实例会话
+        // 各自积累禁令), 裸 WriteAllText 后写覆盖先写丢数据; KeepExisting 让位会丢自己新禁令 —
+        // 此处用 Overwrite (同实例内 _entries 已是合并态; 跨实例冲突交给文件锁排队, 最后写者含
+        // 自身全量快照, 互踩窗口由锁消除), 失败结构化入教训记忆供后续注入。
+        var pattern = "file-conflict:guardrails.json";
+        var hint = agent.execution.ExecutorLessonMemory.Default.RenderInjectionHint(pattern);
+        if (hint.Length > 0)
+            agent.config.AgentTelemetry.Emit("executor_lesson", "GuardrailMemory", ("hint", hint[..Math.Min(160, hint.Length)]));
+        var r = agent.execution.LockedFileWriter.Write(_path, json,
+            agent.execution.ConflictStrategy.Overwrite, TimeSpan.FromSeconds(5));
+        if (!r.Success)
+        {
+            var detail = (r.Occupant ?? r.ErrorDetail ?? "未知")[..Math.Min(120, (r.Occupant ?? r.ErrorDetail ?? "未知").Length)];
+            agent.config.AgentTelemetry.Emit("executor_write", "GuardrailMemory",
+                ("path", _path), ("ok", false), ("kind", r.ErrorKind ?? "io"), ("detail", detail));
+            agent.execution.ExecutorLessonMemory.Default.Record(pattern,
+                $"guardrails 写失败: {detail}",
+                "等待锁重试 (指数退避 ≤5s); 仍失败则保留内存态下次写入重试", "GuardrailMemory.Save 跨实例并发");
+        }
     }
 
     public static GuardrailMemory Load(string path)

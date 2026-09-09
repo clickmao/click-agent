@@ -2065,3 +2065,11 @@
 - **意图指数**: n=11, ms_avg=0.0, dist={'general': 11, 'git_operation': 1, 'search': 1}
 - **per-case**: C01_general_qa 572tok 11.1s Δ+49 | C03_subtask 1310tok 28.0s Δ-236 | C04_skill_identity 0tok 7.0s | C06_executive_unit_convert 0tok 6.6s | C07_memory_followup 2637tok 42.9s Δ-3 | C08_reasoning 1053tok 19.7s Δ-289 | C11_json_format 618tok 10.9s Δ-347 | C13_git_sensitive 2774tok 35.3s Δ+84 | C14_isolated_multi 1869tok 26.1s Δ-1010 | C17_neg_hallucination_bait 755tok 14.0s Δ-36 | C18_neg_format_trap 803tok 14.8s Δ-32 | C19_topic_clarify_6turn 8769tok 73.4s Δ+121 | C26_critic_no_false_positive 1097tok 12.5s Δ-214
 
+## 511 — 批284-R334-executor-hardening-quick13 (2026-09-10T06:41:33+0800)
+
+- **判定**: 13/13 passed, tokens_total=21747 (avg 1673), wall=328812ms (avg 25.3s)
+- **KPI**: tokens_per_case=1673 out (900, 1300) (基准轮数 13)
+- **防漂移指数**: segments=3, drift_pass=1.0, semantic_avg=0.942, chars_ratio=0.952
+- **意图指数**: n=11, ms_avg=0.3, dist={'general': 11, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 561tok 13.3s Δ+23 | C03_subtask 1576tok 34.3s Δ+163 | C04_skill_identity 0tok 7.0s | C06_executive_unit_convert 0tok 6.7s | C07_memory_followup 2644tok 42.5s Δ+75 | C08_reasoning 1133tok 23.5s Δ-50 | C11_json_format 633tok 11.0s Δ-234 | C13_git_sensitive 3026tok 39.2s Δ+456 | C14_isolated_multi 2087tok 33.0s Δ-1792 | C17_neg_hallucination_bait 847tok 16.4s Δ+124 | C18_neg_format_trap 704tok 14.0s Δ-173 | C19_topic_clarify_6turn 7474tok 76.9s Δ-976 | C26_critic_no_false_positive 1062tok 11.1s Δ-176
+

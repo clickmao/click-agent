@@ -38,7 +38,33 @@ public sealed class TaskCharter
     {
         var path = ActivePath(dataRoot);
         Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-        File.WriteAllText(path, JsonSerializer.Serialize(this, TaskCharterJsonCtx.Default.TaskCharter));
+        var json = JsonSerializer.Serialize(this, TaskCharterJsonCtx.Default.TaskCharter);
+        // v0.17.0 T4 (R334): 跨进程加锁写 — 单活动章程槽: 同一章程的状态推进 (planning→running→done)
+        // 必须覆盖自己上次快照 (异 Id 才让位防双任务互踩); allowOverwrite 判定与写入同锁内原子。
+        var pattern = "file-conflict:task-charter:active.json";
+        var hint = agent.execution.ExecutorLessonMemory.Default.RenderInjectionHint(pattern);
+        if (hint.Length > 0)
+            agent.config.AgentTelemetry.Emit("executor_lesson", "TaskCharter", ("hint", hint[..Math.Min(160, hint.Length)]));
+        var r = agent.execution.LockedFileWriter.WriteIf(path, json, existing =>
+            {
+                try
+                {
+                    if (string.IsNullOrEmpty(existing)) return true; // 空文件 → 覆盖
+                    var e = JsonSerializer.Deserialize(existing, TaskCharterJsonCtx.Default.TaskCharter);
+                    return e is null || e.Id == Id; // 同 Id → 覆盖 (自身推进); null (损坏) → 覆盖自愈
+                }
+                catch (JsonException) { return true; } // 损坏 JSON → 覆盖恢复
+            },
+            TimeSpan.FromSeconds(5));
+        if (!r.Success || r.Merged)
+        {
+            var detail = (r.Occupant ?? r.ErrorDetail ?? "未知")[..Math.Min(120, (r.Occupant ?? r.ErrorDetail ?? "未知").Length)];
+            agent.config.AgentTelemetry.Emit("executor_write", "TaskCharter",
+                ("path", "active.json"), ("ok", r.Success), ("kind", r.ErrorKind ?? "merged"), ("detail", detail));
+            agent.execution.ExecutorLessonMemory.Default.Record(pattern,
+                $"任务章程写冲突/失败: {detail}",
+                "等待锁重试; 内容不同时 KeepExisting 让位保住现有章程", "TaskCharter.Save 并发写 active.json");
+        }
     }
 
     /// <summary>读活动章程; 不存在/损坏 → null。</summary>
