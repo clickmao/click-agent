@@ -95,6 +95,64 @@ public class IndustrialAgentV2 : AgentBase
     /// 复杂信号 (多步/代码/分析/对比/计划/长输入) 一律保留默认深推理, 宁可多花不可降智。
     /// </summary>
         /// <summary>
+    /// v0.13.3 R286: 思考链宿主循环 (任务1 收口)。播种 = 消息+上下文中的 URL/目录线索;
+    /// 循环 = TryDequeueNext → HostExploreExecutor 执行 → Record (发现入队, per-source 预算内);
+    /// 收敛 = 预算/无新发现/步数; 产出 = 各步 digest 拼接 (回注预算内截断)。
+    /// 打点: think_chain (steps, ok, ms, digest_len)。
+    /// </summary>
+    private static async Task<string> RunThinkChainAsync(string messageContent, string contextPrompt, CancellationToken ct)
+    {
+        try
+        {
+            var planner = new agent.exploration.ExplorationPlanner(new agent.exploration.ExplorationConfig());
+            var seeded = 0;
+            foreach (System.Text.RegularExpressions.Match m in System.Text.RegularExpressions.Regex.Matches(
+                         messageContent + " " + contextPrompt, @"https?://[^\s,，。;；)" + "\"" + "'" + "]+"))
+            {
+                var u = m.Value.TrimEnd('.', ',', ')', '}', ']', '"', '\'');
+                if (u.Length > 8 && u.Contains("example.com") == false) // example.com 演示域不探索
+                {
+                    planner.Seed(agent.exploration.ExploreSourceKind.Url, u, fromContext: true, discoveredFrom: null);
+                    seeded++;
+                }
+            }
+            if (seeded == 0) return string.Empty;
+
+            var executor = new agent.exploration.HostExploreExecutor("./");
+            var session = new agent.exploration.ThinkChainSession(planner, memory: null, deadlineMs: 4000);
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            var sb = new System.Text.StringBuilder();
+            var steps = 0;
+            while (!planner.BudgetExhausted && steps < 4 && sw.ElapsedMilliseconds < 4000)
+            {
+                var node = planner.TryDequeueNext();
+                if (node == null) break;
+                var result = await session.ExecuteStepAsync(node, executor, ct);
+                if (result == null) break;
+                steps++;
+                if (result.Ok && !string.IsNullOrEmpty(result.Digest))
+                {
+                    sb.AppendLine($"[{node.Kind}:{Truncate(node.Ref, 60)}] {Truncate(result.Digest, 400)}");
+                }
+                if (!result.Ok) break; // 首败即停 (探索是增强, 不拖主链)
+            }
+            agent.config.AgentTelemetry.Emit("think_chain", "IndustrialAgentV2",
+                ("seeded", seeded), ("steps", steps), ("ms", (int)sw.ElapsedMilliseconds),
+                ("digest_len", sb.Length));
+            return sb.ToString();
+        }
+        catch (OperationCanceledException) { throw; }
+        catch (Exception ex)
+        {
+            agent.config.AgentTelemetry.Emit("think_chain", "IndustrialAgentV2",
+                ("error", ex.Message[..Math.Min(60, ex.Message.Length)]));
+            return string.Empty;
+        }
+    }
+
+    private static string Truncate(string s, int n) => s.Length <= n ? s : s[..n] + "…";
+
+    /// <summary>
     /// v0.13.3 B2 (R274): 微步骤隔离执行宿主链。子任务 → MicroQuestion (回注上下文=空, 主上下文不复制)
     /// → 独立微 prompt 逐条问询 (与主链同一 LLM 通道, 但 prompt 只有微问题本身 — 隔离语义) →
     /// MicroStepSession.Record (失败计数/升级联动) → 回注摘要 (≤200 tok/条)。
@@ -568,6 +626,11 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             var microRestore = string.Empty;
             agent.config.AgentTelemetry.Emit("micro_decision", "IndustrialAgentV2",
                 ("mode", gateVerdict.Mode.ToString()), ("subtasks", subTasks.Count));
+
+            // v0.13.3 R286 (思考链任务1 宿主收口): 上下文含 URL/目录线索且非 HardDrop 时, 思考链探索
+            // (预算: deadline 4s + 步数≤4 — user 钦定 per-source 最大渐进探索步骤 config 语义)。
+            // 探索 digest 进 exploreDigest, 与 microRestore 同通道回注。
+            var exploreDigest = await RunThinkChainAsync(message.Content, prompt.ContextPrompt, ct);
             if (gateVerdict.Mode == agent.exploration.ContextGateMode.IsolatedMicro && subTasks.Count > 0)
             {
                 microRestore = await RunMicroStepsAsync(subTasks, intent, ct);
@@ -660,10 +723,11 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             // v0.11.0 R21: 推理档位路由 — 简单任务轻思考省 token/延迟, 复杂任务保留默认深推理。
             // 实测 (glm-5.3-flash): 简单题 reasoning 0 vs 8910ch; 复杂题 low 档 wall -55%。
             prompt.ReasoningEffort = IsSimpleIntentForReasoning(intent, prompt.UserMessage) ? "low" : null;
-            if (!string.IsNullOrEmpty(microRestore))
+            var restoreBlock = string.Join("\n\n", new[] { microRestore, exploreDigest }.Where(s => !string.IsNullOrEmpty(s)));
+            if (restoreBlock.Length > 0)
             {
-                // 回注摘要拼在用户消息尾 (预算已按 200 tok/条封顶 — MicroStepSession.BuildRestoreSummary)
-                prompt.UserMessage = prompt.UserMessage + "\n\n[微步骤结论回注]\n" + microRestore;
+                // 回注摘要拼在用户消息尾 (微步骤 ≤200 tok/条 + 探索 digest 截断 — 预算封顶)
+                prompt.UserMessage = prompt.UserMessage + "\n\n[探索与微步骤结论回注]\n" + restoreBlock;
             }
             // v0.11.0 R129 (PGO v2 D3): LLM 全段耗时 (含队列路由/余额检查; 与 llm_call.ms 差值 = 路由开销)
             var llmSegSw = System.Diagnostics.Stopwatch.StartNew();
