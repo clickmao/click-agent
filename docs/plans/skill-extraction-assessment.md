@@ -35,3 +35,25 @@
 - 抽离 = 增加 LLM 可消费的知识入口, **不删除任何机器代码** (双轨共存: 机器判定保持, skill 供 LLM 预判)。
 - 不做"功能搬家"(把代码改文档) — 只做"知识侧镜像"。
 - 每抽离一个做 A/B (原机器侧 vs +skill 侧) 对比, 数据说话, 不强推。
+
+
+---
+
+# skill 版式分类定稿 (R326-g)
+
+| 版式 | 语义 | 命中行为 | 适用 |
+|---|---|---|---|
+| executive | 脚本执行 | 脚本输出直出 | unit-convert/wordcount |
+| normative | 口径/清单交付 | SKILL.md body 直出 | code-review-checklist/git-commit-helper |
+| knowledge_hint ★新增 | 知识前置 | body 注入 systemPrompt, 回复走 LLM | critic-rules (R01-R08 生成前自查) |
+
+版本A→skill 版迁移矩阵 (按功能模块):
+- ✅ 已迁: 输出自审知识 (critic-rules)
+- ➖ 不迁 (机器限制/已有活通道): 判定器/执行器/存储引擎/FixMemory/Guardrail (已有注入链)/主题牵引判定
+- ➖ 不迁 (normative 已正确): 清单交付类 (code-review-checklist 等)
+- ⏳ 待迁候选: 压缩健康线知识 (audit 流程) / RAG 三口径知识 (召回校准) — 需触发场景评估
+
+KPI 对比结论 (critic-rules 模块):
+- 反模式规避: skill 版 (生成前预防, 含例外理解) > 定版A (生成后检测) — C33/C34/C35 三案实证
+- token: skill 版 +~2KB/命中 (命中才注入); 定版A 0 增量 (后扫) — 预防价值 vs 成本, 命中率随域收窄
+- 用户体验: skill 版无额外提问 (注入无感); force 直出型 (错位形态) 才产生打扰 — 已由 KnowledgeHint 消除
