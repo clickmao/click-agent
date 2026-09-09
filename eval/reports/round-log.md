@@ -1804,3 +1804,11 @@
 - **意图指数**: n=9, ms_avg=0.1, dist={'general': 9, 'git_operation': 1, 'search': 1}
 - **per-case**: C01_general_qa 536tok 8.4s Δ+18 | C03_subtask 1580tok 23.9s Δ-114 | C04_skill_identity 0tok 4.8s | C06_executive_unit_convert 0tok 4.4s | C07_memory_followup 2530tok 24.9s Δ-107 | C08_reasoning 1182tok 31.3s Δ-260 | C11_json_format 884tok 25.9s Δ+81 | C13_git_sensitive 1868tok 39.4s Δ+330 | C14_isolated_multi 1872tok 45.7s Δ-385 | C17_neg_hallucination_bait 731tok 10.0s Δ-101 | C18_neg_format_trap 750tok 11.7s Δ-26
 
+## mass_481 — R315 batch261 xl-suite cadence-catchup (2026-09-09T21:14:45+0800)
+
+- **判定**: 23/23 passed, tokens_total=32369 (avg 1407), wall=472708ms (avg 20.6s)
+- **KPI**: tokens_per_case=1407 out (900, 1300) (基准轮数 0)
+- **防漂移指数**: segments=28, drift_pass=1.0, semantic_avg=0.97, chars_ratio=0.956
+- **意图指数**: n=17, ms_avg=0.1, dist={'general': 14, 'code_generation': 1, 'git_operation': 1, 'search': 4}
+- **per-case**: C01_general_qa 506tok 7.9s | C02_coding 991tok 23.4s | C03_subtask 1437tok 19.7s | C04_skill_identity 0tok 4.8s | C05_skill_wordcount 0tok 4.5s | C06_executive_unit_convert 0tok 4.4s | C07_memory_followup 2561tok 43.4s | C08_reasoning 1223tok 37.3s | C09_balance_cmd 0tok 1.3s | C10_model_list 0tok 1.0s | C11_json_format 956tok 8.7s | C12_negative_empty 539tok 10.1s | C13_git_sensitive 1422tok 40.7s | C09b_balance_glm 0tok 1.0s | C14_isolated_multi 2085tok 41.8s | C15_pivot_multi 3574tok 32.8s | C16_longsession_4turn 7141tok 109.9s | C17_neg_hallucination_bait 850tok 11.2s | C18_neg_format_trap 749tok 11.4s | T-V01_vision_qa 2216tok 8.4s | T-V02_vision_corner 2043tok 17.0s | T-V03_vision_position 1951tok 15.6s | T-V04_vision_negbait 2125tok 16.4s
+
