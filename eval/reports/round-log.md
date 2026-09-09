@@ -1620,3 +1620,11 @@
 - **意图指数**: n=7, ms_avg=5.4, dist={'general': 5, 'file_operation': 1, 'search': 1}
 - **per-case**: XL-01_long_doc_qa 5816tok 23.6s Δ-29 | XL-02_cross_doc 6431tok 36.0s Δ-65 | XL-03_code_summary 7409tok 49.0s Δ-331 | XL-04_heavy 8721tok 52.6s Δ-105 | XL-F01_isolation_longctx 3588tok 41.1s Δ-147 | XL-F02_compression_number 6366tok 34.3s Δ-164 | MS-X01_gate_over_warn 9359tok 49.5s Δ-526
 
+## mass_457 — R275 batch237 quick-11 regular (2026-09-09T09:34:38+0800)
+
+- **判定**: 11/11 passed, tokens_total=11958 (avg 1087), wall=305694ms (avg 27.8s)
+- **KPI**: in-band (基准轮数 11)
+- **防漂移指数**: segments=16, drift_pass=1.0, semantic_avg=0.967, chars_ratio=0.97
+- **意图指数**: n=9, ms_avg=0.1, dist={'general': 7, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 483tok 7.9s Δ+17 | C03_subtask 1774tok 30.7s Δ-272 | C04_skill_identity 0tok 4.8s | C06_executive_unit_convert 0tok 4.4s | C07_memory_followup 3073tok 55.1s Δ+203 | C08_reasoning 1404tok 43.2s Δ+12 | C11_json_format 933tok 38.1s Δ+320 | C13_git_sensitive 1159tok 41.3s Δ-955 | C14_isolated_multi 1702tok 51.6s Δ-144 | C17_neg_hallucination_bait 604tok 17.9s Δ-273 | C18_neg_format_trap 826tok 10.8s Δ+126
+
