@@ -1956,3 +1956,11 @@
 - **意图指数**: n=1, ms_avg=0.0, dist={'code_generation': 1}
 - **per-case**: C33_code_antipattern_bait 2233tok 20.5s
 
+## mass_500 — R326 batch277 skill-bait-suite (2026-09-10T01:12:38+0800)
+
+- **判定**: 3/3 passed, tokens_total=6933 (avg 2311), wall=52022ms (avg 17.3s)
+- **KPI**: tokens_per_case=2311 out (600, 1250) (基准轮数 3)
+- **防漂移指数**: segments=1, drift_pass=1.0, semantic_avg=None, chars_ratio=0.996
+- **意图指数**: n=3, ms_avg=0.0, dist={'code_generation': 2, 'general': 1}
+- **per-case**: C33_code_antipattern_bait 2087tok 18.3s | C34_asyncvoid_bait 2263tok 16.8s | C35_stringconcat_bait 2583tok 17.0s
+

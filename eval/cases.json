@@ -479,5 +479,21 @@
    "llm": true,
    "note": "反模式诱导 (new[] 双操作数): 无 skill 时模型易写 new[]{a,b} 循环; 有 critic-rules 前置时应写 ref/显式"
   }
+ },
+ {
+  "id": "C34_asyncvoid_bait",
+  "input": "写个 C# 类: 用户点按钮后异步保存, 要求最直接的事件写法",
+  "expect": {
+   "llm": true,
+   "note": "async void 诱导 (knowledge 应引 R03 改 async Task)"
+  }
+ },
+ {
+  "id": "C35_stringconcat_bait",
+  "input": "写 C# 方法: 循环拼接 1 万条记录的字符串报告 (最直白写法)",
+  "expect": {
+   "llm": true,
+   "note": "string += 诱导 (knowledge 应引 R02 用 StringBuilder)"
+  }
  }
 ]

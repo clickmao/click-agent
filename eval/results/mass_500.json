@@ -1,0 +1,244 @@
+{
+ "round": "mass_500",
+ "label": "R326 batch277 skill-bait-suite",
+ "ts": "2026-09-10T01:12:38+0800",
+ "cases": 3,
+ "passed": 3,
+ "tokens_total": 6933,
+ "prompt_total": 5343,
+ "completion_total": 1590,
+ "wall_total_ms": 52022,
+ "results": [
+  {
+   "id": "C33_code_antipattern_bait",
+   "input": "写一个 C# 方法: 遍历两个操作数 In0/In1 各自做 Resolve, 汇总处理 (要最直接的写法)",
+   "pass": true,
+   "notes": [],
+   "reply": "/// <summary>对节点 In0/In1 各自 Resolve 后汇总处理。</summary>\nvoid ProcessOperands(Graph g, int id)\n{\n    ref var nn = ref g.N[id];       // 取引用, 避免结构体拷贝\n    var a0 = g.Resolve(nn.In0);     // 直接展开两次调用\n    var a1 = g.Resolve(nn.In1);\n\n    Combine(a0, a1);                // 汇总处理\n}\n\n最直接的写法就是顺序两行调用，不用循环——只有两个操作数，循环纯属多余；尤其避免 foreach (var x in new[] { nn.In0, nn.In1 })，那会为取两个栈上字段每次分配数组（R01）。",
+   "wall_ms": 18258,
+   "points": 39,
+   "llm_calls": 1,
+   "prompt_tokens": 1472,
+   "completion_tokens": 615,
+   "total_tokens": 2087,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "critic-rules",
+     "level": 3,
+     "precision": 0.95
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "critic-rules",
+    "level": 3,
+    "precision": 0.95,
+    "runner_up_gap": 0.5849
+   },
+   "skill_decisions": [
+    "knowledge_hint"
+   ],
+   "intent": "code_generation",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 17099,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/11tok/r0.56rel,WorkspaceFiles:3snip/99tok/r0.77rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:0snip/0tok/r0rel",
+   "assembly_ms": 281,
+   "from_cache": false,
+   "prompt_total_tokens": 1759,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 60,
+   "intent_ms": 0,
+   "llm_ms_total": 9365,
+   "phase_llm_ms": 9611,
+   "compress_n": 0,
+   "compress_drift_ok": 0,
+   "compress_semantic": [],
+   "compress_chars_in": 0,
+   "compress_chars_out": 0,
+   "pivot_n": 0,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": "SteerHint",
+   "topic_drift_n": 1,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [],
+   "gate_mode": "Normal",
+   "gate_est": 2271,
+   "guardrail_injected": 0,
+   "guardrail_writes": 0,
+   "reply_rel": 0.8215,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  },
+  {
+   "id": "C34_asyncvoid_bait",
+   "input": "写个 C# 类: 用户点按钮后异步保存, 要求最直接的事件写法",
+   "pass": true,
+   "notes": [],
+   "reply": "using System;\nusing System.IO;\nusing System.Text;\nusing System.Threading.Tasks;\n\n/// <summary>点击按钮异步保存数据的最直接写法。</summary>\npublic class SaveHandler\n{\n    private readonly string _filePath = \"data.txt\";\n    private string _data = \"待保存内容\";\n\n    /// <summary>绑定按钮点击事件（如 button.Click += OnSaveClick;）。</summary>\n    public async void OnSaveClick(object sender, EventArgs e)  // UI 事件处理器允许 async void (R03 ",
+   "wall_ms": 16780,
+   "points": 41,
+   "llm_calls": 1,
+   "prompt_tokens": 1766,
+   "completion_tokens": 497,
+   "total_tokens": 2263,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "critic-rules",
+     "level": 3,
+     "precision": 0.95
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "critic-rules",
+    "level": 3,
+    "precision": 0.95,
+    "runner_up_gap": 0.5681
+   },
+   "skill_decisions": [
+    "knowledge_hint"
+   ],
+   "intent": "code_generation",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 15775,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 6,
+   "sources_recall": "Memory:1snip/131tok/r0.47rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/11tok/r0.56rel,WorkspaceFiles:3snip/48tok/r0.63rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:0snip/0tok/r0rel",
+   "assembly_ms": 222,
+   "from_cache": false,
+   "prompt_total_tokens": 1937,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 531,
+   "intent_ms": 0,
+   "llm_ms_total": 8147,
+   "phase_llm_ms": 8432,
+   "compress_n": 0,
+   "compress_drift_ok": 0,
+   "compress_semantic": [],
+   "compress_chars_in": 0,
+   "compress_chars_out": 0,
+   "pivot_n": 0,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": "SteerHint",
+   "topic_drift_n": 1,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [],
+   "gate_mode": "Normal",
+   "gate_est": 2449,
+   "guardrail_injected": 0,
+   "guardrail_writes": 0,
+   "reply_rel": 0.7945,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  },
+  {
+   "id": "C35_stringconcat_bait",
+   "input": "写 C# 方法: 循环拼接 1 万条记录的字符串报告 (最直白写法)",
+   "pass": true,
+   "notes": [],
+   "reply": "/// <summary>循环拼接报告: 用 StringBuilder (R02 — 1 万条用 += 会 O(n²) 产生上万个中间串)。</summary>\nstring BuildReport(IEnumerable<Record> records)\n{\n    var sb = new StringBuilder(64 * 1024);      // 预估容量, 减少扩容\n    foreach (var r in records)\n        sb.AppendLine($\"{r.Id},{r.Name}\");\n    return sb.ToString();\n}\n\n更短的一种：先收集行再 string.Join(Environment.NewLine, lines)，效果等同。\n\n关键点：1 万条这个量级正是 report += ... 的经典坑——每次 += 都新建",
+   "wall_ms": 16984,
+   "points": 40,
+   "llm_calls": 1,
+   "prompt_tokens": 2105,
+   "completion_tokens": 478,
+   "total_tokens": 2583,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "critic-rules",
+     "level": 3,
+     "precision": 0.95
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "critic-rules",
+    "level": 3,
+    "precision": 0.95,
+    "runner_up_gap": 0.5683
+   },
+   "skill_decisions": [
+    "knowledge_hint"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 15971,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 7,
+   "sources_recall": "Memory:2snip/250tok/r0.52rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/11tok/r0.56rel,WorkspaceFiles:3snip/26tok/r0.5rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:0snip/0tok/r0rel",
+   "assembly_ms": 245,
+   "from_cache": false,
+   "prompt_total_tokens": 2023,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 185,
+   "intent_ms": 0,
+   "llm_ms_total": 8953,
+   "phase_llm_ms": 9191,
+   "compress_n": 1,
+   "compress_drift_ok": 1,
+   "compress_semantic": [],
+   "compress_chars_in": 503,
+   "compress_chars_out": 501,
+   "pivot_n": 0,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": "SteerHint",
+   "topic_drift_n": 1,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [],
+   "gate_mode": "Normal",
+   "gate_est": 2535,
+   "guardrail_injected": 0,
+   "guardrail_writes": 0,
+   "reply_rel": 0.7338,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  }
+ ],
+ "kpi_breaches": [
+  "tokens_per_case=2311 out (600, 1250)"
+ ],
+ "hist_base_rounds": 3,
+ "compression_index": {
+  "segments": 1,
+  "drift_pass_rate": 1.0,
+  "semantic_avg": null,
+  "chars_ratio": 0.996
+ },
+ "intent_index": {
+  "n": 3,
+  "ms_avg": 0.0,
+  "dist": {
+   "code_generation": 2,
+   "general": 1
+  }
+ }
+}
