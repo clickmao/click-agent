@@ -102,6 +102,9 @@ public class IndustrialAgentV2 : AgentBase
     /// </summary>
     private static async Task<string> RunThinkChainAsync(string messageContent, string contextPrompt, CancellationToken ct)
     {
+        // R287: A/B 开关 (AGENTFRAMEWORK_EXPLORE=0 → 探索链全关, explore_eval 对照组语义)
+        if (Environment.GetEnvironmentVariable("AGENTFRAMEWORK_EXPLORE") == "0")
+            return string.Empty;
         try
         {
             var planner = new agent.exploration.ExplorationPlanner(new agent.exploration.ExplorationConfig());
