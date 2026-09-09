@@ -60,7 +60,7 @@ def score_case(case: dict, result: dict, explore_on: bool) -> dict:
     mc = [k for k in case.get("must_contain", []) if k in reply]
     # R273 围栏语义 (缺陷 68 explore 版); R308f 与 run_round 同源统一: 窗口 40ch + 10 词表 +
     # suspect 降级语义 (否定上下文 → suspects 列表不判死, 与 run_round 判定器一致)
-    neg = ("不是", "并非", "没有", "不能", "错误", "不会", "无法", "并非是", " incorrect", "false", "不是的")
+    neg = ("不", "不是", "并非", "没有", "不能", "错误", "不会", "无法", "并非是", " incorrect", "false", "不是的")
     mnc = []
     suspects = []
     for k in case.get("must_not_contain", []):
