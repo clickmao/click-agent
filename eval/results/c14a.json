@@ -1,0 +1,109 @@
+{
+ "round": "c14a",
+ "label": "R331-c14-rerun-a",
+ "ts": "2026-09-10T05:06:38+0800",
+ "cases": 1,
+ "passed": 1,
+ "tokens_total": 3978,
+ "prompt_total": 1463,
+ "completion_total": 2515,
+ "wall_total_ms": 78459,
+ "results": [
+  {
+   "id": "C14_isolated_multi",
+   "input": "帮我制定一个Redis缓存优化方案，重点看热点key | 今天天气怎么样? 随便聊聊 | /exit",
+   "pass": true,
+   "notes": [],
+   "reply": "[隔离任务] 哈哈，抱歉，我没法知道你所在的位置，也获取不到实时的天气数据，所以没办法直接告诉你今天的天气 😄\n\n不过可以聊聊天气这个话题本身！天气还真是个有意思的东西：\n\n· **好天气**总能让人的心情跟着变好，阳光洒下来的时候感觉做什么都有劲儿\n· **下雨天**其实也自有它的浪漫，窝在家里听雨声、喝杯热茶，挺治愈的\n· **换季的时候**最麻烦，早晚温差大，穿衣服全靠猜\n\n你那边今天天气怎么样？是晴天、雨天还是阴天？出来和我随便聊聊呗～ ☀️🌧️\n  · isolatedTask=True  isolatedSessionId=45d2ab9d-be26-4632-806c-7d6fd4df2a72  relevanceScore=2\n  (14920ms, intent=general)",
+   "wall_ms": 78459,
+   "points": 47,
+   "llm_calls": 2,
+   "prompt_tokens": 1463,
+   "completion_tokens": 2515,
+   "total_tokens": 3978,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "critic-rules",
+     "level": 2,
+     "precision": 0.6
+    },
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.42139757771274766
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "critic-rules",
+    "level": 2,
+    "precision": 0.6,
+    "runner_up_gap": 0.2151
+   },
+   "skill_decisions": [
+    "knowledge_hint",
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 62577,
+   "models": [
+    "glm-5.3-flash",
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/8tok/r0.43rel,WorkspaceFiles:3snip/142tok/r0.77rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:0snip/0tok/r0rel",
+   "assembly_ms": 238,
+   "from_cache": false,
+   "prompt_total_tokens": 1846,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": true,
+   "isolated_score": 2,
+   "bge_provider": "bge-local",
+   "bge_ms": 176,
+   "intent_ms": 0,
+   "llm_ms_total": 63446,
+   "phase_llm_ms": 55015,
+   "compress_n": 0,
+   "compress_drift_ok": 0,
+   "compress_semantic": [],
+   "compress_chars_in": 0,
+   "compress_chars_out": 0,
+   "pivot_n": 0,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": null,
+   "topic_drift_n": 1,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [],
+   "gate_mode": "Normal",
+   "gate_est": 2358,
+   "guardrail_injected": 0,
+   "guardrail_writes": 0,
+   "reply_rel": 0.4022,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  }
+ ],
+ "kpi_breaches": [
+  "tokens_per_case=3978 out (600, 1250)",
+  "wall_per_case_ms=78459 out (8000, 55000)"
+ ],
+ "hist_base_rounds": 0,
+ "compression_index": {
+  "segments": 0,
+  "drift_pass_rate": null,
+  "semantic_avg": null,
+  "chars_ratio": null
+ },
+ "intent_index": {
+  "n": 1,
+  "ms_avg": 0.0,
+  "dist": {
+   "general": 1
+  }
+ }
+}

@@ -150,6 +150,15 @@ public class RAGRecall : IRAGRecall
     // 文档类型索引
     private readonly Dictionary<string, HashSet<string>> _typeIndex = new();
     
+    // v0.16.3 (R331, P12): 落盘裁剪摊销 — 上限 512 行 (保留最新), 每 RagPruneInterval 次追加
+    // 才整读一次判裁剪 (原每 append 无条件整读+可能整写 → 过上限后每消息 O(库大小) 文件 IO)。
+    // 语义: 文件可在两次裁剪间瞬时达 512+63 行 (有界松弛), 每次裁剪终态 = 保留最新 512,
+    // 与逐次裁剪内容集一致 (追加+保尾裁剪单调); 文件被外部删除/重建后计数器最多漂移
+    // RagPruneInterval 次 append, 下次裁剪整读实测自愈, 无永久漂移。
+    private const int RagPersistMaxLines = 512;
+    private const int RagPruneInterval = 64;
+    private int _persistAppendsSincePrune;
+    
     // v0.11.0 R79 (真缺陷 33): RAG 索引落盘路径 — 进程重启后恢复 (与 TendencyData 同类缺陷修复)
     private static readonly string PersistPath = Path.Combine(
         AppContext.BaseDirectory, "..", "..", "..", "..", "..", "..", "data", "rag", "index.jsonl");
@@ -248,11 +257,17 @@ public class RAGRecall : IRAGRecall
             };
             var line = System.Text.Json.JsonSerializer.Serialize(dto, RAGPersistJsonContext.Default.RAGPersistDoc) + "\n";
             File.AppendAllText(path, line);
-            // 上限裁剪: 超 512 行重建 (保留最新)
-            var lines = File.ReadAllLines(path);
-            if (lines.Length > 512)
+            // v0.16.3 (R331, P12): 上限裁剪摊销 — 原每 append 无条件整读判裁剪 (过 512 后每消息
+            // 整读+整写 ~512 行 = 每消息 O(库大小) 文件 IO); 改内存计数, 每 64 次追加整读一次,
+            // 超限重建保留最新 512 (lines[^512..] 语义不变)。文件瞬时上限 512+63 行, 有界。
+            if (Interlocked.Increment(ref _persistAppendsSincePrune) % RagPruneInterval == 0)
             {
-                File.WriteAllLines(path, lines[^512..]);
+                Interlocked.Exchange(ref _persistAppendsSincePrune, 0);
+                var lines = File.ReadAllLines(path);
+                if (lines.Length > RagPersistMaxLines)
+                {
+                    File.WriteAllLines(path, lines[^RagPersistMaxLines..]);
+                }
             }
         }
         catch (Exception ex)

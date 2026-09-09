@@ -2004,3 +2004,49 @@
 - **意图指数**: n=11, ms_avg=1.3, dist={'general': 11, 'git_operation': 1, 'search': 1}
 - **per-case**: C01_general_qa 526tok 10.8s Δ-34 | C03_subtask 1502tok 30.7s Δ-972 | C04_skill_identity 0tok 7.0s | C06_executive_unit_convert 0tok 6.7s | C07_memory_followup 3108tok 46.6s Δ+336 | C08_reasoning 1408tok 47.4s Δ-18 | C11_json_format 953tok 40.9s Δ+146 | C13_git_sensitive 2616tok 56.7s Δ+1396 | C14_isolated_multi 4291tok 99.9s Δ+1940 | C17_neg_hallucination_bait 990tok 21.1s Δ+26 | C18_neg_format_trap 785tok 13.1s Δ-16 | C19_topic_clarify_6turn 8523tok 84.1s Δ+1209 | C26_critic_no_false_positive 1349tok 10.7s Δ+99
 
+## 506 — R331-v0.16.3-rag-prune-amortize-quick13 (2026-09-10T05:04:54+0800)
+
+- **判定**: 12/13 passed, tokens_total=22486 (avg 1730), wall=386827ms (avg 29.8s)
+- **KPI**: tokens_per_case=1730 out (900, 1300) (基准轮数 13)
+- **防漂移指数**: segments=13, drift_pass=1.0, semantic_avg=0.999, chars_ratio=0.98
+- **意图指数**: n=11, ms_avg=0.5, dist={'general': 11, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 527tok 12.0s Δ-29 | C03_subtask 1544tok 30.0s Δ-392 | C04_skill_identity 0tok 7.1s | C06_executive_unit_convert 0tok 6.6s | C07_memory_followup 2986tok 37.9s Δ-44 | C08_reasoning 1658tok 43.2s Δ+264 | C11_json_format 1039tok 18.9s Δ+124 | C13_git_sensitive 2610tok 43.9s Δ+790 | C14_isolated_multi 984tok 51.1s Δ-1514 | C17_neg_hallucination_bait 802tok 14.2s Δ-84 | C18_neg_format_trap 872tok 14.8s Δ+88 | C19_topic_clarify_6turn 9464tok 80.8s Δ+1368 | C26_critic_no_false_positive 0tok 26.4s Δ-1254
+
+## c14a — R331-c14-rerun-a (2026-09-10T05:06:38+0800)
+
+- **判定**: 1/1 passed, tokens_total=3978 (avg 3978), wall=78459ms (avg 78.5s)
+- **KPI**: tokens_per_case=3978 out (600, 1250); wall_per_case_ms=78459 out (8000, 55000) (基准轮数 0)
+- **意图指数**: n=1, ms_avg=0.0, dist={'general': 1}
+- **per-case**: C14_isolated_multi 3978tok 78.5s
+
+## c14b — R331-c14-rerun-b (2026-09-10T05:07:44+0800)
+
+- **判定**: 1/1 passed, tokens_total=3588 (avg 3588), wall=61798ms (avg 61.8s)
+- **KPI**: tokens_per_case=3588 out (600, 1250); wall_per_case_ms=61798 out (8000, 55000) (基准轮数 0)
+- **意图指数**: n=1, ms_avg=0.0, dist={'general': 1}
+- **per-case**: C14_isolated_multi 3588tok 61.8s
+
+## 506b — R331-v0.16.3-rag-prune-amortize-quick13-rerun (2026-09-10T05:16:28+0800)
+
+- **判定**: 12/13 passed, tokens_total=24151 (avg 1858), wall=500769ms (avg 38.5s)
+- **KPI**: tokens_per_case=1858 out (900, 1300) (基准轮数 13)
+- **防漂移指数**: segments=25, drift_pass=1.0, semantic_avg=0.994, chars_ratio=0.958
+- **意图指数**: n=11, ms_avg=0.5, dist={'general': 11, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 521tok 10.6s Δ-14 | C03_subtask 1804tok 36.1s Δ+323 | C04_skill_identity 0tok 7.1s | C06_executive_unit_convert 0tok 6.6s | C07_memory_followup 2874tok 63.3s Δ-254 | C08_reasoning 1593tok 67.2s Δ+117 | C11_json_format 926tok 24.7s Δ-79 | C13_git_sensitive 2956tok 51.7s Δ+408 | C14_isolated_multi 1015tok 59.7s Δ-1625 | C17_neg_hallucination_bait 942tok 19.1s Δ+75 | C18_neg_format_trap 774tok 14.2s Δ-34 | C19_topic_clarify_6turn 9451tok 115.3s Δ+496 | C26_critic_no_false_positive 1295tok 25.2s Δ+426
+
+## 506old — AB-oldcode-86a4f13-C14-flake-check (2026-09-10T05:22:59+0800)
+
+- **判定**: 13/13 passed, tokens_total=23984 (avg 1845), wall=374319ms (avg 28.8s)
+- **KPI**: tokens_per_case=1845 out (900, 1300) (基准轮数 13)
+- **防漂移指数**: segments=14, drift_pass=1.0, semantic_avg=0.932, chars_ratio=0.893
+- **意图指数**: n=11, ms_avg=0.5, dist={'general': 11, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 516tok 10.4s Δ-19 | C03_subtask 1507tok 29.1s Δ+26 | C04_skill_identity 0tok 7.0s | C06_executive_unit_convert 0tok 6.6s | C07_memory_followup 2502tok 44.7s Δ-626 | C08_reasoning 1178tok 27.1s Δ-298 | C11_json_format 985tok 11.0s Δ-20 | C13_git_sensitive 2829tok 37.0s Δ+281 | C14_isolated_multi 3039tok 53.5s Δ+399 | C17_neg_hallucination_bait 781tok 22.9s Δ-86 | C18_neg_format_trap 934tok 20.0s Δ+126 | C19_topic_clarify_6turn 8472tok 88.0s Δ-483 | C26_critic_no_false_positive 1241tok 17.0s Δ+372
+
+## 507 — R331-v0.16.3-rag-prune-amortize-quick13-verify2 (2026-09-10T05:30:50+0800)
+
+- **判定**: 13/13 passed, tokens_total=24380 (avg 1875), wall=410494ms (avg 31.6s)
+- **KPI**: tokens_per_case=1875 out (900, 1300) (基准轮数 13)
+- **防漂移指数**: segments=18, drift_pass=1.0, semantic_avg=0.999, chars_ratio=0.994
+- **意图指数**: n=11, ms_avg=0.5, dist={'general': 11, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 532tok 15.2s Δ+7 | C03_subtask 1328tok 27.6s Δ-289 | C04_skill_identity 0tok 7.0s | C06_executive_unit_convert 0tok 6.6s | C07_memory_followup 2544tok 34.0s Δ-445 | C08_reasoning 1256tok 20.9s Δ-297 | C11_json_format 983tok 11.0s Δ+10 | C13_git_sensitive 2286tok 50.1s Δ-441 | C14_isolated_multi 4584tok 100.0s Δ+2487 | C17_neg_hallucination_bait 650tok 13.0s Δ-261 | C18_neg_format_trap 798tok 14.6s Δ-12 | C19_topic_clarify_6turn 8022tok 99.5s Δ-1124 | C26_critic_no_false_positive 1397tok 11.0s Δ+516
+
