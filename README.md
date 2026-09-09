@@ -13,11 +13,15 @@ C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / Na
 
 ---
 
-### 🚧 v0.13.0/v0.13.1 开发中 — 思考链收敛 / 渐进式探索 / 兜底粘性路由
-- **渐进式探索** (用户钦定): ExplorationConfig (每上下文区/文本/URL/目录最大探索步 + 全局预算 + URL 深度) + ExplorationPlanner (优先级队列, 上下文内 URL > 上下文外目录) — 7 单测。
-- **思考链收敛 T3** (用户钦定): ComplexityGate (复杂度判定) + EvidenceScorer (多源对比, 单源封顶 medium) + ThinkMemory RAG 联想 (相似问题优先阅览历史高置信链接, 引用后 +0.05 置信, 负样本降权, 30 天衰减) + ThinkChainSession (收敛判据: 多源一致/预算耗尽/无新发现/自评) — 12 单测。
-- **兜底粘性路由 v0.13.1** (用户钦定): FallbackConfig (config 开关, 性价比序=auto 同源判据, 逐个兜底+回复校验) + StickyRouteMemory (相似问题首用成功模型; 三门判定: embedding 相似+意图一致+实体指纹; 形近意远不粘; TTL 72h) — Router 逐个兜底链已落地, 11 单测。
-- 设计文档: docs/plans/v0.13.0-progressive-exploration.md · v0.13.0-think-chain-convergence.md · v0.13.1-fallback-sticky-routing.md
+### ✅ v0.13.0/v0.13.1/v0.13.2/v0.13.3 能力 — 思考链 / 渐进式探索 / 兜底粘性 / 底座防护 (R205-R240 已落地)
+- **渐进式探索** (用户钦定): ExplorationConfig (每源最大步 + 全局预算) + ExplorationPlanner (优先级队列, 上下文内 URL > 上下文外目录) + **HostExploreExecutor** (URL GET digest/页面链接发现≤5/目录文件路径穿越防护) + V2 RunThinkChainAsync (播种→4s/4步→首败即停→回注) — 探索 A/B 真机 **hit 0.45→0.64 (+18pt 零回归)**; LinkRegistry 关键文档激活链 (三信号: 锚定/稀缺出链/路径递进 ≥3 激活 + 父链保护)。
+- **思考链 T3** (用户钦定): ComplexityGate + EvidenceScorer (单源封顶 medium) + **ThinkMemory bge 联想真机** (跨进程持久化 STJ source-gen, recall top_sim 0.977) + ThinkChainSession 收敛判据。
+- **兜底粘性路由 v0.13.1**: FallbackConfig 性价比序逐个兜底+回复校验 + StickyRouteMemory 三门判定 (TTL 72h)。
+- **格式修复 v0.13.2**: JsonRepairPlugin 栈感知修复 + FormatRepairLoop 状态机。
+- **压缩失败防护 v0.13.3** (工业模式 M1-M6): D1 异常隔离 (per-snippet 回退原文) / D2 数字+URL 哨兵 (全档 URL 100% 保留实证) / D3 降级链 / D4 熔断器 / 不可变源。
+- **微步骤隔离 B2**: gate=IsolatedMicro → 微问题隔离问询 → 回注 ≤200tok/条 (E2E: 2860ms)。
+- **召回三口径**: bge 0.95 / 词袋长查询 0.70 (IDF 稀缺度加权) / 短查询对抗 0.45; 压缩 audit 104 篇多样态 keys 100%/指令 96%。
+- 490 单测 · AOT 0 IL 警 · 评测通过率 97.9%+ (240 批)。
 
 ### ✅ v0.12.0 新增能力 — 视觉理解 / 渲染插件 / 收敛环 (已验收)
 - **视觉理解链**: CLI `-img` → data URL base64 → glm-5.3-flash v4 端点 (1M ctx); text-only 模型自动重路由 + coding 端点改写 (真缺陷 63/64 修复); OpenAIMultimodalMessage 双形态 DTO (AOT-safe, 禁反射)。

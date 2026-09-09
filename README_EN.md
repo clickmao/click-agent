@@ -16,11 +16,15 @@ Release line: v0.11.0 — unified @cmd command protocol + 3 transports / Skill e
 
 ---
 
-### 🚧 v0.13.0/v0.13.1 In Development — Think-Chain Convergence / Progressive Exploration / Sticky Fallback Routing
-- **Progressive exploration** (user-directed): ExplorationConfig (max steps per context-block/text/url/dir + global budget + URL depth) + ExplorationPlanner (priority queue; URL found in context outranks external directory) — 7 tests.
-- **Think-chain T3** (user-directed): ComplexityGate + EvidenceScorer (multi-source required for high; single source capped medium) + ThinkMemory RAG association (preferentially browse high-confidence history links, +0.05 citation boost, negative-outcome penalty, 30d decay) + ThinkChainSession convergence criteria — 12 tests.
-- **Sticky fallback routing v0.13.1** (user-directed): FallbackConfig (config switch, cost-quality order = auto-sourced ranking, per-fallback reply verification) + StickyRouteMemory (similar questions reuse the previously successful model; triple-gate: embedding similarity + intent + entity fingerprint; TTL 72h) — Router sequential fallback chain landed, 11 tests.
-- Design docs: docs/plans/v0.13.0-progressive-exploration.md · v0.13.0-think-chain-convergence.md · v0.13.1-fallback-sticky-routing.md
+### ✅ v0.13.0/v0.13.1/v0.13.2/v0.13.3 Capabilities — Think-Chain / Progressive Exploration / Fallback Sticky / Foundation Defense (R205-R240 landed)
+- **Progressive exploration**: ExplorationConfig + ExplorationPlanner (priority queue, in-context URL > out-of-context dir) + **HostExploreExecutor** (URL GET digest / page link discovery<=5 / dir+file path-traversal guard) + V2 RunThinkChainAsync (seed->4s/4-step budget->first-fail-stop->re-inject) — exploration A/B live **hit 0.45->0.64 (+18pt zero regression)**; LinkRegistry key-doc activation chain (3-signal >=3 + parent-chain protection).
+- **Think-chain T3**: ComplexityGate + EvidenceScorer (single-source capped medium) + **ThinkMemory bge association live** (cross-process persistence STJ source-gen, recall top_sim 0.977) + ThinkChainSession convergence criteria.
+- **Fallback sticky routing v0.13.1**: FallbackConfig cost-ordered per-model fallback + reply validation + StickyRouteMemory 3-gate matching (TTL 72h).
+- **Format repair v0.13.2**: JsonRepairPlugin stack-aware + FormatRepairLoop state machine.
+- **Compression failure defense v0.13.3** (industrial M1-M6): D1 exception isolation / D2 numeric+URL sentinel (URL 100% kept at every level) / D3 degradation chain / D4 circuit breaker / immutable source.
+- **Micro-step isolation B2**: gate=IsolatedMicro -> isolated micro-query -> re-inject <=200tok/entry (E2E: 2860ms).
+- **Recall three calibers**: bge 0.95 / bag-of-words long-query 0.70 (IDF weighting) / short-query adversarial 0.45; compression audit 104 diverse docs keys 100%/instruction 96%.
+- 490 unit tests · AOT 0 IL warnings · eval pass rate 97.9%+ (240 batches).
 
 ### ✅ v0.12.0 Additions — Vision / Render Plugins / Convergence Loop (Accepted)
 - **Vision chain**: CLI `-img` → data URL base64 → glm-5.3-flash v4 endpoint (1M ctx); text-only model auto-reroute + coding-endpoint rewrite (defects 63/64 fixed); OpenAIMultimodalMessage dual-form DTO (AOT-safe).
