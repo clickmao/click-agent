@@ -1859,3 +1859,11 @@
 - **意图指数**: n=3, ms_avg=0.0, dist={'general': 3}
 - **per-case**: C22_task_route_supplement 764tok 13.1s | C23_task_route_isolate 934tok 9.5s | C24_task_route_pivot 856tok 9.3s
 
+## mass_488 — R323 batch268 quick-13 c26-negative (2026-09-09T23:25:53+0800)
+
+- **判定**: 13/13 passed, tokens_total=23950 (avg 1842), wall=346922ms (avg 26.7s)
+- **KPI**: tokens_per_case=1842 out (900, 1300) (基准轮数 0)
+- **防漂移指数**: segments=28, drift_pass=1.0, semantic_avg=0.96, chars_ratio=0.96
+- **意图指数**: n=11, ms_avg=0.1, dist={'general': 11, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 521tok 8.1s | C03_subtask 1748tok 32.1s | C04_skill_identity 0tok 4.9s | C06_executive_unit_convert 0tok 4.4s | C07_memory_followup 2422tok 43.8s | C08_reasoning 1470tok 36.2s | C11_json_format 1164tok 33.7s | C13_git_sensitive 2477tok 39.1s | C14_isolated_multi 2765tok 47.1s | C17_neg_hallucination_bait 938tok 16.6s | C18_neg_format_trap 692tok 11.2s | C19_topic_clarify_6turn 8331tok 61.4s | C26_critic_no_false_positive 1422tok 8.3s
+
