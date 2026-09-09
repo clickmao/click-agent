@@ -265,12 +265,12 @@ click-agent/
 
 > Historical plan (v7.15 ten nodes - all landed) archived in [improvements.md](docs/improvements.md); per-module design details in docs/archive/.
 
-1. **K1 effect closed loop**: profile-driven reply-quality diff (with/without persona rel comparison) — snippet actionable since R141, LLM behavioral benefit pending verification
-2. **Batch 56+ thousand-round loop** (quick-10 expanded coverage) + semantic_avg tier observation + per-5-batch audit
-3. **K4 long-horizon watch**: skill false-absorption suppression stability + negative-family expansion (8-class checklist toward 25%)
-4. **Real-GPU Vulkan test** (needs real GPU; llvmpipe only on this host)
+1. **K1 effect closed loop (user-topic-tendency first target, continued)**: profile injection is fully wired (24/24 cases UserTendency recall 1snip/rel0.8, tendency_bias conf 0.8); remaining: **with/without-profile LLM behavioral-benefit diff** (same-question dual-run rel comparison — the only open segment)
+2. **Three-suite batch rotation**: quick (every batch) + XL (every 5 batches, from batch242) + explore (from batch243); semantic/compression-sentinel/breaker telemetry under routine watch
+3. **K4 long-horizon watch**: skill false-absorption suppression stability + negative-family expansion (5 cases -> extend C17/C18/T-V04 pattern)
+4. **Real-GPU Vulkan test**: **downgraded to conditional** — host GPU is a Cirrus GD 5446 virtual VGA (no Vulkan/compute; llama.cpp CPU/llvmpipe only); run only when real GPU becomes available, does not block the mainline (local inference has CPU fallback)
 
-> **Current baseline (R151)**: 490/490 tests green / NativeAOT 0 IL warnings / thousand-round eval 97.92% (215 rounds) / 5-KPI full observability — next: K1 effect verification (profile-driven reply diff), semantic_avg tier observation, negative-family expansion.
+> **Current baseline (2026-09-09)**: 490/490 tests green / NativeAOT 0 IL warnings / 240 batches, 99%+ recent-30 / exploration A/B +39pt / think-memory cross-process recall 0.970 — next: K1 behavioral-benefit diff, three-suite rotation stabilization, negative-family expansion.
 
 ## Configuration
 

@@ -166,14 +166,14 @@ python3 cross_validate.py                           # 双 LLM 交叉校验
 - [测试维度总账](docs/reports/test-dimensions-ledger.md) — 15 维度全景 + 负面族 + 防遗忘制度
 - [千轮报告](docs/archive/reports/thousand-round-report.md) (§6 已冻结) · [改进记录](docs/improvements.md) · 历史计划: docs/archive/
 
-## 下一步计划
+## 下一步计划 (2026-09-09 核定)
 
 > 详见 [主报告 §7](docs/reports/dynamic-telemetry-eval-rollback-strategy.md) 与 [方法论 §7 节奏表](docs/reports/iteration-master-plan.md)
 
-1. **K1 效果闭环**: 画像驱动回复质量差分 (有/无画像 rel 对比) — snip 已可执行化, 待验证 LLM 行为收益
-2. **批 56+ 千轮持续** (quick-10 扩容口径) + semantic_avg 档位观察 + 每 5 批审计
-3. **K4 长周期观察**: skill 误吸压制稳定性 + negative-family 扩容 (八类清单向 25% 推进)
-4. **Vulkan 真 GPU 实测** (需真 GPU 环境, 本机仅 llvmpipe)
+1. **K1 效果闭环 (用户话题倾向第一靶点延续)**: 画像注入已全链通 (24/24 用例 UserTendency 召回 1snip/rel0.8, tendency_bias conf 0.8), 待做**有/无画像 LLM 行为收益差分** (同题双跑 rel 对比 — 唯一未闭合段)
+2. **批测三 suite 轮换**: quick (每批) + XL (每 5 批, 批242 起) + explore (批243 起入轮换); semantic/压缩哨兵/熔断打点常态观察
+3. **K4 长周期观察**: skill 误吸压制稳定性 + 负样本族扩容 (现 5 条 → C17/C18/T-V04 模式扩展)
+4. **Vulkan 真 GPU 实测**: **降级为条件性项** — 本机 GPU 为 Cirrus GD 5446 虚拟 VGA (无 Vulkan/计算能力, llama.cpp 仅 CPU/llvmpipe); 仅在获得真 GPU 环境后执行, 不阻塞主线 (本地推理链已有 CPU 档 fallback)
 
 ## 许可证
 

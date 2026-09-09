@@ -1660,3 +1660,19 @@
 - **意图指数**: n=9, ms_avg=0.1, dist={'general': 7, 'git_operation': 1, 'search': 1}
 - **per-case**: C01_general_qa 551tok 7.9s Δ+43 | C03_subtask 1648tok 21.6s Δ-206 | C04_skill_identity 0tok 4.9s | C06_executive_unit_convert 0tok 4.4s | C07_memory_followup 2766tok 27.1s Δ+26 | C08_reasoning 1304tok 14.5s Δ-234 | C11_json_format 970tok 37.4s Δ+111 | C13_git_sensitive 1620tok 40.5s Δ+402 | C14_isolated_multi 1826tok 39.8s Δ+61 | C17_neg_hallucination_bait 950tok 10.1s Δ+177 | C18_neg_format_trap 739tok 10.6s Δ-155
 
+## mass_462 — R297 batch242 xl-suite cadence (2026-09-09T13:00:24+0800)
+
+- **判定**: 7/7 passed, tokens_total=65028 (avg 9290), wall=231031ms (avg 33.0s)
+- **KPI**: tokens_per_case=9290 out (600, 1250) (基准轮数 7)
+- **防漂移指数**: segments=13, drift_pass=1.0, semantic_avg=0.869, chars_ratio=1.0
+- **意图指数**: n=7, ms_avg=5.4, dist={'general': 5, 'file_operation': 1, 'search': 1}
+- **per-case**: XL-01_long_doc_qa 10984tok 27.6s Δ+5168 | XL-02_cross_doc 13022tok 47.8s Δ+6591 | XL-03_code_summary 7376tok 28.7s Δ-33 | XL-04_heavy 8794tok 33.0s Δ+73 | XL-F01_isolation_longctx 3653tok 33.4s Δ+65 | XL-F02_compression_number 11946tok 25.9s Δ+5580 | MS-X01_gate_over_warn 9253tok 34.5s Δ-106
+
+## mass_463 — R298 explore-suite first batch (2026-09-09T13:06:44+0800)
+
+- **判定**: 23/24 passed, tokens_total=29527 (avg 1230), wall=289187ms (avg 12.0s)
+- **KPI**: in-band (基准轮数 0)
+- **防漂移指数**: segments=7, drift_pass=1.0, semantic_avg=0.992, chars_ratio=0.956
+- **意图指数**: n=24, ms_avg=0.0, dist={'general': 22, 'search': 2}
+- **per-case**: TC-N01 542tok 14.7s | TC-N02 583tok 7.8s | TC-N03 894tok 12.9s | TC-N05 1613tok 29.6s | TC-F01 1078tok 9.1s | TC-F02 974tok 13.0s | TC-F04 1292tok 9.6s | TC-F05 1089tok 11.0s | TC-N04 1536tok 10.9s | TC-N06 1336tok 9.4s | TC-F03 1206tok 8.8s | TC-F06 1056tok 10.3s | TC-R01 1321tok 13.1s | TC-R02 1191tok 9.8s | TC-R03 1291tok 10.2s | TC-R04 1213tok 9.6s | TC-R05 1442tok 14.0s | TC-R06 1277tok 9.6s | TC-R07 2023tok 18.6s | TC-R08 1092tok 8.8s | TC-R09 1228tok 10.9s | TC-R10 1783tok 17.9s | TC-R11 1319tok 10.4s | TC-R12 1148tok 8.8s
+
