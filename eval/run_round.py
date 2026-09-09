@@ -369,6 +369,22 @@ def main():
     # 约 25s 一轮 (全量 70-140s), 供千轮级循环高频迭代; 全量轮仍用默认模式。
     if suite == "xl":
         all_cases = json.load(open("eval/cases-xl.json"))
+    elif suite == "explore":
+        # R296: 探索族入批测轮换 — explore_cases.json (24 样本: 12 原始 + 12 可达 URL);
+        # 字段适配: explore 平铺 must_contain/must_not_contain → expect{} 结构 (与判定器兼容)。
+        _ec = json.load(open("eval/explore_cases.json"))
+        _raw = _ec["cases"] if isinstance(_ec, dict) else _ec
+        all_cases = []
+        for c in _raw:
+            all_cases.append({
+                "id": c["id"],
+                "input": c["input"],
+                "expect": {
+                    "llm": True,
+                    "must_contain": c.get("must_contain", []),
+                    "must_not_contain": c.get("must_not_contain", []),
+                },
+            })
     else:
         all_cases = json.load(open("eval/cases.json"))
     if quick:
