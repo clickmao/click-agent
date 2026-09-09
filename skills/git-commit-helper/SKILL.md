@@ -14,6 +14,7 @@ domain_words:
   - git
   - 提交
 priority: 6
+type: normative
 ---
 
 # Git Commit Helper

@@ -35,6 +35,11 @@ internal class Program
         var outputMode = agent.output.OutputMode.Markdown;
         string? embedText = null;
         string? ragPath = null; // v0.13.0: -rag RAG 数据文件路径 (用户钦定)
+        // v0.16.0-a (用户钦定): 外挂 skills — --skills-dir <dir> (可多次) / --skills-blacklist <id|dir> (可多次)
+        //                        / --skills-file <SKILL.md> (单 skill 文件, 可多次); 与内置 skills/ 不冲突均可匹配。
+        var skillExtraDirs = new List<string>();
+        var skillBlacklist = new List<string>();
+        var skillExtraFiles = new List<string>();
         for (var i = 0; i < args.Length; i++)
         {
             if (args[i] == "--log" && i + 1 < args.Length)
@@ -55,6 +60,12 @@ internal class Program
             // v0.13.0 (用户钦定): -rag <path> 指定 RAG 数据文件 (index.jsonl 路径, 可自定义库)
             else if (args[i] == "-rag" && i + 1 < args.Length)
                 ragPath = args[++i];
+            else if (args[i] == "--skills-dir" && i + 1 < args.Length)
+                skillExtraDirs.Add(args[++i]);
+            else if (args[i] == "--skills-blacklist" && i + 1 < args.Length)
+                skillBlacklist.AddRange(args[++i].Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+            else if (args[i] == "--skills-file" && i + 1 < args.Length)
+                skillExtraFiles.Add(args[++i]);
         }
 
         // R136 (D4 reply_rel 基础设施): --embed 直连 BgeEmbedder 输出向量 JSON —
@@ -157,6 +168,14 @@ if (args.Length >= 2 && args[0] == "--compression-audit")
         // v0.13.0 (用户钦定): -rag 指定 RAG 数据文件 → env 钩子 (DI 工厂读取; 进程内生效, 不落盘)
         if (!string.IsNullOrEmpty(ragPath))
             Environment.SetEnvironmentVariable("AGENTFRAMEWORK_RAG_PATH", Path.GetFullPath(ragPath));
+
+        // v0.16.0-a: 外挂 skills env 钩子 (DI 读取; 分号分隔多值)
+        if (skillExtraDirs.Count > 0)
+            Environment.SetEnvironmentVariable("AGENTFRAMEWORK_SKILLS_EXTRA_DIRS", string.Join(";", skillExtraDirs.Select(Path.GetFullPath)));
+        if (skillBlacklist.Count > 0)
+            Environment.SetEnvironmentVariable("AGENTFRAMEWORK_SKILLS_BLACKLIST", string.Join(";", skillBlacklist));
+        if (skillExtraFiles.Count > 0)
+            Environment.SetEnvironmentVariable("AGENTFRAMEWORK_SKILLS_EXTRA_FILES", string.Join(";", skillExtraFiles.Select(Path.GetFullPath)));
 
         var services = new ServiceCollection();
         services.AddLogging(b => b.AddSimpleConsole().SetMinimumLevel(LogLevel.Warning));

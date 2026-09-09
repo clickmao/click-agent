@@ -2,34 +2,34 @@
 # 与 src/agent/critique/OutputCritic.cs 规则数组同源; 本文件供 skill 引擎/人读, 不驱动机器扫描。
 rules:
   - id: R01
-    pattern_desc: 循环内 new[]/new List 字面量取少量固定字段
+    pattern_desc: 循环内临时集合/数组字面量取少量固定值 (通用)
     severity: high
-    domains: [csharp, dotnet]
+    domains: [general]
   - id: R02
     pattern_desc: 循环内 string += 拼接
     severity: medium
-    domains: [csharp]
+    domains: [general]
   - id: R03
-    pattern_desc: async void 非事件处理器
+    pattern_desc: 异步函数返回 void/None (非事件处理器)
     severity: high
-    domains: [csharp, dotnet]
+    domains: [general]
   - id: R04
-    pattern_desc: .Result / .Wait() 阻塞 async 链
+    pattern_desc: 异步链内同步阻塞 (.Result/.Wait/get)
     severity: high
-    domains: [csharp, dotnet]
+    domains: [general]
   - id: R05
     pattern_desc: 空 catch 吞异常
     severity: medium
-    domains: [csharp]
+    domains: [general]
   - id: R06
-    pattern_desc: Count() > 0 判空
+    pattern_desc: 全枚举判空 (应短路)
     severity: low
-    domains: [csharp]
+    domains: [general]
   - id: R07
-    pattern_desc: 浮点 == 直接比较
+    pattern_desc: 浮点相等直接比较
     severity: medium
-    domains: [csharp]
+    domains: [general]
   - id: R08
-    pattern_desc: Dispose 型对象未 using
+    pattern_desc: 资源未确定性释放
     severity: high
-    domains: [csharp, dotnet]
+    domains: [general]

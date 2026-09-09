@@ -17,6 +17,8 @@ public sealed class SkillDispatcher
 
     /// <summary>生命周期状态机 (P2: 缓存/话题切换卸载/熔断托管)</summary>
     public SkillLifecycle Lifecycle { get; }
+    /// <summary>R326/v0.16.0-c: 注册表只读访问 (/skills 指令渲染当前激活 skills)。</summary>
+    public SkillRegistry Registry => _registry;
 
     /// <summary>executive 执行委托注册表 (entry → 委托; P1 仅注册制, 不做文件加载)</summary>
     private readonly Dictionary<string, Func<string, CancellationToken, Task<string>>> _entries = new();

@@ -295,7 +295,44 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton(sp => new agent.config.ConfigSnapshot());
 
         // v7.15 Skill 调度 (P1): skills/ 目录静态加载 + 触发匹配 + 口径承载
-        services.AddSingleton(sp => agent.skills.SkillRegistry.LoadFromDirectory("skills"));
+        // v0.16.0-a (用户钦定): 外挂 skills 目录/单文件合并注册 + blacklist 过滤
+        //   env AGENTFRAMEWORK_SKILLS_EXTRA_DIRS / _FILES / _BLACKLIST (CLI --skills-* 写入, 分号分隔)。
+        //   外挂与内置不冲突: 同 SkillId 时外挂覆盖内置 (后注册者胜 — Register 语义确认)。
+        services.AddSingleton(sp =>
+        {
+            var registry = agent.skills.SkillRegistry.LoadFromDirectory("skills");
+            var extraDirs = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_SKILLS_EXTRA_DIRS");
+            if (!string.IsNullOrEmpty(extraDirs))
+            {
+                foreach (var dir in extraDirs.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                {
+                    if (!Directory.Exists(dir))
+                        continue;
+                    foreach (var pkg in agent.skills.SkillPackageLoader.LoadPackages(dir))
+                        registry.Register(pkg); // 同 Id 覆盖内置 (外挂优先)
+                }
+            }
+            var extraFiles = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_SKILLS_EXTRA_FILES");
+            if (!string.IsNullOrEmpty(extraFiles))
+            {
+                foreach (var file in extraFiles.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                {
+                    if (!File.Exists(file))
+                        continue;
+                    var pkg = agent.skills.SkillPackageLoader.LoadPackage(
+                        Path.GetDirectoryName(Path.GetFullPath(file))!);
+                    if (pkg is not null)
+                        registry.Register(pkg); // 单 SKILL.md 文件 (取其所在目录解析)
+                }
+            }
+            var blacklist = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_SKILLS_BLACKLIST");
+            if (!string.IsNullOrEmpty(blacklist))
+            {
+                foreach (var bl in blacklist.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                    registry.RemoveById(bl); // 精确 Id 或目录名前缀匹配 (RemoveById 实现)
+            }
+            return registry;
+        });
         // v0.11.0 (打点驱动补全): executive skill 包内脚本执行链路 — DI 缺 scriptRunner 注入,
         // 实测 wordcount 正则命中后静默降级 LLM (脚本从未运行)
         services.AddSingleton(sp => new agent.skills.SkillScriptRunner(

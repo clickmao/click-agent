@@ -525,6 +525,35 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             var localCommand = agent.registry.LocalCommandRouter.TryRoute(message.Content);
             if (localCommand.Handled)
             {
+                // v0.16.0-c (用户钦定): /skills 查询当前激活 (可匹配) 的全部 skills;
+                // /skills-only <id,...> 动态 whitelist; /skills-exclude <id,...> 动态 blacklist (v0.16.0-b)。
+                if (localCommand.Command is "skills" or "skills-only" or "skills-exclude")
+                {
+                    response.Success = true;
+                    var registry = _skillDispatcher?.Registry;
+                    if (registry is null)
+                    {
+                        response.Content = "skills 引擎未启用。";
+                    }
+                    else if (localCommand.Command == "skills")
+                    {
+                        var all = registry.All;
+                        var sb2 = new System.Text.StringBuilder($"📚 当前激活 skills ({all.Count}):\n");
+                        foreach (var sk in all)
+                            sb2.Append($"- {sk.SkillId} (v{sk.Version}, {sk.Type}, 触发词: {string.Join("/", sk.Keywords.Take(3))})\n");
+                        response.Content = sb2.ToString();
+                    }
+                    else
+                    {
+                        var ids = (localCommand.Argument ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                        if (localCommand.Command == "skills-only") registry.SetActiveWhitelist(ids.Length > 0 ? ids : null);
+                        else registry.SetActiveBlacklist(ids.Length > 0 ? ids : null);
+                        var joined = ids.Length > 0 ? string.Join(",", ids) : "清除";
+                        response.Content = $"✓ 动态过滤已更新 ({localCommand.Command}: {joined})。当前可匹配 {registry.All.Count} 个。";
+                    }
+                    response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
+                    return response;
+                }
                 response.Content = localCommand.Reply;
                 response.Success = true;
                 response.Data = new Dictionary<string, object>

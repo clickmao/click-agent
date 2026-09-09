@@ -1,83 +1,83 @@
 ---
 name: critic-rules
-description: C# 反模式规则知识 (R01-R08) — 生成代码前自查的静态规则镜像 (机器侧 OutputCritic 同源知识, 供 LLM 预判防患)
-version: 1.0.0
+description: 通用代码反模式规则 (R01-R08) — 生成代码前自查的知识镜像 (与运行时静态扫描同源, 语言无关)
+version: 2.0.0
 license: MIT
 keywords:
   - 反模式
   - 代码质量
-  - C# 优化
+  - 优化
   - 堆分配
   - async
   - 自审
+  - 代码
 regex_patterns:
-  - "(写|生成|实现|给).{0,8}(代码|函数|方法|class|类)"
-  - "(优化|检查).{0,4}(代码|性能|内存)"
+  - "(写|生成|实现|给|修复).{0,8}(代码|函数|方法|class|类|script|脚本|程序)"
+  - "(优化|检查|审查).{0,4}(代码|性能|内存|逻辑)"
 domain_words:
-  - csharp
-  - C#
-  - dotnet
-  - .NET
+  - code
+  - 代码
+  - function
+  - 编程
 priority: 4
 type: knowledge_hint
 ---
 
-# C# 反模式规则 (Critic Rules R01-R08)
+# 通用代码反模式规则 (Critic Rules R01-R08, 语言无关)
 
-> 与运行时 `OutputCritic` (src/agent/critique/OutputCritic.cs) 同源知识镜像。机器侧在代码输出后静态扫描;
-> 本 skill 让 LLM 在**生成前自查** (知识前置)。命中 = 已知改进点提醒, 不是"失败"定性 (R318 语义)。
-> 每条 = 反模式 → 机制 → 修法 → 正反例。
+> 与运行时静态扫描 (OutputCritic) 同源知识镜像。机器侧在代码输出后扫描; 本 skill 让 LLM 在
+> **生成前自查** (知识前置)。命中 = 已知改进点提醒, 不是"失败"定性。规则按语义定义, 各语言映射见每条末尾。
 
 ## R01 循环内堆分配代替取值 ★最易犯
 
-- **反模式**: `foreach (var input in new[] { a.In0, a.In1 })` — 每次迭代堆分配数组, 仅为了取两个栈上字段。
-- **机制**: GC 压力 (每次迭代一个短命分配); 语义是"取值稳定", 分配是纯副作用。
-- **修法**: `ref var nn = ref g.N[id]; var a0 = g.Resolve(nn.In0); var a1 = g.Resolve(nn.In1);`
-- **例外**: 单元素常量数组可豁免; 真正需要集合抽象时用 `stackalloc` 或显式集合。
+- **反模式**: 循环体内为取少量固定值而构造临时集合/数组/字典字面量。
+- **机制**: 每次迭代一次短命堆分配 → GC 压力; 语义是"取值稳定", 分配是纯副作用。
+- **修法**: 直接具名取值/引用 (语言对应: C# `ref` 局部变量; Python 直接元组解包; Go 直接索引; Rust 借用)。
+- **例外**: 确需集合语义 (传给集合 API) 时合法; 单元素常量可豁免。
 
 ## R02 字符串 += 进循环
 
-- **反模式**: `report += item.Name + ",";` (for/foreach/while 内)。
-- **机制**: 每次 += 产生新 string (不可变), 中间串链 O(n²)。
-- **修法**: `StringBuilder`; 少量用 `string.Join` / 收集后 Join。
+- **反模式**: 循环内 `s += piece` 拼接 (不可变字符串语言)。
+- **机制**: 每次 += 产生新串, 中间串链 O(n²)。
+- **修法**: 可变构建器 (C# `StringBuilder` / Java 同 / Python `"".join(list)` / Go `strings.Builder`)。
 
-## R03 async void (非事件处理器)
+## R03 async/异步函数返回 void/None (非事件处理器)
 
-- **反模式**: `async void Handle() { ... }` (事件之外)。
-- **机制**: 异常不可观察 (直接崩进程); 调用方无法 await。
-- **修法**: `async Task` + 传播; 仅 UI 事件处理器保留 async void。
+- **反模式**: `async void fn()` (C# 非事件处理器) / 异步函数吞掉返回值无 Future。
+- **机制**: 异常不可观察; 调用方无法等待/组合。
+- **修法**: 返回 Future/Task/Promise; 仅 UI 事件处理器保留 void 形态 (例外)。
 
-## R04 阻塞等待混用 async
+## R04 阻塞等待混用异步
 
-- **反模式**: `GetValueAsync().Result` / `.Wait()` 在 async 链中。
-- **机制**: sync-over-async → 死锁面 (SynchronizationContext) + 线程池饥饿。
-- **修法**: 全链 `async/await`; 库入口用 ValueTask/ConfigureAwait 说明。
+- **反模式**: 异步调用后 `.Result` / `.Wait()` / `get()` 在 async 链中同步阻塞。
+- **机制**: sync-over-async → 死锁面 + 线程/事件循环饥饿。
+- **修法**: 全链 await/async; 入口处才阻塞 (main)。
 
-## R05 空 catch 吞异常
+## R05 空 catch/except 吞异常
 
-- **反模式**: `catch (Exception) { }`。
-- **机制**: 异常信息蒸发, 调用方无从排查 (与"失败必须透传"铁律冲突)。
+- **反模式**: `catch { }` / `except: pass` 无日志无注释。
+- **机制**: 异常信息蒸发, 调用方无从排查。
 - **修法**: 至少日志/打点; 明确豁免理由注释。
 
-## R06 LINQ Count() > 0
+## R06 Count()/len() 判空代替短路
 
-- **反模式**: `if (items.Count() > 0)`。
-- **机制**: Count() 全枚举; 只需判空。
-- **修法**: `items.Any()` (O(1) 短路)。
+- **反模式**: `if (items.Count() > 0)` (枚举集合)。
+- **机制**: Count 全枚举; 判空只需存在性检查。
+- **修法**: `Any()` / `len()` 对已知容器 / 迭代器 `next(iter, None)`。
 
 ## R07 浮点 == 直接比较
 
-- **反模式**: `if (d == 0d)` / `a == b` (double/float)。
+- **反模式**: `if (d == 0.0)` / `a == b` (浮点计算结果)。
 - **机制**: 二进制表示误差, == 对计算结果几乎必假。
-- **修法**: 容差 `Math.Abs(a - b) < eps`; 或定点/有理数域重设计。
+- **修法**: 容差 `abs(a-b) < eps`; 货币用定点/整数分。
 
-## R08 Dispose 型对象未释放
+## R08 资源未确定性释放
 
-- **反模式**: `var s = new FileStream(...)` 无 using。
-- **机制**: 句柄泄漏直至 GC (非确定性); 文件锁残留。
-- **修法**: `using` 声明/语句; 工厂内创建需注明所有权转移。
+- **反模式**: 打开文件/连接/锁后依赖 GC 释放。
+- **机制**: 句柄泄漏直至 GC (非确定性); 锁/文件残留。
+- **修法**: 语言确定释放构造 (C# `using` / Python `with` / Go `defer` / Rust RAII / Java try-with)。
 
 ## 使用方式
 
-生成/审查 C# 代码前, 先对照以上 8 条自查; 输出后机器侧 OutputCritic 仍会静态复核 (双保险)。
-规则文案变更走代码源 (OutputCritic.cs), 本镜像随版本同步。
+生成/审查代码前对照 8 条自查 (按当前语言取映射); 输出后机器侧静态扫描仍会复核 (双保险)。
+规则语义变更走机器源 (OutputCritic), 本镜像随版本同步。

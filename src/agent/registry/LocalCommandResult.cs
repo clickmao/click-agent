@@ -30,6 +30,7 @@ public static class LocalCommandRouter
         "/official-key",  // v7.15 需求1: 官方通道 key 注入 (⚠ 指令名代拟 — 用户未定名; 内存态)
         "/log",  // v7.15 日志四通道: /log dump → MemoryLogBuffer 存档文件 (JSON 行)
         "/stop", "/continue", "/pause", "/status", "/reset",
+        "/skills", "/skills-only", "/skills-exclude",  // v0.16.0-c/b: skills 查询/动态 whitelist/blacklist (V2 特判渲染)
         "/help",  // v0.11.0 R86: 帮助菜单本地应答 — 原未注册送 LLM 浪费一轮
     };
 
@@ -78,6 +79,19 @@ public static class LocalCommandRouter
             {
                 Handled = true, Command = "reset",
                 Reply = "🔄 会话已重置。",
+            },
+            // v0.16.0-c/b: skills 查询与动态过滤 — Handled=true, V2 特判渲染 (需 SkillRegistry 访问)
+            "/skills" => new LocalCommandResult
+            {
+                Handled = true, Command = "skills",
+            },
+            "/skills-only" => new LocalCommandResult
+            {
+                Handled = true, Command = "skills-only", Argument = arg,
+            },
+            "/skills-exclude" => new LocalCommandResult
+            {
+                Handled = true, Command = "skills-exclude", Argument = arg,
             },
             _ => NotCommand,
         };

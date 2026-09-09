@@ -76,13 +76,46 @@ public sealed class SkillRegistry
         }
     }
 
+    /// <summary>v0.16.0-a: blacklist 移除 — 精确 SkillId 匹配, 或目录名前缀 (skill 包目录名) 匹配。</summary>
+    public int RemoveById(string idOrDir)
+    {
+        lock (_lock)
+        {
+            var exact = _skills.Keys.Where(k => k == idOrDir).ToList();
+            var byDir = _skills.Where(kv => Path.GetFileName(kv.Value.PackageDir ?? "") == idOrDir)
+                               .Select(kv => kv.Key).ToList();
+            var removed = 0;
+            foreach (var k in exact.Concat(byDir).Distinct())
+            {
+                if (_skills.Remove(k)) removed++;
+            }
+            return removed;
+        }
+    }
+
+    // v0.16.0-b: 运行时动态过滤 (循环任务内 whitelist/blacklist — AgentFramework_Skills_ActiveWhitelist/Blacklist env 或指令设置)
+    private volatile HashSet<string>? _activeWhitelist; // null = 不过滤
+    private volatile HashSet<string>? _activeBlacklist; // null = 不过滤
+
+    /// <summary>动态 whitelist (只允许这些 SkillId; null=清除)。</summary>
+    public void SetActiveWhitelist(IEnumerable<string>? ids)
+        => _activeWhitelist = ids is null ? null : new HashSet<string>(ids);
+    /// <summary>动态 blacklist (排除这些 SkillId; null=清除)。</summary>
+    public void SetActiveBlacklist(IEnumerable<string>? ids)
+        => _activeBlacklist = ids is null ? null : new HashSet<string>(ids);
+
     public List<SkillDefinition> All
     {
         get
         {
             lock (_lock)
             {
-                return _skills.Values.ToList();
+                var vals = _skills.Values.ToList();
+                var wl = _activeWhitelist;
+                var bl = _activeBlacklist;
+                if (wl is not null) vals = vals.Where(s => wl.Contains(s.SkillId)).ToList();
+                if (bl is not null) vals = vals.Where(s => !bl.Contains(s.SkillId)).ToList();
+                return vals;
             }
         }
     }

@@ -13,6 +13,8 @@ domain_words:
   - review
   - 审查
 priority: 5
+type: normative
+type: normative
 ---
 
 # Code Review Checklist
