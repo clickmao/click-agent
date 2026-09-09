@@ -1,112 +1,109 @@
-# click-agent (v0.13.3)
+# click-agent (v0.17.2)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)
-![Tests](https://img.shields.io/badge/tests-499%2F499-brightgreen)
+![Tests](https://img.shields.io/badge/tests-619%2F619-brightgreen)
 ![NativeAOT](https://img.shields.io/badge/NativeAOT-zero%20warnings-blueviolet)
-![Eval](https://img.shields.io/badge/迭代评测-240批%2099%25%2B-success)
+![Eval](https://img.shields.io/badge/迭代评测-286批%2099%25%2B-success)
 
-C# 工业级 Agent 框架 — 全场景覆盖、100% 托管代码。net10.0 / NativeAOT 零警告 / 499 测试全绿。
-发布线: v0.13.3 — 思考链+渐进式探索 (A/B +56pt) / 兜底粘性路由 / 格式修复收敛环 / 压缩失败防护 D1-D4 /
-微步骤隔离 / think-memory 跨进程联想 / 视觉理解 / bge 向量召回 0.95 / 22 模型目录 / 全链路打点。
+**一个以文档驱动的全自动化产品迭代 Agent 框架。** 迭代循环由框架内生：计划文档（docs/plans）→ 代码落地 → 真实批测（eval/run_round，断言绑定组件真实行为）→ KPI 打点回授 → 验收存档（版本 tag + improvements 台账）→ 下一轮候选。文档是唯一权威源，记忆只存恢复指针。
+
+框架本体（CLI agent）面向工业级多 agent 协作场景：跨进程执行加固（文件锁/原子写/占用者检测/教训记忆）、离线变更与用户审批（staging 区 + 基线 sha256 冲突拒绝，保护编辑器打开中的文件）、活动任务感知（多 CLI 心跳互见 + 条件调度原语）、上下文压缩/隔离/牵引/记忆分层全链。
+
+**内部插件核心能力按需自行插入**——框架提供宿主机制与执行协议（技能三形态：executive 脚本交付 / normative 清单交付 / knowledge_hint 知识前置注入；脚本执行走 CLI 验证 → 插件服务，JSON Lines 事件流协议；像素画风锚定合成等渲染/领域能力由插件层扩展），能力边界由插入的插件/技能定义，而非框架写死。
+
+net10.0 / NativeAOT 零 IL 警告 / 597 单测全绿 / 迭代评测 286 批通过率 99%+。
+发布线: v0.17.2 — 执行层稳固化 T1-T4 (跨进程锁/占用者检测/教训记忆) / v0.17.1 离线变更用户审批 / v0.17.2-a 活动任务注册表 / v0.16 skills 引擎 (CLI 外挂+动态过滤+查询) / v0.15.2-A 存档版 / v0.14 critic 自审体系 / v0.13.3 思考链+渐进式探索 (+56pt)。
 
 [🇬🇧 English → README_EN.md](README_EN.md)
 
 ---
 
-### ✅ v0.13.0/v0.13.1/v0.13.2/v0.13.3 能力 — 思考链 / 渐进式探索 / 兜底粘性 / 底座防护 (R205-R240 已落地)
-- **渐进式探索** (用户钦定): ExplorationConfig (每源最大步 + 全局预算) + ExplorationPlanner (优先级队列, 上下文内 URL > 上下文外目录) + **HostExploreExecutor** (URL GET digest/页面链接发现≤5/目录文件路径穿越防护) + V2 RunThinkChainAsync (播种→4s/4步→首败即停→回注) — 探索 A/B 真机 **hit 0.45→0.64 (+18pt 零回归)**; LinkRegistry 关键文档激活链 (三信号: 锚定/稀缺出链/路径递进 ≥3 激活 + 父链保护)。
-- **思考链 T3** (用户钦定): ComplexityGate + EvidenceScorer (单源封顶 medium) + **ThinkMemory bge 联想真机** (跨进程持久化 STJ source-gen, recall top_sim 0.977) + ThinkChainSession 收敛判据。
-- **兜底粘性路由 v0.13.1**: FallbackConfig 性价比序逐个兜底+回复校验 + StickyRouteMemory 三门判定 (TTL 72h)。
-- **格式修复 v0.13.2**: JsonRepairPlugin 栈感知修复 + FormatRepairLoop 状态机。
-- **压缩失败防护 v0.13.3** (工业模式 M1-M6): D1 异常隔离 (per-snippet 回退原文) / D2 数字+URL 哨兵 (全档 URL 100% 保留实证) / D3 降级链 / D4 熔断器 / 不可变源。
-- **微步骤隔离 B2**: gate=IsolatedMicro → 微问题隔离问询 → 回注 ≤200tok/条 (E2E: 2860ms)。
-- **召回三口径**: bge 0.95 / 词袋长查询 0.70 (IDF 稀缺度加权) / 短查询对抗 0.45; 压缩 audit 104 篇多样态 keys 100%/指令 96%。
-- 490 单测 · AOT 0 IL 警 · 评测通过率 97.9%+ (240 批)。
+### ✅ v0.17.x 执行层稳固化 — 锁 / 原子写 / 审批 / 活动感知 (R334-R336 已落地, 验收批 284-286 全绿)
+- **跨进程文件锁 + 原子写** (v0.17.0, 用户钦定 "2 agent 写 1 文件" 工业化): FileLock (.lock + FileShare.None=flock LOCK_EX, 崩溃内核自动放锁) / AtomicFileWriter (tmp+fsync+rename) / **OccupantDetector** (/proc/locks → "PID x (comm)") / ExecutorLessonMemory (失败→原因→**频率加权教训记忆**: 1 次摘要→3 次补方案→8 次补上下文, 24h 降级 7d 移除); 接入 TaskCharter/GuardrailMemory 写点 (同 Id 推进覆盖/异主让位/锁内条件覆盖 WriteIf 无 TOCTOU)。
+- **离线变更 + 用户审批** (v0.17.1, 用户钦定 VS Code 场景): StagedFileStore (批次内容落 data/staged/ **不占真实文件地址**; 三阶段过期 TTL→expired 保留→reclaimable→显式清理, 不静默删) / ApprovalController (**锁内基线 sha256 比对 — 目标被编辑器改过 → 冲突拒绝绝不覆盖**; 多批按序合并, 后批基线过期 → partial 人工合并) / `/staged /approve /reject /cleanup` 指令 / `/staged --json` + data/staged/index.json 双通道供前端。
+- **活动任务注册表** (v0.17.2-a, 用户钦定 "所有激活窗口任务"): ActivityService 心跳 data/activity/<pid>.json (pid/window/job_id/任务摘要; TTL 90s 覆盖 LLM 单轮; 优雅退出 finally 清理) / `/activity` 列出**全部激活 agent 含其他 CLI** / IsOtherAgentBusy = "无其他任务则 X 后执行" 条件原语。
+- **脚本插件协议** (v0.17.2-b 计划已定): 执行层自需脚本一律 py → CLI py_compile 验证 → 插件服务执行; stdout JSON Lines 事件流 {progress|heartbeat|done|error}, 长执行 --heartbeat-secs 定时反馈, 结束前必须 done/error。
 
-### ✅ v0.12.0 新增能力 — 视觉理解 / 渲染插件 / 收敛环 (已验收)
-- **视觉理解链**: CLI `-img` → data URL base64 → glm-5.3-flash v4 端点 (1M ctx); text-only 模型自动重路由 + coding 端点改写 (真缺陷 63/64 修复); OpenAIMultimodalMessage 双形态 DTO (AOT-safe, 禁反射)。
-- **真机验收**: T-V01~T-V04 视觉用例族 full-23 首验全绿 (含负样本诱饵: 模型识破"右下角苹果"预设陷阱); 四问真机复证 (主体/角落/位置/否定); 验收基线 docs/archive/reports-archived/v012-acceptance-baseline.md。
-- **图像渲染插件体系** (用户钦定收敛环服务化): IImageRenderPlugin + SkiaSharpRenderPlugin (默认, 边缘选项 -p:DisableSkiaRenderer=true 停编) + SvgTextRenderPlugin (零依赖兜底) + Registry (无可用插件 → 跳过后续环节); LocalSvgRenderer DSL (rect/circle/line/text, XML 转义)。
-- **收敛环 E2E**: LLM 生成 DSL → 渲染 → 5.3-flash 视觉校验 → 真机一轮 PASS (DSL 1039ch → SVG 843ch → 校验 6/6, 6.4s)。
-- **能力矩阵**: models.yaml 25/25 模型 capabilities 回填; CogViewClient 保留 (生成路径按用户钦定弃用)。
+### ✅ v0.14.0-v0.16.x 能力 — critic 自审 / 任务生命周期 / skills 引擎 / 性能 (已验收)
+- **LLM 自审体系** (v0.14, 用户钦定 "LLM 数据来源=人类经验"): OutputCritic (静态反模式 8 规则带行号) / SelfCritic (quote 逐字子串防幻觉锚) / FixMemory (修法独立 schema, 来源秩 human>metric>llm) / CriticPipeline 三级过滤 (LLM 单源=观察态绝不进上下文)。
+- **任务生命周期** (v0.15): TaskCharter 状态机 (planning→running→accepting→done|failed) + 三态输入路由 (补充→pendingContext / 无关→隔离 / 换任务→pivot) + GuardrailMemory (禁令提取→持久→跨域静默→habituation 去重)。
+- **skills 引擎增强** (v0.16, 用户钦定): 格式统一 (6 包 frontmatter 规范) / **critic-rules 语言无关化** (R01-R08 语义级 + C#/Python/Go/Rust/Java 映射) / CLI 外挂 --skills-dir/--skills-blacklist/--skills-file (与内置不冲突) / 运行时动态 whitelist/blacklist / /skills 指令族 / KnowledgeHint 类型 (知识命中→注入 systemPrompt 生成时预防, C33-C35 3/3 精确含例外条款理解)。
+- **性能/内存** (v0.15.3-v0.16.x): TendencyData 三算合一+async 化 (wall -3.5%) / bge 单实例共享 (RSS 130MB) / P4 召回流式化+4MB 预算 / P12 RAG 裁剪摊销 / P10 锚词 long-key 零分配 (语义等价 40 轮随机全等证明)。
+- **版本A 存档**: git tag v0.15.2-A (仓库首 tag) + 全量验收 37/37 + 能力地图 function-map-R326。
 
-### 📦 v0.11.0 R169-R204 能力
+### 📦 v0.12-v0.13.x 能力 (思考链 / 探索 / 视觉 / 渲染插件 / 底座防护)
 
-已归档 → [docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md) · [CHANGELOG-v0.11.0-R186-R204.md](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md)
+已归档 → [CHANGELOG-v0.12-v0.13.x-R169-R268.md](docs/changelogs/CHANGELOG-v0.12-v0.13.x-R169-R268.md) · [CHANGELOG-v0.13.3-R249-R268.md](docs/changelogs/CHANGELOG-v0.13.3-R249-R268.md)
 
 ### 📊 迭代评测统计 (打点对比数据驱动)
 
-| 维度 | 基线 | 当前 (2026-09-09) | 改善 |
+| 维度 | 基线 | 当前 (2026-09-10) | 改善 |
 |---|---|---|---|
-| 评测通过率 | 7354tok 基线 10 用例 | **240 批落盘, 近 30 批 99%+** (quick-11 口径) | 负面扩容后稳定 |
-| 单元测试 | 325 | **499** | +174 |
-| 真缺陷修复 | — | **72 项** (全部打点驱动, #21-#72) |
-| token 使用量 (KPI-2) | era2 730 | **quick-11 1126** (口径细分见报告) | 每 10 批周报 (`eval/token_report.py`) | | 缺陷台账 |
-| 召回率 (RAG) | 词袋 0.45 (缺陷 69 前) | **bge 0.95 / 词袋长查询 0.70** | 三口径基线 |
+| 评测通过率 | 7354tok 基线 10 用例 | **286 批落盘, 近 30 批 99%+** (quick-13 口径) | 负面扩容+真断言后稳定 |
+| 单元测试 | 325 | **597** | +272 |
+| 真缺陷修复 | — | **72+ 项** (全部打点驱动) | 含 C14 flake 根因 (R332 per-case 隔离) |
+| token 使用量 (KPI-2) | era2 730 | **quick-11 1144 / quick-13 ~1765** (口径细分见报告) | 每 10 批周报 (`eval/token_report.py`) |
+| 召回率 (RAG) | 词袋 0.45 | **bge 0.95 / 词袋长查询 0.70** | 三口径基线 |
 | 压缩关键信息保留 | SummarySentences 33-53% | **keys 100% / 指令 96%** (104 篇多样态 audit) | 健康线 ≥95% |
 | 探索 A/B (可达 URL 24 案) | — | **hit 0.167→0.722 (+56pt, R310 复跑) 零回归** | v0.13.3 探索链 |
+| critic 知识前置 (skill 版) | 事后扫描 | **C33-C35 诱饵 3/3 生成时预防含例外理解** (R326g) | knowledge_hint |
 
 ### 批次趋势 (滚动窗口 — 最新 2 批)
 
-**批258 (mass_478)** 11/11 quick-11 1003/case / **批257 (mass_477)** 10/11 quick-11 1242/case (C14 隔离链 R312 重构事故, R313 修复复绿) —
-v0.13.3 合并判定期: TopicRelevanceEvaluator 单点 (隔离/牵引/打点三路消费) + 围栏双脚本同源 (40ch+11 词) +
-缺陷 72 修复 (executive 直达补 intent 打点) + R313 衔接副词精修 + think-memory 跨进程持久化 +
-LinkRegistry 激活链挂载; 批234 1402/case 单批离群定性 (C03 completion 波动非回归); 批236 XL 7/7 7008/case
-(gate 三态稳定); 批238 10/11 C08 意图单批抖动 (3 连真机复现 general, 观察关闭)。
+**批286 (round 513)** 13/13 quick-13 1811/case (v0.17.2-a activity 验收) / **批285 (round 512)** 13/13 quick-13 1765/case (v0.17.1 staged 验收) —
+v0.17 执行层稳固化定档: 跨进程锁+占用者检测+教训记忆 / 离线变更审批 (基线比对冲突拒绝 E2E 三场景) / 活动注册表 (双实例互见 win/job_id) —
+v0.16 skills 引擎 (CLI 外挂/动态过滤//skills 指令族, 批280 37/37) — v0.15.2 guardrail 真断言 (批271 5/5, C27 否定词"不"补围栏) —
+R332 eval per-case 隔离 (C14 flake 根因, run_round 每 case 前清 sessions+rag) — 探索 +56pt 历史最高 (R310) —
+版本A 存档 tag v0.15.2-A (批272-273/277 验收)。
 
-归档: [42-78](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md) · [79-108](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md) · [109-138](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md) · [139-167](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md) · [168-177](docs/changelogs/CHANGELOG-v0.11.0-R205-R218.md) · [178-187](docs/changelogs/CHANGELOG-v0.11.0-R219-R228.md) · [188-217](docs/changelogs/CHANGELOG-v0.13.x-R229-R248.md) · [218-247](docs/changelogs/CHANGELOG-v0.13.3-R249-R268.md)。每 30 批滚动 (2026-09-09 补账, 下一点≈批258)。
-
-专项验证: 多来源召回率 / 无关话题隔离 (score=2 独立 session) / session 长期记忆 (跨进程落盘) / JSON 格式跟随 / 双 LLM 校验 / XL 三态 gate — 全部 ✓。
-
-完整报告: [主报告 §7](docs/reports/dynamic-telemetry-eval-rollback-strategy.md) · 阶段台账: [wave3-ledger (归档)](docs/archive/reports-archived/wave3-ledger.md)
+归档: [42-78](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md) · [79-108](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md) · [109-138](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md) · [139-167](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md) · [168-177](docs/changelogs/CHANGELOG-v0.11.0-R205-R218.md) · [178-187](docs/changelogs/CHANGELOG-v0.11.0-R219-R228.md) · [188-217](docs/changelogs/CHANGELOG-v0.13.x-R229-R248.md) · [218-247](docs/changelogs/CHANGELOG-v0.13.3-R249-R268.md)。每 30 批滚动; 下一点≈批307。
 
 ### 🧭 能力全景
 
-**工程总览**: 16 csproj — agent (主链 22 子模块: intent/registry/memory/contextassembler/tendency/session/search/llamalocal/maf/pipeline/subagent 等) / core / config / contextgradient / modelqueue / skills / rag / vectormemory / workspace / io / logging / output / recovery / codegen / host / tests。
+**工程总览**: 19 csproj — agent (主链 25+ 子模块: intent/registry/memory/contextassembler/tendency/session/search/llamalocal/maf/pipeline/subagent/critique/tasks/execution/staging/activity 等) / core / config / contextgradient / modelqueue / skills / rag / vectormemory / workspace / io / logging / output / recovery / codegen / host / tests。
+
+**文档驱动迭代循环 (框架内生, 用户钦定方向)**
+- 计划 → 代码 → **真实批测** (断言绑组件真实行为, R149 标准) → 打点回授 (AgentTelemetry JSONL 全链) → 验收存档 (tag + improvements) → 下轮候选 (master-plan 触发器与宪法八条)
+
+**执行层稳固化 (v0.17.x, 用户钦定 "2 agent 写 1 文件" 族)**
+- 跨进程 FileLock (flock 内核仲裁, 崩溃自动放锁) + AtomicFileWriter (无半写) + OccupantDetector (/proc/locks 占用者 pid/comm)
+- ExecutorLessonMemory 频率加权教训记忆 (失败原因→方案→上下文, TTL 衰减)
+- StagedFileStore 离线变更审批 (VS Code 编辑保护: 基线 sha256 冲突绝不覆盖) + ActivityService 活动心跳 (多 CLI 互见/job_id/条件原语)
 
 **推理与任务**
-- 意图分析与子任务细分: 19 中英连接词, Sequential/Parallel/DependsOnOutput 关系; 创作类拦截 (写诗≠写代码, R116)
-- TaskPlan 拓扑执行: Level 并发 (Task.WhenAll + MaxParallelism) / 节点重试 (指数退避+瞬态分类) / 敏感意图 PausedForApproval
-- 隔离任务: 无关话题生成边界隔离 subagent (独立 session, 主记忆零污染), 完成即销毁
+- 意图分析与子任务细分: 19 中英连接词, Sequential/Parallel/DependsOnOutput 关系; 创作类拦截
+- TaskPlan 拓扑执行: Level 并发 / 节点重试 / 敏感意图 PausedForApproval; TaskCharter 任务生命周期 (三态输入路由)
+- 隔离任务: 无关话题边界隔离 subagent (独立 session, 主记忆零污染), 完成即销毁; TopicRelevanceEvaluator 合并判定 (隔离/牵引/打点三路)
 
 **模型调度 (agent.modelqueue)**
-- 本地 (LocalLlamaCaller 真跑) > 官方 (硬编码+内存 key) > 远程 API 三通道
-- 22 模型目录: 意图 × token 估算 × 成本排序; auto/manual 双模; 粘性同步 (R89)
-- **余额链**: 真 API 同步 → 本地累计 → 阈值再同步; 余额不足自动切模 (候选过滤: 有 key + sufficient, #46) + `flags:balance-insufficient` 提示; 汇率 CNY÷7.2 (#45)
+- 本地 (LocalLlamaCaller 真跑) > 官方 > 远程 API 三通道; 22+ 模型目录; auto/manual 双模; 粘性路由 (兜底性价比序 + 三门判定)
+- 余额链: 真 API 同步; 余额不足自动切模; 汇率 CNY÷7.2
 
-**视觉与图像 (v0.12.0 已验收)**
-- 视觉理解链: CLI `-img` → base64 data URL → glm-5.3-flash v4 (1M ctx); text-only 自动重路由 + coding 端点改写; 双形态 DTO (AOT-safe)
-- 图像渲染插件: IImageRenderPlugin (SkiaSharp 默认可边缘停编 / SVG 文本兜底) + LocalSvgRenderer DSL; 收敛环 E2E (DSL→渲染→视觉校验→FAIL 重生成→PASS)
-- 用例族 T-V01~04 (含负样本诱饵) full 批 23/23; 验收基线 docs/archive/reports-archived/v012-acceptance-baseline.md
+**视觉与图像**
+- 视觉理解链: CLI `-img` → glm-5.3-flash v4 (1M ctx); text-only 自动重路由
+- 图像渲染插件: IImageRenderPlugin (SkiaSharp 默认 / SVG 文本兜底) + LocalSvgRenderer DSL (像素画风锚定合成类能力由插件层扩展); 收敛环 E2E
 
-**探索与思考链 (v0.13.x 开发中, 用户钦定)**
-- 渐进式探索: ExplorationPlanner (每上下文区/文本/URL/目录最大步数 config; 上下文内 URL > 上下文外目录优先级)
-- 思考链收敛: ComplexityGate + EvidenceScorer (多源对比, 单源封顶 medium) + ThinkMemory RAG 联想 (相似问题优先历史高置信链接, 引用后 +0.05 置信)
-- 兜底粘性路由: FallbackConfig (config 开关+性价比序+逐个兜底校验) + StickyRouteMemory (相似问题首用成功模型; 三门判定防形近意远)
-- 格式修复收敛环: IFormatRepairPlugin (①块内检测→②查找→③校验→④本地修复→⑤LLM 循环; max_llm_rounds; 技能-校验矩阵)
-- RAG 数据文件用户指定: CLI `-rag <path>` / 任务内 `/rag` / env 三入口 (多库隔离)
-- **压缩底座 audit** (v0.13.3): `--compression-audit` 分档校验 (500/1000/2000/3000 tok × 级别 → 关键信息保留率/压缩率/耗时); ground-truth 104 篇多样态; A3 关键句保护修复 (SummarySentences 因果/指令保留 0-20%→100% 单样/85% 多样态); 每批抽查+10 批全量 cadence
-- **429 感知调度**: 限流跳过同模型重试直切备 (省 ~1000 tok/次重发)
-- **微步骤隔离设计 A6**: 阈值门控 (未达阈值走常规, 更正2); 触发率基线 0% (批164-210 实测)
+**探索与思考链**
+- 渐进式探索: ExplorationPlanner (每源最大步 config; 上下文内 URL > 上下文外目录)
+- 思考链收敛: ComplexityGate + EvidenceScorer + ThinkMemory bge 联想 (跨进程持久化)
+- critic 自审 (v0.14): OutputCritic 静态 8 规则 / SelfCritic quote 逐字锚 / FixMemory 来源秩 / CriticPipeline 三级过滤
 
-**Skill 调度 (agent.skills)**
-- SKILL.md 目录包 (Anthropic Agent-Skills Open Standard) + executive 真进程脚本执行 (python/bash/node, 沙箱/超时 kill-tree)
+**Skill 调度 (agent.skills, v0.16 增强)**
+- SKILL.md 目录包三形态 (executive/normative/knowledge_hint); CLI 外挂 --skills-dir/--skills-file/--skills-blacklist; 动态 whitelist/blacklist; /skills 指令
 - 四级触发: 关键词 → 正则 → 领域词 → bge 语义 (cos≥0.45)
 
-**上下文与记忆 (agent.contextgradient)**
-- 梯度压缩 L0-L3 + P0-P3 锚点; 主题聚类 + 三重漂移校验 (bge 真向量 cos)
-- 多数据源上下文注入 8 源: Memory/Session/Workspace/AgentContext/UserTendency/WebSearch/ToolOutput/SessionMemory — 各源召回明细打点 (per-source snip/tok/rel)
-- 体积治理: Memory 源 500tok 预算 + rel<0.4 只留 best1 (#49); Workspace 相关分比例化 (#50)
+**上下文与记忆**
+- 梯度压缩 L0-L3 + 锚词 (P10 long-key 零分配) + 三重漂移校验 (bge 真向量)
+- 8 源上下文注入: Memory/Session/Workspace/AgentContext/UserTendency/WebSearch/ToolOutput/SessionMemory — 各源召回明细打点
 
 **配置与输出**
 - 四层 YAML 配置 (Yamlify, 零反射) + IOutputSink 统一输出 (库内零 Console 直写)
-- PGO 打点: AgentTelemetry JSONL (12+ 点位) — 详见千轮报告
+- PGO 打点: AgentTelemetry JSONL (30+ 点位)
 
 **工程**
 - NativeAOT: 端到端 0 IL 警告 (JIT 仅测试手段, 发布形态必为 AOT — 钦定铁律)
-- Session 恢复: ExecutionCheckpoint 原子持久化
-- agent.io 协议库 (netstandard2.1 零依赖)
+- Session 恢复: ExecutionCheckpoint 原子持久化; agent.io 协议库 (netstandard2.1 零依赖)
 
 ## 快速开始
 
@@ -128,54 +125,60 @@ dotnet run
 # 单轮模式
 dotnet run -- -q "先搜索 AOT 资料, 再写总结文档"
 
-# 环境变量 (3 端点示例)
+# 外挂 skills 目录 (v0.16)
+dotnet run -- --skills-dir /path/to/skills --skills-blacklist wordcount
+
+# 环境变量
 # AGENTFRAMEWORK_KEYS_BIGMODEL / AGENTFRAMEWORK_KEYS_DEEPSEEK / AGENTFRAMEWORK_KEYS_KIMI
 # AGENTFRAMEWORK_BGE_MODEL=bge 模型路径 (启用真向量链)
 # AGENTFRAMEWORK_MIN_BALANCE_USD=0.50 (余额阈值)
+# AGENTFRAMEWORK_WINDOW / AGENTFRAMEWORK_JOB_ID (活动注册身份, v0.17.2)
 ```
 
-CLI 内置命令: `/balance` (余额+活跃模型) / `/model` / `/token stats` / `/status` / `/reset` / `/exit`。
+CLI 内置命令: `/balance` · `/model` · `/status` · `/reset` · `/skills` (`/skills-only|exclude`) · `/staged` (`diff`) · `/approve` · `/reject` · `/cleanup` · `/activity` · `/exit`。
 
 ### 评测复现
 
 ```bash
 cd eval
-python3 run_round.py mass_1000 "my round" --quick   # quick 5 用例
-python3 analyze.py mass_1000 mass_999               # 批间对比
-python3 cross_validate.py                           # 双 LLM 交叉校验
+python3 run_round.py --quick 513 "label"        # quick 13 用例 (高频回归)
+python3 run_round.py 513 "label"                # 全量 37 用例
+python3 token_report.py                          # KPI-2 token 周报 (每 10 批)
 ```
 
-## 验证基线 (2026-09-09)
+## 验证基线 (2026-09-10)
 
 | 项 | 结果 |
 |---|---|
-| 单元测试 | **499/499** 通过 |
+| 单元测试 | **597/597** 通过 (含 ExecutorHardening 并发/StagedApproval/ActivityService 族) |
 | NativeAOT (linux-x64) | **0 IL 警告** (多次复验) + full-graph AOT 冒烟通过 |
-| 迭代评测 | **240 批落盘, 近 30 批 99%+** (quick-11 口径) |
-| XL 大上下文族 | 7/7 通过 (gate 三态: IsolatedMicro×3 / HardDrop×3 / Normal×1) |
-| 探索 A/B (可达 URL 24 案) | hit **0.167→0.722 (+56pt, R310 复跑) 零回归** |
-| think-memory 持久化 | 跨进程 recall hit top_sim 0.970 ✓ |
-| 压缩 audit | 104 篇多样态: keys 100% / 因果 100% / 指令 96% / 压缩率 79-92% |
-| 3 端点真机 | glm/deepseek 对话+余额 ✓ (2026-09-09 复验: deepseek-v4-flash 0.5s, 余额 48.95 CNY); kimi 负样本诚实报错 ✓ |
-| 兜底链路 | deepseek 备选通道健康 (F1 逐个兜底 + C17 兜底拒答围栏实证) |
-| bge 真链 | JIT+AOT 双验收 ✓ |
+| 迭代评测 | **286 批落盘, 近 30 批 99%+** (quick-13 口径); 批280 全量 37/37 |
+| 双实例并发写文件 | 60/60 零交错 (flock 真机) + 8 线程 120 行零丢失 (单测) |
+| 离线审批 E2E | VS Code 编辑中 → approve 冲突拒绝不覆盖 ✓ → 恢复基线 → 应用 ✓ |
+| 活动注册 E2E | 双实例 /activity 互见 (pid/win/job_id/任务摘要) ✓ |
+| 探索 A/B (24 案) | hit **0.167→0.722 (+56pt, R310 复跑) 零回归** |
+| critic 知识前置 | C33-C35 诱饵 3/3 (含 R03 例外条款理解) |
+| 压缩 audit | 104 篇多样态: keys 100% / 指令 96% / 压缩率 79-92% |
+| 3 端点真机 | glm/deepseek 对话+余额 ✓; kimi 负样本诚实报错 ✓ |
+| bge 真链 | JIT+AOT 双验收 ✓ (单实例共享 RSS 130MB) |
 
 ## 文档
 
 - [架构文档](docs/architecture.md) · [API](docs/api.md) · [CLI 指令](docs/CLI指令说明.md)
-- [迭代方法论总纲](docs/reports/iteration-master-plan.md) — 宪法八条 / 5 KPI / 触发器 / 探索与负面数据源方法 / 真实性五道防线 (活文档)
+- [迭代方法论总纲](docs/reports/iteration-master-plan.md) — 宪法八条 / 5 KPI / 触发器 / 真实性五道防线 (活文档)
 - [主报告·动态打点与回滚](docs/reports/dynamic-telemetry-eval-rollback-strategy.md) — 状态层 (活文档, 每轮更新)
-- [测试维度总账](docs/reports/test-dimensions-ledger.md) — 15 维度全景 + 负面族 + 防遗忘制度
-- [千轮报告](docs/archive/reports/thousand-round-report.md) (§6 已冻结) · [改进记录](docs/improvements.md) · 历史计划: docs/archive/
+- [改进记录](docs/improvements.md) — R309 起逐轮补录 (活文档, 顶部最新)
+- 版本计划: [v0.17.2 活动+脚本协议](docs/plans/v0.17.2-activity-script-plan.md) · [v0.17.1 审批](docs/plans/v0.17.1-staged-approval-plan.md) · [v0.17.0 执行层](docs/plans/v0.17.0-executor-hardening-plan.md)
+- 历史: [CHANGELOGs](docs/changelogs/) · [测试维度总账](docs/reports/test-dimensions-ledger.md) · 千轮报告 §6 冻结版
 
-## 下一步计划 (2026-09-09 核定)
+## 下一步计划 (2026-09-10 核定)
 
 > 详见 [主报告 §7](docs/reports/dynamic-telemetry-eval-rollback-strategy.md) 与 [方法论 §7 节奏表](docs/reports/iteration-master-plan.md)
 
-1. **K1 效果闭环 (用户话题倾向第一靶点延续)**: 画像注入已全链通 (24/24 用例 UserTendency 召回 1snip/rel0.8, tendency_bias conf 0.8), 待做**有/无画像 LLM 行为收益差分** (同题双跑 rel 对比 — 唯一未闭合段)
-2. **批测三 suite 轮换**: quick (每批) + XL (每 5 批, 批242 起) + explore (批243 起入轮换); semantic/压缩哨兵/熔断打点常态观察
-3. **K4 长周期观察**: skill 误吸压制稳定性 + 负样本族扩容 (现 5 条 → C17/C18/T-V04 模式扩展)
-4. **Vulkan 真 GPU 实测**: **降级为条件性项** — 本机 GPU 为 Cirrus GD 5446 虚拟 VGA (无 Vulkan/计算能力, llama.cpp 仅 CPU/llvmpipe); 仅在获得真 GPU 环境后执行, 不阻塞主线 (本地推理链已有 CPU 档 fallback)
+1. **v0.17.2-b 脚本插件协议落地**: py 验证 → 插件服务执行 + JSON Lines 事件流包装 (协议已定稿 docs/plans/v0.17.2-activity-script-plan.md §2)
+2. **v0.17.2-c 条件定时**: "无其他任务则 X 后执行" (IsOtherAgentBusy 原语已就绪) + 定时任务 skill
+3. **产出侧 staging 接入**: `--stage-writes` 开关让 agent 文件产出默认进审批区 (v0.17.1 审批层已全通)
+4. **eval 加固续**: C14 隔离族连续批观察 (R332 修复后多批验证) + 教训记忆注入效果实测
 
 ## 许可证
 

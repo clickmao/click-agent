@@ -1,15 +1,21 @@
-# click-agent (v0.13.3)
+# click-agent (v0.17.2)
 
 [![ci](https://github.com/clickmao/click-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/clickmao/click-agent/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)
-![Tests](https://img.shields.io/badge/tests-490%2F490-brightgreen)
-![Eval](https://img.shields.io/badge/thousand--round%20eval-1034%2F1056-success)
+![Tests](https://img.shields.io/badge/tests-619%2F619-brightgreen)
+![Eval](https://img.shields.io/badge/迭代评测-286批%2099%25%2B-success)
 ![NativeAOT](https://img.shields.io/badge/NativeAOT-zero%20warnings-blueviolet)
 
 > CI workflow file is ready (`.github/workflows/ci.yml`); badge activates once pushed with a `workflow`-scoped token.
 
-C# agent framework built on Microsoft MAF (Microsoft Agent Framework) & WebReaper — full-scenario coverage, 100% managed code. net10.0 / NativeAOT zero warnings / 355 tests green.
+A document-driven, fully automated product-iteration Agent framework. The iteration loop is built into the framework: plan docs → code → real eval batches (assertions bound to component behavior) → KPI telemetry → acceptance archive (tags + improvements ledger) → next-round candidates. Documents are the single source of truth; memory stores pointers only.
+
+Host-level execution hardening for multi-agent collaboration: cross-process file locking / atomic writes / occupant detection / lesson memory (v0.17.0), offline staged changes with user approval — baseline-sha conflict refusal protects files being edited in VS Code (v0.17.1), activity/task registry across CLI instances with job_id visibility (v0.17.2-a).
+
+Internal plugin capabilities are inserted on demand — the framework provides host mechanisms and execution protocols (skill taxonomy: executive / normative / knowledge_hint; script execution via CLI-verified → plugin-service with JSON Lines event streams; rendering/domain capabilities like pixel-art style-anchored synthesis extend through the plugin layer). Capability boundaries are defined by inserted plugins/skills, not hard-coded.
+
+net10.0 / NativeAOT zero IL warnings / 597 tests green / 286 eval batches 99%+. Release line: v0.17.2 executor hardening + staged approval + activity registry / v0.16 skills engine / v0.15.2-A archived baseline / v0.14 LLM self-critique / v0.13.3 think-chain + progressive exploration (+56pt).
 Release line: v0.11.0 — unified @cmd command protocol + 3 transports / Skill executive scripts / vector-blended relevance scoring / 19-model catalog.
 
 [🇨🇳 中文 → README.md](README.md)

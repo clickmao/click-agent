@@ -36,6 +36,14 @@
 | `/continue` | — | 继续 | 本地 | LocalCommandRouter |
 | `/reset` | — | 重置会话 | 本地/host | 双层 |
 | `/exit` | — | 退出 CLI | — | host |
+| `/skills` | — | 查询当前激活 (可匹配) 全部 skills: id/版本/类型/触发词 (v0.16.0-c) | 本地 | LocalCommandRouter + V2 渲染 |
+| `/skills-only <id,...>` | 逗号分隔 | 动态 whitelist — 只允许这些 skill 参与匹配 (空 = 清除) (v0.16.0-b) | 本地 | 同上 |
+| `/skills-exclude <id,...>` | 逗号分隔 | 动态 blacklist — 排除这些 skill (空 = 清除) (v0.16.0-b) | 本地 | 同上 |
+| `/staged` | — / `--json` / `diff <id>` | 列出待审批离线变更批次 (JSON 供前端; diff 显示完整内容) (v0.17.1) | 本地 | 同上 |
+| `/approve <id\|all>` | 批次 id | 应用变更到真实文件 — 锁内基线 sha256 比对, 目标被外部改过 → 冲突拒绝绝不覆盖 (v0.17.1) | 本地 | 同上 |
+| `/reject <id>` | 批次 id | 标记批次 rejected (staging 保留, /cleanup 物理删) (v0.17.1) | 本地 | 同上 |
+| `/cleanup` | — | 物理删除 reclaimable 批次 (v0.17.1) | 本地 | 同上 |
+| `/activity` | — | 列出全部激活 agent/窗口/任务: pid/win/job_id/心跳龄 (含其他 CLI 实例) (v0.17.2-a) | 本地 | 同上 |
 
 ## 启动参数总表 (进程启动 CLI flags — host)
 
@@ -49,6 +57,9 @@
 | `--official-key <key>` | key 字面量 | 启动注入官方通道 key (内存态; 命令行引用立即释放) | — | host |
 | `--embed <text>` | 文本 | 直连 BgeEmbedder 输出向量 JSON (评测离线算 reply_rel, 不走 LLM/DI 全链) | stdout | host (R136) |
 | `--compression-audit <path>` | groundtruth.json | 压缩底座 audit: 分档校验矩阵 (档×级别→关键信息保留率/压缩率/耗时), 落 eval/results/ | JSON | host (v0.13.3) |
+| `--skills-dir <dir>` | 目录 (可多次) | 外挂 skills 目录 — 与内置 skills/ 合并匹配, 同 SkillId 外挂覆盖内置 (v0.16.0-a) | — | host |
+| `--skills-blacklist <id或目录名>` | 值 (可多次) | 加载后从注册表移除指定 skill (精确 id + 包目录名双匹配) (v0.16.0-a) | — | host |
+| `--skills-file <SKILL.md>` | 单 skill 文件 (可多次) | 外挂单 skill 文件 (目录包外) (v0.16.0-a) | — | host |
 | `--smoke` | — | 冒烟自检 (全图 AOT 校验) | 日志 | host |
 
 ### 探索/思考链环境开关 (v0.13.3 R287)
