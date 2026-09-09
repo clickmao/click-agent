@@ -47,12 +47,14 @@ def rel(a: str, b: str) -> float:
 
 def _embed(text):
     import subprocess as sp
-    r = sp.run(["./src/agent.host/bin/Release/net10.0/agenthost", "--embed", text[:2000]],
-               capture_output=True, text=True, timeout=60, errors="replace", env=os.environ)
-    try:
-        return json.loads(r.stdout.strip().splitlines()[-1])
-    except Exception:
-        return None
+    for _try in range(3):
+        r = sp.run(["./src/agent.host/bin/Release/net10.0/agenthost", "--embed", text[:2000]],
+                   capture_output=True, text=True, timeout=90, errors="replace", env=os.environ)
+        try:
+            return json.loads(r.stdout.strip().splitlines()[-1])
+        except Exception:
+            time.sleep(2)
+    return None
 
 rows = []
 for i, q in enumerate(QUESTIONS[:N]):

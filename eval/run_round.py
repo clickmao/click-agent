@@ -29,7 +29,7 @@ def read_telemetry(path=None):
     path = path or TELEMETRY
     if not os.path.exists(path):
         return points
-    for line in open(path, encoding="utf-8-sig"):
+    for line in open(path, encoding="utf-8-sig", errors="replace"):  # R299: 非UTF8字节容错 (llama日志噪声)
         line = line.strip()
         if not line:
             continue

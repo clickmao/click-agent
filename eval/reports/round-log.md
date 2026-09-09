@@ -1676,3 +1676,11 @@
 - **意图指数**: n=24, ms_avg=0.0, dist={'general': 22, 'search': 2}
 - **per-case**: TC-N01 542tok 14.7s | TC-N02 583tok 7.8s | TC-N03 894tok 12.9s | TC-N05 1613tok 29.6s | TC-F01 1078tok 9.1s | TC-F02 974tok 13.0s | TC-F04 1292tok 9.6s | TC-F05 1089tok 11.0s | TC-N04 1536tok 10.9s | TC-N06 1336tok 9.4s | TC-F03 1206tok 8.8s | TC-F06 1056tok 10.3s | TC-R01 1321tok 13.1s | TC-R02 1191tok 9.8s | TC-R03 1291tok 10.2s | TC-R04 1213tok 9.6s | TC-R05 1442tok 14.0s | TC-R06 1277tok 9.6s | TC-R07 2023tok 18.6s | TC-R08 1092tok 8.8s | TC-R09 1228tok 10.9s | TC-R10 1783tok 17.9s | TC-R11 1319tok 10.4s | TC-R12 1148tok 8.8s
 
+## mass_464 — R299 batch244 retry fence (2026-09-09T13:33:59+0800)
+
+- **判定**: 11/11 passed, tokens_total=12942 (avg 1177), wall=242834ms (avg 22.1s)
+- **KPI**: in-band (基准轮数 11)
+- **防漂移指数**: segments=9, drift_pass=1.0, semantic_avg=0.987, chars_ratio=0.959
+- **意图指数**: n=9, ms_avg=0.1, dist={'general': 7, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 542tok 7.7s Δ+0 | C03_subtask 1740tok 26.9s Δ+223 | C04_skill_identity 0tok 4.7s | C06_executive_unit_convert 0tok 4.4s | C07_memory_followup 3098tok 29.5s Δ+1034 | C08_reasoning 1239tok 31.3s Δ-10 | C11_json_format 834tok 28.6s Δ+3 | C13_git_sensitive 1720tok 38.6s Δ+494 | C14_isolated_multi 2278tok 49.9s Δ+472 | C17_neg_hallucination_bait 823tok 11.0s Δ-63 | C18_neg_format_trap 668tok 10.3s Δ-287
+
