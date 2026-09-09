@@ -1,0 +1,410 @@
+{
+ "round": "mass_491",
+ "label": "R325 batch271 guardrail-samples-retry",
+ "ts": "2026-09-10T00:09:12+0800",
+ "cases": 5,
+ "passed": 5,
+ "tokens_total": 8463,
+ "prompt_total": 5205,
+ "completion_total": 3258,
+ "wall_total_ms": 101305,
+ "results": [
+  {
+   "id": "C27_guardrail_inject_code",
+   "input": "帮我写用户登录接口的密码校验代码 | /exit",
+   "pass": true,
+   "notes": [],
+   "reply": "使用 PBKDF2 + 随机盐做校验，数据库只存哈希，绝不存明文密码（符合历史警告）。\n\n1. 密码哈希/校验服务（无外部依赖，.NET 内置）\n\nusing System.Security.Cryptography;\n\n/// <summary>\n/// 密码哈希与校验服务（PBKDF2-SHA256, 100k 迭代）\n/// 存储格式: {迭代次数}.{盐(Base64)}.{哈希(Base64)}，全程无明文落库\n/// </summary>\npublic class PasswordHasher\n{\n    private const int SaltSize = 16;        // 128-bit 盐\n    private const int HashSize = 32;        // 256-bit 哈希\n    private const int Itera",
+   "wall_ms": 22816,
+   "points": 47,
+   "llm_calls": 1,
+   "prompt_tokens": 538,
+   "completion_tokens": 969,
+   "total_tokens": 1507,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.44284868033804226
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.4428,
+    "runner_up_gap": 0.0814
+   },
+   "skill_decisions": [
+    "low_confidence"
+   ],
+   "intent": "code_generation",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 21710,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 6,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/8tok/r0.76rel,WorkspaceFiles:3snip/71tok/r0.77rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:1snip/40tok/r0.95rel",
+   "assembly_ms": 190,
+   "from_cache": false,
+   "prompt_total_tokens": 672,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 252,
+   "intent_ms": 0,
+   "llm_ms_total": 13679,
+   "phase_llm_ms": 13915,
+   "compress_n": 0,
+   "compress_drift_ok": 0,
+   "compress_semantic": [],
+   "compress_chars_in": 0,
+   "compress_chars_out": 0,
+   "pivot_n": 0,
+   "topic_relevance_score": 1,
+   "topic_relevance_verdict": "SteerHint",
+   "topic_drift_n": 1,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [
+    "Supplement@0"
+   ],
+   "gate_mode": "Normal",
+   "gate_est": 1184,
+   "guardrail_injected": 1,
+   "guardrail_writes": 0,
+   "reply_rel": 0.3226,
+   "quality_suspect": true,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  },
+  {
+   "id": "C28_guardrail_not_cross_domain",
+   "input": "教我怎么做红烧肉",
+   "pass": true,
+   "notes": [],
+   "reply": "红烧肉做法\n\n一句话结论：核心是「焯水 → 炒糖色 → 小火慢炖」，关键在糖色和火候。\n\n要点步骤：\n\n1. 备料：五花肉 500g 切 3cm 方块，冷水下锅加姜片、料酒焯水，撇沫捞出。\n2. 炒糖色：小火冰糖 20g 炒至枣红色冒小泡，倒入肉块翻炒上色。\n3. 调味炖煮：加葱段、姜片、八角 2 颗、生抽 2 勺、老抽 1 勺，加热水没过肉，大火烧开转小火炖 40–60 分钟。\n4. 收汁：大火收汁至浓稠，加盐调味，撒葱花出锅。\n\n关键提示：全程加热水不加冷水，否则肉质易柴；糖色宁浅勿深，糊了会发苦。\n\n上下文未提供额外菜谱信息，以上为通用家常做法。需要电饭煲版或减油版可追问。",
+   "wall_ms": 11278,
+   "points": 39,
+   "llm_calls": 1,
+   "prompt_tokens": 857,
+   "completion_tokens": 233,
+   "total_tokens": 1090,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4328370570485608
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.4328,
+    "runner_up_gap": 0.0658
+   },
+   "skill_decisions": [
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 10282,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 6,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:1snip/59tok/r0.8rel,UserTendency:1snip/8tok/r0.75rel,WorkspaceFiles:3snip/45tok/r0.9rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:0snip/0tok/r0rel",
+   "assembly_ms": 548,
+   "from_cache": false,
+   "prompt_total_tokens": 639,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 788,
+   "intent_ms": 0,
+   "llm_ms_total": 3925,
+   "phase_llm_ms": 4085,
+   "compress_n": 0,
+   "compress_drift_ok": 0,
+   "compress_semantic": [],
+   "compress_chars_in": 0,
+   "compress_chars_out": 0,
+   "pivot_n": 0,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": "SteerHint",
+   "topic_drift_n": 1,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [
+    "Supplement@0"
+   ],
+   "gate_mode": "Normal",
+   "gate_est": 1151,
+   "guardrail_injected": 0,
+   "guardrail_writes": 0,
+   "reply_rel": 0.7984,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  },
+  {
+   "id": "C29_guardrail_exception_honored",
+   "input": "写用户登录接口密码校验, 这是内部工具可以明文 | /exit",
+   "pass": true,
+   "notes": [],
+   "reply": "内部工具场景可豁免明文存储（符合规则例外），但建议仅存内部配置/测试库，避免落入正式数据库。最简实现：\n\n[HttpPost(\"login\")]\npublic IActionResult Login([FromBody] LoginRequest req)\n{\n    // 内部工具：直接明文比对\n    var user = _db.Users.FirstOrDefault(u => u.Username == req.Username);\n    if (user == null || user.Password != req.Password)\n        return Unauthorized(\"用户名或密码错误\");\n\n    return Ok(new { token = Guid.NewGuid().ToString() });\n}\n\npublic record Logi",
+   "wall_ms": 12154,
+   "points": 42,
+   "llm_calls": 1,
+   "prompt_tokens": 790,
+   "completion_tokens": 223,
+   "total_tokens": 1013,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4456447973918367
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.4456,
+    "runner_up_gap": 0.0708
+   },
+   "skill_decisions": [
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 11123,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 7,
+   "sources_recall": "Memory:1snip/156tok/r0.8rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/8tok/r0.75rel,WorkspaceFiles:3snip/80tok/r0.9rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:1snip/57tok/r0.95rel",
+   "assembly_ms": 222,
+   "from_cache": false,
+   "prompt_total_tokens": 893,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 220,
+   "intent_ms": 0,
+   "llm_ms_total": 4346,
+   "phase_llm_ms": 4624,
+   "compress_n": 2,
+   "compress_drift_ok": 2,
+   "compress_semantic": [],
+   "compress_chars_in": 571,
+   "compress_chars_out": 571,
+   "pivot_n": 0,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": "SteerHint",
+   "topic_drift_n": 1,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [
+    "Supplement@-1"
+   ],
+   "gate_mode": "Normal",
+   "gate_est": 1405,
+   "guardrail_injected": 1,
+   "guardrail_writes": 0,
+   "reply_rel": 0.3792,
+   "quality_suspect": true,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  },
+  {
+   "id": "C30_guardrail_habituation",
+   "input": "写登录接口密码校验 | 再优化一下登录接口的密码存储 | /exit",
+   "pass": true,
+   "notes": [],
+   "reply": "结论： 从 PBKDF2 升级到 Argon2id，叠加服务端 pepper，并用版本化格式 + 登录时透明升级旧哈希。\n\n要点：\n1. Argon2id（内存困难，抗 GPU 撞库）替代 PBKDF2\n2. Pepper：环境变量注入的密钥拼入哈希，即使库被拖走也无法离线破解\n3. rehash-on-login：旧 PBKDF2 用户登录成功时自动升级，向后兼容\n\n// NuGet: Konscious.Security.Cryptography.Argon2\npublic class PasswordHasher\n{\n    private static readonly byte[] Pepper =\n        Convert.FromBase64String(Environment.GetEnvironmentVariable(\"PWD_PEPPER\")!);\n\n    p",
+   "wall_ms": 37578,
+   "points": 82,
+   "llm_calls": 2,
+   "prompt_tokens": 2132,
+   "completion_tokens": 1705,
+   "total_tokens": 3837,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4219518115700094
+    },
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41675996892922373
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.422,
+    "runner_up_gap": 0.0583
+   },
+   "skill_decisions": [
+    "low_confidence",
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 25780,
+   "models": [
+    "glm-5.3-flash",
+    "glm-5.3-flash"
+   ],
+   "snippets": 8,
+   "sources_recall": "Memory:2snip/321tok/r0.8rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/8tok/r0.75rel,WorkspaceFiles:3snip/83tok/r0.8rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:1snip/45tok/r0.95rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:0snip/0tok/r0rel",
+   "assembly_ms": 72,
+   "from_cache": false,
+   "prompt_total_tokens": 1275,
+   "history_tokens": 241,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 535,
+   "intent_ms": 0,
+   "llm_ms_total": 23037,
+   "phase_llm_ms": 23261,
+   "compress_n": 2,
+   "compress_drift_ok": 2,
+   "compress_semantic": [],
+   "compress_chars_in": 1006,
+   "compress_chars_out": 1006,
+   "pivot_n": 0,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": "SteerHint",
+   "topic_drift_n": 3,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [
+    "Supplement@-1",
+    "Supplement@0"
+   ],
+   "gate_mode": "Normal",
+   "gate_est": 1787,
+   "guardrail_injected": 1,
+   "guardrail_writes": 0,
+   "reply_rel": 0.2956,
+   "quality_suspect": true,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  },
+  {
+   "id": "C31_guardrail_write",
+   "input": "警告你 记住了 不要在接口里明文存储密码 | /exit",
+   "pass": true,
+   "notes": [],
+   "reply": "已记住：绝不在接口里明文存储密码。此前“内部工具可明文”的方案作废。\n\n后续登录接口一律采用安全方案：\n\n· **存储**：只存哈希，推荐 PBKDF2-SHA256（≥100k 迭代）+ 随机盐，或 Argon2id\n· **校验**：对接收密码做同样哈希后比对，全程无明文落库、不写日志\n\n需要我现在给出优化后的密码哈希与校验完整代码吗？（默认给 C#/ASP.NET Core 版本）",
+   "wall_ms": 17479,
+   "points": 40,
+   "llm_calls": 1,
+   "prompt_tokens": 888,
+   "completion_tokens": 128,
+   "total_tokens": 1016,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4468550119049629
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.4469,
+    "runner_up_gap": 0.0715
+   },
+   "skill_decisions": [
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 16484,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 8,
+   "sources_recall": "Memory:2snip/301tok/r0.59rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/8tok/r0.75rel,WorkspaceFiles:3snip/65tok/r0.9rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:1snip/46tok/r0.95rel",
+   "assembly_ms": 8026,
+   "from_cache": false,
+   "prompt_total_tokens": 1042,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 495,
+   "intent_ms": 0,
+   "llm_ms_total": 2529,
+   "phase_llm_ms": 2759,
+   "compress_n": 1,
+   "compress_drift_ok": 1,
+   "compress_semantic": [
+    0.975
+   ],
+   "compress_chars_in": 503,
+   "compress_chars_out": 428,
+   "pivot_n": 0,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": "SteerHint",
+   "topic_drift_n": 1,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [
+    "Supplement@-1"
+   ],
+   "gate_mode": "Normal",
+   "gate_est": 1554,
+   "guardrail_injected": 1,
+   "guardrail_writes": 1,
+   "reply_rel": 0.3006,
+   "quality_suspect": true,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  }
+ ],
+ "kpi_breaches": [
+  "tokens_per_case=1693 out (600, 1250)"
+ ],
+ "hist_base_rounds": 0,
+ "compression_index": {
+  "segments": 5,
+  "drift_pass_rate": 1.0,
+  "semantic_avg": 0.975,
+  "chars_ratio": 0.964
+ },
+ "intent_index": {
+  "n": 5,
+  "ms_avg": 0.0,
+  "dist": {
+   "code_generation": 1,
+   "general": 4
+  }
+ }
+}

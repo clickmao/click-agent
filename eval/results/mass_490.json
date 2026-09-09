@@ -1,0 +1,405 @@
+{
+ "round": "mass_490",
+ "label": "R325 batch270 guardrail-samples",
+ "ts": "2026-09-10T00:04:49+0800",
+ "cases": 5,
+ "passed": 5,
+ "tokens_total": 6189,
+ "prompt_total": 4222,
+ "completion_total": 1967,
+ "wall_total_ms": 150065,
+ "results": [
+  {
+   "id": "C27_guardrail_inject_code",
+   "input": "帮我写用户登录接口的密码校验代码 | /exit",
+   "pass": true,
+   "notes": [],
+   "reply": "失败: 备选 deepseek-v4-flash 回复未通过兜底校验",
+   "wall_ms": 79207,
+   "points": 37,
+   "llm_calls": 1,
+   "prompt_tokens": 0,
+   "completion_tokens": 0,
+   "total_tokens": 0,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.44284868033804226
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.4428,
+    "runner_up_gap": 0.0814
+   },
+   "skill_decisions": [
+    "low_confidence"
+   ],
+   "intent": "code_generation",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": false,
+   "loop_ms": 78139,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/8tok/r0.76rel,WorkspaceFiles:3snip/83tok/r0.8rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:0snip/0tok/r0rel",
+   "assembly_ms": 213,
+   "from_cache": false,
+   "prompt_total_tokens": 628,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 87,
+   "intent_ms": 0,
+   "llm_ms_total": 131,
+   "phase_llm_ms": 72793,
+   "compress_n": 0,
+   "compress_drift_ok": 0,
+   "compress_semantic": [],
+   "compress_chars_in": 0,
+   "compress_chars_out": 0,
+   "pivot_n": 0,
+   "topic_relevance_score": 1,
+   "topic_relevance_verdict": "SteerHint",
+   "topic_drift_n": 1,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [
+    "Supplement@0"
+   ],
+   "gate_mode": "Normal",
+   "gate_est": 1140,
+   "guardrail_injected": 0,
+   "guardrail_writes": 0,
+   "reply_rel": 0.3509,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  },
+  {
+   "id": "C28_guardrail_not_cross_domain",
+   "input": "教我怎么做红烧肉",
+   "pass": true,
+   "notes": [],
+   "reply": "红烧肉做法（简版）\n\n食材：五花肉 500g、冰糖 30g、葱姜、八角 2 个、生抽 2 勺、老抽 1 勺、料酒。\n\n步骤：\n1. 五花肉切块，冷水下锅焯水，捞出洗净。\n2. 少油小火炒冰糖至焦糖色，下肉块翻炒上色。\n3. 加葱姜、八角、料酒、生抽、老抽，倒入热水没过肉。\n4. 小火炖 40–60 分钟，最后大火收汁即可。\n\n要点：炒糖色别炒糊；加热水不加冷水，肉更嫩。\n\n需要更详细的版本（如免炒糖色做法）可以告诉我。",
+   "wall_ms": 10688,
+   "points": 39,
+   "llm_calls": 1,
+   "prompt_tokens": 900,
+   "completion_tokens": 160,
+   "total_tokens": 1060,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4328370570485608
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.4328,
+    "runner_up_gap": 0.0658
+   },
+   "skill_decisions": [
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 9659,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 6,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:1snip/59tok/r0.8rel,UserTendency:1snip/8tok/r0.76rel,WorkspaceFiles:3snip/127tok/r0.83rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:0snip/0tok/r0rel",
+   "assembly_ms": 548,
+   "from_cache": false,
+   "prompt_total_tokens": 716,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 551,
+   "intent_ms": 0,
+   "llm_ms_total": 3614,
+   "phase_llm_ms": 3737,
+   "compress_n": 0,
+   "compress_drift_ok": 0,
+   "compress_semantic": [],
+   "compress_chars_in": 0,
+   "compress_chars_out": 0,
+   "pivot_n": 0,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": "SteerHint",
+   "topic_drift_n": 1,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [
+    "Supplement@0"
+   ],
+   "gate_mode": "Normal",
+   "gate_est": 1228,
+   "guardrail_injected": 0,
+   "guardrail_writes": 0,
+   "reply_rel": 0.784,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  },
+  {
+   "id": "C29_guardrail_exception_honored",
+   "input": "写用户登录接口密码校验, 这是内部工具可以明文 | /exit",
+   "pass": true,
+   "notes": [],
+   "reply": "即使内部工具可豁免，仍强烈建议不存明文（防泄露、防日志打印、后续复用）。给你一个推荐写法（Python + FastAPI，符合你常用的 Web API 场景）：\n\nfrom passlib.hash import pbkdf2_sha256\n\ndef hash_password(plain: str) -> str:\n    return pbkdf2_sha256.hash(plain)\n\ndef verify_password(plain: str, hashed: str) -> bool:\n    return pbkdf2_sha256.verify(plain, hashed)\n\n@app.post(\"/login\")\ndef login(req: LoginRequest):\n    user = get_user(req.username)\n    if not user",
+   "wall_ms": 14328,
+   "points": 39,
+   "llm_calls": 1,
+   "prompt_tokens": 519,
+   "completion_tokens": 346,
+   "total_tokens": 865,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4456447973918367
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.4456,
+    "runner_up_gap": 0.0708
+   },
+   "skill_decisions": [
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 13338,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 5,
+   "sources_recall": "Memory:0snip/0tok/r0rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/8tok/r0.76rel,WorkspaceFiles:3snip/92tok/r0.8rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:0snip/0tok/r0rel",
+   "assembly_ms": 214,
+   "from_cache": false,
+   "prompt_total_tokens": 624,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 480,
+   "intent_ms": 0,
+   "llm_ms_total": 6238,
+   "phase_llm_ms": 6529,
+   "compress_n": 0,
+   "compress_drift_ok": 0,
+   "compress_semantic": [],
+   "compress_chars_in": 0,
+   "compress_chars_out": 0,
+   "pivot_n": 0,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": "SteerHint",
+   "topic_drift_n": 1,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [
+    "Supplement@-1"
+   ],
+   "gate_mode": "Normal",
+   "gate_est": 1136,
+   "guardrail_injected": 0,
+   "guardrail_writes": 0,
+   "reply_rel": 0.3626,
+   "quality_suspect": true,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  },
+  {
+   "id": "C30_guardrail_habituation",
+   "input": "写登录接口密码校验 | 再优化一下登录接口的密码存储 | /exit",
+   "pass": true,
+   "notes": [],
+   "reply": "密码存储优化：PBKDF2 → Argon2id\n\n一句话结论：升级为 Argon2id（OWASP 首选），抗 GPU 暴力破解，并支持登录时自动升级旧哈希。\n\npip install argon2-cffi\n\nfrom argon2 import PasswordHasher\nfrom argon2.exceptions import VerifyMismatchError\n\nph = PasswordHasher(\n    time_cost=3,         # 迭代轮数\n    memory_cost=65536,   # 64 MiB 内存开销\n    parallelism=4,\n)\n\ndef hash_password(plain: str) -> str:\n    return ph.hash(plain)\n\ndef verify_and_upgrade(userna",
+   "wall_ms": 32283,
+   "points": 77,
+   "llm_calls": 2,
+   "prompt_tokens": 1887,
+   "completion_tokens": 1394,
+   "total_tokens": 3281,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4219518115700094
+    },
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.41675996892922373
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.422,
+    "runner_up_gap": 0.0583
+   },
+   "skill_decisions": [
+    "low_confidence",
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 20992,
+   "models": [
+    "glm-5.3-flash",
+    "glm-5.3-flash"
+   ],
+   "snippets": 8,
+   "sources_recall": "Memory:2snip/278tok/r0.8rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/8tok/r0.76rel,WorkspaceFiles:3snip/93tok/r0.77rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:1snip/45tok/r0.95rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:0snip/0tok/r0rel",
+   "assembly_ms": 66,
+   "from_cache": false,
+   "prompt_total_tokens": 1234,
+   "history_tokens": 272,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 118,
+   "intent_ms": 0,
+   "llm_ms_total": 18835,
+   "phase_llm_ms": 19085,
+   "compress_n": 2,
+   "compress_drift_ok": 2,
+   "compress_semantic": [],
+   "compress_chars_in": 1006,
+   "compress_chars_out": 1006,
+   "pivot_n": 0,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": "SteerHint",
+   "topic_drift_n": 3,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [
+    "Supplement@-1",
+    "Supplement@0"
+   ],
+   "gate_mode": "Normal",
+   "gate_est": 1746,
+   "guardrail_injected": 0,
+   "guardrail_writes": 0,
+   "reply_rel": 0.3355,
+   "quality_suspect": true,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  },
+  {
+   "id": "C31_guardrail_write",
+   "input": "警告你 记住了 不要在接口里明文存储密码 | /exit",
+   "pass": true,
+   "notes": [],
+   "reply": "记住了：接口中绝不明文存储密码。后续登录/注册相关代码一律使用哈希方案（如 PBKDF2/Argon2），校验时用 verify 比对，不落明文。\n\n需要我现在把登录接口的密码存储部分按这个要求优化吗？",
+   "wall_ms": 13559,
+   "points": 40,
+   "llm_calls": 1,
+   "prompt_tokens": 916,
+   "completion_tokens": 67,
+   "total_tokens": 983,
+   "llm_ms_est": null,
+   "skill_hits": [
+    {
+     "skill": "identity_statement",
+     "level": 1,
+     "precision": 0.4468550119049629
+    }
+   ],
+   "skill_force": null,
+   "skill_match": {
+    "top1": "identity_statement",
+    "level": 1,
+    "precision": 0.4469,
+    "runner_up_gap": 0.0715
+   },
+   "skill_decisions": [
+    "low_confidence"
+   ],
+   "intent": "general",
+   "subtasks": 1,
+   "assembly_ok": true,
+   "loop_success": true,
+   "loop_ms": 12570,
+   "models": [
+    "glm-5.3-flash"
+   ],
+   "snippets": 8,
+   "sources_recall": "Memory:2snip/276tok/r0.48rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/8tok/r0.76rel,WorkspaceFiles:3snip/136tok/r0.67rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:1snip/46tok/r0.95rel",
+   "assembly_ms": 221,
+   "from_cache": false,
+   "prompt_total_tokens": 1033,
+   "history_tokens": 0,
+   "gate_to_ask": 0,
+   "isolated": null,
+   "isolated_score": null,
+   "bge_provider": "bge-local",
+   "bge_ms": 304,
+   "intent_ms": 0,
+   "llm_ms_total": 6495,
+   "phase_llm_ms": 6748,
+   "compress_n": 1,
+   "compress_drift_ok": 1,
+   "compress_semantic": [],
+   "compress_chars_in": 503,
+   "compress_chars_out": 499,
+   "pivot_n": 0,
+   "topic_relevance_score": 0,
+   "topic_relevance_verdict": "SteerHint",
+   "topic_drift_n": 1,
+   "topic_clarify_pulled": 0,
+   "task_input_routes": [
+    "Supplement@-1"
+   ],
+   "gate_mode": "Normal",
+   "gate_est": 1545,
+   "guardrail_injected": 1,
+   "guardrail_writes": 1,
+   "reply_rel": 0.3088,
+   "quality_suspect": true,
+   "delta_tokens_vs_hist": null,
+   "delta_wall_vs_hist": null
+  }
+ ],
+ "kpi_breaches": [],
+ "hist_base_rounds": 0,
+ "compression_index": {
+  "segments": 3,
+  "drift_pass_rate": 1.0,
+  "semantic_avg": null,
+  "chars_ratio": 0.997
+ },
+ "intent_index": {
+  "n": 5,
+  "ms_avg": 0.0,
+  "dist": {
+   "code_generation": 1,
+   "general": 4
+  }
+ }
+}
