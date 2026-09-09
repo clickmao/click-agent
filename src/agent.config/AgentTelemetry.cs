@@ -65,10 +65,21 @@ public static class AgentTelemetry
     }
 
     /// <summary>单点位: point=点位类型, module=发起模块, kv=度量键值 (数值/字符串/时间戳由调用方给原始值)</summary>
+    /// <summary>R305 (真缺陷 71 根因): writer 创建失败的静默丢弃计数 — 批测中并行 build
+    /// 会让 Configure 撞文件锁 → _writer=null → 后续 Emit 全丢 (C08 intent=None/llm_calls=0 假象)。</summary>
+    public static long WriterNullDrops => Interlocked.Read(ref _writerNullDrops);
+    private static long _writerNullDrops;
+
     public static void Emit(string point, string module, params (string Key, object? Value)[] kv)
     {
         if (!_enabled)
             return;
+        if (_writer is null)
+        {
+            // Configure 失败 (_writer=null) 时不再静默 — 计数可见 (进程退出前宿主可上报)。
+            Interlocked.Increment(ref _writerNullDrops);
+            return;
+        }
         try
         {
             var sb = new StringBuilder(256);
