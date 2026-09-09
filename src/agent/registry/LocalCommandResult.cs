@@ -31,6 +31,7 @@ public static class LocalCommandRouter
         "/log",  // v7.15 日志四通道: /log dump → MemoryLogBuffer 存档文件 (JSON 行)
         "/stop", "/continue", "/pause", "/status", "/reset",
         "/skills", "/skills-only", "/skills-exclude",  // v0.16.0-c/b: skills 查询/动态 whitelist/blacklist (V2 特判渲染)
+        "/staged", "/approve", "/reject", "/cleanup",  // v0.17.1 (R335): 离线变更审批 (V2 特判渲染)
         "/help",  // v0.11.0 R86: 帮助菜单本地应答 — 原未注册送 LLM 浪费一轮
     };
 
@@ -92,6 +93,23 @@ public static class LocalCommandRouter
             "/skills-exclude" => new LocalCommandResult
             {
                 Handled = true, Command = "skills-exclude", Argument = arg,
+            },
+            // v0.17.1: staged approval — Handled=true, V2 特判渲染 (需 StagedFileStore/ApprovalController)
+            "/staged" => new LocalCommandResult
+            {
+                Handled = true, Command = "staged", Argument = arg,
+            },
+            "/approve" => new LocalCommandResult
+            {
+                Handled = true, Command = "approve", Argument = arg,
+            },
+            "/reject" => new LocalCommandResult
+            {
+                Handled = true, Command = "reject", Argument = arg,
+            },
+            "/cleanup" => new LocalCommandResult
+            {
+                Handled = true, Command = "cleanup", Argument = arg,
             },
             _ => NotCommand,
         };

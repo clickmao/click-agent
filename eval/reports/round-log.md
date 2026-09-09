@@ -2073,3 +2073,11 @@
 - **意图指数**: n=11, ms_avg=0.3, dist={'general': 11, 'git_operation': 1, 'search': 1}
 - **per-case**: C01_general_qa 561tok 13.3s Δ+23 | C03_subtask 1576tok 34.3s Δ+163 | C04_skill_identity 0tok 7.0s | C06_executive_unit_convert 0tok 6.7s | C07_memory_followup 2644tok 42.5s Δ+75 | C08_reasoning 1133tok 23.5s Δ-50 | C11_json_format 633tok 11.0s Δ-234 | C13_git_sensitive 3026tok 39.2s Δ+456 | C14_isolated_multi 2087tok 33.0s Δ-1792 | C17_neg_hallucination_bait 847tok 16.4s Δ+124 | C18_neg_format_trap 704tok 14.0s Δ-173 | C19_topic_clarify_6turn 7474tok 76.9s Δ-976 | C26_critic_no_false_positive 1062tok 11.1s Δ-176
 
+## 512 — 批285-R335-staged-approval-quick13 (2026-09-10T06:52:48+0800)
+
+- **判定**: 13/13 passed, tokens_total=22955 (avg 1766), wall=324867ms (avg 25.0s)
+- **KPI**: tokens_per_case=1766 out (900, 1300) (基准轮数 13)
+- **防漂移指数**: segments=1, drift_pass=1.0, semantic_avg=None, chars_ratio=0.989
+- **意图指数**: n=11, ms_avg=0.0, dist={'general': 11, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 570tok 11.0s Δ+13 | C03_subtask 1815tok 37.4s Δ+467 | C04_skill_identity 0tok 7.0s | C06_executive_unit_convert 0tok 6.6s | C07_memory_followup 2310tok 33.8s Δ-304 | C08_reasoning 1051tok 20.4s Δ-90 | C11_json_format 625tok 11.1s Δ-120 | C13_git_sensitive 2467tok 31.9s Δ-85 | C14_isolated_multi 3114tok 49.9s Δ-375 | C17_neg_hallucination_bait 743tok 12.9s Δ+29 | C18_neg_format_trap 812tok 14.2s Δ-21 | C19_topic_clarify_6turn 8358tok 77.0s Δ-191 | C26_critic_no_false_positive 1090tok 11.6s Δ-100
+

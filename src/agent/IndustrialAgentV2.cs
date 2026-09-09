@@ -244,6 +244,10 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
         return intent is "general" or "smalltalk" or "search" && userMessage.Length <= 120;
     }
     private readonly agent.skills.SkillDispatcher? _skillDispatcher;
+
+    private agent.staging.ApprovalController? _staging;
+    private agent.staging.ApprovalController Staging()
+        => _staging ??= new agent.staging.ApprovalController(new agent.staging.StagedFileStore());
     
     private readonly List<string> _capabilities = new();
     
@@ -550,6 +554,64 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                         else registry.SetActiveBlacklist(ids.Length > 0 ? ids : null);
                         var joined = ids.Length > 0 ? string.Join(",", ids) : "清除";
                         response.Content = $"✓ 动态过滤已更新 ({localCommand.Command}: {joined})。当前可匹配 {registry.All.Count} 个。";
+                    }
+                    response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
+                    return response;
+                }
+                // v0.17.1 (R335): 离线变更审批 /staged /approve /reject /cleanup
+                if (localCommand.Command is "staged" or "approve" or "reject" or "cleanup")
+                {
+                    response.Success = true;
+                    try
+                    {
+                        var staging = Staging();
+                        if (localCommand.Command == "staged")
+                        {
+                            var arg2 = (localCommand.Argument ?? "").Trim();
+                            if (arg2.StartsWith("diff ", StringComparison.Ordinal))
+                                response.Content = staging.Diff(arg2["diff ".Length..].Trim());
+                            else
+                                response.Content = staging.ListPending(arg2.Length > 0 ? arg2 : null);
+                        }
+                        else if (localCommand.Command == "approve")
+                        {
+                            var id = (localCommand.Argument ?? "").Trim();
+                            if (string.Equals(id, "all", StringComparison.OrdinalIgnoreCase))
+                            {
+                                var store = new agent.staging.StagedFileStore();
+                                var pending = store.All().Where(b => b.IsPending).ToList();
+                                if (pending.Count == 0) { response.Content = "无待审批批次。"; }
+                                else
+                                {
+                                    var parts2 = new System.Text.StringBuilder();
+                                    foreach (var b in pending)
+                                        parts2.AppendLine(staging.Apply(b.Id).Render());
+                                    response.Content = parts2.ToString().TrimEnd();
+                                }
+                            }
+                            else
+                            {
+                                response.Content = string.IsNullOrEmpty(id)
+                                    ? "用法: /approve <批次id|all> (/staged 查看)"
+                                    : staging.Apply(id).Render();
+                            }
+                        }
+                        else if (localCommand.Command == "reject")
+                        {
+                            var id = (localCommand.Argument ?? "").Trim();
+                            if (string.IsNullOrEmpty(id)) { response.Content = "用法: /reject <批次id>"; }
+                            else if (new agent.staging.StagedFileStore().Find(id) is null) { response.Content = $"批次 {id} 不存在。"; }
+                            else { staging.Reject(id); response.Content = $"✗ 批次 {id} 已标记 rejected (staging 内容保留, /cleanup 物理删除)。"; }
+                        }
+                        else // cleanup
+                        {
+                            var n = new agent.staging.StagedFileStore().Cleanup(includeExpired: false);
+                            response.Content = n > 0 ? $"🗑 已清理 {n} 个 reclaimable 批次。" : "无 reclaimable 批次可清理。";
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        response.Content = $"staging 操作失败: {ex.Message}";
                     }
                     response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
                     return response;
