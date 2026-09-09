@@ -43,7 +43,12 @@ public class IndustrialAgentV2 : AgentBase
     private readonly string _dataStoragePath;
     private readonly IRecoverySystem _recoverySystem;
     private readonly IVectorStore _vectorStore;
-    private readonly IRAGRecall? _ragRecall;  // v0.11.0 R6: 存储召回同源修复
+    private readonly IRAGRecall? _ragRecall;
+    private readonly agent.contextgradient.ITextEmbedder? _textEmbedder;
+    private readonly string _instanceId = Guid.NewGuid().ToString("N")[..8];
+    private agent.exploration.ThinkMemory? _thinkMemory;
+    /// <summary>v0.13.3 R275: 联想库为**进程级**单例 (V2 实例可能每轮重建 — host 生命周期语义), 跨轮保留。
+    private static readonly agent.exploration.ThinkMemory _thinkMemoryGlobal = new(new agent.exploration.ThinkMemoryConfig());  // v0.11.0 R6: 存储召回同源修复
     private readonly agent.exploration.ContextBudgetGate _contextGate = new();  // v0.13.3 M2: 上下文预算门
     private readonly IVectorMemoryRecall _memoryRecall;
     private readonly ITemplateStore _templateStore;
@@ -177,7 +182,8 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
         agent.modelqueue.ModelVerifyService? verifyService = null,
         agent.logging.LogRouter? logRouter = null,
         agent.skills.SkillDispatcher? skillDispatcher = null,
-        IRAGRecall? ragRecall = null) : base(logger, handlers)
+        IRAGRecall? ragRecall = null,
+        agent.contextgradient.ITextEmbedder? textEmbedder = null) : base(logger, handlers)
     {
         _isolatedTaskRunner = isolatedTaskRunner;
         _modelRouter = modelRouter;
@@ -193,6 +199,12 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
         _vectorStore = vectorStore;
         _memoryRecall = memoryRecall;
         _ragRecall = ragRecall;
+        _textEmbedder = textEmbedder;
+        _thinkMemory = _thinkMemoryGlobal;
+        agent.config.AgentTelemetry.Emit("think_memory_boot", "IndustrialAgentV2",
+            ("embedder_injected", textEmbedder is not null),
+            ("available", textEmbedder is { IsAvailable: true }),
+            ("instance", Guid.NewGuid().ToString("N")[..8]));
         _templateStore = templateStore;
         _searchService = searchService;
         _subAgentPool = subAgentPool;
@@ -543,6 +555,56 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             if (gateVerdict.Mode == agent.exploration.ContextGateMode.IsolatedMicro && subTasks.Count > 0)
             {
                 microRestore = await RunMicroStepsAsync(subTasks, intent, ct);
+            }
+
+            // v0.13.3 R275: think-memory 联想检索真机链 — bge 向量 (ITextEmbedder DI) → Recall 历史相似问题
+            // (MinSimilarity 0.75, 负样本降权) → 命中摘要回注 (复用 microRestore 通道, A5 语义);
+            // 本轮问题向量 Write 入记忆 (联想库, 进程内 — 持久化排后续轮)。
+            agent.config.AgentTelemetry.Emit("think_memory_recall_gate", "IndustrialAgentV2",
+                ("count", _thinkMemory?.Count ?? -1), ("embedder", _textEmbedder is { IsAvailable: true }), ("instance", _instanceId));
+            if (_textEmbedder is { IsAvailable: true } && _thinkMemory is { Count: > 0 })
+            {
+                try
+                {
+                    var qVec = await _textEmbedder.EmbedAsync(message.Content, ct);
+                    var hits = _thinkMemory.Recall(qVec, 2);
+                    if (hits.Count > 0)
+                    {
+                        var sbHit = new System.Text.StringBuilder();
+                        foreach (var h in hits)
+                        {
+                            sbHit.AppendLine($"[联想 {h.Similarity:F2}] {h.Record.QuestionHead}");
+                        }
+                        microRestore = string.IsNullOrEmpty(microRestore)
+                            ? sbHit.ToString()
+                            : microRestore + "\n" + sbHit;
+                        agent.config.AgentTelemetry.Emit("think_memory", "IndustrialAgentV2",
+                            ("hits", hits.Count), ("top_sim", hits[0].Similarity));
+                    }
+                }
+                catch (OperationCanceledException) { throw; }
+                catch (Exception ex)
+                {
+                    agent.config.AgentTelemetry.Emit("think_memory", "IndustrialAgentV2",
+                        ("error", ex.Message[..Math.Min(60, ex.Message.Length)]));
+                }
+            }
+            if (_textEmbedder is { IsAvailable: true } && _thinkMemory is not null)
+            {
+                try
+                {
+                    var wVec = await _textEmbedder.EmbedAsync(message.Content, ct);
+                    _thinkMemory.Write(new agent.exploration.ThinkRecord
+                    {
+                        QuestionEmbedding = wVec,
+                        QuestionHead = message.Content.Length > 60 ? message.Content[..60] : message.Content,
+                        AvgConfidence = subTasks.Count > 0 ? subTasks.Average(t => t.Confidence) : 1.0,
+                    });
+                    agent.config.AgentTelemetry.Emit("think_memory", "IndustrialAgentV2",
+                        ("written", true), ("count", _thinkMemory.Count), ("instance", _instanceId));
+                }
+                catch (OperationCanceledException) { throw; }
+                catch { /* 联想写入失败不影响主链 (防御性 — 打点在 Recall 侧已覆盖) */ }
             }
 
             // 5. ✅ 调用 LLM（传入完整 Prompt）
