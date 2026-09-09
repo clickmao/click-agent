@@ -248,6 +248,16 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
     private agent.staging.ApprovalController? _staging;
     private agent.staging.ApprovalController Staging()
         => _staging ??= new agent.staging.ApprovalController(new agent.staging.StagedFileStore());
+
+    private agent.activity.ActivityService? _activity;
+    private agent.activity.ActivityService Activity()
+        => _activity ??= new agent.activity.ActivityService();
+
+    /// <summary>v0.17.2-a (R336): 进程优雅退出时清自身活动心跳文件 (host finally 调用; kill -9 由 TTL 兜底)。</summary>
+    public void ClearActivity()
+    {
+        try { _activity?.Clear(); } catch { /* 静默 — 退出清理不可阻塞 */ }
+    }
     
     private readonly List<string> _capabilities = new();
     
@@ -369,6 +379,8 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
     protected override async Task<AgentResponse> OnProcessAsync(Message message, CancellationToken ct)
     {
         var startTime = DateTime.UtcNow;
+        // v0.17.2-a (R336): 活动心跳 — 每轮注册本进程活动 (任务摘要), 退出由 10s TTL 过期自清
+        try { Activity().Heartbeat(message.Content); } catch { /* 活动感知不阻塞主链 */ }
         var response = new AgentResponse();
         
         try
@@ -613,6 +625,14 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     {
                         response.Content = $"staging 操作失败: {ex.Message}";
                     }
+                    response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
+                    return response;
+                }
+                // v0.17.2-a (R336): /activity 查询全部激活 agent/窗口/任务 (含其他 CLI, job_id/pid)
+                if (localCommand.Command == "activity")
+                {
+                    response.Success = true;
+                    response.Content = Activity().Render();
                     response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
                     return response;
                 }

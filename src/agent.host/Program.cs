@@ -217,10 +217,17 @@ if (args.Length >= 2 && args[0] == "--compression-audit")
                     .LogInformation("[recovery] {Summary}", recovery.Summary);
         }
 
-        if (smoke && oneShot == null)
-            return await RunSmokeAsync(provider, entryAgent);
-
-        return await RunCliAsync(provider, entryAgent, sink, oneShot, logPath, outputMode, imageArgs);
+        try
+        {
+            if (smoke && oneShot == null)
+                return await RunSmokeAsync(provider, entryAgent);
+            return await RunCliAsync(provider, entryAgent, sink, oneShot, logPath, outputMode, imageArgs);
+        }
+        finally
+        {
+            // v0.17.2-a (R336): 优雅退出清活动心跳 (kill -9 由 ActivityService TTL 兜底, 不在此路径)
+            (entryAgent as agent.IndustrialAgentV2)?.ClearActivity();
+        }
     }
 
     // ─────────────────────────── CLI REPL ───────────────────────────
