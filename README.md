@@ -154,7 +154,8 @@ python3 cross_validate.py                           # 双 LLM 交叉校验
 | 探索 A/B (可达 URL 24 案) | hit **0.278→0.667 (+39pt) 零回归** |
 | think-memory 持久化 | 跨进程 recall hit top_sim 0.970 ✓ |
 | 压缩 audit | 104 篇多样态: keys 100% / 因果 100% / 指令 96% / 压缩率 79-92% |
-| 3 端点真机 | glm/deepseek 对话+余额 ✓; kimi 负样本诚实报错 ✓ |
+| 3 端点真机 | glm/deepseek 对话+余额 ✓ (2026-09-09 复验: deepseek-v4-flash 0.5s, 余额 48.95 CNY); kimi 负样本诚实报错 ✓ |
+| 兜底链路 | deepseek 备选通道健康 (F1 逐个兜底 + C17 兜底拒答围栏实证) |
 | bge 真链 | JIT+AOT 双验收 ✓ |
 
 ## 文档
