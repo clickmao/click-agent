@@ -1724,3 +1724,19 @@
 - **意图指数**: n=24, ms_avg=0.0, dist={'general': 22, 'search': 2}
 - **per-case**: TC-N01 569tok 8.6s Δ+27 | TC-N02 0tok 15.6s Δ-583 | TC-N03 553tok 8.5s Δ-341 | TC-N05 1676tok 24.2s Δ+63 | TC-F01 998tok 10.7s Δ-80 | TC-F02 924tok 9.7s Δ-50 | TC-F04 1225tok 9.1s Δ-67 | TC-F05 1147tok 10.2s Δ+58 | TC-N04 1610tok 11.2s Δ+74 | TC-N06 1271tok 10.9s Δ-65 | TC-F03 1139tok 8.8s Δ-67 | TC-F06 1003tok 10.3s Δ-53 | TC-R01 1171tok 11.7s Δ-150 | TC-R02 1174tok 10.2s Δ-17 | TC-R03 1206tok 9.4s Δ-85 | TC-R04 1221tok 9.8s Δ+8 | TC-R05 1224tok 12.2s Δ-218 | TC-R06 1235tok 9.8s Δ-42 | TC-R07 1595tok 16.9s Δ-428 | TC-R08 1107tok 10.1s Δ+15 | TC-R09 1213tok 9.9s Δ-15 | TC-R10 1751tok 18.8s Δ-32 | TC-R11 1212tok 9.7s Δ-107 | TC-R12 1188tok 11.2s Δ+40
 
+## mass_470 — R308b batch250 quick-11 merged-verdict regression (2026-09-09T17:56:53+0800)
+
+- **判定**: 11/11 passed, tokens_total=12892 (avg 1172), wall=270205ms (avg 24.6s)
+- **KPI**: in-band (基准轮数 11)
+- **防漂移指数**: segments=11, drift_pass=1.0, semantic_avg=0.963, chars_ratio=0.859
+- **意图指数**: n=9, ms_avg=0.1, dist={'general': 7, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 593tok 10.5s Δ+79 | C03_subtask 1434tok 24.9s Δ-357 | C04_skill_identity 0tok 4.8s | C06_executive_unit_convert 0tok 4.4s | C07_memory_followup 2901tok 35.3s Δ+73 | C08_reasoning 1248tok 39.1s Δ+352 | C11_json_format 775tok 13.6s Δ-153 | C13_git_sensitive 2138tok 46.1s Δ+389 | C14_isolated_multi 2084tok 43.0s Δ+209 | C17_neg_hallucination_bait 946tok 37.4s Δ+123 | C18_neg_format_trap 773tok 11.2s Δ+34
+
+## mass_471 — R308c batch251 topic-relevance-summarize (2026-09-09T18:29:11+0800)
+
+- **判定**: 11/11 passed, tokens_total=12602 (avg 1146), wall=231780ms (avg 21.1s)
+- **KPI**: in-band (基准轮数 11)
+- **防漂移指数**: segments=8, drift_pass=1.0, semantic_avg=1.0, chars_ratio=0.998
+- **意图指数**: n=9, ms_avg=0.4, dist={'general': 7, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 602tok 20.4s Δ+88 | C03_subtask 1665tok 36.4s Δ-126 | C04_skill_identity 0tok 4.8s | C06_executive_unit_convert 0tok 4.5s | C07_memory_followup 2592tok 27.1s Δ-236 | C08_reasoning 1389tok 21.7s Δ+493 | C11_json_format 921tok 8.6s Δ-7 | C13_git_sensitive 1878tok 38.7s Δ+129 | C14_isolated_multi 1947tok 50.0s Δ+72 | C17_neg_hallucination_bait 782tok 9.8s Δ-41 | C18_neg_format_trap 826tok 9.9s Δ+87
+

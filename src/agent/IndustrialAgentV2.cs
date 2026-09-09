@@ -542,6 +542,9 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 string[] pivotSkipMarkers = { "不要之前", "不用之前", "放弃", "重新开始", "取消之前", "先不做", "不管之前",
                     "算了", "改成", "改为", "换成", "不要了", "还是做", "换一个" };
                 var pivotRequested = pivotSkipMarkers.Any(m => message.Content.Contains(m, StringComparison.Ordinal));
+                agent.config.AgentTelemetry.Emit("topic_relevance", "IndustrialAgentV2",
+                    ("stage", "isolation-point"), ("core", coreTopic),
+                    ("goal_entities", goalEntities.Count), ("subtasks", subTasks.Count));
                 // 首轮 (无目标锚) 不隔离 — 无"当前任务"可言
                 if (!pivotRequested && goal != null && goalEntities.Count > 0)
                 {
@@ -669,6 +672,12 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     ("score", topicVerdict.Score), ("verdict", topicVerdict.Action.ToString()),
                     ("core", coreTopic),
                     ("signals", string.Join(";", topicVerdict.Signals)[..Math.Min(120, string.Join(";", topicVerdict.Signals).Length)]));
+            }
+            else
+            {
+                // R308b: 无 goal 锚轮 (verdict null — 非隔离路径) 也打点, 消除观测盲区。
+                agent.config.AgentTelemetry.Emit("topic_relevance", "IndustrialAgentV2",
+                    ("stage", "no-anchor"), ("core", coreTopic), ("drift", isDrift));
             }
 
             // v0.13.3 R286 (思考链任务1 宿主收口): 上下文含 URL/目录线索且非 HardDrop 时, 思考链探索

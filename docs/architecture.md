@@ -1377,6 +1377,13 @@ click-agent/
 
 ## 11. v0.13 组件层 (R205-R288 落地, 2026-09-09 梳理)
 
+**agent.intent** (意图/相关度 — R308 合并判定):
+- `TopicRelevanceEvaluator.Evaluate`: 统一相关度评估 — 一份 verdict 三路消费 (Isolate→subagent 隔离 /
+  SteerHint→L1 牵引提示 / Normal), 信号 = 实体重叠 ±2 + 意图差 +1 + 离题词 +1 (TaskRelevanceChecker.Check)
+  + 画像词面偏离 (弱补充); 分级 veto (指代词绝对 / 短询问仅在无实体零重叠事实时); 打点 topic_relevance 单点
+  {score, verdict, core, signals} — 旧 topic_drift/topic_steering 点位已收编
+- `TaskRelevanceChecker`: 评分引擎 (evaluator 唯一调用方)
+
 **agent.exploration** (探索/思考链, 零宿主反向依赖):
 - `ExplorationPlanner`: 五源 (ContextBlock/Text/Url/Directory/File) 优先级队列; per-source 最大步 (config) + 全局预算
 - `ThinkChainSession`: ExecuteStepAsync (执行+Record+引用 citation-boost) + EvaluateConvergence (自评/预算/无新发现×2/证据分)

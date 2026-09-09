@@ -167,6 +167,12 @@ def summarize_points(points):
             # v0.13.3 M4: 上下文预算门 (normal/isolated_micro/hard_drop) — 微隔离触发观测点
             s["gate_mode"] = kv.get("mode")
             s["gate_est"] = kv.get("est_tokens")
+        elif tag == "topic_relevance":
+            # R308b: 合并判定打点消费 (score/verdict/drift 计数 — 牵引与隔离的批测观测面)
+            s["topic_relevance_score"] = kv.get("score") or 0
+            s["topic_relevance_verdict"] = kv.get("verdict")
+            if kv.get("verdict") == "SteerHint" or kv.get("drift"):
+                s["topic_drift_n"] += 1
         elif tag == "loop_turn":
             s["loop_success"] = kv.get("success")
             s["loop_ms"] = kv.get("total_ms")
