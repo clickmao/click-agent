@@ -176,6 +176,14 @@ public sealed class ContextGradientCompressor
         foreach (System.Text.RegularExpressions.Match m in
                  System.Text.RegularExpressions.Regex.Matches(content, @"SN-\d+"))
             if (!sentinels.Contains(m.Value)) sentinels.Add(m.Value);
+        // v0.13.3 R281 (D2 扩展, 设计稿 §7.3): URL 哨兵 — 链接入口是探索/激活链的载体,
+        // audit 实证含链接文档 keys 14% (URL 大丢)。截尾标点避免把句末逗号句号计入:
+        foreach (System.Text.RegularExpressions.Match m in
+                 System.Text.RegularExpressions.Regex.Matches(content, @"https?://[^\s,，。;；)" + "\"" + "'" + "]+"))
+        {
+            var url = m.Value.TrimEnd('.', ',', ')', '}', ']');
+            if (url.Length > 8 && !sentinels.Contains(url)) sentinels.Add(url);
+        }
         return sentinels;
     }
 

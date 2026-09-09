@@ -48,7 +48,9 @@ public class IndustrialAgentV2 : AgentBase
     private readonly string _instanceId = Guid.NewGuid().ToString("N")[..8];
     private agent.exploration.ThinkMemory? _thinkMemory;
     /// <summary>v0.13.3 R275: 联想库为**进程级**单例 (V2 实例可能每轮重建 — host 生命周期语义), 跨轮保留。
-    private static readonly agent.exploration.ThinkMemory _thinkMemoryGlobal = new(new agent.exploration.ThinkMemoryConfig());  // v0.11.0 R6: 存储召回同源修复
+    private static readonly agent.exploration.ThinkMemory _thinkMemoryGlobal = new(new agent.exploration.ThinkMemoryConfig());
+    /// <summary>v0.13.3 R282: 探索链接登记表 (进程级) — 上下文 URL 三信号预判+激活打点。</summary>
+    private static readonly agent.exploration.LinkRegistry _linkRegistry = new();  // v0.11.0 R6: 存储召回同源修复
     private readonly agent.exploration.ContextBudgetGate _contextGate = new();  // v0.13.3 M2: 上下文预算门
     private readonly IVectorMemoryRecall _memoryRecall;
     private readonly ITemplateStore _templateStore;

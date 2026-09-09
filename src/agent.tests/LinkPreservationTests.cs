@@ -45,5 +45,7 @@ public class LinkPreservationTests
             // RuleCompressed (安全主力档): URL 入口必须保留
             Assert.True(criticalUrlKept, $"RuleCompressed 丢失关键 URL 入口! SentinelLosses=[{string.Join(",", result.SentinelLosses)}]");
         }
+        // R281 (URL 哨兵后): 全档位 URL 入口都必须保留 (哨兵降级链兜底)
+        Assert.True(criticalUrlKept, $"{level} 丢失关键 URL 入口 (URL 哨兵未兜住)!");
     }
 }
