@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Text.Json;
 
 namespace agent.modelqueue;
@@ -91,6 +92,12 @@ public sealed class ModelVerifyService
                 result.Ok = true;
                 result.Verdict = "HTTP 429 = 端点正确且触发限流 — 模型参数合法";
             }
+            else if (code == 410)
+            {
+                // 410 Gone = 端点真实但该模型 id 已下线 (R348 实证: NVIDIA step-3.7-flash) — 端点合法, 条目需更新
+                result.Ok = false;
+                result.Verdict = "HTTP 410 = 端点正确但模型 id 已下线 — 更新条目 model 名";
+            }
             else
             {
                 result.Ok = false;
@@ -114,5 +121,17 @@ public sealed class ModelVerifyService
             result.Error = $"网络不可达: {ex.GetType().Name}: {ex.Message}";
         }
         return result;
+    }
+
+    /// <summary>
+    /// R349: 全目录并发校验 (假 key 探针; 供 /model verify-all)。
+    /// 返回逐模型结果; 语义与 VerifyAsync 一致 (恒返回, 不冒泡)。
+    /// </summary>
+    public async Task<System.Collections.Generic.IReadOnlyList<ModelVerifyResult>> VerifyAllAsync(
+        CancellationToken ct = default)
+    {
+        var ids = _catalog.Models.Select(m => m.Id).ToList();
+        var tasks = ids.Select(id => VerifyAsync(id, ct));
+        return await Task.WhenAll(tasks).ConfigureAwait(false);
     }
 }

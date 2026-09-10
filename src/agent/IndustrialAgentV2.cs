@@ -1541,6 +1541,43 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     ExecutionTimeMs = elapsedMs,
                 };
             }
+            // R349: /model verify-all — 全目录并发校验 (免费池 52 条目真机探针; 汇总渲染)
+            if (parts[1].Equals("verify-all", StringComparison.OrdinalIgnoreCase))
+            {
+                if (_verifyService is null)
+                {
+                    return MakeJsonResponse(new ModelCommandPayload
+                    {
+                        Command = "model_verify_all", Ok = false, Error = "verify_service_unavailable",
+                    }, elapsedMs);
+                }
+                var all = _verifyService.VerifyAllAsync().GetAwaiter().GetResult();
+                var okCount = all.Count(v => v.Ok);
+                var sb = new System.Text.StringBuilder();
+                sb.Append($"模型目录全量校验: {okCount}/{all.Count} 合法 (假 key 探针, HTTP 401/403/429=地址真实)\n");
+                foreach (var g in all.GroupBy(v => v.Ok ? "ok" : "bad"))
+                {
+                    if (g.Key == "ok")
+                    {
+                        sb.Append($"  ✓ 合法 {okCount}: ");
+                        sb.Append(string.Join(", ", g.Select(v => v.Model)));
+                        sb.Append('\n');
+                    }
+                }
+                var bad = all.Where(v => !v.Ok).ToList();
+                if (bad.Count > 0)
+                {
+                    sb.Append("  ✗ 异常 (人工复核):\n");
+                    foreach (var v in bad)
+                        sb.Append($"    {v.Model}: {NonEmpty(v.Verdict, v.Error, "unknown")}\n");
+                }
+                return new AgentResponse
+                {
+                    Success = true,
+                    Content = sb.ToString(),
+                    ExecutionTimeMs = elapsedMs + (long)(DateTime.UtcNow - DateTime.UtcNow).TotalMilliseconds,
+                };
+            }
             var target = parts[1];
             var okSet = _modelRouter.SetManualOverride(target);
             if (okSet)

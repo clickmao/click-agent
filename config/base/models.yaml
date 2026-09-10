@@ -516,8 +516,8 @@ modules:
     suited_for: [reasoning, general, chat]
     capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
 
-  - name: modelscope-deepseek-v4-flash
-    description: ModelScope 免费-DeepSeek-V4-Flash (2000 RPD; 注册即得)
+  - name: "deepseek-ai/DeepSeek-V4-Flash"
+    description: ModelScope 免费-DeepSeek-V4-Flash (2000 RPD; 注册即得; name=上游调用 id)
     provider: modelscope
     request_address: https://api-inference.modelscope.cn/v1/chat/completions
     api_key: AGENT_MODELSCOPE_KEY
@@ -529,8 +529,8 @@ modules:
     suited_for: [general, reasoning, coding, chat]
     capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
 
-  - name: modelscope-glm-5.1
-    description: ModelScope 免费-GLM-5.1 (ZhipuAI/GLM-5.1; 2000 RPD)
+  - name: "ZhipuAI/GLM-5.1"
+    description: ModelScope 免费-GLM-5.1 (2000 RPD; name=上游调用 id)
     provider: modelscope
     request_address: https://api-inference.modelscope.cn/v1/chat/completions
     api_key: AGENT_MODELSCOPE_KEY
@@ -595,8 +595,8 @@ modules:
     capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
 
   # ── 国外 ──
-  - name: nvidia-kimi-k2.6
-    description: NVIDIA NIM 免费-Kimi K2.6 (40 RPM; 2026-09-10 实测 401 端点有效)
+  - name: "moonshotai/kimi-k2.6"
+    description: NVIDIA NIM 免费-Kimi K2.6 (40 RPM; 2026-09-10 实测 401 端点有效; name=上游调用 id)
     provider: nvidia
     request_address: https://integrate.api.nvidia.com/v1/chat/completions
     api_key: AGENT_NVIDIA_KEY
@@ -608,8 +608,8 @@ modules:
     suited_for: [general, reasoning, coding, planning]
     capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
 
-  - name: nvidia-muse-glimmer-30b
-    description: NVIDIA NIM 免费-Muse Glimmer 30B (meta; 40 RPM)
+  - name: "meta/muse-glimmer-30b"
+    description: NVIDIA NIM 免费-Muse Glimmer 30B (meta; 40 RPM; name=上游调用 id)
     provider: nvidia
     request_address: https://integrate.api.nvidia.com/v1/chat/completions
     api_key: AGENT_NVIDIA_KEY
