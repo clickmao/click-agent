@@ -43,6 +43,7 @@ public static class LocalCommandRouter
         "/skills", "/skills-only", "/skills-exclude",  // v0.16.0-c/b: skills 查询/动态 whitelist/blacklist (V2 特判渲染)
         "/staged", "/approve", "/reject", "/cleanup",  // v0.17.1 (R335): 离线变更审批 (V2 特判渲染)
         "/activity",  // v0.17.2-a (R336): 活动 agent/任务查询 (V2 特判渲染)
+        "/llm-service", // v0.20.2 (R345): llm-manager/worker 状态观测 (V2 特判渲染)
         "/schedule-run",  // v0.17.2-b/c (R337): 条件定时执行 py 插件脚本 (V2 特判渲染)
         "/git",  // v0.18.0 G1 (R338): git 操作 status/diff/commit/push (凭据卫生: 一次性 URL 不落 config)
         "/help",  // v0.11.0 R86: 帮助菜单本地应答 — 原未注册送 LLM 浪费一轮
@@ -127,6 +128,11 @@ public static class LocalCommandRouter
             "/activity" => new LocalCommandResult
             {
                 Handled = true, Command = "activity",
+            },
+            // v0.20.2: llm-manager/worker 状态 (V2 特判渲染, 需 LlmServiceStatus)
+            "/llm-service" => new LocalCommandResult
+            {
+                Handled = true, Command = "llm-service",
             },
             // v0.17.2-b/c: 条件定时执行 py 插件脚本 (V2 特判渲染, 需 ScriptPluginRunner/ConditionalScriptScheduler)
             "/schedule-run" => new LocalCommandResult

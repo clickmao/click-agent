@@ -44,6 +44,7 @@
 | `/reject <id>` | 批次 id | 标记批次 rejected (staging 保留, /cleanup 物理删) (v0.17.1) | 本地 | 同上 |
 | `/cleanup` | — | 物理删除 reclaimable 批次 (v0.17.1) | 本地 | 同上 |
 | `/activity` | — | 列出全部激活 agent/窗口/任务: pid/win/job_id/心跳龄 (含其他 CLI 实例) (v0.17.2-a) | 本地 | 同上 |
+| `/llm-service` | — | llm-manager/worker 状态: manager pid / worker 运行与 RSS / 请求数 / lazy 拉起与卸载次数 / 内存阈值与活跃 CLI 数 (manager 不在 → 提示启动方式) (v0.20.2) | 本地 | LlmServiceStatus |
 
 ## 启动参数总表 (进程启动 CLI flags — host)
 
@@ -63,6 +64,7 @@
 | `--smoke` | — | 冒烟自检 (全图 AOT 校验) | 日志 | host |
 | `--llm-manager` | — | 启动 llm-manager 轻量常驻进程 (0 模型占用; worker 按需 lazy 拉起; 资源紧张 ∧ 无 CLI 实例 → kill worker 卸载) (v0.20.0) | 日志 | host |
 | `--llm-service` | — | 启动 worker 进程 (真正加载 bge 嵌入服务; 通常由 manager 拉起, 也可手动/外部守护启动) (v0.20.0) | 日志 | host |
+| `--llm-service-status` | — | 非交互输出 llm-manager/worker 状态 (脚本/CI/前端/无 TTY); exit 0=在线, 5=未运行; 等价 `/llm-service` 指令 (v0.20.3) | stdout | host |
 
 ### LLM 服务独立进程 (v0.20.0 — llm-manager / worker, 用户钦定)
 

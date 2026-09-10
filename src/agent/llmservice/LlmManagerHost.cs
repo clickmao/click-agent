@@ -147,6 +147,7 @@ public sealed class LlmManagerHost : IDisposable
             // ping 由 manager 直接应答 (探活不触发 worker 加载 — lazy 语义)
             var op = ExtractOp(line);
             if (op == "ping") return "{\"ok\":true,\"pong\":true,\"manager\":true}";
+            if (op == "status") return StatusJson();
             var forward = await ForwardToWorkerAsync(line).ConfigureAwait(false);
             return forward;
         }
@@ -237,6 +238,38 @@ public sealed class LlmManagerHost : IDisposable
             throw new IOException($"worker {WorkerReadyBudgetSec}s 未就绪; 见 {_sockPath}.worker.log");
         }
         finally { _workerGate.Release(); }
+    }
+
+    /// <summary>v0.20.2 (R345): 状态查询 (供 /llm-service 指令观测) — 跨平台 (Process.WorkingSet64)。</summary>
+    public string StatusJson()
+    {
+        var workerUp = WorkerRunning || ProbeWorker();
+        var wpid = -1;
+        if (_worker is { HasExited: false }) wpid = SafePid(_worker);
+        else if (LlmServiceHost.TryReadPid(_workerSockPath + ".pid", out var p)) wpid = p;
+        var wrss = wpid > 0 ? ReadRssMb(wpid) : 0;
+        return "{\"ok\":true"
+            + ",\"manager_pid\":" + Environment.ProcessId
+            + ",\"worker_running\":" + (workerUp ? "true" : "false")
+            + ",\"worker_pid\":" + wpid
+            + ",\"worker_rss_mb\":" + wrss
+            + ",\"requests\":" + RequestCount
+            + ",\"spawns\":" + WorkerSpawnCount
+            + ",\"unloads\":" + WorkerUnloadCount
+            + ",\"mem_available_mb\":" + _memAvailableMb()
+            + ",\"mem_floor_mb\":" + _memFloorMb
+            + ",\"active_cli\":" + _activeCliCount() + "}";
+    }
+
+    /// <summary>进程 RSS (MB); 跨平台 (WorkingSet64)。失败 → 0。</summary>
+    public static long ReadRssMb(int pid)
+    {
+        try
+        {
+            using var pr = Process.GetProcessById(pid);
+            return pr.WorkingSet64 / (1024 * 1024);
+        }
+        catch { return 0; }
     }
 
     private bool ProbeWorker()

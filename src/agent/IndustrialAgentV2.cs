@@ -700,6 +700,16 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
                     return response;
                 }
+                // v0.20.2 (R345): /llm-service — llm-manager/worker 状态观测 (独立进程; manager 不在 → 提示启动)
+                if (localCommand.Command == "llm-service")
+                {
+                    var sock = agent.llamalocal.RemoteEmbedder.GetSockFromEnv();
+                    var st = agent.llmservice.LlmServiceStatus.Query(sock);
+                    response.Success = true;
+                    response.Content = st.Render(sock);
+                    response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
+                    return response;
+                }
                 // v0.17.2-b/c (R337): /schedule-run 条件定时执行 py 插件脚本 —
                 // 用法: /schedule-run <延时秒> <py脚本路径> [目标描述]; 到期且无其他 agent 忙则执行
                 // (v0.17.2-b 事件流协议; 坏 py 拒绝 + 教训落盘)。v1 延时上限 60s (长延时/跨重启调度交互语义待用户裁定)。

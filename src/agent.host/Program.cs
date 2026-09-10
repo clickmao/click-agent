@@ -173,6 +173,16 @@ if (args.Length >= 1 && args[0] == "--llm-manager")
     }
 }
 
+// v0.20.3 (R346): --llm-service-status — 非交互输出 llm-manager/worker 状态 (脚本/CI/前端/无 TTY 场景)。
+// exit 0 = manager 在线; exit 5 = 未运行 (诚实失败, 不伪造)。等价 REPL 内 /llm-service 指令。
+if (args.Length >= 1 && args[0] == "--llm-service-status")
+{
+    var sock = agent.llamalocal.RemoteEmbedder.GetSockFromEnv();
+    var st = agent.llmservice.LlmServiceStatus.Query(sock);
+    Console.WriteLine(st.Render(sock));
+    return st.Online ? 0 : 5;
+}
+
 // v0.13.3 A2 (用户钦定) — 压缩底座 audit (用户钦定) — 压缩底座 audit: ground-truth 样本 × 真实 ContextGradientCompressor
 // → 关键信息保留率 / 压缩率 / semantic / 耗时 矩阵 (JSON 输出 → eval/results/)。
 // 用法: agenthost --compression-audit <groundtruth.json>
