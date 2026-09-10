@@ -725,7 +725,20 @@ modules:
     suited_for: [chat, general]
     capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
 
-  # ✗ 排除 (实测网络阻塞, 本部署不可调用; 公网/代理环境可启用): Mistral / HuggingFace router / Google googleapis
+  - name: "deepseek-ai/DeepSeek-V4-Flash"
+    description: HuggingFace Router 免费-DeepSeek-V4-Flash (300 RPH; ⚠ 本机 DNS 污染不可达, 代理/公网环境可用)
+    provider: huggingface
+    request_address: https://router.huggingface.co/v1/chat/completions
+    api_key: AGENT_HF_KEY
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 7
+    coding_score: 7
+    context_window: 131072
+    suited_for: [general, reasoning, coding, chat]
+    capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
+
+  # ✗ 网络阻塞本机不可调用 (公网/代理环境可启用): Mistral / Google googleapis / HuggingFace router (key 已配 AGENT_HF_KEY, 本机 DNS 污染 → Meta 假 IP)
   # △ 排除 (LLM7): 端点真实但免费模型 currently unavailable (临时额度耗尽; 暂不加入)
   # △ 排除 (G4F): 需 PoW 挖 cake 积分, 非纯免费 (不合"免费额度"语义)
   # △ 排除 (Cloudflare): 需 ACCOUNT_ID 拼接端点, 结构不同暂不集成

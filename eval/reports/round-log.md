@@ -2134,3 +2134,11 @@
 - **意图指数**: n=11, ms_avg=1.1, dist={'general': 11, 'git_operation': 1, 'search': 1}
 - **per-case**: C01_general_qa 0tok 29.6s Δ-541 | C03_subtask 2003tok 65.9s Δ+407 | C04_skill_identity 0tok 12.7s | C06_executive_unit_convert 0tok 11.6s | C07_memory_followup 3360tok 77.2s Δ+647 | C08_reasoning 1034tok 30.5s Δ-247 | C11_json_format 617tok 19.4s Δ-100 | C13_git_sensitive 2106tok 34.4s Δ-358 | C14_isolated_multi 1995tok 44.9s Δ-787 | C17_neg_hallucination_bait 767tok 15.5s Δ+7 | C18_neg_format_trap 843tok 14.7s Δ-48 | C19_topic_clarify_6turn 8288tok 80.2s Δ+29 | C26_critic_no_false_positive 1134tok 11.7s Δ+8
 
+## 519 — v0.20.4 R348 免费池 27 条目 YAML 不回归 (2026-09-10T10:01:33+0800)
+
+- **判定**: 12/13 passed, tokens_total=23221 (avg 1786), wall=403770ms (avg 31.1s)
+- **KPI**: tokens_per_case=1786 out (900, 1300) (基准轮数 13)
+- **防漂移指数**: segments=4, drift_pass=1.0, semantic_avg=0.987, chars_ratio=0.919
+- **意图指数**: n=11, ms_avg=0.0, dist={'general': 11, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 755tok 28.7s Δ+215 | C03_subtask 992tok 14.4s Δ-617 | C04_skill_identity 0tok 7.0s | C06_executive_unit_convert 0tok 6.8s | C07_memory_followup 1117tok 25.6s Δ-1668 | C08_reasoning 970tok 24.5s Δ-100 | C11_json_format 852tok 16.9s Δ+193 | C13_git_sensitive 1775tok 9.8s Δ-573 | C14_isolated_multi 2525tok 28.0s Δ-549 | C17_neg_hallucination_bait 1276tok 29.3s Δ+493 | C18_neg_format_trap 0tok 11.5s Δ-874 | C19_topic_clarify_6turn 11563tok 169.7s Δ+3456 | C26_critic_no_false_positive 1396tok 31.8s Δ+273
+

@@ -33,6 +33,7 @@ public class FreeApiModelsTests
     [InlineData("moonshotai/kimi-k2.6", "nvidia", "https://integrate.api.nvidia.com/v1/chat/completions", "AGENT_NVIDIA_KEY")]
     [InlineData("cohere-command-a-reasoning", "cohere", "https://api.cohere.ai/compatibility/v1/chat/completions", "AGENT_COHERE_KEY")]
     [InlineData("kilo-free", "kilo", "https://api.kilo.ai/api/gateway/chat/completions", "AGENT_KILO_KEY")]
+    [InlineData("deepseek-ai/DeepSeek-V4-Flash", "huggingface", "https://router.huggingface.co/v1/chat/completions", "AGENT_HF_KEY")]
     [InlineData("openrouter/free", "openrouter", "https://openrouter.ai/api/v1/chat/completions", "AGENT_OPENROUTER_KEY")]
     [InlineData("gemini-3.5-flash", "google", "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", "AGENT_GEMINI_KEY")]
     [InlineData("llama-3.3-70b", "cerebras", "https://api.cerebras.ai/v1/chat/completions", "AGENT_CEREBRAS_KEY")]
