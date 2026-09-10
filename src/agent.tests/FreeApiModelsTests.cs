@@ -1,14 +1,15 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 using agent.modelqueue;
 
 namespace agentframework.tests;
 
-/// <summary>v0.20.4 (R347): 免费国外 API 备用池 — YAML 条目 + auto 沉底机制
-/// (未配 key → priceScore=0 沉底, 对现有选择零影响; 配 key → 价格 0 → 自动进入优选/兜底)。</summary>
+/// <summary>v0.20.5 R351 (用户钦定): 模型目录精简 — 仅 deepseek-4.1-flash(首)/glm-5.3-flash(次)/gpt-6(默认配置);
+/// 本地 LLM/官方通道/免费池预留配置全部移除。选模: 无 key 沉底机制保留。</summary>
 public class FreeApiModelsTests
 {
     private static string RepoRoot()
@@ -22,109 +23,107 @@ public class FreeApiModelsTests
         throw new DirectoryNotFoundException("找不到仓库根 (config/base/models.yaml)");
     }
 
+    private static string Yaml() => File.ReadAllText(Path.Combine(RepoRoot(), "config", "base", "models.yaml"));
+
     [Theory]
-    [InlineData("llama-3.3-70b-versatile", "groq", "https://api.groq.com/openai/v1/chat/completions", "AGENT_GROQ_KEY")]
-    [InlineData("llama-3.1-8b-instant", "groq", "https://api.groq.com/openai/v1/chat/completions", "AGENT_GROQ_KEY")]
-    [InlineData("openai/gpt-oss-120b", "groq", "https://api.groq.com/openai/v1/chat/completions", "AGENT_GROQ_KEY")]
-    [InlineData("nvidia/nemotron-3-ultra-550b-a55b:free", "openrouter", "https://openrouter.ai/api/v1/chat/completions", "AGENT_OPENROUTER_KEY")]
-    [InlineData("nvidia/nemotron-3-super-120b-a12b:free", "openrouter", "https://openrouter.ai/api/v1/chat/completions", "AGENT_OPENROUTER_KEY")]
-    [InlineData("siliconflow-glm-4-9b", "siliconflow", "https://api.siliconflow.cn/v1/chat/completions", "AGENT_SILICONFLOW_KEY")]
-    [InlineData("deepseek-ai/DeepSeek-V4-Flash", "modelscope", "https://api-inference.modelscope.cn/v1/chat/completions", "AGENT_MODELSCOPE_KEY")]
-    [InlineData("moonshotai/kimi-k2.6", "nvidia", "https://integrate.api.nvidia.com/v1/chat/completions", "AGENT_NVIDIA_KEY")]
-    [InlineData("cohere-command-a-reasoning", "cohere", "https://api.cohere.ai/compatibility/v1/chat/completions", "AGENT_COHERE_KEY")]
-    [InlineData("kilo-free", "kilo", "https://api.kilo.ai/api/gateway/chat/completions", "AGENT_KILO_KEY")]
-    [InlineData("deepseek-ai/DeepSeek-V4-Flash", "huggingface", "https://router.huggingface.co/v1/chat/completions", "AGENT_HF_KEY")]
-    [InlineData("openrouter/free", "openrouter", "https://openrouter.ai/api/v1/chat/completions", "AGENT_OPENROUTER_KEY")]
-    [InlineData("gemini-3.5-flash", "google", "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", "AGENT_GEMINI_KEY")]
-    [InlineData("llama-3.3-70b", "cerebras", "https://api.cerebras.ai/v1/chat/completions", "AGENT_CEREBRAS_KEY")]
-    [InlineData("nvidia/llama-3.1-nemotron-70b-instruct", "nvidia", "https://integrate.api.nvidia.com/v1/chat/completions", "AGENT_NVIDIA_KEY")]
-    public void Yaml_ContainsFreeApiEntry(string name, string provider, string endpoint, string keyEnv)
+    [InlineData("deepseek-4.1-flash", "deepseek", "https://api.deepseek.com/v1/chat/completions", "AGENTFRAMEWORK_KEYS_DEEPSEEK")]
+    [InlineData("glm-5.3-flash", "zhipu", "https://open.bigmodel.cn/api/coding/paas/v4/chat/completions", "AGENTFRAMEWORK_KEYS_BIGMODEL")]
+    [InlineData("gpt-6", "openai", "https://api.openai.com/v1/chat/completions", "AGENT_OPENAI_KEY")]
+    public void Yaml_ContainsExactlyThreeChannels(string name, string provider, string endpoint, string keyEnv)
     {
-        // YAML 原文校验 (不依赖 ConfigSnapshot 语义; 防条目漂移)
-        var yaml = File.ReadAllText(Path.Combine(RepoRoot(), "config", "base", "models.yaml"));
-        Assert.True(yaml.Contains($"name: {name}") || yaml.Contains($"name: \"{name}\"") || yaml.Contains($"name: '{name}'"),
-            $"YAML 未含条目 name={name} (含引号形式)");
+        var yaml = Yaml();
+        Assert.Contains($"name: {name}", yaml);
         Assert.Contains($"provider: {provider}", yaml);
         Assert.Contains(endpoint, yaml);
         Assert.Contains($"api_key: {keyEnv}", yaml);
     }
 
     [Fact]
-    public void FreeEntries_HaveZeroPrice()
+    public void Yaml_Stripped_OfRemovedSources()
     {
-        var yaml = File.ReadAllText(Path.Combine(RepoRoot(), "config", "base", "models.yaml"));
-        var lines = yaml.Split('\n');
-        // 免费段内所有条目 price 均为 0.0 (免费语义: 不打价格战误判)
-        var start = Array.FindIndex(lines, l => l.Contains("免费国外 API 备用池"));
-        Assert.True(start > 0, "未找到免费备用池段");
-        var seg = string.Join('\n', lines[start..]);
-        var inFree = seg.Split("proxy:")[0];
-        var nameCount = inFree.Split("  - name:").Length - 1;
-        var zeroPrice = inFree.Split("price_in_per_m: 0.0").Length - 1;
-        Assert.True(nameCount is >= 27 and <= 29, $"免费条目数应为 27-29 (8 原有+19 新增-去重), 实际 {nameCount}");
-        Assert.Equal(nameCount, zeroPrice);
+        var yaml = Yaml();
+        // 本地 LLM / 官方通道 / 免费池预留 全部移除 (用户钦定)
+        Assert.DoesNotContain("LocalLlamaCaller", yaml);
+        Assert.DoesNotContain("\nlocal:", yaml); // 本地推理通道段已删 (bypass_local 是代理配置, 保留)
+        Assert.DoesNotContain("OfficialModels", yaml);
+        Assert.DoesNotContain(":free", yaml);
+        Assert.DoesNotContain("groq", yaml, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("siliconflow", yaml, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("openrouter", yaml, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("kilo", yaml, StringComparison.OrdinalIgnoreCase);
+        // 移除的旧预留条目
+        Assert.DoesNotContain("gpt-4o", yaml);
+        Assert.DoesNotContain("gemini", yaml, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("claude", yaml, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
-    public void RankCandidates_NoKey_SinksFreeEntries()
+    public void RankCandidates_NoKey_SinksEntry()
     {
-        // 免费模型价格 0 → priceScore 计算为 1; 但 env 未配置 → 强降权 0 → 沉底
         var sched = new ChannelScheduler();
-        var free = MakeEntry("llama-3.3-70b-versatile", "groq", "AGENT_GROQ_KEY", 0, 0, 7);
-        var paid = MakeEntry("glm-5.3-flash", "zhipu", "AGENT_ZHIPU_KEY", 1, 1, 7);
-        var oldGroq = Environment.GetEnvironmentVariable("AGENT_GROQ_KEY");
-        var oldZhipu = Environment.GetEnvironmentVariable("AGENT_ZHIPU_KEY");
+        var keyed = new ModelCatalogEntry
+        {
+            Id = "keyed", Provider = "remote", ReasoningScore = 5, CodingScore = 5,
+            PriceInPerM = 1, PriceOutPerM = 1, ContextWindow = 128000,
+            ApiKeyEnv = "AF_T_KEYED",
+            SuitedFor = new List<string> { "general" },
+        };
+        var unkeyed = new ModelCatalogEntry
+        {
+            Id = "unkeyed", Provider = "remote", ReasoningScore = 9, CodingScore = 9,
+            PriceInPerM = 0, PriceOutPerM = 0, ContextWindow = 128000,
+            ApiKeyEnv = "AF_T_UNKEYED",
+            SuitedFor = new List<string> { "general" },
+        };
+        var old1 = Environment.GetEnvironmentVariable("AF_T_KEYED");
+        var old2 = Environment.GetEnvironmentVariable("AF_T_UNKEYED");
         try
         {
-            Environment.SetEnvironmentVariable("AGENT_GROQ_KEY", null);
-            Environment.SetEnvironmentVariable("AGENT_ZHIPU_KEY", "test-key");
-            var ranked = sched.RankCandidates(new[] { free, paid }, TaskKindHint.General, 1000);
-            Assert.Equal(0, ranked.First(r => r.Model.Id == free.Id).PriceScore);
-            Assert.Equal(paid.Id, ranked[0].Model.Id); // 无 key 免费条目沉底 (不影响现有选择)
+            Environment.SetEnvironmentVariable("AF_T_KEYED", "k");
+            Environment.SetEnvironmentVariable("AF_T_UNKEYED", null);
+            var ranked = sched.RankCandidates(new[] { unkeyed, keyed }, TaskKindHint.General, 1000);
+            Assert.Equal(0, ranked.First(r => r.Model.Id == unkeyed.Id).PriceScore);
+            Assert.Equal("keyed", ranked[0].Model.Id);
         }
         finally
         {
-            Environment.SetEnvironmentVariable("AGENT_GROQ_KEY", oldGroq);
-            Environment.SetEnvironmentVariable("AGENT_ZHIPU_KEY", oldZhipu);
+            Environment.SetEnvironmentVariable("AF_T_KEYED", old1);
+            Environment.SetEnvironmentVariable("AF_T_UNKEYED", old2);
         }
     }
 
     [Fact]
-    public void RankCandidates_WithKey_FreeEntrySurfaces()
+    public void RankCandidates_FreePrice_Surfaces_WhenKeyed()
     {
-        // 配 key 后: 免费 (价格 0 → priceScore=1) 与付费模型同等能力下 → 免费排前 (auto 优选)
         var sched = new ChannelScheduler();
-        var free = MakeEntry("llama-3.3-70b-versatile", "groq", "AGENT_GROQ_KEY", 0, 0, 7);
-        var paid = MakeEntry("glm-5.3-flash", "zhipu", "AGENT_ZHIPU_KEY", 2, 8, 7);
-        var oldGroq = Environment.GetEnvironmentVariable("AGENT_GROQ_KEY");
-        var oldZhipu = Environment.GetEnvironmentVariable("AGENT_ZHIPU_KEY");
+        var free = new ModelCatalogEntry
+        {
+            Id = "glm-5.3-flash", Provider = "remote", ReasoningScore = 8, CodingScore = 8,
+            PriceInPerM = 0, PriceOutPerM = 0, ContextWindow = 131072,
+            ApiKeyEnv = "AF_T_FREE",
+            SuitedFor = new List<string> { "general" },
+        };
+        var paid = new ModelCatalogEntry
+        {
+            Id = "paid", Provider = "remote", ReasoningScore = 8, CodingScore = 8,
+            PriceInPerM = 2, PriceOutPerM = 8, ContextWindow = 128000,
+            ApiKeyEnv = "AF_T_PAID",
+            SuitedFor = new List<string> { "general" },
+        };
+        var old1 = Environment.GetEnvironmentVariable("AF_T_FREE");
+        var old2 = Environment.GetEnvironmentVariable("AF_T_PAID");
         try
         {
-            Environment.SetEnvironmentVariable("AGENT_GROQ_KEY", "test-key");
-            Environment.SetEnvironmentVariable("AGENT_ZHIPU_KEY", "test-key");
+            Environment.SetEnvironmentVariable("AF_T_FREE", "k");
+            Environment.SetEnvironmentVariable("AF_T_PAID", "k");
             var ranked = sched.RankCandidates(new[] { free, paid }, TaskKindHint.General, 1000);
             Assert.Equal(1.0, ranked.First(r => r.Model.Id == free.Id).PriceScore);
             Assert.Equal(free.Id, ranked[0].Model.Id);
         }
         finally
         {
-            Environment.SetEnvironmentVariable("AGENT_GROQ_KEY", oldGroq);
-            Environment.SetEnvironmentVariable("AGENT_ZHIPU_KEY", oldZhipu);
+            Environment.SetEnvironmentVariable("AF_T_FREE", old1);
+            Environment.SetEnvironmentVariable("AF_T_PAID", old2);
         }
     }
-
-    private static ModelCatalogEntry MakeEntry(string id, string provider, string keyEnv,
-        int priceIn, int priceOut, int reasoning)
-        => new()
-        {
-            Id = id,
-            Provider = provider,
-            ApiKeyEnv = keyEnv,
-            PriceInPerM = priceIn,
-            PriceOutPerM = priceOut,
-            ReasoningScore = reasoning,
-            CodingScore = reasoning,
-            ContextWindow = 131072,
-            SuitedFor = new List<string> { "general", "chat" },
-        };
 }

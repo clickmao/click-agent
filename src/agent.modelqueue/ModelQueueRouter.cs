@@ -74,9 +74,6 @@ public sealed class ModelQueueRouter : IModelQueueCaller
     private readonly ModelSelectionPolicy _policy;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly Microsoft.Extensions.Logging.ILogger _logger;
-
-    /// <summary>需求①: 本地推理桥 (宿主注入; null = 无本地模型, 通道自动不可用)</summary>
-    private readonly ILocalInference? _localInference;
     private readonly TokenUsageService? _tokenUsage;
     private readonly FallbackConfig _fallback;
 
@@ -102,10 +99,7 @@ public sealed class ModelQueueRouter : IModelQueueCaller
 
     private readonly LazyBalanceSync _balanceSyncOnce = new();
 
-    /// <summary>需求1: 官方 key 仓库 (CLI --official-key / /official-key 注入; 永不落盘)</summary>
-    public OfficialKeyStore OfficialKeys { get; } = new();
-
-    /// <summary>需求1: 三通道调度 (本地&gt;官方&gt;远端; 并发数托管)</summary>
+    /// <summary>通道调度 (R351: 仅远端目录通道; 本地/官方已移除 — 用户钦定全 API 化)</summary>
     public ChannelScheduler Scheduler { get; }
 
     /// <summary>手动覆盖 (null = 自动); /model &lt;id&gt; 设置, /model auto 清除</summary>
@@ -130,7 +124,6 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         IHttpClientFactory httpClientFactory,
         Microsoft.Extensions.Logging.ILogger logger,
         ChannelScheduler? scheduler = null,
-        ILocalInference? localInference = null,
         TokenUsageService? tokenUsage = null,
         FallbackConfig? fallbackConfig = null)
     {
@@ -139,20 +132,8 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         _policy = new ModelSelectionPolicy();
         _httpClientFactory = httpClientFactory;
         _logger = logger;
-        _localInference = localInference;
         _tokenUsage = tokenUsage;
         Scheduler = scheduler ?? new ChannelScheduler();
-        // 本地通道可用性 = 桥接的本地模型就绪 (ChannelScheduler 已默认 Local 可用, 这里按事实修正)
-        Scheduler.SetAvailable(ModelChannel.Local, localInference?.IsAvailable ?? false);
-        // 官方通道可用性 = key 已注入 (注入/撤销时由指令处理刷新)
-        Scheduler.SetAvailable(ModelChannel.Official, OfficialKeys.IsAvailable());
-    }
-
-    /// <summary>官方 key 注入入口 (CLI 启动参数/指令 — 同步刷新官方通道可用性)</summary>
-    public void SetOfficialKey(string? key)
-    {
-        OfficialKeys.Set(key);
-        Scheduler.SetAvailable(ModelChannel.Official, OfficialKeys.IsAvailable());
     }
 
     /// <summary>当前手动覆盖模型 id (null = auto 自动选模模式) — /model 指令与 /status 展示</summary>
@@ -206,58 +187,8 @@ public sealed class ModelQueueRouter : IModelQueueCaller
 
     public async Task<QueueResponse> CallAsync(QueuePrompt prompt, TaskKindHint kind, string intent, CancellationToken ct = default)
     {
-        // 需求① 本地通道真跑: 无手动覆盖/粘性时, 本地优先 (并发余量内) — LocalInferenceAdapter 实跑子任务
-        bool useLocal = false;
-        lock (_lock)
-        {
-            // v0.12.0 A2 (真缺陷 62): 首调本地优先策略未考虑多模态 —
-            // qwen 0.5b 文本模型收到图像请求 → 推理挂起 (smoke/vision E2E 双实证)。
-            // 带图请求强制走云端 (capabilities 路由: 本地 qwen image_input=false)。
-            var hasImagePayload = prompt.ImageCount > 0;
-            if (_manualOverride is null && _activeModelId is null && !hasImagePayload &&
-                _localInference is not null && _localInference.IsAvailable)
-            {
-                var localChannel = Scheduler.AcquireChannel();
-                if (localChannel == ModelChannel.Local)
-                {
-                    useLocal = true;
-                    LastSelectionBasis = $"channel:local:{_localInference.ModelName}";
-                }
-                else if (localChannel is not null)
-                    Scheduler.ReleaseChannel(localChannel.Value); // 首选非 Local (本地满) → 按其通道语义继续
-            }
-        }
-        if (useLocal)
-        {
-            try
-            {
-                var localResp = await _localInference!.CallAsync(prompt, ct).ConfigureAwait(false);
-                Scheduler.ReleaseChannel(ModelChannel.Local);
-                // v0.11.0 R104 (真缺陷 38): 本地通道无 llm_call 打点 = PGO 盲区 — harness llm_calls=0 误判,
-                // token 统计/反馈速度指标也全部缺失。与云端路径 (271/284) 对齐补齐。
-                agent.config.AgentTelemetry.Emit("llm_call", "ModelQueueRouter",
-                    ("model", localResp.Model), ("provider", "local"),
-                    ("prompt_tokens", localResp.PromptTokens), ("completion_tokens", localResp.CompletionTokens),
-                    ("total_tokens", localResp.TokensUsed), ("success", localResp.Success),
-                    ("content_len", localResp.Content?.Length ?? 0));
-                return localResp;
-            }
-            catch (Exception ex) when (ex is not OperationCanceledException)
-            {
-                Scheduler.ReleaseChannel(ModelChannel.Local);
-                agent.config.AgentTelemetry.Emit("llm_call", "ModelQueueRouter",
-                    ("model", _localInference!.ModelName), ("provider", "local"),
-                    ("success", false), ("error_kind", "local"), ("error", ex.Message));
-                return new QueueResponse
-                {
-                    Success = false,
-                    Error = $"本地模型调用失败: {ex.Message}",
-                    Model = _localInference!.ModelName,
-                };
-            }
-        }
-
-        // 需求1 混合调度: 手动/粘性优先 → 通道优先级 (官方 key 在 → 官方可作候选; 远端目录在 → 远端)
+        // R351 (用户钦定): 本地推理通道移除 — 全部经 API 调用 (远端目录)。
+        // 需求1 混合调度: 手动/粘性优先 → 通道优先级 (远端目录)
         var entry = _catalog.Find(_manualOverride ?? _activeModelId)
                     ?? _policy.Select(null, kind, intent,
                         prompt.EstimatedTokens, prompt.EstimatedTokens / 3, _catalog)
@@ -539,16 +470,12 @@ public sealed class ModelQueueRouter : IModelQueueCaller
     /// </summary>
     private ModelCatalogEntry? SelectAlternativeByBalance(ModelCatalogEntry current, int estimatedTokens)
     {
-        // 本地通道可用 → 本地承接 (本地模型无余额限制)
-        if (_localInference is not null && _localInference.IsAvailable)
-            return null; // 本地走 CallAsync 本地分支, 此处不重复
         if (_tokenUsage is null) return null;
         var candidates = _catalog.Models
             .Where(m => !string.Equals(m.Id, current.Id, StringComparison.OrdinalIgnoreCase))
             // v0.11.0 R115 (真缺陷 46): 候选必须 key 已配置 (曾选中 claude-sonnet-4-5 而
             // ANTHROPIC_KEY 未设 → 切换后调用必败, 比不切更糟)
-            .Where(m => m.Provider == "official" ||
-                        !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(m.ApiKeyEnv)))
+            .Where(m => !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(m.ApiKeyEnv)))
             .Select(m => (Model: m, Est: _tokenUsage!.EstimateBalance(m.Provider, estimatedTokens)))
             .Where(t => t.Est.Sufficient)
             .OrderByDescending(t => t.Model.ReasoningScore + t.Model.CodingScore)
@@ -557,31 +484,11 @@ public sealed class ModelQueueRouter : IModelQueueCaller
     }
 
     /// <summary>
-    /// 需求1 通道优先级选模 (本地由宿主 LocalLlamaCaller 在 adapter 层直跑, 不占远端并发;
-    /// 此处处理官方/远端): 官方 key 在 → 官方通道 RankCandidates 选优; 否则远端目录选优。
+    /// 通道优先级选模 (R351: 本地/官方通道移除 — 纯远端目录选优)。
     /// 通道满 (AcquireChannel=null) → 不阻塞主链, 退回目录首模型由其自身失败语义兜底。
     /// </summary>
     private ModelCatalogEntry? SelectByChannelPriority(TaskKindHint kind, string intent, int estimatedTokens)
     {
-        if (OfficialKeys.IsAvailable())
-        {
-            var channel = Scheduler.AcquireChannel();
-            if (channel is ModelChannel.Official or null)
-            {
-                if (channel is not null)
-                    Scheduler.ReleaseChannel(channel.Value);
-                var ranked = Scheduler.RankCandidates(OfficialModels.Models, kind, estimatedTokens);
-                if (ranked.Count > 0)
-                {
-                    LastSelectionBasis = $"channel:official:{ranked[0].Model.Id}";
-                    return ranked[0].Model;
-                }
-            }
-            else
-            {
-                Scheduler.ReleaseChannel(channel.Value);
-            }
-        }
         var remoteRanked = Scheduler.RankCandidates(_catalog.Models, kind, estimatedTokens);
         if (remoteRanked.Count == 0)
             return null;
@@ -649,10 +556,8 @@ public sealed class ModelQueueRouter : IModelQueueCaller
 
     private async Task<QueueResponse> CallEntryAsync(ModelCatalogEntry entry, QueuePrompt prompt, CancellationToken ct)
     {
-        // official 通道 key 只从内存仓库取 (永不落盘); 其余通道从环境变量
-        var apiKey = entry.Provider == "official"
-            ? OfficialKeys.Get()
-            : Environment.GetEnvironmentVariable(entry.ApiKeyEnv);
+        // R351: 全通道 key 走环境变量 (官方内存通道已移除; 凭据铁律不变)
+        var apiKey = Environment.GetEnvironmentVariable(entry.ApiKeyEnv);
         if (string.IsNullOrEmpty(apiKey))
         {
             return new QueueResponse

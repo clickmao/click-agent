@@ -37,8 +37,28 @@ public sealed class ContextGradientCompressor
         var score = request.RelevanceScore;
         if (score is < 0.5 or >= 0.8)
             return CompressCoreAsync(request, null, ct).ConfigureAwait(false).GetAwaiter().GetResult();
-        var originalEmbedding = await _embedder.EmbedAsync(request.Content, ct);
-        return await CompressCoreAsync(request, originalEmbedding, ct).ConfigureAwait(false);
+        // R352-b (用户钦定): 原文 embed 与压缩主干并行 — embed 不依赖压缩产物, 串行纯白等一次 embed 延迟。
+        // Core 收 originalEmbedding=null (内部语义校验跳过), 校验在外层 embed 就绪后补做 (行为等价)。
+        var embedTask = _embedder.EmbedAsync(request.Content, ct);
+        var coreTask = CompressCoreAsync(request, null, ct);
+        await Task.WhenAll(embedTask, coreTask).ConfigureAwait(false);
+        var originalEmbedding = embedTask.Result;
+        var gr = coreTask.Result;
+        // 防漂移第二重 (等价外移): 语义相似度 — 仅 SummarySentences 档 (0.5-0.8) 且产物非全文
+        if (gr.Level == GradientLevel.SummarySentences && gr.Content.Length < (request.Content?.Length ?? 0))
+        {
+            var compressedEmbedding = await _embedder.EmbedAsync(gr.Content, ct).ConfigureAwait(false);
+            var cosine = VectorMath.Cosine(originalEmbedding, compressedEmbedding);
+            gr.SemanticSimilarity = cosine;
+            if (cosine < _semanticThreshold)
+            {
+                gr.Level = GradientLevel.Full;
+                gr.Content = request.Content ?? string.Empty;
+                gr.CompressedChars = gr.Content.Length;
+            }
+        }
+        return gr;
+
     }
 
     private async Task<GradientResult> CompressCoreAsync(GradientRequest request, float[]? originalEmbedding, CancellationToken ct)

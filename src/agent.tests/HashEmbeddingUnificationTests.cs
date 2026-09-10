@@ -86,8 +86,8 @@ public class HashEmbeddingUnificationTests
     [Fact]
     public void EmbeddingRouter_Fallback_Uses_Unified_384()
     {
-        // llamalocal 256 版退役: EmbeddingRouter 无模型 fallback → vectormemory.HashEmbeddingProvider (384, name=hash)
-        var router = new agent.llamalocal.EmbeddingRouter(null, llmLoaded: false);
+        // R352: EmbeddingRouter 语义档注入 null (无 llm-service) → HashEmbeddingProvider 兜底 (384, name=hash)
+        var router = new agent.llamalocal.EmbeddingRouter(null);
         Assert.Equal(384, router.Dimension);
         Assert.Equal("hash", router.Name);
         var v = router.Embed("rust 的所有权机制。测试文本");

@@ -4,51 +4,27 @@ using Xunit;
 namespace agent.tests;
 
 /// <summary>
-/// v7.15 需求1 测试: 官方模型硬编码/key 内存态/三通道并发托管/优先级/子任务综合选模。
+/// 通道调度测试 (R351: 本地/官方通道移除 — 仅远端目录通道; 并发托管/选模打分保留)。
 /// </summary>
 public class ChannelSchedulerTests
 {
     [Fact]
-    public void Official_Models_Are_Hardcoded_And_Isolated_From_Yaml()
+    public void Acquire_RemoteChannel_ConcurrencyManaged()
     {
-        Assert.Equal(2, OfficialModels.Models.Count);
-        Assert.All(OfficialModels.Models, m => Assert.Equal("official", m.Provider));
-        Assert.NotNull(OfficialModels.Find("official-gpt-4o"));
-        Assert.Null(OfficialModels.Find("official-nonexistent"));
-    }
-
-    [Fact]
-    public void KeyStore_Memory_Only_Set_Clear_Availability()
-    {
-        var store = new OfficialKeyStore();
-        Assert.False(store.IsAvailable());
-        store.Set("sk-test");
-        Assert.True(store.IsAvailable());
-        Assert.Equal("sk-test", store.Get());
-        store.Set(null); // off 清除
-        Assert.False(store.IsAvailable());
-    }
-
-    [Fact]
-    public void Acquire_Follows_Priority_Local_Official_Remote()
-    {
-        var sched = new ChannelScheduler(localMax: 1, officialMax: 1, remoteMax: 1);
-        sched.SetAvailable(ModelChannel.Official, true); // key 注入语义
-        Assert.Equal(ModelChannel.Local, sched.AcquireChannel());  // 本地优先
-        Assert.Equal(ModelChannel.Official, sched.AcquireChannel()); // 本地满 → 官方
-        Assert.Equal(ModelChannel.Remote, sched.AcquireChannel());  // 官方满 → 远端
+        var sched = new ChannelScheduler(remoteMax: 2);
+        Assert.Equal(ModelChannel.Remote, sched.AcquireChannel());
+        Assert.Equal(ModelChannel.Remote, sched.AcquireChannel());
         Assert.Null(sched.AcquireChannel());                        // 全满
-        sched.ReleaseChannel(ModelChannel.Local);
-        Assert.Equal(ModelChannel.Local, sched.AcquireChannel());   // 释放后本地又可用
+        sched.ReleaseChannel(ModelChannel.Remote);
+        Assert.Equal(ModelChannel.Remote, sched.AcquireChannel());  // 释放后又可用
     }
 
     [Fact]
     public void Unavailable_Channel_Skipped()
     {
-        var sched = new ChannelScheduler(localMax: 1, officialMax: 1, remoteMax: 1);
-        sched.SetAvailable(ModelChannel.Official, false); // 无 key
-        Assert.Equal(ModelChannel.Local, sched.AcquireChannel());
-        Assert.Equal(ModelChannel.Remote, sched.AcquireChannel()); // 官方跳过
+        var sched = new ChannelScheduler(remoteMax: 1);
+        sched.SetAvailable(ModelChannel.Remote, false);
+        Assert.Null(sched.AcquireChannel()); // 唯一通道不可用 → null (不阻塞主链语义)
     }
 
     [Fact]
@@ -78,37 +54,38 @@ public class ChannelSchedulerTests
     }
 
     [Fact]
-    public void Router_SetOfficialKey_Toggles_Official_Channel()
+    public void RankCandidates_NoKey_SinksEntry()
     {
-        var catalog = new ModelCatalog();
-        var router = new ModelQueueRouter(catalog,
-            new System.Net.Http.HttpClientHandler().CreateHttpClientFactoryStub(),
-            new TestLogger());
-        Assert.False(router.OfficialKeys.IsAvailable());
-        router.SetOfficialKey("sk-abc");
-        Assert.True(router.OfficialKeys.IsAvailable());
-        Assert.True(router.Scheduler.Snapshot().First(c => c.Channel == ModelChannel.Official).Available);
-        router.SetOfficialKey(null);
-        Assert.False(router.OfficialKeys.IsAvailable());
-    }
-
-    private sealed class TestLogger : Microsoft.Extensions.Logging.ILogger
-    {
-        public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
-        public bool IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel) => false;
-        public void Log<TState>(Microsoft.Extensions.Logging.LogLevel logLevel, Microsoft.Extensions.Logging.EventId eventId,
-            TState state, Exception? exception, Func<TState, Exception?, string> formatter) { }
-    }
-}
-
-/// <summary>HttpClientFactory 测试桩 (IHttpClientFactory 最小实现)</summary>
-internal static class HttpClientFactoryStub
-{
-    public static IHttpClientFactory CreateHttpClientFactoryStub(this System.Net.Http.HttpClientHandler _) =>
-        new StubFactory();
-
-    private sealed class StubFactory : IHttpClientFactory
-    {
-        public System.Net.Http.HttpClient CreateClient(string name) => new();
+        // key 未配置 → 强降权 (auto 不选将失败的模型; R351 机制保留)
+        var sched = new ChannelScheduler();
+        var keyed = new ModelCatalogEntry
+        {
+            Id = "keyed", Provider = "remote", ReasoningScore = 5, CodingScore = 5,
+            PriceInPerM = 1, PriceOutPerM = 1, ContextWindow = 128000,
+            ApiKeyEnv = "AF_TEST_KEYED_KEY",
+            SuitedFor = new List<string> { "general" },
+        };
+        var unkeyed = new ModelCatalogEntry
+        {
+            Id = "unkeyed", Provider = "remote", ReasoningScore = 9, CodingScore = 9,
+            PriceInPerM = 0, PriceOutPerM = 0, ContextWindow = 128000,
+            ApiKeyEnv = "AF_TEST_UNKEYED_KEY",
+            SuitedFor = new List<string> { "general" },
+        };
+        var old = Environment.GetEnvironmentVariable("AF_TEST_KEYED_KEY");
+        var old2 = Environment.GetEnvironmentVariable("AF_TEST_UNKEYED_KEY");
+        try
+        {
+            Environment.SetEnvironmentVariable("AF_TEST_KEYED_KEY", "k");
+            Environment.SetEnvironmentVariable("AF_TEST_UNKEYED_KEY", null);
+            var ranked = sched.RankCandidates(new[] { unkeyed, keyed }, TaskKindHint.General, 1000);
+            Assert.Equal(0, ranked.First(r => r.Model.Id == unkeyed.Id).PriceScore);
+            Assert.Equal("keyed", ranked[0].Model.Id);
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("AF_TEST_KEYED_KEY", old);
+            Environment.SetEnvironmentVariable("AF_TEST_UNKEYED_KEY", old2);
+        }
     }
 }

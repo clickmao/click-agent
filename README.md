@@ -19,11 +19,22 @@ net10.0 / NativeAOT 零 IL 警告 / 699 单测全绿 / 迭代评测 319 批通�
 
 ---
 
+### ✅ v0.19.0 前端统一接口 + 监督面 (R341 契约设计 / R350 P1 首切片落地)
+- **统一契约 AgentFrontendApi v1** (用户钦定: 一个契约覆盖全部能力域, 外部 IDE/前端只对接接口): 统一信封 JSON Lines (req/resp/event 三类; 错误结构化 unknown_api/bad_payload/busy/conflict/not_found/internal) + UnifiedStateSnapshot 一次拉全 (agent/turn/ask/charter/staged/activity/skills/scripts/eval/lessons/supervision) + 能力域前缀分组 (chat/ask/script/staged/activity/skills/model/memory/charter/guardrail/eval/files/render/trace/plan/fs/perm/telemetry/state)。
+- **监督面三件** (用户钦定并入): 域 18 计划级审批闸 (plan.propose/approve/reject, plan_awaiting 事件) / 域 19 文件修改前快照回滚 (fs.snapshot/rollback, path+pre_hash+ts) / 域 20 工具级权限 (perm.mode default_ask|auto|deny)。
+- **P1 首切片落地** (R350): TCP 47810 Server (行协议, 每连接一线程) + Router + state.hello/snapshot + meta 域; 真 TCP 往返测试 (快照字段/未知 api 结构化错误/坏信封 bad_payload)。传输可插拔 (Socket 现有 / WS 适配器待)。
+- **无头浏览器选型定案** (实测): PuppeteerSharp = 唯一 AOT 可运行选项 (Microsoft.Playwright AOT 裁剪后 NRE 崩溃; PuppeteerSharp AOT 23.3MB 全冒烟通过 nav/eval/screenshot)。
+
+### ✅ v0.18.0 执行链路硬化 (R339-R340 已落地)
+- **指令路由防漂移双门** (用户钦定 fail-closed): Known 集合首门 + TryRoute switch 臂真路由 — Known 含但 switch 缺 → 硬闸拦截并打点 route_break, 绝不漏进 LLM 幻觉假执行 (历史真缺陷: /skills 加了 Known 漏了 switch 臂 → 走 LLM 幻觉能力表)。
+- **并行轮次冲突防护**: 轮号占用判定 (pgrep + 锁文件 + 目标轮 json mtime >10min 才算 stale); 双会话并行写 improvements 以顶部为准; git push 一次性 URL → sed 脱敏 → config 零残留 → API sha 复核 (TLS 慢窗 3×退避)。
+- **计划文档 DocRef 防漂移**: TaskPlan 节点 DocRef 标注计划文档, 测试防漂移 (DevPlanDocRefTests); 开发计划隔离单文档, 必含现状代码事实(带行号)+设计+关键约束+验收标准+排除项。
+
 ### ✅ v0.20.0-v0.20.2 LLM 服务独立进程 + 多 LLM 免费测试池 + FrontendApi v1 (R342-R350 已落地, 真机 E2E 全通)
 - **动因** (用户钦定): "将 llm 服务写成单独进程, 以免新 CLI 重新加载 LLM 到显存内"; 加载一次 LLM 成本极高 (bge 26MB 权重 → RSS ~157MB, LLM 更甚) → 0 实例时新 CLI 不得重载。
 - **架构**: `llm-manager` 轻量常驻 (0 模型, 不随 CLI 生死) 对外 UDS 透明代理 → **lazy spawn** `llm-service-host` worker (真 bge) / **supervise** (worker 崩溃 → 下次请求自动重拉, 客户端无感) / **unload** (资源紧张 ∧ 无 CLI 实例 ∧ 无进行中请求 → **kill worker**, OS 回收全部 native 内存)。卸载判定不按时间 (内存充足常驻); 空闲长连接不阻止卸载; 熔断防重启风暴; SIGKILL 孤儿 worker 自动清理。
 - **跨平台铁律** (用户 OOB 修正): 产品代码零 shell — `Process.Start`+`ArgumentList` / `Process.Kill(entireProcessTree)` / `Process.GetProcessById`+`HasExited`; daemon 自写日志; UDS; 非 Linux 内存探测优雅降级。
-- **保留** (用户纠正): "仅是新增本机 llm host 而非全面修改当前框架 llm 使用流程" — DI/进程内路径原样, 客户端入口 `RemoteEmbedder` 显式选用。
+- **R352 演进** (用户钦定): 本地 LLM 推理 + bge 进程内加载移除 (LLamaSharp 全拆) — embed 语义档固定走 llm-service API (hash 兜底), AOT 13.3MB。
 - 真机 E2E: manager 0 模型 → lazy worker (RSS 157MB, bge 512 维) → kill -9 → 自动重拉 (pid 变化) → 阈值拉满 + 无 CLI 实例 → 卸载无残留。
 - **opt-in 集成 + 可观测** (v0.20.1-v0.20.2): `AGENTFRAMEWORK_BGE_MODE=remote` 走本机 service (CLI 进程 RSS 160→41MB, 省 119MB/进程) / `/llm-service` 指令 + `--llm-service-status` 参数 (manager/worker 状态/请求数/卸载计数) / Windows 内存探测 (GlobalMemoryStatusEx)。
 - **多 LLM 免费测试池** (v0.20.4, 用户钦定): Free-LLM-Collection 全源接入 28 条 (Groq/OpenRouter/NVIDIA/Cerebras/Cohere/硅基流动/ModelScope/智普/Kilo 等), 全部 OpenAI 兼容; 未配 key 自动沉底零影响 (RankCandidates), 配 key 即入 auto 优选; 24 端点假 key 探针逐实测 + 真 key 真机调用验证 (OpenRouter nemotron-ultra / Kilo 双通过); `/model verify-all` 全目录并发校验。

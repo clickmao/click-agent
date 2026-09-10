@@ -80,10 +80,8 @@ agent:
   # 摘要触发轮次 (单位: 轮)
   summarize_after_turns: 10
 
-# 本地嵌入 (v7.15 P3: 上下文梯度压缩语义漂移校验)
+# 嵌入 (上下文梯度压缩语义漂移校验) — R351: 本地 bge 加载移除, 走 llm-service (RemoteEmbedder) 或锚词模式
 embedding:
-  # bge gguf 模型路径 (文件缺失 → 自动退锚词模式, 行为兼容)
-  model_path: /home/agentuser/models/bge-small-en-v1.5-q4_k_m.gguf
   # 语义漂移阈值 (cos 下限, 原文三重校验)
   drift_threshold: 0.92
 
@@ -93,7 +91,7 @@ openai:
   # API Key 的环境变量名 (不是 Key 本身!)
   api_key_env: AGENT_OPENAI_KEY
   # 默认模型 ID
-  model: gpt-4
+  model: gpt-6  # R351: 默认配置保留 (用户钦定)
   # 兼容端点 (留空 = 官方/由 env 覆盖)
   endpoint: ""
 

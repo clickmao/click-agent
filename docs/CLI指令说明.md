@@ -17,9 +17,6 @@
 | `/model auto` | — | 恢复自动 (清手动+清粘性) | JSON | V2 拦截 |
 | `/model verify <id>` | 目录模型 id | 目录参数真机校验 (假 key 探测, 期待 401/403) | JSON | V2 拦截 |
 | `/balance [id]` | 可选模型 id | token 余额查询 (scheme 分派) | JSON | V2 拦截 |
-| `/official-key` | — | 官方通道 key 注入状态查询 (不回显 key) | JSON | V2 拦截 |
-| `/official-key <key>` | key 字面量 | 注入官方通道 key (仅内存, 永不落盘) | JSON | V2 拦截 |
-| `/official-key off` | — | 清除官方通道 key | JSON | V2 拦截 |
 | `/token stats` | — | Token 用量统计 (总量/按模型/按 provider/预估成本/余额快照) | JSON | V2 拦截 |
 | `/forecast` | — | 下轮预估读回 (上轮任务摘要/倾向/延续提示) | JSON | V2 拦截 |
 | `/log dump` | — | 内存日志环形缓冲 (2000 条) 存档 JSON 行文件 | JSON | V2 拦截 |
@@ -55,7 +52,6 @@
 | `-rag <path>` | index.jsonl 路径 | 指定 RAG 数据文件 (v0.13.0 已落地; ≡ /rag 或 env AGENTFRAMEWORK_RAG_PATH) | — | host |
 | `--log <path>` | 文件路径 | 输出 tee 到文件 | — | host |
 | `--output-mode text\|markdown` | 模式 | 输出渲染模式 | — | host |
-| `--official-key <key>` | key 字面量 | 启动注入官方通道 key (内存态; 命令行引用立即释放) | — | host |
 | `--embed <text>` | 文本 | 直连 BgeEmbedder 输出向量 JSON (评测离线算 reply_rel, 不走 LLM/DI 全链) | stdout | host (R136) |
 | `--compression-audit <path>` | groundtruth.json | 压缩底座 audit: 分档校验矩阵 (档×级别→关键信息保留率/压缩率/耗时), 落 eval/results/ | JSON | host (v0.13.3) |
 | `--skills-dir <dir>` | 目录 (可多次) | 外挂 skills 目录 — 与内置 skills/ 合并匹配, 同 SkillId 外挂覆盖内置 (v0.16.0-a) | — | host |
@@ -63,7 +59,6 @@
 | `--skills-file <SKILL.md>` | 单 skill 文件 (可多次) | 外挂单 skill 文件 (目录包外) (v0.16.0-a) | — | host |
 | `--smoke` | — | 冒烟自检 (全图 AOT 校验) | 日志 | host |
 | `--llm-manager` | — | 启动 llm-manager 轻量常驻进程 (0 模型占用; worker 按需 lazy 拉起; 资源紧张 ∧ 无 CLI 实例 → kill worker 卸载) (v0.20.0) | 日志 | host |
-| `--llm-service` | — | 启动 worker 进程 (真正加载 bge 嵌入服务; 通常由 manager 拉起, 也可手动/外部守护启动) (v0.20.0) | 日志 | host |
 | `--llm-service-status` | — | 非交互输出 llm-manager/worker 状态 (脚本/CI/前端/无 TTY); exit 0=在线, 5=未运行; 等价 `/llm-service` 指令 (v0.20.3) | stdout | host |
 
 ### LLM 服务独立进程 (v0.20.0 — llm-manager / worker, 用户钦定)
@@ -85,11 +80,10 @@ CLI(s) ──UDS──→ llm-manager (轻量常驻, 0 模型, 不随 CLI 生死
 | `AGENTFRAMEWORK_LLM_SERVICE_LOG` | `<sock>.log` | daemon 自写日志 (跨平台, 不依赖 shell 重定向) |
 | `AGENTFRAMEWORK_LLM_SERVICE_MEM_FLOOR_MB` | 512 | 可用内存低于此值 (且无 CLI 实例) → 卸载 worker |
 | `AGENTFRAMEWORK_LLM_SERVICE_UNLOAD_CHECK_MS` | 15000 | 卸载巡检间隔 |
-| `AGENTFRAMEWORK_BGE_MODE` | `local` | **opt-in** 嵌入后端: `remote` → 走本机 llm-service (CLI 进程免加载 bge, 首次调用 lazy 拉起 manager/worker); 其他/未设 → 原路径 (进程内 BgeEmbedder, 行为不变) (v0.20.1 P4-a) |
 
 行为要点: ① **不按时间卸载** — 内存充足则 worker 常驻; ② 空闲长连接不阻止卸载 (下次请求自动重拉);
 ③ 客户端窗口 5min 内自启 ≥3 次 → 熔断 (防重启风暴); ④ manager 被 SIGKILL 后残留的孤儿 worker 由新 manager 启动时清理。
-⑤ 客户端调用入口 (库): `agent.llamalocal.RemoteEmbedder` (ITextEmbedder 实现; 现有 DI 路径默认不变)。
+⑤ R352 变更 (用户钦定): 本地 bge 进程内加载与本地推理通道移除 — 嵌入语义档固定走 `RemoteEmbedder` (llm-service 不可用 → hash 兜底); BGE_MODE 开关取消 (remote 即唯一语义档)。
 
 ### 探索/思考链环境开关 (v0.13.3 R287)
 

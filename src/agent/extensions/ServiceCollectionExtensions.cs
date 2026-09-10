@@ -210,28 +210,16 @@ public static class ServiceCollectionExtensions
             // 都落到此 env 钩子 (启动期设置, 进程内生效); 未设 → 既有解析序 (覆写/CWD/AppContext)。
             var ragOverride = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_RAG_PATH");
             if (!string.IsNullOrEmpty(ragOverride)) cfg.PersistPathOverride = ragOverride;
-            var llmLoaded = false; // v0.11.0 R113: 共享 LLM 服务已废弃 — bge 决策按本进程未加载处理 (CPU/独立档)
+            // R352: EmbeddingRouter = RemoteEmbedder (语义) + hash 兜底 (本地 bge 已移除)
             cfg.EmbeddingFunction = text => new agent.llamalocal.EmbeddingRouter(
-                Environment.GetEnvironmentVariable("AGENTFRAMEWORK_BGE_MODEL"),
-                llmLoaded).Embed(text);
+                sp.GetRequiredService<agent.contextgradient.ITextEmbedder>()).Embed(text);
             return cfg;
         });
         services.AddSingleton<IRAGRecall, RAGRecall>();
-        // v7.15 P3: bge 嵌入器 (压缩语义漂移校验) — 模型路径走配置, 缺失 → NullTextEmbedder (锚词模式, 行为兼容)
-        // v0.20.1 P4-a (R344, 用户钦定 opt-in): AGENTFRAMEWORK_BGE_MODE=remote → 本机 llm-service
-        // (llm-manager/worker 独立进程, 免每 CLI 进程加载 bge); 默认 local = 原路径 (行为不变)。
+        // R352 (用户钦定): bge 本地进程内加载移除 — 嵌入走 llm-service (RemoteEmbedder, UDS API 调用;
+        // 首次调用自动拉起 manager/worker)。daemon 不可用且不可拉起 → NullTextEmbedder (锚词模式, 行为兼容)。
         services.AddSingleton<agent.contextgradient.ITextEmbedder>(sp =>
-        {
-            var cfg = sp.GetRequiredService<agent.config.ConfigSnapshot>();
-            var modelPath = cfg.Get("embedding", "model_path", "");
-            var mode = agent.llamalocal.EmbedderMode.Resolve(
-                Environment.GetEnvironmentVariable(agent.llamalocal.EmbedderMode.EnvName));
-            if (mode == agent.llamalocal.EmbedderModeKind.Remote)
-                return new agent.llamalocal.RemoteEmbedder(); // 懒连接; 调用时自动拉起 manager/worker
-            return File.Exists(modelPath)
-                ? new agent.llamalocal.BgeEmbedder(modelPath)
-                : new agent.contextgradient.NullTextEmbedder();
-        });
+            new agent.llamalocal.RemoteEmbedder());
         services.AddSingleton<IContextAssembler>(sp =>
         {
             var embedder = sp.GetRequiredService<agent.contextgradient.ITextEmbedder>();
@@ -247,24 +235,9 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IFeedbackPersistence, FeedbackPersistence>();
         
         // 主Agent: IndustrialAgentV2 是完整管线（意图识别→多源上下文组装→PromptBuilder→LLM→记忆/会话存储）
-        // LLM 调用器: v7.15 模型队列接管 (目录 config/base/models.yaml — 主备切换/意图选模/手动覆盖)
+        // LLM 调用器: 模型队列接管 (目录 config/base/models.yaml — 主备切换/意图选模/手动覆盖)
         services.AddSingleton(sp =>
             agent.modelqueue.ModelCatalog.Load(sp.GetRequiredService<agent.config.ConfigSnapshot>()));
-        // v0.10.0 需求①: 本地推理通道 — LocalLlamaCaller 按 models.yaml local 段构造
-        // (gguf 文件缺失 → LocalInferenceAdapter.IsAvailable=false, 本地通道诚实降级, 不伪造)
-        services.AddSingleton(sp =>
-        {
-            var localCfg = sp.GetRequiredService<agent.modelqueue.ModelCatalog>().LocalChannel;
-            // v0.11.0 R104: 批测开关 — AGENTFRAMEWORK_LOCAL_DISABLED=1 时返回不存在路径, local 通道诚实降级关闭
-            // (qwen 0.5b CPU 71s/轮, 千轮批必须走云端; 本地通道保留为 failover/E2E 语义验证)。
-            if (Environment.GetEnvironmentVariable("AGENTFRAMEWORK_LOCAL_DISABLED") == "1")
-                localCfg.ModelPath = "/nonexistent-local-disabled.gguf";
-            return new agent.llamalocal.LocalLlamaCaller(
-                Microsoft.Extensions.Logging.LoggerFactory.Create(b => { }).CreateLogger<agent.llamalocal.LocalLlamaCaller>(),
-                localCfg.ModelPath,
-                (uint)Math.Max(512, localCfg.ContextSize),
-                gpuLayers: (uint)Math.Max(0, localCfg.GpuLayers));
-        });
         services.AddSingleton(sp => new agent.modelqueue.TokenUsageService(
             sp.GetRequiredService<agent.modelqueue.BalanceQueryService>(),
             sp.GetRequiredService<agent.modelqueue.ModelCatalog>()));
@@ -275,10 +248,8 @@ public static class ServiceCollectionExtensions
                 sp.GetRequiredService<agent.modelqueue.ModelCatalog>(),
                 sp.GetRequiredService<IHttpClientFactory>(),
                 sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<IndustrialAgentV2>>(),
-                localInference: new agent.modelqueue.LocalInferenceAdapter(
-                    sp.GetRequiredService<agent.llamalocal.LocalLlamaCaller>()),
                 tokenUsage: tokenUsageLocal);
-            // v0.11.0 R15: auto 选模主路径余额感知 — EstimateBalance (含 CNY→USD 换算) 注入排序强降权
+            // auto 选模主路径余额感知 — EstimateBalance (含 CNY→USD 换算) 注入排序强降权
             routerLocal.Scheduler.BalanceProbe = tokenUsageLocal.EstimateBalance;
             return routerLocal;
         });

@@ -31,12 +31,6 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.10" />
     <!-- WebReaper 库直引 (net10.0 对齐): 搜索结果全文增强引擎 (AOT clean, 上游 CLI 同链路自证) -->
     <PackageReference Include="WebReaper" Version="11.3.1" />
-    <!-- 本地推理 (R100 换 vendored LLamaSharp 0.29 fork, 独立 repo ProjectReference):
-         0.27 nuget native 在本容器 segfault, 0.29 (deps.zip 815a2a5 选择性解压) JIT 实测 OK。
-         Vulkan loader 复用策略 (用户钦定): libggml-vulkan.so 的 DT_NEEDED=libvulkan.so.1,
-         Silk.NET.Vulkan P/Invoke 的也是同一系统 loader — 系统装一份 loader 全局共用,
-         运行时由 VulkanSupport.Configure 统一启用 (探测 loader → WithVulkan(true)), 无第二副本。 -->
-    <PackageReference Include="Silk.NET.Vulkan" Version="2.23.0" />
     <!-- Serialization: System.Text.Json 内置于 net10.0 (AOT source-gen, 零反射) -->
     <!-- Regex: GeneratedRegex source generator (AOT 零反射) -->
   </ItemGroup>
@@ -58,21 +52,6 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="agentframework.tests" />
-  </ItemGroup>
-  <ItemGroup>
-    <!-- v0.11.0 R103: vendored LLamaSharp 0.29 native (deps.zip 选择性解压产物) 复制进运行输出 —
-         布局 = LLamaSharp 0.29 加载器约定 runtimes/linux-x64/native/{变体}/ (bge-probe AOT/JIT 实测) -->
-    <!-- v0.11.0 R114: Silk.NET 式单入口顶层布局 — $ORIGIN RUNPATH 让系统加载器自动解析全部依赖,
-         加载器 R114 快路径直接 dlopen 顶层 libllama.so (变体目录保留为旧策略 fallback) -->
-    <None Include="/home/agentuser/LLamaSharp/LLama/runtimes/native-x64/*.so" CopyToOutputDirectory="PreserveNewest"
-          Link="runtimes/linux-x64/native/%(Filename)%(Extension)" />
-    <None Include="/home/agentuser/LLamaSharp/LLama/runtimes/native-x64/avx2/*.so" CopyToOutputDirectory="PreserveNewest"
-          Link="runtimes/linux-x64/native/avx2/%(Filename)%(Extension)" />
-    <None Include="/home/agentuser/LLamaSharp/LLama/runtimes/native-x64/vulkan/*.so" CopyToOutputDirectory="PreserveNewest"
-          Link="runtimes/linux-x64/native/vulkan/%(Filename)%(Extension)" />
-    <!-- v0.11.0 R117: 删除 avx512/avx/noavx 假变体目录 — 它们复制的是 avx2 二进制 (标签撒谎:
-         noavx 机器 fallback 到假 noavx/ 会 SIGILL)。R114 单入口快路径走顶层, fallback 语义由
-         TryFindPath 原名回退 (顶层命中) 承接, 假目录无正向价值。 -->
   </ItemGroup>
 
 </Project>

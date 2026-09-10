@@ -30,7 +30,6 @@ internal class Program
         string? logPath = null;
         string? oneShot = null;
         var imageArgs = new List<string>(); // v0.12.0 A2: -img 图像附件 (路径/URL, 可多次)
-        string? officialKey = null; // v7.15 需求1: 官方通道 key (CLI 传递, 内存态, 永不落盘)
         var smoke = args.Length == 0 || args.Contains("--smoke");
         var outputMode = agent.output.OutputMode.Markdown;
         string? embedText = null;
@@ -46,8 +45,6 @@ internal class Program
                 logPath = args[++i];
             else if (args[i] == "-q" && i + 1 < args.Length)
                 oneShot = args[++i];
-            else if (args[i] == "--official-key" && i + 1 < args.Length)
-                officialKey = args[++i];
             else if (args[i] == "--output-mode" && i + 1 < args.Length)
                 outputMode = args[++i] == "text"
                     ? agent.output.OutputMode.PlainText
@@ -68,17 +65,11 @@ internal class Program
                 skillExtraFiles.Add(args[++i]);
         }
 
-        // R136 (D4 reply_rel 基础设施): --embed 直连 BgeEmbedder 输出向量 JSON —
-        // harness 离线算 (question, reply) 余弦, 不走 LLM/DI 全链。模型缺失 → exit 3 + stderr (诚实失败)。
+        // R136 (D4 reply_rel 基础设施): --embed 输出向量 JSON — R352: 本地 bge 已删,
+        // 走 llm-service (RemoteEmbedder; daemon 离线 → hash 兜底语义), harness 离线算 reply_rel 不变。
         if (embedText is not null)
         {
-            var modelPath = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_BGE_MODEL");
-            if (string.IsNullOrEmpty(modelPath) || !File.Exists(modelPath))
-            {
-                Console.Error.WriteLine("embed_model_missing");
-                return 3;
-            }
-            using var embedder = new agent.llamalocal.BgeEmbedder(modelPath);
+            var embedder = new agent.llamalocal.RemoteEmbedder();
             var vec = await embedder.EmbedAsync(embedText, CancellationToken.None);
             Console.WriteLine("[" + string.Join(",", vec.Select(v => v.ToString("R", System.Globalization.CultureInfo.InvariantCulture))) + "]");
             return 0;
@@ -100,44 +91,8 @@ static void RedirectDaemonLogIfConfigured()
 
 // v0.20.0 P1 (R342, 用户钦定): 本机 LLM service daemon — 常驻加载 bge 服务多 CLI (新 CLI 免重载模型)。
 // 旁路模式: 框架现有 LLM 使用流程不改 (用户纠正); 客户端显式用 agent.llamalocal.RemoteEmbedder。
-if (args.Length >= 1 && args[0] == "--llm-service")
-{
-    RedirectDaemonLogIfConfigured();
-    var bgePath = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_BGE_MODEL");
-    if (string.IsNullOrEmpty(bgePath) || !File.Exists(bgePath))
-    {
-        Console.Error.WriteLine("llm-service: AGENTFRAMEWORK_BGE_MODEL 未设置或不存在 — 需要 bge 模型路径");
-        return 4;
-    }
-    Console.WriteLine($"llm-service: 加载 bge {bgePath} (仅一次, 常驻)...");
-    agent.llamalocal.BgeEmbedder? embedder = null;
-    agent.llmservice.LlmServiceHost? host = null;
-    try
-    {
-        embedder = new agent.llamalocal.BgeEmbedder(bgePath);
-        host = new agent.llmservice.LlmServiceHost(
-            (text, ct) => embedder.EmbedAsync(text, ct),
-            msg => Console.WriteLine($"[llm-service] {msg}"));
-    }
-    catch (Exception ex)
-    {
-        // 双启保护 (LlmServiceHost 构造: pid 活 → 抛) + bge 加载失败 → 友好报错退出
-        Console.Error.WriteLine($"llm-service: 启动失败 — {ex.Message}");
-        return 4;
-    }
-    using (embedder)
-    using (host)
-    {
-        Console.WriteLine("llm-service: READY (Ctrl+C 退出; 多 CLI 经 Unix socket 复用本模型)");
-        Console.Out.Flush();
-        var done = new ManualResetEventSlim(false);
-        Console.CancelKeyPress += (_, e) => { e.Cancel = true; done.Set(); };
-        AppDomain.CurrentDomain.ProcessExit += (_, _) => done.Set();
-        done.Wait();
-        Console.WriteLine("llm-service: 退出 (模型已卸载)");
-        return 0;
-    }
-}
+// R352: --llm-service 分支移除 (本地 bge 引擎 = LLamaSharp 已删; embed 语义档走外部 llm-service 部署或锚词)
+
 
 // v0.20.0 P3 (R343, 用户钦定策略): llm-manager — 轻量常驻编排进程 (0 模型加载)。
 // 对外 UDS 与 CLI 通讯; worker (--llm-service, 真模型) 按需 lazy spawn; 资源紧张 ∧ 无 CLI 实例 → kill worker 卸载。
@@ -293,12 +248,6 @@ if (args.Length >= 2 && args[0] == "--compression-audit")
         var entryAgent = provider.GetRequiredService<IAgent>();
 
         // v7.15 需求1: CLI 启动参数注入官方 key (立即释放命令行引用 — 避免进程参数驻留)
-        if (officialKey != null)
-        {
-            var router = provider.GetRequiredService<agent.modelqueue.ModelQueueRouter>();
-            router.SetOfficialKey(officialKey);
-            officialKey = null;
-        }
 
         IOutputSink sink = earlySink; // R101 (缺陷 37): 复用 DI 注册实例 (smoke/CLI 同源)
 
