@@ -64,11 +64,10 @@ public sealed class BgeCpuEmbedder : agent.contextgradient.ITextEmbedder, IDispo
         var h = new float[seq * hidden];
         for (var t = 0; t < seq; t++)
         {
-            var tokBase = ids[t] * hidden;
-            var posBase = t * hidden;
-            var typeBase = 0 * hidden; // 单句 type=0
-            for (var d = 0; d < hidden; d++)
-                h[t * hidden + d] = tokenEmbd[tokBase + d] + posEmbd[posBase + d] + tokenTypes[typeBase + d];
+            var dst = h.AsSpan(t * hidden, hidden);
+            tokenEmbd.AsSpan(ids[t] * hidden, hidden).CopyTo(dst);        // token 段
+            TensorPrimitives.Add(dst, posEmbd.AsSpan(t * hidden, hidden), dst);   // + position
+            TensorPrimitives.Add(dst, tokenTypes.AsSpan(0, hidden), dst);         // + token_type 0
         }
         // token_embd_norm (R100 旧 gguf 常见; 本文件第一层后归一 — 按张量表 token_embd_norm 存在则先做)
         if (_weights.TryGetValue("token_embd_norm.weight", out var tenW))
@@ -131,13 +130,14 @@ public sealed class BgeCpuEmbedder : agent.contextgradient.ITextEmbedder, IDispo
                 var row = scores.AsSpan(i * seq, seq);
                 SoftMax(row);
                 var dst = attnOut.AsSpan(i * hidden + qo, headDim);
+                var tmp = headDim <= 128 ? stackalloc float[headDim] : new float[headDim];
                 for (var j = 0; j < seq; j++)
                 {
                     var w = row[j];
                     if (w == 0f) continue;
-                    var vo = j * hidden + qo;
-                    var src = v.AsSpan(vo, headDim);
-                    for (var d = 0; d < headDim; d++) dst[d] += w * src[d];
+                    // SIMD: tmp = w * v[vo..]; dst += tmp
+                    TensorPrimitives.Multiply(v.AsSpan(j * hidden + qo, headDim), w, tmp);
+                    TensorPrimitives.Add(dst, tmp, dst);
                 }
             }
         }
@@ -179,8 +179,9 @@ public sealed class BgeCpuEmbedder : agent.contextgradient.ITextEmbedder, IDispo
             TensorPrimitives.Subtract(row, mean, row);
             var varr = TensorPrimitives.SumOfSquares(row) / hidden;
             var inv = 1f / MathF.Sqrt(varr + eps);
-            for (var d = 0; d < hidden; d++)
-                row[d] = row[d] * inv * w[d] + b[d];
+            TensorPrimitives.Multiply(row, inv, row);
+            TensorPrimitives.Multiply(row, w, row);   // 逐元素 ∘ w (SIMD)
+            TensorPrimitives.Add(row, b, row);
         }
     }
 
@@ -194,10 +195,10 @@ public sealed class BgeCpuEmbedder : agent.contextgradient.ITextEmbedder, IDispo
 
     private static void SoftMax(Span<float> row)
     {
-        var max = float.MinValue;
-        for (var i = 0; i < row.Length; i++) if (row[i] > max) max = row[i];
-        var sum = 0f;
-        for (var i = 0; i < row.Length; i++) { row[i] = MathF.Exp(row[i] - max); sum += row[i]; }
+        var max = TensorPrimitives.Max(row);
+        TensorPrimitives.Subtract(row, max, row);
+        TensorPrimitives.Exp(row, row);
+        var sum = TensorPrimitives.Sum(row);
         if (sum > 0) TensorPrimitives.Multiply(row, 1f / sum, row);
     }
 
