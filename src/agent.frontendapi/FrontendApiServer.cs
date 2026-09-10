@@ -17,10 +17,10 @@ public sealed class FrontendApiServer : IDisposable
     private readonly Action<string> _log;
     private readonly CancellationTokenSource _cts = new();
     private Socket? _listener;
-    private readonly Func<string, string?> _handler; // api → payloadJson (null=unknown_api)
+    private readonly Func<string, string, Task<string?>> _handler; // (api, payloadJson) → payloadJson (null=unknown_api)
     private bool _disposed;
 
-    public FrontendApiServer(Func<string, string?> handler, Action<string> log, int port = FrontendApiContract.DefaultPort)
+    public FrontendApiServer(Func<string, string, Task<string?>> handler, Action<string> log, int port = FrontendApiContract.DefaultPort)
     {
         _handler = handler;
         _log = log;
@@ -68,7 +68,7 @@ public sealed class FrontendApiServer : IDisposable
                     if (idx < 0) break;
                     var line = text[..idx];
                     pending.Remove(0, idx + 1);
-                    var resp = HandleLine(line);
+                    var resp = await HandleLineAsync(line);
                     var bytes = Encoding.UTF8.GetBytes(resp + "\n");
                     await client.SendAsync(new ArraySegment<byte>(bytes), SocketFlags.None, _cts.Token).ConfigureAwait(false);
                 }
@@ -79,7 +79,7 @@ public sealed class FrontendApiServer : IDisposable
         finally { try { client.Close(); } catch { } }
     }
 
-    private string HandleLine(string line)
+    private async Task<string> HandleLineAsync(string line)
     {
         var req = FrontendApiContract.ParseRequest(line);
         if (req is null)
@@ -87,7 +87,7 @@ public sealed class FrontendApiServer : IDisposable
                 FrontendApiContract.ErrCodeBadPayload, "信封非法 (需 v:1/type:req/req_id/api)");
         try
         {
-            var payload = _handler(req.Api);
+            var payload = await _handler(req.Api, req.PayloadJson).ConfigureAwait(false);
             if (payload is null)
                 return FrontendApiContract.FormatResponse(req.ReqId, false, "{}",
                     FrontendApiContract.ErrCodeUnknownApi, $"未知 api: {req.Api}");

@@ -244,8 +244,61 @@ if (args.Length >= 2 && args[0] == "--compression-audit")
         agent.config.AgentTelemetry.Configure("host", "./data/telemetry");
         agent.config.AgentTelemetry.Emit("boot", "Program", ("probe", true));
 
+// v0.19 P1 后半 (R355): --frontend-api <port> — FrontendApi 统一接口独立挂载。
+// 与 REPL/one-shot 并列的第三种运行形态: 常驻服务, 外部前端经 TCP 行 JSON 信封消费完整 agent 管线。
         await using var provider = services.BuildServiceProvider();
         var entryAgent = provider.GetRequiredService<IAgent>();
+
+if (args.Length >= 2 && args[0] == "--frontend-api")
+{
+    if (!int.TryParse(args[1], out var apiPort) || apiPort is < 1 or > 65535)
+    {
+        Console.Error.WriteLine("frontend-api: 端口非法");
+        return 4;
+    }
+    RedirectDaemonLogIfConfigured();
+    var frontendCtx = new AgentContext(provider) { SessionId = "frontend-main", UserId = "frontend-user" };
+    await entryAgent.InitializeAsync(frontendCtx);
+
+    var snapshotJson = "{\"v\":1,\"agent\":{\"name\":\"click-agent\",\"status\":\"idle\"},\"note\":\"P1 snapshot 骨架\"}";
+    var metaJson = "{\"version\":\"0.20.5\",\"contract\":1,\"domains\":[\"chat\",\"meta\",\"state\"]}";
+    var chatRouter = new agent.frontendapi.FrontendApiChatRouter(entryAgent);
+    var server = new agent.frontendapi.FrontendApiServer(async (api, payloadJson) =>
+    {
+        // chat 域 (异步直通 V2)
+        var chatResp = await chatRouter.HandleAsync(api, payloadJson);
+        if (chatResp is not null) return chatResp;
+        // 状态/元域 (同步)
+        return api switch
+        {
+            "state.snapshot" => snapshotJson,
+            "state.hello" => "{\"hello\":true}",
+            "meta.info" => metaJson,
+            _ => null,
+        };
+    }, msg => Console.WriteLine($"[frontend-api] {msg}"), apiPort);
+
+    try
+    {
+        server.Start();
+    }
+    catch (Exception ex)
+    {
+        Console.Error.WriteLine($"frontend-api: 启动失败 — {ex.Message}");
+        return 4;
+    }
+    Console.WriteLine($"frontend-api: READY :{apiPort} (chat.send 直通 V2 管线; Ctrl+C 退出)");
+    Console.Out.Flush();
+    var feDone = new ManualResetEventSlim(false);
+    Console.CancelKeyPress += (_, e) => { e.Cancel = true; feDone.Set(); };
+    AppDomain.CurrentDomain.ProcessExit += (_, _) => feDone.Set();
+    feDone.Wait();
+    server.Dispose();
+    Console.WriteLine("frontend-api: 退出");
+    return 0;
+}
+
+
 
         // v7.15 需求1: CLI 启动参数注入官方 key (立即释放命令行引用 — 避免进程参数驻留)
 
