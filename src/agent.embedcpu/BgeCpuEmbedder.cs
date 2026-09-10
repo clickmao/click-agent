@@ -59,17 +59,6 @@ public sealed class BgeCpuEmbedder : agent.contextgradient.ITextEmbedder, IDispo
 
         // ① embedding 查表 + 位置嵌入 + token_type
         var tokenEmbd = _weights!["token_embd.weight"];     // [512 vocab] 行主序: token*512+d
-        if (Trace)
-        {
-            // 独立重读 cls 行 (绕过缓存) 对照 python ref [-0.1485,0.0568,-0.0262,-0.0437]
-            var model = _model!;
-            var ti = model.Tensors["token_embd.weight"];
-            var rawRow = model.ReadTensor(ti);
-            var off = 101 * hidden;
-            Console.Error.WriteLine($"cls raw read first4={string.Join(",", rawRow.Skip(off).Take(4).Select(x => x.ToString("F4")))}");
-            Console.Error.WriteLine($"row0 raw read first4={string.Join(",", rawRow.Take(4).Select(x => x.ToString("F4")))} (python [PAD] ref: 0.0050,-0.0275,0.0250,0.0350)");
-            Console.Error.WriteLine($"cls cache  first4={string.Join(",", tokenEmbd.Skip(off).Take(4).Select(x => x.ToString("F4")))}");
-        }
         var posEmbd = _weights["position_embd.weight"];     // [512 pos][512 dim]
         var tokenTypes = _weights["token_types.weight"];    // [512? dim] — type 0
         var h = new float[seq * hidden];
@@ -88,13 +77,11 @@ public sealed class BgeCpuEmbedder : agent.contextgradient.ITextEmbedder, IDispo
             LayerNorm(h, tenW, tenB, seq, hidden);
         }
 
-        if (Trace) DebugPool("emb", h, seq, hidden);
         // ② 4 层 transformer
         for (var layer = 0; layer < 4; layer++)
         {
             var blk = $"blk.{layer}.";
             h = TransformerBlock(h, seq, hidden, blk);
-            if (Trace) DebugPool($"{blk}", h, seq, hidden);
             if (Trace)
             {
                 double mean = 0, sq = 0;
@@ -113,17 +100,6 @@ public sealed class BgeCpuEmbedder : agent.contextgradient.ITextEmbedder, IDispo
         var norm = TensorPrimitives.Norm(pooled);
         if (norm > 0) TensorPrimitives.Multiply(pooled, 1f / (float)norm, pooled);
         return pooled;
-    }
-
-    private static void DebugPool(string tag, float[] h, int seq, int hidden)
-    {
-        var pooled = new float[hidden];
-        for (var t = 0; t < seq; t++)
-            TensorPrimitives.Add(pooled, h.AsSpan(t * hidden, hidden), pooled);
-        TensorPrimitives.Divide(pooled, seq, pooled);
-        var norm = TensorPrimitives.Norm(pooled);
-        if (norm > 0) TensorPrimitives.Multiply(pooled, 1f / norm, pooled);
-        Console.Error.WriteLine($"[{tag}] pool_norm1 first3={string.Join(",", pooled.Take(3).Select(x => x.ToString("F4")))}");
     }
 
     private float[] TransformerBlock(float[] h, int seq, int hidden, string blk)
@@ -154,12 +130,14 @@ public sealed class BgeCpuEmbedder : agent.contextgradient.ITextEmbedder, IDispo
             {
                 var row = scores.AsSpan(i * seq, seq);
                 SoftMax(row);
+                var dst = attnOut.AsSpan(i * hidden + qo, headDim);
                 for (var j = 0; j < seq; j++)
                 {
-                    if (row[j] == 0f) continue;
+                    var w = row[j];
+                    if (w == 0f) continue;
                     var vo = j * hidden + qo;
-                    for (var d = 0; d < headDim; d++)
-                        attnOut[i * hidden + qo + d] += row[j] * v[vo + d];
+                    var src = v.AsSpan(vo, headDim);
+                    for (var d = 0; d < headDim; d++) dst[d] += w * src[d];
                 }
             }
         }
@@ -225,13 +203,24 @@ public sealed class BgeCpuEmbedder : agent.contextgradient.ITextEmbedder, IDispo
 
     private static void Gelu(Span<float> x)
     {
-        // tanh 近似 (BERT 标准)
-        for (var i = 0; i < x.Length; i++)
-        {
-            var v = x[i];
-            x[i] = 0.5f * v * (1f + MathF.Tanh(0.7978845608f * (v + 0.044715f * v * v * v)));
-        }
+        // tanh 近似 (BERT 标准) — 全 SIMD: t = tanh(0.7979*(v + 0.044715v³)); x = 0.5v(1+t) = 0.5v + 0.5v*t
+        var n = x.Length;
+        Span<float> t = n <= 4096 ? stackalloc float[n] : new float[n];
+        // t = v²
+        TensorPrimitives.Multiply(x, x, t);
+        // t = 0.044715 v³ = 0.044715 v² * v
+        TensorPrimitives.Multiply(t, 0.044715f, t);
+        TensorPrimitives.Multiply(t, x, t);
+        // t = v + t → 乘 c → tanh
+        TensorPrimitives.Add(t, x, t);
+        TensorPrimitives.Multiply(t, 0.7978845608f, t);
+        TensorPrimitives.Tanh(t, t);
+        // t = 0.5 * v * t ; x = 0.5v + t
+        TensorPrimitives.Multiply(x, 0.5f, x);
+        TensorPrimitives.Multiply(t, x, t);   // t = 0.5v * t
+        TensorPrimitives.Add(x, t, x);
     }
+
 
     public void Dispose() { /* 权重托管内存, GC 回收 */ }
 }

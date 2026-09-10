@@ -27,7 +27,6 @@ public sealed class GgufModel
     }
 
     public static bool Trace;
-    public static bool TraceQ;
 
     public static GgufModel Load(string path)
     {
@@ -123,14 +122,6 @@ public sealed class GgufModel
             if (ti.GgmlType == 8) // Q8_0: block = 2B scale(f16) + 32B (32×i8)
             {
                 var nBlocks = (count + 31) / 32;
-                if (count > 600)
-                {
-                    var p0 = Data.Position;
-                    var hex = new byte[6];
-                    Data.ReadExactly(hex, 0, 6);
-                    Data.Seek(p0, SeekOrigin.Begin);
-                    Console.Error.WriteLine($"[RAW6] {ti.Name}: {Convert.ToHexString(hex)}");
-                }
                 for (var b = 0; b < nBlocks; b++)
                 {
                     var scale = ReadF16Le(Data);
