@@ -83,6 +83,95 @@ internal class Program
             Console.WriteLine("[" + string.Join(",", vec.Select(v => v.ToString("R", System.Globalization.CultureInfo.InvariantCulture))) + "]");
             return 0;
         }
+// v0.20.0 P3 (R343, 用户 OOB: "/bin/sh 跨平台怎么办?"): daemon 自写日志 — 不依赖 shell 重定向,
+// 跨平台 (Windows/macOS/Linux); spawn 端仅传 env, 无 shell 依赖。SIGPIPE/终端消失均不影响。
+static void RedirectDaemonLogIfConfigured()
+{
+    var logPath = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_LLM_SERVICE_LOG");
+    if (string.IsNullOrEmpty(logPath)) return;
+    try
+    {
+        var sw = System.IO.TextWriter.Synchronized(new System.IO.StreamWriter(logPath, append: true) { AutoFlush = true });
+        Console.SetOut(sw);
+        Console.SetError(sw);
+    }
+    catch { /* 日志文件不可写 → 保持 stdout (不阻断服务) */ }
+}
+
+// v0.20.0 P1 (R342, 用户钦定): 本机 LLM service daemon — 常驻加载 bge 服务多 CLI (新 CLI 免重载模型)。
+// 旁路模式: 框架现有 LLM 使用流程不改 (用户纠正); 客户端显式用 agent.llamalocal.RemoteEmbedder。
+if (args.Length >= 1 && args[0] == "--llm-service")
+{
+    RedirectDaemonLogIfConfigured();
+    var bgePath = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_BGE_MODEL");
+    if (string.IsNullOrEmpty(bgePath) || !File.Exists(bgePath))
+    {
+        Console.Error.WriteLine("llm-service: AGENTFRAMEWORK_BGE_MODEL 未设置或不存在 — 需要 bge 模型路径");
+        return 4;
+    }
+    Console.WriteLine($"llm-service: 加载 bge {bgePath} (仅一次, 常驻)...");
+    agent.llamalocal.BgeEmbedder? embedder = null;
+    agent.llmservice.LlmServiceHost? host = null;
+    try
+    {
+        embedder = new agent.llamalocal.BgeEmbedder(bgePath);
+        host = new agent.llmservice.LlmServiceHost(
+            (text, ct) => embedder.EmbedAsync(text, ct),
+            msg => Console.WriteLine($"[llm-service] {msg}"));
+    }
+    catch (Exception ex)
+    {
+        // 双启保护 (LlmServiceHost 构造: pid 活 → 抛) + bge 加载失败 → 友好报错退出
+        Console.Error.WriteLine($"llm-service: 启动失败 — {ex.Message}");
+        return 4;
+    }
+    using (embedder)
+    using (host)
+    {
+        Console.WriteLine("llm-service: READY (Ctrl+C 退出; 多 CLI 经 Unix socket 复用本模型)");
+        Console.Out.Flush();
+        var done = new ManualResetEventSlim(false);
+        Console.CancelKeyPress += (_, e) => { e.Cancel = true; done.Set(); };
+        AppDomain.CurrentDomain.ProcessExit += (_, _) => done.Set();
+        done.Wait();
+        Console.WriteLine("llm-service: 退出 (模型已卸载)");
+        return 0;
+    }
+}
+
+// v0.20.0 P3 (R343, 用户钦定策略): llm-manager — 轻量常驻编排进程 (0 模型加载)。
+// 对外 UDS 与 CLI 通讯; worker (--llm-service, 真模型) 按需 lazy spawn; 资源紧张 ∧ 无 CLI 实例 → kill worker 卸载。
+// 客户端 (RemoteEmbedder) 走同一 sock 协议 — manager 透明代理, CLI 全退 manager 仍在 (不随 CLI 生死)。
+if (args.Length >= 1 && args[0] == "--llm-manager")
+{
+    RedirectDaemonLogIfConfigured();
+    agent.llmservice.LlmManagerHost manager;
+    try
+    {
+        // env 可调 (用户钦定"llm-host 内部自动管理"; 默认: 内存 <512MB 且无 CLI 实例 → 卸载 worker)
+        var floor = long.TryParse(Environment.GetEnvironmentVariable("AGENTFRAMEWORK_LLM_SERVICE_MEM_FLOOR_MB"), out var f) ? f : 512;
+        var checkMs = int.TryParse(Environment.GetEnvironmentVariable("AGENTFRAMEWORK_LLM_SERVICE_UNLOAD_CHECK_MS"), out var c) ? c : 15_000;
+        manager = new agent.llmservice.LlmManagerHost(msg => Console.WriteLine($"[llm-manager] {msg}"),
+            memFloorMb: floor, unloadCheckMs: checkMs);
+        manager.Start();
+    }
+    catch (Exception ex)
+    {
+        Console.Error.WriteLine($"llm-manager: 启动失败 — {ex.Message}");
+        return 4;
+    }
+    using (manager)
+    {
+        Console.WriteLine("llm-manager: READY (0 模型占用; worker 按需拉起; 资源紧张且无 CLI 实例时自动卸载 worker)");
+        Console.Out.Flush();
+        var done = new ManualResetEventSlim(false);
+        Console.CancelKeyPress += (_, e) => { e.Cancel = true; done.Set(); };
+        AppDomain.CurrentDomain.ProcessExit += (_, _) => done.Set();
+        done.Wait();
+        Console.WriteLine("llm-manager: 退出");
+        return 0;
+    }
+}
 
 // v0.13.3 A2 (用户钦定) — 压缩底座 audit (用户钦定) — 压缩底座 audit: ground-truth 样本 × 真实 ContextGradientCompressor
 // → 关键信息保留率 / 压缩率 / semantic / 耗时 矩阵 (JSON 输出 → eval/results/)。
