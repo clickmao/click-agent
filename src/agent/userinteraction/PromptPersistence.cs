@@ -25,15 +25,32 @@ public static class PromptPersistence
 
         try
         {
-            var json = File.ReadAllText(path);
-            var loaded = JsonSerializer.Deserialize(json, PromptJsonContext.Default.DictionaryStringString);
-            return loaded is null
+            var content = File.ReadAllText(path);
+
+            // R358: 密文路径 (ENC1: 前缀) — AES-GCM 解密; 密钥缺失/损坏 → 空表重新问询
+            if (content.StartsWith("ENC1:", StringComparison.Ordinal))
+            {
+                var key = CredentialEncryption.LoadOrCreateMasterKey(dataDir);
+                var decrypted = CredentialEncryption.TryDecrypt(content, key);
+                return decrypted is null
+                    ? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                    : new Dictionary<string, string>(decrypted, StringComparer.OrdinalIgnoreCase);
+            }
+
+            // 旧明文 JSON → 读取并一次性迁移为密文 (无感升级)
+            var loaded = JsonSerializer.Deserialize(content, PromptJsonContext.Default.DictionaryStringString);
+            var result = loaded is null
                 ? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
                 : new Dictionary<string, string>(loaded, StringComparer.OrdinalIgnoreCase);
+            if (result.Count > 0)
+            {
+                try { SaveCredentials(dataDir, result); } catch { /* 迁移失败不影响本次读取 */ }
+            }
+            return result;
         }
         catch
         {
-            // 凭据文件损坏 → 视为无凭据, 让问询流程重新要走 (绝不抛异常阻断启动)
+            // 凭据文件损坏 (含 GCM 认证失败 = 篡改/密钥不匹配) → 视为无凭据, 重新问询 (绝不抛异常阻断启动)
             return new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         }
     }
@@ -45,7 +62,9 @@ public static class PromptPersistence
         if (!string.IsNullOrEmpty(dir))
             Directory.CreateDirectory(dir);
 
-        File.WriteAllText(path, JsonSerializer.Serialize(credentials, PromptJsonContext.Default.DictionaryStringString));
+        // R358: 静态加密落盘 (AES-256-GCM; 主密钥 master.key 与文件分离)
+        var masterKey = CredentialEncryption.LoadOrCreateMasterKey(dataDir);
+        File.WriteAllText(path, CredentialEncryption.Encrypt(credentials, masterKey));
 
         // 尽力收紧文件权限 (Unix); Windows 上 ACL 收紧交给用户/部署脚本
         if (!OperatingSystem.IsWindows())
