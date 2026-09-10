@@ -5,7 +5,7 @@ namespace agent.embedcpu;
 
 /// <summary>
 /// v0.20.5 R353 (用户钦定): bge 本地 CPU 最小推理 — 纯托管 BERT encoder forward。
-/// 架构: bert (bge-small-zh-v1.5, 4 层, 512 dim, 8 头, mean-pool + L2 归一)。
+/// 架构: bert (bge-small-zh-v1.5, 4 层, 512 dim, 8 头, CLS-pool + L2 归一 — 官方 1_Pooling cls_token=true)。
 /// 数值: TensorPrimitives SIMD (dot/ scale/ add); 精度 F32 (Q8_0 权重反量化一次, 缓存复用)。
 /// 设计: 惰性加载 + 双检锁 (BgeEmbedder 同模式); EmbedAsync 异步入口 — 与召回/压缩主链并行 (R352-b)。
 /// </summary>
@@ -89,11 +89,12 @@ public sealed class BgeCpuEmbedder : agent.contextgradient.ITextEmbedder, IDispo
             }
         }
 
-        // ③ mean pooling (bert.attention.causal=0 → 全 token 平均; GGUF pooling_type=2=MEAN)
+        // ③ pooling — R356 审计修正: BGE 官方 1_Pooling/config.json = pooling_mode_cls_token:true
+        // (HF BAAI/bge-small-zh-v1.5 模型卡实证; mean=false)。旧实现误用 mean (GGUF 元数据
+        // pooling_type=2 系转换器默认值, 非 HF 语义) → 无关对 cos 虚高 0.86 的根因。
+        // BGE 语义: [CLS] 位置的最后隐藏态 = 句表示。
         var pooled = new float[hidden];
-        for (var t = 0; t < seq; t++)
-            TensorPrimitives.Add(pooled, h.AsSpan(t * hidden, hidden), pooled);
-        TensorPrimitives.Divide(pooled, (float)seq, pooled);
+        h.AsSpan(0, hidden).CopyTo(pooled);
 
         // ④ L2 归一
         var norm = TensorPrimitives.Norm(pooled);

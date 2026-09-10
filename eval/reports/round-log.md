@@ -2162,3 +2162,11 @@
 - **意图指数**: n=11, ms_avg=0.0, dist={'general': 11, 'git_operation': 1, 'search': 1}
 - **per-case**: C01_general_qa 494tok 8.3s Δ+242 | C03_subtask 974tok 22.8s Δ-24 | C04_skill_identity 0tok 2.6s | C06_executive_unit_convert 0tok 2.5s | C07_memory_followup 2613tok 37.3s Δ+1121 | C08_reasoning 1034tok 21.9s Δ+366 | C11_json_format 597tok 5.2s Δ+107 | C13_git_sensitive 2816tok 53.7s Δ+1522 | C14_isolated_multi 2871tok 44.6s Δ+1364 | C17_neg_hallucination_bait 802tok 12.7s Δ+121 | C18_neg_format_trap 827tok 8.5s Δ+546 | C19_topic_clarify_6turn 9059tok 60.4s Δ+2442 | C26_critic_no_false_positive 1141tok 9.7s Δ+298
 
+## 523 — v0.20.5 R356 DS 主力首个批测 (deepseek-flash priority=1) (2026-09-11T00:33:33+0800)
+
+- **判定**: 13/13 passed, tokens_total=23864 (avg 1836), wall=104044ms (avg 8.0s)
+- **KPI**: tokens_per_case=1836 out (900, 1300); wall_per_case_ms=8003 out (12000, 45000) (基准轮数 13)
+- **防漂移指数**: segments=3, drift_pass=1.0, semantic_avg=0.962, chars_ratio=0.665
+- **意图指数**: n=11, ms_avg=0.1, dist={'general': 11, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 684tok 4.3s Δ+432 | C03_subtask 1379tok 8.5s Δ+1048 | C04_skill_identity 0tok 2.5s | C06_executive_unit_convert 0tok 2.5s | C07_memory_followup 2718tok 12.2s Δ+2346 | C08_reasoning 947tok 7.0s Δ+624 | C11_json_format 729tok 5.2s Δ+445 | C13_git_sensitive 1690tok 6.0s Δ+1098 | C14_isolated_multi 3057tok 15.9s Δ+2215 | C17_neg_hallucination_bait 969tok 5.6s Δ+544 | C18_neg_format_trap 1233tok 6.2s | C19_topic_clarify_6turn 9094tok 22.7s Δ+5240 | C26_critic_no_false_positive 1364tok 5.4s Δ+899
+

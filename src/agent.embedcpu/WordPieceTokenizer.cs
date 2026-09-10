@@ -57,8 +57,7 @@ public sealed class WordPieceTokenizer
         void Flush()
         {
             if (sb.Length == 0) return;
-            var word = sb.ToString();
-            result.Add(word.StartsWith("▁") ? word : "▁" + word);
+            result.Add(sb.ToString()); // BERT WordPiece: 词无 ▁ 前缀 (sentencepiece 风格已纠正 R356)
             sb.Clear();
         }
         foreach (var ch in text)
