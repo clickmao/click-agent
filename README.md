@@ -19,22 +19,22 @@ net10.0 / NativeAOT 零 IL 警告 / 597 单测全绿 / 迭代评测 286 批通�
 
 ---
 
+### ✅ v0.20.0 LLM 服务独立进程 — llm-manager / worker (R342-R343 已落地, 真机 E2E 全通)
+- **动因** (用户钦定): "将 llm 服务写成单独进程, 以免新 CLI 重新加载 LLM 到显存内"; 加载一次 LLM 成本极高 (bge 26MB 权重 → RSS ~157MB, LLM 更甚) → 0 实例时新 CLI 不得重载。
+- **架构**: `llm-manager` 轻量常驻 (0 模型, 不随 CLI 生死) 对外 UDS 透明代理 → **lazy spawn** `llm-service-host` worker (真 bge) / **supervise** (worker 崩溃 → 下次请求自动重拉, 客户端无感) / **unload** (资源紧张 ∧ 无 CLI 实例 ∧ 无进行中请求 → **kill worker**, OS 回收全部 native 内存)。卸载判定不按时间 (内存充足常驻); 空闲长连接不阻止卸载; 熔断防重启风暴; SIGKILL 孤儿 worker 自动清理。
+- **跨平台铁律** (用户 OOB 修正): 产品代码零 shell — `Process.Start`+`ArgumentList` / `Process.Kill(entireProcessTree)` / `Process.GetProcessById`+`HasExited`; daemon 自写日志; UDS; 非 Linux 内存探测优雅降级。
+- **保留** (用户纠正): "仅是新增本机 llm host 而非全面修改当前框架 llm 使用流程" — DI/进程内路径原样, 客户端入口 `RemoteEmbedder` 显式选用。
+- 真机 E2E: manager 0 模型 → lazy worker (RSS 157MB, bge 512 维) → kill -9 → 自动重拉 (pid 变化) → 阈值拉满 + 无 CLI 实例 → 卸载无残留。661 单测全绿 / AOT 13.6MB 零 IL 警告。
+
 ### ✅ v0.17.x 执行层稳固化 — 锁 / 原子写 / 审批 / 活动感知 (R334-R336 已落地, 验收批 284-286 全绿)
 - **跨进程文件锁 + 原子写** (v0.17.0, 用户钦定 "2 agent 写 1 文件" 工业化): FileLock (.lock + FileShare.None=flock LOCK_EX, 崩溃内核自动放锁) / AtomicFileWriter (tmp+fsync+rename) / **OccupantDetector** (/proc/locks → "PID x (comm)") / ExecutorLessonMemory (失败→原因→**频率加权教训记忆**: 1 次摘要→3 次补方案→8 次补上下文, 24h 降级 7d 移除); 接入 TaskCharter/GuardrailMemory 写点 (同 Id 推进覆盖/异主让位/锁内条件覆盖 WriteIf 无 TOCTOU)。
 - **离线变更 + 用户审批** (v0.17.1, 用户钦定 VS Code 场景): StagedFileStore (批次内容落 data/staged/ **不占真实文件地址**; 三阶段过期 TTL→expired 保留→reclaimable→显式清理, 不静默删) / ApprovalController (**锁内基线 sha256 比对 — 目标被编辑器改过 → 冲突拒绝绝不覆盖**; 多批按序合并, 后批基线过期 → partial 人工合并) / `/staged /approve /reject /cleanup` 指令 / `/staged --json` + data/staged/index.json 双通道供前端。
 - **活动任务注册表** (v0.17.2-a, 用户钦定 "所有激活窗口任务"): ActivityService 心跳 data/activity/<pid>.json (pid/window/job_id/任务摘要; TTL 90s 覆盖 LLM 单轮; 优雅退出 finally 清理) / `/activity` 列出**全部激活 agent 含其他 CLI** / IsOtherAgentBusy = "无其他任务则 X 后执行" 条件原语。
 - **脚本插件协议** (v0.17.2-b 计划已定): 执行层自需脚本一律 py → CLI py_compile 验证 → 插件服务执行; stdout JSON Lines 事件流 {progress|heartbeat|done|error}, 长执行 --heartbeat-secs 定时反馈, 结束前必须 done/error。
 
-### ✅ v0.14.0-v0.16.x 能力 — critic 自审 / 任务生命周期 / skills 引擎 / 性能 (已验收)
-- **LLM 自审体系** (v0.14, 用户钦定 "LLM 数据来源=人类经验"): OutputCritic (静态反模式 8 规则带行号) / SelfCritic (quote 逐字子串防幻觉锚) / FixMemory (修法独立 schema, 来源秩 human>metric>llm) / CriticPipeline 三级过滤 (LLM 单源=观察态绝不进上下文)。
-- **任务生命周期** (v0.15): TaskCharter 状态机 (planning→running→accepting→done|failed) + 三态输入路由 (补充→pendingContext / 无关→隔离 / 换任务→pivot) + GuardrailMemory (禁令提取→持久→跨域静默→habituation 去重)。
-- **skills 引擎增强** (v0.16, 用户钦定): 格式统一 (6 包 frontmatter 规范) / **critic-rules 语言无关化** (R01-R08 语义级 + C#/Python/Go/Rust/Java 映射) / CLI 外挂 --skills-dir/--skills-blacklist/--skills-file (与内置不冲突) / 运行时动态 whitelist/blacklist / /skills 指令族 / KnowledgeHint 类型 (知识命中→注入 systemPrompt 生成时预防, C33-C35 3/3 精确含例外条款理解)。
-- **性能/内存** (v0.15.3-v0.16.x): TendencyData 三算合一+async 化 (wall -3.5%) / bge 单实例共享 (RSS 130MB) / P4 召回流式化+4MB 预算 / P12 RAG 裁剪摊销 / P10 锚词 long-key 零分配 (语义等价 40 轮随机全等证明)。
-- **版本A 存档**: git tag v0.15.2-A (仓库首 tag) + 全量验收 37/37 + 能力地图 function-map-R326。
+### 📦 v0.14-v0.16.x 能力 (critic 自审 / 任务生命周期 / skills 引擎 / 性能) + v0.12-v0.13.x 能力 (思考链 / 探索 / 视觉 / 渲染插件 / 底座防护)
 
-### 📦 v0.12-v0.13.x 能力 (思考链 / 探索 / 视觉 / 渲染插件 / 底座防护)
-
-已归档 → [CHANGELOG-v0.12-v0.13.x-R169-R268.md](docs/changelogs/CHANGELOG-v0.12-v0.13.x-R169-R268.md) · [CHANGELOG-v0.13.3-R249-R268.md](docs/changelogs/CHANGELOG-v0.13.3-R249-R268.md)
+已归档 → [CHANGELOG-v0.14-v0.16.x.md](docs/changelogs/CHANGELOG-v0.14-v0.16.x-R277-R336.md) · [CHANGELOG-v0.12-v0.13.x-R169-R268.md](docs/changelogs/CHANGELOG-v0.12-v0.13.x-R169-R268.md) · [CHANGELOG-v0.13.3-R249-R268.md](docs/changelogs/CHANGELOG-v0.13.3-R249-R268.md)
 
 ### 📊 迭代评测统计 (打点对比数据驱动)
 

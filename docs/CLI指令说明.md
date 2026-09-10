@@ -61,6 +61,32 @@
 | `--skills-blacklist <id或目录名>` | 值 (可多次) | 加载后从注册表移除指定 skill (精确 id + 包目录名双匹配) (v0.16.0-a) | — | host |
 | `--skills-file <SKILL.md>` | 单 skill 文件 (可多次) | 外挂单 skill 文件 (目录包外) (v0.16.0-a) | — | host |
 | `--smoke` | — | 冒烟自检 (全图 AOT 校验) | 日志 | host |
+| `--llm-manager` | — | 启动 llm-manager 轻量常驻进程 (0 模型占用; worker 按需 lazy 拉起; 资源紧张 ∧ 无 CLI 实例 → kill worker 卸载) (v0.20.0) | 日志 | host |
+| `--llm-service` | — | 启动 worker 进程 (真正加载 bge 嵌入服务; 通常由 manager 拉起, 也可手动/外部守护启动) (v0.20.0) | 日志 | host |
+
+### LLM 服务独立进程 (v0.20.0 — llm-manager / worker, 用户钦定)
+
+目标: 新 CLI 不再重复加载 LLM 到内存/显存 (bge 加载后 RSS ~157MB, LLM 更甚)。
+
+```
+CLI(s) ──UDS──→ llm-manager (轻量常驻, 0 模型, 不随 CLI 生死)
+                   ├─ lazy:     首个使用请求 → 拉起 worker (真加载模型)
+                   ├─ supervise: worker 崩溃/被杀 → 下次请求自动重拉
+                   └─ unload:   资源紧张 ∧ 无 CLI 实例 ∧ 无进行中请求 → kill worker (OS 回收内存)
+                            └──UDS──→ llm-service-host (worker, 可被杀)
+```
+
+| env | 默认 | 说明 |
+|---|---|---|
+| `AGENTFRAMEWORK_LLM_SERVICE_SOCK` | 系统临时目录 `af-llm.sock` | 客户端↔manager 通讯 socket (worker socket 同路径 + `.worker`) |
+| `AGENTFRAMEWORK_LLM_SERVICE_BIN` | 当前 agenthost 进程路径 | 客户端/manager 拉起时的 agenthost 可执行路径 |
+| `AGENTFRAMEWORK_LLM_SERVICE_LOG` | `<sock>.log` | daemon 自写日志 (跨平台, 不依赖 shell 重定向) |
+| `AGENTFRAMEWORK_LLM_SERVICE_MEM_FLOOR_MB` | 512 | 可用内存低于此值 (且无 CLI 实例) → 卸载 worker |
+| `AGENTFRAMEWORK_LLM_SERVICE_UNLOAD_CHECK_MS` | 15000 | 卸载巡检间隔 |
+
+行为要点: ① **不按时间卸载** — 内存充足则 worker 常驻; ② 空闲长连接不阻止卸载 (下次请求自动重拉);
+③ 客户端窗口 5min 内自启 ≥3 次 → 熔断 (防重启风暴); ④ manager 被 SIGKILL 后残留的孤儿 worker 由新 manager 启动时清理。
+⑤ 客户端调用入口 (库): `agent.llamalocal.RemoteEmbedder` (ITextEmbedder 实现; 现有 DI 路径默认不变)。
 
 ### 探索/思考链环境开关 (v0.13.3 R287)
 

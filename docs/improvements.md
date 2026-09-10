@@ -12,6 +12,16 @@
 
 ---
 
+## R343 v0.20.0 LLM 服务独立进程 — llm-manager / worker 架构 (批516 quick-13 验证中)
+
+- **用户指令**: "将llm服务写成单独进程, 以免新CLI重新加载LLM到显存内, 最好使用小而完善的框架完成"; 纠正 "仅是新增本机 llm host 而非全面修改当前框架llm使用流程"; 钦定策略 "一个是 llm-manager 进程, 一个是实际 llm-service-host; **卸载直接杀 llm-service-host 就好了**"。
+- **现状代码事实**: BgeEmbedder (llamalocal) 惰性加载 bge-q8 26MB (加载后 RSS ~157MB 实测), 每 CLI 进程经 DI 新建 (ServiceCollectionExtensions L226); LLamaEmbedder.Dispose() 只释放 Context **不释放 _weights** (LLamaSharp L54-57 实测) → 手工卸载需穿透 SharedEmbedderRegistry (无卸载 API) + 引用计数, 复杂易漏; CLI 生命周期 = REPL while(true) (L296) 或 -q 单次, 多实例并存。
+- **架构**: `llm-manager` (轻量常驻, 0 模型, 不随 CLI 生死) 对外 UDS 透明代理 → lazy spawn `llm-service-host` worker (真 bge); 卸载 = kill worker (OS 回收全部 native 内存, 绕开手工释放/引用计数)。ping 由 manager 直答 (探活不触发加载); 双启保护 .manager.pid/.worker.pid; 客户端 .startlock 原子抢占; SIGKILL 后孤儿 worker 由新 manager 清理。
+- **卸载判定 (纯函数, 单测矩阵)**: `ShouldUnload = workerUp ∧ inflight==0 ∧ availMb>0 ∧ availMb<floor(512) ∧ cliCount==0` — **不按时间** (用户钦定: 内存充足常驻); **空闲长连接不阻止卸载** (实测缺陷修正: 原含 conns==0 导致 CLI 长连接永久阻止卸载); 读不到内存 (非 Linux) 保守不卸。
+- **跨平台 (用户 OOB "/bin/sh 跨平台怎么办?")**: 产品代码零 shell — spawn 用 `Process.Start`+`ArgumentList`, 卸载用 `Process.Kill(entireProcessTree:true)`, 存活判断 `Process.GetProcessById`+`HasExited`; daemon 自写日志 (env LOG, 替代 sh 重定向); UDS 跨平台 (Win10+ AF_UNIX); /proc/meminfo 非 Linux 优雅降级 (Windows GlobalMemoryStatusEx 待办)。
+- **验收**: 新增 LlmServiceTests(9)+LlmManagerTests(7) → **全量 661/661 绿**; AOT publish 13.6MB **0 IL 警告**; 真机 E2E: ①manager READY 0 模型 → ②首请求 lazy worker (RSS 157684KB, bge 512 维) → ③kill -9 worker → ④下请求自动重拉 (pid 2659546→2659594) + manager 存活 → ⑤阈值拉满+无 CLI 实例 → worker 被卸载无残留。
+- **诚实边界**: ①RemoteEmbedder 尚无框架内调用点 (opt-in 集成 = v0.20.1 P4-a); ②worker 仅服务 bge embed, 本地 LLM 推理未 worker 化 (P4-b 评估); ③Windows 内存探测未实现。
+
 ## R338 v0.17.3 P10 锚词 Span 化收尾 (批288 quick-13 13/13)
 
 - **立项**: improvements.md 下轮候选 — R333 (v0.16.4) 完成 P10 中文 2/3/4 字窗 long-key 零分配后遗留 **English 段未动** (function-map-R326 P10: 压缩热路径锚词提取)。可选性: c 收口/dormant 退役均需用户裁定 → 本轮唯一可执行候选。

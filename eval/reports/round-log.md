@@ -2111,3 +2111,11 @@
 - **意图指数**: n=11, ms_avg=0.1, dist={'general': 11, 'git_operation': 1, 'search': 1}
 - **per-case**: C01_general_qa 533tok 11.6s Δ-22 | C03_subtask 1069tok 24.2s Δ-600 | C04_skill_identity 0tok 7.3s | C06_executive_unit_convert 0tok 6.7s | C07_memory_followup 2380tok 35.8s Δ-180 | C08_reasoning 1049tok 21.2s Δ-295 | C11_json_format 733tok 17.9s Δ+37 | C13_git_sensitive 2276tok 26.7s Δ-308 | C14_isolated_multi 3426tok 60.9s Δ+715 | C17_neg_hallucination_bait 736tok 13.0s Δ-1 | C18_neg_format_trap 909tok 16.2s Δ-7 | C19_topic_clarify_6turn 8077tok 73.8s Δ+203 | C26_critic_no_false_positive 1055tok 11.2s Δ-89
 
+## 516 — v0.20.0 llm-manager 架构验收 (2026-09-10T09:07:21+0800)
+
+- **判定**: 13/13 passed, tokens_total=23671 (avg 1821), wall=371590ms (avg 28.6s)
+- **KPI**: tokens_per_case=1821 out (900, 1300) (基准轮数 13)
+- **防漂移指数**: segments=1, drift_pass=1.0, semantic_avg=None, chars_ratio=1.0
+- **意图指数**: n=11, ms_avg=0.1, dist={'general': 11, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 520tok 10.6s Δ-35 | C03_subtask 1950tok 44.5s Δ+281 | C04_skill_identity 0tok 7.1s | C06_executive_unit_convert 0tok 6.7s | C07_memory_followup 3154tok 57.9s Δ+594 | C08_reasoning 1029tok 23.9s Δ-315 | C11_json_format 611tok 11.1s Δ-85 | C13_git_sensitive 2942tok 54.2s Δ+358 | C14_isolated_multi 1978tok 29.2s Δ-733 | C17_neg_hallucination_bait 818tok 16.1s Δ+81 | C18_neg_format_trap 819tok 13.5s Δ-97 | C19_topic_clarify_6turn 8677tok 83.8s Δ+803 | C26_critic_no_false_positive 1173tok 13.1s Δ+29
+
