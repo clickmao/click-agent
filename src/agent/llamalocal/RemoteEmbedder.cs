@@ -67,7 +67,9 @@ public sealed class RemoteEmbedder : agent.contextgradient.ITextEmbedder, IDispo
         return s;
     }
 
-    public bool IsAvailable => Probe(_sockPath);
+    /// <summary>可用性: daemon 在线 或 具备拉起能力 (有可执行) — lazy 语义下"可拉起"即视为可用
+    /// (否则 ContextAssembler 会在首次使用前误判不可用 → 恒退锚词模式)。</summary>
+    public bool IsAvailable => Probe(_sockPath, 200) || ResolveSpawnCommand() is not null;
 
     public async Task<float[]> EmbedAsync(string text, CancellationToken ct = default)
     {
@@ -332,4 +334,19 @@ public sealed class RemoteEmbedder : agent.contextgradient.ITextEmbedder, IDispo
         => "\"" + s.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", "\\n").Replace("\r", "\\r").Replace("\t", "\\t") + "\"";
 
     public void Dispose() => Teardown();
+}
+
+/// <summary>v0.20.1 P4-a (R344): 嵌入后端模式 — opt-in, 默认 local (用户铁律: 默认行为不变)。
+/// env AGENTFRAMEWORK_BGE_MODE: "remote" → 本机 llm-service (manager/worker, 免进程内加载 bge);
+/// 其他/未设 → local (进程内 BgeEmbedder, 原路径)。</summary>
+public enum EmbedderModeKind { Local, Remote }
+
+public static class EmbedderMode
+{
+    public const string EnvName = "AGENTFRAMEWORK_BGE_MODE";
+
+    public static EmbedderModeKind Resolve(string? envValue)
+        => string.Equals(envValue?.Trim(), "remote", StringComparison.OrdinalIgnoreCase)
+            ? EmbedderModeKind.Remote
+            : EmbedderModeKind.Local;
 }

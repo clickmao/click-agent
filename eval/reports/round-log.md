@@ -2119,3 +2119,11 @@
 - **意图指数**: n=11, ms_avg=0.1, dist={'general': 11, 'git_operation': 1, 'search': 1}
 - **per-case**: C01_general_qa 520tok 10.6s Δ-35 | C03_subtask 1950tok 44.5s Δ+281 | C04_skill_identity 0tok 7.1s | C06_executive_unit_convert 0tok 6.7s | C07_memory_followup 3154tok 57.9s Δ+594 | C08_reasoning 1029tok 23.9s Δ-315 | C11_json_format 611tok 11.1s Δ-85 | C13_git_sensitive 2942tok 54.2s Δ+358 | C14_isolated_multi 1978tok 29.2s Δ-733 | C17_neg_hallucination_bait 818tok 16.1s Δ+81 | C18_neg_format_trap 819tok 13.5s Δ-97 | C19_topic_clarify_6turn 8677tok 83.8s Δ+803 | C26_critic_no_false_positive 1173tok 13.1s Δ+29
 
+## 517 — v0.20.1 P4-a opt-in 集成验收 (默认 local 不回归) (2026-09-10T09:16:58+0800)
+
+- **判定**: 13/13 passed, tokens_total=23004 (avg 1770), wall=380747ms (avg 29.3s)
+- **KPI**: tokens_per_case=1770 out (900, 1300) (基准轮数 13)
+- **防漂移指数**: segments=1, drift_pass=1.0, semantic_avg=None, chars_ratio=1.0
+- **意图指数**: n=11, ms_avg=0.3, dist={'general': 11, 'git_operation': 1, 'search': 1}
+- **per-case**: C01_general_qa 567tok 12.4s Δ+16 | C03_subtask 1809tok 41.0s Δ+317 | C04_skill_identity 0tok 7.1s | C06_executive_unit_convert 0tok 6.7s | C07_memory_followup 2821tok 51.0s Δ+406 | C08_reasoning 1133tok 25.3s Δ-119 | C11_json_format 634tok 11.1s Δ-97 | C13_git_sensitive 1825tok 19.0s Δ-623 | C14_isolated_multi 3818tok 82.3s Δ+1029 | C17_neg_hallucination_bait 795tok 17.3s Δ+72 | C18_neg_format_trap 893tok 15.8s Δ-13 | C19_topic_clarify_6turn 7567tok 80.6s Δ-360 | C26_critic_no_false_positive 1142tok 11.1s Δ+23
+

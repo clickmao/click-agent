@@ -83,6 +83,7 @@ CLI(s) ──UDS──→ llm-manager (轻量常驻, 0 模型, 不随 CLI 生死
 | `AGENTFRAMEWORK_LLM_SERVICE_LOG` | `<sock>.log` | daemon 自写日志 (跨平台, 不依赖 shell 重定向) |
 | `AGENTFRAMEWORK_LLM_SERVICE_MEM_FLOOR_MB` | 512 | 可用内存低于此值 (且无 CLI 实例) → 卸载 worker |
 | `AGENTFRAMEWORK_LLM_SERVICE_UNLOAD_CHECK_MS` | 15000 | 卸载巡检间隔 |
+| `AGENTFRAMEWORK_BGE_MODE` | `local` | **opt-in** 嵌入后端: `remote` → 走本机 llm-service (CLI 进程免加载 bge, 首次调用 lazy 拉起 manager/worker); 其他/未设 → 原路径 (进程内 BgeEmbedder, 行为不变) (v0.20.1 P4-a) |
 
 行为要点: ① **不按时间卸载** — 内存充足则 worker 常驻; ② 空闲长连接不阻止卸载 (下次请求自动重拉);
 ③ 客户端窗口 5min 内自启 ≥3 次 → 熔断 (防重启风暴); ④ manager 被 SIGKILL 后残留的孤儿 worker 由新 manager 启动时清理。

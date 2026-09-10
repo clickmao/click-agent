@@ -218,10 +218,16 @@ public static class ServiceCollectionExtensions
         });
         services.AddSingleton<IRAGRecall, RAGRecall>();
         // v7.15 P3: bge 嵌入器 (压缩语义漂移校验) — 模型路径走配置, 缺失 → NullTextEmbedder (锚词模式, 行为兼容)
+        // v0.20.1 P4-a (R344, 用户钦定 opt-in): AGENTFRAMEWORK_BGE_MODE=remote → 本机 llm-service
+        // (llm-manager/worker 独立进程, 免每 CLI 进程加载 bge); 默认 local = 原路径 (行为不变)。
         services.AddSingleton<agent.contextgradient.ITextEmbedder>(sp =>
         {
             var cfg = sp.GetRequiredService<agent.config.ConfigSnapshot>();
             var modelPath = cfg.Get("embedding", "model_path", "");
+            var mode = agent.llamalocal.EmbedderMode.Resolve(
+                Environment.GetEnvironmentVariable(agent.llamalocal.EmbedderMode.EnvName));
+            if (mode == agent.llamalocal.EmbedderModeKind.Remote)
+                return new agent.llamalocal.RemoteEmbedder(); // 懒连接; 调用时自动拉起 manager/worker
             return File.Exists(modelPath)
                 ? new agent.llamalocal.BgeEmbedder(modelPath)
                 : new agent.contextgradient.NullTextEmbedder();

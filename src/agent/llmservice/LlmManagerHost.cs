@@ -331,9 +331,10 @@ public sealed class LlmManagerHost : IDisposable
 
     // ---- 默认探测器 (可注入替换以便测试) ----
 
-    /// <summary>系统可用内存 MB (/proc/meminfo MemAvailable)。</summary>
+    /// <summary>系统可用内存 MB (Linux: /proc/meminfo MemAvailable; Windows: GlobalMemoryStatusEx; 其他 → -1)。</summary>
     public static long ReadMemAvailableMb()
     {
+        if (OperatingSystem.IsWindows()) return WindowsMemory.GetAvailableMb();
         try
         {
             foreach (var line in File.ReadAllLines("/proc/meminfo"))
