@@ -104,6 +104,18 @@ public class IndustrialAgentV2 : AgentBase
     private readonly ILLMCaller _llmCaller;
     private readonly agent.subagent.IsolatedTaskRunner? _isolatedTaskRunner;
     private readonly agent.modelqueue.ModelQueueRouter? _modelRouter;
+
+    /// <summary>R356-c: 前端 state.snapshot 真实状态快照 (零反射手写序列化由消费方做)。</summary>
+    public sealed record AgentSnapshot(
+        string SessionId,
+        string? ModelId,
+        string? ModelProvider,
+        string SelectionBasis,
+        string SelectionMode,
+        int ModelSwitches,
+        long UptimeMs);
+
+    private readonly long _startTicks = Environment.TickCount64;
     private readonly agent.modelqueue.BalanceQueryService? _balanceService;
     private readonly agent.modelqueue.TokenUsageService? _tokenUsageService;
     private readonly agent.modelqueue.ModelVerifyService? _verifyService;
@@ -1399,6 +1411,24 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
     ///   /balance [id]      → 余额查询 (scheme 分派, 诚实报错)
     /// 返回 null = 非本组指令 (放行主链)。
     /// </summary>
+    /// <summary>
+    /// R356-c: 前端 state.snapshot 数据源 — 聚合模型路由/会话/运行时长真实状态。
+    /// 零副作用 (只读), 供 FrontendApi 消费。
+    /// </summary>
+    public AgentSnapshot GetSnapshot()
+    {
+        var active = _modelRouter?.ActiveModel;
+        return new AgentSnapshot(
+            SessionId: "frontend-main",
+            ModelId: active?.Id,
+            ModelProvider: active?.Provider,
+            SelectionBasis: _modelRouter?.LastSelectionBasis ?? "none",
+            SelectionMode: _modelRouter?.ManualOverride is null ? "auto" : "manual",
+            ModelSwitches: _modelRouter?.Switches.Count ?? 0,
+            UptimeMs: Environment.TickCount64 - _startTicks);
+    }
+
+
     private AgentResponse? HandleModelCommand(string input, long elapsedMs)
     {
         var parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);

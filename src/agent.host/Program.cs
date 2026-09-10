@@ -1,4 +1,5 @@
 using agent.contextgradient;
+using System.Text;
 using System.Text.Json;
 using agent.llamalocal;
 using Microsoft.Extensions.DependencyInjection;
@@ -260,18 +261,41 @@ if (args.Length >= 2 && args[0] == "--frontend-api")
     var frontendCtx = new AgentContext(provider) { SessionId = "frontend-main", UserId = "frontend-user" };
     await entryAgent.InitializeAsync(frontendCtx);
 
-    var snapshotJson = "{\"v\":1,\"agent\":{\"name\":\"click-agent\",\"status\":\"idle\"},\"note\":\"P1 snapshot 骨架\"}";
     var metaJson = "{\"version\":\"0.20.5\",\"contract\":1,\"domains\":[\"chat\",\"meta\",\"state\"]}";
     var chatRouter = new agent.frontendapi.FrontendApiChatRouter(entryAgent);
+    var v2 = entryAgent as IndustrialAgentV2;
     var server = new agent.frontendapi.FrontendApiServer(async (api, payloadJson) =>
     {
         // chat 域 (异步直通 V2)
         var chatResp = await chatRouter.HandleAsync(api, payloadJson);
         if (chatResp is not null) return chatResp;
-        // 状态/元域 (同步)
+        // 状态域: R356-c 真实快照 (V2.GetSnapshot 实时聚合 — 手写序列化零反射)
+        if (api == "state.snapshot")
+        {
+            if (v2 is null)
+                return "{\"error\":\"snapshot_unavailable\"}";
+            var snap = v2.GetSnapshot();
+            using var ms = new MemoryStream();
+            using (var w = new Utf8JsonWriter(ms))
+            {
+                w.WriteStartObject();
+                w.WriteString("session_id", snap.SessionId);
+                w.WriteStartObject("model");
+                w.WriteString("id", snap.ModelId ?? "(none)");
+                w.WriteString("provider", snap.ModelProvider ?? "(none)");
+                w.WriteString("selection", snap.SelectionBasis);
+                w.WriteString("mode", snap.SelectionMode);
+                w.WriteNumber("switches", snap.ModelSwitches);
+                w.WriteEndObject();
+                w.WriteNumber("uptime_ms", snap.UptimeMs);
+                w.WriteBoolean("ready", true);
+                w.WriteEndObject();
+            }
+            return Encoding.UTF8.GetString(ms.ToArray());
+        }
+        // 元域 (同步)
         return api switch
         {
-            "state.snapshot" => snapshotJson,
             "state.hello" => "{\"hello\":true}",
             "meta.info" => metaJson,
             _ => null,

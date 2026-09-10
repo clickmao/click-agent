@@ -650,11 +650,14 @@ def main():
     # 口径分带: full-19 (批50 基线) vs quick-10 (R143 扩容: 5 关键+5 多样性含负面/skill/记忆)
     # quick-10 估 tok/case ≈ 780 (批49 全量 per-case 推导); wall 上限放宽 (C13/C17 LLM 用例拖尾)
     if len(results) <= 12:
-        # R149: quick-11 口径 (+C14 repl 双轮) — tok 均值摊薄带不变; C14 双 LLM 轮 wall 拖尾 → 上限 40→55s
-        # R182: C07 改 repl 双轮 (真缺陷 61 修复配套) → +1 轮 LLM 成本, tok 上界 1100→1250 (批131 1193 实证锚定)
+        # R149: quick-11 口径 (+C14 repl 双轮); R182: C07 双轮 → tok 上界 1250 (批131 锚定)
         KPI = {"tokens_per_case": (600, 1250), "wall_per_case_ms": (8000, 55000)}
     else:
-        KPI = {"tokens_per_case": (900, 1300), "wall_per_case_ms": (12000, 45000)}
+        # R356-c (用户令 KPI 口径决策): 旧上界 1300 自批 518 起 4 轮连续失效 (518/519/522 GLM 时代
+        # 即 1703-1787, 非 DS 切换引入) → 重新锚定 (1400, 2100): 上界=批523(1836)+15% 波动容差;
+        # 下界 1400=旧带抬升防回答缩水作弊。wall 下界 12000 淘汰: DS deepseek-flash 实测 8003ms/case
+        # (批523) 较 GLM (522: 22317ms) 快 2.8 倍 — 提速是真实收益, 下界改为 5000 防零调用假快。
+        KPI = {"tokens_per_case": (1400, 2100), "wall_per_case_ms": (5000, 45000)}
     breaches = []
     n = max(1, len(results))
     avg_tok = summary["tokens_total"] / n

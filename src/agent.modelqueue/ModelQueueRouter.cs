@@ -189,10 +189,15 @@ public sealed class ModelQueueRouter : IModelQueueCaller
     {
         // R351 (用户钦定): 本地推理通道移除 — 全部经 API 调用 (远端目录)。
         // 需求1 混合调度: 手动/粘性优先 → 通道优先级 (远端目录)
-        var entry = _catalog.Find(_manualOverride ?? _activeModelId)
+        var sticky = _catalog.Find(_manualOverride ?? _activeModelId);
+        var entry = sticky
                     ?? _policy.Select(null, kind, intent,
                         prompt.EstimatedTokens, prompt.EstimatedTokens / 3, _catalog)
                     ?? SelectByChannelPriority(kind, intent, prompt.EstimatedTokens);
+        // R356-c: 选模依据实时可观测 (snapshot/state 消费; sticky 命中原来不更新 → 恒显 init)
+        LastSelectionBasis = sticky is not null
+            ? $"sticky:{entry!.Id}"
+            : $"auto:{entry?.Id ?? "(none)"}";
         if (entry is null)
         {
             return new QueueResponse
