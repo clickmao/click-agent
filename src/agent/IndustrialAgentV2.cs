@@ -104,6 +104,13 @@ public class IndustrialAgentV2 : AgentBase
     private readonly ILLMCaller _llmCaller;
     private readonly agent.subagent.IsolatedTaskRunner? _isolatedTaskRunner;
     private readonly agent.modelqueue.ModelQueueRouter? _modelRouter;
+    private readonly agent.roles.RoleRegistry? _roleRegistry;
+
+    /// <summary>R362: 当前激活 Role (可空 — --role 未传时 null, 行为与无 Role 完全一致)。</summary>
+    public agent.roles.RoleRegistry.RolePackage? ActiveRole { get; }
+
+    /// <summary>R362: Role 成长账本 (仅激活 Role 时非空 — 赏罚计数/置信度/倾向)。</summary>
+    public agent.roles.RoleGrowthLedger? GrowthLedger { get; }
 
     /// <summary>R356-c: 前端 state.snapshot 真实状态快照 (零反射手写序列化由消费方做)。</summary>
     public sealed record AgentSnapshot(
@@ -323,9 +330,14 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
         agent.logging.LogRouter? logRouter = null,
         agent.skills.SkillDispatcher? skillDispatcher = null,
         IRAGRecall? ragRecall = null,
-        agent.contextgradient.ITextEmbedder? textEmbedder = null) : base(logger, handlers)
+        agent.contextgradient.ITextEmbedder? textEmbedder = null,
+        agent.roles.RoleRegistry? roleRegistry = null) : base(logger, handlers)
     {
         _isolatedTaskRunner = isolatedTaskRunner;
+        var activeId = roleRegistry?.ActiveId;
+        ActiveRole = activeId is null ? null : roleRegistry!.Find(activeId);
+        GrowthLedger = ActiveRole is null || activeId is null ? null : new agent.roles.RoleGrowthLedger(activeId);
+        _roleRegistry = roleRegistry;
         _modelRouter = modelRouter;
         _balanceService = balanceService;
         _tokenUsageService = tokenUsageService;
@@ -1946,6 +1958,17 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             var agentUid = message.SenderId is { Length: > 0 } ? message.SenderId : "main";
             var profile = _agentProfileStore.GetOrCreate(agentUid);
             var blocks = new List<string>();
+            // R362 (v0.21.0): Role 块注入 — 语风种子 + 赏罚成长实况 (排在 agent 画像之前: 角色人格优先)
+            if (ActiveRole is not null)
+            {
+                var roleSb = new System.Text.StringBuilder($"【角色:{ActiveRole.Name}】");
+                if (!string.IsNullOrEmpty(ActiveRole.ProfileSeed))
+                    roleSb.Append('\n').Append(ActiveRole.ProfileSeed);
+                var growthBlock = GrowthLedger?.RenderForPrompt();
+                if (!string.IsNullOrEmpty(growthBlock))
+                    roleSb.Append('\n').Append(growthBlock);
+                blocks.Add(roleSb.ToString());
+            }
             var profileRendered = profile.RenderForPrompt();
             if (!string.IsNullOrEmpty(profileRendered))
                 blocks.Add(profileRendered);

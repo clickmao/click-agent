@@ -40,6 +40,8 @@ internal class Program
         var skillExtraDirs = new List<string>();
         var skillBlacklist = new List<string>();
         var skillExtraFiles = new List<string>();
+        string? roleId = null;   // v0.21.0 (用户钦定): --role <id> 可空 — 缺省无角色 (行为不变)
+        string? rolesDir = null; // --roles-dir <dir> 外挂角色包目录 (默认 roles/)
         for (var i = 0; i < args.Length; i++)
         {
             if (args[i] == "--log" && i + 1 < args.Length)
@@ -64,6 +66,11 @@ internal class Program
                 skillBlacklist.AddRange(args[++i].Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
             else if (args[i] == "--skills-file" && i + 1 < args.Length)
                 skillExtraFiles.Add(args[++i]);
+            // v0.21.0 (用户钦定): --role <id> 激活外挂角色 (可空 — 不传即无角色); --roles-dir 自定义包目录
+            else if (args[i] == "--role" && i + 1 < args.Length)
+                roleId = args[++i];
+            else if (args[i] == "--roles-dir" && i + 1 < args.Length)
+                rolesDir = args[++i];
         }
 
         // R136 (D4 reply_rel 基础设施): --embed 输出向量 JSON — R352: 本地 bge 已删,
@@ -248,6 +255,9 @@ if (args.Length >= 2 && args[0] == "--compression-audit")
 // v0.19 P1 后半 (R355): --frontend-api <port> — FrontendApi 统一接口独立挂载。
 // 与 REPL/one-shot 并列的第三种运行形态: 常驻服务, 外部前端经 TCP 行 JSON 信封消费完整 agent 管线。
         await using var provider = services.BuildServiceProvider();
+        // R362: CLI --role 优先于 config (可空 — 未传时用 config/无角色)
+        if (!string.IsNullOrWhiteSpace(roleId))
+            provider.GetRequiredService<agent.roles.RoleRegistry>().ActiveId = roleId;
         var entryAgent = provider.GetRequiredService<IAgent>();
 
 if (args.Length >= 2 && args[0] == "--frontend-api")
