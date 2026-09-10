@@ -1,8 +1,8 @@
-# click-agent (v0.17.2)
+# click-agent (v0.20.2)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)
-![Tests](https://img.shields.io/badge/tests-619%2F619-brightgreen)
+![Tests](https://img.shields.io/badge/tests-699%2F699-brightgreen)
 ![NativeAOT](https://img.shields.io/badge/NativeAOT-zero%20warnings-blueviolet)
 ![Eval](https://img.shields.io/badge/迭代评测-286批%2099%25%2B-success)
 
@@ -12,19 +12,22 @@
 
 **内部插件核心能力按需自行插入**——框架提供宿主机制与执行协议（技能三形态：executive 脚本交付 / normative 清单交付 / knowledge_hint 知识前置注入；脚本执行走 CLI 验证 → 插件服务，JSON Lines 事件流协议；像素画风锚定合成等渲染/领域能力由插件层扩展），能力边界由插入的插件/技能定义，而非框架写死。
 
-net10.0 / NativeAOT 零 IL 警告 / 597 单测全绿 / 迭代评测 286 批通过率 99%+。
-发布线: v0.17.2 — 执行层稳固化 T1-T4 (跨进程锁/占用者检测/教训记忆) / v0.17.1 离线变更用户审批 / v0.17.2-a 活动任务注册表 / v0.16 skills 引擎 (CLI 外挂+动态过滤+查询) / v0.15.2-A 存档版 / v0.14 critic 自审体系 / v0.13.3 思考链+渐进式探索 (+56pt)。
+net10.0 / NativeAOT 零 IL 警告 / 699 单测全绿 / 迭代评测 319 批通过率 99%+。
+发布线: v0.20.2 — LLM 服务独立进程 (llm-manager/worker, 卸载=杀 worker) / 多 LLM 免费测试池 (28 条) / FrontendApi v1 契约 / v0.17.x 执行层稳固化 / v0.16 skills 引擎 / v0.15.2-A 存档版 / v0.14 critic 自审体系 / v0.13.3 思考链+渐进式探索。
 
 [🇬🇧 English → README_EN.md](README_EN.md)
 
 ---
 
-### ✅ v0.20.0 LLM 服务独立进程 — llm-manager / worker (R342-R343 已落地, 真机 E2E 全通)
+### ✅ v0.20.0-v0.20.2 LLM 服务独立进程 + 多 LLM 免费测试池 + FrontendApi v1 (R342-R350 已落地, 真机 E2E 全通)
 - **动因** (用户钦定): "将 llm 服务写成单独进程, 以免新 CLI 重新加载 LLM 到显存内"; 加载一次 LLM 成本极高 (bge 26MB 权重 → RSS ~157MB, LLM 更甚) → 0 实例时新 CLI 不得重载。
 - **架构**: `llm-manager` 轻量常驻 (0 模型, 不随 CLI 生死) 对外 UDS 透明代理 → **lazy spawn** `llm-service-host` worker (真 bge) / **supervise** (worker 崩溃 → 下次请求自动重拉, 客户端无感) / **unload** (资源紧张 ∧ 无 CLI 实例 ∧ 无进行中请求 → **kill worker**, OS 回收全部 native 内存)。卸载判定不按时间 (内存充足常驻); 空闲长连接不阻止卸载; 熔断防重启风暴; SIGKILL 孤儿 worker 自动清理。
 - **跨平台铁律** (用户 OOB 修正): 产品代码零 shell — `Process.Start`+`ArgumentList` / `Process.Kill(entireProcessTree)` / `Process.GetProcessById`+`HasExited`; daemon 自写日志; UDS; 非 Linux 内存探测优雅降级。
 - **保留** (用户纠正): "仅是新增本机 llm host 而非全面修改当前框架 llm 使用流程" — DI/进程内路径原样, 客户端入口 `RemoteEmbedder` 显式选用。
-- 真机 E2E: manager 0 模型 → lazy worker (RSS 157MB, bge 512 维) → kill -9 → 自动重拉 (pid 变化) → 阈值拉满 + 无 CLI 实例 → 卸载无残留。661 单测全绿 / AOT 13.6MB 零 IL 警告。
+- 真机 E2E: manager 0 模型 → lazy worker (RSS 157MB, bge 512 维) → kill -9 → 自动重拉 (pid 变化) → 阈值拉满 + 无 CLI 实例 → 卸载无残留。
+- **opt-in 集成 + 可观测** (v0.20.1-v0.20.2): `AGENTFRAMEWORK_BGE_MODE=remote` 走本机 service (CLI 进程 RSS 160→41MB, 省 119MB/进程) / `/llm-service` 指令 + `--llm-service-status` 参数 (manager/worker 状态/请求数/卸载计数) / Windows 内存探测 (GlobalMemoryStatusEx)。
+- **多 LLM 免费测试池** (v0.20.4, 用户钦定): Free-LLM-Collection 全源接入 28 条 (Groq/OpenRouter/NVIDIA/Cerebras/Cohere/硅基流动/ModelScope/智普/Kilo 等), 全部 OpenAI 兼容; 未配 key 自动沉底零影响 (RankCandidates), 配 key 即入 auto 优选; 24 端点假 key 探针逐实测 + 真 key 真机调用验证 (OpenRouter nemotron-ultra / Kilo 双通过); `/model verify-all` 全目录并发校验。
+- **FrontendApi v1 契约** (v0.19.0 P1 首切片): 统一信封 (JSON Lines: req/resp/event) + TCP 47810 Server + Router + state.snapshot/state.hello/meta 域 (真 TCP 往返测试; chat/ask 域后半接入)。
 
 ### ✅ v0.17.x 执行层稳固化 — 锁 / 原子写 / 审批 / 活动感知 (R334-R336 已落地, 验收批 284-286 全绿)
 - **跨进程文件锁 + 原子写** (v0.17.0, 用户钦定 "2 agent 写 1 文件" 工业化): FileLock (.lock + FileShare.None=flock LOCK_EX, 崩溃内核自动放锁) / AtomicFileWriter (tmp+fsync+rename) / **OccupantDetector** (/proc/locks → "PID x (comm)") / ExecutorLessonMemory (失败→原因→**频率加权教训记忆**: 1 次摘要→3 次补方案→8 次补上下文, 24h 降级 7d 移除); 接入 TaskCharter/GuardrailMemory 写点 (同 Id 推进覆盖/异主让位/锁内条件覆盖 WriteIf 无 TOCTOU)。

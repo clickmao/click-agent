@@ -3,7 +3,7 @@
   <PropertyGroup>
     <DefineConstants Condition="'$(DisableSkiaRenderer)' != 'true'">$(DefineConstants);SKIA_RENDERER</DefineConstants>
     <TargetFramework>net10.0</TargetFramework>
-    <Version>0.17.2</Version>
+    <Version>0.20.2</Version>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../agent/agent.csproj" />
+    <ProjectReference Include="../agent.frontendapi/agent.frontendapi.csproj" />
     <ProjectReference Include="../agent.config/agent.config.csproj" />
     <ProjectReference Include="../agent.exploration/agent.exploration.csproj" />
     <ProjectReference Include="../agent.io/agent.io.csproj" />
