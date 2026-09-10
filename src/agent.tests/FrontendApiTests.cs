@@ -19,9 +19,13 @@ public class FrontendApiTests : IDisposable
         // 每测试独立端口 (并行安全): 47900 + 随机偏移
         _port = 47900 + (System.Environment.ProcessId % 500) + new Random().Next(50);
         _server = new FrontendApiServer(
-            FrontendApiRouter.Build(
-                snapshotBuilder: () => "{\"v\":1,\"agent\":{\"name\":\"click-agent\",\"status\":\"idle\"}}",
-                metaInfo: () => "{\"version\":\"0.20.4\",\"contract\":1}"),
+            async (api, _) =>
+            {
+                var sync = FrontendApiRouter.Build(
+                    snapshotBuilder: () => "{\"v\":1,\"agent\":{\"name\":\"click-agent\",\"status\":\"idle\"}}",
+                    metaInfo: () => "{\"version\":\"0.20.4\",\"contract\":1}");
+                return sync(api);
+            },
             _ => { }, _port);
         _server.Start();
         // 等监听就绪

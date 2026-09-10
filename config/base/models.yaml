@@ -6,9 +6,10 @@
 # ==============================================
 modules:
   # ── 首选: DeepSeek 4.1 Flash (性价比主力) ──
-  - name: deepseek-4.1-flash
-    description: DeepSeek 4.1 Flash — 首选 (通用对话/代码, 性价比主力)
+  - name: deepseek-flash
+    description: DeepSeek Flash — 首选 (通用对话/代码, 性价比主力; API 正名 deepseek-flash, 4.1-flash 系产品线名)
     provider: deepseek
+    priority: 1
     request_address: https://api.deepseek.com/v1/chat/completions
     api_key: AGENTFRAMEWORK_KEYS_DEEPSEEK
     context_window: 131072
@@ -22,6 +23,7 @@ modules:
   - name: glm-5.3-flash
     description: GLM 5.3 Flash — 次选 (bigmodel coding 端点, 快速通用)
     provider: zhipu
+    priority: 2
     request_address: https://open.bigmodel.cn/api/coding/paas/v4/chat/completions
     api_key: AGENTFRAMEWORK_KEYS_BIGMODEL
     context_window: 131072

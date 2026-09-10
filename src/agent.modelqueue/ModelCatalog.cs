@@ -47,6 +47,9 @@ public sealed class ModelCatalogEntry
     /// <summary>推理能力 1-10 (C.6.1 标准值, 依据公开评测归一化)</summary>
     public int ReasoningScore { get; set; }
 
+    /// <summary>R356 (用户钦定): 目录声明优先级 — 1=最高 (首选)。0=未声明 (按旧打分逻辑)。</summary>
+    public int Priority { get; set; }
+
     /// <summary>编码能力 1-10</summary>
     public int CodingScore { get; set; }
 
@@ -151,6 +154,7 @@ public sealed class ModelCatalog
                     PriceInPerM = AsDouble(d, "price_in_per_m"),
                     PriceOutPerM = AsDouble(d, "price_out_per_m"),
                     ReasoningScore = (int)AsDouble(d, "reasoning_score"),
+                    Priority = (int)AsDouble(d, "priority"),
                     CodingScore = (int)AsDouble(d, "coding_score"),
                     ContextWindow = (int)AsDouble(d, "context_window"),
                     SuitedFor = d.TryGetValue("suited_for", out var sf) && sf is List<object?> sl

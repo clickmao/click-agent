@@ -8,7 +8,7 @@ using agent.modelqueue;
 
 namespace agentframework.tests;
 
-/// <summary>v0.20.5 R351 (用户钦定): 模型目录精简 — 仅 deepseek-4.1-flash(首)/glm-5.3-flash(次)/gpt-6(默认配置);
+/// <summary>v0.20.5 R351 (用户钦定): 模型目录精简 — 仅 deepseek-flash(首)/glm-5.3-flash(次)/gpt-6(默认配置);
 /// 本地 LLM/官方通道/免费池预留配置全部移除。选模: 无 key 沉底机制保留。</summary>
 public class FreeApiModelsTests
 {
@@ -26,7 +26,7 @@ public class FreeApiModelsTests
     private static string Yaml() => File.ReadAllText(Path.Combine(RepoRoot(), "config", "base", "models.yaml"));
 
     [Theory]
-    [InlineData("deepseek-4.1-flash", "deepseek", "https://api.deepseek.com/v1/chat/completions", "AGENTFRAMEWORK_KEYS_DEEPSEEK")]
+    [InlineData("deepseek-flash", "deepseek", "https://api.deepseek.com/v1/chat/completions", "AGENTFRAMEWORK_KEYS_DEEPSEEK")]
     [InlineData("glm-5.3-flash", "zhipu", "https://open.bigmodel.cn/api/coding/paas/v4/chat/completions", "AGENTFRAMEWORK_KEYS_BIGMODEL")]
     [InlineData("gpt-6", "openai", "https://api.openai.com/v1/chat/completions", "AGENT_OPENAI_KEY")]
     public void Yaml_ContainsExactlyThreeChannels(string name, string provider, string endpoint, string keyEnv)

@@ -60,8 +60,14 @@ public sealed class ModelSelectionPolicy
             return null;
 
         // 2. 计价策略: 性能不敏感 → 最便宜可用
+        // R356: 声明了 priority 的模型不参与"最便宜"抢位 (首选 DS 不得被 0 价 GLM 顶掉);
+        // 全目录都未声明 → 保持旧 cheapest 行为。
         if (LowSensitivityKinds.Contains(kind))
         {
+            var declared = catalog.Models.Where(m => m.Priority > 0)
+                .OrderBy(m => m.Priority).ToList();
+            if (declared.Count > 0)
+                return declared[0];
             return catalog.Models
                 .OrderBy(m => EstimatedCost(m, estimatedTokens, estimatedOutputTokens))
                 .FirstOrDefault();
@@ -89,7 +95,11 @@ public sealed class ModelSelectionPolicy
             var codingNeed = IsCodingIntent(intent) ? m.CodingScore / 10.0 : 0.0;
             // 费用惩罚: 归一化到与 fitness 同量纲 (1 USD 差 ≈ 2 分)
             var cost = EstimatedCost(m, estimatedTokens, estimatedOutputTokens);
-            var score = fitness * 2.0 + reasoningNeed * 3.0 + codingNeed * 3.0 - cost * 2.0;
+            // R356 (用户钦定): 目录声明 priority 主导 — 每低一档扣 5 分 (压过 cost*2 的 0 价优势,
+            // 但重推理意图下 reasoning*3=3 分不足以翻盘 → 需要 >5 分差才能翻, 即能力分差 ≥2 才翻)。
+            // 未声明 (0) 不影响 — 保持历史行为。
+            var priorityPenalty = m.Priority > 0 ? (m.Priority - 1) * 5.0 : 0.0;
+            var score = fitness * 2.0 + reasoningNeed * 3.0 + codingNeed * 3.0 - cost * 2.0 - priorityPenalty;
             if (score > bestScore)
             {
                 bestScore = score;
