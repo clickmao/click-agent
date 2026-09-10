@@ -219,8 +219,6 @@ public sealed class LlmManagerHost : IDisposable
                 psi.ArgumentList.Add("--llm-service");
                 psi.Environment["AGENTFRAMEWORK_LLM_SERVICE_SOCK"] = _workerSockPath;
                 psi.Environment["AGENTFRAMEWORK_LLM_SERVICE_LOG"] = _sockPath + ".worker.log";
-                var bge = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_BGE_MODEL");
-                if (!string.IsNullOrEmpty(bge)) psi.Environment["AGENTFRAMEWORK_BGE_MODEL"] = bge;
                 p = Process.Start(psi);
             }
             if (p is null) throw new IOException("worker spawn 返回 null");

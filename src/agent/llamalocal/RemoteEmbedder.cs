@@ -190,8 +190,6 @@ public sealed class RemoteEmbedder : agent.contextgradient.ITextEmbedder, IDispo
             psi.ArgumentList.Add("--llm-manager");
             psi.Environment["AGENTFRAMEWORK_LLM_SERVICE_SOCK"] = _sockPath;
             psi.Environment["AGENTFRAMEWORK_LLM_SERVICE_LOG"] = logPath;
-            var bge = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_BGE_MODEL");
-            if (!string.IsNullOrEmpty(bge)) psi.Environment["AGENTFRAMEWORK_BGE_MODEL"] = bge;
             var p = Process.Start(psi);
             if (p is null) return "Process.Start 返回 null";
             p.Dispose(); // 不持有 — daemon 独立存活 (CLI 退出不杀)

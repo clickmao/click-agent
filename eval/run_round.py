@@ -507,13 +507,8 @@ def main():
         all_cases = [c for c in all_cases if c["id"].startswith(keep)]
     cases = all_cases
     env = load_env()
-    # v0.11.0 R107 (真缺陷 40): 本地通道批测泄漏 — qwen gguf 就绪后 llm-service 守护使 local
-    # IsAvailable=true, 批测未设 AGENTFRAMEWORK_LOCAL_DISABLED=1 时全部用例被 local 优先抢走
-    # (tokens=0, 0.5B CPU 71s/轮, C11 ctx 4096 溢出真失败, 2026-09-07 实证 mass_79 retired)。
-    # harness 层强制兜底: 本地通道对评测是确定性污染源, 不依赖调用方记得设环境变量。
-    env.setdefault("AGENTFRAMEWORK_LOCAL_DISABLED", "1")
-    if os.environ.get("AGENTFRAMEWORK_EVAL_ALLOW_LOCAL") == "1":
-        env.pop("AGENTFRAMEWORK_LOCAL_DISABLED", None)  # 显式逃生口: 本地通道专项评测时用
+    # R351 (用户钦定): 本地推理通道已移除 (全 API 化) — LOCAL_DISABLED 开关随之退役
+    # (历史: R107 真缺陷 40 本地通道批测泄漏 mass_79 retired; 通道本体删除后泄漏源不存在)。
     # v0.11.0 R81: 评测隔离 — R79 RAG 索引落盘会让前轮记忆泄入本轮 (真机是功能, 评测是污染),
     # 每轮启动前清空 RAG 落盘 + 会话记忆, 保证轮间独立可比。
     for stale in ("data/rag/index.jsonl",):
@@ -553,7 +548,13 @@ def main():
     # v0.11.0 R153 (真缺陷 57): gate 读 os.environ 但 bge 路径只在 .env.local → 未 export 的
     # 启动环境 (cron/新 shell) 下 D4 整块静默跳过, reply_rel 全 None (批79/80 实证 n=0)。
     # 修: gate 与子进程同源 — 都读 load_env() 合并后的 env (.env.local 兜底)。
-    if os.path.exists(host_dll) and env.get("AGENTFRAMEWORK_BGE_MODEL"):
+    # R353: --embed 走 llm-service (RemoteEmbedder; daemon 离线 → hash 兜底), 不再依赖本地 bge 模型文件。
+    # BIN 用 env 或 host 目录下 agenthost 二进制 (RemoteEmbedder 拉起 manager 需要可执行路径)。
+    _host_bin = env.get("AGENTFRAMEWORK_LLM_SERVICE_BIN") or (
+        os.path.join(os.path.dirname(host_dll), "agenthost") if os.path.exists(host_dll) else None)
+    if os.path.exists(host_dll):
+        if _host_bin and os.path.exists(_host_bin):
+            env.setdefault("AGENTFRAMEWORK_LLM_SERVICE_BIN", _host_bin)
         def _embed(text):
             try:
                 p = subprocess.run(["dotnet", host_dll, "--embed", text[:2000]],

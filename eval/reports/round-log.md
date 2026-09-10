@@ -2142,3 +2142,15 @@
 - **意图指数**: n=11, ms_avg=0.0, dist={'general': 11, 'git_operation': 1, 'search': 1}
 - **per-case**: C01_general_qa 755tok 28.7s Δ+215 | C03_subtask 992tok 14.4s Δ-617 | C04_skill_identity 0tok 7.0s | C06_executive_unit_convert 0tok 6.8s | C07_memory_followup 1117tok 25.6s Δ-1668 | C08_reasoning 970tok 24.5s Δ-100 | C11_json_format 852tok 16.9s Δ+193 | C13_git_sensitive 1775tok 9.8s Δ-573 | C14_isolated_multi 2525tok 28.0s Δ-549 | C17_neg_hallucination_bait 1276tok 29.3s Δ+493 | C18_neg_format_trap 0tok 11.5s Δ-874 | C19_topic_clarify_6turn 11563tok 169.7s Δ+3456 | C26_critic_no_false_positive 1396tok 31.8s Δ+273
 
+## 520 — v0.20.5 R353 精简后全链回归 (无 LOCAL_DISABLED/BGE_MODEL env) (2026-09-10T23:23:16+0800)
+
+- **判定**: 0/13 passed, tokens_total=0 (avg 0), wall=8584ms (avg 0.7s)
+- **KPI**: tokens_per_case=0 out (900, 1300); wall_per_case_ms=660 out (12000, 45000) (基准轮数 13)
+- **per-case**: C01_general_qa 0tok 0.8s Δ-362 | C03_subtask 0tok 0.7s Δ-1921 | C04_skill_identity 0tok 0.6s | C06_executive_unit_convert 0tok 0.6s | C07_memory_followup 0tok 0.7s Δ-3112 | C08_reasoning 0tok 0.6s Δ-1065 | C11_json_format 0tok 0.6s Δ-621 | C13_git_sensitive 0tok 0.6s Δ-2291 | C14_isolated_multi 0tok 0.7s Δ-2597 | C17_neg_hallucination_bait 0tok 0.7s Δ-793 | C18_neg_format_trap 0tok 0.7s Δ-852 | C19_topic_clarify_6turn 0tok 0.7s Δ-8177 | C26_critic_no_false_positive 0tok 0.7s Δ-1150
+
+## 521 — v0.20.5 R353 精简后回归 (keys 正常, 无死 env) (2026-09-10T23:28:27+0800)
+
+- **判定**: 0/13 passed, tokens_total=0 (avg 0), wall=8642ms (avg 0.7s)
+- **KPI**: tokens_per_case=0 out (900, 1300); wall_per_case_ms=665 out (12000, 45000) (基准轮数 13)
+- **per-case**: C01_general_qa 0tok 0.8s Δ-441 | C03_subtask 0tok 0.7s Δ-1601 | C04_skill_identity 0tok 0.6s | C06_executive_unit_convert 0tok 0.7s | C07_memory_followup 0tok 0.7s Δ-2433 | C08_reasoning 0tok 0.7s Δ-1046 | C11_json_format 0tok 0.6s Δ-701 | C13_git_sensitive 0tok 0.7s Δ-1902 | C14_isolated_multi 0tok 0.6s Δ-2779 | C17_neg_hallucination_bait 0tok 0.7s Δ-946 | C18_neg_format_trap 0tok 0.7s Δ-579 | C19_topic_clarify_6turn 0tok 0.7s Δ-9139 | C26_critic_no_false_positive 0tok 0.7s Δ-1224
+
