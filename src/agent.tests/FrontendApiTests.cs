@@ -16,6 +16,7 @@ public class FrontendApiTests : IDisposable
 
     public FrontendApiTests()
     {
+        // R361: auth 关闭改用构造参数 (全局 env 在并行测试间串扰 — 真 bug)
         // 每测试独立端口 (并行安全): 47900 + 随机偏移
         _port = 47900 + (System.Environment.ProcessId % 500) + new Random().Next(50);
         _server = new FrontendApiServer(
@@ -26,7 +27,7 @@ public class FrontendApiTests : IDisposable
                     metaInfo: () => "{\"version\":\"0.20.4\",\"contract\":1}");
                 return sync(api);
             },
-            _ => { }, _port);
+            _ => { }, _port, access: new FrontendAccessControl(authDisabledOverride: true));
         _server.Start();
         // 等监听就绪
         var deadline = DateTime.UtcNow.AddSeconds(5);

@@ -312,6 +312,7 @@ if (args.Length >= 2 && args[0] == "--frontend-api")
         return 4;
     }
     Console.WriteLine($"frontend-api: READY :{apiPort} (chat.send 直通 V2 管线; Ctrl+C 退出)");
+    Console.WriteLine($"frontend-api: AUTH token = {server.TokenHex} (客户端首行 {{\"type\":\"auth\",\"token\":\"...\"}}; env AGENTFRAMEWORK_FRONTEND_TOKEN 可注入)");
     Console.Out.Flush();
     var feDone = new ManualResetEventSlim(false);
     Console.CancelKeyPress += (_, e) => { e.Cancel = true; feDone.Set(); };

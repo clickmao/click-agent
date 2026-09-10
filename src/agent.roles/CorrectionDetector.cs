@@ -39,6 +39,14 @@ public static class CorrectionDetector
         "thanks", "got it", "correct", "exactly",
     };
 
+    // R361 对抗修正: 语境豁免 — 否定词出现在转述他人/假设/历史语境时不判罚 (L1 误杀 3 例实证)
+    private static readonly string[] ContextExemptions =
+    {
+        "同事说", "别人说", "他们说", "据说",        // 转述他人
+        "如果我说错", "如果我理解", "假如",          // 假设句
+        "上次", "之前那个", "历史", "昨天",          // 历史对照
+    };
+
     /// <summary>L1 规则判定。返回 null = 模糊 (需 L2)。</summary>
     public static CorrectionVerdict? RuleJudge(string userMessage, string previousReply)
     {
@@ -47,11 +55,17 @@ public static class CorrectionDetector
 
         var lower = msg.ToLowerInvariant();
 
+        // 语境豁免前置: 豁免词命中 → 直接进 L2 (规则不可靠, 让 LLM 语境判)
+        foreach (var ex in ContextExemptions)
+            if (lower.Contains(ex))
+                return null;
+
         // 强纠正: 纠正词 + (指代词 或 短消息 — 短否定几乎必然针对上一轮)
         foreach (var m in CorrectMarkers)
         {
             if (!lower.Contains(m)) continue;
-            var referential = ContainsReference(lower) || msg.Length <= 24;
+            var isEnglishMarker = m.All(c => c < 0x80); // 英文标记自带指代 ("not what i meant" 必指上一轮)
+            var referential = isEnglishMarker || ContainsReference(lower) || msg.Length <= 24;
             if (referential)
                 return new CorrectionVerdict { Kind = CorrectionKind.Correct, Confidence = 0.9, Signal = $"marker:{m}" };
         }
@@ -88,16 +102,34 @@ public static class CorrectionDetector
         var user = Truncate(userMessage ?? "", 120);
         var prev = Truncate(previousReply ?? "", 160);
         var prompt =
-            "判定用户这条消息相对上一轮回答是哪种: CORRECTION(纠正/否定上一轮) / ADOPT(认可/采纳) / NEUTRAL(新话题或无关)。\n" +
-            $"上一轮: {prev}\n用户: {user}\n只输出一个词。";
-        var (content, tokens) = await llmCaller(prompt, 48).ConfigureAwait(false); // reasoning 模型思维链吃预算 (R360 实证)
+            "判定用户消息相对上一轮回答: 纠正否定上一轮=C, 认可采纳=A, 新话题无关=N。\n" +
+            $"上一轮: {prev}\n用户: {user}\n只输出一个字母。";
+        string content;
+        int tokens;
+        try
+        {
+            (content, tokens) = await llmCaller(prompt, 64).ConfigureAwait(false);
+            var wordTry = (content ?? "").Trim().ToUpperInvariant();
+            // reasoning 模型思维链可能吃光预算 → 空 content 翻倍重试一次 (R361 对抗实证)
+            if (wordTry.Length == 0)
+            {
+                var (content2, tokens2) = await llmCaller(prompt, 128).ConfigureAwait(false);
+                content = content2;
+                tokens += tokens2;
+            }
+        }
+        catch
+        {
+            // LLM 不可用 → NEUTRAL 不罚不赏 (诚实语义, 不阻断主链)
+            return new CorrectionVerdict { Kind = CorrectionKind.Neutral, Confidence = 0.5, Signal = "llm_error", Source = "llm", TokensUsed = 0 };
+        }
         var word = (content ?? "").Trim().ToUpperInvariant();
 
         return word switch
         {
-            var w when w.Contains("CORRECT") => new CorrectionVerdict
+            var w when w.StartsWith("C") || w.Contains("CORRECT") => new CorrectionVerdict
                 { Kind = CorrectionKind.Correct, Confidence = 0.8, Signal = "llm", Source = "llm", TokensUsed = tokens },
-            var w when w.Contains("ADOPT") => new CorrectionVerdict
+            var w when w.StartsWith("A") || w.Contains("ADOPT") => new CorrectionVerdict
                 { Kind = CorrectionKind.Adopt, Confidence = 0.8, Signal = "llm", Source = "llm", TokensUsed = tokens },
             _ => new CorrectionVerdict
                 { Kind = CorrectionKind.Neutral, Confidence = 0.6, Signal = "llm:" + Truncate(content ?? "?", 12), Source = "llm", TokensUsed = tokens },

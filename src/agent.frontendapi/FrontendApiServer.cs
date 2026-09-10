@@ -18,14 +18,20 @@ public sealed class FrontendApiServer : IDisposable
     private readonly CancellationTokenSource _cts = new();
     private Socket? _listener;
     private readonly Func<string, string, Task<string?>> _handler; // (api, payloadJson) → payloadJson (null=unknown_api)
+    private readonly FrontendAccessControl _access; // R358: 鉴权+限流
     private bool _disposed;
 
-    public FrontendApiServer(Func<string, string, Task<string?>> handler, Action<string> log, int port = FrontendApiContract.DefaultPort)
+    public FrontendApiServer(Func<string, string, Task<string?>> handler, Action<string> log,
+        int port = FrontendApiContract.DefaultPort, FrontendAccessControl? access = null)
     {
         _handler = handler;
         _log = log;
         _port = port;
+        _access = access ?? new FrontendAccessControl();
     }
+
+    /// <summary>启动日志用: token (随机生成时打印; env 注入时不重复)。</summary>
+    public string TokenHex => _access.TokenHex;
 
     public void Start()
     {
@@ -54,6 +60,10 @@ public sealed class FrontendApiServer : IDisposable
     {
         try
         {
+            // R358: 鉴权握手 — 首行必须 {"type":"auth","token":"..."}; 失败静默断连 (防枚举)
+            if (_access.AuthEnabled && !await TryAuthHandshakeAsync(client).ConfigureAwait(false))
+                return;
+
             var buf = new byte[16384];
             var pending = new StringBuilder();
             while (!_cts.IsCancellationRequested)
@@ -68,7 +78,17 @@ public sealed class FrontendApiServer : IDisposable
                     if (idx < 0) break;
                     var line = text[..idx];
                     pending.Remove(0, idx + 1);
-                    var resp = await HandleLineAsync(line);
+                    if (!_access.TryAcquire())
+                    {
+                        var busy = FrontendApiContract.FormatResponse("rate", false, "{}",
+                            "busy", "限流/并发超限, 稍后重试");
+                        var busyBytes = Encoding.UTF8.GetBytes(busy + "\n");
+                        await client.SendAsync(new ArraySegment<byte>(busyBytes), SocketFlags.None, _cts.Token).ConfigureAwait(false);
+                        continue;
+                    }
+                    string resp;
+                    try { resp = await HandleLineAsync(line); }
+                    finally { _access.Release(); }
                     var bytes = Encoding.UTF8.GetBytes(resp + "\n");
                     await client.SendAsync(new ArraySegment<byte>(bytes), SocketFlags.None, _cts.Token).ConfigureAwait(false);
                 }
@@ -77,6 +97,35 @@ public sealed class FrontendApiServer : IDisposable
         catch (OperationCanceledException) { }
         catch (Exception) { /* 客户端断开 */ }
         finally { try { client.Close(); } catch { } }
+    }
+
+    /// <summary>R358: auth 握手 — 首行 {"type":"auth","token":"..."}; 5s 超时/失败断连。</summary>
+    private async Task<bool> TryAuthHandshakeAsync(Socket client)
+    {
+        try
+        {
+            using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(_cts.Token);
+            timeoutCts.CancelAfter(5000);
+            var buf = new byte[4096];
+            var sb = new StringBuilder();
+            while (true)
+            {
+                var n = await client.ReceiveAsync(new ArraySegment<byte>(buf), SocketFlags.None, timeoutCts.Token).ConfigureAwait(false);
+                if (n == 0) return false;
+                sb.Append(Encoding.UTF8.GetString(buf, 0, n));
+                var text = sb.ToString();
+                var idx = text.IndexOf('\n');
+                if (idx < 0) continue;
+                var line = text[..idx].Trim();
+                if (line.Length > 4096) return false; // 超长 auth 行 = 恶意
+                using var doc = System.Text.Json.JsonDocument.Parse(line);
+                var root = doc.RootElement;
+                if (!root.TryGetProperty("type", out var t) || t.GetString() != "auth") return false;
+                var token = root.TryGetProperty("token", out var tk) ? tk.GetString() : null;
+                return _access.ValidateToken(token);
+            }
+        }
+        catch { return false; }
     }
 
     private async Task<string> HandleLineAsync(string line)
