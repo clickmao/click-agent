@@ -1,8 +1,8 @@
-# click-agent (v0.20.2)
+# click-agent (v0.20.5)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)
-![Tests](https://img.shields.io/badge/tests-699%2F699-brightgreen)
+![Tests](https://img.shields.io/badge/tests-683%2F683-brightgreen)
 ![NativeAOT](https://img.shields.io/badge/NativeAOT-zero%20warnings-blueviolet)
 ![Eval](https://img.shields.io/badge/迭代评测-286批%2099%25%2B-success)
 
@@ -12,8 +12,9 @@
 
 **内部插件核心能力按需自行插入**——框架提供宿主机制与执行协议（技能三形态：executive 脚本交付 / normative 清单交付 / knowledge_hint 知识前置注入；脚本执行走 CLI 验证 → 插件服务，JSON Lines 事件流协议；像素画风锚定合成等渲染/领域能力由插件层扩展），能力边界由插入的插件/技能定义，而非框架写死。
 
-net10.0 / NativeAOT 零 IL 警告 / 699 单测全绿 / 迭代评测 319 批通过率 99%+。
-发布线: v0.20.2 — LLM 服务独立进程 (llm-manager/worker, 卸载=杀 worker) / 多 LLM 免费测试池 (28 条) / FrontendApi v1 契约 / v0.17.x 执行层稳固化 / v0.16 skills 引擎 / v0.15.2-A 存档版 / v0.14 critic 自审体系 / v0.13.3 思考链+渐进式探索。
+net10.0 / NativeAOT 零 IL 警告 / 683 单测全绿 / 迭代评测 520+ 批通过率 99%+。
+发布线: v0.20.5 — LLM 服务独立进程 (llm-manager/worker, 卸载=杀 worker) / 纯托管 bge 本地 CPU 嵌入 (embedcpu, 零 ONNX) / FrontendApi v1 (chat/ask/state 域) / 模型目录 3 通道 (deepseek-flash 首选 priority 主导) / 凭据静态加密 (AES-256-GCM) / v0.17.x 执行层稳固化 / v0.16 skills 引擎 / v0.15.2-A 存档版 / v0.14 critic 自审体系。
+下一版: **v0.21.0 Role 系统 (计划已立)** — 可成长扮演角色: 性格/能力/倾向/成长经历四维区别 + 紧凑数据包 (≤8KB) + /role 指令族。见 docs/plans/v0.21.0-role-system-plan.md 与 docs/Role使用说明.md。
 
 [🇬🇧 English → README_EN.md](README_EN.md)
 
@@ -37,7 +38,7 @@ net10.0 / NativeAOT 零 IL 警告 / 699 单测全绿 / 迭代评测 319 批通�
 - **R352 演进** (用户钦定): 本地 LLM 推理 + bge 进程内加载移除 (LLamaSharp 全拆) — embed 语义档固定走 llm-service API (hash 兜底), AOT 13.3MB。
 - 真机 E2E: manager 0 模型 → lazy worker (RSS 157MB, bge 512 维) → kill -9 → 自动重拉 (pid 变化) → 阈值拉满 + 无 CLI 实例 → 卸载无残留。
 - **opt-in 集成 + 可观测** (v0.20.1-v0.20.2): `AGENTFRAMEWORK_BGE_MODE=remote` 走本机 service (CLI 进程 RSS 160→41MB, 省 119MB/进程) / `/llm-service` 指令 + `--llm-service-status` 参数 (manager/worker 状态/请求数/卸载计数) / Windows 内存探测 (GlobalMemoryStatusEx)。
-- **多 LLM 免费测试池** (v0.20.4, 用户钦定): Free-LLM-Collection 全源接入 28 条 (Groq/OpenRouter/NVIDIA/Cerebras/Cohere/硅基流动/ModelScope/智普/Kilo 等), 全部 OpenAI 兼容; 未配 key 自动沉底零影响 (RankCandidates), 配 key 即入 auto 优选; 24 端点假 key 探针逐实测 + 真 key 真机调用验证 (OpenRouter nemotron-ultra / Kilo 双通过); `/model verify-all` 全目录并发校验。
+- **多 LLM 免费测试池** (v0.20.4, 用户钦定): Free-LLM-Collection 全源接入 28 条 (Groq/OpenRouter/NVIDIA/Cerebras/Cohere/硅基流动/ModelScope/智普/Kilo 等), 全部 OpenAI 兼容; 未配 key 自动沉底零影响 (RankCandidates), 配 key 即入 auto 优选; 24 端点假 key 探针逐实测 + 真 key 真机调用验证 (OpenRouter nemotron-ultra / Kilo 双通过); `/model verify-all` 全目录并发校验。**[R351 已撤]** 免费池整段随模型通道精简移除 (models.yaml 52→3, 仅 deepseek-flash 首选/glm-5.3-flash 次选/gpt-6 默认保留), 此行保留为轮段史实。
 - **FrontendApi v1 契约** (v0.19.0 P1 首切片): 统一信封 (JSON Lines: req/resp/event) + TCP 47810 Server + Router + state.snapshot/state.hello/meta 域 (真 TCP 往返测试; chat/ask 域后半接入)。
 
 ### ✅ v0.17.x 执行层稳固化 — 锁 / 原子写 / 审批 / 活动感知 (R334-R336 已落地, 验收批 284-286 全绿)

@@ -201,3 +201,13 @@ agenthost -rag /path/to/index.jsonl   # repl 会话
 | `/log dump` | 内存日志环形缓冲 (2000 条) 存档 JSON 行文件 | 路径见返回 JSON |
 | `/balance [id]` | token 余额查询 (provider scheme 分派: openai=subscription, deepseek=balance) | 智谱无公开余额 API → 诚实报错 |
 
+### /role 角色族（v0.21.0 计划 — 详见 docs/plans/v0.21.0-role-system-plan.md）
+
+| 指令 | 功能 | 备注 |
+|---|---|---|
+| `/role list` | 列出 roles/ 下全部角色包（体积/经历条数/激活态） | 包加载失败降级跳过 |
+| `/role use <id>` | 激活角色（持久偏好） | prompt 注入语风+倾向块; 召回源随角色切换 |
+| `/role off` | 回到无角色默认态 | 行为与 v0.20.5 一致 |
+| `/role info [id]` | 渲染实况预览 + 成长经历 top5 | 超预算截断可见 |
+| `/role forget <id> <hash\|all>` | 删除成长经历 | 用户数据权; 立场类仅显式删除 |
+
