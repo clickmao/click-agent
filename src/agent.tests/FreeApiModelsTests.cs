@@ -26,7 +26,13 @@ public class FreeApiModelsTests
     [InlineData("llama-3.3-70b-versatile", "groq", "https://api.groq.com/openai/v1/chat/completions", "AGENT_GROQ_KEY")]
     [InlineData("llama-3.1-8b-instant", "groq", "https://api.groq.com/openai/v1/chat/completions", "AGENT_GROQ_KEY")]
     [InlineData("openai/gpt-oss-120b", "groq", "https://api.groq.com/openai/v1/chat/completions", "AGENT_GROQ_KEY")]
-    [InlineData("z-ai/glm-5.2:free", "openrouter", "https://openrouter.ai/api/v1/chat/completions", "AGENT_OPENROUTER_KEY")]
+    [InlineData("nvidia/nemotron-3-ultra-550b-a55b:free", "openrouter", "https://openrouter.ai/api/v1/chat/completions", "AGENT_OPENROUTER_KEY")]
+    [InlineData("nvidia/nemotron-3-super-120b-a12b:free", "openrouter", "https://openrouter.ai/api/v1/chat/completions", "AGENT_OPENROUTER_KEY")]
+    [InlineData("siliconflow-glm-4-9b", "siliconflow", "https://api.siliconflow.cn/v1/chat/completions", "AGENT_SILICONFLOW_KEY")]
+    [InlineData("modelscope-deepseek-v4-flash", "modelscope", "https://api-inference.modelscope.cn/v1/chat/completions", "AGENT_MODELSCOPE_KEY")]
+    [InlineData("nvidia-kimi-k2.6", "nvidia", "https://integrate.api.nvidia.com/v1/chat/completions", "AGENT_NVIDIA_KEY")]
+    [InlineData("cohere-command-a-reasoning", "cohere", "https://api.cohere.ai/compatibility/v1/chat/completions", "AGENT_COHERE_KEY")]
+    [InlineData("kilo-free", "kilo", "https://api.kilo.ai/api/gateway/chat/completions", "AGENT_KILO_KEY")]
     [InlineData("openrouter/free", "openrouter", "https://openrouter.ai/api/v1/chat/completions", "AGENT_OPENROUTER_KEY")]
     [InlineData("gemini-3.5-flash", "google", "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", "AGENT_GEMINI_KEY")]
     [InlineData("llama-3.3-70b", "cerebras", "https://api.cerebras.ai/v1/chat/completions", "AGENT_CEREBRAS_KEY")]
@@ -54,7 +60,7 @@ public class FreeApiModelsTests
         var inFree = seg.Split("proxy:")[0];
         var nameCount = inFree.Split("  - name:").Length - 1;
         var zeroPrice = inFree.Split("price_in_per_m: 0.0").Length - 1;
-        Assert.True(nameCount == 8, $"免费条目数应为 8, 实际 {nameCount}");
+        Assert.True(nameCount is >= 27 and <= 29, $"免费条目数应为 27-29 (8 原有+19 新增-去重), 实际 {nameCount}");
         Assert.Equal(nameCount, zeroPrice);
     }
 

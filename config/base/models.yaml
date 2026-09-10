@@ -397,15 +397,29 @@ modules:
     capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
 
   # ── OpenRouter (20+ :free 模型; 免费 20 RPM / 50 RPD, 充值 $10 → 1000 RPD) 申请 https://openrouter.ai/keys ──
-  - name: "z-ai/glm-5.2:free"
-    description: OpenRouter 免费-GLM 5.2 (256K; tools; 免费额度 50 RPD)
+  # 注: z-ai/glm-5.2:free 已下架免费 (2026-09-10 实测 404 提示转付费 slug) — 换实测可用条目
+  - name: "nvidia/nemotron-3-ultra-550b-a55b:free"
+    description: OpenRouter 免费-Nemotron Ultra 550B (1M 上下文; 2026-09-10 真机调用通过)
     provider: openrouter
     request_address: https://openrouter.ai/api/v1/chat/completions
     api_key: AGENT_OPENROUTER_KEY
     price_in_per_m: 0.0
     price_out_per_m: 0.0
     reasoning_score: 8
-    coding_score: 8
+    coding_score: 7
+    context_window: 1048576
+    suited_for: [general, reasoning, coding, chat]
+    capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
+
+  - name: "nvidia/nemotron-3-super-120b-a12b:free"
+    description: OpenRouter 免费-Nemotron Super 120B (262K; 2026-09-10 真机调用通过)
+    provider: openrouter
+    request_address: https://openrouter.ai/api/v1/chat/completions
+    api_key: AGENT_OPENROUTER_KEY
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 7
+    coding_score: 7
     context_window: 262144
     suited_for: [general, reasoning, coding, chat]
     capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
@@ -465,9 +479,257 @@ modules:
     suited_for: [general, reasoning, coding]
     capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
 
-# 可达性实测 (2026-09-10, 本机网络, 假 key 探针): Groq 403 / OpenRouter 401 / Cerebras 403 /
+# 可达性实测 (2026-09-10, 本机网络, 假 key 探针): Groq 403 / OpenRouter 401 (真 key 真机调用 ✓ nemotron-ultra) / Cerebras 403 /
 #   NVIDIA 401 = 地址合法且鉴权拒绝 (端点真实); Google Gemini 000 = googleapis.com 在本部署网络被阻塞
 #   (与既有 gemini-2.5 条目同因; 公网/代理环境可用, 条目保留)。
+  # ══ Free-LLM-Collection 全源补充 (v0.20.4 R348, 2026-09-10 实测) ══
+  # 来源: github.com/for-the-zero/Free-LLM-Collection — 本机 24 端点假 key 探针逐测:
+  #   ✓ 地址真实可调用 (401/403 鉴权拒绝) 20 家 / ✗ 网络阻塞 3 家 (mistral/huggingface/googleapis, 公网可用) /
+  #   △ LLM7 端点真但免费模型暂不可用 / NVIDIA kimi-k2.6+muse 401 有效。
+  # 原则 (用户钦定): 免费额度语义 → 全部 price 0.0; key 未配 → 自动沉底零影响 (RankCandidates 机制)。
+  # 注册地址见各 provider 注释。gitignored .env.local 填 key 即接入 auto 优选/兜底。
+
+  # ── 国内 ──
+  - name: siliconflow-glm-4-9b
+    description: 硅基流动免费-GLM-4-9B (1000 RPM 极宽; THUDM/GLM-4-9B-0414)
+    provider: siliconflow
+    request_address: https://api.siliconflow.cn/v1/chat/completions
+    api_key: AGENT_SILICONFLOW_KEY
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 6
+    coding_score: 6
+    context_window: 131072
+    suited_for: [chat, summary, classify, general]
+    capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
+
+  - name: siliconflow-deepseek-r1-8b
+    description: 硅基流动免费-DeepSeek-R1-0528-Qwen3-8B (推理; 1000 RPM)
+    provider: siliconflow
+    request_address: https://api.siliconflow.cn/v1/chat/completions
+    api_key: AGENT_SILICONFLOW_KEY
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 7
+    coding_score: 6
+    context_window: 131072
+    suited_for: [reasoning, general, chat]
+    capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
+
+  - name: modelscope-deepseek-v4-flash
+    description: ModelScope 免费-DeepSeek-V4-Flash (2000 RPD; 注册即得)
+    provider: modelscope
+    request_address: https://api-inference.modelscope.cn/v1/chat/completions
+    api_key: AGENT_MODELSCOPE_KEY
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 7
+    coding_score: 7
+    context_window: 131072
+    suited_for: [general, reasoning, coding, chat]
+    capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
+
+  - name: modelscope-glm-5.1
+    description: ModelScope 免费-GLM-5.1 (ZhipuAI/GLM-5.1; 2000 RPD)
+    provider: modelscope
+    request_address: https://api-inference.modelscope.cn/v1/chat/completions
+    api_key: AGENT_MODELSCOPE_KEY
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 7
+    coding_score: 7
+    context_window: 131072
+    suited_for: [general, reasoning, coding]
+    capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
+
+  - name: glm-4.7-flash
+    description: 智普 Bigmodel 免费-GLM-4.7-Flash (限额未知; 国内直连)
+    provider: zhipu
+    request_address: https://open.bigmodel.cn/api/paas/v4/chat/completions
+    api_key: AGENTFRAMEWORK_KEYS_ZHIPU
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 6
+    coding_score: 6
+    context_window: 131072
+    suited_for: [chat, summary, classify]
+    capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
+
+  - name: intern-latest
+    description: 书生 InternAI 免费-intern-latest (10 RPM; key 有效期 6 个月)
+    provider: internai
+    request_address: https://chat.intern-ai.org.cn/api/v1/chat/completions
+    api_key: AGENT_INTERN_KEY
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 7
+    coding_score: 6
+    context_window: 131072
+    suited_for: [general, chat, reasoning]
+    capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
+
+  - name: sensenova-6.8-flash-lite
+    description: SenseNova 免费-6.8-flash-lite (60000 Points/5h)
+    provider: sensenova
+    request_address: https://token.sensenova.cn/v1/chat/completions
+    api_key: AGENT_SENSENOVA_KEY
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 6
+    coding_score: 6
+    context_window: 131072
+    suited_for: [chat, summary, classify]
+    capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
+
+  - name: xinghuo-lite
+    description: 讯飞星火免费-lite (2 QPS; spark-api-open)
+    provider: xfyun
+    request_address: https://spark-api-open.xf-yun.com/v1/chat/completions
+    api_key: AGENT_XFYUN_KEY
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 5
+    coding_score: 5
+    context_window: 131072
+    suited_for: [chat, summary]
+    capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
+
+  # ── 国外 ──
+  - name: nvidia-kimi-k2.6
+    description: NVIDIA NIM 免费-Kimi K2.6 (40 RPM; 2026-09-10 实测 401 端点有效)
+    provider: nvidia
+    request_address: https://integrate.api.nvidia.com/v1/chat/completions
+    api_key: AGENT_NVIDIA_KEY
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 8
+    coding_score: 8
+    context_window: 131072
+    suited_for: [general, reasoning, coding, planning]
+    capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
+
+  - name: nvidia-muse-glimmer-30b
+    description: NVIDIA NIM 免费-Muse Glimmer 30B (meta; 40 RPM)
+    provider: nvidia
+    request_address: https://integrate.api.nvidia.com/v1/chat/completions
+    api_key: AGENT_NVIDIA_KEY
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 7
+    coding_score: 6
+    context_window: 131072
+    suited_for: [general, chat]
+    capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
+
+  - name: cerebras-qwen3-235b
+    description: Cerebras 免费-Qwen3-235B-A22B (30 RPM/900 RPH; 极速 LPU)
+    provider: cerebras
+    request_address: https://api.cerebras.ai/v1/chat/completions
+    api_key: AGENT_CEREBRAS_KEY
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 8
+    coding_score: 8
+    context_window: 131072
+    suited_for: [general, reasoning, coding]
+    capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
+
+  - name: cohere-command-a-reasoning
+    description: Cohere 免费-Command-A-Reasoning (20 RPM; compatibility/v1 OpenAI 兼容)
+    provider: cohere
+    request_address: https://api.cohere.ai/compatibility/v1/chat/completions
+    api_key: AGENT_COHERE_KEY
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 8
+    coding_score: 7
+    context_window: 131072
+    suited_for: [reasoning, general, planning]
+    capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
+
+  - name: opencode-zen-nemotron-ultra-free
+    description: OpenCode Zen 免费-Nemotron-Ultra (opencode.ai/zen; 限额未知)
+    provider: opencodezen
+    request_address: https://opencode.ai/zen/v1/chat/completions
+    api_key: AGENT_ZEN_KEY
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 8
+    coding_score: 7
+    context_window: 262144
+    suited_for: [general, reasoning]
+    capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
+
+  - name: kilo-free
+    description: Kilo Gateway 免费-自动路由 (实测无 key 亦可调; 200 RPH; 底层 ling-3.0-flash-fin)
+    provider: kilo
+    request_address: https://api.kilo.ai/api/gateway/chat/completions
+    api_key: AGENT_KILO_KEY
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 6
+    coding_score: 6
+    context_window: 131072
+    suited_for: [chat, general, summary]
+    capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
+
+  - name: dxnt-free
+    description: DXNT Token 平台免费-dxnt.com/free (20 RPM/100 RPD)
+    provider: dxnt
+    request_address: https://www.dxnt.com/v1/chat/completions
+    api_key: AGENT_DXNT_KEY
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 6
+    coding_score: 6
+    context_window: 131072
+    suited_for: [chat, general]
+    capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
+
+  - name: agnes-2.5-flash
+    description: Agnes AI 免费-2.5-Flash (apihub.agnes-ai.com; 限额未知)
+    provider: agnes
+    request_address: https://apihub.agnes-ai.com/v1/chat/completions
+    api_key: AGENT_AGNES_KEY
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 6
+    coding_score: 6
+    context_window: 131072
+    suited_for: [chat, general, summary]
+    capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
+
+  - name: inception-mercury-2
+    description: InceptionLab 免费-Mercury-2 (1000 RPM 极宽; 扩散式 LLM)
+    provider: inception
+    request_address: https://api.inceptionlabs.ai/v1/chat/completions
+    api_key: AGENT_INCEPTION_KEY
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 6
+    coding_score: 7
+    context_window: 131072
+    suited_for: [general, coding, chat]
+    capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
+
+  - name: orcarouter-free
+    description: OrcaRouter 免费自动路由 (orcarouter/free; 动态限额)
+    provider: orcarouter
+    request_address: https://api.orcarouter.ai/v1/chat/completions
+    api_key: AGENT_ORCAROUTER_KEY
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 6
+    coding_score: 6
+    context_window: 131072
+    suited_for: [chat, general]
+    capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
+
+  # ✗ 排除 (实测网络阻塞, 本部署不可调用; 公网/代理环境可启用): Mistral / HuggingFace router / Google googleapis
+  # △ 排除 (LLM7): 端点真实但免费模型 currently unavailable (临时额度耗尽; 暂不加入)
+  # △ 排除 (G4F): 需 PoW 挖 cake 积分, 非纯免费 (不合"免费额度"语义)
+  # △ 排除 (Cloudflare): 需 ACCOUNT_ID 拼接端点, 结构不同暂不集成
+
 proxy:
   url: ""            # 例: http://127.0.0.1:7890
   bypass_local: true # 本地/内网地址不走代理
