@@ -216,10 +216,16 @@ public static class ServiceCollectionExtensions
             return cfg;
         });
         services.AddSingleton<IRAGRecall, RAGRecall>();
-        // R352 (用户钦定): bge 本地进程内加载移除 — 嵌入走 llm-service (RemoteEmbedder, UDS API 调用;
-        // 首次调用自动拉起 manager/worker)。daemon 不可用且不可拉起 → NullTextEmbedder (锚词模式, 行为兼容)。
+        // R353 (用户钦定): bge 本地 CPU 最小推理 (纯托管 BERT forward, 零 LLamaSharp/ONNX) —
+        // EmbedAsync 异步, 与召回/压缩主链并行 (R352-b)。模型缺失 → NullTextEmbedder (锚词模式, 行为兼容)。
         services.AddSingleton<agent.contextgradient.ITextEmbedder>(sp =>
-            new agent.llamalocal.RemoteEmbedder());
+        {
+            var modelPath = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_BGE_MODEL")
+                ?? "/home/agentuser/.agentframework/models/bge-q8.gguf";
+            return File.Exists(modelPath)
+                ? new agent.embedcpu.BgeCpuEmbedder(modelPath)
+                : new agent.contextgradient.NullTextEmbedder();
+        });
         services.AddSingleton<IContextAssembler>(sp =>
         {
             var embedder = sp.GetRequiredService<agent.contextgradient.ITextEmbedder>();
