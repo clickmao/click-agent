@@ -340,15 +340,6 @@ public static class ServiceCollectionExtensions
             ChatboxSink = sp.GetRequiredService<agent.logging.IChatboxSink>(),
         });
 
-        // R362 (v0.21.0): Role 外挂 — roles/ 目录扫描 + activeRole 配置 (可空 = 无角色)
-        services.AddSingleton(sp =>
-        {
-            var cfg = sp.GetRequiredService<agent.config.ConfigSnapshot>();
-            var activeId = cfg.Get("agent", "role.active", "");
-            var reg = agent.roles.RoleRegistry.LoadFromDirectory("roles");
-            reg.ActiveId = string.IsNullOrWhiteSpace(activeId) ? null : activeId;
-            return reg;
-        });
 
         // 优先注册 V2；MainAgent 保留为简单回显的 fallback
         services.AddSingleton<IndustrialAgentV2>();

@@ -33,6 +33,17 @@ public sealed class RoleGrowthLedger
         Load();
     }
 
+    /// <summary>R363: 从 .rbin 文档播种 (账本空时用文档内计数初始化; 文件已有增量以文件为准)。</summary>
+    public void SeedFrom(IEnumerable<KeyValuePair<string, (int Reward, int Penalty)>> growth)
+    {
+        lock (_lock)
+        {
+            foreach (var (domain, s) in growth)
+                if (!_domains.ContainsKey(domain))
+                    _domains[domain] = (s.Reward, s.Penalty);
+        }
+    }
+
     /// <summary>记一次赏罚。kind=Correct→罚, Adopt→赏, Neutral→忽略。</summary>
     public void Record(CorrectionDetector.CorrectionKind kind, string domain)
     {

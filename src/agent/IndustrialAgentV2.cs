@@ -103,14 +103,28 @@ public class IndustrialAgentV2 : AgentBase
     // ✅ 新增：LLM 调用器（示例接口）
     private readonly ILLMCaller _llmCaller;
     private readonly agent.subagent.IsolatedTaskRunner? _isolatedTaskRunner;
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<string, string> _lastReplyBySession = new();
+    private readonly agent.roles.FailureClusters _failureClusters = new();
+
+    /// <summary>R365: 纠正检测微 prompt 通道 (走模型队列; ~140 tok/次)。</summary>
+    private async Task<(string Content, int TokensUsed)> DetectViaLlm(string prompt, int maxTokens)
+    {
+        var resp = await _modelRouter!.CallAsync(new agent.modelqueue.QueuePrompt
+        {
+            SystemPrompt = "只输出一个字母。",
+            UserMessage = prompt,
+            EstimatedTokens = prompt.Length / 2,
+        }, agent.modelqueue.TaskKindHint.ContextCompression, "general", CancellationToken.None);
+        return (resp.Success ? resp.Content : "", prompt.Length / 2 + resp.Content.Length / 2);
+    }
+
     private readonly agent.modelqueue.ModelQueueRouter? _modelRouter;
-    private readonly agent.roles.RoleRegistry? _roleRegistry;
+    /// <summary>R363: 当前激活 Role 文档 (可空 — .rbin 未挂时 null, 行为与无 Role 完全一致)。</summary>
+    public agent.roles.RoleBinaryFile.RoleDocument? ActiveRole { get; }
 
-    /// <summary>R362: 当前激活 Role (可空 — --role 未传时 null, 行为与无 Role 完全一致)。</summary>
-    public agent.roles.RoleRegistry.RolePackage? ActiveRole { get; }
-
-    /// <summary>R362: Role 成长账本 (仅激活 Role 时非空 — 赏罚计数/置信度/倾向)。</summary>
+    /// <summary>R363: Role 成长账本 (仅挂载 .rbin 时非空 — 赏罚计数/置信度/倾向)。</summary>
     public agent.roles.RoleGrowthLedger? GrowthLedger { get; }
+    private readonly string? _roleFilePath;
 
     /// <summary>R356-c: 前端 state.snapshot 真实状态快照 (零反射手写序列化由消费方做)。</summary>
     public sealed record AgentSnapshot(
@@ -331,13 +345,21 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
         agent.skills.SkillDispatcher? skillDispatcher = null,
         IRAGRecall? ragRecall = null,
         agent.contextgradient.ITextEmbedder? textEmbedder = null,
-        agent.roles.RoleRegistry? roleRegistry = null) : base(logger, handlers)
+        string? roleFilePath = null,
+        byte[]? roleMasterKey = null) : base(logger, handlers)
     {
         _isolatedTaskRunner = isolatedTaskRunner;
-        var activeId = roleRegistry?.ActiveId;
-        ActiveRole = activeId is null ? null : roleRegistry!.Find(activeId);
-        GrowthLedger = ActiveRole is null || activeId is null ? null : new agent.roles.RoleGrowthLedger(activeId);
-        _roleRegistry = roleRegistry;
+        // R363: roleFilePath 未传时回退 env (DI 无参构造场景 — Program --role 解析后写入)。
+        // 密钥: data/master.key 持久主密钥 (与 credentials.json 同层级 — 跨会话可解, 换机不可解)。
+        roleFilePath ??= Environment.GetEnvironmentVariable("AGENTFRAMEWORK_ROLE_FILE");
+        _roleFilePath = roleFilePath;
+        if (roleFilePath is not null && File.Exists(roleFilePath))
+        {
+            var key = roleMasterKey ?? agent.userinteraction.CredentialEncryption.LoadOrCreateMasterKey("data");
+            ActiveRole = agent.roles.RoleBinaryFile.Read(roleFilePath, key);
+            GrowthLedger = new agent.roles.RoleGrowthLedger(ActiveRole.Id, Path.Combine("data", "roles"));
+            GrowthLedger.SeedFrom(ActiveRole.Growth); // 文档内计数播种 (文件无增量时生效)
+        }
         _modelRouter = modelRouter;
         _balanceService = balanceService;
         _tokenUsageService = tokenUsageService;
@@ -1281,6 +1303,37 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 _agentProfileStore.GetOrCreate(learnUid)
                     .RecordTaskOutcome(intent, llmResponse.Success);
                 _agentProfileStore.Save();
+
+                // R365 (v0.21.0): 赏罚信号接主链 — 纠正检测 (两级: L1 规则 0tok / L2 微 prompt ~140tok)
+                // + 推理中止失败簇 (自体信号) + Role 成长账本写回。LLM 判定走后台 Task 不阻塞响应。
+                // R365 门禁 (用户钦定): 赏罚是 Role 的能力 — 无 role (GrowthLedger null) 时整链失效:
+                // 不起后台 Task / 不调 LLM / 不写失败簇 / 联想前置注入自动关闭 (null 安全空返回)。
+                if (GrowthLedger is not null)
+                {
+                    if (llmResponse.Success)
+                    {
+                        var lastReply = _lastReplyBySession.GetValueOrDefault(memSession.Id);
+                        var question = message.Content;
+                        var domainKey = intent;
+                        _ = Task.Run(async () =>
+                        {
+                            try
+                            {
+                                var verdict = await agent.roles.CorrectionDetector.JudgeAsync(
+                                    question, lastReply ?? "",
+                                    async (prompt, maxTokens) => await DetectViaLlm(prompt, maxTokens), ct);
+                                GrowthLedger.Record(verdict.Kind, domainKey);
+                            }
+                            catch { /* 赏罚失败不影响主链 */ }
+                        }, ct);
+                        _lastReplyBySession[memSession.Id] = llmResponse.Content;
+                    }
+                    else
+                    {
+                        // LLM 失败 = 自体失败信号 → 失败簇记罚 (超时/错误类)
+                        _failureClusters.RecordAbort("limit", message.Content);
+                    }
+                }
             }
             catch (Exception ex)
             {
