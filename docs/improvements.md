@@ -12,6 +12,21 @@
 
 ---
 
+## R353/R354 v0.20.5 模型通道精简 + bge 本地 CPU 最小推理 + LLamaSharp 全拆 (批520/521/522)
+
+- **用户指令**: ①"去掉项目内本地加载本地llm与官方llm相关功能…仅保留api调用能力" ②"deepseek4.1flash首选 glm5.3flash次选 保留gpt6默认 其余model预留配置移除" ③"去掉llama后仅限cpu 不要onnx 少量代码或成熟库" ④"bge即便用最小实现也请本地cpu异步跑" ⑤"脚本互动若业界无先例则删" ⑥"跨平台vector实现"。
+- **通道精简**: 删 LocalLlamaCaller/LocalInferenceAdapter/ILocalInference/OfficialModels/OfficialKeyStore/--official-key; ChannelScheduler 三通道→单 Remote; models.yaml 52→3 (deepseek-4.1-flash 首/glm-5.3-flash 次/gpt-6 默认配置); core.yaml model gpt-4→gpt-6; SkiaSharp 渲染器删 (仅 SVG)。
+- **LLamaSharp 全拆** (vendored fork 445MB 目录+nuget 缓存+csproj 引用+native 复制段): BgeEmbedder/SharedEmbedderRegistry/BgeEmbeddingProvider 删; qwen/bge-small-en gguf 删 (bge-q8 保留 — embedcpu 引擎)。
+- **embedcpu 新项目** (纯托管零原生依赖, ~470 行): GgufModel (GGUF v3 最小解析+Q8_0/F32 反量化+f16 手写位运算) / WordPieceTokenizer (21128 词表最长匹配+## 子词回退+中文按字) / BgeCpuEmbedder (4 层 BERT forward, TensorPrimitives SIMD, mean-pool+L2, 惰性双检锁, EmbedAsync=Task.Run 异步)。
+- **真 bug (R353b 修)**: Q8_0 反量化 Data.ReadByte() 返回无符号 int → 负权重变正大数 → cos 恒 1.0 嵌入无区分度; 修 = (sbyte) 显式转换; 修后与 python 参照逐位一致。
+- **R353c 跨平台向量化** (用户检查点): 剩余 4 处标量循环全 TensorPrimitives 化 (embedding 查表/attention 加权/SoftMax/LayerNorm 仿射) — 跨平台自动 SSE/AVX2/AVX512/NEON。
+- **R354 eval 同步**: LOCAL_DISABLED 死开关退役 (本地通道本体已删, R107 泄漏源不存在); D4 gate 不再依赖 BGE_MODEL (--embed 走 llm-service), 自动探测 agenthost 路径注入 LLM_SERVICE_BIN。
+- **真缺陷 (520/521 双 0/13 负样本如实)**: 清 bin/obj 后未重建 host 而 run_round 用 --no-build → CLI 不存在全 case 650ms 空回; 重建后 CLI 手验 glm-5.3-flash 正常回复。教训: 清 build 产物必须立刻重建 host (run_round --no-build 依赖磁盘二进制)。
+- **脚本互动调研归档** (R352-d): 8 家主流 agent 均无"脚本执行中主动问 CLI"先例, 主导模式=单向事件流 → 本项目 ScriptPluginRunner 单向事件流判定保留 (script-interaction-research-R352.md)。
+- **基线**: 677/677 绿; AOT 13.4MB 0 IL 警告; bge CPU 热嵌入 ~26-90ms; 验收批 522 (host 重建后)。
+
+---
+
 ## R343 v0.20.0 LLM 服务独立进程 — llm-manager / worker 架构 (批516 quick-13 验证中)
 
 - **用户指令**: "将llm服务写成单独进程, 以免新CLI重新加载LLM到显存内, 最好使用小而完善的框架完成"; 纠正 "仅是新增本机 llm host 而非全面修改当前框架llm使用流程"; 钦定策略 "一个是 llm-manager 进程, 一个是实际 llm-service-host; **卸载直接杀 llm-service-host 就好了**"。
