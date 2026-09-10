@@ -351,6 +351,123 @@ modules:
     coding_score: 0.82
     capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
 
+  # ══ 免费国外 API 备用池 (v0.20.4 R347, 用户钦定: 供多 LLM 测试环境) ══
+  # 机制: ChannelScheduler.RankCandidates 对 env 未配置的 key 强降权 (priceScore=0 → 沉底, 不删)
+  #   → 未配 key 时对现有 auto 选择零影响; 配 key 后 (价格 0 → priceScore=1) 自动进入 auto 优选/兜底。
+  # 启用: 申请 key → 写入 .env.local (变量名见各条 api_key) → 自动参与排序。key 永不落配置 (凭据铁律)。
+
+  # ── Groq (LPU 极速; 免费无信用卡: 30 RPM / 1000-14400 RPD / 6-12K TPM) 申请 https://console.groq.com/keys ──
+  - name: llama-3.3-70b-versatile
+    description: Groq 免费-70B 主力 (30 RPM/1000 RPD/12K TPM; OpenAI 兼容)
+    provider: groq
+    request_address: https://api.groq.com/openai/v1/chat/completions
+    api_key: AGENT_GROQ_KEY
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 7
+    coding_score: 7
+    context_window: 131072
+    suited_for: [general, reasoning, coding, chat]
+    capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
+
+  - name: llama-3.1-8b-instant
+    description: Groq 免费-轻量高配额 (30 RPM/14400 RPD/6K TPM; 适合批量/轻任务)
+    provider: groq
+    request_address: https://api.groq.com/openai/v1/chat/completions
+    api_key: AGENT_GROQ_KEY
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 5
+    coding_score: 5
+    context_window: 131072
+    suited_for: [chat, summary, classify, general]
+    capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
+
+  - name: "openai/gpt-oss-120b"
+    description: Groq 免费-开源 120B (30 RPM/1000 RPD/8K TPM)
+    provider: groq
+    request_address: https://api.groq.com/openai/v1/chat/completions
+    api_key: AGENT_GROQ_KEY
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 8
+    coding_score: 8
+    context_window: 131072
+    suited_for: [general, reasoning, coding, planning]
+    capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
+
+  # ── OpenRouter (20+ :free 模型; 免费 20 RPM / 50 RPD, 充值 $10 → 1000 RPD) 申请 https://openrouter.ai/keys ──
+  - name: "z-ai/glm-5.2:free"
+    description: OpenRouter 免费-GLM 5.2 (256K; tools; 免费额度 50 RPD)
+    provider: openrouter
+    request_address: https://openrouter.ai/api/v1/chat/completions
+    api_key: AGENT_OPENROUTER_KEY
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 8
+    coding_score: 8
+    context_window: 262144
+    suited_for: [general, reasoning, coding, chat]
+    capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
+
+  - name: "openrouter/free"
+    description: OpenRouter 免费模型路由 (随机挑可用免费模型; 200K; 无需挑选)
+    provider: openrouter
+    request_address: https://openrouter.ai/api/v1/chat/completions
+    api_key: AGENT_OPENROUTER_KEY
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 6
+    coding_score: 6
+    context_window: 200000
+    suited_for: [general, chat, summary]
+    capabilities: {text: true, image_input: true, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
+
+  # ── Google Gemini (Free Tier: 选中模型免费, 5-15 RPM, 最高 1500 RPD; 无信用卡) 申请 https://aistudio.google.com/app/apikey ──
+  - name: gemini-3.5-flash
+    description: Google 免费-3.5 Flash (免费 tier 输入输出均免费; OpenAI 兼容端点)
+    provider: google
+    request_address: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions
+    api_key: AGENT_GEMINI_KEY
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 8
+    coding_score: 7
+    context_window: 1048576
+    suited_for: [general, reasoning, coding, chat, summary]
+    capabilities: {text: true, image_input: true, video_input: true, audio_input: true, file_pdf: true, file_xlsx: false, image_output: false}
+
+  # ── Cerebras (免费 ~1M tokens/天; 无信用卡) 申请 https://cloud.cerebras.ai ──
+  - name: llama-3.3-70b
+    description: Cerebras 免费-70B (约 1M tokens/天; 推理极快)
+    provider: cerebras
+    request_address: https://api.cerebras.ai/v1/chat/completions
+    api_key: AGENT_CEREBRAS_KEY
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 7
+    coding_score: 7
+    context_window: 131072
+    suited_for: [general, reasoning, coding, chat]
+    capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
+
+  # ── NVIDIA NIM (120+ 开源模型, ~40 RPM, 免费 API credits) 申请 https://build.nvidia.com ──
+  - name: "nvidia/llama-3.1-nemotron-70b-instruct"
+    description: NVIDIA NIM 免费-Nemotron 70B (128K; 免费 credits)
+    provider: nvidia
+    request_address: https://integrate.api.nvidia.com/v1/chat/completions
+    api_key: AGENT_NVIDIA_KEY
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 8
+    coding_score: 7
+    context_window: 131072
+    suited_for: [general, reasoning, coding]
+    capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
+
+# 可达性实测 (2026-09-10, 本机网络, 假 key 探针): Groq 403 / OpenRouter 401 / Cerebras 403 /
+#   NVIDIA 401 = 地址合法且鉴权拒绝 (端点真实); Google Gemini 000 = googleapis.com 在本部署网络被阻塞
+#   (与既有 gemini-2.5 条目同因; 公网/代理环境可用, 条目保留)。
 proxy:
   url: ""            # 例: http://127.0.0.1:7890
   bypass_local: true # 本地/内网地址不走代理
