@@ -151,7 +151,7 @@ done
 > - **模型主力**：`deepseek-flash`（models.yaml `priority=1` 压过 GLM 的 0 价；DS 旧营销名 deepseek-4.1-flash 不存在，已正名）。
 > - **本轮交付**：Role 单文件 `.rbin`（ARBL + AES-256-GCM(gzip)，非明文，Read/Write API，实测 306B）／赏罚涌现倾向（CorrectionDetector L1 0tok + L2 微 prompt；RoleGrowthLedger 域级 Beta）／推理中止→失败簇三件（检测/指纹簇/罚分≥3 前置注入）／赏罚接 V2 主链；无 role 时整链失效（0 token 0 写盘）。全部无 role 行为与默认逐字节一致。
 > - **诚实边界（未解）**：① 工业级 6 缺口余项 = CI 门禁／配置热更新／metrics 端点／断路器半开探测／跨请求成本闸（sec1 凭据加密 ✓、sec2/sec3 鉴权+限流 ✓）；② embedcpu 无关对 cos 0.90+ vs llama.cpp 金标准 0.18-0.23 **未解**（金标准环境 /tmp/llama-full/build/bin/llama-server 已就位）；③ KPI token 上界 1300 与批 523 实测 1836 的口径待定夺；④ Windows 内存探测路径无本机实测。
-> - **文档同步**：本轮已更新 README 双语 / improvements.md（R355-R365 两段）/ CLI指令说明.md（`--role`/`--frontend-api` + Role 实况段）/ Role使用说明.md（.rbin 重写）/ v0.21.0 plan §0.1 实施修订 / api.md §24-27 / architecture.md 时效声明。
+> - **文档同步**：本轮已更新 README 双语 / improvements.md（R355-R365 两段）/ CLI指令说明.md（`--role`/`--frontend-api` + Role 实况段）/ Role使用说明.md（.rbin 重写）/ v0.21.0 plan §0.1 实施修订 / api.md §31-§34 / architecture.md 时效声明。
 >
 > ---
 

@@ -1,9 +1,9 @@
 # AgentFramework API 文档
 
 > **时效声明 (2026-09-12)**: 目录 §1-§26 为 v0.11.0 及更早的 API 基线（史实保留）。
-> v0.12.0-v0.21.0 增量以追加章节形式位于文末（§19-§24 为第二编号段，与应用层 §19-§23 并存，按标题定位）。
+> v0.12.0-v0.21.0 增量以追加章节形式位于文末（§19-§30 为第二编号段，与第三编号段 §31-§34 并存；编号有重叠，请按标题定位）。
 > **已废止**：§17 本地推理 / §23 Vulkan 模式加载（LLamaSharp 进程内加载）已于 R351/R352 整体移除，当前仅保留 API 调用能力。
-> **最新增量**：§24 FrontendApi v1 契约 / §25 LLM 服务独立进程 / §26 凭据静态加密 / §27 Role 系统 API（v0.21.0）。
+> **最新增量 (§31-§34)**：§31 FrontendApi v1 契约 / §32 LLM 服务独立进程 / §33 凭据静态加密 / §34 Role 系统 API（v0.21.0）。
 
 ## 目录
 
@@ -1361,7 +1361,7 @@ var reloaded = ConfigModelBinder.Get<ModelQueueConfig>(new ConfigSnapshot("./con
 
 ---
 
-## 24. FrontendApi v1 统一契约 (v0.19.0 设计 / R350-R355 落地)
+## 31. FrontendApi v1 统一契约 (v0.19.0 设计 / R350-R355 落地)
 
 **定位**：本项目 = 能力与接口提供方；外部 IDE/前端 = 消费方。一个契约覆盖全部能力域，外部只对接一个协议。
 
@@ -1373,7 +1373,7 @@ var reloaded = ConfigModelBinder.Get<ModelQueueConfig>(new ConfigSnapshot("./con
 - **鉴权与限流**（sec2/sec3）：共享 token（随机 hex 或 env 注入；缺失 → `unauthorized`）+ 令牌桶限流 + 并发上限 → `rate_limited`/`busy`。
 - **AOT 约束**：禁用反射序列化 → 全部响应手写 `Utf8JsonWriter`（匿名类型 `JsonSerializer.Serialize` 在 AOT 下崩溃，已修）。
 
-## 25. LLM 服务独立进程 (v0.20.0, 用户钦定)
+## 32. LLM 服务独立进程 (v0.20.0, 用户钦定)
 
 **动因**：新 CLI 不得重复加载 LLM 到内存/显存（bge 加载后 RSS ~157MB）。
 
@@ -1391,7 +1391,7 @@ CLI(s) ──UDS──→ llm-manager (轻量常驻, 0 模型)
 - **CLI**：`--llm-manager`（常驻）/ `--llm-service-status`（非交互查询，exit 0=在线 5=未运行）/ `/llm-service` 指令。
 - **R352 变更**：worker 内本地 bge 引擎（LLamaSharp）已拆除；嵌入语义档由 `RemoteEmbedder` 客户端指向外部 llm-service（不可用 → hash 兜底）。
 
-## 26. 凭据静态加密 (R358, 用户钦定跨平台统一方案)
+## 33. 凭据静态加密 (R358, 用户钦定跨平台统一方案)
 
 `src/agent/CredentialEncryption.cs` — **AES-256-GCM**（`System.Security.Cryptography` 原语，AOT 全支持，Win/Linux/macOS 同一实现；不用 DPAPI/libsecret 分叉）。
 
@@ -1404,7 +1404,7 @@ string dec = CredentialEncryption.Decrypt(enc, key);           // 篡改 → Cry
 - 明文自动迁移：`PromptPersistence.Load` 兼容旧明文，首次 `Save` 即加密。
 - 密钥层级：`data/master.key` 同时是 Role `.rbin` 的加密密钥来源。
 
-## 27. Role 系统 API (v0.21.0)
+## 34. Role 系统 API (v0.21.0)
 
 **格式**：`.rbin` 单文件 = 16B 头（magic `ARBL` + version + flags + gzip 长度 + 原始长度）+ `AES-256-GCM(gzip(JSON))`。
 
