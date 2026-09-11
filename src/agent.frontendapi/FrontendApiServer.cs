@@ -13,6 +13,12 @@ namespace agent.frontendapi;
 /// </summary>
 public sealed class FrontendApiServer : IDisposable
 {
+    /// <summary>v0.21.1 (R367): 待解析行缓冲上限 (1MB) — 超过即断连, 防无换行数据无界增长。</summary>
+    private const int MaxPendingBytes = 1 << 20;
+
+    /// <summary>v0.21.1 (R367): 鉴权握手缓冲上限 (auth 行本身很小, 8KB 绰绰有余)。</summary>
+    private const int MaxAuthBytes = 8192;
+
     private readonly int _port;
     private readonly Action<string> _log;
     private readonly CancellationTokenSource _cts = new();
@@ -71,6 +77,13 @@ public sealed class FrontendApiServer : IDisposable
                 var n = await client.ReceiveAsync(new ArraySegment<byte>(buf), SocketFlags.None, _cts.Token).ConfigureAwait(false);
                 if (n == 0) break;
                 pending.Append(Encoding.UTF8.GetString(buf, 0, n));
+                // v0.21.1 (R367): 不带 '\n' 的超长数据 = 恶意/异常客户端 → 断连。
+                // 原实现 pending 无上限, 持续灌入无换行数据可致内存无界增长 (真缺陷)。
+                if (pending.Length > MaxPendingBytes)
+                {
+                    _log("frontendapi: 客户端行缓冲超过上限, 断开连接");
+                    return;
+                }
                 while (true)
                 {
                     var text = pending.ToString();
@@ -78,17 +91,7 @@ public sealed class FrontendApiServer : IDisposable
                     if (idx < 0) break;
                     var line = text[..idx];
                     pending.Remove(0, idx + 1);
-                    if (!_access.TryAcquire())
-                    {
-                        var busy = FrontendApiContract.FormatResponse("rate", false, "{}",
-                            "busy", "限流/并发超限, 稍后重试");
-                        var busyBytes = Encoding.UTF8.GetBytes(busy + "\n");
-                        await client.SendAsync(new ArraySegment<byte>(busyBytes), SocketFlags.None, _cts.Token).ConfigureAwait(false);
-                        continue;
-                    }
-                    string resp;
-                    try { resp = await HandleLineAsync(line); }
-                    finally { _access.Release(); }
+                    var resp = await ServeOneLineAsync(line).ConfigureAwait(false);
                     var bytes = Encoding.UTF8.GetBytes(resp + "\n");
                     await client.SendAsync(new ArraySegment<byte>(bytes), SocketFlags.None, _cts.Token).ConfigureAwait(false);
                 }
@@ -113,6 +116,10 @@ public sealed class FrontendApiServer : IDisposable
                 var n = await client.ReceiveAsync(new ArraySegment<byte>(buf), SocketFlags.None, timeoutCts.Token).ConfigureAwait(false);
                 if (n == 0) return false;
                 sb.Append(Encoding.UTF8.GetString(buf, 0, n));
+                // v0.21.1 (R367): 与请求循环同类的无界增长防护。
+                // 原实现的 4096 检查只在"找到 '\n' 之后"生效, 未遇换行前 sb 可持续增长;
+                // 且 auth 阶段位于限流/并发准入之前, 5s 窗口内可灌入大量数据 → 提前掐断。
+                if (sb.Length > MaxAuthBytes) return false;
                 var text = sb.ToString();
                 var idx = text.IndexOf('\n');
                 if (idx < 0) continue;
@@ -128,12 +135,21 @@ public sealed class FrontendApiServer : IDisposable
         catch { return false; }
     }
 
-    private async Task<string> HandleLineAsync(string line)
+    /// <summary>
+    /// v0.21.1: 单行请求 — 解析 → 限流 → 执行 → 格式化。
+    /// 修复 (R367): 限流响应曾把 req_id 硬编码为 "rate", 违反"响应回显 req_id"契约,
+    /// 客户端无法关联被限流的请求 → 现回显真实 req_id (信封非法时用 "unknown")。
+    /// </summary>
+    private async Task<string> ServeOneLineAsync(string line)
     {
         var req = FrontendApiContract.ParseRequest(line);
         if (req is null)
             return FrontendApiContract.FormatResponse("unknown", false, "{}",
                 FrontendApiContract.ErrCodeBadPayload, "信封非法 (需 v:1/type:req/req_id/api)");
+        // 限流/并发准入 (解析后执行: 非法信封不再白占令牌)
+        if (!_access.TryAcquire())
+            return FrontendApiContract.FormatResponse(req.ReqId, false, "{}",
+                "busy", "限流/并发超限, 稍后重试");
         try
         {
             var payload = await _handler(req.Api, req.PayloadJson).ConfigureAwait(false);
@@ -142,10 +158,21 @@ public sealed class FrontendApiServer : IDisposable
                     FrontendApiContract.ErrCodeUnknownApi, $"未知 api: {req.Api}");
             return FrontendApiContract.FormatResponse(req.ReqId, true, payload);
         }
+        // v0.21.1: 业务层显式声明的参数错误 → bad_payload (契约语义)。
+        // 原实现被下方 catch-all 吞成 internal, 与契约定义的 bad_payload 语义不符。
+        catch (FrontendApiChatRouter.BadPayloadException ex)
+        {
+            return FrontendApiContract.FormatResponse(req.ReqId, false, "{}",
+                FrontendApiContract.ErrCodeBadPayload, ex.Message);
+        }
         catch (Exception ex)
         {
             return FrontendApiContract.FormatResponse(req.ReqId, false, "{}",
                 FrontendApiContract.ErrCodeInternal, ex.Message);
+        }
+        finally
+        {
+            _access.Release();
         }
     }
 

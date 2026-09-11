@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- WinForms 仅 Windows 目标; 刻意不加入 agent.sln — 仓库 CI 跑 ubuntu-latest 且 -warnaserror,
+         若进 sln 会因 net10.0-windows 在 Linux 无 WindowsDesktop 引用包而构建失败。 -->
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <Version>0.21.0</Version>
+    <RootNamespace>Samples.FrontendApi.WinForms</RootNamespace>
+    <AssemblyName>FrontendApiWinFormsDemo</AssemblyName>
+  </PropertyGroup>
+
+</Project>

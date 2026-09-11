@@ -268,7 +268,8 @@ if (args.Length >= 2 && args[0] == "--frontend-api")
     var frontendCtx = new AgentContext(provider) { SessionId = "frontend-main", UserId = "frontend-user" };
     await entryAgent.InitializeAsync(frontendCtx);
 
-    var metaJson = "{\"version\":\"0.20.5\",\"contract\":1,\"domains\":[\"chat\",\"meta\",\"state\"]}";
+    // v0.21.1 (R367): 版本跟随发布线 (原硬编码 "0.20.5", 与 v0.21.0 实际版本漂移 — 前端无从得知真实版本)
+    var metaJson = "{\"version\":\"0.21.0\",\"contract\":1,\"domains\":[\"chat\",\"meta\",\"state\"]}";
     var chatRouter = new agent.frontendapi.FrontendApiChatRouter(entryAgent);
     var v2 = entryAgent as IndustrialAgentV2;
     var server = new agent.frontendapi.FrontendApiServer(async (api, payloadJson) =>

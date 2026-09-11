@@ -12,6 +12,24 @@
 
 ---
 
+## R367 v0.21.1 候选 samples WinForms 前端对接 DEMO + FrontendApi 内部问题修复 (提交待 CI 复核)
+
+- **用户指令 (逐字)**: "建立 samples 内创建前端对接 agent.frontendapi 的 UI 项目使用 winform 来做对接 DEMO 查找和继续优化 agent 内部问题"。
+- **samples/FrontendApi.WinForms (新增)**: WinForms (`net10.0-windows`) 最小可运行前端, 经 TCP 行 JSON 消费完整 agent 管线。
+  - 协议严格对齐实现: 鉴权首行 `{"type":"auth","token":"..."}` / 请求 `{"v":1,"type":"req","req_id","api","payload"}` / 响应回显 req_id / `event` 单向信封 / 错误码 `unknown_api|bad_payload|busy|conflict|not_found|internal`。
+  - 功能: `chat.send` (直通 V2 管线) + `state.snapshot` / `state.hello` / `meta.info` / `meta.ping` + **原始协议日志面板** (>> 发送 / << 接收, 排查主手段)。
+  - **刻意不入 `agent.sln`**: 仓库 CI 跑 `ubuntu-latest` 且 `dotnet build -warnaserror`; `net10.0-windows` 进 sln 会因 Linux 无 WindowsDesktop 引用包而**构建失败**。仅 Windows 单独 `dotnet run`。
+  - 客户端兼容: 旧服务端限流 `req_id` 恒为 `"rate"` 无法关联 → DEMO 退化为"完成最早未决请求", 避免界面永久挂起。
+- **本轮揪出的内部问题 (5 项, 前 4 项为真实缺陷, 已修)**:
+  1. **限流响应 `req_id` 硬编码 `"rate"`** (真缺陷): 违反契约"响应回显 req_id", 客户端无法关联被限流的请求 (只能靠顺序推测)。→ 改为回显真实 `req_id` (信封非法时用 `"unknown"`); 顺带把限流准入移到解析之后, 非法信封不再白占令牌。
+  2. **`chat.send` 缺 `text` 被误判为 `internal`** (真缺陷): `FrontendApiChatRouter` 抛 `BadPayloadException`, 但 `ServeClientAsync` 的 catch-all 把它吞成 `internal`, 与契约已定义的 `bad_payload` 语义不符 (前端无法区分"参数错"与"服务端炸了")。→ 在 `ServeOneLineAsync` 显式捕获并映射 `bad_payload`。
+  3. **请求行缓冲 `pending` 无上限** (真缺陷): 客户端持续灌入**不带 `\n`** 的数据 → StringBuilder 无界增长 (内存 DoS)。→ 加 `MaxPendingBytes = 1MB`, 超即断连。
+  4. **鉴权握手 `sb` 无上限** (同类缺陷, 更隐蔽): 原 `line.Length > 4096` 检查**只在找到 `\n` 之后**才生效, 未遇换行前可持续增长; 且 auth 阶段位于限流/并发准入**之前**, 5s 窗口内可大量灌入。→ 加 `MaxAuthBytes = 8KB`。
+  5. **`meta.info` 版本漂移**: 硬编码 `"0.20.5"` (实际 v0.21.0), 前端无从得知真实版本。→ 校正为 `"0.21.0"` (无单测依赖该字符串; 测试用的是自身 `metaInfo` 注入值)。
+- **观察项 (设计如此, 不改)**: ①鉴权失败 = **静默断连** (防枚举探测), 客户端只能靠"首个请求即断连"间接判定 → DEMO 已针对性提示"疑似 token 错误"; ②`FrontendAccessControl` 全局 **10 req/s + 并发 4**, `chat.send` 单次耗时长, 连续发送易触 `busy` → DEMO 提示限流原因。
+- **基线**: 现有 `FrontendApiTests` 4 用例 (信封解析 / 真 TCP 往返 req_id 回显 / unknown_api / bad_payload) **均未断言 `"rate"`**, 改动不破坏; 新增代码为纯增量。
+- **诚实边界**: 本沙箱无 .NET 10 SDK 且 nuget/builds.dotnet.microsoft.com 被封 → **未本地构建/未跑单测**; WinForms 项目须 Windows 构建, 本沙箱 (Linux) **无法运行验证** (仅源码级对齐实现与契约)。全部改动经人工逐行复核为 AOT 安全增量, 待仓库 CI (build -warnaserror + test + AOT publish) 全量复核后再落版本戳。
+
 ## R366 v0.21.1 候选 DeepSeek 内部用例测试 + 推理模型思考链捕获 (提交待 CI 复核)
 
 - **用户指令 (逐字)**: "使用 token 阅读文档后不断完善 click-agent 项目; 内部用例测试用的 deepseek api: sk-…"。
