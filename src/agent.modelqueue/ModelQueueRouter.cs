@@ -41,6 +41,9 @@ public sealed class QueueResponse
     public int PromptTokens { get; set; }
     public int TokensUsed { get; set; }
 
+    /// <summary>v0.21.1: 推理模型思考链 (reasoning_content); 非推理模型为 null。</summary>
+    public string? ReasoningContent { get; set; }
+
     /// <summary>v0.10.0: 输出 token 数 (TokensUsed = prompt + completion)</summary>
     public int CompletionTokens => Math.Max(0, TokensUsed - PromptTokens);
 }
@@ -286,6 +289,8 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                 ("total_tokens", resp.TokensUsed), ("success", true),
                 // v0.11.0 R19: 内容长度诊断 (C03 曾现 completion 2000 tok 但回复渲染空 — 定位内容丢在链路哪段)
                 ("content_len", resp.Content?.Length ?? 0),
+                // v0.21.1: 推理模型思考链长度诊断 (reasoning_content 是否被真实返回 / 占多少)
+                ("reasoning_len", resp.ReasoningContent?.Length ?? 0),
                 // v0.11.0 R129 (D3): LLM 真耗时 ms
                 ("ms", llmSw.ElapsedMilliseconds));
             // 阈值再同步 (fire-and-forget, 不阻塞主链)
@@ -359,6 +364,7 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                         ("prompt_tokens", retried.PromptTokens), ("completion_tokens", retried.CompletionTokens),
                         ("total_tokens", retried.TokensUsed), ("success", true),
                         ("content_len", retried.Content?.Length ?? 0),
+                        ("reasoning_len", retried.ReasoningContent?.Length ?? 0),
                         ("ms", retrySw.ElapsedMilliseconds), ("attempt", attempt + 1));
                     return retried;
                 }
@@ -428,6 +434,7 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                         ("prompt_tokens", backupResp.PromptTokens), ("completion_tokens", backupResp.CompletionTokens),
                         ("total_tokens", backupResp.TokensUsed), ("success", true),
                         ("content_len", backupResp.Content?.Length ?? 0),
+                        ("reasoning_len", backupResp.ReasoningContent?.Length ?? 0),
                         ("ms", backupSw.ElapsedMilliseconds), ("attempt", "failover"));
                     return backupResp;
                 }
@@ -622,7 +629,10 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         }
 
         var parsed = JsonSerializer.Deserialize(body, ModelQueueJsonContext.Default.OpenAIChatResponse);
-        var content = parsed?.Choices?.FirstOrDefault()?.Message?.Content ?? string.Empty;
+        var choice = parsed?.Choices?.FirstOrDefault();
+        var content = choice?.Message?.Content ?? string.Empty;
+        // v0.21.1: 推理模型思考链捕获 (DeepSeek deepseek-flash/reasoner 实测返回 reasoning_content)
+        var reasoning = choice?.Message?.ReasoningContent;
         return new QueueResponse
         {
             Content = content,
@@ -630,6 +640,7 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             Model = entry.Id,
             PromptTokens = parsed?.Usage?.PromptTokens ?? 0,
             TokensUsed = parsed?.Usage?.TotalTokens ?? 0,
+            ReasoningContent = reasoning,
         };
     }
 

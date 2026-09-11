@@ -2307,7 +2307,10 @@ public class LLMResponse
     
     /// <summary>完成原因（stop, length, content_filter, etc）</summary>
     public string? FinishReason { get; set; }
-    
+
+    /// <summary>v0.21.1: 推理模型思考链 (reasoning_content); 非推理模型为 null。</summary>
+    public string? ReasoningContent { get; set; }
+
     /// <summary>响应 ID</summary>
     public string? ResponseId { get; set; }
     

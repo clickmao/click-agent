@@ -7,7 +7,7 @@
 modules:
   # ── 首选: DeepSeek 4.1 Flash (性价比主力) ──
   - name: deepseek-flash
-    description: DeepSeek Flash — 首选 (通用对话/代码, 性价比主力; API 正名 deepseek-flash, 4.1-flash 系产品线名)
+    description: DeepSeek Flash — 首选 (通用对话/代码, 性价比主力; API 正名 deepseek-flash, 4.1-flash 系产品线名); 推理模型, 返回 reasoning_content (v0.21.1 起由模型队列捕获)
     provider: deepseek
     priority: 1
     request_address: https://api.deepseek.com/v1/chat/completions
@@ -52,7 +52,10 @@ proxy:
 
 # ── 余额查询方案 ──
 # 智谱 GLM (bigmodel.cn / z.ai): 无公开 REST 余额接口 (2026-09-10 实测 11 端点全 404) — 余额仅控制台可见
+# DeepSeek 余额实测 (v0.21.1 内部探针 probes/deepseek-probe, 真实 key):
+#   GET https://api.deepseek.com/user/balance → { is_available, balance_infos:[{ currency, total_balance, ... }] }
+#   币种为 CNY (非下方旧注的 USD); 余额判定请读本结构而非假设币种。
 balance_schemes:
   deepseek:
     request_address: https://api.deepseek.com/user/balance
-    note: GET + Bearer; balance 字段 USD
+    note: GET + Bearer; 返回 balance_infos[].currency(CNY)/total_balance (实测, 非 USD)

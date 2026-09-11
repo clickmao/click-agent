@@ -43,6 +43,7 @@ public sealed class ModelQueueAdapter : ILLMCaller, agent.subagent.ILLMCallerFor
             Model = r.Model,
             PromptTokens = r.PromptTokens,
             TokensUsed = r.TokensUsed,
+            ReasoningContent = r.ReasoningContent,
         };
     }
 }

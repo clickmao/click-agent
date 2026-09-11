@@ -12,6 +12,26 @@
 
 ---
 
+## R366 v0.21.1 候选 DeepSeek 内部用例测试 + 推理模型思考链捕获 (提交待 CI 复核)
+
+- **用户指令 (逐字)**: "使用 token 阅读文档后不断完善 click-agent 项目; 内部用例测试用的 deepseek api: sk-…"。
+- **DeepSeek 内部用例测试探针 (probes/deepseek-probe, 新增)**: 不依赖 NativeAOT 构建, 用真实 DeepSeek API 验证 `src/agent.modelqueue` 发出的 OpenAI 兼容 chat/completions 请求契约, 并捕获项目 DTO 未解析字段。凭据铁律: key 仅从环境变量 `DEEPSEEK_API_KEY` 读取, 输出脱敏; 内置 1.5s 调用间隔 + 对 401/429/5xx 指数退避重试 (规避 DeepSeek 速率窗口)。
+- **推理模型思考链捕获 (v0.21.1 核心)**: 实测证实项目首选 `deepseek-flash` **即推理模型** (返回 `reasoning_content`), 而 `OpenAIChatResponseDtos.cs` 此前未解析该字段 → 思考链整段丢弃。补:
+  - `OpenAIChatResponseMessage.ReasoningContent` (`[JsonPropertyName("reasoning_content")]`, 经 `OpenAIChatResponse` source-gen 上下文自动纳入, AOT 安全);
+  - `QueueResponse.ReasoningContent` + `CallEntryAsync` 捕获 `choice.Message.ReasoningContent`;
+  - `LLMResponse.ReasoningContent` + `ModelQueueAdapter` 透传;
+  - 三处 `llm_call` 遥测补 `reasoning_len` (主成功/请求内重试/兜底切换路径一致)。
+  - 纯增量, 无反射/无新类型注册, 不破坏 AOT 零 IL 警告契约。
+- **models.yaml 校正**: `balance_schemes.deepseek` 旧注 "balance 字段 USD" 实测为 **CNY** (`balance_infos[].currency=C NY` / `total_balance`) → 校正注释; `deepseek-flash` 条目补 "推理模型, 返回 reasoning_content" 说明。
+- **实测契约结论 (真实 key, 探针 6 用例)**:
+  1. `deepseek-flash` = 项目发送的真实模型名, 接受且返回 `reasoning_content` (推理档 low/high 思考链长度随档增长) ✓;
+  2. `deepseek-chat` 非推理, 无 `reasoning_content`; 收 `reasoning_effort` 被无害忽略 (200) ✓ — 项目对全模型透传 `reasoning_effort` 安全;
+  3. `deepseek-reasoner` 历史推理模型, 可用性随 DeepSeek 目录变动 (探针保留该用例);
+  4. `GET /user/balance` 返回 `balance_infos[].currency=C NY` (非 USD) ✓。
+- **观察项 (未改动 auth 语义)**: DeepSeek 对 chat/completions 速率窗口返回 **401 而非 429**; 项目 `OnTransientFailureAsync` 仅把 429 当可重试限流, 401 被当作鉴权硬失败不重试 (真实 401 须 fail-closed, 故不改)。探针已用退避重试规避该窗口。
+- **基线**: 真实 DeepSeek 调用 6 用例契约验证通过 (reasoning/reasoner 视目录可用性); 改动 `git diff` 纯增量。
+- **诚实边界**: 本沙箱无 .NET 10 SDK 且 nuget/builds.dotnet.microsoft.com 被封 → **未本地跑 730 单测 / NativeAOT 构建 / eval**; 改动经设计评审为 source-gen 安全增量 (仅新增可序列化属性 + 遥测字段), 待仓库 CI (dotnet build + test + AOT publish) 全量复核。版本戳 (csproj 0.21.0→0.21.1 / README 徽章) 待 CI 绿后由统一提交补齐, 避免未构建即改版本号造成口径不一致。
+
 ## R365 v0.21.0 Role 系统交付 + 凭据加密 + FrontendApi 鉴权 (批523 13/13, 提交 `7ed4031`)
 
 - **用户指令 (逐字)**: ①"凭据静态加密 请用跨平台统一方案" ②"完善 6 个硬缺口" ③R360 "不做前置人格语料，倾向=对用户问题置信度的赏罚涌现" ④R361 "用对抗用例验证后有效在接近V2 并记得 role 可以外挂依据给 V2" ⑤**R363 "去掉roles目录相关，仅能外部挂载单文件且不可是明文，需压缩友好的快读快写可扩展结构，提供API读取修改写入 并实现 ① 推理中止→失败簇三件实现 ② 赏罚信号接 V2 主链（:1270 替换 llmResponse.Success）"** ⑥"全部提交github，并更新全部文档到当前项目状态"。
