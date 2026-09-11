@@ -37,7 +37,7 @@ public sealed class FailureClusters
         for (var i = recentReplies.Count - 2; i >= recentReplies.Count - StagnationWindow; i--)
         {
             var prevSet = new HashSet<string>(Trigrams(recentReplies[i]));
-            // 包含率 = |last ∩ prev| / min(|last|,|prev|) — 短回复的 trigram 采样稀疏, 用包含率更稳
+            // 双向 Jaccard (|last ∩ prev| / |last ∪ prev|) — 短回复的 trigram 采样稀疏, 用集合比值对长度差异不敏感
             var inter = lastSet.Count(prevSet.Contains);
             var union = lastSet.Count + prevSet.Count - inter;
             if (union == 0 || (double)inter / union < StagnationSimilarity) return false;
@@ -83,9 +83,27 @@ public sealed class FailureClusters
         foreach (var ch in question)
             if (ch >= 0x4E00 && ch <= 0x9FFF && !stop.Contains(ch.ToString()))
                 chars.Add(ch.ToString());
-        chars.Sort();
+        // 序数排序 (R365 审查): List<string>.Sort() 默认走文化相关比较 — 同一问题在不同 locale
+        // 下可能得到不同指纹 (簇归类跨机漂移)。指纹必须文化无关 → StringComparer.Ordinal。
+        chars.Sort(StringComparer.Ordinal);
         var joined = string.Join("", chars);
-        return joined.Length == 0 ? "EMPTY" : joined[..Math.Min(24, joined.Length)].GetHashCode().ToString("X8");
+        return joined.Length == 0 ? "EMPTY" : StableHash(joined[..Math.Min(24, joined.Length)]).ToString("X8");
+    }
+
+    /// <summary>
+    /// 进程间稳定 hash (FNV-1a 32bit)。
+    /// 修 (R365 审查): 原用 string.GetHashCode() — .NET Core 对 string 默认**每进程随机化种子**,
+    /// 落盘的簇键重启后无法复现 → "跨会话簇归类" 静默失效 (同进程内测试测不出)。
+    /// </summary>
+    private static uint StableHash(string s)
+    {
+        var h = 2166136261u;
+        foreach (var c in s)
+        {
+            h ^= c;
+            h *= 16777619u;
+        }
+        return h;
     }
 
     private static string[] Trigrams(string s)

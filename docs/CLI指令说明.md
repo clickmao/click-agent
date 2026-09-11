@@ -60,6 +60,8 @@
 | `--smoke` | — | 冒烟自检 (全图 AOT 校验) | 日志 | host |
 | `--llm-manager` | — | 启动 llm-manager 轻量常驻进程 (0 模型占用; worker 按需 lazy 拉起; 资源紧张 ∧ 无 CLI 实例 → kill worker 卸载) (v0.20.0) | 日志 | host |
 | `--llm-service-status` | — | 非交互输出 llm-manager/worker 状态 (脚本/CI/前端/无 TTY); exit 0=在线, 5=未运行; 等价 `/llm-service` 指令 (v0.20.3) | stdout | host |
+| `--frontend-api <port>` | TCP 端口 | 启动 FrontendApi v1 常驻服务 (第三种运行形态; 统一信封 JSON Lines, 27 能力域; 需鉴权 token) (v0.19.0/R355) | 服务 | host |
+| `--role <path.rbin>` | .rbin 单文件路径 | **挂载扮演角色** (v0.21.0): 单文件非明文包 (ARBL+AES-GCM(gzip)); 不传 = 无角色 (行为与默认逐字节一致, 赏罚链整链失效 0 token) | — | host |
 
 ### LLM 服务独立进程 (v0.20.0 — llm-manager / worker, 用户钦定)
 
@@ -91,8 +93,7 @@ CLI(s) ──UDS──→ llm-manager (轻量常驻, 0 模型, 不随 CLI 生死
 |---|---|---|
 | `AGENTFRAMEWORK_EXPLORE` | 未设/`1` = 开 (默认) / `0` = 全关 | 思考链探索总开关 (RunThinkChainAsync 入口短路; explore_eval A/B 对照组语义) |
 | `AGENTFRAMEWORK_RAG_PATH` | index.jsonl 路径 | RAG 数据文件 (≡ -rag / /rag) |
-| `AGENTFRAMEWORK_LOCAL_DISABLED` | `1` | 批测禁本地模型 (qwen 路径) |
-| `AGENTFRAMEWORK_BGE_MODEL` | gguf 路径 | bge 嵌入模型路径 |
+| `AGENTFRAMEWORK_BGE_MODE` | `remote` | 嵌入走本机 llm-service (opt-in; R352 后本地引擎已移除) |
 | `AGENTFRAMEWORK_TELEMETRY` | 目录 | telemetry jsonl 输出目录 (run_round per-case 隔离) |
 
 ## /model list 与序号选择 (v0.10.0)
@@ -201,13 +202,21 @@ agenthost -rag /path/to/index.jsonl   # repl 会话
 | `/log dump` | 内存日志环形缓冲 (2000 条) 存档 JSON 行文件 | 路径见返回 JSON |
 | `/balance [id]` | token 余额查询 (provider scheme 分派: openai=subscription, deepseek=balance) | 智谱无公开余额 API → 诚实报错 |
 
-### /role 角色族（v0.21.0 计划 — 详见 docs/plans/v0.21.0-role-system-plan.md）
+### Role 角色系统（v0.21.0 已实施 — 详见 docs/Role使用说明.md）
 
-| 指令 | 功能 | 备注 |
+> **实施形态与计划有别**（用户 R363 钦定修订）：不做 `roles/` 目录包、不做 `/role` 指令族；
+> 唯一形态 = **启动参数挂载单文件 `.rbin`**。原计划对照见 docs/plans/v0.21.0-role-system-plan.md §0.1。
+
+| 操作 | 形式 | 功能 |
 |---|---|---|
-| `/role list` | 列出 roles/ 下全部角色包（体积/经历条数/激活态） | 包加载失败降级跳过 |
-| `/role use <id>` | 激活角色（持久偏好） | prompt 注入语风+倾向块; 召回源随角色切换 |
-| `/role off` | 回到无角色默认态 | 行为与 v0.20.5 一致 |
-| `/role info [id]` | 渲染实况预览 + 成长经历 top5 | 超预算截断可见 |
-| `/role forget <id> <hash\|all>` | 删除成长经历 | 用户数据权; 立场类仅显式删除 |
+| 挂载角色 | 启动参数 `--role <path.rbin>` | 从加密单文件加载角色（人格种子 + 成长账本）；不传 = 无角色 |
+| 查看实况 | FrontendApi `role.info` | 角色 id/名称/成长域分布/置信度/失败簇 |
+| 读写/修改 | `RoleBinaryFile.Read/Write(path, key)` | C# API：读 → 改任意字段（含自定义 `x:` 键）→ 原子写回 |
+| 生成/更新包 | 程序化 (见 Role使用说明 §4) | 无 CLI 生成器；由调用方以 API 组装文档后写入 |
+
+**赏罚与成长**（v0.21.0，无需用户显式操作）：
+- 用户纠正 → `CorrectionDetector` L1 词面规则（0 token，覆盖 ~60%）或 L2 微 prompt（单字母协议，~140 tok）判定；
+- 域级置信度 `(赏+1)/(总+2)` → 低置信域自动触发"先怀疑/先要证据"；样本 <5 显示"观察中"（诚实语义）；
+- 推理中止（超时/token 超限/自证循环）→ 失败簇罚分，≥3 分时自动前置注入策略警告。
+- **无角色时整链失效**：不起后台 Task / 不调 LLM（0 token）/ 不写盘 / 联想注入关闭。
 

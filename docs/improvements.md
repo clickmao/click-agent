@@ -12,6 +12,32 @@
 
 ---
 
+## R365 v0.21.0 Role 系统交付 + 凭据加密 + FrontendApi 鉴权 (批523 13/13, 提交 `7ed4031`)
+
+- **用户指令 (逐字)**: ①"凭据静态加密 请用跨平台统一方案" ②"完善 6 个硬缺口" ③R360 "不做前置人格语料，倾向=对用户问题置信度的赏罚涌现" ④R361 "用对抗用例验证后有效在接近V2 并记得 role 可以外挂依据给 V2" ⑤**R363 "去掉roles目录相关，仅能外部挂载单文件且不可是明文，需压缩友好的快读快写可扩展结构，提供API读取修改写入 并实现 ① 推理中止→失败簇三件实现 ② 赏罚信号接 V2 主链（:1270 替换 llmResponse.Success）"** ⑥"全部提交github，并更新全部文档到当前项目状态"。
+- **凭据静态加密 (R358)**: 新建 src/agent/CredentialEncryption.cs — **AES-256-GCM**（跨平台统一原语，AOT 全支持；不用 DPAPI/libsecret 分叉）；master.key 32B 落盘 600 权限；明文自动迁移（Load 兼容 + 首次 Save 即加密）；GCM 篡改拒绝。PromptPersistence 接入；6 单测。
+- **Role 单文件 `.rbin` (R363, 用户钦定修订)**: 新建 src/agent.roles/RoleBinaryFile.cs（191 行）— 16B 头（magic `ARBL`+version+flags+压缩长度+原始长度）+ `AES-256-GCM(gzip(JSON))`；密钥=`data/master.key` 持久层级（跨会话可解/换机不可解）；未知 `x:` 前缀键读写往返保留（可扩展）；tmp+rename 原子写；Read/Write API。**目录方案废除**：RoleRegistry.cs 删（照 SkillRegistry 的 roles/ 目录包扫模式终弃），Program `--role` 改接 .rbin 路径、`--roles-dir` 删。实测 700B 文本 → **306B**；hex dump 仅见 magic + 密文（非明文实证）。
+- **赏罚涌现倾向 (R360, 用户钦定非前置语料)**: CorrectionDetector.cs 两级判定 — L1 规则词面（"不对/错了/不是这个意思"等强模式，**0 token**，14 轮模拟拦 12/14）+ L2 微 prompt（**单字母 C/A/N 输出协议**，~140 tok/次，均摊 20.7 tok/轮，省 85%）→ RoleGrowthLedger.cs 域级 Beta 计数，confidence=(赏+1)/(总+2)（Laplace），**<0.4 先怀疑 / >0.7 信任 / 样本<5 观察中**。实证：docker 域 5 罚 0 赏 → 0.143 Distrust（"先怀疑"自动涌现）；git 3 赏 0 罚 → 0.800 观察中；跨会话重载保持。
+- **推理中止→失败簇 (R364, "三件")**: FailureClusters.cs — 中止检测（超时 / token 超限 / **自证循环**：窗口 3 轮回复 trigram Jaccard ≥0.95 判原地打转）→ 问题指纹簇归类（落盘跨会话）→ **罚分 ≥3 前置注入**策略警告（先澄清/降级/诚实坦白）。Jaccard 修 `last.Count(prev.Contains)` 歧义为 `last.Count(t => prev.Contains(t))`。
+- **R365 文档同步期审查（自查发现 3 真缺陷，已修）**: ①**前置注入实际未接线**——`RenderWarning` 有实现但 V2 prompt 组装处从未消费（"三件"只有两件在跑，属宣称与实现不符）→ 接入 Role 块（`message.Content` 指纹命中且罚分≥阈值 → 注入），无 role 时不进分支；②**簇键跨进程不稳定**——`string.GetHashCode()` 在 .NET Core 对 string 每进程随机化种子，落盘的 `failureClusters.json` 重启后键全失配 → "跨会话簇归类"静默失效（同进程测试测不出：`落盘重载_簇保持` 恰好骗过）→ 改 **FNV-1a 32bit 自实现**；③**指纹排序文化相关**——`List<string>.Sort()` 默认文化比较，同问题换 locale 得不同键 → 改 `StringComparer.Ordinal`。新增回归锁 `簇键_进程间稳定`（硬编码 3 键值，期望值由独立 Python FNV 实现交叉验证，非抄实现输出）。
+- **赏罚接 V2 主链 (R364)**: CorrectionDetector 后台 Task（不阻塞响应）挂记忆回写区，`GrowthLedger.Record` + LLM 失败 → `FailureClusters.RecordAbort`；L2 判定走模型队列 ContextCompression 通道（微 prompt 隔离）。
+- **无 role 门禁 (用户 OOB 校验令)**: 查实 2 处漏洞（纠正检测 Task 无 role 仍起 → 白烧 LLM token；失败簇仍写盘）→ 加门禁：`GrowthLedger == null` 整链失效 — 不起 Task / 不调 LLM / 不写盘 / 联想前置注入关闭（null 安全空返回）；无角色行为与 v0.20.5 一致。
+- **对抗验证 (R361)**: /tmp/adversarial 30 例（判罚正例10 / 判赏正例8 / 误杀陷阱7 / 模糊灰区5）；首轮 23/30 → 修 L1 语境豁免（转述/假设/历史）+ L2 单字母协议 + max_tokens 自适应重试（deepseek-flash 是 reasoning 模型，思维链吃光 token 致 content 空）→ **30/30（判分题 25/25 = 100%）**；固化 CorrectionDetectorTests.cs 22 用例（脱 LLM，L1 规则 / L2 mock）。
+- **FrontendApi 鉴权 + 限流 (sec2/sec3 部分)**: FrontendAccessControl.cs（共享 token：随机 hex 或 env 注入 / 令牌桶限流 / 并发上限）。
+- **真机 E2E**: `agenthost --frontend-api 47819 --role skeptic.rbin` → 同对抗问题回复"前提澄清: 没有证据表明…"（人格从加密单文件加载，4.2s）✓；R355 TCP 47812 chat.send E2E（meta.ping→pong / "回复两个字:收到"→"收到" / 未知 api 结构化错误）。
+- **基线**: **730/730 全绿**（729 + 1 新增回归锁 `簇键_进程间稳定`；R362 为 718）；AOT **13.75MB** 零 IL 警告；批 523（DS 主力首测）13/13。
+- **诚实边界**: ①R2 能力绑定（Role 绑独立二级召回源）未实施；②`/role` 指令族未做（改 `--role` 启动参数 + `role.info` api）；③embedcpu 无关对 cos 0.90+ vs llama.cpp 金标准 0.18-0.23 差异未解（Q8_0 地板假设已证伪）；④sec2 鉴权仅 token，OAuth/mTLS 未做。
+
+## R355/R356 v0.19.0 FrontendApi chat 域接通 + DS 主力切换 (批 523 13/13, 提交 `3f90e3c`/`6a33404`)
+
+- **用户指令**: ①"若当前你通过API使用LLM服务是GLM请改成DS, ds-flash4.1" ②"② KPI token 口径决策 ③ FrontendApi state.snapshot 真实状态填充"。
+- **R355 FrontendApi chat 域**: 新建 FrontendApiChatRouter.cs（chat 域异步 handler 持 IAgent，直通 ProcessAsync）；FrontendApiServer handler 签名升级 `(api, payload)`；Program 加 `--frontend-api <port>` 第三运行形态（TCP 常驻）。两处 AOT/契约级修复：payload 透传缺失（server→router 传 "{}"）、AOT 反射禁用下匿名类型序列化崩溃 → 手写 Utf8JsonWriter。真机 E2E 全通；677/677，AOT 13.4MB。
+- **R356 DS 主力切换（二分实证）**: 修前真相 = **首选实为 GLM**（打分 GLM/DS 同 8 分，GLM 价格 0 → fitness×2+推理×3+编码×3-价×2 恒胜；models.yaml "首选"标注仅注释、代码不消费）。修 A：models.yaml 加 `priority`（DS=1/GLM=2），ModelSelectionPolicy 每低一档 **-5 分**压过 0 价优势；性能不敏感分支（压缩/标注）同锁首选；未声明=旧行为不变；6 单测含"未声明时 GLM 仍胜"回归保护。修 B（正名）：**`deepseek-4.1-flash` API 名不存在（400）** → 官方支持名 = **`deepseek-flash`**（另一合法名 deepseek-v4-pro），直调 200 model echo 确认。终验：GLM 坏 key 下 chat.send **一次成功、零 401、零兜底、零 warn**。683/683。
+- **R356-b embedcpu 数值审计（llama.cpp 源码对照）**: curl 拉 llama-model.cpp / llama-graph.cpp / src/models/bert.cpp / ggml.c 逐项对照 — 前向 8 项对齐 bert.cpp（gelu=tanh 变体、无 causal mask、scale、残差位置全 ✓）；**修正 pooling：mean→CLS**（BGE 官方 1_Pooling 实证 cls_token + pooling_type=2 是转换器默认值不可信）；WordPiece 去 ▁ 前缀（BERT 词表无 ▁，词="word"/子词="##sub"）→ **相关对 cos 0.8372 → 0.9634** ✓。683/683，推 `a8fe11f`。
+- **llama.cpp 金标准对照（决定性实验）**: ghfast 镜像 clone llama.cpp 11s → 构建 llama-server（新版 embedding CLI 已移除，改走 `/v1/embeddings`）→ 同 `bge-q8.gguf` 加载：**mean pooling 无关对 0.17-0.19，CLS pooling 0.18-0.23 vs 我们 0.90+** → **Q8_0 噪声地板假设证伪，前向仍有差异（未解）**；同句前 16 维 cos 0.79。
+- **R356-c**: KPI token 口径重锚（tokens_per_case 上界 1300，批 523 实测 1836 带外待定夺）+ state.snapshot 真实状态填充。
+- **基线**: 683/683；批 523 = **13/13**，1836 tok/case，8.0s/case（DS 主力首测）。
+
 ## R353/R354 v0.20.5 模型通道精简 + bge 本地 CPU 最小推理 + LLamaSharp 全拆 (批520/521/522)
 
 - **用户指令**: ①"去掉项目内本地加载本地llm与官方llm相关功能…仅保留api调用能力" ②"deepseek4.1flash首选 glm5.3flash次选 保留gpt6默认 其余model预留配置移除" ③"去掉llama后仅限cpu 不要onnx 少量代码或成熟库" ④"bge即便用最小实现也请本地cpu异步跑" ⑤"脚本互动若业界无先例则删" ⑥"跨平台vector实现"。

@@ -1,10 +1,10 @@
-# click-agent (v0.20.5)
+# click-agent (v0.21.0)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)
-![Tests](https://img.shields.io/badge/tests-683%2F683-brightgreen)
+![Tests](https://img.shields.io/badge/tests-730%2F730-brightgreen)
 ![NativeAOT](https://img.shields.io/badge/NativeAOT-zero%20warnings-blueviolet)
-![Eval](https://img.shields.io/badge/迭代评测-286批%2099%25%2B-success)
+![Eval](https://img.shields.io/badge/迭代评测-523批%2099%25%2B-success)
 
 **一个以文档驱动的全自动化产品迭代 Agent 框架。** 迭代循环由框架内生：计划文档（docs/plans）→ 代码落地 → 真实批测（eval/run_round，断言绑定组件真实行为）→ KPI 打点回授 → 验收存档（版本 tag + improvements 台账）→ 下一轮候选。文档是唯一权威源，记忆只存恢复指针。
 
@@ -12,13 +12,22 @@
 
 **内部插件核心能力按需自行插入**——框架提供宿主机制与执行协议（技能三形态：executive 脚本交付 / normative 清单交付 / knowledge_hint 知识前置注入；脚本执行走 CLI 验证 → 插件服务，JSON Lines 事件流协议；像素画风锚定合成等渲染/领域能力由插件层扩展），能力边界由插入的插件/技能定义，而非框架写死。
 
-net10.0 / NativeAOT 零 IL 警告 / 683 单测全绿 / 迭代评测 520+ 批通过率 99%+。
-发布线: v0.20.5 — LLM 服务独立进程 (llm-manager/worker, 卸载=杀 worker) / 纯托管 bge 本地 CPU 嵌入 (embedcpu, 零 ONNX) / FrontendApi v1 (chat/ask/state 域) / 模型目录 3 通道 (deepseek-flash 首选 priority 主导) / 凭据静态加密 (AES-256-GCM) / v0.17.x 执行层稳固化 / v0.16 skills 引擎 / v0.15.2-A 存档版 / v0.14 critic 自审体系。
-下一版: **v0.21.0 Role 系统 (计划已立)** — 可成长扮演角色: 性格/能力/倾向/成长经历四维区别 + 紧凑数据包 (≤8KB) + /role 指令族。见 docs/plans/v0.21.0-role-system-plan.md 与 docs/Role使用说明.md。
+net10.0 / NativeAOT 零 IL 警告 (13.75MB) / 730 单测全绿 / 迭代评测 523 批通过率 99%+。
+发布线: **v0.21.0 Role 可成长扮演角色系统** (.rbin 单文件外挂 / 赏罚涌现倾向 / 推理中止失败簇) — LLM 服务独立进程 (llm-manager/worker) / 纯托管 bge 本地 CPU 嵌入 (embedcpu) / FrontendApi v1 (chat/ask/state 域 + token 鉴权 + 令牌桶限流) / 模型目录 3 通道 (deepseek-flash priority 主导) / 凭据静态加密 (AES-256-GCM) / v0.17.x 执行层稳固化 / v0.16 skills 引擎。
+下一版候选: 工业级 6 缺口余项 (CI 门禁 / 配置热更新 / metrics 端点 / 断路器半开 / 成本预算闸) + embedcpu 与 llama.cpp 金标准逐维对照。
 
 [🇬🇧 English → README_EN.md](README_EN.md)
 
 ---
+
+### ✅ v0.21.0 Role 可成长扮演角色系统 (R356-R365 已落地, 真机 E2E 全通)
+- **单文件外挂** (用户钦定 "仅能外部挂载单文件且不可是明文"): `.rbin` 格式 = 16B 头 (magic "ARBL" + version + flags + 压缩/原始长度) + `AES-256-GCM(gzip(JSON))` 载荷; 密钥=data/master.key 持久层级 (跨会话可解/换机不可解); 未知 `x:` 前缀键保留 (可扩展); 原子写 (tmp+rename); KB 级全量读写。实测 skeptic 包 700B 文本 → **306B**。
+- **CLI 启动可空**: `--role <file.rbin>` (不传=无角色, 行为与 v0.20.5 逐字节一致)。
+- **赏罚涌现倾向** (用户钦定 "不需要前置人格语料; 倾向来源置信度"): 无手写规则 — `CorrectionDetector` 两级判定 (L1 规则词面 0 token 拦截 60% + L2 微 prompt 单字母协议 ~140 tok/次) → `RoleGrowthLedger` 域级 Beta 计数 (confidence=(赏+1)/(总+2), Laplace 平滑) → 置信度 <0.4 自动"先怀疑"/ >0.7 "信任"/ 样本<5 "观察中" (诚实语义)。200 轮仿真实证倾向差收敛 +0.64。
+- **推理中止→失败簇** (用户钦定 "推理不下去了即失败信号"): 中止检测 (超时/超限/自证循环 trigram Jaccard≥0.95) → 问题指纹簇归类 → 罚分≥3 自动前置注入策略警告 (先澄清/降级/诚实坦白)。
+- **无 role 门禁** (用户 OOB 钦定校验): GrowthLedger 为空时赏罚整链失效 — 不起后台 Task / 不调 LLM / 不写失败簇 / 联想注入自动关闭。
+- **对抗验证**: 30 例用例族 (判罚正例10/采纳正例8/误杀陷阱7/灰区5) → 语境豁免 (转述/假设/历史) 修正后 **25/25 判分 100%**; 固化 22 单测。
+- **前置能力**: 凭据静态加密 (AES-256-GCM 跨平台统一, 明文自动迁移) / FrontendApi 鉴权 (共享 token, 随机 hex 或 env 注入) + 令牌桶限流 + 并发上限。
 
 ### ✅ v0.19.0 前端统一接口 + 监督面 (R341 契约设计 / R350 P1 首切片落地)
 - **统一契约 AgentFrontendApi v1** (用户钦定: 一个契约覆盖全部能力域, 外部 IDE/前端只对接接口): 统一信封 JSON Lines (req/resp/event 三类; 错误结构化 unknown_api/bad_payload/busy/conflict/not_found/internal) + UnifiedStateSnapshot 一次拉全 (agent/turn/ask/charter/staged/activity/skills/scripts/eval/lessons/supervision) + 能力域前缀分组 (chat/ask/script/staged/activity/skills/model/memory/charter/guardrail/eval/files/render/trace/plan/fs/perm/telemetry/state)。
@@ -55,9 +64,9 @@ net10.0 / NativeAOT 零 IL 警告 / 683 单测全绿 / 迭代评测 520+ 批通�
 
 | 维度 | 基线 | 当前 (2026-09-10) | 改善 |
 |---|---|---|---|
-| 评测通过率 | 7354tok 基线 10 用例 | **286 批落盘, 近 30 批 99%+** (quick-13 口径) | 负面扩容+真断言后稳定 |
-| 单元测试 | 325 | **597** | +272 |
-| 真缺陷修复 | — | **72+ 项** (全部打点驱动) | 含 C14 flake 根因 (R332 per-case 隔离) |
+| 评测通过率 | 7354tok 基线 10 用例 | **523 批落盘, 近 30 批 99%+** (quick-13 口径) | 负面扩容+真断言后稳定 |
+| 单元测试 | 325 | **730** | +405 |
+| 真缺陷修复 | — | **75+ 项** (全部打点驱动; 含 R365 自查 3 项) | 含 C14 flake 根因 (R332 per-case 隔离) |
 | token 使用量 (KPI-2) | era2 730 | **quick-11 1144 / quick-13 ~1765** (口径细分见报告) | 每 10 批周报 (`eval/token_report.py`) |
 | 召回率 (RAG) | 词袋 0.45 | **bge 0.95 / 词袋长查询 0.70** | 三口径基线 |
 | 压缩关键信息保留 | SummarySentences 33-53% | **keys 100% / 指令 96%** (104 篇多样态 audit) | 健康线 ≥95% |

@@ -1,5 +1,10 @@
 # AgentFramework API 文档
 
+> **时效声明 (2026-09-12)**: 目录 §1-§26 为 v0.11.0 及更早的 API 基线（史实保留）。
+> v0.12.0-v0.21.0 增量以追加章节形式位于文末（§19-§24 为第二编号段，与应用层 §19-§23 并存，按标题定位）。
+> **已废止**：§17 本地推理 / §23 Vulkan 模式加载（LLamaSharp 进程内加载）已于 R351/R352 整体移除，当前仅保留 API 调用能力。
+> **最新增量**：§24 FrontendApi v1 契约 / §25 LLM 服务独立进程 / §26 凭据静态加密 / §27 Role 系统 API（v0.21.0）。
+
 ## 目录
 
 1. [核心接口](#1-核心接口)
@@ -1353,3 +1358,69 @@ var reloaded = ConfigModelBinder.Get<ModelQueueConfig>(new ConfigSnapshot("./con
 
 层级语义: 读 = 四层合并视图 (base → env → modules → runtime); 写 = 只落 L3 `modules/{module}.yaml`
 (L1 base 永不改, 发布物安全); 清空某模块覆盖回落 L1 用 `writer.ResetModule(module)`。
+
+---
+
+## 24. FrontendApi v1 统一契约 (v0.19.0 设计 / R350-R355 落地)
+
+**定位**：本项目 = 能力与接口提供方；外部 IDE/前端 = 消费方。一个契约覆盖全部能力域，外部只对接一个协议。
+
+- **传输**：TCP (`--frontend-api <port>`) 常驻；**信封** = JSON Lines，三类消息 `req` / `resp` / `event`。
+- **结构化错误**：`unknown_api` / `bad_payload` / `busy` / `conflict` / `not_found` / `internal` / `unauthorized` / `rate_limited`。
+- **状态快照**：`UnifiedStateSnapshot` 一次拉全 — agent / turn / ask / charter / staged / activity / skills / scripts / eval / lessons / supervision。
+- **能力域前缀**：chat / ask / script / staged / activity / skills / model / memory / charter / guardrail / eval / files / render / trace / plan / fs / perm / telemetry / state / role / meta（共 27 域）。
+- **chat 域**（R355 接通）：`chat.send` → 直通 `IAgent.ProcessAsync` 完整 V2 管线（含 model 选择、压缩、记忆）。handler 签名 `(api, payload)` 透传 payload。
+- **鉴权与限流**（sec2/sec3）：共享 token（随机 hex 或 env 注入；缺失 → `unauthorized`）+ 令牌桶限流 + 并发上限 → `rate_limited`/`busy`。
+- **AOT 约束**：禁用反射序列化 → 全部响应手写 `Utf8JsonWriter`（匿名类型 `JsonSerializer.Serialize` 在 AOT 下崩溃，已修）。
+
+## 25. LLM 服务独立进程 (v0.20.0, 用户钦定)
+
+**动因**：新 CLI 不得重复加载 LLM 到内存/显存（bge 加载后 RSS ~157MB）。
+
+```
+CLI(s) ──UDS──→ llm-manager (轻量常驻, 0 模型)
+                   ├─ lazy:      首个使用请求 → 拉起 worker (真加载模型)
+                   ├─ supervise: worker 崩溃 → 下次请求自动重拉
+                   └─ unload:   资源紧张 ∧ 无 CLI 实例 ∧ 无进行中请求 → kill worker
+                            └──UDS──→ llm-service-host (worker, 可被杀)
+```
+
+- **卸载 = kill worker**（用户钦定；OS 回收 native 内存，零优雅关停）。
+- **跨平台零 shell**：`Process.Start`+`ArgumentList` / `Kill(entireProcessTree)` / UDS（Win10+ AF_UNIX）；`/proc/meminfo` 非 Linux 优雅降级。
+- **env**：`AGENTFRAMEWORK_LLM_SERVICE_SOCK` / `_BIN` / `_LOG` / `_MEM_FLOOR_MB`(512) / `_UNLOAD_CHECK_MS`(15000)。
+- **CLI**：`--llm-manager`（常驻）/ `--llm-service-status`（非交互查询，exit 0=在线 5=未运行）/ `/llm-service` 指令。
+- **R352 变更**：worker 内本地 bge 引擎（LLamaSharp）已拆除；嵌入语义档由 `RemoteEmbedder` 客户端指向外部 llm-service（不可用 → hash 兜底）。
+
+## 26. 凭据静态加密 (R358, 用户钦定跨平台统一方案)
+
+`src/agent/CredentialEncryption.cs` — **AES-256-GCM**（`System.Security.Cryptography` 原语，AOT 全支持，Win/Linux/macOS 同一实现；不用 DPAPI/libsecret 分叉）。
+
+```csharp
+var key = CredentialEncryption.LoadOrCreateMasterKey("data");  // 32B, 落盘 mode 600
+string enc = CredentialEncryption.Encrypt(plaintext, key);
+string dec = CredentialEncryption.Decrypt(enc, key);           // 篡改 → CryptographicException
+```
+
+- 明文自动迁移：`PromptPersistence.Load` 兼容旧明文，首次 `Save` 即加密。
+- 密钥层级：`data/master.key` 同时是 Role `.rbin` 的加密密钥来源。
+
+## 27. Role 系统 API (v0.21.0)
+
+**格式**：`.rbin` 单文件 = 16B 头（magic `ARBL` + version + flags + gzip 长度 + 原始长度）+ `AES-256-GCM(gzip(JSON))`。
+
+```csharp
+// 读
+RoleDocument doc = RoleBinaryFile.Read("my-role.rbin", key);
+// 改（任意字段 + 自定义扩展键）
+doc.Name = "疑问者·改";
+doc.Growth["docker"] = (0, 5);
+doc.Extra["custom"] = "v2";
+// 写（tmp+rename 原子替换）
+RoleBinaryFile.Write("my-role.rbin", doc, key);
+```
+
+- **文档模型**：`Id` / `Name` / `ProfileSeed`（人格种子语料，可空）/ `Growth`（域→(赏,罚) Beta 计数）/ `TokensUsed` / `Extra`（未知 `x:` 前缀键读写往返保留 = 可扩展）。
+- **错误语义**：非 `ARBL` 或版本不支持 → `InvalidDataException`；密钥错误/篡改 → `CryptographicException`（GCM 认证拒绝，绝不返回脏数据）。
+- **赏罚链**（无需用户显式操作）：`CorrectionDetector`（L1 规则 0 token / L2 微 prompt 单字母协议）→ `RoleGrowthLedger`（域级 Beta，confidence=(赏+1)/(总+2)）；`FailureClusters`（推理中止检测 → 问题指纹簇 → 罚分 ≥3 前置注入）。
+- **门禁**：未挂载 role（`GrowthLedger == null`）→ 整链失效：不起后台 Task / 不调 LLM（0 token）/ 不写盘 / 联想注入关闭。
+- 用户向说明见 `docs/Role使用说明.md`；设计对照见 `docs/plans/v0.21.0-role-system-plan.md` §0.1（原设计 vs 实施修订）。

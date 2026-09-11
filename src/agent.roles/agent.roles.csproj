@@ -5,7 +5,11 @@
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <InvariantGlobalization>true</InvariantGlobalization>
+    <Version>0.21.0</Version>
   </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="agentframework.tests" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../agent.core/agent.core.csproj" />
     <ProjectReference Include="../agent.config/agent.config.csproj" />

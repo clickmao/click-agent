@@ -145,4 +145,16 @@ public class FailureClustersTests : IDisposable
         var diff = new[] { "方案如下: 使用 A", "方案如下: 使用 B", "方案如下: 使用 A" };
         Assert.False(FailureClusters.IsStagnant(diff));
     }
+
+    [Fact]
+    public void 簇键_进程间稳定()
+    {
+        // R365 审查修复: 原 string.GetHashCode() 每进程随机化 → 落盘键重启后失配 (同进程测试测不出)。
+        // 硬编码期望值 = 跨进程/跨运行锁定算法; 若未来改 hash/sort 必须显式同步本断言。
+        var actual = FailureClusters.ClusterKey("如何求解非线性偏微分方程组") + "|" +
+                     FailureClusters.ClusterKey("复现某崩溃问题") + "|" +
+                     FailureClusters.ClusterKey("git rebase 的正确流程是什么");
+        // 期望值由独立实现 (Python FNV-1a/序数排序) 交叉验证得出 — 非"抄实现输出"。
+        Assert.Equal("F04057D8|35C534E9|C837EB65", actual);
+    }
 }

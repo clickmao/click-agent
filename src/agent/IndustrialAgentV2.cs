@@ -2020,6 +2020,11 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 var growthBlock = GrowthLedger?.RenderForPrompt();
                 if (!string.IsNullOrEmpty(growthBlock))
                     roleSb.Append('\n').Append(growthBlock);
+                // R365 (v0.21.0): 推理中止失败簇前置注入 — 命中该问题所属簇罚分 ≥3 时注入策略警告
+                // (先澄清边界 → 降级方案 → 诚实说明做不到的部分)。无 role 时不进入此分支 (整链失效)。
+                var abortWarning = _failureClusters.RenderWarning(message.Content);
+                if (!string.IsNullOrEmpty(abortWarning))
+                    roleSb.Append('\n').Append(abortWarning);
                 blocks.Add(roleSb.ToString());
             }
             var profileRendered = profile.RenderForPrompt();

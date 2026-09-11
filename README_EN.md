@@ -1,10 +1,10 @@
-# click-agent (v0.17.2)
+# click-agent (v0.21.0)
 
 [![ci](https://github.com/clickmao/click-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/clickmao/click-agent/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)
-![Tests](https://img.shields.io/badge/tests-619%2F619-brightgreen)
-![Eval](https://img.shields.io/badge/迭代评测-286批%2099%25%2B-success)
+![Tests](https://img.shields.io/badge/tests-730%2F730-brightgreen)
+![Eval](https://img.shields.io/badge/迭代评测-523批%2099%25%2B-success)
 ![NativeAOT](https://img.shields.io/badge/NativeAOT-zero%20warnings-blueviolet)
 
 > CI workflow file is ready (`.github/workflows/ci.yml`); badge activates once pushed with a `workflow`-scoped token.
@@ -15,12 +15,32 @@ Host-level execution hardening for multi-agent collaboration: cross-process file
 
 Internal plugin capabilities are inserted on demand — the framework provides host mechanisms and execution protocols (skill taxonomy: executive / normative / knowledge_hint; script execution via CLI-verified → plugin-service with JSON Lines event streams; rendering/domain capabilities like pixel-art style-anchored synthesis extend through the plugin layer). Capability boundaries are defined by inserted plugins/skills, not hard-coded.
 
-net10.0 / NativeAOT zero IL warnings / 597 tests green / 286 eval batches 99%+. Release line: v0.17.2 executor hardening + staged approval + activity registry / v0.16 skills engine / v0.15.2-A archived baseline / v0.14 LLM self-critique / v0.13.3 think-chain + progressive exploration (+56pt).
-Release line: v0.11.0 — unified @cmd command protocol + 3 transports / Skill executive scripts / vector-blended relevance scoring / 19-model catalog.
+net10.0 / NativeAOT zero IL warnings (13.75MB) / **730 tests green** / 523 eval batches 99%+.
+
+**Release line: v0.21.0 — Role (growable persona) system.** Mountable as a **single encrypted `.rbin` file** (`ARBL` header + `AES-256-GCM(gzip(JSON))`, key = persistent `data/master.key`; unknown `x:` keys preserved; atomic write) — no plaintext, no directory scanning. Trait/attitude emerges from **praise–blame signals** (`CorrectionDetector` L1 rule layer 0-token ~60% + L2 micro-prompt single-letter protocol ~140tok; `RoleGrowthLedger` per-domain Beta posterior, confidence=(praise+1)/(total+2) — <0.4 doubt-first / >0.7 trust / <5 samples honest "observing"). **Inference-abort → failure-cluster** (timeout / token-cap / self-loop trigram Jaccard≥0.95) with pre-injection of a strategy warning at penalty ≥3. **No role ⇒ whole chain disabled** (no background task, no LLM call, 0 token, no persistence). Plus: credential-at-rest encryption (AES-256-GCM, cross-platform) / FrontendApi v1 (chat-answer-state domains + token auth + token-bucket rate limit) / LLM-service as a separate process (llm-manager/worker, unload = kill worker) / pure-managed bge CPU embedder (embedcpu, zero ONNX/LLamaSharp) / 3-model catalog (deepseek-flash preferred via priority) / v0.17.x executor hardening / v0.16 skills engine.
 
 [🇨🇳 中文 → README.md](README.md)
 
 ---
+
+### ✅ v0.21.0 Role — Growable Persona System (R356-R365, live E2E passed)
+- **Single-file mount** (user-decided: "mount only a single external file, and it must not be plaintext"): `.rbin` = 16B header (magic `ARBL`, version, flags, lengths) + `AES-256-GCM(gzip(JSON))`; key = persistent `data/master.key` (decryptable across sessions, not across machines); extensible via preserved `x:` keys; atomic tmp+rename write; KB-scale read/modify/write API (`RoleBinaryFile.Read/Write`). Measured: 700B text persona → **306B**.
+- **CLI**: `--role <file.rbin>` (omitted ⇒ no role, behavior byte-identical to default).
+- **Attitude by emergence** (no hand-written bias rules): correction detection (L1 lexical 0-token + L2 micro-prompt) → per-domain Beta ledger → doubt/trust/observing verdicts; 200-round simulation converges +0.64.
+- **Inference abort → failure clusters**: abort detection (timeout/token-cap/self-loop), problem-fingerprint clustering, pre-injected strategy warning at penalty ≥3.
+- **Adversarial validation**: 30-case family (10 blame / 8 praise / 7 false-positive traps / 5 gray) → context exemption fix → **25/25 scoring 100%**; 22 regression tests.
+- **Gate**: with no role, the whole praise-blame chain is inert (no task, no LLM, no writes).
+
+### ✅ v0.19.0-v0.20.5 Frontend Unified API + LLM Service Process + Credential Encryption (R341-R356, live E2E)
+- **FrontendApi v1 contract** (unified envelope JSON Lines req/resp/event, structured errors, 27 capability domains, UnifiedStateSnapshot) + TCP server; **chat domain wired to the full V2 pipeline** (R355), real TCP round-trips.
+- **LLM service as separate process** (user-decided): `llm-manager` (lightweight resident, 0 models) → lazy-spawned `llm-service-host` worker; **unload = kill worker** (OS reclaims); zero-shell cross-platform (`Process.Start`+`ArgumentList`), UDS, orphan cleanup, restart-storm circuit breaker.
+- **Credential encryption at rest** (user-decided, cross-platform): **AES-256-GCM** (`System.Security.Cryptography`), `master.key` 32B mode-600, plaintext auto-migration, tamper rejection.
+- **Model catalog reduced to 3** (user-decided): deepseek-flash (preferred, `priority` field wins over GLM's zero-price), glm-5.3-flash (secondary), gpt-6 (default config). Fixed a real defect: the API name `deepseek-4.1-flash` does not exist → correct name is `deepseek-flash`; GLM was silently the effective primary (equal score + zero price) until `priority` was added.
+- **embedcpu**: pure-managed bge CPU embedder (GGUF Q8_0 + WordPiece + 4-layer BERT, `TensorPrimitives` SIMD) — **no LLamaSharp/ONNX/native deps**; pooling fixed to CLS (relevant-pair cosine 0.84 → 0.96).
+
+### ✅ v0.17.x-v0.18.0 Executor Hardening (R334-R340, batches 284-286 green)
+- Cross-process file locks + atomic writes + OccupantDetector + frequency-weighted lesson memory; offline staged changes with baseline-sha conflict refusal (protects files open in an editor); activity/task registry seeing all CLI instances.
+- Command-route drift双门 (fail-closed Known-set + real switch arm), parallel-round collision protocol, plan-doc `DocRef` drift tests.
 
 ### ✅ v0.13.0/v0.13.1/v0.13.2/v0.13.3 Capabilities — Think-Chain / Progressive Exploration / Fallback Sticky / Foundation Defense (R205-R240 landed)
 - **Progressive exploration**: ExplorationConfig + ExplorationPlanner (priority queue, in-context URL > out-of-context dir) + **HostExploreExecutor** (URL GET digest / page link discovery<=5 / dir+file path-traversal guard) + V2 RunThinkChainAsync (seed->4s/4-step budget->first-fail-stop->re-inject) — exploration A/B live **hit 0.45->0.64 (+18pt zero regression)**; LinkRegistry key-doc activation chain (3-signal >=3 + parent-chain protection).
@@ -44,7 +64,7 @@ Release line: v0.11.0 — unified @cmd command protocol + 3 transports / Skill e
 Archived → [CHANGELOG-v0.11.0-R169-R185.md](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md) · [CHANGELOG-v0.11.0-R186-R204.md](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md) · [CHANGELOG-v0.11.0-R205-R218.md](docs/changelogs/CHANGELOG-v0.11.0-R205-R218.md) · [CHANGELOG-v0.11.0-R219-R228.md](docs/changelogs/CHANGELOG-v0.11.0-R219-R228.md) · [CHANGELOG-v0.13.x-R229-R248.md](docs/changelogs/CHANGELOG-v0.13.x-R229-R248.md) · [CHANGELOG-v0.13.3-R249-R268.md](docs/changelogs/CHANGELOG-v0.13.3-R249-R268.md) (30-batch scroll; backfilled 2026-09-09, next ≈batch258)
 
 ### 📊 Iteration Eval Stats (telemetry-driven)
-- **256 batches landed, recent-30 99%+** (quick-11 caliber); **499 unit tests** (325 baseline, +174); **72 real defects** fixed, all telemetry-driven (#21-#72); recall calibers **bge 0.95 / bag-of-words long 0.70 / adversarial short 0.45**; compression audit 104 diverse docs **keys 100% / instruction 96%**; exploration A/B (24 cases) **hit 0.167->0.722 (+56pt, R310 rerun)**; merged relevance verdict (isolation+steering single-point, R308).
+- **523 batches landed, recent-30 99%+** (quick-13 caliber); **730 unit tests** (325 baseline, +405); **75+ real defects** fixed (incl. 3 self-audited in R365), all telemetry-driven; recall calibers **bge 0.95 / bag-of-words long 0.70 / adversarial short 0.45**; compression audit 104 diverse docs **keys 100% / instruction 96%**; exploration A/B (24 cases) **hit 0.167->0.722 (+56pt, R310 rerun)**; merged relevance verdict (isolation+steering single-point, R308).
 
 ### Batch Trend (rolling window — latest 2)
 **Batch 240 (mass_460)** 11/11 quick-11 920/case / **Batch 239 (mass_459)** 11/11 quick-11 974/case —

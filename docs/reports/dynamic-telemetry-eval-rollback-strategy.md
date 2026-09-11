@@ -143,6 +143,18 @@ done
 
 ## 7. 迭代状态快照（恢复迭代从这里开始）
 
+> ### ⏱ 最新状态（2026-09-12 — 恢复迭代先读这里；下方为历史逐轮条目）
+>
+> - **版本**：**v0.21.0 Role 可成长角色系统**（提交 `7ed4031`，R356-R365 已交付并推送；远端 MATCH）。
+> - **测试/AOT**：**730/730 全绿**；NativeAOT **13.75MB，0 IL 警告**。
+> - **批测**：批 **523** = 13/13（DS 主力首测，1836 tok/case，8.0s/case）；下一轮号候选 **524**（启动前走 R257 撞号协议：pgrep + 锁文件 + mtime >10min 才算 stale）。
+> - **模型主力**：`deepseek-flash`（models.yaml `priority=1` 压过 GLM 的 0 价；DS 旧营销名 deepseek-4.1-flash 不存在，已正名）。
+> - **本轮交付**：Role 单文件 `.rbin`（ARBL + AES-256-GCM(gzip)，非明文，Read/Write API，实测 306B）／赏罚涌现倾向（CorrectionDetector L1 0tok + L2 微 prompt；RoleGrowthLedger 域级 Beta）／推理中止→失败簇三件（检测/指纹簇/罚分≥3 前置注入）／赏罚接 V2 主链；无 role 时整链失效（0 token 0 写盘）。全部无 role 行为与默认逐字节一致。
+> - **诚实边界（未解）**：① 工业级 6 缺口余项 = CI 门禁／配置热更新／metrics 端点／断路器半开探测／跨请求成本闸（sec1 凭据加密 ✓、sec2/sec3 鉴权+限流 ✓）；② embedcpu 无关对 cos 0.90+ vs llama.cpp 金标准 0.18-0.23 **未解**（金标准环境 /tmp/llama-full/build/bin/llama-server 已就位）；③ KPI token 上界 1300 与批 523 实测 1836 的口径待定夺；④ Windows 内存探测路径无本机实测。
+> - **文档同步**：本轮已更新 README 双语 / improvements.md（R355-R365 两段）/ CLI指令说明.md（`--role`/`--frontend-api` + Role 实况段）/ Role使用说明.md（.rbin 重写）/ v0.21.0 plan §0.1 实施修订 / api.md §24-27 / architecture.md 时效声明。
+>
+> ---
+
 - **主线进度**：R138-R153。R149 用户质疑整改（真断言族）；R151 pivot 判定闭环（真缺陷 56 KeyError 修复）；R152 收尾（phase report 3: batch62-78 187/187 + README 30 批滚动制度）；**R153 真缺陷 57 修复**：D4 gate 读 os.environ 致 reply_rel 整块静默失效（批79/80 n=0 实证，诚实缺省未破）→ gate 同源 load_env()，批81 同环境复验 n=11 avg 0.631 恢复。下一轮号 **mass_351**（R180-R184 进度与接力细节见下方对应条目及台账 R180-R184）。
 - **最近五批审计（批76-80）**：63/63 全绿（quick-11 子集 44/44）；tok/case 941→939→928→860 递降带内（全量批 1165 口径不同）；drift 全 1.0；suspects 0；D4 rel 修复前 n=0（缺陷 57）/修复后 n=11 avg 0.631。
 - **R149 用户质疑结论**：TaskRelevanceChecker 组件能力真实（全量批 50/53 isolated=True score=2 实测）但判定空心成立——既往 C14/C15 expect 只有 llm:true，通过率对组件无证明力。修复后 C14 真断言批69-72 四连验 isolated=True score=2 PASS (4/4)。
