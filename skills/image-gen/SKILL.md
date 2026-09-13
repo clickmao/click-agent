@@ -9,6 +9,9 @@ keywords:
   - 渲染
   - 生成示意图
   - 生成 icon
+regex_patterns:
+  - "(生成|画|绘制|渲染|做).{0,6}(图像|图|图片|示意图|icon|图标|logo|海报)"
+  - "(示意图|流程图|架构图|矢量图)"
 domain_words:
   - 图像
   - svg

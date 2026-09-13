@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R393",
+  "updated_round": "R398",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -560,6 +560,16 @@
         "src/agent.tests/BgeMatMulPortTests.cs"
       ],
       "owner_round": "R393"
+    },
+    {
+      "id": "probe.randomized-selfcheck",
+      "capability": "随机化能力自检探针: 随机程序题(6 族) + 随机数学题(5 族); 每题**双路径验算**(不一致 ⇒ 拒发题); 判分**只认隐藏用例**且**整题全对**才算过; 失败模式分类(no_code/syntax_error/runtime_error/timeout/wrong_output/partial/no_final/wrong_final)。R398 真机(种子 20260913, 题集 sha 95d6bb1b1a6cdacf): 6 题 21 用例 **21/21 = 1.0000**(73.33s)。真机首轮抓出判定器 2 个真缺陷(围栏假设 / 尾部状态行混入)并固化为永久负控 ⇒ 口径『判定必须按交付物的真实形态收集候选』",
+      "level": "L4",
+      "evidence_cmd": "python3 eval/probe/tasks.py --selftest && python3 eval/probe/grade.py --selftest && python3 eval/probe/run_probe.py --selftest && python3 eval/probe/run_probe.py --kind both --n 3 --seed 20260913 --solver agent --tag=run1",
+      "evidence_path": "docs/reports/r398/r398-random-probe-selftest.md; data/probe/probe-agent-seed20260913.json; data/probe/replies/; eval/probe/",
+      "negative_control": "生成器 21/21(含 2 条『双路径不一致 ⇒ 拒发题』); 判定器 13/13(真差一/死循环/语法错/单值硬编码/无围栏 CLI 回复+尾部状态行/产物路径回退, 且**反向负控**: 比对恒真时差一解被判通过 ⇒ 证明判据非空心); 编排器 11/11(hardcode 作弊解仅 22.2% 用例通过率 ⇒ 确立『整题全对』计分)",
+      "covers": "eval/probe/tasks.py, eval/probe/grade.py, eval/probe/run_probe.py, skills/independent-verification-before-claim/, src/agent.tests/SkillGeneralizationTests.cs",
+      "owner_round": "R398"
     }
   ],
   "aot_check_policy": "release_tag_only",
