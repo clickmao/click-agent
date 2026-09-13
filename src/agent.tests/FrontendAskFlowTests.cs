@@ -1,6 +1,7 @@
 using System;
 using System.Net.Sockets;
 using System.Text;
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -98,18 +99,31 @@ public class FrontendAskFlowTests : IDisposable
     }
 
     /// <summary>读到首个 type 匹配的行 (事件可能先于响应到达)。</summary>
-    private static JsonDocument ReadUntil(NetworkStream st, string type)
+    /// <summary>R376: 事件与响应**不保证相对顺序** (并发派发下 ask_closed 可能先于 ask.* 的 resp)。
+    /// 原实现把途中不匹配的行直接 Dispose → 先到达的事件被吞 → 后续断言假红。现暂存不丢。</summary>
+    private readonly List<JsonDocument> _stash = new();
+
+    private JsonDocument ReadUntil(NetworkStream st, string type)
     {
+        for (var i = 0; i < _stash.Count; i++)
+        {
+            var d = _stash[i];
+            if (d.RootElement.TryGetProperty("type", out var t0) && t0.GetString() == type)
+            {
+                _stash.RemoveAt(i);
+                return d;
+            }
+        }
         for (var i = 0; i < 12; i++)
         {
             var d = ReadJson(st);
             if (d.RootElement.TryGetProperty("type", out var t) && t.GetString() == type) return d;
-            d.Dispose();
+            _stash.Add(d);
         }
         throw new Xunit.Sdk.XunitException($"12 行内未收到 type={type} (事件/响应未按行送达)");
     }
 
-    private static string SendReq(Socket s, NetworkStream st, string api, string payload, string reqId = "r1")
+    private string SendReq(Socket s, NetworkStream st, string api, string payload, string reqId = "r1")
     {
         s.Send(Encoding.UTF8.GetBytes(
             $"{{\"v\":1,\"type\":\"req\",\"req_id\":\"{reqId}\",\"api\":\"{api}\",\"payload\":{payload}}}\n"));

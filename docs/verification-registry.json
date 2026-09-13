@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R375",
+ "updated_round": "R376",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -245,6 +245,33 @@
     "src/agent.host/Program.cs"
    ],
    "owner_round": "R375"
+  },
+  {
+   "id": "ask.menu.loop",
+   "capability": "真机同一连接内 menu 问询闭环 L3: ask 信封事件(含 questions/options) → 同连接 ask.reply → payload.outcome=answered → ask_closed{answered} → 续跑返回正文; 且生产侧触发命中 ≥1 (evidence_gate.to_ask≥1)",
+   "level": "L3",
+   "evidence_cmd": "python3 /tmp/fp376/probe2.py  # RESULT_JSON{ask,reply,continue,gate}=true | dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~FrontendAskSameConnTests",
+   "evidence_path": "src/agent.tests/FrontendAskSameConnTests.cs",
+   "negative_control": "① 读循环改回同步等待长任务完成(还原⑫类断链) → 同连接 2 用例全红(已实证, 且其它 21 用例不动 → 变异特异); ② 触发器带外构造的旧式单测在该变异下**仍然全绿** = 盲区实证",
+   "covers": [
+    "src/agent.frontendapi/FrontendApiServer.cs",
+    "src/agent.frontendapi/FrontendApiChatRouter.cs",
+    "src/agent.frontendapi/FrontendEventHub.cs",
+    "src/agent/registry/EvidenceGate.cs"
+   ],
+   "owner_round": "R376"
+  },
+  {
+   "id": "frontend.conn.framing",
+   "capability": "帧/握手边界与并发派发契约 L2(真 TCP): ① auth 与首个请求合并写入仍被处理(残包转交, 不丢字节); ② 同段多请求全部处理且按 req_id 关联(不依赖到达顺序); ③ 非法 token 静默断连(不响应); ④ 在途上限(背压)与异常必观测",
+   "level": "L2",
+   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~FrontendHandshakeTests",
+   "evidence_path": "src/agent.tests/FrontendHandshakeTests.cs",
+   "negative_control": "丢弃握手残包(rest=空) → 同段写入 2 用例红(已实证, 两种变异各 2 红); 正常路径(auth 后另发请求)用例保持绿 → 证明变异只打中帧边界",
+   "covers": [
+    "src/agent.frontendapi/FrontendApiServer.cs"
+   ],
+   "owner_round": "R376"
   }
  ],
  "aot_check_policy": "release_tag_only",

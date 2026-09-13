@@ -143,18 +143,21 @@ done
 
 ## 7. 迭代状态快照（恢复迭代从这里开始）
 
-> ### ⏱ 最新状态（2026-09-13 R375 — 恢复迭代先读这里；下方为历史逐轮条目）
+> ### ⏱ 最新状态（2026-09-13 R376 — 恢复迭代先读这里；下方为历史逐轮条目）
 >
-> - **版本**：**v0.22.0 探索期**；本地 HEAD `4b05ca8`(规范 R7) + R375 未提交；远端 `origin/main` = `740ddf2` **未推**（候选 ghp_ 全 401，需用户给有效 token 或替代通路）。
-> - **测试**：**841/841 全绿**（env 干净；R374 为 827）；**AOT 编译校验只在发布 tag 时执行/登记**（规范 **R7** / registry `aot_check_policy=release_tag_only`；非发布轮的 AOT 结果仅作参考证据）。
+> - **版本**：**v0.22.0 探索期**；本地 HEAD = 本轮 R376 提交（git log 最新；R375 `941c9cd` / 规范 R7 `4b05ca8` / R374 `ebbd117` 已在链上）；远端 `origin/main` = `740ddf2` **未推**（候选 ghp_ 全 401 + 镜像 `could not read Username`，需用户给有效 token 或替代通路）。
+> - **测试**：**847/847 全绿**（env 干净；R375 为 841）；**AOT 编译校验只在发布 tag 时执行/登记**（规范 **R7** / registry `aot_check_policy=release_tag_only`；非发布轮 AOT 仅作参考证据）。
 > - **批测**：批 **523**（下一轮号候选 **524**；`round_autopilot --dry-run` 算出 1511 与文档不一致**仍未收口**；启动前走 R257 撞号协议：pgrep + 锁文件 + mtime>10min 才算 stale）。
-> - **本轮交付（R375 = exp2 5 计划之一，P0）**：前端 menu 问询通路 — **信封**（`AskEnvelope`：`{v,type:event,event:ask,payload{ask_id,service,purpose,timeout_s,group_size,questions[{key,display,required,sensitive,data_type,multi_select,default_value,options[{value,label,recommended}]}]}}`）+ **事件推送**（`FrontendEventHub` → `FrontendApiServer.EmitEventAsync`，单连接发送锁）+ **应答路由**（`ask.reply`/`ask.cancel` → 等待中的调用；超时/取消/被取代/幂等）+ **选项贯通**（`CredentialItem.DataType/Choices/MultiSelect/DefaultValue` + `ClarificationBatch` 结构化下发）+ **主机接线**（`--frontend-api` 模式覆盖 Console 实现）。真机 P1 伪造 id → `unknown_ask`（非 `channel_unavailable`）= 接线已证；P2 真实 `chat.send` **ask 事件 0/1**（散文澄清）→ 生产侧触发点未命中，见 `docs/improvements.md` R375 段。
-
-> - **能力探针（R375 回归样本，同题贪吃蛇）**：真机 **1 次调用 / 82s / 17,188 tokens**（prompt 2,359 + completion 14,829，`first_budget=32768`、`truncated=false`）/ 产物 16,842 B `origin=fenced` `exit=0`；**独立复核** `python3 -I <产物> --selftest` → **exit=0 · 13/13 用例通过 · PASS**；同题 tokens: R373 基线 18,029 → 17,188（−4.7%）→ R375（仅前端模式改动）未回归 CLI 主链。
-> - **诚实边界**：① R375 只证「通道已通」，**未证**「管线会结构化问询」（真机 0/1 命中，触发条件待定位）；② 握手吞同批字节（⑪类新断链）未修；③ D7 截断续写真机仍未救回（`recovered=false`）；④ exp2 文档 Q1–Q4 用户未裁决，R375 按推荐项实施（Q1=做推送 / Q3=收敛进栈 B）**待用户确认**；⑤ bge 训练闭环静默后台、版本小报未产出；⑥ 工业级缺口余项：CI 门禁 / 配置热更新 / metrics 端点 / 断路器半开 / 跨请求成本闸。
-> - **文档同步**：`docs/improvements.md`(+R375 段) / `docs/verification-registry.json`(+2 行) / `docs/plans/v0.22.0-exp5-lesson-table.md`(§13 两条通用教训) / `docs/plans/v0.22.0-exp2-*.md`(+R375 实装段) / 本快照。
+> - **本轮交付（R376 = exp2 的 P2，5 计划之一）**：**真机同连接 menu 闭环达成** —— `evidence_gate{to_ask:1,confidences:"0.55"}` → ask 信封事件 → 同连接 `ask.reply` → `outcome=answered` → 续跑 `loop_turn{success:true,reply_chars:119,asked:true}`（3/3 复跑）；顺带修 **⑪ 握手残包**（`TryAuthHandshakeAsync` 返回 Tail + 预置排空）与 **⑫ 同通道回程饿死**（读循环只解析 + 并发派发，在途上限 8，断开 2s 收尾）。
+>
+> - **机检/负向控制**：过滤族 **23/23**、全量 **847/847**；丢握手残包 **2 红**、读循环改回等待长任务 **2 红**（已还原）。
+> - **能力探针（R376 回归样本，同题贪吃蛇）**：真机 **1 次调用 / 76.7s / 19,191 tokens** / 产物 14,368 B `origin=fenced` `exit=0`；**独立复核** `python3 -I <产物> --selftest` → **exit=0 · PASS (34/34)**；R375 同题 17,188 tokens（+11.7%，单样本、产物自测项 34 vs 13）。
+> - **通用教训沉淀**：`skills/delivery-selfcheck/SKILL.md` v1.1.0「步骤 6 · 通道核查」；语言无关机检 19/19（含负向控制）。
+> - **诚实边界**：① 真机样本 n=3；② tokens 单样本 +11.7%（模型侧生成差异，非机制开销）；③ 在途请求不随断连取消（2s 收尾后放弃，同修复前语义）；④ exp2 §8 Q1–Q4 仍待用户裁决；⑤ ⑫ 的后继观察：同连接并发在途上限 8 未做压力测试（仅逻辑断言）；⑥ D7 截断续写仍未救回；⑦ 工业级缺口余项：CI 门禁 / 配置热更新 / metrics 端点 / 断路器半开 / 跨请求成本闸。
+> - **文档同步**：`docs/improvements.md`(+R376 段) / `docs/verification-registry.json`(+2 行, updated_round=R376) / `docs/plans/v0.22.0-exp2-*.md`(§10) / `docs/plans/v0.22.0-exp5-lesson-table.md`(§14 通用教训 + §13-2 状态更新) / `skills/delivery-selfcheck/SKILL.md`(v1.1.0) / 本快照。
 >
 > ---
+- **R375 段（历史）**：exp2 P0 前端 menu 问询通路实装（`AskEnvelope` 信封 + `FrontendEventHub` 事件推送 + `ask.reply/ask.cancel` 路由 + 选项贯通）；P1 真机接线已证（伪造 id → `unknown_ask`）；P2 ask 事件 **0/1**（触发点未命中）；全量 841/841；AOT 参考 13,947,200 B / 0 IL。
 - **主线进度**：R138-R153。R149 用户质疑整改（真断言族）；R151 pivot 判定闭环（真缺陷 56 KeyError 修复）；R152 收尾（phase report 3: batch62-78 187/187 + README 30 批滚动制度）；**R153 真缺陷 57 修复**：D4 gate 读 os.environ 致 reply_rel 整块静默失效（批79/80 n=0 实证，诚实缺省未破）→ gate 同源 load_env()，批81 同环境复验 n=11 avg 0.631 恢复。下一轮号 **mass_351**（R180-R184 进度与接力细节见下方对应条目及台账 R180-R184）。
 - **最近五批审计（批76-80）**：63/63 全绿（quick-11 子集 44/44）；tok/case 941→939→928→860 递降带内（全量批 1165 口径不同）；drift 全 1.0；suspects 0；D4 rel 修复前 n=0（缺陷 57）/修复后 n=11 avg 0.631。
 - **R149 用户质疑结论**：TaskRelevanceChecker 组件能力真实（全量批 50/53 isolated=True score=2 实测）但判定空心成立——既往 C14/C15 expect 只有 llm:true，通过率对组件无证明力。修复后 C14 真断言批69-72 四连验 isolated=True score=2 PASS (4/4)。
