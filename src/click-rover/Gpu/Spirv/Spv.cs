@@ -60,15 +60,19 @@ public sealed class Spv
         OpLoad = 61, OpStore = 62, OpAccessChain = 65, OpArrayLength = 68,
         OpDecorate = 71, OpMemberDecorate = 72, OpCompositeExtract = 81,
         OpExtInstImport = 11, OpExtInst = 12, OpLabel = 248, OpReturn = 253,
+        OpConvertUToF = 112,
         OpFNegate = 127, OpIAdd = 128, OpFAdd = 129, OpISub = 130, OpFSub = 131, OpIMul = 132,
         OpFMul = 133, OpFDiv = 136, OpBitcast = 124,
-        OpUGreaterThanEqual = 179, OpBranch = 249, OpBranchConditional = 250, OpSelectionMerge = 247,
+        OpUGreaterThanEqual = 174, OpBranch = 249, OpBranchConditional = 250, OpSelectionMerge = 247,
         OpSelect = 169;
 
     public const uint CapShader = 1, MemLogical = 0, MemGLSL450 = 1, ExecGLCompute = 5,
         ScInput = 1, ScWorkgroup = 4, ScStorageBuffer = 12,
         DecBlock = 2, DecArrayStride = 6, DecDescriptorSet = 34, DecBinding = 33, DecBuiltIn = 11,
         DecOffset = 35, BuiltInGlobalInvocationId = 28, ExModeLocalSize = 17;
+
+    /// <summary>GLSL.std.450 扩展指令号 (命名约定 Glsl&lt;Name&gt;: 由 SpvRegistryAudit 对权威 extinst grammar 核对)。</summary>
+    public const uint GlslExp = 27;
 
     // ---- 前置段 ----
     public uint Cap(uint c) { EP(OpCapability, c); return c; }
@@ -84,7 +88,16 @@ public sealed class Spv
         EP(OpEntryPoint, ops);
         return fn;
     }
-    public uint ExecMode(uint fn, uint mode, params uint[] args) { EP(OpExecutionMode, Pre(fn, args)); return fn; }
+    public uint ExecMode(uint fn, uint mode, params uint[] args)
+    {
+        // SPIR-V 规范: OpExecutionMode 操作数 = EntryPoint(id), Execution Mode(literal), Literal...
+        // (旧实现漏写 mode → 驱动必然拒收; 由独立结构校验器 SpirvValidator 抓出)
+        var ops = new uint[2 + args.Length];
+        ops[0] = fn; ops[1] = mode;
+        Array.Copy(args, 0, ops, 2, args.Length);
+        EP(OpExecutionMode, ops);
+        return fn;
+    }
 
     // ---- 注解段 ----
     public uint Decorate(uint target, uint dec, params uint[] args) { EA(OpDecorate, Pre(target, Pre(dec, args))); return target; }
@@ -132,6 +145,8 @@ public sealed class Spv
     public uint Store(uint ptr, uint val) { E(OpStore, ptr, val); return 0; }
     public uint AccessChain(uint ptrType, uint baseVar, params uint[] idx) => Res(ptrType, OpAccessChain, Pre(baseVar, idx));
     public uint ArrayLength(uint structPtr, uint member) => Res(TypeU32(), OpArrayLength, structPtr, member);
+    /// <summary>uint → f32 位值转换 (诊断用; 复用调用方给的 f32 类型 id, 不新建类型)。</summary>
+    public uint UToF(uint f32Type, uint u) => Res(f32Type, OpConvertUToF, u);
     public uint Extract(uint type, uint composite, params uint[] idx) => Res(type, OpCompositeExtract, Pre(composite, idx));
     public uint Bin(uint op, uint type, uint a, uint b) => Res(type, op, a, b);
     public uint Ext(uint type, uint set, uint inst, params uint[] ops) => Res(type, OpExtInst, Pre(set, Pre(inst, ops)));

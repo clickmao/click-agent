@@ -56,6 +56,9 @@
     <!-- v0.23.0 exp12 · S2: click-rover 形式化内核共享源 (纯 BCL / 零反射 / 无 NuGet 依赖, 与 CLI 同源编译),
          使「节点级闸门」在 agent 进程内零 token 判定, 不起子进程、不走 shell。 -->
     <Compile Include="../click-rover/Formal/*.cs" Link="Formal/%(Filename)%(Extension)" />
+    <!-- v0.23.0 exp12 · vulkan: click-rover SPIR-V 汇编器 + 内核目录 + **独立结构校验器** (同为纯 BCL),
+         使 GPU 内核可被 agent 进程内静态校验 (机检), 不引入 Silk.NET 依赖 (主机侧仅 CLI 引用)。 -->
+    <Compile Include="../click-rover/Gpu/Spirv/*.cs" Link="Gpu/Spirv/%(Filename)%(Extension)" />
   </ItemGroup>
 
   <ItemGroup>

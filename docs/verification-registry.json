@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R388",
+  "updated_round": "R389",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -450,6 +450,56 @@
         "src/agent/intent/TaskPlan.cs(ClarificationsSettled)"
       ],
       "owner_round": "R384"
+    },
+    {
+      "id": "gpu.spirv.registry-audit",
+      "capability": "自写 SPIR-V 常量表 vs Khronos 权威 registry 的机检 (v0.23.0 · click-rover GPU): 汇编器/结构校验器/反汇编器**共用同一张手写常量表** ⇒ 表里抄错一个号, 三者会互相印证同一个错误 (R389-vulkan 真机实证: OpUGreaterThanEqual 抄成 179=OpSLessThanEqual (规范 174)、OpConvertUToF 抄成 111=OpConvertSToF (规范 112) ⇒ 结构校验报 valid、反汇编逐字正确, 而设备执行另一条指令 ⇒ 守卫失效、动态索引写全部越界不可见)。机检以 registry/ 下 Khronos 官方 grammar (core + GLSL.std.450) 为独立 oracle 逐条核对 opcode / 枚举 / 扩展指令号; 表外常量进 'unverified' 而非静默放过; 提取器只扫 const 块 (不吃局部变量噪声)。",
+      "level": "L4",
+      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter 'FullyQualifiedName~SpvRegistryAuditTests'",
+      "evidence_path": "src/click-rover/Gpu/Spirv/SpvRegistryAudit.cs",
+      "negative_control": "① 把 OpUGreaterThanEqual 改回错值 179 ⇒ 必须报 1 条 Mismatch(registry=174); ② 把 DecBinding 改为 34 ⇒ 必须报 Decoration/Binding(33); ③ 把 GlslExp 改为 31 ⇒ 必须报 GLSL.std.450/Exp(27); ④ 注入表外常量 OpTotallyFake ⇒ 必须进 Unverified 而非静默通过; ⑤ 核对付数下限 100 (常量块被漏扫同样失败); ⑥ 提取器边界: 含 for(int i=0) 的片段只提取 const 块内名字。",
+      "covers": [
+        "src/agent.tests/SpvRegistryAuditTests.cs",
+        "src/agent.tests/SpvRegistryAuditTests.cs(6例)",
+        "src/click-rover/Gpu/Spirv/SpvRegistryAudit.cs",
+        "src/click-rover/Gpu/Spirv/Spv.cs(常量表)",
+        "src/click-rover/Gpu/Spirv/SpirvValidator.cs(常量表)",
+        "src/click-rover/Gpu/Spirv/registry/spirv.core.grammar.json",
+        "src/click-rover/Gpu/Spirv/registry/extinst.glsl.std.450.grammar.json",
+        "src/click-rover/Gpu/Spirv/registry/README.md(来源+sha256)"
+      ],
+      "owner_round": "R389"
+    },
+    {
+      "id": "gpu.spirv.structural-validation",
+      "capability": "自研 SPIR-V 汇编器 + **独立结构校验器** + **独立反汇编器** (零 glslang/glslc 环境): Spv.cs 手写指令级汇编器产出模块; SpirvValidator.cs 独立遍历结构 (magic/version/bound/opcode 合法性/结果 id 位置/能力-执行模型一致性); SpvDisassembler.cs 独立解码逐字转储 (**不入执行路径**)。校验器必须有判别力: 5 组负向控制 (坏 magic / bound=1 / 未知 opcode / 缺 Shader 能力 / 丢执行模式字面量) 必须全部被抓。",
+      "level": "L4",
+      "evidence_cmd": "DOTNET_ROOT=$HOME/.dotnet src/click-rover/bin/Release/net10.0/click-rover vulkan --spirv-only --elements 16  (及 --spv-dump 反汇编转储)",
+      "evidence_path": "src/click-rover/Gpu/Spirv/SpirvValidator.cs",
+      "negative_control": "5 组注入缺陷必须全红 (实测 neg=5/5): magic / bound / 未知 opcode / 缺能力 / 丢 mode 字面量; 反汇编对账另证伪'SPIR-V 层绑定/装饰错位'整类猜测 (R389)。",
+      "covers": [
+        "src/click-rover/Gpu/Spirv/Spv.cs",
+        "src/click-rover/Gpu/Spirv/Kernels.cs",
+        "src/click-rover/Gpu/Spirv/SpirvValidator.cs",
+        "src/click-rover/Gpu/Spirv/SpvDisassembler.cs",
+        "src/click-rover/Cli/VulkanCli.cs(--spirv-only/--spv-dump)"
+      ],
+      "owner_round": "R389"
+    },
+    {
+      "id": "gpu.vulkan.dispatch",
+      "capability": "Vulkan 计算后端真机跑通并对账 (v0.23.0 · click-rover GPU, GPU0 = llvmpipe/lavapipe 软件实现): instance/物理设备/队列/device memory/缓冲上传下载/描述符集/计算管线/dispatch/回读全链自实现 (VulkanBackend.cs, 零 shell 零反射, Silk.NET.Vulkan 2.23.0 与 Silk.NET 同源)。三内核数值对账: fma_vec max_abs_diff=0、silu_mul 2.98e-08<1e-5、scale_inplace max_abs_diff=0; 机制探针 const_b1_hits=4/4、dyn_b2_hits=16/16、dync_b3_hits=16/16、index_value=8∈[0,16)。",
+      "level": "L3",
+      "evidence_cmd": "DOTNET_ROOT=$HOME/.dotnet src/click-rover/bin/Release/net10.0/click-rover vulkan --elements 16   (判据: done{kernels=3 pass=3 fail=0 spirv_valid=3 neg=5/5} 且 exit 0)",
+      "evidence_path": "src/click-rover/Gpu/VulkanBackend.cs",
+      "negative_control": "① 5 组 SPIR-V 结构缺陷必须被校验器抓; ② 机制分解探针 DiagProbe v4 解耦'动态索引/缓冲绑定位置', 逐机制二分而非盲猜 (曾据此否定'只有 binding 2 可写'假说, 最终由 index_value=248∈0..255=LocalSize 指向 BuiltIn 号 ⇒ 再由权威 registry oracle 定位到 opcode 常量错值); ③ 诊断夹具缓冲序必须与内核变量声明序逐位对齐 (错位会伪装成'设备写未落地')。",
+      "covers": [
+        "src/click-rover/Gpu/VulkanBackend.cs",
+        "src/click-rover/Cli/VulkanCli.cs",
+        "src/click-rover/Gpu/Spirv/Kernels.cs",
+        "src/click-rover/click-rover.csproj(Silk.NET.Vulkan 2.23.0)"
+      ],
+      "owner_round": "R389"
     }
   ],
   "aot_check_policy": "release_tag_only",
