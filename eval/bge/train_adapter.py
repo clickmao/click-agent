@@ -22,7 +22,14 @@ def tag_of(prefix, texts):
 
 
 def solve_ridge(Q, P, r, lam):
-    """W = (QᵀQ + λI)⁻¹ QᵀP , 全部 r×r / r 维, 高斯-约当消元。"""
+    """解 (QᵀQ+λI)X = QᵀP 后 **返回 Xᵗ** —— 即"可直接乘"的映射 W (满足 p ≈ W·q)。
+
+    约定说明 (真机缺陷固化, 两层):
+      ① 拟合空间必须 == 应用空间 (`Adapter.encode(query_side=True)` 乘的是 λ^(-α) 缩放后的白化向量);
+      ② 最小二乘的正规解 X=(QᵀQ+λI)⁻¹QᵀP 是 **列定向**解 (即 Wᵗ, 满足 p ≈ Xᵗ·q)。
+         旧代码直接把 X 交给 `matvec(W, w)` (= W·w) → **转置错**, 真机表现 r@1=0.0/median_rank=999
+         (比随机更差)。此处统一在**唯一出口**转置, 下游只有"行主序 + matvec"一种约定。
+    """
     A = [[0.0] * r for _ in range(r)]
     B = [[0.0] * r for _ in range(r)]
     for qi, pi in zip(Q, P):
@@ -51,7 +58,8 @@ def solve_ridge(Q, P, r, lam):
             if k != col and M[k][col] != 0.0:
                 f = M[k][col]
                 M[k] = [a - f * b for a, b in zip(M[k], M[col])]
-    return [row[r:] for row in M]
+    X = [row[r:] for row in M]                    # (QᵀQ+λI)⁻¹QᵀP  — 列定向 (Wᵗ)
+    return [[X[j][i] for j in range(r)] for i in range(r)]   # → 可直接乘的 W
 
 
 def main():
@@ -125,9 +133,16 @@ def main():
             base_w = L.Adapter(mu, V, lams, alpha=0.5)
             Qw = [L.normalize(base_w.encode(v)) for v in tqv]
             Pw = [L.normalize(base_w.encode(v)) for v in tpv]
-            # 岭回归用未归一化白化向量 (尺度和有意义)
-            Qr = [base_w._base(v) for v in tqv]
-            Pr = [base_w._base(v) for v in tpv]
+            # R380 真缺陷修复: 拟合空间必须 == 应用空间。
+            # `Adapter.encode(query_side=True)` 是把 W 乘在 **λ^(-α) 缩放后**的向量上
+            # (`w = _base/λ^α`), 而旧代码拿 **未缩放** 的 `_base` 去拟合 → 输入被逐维缩放
+            # 后再乘 W, 等于用了一个错误的映射 (真机: r@1=0.0 / median_rank=999, 比随机更差)。
+            # 现按"应用时所处空间"(λ 缩放后的白化向量) 拟合, 与语料侧 `normalize(w)` 同空间。
+            def _apply_space(v):
+                z = base_w._base(v)
+                return [zi / (base_w.lambdas[i] ** base_w.alpha) for i, zi in enumerate(z)]
+            Qr = [_apply_space(v) for v in tqv]
+            Pr = [_apply_space(v) for v in tpv]
             W = solve_ridge(Qr, Pr, k, args.ridge_lambda)
             cfgs.append((f"whiten_r{k}_a0.5+ridge", L.Adapter(mu, V, lams, alpha=0.5, W=W,
                                                               meta={"method": "whiten+ridge", "r": k,
