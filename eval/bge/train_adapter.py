@@ -62,6 +62,59 @@ def solve_ridge(Q, P, r, lam):
     return [[X[j][i] for j in range(r)] for i in range(r)]   # → 可直接乘的 W
 
 
+# ── 闸门 G3/G5 的**真实**判定件 ──────────────────────────────────────────────
+# R395 修两个真缺陷:
+#   ① G3 口径分叉: 文档 §5 写"延迟增幅 ≤15% ∧ 内存增幅 ≤15%", 代码却是静态算力占比,
+#      两者不是同一件事 → 现按文档语义实装三项, 并把文档改成与代码**逐字同阈值**;
+#   ② G5 空心闸门: 原文 g["G5"] = True (恒真) → 现真跑三条逐位判据 + 一枚负控。
+MAC_BUDGET = 0.05      # G3a 算力增幅 (每次编码乘加数 / 24M 参数嵌入前向, 静态可复算)
+LAT_BUDGET = 0.15      # G3b 延迟增幅 (适配器实测 ms/向量 ÷ **绕缓存**的真实前向 ms/向量)
+MEM_BUDGET = 0.15      # G3c 内存增幅 (静态代理: 适配器对象字节 / 嵌入模型文件字节)
+
+
+def adapter_bytes(ad, dim):
+    """适配器常驻字节 (**静态代理**: 对象数组字节数, 非进程 RSS 实测 —— 口径明示, 不冒充实测)。"""
+    n = 4 * dim                                    # mean
+    if ad.V is not None:
+        n += 4 * dim * ad.r + 4 * ad.r             # V + lambdas
+    if ad.W:
+        n += 4 * ad.r * ad.r                       # W (行主序扁平)
+    return n
+
+
+def measure_forward_ms(corpus, n=24):
+    """真实前向成本 (ms/向量)。**必须绕开缓存**: `embed_cached` 命中时返回 0.0 ms,
+    拿它当分母会把延迟判据变成 0 分母的垃圾 (R395 实测坑)。"""
+    texts = [c["text"][:1200] for c in corpus[:n]]
+    t0 = time.time()
+    L.embed(texts)
+    return (time.time() - t0) * 1000 / max(1, len(texts))
+
+
+def determinism_checks(ad, cvecs, qvecs, golds, cids, ranks_recorded, probe_n=12):
+    """G5 判定器 (三条逐位判据 + 一枚负控; 机检可注入非确定性来验证它有判别力)。
+
+    ① encode_repeat      同输入两次编码逐位一致 (定长迭代/无随机源的实跑证据);
+    ② order_invariant    中间插入异质编码后再编码同一向量, 结果不变 (抓"编码器改自身状态");
+    ③ ranks_reproducible 用再编码向量重算 recall_metrics, 秩向量与择优时逐位相同;
+    ④ negative_control   扰动一个输入分量 → 判定器必须判"不一致" (否则判定器恒真=空心)。
+    """
+    det = {}
+    s = cvecs[:probe_n]
+    det["encode_repeat"] = [ad.encode(v) for v in s] == [ad.encode(v) for v in s]
+    a1 = [ad.encode(v) for v in s]
+    [ad.encode(v, query_side=True) for v in qvecs[:probe_n]]
+    det["order_invariant"] = a1 == [ad.encode(v) for v in s]
+    cv = [ad.encode(v) for v in cvecs]
+    qv = [ad.encode(v, query_side=True) for v in qvecs]
+    _, rk = L.recall_metrics(cv, golds, qv, cids)
+    det["ranks_reproducible"] = (rk == ranks_recorded)
+    m = list(s[0]); m[0] = m[0] + 1e-3
+    det["negative_control"] = ([ad.encode(v) for v in s] !=
+                               [ad.encode(m)] + [ad.encode(v) for v in s[1:]])
+    return det
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--ks", nargs="*", type=int, default=[64, 128])
@@ -85,6 +138,7 @@ def main():
         dim = len(cvecs[0])
         base_metrics, base_ranks = L.recall_metrics(cvecs, golds, qvecs, cids)
         base_metrics["lexical"] = L.lexical_baseline(corpus, queries)[0]  # 返回 (metrics, ranks)
+        fwd_ms_per_vec = measure_forward_ms(corpus)   # G3b 分母: 绕缓存的真实前向
         assert len(cvecs[0]) == dim
     finally:
         proc.kill()
@@ -148,11 +202,13 @@ def main():
                                                               meta={"method": "whiten+ridge", "r": k,
                                                                     "lambda": args.ridge_lambda})))
 
+        ranks_by_cfg = {}
         for name, ad in cfgs:
             t0 = time.time()
             cvec_a = [ad.encode(v) for v in cvecs]
             qvec_a = [ad.encode(v, query_side=True) for v in qvecs]
             m, ranks = L.recall_metrics(cvec_a, golds, qvec_a, cids)
+            ranks_by_cfg[name] = ranks
             m["ms_per_vec"] = round((time.time() - t0) * 1000 / (len(cvecs) + len(qvecs)), 2)
             if pairs:
                 tv = [ad.encode(v, query_side=True) for v in tqv]
@@ -167,6 +223,7 @@ def main():
 
     # ── 择优 + 闸门 ──
     adopted, verdict, reason = None, "no_data", "无训练对 (先跑 collect_pairs.py --gen)"
+    g, gd = {}, {}
     if results:
         results.sort(key=lambda r: (-r.get("r@10", 0), -r.get("r@1", 0)))
         best = results[0]
@@ -174,9 +231,17 @@ def main():
         g["G1"] = best["r@10"] - base_metrics["r@10"] >= 0.025
         g["G2"] = best["r@1"] >= base_metrics["r@1"] - 0.0083
         mac = 2 * dim * (best["adapter"].r or dim)      # 每次编码的乘加数
-        g["G3"] = (mac / (24_000_000 * 2)) <= 0.05      # 相对 24M 参数嵌入前向的算力占比
+        gd["mac_ratio"] = round(mac / (24_000_000 * 2), 5)
+        gd["fwd_ms_per_vec"] = round(fwd_ms_per_vec, 3)
+        gd["latency_ratio"] = round(best["ms_per_vec"] / fwd_ms_per_vec, 5) if fwd_ms_per_vec else None
+        gd["mem_ratio"] = round(adapter_bytes(best["adapter"], dim) / max(1, os.path.getsize(L.MODEL)), 5)
+        g["G3"] = ((gd["mac_ratio"] <= MAC_BUDGET)
+                   and (gd["latency_ratio"] is not None and gd["latency_ratio"] <= LAT_BUDGET)
+                   and (gd["mem_ratio"] <= MEM_BUDGET))
         g["G4"] = abs(best.get("r@10_train", best["r@10"]) - best["r@10"]) <= 0.15
-        g["G5"] = True  # 确定性: 定长迭代 + 固定种子, 由 --dry-run 重跑复核
+        gd["G5_detail"] = determinism_checks(best["adapter"], cvecs, qvecs, golds, cids,
+                                             ranks_by_cfg.get(best["config"], []))
+        g["G5"] = all(v is True for v in gd["G5_detail"].values())
         ok = all(g.values())
         verdict = "adopted" if ok else "rolled_back"
         reason = "全部闸门通过" if ok else "未过: " + ",".join(k for k, v in g.items() if not v)
@@ -196,6 +261,7 @@ def main():
                    "config": best["config"], "metrics": {k: v for k, v in best.items()
                                                          if k not in ("adapter",)},
                    "base_metrics": base_metrics, "corpus_version": CORPUS_FIX,
+                   "gates": g, "gate_detail": gd,
                    "n_pairs": len(pairs), "adapter_sha8": adapter_sha},
                   open(os.path.join(vdir, "meta.json"), "w", encoding="utf-8"),
                   ensure_ascii=False, indent=2)
@@ -214,10 +280,11 @@ def main():
         L.save_versions(idx)
         os.makedirs(REPORTS, exist_ok=True)
         write_report(os.path.join(REPORTS, f"v{vnum}.md"), vnum, ts, base_metrics, results,
-                     best, verdict, reason, entry, len(pairs))
+                     best, verdict, reason, entry, len(pairs), g, gd)
     print(json.dumps({"version": vnum, "verdict": verdict, "reason": reason,
                       "config": best["config"] if best else "-",
                       "base": {k: base_metrics[k] for k in ("r@1", "r@10", "mrr@10")},
+                      "gates": g, "gate_detail": gd,
                       "best": {k: best[k] for k in ("r@1", "r@10", "mrr@10", "median_rank")} if best else None,
                       "all": [{k: r[k] for k in ("config", "r@1", "r@10", "mrr@10")} for r in results],
                       "corpus_ms": round(c_ms, 1), "elapsed_s": round(time.time() - t_all, 1)},
@@ -225,12 +292,22 @@ def main():
     return 0
 
 
-def write_report(path, vnum, ts, base, results, best, verdict, reason, entry, n_pairs):
+def write_report(path, vnum, ts, base, results, best, verdict, reason, entry, n_pairs,
+                 gates=None, gd=None):
     rows = "\n".join(
         "| {c} | {r1:.4f} | {r10:.4f} | {m:.4f} | {med} | {ms} |".format(
             c=r["config"], r1=r["r@1"], r10=r["r@10"], m=r["mrr@10"], med=r["median_rank"],
             ms=r.get("ms_per_vec", "-")) for r in results)
     b = best if best else {"r@1": 0, "r@10": 0, "mrr@10": 0, "median_rank": "-", "config": "-"}
+    if gd:
+        g5 = gd.get("G5_detail", {})
+        gates_txt = ("- G3 明细：算力增幅 {m}% / 延迟增幅 {l}%（真前向 {f} ms/向量）/ 内存增幅 {c}%\n"
+                     "- G5 明细：{d5}（负控=True 表示判定器有判别力）").format(
+            m=round(100 * gd.get("mac_ratio", 0), 2), l=round(100 * (gd.get("latency_ratio") or 0), 2),
+            f=gd.get("fwd_ms_per_vec"), c=round(100 * gd.get("mem_ratio", 0), 2),
+            d5=" ".join(f"{k}={v}" for k, v in g5.items()) or "-")
+    else:
+        gates_txt = "- （本次无候选，无闸门明细）"
     txt = f"""# bge 版本小报 v{vnum}（{ts[:10]}）
 
 - 基座：bge-small-zh-v1.5（Q8_0，4 层/512 维/8 头，GGUF 元数据实测）
@@ -249,9 +326,10 @@ def write_report(path, vnum, ts, base, results, best, verdict, reason, entry, n_
 - 词法基线（字符二元组 Jaccard）：recall@1 {base.get('lexical', {}).get('r@1', '-')} / recall@10 {base.get('lexical', {}).get('r@10', '-')}
 - 择优：**{b['config']}** → recall@1 {b['r@1']} / recall@10 {b['r@10']} / MRR@10 {b['mrr@10']}
 
-## 闸门（G1 收益 ≥2.5pt / G2 r@1 不倒退 / G3 算力 <5% / G4 过拟合 ≤15pt / G5 确定性）
+## 闸门（G1 收益 ≥2.5pt / G2 r@1 不倒退 / G3 算力 ≤5% ∧ 延迟 ≤15% ∧ 内存 ≤15% / G4 过拟合 ≤15pt / G5 确定性×3+负控）
 
 - 判定：**{verdict}** —— {reason}
+{gates_txt}
 
 ## 诚实边界
 
