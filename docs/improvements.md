@@ -618,3 +618,12 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **D7 运行时依赖等待** (用户 OOB 新增测试点): A 跑到中途要用 B 的产出, 而 B 未产出/在等用户 ⇒ **A 等待, B 产出后才继续** (不消费输入/不伪造/不静默)。确定性契约 `$node:<id>`、`$dep:<id>`、`<id>的产出`; **等待不占并发额度** (延迟队列, 额度=1 也不死锁); **有界等待**超限如实失败 (不采用迟到产出); **成环在记账时即拒**; 生产节点在等用户 ⇒ `PausedForDependency`; 提前终止时等待节点明确落终态 (不留悬空 Waiting); 前端可见 `plan.node{state:Waiting, wait_for, wait_reason}` + `plan_wait` + KPI `WaitNodes/WaitUs`。机检 `PlanRuntimeWaitTests` **11 例**。
   - **诚实边界**: **跨轮唤醒 (D7b) 未实现** —— 检查点 `SaveCheckpoint` 只写不读 (无 `LoadCheckpoint`/续跑入口), 用户回复后不会自动续跑; **自然语言引用不认** ⇒ 真实任务要出触发点必须先做契约**前置注入** (D7c)。
 - 基线: **949/949** (891 + PlanLocalFirst 14 + PlanAblation 24 + Resolver 9 + RuntimeWait 11); AOT 发布校验按登记口径只在发布 tag 执行。
+
+### R384 (2026-09-13) — D7b 跨轮唤醒（装载入口 + 续跑消费方）
+- **补齐结构缺口**（R383 诚实边界 1）: 此前检查点 **只写不读** —— 生产节点在等用户时计划停在 `PausedForDependency`, 用户把答案发回来**没有任何消费方**（被当成全新任务重拆, 永远等不到续跑）。本轮加 `PlanResumeService`：**Capture**(蓝图+运行态+真产出+卡住节点+问题) → **Load**(拆解**之前**拦截, 从检查点重建 plan/run) → **ApplyReply**(答复落到确定参数槽) → `PlanRunner.RunAsync(seedRun)` 从上一轮运行态继续, 已 Completed 节点**不重跑**、等待节点被**真产出**唤醒。
+- **四条硬纪律（机检逐条钉）**: ①不重拆（拦截点在意图拆解前）②不伪造（生产者已 Completed 而快照缺其产出 ⇒ 装载入口**直接拒绝**, 不接受空着喂/重跑生产者）③不猜（无参数名/多条目/不在选项内 ⇒ 拒绝落地并作废该检查点, 如实告知）④不留悬空（跑完清检查点; 再次暂停重新捕获; 等待台账跨轮闭合, `WaitUs` 含用户思考时间）。
+- **两个实现要点**: `ClarificationsSettled`（答复落地后证据门槛**不再重复问同一句**; 其它低置信节点仍正常提问）; 续跑批次过滤已 Completed 节点（`order` 保持完整以保生产者查找）。
+- **跨进程真机证据**（两个独立 dotnet 进程只共享检查点文件）: A(write) `state=PausedForDependency, awaiting=b, order=[]`; B(resume) `state=Finished, order=[b,a], a_input=out-b, slot_value=数据是 42, wait_ms=9`。落盘键位 `PlanJson(1682 字符)/RunJson(625)/NodeOutputs/SourceText/AwaitingNodeId=b/PendingQuestion=要处理哪个文件?`。
+- **产品链路真机 E2E**: 用产品序列化器在真机数据目录预置可续跑检查点 → `agenthost --session-id cli-r384probe -q "数据是 42"` → `plan_resume{resumed:true, state:Finished, nodes:2, waits:1, slot:target}`、两个节点全本地 `Completed` (`tokens:0`)、**整轮遥测无 `llm_call`（零 LLM 调用/零 token）**、答复渲染为 `🔄 续跑计划 r384-probe …`、跑完检查点由产品自己清掉。附带产品改动 `--session-id <id>`（原会话 Id 每进程随机 ⇒ 跨进程可复现性不成立）。
+- **诚实边界**: D7c 契约前置注入**未做且查明落点不存在** —— 当前**没有逐节点远程生成**（一次远程生成覆盖整段计划, 节点文本由确定性拆解产生, 无"节点级提示词"注入面）; 要落 D7c 须先决策"拆成逐节点生成"还是"把契约塞进同一次生成的指令区"（后者需计划先于出站请求成立, 可进静态前缀缓存）。续跑入口**只认"等用户答复"**（纯等待/崩溃中断不自动续跑; 等审批故意不捕获, 否则会吞审批消息）; 多条目澄清需"逐项答复协议"; 答复落点语义与主链 `AnswerSink`（无槽时挂节点文本）**不一致**; `WaitUs` 跨进程锚点不同 ⇒ 跨进程等待时长只作参考。
+- 机检: `PlanResumeTests` **18 例**（6 正向 + 8 负向 + 2 跨进程探针 + 1 审批负向 + 1 产品链路探针）; 基线 **967/967**（949 + 18 新增/探针）。

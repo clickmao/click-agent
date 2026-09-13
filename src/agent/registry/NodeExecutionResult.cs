@@ -124,11 +124,32 @@ public class TaskPlanExecutor
     public async Task<TaskPlanRun> ExecuteAsync(
         TaskPlan plan,
         Func<InjectedInstruction?>? pollInjections = null,
-        CancellationToken ct = default)
+        CancellationToken ct = default,
+        TaskPlanRun? seedRun = null)
     {
-        var run = new TaskPlanRun { PlanId = plan.PlanId };
-        foreach (var n in plan.Nodes)
-            run.NodeStates[n.Id] = PlanNodeState.Pending;
+        // D7b 续跑: seedRun 非空 = 从检查点重建的运行态继续跑 (节点状态/等待台账/暂停原因都是上一轮的)
+        var run = seedRun ?? new TaskPlanRun { PlanId = plan.PlanId };
+        if (seedRun is null)
+        {
+            foreach (var n in plan.Nodes)
+                run.NodeStates[n.Id] = PlanNodeState.Pending;
+        }
+        else
+        {
+            // 续跑状态归一: 已 Completed 的**不重跑** (产出已在 ctx.NodeOutputs 里, 重跑=重复副作用);
+            // 半途态 (等待/等用户/运行中) 一律转 Pending, 本轮重新参与调度。
+            foreach (var n in plan.Nodes)
+            {
+                if (!run.NodeStates.TryGetValue(n.Id, out var st))
+                    run.NodeStates[n.Id] = PlanNodeState.Pending;
+                else if (st is PlanNodeState.AwaitingClarification or PlanNodeState.AwaitingApproval
+                         or PlanNodeState.Waiting or PlanNodeState.Running)
+                    run.NodeStates[n.Id] = PlanNodeState.Pending;
+            }
+
+            run.State = TaskPlanRunState.Running;
+            run.PauseReason = null;
+        }
 
         // 拓扑序: 层级优先, 同层保持用户表达顺序 (数组序=拆解序, 不是文本长度)
         var indexOf = plan.Nodes.Select((n, i) => (n.Id, i)).ToDictionary(x => x.Id, x => x.i);
@@ -151,7 +172,7 @@ public class TaskPlanExecutor
         foreach (var req in gateVerdict.ToAsk)
         {
             var node = order[req.SubTask.Order]; // Order 即拆解序 = 数组序 (order 按 ThenBy(indexOf) 排列)
-            if (node.Clarifications.Count > 0)
+            if (node.Clarifications.Count > 0 || node.ClarificationsSettled) // D7b: 已答复过的澄清不再重复问
                 continue;
             foreach (var q in req.Questions)
             {
@@ -179,7 +200,11 @@ public class TaskPlanExecutor
         // 依赖正确性由 Level 计算保证 (批内节点互不依赖); 单节点批走串行路径零行为变化。
         foreach (var levelGroup in order.GroupBy(n => n.Level).OrderBy(g => g.Key))
         {
-            var batch = levelGroup.ToList();
+            // D7b 续跑: 上一轮已 Completed 的节点不再重跑 (产出已注入 ctx.NodeOutputs; 重跑 = 重复副作用)。
+            // 注意 order 保持完整 —— 生产节点查找/依赖判定仍要看得见它们。
+            var batch = seedRun is null
+                ? levelGroup.ToList()
+                : levelGroup.Where(n => StateOf(run, n.Id) != PlanNodeState.Completed).ToList();
 
             // 层边界: 检查用户插入的强制指令 (保持层粒度, 不在并发内轮询)
             var layerInjection = pollInjections?.Invoke();

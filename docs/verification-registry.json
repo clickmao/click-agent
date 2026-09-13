@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R383",
+  "updated_round": "R384",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -379,6 +379,25 @@
         "src/agent/registry/NodeExecutionResult.cs(D7 调度)"
       ],
       "owner_round": "R383"
+    },
+    {
+      "id": "plan.resume.checkpoint",
+      "capability": "计划跨轮续跑 D7b (v0.22.0 exp9): 计划因\"节点在等用户回答\"而停在 PausedForDependency 时, 把 蓝图快照+运行态+已完成节点真产出+卡住节点+问题文本 一起写进检查点; 下一轮消息在**意图拆解之前**被装载入口拦截, 从检查点**重建** TaskPlan/TaskPlanRun, 答复落到确定参数槽后从上一轮运行态继续(已 Completed 节点不重跑, 产出从快照注入)。四条硬纪律: ①不重拆(拦截点在拆解前) ②不伪造(生产者已 Completed 而快照缺其产出 ⇒ 装载入口直接拒绝, 不接受空着喂或重跑生产者) ③不猜(无参数名/多条目/不在选项内 ⇒ 拒绝落地并作废检查点) ④不留悬空(跑完清检查点, 再次暂停重新捕获; 等待台账跨轮闭合, WaitUs 含用户思考时间)。跨进程等价: 只依赖落盘的蓝图+运行态+真产出, 不依赖进程内残留对象。",
+      "level": "L2",
+      "evidence_cmd": "PLAN_RESUME_XPROC=write PLAN_RESUME_DIR=/tmp/r384/xproc dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter 'FullyQualifiedName~跨进程探针_进程A'  &&  PLAN_RESUME_XPROC=resume PLAN_RESUME_DIR=/tmp/r384/xproc dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter 'FullyQualifiedName~跨进程探针_进程B'",
+      "evidence_path": "src/agent/intent/PlanResumeService.cs",
+      "negative_control": "① 无检查点/老检查点缺蓝图 ⇒ 拒绝续跑(重建=重拆任务) ② 计划已终态且无待答节点 ⇒ 拒绝 ③ 等待节点的生产者已 Completed 但快照缺其产出 ⇒ 装载入口拒绝(不伪造/不重跑) ④ 答复无参数名 ⇒ 拒绝落地 ⑤ 多条目澄清 ⇒ 拒绝(不猜位置) ⑥ 答复不在 Choices 内 ⇒ 拒绝 ⑦ 已 Completed 节点在续跑轮**不被重跑**(真成环/重复副作用防线) ⑧ 未设该 env ⇒ 探针立即 return, 常规全量测试不受影响",
+      "covers": [
+        "src/agent.tests/PlanResumeTests.cs",
+        "src/agent.tests/PlanResumeTests.cs(14例)",
+        "src/agent/intent/PlanResumeService.cs",
+        "src/agent/intent/PlanRunner.cs(RunAsync seedRun)",
+        "src/agent/recovery/ExecutionCheckpoint.cs(PlanJson/RunJson/NodeOutputs/SourceText/AwaitingNodeId/PendingQuestion)",
+        "src/agent/registry/NodeExecutionResult.cs(seedRun/ClarificationsSettled)",
+        "src/agent/IndustrialAgentV2.cs(TryResumePausedPlanAsync)",
+        "src/agent/intent/TaskPlan.cs(ClarificationsSettled)"
+      ],
+      "owner_round": "R384"
     }
   ],
   "aot_check_policy": "release_tag_only",

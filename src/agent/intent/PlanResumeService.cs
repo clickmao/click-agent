@@ -1,0 +1,300 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
+using agent.recovery;
+
+namespace agent.intent;
+
+/// <summary>
+/// 续跑候选 (v0.22.0 exp9 D7b): 从检查点**重建**出来的"上一轮没跑完的计划"。
+/// 三件套齐备才算候选: 蓝图 (跑什么/依赖/位置) + 运行态 (跑到哪/谁在等谁) + 已完成节点真产出。
+/// </summary>
+public sealed class PlanResumeCandidate
+{
+    public required TaskPlan Plan { get; init; }
+
+    public required TaskPlanRun Run { get; init; }
+
+    /// <summary>已完成节点的真产出 (NodeId → 输出) —— 唤醒等待节点靠它, 不靠重跑/不靠编</summary>
+    public required Dictionary<string, string> NodeOutputs { get; init; }
+
+    /// <summary>本轮原始请求 (无依赖节点的输入来源)</summary>
+    public string? SourceText { get; init; }
+
+    /// <summary>卡在等用户回复的节点 Id</summary>
+    public required string AwaitingNodeId { get; init; }
+
+    /// <summary>给用户看的问题 (与节点 Clarifications 同源)</summary>
+    public string? PendingQuestion { get; init; }
+
+    public PlanNode AwaitingNode =>
+        Plan.Nodes.FirstOrDefault(n => n.Id == AwaitingNodeId)
+        ?? throw new InvalidOperationException($"检查点指向的节点 {AwaitingNodeId} 不在蓝图里 — 候选不合法");
+
+    /// <summary>
+    /// 等用户的节点挂在哪些参数槽上 (前端/日志可显示"答复将落到哪")。
+    /// 装载时**快照**一次: 答复落地后 Clarifications 会被清空, 现算就会变成空 —— 那会让
+    /// "答复落到了哪个槽"这条事实在事后不可对账。
+    /// </summary>
+    public required IReadOnlyList<string> AwaitingParameterNames { get; init; }
+}
+
+/// <summary>
+/// 计划续跑服务 (v0.22.0 exp9 D7b) —— 补上"装载入口 + 续跑消费方"这块结构缺口。
+///
+/// 背景: R383 的 D7a 能让节点 A 在运行中途停下来等 B 的产出; 但若 B 在等用户回答,
+/// 计划就停在 PausedForDependency —— 下一轮用户答复**不会有任何消费方** (旧实现只会把答复当成一个全新任务重拆)。
+///
+/// 本服务的三件事 (全部确定性, 零 LLM):
+///   ① Capture  — 暂停时把 蓝图/运行态/真产出 写进检查点 (老检查点没有蓝图 → 不可续跑);
+///   ② TryLoad  — 下一轮把检查点**装载**回候选 (缺任何一件 → 如实拒绝, 不猜测重建);
+///   ③ ApplyReply — 把用户答复落到确定的参数槽 (条目无参数名/答复不在选项内 → 拒绝), 清澄清, 置 Pending。
+///
+/// 拒绝原因一律以可读事实返回, 由调用方原样呈现 —— 不许降级成"重拆一遍"冒充续跑。
+/// </summary>
+public static class PlanResumeService
+{
+    public const string RefuseNoCheckpoint = "上一轮没有检查点 (没有未完成的计划)";
+    public const string RefuseNoPayload = "检查点缺蓝图/运行态快照 (老格式) — 重建等于重拆任务, 不是续跑, 拒绝";
+    public const string RefuseRunTerminal = "上一轮计划已到终态 (Finished/Cancelled) — 无需续跑";
+    public const string RefuseNotAwaitingUser = "上一轮没有节点在等用户回复 — 没有答复可落地";
+    public const string RefuseNoSlot = "澄清条目没有参数名, 答复落不到确定位置 — 拒绝 (不猜)";
+    public const string RefuseMultiItem = "该节点有多条澄清要一次答复 — 本轮只支持单条目答复协议, 拒绝 (不猜位置)";
+    public const string RefuseChoiceMismatch = "答复不在该条目的可选范围内";
+    public const string RefuseMissingOutputs = "等待节点要吃的产出不在检查点快照里 — 续跑只能伪造或重跑生产者, 两者都不接受";
+
+    /// <summary>
+    /// ① 捕获: 计划停下来 (等用户 / 等产出) 时把续跑三件套落盘。
+    /// 返回 false = 没写 (store 未注入 / 会话 Id 空 / 计划已正常跑完 —— 正常完成不需要续跑入口)。
+    /// </summary>
+    public static bool Capture(
+        CheckpointStore? store, string sessionId, TaskPlan plan, TaskPlanRun run,
+        IReadOnlyDictionary<string, string?>? outputs, string? sourceText)
+    {
+        if (store is null || string.IsNullOrEmpty(sessionId))
+            return false;
+
+        // 只捕获"有节点在等用户**文字答复**"的暂停态: 等审批(AwaitingApproval)有自己的答复协议,
+        // 捕获它= 把它拦进续跑入口(reply 落不到澄清参数槽) ⇒ 会吞掉审批消息 (不许)。
+        var awaitingId = AwaitingNodeIdOf(run, plan);
+        if (!IsClarificationAwaiting(run, plan, awaitingId))
+            return false;
+
+        var snap = new Dictionary<string, string>(StringComparer.Ordinal);
+        if (outputs is not null)
+            foreach (var kv in outputs)
+                if (!string.IsNullOrEmpty(kv.Value))
+                    snap[kv.Key] = kv.Value!;
+
+        store.Save(new ExecutionCheckpoint
+        {
+            SessionId = sessionId,
+            PlanId = run.PlanId,
+            RunId = run.RunId,
+            NodeStates = run.NodeStates.ToDictionary(kv => kv.Key, kv => kv.Value.ToString()),
+            PauseReason = run.PauseReason,
+            PlanJson = JsonSerializer.Serialize(plan, TaskPlanJsonContext.Default.TaskPlan),
+            RunJson = JsonSerializer.Serialize(run, TaskPlanJsonContext.Default.TaskPlanRun),
+            NodeOutputs = snap,
+            SourceText = sourceText,
+            AwaitingNodeId = awaitingId,
+            PendingQuestion = awaitingId is null
+                ? null
+                : plan.Nodes.FirstOrDefault(n => n.Id == awaitingId)?
+                      .Clarifications.FirstOrDefault()?.Question,
+        });
+        return true;
+    }
+
+    /// <summary>
+    /// ② 装载: 读检查点 → 重建 (计划, 运行态)。任何一件缺失都如实返回原因, 绝不"尽力重建"。
+    /// </summary>
+    public static bool TryLoad(
+        CheckpointStore? store, string sessionId, out PlanResumeCandidate? candidate, out string reason)
+    {
+        candidate = null;
+        reason = RefuseNoCheckpoint;
+        if (store is null || string.IsNullOrEmpty(sessionId))
+            return false;
+
+        var cp = store.Load(sessionId);
+        if (cp is null)
+            return false;
+
+        if (string.IsNullOrEmpty(cp.PlanJson) || string.IsNullOrEmpty(cp.RunJson))
+        {
+            reason = RefuseNoPayload;
+            return false;
+        }
+
+        TaskPlan? plan;
+        TaskPlanRun? run;
+        try
+        {
+            plan = JsonSerializer.Deserialize(cp.PlanJson, TaskPlanJsonContext.Default.TaskPlan);
+            run = JsonSerializer.Deserialize(cp.RunJson, TaskPlanJsonContext.Default.TaskPlanRun);
+        }
+        catch (JsonException)
+        {
+            reason = RefuseNoPayload; // 损坏快照 = 没有快照, 不猜
+            return false;
+        }
+
+        if (plan is null || run is null)
+        {
+            reason = RefuseNoPayload;
+            return false;
+        }
+
+        // 取消 = 用户明确放弃 ⇒ 不自动续跑; Finished 则要看下面"有没有节点在等用户"再定 (计划本轮跑完
+        // 但某节点卡在等澄清时, State 也会是 Finished —— 那不是"任务完成", 是"等你回答")。
+        if (run.State is TaskPlanRunState.Cancelled)
+        {
+            reason = RefuseRunTerminal;
+            return false;
+        }
+
+        var awaitingId = AwaitingNodeIdOf(run, plan) ?? cp.AwaitingNodeId;
+        var awaitingValid = !string.IsNullOrEmpty(awaitingId)
+                            && plan.Nodes.FirstOrDefault(n => n.Id == awaitingId) is { Clarifications.Count: > 0 }
+                            && run.NodeStates.TryGetValue(awaitingId!, out var awaitingState)
+                            && awaitingState == PlanNodeState.AwaitingClarification;
+        if (!awaitingValid)
+        {
+            reason = run.State is TaskPlanRunState.Finished ? RefuseRunTerminal : RefuseNotAwaitingUser;
+            return false;
+        }
+
+        // 防伪造 (D7b 硬纪律②): 等待节点要吃的产出必须在快照里 —— 缺了就只能"空着喂"(伪造)或
+        // 重跑生产者(重复副作用), 两者都不可接受 ⇒ 装载入口直接拒绝, 由调用方如实告知。
+        foreach (var kv in run.NodeStates.Where(x => x.Value == PlanNodeState.Waiting))
+        {
+            var waitingNode = plan.Nodes.FirstOrDefault(n => n.Id == kv.Key);
+            if (waitingNode is null)
+                continue;
+            var producer = RuntimeDependencyScanner.FindProducer(waitingNode, plan.Nodes);
+            if (producer is null)
+                continue;
+            if (run.NodeStates.TryGetValue(producer, out var ps) && ps == PlanNodeState.Completed
+                && !cp.NodeOutputs.ContainsKey(producer))
+            {
+                reason = $"{RefuseMissingOutputs} (节点 {kv.Key} ← {producer})";
+                return false;
+            }
+        }
+
+        candidate = new PlanResumeCandidate
+        {
+            Plan = plan,
+            Run = run,
+            NodeOutputs = cp.NodeOutputs,
+            SourceText = cp.SourceText ?? plan.SourceText,
+            AwaitingNodeId = awaitingId!,
+            AwaitingParameterNames = plan.Nodes.First(n => n.Id == awaitingId)
+                .Clarifications.Select(c => c.ParameterName).ToList(),
+            PendingQuestion = cp.PendingQuestion,
+        };
+        reason = string.Empty;
+        return true;
+    }
+
+    /// <summary>
+    /// ③ 落地答复: 把用户这一轮的消息写进等用户节点的参数槽, 清澄清, 节点转 Pending (等待节点会在同一轮被唤醒)。
+    /// 拒绝条件: 条目无参数名 / 多条目 (无位置协议) / 答复不在选项内。
+    /// </summary>
+    public static bool ApplyReply(PlanResumeCandidate candidate, string reply, out string reason)
+    {
+        reason = string.Empty;
+        var text = (reply ?? string.Empty).Trim();
+        if (text.Length == 0)
+        {
+            reason = "答复为空 — 不落地 (不拿空串占住参数槽)";
+            return false;
+        }
+
+        var node = candidate.AwaitingNode;
+        var items = node.Clarifications.ToList();
+        if (items.Count == 0)
+        {
+            reason = RefuseNotAwaitingUser;
+            return false;
+        }
+
+        // 多条目 = 需要位置协议 (逐项答复): 本轮**不猜**位置, 如实拒绝并把协议留作下轮候选。
+        if (items.Count > 1)
+        {
+            reason = RefuseMultiItem;
+            return false;
+        }
+
+        var item = items[0];
+        if (string.IsNullOrWhiteSpace(item.ParameterName))
+        {
+            reason = RefuseNoSlot;
+            return false;
+        }
+
+        if (item.Choices.Count > 0
+            && !item.Choices.Any(x => string.Equals(x, text, StringComparison.OrdinalIgnoreCase)))
+        {
+            reason = $"{RefuseChoiceMismatch} [{string.Join('/', item.Choices)}]";
+            return false;
+        }
+
+        var slot = node.Parameters.FirstOrDefault(p =>
+            string.Equals(p.Name, item.ParameterName, StringComparison.Ordinal));
+        if (slot is null)
+        {
+            slot = new TaskParameter
+            {
+                Name = item.ParameterName,
+                DisplayName = item.ParameterName,
+                IsRequired = true,
+            };
+            node.Parameters.Add(slot);
+        }
+        slot.Value = text;
+
+        // 澄清结清: 清条目 + 打标记 —— 不打卡片, 证据门槛会按同一低置信度把刚答过的问题再问一遍。
+        node.Clarifications.Clear();
+        node.ClarificationsSettled = true;
+
+        candidate.Run.NodeStates[node.Id] = PlanNodeState.Pending;
+        candidate.Run.State = TaskPlanRunState.Running;
+        candidate.Run.PauseReason = null;
+        return true;
+    }
+
+    /// <summary>
+    /// 该节点是不是"在等用户**文字答复**"(= 续跑入口能落地的形态)。
+    /// 等审批(`AwaitingApproval`)不算: 它有独立的答复协议, 被续跑入口拦下会**吞掉审批消息**。
+    /// </summary>
+    private static bool IsClarificationAwaiting(TaskPlanRun run, TaskPlan plan, string? nodeId)
+        => !string.IsNullOrEmpty(nodeId)
+           && run.NodeStates.TryGetValue(nodeId!, out var st)
+           && st == PlanNodeState.AwaitingClarification
+           && plan.Nodes.FirstOrDefault(n => n.Id == nodeId) is { Clarifications.Count: > 0 };
+
+    /// <summary>
+    /// 卡在等用户的节点: 优先按 Clarifications 判定 (有具体问题才有"答复"可言),
+    /// 否则退回状态名判定 (ClarificationItem 可能已被其他路径清掉)。
+    /// </summary>
+    public static string? AwaitingNodeIdOf(TaskPlanRun run, TaskPlan plan)
+    {
+        foreach (var node in plan.Nodes)
+        {
+            if (!run.NodeStates.TryGetValue(node.Id, out var st))
+                continue;
+            if (st is PlanNodeState.AwaitingClarification or PlanNodeState.AwaitingApproval
+                && node.Clarifications.Count > 0)
+                return node.Id;
+        }
+
+        foreach (var kv in run.NodeStates)
+            if (kv.Value is PlanNodeState.AwaitingClarification or PlanNodeState.AwaitingApproval)
+                return kv.Key;
+
+        return null;
+    }
+}

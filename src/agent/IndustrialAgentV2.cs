@@ -856,6 +856,14 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 return response;
             }
 
+            // 1.0 跨轮续跑 (v0.22.0 exp9 D7b): 上一轮计划卡在"等用户回答"时, 这一轮消息的语义 = **答复它**,
+            //     不是新任务 —— 必须在意图拆解**之前**拦下, 否则答复会被重拆成新任务, 用户永远等不到续跑。
+            if (await TryResumePausedPlanAsync(message, response, ct))
+            {
+                response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
+                return response;
+            }
+
             // 1. 意图识别 + 子任务拆解 (v7.9): 复合句拆为有序子任务, 主意图驱动模板选择
             // v0.11.0 R129 (PGO v2 D3): 意图阶段热路径计时
             var intentSw = System.Diagnostics.Stopwatch.StartNew();
@@ -2072,6 +2080,20 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 ? new RemoteWindow(_planRemoteStartUs, _planRemoteReadyUs)
                 : (RemoteWindow?)null;
             var run = await _planRunner.RunAsync(plan, ctx, ct, localFirst, window);
+
+            // D7b: 计划停在"等用户 / 等产出" → 落续跑三件套 (蓝图 + 运行态 + 已完成节点真产出)。
+            //     没有这一步, 用户下一轮的答复就没有消费方 —— 计划的 Waiting 会永远挂着 (结构缺口)。
+            var store = _planCheckpoints ??= new agent.recovery.CheckpointStore(_dataStoragePath);
+            if (agent.intent.PlanResumeService.Capture(
+                    store, ctx.SessionId ?? "", plan, run, ctx.NodeOutputs, plan.SourceText))
+            {
+                agent.config.AgentTelemetry.Emit("plan_resume_capture", "IndustrialAgentV2",
+                    ("plan_id", plan.PlanId),
+                    ("state", run.State.ToString()),
+                    ("awaiting", agent.intent.PlanResumeService.AwaitingNodeIdOf(run, plan) ?? ""),
+                    ("outputs", ctx.NodeOutputs.Count),
+                    ("waits", run.Waits.Count));
+            }
             var localOk = run.Outcomes.Count(o =>
                 o.Location is "local" or "hybrid" && o.State == PlanNodeState.Completed);
             var failed = run.Outcomes.Count(o => o.State == PlanNodeState.Failed);
@@ -2105,6 +2127,104 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
 
     /// <summary>D4: 贯穿两阶段的执行上下文 (本地先行 + 产物就绪后回填)</summary>
     private LocalNodeContext? _planCtx;
+
+    /// <summary>D7b: 计划检查点仓库 (懒建) —— 暂停时写它, 下一轮装载入口读它</summary>
+    private agent.recovery.CheckpointStore? _planCheckpoints;
+
+    /// <summary>
+    /// D7b 跨轮唤醒 (真续跑): 检查点 → 装载 → 答复落到确定参数槽 → 从**上轮运行态**继续跑。
+    /// 三条硬纪律:
+    ///   ① 不重拆: 走出这条路就**不再**把这一轮消息当新任务 (用户答的就是上一轮那个问题);
+    ///   ② 不伪造: 唤醒等待节点喂的是检查点里的**真产出** (缺产出快照 = 装载入口直接拒绝);
+    ///   ③ 不吞: 答复落不到确定位置 (无参数名 / 多条目 / 不在选项内) → 如实告诉用户并作废该检查点,
+    ///      既不静默丢弃, 也不把答复硬塞进一个猜出来的槽。
+    /// </summary>
+    private async Task<bool> TryResumePausedPlanAsync(Message message, AgentResponse response, CancellationToken ct)
+    {
+        if (string.IsNullOrEmpty(message.SessionId))
+            return false;
+
+        var store = _planCheckpoints ??= new agent.recovery.CheckpointStore(_dataStoragePath);
+        if (!agent.intent.PlanResumeService.TryLoad(store, message.SessionId, out var cand, out var why) || cand is null)
+        {
+            // 没有未完成计划 = 常态 (普通消息都走这里): 只在"有检查点却装不回来"时留痕, 不刷噪声
+            if (why != agent.intent.PlanResumeService.RefuseNoCheckpoint)
+                agent.config.AgentTelemetry.Emit("plan_resume", "IndustrialAgentV2",
+                    ("resumed", false), ("reason", why));
+            return false;
+        }
+
+        if (!agent.intent.PlanResumeService.ApplyReply(cand, message.Content, out var applyWhy))
+        {
+            store.Clear(message.SessionId);
+            response.Success = false;
+            response.Content =
+                $"上一轮计划停在等你回答: {Truncate(cand.PendingQuestion ?? "(无问题文本)", 120)}\n" +
+                $"这一轮答复没有落地: {applyWhy}\n" +
+                "该续跑入口已作废 —— 请把这一轮内容重新表述为完整任务, 或按上面的问题再答一次。";
+            agent.config.AgentTelemetry.Emit("plan_resume", "IndustrialAgentV2",
+                ("plan_id", cand.Plan.PlanId), ("resumed", false), ("reason", applyWhy));
+            return true;
+        }
+
+        // 续跑: 重建 ctx (真产出注入) → 从 seedRun 继续 (Completed 节点不重跑)
+        var ctx = agent.intent.PlanRunner.NewContext(
+            sessionId: message.SessionId, sourceText: cand.SourceText ?? message.Content);
+        foreach (var kv in cand.NodeOutputs)
+            ctx.NodeOutputs[kv.Key] = kv.Value;
+        _planRunner ??= new agent.intent.PlanRunner();
+        _planCtx = ctx;
+        _lastPlan = cand.Plan;
+
+        var run = await _planRunner.RunAsync(cand.Plan, ctx, ct,
+            localFirst: null, remoteWindow: null, seedRun: cand.Run);
+        _lastPlanRun = run;
+
+        agent.config.AgentTelemetry.Emit("plan_resume", "IndustrialAgentV2",
+            ("plan_id", cand.Plan.PlanId), ("resumed", true), ("state", run.State.ToString()),
+            ("nodes", cand.Plan.Nodes.Count), ("waits", run.Waits.Count),
+            ("seeded_outputs", cand.NodeOutputs.Count),
+            ("slot", string.Join(",", cand.AwaitingParameterNames)));
+
+        response.Success = run.State == TaskPlanRunState.Finished;
+        response.Content = RenderResumeReply(cand, run);
+        response.Data = new Dictionary<string, object>
+        {
+            { "planResumed", true },
+            { "planId", cand.Plan.PlanId },
+            { "planState", run.State.ToString() },
+            { "awaitingNode", cand.AwaitingNodeId },
+        };
+
+        if (run.State == TaskPlanRunState.Finished)
+            store.Clear(message.SessionId); // 跑完不留悬空的续跑入口
+        else
+            agent.intent.PlanResumeService.Capture(store, message.SessionId, cand.Plan, run, ctx.NodeOutputs, cand.SourceText);
+        return true;
+    }
+
+    /// <summary>续跑答复渲染 (零 LLM): 节点结果 + 等待台账 (等待时长含用户思考时间, 是真账不是估计)。</summary>
+    private static string RenderResumeReply(agent.intent.PlanResumeCandidate cand, TaskPlanRun run)
+    {
+        var sb = new System.Text.StringBuilder();
+        sb.Append("🔄 续跑计划 ").Append(cand.Plan.PlanId)
+          .Append(" (答复落到参数槽: ").Append(string.Join(",", cand.AwaitingParameterNames)).Append(')');
+        if (!string.IsNullOrEmpty(cand.PendingQuestion))
+            sb.Append("\n上一轮的问题: ").Append(Truncate(cand.PendingQuestion, 100));
+        sb.Append('\n');
+        foreach (var o in run.Outcomes)
+            sb.Append("- ").Append(o.NodeId).Append(" [").Append(o.Location).Append("] ")
+              .Append(o.State).Append(": ").Append(Truncate(o.Detail ?? string.Empty, 90)).Append('\n');
+        if (run.Waits.Count > 0)
+        {
+            var now = agent.intent.Monotonic.NowUs();
+            var totalMs = run.Waits.Values.Sum(w => ((w.EndedUs ?? now) - w.StartedUs) / 1000);
+            sb.Append("等待台账: ").Append(run.Waits.Count).Append(" 条, 共 ").Append(totalMs)
+              .Append("ms (含你思考的时间; 等待不占并发额度)").Append('\n');
+        }
+        sb.Append("计划状态: ").Append(run.State);
+        return sb.ToString();
+    }
 
     /// <summary>D4: 远程窗口起点 (计划构建时刻; 用于 "本地先行与远程等待真重叠" 测量)</summary>
     private long _planRemoteStartUs;

@@ -472,13 +472,21 @@ public sealed class PlanRunner
     /// <summary>执行整张计划 (真执行体)。返回的 run.Outcomes 即前端/KPI 的唯一事实源。</summary>
     /// <param name="localFirst">D4: 已由 StartLocalFirst 跑过的无依赖本地节点 — 结果直接复用, 绝不重复执行</param>
     /// <param name="remoteWindow">D4: 远程生成窗口 (用于算"本地先行与远程生成真重叠了多少毫秒")</param>
+    /// <param name="seedRun">D7b: 从检查点重建的运行态 (续跑)。非空 ⇒ 上轮已 Completed 的节点不重跑,
+    /// 其产出必须已由调用方注入 <paramref name="ctx"/>.NodeOutputs —— 否则等待节点会拿到空输入。</param>
     public async Task<TaskPlanRun> RunAsync(TaskPlan plan, LocalNodeContext? ctx = null, CancellationToken ct = default,
-        LocalFirstRun? localFirst = null, RemoteWindow? remoteWindow = null)
+        LocalFirstRun? localFirst = null, RemoteWindow? remoteWindow = null, TaskPlanRun? seedRun = null)
     {
         ctx ??= new LocalNodeContext();
         var enabled = _gate();
         var outcomes = new ConcurrentDictionary<string, NodeOutcome>(StringComparer.Ordinal);
         var results = new ConcurrentDictionary<string, NodeExecutionResult>(StringComparer.Ordinal);
+
+        // D7b 续跑: 上一轮的审计行先并回台账 —— 否则收尾时 run.Outcomes 只留本轮跑过的节点,
+        // 上轮 Completed 的节点从 KPI/前端事件里凭空消失 (账要连得上, 不能只看最后一段)。
+        if (seedRun is not null)
+            foreach (var o in seedRun.Outcomes)
+                outcomes[o.NodeId] = o;
 
         if (localFirst is not null)
         {
@@ -510,7 +518,7 @@ public sealed class PlanRunner
 
         var sw = Stopwatch.StartNew();
         var executor = NewExecutor(runner, plan.PlanId);
-        var run = await executor.ExecuteAsync(plan, pollInjections: null, ct).ConfigureAwait(false);
+        var run = await executor.ExecuteAsync(plan, pollInjections: null, ct, seedRun).ConfigureAwait(false);
         sw.Stop();
 
         // 审计与状态对齐: 只保留真正跑过的节点 (Paused/待澄清节点无产物, 不塞假数据)

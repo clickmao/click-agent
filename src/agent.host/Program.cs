@@ -18,6 +18,7 @@ namespace agent.host;
 ///   agenthost -rag <path>     → 指定 RAG 数据文件 (v0.13.0, 用户钦定)
 ///   agenthost --log run.log   → 任务输出日志保存为 markdown 文件
 ///   agenthost --output-mode text → 纯文本模式 (默认 markdown; 控制台均着色)
+///   agenthost --session-id cli-x7 → 显式指定会话 Id (D7b 跨进程续跑/真机复现; 默认每次随机)
 ///   agenthost --smoke         → AOT 冒烟 (原 Program 行为保留)
 /// 返回内容经区段插件处理 (html 标记/代码审查) 后输出; markdown 渲染重点。
 /// </summary>
@@ -47,12 +48,15 @@ internal class Program
         var skillBlacklist = new List<string>();
         var skillExtraFiles = new List<string>();
         string? roleId = null;   // R363 (用户钦定): --role <file.rbin> 可空 — 缺省无角色 (行为不变); 非明文单文件
+        string? sessionIdOverride = null; // R384 (D7b): --session-id <id> 显式指定会话 Id (跨进程续跑/真机复现需要)
         for (var i = 0; i < args.Length; i++)
         {
             if (args[i] == "--log" && i + 1 < args.Length)
                 logPath = args[++i];
             else if (args[i] == "-q" && i + 1 < args.Length)
                 oneShot = args[++i];
+            else if (args[i] == "--session-id" && i + 1 < args.Length)
+                sessionIdOverride = args[++i];
             else if (args[i] == "--output-mode" && i + 1 < args.Length)
                 outputMode = args[++i] == "text"
                     ? agent.output.OutputMode.PlainText
@@ -384,7 +388,7 @@ if (args.Length >= 2 && args[0] == "--frontend-api")
         {
             if (smoke && oneShot == null)
                 return await RunSmokeAsync(provider, entryAgent);
-            return await RunCliAsync(provider, entryAgent, sink, oneShot, logPath, outputMode, imageArgs);
+            return await RunCliAsync(provider, entryAgent, sink, oneShot, logPath, outputMode, imageArgs, sessionIdOverride);
         }
         finally
         {
@@ -398,10 +402,10 @@ if (args.Length >= 2 && args[0] == "--frontend-api")
     private static async Task<int> RunCliAsync(
         ServiceProvider provider, IAgent agent, IOutputSink sink, string? oneShot, string? logPath,
         agent.output.OutputMode mode = agent.output.OutputMode.Markdown,
-        List<string>? imageAttachments = null)
+        List<string>? imageAttachments = null, string? sessionId = null)
     {
         var sessionMgr = provider.GetRequiredService<ISessionManager>();
-        var session = new CliSession(sink, "./data");
+        var session = new CliSession(sink, "./data", sessionId: sessionId);
         // 面板数据服务 (v7.14): /status 与 /session 家族全部输出格式化 JSON (程序可解析)
         var panel = new agent.registry.PanelDataService(
             sessionMgr,

@@ -17,18 +17,26 @@ public sealed class CliSession
     private readonly SpectreOutputRenderer _renderer;
     private readonly List<string> _steps = new();
 
-    public string SessionId { get; } = "cli-" + Guid.NewGuid().ToString("N")[..8];
+    /// <summary>
+    /// 会话 Id (检查点/续跑入口按它取数)。默认每次进程随机; `--session-id <id>` 可显式指定 ——
+    /// 真机复现/跨进程续跑需要"同一个会话 Id 跨进程成立"(D7b: 装载入口按会话 Id 找检查点)。
+    /// </summary>
+    public string SessionId { get; }
 
     /// <summary>本轮步骤明细 (执行后可查)</summary>
     public IReadOnlyList<string> Steps => _steps;
 
     /// <param name="mode">输出模式 (v7.13): Markdown=全格式美化 / PlainText=平铺着色 (默认 markdown)</param>
-    public CliSession(IOutputSink output, string dataPath, OutputMode mode = OutputMode.Markdown)
+    public CliSession(IOutputSink output, string dataPath, OutputMode mode = OutputMode.Markdown,
+        string? sessionId = null)
     {
         _out = output;
         _dataPath = dataPath;
         _mode = mode;
         _renderer = new SpectreOutputRenderer();
+        SessionId = string.IsNullOrWhiteSpace(sessionId)
+            ? "cli-" + Guid.NewGuid().ToString("N")[..8]
+            : sessionId.Trim();
     }
 
     public void RecordStep(string what) => _steps.Add($"[{DateTime.Now:HH:mm:ss}] {what}");

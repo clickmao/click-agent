@@ -93,6 +93,13 @@ public class PlanNode
     /// <summary>待澄清条目 (非空 → 该节点暂不可执行)</summary>
     public List<ClarificationItem> Clarifications { get; set; } = new();
 
+    /// <summary>
+    /// 澄清已结清 (v0.22.0 exp9 D7b 续跑专用): 用户已答复过本节点的澄清 → 证据门槛**不得**再问一遍。
+    /// 续跑时 Clarifications 被清空 (答案写回参数槽), 若不记这个标记, 门槛会按同一低置信度重新提问
+    /// ⇒ 用户被反复问同一句。false = 老行为 (未结清)。
+    /// </summary>
+    public bool ClarificationsSettled { get; set; }
+
     /// <summary>参数齐备 + 依赖可满足 → 调度器可立即异步执行</summary>
     public bool IsExecutable => Clarifications.Count == 0;
 
