@@ -110,6 +110,13 @@ public class PlanNode
     /// 开发计划型任务节点标注其模块文档; 日常用户任务无文档时为 null。AOT 纯数据字段。</summary>
     public string? DocRef { get; set; }
 
+    /// <summary>
+    /// 形式化断言契约 (v0.23.0 exp12 S2): 本节点的可判定片段文本 —— 逐行 `premise &lt;expr&gt;` / `goal &lt;expr&gt;`,
+    /// 或显式弃权 `no_formal: &lt;理由&gt;`。语法与 click-rover `check` 同构, 判定在**本机内核**完成(零 token)。
+    /// 缺省 null = 未声明 ⇒ 闸门按「无形式化义务」放行, **绝不为此追问 LLM**。
+    /// </summary>
+    public string? Formal { get; set; }
+
     /// <summary>拆解置信度 (v7.13): EvidenceGate 裁定依据 (Builder 从 SubTask 透传)</summary>
     public double Confidence { get; set; } = 1.0;
 

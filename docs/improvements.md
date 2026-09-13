@@ -12,6 +12,35 @@
 
 ---
 
+## R386/R387 — 形式化闸门接线(调度器唯一前门) + 断言契约层 + 等待墙钟锚点 + DCR 评测入口
+
+**用户令 (逐字)**: "进行下一步直到目前所有计划的任务全部完成"。
+
+**交付(全部带真机/机检证据)**:
+1. **M1 删空抽象层**: `ICapabilityPlugin`/`CapabilityPluginRegistry` = 零实现零注册(仅定义+一个 `FakePlugin` 测试) ⇒ 删两文件;
+   **反证**: 删除后全量构建 0 错、全量测试绿 ⇒ 确认无消费方。M2 能力来源唯一: 保留 `CapabilityScanner` + `PanelData.CapabilityEntry`(全仓唯一定义)。
+2. **断言契约层** `FormalAssertionContract`: 缺省(未声明)⇒`NoFormal` **放行且绝不为此追问 LLM**; 显式 `no_formal: <理由>` ⇒ 放行;
+   `no_formal` 与 premise/goal 并存(自相矛盾)/残缺(缺 premise 或 goal)⇒`Malformed` 阻断。21 例单测含负向控制。
+3. **节点级形式化闸门 — 第一次插错位置, 被真跑机检抓出**: 初版插在 `PlanRunner.RunNodeAsync`(产品路径的私有方法) ⇒
+   端到端接线测试显示"被反驳契约的节点**执行体仍被调用**"(`order=["a"]`) ⇒ 说明该点**不是唯一前门**。
+   迁到**调度器唯一前门** `TaskPlanExecutor.RunNodeCoreAsync`(任何被注入的 nodeRunner 都绕不过)后: 被反驳/片段外节点**零调用**且终态 `Failed`。
+   **这就是"接线测试必须驱动真实调度器"的实证价值** —— 单测全绿但闸门在真链路上不生效, 只有端到端断言能暴露。
+4. **内核语义修正(契约与实现不一致)**: 文档契约写"片段外一律 `Unknown`", 实测非线性前提(`x * x == 4`)被判 `Malformed` ⇒
+   会把**正确弃权误记成畸形**, 直接扭曲 DCR 口径。修 `FormalKernel.FromParseFailure`: 片段外⇒`Unknown`(附 `fragment_limit:` 理由码), 真语法错仍 `Malformed`。
+5. **`--formal-eval <cases.jsonl>`**(真实装配判定层入口, 零 LLM/零 daemon/零 shell): 8/8 冒烟覆盖 absent / declared / proved / refuted(附精确反例 `x=32818, y=-32808`) /
+   vacuous / fragment(`Abstained`) / malformed / 自相矛盾; 每行 `would_call_llm=false`。**这是 DCR 可证伪测量的接口**。
+6. **WaitUs 墙钟锚点**(R384 遗留⑤: 跨进程不可对账): `NodeWaitRecord` 增 `Started/EndedWallUtcMs` + `End()` **单一写点**(禁止两处各自取时钟) +
+   3 条对账判据(`WallClockReconciled` / `WallClockOrdered`) + 负向控制(人为倒流必须判否)。时长唯一事实源仍是进程内单调时钟。
+7. **R384 遗留④复核结论**: "答复落点与主链 `AnswerSink` 不一致" —— **`AnswerSink` 全仓 0 命中, 前提失效**; 真实落点是 `PlanResumeService.ApplyReply`(:206, 槽位名+范围校验, 不满足即拒绝)。
+8. **登记**: `docs/verification-registry.json` 增 3 行(`formal.contract` L2 / `formal.node-gate` **L4** / `plan.wait.wallclock` L2), 机检 `VerificationFormTests` 6/6。
+
+**基线**: 全量 **1019/1019 绿**; 闸门+接线 28/28; 契约 21/21; 墙钟+等待 35/35; 机检 6/6。
+
+**诚实边界**: FAVA 原文正文(arXiv HTML/PDF/ar5iv/alphaXiv)本次均只取到摘要与引言 ⇒ **DCR 公式 / 分母 / 弃权处置 / aggregate 合并方式(T1–T4)仍未知**;
+故 DCR 报告必须给**双口径敏感性分析**(弃权计合规 / 不计合规), 不得只报一个数。
+
+---
+
 ## R380 — 缓存命中率口径修订(首要KPI) + 越线必查闸门 + 会话稳定基线 + 视觉能力目录纠偏
 
 **用户 OOB (逐字)**: "将缓存命中率计算只计算需要命中的部分，当前轮新增不计入，因为肯定不触发缓存，并且记录到KPI首要任务内，一旦越过红线必然检查问题为什么发生并修复" / "将之前的红线提高为95%"

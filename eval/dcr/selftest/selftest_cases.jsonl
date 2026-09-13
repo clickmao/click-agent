@@ -1,0 +1,4 @@
+{"id":"t1","category":"entail","contract":"premise x == 1\ngoal x == 1","expected_disposition":"Proceed","expected_verdict":"Proved","label_source":"z3","z3_label":"unsat"}
+{"id":"t2","category":"refute","contract":"premise x == 1\ngoal x == 2","expected_disposition":"Violation","expected_verdict":"Refuted","label_source":"z3","z3_label":"sat"}
+{"id":"t3","category":"vacuous","contract":"premise x == 1\npremise x == 2\ngoal x == 1","expected_disposition":"Violation","expected_verdict":"Vacuous","label_source":"z3","z3_label":"premises_unsat"}
+{"id":"t4","category":"absent","contract":null,"expected_disposition":"Proceed","expected_verdict":"NoFormal","label_source":"n/a","z3_label":"n/a"}

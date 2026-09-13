@@ -49,6 +49,7 @@ internal class Program
         var skillExtraFiles = new List<string>();
         string? roleId = null;   // R363 (用户钦定): --role <file.rbin> 可空 — 缺省无角色 (行为不变); 非明文单文件
         string? sessionIdOverride = null; // R384 (D7b): --session-id <id> 显式指定会话 Id (跨进程续跑/真机复现需要)
+        string? formalEvalPath = null; // v0.23.0 exp12 S3/S4: --formal-eval <cases.jsonl> 判定层题集入口 (纯本地零 token)
         for (var i = 0; i < args.Length; i++)
         {
             if (args[i] == "--log" && i + 1 < args.Length)
@@ -78,6 +79,9 @@ internal class Program
             // R363 (用户钦定): --role <file.rbin> 挂载外挂角色 (可空 — 不传即无角色; 非明文单文件)
             else if (args[i] == "--role" && i + 1 < args.Length)
                 roleId = args[++i];
+            // v0.23.0 exp12 S3/S4 (用户钦定: DCR 必须可证伪): --formal-eval <cases.jsonl> —— 真实装配判定层逐条裁决
+            else if (args[i] == "--formal-eval" && i + 1 < args.Length)
+                formalEvalPath = args[++i];
         }
 
         // R136 (D4 reply_rel 基础设施): --embed 输出向量 JSON — R352: 本地 bge 已删,
@@ -89,6 +93,12 @@ internal class Program
             Console.WriteLine("[" + string.Join(",", vec.Select(v => v.ToString("R", System.Globalization.CultureInfo.InvariantCulture))) + "]");
             return 0;
         }
+
+        // ── v0.23.0 exp12 · S3/S4（用户钦定：决策合规率必须可证伪）─────────────────────────────
+        // --formal-eval <cases.jsonl>：判定题集逐条过**真实装配的判定层**（契约层 → 四态处置 → 共享源内核），
+        // 零 LLM / 零 daemon / 零 shell；输出 JSONL 交 scripts/kpi_dcr.py 与独立 oracle(z3) 标签对账。
+        if (formalEvalPath is not null)
+            return agent.host.FormalEvalCommand.Run(formalEvalPath, Console.Out, Console.Error);
 // v0.20.0 P3 (R343, 用户 OOB: "/bin/sh 跨平台怎么办?"): daemon 自写日志 — 不依赖 shell 重定向,
 // 跨平台 (Windows/macOS/Linux); spawn 端仅传 env, 无 shell 依赖。SIGPIPE/终端消失均不影响。
 static void RedirectDaemonLogIfConfigured()

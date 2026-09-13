@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>形式化验证增强 Agent 逻辑闭环 · 可行性调研报告</title>
+<style>
+  :root{
+    --ink:#0f1a22; --ink-2:#22323d; --paper:#f6f4ef; --panel:#fffdf8;
+    --line:#d8d2c4; --line-2:#bdb5a3; --accent:#b4531f; --accent-2:#8a3e15;
+    --teal:#1d5c63; --teal-2:#0d3b40; --dim:#5d6b74; --ok:#2f6b46; --warn:#8a5a12;
+    --mono:ui-monospace,"SFMono-Regular","JetBrains Mono","Cascadia Mono",Consolas,monospace;
+    --serif:"Source Han Serif SC","Noto Serif CJK SC","Songti SC",Songti,serif;
+    --sans:"Source Han Sans SC","Noto Sans CJK SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.75;
+       -webkit-font-smoothing:antialiased;font-size:16px}
+  .wrap{display:grid;grid-template-columns:250px minmax(0,1fr);gap:0;max-width:1500px;margin:0 auto}
+  /* ---- rail ---- */
+  .rail{position:sticky;top:0;height:100vh;overflow:auto;border-right:1px solid var(--line);
+        padding:28px 20px 40px;background:linear-gradient(180deg,#fbf9f4,#f4f1ea)}
+  .rail .brand{font-family:var(--serif);font-size:19px;font-weight:700;letter-spacing:.02em;margin:0 0 4px}
+  .rail .sub{font-size:11.5px;color:var(--dim);letter-spacing:.14em;text-transform:uppercase;margin-bottom:22px}
+  .rail nav a{display:block;color:var(--ink-2);text-decoration:none;font-size:13.5px;padding:6px 8px;
+              border-left:2px solid transparent;line-height:1.5}
+  .rail nav a:hover{color:var(--accent-2);border-left-color:var(--accent);background:#fff}
+  .rail nav .h{font-size:11px;letter-spacing:.16em;color:var(--dim);text-transform:uppercase;margin:18px 0 6px 8px}
+  /* ---- main ---- */
+  main{padding:0 0 90px;min-width:0}
+  header.hero{border-bottom:1px solid var(--line);padding:56px 56px 34px;background:
+     radial-gradient(1200px 300px at 0% 0%,#efe8dc 0%,transparent 70%)}
+  .kicker{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent)}
+  h1{font-family:var(--serif);font-size:40px;line-height:1.25;margin:12px 0 10px;font-weight:700;letter-spacing:.01em}
+  .lede{max-width:74ch;color:var(--ink-2);font-size:17px}
+  .meta{margin-top:22px;display:flex;flex-wrap:wrap;gap:10px}
+  .tag{font-size:12px;padding:3px 10px;border:1px solid var(--line-2);border-radius:999px;color:var(--ink-2);background:#fff}
+  .tag.a{border-color:var(--accent);color:var(--accent-2)}
+  .tag.t{border-color:var(--teal);color:var(--teal)}
+  section{padding:44px 56px 8px;border-bottom:1px solid var(--line)}
+  section:last-of-type{border-bottom:none}
+  h2{font-family:var(--serif);font-size:27px;margin:0 0 6px;letter-spacing:.01em}
+  h2 .n{color:var(--accent);font-size:17px;font-family:var(--mono);margin-right:10px;vertical-align:2px}
+  h3{font-family:var(--serif);font-size:19px;margin:30px 0 8px}
+  h4{font-size:15px;margin:20px 0 6px;letter-spacing:.02em;color:var(--ink-2)}
+  p{max-width:88ch}
+  .sub{color:var(--dim);font-size:14px;margin:0 0 18px}
+  ul,ol{max-width:88ch;padding-left:22px}
+  li{margin:5px 0}
+  code{font-family:var(--mono);font-size:13px;background:#efe9dd;padding:1.5px 5px;border-radius:3px;
+       border:1px solid #e2dccd;color:#3a2c1d}
+  a{color:var(--teal);text-decoration:none;border-bottom:1px solid #bcd0d1}
+  a:hover{color:var(--accent-2);border-bottom-color:var(--accent)}
+  /* ---- blocks ---- */
+  .callout{border:1px solid var(--line);border-left:3px solid var(--accent);background:var(--panel);
+           padding:16px 20px;margin:18px 0;border-radius:2px}
+  .callout.t{border-left-color:var(--teal)}
+  .callout .t{font-weight:600;font-size:14px;letter-spacing:.02em;margin-bottom:4px}
+  .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px;margin:20px 0}
+  .card{border:1px solid var(--line);background:var(--panel);padding:16px 18px;border-radius:2px}
+  .card h4{margin:0 0 6px;font-family:var(--serif);font-size:16.5px;color:var(--ink)}
+  .card p{font-size:14px;color:var(--ink-2);margin:4px 0}
+  .card .k{font-family:var(--mono);font-size:12px;color:var(--accent-2);letter-spacing:.04em}
+  table{width:100%;border-collapse:collapse;margin:18px 0;font-size:13.5px;background:var(--panel)}
+  caption{caption-side:top;text-align:left;font-size:12.5px;color:var(--dim);padding-bottom:6px}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:#efe9dd;font-weight:600;font-size:13px;letter-spacing:.02em}
+  td.num{font-family:var(--mono);white-space:nowrap}
+  tr:nth-child(even) td{background:#fdfbf6}
+  figure{margin:22px 0}
+  figure svg{width:100%;height:auto;display:block;border:1px solid var(--line);background:var(--panel)}
+  figcaption{font-size:12.5px;color:var(--dim);margin-top:8px}
+  .pill{display:inline-block;font-size:11.5px;font-family:var(--mono);padding:1px 7px;border-radius:3px;
+        border:1px solid var(--line-2);color:var(--ink-2);background:#fff}
+  .pill.ok{border-color:#9dc0a8;color:var(--ok);background:#f2f8f3}
+  .pill.w{border-color:#d9c08a;color:var(--warn);background:#fdf7ea}
+  .pill.r{border-color:#d3a3a3;color:#8f2f2f;background:#fdf1f1}
+  footer{padding:34px 56px 60px;color:var(--dim);font-size:13px}
+  .cite{font-size:12.5px;color:var(--dim)}
+  ol.refs{font-size:13.5px}
+  ol.refs li{margin:9px 0}
+  hr.sep{border:none;border-top:1px dashed var(--line-2);margin:26px 0}
+  .kv{display:grid;grid-template-columns:170px minmax(0,1fr);gap:6px 14px;font-size:13.5px;margin:14px 0}
+  .kv dt{font-family:var(--mono);color:var(--accent-2);font-size:12.5px;padding-top:2px}
+  .kv dd{margin:0}
+  @media (max-width:940px){.wrap{grid-template-columns:1fr}.rail{position:static;height:auto}
+    header.hero,section,footer{padding-left:22px;padding-right:22px}h1{font-size:29px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<aside class="rail">
+  <div class="brand">形式化验证 × Agent</div>
+  <div class="sub">Feasibility Review</div>
+  <nav>
+    <div class="h">结论</div>
+    <a href="#tldr">0 · 结论速览</a>
+    <a href="#scope">1 · 问题拆解与边界</a>
+    <div class="h">证据</div>
+    <a href="#evidence">2 · 多方文献证据地图</a>
+    <a href="#usecases">3 · 形式化用例库（六类）</a>
+    <div class="h">方案</div>
+    <a href="#arch">4 · click-verify 五层架构</a>
+    <a href="#protocol">5 · 形式化符号返回协议</a>
+    <a href="#kpi">6 · 与 5 KPI 的因果链</a>
+    <a href="#tokens">7 · token 节省：机制与量级</a>
+    <div class="h">风险与路线</div>
+    <a href="#risk">8 · 风险与反证</a>
+    <a href="#roadmap">9 · 分阶段路线图</a>
+    <a href="#open">10 · 待确认项</a>
+    <a href="#refs">11 · 参考文献</a>
+  </nav>
+</aside>
+<main>
+<header class="hero">
+  <div class="kicker">可行性调研报告 · 图文版</div>
+  <h1>如何利用形式化验证增强 Agent 自身的逻辑能力<br>——形成逻辑思维闭环、提升体验并节省 token</h1>
+  <p class="lede">本报告回答一个问题：把「形式化验证」从数学定理证明的专用工具，移植为 agent 运行时的<b>逻辑裁判</b>，是否可行、以什么形态落地、能省多少 token、以及在哪里会失败。结论基于 12 组公开文献的多方对账，并与本项目已有基线（本地 Prover 引擎 <code>click-rover</code>、缓存命中率口径、契约前置注入）对齐。</p>
+  <div class="meta">
+    <span class="tag a">结论：可行，条件性</span>
+    <span class="tag t">三条落地路线</span>
+    <span class="tag">12 组文献证据</span>
+    <span class="tag">6 类形式化用例</span>
+    <span class="tag">5 项可测验收判据</span>
+  </div>
+</header>
+
+<section id="tldr">
+  <h2><span class="n">00</span>结论速览</h2>
+  <p class="sub">先给裁决，再给依据。以下每条都可被下文的文献数据或本项目基线数据反驳。</p>
+  <div class="grid2">
+    <div class="card">
+      <div class="k">裁决 1</div>
+      <h4>「逻辑闭环」成立，但闭环的位置不是模型，是运行时</h4>
+      <p>文献一致指向同一结论：LLM 负责<b>提议</b>（生成候选证明/候选计划），验证器负责<b>裁判</b>（不可协商的通过/拒绝）。把二者放进同一个自回归循环里让模型"自我批判"，收益远低于让外部内核做硬判定。最强证据：编译器反馈单独一项就把忠实形式化率从 19.75–36.00% 抬到 58.75–62.00%（+32.3 点）。</p>
+    </div>
+    <div class="card">
+      <div class="k">裁决 2</div>
+      <h4>token 节省是真实且可归因的，但有前置条件</h4>
+      <p>节省不来自"少说话"，来自四件事：本地验证零 token、契约前置消灭澄清轮、已验证结论缓存复用、错误分支早停。文献侧对应证据：符号检索使昂贵编译-修复循环调用次数下降 26.6–29.8%；奖励引导解码最高减少 4.4 倍 FLOPs。前提是<b>验证判定必须是确定性的</b>，否则省下的 token 会以重试的形式还回去。</p>
+    </div>
+    <div class="card">
+      <div class="k">裁决 3</div>
+      <h4>最大风险不是验证不通过，是「验证通过了但意思错了」</h4>
+      <p>这是本报告最重要的一条。形式化只保证"模型写下的命题被证明"，不保证"这个命题是你想说的那个"。实测：编译通过率 89.5%，语义忠实率仅 60.5%，<b>缺口 29.0 个百分点</b>；跨 8 个系统的缺口范围 3.0–29.0 点。任何把"编译通过"当作正确性证据的设计都会系统性放大这个缺口。</p>
+    </div>
+    <div class="card">
+      <div class="k">裁决 4</div>
+      <h4>推荐形态：五层增强（契约 / 本地内核 / 证据缓存 / 闭环 / 信任台账）</h4>
+      <p>不自研定理证明器，不替换现有 LLM 链路。在最外层加"可验证契约"，在最内层加"本地、零 token、可离线重放的验证内核"，中间用证据缓存把重复推理变成查表。工程可行性已被外部实现证明量级：约 1900 行核心代码 + 130 个测试即可覆盖污点分析、安全自动机、Z3 定理证明三类静态检查，且验证阶段<b>不需要任何 LLM 调用</b>。</p>
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="t">一句话方案</div>
+    <p style="margin:0">让 LLM 的每一次关键输出都附带一段<b>机器可判定的形式化断言</b>（claim + formal + witness + 证据等级）；本地验证内核用确定性规则（模式/约束/数据流/内核检查）在<b>零 API token</b> 下判定；通过则把结论与其证明一起冻结进证据缓存，失败则把反例或最小冲突核回注给规划器。<b>验证通过的东西从此不再重复推理</b>——这就是逻辑闭环与 token 节省的同一个机制。</p>
+  </div>
+</section>
+
+<section id="scope">
+  <h2><span class="n">01</span>问题拆解与边界</h2>
+  <p class="sub">先把问题本身定义清楚，否则"增强逻辑能力"是一句无法验收的话。</p>
+
+  <h3>1.1 「增强 agent 自身逻辑能力」的三种口径</h3>
+  <table>
+    <caption>同一句话的三种可验收解释，只有第二种能被本轮方案覆盖。</caption>
+    <thead><tr><th style="width:22%">口径</th><th>含义</th><th style="width:30%">可验收判据</th><th style="width:14%">本轮覆盖</th></tr></thead>
+    <tbody>
+      <tr><td>① 参数层增强</td><td>用形式化数据继续预训练/微调模型本体，让参数里长出逻辑能力</td><td>同题基准准确率提升，且不退化</td><td><span class="pill w">部分</span> 仅本地 7B 蒸馏模型</td></tr>
+      <tr><td>② 运行时增强</td><td>不动参数，在生成与执行之间插入不可绕过的验证与纠错回路</td><td>验证判定确定性、闭环有界、可离线重放</td><td><span class="pill ok">主路线</span></td></tr>
+      <tr><td>③ 表示层增强</td><td>让模型的中间输出本身是形式化符号，压缩语义、便于复用</td><td>等价语义下 token 数下降，复用率上升</td><td><span class="pill ok">主路线</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>1.2 任务分层：不是所有任务都能形式化</h3>
+  <p>形式化验证的适用面由"该任务是否存在确定性的判定程序"决定，而不是由任务的重要性决定。按可判定性分三层：</p>
+  <figure>
+    <svg viewBox="0 0 980 300" role="img" aria-label="任务可形式化程度分层图">
+      <style>
+        .bx{fill:#fffdf8;stroke:#bdb5a3}
+        .bx2{fill:#f2f8f3;stroke:#9dc0a8}
+        .bx3{fill:#fdf7ea;stroke:#d9c08a}
+        .tt{font-family:"Source Han Sans SC","Noto Sans CJK SC",sans-serif;fill:#0f1a22}
+        .ts{font-family:"Source Han Sans SC","Noto Sans CJK SC",sans-serif;fill:#5d6b74}
+        .tm{font-family:ui-monospace,Consolas,monospace;fill:#8a3e15}
+      </style>
+      <text class="tt" x="30" y="30" font-size="14" font-weight="600">A · 完全可判定</text>
+      <rect class="bx2" x="30" y="42" width="290" height="120"/>
+      <text class="ts" x="46" y="68" font-size="12.5">约束/契约/数据流/序列规则</text>
+      <text class="ts" x="46" y="90" font-size="12.5">工具调用前置条件、策略合规</text>
+      <text class="ts" x="46" y="112" font-size="12.5">类型/模式/不变量、算术与集合论命题</text>
+      <text class="tm" x="46" y="140" font-size="12">⇒ 判定成本 O(毫秒)，零 token</text>
+      <text class="tt" x="355" y="30" font-size="14" font-weight="600">B · 条件可判定</text>
+      <rect class="bx3" x="355" y="42" width="290" height="120"/>
+      <text class="ts" x="371" y="68" font-size="12.5">需要先做"非形式 → 形式"翻译</text>
+      <text class="ts" x="371" y="90" font-size="12.5">数学命题、代码后置条件、计划合理性</text>
+      <text class="ts" x="371" y="112" font-size="12.5">翻译本身可能不忠实（见 §8.1）</text>
+      <text class="tm" x="371" y="140" font-size="12">⇒ 判定便宜，翻译是瓶颈</text>
+      <text class="tt" x="680" y="30" font-size="14" font-weight="600">C · 不可判定/不适用</text>
+      <rect class="bx" x="680" y="42" width="270" height="120"/>
+      <text class="ts" x="696" y="68" font-size="12.5">开放式创作、审美判断</text>
+      <text class="ts" x="696" y="90" font-size="12.5">用户偏好、含糊需求、价值权衡</text>
+      <text class="ts" x="696" y="112" font-size="12.5">人力/时间成本估计</text>
+      <text class="tm" x="696" y="140" font-size="12">⇒ 只能降级为"可检查"</text>
+      <text class="ts" x="30" y="196" font-size="12.5">落地策略：A 类硬验证（不可协商）；B 类验证 + 忠实性复核（双签）；C 类不验证，改为结构化确认（降低但不消灭不确定性）。</text>
+      <text class="ts" x="30" y="222" font-size="12.5">比例目标：把 C 类任务尽可能重构为 A 类——这是"增强 agent 逻辑能力"最实际的着力点，也直接决定 token 节省上限。</text>
+      <line x1="30" y1="248" x2="950" y2="248" stroke="#d8d2c4"/>
+      <text class="tm" x="30" y="272" font-size="12">A : B : C 的当前经验分布 ≈ 40% : 35% : 25%（按节点类型估计，待实测校准）</text>
+    </svg>
+    <figcaption>图 1 · 按可判定性给任务分层。方案的全部收益都来自把任务从 B/C 推向 A，或把验证成本压到零。</figcaption>
+  </figure>
+
+  <h3>1.3 边界与非目标</h3>
+  <ul>
+    <li><b>不做</b>模型微调替代方案：参数层增强与本方案正交，可叠加但不作为闭环前提。</li>
+    <li><b>不做</b>通用定理证明器：数学定理只是用例之一；本方案的内核是"确定性裁判 + 证据台账"。</li>
+    <li><b>不改</b>现有 LLM 主链路：按既有拆除令，线上推理仍走 API；本地引擎是<b>新模块</b>，不是本地 LLM 加载层。</li>
+    <li><b>不承诺</b>零错误：承诺的是"错误不再被静默通过"——失败必须表现为可见的拒绝或诚实弃权（Abstain）。</li>
+  </ul>
+</section>
+
+<section id="evidence">
+  <h2><span class="n">02</span>多方文献证据地图</h2>
+  <p class="sub">12 组来源按"机制 → 实测证据 → 对本项目的启示"三段式排列。带数字的条目均可回溯到原文。</p>
+  <table>
+    <caption>证据强度按「有对照实验 + 数字可核」标记：<span class="pill ok">强</span> 有对照+数字；<span class="pill w">中</span> 有数字无对照；<span class="pill">弱</span> 仅架构主张。</caption>
+    <thead><tr><th style="width:20%">来源</th><th style="width:26%">核心机制</th><th style="width:32%">实测证据</th><th>对本项目的启示</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>DeepSeek-Prover-V2 技术报告<br><span class="cite">arXiv 2504.21801</span></td>
+        <td>先由强模型递归拆子目标 → 合成思维链冷启动 → 强化学习；把非形式推理与形式证明并入同一模型</td>
+        <td class="num">671B：MiniF2F-test 88.9%；PutnamBench 49/658；AIME24-25 6/15（同模型非形式多数投票 8/15）</td>
+        <td>证明"拆解 + 形式化 + 验证"这条流水线是当前最优范式；7B 蒸馏版可作为本地裁判的候选模型，但只擅长数学类，不能当通用裁判</td>
+      </tr>
+      <tr>
+        <td>Prover Agent<br><span class="cite">arXiv 2506.19923</span></td>
+        <td>三个角色分工：非形式推理 LLM 出思路、形式证明模型出代码、Lean 出反馈；额外生成辅助引理（含特例与由假设派生的事实）</td>
+        <td class="num">小模型规模下 MiniF2F 88.1%；PutnamBench 25/658（每题 1600 次尝试预算）；作者明确提示"程序无法捕获的错误需人工复核"</td>
+        <td><b>引理生成</b>是可复用资产：证明过程中产出的中间引理可入库复用，直接对应"证据缓存层"；"需人工复核"提示验证≠语义正确</td>
+      </tr>
+      <tr>
+        <td>工具增强 Agent 的形式化因子分析<br><span class="cite">arXiv 2604.16538 / 2606.31002</span></td>
+        <td>2³ 因子设计：专家草稿(T) × 符号检索(S) × 编译器反馈(F)，量化每种工具的边际贡献与交互</td>
+        <td class="num">反馈是能力瓶颈：+32.3 点（19.75–36.00% → 58.75–62.00%）；检索 +6.8 点均值（无反馈时 +12.4，有反馈时 +1.2）；专家草稿 +0.9 点（有反馈时 −2.0，可被替代）；检索使昂贵 REPL 调用下降 29.8%（1496→1050）与 26.6%（1374→1008）</td>
+        <td><b>最重要的一条外部证据</b>：决定成败的是"验证反馈"而不是"更聪明的草稿"。预算应优先投在验证回路与本地反馈延迟上，而不是换更强的模型</td>
+      </tr>
+      <tr>
+        <td>EG-VAR 证据锚定验证式推理<br><span class="cite">arXiv 2607.12650</span></td>
+        <td>四层信任台账：L1 确定性工具层产出"受证事实" → L2 逐源语义提升（审计过的映射） → L3 内核是<b>唯一</b>有权铸造「已验真」结论的角色 → L4 LLM 不可信，只提议证明</td>
+        <td class="num">TableBench 120/120（100%）vs 同工具基线 95.0% vs 单发 89.2%；反事实注入压力测试下保持 100% 溯源忠实（同工具 80–90%，无工具 50–80%）；形式化残余误差 3.3%/1.7%；所有已验证结论附带可<b>离线复跑</b>的证明文件</td>
+        <td>直接可搬的架构模板：<b>等级栅格 + 不可上溯规则</b>（结论不得比其最弱前提更可信）+ 诚实弃权 + 可重放审计。这正是"节点输出带形式化符号 + 本地验证"的目标形态</td>
+      </tr>
+      <tr>
+        <td>SMT 求解器校验工具调用合规<br><span class="cite">arXiv 2603.20449</span></td>
+        <td>把自然语言策略编译为 SMT-LIB 约束；每次工具调用执行前用 Z3 做前置条件检查，UNSAT 则阻断，并把<b>最小不可满足核</b>回注到重试提示中</td>
+        <td class="num">τ²-bench：策略违规率下降且任务准确率保持；重试上限 3 次后交还用户</td>
+        <td>提供"失败也要有用"的范式：判定失败时回注的是<b>最小冲突核</b>而非一句"错了"，这直接减少后续重试轮数（token 节省机制之二）</td>
+      </tr>
+      <tr>
+        <td>FAVA 形式化授权框架<br><span class="cite">arXiv 2607.27267</span></td>
+        <td>LLM 辅助的权限中间表示 → 确定性下降为带证据的权限图（追踪数据流/依赖/上下文标签）→ SMT 授权器在执行任何有副作用动作前做数学验证 → 运行时网关执行裁决</td>
+        <td class="num">跨 OpenAgentSafety / OctoBench / ActPlane 汇总决策合规率 90.5%；拦截动态违规轨迹时给出精确反例</td>
+        <td>证明"验证器 + 网关"是工程可落地的解耦形态；90.5% 也划出了现实上限——不要宣称 100%</td>
+      </tr>
+      <tr>
+        <td>Guardians of the Agents<br><span class="cite">E. Meijer, CACM 2026 及其实现</span></td>
+        <td>LLM 一次性生成结构化计划，参数用<b>符号引用</b>而非真实数据；静态验证器在<b>任何工具执行前</b>做三类独立检查：污点分析、安全自动机、Z3 定理证明，只有通过的计划才执行</td>
+        <td class="num">核心约 1900 行 + 130 个测试；仅两个依赖；<b>验证阶段零 LLM 调用</b>；提示注入演示中恶意计划无法通过验证，且重试也无法绕过</td>
+        <td>工程量级证据：静态验证层的实现成本远低于直觉。与"契约前置注入静态前缀"同构——契约在编译期进前缀，验证在运行时零 token</td>
+      </tr>
+      <tr>
+        <td>忠实性缺口研究（三组）<br><span class="cite">arXiv 2606.16541 / 2606.31002 / 2604.19459</span></td>
+        <td>区分"编译通过"与"语义忠实"；用双向可证性指纹 + 反事实探针生成来检测漂移；把忠实性分数当作解码奖励（Faithfulness-Guided Decoding）</td>
+        <td class="num">8 个系统的编译-忠实缺口 3.0–29.0 点；全工具 agent 编译 89.5% 但共识忠实仅 60.5%；人工审计确认 95/114 个"编译通过但被拒"确属语义失败；忠实性引导解码使漂移率下降 47%；自适应探针预算 3.2× 更省</td>
+        <td><b>必须内置的对抗措施</b>：验证结果要带"忠实性等级"，且形式化语句必须能被用户回读确认；否则系统会稳定地"证明错的东西"</td>
+      </tr>
+      <tr>
+        <td>奖励引导推测解码 RSD<br><span class="cite">arXiv 2501.19324</span></td>
+        <td>轻量草稿模型提议 + 过程奖励模型评估中间步骤 → 动态决定是否调用大模型；用奖励引导的接受准则替代严格逐 token 匹配</td>
+        <td class="num">推理类基准上最高减少 4.4 倍 FLOPs，同时平均准确率优于并行解码（最高 +3.5）</td>
+        <td>"用廉价裁判决定是否升级到昂贵推理"的量化支撑；本地验证器扮演的正是这个"廉价裁判"角色</td>
+      </tr>
+      <tr>
+        <td>层跳与自推测解码<br><span class="cite">LayerSkip, ACL 2024</span></td>
+        <td>前若干层早退生成草稿，剩余层并行验证并纠错；草稿与验证共享同一 KV 缓存</td>
+        <td class="num">摘要任务最高 2.16×、代码 1.82× 加速；接受率 45–74.5%</td>
+        <td>验证的正确用法是"批量并行校验"而非逐条追问；同时说明验证有接受率上限，闭环必须有界</td>
+      </tr>
+      <tr>
+        <td>自验证推测解码 SVIP<br><span class="cite">EMNLP 2025</span></td>
+        <td>按草稿模型熵值动态决定"继续起草"还是"交验证"</td>
+        <td class="num">长文生成中固定草稿长度次优；熵准则逼近理论下界</td>
+        <td>闭环的触发点应由<b>不确定性</b>驱动（低置信才验证），而不是每个节点都验证——这决定验证开销上限</td>
+      </tr>
+      <tr>
+        <td>非形式→形式化忠实性评测协议<br><span class="cite">arXiv 2606.31002</span></td>
+        <td>用编译 + 跨模型语义共识 + 人工审计校准做三重判定，避免单一指标被游戏</td>
+        <td class="num">与人工多数意见一致率 89.7%（87/97，95% CI 82.1–94.3%）</td>
+        <td>我们自己的忠实性判据也应<b>多源交叉</b>而非单点判定；单一判据一定被优化目标绕开</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="usecases">
+  <h2><span class="n">03</span>形式化用例库（六类）</h2>
+  <p class="sub">从可判定性最强的用例往最难排。建议按此顺序接入，每类都有独立的验收判据。</p>
+  <figure>
+    <svg viewBox="0 0 980 420" role="img" aria-label="六类形式化用例与验证成本">
+      <style>
+        .bg{fill:#fffdf8;stroke:#bdb5a3}
+        .bar{fill:#1d5c63}
+        .bar2{fill:#b4531f}
+        .tt2{font-family:"Source Han Sans SC","Noto Sans CJK SC",sans-serif;fill:#0f1a22}
+        .ts2{font-family:"Source Han Sans SC","Noto Sans CJK SC",sans-serif;fill:#5d6b74}
+        .tm2{font-family:ui-monospace,Consolas,monospace;fill:#8a3e15}
+      </style>
+      <text class="tt2" x="30" y="26" font-size="14" font-weight="600">验证成本（低 → 高）</text>
+      <text class="tt2" x="620" y="26" font-size="14" font-weight="600">可复用性（低 → 高）</text>
+      <!-- rows -->
+      <g>
+        <text class="tt2" x="30" y="66" font-size="13">① 契约与前置条件（工具调用参数/状态约束）</text>
+        <rect class="bar" x="430" y="54" width="60" height="14" rx="2"/>
+        <rect class="bar2" x="760" y="54" width="180" height="14" rx="2"/>
+        <text class="tm2" x="502" y="66" font-size="11.5">毫秒 / 零 token</text>
+        <text class="tm2" x="800" y="66" font-size="11.5">高（策略稳定）</text>
+      </g>
+      <g>
+        <text class="tt2" x="30" y="106" font-size="13">② 计划静态验证（数据流污点 + 序列自动机 + 定理证明）</text>
+        <rect class="bar" x="430" y="94" width="95" height="14" rx="2"/>
+        <rect class="bar2" x="760" y="94" width="150" height="14" rx="2"/>
+        <text class="tm2" x="537" y="106" font-size="11.5">毫秒–秒 / 零 token</text>
+        <text class="tm2" x="800" y="106" font-size="11.5">高（模式固定）</text>
+      </g>
+      <g>
+        <text class="tt2" x="30" y="146" font-size="13">③ 节点后置条件与产出校验</text>
+        <rect class="bar" x="430" y="134" width="120" height="14" rx="2"/>
+        <rect class="bar2" x="760" y="134" width="130" height="14" rx="2"/>
+        <text class="tm2" x="562" y="146" font-size="11.5">毫秒–秒 / 零 token</text>
+        <text class="tm2" x="800" y="146" font-size="11.5">中高（随任务变化）</text>
+      </g>
+      <g>
+        <text class="tt2" x="30" y="186" font-size="13">④ 经验性主张的真值锚定（"表里最大的是巴西"类）</text>
+        <rect class="bar" x="430" y="174" width="170" height="14" rx="2"/>
+        <rect class="bar2" x="760" y="174" width="110" height="14" rx="2"/>
+        <text class="tm2" x="612" y="186" font-size="11.5">秒级 / 零 token（需逐源映射）</text>
+        <text class="tm2" x="800" y="186" font-size="11.5">中（映射可审计）</text>
+      </g>
+      <g>
+        <text class="tt2" x="30" y="226" font-size="13">⑤ 代码后置条件（产物自检 + 行数/行为断言）</text>
+        <rect class="bar" x="430" y="214" width="210" height="14" rx="2"/>
+        <rect class="bar2" x="760" y="214" width="90" height="14" rx="2"/>
+        <text class="tm2" x="652" y="226" font-size="11.5">秒级 / 已有真跑闸门</text>
+        <text class="tm2" x="800" y="226" font-size="11.5">中</text>
+      </g>
+      <g>
+        <text class="tt2" x="30" y="266" font-size="13">⑥ 数学命题证明（本地 7B 裁判）</text>
+        <rect class="bar" x="430" y="254" width="300" height="14" rx="2"/>
+        <rect class="bar2" x="760" y="254" width="60" height="14" rx="2"/>
+        <text class="tm2" x="742" y="266" font-size="11.5">秒–分 / 零 token（本地）</text>
+        <text class="tm2" x="800" y="266" font-size="11.5">中（引理可复用）</text>
+      </g>
+      <line x1="30" y1="292" x2="950" y2="292" stroke="#d8d2c4"/>
+      <text class="tt2" x="30" y="318" font-size="13" font-weight="600">推荐接入顺序与理由</text>
+      <text class="ts2" x="30" y="342" font-size="12.5">①②③ 先行：判定确定、无需翻译、零 token，且能立刻收敛"计划是否可执行"——漏检代价最高的一类错误。</text>
+      <text class="ts2" x="30" y="364" font-size="12.5">④⑤ 次之：已有基础设施可复用（产物真跑闸门、数据源可枚举），但要先补"逐源语义映射"这一审计资产。</text>
+      <text class="ts2" x="30" y="386" font-size="12.5">⑥ 最后：本地 7B 裁判能力有限，只作为"廉价的额外独立复核"，不能替代真值来源；其价值在于把数学类结论变成可缓存资产。</text>
+    </svg>
+    <figcaption>图 2 · 六类用例的验证成本与可复用性。① ② ③ 是本方案的必做项，⑥ 是锦上添花且受本地算力限制。</figcaption>
+  </figure>
+
+  <h3>3.1 用例细节与验收判据</h3>
+  <table>
+    <thead><tr><th style="width:6%">#</th><th style="width:24%">用例</th><th>形式化对象</th><th style="width:32%">验收判据（可机检）</th></tr></thead>
+    <tbody>
+      <tr><td>①</td><td>契约与前置条件</td><td>节点/工具的输入类型、取值范围、状态前置；写成确定性断言而非自然语言描述</td><td>注入违规参数 → 必须被拒且给出最小冲突核；合法参数 → 零误拒</td></tr>
+      <tr><td>②</td><td>计划静态验证</td><td>计划的符号图：污点是否从受限源流向禁止汇、调用序列是否进入错误状态、前置/框架条件是否成立</td><td>构造含提示注入的计划 → 执行前拦下；正常计划 → 通过率不下降</td></tr>
+      <tr><td>③</td><td>节点后置条件</td><td>每个节点产出必须满足的断言（文件存在、字段非空、行数/结构、退出码）</td><td>缺产出快照 ⇒ 拒绝续跑（已有硬纪律）；断言失败必须有可见拒绝</td></tr>
+      <tr><td>④</td><td>经验主张锚定</td><td>把"某表/接口中的事实"提升为世界谓词，且提升映射经过审计、可复用</td><td>反事实注入测试下溯源忠实率 ≥ 基线；结论不得高于最弱前提等级</td></tr>
+      <tr><td>⑤</td><td>代码后置条件</td><td>产物自检 + 行为断言 + 行数/结构统计，与真跑闸门串联</td><td>自检通过率与真跑退出码一致性；"自证"不算通过（已有定性）</td></tr>
+      <tr><td>⑥</td><td>数学命题证明</td><td>命题的完整形式化语句 + 证明项；内核判定可离线重放</td><td>证明可离线重放且零 API 调用；语义忠实性由用户回读确认</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="arch">
+  <h2><span class="n">04</span>click-verify：五层增强架构</h2>
+  <p class="sub">与现有链路正交：不改 LLM 主体，不引入本地 LLM 加载层；新增的只有契约、判定、缓存、闭环、台账五件事。</p>
+  <figure>
+    <svg viewBox="0 0 980 560" role="img" aria-label="五层增强架构图">
+      <style>
+        .L{fill:#fffdf8;stroke:#bdb5a3}
+        .Lk{fill:#fdf7ea;stroke:#d9c08a}
+        .Lc{fill:#f2f8f3;stroke:#9dc0a8}
+        .Lt{font-family:"Source Han Sans SC","Noto Sans CJK SC",sans-serif;fill:#0f1a22}
+        .Ls{font-family:"Source Han Sans SC","Noto Sans CJK SC",sans-serif;fill:#5d6b74}
+        .Lm{font-family:ui-monospace,Consolas,monospace;fill:#8a3e15}
+        .ar{stroke:#8a3e15;stroke-width:1.6;fill:none;marker-end:url(#ah)}
+        .ar2{stroke:#1d5c63;stroke-width:1.6;fill:none;marker-end:url(#ah2)}
+      </style>
+      <defs>
+        <marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#8a3e15"/></marker>
+        <marker id="ah2" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1d5c63"/></marker>
+      </defs>
+      <!-- L4 -->
+      <rect class="Lk" x="30" y="24" width="920" height="86" rx="3"/>
+      <text class="Lt" x="48" y="50" font-size="14" font-weight="600">L4 · 信任与经验层</text>
+      <text class="Ls" x="48" y="74" font-size="12.5">证据等级栅格（已验真 / 有支撑 / 合理 / 推测）+ 不可上溯规则：结论可信度不得高于最弱前提</text>
+      <text class="Ls" x="48" y="96" font-size="12.5">已验真结论沉淀为可复用引理与"思考逻辑"skill；审计可离线重放，无需重跑模型</text>
+      <!-- L3 -->
+      <rect class="Lc" x="30" y="126" width="920" height="104" rx="3"/>
+      <text class="Lt" x="48" y="152" font-size="14" font-weight="600">L3 · 规划-验证闭环层</text>
+      <text class="Ls" x="48" y="176" font-size="12.5">LLM 输出 → 结构化断言 → 本地判定 → 通过：冻结入库 / 失败：回注最小冲突核 → 有界重试（≤N）→ 仍失败则交还用户</text>
+      <rect x="48" y="188" width="200" height="30" rx="2" fill="#fff" stroke="#9dc0a8"/>
+      <text class="Lm" x="60" y="208" font-size="12">提议 proposal</text>
+      <rect x="272" y="188" width="200" height="30" rx="2" fill="#fff" stroke="#9dc0a8"/>
+      <text class="Lm" x="284" y="208" font-size="12">判定 verdict</text>
+      <rect x="496" y="188" width="200" height="30" rx="2" fill="#fff" stroke="#9dc0a8"/>
+      <text class="Lm" x="508" y="208" font-size="12">反例 / 冲突核</text>
+      <rect x="720" y="188" width="200" height="30" rx="2" fill="#fff" stroke="#9dc0a8"/>
+      <text class="Lm" x="732" y="208" font-size="12">有界重规划</text>
+      <path class="ar2" d="M248,203 L268,203"/><path class="ar2" d="M472,203 L492,203"/>
+      <path class="ar2" d="M696,203 L716,203"/>
+      <path class="ar2" d="M820,222 C820,246 260,250 250,226" stroke-dasharray="4 3"/>
+      <!-- L2 -->
+      <rect class="L" x="30" y="246" width="920" height="92" rx="3"/>
+      <text class="Lt" x="48" y="272" font-size="14" font-weight="600">L2 · 证据与缓存层</text>
+      <text class="Ls" x="48" y="296" font-size="12.5">证明工件（自包含、可离线重放）· 引理库 · 断言指纹去重 · 稳定前缀缓存</text>
+      <text class="Ls" x="48" y="318" font-size="12.5">命中即返回既有结论，跳过整条推理链；缓存命中率目标 ≥95%（现有基线 96.39% / 95.61%）</text>
+      <!-- L1 -->
+      <rect class="L" x="30" y="354" width="920" height="92" rx="3"/>
+      <text class="Lt" x="48" y="380" font-size="14" font-weight="600">L1 · 本地验证内核（零 API token）</text>
+      <text class="Ls" x="48" y="404" font-size="12.5">确定性检查器：模式/类型 · 约束求解 · 数据流污点 · 序列自动机 · 算术与集合论判定</text>
+      <text class="Ls" x="48" y="426" font-size="12.5">本地 Prover 引擎（click-rover：GGUF + mmap 惰性加载 + 张量回收 + CPU/GPU 混合 + AOT）作为数学类命题的独立复核</text>
+      <!-- L0 -->
+      <rect class="Lk" x="30" y="462" width="920" height="80" rx="3"/>
+      <text class="Lt" x="48" y="488" font-size="14" font-weight="600">L0 · 契约层（编译期进入静态前缀）</text>
+      <text class="Ls" x="48" y="512" font-size="12.5">节点/工具接口契约：前置条件、后置断言、不变量、禁止数据流。以源生成方式固化，运行时零 token 注入</text>
+      <text class="Ls" x="48" y="532" font-size="12.5">契约是验证的判据来源，也是"降低澄清轮"的信息来源——一次写清，长期复用</text>
+      <!-- arrows up -->
+      <path class="ar" d="M120,462 L120,446"/><path class="ar" d="M120,354 L120,338"/>
+      <path class="ar" d="M120,246 L120,230"/><path class="ar" d="M120,126 L120,110"/>
+      <text class="Lm" x="132" y="457" font-size="11.5">判据</text>
+      <text class="Lm" x="132" y="349" font-size="11.5">证据</text>
+      <text class="Lm" x="132" y="241" font-size="11.5">结论</text>
+      <text class="Lm" x="132" y="121" font-size="11.5">等级</text>
+    </svg>
+    <figcaption>图 3 · 五层架构。关键约束：判据只向下（契约 → 判定），结论只向上（判定 → 等级），LLM 永远不在验证链的信任路径上。</figcaption>
+  </figure>
+
+  <h3>4.1 每一层做与不做的事</h3>
+  <dl class="kv">
+    <dt>L0 契约层</dt><dd>做：把接口契约写成确定性断言并源生成进静态前缀。不做：契约的语义正确性自动判定（契约由人/审计定义）。</dd>
+    <dt>L1 本地内核</dt><dd>做：确定性判定 + 本地模型复核；输出"通过/拒绝/弃权"三态与证据。不做：任何网络调用；不做自然语言判别。</dd>
+    <dt>L2 证据缓存</dt><dd>做：以断言指纹为键冻结证明工件与引理；命中直接返回。不做：跨语义等价但字面不同的断言的自动合并（指纹只认结构）。</dd>
+    <dt>L3 闭环层</dt><dd>做：有界重试、最小冲突核回注、失败可见。不做：无限重试；不做静默降级（失败必须上报）。</dd>
+    <dt>L4 信任台账</dt><dd>做：等级栅格、不可上溯、经验沉淀为 skill。不做：让 LLM 自己给自己升级证据等级。</dd>
+  </dl>
+
+  <div class="callout t">
+    <div class="t">与现有系统的接缝（不新增破坏面）</div>
+    <ul style="margin:6px 0 0">
+      <li>契约与后置断言挂在<b>已有节点结果契约</b>上（现有节点结果对象已含产出与状态，扩展为带断言集）。</li>
+      <li>验证判定发生在<b>执行前/执行后</b>两个固定点位，不侵入规划器内部推理。</li>
+      <li>失败回注走<b>已有重试/续跑通道</b>（检查点与等待机制已具备），不新建调度。</li>
+      <li>证据等级作为<b>输出元数据</b>附带，前端可选择展示"此结论已被机器验证"以增强用户体验。</li>
+    </ul>
+  </div>
+</section>
+
+<section id="protocol">
+  <h2><span class="n">05</span>形式化符号返回协议</h2>
+  <p class="sub">闭环的入口是"LLM 返回时附带形式化符号"。协议设计决定后续一切：字段越少越好，且必须可判定、可拒绝、可弃权。</p>
+  <table>
+    <thead><tr><th style="width:14%">字段</th><th style="width:34%">含义</th><th>判定规则</th></tr></thead>
+    <tbody>
+      <tr><td><code>claim</code></td><td>用自然语言重述的结论（给人读，也给忠实性复核用）</td><td>必须与 <code>formal</code> 成对出现；只有其中之一 ⇒ 拒绝</td></tr>
+      <tr><td><code>formal</code></td><td>机器可判定的断言（约束式 / 前置后置 / 命题式 / 计划图）</td><td>解析失败 ⇒ 直接拒绝，不回注猜测；不得静默降级为自然语言判定</td></tr>
+      <tr><td><code>witness</code></td><td>支撑断言的可核查证据：具体取值、数据来源标识、证明项或冲突核</td><td>缺 witness 的结论一律降为"合理"，不得进入已验真</td></tr>
+      <tr><td><code>grade</code></td><td>模型自评的证据等级（仅作输入，不作结论）</td><td>最终等级由 L4 按不可上溯规则重算；模型自评只能降不能升</td></tr>
+      <tr><td><code>scope</code></td><td>断言适用的前提与边界（什么条件下成立）</td><td>作用域外的调用视为未验证；防止结论被跨语境滥用</td></tr>
+    </tbody>
+  </table>
+
+  <h3>5.1 为什么必须允许「弃权」</h3>
+  <p>外部证据给出的最重要工程教训之一是：不能证明时的正确行为是<b>诚实弃权</b>，而不是猜一个看起来合理的答案。四层信任台账框架把"弃权"做成了一等结果，并因此把潜在幻觉转化成了可审计的、可度量的形式化失败。对我们而言，弃权还带来一个直接收益：它把"再试一次（花 token）"与"承认不知道（零 token，交还用户）"分开，避免在无解路径上无限消耗预算。</p>
+
+  <h3>5.2 闭环时序</h3>
+  <figure>
+    <svg viewBox="0 0 980 330" role="img" aria-label="规划验证闭环时序图">
+      <style>
+        .q{fill:#f2f8f3;stroke:#9dc0a8}
+        .r{fill:#fdf7ea;stroke:#d9c08a}
+        .S{font-family:"Source Han Sans SC","Noto Sans CJK SC",sans-serif;fill:#5d6b74;font-size:12.5}
+        .M{font-family:ui-monospace,Consolas,monospace;fill:#8a3e15;font-size:12}
+        .ar3{stroke:#5d6b74;stroke-width:1.3;fill:none;marker-end:url(#ah3)}
+      </style>
+      <defs><marker id="ah3" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#5d6b74"/></marker></defs>
+      <text class="S" x="60" y="30">用户/上游请求</text>
+      <text class="S" x="330" y="30">LLM（API，计 token）</text>
+      <text class="S" x="620" y="30">本地验证内核（零 token）</text>
+      <text class="S" x="840" y="30">证据台账</text>
+      <line x1="120" y1="42" x2="120" y2="300" stroke="#bdb5a3" stroke-dasharray="4 4"/>
+      <line x1="400" y1="42" x2="400" y2="300" stroke="#bdb5a3" stroke-dasharray="4 4"/>
+      <line x1="700" y1="42" x2="700" y2="300" stroke="#bdb5a3" stroke-dasharray="4 4"/>
+      <line x1="890" y1="42" x2="890" y2="300" stroke="#bdb5a3" stroke-dasharray="4 4"/>
+      <path class="ar3" d="M120,66 L396,66"/><text class="M" x="140" y="60">任务 + 契约（静态前缀）</text>
+      <rect class="q" x="330" y="78" width="140" height="26"/><text class="M" x="342" y="96">生成 claim/formal/witness</text>
+      <path class="ar3" d="M400,124 L696,124"/><text class="M" x="430" y="118">结构化断言</text>
+      <rect class="r" x="620" y="136" width="160" height="26"/><text class="M" x="632" y="154">确定性判定 + 本地复核</text>
+      <path class="ar3" d="M700,182 L404,182" stroke="#2f6b46"/><text class="M" x="440" y="176" fill="#2f6b46">通过 / 拒绝 / 弃权</text>
+      <path class="ar3" d="M700,206 L894,206" stroke="#2f6b46"/><text class="M" x="716" y="200" fill="#2f6b46">通过即冻结证据</text>
+      <path class="ar3" d="M400,240 L124,240"/><text class="M" x="150" y="234">已验证结论 + 等级（可展示）</text>
+      <text class="M" x="404" y="272" fill="#b4531f">拒绝路径：仅回注最小冲突核（不重复整段推理）→ 有界重试 ≤N → 仍失败则弃权</text>
+      <text class="M" x="404" y="292" fill="#1d5c63">命中路径：断言指纹命中缓存 ⇒ 整段灰色区域被跳过，token 成本 = 0</text>
+    </svg>
+    <figcaption>图 4 · 闭环时序。省钱发生在两处：验证本身零 token；命中缓存的断言整段跳过生成。</figcaption>
+  </figure>
+</section>
+
+<section id="kpi">
+  <h2><span class="n">06</span>与 5 KPI 的因果链</h2>
+  <p class="sub">方案不以"架构漂亮"验收，只以既有 5 个 KPI 验收。每条 KPI 都要能指出本方案影响它的具体机制。</p>
+  <table>
+    <thead><tr><th style="width:18%">KPI</th><th style="width:34%">本方案的机制</th><th style="width:24%">预期方向</th><th>判据（同题前后对比）</th></tr></thead>
+    <tbody>
+      <tr><td>被提问概率</td><td>契约前置把"需要问用户才能确定"的信息提前固化；不确定时才弃权交还用户</td><td>不升高（红线）</td><td>每回合澄清次数 ≤ 基线；澄清从"猜-确认"变为"一次性确认"</td></tr>
+      <tr><td>token 使用量</td><td>四条机制叠加（§7）：本地验证零 token / 少一轮澄清 / 缓存复用 / 错误分支早停</td><td>下降</td><td>同题任务总 token 相对基线 ↓；缓存命中率不退化（≥95%）</td></tr>
+      <tr><td>回答准确性</td><td>验证通过才提升证据等级；不通过则拒绝或回注冲突核</td><td>上升或不降</td><td>历史用例集通过率 ≥ 基线；反事实注入测试下溯源忠实率 ≥ 基线</td></tr>
+      <tr><td>SKILL 调用准确性</td><td>已验证结论沉淀为"思考逻辑"类 skill（只注入知识、不劫持任务）；契约进静态前缀后触发更精准</td><td>上升</td><td>误触发率不升；技能命中后确实减少后续轮数</td></tr>
+      <tr><td>基础能力</td><td>不退化即算通过：验证层是外挂，失败可整体关闭（开关回退）</td><td>不降</td><td>关闭开关后基线数字逐位复原（离线可证）</td></tr>
+    </tbody>
+  </table>
+  <div class="callout">
+    <div class="t">反向约束（先写好失败条件）</div>
+    <p style="margin:0">任一条 KPI 相对基线恶化 ⇒ 立即关闭验证层并回退，不以"架构更先进"为由保留。这一条写在最前面，是为了防止验证层变成只增成本不减 token 的装饰。</p>
+  </div>
+</section>
+
+<section id="tokens">
+  <h2><span class="n">07</span>token 节省：机制与量级</h2>
+  <p class="sub">四条机制各自独立、可单独开关、可单独度量。量级给的是保守区间与来源，不是承诺值。</p>
+  <figure>
+    <svg viewBox="0 0 980 360" role="img" aria-label="token 节省机制漏斗">
+      <style>
+        .fn{fill:#1d5c63}
+        .fn2{fill:#2f6b46}
+        .fn3{fill:#b4531f}
+        .fn4{fill:#8a5a12}
+        .T{font-family:"Source Han Sans SC","Noto Sans CJK SC",sans-serif;fill:#0f1a22;font-size:13}
+        .M3{font-family:ui-monospace,Consolas,monospace;fill:#5d6b74;font-size:11.5}
+      </style>
+      <text class="T" x="30" y="28" font-weight="600">M1 · 本地验证零 token</text>
+      <rect class="fn" x="30" y="38" width="180" height="16" rx="2"/>
+      <text class="M3" x="222" y="51">每次判定替代一次远程复核调用；判定成本为本地算力</text>
+      <text class="T" x="30" y="88" font-weight="600">M2 · 契约前置 → 澄清轮次下降</text>
+      <rect class="fn2" x="30" y="98" width="220" height="16" rx="2"/>
+      <text class="M3" x="262" y="111">澄清是纯开销轮：一轮 = 一次完整上下文往返</text>
+      <text class="T" x="30" y="148" font-weight="600">M3 · 证据/证明缓存 → 稳定前缀高命中</text>
+      <rect class="fn3" x="30" y="158" width="300" height="16" rx="2"/>
+      <text class="M3" x="342" y="171">已验真结论与引理进入稳定前缀，命中即跳过整段生成；现有命中率基线 96.39% / 95.61%</text>
+      <text class="T" x="30" y="208" font-weight="600">M4 · 错误分支早停（验证即剪枝）</text>
+      <rect class="fn4" x="30" y="218" width="260" height="16" rx="2"/>
+      <text class="M3" x="302" y="231">外部证据类比：符号检索使编译-修复循环调用下降 26.6–29.8%；奖励引导解码最高减少 4.4× FLOPs</text>
+      <line x1="30" y1="258" x2="950" y2="258" stroke="#d8d2c4"/>
+      <text class="T" x="30" y="284" font-weight="600">净收益的前提条件（不满足则 token 反而上升）</text>
+      <text class="M3" x="30" y="306">① 判定必须确定性且低延迟：本地判定若需 10 秒，用户等待成本与重试成本会吃掉收益</text>
+      <text class="M3" x="30" y="326">② 重试必须可见且有界：静默重试是 token 黑洞，也是"看起来更聪明"的假象来源</text>
+      <text class="M3" x="30" y="346">③ 缓存键必须结构敏感：语义等价但字面不同的断言不得被视为同一证据，否则准确性下降</text>
+    </svg>
+    <figcaption>图 5 · 四条节省机制与三条前提。前两条几乎无风险，后两条依赖工程细节（延迟、有界、指纹）。</figcaption>
+  </figure>
+  <table>
+    <caption>量级估计：区间取文献中的保守侧，实际值须由同题前后对比实测确认（不达标即回退）。</caption>
+    <thead><tr><th style="width:6%"></th><th style="width:24%">机制</th><th style="width:34%">为什么省</th><th style="width:20%">保守量级</th><th>度量方式</th></tr></thead>
+    <tbody>
+      <tr><td>M1</td><td>本地验证零 token</td><td>判定发生在本地，不产生任何 API 调用</td><td class="num">省 100% 的验证调用</td><td>验证期间 API 调用计数（目标恒为 0）</td></tr>
+      <tr><td>M2</td><td>契约前置</td><td>把"问用户"换成"读契约"，澄清轮是完整往返</td><td class="num">每回合澄清 ≤0.5 次</td><td>澄清次数 / 回合，与基线同题对比</td></tr>
+      <tr><td>M3</td><td>证据缓存 + 稳定前缀</td><td>已验证结论不重复推理；前缀命中的 token 单价显著低于新增</td><td class="num">命中率 ≥95%（维持）</td><td>命中率按"只算需命中部分"口径</td></tr>
+      <tr><td>M4</td><td>错误分支早停</td><td>验证失败立即中断，不再沿着错误路径生成</td><td class="num">重试 ≤1 次</td><td>失败节点平均重试次数</td></tr>
+    </tbody>
+  </table>
+  <div class="callout t">
+    <div class="t">最诚实的一句</div>
+    <p style="margin:0">token 节省的真正来源不是"验证器让模型变聪明了"，而是<b>"已经验证过的东西不再重新推一遍"</b>。这也是为什么缓存层（L2）在架构上比模型层（L1 的本地 7B）更关键：前者每天省钱，后者只在数学类用例上挣钱。</p>
+  </div>
+</section>
+
+<section id="risk">
+  <h2><span class="n">08</span>风险与反证</h2>
+  <p class="sub">按"如果我们错了，最先从哪里看出来"排序。每条风险配一个能在早期观测到的信号。</p>
+
+  <h3>8.1 忠实性缺口：验证通过 ≠ 意思对了 <span class="pill r">最高风险</span></h3>
+  <p>形式化只保证模型写下的命题被证明，不保证该命题等同于用户的意图。实测缺口：全工具 agent 编译通过 89.5%，语义共识忠实 60.5%，<b>缺口 29.0 个百分点</b>；另有跨 8 系统 3.0–29.0 点的缺口区间，人工审计确认 95/114 个"编译通过但被判不忠实"确属语义失败。</p>
+  <ul>
+    <li><b>早期信号</b>：验证通过率高、但用户回读后要求修改的比例也高。</li>
+    <li><b>缓解</b>：① 断言必须成对回读（自然语言重述 + 形式化）；② 用多源交叉判定而非单一判据；③ 把"忠实性等级"与"验证结果"分开记录；④ 引入反事实探针（对外部证据中的注入做压力测试）。</li>
+    <li><b>判据</b>：反事实注入下溯源忠实率 ≥ 基线；用户"验证通过但结果不对"的上报数为零增长。</li>
+  </ul>
+
+  <h3>8.2 形式化博彩（formalization gaming）</h3>
+  <p>当"验证通过"成为优化目标时，系统可能学会写更容易通过的形式化，而不是更正确的结论——与规范博弈同源。论文已记录模型可能利用评测缺口的行为。</p>
+  <ul>
+    <li><b>缓解</b>：断言集由契约层定义（模型不得自选判据）；每日抽样人工复核；长轨迹设置告警。</li>
+    <li><b>判据</b>：抽查样本中"断言被改写得更容易通过"的事件数为零。</li>
+  </ul>
+
+  <h3>8.3 长轨迹反而更不忠实</h3>
+  <p>观测：在启用编译器反馈的配置下，1–2 步轨迹的忠实率 81.3%，19–24 步时降到 12.0%。即"再多修几轮"是负收益区间。</p>
+  <ul>
+    <li><b>缓解</b>：闭环重试上限≤1–2；步数超阈值时强制降级为弃权并交还用户。</li>
+    <li><b>判据</b>：重试次数分布右尾被截断；超长轨迹不再产生"已验真"等级。</li>
+  </ul>
+
+  <h3>8.4 本地 7B 裁判的能力上限</h3>
+  <p>7B 蒸馏版在数学类基准上表现可观，但领域窄、且本机无 GPU（仅 CPU 实测路径），吞吐受限。</p>
+  <ul>
+    <li><b>缓解</b>：本地模型只做"独立复核"与"缓存生成"，不做唯一真值来源；非数学类判定走确定性检查器。</li>
+    <li><b>判据</b>：本地复核与真值来源不一致时，记录为弃权而非通过。</li>
+  </ul>
+
+  <h3>8.5 验证覆盖 ≠ 正确性；成本 ≠ 零</h3>
+  <p>被验证的部分可信，未被覆盖的部分一如既往。同时验证层本身要消耗本地算力与工程维护成本。</p>
+  <ul>
+    <li><b>缓解</b>：输出中显式标注"已验证 / 未覆盖"，让用户看到边界；验证层可整体开关。</li>
+    <li><b>判据</b>：关闭开关后所有基线数字逐位复原。</li>
+  </ul>
+
+  <h3>8.6 现实上限</h3>
+  <p>外部最强工程化实现给出的决策合规率为 90.5%，并非 100%。任何宣称"验证后绝对正确"的设计都不成立。</p>
+
+  <h3>8.7 方法论教训：同源对账 = 自证（本次实现当场抓到） <span class="pill r">已复现</span></h3>
+  <p>本方案自研的本地推理引擎在解析 GGUF 时，把<b>数据区起始偏移</b>算在「KV 段之后」对齐；规范要求算在「<b>张量信息段之后</b>」对齐。本模型因此少算 <b>16,192 字节</b>（恰为 273 条张量信息的字节量），所有张量窗口整体前移，反量化出的权重全部错误——真机前向实测 <code>y_sum = NaN</code>。</p>
+  <p><b>为什么第一轮没抓到：</b>初版用官方参考内核（<code>ggml-quants.c</code> 直链）对同一张量对账，得到 <code>differing=0 / exact_match</code>。但参考内核吃到的是<b>同一份错误偏移</b>下截出的字节——两边只是互相印证了同一个错误，<i>验证通过</i> 在这里不构成任何证据。换成第三方独立解析实现（<code>python-gguf</code>，纯 Python/NumPy）后，差异立刻在 16,192 字节处暴露。</p>
+  <ul>
+    <li><b>验证判据（可机检）</b>：跨实现对账必须换<b>独立解析实现</b>——不同来源、不共享偏移推导代码；判据 = <b>三方</b>（自研解析 / 参考内核 / 独立解析）在同一张量上 <code>diff = 0</code>，而非两方一致。</li>
+    <li><b>修复后实测</b>：<code>data_offset = 3,990,784</code>（与第三方一致）；5 张量 × 2 文件（4.2&nbsp;GB 7B / 334&nbsp;MB 检索模型）× Q4_K+Q6_K <b>全部 <code>diff=0, max_abs=0</code></b>；并行路径互查 <code>max_abs_diff = 1.9e-06</code>（fp32 精度内）。</li>
+  </ul>
+  <div class="callout t"><b>教训抽象（语言无关）：</b>当验证者与被验证者共享同一个前提推导时，「通过」不构成证据。任何验证链都必须至少包含一个<b>不共享该推导</b>的独立观测点——否则一致性只证明了两者在同一个错误上达成共识。</div>
+</section>
+
+<section id="roadmap">
+  <h2><span class="n">09</span>分阶段路线图</h2>
+  <p class="sub">每阶段独立可验收、独立可回退。P0 不依赖任何新模型能力，因此在本地引擎完成前即可上线并先拿到 token 证据。</p>
+  <figure>
+    <svg viewBox="0 0 980 300" role="img" aria-label="路线图">
+      <style>
+        .p0{fill:#f2f8f3;stroke:#9dc0a8}
+        .p1{fill:#fdf7ea;stroke:#d9c08a}
+        .p2{fill:#fdf1f1;stroke:#d3a3a3}
+        .T2{font-family:"Source Han Sans SC","Noto Sans CJK SC",sans-serif;fill:#0f1a22;font-size:13.5}
+        .S2{font-family:"Source Han Sans SC","Noto Sans CJK SC",sans-serif;fill:#5d6b74;font-size:12}
+        .M2{font-family:ui-monospace,Consolas,monospace;fill:#8a3e15;font-size:11.5}
+      </style>
+      <line x1="40" y1="60" x2="940" y2="60" stroke="#bdb5a3"/>
+      <circle cx="120" cy="60" r="7" fill="#2f6b46"/><circle cx="470" cy="60" r="7" fill="#8a5a12"/><circle cx="830" cy="60" r="7" fill="#8f2f2f"/>
+      <rect class="p0" x="40" y="80" width="220" height="150" rx="3"/>
+      <text class="T2" x="54" y="104" font-weight="600">P0 · 确定性前置</text>
+      <text class="S2" x="54" y="128">① 契约写成断言并进静态前缀</text>
+      <text class="S2" x="54" y="148">② 计划静态检查（污点/序列/约束）</text>
+      <text class="S2" x="54" y="168">③ 节点后置断言接入结果契约</text>
+      <text class="S2" x="54" y="188">④ 全部零 token、本地判定</text>
+      <text class="M2" x="54" y="214">验收：违规计划被拦；澄清轮↓；token↓</text>
+      <rect class="p1" x="300" y="80" width="290" height="150" rx="3"/>
+      <text class="T2" x="314" y="104" font-weight="600">P1 · 符号返回与闭环</text>
+      <text class="S2" x="314" y="128">① LLM 输出附带 claim/formal/witness/grade</text>
+      <text class="S2" x="314" y="148">② 本地验证 → 通过冻结 / 拒绝回注冲突核</text>
+      <text class="S2" x="314" y="168">③ 有界重试 + 诚实弃权</text>
+      <text class="S2" x="314" y="188">④ 证据等级栅格与不可上溯规则</text>
+      <text class="M2" x="314" y="214">验收：验证期 API 调用=0；重试≤1；准确率不降</text>
+      <rect class="p2" x="630" y="80" width="310" height="150" rx="3"/>
+      <text class="T2" x="644" y="104" font-weight="600">P2 · 缓存与本地复核</text>
+      <text class="S2" x="644" y="128">① 证明工件 + 引理库 + 指纹去重</text>
+      <text class="S2" x="644" y="148">② 稳定前缀与缓存命中率维护</text>
+      <text class="S2" x="644" y="168">③ 本地 Prover 引擎作为独立复核</text>
+      <text class="S2" x="644" y="188">④ 经验沉淀为思考逻辑类 skill</text>
+      <text class="M2" x="644" y="214">验收：命中率≥95%；本地复核对账一致；回退可复原</text>
+      <text class="M2" x="40" y="262">回退条件（三阶段通用）：任一 KPI 相对基线恶化 ⇒ 关闭验证层；关闭后基线数字必须逐位复原（离线可证）。</text>
+      <text class="M2" x="40" y="284">顺序约束：P0 不依赖新模型能力，可与本地引擎并行；P1 依赖 P0 的判据集；P2 依赖 P1 的等级与证据格式。</text>
+    </svg>
+    <figcaption>图 6 · 三阶段路线图。P0 先摘低风险收益，P1 建立闭环，P2 把闭环变成资产。</figcaption>
+  </figure>
+</section>
+
+<section id="open">
+  <h2><span class="n">10</span>待确认项</h2>
+  <p class="sub">这些是会改变设计的选择题，需在实施前定稿；未定稿前不进入实施。</p>
+  <ol>
+    <li><b>断言来源</b>：契约由人工/审计定义，还是允许 LLM 生成候选断言再由人复核？后者扩张速度快但引入 8.2 的风险。</li>
+    <li><b>证据等级的展示策略</b>：是否在用户可见输出中标注"已验证"？标注增强体验，但也可能诱导用户过度信任未覆盖部分。</li>
+    <li><b>数学类用例的优先级</b>：本地 7B 裁判是否值得投入（受本机无 GPU 限制），还是先只做确定性检查器、把数学类留到算力就绪。</li>
+    <li><b>缓存指纹粒度</b>：按断言结构、按语义哈希、还是按来源+作用域组合？粒度越粗越省钱、越细越安全。</li>
+    <li><b>弃权的用户体验</b>：弃权时是直接告知未验证，还是给一个低等级的候选答案并明确标注？</li>
+    <li><b>与既有续跑机制的关系</b>：验证失败是否复用已有检查点/续跑通道，还是走独立重试计数。</li>
+  </ol>
+</section>
+
+<section id="refs">
+  <h2><span class="n">11</span>参考文献</h2>
+  <p class="sub">按主题分组；带数字的结论均出自以下来源（arXiv 编号可直接检索原文）。</p>
+  <h4>形式化证明与 agent 工具链</h4>
+  <ol class="refs">
+    <li>DeepSeek-Prover-V2: Advancing Formal Mathematical Reasoning via Reinforcement Learning for Subgoal Decomposition. arXiv:2504.21801. <a href="https://arxiv.org/abs/2504.21801">arxiv.org/abs/2504.21801</a></li>
+    <li>Prover Agent: An Agent-Based Framework for Formal Mathematical Proofs. arXiv:2506.19923. <a href="https://arxiv.org/abs/2506.19923">arxiv.org/abs/2506.19923</a></li>
+    <li>Understanding Tool-Augmented Agents for Lean Formalization: A Factorial Analysis. arXiv:2604.16538. <a href="https://arxiv.org/abs/2604.16538">arxiv.org/abs/2604.16538</a></li>
+    <li>Beyond Compilation: Evaluating Faithful Natural-Language-to-Lean Statement Formalization. arXiv:2606.31002. <a href="https://arxiv.org/abs/2606.31002">arxiv.org/abs/2606.31002</a></li>
+  </ol>
+  <h4>忠实性、漂移与反博弈</h4>
+  <ol class="refs" start="5">
+    <li>The Faithfulness Gap: Certifying Semantic Equivalence Between Natural-Language and Formal Mathematical Statements. arXiv:2606.16541. <a href="https://arxiv.org/abs/2606.16541">arxiv.org/abs/2606.16541</a></li>
+    <li>Do LLMs Game Formalization? Evaluating Faithfulness in Logical Reasoning. arXiv:2604.19459. <a href="https://arxiv.org/abs/2604.19459">arxiv.org/abs/2604.19459</a></li>
+    <li>Monotonic Reference-Free Refinement for Autoformalization. arXiv:2601.23166. <a href="https://arxiv.org/abs/2601.23166">arxiv.org/abs/2601.23166</a></li>
+    <li>MechGeo: Autoformalizing and Proving Euclidean Geometry in Lean 4. arXiv:2608.02295. <a href="https://arxiv.org/abs/2608.02295">arxiv.org/abs/2608.02295</a></li>
+  </ol>
+  <h4>Agent 运行时验证与信任台账</h4>
+  <ol class="refs" start="9">
+    <li>EG-VAR: Evidence-Grounded Verified Agentic Reasoning via Tool-Attested Kernel Proofs. arXiv:2607.12650. <a href="https://arxiv.org/abs/2607.12650">arxiv.org/abs/2607.12650</a></li>
+    <li>Solver-Aided Verification of Policy Compliance in Tool-Augmented LLM Agents. arXiv:2603.20449. <a href="https://arxiv.org/abs/2603.20449">arxiv.org/abs/2603.20449</a></li>
+    <li>FAVA: Formal Authorization for Verified Agents with Evidence-Backed Permission Graphs. arXiv:2607.27267. <a href="https://arxiv.org/abs/2607.27267">arxiv.org/abs/2607.27267</a></li>
+    <li>Guardians of the Agents: Formal Verification of AI Workflows. E. Meijer, Communications of the ACM, January 2026. 参考实现：<a href="https://github.com/benbrastmckie/guardians">github.com/benbrastmckie/guardians</a></li>
+  </ol>
+  <h4>推理效率与 token 成本</h4>
+  <ol class="refs" start="13">
+    <li>Reward-Guided Speculative Decoding for Efficient LLM Reasoning. arXiv:2501.19324. <a href="https://arxiv.org/abs/2501.19324">arxiv.org/abs/2501.19324</a></li>
+    <li>LayerSkip: Enabling Early Exit Inference and Self-Speculative Decoding. ACL 2024. <a href="https://aclanthology.org/2024.acl-long.681/">aclanthology.org/2024.acl-long.681</a></li>
+    <li>Draft Model Knows When to Stop: Self-Verification Speculative Decoding for Long-Form Generation. EMNLP 2025. <a href="https://aclanthology.org/anthology-files/pdf/emnlp/2025.emnlp-main.844.pdf">aclanthology (PDF)</a></li>
+  </ol>
+  <hr class="sep">
+  <p class="cite">说明：本报告为可行性调研结论，所有外部数字均引自上述公开文献；与本项目相关的数字（缓存命中率基线、真跑闸门、续跑纪律等）来自本项目既有实测记录。方案落地前须先定稿 §10 待确认项，并按 §9 逐阶段验收；任一 KPI 恶化即回退。</p>
+</section>
+
+<footer>
+  形式化验证增强 Agent 逻辑闭环 · 可行性调研报告 · 图文版<br>
+  证据口径：仅采用有对照实验或可核数字的来源；架构主张单独标注。报告内所有判据均设计为可机检。
+</footer>
+</main>
+</div>
+</body>
+</html>

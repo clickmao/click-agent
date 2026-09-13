@@ -349,6 +349,18 @@ public class TaskPlanExecutor
     private async Task<TaskPlanRun?> RunNodeCoreAsync(
         PlanNode node, List<PlanNode> order, TaskPlanRun run, TaskPlan plan, CancellationToken ct)
     {
+        // ── v0.23.0 exp12 · S2: 节点级形式化闸门 ──────────────────────────────────────────────
+        // 位置 = **调度器唯一前门**: 任何被注入的 nodeRunner (产品路径/隔离微步骤/测试) 都绕不过去。
+        // 语义: 未声明断言⇒放行(不追问 LLM) / 已证⇒放行 / 反驳⇒阻断+精确反例 / 空真⇒阻断 /
+        //       片段外⇒弃权(不放行, 但记为 Abstained 不计违规) / 畸形⇒阻断。全本地整数运算, 零 token。
+        if (agent.intent.PlanNodeFormalGate.IsEnabled())
+        {
+            var gate = agent.intent.PlanNodeFormalGate.Evaluate(node.Formal);
+            agent.intent.PlanNodeFormalGate.Emit(node, plan.PlanId, gate);
+            if (!gate.Allowed)
+                return FailPlan(node, run, order, agent.intent.PlanNodeFormalGate.BlockMessage(gate));
+        }
+
         run.NodeStates[node.Id] = PlanNodeState.Running;
 
         // ── FailRetry (v7.15): 瞬态失败按 MaxRetries 重试 (指数退避 500ms×2^n 上限 4s), 耗尽才收敛 ──
@@ -567,7 +579,7 @@ public class TaskPlanExecutor
             // 顺序很关键: 若先判 Completed, 上限对"等到了但太晚"永远不可达 = 假的边界。
             if (Monotonic.NowUs() - wait.StartedUs > _maxWaitUs)
             {
-                wait.EndedUs = Monotonic.NowUs();
+                wait.End(Monotonic.NowUs());
                 deferred.Remove(node);
                 return FailPlan(node, run, order,
                     $"等待 {wait.ProducerId} 产出超过上限 ({(wait.EndedUs - wait.StartedUs) / 1000}ms > {_maxWaitMs}ms) — 不采用迟到产出");
@@ -575,7 +587,7 @@ public class TaskPlanExecutor
 
             if (state == PlanNodeState.Completed)
             {
-                wait.EndedUs = Monotonic.NowUs();
+                wait.End(Monotonic.NowUs());
                 AddRuntimeDep(node, wait.ProducerId);
                 run.NodeStates[node.Id] = PlanNodeState.Pending; // 释放等待态 → 立刻可跑
                 deferred.Remove(node);
@@ -589,7 +601,7 @@ public class TaskPlanExecutor
 
             if (state is PlanNodeState.Failed or PlanNodeState.Skipped)
             {
-                wait.EndedUs = Monotonic.NowUs();
+                wait.End(Monotonic.NowUs());
                 deferred.Remove(node);
                 return FailPlan(node, run, order,
                     $"运行时依赖节点 {wait.ProducerId} 未成功 ({state}) — 不静默兜底");
@@ -605,7 +617,7 @@ public class TaskPlanExecutor
 
             if (finalPass)
             {
-                wait.EndedUs = Monotonic.NowUs();
+                wait.End(Monotonic.NowUs());
                 deferred.Remove(node);
                 return FailPlan(node, run, order,
                     $"运行时依赖 {wait.ProducerId} 在计划结束时仍未产出 (状态={state})");
@@ -642,7 +654,11 @@ public class TaskPlanExecutor
     private static void MarkWaiting(PlanNode node, string producerId, string reason, TaskPlanRun run)
     {
         run.NodeStates[node.Id] = PlanNodeState.Waiting;
-        run.Waits[node.Id] = new NodeWaitRecord(node.Id, producerId, reason, Monotonic.NowUs());
+        run.Waits[node.Id] = new NodeWaitRecord(node.Id, producerId, reason, Monotonic.NowUs())
+        {
+            // v0.23.0 exp13 · §3: 墙钟锚点与单调起点同一写点 (跨进程对账用)
+            StartedWallUtcMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+        };
     }
 
     private static void AddRuntimeDep(PlanNode node, string producerId)

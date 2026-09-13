@@ -53,6 +53,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- v0.23.0 exp12 · S2: click-rover 形式化内核共享源 (纯 BCL / 零反射 / 无 NuGet 依赖, 与 CLI 同源编译),
+         使「节点级闸门」在 agent 进程内零 token 判定, 不起子进程、不走 shell。 -->
+    <Compile Include="../click-rover/Formal/*.cs" Link="Formal/%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
     <InternalsVisibleTo Include="agentframework.tests" />
   </ItemGroup>
 

@@ -86,6 +86,8 @@ public class PlanRuntimeWaitTests
         Assert.Equal("b", run.Waits["a"].ProducerId);
         Assert.Equal("queued", run.Waits["a"].Reason);                     // B 当时还没启动
         Assert.NotNull(run.Waits["a"].WaitUs);
+        Assert.NotNull(run.Waits["a"].StartedWallUtcMs);          // v0.23.0 exp13 §3: 锚点与单调起点同写点落地
+        Assert.True(run.Waits["a"].WallClockReconciled());        // 且本记录内不倒流 (跨进程可对账的前提)
         Assert.Contains(waits, w => w.Node == "a" && w.Producer == "b");    // 等待事件真出站
         Assert.Contains("b", plan.Nodes.First(n => n.Id == "a").RuntimeDeps); // 依赖已注入
         Assert.Single(run.Waits);              // 只有 a 在等

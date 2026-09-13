@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R384",
+  "updated_round": "R386",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -10,6 +10,57 @@
     "L4": "对抗/负向控制(注入缺陷必失败)"
   },
   "rows": [
+    {
+      "id": "dcr.harness",
+      "capability": "决策合规率(DCR)判定题集 + 独立 oracle 标注 + **真实装配**评测(零 LLM 调用)。实测: DCR=132/145=91.03%(弃权计合规口径) / 88/145=60.69%(保守口径) / 覆盖率 60.69%(<70% 自定下限 ⇒ 达标不成立) / 主动误判 0",
+      "level": "L3",
+      "evidence_cmd": "dotnet run --project src/agent.host -c Release --no-build -- --formal-eval eval/dcr/dcr_cases.jsonl > /tmp/real.jsonl && python3 /tmp/r387/verify_dcr.py && python3 scripts/kpi_dcr.py --cases eval/dcr/dcr_cases.jsonl --decisions /tmp/real.jsonl",
+      "evidence_path": "scripts/kpi_dcr.py",
+      "negative_control": "① 打分器自测: 缺标签题集/决策 id 不匹配必须非零退出(不得静默跳过); ② 标签独立性: 83/145 由 z3 重新推导(self_check=ok), 其余 62 条为构造定义(不是经验结论, 已明示); ③ 换独立实现复跑: 真装配二进制 vs 子代理 harness 逐字段 diff=0(145/145), 且 would_call_llm 全 false",
+      "covers": [
+        "eval/dcr/dcr_cases.jsonl",
+        "scripts/kpi_dcr.py",
+        "src/agent.host/FormalEvalCommand.cs"
+      ],
+      "owner_round": "R386"
+    },
+    {
+      "id": "formal.contract",
+      "capability": "形式化断言契约(缺失≠错误 / 显式 no_formal / 残缺不放行 / 任何分支不追问 LLM)",
+      "level": "L2",
+      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~FormalAssertionContractTests",
+      "evidence_path": "src/agent.tests/FormalAssertionContractTests.cs",
+      "negative_control": "① `no_formal` 与 premise/goal 同时出现(自相矛盾) → 必须 Malformed 且不放行; ② 只有 premise 无 goal / 空断言体 → 必须 Malformed; ③ 任意处置分支的 RequiresLlmRetry 必须恒为 false(不得为形式化数据追问 LLM)",
+      "covers": [
+        "src/agent/registry/FormalAssertionContract.cs"
+      ],
+      "owner_round": "R386"
+    },
+    {
+      "id": "formal.node-gate",
+      "capability": "节点级形式化闸门(调度器唯一前门: 未声明⇒放行 / 已证⇒放行 / 反驳⇒阻断+反例 / 空真⇒阻断 / 片段外⇒弃权 / 畸形⇒阻断, 零 token)",
+      "level": "L4",
+      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter \"FullyQualifiedName~PlanNodeFormalGateTests|FullyQualifiedName~PlanFormalGateWiringTests\"",
+      "evidence_path": "src/agent.tests/PlanFormalGateWiringTests.cs",
+      "negative_control": "① 关闸门(AGENTFRAMEWORK_FORMAL_GATE=0) 时同一份被反驳契约必须照常执行; ② 无契约的同形节点必须照常执行(证明阻断由契约引起, 非调度副作用); ③ 被反驳/片段外节点其执行体**零调用**且终态必须 Failed(不得静默跳过)",
+      "covers": [
+        "src/agent/intent/PlanNodeFormalGate.cs",
+        "src/agent/registry/NodeExecutionResult.cs"
+      ],
+      "owner_round": "R386"
+    },
+    {
+      "id": "plan.wait.wallclock",
+      "capability": "等待台账墙钟锚点(跨进程时间线可对账; 时长仍以进程内单调时钟为唯一事实源)",
+      "level": "L2",
+      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter \"FullyQualifiedName~WaitWallClockTests|FullyQualifiedName~PlanRuntimeWaitTests\"",
+      "evidence_path": "src/agent.tests/WaitWallClockTests.cs",
+      "negative_control": "① 人为倒流的锚点必须判为不可对账(reconciled=false); ② 跨记录时间倒流必须判否; ③ 老检查点(无锚点)必须判否而非默认通过; ④ 真机 run(PlanRuntimeWaitTests)断言锚点与单调起点同写点落地",
+      "covers": [
+        "src/agent/intent/TaskPlanRun.cs"
+      ],
+      "owner_round": "R387"
+    },
     {
       "id": "python.artifact.compile",
       "capability": "Python 产物落盘 + 语法校验 + 台账",
