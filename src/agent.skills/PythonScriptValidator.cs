@@ -29,9 +29,7 @@ public static class PythonScriptValidator
     {
         if (string.IsNullOrWhiteSpace(scriptPath) || !File.Exists(scriptPath))
             return new PythonValidationResult(false, $"脚本不存在: {scriptPath}", -1);
-        var python = !string.IsNullOrWhiteSpace(pythonPath) && File.Exists(pythonPath)
-            ? pythonPath
-            : SkillScriptRunner.FindOnPath("python3") ?? SkillScriptRunner.FindOnPath("python");
+        var python = ResolvePython(pythonPath);
         if (python is null)
             return new PythonValidationResult(false, "python3 解释器不可用 (PATH 无 python3/python)", -2);
 
@@ -77,6 +75,17 @@ public static class PythonScriptValidator
         {
             return new PythonValidationResult(false, $"py_compile 启动失败: {ex.Message}", -4);
         }
+    }
+
+    /// <summary>
+    /// L5 (t8–t12): 解释器解析**单一来源** —— 语法校验 (py_compile) 与运行级验证 (RunAsync)
+    /// 必须用同一个解释器, 否则"语法通过但运行时是另一个 python"会造成结论不可对齐。
+    /// </summary>
+    public static string? ResolvePython(string? pythonPath = null)
+    {
+        if (!string.IsNullOrWhiteSpace(pythonPath) && File.Exists(pythonPath))
+            return pythonPath;
+        return SkillScriptRunner.FindOnPath("python3") ?? SkillScriptRunner.FindOnPath("python");
     }
 
     private static string Truncate(string s, int max) => s.Length <= max ? s : s[..max] + "…";

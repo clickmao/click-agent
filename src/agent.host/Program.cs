@@ -25,6 +25,12 @@ internal class Program
 {
     private static string Truncate(string? s, int n) => string.IsNullOrEmpty(s) ? string.Empty : s.Length <= n ? s : s[..n] + "...";
 
+    /// <summary>R371: 运行级验证结论上屏 (闸门未开/未运行时不显示 — 不假装验证过)。</summary>
+    private static string RunNote(agent.registry.PythonArtifactReport r)
+        => !r.Ran ? string.Empty
+           : r.RunTimedOut ? $" · run 超时({r.RunElapsedMs}ms)"
+           : $" · run exit={r.RunExitCode} ({r.RunElapsedMs}ms)";
+
     private static async Task<int> Main(string[] args)
     {
         // ── 参数解析 ──
@@ -517,7 +523,7 @@ if (args.Length >= 2 && args[0] == "--frontend-api")
                     sink.Step(step, "PY 落盘 + py_compile", $"{pass}/{pyReports.Count} 通过");
                     foreach (var r in pyReports)
                         sink.Write(CliRenderer.Dim(r.CompileValid
-                            ? $"    · {r.Path} ({r.Bytes}B) ✓ py_compile"
+                            ? $"    · {r.Path} ({r.Bytes}B) ✓ py_compile" + RunNote(r)
                             : $"    · {r.Path} ({r.Bytes}B) ✗ exit={r.ExitCode} {Truncate(r.Detail, 120)}"));
                 }
 

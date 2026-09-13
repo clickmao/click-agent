@@ -81,7 +81,8 @@ namespace agent.skills
             var psi = new ProcessStartInfo
             {
                 FileName = interpreter,
-                Arguments = $"\"{scriptPath}\"",
+                // 跨平台铁律 (用户点破 /bin/sh 缺陷): 禁字符串拼命令 → ArgumentList 直连 spawn
+                ArgumentList = { scriptPath },
                 WorkingDirectory = skill.PackageDir,   // 沙箱: cwd=包目录 (相对路径读取 SKILL.md/references 可用)
                 UseShellExecute = false,
                 RedirectStandardInput = true,
@@ -274,7 +275,7 @@ namespace agent.skills
                 using var ps = Process.Start(new ProcessStartInfo
                 {
                     FileName = "pkill",
-                    Arguments = $"-P {parentId}",
+                    ArgumentList = { "-P", parentId.ToString(System.Globalization.CultureInfo.InvariantCulture) },
                     UseShellExecute = false,
                     CreateNoWindow = true,
                 });

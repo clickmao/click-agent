@@ -25,8 +25,13 @@ type: knowledge_hint
 
 # 通用代码反模式规则 (Critic Rules R01-R08, 语言无关)
 
-> 与运行时静态扫描 (OutputCritic) 同源知识镜像。机器侧在代码输出后扫描; 本 skill 让 LLM 在
+> 与静态扫描组件 `OutputCritic` (src/agent/critique/OutputCritic.cs) 同源知识镜像。本 skill 让 LLM 在
 > **生成前自查** (知识前置)。命中 = 已知改进点提醒, 不是"失败"定性。规则按语义定义, 各语言映射见每条末尾。
+>
+> **⚠ 真实状态 (R370 L2-F2 纠偏)**：`OutputCritic`/`CriticPipeline`/`SelfCritic` 三件套**已实现且有真断言单测**，
+> 但**生产主链 0 消费**（`grep -rn 'OutputCritic\|CriticPipeline' src/ --include=*.cs` 仅命中 critique/ 与 tests/）：
+> 即"机器侧输出后复核"**当前不会发生**。本 skill 的价值仅在"生成前自查"这一半。
+> 接线（主链末端静态复核 + 按 L1 级证据标注呈现）已登记为 L3 待办，见 docs/plans/v0.22.0-l2-capability-diff.md §2-F2。
 
 ## R01 循环内堆分配代替取值 ★最易犯
 
@@ -79,5 +84,8 @@ type: knowledge_hint
 
 ## 使用方式
 
-生成/审查代码前对照 8 条自查 (按当前语言取映射); 输出后机器侧静态扫描仍会复核 (双保险)。
-规则语义变更走机器源 (OutputCritic), 本镜像随版本同步。
+生成/审查代码前对照 8 条自查 (按当前语言取映射)。
+
+> **原表述"输出后机器侧静态扫描仍会复核 (双保险)"已于 R370 撤回** —— 该复核当前**不会发生**
+> (生产 0 消费, 见文首真实状态注记)。撤回理由：文档声明必须与物理行为一致 (验证形式规范 R1/R6)。
+> 规则语义变更仍走机器源 (`OutputCritic.Finding`), 本镜像随版本同步。

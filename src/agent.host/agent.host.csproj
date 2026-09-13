@@ -36,4 +36,23 @@
     <ProjectReference Include="..\agent.output\agent.output.csproj" />
   </ItemGroup>
 
+<!--
+    R371 D2 (发布自包含): AOT 产物必须自带 config/base, 否则从仓库外任意 cwd 运行都报
+    "模型目录为空" (真机实证: 在 /tmp 下运行发布产物)。运行时层 config/runtime 不随包
+    (由部署侧可写目录生成); 凭据只存环境变量名, 无明文值 (凭据卫生)。
+  -->
+  <ItemGroup>
+    <None Include="../../config/base/**/*"
+          Link="config/base/%(RecursiveDir)%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest"
+          CopyToPublishDirectory="PreserveNewest" />
+    <None Include="../../config/modules/**/*"
+          Link="config/modules/%(RecursiveDir)%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest"
+          CopyToPublishDirectory="PreserveNewest" />
+    <None Include="../../config/env/**/*"
+          Link="config/env/%(RecursiveDir)%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest"
+          CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>

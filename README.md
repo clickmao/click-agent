@@ -189,10 +189,11 @@ python3 token_report.py                          # KPI-2 token 周报 (每 10 �
 ## 文档
 
 - [架构文档](docs/architecture.md) · [API](docs/api.md) · [CLI 指令](docs/CLI指令说明.md)
-- [迭代方法论总纲](docs/reports/iteration-master-plan.md) — 宪法八条 / 5 KPI / 触发器 / 真实性五道防线 (活文档)
+- [迭代方法论总纲](docs/reports/iteration-master-plan.md) — 宪法八条 + **验证形式铁律(R370)** / 5 KPI / 触发器 / 真实性五道防线 (活文档)
+- [**验证形式规范**](docs/验证形式规范.md) + [机读登记表](docs/verification-registry.json) — 证据阶梯 L0–L4 / 无登记=未验证 / 静态不得冒充运行 (R370 立, 机检 `VerificationFormTests`)
 - [主报告·动态打点与回滚](docs/reports/dynamic-telemetry-eval-rollback-strategy.md) — 状态层 (活文档, 每轮更新)
 - [改进记录](docs/improvements.md) — R309 起逐轮补录 (活文档, 顶部最新)
-- 版本计划: [v0.22.0 探索项 5 项](docs/plans/v0.22.0-exploration-index.md) · [v0.21.0 Role 系统](docs/plans/v0.21.0-role-system-plan.md) · [v0.17.2 活动+脚本协议](docs/plans/v0.17.2-activity-script-plan.md) · [v0.17.1 审批](docs/plans/v0.17.1-staged-approval-plan.md) · [v0.17.0 执行层](docs/plans/v0.17.0-executor-hardening-plan.md)
+- 版本计划: [v0.22.0 探索项 7 项](docs/plans/v0.22.0-exploration-index.md) · [v0.22.0 长期任务看板](docs/plans/v0.22.0-longterm-backlog.md) · [exp6 嵌入模型选型](docs/plans/v0.22.0-exp6-embedding-model-selection.md) · [exp7 bge 闲时训练闭环](docs/plans/v0.22.0-exp7-bge-idle-training-loop.md) · [v0.22.0 KPI 判定](docs/plans/v0.22.0-kpi-decision.md) · [v0.21.0 Role 系统](docs/plans/v0.21.0-role-system-plan.md) · [v0.17.2 活动+脚本协议](docs/plans/v0.17.2-activity-script-plan.md) · [v0.17.1 审批](docs/plans/v0.17.1-staged-approval-plan.md) · [v0.17.0 执行层](docs/plans/v0.17.0-executor-hardening-plan.md)
 - 历史: [CHANGELOGs](docs/changelogs/) · [测试维度总账](docs/reports/test-dimensions-ledger.md) · 千轮报告 §6 冻结版
 
 ## 下一步计划 (2026-09-10 核定)

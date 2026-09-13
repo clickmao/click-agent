@@ -1,0 +1,273 @@
+{
+ "A_scale": {
+  "S1_all": {
+   "files": 971,
+   "bytes": 13196566,
+   "loc": 328071,
+   "chunks@465c": 28380
+  },
+  "S2_src_cs": {
+   "files": 301,
+   "bytes": 2010509,
+   "loc": 51188,
+   "chunks@465c": 4324
+  },
+  "S3_src_docs_md": {
+   "files": 388,
+   "bytes": 3124641,
+   "loc": 64850,
+   "chunks@465c": 6720
+  },
+  "S4_git_last30_commits": {
+   "files": 104,
+   "bytes": 1451164,
+   "loc": 27731,
+   "chunks@465c": 3121
+  },
+  "S5_doc_referenced_src": {
+   "files": 60,
+   "bytes": 724223,
+   "loc": 16560,
+   "chunks@465c": 1558
+  }
+ },
+ "A2_lexical_bench": {
+  "corpus": "src/**/*.cs (301 files)",
+  "cold_scan_ms_per_query": 7.35,
+  "warm_scan_ms_per_query": 0.74,
+  "load_corpus_to_memory_ms": 7.1,
+  "token_index_build_ms": 314.6,
+  "token_index_query_ms": 0.0039,
+  "token_index_terms": 8144,
+  "token_index_heap_mb": 4.06,
+  "token_index_parity_vs_substring": false,
+  "token_misses": {
+   "failureClusters": [],
+   "AOT": [
+    "src/agent/CredentialEncryption.cs",
+    "src/agent.config/MiniYaml.cs"
+   ],
+   "ContextAssembler": [
+    "src/agent/contextassembler/DataSourceType.cs",
+    "src/agent/contextassembler/ContextAssemblerConfig.cs",
+    "src/agent.host/Program.cs"
+   ]
+  },
+  "trigram_index_build_ms": 3156.7,
+  "trigram_index_query_ms": 1.375,
+  "trigram_index_keys": 86218,
+  "trigram_index_heap_mb": 45.27,
+  "trigram_parity_vs_substring(val/1)": false,
+  "substring_hits_files": {
+   "RemoteEmbedder": 12,
+   "PythonArtifactPlugin": 3,
+   "ArgumentList": 7,
+   "failureClusters": 2,
+   "AOT": 76,
+   "RoleBinaryFile": 3,
+   "ContextAssembler": 16,
+   "gate_to_ask": 0,
+   "lessons": 3,
+   "embedder": 10
+  },
+  "queries": [
+   "RemoteEmbedder",
+   "PythonArtifactPlugin",
+   "ArgumentList",
+   "failureClusters",
+   "AOT",
+   "RoleBinaryFile",
+   "ContextAssembler",
+   "gate_to_ask",
+   "lessons",
+   "embedder"
+  ]
+ },
+ "B_bge_cost_model": {
+  "measured": {
+   "source": "/tmp/bge_bench.log",
+   "chunks": 300,
+   "avg_chars": 465,
+   "total_s": 61.061,
+   "ms_per_chunk": 203.54,
+   "chunks_per_s": 4.91,
+   "chars_per_s": 2287
+  },
+  "extrapolation": {
+   "full_chunks": 6375,
+   "est_minutes": 21.6,
+   "caveat": "21.6min 是 300 块实测的线性外推，非真实全量运行"
+  },
+  "memory_correction": {
+   "rss_mb_during_embed": 306.0,
+   "managed_mb": 93.6,
+   "note": "306MB 是进程 RSS（含模型权重），不是索引体积；索引体积见 vectors_*"
+  },
+  "vector_bytes_per_doc": {
+   "fp32": 2048.0,
+   "fp16": 1024.0,
+   "fp8": 512.0
+  },
+  "scopes": {
+   "S1_all": {
+    "chunks": 28380,
+    "embed_s": 5776.4,
+    "embed_min": 96.27,
+    "vectors_fp32_mb": 55.4,
+    "vectors_int8_mb": 13.9,
+    "share_of_full_chunks": 445.2
+   },
+   "S2_src_cs": {
+    "chunks": 4324,
+    "embed_s": 880.1,
+    "embed_min": 14.67,
+    "vectors_fp32_mb": 8.4,
+    "vectors_int8_mb": 2.1,
+    "share_of_full_chunks": 67.8
+   },
+   "S3_src_docs_md": {
+    "chunks": 6720,
+    "embed_s": 1367.8,
+    "embed_min": 22.8,
+    "vectors_fp32_mb": 13.1,
+    "vectors_int8_mb": 3.3,
+    "share_of_full_chunks": 105.4
+   },
+   "S4_git_last30_commits": {
+    "chunks": 3121,
+    "embed_s": 635.2,
+    "embed_min": 10.59,
+    "vectors_fp32_mb": 6.1,
+    "vectors_int8_mb": 1.5,
+    "share_of_full_chunks": 49.0
+   },
+   "S5_doc_referenced_src": {
+    "chunks": 1558,
+    "embed_s": 317.1,
+    "embed_min": 5.29,
+    "vectors_fp32_mb": 3.0,
+    "vectors_int8_mb": 0.8,
+    "share_of_full_chunks": 24.4
+   }
+  }
+ },
+ "C_history_kpi": {
+  "rounds": 512,
+  "cases": 4391,
+  "pass_rate": 0.9854,
+  "tokens_per_case": {
+   "median": 750,
+   "mean": 1030.4
+  },
+  "workspace_recall": {
+   "share_with_recall": 0.7012,
+   "median_snips": 3,
+   "median_tokens_injected": 57,
+   "mean_tokens_injected": 59.9,
+   "median_rel": 0.63
+  },
+  "multistep": {
+   "n_ge3": 490,
+   "pass_ge3": 0.9939,
+   "pass_lt3": 0.9844
+  },
+  "ask_signals": {
+   "gate_to_ask_true": 21,
+   "topic_clarify_pulled_gt0": 29
+  },
+  "skill": {
+   "median_precision": 0.4152,
+   "p10_precision": 0.3732,
+   "decisions": {
+    "low_confidence": 2609,
+    "knowledge_hint": 60,
+    "force": 234,
+    "degrade_semantic": 308,
+    "no_hit": 30
+   }
+  },
+  "latency_ms": {
+   "median_wall": 11780,
+   "median_bge": 462,
+   "bge_cases": 2669
+  }
+ },
+ "D_lesson_recurrence": {
+  "fails": 64,
+  "fail_rate": 0.0146,
+  "distinct_fail_signatures": 26,
+  "signatures_ge3": 7,
+  "top_signatures": [
+   {
+    "note": "FAIL:llm_calls=N want ≥N",
+    "count": 27
+   },
+   {
+    "note": "FAIL:reply N < N",
+    "count": 18
+   },
+   {
+    "note": "FAIL:isolated=None (score=None) want True",
+    "count": 5
+   },
+   {
+    "note": "FAIL:intent=None want general",
+    "count": 5
+   },
+   {
+    "note": "FAIL:models N < N",
+    "count": 4
+   },
+   {
+    "note": "FAIL:subtasks=N",
+    "count": 3
+   },
+   {
+    "note": "FAIL:reply 缺少 'fahrenheit'",
+    "count": 3
+   },
+   {
+    "note": "FAIL:skill_force identity_statement failed (hits=[], llm=N)",
+    "count": 2
+   }
+  ],
+  "all_notes_ge3": 8,
+  "stores_existing": {
+   "data/executor-lessons.json": 1,
+   "data/guardrails.json": 4,
+   "data/roles/": [],
+   "failureClusters.json": false
+  }
+ },
+ "E_verdicts": {
+  "break_even_queries": 47.6,
+  "min_scoped_bge_minutes": 5.29,
+  "items": {
+   "exp1a_keyword_inverted_index": {
+    "metric": "cold_scan_ms/query=7.35, warm=0.740, token_idx_build=314.6ms/8144 keys/4.06MB, trigram_build=3156.7ms/86218 keys/45.27MB, token_parity=False, trigram_parity=False, break_even_q=48",
+    "threshold": "冷扫 <50ms/query 且温扫 <5ms/query → 持久索引的延迟收益 <10ms，不足以抵消构建/内存/语义代价",
+    "verdict": "NOT_NEEDED (惰性扫描+结果缓存即可; 索引仅当语料 >50MB 文本或需跨会话复用)"
+   },
+   "exp1b_bge_persistent_index": {
+    "metric": "cheapest scoped scope = 5.29 min (S5_doc_referenced_src); query-time bge median = 462 ms/case",
+    "threshold": "最小 scoped 建索引 <1min 才考虑预建；否则不做",
+    "verdict": "NOT_NEEDED (查询期按需 embedding 已覆盖)"
+   },
+   "exp2_ask_menu": {
+    "metric": "gate_to_ask 21/4391 (0.48%), clarify_pulled 29",
+    "threshold": "现有评测无交互场景 → 不可判",
+    "verdict": "INCONCLUSIVE (需新埋点，KPI 定义见文档)"
+   },
+   "exp3_step_alignment": {
+    "metric": "pass(subtasks>=3)=0.9939 vs pass(<3)=0.9844",
+    "threshold": "若长链通过率低于短链 5pt 以上才建校验",
+    "verdict": "NOT_NEEDED (数据反向：长链更好)"
+   },
+   "exp5_lesson_table": {
+    "metric": "distinct fail sig=26, sig>=3: 7, top2 share=49%",
+    "threshold": "sig>=3 的数量 >=5 → 轻量实现值得做",
+    "verdict": "NEEDED_LIGHT (role 模块最小实现)"
+   }
+  }
+ }
+}

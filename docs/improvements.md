@@ -12,6 +12,61 @@
 
 ---
 
+## R371 能力差异探针(py 游戏) → 五处断链修复 + 教训表/运行级验证收口 (778/778 ×3, AOT 0 IL 警)
+
+- **用户指令 (逐字, 三条)**:
+  1. "请将bge设置为静默后台长期任务，只用汇报给我之前的5个需求和 【通过查看自己的上下文来对比当前项目agent能力（通过py开发一个游戏）差异】 这项任务，你可以先内置py插件"
+  2. "真跑 agent 产出的 artifact 自测 时记得将可复用的模块做成skill放在skills内，并且可以允许对已有skill进行优化、删除、更名等操作（注意所有代码类型的必须为通用形式），一切以KPI（tokens\用户回答频率不能高\回复质量，同一个问题优化前后需要多少tokens和多少轮）和通过上下文自检为要目的"
+- **探针方法**: 同一提示词（Python 贪吃蛇 + `--selftest` 无头自测）→ ① 宿主侧一条链做完（**PASS**）；② 项目 agent 用 **AOT 真产物**跑 → 逐环节对比。
+- **五处断链点（全部真机实证 + 修复 + 机检）**:
+  1. **D1 空正文被判成功**（最严重）：`llm_call completion=8192(=上限)/content_len=0/reasoning_len=22633` 且 `loop_turn reply_chars=0 success=true`
+     → 推理模型吃满输出预算，框架只对 HTTP 异常重试、**从不检查正文是否为空**。修 `ModelQueueRouter`：检测 → 升级预算(8192→32768)+抑制推理提示重试一次 → 仍空则**可见降级 + Success=false**；遥测不再无条件 `success=true`。
+     **修复后真机铁证**：`llm_call_recover: first_content_len=0 → retry_content_len=11345, recovered=true`（同一天同一提示词，缺陷真实复现并被自动救回）。机检 `EmptyContentRecoveryTests` 3/3。
+  2. **D4 裸代码 → 机器链全程不触发**：回复 9232 字符完整实现、却**零 `script_artifact` 遥测**、`data/artifacts/` 无新文件。
+     排查先自证伪（围栏正则被怀疑转义写坏 → 用独立 Python 复算 C# 字面量 → **正则正确**）；真因=**输出纪律从未要求代码围栏**，
+     而插件只认 ```python → 契约不匹配；且第 7 条"500 字以内"与"交付完整单文件"直接冲突。修：输出纪律第 9 条（代码必须围栏 + 解除字数限制）。
+     修复后：`script_artifact py_4ec069d5.py 12156B compile_valid=true`，**复跑其 `--selftest` → PASS (18/18)**。
+  3. **D2 发布产物不自带 config**：AOT 产物在仓库外 cwd 运行 → `模型目录为空`。修 `agent.host.csproj` 让 publish 携带 `config/{base,modules,env}`
+     （凭据只存环境变量名）；验证 `CONFIG_SHIPPED=/tmp/pub_aot_r374/config/base`。
+  4. **D5 运行级验证选参 + 结论上屏**：交互式产物被无参运行必然卡到超时；CLI 只显示编译结论。修：产物含 `--selftest` 时自动带参（保守），
+     CLI 追加 `· run exit=<code> (<ms>)`（未开启不显示，不假装验证过）。
+  5. **D6 相对路径 → 运行级验证假阴性**：插件传相对路径而子进程 cwd 被切到脚本目录 → `python exit=2 (50ms)` 秒退，与"真跑 PASS 18/18"矛盾。
+     修：`Path.GetFullPath(scriptPath)`；**RED→GREEN 负向控制**（撤销修复 → `Expected 0 / Actual 2`；恢复 → 12/12）。
+- **L5 运行级验证 (t8–t12)** 收口：默认关、零 shell、超时杀树、输出上限排空、结构化结果、插件接线；族内 20/20（含 300k 排空 / 路径含空格引号 / 闸门关不执行 / 相对路径回归）。
+- **exp5 教训表（role 模块）核心**：`LessonGeneralization`（通用化机检）/`LessonTable`（FNV-1a 指纹 + 去重归并 + 版本游标 + STJ 源生成 + 原子写）/`RoleLessons`（无 role 不落盘且显式回报）；11/11 机检（A8 负断言：`py_compile`/`C#`/`.cs` 一律拒收）。
+- **exp8 立项**（用户本轮新钦定）：[已验证产物 → skill 蒸馏 + skill 生命周期 + KPI A/B](docs/plans/v0.22.0-exp8-artifact-to-skill-and-kpi-ab.md)（设计文档，含 tokens/轮数/asked 率/质量 对照口径与 A1–A6 机检草案）。
+- **静默后台**：bge 闲时训练 cron 改为 `deliver=local`（只落盘不打扰）；探针全记录 `docs/plans/v0.22.0-r371-capability-probe-python-game.md`。
+- **基线**: 单元测试 **778/778（连跑 3 次全绿）** / AOT linux-x64 **0 IL 警告**, `agenthost` **13,800,832 B**, 发布自包含（自带 config）。
+- **诚实边界**: ① 探针只覆盖"生成代码"单场景，未覆盖多轮迭代式修复；② 运行级验证默认仍关（需 `AGENTFRAMEWORK_PY_RUN=1`）；
+  ③ D3（运行结果回流给模型以自我迭代）**未做**，登记待办；④ exp8 仅设计未实现。
+
+---
+
+## R370 验证形式入规范 + 跨会话检索 + 运行级验证 + 教训表(role) + bge 召回实测反转 (772/772, AOT 0 IL 警)
+
+- **用户指令 (逐字, 两条)**:
+  1. "继续下轮，注意别忘验证形式，要加入规范内，【通过查看自己的上下文来对比当前项目agent能力差异】并修复完善"
+  2. "收集未来可用于bge-small-zh-v1.5基座的数据，并加入闲时训练计划，本机若无任务再执行就自动执行数据收集，训练bge版本，统计KPI不断择优，请你以确定性的召回率为目标不断优化bge-small-zh-v1.5 并生成每个版本小报"
+  3. (后续) "注意别忘验证形式…和 之前的5个开发计划的实施" + "你需要实测它们用于召回的能力后再最终确定用哪个嵌入模型"
+- **L1 验证形式入规范 (用户长期焦点, 本轮交付)**: 新增 [docs/验证形式规范.md](docs/验证形式规范.md) (证据阶梯 L0 未验证 → L1 静态 → L2 单测/组件行为 → L3 真机运行 → L4 对抗负向控制; 六条规则: 无登记=未验证 / 静态最高只能报 L1 / L≥2 必须负向控制 / 证据必须落盘可复查 / 表述纪律 / 登记表机检) + [docs/verification-registry.json](docs/verification-registry.json) (机读登记表, 含 `covers[]` 覆盖插件实现) + `src/agent.tests/VerificationFormTests.cs` **6/6 通过** —— 含**自检负向控制**: 注入 5 类缺陷 (缺负向控制/静态冒充运行/证据路径不存在/插件漏登记/等级越级) 全部被抓出。已挂 README + 总纲 §0-0 第 9 条。
+- **L2 自上下文能力差异 + 首批修复**: 新增 [docs/plans/v0.22.0-l2-capability-diff.md](docs/plans/v0.22.0-l2-capability-diff.md) (16 项逐条对位, 判定只用 `file:line` 实证; 缺口清单 G1–G9 入长期看板)。
+  - **F1 跨会话检索** `src/agent/session/SessionHistorySearch.cs`: 会话记忆已落盘却**无检索入口** (对位宿主侧 session_search) → 纯 stdlib/零 LLM/确定性打分 (CJK 二元组 + ASCII 词 + IDF + 子串加成), 命中词居中开窗截断; `SessionHistorySearchTests` **10/10** (含负向控制: 无关查询空结果 / IDF 判别力 / **只读保证**: 检索前后 mtime 不变 / 缺文件不抛)。
+  - **F2 宣称纠偏**: `skills/critic-rules/SKILL.md` 写的"输出后机器侧静态扫描仍会复核 (双保险)"与代码事实矛盾 (**生产 0 消费**) → 改为真实状态 + 登记"接线"为待办 (诚实优先于好看)。
+- **L5 运行级验证 (t8–t12, 用户 5 项计划之一)**: `src/agent.skills/PythonRunVerifier.cs` + `PythonArtifactPlugin` 接线 —— 默认**关** (`AGENTFRAMEWORK_PY_RUN`), 开启后语法通过即真跑并回写 `Ran/RunExitCode/RunElapsedMs/RunTimedOut`; 零 shell (`ArgumentList`), 超时**杀进程树**, 输出上限**排空管道**(否则 300k 输出会假超时), 结构化结果不抛异常。`PythonRunVerifierTests` + 插件接线 **15/15** (含 300k 排空 / 路径含空格与引号 / 闸门关不执行 / 脚本不存在)。
+  - **顺带修真缺陷**: 产物命名 `py_<ts>_<sha8>.py` 含时钟 → 同内容跨秒产出两个文件, 破坏"内容寻址幂等"契约 (R368 用例在本机高负载下必红, 属潜伏 flaky) → 改 **纯内容寻址 `py_<sha16>.py`**。
+- **L3e 教训表 (exp5 首批, 归属 role 模块)**: `src/agent.roles/` 新增 `LessonGeneralization` (通用化机检: 黑名单词表 + 词法边界, 防误杀) / `LessonTable` (统一记录 + FNV-1a 指纹 + 去重归并 + 版本/增量游标 + STJ 源生成 + 原子写) / `RoleLessons` (role 门面; 无 role 按口径① 不落盘不注入且**显式回报**), 落盘 `data/roles/{roleId}.lessons.json`。`LessonTableTests` **11/11** —— A1 去重计数 / A2 **指纹与独立 Python FNV-1a 实现互锁** / A3 增量游标 / A4+A5① 用户项目目录零新增 / A5② 跨 role 隔离 / A8 正+负 (同通用模式双语实例归并 1 条 Count=2; Pattern 含 `py_compile`/`C#`/`.cs` **一律拒收**)。
+- **L4 bge 闲时训练闭环 + 召回实测 (用户本轮新焦点, 关键裁决反转)**:
+  - 评测台: 冻结语料 **1299 块/384 文件** + 冻结查询 **120 条** (LLM 生成, 强制不复述片段独特标识符 + ASCII 标识符过滤) + recall@1/5/10/20 + MRR@10 + 词法基线。
+  - **实测 (llama.cpp 金标准口径)**: 词法基线 r@1 **0.4417** / r@10 0.750 / MRR 0.5571; **bge-base r@1 0.4417 / r@10 0.7417 / MRR 0.5416**; **bge-small r@1 0.3083 / r@10 0.6333 / MRR 0.4150**。
+  - **裁决反转 (诚实更正)**: 10 条硬集上"bge-base 未赢 bge-small"是**样本噪声**; 120 查询口径下 **bge-base 全面领先 bge-small (r@1 +13.3pt)**, 且 ≈ 词法基线 → **纯稠密无优势, 正解是混合检索**。用户钦定基座仍为 bge-small (成本 1/6.6, 内存 106MB vs 193MB), 目标改为"用 T1 适配器把 r@1 从 0.308 逼向 0.44"。
+  - **互补性实锤**: bge-small 相对词法 `dense_only_wins=7` / `lexical_only_wins=15` / `both_fail=21`; **union@10 0.7917 (词法单用 0.75, +4.2pt)** / union@20 0.825; oracle@1 **0.5333** (完美选择器上界) → **稠密确有词法够不到的独有命中**, 混合检索有据。
+  - 闭环代码: `eval/bge/{bge_lib,collect_pairs,train_adapter,eval_recall,complementarity}.py` (纯 stdlib, 零 shell subprocess, 512 维手写矩阵运算) + `scripts/bge_idle_train.sh` (闲时闸门: load<1.0 ∧ 可用内存≥1.2G ∧ 无在跑任务) + cron `bge-idle-train` (每 30min, 空闲才跑, 无版本产出则零输出不打扰) + 设计文档 exp7。
+  - **修缺陷**: ① 缓存 tag 不含模型身份 → 跨模型串用向量 (改 `模型名__前缀_sha_len`); ② llama-server **就绪判定错** (端口可连 ≠ 模型已加载 → qwen3/m3 首请求 503 掉队) → 改为"真发一次嵌入成功才算就绪"。
+- **基线**: 单元测试 **772/772** (R368 736) / NativeAOT linux-x64 **0 IL 警告**, `agenthost` **13,792,560 B** (R368 13,775,840 B, +0.12%) / 批测 523 轮 (下轮 524, autopilot 取值自证)。
+- **诚实边界**: ① L1 只覆盖已登记项, 覆盖度靠 `covers[]` 机检而非全仓普查; ② L2 的 G1–G9 多数**未接线** (只做组件 + 机检); ③ exp5 前端域登记/`lessons_version` 与三源适配器投影未做; ④ bge 版本小报待首版产出; ⑤ m3/qwen3 召回数字为补跑 (成本维度已淘汰, 不改变选型)。
+
+---
+
 ## R368 探索轮: 用户 OOB 5 项计划立项 + PY 落盘/机器校验插件落地 (736/736, AOT 0 IL 警)
 
 - **用户指令 (逐字, 两条)**:
@@ -25,7 +80,7 @@
   4. **跨步产物不落不传** (探索项 3/4 同根因): runner 签名忽略上游产物 + 步骤产物不持久化 + 恢复只恢复状态 → 长任务跨步只能靠上下文猜。
   5. **bge 全量索引不可行 (本机实测)**: bge-q8 CPU 单线程 203.5 ms/块 / 4.9 块/s / RSS 306 MB → 全仓 6375 块 ≈ **21.6 min** → 与用户"不主动探索全量"直接冲突。
 - **本轮实施 (探索项 4 的 T1/T2/T3)**:
-  - `src/agent/registry/PythonArtifactPlugin.cs` (新增): ```` ```python ```` 段 → 落盘 `data/artifacts/py_<ts>_<sha8>.py` (内容寻址幂等) + 真实 `python3 -m py_compile` 机器校验 + `PythonArtifactLedger` 台账 (线程安全, 单调 Version, 供前端增量读) + telemetry 点 `script_artifact`; **输出恒等** (不改写 LLM 文本/围栏); 非 python 段零损耗透传; `AGENTFRAMEWORK_PY_ARTIFACT=off` 可关。
+  - `src/agent/registry/PythonArtifactPlugin.cs` (新增): ```` ```python ```` 段 → 落盘 `data/artifacts/py_<sha16>.py` (内容寻址幂等; **R370 修正**: 旧名 `py_<ts>_<sha8>.py` 含时间戳 → 同内容跨秒会写两个文件, 与幂等契约冲突, 本机高负载时用例必红) + 真实 `python3 -m py_compile` 机器校验 + `PythonArtifactLedger` 台账 (线程安全, 单调 Version, 供前端增量读) + telemetry 点 `script_artifact`; **输出恒等** (不改写 LLM 文本/围栏); 非 python 段零损耗透传; `AGENTFRAMEWORK_PY_ARTIFACT=off` 可关。
   - 接线: DI 注册 (`ServiceCollectionExtensions.cs:150-158`) + CLI 步骤 `[05] PY 落盘 + py_compile N/M 通过` (`Program.cs:490-518`)。
   - 零 shell 修复: `PythonScriptValidator` `Arguments` 字符串 → **`ArgumentList`** (跨平台铁律); 新增 `ValidateAsync(path, pythonPath, ct)` 重载使 `AGENTFRAMEWORK_PYTHON` 覆盖真正生效。
   - 测试: `PythonArtifactPluginTests` 6 用例 (好码落盘+过 / 坏码失败不静默 / 非 python 透传零副作用 / 同内容幂等 / 版本单调 / 路由器集成原文还原)。

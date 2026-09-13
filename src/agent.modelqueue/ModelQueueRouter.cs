@@ -272,6 +272,12 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         try
         {
             var resp = await CallEntryAsync(entry, prompt, ct);
+            // R371 真缺陷 (空正文): 推理模型把输出预算全花在思维链 → content 空但 success=true,
+            // 用户侧表现为"执行 ~30s 后回复空白" (E2E 铁证: completion 8192/8192, content_len=0, reasoning_len=22633,
+            // loop_turn reply_chars=0 且 success=true)。旧修 (R19: max_tokens 2000→8192) 只是抬高天花板 —
+            // 推理可吃满任意上限 → 改为"检测 + 有界恢复 + 诚实降级"。
+            if (string.IsNullOrWhiteSpace(resp.Content) && !string.IsNullOrWhiteSpace(resp.ReasoningContent))
+                resp = await RecoverFromEmptyContentAsync(entry, prompt, resp, ct).ConfigureAwait(false);
             llmSw.Stop();
             lock (_lock)
             {
@@ -286,7 +292,9 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             agent.config.AgentTelemetry.Emit("llm_call", "ModelQueueRouter",
                 ("model", entry.Id), ("provider", entry.Provider),
                 ("prompt_tokens", resp.PromptTokens), ("completion_tokens", resp.CompletionTokens),
-                ("total_tokens", resp.TokensUsed), ("success", true),
+                ("total_tokens", resp.TokensUsed), ("success", resp.Success),
+                ("empty_reply", string.IsNullOrEmpty(resp.Content)),
+                ("error_kind", resp.Error ?? ""),
                 // v0.11.0 R19: 内容长度诊断 (C03 曾现 completion 2000 tok 但回复渲染空 — 定位内容丢在链路哪段)
                 ("content_len", resp.Content?.Length ?? 0),
                 // v0.21.1: 推理模型思考链长度诊断 (reasoning_content 是否被真实返回 / 占多少)
@@ -566,7 +574,58 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         return System.Text.Encoding.UTF8.GetString(ms.ToArray());
     }
 
-    private async Task<QueueResponse> CallEntryAsync(ModelCatalogEntry entry, QueuePrompt prompt, CancellationToken ct)
+    /// <summary>R371: 空正文恢复时的输出预算 (×4 于默认 8192; 硬上限保护, 不是"再抬天花板"而是配合抑制推理)。</summary>
+    private const int MaxTokensEscalated = 32768;
+
+    /// <summary>R371: 抑制推理、强制正文的提示 (模型无关表述, 追加为 system 消息)。</summary>
+    private const string NoReasoningNudge =
+        "[系统] 直接输出最终答案正文本身, 不要输出思考/推理过程 (推理会占满输出预算, 导致正文为空)。";
+
+    /// <summary>
+    /// R371 空正文恢复 (真缺陷修复): 首次调用 content 为空而 reasoning 非空 (= 推理吃满输出预算)
+    /// → 升级预算 + 抑制推理再试一次; 仍空则返回**可见降级文案**并把 Success 置假 (绝不静默返回空白)。
+    /// 有界: 只重试 1 次, 不做循环; 失败判定与遥测绑定 (success/empty_reply/error_kind)。
+    /// </summary>
+    private async Task<QueueResponse> RecoverFromEmptyContentAsync(
+        ModelCatalogEntry entry, QueuePrompt prompt, QueueResponse first, CancellationToken ct)
+    {
+        var firstReasoning = first.ReasoningContent?.Length ?? 0;
+        var firstCompletion = first.CompletionTokens;
+        try
+        {
+            var retried = await CallEntryAsync(entry, prompt, ct,
+                maxTokensOverride: MaxTokensEscalated, extraSystemSuffix: NoReasoningNudge).ConfigureAwait(false);
+            var recovered = !string.IsNullOrWhiteSpace(retried.Content);
+            agent.config.AgentTelemetry.Emit("llm_call_recover", "ModelQueueRouter",
+                ("model", entry.Id), ("reason", "empty_content"), ("max_tokens", MaxTokensEscalated),
+                ("first_content_len", first.Content?.Length ?? 0), ("first_reasoning_len", firstReasoning),
+                ("first_completion_tokens", firstCompletion),
+                ("retry_content_len", retried.Content?.Length ?? 0),
+                ("retry_reasoning_len", retried.ReasoningContent?.Length ?? 0),
+                ("retry_completion_tokens", retried.CompletionTokens),
+                ("recovered", recovered));
+            if (recovered) return retried;
+
+            retried.Success = false;
+            retried.Error = "empty_content_after_retry";
+            retried.Content =
+                "⚠ 模型未产出正文: 推理过程占满了输出预算 (已自动放宽输出预算并重试一次仍失败)。"
+                + "请重试, 或改用非推理模型 / 缩小任务范围。";
+            return retried;
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            agent.config.AgentTelemetry.Emit("llm_call_recover", "ModelQueueRouter",
+                ("model", entry.Id), ("reason", "empty_content"), ("recovered", false), ("error", ex.Message));
+            first.Success = false;
+            first.Error = $"empty_content_retry_failed: {ex.Message}";
+            first.Content = "⚠ 模型未产出正文, 且自动重试失败: " + ex.Message + " — 请重试或切换模型。";
+            return first;
+        }
+    }
+
+    private async Task<QueueResponse> CallEntryAsync(ModelCatalogEntry entry, QueuePrompt prompt, CancellationToken ct,
+        int? maxTokensOverride = null, string? extraSystemSuffix = null)
     {
         // R351: 全通道 key 走环境变量 (官方内存通道已移除; 凭据铁律不变)
         var apiKey = Environment.GetEnvironmentVariable(entry.ApiKeyEnv);
@@ -612,7 +671,10 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         // v0.12.0 A3 (真缺陷 64): coding 端点不收图像 (HTTP 400 1210 真机实证) —
         // 带图请求改写标准 v4 chat 端点 (glm-5.3-flash 视觉走 v4, data URL 真机已验 1445tok)。
         var targetEndpoint = prompt.ImageUrls.Count > 0 ? VisionPayload.ToChatEndpoint(entry.Endpoint) : entry.Endpoint;
+        if (!string.IsNullOrWhiteSpace(extraSystemSuffix))
+            messages.Add(new QueueChatMessage { Role = "system", Content = extraSystemSuffix });
         var request = new QueueChatRequest { Model = entry.Id, Messages = messages, ReasoningEffort = prompt.ReasoningEffort };
+        if (maxTokensOverride is int mt && mt > 0) request.MaxTokens = mt;
         using var http = new HttpRequestMessage(HttpMethod.Post, targetEndpoint)
         {
             Content = new StringContent(

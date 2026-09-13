@@ -151,7 +151,13 @@ public sealed class ScriptPluginRunner
         var psi = new ProcessStartInfo
         {
             FileName = python,
-            Arguments = $"\"{scriptPath}\" --task-json \"{taskJsonPath}\" --heartbeat-secs {heartbeatSecs.ToString(CultureInfo.InvariantCulture)}",
+            // 跨平台铁律: ArgumentList 直连 spawn (旧写法把路径拼进命令行, 含空格/引号时被 shell 语义解析)
+            ArgumentList =
+            {
+                scriptPath,
+                "--task-json", taskJsonPath,
+                "--heartbeat-secs", heartbeatSecs.ToString(CultureInfo.InvariantCulture),
+            },
             WorkingDirectory = Path.GetDirectoryName(Path.GetFullPath(scriptPath)) ?? Environment.CurrentDirectory,
             UseShellExecute = false,
             RedirectStandardOutput = true,
