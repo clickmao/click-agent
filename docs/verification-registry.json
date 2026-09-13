@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R400",
+  "updated_round": "R401",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -606,6 +606,21 @@
         "eval/rover/tokref/decode_fixtures.jsonl"
       ],
       "owner_round": "R400"
+    },
+    {
+      "id": "capability.selfcheck.loop",
+      "capability": "能力自检循环 (用户令 2026-09-14, R400 后常驻): 随机程序题(6 家族) + 随机数学题(8 家族) → **机械判定**(数学=独立暴力 oracle; 程序=隐藏用例族) → 读数落 eval/capability/kpi.jsonl → 通用教训落 skills/ (type=knowledge_hint)。判定器自身判定力实测 SOUND: 8 个变异解**全部必红**且红在预期判据上, 参考解全绿 (程序 16/16 + 27/27 + 4/4; 数学 8 家族参考解 19/19 与暴力 oracle 逐条一致)。本轮真跑: 生成树计数=21 (矩阵树定理 ≡ 子集枚举, 与判定器 oracle 三方一致), TtlCache 4/4。",
+      "level": "L4",
+      "evidence_cmd": "python3 scripts/capability_cycle.py selftest && python3 scripts/capability_cycle.py emit --seed 20260914 && python3 scripts/capability_cycle.py grade --cycle eval/capability/cycle-20260914-s20260914.json --dir eval/capability/20260914-s20260914",
+      "evidence_path": "eval/capability/kpi.jsonl",
+      "negative_control": "注入缺陷必红 (实测 8/8): roman_canonical:lenient_decode 19/27(should_reject×8) / merge_intervals:drop_adjacent 9/16(wrong_output×7) / merge_intervals:no_sort 5/16 / topo_order:skip_cycle_check / ttl_cache:expire_after_boundary 3/4(expired_at_boundary×1) / ttl_cache:recency_by_clock 3/4(lru_after_touch×1) 等; 判定器自检出现「参考解不绿」或「变异解没红」即判 SOUND=False 拒绝记分。",
+      "covers": [
+        "eval/probe/tasks.py",
+        "eval/capability",
+        "scripts/capability_cycle.py",
+        "skills/spec-uniqueness-and-judge-soundness"
+      ],
+      "owner_round": "R401"
     }
   ],
   "aot_check_policy": "release_tag_only",
