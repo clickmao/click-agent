@@ -7,7 +7,8 @@ using Xunit;
 namespace agent.tests;
 
 /// <summary>
-/// R379 缓存前缀不变式机检 (用户钦定 KPI 红线: 多轮会话第 2 轮起命中率 ≥90%, 目标 98~99%)。
+/// R379 缓存前缀不变式机检 (用户钦定 KPI 红线: 多轮会话第 2 轮起命中率 ≥ PromptCacheRedline.Threshold, 现 97%; 目标 98~99%)。
+/// M1 的比值是**字节级必要前提** (字节前缀比 ≥ 红线); 真正的红线判定在 PromptCacheRedline (token 口径, 另含 64-token 单元对齐损耗)。
 ///
 /// 背景 (决定性实测): DeepSeek 上下文缓存以 64 token 为单元, 必须"自 token 0 起完整匹配缓存前缀"
 /// 才命中 (api-docs.deepseek.com/zh-cn/guides/kv_cache)。因此请求体必须是**追加式**的:
@@ -96,7 +97,7 @@ public class MultiTurnCachePrefixTests
         return $"前缀全同, 仅长度不同: prev={prev.Length} cur={cur.Length} (新增 {cur.Length - prev.Length} 字符)";
     }
 
-    /// <summary>M1 — 主断言: 三轮请求体逐字节前缀 + 命中率上界 ≥90% 红线。</summary>
+    /// <summary>M1 — 主断言: 三轮请求体逐字节前缀 + 字节级上界过红线 (条件取自 PromptCacheRedline.Threshold, 不写死)。</summary>
     [Fact]
     public void M1_三轮请求体逐字节前缀_且命中率上界过红线()
     {
@@ -125,8 +126,8 @@ public class MultiTurnCachePrefixTests
                 $"第 {i + 1} 轮请求体不是第 {i} 轮的逐字节追加 → 缓存前缀自首个分歧字节起全部失配\n{FirstDiff(bodies[i - 1], bodies[i])}");
             var rate = (double)bodies[i - 1].Length / bodies[i].Length;
             Assert.True(
-                rate >= 0.90,
-                $"轮{i}→轮{i + 1} 命中率上界 {rate:P2} < 90% 红线 (前缀 {bodies[i - 1].Length} / 全量 {bodies[i].Length} 字符)");
+                rate >= PromptCacheRedline.Threshold,
+                $"轮{i}→轮{i + 1} 字节级上界 {rate:P2} < {PromptCacheRedline.Threshold:P0} 红线 (前缀 {bodies[i - 1].Length} / 全量 {bodies[i].Length} 字符)");
         }
     }
 

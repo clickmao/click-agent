@@ -1,4 +1,5 @@
 using agent.context;
+using agent.modelqueue;
 using Xunit;
 
 namespace agent.tests;
@@ -6,7 +7,9 @@ namespace agent.tests;
 /// <summary>
 /// R379 增量最小化机检: 会话静态块识别 / 动态块跨轮行级去重 / 每轮增量占前缀比例红线。
 ///
-/// 红线 (用户钦定): 多轮会话第 2 轮起 provider 缓存命中率 ≥90%。
+/// 红线 (用户钦定): 多轮会话第 2 轮起 provider 缓存命中率 ≥ PromptCacheRedline.Threshold (现 97%)。
+/// 本文件的 P3 是**字节级必要前提代理**, 不是红线判定本身 (判定在 PromptCacheRedline, 见 PromptCacheRedlineTests);
+/// 代理条件从同一条常量派生 (maxShare = 1 − Threshold), 杜绝"测试里写死的红线"与代码常量分叉。
 /// 实测判据 (DS 官方规则: 缓存单元 64 token, 必须自 token 0 起完整匹配):
 ///   命中率 ≈ 已发前缀字节 / 本轮总字节  → 等价于 **每轮新增字节 / 总字节 ≤ 10%**。
 /// 本机检把这条红线变成硬断言 (含负向控制: 不去重时该断言必须为假)。
@@ -68,27 +71,29 @@ public class SessionInjectionPlannerTests
     }
 
     /// <summary>
-    /// P3 (红线): 第 2 轮起「新增字节 / 总字节」≤ 10% ⇔ 缓存命中率上界 ≥90%。
-    /// 结构: 前缀 = system(440) + 静态块(650) + 首轮动态(810); 第 2 轮增量 = 回答(130) + 新召回(40)。
+    /// P3 (红线必要前提): 第 2 轮起「新增字节 / 总字节」≤ 1 − Threshold (97% ⇒ ≤3%) ⇔ 字节级命中率上界 ≥97%。
+    /// 结构: 前缀 = system(440) + 静态块(3000) + 首轮动态(3000); 第 2 轮增量 = 回答(130) + 新召回(40)。
+    /// (R393: 上界由旧的写死 10%/90% 改为从 PromptCacheRedline.Threshold 派生 —— 旧值停留在 90% 时代。)
     /// </summary>
     [Fact]
     public void P3_红线_每轮增量占比不超一成()
     {
-        var staticText = new string('静', 650);
+        var staticText = new string('静', 3000);
         var sys = new string('系', 440);
-        var dyn1 = new string('召', 810);
-        var prefix = sys.Length + staticText.Length + dyn1.Length; // 1900
+        var dyn1 = new string('召', 3000);
+        var prefix = sys.Length + staticText.Length + dyn1.Length; // 6440
 
         var answer = new string('答', 130);
         var dyn2New = new string('新', 40);
+        var maxShare = 1.0 - PromptCacheRedline.Threshold;   // 97% ⇒ 3%
         var withDedupe = (double)(answer.Length + dyn2New.Length) / (prefix + answer.Length + dyn2New.Length);
-        Assert.True(withDedupe <= 0.10,
-            $"第 2 轮增量占比 {withDedupe:P2} > 10% → 命中率上界 < 90% 红线 (前缀 {prefix} / 增量 {answer.Length + dyn2New.Length})");
+        Assert.True(withDedupe <= maxShare,
+            $"第 2 轮增量占比 {withDedupe:P2} > {maxShare:P0} → 字节级命中率上界 < {PromptCacheRedline.Threshold:P0} 红线 (前缀 {prefix} / 增量 {answer.Length + dyn2New.Length})");
 
         // 负向控制: 不做增量最小化 (重复注入整块动态上下文) → 占比必须破线, 否则判据是空心的
         var withoutDedupe = (double)(answer.Length + dyn1.Length + dyn2New.Length) / (prefix + answer.Length + dyn1.Length + dyn2New.Length);
-        Assert.True(withoutDedupe > 0.10,
-            $"负向控制失效: 不去重时占比仅 {withoutDedupe:P2}, 无法证明该判据能抓出破坏前缀的策略");
+        Assert.True(withoutDedupe > maxShare,
+            $"负向控制失效: 不去重时占比仅 {withoutDedupe:P2} <= {maxShare:P0}, 无法证明该判据能抓出破坏前缀的策略");
     }
 
     /// <summary>

@@ -7,7 +7,7 @@
   · 会话首轮无"需要命中"部分 → 不适用 (不并入比率)
   · 缺口 ≤64 token 属缓存单元边界对齐损耗 (正常)
 
-红线 (用户钦定): 多轮会话**第 2 轮起** 有效命中率 ≥ 95% (目标 98~99%); 越线必须查因并修复。
+红线 (用户钦定): 多轮会话**第 2 轮起** 有效命中率 ≥ 97% (R393 OOB 由 95% 提高; 目标 98~99%); 越线必须查因并修复。
   用户逐字: "一旦越过红线必然检查问题为什么发生并修复" → 本脚本对每个越线轮给出数值 + 诊断入口;
   代码侧闸门见 src/agent.modelqueue/PromptCacheRedline.cs (越线即 LogWarning + cache_redline_violation 遥测)。
 
@@ -20,7 +20,7 @@
 import argparse, io, json, os, sys
 from datetime import datetime
 
-REDLINE = 0.95
+REDLINE = 0.97
 DEFAULT_TEL = "data/telemetry/host.jsonl"
 
 

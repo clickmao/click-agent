@@ -3,9 +3,11 @@ namespace agent.modelqueue;
 /// <summary>
 /// R380 (用户钦定, **首要 KPI**): prompt 缓存**红线闸门 + 越线必查**。
 ///
-/// 红线: 多轮会话 **第 2 轮起** 有效命中率 ≥ **95%** (用户 OOB 提高; 目标 98~99%)。
-/// 算术前提 (R380 实测): 命中上限 ≈ 1 − 1/n (n = 前缀 64-token 单元数) ⇒ 前缀须 ≥
-/// <see cref="PromptCacheKpi.PrefixTokensNeededFor"/> 给出的量级 (95% ⇒ ≥1280 token), 否则**必然越线**。
+/// 红线: 多轮会话 **第 2 轮起** 有效命中率 ≥ **97%** (R393 用户 OOB: 由 95% 提高到 97%; 目标 98~99%)。
+/// 算术前提 (R380 实测): 命中上限 = (⌊P/64⌋ − 1) × 64 ⇒ 前缀须 ≥
+/// <see cref="PromptCacheKpi.PrefixTokensNeededFor"/> 的**最坏对齐稳健界**, 否则**必然越线**:
+///   **97% ⇒ ≥4224 token (66 单元)**; 95% ⇒ ≥2496; 98% ⇒ ≥6336。
+/// (对齐最优时 97% 也需 ≥2176 token —— 越线诊断/加厚方案按稳健界取, 不按最优界。)
 /// 口径: 见 <see cref="PromptCacheKpi"/> —— 只算「需要命中的部分」, 本轮新增不计入分母。
 ///
 /// 用户逐字: **"一旦越过红线必然检查问题为什么发生并修复"** ⇒ 越线不得只记一个数字了事:
@@ -13,8 +15,12 @@ namespace agent.modelqueue;
 /// </summary>
 public static class PromptCacheRedline
 {
-    /// <summary>红线阈值 (用户钦定, R380 OOB 由 90% 提高到 **95%**): 多轮第 2 轮起有效命中率 ≥ 95%。</summary>
-    public const double Threshold = 0.95;
+    /// <summary>
+    /// 红线阈值 (用户钦定): R380 OOB 由 90% 提高到 95%; **R393 OOB 再由 95% 提高到 97%**
+    /// (目标 98~99% 不变)。改此常量即改判定与诊断文案; `scripts/kpi_cache_hit.py` 的 REDLINE
+    /// 由机检锁死同值 (阈值散落两处必漂移)。
+    /// </summary>
+    public const double Threshold = 0.97;
 
     /// <summary>生效最小轮次: 第 1 轮是冷启动 (无"需要命中"的部分), 不参与判定。</summary>
     public const int MinTurn = 2;

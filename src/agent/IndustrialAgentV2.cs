@@ -1142,7 +1142,7 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 if (!_frozenSystemPrompt.TryGet(sysKey, out var frozen))
                 {
                     // 会话首轮: (会话基线 + 静态块) 焊进前缀 —— 此后每轮都命中这段缓存, 且不再重复注入。
-                    // R380 (用户 OOB 红线 95%, 越线必查+修复): 命中上限 ≈ (n−1)/n (n = 前缀 64-token 单元数)
+                    // R380/R393 (用户 OOB 红线 95%→97%, 越线必查+修复): 命中上限 ≈ (n−1)/n (n = 前缀 64-token 单元数)
                     //  ⇒ 前缀必须够厚, 否则结构修到极限也越线 (真机实测 981 token 前缀的上限恰为 896 = 91.3%)。
                     var baseline = SessionBaseline.Build(
                         _workspace is { RootPath: { Length: > 0 } wr } ? wr : Environment.CurrentDirectory,

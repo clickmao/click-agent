@@ -329,7 +329,7 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             var effRate = (double)(effKv[1].Value ?? -1d);
             agent.config.AgentTelemetry.Emit("llm_call", "ModelQueueRouter",
                 ("model", entry.Id), ("provider", entry.Provider),
-                // R379: 逐轮归属 (红线判据: 多轮第 2 轮起命中率 ≥90%) — 无此字段则无法把 KPI 追到"第几轮"
+                // R379: 逐轮归属 (红线判据: 多轮第 2 轮起命中率 ≥ PromptCacheRedline.Threshold, 现 97%) — 无此字段则无法把 KPI 追到"第几轮"
                 ("agent_session", prompt.SessionId ?? ""), ("turn", prompt.TurnIndex),
                 ("prompt_tokens", resp.PromptTokens), ("completion_tokens", resp.CompletionTokens),
                 ("total_tokens", resp.TokensUsed), ("success", resp.Success),

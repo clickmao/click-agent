@@ -135,7 +135,7 @@
 | 上下文装配失败降级 | `V2:1102-1107` | `!contextResult.Success` | 记 warning, 无上下文继续 (`continuing without context`) |
 | LLM 失败降级 | `V2:1535-1542` | `!llmResponse.Success` | 内容置空 + `Error` 透传 + `AgentState.Ready` (LLM 失败≠Agent 故障) |
 | 本地节点失败不阻断 | `V2:1553-1556` | 本地 plan 执行异常 | 结论只作审计/证据, 不阻断主链 |
-| 缓存命中红线闸门 (90%/95%) | `ModelQueueRouter.cs:350-369` | `PromptCacheRedline.Threshold` 越线 | 落盘诊断 + 响亮告警 (`:362/:366-369`), 不改请求 |
+| 缓存命中红线闸门 (95%→97%, R394) | `ModelQueueRouter.cs:350-369` | `PromptCacheRedline.Threshold` 越线 | 落盘诊断 + 响亮告警 (`:362/:366-369`), 不改请求 |
 | 静态块去重上界 | `SessionInjectionPlanner.cs:32` (`MaxTrackedLines=20000`) | 账本超界 | 清空账本 (防无界增长) |
 | 冻结 system 表上界 | `V2:1141` | `_frozenSystemPrompt.Count > 512` | 清表 (防长驻进程无界增长) |
 
