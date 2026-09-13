@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R370",
+  "updated_round": "R372",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -17,7 +17,9 @@
       "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~PythonArtifactPluginTests",
       "evidence_path": "src/agent.tests/PythonArtifactPluginTests.cs",
       "negative_control": "写入含语法错误的脚本 → compile_valid 必须为 false（用例内断言）",
-      "covers": ["src/agent/registry/PythonArtifactPlugin.cs"],
+      "covers": [
+        "src/agent/registry/PythonArtifactPlugin.cs"
+      ],
       "owner_round": "R368"
     },
     {
@@ -27,7 +29,10 @@
       "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~RegistryTests",
       "evidence_path": "src/agent.tests/RegistryTests.cs",
       "negative_control": "插件改写原文 → Router_RoutesToRegisteredPlugin_AndPreservesFences 断言原文还原必红；html 段传给代码审查 → Router_CodeReviewPlugin_ReceivesNonUiCode 断言 Null 必红",
-      "covers": ["src/agent/registry/UiCapturePlugin.cs", "src/agent/registry/CodeReviewPlugin.cs"],
+      "covers": [
+        "src/agent/registry/UiCapturePlugin.cs",
+        "src/agent/registry/CodeReviewPlugin.cs"
+      ],
       "owner_round": "R368"
     },
     {
@@ -37,7 +42,9 @@
       "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~RoleBinaryFileTests",
       "evidence_path": "src/agent.tests/RoleBinaryFileTests.cs",
       "negative_control": "篡改密文 1 字节 → GCM tag 校验必须失败(解密抛错)",
-      "covers": ["src/agent.roles/RoleBinaryFile.cs"],
+      "covers": [
+        "src/agent.roles/RoleBinaryFile.cs"
+      ],
       "owner_round": "R363"
     },
     {
@@ -100,6 +107,44 @@
       "covers": [],
       "owner_round": "R369",
       "gap_note": "仅代码走查 + 静态扫描；无独立运行级机检。已知例外: src/agent.workspace/GitChangeType.cs(死代码, 未接线, 21 处)。运行级机检列入长期看板 L6。"
+    },
+    {
+      "id": "code.unfenced.promote",
+      "capability": "无围栏代码 → 产物入链(字符串字面量感知 + 机制归因)",
+      "level": "L4",
+      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~UnfencedCodeDetectionTests",
+      "evidence_path": "src/agent.tests/UnfencedCodeDetectionTests.cs",
+      "negative_control": "关闭启发式回退 → 3 个用例如期变红(RED 控制已跑);纯散文/<8 行/已有围栏 → 不得提升",
+      "covers": [
+        "src/agent/registry/SegmentKind.cs",
+        "src/agent/registry/PythonArtifactPlugin.cs"
+      ],
+      "owner_round": "R371"
+    },
+    {
+      "id": "llm.truncated.detect",
+      "capability": "截断正文检测(尾部未完结构)",
+      "level": "L2",
+      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~TruncatedReplyRecoveryTests",
+      "evidence_path": "src/agent.tests/TruncatedReplyRecoveryTests.cs",
+      "negative_control": "完整实现/闭合围栏/全角句号结尾 → 必须判否(零误报)",
+      "covers": [
+        "src/agent.modelqueue/ModelQueueRouter.cs"
+      ],
+      "owner_round": "R372"
+    },
+    {
+      "id": "llm.truncated.continue",
+      "capability": "截断有界续写 + 去重重拼",
+      "level": "L2",
+      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~TruncatedReplyRecoveryTests",
+      "evidence_path": "src/agent.tests/TruncatedReplyRecoveryTests.cs",
+      "negative_control": "续写返回空 → 保留原文并仍可检出截断;完整正文 → 恰好 1 次调用(零额外成本)",
+      "covers": [
+        "src/agent.modelqueue/ModelQueueRouter.cs"
+      ],
+      "owner_round": "R372",
+      "l3_pending": "真机 8192 截断复现时验证 llm_call_continue 的 recovered=true(下轮探针)"
     }
   ]
 }

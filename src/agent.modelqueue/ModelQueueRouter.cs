@@ -278,6 +278,12 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             // 推理可吃满任意上限 → 改为"检测 + 有界恢复 + 诚实降级"。
             if (string.IsNullOrWhiteSpace(resp.Content) && !string.IsNullOrWhiteSpace(resp.ReasoningContent))
                 resp = await RecoverFromEmptyContentAsync(entry, prompt, resp, ct).ConfigureAwait(false);
+            // R371 D7 真缺陷 (真机 RUN3 实证): 正文被输出预算**截断** (completion=8192 上限, content=1209 字符,
+            // 断在 `start_len: int =` 的半行) 却 success=true → 用户拿到半份实现, 且 artifact 命中率看起来只是"抖动"。
+            // 判据纯语法 (与模型无关): 尾部是未完结构 (= ( [ { , + - * / \ : 或未闭合三引号/围栏)。
+            // 处置: 有界**续写一次** (升预算 + 明确断点提示) → 去重重拼; 失败则保留原文 (绝不假装完整)。
+            if (LooksTruncated(resp.Content))
+                resp = await RecoverFromTruncatedAsync(entry, prompt, resp, ct).ConfigureAwait(false);
             llmSw.Stop();
             lock (_lock)
             {
@@ -299,6 +305,8 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                 ("content_len", resp.Content?.Length ?? 0),
                 // v0.21.1: 推理模型思考链长度诊断 (reasoning_content 是否被真实返回 / 占多少)
                 ("reasoning_len", resp.ReasoningContent?.Length ?? 0),
+                // R371 D7: 每次调用都记录是否**结构未闭合** (截断) — 无此字段, "半份实现"只能靠人肉看输出才发现
+                ("truncated", LooksTruncated(resp.Content)),
                 // v0.11.0 R129 (D3): LLM 真耗时 ms
                 ("ms", llmSw.ElapsedMilliseconds));
             // 阈值再同步 (fire-and-forget, 不阻塞主链)
@@ -620,6 +628,96 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             first.Success = false;
             first.Error = $"empty_content_retry_failed: {ex.Message}";
             first.Content = "⚠ 模型未产出正文, 且自动重试失败: " + ex.Message + " — 请重试或切换模型。";
+            return first;
+        }
+    }
+
+    /// <summary>
+    /// R371 D7: **截断检测** (真机 RUN3 实证: 输出预算耗尽, 正文停在半行 `start_len: int =` 却 success=true)。
+    /// 判据纯语法、与模型/语言无关: 尾部是"未完结构" (= ( [ { , + - * / \ : 或未闭合三引号 / 未闭合围栏)。
+    /// 为何不用 token 计数: 预算可被升级 (8192 → 32768), 只有**结构未闭合**才是与预算无关的客观截断证据。
+    /// </summary>
+    public static bool LooksTruncated(string? content)
+    {
+        if (string.IsNullOrWhiteSpace(content)) return false;
+        var t = content.TrimEnd();
+        if (t.Length == 0) return false;
+
+        // 尾部运算符 / 开括号 / 分隔符 → 语句未完 (中文全角标点不算: "说明如下：" 是完整句)
+        if ("=([{,+-*/\\:".IndexOf(t[^1]) >= 0) return true;
+
+        // 未闭合的三引号 (字符串字面量中途断掉)
+        var triples = 0;
+        for (var i = 0; (i = t.IndexOf("\"\"\"", i, StringComparison.Ordinal)) >= 0; i += 3) triples++;
+        if (triples % 2 == 1) return true;
+
+        // 未闭合的代码围栏
+        var fences = 0;
+        for (var i = 0; (i = t.IndexOf("```", i, StringComparison.Ordinal)) >= 0; i += 3) fences++;
+        return fences % 2 == 1;
+    }
+
+    /// <summary>续写去重: 去掉续写段开头与已输出尾部**重叠**的部分 (模型常把断点前几个字符重打一遍)。</summary>
+    public static string MergeContinuation(string head, string tail)
+    {
+        if (tail.Length == 0) return head;
+        var max = Math.Min(MaxOverlapChars, Math.Min(head.Length, tail.Length));
+        for (var len = max; len >= MinOverlapChars; len--)
+        {
+            var overlapped = head.AsSpan(head.Length - len);
+            if (!overlapped.SequenceEqual(tail.AsSpan(0, len))) continue;
+            // 纯空白重叠不算证据: 缩进/换行在断点两侧本来就相同, 删掉会吃掉真实缩进
+            if (!ContainsNonSpace(overlapped)) continue;
+            return head + tail[len..];
+        }
+        return head + tail;
+    }
+
+    private const int MinOverlapChars = 6;   // 6 起: 覆盖 `print(` 这类真实断点重复
+    private const int MaxOverlapChars = 200;
+
+    private static bool ContainsNonSpace(ReadOnlySpan<char> s)
+    {
+        foreach (var c in s) if (!char.IsWhiteSpace(c)) return true;
+        return false;
+    }
+
+    /// <summary>截断续写提示 (模型无关表述): 给出断点, 只要求补剩余部分。</summary>
+    private const string TruncatedNudge =
+        "[系统] 上一轮回答在输出预算处被**截断**了 (不是写完了)。请**只输出断点之后的剩余内容**, 从断点处直接续写: "
+        + "不要重复断点之前的任何字符, 不要重开场白/标题, 不要解释, 不要重开代码围栏。";
+
+    /// <summary>
+    /// R371 D7 修复: 截断正文 → 升预算 + 断点提示**续写一次**, 语法去重重拼;
+    /// 续写失败/仍截断则保留原文并如实上报 (success 不置假: 半份实现仍可用, 但 truncated 事实必须可见)。
+    /// </summary>
+    private async Task<QueueResponse> RecoverFromTruncatedAsync(
+        ModelCatalogEntry entry, QueuePrompt prompt, QueueResponse first, CancellationToken ct)
+    {
+        var head = first.Content ?? string.Empty;
+        var tailShown = head.Length <= 40 ? head : head[^40..];
+        try
+        {
+            var retried = await CallEntryAsync(entry, prompt, ct,
+                maxTokensOverride: MaxTokensEscalated, extraSystemSuffix: TruncatedNudge).ConfigureAwait(false);
+            var added = (retried.Content ?? string.Empty).TrimEnd();
+            var merged = added.Length == 0 ? head : MergeContinuation(head, retried.Content!);
+            var stillTruncated = LooksTruncated(merged);
+            agent.config.AgentTelemetry.Emit("llm_call_continue", "ModelQueueRouter",
+                ("model", entry.Id), ("reason", "truncated"), ("max_tokens", MaxTokensEscalated),
+                ("before_len", head.Length), ("added_len", added.Length), ("after_len", merged.Length),
+                ("first_completion_tokens", first.CompletionTokens),
+                ("retry_completion_tokens", retried.CompletionTokens),
+                ("still_truncated", stillTruncated), ("recovered", added.Length > 0 && !stillTruncated),
+                ("tail_before", tailShown));
+            if (added.Length == 0) return first;
+            first.Content = merged;
+            return first;
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            agent.config.AgentTelemetry.Emit("llm_call_continue", "ModelQueueRouter",
+                ("model", entry.Id), ("reason", "truncated"), ("recovered", false), ("error", ex.Message));
             return first;
         }
     }

@@ -121,7 +121,10 @@ public sealed class PythonArtifactPlugin : IResponseSegmentPlugin
         _ledger.Add(report);
         agent.config.AgentTelemetry.Emit("script_artifact", "python-artifact",
             ("path", report.Path), ("bytes", report.Bytes), ("sha8", report.Sha256Short),
-            ("compile_valid", report.CompileValid), ("exit", report.ExitCode));
+            ("compile_valid", report.CompileValid), ("exit", report.ExitCode),
+            // R371 D4-b: **机制归因** — fenced(模型自带围栏) vs heuristic(无围栏启发式提升)。
+            // 没有这个字段, "artifact 命中率" 上升无法归因到 D4-b (真机 RUN1/2 是否走启发式无从区分)。
+            ("origin", segment.Promoted ? "heuristic" : "fenced"));
         return content; // 恒等: 不改写 LLM 文本
     }
 
