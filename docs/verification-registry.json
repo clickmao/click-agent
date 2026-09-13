@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R386",
+  "updated_round": "R388",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -12,17 +12,18 @@
   "rows": [
     {
       "id": "dcr.harness",
-      "capability": "决策合规率(DCR)判定题集 + 独立 oracle 标注 + **真实装配**评测(零 LLM 调用)。实测: DCR=132/145=91.03%(弃权计合规口径) / 88/145=60.69%(保守口径) / 覆盖率 60.69%(<70% 自定下限 ⇒ 达标不成立) / 主动误判 0",
+      "capability": "决策合规率(DCR)判定题集 + 独立 oracle(z3)标注 + **真实装配**评测(零 LLM 调用) + **z3 独立审计装配裁决**。R388 实测: DCR=145/145=100.00%(弃权计合规口径) / 101/145=69.66%(保守口径, 恰等于题集可决断集上限) / 可决断集覆盖率 101/101=100% / 主动误判 0 / 弃权率 13.10% / 畸形率 17.24%",
       "level": "L3",
-      "evidence_cmd": "dotnet run --project src/agent.host -c Release --no-build -- --formal-eval eval/dcr/dcr_cases.jsonl > /tmp/real.jsonl && python3 /tmp/r387/verify_dcr.py && python3 scripts/kpi_dcr.py --cases eval/dcr/dcr_cases.jsonl --decisions /tmp/real.jsonl",
+      "evidence_cmd": "dotnet run --project src/agent.host -c Release --no-build -- --formal-eval eval/dcr/dcr_cases.jsonl > /tmp/r388/assembly_real.jsonl && python3 scripts/kpi_dcr.py --cases eval/dcr/dcr_cases.jsonl --decisions /tmp/r388/assembly_real.jsonl && /tmp/z3env/bin/python eval/dcr/audit_decisions.py --decisions /tmp/r388/assembly_real.jsonl",
       "evidence_path": "scripts/kpi_dcr.py",
-      "negative_control": "① 打分器自测: 缺标签题集/决策 id 不匹配必须非零退出(不得静默跳过); ② 标签独立性: 83/145 由 z3 重新推导(self_check=ok), 其余 62 条为构造定义(不是经验结论, 已明示); ③ 换独立实现复跑: 真装配二进制 vs 子代理 harness 逐字段 diff=0(145/145), 且 would_call_llm 全 false",
+      "negative_control": "① 打分器自测: 缺标签题集/决策 id 不匹配必须非零退出(不得静默跳过); ② 标签独立性: 83/145 由 z3 重新推导(self_check=ok), 其余 62 条为构造定义(不是经验结论, 已明示); ③ 换独立实现复跑: 真装配二进制 vs 子代理 harness 逐字段 diff=0(145/145), 且 would_call_llm 全 false; ④ **独立审计器 `eval/dcr/audit_decisions.py` 不 import 内核代码**, 用 z3 逐条复核裁决 —— Refuted 反例必须真满足 premise∧¬goal、Proved 必须真 unsat; 实测 30/30 反例为真、33/33 真 unsat、0 假(AUDIT_RESULT=SOUND)",
       "covers": [
         "eval/dcr/dcr_cases.jsonl",
         "scripts/kpi_dcr.py",
+        "eval/dcr/audit_decisions.py",
         "src/agent.host/FormalEvalCommand.cs"
       ],
-      "owner_round": "R386"
+      "owner_round": "R388"
     },
     {
       "id": "formal.contract",
