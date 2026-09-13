@@ -113,6 +113,16 @@
         "8"
       ],
       "Summary": "C.6: ReasoningScore/CodingScore 1-10 标准值; config/base/models.yaml 目录 (知名模型全参数, key 只存 env 名); 意图×token预估×费用 综合选模; 余额方案调研后定 scheme; /model verify 真实 http 校验 (假 key 期望 401)"
+    },
+    {
+      "Id": "dev-rover-gen",
+      "Text": "rover 生成链: GGUF 词表→字节级 BPE 分词器 + chat template + 采样 + 解码环 ⇒ 本机引擎可当解法后端 (探针 solver=rover)",
+      "Intent": "code_generation",
+      "Level": 1,
+      "ParallelGroup": 1,
+      "DocRef": "docs/plans/v0.26.0-r400-rover-generation-chain.md",
+      "Parameters": [],
+      "Confidence": 1.0
     }
   ]
 }
