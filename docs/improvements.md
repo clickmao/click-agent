@@ -34,6 +34,12 @@ Vulkan 只需 BCL 的 `NativeLibrary` + 函数指针即可自载, 第三方绑�
 
 **报告**: `docs/reports/r396/r396-product-side-vulkan-loader-parity.md`。
 
+**附带解锁 (⑤ dcr-align)**: FAVA 正文 (arXiv `2607.27267v1`) 已抓到并落盘, DCR 口径取得权威原文 ——
+`DCR = (TP+TN)/(TP+TN+FP+FN)`, **无"弃权"项**, 不确定一律 **fail-closed 记 block**; aggregate = **单一二元矩阵**(非各集宏平均);
+trace-conditioned 100.0% 论文自陈为 *labeled diagnostic*, 须与 zero-shot 主表分开读; 论文**未给方差/置信区间** ⇒ ±5pp 仍是本仓自设工程裕度。
+由此解释本仓"合规 100.00% / 保守 69.66%"两面不矛盾(弃权处置不同); 对齐重算(=fail-closed 归并后单一口径)列下轮。
+取证件: `docs/reports/dcr/dcr-align-fava-source-2026-09-13.md`。
+
 ---
 
 ## R395 — BGE 闸门真修 + 停 cron + 融合线实测(RRF 可达值 0.8500)
