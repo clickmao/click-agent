@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R377",
+ "updated_round": "R379",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -288,6 +288,24 @@
     "scripts/kpi_cache_hit.py"
    ],
    "owner_round": "R377"
+  },
+  {
+   "id": "kpi.prompt_cache_hit_redline",
+   "capability": "多轮会话 prompt 缓存命中率红线 KPI (用户钦定 R379, 首要 KPI): 红线 = 多轮会话**第 2 轮起**命中率 ≥90% (目标 98~99%); 前置结构铁律 = ①messages[0] 会话内恒定字节 (会话冻结 systemPrompt) ②历史追加式回放 (不重写/不砍头, 2000→1M token 预算) ③发送字节=回放字节 (SentContent 在回注之后快照) ④每轮增量最小化 (静态块首轮焊进前缀 + 动态块跨轮字节/近重复去重); 逐轮归属 = llm_call 打点 agent_session/turn; 判定 = scripts/kpi_cache_hit.py 的 redline 段 (命中率 ≈ 已发前缀/本轮总量, 故红线等价于每轮增量 ≤ 前缀/9)",
+   "level": "L3",
+   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter 'FullyQualifiedName~MultiTurnCachePrefixTests|FullyQualifiedName~SessionInjectionPlannerTests'  # 9/9 | python3 scripts/kpi_cache_hit.py --since <轮次起点>  # redline 段",
+   "evidence_path": "src/agent.tests/MultiTurnCachePrefixTests.cs",
+   "negative_control": "① 变量块放回 systemPrompt (=旧代码形态) → 轮 2 前缀断言红(已实证, M2 用例); ② 不去重重复注入整块动态上下文 → 增量占比 >10% 红(已实证, P3 负向控制); ③ 空集合去重 → 旧行重复进入增量红(已实证, P2)。真机反证: 修前 30.26%/62.28%/0.00% → 修后 13.05%(冷启动)/66.08%/72.44%; 结构指标 messages[0] 恒定 1149 字符、轮间公共前缀 99.4%/99.6%",
+   "covers": [
+    "src/agent/IndustrialAgentV2.cs",
+    "src/agent/context/SessionInjectionPlanner.cs",
+    "src/agent/templates/IPromptBuilder.cs",
+    "src/agent.modelqueue/ModelQueueRouter.cs",
+    "src/agent.tests/MultiTurnCachePrefixTests.cs",
+    "src/agent.tests/SessionInjectionPlannerTests.cs",
+    "scripts/kpi_cache_hit.py"
+   ],
+   "owner_round": "R379"
   }
  ],
  "aot_check_policy": "release_tag_only",

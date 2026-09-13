@@ -32,8 +32,39 @@ namespace agent;
 /// 2. 上下文被整合到 System Prompt 中，而非只是展示
 /// 3. 支持带历史的对话 Prompt
 /// </summary>
+/// <summary>
+/// R379: 缓存前缀治理 — 会话 → (冻结的系统提示, 冻结时意图)。
+/// messages[0] 必须会话内恒定字节, 否则 provider 的缓存前缀自字节 0 失配。
+/// </summary>
+public sealed class FrozenSystemPromptTable
+{
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<string, (string Prompt, string Intent)> _map =
+        new(StringComparer.Ordinal);
+
+    public int Count => _map.Count;
+    public void Clear() => _map.Clear();
+
+    public (string Prompt, string Intent) GetOrAdd(string sessionId, (string Prompt, string Intent) seed)
+        => _map.GetOrAdd(sessionId, seed);
+
+    public bool TryGet(string sessionId, out (string Prompt, string Intent) value)
+        => _map.TryGetValue(sessionId, out value);
+
+    public void Set(string sessionId, (string Prompt, string Intent) value) => _map[sessionId] = value;
+}
+
 public class IndustrialAgentV2 : AgentBase
 {
+    /// <summary>R379: 会话冻结系统提示表 (缓存前缀铁律: messages[0] 会话内恒定字节)</summary>
+    private readonly FrozenSystemPromptTable _frozenSystemPrompt = new();
+
+    /// <summary>
+    /// R379: 会话 → 已注入过的上下文行哈希 (动态块跨轮行级去重)。
+    /// 已在前几轮追加区出现过的行不再重复注入 —— 历史里已有、信息不丢, 但每轮增量 token 大幅下降
+    /// (实测每轮增量 ~850 token 而会话前缀仅 ~970 token → 不去重则命中率天花板仅 ~53%)。
+    /// </summary>
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<string, SessionInjectionPlanner.InjectionLedger> _sessionSentLines = new(StringComparer.Ordinal);
+
     private readonly IWorkspace _workspace;
     private readonly ICodeGenerator _codeGenerator;
     private readonly agent.registry.AgentRegistry _agentRegistry;
@@ -1028,31 +1059,120 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     contextResult.Error);
             }
             
-            // 3. 获取对话历史
-            var history = await GetConversationHistoryAsync(message.SessionId, 10, ct);
+            // 3. 获取对话历史 (R379: 全量正序回放 — 追加式前缀; 旧实现倒序 Take(10) 头部滚动丢弃)
+            var history = await GetConversationHistoryAsync(message.SessionId, ct);
             
             // 4. ✅ 关键：构建真正发给 LLM 的 Prompt
             var systemPrompt = IntentPromptTemplates.GetSystemPrompt(intent);
+
+            // ── R379 Fix B (真机实证) ──
+            // systemPrompt 由 intent 逐轮选择 → 会话内意图漂移 (实况: 轮1 search → 轮2 general)
+            // 会让 messages[0] 从字节 4 起变化 → DS 缓存前缀 (64 token 单元, 自 token 0 完整匹配) 整段失配,
+            // 实测轮2 命中率 0%。铁律: messages[0] 必须"会话内恒定字节"。
+            // 意图漂移不再改写 system, 而是以 [本轮意图适配] 尾部块注入 user (纯追加区, 不破坏已有前缀)。
+            // R379 增量最小化 (实测: 每轮增量 ~850 token, 会话前缀仅 ~970 token → 命中率天花板 ~53%):
+            //   ① 会话静态块 (画像/偏好/工作区) 只在**会话首轮**焊进前缀, 之后不再重复注入;
+            //   ② 动态块跨轮行级去重 (已发过的行不再重复发 —— 历史里已有);
+            //   ③ 意图漂移只追加一行短提示 (整段专用指引白烧 ~500 字符/轮)。
+            var headerBlocks = SessionInjectionPlanner.Split(contextResult.PromptHeader);
+            var staticBlocks = new List<SessionInjectionPlanner.Block>();
+            var dynamicBlocks = new List<SessionInjectionPlanner.Block>();
+            foreach (var b in headerBlocks)
+            {
+                if (SessionInjectionPlanner.IsSessionStatic(b.Title)) staticBlocks.Add(b);
+                else dynamicBlocks.Add(b);
+            }
+            var staticText = SessionInjectionPlanner.Join(staticBlocks);
+
+            string intentAdaptHint = string.Empty;
+            var systemPromptFrozen = false;
+            var staticHoistedChars = 0;
+            var sysKey = string.IsNullOrEmpty(message.SessionId) ? null : message.SessionId;
+            if (sysKey != null)
+            {
+                if (_frozenSystemPrompt.Count > 512) _frozenSystemPrompt.Clear(); // 有界: 防长驻进程无界增长
+                if (!_frozenSystemPrompt.TryGet(sysKey, out var frozen))
+                {
+                    // 会话首轮: 静态块焊进前缀 (此后每轮都命中这段, 且不再重复注入)
+                    var initial = staticText.Length > 0 ? systemPrompt + "\n\n[会话静态上下文]\n" + staticText : systemPrompt;
+                    staticHoistedChars = initial.Length - systemPrompt.Length;
+                    frozen = (initial, intent);
+                    _frozenSystemPrompt.Set(sysKey, frozen);
+                }
+                else if (!string.Equals(frozen.Intent, intent, StringComparison.Ordinal))
+                {
+                    // 意图漂移: 只追加一行短提示 (专用指引已在冻结人格里) → 不再动 messages[0] 的字节
+                    intentAdaptHint = $"[本轮意图] {intent} (会话人格保持不变)";
+                    systemPromptFrozen = true;
+                    // KPI 归因: 该轮拦截了一次意图漂移 (否则该轮缓存命中率归零)
+                    agent.config.AgentTelemetry.Emit("cache_prefix_guard", "IndustrialAgentV2",
+                        ("frozen", true), ("intent", intent), ("session", message.SessionId));
+                }
+                systemPrompt = frozen.Prompt;
+            }
+            else if (staticText.Length > 0)
+            {
+                // 无会话 (一次性请求): 无处冻结 → 静态块随本轮尾部下发
+                dynamicBlocks.Insert(0, new SessionInjectionPlanner.Block("[会话静态上下文]", staticText));
+            }
 
             // 下轮预估读回 (v7.11): 上轮循环落盘的预估 → 指示 LLM 用户本轮输入倾向
             var identity = _agentRegistry.Get(message.SenderId is { Length: > 0 } ? message.SenderId : "main")
                             ?? _agentRegistry.Main;
             var forecast = agent.registry.NextTurnForecast.Load(_dataStoragePath, identity.Uid);
             var forecastHeader = agent.registry.NextTurnForecast.ToPromptHeader(forecast);
+            // ── R379 缓存前缀稳定化 (用户钦定 KPI 红线: 多轮会话第 2 轮起命中率 ≥90%, 目标 98~99%) ──
+            // systemPrompt 是 messages[0] → 只要它每轮变一个字节, provider 的缓存前缀就从字节 0 失配。
+            // 因此 systemPrompt 保持"会话内恒定", 一切每轮变化的块 (下轮预估 / 技能知识 / 上下文召回)
+            // 一律内联进"本轮 user 内容", 并落进 SentContent 作为回放字节 (追加区语义)。
+            var inlineBlocks = new List<string>();
+            if (intentAdaptHint.Length > 0)
+                inlineBlocks.Add(intentAdaptHint);
             if (forecastHeader.Length > 0)
-                systemPrompt = systemPrompt + "\n" + forecastHeader;
-            // R326-f: KnowledgeHint skill 知识注入 (命中后 systemPrompt 尾挂知识参考; 本轮一次)
+                inlineBlocks.Add(forecastHeader);
+            // R326-f: KnowledgeHint skill 知识注入 (命中后尾挂知识参考; 本轮一次)
             if (_pendingSkillKnowledge.Length > 0)
             {
-                systemPrompt = systemPrompt + "\n\n[技能知识参考]\n" + _pendingSkillKnowledge;
+                inlineBlocks.Add("[技能知识参考]\n" + _pendingSkillKnowledge);
                 _pendingSkillKnowledge = string.Empty;
             }
+            // 动态块: 跨轮行级去重后下发 (去重集合按会话持有; 一次性请求用临时集合)
+            var dynKept = 0;
+            var dynDropped = 0;
+            var dynText = string.Empty;
+            if (dynamicBlocks.Count > 0)
+            {
+                if (sysKey != null)
+                {
+                    var seen = _sessionSentLines.GetOrAdd(sysKey, _ => new SessionInjectionPlanner.InjectionLedger());
+                    lock (seen) { (dynText, dynKept, dynDropped) = SessionInjectionPlanner.Dedupe(dynamicBlocks, seen); }
+                }
+                else
+                {
+                    (dynText, dynKept, dynDropped) = SessionInjectionPlanner.Dedupe(dynamicBlocks, new SessionInjectionPlanner.InjectionLedger());
+                }
+            }
+            if (dynText.Length > 0)
+                inlineBlocks.Add(dynText);
+
+            var sentUserContent = message.Content;
+            if (inlineBlocks.Count > 0)
+                sentUserContent = message.Content + "\n\n[本轮参考上下文]\n" + string.Join("\n\n", inlineBlocks);
+            message.SentContent = sentUserContent;
 
             var prompt = _promptBuilder.BuildWithHistory(
                 message,
                 contextResult,
                 systemPrompt,
                 history);
+            // 上下文/预估/技能知识已内联在 user 消息里 → 不再作为独立 system 消息发出 (否则切断前缀)
+            prompt.UserMessage = sentUserContent;
+            prompt.ContextPrompt = string.Empty;
+            // R379 KPI 归属 (红线判据: 多轮会话第 2 轮起命中率 ≥90%) — 无会话/轮次则 KPI 无法追到"第几轮"
+            prompt.SessionId = message.SessionId;
+            prompt.TurnIndex = history.Count / 2 + 1;
+            prompt.EstimatedTokens += EstimateTokens(forecastHeader) + EstimateTokens(sentUserContent)
+                                      - EstimateTokens(message.Content) - EstimateTokens(contextResult.PromptHeader);
             
             _logger.LogInformation(
                 "Built prompt: {Tokens} tokens (Context: {ContextTokens})",
@@ -1064,7 +1184,14 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 ("total_tokens", prompt.EstimatedTokens),
                 ("history_msgs", prompt.History.Count),
                 ("history_tokens", prompt.History.Sum(h => EstimateTokens(h.Content))),
-                ("context_tokens", EstimateTokens(prompt.ContextPrompt)));
+                ("history_trimmed", prompt.HistoryTrimmedMessages),
+                ("inline_context_tokens", EstimateTokens(contextResult.PromptHeader)),
+                ("sent_user_tokens", EstimateTokens(prompt.UserMessage)),
+                ("inline_dedupe_kept", dynKept),
+                ("inline_dedupe_dropped", dynDropped),
+                ("static_hoisted_chars", staticHoistedChars),
+                ("prefix_frozen", sysKey != null),
+                ("intent_drift_guarded", systemPromptFrozen));
             
             // v0.13.3 M2 (用户钦定 Baseline 换血): 上下文预算门 — est 与 WARN/HARD 比较,
             // normal/isolated_micro/hard_drop 三态打点 (微隔离触发的前置观测点; 判定器在 agent.exploration)。
@@ -1211,6 +1338,11 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             {
                 // 回注摘要拼在用户消息尾 (微步骤 ≤200 tok/条 + 探索 digest 截断 — 预算封顶)
                 prompt.UserMessage = prompt.UserMessage + "\n\n[探索与微步骤结论回注]\n" + restoreBlock;
+                // ── R379 Fix A (真机实证) ──
+                // 该追加发生在 SentContent 快照之后 → 存进会话的是"旧字节", 回放时少这一个块 (实测 turn2 的
+                // user 消息被回放成 1150 字符, 而当时实发 1222 字符 → 前缀在历史中部断裂)。
+                // 铁律: SentContent = 最终发送字节。任何对 prompt.UserMessage 的事后追加都必须回写。
+                message.SentContent = prompt.UserMessage;
             }
             // v0.11.0 R129 (PGO v2 D3): LLM 全段耗时 (含队列路由/余额检查; 与 llm_call.ms 差值 = 路由开销)
             var llmSegSw = System.Diagnostics.Stopwatch.StartNew();
@@ -2056,23 +2188,37 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
         return await _contextAssembler.AssembleAsync(request, ct);
     }
     
+    /// <summary>
+    /// R379 缓存前缀稳定化: 会话历史"全量正序回放"。
+    /// · 不再倒序 Take(N) —— 窗口滑动会丢头部, 让 provider 的缓存前缀从丢弃点断裂;
+    /// · 回放 SentContent (当初真正发出去的字节, 含本轮内联上下文), 保证逐字节一致;
+    /// · OrderBy 用稳定排序 (LINQ OrderBy 稳定) 且不加随机 tie-breaker, 同刻消息保持追加序。
+    /// 超预算的治理交给 PromptBuilder (整轮丢弃 + 打点), 不在此处静默截断。
+    /// </summary>
     private async Task<List<Message>> GetConversationHistoryAsync(
         string sessionId,
-        int maxMessages,
         CancellationToken ct)
     {
         if (string.IsNullOrEmpty(sessionId))
             return new List<Message>();
-        
+
         var session = await _sessionManager.GetSessionAsync(sessionId);
         if (session == null)
             return new List<Message>();
-        
+
         return session.Messages
             .Where(m => m.Role != MessageRole.System)
-            .OrderByDescending(m => m.Timestamp)
-            .Take(maxMessages)
-            .Reverse()
+            .OrderBy(m => m.Timestamp)
+            .Select(m => new Message
+            {
+                Id = m.Id,
+                SessionId = m.SessionId,
+                SenderId = m.SenderId,
+                Role = m.Role,
+                Type = m.Type,
+                Timestamp = m.Timestamp,
+                Content = m.SentContent ?? m.Content,
+            })
             .ToList();
     }
     

@@ -36,6 +36,14 @@ public class Message
     /// </summary>
     [JsonPropertyName("content")]
     public string Content { get; set; } = string.Empty;
+
+    /// <summary>
+    /// R379 缓存前缀稳定化: 实际发送给 LLM 的 user 内容 (任务原文 + 本轮内联易变上下文)。
+    /// 多轮回放必须逐字节重放"当初真正发出去的字节", 否则 provider 的缓存前缀单元失配
+    /// (用户钦定 KPI 红线: 多轮会话第 2 轮起命中率 ≥90%, 目标 98~99%)。为空时回退 Content。
+    /// </summary>
+    [JsonPropertyName("sent_content")]
+    public string? SentContent { get; set; }
     
     /// <summary>
     /// 消息类型

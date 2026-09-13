@@ -53,6 +53,9 @@ public class Prompt
     /// 对话历史
     /// </summary>
     public List<PromptMessage> History { get; set; } = new();
+
+    /// <summary>R379: 本次因预算上限被整轮丢弃的历史消息条数 (0 = 完全追加式, KPI 归因用)。</summary>
+    public int HistoryTrimmedMessages { get; set; }
     
     /// <summary>
     /// 当前用户消息
@@ -74,6 +77,12 @@ public class Prompt
     /// Token 估算
     /// </summary>
     public int EstimatedTokens { get; set; }
+
+    /// <summary>R379: 会话标识 (缓存前缀 KPI 归属; 空 = 一次性请求)。</summary>
+    public string? SessionId { get; set; }
+
+    /// <summary>R379: 本会话内第几轮 (1 起; 红线判据 = 第 2 轮起命中率 ≥90%)。</summary>
+    public int TurnIndex { get; set; }
     
     /// <summary>
     /// 组合为完整 Prompt
@@ -139,7 +148,10 @@ public class PromptBuilder : IPromptBuilder
     
     public PromptBuilder(
         int maxContextTokens = 4000,
-        int maxHistoryTokens = 2000,
+        // R379 (用户钦定): 2000 → 1_000_000。历史预算是命中率的分母治理阀: 预算越小越常触发整轮丢弃,
+        // 每次丢弃都让该轮命中率塌到接近 0 (前缀断裂), 与"第 2 轮起 ≥90%、目标 98~99%"直接冲突。
+        // 1M 实为"不触发丢弃"的安全阀 (自检/真机同口径), 真正的前缀治理靠追加式回放而非截断。
+        int maxHistoryTokens = 1_000_000,
         bool includeMetadata = false)
     {
         _maxContextTokens = maxContextTokens;
@@ -184,49 +196,48 @@ public class PromptBuilder : IPromptBuilder
         // v0.12.0 A2: 图像附件透传 (CLI -img / Message.ImageAttachments) → LLM caller 多段 content
         prompt.ImageUrls = userMessage.ImageAttachments;
 
-        // 收集历史消息（从后往前取，保持最近的消息）
-        // 注意：当前消息不在 history 中（因为还没添加）
+        // ── R379 缓存前缀稳定化 (用户钦定 KPI 红线) ──
+        // 历史必须"追加式全量回放": provider 的缓存前缀单元只在"请求从第 0 个 token 起完整匹配"时命中。
+        // 旧实现有三处破坏前缀, 已全部移除:
+        //   ① 倒序 Take(10) 窗口滑动 → 会话变长时头部消息被丢, 前缀从丢弃点断裂;
+        //   ② >6 条滚动摘要重写 → 摘要内容随旧消息滚动变化, 且把已发送字节改写成了别的字节;
+        //   ③ 2000 token 预算 break → 按 token 边界截断消息序列。
+        // 现策略: 正序全量保留; 仅当总预算超上限时, 从"最旧的一整轮"(user+assistant 对) 整体丢弃,
+        // 且一次丢到 60% 预算 (摊薄触发频率), 丢弃条数打进 HistoryTrimmedMessages 供 KPI 归因。
         var historyMessages = conversationHistory
-            .Where(m => m.Role != MessageRole.System) // 排除系统消息
-            .OrderByDescending(m => m.Timestamp)
-            .Take(10) // 最近10条
-            .Reverse() // 恢复正序
+            .Where(m => m.Role != MessageRole.System)
+            .OrderBy(m => m.Timestamp)
             .ToList();
-        
+
         var historyTokens = 0;
-        // v0.11.0 R5: 老消息滚动摘要 — >6 条时把更早的合并为单条摘要, 保最近 6 条完整 (token 治理)
-        const int RecentFullCount = 6;
-        if (historyMessages.Count > RecentFullCount)
+        var trimmed = 0;
+        var allTokens = historyMessages.Sum(m => EstimateTokens(m.Content));
+        if (allTokens > _maxHistoryTokens && _maxHistoryTokens > 0)
         {
-            var older = historyMessages.Take(historyMessages.Count - RecentFullCount).ToList();
-            var digest = string.Join(" | ", older.Select(m =>
+            var target = (int)(_maxHistoryTokens * 0.6);
+            var budget = allTokens;
+            var start = 0;
+            while (start < historyMessages.Count && budget > target)
             {
-                var c = m.Content.Replace("\n", " ").Trim();
-                return (m.Role == MessageRole.User ? "问:" : "答:") + (c.Length > 40 ? c[..40] + "…" : c);
-            }));
-            prompt.History.Add(new PromptMessage
-            {
-                Role = MessageRole.System,
-                Content = "【早前对话摘要】" + digest,
-                Timestamp = older[0].Timestamp,
-            });
-            historyTokens += EstimateTokens(digest) + 10;
-            historyMessages = historyMessages.Skip(historyMessages.Count - RecentFullCount).ToList();
+                budget -= EstimateTokens(historyMessages[start].Content);
+                start++;
+                while (start < historyMessages.Count && historyMessages[start].Role != MessageRole.User)
+                    start++; // 对齐整轮边界: 丢到下一个 user 消息之前
+            }
+            trimmed = start;
+            historyMessages = historyMessages.Skip(start).ToList();
         }
         foreach (var msg in historyMessages)
         {
-            var msgTokens = EstimateTokens(msg.Content);
-            if (historyTokens + msgTokens > _maxHistoryTokens)
-                break;
-            
             prompt.History.Add(new PromptMessage
             {
                 Role = msg.Role,
                 Content = msg.Content,
                 Timestamp = msg.Timestamp
             });
-            historyTokens += msgTokens;
+            historyTokens += EstimateTokens(msg.Content);
         }
+        prompt.HistoryTrimmedMessages = trimmed;
         
         // 重新计算总 Token
         prompt.EstimatedTokens += historyTokens;

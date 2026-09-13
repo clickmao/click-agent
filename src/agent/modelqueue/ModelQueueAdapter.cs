@@ -15,7 +15,11 @@ public sealed class ModelQueueAdapter : ILLMCaller, agent.subagent.ILLMCallerFor
 
     public ModelQueueAdapter(ModelQueueRouter router) => _router = router;
 
-    public async Task<LLMResponse> CallAsync(Prompt prompt, CancellationToken ct = default)
+    /// <summary>
+    /// R379: Prompt → QueuePrompt 协议转换 (自 CallAsync 抽出为单一事实源, 缓存前缀机检直接消费)。
+    /// 契约: History 按时间正序**全量**映射 (倒序窗口/截断都会让 provider 缓存前缀失配)。
+    /// </summary>
+    public static QueuePrompt ToQueuePrompt(Prompt prompt)
     {
         var qp = new QueuePrompt
         {
@@ -23,6 +27,8 @@ public sealed class ModelQueueAdapter : ILLMCaller, agent.subagent.ILLMCallerFor
             ContextPrompt = prompt.ContextPrompt,
             UserMessage = prompt.UserMessage,
             EstimatedTokens = prompt.EstimatedTokens,
+            SessionId = prompt.SessionId,
+            TurnIndex = prompt.TurnIndex,
             // v0.11.0 R22: 推理档位透传 (deepseek 实测 low 档 reasoning 24ch vs 90ch)
             ReasoningEffort = prompt.ReasoningEffort,
             // v0.12.0 A2: 图像附件透传 (Router 带图强制云端 + parts[] — 本地 qwen 无视觉, 缺陷 62)
@@ -34,6 +40,12 @@ public sealed class ModelQueueAdapter : ILLMCaller, agent.subagent.ILLMCallerFor
                 Role = msg.Role == MessageRole.User ? "user" : "assistant",
                 Content = msg.Content,
             });
+        return qp;
+    }
+
+    public async Task<LLMResponse> CallAsync(Prompt prompt, CancellationToken ct = default)
+    {
+        var qp = ToQueuePrompt(prompt);
         // R373: 意图透传 (此前硬编码 "general" → 首轮预算策略永远匹配不上, 真机铁证:
         // 代码任务首轮 completion_tokens=8192 被推理吃满 → content 空/半截, 每题 2 次调用)。
         var intent = string.IsNullOrWhiteSpace(prompt.Intent) ? "general" : prompt.Intent!;

@@ -17,6 +17,10 @@ public sealed class QueuePrompt
     /// <summary>预估输入 token (费用估算/选模)</summary>
     public int EstimatedTokens { get; set; }
 
+    /// <summary>R379: 会话标识 + 轮次 (缓存前缀 KPI 逐轮归属; 空/0 = 一次性请求)</summary>
+    public string? SessionId { get; set; }
+    public int TurnIndex { get; set; }
+
     /// <summary>v0.11.0 R22: 推理档位建议 (null=默认深推理; low=轻思考)。</summary>
     public string? ReasoningEffort { get; set; }
 
@@ -307,6 +311,8 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             var cacheKv = PromptCacheKpi.Fields(resp.CacheHitTokens, resp.CacheMissTokens);
             agent.config.AgentTelemetry.Emit("llm_call", "ModelQueueRouter",
                 ("model", entry.Id), ("provider", entry.Provider),
+                // R379: 逐轮归属 (红线判据: 多轮第 2 轮起命中率 ≥90%) — 无此字段则无法把 KPI 追到"第几轮"
+                ("agent_session", prompt.SessionId ?? ""), ("turn", prompt.TurnIndex),
                 ("prompt_tokens", resp.PromptTokens), ("completion_tokens", resp.CompletionTokens),
                 ("total_tokens", resp.TokensUsed), ("success", resp.Success),
                 ("empty_reply", string.IsNullOrEmpty(resp.Content)),
@@ -548,7 +554,7 @@ public sealed class ModelQueueRouter : IModelQueueCaller
     /// v0.12.0 A2: 请求序列化 — 无 parts 走 source-gen (原路); 任一消息 HasParts → 手写
     /// Utf8JsonWriter 输出 parts[] 形态 (source-gen 对 union 不友好, 手写 AOT 安全)。
     /// </summary>
-    private static string SerializeChatRequest(QueueChatRequest request)
+    internal static string SerializeChatRequest(QueueChatRequest request)
     {
         if (!request.Messages.Any(m => m.HasParts))
             return JsonSerializer.Serialize(request, ModelQueueJsonContext.Default.QueueChatRequest);
@@ -763,6 +769,31 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         }
     }
 
+    private static int _reqDumpSeq;
+
+    /// <summary>
+    /// R378 (缓存命中率归因): 把发给提供方的请求体原样落盘, 目录由 env AGENTFRAMEWORK_DUMP_REQUEST 指定。
+    /// 用途: 两次调用的最长公共前缀 = 提供方实际可缓存的上界; 据此定位"第一个分歧字节"。
+    /// 默认关闭 (未设 env 时零开销), 失败静默且不影响主链。
+    /// </summary>
+    private static void DumpRequestIfRequested(string body)
+    {
+        var dir = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_DUMP_REQUEST");
+        if (string.IsNullOrWhiteSpace(dir)) return;
+        try
+        {
+            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+            var n = System.Threading.Interlocked.Increment(ref _reqDumpSeq);
+            var stamp = DateTime.UtcNow.ToString("HHmmss_fff", System.Globalization.CultureInfo.InvariantCulture);
+            var path = Path.Combine(dir, "req_" + stamp + "_" + n.ToString("00", System.Globalization.CultureInfo.InvariantCulture) + ".json");
+            File.WriteAllText(path, body, new System.Text.UTF8Encoding(false));
+        }
+        catch
+        {
+            // 诊断通道: 任何失败都不应影响主链
+        }
+    }
+
     private async Task<QueueResponse> CallEntryAsync(ModelCatalogEntry entry, QueuePrompt prompt, CancellationToken ct,
         int? maxTokensOverride = null, string? extraSystemSuffix = null)
     {
@@ -779,6 +810,53 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         }
 
         var client = _httpClientFactory.CreateClient("modelqueue");
+        var targetEndpoint = prompt.ImageUrls.Count > 0 ? VisionPayload.ToChatEndpoint(entry.Endpoint) : entry.Endpoint;
+        var messages = BuildMessages(prompt, extraSystemSuffix);
+        var request = new QueueChatRequest { Model = entry.Id, Messages = messages, ReasoningEffort = prompt.ReasoningEffort };
+        if (maxTokensOverride is int mt && mt > 0) request.MaxTokens = mt;
+        var requestBody = SerializeChatRequest(request);
+        // R378 归因: 请求体按需落盘 (env AGENTFRAMEWORK_DUMP_REQUEST=目录) —— 缓存命中率前缀分歧点可测
+        DumpRequestIfRequested(requestBody);
+        using var http = new HttpRequestMessage(HttpMethod.Post, targetEndpoint)
+        {
+            Content = new StringContent(requestBody, System.Text.Encoding.UTF8, "application/json"),
+        };
+        http.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
+
+        using var resp = await client.SendAsync(http, ct);
+        var body = await resp.Content.ReadAsStringAsync(ct);
+        if (!resp.IsSuccessStatusCode)
+        {
+            throw new HttpRequestException($"HTTP {(int)resp.StatusCode}: {Truncate(body, 200)}");
+        }
+
+        var parsed = JsonSerializer.Deserialize(body, ModelQueueJsonContext.Default.OpenAIChatResponse);
+        var choice = parsed?.Choices?.FirstOrDefault();
+        var content = choice?.Message?.Content ?? string.Empty;
+        // v0.21.1: 推理模型思考链捕获 (DeepSeek deepseek-flash/reasoner 实测返回 reasoning_content)
+        var reasoning = choice?.Message?.ReasoningContent;
+        return new QueueResponse
+        {
+            Content = content,
+            Success = true,
+            Model = entry.Id,
+            PromptTokens = parsed?.Usage?.PromptTokens ?? 0,
+            TokensUsed = parsed?.Usage?.TotalTokens ?? 0,
+            CacheHitTokens = parsed?.Usage?.PromptCacheHitTokens,
+            CacheMissTokens = parsed?.Usage?.PromptCacheMissTokens,
+            ReasoningContent = reasoning,
+        };
+    }
+
+    /// <summary>
+    /// R379: 消息列表装配 (自 CallEntryAsync 抽出, 供缓存前缀不变式机检直接消费, 无需网络)。
+    /// 顺序契约: system(会话内恒定字节) → context(system, 本轮) → history(追加式全量回放) → user(本轮)
+    ///   → [extraSystemSuffix]。
+    /// ⚠ extraSystemSuffix 必须追加在末尾: 任何把它前置到 system 首位的改动都会切断已缓存前缀
+    ///   (MultiTurnCachePrefixTests 负向控制会红)。同理 system 一旦发出, 会话内不得再变。
+    /// </summary>
+    internal static List<QueueChatMessage> BuildMessages(QueuePrompt prompt, string? extraSystemSuffix = null)
+    {
         var messages = new List<QueueChatMessage>();
         if (!string.IsNullOrEmpty(prompt.SystemPrompt))
             messages.Add(new QueueChatMessage { Role = "system", Content = prompt.SystemPrompt });
@@ -809,42 +887,9 @@ public sealed class ModelQueueRouter : IModelQueueCaller
 
         // v0.12.0 A3 (真缺陷 64): coding 端点不收图像 (HTTP 400 1210 真机实证) —
         // 带图请求改写标准 v4 chat 端点 (glm-5.3-flash 视觉走 v4, data URL 真机已验 1445tok)。
-        var targetEndpoint = prompt.ImageUrls.Count > 0 ? VisionPayload.ToChatEndpoint(entry.Endpoint) : entry.Endpoint;
         if (!string.IsNullOrWhiteSpace(extraSystemSuffix))
             messages.Add(new QueueChatMessage { Role = "system", Content = extraSystemSuffix });
-        var request = new QueueChatRequest { Model = entry.Id, Messages = messages, ReasoningEffort = prompt.ReasoningEffort };
-        if (maxTokensOverride is int mt && mt > 0) request.MaxTokens = mt;
-        using var http = new HttpRequestMessage(HttpMethod.Post, targetEndpoint)
-        {
-            Content = new StringContent(
-                SerializeChatRequest(request),
-                System.Text.Encoding.UTF8, "application/json"),
-        };
-        http.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
-
-        using var resp = await client.SendAsync(http, ct);
-        var body = await resp.Content.ReadAsStringAsync(ct);
-        if (!resp.IsSuccessStatusCode)
-        {
-            throw new HttpRequestException($"HTTP {(int)resp.StatusCode}: {Truncate(body, 200)}");
-        }
-
-        var parsed = JsonSerializer.Deserialize(body, ModelQueueJsonContext.Default.OpenAIChatResponse);
-        var choice = parsed?.Choices?.FirstOrDefault();
-        var content = choice?.Message?.Content ?? string.Empty;
-        // v0.21.1: 推理模型思考链捕获 (DeepSeek deepseek-flash/reasoner 实测返回 reasoning_content)
-        var reasoning = choice?.Message?.ReasoningContent;
-        return new QueueResponse
-        {
-            Content = content,
-            Success = true,
-            Model = entry.Id,
-            PromptTokens = parsed?.Usage?.PromptTokens ?? 0,
-            TokensUsed = parsed?.Usage?.TotalTokens ?? 0,
-            CacheHitTokens = parsed?.Usage?.PromptCacheHitTokens,
-            CacheMissTokens = parsed?.Usage?.PromptCacheMissTokens,
-            ReasoningContent = reasoning,
-        };
+        return messages;
     }
 
     private static string Truncate(string s, int max) =>
