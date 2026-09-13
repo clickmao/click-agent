@@ -24,6 +24,18 @@ log "idle ok (load=$l1 mem=${memavail}MB)"
 export PATH="$HOME/.dotnet:$PATH"
 set -a; [ -f .env.local ] && . ./.env.local; set +a
 
+# R380: 模型必须在位, 否则训练必然失败 —— 缺失即记录并退出 (不进入 900s 傻等)
+if [ -z "${BGE_MODEL:-}" ]; then
+  for c in "$REPO/.agentframework/models/bge-q8.gguf" "$HOME/.agentframework/models/bge-q8.gguf" \
+           "/tmp/models/bge-base-zh-v1.5-q8.gguf" "/tmp/p3probe/models/bge-q8.gguf"; do
+    [ -f "$c" ] && { export BGE_MODEL="$c"; break; }
+  done
+fi
+if [ ! -f "${BGE_MODEL:-/nonexistent}" ]; then
+  log "skip train: 嵌入模型缺失 (设 BGE_MODEL)"; exit 0
+fi
+log "model=$BGE_MODEL"
+
 # ── 数据采集 (真实 query 收割 + LLM 出题, 有预算上限) ──
 col=$(python3 eval/bge/collect_pairs.py --harvest --gen --budget 240 --max-pairs 120 2>>"$LOG")
 log "collect: ${col:-<empty>}"

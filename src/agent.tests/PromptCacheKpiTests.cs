@@ -100,7 +100,9 @@ public class PromptCacheKpiTests
         var dataBlocks = blocks.Where(b => b.Contains("(\"total_tokens\", ")).ToArray();
         Assert.Equal(3, dataBlocks.Length);                     // 带真实响应对象的三处
         foreach (var b in dataBlocks)
-            Assert.Contains("cacheKv[0], cacheKv[1], cacheKv[2]);", b);   // 真铺设, 非"算了不用"
+            // R380 加强: 三处都要同时铺 R377 三元组 + R380 二元组 (只铺前三个 → "算了不用"复发)
+            Assert.Contains("cacheKv[0], cacheKv[1], cacheKv[2], effKv[0], effKv[1]);", b);
+        Assert.Equal(3, src.Split("var effKv = PromptCacheKpi.EffectiveFields(").Length - 1);
         Assert.Equal(3, src.Split("var cacheKv = PromptCacheKpi.Fields(").Length - 1);
         Assert.DoesNotContain("(\"cache_hit_rate\", 0)", src);   // 不得硬编码 0 冒充未上报
         Assert.Contains("CacheHitTokens = parsed?.Usage?.PromptCacheHitTokens", src);

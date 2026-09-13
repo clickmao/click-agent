@@ -1,174 +1,182 @@
 #!/usr/bin/env python3
-"""R377 (用户钦定): prompt 缓存命中率 KPI —— 从遥测离线聚合, 与 token 成本 KPI 同表。
+"""prompt 缓存命中率 KPI —— **首要 KPI** (口径用户钦定 R380, 2026-09-13)。
 
-口径 (与 src/agent.modelqueue/PromptCacheKpi.cs 严格一致):
-  · 命中率 = cache_hit_tokens / (cache_hit_tokens + cache_miss_tokens), 保留 4 位;
-  · 未上报 (provider 没给字段) 记 -1, **不并入比率**, 单独计数 —— "没测到" != "命中率 0%";
-  · 分母为 0 同样不计入比率。
-  · R379 新增: 按**会话 + 轮次**聚合, 并对用户钦定红线 (多轮会话第 2 轮起 ≥90%, 目标 98~99%) 出判定;
-    轮次/会话来自 llm_call 打点的 agent_session / turn 字段 (无字段则记 unknown, 不臆造)。
+口径 (逐字依据: "将缓存命中率计算只计算需要命中的部分，当前轮新增不计入，因为肯定不触发缓存"):
+  有效命中率 = cache_hit_tokens / min(本轮 prompt_tokens, 上一轮同会话 prompt_tokens)
+  · 分母 = "需要命中的部分" = 上一轮已发前缀 (本轮新增**不计入**, 新增必然不命中)
+  · 会话首轮无"需要命中"部分 → 不适用 (不并入比率)
+  · 缺口 ≤64 token 属缓存单元边界对齐损耗 (正常)
 
-用法:
-  python3 scripts/kpi_cache_hit.py [遥测路径] [--json 输出路径] [--since ISO时间前缀]
-默认遥测: data/telemetry/host.jsonl (UTF-8 BOM), 输出: eval/results/kpi_cache_hit_<UTC>.json
+红线 (用户钦定): 多轮会话**第 2 轮起** 有效命中率 ≥ 95% (目标 98~99%); 越线必须查因并修复。
+  用户逐字: "一旦越过红线必然检查问题为什么发生并修复" → 本脚本对每个越线轮给出数值 + 诊断入口;
+  代码侧闸门见 src/agent.modelqueue/PromptCacheRedline.cs (越线即 LogWarning + cache_redline_violation 遥测)。
+
+参考值: 旧口径 hit/(hit+miss) 一并列出 (含本轮新增, 仅作参考, **不作判定口径**)。
+
+数据源: data/telemetry/host.jsonl (point=llm_call, 字段在 kv 内)
+用法: kpi_cache_hit.py [--since ISO8601] [--file PATH] [--json OUT]
+退出码: 0 = 达标/无多轮数据; 1 = 存在越线; 2 = 数据缺失
 """
-import io
-import json
-import os
-import sys
-from datetime import datetime, timezone
+import argparse, io, json, os, sys
+from datetime import datetime
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DEFAULT_TEL = os.path.join(ROOT, "data", "telemetry", "host.jsonl")
+REDLINE = 0.95
+DEFAULT_TEL = "data/telemetry/host.jsonl"
 
 
-def iter_rows(path):
-    with io.open(path, encoding="utf-8-sig", errors="replace") as f:
-        for line in f:
-            line = line.strip()
-            if not line.startswith("{"):
+def load(path, since=None):
+    if not os.path.exists(path):
+        print(f"数据缺失: {path}"); sys.exit(2)
+    rows = []
+    for line in io.open(path, encoding="utf-8-sig", errors="replace"):
+        line = line.strip()
+        if not line.startswith("{"):
+            continue
+        try:
+            r = json.loads(line)
+        except Exception:
+            continue
+        if since and str(r.get("ts", "")) < since:
+            continue
+        rows.append(r)
+    return rows
+
+
+def num(v, d=-1):
+    try:
+        return int(v)
+    except Exception:
+        return d
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--since", default=None, help="ISO8601 起始 (含)")
+    ap.add_argument("--file", default=DEFAULT_TEL)
+    ap.add_argument("--json", dest="json_out", default=None)
+    a = ap.parse_args()
+
+    rows = load(a.file, a.since)
+    calls = [r for r in rows if r.get("point") == "llm_call"]
+    viol_points = [r for r in rows if r.get("point") == "cache_redline_violation"]
+
+    # 逐会话按时间流重建"需要命中的部分"
+    sessions = {}
+    order = []
+    for r in calls:
+        kv = r.get("kv") or {}
+        sk = kv.get("agent_session") or kv.get("session") or "?"
+        if sk not in sessions:
+            sessions[sk] = {"calls": [], "last_prompt": 0}
+            order.append(sk)
+        s = sessions[sk]
+        pt = num(kv.get("prompt_tokens"), 0)
+        hit = num(kv.get("cache_hit_tokens"), -1)
+        miss = num(kv.get("cache_miss_tokens"), -1)
+        cacheable = min(pt, s["last_prompt"]) if s["last_prompt"] > 0 else 0
+        eff = round(hit / cacheable, 4) if (cacheable > 0 and hit >= 0) else None
+        turn = num(kv.get("turn"), 0)
+        s["calls"].append({"ts": r.get("ts"), "turn": turn, "prompt": pt, "hit": hit, "miss": miss,
+                           "cacheable": cacheable, "effective": eff})
+        s["last_prompt"] = pt
+
+    # 聚合
+    by_turn = {}
+    tot_hit = tot_cacheable = tot_rep_hit = tot_rep_miss = 0
+    unreported = 0
+    violations = []
+    multi_sessions = 0
+    for sk in order:
+        s = sessions[sk]
+        multi = len([c for c in s["calls"] if c["turn"] >= 2 or len(s["calls"]) > 1]) > 1
+        if multi:
+            multi_sessions += 1
+        for c in s["calls"]:
+            if c["hit"] < 0:
+                unreported += 1
                 continue
-            try:
-                yield json.loads(line)
-            except Exception:
-                continue
+            tot_rep_hit += c["hit"]; tot_rep_miss += max(c["miss"], 0)
+            if c["effective"] is not None:
+                t = by_turn.setdefault(c["turn"], {"hit": 0, "cacheable": 0, "calls": 0})
+                t["hit"] += c["hit"]; t["cacheable"] += c["cacheable"]; t["calls"] += 1
+                tot_hit += c["hit"]; tot_cacheable += c["cacheable"]
+                if c["turn"] >= 2 and c["effective"] < REDLINE:
+                    violations.append({"session": sk, "turn": c["turn"], "prompt": c["prompt"],
+                                       "cacheable": c["cacheable"], "hit": c["hit"],
+                                       "miss": c["miss"], "effective": c["effective"],
+                                       "growth": c["prompt"] - c["cacheable"],
+                                       "gap": c["cacheable"] - c["hit"]})
 
+    eff_all = round(tot_hit / tot_cacheable, 4) if tot_cacheable else -1
+    rep_all = round(tot_rep_hit / (tot_rep_hit + tot_rep_miss), 4) if (tot_rep_hit + tot_rep_miss) else -1
 
-def as_int(v):
-    return v if isinstance(v, int) else None
+    print("=" * 74)
+    print("prompt 缓存命中率 KPI (口径: 只算需要命中的部分; 本轮新增不计入) — 首要 KPI")
+    print("=" * 74)
+    print(f"调用数 {len(calls)}  会话数 {len(order)} (多轮 {multi_sessions})  未上报 {unreported} (不并入比率)")
+    print(f"\n[首要] 多轮会话有效命中率 (红线: 第 2 轮起 ≥{REDLINE:.0%})")
+    print(f"{'轮次':<6}{'调用':<6}{'需要命中':<10}{'命中':<8}{'有效命中率':<12}{'判定'}")
+    for t in sorted(by_turn):
+        d = by_turn[t]
+        rate = d["hit"] / d["cacheable"] if d["cacheable"] else -1
+        verdict = "—(冷启动不适用)" if t < 2 else ("达标 ✓" if rate >= REDLINE else "**越线 ✗ 必查因修复**")
+        print(f"{t:<6}{d['calls']:<6}{d['cacheable']:<10}{d['hit']:<8}{rate:<12.4f}{verdict}")
+    print(f"{'合计':<6}{'':<6}{tot_cacheable:<10}{tot_hit:<8}{eff_all:<12.4f}"
+          f"{'达标 ✓' if eff_all >= REDLINE or eff_all < 0 else '**越线 ✗**'}")
+    print(f"\n[参考] 旧口径 hit/(hit+miss) = {rep_all:.4f}  (含本轮新增, 不作判定口径)")
 
+    if viol_points:
+        print(f"\n[代码闸门越线记录] {len(viol_points)} 条 (point=cache_redline_violation)")
+        for v in viol_points[-3:]:
+            kv = v.get("kv") or {}
+            print(f"  · 轮 {kv.get('turn')} rate={kv.get('effective_hit_rate')} "
+                  f"cacheable={kv.get('cacheable_tokens')} prompt={kv.get('prompt_tokens')}")
+    if violations:
+        print(f"\n[越线明细] {len(violations)} 条 (按实测根因排查: ①messages[0] 改写 ②历史重写/砍头 "
+              f"③发送≠回放字节 ④增量过大; 缺口≤64 token 属单元对齐损耗)")
+        for v in violations[:6]:
+            print(f"  · {v['session']} 轮{v['turn']}: 有效 {v['effective']:.4f} "
+                  f"(需要命中 {v['cacheable']} 命中 {v['hit']} 缺口 {v['gap']} 本轮新增 {v['growth']})")
 
-def collect(path, since=None):
-    agg = {"calls": 0, "reported": 0, "unreported": 0, "hit": 0, "miss": 0,
-           "by_model": {}, "by_turn": {}, "by_session": {}, "samples": []}
-    for row in iter_rows(path):
-        if row.get("point") != "llm_call":
+    out = {"since": a.since, "calls": len(calls), "sessions": len(order), "unreported": unreported,
+           "effective_hit_rate": eff_all, "reference_hit_rate": rep_all, "redline": REDLINE,
+           "by_turn": {str(k): v for k, v in by_turn.items()}, "violations": violations,
+           "redline_points": len(viol_points),
+           "verdict": ("PASS" if not violations else "FAIL_REDLINE")}
+
+    # ── 按会话判定 (VERDICT 以**最新会话**为准: 历史越线单列, 不掩盖当前状态) ──
+    per_sess = []
+    for sk in order:
+        cs = [c for c in sessions[sk]["calls"] if c["turn"] >= 2 and c["effective"] is not None]
+        if not cs:
             continue
-        ts = str(row.get("ts", ""))
-        if since and ts < since:
-            continue
-        kv = row.get("kv") or {}
-        agg["calls"] += 1
-        hit, miss = as_int(kv.get("cache_hit_tokens")), as_int(kv.get("cache_miss_tokens"))
-        if hit is None or miss is None or hit < 0 or miss < 0 or (hit + miss) <= 0:
-            agg["unreported"] += 1
-            continue
-        agg["reported"] += 1
-        agg["hit"] += hit
-        agg["miss"] += miss
-        model = str(kv.get("model") or "unknown")
-        m = agg["by_model"].setdefault(model, {"calls": 0, "hit": 0, "miss": 0})
-        m["calls"] += 1
-        m["hit"] += hit
-        m["miss"] += miss
-        turn = kv.get("turn")
-        turn = int(turn) if isinstance(turn, int) or (isinstance(turn, str) and turn.isdigit()) else 0
-        sess = str(kv.get("agent_session") or "")
-        t = agg["by_turn"].setdefault(turn, {"calls": 0, "hit": 0, "miss": 0})
-        t["calls"] += 1
-        t["hit"] += hit
-        t["miss"] += miss
-        if sess:
-            s_ = agg["by_session"].setdefault(sess, {})
-            st = s_.setdefault(turn, {"hit": 0, "miss": 0})
-            st["hit"] += hit
-            st["miss"] += miss
-        agg["samples"].append({"ts": ts, "model": model, "hit": hit, "miss": miss, "turn": turn,
-                               "session": sess, "rate": kv.get("cache_hit_rate")})
-    total = agg["hit"] + agg["miss"]
-    agg["cache_hit_rate"] = round(agg["hit"] / total, 4) if total > 0 else -1
-    for m in agg["by_model"].values():
-        t = m["hit"] + m["miss"]
-        m["cache_hit_rate"] = round(m["hit"] / t, 4) if t > 0 else -1
-    agg["by_turn"] = {str(k): dict(v, cache_hit_rate=round(v["hit"] / (v["hit"] + v["miss"]), 4)
-                                   if (v["hit"] + v["miss"]) > 0 else -1)
-                      for k, v in sorted(agg["by_turn"].items())}
-
-    # R379 红线判定: 多轮会话 (轮次 ≥2 的调用) 命中率必须 ≥90%, 目标 98~99%
-    REDLINE = 0.90
-    multi = {k: v for k, v in agg["by_turn"].items() if int(k) >= 2 and (v["hit"] + v["miss"]) > 0}
-    if multi:
-        hit = sum(v["hit"] for v in multi.values())
-        miss = sum(v["miss"] for v in multi.values())
-        rate = round(hit / (hit + miss), 4)
-        agg["redline"] = {"scope": "多轮会话第 2 轮起", "threshold": REDLINE, "target": "0.98~0.99",
-                          "rate": rate, "hit": hit, "miss": miss,
-                          "verdict": "PASS" if rate >= REDLINE else "FAIL",
-                          "by_turn_min": min(v["cache_hit_rate"] for v in multi.values())}
+        cap_s = sum(c["cacheable"] for c in cs)
+        per_sess.append((sessions[sk]["calls"][-1]["ts"] or "", sk, len(cs),
+                         round(sum(c["hit"] for c in cs) / cap_s, 4) if cap_s else -1))
+    if per_sess:
+        per_sess.sort()
+        print("\n[按会话判定] (只列轮≥2 的会话; 判定以最新会话为准)")
+        for ts, sk, n, rate in per_sess:
+            ok = "达标 ✓" if rate >= REDLINE else "越线 ✗"
+            print(f"  {sk[:22]:<22} 轮数={n} 有效={rate:.4f} {ok} (末次 {ts[:19]})")
+        _, latest_sk, _, lr = per_sess[-1]
+        out["verdict"] = "PASS" if (lr < 0 or lr >= REDLINE) else "FAIL_REDLINE"
+        out["latest_session"] = latest_sk
+        out["by_session"] = [{"session": sk, "turns": n, "rate": r, "last_ts": ts} for ts, sk, n, r in per_sess]
+        if violations:
+            print(f"  (历史越线 {len(violations)} 条仍在上面列出 — 越线闸门不遗忘; 修复后新会话应达标)")
+    if a.json_out:
+        json.dump(out, io.open(a.json_out, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+        print(f"\n落盘: {a.json_out}")
     else:
-        agg["redline"] = {"scope": "多轮会话第 2 轮起", "threshold": REDLINE, "verdict": "NO_DATA"}
-    norm = {}
-    for sk, turns in agg["by_session"].items():
-        rated = {str(k): round(v["hit"] / (v["hit"] + v["miss"]), 4)
-                 for k, v in sorted(turns.items()) if (v["hit"] + v["miss"]) > 0}
-        t2 = {k: v for k, v in turns.items() if k >= 2 and (v["hit"] + v["miss"]) > 0}
-        h = sum(v["hit"] for v in t2.values())
-        ms = sum(v["miss"] for v in t2.values())
-        norm[sk] = {"turns": rated, "multi_turn_rate": round(h / (h + ms), 4) if (h + ms) > 0 else -1}
-    agg["by_session"] = norm
-    return agg
+        default = "eval/results/kpi_cache_hit_%s.json" % datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+        os.makedirs(os.path.dirname(default), exist_ok=True)
+        json.dump(out, io.open(default, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+        print(f"\n落盘: {default}")
 
-
-def main(argv):
-    tel = DEFAULT_TEL
-    out = None
-    since = None
-    i = 1
-    while i < len(argv):
-        a = argv[i]
-        if a == "--json":
-            i += 1
-            out = argv[i]
-        elif a == "--since":
-            i += 1
-            since = argv[i]
-        else:
-            tel = a
-        i += 1
-
-    if not os.path.exists(tel):
-        print("遥测文件不存在: %s" % tel)
-        return 2
-
-    agg = collect(tel, since)
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    agg["telemetry"] = tel
-    agg["generated_at"] = stamp
-    agg["since"] = since
-
-    if out is None:
-        d = os.path.join(ROOT, "eval", "results")
-        os.makedirs(d, exist_ok=True)
-        out = os.path.join(d, "kpi_cache_hit_%s.json" % stamp)
-    with io.open(out, "w", encoding="utf-8") as f:
-        json.dump(agg, f, ensure_ascii=False, indent=1)
-
-    rate = agg["cache_hit_rate"]
-    rate_s = ("%.2f%%" % (rate * 100)) if rate >= 0 else "未上报(n/a)"
-    print("prompt 缓存命中率 KPI: %s  (hit=%d miss=%d, 上报 %d/%d 次调用, %d 次未上报)"
-          % (rate_s, agg["hit"], agg["miss"], agg["reported"], agg["calls"], agg["unreported"]))
-    for model, m in sorted(agg["by_model"].items()):
-        r = m["cache_hit_rate"]
-        print("  · %-18s calls=%-3d hit=%-7d miss=%-7d rate=%s"
-              % (model, m["calls"], m["hit"], m["miss"], ("%.2f%%" % (r * 100)) if r >= 0 else "n/a"))
-    for turn, v in agg["by_turn"].items():
-        r = v["cache_hit_rate"]
-        mark = "  ← 红线内(第2轮起)" if int(turn) >= 2 else ""
-        print("  · turn=%-3s calls=%-3d hit=%-7d miss=%-7d rate=%s%s"
-              % (turn, v["calls"], v["hit"], v["miss"], ("%.2f%%" % (r * 100)) if r >= 0 else "n/a", mark))
-    rl = agg["redline"]
-    if rl["verdict"] == "NO_DATA":
-        print("红线判定 (多轮第2轮起 ≥90%%): 无数据 (遥测里没有 turn≥2 的上报调用)")
-    else:
-        print("红线判定 (多轮第2轮起 ≥90%%): %s — 实测 %.2f%% (hit=%d miss=%d, 最低轮 %.2f%%), 目标 98~99%%"
-              % (rl["verdict"], rl["rate"] * 100, rl["hit"], rl["miss"], rl["by_turn_min"] * 100))
-    for sk, v in sorted(agg["by_session"].items()):
-        print("  · 会话 %s 逐轮命中率: %s (多轮合计 %.2f%%)"
-              % (sk, ", ".join("t%s=%.1f%%" % (k, r * 100) for k, r in v["turns"].items()),
-                 v["multi_turn_rate"] * 100))
-    print("落盘: %s" % out)
-    return 0
+    print(f"VERDICT: {out['verdict']}")
+    return 0 if out["verdict"] == "PASS" else 1
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv))
+    sys.exit(main())

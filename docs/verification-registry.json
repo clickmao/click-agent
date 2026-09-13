@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R379",
+ "updated_round": "R380",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -275,7 +275,7 @@
   },
   {
    "id": "kpi.prompt_cache_hit",
-   "capability": "prompt 缓存命中率 KPI (用户钦定, K2b 成本侧): 解析 usage.prompt_cache_hit_tokens/prompt_cache_miss_tokens → 命中率 hit/(hit+miss) 4 位小数; 三处 data-carrying llm_call 打点铺 cache_hit_tokens/cache_miss_tokens/cache_hit_rate; 离线聚合 scripts/kpi_cache_hit.py (按模型分组 + 未上报计数); 未上报/无分母记 -1 且不并入比率",
+   "capability": "prompt 缓存命中率 KPI (用户钦定, K2b 成本侧): 解析 usage.prompt_cache_hit_tokens/prompt_cache_miss_tokens → 命中率 hit/(hit+miss) 4 位小数; 三处 data-carrying llm_call 打点铺 cache_hit_tokens/cache_miss_tokens/cache_hit_rate; 离线聚合 scripts/kpi_cache_hit.py (按模型分组 + 按轮次/会话聚合 + 未上报计数 + redline 段); 未上报/无分母记 -1 且不并入比率; **R380 口径修订 (用户钦定): 命中率只算『需要命中的部分』—— 本轮新增不计入 (新增必然不命中) ⇒ 有效命中率 = cache_hit_tokens / min(本轮 prompt_tokens, 上一轮同会话 prompt_tokens)**; 原 hit/(hit+miss) 保留为参考口径 (旧口径把新增算进分母, 会把已到结构极限的轮次误判为灾难性失败)",
    "level": "L3",
    "evidence_cmd": "python3 scripts/kpi_cache_hit.py /tmp/gameprobe/r377_kpi.telemetry  # 真机样本: hit=3328 miss=7610 → 30.43% | dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~PromptCacheKpi",
    "evidence_path": "src/agent.tests/PromptCacheKpiTests.cs",
@@ -291,7 +291,7 @@
   },
   {
    "id": "kpi.prompt_cache_hit_redline",
-   "capability": "多轮会话 prompt 缓存命中率红线 KPI (用户钦定 R379, 首要 KPI): 红线 = 多轮会话**第 2 轮起**命中率 ≥90% (目标 98~99%); 前置结构铁律 = ①messages[0] 会话内恒定字节 (会话冻结 systemPrompt) ②历史追加式回放 (不重写/不砍头, 2000→1M token 预算) ③发送字节=回放字节 (SentContent 在回注之后快照) ④每轮增量最小化 (静态块首轮焊进前缀 + 动态块跨轮字节/近重复去重); 逐轮归属 = llm_call 打点 agent_session/turn; 判定 = scripts/kpi_cache_hit.py 的 redline 段 (命中率 ≈ 已发前缀/本轮总量, 故红线等价于每轮增量 ≤ 前缀/9)",
+   "capability": "多轮会话 prompt 缓存命中率红线 KPI (用户钦定 R379, 首要 KPI): 红线 = 多轮会话**第 2 轮起**有效命中率 ≥**95%** (用户 OOB 由 90% 提高; 目标 98~99%), **越线必查**: 越线必须产出可执行诊断 (提示词装配四类破坏点 + 算术判决) 并修复, 不得只记数字; **算术判决**: 命中 = (floor(前缀/64)−1)×64 ⇒ 上限 ≈ (n−1)/n ⇒ 95% 需前缀 ≥2496 token (n≥39), 98% 需 ≥6336; 前置结构铁律 = ①messages[0] 会话内恒定字节 (会话冻结 systemPrompt) ②历史追加式回放 (不重写/不砍头, 2000→1M token 预算) ③发送字节=回放字节 (SentContent 在回注之后快照) ④每轮增量最小化 (静态块首轮焊进前缀 + 动态块跨轮字节/近重复去重) ⑤**会话稳定基线** (SessionBaseline, ~3k 字符: 纪律/命令/工作区快照/能力/模块地图) 首轮焊进前缀 —— 红线 95% 的算术必需项; 逐轮归属 = llm_call 打点 agent_session/turn/cacheable_tokens/effective_hit_rate; 越线告警 = cache_redline_violation 打点 (含 diagnosis); 判定/门禁 = scripts/kpi_cache_hit.py 的 redline 段 (退出码 -1 可做 CI 门禁) (命中率 ≈ 已发前缀/本轮总量, 故红线等价于每轮增量 ≤ 前缀/9)",
    "level": "L3",
    "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter 'FullyQualifiedName~MultiTurnCachePrefixTests|FullyQualifiedName~SessionInjectionPlannerTests'  # 9/9 | python3 scripts/kpi_cache_hit.py --since <轮次起点>  # redline 段",
    "evidence_path": "src/agent.tests/MultiTurnCachePrefixTests.cs",

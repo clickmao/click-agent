@@ -84,6 +84,16 @@ public sealed class ModelSwitchRecord
 public sealed class ModelQueueRouter : IModelQueueCaller
 {
     private readonly ModelCatalog _catalog;
+    /// <summary>
+    /// R380: 会话 → 上一轮已发 prompt tokens (「需要命中的部分」的基准)。
+    /// 有效命中率 = 本轮 hit / min(本轮 prompt, 上一轮 prompt) —— 本轮新增不计入分母。
+    /// </summary>
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<string, int> _lastPromptTokens = new(StringComparer.Ordinal);
+
+    /// <summary>R380: 取该会话"上一轮已发 prompt token 数"(无 → 0)。三处打点共用, 避免作用域各自重算。</summary>
+    private int LastPromptTokensFor(string? sessionId)
+        => string.IsNullOrEmpty(sessionId) ? 0 : (_lastPromptTokens.TryGetValue(sessionId, out var v) ? v : 0);
+
     private readonly ModelSelectionPolicy _policy;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly Microsoft.Extensions.Logging.ILogger _logger;
@@ -309,6 +319,14 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             _tokenUsage?.RecordUsage(resp.Model, entry.Provider, resp.PromptTokens, resp.CompletionTokens);
             // R377: prompt 缓存命中率 KPI (未上报 → -1, 与"命中 0"区分)
             var cacheKv = PromptCacheKpi.Fields(resp.CacheHitTokens, resp.CacheMissTokens);
+            // R380 (用户钦定**口径修订**, 首要 KPI): 命中率只算"需要命中的部分" —— 本轮新增不计入
+            //  (新增是首次发送, 必然不命中; 计入分母会把"前缀复用度"与"本轮新发量"混为一谈 → 指标被稀释)。
+            //  有效命中率 = hit / min(本轮 prompt, 上一轮已发 prompt); 会话首轮无"需要命中"部分 → -1。
+            var sessKey = prompt.SessionId ?? string.Empty;
+            var lastPrompt = 0;
+            if (sessKey.Length > 0 && _lastPromptTokens.TryGetValue(sessKey, out var lp)) lastPrompt = lp;
+            var effKv = PromptCacheKpi.EffectiveFields(resp.CacheHitTokens, resp.PromptTokens, LastPromptTokensFor(sessKey));
+            var effRate = (double)(effKv[1].Value ?? -1d);
             agent.config.AgentTelemetry.Emit("llm_call", "ModelQueueRouter",
                 ("model", entry.Id), ("provider", entry.Provider),
                 // R379: 逐轮归属 (红线判据: 多轮第 2 轮起命中率 ≥90%) — 无此字段则无法把 KPI 追到"第几轮"
@@ -328,7 +346,28 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                 ("first_budget", firstBudget), ("intent", intent ?? ""),
                 // v0.11.0 R129 (D3): LLM 真耗时 ms
                 ("ms", llmSw.ElapsedMilliseconds),
-                cacheKv[0], cacheKv[1], cacheKv[2]);
+                cacheKv[0], cacheKv[1], cacheKv[2], effKv[0], effKv[1]);
+            // R380 (+R379 逐轮归属) 红线闸门 —— 用户逐字: "一旦越过红线必然检查问题为什么发生并修复"。
+            // 越线不得只记数字: 必须同时落盘**可执行诊断**(按 R379 实测四类破坏点排序) + 响亮告警。
+            if (sessKey.Length > 0)
+            {
+                if (_lastPromptTokens.Count > 512) _lastPromptTokens.Clear();   // 有界: 防长驻进程无界增长
+                _lastPromptTokens[sessKey] = resp.PromptTokens;
+            }
+            var cacheable = (int)(effKv[0].Value ?? 0);
+            if (PromptCacheRedline.Violated(prompt.TurnIndex, cacheable, effRate))
+            {
+                var diag = PromptCacheRedline.Diagnose(prompt.TurnIndex, resp.PromptTokens, cacheable,
+                    PromptCacheKpi.HitTokens(resp.CacheHitTokens), PromptCacheKpi.MissTokens(resp.CacheMissTokens), lastPrompt);
+                _logger.LogWarning("ModelQueue: prompt 缓存红线越线 — {Diag}", diag);
+                agent.config.AgentTelemetry.Emit("cache_redline_violation", "ModelQueueRouter",
+                    ("agent_session", sessKey), ("turn", prompt.TurnIndex),
+                    ("effective_hit_rate", effRate), ("cacheable_tokens", cacheable),
+                    ("hit", PromptCacheKpi.HitTokens(resp.CacheHitTokens)),
+                    ("miss", PromptCacheKpi.MissTokens(resp.CacheMissTokens)),
+                    ("prompt_tokens", resp.PromptTokens), ("last_prompt_tokens", lastPrompt),
+                    ("threshold", PromptCacheRedline.Threshold), ("diagnosis", diag));
+            }
             // 阈值再同步 (fire-and-forget, 不阻塞主链)
             if (_tokenUsage is not null && _tokenUsage.NeedsResync(entry.Provider))
                 _ = _tokenUsage.TryResyncAsync(entry.Provider, CancellationToken.None);
@@ -396,6 +435,8 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                     LastSelectionBasis = $"retry_ok:{entry.Id} (attempt {attempt + 1})";
                     _tokenUsage?.RecordUsage(retried.Model, entry.Provider, retried.PromptTokens, retried.CompletionTokens);
                     var cacheKv = PromptCacheKpi.Fields(retried.CacheHitTokens, retried.CacheMissTokens);
+                    // R380: 重试路径同样只算"需要命中的部分" (否则 KPI 漏掉重试调用)
+                    var effKv = PromptCacheKpi.EffectiveFields(retried.CacheHitTokens, retried.PromptTokens, LastPromptTokensFor(prompt.SessionId));
                     agent.config.AgentTelemetry.Emit("llm_call", "ModelQueueRouter",
                         ("model", entry.Id), ("provider", entry.Provider),
                         ("prompt_tokens", retried.PromptTokens), ("completion_tokens", retried.CompletionTokens),
@@ -403,7 +444,7 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                         ("content_len", retried.Content?.Length ?? 0),
                         ("reasoning_len", retried.ReasoningContent?.Length ?? 0),
                         ("ms", retrySw.ElapsedMilliseconds), ("attempt", attempt + 1),
-                        cacheKv[0], cacheKv[1], cacheKv[2]);
+                        cacheKv[0], cacheKv[1], cacheKv[2], effKv[0], effKv[1]);
                     return retried;
                 }
                 // 软失败 (Success=false 但未抛异常) 也算本次失败, 继续走切备
@@ -468,6 +509,8 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                     }
                     _tokenUsage?.RecordUsage(backupResp.Model, backup.Provider, backupResp.PromptTokens, backupResp.CompletionTokens);
                     var cacheKv = PromptCacheKpi.Fields(backupResp.CacheHitTokens, backupResp.CacheMissTokens);
+                    // R380: 备选 provider 路径同样只算"需要命中的部分"
+                    var effKv = PromptCacheKpi.EffectiveFields(backupResp.CacheHitTokens, backupResp.PromptTokens, LastPromptTokensFor(prompt.SessionId));
                     agent.config.AgentTelemetry.Emit("llm_call", "ModelQueueRouter",
                         ("model", backup.Id), ("provider", backup.Provider),
                         ("prompt_tokens", backupResp.PromptTokens), ("completion_tokens", backupResp.CompletionTokens),
@@ -475,7 +518,7 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                         ("content_len", backupResp.Content?.Length ?? 0),
                         ("reasoning_len", backupResp.ReasoningContent?.Length ?? 0),
                         ("ms", backupSw.ElapsedMilliseconds), ("attempt", "failover"),
-                        cacheKv[0], cacheKv[1], cacheKv[2]);
+                        cacheKv[0], cacheKv[1], cacheKv[2], effKv[0], effKv[1]);
                     return backupResp;
                 }
                 agent.config.AgentTelemetry.Emit("fallback_verify_fail", "ModelQueueRouter",

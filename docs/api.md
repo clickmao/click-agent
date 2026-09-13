@@ -1251,6 +1251,7 @@ writer.ResetModule("model_queue");                             // 清 L3 覆盖,
 - CLI: `agenthost -img /path/to/img.png "描述这张图"` → `Message.ImageAttachments` → `QueuePrompt.ImageUrls` → Router 组装 parts[]。
 - 带图请求: content = `[{type:"text"},{type:"image_url",image_url:{url:"data:image/png;base64,..."}}]` (本地路径自动转 data URL, 真缺陷 63)。
 - 路由: text-only 模型自动重路由到 image_input 模型 (真缺陷 64); coding 端点不收图像 → 改写标准 v4 端点。
+- **R379 实证修订 (2026-09-13)**: `deepseek-flash` 的 `image_input` 由 **false 纠正为 true** —— 真机探针 (data URL 图像 + `v1/chat/completions`) 返回 HTTP 200 且内容判读正确 (红块 + SCORE 7 + GAME OVER 全对)。此前 false 使带图请求被重路由到 gpt-6, 与用户口径「截图 ds4.1flash 有 api」矛盾。`glm-5.3-flash` 仍为 false (其配置端点为 coding 端点, 实测不收图)。
 - DTO: `OpenAIMultimodalMessage` 双形态 (string content | parts[]), AOT-safe 手写 converter (source-gen 不支持 union)。
 
 ### 19.2 图像渲染插件 (v0.12.0 收敛环)

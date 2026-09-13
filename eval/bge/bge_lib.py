@@ -14,7 +14,16 @@ REPO = os.environ.get("BGE_REPO", "/home/agentuser/AgentFramework")
 FIX = os.path.join(REPO, "eval", "bge", "fixtures")
 DATA = os.path.join(REPO, "data", "bge")
 CACHE = os.path.join(DATA, "cache")
-DEFAULT_MODEL = os.path.join(REPO, ".agentframework", "models", "bge-q8.gguf")
+# R380 修复: 模型路径曾写死 <repo>/.agentframework/... 而真机文件在 ~/.agentframework/... → llama-server 秒退,
+# 脚本却傻等 900s 超时 (每次 cron 白烧 15 分钟, versions/ 一直空)。改为**按序回退**, 全部缺失则快速失败。
+_MODEL_CANDIDATES = [
+    os.environ.get("BGE_MODEL", ""),
+    os.path.join(REPO, ".agentframework", "models", "bge-q8.gguf"),
+    os.path.expanduser("~/.agentframework/models/bge-q8.gguf"),
+    "/tmp/models/bge-base-zh-v1.5-q8.gguf",
+    "/tmp/p3probe/models/bge-q8.gguf",
+]
+DEFAULT_MODEL = next((c for c in _MODEL_CANDIDATES if c and os.path.exists(c)), _MODEL_CANDIDATES[1])
 MODEL = os.environ.get("BGE_MODEL", DEFAULT_MODEL)
 PORT = int(os.environ.get("BGE_PORT", "18099"))
 
@@ -54,6 +63,9 @@ def server_libdir(binpath):
 # ── llama-server ────────────────────────────────────────────────────────────
 def start_server(pooling="cls", port=None, model=None, threads=2):
     binp = find_server()
+    mdl = model or MODEL
+    if not os.path.exists(mdl):
+        raise RuntimeError(f"嵌入模型缺失: {mdl} (设 BGE_MODEL 或放到 ~/.agentframework/models/)")
     port = port or PORT
     env = dict(os.environ)
     env["LD_LIBRARY_PATH"] = server_libdir(binp) + ":" + env.get("LD_LIBRARY_PATH", "")
@@ -63,7 +75,15 @@ def start_server(pooling="cls", port=None, model=None, threads=2):
          "--threads", str(threads), "--port", str(port), "-c", "512", "-b", "512"],
         stdout=log, stderr=subprocess.STDOUT, env=env)
     t0 = time.time()
+    logpath = os.path.join("/tmp", f"bge_srv_{port}.log")
     while time.time() - t0 < 900:
+        if proc.poll() is not None:            # R380: 进程已退出 → 立即失败并带上日志尾 (不再傻等 900s)
+            tail = ""
+            try:
+                tail = "".join(open(logpath, encoding="utf-8", errors="replace").readlines()[-6:])
+            except Exception:
+                pass
+            raise RuntimeError(f"llama-server 启动即退出 (code={proc.returncode}) model={model or MODEL}\n{tail}")
         try:
             with socket.create_connection(("127.0.0.1", port), 1):
                 # 端口可连 ≠ 模型已加载完: 必须用**真实嵌入请求**确认就绪,
@@ -165,8 +185,17 @@ def dot(a, b):
 
 
 def matvec(M, v):
-    """行主序扁平矩阵 (r×d) 乘 d 维向量 → r 维"""
-    d = len(v); r = len(M) // d
+    """行主序矩阵 (r×d) 乘 d 维向量 → r 维。
+
+    接受两种形状: 扁平行主序 [r*d] 或嵌套行 [[d]] —— **统一按扁平行主序处理**。
+    (真机缺陷: solve_ridge 产出的 W 是嵌套行, 而本函数/save 假设扁平 → 首次真跑才炸;
+     形状不一致属"静默语义错", 故在此显式归一 + 断言, 不留两种解释。)
+    """
+    if M and isinstance(M[0], (list, tuple)):
+        M = [x for row in M for x in row]
+    d = len(v)
+    assert d > 0 and len(M) % d == 0, "matvec: 形状不匹配 len(M)=%d d=%d" % (len(M), d)
+    r = len(M) // d
     return [dot(M[i * d:(i + 1) * d], v) for i in range(r)]
 
 
@@ -236,9 +265,14 @@ class Adapter:
     可选 query 侧额外线性映射 W (r×r)。"""
 
     def __init__(self, mean, V, lambdas, alpha=0.5, W=None, meta=None):
-        self.mean, self.V, self.lambdas, self.alpha, self.W = mean, V, lambdas, alpha, W
         self.d = len(mean)
         self.r = len(lambdas) if lambdas else self.d
+        if W is not None and W and isinstance(W[0], (list, tuple)):
+            # 形状归一: 嵌套行 → 扁平行主序 (save/load/matvec 只有一种约定)
+            W = [x for row in W for x in row]
+        if W:
+            assert len(W) == self.r * self.r, "Adapter: W 形状 %d ≠ r²=%d" % (len(W), self.r * self.r)
+        self.mean, self.V, self.lambdas, self.alpha, self.W = mean, V, lambdas, alpha, W
         self.meta = meta or {}
 
     def _base(self, x):

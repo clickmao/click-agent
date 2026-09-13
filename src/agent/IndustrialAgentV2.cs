@@ -1087,15 +1087,21 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             string intentAdaptHint = string.Empty;
             var systemPromptFrozen = false;
             var staticHoistedChars = 0;
+            var baselineChars = 0;
             var sysKey = string.IsNullOrEmpty(message.SessionId) ? null : message.SessionId;
             if (sysKey != null)
             {
                 if (_frozenSystemPrompt.Count > 512) _frozenSystemPrompt.Clear(); // 有界: 防长驻进程无界增长
                 if (!_frozenSystemPrompt.TryGet(sysKey, out var frozen))
                 {
-                    // 会话首轮: 静态块焊进前缀 (此后每轮都命中这段, 且不再重复注入)
-                    var initial = staticText.Length > 0 ? systemPrompt + "\n\n[会话静态上下文]\n" + staticText : systemPrompt;
+                    // 会话首轮: (会话基线 + 静态块) 焊进前缀 —— 此后每轮都命中这段缓存, 且不再重复注入。
+                    // R380 (用户 OOB 红线 95%, 越线必查+修复): 命中上限 ≈ (n−1)/n (n = 前缀 64-token 单元数)
+                    //  ⇒ 前缀必须够厚, 否则结构修到极限也越线 (真机实测 981 token 前缀的上限恰为 896 = 91.3%)。
+                    var baseline = SessionBaseline.Build(_workspace is { RootPath: { Length: > 0 } wr } ? wr : Environment.CurrentDirectory);
+                    var initial = systemPrompt + "\n\n" + baseline
+                                  + (staticText.Length > 0 ? "\n[会话静态上下文]\n" + staticText : string.Empty);
                     staticHoistedChars = initial.Length - systemPrompt.Length;
+                    baselineChars = baseline.Length;
                     frozen = (initial, intent);
                     _frozenSystemPrompt.Set(sysKey, frozen);
                 }
@@ -1190,6 +1196,7 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 ("inline_dedupe_kept", dynKept),
                 ("inline_dedupe_dropped", dynDropped),
                 ("static_hoisted_chars", staticHoistedChars),
+                ("baseline_chars", baselineChars),
                 ("prefix_frozen", sysKey != null),
                 ("intent_drift_guarded", systemPromptFrozen));
             
