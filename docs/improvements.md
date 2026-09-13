@@ -12,6 +12,30 @@
 
 ---
 
+## R396 — 产品侧 Vulkan 端口(去 Silk.NET 依赖, 名字/版本与 Silk.NET 逐字一致)
+
+**用户令 (逐字)**: "不要引入silk.net; 但用的vulkan.dll文件名与版本请和silk.net库一致。"
+
+**因果链**: 上轮遗留"产品侧进程内选 vulkan 需引 Silk.NET ⇒ 6 条第三方 IL 告警 ⇒ 待用户决策"; 本轮裁决 = **要能力不要依赖** ——
+Vulkan 只需 BCL 的 `NativeLibrary` + 函数指针即可自载, 第三方绑定并非必需; 但"自载"必须证明**与 Silk.NET 用的是同一个加载器**,
+否则就是另一套东西 (名字/soname/请求版本任一处不同 ⇒ 行为可能分叉)。
+
+**落地**: 新增 `src/agent.gpu` (零外部包依赖 / 零反射 / AOT)。名字与版本**取证自包内程序集**, 不是读文档:
+`eval/vulkan/extract_silknet_loader_names.py` 机械提取 UTF-16 字面量 → oracle (`vulkan-1.dll` / `libvulkan.so.1` / `libvulkan.so` / `libvulkan.dylib`, 源 sha256 落档);
+请求版本与引擎侧 Silk.NET 路径 (`Vk.MakeVersion(1,1,0)`) 源码级锁定。
+
+**真机证据**:
+- 机检 **5/5** (`VulkanLoaderParityTests`): 名字逐字对账 + sha256 溯源 + 版本反漂移 + **依赖声明投影检查**(不引 Silk.NET: 注释不算、声明算) + 负控 + 真机设备 + 池化复用。
+- **JIT 与 AOT 同一结论**: AOT 单文件 1.19 MB, **IL 警告 0**, 输出目录无任何托管依赖; `probe` 输出 `vkdevice{name="llvmpipe (LLVM 20.1.2, 256 bits)" api=1.4.318 vendor=0x10005 type=cpu}`。
+- **跨实现对账 SOUND**: 与系统 `vulkaninfo` 逐字段比对 **6/6 一致** (设备名/apiVersion/driverVersion/vendorID/deviceID/deviceType), 对 AOT 产物复跑仍 SOUND ⇒ 自写绑定与独立实现等价。
+- 负控 `probe --negctl` ⇒ `not_found` 显式失败 (不静默回退 CPU)。
+
+**诚实边界**: ① 本轮只打通"加载器/实例/设备枚举"(Stage 1+2), **产品侧计算管线 (descriptor/pipeline/命令缓冲) 仍是引擎侧实现**, Stage 3 待做; ② 内存堆解析 (结构对齐) 未做, 只断言对账过的字段; ③ 本机唯一设备是 **lavapipe 软件 ICD** (显示设备为 QEMU 模拟 Cirrus GD 5446), **真 GPU 斜率需外部机器**, 复跑脚本已备; ④ oracle 溯源依赖本机 nuget 缓存, 缺失时显式 warn 而非静默。
+
+**报告**: `docs/reports/r396/r396-product-side-vulkan-loader-parity.md`。
+
+---
+
 ## R395 — BGE 闸门真修 + 停 cron + 融合线实测(RRF 可达值 0.8500)
 
 **用户令 (逐字)**: "修完闸门 停 cron 走融合线"; 前置问 **"先告诉我一个结论, bge底座是否还需要自己二次训练, 有意义么, 提升性能代价多大?"**

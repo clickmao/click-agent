@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RootNamespace>agent.gpu</RootNamespace>
+    <AssemblyName>agent.gpu</AssemblyName>
+    <Version>0.21.0</Version>
+    <!-- 工业级 AOT 前置: 可空警告升级为错误 -->
+    <WarningsAsErrors>nullable</WarningsAsErrors>
+    <IsAotCompatible>true</IsAotCompatible>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <!-- R396 用户令 (逐字): "不要引入silk.net; 但用的vulkan.dll文件名与版本请和silk.net库一致"。
+       本项目**零外部包依赖** —— 不引 Silk.NET; Vulkan 通过 NativeLibrary + 函数指针自载
+       (AOT 安全, 零反射), 加载器名字/请求版本由 oracle 机检锁死在 Silk.NET 2.23.0 的口径上。 -->
+  <ItemGroup>
+    <None Include="oracle/silknet-vulkan-loader.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

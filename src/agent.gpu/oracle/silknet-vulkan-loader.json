@@ -1,0 +1,35 @@
+{
+  "extracted": {
+    "libvulkan.dylib": {
+      "utf16le": 1
+    },
+    "libvulkan.so": {
+      "utf16le": 2
+    },
+    "libvulkan.so.1": {
+      "utf16le": 1
+    },
+    "vulkan-1.dll": {
+      "utf16le": 1
+    }
+  },
+  "extractor": "eval/vulkan/extract_silknet_loader_names.py",
+  "note": "顺序即解析优先级: soname(.so.1) 优先于无版本名, 与 Silk.NET 的候选顺序一致。",
+  "platform_map": {
+    "linux": [
+      "libvulkan.so.1",
+      "libvulkan.so"
+    ],
+    "macos": [
+      "libvulkan.dylib"
+    ],
+    "windows": [
+      "vulkan-1.dll"
+    ]
+  },
+  "source_asset": "lib/netstandard2.0/Silk.NET.Vulkan.dll",
+  "source_bytes": 3356432,
+  "source_package": "Silk.NET.Vulkan",
+  "source_sha256": "5b788c155a9f5e32b9af5097e3e8ef10e9bc6509d7bd2e431b0889d47052f401",
+  "source_version": "2.23.0"
+}
