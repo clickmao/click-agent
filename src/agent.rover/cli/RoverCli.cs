@@ -26,6 +26,7 @@ public static class RoverCli
                 "probe" => Probe(args, o),
                 "check" => CheckCmd(args, o),
                 "forward" => ForwardCli.Forward(args, o),
+                "tokenize" or "generate" => GenerateCli.Run(args, o),
                 "vulkan" => VulkanCli.Run(args, o),
                 "embed" => EmbedCli.Run(args, o),
                 "--help" or "-h" or "help" => Usage(o),
@@ -57,6 +58,7 @@ public static class RoverCli
         o.WriteLine("  check <file.assert> [--json]     本地形式化裁决 (可判定片段 / 零 token / 零 shell)");
         o.WriteLine("  check --selftest                 内核自证套件 (含反例控制组)");
         o.WriteLine(ForwardCli.UsageLine);
+        o.WriteLine(GenerateCli.UsageLine);
         o.WriteLine(VulkanCli.UsageLine);
         o.WriteLine(EmbedCli.UsageLine);
         return 0;

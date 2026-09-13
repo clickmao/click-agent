@@ -59,6 +59,9 @@
     <!-- v0.23.0 exp12 · vulkan: agent.rover SPIR-V 汇编器 + 内核目录 + **独立结构校验器** (同为纯 BCL),
          使 GPU 内核可被 agent 进程内静态校验 (机检), 不引入 Silk.NET 依赖 (主机侧仅 CLI 引用)。 -->
     <Compile Include="../agent.rover/gpu/spirv/*.cs" Link="gpu/spirv/%(Filename)%(Extension)" />
+    <!-- R400: rover 分词/采样 (纯 BCL / 零反射 / 无 NuGet) —— 与 CLI 同源编译, 供测试与产品侧复用 -->
+    <Compile Include="../agent.rover/token/*.cs" Link="rover-token/%(Filename)%(Extension)" />
+    <Compile Include="../agent.rover/infer/Sampler.cs" Link="rover-infer/%(Filename)%(Extension)" />
   </ItemGroup>
 
   <ItemGroup>
