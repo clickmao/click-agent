@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,7 +26,9 @@ public sealed record PythonArtifactReport(
     bool Ran = false,          // L5: 是否真的执行过 (运行级验证)
     int RunExitCode = -1,
     long RunElapsedMs = 0,
-    bool RunTimedOut = false);
+    bool RunTimedOut = false,
+    // R374: 校验/运行输出摘要 (尾部保留) — 让"失败原因"成为可观测事实, 而非只有一个 exit 码。
+    string OutputExcerpt = "");
 
 /// <summary>
 /// Python 产物台账 (R368): 线程安全, 记录本进程内所有落盘+校验结果。
@@ -57,7 +60,7 @@ public sealed class PythonArtifactLedger
 ///          校验结论经台账/telemetry 暴露 → 宿主展示, 前端可订阅。
 /// 非 python 语言段零损耗透传。
 /// </summary>
-public sealed class PythonArtifactPlugin : IResponseSegmentPlugin
+public sealed class PythonArtifactPlugin : IResponseSegmentPlugin, IArtifactCheckSource
 {
     private static readonly string[] PythonLangs = { "python", "py", "python3", "python3.11", "python3.12" };
 
@@ -97,6 +100,18 @@ public sealed class PythonArtifactPlugin : IResponseSegmentPlugin
 
     public string Name => "python-artifact";
 
+    // R374 (D3): 待回流校验结论队列 (取即清)。并发安全: 插件可能被多会话/子任务并发调用。
+    private readonly ConcurrentQueue<ArtifactCheck> _pendingChecks = new();
+
+    /// <summary>取走自上次调用以来新增的校验结论 (含通过项 — 复检据此判定"修好了")。</summary>
+    public IReadOnlyList<ArtifactCheck> DrainNewChecks()
+    {
+        var list = new List<ArtifactCheck>();
+        while (_pendingChecks.TryDequeue(out var c))
+            list.Add(c);
+        return list;
+    }
+
     public IReadOnlySet<SegmentKind> Consumes { get; } =
         new HashSet<SegmentKind> { SegmentKind.Code };
 
@@ -116,9 +131,12 @@ public sealed class PythonArtifactPlugin : IResponseSegmentPlugin
         var sha = Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant();
         var shortSha = sha[..8];
 
-        var report = await PersistAndVerifyAsync(content, bytes.Length, sha, segment.Language!, ct)
+        var (report, check) = await PersistAndVerifyAsync(content, bytes.Length, sha, segment.Language!, ct)
             .ConfigureAwait(false);
         _ledger.Add(report);
+        // R374 (D3): 校验结论排队待回流 (含通过项 — 复检需要"通过"证据才能判定已修复)。
+        if (ArtifactRepairPolicy.IsEnabled())
+            _pendingChecks.Enqueue(check);
         agent.config.AgentTelemetry.Emit("script_artifact", "python-artifact",
             ("path", report.Path), ("bytes", report.Bytes), ("sha8", report.Sha256Short),
             ("compile_valid", report.CompileValid), ("exit", report.ExitCode),
@@ -128,7 +146,7 @@ public sealed class PythonArtifactPlugin : IResponseSegmentPlugin
         return content; // 恒等: 不改写 LLM 文本
     }
 
-    private async Task<PythonArtifactReport> PersistAndVerifyAsync(
+    private async Task<(PythonArtifactReport Report, ArtifactCheck Check)> PersistAndVerifyAsync(
         string content, int byteCount, string sha, string language, CancellationToken ct)
     {
         var shortSha = sha[..8];
@@ -141,6 +159,8 @@ public sealed class PythonArtifactPlugin : IResponseSegmentPlugin
         var runExit = -1;
         long runMs = 0;
         var runTimedOut = false;
+        // R374: 失败原因文本 (编译 stderr 或 运行 stderr/stdout) — 此前只留一个 exit 码, 信息在此处被丢弃。
+        var output = string.Empty;
 
         try
         {
@@ -157,13 +177,14 @@ public sealed class PythonArtifactPlugin : IResponseSegmentPlugin
             valid = check.Valid;
             exitCode = check.ExitCode;
             detail = check.Detail;
+            output = check.Detail; // 编译失败时 Detail 即 py_compile 的错误输出
 
             // L5: 语法通过且闸门开启 → 真跑一遍 (进程级证据: 退出码/耗时/stderr)
             if (valid && _runGate())
             {
                 // R371: 产物自带无头自测入口时, 用 --selftest 跑 (否则交互式程序必然卡到超时,
                 // 验证结论退化为"超时"而不是"对错") — 选参策略保守: 只认显式出现的 --selftest。
-                var runArgs = content.Contains("--selftest", StringComparison.Ordinal)
+                var runArgs = ArtifactCheck.MentionsSelfTest(content)
                     ? new[] { "--selftest" }
                     : Array.Empty<string>();
                 var run = await PythonRunVerifier.RunAsync(path, _pythonResolver(), workingDir: null, args: runArgs,
@@ -173,6 +194,8 @@ public sealed class PythonArtifactPlugin : IResponseSegmentPlugin
                 runExit = run.ExitCode;
                 runMs = run.ElapsedMs;
                 runTimedOut = run.TimedOut;
+                // R374: 真跑输出回流 (stderr 优先, stdout 补充; 两路各自已被 verifier 限幅)。
+                output = ComposeRunOutput(run.StdOut, run.StdErr);
                 var runNote = run.Ran
                     ? $"run: {run.Detail}" + (string.IsNullOrWhiteSpace(run.StdErr) ? string.Empty : $" stderr={Truncate(run.StdErr.Trim(), 200)}")
                     : $"run(未执行): {run.Detail}";
@@ -191,10 +214,15 @@ public sealed class PythonArtifactPlugin : IResponseSegmentPlugin
             detail = $"落盘/校验异常: {ex.Message}";
         }
 
-        return new PythonArtifactReport(
+        var report = new PythonArtifactReport(
             path, language, byteCount, shortSha, valid, exitCode,
             Truncate(detail, 300), now.ToUnixTimeMilliseconds(),
-            ran, runExit, runMs, runTimedOut);
+            ran, runExit, runMs, runTimedOut,
+            Truncate(output, 1200));
+        // 回流用结论: 输出最多 6000 字符 (回灌模型的量级由策略再裁)。
+        var artifactCheck = new ArtifactCheck(
+            path, language, content, valid, exitCode, ran, runExit, runTimedOut, Truncate(output, 6000));
+        return (report, artifactCheck);
     }
 
     private static string? DefaultPythonResolver()
@@ -221,6 +249,16 @@ public sealed class PythonArtifactPlugin : IResponseSegmentPlugin
             }
         }
         return null;
+    }
+
+    /// <summary>R374: 运行输出合并 (stderr 在前 — 错误优先; 空则省略该段)。</summary>
+    private static string ComposeRunOutput(string? stdout, string? stderr)
+    {
+        var err = stderr?.Trim() ?? string.Empty;
+        var outText = stdout?.Trim() ?? string.Empty;
+        if (err.Length == 0) return outText;
+        if (outText.Length == 0) return err;
+        return $"[stderr]\n{err}\n[stdout]\n{outText}";
     }
 
     private static string Truncate(string s, int max) =>

@@ -102,6 +102,9 @@ public class IndustrialAgentV2 : AgentBase
     
     // ✅ 新增：LLM 调用器（示例接口）
     private readonly ILLMCaller _llmCaller;
+
+    // R374 (D3): 运行结果回流闭环 (懒构造: 复用本实例的段落路由器 + LLM 端口, 零构造签名变更)。
+    private ArtifactRepairLoop? _artifactRepair;
     private readonly agent.subagent.IsolatedTaskRunner? _isolatedTaskRunner;
     private readonly System.Collections.Concurrent.ConcurrentDictionary<string, string> _lastReplyBySession = new();
     private readonly agent.roles.FailureClusters _failureClusters = new();
@@ -1353,6 +1356,10 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             {
                 // 返回后处理 (v7.11): 区段快速标记 → 插件路由 (UI 捕获/审查服务等, 不写死)
                 response.Content = await _segmentRouter.ProcessAsync(llmResponse.Content, ct);
+                // R374 (D3): 运行结果回流 — 产物机器校验失败 → 失败输出回灌模型 → 有界修复 1 轮 → 复检。
+                // 诚实边界: 未修好则不替换正文 (不假装成功); 事实经 telemetry artifact_feedback 落盘。
+                _artifactRepair ??= new agent.registry.ArtifactRepairLoop(_segmentRouter, _llmCaller);
+                response.Content = (await _artifactRepair.RunAsync(response.Content, ct)).Content;
                 // R307 (L1 轻牵引): 连续 ≥2 轮偏题 → 回复尾追加衔接提示 (区段路由后追加, 防被路由过滤)。
                 if (clarifyPending)
                     response.Content += $"\n\n> 💡 需要我回到「{coreTopic}」继续, 还是继续当前话题? 直接说一声即可。";

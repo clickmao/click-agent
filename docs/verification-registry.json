@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R373",
+ "updated_round": "R374",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -187,6 +187,33 @@
     "src/agent.skills/SkillDispatcher.cs"
    ],
    "owner_round": "R373"
+  },
+  {
+   "id": "artifact.failure.feedback",
+   "capability": "产物校验失败 → 失败输出回流模型 → 有界修复 1 轮 → 复检(新产物通过才算修好) (L2 单测 + L3 真机)",
+   "level": "L3",
+   "evidence_cmd": "bash /tmp/gameprobe/run_r374.sh  # 真机 A/B: A 臂=AGENTFRAMEWORK_ARTIFACT_REPAIR=0 → 0 条 artifact_feedback; B 臂=默认 → 2/3 触发, 其中 1 次 fixed=true。单测: dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~ArtifactRepairTests",
+   "evidence_path": "src/agent.tests/ArtifactRepairTests.cs",
+   "negative_control": "① 闸门关 → 策略永不触发(真机 A 臂 3 连跑 0 条 artifact_feedback); ② 修复轮回吐同一份失败脚本 → 同产物路径不得判定 fixed=true(非确定性场景防 KPI 虚高); ③ IsRepairable 置 false → 4 条用例必红(已实证)",
+   "covers": [
+    "src/agent/registry/ArtifactRepair.cs",
+    "src/agent/registry/PythonArtifactPlugin.cs",
+    "src/agent/registry/SegmentKind.cs",
+    "src/agent/IndustrialAgentV2.cs"
+   ],
+   "owner_round": "R374"
+  },
+  {
+   "id": "artifact.failure.visible",
+   "capability": "失败事实的可消费性: 运行/校验输出与闸门契约进入下一轮提示词(可见性断言, 不只是被记录)",
+   "level": "L2",
+   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~ArtifactRepairTests",
+   "evidence_path": "src/agent.tests/ArtifactRepairTests.cs",
+   "negative_control": "断言绑定真实事实而非是否调用了模型: 提示词必须含 python3 -I(闸门调用方式)、--selftest(闸门选参)、真实未通过用例原文、最小改动约束; 摘要只摘原文行且上限 12 条, 不得臆造",
+   "covers": [
+    "src/agent/registry/ArtifactRepair.cs"
+   ],
+   "owner_round": "R374"
   }
  ]
 }

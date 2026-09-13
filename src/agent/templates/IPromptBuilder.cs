@@ -333,7 +333,8 @@ public class IntentPromptTemplates
     /// 输出纪律 (v0.11.0 R18): 打点实测 C08 reasoning completion 1875 tok 偏冗长;
     /// 统一附加长度约束 — 直接回答优先, 展开细节仅按需。
     /// </summary>
-    private const string OutputDiscipline =
+    /// <summary>R374: 公开为常量文本 — 回流修复轮复用同一份输出纪律 (单一来源, 防两处纪律漂移)。</summary>
+    public const string OutputDisciplineText =
         "\n5. 输出纪律：直接回答问题本身，不重复用户问题；无需要时不主动展开背景、对比表或延伸建议；默认简洁，用户追问再展开。" +
         "\n6. 问询纪律（R42）：需要用户澄清时，先给出一句话问询；补默认方案一句话即可，不预铺长清单。" +
         "\n7. 多步任务（调研/报告/对比/计划）：单条回复控制在 500 字以内 — 先给结论与关键依据（要点式），完整长文仅在用户明确要求时生成。" +
@@ -349,6 +350,6 @@ public class IntentPromptTemplates
     /// </summary>
     public static string GetSystemPrompt(string intent)
     {
-        return _templates.GetValueOrDefault(intent, _templates["general"]) + OutputDiscipline;
+        return _templates.GetValueOrDefault(intent, _templates["general"]) + OutputDisciplineText;
     }
 }

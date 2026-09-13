@@ -143,15 +143,14 @@ done
 
 ## 7. 迭代状态快照（恢复迭代从这里开始）
 
-> ### ⏱ 最新状态（2026-09-12 — 恢复迭代先读这里；下方为历史逐轮条目）
+> ### ⏱ 最新状态（2026-09-13 R374 — 恢复迭代先读这里；下方为历史逐轮条目）
 >
-> - **版本**：**v0.21.0 Role 可成长角色系统**（提交 `7ed4031`，R356-R365 已交付并推送；远端 MATCH）。
-> - **测试/AOT**：**730/730 全绿**；NativeAOT **13.75MB，0 IL 警告**。
-> - **批测**：批 **523** = 13/13（DS 主力首测，1836 tok/case，8.0s/case）；下一轮号候选 **524**（启动前走 R257 撞号协议：pgrep + 锁文件 + mtime >10min 才算 stale）。
-> - **模型主力**：`deepseek-flash`（models.yaml `priority=1` 压过 GLM 的 0 价；DS 旧营销名 deepseek-4.1-flash 不存在，已正名）。
-> - **本轮交付**：Role 单文件 `.rbin`（ARBL + AES-256-GCM(gzip)，非明文，Read/Write API，实测 306B）／赏罚涌现倾向（CorrectionDetector L1 0tok + L2 微 prompt；RoleGrowthLedger 域级 Beta）／推理中止→失败簇三件（检测/指纹簇/罚分≥3 前置注入）／赏罚接 V2 主链；无 role 时整链失效（0 token 0 写盘）。全部无 role 行为与默认逐字节一致。
-> - **诚实边界（未解）**：① 工业级 6 缺口余项 = CI 门禁／配置热更新／metrics 端点／断路器半开探测／跨请求成本闸（sec1 凭据加密 ✓、sec2/sec3 鉴权+限流 ✓）；② embedcpu 无关对 cos 0.90+ vs llama.cpp 金标准 0.18-0.23 **未解**（金标准环境 /tmp/llama-full/build/bin/llama-server 已就位）；③ KPI token 上界 1300 与批 523 实测 1836 的口径待定夺；④ Windows 内存探测路径无本机实测。
-> - **文档同步**：本轮已更新 README 双语 / improvements.md（R355-R365 两段）/ CLI指令说明.md（`--role`/`--frontend-api` + Role 实况段）/ Role使用说明.md（.rbin 重写）/ v0.21.0 plan §0.1 实施修订 / api.md §31-§34 / architecture.md 时效声明。
+> - **版本**：**v0.22.0 探索期**；本地 HEAD `651b894`(R373) + R374 未提交；远端 `origin/main` = `740ddf2` **未推**（全部候选 ghp_ 401，需用户给有效 token 或替代通路）。
+> - **测试/AOT**：**827/827 全绿**（env 干净复跑；探针脚本曾把闸门 env 导入测试进程致 1 红，已修脚本）；NativeAOT **13,842,384 B，0 IL 警告**。
+> - **批测**：批 **523**（下一轮号候选 **524**；启动前走 R257 撞号协议：pgrep + 锁文件 + mtime>10min 才算 stale）。
+> - **本轮交付（R373+R374）**：R373 首轮输出预算策略（D8 接线缺口修复：`ModelQueueAdapter` 硬编码 intent → 意图透传；调用 2→1、tokens −32%、有效产物 1/3→3/3）+ 经验沉淀为**思考逻辑 skill**（`delivery-selfcheck`，`type: knowledge_hint` 防技能劫持）；**R374 运行结果回流闭环 D3**：数据面（`ArtifactCheck`/`IArtifactCheckSource`/`Router.DrainArtifactChecks`，失败输出不再丢）+ 闭环面（`ArtifactRepairLoop`：失败输出回流 → 有界 1 轮修复 → 复检「新路径且通过」）+ 修复提示词改进（闸门契约 / 未通过用例摘要 / 最小改动）。真机三臂 A/B（回流关 / 回流开旧提示词 / 回流开新提示词）见 `docs/improvements.md` R374 段。
+> - **诚实边界**：① n=3/臂，跨臂「最终有效 2/3 vs 3/3」是抽样，**机制已证、统计未证**；② 失败路径成本 +1 调用 +23.3k tokens +70s；③ D7 截断续写真机仍未救回（`recovered=false`，当前被首轮预算策略绕过）；④ exp8 自动化蒸馏管路未做（skill 仍人工蒸馏）；⑤ bge 训练闭环未产出新版本（静默后台）；⑥ 工业级缺口余项：CI 门禁 / 配置热更新 / metrics 端点 / 断路器半开 / 跨请求成本闸。
+> - **文档同步**：`docs/improvements.md`(+R374 段) / `docs/verification-registry.json`(+2 行，共 17 行) / `docs/plans/v0.22.0-exp5-lesson-table.md`(§12 两条通用教训) / 本轮探针文档(+R374 段与断链⑩⑪)。
 >
 > ---
 

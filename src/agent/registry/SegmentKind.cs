@@ -357,6 +357,23 @@ public class ResponseSegmentRouter
     /// <summary>全部插件名 (诊断: 宿主启动时打印路由表)</summary>
     public IReadOnlyList<string> PluginNames => _plugins.Select(p => p.Name).ToList();
 
+    /// <summary>
+    /// R374 (D3): 聚合各插件的**产物校验结论** (主链据此回流修复)。
+    /// 契约: 取即清 (drain) — 结论只被消费一次, 避免同一失败被反复"修复"。
+    /// </summary>
+    public IReadOnlyList<ArtifactCheck> DrainArtifactChecks()
+    {
+        List<ArtifactCheck>? all = null;
+        foreach (var p in _plugins)
+        {
+            if (p is not IArtifactCheckSource src) continue;
+            var items = src.DrainNewChecks();
+            if (items.Count == 0) continue;
+            (all ??= new List<ArtifactCheck>()).AddRange(items);
+        }
+        return (IReadOnlyList<ArtifactCheck>?)all ?? Array.Empty<ArtifactCheck>();
+    }
+
     /// <summary>处理全文: 标记 → 逐段路由 → 拼回输出 (插件可改写段内容)</summary>
     public async Task<string> ProcessAsync(string llmOutput, CancellationToken ct = default)
     {
