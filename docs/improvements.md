@@ -936,3 +936,19 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **诚实边界**: ① agent 侧仍 100% ⇒ 题集对能力提升仍无区分度；② 数学题仍只判终值/见证，**不判推理链**；③ 沙箱**不是安全边界**（隔离目录+超时+`-I -B`，**不禁网**）；④ 本机唯一 Vulkan 设备是 llvmpipe 软件 ICD ⇒ 引擎读数**只代表 CPU 路径**；⑤ **agent.rover 目前不是解法后端**（只有 `forward` token→logits，缺 tokenizer/采样/解码环）⇒ 已列为 R400 首要工程项。
 - **证据报告**: `docs/reports/r399/r399-m6-hardening-and-kpi-datapoints.md` + 机器生成的 `docs/reports/r399/kpi-probe-r399.md`。
 
+### R400 (2026-09-14) — rover 生成链：分词器 / chat template / 采样 / 解码环（本机引擎可当解法后端的前提）
+
+- **靶点（用户令「继续下轮」+「**注意 rover 也在该一直执行任务规划内**」）**: R399 诚实边界写明「agent.rover 目前**不是解法后端**（只有 `forward` token→logits，缺 tokenizer/采样/解码环）」⇒ 本轮补齐**生成链**，且全程落在任务规划体系内（计划文档 + TaskPlan 节点 `dev-rover-gen` + 长期看板 L8 + 登记表行 + 主报告 §7）。
+- **交付**: 新件 `src/agent.rover/token/{ByteUnicode,Pretokenizer,BpeTokenizer,ChatTemplate,TableSnapshot,TokenizerAssets.g.cs}`、`src/agent.rover/infer/Sampler.cs`、`src/agent.rover/cli/GenerateCli.cs`（`tokenize`/`generate` 子命令）、`src/agent/agent.csproj`（共享源编译，纯 BCL）；资产入仓 `eval/rover/tokref/`（表快照 + 5 组夹具 + manifest）；生成器 `scripts/rover_{gen_tokenizer_assets,probe_oracle_predicates,build_tokenizer_fixtures}.py`；测试 `src/agent.tests/Rover{Tokenizer,Sampler}Tests.cs`（22 条）。
+- **对账口径（跨实现铁律）**: oracle = HF `tokenizers` 0.23.2（**独立实现**）；**199 encode + 199 预分词 + 2000 压力 + 405 解码**夹具逐条相等；chat 渲染 12/12 与 jinja2（transformers 同引擎同参数）逐字节相等；GGUF 装载路径与表快照路径**同摘要**（`merges_sha256=cb5bed793622288a…`、`tokens_sha256=6e5117ddc01e0cb3…`）⇒ 脱离 4.2 GB 模型可复跑全部对账。
+- **本轮 5 处实测修正（都是「看起来对」的失效形态）**:
+  ① **.NET Regex 不可用于增补平面字符类** —— 它按 UTF-16 码元解析，`𐐀-𐑏` 被拆成孤立代理项 + 反向区间 ⇒ 静默过量匹配；改为生成器把正则机器解析成**标量区间表**，C# 侧标量扫描。
+  ② **区间表必须归一化（排序+合并）** —— CJK 正则原文顺序 `一-龥` `ࠀ-一` `가-퟿` 非升序，首版透传致二分查找漏判（`中अआ文` 被切成 3 片）⇒ 归一化 + 新增自检项「严格升序互不重叠」。
+  ③ **`\s?[类]+` 的空白前缀需要回溯** —— 贪婪吞空白后若其后不是类字符，必须退回「不吞空白」，让该空白字符本身作为类成员被匹配（U+3000 同时在空白集与标点/CJK 类内）。
+  ④ **判定谓词必须逐阶段隔离探测** —— 用整条流水线探测 `\s` 会被后续 CJK 阶段二次切分干扰（把 Zs 类空白误判为「非 `\s`」）；正确读数：`\s` = 25 码点 = **Unicode White_Space 全集**（全 BMP 穷举），Digits = `{Nd,Nl,No}`（1831/1831，负控 3920 例 **0 违规**）。
+  ⑤ **切分集 = `added_tokens` 全体 18 个**（实测与 `special=true` 无关）；`special=true` 的 3 个只影响 `decode(skip_special_tokens=true)` —— 编码切分集与解码跳过集必须**分别入表**。
+- **负控常态化（带判别力读数）**: merges 乱序 **41.5%** / 逆序 **56.9%** / 清空 **95.3%**（依赖合并样本 1814），阈值取 30/40/90%；空切分集必红；朴素整片预分词判别 **137/199**。统计只在**依赖合并表**的样本上做 —— 整片命中词表的文本与合并表无关，计入会稀释判别力。
+- **负控当场抓到的真 bug**: `Sampler.NextU64` 首版把状态拷进局部再 `ref` ⇒ 随机源**永不前进**（采样退化为恒定输出），由「平坦分布 300 抽取必须出现 >5 个不同 id」的反向控制捕获并修复。
+- **真机读数**: GGUF 装载路径 199/199 + 199/199 + 2000/2000 + 405/405（`pass=true`）；`generate --chat` 7B 真跑（逐 token 墙钟 / `tok/s` / 峰值 RSS / 流式字节数，见 `docs/reports/r400/rover-generation-chain.md`）；探针 `solver=rover` 已接线（远端 API 与 rover 同题同判定器，读数标注 `budget_limited`）。
+- **诚实边界**: ① 本机 2 vCPU / 无 GPU / 每 token 流式扫 ≈4.0 GiB ⇒ 生成**不可交互**（≈20–33 s/token），本轮交付「链路正确 + 可对账」，性能线属 R401/R402；② chat template 仅支持 `system/user/assistant` 子集，工具调用与 Jinja 全量属 R403；③ 采样器**不含**重复/存在/频率惩罚；④ 探针 `solver=rover` 为**限量 token 口径**（默认 8），不得读作「rover 能力为零」。
+- **机检**: 新增 22 条测试全绿；形式校验（`VerificationFormTests` / `DevPlanDocRefTests`）+ 全量回归见本轮报告。

@@ -155,7 +155,21 @@ done
 
 ## 7. 迭代状态快照（恢复迭代从这里开始）
 
-> ### ⏱ 最新状态（2026-09-13 R377 — 恢复迭代先读这里；下方为历史逐轮条目）
+> ### ⏱ 最新状态（2026-09-14 R400 — 恢复迭代先读这里；下方为历史逐轮条目）
+>
+> - **版本**：**v0.26.0 · R400 已交付**（rover 生成链）；本地 HEAD = `9d2191a`（R400 生成链落地）+ `f75e6f7`（R400 规划入账）+ `4cabcc5`(R399) …；远端 `origin/main` = `740ddf2` **未推**（推送暂停令在效）。
+> - **【推送暂停令 (2026-09-13 用户钦定)】**：**暂停所有 GitHub 推送** —— 三道机械闸在位（`.git/PUSH_PAUSED` + `.git/hooks/pre-push` + `remote.origin.pushurl`→不可达路径）；解除 = 删标记 + 删 hook + `git config --unset remote.origin.pushurl`。
+> - **【常驻循环 (2026-09-14 用户钦定)】**：cron **`10f9d6454575`** 每 60 分钟跑 `scripts/capability_cycle_status.py` 判 `mode=tasks|selfcheck`：有未完成计划项 ⇒ 推进最前一项一步（要真机证据）；无 ⇒ 跑「py 随机程序 + 随机数学题」能力自检并沉淀通用性 skill 到 `skills/`（`type: knowledge_hint`）。BGE 线仍静默（cron `79b866b5097d`，6h）。
+> - **本轮交付（R400）**：**rover 生成链**（目标 ③「本机引擎可当解法后端」的前置）—— `src/agent.rover/token/{ByteUnicode,Pretokenizer,BpeTokenizer,ChatTemplate,TableSnapshot,TokenizerAssets.g.cs}` + `infer/Sampler.cs` + `cli/GenerateCli.cs`（`tokenize`/`generate`）+ `agent.csproj` 共享源；资产入仓 `eval/rover/tokref/`（表快照 + 夹具 199/199/2000/405 + chat_golden 12）；生成器 `scripts/rover_*.py`；测试 22 条。
+> - **对账读数（oracle = HF tokenizers 0.23.2，独立实现）**：encode **199/199**、预分词 **199/199**、压力批 **2000/2000**（encode+分片双断言）、解码 **405/405**（两种 skip 口径）、chat 渲染 **12/12**（jinja2 逐字节）；**GGUF 装载路径同读数**（真机 `tokenize <gguf> --fixtures` ⇒ `pass=true`）⇒ 表快照路径与真机路径**同摘要**（`merges_sha256=cb5bed793622288a…` / `tokens_sha256=6e5117ddc01e0cb3…`）。
+> - **负控读数（判别力量化）**：merges 乱序 **41.5%** / 逆序 **56.9%** / 清空 **95.3%** 被检出（依赖合并样本 1814；阈值 30/40/90%）；空切分集必红；朴素整片预分词判别 **137/199**。负控当场抓到真 bug：`Sampler.NextU64` 状态拷贝致随机源不前进（采样退化）。
+> - **本轮 5 处实测修正**：① .NET Regex 按 UTF-16 码元解析字符类 ⇒ 增补平面区间静默过量匹配（改机器派生标量区间表）；② 区间表须归一化（CJK 正则原文非升序 ⇒ 二分漏判）；③ `\s?[类]+` 前缀需回溯；④ 判定谓词须**阶段隔离探测**（整条流水线探测会把 Zs 空白误判为非 `\s`；正确 = 25 码点 = Unicode White_Space 全集；Digits = {Nd,Nl,No} 1831/1831，负控 3920 例 0 违规）；⑤ 切分集 = `added_tokens` **全体 18**（与 `special=true` 无关），跳过集 = 3。
+> - **诚实边界**：① 本机 2 vCPU / 无 GPU / 每 token 流式扫 ≈4.0 GiB ⇒ 生成**不可交互**（≈20–33 s/token），本轮交付「链路正确 + 可对账」，性能线属 R401/R402；② chat template 仅 `system/user/assistant` 子集（工具调用/Jinja 全量 = R403）；③ 采样器无重复/存在/频率惩罚；④ 探针 `solver=rover` 为**限量 token 口径**（默认 8），不得读作「rover 能力为零」；⑤ M6 对 agent 仍饱和（R399 遗留）⇒ 下轮换维度。
+> - **文档同步**：`docs/plans/v0.26.0-r400-rover-generation-chain.md`(计划+实施记录) / `docs/plans/v0.22.0-longterm-backlog.md`(L8 R400 状态) / `docs/improvements.md`(+R400) / `docs/verification-registry.json`(+`rover.generation.chain`, updated_round=R400) / `docs/reports/r400/`。
+>
+> ---
+> ### 🗂 历史快照（R377，2026-09-13）
+（以下为 R377 时的快照正文，保留以追溯）
 >
 > - **版本**：**v0.22.0 探索期**；本地 HEAD = 本轮 R377 提交 + R376 `68e8ed6` + R375 `941c9cd` + 规范 R7 `4b05ca8`；远端 `origin/main` = `740ddf2` **未推**。
 > - **【推送暂停令 (2026-09-13 用户钦定)】**：**暂停所有 GitHub 推送** —— 三道机械闸已就位（`.git/PUSH_PAUSED` 标记 + `.git/hooks/pre-push` 拒绝 + `remote.origin.pushurl` 指向不可达路径, 离线秒失败 EXIT=128 已实证）；两个定时任务（`f6a10a4499cc` 千轮守卫 / `9a97763d5fcd` 底座小报）指令已改写为**仅本地 commit**；解除方式: 删标记 + 删 hook + `git config --unset remote.origin.pushurl`。**fetch 面未受影响**。
@@ -165,8 +179,6 @@ done
 > - **能力探针（R377 回归样本, 同题贪吃蛇 ×2）**：RUN1 2 调用 / 137s / 37,226 tokens / 产物 2 个 / reply 17,973 ch；RUN2 2 调用 / 139s / 39,955 tokens / reply 13,487 ch；**独立复核** `--selftest` → 修复后产物 **16/16 PASS**（两跑均是"首投失败 → D3 修复成功"）。
 > - **诚实边界**：① 命中率为 2 跑样本非稳态分布；② 本轮 tokens 高于 R376 因 D3 修复各多 1 调用（机制正常, 成本如实登记）；③ 首跑全量 857/859（2 红未留名）→ 连跑两遍 859/859, 判负载偶发；④ exp2 §8 Q1–Q4 仍待用户裁决；⑤ D7 截断续写仍未救回；⑥ 工业级缺口余项: CI 门禁 / 配置热更新 / metrics 端点 / 断路器半开 / 跨请求成本闸。
 > - **文档同步**：`docs/improvements.md`(+R377) / `docs/reports/iteration-master-plan.md`(§0-1 K2b) / 本报告(§6b + 快照) / `docs/verification-registry.json`(+1 行, R377) / `docs/plans/v0.22.0-exp5-lesson-table.md`(§15) / `skills/delivery-selfcheck/SKILL.md`(v1.1.1) / `scripts/kpi_cache_hit.py`(新)。
->
-> ---
 - **R376 段（历史）**：exp2 P2 达成 —— 真机同连接 menu 闭环（`ask` 信封 → 同连接 `ask.reply` → `outcome=answered` → 续跑返回正文, 3/3）；修 **⑪ 握手残包**（返回 Tail + 预置排空）与 **⑫ 同通道回程饿死**（读循环只解析 + 并发派发, 在途上限 8）；全量 847/847；负向控制 2/2 红；AOT 参考 13,959,712 B。
 - **R375 段（历史）**：exp2 P0 前端 menu 问询通路实装（`AskEnvelope` 信封 + `FrontendEventHub` 事件推送 + `ask.reply/ask.cancel` 路由 + 选项贯通）；P1 真机接线已证（伪造 id → `unknown_ask`）；P2 ask 事件 **0/1**（触发点未命中）；全量 841/841；AOT 参考 13,947,200 B / 0 IL。
 - **主线进度**：R138-R153。R149 用户质疑整改（真断言族）；R151 pivot 判定闭环（真缺陷 56 KeyError 修复）；R152 收尾（phase report 3: batch62-78 187/187 + README 30 批滚动制度）；**R153 真缺陷 57 修复**：D4 gate 读 os.environ 致 reply_rel 整块静默失效（批79/80 n=0 实证，诚实缺省未破）→ gate 同源 load_env()，批81 同环境复验 n=11 avg 0.631 恢复。下一轮号 **mass_351**（R180-R184 进度与接力细节见下方对应条目及台账 R180-R184）。

@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R399",
+  "updated_round": "R400",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -582,6 +582,30 @@
       "negative_control": "24/24: 缺率/缺 sha/缺 ts/缺 taxonomy ⇒ error; total=0 或 n_tasks=0 ⇒ error(除零保护); 窗口锚点写反([ts,ts+elapsed]) ⇒ **读不到窗内调用**(必须 None); 7 位小数遥测时间戳必须可解析(曾静默丢 ⇒ token 全 None); 非法时间戳必须抛错; 窗口内无调用 ⇒ n/a(不是 0); 同 run 台账去重; 异题集对比必须显式标注不可比; 未知失败模式键必须保留",
       "covers": "scripts/kpi_probe.py, eval/probe/run_probe.py, data/probe/kpi.jsonl",
       "owner_round": "R399"
+    },
+    {
+      "id": "rover.generation.chain",
+      "capability": "本机 agent.rover 的**生成链**(R400): GGUF 内嵌 gpt2 字节级 BPE(102400 词表/99757 合并) + 预分词标量扫描器(5 条 Split + Digits 逐位 + ByteLevel) + DeepSeek chat template(支持子集) + SplitMix64 确定性采样(greedy/temperature/top-k/top-p) + 复用增量前向的解码环 ⇒ 文本进文本出。对账 oracle = HF tokenizers 0.23.2(**独立实现, 非本仓代码**): 199 encode + 199 预分词 + 2000 压力(encode 与分片双断言) + 405 解码(两种 skip 口径) 夹具逐条相等; chat 渲染 12/12 与 jinja2(transformers 同引擎同参数)逐字节相等; 两张判定谓词表由 oracle **阶段隔离探测**生成(\\s = 25 码点 = Unicode White_Space 全集, 全 BMP 穷举; Digits = {Nd,Nl,No} 全集 1831/1831, 负控 3920 例 0 违规)。常量资产由 tokenizer.json **机器生成**(正则原文 sha256 + 归一化区间表 + 摘要), 禁手抄。",
+      "level": "L4",
+      "evidence_cmd": "agent.rover tokenize eval/... || python3 scripts/rover_gen_tokenizer_assets.py --tokenizer-json <tokenizer.json> --check; agent.rover tokenize --tables eval/rover/tokref/tables --selftest --fixtures --neg-control",
+      "evidence_path": "docs/reports/r400/rover-generation-chain.md",
+      "negative_control": "5 类必须红: merges 乱序 41.5% / 逆序 56.9% / 清空 95.3% 被检出(依赖合并样本 1814, 阈值 30/40/90%); 空切分集 ⇒ 特殊符号文本 3→15 id; 朴素整片预分词判别 137/199; 采样器退化(恒 argmax)负控 ⇒ 平坦分布 300 抽取需 >5 个不同 id(该负控当场抓到 NextU64 状态未前进的真 bug)",
+      "covers": [
+        "src/agent.rover/token/BpeTokenizer.cs",
+        "src/agent.rover/token/Pretokenizer.cs",
+        "src/agent.rover/token/ByteUnicode.cs",
+        "src/agent.rover/token/ChatTemplate.cs",
+        "src/agent.rover/token/TableSnapshot.cs",
+        "src/agent.rover/token/TokenizerAssets.g.cs",
+        "src/agent.rover/infer/Sampler.cs",
+        "src/agent.rover/cli/GenerateCli.cs",
+        "src/agent.tests/RoverTokenizerTests.cs",
+        "src/agent.tests/RoverSamplerTests.cs",
+        "eval/rover/tokref/fixtures.jsonl",
+        "eval/rover/tokref/stress_fixtures.jsonl",
+        "eval/rover/tokref/decode_fixtures.jsonl"
+      ],
+      "owner_round": "R400"
     }
   ],
   "aot_check_policy": "release_tag_only",

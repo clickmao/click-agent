@@ -21,7 +21,7 @@
 用法
 ----
     python3 eval/probe/run_probe.py --selftest
-    python3 eval/probe/run_probe.py --kind program --n 4 --seed 7 --solver oracle
+    python3 eval/probe/run_probe.py --kind program --n 4 --seed 7 --solver oracle|agent|rover|mutation:<kind>|file:<dir>|command:<cmd>
 """
 
 from __future__ import annotations
@@ -201,6 +201,49 @@ def solve_agent(task: dict, solve_timeout: float):
                     "session": sid, "stderr_tail": "solve timeout"}
 
 
+def solve_rover(task: dict, solve_timeout: float) -> tuple:
+    """真机自检: 用本机 agent.rover 引擎 (GGUF + 字节级 BPE + chat template + 采样 + 解码环) 跑一题。
+
+    诚实边界: CPU 上每 token 需流式扫全模型 (≈4.0 GiB), 实测 20~33 s/token ⇒ 默认只给
+    极小 token 预算 (PROBE_ROVER_MAX_TOKENS) 以证明**链路可用**, 不足以产出完整解法。
+    meta 中 budget_limited/max_tokens 明确标注, 避免把「预算截断」读成「能力为零」。
+    """
+    cli = os.environ.get("AGENTFRAMEWORK_ROVER_CLI", os.path.join(ROOT, "src/agent.rover/bin/Release/net10.0/agent.rover"))
+    model = os.environ.get("AGENTFRAMEWORK_ROVER_MODEL", "/tmp/models/prover7b-q4km.gguf")
+    max_tokens = int(os.environ.get("PROBE_ROVER_MAX_TOKENS", "8"))
+    temp = os.environ.get("PROBE_ROVER_TEMPERATURE", "0.7")
+    seed = os.environ.get("PROBE_ROVER_SEED", "12345")
+    if not os.path.exists(cli):
+        raise SystemExit("rover CLI 不存在: %s (先 dotnet build -c Release, 或设 AGENTFRAMEWORK_ROVER_CLI)" % cli)
+    if not os.path.exists(model):
+        raise SystemExit("rover 模型不存在: %s (设 AGENTFRAMEWORK_ROVER_MODEL)" % model)
+    jf = os.path.join(DATA, "rover-gen-%s.json" % task["tid"])
+    cmd = [cli, "generate", model, "--chat",
+           "--system", "你是严谨的编程与数学助手。请直接给出完整可运行的答案。",
+           "--prompt", task["prompt"], "--max-tokens", str(max_tokens),
+           "--temperature", temp, "--seed", seed, "--json", jf]
+    t0 = time.time()
+    try:
+        p = subprocess.run(cmd, capture_output=True, text=True, timeout=solve_timeout, cwd=ROOT)
+    except subprocess.TimeoutExpired:
+        return "", False, {"exit": -9, "elapsed_s": round(time.time() - t0, 2),
+                           "budget_limited": True, "max_tokens": max_tokens, "stderr_tail": "solve timeout"}
+    meta = {"exit": p.returncode, "elapsed_s": round(time.time() - t0, 2),
+            "budget_limited": True, "max_tokens": max_tokens,
+            "stderr_tail": (p.stderr or "")[-300:]}
+    text = ""
+    if os.path.exists(jf):
+        try:
+            j = json.load(open(jf, encoding="utf-8"))
+            text = j.get("text", "")
+            meta.update({"steps": j.get("steps"), "ms_per_token": j.get("ms_per_token"),
+                         "tokens_per_s": j.get("tokens_per_s"), "stop": j.get("stop"),
+                         "prompt_tokens": j.get("prompt_tokens"), "ws_delta_bytes": j.get("ws_delta_bytes")})
+        except Exception as e:  # noqa: BLE001
+            meta["json_error"] = str(e)
+    return text, False, meta
+
+
 def solve(task: dict, solver: str, solve_timeout: float = 300.0) -> tuple:
     if solver == "oracle":
         return oracle_reply(task), True, {}
@@ -209,6 +252,8 @@ def solve(task: dict, solver: str, solve_timeout: float = 300.0) -> tuple:
     if solver == "agent":
         rep, meta = solve_agent(task, solve_timeout)
         return rep, False, meta
+    if solver == "rover":
+        return solve_rover(task, solve_timeout)
     if solver.startswith("file:"):
         d = solver.split(":", 1)[1]
         p = os.path.join(d, "%s.txt" % task["tid"])
