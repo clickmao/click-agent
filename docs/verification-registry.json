@@ -1,150 +1,192 @@
 {
-  "schema": "verification-registry/v1",
-  "updated_round": "R372",
-  "spec": "docs/验证形式规范.md",
-  "levels": {
-    "L0": "未验证(仅存在)",
-    "L1": "静态检查(编译/语法/结构扫描)",
-    "L2": "单测/组件行为断言",
-    "L3": "真机运行(进程/产物/端到端)",
-    "L4": "对抗/负向控制(注入缺陷必失败)"
+ "schema": "verification-registry/v1",
+ "updated_round": "R373",
+ "spec": "docs/验证形式规范.md",
+ "levels": {
+  "L0": "未验证(仅存在)",
+  "L1": "静态检查(编译/语法/结构扫描)",
+  "L2": "单测/组件行为断言",
+  "L3": "真机运行(进程/产物/端到端)",
+  "L4": "对抗/负向控制(注入缺陷必失败)"
+ },
+ "rows": [
+  {
+   "id": "python.artifact.compile",
+   "capability": "Python 产物落盘 + 语法校验 + 台账",
+   "level": "L2",
+   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~PythonArtifactPluginTests",
+   "evidence_path": "src/agent.tests/PythonArtifactPluginTests.cs",
+   "negative_control": "写入含语法错误的脚本 → compile_valid 必须为 false（用例内断言）",
+   "covers": [
+    "src/agent/registry/PythonArtifactPlugin.cs"
+   ],
+   "owner_round": "R368"
   },
-  "rows": [
-    {
-      "id": "python.artifact.compile",
-      "capability": "Python 产物落盘 + 语法校验 + 台账",
-      "level": "L2",
-      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~PythonArtifactPluginTests",
-      "evidence_path": "src/agent.tests/PythonArtifactPluginTests.cs",
-      "negative_control": "写入含语法错误的脚本 → compile_valid 必须为 false（用例内断言）",
-      "covers": [
-        "src/agent/registry/PythonArtifactPlugin.cs"
-      ],
-      "owner_round": "R368"
-    },
-    {
-      "id": "segment.plugin.router",
-      "capability": "响应分段插件路由(恒等不改写原文 / 代码段审查回调)",
-      "level": "L2",
-      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~RegistryTests",
-      "evidence_path": "src/agent.tests/RegistryTests.cs",
-      "negative_control": "插件改写原文 → Router_RoutesToRegisteredPlugin_AndPreservesFences 断言原文还原必红；html 段传给代码审查 → Router_CodeReviewPlugin_ReceivesNonUiCode 断言 Null 必红",
-      "covers": [
-        "src/agent/registry/UiCapturePlugin.cs",
-        "src/agent/registry/CodeReviewPlugin.cs"
-      ],
-      "owner_round": "R368"
-    },
-    {
-      "id": "role.rbin.roundtrip",
-      "capability": "Role 单文件 .rbin 加密往返(gzip+AES-256-GCM+原子写)",
-      "level": "L2",
-      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~RoleBinaryFileTests",
-      "evidence_path": "src/agent.tests/RoleBinaryFileTests.cs",
-      "negative_control": "篡改密文 1 字节 → GCM tag 校验必须失败(解密抛错)",
-      "covers": [
-        "src/agent.roles/RoleBinaryFile.cs"
-      ],
-      "owner_round": "R363"
-    },
-    {
-      "id": "credential.aesgcm",
-      "capability": "凭据静态加密(AES-256-GCM 跨平台统一)",
-      "level": "L3",
-      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~CredentialEncryptionTests",
-      "evidence_path": "src/agent.tests/CredentialEncryptionTests.cs",
-      "negative_control": "错误 key → 解密必须抛异常；密文改 1 bit → 完整性校验必须失败",
-      "covers": [],
-      "owner_round": "R358"
-    },
-    {
-      "id": "devplan.docref",
-      "capability": "开发计划节点 DocRef 防漂移(文档-代码锚定)",
-      "level": "L2",
-      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~DevPlanDocRefTests",
-      "evidence_path": "src/agent.tests/DevPlanDocRefTests.cs",
-      "negative_control": "删/改被 DocRef 指向的文档 → 测试必红",
-      "covers": [],
-      "owner_round": "R360"
-    },
-    {
-      "id": "aot.publish.zero_il",
-      "capability": "NativeAOT 发布(0 IL 警告)",
-      "level": "L3",
-      "evidence_cmd": "export PATH=\"$HOME/.dotnet:$PATH\" && dotnet publish src/agent.host/agent.host.csproj -c Release -r linux-x64 -p:PublishAot=true",
-      "evidence_path": "src/agent.host",
-      "negative_control": "引入反射/动态代码路径 → IL2026/IL3050 警告出现，即视为失败(0 警告为发布铁律)",
-      "covers": [],
-      "owner_round": "R368"
-    },
-    {
-      "id": "bge.recall.frozen_bench",
-      "capability": "bge 确定性召回率评测(冻结语料/冻结查询/冻结指标)",
-      "level": "L3",
-      "evidence_cmd": "python3 eval/bge/eval_recall.py --label bge-small-zh-v1.5",
-      "evidence_path": "eval/bge/fixtures/corpus.jsonl",
-      "negative_control": "打乱 gold_id 映射 → 指标必须塌到随机水平(r@1 ≈ 1/1299)",
-      "covers": [],
-      "owner_round": "R370"
-    },
-    {
-      "id": "verification.registry.selfcheck",
-      "capability": "验证形式登记表自身(漏项/越级/路径不存在 必红)",
-      "level": "L4",
-      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~VerificationFormTests",
-      "evidence_path": "src/agent.tests/VerificationFormTests.cs",
-      "negative_control": "删除任一登记行/L≥2 行缺负向控制/静态命令越级申报/新增未登记插件 → 本测试必红",
-      "covers": [],
-      "owner_round": "R370"
-    },
-    {
-      "id": "zero.shell.spawn",
-      "capability": "外部进程直连(ArgumentList 参数数组, 零 shell 拼接)",
-      "level": "L1",
-      "evidence_cmd": "python3 -c \"import re,pathlib;print(sum(1 for f in pathlib.Path('src').rglob('*.cs') for l in f.read_text(encoding='utf-8').splitlines() if re.search(r'Arguments\\\\s*=', l)))\"",
-      "evidence_path": "src/agent.skills/SkillScriptRunner.cs",
-      "negative_control": "",
-      "covers": [],
-      "owner_round": "R369",
-      "gap_note": "仅代码走查 + 静态扫描；无独立运行级机检。已知例外: src/agent.workspace/GitChangeType.cs(死代码, 未接线, 21 处)。运行级机检列入长期看板 L6。"
-    },
-    {
-      "id": "code.unfenced.promote",
-      "capability": "无围栏代码 → 产物入链(字符串字面量感知 + 机制归因)",
-      "level": "L4",
-      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~UnfencedCodeDetectionTests",
-      "evidence_path": "src/agent.tests/UnfencedCodeDetectionTests.cs",
-      "negative_control": "关闭启发式回退 → 3 个用例如期变红(RED 控制已跑);纯散文/<8 行/已有围栏 → 不得提升",
-      "covers": [
-        "src/agent/registry/SegmentKind.cs",
-        "src/agent/registry/PythonArtifactPlugin.cs"
-      ],
-      "owner_round": "R371"
-    },
-    {
-      "id": "llm.truncated.detect",
-      "capability": "截断正文检测(尾部未完结构)",
-      "level": "L2",
-      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~TruncatedReplyRecoveryTests",
-      "evidence_path": "src/agent.tests/TruncatedReplyRecoveryTests.cs",
-      "negative_control": "完整实现/闭合围栏/全角句号结尾 → 必须判否(零误报)",
-      "covers": [
-        "src/agent.modelqueue/ModelQueueRouter.cs"
-      ],
-      "owner_round": "R372"
-    },
-    {
-      "id": "llm.truncated.continue",
-      "capability": "截断有界续写 + 去重重拼",
-      "level": "L2",
-      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~TruncatedReplyRecoveryTests",
-      "evidence_path": "src/agent.tests/TruncatedReplyRecoveryTests.cs",
-      "negative_control": "续写返回空 → 保留原文并仍可检出截断;完整正文 → 恰好 1 次调用(零额外成本)",
-      "covers": [
-        "src/agent.modelqueue/ModelQueueRouter.cs"
-      ],
-      "owner_round": "R372",
-      "l3_pending": "真机 8192 截断复现时验证 llm_call_continue 的 recovered=true(下轮探针)"
-    }
-  ]
+  {
+   "id": "segment.plugin.router",
+   "capability": "响应分段插件路由(恒等不改写原文 / 代码段审查回调)",
+   "level": "L2",
+   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~RegistryTests",
+   "evidence_path": "src/agent.tests/RegistryTests.cs",
+   "negative_control": "插件改写原文 → Router_RoutesToRegisteredPlugin_AndPreservesFences 断言原文还原必红；html 段传给代码审查 → Router_CodeReviewPlugin_ReceivesNonUiCode 断言 Null 必红",
+   "covers": [
+    "src/agent/registry/UiCapturePlugin.cs",
+    "src/agent/registry/CodeReviewPlugin.cs"
+   ],
+   "owner_round": "R368"
+  },
+  {
+   "id": "role.rbin.roundtrip",
+   "capability": "Role 单文件 .rbin 加密往返(gzip+AES-256-GCM+原子写)",
+   "level": "L2",
+   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~RoleBinaryFileTests",
+   "evidence_path": "src/agent.tests/RoleBinaryFileTests.cs",
+   "negative_control": "篡改密文 1 字节 → GCM tag 校验必须失败(解密抛错)",
+   "covers": [
+    "src/agent.roles/RoleBinaryFile.cs"
+   ],
+   "owner_round": "R363"
+  },
+  {
+   "id": "credential.aesgcm",
+   "capability": "凭据静态加密(AES-256-GCM 跨平台统一)",
+   "level": "L3",
+   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~CredentialEncryptionTests",
+   "evidence_path": "src/agent.tests/CredentialEncryptionTests.cs",
+   "negative_control": "错误 key → 解密必须抛异常；密文改 1 bit → 完整性校验必须失败",
+   "covers": [],
+   "owner_round": "R358"
+  },
+  {
+   "id": "devplan.docref",
+   "capability": "开发计划节点 DocRef 防漂移(文档-代码锚定)",
+   "level": "L2",
+   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~DevPlanDocRefTests",
+   "evidence_path": "src/agent.tests/DevPlanDocRefTests.cs",
+   "negative_control": "删/改被 DocRef 指向的文档 → 测试必红",
+   "covers": [],
+   "owner_round": "R360"
+  },
+  {
+   "id": "aot.publish.zero_il",
+   "capability": "NativeAOT 发布(0 IL 警告)",
+   "level": "L3",
+   "evidence_cmd": "export PATH=\"$HOME/.dotnet:$PATH\" && dotnet publish src/agent.host/agent.host.csproj -c Release -r linux-x64 -p:PublishAot=true",
+   "evidence_path": "src/agent.host",
+   "negative_control": "引入反射/动态代码路径 → IL2026/IL3050 警告出现，即视为失败(0 警告为发布铁律)",
+   "covers": [],
+   "owner_round": "R368"
+  },
+  {
+   "id": "bge.recall.frozen_bench",
+   "capability": "bge 确定性召回率评测(冻结语料/冻结查询/冻结指标)",
+   "level": "L3",
+   "evidence_cmd": "python3 eval/bge/eval_recall.py --label bge-small-zh-v1.5",
+   "evidence_path": "eval/bge/fixtures/corpus.jsonl",
+   "negative_control": "打乱 gold_id 映射 → 指标必须塌到随机水平(r@1 ≈ 1/1299)",
+   "covers": [],
+   "owner_round": "R370"
+  },
+  {
+   "id": "verification.registry.selfcheck",
+   "capability": "验证形式登记表自身(漏项/越级/路径不存在 必红)",
+   "level": "L4",
+   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~VerificationFormTests",
+   "evidence_path": "src/agent.tests/VerificationFormTests.cs",
+   "negative_control": "删除任一登记行/L≥2 行缺负向控制/静态命令越级申报/新增未登记插件 → 本测试必红",
+   "covers": [],
+   "owner_round": "R370"
+  },
+  {
+   "id": "zero.shell.spawn",
+   "capability": "外部进程直连(ArgumentList 参数数组, 零 shell 拼接)",
+   "level": "L1",
+   "evidence_cmd": "python3 -c \"import re,pathlib;print(sum(1 for f in pathlib.Path('src').rglob('*.cs') for l in f.read_text(encoding='utf-8').splitlines() if re.search(r'Arguments\\\\s*=', l)))\"",
+   "evidence_path": "src/agent.skills/SkillScriptRunner.cs",
+   "negative_control": "",
+   "covers": [],
+   "owner_round": "R369",
+   "gap_note": "仅代码走查 + 静态扫描；无独立运行级机检。已知例外: src/agent.workspace/GitChangeType.cs(死代码, 未接线, 21 处)。运行级机检列入长期看板 L6。"
+  },
+  {
+   "id": "code.unfenced.promote",
+   "capability": "无围栏代码 → 产物入链(字符串字面量感知 + 机制归因)",
+   "level": "L4",
+   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~UnfencedCodeDetectionTests",
+   "evidence_path": "src/agent.tests/UnfencedCodeDetectionTests.cs",
+   "negative_control": "关闭启发式回退 → 3 个用例如期变红(RED 控制已跑);纯散文/<8 行/已有围栏 → 不得提升",
+   "covers": [
+    "src/agent/registry/SegmentKind.cs",
+    "src/agent/registry/PythonArtifactPlugin.cs"
+   ],
+   "owner_round": "R371"
+  },
+  {
+   "id": "llm.truncated.detect",
+   "capability": "截断正文检测(尾部未完结构)",
+   "level": "L2",
+   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~TruncatedReplyRecoveryTests",
+   "evidence_path": "src/agent.tests/TruncatedReplyRecoveryTests.cs",
+   "negative_control": "完整实现/闭合围栏/全角句号结尾 → 必须判否(零误报)",
+   "covers": [
+    "src/agent.modelqueue/ModelQueueRouter.cs"
+   ],
+   "owner_round": "R372"
+  },
+  {
+   "id": "llm.truncated.continue",
+   "capability": "截断有界续写 + 去重重拼",
+   "level": "L2",
+   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~TruncatedReplyRecoveryTests",
+   "evidence_path": "src/agent.tests/TruncatedReplyRecoveryTests.cs",
+   "negative_control": "续写返回空 → 保留原文并仍可检出截断;完整正文 → 恰好 1 次调用(零额外成本)",
+   "covers": [
+    "src/agent.modelqueue/ModelQueueRouter.cs"
+   ],
+   "owner_round": "R372",
+   "l3_pending": "真机 8192 截断复现时验证 llm_call_continue 的 recovered=true(下轮探针)"
+  },
+  {
+   "id": "llm.budget.first_call",
+   "capability": "首轮输出预算按任务分类给足(推理与交付物同池) (L2 单测 + L3 真机)",
+   "level": "L3",
+   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~FirstCallBudgetTests",
+   "evidence_path": "src/agent.tests/FirstCallBudgetTests.cs",
+   "negative_control": "非大产物分类(一般问答/上下文压缩)必须保持默认预算(用例断言); RED 控制: 把调用方的分类标签改回硬编码 → 接线用例必红",
+   "covers": [
+    "src/agent.modelqueue/ModelQueueRouter.cs",
+    "src/agent/modelqueue/ModelQueueAdapter.cs",
+    "src/agent/templates/IPromptBuilder.cs",
+    "src/agent/IndustrialAgentV2.cs"
+   ],
+   "owner_round": "R373",
+   "real_machine": "3 连跑同题: 修复前 每题 2 次调用/3 轮全触发恢复/有效产物 1-2/3; 修复后 1 次调用/零恢复/有效 3/3, tokens −32%, 墙钟 136s→64s"
+  },
+  {
+   "id": "skill.lesson.generalize",
+   "capability": "经验沉淀=思考逻辑 skill, 且核心判据零语言特性(机检+负向控制)",
+   "level": "L2",
+   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~SkillGeneralizationTests",
+   "evidence_path": "src/agent.tests/SkillGeneralizationTests.cs",
+   "negative_control": "向技能正文注入语言 token → 黑名单必命中(用例断言, 证明机检非空转)",
+   "covers": [
+    "skills/delivery-selfcheck/SKILL.md",
+    "src/agent.roles/LessonGeneralization.cs"
+   ],
+   "owner_round": "R373"
+  },
+  {
+   "id": "skill.knowledge_hint.no_hijack",
+   "capability": "自检技能=知识提示型(命中注入, 不直出吞任务) (L2 单测 + L3 真机)",
+   "level": "L3",
+   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~SkillGeneralizationTests",
+   "evidence_path": "src/agent.tests/SkillGeneralizationTests.cs",
+   "negative_control": "真机反例已实证: 口径型(normative)命中等级3 时 force 直出技能正文 → 无 LLM 调用、reply_chars=1526、2.4s 结束(任务被劫持); 改 knowledge_hint 后回复仍走 LLM 主链",
+   "covers": [
+    "skills/delivery-selfcheck/SKILL.md",
+    "src/agent.skills/SkillDispatcher.cs"
+   ],
+   "owner_round": "R373"
+  }
+ ]
 }

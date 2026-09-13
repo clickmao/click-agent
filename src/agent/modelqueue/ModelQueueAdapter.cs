@@ -34,7 +34,10 @@ public sealed class ModelQueueAdapter : ILLMCaller, agent.subagent.ILLMCallerFor
                 Role = msg.Role == MessageRole.User ? "user" : "assistant",
                 Content = msg.Content,
             });
-        var r = await _router.CallAsync(qp, TaskKindHint.General, "general", ct);
+        // R373: 意图透传 (此前硬编码 "general" → 首轮预算策略永远匹配不上, 真机铁证:
+        // 代码任务首轮 completion_tokens=8192 被推理吃满 → content 空/半截, 每题 2 次调用)。
+        var intent = string.IsNullOrWhiteSpace(prompt.Intent) ? "general" : prompt.Intent!;
+        var r = await _router.CallAsync(qp, TaskKindHint.General, intent, ct);
         return new LLMResponse
         {
             Content = r.Content,

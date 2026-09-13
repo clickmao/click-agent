@@ -95,7 +95,7 @@ public class PythonArtifactPluginTests : IDisposable
         var reports = ledger.Snapshot();
         Assert.Equal(2, reports.Count);                       // 两次都记账 (可观测)
         Assert.Equal(reports[0].Sha256Short, reports[1].Sha256Short);
-        Assert.Equal(1, Directory.GetFiles(_dir, "*.py").Length); // 内容寻址 → 只一个文件
+        Assert.Single(Directory.GetFiles(_dir, "*.py"));       // 内容寻址 → 只一个文件
     }
 
     [Fact]

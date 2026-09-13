@@ -35,6 +35,10 @@ public class Prompt
     /// LLM caller 消费 (glm reasoning_effort=low 轻思考: 简单题 reasoning 0 vs 8910ch)。</summary>
     public string? ReasoningEffort { get; set; }
 
+    /// <summary>R373: 任务意图透传 (主链意图分类器的结果, 如 code_generation)。
+    /// 消费方 = 模型队列: 决定首轮输出预算 (推理与正文共享 max_tokens → 代码类必须给足)。</summary>
+    public string? Intent { get; set; }
+
     /// <summary>
     /// 系统 Prompt（包含指令）
     /// </summary>

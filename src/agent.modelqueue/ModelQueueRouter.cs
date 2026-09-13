@@ -271,7 +271,9 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         var llmSw = System.Diagnostics.Stopwatch.StartNew();
         try
         {
-            var resp = await CallEntryAsync(entry, prompt, ct);
+            // R373: 首轮预算按任务类型给足 (真机 D1/D7 同源根因: 推理与正文共享 max_tokens)
+            var firstBudget = InitialMaxTokens(kind, intent);
+            var resp = await CallEntryAsync(entry, prompt, ct, firstBudget).ConfigureAwait(false);
             // R371 真缺陷 (空正文): 推理模型把输出预算全花在思维链 → content 空但 success=true,
             // 用户侧表现为"执行 ~30s 后回复空白" (E2E 铁证: completion 8192/8192, content_len=0, reasoning_len=22633,
             // loop_turn reply_chars=0 且 success=true)。旧修 (R19: max_tokens 2000→8192) 只是抬高天花板 —
@@ -307,6 +309,9 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                 ("reasoning_len", resp.ReasoningContent?.Length ?? 0),
                 // R371 D7: 每次调用都记录是否**结构未闭合** (截断) — 无此字段, "半份实现"只能靠人肉看输出才发现
                 ("truncated", LooksTruncated(resp.Content)),
+                // R373 归因铁律 (R372 教训): 命中/失败必须能追溯到**机制** — 记录首轮预算与意图,
+                // 否则"预算策略是否真生效"又只能靠猜 (本轮真机首跑即踩: 适配器硬编码 intent 使策略成死代码)。
+                ("first_budget", firstBudget), ("intent", intent ?? ""),
                 // v0.11.0 R129 (D3): LLM 真耗时 ms
                 ("ms", llmSw.ElapsedMilliseconds));
             // 阈值再同步 (fire-and-forget, 不阻塞主链)
@@ -584,6 +589,29 @@ public sealed class ModelQueueRouter : IModelQueueCaller
 
     /// <summary>R371: 空正文恢复时的输出预算 (×4 于默认 8192; 硬上限保护, 不是"再抬天花板"而是配合抑制推理)。</summary>
     private const int MaxTokensEscalated = 32768;
+
+    /// <summary>默认输出预算 (与 DTO 默认一致; 只作截断保护, 实际长度由输出纪律约束)。</summary>
+    public const int DefaultMaxTokens = 8192;
+
+    /// <summary>
+    /// R373 **首轮预算策略** —— D1(空正文)/D7(半正文) 的**同源根因修复**。
+    /// 真机铁证: `completion_tokens=8192` 被**推理内容独占** (reasoning_len 22633~28306, content_len=0),
+    /// 旧行为 = 首轮 8192 全废 → 触发有界恢复(第 2 次调用 32768) → 同题 2~3 次调用/多花 8192 tok/多等 30~60s。
+    /// 正解: **首轮就按任务类型给足预算** (推理 + 完整产物必须同框), 恢复链退化为兜底。
+    /// 判据只取**确定性信号** (任务类型 + 意图标签), 不做用户文本关键词猜测 —— 避免把闲聊也抬到 32k。
+    /// </summary>
+    public static int InitialMaxTokens(TaskKindHint kind, string? intent)
+    {
+        if (kind != TaskKindHint.General) return DefaultMaxTokens;   // 压缩/标注类任务产物短, 保持 8k
+        if (string.IsNullOrWhiteSpace(intent)) return DefaultMaxTokens;
+        foreach (var marker in LargeOutputIntentMarkers)
+            if (intent.Contains(marker, StringComparison.OrdinalIgnoreCase)) return MaxTokensEscalated;
+        return DefaultMaxTokens;
+    }
+
+    /// <summary>大产物意图标记 (产物通常含整份文件/脚本 → 推理+正文必须同框)。</summary>
+    private static readonly string[] LargeOutputIntentMarkers =
+        { "code", "coding", "script", "program", "game", "implement", "refactor", "artifact" };
 
     /// <summary>R371: 抑制推理、强制正文的提示 (模型无关表述, 追加为 system 消息)。</summary>
     private const string NoReasoningNudge =

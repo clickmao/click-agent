@@ -1202,6 +1202,7 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             // v0.11.0 R21: 推理档位路由 — 简单任务轻思考省 token/延迟, 复杂任务保留默认深推理。
             // 实测 (glm-5.3-flash): 简单题 reasoning 0 vs 8910ch; 复杂题 low 档 wall -55%。
             prompt.ReasoningEffort = IsSimpleIntentForReasoning(intent, prompt.UserMessage) ? "low" : null;
+            prompt.Intent = intent;   // R373: 意图透传到模型队列 (首轮预算策略的确定性输入, 不靠文本猜测)
             var restoreBlock = string.Join("\n\n", new[] { microRestore, exploreDigest }.Where(s => !string.IsNullOrEmpty(s)));
             if (restoreBlock.Length > 0)
             {

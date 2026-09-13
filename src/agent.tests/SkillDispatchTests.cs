@@ -123,7 +123,7 @@ public class SkillDispatchTests
         }
         var registry = SkillRegistry.LoadFromDirectory(root);
         // v0.10.0: 开放标准包 (SKILL.md 目录) 与 legacy 平文件并存 — legacy 断言不变
-        var skill = Assert.Single(registry.All.Where(s => s.PackageDir is null));
+        var skill = Assert.Single(registry.All, s => s.PackageDir is null);
         Assert.Equal("identity_statement", skill.SkillId);
         Assert.True(skill.Exclusive);
         Assert.Contains("你是谁", skill.Keywords);

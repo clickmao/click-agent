@@ -207,7 +207,7 @@ public class LessonTableTests : IDisposable
         var rows = back.Query(0, kind: "Failure", scope: "Project");
         Assert.Equal(2, rows.Count);
         var a = Assert.Single(rows, r => r.Pattern == GenericA);
-        Assert.Equal(1, a.Instances.Count);
+        Assert.Single(a.Instances);
         Assert.Equal("python", a.Instances[0].Lang);
         Assert.Equal(t.Query(0).Count, back.Query(0).Count);
     }
