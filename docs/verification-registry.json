@@ -71,11 +71,13 @@
    "id": "aot.publish.zero_il",
    "capability": "NativeAOT 发布(0 IL 警告)",
    "level": "L3",
-   "evidence_cmd": "export PATH=\"$HOME/.dotnet:$PATH\" && dotnet publish src/agent.host/agent.host.csproj -c Release -r linux-x64 -p:PublishAot=true",
+   "evidence_cmd": "export PATH=\"$HOME/.dotnet:$PATH\" && dotnet publish src/agent.host/agent.host.csproj -c Release -r linux-x64 -o /tmp/pub_release  # 不带 -p:PublishAot(会污染 agent.io 报 NETSDK1207)",
    "evidence_path": "src/agent.host",
    "negative_control": "引入反射/动态代码路径 → IL2026/IL3050 警告出现，即视为失败(0 警告为发布铁律)",
    "covers": [],
-   "owner_round": "R368"
+   "owner_round": "R368",
+   "registration": "release_tag_only",
+   "note": "仅在发布 tag 时执行/登记; 0 IL 警告为发布铁律, 非发布轮不登记。历史参考: R373 13,817,472 B / R374 13,842,384 B 均 0 IL"
   },
   {
    "id": "bge.recall.frozen_bench",
@@ -215,5 +217,7 @@
    ],
    "owner_round": "R374"
   }
- ]
+ ],
+ "aot_check_policy": "release_tag_only",
+ "aot_check_policy_note": "AOT 编译校验(NativeAOT 发布/0 IL 警告/发布体积)仅在【发布 tag】时执行并登记;非发布轮次的 AOT 结果只作参考证据, 不构成该轮能力的登记依据或等级判定(用户口径 2026-09-13)"
 }
