@@ -170,11 +170,12 @@ python3 run_round.py 513 "label"                # 全量 37 用例
 python3 token_report.py                          # KPI-2 token 周报 (每 10 批)
 ```
 
-## 验证基线 (2026-09-10)
+## 验证基线 (滚动, 最新 2026-09-13)
 
 | 项 | 结果 |
 |---|---|
-| 单元测试 | **597/597** 通过 (含 ExecutorHardening 并发/StagedApproval/ActivityService 族) |
+| 最新基线 (2026-09-13, R372) | 单元测试 **802/802** · AOT linux-x64 **0 IL 警告** · `agenthost` **13,817,456 B** · 能力探针产物命中 **3/3**(有效 2/3, 截断如实报 invalid) |
+| 单元测试 (2026-09-10) | **597/597** 通过 (含 ExecutorHardening 并发/StagedApproval/ActivityService 族) |
 | NativeAOT (linux-x64) | **0 IL 警告** (多次复验) + full-graph AOT 冒烟通过 |
 | 迭代评测 | **286 批落盘, 近 30 批 99%+** (quick-13 口径); 批280 全量 37/37 |
 | 双实例并发写文件 | 60/60 零交错 (flock 真机) + 8 线程 120 行零丢失 (单测) |
