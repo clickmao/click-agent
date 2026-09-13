@@ -1063,6 +1063,23 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             _planRemoteStartUs = agent.intent.Monotonic.NowUs();
             _localFirst = _planRunner.StartLocalFirst(_lastPlan, _planCtx, ct);
 
+            // 1.7 出站文本扣减 (v0.22.0 exp9 D4b): 已判"框架自己做"的子请求**不许再发给模型**。
+            //     路由是"谁来做", 不是"记账": 不扣减 ⇒ 模型把同一步再算一遍 (真机 R382: 模型算 118 / 框架确定性算 117),
+            //     零 token 收益被吃掉, 而且用户看到的是模型那个错的数。
+            //     保守方向: 定位不到/多处出现/比例过大一律**不扣** (RequestAblation 内部硬约束), 绝不改坏用户原话;
+            //     全部节点都是本地 ⇒ 那是"本地独占回合"(§10 边界, 本轮不实现), 也不扣, 交原链路。
+            _planAblation = agent.intent.RequestAblation.SubtractForPlan(message.Content, _lastPlan.Nodes);
+            agent.config.AgentTelemetry.Emit("plan_ablate", "IndustrialAgentV2",
+                ("applied", _planAblation.Applied),
+                ("removed_chars", _planAblation.RemovedChars),
+                ("clauses", string.Join(" | ", _planAblation.RemovedClauses)),
+                ("reason", _planAblation.AbortReason),
+                ("src_chars", message.Content.Length),
+                ("out_chars", _planAblation.Text.Length));
+            if (_planAblation.Applied)
+                _logger.LogInformation("出站扣减 (D4b): {Count} 段本地子请求 / {Chars} 字符不再发给模型",
+                    _planAblation.RemovedClauses.Count, _planAblation.RemovedChars);
+
             // 2. 多数据源上下文组装（失败时降级为空上下文，不阻断对话）
             var contextResult = await AssembleContextAsync(message, intent, subTasks, ct);
             // v0.11.0: source 级召回统计 (对比数据 — 召回率/压缩率/延迟)
@@ -1183,9 +1200,11 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             if (dynText.Length > 0)
                 inlineBlocks.Add(dynText);
 
-            var sentUserContent = message.Content;
+            // D4b: 出站正文 = 原文扣掉"框架自己做"的子请求 (未扣减时逐字等于原文 ⇒ 零改动)
+            var outboundText = _planAblation is { Applied: true } ? _planAblation.Text : message.Content;
+            var sentUserContent = outboundText;
             if (inlineBlocks.Count > 0)
-                sentUserContent = message.Content + "\n\n[本轮参考上下文]\n" + string.Join("\n\n", inlineBlocks);
+                sentUserContent = outboundText + "\n\n[本轮参考上下文]\n" + string.Join("\n\n", inlineBlocks);
             message.SentContent = sentUserContent;
 
             var prompt = _promptBuilder.BuildWithHistory(
@@ -1527,6 +1546,30 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 {
                     _planRemoteReadyUs = agent.intent.Monotonic.NowUs();
                     _lastPlanRun = await RunPlanAsync(_lastPlan, response.Content, ct, _localFirst);
+
+                    // D4b: 被出站扣减的本地子请求 → 框架自渲染结论并入回复。
+                    // 这些子请求已经不在发给模型的文本里, 模型不会回答它们 ⇒ 用户可见结论必须由框架补上;
+                    // 本地节点失败也如实写 (不静默), 否则等于"把用户的问题删了还不回答"。
+                    if (_planAblation is { Applied: true } && _lastPlanRun is not null)
+                    {
+                        var outcomeById = _lastPlanRun.Outcomes.ToDictionary(o => o.NodeId, StringComparer.Ordinal);
+                        var items = new List<agent.intent.LocalAnswerItem>();
+                        foreach (var n in _lastPlan.LocalizedRequestNodes)
+                        {
+                            var ok = outcomeById.TryGetValue(n.Id, out var o)
+                                && o.State == agent.intent.PlanNodeState.Completed;
+                            items.Add(new agent.intent.LocalAnswerItem(n.Text, o?.Detail, ok));
+                        }
+
+                        var localSection = agent.intent.PlanLocalAnswer.Render(items);
+                        if (localSection.Length > 0)
+                        {
+                            response.Content += localSection;
+                            agent.config.AgentTelemetry.Emit("plan_local_answer", "IndustrialAgentV2",
+                                ("items", items.Count), ("ok", items.Count(i => i.Ok)),
+                                ("chars", localSection.Length));
+                        }
+                    }
                 }
                 // R307 (L1 轻牵引): 连续 ≥2 轮偏题 → 回复尾追加衔接提示 (区段路由后追加, 防被路由过滤)。
                 if (clarifyPending)
@@ -2056,6 +2099,9 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
 
     /// <summary>D4: 本地先行批次句柄 (无依赖本地节点, 计划构建时即启动)</summary>
     private LocalFirstRun? _localFirst;
+
+    /// <summary>出站文本扣减结果 (v0.22.0 exp9 D4b): 已判本地执行的子请求片段 + 扣减后的出站正文。</summary>
+    private agent.intent.AblationResult? _planAblation;
 
     /// <summary>D4: 贯穿两阶段的执行上下文 (本地先行 + 产物就绪后回填)</summary>
     private LocalNodeContext? _planCtx;

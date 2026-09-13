@@ -17,14 +17,18 @@ public sealed record PythonRunResult(
     long ElapsedMs,
     bool TimedOut,
     bool OutputTruncated,
-    string Detail);
+    string Detail,
+    string Interpreter = "");
 
 /// <summary>
 /// L5 (t8–t12) 运行级验证: 语法校验 (py_compile) ≠ 能跑。本类把产物**真跑一遍**,
 /// 给出进程级证据 (退出码/stderr/耗时), 让"已验证"三个字有物理含义。
 ///
 /// 安全边界 (诚实声明):
-/// - **默认关闭**: 需 `AGENTFRAMEWORK_PY_RUN=1|true|on|yes` 才执行; 关闭时 RunAsync 直接拒绝 (Ran=false)。
+/// - **默认跟随 py tool** (T4 决策 §11): 未设 `AGENTFRAMEWORK_PY_RUN` 时, 装了固定解释器
+///   (scripts/fetch-py-tool.sh → explicit/pinned/managed) 才真跑; 显式 `=0|false|off` 一律关闭,
+///   显式 `=1|true|on|yes` 无条件开。关闭时 RunAsync 直接拒绝 (Ran=false)。
+/// - 只对 `.py` 产物开放 (非 python 产物不进这条路径); 解释器来源 (explicit/pinned/managed/path) 随结果返回, 可对账。
 /// - 执行的是 LLM 生成的代码, **以当前进程用户权限运行** (无沙箱/无 seccomp) —— 只在可信产物+受控环境开启;
 /// - 超时强制杀进程树; 输出按字符上限截断 (截断后继续排空管道, 避免子进程写满管道死锁);
 /// - 零 shell: `ProcessStartInfo.ArgumentList` 直连 spawn, 路径含空格/引号不会被 shell 语义解析;
@@ -37,12 +41,16 @@ public static class PythonRunVerifier
     public const int DefaultMaxOutputChars = 8_000;
     public const int MaxConfiguredOutputChars = 200_000;
 
-    /// <summary>运行级验证是否开启 (raw 为空时读环境变量)。</summary>
+    /// <summary>运行级验证是否开启。
+    /// T4 决策 (v0.22.0 exp9 §11): 未显式设置时 = **是否已装固定解释器** —— 装了 py tool
+    /// (scripts/fetch-py-tool.sh: explicit/pinned/managed) 才默认真跑; 只有 PATH 兜底解释器时保持默认不跑,
+    /// 免得"某个恰好存在的 python 跑过了"被当成结论 (不可复现的通过比不通过更危险)。
+    /// 显式值语义: 1/true/on/yes = 开; 0/false/off/no/其它非空值 = 关 (fail-safe, 只有空值走默认)。</summary>
     public static bool IsEnabled(string? raw = null)
     {
         var v = raw ?? Environment.GetEnvironmentVariable(EnableEnvName);
         if (string.IsNullOrWhiteSpace(v))
-            return false;
+            return PythonInterpreterResolver.HasPinnedInterpreter();
         return v.Trim().ToLowerInvariant() is "1" or "true" or "on" or "yes";
     }
 
@@ -62,13 +70,17 @@ public static class PythonRunVerifier
     {
         // 闸门语义: 默认读环境变量; 调用方已自行闸门(如插件注入的 runGate)时可显式置位。
         if (!(explicitlyEnabled ?? IsEnabled()))
-            return Refused($"运行级验证未启用 (设 {EnableEnvName}=1 开启; 生成代码默认不执行)");
+            return Refused($"运行级验证未启用 ({EnableEnvName} 显式关闭, 或本机无固定解释器; 见 exp9 §11)");
         if (string.IsNullOrWhiteSpace(scriptPath) || !File.Exists(scriptPath))
             return Refused($"脚本不存在: {scriptPath}");
+        // T4 (§11): 闸门只对 .py 产物开放 —— 别的扩展名不是"python 产物", 不该进这条执行路径
+        if (!scriptPath.EndsWith(".py", StringComparison.OrdinalIgnoreCase))
+            return Refused($"只对 .py 产物开放真跑闸门 (路径={scriptPath})");
 
-        var python = PythonScriptValidator.ResolvePython(pythonPath);
-        if (python is null)
-            return Refused("python3 解释器不可用 (PATH 无 python3/python)");
+        var interp = PythonInterpreterResolver.Resolve(pythonPath);
+        if (interp is null)
+            return Refused("python 解释器不可用 (无固定解释器且 PATH 无 python3/python)");
+        var python = interp.Exe;
 
         if (timeoutMs <= 0)
             timeoutMs = DefaultTimeoutMs;
@@ -138,16 +150,16 @@ public static class PythonRunVerifier
             sw.Stop();
             var code = timedOut ? -1 : SafeExitCode(p);
             var detail = timedOut
-                ? $"运行超时 ({timeoutMs}ms) → 已杀进程树"
-                : $"exit={code}; stdout={o.Text.Length}ch{(o.Truncated ? "(截断)" : "")}; stderr={e.Text.Length}ch{(e.Truncated ? "(截断)" : "")}";
+                ? $"运行超时 ({timeoutMs}ms) → 已杀进程树; interp={interp.Source}:{python}"
+                : $"exit={code}; stdout={o.Text.Length}ch{(o.Truncated ? "(截断)" : "")}; stderr={e.Text.Length}ch{(e.Truncated ? "(截断)" : "")}; interp={interp.Source}:{python}";
             return new PythonRunResult(true, code, o.Text, e.Text, sw.ElapsedMilliseconds,
-                timedOut, o.Truncated || e.Truncated, detail);
+                timedOut, o.Truncated || e.Truncated, detail, python);
         }
         catch (Exception ex)
         {
             sw.Stop();
             return new PythonRunResult(false, -1, string.Empty, string.Empty, sw.ElapsedMilliseconds,
-                false, false, $"运行失败: {ex.Message}");
+                false, false, $"运行失败: {ex.Message}", python);
         }
         finally
         {

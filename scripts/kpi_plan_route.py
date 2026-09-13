@@ -119,6 +119,8 @@ def aggregate(events: list[dict]) -> list[dict]:
             "local_first_us": overlap.get("local_first_us", 0),
             "overlap_us": overlap.get("overlap_us", summary.get("overlap_us", 0)),
             "remote_wait_us": overlap.get("remote_wait_us", summary.get("remote_wait_us", 0)),
+            "wait_nodes": summary.get("wait_nodes", 0),
+            "wait_us": summary.get("wait_us", 0),
             "llm_calls": len(in_window),
             "prompt_tokens": sum(c.get("prompt_tokens", 0) or 0 for c in kv_calls),
             "completion_tokens": sum(c.get("completion_tokens", 0) or 0 for c in kv_calls),
@@ -135,12 +137,12 @@ def aggregate(events: list[dict]) -> list[dict]:
 
 
 def format_table(rows: list[dict]) -> str:
-    head = f"{'plan_id':<14}{'节点':>4}{'本地':>5}{'远程':>5}{'本地OK':>7}{'先行':>5}{'重叠µs':>9}{'LLM次':>6}{'tokens':>9}{'窗口ms':>8}"
+    head = f"{'plan_id':<14}{'节点':>4}{'本地':>5}{'远程':>5}{'本地OK':>7}{'先行':>5}{'重叠µs':>9}{'等待':>5}{'LLM次':>6}{'tokens':>9}{'窗口ms':>8}"
     lines = [head, "-" * len(head)]
     for r in rows:
         lines.append(
             f"{r['plan_id']:<14}{r['nodes_total']:>4}{r['local_nodes']:>5}{r['remote_nodes']:>5}"
-            f"{r['local_ok']:>7}{r['local_first_nodes']:>5}{r['overlap_us']:>9}{r['llm_calls']:>6}"
+            f"{r['local_ok']:>7}{r['local_first_nodes']:>5}{r['overlap_us']:>9}{r['wait_nodes']:>5}{r['llm_calls']:>6}"
             f"{r['prompt_tokens'] + r['completion_tokens']:>9}{r['window_ms']:>8}")
     return "\n".join(lines)
 
@@ -160,6 +162,8 @@ def compare(base_path: str, new_path: str) -> int:
         ("本地先行节点数", b["local_first_nodes"], n["local_first_nodes"], "越多越好=零 token 先跑"),
         ("真重叠 µs", b["overlap_us"], n["overlap_us"], "越大越好=真并行"),
         ("本地 tokens", b["local_tokens"], n["local_tokens"], "恒 0 即本地未花模型"),
+        ("运行时依赖等待节点数", b["wait_nodes"], n["wait_nodes"], "等待是『必须等』的事实, 非越多越好"),
+        ("运行时依赖等待 µs", b["wait_us"], n["wait_us"], "同上 (有界等待, 超限即失败)"),
     ]
     print(f"基线 {base_path}  plan={b['plan_id']}  窗={b['window'][0]} → {b['window'][1]}")
     print(f"新版 {new_path}  plan={n['plan_id']}  窗={n['window'][0]} → {n['window'][1]}\n")

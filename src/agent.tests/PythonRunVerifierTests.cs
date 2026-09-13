@@ -37,16 +37,17 @@ public class PythonRunVerifierTests : IDisposable
         return p;
     }
 
+    /// <summary>T4 决策后语义变了: 清空 env = 走"跟随 py tool"的默认; 要关必须**显式** =0。</summary>
     private static void SetGate(bool on) =>
-        Environment.SetEnvironmentVariable(PythonRunVerifier.EnableEnvName, on ? "1" : null);
+        Environment.SetEnvironmentVariable(PythonRunVerifier.EnableEnvName, on ? "1" : "0");
 
     [Fact]
-    public async Task 默认关闭_拒绝执行_不产生任何进程副作用()
+    public async Task 显式关闭_拒绝执行_不产生任何进程副作用()
     {
         SetGate(false);
         var path = Script("nope.py", "open('SIDE_EFFECT.txt','w').write('x')\n");
 
-        Assert.False(PythonRunVerifier.IsEnabled(), "默认必须是关");
+        Assert.False(PythonRunVerifier.IsEnabled(), "显式 =0 必须关 (T4: 空值才走\"跟随 py tool\"的默认)");
         var r = await PythonRunVerifier.RunAsync(path);
 
         Assert.False(r.Ran);
@@ -56,7 +57,7 @@ public class PythonRunVerifierTests : IDisposable
     }
 
     [Fact]
-    public void 闸门取值_只认显式开()
+    public void 闸门取值_空值跟随py_tool_非空非肯定值一律关()
     {
         Assert.True(PythonRunVerifier.IsEnabled("1"));
         Assert.True(PythonRunVerifier.IsEnabled("TRUE"));
@@ -64,8 +65,10 @@ public class PythonRunVerifierTests : IDisposable
         Assert.True(PythonRunVerifier.IsEnabled("yes"));
         Assert.False(PythonRunVerifier.IsEnabled("0"));
         Assert.False(PythonRunVerifier.IsEnabled("off"));
-        Assert.False(PythonRunVerifier.IsEnabled(""));
-        Assert.False(PythonRunVerifier.IsEnabled(null));
+        Assert.False(PythonRunVerifier.IsEnabled("也许"));
+        // T4 决策 (§11): 空值 = 跟随"本机是否装了固定解释器" —— 不再是无条件默认关
+        Assert.Equal(PythonInterpreterResolver.HasPinnedInterpreter(), PythonRunVerifier.IsEnabled(""));
+        Assert.Equal(PythonInterpreterResolver.HasPinnedInterpreter(), PythonRunVerifier.IsEnabled(null));
     }
 
     [Fact]

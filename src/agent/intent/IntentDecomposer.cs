@@ -82,6 +82,20 @@ public static class IntentDecomposer
         "based on", "according to", "using that", "from that"
     ];
 
+    /// <summary>
+    /// 子句边界字符 (切分后逐子句 Trim 用的那一组)。
+    /// 出站扣减 (RequestAblation) 按**同一组字符**扩展删除区间 —— 同一口径, 不另立表。
+    /// </summary>
+    internal static readonly char[] ClauseBoundaryChars =
+        [' ', '\t', '\r', '\n', '，', '。', '；', '、', ',', '.', ';'];
+
+    /// <summary>
+    /// 全部切分连接词 (顺序 + 并列 + 依赖标记)。
+    /// 出站扣减时用来吸收被删片段**左邻的连接词** (如 "并且统计字数" 删掉后不该留一个孤立的 "并且")。
+    /// </summary>
+    internal static readonly string[] AllConnectorTokens =
+        [.. SequentialConnectors, .. ParallelConnectors, .. DependencyMarkers];
+
     /// <summary>拆解: 复合句 → 子任务序列 (单句返回单元素序列)</summary>
     public static IReadOnlyList<SubTask> Decompose(string content)
     {
@@ -94,7 +108,7 @@ public static class IntentDecomposer
         for (var i = 0; i < clauses.Count; i++)
         {
             var (clause, connector) = clauses[i];
-            clause = clause.Trim(' ', '\t', '\r', '\n', '，', '。', '；', '、', ',', '.', ';');
+            clause = clause.Trim(ClauseBoundaryChars);
             if (clause.Length == 0)
                 continue;
 

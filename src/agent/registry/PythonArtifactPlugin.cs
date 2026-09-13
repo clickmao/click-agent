@@ -202,7 +202,8 @@ public sealed class PythonArtifactPlugin : IResponseSegmentPlugin, IArtifactChec
                 detail = $"{detail} | {runNote}";
                 agent.config.AgentTelemetry.Emit("script_run", "python-artifact",
                     ("path", path), ("ran", run.Ran), ("exit", run.ExitCode),
-                    ("ms", run.ElapsedMs), ("timed_out", run.TimedOut), ("truncated", run.OutputTruncated));
+                    ("ms", run.ElapsedMs), ("timed_out", run.TimedOut), ("truncated", run.OutputTruncated),
+                    ("interp", run.Interpreter));   // T4 §11: 跑在哪个解释器上要可对账
             }
         }
         catch (OperationCanceledException)
@@ -225,31 +226,12 @@ public sealed class PythonArtifactPlugin : IResponseSegmentPlugin, IArtifactChec
         return (report, artifactCheck);
     }
 
+    /// <summary>
+    /// 解释器解析统一走 <see cref="PythonInterpreterResolver"/> (T4 §11): 显式 env → 仓库固定 py tool
+    /// → uv 托管 → PATH。本方法只做"取路径", 顺序与来源标签由解析器负责 (单一事实源, 不再各写一份)。
+    /// </summary>
     private static string? DefaultPythonResolver()
-    {
-        var env = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_PYTHON");
-        if (!string.IsNullOrWhiteSpace(env) && File.Exists(env))
-            return env;
-        // agent.skills 的 FindOnPath 是 internal (跨程序集不可见) → 本插件自带等价实现。
-        // 跨平台: Windows 需试 .exe/.cmd/.bat 后缀; Unix 直接查可执行文件。
-        var pathVar = Environment.GetEnvironmentVariable("PATH");
-        if (string.IsNullOrEmpty(pathVar))
-            return null;
-        var exts = OperatingSystem.IsWindows()
-            ? new[] { ".exe", ".cmd", ".bat", string.Empty }
-            : new[] { string.Empty };
-        foreach (var dir in pathVar.Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries))
-        {
-            foreach (var name in new[] { "python3", "python" })
-            foreach (var ext in exts)
-            {
-                var candidate = Path.Combine(dir, name + ext);
-                if (File.Exists(candidate))
-                    return candidate;
-            }
-        }
-        return null;
-    }
+        => PythonInterpreterResolver.Resolve()?.Exe;
 
     /// <summary>R374: 运行输出合并 (stderr 在前 — 错误优先; 空则省略该段)。</summary>
     private static string ComposeRunOutput(string? stdout, string? stderr)

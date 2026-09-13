@@ -39,6 +39,10 @@ public class TaskPlan
     /// <summary>需远程生成的节点 Id (v0.22.0 exp9 D1): 本地无法产出, 必须走模型</summary>
     public List<string> RemoteNodeIds =>
         Nodes.Where(n => n.Location == NodeExecutionLocation.Remote).Select(n => n.Id).ToList();
+
+    /// <summary>用户原文级本地子请求 (v0.22.0 exp9 D4b): 这些子请求的原文片段**必须从模型出站文本扣减**</summary>
+    public List<PlanNode> LocalizedRequestNodes =>
+        Nodes.Where(n => n.IsLocalizedRequest).ToList();
 }
 
 /// <summary>
@@ -127,6 +131,23 @@ public class PlanNode
     /// <summary>是否可零 token 本地执行 (调度器据此决定是否先行/并发)</summary>
     public bool RunsLocally =>
         Location != NodeExecutionLocation.Remote && !string.IsNullOrEmpty(LocalExecutorId);
+
+    /// <summary>
+    /// 运行时依赖 (v0.22.0 exp9 D7): 执行中才发现"需要另一节点的产出"。由调度器在等待解决后写入,
+    /// 输入解析优先取这些节点 (晚绑定)。与 <see cref="DependsOn"/> 的区别: 后者是**建计划时**声明的,
+    /// 前者是**执行时**发现的 —— 两者语义相同: 必须等它产出, 不许伪造/静默兜底。
+    /// </summary>
+    public List<string> RuntimeDeps { get; set; } = [];
+
+    /// <summary>
+    /// 本节点是否为「用户原文级本地子请求」(v0.22.0 exp9 D4b)。
+    /// 语义: **整段子请求**就是"在用户自己的原文上做文本处理" —— 框架确定性可算, 无需模型参与。
+    /// 因此该子请求必须 ① 走 Local 执行 ② 从**模型出站文本扣减** (RequestAblation)
+    /// ③ 由框架把本地结论自渲染进回复 (PlanLocalAnswer)。
+    /// 不给扣减 = 模型会把同一步再算一遍 (真机实测: 模型算 118 / 框架算 117) ⇒ 零 token 收益被吃掉。
+    /// 与 Location/Hint 同源: 由 PlanRoutePolicy 写回, 不许上游手填。
+    /// </summary>
+    public bool IsLocalizedRequest { get; set; }
 }
 
 /// <summary>子任务参数槽 — 问询协议的拆解侧载体 (复用 AnswerAuthority 语义)</summary>

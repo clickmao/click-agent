@@ -190,6 +190,13 @@ public sealed class TextProcessExecutor : ILocalNodeExecutor
     /// </summary>
     internal static string ResolveInput(PlanNode node, LocalNodeContext ctx)
     {
+        // v0.22.0 exp9 D7: 运行时依赖 (执行中发现的) 与声明依赖同权 —— 它是"我确实要它的产出"的显式契约,
+        // 排在声明依赖之前解析, 因为它是更晚、更具体的需求 (调度器已保证其产出就绪才会跑到这里)。
+        foreach (var dep in node.RuntimeDeps)
+        {
+            if (ctx.NodeOutputs.TryGetValue(dep, out var ro) && !string.IsNullOrEmpty(ro))
+                return ro!;
+        }
         foreach (var dep in node.DependsOn)
         {
             if (ctx.NodeOutputs.TryGetValue(dep, out var o) && !string.IsNullOrEmpty(o))
@@ -442,7 +449,7 @@ public sealed class PlanRunner
             {
                 var runner = new Func<PlanNode, CancellationToken, Task<NodeExecutionResult>>(
                     (node, c) => RunNodeAsync(node, ctx, batch.Outcomes, batch.Results, c, plan.PlanId));
-                await new TaskPlanExecutor(runner).ExecuteAsync(sub, pollInjections: null, ct).ConfigureAwait(false);
+                await NewExecutor(runner, plan.PlanId).ExecuteAsync(sub, pollInjections: null, ct).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -502,7 +509,7 @@ public sealed class PlanRunner
             };
 
         var sw = Stopwatch.StartNew();
-        var executor = new TaskPlanExecutor(runner);
+        var executor = NewExecutor(runner, plan.PlanId);
         var run = await executor.ExecuteAsync(plan, pollInjections: null, ct).ConfigureAwait(false);
         sw.Stop();
 
@@ -543,6 +550,8 @@ public sealed class PlanRunner
             OverlapUs: overlapUs,
             RemoteWaitUs: remoteWaitUs,
             LocalTokens: localTokens,
+            WaitNodes: run.Waits.Count,
+            WaitUs: run.Waits.Values.Sum(w => w.WaitUs ?? 0),
             ElapsedMs: (int)sw.ElapsedMilliseconds);
 
         AgentTelemetry.Emit("plan", "PlanRunner",
@@ -554,6 +563,8 @@ public sealed class PlanRunner
             ("skipped", skipped),
             ("local_tokens", localTokens),
             ("remote_tokens", remoteTokens),
+            ("wait_nodes", run.Waits.Count),
+            ("wait_us", run.Waits.Values.Sum(w => w.WaitUs ?? 0)),
             ("local_first", localFirst is not null),
             ("local_first_nodes", localFirstNodes),
             ("local_first_ms", localFirstUs / 1000),
@@ -669,6 +680,33 @@ public sealed class PlanRunner
         return result;
     }
 
+    /// <summary>
+    /// D7 事件出口装配: 等待事件走与节点完成**同一条通道** (D5 纪律: 前端一个域看全)。
+    /// 这里只做装配, 具体载荷在 <see cref="EmitWaitAsync"/>。
+    /// </summary>
+    private TaskPlanExecutor NewExecutor(Func<PlanNode, CancellationToken, Task<NodeExecutionResult>> runner, string planId)
+        => new(runner, onWait: (node, producerId, reason, ct) => EmitWaitAsync(node, producerId, reason, planId, ct));
+
+    /// <summary>节点进等待态 (D7): 遥测 + `plan.node` 事件, 前端立刻可见 "谁在等谁的什么"。</summary>
+    private async Task EmitWaitAsync(PlanNode node, string producerId, string reason, string planId, CancellationToken ct)
+    {
+        var outcome = new NodeOutcome
+        {
+            NodeId = node.Id,
+            Location = node.LocationText,
+            ExecutorId = node.LocalExecutorId,
+            State = PlanNodeState.Waiting,
+            WaitFor = producerId,
+            WaitReason = reason,
+            Detail = $"等待 {producerId} 的产出 ({reason})",
+        };
+
+        AgentTelemetry.Emit("plan_wait", "PlanRunner",
+            ("plan_id", planId), ("node", node.Id), ("producer", producerId), ("reason", reason));
+
+        await EmitNodeAsync(node, outcome, planId, ct).ConfigureAwait(false);
+    }
+
     /// <summary>单节点事件 (D5) —— 前端按节点看"哪步在哪跑、跑了多久、成没成"</summary>
     private async Task EmitNodeAsync(PlanNode node, NodeOutcome outcome, string planId, CancellationToken ct)
     {
@@ -736,6 +774,9 @@ public sealed class PlanRunner
             w.WriteNumber("elapsed_ms", outcome.ElapsedMs);
             w.WriteNumber("tokens", outcome.Tokens);
             w.WriteString("artifact", outcome.ArtifactPath ?? "");
+            // D7: 等待中的节点前端必须能直接看到"在等谁、为什么" (不是一个孤零零的 waiting)
+            w.WriteString("wait_for", outcome.WaitFor ?? "");
+            w.WriteString("wait_reason", outcome.WaitReason ?? "");
             w.WriteString("detail", Trunc(outcome.Detail, 300) ?? "");
             w.WriteEndObject();
         }

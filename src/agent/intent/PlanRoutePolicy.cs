@@ -177,6 +177,14 @@ public static class PlanRoutePolicy
 
         var isGeneration = GenerationIntents.Contains(node.Intent);
 
+        // R2c (D4b): **整段子请求**就是"在用户自己的原文上做文本处理" (无依赖 + 动作词∧原文对象词 + 非产物型 + 短句)
+        //   ⇒ Local 零 token 执行, 且该子请求必须从**模型出站文本扣减** (RequestAblation), 否则模型会再算一遍
+        //     = 重复计算 (真机实测: 模型报 118 / 框架确定性统计 117) ⇒ "本地先行"的零 token 收益被吃掉。
+        //   反例 (含代码/产物标记、过长、有依赖) 一律落回 R2b/R2 —— 判据是纯函数, 可单测、可反向断言。
+        if (LocalVerifyNodePlanner.IsPureSourceTextOp(node.Text, node.DependsOn.Count))
+            return new RouteDecision(NodeExecutionLocation.Local, LocalExecutorRegistry.TextProcess,
+                "整段子请求=用户原文上的文本处理 (框架确定性可算, 非生成) ⇒ 本地零 token; 已从模型出站文本扣减 (防重复计算)");
+
         if (isGeneration)
         {
             // R2b: 生成 + 文本含"本地可立刻做"的动作
@@ -229,6 +237,12 @@ public static class PlanRoutePolicy
         node.Location = d.Location;
         node.LocalExecutorId = d.ExecutorId;
         node.LocalHint = d.Hint;
+
+        // D4b: 出站扣减标记与位置判定**同一条规则** (IsPureSourceTextOp) —— 不允许两处口径各判一次。
+        // 非纯原文级节点一律清零 (幂等: 路由可重复调用)。
+        node.IsLocalizedRequest = d.Location == NodeExecutionLocation.Local
+            && d.ExecutorId == LocalExecutorRegistry.TextProcess
+            && LocalVerifyNodePlanner.IsPureSourceTextOp(node.Text, node.DependsOn.Count);
         return d;
     }
 }
@@ -332,6 +346,24 @@ public static class LocalVerifyNodePlanner
             return false;
         return SourceTextOpMarkers.Any(m => sourceText.Contains(m, StringComparison.OrdinalIgnoreCase))
             && SourceTextTargetMarkers.Any(m => sourceText.Contains(m, StringComparison.OrdinalIgnoreCase));
+    }
+
+    /// <summary>纯原文级文本处理子请求的最大字数 (超过则说明该片段还裹着别的诉求 ⇒ 不许整体扣减)</summary>
+    internal const int PureSourceOpMaxChars = 60;
+
+    /// <summary>
+    /// 该节点是否为「纯原文级文本处理子请求」(v0.22.0 exp9 D4b, 纯函数):
+    ///   ① 无依赖 (输入=本轮原文, 不需要任何前序产物)
+    ///   ② 动作词 ∧ 原文对象词双命中 (AsksSourceTextOp —— 复用 D4 同一判据, 不另立口径)
+    ///   ③ 非产物型 (无 python/脚本/游戏… 标记 ⇒ 不是"写一个统计字数的程序")
+    ///   ④ 短句 (≤ PureSourceOpMaxChars ⇒ 整段就是这一步, 不是"写贪吃蛇并统计字数"这种混合诉求)
+    /// 四条全中 ⇒ 框架可**独立完成**这一步: 走 Local 且从模型出站文本扣减。
+    /// </summary>
+    internal static bool IsPureSourceTextOp(string? text, int dependsOnCount)
+    {
+        if (dependsOnCount != 0 || !AsksSourceTextOp(text) || LooksLikeCodeTask(text))
+            return false;
+        return (text ?? string.Empty).Trim().Length <= PureSourceOpMaxChars;
     }
 
     /// <summary>

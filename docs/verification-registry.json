@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R382",
+  "updated_round": "R383",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -325,6 +325,60 @@
         "scripts/kpi_plan_route.py"
       ],
       "owner_round": "R382"
+    },
+    {
+      "id": "plan.route.ablation",
+      "capability": "出站文本扣减 D4b (v0.22.0 exp9): 已判**本地执行**的子请求不许再发给模型 —— 路由是\"谁来做\", 不是\"记账\"。 三层判据全确定性: ①节点级 R2c(无依赖 ∧ AsksSourceTextOp 动作词∧原文对象词 ∧ 非产物型 ∧ ≤60字 ⇒ Local(text.process) + IsLocalizedRequest); ②片段级 RequestAblation.Subtract(片段在原文**唯一**定位 + 左吸收连接词/边界 + 右吸收边界 + 相邻区间合并 + 剩余≥25% 否则放弃); ③计划级闸门(仅当计划仍有远程节点承担请求时才扣减; 全本地=本地独占回合 D4c 未实现 ⇒ 不扣)。 扣减掉的子请求由框架自渲染进答复(PlanLocalAnswer: 成功⇒结果, 失败⇒如实说明), 遥测 plan_ablate/plan_local_answer。 真机: 远程节点 2→1、出站 117→100 字符、答复字数由模型自算 118(错) 改为框架算 117(对)。",
+      "level": "L3",
+      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter 'FullyQualifiedName~PlanAblationTests' ; python3 scripts/kpi_plan_route.py --telemetry data/telemetry/host.jsonl",
+      "evidence_path": "src/agent/intent/RequestAblation.cs",
+      "negative_control": "① 代码类子请求(含 python/程序/游戏 等产物标记) → 不本地化(不扣减); ② 有依赖节点 → 不本地化; ③ 长句(>60字) → 不本地化; ④ 片段在原文出现多次 → 不扣减(无法确定删哪处); ⑤ 扣减后剩余<25% → 不扣减; ⑥ 全本地计划 → 不扣减(不用\"把原文扣成空\"假装实现); ⑦ 未扣减时出站正文逐字等于原文(零改动)。",
+      "covers": [
+        "docs/plans/v0.22.0-exp9-subtask-plan-routing-and-local-first.md",
+        "src/agent.tests/PlanAblationTests.cs",
+        "src/agent/IndustrialAgentV2.cs",
+        "src/agent/intent/PlanRoutePolicy.cs",
+        "src/agent/intent/RequestAblation.cs",
+        "src/agent/intent/TaskPlan.cs",
+        "src/agent/tests/PlanAblationTests.cs(24例)"
+      ],
+      "owner_round": "R383"
+    },
+    {
+      "id": "python.interpreter.pinned_tool",
+      "capability": "测试用 py tool + 真跑闸门默认值 T4 决策 (v0.22.0 exp9): AGENTFRAMEWORK_PY_RUN 未显式设置时, 默认值 = **本机是否已装固定解释器** (PythonInterpreterResolver.HasPinnedInterpreter: explicit/pinned/managed); 只有 PATH 兜底解释器时保持默认不跑 —— 不可复现的\"跑过了\"比不通过更危险。解析顺序单一事实源: 显式 AGENTFRAMEWORK_PY_EXE(兼容旧名 AGENTFRAMEWORK_PYTHON) → 仓库固定记录 tools/py/interpreter.txt → uv 托管解释器目录 → PATH, 返回 (Exe, Source)。闸门只对 .py 开放; 解释器来源进 PythonRunResult.Interpreter 与 script_run.interp 遥测(可对账)。py tool 由 scripts/fetch-py-tool.sh 固定(uv 托管 CPython 3.12.14, uv 自带下载校验)。 真机: script_run{ran:true, exit:0, ms:32, interp:…/cpython-3.12.14…/python3.12}。诚实边界: 无沙箱/无 seccomp, 以当前用户权限运行。",
+      "level": "L3",
+      "evidence_cmd": "bash scripts/fetch-py-tool.sh ; dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter 'FullyQualifiedName~PythonInterpreterResolverTests'",
+      "evidence_path": "src/agent.skills/PythonInterpreterResolver.cs",
+      "negative_control": "① 显式 0/false/off/未知非空值 → 关(只有空值走默认); ② 记录文件指向不存在的路径 → 回退托管目录(不报错也不硬用); ③ 全无解释器 → 返回 null 且闸门拒绝(不瞎猜路径); ④ 非 .py 产物 → 拒绝执行; ⑤ 真 spawn 失败退出码 → 如实透传(不当成环境错)。",
+      "covers": [
+        "scripts/fetch-py-tool.sh",
+        "src/agent.skills/PythonInterpreterResolver.cs",
+        "src/agent.skills/PythonRunVerifier.cs",
+        "src/agent.tests/PythonInterpreterResolverTests.cs",
+        "src/agent/registry/PythonArtifactPlugin.cs",
+        "src/agent/tests/PythonInterpreterResolverTests.cs(9例)"
+      ],
+      "owner_round": "R383"
+    },
+    {
+      "id": "plan.runtime.wait",
+      "capability": "运行时依赖等待 D7 (v0.22.0 exp9, 用户新增测试点): A、B 并发启动, A 跑到中途才发现要用 B 的产出, 而 B 尚未产出/正在等用户 ⇒ A **等待** B 的产出后才继续(**不消费输入、不伪造数据、不静默降级**)。①发现两条路径: 执行前确定性扫描显式契约($node:<id>/$dep:<id>/<id>的产出; 不猜自然语言) + 执行中途由执行体返回 FinalState=Waiting+NeedNodeId; ②等待不占并发额度(T5 已决): 延迟队列 + 层批后/收尾唤醒轮次重跑, 额度=1 亦不死锁; ③唤醒: 注入 RuntimeDeps 后重跑消费节点, 输入解析运行时依赖优先 ⇒ 拿到生产节点真实产出; ④有界等待(默认600s): 先判上限(含产出迟到) ⇒ 超限如实失败不采用迟到产出; ⑤死锁在记账时拒(等待图无环, 含自环); ⑥生产节点在等用户 ⇒ 消费节点 Waiting(reason=user) + 计划 PausedForDependency; ⑦提前终止时等待节点明确落 Failed/Skipped, 不留悬空 Waiting; ⑧可见性: plan.node{state:Waiting, wait_for, wait_reason} + plan_wait 遥测 + KPI WaitNodes/WaitUs。",
+      "level": "L2",
+      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter 'FullyQualifiedName~PlanRuntimeWaitTests'",
+      "evidence_path": "src/agent/intent/RuntimeDependencyScanner.cs",
+      "negative_control": "① 生产节点失败 ⇒ 消费节点明确 Failed/Skipped, 执行体从未被调用(不静默兜底); ② 互相等待 ⇒ 记账时即拒(成环, 不靠超时); ③ 等待超过上限(即使产出迟到) ⇒ 如实失败; ④ 执行体重复索要已注入依赖 ⇒ 如实失败(防无限重跑); ⑤ 自引用/未知 id ⇒ 不等待不空等; ⑥ 并发额度=1 且消费节点等待 ⇒ 不死锁(B 先跑完 A 才跑)。",
+      "covers": [
+        "src/agent.tests/PlanRuntimeWaitTests.cs",
+        "src/agent.tests/PlanRuntimeWaitTests.cs(11例)",
+        "src/agent/intent/PlanRunner.cs",
+        "src/agent/intent/RuntimeDependencyScanner.cs",
+        "src/agent/intent/TaskPlan.cs",
+        "src/agent/intent/TaskPlanRun.cs",
+        "src/agent/registry/NodeExecutionResult.cs",
+        "src/agent/registry/NodeExecutionResult.cs(D7 调度)"
+      ],
+      "owner_round": "R383"
     }
   ],
   "aot_check_policy": "release_tag_only",

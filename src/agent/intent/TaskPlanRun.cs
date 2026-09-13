@@ -41,7 +41,33 @@ public class TaskPlanRun
     /// 不许各自重算 (重算 = 口径漂移的来源)。</summary>
     public PlanKpi? Kpi { get; set; }
 
+    /// <summary>
+    /// 运行时依赖等待台账 (v0.22.0 exp9 D7): NodeId → 等待记录。空 = 本轮没有节点在等别人。
+    /// 这是"等待"说法的唯一事实源: 状态 (NodeStates=Waiting) 只说"在等", 这里说"等谁、为什么、等多久"。
+    /// </summary>
+    public Dictionary<string, NodeWaitRecord> Waits { get; set; } = new(StringComparer.Ordinal);
+
     public DateTime StartedAt { get; set; } = DateTime.UtcNow;
+}
+
+/// <summary>
+/// 单次运行时依赖等待 (v0.22.0 exp9 D7)。
+/// Reason 语义 (确定性取值, 前端直接显示):
+/// - `running`: 生产节点在本轮已启动, 尚未产出;
+/// - `queued`: 生产节点尚未启动 (层级在后 / 并发额度未轮到);
+/// - `user`: 生产节点在等用户澄清/审批 —— 它的产出依赖用户回复 (跨轮场景, 见 §12 D7b 边界)。
+/// </summary>
+public sealed record NodeWaitRecord(
+    string NodeId,
+    string ProducerId,
+    string Reason,
+    long StartedUs)
+{
+    /// <summary>唤醒时刻 (未唤醒为 null)</summary>
+    public long? EndedUs { get; set; }
+
+    /// <summary>等待时长 (微秒; 未唤醒为 null)</summary>
+    public long? WaitUs => EndedUs is null ? null : EndedUs - StartedUs;
 }
 
 /// <summary>
@@ -65,6 +91,8 @@ public sealed record PlanKpi(
     long OverlapUs,
     long RemoteWaitUs,
     long LocalTokens,
+    int WaitNodes,
+    long WaitUs,
     int ElapsedMs);
 
 /// <summary>
@@ -92,6 +120,12 @@ public class NodeOutcome
 
     /// <summary>结论摘要 (成功=简述; 失败=真实原因, 不静默)</summary>
     public string? Detail { get; set; }
+
+    /// <summary>运行时依赖等待: 在等哪个节点的产出 (v0.22.0 exp9 D7; 非等待节点为 null)</summary>
+    public string? WaitFor { get; set; }
+
+    /// <summary>等待原因 (running/queued/user; 非等待节点为 null)</summary>
+    public string? WaitReason { get; set; }
 }
 
 /// <summary>计划运行状态</summary>
@@ -106,6 +140,12 @@ public enum TaskPlanRunState
     /// <summary>全部节点终态 (Completed/Failed/Skipped)</summary>
     Finished,
 
+    /// <summary>
+    /// 存在节点在等另一节点的产出, 而该生产节点在等用户 (澄清/审批) (v0.22.0 exp9 D7)。
+    /// 本轮到此为止: 不许伪造数据硬跑 —— 用户回复后重跑 (跨轮唤醒 D7b 见计划 §12 边界)。
+    /// </summary>
+    PausedForDependency,
+
     /// <summary>用户或策略取消 (未完成节点标记 Skipped)</summary>
     Cancelled,
 }
@@ -114,6 +154,14 @@ public enum TaskPlanRunState
 public enum PlanNodeState
 {
     Pending,
+
+    /// <summary>
+    /// 等待其它节点产出 (v0.22.0 exp9 D7 运行时依赖): A 跑到中途发现要用 B 的产出, 而 B 尚未产出
+    /// (在跑 / 在等用户澄清) ⇒ A 进本状态, **不消费输入、不伪造数据、不静默降级**。
+    /// 生产节点落终态后由调度器唤醒 (详情见 TaskPlanRun.Waits)。
+    /// </summary>
+    Waiting,
+
     AwaitingClarification,
     AwaitingApproval,
     Running,

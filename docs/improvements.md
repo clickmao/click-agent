@@ -611,3 +611,10 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
   - 统一出口转置 + 同空间拟合后真机: **median_rank 999 → 23 / r@1 0.0083 → 0.1750 / r@10 0.0583 → 0.4250**。
   - 机检 `eval/bge/test_ridge_space.py` (同空间 cos **1.0000** 精确复原 + 异空间**反向控制**必须显著变差) → 4/4。
   - **结论订正**: ridge 在修正实现下仍不及基线 (0.1750 < 0.3083, G1/G2 未过 → `rolled_back`), 故"ridge 无收益"这回**有依据**; 此前结论建立在错误实现上, 不成立。
+
+### R383 (2026-09-13) — D4b 出站扣减 + T4 真跑闸门决策 + D7 运行时依赖等待
+- **D4b 出站扣减** (修 R382 §9.5-2 的重复计算): 已判**本地执行**的子请求**不再发给模型** —— 路由是"谁来做", 不是"记账"。三层确定性判据 (节点级 R2c / 片段级 `RequestAblation` / 计划级闸门"仍有远程节点才扣"), 保守方向"定位失败/多处/剩余<25%/全本地 ⇒ 一律不扣"; 扣减掉的子请求由框架自渲染进答复 (`PlanLocalAnswer`, 失败也如实说明)。**真机**: 远程节点 **2→1**、出站 **117→100 字符**、答复里的字数由模型自算 **118(错)** 改为框架算 **117(对)**、tokens 38,275→30,501 (指示性)。机检 `PlanAblationTests` **24 例**。
+- **T4 决策**: `AGENTFRAMEWORK_PY_RUN` **空值 ⇒ 默认跟随"是否已装固定解释器"** (只有 PATH 兜底时保持不跑 —— 不可复现的通过比不通过更危险); 解析顺序单一事实源 (`explicit → 仓库固定记录 → uv 托管 → PATH`), **解释器来源进结果与遥测**; `scripts/fetch-py-tool.sh` 固定 CPython 3.12.14; 闸门只对 `.py` 开放。**真机**: `script_run{ran:true, exit:0, ms:32, interp=…cpython-3.12.14…}`。机检 `PythonInterpreterResolverTests` **9 例**。
+- **D7 运行时依赖等待** (用户 OOB 新增测试点): A 跑到中途要用 B 的产出, 而 B 未产出/在等用户 ⇒ **A 等待, B 产出后才继续** (不消费输入/不伪造/不静默)。确定性契约 `$node:<id>`、`$dep:<id>`、`<id>的产出`; **等待不占并发额度** (延迟队列, 额度=1 也不死锁); **有界等待**超限如实失败 (不采用迟到产出); **成环在记账时即拒**; 生产节点在等用户 ⇒ `PausedForDependency`; 提前终止时等待节点明确落终态 (不留悬空 Waiting); 前端可见 `plan.node{state:Waiting, wait_for, wait_reason}` + `plan_wait` + KPI `WaitNodes/WaitUs`。机检 `PlanRuntimeWaitTests` **11 例**。
+  - **诚实边界**: **跨轮唤醒 (D7b) 未实现** —— 检查点 `SaveCheckpoint` 只写不读 (无 `LoadCheckpoint`/续跑入口), 用户回复后不会自动续跑; **自然语言引用不认** ⇒ 真实任务要出触发点必须先做契约**前置注入** (D7c)。
+- 基线: **949/949** (891 + PlanLocalFirst 14 + PlanAblation 24 + Resolver 9 + RuntimeWait 11); AOT 发布校验按登记口径只在发布 tag 执行。
