@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R392",
+  "updated_round": "R393",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -538,6 +538,28 @@
         "src/agent.tests/FormalVerifyExecutorTests.cs"
       ],
       "owner_round": "R391"
+    },
+    {
+      "id": "agent.bge.vulkan_port",
+      "capability": "本地 BGE 的 **Vulkan GPU 执行端口**(R393): 矩阵乘端口 `IMatMulBackend` 抽在 `agent.embedcpu`(前向只有一份 ⇒ 不产生第二份 LayerNorm/注意力/池化语义), CPU 实现走 `TensorPrimitives.Dot`, Vulkan 实现 `VulkanMatMulBackend` + 形状特化内核 `Kernels.MatMulBias(inDim,outDim)`(4 绑定 W/X/B/Y, inDim/outDim 为编译期常量 ⇒ 内核内不反推维度, 尾线程由 i≥ArrayLength(Y) 守卫返回)。真机判据三项: ① 端口确实被使用(`dispatch_calls == 层4×6×文本×重复`, 72/216/864 三规模 match=True, 接成装饰即红); ② 数值对账(Vulkan vs CPU `max_abs_diff ≤ 2.538E-007` / `cos=1.000000000`; CPU 档差异 0 且逐位相同; 舍入语义: 内核顺序累加 vs CPU SIMD 多累加器 ⇒ **不以逐位一致为判据**, 判据 = ≤1e-3 ∧ cos≥0.99999); ③ 无设备负控(`--device 99` ⇒ ok=false reason=device_unavailable 退出码 1, 绝不静默退回 CPU 冒充 GPU)。附: 引擎侧 NativeAOT 原生二进制真跑 Vulkan 端口 PASS(无 JIT), 产品侧 `agent.host` AOT 仍 IL 警告 0(未引入 Silk.NET)。",
+      "level": "L4",
+      "evidence_cmd": "dotnet publish src/agent.rover/agent.rover.csproj -c Release -r linux-x64 -p:PublishAot=true -o /tmp/r393/rover_aot && /tmp/r393/rover_aot/agent.rover embed --backend vulkan --selftest (判据: portcheck.dispatch_calls==expected ∧ verdict=PASS ∧ worst_cos=1.000000000); 对照: ./src/agent.rover/bin/Release/net10.0/agent.rover embed --backend cpu --selftest (差异 0); 负控: ... embed --backend vulkan --device 99 --compare (必须 ok=false 且退出码 1); 机检: env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~BgeMatMulPortTests",
+      "evidence_path": "src/agent.embedcpu/MatMulBackend.cs",
+      "evidence_report": "docs/reports/r385/r393-bge-vulkan-port.md",
+      "negative_control": "① `--device 99`: 显式请求 GPU 端口而设备不存在 ⇒ 必须 `ok=false reason=device_unavailable` 且退出码 1, **不得产出任何嵌入**(\"静默回退 CPU 冒充 GPU\"在此红); ② 端口空心判定: 若把 Vulkan 端口接成装饰(只在 CPU 路径加一层), `portcheck.dispatch_calls` 立刻 ≠ expected; ③ 内核形状约束有判别力: `BgeMatMulPortTests.MatMulBias_驱动约束检查器有判别力` 把好内核的循环头改回**条件分支**(实测被 lavapipe 拒绝的旧形状), 检查器必须报 1 处违规 —— 改回即红; ④ 结构校验通过 ≠ 可执行: 首版内核自写校验判合法而真机 `VK_ERROR_UNKNOWN`, 故本行等级依据是**真机执行**而非静态校验; ⑤ `SpvRegistryAudit` 常量表机检(新增 `ScFunction` 未绑定别名时审计真红过一次); ⑥ 池读数判据: `pool{slots=7}` 在 864 次派发下恒定(复用率 99.8%), 若逐次分配则该读数随派发增长。",
+      "covers": [
+        "src/agent.embedcpu/MatMulBackend.cs",
+        "src/agent.embedcpu/BgeCpuEmbedder.cs",
+        "src/agent.rover/gpu/VulkanMatMulBackend.cs",
+        "src/agent.rover/gpu/VulkanBackend.cs",
+        "src/agent.rover/gpu/spirv/Kernels.cs",
+        "src/agent.rover/gpu/spirv/Spv.cs",
+        "src/agent.rover/gpu/spirv/SpvRegistryAudit.cs",
+        "src/agent.rover/cli/EmbedCli.cs",
+        "src/agent.rover/cli/RoverCli.cs",
+        "src/agent.tests/BgeMatMulPortTests.cs"
+      ],
+      "owner_round": "R393"
     }
   ],
   "aot_check_policy": "release_tag_only",

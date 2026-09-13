@@ -36,6 +36,8 @@ public static class SpvRegistryAudit
         ["ScInput"] = ("StorageClass", "Input"),
         ["ScWorkgroup"] = ("StorageClass", "Workgroup"),
         ["ScStorageBuffer"] = ("StorageClass", "StorageBuffer"),
+        // R393: BGE 矩阵乘内核的函数局部变量 (累加器/循环计数器) 用 Function 存储类
+        ["ScFunction"] = ("StorageClass", "Function"),
         ["DecBlock"] = ("Decoration", "Block"),
         ["DecArrayStride"] = ("Decoration", "ArrayStride"),
         ["DecDescriptorSet"] = ("Decoration", "DescriptorSet"),

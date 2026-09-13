@@ -27,6 +27,7 @@ public static class RoverCli
                 "check" => CheckCmd(args, o),
                 "forward" => ForwardCli.Forward(args, o),
                 "vulkan" => VulkanCli.Run(args, o),
+                "embed" => EmbedCli.Run(args, o),
                 "--help" or "-h" or "help" => Usage(o),
                 _ => Unknown(args[0], err),
             };
@@ -57,6 +58,7 @@ public static class RoverCli
         o.WriteLine("  check --selftest                 内核自证套件 (含反例控制组)");
         o.WriteLine(ForwardCli.UsageLine);
         o.WriteLine(VulkanCli.UsageLine);
+        o.WriteLine(EmbedCli.UsageLine);
         return 0;
     }
 

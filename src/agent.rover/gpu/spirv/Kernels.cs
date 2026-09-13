@@ -41,6 +41,67 @@ public static class Kernels
     }, buffers: 2);
 
     /// <summary>
+    /// 矩阵乘 + 偏置 (R393 —— 本地 BGE 的 GPU 执行端口内核):
+    ///   Y[t·outDim+o] = B[o] + Σ_k W[o·inDim+k] · X[t·inDim+k]
+    /// 绑定: 0=W(out×in) 1=X(seq×in) 2=B(out) 3=Y(seq×out); 1 维派发 count = seq·outDim。
+    /// inDim/outDim 为编译期常量 (形状特化) ⇒ 内核内不需要用 ArrayLength 反推维度,
+    /// 也不依赖派发尺寸整除; 尾线程由 i ≥ ArrayLength(Y) 守卫直接返回 (不写脏数据)。
+    /// 累加 = 按 k 顺序的单精度累加; CPU 端口走 TensorPrimitives.Dot (SIMD 多累加器), 两者舍入
+    /// 路径不同 ⇒ 对账判据是逐元素差 ≈ f32 eps (实测 2.5e-7) + 余弦 = 1.0, 不是逐位相同。
+    /// </summary>
+    public static Kernel MatMulBias(int inDim, int outDim, uint localSize = 64) => Build(
+        $"matmul_bias_{inDim}x{outDim}", outPrologue: false, buffers: 4, localSize: localSize,
+        firstBlock: (s, c) =>
+        {
+            c.PU32F = s.TypePtr(Spv.ScFunction, c.U32);
+            c.PF32F = s.TypePtr(Spv.ScFunction, c.F32);
+            c.K = s.FnVar(c.PU32F);
+            c.Acc = s.FnVar(c.PF32F);
+        },
+        body: (s, c) =>
+        {
+            var w = c.Take(0); var x = c.Take(1); var b = c.Take(2); var y = c.Take(3);
+            var yLen = s.ArrayLength(y, 0);
+            var oob = s.Bin(Spv.OpUGreaterThanEqual, c.Bool, c.I, yLen);
+            var retL = s.LabelFor(); var goL = s.LabelFor();
+            s.SelectionMerge(goL); s.BranchCond(oob, retL, goL);
+            s.Place(retL); s.Return();
+            s.Place(goL);
+            var inC = s.ConstU32((uint)inDim);
+            var outC = s.ConstU32((uint)outDim);
+            var one = s.ConstU32(1);
+            var t = s.Bin(Spv.OpUDiv, c.U32, c.I, outC);
+            var o = s.Bin(Spv.OpISub, c.U32, c.I, s.Bin(Spv.OpIMul, c.U32, t, outC));
+            var wRow = s.Bin(Spv.OpIMul, c.U32, o, inC);
+            var xRow = s.Bin(Spv.OpIMul, c.U32, t, inC);
+            s.Store(c.K, c.Zero);
+            s.Store(c.Acc, s.ConstF32(0f));
+            var header = s.LabelFor(); var check = s.LabelFor(); var loopBody = s.LabelFor(); var cont = s.LabelFor(); var done = s.LabelFor();
+            s.Branch(header);
+            s.Place(header);
+            s.LoopMerge(done, cont);
+            // 循环头只做 OpLoopMerge + 无条件跳转, 条件判定放独立条件块 —— 即 glslang 生成形状。
+            // 实测约束 (R393, lavapipe/LLVM 20.1.2): 把 OpBranchConditional 直接放进循环头
+            // (条件为真去循环体 / 假去 merge) 会使 vkCreateComputePipelines 返回 VK_ERROR_UNKNOWN,
+            // 而同一模块的形状等价改法 (本行起) 通过; 判据见 /tmp/r393probe 最小变体对账。
+            s.Branch(check);
+            s.Place(check);
+            s.BranchCond(s.Bin(Spv.OpULessThan, c.Bool, s.Load(c.U32, c.K), inC), loopBody, done);
+            s.Place(loopBody);
+            var k = s.Load(c.U32, c.K);
+            var wv = s.Load(c.F32, Elem(s, c, w, s.Bin(Spv.OpIAdd, c.U32, wRow, k)));
+            var xv = s.Load(c.F32, Elem(s, c, x, s.Bin(Spv.OpIAdd, c.U32, xRow, k)));
+            s.Store(c.Acc, s.Bin(Spv.OpFAdd, c.F32, s.Load(c.F32, c.Acc), s.Bin(Spv.OpFMul, c.F32, wv, xv)));
+            s.Branch(cont);
+            s.Place(cont);
+            s.Store(c.K, s.Bin(Spv.OpIAdd, c.U32, s.Load(c.U32, c.K), one));
+            s.Branch(header);
+            s.Place(done);
+            var sum = s.Bin(Spv.OpFAdd, c.F32, s.Load(c.F32, c.Acc), s.Load(c.F32, Elem(s, c, b, o)));
+            s.Store(Elem(s, c, y, c.I), sum);
+        });
+
+    /// <summary>
     /// 诊断探针 (机制分解, v4): 把"动态索引"与"缓冲绑定位置"两个变量彻底解耦 ——
     ///   cst[0..3] = 101..104  常量索引 store 进 binding 1   ⇒ 该绑定是否可写
     ///   dyn[I]    = 7.0f      动态索引 store 进 binding 2   ⇒ 动态索引本身 (binding 2 已知可写)
@@ -79,11 +140,18 @@ public static class Kernels
     sealed class Ctx
     {
         public uint F32, U32, Bool, V3U, Gid, Glsl, PF32, I, Zero;
+        /// <summary>R393 矩阵乘内核: 归约累加器 / 循环计数器 / 其 Function 存储类指针类型。</summary>
+        public uint Acc, K, PF32F, PU32F;
         public uint[] Bufs = Array.Empty<uint>();
         public uint Take(int i) => Bufs[i];
     }
 
-    static Kernel Build(string name, bool outPrologue, Action<Spv, Ctx> body, int buffers, uint localSize = 256)
+    /// <param name="firstBlock">
+    /// 函数首块钩子 (R393): 在 OpLabel 之后、任何守卫之前执行 —— Function 存储类变量 (OpVariable)
+    /// 只能声明在这里, 否则违反 SPIR-V "函数变量须在首块" 规则。
+    /// </param>
+    static Kernel Build(string name, bool outPrologue, Action<Spv, Ctx> body, int buffers, uint localSize = 256,
+        Action<Spv, Ctx>? firstBlock = null)
     {
         var s = new Spv();
         s.Cap(Spv.CapShader);
@@ -115,6 +183,7 @@ public static class Kernels
         var fnTy = s.TypeFn(s.TypeVoid());
         s.Function(fnId, s.TypeVoid(), fnTy);
         var entry = s.Label();
+        firstBlock?.Invoke(s, c);
         c.I = s.Extract(c.U32, s.Load(c.V3U, c.Gid), 0);
         var n = s.ArrayLength(c.Bufs[0], 0);
         var oob = s.Bin(Spv.OpUGreaterThanEqual, c.Bool, c.I, n);

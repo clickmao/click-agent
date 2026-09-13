@@ -12,6 +12,43 @@
 
 ---
 
+## R393 — 本地 BGE 接入 Vulkan GPU 执行端口(端口化 + 真机对账 + 驱动约束取证)
+
+**用户令 (逐字)**: "agent 本地bge也需要加vulkan gpu运行端口"。
+
+**因果链**: 本地 BGE 一次嵌入的热点是**每层 6 次矩阵乘**(q/k/v/attn_output/ffn_up/ffn_down ⇒ 24 次 [seq,in]×[in,out])。若把"GPU 版"写成第二个前向, 立刻产生**两份前向语义**(LayerNorm/注意力/GELU/池化任一侧改动都要双改双测) —— 这是教训表 §10.2(同构多表示的形状静默错)的同类风险。故落点是**端口 + 单一前向**: 端口契约 `IMatMulBackend`(`src/agent.embedcpu/MatMulBackend.cs`), CPU 实现 `CpuMatMulBackend`(SIMD), Vulkan 实现 `src/agent.rover/gpu/VulkanMatMulBackend.cs`, 新建形状特化内核 `Kernels.MatMulBias(inDim,outDim)`, 前向本身**一行没多写**(只把 6 个投影改走端口)。
+
+**交付**:
+1. **端口契约与实现**: `MatMulBackend.cs`(新, 端口 + CPU 实现, 声明"纯函数 + 长度恰为 seq*outDim + 舍入语义"); `BgeCpuEmbedder(model, IMatMulBackend?)` 构造注入(**缺省 CPU, 行为与旧版逐位一致**), 新属性 `MatMulBackendName` 供证据; 删除私有 `MatMulAdd`(原样搬进 `CpuMatMulBackend`)。
+2. **Vulkan 端口**: `VulkanMatMulBackend`(端口名 `vulkan`, 形状特化内核缓存, 三个形状断言 weight/input/bias, 暴露 `Dispatches`/`LastDispatchMs`/`PoolStats`); `agent.rover` 单向引用 `agent.embedcpu`(无环)。产品程序集**不引入 Silk.NET**(沿用 `agent.csproj` 既有边界)。
+3. **内核**: `Kernels.MatMulBias` 4 绑定 (0=W 1=X 2=B 3=Y), `inDim/outDim` = 编译期常量(形状特化 ⇒ 内核内不用 ArrayLength 反推维度), 越界守卫 `i ≥ ArrayLength(Y)`; `Spv` 新增 `OpULessThan=176`/`OpUDiv=134`/`OpLoopMerge=246`/`ScFunction=7` + `LoopMerge()`/`FnVar()`(函数首块钩子 `Build(..., firstBlock)`), 全部经 `SpvRegistryAudit` 对权威 grammar 机检(新增 `ScFunction` 别名绑定, 否则审计红 —— 本轮真红过一次)。
+4. **真机入口**: `agent.rover embed [--backend cpu|vulkan] [--device I] [--repeat R] [--text T] [--compare] [--selftest]` —— 输出全机器可读行(`bgemodel/port/vkdevice/membase/emb/determinism/parity/portcheck/pool/mem/done`), 零 shell / 零 Console 直写。
+
+**真机证据**(`docs/reports/r385/r393-bge-vulkan-port.md`, 原始日志 `/tmp/r393/`):
+- **端口确实被使用(防空心)**: `portcheck{dispatch_calls=expected}` 在 72 / 216 / 864 三种规模下 `match=True`(期望 = 层 4 × 6 × 文本 3 × 重复 R)。
+- **数值对账**: Vulkan vs CPU `max_abs_diff ≤ 2.538E-007`, `cos=1.000000000`, `verdict=PASS`; CPU 档 `max_abs_diff=0.000E+000`(逐位相同)。舍入语义已写清: 内核**顺序**累加 vs CPU `TensorPrimitives.Dot`(**SIMD 多累加器**) ⇒ 不逐位相同, 故判据 = `≤1e-3 ∧ cos≥0.99999`(把"逐位一致"当判据会假红)。
+- **确定性**: `repeat=3` 三个 pass `identical=true`(逐位)。
+- **负控**: `--device 99` ⇒ `vkerr{note=device_index_out_of_range}` + `done{ok=false reason=device_unavailable}` 退出码 1, **不产出任何嵌入**(不静默退回 CPU)。
+- **AOT**: 引擎侧 `IL_warnings=6`(全部第三方 `Silk.NET.Core.Loader` IL3000/IL3002) 且**原生二进制真跑 Vulkan 端口** PASS(无 JIT); 产品侧 `agent.host` publish **EXIT=0 / IL 警告 0 / 原生 14.5 MB**。
+- **全量回归 1060/1060 绿**(1051 + 新增 9); 全解决方案 build **0 Error**; 本轮触及文件**新增 warning = 0**(`BgeCpuEmbedder.cs` 的 CA2014 经 `git show HEAD:` 比对确认为既有)。
+
+**本轮最贵发现: 循环头不能带条件分支(规范合法 ≠ 驱动接受)**
+- 首版内核把 `OpBranchConditional(cond, 循环体, merge)` 放在循环头 ⇒ `vkCreateComputePipelines: VK_ERROR_UNKNOWN`, 而自写结构校验器判**合法**。
+- 一次性探针 `/tmp/r393probe` 最小变体二分(不入产品): 纯逐元素 ✅ / 函数局部变量 ✅ / `OpUDiv` ✅ / **循环头带条件分支 ❌(守卫有无、内存访问有无、分支极性三种改法都红)** / **glslang 形状(循环头只 `OpLoopMerge`+无条件跳转, 条件判定独立块) ✅** ⇒ 唯一变量是控制流形状。
+- 修复采用 glslang 形状, 并**机检固化**: `MatMulBias_含唯一归约循环且循环头无条件分支` + 判别力负控 `MatMulBias_驱动约束检查器有判别力`(改回条件分支必须报 1 处违规)。
+
+**内存观测(结论: 归因驱动, 不记为我方泄漏)**
+- 原实现每次派发新建且从不销毁 6 类管线资源(真句柄泄漏) ⇒ 改造①按 (内核名,绑定数) 缓存; 改造②设备缓冲按 64 KiB 档位池化; 改造③命令缓冲常驻 + `ResetCommandPool`。
+- 三次改造后 **RSS 斜率均不变**(≈76 KB/派发, 72/432/864 次派发实测), 而池读数证明我方有界: `pool{classes=5 slots=7 leases=3456 reuses=3449}`(**864 次派发只用 7 个设备缓冲, 复用率 99.8%**)。
+- ⇒ 剩余增长落在 **lavapipe(软件 Vulkan ICD)内部**, 真 GPU 必须重测; **不记为我方泄漏, 也不声称已解决**(三次改造各有真实收益: 消除句柄泄漏 + 消除每派发 SPIR-V 重编译, 后者实测 `ms_per_embed` 693→558)。
+
+**诚实边界**:
+1. 本机唯一 Vulkan 设备是**软件实现**(llvmpipe) ⇒ 端口在本机比 CPU 慢(≈588–693 ms vs ≈249–259 ms/嵌入); **不提出性能承诺**, 真 GPU 复测判据/命令见报告 §6。
+2. **产品侧未接线**: `agent.host` 进程内选 `vulkan` 需把 Vulkan 共享源接进产品并引入 Silk.NET, 会带入 6 条第三方 IL 警告 ⇒ **须用户决策**(本轮不擅自破坏既有边界)。
+3. 循环控制流约束来自本机唯一驱动实现; 换驱动须复跑 `--selftest`。
+4. 长文本(seq→510)只做了内核级数值对账(探针 `512×2048`), 未做端到端对账。
+5. 踩坑: 给 `agent.host` 追加命令行 `-p:PublishAot=true` 会全局传播并命中 `netstandard2.1` 的 `agent.io` ⇒ `NETSDK1207`; 正确做法是只用 csproj 内置 `PublishAot`。
+
 ## R392 — 模块重命名 click-rover → agent.rover(目录/项目名/内部文件夹/命名空间全部小写, 类名不动)
 
 **用户令 (逐字)**: "click-rover 更名为agent.rover 并且内部文件夹 类文件的命名空间 也需要小写 （类本身不用）"。

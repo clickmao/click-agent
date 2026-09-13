@@ -16,6 +16,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- R393: BGE 矩阵乘端口契约 (IMatMulBackend) 位于 agent.embedcpu; 本工程提供 Vulkan 实现。
+         方向 rover -> embedcpu, 无环; 产品侧 (agent) 不因此获得 Silk.NET 依赖。 -->
+    <ProjectReference Include="../agent.embedcpu/agent.embedcpu.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.Numerics.Tensors" Version="10.0.0" />
     <!-- C6: 与 Silk.NET 相同的 Vulkan 运行库 -->
     <PackageReference Include="Silk.NET.Vulkan" Version="2.23.0" />

@@ -64,10 +64,13 @@ public sealed class Spv
         OpFNegate = 127, OpIAdd = 128, OpFAdd = 129, OpISub = 130, OpFSub = 131, OpIMul = 132,
         OpFMul = 133, OpFDiv = 136, OpBitcast = 124,
         OpUGreaterThanEqual = 174, OpBranch = 249, OpBranchConditional = 250, OpSelectionMerge = 247,
-        OpSelect = 169;
+        OpSelect = 169,
+        // R393: BGE 矩阵乘内核 (归约循环) 所需 —— 取值由 SpvRegistryAudit 对权威
+        // spirv.core.grammar.json 机检核对, 不靠人记。
+        OpULessThan = 176, OpUDiv = 134, OpLoopMerge = 246;
 
     public const uint CapShader = 1, MemLogical = 0, MemGLSL450 = 1, ExecGLCompute = 5,
-        ScInput = 1, ScWorkgroup = 4, ScStorageBuffer = 12,
+        ScInput = 1, ScWorkgroup = 4, ScStorageBuffer = 12, ScFunction = 7,
         DecBlock = 2, DecArrayStride = 6, DecDescriptorSet = 34, DecBinding = 33, DecBuiltIn = 11,
         DecOffset = 35, BuiltInGlobalInvocationId = 28, ExModeLocalSize = 17;
 
@@ -165,5 +168,14 @@ public sealed class Spv
         EP(OpExtInstImport, ops);
         return id;
     }
+    /// <summary>OpLoopMerge: 必须紧接在循环头的分支指令之前 (SPIR-V 结构规则), 无结果 id。</summary>
+    public uint LoopMerge(uint merge, uint cont) { E(OpLoopMerge, merge, cont, 0); return 0; }
+
+    /// <summary>
+    /// 函数局部变量 (Function 存储类)。SPIR-V 要求这类变量位于函数首个块内 —— 因此只能在
+    /// <c>Kernels.Build</c> 的 firstBlock 钩子里声明 (主体回调内的块已不是首块)。
+    /// </summary>
+    public uint FnVar(uint ptrType) { uint id = NewId(); E(OpVariable, ptrType, id, ScFunction); return id; }
+
     static uint[] Pre(uint head, uint[] xs) { var a = new uint[xs.Length + 1]; a[0] = head; Array.Copy(xs, 0, a, 1, xs.Length); return a; }
 }

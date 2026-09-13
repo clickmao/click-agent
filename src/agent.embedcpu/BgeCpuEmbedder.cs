@@ -12,6 +12,7 @@ namespace agent.embedcpu;
 public sealed class BgeCpuEmbedder : agent.contextgradient.ITextEmbedder, IDisposable
 {
     private readonly string _modelPath;
+    private readonly IMatMulBackend _mm;
     private readonly object _lock = new();
     private GgufModel? _model;
     private WordPieceTokenizer? _tokenizer;
@@ -20,9 +21,22 @@ public sealed class BgeCpuEmbedder : agent.contextgradient.ITextEmbedder, IDispo
     private int _dim = 512;
     private int _maxTokens = 510; // +CLS+SEP = 512
 
-    public BgeCpuEmbedder(string modelPath) => _modelPath = modelPath;
+    public BgeCpuEmbedder(string modelPath)
+        : this(modelPath, null)
+    {
+    }
+
+    /// <summary>构造: <paramref name="matmul"/> 为矩阵乘执行端口 (null ⇒ CPU/TensorPrimitives)。</summary>
+    public BgeCpuEmbedder(string modelPath, IMatMulBackend? matmul)
+    {
+        _modelPath = modelPath;
+        _mm = matmul ?? CpuMatMulBackend.Instance;
+    }
 
     public bool IsAvailable => File.Exists(_modelPath) && new FileInfo(_modelPath).Length > 0;
+
+    /// <summary>当前矩阵乘端口名 (cpu/vulkan) —— 证据用, 不参与计算。</summary>
+    public string MatMulBackendName => _mm.Name;
 
     private void EnsureInitialized()
     {
@@ -108,9 +122,9 @@ public sealed class BgeCpuEmbedder : agent.contextgradient.ITextEmbedder, IDispo
         var headDim = hidden / heads;
 
         // --- 自注意力 (BERT post-LN: attn → attn_output_norm) ---
-        var q = MatMulAdd(h, _weights![$"{blk}attn_q.weight"], _weights[$"{blk}attn_q.bias"], seq, hidden, hidden);
-        var k = MatMulAdd(h, _weights[$"{blk}attn_k.weight"], _weights[$"{blk}attn_k.bias"], seq, hidden, hidden);
-        var v = MatMulAdd(h, _weights[$"{blk}attn_v.weight"], _weights[$"{blk}attn_v.bias"], seq, hidden, hidden);
+        var q = _mm.MatMulAdd(h, _weights![$"{blk}attn_q.weight"], _weights[$"{blk}attn_q.bias"], seq, hidden, hidden);
+        var k = _mm.MatMulAdd(h, _weights[$"{blk}attn_k.weight"], _weights[$"{blk}attn_k.bias"], seq, hidden, hidden);
+        var v = _mm.MatMulAdd(h, _weights[$"{blk}attn_v.weight"], _weights[$"{blk}attn_v.bias"], seq, hidden, hidden);
 
         var attnOut = new float[seq * hidden];
         var scale = 1f / MathF.Sqrt(headDim);
@@ -142,32 +156,17 @@ public sealed class BgeCpuEmbedder : agent.contextgradient.ITextEmbedder, IDispo
                 }
             }
         }
-        var attnProj = MatMulAdd(attnOut, _weights[$"{blk}attn_output.weight"], _weights[$"{blk}attn_output.bias"], seq, hidden, hidden);
+        var attnProj = _mm.MatMulAdd(attnOut, _weights[$"{blk}attn_output.weight"], _weights[$"{blk}attn_output.bias"], seq, hidden, hidden);
         TensorPrimitives.Add(h, attnProj, h); // residual
         LayerNorm(h, _weights[$"{blk}attn_output_norm.weight"], _weights[$"{blk}attn_output_norm.bias"], seq, hidden);
 
         // --- FFN (residual → layer_output_norm) ---
-        var ffnOut = MatMulAdd(h, _weights[$"{blk}ffn_up.weight"], _weights[$"{blk}ffn_up.bias"], seq, hidden, 2048);
+        var ffnOut = _mm.MatMulAdd(h, _weights[$"{blk}ffn_up.weight"], _weights[$"{blk}ffn_up.bias"], seq, hidden, 2048);
         Gelu(ffnOut);
-        var down = MatMulAdd(ffnOut, _weights[$"{blk}ffn_down.weight"], _weights[$"{blk}ffn_down.bias"], seq, 2048, hidden);
+        var down = _mm.MatMulAdd(ffnOut, _weights[$"{blk}ffn_down.weight"], _weights[$"{blk}ffn_down.bias"], seq, 2048, hidden);
         TensorPrimitives.Add(h, down, h); // residual
         LayerNorm(h, _weights[$"{blk}layer_output_norm.weight"], _weights[$"{blk}layer_output_norm.bias"], seq, hidden);
         return h;
-    }
-
-    private static float[] MatMulAdd(float[] input, float[] weight, float[] bias, int seq, int inDim, int outDim)
-    {
-        // GGUF 权重布局 [out, in] 行主序 (llama.cpp 导出惯例): y[o] = Σ_i w[o*inDim+i]*x[i] + b[o]
-        var output = new float[seq * outDim];
-        for (var t = 0; t < seq; t++)
-        {
-            var x = input.AsSpan(t * inDim, inDim);
-            var y = output.AsSpan(t * outDim, outDim);
-            bias.CopyTo(y);
-            for (var o = 0; o < outDim; o++)
-                y[o] += TensorPrimitives.Dot(weight.AsSpan(o * inDim, inDim), x);
-        }
-        return output;
     }
 
     private static void LayerNorm(float[] h, float[] w, float[] b, int seq, int hidden)

@@ -202,6 +202,189 @@ public sealed unsafe class VulkanBackend : IDisposable
     /// <summary>单个内核的派发结果 (真机读数)。</summary>
     public sealed record DispatchResult(string Kernel, int Elements, uint Groups, double DispatchMs, double ElementsPerMs);
 
+    /// <summary>按 (内核名, 绑定数) 缓存的管线类资源 —— 生命周期与 backend 一致, Dispose 时统一销毁。</summary>
+    sealed class PipeSet
+    {
+        public DescriptorSetLayout Layout;
+        public DescriptorPool Dpool;
+        public DescriptorSet Set;
+        public ShaderModule Module;
+        public PipelineLayout Playout;
+        public Pipeline Pipeline;
+
+        public void Dispose(Vk vk, Device dev)
+        {
+            if (Pipeline.Handle != 0) vk.DestroyPipeline(dev, Pipeline, null);
+            if (Playout.Handle != 0) vk.DestroyPipelineLayout(dev, Playout, null);
+            if (Module.Handle != 0) vk.DestroyShaderModule(dev, Module, null);
+            if (Dpool.Handle != 0) vk.DestroyDescriptorPool(dev, Dpool, null);   // 池销毁即回收其集合
+            if (Layout.Handle != 0) vk.DestroyDescriptorSetLayout(dev, Layout, null);
+        }
+    }
+
+    // ── R393 内存观测 (A/B 三次, 本机 llvmpipe/lavapipe · LLVM 20.1.2, 证据 /tmp/r393/embed_vk_pool.log) ──
+    //   改前: 每次派发新建且从不销毁 管线/描述符布局/池/集合/着色器模块/管线布局 (6 个 VkHandle) —— 句柄泄漏
+    //   改造① 管线类资源按 (内核名, 绑定数) 缓存            ⇒ RSS 斜率不变 (仍 ≈ 76 KB/次派发)
+    //   改造② 设备缓冲按 64 KiB 档位池化 (864 次派发 7 个缓冲, 复用率 99.8%) ⇒ 斜率不变
+    //   改造③ 命令缓冲常驻 + ResetCommandPool              ⇒ 斜率不变
+    //   ⇒ 我方三类资源均已池化/销毁 (池读数可证), 剩余斜率归属驱动内部实现;
+    //     结论: 真 GPU 上必须重测该斜率, 在此之前既不记为我方泄漏, 也不声称已解决。
+    readonly Dictionary<(string Kernel, int Buffers), PipeSet> _pipes = new();
+    CommandBuffer _cb;
+    bool _cbReady;
+
+    /// <summary>池化设备缓冲槽 (Buf + Memory + 持久映射 + 容量档位)。</summary>
+    sealed class BufferSlot
+    {
+        public Silk.NET.Vulkan.Buffer Buf;
+        public DeviceMemory Mem;
+        public void* Map;
+        public ulong Capacity;
+        public ulong Class;
+    }
+
+    /// <summary>档位大小 = 64 KiB 向上取整 (BGE 形状下档位数 ≤ 约 20 个 ⇒ 池内存有界)。</summary>
+    const ulong SlotGranularity = 64 * 1024;
+
+    readonly Dictionary<ulong, List<BufferSlot>> _slots = new();
+    readonly List<BufferSlot> _slotAll = new();
+
+    /// <summary>池占用读数 (证据用): 档位数 / 槽位总数 / 租借次数。</summary>
+    public int SlotClasses => _slots.Count;
+    public int SlotCount => _slotAll.Count;
+    public long SlotLeases { get; private set; }
+    public int SlotReuses { get; private set; }
+
+    static ulong SlotClass(ulong bytes) => (bytes + SlotGranularity - 1) / SlotGranularity * SlotGranularity;
+
+    BufferSlot AcquireSlot(ulong bytes)
+    {
+        var cls = SlotClass(bytes);
+        if (_slots.TryGetValue(cls, out var free) && free.Count > 0)
+        {
+            var s = free[^1];
+            free.RemoveAt(free.Count - 1);
+            SlotLeases++; SlotReuses++;
+            return s;
+        }
+
+        var slot = new BufferSlot { Capacity = cls, Class = cls };
+        var bci = new BufferCreateInfo
+        {
+            SType = StructureType.BufferCreateInfo, Size = cls,
+            Usage = BufferUsageFlags.StorageBufferBit | BufferUsageFlags.TransferSrcBit | BufferUsageFlags.TransferDstBit,
+            SharingMode = SharingMode.Exclusive,
+        };
+        var r = _vk.CreateBuffer(_dev, &bci, null, out slot.Buf);
+        if (r != Result.Success) throw new InvalidOperationException($"vk_create_buffer_failed: {r}");
+        var req = default(MemoryRequirements);
+        _vk.GetBufferMemoryRequirements(_dev, slot.Buf, &req);
+        var mai = new MemoryAllocateInfo
+        {
+            SType = StructureType.MemoryAllocateInfo,
+            AllocationSize = req.Size, MemoryTypeIndex = FindMemoryType(req.MemoryTypeBits),
+        };
+        r = _vk.AllocateMemory(_dev, &mai, null, out slot.Mem);
+        if (r != Result.Success) throw new InvalidOperationException($"vk_allocate_memory_failed: {r}");
+        _vk.BindBufferMemory(_dev, slot.Buf, slot.Mem, 0);
+        void* p;
+        r = _vk.MapMemory(_dev, slot.Mem, 0, cls, MemoryMapFlags.None, &p);
+        if (r != Result.Success) throw new InvalidOperationException($"vk_map_memory_failed: {r}");
+        slot.Map = p;
+        _slotAll.Add(slot);
+        SlotLeases++;
+        return slot;
+    }
+
+    void ReleaseSlot(BufferSlot slot)
+    {
+        if (!_slots.TryGetValue(slot.Class, out var free)) _slots[slot.Class] = free = new List<BufferSlot>();
+        free.Add(slot);
+    }
+
+
+    /// <summary>
+    /// 按 (内核名, 绑定数) 建/取管线类资源缓存 (R393)。
+    /// 原实现每次派发都新建描述符布局/池/集合/着色器模块/管线布局/管线且从不销毁 ——
+    /// 这是 6 个 VkHandle/次 的真句柄泄漏 (代码事实), 且每次派发都要重新编译一次 SPIR-V。
+    /// 缓存后同形状内核只编译/建一次。
+    /// 注意 (R393 实测): 该修复并未改变进程 RSS 随派发次数增长的斜率 ⇒ 斜率不归因于此,
+    /// 见下方内存观测块 —— 不把未证明的因果关系写进注释。
+    /// </summary>
+    PipeSet PipeFor(Kernels.Kernel kernel, int nb)
+    {
+        var key = (kernel.Name, nb);
+        if (_pipes.TryGetValue(key, out var cached)) return cached;
+
+        var p = new PipeSet();
+            // 描述符布局 + 池 + 集合
+            var bindings = new DescriptorSetLayoutBinding[nb];
+            for (int i = 0; i < nb; i++)
+                bindings[i] = new DescriptorSetLayoutBinding
+                {
+                    Binding = (uint)i, DescriptorType = DescriptorType.StorageBuffer,
+                    DescriptorCount = 1, StageFlags = ShaderStageFlags.ComputeBit,
+                };
+            fixed (DescriptorSetLayoutBinding* bp = bindings)
+            {
+                var dslci = new DescriptorSetLayoutCreateInfo
+                { SType = StructureType.DescriptorSetLayoutCreateInfo, BindingCount = (uint)nb, PBindings = bp };
+                var r = _vk.CreateDescriptorSetLayout(_dev, &dslci, null, out p.Layout);
+                if (r != Result.Success) throw new InvalidOperationException($"vk_descriptor_layout_failed: {r}");
+            }
+
+            var poolSizes = new DescriptorPoolSize[nb];
+            for (int i = 0; i < nb; i++) poolSizes[i] = new DescriptorPoolSize { Type = DescriptorType.StorageBuffer, DescriptorCount = 1 };
+            fixed (DescriptorPoolSize* ps = poolSizes)
+            {
+                var dpci = new DescriptorPoolCreateInfo
+                { SType = StructureType.DescriptorPoolCreateInfo, MaxSets = 1, PoolSizeCount = (uint)nb, PPoolSizes = ps };
+                var r = _vk.CreateDescriptorPool(_dev, &dpci, null, out p.Dpool);
+                if (r != Result.Success) throw new InvalidOperationException($"vk_descriptor_pool_failed: {r}");
+            }
+
+            {
+                var dsl = p.Layout;
+                var dsai = new DescriptorSetAllocateInfo
+                { SType = StructureType.DescriptorSetAllocateInfo, DescriptorPool = p.Dpool, DescriptorSetCount = 1, PSetLayouts = &dsl };
+                var r = _vk.AllocateDescriptorSets(_dev, &dsai, out p.Set);
+                if (r != Result.Success) throw new InvalidOperationException($"vk_descriptor_set_failed: {r}");
+            }
+            // 着色器模块 + 管线
+            fixed (uint* code = kernel.Words)
+            {
+                var smci = new ShaderModuleCreateInfo
+                {
+                    SType = StructureType.ShaderModuleCreateInfo,
+                    CodeSize = (nuint)(kernel.Words.Length * 4), PCode = code,
+                };
+                var r = _vk.CreateShaderModule(_dev, &smci, null, out p.Module);
+                if (r != Result.Success) throw new InvalidOperationException($"vk_shader_module_failed: {r}");
+            }
+            {
+                var dsl = p.Layout;
+                var plci = new PipelineLayoutCreateInfo
+                { SType = StructureType.PipelineLayoutCreateInfo, SetLayoutCount = 1, PSetLayouts = &dsl };
+                var r = _vk.CreatePipelineLayout(_dev, &plci, null, out p.Playout);
+                if (r != Result.Success) throw new InvalidOperationException($"vk_pipeline_layout_failed: {r}");
+            }
+            byte[] mainName = { (byte)'m', (byte)'a', (byte)'i', (byte)'n', 0 };
+            fixed (byte* mn = mainName)
+            {
+                var stage = new PipelineShaderStageCreateInfo
+                {
+                    SType = StructureType.PipelineShaderStageCreateInfo,
+                    Stage = ShaderStageFlags.ComputeBit, Module = p.Module, PName = mn,
+                };
+                var cpci = new ComputePipelineCreateInfo
+                { SType = StructureType.ComputePipelineCreateInfo, Stage = stage, Layout = p.Playout, BasePipelineIndex = -1 };
+                var r = _vk.CreateComputePipelines(_dev, default, 1u, &cpci, null, out p.Pipeline);
+                if (r != Result.Success) throw new InvalidOperationException($"vk_compute_pipeline_failed: {r}");
+            }
+        _pipes[key] = p;
+        return p;
+    }
+
     /// <summary>
     /// 派发一个计算内核: <paramref name="buffers"/> 为各绑定的 f32 数据 (长度可不同, 如标量缓冲)。
     /// 就地写回计算结果 —— 对账在调用方进行。
@@ -221,137 +404,67 @@ public sealed unsafe class VulkanBackend : IDisposable
         var sizes = new ulong[nb];
         var maps = new void*[nb];
         var infos = new DescriptorBufferInfo[nb];
+        var leased = new BufferSlot[nb];
+
+        // R393: 管线类资源按 (内核名, 绑定数) 缓存 (见 PipeFor); 每次派发只重建 buffer/memory/命令缓冲。
+        var pipe = PipeFor(kernel, nb);
 
         try
         {
             for (int i = 0; i < nb; i++)
             {
                 sizes[i] = (ulong)buffers[i].Length * 4;
-                var bci = new BufferCreateInfo
-                {
-                    SType = StructureType.BufferCreateInfo, Size = sizes[i],
-                    Usage = BufferUsageFlags.StorageBufferBit | BufferUsageFlags.TransferSrcBit | BufferUsageFlags.TransferDstBit,
-                    SharingMode = SharingMode.Exclusive,
-                };
-                var r = _vk.CreateBuffer(_dev, &bci, null, out bufs[i]);
-                if (r != Result.Success) throw new InvalidOperationException($"vk_create_buffer_failed: {r}");
-                var req = default(MemoryRequirements);
-                _vk.GetBufferMemoryRequirements(_dev, bufs[i], &req);
-                var mai = new MemoryAllocateInfo
-                {
-                    SType = StructureType.MemoryAllocateInfo,
-                    AllocationSize = req.Size, MemoryTypeIndex = FindMemoryType(req.MemoryTypeBits),
-                };
-                r = _vk.AllocateMemory(_dev, &mai, null, out mems[i]);
-                if (r != Result.Success) throw new InvalidOperationException($"vk_allocate_memory_failed: {r}");
-                _vk.BindBufferMemory(_dev, bufs[i], mems[i], 0);
-                void* p;
-                r = _vk.MapMemory(_dev, mems[i], 0, sizes[i], MemoryMapFlags.None, &p);
-                if (r != Result.Success) throw new InvalidOperationException($"vk_map_memory_failed: {r}");
-                maps[i] = p;
-                fixed (float* src = buffers[i]) System.Buffer.MemoryCopy(src, p, (long)sizes[i], (long)sizes[i]);
+                // 设备缓冲来自池 (按 64 KiB 档位复用): 消除逐次 CreateBuffer/AllocateMemory/FreeMemory
+                // 的分配 churn, 并保证我方不存在逐次句柄累积 (池读数可证: 864 次派发只用 7 个缓冲)。
+                // 描述符 Range 仍写精确字节数 ⇒ 内核 ArrayLength 语义不变。
+                var slot = AcquireSlot(sizes[i]);
+                leased[i] = slot;
+                bufs[i] = slot.Buf; mems[i] = slot.Mem; maps[i] = slot.Map;
+                fixed (float* src = buffers[i]) System.Buffer.MemoryCopy(src, slot.Map, (long)sizes[i], (long)sizes[i]);
                 infos[i] = new DescriptorBufferInfo { Buffer = bufs[i], Offset = 0, Range = sizes[i] };
             }
 
-            // 描述符布局 + 池 + 集合
-            var bindings = new DescriptorSetLayoutBinding[nb];
-            for (int i = 0; i < nb; i++)
-                bindings[i] = new DescriptorSetLayoutBinding
-                {
-                    Binding = (uint)i, DescriptorType = DescriptorType.StorageBuffer,
-                    DescriptorCount = 1, StageFlags = ShaderStageFlags.ComputeBit,
-                };
-            DescriptorSetLayout layout;
-            fixed (DescriptorSetLayoutBinding* bp = bindings)
-            {
-                var dslci = new DescriptorSetLayoutCreateInfo
-                { SType = StructureType.DescriptorSetLayoutCreateInfo, BindingCount = (uint)nb, PBindings = bp };
-                var r = _vk.CreateDescriptorSetLayout(_dev, &dslci, null, out layout);
-                if (r != Result.Success) throw new InvalidOperationException($"vk_descriptor_layout_failed: {r}");
-            }
 
-            var poolSizes = new DescriptorPoolSize[nb];
-            for (int i = 0; i < nb; i++) poolSizes[i] = new DescriptorPoolSize { Type = DescriptorType.StorageBuffer, DescriptorCount = 1 };
-            DescriptorPool dpool;
-            fixed (DescriptorPoolSize* ps = poolSizes)
-            {
-                var dpci = new DescriptorPoolCreateInfo
-                { SType = StructureType.DescriptorPoolCreateInfo, MaxSets = 1, PoolSizeCount = (uint)nb, PPoolSizes = ps };
-                var r = _vk.CreateDescriptorPool(_dev, &dpci, null, out dpool);
-                if (r != Result.Success) throw new InvalidOperationException($"vk_descriptor_pool_failed: {r}");
-            }
-
-            DescriptorSet set;
-            {
-                var dsl = layout;
-                var dsai = new DescriptorSetAllocateInfo
-                { SType = StructureType.DescriptorSetAllocateInfo, DescriptorPool = dpool, DescriptorSetCount = 1, PSetLayouts = &dsl };
-                var r = _vk.AllocateDescriptorSets(_dev, &dsai, out set);
-                if (r != Result.Success) throw new InvalidOperationException($"vk_descriptor_set_failed: {r}");
-            }
+            // 每次派发重写描述符绑定 (缓冲对象逐次新建); 描述符集合本身来自 PipeFor 缓存。
             fixed (DescriptorBufferInfo* ip = infos)
             {
                 var writes = new WriteDescriptorSet[nb];
                 for (int i = 0; i < nb; i++)
                     writes[i] = new WriteDescriptorSet
                     {
-                        SType = StructureType.WriteDescriptorSet, DstSet = set, DstBinding = (uint)i,
+                        SType = StructureType.WriteDescriptorSet, DstSet = pipe.Set, DstBinding = (uint)i,
                         DescriptorCount = 1, DescriptorType = DescriptorType.StorageBuffer, PBufferInfo = &ip[i],
                     };
                 fixed (WriteDescriptorSet* wp = writes) _vk.UpdateDescriptorSets(_dev, (uint)nb, wp, 0, null);
             }
 
-            // 着色器模块 + 管线
-            ShaderModule module;
-            fixed (uint* code = kernel.Words)
-            {
-                var smci = new ShaderModuleCreateInfo
-                {
-                    SType = StructureType.ShaderModuleCreateInfo,
-                    CodeSize = (nuint)(kernel.Words.Length * 4), PCode = code,
-                };
-                var r = _vk.CreateShaderModule(_dev, &smci, null, out module);
-                if (r != Result.Success) throw new InvalidOperationException($"vk_shader_module_failed: {r}");
-            }
-            PipelineLayout playout;
-            {
-                var dsl = layout;
-                var plci = new PipelineLayoutCreateInfo
-                { SType = StructureType.PipelineLayoutCreateInfo, SetLayoutCount = 1, PSetLayouts = &dsl };
-                var r = _vk.CreatePipelineLayout(_dev, &plci, null, out playout);
-                if (r != Result.Success) throw new InvalidOperationException($"vk_pipeline_layout_failed: {r}");
-            }
-            Pipeline pipeline;
-            byte[] mainName = { (byte)'m', (byte)'a', (byte)'i', (byte)'n', 0 };
-            fixed (byte* mn = mainName)
-            {
-                var stage = new PipelineShaderStageCreateInfo
-                {
-                    SType = StructureType.PipelineShaderStageCreateInfo,
-                    Stage = ShaderStageFlags.ComputeBit, Module = module, PName = mn,
-                };
-                var cpci = new ComputePipelineCreateInfo
-                { SType = StructureType.ComputePipelineCreateInfo, Stage = stage, Layout = playout, BasePipelineIndex = -1 };
-                var r = _vk.CreateComputePipelines(_dev, default, 1u, &cpci, null, out pipeline);
-                if (r != Result.Success) throw new InvalidOperationException($"vk_compute_pipeline_failed: {r}");
-            }
-
             // 命令缓冲: barrier(Host→Compute) → bind → dispatch → barrier(Compute→Host)
-            CommandBuffer cb;
+            // 命令缓冲常驻复用 (R393): 消除逐次 Allocate/FreeCommandBuffers 的分配 churn。
+            // 池已带 ResetCommandBufferBit, 故 ResetCommandPool 即可安全重录
+            // (派发前后都 QueueWaitIdle, 无在飞工作)。
+            if (!_cbReady)
             {
                 var cbai = new CommandBufferAllocateInfo
                 { SType = StructureType.CommandBufferAllocateInfo, CommandPool = _pool, Level = CommandBufferLevel.Primary, CommandBufferCount = 1 };
-                var r = _vk.AllocateCommandBuffers(_dev, &cbai, out cb);
-                if (r != Result.Success) throw new InvalidOperationException($"vk_alloc_command_buffer_failed: {r}");
+                var rc = _vk.AllocateCommandBuffers(_dev, &cbai, out _cb);
+                if (rc != Result.Success) throw new InvalidOperationException($"vk_alloc_command_buffer_failed: {rc}");
+                _cbReady = true;
             }
+            else
+            {
+                var rr = _vk.ResetCommandPool(_dev, _pool, 0);
+                if (rr != Result.Success) throw new InvalidOperationException($"vk_reset_command_pool_failed: {rr}");
+            }
+            var cb = _cb;
             {
                 var bi = new CommandBufferBeginInfo
                 { SType = StructureType.CommandBufferBeginInfo, Flags = CommandBufferUsageFlags.OneTimeSubmitBit };
                 var r = _vk.BeginCommandBuffer(cb, &bi);
                 if (r != Result.Success) throw new InvalidOperationException($"vk_begin_command_buffer_failed: {r}");
             }
-            _vk.CmdBindPipeline(cb, PipelineBindPoint.Compute, pipeline);
-            _vk.CmdBindDescriptorSets(cb, PipelineBindPoint.Compute, playout, 0, 1, &set, 0, null);
+            _vk.CmdBindPipeline(cb, PipelineBindPoint.Compute, pipe.Pipeline);
+            var pset = pipe.Set;
+            _vk.CmdBindDescriptorSets(cb, PipelineBindPoint.Compute, pipe.Playout, 0, 1, &pset, 0, null);
 
             var barriers = new BufferMemoryBarrier[nb];
             for (int i = 0; i < nb; i++)
@@ -391,17 +504,11 @@ public sealed unsafe class VulkanBackend : IDisposable
             for (int i = 0; i < nb; i++)
                 fixed (float* dst = buffers[i]) System.Buffer.MemoryCopy(maps[i], dst, (long)sizes[i], (long)sizes[i]);
 
-            _vk.FreeCommandBuffers(_dev, _pool, 1, &cb);
             return new DispatchResult(kernel.Name, count, groups, sw.Elapsed.TotalMilliseconds, count / Math.Max(0.001, sw.Elapsed.TotalMilliseconds));
         }
         finally
         {
-            for (int i = 0; i < nb; i++)
-            {
-                if (maps[i] != null) _vk.UnmapMemory(_dev, mems[i]);
-                if (bufs[i].Handle != 0) _vk.DestroyBuffer(_dev, bufs[i], null);
-                if (mems[i].Handle != 0) _vk.FreeMemory(_dev, mems[i], null);
-            }
+            for (int i = 0; i < nb; i++) if (leased[i] is not null) ReleaseSlot(leased[i]);
         }
     }
 
@@ -410,6 +517,15 @@ public sealed unsafe class VulkanBackend : IDisposable
         if (_disposed) return;
         _disposed = true;
         _vk.DeviceWaitIdle(_dev);
+        foreach (var p in _pipes.Values) p.Dispose(_vk, _dev);
+        _pipes.Clear();
+        foreach (var s in _slotAll)
+        {
+            if (s.Map != null) _vk.UnmapMemory(_dev, s.Mem);
+            if (s.Buf.Handle != 0) _vk.DestroyBuffer(_dev, s.Buf, null);
+            if (s.Mem.Handle != 0) _vk.FreeMemory(_dev, s.Mem, null);
+        }
+        _slotAll.Clear(); _slots.Clear();
         _vk.DestroyCommandPool(_dev, _pool, null);
         _vk.DestroyDevice(_dev, null);
         _vk.DestroyInstance(_inst, null);
