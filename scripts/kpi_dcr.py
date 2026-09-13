@@ -16,13 +16,13 @@
   * **绝不静默跳过任何条目**
 
 内核层对比 (--kernel):
-  传入 `clickrover check --json` 风格输出 (每行字段 verdict/counterexample/ms)。
+  传入 `agent.rover check --json` 风格输出 (每行字段 verdict/counterexample/ms)。
   行内无 id 时按**行序**与 cases 对齐 (报告里显式声明该假设); 行数不等 ⇒ error。
 
 用法:
   python3 scripts/kpi_dcr.py --cases eval/dcr/dcr_cases.jsonl \
                              --decisions <agent_out.jsonl> \
-                             [--kernel <clickrover_out.jsonl>] [--json]
+                             [--kernel <agent.rover_out.jsonl>] [--json]
 退出码: 0 = 跑通; 2 = 输入/标签/对齐错误。
 """
 import argparse
@@ -329,7 +329,7 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description="DCR 判定脚本 (stdlib only)")
     ap.add_argument("--cases", required=True, help="判定题集 jsonl")
     ap.add_argument("--decisions", required=True, help="真实装配输出 jsonl")
-    ap.add_argument("--kernel", default=None, help="clickrover check --json 风格输出 (可选)")
+    ap.add_argument("--kernel", default=None, help="agent.rover check --json 风格输出 (可选)")
     ap.add_argument("--json", action="store_true", help="额外打印机器可读 JSON")
     a = ap.parse_args(argv)
 

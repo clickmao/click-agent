@@ -112,7 +112,7 @@ public class PlanNode
 
     /// <summary>
     /// 形式化断言契约 (v0.23.0 exp12 S2): 本节点的可判定片段文本 —— 逐行 `premise &lt;expr&gt;` / `goal &lt;expr&gt;`,
-    /// 或显式弃权 `no_formal: &lt;理由&gt;`。语法与 click-rover `check` 同构, 判定在**本机内核**完成(零 token)。
+    /// 或显式弃权 `no_formal: &lt;理由&gt;`。语法与 agent.rover `check` 同构, 判定在**本机内核**完成(零 token)。
     /// 缺省 null = 未声明 ⇒ 闸门按「无形式化义务」放行, **绝不为此追问 LLM**。
     /// </summary>
     public string? Formal { get; set; }

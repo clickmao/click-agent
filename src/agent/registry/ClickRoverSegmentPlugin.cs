@@ -29,7 +29,7 @@ public sealed class ClickRoverSegmentPlugin : IResponseSegmentPlugin
     private readonly List<FormalSegmentReport> _reports = [];
 
     /// <summary>插件名 (静态前缀在场判定的依据, 见 FormalPromptContract.IsPresent)。</summary>
-    public const string PluginId = "clickrover.formal";
+    public const string PluginId = "agent.rover.formal";
 
     /// <summary>
     /// 挂载开关: 缺省**开**; `AGENTFRAMEWORK_FORMAL_SEGMENT=0` 整段关闭。

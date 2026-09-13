@@ -273,15 +273,15 @@
 | `GitOperationResult` | `src/agent.workspace/GitChangeType.cs:68` | `agent.workspace` |
 | `FileChangeType` | `src/agent.workspace/WorkspaceState.cs:20` | `agent.workspace` |
 | `FileChangeEvent` | `src/agent.workspace/WorkspaceState.cs:31` | `agent.workspace` |
-| `ParseError` | `src/click-rover/Formal/FormalKernel.cs:31` | `clickrover.formal` |
-| `Atom` | `src/click-rover/Formal/Formula.cs:14` | `clickrover.formal` |
-| `Or` | `src/click-rover/Formal/Formula.cs:16` | `clickrover.formal` |
-| `GgufValueKind` | `src/click-rover/Gguf/GgufReader.cs:6` | `clickrover.gguf` |
-| `GgufValue` | `src/click-rover/Gguf/GgufReader.cs:13` | `clickrover.gguf` |
-| `GgufArray` | `src/click-rover/Gguf/GgufReader.cs:44` | `clickrover.gguf` |
-| `GgufTensorInfo` | `src/click-rover/Gguf/GgufReader.cs:54` | `clickrover.gguf` |
-| `Kernels` | `src/click-rover/Gpu/Spirv/Kernels.cs:4` | `clickrover.gpu.spirv` |
-| `TensorBuffer` | `src/click-rover/Runtime/TensorResidency.cs:37` | `clickrover.runtime` |
+| `ParseError` | `src/agent.rover/formal/FormalKernel.cs:31` | `agent.rover.formal` |
+| `Atom` | `src/agent.rover/formal/Formula.cs:14` | `agent.rover.formal` |
+| `Or` | `src/agent.rover/formal/Formula.cs:16` | `agent.rover.formal` |
+| `GgufValueKind` | `src/agent.rover/gguf/GgufReader.cs:6` | `agent.rover.gguf` |
+| `GgufValue` | `src/agent.rover/gguf/GgufReader.cs:13` | `agent.rover.gguf` |
+| `GgufArray` | `src/agent.rover/gguf/GgufReader.cs:44` | `agent.rover.gguf` |
+| `GgufTensorInfo` | `src/agent.rover/gguf/GgufReader.cs:54` | `agent.rover.gguf` |
+| `Kernels` | `src/agent.rover/gpu/spirv/Kernels.cs:4` | `agent.rover.gpu.spirv` |
+| `TensorBuffer` | `src/agent.rover/runtime/TensorResidency.cs:37` | `agent.rover.runtime` |
 
 ### 6.2 仅测试态引用 (生产零消费: **49** 个)
 
@@ -349,7 +349,7 @@
 | `src/agent/pipeline/PipelineTask.cs` | 6 | `PipelineTask`, `PipelineContext`, `DecompositionResult`, `DecomposeOptions`, `ComplexityAssessment` |
 | `src/agent.modelqueue/ModelCatalog.cs` | 4 | `ModelCapabilitiesParser`, `ModelCapabilities`, `LocalChannelConfig`, `ModelCatalogLoadResult` |
 | `src/agent.workspace/GitChangeType.cs` | 4 | `GitChangeType`, `GitChange`, `GitStatus`, `GitOperationResult` |
-| `src/click-rover/Gguf/GgufReader.cs` | 4 | `GgufValueKind`, `GgufValue`, `GgufArray`, `GgufTensorInfo` |
+| `src/agent.rover/gguf/GgufReader.cs` | 4 | `GgufValueKind`, `GgufValue`, `GgufArray`, `GgufTensorInfo` |
 | `src/agent.exploration/ThinkChainSession.cs` | 3 | `ThinkStep`, `ConvergeReason`, `ThinkChainResult` |
 | `src/agent.modelqueue/OpenAIChatResponseDtos.cs` | 3 | `OpenAIChatChoice`, `OpenAIChatResponseMessage`, `OpenAIChatUsage` |
 | `src/agent.modelqueue/TokenUsageService.cs` | 3 | `UsageRecord`, `BalanceSnapshot`, `UsageStatsSnapshot` |
@@ -371,7 +371,7 @@
 | `src/agent/registry/EvidenceGate.cs` | 2 | `EvidenceRequest`, `GateResult` |
 | `src/agent/tendency/TendencyData.cs` | 2 | `TendencyConfig`, `ContextBias` |
 | `src/agent.workspace/WorkspaceState.cs` | 2 | `FileChangeType`, `FileChangeEvent` |
-| `src/click-rover/Formal/Formula.cs` | 2 | `Atom`, `Or` |
+| `src/agent.rover/formal/Formula.cs` | 2 | `Atom`, `Or` |
 | `src/agent.codegen/CodeGenerator.cs` | 1 | `LanguageConfig` |
 | `src/agent.core/core/AgentEnums.cs` | 1 | `ContentCategory` |
 | `src/agent/critique/FixMemory.cs` | 1 | `FixEntry` |
@@ -408,7 +408,7 @@
 | `SearchResult` | `src/agent.workspace/WorkspaceState.cs:188` (`public class`, ns `agent.workspace`) | `src/agent/search/SearchResult.cs:6` (`public class`, ns `agent.search`) | **生产/生产, 同名不同命名空间** | 命名冲突候选 (编译无冲突; 跨命名空间易混) |
 | `MemoryEntry` | `src/agent/memory/MemoryEntry.cs:6` (`public class`, ns `agent.memory`) | `src/agent/session/SessionMemory.cs:182` (`private sealed record`, 嵌套) | 生产/生产, 可见性不同 | 低风险 (一份是私有嵌套) |
 | `GtDoc` | `src/agent.host/Program.cs:675` (`class`) | `src/agent.tests/RecallRateTests.cs:15` (`record`) | 生产/测试 | 低风险 |
-| `Program.cs` (文件名副本) | `src/agent.host/Program.cs` | `src/click-rover/Program.cs` | 同名文件不同项目 | 无害 |
+| `Program.cs` (文件名副本) | `src/agent.host/Program.cs` | `src/agent.rover/Program.cs` | 同名文件不同项目 | 无害 |
 | `ModelQueueAdapter` (用户点名) | `src/agent/modelqueue/ModelQueueAdapter.cs:12` | **未找到第二副本** (已扫: `class ModelQueueAdapter`、全仓文件名 `ModelQueueAdapter*` 全 src) | 单一定义 | **不是双副本** |
 | `FakeEmbedder` / `StubAgent` / `StubHttpClientFactory` / `ThrowingSink` | 均只在 `src/agent.tests/**` 内跨文件重名 | — | 测试桩重名 | 非产品代码 |
 

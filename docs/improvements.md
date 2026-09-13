@@ -12,6 +12,43 @@
 
 ---
 
+## R392 — 模块重命名 click-rover → agent.rover(目录/项目名/内部文件夹/命名空间全部小写, 类名不动)
+
+**用户令 (逐字)**: "click-rover 更名为agent.rover 并且内部文件夹 类文件的命名空间 也需要小写 （类本身不用）"。
+
+**因果链**: 模块名 `click-rover` 带连字符 ⇒ (a) 命名空间 root 只能写 `clickrover`(与目录名不同形, 二者漂移), (b) 内部文件夹首字母大写(`Cli/Gguf/Gpu/Spirv/...`)与命名空间 `clickrover.cli` **大小写不一致**, 同一目录在路径与符号里两种写法 ⇒ 引用面靠人记忆同步, 一旦不同步就是"编译过得去、文档与路径对不上"的静默漂移。R392 把**目录名 = 项目名 = 程序集名 = 命名空间 root = 文件夹名** 收敛成**同一串小写标识** `agent.rover`, 使"名字只有一处真值"; 同时保留类名(在 `.sln`/文档/registry 中作为符号引用, 改名无收益却有回归风险)。
+
+**交付(全部带真机/机检证据)**:
+1. **重命名映射(34 文件 + 1 计划文档)**: `src/click-rover` → `src/agent.rover`; csproj `click-rover.csproj` → `agent.rover.csproj`; `AssemblyName`/`RootNamespace` = `agent.rover`; 内部文件夹 `Cli→cli` `Formal→formal` `Gguf→gguf` `Gpu→gpu` `Gpu/Spirv→gpu/spirv` `Infer→infer` `Quant→quant` `Runtime→runtime`; 命名空间 `clickrover.*` → `agent.rover.*`。全部走 `git mv` + 脚本化文本重写(**不留人手抄**)。
+2. **消费侧引用面同步**: `src/agent/agent.csproj` 共享源 `../agent.rover/formal/*.cs` + `../agent.rover/gpu/spirv/*.cs`(Link 同步小写); `eval/dcr/harness/dcrval.csproj`; `SpvRegistryAuditTests`(机检路径 + 目录探测); `docs/verification-registry.json` 的 `evidence_path`(**机检校验路径存在性, 不更新即红**); `scripts/kpi_dcr.py` / `eval/dcr/*` / plans / reports。
+3. **解决方案接入(补齐 `agent.rover` 长期缺口)**: `dotnet sln agent.sln add src/agent.rover/agent.rover.csproj` ⇒ 工程数 16→17, 全解决方案 build **0 Error**。
+4. **契约标识同步**: 插件 id `clickrover.formal` → `agent.rover.formal`(消费侧与契约文本同源常量 `FormalPromptContract.PluginName`/`ClickRoverSegmentPlugin.PluginId`, 由机检保证一致)。
+5. **残留检查 = 0**(除已发布 HTML 报告逐字未动, 保其 sha256)。
+
+**真机基线(重命名后, 与重命名前逐项对照)**:
+- 全量回归 **1051/1051 绿**(与 R391 基线**同数**, `/tmp/r392/full_test.log`, 31 s; 干净无并发)
+- 解决方案 build **0 Error / 66 Warning**(66 = 既有 warning 存量, 非本轮新增)
+- **数值不变**: tiny 前向 `topk{rank=1 id=46 logit=4.420093}` 与 R388b 记录值**逐位相同** ⇒ 重命名未触碰任何计算
+- 内核 `check --selftest` **14/14**(tokens=0); 驻留 `residency --selftest`(真 7B Q4_K_M) **10/10**
+- Vulkan 真机: `done{command=vulkan kernels=3 pass=3 fail=0 spirv_valid=3 neg=5/5}`; `meta` 正常
+- **AOT 发布复验**(改 agent 链代码后可执行产物必重发布): R391 收尾与 R392 各跑一次 `dotnet publish src/agent.host -c Release -r linux-x64` ⇒ `EXIT=0`, **IL 警告 0**, 产出原生 `agenthost`(NativeAOT, 无 JIT)
+
+**附带发现并修复: 仓库内两份 DCR eval 快照是 R387 旧物(重命名逼出的真 bug)**
+- **触发**: 按"改名后必须用真产物复验数值不变"的纪律复跑装配层评测, 发现仓库内 `eval/dcr/assembly_out.jsonl` / `eval/dcr/kernel_out.jsonl` **不是 R388 权威快照**, 而是 **R387 时代旧物**(各含 32 条 `Unknown`) ⇒ 与 R387 记录的 **DCR 132/145 = 91.03% / 覆盖率 60.69%** 对应, 比 R388 修内核后的真实值低 **13 条**。
+- **根因**: R388 的真装配复跑产物落在 `/tmp/r388/`, **仓库内那份从未同步** ⇒ 临时目录里的权威快照 ≠ 仓库里的权威快照(同类根因: R390 的"跑旧 DLL"假象)。
+- **修复**: 由**仓库内产物**复跑并**直接覆盖仓库文件** —— 装配层 = **AOT 原生产物** `agenthost --formal-eval eval/dcr/dcr_cases.jsonl`; 内核层 = 重命名后 `agent.rover check <case>.assert --json` ×145; 随后 `scripts/kpi_dcr.py` 重生成 `eval/dcr/dcr_report.txt`。
+- **零漂移证明(两条独立腿, 各 145/145、0 差异)**: 新装配快照 vs R388 真装配快照 `field_diffs=0`; 新内核快照 vs R388 内核快照 `field_diffs=0`(**含 `note` 与反例变量取值**) ⇒ 重命名未改任何判定; 顺带 `ms` 由 R388 的 ~32.7 ms/条降到 **~0.18 ms/条**(AOT 免 JIT, 旁证)。
+- **刷新后权威结论**(双口径并列): **DCR(弃权计合规) 145/145 = 100.00%** / **保守口径 101/145 = 69.66%**(= 可决断集上限) / 覆盖率 101/145 = 69.66%(Proceed 51 · Violation 50 · Abstained 19 · Malformed 25) / 六类一致率**全 100%** / **主动误判 0**; z3 独立审计重跑 `AUDIT_RESULT=SOUND`(**30/30 反例为真 · 33/33 Proved 确 unsat · 0 假**), 与题集自带 `expected_verdict` **145/145 一致**。
+- **文档同步**: `eval/dcr/README.md` §4.1/§4.2、`docs/reports/r385/dcr-s3-s4-results.md`(§4 标为 R387 留痕 + 新增 §8)。
+- **新纪律**: 凡涉及仓库内 eval 快照的轮次, **必须用仓库内相对路径复跑并覆盖仓库文件**, 禁止只在 `/tmp` 留证。
+
+**诚实边界**:
+- 类名按用户令**不动**(`ClickRoverSegmentPlugin` 等), 因此"符号层"仍含 `ClickRover` 词形 —— 这是用户明示的取舍, 非遗漏。
+- 计时类微基准 `SessionPerformanceTests.GetRecentMessages_BeatsFullTableSort_AtScale` 在与 build **并发**时出现过一次假红(`new 191µs < old/3 109µs`, old 被并发拉快); **无并发单跑 4/4 绿、全量单跑 1051/1051 绿** ⇒ 判为 2 vCPU 争用下的噪声, 非重命名引入。
+- 已发布 HTML 调研报告内 2 处 `click-rover` 字样**故意不改**(线上产物 hash 已交付, 改动即换版)。
+
+---
+
 ## R391 — 形式化闭环挂上主链(计划节点级本地验证 + 静态前缀条件契约注入)
 
 **用户令 (逐字)**: "继续下一轮, 并结合当前 agent 能力做一次能力精简归拢(不必要的能力与步骤可以合并降低复杂度) 并于形式化验证引擎高度规划最合理的 agent 执行链" + "新 agent 链的计划要达到外部最强工程化实现给出的决策合规率为 90.5% 的 ±5 个百分点左右" + "进行下一步直到目前所有计划的任务全部完成"。
@@ -697,16 +734,16 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **诚实边界**: **T1–T4（FAVA 的 DCR 公式/分母/弃权处置/aggregate 合并）仍不可得** ⇒ **"达到 90.5%±5pp"仍不能单口径断言**（100% 与 69.66% 分落区间上/下，**达标与否完全取决于弃权是否计合规**）；当前题集已**饱和**（100% 无区分度）⇒ 下轮须加硬用例（长轨迹 / 语义降层类）。
 - 机检: 全量 **1019/1019**（含 kernel 共享源）；内核自检 `check --selftest` **14/14**；`XCHECK{agree=15, int_gap=0, unsound=0}`。
 
-### R388b (2026-09-13) — click-rover Transformer 前向推理真机对账（焦点①）
+### R388b (2026-09-13) — agent.rover Transformer 前向推理真机对账（焦点①）
 
-- **交付**: `src/click-rover/Infer/{ModelConfig(152),RopeTable(73),KvCache(100),ForwardPass(303)}.cs` + `Cli/ForwardCli.cs`(173)（新增；未改 csproj、未加 NuGet、零反射、输出走 `TextWriter`）。
+- **交付**: `src/agent.rover/infer/{ModelConfig(152),RopeTable(73),KvCache(100),ForwardPass(303)}.cs` + `Cli/ForwardCli.cs`(173)（新增；未改 csproj、未加 NuGet、零反射、输出走 `TextWriter`）。
 - **Phase 1 数学自证（tiny f32，同权重两侧各算）**: GQA(4/2)+untied 与 MHA(4/4)+tied 两个 tiny ⇒ logits `max_abs_diff` **7.27e-06 / 7.63e-06**（判据 <1e-4）· top-5 id **全同** · **逐层逐 token** hidden 对账最差 5.91e-05（相对 ≈1.3e-06，纯 f32 归约次序）。
 - **Phase 2 真 7B（DeepSeek-Prover-V2-7B GGUF-Q4_K_M，4.22 GB）**: 单 token **top-1 = 185**、耗时 16.7–19.4 s、**峰值 RSS 374.7 MiB**（numpy 独立参考 **1.98 GiB**，`Swaps: 0` 侥幸通过）；4 token KV cache `kv_len` 1→2→3→4、**top-1 = 13、top-5 = [13,16,17,15,18] 与 numpy 完全一致**、logits `max_abs_diff 6.10e-05`。
 - **"没有 7B 张量被全量物化"有账**: `streamed 4023.0 MiB / file 4028 MiB → ratio 0.999`（单 token 把整份权重流式读一遍）、常驻仅 **976 KiB**（61 张 norm）；numpy 参考物化整张 ffn ⇒ 1.98 GiB。
 - **主线程独立复核（不采信子代理自报）**: 重跑 tiny + 真 7B 单 token + numpy 参考 ⇒ 逐位复现（`7.27176666e-06`、`top-1=185`、`2.174377744e-04`、top-5 全同）。
 - **诚实边界**: 本模型实测**非 GQA**（`n_head_kv = n_head = 32`）、**无 RoPE scaling** ⇒ 两分支只由 tiny 覆盖；**未实现采样/生成循环**（无 temperature/top-p/EOS）；**未做性能优化**（22.2 s/token 受"每 token 重读 15.1 GiB 权重"限制）；单 token logits 绝对差 **2.17e-04 > 1e-4**（值域 44.7–64.5 ⇒ 相对 3.4e-06；top-1 判定裕度为误差的 **645×**，argmax 不在可翻转临界）。
 
-### R389 (2026-09-13) — click-rover Vulkan 真机落地 + SPIR-V 常量表权威机检（焦点① GPU 路径）
+### R389 (2026-09-13) — agent.rover Vulkan 真机落地 + SPIR-V 常量表权威机检（焦点① GPU 路径）
 
 - **旧假设被探针证伪（诚实修正）**: 此前计划书写"本机无 GPU ⇒ Vulkan 只能编译 + 真调 `vkEnumeratePhysicalDevices` 得 0 设备"。`vulkaninfo --summary` 实测 **GPU0 = llvmpipe (LLVM 20.1.2)**（lavapipe 软件 Vulkan ICD 已装）⇒ **Vulkan 路径可真跑 dispatch 并对账**；本轮据此把 GPU 路径从"仅编译"升级为"**真机跑通 + 数值对账**"，并回改 exp10 计划的 C5/GPU/A6 条目（不留旧结论）。
 - **交付（全部自研，零 shell / 零反射 / 无 glslang·glslc 环境）**: `Gpu/VulkanBackend.cs`(419 行, instance→物理设备→队列→设备内存→缓冲上传/回读→描述符集→计算管线→dispatch) + `Gpu/Spirv/{Spv.cs(指令级汇编器), Kernels.cs(四内核), SpirvValidator.cs(**独立**结构校验器), SpvDisassembler.cs(**独立**反汇编器, 不入执行路径)}` + `Cli/VulkanCli.cs`(`vulkan` 子命令 / `--spirv-only` / `--spv-dump` / `--show` / `--elements` / `--repeat` / 5 组 `NegativeControl`)。运行库 = `Silk.NET.Vulkan 2.23.0`（与 Silk.NET 同源, 非自造 P/Invoke; API 形状先由一次性反射探针 `/tmp/vkprobe` 定死再写静态代码, 探针不入产品）。
@@ -717,7 +754,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **诚实边界**: GPU0 是 **lavapipe 软件实现**, `device_ms`/`elem_per_ms` 只作正确性证据、**不代表真实 GPU 性能**；**CUDA 路径未实现**（本机无 NVIDIA 设备）；Silk.NET 的 Vulkan API 形状由一次性反射探针确定（探针在 `/tmp`, 未入产品）；`/usr/share/vulkan/explicit_layer.d/` 无 validation layer ⇒ 结构校验靠自研校验器 + 5 组负控背书（非 khronos 官方校验层背书）。
 - 机检: `SpvRegistryAuditTests` **6/6**（含 4 组负向控制）；全量测试 `1025/1025`（1019 + 6 新增）；`vulkan` 子命令 exit 0。
 
-### R390 (2026-09-13) — click-rover 驻留/回收接前向：热集常驻 + LRU 主动驱逐真触发（焦点① 剩余件）
+### R390 (2026-09-13) — agent.rover 驻留/回收接前向：热集常驻 + LRU 主动驱逐真触发（焦点① 剩余件）
 
 - **本条要修的靶点（用户口径 C3/C4 的空白面）**: 此前驻留账**恒 `evicts=0`** —— 即"只常驻活性高的张量 + 不再使用的张量主动从内存释放"里的**驱逐/回收路径从未被走到**，且 `TensorResidency` **未接进前向**（前向完全不走驻留管理）。
 - **交付**: `Infer/ForwardPass.cs`（cts 增 `pins` / `reclaimPerToken` 两参；每 token 末 `ReclaimAll()`；暴露 `ResidentCount`）+ `Cli/ForwardCli.cs`（`--budget-mb|--budget-kb|--budget-bytes` / `--no-pin` / `--reclaim-per-token` + `residency_scope` / `residency_verdict` 两行账面）+ 新件 `Cli/ResidencySelfTest.cs`（**10 例自证套件**，真张量夹具，零 shell 零外部进程）+ `Runtime/TensorResidency.cs`（预算语义显式声明 `Ledger.BudgetUnlimited`）。

@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>agent.rover</AssemblyName>
+    <RootNamespace>agent.rover</RootNamespace>
+    <Version>0.23.0</Version>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <!-- AOT: 零反射 / 零 shell; 发布形态 = NativeAOT -->
+    <IsAotCompatible>true</IsAotCompatible>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Numerics.Tensors" Version="10.0.0" />
+    <!-- C6: 与 Silk.NET 相同的 Vulkan 运行库 -->
+    <PackageReference Include="Silk.NET.Vulkan" Version="2.23.0" />
+    <PackageReference Include="Silk.NET.Core" Version="2.23.0" />
+  </ItemGroup>
+
+</Project>

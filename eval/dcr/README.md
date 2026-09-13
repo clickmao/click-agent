@@ -16,7 +16,7 @@
 | `eval/dcr/dcr_cases.jsonl` | 145 | **交付物 A**：判定题集，6 类 |
 | `eval/dcr/verify_cases.py` | 72 | 独立重算自验：读回 jsonl ↔ z3 oracle 逐条比对 |
 | `eval/dcr/assembly_out.jsonl` | 145 | 真实装配层（`PlanNodeFormalGate.Evaluate`）判定输出 |
-| `eval/dcr/kernel_out.jsonl` | 145 | 真实内核 CLI（`clickrover check --json`）输出，按行序对齐 |
+| `eval/dcr/kernel_out.jsonl` | 145 | 真实内核 CLI（`agent.rover check --json`）输出，按行序对齐 |
 | `eval/dcr/harness/` | — | 真实装配回放 harness（csproj + Program.cs + Stubs.cs） |
 | `eval/dcr/dcr_report.txt` | — | 真实装配输出的 DCR 报告快照 |
 | `eval/dcr/selftest/` | — | 脚本自测夹具与负例（非 DCR 结论） |
@@ -100,7 +100,7 @@ c079 [vacuous] status=vacuous z3_label=premises_unsat model=None  # 2x==2y+1
 
 ## 3. 真实装配层回放（产生 decisions）
 
-harness 以**共享源码编译**方式引用仓库真实 `src/click-rover/Formal/*.cs` +
+harness 以**共享源码编译**方式引用仓库真实 `src/agent.rover/formal/*.cs` +
 `FormalAssertionContract.cs` + `PlanNodeFormalGate.cs`，逐条把 contract 交给真实 `Evaluate()`。
 `Stubs.cs` 仅提供 `PlanNode.Id` / `AgentTelemetry.Emit` 的编译依赖，**不替代任何判定逻辑**。
 
@@ -116,7 +116,7 @@ wrote eval/dcr/assembly_out.jsonl rows=145
 内核层输出（真实 CLI，逐条 `check --json`，按**行序**与 cases 对齐）：
 
 ```
-$ CL=src/click-rover/bin/Release/net10.0/click-rover
+$ CL=src/agent.rover/bin/Release/net10.0/agent.rover
 $ # 对每条 case 写 .assert 文件后: "$CL" check <file> --json
 kernel rows: 145 nonjson: 0
 ```
@@ -129,7 +129,7 @@ stdlib only。用法：
 
 ```
 python3 scripts/kpi_dcr.py --cases <cases.jsonl> --decisions <agent_out.jsonl> \
-                           [--kernel <clickrover_out.jsonl>] [--json]
+                           [--kernel <agent.rover_out.jsonl>] [--json]
 ```
 
 输出：N、DCR=agree/N、覆盖率=(Proceed+Violation)/N（分母含弃权与畸形，两者单列）、弃权率、
@@ -138,38 +138,44 @@ python3 scripts/kpi_dcr.py --cases <cases.jsonl> --decisions <agent_out.jsonl> \
 
 ### 4.1 真实装配输出的 DCR 结论（`eval/dcr/dcr_report.txt`）
 
+> **快照刷新 (R392, 2026-09-13)**：装配层 `assembly_out.jsonl` 由 **AOT 原生产物**
+> (`dotnet publish src/agent.host -c Release -r linux-x64` 后的 `agenthost --formal-eval`) 复跑生成；
+> 内核层 `kernel_out.jsonl` 由重命名后的 `agent.rover check <case>.assert --json` 复跑生成。
+> 此前仓库内两份快照是 **R387 时代旧物**（含 13 条 `Unknown`），与 R388 已修的内核不一致 ——
+> 详见 `docs/improvements.md` R392 节。刷新后二者与 R388 真装配/kernel 权威快照 **逐条 0 差异**。
+
 ```
 N (总条目)              = 145
-DCR                     = 132/145 = 0.9103  (91.03%)
-覆盖率 (Proceed+Violation) = 88/145 = 0.6069  (60.69%)
-  其中 Proceed          = 48 (33.10%)
-  其中 Violation        = 40 (27.59%)
-弃权率 (Abstained)      = 32/145 = 22.07%
+DCR                     = 145/145 = 1.0000  (100.00%)
+覆盖率 (Proceed+Violation) = 101/145 = 0.6966  (69.66%)
+  其中 Proceed          = 51 (35.17%)
+  其中 Violation        = 50 (34.48%)
+弃权率 (Abstained)      = 19/145 = 13.10%
 畸形率 (Malformed)      = 25/145 = 17.24%
 决断条目一致率           = 1.0000  (100.00%)
 主动误判 (unsafe)        = 0
 category             N   agree       rate
-entail              33      30     90.91%
-refute              30      25     83.33%
-vacuous             20      15     75.00%
+entail              33      33    100.00%
+refute              30      30    100.00%
+vacuous             20      20    100.00%
 out_of_fragment     19      19    100.00%
 malformed           25      25    100.00%
 absent              18      18    100.00%
 混淆矩阵 (行=expected, 列=actual):
                 Proceed  Violation  Abstained  Malformed
-Proceed              48          0          3          0
-Violation             0         40         10          0
+Proceed              51          0          0          0
+Violation             0         50          0          0
 Abstained             0          0         19          0
 Malformed             0          0          0         25
 ```
 
-**13 条不一致全部是「期望可判、真实内核诚实弃权 (Unknown)」，0 条主动误判**（Proceed/Violation
-方向无一错误）。
+**0 条不一致、0 条主动误判**（Proceed/Violation 方向无一错误）；弃权 19 条全部是设计上不该决断的
+`out_of_fragment`（诚实弃权口径）。
 
 ### 4.2 内核层对比（`--kernel`）
 
 按行序对齐（行内无 id，报告显式声明该假设；行数不等即报错）。真实数字：
-**内核 vs 期望 = 113/145 (77.93%)；内核 vs 装配 = 126/145 (86.90%)**。
+**内核 vs 期望 = 126/145 (86.90%)；内核 vs 装配 = 126/145 (86.90%)**。
 19 条内核≠装配的差异**不是内核判错**，而是层职责不同：18 条 absent（原始 CLI 无契约层
 `no_formal` 语义，空输入→Malformed，闸门→NoFormal/Proceed）+ 1 条 `goal x < 10`（契约层要求
 premise，CLI 允许 goal-only 故能 Refute）。脚本已在报告中打印该说明。
@@ -231,7 +237,7 @@ exit=2
    - 宽反例域（c044 的 50 万点区间）无法枚举 ⇒ 弃权；
    - ≥2 自由变量、无界时的整数奇偶矛盾（`3x-3y==1`、`2x==2y+1` 等）无法用盒判定 ⇒ 弃权。
    这些是**内核完备性缺口**，不是错误判定——`unsafe 主动误判 = 0` 证明方向安全。
-4. **内核层对比假设“按行序对齐”**：`clickrover check --json` 输出不含 id，对齐假设未由数据
+4. **内核层对比假设“按行序对齐”**：`agent.rover check --json` 输出不含 id，对齐假设未由数据
    本身保证；脚本在行数不等时直接报错，不猜。
 5. **自测非结论**：§4.3 的 0.75 是脚本自证的算术正确性，与真实 DCR 无关，已显式标注。
 6. 依赖 `z3-solver`（本机 `/tmp/z3env`，z3 5.1.0）与 .NET 10 SDK；换环境需重装。

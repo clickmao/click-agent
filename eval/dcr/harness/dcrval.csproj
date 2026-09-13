@@ -14,7 +14,7 @@
     <!-- 只编译 harness 自身 + 仓库内**只读**共享源 (绝不修改 src/**) -->
     <Compile Include="Stubs.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)../../../src/click-rover/Formal/*.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)../../../src/agent.rover/formal/*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)../../../src/agent/registry/FormalAssertionContract.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)../../../src/agent/intent/PlanNodeFormalGate.cs" />
   </ItemGroup>

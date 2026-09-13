@@ -1,5 +1,5 @@
 using Xunit;
-using clickrover.gpu.spirv;
+using agent.rover.gpu.spirv;
 
 namespace agent.tests;
 
@@ -17,16 +17,16 @@ namespace agent.tests;
 /// </summary>
 public sealed class SpvRegistryAuditTests
 {
-    const string SpvCs = "src/click-rover/Gpu/Spirv/Spv.cs";
-    const string ValidatorCs = "src/click-rover/Gpu/Spirv/SpirvValidator.cs";
-    const string CoreGrammar = "src/click-rover/Gpu/Spirv/registry/spirv.core.grammar.json";
-    const string GlslGrammar = "src/click-rover/Gpu/Spirv/registry/extinst.glsl.std.450.grammar.json";
+    const string SpvCs = "src/agent.rover/gpu/spirv/Spv.cs";
+    const string ValidatorCs = "src/agent.rover/gpu/spirv/SpirvValidator.cs";
+    const string CoreGrammar = "src/agent.rover/gpu/spirv/registry/spirv.core.grammar.json";
+    const string GlslGrammar = "src/agent.rover/gpu/spirv/registry/extinst.glsl.std.450.grammar.json";
 
     static string RepoRoot()
     {
         var d = new DirectoryInfo(AppContext.BaseDirectory);
         for (int i = 0; i < 12 && d is not null; i++, d = d.Parent)
-            if (Directory.Exists(Path.Combine(d.FullName, "src", "click-rover")) &&
+            if (Directory.Exists(Path.Combine(d.FullName, "src", "agent.rover")) &&
                 Directory.Exists(Path.Combine(d.FullName, "docs")))
                 return d.FullName;
         throw new InvalidOperationException($"repo root not found from {AppContext.BaseDirectory}");

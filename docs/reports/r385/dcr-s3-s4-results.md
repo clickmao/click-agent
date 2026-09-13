@@ -42,6 +42,8 @@ python3 scripts/kpi_dcr.py --cases eval/dcr/dcr_cases.jsonl --decisions /tmp/r38
 
 ## §4 结果（多口径）
 
+> **⚠ 本节是 R387 首轮数字（当时的快照），已被 §7/R388 修内核 + R392 刷新快照后的结论取代** —— 保留作演进留痕，勿引用其口径结论。
+
 | 指标 | 值 | 备注 |
 |---|---|---|
 | **DCR（弃权计合规，FAVA 风格口径）** | **132/145 = 91.03%** | 落在 [85.5%, 95.5%] 内 |
@@ -129,4 +131,61 @@ AUDIT_RESULT=SOUND
 | 内核 CLI 允许 goal-only 并 Refute，闸门要求 premise/no_formal ⇒ Malformed | 1（c108） | 契约结构完整性属**契约层**职责 |
 
 ⇒ 内核层对比的期望列应读作"原始内核能力"，**装配层才是契约语义的裁决**；内核层自检 `check --selftest` **14/14 全绿**。
+
+---
+
+## §8 R392：仓库内两份 eval 快照是 R387 旧物（已刷新）+ 重命名零漂移证明
+
+### §8.1 触发（重命名被迫复跑）
+
+R392 把模块 `click-rover` 改名为 `agent.rover`（目录/项目名/内部文件夹/命名空间全小写，类名不动）。
+按"改名后必须用真产物复验数值不变"的纪律重跑，发现仓库内 `eval/dcr/assembly_out.jsonl` 与
+`eval/dcr/kernel_out.jsonl` **不是 R388 真装配/kernel 快照**，而是 **R387 时代旧物**：
+
+| 文件 | 旧快照（=R387 旧物） | R388 权威 / R392 复跑 |
+|---|---|---|
+| `assembly_out.jsonl` | 145 行、32 条 `Unknown` ⇒ **DCR 132/145 = 91.03%** | 19 条 `Unknown`（全为 out_of_fragment）⇒ **DCR 145/145 = 100.00%** |
+| `kernel_out.jsonl` | 32 条 `Unknown` | 19 条 `Unknown` |
+| 差异行 | — | **13 条**（c018/c023/c024/c044/c052–c055/c066/c074/c077/c079/c081） |
+
+13 条差异行的契约全部命中 §7.1 已修的三条缺口（等式传递/反例域/gcd 整除）⇒ 说明这两份仓库快照
+**早于 R388 的内核修复**。R387 的 `91.03%` 因此是**修前**数字。
+
+### §8.2 复跑证据（两条独立腿）
+
+1. **装配层**：AOT 原生产物（`dotnet publish src/agent.host -c Release -r linux-x64` ⇒ 原生
+   `agenthost`，IL 警告 0）跑 `--formal-eval eval/dcr/dcr_cases.jsonl` ⇒ 145 行；
+   与 `/tmp/r388/assembly_real.jsonl`（R388 真装配快照）**逐条 0 差异**；`ms` 由 R388 的 ~32.7 ms/条
+   降到 **~0.18 ms/条**（AOT 免 JIT，仅作旁证）。
+2. **内核层**：重命名后的 `agent.rover check <case>.assert --json` 逐条复跑 145 条 ⇒ 与
+   `/tmp/r388/kernel_out.jsonl` **逐条 0 差异**（含 `note` 与反例变量取值）。
+
+⇒ **重命名零语义漂移**（两条腿各自 145/145、0 差异），且仓库快照已刷新为 R388/R392 权威值。
+
+### §8.3 z3 独立审计（刷新后重跑）
+
+`eval/dcr/audit_decisions.py`（不 import 内核代码，仅 z3）⇒ `AUDIT_RESULT=SOUND`：
+**30/30 Refuted 反例经 z3 复核为真、33/33 Proved 确 unsat、0 假**；
+另有 1 条 `Refuted` 属内核层（c108，装配层判 Malformed ⇒ 层职责差异，同 §7.5）。
+逐条与题集自带 `expected_verdict` 比对：**145/145 一致**。
+
+### §8.4 刷新后的权威结论（`eval/dcr/dcr_report.txt`）
+
+| 口径 | 数值 |
+|---|---|
+| **DCR（弃权计合规）** | **145/145 = 100.00%** |
+| 保守口径 | 101/145 = 69.66%（= 可决断集上限） |
+| 覆盖率（Proceed+Violation） | 101/145 = 69.66%（Proceed 51 / Violation 50 / Abstained 19 / Malformed 25） |
+| 分类一致率 | entail/refute/vacuous/out_of_fragment/malformed/absent **全 100%** |
+| 主动误判 | **0** |
+
+### §8.5 诚实边界（新增）
+
+- 旧快照之所以长期未被发现，是因为 **R388 的真装配复跑产物落在 `/tmp`，仓库内那份未同步** ⇒
+  "临时目录里的权威快照 ≠ 仓库里的权威快照"。**已加纪律**：涉及仓库内 eval 快照的轮次，必须
+  **由仓库内产物（相对路径）复跑并直接覆盖仓库文件**，禁止只在 `/tmp` 留证。
+- 内核层 `kernel_out.jsonl` **行内无 id**，与 cases 的对齐仍靠行序（脚本已显式声明该假设）⇒
+  该对比只作旁证。
+- T1–T4 与"90.5%±5pp 能否成立"**仍开放**（口径取决于弃权是否计合规）。
+
 

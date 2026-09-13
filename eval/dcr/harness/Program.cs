@@ -1,5 +1,5 @@
 // DCR 判定题集的**真实装配层**回放: 逐条把 contract 交给仓库真实的
-// PlanNodeFormalGate.Evaluate() (→ 真实 FormalAssertionContract + 真实 click-rover 内核)。
+// PlanNodeFormalGate.Evaluate() (→ 真实 FormalAssertionContract + 真实 agent.rover 内核)。
 // 用法: dotnet run -- <cases.jsonl> <out_decisions.jsonl>
 using System.Text;
 using System.Text.Json;

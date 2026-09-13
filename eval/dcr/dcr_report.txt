@@ -2,56 +2,44 @@
 DCR 判定报告  (DCR = agree/N, agree = actual disposition == expected)
 ==============================================================================
 N (总条目)              = 145
-DCR                     = 132/145 = 0.9103  (91.03%)
-覆盖率 (Proceed+Violation) = 88/145 = 0.6069  (60.69%)
-  其中 Proceed          = 48 (33.10%)
-  其中 Violation        = 40 (27.59%)
-弃权率 (Abstained)      = 32/145 = 22.07%
+DCR                     = 145/145 = 1.0000  (100.00%)
+覆盖率 (Proceed+Violation) = 101/145 = 0.6966  (69.66%)
+  其中 Proceed          = 51 (35.17%)
+  其中 Violation        = 50 (34.48%)
+弃权率 (Abstained)      = 19/145 = 13.10%
 畸形率 (Malformed)      = 25/145 = 17.24%
-决断条目 (未弃权/未畸形) = 88
+决断条目 (未弃权/未畸形) = 101
 决断条目一致率           = 1.0000  (100.00%)
 主动误判 (unsafe: 期望≠实际 且 实际 Proceed/Violation) = 0 
 ------------------------------------------------------------------------------
 category             N   agree       rate
-entail              33      30     90.91%
-refute              30      25     83.33%
-vacuous             20      15     75.00%
+entail              33      33    100.00%
+refute              30      30    100.00%
+vacuous             20      20    100.00%
 out_of_fragment     19      19    100.00%
 malformed           25      25    100.00%
 absent              18      18    100.00%
 ------------------------------------------------------------------------------
 混淆矩阵 (行=expected, 列=actual):
                 Proceed  Violation  Abstained  Malformed
-Proceed              48          0          3          0
-Violation             0         40         10          0
+Proceed              51          0          0          0
+Violation             0         50          0          0
 Abstained             0          0         19          0
 Malformed             0          0          0         25
 ------------------------------------------------------------------------------
-未一致条目明细 (id / category / 期望 / 实际 / reason): 13 条
-  c018   entail           exp=Proceed   (Proved) act=Abstained (Unknown) reason=premise_decision_unknown
-  c023   entail           exp=Proceed   (Proved) act=Abstained (Unknown) reason=premise_decision_unknown
-  c024   entail           exp=Proceed   (Proved) act=Abstained (Unknown) reason=premise_decision_unknown
-  c044   refute           exp=Violation (Refuted) act=Abstained (Unknown) reason=refute_decision_unknown
-  c052   refute           exp=Violation (Refuted) act=Abstained (Unknown) reason=premise_decision_unknown
-  c053   refute           exp=Violation (Refuted) act=Abstained (Unknown) reason=premise_decision_unknown
-  c054   refute           exp=Violation (Refuted) act=Abstained (Unknown) reason=premise_decision_unknown
-  c055   refute           exp=Violation (Refuted) act=Abstained (Unknown) reason=premise_decision_unknown
-  c066   vacuous          exp=Violation (Vacuous) act=Abstained (Unknown) reason=premise_decision_unknown
-  c074   vacuous          exp=Violation (Vacuous) act=Abstained (Unknown) reason=premise_decision_unknown
-  c077   vacuous          exp=Violation (Vacuous) act=Abstained (Unknown) reason=premise_decision_unknown
-  c079   vacuous          exp=Violation (Vacuous) act=Abstained (Unknown) reason=premise_decision_unknown
-  c081   vacuous          exp=Violation (Vacuous) act=Abstained (Unknown) reason=premise_decision_unknown
+未一致条目明细 (id / category / 期望 / 实际 / reason): 0 条
+  (无)
 ------------------------------------------------------------------------------
 内核层对比 (--kernel)
   kernel file          = eval/dcr/kernel_out.jsonl
   对齐假设              = 行内无 id ⇒ **按行序与 cases 对齐** (该假设未由数据本身保证)
   内核 verdict→disposition 映射 (与闸门同表)
-  内核层 vs 期望一致率   = 113/145 = 77.93%
+  内核层 vs 期望一致率   = 126/145 = 86.90%
   内核层 vs 装配层一致率 = 126/145 = 86.90%
   category             N kernel≈exp kernel≈asm
-  entail              33         30         33
-  refute              30         25         30
-  vacuous             20         15         20
+  entail              33         33         33
+  refute              30         30         30
+  vacuous             20         20         20
   out_of_fragment     19         19         19
   malformed           25         24         24
   absent              18          0          0

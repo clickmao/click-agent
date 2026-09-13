@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R391",
+  "updated_round": "R392",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -12,9 +12,9 @@
   "rows": [
     {
       "id": "dcr.harness",
-      "capability": "决策合规率(DCR)判定题集 + 独立 oracle(z3)标注 + **真实装配**评测(零 LLM 调用) + **z3 独立审计装配裁决**。R388 实测: DCR=145/145=100.00%(弃权计合规口径) / 101/145=69.66%(保守口径, 恰等于题集可决断集上限) / 可决断集覆盖率 101/101=100% / 主动误判 0 / 弃权率 13.10% / 畸形率 17.24%",
+      "capability": "决策合规率(DCR)判定题集 + 独立 oracle(z3)标注 + **真实装配**评测(零 LLM 调用) + **z3 独立审计装配裁决**。R388 实测: DCR=145/145=100.00%(弃权计合规口径) / 101/145=69.66%(保守口径, 恰等于题集可决断集上限) / 可决断集覆盖率 101/101=100% / 主动误判 0 / 弃权率 13.10% / 畸形率 17.24%。**R392**: 快照改由 **AOT 原生产物**按仓库内相对路径复跑并覆盖 `eval/dcr/{assembly_out,kernel_out}.jsonl`(与 R388 快照逐条 field_diffs=0 ⇒ 零漂移), 旧仓库快照实为 R387 旧物(已清)",
       "level": "L3",
-      "evidence_cmd": "dotnet run --project src/agent.host -c Release --no-build -- --formal-eval eval/dcr/dcr_cases.jsonl > /tmp/r388/assembly_real.jsonl && python3 scripts/kpi_dcr.py --cases eval/dcr/dcr_cases.jsonl --decisions /tmp/r388/assembly_real.jsonl && /tmp/z3env/bin/python eval/dcr/audit_decisions.py --decisions /tmp/r388/assembly_real.jsonl",
+      "evidence_cmd": "dotnet publish src/agent.host/agent.host.csproj -c Release -r linux-x64 -o /tmp/aot && /tmp/aot/agenthost --formal-eval eval/dcr/dcr_cases.jsonl > eval/dcr/assembly_out.jsonl && python3 scripts/kpi_dcr.py --cases eval/dcr/dcr_cases.jsonl --decisions eval/dcr/assembly_out.jsonl --kernel eval/dcr/kernel_out.jsonl && /tmp/z3env/bin/python eval/dcr/audit_decisions.py --decisions eval/dcr/assembly_out.jsonl --cases eval/dcr/dcr_cases.jsonl",
       "evidence_path": "scripts/kpi_dcr.py",
       "negative_control": "① 打分器自测: 缺标签题集/决策 id 不匹配必须非零退出(不得静默跳过); ② 标签独立性: 83/145 由 z3 重新推导(self_check=ok), 其余 62 条为构造定义(不是经验结论, 已明示); ③ 换独立实现复跑: 真装配二进制 vs 子代理 harness 逐字段 diff=0(145/145), 且 would_call_llm 全 false; ④ **独立审计器 `eval/dcr/audit_decisions.py` 不 import 内核代码**, 用 z3 逐条复核裁决 —— Refuted 反例必须真满足 premise∧¬goal、Proved 必须真 unsat; 实测 30/30 反例为真、33/33 真 unsat、0 假(AUDIT_RESULT=SOUND)",
       "covers": [
@@ -453,20 +453,20 @@
     },
     {
       "id": "gpu.spirv.registry-audit",
-      "capability": "自写 SPIR-V 常量表 vs Khronos 权威 registry 的机检 (v0.23.0 · click-rover GPU): 汇编器/结构校验器/反汇编器**共用同一张手写常量表** ⇒ 表里抄错一个号, 三者会互相印证同一个错误 (R389-vulkan 真机实证: OpUGreaterThanEqual 抄成 179=OpSLessThanEqual (规范 174)、OpConvertUToF 抄成 111=OpConvertSToF (规范 112) ⇒ 结构校验报 valid、反汇编逐字正确, 而设备执行另一条指令 ⇒ 守卫失效、动态索引写全部越界不可见)。机检以 registry/ 下 Khronos 官方 grammar (core + GLSL.std.450) 为独立 oracle 逐条核对 opcode / 枚举 / 扩展指令号; 表外常量进 'unverified' 而非静默放过; 提取器只扫 const 块 (不吃局部变量噪声)。",
+      "capability": "自写 SPIR-V 常量表 vs Khronos 权威 registry 的机检 (v0.23.0 · agent.rover GPU): 汇编器/结构校验器/反汇编器**共用同一张手写常量表** ⇒ 表里抄错一个号, 三者会互相印证同一个错误 (R389-vulkan 真机实证: OpUGreaterThanEqual 抄成 179=OpSLessThanEqual (规范 174)、OpConvertUToF 抄成 111=OpConvertSToF (规范 112) ⇒ 结构校验报 valid、反汇编逐字正确, 而设备执行另一条指令 ⇒ 守卫失效、动态索引写全部越界不可见)。机检以 registry/ 下 Khronos 官方 grammar (core + GLSL.std.450) 为独立 oracle 逐条核对 opcode / 枚举 / 扩展指令号; 表外常量进 'unverified' 而非静默放过; 提取器只扫 const 块 (不吃局部变量噪声)。",
       "level": "L4",
       "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter 'FullyQualifiedName~SpvRegistryAuditTests'",
-      "evidence_path": "src/click-rover/Gpu/Spirv/SpvRegistryAudit.cs",
+      "evidence_path": "src/agent.rover/gpu/spirv/SpvRegistryAudit.cs",
       "negative_control": "① 把 OpUGreaterThanEqual 改回错值 179 ⇒ 必须报 1 条 Mismatch(registry=174); ② 把 DecBinding 改为 34 ⇒ 必须报 Decoration/Binding(33); ③ 把 GlslExp 改为 31 ⇒ 必须报 GLSL.std.450/Exp(27); ④ 注入表外常量 OpTotallyFake ⇒ 必须进 Unverified 而非静默通过; ⑤ 核对付数下限 100 (常量块被漏扫同样失败); ⑥ 提取器边界: 含 for(int i=0) 的片段只提取 const 块内名字。",
       "covers": [
         "src/agent.tests/SpvRegistryAuditTests.cs",
         "src/agent.tests/SpvRegistryAuditTests.cs(6例)",
-        "src/click-rover/Gpu/Spirv/SpvRegistryAudit.cs",
-        "src/click-rover/Gpu/Spirv/Spv.cs(常量表)",
-        "src/click-rover/Gpu/Spirv/SpirvValidator.cs(常量表)",
-        "src/click-rover/Gpu/Spirv/registry/spirv.core.grammar.json",
-        "src/click-rover/Gpu/Spirv/registry/extinst.glsl.std.450.grammar.json",
-        "src/click-rover/Gpu/Spirv/registry/README.md(来源+sha256)"
+        "src/agent.rover/gpu/spirv/SpvRegistryAudit.cs",
+        "src/agent.rover/gpu/spirv/Spv.cs(常量表)",
+        "src/agent.rover/gpu/spirv/SpirvValidator.cs(常量表)",
+        "src/agent.rover/gpu/spirv/registry/spirv.core.grammar.json",
+        "src/agent.rover/gpu/spirv/registry/extinst.glsl.std.450.grammar.json",
+        "src/agent.rover/gpu/spirv/registry/README.md(来源+sha256)"
       ],
       "owner_round": "R389"
     },
@@ -474,46 +474,46 @@
       "id": "gpu.spirv.structural-validation",
       "capability": "自研 SPIR-V 汇编器 + **独立结构校验器** + **独立反汇编器** (零 glslang/glslc 环境): Spv.cs 手写指令级汇编器产出模块; SpirvValidator.cs 独立遍历结构 (magic/version/bound/opcode 合法性/结果 id 位置/能力-执行模型一致性); SpvDisassembler.cs 独立解码逐字转储 (**不入执行路径**)。校验器必须有判别力: 5 组负向控制 (坏 magic / bound=1 / 未知 opcode / 缺 Shader 能力 / 丢执行模式字面量) 必须全部被抓。",
       "level": "L4",
-      "evidence_cmd": "DOTNET_ROOT=$HOME/.dotnet src/click-rover/bin/Release/net10.0/click-rover vulkan --spirv-only --elements 16  (及 --spv-dump 反汇编转储)",
-      "evidence_path": "src/click-rover/Gpu/Spirv/SpirvValidator.cs",
+      "evidence_cmd": "DOTNET_ROOT=$HOME/.dotnet src/agent.rover/bin/Release/net10.0/agent.rover vulkan --spirv-only --elements 16  (及 --spv-dump 反汇编转储)",
+      "evidence_path": "src/agent.rover/gpu/spirv/SpirvValidator.cs",
       "negative_control": "5 组注入缺陷必须全红 (实测 neg=5/5): magic / bound / 未知 opcode / 缺能力 / 丢 mode 字面量; 反汇编对账另证伪'SPIR-V 层绑定/装饰错位'整类猜测 (R389)。",
       "covers": [
-        "src/click-rover/Gpu/Spirv/Spv.cs",
-        "src/click-rover/Gpu/Spirv/Kernels.cs",
-        "src/click-rover/Gpu/Spirv/SpirvValidator.cs",
-        "src/click-rover/Gpu/Spirv/SpvDisassembler.cs",
-        "src/click-rover/Cli/VulkanCli.cs(--spirv-only/--spv-dump)"
+        "src/agent.rover/gpu/spirv/Spv.cs",
+        "src/agent.rover/gpu/spirv/Kernels.cs",
+        "src/agent.rover/gpu/spirv/SpirvValidator.cs",
+        "src/agent.rover/gpu/spirv/SpvDisassembler.cs",
+        "src/agent.rover/cli/VulkanCli.cs(--spirv-only/--spv-dump)"
       ],
       "owner_round": "R389"
     },
     {
       "id": "gpu.vulkan.dispatch",
-      "capability": "Vulkan 计算后端真机跑通并对账 (v0.23.0 · click-rover GPU, GPU0 = llvmpipe/lavapipe 软件实现): instance/物理设备/队列/device memory/缓冲上传下载/描述符集/计算管线/dispatch/回读全链自实现 (VulkanBackend.cs, 零 shell 零反射, Silk.NET.Vulkan 2.23.0 与 Silk.NET 同源)。三内核数值对账: fma_vec max_abs_diff=0、silu_mul 2.98e-08<1e-5、scale_inplace max_abs_diff=0; 机制探针 const_b1_hits=4/4、dyn_b2_hits=16/16、dync_b3_hits=16/16、index_value=8∈[0,16)。",
+      "capability": "Vulkan 计算后端真机跑通并对账 (v0.23.0 · agent.rover GPU, GPU0 = llvmpipe/lavapipe 软件实现): instance/物理设备/队列/device memory/缓冲上传下载/描述符集/计算管线/dispatch/回读全链自实现 (VulkanBackend.cs, 零 shell 零反射, Silk.NET.Vulkan 2.23.0 与 Silk.NET 同源)。三内核数值对账: fma_vec max_abs_diff=0、silu_mul 2.98e-08<1e-5、scale_inplace max_abs_diff=0; 机制探针 const_b1_hits=4/4、dyn_b2_hits=16/16、dync_b3_hits=16/16、index_value=8∈[0,16)。",
       "level": "L3",
-      "evidence_cmd": "DOTNET_ROOT=$HOME/.dotnet src/click-rover/bin/Release/net10.0/click-rover vulkan --elements 16   (判据: done{kernels=3 pass=3 fail=0 spirv_valid=3 neg=5/5} 且 exit 0)",
-      "evidence_path": "src/click-rover/Gpu/VulkanBackend.cs",
+      "evidence_cmd": "DOTNET_ROOT=$HOME/.dotnet src/agent.rover/bin/Release/net10.0/agent.rover vulkan --elements 16   (判据: done{kernels=3 pass=3 fail=0 spirv_valid=3 neg=5/5} 且 exit 0)",
+      "evidence_path": "src/agent.rover/gpu/VulkanBackend.cs",
       "negative_control": "① 5 组 SPIR-V 结构缺陷必须被校验器抓; ② 机制分解探针 DiagProbe v4 解耦'动态索引/缓冲绑定位置', 逐机制二分而非盲猜 (曾据此否定'只有 binding 2 可写'假说, 最终由 index_value=248∈0..255=LocalSize 指向 BuiltIn 号 ⇒ 再由权威 registry oracle 定位到 opcode 常量错值); ③ 诊断夹具缓冲序必须与内核变量声明序逐位对齐 (错位会伪装成'设备写未落地')。",
       "covers": [
-        "src/click-rover/Gpu/VulkanBackend.cs",
-        "src/click-rover/Cli/VulkanCli.cs",
-        "src/click-rover/Gpu/Spirv/Kernels.cs",
-        "src/click-rover/click-rover.csproj(Silk.NET.Vulkan 2.23.0)"
+        "src/agent.rover/gpu/VulkanBackend.cs",
+        "src/agent.rover/cli/VulkanCli.cs",
+        "src/agent.rover/gpu/spirv/Kernels.cs",
+        "src/agent.rover/agent.rover.csproj(Silk.NET.Vulkan 2.23.0)"
       ],
       "owner_round": "R389"
     },
     {
       "id": "rover.residency.hot_lru_reclaim",
-      "capability": "click-rover 张量驻留/内存回收接前向真机落地 (v0.23.0 · 焦点① 剩余件): ① 热集常驻 — 默认 pin 全部 norm, 真 7B 实测 61 张/999,424B ≈ 0.023% 模型体积, 第 2 token 起 60/61 命中; ② LRU 主动驱逐 — 超预算按 LastUseTick 最久未用先走, 真 7B --budget-bytes 16384 ⇒ evicts=118/reclaims=120/peak=32768 (=预算+单张量), 受限 vs 默认 logits 逐位一致 (sha256 e34dabd647b50ba0, top-1 均为 185); ③ 显式 ReclaimAll 只释放非常驻且释放额=非常驻驻留之和; ④ 量化权重走 StreamWindow 零拷贝 ⇒ 驻留恒 0; ⑤ 预算语义只声明一次 (0/负 = 无上限 BudgetUnlimited), 判定与打印同源派生。自证套件 10/10 (真 7B + tiny 双夹具, 零 shell)。",
+      "capability": "agent.rover 张量驻留/内存回收接前向真机落地 (v0.23.0 · 焦点① 剩余件): ① 热集常驻 — 默认 pin 全部 norm, 真 7B 实测 61 张/999,424B ≈ 0.023% 模型体积, 第 2 token 起 60/61 命中; ② LRU 主动驱逐 — 超预算按 LastUseTick 最久未用先走, 真 7B --budget-bytes 16384 ⇒ evicts=118/reclaims=120/peak=32768 (=预算+单张量), 受限 vs 默认 logits 逐位一致 (sha256 e34dabd647b50ba0, top-1 均为 185); ③ 显式 ReclaimAll 只释放非常驻且释放额=非常驻驻留之和; ④ 量化权重走 StreamWindow 零拷贝 ⇒ 驻留恒 0; ⑤ 预算语义只声明一次 (0/负 = 无上限 BudgetUnlimited), 判定与打印同源派生。自证套件 10/10 (真 7B + tiny 双夹具, 零 shell)。",
       "level": "L3",
-      "evidence_cmd": "DOTNET_ROOT=$HOME/.dotnet src/click-rover/bin/Release/net10.0/click-rover residency --selftest <gguf>   (判据: selftest{ran=10 pass=10 fail=0} 且 exit 0; 夹具不足须 exit 3 而非硬凑); 接前向对账: click-rover forward <gguf> --tokens 1,2,3 --no-pin --budget-bytes 256 --reclaim-per-token --dump A 对比默认 --dump B ⇒ 8/8 文件 cmp 逐位一致",
-      "evidence_path": "src/click-rover/Runtime/TensorResidency.cs",
+      "evidence_cmd": "DOTNET_ROOT=$HOME/.dotnet src/agent.rover/bin/Release/net10.0/agent.rover residency --selftest <gguf>   (判据: selftest{ran=10 pass=10 fail=0} 且 exit 0; 夹具不足须 exit 3 而非硬凑); 接前向对账: agent.rover forward <gguf> --tokens 1,2,3 --no-pin --budget-bytes 256 --reclaim-per-token --dump A 对比默认 --dump B ⇒ 8/8 文件 cmp 逐位一致",
+      "evidence_path": "src/agent.rover/runtime/TensorResidency.cs",
       "evidence_report": "docs/reports/r385/residency-evidence.md",
       "negative_control": "① 真释放判别: 驱逐后对受害者缓冲 Span 访问必须抛 ObjectDisposedException (只加计数不释放的实现在此必红); ② 全 pin + 预算 1B ⇒ 必须 evicts=0 且如实报 budget_exceeded_honest, 不得伪报符合预算; ③ LRU 次序必须在驱逐发生的那一刻判定 (事后观测会被后续驱逐掩盖 — 首版断言即因此误红); ④ 夹具不足 6 张量则 exit 3 报 selftest_insufficient_tensors, 不硬凑。",
       "covers": [
-        "src/click-rover/Runtime/TensorResidency.cs",
-        "src/click-rover/Cli/ResidencySelfTest.cs",
-        "src/click-rover/Infer/ForwardPass.cs",
-        "src/click-rover/Cli/ForwardCli.cs"
+        "src/agent.rover/runtime/TensorResidency.cs",
+        "src/agent.rover/cli/ResidencySelfTest.cs",
+        "src/agent.rover/infer/ForwardPass.cs",
+        "src/agent.rover/cli/ForwardCli.cs"
       ],
       "owner_round": "R390"
     },

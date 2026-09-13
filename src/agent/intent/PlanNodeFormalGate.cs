@@ -3,8 +3,8 @@ using agent.registry;
 
 namespace agent.intent;
 
-using Kernel = clickrover.formal.FormalKernel;
-using KernelVerdict = clickrover.formal.Verdict;
+using Kernel = agent.rover.formal.FormalKernel;
+using KernelVerdict = agent.rover.formal.Verdict;
 
 /// <summary>闸门处置 (DCR 台账的分类口径 —— 合规/违规/弃权/畸形 四态不可混算)。</summary>
 public enum FormalGateDisposition

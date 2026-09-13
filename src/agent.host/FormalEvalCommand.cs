@@ -7,11 +7,11 @@ namespace agent.host;
 /// <summary>
 /// v0.23.0 exp12 · S3/S4（用户钦定：决策合规率必须可证伪）：`--formal-eval &lt;cases.jsonl&gt;` ——
 /// 把判定题集**逐条喂给真实装配的判定层**（契约解析 FormalAssertionContract → 四态处置 PlanNodeFormalGate
-/// → 共享源形式化内核 clickrover.formal.FormalKernel），每行输出一条判定 JSON。
+/// → 共享源形式化内核 agent.rover.formal.FormalKernel），每行输出一条判定 JSON。
 ///
 /// 铁律：
 ///  1) **零 LLM / 零 daemon / 零 shell / 零外部进程 / 不写任何状态** —— 判定全在本地整数运算完成；
-///  2) 与 `click-rover check --json`（纯内核层）对照 ⇒ 契约层引入的差异**可被独立观察**，不允许自证；
+///  2) 与 `agent.rover check --json`（纯内核层）对照 ⇒ 契约层引入的差异**可被独立观察**，不允许自证；
 ///  3) 题集任何一行不可解析即非零退出（不静默跳过 —— 静默跳过会让 DCR 分母失真）。
 /// </summary>
 public static class FormalEvalCommand

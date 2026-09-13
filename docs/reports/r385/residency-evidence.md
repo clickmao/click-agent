@@ -1,4 +1,4 @@
-# click-rover 驻留 / 内存回收接前向 —— 真机证据（R390）
+# agent.rover 驻留 / 内存回收接前向 —— 真机证据（R390）
 
 > 轮次: **R390**（v0.23.0 · 焦点① 剩余件）／日期: 2026-09-13
 > 目标（用户口径逐字）: "只常驻活性高的张量（不再使用的张量，可以主动从内存释放（做内存回收）"。
@@ -17,11 +17,11 @@
 
 | 文件 | 作用 |
 |---|---|
-| `src/click-rover/Infer/ForwardPass.cs` | 前向增 `pins` / `reclaimPerToken` 两参；每 token 末 `ReclaimAll()`；暴露 `ResidentCount`（只数**物化**张量） |
-| `src/click-rover/Cli/ForwardCli.cs` | `--budget-mb` / `--budget-kb` / `--budget-bytes` / `--no-pin` / `--reclaim-per-token`；输出 `residency_scope` + `residency_verdict` 两行账面 |
-| `src/click-rover/Cli/ResidencySelfTest.cs` | **10 例自证套件**（真 GGUF 夹具、零 shell、零外部进程） |
-| `src/click-rover/Runtime/TensorResidency.cs` | 预算语义显式声明：`Ledger.BudgetUnlimited = budget <= 0`；`EnforceBudget` 与判语同源 |
-| `src/click-rover/Cli/RoverCli.cs` | `residency <gguf> [--budget-bytes N] [--budget-mb N] [--pin a,b] [--selftest]` 子命令 |
+| `src/agent.rover/infer/ForwardPass.cs` | 前向增 `pins` / `reclaimPerToken` 两参；每 token 末 `ReclaimAll()`；暴露 `ResidentCount`（只数**物化**张量） |
+| `src/agent.rover/cli/ForwardCli.cs` | `--budget-mb` / `--budget-kb` / `--budget-bytes` / `--no-pin` / `--reclaim-per-token`；输出 `residency_scope` + `residency_verdict` 两行账面 |
+| `src/agent.rover/cli/ResidencySelfTest.cs` | **10 例自证套件**（真 GGUF 夹具、零 shell、零外部进程） |
+| `src/agent.rover/runtime/TensorResidency.cs` | 预算语义显式声明：`Ledger.BudgetUnlimited = budget <= 0`；`EnforceBudget` 与判语同源 |
+| `src/agent.rover/cli/RoverCli.cs` | `residency <gguf> [--budget-bytes N] [--budget-mb N] [--pin a,b] [--selftest]` 子命令 |
 
 ## 2. 自证套件 —— `residency --selftest`（真 7B 夹具，10/10，exit 0）
 
@@ -124,14 +124,14 @@ identical logits.bin e34dabd647b50ba0        # 且 top-1 与默认一致
 3. `--reclaim-per-token` 每 token 重物化 norm（`hits` 归 0），是**故意**的对照档，非默认行为；默认档不回收，故 `reclaims=0`。
 4. **`resident_end=1` 且 `verdict=budget_exceeded_honest` 是设计内的诚实报错**：预算 16,384 B 装不下"下一张进来时还要留一张"的峰值 ⇒ 如实报超限，不静默降级、不伪报。
 5. 未做多线程/流水线下的驻留并发安全论证（前向当前单线程）。
-6. 与 agent 主链的**挂载仍未接线**（C7/C8）——本轮只完成"前向 ↔ 驻留"，未完成"agent ↔ click-rover"。
+6. 与 agent 主链的**挂载仍未接线**（C7/C8）——本轮只完成"前向 ↔ 驻留"，未完成"agent ↔ agent.rover"。
 
 ## 6. 复现命令
 
 ```bash
 export DOTNET_ROOT="$HOME/.dotnet"; export PATH="$DOTNET_ROOT:$PATH"
-dotnet build src/click-rover/click-rover.csproj -c Release          # 0 Warning / 0 Error
-R=src/click-rover/bin/Release/net10.0/click-rover.dll
+dotnet build src/agent.rover/agent.rover.csproj -c Release          # 0 Warning / 0 Error
+R=src/agent.rover/bin/Release/net10.0/agent.rover.dll
 dotnet $R residency --selftest /tmp/models/prover7b-q4km.gguf      # 判据: ran=10 pass=10 fail=0 且 exit 0
 dotnet $R forward /tmp/tiny/tiny-gqa-untied.gguf --tokens 1,2,3 --ctx 64 --dump /tmp/resid/def
 dotnet $R forward /tmp/tiny/tiny-gqa-untied.gguf --tokens 1,2,3 --ctx 64 \

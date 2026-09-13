@@ -21,7 +21,7 @@ C8 注入的契约要求模型把形式化断言写进 `clickproof` 围栏; C7 �
 真机 (生产 DI) 原始行:
 
 ```
-A_plugins=[ui-capture|code-review|clickrover.formal|python-artifact]
+A_plugins=[ui-capture|code-review|agent.rover.formal|python-artifact]
 A_formal_present=True
 A_prefix_has_clickproof=True absent_has_clickproof=False
 A_prefix_chars=2800->3391 delta_tokens_est=358

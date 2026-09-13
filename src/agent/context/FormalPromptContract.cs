@@ -17,7 +17,7 @@ namespace agent.context;
 public static class FormalPromptContract
 {
     /// <summary>插件名 (与 ClickRoverSegmentPlugin.Name 同值, 由机检保证一致)。</summary>
-    public const string PluginName = "clickrover.formal";
+    public const string PluginName = "agent.rover.formal";
 
     /// <summary>围栏语言标识 (单一事实源 = ClickProofFence.Language)。</summary>
     public const string FenceLanguage = ClickProofFence.Language;

@@ -9,13 +9,13 @@ namespace agent.registry;
 ///  2) <b>显式声明优先</b>: 节点以 no_formal 标记声明「本节点无可判定片段」⇒ NoFormal("declared")。
 ///  3) <b>残缺不放行</b>: 有断言意图但 premise/goal 不齐、裸关键字、或与 no_formal 自相矛盾 ⇒ Malformed,
 ///     不放行、不静默吞、不追问(模型不能靠"写坏断言"绕过闸门)。
-///  4) <b>零 token / 零 shell / 零反射</b>: 本层只做语法与义务判定, 数学裁决交 click-rover 内核
-///     (`click-rover check <file.assert>`), 语法与之严格同构。
+///  4) <b>零 token / 零 shell / 零反射</b>: 本层只做语法与义务判定, 数学裁决交 agent.rover 内核
+///     (`agent.rover check <file.assert>`), 语法与之严格同构。
 ///  5) 任何分支都不得触发 LLM 重试(<see cref="FormalContractResult.RequiresLlmRetry"/> 恒为 false)。
 /// </summary>
 public enum FormalContractDecision
 {
-    /// <summary>premise/goal 齐备 ⇒ 交 click-rover 内核裁决(本地, 零 token)。</summary>
+    /// <summary>premise/goal 齐备 ⇒ 交 agent.rover 内核裁决(本地, 零 token)。</summary>
     Assertion = 0,
 
     /// <summary>本次不提供形式化断言(缺失或显式声明) ⇒ 放行; 不追问 LLM。</summary>
@@ -43,7 +43,7 @@ public sealed record FormalContractResult(
 }
 
 /// <summary>
-/// 断言契约解析器。语法(与 click-rover `check` 同构, 逐行):
+/// 断言契约解析器。语法(与 agent.rover `check` 同构, 逐行):
 /// <code>
 /// # 注释(可省略)
 /// premise x + y == 10

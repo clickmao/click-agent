@@ -9,7 +9,7 @@
 用法: python3 eval/dcr/audit_decisions.py [--cases eval/dcr/dcr_cases.jsonl]
                                            [--decisions /tmp/r388/assembly_real.jsonl]
 退出码: 0 = 无假反例/无假证明; 1 = 发现不健全裁决。
-依赖: z3 (独立 oracle), 与 click-rover 内核实现完全无关。
+依赖: z3 (独立 oracle), 与 agent.rover 内核实现完全无关。
 """
 import argparse
 import json

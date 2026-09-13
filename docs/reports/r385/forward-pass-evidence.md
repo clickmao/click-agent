@@ -3,7 +3,7 @@
 **日期**：2026-09-13  
 **机器**：Linux 6.8，2 vCPU，3.6 GiB RAM（约 1.95 GiB `MemAvailable`），10 GiB swap（实际使用 0），无 GPU  
 **被测模型**：`/tmp/models/prover7b-q4km.gguf`（4,223,362,304 B = 3.933 GiB，Q4_K_M）  
-**C# 侧**：`dotnet 10.0.400`，`src/click-rover`（SDK 风格 csproj，未改 csproj、未加 NuGet）  
+**C# 侧**：`dotnet 10.0.400`，`src/agent.rover`（SDK 风格 csproj，未改 csproj、未加 NuGet）  
 **对照侧**：`/tmp/ggufenv/bin/python`（gguf + numpy），独立实现，逐张量流式反量化
 
 ---
@@ -29,19 +29,19 @@
 
 ## 1. 交付文件清单与关键函数
 
-全部为**新增文件**，工作树中 `src/click-rover/` 整体未被 git 跟踪（`?? src/click-rover/`）；未执行任何 `git commit`/`push`。
+全部为**新增文件**，工作树中 `src/agent.rover/` 整体未被 git 跟踪（`?? src/agent.rover/`）；未执行任何 `git commit`/`push`。
 
 | 文件 | 行数 | 职责 | 关键函数（file:line） |
 |---|---|---|---|
-| `src/click-rover/Infer/ModelConfig.cs` | 152 | GGUF metadata → 超参，构造期强校验（缺失/不自洽即抛错，无默认值降级） | `From` :46，`AttnScale` :39，`LayerPrefix` :43，`Validate` :99 |
-| `src/click-rover/Infer/RopeTable.cs` | 73 | RoPE 预计算 cos/sin，**LLaMA NORM 配对**（i ↔ i+n_rot/2） | `RopeTable` ctor :19，`Apply` :51，`At` :70 |
-| `src/click-rover/Infer/KvCache.cs` | 100 | 逐层 KV cache，布局 `[layer][kvHead][pos][dim]`，单/多 token 同路径 | `KvCache` :25，`EnsureCapacity` :44，`Append` :65，`Keys` :83，`Values` :86 |
-| `src/click-rover/Infer/ForwardPass.cs` | 303 | 前向主体 + 计时/内存/RSS 读数 | `Forward` :162（Embed :177；RMSNorm+QKV :185-189；RoPE :190-191；KV append :192；GQA 注意力 :195-202；attn_out+残差 :203-204；FFN RMSNorm :209；SwiGLU :210-213；残差 :214；output_norm :234-235；lm_head/tied :238-239），`Gemv` :120，`MaybeLoadBias` :106，`ReadVm` :281，`TopK` :256，`LayerHook` :10 |
-| `src/click-rover/Cli/ForwardCli.cs` | 173 | `forward` 子命令：参数解析、RoPE 双实现对拍、统计输出、dump | `Forward` :18，`RopeCrossCheck` :118，`WriteF32` :166 |
-| `src/click-rover/Cli/RoverCli.cs` | — | 仅两处改动：dispatch `"forward"`、usage 一行 | — |
+| `src/agent.rover/infer/ModelConfig.cs` | 152 | GGUF metadata → 超参，构造期强校验（缺失/不自洽即抛错，无默认值降级） | `From` :46，`AttnScale` :39，`LayerPrefix` :43，`Validate` :99 |
+| `src/agent.rover/infer/RopeTable.cs` | 73 | RoPE 预计算 cos/sin，**LLaMA NORM 配对**（i ↔ i+n_rot/2） | `RopeTable` ctor :19，`Apply` :51，`At` :70 |
+| `src/agent.rover/infer/KvCache.cs` | 100 | 逐层 KV cache，布局 `[layer][kvHead][pos][dim]`，单/多 token 同路径 | `KvCache` :25，`EnsureCapacity` :44，`Append` :65，`Keys` :83，`Values` :86 |
+| `src/agent.rover/infer/ForwardPass.cs` | 303 | 前向主体 + 计时/内存/RSS 读数 | `Forward` :162（Embed :177；RMSNorm+QKV :185-189；RoPE :190-191；KV append :192；GQA 注意力 :195-202；attn_out+残差 :203-204；FFN RMSNorm :209；SwiGLU :210-213；残差 :214；output_norm :234-235；lm_head/tied :238-239），`Gemv` :120，`MaybeLoadBias` :106，`ReadVm` :281，`TopK` :256，`LayerHook` :10 |
+| `src/agent.rover/cli/ForwardCli.cs` | 173 | `forward` 子命令：参数解析、RoPE 双实现对拍、统计输出、dump | `Forward` :18，`RopeCrossCheck` :118，`WriteF32` :166 |
+| `src/agent.rover/cli/RoverCli.cs` | — | 仅两处改动：dispatch `"forward"`、usage 一行 | — |
 
 复用（只读，未改动）：`Gguf/GgufReader.cs`、`Gguf/GgufMappedFile.cs`、`Quant/Dequant.cs`、`Runtime/CpuKernels.cs`、`Runtime/TensorResidency.cs`。
-**未修改 `src/agent/**` 任何文件**（`git status --porcelain -- src/agent` 输出为空；`git diff -- src/click-rover/click-rover.csproj` 亦为空）。
+**未修改 `src/agent/**` 任何文件**（`git status --porcelain -- src/agent` 输出为空；`git diff -- src/agent.rover/agent.rover.csproj` 亦为空）。
 
 实现要点落实：
 - **零硬编码**：`layers/hidden/ffn/n_head/n_head_kv/head_dim/vocab/ctx/rope_base/rope_dim/rms_eps` 全部 `Req()` 自 metadata；RoPE scaling 读 `*.rope.scaling.type`（本模型不存在 → `none`，且 `attn_scale` 由 `1/sqrt(head_dim)` 计算而非写死）。
@@ -70,7 +70,7 @@ tiny-mha-tied.gguf    (348160 B)
 
 ```
 $ export PATH="$HOME/.dotnet:$PATH" DOTNET_ROOT="$HOME/.dotnet"
-$ dotnet run --project src/click-rover/click-rover.csproj -c Release --no-build -- \
+$ dotnet run --project src/agent.rover/agent.rover.csproj -c Release --no-build -- \
     forward /tmp/tiny/tiny-gqa-untied.gguf --tokens 1,2,3 --dump /tmp/dump_cs
 forward{file=tiny-gqa-untied.gguf file_bytes=331840 tokens=[1,2,3] n_tokens=3 data_offset=2880}
 cfg{arch=llama name=tiny-untied-L2-h64-nh4-nhkv2 layers=2 hidden=64 ffn=128 n_head=4 n_head_kv=2 gqa_group=2 head_dim=16 value_dim=16}
@@ -169,7 +169,7 @@ ref_done
 ```
 $ export PATH="$HOME/.dotnet:$PATH" DOTNET_ROOT="$HOME/.dotnet"
 $ cd /home/agentuser/AgentFramework
-$ time dotnet run --project src/click-rover/click-rover.csproj -c Release --no-build -- \
+$ time dotnet run --project src/agent.rover/agent.rover.csproj -c Release --no-build -- \
     forward /tmp/models/prover7b-q4km.gguf --tokens 100000 --ctx 4 \
     --drop-pages --budget-mb 96 --dump /tmp/dump_7b_1
 forward{file=prover7b-q4km.gguf file_bytes=4223362304 tokens=[100000] n_tokens=1 data_offset=3990784}
@@ -238,7 +238,7 @@ ref_done
 ### 4.1 命令与原始输出
 
 ```
-$ time dotnet run --project src/click-rover/click-rover.csproj -c Release --no-build -- \
+$ time dotnet run --project src/agent.rover/agent.rover.csproj -c Release --no-build -- \
     forward /tmp/models/prover7b-q4km.gguf --tokens 100000,90379,4160,16 --ctx 8 \
     --drop-pages --budget-mb 96 --steps --dump /tmp/dump_7b_4
 forward{file=prover7b-q4km.gguf file_bytes=4223362304 tokens=[100000,90379,4160,16] n_tokens=4 data_offset=3990784}
@@ -336,8 +336,8 @@ ref_done
 
 | 实现 | 峰值 RSS | 说明 |
 |---|---|---|
-| C# click-rover（逐张量流式 + `MADV_DONTNEED`） | **364.9 MiB** | 常驻仅 976 KiB norm；权重边反量化边用 |
-| C# click-rover（单 token） | **359.6 MiB** | 同上 |
+| C# agent.rover（逐张量流式 + `MADV_DONTNEED`） | **364.9 MiB** | 常驻仅 976 KiB norm；权重边反量化边用 |
+| C# agent.rover（单 token） | **359.6 MiB** | 同上 |
 | numpy 参考（LRU 320 MB，仍物化整张 ffn 张量） | **2,076,236 KB ≈ 1.98 GiB** | 逼近 2.2 GiB 可用上限，`Swaps: 0` 侥幸通过 |
 
 即：**C# 路径的流式设计是本机真正可行的方案**；numpy 参考若不加 LRU 会 OOM。
@@ -361,21 +361,21 @@ ref_done
 ```bash
 export PATH="$HOME/.dotnet:$PATH" DOTNET_ROOT="$HOME/.dotnet"
 cd /home/agentuser/AgentFramework
-dotnet build src/click-rover/click-rover.csproj -c Release -v q --nologo     # 0 warning / 0 error
+dotnet build src/agent.rover/agent.rover.csproj -c Release -v q --nologo     # 0 warning / 0 error
 
 # Phase 1
 /tmp/ggufenv/bin/python /tmp/gen_tiny_gguf.py /tmp/tiny
-dotnet run --project src/click-rover/click-rover.csproj -c Release --no-build -- \
+dotnet run --project src/agent.rover/agent.rover.csproj -c Release --no-build -- \
   forward /tmp/tiny/tiny-gqa-untied.gguf --tokens 1,2,3 --dump /tmp/dump_cs
 /tmp/ggufenv/bin/python /tmp/ref_forward.py /tmp/tiny/tiny-gqa-untied.gguf \
   --tokens 1,2,3 --dump /tmp/dump_cs --json /tmp/ref_tiny.json
 # (tiny-mha-tied.gguf 同理, 覆盖 tied embeddings + MHA)
 
 # Phase 2
-dotnet run --project src/click-rover/click-rover.csproj -c Release --no-build -- \
+dotnet run --project src/agent.rover/agent.rover.csproj -c Release --no-build -- \
   forward /tmp/models/prover7b-q4km.gguf --tokens 100000 --ctx 4 --drop-pages \
   --budget-mb 96 --dump /tmp/dump_7b_1
-dotnet run --project src/click-rover/click-rover.csproj -c Release --no-build -- \
+dotnet run --project src/agent.rover/agent.rover.csproj -c Release --no-build -- \
   forward /tmp/models/prover7b-q4km.gguf --tokens 100000,90379,4160,16 --ctx 8 \
   --drop-pages --budget-mb 96 --steps --dump /tmp/dump_7b_4
 /tmp/ggufenv/bin/python /tmp/ref_forward.py /tmp/models/prover7b-q4km.gguf \
@@ -385,4 +385,4 @@ dotnet run --project src/click-rover/click-rover.csproj -c Release --no-build --
 
 辅助脚本：`/tmp/gen_tiny_gguf.py`（tiny GGUF 构造）、`/tmp/ref_forward.py`（numpy 独立参考）、`/tmp/analyze.py`、`/tmp/rel.py`、`/tmp/find_tokens.py`。
 
-**约束遵守**：未 `git commit` / `push`；未改动 `src/agent/**`；未改 `click-rover.csproj`；未加 NuGet 包；未使用反射；未用 `Console.WriteLine`（输出统一走 `RoverCli` 的 `TextWriter o`）。本文所有数字均来自上述真实运行，粘贴自原始输出。
+**约束遵守**：未 `git commit` / `push`；未改动 `src/agent/**`；未改 `agent.rover.csproj`；未加 NuGet 包；未使用反射；未用 `Console.WriteLine`（输出统一走 `RoverCli` 的 `TextWriter o`）。本文所有数字均来自上述真实运行，粘贴自原始输出。
