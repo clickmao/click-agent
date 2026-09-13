@@ -5,6 +5,10 @@
 
 > 铁律：本目录内所有期望标签均由**独立 oracle z3** 对 `premise ∧ ¬goal` 做**整数** SAT 推导；
 > 结论全部来自真实运行。`src/**` 未被修改（harness 用共享源码编译，只读）。
+>
+> **口径定稿（R397, 单一口径）**：`DCR = (TP+TN)/(TP+TN+FP+FN)`，**无弃权项**，非 `Proceed` 一律 **fail-closed 记 block**（FAVA 语义）。
+> 实测 **145/145 = 100.00%**（TP=94 · TN=51 · FP=0 · FN=0）；**口径敏感度 30.34pp**（弃权/畸形按放行 ⇒ 69.66%）。
+> ⇒ **禁止再以双口径并列汇报**；重算器 `eval/dcr/dcr_align.py`（`--selftest` 7/7，机读产物 `docs/reports/dcr/dcr-single-metric.json`，报告 `docs/reports/r397/`）。
 
 ---
 
@@ -18,6 +22,7 @@
 | `eval/dcr/assembly_out.jsonl` | 145 | 真实装配层（`PlanNodeFormalGate.Evaluate`）判定输出 |
 | `eval/dcr/kernel_out.jsonl` | 145 | 真实内核 CLI（`agent.rover check --json`）输出，按行序对齐 |
 | `eval/dcr/harness/` | — | 真实装配回放 harness（csproj + Program.cs + Stubs.cs） |
+| `eval/dcr/dcr_align.py` | 307 | **单一口径重算器**（FAVA 语义 fail-closed）+ 敏感度表 + 独立实现对账 + `--selftest` 负控 7/7 |
 | `eval/dcr/dcr_report.txt` | — | 真实装配输出的 DCR 报告快照 |
 | `eval/dcr/selftest/` | — | 脚本自测夹具与负例（非 DCR 结论） |
 | `scripts/kpi_dcr.py` | 356 | **交付物 B**：DCR 判定脚本（stdlib only） |

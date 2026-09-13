@@ -1,0 +1,152 @@
+{
+  "DCR": 1.0,
+  "N": 145,
+  "confusion": {
+    "FN": 0,
+    "FP": 0,
+    "TN": 51,
+    "TP": 94
+  },
+  "cross_impl_csharp": {
+    "all_pass": true,
+    "identities": {
+      "N 一致": true,
+      "Proceed 计数一致 (= TN 侧)": true,
+      "可决断集一致 (= Proceed+Violation)": true,
+      "弃权+畸形 = N-可决断": true
+    },
+    "raw": {
+      "N": 145,
+      "abstained": 19,
+      "decidable": 101,
+      "malformed": 25,
+      "proceed": 51,
+      "violation": 50
+    }
+  },
+  "label_source": {
+    "constructive": 62,
+    "z3": 83
+  },
+  "metric": "DCR",
+  "per_category": {
+    "absent": {
+      "N": 18,
+      "actual": [
+        "Proceed"
+      ],
+      "dcr": 1.0,
+      "expected": [
+        "Proceed"
+      ],
+      "fn": 0,
+      "fp": 0,
+      "tn": 18,
+      "tp": 0
+    },
+    "entail": {
+      "N": 33,
+      "actual": [
+        "Proceed"
+      ],
+      "dcr": 1.0,
+      "expected": [
+        "Proceed"
+      ],
+      "fn": 0,
+      "fp": 0,
+      "tn": 33,
+      "tp": 0
+    },
+    "malformed": {
+      "N": 25,
+      "actual": [
+        "Malformed"
+      ],
+      "dcr": 1.0,
+      "expected": [
+        "Malformed"
+      ],
+      "fn": 0,
+      "fp": 0,
+      "tn": 0,
+      "tp": 25
+    },
+    "out_of_fragment": {
+      "N": 19,
+      "actual": [
+        "Abstained"
+      ],
+      "dcr": 1.0,
+      "expected": [
+        "Abstained"
+      ],
+      "fn": 0,
+      "fp": 0,
+      "tn": 0,
+      "tp": 19
+    },
+    "refute": {
+      "N": 30,
+      "actual": [
+        "Violation"
+      ],
+      "dcr": 1.0,
+      "expected": [
+        "Violation"
+      ],
+      "fn": 0,
+      "fp": 0,
+      "tn": 0,
+      "tp": 30
+    },
+    "vacuous": {
+      "N": 20,
+      "actual": [
+        "Violation"
+      ],
+      "dcr": 1.0,
+      "expected": [
+        "Violation"
+      ],
+      "fn": 0,
+      "fp": 0,
+      "tn": 0,
+      "tp": 20
+    }
+  },
+  "sensitivity": {
+    "fail-closed (本口径: 非 Proceed 一律 block)": {
+      "DCR": 1.0,
+      "N": 145,
+      "fn": 0,
+      "fp": 0,
+      "tn": 51,
+      "tp": 94
+    },
+    "仅可决断集 (排除弃权/畸形)": {
+      "DCR": 1.0,
+      "N": 101,
+      "fn": 0,
+      "fp": 0,
+      "tn": 51,
+      "tp": 50
+    },
+    "弃权/畸形按放行 (Violation 才算 block)": {
+      "DCR": 0.696552,
+      "N": 145,
+      "fn": 44,
+      "fp": 0,
+      "tn": 51,
+      "tp": 50
+    },
+    "旧口径: 四类处置一致率 (对照, 非本指标)": {
+      "N": 145,
+      "agree": 145,
+      "rate": 1.0
+    }
+  },
+  "sensitivity_spread_pp": 30.34,
+  "spec": "DCR = (TP+TN)/(TP+TN+FP+FN); 无弃权项; 非 Proceed(fail-closed) 记 block",
+  "spec_source": "FAVA 正文取证 docs/reports/dcr/dcr-align-fava-source-2026-09-13.md"
+}
