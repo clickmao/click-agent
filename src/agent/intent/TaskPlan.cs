@@ -31,6 +31,36 @@ public class TaskPlan
 
     /// <summary>拓扑层级 (0 = 无依赖根层) — UI 分层布局用; 同层节点可并行</summary>
     public int MaxLevel => Nodes.Count > 0 ? Nodes.Max(n => n.Level) : 0;
+
+    /// <summary>可零 token 本地执行的节点 Id (v0.22.0 exp9 D1): 调度器"本地先行"的候选集</summary>
+    public List<string> LocalExecutableNodeIds =>
+        Nodes.Where(n => n.RunsLocally).Select(n => n.Id).ToList();
+
+    /// <summary>需远程生成的节点 Id (v0.22.0 exp9 D1): 本地无法产出, 必须走模型</summary>
+    public List<string> RemoteNodeIds =>
+        Nodes.Where(n => n.Location == NodeExecutionLocation.Remote).Select(n => n.Id).ToList();
+}
+
+/// <summary>
+/// 节点执行位置 (v0.22.0 exp9 D1)。用户口径: "查看哪个步骤可以直接本地跑, 哪个任务需要远程生成,
+/// 远程生成后如果是文本处理任务就可以本地先跑起来等待其他远端任务执行 (如果没有依赖的话)"。
+///
+/// Remote: 必须远程生成 (LLM) —— 本地无生成能力。
+/// Local : 本地确定性执行器可独立完成 —— 零 LLM 调用 / 零 token。
+/// Hybrid: 远程生成 + 本地立即跑/验 (同一节点两段; 第二段不新增 LLM 调用)。
+///
+/// 判定归 PlanRoutePolicy (确定性表, 非 LLM 自述); 字段由路由写回, 不许上游手填。
+/// </summary>
+public enum NodeExecutionLocation
+{
+    /// <summary>远程生成 (模型)</summary>
+    Remote = 0,
+
+    /// <summary>本地执行 (零 token)</summary>
+    Local = 1,
+
+    /// <summary>远程生成 + 本地立即处理 (零 token 第二段)</summary>
+    Hybrid = 2,
 }
 
 /// <summary>计划节点 = 一个子任务</summary>
@@ -75,6 +105,28 @@ public class PlanNode
     /// <summary>置信度扣分信号 (v7.13): 指代不清/弱意图/缺参数等 (Builder 从 SubTask 透传)</summary>
     public IntentDecomposer.ConfidenceFlags ConfidenceFlags { get; set; }
         = IntentDecomposer.ConfidenceFlags.None;
+
+    /// <summary>执行位置 (v0.22.0 exp9 D1): 由 PlanRoutePolicy 确定性判定写回, 不由 LLM 决定。
+    /// 默认 Remote 是**保守**缺省 (未判定 = 不许乐观当本地可跑)。</summary>
+    public NodeExecutionLocation Location { get; set; } = NodeExecutionLocation.Remote;
+
+    /// <summary>本地执行器登记 Id (Location != Remote 时非空; 取 LocalExecutorRegistry 已接线项)</summary>
+    public string? LocalExecutorId { get; set; }
+
+    /// <summary>判定依据短句 (前端展示"为什么这步能本地跑"; 规则给出的事实, 非模型自述)</summary>
+    public string? LocalHint { get; set; }
+
+    /// <summary>位置文本 (UI/事件契约用; 枚举数值不进前端契约)</summary>
+    public string LocationText => Location switch
+    {
+        NodeExecutionLocation.Local => "local",
+        NodeExecutionLocation.Hybrid => "hybrid",
+        _ => "remote",
+    };
+
+    /// <summary>是否可零 token 本地执行 (调度器据此决定是否先行/并发)</summary>
+    public bool RunsLocally =>
+        Location != NodeExecutionLocation.Remote && !string.IsNullOrEmpty(LocalExecutorId);
 }
 
 /// <summary>子任务参数槽 — 问询协议的拆解侧载体 (复用 AnswerAuthority 语义)</summary>

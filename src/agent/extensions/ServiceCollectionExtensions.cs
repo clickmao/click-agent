@@ -156,6 +156,10 @@ public static class ServiceCollectionExtensions
                 sp.GetRequiredService<agent.registry.PythonArtifactLedger>(),
                 System.IO.Path.Combine(opts.DataStoragePath, "artifacts"));
         });
+        // v0.22.0 exp9 D3: 计划真执行体 — 本地节点零 token 真跑 (需 python 产物台账定位产物路径)
+        services.AddSingleton(sp => new agent.intent.PlanRunner(
+            executors: null,
+            ledger: sp.GetRequiredService<agent.registry.PythonArtifactLedger>()));
         services.AddSingleton(sp =>
         {
             var plugins = sp.GetServices<agent.registry.IResponseSegmentPlugin>();

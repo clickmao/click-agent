@@ -380,7 +380,8 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
         IRAGRecall? ragRecall = null,
         agent.contextgradient.ITextEmbedder? textEmbedder = null,
         string? roleFilePath = null,
-        byte[]? roleMasterKey = null) : base(logger, handlers)
+        byte[]? roleMasterKey = null,
+        agent.intent.PlanRunner? planRunner = null) : base(logger, handlers)
     {
         _isolatedTaskRunner = isolatedTaskRunner;
         // R363: roleFilePath 未传时回退 env (DI 无参构造场景 — Program --role 解析后写入)。
@@ -424,6 +425,7 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
         _llmCaller = llmCaller;
         _agentRegistry = agentRegistry;
         _segmentRouter = segmentRouter;
+        _planRunner = planRunner;
         _clarificationService = clarificationService;
         _dataStoragePath = dataStoragePath;
         _sessionMemoryStore = new agent.session.JsonSessionMemoryStore(_dataStoragePath);
@@ -483,17 +485,25 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
         
         try
         {
-            // 0.-1 /plan 计划查询 (v7.15 T.4-4): 输出最近一次影子计划 TaskPlanRun JSON (面板全 JSON 惯例)
+            // 0.-1 /plan 计划查询 (v7.15 T.4-4; v0.22.0 exp9: 加"已路由计划 + 真执行结论"两段)
             if (message.Content.Trim().Equals("/plan", StringComparison.OrdinalIgnoreCase))
             {
                 response.Success = true;
-                if (_lastShadowRun is null)
+                if (_lastPlan is null && _lastPlanRun is null)
                 {
-                    response.Content = "{\"plan\": null, \"hint\": \"\u5c1a\u65e0\u8ba1\u5212\u6f14\u7ec3\u8bb0\u5f55 \u2014 \u53d1\u9001\u4e00\u6761\u591a\u5b50\u4efb\u52a1\u6d88\u606f\u540e\u518d\u67e5\"}";
+                    response.Content = "{\"plan\": null, \"hint\": \"尚无计划记录 — 发送一条多子任务消息后再查\"}";
                 }
                 else
                 {
-                    response.Content = TaskPlanJsonContext.ToJson(_lastShadowRun);
+                    // 每节点: 位置 (local/remote/hybrid) + 执行器 + 状态/耗时/tokens — 前端直接可画
+                    var planJson = _lastPlan is null ? "null" : TaskPlanJsonContext.ToJson(_lastPlan);
+                    var runJson = _lastPlanRun is null ? "null" : TaskPlanJsonContext.ToJson(_lastPlanRun);
+                    var local = _lastPlan?.Nodes.Count(n => n.RunsLocally) ?? 0;
+                    var remote = _lastPlan?.Nodes.Count(n => n.Location == NodeExecutionLocation.Remote) ?? 0;
+                    var localTokens = _lastPlanRun?.Outcomes.Where(o => o.Location is "local" or "hybrid").Sum(o => o.Tokens) ?? 0;
+                    response.Content =
+                        $"{{\"plan\":{planJson},\"run\":{runJson}," +
+                        $"\"routing\":{{\"local\":{local},\"remote\":{remote},\"local_tokens\":{localTokens}}}}}";
                 }
                 response.Data = new Dictionary<string, object> { { "localCommand", "plan" } };
                 response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
@@ -1038,8 +1048,9 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 _logger.LogInformation("EvidenceGate 补充了 {Count} 字用户说明", clarifiedAddendum.Length);
             }
 
-            // 1.6 影子计划演练 (v7.15 归拢 T.2-4): Build+Execute 调度语义, 只记录不采纳, 不阻断主链
-            _lastShadowRun = await RunShadowPlanAsync(message.Content, subTasks, ct);
+            // 1.6 计划构建 + 确定性路由 (v0.22.0 exp9 D1+D2): 子任务 → 节点位置 (本地/远程) → 追加本地验证节点。
+            //     真执行 (D3) 推迟到产物就绪之后 (RunPlanAsync), 避免拿不到执行对象空跑。
+            _lastPlan = BuildRoutedPlan(message.Content, subTasks);
 
             // 2. 多数据源上下文组装（失败时降级为空上下文，不阻断对话）
             var contextResult = await AssembleContextAsync(message, intent, subTasks, ct);
@@ -1499,6 +1510,10 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 // 诚实边界: 未修好则不替换正文 (不假装成功); 事实经 telemetry artifact_feedback 落盘。
                 _artifactRepair ??= new agent.registry.ArtifactRepairLoop(_segmentRouter, _llmCaller);
                 response.Content = (await _artifactRepair.RunAsync(response.Content, ct)).Content;
+                // v0.22.0 exp9 D3: 计划真执行 — 产物就绪后跑本地节点 (零 token; 不再用哑执行体)。
+                // 诚实边界: 本地节点结论只作审计/证据 (run.Outcomes + telemetry plan_node), 失败不阻断主链。
+                if (_lastPlan is not null)
+                    _lastPlanRun = await RunPlanAsync(_lastPlan, response.Content, ct);
                 // R307 (L1 轻牵引): 连续 ≥2 轮偏题 → 回复尾追加衔接提示 (区段路由后追加, 防被路由过滤)。
                 if (clarifyPending)
                     response.Content += $"\n\n> 💡 需要我回到「{coreTopic}」继续, 还是继续当前话题? 直接说一声即可。";
@@ -1959,35 +1974,67 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
         };
     }
 
-    private async Task<TaskPlanRun?> RunShadowPlanAsync(
-        string sourceText, IReadOnlyList<IntentDecomposer.SubTask> subTasks, CancellationToken ct)
+    /// <summary>
+    /// 计划构建 + 确定性路由 (v0.22.0 exp9 D1+D2): 拆解 → TaskPlan → 节点位置判定 → 追加本地验证节点。
+    /// 只构建不执行 —— 本地节点的执行在产物就绪后 (RunPlanAsync), 避免"无对象空跑"。
+    /// </summary>
+    private TaskPlan BuildRoutedPlan(string sourceText, IReadOnlyList<IntentDecomposer.SubTask> subTasks)
+    {
+        var plan = RoutedPlanBuilder.Build(sourceText, subTasks);
+        var local = plan.Nodes.Count(n => n.Location == NodeExecutionLocation.Local);
+        var hybrid = plan.Nodes.Count(n => n.Location == NodeExecutionLocation.Hybrid);
+        var remote = plan.Nodes.Count(n => n.Location == NodeExecutionLocation.Remote);
+        _logger.LogInformation(
+            "Plan {PlanId}: {Nodes} nodes → local={Local} hybrid={Hybrid} remote={Remote}",
+            plan.PlanId, plan.Nodes.Count, local, hybrid, remote);
+        agent.config.AgentTelemetry.Emit("plan_route", "IndustrialAgentV2",
+            ("plan_id", plan.PlanId),
+            ("nodes", plan.Nodes.Count),
+            ("local", local),
+            ("hybrid", hybrid),
+            ("remote", remote));
+        return plan;
+    }
+
+    /// <summary>
+    /// 计划真执行 (v0.22.0 exp9 D3): 产物就绪后跑本地节点 (真子进程/真统计, 零 LLM 调用),
+    /// 并把主链已生成的正文登记为远程节点产物 (**不二次调用模型**)。
+    /// 失败只记录不阻断主链; 结论写 run.Outcomes + telemetry plan_node/plan。
+    /// </summary>
+    private async Task<TaskPlanRun?> RunPlanAsync(TaskPlan plan, string? remoteText, CancellationToken ct)
     {
         try
         {
-            var plan = TaskPlanBuilder.Build(sourceText, subTasks);
-            var executor = new TaskPlanExecutor(
-                // 哑执行体: 影子不产真输出, 节点标 Skipped (只演练调度语义, 不烧 LLM)
-                (node, _) => Task.FromResult(new NodeExecutionResult
-                {
-                    NodeId = node.Id, FinalState = PlanNodeState.Skipped, Output = null
-                }));
-            var run = await executor.ExecuteAsync(plan, pollInjections: null, ct);
+            _planRunner ??= new agent.intent.PlanRunner();
+            var ctx = _planRunner.ContextFromLedger(remoteText: remoteText);
+            var run = await _planRunner.RunAsync(plan, ctx, ct);
+            var localOk = run.Outcomes.Count(o =>
+                o.Location is "local" or "hybrid" && o.State == PlanNodeState.Completed);
+            var failed = run.Outcomes.Count(o => o.State == PlanNodeState.Failed);
+            var skipped = run.Outcomes.Count(o => o.State == PlanNodeState.Skipped);
             _logger.LogInformation(
-                "Shadow plan {PlanId}: {Nodes} nodes → {State}; awaiting={Awaiting}, dropped={Dropped}",
-                plan.PlanId, plan.Nodes.Count, run.State,
-                run.NodeStates.Values.Count(s => s == PlanNodeState.AwaitingClarification),
-                run.DroppedForEvidenceLimit.Count);
+                "Plan {PlanId} executed: local_ok={LocalOk} failed={Failed} skipped={Skipped} (executors: {Executors})",
+                plan.PlanId, localOk, failed, skipped, string.Join(",", _planRunner.WiredExecutors));
             return run;
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
-            // 影子失败不影响主链 (演练性质)
-            _logger.LogWarning(ex, "Shadow plan failed (non-fatal)");
+            // 计划失败不影响主链 (审计性质) — 但不静默: 告警 + 遥测
+            _logger.LogWarning(ex, "Plan execution failed (non-fatal)");
+            agent.config.AgentTelemetry.Emit("plan_exec_failed", "IndustrialAgentV2",
+                ("plan_id", plan.PlanId), ("error", ex.GetType().Name));
             return null;
         }
     }
 
-    private TaskPlanRun? _lastShadowRun;
+    /// <summary>最近一次路由后的计划 (D1+D2 产物; /plan 与前端事件读这里)</summary>
+    private TaskPlan? _lastPlan;
+
+    /// <summary>最近一次计划真执行记录 (D3 产物)</summary>
+    private TaskPlanRun? _lastPlanRun;
+
+    /// <summary>计划真执行体 (v0.22.0 exp9 D3; DI 注入失效时回退默认实现 — 有台账才能拿到产物路径)</summary>
+    private agent.intent.PlanRunner? _planRunner;
 
     private async Task<string> RunEvidenceGateAsync(
         Message message, IReadOnlyList<IntentDecomposer.SubTask> subTasks, CancellationToken ct)
