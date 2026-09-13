@@ -923,3 +923,16 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - 机检: `residency --selftest` **10/10**（真 7B + tiny 双夹具）；Vulkan/内核回归未受影响；全量测试 **1025/1025**。
 - **机检有判别力的当场实证（诚实记录）**: 本轮登记表条目**第一次写错**（把 `evidence_path` 写成"源文件 | 报告"两段式）⇒ `VerificationFormTests.Registry_Exists_And_HasNoViolations` **当场判红**（`evidence_path 不存在`）⇒ 改回单一存在路径 + 新增独立 `evidence_report` 字段复跑全绿。自查不是空断言，本轮由它挡下一次。
 - **证据报告（真机输出逐字，45 行）**: `docs/reports/r385/residency-evidence.md`（自证 10 例明细 + tiny/7B 对账 + `cmp` 逐位结果 + 复现命令）。
+
+### R399 (2026-09-13) — 题集加硬(M6) + 跑测数据打点(KPI) + 本机 agent.rover 引擎读数
+
+- **靶点（用户令"用你的推荐方案…不用问询我 + 给 KPI 打点 + 我可以看到具体提升报告"）**: R398 的诚实边界写明"6 题 100% ⇒ 对能力提升零区分度"，且**作弊解仍拿 22.2% 用例级通过率** ⇒ 加硬必须作用在隐藏用例的对抗性上；同时"提升"必须可量化 ⇒ 需把每次真机运行的通过率/耗时/token/失败模式落成台账与前后对比报告。
+- **交付**: `eval/probe/tasks.py`(627→853，对抗用例机制 `HARD_INPUTS` + 新陷阱族 `pair_closest_abs_sum` + 见证型数学族)、`eval/probe/grade.py`(300→406，`_verify_witness` 独立验证见证 + `wrong_witness` 失败模式)、`eval/probe/run_probe.py`(380→440，族池接线 + `--families`/`--dump-tasks` + 题集 sha 单口径)、新件 `scripts/kpi_probe.py`(418，台账+对比报告+24 条负控)、`eval/probe/README.md`、`docs/plans/v0.25.0-r399-probe-hardening-and-kpi.md`。
+- **加硬三层（可复核）**: ① 每程序族钉死 3–5 条边界输入（全负/单元素/10^9/并列/满字母表…）**只进隐藏集**，不足 3 条即**拒发题**；② 新陷阱族 = "两数之和绝对值最小"（朴素写法在同下标复用/并列取值上翻车）；③ 见证型数学题（`x²≡a mod p`、最小反例）⇒ 判定改为**独立验证见证语义**（最小反例还要复核 `∀m<n` 成立），不比对任何标签。
+- **真机读数（同题集 sha 内可比）**: agent 全量批 35/35 用例 = 1.0000、整题 6/6、**56.09s**、8 次 LLM 调用、prompt 21,530 / completion 4,845 / **4,396 tok/题**；定向批（新族）36/36、整题 6/6、215.01s、**11,215 tok/题**；**作弊解 22.2%→6.25% 用例级、整题全对恒 0/3**；`oracle` 0.71s 满分（管线正控）。**结论: 加硬只加硬了"对作弊解的判别力"，对 agent 仍饱和 ⇒ 下轮换维度（多步需落盘/缺信息反问/证明链）**。
+- **本轮 6 处真缺陷（含 2 处"口径假设错 ⇒ 空心指标"）**: ① 见证型族**从未被抽到**（题池只取 `MATH_FAMILIES` ⇒ 新功能不可达）② 题集 sha **双口径**（生成 vs `--tasks` 复用）③ KPI 时间窗锚点写反（`ts` 是**结束**时刻，写成 `[ts, ts+elapsed]`）④ 遥测 7 位小数时间戳解析失败被 `except: continue` **静默跳过**（token 全 None 且不报错）⑤ `grade_program` 无 `since` ⇒ 产物新鲜度负控从未跑到（假绿）⑥ **R398 漏下的登记表回归**: `evidence_path` 写成 `';'` 多路径 ⇒ `VerificationFormTests` 判红（全量回归当年跑在登记表改写**之前**）。
+- **立规（可复用教训）**: KPI/判定的**口径假设错不会报错，只会把指标变成 None/0** ⇒ 每个窗口/口径都必须配一条"锚点写反必须读不到"的反向负控；任何**证据/登记表改写之后必须立刻跑形式校验**（不能只跑功能回归）。
+- 机检: 生成器 **39/39**、判定器 **25/25**、编排器 **18/18**、KPI 打点器 **24/24**、`VerificationFormTests` **6/6**。
+- **诚实边界**: ① agent 侧仍 100% ⇒ 题集对能力提升仍无区分度；② 数学题仍只判终值/见证，**不判推理链**；③ 沙箱**不是安全边界**（隔离目录+超时+`-I -B`，**不禁网**）；④ 本机唯一 Vulkan 设备是 llvmpipe 软件 ICD ⇒ 引擎读数**只代表 CPU 路径**；⑤ **agent.rover 目前不是解法后端**（只有 `forward` token→logits，缺 tokenizer/采样/解码环）⇒ 已列为 R400 首要工程项。
+- **证据报告**: `docs/reports/r399/r399-m6-hardening-and-kpi-datapoints.md` + 机器生成的 `docs/reports/r399/kpi-probe-r399.md`。
+

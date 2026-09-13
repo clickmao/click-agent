@@ -98,7 +98,23 @@ from itertools import groupby
 pairs=sorted((ln.split(',')[0], int(ln.split(',')[1])) for ln in sys.stdin.read().strip().splitlines())
 print(';'.join('%s=%d'%(k,sum(v for _,v in g)) for k,g in groupby(pairs,key=lambda t:t[0])))"""
 
+_REF_PAIRCLOSE = """
+import sys
+d = sys.stdin.read().split()
+n = int(d[0])
+a = [int(x) for x in d[1:1 + n]]
+best = None
+for i in range(n):
+    for j in range(i + 1, n):
+        s = a[i] + a[j]
+        k = (abs(s), s)
+        if best is None or k < best[0]:
+            best = (k, s)
+print(best[1])
+"""
+
 REF_SRC = {
+    "pair_closest_abs_sum": _REF_PAIRCLOSE.strip(),
     "max_subarray": _REF_MAXSUB.strip(),
     "longest_unique": _REF_LONGEST.strip(),
     "bracket_fix": _REF_BRACKET.strip(),
@@ -262,6 +278,26 @@ def run(tasks_list, solver: str, timeout: float, solve_timeout: float = 300.0,
     }
 
 
+def _canon_sha(raw):
+    """题集规范哈希: 与生成/复用无关, 同一批题必得同一 sha (对比可追溯的前提)。"""
+    return hashlib.sha256("\n".join(json.dumps(t, sort_keys=True, ensure_ascii=False) for t in raw)
+                          .encode()).hexdigest()[:16]
+
+
+def _pools(kind, only):
+    """族池: 程序族 / (数学族 ∪ 见证型族)。only=逗号白名单(定向覆盖)。
+
+    见证型族若不入池 ⇒ 生成了也永不抽样(死代码), 故此处必须并集。
+    """
+    want = [x.strip() for x in (only or "").split(",") if x.strip()]
+    prog = [f for f in sorted(taskgen.PROGRAM_FAMILIES) if not want or f in want]
+    mathl = [f for f in sorted(taskgen.MATH_FAMILIES) + sorted(taskgen.WITNESS_FAMILIES)
+             if not want or f in want]
+    if want and not prog and not mathl:
+        raise SystemExit("--families 无匹配族: %s" % only)
+    return (prog if kind in ("program", "both") else []), (mathl if kind in ("math", "both") else [])
+
+
 def _solver_id(solver: str) -> str:
     if solver.startswith("command:"):
         return "cmd:" + hashlib.sha256(solver.encode()).hexdigest()[:12]
@@ -289,6 +325,30 @@ def selftest() -> int:
     math_ = [json.loads(taskgen.gen_math_task(i, sorted(taskgen.MATH_FAMILIES), rnd).to_json())
              for i in range(1, 3)]
     allt = prog + math_
+
+    # 反死代码: 见证型族必须真的可达 (曾因池子只取 MATH_FAMILIES 而永不抽样)
+    _prog_pool, _math_pool = _pools("both", "")
+    chk("见证型族在数学池内(非死代码)",
+        bool(taskgen.WITNESS_FAMILIES) and all(f in _math_pool for f in taskgen.WITNESS_FAMILIES),
+        "witness=%s" % sorted(taskgen.WITNESS_FAMILIES))
+    _wp = _pools("math", ",".join(sorted(taskgen.WITNESS_FAMILIES)))
+    chk("--families 白名单可定向且不混入程序族",
+        _wp[0] == [] and sorted(_wp[1]) == sorted(taskgen.WITNESS_FAMILIES))
+    wit = [json.loads(taskgen.gen_math_task(i, sorted(taskgen.WITNESS_FAMILIES), rnd).to_json())
+           for i in range(1, 3)]
+    chk("见证型题 meta.witness 就位且 answer 非空(仅供 oracle 正控)",
+        all(w["meta"].get("witness") and (w["answer"] or "").strip() for w in wit))
+    rw = run(wit, "oracle", 5.0)
+    chk("正控: 见证型题 oracle 满分", rw["rate"] == 1.0, "rate=%.4f tax=%s" % (rw["rate"], rw["taxonomy"]))
+    rw2 = run(wit, "mutation:wrongfinal", 5.0)
+    chk("负控: 见证型题错见证被判红", rw2["rate"] < 1.0 and bool(rw2["taxonomy"].get("wrong_witness")),
+        "rate=%.4f tax=%s" % (rw2["rate"], rw2["taxonomy"]))
+
+    chk("oracle 参考解覆盖全部程序族(反覆盖缺口)",
+        all(f in REF_SRC for f in sorted(taskgen.PROGRAM_FAMILIES)),
+        "缺: %s" % [f for f in sorted(taskgen.PROGRAM_FAMILIES) if f not in REF_SRC])
+    chk("规范题集哈希与复用路径一致",
+        _canon_sha(allt) == _canon_sha(json.loads(json.dumps(allt))))
 
     r = run(allt, "oracle", 5.0)
     chk("正控: oracle 满分", r["rate"] == 1.0, "rate=%.4f tax=%s" % (r["rate"], r["taxonomy"]))
@@ -330,6 +390,8 @@ def main(argv=None) -> int:
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--tag", default="")            # 回复留档后缀, 便于区分多轮探针
     ap.add_argument("--tasks", default="")     # 复用已生成题集 (保证题集哈希可追溯)
+    ap.add_argument("--families", default="")  # 定向覆盖: 逗号分隔族白名单(含见证型族)
+    ap.add_argument("--dump-tasks", default="", dest="dump_tasks")  # 落盘题集供多解法同批对比
     ap.add_argument("--out", default="")
     ap.add_argument("--selftest", action="store_true")
     a = ap.parse_args(argv)
@@ -338,18 +400,23 @@ def main(argv=None) -> int:
 
     if a.tasks:
         raw = json.load(open(a.tasks, encoding="utf-8"))
-        sha = hashlib.sha256(open(a.tasks, "rb").read()).hexdigest()[:16]
+        sha = _canon_sha(raw)
     else:
         rnd = random.Random(a.seed)
         raw = []
-        if a.kind in ("program", "both"):
-            for i in range(1, a.n + 1):
-                raw.append(json.loads(taskgen.gen_program_task(i, sorted(taskgen.PROGRAM_FAMILIES), rnd).to_json()))
-        if a.kind in ("math", "both"):
-            for i in range(1, a.n + 1):
-                raw.append(json.loads(taskgen.gen_math_task(i, sorted(taskgen.MATH_FAMILIES), rnd).to_json()))
-        sha = hashlib.sha256("\n".join(json.dumps(t, sort_keys=True, ensure_ascii=False) for t in raw)
-                             .encode()).hexdigest()[:16]
+        prog_pool, math_pool = _pools(a.kind, a.families)
+        for i in range(1, a.n + 1):
+            if prog_pool:
+                raw.append(json.loads(taskgen.gen_program_task(i, prog_pool, rnd).to_json()))
+        for i in range(1, a.n + 1):
+            if math_pool:
+                raw.append(json.loads(taskgen.gen_math_task(i, math_pool, rnd).to_json()))
+        if a.dump_tasks:
+            os.makedirs(os.path.dirname(a.dump_tasks) or ".", exist_ok=True)
+            with open(a.dump_tasks, "w", encoding="utf-8") as fh:
+                json.dump(raw, fh, ensure_ascii=False, indent=1)
+            print("题集已落盘: %s" % a.dump_tasks)
+        sha = _canon_sha(raw)
 
     print("题集: %d 题 (kind=%s seed=%s) sha=%s" % (len(raw), a.kind, a.seed, sha))
     print("解法: %s" % a.solver)

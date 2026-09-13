@@ -231,6 +231,33 @@ def _in_csv_agg(rnd):
                    for _ in range(rnd.randint(1, 8)))
 
 
+def _p_pair_closest(nums):
+    best, bkey = None, None
+    for i in range(len(nums)):
+        for j in range(i + 1, len(nums)):
+            s = nums[i] + nums[j]
+            key = (abs(s), s)
+            if bkey is None or key < bkey:
+                best, bkey = s, key
+    return best
+
+
+def _p_pair_closest_alt(nums):
+    import itertools
+    sums = [a + b for a, b in itertools.combinations(nums, 2)]
+    return min(sums, key=lambda s: (abs(s), s))
+
+
+def _in_pair_closest(rnd):
+    n = rnd.randint(2, 7)
+    if rnd.random() < 0.35:
+        pool = rnd.sample(range(-9, 10), rnd.randint(2, 4))
+        vals = [rnd.choice(pool) for _ in range(n)]
+    else:
+        vals = [rnd.randint(-12, 12) for _ in range(n)]
+    return "%d\n%s\n" % (n, " ".join(map(str, vals)))
+
+
 PROGRAM_FAMILIES = {
     "max_subarray": {
         "spec": "读入: 第一行整数 n; 第二行 n 个整数(空格分隔)。输出: 连续子数组的最大和(至少取一个元素)。",
@@ -275,6 +302,13 @@ PROGRAM_FAMILIES = {
         "check": _p_csv_agg_alt,
         "gen_input": _in_csv_agg,
         "fmt": lambda r: r,
+    },
+    "pair_closest_abs_sum": {
+        "spec": "读入: 第一行整数 n (n>=2); 第二行 n 个整数。输出: 在所有下标 i<j 的两数之和中, 绝对值最小的那个和; 若并列取数值最小者。",
+        "ref": lambda s: _p_pair_closest([int(x) for x in s.split()[1:]]),
+        "check": lambda s: _p_pair_closest_alt([int(x) for x in s.split()[1:]]),
+        "gen_input": _in_pair_closest,
+        "fmt": lambda r: "%d" % r,
     },
 }
 
@@ -424,6 +458,135 @@ def _fill_graph(rnd, n):
     return w
 
 
+
+
+# ---------------------------------------------------------------- 对抗输入 (M6 加硬)
+# 抗性来源: 这些输入**只进 hidden**, 公开用例里给不到 ⇒ 通过公开样例的"浅解"会在此翻车。
+# 覆盖: 退化长度 / 全负 / 全同 / 极大值 / 全零 / 并列。
+HARD_INPUTS = {
+    "max_subarray": ["1\n-7\n", "3\n-5 -1 -3\n", "6\n0 0 0 0 0 0\n",
+                     "5\n1000000000 1000000000 -1 1000000000 1000000000\n", "4\n-1 2 -1 2\n"],
+    "longest_unique": ["a\n", "aaaaaa\n", "abcdefghijklmnopqrstuvwxyz\n", "abba\n", "abcdbe\n"],
+    "bracket_fix": ["(\n", ")((()\n", "()))(((\n", ")(\n", "((((((\n"],
+    "interval_sum": ["1 1\n5\n0 0\n", "3 2\n-1 -2 -3\n0 2\n1 1\n",
+                     "4 3\n0 0 0 0\n0 3\n1 2\n2 2\n",
+                     "3 1\n1000000000 1000000000 1000000000\n0 2\n", "2 2\n-5 5\n0 1\n1 1\n"],
+    "matrix_spiral": ["1 1\n7\n", "1 5\n1 2 3 4 5\n", "5 1\n1\n2\n3\n4\n5\n",
+                      "2 2\n-1 -2\n-3 -4\n", "3 3\n0 0 0\n0 0 0\n0 0 0\n"],
+    "csv_agg": ["A,1\n", "Z,5\nA,5\n", "A,-3\nB,4\n", "A,0\n", "M,7\nM,-7\nN,2\n"],
+    "pair_closest_abs_sum": ["2\n0 0\n", "2\n-5 5\n", "3\n1 1 1\n", "4\n-3 7 7 -3\n", "2\n-9 -9\n"],
+}
+
+
+# ---------------------------------------------------------------- 见证型数学题 (M6 加硬)
+# 与"唯一答案"族不同: 答案**不唯一**, 判定 = 独立验证解答者给出的见证 (判据绑定语义, 非比对标签)。
+
+def _w_sqrt_mod_gen(rnd):
+    p = rnd.choice([101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167])
+    x0 = rnd.randint(0, p - 1)
+    return {"kind": "sqrt_mod", "p": p, "a": (x0 * x0) % p}
+
+
+def _w_sqrt_mod_ref(m):
+    p, a = m["p"], m["a"]
+    return [x for x in range(p) if (x * x) % p == a]
+
+
+def _w_sqrt_mod_check(m):
+    p, a = m["p"], m["a"]
+    hits = []
+    for x in range(p):
+        r = (x * x) % p
+        if r == a:
+            hits.append(x)
+    return hits
+
+
+def _claim_mersenne(n):
+    v = (1 << n) - 1
+    if v < 2:
+        return False
+    d = 2
+    while d * d <= v:
+        if v % d == 0:
+            return False
+        d += 1
+    return True
+
+
+def _claim_mersenne_alt(n):
+    v = (1 << n) - 1
+    if v < 2:
+        return False
+    if v % 2 == 0:
+        return v == 2
+    d = 3
+    while d * d <= v:
+        if v % d == 0:
+            return False
+        d += 2
+    return True
+
+
+def _claim_poly41(n):
+    v = n * n - n + 41
+    if v < 2:
+        return False
+    d = 2
+    while d * d <= v:
+        if v % d == 0:
+            return False
+        d += 1
+    return True
+
+
+def _claim_poly41_alt(n):
+    v = n * n - n + 41
+    for d in range(2, int(v ** 0.5) + 1):
+        if v % d == 0:
+            return False
+    return True
+
+
+CLAIMS = {
+    "mersenne_prime": {"expr": "2^n - 1 是质数", "n_min": 2, "n_max": 12,
+                       "ref": _claim_mersenne, "check": _claim_mersenne_alt},
+    "poly41_prime": {"expr": "n^2 - n + 41 是质数", "n_min": 2, "n_max": 60,
+                     "ref": _claim_poly41, "check": _claim_poly41_alt},
+}
+
+
+def _w_counterexample_gen(rnd):
+    name = rnd.choice(sorted(CLAIMS))
+    c = CLAIMS[name]
+    n = c["n_min"]
+    while n <= c["n_max"]:
+        if not c["ref"](n):
+            break
+        n += 1
+    else:
+        raise RefuseToEmit("claim 无反例: %s" % name)
+    return {"kind": "min_counterexample", "claim": name, "n": n}
+
+
+WITNESS_FAMILIES = {
+    # answer = 生成器已知的**一个**合法见证, 仅供 oracle 正控与可复现性使用;
+    # 判定端(grade.py)不比对 answer, 而是独立验证见证语义 ⇒ 多解不算错, 错解必被拒。
+    "witness_sqrt_mod": {
+        "gen": _w_sqrt_mod_gen, "spec": lambda m: (
+            "求整数 x (0 <= x < %d) 满足 x^2 ≡ %d (mod %d)。答案不唯一, 任何满足条件的 x 都算正确。"
+            % (m["p"], m["a"], m["p"])),
+        "answer": lambda m: str(min(_dual(_w_sqrt_mod_ref, _w_sqrt_mod_check, m))),
+    },
+    "witness_min_counterexample": {
+        "gen": _w_counterexample_gen, "spec": lambda m: (
+            "设命题 P(n) 为: %s (n 为整数)。求最小的 n >= %d 使 P(n) 为假。"
+            % (CLAIMS[m["claim"]]["expr"], CLAIMS[m["claim"]]["n_min"])),
+        "answer": lambda m: str(m["n"]),
+    },
+}
+
+
 MATH_FAMILIES = {
     "quadratic_residue_count": {
         "gen": lambda rnd: (rnd.randrange(0, 13), rnd.choice([8, 9, 10, 12, 15, 16])),
@@ -478,6 +641,13 @@ def _render_math(fam, params):
 
 def gen_math_task(idx, families, rnd):
     fam = rnd.choice(families)
+    if fam in WITNESS_FAMILIES:
+        wf = WITNESS_FAMILIES[fam]
+        m = wf["gen"](rnd)
+        prompt = ("%s\n\n请给出最终答案, 最后一行必须是 `FINAL: <答案>` 格式。"
+                  % wf["spec"](m))
+        return Task(tid="m%03d" % idx, kind="math", family=fam, prompt=prompt,
+                    answer=wf["answer"](m), meta={"witness": m})
     f = MATH_FAMILIES[fam]
     params = f["gen"](rnd)
     expected = _dual(f["ref"], f["check"], params)
@@ -509,8 +679,19 @@ def gen_program_task(idx, families, rnd, n_public=2, n_hidden=6):
         % (f["spec"], "\n\n".join("输入:\n%s期望输出:\n%s" % (c.stdin, c.expected_stdout)
                                   for c in cases[:n_public]))
     )
+    hard = []
+    for stdin_text in HARD_INPUTS.get(fam, []):
+        if stdin_text in seen:
+            continue
+        seen.add(stdin_text)
+        exp = _dual(lambda s: _fam_answer(fam, "ref", s),
+                    lambda s: _fam_answer(fam, "check", s), stdin_text)
+        hard.append(Case(stdin_text, f["fmt"](exp)))
+    if len(hard) < 3:
+        raise RefuseToEmit("对抗用例不足: %s (%d)" % (fam, len(hard)))
     return Task(tid="p%03d" % idx, kind="program", family=fam, prompt=prompt,
-                public=cases[:n_public], hidden=cases[n_public:])
+                public=cases[:n_public], hidden=cases[n_public:] + hard,
+                meta={"hard": len(hard)})
 
 
 # ---------------------------------------------------------------- 自检负控
@@ -532,14 +713,17 @@ def selftest() -> int:
 
     try:
         t = gen_program_task(1, ["max_subarray"], rnd, n_public=1, n_hidden=2)
-        chk("双路径一致时可发题", len(t.hidden) == 2)
+        chk("双路径一致时可发题", len(t.hidden) == 2 + t.meta["hard"],
+            "hid=%d hard=%d" % (len(t.hidden), t.meta["hard"]))
     except RefuseToEmit as e:
         chk("双路径一致时可发题", False, str(e))
 
     for fam in sorted(PROGRAM_FAMILIES):
         try:
             t = gen_program_task(2, [fam], random.Random(1000 + len(fam)), n_public=1, n_hidden=3)
-            chk("program 族双路径一致:%s" % fam, len(t.hidden) == 3)
+            chk("program 族双路径一致:%s" % fam,
+                len(t.hidden) == 3 + t.meta["hard"] and t.meta["hard"] >= 3,
+                "hid=%d hard=%d" % (len(t.hidden), t.meta["hard"]))
         except RefuseToEmit as e:
             chk("program 族双路径一致:%s" % fam, False, str(e))
 
@@ -584,6 +768,49 @@ def selftest() -> int:
         gen_program_task(8, ["csv_agg"], random.Random(42), 1, 2).to_json()
         == gen_program_task(8, ["csv_agg"], random.Random(42), 1, 2).to_json())
 
+    # ---- M6 加硬: 对抗用例覆盖 + 浅解必须翻车 + 见证型 ----
+    chk("对抗输入覆盖全部 program 族",
+        set(HARD_INPUTS) == set(PROGRAM_FAMILIES)
+        and all(len(v) >= 3 for v in HARD_INPUTS.values()),
+        "%d 族 / 最少 %d 条" % (len(HARD_INPUTS), min(len(v) for v in HARD_INPUTS.values())))
+
+    hit = 0
+    for fam in sorted(PROGRAM_FAMILIES):
+        tt = gen_program_task(9, [fam], random.Random(2000 + len(fam)), n_public=2, n_hidden=2)
+        pub_map = {c.stdin: c.expected_stdout for c in tt.public}
+        passed = sum(1 for h in tt.hidden if pub_map.get(h.stdin) == h.expected_stdout)
+        hit += passed
+        chk("浅解(只硬编码公开样例)在 %s 上零通过" % fam, passed == 0, "passed=%d" % passed)
+    chk("浅解跨族零通过", hit == 0)
+
+    for fam in sorted(WITNESS_FAMILIES):
+        tt = gen_math_task(10, [fam], random.Random(3000 + len(fam)))
+        m = tt.meta.get("witness", {})
+        av = int(tt.answer) if tt.answer.strip() else None
+        if m.get("kind") == "sqrt_mod":
+            chk("见证型 answer 是合法见证(oracle 正控可用)",
+                av is not None and 0 <= av < m["p"] and (av * av) % m["p"] == m["a"],
+                "answer=%r p=%d a=%d" % (tt.answer, m["p"], m["a"]))
+        else:
+            chk("见证型 answer 是最小反例", av == m.get("n"), "answer=%r n=%r" % (tt.answer, m.get("n")))
+        if m.get("kind") == "sqrt_mod":
+            good = (m["a"] % m["p"]) == ((min(x for x in range(m["p"]) if (x * x) % m["p"] == m["a"]) ** 2) % m["p"])
+            bad = [x for x in range(m["p"]) if (x * x) % m["p"] == m["a"]]
+            chk("见证型 sqrt_mod 有解且非平凡", good and len(bad) >= 1 and m["p"] in (101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167),
+                "p=%d a=%d 解数=%d" % (m["p"], m["a"], len(bad)))
+            n0 = (m["a"] + 1) % m["p"]
+            chk("见证型 sqrt_mod 错见证必须被拒", not ((m["a"] == 0) or ((n0 * n0) % m["p"] == m["a"])),
+                "反例 x=%d" % n0)
+        else:
+            C = CLAIMS[m["claim"]]
+            n = m["n"]
+            chk("见证型 最小反例正确且最小",
+                (not C["ref"](n)) and all(C["ref"](k) for k in range(C["n_min"], n)),
+                "%s n=%d" % (m["claim"], n))
+            chk("见证型 最小反例双实现一致:%s" % m["claim"], C["check"](n) == C["ref"](n))
+        chk("见证型 answer 就位且判定=验见证非比对标签:%s" % fam,
+            tt.answer.strip() != "" and bool(m) and "FINAL:" in tt.prompt)
+
     print("selftest %d/%d" % (ok, ok + len(fails)))
     return 0 if not fails else 1
 
@@ -608,7 +835,7 @@ def main(argv=None) -> int:
         for i in range(1, a.n + 1):
             tasks.append(gen_program_task(i, fams, rnd))
     else:
-        fams = sorted(MATH_FAMILIES)
+        fams = sorted(MATH_FAMILIES) + sorted(WITNESS_FAMILIES)
         for i in range(1, a.n + 1):
             tasks.append(gen_math_task(i, fams, rnd))
 

@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R398",
+  "updated_round": "R399",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -563,13 +563,25 @@
     },
     {
       "id": "probe.randomized-selfcheck",
-      "capability": "随机化能力自检探针: 随机程序题(6 族) + 随机数学题(5 族); 每题**双路径验算**(不一致 ⇒ 拒发题); 判分**只认隐藏用例**且**整题全对**才算过; 失败模式分类(no_code/syntax_error/runtime_error/timeout/wrong_output/partial/no_final/wrong_final)。R398 真机(种子 20260913, 题集 sha 95d6bb1b1a6cdacf): 6 题 21 用例 **21/21 = 1.0000**(73.33s)。真机首轮抓出判定器 2 个真缺陷(围栏假设 / 尾部状态行混入)并固化为永久负控 ⇒ 口径『判定必须按交付物的真实形态收集候选』",
+      "capability": "随机化能力自检探针: 随机程序题(7 族, 含新陷阱族 pair_closest_abs_sum) + 随机数学题(5 古典 + 2 见证型); 每题**双路径验算**(不一致 ⇒ 拒发题); 判分**只认隐藏用例**且**整题全对**才算过; 失败模式分类(no_code/syntax_error/runtime_error/timeout/wrong_output/partial/no_final/wrong_final/**wrong_witness**)。R398 真机(seed 20260913, 题集 95d6bb1b1a6cdacf): 6 题 21 用例 21/21(73.33s)。R399 加硬: 每程序族强制并入 3-5 条**对抗用例**(只进 hidden, 不足则拒发题) + 见证型数学题(判定=**独立验证见证**, 不比对标签) ⇒ 同种子隐藏用例 21→35; 真机 agent 35/35 用例、6/6 整题全对(56.09s); **作弊解(mutation:hardcode) 用例级 22.2%→6.25% 且整题全对恒 0/3**",
       "level": "L4",
-      "evidence_cmd": "python3 eval/probe/tasks.py --selftest && python3 eval/probe/grade.py --selftest && python3 eval/probe/run_probe.py --selftest && python3 eval/probe/run_probe.py --kind both --n 3 --seed 20260913 --solver agent --tag=run1",
-      "evidence_path": "docs/reports/r398/r398-random-probe-selftest.md; data/probe/probe-agent-seed20260913.json; data/probe/replies/; eval/probe/",
-      "negative_control": "生成器 21/21(含 2 条『双路径不一致 ⇒ 拒发题』); 判定器 13/13(真差一/死循环/语法错/单值硬编码/无围栏 CLI 回复+尾部状态行/产物路径回退, 且**反向负控**: 比对恒真时差一解被判通过 ⇒ 证明判据非空心); 编排器 11/11(hardcode 作弊解仅 22.2% 用例通过率 ⇒ 确立『整题全对』计分)",
+      "evidence_cmd": "python3 eval/probe/tasks.py --selftest && python3 eval/probe/grade.py --selftest && python3 eval/probe/run_probe.py --selftest && python3 eval/probe/run_probe.py --kind both --n 3 --seed 20260913 --solver agent --solve-timeout 420 --tag=run1",
+      "evidence_path": "eval/probe",
+      "negative_control": "生成器 39/39(含双路径不一致⇒拒发题 + **每条 HARD_INPUTS 必须≥3 条** + 浅解负控: 只背公开样例的解法在 hidden 上必须 0 通过); 判定器 25/25(差一/死循环/语法错/单值硬编码/无围栏 CLI 回复+尾部状态行/产物路径回退, **见证型**: 错见证/越界/非整数必须 wrong_witness, 且把判定谓词打坏后必须被抓) + **反向负控**(比对恒真时差一解被判通过 ⇒ 判据非空心); 编排器 18/18(含**反死代码**: 见证型族必须可达; hardcode 作弊解仅 6.25% 用例级/0 整题)",
       "covers": "eval/probe/tasks.py, eval/probe/grade.py, eval/probe/run_probe.py, skills/independent-verification-before-claim/, src/agent.tests/SkillGeneralizationTests.cs",
-      "owner_round": "R398"
+      "owner_round": "R399",
+      "evidence_report": "docs/reports/r399/r399-m6-hardening-and-kpi-datapoints.md"
+    },
+    {
+      "id": "probe.kpi-instrumentation",
+      "capability": "跑测数据打点(KPI): 探针运行摘要(data/probe/probe-*.json) + 遥测 llm_call 打点(prompt/completion tokens) 合成台账 data/probe/kpi.jsonl, 并生成**前后对比报告**(A→B 逐项 Δ / 按族分层 / 失败模式分布 / 诚实边界)。一级指标 = 通过率(用例级) 与 **整题全对率**; token 取 run 墙钟窗口 [ts-elapsed_s, ts]; 不走 LLM 的 solver(oracle/mutation) token 记 **n/a 不记 0**; 缺字段/除零/未知模式键**一律不静默**。R399 真机读数: agent 全量批 8 次调用 / prompt 21,530 / completion 4,845 / **4,396 tok/题**; 定向批(新族) 11 次调用 / 28,334 / 38,956 / **11,215 tok/题**",
+      "level": "L4",
+      "evidence_cmd": "python3 scripts/kpi_probe.py --selftest && python3 scripts/kpi_probe.py --report docs/reports/r399/kpi-probe-r399.md --compare probe-oracle-seed20260913 probe-agent-seed20260913",
+      "evidence_path": "scripts/kpi_probe.py",
+      "evidence_report": "docs/reports/r399/kpi-probe-r399.md",
+      "negative_control": "24/24: 缺率/缺 sha/缺 ts/缺 taxonomy ⇒ error; total=0 或 n_tasks=0 ⇒ error(除零保护); 窗口锚点写反([ts,ts+elapsed]) ⇒ **读不到窗内调用**(必须 None); 7 位小数遥测时间戳必须可解析(曾静默丢 ⇒ token 全 None); 非法时间戳必须抛错; 窗口内无调用 ⇒ n/a(不是 0); 同 run 台账去重; 异题集对比必须显式标注不可比; 未知失败模式键必须保留",
+      "covers": "scripts/kpi_probe.py, eval/probe/run_probe.py, data/probe/kpi.jsonl",
+      "owner_round": "R399"
     }
   ],
   "aot_check_policy": "release_tag_only",

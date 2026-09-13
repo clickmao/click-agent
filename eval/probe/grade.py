@@ -137,9 +137,12 @@ def _syntax_ok(code: str) -> bool:
         return False
 
 
-def grade_program(task: dict, reply: str, timeout: float = 5.0) -> dict:
-    """返回 {mode, passed, total, detail[], taxonomy}。mode ∈ 上面铁律 2 的集合。"""
-    code = extract_code(reply)
+def grade_program(task: dict, reply: str, timeout: float = 5.0, since: float = None) -> dict:
+    """返回 {mode, passed, total, detail[], taxonomy}。mode ∈ 上面铁律 2 的集合。
+
+    since: 求解开始墙钟秒; 只接受**该时刻之后**落盘的产物 (防拿旧产物冒充本次结果)。
+    """
+    code = extract_code(reply, since=since)
     if not code or not code.strip():
         return {"mode": "no_code", "passed": 0, "total": len(task["hidden"]),
                 "detail": [], "taxonomy": {"no_code": 1}}
@@ -169,8 +172,80 @@ def grade_program(task: dict, reply: str, timeout: float = 5.0) -> dict:
     return {"mode": mode, "passed": passed, "total": total, "detail": detail, "taxonomy": tax}
 
 
+# ---------------------------------------------------------------- 见证型数学题: 独立验证
+# 判据绑定语义: 不比对单一标签, 而是**验证解答者给出的见证**。
+# 本实现的素数判定走 6k±1 轮, 与生成器 (tasks.py 的双实现) 不同路 ⇒ 构成跨实现对账。
+
+_CLAIM_MIN = {"mersenne_prime": 2, "poly41_prime": 2}
+
+
+def _grade_pred(name: str):
+    if name == "mersenne_prime":
+        def f(n: int) -> bool:
+            v = (1 << n) - 1
+            if v < 2:
+                return False
+            if v % 2 == 0:
+                return v == 2
+            if v % 3 == 0:
+                return v == 3
+            d = 5
+            while d * d <= v:
+                if v % d == 0 or v % (d + 2) == 0:
+                    return False
+                d += 6
+            return True
+        return f
+
+    def g(n: int) -> bool:
+        v = n * n - n + 41
+        if v < 2:
+            return False
+        d = 2
+        while d * d <= v:
+            if v % d == 0:
+                return False
+            d += 1
+        return True
+    return g
+
+
+def verify_witness(meta: dict, got: str):
+    """独立验证见证 ⇒ (ok, reason)。"""
+    m = (meta or {}).get("witness") or {}
+    kind = m.get("kind")
+    try:
+        x = int(got)
+    except (TypeError, ValueError):
+        return False, "not_int"
+    if kind == "sqrt_mod":
+        p, a = int(m["p"]), int(m["a"])
+        if not (0 <= x < p):
+            return False, "out_of_range"
+        return ((x * x) % p == a), "x^2 mod p != a"
+    if kind == "min_counterexample":
+        name = str(m["claim"])
+        pred = _grade_pred(name)
+        if pred(x):
+            return False, "claim_true_at_n"
+        for k in range(_CLAIM_MIN[name], x):
+            if not pred(k):
+                return False, "not_minimal:%d" % k
+        return True, ""
+    return False, "unknown_witness_kind"
+
+
 def grade_math(task: dict, reply: str) -> dict:
     got = extract_final(reply)
+    if not got:
+        return {"mode": "no_final", "passed": 0, "total": 1, "detail": [], "taxonomy": {"no_final": 1}}
+    if (task.get("meta") or {}).get("witness"):
+        ok, why = verify_witness(task["meta"], got)
+        mode = "ok" if ok else "wrong_witness"
+        return {"mode": mode, "passed": 1 if ok else 0, "total": 1,
+                "detail": [{"case": 0, "verdict": mode, "got": got,
+                            "want": "<见证独立验证>", "why": why}],
+                "taxonomy": {mode: 1}}
     want = task["answer"]
     if not got:
         return {"mode": "no_final", "passed": 0, "total": 1, "detail": [], "taxonomy": {"no_final": 1}}
@@ -246,6 +321,29 @@ def selftest() -> int:
 
     r = grade_program({"kind": "program", "hidden": t["hidden"]}, "```python\n%s\n```" % _GOOD_MAXSUB)
     chk("正控: 与公开用例无关(判定只用隐藏)", r["passed"] == 2)
+
+    # ---- 见证型判定负控 ----
+    ws = {"kind": "math", "family": "witness_sqrt_mod", "answer": "", "meta": {"witness": {"kind": "sqrt_mod", "p": 101, "a": 4}}}
+    chk("正控: sqrt_mod 正确见证通过", grade_math(ws, "FINAL: 2")["mode"] == "ok")
+    chk("负控: sqrt_mod 错见证被拒", grade_math(ws, "FINAL: 3")["mode"] == "wrong_witness")
+    chk("负控: sqrt_mod 越界被拒", grade_math(ws, "FINAL: 101")["mode"] == "wrong_witness")
+    chk("负控: 见证非整数被拒", grade_math(ws, "FINAL: abc")["mode"] == "wrong_witness")
+
+    wc = {"kind": "math", "family": "witness_min_counterexample", "answer": "",
+          "meta": {"witness": {"kind": "min_counterexample", "claim": "mersenne_prime", "n": 4}}}
+    chk("正控: 最小反例 4 通过", grade_math(wc, "FINAL: 4")["mode"] == "ok")
+    chk("负控: 非最小反例被拒(5)", grade_math(wc, "FINAL: 5")["mode"] == "wrong_witness")
+    chk("负控: 命题为真的 n 被拒(3)", grade_math(wc, "FINAL: 3")["mode"] == "wrong_witness")
+    chk("负控: 缺 FINAL 判 no_final", grade_math(wc, "最小反例是 4")["mode"] == "no_final")
+
+    _save_pred = _grade_pred
+    globals()["_grade_pred"] = lambda name: (lambda n: True)   # 打坏判据
+    try:
+        bad = grade_math(wc, "FINAL: 4")["mode"]
+    finally:
+        globals()["_grade_pred"] = _save_pred                  # 还原
+    chk("反向负控: 谓词恒真时 4 必须被判命题为真", bad == "wrong_witness", "mode=%s" % bad)
+    chk("还原后判据仍严", grade_math(wc, "FINAL: 5")["mode"] == "wrong_witness")
 
     tm = {"kind": "math", "family": "comb_mod", "answer": "5"}
     chk("正控: math FINAL 解析", grade_math(tm, "推导…\nFINAL: 5")["mode"] == "ok")
