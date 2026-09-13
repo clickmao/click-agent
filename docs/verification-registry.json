@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R401",
+  "updated_round": "R402",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -621,6 +621,26 @@
         "skills/spec-uniqueness-and-judge-soundness"
       ],
       "owner_round": "R401"
+    },
+    {
+      "id": "rover.io.attribution",
+      "capability": "rover 生成链性能归因（盘读 vs 计算）: 进程 `/proc/self/io` + 内核 `/proc/diskstats` + 零运算裸读参照**三通道**同向才下结论。R402 实测: 每 pass 盘读 = 0.765/0.879/0.912 × 模型体积（3.23–3.85 GB，76.5–91.2% 必须从块设备重读）; ledger 流式当量 0.999/pass; 冷页臂−默认臂差 0.000（引擎无缓存复用机制）; 设备通道 vs 进程通道 1.006×（非自我报告）; 裸读 stream 436–544 MiB/s、mmap 229–368 MiB/s，64 MiB 块/提示窗**更慢**（预读负结果）; 计算（减法）9.2–17.0 s/pass ⇒ 本机天花板 0.06–0.11 tok/s（与远端 470.2 tok/s 差 4,300–7,800×）。同题 1-token 前向墙钟 15.97/25.02/22.66 s（极差 1.57×）⇒ 秒表不作 KPI，只认计数器比值。",
+      "level": "L3",
+      "evidence_cmd": "dotnet build src/agent.rover/agent.rover.csproj -c Release --nologo -v q && dotnet test src/agent.tests/agentframework.tests.csproj -c Release --nologo -v q --filter \"FullyQualifiedName~RoverProcIo\" && src/agent.rover/bin/Release/net10.0/agent.rover readbench /tmp/models/prover7b-q4km.gguf --mode stream --chunk-mb 8 --passes 2 && python3 scripts/r402_io_attribution.py --json data/probe/r402/io-attribution-run3.json",
+      "evidence_path": "scripts/r402_io_attribution.py",
+      "evidence_report": "docs/reports/r402/io-attribution.md",
+      "negative_control": "① 设备通道口径负控: 分区行会双计 —— 修正后 guard 实测 naive=6,502,662,144 vs whole=3,251,081,216 = **2.00×**（首版正则 `vd[a-z]+\\d*` 误匹配 vda1，两个数几乎相等掩盖了错误；双计值与正确值**一并落盘**供第三方复核）；② 不可用即标: 任一通道返回 0/缺失一律 `available=false` 且**不写入归因**（不以 0 充数）；③ 裸读臂自带 `readbench_scope{disk_path_engaged}`：`read_bytes≈0` 时读数只作「内存路径上界」，不得当盘吞吐；④ 解析负控: `/proc` 字段偏移错位会**静默得 0** —— 单测用带空格/括号的 `comm` 夹具钉死 minflt=idx7、majflt=idx9；⑤ 每-pass 分母口径负控: 分母误取 decode 步数会复现 R400 台账错值（单测 InRange 钉死 23.7–23.8e9）；⑥ 冷页对照臂 `--drop-pages` 与默认臂逐字节对照（差 0.000 才算「无缓存复用」成立）",
+      "covers": [
+        "src/agent.rover/runtime/ProcIo.cs",
+        "src/agent.rover/infer/ForwardPass.cs(ForwardStats.Io/Passes)",
+        "src/agent.rover/cli/ForwardCli.cs(io{}/io_scope{})",
+        "src/agent.rover/cli/ReadBenchCli.cs",
+        "src/agent.tests/RoverProcIoTests.cs",
+        "scripts/r402_io_attribution.py",
+        "eval/rover/r402/io-attribution-run3.json",
+        "eval/rover/r402/README.md"
+      ],
+      "owner_round": "R402"
     }
   ],
   "aot_check_policy": "release_tag_only",

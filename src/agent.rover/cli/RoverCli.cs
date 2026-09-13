@@ -29,6 +29,7 @@ public static class RoverCli
                 "tokenize" or "generate" => GenerateCli.Run(args, o),
                 "vulkan" => VulkanCli.Run(args, o),
                 "embed" => EmbedCli.Run(args, o),
+                "readbench" => ReadBenchCli.Run(args, o),
                 "--help" or "-h" or "help" => Usage(o),
                 _ => Unknown(args[0], err),
             };
@@ -61,6 +62,7 @@ public static class RoverCli
         o.WriteLine(GenerateCli.UsageLine);
         o.WriteLine(VulkanCli.UsageLine);
         o.WriteLine(EmbedCli.UsageLine);
+        o.WriteLine(ReadBenchCli.UsageLine);
         return 0;
     }
 

@@ -1,0 +1,338 @@
+{
+ "schema": "rover-io-attribution/1",
+ "ts": "2026-09-14T03:56:14+0800",
+ "machine": {
+  "MemTotal": "3747744 kB",
+  "MemFree": "134856 kB",
+  "Cached": "2452044 kB",
+  "nproc": 2
+ },
+ "model": {
+  "path": "/tmp/models/prover7b-q4km.gguf",
+  "bytes": 4223362304,
+  "model_over_ram_ratio": 1.1
+ },
+ "bare_read_mb_per_s": {
+  "readbench_stream": 491.5,
+  "readbench_mmap": 368.0,
+  "readbench_stream_chunk64": 549.8,
+  "readbench_mmap_chunk64": 254.6
+ },
+ "bare_read_mb_per_s_best": 549.8,
+ "arms": {
+  "forward_1tok": {
+   "ledger_sweeps_equivalent": 0.999,
+   "streamed_bytes": 4218372096.0,
+   "io_counters_available": "True",
+   "disk_read_bytes": 3711356928.0,
+   "passes": 1.0,
+   "disk_read_bytes_per_pass": 3711356928.0,
+   "disk_read_bytes_per_pass_over_model": 0.8787683037481598,
+   "disk_read_ratio_vs_streamed": 0.8798078603637719,
+   "verdict": "io_dominant",
+   "wall_s": 25.02,
+   "totals": {},
+   "mb_per_s_dev": 283.6,
+   "residency": [
+    "residency{loaded=976.0KiB reclaimed=0.0KiB streamed=4023.0MiB}",
+    "residency{loads=61 evicts=0 reclaims=0 hits=0 misses=61 hit_rate=0.00 %}",
+    "residency{peak_resident=976.0KiB budget=96.0MiB}"
+   ],
+   "disk_wait_s_est": {
+    "bare_stream_rate": 7.2,
+    "bare_mmap_rate": 9.62
+   },
+   "disk_wait_s_interval": [
+    7.2,
+    9.62
+   ],
+   "compute_s_interval": [
+    15.4,
+    17.82
+   ],
+   "disk_wait_share_interval": [
+    0.288,
+    0.384
+   ]
+  },
+  "forward_2tok": {
+   "ledger_sweeps_equivalent": 1.916,
+   "streamed_bytes": 8092680192.0,
+   "io_counters_available": "True",
+   "disk_read_bytes": 7267250176.0,
+   "passes": 2.0,
+   "disk_read_bytes_per_pass": 3633625088.0,
+   "disk_read_bytes_per_pass_over_model": 0.8603631008778355,
+   "disk_read_ratio_vs_streamed": 0.8980028870020124,
+   "verdict": "io_dominant",
+   "wall_s": 48.1,
+   "totals": {},
+   "mb_per_s_dev": 288.5,
+   "residency": [
+    "residency{loaded=976.0KiB reclaimed=0.0KiB streamed=7717.8MiB}",
+    "residency{loads=61 evicts=0 reclaims=0 hits=60 misses=61 hit_rate=49.59 %}",
+    "residency{peak_resident=976.0KiB budget=96.0MiB}"
+   ],
+   "disk_wait_s_est": {
+    "bare_stream_rate": 14.1,
+    "bare_mmap_rate": 18.83
+   },
+   "disk_wait_s_interval": [
+    14.1,
+    18.83
+   ],
+   "compute_s_interval": [
+    29.27,
+    34.0
+   ],
+   "disk_wait_share_interval": [
+    0.293,
+    0.391
+   ]
+  },
+  "forward_2tok_droppages": {
+   "ledger_sweeps_equivalent": 1.916,
+   "streamed_bytes": 8092680192.0,
+   "io_counters_available": "True",
+   "disk_read_bytes": 7254310912.0,
+   "passes": 2.0,
+   "disk_read_bytes_per_pass": 3627155456.0,
+   "disk_read_bytes_per_pass_over_model": 0.8588312332486074,
+   "disk_read_ratio_vs_streamed": 0.8964040021217238,
+   "verdict": "io_dominant",
+   "wall_s": 47.85,
+   "totals": {},
+   "mb_per_s_dev": 289.6,
+   "residency": [
+    "residency{loaded=976.0KiB reclaimed=0.0KiB streamed=7717.8MiB}",
+    "residency{loads=61 evicts=0 reclaims=0 hits=60 misses=61 hit_rate=49.59 %}",
+    "residency{peak_resident=976.0KiB budget=96.0MiB}"
+   ],
+   "disk_wait_s_est": {
+    "bare_stream_rate": 14.08,
+    "bare_mmap_rate": 18.8
+   },
+   "disk_wait_s_interval": [
+    14.08,
+    18.8
+   ],
+   "compute_s_interval": [
+    29.05,
+    33.77
+   ],
+   "disk_wait_share_interval": [
+    0.294,
+    0.393
+   ]
+  }
+ },
+ "page_cache_reuse_delta": 0.0,
+ "steps": [
+  {
+   "step": "readbench_stream",
+   "argv": "/home/agentuser/AgentFramework/src/agent.rover/bin/Release/net10.0/agent.rover readbench /tmp/models/prover7b-q4km.gguf --mode stream --chunk-mb 8 --passes 2",
+   "rc": 0,
+   "wall_s": 16.43,
+   "stdout_lines": [
+    "readbench_pass{pass=0 mode=stream bytes=4223362304 ms=10152.0 mb_per_s=396.7 disk_read_bytes=3739648000 rchar_bytes=4223362737 majflt=0 minflt=2181 io_counters_available=True}",
+    "readbench_pass{pass=1 mode=stream bytes=4223362304 ms=6236.3 mb_per_s=645.9 disk_read_bytes=2288779264 rchar_bytes=4223365648 majflt=0 minflt=2100 io_counters_available=True}",
+    "readbench{file=prover7b-q4km.gguf file_bytes=4223362304 mode=stream chunk_mb=8 passes=2 bytes_total=8446724608 ms_total=16388.3 mb_per_s=491.5 checksum=255982}",
+    "readbench_scope{disk_read_bytes_first_pass=3739648000 disk_read_bytes_last_pass=2288779264 disk_path_engaged=True verdict=cold_or_thrashing_read_measured honest_note=ram_total_must_be_compared_to_file_bytes}",
+    "done{command=readbench mode=stream}"
+   ],
+   "stderr_tail": [],
+   "dev_disk_read_bytes_delta": 12060196864,
+   "dev_disk_read_bytes_delta_naive_double_counted": 12060196864,
+   "dev_disk_read_mb_per_s": 699.9,
+   "memfree_kb_before": "134856 kB",
+   "memfree_kb_after": "125296 kB",
+   "cached_kb_after": "2479196 kB"
+  },
+  {
+   "step": "readbench_mmap",
+   "argv": "/home/agentuser/AgentFramework/src/agent.rover/bin/Release/net10.0/agent.rover readbench /tmp/models/prover7b-q4km.gguf --mode mmap --chunk-mb 8 --passes 2",
+   "rc": 0,
+   "wall_s": 22.06,
+   "stdout_lines": [
+    "readbench_pass{pass=0 mode=mmap bytes=4223362304 ms=11001.4 mb_per_s=366.1 disk_read_bytes=3931967488 rchar_bytes=757 majflt=512 minflt=95298 io_counters_available=True}",
+    "readbench_pass{pass=1 mode=mmap bytes=4223362304 ms=10890.1 mb_per_s=369.8 disk_read_bytes=3945172992 rchar_bytes=443 majflt=537 minflt=93801 io_counters_available=True}",
+    "readbench{file=prover7b-q4km.gguf file_bytes=4223362304 mode=mmap chunk_mb=8 passes=2 bytes_total=8446724608 ms_total=21891.6 mb_per_s=368.0 checksum=258152176}",
+    "readbench_scope{disk_read_bytes_first_pass=3931967488 disk_read_bytes_last_pass=3945172992 disk_path_engaged=True verdict=cold_or_thrashing_read_measured honest_note=ram_total_must_be_compared_to_file_bytes}",
+    "done{command=readbench mode=mmap}"
+   ],
+   "stderr_tail": [],
+   "dev_disk_read_bytes_delta": 15763554304,
+   "dev_disk_read_bytes_delta_naive_double_counted": 15763914752,
+   "dev_disk_read_mb_per_s": 681.5,
+   "memfree_kb_before": "125296 kB",
+   "memfree_kb_after": "193084 kB",
+   "cached_kb_after": "2483080 kB"
+  },
+  {
+   "step": "readbench_stream_chunk64",
+   "argv": "/home/agentuser/AgentFramework/src/agent.rover/bin/Release/net10.0/agent.rover readbench /tmp/models/prover7b-q4km.gguf --mode stream --chunk-mb 64 --passes 1",
+   "rc": 0,
+   "wall_s": 7.4,
+   "stdout_lines": [
+    "readbench_pass{pass=0 mode=stream bytes=4223362304 ms=7326.0 mb_per_s=549.8 disk_read_bytes=2636259328 rchar_bytes=4223362732 majflt=0 minflt=16516 io_counters_available=True}",
+    "readbench{file=prover7b-q4km.gguf file_bytes=4223362304 mode=stream chunk_mb=64 passes=1 bytes_total=4223362304 ms_total=7326.0 mb_per_s=549.8 checksum=17047}",
+    "readbench_scope{disk_read_bytes_first_pass=2636259328 disk_read_bytes_last_pass=2636259328 disk_path_engaged=True verdict=cold_or_thrashing_read_measured honest_note=ram_total_must_be_compared_to_file_bytes}",
+    "done{command=readbench mode=stream}"
+   ],
+   "stderr_tail": [],
+   "dev_disk_read_bytes_delta": 5276016640,
+   "dev_disk_read_bytes_delta_naive_double_counted": 5276016640,
+   "dev_disk_read_mb_per_s": 679.6,
+   "memfree_kb_before": "193084 kB",
+   "memfree_kb_after": "269536 kB",
+   "cached_kb_after": "2420288 kB"
+  },
+  {
+   "step": "readbench_mmap_chunk64",
+   "argv": "/home/agentuser/AgentFramework/src/agent.rover/bin/Release/net10.0/agent.rover readbench /tmp/models/prover7b-q4km.gguf --mode mmap --chunk-mb 64 --passes 1",
+   "rc": 0,
+   "wall_s": 15.96,
+   "stdout_lines": [
+    "readbench_pass{pass=0 mode=mmap bytes=4223362304 ms=15819.7 mb_per_s=254.6 disk_read_bytes=3945205760 rchar_bytes=758 majflt=543 minflt=94185 io_counters_available=True}",
+    "readbench{file=prover7b-q4km.gguf file_bytes=4223362304 mode=mmap chunk_mb=64 passes=1 bytes_total=4223362304 ms_total=15819.7 mb_per_s=254.6 checksum=129076088}",
+    "readbench_scope{disk_read_bytes_first_pass=3945205760 disk_read_bytes_last_pass=3945205760 disk_path_engaged=True verdict=cold_or_thrashing_read_measured honest_note=ram_total_must_be_compared_to_file_bytes}",
+    "done{command=readbench mode=mmap}"
+   ],
+   "stderr_tail": [],
+   "dev_disk_read_bytes_delta": 7896399872,
+   "dev_disk_read_bytes_delta_naive_double_counted": 7896801280,
+   "dev_disk_read_mb_per_s": 472.0,
+   "memfree_kb_before": "269536 kB",
+   "memfree_kb_after": "208384 kB",
+   "cached_kb_after": "2483716 kB"
+  },
+  {
+   "step": "forward_1tok",
+   "argv": "/home/agentuser/AgentFramework/src/agent.rover/bin/Release/net10.0/agent.rover forward /tmp/models/prover7b-q4km.gguf --tokens 1000 --ctx 4",
+   "rc": 0,
+   "wall_s": 25.02,
+   "stdout_lines": [
+    "forward{file=prover7b-q4km.gguf file_bytes=4223362304 tokens=[1000] n_tokens=1 data_offset=3990784}",
+    "cfg{arch=llama name=Deepseek-Prover-V2-7B layers=30 hidden=4096 ffn=11008 n_head=32 n_head_kv=32 gqa_group=1 head_dim=128 value_dim=128}",
+    "cfg{vocab=102400 ctx=32768 rope_dim=128 rope_base=10000 rope_scaling=none rope_factor=0 rms_eps=1E-06 attn_scale=0.088388346 tied_embeddings=False}",
+    "open{meta_parse_ms=37 header_open_ms=39.6 header_bytes_read=3990784 ws_before=30412800 ws_after=51605504}",
+    "residency_scope{budget_bytes=100663296 budget_unlimited=False pin_mode=default_norms reclaim_each_step=False}",
+    "rope_check{impl_a=RopeTable impl_b=CpuKernels.Rope n_heads=32 head_dim=128 rope_dim=128 pos=7 max_abs_diff=7.1525574E-07 verdict=match}",
+    "logits{count=102400 min=78.10906 max=100.66701 mean=86.7501 stdev=2.1845454590251157 sum=8883210.145210266}",
+    "topk{rank=1 id=12 logit=100.66701}",
+    "topk{rank=2 id=185 logit=100.08725}",
+    "topk{rank=3 id=13 logit=99.86978}",
+    "topk{rank=4 id=11 logit=99.62295}",
+    "topk{rank=5 id=62 logit=99.50535}",
+    "logits_head{[0]=95.802734 [1]=95.80256 [2]=93.07207 [3]=94.22148 [4]=94.50393 [5]=90.95368 [6]=95.47176 [7]=98.79937}",
+    "last_hidden{idx0..3=[95.802734,95.80256,93.07207,94.22148]}",
+    "timing{embed_ms=2.3 attn_ms=7870.8 ffn_ms=15321.7 out_norm_ms=1.3 lm_head_ms=1514.8 total_ms=24735.4 per_token_ms=24735.4 layers=30 tokens=1}",
+    "layer_timing{min_ms=504.3 max_ms=985.2 mean_ms=773.1 is_per_layer=True}",
+    "mem{peak_working_set=2213326848 peak_vmrss=2213347328 vmhwm=2213019648 vmhwm_mib=2110.5 kv_cache_bytes=3932160 gc_heap=13828584 drop_pages=False}",
+    "residency{loaded=976.0KiB reclaimed=0.0KiB streamed=4023.0MiB}",
+    "residency{loads=61 evicts=0 reclaims=0 hits=0 misses=61 hit_rate=0.00 %}",
+    "residency{peak_resident=976.0KiB budget=96.0MiB}",
+    "residency_verdict{peak_resident=999424 budget=100663296 peak_within_budget=True evicts=0 reclaims=0 loads=61 hits=0 misses=61 hit_rate=0.0000 resident_end=61 verdict=within_budget}",
+    "stream{tensor_window_bytes_scanned=4218372096 file_bytes=4223362304 ratio=0.999 touched_windows=273 passes=1 streamed_bytes_per_pass=4218372096}",
+    "io{available=True disk_read_bytes=3711356928 rchar_bytes=13439 syscr=58 minflt=88657 majflt=881 passes=1 disk_read_bytes_per_pass=3711356928 streamed_bytes_per_pass=4218372096 disk_read_ratio=0.880 majflt_per_pass=881}",
+    "io_scope{rule=disk_read_ratio>=0.5⇒io_dominant attribution=io_dominant_suspect honest_note=adjudication_requires_readbench_ratio}",
+    "done{command=forward tokens=1 vocab=102400 layers=30}"
+   ],
+   "stderr_tail": [],
+   "dev_disk_read_bytes_delta": 7439130624,
+   "dev_disk_read_bytes_delta_naive_double_counted": 7439605760,
+   "dev_disk_read_mb_per_s": 283.6,
+   "memfree_kb_before": "208384 kB",
+   "memfree_kb_after": "214552 kB",
+   "cached_kb_after": "2472720 kB"
+  },
+  {
+   "step": "forward_2tok",
+   "argv": "/home/agentuser/AgentFramework/src/agent.rover/bin/Release/net10.0/agent.rover forward /tmp/models/prover7b-q4km.gguf --tokens 1000,2000 --ctx 4",
+   "rc": 0,
+   "wall_s": 48.1,
+   "stdout_lines": [
+    "forward{file=prover7b-q4km.gguf file_bytes=4223362304 tokens=[1000,2000] n_tokens=2 data_offset=3990784}",
+    "cfg{arch=llama name=Deepseek-Prover-V2-7B layers=30 hidden=4096 ffn=11008 n_head=32 n_head_kv=32 gqa_group=1 head_dim=128 value_dim=128}",
+    "cfg{vocab=102400 ctx=32768 rope_dim=128 rope_base=10000 rope_scaling=none rope_factor=0 rms_eps=1E-06 attn_scale=0.088388346 tied_embeddings=False}",
+    "open{meta_parse_ms=41 header_open_ms=43.6 header_bytes_read=3990784 ws_before=30588928 ws_after=51720192}",
+    "residency_scope{budget_bytes=100663296 budget_unlimited=False pin_mode=default_norms reclaim_each_step=False}",
+    "rope_check{impl_a=RopeTable impl_b=CpuKernels.Rope n_heads=32 head_dim=128 rope_dim=128 pos=7 max_abs_diff=7.1525574E-07 verdict=match}",
+    "logits{count=102400 min=90.25409 max=111.35759 mean=96.91628 stdev=2.0610501839291593 sum=9924227.544769287}",
+    "topk{rank=1 id=185 logit=111.35759}",
+    "topk{rank=2 id=207 logit=109.5441}",
+    "topk{rank=3 id=7 logit=109.39214}",
+    "topk{rank=4 id=63550 logit=109.38563}",
+    "topk{rank=5 id=2000 logit=108.851746}",
+    "logits_head{[0]=104.41712 [1]=104.940796 [2]=104.04739 [3]=105.54326 [4]=105.7363 [5]=104.378815 [6]=105.085655 [7]=109.39214}",
+    "last_hidden{idx0..3=[104.41712,104.940796,104.04739,105.54326]}",
+    "timing{embed_ms=3.1 attn_ms=15286.5 ffn_ms=30935.5 out_norm_ms=7.6 lm_head_ms=1515.5 total_ms=47795.2 per_token_ms=23897.6 layers=30 tokens=2}",
+    "layer_timing{min_ms=1150.5 max_ms=1879.2 mean_ms=1540.7 is_per_layer=True}",
+    "mem{peak_working_set=2211483648 peak_vmrss=2211512320 vmhwm=2211315712 vmhwm_mib=2108.9 kv_cache_bytes=3932160 gc_heap=14867592 drop_pages=False}",
+    "residency{loaded=976.0KiB reclaimed=0.0KiB streamed=7717.8MiB}",
+    "residency{loads=61 evicts=0 reclaims=0 hits=60 misses=61 hit_rate=49.59 %}",
+    "residency{peak_resident=976.0KiB budget=96.0MiB}",
+    "residency_verdict{peak_resident=999424 budget=100663296 peak_within_budget=True evicts=0 reclaims=0 loads=61 hits=60 misses=61 hit_rate=0.4959 resident_end=61 verdict=within_budget}",
+    "stream{tensor_window_bytes_scanned=8092680192 file_bytes=4223362304 ratio=1.916 touched_windows=484 passes=2 streamed_bytes_per_pass=4046340096}",
+    "io{available=True disk_read_bytes=7267250176 rchar_bytes=19645 syscr=85 minflt=168649 majflt=2117 passes=2 disk_read_bytes_per_pass=3633625088 streamed_bytes_per_pass=4046340096 disk_read_ratio=0.898 majflt_per_pass=1058}",
+    "io_scope{rule=disk_read_ratio>=0.5⇒io_dominant attribution=io_dominant_suspect honest_note=adjudication_requires_readbench_ratio}",
+    "done{command=forward tokens=2 vocab=102400 layers=30}"
+   ],
+   "stderr_tail": [],
+   "dev_disk_read_bytes_delta": 14552596480,
+   "dev_disk_read_bytes_delta_naive_double_counted": 14553022464,
+   "dev_disk_read_mb_per_s": 288.5,
+   "memfree_kb_before": "214552 kB",
+   "memfree_kb_after": "223372 kB",
+   "cached_kb_after": "2472988 kB"
+  },
+  {
+   "step": "forward_2tok_droppages",
+   "argv": "/home/agentuser/AgentFramework/src/agent.rover/bin/Release/net10.0/agent.rover forward /tmp/models/prover7b-q4km.gguf --tokens 1000,2000 --ctx 4 --drop-pages",
+   "rc": 0,
+   "wall_s": 47.85,
+   "stdout_lines": [
+    "forward{file=prover7b-q4km.gguf file_bytes=4223362304 tokens=[1000,2000] n_tokens=2 data_offset=3990784}",
+    "cfg{arch=llama name=Deepseek-Prover-V2-7B layers=30 hidden=4096 ffn=11008 n_head=32 n_head_kv=32 gqa_group=1 head_dim=128 value_dim=128}",
+    "cfg{vocab=102400 ctx=32768 rope_dim=128 rope_base=10000 rope_scaling=none rope_factor=0 rms_eps=1E-06 attn_scale=0.088388346 tied_embeddings=False}",
+    "open{meta_parse_ms=36 header_open_ms=39.0 header_bytes_read=3990784 ws_before=30535680 ws_after=51662848}",
+    "residency_scope{budget_bytes=100663296 budget_unlimited=False pin_mode=default_norms reclaim_each_step=False}",
+    "rope_check{impl_a=RopeTable impl_b=CpuKernels.Rope n_heads=32 head_dim=128 rope_dim=128 pos=7 max_abs_diff=7.1525574E-07 verdict=match}",
+    "logits{count=102400 min=90.25409 max=111.35759 mean=96.91628 stdev=2.0610501839291593 sum=9924227.544769287}",
+    "topk{rank=1 id=185 logit=111.35759}",
+    "topk{rank=2 id=207 logit=109.5441}",
+    "topk{rank=3 id=7 logit=109.39214}",
+    "topk{rank=4 id=63550 logit=109.38563}",
+    "topk{rank=5 id=2000 logit=108.851746}",
+    "logits_head{[0]=104.41712 [1]=104.940796 [2]=104.04739 [3]=105.54326 [4]=105.7363 [5]=104.378815 [6]=105.085655 [7]=109.39214}",
+    "last_hidden{idx0..3=[104.41712,104.940796,104.04739,105.54326]}",
+    "timing{embed_ms=3.5 attn_ms=15277.8 ffn_ms=30824.3 out_norm_ms=1.2 lm_head_ms=1510.0 total_ms=47643.9 per_token_ms=23822.0 layers=30 tokens=2}",
+    "layer_timing{min_ms=1157.3 max_ms=1741.7 mean_ms=1536.7 is_per_layer=True}",
+    "mem{peak_working_set=47030272 peak_vmrss=47058944 vmhwm=390594560 vmhwm_mib=372.5 kv_cache_bytes=3932160 gc_heap=14867984 drop_pages=True}",
+    "residency{loaded=976.0KiB reclaimed=0.0KiB streamed=7717.8MiB}",
+    "residency{loads=61 evicts=0 reclaims=0 hits=60 misses=61 hit_rate=49.59 %}",
+    "residency{peak_resident=976.0KiB budget=96.0MiB}",
+    "residency_verdict{peak_resident=999424 budget=100663296 peak_within_budget=True evicts=0 reclaims=0 loads=61 hits=60 misses=61 hit_rate=0.4959 resident_end=61 verdict=within_budget}",
+    "stream{tensor_window_bytes_scanned=8092680192 file_bytes=4223362304 ratio=1.916 touched_windows=484 passes=2 streamed_bytes_per_pass=4046340096}",
+    "io{available=True disk_read_bytes=7254310912 rchar_bytes=19936 syscr=85 minflt=169698 majflt=1435 passes=2 disk_read_bytes_per_pass=3627155456 streamed_bytes_per_pass=4046340096 disk_read_ratio=0.896 majflt_per_pass=718}",
+    "io_scope{rule=disk_read_ratio>=0.5⇒io_dominant attribution=io_dominant_suspect honest_note=adjudication_requires_readbench_ratio}",
+    "done{command=forward tokens=2 vocab=102400 layers=30}"
+   ],
+   "stderr_tail": [],
+   "dev_disk_read_bytes_delta": 14528724992,
+   "dev_disk_read_bytes_delta_naive_double_counted": 14529216512,
+   "dev_disk_read_mb_per_s": 289.6,
+   "memfree_kb_before": "223372 kB",
+   "memfree_kb_after": "266924 kB",
+   "cached_kb_after": "2473232 kB"
+  }
+ ],
+ "honest_notes": [
+  "三个独立通道 (进程 /proc/self/io · 设备 /proc/diskstats · 无运算裸读参照) 必须同向才下归因结论",
+  "裸读 read_bytes≈0 ⇒ 跑的是页缓存, 该吞吐只能当「内存路径上界」, 不能当盘吞吐",
+  "裸读是顺序读, 前向是缺页驱动的逐张量触碰 ⇒ 前向的等效吞吐只会更低, 不会更高",
+  "单机单盘读数, 不代表其它机型; 归因结论绑定本机 (2 vCPU / MemTotal 见 machine 段)",
+  "盘等待秒数的分母 = 同机同文件的裸读速率 (stream 与 mmap 两条路径给出上下界), 不是拍脑袋系数; 裸读是顺序读而前向是逐张量缺页触碰 ⇒ 真实盘等待倾向区间**上沿**",
+  "设备通道只累计整盘行, 分区行会双计; 双计口径的值同样落盘 (负控), 供第三方复核口径本身"
+ ]
+}

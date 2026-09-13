@@ -72,7 +72,7 @@ prompt = `<｜begin▁of▁sentence｜>你是严谨的数学助手…<｜User｜
 | tokens_per_s | **0.0389** |
 | 总墙钟（8 token） | 989,894.9 ms（16.5 min） |
 | 峰值 RSS | 1,995,580 KB = **1.90 GiB**（ws_delta 2,013,544,448 B） |
-| 流式字节 | 177,440,440,320 B = **165.2 GiB** ⇒ ≈22.2 GB/token（≈5.3× 模型体积） |
+| 流式字节 | 177,440,440,320 B = **165.2 GiB** ⇒ 3.943 **GB/token**（≈0.94× 模型体积）<br>（**R402 口径修正**：原写 ≈22.2 GB/token「≈5.3× 模型体积」是**分母口径错** —— 分子含 prefill 37 + decode 8 = **45 个 pass**，分母只除了 8 步 decode。按 token 数除才是 3.943 GB/token，与本节下文「每 token 流式扫 ≈4.0 GiB」自洽；见 `docs/reports/r402/io-attribution.md` §4.1） |
 | 采样随机数消耗 | `draws=8`（1 draw/token，修复后行为） |
 | 驱逐 | `evicts=0`（默认 pin 热集） |
 | stop | `max_tokens`（未自然 EOS） |
@@ -97,7 +97,7 @@ prompt = `<｜begin▁of▁sentence｜>你是严谨的数学助手…<｜User｜
   rover **不是交互级解法后端**；R400 交付的是「生成链正确且可对账」这一**前置条件**。
   解法级 KPI 对比要等 R401/R402（批 prefill / 线程 / mmap 策略）把吞吐抬到可测区间才成立。
 
-## 4. 本轮 5 处实测修正（均为「看起来对」的失效形态）
+## 4. 本轮 5 处实测修正（均为「看起来对」的失效形态）＋ R402 复核追加 1 处
 
 | # | 现象 | 根因 | 修法 |
 |---|---|---|---|
@@ -106,6 +106,7 @@ prompt = `<｜begin▁of▁sentence｜>你是严谨的数学助手…<｜User｜
 | ③ | `：\u3000””\u3000` 尾片切分错误 | `\s?[类]+` 的空白前缀**需要回溯**（贪婪吞空白后若不是类字符，须退回不吞，把该空白字符当类成员） | `MatchClassRun` 实现回转义 |
 | ④ | 谓词表把 Zs 类空白误判为「非 `\s`」 | 用**整条流水线**探测单条谓词，后续 CJK 阶段二次切分干扰判断 | 改为 oracle **阶段隔离探测**（只喂单个 Split/Digits 句柄） |
 | ⑤ | 特殊符号编码结果与 oracle 不一致 | 误以为切分集 = `special=true` 的 3 个 | 实测切分集 = `added_tokens` **全体 18**；`special=true` 的 3 个只影响 `decode(skip_special_tokens=true)` |
+| ⑥ | **（R402 复核追加）** 流式字节被报成 ≈22.2 GB/token（≈5.3× 模型体积），与本报告下文的「≈4.0 GiB/token」自相矛盾 | 台账口径错：分子含 37 prefill + 8 decode 共 45 个 pass，分母只除 decode 的 8 步 | 改为按 token 数除 = **3.943 GB/token**；引擎侧同步加 `streamed_bytes_per_pass`（分母 = pass 数）作为**唯一口径**，并配单测钉死分母语义 |
 
 ## 5. 交付物
 

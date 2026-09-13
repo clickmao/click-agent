@@ -106,7 +106,19 @@ public static class ForwardCli
                     $"hit_rate={fp.Ledger.HitRate:F4} resident_end={fp.ResidentCount} " +
                     $"verdict={(fp.Ledger.BudgetUnlimited ? "budget_unlimited" : budgetOk ? "within_budget" : "budget_exceeded_honest")}}}");
         o.WriteLine($"stream{{tensor_window_bytes_scanned={st.StreamedBytes} file_bytes={r.Mapped.Length} " +
-                    $"ratio={(double)st.StreamedBytes / r.Mapped.Length:F3} touched_windows={r.Mapped.TouchedWindows}}}");
+                    $"ratio={(double)st.StreamedBytes / r.Mapped.Length:F3} touched_windows={r.Mapped.TouchedWindows} " +
+                    $"passes={st.Passes} streamed_bytes_per_pass={st.StreamedBytesPerPass:F0}}}");
+        // R402 度量子步骤: 把「每 token 秒数」拆成盘读 vs 计算。判据是**盘读字节 / 窗口扫描字节**
+        // —— ≈1 说明每个 token 都在真正读盘 (页缓存装不下模型), ≪1 说明命中页缓存 (瓶颈在计算)。
+        // 阈值 0.5 是**机械分档**不是结论: 最终归因还需与裸读吞吐 (readbench) 相除才成立。
+        o.WriteLine($"io{{available={st.Io.Available} disk_read_bytes={st.Io.ReadBytes} " +
+                    $"rchar_bytes={st.Io.RcharBytes} syscr={st.Io.Syscr} minflt={st.Io.MinFlt} majflt={st.Io.MajFlt} " +
+                    $"passes={st.Passes} disk_read_bytes_per_pass={st.DiskReadBytesPerPass:F0} " +
+                    $"streamed_bytes_per_pass={st.StreamedBytesPerPass:F0} disk_read_ratio={st.DiskReadRatio:F3} " +
+                    $"majflt_per_pass={(st.Passes > 0 ? (double)st.Io.MajFlt / st.Passes : 0):F0}}}");
+        o.WriteLine($"io_scope{{rule=disk_read_ratio>=0.5⇒io_dominant " +
+                    $"attribution={(!st.Io.Available ? "unmeasured_io_counters_unavailable" : st.DiskReadRatio >= 0.5 ? "io_dominant_suspect" : "cache_hit_compute_dominant_suspect")} " +
+                    $"honest_note=adjudication_requires_readbench_ratio}}");
 
         if (dumpDir is not null)
         {

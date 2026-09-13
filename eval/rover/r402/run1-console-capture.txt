@@ -1,0 +1,54 @@
+# R402 · 归因测量 第 1 次运行的**控制台捕获**（原始 JSON 已被第 2 次运行覆盖）
+
+诚实说明（保留本条是为了不留假账）：第 1 次运行的 JSON 落盘在同一路径
+`data/probe/r402/io-attribution.json`，第 2 次运行直接覆盖了它，**原始 JSON 已丢失**。
+本文件保存的是第 1 次运行时 `tail -30` 的**原样控制台输出**与 `forward_1tok` 的原始 `io{}/stream{}/residency{}` 行，
+用于交叉核对「同题重复跑」的波动幅度。凡本文件未逐字捕获的字段，一律不在报告里当作读数引用。
+
+运行时刻：2026-09-14 凌晨（cron 轮内），命令：
+`python3 scripts/r402_io_attribution.py --json data/probe/r402/io-attribution.json`
+
+## 1. 控制台汇总（原样）
+
+```
+machine{MemTotal=3747744 kB nproc=2}
+model{bytes=4223362304 over_ram=1.1}
+bare_read{stream_mb_per_s=436.0 mmap_mb_per_s=364.3 best=436.0}
+forward_1tok{wall_s=15.97 tokens=1.0 disk_per_pass=*** over_model=0.912079514549742 ratio_vs_streamed=0.9131584773312516 ledger_sweeps=0.999 verdict=io_dominant dev_mb_per_s=461.0}
+forward_2tok{wall_s=29.61 tokens=2.0 disk_per_pass=*** over_model=0.8717049343631211 ratio_vs_streamed=0.9098409112074795 ledger_sweeps=1.916 verdict=io_dominant dev_mb_per_s=475.1}
+forward_2tok_droppages{wall_s=42.42 tokens=2.0 disk_per_pass=*** over_model=0.8704354093699843 ratio_vs_streamed=0.9085158461183387 ledger_sweeps=1.916 verdict=io_dominant dev_mb_per_s=331.0}
+cache_reuse_delta{cold_minus_warm_per_pass_over_model=0.0}
+```
+
+注：`disk_per_pass=***` 是运行时占位符被抑制显示，真值见下面原始行的 `disk_read_bytes_per_pass`。
+
+## 2. forward_1tok 原始行（第 1 次运行）
+
+```
+residency{loaded=976.0KiB reclaimed=0.0KiB streamed=4023.0MiB}
+residency{loads=61 evicts=0 reclaims=0 hits=0 misses=61 hit_rate=0.00 %}
+residency{peak_resident=976.0KiB budget=96.0MiB}
+stream{tensor_window_bytes_scanned=4218372096 file_bytes=4223362304 ratio=0.999 touched_windows=273 passes=1 streamed_bytes_per_pass=4218372096}
+io{available=True disk_read_bytes=3852042240 rchar_bytes=13996 syscr=62 minflt=89438 majflt=905 passes=1 disk_read_bytes_per_pass=3852042240 streamed_bytes_per_pass=4218372096 disk_read_ratio=0.913 majflt_per_pass=905}
+io_scope{rule=disk_read_ratio>=0.5⇒io_dominant attribution=io_dominant_suspect honest_note=adjudication_requires_readbench_ratio}
+```
+
+## 3. 裸读臂逐 pass（第 1 次运行）
+
+```
+readbench_pass{pass=0 mode=stream bytes=4223362304 ms=9193.0 mb_per_s=438.1 disk_read_bytes=3415375872 rchar_bytes=4223362730 majflt=0 minflt=2180 io_counters_available=True}
+readbench_pass{pass=1 mode=stream bytes=4223362304 ms=9284.7 mb_per_s=433.8 disk_read_bytes=3406426112 rchar_bytes=4223365609 majflt=0 minflt=2100 io_counters_available=True}
+readbench{file=prover7b-q4km.gguf file_bytes=4223362304 mode=stream chunk_mb=8 passes=2 bytes_total=8446724608 ms_total=18477.7 mb_per_s=436.0 checksum=255982}
+readbench_pass{pass=0 mode=mmap bytes=4223362304 ms=10576.9 mb_per_s=380.8 disk_read_bytes=3789959168 rchar_bytes=754 majflt=751 minflt=93368 io_counters_available=True}
+readbench_pass{pass=1 mode=mmap bytes=4223362304 ms=11538.1 mb_per_s=349.1 disk_read_bytes=4086800384 rchar_bytes=444 majflt=591 minflt=91424 io_counters_available=True}
+readbench{file=prover7b-q4km.gguf file_bytes=4223362304 mode=mmap chunk_mb=8 passes=2 bytes_total=8446724608 ms_total=22115.0 mb_per_s=364.3 checksum=258152176}
+```
+
+## 4. 第 1 次运行可用的结论（与第 2/3 次对照）
+
+- **零缓存复用（两次同向）**：裸读臂 `disk_read_bytes` 每 pass 3.41–4.09 GB ≈ 文件体积 ⇒ 连**不含任何数学运算**的顺序读都在反复吃盘。
+- **进程盘读 ≈ 0.87–0.91 × 模型体积/pass（三次同向）**。
+- **墙钟不稳定**：同一个 1-token 前向，第 1 次 15.97 s、第 2 次 25.02 s（+57%）。
+  ⇒ 本机上「秒/token」不是稳定 KPI；归因必须靠**进程/设备计数器**（比值稳定），不能靠秒表。
+- 第 1 次运行的设备侧速率（461/475/331 MiB/s）**口径有误**（正则把分区行也算进去了，见第 3 次运行脚本注释），
+  故本文件中这些设备速率**不作结论引用**，仅留档。

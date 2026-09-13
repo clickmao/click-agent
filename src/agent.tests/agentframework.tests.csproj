@@ -20,6 +20,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- R402: 归因读数辅助 (纯 BCL / 零依赖) —— 只被测试使用, 故**只在此处**编译,
+         不放进 agent.csproj 共享源: 产品程序集(AOT 产物)不应含测试专用类型。 -->
+    <Compile Include="../agent.rover/runtime/ProcIo.cs" Link="rover-runtime/%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="../agent/agent.csproj" />
     <ProjectReference Include="../agent.gpu/agent.gpu.csproj" />
     <ProjectReference Include="../agent.frontendapi/agent.frontendapi.csproj" />

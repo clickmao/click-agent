@@ -28,6 +28,15 @@ public sealed class ForwardStats
     public long CachedKvBytes { get; set; }
     /// <summary>本进程从 mmap 窗口"扫过"的量化字节数 (证明逐层流式, 不是全量物化)</summary>
     public long StreamedBytes { get; set; }
+    /// <summary>本次前向的进程 I/O / 缺页读数差 (R402: 判定「盘读等待」vs「反量化计算」的唯一硬指标)</summary>
+    public ProcIoSnapshot Io { get; set; } = ProcIoSnapshot.Unavailable;
+    /// <summary>本次前向的 **pass 数** = token 数 (本引擎逐 token 各扫一遍全权重)</summary>
+    public int Passes { get; set; }
+    /// <summary>每 pass 真正提交到块设备的字节 (≈权重体积 ⇒ 页缓存装不下模型; ≪ 权重体积 ⇒ 命中缓存)</summary>
+    public double DiskReadBytesPerPass => IoThroughput.PerPass(Io.ReadBytes, Passes);
+    public double StreamedBytesPerPass => IoThroughput.PerPass(StreamedBytes, Passes);
+    /// <summary>盘读 / 窗口扫描比: ≈1 ⇒ 每个 token 都在吃盘; ≪1 ⇒ 页缓存命中</summary>
+    public double DiskReadRatio => IoThroughput.Ratio(Io.ReadBytes, StreamedBytes);
 }
 
 /// <summary>
@@ -180,6 +189,7 @@ public sealed unsafe class ForwardPass : IDisposable
         _cache.EnsureCapacity(tokens.Count);
 
         var swTotal = Stopwatch.StartNew();
+        var ioBefore = ProcIoSnapshot.Capture();
         double embedMs = 0, attnMs = 0, ffnMs = 0, outNormMs = 0, lmHeadMs = 0;
 
         for (int ti = 0; ti < tokens.Count; ti++)
@@ -264,6 +274,8 @@ public sealed unsafe class ForwardPass : IDisposable
         Stats.LmHeadMs = lmHeadMs;
         Stats.TotalMs = preLm + lmHeadMs;
         Stats.TokensProcessed = tokens.Count;
+        Stats.Passes = tokens.Count;
+        Stats.Io = ProcIoSnapshot.Delta(ioBefore, ProcIoSnapshot.Capture());
         Stats.StreamedBytes = Ledger.StreamedBytes;
         Stats.CachedKvBytes = _cache.ResidentBytes;
         return _logits;
