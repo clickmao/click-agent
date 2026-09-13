@@ -1144,7 +1144,10 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     // 会话首轮: (会话基线 + 静态块) 焊进前缀 —— 此后每轮都命中这段缓存, 且不再重复注入。
                     // R380 (用户 OOB 红线 95%, 越线必查+修复): 命中上限 ≈ (n−1)/n (n = 前缀 64-token 单元数)
                     //  ⇒ 前缀必须够厚, 否则结构修到极限也越线 (真机实测 981 token 前缀的上限恰为 896 = 91.3%)。
-                    var baseline = SessionBaseline.Build(_workspace is { RootPath: { Length: > 0 } wr } ? wr : Environment.CurrentDirectory);
+                    var baseline = SessionBaseline.Build(
+                        _workspace is { RootPath: { Length: > 0 } wr } ? wr : Environment.CurrentDirectory,
+                        // R391(C8): 本地形式化验证段插件**在场** ⇒ 注入 clickproof 输出契约 (不在场 ⇒ 前缀逐字不变)
+                        System.Linq.Enumerable.Contains(_segmentRouter.PluginNames, agent.registry.ClickRoverSegmentPlugin.PluginId));
                     var initial = systemPrompt + "\n\n" + baseline
                                   + (staticText.Length > 0 ? "\n[会话静态上下文]\n" + staticText : string.Empty);
                     staticHoistedChars = initial.Length - systemPrompt.Length;

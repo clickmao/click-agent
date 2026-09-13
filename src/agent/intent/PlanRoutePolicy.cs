@@ -14,6 +14,9 @@ public static class PlanNodeIntents
 
     /// <summary>本地文本处理 (证据汇总/格式化/统计 — 纯本地, 零 token)</summary>
     public const string TextProcessing = "text_processing";
+
+    /// <summary>本地形式化验证 (R391 C7): clickproof 断言 → 本地内核确定性裁决, 零 token</summary>
+    public const string VerifyFormal = "verify_formal";
 }
 
 /// <summary>
@@ -38,7 +41,7 @@ public sealed record LocalExecutorDescriptor(
 /// 本地执行能力登记表 (v0.22.0 exp9 D2) —— 单一事实源。
 ///
 /// 硬约束: 这张表与真实实现一一对应。
-///   · Wired=true  的实现体见 PlanRunner.cs (PythonSelfTestExecutor / TextProcessExecutor), 有单测覆盖;
+///   · Wired=true  的实现体见 PlanRunner.cs (PythonSelfTestExecutor / TextProcessExecutor / FormalVerifyExecutor), 有单测覆盖;
 ///   · Wired=false 的条目只作"已识别但未接线"的显式登记, 路由函数永不返回它们。
 /// 这样"本地可跑"就不是口号: 表里没有 = 路由只能判 Remote = 不会假装本地能跑。
 /// </summary>
@@ -49,6 +52,9 @@ public static class LocalExecutorRegistry
 
     /// <summary>本地文本处理/证据汇总 (统计/格式化/摘要, 纯 CPU)</summary>
     public const string TextProcess = "text.process";
+
+    /// <summary>本地形式化验证 (R391 C7): clickproof 断言 → 本地内核确定性裁决 (零 token / 零 shell)</summary>
+    public const string FormalVerify = "formal.verify";
 
     /// <summary>真机按键回放 + 截图反核 (跨平台按键通道未接线 → 见 D3b)</summary>
     public const string RealMachineReplay = "realmachine.replay";
@@ -69,6 +75,12 @@ public static class LocalExecutorRegistry
             "纯文本统计/格式化无需模型 ⇒ 本地 CPU 直接算 (零 token)",
             Wired: true,
             PostActionMarkers: ["统计", "格式化", "汇总", "转换", "计数", "摘要", "整理", "合并"]),
+
+        new(FormalVerify, "本地形式化验证 (clickproof 断言)",
+            [PlanNodeIntents.VerifyFormal],
+            "节点携带 clickproof 断言 ⇒ 本地内核确定性裁决 (Proved/Refuted/Vacuous/Unknown 四态), 零 token",
+            Wired: true,
+            PostActionMarkers: []),
 
         new(RealMachineReplay, "真机按键回放 + 截图反核",
             [PlanNodeIntents.VerifyLocal],
@@ -163,6 +175,13 @@ public static class PlanRoutePolicy
     public static bool ContainsLocalPostAction(string? text) =>
         LocalExecutorRegistry.ForPostAction(text) is not null;
 
+    /// <summary>
+    /// R391(C7): 节点文本是否携带**机器可读**的形式化断言 —— 围栏提取或裸契约行。
+    /// 与 FormalVerifyExecutor 的解析口径同源 (同一提取器), 避免"路由判本地、执行器却读不到"这类断链。
+    /// </summary>
+    public static bool CarriesFormalClaim(string? text) =>
+        agent.registry.ClickProofFence.ExtractTrimmed(text) is not null || FormalVerifyExecutor.LooksLikeContract(text);
+
     /// <summary>单节点判定 (纯函数: 输入节点事实, 输出位置 + 执行器 + 依据)</summary>
     /// <param name="absorbLocalTextOp">
     /// true (缺省): 生成节点吸收本地文本动作 → Hybrid (处理**生成内容**)。
@@ -176,6 +195,13 @@ public static class PlanRoutePolicy
                 "参数待澄清 ⇒ 位置待定 (澄清后由路由重判)");
 
         var isGeneration = GenerationIntents.Contains(node.Intent);
+
+        // R391(C7): 节点**自身携带机器可读的形式化断言** (clickproof 围栏 / 裸 premise|goal|no_formal 契约行)
+        //   ⇒ 这是一个可判定的本地验证节点: 本地内核确定性裁决, 零 token, 未证明不放行。
+        //   判据是围栏本身而非自然语言关键词 ⇒ 不会误触发, 也不依赖模型"愿不愿意"说关键词。
+        if (CarriesFormalClaim(node.Text))
+            return new RouteDecision(NodeExecutionLocation.Local, LocalExecutorRegistry.FormalVerify,
+                "节点携带 clickproof 形式化断言 ⇒ 本地内核确定性裁决 (零 token; 未证明绝不放行)");
 
         // R2c (D4b): **整段子请求**就是"在用户自己的原文上做文本处理" (无依赖 + 动作词∧原文对象词 + 非产物型 + 短句)
         //   ⇒ Local 零 token 执行, 且该子请求必须从**模型出站文本扣减** (RequestAblation), 否则模型会再算一遍

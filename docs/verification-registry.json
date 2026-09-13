@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R390",
+  "updated_round": "R391",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -516,6 +516,28 @@
         "src/click-rover/Cli/ForwardCli.cs"
       ],
       "owner_round": "R390"
+    },
+    {
+      "id": "agent.formal.loop_mount",
+      "capability": "形式化验证闭环**挂到 agent 主链**(v0.23.0 · 焦点③ 执行链核心): ① C8 静态前缀条件注入 — 契约段(clickproof 围栏 + no_formal 逃生口)只在段插件在场时追加, 不在场 ⇒ 前缀与 R380 **逐字一致**(零 token 负担), 双槽缓存防两种前缀串味(前缀随调用顺序漂移会同时毁掉可复现性与缓存命中率); ② C7 计划节点级本地验证 — 节点正文自带机器可读断言 ⇒ 路由判 Local + formal.verify 执行器, **零 LLM 调用**(NodeOutcome.Tokens=0); Proved⇒Completed 放行 / Refuted⇒Failed 且反例随 PlanNodeFormalGate.BlockMessage **同源文案**回注 / Unknown⇒Failed 但 disposition=Abstained(诚实弃权: 不计违规, 一样不放行) / 缺失(NoFormal)⇒放行且**绝不因此追问 LLM**; ③ 段插件消费侧**恒等透传**(返回段与入参逐字相等), 裁决只落账不改正文; ④ 注入侧与消费侧共用同一套围栏标识(ClickProofFence.Language / ClickRoverSegmentPlugin.PluginId), 有同源机检封死'注入了却读不到'的静默断链。",
+      "level": "L4",
+      "evidence_cmd": "dotnet run -c Release --project /tmp/r391probe (生产组合根 AddAgentFramework() 装配; 判据: A_prefix_has_clickproof=True ∧ absent_has_clickproof=False ∧ C_route location=Local exec=formal.verify ∧ C_n1_proved=True ∧ n2_blocked=True ∧ total_llm_tokens=0); 机检: env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR dotnet test src/agent.tests/agentframework.tests.csproj -c Release (三新套件 26 例)",
+      "evidence_path": "src/agent/intent/FormalVerifyExecutor.cs",
+      "evidence_report": "docs/reports/r385/r391-mount-evidence.md",
+      "negative_control": "① 不在场前缀必须逐字不变(含'不在场前缀不含 clickproof'的负控断言) —— 单槽缓存与'无条件注入'两种实现都会在此红; ② Unknown 案例: 执行器输出必须带**闸门自己的**弃权文案, 只输出 disposition 枚举名会红(本轮真红过一次, 改为复用 PlanNodeFormalGate.BlockMessage 才转绿) ⇒ 证明断言绑定组件真实行为而非空心判定; ③ 路由负控: python 围栏/自然语言散文**不得**被判本地形式化节点(否则任意节点都能借形式化绕过远程生成); ④ 插件恒等透传用 == 逐字判定而非长度/包含; ⑤ 真机执行在**无任何 LLM 提供方**的容器里跑通 ⇒ 若误判远程必然硬失败。",
+      "covers": [
+        "src/agent/registry/ClickProofFence.cs",
+        "src/agent/registry/ClickRoverSegmentPlugin.cs",
+        "src/agent/context/FormalPromptContract.cs",
+        "src/agent/context/SessionBaseline.cs",
+        "src/agent/intent/FormalVerifyExecutor.cs",
+        "src/agent/intent/PlanRoutePolicy.cs",
+        "src/agent/intent/PlanRunner.cs",
+        "src/agent.tests/FormalPromptContractTests.cs",
+        "src/agent.tests/ClickRoverSegmentPluginTests.cs",
+        "src/agent.tests/FormalVerifyExecutorTests.cs"
+      ],
+      "owner_round": "R391"
     }
   ],
   "aot_check_policy": "release_tag_only",

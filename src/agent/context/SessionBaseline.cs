@@ -17,25 +17,37 @@ namespace agent.context;
 public static class SessionBaseline
 {
     private static readonly object Gate = new();
-    private static string? _cached;
 
-    /// <summary>构建 (进程内只算一次: 工作区结构快照必须恒定, 否则前缀每轮变)。</summary>
-    public static string Build(string workspaceRoot)
+    // 两槽缓存: 槽 0 = 未挂载形式化验证器 (R380 旧行为, **逐字不变**); 槽 1 = 已挂载 (追加契约段)。
+    // 单槽缓存会把两种前缀串味 (先到的赢) ⇒ 前缀随调用顺序漂移 = 可复现性与命中率一起崩 —— 机检覆盖。
+    private static readonly string?[] Cache = new string?[2];
+
+    /// <summary>构建 (进程内只算一次: 工作区结构快照必须恒定, 否则前缀每轮变)。
+    /// 缺省**不注入**形式化契约 (与 R380 前缀逐字兼容); 需要注入时用重载显式声明。</summary>
+    public static string Build(string workspaceRoot) => Build(workspaceRoot, formalPluginPresent: false);
+
+    /// <summary>R391(C8): 按"本地形式化验证器是否在场"条件注入契约段 (不在场 ⇒ 逐字原样返回)。</summary>
+    public static string Build(string workspaceRoot, bool formalPluginPresent)
     {
+        var slot = formalPluginPresent ? 1 : 0;
         lock (Gate)
         {
-            _cached ??= Compose(workspaceRoot);
-            return _cached;
+            Cache[slot] ??= Compose(workspaceRoot, formalPluginPresent);
+            return Cache[slot]!;
         }
     }
 
     /// <summary>机检用: 允许重算。</summary>
     public static void ResetForTests()
     {
-        lock (Gate) _cached = null;
+        lock (Gate)
+        {
+            Cache[0] = null;
+            Cache[1] = null;
+        }
     }
 
-    private static string Compose(string root)
+    private static string Compose(string root, bool formalPluginPresent)
     {
         var sb = new StringBuilder(4096);
         sb.Append("[会话基线 v1] 本节内容在本会话内**恒定不变** (与轮次无关, 供前缀复用)。\n\n");
@@ -103,6 +115,10 @@ public static class SessionBaseline
         sb.Append("2. 数据优先于形容: 给数字、给命令、给对比 (优化前后同题对照)。\n");
         sb.Append("3. 边界要写清\"没做到什么\"与\"为什么\"(含算术/资源/环境限制)。\n");
         sb.Append("4. 不用套话填充; 一条信息只说一次。\n");
+
+        // R391(C8): 本地形式化验证器在场才追加契约段 —— 不在场时前缀与 R380 **逐字一致** (零 token 负担)。
+        if (formalPluginPresent) sb.Append('\n').Append(FormalPromptContract.Build());
+
         return sb.ToString();
     }
 

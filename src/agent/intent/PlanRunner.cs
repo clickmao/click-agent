@@ -318,7 +318,7 @@ public sealed class PlanRunner
         Func<bool>? gate = null,
         IPlanEventSink? events = null)
     {
-        var list = executors?.ToList() ?? [new PythonSelfTestExecutor(), new TextProcessExecutor()];
+        var list = executors?.ToList() ?? [new PythonSelfTestExecutor(), new TextProcessExecutor(), new FormalVerifyExecutor()];
         _executors = list.ToDictionary(e => e.Id, StringComparer.Ordinal);
         _ledger = ledger;
         _gate = gate ?? (() => IsEnabled());

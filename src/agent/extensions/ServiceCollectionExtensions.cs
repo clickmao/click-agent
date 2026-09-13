@@ -147,6 +147,11 @@ public static class ServiceCollectionExtensions
         // ✅ 返回内容区段路由 (v7.11): 插件化后处理, 宿主可追加自定义插件
         services.AddSingleton<agent.registry.IResponseSegmentPlugin, agent.registry.UiCapturePlugin>();
         services.AddSingleton<agent.registry.IResponseSegmentPlugin, agent.registry.CodeReviewPlugin>();
+        // ✅ R391(C8): 本地形式化验证段插件 — **在场** ⇒ 静态前缀注入 clickproof 输出契约 (不在场 ⇒ 前缀与 R380 逐字一致)。
+        //    非 clickproof 段恒等透传 (零改动模型正文); clickproof 段 → 本地内核确定性裁决 + 遥测 (零 token)。
+        //    环境开关 AGENTFRAMEWORK_FORMAL_SEGMENT=0 可整段关闭 (缺省开)。
+        if (agent.registry.ClickRoverSegmentPlugin.Enabled)
+            services.AddSingleton<agent.registry.IResponseSegmentPlugin, agent.registry.ClickRoverSegmentPlugin>();
         // ✅ R368: python 段 → 落盘 + py_compile 机器校验 (用户钦定 "内置个PY和PY执行插件")
         services.AddSingleton<agent.registry.PythonArtifactLedger>();
         services.AddSingleton<agent.registry.IResponseSegmentPlugin>(sp =>
