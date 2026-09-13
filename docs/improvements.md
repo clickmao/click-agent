@@ -12,6 +12,26 @@
 
 ---
 
+## R375 exp2 P0 前端 menu 问询通路实装 — 信封 + 事件推送 + ask.reply/ask.cancel + 选项贯通 (841/841)
+
+**状态**: 已实施（L2 机检 + L3 真机接线证明；生产侧命中率 0/1 如实登记；AOT 按规范 R7 本轮不登记）
+
+- **缺口（exp2 P0 三处）**: ① `FrontendPromptService` 的 `emitEvent` **无提供者** → 前端模式下问询事件直接消失（A 栈 `Options` 有字段、零消费方）；
+  ② 事件**不成信封**（裸 `{ev:"ask",...}`，与契约 `{v,type,event,payload}` 不一致）；③ 选项/数据类型**只拼进 Display 文本**，前端无法渲染菜单。
+- **实装**:
+  - **契约面**: 新增 `src/agent.frontendapi/AskEnvelope.cs` — 手写 `Utf8JsonWriter`（零反射/AOT）产出 `{"v":1,"type":"event","event":"ask","payload":{ask_id,service,purpose,timeout_s,group_size,questions[]}}`，单题含 `data_type/multi_select/default_value/options[{value,label,recommended}]`；另有 `ask_closed{reason: answered|timeout|cancelled|superseded}` 与 `TryParseReply`（空 id / 非对象 / 非 JSON → 显式拒）。
+  - **通道面**: 新增 `FrontendEventHub.cs`（进程内唯一出站口）+ `FrontendApiServer.EmitEventAsync`（已鉴权在线连接广播）+ **单连接发送锁**（事件与响应不再可能交织成半行）；`FrontendApiChatRouter` 新增 `ask.reply` / `ask.cancel` 路由；`FrontendPromptService` 支持超时 / 取消 / 被取代 / 幂等（`already_answered`）。
+  - **模型面**: `CredentialItem` += `DataType/Choices/MultiSelect/DefaultValue`（+ `CredentialChoice`）；`ClarificationBatch` 结构化下发选项（不再只拼文本），回答仍走原 `PromptDataValidator` 选项校验 → 菜单选择是**真闭环**而非显示优化。
+  - **主机接线**: `Program.cs` 在 `--frontend-api` 模式下**覆盖** DI 的 Console 实现（DI 单服务解析取最后注册者）→ `IndustrialAgentV2` 经 DI 拿到前端问询实现；服务器上电前挂接出站面。
+- **机检**: 新增 `AskEnvelopeTests` **8/8** + `FrontendAskFlowTests` **6/6**（真 TCP + 真信封：事件抵达含 options / 回复后调用方拿到答案 / 未知 id 不误投 / 取消返回 null / 超时 1s / 幂等 already_answered）；原 `FrontendApiTests` 4/4 不回归。
+- **负向控制（真红实测）**: ① 回退裸 `{ev:"ask"}` → 5 红；② `BuildQuestions` 丢 options → 1 红；③ `Complete` 去掉 ask_id 校验 → 1 红（防误投）。
+- **真机（L3/L4，`/tmp/fp375/probe.py`）**:
+  - **P1 确定性（真 `agenthost` 二进制 + 真 TCP + 真 auth token）**: `meta.ping ok` / 伪造 `ask.reply`、`ask.cancel` → `payload.outcome=unknown_ask`（**未接线时会是 `channel_unavailable`** → 据此证明真机 DI 已换实现且通道已挂接）/ 空 envelope → `error.code=bad_payload` / `state.snapshot ok`。
+  - **P2 真实 `chat.send`（deepseek-flash，1 次）**: **ask 事件 = 0/1** → 模型走**散文澄清**（reply 前缀 `[隔离任务]`），未触发结构化问询。生产者存在（`IndustrialAgentV2.cs:1878` EvidenceGate 裁定；`NodeExecutionResult.cs:332` node.Clarifications）但本次判据未命中 → **只登记「机制已通」，不登记「管线会问询」**。
+- **真机顺带发现（⑪类新断链）**: 前端**握手整块消费首帧** → 与 auth 同一 TCP 段到达的首个请求被静默吞掉（探针首跑无响应、客户端表现为挂起；加 0.8s 间隔即通）→ 下轮候选修复（残包交还主循环）。
+- **能力探针回归样本（同题贪吃蛇，`/tmp/gameprobe/run_r375.sh`）**: 真机 **1 次调用 / 82s / 17,188 tokens**（prompt 2,359 + completion 14,829；`first_budget=32768` 生效、`truncated=false`、`empty_reply=false`、`content_len=16092`）/ 产物 `py_936eb4414f523505.py` **16,842 B** `origin=fenced` `compile_valid=true` `exit=0`；**独立复核**（不信任遥测自报：`python3 -I <产物> --selftest`）**exit=0 · 13/13 用例通过 · PASS** → R375 改动（仅前端模式路径）**未回归 CLI 主链**；同题 tokens: R373 基线 18,029 → **17,188（−4.7%）**。
+- **基线**: 单元测试 **841/841**（R374: 827 + 信封 8 + 真 socket 6）；AOT 见下方参考证据（按 R7 非发布 tag 不登记）。
+
 ## R374 运行结果回流闭环 D3(自我迭代) — 失败输出回流 + 有界修复 + 复检 (827/827, AOT 0 IL 警, 13,842,384 B)
 
 - **断链 D3(运行结果回流)**: 产物校验失败时, 运行输出(stdout/stderr/未通过用例)在插件内部被丢弃 — 台账/遥测只留一个 exit 码

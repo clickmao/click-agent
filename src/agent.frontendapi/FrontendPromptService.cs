@@ -1,19 +1,18 @@
-using System.Text;
-using System.Text.Json;
 using agent.core;
 using agent.userinteraction;
 
 namespace agent.frontendapi;
 
 /// <summary>
-/// v0.19 P1 ask 域 (R357): IUserPromptService 的 TCP 实现 — EvidenceGate 批量问询经
-/// 前端协议路由: chat.send 触发问询 → 服务端 emit "ask" 事件 → 前端 ask.reply 提交答案 →
-/// RequestCredentialsAsync 的 TaskCompletionSource 完成, V2 管线继续。
-/// 语义铁律: 用户拒绝/超时返回 null (调用方走降级路径, 不伪造答案)。
+/// v0.19 P1 ask 域 (R357) / R375 (exp2 P0) 重构: IUserPromptService 的前端实现。
+/// 出站: 经 FrontendEventHub 发**标准信封** {v,type:event,event:ask,payload:{ask_id,service,purpose,
+/// timeout_s,questions:[{key,display,required,sensitive,data_type,multi_select,default_value,options[]}]}};
+/// 入站: 路由 ask.reply / ask.cancel → Complete(askId, answers)。
+/// 语义铁律: 拒绝/超时/取消一律返回 null (调用方走降级, 绝不伪造答案); 关闭必有 ask_closed 事件与原因。
 /// </summary>
-public sealed class FrontendPromptService : IUserPromptService
+public sealed class FrontendPromptService : IUserPromptService, IAskReplySink
 {
-    private readonly Func<object, Task> _emitEvent;           // 事件出站 (ask 信封)
+    private readonly Func<string, Task> _emitEnvelope;   // 事件出站 (已序列化信封行)
     private readonly int _timeoutSeconds;
 
     private sealed class Pending
@@ -21,14 +20,20 @@ public sealed class FrontendPromptService : IUserPromptService
         public TaskCompletionSource<Dictionary<string, string>?> Tcs =
             new(TaskCreationOptions.RunContinuationsAsynchronously);
         public required string RequestId;
+        public bool Superseded;
     }
 
     private Pending? _pending;
     private readonly object _lock = new();
 
-    public FrontendPromptService(Func<object, Task> emitEvent, int timeoutSeconds = 300)
+    /// <summary>已答 ask_id 缓存 (幂等重放: 同 id 重复提交不二次投递, 也不误判 unknown)。</summary>
+    private readonly HashSet<string> _answered = new(StringComparer.Ordinal);
+    private readonly Queue<string> _answeredOrder = new();
+    private const int AnsweredCacheLimit = 32;
+
+    public FrontendPromptService(Func<string, Task> emitEnvelope, int timeoutSeconds = 300)
     {
-        _emitEvent = emitEvent;
+        _emitEnvelope = emitEnvelope;
         _timeoutSeconds = timeoutSeconds;
     }
 
@@ -41,33 +46,43 @@ public sealed class FrontendPromptService : IUserPromptService
     {
         var reqId = "ask-" + Guid.NewGuid().ToString("N")[..8];
         var pending = new Pending { RequestId = reqId };
+        string? supersededId = null;
         lock (_lock)
         {
-            _pending?.Tcs.TrySetResult(null); // 上一问未答即被覆盖 → 视为放弃 (诚实语义)
+            if (_pending is not null)
+            {
+                _pending.Superseded = true;
+                supersededId = _pending.RequestId;
+                _pending.Tcs.TrySetResult(null); // 上一问未答即被覆盖 → 视为放弃 (诚实语义)
+            }
             _pending = pending;
         }
+        if (supersededId is not null)
+            await _emitEnvelope(AskEnvelope.BuildClosed(supersededId, "superseded")).ConfigureAwait(false);
 
-        // ask 事件: questions[] = items (key/display/required/sensitive)
-        await _emitEvent(new
-        {
-            ev = "ask",
-            ask_id = reqId,
-            service = request.ServiceName,
-            purpose = request.Purpose,
-            questions = request.Items.Select(i => new
-            {
-                key = i.Key, display = i.DisplayName, required = i.Required, sensitive = i.Sensitive,
-            }),
-        }).ConfigureAwait(false);
+        var timeoutSeconds = request.TimeoutSeconds is > 0 ? request.TimeoutSeconds.Value! : _timeoutSeconds;
+        var questions = BuildQuestions(request);
+        await _emitEnvelope(AskEnvelope.BuildAsk(
+            reqId, request.ServiceName, request.Purpose, timeoutSeconds, questions.Count, questions))
+            .ConfigureAwait(false);
 
         try
         {
-            return await pending.Tcs.Task.WaitAsync(TimeSpan.FromSeconds(_timeoutSeconds), ct)
+            var answers = await pending.Tcs.Task.WaitAsync(TimeSpan.FromSeconds(timeoutSeconds), ct)
                 .ConfigureAwait(false);
+            await _emitEnvelope(AskEnvelope.BuildClosed(reqId, answers is null ? "cancelled" : "answered"))
+                .ConfigureAwait(false);
+            return answers;
         }
         catch (TimeoutException)
         {
+            await _emitEnvelope(AskEnvelope.BuildClosed(reqId, "timeout")).ConfigureAwait(false);
             return null; // 超时 = 放弃 (V2 走降级)
+        }
+        catch (OperationCanceledException)
+        {
+            await _emitEnvelope(AskEnvelope.BuildClosed(reqId, "cancelled")).ConfigureAwait(false);
+            return null;
         }
         finally
         {
@@ -87,15 +102,45 @@ public sealed class FrontendPromptService : IUserPromptService
         });
     }
 
-    /// <summary>ask.reply 消费点: 前端提交 {ask_id, answers:{key:value}} 或 {ask_id, cancel:true}。</summary>
-    public bool TryComplete(string askId, Dictionary<string, string>? answers)
+    /// <summary>ask.reply / ask.cancel 消费点 (P1-6 幂等: 同 ask_id 重复提交不二次投递)。</summary>
+    public AskReplyOutcome Complete(string askId, Dictionary<string, string>? answers)
     {
         Pending? p;
         lock (_lock)
         {
             p = _pending;
-            if (p is null || p.RequestId != askId) return false;
+            if (p is null || p.RequestId != askId)
+                return _answered.Contains(askId) ? AskReplyOutcome.AlreadyAnswered : AskReplyOutcome.UnknownAsk;
+            Remember(askId);
         }
-        return p.Tcs.TrySetResult(answers);
+        return p.Tcs.TrySetResult(answers) ? AskReplyOutcome.Answered : AskReplyOutcome.AlreadyAnswered;
+    }
+
+    private void Remember(string askId)
+    {
+        if (_answered.Add(askId)) _answeredOrder.Enqueue(askId);
+        while (_answeredOrder.Count > AnsweredCacheLimit)
+            _answered.Remove(_answeredOrder.Dequeue());
+    }
+
+    /// <summary>条目 → 通道题面: 选项/类型必须结构化下发 (前端渲染菜单), 不再只拼文本。</summary>
+    internal static List<AskQuestion> BuildQuestions(CredentialRequest request)
+    {
+        var list = new List<AskQuestion>(request.Items.Count);
+        foreach (var i in request.Items)
+        {
+            var dt = string.IsNullOrWhiteSpace(i.DataType) ? InferDataType(i) : i.DataType!;
+            var multi = i.MultiSelect || string.Equals(dt, "multi_choice", StringComparison.OrdinalIgnoreCase);
+            var options = i.Choices.Select(c => new AskOption(c.Value, c.Label, c.Recommended)).ToList();
+            list.Add(new AskQuestion(i.Key, i.DisplayName, i.Required, i.Sensitive, dt, multi, options, i.DefaultValue));
+        }
+        return list;
+    }
+
+    private static string InferDataType(CredentialItem i)
+    {
+        if (i.Sensitive) return "text";
+        if (i.Choices.Count > 0) return i.MultiSelect ? "multi_choice" : "choice";
+        return "text";
     }
 }

@@ -42,6 +42,50 @@ public static class ClarificationBatch
     }
 
     /// <summary>
+    /// R375 (exp2 P0-3): 条目 → 通道条目 —— 选项/数据类型/多选/默认值**结构化**下发。
+    /// 旧实现只把菜单拼进 Describe() 文本, 前端拿不到 options[] → 只能当自由文本输入 (菜单名存实亡)。
+    /// </summary>
+    private static CredentialItem BuildItem(ClarificationItem it, string? suffix = null)
+    {
+        var item = new CredentialItem
+        {
+            Key = it.ParameterName,
+            DisplayName = suffix is null ? Describe(it) : $"{Describe(it)} ({suffix})",
+            Required = true,
+            Sensitive = it.Kind == ClarificationKinds.ApiKey,
+            DataType = MapDataType(it),
+            MultiSelect = it.DataType == PromptDataType.MultiChoice,
+            DefaultValue = it.SuggestedValues.Count > 0 ? it.SuggestedValues[0] : null,
+        };
+        foreach (var c in it.Choices)
+            item.Choices.Add(new CredentialChoice
+            {
+                Value = c,
+                Label = c,
+                Recommended = it.SuggestedValues.Contains(c),
+            });
+        return item;
+    }
+
+    /// <summary>R375: 数据类型透传 (choice/multi_choice 是菜单渲染的关键; 未知类型退化为 text, 不臆造)。</summary>
+    private static string MapDataType(ClarificationItem it) => it.DataType switch
+    {
+        PromptDataType.Choice => "choice",
+        PromptDataType.MultiChoice => "multi_choice",
+        PromptDataType.Number => "number",
+        PromptDataType.Integer => "integer",
+        PromptDataType.Boolean => "boolean",
+        PromptDataType.Date => "date",
+        PromptDataType.Time => "time",
+        PromptDataType.DateTime => "datetime",
+        PromptDataType.Url => "url",
+        PromptDataType.Email => "email",
+        PromptDataType.Path => "path",
+        PromptDataType.Port => "port",
+        _ => "text",
+    };
+
+    /// <summary>
     /// 执行一批问询 (调 prompt 一次): 每个条目按 DataType 校验,
     /// 校验失败立即重问该条 (最多 maxRetries 次), 仍失败则该条放弃 (返回 Error, 不伪造)。
     /// v7.13: 问询前应用偏好库 (类似问题复用历史偏好), 合法答案回写偏好 (只记模式, 不记凭据/原值)。
@@ -73,15 +117,7 @@ public static class ClarificationBatch
         };
 
         foreach (var it in batch)
-        {
-            request.Items.Add(new CredentialItem
-            {
-                Key = it.ParameterName,
-                DisplayName = Describe(it),
-                Required = true,
-                Sensitive = it.Kind == ClarificationKinds.ApiKey,
-            });
-        }
+            request.Items.Add(BuildItem(it));
 
         for (var attempt = 0; attempt <= maxRetries; attempt++)
         {
@@ -121,13 +157,7 @@ public static class ClarificationBatch
             request.Items.Clear();
             foreach (var it in pending)
             {
-                request.Items.Add(new CredentialItem
-                {
-                    Key = it.ParameterName,
-                    DisplayName = $"{Describe(it)} (上次输入无效, 重试)",
-                    Required = true,
-                    Sensitive = it.Kind == ClarificationKinds.ApiKey,
-                });
+                request.Items.Add(BuildItem(it, "上次输入无效, 重试"));
             }
         }
 

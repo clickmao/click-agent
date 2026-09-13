@@ -255,6 +255,18 @@ if (args.Length >= 2 && args[0] == "--compression-audit")
         agent.config.AgentTelemetry.Configure("host", "./data/telemetry");
         agent.config.AgentTelemetry.Emit("boot", "Program", ("probe", true));
 
+        // R375 (exp2 P0-1): 前端事件出站枢纽 — 进程内唯一出站口 (ask 信封送达面)。
+        services.AddSingleton<agent.frontendapi.FrontendEventHub>();
+        var frontendApiRequested = args.Length >= 2 && args[0] == "--frontend-api";
+        if (frontendApiRequested)
+        {
+            // R375: frontend 模式下问询必须走**前端**通道 —— 后注册覆盖 AddAgentFramework 内的 Console 实现
+            // (DI 单服务解析取最后注册者)。不覆盖 = ask 事件无人消费, 兜底行为打到服务端控制台 (接线缺口)。
+            services.AddSingleton<agent.userinteraction.IUserPromptService>(sp =>
+                new agent.frontendapi.FrontendPromptService(
+                    sp.GetRequiredService<agent.frontendapi.FrontendEventHub>().EmitAsync));
+        }
+
 // v0.19 P1 后半 (R355): --frontend-api <port> — FrontendApi 统一接口独立挂载。
 // 与 REPL/one-shot 并列的第三种运行形态: 常驻服务, 外部前端经 TCP 行 JSON 信封消费完整 agent 管线。
         await using var provider = services.BuildServiceProvider();
@@ -276,7 +288,12 @@ if (args.Length >= 2 && args[0] == "--frontend-api")
 
     // v0.21.1 (R367): 版本跟随发布线 (原硬编码 "0.20.5", 与 v0.21.0 实际版本漂移 — 前端无从得知真实版本)
     var metaJson = "{\"version\":\"0.21.0\",\"contract\":1,\"domains\":[\"chat\",\"meta\",\"state\"]}";
-    var chatRouter = new agent.frontendapi.FrontendApiChatRouter(entryAgent);
+    // R375 (exp2 P0-1): 挂接事件出站 + ask 应答面 (hub 为唯一出站口; 未挂接时事件丢弃并计数)
+    var eventHub = provider.GetRequiredService<agent.frontendapi.FrontendEventHub>();
+    if (provider.GetRequiredService<agent.userinteraction.IUserPromptService>() is agent.frontendapi.IAskReplySink askSink)
+        eventHub.AttachAsk(askSink);
+    var chatRouter = new agent.frontendapi.FrontendApiChatRouter(entryAgent,
+        askSink: eventHub.AskSink);
     var v2 = entryAgent as IndustrialAgentV2;
     var server = new agent.frontendapi.FrontendApiServer(async (api, payloadJson) =>
     {
@@ -318,7 +335,9 @@ if (args.Length >= 2 && args[0] == "--frontend-api")
 
     try
     {
-        server.Start();
+        // R375: 上电前挂接出站面 — ask 信封经 hub → 所有在线客户端 (挂接前的事件计入 Dropped, 不伪装送达)
+    eventHub.AttachServer(line => server.EmitEventAsync(line));
+    server.Start();
     }
     catch (Exception ex)
     {

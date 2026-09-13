@@ -97,6 +97,9 @@ public class CredentialRequest
     /// <summary>不提供时的降级行为说明 (如 "将跳过此源, 使用 Bing CN 兜底")</summary>
     public string? FallbackNote { get; set; }
 
+    /// <summary>R375 (exp2 P1-4): 问询超时秒数; null = 实现默认 (console 实现无超时)</summary>
+    public int? TimeoutSeconds { get; set; }
+
     /// <summary>问询来源 (谁在等这个答案)</summary>
     public PromptOrigin Origin { get; set; } = PromptOrigin.Main();
 }
@@ -115,6 +118,31 @@ public class CredentialItem
 
     /// <summary>是否敏感值 (输入时打码, 存储时仅入本地凭据文件)</summary>
     public bool Sensitive { get; set; }
+
+    /// <summary>R375 (exp2 P0-3): 答案数据类型 ("text"/"choice"/"multi_choice"/"number"/"boolean"/...); 前端据此渲染控件</summary>
+    public string? DataType { get; set; }
+
+    /// <summary>R375 (exp2 P0-3): 完整选项列表 (choice/multi_choice 必须给全) —— 不得只把菜单拼进 DisplayName 文本</summary>
+    public List<CredentialChoice> Choices { get; set; } = new();
+
+    /// <summary>R375: 多选标志 (DataType=multi_choice)</summary>
+    public bool MultiSelect { get; set; }
+
+    /// <summary>R375: 默认值/推荐值 (前端可预选; 用户可直接采用)</summary>
+    public string? DefaultValue { get; set; }
+}
+
+/// <summary>R375 (exp2 P0-3): 选项条目 —— 值与显示分离 (前端渲染 label, 回填 value)。</summary>
+public class CredentialChoice
+{
+    /// <summary>回填值 (校验用; 必须命中 DataType=choice 的合法集)</summary>
+    public string Value { get; set; } = string.Empty;
+
+    /// <summary>给用户看的文本 (默认同 Value)</summary>
+    public string Label { get; set; } = string.Empty;
+
+    /// <summary>是否推荐项 (菜单高亮/预选)</summary>
+    public bool Recommended { get; set; }
 }
 
 /// <summary>问询类型 flag</summary>

@@ -25,6 +25,10 @@ public sealed class FrontendApiServer : IDisposable
     private Socket? _listener;
     private readonly Func<string, string, Task<string?>> _handler; // (api, payloadJson) → payloadJson (null=unknown_api)
     private readonly FrontendAccessControl _access; // R358: 鉴权+限流
+
+    /// <summary>R375 (exp2 P0-1): 在线连接登记 — ask 事件信封的送达面 (每连接一把发送锁防行交错)。</summary>
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<ClientConn, byte> _clients = new();
+
     private bool _disposed;
 
     public FrontendApiServer(Func<string, string, Task<string?>> handler, Action<string> log,
@@ -64,12 +68,16 @@ public sealed class FrontendApiServer : IDisposable
 
     private async Task ServeClientAsync(Socket client)
     {
+        ClientConn? conn = null;
         try
         {
             // R358: 鉴权握手 — 首行必须 {"type":"auth","token":"..."}; 失败静默断连 (防枚举)
             if (_access.AuthEnabled && !await TryAuthHandshakeAsync(client).ConfigureAwait(false))
                 return;
 
+            // R375: 鉴权通过才登记为事件接收端 (未鉴权连接不得收到 ask 信封)
+            conn = new ClientConn(client);
+            _clients[conn] = 0;
             var buf = new byte[16384];
             var pending = new StringBuilder();
             while (!_cts.IsCancellationRequested)
@@ -92,14 +100,17 @@ public sealed class FrontendApiServer : IDisposable
                     var line = text[..idx];
                     pending.Remove(0, idx + 1);
                     var resp = await ServeOneLineAsync(line).ConfigureAwait(false);
-                    var bytes = Encoding.UTF8.GetBytes(resp + "\n");
-                    await client.SendAsync(new ArraySegment<byte>(bytes), SocketFlags.None, _cts.Token).ConfigureAwait(false);
+                    await conn!.WriteLineAsync(resp, _cts.Token).ConfigureAwait(false);
                 }
             }
         }
         catch (OperationCanceledException) { }
         catch (Exception) { /* 客户端断开 */ }
-        finally { try { client.Close(); } catch { } }
+        finally
+        {
+            if (conn is not null) _clients.TryRemove(conn, out _);
+            try { client.Close(); } catch { }
+        }
     }
 
     /// <summary>R358: auth 握手 — 首行 {"type":"auth","token":"..."}; 5s 超时/失败断连。</summary>
@@ -173,6 +184,46 @@ public sealed class FrontendApiServer : IDisposable
         finally
         {
             _access.Release();
+        }
+    }
+
+    /// <summary>R375 (exp2 P0-1): 向所有在线客户端推送事件信封; 返回实际送达连接数 (0 = 无人监听, 不伪造送达)。</summary>
+    public async Task<int> EmitEventAsync(string envelopeLine)
+    {
+        if (_clients.IsEmpty) return 0;
+        var sent = 0;
+        foreach (var conn in _clients.Keys)
+            if (await conn.TryWriteLineAsync(envelopeLine, _cts.Token).ConfigureAwait(false)) sent++;
+        return sent;
+    }
+
+    /// <summary>在线客户端数 (诊断/真机探针用)。</summary>
+    public int ClientCount => _clients.Count;
+
+    /// <summary>
+    /// R375: 单连接发送面 — 响应与事件信封**共用一把锁**。
+    /// 原实现只有请求-响应 (天然串行), 加入事件推送后若无锁, 并发写同一 socket 会把两行 JSON 交错 → 客户端解析必坏。
+    /// </summary>
+    private sealed class ClientConn
+    {
+        private readonly Socket _sock;
+        private readonly SemaphoreSlim _gate = new(1, 1);
+
+        public ClientConn(Socket sock) => _sock = sock;
+
+        public Task WriteLineAsync(string line, CancellationToken ct) => TryWriteLineAsync(line, ct);
+
+        public async Task<bool> TryWriteLineAsync(string line, CancellationToken ct)
+        {
+            var bytes = Encoding.UTF8.GetBytes(line + "\n");
+            await _gate.WaitAsync(ct).ConfigureAwait(false);
+            try
+            {
+                await _sock.SendAsync(new ArraySegment<byte>(bytes), SocketFlags.None, ct).ConfigureAwait(false);
+                return true;
+            }
+            catch { return false; }
+            finally { _gate.Release(); }
         }
     }
 

@@ -143,17 +143,18 @@ done
 
 ## 7. 迭代状态快照（恢复迭代从这里开始）
 
-> ### ⏱ 最新状态（2026-09-13 R374 — 恢复迭代先读这里；下方为历史逐轮条目）
+> ### ⏱ 最新状态（2026-09-13 R375 — 恢复迭代先读这里；下方为历史逐轮条目）
 >
-> - **版本**：**v0.22.0 探索期**；本地 HEAD `651b894`(R373) + R374 未提交；远端 `origin/main` = `740ddf2` **未推**（全部候选 ghp_ 401，需用户给有效 token 或替代通路）。
-> - **测试/AOT**：**827/827 全绿**（env 干净复跑；探针脚本曾把闸门 env 导入测试进程致 1 红，已修脚本）；NativeAOT **13,842,384 B，0 IL 警告**（**非发布轮=参考证据**；AOT 编译校验**只在发布 tag 时执行/登记** —— 规范 R7 / registry `aot_check_policy`）。
-> - **批测**：批 **523**（下一轮号候选 **524**；启动前走 R257 撞号协议：pgrep + 锁文件 + mtime>10min 才算 stale）。
-> - **本轮交付（R373+R374）**：R373 首轮输出预算策略（D8 接线缺口修复：`ModelQueueAdapter` 硬编码 intent → 意图透传；调用 2→1、tokens −32%、有效产物 1/3→3/3）+ 经验沉淀为**思考逻辑 skill**（`delivery-selfcheck`，`type: knowledge_hint` 防技能劫持）；**R374 运行结果回流闭环 D3**：数据面（`ArtifactCheck`/`IArtifactCheckSource`/`Router.DrainArtifactChecks`，失败输出不再丢）+ 闭环面（`ArtifactRepairLoop`：失败输出回流 → 有界 1 轮修复 → 复检「新路径且通过」）+ 修复提示词改进（闸门契约 / 未通过用例摘要 / 最小改动）。真机三臂 A/B（回流关 / 回流开旧提示词 / 回流开新提示词）见 `docs/improvements.md` R374 段。
-> - **诚实边界**：① n=3/臂，跨臂「最终有效 2/3 vs 3/3」是抽样，**机制已证、统计未证**；② 失败路径成本 +1 调用 +23.3k tokens +70s；③ D7 截断续写真机仍未救回（`recovered=false`，当前被首轮预算策略绕过）；④ exp8 自动化蒸馏管路未做（skill 仍人工蒸馏）；⑤ bge 训练闭环未产出新版本（静默后台）；⑥ 工业级缺口余项：CI 门禁 / 配置热更新 / metrics 端点 / 断路器半开 / 跨请求成本闸。
-> - **文档同步**：`docs/improvements.md`(+R374 段) / `docs/verification-registry.json`(+2 行，共 17 行) / `docs/plans/v0.22.0-exp5-lesson-table.md`(§12 两条通用教训) / 本轮探针文档(+R374 段与断链⑩⑪)。
+> - **版本**：**v0.22.0 探索期**；本地 HEAD `4b05ca8`(规范 R7) + R375 未提交；远端 `origin/main` = `740ddf2` **未推**（候选 ghp_ 全 401，需用户给有效 token 或替代通路）。
+> - **测试**：**841/841 全绿**（env 干净；R374 为 827）；**AOT 编译校验只在发布 tag 时执行/登记**（规范 **R7** / registry `aot_check_policy=release_tag_only`；非发布轮的 AOT 结果仅作参考证据）。
+> - **批测**：批 **523**（下一轮号候选 **524**；`round_autopilot --dry-run` 算出 1511 与文档不一致**仍未收口**；启动前走 R257 撞号协议：pgrep + 锁文件 + mtime>10min 才算 stale）。
+> - **本轮交付（R375 = exp2 5 计划之一，P0）**：前端 menu 问询通路 — **信封**（`AskEnvelope`：`{v,type:event,event:ask,payload{ask_id,service,purpose,timeout_s,group_size,questions[{key,display,required,sensitive,data_type,multi_select,default_value,options[{value,label,recommended}]}]}}`）+ **事件推送**（`FrontendEventHub` → `FrontendApiServer.EmitEventAsync`，单连接发送锁）+ **应答路由**（`ask.reply`/`ask.cancel` → 等待中的调用；超时/取消/被取代/幂等）+ **选项贯通**（`CredentialItem.DataType/Choices/MultiSelect/DefaultValue` + `ClarificationBatch` 结构化下发）+ **主机接线**（`--frontend-api` 模式覆盖 Console 实现）。真机 P1 伪造 id → `unknown_ask`（非 `channel_unavailable`）= 接线已证；P2 真实 `chat.send` **ask 事件 0/1**（散文澄清）→ 生产侧触发点未命中，见 `docs/improvements.md` R375 段。
+
+> - **能力探针（R375 回归样本，同题贪吃蛇）**：真机 **1 次调用 / 82s / 17,188 tokens**（prompt 2,359 + completion 14,829，`first_budget=32768`、`truncated=false`）/ 产物 16,842 B `origin=fenced` `exit=0`；**独立复核** `python3 -I <产物> --selftest` → **exit=0 · 13/13 用例通过 · PASS**；同题 tokens: R373 基线 18,029 → 17,188（−4.7%）→ R375（仅前端模式改动）未回归 CLI 主链。
+> - **诚实边界**：① R375 只证「通道已通」，**未证**「管线会结构化问询」（真机 0/1 命中，触发条件待定位）；② 握手吞同批字节（⑪类新断链）未修；③ D7 截断续写真机仍未救回（`recovered=false`）；④ exp2 文档 Q1–Q4 用户未裁决，R375 按推荐项实施（Q1=做推送 / Q3=收敛进栈 B）**待用户确认**；⑤ bge 训练闭环静默后台、版本小报未产出；⑥ 工业级缺口余项：CI 门禁 / 配置热更新 / metrics 端点 / 断路器半开 / 跨请求成本闸。
+> - **文档同步**：`docs/improvements.md`(+R375 段) / `docs/verification-registry.json`(+2 行) / `docs/plans/v0.22.0-exp5-lesson-table.md`(§13 两条通用教训) / `docs/plans/v0.22.0-exp2-*.md`(+R375 实装段) / 本快照。
 >
 > ---
-
 - **主线进度**：R138-R153。R149 用户质疑整改（真断言族）；R151 pivot 判定闭环（真缺陷 56 KeyError 修复）；R152 收尾（phase report 3: batch62-78 187/187 + README 30 批滚动制度）；**R153 真缺陷 57 修复**：D4 gate 读 os.environ 致 reply_rel 整块静默失效（批79/80 n=0 实证，诚实缺省未破）→ gate 同源 load_env()，批81 同环境复验 n=11 avg 0.631 恢复。下一轮号 **mass_351**（R180-R184 进度与接力细节见下方对应条目及台账 R180-R184）。
 - **最近五批审计（批76-80）**：63/63 全绿（quick-11 子集 44/44）；tok/case 941→939→928→860 递降带内（全量批 1165 口径不同）；drift 全 1.0；suspects 0；D4 rel 修复前 n=0（缺陷 57）/修复后 n=11 avg 0.631。
 - **R149 用户质疑结论**：TaskRelevanceChecker 组件能力真实（全量批 50/53 isolated=True score=2 实测）但判定空心成立——既往 C14/C15 expect 只有 llm:true，通过率对组件无证明力。修复后 C14 真断言批69-72 四连验 isolated=True score=2 PASS (4/4)。

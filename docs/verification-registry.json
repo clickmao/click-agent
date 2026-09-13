@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R374",
+ "updated_round": "R375",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -216,6 +216,35 @@
     "src/agent/registry/ArtifactRepair.cs"
    ],
    "owner_round": "R374"
+  },
+  {
+   "id": "ask.envelope.contract",
+   "capability": "前端问询信封契约 L2: {v,type:event,event:ask,payload{ask_id,service,purpose,timeout_s,group_size,questions[{key,display,required,sensitive,data_type,multi_select,default_value,options[{value,label,recommended}]}]}} — 选项结构化下发(不得只拼文本); 另有 ask_closed{reason} 与 TryParseReply 显式拒绝非法 payload",
+   "level": "L2",
+   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~AskEnvelopeTests",
+   "evidence_path": "src/agent.tests/AskEnvelopeTests.cs",
+   "negative_control": "① 回退裸 {ev:\"ask\"} → 真 socket 用例族 5 红(已实证); ② BuildQuestions 丢 options → 1 红(已实证); ③ 非法 payload(空/缺 ask_id/非对象/非 JSON) 必须显式拒(4 用例)",
+   "covers": [
+    "src/agent.frontendapi/AskEnvelope.cs",
+    "src/agent.frontendapi/FrontendPromptService.cs",
+    "src/agent.core/userinteraction/PromptOrigin.cs"
+   ],
+   "owner_round": "R375"
+  },
+  {
+   "id": "ask.frontend.channel",
+   "capability": "前端 ask 通道 L2(真 socket)+L3(真机): 问询事件经 EventHub → 所有已鉴权在线连接(单连接发送锁, 行不交错); ask.reply/ask.cancel 回到等待中的调用(超时/取消/被取代/幂等 already_answered)",
+   "level": "L3",
+   "evidence_cmd": "python3 /tmp/fp375/probe.py  # 真机: 伪造 ask_id → payload.outcome=unknown_ask(未接线时为 channel_unavailable); 空 envelope → bad_payload | dotnet test ... --filter FullyQualifiedName~FrontendAskFlowTests",
+   "evidence_path": "src/agent.tests/FrontendAskFlowTests.cs",
+   "negative_control": "① Complete 去掉 ask_id 校验 → 伪造 id 用例 1 红(已实证, 防误投); ② 未挂接 sink → outcome=channel_unavailable(与 unknown_ask 可区分, 防\"接线了\"被空报); ③ 生产侧命中: 真机 chat.send 1 次 ask 事件 0 → 只登记\"机制已通\", 不登记\"管线会问询\"",
+   "covers": [
+    "src/agent.frontendapi/FrontendApiServer.cs",
+    "src/agent.frontendapi/FrontendEventHub.cs",
+    "src/agent.frontendapi/FrontendApiChatRouter.cs",
+    "src/agent.host/Program.cs"
+   ],
+   "owner_round": "R375"
   }
  ],
  "aot_check_policy": "release_tag_only",
