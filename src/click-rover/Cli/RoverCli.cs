@@ -51,6 +51,7 @@ public static class RoverCli
         o.WriteLine("  dequant <gguf> <tensor> [--rows N] [--out f32.bin] [--json]");
         o.WriteLine("  matvec <gguf> <tensor> [--seed N] [--repeat N] [--ablate]");
         o.WriteLine("  residency <gguf> [--budget-mb N] [--pin a,b]  驻留/回收账");
+        o.WriteLine("  residency --selftest <gguf>                  驻留/回收自证套件 (含负向控制组)");
         o.WriteLine("  probe <gguf>                     综合证据 (惰性加载 + 驻留 + 回收)");
         o.WriteLine("  check <file.assert> [--json]     本地形式化裁决 (可判定片段 / 零 token / 零 shell)");
         o.WriteLine("  check --selftest                 内核自证套件 (含反例控制组)");
@@ -200,6 +201,13 @@ public static class RoverCli
 
     private static int ResidencyCmd(string[] a, TextWriter o)
     {
+        if (a.Length >= 2 && a[1] == "--selftest")
+        {
+            string? selPath = Opt(a, "--file") ?? Opt(a, "--gguf")
+                ?? (a.Length > 2 && !a[2].StartsWith("--", StringComparison.Ordinal) ? a[2] : null);
+            if (selPath is null) { o.WriteLine("usage: residency --selftest <gguf>"); return 2; }
+            return ResidencySelfTest.Run(selPath, o);
+        }
         if (a.Length < 2) { o.WriteLine("error{kind=missing_arg arg=gguf}"); return 2; }
         long budget = long.Parse(Opt(a, "--budget-mb") ?? "64") * 1024 * 1024;
         var pins = (Opt(a, "--pin") ?? string.Empty).Split(',', StringSplitOptions.RemoveEmptyEntries);

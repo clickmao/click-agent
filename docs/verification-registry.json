@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R389",
+  "updated_round": "R390",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -500,6 +500,22 @@
         "src/click-rover/click-rover.csproj(Silk.NET.Vulkan 2.23.0)"
       ],
       "owner_round": "R389"
+    },
+    {
+      "id": "rover.residency.hot_lru_reclaim",
+      "capability": "click-rover 张量驻留/内存回收接前向真机落地 (v0.23.0 · 焦点① 剩余件): ① 热集常驻 — 默认 pin 全部 norm, 真 7B 实测 61 张/999,424B ≈ 0.023% 模型体积, 第 2 token 起 60/61 命中; ② LRU 主动驱逐 — 超预算按 LastUseTick 最久未用先走, 真 7B --budget-bytes 16384 ⇒ evicts=118/reclaims=120/peak=32768 (=预算+单张量), 受限 vs 默认 logits 逐位一致 (sha256 e34dabd647b50ba0, top-1 均为 185); ③ 显式 ReclaimAll 只释放非常驻且释放额=非常驻驻留之和; ④ 量化权重走 StreamWindow 零拷贝 ⇒ 驻留恒 0; ⑤ 预算语义只声明一次 (0/负 = 无上限 BudgetUnlimited), 判定与打印同源派生。自证套件 10/10 (真 7B + tiny 双夹具, 零 shell)。",
+      "level": "L3",
+      "evidence_cmd": "DOTNET_ROOT=$HOME/.dotnet src/click-rover/bin/Release/net10.0/click-rover residency --selftest <gguf>   (判据: selftest{ran=10 pass=10 fail=0} 且 exit 0; 夹具不足须 exit 3 而非硬凑); 接前向对账: click-rover forward <gguf> --tokens 1,2,3 --no-pin --budget-bytes 256 --reclaim-per-token --dump A 对比默认 --dump B ⇒ 8/8 文件 cmp 逐位一致",
+      "evidence_path": "src/click-rover/Runtime/TensorResidency.cs",
+      "evidence_report": "docs/reports/r385/residency-evidence.md",
+      "negative_control": "① 真释放判别: 驱逐后对受害者缓冲 Span 访问必须抛 ObjectDisposedException (只加计数不释放的实现在此必红); ② 全 pin + 预算 1B ⇒ 必须 evicts=0 且如实报 budget_exceeded_honest, 不得伪报符合预算; ③ LRU 次序必须在驱逐发生的那一刻判定 (事后观测会被后续驱逐掩盖 — 首版断言即因此误红); ④ 夹具不足 6 张量则 exit 3 报 selftest_insufficient_tensors, 不硬凑。",
+      "covers": [
+        "src/click-rover/Runtime/TensorResidency.cs",
+        "src/click-rover/Cli/ResidencySelfTest.cs",
+        "src/click-rover/Infer/ForwardPass.cs",
+        "src/click-rover/Cli/ForwardCli.cs"
+      ],
+      "owner_round": "R390"
     }
   ],
   "aot_check_policy": "release_tag_only",

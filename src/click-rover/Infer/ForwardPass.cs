@@ -52,6 +52,8 @@ public sealed unsafe class ForwardPass : IDisposable
     private readonly RopeTable _rope;
     private readonly KvCache _cache;
     private readonly bool _dropPages;
+    /// <summary>每个 token 后主动释放非常驻物化张量 (主动回收入口; 默认关, 以免热 norm 反复重解量化)</summary>
+    private readonly bool _reclaimPerToken;
 
     private readonly float[] _x, _xn, _q, _k, _v, _attn, _proj, _ff, _gate, _up, _logits, _scores;
     private readonly float[]? _qBias, _kBias, _vBias, _oBias;
@@ -59,19 +61,31 @@ public sealed unsafe class ForwardPass : IDisposable
     public ModelConfig Config => _c;
     public ResidencyLedger Ledger => _res.Ledger;
     public KvCache Cache => _cache;
+    /// <summary>当前物化常驻张量数 (驻留账读数; 量化权重走流窗口不计入)</summary>
+    public int ResidentCount => _res.ResidentCount;
     public ForwardStats Stats { get; } = new();
 
-    public ForwardPass(GgufReader r, ModelConfig c, int maxPositions, long budgetBytes, bool dropPages)
+    public ForwardPass(GgufReader r, ModelConfig c, int maxPositions, long budgetBytes, bool dropPages,
+        IReadOnlyCollection<string>? pins = null, bool reclaimPerToken = false)
     {
-        _r = r; _c = c; _dropPages = dropPages;
+        _r = r; _c = c; _dropPages = dropPages; _reclaimPerToken = reclaimPerToken;
 
-        var pinned = new List<string>();
-        for (int l = 0; l < c.NLayer; l++)
+        // 热集口径: pins == null ⇒ 默认钉住全部 norm (每层每 token 必用, 活性最高);
+        // pins 显式给出 (含空集) ⇒ 用调用方口径: 空集 = 不预判热集, 全交给预算 + LRU,
+        // 驱逐路径因此**真被触发** (账面有 evicts/reclaimed 数字, 不靠调用方相信)。
+        IReadOnlyCollection<string> pinned;
+        if (pins is null)
         {
-            pinned.Add($"blk.{l}.attn_norm.weight");
-            pinned.Add($"blk.{l}.ffn_norm.weight");
+            var def = new List<string>();
+            for (int l = 0; l < c.NLayer; l++)
+            {
+                def.Add($"blk.{l}.attn_norm.weight");
+                def.Add($"blk.{l}.ffn_norm.weight");
+            }
+            def.Add("output_norm.weight");
+            pinned = def;
         }
-        pinned.Add("output_norm.weight");
+        else pinned = pins;
 
         _qBias = MaybeLoadBias("attn_q.bias", c.QElems);
         _kBias = MaybeLoadBias("attn_k.bias", c.KvElems);
@@ -221,10 +235,13 @@ public sealed unsafe class ForwardPass : IDisposable
             }
 
             _cache.CommitToken();
+            if (_reclaimPerToken) _res.ReclaimAll();   // 主动释放: 本 token 物化的非常驻张量已不再需要
             SampleMemory();
             if (log is not null)
                 log.WriteLine($"step{{token_index={ti} token={tokens[ti]} pos={pos} kv_len={_cache.Length} " +
-                              $"cache_bytes={_cache.ResidentBytes} layer_ms_sum={Stats.LayerMs.Sum():F1}}}");
+                              $"cache_bytes={_cache.ResidentBytes} resident={_res.ResidentCount} " +
+                              $"reclaimed_bytes={Ledger.ReclaimedBytes} evicts={Ledger.EvictCount} " +
+                              $"layer_ms_sum={Stats.LayerMs.Sum():F1}}}");
         }
 
         swTotal.Stop();

@@ -20,6 +20,9 @@ public sealed class ResidencyLedger
     public long CacheMisses { get; internal set; }
     public long PeakResidentBytes { get; internal set; }
     public long BudgetBytes { get; internal set; }
+    /// <summary>预算 = 0/负 时的显式语义: 不设上限 (不是"预算为 0 字节")。
+    /// 判定/打印必须从这一个声明派生, 不许各自解释同一个数字 (否则两层口径互相矛盾)。</summary>
+    public bool BudgetUnlimited { get; internal set; }
 
     public double HitRate => CacheHits + CacheMisses == 0 ? 0 : (double)CacheHits / (CacheHits + CacheMisses);
 
@@ -103,6 +106,7 @@ public sealed class TensorResidency : IDisposable
         _pinned = new HashSet<string>(pinned ?? Array.Empty<string>(), StringComparer.Ordinal);
         _hotThreshold = hotAccessThreshold;
         Ledger.BudgetBytes = budgetBytes;
+        Ledger.BudgetUnlimited = budgetBytes <= 0;
     }
 
     public int ResidentCount => _resident.Count;
@@ -194,7 +198,7 @@ public sealed class TensorResidency : IDisposable
     /// <summary>超预算时按 LRU 驱逐非常驻张量 (最近最少用先走)</summary>
     private void EnforceBudget(string incoming)
     {
-        if (Ledger.BudgetBytes <= 0) return;
+        if (Ledger.BudgetUnlimited) return;   // 与 Ledger.BudgetUnlimited 同源判定 (0/负 = 无上限)
         while (ResidentBytes > Ledger.BudgetBytes)
         {
             string? victim = null;

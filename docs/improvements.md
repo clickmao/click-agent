@@ -686,3 +686,18 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **诊断纪律（可复用）**: "dispatch 成功 ≠ 数值正确" ⇒ 先加数值转储, 再把失效点**逐机制二分**（ArrayLength / 常量索引 / 动态索引 / 常量值+动态索引 / 缓冲绑定位置）；"结构合法但数值错"必须用**独立反汇编器取真值**（据此**证伪**"'SPIR-V 层绑定/装饰错位'整类猜测", 真问题是诊断夹具自身缓冲顺序错位）；夹具缓冲序必须与内核变量声明序**逐位对齐**, 否则错位会伪装成"设备写未落地"。
 - **诚实边界**: GPU0 是 **lavapipe 软件实现**, `device_ms`/`elem_per_ms` 只作正确性证据、**不代表真实 GPU 性能**；**CUDA 路径未实现**（本机无 NVIDIA 设备）；Silk.NET 的 Vulkan API 形状由一次性反射探针确定（探针在 `/tmp`, 未入产品）；`/usr/share/vulkan/explicit_layer.d/` 无 validation layer ⇒ 结构校验靠自研校验器 + 5 组负控背书（非 khronos 官方校验层背书）。
 - 机检: `SpvRegistryAuditTests` **6/6**（含 4 组负向控制）；全量测试 `1025/1025`（1019 + 6 新增）；`vulkan` 子命令 exit 0。
+
+### R390 (2026-09-13) — click-rover 驻留/回收接前向：热集常驻 + LRU 主动驱逐真触发（焦点① 剩余件）
+
+- **本条要修的靶点（用户口径 C3/C4 的空白面）**: 此前驻留账**恒 `evicts=0`** —— 即"只常驻活性高的张量 + 不再使用的张量主动从内存释放"里的**驱逐/回收路径从未被走到**，且 `TensorResidency` **未接进前向**（前向完全不走驻留管理）。
+- **交付**: `Infer/ForwardPass.cs`（cts 增 `pins` / `reclaimPerToken` 两参；每 token 末 `ReclaimAll()`；暴露 `ResidentCount`）+ `Cli/ForwardCli.cs`（`--budget-mb|--budget-kb|--budget-bytes` / `--no-pin` / `--reclaim-per-token` + `residency_scope` / `residency_verdict` 两行账面）+ 新件 `Cli/ResidencySelfTest.cs`（**10 例自证套件**，真张量夹具，零 shell 零外部进程）+ `Runtime/TensorResidency.cs`（预算语义显式声明 `Ledger.BudgetUnlimited`）。
+- **真机证据 · 接前向对账（判据：受限 vs 默认逐位一致）**:
+  - tiny（`tiny-gqa-untied.gguf`，3 token）：`--no-pin --budget-bytes 256 --reclaim-per-token` ⇒ `evicts=9 reclaims=12 loads=13 peak_resident=512 budget=256`，`peak = 预算 + 单张量字节`（驱逐确实发生了才可能压到这个值）；**8/8 dump 文件 `cmp` 逐位一致**（logits sha256 `c5bbb3f546a640be`）。
+  - 真 7B（4.22 GB）：`--no-pin --budget-bytes 16384` ⇒ **`evicts=118 reclaims=120 loads=121 peak_resident=32768`**；**top-1 = 185 与默认一致**、`logits.bin` sha256 `e34dabd647b50ba0` **逐位相同** ⇒ 驱逐/重载**不改变数值结果**（重物化走同一确定性反量化路径）。
+  - 热集常驻（默认 pin 全部 norm）：真 7B `loads=61 hits=60`（第 2 token 起 60/61 命中）、常驻 **999,424 B ≈ 0.023%** 模型体积。
+- **自证套件 10/10（真 7B + tiny 双夹具，`residency --selftest <gguf>`，exit 0）**: 预算约束上界 / LRU 驱逐真发生 / **LRU 受害者次序** / **真释放判别** / 账本恒等式 `loaded == resident + reclaimed` / pin 免疫 / 流窗口零物化（量化权重驻留恒 0）/ `ReclaimAll` 释放额精确 / **负控①**全 pin + 预算 1B ⇒ 必须 `evicts=0` 且如实报 `budget_exceeded_honest` / **负控②** 预算语义只声明一次。
+- **本轮修掉的两处真缺陷（均为"两层口径不一致"，非表面 bug）**: ① `EnforceBudget` 首行 `if (Ledger.BudgetBytes <= 0) return;`（0 = 无上限）与 CLI 判语 `peak <= budgetBytes`（0 预算 = 必然超限）**各自解释同一个数字** ⇒ `--budget-mb 0` 时账面同时出现"无上限未驱逐"与 `budget_exceeded_honest`。修法：语义**只声明一次**（`Ledger.BudgetUnlimited = budget <= 0`），判定与打印**同源派生**，并补 `--budget-bytes` 表达真子张量级预算（0/负 不再是唯一能表达"很小"的手段）。② **自证断言本身写错**：LRU 次序原在 12 次取用**之后**判定，而 `small[1]` 早已被后续驱逐 ⇒ 断言误红；改为**在驱逐发生的那一刻**判定（事后观测会被后续驱逐掩盖）—— 记入"机检须在事件时刻判定"的可复用教训。
+- **诚实边界**: ① 本机 2 vCPU / ~2.2 GiB 可用内存 ⇒ 预算强度只覆盖"小到能触发驱逐"的量级，**未做长序列下的峰值 RSS 压测**；② 驱逐策略是 **LRU-on-tick**，热集晋升（`IsHot` 访问计数）**在前向里未作为驱逐豁免使用**（前向只在 `--no-pin`/默认 pin 两档间切换，未实装"访问计数晋升为常驻"）；③ `--reclaim-per-token` 后每 token 重物化 norm（`hits` 归 0），是**故意**的对照档，不是默认行为；④ 未做多线程/流水线下的驻留并发安全论证（前向当前单线程）。
+- 机检: `residency --selftest` **10/10**（真 7B + tiny 双夹具）；Vulkan/内核回归未受影响；全量测试 **1025/1025**。
+- **机检有判别力的当场实证（诚实记录）**: 本轮登记表条目**第一次写错**（把 `evidence_path` 写成"源文件 | 报告"两段式）⇒ `VerificationFormTests.Registry_Exists_And_HasNoViolations` **当场判红**（`evidence_path 不存在`）⇒ 改回单一存在路径 + 新增独立 `evidence_report` 字段复跑全绿。自查不是空断言，本轮由它挡下一次。
+- **证据报告（真机输出逐字，45 行）**: `docs/reports/r385/residency-evidence.md`（自证 10 例明细 + tiny/7B 对账 + `cmp` 逐位结果 + 复现命令）。

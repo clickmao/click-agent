@@ -13,7 +13,7 @@ namespace clickrover.cli;
 /// </summary>
 public static class ForwardCli
 {
-    public const string UsageLine = "  forward <gguf> --tokens a,b,c [--ctx N] [--dump DIR] [--drop-pages]  前向 logits + top-k";
+    public const string UsageLine = "  forward <gguf> --tokens a,b,c [--ctx N] [--dump DIR] [--drop-pages] [--budget-mb N|--budget-kb N|--budget-bytes N] [--no-pin] [--reclaim-per-token]  前向 logits + top-k";
 
     internal static int Forward(string[] a, TextWriter o)
     {
@@ -27,7 +27,14 @@ public static class ForwardCli
         string? dumpDir = Opt(a, "--dump");
         bool dropPages = a.Contains("--drop-pages");
         bool showSteps = a.Contains("--steps");
+        bool noPin = a.Contains("--no-pin");
+        bool reclaimPerToken = a.Contains("--reclaim-per-token");
         int budgetMb = int.Parse(Opt(a, "--budget-mb") ?? "96", CultureInfo.InvariantCulture);
+        int budgetKb = int.Parse(Opt(a, "--budget-kb") ?? "0", CultureInfo.InvariantCulture);
+        long budgetBytesOpt = long.Parse(Opt(a, "--budget-bytes") ?? "0", CultureInfo.InvariantCulture);
+        // 0/负 一律表示"不设上限"(由 Ledger.BudgetUnlimited 统一声明); 真子张量级预算用 --budget-bytes 表达。
+        long budgetBytes = budgetBytesOpt > 0 ? budgetBytesOpt
+            : budgetKb > 0 ? (long)budgetKb * 1024 : (long)budgetMb * 1048576;
         int topk = int.Parse(Opt(a, "--topk") ?? "5", CultureInfo.InvariantCulture);
         int headVals = int.Parse(Opt(a, "--head-vals") ?? "8", CultureInfo.InvariantCulture);
 
@@ -47,7 +54,11 @@ public static class ForwardCli
         int maxPos = int.Parse(Opt(a, "--ctx") ?? Math.Max(tokens.Length, 4).ToString(CultureInfo.InvariantCulture), CultureInfo.InvariantCulture);
         if (maxPos < tokens.Length) maxPos = tokens.Length;
 
-        using var fp = new ForwardPass(r, cfg, maxPos, (long)budgetMb * 1024 * 1024, dropPages);
+        // --no-pin: 不预判热集 (空 pin 集) ⇒ norm 全部纳入预算 + LRU, 驱逐/回收路径真被走到。
+        IReadOnlyCollection<string>? pins = noPin ? Array.Empty<string>() : null;
+        using var fp = new ForwardPass(r, cfg, maxPos, budgetBytes, dropPages, pins, reclaimPerToken);
+        o.WriteLine($"residency_scope{{budget_bytes={budgetBytes} budget_unlimited={fp.Ledger.BudgetUnlimited} " +
+                    $"pin_mode={(noPin ? "none" : "default_norms")} reclaim_each_step={reclaimPerToken}}}");
         RopeCrossCheck(cfg, o);
 
         TextWriter? stepLog = showSteps ? o : null;
@@ -86,6 +97,14 @@ public static class ForwardCli
                     $"vmhwm={hw.VmHwm} vmhwm_mib={hw.VmHwm / 1048576.0:F1} " +
                     $"kv_cache_bytes={st.CachedKvBytes} gc_heap={GC.GetTotalMemory(false)} drop_pages={dropPages}}}");
         foreach (var line in fp.Ledger.Lines()) o.WriteLine(line);
+        // 预算诚实性: 只 pin 集本身超预算时 EnforceBudget 会如实停手 (不假装驱逐) ⇒ 账面必须显式标注超限,
+        // 不许把"没驱逐"当成"符合预算"。
+        bool budgetOk = fp.Ledger.BudgetUnlimited || fp.Ledger.PeakResidentBytes <= budgetBytes;
+        o.WriteLine($"residency_verdict{{peak_resident={fp.Ledger.PeakResidentBytes} budget={budgetBytes} " +
+                    $"peak_within_budget={budgetOk} evicts={fp.Ledger.EvictCount} reclaims={fp.Ledger.ReclaimCount} " +
+                    $"loads={fp.Ledger.LoadCount} hits={fp.Ledger.CacheHits} misses={fp.Ledger.CacheMisses} " +
+                    $"hit_rate={fp.Ledger.HitRate:F4} resident_end={fp.ResidentCount} " +
+                    $"verdict={(fp.Ledger.BudgetUnlimited ? "budget_unlimited" : budgetOk ? "within_budget" : "budget_exceeded_honest")}}}");
         o.WriteLine($"stream{{tensor_window_bytes_scanned={st.StreamedBytes} file_bytes={r.Mapped.Length} " +
                     $"ratio={(double)st.StreamedBytes / r.Mapped.Length:F3} touched_windows={r.Mapped.TouchedWindows}}}");
 
