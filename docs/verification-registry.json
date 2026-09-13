@@ -1,313 +1,332 @@
 {
- "schema": "verification-registry/v1",
- "updated_round": "R380",
- "spec": "docs/验证形式规范.md",
- "levels": {
-  "L0": "未验证(仅存在)",
-  "L1": "静态检查(编译/语法/结构扫描)",
-  "L2": "单测/组件行为断言",
-  "L3": "真机运行(进程/产物/端到端)",
-  "L4": "对抗/负向控制(注入缺陷必失败)"
- },
- "rows": [
-  {
-   "id": "python.artifact.compile",
-   "capability": "Python 产物落盘 + 语法校验 + 台账",
-   "level": "L2",
-   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~PythonArtifactPluginTests",
-   "evidence_path": "src/agent.tests/PythonArtifactPluginTests.cs",
-   "negative_control": "写入含语法错误的脚本 → compile_valid 必须为 false（用例内断言）",
-   "covers": [
-    "src/agent/registry/PythonArtifactPlugin.cs"
-   ],
-   "owner_round": "R368"
+  "schema": "verification-registry/v1",
+  "updated_round": "R382",
+  "spec": "docs/验证形式规范.md",
+  "levels": {
+    "L0": "未验证(仅存在)",
+    "L1": "静态检查(编译/语法/结构扫描)",
+    "L2": "单测/组件行为断言",
+    "L3": "真机运行(进程/产物/端到端)",
+    "L4": "对抗/负向控制(注入缺陷必失败)"
   },
-  {
-   "id": "segment.plugin.router",
-   "capability": "响应分段插件路由(恒等不改写原文 / 代码段审查回调)",
-   "level": "L2",
-   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~RegistryTests",
-   "evidence_path": "src/agent.tests/RegistryTests.cs",
-   "negative_control": "插件改写原文 → Router_RoutesToRegisteredPlugin_AndPreservesFences 断言原文还原必红；html 段传给代码审查 → Router_CodeReviewPlugin_ReceivesNonUiCode 断言 Null 必红",
-   "covers": [
-    "src/agent/registry/UiCapturePlugin.cs",
-    "src/agent/registry/CodeReviewPlugin.cs"
-   ],
-   "owner_round": "R368"
-  },
-  {
-   "id": "role.rbin.roundtrip",
-   "capability": "Role 单文件 .rbin 加密往返(gzip+AES-256-GCM+原子写)",
-   "level": "L2",
-   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~RoleBinaryFileTests",
-   "evidence_path": "src/agent.tests/RoleBinaryFileTests.cs",
-   "negative_control": "篡改密文 1 字节 → GCM tag 校验必须失败(解密抛错)",
-   "covers": [
-    "src/agent.roles/RoleBinaryFile.cs"
-   ],
-   "owner_round": "R363"
-  },
-  {
-   "id": "credential.aesgcm",
-   "capability": "凭据静态加密(AES-256-GCM 跨平台统一)",
-   "level": "L3",
-   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~CredentialEncryptionTests",
-   "evidence_path": "src/agent.tests/CredentialEncryptionTests.cs",
-   "negative_control": "错误 key → 解密必须抛异常；密文改 1 bit → 完整性校验必须失败",
-   "covers": [],
-   "owner_round": "R358"
-  },
-  {
-   "id": "devplan.docref",
-   "capability": "开发计划节点 DocRef 防漂移(文档-代码锚定)",
-   "level": "L2",
-   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~DevPlanDocRefTests",
-   "evidence_path": "src/agent.tests/DevPlanDocRefTests.cs",
-   "negative_control": "删/改被 DocRef 指向的文档 → 测试必红",
-   "covers": [],
-   "owner_round": "R360"
-  },
-  {
-   "id": "aot.publish.zero_il",
-   "capability": "NativeAOT 发布(0 IL 警告)",
-   "level": "L3",
-   "evidence_cmd": "export PATH=\"$HOME/.dotnet:$PATH\" && dotnet publish src/agent.host/agent.host.csproj -c Release -r linux-x64 -o /tmp/pub_release  # 不带 -p:PublishAot(会污染 agent.io 报 NETSDK1207)",
-   "evidence_path": "src/agent.host",
-   "negative_control": "引入反射/动态代码路径 → IL2026/IL3050 警告出现，即视为失败(0 警告为发布铁律)",
-   "covers": [],
-   "owner_round": "R368",
-   "registration": "release_tag_only",
-   "note": "仅在发布 tag 时执行/登记; 0 IL 警告为发布铁律, 非发布轮不登记。历史参考: R373 13,817,472 B / R374 13,842,384 B 均 0 IL"
-  },
-  {
-   "id": "bge.recall.frozen_bench",
-   "capability": "bge 确定性召回率评测(冻结语料/冻结查询/冻结指标)",
-   "level": "L3",
-   "evidence_cmd": "python3 eval/bge/eval_recall.py --label bge-small-zh-v1.5",
-   "evidence_path": "eval/bge/fixtures/corpus.jsonl",
-   "negative_control": "打乱 gold_id 映射 → 指标必须塌到随机水平(r@1 ≈ 1/1299)",
-   "covers": [],
-   "owner_round": "R370"
-  },
-  {
-   "id": "verification.registry.selfcheck",
-   "capability": "验证形式登记表自身(漏项/越级/路径不存在 必红)",
-   "level": "L4",
-   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~VerificationFormTests",
-   "evidence_path": "src/agent.tests/VerificationFormTests.cs",
-   "negative_control": "删除任一登记行/L≥2 行缺负向控制/静态命令越级申报/新增未登记插件 → 本测试必红",
-   "covers": [],
-   "owner_round": "R370"
-  },
-  {
-   "id": "zero.shell.spawn",
-   "capability": "外部进程直连(ArgumentList 参数数组, 零 shell 拼接)",
-   "level": "L1",
-   "evidence_cmd": "python3 -c \"import re,pathlib;print(sum(1 for f in pathlib.Path('src').rglob('*.cs') for l in f.read_text(encoding='utf-8').splitlines() if re.search(r'Arguments\\\\s*=', l)))\"",
-   "evidence_path": "src/agent.skills/SkillScriptRunner.cs",
-   "negative_control": "",
-   "covers": [],
-   "owner_round": "R369",
-   "gap_note": "仅代码走查 + 静态扫描；无独立运行级机检。已知例外: src/agent.workspace/GitChangeType.cs(死代码, 未接线, 21 处)。运行级机检列入长期看板 L6。"
-  },
-  {
-   "id": "code.unfenced.promote",
-   "capability": "无围栏代码 → 产物入链(字符串字面量感知 + 机制归因)",
-   "level": "L4",
-   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~UnfencedCodeDetectionTests",
-   "evidence_path": "src/agent.tests/UnfencedCodeDetectionTests.cs",
-   "negative_control": "关闭启发式回退 → 3 个用例如期变红(RED 控制已跑);纯散文/<8 行/已有围栏 → 不得提升",
-   "covers": [
-    "src/agent/registry/SegmentKind.cs",
-    "src/agent/registry/PythonArtifactPlugin.cs"
-   ],
-   "owner_round": "R371"
-  },
-  {
-   "id": "llm.truncated.detect",
-   "capability": "截断正文检测(尾部未完结构)",
-   "level": "L2",
-   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~TruncatedReplyRecoveryTests",
-   "evidence_path": "src/agent.tests/TruncatedReplyRecoveryTests.cs",
-   "negative_control": "完整实现/闭合围栏/全角句号结尾 → 必须判否(零误报)",
-   "covers": [
-    "src/agent.modelqueue/ModelQueueRouter.cs"
-   ],
-   "owner_round": "R372"
-  },
-  {
-   "id": "llm.truncated.continue",
-   "capability": "截断有界续写 + 去重重拼",
-   "level": "L2",
-   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~TruncatedReplyRecoveryTests",
-   "evidence_path": "src/agent.tests/TruncatedReplyRecoveryTests.cs",
-   "negative_control": "续写返回空 → 保留原文并仍可检出截断;完整正文 → 恰好 1 次调用(零额外成本)",
-   "covers": [
-    "src/agent.modelqueue/ModelQueueRouter.cs"
-   ],
-   "owner_round": "R372",
-   "l3_pending": "真机 8192 截断复现时验证 llm_call_continue 的 recovered=true(下轮探针)"
-  },
-  {
-   "id": "llm.budget.first_call",
-   "capability": "首轮输出预算按任务分类给足(推理与交付物同池) (L2 单测 + L3 真机)",
-   "level": "L3",
-   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~FirstCallBudgetTests",
-   "evidence_path": "src/agent.tests/FirstCallBudgetTests.cs",
-   "negative_control": "非大产物分类(一般问答/上下文压缩)必须保持默认预算(用例断言); RED 控制: 把调用方的分类标签改回硬编码 → 接线用例必红",
-   "covers": [
-    "src/agent.modelqueue/ModelQueueRouter.cs",
-    "src/agent/modelqueue/ModelQueueAdapter.cs",
-    "src/agent/templates/IPromptBuilder.cs",
-    "src/agent/IndustrialAgentV2.cs"
-   ],
-   "owner_round": "R373",
-   "real_machine": "3 连跑同题: 修复前 每题 2 次调用/3 轮全触发恢复/有效产物 1-2/3; 修复后 1 次调用/零恢复/有效 3/3, tokens −32%, 墙钟 136s→64s"
-  },
-  {
-   "id": "skill.lesson.generalize",
-   "capability": "经验沉淀=思考逻辑 skill, 且核心判据零语言特性(机检+负向控制)",
-   "level": "L2",
-   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~SkillGeneralizationTests",
-   "evidence_path": "src/agent.tests/SkillGeneralizationTests.cs",
-   "negative_control": "向技能正文注入语言 token → 黑名单必命中(用例断言, 证明机检非空转)",
-   "covers": [
-    "skills/delivery-selfcheck/SKILL.md",
-    "src/agent.roles/LessonGeneralization.cs"
-   ],
-   "owner_round": "R373"
-  },
-  {
-   "id": "skill.knowledge_hint.no_hijack",
-   "capability": "自检技能=知识提示型(命中注入, 不直出吞任务) (L2 单测 + L3 真机)",
-   "level": "L3",
-   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~SkillGeneralizationTests",
-   "evidence_path": "src/agent.tests/SkillGeneralizationTests.cs",
-   "negative_control": "真机反例已实证: 口径型(normative)命中等级3 时 force 直出技能正文 → 无 LLM 调用、reply_chars=1526、2.4s 结束(任务被劫持); 改 knowledge_hint 后回复仍走 LLM 主链",
-   "covers": [
-    "skills/delivery-selfcheck/SKILL.md",
-    "src/agent.skills/SkillDispatcher.cs"
-   ],
-   "owner_round": "R373"
-  },
-  {
-   "id": "artifact.failure.feedback",
-   "capability": "产物校验失败 → 失败输出回流模型 → 有界修复 1 轮 → 复检(新产物通过才算修好) (L2 单测 + L3 真机)",
-   "level": "L3",
-   "evidence_cmd": "bash /tmp/gameprobe/run_r374.sh  # 真机 A/B: A 臂=AGENTFRAMEWORK_ARTIFACT_REPAIR=0 → 0 条 artifact_feedback; B 臂=默认 → 2/3 触发, 其中 1 次 fixed=true。单测: dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~ArtifactRepairTests",
-   "evidence_path": "src/agent.tests/ArtifactRepairTests.cs",
-   "negative_control": "① 闸门关 → 策略永不触发(真机 A 臂 3 连跑 0 条 artifact_feedback); ② 修复轮回吐同一份失败脚本 → 同产物路径不得判定 fixed=true(非确定性场景防 KPI 虚高); ③ IsRepairable 置 false → 4 条用例必红(已实证)",
-   "covers": [
-    "src/agent/registry/ArtifactRepair.cs",
-    "src/agent/registry/PythonArtifactPlugin.cs",
-    "src/agent/registry/SegmentKind.cs",
-    "src/agent/IndustrialAgentV2.cs"
-   ],
-   "owner_round": "R374"
-  },
-  {
-   "id": "artifact.failure.visible",
-   "capability": "失败事实的可消费性: 运行/校验输出与闸门契约进入下一轮提示词(可见性断言, 不只是被记录)",
-   "level": "L2",
-   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~ArtifactRepairTests",
-   "evidence_path": "src/agent.tests/ArtifactRepairTests.cs",
-   "negative_control": "断言绑定真实事实而非是否调用了模型: 提示词必须含 python3 -I(闸门调用方式)、--selftest(闸门选参)、真实未通过用例原文、最小改动约束; 摘要只摘原文行且上限 12 条, 不得臆造",
-   "covers": [
-    "src/agent/registry/ArtifactRepair.cs"
-   ],
-   "owner_round": "R374"
-  },
-  {
-   "id": "ask.envelope.contract",
-   "capability": "前端问询信封契约 L2: {v,type:event,event:ask,payload{ask_id,service,purpose,timeout_s,group_size,questions[{key,display,required,sensitive,data_type,multi_select,default_value,options[{value,label,recommended}]}]}} — 选项结构化下发(不得只拼文本); 另有 ask_closed{reason} 与 TryParseReply 显式拒绝非法 payload",
-   "level": "L2",
-   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~AskEnvelopeTests",
-   "evidence_path": "src/agent.tests/AskEnvelopeTests.cs",
-   "negative_control": "① 回退裸 {ev:\"ask\"} → 真 socket 用例族 5 红(已实证); ② BuildQuestions 丢 options → 1 红(已实证); ③ 非法 payload(空/缺 ask_id/非对象/非 JSON) 必须显式拒(4 用例)",
-   "covers": [
-    "src/agent.frontendapi/AskEnvelope.cs",
-    "src/agent.frontendapi/FrontendPromptService.cs",
-    "src/agent.core/userinteraction/PromptOrigin.cs"
-   ],
-   "owner_round": "R375"
-  },
-  {
-   "id": "ask.frontend.channel",
-   "capability": "前端 ask 通道 L2(真 socket)+L3(真机): 问询事件经 EventHub → 所有已鉴权在线连接(单连接发送锁, 行不交错); ask.reply/ask.cancel 回到等待中的调用(超时/取消/被取代/幂等 already_answered)",
-   "level": "L3",
-   "evidence_cmd": "python3 /tmp/fp375/probe.py  # 真机: 伪造 ask_id → payload.outcome=unknown_ask(未接线时为 channel_unavailable); 空 envelope → bad_payload | dotnet test ... --filter FullyQualifiedName~FrontendAskFlowTests",
-   "evidence_path": "src/agent.tests/FrontendAskFlowTests.cs",
-   "negative_control": "① Complete 去掉 ask_id 校验 → 伪造 id 用例 1 红(已实证, 防误投); ② 未挂接 sink → outcome=channel_unavailable(与 unknown_ask 可区分, 防\"接线了\"被空报); ③ 生产侧命中: 真机 chat.send 1 次 ask 事件 0 → 只登记\"机制已通\", 不登记\"管线会问询\"",
-   "covers": [
-    "src/agent.frontendapi/FrontendApiServer.cs",
-    "src/agent.frontendapi/FrontendEventHub.cs",
-    "src/agent.frontendapi/FrontendApiChatRouter.cs",
-    "src/agent.host/Program.cs"
-   ],
-   "owner_round": "R375"
-  },
-  {
-   "id": "ask.menu.loop",
-   "capability": "真机同一连接内 menu 问询闭环 L3: ask 信封事件(含 questions/options) → 同连接 ask.reply → payload.outcome=answered → ask_closed{answered} → 续跑返回正文; 且生产侧触发命中 ≥1 (evidence_gate.to_ask≥1)",
-   "level": "L3",
-   "evidence_cmd": "python3 /tmp/fp376/probe2.py  # RESULT_JSON{ask,reply,continue,gate}=true | dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~FrontendAskSameConnTests",
-   "evidence_path": "src/agent.tests/FrontendAskSameConnTests.cs",
-   "negative_control": "① 读循环改回同步等待长任务完成(还原⑫类断链) → 同连接 2 用例全红(已实证, 且其它 21 用例不动 → 变异特异); ② 触发器带外构造的旧式单测在该变异下**仍然全绿** = 盲区实证",
-   "covers": [
-    "src/agent.frontendapi/FrontendApiServer.cs",
-    "src/agent.frontendapi/FrontendApiChatRouter.cs",
-    "src/agent.frontendapi/FrontendEventHub.cs",
-    "src/agent/registry/EvidenceGate.cs"
-   ],
-   "owner_round": "R376"
-  },
-  {
-   "id": "frontend.conn.framing",
-   "capability": "帧/握手边界与并发派发契约 L2(真 TCP): ① auth 与首个请求合并写入仍被处理(残包转交, 不丢字节); ② 同段多请求全部处理且按 req_id 关联(不依赖到达顺序); ③ 非法 token 静默断连(不响应); ④ 在途上限(背压)与异常必观测",
-   "level": "L2",
-   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~FrontendHandshakeTests",
-   "evidence_path": "src/agent.tests/FrontendHandshakeTests.cs",
-   "negative_control": "丢弃握手残包(rest=空) → 同段写入 2 用例红(已实证, 两种变异各 2 红); 正常路径(auth 后另发请求)用例保持绿 → 证明变异只打中帧边界",
-   "covers": [
-    "src/agent.frontendapi/FrontendApiServer.cs"
-   ],
-   "owner_round": "R376"
-  },
-  {
-   "id": "kpi.prompt_cache_hit",
-   "capability": "prompt 缓存命中率 KPI (用户钦定, K2b 成本侧): 解析 usage.prompt_cache_hit_tokens/prompt_cache_miss_tokens → 命中率 hit/(hit+miss) 4 位小数; 三处 data-carrying llm_call 打点铺 cache_hit_tokens/cache_miss_tokens/cache_hit_rate; 离线聚合 scripts/kpi_cache_hit.py (按模型分组 + 按轮次/会话聚合 + 未上报计数 + redline 段); 未上报/无分母记 -1 且不并入比率; **R380 口径修订 (用户钦定): 命中率只算『需要命中的部分』—— 本轮新增不计入 (新增必然不命中) ⇒ 有效命中率 = cache_hit_tokens / min(本轮 prompt_tokens, 上一轮同会话 prompt_tokens)**; 原 hit/(hit+miss) 保留为参考口径 (旧口径把新增算进分母, 会把已到结构极限的轮次误判为灾难性失败)",
-   "level": "L3",
-   "evidence_cmd": "python3 scripts/kpi_cache_hit.py /tmp/gameprobe/r377_kpi.telemetry  # 真机样本: hit=3328 miss=7610 → 30.43% | dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~PromptCacheKpi",
-   "evidence_path": "src/agent.tests/PromptCacheKpiTests.cs",
-   "negative_control": "① 命中率分母 +1 → 4 红(已实证); ② HitTokens(hit)=>hit??0 (未上报冒充 0 命中) → 1 红(已实证); ③ 删一处打点铺设 → 1 红(已实证; 首跑曾 0 红 = 断言空心, 改按打点块配对后抓到)",
-   "covers": [
-    "src/agent.modelqueue/PromptCacheKpi.cs",
-    "src/agent.modelqueue/OpenAIChatResponseDtos.cs",
-    "src/agent.modelqueue/ModelQueueRouter.cs",
-    "src/agent/modelqueue/ModelQueueAdapter.cs",
-    "scripts/kpi_cache_hit.py"
-   ],
-   "owner_round": "R377"
-  },
-  {
-   "id": "kpi.prompt_cache_hit_redline",
-   "capability": "多轮会话 prompt 缓存命中率红线 KPI (用户钦定 R379, 首要 KPI): 红线 = 多轮会话**第 2 轮起**有效命中率 ≥**95%** (用户 OOB 由 90% 提高; 目标 98~99%), **越线必查**: 越线必须产出可执行诊断 (提示词装配四类破坏点 + 算术判决) 并修复, 不得只记数字; **算术判决**: 命中 = (floor(前缀/64)−1)×64 ⇒ 上限 ≈ (n−1)/n ⇒ 95% 需前缀 ≥2496 token (n≥39), 98% 需 ≥6336; 前置结构铁律 = ①messages[0] 会话内恒定字节 (会话冻结 systemPrompt) ②历史追加式回放 (不重写/不砍头, 2000→1M token 预算) ③发送字节=回放字节 (SentContent 在回注之后快照) ④每轮增量最小化 (静态块首轮焊进前缀 + 动态块跨轮字节/近重复去重) ⑤**会话稳定基线** (SessionBaseline, ~3k 字符: 纪律/命令/工作区快照/能力/模块地图) 首轮焊进前缀 —— 红线 95% 的算术必需项; 逐轮归属 = llm_call 打点 agent_session/turn/cacheable_tokens/effective_hit_rate; 越线告警 = cache_redline_violation 打点 (含 diagnosis); 判定/门禁 = scripts/kpi_cache_hit.py 的 redline 段 (退出码 -1 可做 CI 门禁) (命中率 ≈ 已发前缀/本轮总量, 故红线等价于每轮增量 ≤ 前缀/9)",
-   "level": "L3",
-   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter 'FullyQualifiedName~MultiTurnCachePrefixTests|FullyQualifiedName~SessionInjectionPlannerTests'  # 9/9 | python3 scripts/kpi_cache_hit.py --since <轮次起点>  # redline 段",
-   "evidence_path": "src/agent.tests/MultiTurnCachePrefixTests.cs",
-   "negative_control": "① 变量块放回 systemPrompt (=旧代码形态) → 轮 2 前缀断言红(已实证, M2 用例); ② 不去重重复注入整块动态上下文 → 增量占比 >10% 红(已实证, P3 负向控制); ③ 空集合去重 → 旧行重复进入增量红(已实证, P2)。真机反证: 修前 30.26%/62.28%/0.00% → 修后 13.05%(冷启动)/66.08%/72.44%; 结构指标 messages[0] 恒定 1149 字符、轮间公共前缀 99.4%/99.6%",
-   "covers": [
-    "src/agent/IndustrialAgentV2.cs",
-    "src/agent/context/SessionInjectionPlanner.cs",
-    "src/agent/templates/IPromptBuilder.cs",
-    "src/agent.modelqueue/ModelQueueRouter.cs",
-    "src/agent.tests/MultiTurnCachePrefixTests.cs",
-    "src/agent.tests/SessionInjectionPlannerTests.cs",
-    "scripts/kpi_cache_hit.py"
-   ],
-   "owner_round": "R379"
-  }
- ],
- "aot_check_policy": "release_tag_only",
- "aot_check_policy_note": "AOT 编译校验(NativeAOT 发布/0 IL 警告/发布体积)仅在【发布 tag】时执行并登记;非发布轮次的 AOT 结果只作参考证据, 不构成该轮能力的登记依据或等级判定(用户口径 2026-09-13)"
+  "rows": [
+    {
+      "id": "python.artifact.compile",
+      "capability": "Python 产物落盘 + 语法校验 + 台账",
+      "level": "L2",
+      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~PythonArtifactPluginTests",
+      "evidence_path": "src/agent.tests/PythonArtifactPluginTests.cs",
+      "negative_control": "写入含语法错误的脚本 → compile_valid 必须为 false（用例内断言）",
+      "covers": [
+        "src/agent/registry/PythonArtifactPlugin.cs"
+      ],
+      "owner_round": "R368"
+    },
+    {
+      "id": "segment.plugin.router",
+      "capability": "响应分段插件路由(恒等不改写原文 / 代码段审查回调)",
+      "level": "L2",
+      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~RegistryTests",
+      "evidence_path": "src/agent.tests/RegistryTests.cs",
+      "negative_control": "插件改写原文 → Router_RoutesToRegisteredPlugin_AndPreservesFences 断言原文还原必红；html 段传给代码审查 → Router_CodeReviewPlugin_ReceivesNonUiCode 断言 Null 必红",
+      "covers": [
+        "src/agent/registry/UiCapturePlugin.cs",
+        "src/agent/registry/CodeReviewPlugin.cs"
+      ],
+      "owner_round": "R368"
+    },
+    {
+      "id": "role.rbin.roundtrip",
+      "capability": "Role 单文件 .rbin 加密往返(gzip+AES-256-GCM+原子写)",
+      "level": "L2",
+      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~RoleBinaryFileTests",
+      "evidence_path": "src/agent.tests/RoleBinaryFileTests.cs",
+      "negative_control": "篡改密文 1 字节 → GCM tag 校验必须失败(解密抛错)",
+      "covers": [
+        "src/agent.roles/RoleBinaryFile.cs"
+      ],
+      "owner_round": "R363"
+    },
+    {
+      "id": "credential.aesgcm",
+      "capability": "凭据静态加密(AES-256-GCM 跨平台统一)",
+      "level": "L3",
+      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~CredentialEncryptionTests",
+      "evidence_path": "src/agent.tests/CredentialEncryptionTests.cs",
+      "negative_control": "错误 key → 解密必须抛异常；密文改 1 bit → 完整性校验必须失败",
+      "covers": [],
+      "owner_round": "R358"
+    },
+    {
+      "id": "devplan.docref",
+      "capability": "开发计划节点 DocRef 防漂移(文档-代码锚定)",
+      "level": "L2",
+      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~DevPlanDocRefTests",
+      "evidence_path": "src/agent.tests/DevPlanDocRefTests.cs",
+      "negative_control": "删/改被 DocRef 指向的文档 → 测试必红",
+      "covers": [],
+      "owner_round": "R360"
+    },
+    {
+      "id": "aot.publish.zero_il",
+      "capability": "NativeAOT 发布(0 IL 警告)",
+      "level": "L3",
+      "evidence_cmd": "export PATH=\"$HOME/.dotnet:$PATH\" && dotnet publish src/agent.host/agent.host.csproj -c Release -r linux-x64 -o /tmp/pub_release  # 不带 -p:PublishAot(会污染 agent.io 报 NETSDK1207)",
+      "evidence_path": "src/agent.host",
+      "negative_control": "引入反射/动态代码路径 → IL2026/IL3050 警告出现，即视为失败(0 警告为发布铁律)",
+      "covers": [],
+      "owner_round": "R368",
+      "registration": "release_tag_only",
+      "note": "仅在发布 tag 时执行/登记; 0 IL 警告为发布铁律, 非发布轮不登记。历史参考: R373 13,817,472 B / R374 13,842,384 B 均 0 IL"
+    },
+    {
+      "id": "bge.recall.frozen_bench",
+      "capability": "bge 确定性召回率评测(冻结语料/冻结查询/冻结指标)",
+      "level": "L3",
+      "evidence_cmd": "python3 eval/bge/eval_recall.py --label bge-small-zh-v1.5",
+      "evidence_path": "eval/bge/fixtures/corpus.jsonl",
+      "negative_control": "打乱 gold_id 映射 → 指标必须塌到随机水平(r@1 ≈ 1/1299)",
+      "covers": [],
+      "owner_round": "R370"
+    },
+    {
+      "id": "verification.registry.selfcheck",
+      "capability": "验证形式登记表自身(漏项/越级/路径不存在 必红)",
+      "level": "L4",
+      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~VerificationFormTests",
+      "evidence_path": "src/agent.tests/VerificationFormTests.cs",
+      "negative_control": "删除任一登记行/L≥2 行缺负向控制/静态命令越级申报/新增未登记插件 → 本测试必红",
+      "covers": [],
+      "owner_round": "R370"
+    },
+    {
+      "id": "zero.shell.spawn",
+      "capability": "外部进程直连(ArgumentList 参数数组, 零 shell 拼接)",
+      "level": "L1",
+      "evidence_cmd": "python3 -c \"import re,pathlib;print(sum(1 for f in pathlib.Path('src').rglob('*.cs') for l in f.read_text(encoding='utf-8').splitlines() if re.search(r'Arguments\\\\s*=', l)))\"",
+      "evidence_path": "src/agent.skills/SkillScriptRunner.cs",
+      "negative_control": "",
+      "covers": [],
+      "owner_round": "R369",
+      "gap_note": "仅代码走查 + 静态扫描；无独立运行级机检。已知例外: src/agent.workspace/GitChangeType.cs(死代码, 未接线, 21 处)。运行级机检列入长期看板 L6。"
+    },
+    {
+      "id": "code.unfenced.promote",
+      "capability": "无围栏代码 → 产物入链(字符串字面量感知 + 机制归因)",
+      "level": "L4",
+      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~UnfencedCodeDetectionTests",
+      "evidence_path": "src/agent.tests/UnfencedCodeDetectionTests.cs",
+      "negative_control": "关闭启发式回退 → 3 个用例如期变红(RED 控制已跑);纯散文/<8 行/已有围栏 → 不得提升",
+      "covers": [
+        "src/agent/registry/SegmentKind.cs",
+        "src/agent/registry/PythonArtifactPlugin.cs"
+      ],
+      "owner_round": "R371"
+    },
+    {
+      "id": "llm.truncated.detect",
+      "capability": "截断正文检测(尾部未完结构)",
+      "level": "L2",
+      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~TruncatedReplyRecoveryTests",
+      "evidence_path": "src/agent.tests/TruncatedReplyRecoveryTests.cs",
+      "negative_control": "完整实现/闭合围栏/全角句号结尾 → 必须判否(零误报)",
+      "covers": [
+        "src/agent.modelqueue/ModelQueueRouter.cs"
+      ],
+      "owner_round": "R372"
+    },
+    {
+      "id": "llm.truncated.continue",
+      "capability": "截断有界续写 + 去重重拼",
+      "level": "L2",
+      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~TruncatedReplyRecoveryTests",
+      "evidence_path": "src/agent.tests/TruncatedReplyRecoveryTests.cs",
+      "negative_control": "续写返回空 → 保留原文并仍可检出截断;完整正文 → 恰好 1 次调用(零额外成本)",
+      "covers": [
+        "src/agent.modelqueue/ModelQueueRouter.cs"
+      ],
+      "owner_round": "R372",
+      "l3_pending": "真机 8192 截断复现时验证 llm_call_continue 的 recovered=true(下轮探针)"
+    },
+    {
+      "id": "llm.budget.first_call",
+      "capability": "首轮输出预算按任务分类给足(推理与交付物同池) (L2 单测 + L3 真机)",
+      "level": "L3",
+      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~FirstCallBudgetTests",
+      "evidence_path": "src/agent.tests/FirstCallBudgetTests.cs",
+      "negative_control": "非大产物分类(一般问答/上下文压缩)必须保持默认预算(用例断言); RED 控制: 把调用方的分类标签改回硬编码 → 接线用例必红",
+      "covers": [
+        "src/agent.modelqueue/ModelQueueRouter.cs",
+        "src/agent/modelqueue/ModelQueueAdapter.cs",
+        "src/agent/templates/IPromptBuilder.cs",
+        "src/agent/IndustrialAgentV2.cs"
+      ],
+      "owner_round": "R373",
+      "real_machine": "3 连跑同题: 修复前 每题 2 次调用/3 轮全触发恢复/有效产物 1-2/3; 修复后 1 次调用/零恢复/有效 3/3, tokens −32%, 墙钟 136s→64s"
+    },
+    {
+      "id": "skill.lesson.generalize",
+      "capability": "经验沉淀=思考逻辑 skill, 且核心判据零语言特性(机检+负向控制)",
+      "level": "L2",
+      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~SkillGeneralizationTests",
+      "evidence_path": "src/agent.tests/SkillGeneralizationTests.cs",
+      "negative_control": "向技能正文注入语言 token → 黑名单必命中(用例断言, 证明机检非空转)",
+      "covers": [
+        "skills/delivery-selfcheck/SKILL.md",
+        "src/agent.roles/LessonGeneralization.cs"
+      ],
+      "owner_round": "R373"
+    },
+    {
+      "id": "skill.knowledge_hint.no_hijack",
+      "capability": "自检技能=知识提示型(命中注入, 不直出吞任务) (L2 单测 + L3 真机)",
+      "level": "L3",
+      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~SkillGeneralizationTests",
+      "evidence_path": "src/agent.tests/SkillGeneralizationTests.cs",
+      "negative_control": "真机反例已实证: 口径型(normative)命中等级3 时 force 直出技能正文 → 无 LLM 调用、reply_chars=1526、2.4s 结束(任务被劫持); 改 knowledge_hint 后回复仍走 LLM 主链",
+      "covers": [
+        "skills/delivery-selfcheck/SKILL.md",
+        "src/agent.skills/SkillDispatcher.cs"
+      ],
+      "owner_round": "R373"
+    },
+    {
+      "id": "artifact.failure.feedback",
+      "capability": "产物校验失败 → 失败输出回流模型 → 有界修复 1 轮 → 复检(新产物通过才算修好) (L2 单测 + L3 真机)",
+      "level": "L3",
+      "evidence_cmd": "bash /tmp/gameprobe/run_r374.sh  # 真机 A/B: A 臂=AGENTFRAMEWORK_ARTIFACT_REPAIR=0 → 0 条 artifact_feedback; B 臂=默认 → 2/3 触发, 其中 1 次 fixed=true。单测: dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~ArtifactRepairTests",
+      "evidence_path": "src/agent.tests/ArtifactRepairTests.cs",
+      "negative_control": "① 闸门关 → 策略永不触发(真机 A 臂 3 连跑 0 条 artifact_feedback); ② 修复轮回吐同一份失败脚本 → 同产物路径不得判定 fixed=true(非确定性场景防 KPI 虚高); ③ IsRepairable 置 false → 4 条用例必红(已实证)",
+      "covers": [
+        "src/agent/registry/ArtifactRepair.cs",
+        "src/agent/registry/PythonArtifactPlugin.cs",
+        "src/agent/registry/SegmentKind.cs",
+        "src/agent/IndustrialAgentV2.cs"
+      ],
+      "owner_round": "R374"
+    },
+    {
+      "id": "artifact.failure.visible",
+      "capability": "失败事实的可消费性: 运行/校验输出与闸门契约进入下一轮提示词(可见性断言, 不只是被记录)",
+      "level": "L2",
+      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~ArtifactRepairTests",
+      "evidence_path": "src/agent.tests/ArtifactRepairTests.cs",
+      "negative_control": "断言绑定真实事实而非是否调用了模型: 提示词必须含 python3 -I(闸门调用方式)、--selftest(闸门选参)、真实未通过用例原文、最小改动约束; 摘要只摘原文行且上限 12 条, 不得臆造",
+      "covers": [
+        "src/agent/registry/ArtifactRepair.cs"
+      ],
+      "owner_round": "R374"
+    },
+    {
+      "id": "ask.envelope.contract",
+      "capability": "前端问询信封契约 L2: {v,type:event,event:ask,payload{ask_id,service,purpose,timeout_s,group_size,questions[{key,display,required,sensitive,data_type,multi_select,default_value,options[{value,label,recommended}]}]}} — 选项结构化下发(不得只拼文本); 另有 ask_closed{reason} 与 TryParseReply 显式拒绝非法 payload",
+      "level": "L2",
+      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~AskEnvelopeTests",
+      "evidence_path": "src/agent.tests/AskEnvelopeTests.cs",
+      "negative_control": "① 回退裸 {ev:\"ask\"} → 真 socket 用例族 5 红(已实证); ② BuildQuestions 丢 options → 1 红(已实证); ③ 非法 payload(空/缺 ask_id/非对象/非 JSON) 必须显式拒(4 用例)",
+      "covers": [
+        "src/agent.frontendapi/AskEnvelope.cs",
+        "src/agent.frontendapi/FrontendPromptService.cs",
+        "src/agent.core/userinteraction/PromptOrigin.cs"
+      ],
+      "owner_round": "R375"
+    },
+    {
+      "id": "ask.frontend.channel",
+      "capability": "前端 ask 通道 L2(真 socket)+L3(真机): 问询事件经 EventHub → 所有已鉴权在线连接(单连接发送锁, 行不交错); ask.reply/ask.cancel 回到等待中的调用(超时/取消/被取代/幂等 already_answered)",
+      "level": "L3",
+      "evidence_cmd": "python3 /tmp/fp375/probe.py  # 真机: 伪造 ask_id → payload.outcome=unknown_ask(未接线时为 channel_unavailable); 空 envelope → bad_payload | dotnet test ... --filter FullyQualifiedName~FrontendAskFlowTests",
+      "evidence_path": "src/agent.tests/FrontendAskFlowTests.cs",
+      "negative_control": "① Complete 去掉 ask_id 校验 → 伪造 id 用例 1 红(已实证, 防误投); ② 未挂接 sink → outcome=channel_unavailable(与 unknown_ask 可区分, 防\"接线了\"被空报); ③ 生产侧命中: 真机 chat.send 1 次 ask 事件 0 → 只登记\"机制已通\", 不登记\"管线会问询\"",
+      "covers": [
+        "src/agent.frontendapi/FrontendApiServer.cs",
+        "src/agent.frontendapi/FrontendEventHub.cs",
+        "src/agent.frontendapi/FrontendApiChatRouter.cs",
+        "src/agent.host/Program.cs"
+      ],
+      "owner_round": "R375"
+    },
+    {
+      "id": "ask.menu.loop",
+      "capability": "真机同一连接内 menu 问询闭环 L3: ask 信封事件(含 questions/options) → 同连接 ask.reply → payload.outcome=answered → ask_closed{answered} → 续跑返回正文; 且生产侧触发命中 ≥1 (evidence_gate.to_ask≥1)",
+      "level": "L3",
+      "evidence_cmd": "python3 /tmp/fp376/probe2.py  # RESULT_JSON{ask,reply,continue,gate}=true | dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~FrontendAskSameConnTests",
+      "evidence_path": "src/agent.tests/FrontendAskSameConnTests.cs",
+      "negative_control": "① 读循环改回同步等待长任务完成(还原⑫类断链) → 同连接 2 用例全红(已实证, 且其它 21 用例不动 → 变异特异); ② 触发器带外构造的旧式单测在该变异下**仍然全绿** = 盲区实证",
+      "covers": [
+        "src/agent.frontendapi/FrontendApiServer.cs",
+        "src/agent.frontendapi/FrontendApiChatRouter.cs",
+        "src/agent.frontendapi/FrontendEventHub.cs",
+        "src/agent/registry/EvidenceGate.cs"
+      ],
+      "owner_round": "R376"
+    },
+    {
+      "id": "frontend.conn.framing",
+      "capability": "帧/握手边界与并发派发契约 L2(真 TCP): ① auth 与首个请求合并写入仍被处理(残包转交, 不丢字节); ② 同段多请求全部处理且按 req_id 关联(不依赖到达顺序); ③ 非法 token 静默断连(不响应); ④ 在途上限(背压)与异常必观测",
+      "level": "L2",
+      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~FrontendHandshakeTests",
+      "evidence_path": "src/agent.tests/FrontendHandshakeTests.cs",
+      "negative_control": "丢弃握手残包(rest=空) → 同段写入 2 用例红(已实证, 两种变异各 2 红); 正常路径(auth 后另发请求)用例保持绿 → 证明变异只打中帧边界",
+      "covers": [
+        "src/agent.frontendapi/FrontendApiServer.cs"
+      ],
+      "owner_round": "R376"
+    },
+    {
+      "id": "kpi.prompt_cache_hit",
+      "capability": "prompt 缓存命中率 KPI (用户钦定, K2b 成本侧): 解析 usage.prompt_cache_hit_tokens/prompt_cache_miss_tokens → 命中率 hit/(hit+miss) 4 位小数; 三处 data-carrying llm_call 打点铺 cache_hit_tokens/cache_miss_tokens/cache_hit_rate; 离线聚合 scripts/kpi_cache_hit.py (按模型分组 + 按轮次/会话聚合 + 未上报计数 + redline 段); 未上报/无分母记 -1 且不并入比率; **R380 口径修订 (用户钦定): 命中率只算『需要命中的部分』—— 本轮新增不计入 (新增必然不命中) ⇒ 有效命中率 = cache_hit_tokens / min(本轮 prompt_tokens, 上一轮同会话 prompt_tokens)**; 原 hit/(hit+miss) 保留为参考口径 (旧口径把新增算进分母, 会把已到结构极限的轮次误判为灾难性失败)",
+      "level": "L3",
+      "evidence_cmd": "python3 scripts/kpi_cache_hit.py /tmp/gameprobe/r377_kpi.telemetry  # 真机样本: hit=3328 miss=7610 → 30.43% | dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~PromptCacheKpi",
+      "evidence_path": "src/agent.tests/PromptCacheKpiTests.cs",
+      "negative_control": "① 命中率分母 +1 → 4 红(已实证); ② HitTokens(hit)=>hit??0 (未上报冒充 0 命中) → 1 红(已实证); ③ 删一处打点铺设 → 1 红(已实证; 首跑曾 0 红 = 断言空心, 改按打点块配对后抓到)",
+      "covers": [
+        "src/agent.modelqueue/PromptCacheKpi.cs",
+        "src/agent.modelqueue/OpenAIChatResponseDtos.cs",
+        "src/agent.modelqueue/ModelQueueRouter.cs",
+        "src/agent/modelqueue/ModelQueueAdapter.cs",
+        "scripts/kpi_cache_hit.py"
+      ],
+      "owner_round": "R377"
+    },
+    {
+      "id": "kpi.prompt_cache_hit_redline",
+      "capability": "多轮会话 prompt 缓存命中率红线 KPI (用户钦定 R379, 首要 KPI): 红线 = 多轮会话**第 2 轮起**有效命中率 ≥**95%** (用户 OOB 由 90% 提高; 目标 98~99%), **越线必查**: 越线必须产出可执行诊断 (提示词装配四类破坏点 + 算术判决) 并修复, 不得只记数字; **算术判决**: 命中 = (floor(前缀/64)−1)×64 ⇒ 上限 ≈ (n−1)/n ⇒ 95% 需前缀 ≥2496 token (n≥39), 98% 需 ≥6336; 前置结构铁律 = ①messages[0] 会话内恒定字节 (会话冻结 systemPrompt) ②历史追加式回放 (不重写/不砍头, 2000→1M token 预算) ③发送字节=回放字节 (SentContent 在回注之后快照) ④每轮增量最小化 (静态块首轮焊进前缀 + 动态块跨轮字节/近重复去重) ⑤**会话稳定基线** (SessionBaseline, ~3k 字符: 纪律/命令/工作区快照/能力/模块地图) 首轮焊进前缀 —— 红线 95% 的算术必需项; 逐轮归属 = llm_call 打点 agent_session/turn/cacheable_tokens/effective_hit_rate; 越线告警 = cache_redline_violation 打点 (含 diagnosis); 判定/门禁 = scripts/kpi_cache_hit.py 的 redline 段 (退出码 -1 可做 CI 门禁) (命中率 ≈ 已发前缀/本轮总量, 故红线等价于每轮增量 ≤ 前缀/9)",
+      "level": "L3",
+      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter 'FullyQualifiedName~MultiTurnCachePrefixTests|FullyQualifiedName~SessionInjectionPlannerTests'  # 9/9 | python3 scripts/kpi_cache_hit.py --since <轮次起点>  # redline 段",
+      "evidence_path": "src/agent.tests/MultiTurnCachePrefixTests.cs",
+      "negative_control": "① 变量块放回 systemPrompt (=旧代码形态) → 轮 2 前缀断言红(已实证, M2 用例); ② 不去重重复注入整块动态上下文 → 增量占比 >10% 红(已实证, P3 负向控制); ③ 空集合去重 → 旧行重复进入增量红(已实证, P2)。真机反证: 修前 30.26%/62.28%/0.00% → 修后 13.05%(冷启动)/66.08%/72.44%; 结构指标 messages[0] 恒定 1149 字符、轮间公共前缀 99.4%/99.6%",
+      "covers": [
+        "src/agent/IndustrialAgentV2.cs",
+        "src/agent/context/SessionInjectionPlanner.cs",
+        "src/agent/templates/IPromptBuilder.cs",
+        "src/agent.modelqueue/ModelQueueRouter.cs",
+        "src/agent.tests/MultiTurnCachePrefixTests.cs",
+        "src/agent.tests/SessionInjectionPlannerTests.cs",
+        "scripts/kpi_cache_hit.py"
+      ],
+      "owner_round": "R379"
+    },
+    {
+      "id": "plan.route.local_first_frontend_kpi",
+      "capability": "计划执行位置路由 D4+D5+D6 (v0.22.0 exp9): ①本地先行 — 无依赖本地节点(输入=本轮原文, 动作词∧对象词双命中判定)在**计划构建时**启动, 与远程生成真并行, 结果复用绝不双跑; 语义修正: 用户要处理自己的原文时生成节点不再吸收该动作(Hybrid→Remote); **µs 计量**真重叠(毫秒会把亚毫秒本地节点舍入成假 0) + overlap_regime 标记; ②前端事件 — plan.created(模型调用前公告子任务细分+每步位置)/plan.node/plan.finished, 核心层只认 IPlanEventSink(载荷手写 JSON 零反射), 宿主 PlanEventEnvelopeSink 包 FrontendApiContract 信封, meta.info 登记 plan 域, 事件通道故障不得打断计划; ③KPI — TaskPlanRun.Kpi 为唯一事实源(遥测/前端事件//plan 端点同源) + scripts/kpi_plan_route.py 汇总与同题对照(LLM 调用数/tokens/端到端 ms/可见节点数)",
+      "level": "L3",
+      "evidence_cmd": "python3 scripts/kpi_plan_route.py --selftest  # 7 断言(含无先行则重叠必 0) | dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~PlanLocalFirstTests  # 14/14 | 真机: agenthost --frontend-api 47911 + /tmp/r382/plan_frontend_probe.py → plan.created t+2.4s(模型中), local_first overlap_us=23596/remote_wait_us=166150459, 产物 --selftest 8/8 PASS",
+      "evidence_path": "src/agent.tests/PlanLocalFirstTests.cs",
+      "negative_control": "① 计划无无依赖本地节点 → StartLocalFirst 返回 null 且遥测 state=skip(不许假装先行); ② 无先行窗口 → overlap_us 必须 0(KPI selftest 负向控制); ③ 事件出口抛异常 → 计划仍全节点 Completed(ThrowingSink); ④ RemoteText==null 时本地节点即完成 ⇒ 真先行而非事后跑",
+      "covers": [
+        "src/agent/intent/PlanRunner.cs",
+        "src/agent/intent/PlanRoutePolicy.cs",
+        "src/agent/intent/TaskPlanRun.cs",
+        "src/agent.host/PlanEventEnvelopeSink.cs",
+        "src/agent.host/Program.cs",
+        "src/agent/IndustrialAgentV2.cs",
+        "src/agent.tests/PlanLocalFirstTests.cs",
+        "scripts/kpi_plan_route.py"
+      ],
+      "owner_round": "R382"
+    }
+  ],
+  "aot_check_policy": "release_tag_only",
+  "aot_check_policy_note": "AOT 编译校验(NativeAOT 发布/0 IL 警告/发布体积)仅在【发布 tag】时执行并登记;非发布轮次的 AOT 结果只作参考证据, 不构成该轮能力的登记依据或等级判定(用户口径 2026-09-13)"
 }

@@ -164,7 +164,11 @@ public static class PlanRoutePolicy
         LocalExecutorRegistry.ForPostAction(text) is not null;
 
     /// <summary>单节点判定 (纯函数: 输入节点事实, 输出位置 + 执行器 + 依据)</summary>
-    public static RouteDecision Decide(PlanNode node)
+    /// <param name="absorbLocalTextOp">
+    /// true (缺省): 生成节点吸收本地文本动作 → Hybrid (处理**生成内容**)。
+    /// false: 用户要处理的是**自己的原文**, 该动作已单列为无依赖本地节点 (D4) → 本节点不吸收, 走 Remote。
+    /// </param>
+    public static RouteDecision Decide(PlanNode node, bool absorbLocalTextOp = true)
     {
         // R0: 待澄清 → 位置待定 (保守: Remote, 不占用本地执行资源)
         if (!node.IsExecutable)
@@ -187,6 +191,11 @@ public static class PlanRoutePolicy
                         $"「{node.Intent}」需远程生成; 产物自测单列本地节点 (python.selftest, 零 token)");
 
                 // R2b-2: 本地半段是文本处理类 → Hybrid (同一节点: 远程生成后本地立即处理, 不新增 LLM 调用)
+                // D4 例外: 若用户要处理的是**自己的原文** (该动作已单列为无依赖本地节点), 本节点不许再吸收 —
+                //          同一动作被算两次, 且 Hybrid 第二段输入是**生成内容**, 与用户目标 (原文) 不同。
+                if (post.Id == LocalExecutorRegistry.TextProcess && !absorbLocalTextOp)
+                    return new RouteDecision(NodeExecutionLocation.Remote, null,
+                        "本地文本动作对象=用户原文 (已单列为无依赖本地节点) ⇒ 本节点只做远程生成");
                 return new RouteDecision(NodeExecutionLocation.Hybrid, post.Id,
                     $"「{node.Intent}」需远程生成, 但含本地可做动作 ⇒ 生成后立即本地 {post.Id} (零 token)");
             }
@@ -207,16 +216,16 @@ public static class PlanRoutePolicy
     }
 
     /// <summary>把判定写回整张计划的节点 (Builder/调用方在 Build 后调用一次)</summary>
-    public static void Apply(TaskPlan plan)
+    public static void Apply(TaskPlan plan, bool absorbLocalTextOp = true)
     {
         foreach (var n in plan.Nodes)
-            ApplyNode(n);
+            ApplyNode(n, absorbLocalTextOp);
     }
 
     /// <summary>把判定写回单个节点</summary>
-    public static RouteDecision ApplyNode(PlanNode node)
+    public static RouteDecision ApplyNode(PlanNode node, bool absorbLocalTextOp = true)
     {
-        var d = Decide(node);
+        var d = Decide(node, absorbLocalTextOp);
         node.Location = d.Location;
         node.LocalExecutorId = d.ExecutorId;
         node.LocalHint = d.Hint;
@@ -305,6 +314,53 @@ public static class LocalVerifyNodePlanner
         return added;
     }
 
+    /// <summary>
+    /// 用户是否要求对**自己的原文/需求**做本地可算的文本处理 (v0.22.0 exp9 D4)。
+    /// 判定 = 动作词 ∧ 对象词 双命中 (确定性, 非 LLM 判定)。
+    /// 为什么单列: 这类任务的输入 (用户原文) 在模型还没生成前就已在手 ⇒ 属**无依赖本地节点**,
+    /// 可与远程生成**真并行先行**; 而"统计生成出来的代码行数"依赖远程产物, 是另一类 (Hybrid/验证节点)。
+    /// </summary>
+    private static readonly string[] SourceTextOpMarkers =
+        ["统计", "计数", "字数", "行数", "词频", "摘要", "格式化", "汇总", "字符数", "词数"];
+
+    private static readonly string[] SourceTextTargetMarkers =
+        ["需求", "原文", "这段话", "我写", "我说的", "描述", "提示词", "输入文本", "问题描述", "本文"];
+
+    internal static bool AsksSourceTextOp(string? sourceText)
+    {
+        if (string.IsNullOrWhiteSpace(sourceText))
+            return false;
+        return SourceTextOpMarkers.Any(m => sourceText.Contains(m, StringComparison.OrdinalIgnoreCase))
+            && SourceTextTargetMarkers.Any(m => sourceText.Contains(m, StringComparison.OrdinalIgnoreCase));
+    }
+
+    /// <summary>
+    /// 追加"无依赖本地文本处理"节点 (D4 本地先行的真实载体): 输入 = 本轮用户原文。
+    /// 消费方 = 计划审计 / 前端事件 (D5) / KPI (D6) 与用户要的那个统计结果本身 —— 不是为编排而编排。
+    /// 幂等: 已有同执行器的无依赖节点则不重复追加。
+    /// </summary>
+    public static IReadOnlyList<PlanNode> AppendSourceTextProcessor(TaskPlan plan, string sourceText)
+    {
+        var added = new List<PlanNode>();
+        if (!LocalExecutorRegistry.IsWired(LocalExecutorRegistry.TextProcess))
+            return added;
+        if (!AsksSourceTextOp(sourceText))
+            return added;
+        if (plan.Nodes.Any(n => n.LocalExecutorId == LocalExecutorRegistry.TextProcess && n.DependsOn.Count == 0))
+            return added;
+
+        var preview = sourceText.Length <= 40 ? sourceText : sourceText[..40] + "…";
+        var node = new PlanNode
+        {
+            Text = $"本地处理用户原文 (输入=本轮原文, 统计/汇总): {preview}",
+            Intent = PlanNodeIntents.TextProcessing,
+            DependsOn = [],
+        };
+        plan.Nodes.Add(node);
+        added.Add(node);
+        return added;
+    }
+
     private static bool HasNode(TaskPlan plan, string dependsOnId, string executorId) =>
         plan.Nodes.Any(n => n.LocalExecutorId == executorId && n.DependsOn.Contains(dependsOnId));
 }
@@ -320,9 +376,20 @@ public static class RoutedPlanBuilder
     public static TaskPlan Build(string sourceText, IReadOnlyList<IntentDecomposer.SubTask> subTasks)
     {
         var plan = TaskPlanBuilder.Build(sourceText, subTasks);
-        PlanRoutePolicy.Apply(plan);
+
+        // D4: 用户要求处理"**自己的原文**"时, 该文本动作单列为无依赖本地节点 (输入在手 ⇒ 可先于远程生成跑),
+        //     且生成节点不再吸收它 (Hybrid 第二段输入是生成内容, 目标不同 ⇒ 不许混算)。
+        var separateLocalText = LocalVerifyNodePlanner.AsksSourceTextOp(sourceText);
+        var absorbLocalTextOp = !separateLocalText;
+
+        PlanRoutePolicy.Apply(plan, absorbLocalTextOp);
+        var before = plan.Nodes.Count;
         LocalVerifyNodePlanner.AppendFor(plan);
-        PlanRoutePolicy.Apply(plan);
+        if (separateLocalText)
+            LocalVerifyNodePlanner.AppendSourceTextProcessor(plan, sourceText);
+        if (plan.Nodes.Count != before)
+            TaskPlanBuilder.ComputeLevelsAndParallelGroups(plan);
+        PlanRoutePolicy.Apply(plan, absorbLocalTextOp);
         return plan;
     }
 }

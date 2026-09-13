@@ -501,9 +501,13 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     var local = _lastPlan?.Nodes.Count(n => n.RunsLocally) ?? 0;
                     var remote = _lastPlan?.Nodes.Count(n => n.Location == NodeExecutionLocation.Remote) ?? 0;
                     var localTokens = _lastPlanRun?.Outcomes.Where(o => o.Location is "local" or "hybrid").Sum(o => o.Tokens) ?? 0;
+                    // D6: 计划级 KPI 一并回给前端 (本地先行节点数/真重叠 ms/远程等待 ms/本地 token) —
+                    //     "本地先行到底省了什么"必须由数字回答, 不能只给一句话。
+                    var kpiJson = _lastPlanRun?.Kpi is { } kpi ? TaskPlanJsonContext.ToJson(kpi) : "null";
                     response.Content =
-                        $"{{\"plan\":{planJson},\"run\":{runJson}," +
-                        $"\"routing\":{{\"local\":{local},\"remote\":{remote},\"local_tokens\":{localTokens}}}}}";
+                        "{\"plan\":" + planJson + ",\"run\":" + runJson + ",\"kpi\":" + kpiJson +
+                        ",\"routing\":{\"local\":" + local + ",\"remote\":" + remote +
+                        ",\"local_tokens\":" + localTokens + "}}";
                 }
                 response.Data = new Dictionary<string, object> { { "localCommand", "plan" } };
                 response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
@@ -1049,8 +1053,15 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             }
 
             // 1.6 计划构建 + 确定性路由 (v0.22.0 exp9 D1+D2): 子任务 → 节点位置 (本地/远程) → 追加本地验证节点。
-            //     真执行 (D3) 推迟到产物就绪之后 (RunPlanAsync), 避免拿不到执行对象空跑。
+            //     D5: 意图进入即把"子任务细分+每步位置"公告前端 (不等模型生成完);
+            //     D4: 无依赖本地节点 (输入=用户原文, 已在手) 此刻就**并行先跑**, 不等远程产物。
             _lastPlan = BuildRoutedPlan(message.Content, subTasks);
+            _planRunner ??= new agent.intent.PlanRunner();
+            await _planRunner.AnnounceAsync(_lastPlan, ct);
+            _planCtx = agent.intent.PlanRunner.NewContext(
+                sessionId: message.SessionId, sourceText: message.Content);
+            _planRemoteStartUs = agent.intent.Monotonic.NowUs();
+            _localFirst = _planRunner.StartLocalFirst(_lastPlan, _planCtx, ct);
 
             // 2. 多数据源上下文组装（失败时降级为空上下文，不阻断对话）
             var contextResult = await AssembleContextAsync(message, intent, subTasks, ct);
@@ -1513,7 +1524,10 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 // v0.22.0 exp9 D3: 计划真执行 — 产物就绪后跑本地节点 (零 token; 不再用哑执行体)。
                 // 诚实边界: 本地节点结论只作审计/证据 (run.Outcomes + telemetry plan_node), 失败不阻断主链。
                 if (_lastPlan is not null)
-                    _lastPlanRun = await RunPlanAsync(_lastPlan, response.Content, ct);
+                {
+                    _planRemoteReadyUs = agent.intent.Monotonic.NowUs();
+                    _lastPlanRun = await RunPlanAsync(_lastPlan, response.Content, ct, _localFirst);
+                }
                 // R307 (L1 轻牵引): 连续 ≥2 轮偏题 → 回复尾追加衔接提示 (区段路由后追加, 防被路由过滤)。
                 if (clarifyPending)
                     response.Content += $"\n\n> 💡 需要我回到「{coreTopic}」继续, 还是继续当前话题? 直接说一声即可。";
@@ -2001,13 +2015,20 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
     /// 并把主链已生成的正文登记为远程节点产物 (**不二次调用模型**)。
     /// 失败只记录不阻断主链; 结论写 run.Outcomes + telemetry plan_node/plan。
     /// </summary>
-    private async Task<TaskPlanRun?> RunPlanAsync(TaskPlan plan, string? remoteText, CancellationToken ct)
+    private async Task<TaskPlanRun?> RunPlanAsync(TaskPlan plan, string? remoteText, CancellationToken ct,
+        LocalFirstRun? localFirst = null)
     {
         try
         {
             _planRunner ??= new agent.intent.PlanRunner();
-            var ctx = _planRunner.ContextFromLedger(remoteText: remoteText);
-            var run = await _planRunner.RunAsync(plan, ctx, ct);
+            // 同一个 ctx 对象贯穿两阶段: 本地先行阶段的节点输出不能丢 (否则下游依赖取不到)
+            var ctx = _planCtx ?? agent.intent.PlanRunner.NewContext();
+            _planRunner.FillFromLedger(ctx);
+            ctx.RemoteText = remoteText;
+            var window = _planRemoteStartUs > 0
+                ? new RemoteWindow(_planRemoteStartUs, _planRemoteReadyUs)
+                : (RemoteWindow?)null;
+            var run = await _planRunner.RunAsync(plan, ctx, ct, localFirst, window);
             var localOk = run.Outcomes.Count(o =>
                 o.Location is "local" or "hybrid" && o.State == PlanNodeState.Completed);
             var failed = run.Outcomes.Count(o => o.State == PlanNodeState.Failed);
@@ -2032,6 +2053,18 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
 
     /// <summary>最近一次计划真执行记录 (D3 产物)</summary>
     private TaskPlanRun? _lastPlanRun;
+
+    /// <summary>D4: 本地先行批次句柄 (无依赖本地节点, 计划构建时即启动)</summary>
+    private LocalFirstRun? _localFirst;
+
+    /// <summary>D4: 贯穿两阶段的执行上下文 (本地先行 + 产物就绪后回填)</summary>
+    private LocalNodeContext? _planCtx;
+
+    /// <summary>D4: 远程窗口起点 (计划构建时刻; 用于 "本地先行与远程等待真重叠" 测量)</summary>
+    private long _planRemoteStartUs;
+
+    /// <summary>D4: 远程窗口终点 (本轮产物/正文就绪时刻)</summary>
+    private long _planRemoteReadyUs;
 
     /// <summary>计划真执行体 (v0.22.0 exp9 D3; DI 注入失效时回退默认实现 — 有台账才能拿到产物路径)</summary>
     private agent.intent.PlanRunner? _planRunner;

@@ -257,6 +257,10 @@ if (args.Length >= 2 && args[0] == "--compression-audit")
 
         // R375 (exp2 P0-1): 前端事件出站枢纽 — 进程内唯一出站口 (ask 信封送达面)。
         services.AddSingleton<agent.frontendapi.FrontendEventHub>();
+        // v0.22.0 exp9 D5: 计划事件出站 (plan.created/plan.node/plan.finished) —
+        // 核心层发 IPlanEventSink, 宿主包前端信封; 无前端连接时 hub 只计数丢弃 (不静默崩)。
+        services.AddSingleton<agent.intent.IPlanEventSink>(sp =>
+            new agent.host.PlanEventEnvelopeSink(sp.GetRequiredService<agent.frontendapi.FrontendEventHub>()));
         var frontendApiRequested = args.Length >= 2 && args[0] == "--frontend-api";
         if (frontendApiRequested)
         {
@@ -287,7 +291,7 @@ if (args.Length >= 2 && args[0] == "--frontend-api")
     await entryAgent.InitializeAsync(frontendCtx);
 
     // v0.21.1 (R367): 版本跟随发布线 (原硬编码 "0.20.5", 与 v0.21.0 实际版本漂移 — 前端无从得知真实版本)
-    var metaJson = "{\"version\":\"0.21.0\",\"contract\":1,\"domains\":[\"chat\",\"meta\",\"state\"]}";
+    var metaJson = "{\"version\":\"0.21.0\",\"contract\":1,\"domains\":[\"chat\",\"meta\",\"state\",\"plan\"]}";
     // R375 (exp2 P0-1): 挂接事件出站 + ask 应答面 (hub 为唯一出站口; 未挂接时事件丢弃并计数)
     var eventHub = provider.GetRequiredService<agent.frontendapi.FrontendEventHub>();
     if (provider.GetRequiredService<agent.userinteraction.IUserPromptService>() is agent.frontendapi.IAskReplySink askSink)

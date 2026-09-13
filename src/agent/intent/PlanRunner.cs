@@ -1,7 +1,9 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using agent.config;
 using agent.registry;
 using agent.skills;
@@ -15,15 +17,19 @@ namespace agent.intent;
 public sealed class LocalNodeContext
 {
     /// <summary>本轮产物路径 (远程节点产出的可跑对象; 由台账/主链提供)</summary>
-    public string? ArtifactPath { get; init; }
+    public string? ArtifactPath { get; set; }
 
     /// <summary>本轮远程生成正文 (Hybrid 节点的第二段输入; 主链产出, 不重复调用模型)</summary>
-    public string? RemoteText { get; init; }
+    public string? RemoteText { get; set; }
 
     /// <summary>远程产物是否已就绪 (未就绪 ⇒ 依赖它的本地节点不许假装成功)</summary>
     public bool HasRemoteProduct => !string.IsNullOrEmpty(ArtifactPath) || !string.IsNullOrEmpty(RemoteText);
 
     public string? SessionId { get; init; }
+
+    /// <summary>本轮用户原文 (v0.22.0 exp9 D4): 无依赖本地文本节点的输入 —— 模型生成前即已就绪,
+    /// 这正是"本地先行"能真并行的前提。</summary>
+    public string? SourceText { get; init; }
 
     /// <summary>python 解释器路径 (null = 由运行级解析器决定)</summary>
     public string? PythonPath { get; init; }
@@ -177,7 +183,11 @@ public sealed class TextProcessExecutor : ILocalNodeExecutor
         });
     }
 
-    /// <summary>输入解析顺序: 上游输出 → 远程正文 (确定性, 可单测)</summary>
+    /// <summary>
+    /// 输入解析顺序: 上游输出 → **无依赖? 本轮原文** → 远程正文 (确定性, 可单测)。
+    /// D4: 无依赖节点的输入是"用户原文"(模型生成前就在手) —— 不许误取生成正文, 否则本地先行
+    ///     会变成"处理别人的产物", 语义就错了。
+    /// </summary>
     internal static string ResolveInput(PlanNode node, LocalNodeContext ctx)
     {
         foreach (var dep in node.DependsOn)
@@ -185,11 +195,90 @@ public sealed class TextProcessExecutor : ILocalNodeExecutor
             if (ctx.NodeOutputs.TryGetValue(dep, out var o) && !string.IsNullOrEmpty(o))
                 return o!;
         }
+        if (node.DependsOn.Count == 0 && !string.IsNullOrEmpty(ctx.SourceText))
+            return ctx.SourceText!;
         return ctx.RemoteText ?? string.Empty;
     }
 
     internal static string Sha(string s) =>
         Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(s)))[..8];
+}
+
+/// <summary>
+/// 计划事件名 (v0.22.0 exp9 D5) —— 前端按事件名订阅; 载荷是手写 JSON (零反射, AOT 安全)。
+/// </summary>
+public static class PlanEvents
+{
+    /// <summary>计划已创建 (意图进入即公告: 子任务细分 + 每步位置, 不等模型生成完)</summary>
+    public const string Created = "plan.created";
+
+    /// <summary>单节点落终态 (位置/执行器/耗时/token/产物)</summary>
+    public const string Node = "plan.node";
+
+    /// <summary>计划收口 (本地先行/重叠/汇总计数)</summary>
+    public const string Finished = "plan.finished";
+}
+
+/// <summary>
+/// 计划事件出站口 (v0.22.0 exp9 D5)。核心层只依赖这个接口; 具体信封与传输由宿主接
+/// (host: `FrontendApiContract.FormatEvent` + `FrontendEventHub`)。
+///
+/// 契约: 实现方抛异常**不得**打断计划 (PlanRunner 仍会兜底), 也不得阻塞主链。
+/// </summary>
+public interface IPlanEventSink
+{
+    Task EmitAsync(string @event, string payloadJson, CancellationToken ct = default);
+}
+
+/// <summary>单调时钟 (跨平台, 不受系统时间调整影响) —— 用于"本地先行与远程生成真重叠"的测量</summary>
+public static class Monotonic
+{
+    private static readonly double TicksPerUs = Stopwatch.Frequency / 1_000_000.0;
+
+    /// <summary>毫秒 (TickCount64, 跨平台单调): 长时段用</summary>
+    public static long NowMs() => Environment.TickCount64;
+
+    /// <summary>微秒 (Stopwatch 计时器): 本地节点常在**亚毫秒**完成 —— 毫秒分辨率会把"真重叠"舍入成 0,
+    /// 那就成了假证据 (声称并行先行, 数字却是 0)。</summary>
+    public static long NowUs() => (long)(Stopwatch.GetTimestamp() / TicksPerUs);
+}
+
+/// <summary>远程生成窗口 (主链事实: 调用方在模型调用前后各取一次单调时刻)</summary>
+public readonly record struct RemoteWindow(long StartedUs, long ReadyUs)
+{
+    public long WaitUs => Math.Max(0, ReadyUs - StartedUs);
+
+    public long WaitMs => WaitUs / 1000;
+}
+
+/// <summary>
+/// 本地先行批次 (v0.22.0 exp9 D4): 无依赖本地节点的**真并行**执行句柄。
+/// 为什么需要句柄: 这些节点的输入 (用户原文) 在远程生成前就在手, 因此可以在模型调用
+/// **进行中**就跑完 —— 而不是等远程产物回来再跑 (那是 D3 的串行语义)。
+/// </summary>
+public sealed class LocalFirstRun
+{
+    /// <summary>本批次节点 id (前端/KPI 显示"哪些步先跑了")</summary>
+    public required IReadOnlyList<string> NodeIds { get; init; }
+
+    /// <summary>批次完成信号 (PlanRunner.RunAsync 会 await 它并复用结果, **绝不重复执行**)</summary>
+    public required Task Pending { get; set; }
+
+    public required long StartedUs { get; init; }
+
+    /// <summary>批次结束时刻 (全部无依赖本地节点落终态)</summary>
+    public long EndedUs { get; internal set; }
+
+    /// <summary>批次耗时 (微秒): 亚毫秒本地节点必须用 µs 计量, 否则重叠会被舍入成 0</summary>
+    public long ElapsedUs => Math.Max(0, EndedUs - StartedUs);
+
+    public int ElapsedMs => (int)(ElapsedUs / 1000);
+
+    internal ConcurrentDictionary<string, NodeOutcome> Outcomes { get; } = new(StringComparer.Ordinal);
+
+    internal ConcurrentDictionary<string, NodeExecutionResult> Results { get; } = new(StringComparer.Ordinal);
+
+    internal void MarkEnded() => EndedUs = Monotonic.NowUs();
 }
 
 /// <summary>
@@ -214,16 +303,19 @@ public sealed class PlanRunner
     private readonly Dictionary<string, ILocalNodeExecutor> _executors;
     private readonly PythonArtifactLedger? _ledger;
     private readonly Func<bool> _gate;
+    private readonly IPlanEventSink? _events;
 
     public PlanRunner(
         IEnumerable<ILocalNodeExecutor>? executors = null,
         PythonArtifactLedger? ledger = null,
-        Func<bool>? gate = null)
+        Func<bool>? gate = null,
+        IPlanEventSink? events = null)
     {
         var list = executors?.ToList() ?? [new PythonSelfTestExecutor(), new TextProcessExecutor()];
         _executors = list.ToDictionary(e => e.Id, StringComparer.Ordinal);
         _ledger = ledger;
         _gate = gate ?? (() => IsEnabled());
+        _events = events;
     }
 
     /// <summary>计划真执行闸门 (缺省开; raw 为空时读环境变量。=0|false|off ⇒ 回退哑体)</summary>
@@ -241,10 +333,35 @@ public sealed class PlanRunner
     public IReadOnlyCollection<string> WiredExecutors => _executors.Keys;
 
     /// <summary>
+    /// 新建本地执行上下文 (D4: 计划构建时就用它启动本地先行; 产物就绪后再回填远程事实)。
+    /// 为什么不复用 ContextFromLedger: 那一刻台账里最新产物是**上一轮**的 (陈旧), 回填会造假事实。
+    /// </summary>
+    public static LocalNodeContext NewContext(string? sessionId = null, string? sourceText = null,
+        string? remoteText = null, string? artifactPath = null) => new()
+        {
+            SessionId = sessionId,
+            SourceText = sourceText,
+            RemoteText = remoteText,
+            ArtifactPath = artifactPath,
+        };
+
+    /// <summary>产物就绪后, 把台账里最新产物路径回填到既有 ctx (同一对象 ⇒ 不丢本地先行节点的输出)</summary>
+    public LocalNodeContext FillFromLedger(LocalNodeContext ctx)
+    {
+        var items = _ledger?.Snapshot();
+        var latest = items is { Count: > 0 }
+            ? items.OrderByDescending(r => r.AtUnixMs).FirstOrDefault()
+            : null;
+        ctx.ArtifactPath = latest?.Path;
+        return ctx;
+    }
+
+    /// <summary>
     /// 从产物台账构造上下文 (取最近一条 python 报告 = 刚落盘的产物)。
     /// 诚实边界: 台账无会话维度, 跨会话并发时取"最新一条"; 会话级隔离属 D5。
     /// </summary>
-    public LocalNodeContext ContextFromLedger(string? sessionId = null, string? remoteText = null)
+    public LocalNodeContext ContextFromLedger(string? sessionId = null, string? remoteText = null,
+        string? sourceText = null)
     {
         var items = _ledger?.Snapshot();
         var latest = items is { Count: > 0 }
@@ -255,18 +372,128 @@ public sealed class PlanRunner
             SessionId = sessionId,
             ArtifactPath = latest?.Path,
             RemoteText = remoteText,
+            SourceText = sourceText,
         };
     }
 
+    /// <summary>
+    /// 把"任务细分 + 每步执行位置"公告给前端 (D5)。调用时机 = 意图进入、模型还**没**开始生成时,
+    /// 这样前端能立刻显示子任务清单 (而不是等整轮结束才知道)。
+    /// </summary>
+    public async Task AnnounceAsync(TaskPlan plan, CancellationToken ct = default)
+    {
+        if (_events is null)
+            return;
+        try
+        {
+            await _events.EmitAsync(PlanEvents.Created, CreatedPayload(plan), ct).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            AgentTelemetry.Emit("plan_event_error", "PlanRunner",
+                ("event", PlanEvents.Created), ("err", Trunc(ex.Message, 160) ?? ""));
+        }
+    }
+
+    /// <summary>
+    /// D4 本地先行: **立刻**启动"无依赖本地节点"(输入已在手, 不必等远程产物), 与远程生成真并行。
+    ///
+    /// 返回 null = 本计划**没有**这种节点 —— 不许假装先行 (打点 `plan_local_first` state=skip 留痕)。
+    /// 闸门关闭 (回退哑体) 时同样返回 null。
+    /// </summary>
+    public LocalFirstRun? StartLocalFirst(TaskPlan plan, LocalNodeContext ctx, CancellationToken ct = default)
+    {
+        if (!_gate())
+            return null;
+
+        var ready = plan.Nodes
+            .Where(n => n.DependsOn.Count == 0 && n.RunsLocally
+                        && LocalExecutorRegistry.IsWired(n.LocalExecutorId)
+                        && _executors.ContainsKey(n.LocalExecutorId!))
+            .ToList();
+
+        if (ready.Count == 0)
+        {
+            AgentTelemetry.Emit("plan_local_first", "PlanRunner",
+                ("plan_id", plan.PlanId), ("state", "skip"), ("reason", "无无依赖本地节点"));
+            return null;
+        }
+
+        // 子计划复用同一执行引擎 (调度/失败/终态语义与整计划一致), 只含无依赖本地节点 ⇒ 全部 Level 0
+        var sub = new TaskPlan
+        {
+            PlanId = plan.PlanId,
+            SourceText = plan.SourceText,
+            MaxParallelism = plan.MaxParallelism,
+            DefaultMaxRetries = plan.DefaultMaxRetries,
+        };
+        sub.Nodes.AddRange(ready);
+
+        var batch = new LocalFirstRun
+        {
+            NodeIds = ready.Select(n => n.Id).ToList(),
+            StartedUs = Monotonic.NowUs(),
+            Pending = Task.CompletedTask,
+        };
+
+        batch.Pending = Task.Run(async () =>
+        {
+            try
+            {
+                var runner = new Func<PlanNode, CancellationToken, Task<NodeExecutionResult>>(
+                    (node, c) => RunNodeAsync(node, ctx, batch.Outcomes, batch.Results, c, plan.PlanId));
+                await new TaskPlanExecutor(runner).ExecuteAsync(sub, pollInjections: null, ct).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                AgentTelemetry.Emit("plan_local_first_error", "PlanRunner",
+                    ("plan_id", plan.PlanId), ("err", Trunc(ex.Message, 160) ?? ""));
+            }
+            finally
+            {
+                batch.MarkEnded();
+            }
+        }, ct);
+
+        AgentTelemetry.Emit("plan_local_first", "PlanRunner",
+            ("plan_id", plan.PlanId), ("state", "started"),
+            ("nodes", ready.Count), ("ids", string.Join(",", batch.NodeIds)));
+
+        return batch;
+    }
+
     /// <summary>执行整张计划 (真执行体)。返回的 run.Outcomes 即前端/KPI 的唯一事实源。</summary>
-    public async Task<TaskPlanRun> RunAsync(TaskPlan plan, LocalNodeContext? ctx = null, CancellationToken ct = default)
+    /// <param name="localFirst">D4: 已由 StartLocalFirst 跑过的无依赖本地节点 — 结果直接复用, 绝不重复执行</param>
+    /// <param name="remoteWindow">D4: 远程生成窗口 (用于算"本地先行与远程生成真重叠了多少毫秒")</param>
+    public async Task<TaskPlanRun> RunAsync(TaskPlan plan, LocalNodeContext? ctx = null, CancellationToken ct = default,
+        LocalFirstRun? localFirst = null, RemoteWindow? remoteWindow = null)
     {
         ctx ??= new LocalNodeContext();
         var enabled = _gate();
         var outcomes = new ConcurrentDictionary<string, NodeOutcome>(StringComparer.Ordinal);
+        var results = new ConcurrentDictionary<string, NodeExecutionResult>(StringComparer.Ordinal);
+
+        if (localFirst is not null)
+        {
+            try
+            {
+                await localFirst.Pending.ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                AgentTelemetry.Emit("plan_local_first_error", "PlanRunner",
+                    ("plan_id", plan.PlanId), ("err", Trunc(ex.Message, 160) ?? ""));
+            }
+            foreach (var kv in localFirst.Results)
+                results[kv.Key] = kv.Value;
+            foreach (var kv in localFirst.Outcomes)
+                outcomes[kv.Key] = kv.Value;
+        }
 
         Func<PlanNode, CancellationToken, Task<NodeExecutionResult>> runner = enabled
-            ? (node, c) => RunNodeAsync(node, ctx, outcomes, c)
+            ? (node, c) => results.TryGetValue(node.Id, out var pre)
+                ? Task.FromResult(pre)
+                : RunNodeAsync(node, ctx, outcomes, results, c, plan.PlanId)
             : (node, _) =>
             {
                 // 哑体回退也要留审计行 (state=Skipped + 原因), 否则 run.Outcomes 空白 = 静默
@@ -288,6 +515,36 @@ public sealed class PlanRunner
         var local = run.Outcomes.Count(o => o.Location is "local" or "hybrid" && o.State == PlanNodeState.Completed);
         var failed = run.Outcomes.Count(o => o.State == PlanNodeState.Failed);
         var skipped = run.Outcomes.Count(o => o.State == PlanNodeState.Skipped);
+        var remoteTokens = run.Outcomes.Where(o => o.Location == "remote").Sum(o => o.Tokens);
+        var localTokens = run.Outcomes.Where(o => o.Location is "local" or "hybrid").Sum(o => o.Tokens);
+
+        // D4 重叠度量: 本地先行批次与远程生成窗口的真正交集 (不是"两次耗时相加"这种假账)
+        var localFirstNodes = localFirst?.NodeIds.Count ?? 0;
+        var localFirstUs = localFirst?.ElapsedUs ?? 0;
+        var remoteWaitUs = remoteWindow?.WaitUs ?? 0;
+        var overlapUs = 0L;
+        if (localFirst is not null && remoteWindow is { } rw)
+        {
+            overlapUs = Math.Max(0,
+                Math.Min(localFirst.EndedUs, rw.ReadyUs) - Math.Max(localFirst.StartedUs, rw.StartedUs));
+        }
+
+        // D6: 计划级 KPI 落到 run 上 —— 前端事件 / 遥测 / 对照脚本读**同一份**数字
+        run.Kpi = new PlanKpi(
+            Nodes: plan.Nodes.Count,
+            LocalNodes: plan.Nodes.Count(n => n.Location == NodeExecutionLocation.Local),
+            RemoteNodes: plan.Nodes.Count(n => n.Location == NodeExecutionLocation.Remote),
+            HybridNodes: plan.Nodes.Count(n => n.Location == NodeExecutionLocation.Hybrid),
+            LocalFirstNodes: localFirstNodes,
+            LocalFirstMs: (int)(localFirstUs / 1000),
+            OverlapMs: (int)(overlapUs / 1000),
+            RemoteWaitMs: (int)(remoteWaitUs / 1000),
+            LocalFirstUs: localFirstUs,
+            OverlapUs: overlapUs,
+            RemoteWaitUs: remoteWaitUs,
+            LocalTokens: localTokens,
+            ElapsedMs: (int)sw.ElapsedMilliseconds);
+
         AgentTelemetry.Emit("plan", "PlanRunner",
             ("plan_id", plan.PlanId),
             ("enabled", enabled),
@@ -295,13 +552,52 @@ public sealed class PlanRunner
             ("local_ok", local),
             ("local_failed", failed),
             ("skipped", skipped),
-            ("local_tokens", 0L),
+            ("local_tokens", localTokens),
+            ("remote_tokens", remoteTokens),
+            ("local_first", localFirst is not null),
+            ("local_first_nodes", localFirstNodes),
+            ("local_first_ms", localFirstUs / 1000),
+            ("local_first_us", localFirstUs),
+            ("overlap_us", overlapUs),
+            ("remote_wait_us", remoteWaitUs),
             ("elapsed_ms", sw.ElapsedMilliseconds));
+
+        if (localFirst is not null)
+        {
+            AgentTelemetry.Emit("plan_local_first_overlap", "PlanRunner",
+                ("plan_id", plan.PlanId),
+                ("nodes", localFirstNodes),
+                ("local_first_us", localFirstUs),
+                ("overlap_us", overlapUs),
+                ("remote_wait_us", remoteWaitUs),
+                ("overlap_regime", overlapUs > 0 ? "true-overlap" : "no-overlap"));
+        }
+
+        await EmitFinishedAsync(plan, run, localFirst, overlapUs, remoteWaitUs, ct).ConfigureAwait(false);
         return run;
     }
 
+    private async Task EmitFinishedAsync(TaskPlan plan, TaskPlanRun run, LocalFirstRun? localFirst,
+        long overlapUs, long remoteWaitUs, CancellationToken ct)
+    {
+        if (_events is null)
+            return;
+        var payload = FinishedPayload(plan, run, localFirst, overlapUs, remoteWaitUs);
+        try
+        {
+            await _events.EmitAsync(PlanEvents.Finished, payload, ct).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            AgentTelemetry.Emit("plan_event_error", "PlanRunner",
+                ("event", PlanEvents.Finished), ("err", Trunc(ex.Message, 160) ?? ""));
+        }
+    }
+
     private async Task<NodeExecutionResult> RunNodeAsync(
-        PlanNode node, LocalNodeContext ctx, ConcurrentDictionary<string, NodeOutcome> outcomes, CancellationToken ct)
+        PlanNode node, LocalNodeContext ctx, ConcurrentDictionary<string, NodeOutcome> outcomes,
+        ConcurrentDictionary<string, NodeExecutionResult> results, CancellationToken ct,
+        string planId = "")
     {
         var sw = Stopwatch.StartNew();
         NodeExecutionResult result;
@@ -345,7 +641,7 @@ public sealed class PlanRunner
             ctx.NodeOutputs[node.Id] = result.Output;
 
         var tokens = node.Location == NodeExecutionLocation.Remote ? 0L : 0L; // 本地恒 0; 远程由主链计费
-        outcomes[node.Id] = new NodeOutcome
+        var outcome = new NodeOutcome
         {
             NodeId = node.Id,
             Location = node.LocationText,
@@ -356,6 +652,8 @@ public sealed class PlanRunner
             ArtifactPath = node.RunsLocally ? ctx.ArtifactPath : null,
             Detail = Trunc(FirstNonEmpty(result.Error, result.Output), 300),
         };
+        outcomes[node.Id] = outcome;
+        results[node.Id] = result;
 
         AgentTelemetry.Emit("plan_node", "PlanRunner",
             ("plan_node", node.Id),
@@ -366,7 +664,111 @@ public sealed class PlanRunner
             ("elapsed_ms", sw.ElapsedMilliseconds),
             ("tokens", tokens));
 
+        await EmitNodeAsync(node, outcome, planId, ct).ConfigureAwait(false);
+
         return result;
+    }
+
+    /// <summary>单节点事件 (D5) —— 前端按节点看"哪步在哪跑、跑了多久、成没成"</summary>
+    private async Task EmitNodeAsync(PlanNode node, NodeOutcome outcome, string planId, CancellationToken ct)
+    {
+        if (_events is null)
+            return;
+        try
+        {
+            await _events.EmitAsync(PlanEvents.Node, NodePayload(node, outcome, planId), ct).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            AgentTelemetry.Emit("plan_event_error", "PlanRunner",
+                ("event", PlanEvents.Node), ("err", Trunc(ex.Message, 160) ?? ""));
+        }
+    }
+
+    // ---- D5 事件载荷 (手写 JSON: 零反射, AOT 安全; 只暴露前端需要的字段) ----
+
+    private static string CreatedPayload(TaskPlan plan)
+    {
+        using var ms = new MemoryStream();
+        using (var w = new Utf8JsonWriter(ms))
+        {
+            w.WriteStartObject();
+            w.WriteString("plan_id", plan.PlanId);
+            w.WriteNumber("nodes_total", plan.Nodes.Count);
+            w.WriteNumber("local", plan.Nodes.Count(n => n.Location == NodeExecutionLocation.Local));
+            w.WriteNumber("hybrid", plan.Nodes.Count(n => n.Location == NodeExecutionLocation.Hybrid));
+            w.WriteNumber("remote", plan.Nodes.Count(n => n.Location == NodeExecutionLocation.Remote));
+            w.WriteStartArray("nodes");
+            foreach (var n in plan.Nodes)
+            {
+                w.WriteStartObject();
+                w.WriteString("id", n.Id);
+                w.WriteString("text", Trunc(n.Text, 160) ?? "");
+                w.WriteString("intent", n.Intent);
+                w.WriteString("location", n.LocationText);
+                w.WriteString("executor", n.LocalExecutorId ?? "");
+                w.WriteNumber("level", n.Level);
+                w.WriteBoolean("depends_on_parent", n.DependsOn.Count > 0);
+                w.WriteStartArray("depends_on");
+                foreach (var d in n.DependsOn)
+                    w.WriteStringValue(d);
+                w.WriteEndArray();
+                w.WriteEndObject();
+            }
+            w.WriteEndArray();
+            w.WriteEndObject();
+        }
+        return Encoding.UTF8.GetString(ms.ToArray());
+    }
+
+    private static string NodePayload(PlanNode node, NodeOutcome outcome, string planId)
+    {
+        using var ms = new MemoryStream();
+        using (var w = new Utf8JsonWriter(ms))
+        {
+            w.WriteStartObject();
+            w.WriteString("plan_id", planId);
+            w.WriteString("node_id", outcome.NodeId);
+            w.WriteString("intent", node.Intent);
+            w.WriteString("location", outcome.Location);
+            w.WriteString("executor", outcome.ExecutorId ?? "");
+            w.WriteString("state", outcome.State.ToString());
+            w.WriteNumber("elapsed_ms", outcome.ElapsedMs);
+            w.WriteNumber("tokens", outcome.Tokens);
+            w.WriteString("artifact", outcome.ArtifactPath ?? "");
+            w.WriteString("detail", Trunc(outcome.Detail, 300) ?? "");
+            w.WriteEndObject();
+        }
+        return Encoding.UTF8.GetString(ms.ToArray());
+    }
+
+    private static string FinishedPayload(TaskPlan plan, TaskPlanRun run, LocalFirstRun? localFirst,
+        long overlapUs, long remoteWaitUs)
+    {
+        using var ms = new MemoryStream();
+        using (var w = new Utf8JsonWriter(ms))
+        {
+            w.WriteStartObject();
+            w.WriteString("plan_id", plan.PlanId);
+            w.WriteString("run_id", run.RunId);
+            w.WriteString("state", run.State.ToString());
+            w.WriteNumber("nodes_total", plan.Nodes.Count);
+            w.WriteNumber("local_ok", run.Outcomes.Count(o => o.Location is "local" or "hybrid" && o.State == PlanNodeState.Completed));
+            w.WriteNumber("failed", run.Outcomes.Count(o => o.State == PlanNodeState.Failed));
+            w.WriteNumber("skipped", run.Outcomes.Count(o => o.State == PlanNodeState.Skipped));
+            w.WriteNumber("local_tokens", run.Outcomes.Where(o => o.Location is "local" or "hybrid").Sum(o => o.Tokens));
+            w.WriteNumber("remote_tokens", run.Outcomes.Where(o => o.Location == "remote").Sum(o => o.Tokens));
+            w.WriteBoolean("local_first", localFirst is not null);
+            w.WriteNumber("local_first_nodes", localFirst?.NodeIds.Count ?? 0);
+            w.WriteNumber("local_first_ms", localFirst?.ElapsedMs ?? 0);
+            w.WriteNumber("local_first_us", localFirst?.ElapsedUs ?? 0);
+            w.WriteNumber("overlap_ms", overlapUs / 1000);
+            w.WriteNumber("overlap_us", overlapUs);
+            w.WriteNumber("remote_wait_ms", remoteWaitUs / 1000);
+            w.WriteNumber("remote_wait_us", remoteWaitUs);
+            w.WriteEndObject();
+        }
+        return Encoding.UTF8.GetString(ms.ToArray());
     }
 
     /// <summary>远程节点: 主链已生成, 这里只登记, **绝不二次调用模型**</summary>
