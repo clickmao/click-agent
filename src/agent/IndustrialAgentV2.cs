@@ -2319,6 +2319,12 @@ public class LLMResponse
     /// <summary>v0.21.1: 推理模型思考链 (reasoning_content); 非推理模型为 null。</summary>
     public string? ReasoningContent { get; set; }
 
+    /// <summary>R377: prompt 缓存命中 token (provider 未上报 → null)。</summary>
+    public int? CacheHitTokens { get; set; }
+
+    /// <summary>R377: prompt 缓存未命中 token (provider 未上报 → null)。</summary>
+    public int? CacheMissTokens { get; set; }
+
     /// <summary>响应 ID</summary>
     public string? ResponseId { get; set; }
     
@@ -2452,6 +2458,8 @@ public class OpenAILLMCaller : ILLMCaller
                 Model = _model,
                 TokensUsed = usage.TryGetProperty("total_tokens", out var total) ? total.GetInt32() : 0,
                 PromptTokens = usage.TryGetProperty("prompt_tokens", out var pt) ? pt.GetInt32() : 0,
+                CacheHitTokens = usage.TryGetProperty("prompt_cache_hit_tokens", out var ch) ? ch.GetInt32() : null,
+                CacheMissTokens = usage.TryGetProperty("prompt_cache_miss_tokens", out var cm) ? cm.GetInt32() : null,
                 CompletionTokens = usage.TryGetProperty("completion_tokens", out var completion) ? completion.GetInt32() : 0,
                 ResponseId = responseId,
                 FinishReason = finishReason,

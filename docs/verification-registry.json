@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R376",
+ "updated_round": "R377",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -272,6 +272,22 @@
     "src/agent.frontendapi/FrontendApiServer.cs"
    ],
    "owner_round": "R376"
+  },
+  {
+   "id": "kpi.prompt_cache_hit",
+   "capability": "prompt 缓存命中率 KPI (用户钦定, K2b 成本侧): 解析 usage.prompt_cache_hit_tokens/prompt_cache_miss_tokens → 命中率 hit/(hit+miss) 4 位小数; 三处 data-carrying llm_call 打点铺 cache_hit_tokens/cache_miss_tokens/cache_hit_rate; 离线聚合 scripts/kpi_cache_hit.py (按模型分组 + 未上报计数); 未上报/无分母记 -1 且不并入比率",
+   "level": "L3",
+   "evidence_cmd": "python3 scripts/kpi_cache_hit.py /tmp/gameprobe/r377_kpi.telemetry  # 真机样本: hit=3328 miss=7610 → 30.43% | dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~PromptCacheKpi",
+   "evidence_path": "src/agent.tests/PromptCacheKpiTests.cs",
+   "negative_control": "① 命中率分母 +1 → 4 红(已实证); ② HitTokens(hit)=>hit??0 (未上报冒充 0 命中) → 1 红(已实证); ③ 删一处打点铺设 → 1 红(已实证; 首跑曾 0 红 = 断言空心, 改按打点块配对后抓到)",
+   "covers": [
+    "src/agent.modelqueue/PromptCacheKpi.cs",
+    "src/agent.modelqueue/OpenAIChatResponseDtos.cs",
+    "src/agent.modelqueue/ModelQueueRouter.cs",
+    "src/agent/modelqueue/ModelQueueAdapter.cs",
+    "scripts/kpi_cache_hit.py"
+   ],
+   "owner_round": "R377"
   }
  ],
  "aot_check_policy": "release_tag_only",

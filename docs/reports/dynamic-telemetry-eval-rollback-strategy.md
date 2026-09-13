@@ -141,22 +141,33 @@ done
 | 批 tokens 均值 | 3671（批39） | 待批40 确认 |
 | 单测 | 386 | 386 全绿 |
 
+## 6b. prompt 缓存命中率 KPI（R377 新增, K2b）
+
+**口径**（与 `src/agent.modelqueue/PromptCacheKpi.cs` 严格一致）:
+
+- 命中率 = `prompt_cache_hit_tokens / (prompt_cache_hit_tokens + prompt_cache_miss_tokens)`, 保留 4 位小数;
+- **未上报记 -1 且不并入比率**（provider 不给字段 ≠ 命中 0%）; 分母为 0 同样 -1;
+- 打点字段固定 `cache_hit_tokens` / `cache_miss_tokens` / `cache_hit_rate`（`llm_call` 点的三处 data-carrying 路径全覆盖）;
+- 离线复算: `python3 scripts/kpi_cache_hit.py [遥测路径] [--since ISO] [--json 输出]`（按模型分组 + 未上报计数 + 落盘 `eval/results/kpi_cache_hit_<UTC>.json`）。
+
+**首发基线（R377, 真机同题 2 跑 / 4 次调用）**: 命中 **3,328** / 未命中 **7,610** → **30.43%**（RUN1 23.73% → RUN2 36.94%）;
+全量遥测同口径: 上报 4/45 次调用, 41 次未上报（历史行无此字段, 如实分列不读成 0%）。
+
 ## 7. 迭代状态快照（恢复迭代从这里开始）
 
-> ### ⏱ 最新状态（2026-09-13 R376 — 恢复迭代先读这里；下方为历史逐轮条目）
+> ### ⏱ 最新状态（2026-09-13 R377 — 恢复迭代先读这里；下方为历史逐轮条目）
 >
-> - **版本**：**v0.22.0 探索期**；本地 HEAD = 本轮 R376 提交（git log 最新；R375 `941c9cd` / 规范 R7 `4b05ca8` / R374 `ebbd117` 已在链上）；远端 `origin/main` = `740ddf2` **未推**（候选 ghp_ 全 401 + 镜像 `could not read Username`，需用户给有效 token 或替代通路）。
-> - **测试**：**847/847 全绿**（env 干净；R375 为 841）；**AOT 编译校验只在发布 tag 时执行/登记**（规范 **R7** / registry `aot_check_policy=release_tag_only`；非发布轮 AOT 仅作参考证据）。
-> - **批测**：批 **523**（下一轮号候选 **524**；`round_autopilot --dry-run` 算出 1511 与文档不一致**仍未收口**；启动前走 R257 撞号协议：pgrep + 锁文件 + mtime>10min 才算 stale）。
-> - **本轮交付（R376 = exp2 的 P2，5 计划之一）**：**真机同连接 menu 闭环达成** —— `evidence_gate{to_ask:1,confidences:"0.55"}` → ask 信封事件 → 同连接 `ask.reply` → `outcome=answered` → 续跑 `loop_turn{success:true,reply_chars:119,asked:true}`（3/3 复跑）；顺带修 **⑪ 握手残包**（`TryAuthHandshakeAsync` 返回 Tail + 预置排空）与 **⑫ 同通道回程饿死**（读循环只解析 + 并发派发，在途上限 8，断开 2s 收尾）。
->
-> - **机检/负向控制**：过滤族 **23/23**、全量 **847/847**；丢握手残包 **2 红**、读循环改回等待长任务 **2 红**（已还原）。
-> - **能力探针（R376 回归样本，同题贪吃蛇）**：真机 **1 次调用 / 76.7s / 19,191 tokens** / 产物 14,368 B `origin=fenced` `exit=0`；**独立复核** `python3 -I <产物> --selftest` → **exit=0 · PASS (34/34)**；R375 同题 17,188 tokens（+11.7%，单样本、产物自测项 34 vs 13）。
-> - **通用教训沉淀**：`skills/delivery-selfcheck/SKILL.md` v1.1.0「步骤 6 · 通道核查」；语言无关机检 19/19（含负向控制）。
-> - **诚实边界**：① 真机样本 n=3；② tokens 单样本 +11.7%（模型侧生成差异，非机制开销）；③ 在途请求不随断连取消（2s 收尾后放弃，同修复前语义）；④ exp2 §8 Q1–Q4 仍待用户裁决；⑤ ⑫ 的后继观察：同连接并发在途上限 8 未做压力测试（仅逻辑断言）；⑥ D7 截断续写仍未救回；⑦ 工业级缺口余项：CI 门禁 / 配置热更新 / metrics 端点 / 断路器半开 / 跨请求成本闸。
-> - **文档同步**：`docs/improvements.md`(+R376 段) / `docs/verification-registry.json`(+2 行, updated_round=R376) / `docs/plans/v0.22.0-exp2-*.md`(§10) / `docs/plans/v0.22.0-exp5-lesson-table.md`(§14 通用教训 + §13-2 状态更新) / `skills/delivery-selfcheck/SKILL.md`(v1.1.0) / 本快照。
+> - **版本**：**v0.22.0 探索期**；本地 HEAD = 本轮 R377 提交 + R376 `68e8ed6` + R375 `941c9cd` + 规范 R7 `4b05ca8`；远端 `origin/main` = `740ddf2` **未推**。
+> - **【推送暂停令 (2026-09-13 用户钦定)】**：**暂停所有 GitHub 推送** —— 三道机械闸已就位（`.git/PUSH_PAUSED` 标记 + `.git/hooks/pre-push` 拒绝 + `remote.origin.pushurl` 指向不可达路径, 离线秒失败 EXIT=128 已实证）；两个定时任务（`f6a10a4499cc` 千轮守卫 / `9a97763d5fcd` 底座小报）指令已改写为**仅本地 commit**；解除方式: 删标记 + 删 hook + `git config --unset remote.origin.pushurl`。**fetch 面未受影响**。
+> - **测试**：**859/859 全绿**（env 干净, 连跑两遍；R376 为 847）；**AOT 编译校验只在发布 tag 时执行/登记**（规范 **R7**；非发布轮 AOT 仅作参考证据）。
+> - **本轮交付（R377）**：**DS prompt 缓存命中率纳入优化 KPI（用户钦定）** —— DTO 解析 `prompt_cache_hit_tokens`/`prompt_cache_miss_tokens` → `PromptCacheKpi`（命中率 4 位 + 未上报哨兵 -1）→ 三处 `llm_call` 打点铺三元组 → `scripts/kpi_cache_hit.py` 离线聚合；真机同题 2 跑 **命中率 23.73% → 36.94%（合计 30.43%, 4 次调用）**。
+> - **机检/负向控制**：`PromptCacheKpiTests` **12/12**；负向控制 **4/1/1 红**（算法篡改 / 未上报冒充 0 / 打点铺设被删）→ 其中变异③首跑 0 红 = 我的断言当时空心 → **改按打点块配对**后抓到（教训入 exp5 §15）。
+> - **能力探针（R377 回归样本, 同题贪吃蛇 ×2）**：RUN1 2 调用 / 137s / 37,226 tokens / 产物 2 个 / reply 17,973 ch；RUN2 2 调用 / 139s / 39,955 tokens / reply 13,487 ch；**独立复核** `--selftest` → 修复后产物 **16/16 PASS**（两跑均是"首投失败 → D3 修复成功"）。
+> - **诚实边界**：① 命中率为 2 跑样本非稳态分布；② 本轮 tokens 高于 R376 因 D3 修复各多 1 调用（机制正常, 成本如实登记）；③ 首跑全量 857/859（2 红未留名）→ 连跑两遍 859/859, 判负载偶发；④ exp2 §8 Q1–Q4 仍待用户裁决；⑤ D7 截断续写仍未救回；⑥ 工业级缺口余项: CI 门禁 / 配置热更新 / metrics 端点 / 断路器半开 / 跨请求成本闸。
+> - **文档同步**：`docs/improvements.md`(+R377) / `docs/reports/iteration-master-plan.md`(§0-1 K2b) / 本报告(§6b + 快照) / `docs/verification-registry.json`(+1 行, R377) / `docs/plans/v0.22.0-exp5-lesson-table.md`(§15) / `skills/delivery-selfcheck/SKILL.md`(v1.1.1) / `scripts/kpi_cache_hit.py`(新)。
 >
 > ---
+- **R376 段（历史）**：exp2 P2 达成 —— 真机同连接 menu 闭环（`ask` 信封 → 同连接 `ask.reply` → `outcome=answered` → 续跑返回正文, 3/3）；修 **⑪ 握手残包**（返回 Tail + 预置排空）与 **⑫ 同通道回程饿死**（读循环只解析 + 并发派发, 在途上限 8）；全量 847/847；负向控制 2/2 红；AOT 参考 13,959,712 B。
 - **R375 段（历史）**：exp2 P0 前端 menu 问询通路实装（`AskEnvelope` 信封 + `FrontendEventHub` 事件推送 + `ask.reply/ask.cancel` 路由 + 选项贯通）；P1 真机接线已证（伪造 id → `unknown_ask`）；P2 ask 事件 **0/1**（触发点未命中）；全量 841/841；AOT 参考 13,947,200 B / 0 IL。
 - **主线进度**：R138-R153。R149 用户质疑整改（真断言族）；R151 pivot 判定闭环（真缺陷 56 KeyError 修复）；R152 收尾（phase report 3: batch62-78 187/187 + README 30 批滚动制度）；**R153 真缺陷 57 修复**：D4 gate 读 os.environ 致 reply_rel 整块静默失效（批79/80 n=0 实证，诚实缺省未破）→ gate 同源 load_env()，批81 同环境复验 n=11 avg 0.631 恢复。下一轮号 **mass_351**（R180-R184 进度与接力细节见下方对应条目及台账 R180-R184）。
 - **最近五批审计（批76-80）**：63/63 全绿（quick-11 子集 44/44）；tok/case 941→939→928→860 递降带内（全量批 1165 口径不同）；drift 全 1.0；suspects 0；D4 rel 修复前 n=0（缺陷 57）/修复后 n=11 avg 0.631。

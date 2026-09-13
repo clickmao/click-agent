@@ -46,6 +46,12 @@ public sealed class QueueResponse
 
     /// <summary>v0.10.0: 输出 token 数 (TokensUsed = prompt + completion)</summary>
     public int CompletionTokens => Math.Max(0, TokensUsed - PromptTokens);
+
+    /// <summary>R377: prompt 缓存命中 token (provider 未上报 → null, 不得当 0)。</summary>
+    public int? CacheHitTokens { get; set; }
+
+    /// <summary>R377: prompt 缓存未命中 token (provider 未上报 → null)。</summary>
+    public int? CacheMissTokens { get; set; }
 }
 
 /// <summary>模型队列调用端口 (adapter 在 agent 主程序集实现 ILLMCaller 时消费)</summary>
@@ -297,6 +303,8 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             }
             // v0.10.0: 用量本地累计
             _tokenUsage?.RecordUsage(resp.Model, entry.Provider, resp.PromptTokens, resp.CompletionTokens);
+            // R377: prompt 缓存命中率 KPI (未上报 → -1, 与"命中 0"区分)
+            var cacheKv = PromptCacheKpi.Fields(resp.CacheHitTokens, resp.CacheMissTokens);
             agent.config.AgentTelemetry.Emit("llm_call", "ModelQueueRouter",
                 ("model", entry.Id), ("provider", entry.Provider),
                 ("prompt_tokens", resp.PromptTokens), ("completion_tokens", resp.CompletionTokens),
@@ -313,7 +321,8 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                 // 否则"预算策略是否真生效"又只能靠猜 (本轮真机首跑即踩: 适配器硬编码 intent 使策略成死代码)。
                 ("first_budget", firstBudget), ("intent", intent ?? ""),
                 // v0.11.0 R129 (D3): LLM 真耗时 ms
-                ("ms", llmSw.ElapsedMilliseconds));
+                ("ms", llmSw.ElapsedMilliseconds),
+                cacheKv[0], cacheKv[1], cacheKv[2]);
             // 阈值再同步 (fire-and-forget, 不阻塞主链)
             if (_tokenUsage is not null && _tokenUsage.NeedsResync(entry.Provider))
                 _ = _tokenUsage.TryResyncAsync(entry.Provider, CancellationToken.None);
@@ -380,13 +389,15 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                     lock (_lock) _consecutiveFailures = 0;
                     LastSelectionBasis = $"retry_ok:{entry.Id} (attempt {attempt + 1})";
                     _tokenUsage?.RecordUsage(retried.Model, entry.Provider, retried.PromptTokens, retried.CompletionTokens);
+                    var cacheKv = PromptCacheKpi.Fields(retried.CacheHitTokens, retried.CacheMissTokens);
                     agent.config.AgentTelemetry.Emit("llm_call", "ModelQueueRouter",
                         ("model", entry.Id), ("provider", entry.Provider),
                         ("prompt_tokens", retried.PromptTokens), ("completion_tokens", retried.CompletionTokens),
                         ("total_tokens", retried.TokensUsed), ("success", true),
                         ("content_len", retried.Content?.Length ?? 0),
                         ("reasoning_len", retried.ReasoningContent?.Length ?? 0),
-                        ("ms", retrySw.ElapsedMilliseconds), ("attempt", attempt + 1));
+                        ("ms", retrySw.ElapsedMilliseconds), ("attempt", attempt + 1),
+                        cacheKv[0], cacheKv[1], cacheKv[2]);
                     return retried;
                 }
                 // 软失败 (Success=false 但未抛异常) 也算本次失败, 继续走切备
@@ -450,13 +461,15 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                         LastSelectionBasis = $"failover:{backup.Id} (原 {entry.Id} 瞬态失败, 兜底 {attemptN}/{backupChain.Count})";
                     }
                     _tokenUsage?.RecordUsage(backupResp.Model, backup.Provider, backupResp.PromptTokens, backupResp.CompletionTokens);
+                    var cacheKv = PromptCacheKpi.Fields(backupResp.CacheHitTokens, backupResp.CacheMissTokens);
                     agent.config.AgentTelemetry.Emit("llm_call", "ModelQueueRouter",
                         ("model", backup.Id), ("provider", backup.Provider),
                         ("prompt_tokens", backupResp.PromptTokens), ("completion_tokens", backupResp.CompletionTokens),
                         ("total_tokens", backupResp.TokensUsed), ("success", true),
                         ("content_len", backupResp.Content?.Length ?? 0),
                         ("reasoning_len", backupResp.ReasoningContent?.Length ?? 0),
-                        ("ms", backupSw.ElapsedMilliseconds), ("attempt", "failover"));
+                        ("ms", backupSw.ElapsedMilliseconds), ("attempt", "failover"),
+                        cacheKv[0], cacheKv[1], cacheKv[2]);
                     return backupResp;
                 }
                 agent.config.AgentTelemetry.Emit("fallback_verify_fail", "ModelQueueRouter",
@@ -828,6 +841,8 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             Model = entry.Id,
             PromptTokens = parsed?.Usage?.PromptTokens ?? 0,
             TokensUsed = parsed?.Usage?.TotalTokens ?? 0,
+            CacheHitTokens = parsed?.Usage?.PromptCacheHitTokens,
+            CacheMissTokens = parsed?.Usage?.PromptCacheMissTokens,
             ReasoningContent = reasoning,
         };
     }
