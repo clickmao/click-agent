@@ -21,6 +21,11 @@ public sealed class ModelConfig
     public required int ValueDim { get; init; }
     /// <summary>参与旋转的维度数 = rope.dimension_count (≤ HeadDim)</summary>
     public required int RopeDim { get; init; }
+    /// <summary>
+    /// RoPE 配对约定, 按 arch 判定 (权威源 llama.cpp llama_model_rope_type; 见 <see cref="RopePairings"/>)。
+    /// 用错不报错、只静默算错, 故为 required (不许有默认值)。
+    /// </summary>
+    public required RopePairing RopePairing { get; init; }
     public required int Vocab { get; init; }
     public required int Ctx { get; init; }
     public required float RmsEps { get; init; }
@@ -88,6 +93,7 @@ public sealed class ModelConfig
             Arch = arch, Name = name, NLayer = L, Hidden = hidden, Ffn = ffn,
             NHead = nHead, NHeadKv = nHeadKv, HeadDim = headDim, ValueDim = valDim,
             RopeDim = ropeDim, Vocab = vocab, Ctx = ctx, RmsEps = eps, RopeBase = ropeBase,
+            RopePairing = RopePairings.FromArch(arch),
             RopeScaling = scaling, RopeFactor = factor,
             TiedOutput = tied, HasOutputTensor = outT is not null,
         };

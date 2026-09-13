@@ -19,7 +19,7 @@ public static class GenerateCli
 {
     public const string UsageLine =
         "  tokenize <gguf|--tables DIR> --selftest | --fixtures | --text \"...\"   分词器自检/对账/诊断\n" +
-        "  generate <gguf> --prompt P [--chat [--system S]] [--max-tokens N] [--temperature T] [--top-k K] [--top-p P] [--seed S] [--ctx N] [--max-seconds S] [--out-text F] [--json F]";
+        "  generate <gguf> --prompt P [--chat [--system S]] [--max-tokens N] [--temperature T] [--top-k K] [--top-p P] [--seed S] [--ctx N] [--max-seconds S] [--out-text F] [--json F] [--dump-logits DIR]";
 
     public static int Run(string[] a, TextWriter o)
         => a[0] switch
@@ -35,7 +35,7 @@ public static class GenerateCli
     {
         if (a.Contains("--selftest"))
         {
-            return SelfTest(o);
+            return SelfTest(a, o);
         }
 
         string? tables = Opt(a, "--tables");
@@ -62,8 +62,10 @@ public static class GenerateCli
             return 2;
         }
 
-        BpeTokenizer tk = new(tokens, types, merges);
+        ResolveSplitSpecial(tokens, types, out IReadOnlyList<string>? splitTok, out IReadOnlyList<string>? specialTok, out string setSrc);
+        BpeTokenizer tk = new(tokens, types, merges, splitTok, specialTok);
         o.WriteLine($"tokenizer{{spec=gpt2/byte-level {prov}}}");
+        o.WriteLine($"tokenset{{source={setSrc} split={tk.SplitCount} special={tk.SpecialCount} vocab={tokens.Count}}}");
         if (a.Contains("--neg-control"))
         {
             return NegControl(a, o, tk, tokens, types, merges);
@@ -92,7 +94,7 @@ public static class GenerateCli
         return 0;
     }
 
-    private static int SelfTest(TextWriter o)
+    private static int SelfTest(string[] a, TextWriter o)
     {
         int pass = 0;
         int fail = 0;
@@ -121,7 +123,9 @@ public static class GenerateCli
         Case("special_tokens_digest", sq == TokenizerAssets.SpecialTokensDigest, $"recomputed={sq[..16]}");
 
         // chat 黄金样本 (jinja2 渲染, 独立引擎): 缺失时按 FormalAssertionContract「缺失≠错误」放行但不记通过
-        const string golden = "eval/rover/tokref/chat_golden.jsonl";
+        // --chat-golden 可指向任意金标文件 (R405: 多模型夹具 r1_/qwen25math_); 覆盖时按文件行数校验, 不改默认口径
+        bool goldenOverride = Opt(a, "--chat-golden") is not null;
+        string golden = Opt(a, "--chat-golden") ?? "eval/rover/tokref/chat_golden.jsonl";
         if (File.Exists(golden))
         {
             int n = 0;
@@ -154,12 +158,62 @@ public static class GenerateCli
                 }
             }
 
-            Case("chat_golden", ok == n && n == ChatTemplate.GoldenCount, $"cases={n} pass={ok} (jinja2 oracle)");
+            Case("chat_golden", ok == n && (goldenOverride || n == ChatTemplate.GoldenCount), $"cases={n} pass={ok} file={golden} (jinja2 oracle)");
         }
         else
         {
             o.WriteLine($"case{{id=chat_golden verdict=absent detail={golden} 不存在 (缺失≠错误, 不记通过)}}");
         }
+
+        // R406 P0-2: **模板驱动**渲染 (GGUF 内嵌 tokenizer.chat_template + Jinja 子集解释器) 的三套夹具对账。
+        // 与上面 chat_golden (DeepSeek 专用渲染器) 并行存在, 互不改口径: 该用例证明通用路径成立。
+        (string Template, string Golden)[] jinjaSets =
+        [
+            ("eval/rover/tokref/chat_template.jinja", "eval/rover/tokref/chat_golden.jsonl"),
+            ("eval/rover/tokref/r1_chat_template.jinja", "eval/rover/tokref/r1_chat_golden.jsonl"),
+            ("eval/rover/tokref/qwen25math_chat_template.jinja", "eval/rover/tokref/qwen25math_chat_golden.jsonl"),
+        ];
+        int jn = 0, jok = 0, jmissing = 0;
+        foreach ((string tplPath, string goldPath) in jinjaSets)
+        {
+            if (!File.Exists(tplPath) || !File.Exists(goldPath))
+            {
+                jmissing++;
+                continue;
+            }
+
+            string tplText = File.ReadAllText(tplPath);
+            foreach (string line in File.ReadLines(goldPath))
+            {
+                if (line.Trim().Length == 0)
+                {
+                    continue;
+                }
+
+                using JsonDocument d = JsonDocument.Parse(line);
+                JsonElement root = d.RootElement;
+                List<ChatMessage> jmsgs = [];
+                foreach (JsonElement m in root.GetProperty("messages").EnumerateArray())
+                {
+                    jmsgs.Add(new ChatMessage(m.GetProperty("role").GetString()!, m.GetProperty("content").GetString()!));
+                }
+
+                string jbos = root.TryGetProperty("bos_token", out JsonElement bt) ? bt.GetString()! : ChatTemplate.Bos;
+                string jwant = root.GetProperty("rendered").GetString()!;
+                string jgot = ChatTemplate.RenderFromTemplate(tplText, jmsgs, root.GetProperty("add_generation_prompt").GetBoolean(), jbos);
+                jn++;
+                if (jgot == jwant)
+                {
+                    jok++;
+                }
+                else
+                {
+                    o.WriteLine($"jinja_mismatch{{set={Path.GetFileName(goldPath)} name={root.GetProperty("name").GetString()}}}");
+                }
+            }
+        }
+
+        Case("chat_golden_jinja32", jmissing == 0 && jn == 32 && jok == jn, $"cases={jn} pass={jok} missing_sets={jmissing} (模板驱动, jinja2 oracle)");
 
         o.WriteLine($"selftest{{ran={pass + fail} pass={pass} fail={fail} tokens=0}}");
         return fail == 0 ? 0 : 1;
@@ -314,18 +368,50 @@ public static class GenerateCli
         int budgetMb = int.Parse(Opt(a, "--budget-mb") ?? "96", CultureInfo.InvariantCulture);
         bool dropPages = a.Contains("--drop-pages");
         int? ctxOpt = Opt(a, "--ctx") is { } cs ? int.Parse(cs, CultureInfo.InvariantCulture) : null;
+        string? dumpLogitsDir = Opt(a, "--dump-logits");   // R407: 逐位对账用, 落原始 f32 logits 向量
 
         long ws0 = Mem();
         using GgufReader r = GgufReader.Open(path);
         LoadRawFromGguf(r, out List<string> rawTokens, out List<int> rawTypes, out List<string> rawMerges, out string tokProv);
-        BpeTokenizer tk = new(rawTokens, rawTypes, rawMerges);
+        ResolveSplitSpecial(rawTokens, rawTypes, out IReadOnlyList<string>? splitTok, out IReadOnlyList<string>? specialTok, out string setSrc);
+        BpeTokenizer tk = new(rawTokens, rawTypes, rawMerges, splitTok, specialTok);
         ModelConfig cfg = ModelConfig.From(r);
         long eos = r.TryGetLong("tokenizer.ggml.eos_token_id", out long e) ? e : -1;
         int bos = r.TryGetLong("tokenizer.ggml.bos_token_id", out long b) ? (int)b : -1;
+        string bosText = bos >= 0 && bos < rawTokens.Count ? rawTokens[bos] : ChatTemplate.Bos;
 
-        string promptText = chat
-            ? ChatTemplate.Render(BuildMessages(system, prompt), addGenerationPrompt: true)
-            : prompt;
+        // R406 P0-2: 生成路径优先用**模型自带模板** (GGUF tokenizer.chat_template), 不再写死 DeepSeek 模板。
+        string? modelTemplate = r.GetString("tokenizer.chat_template");
+        string templateSource = modelTemplate is null ? "none" : "kv-string";
+        if (modelTemplate is null
+            && r.Kv.TryGetValue("tokenizer.chat_template", out GgufValue tplArr)
+            && tplArr.A?.Items is { Count: > 0 } tplItems
+            && tplItems[0].Kind == GgufValueKind.String)
+        {
+            modelTemplate = tplItems[0].S;
+            templateSource = "kv-array[0]";
+        }
+
+        string promptText;
+        if (!chat)
+        {
+            promptText = prompt;
+        }
+        else if (modelTemplate is { Length: > 0 })
+        {
+            promptText = ChatTemplate.RenderFromTemplate(modelTemplate, BuildMessages(system, prompt), addGenerationPrompt: true, bosText);
+        }
+        else if (a.Contains("--chat-fallback-deepseek"))
+        {
+            o.WriteLine("warn{kind=no_chat_template fallback=deepseek-specific (显式开关, 非静默)}");
+            templateSource = "fallback-deepseek";
+            promptText = ChatTemplate.Render(BuildMessages(system, prompt), addGenerationPrompt: true);
+        }
+        else
+        {
+            o.WriteLine("error{kind=no_chat_template hint=该模型无 tokenizer.chat_template; 加 --chat-fallback-deepseek 显式回退, 或改用带模板的模型}");
+            return 2;
+        }
         List<int> ids = tk.Encode(promptText);
         if (ids.Count == 0)
         {
@@ -343,6 +429,8 @@ public static class GenerateCli
                     $"prompt_tokens={ids.Count} max_tokens={maxTokens} temperature={temperature} top_k={topK} top_p={topP} seed={seed} " +
                     $"eos={eos} bos={bos} ctx={maxPos}}}");
         o.WriteLine($"tokenizer{{{tokProv}}}");
+        o.WriteLine($"tokenset{{source={setSrc} split={tk.SplitCount} special={tk.SpecialCount} vocab={rawTokens.Count}}}");
+        o.WriteLine($"chat_template{{source={templateSource} chars={(modelTemplate?.Length ?? 0)} sha256={(modelTemplate is null ? "none" : Sha256Hex(Encoding.UTF8.GetBytes(modelTemplate))[..16])} bos_text={Esc(bosText)}}}");
         o.WriteLine($"prompt{{sha256={Sha256Hex(Encoding.UTF8.GetBytes(promptText))} len={promptText.Length} text={Esc(promptText)}}}");
         o.WriteLine($"cfg{{arch={cfg.Arch} layers={cfg.NLayer} hidden={cfg.Hidden} vocab={tk.VocabSize}}}");
 
@@ -361,6 +449,8 @@ public static class GenerateCli
         string stop = "max_tokens";
         for (int step = 0; step < maxTokens; step++)
         {
+            // R407: step k 的这一份 logits 就是「采样出第 k 个 token」所用的向量 —— 对账的锚点。
+            if (dumpLogitsDir is not null) DumpLogits(dumpLogitsDir, step, logits, o);
             int next = sampler.Next(logits);
             outp.Add(next);
             string tokenText = next >= 0 && next < tk.VocabSize ? tk.TokenString(next) : "<oob>";
@@ -483,6 +573,33 @@ public static class GenerateCli
         w.WriteEndObject();
     }
 
+    /// <summary>
+    /// 切分/特殊符号表解析 —— 编译期 DeepSeek 表仅当"派生结果与它逐元素一致"时使用 (保老模型逐位不变);
+    /// 否则一律用 GGUF token_type 派生 (换模型免改代码)。派生不到类型 ⇒ 显式空表并标注来源, 不回退。
+    /// </summary>
+    private static void ResolveSplitSpecial(
+        List<string> tokens,
+        List<int> types,
+        out IReadOnlyList<string>? split,
+        out IReadOnlyList<string>? special,
+        out string src)
+    {
+        bool derived = BpeTokenizer.TryDeriveFromTypes(tokens, types, out List<string> dsplit, out List<string> dspecial);
+        if (derived
+            && dsplit.Count == TokenizerAssets.SplitTokens.Length
+            && dsplit.SequenceEqual(TokenizerAssets.SplitTokens))
+        {
+            split = null;
+            special = null;
+            src = "builtin_deepseek_defaults";
+            return;
+        }
+
+        split = dsplit;
+        special = dspecial;
+        src = derived ? "derived_gguf_token_type" : "empty_no_token_type";
+    }
+
     private static void LoadRawFromGguf(GgufReader r, out List<string> tokens, out List<int> types, out List<string> merges, out string prov)
     {
         tokens = r.GetStringArray("tokenizer.ggml.tokens");
@@ -587,6 +704,20 @@ public static class GenerateCli
         }
 
         return null;
+    }
+
+    /// <summary>R407 逐位对账: 把 step 用的 logits 向量原样落成 f32 小端文件 (与 oracle 逐元素比)。</summary>
+    private static void DumpLogits(string dir, int step, float[] logits, TextWriter o)
+    {
+        Directory.CreateDirectory(dir);
+        string file = Path.Combine(dir, $"logits_{step:D3}.f32");
+        byte[] buf = new byte[logits.Length * 4];
+        Buffer.BlockCopy(logits, 0, buf, 0, buf.Length);
+        File.WriteAllBytes(file, buf);
+        if (step < 3 || step % 8 == 0)
+        {
+            o.WriteLine($"logitdump{{step={step} dims={logits.Length} bytes={buf.Length} file={file}}}");
+        }
     }
 
     private static long Mem()

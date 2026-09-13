@@ -87,6 +87,46 @@ public static class ChatTemplate
         return sb.ToString();
     }
 
+    /// <summary>
+    /// 模板驱动渲染 (R406): 用 GGUF 内嵌 `tokenizer.chat_template` **原文**渲染, 不写死任何模型。
+    /// messages 映射为 jinja 的 [{'role','content'}] 列表; 未提供的字段 (tool_calls/reasoning_content)
+    /// 在模板内表现为宽松 Undefined (假值) —— 与「无工具调用」语义一致。
+    /// </summary>
+    public static string RenderFromTemplate(string template, IReadOnlyList<ChatMessage> messages, bool addGenerationPrompt, string bosToken, JinjaOptions? options = null)
+    {
+        ArgumentNullException.ThrowIfNull(template);
+        ArgumentNullException.ThrowIfNull(messages);
+        List<JinjaValue> list = new(messages.Count);
+        foreach (ChatMessage m in messages)
+        {
+            Dictionary<string, JinjaValue> item = new(StringComparer.Ordinal)
+            {
+                ["role"] = JinjaValue.Of(m.Role),
+                ["content"] = JinjaValue.Of(m.Content),
+            };
+            list.Add(JinjaValue.Dict(item));
+        }
+
+        Dictionary<string, JinjaValue> ctx = new(StringComparer.Ordinal)
+        {
+            ["messages"] = JinjaValue.Of(list),
+            ["add_generation_prompt"] = JinjaValue.Of(addGenerationPrompt),
+            ["bos_token"] = JinjaValue.Of(bosToken),
+        };
+        return JinjaTemplate.Render(template, JinjaValue.Dict(ctx), options);
+    }
+
+    /// <summary>模板来自 GGUF 的入口: 缺失/空 ⇒ 显式抛 (不静默回退到下面的 DeepSeek 专用路径)。</summary>
+    public static string RenderFromModelTemplate(string? ggufTemplate, IReadOnlyList<ChatMessage> messages, bool addGenerationPrompt, string bosToken, JinjaOptions? options = null)
+    {
+        if (string.IsNullOrEmpty(ggufTemplate))
+        {
+            throw new NotSupportedException("该模型 GGUF 无 tokenizer.chat_template ⇒ 模板驱动渲染不可用 (不静默回退)");
+        }
+
+        return RenderFromTemplate(ggufTemplate, messages, addGenerationPrompt, bosToken, options);
+    }
+
     /// <summary>自检: 常量标签与资产表一致 (防止与生成资产漂移)。</summary>
     public static bool SelfCheck(out string detail)
     {

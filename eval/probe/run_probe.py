@@ -27,6 +27,7 @@
 from __future__ import annotations
 
 import argparse
+import glob
 import hashlib
 import json
 import os
@@ -201,36 +202,80 @@ def solve_agent(task: dict, solve_timeout: float):
                     "session": sid, "stderr_tail": "solve timeout"}
 
 
-def solve_rover(task: dict, solve_timeout: float) -> tuple:
-    """真机自检: 用本机 agent.rover 引擎 (GGUF + 字节级 BPE + chat template + 采样 + 解码环) 跑一题。
+def _resolve_rover_model() -> str:
+    """前置资产检查 (缺则带候选清单秒退, 不进入重试/等待)。"""
+    env = os.environ.get("AGENTFRAMEWORK_ROVER_MODEL")
+    if env:
+        if not os.path.exists(env):
+            raise SystemExit("rover 模型不存在 (AGENTFRAMEWORK_ROVER_MODEL): %s" % env)
+        return env
+    default = "/tmp/models/prover7b-q4km.gguf"
+    if os.path.exists(default):
+        return default
+    cands = sorted(glob.glob("/tmp/models/*.gguf")) if os.path.isdir("/tmp/models") else []
+    raise SystemExit("rover 模型不存在: 默认 %s 已不可用 (清理/删除); 现有候选 %s ⇒ 显式设 "
+                     "AGENTFRAMEWORK_ROVER_MODEL (不自动换模型, 换模型会改变被测对象)" % (default, cands or "无"))
 
-    诚实边界: CPU 上每 token 需流式扫全模型 (≈4.0 GiB), 实测 20~33 s/token ⇒ 默认只给
-    极小 token 预算 (PROBE_ROVER_MAX_TOKENS) 以证明**链路可用**, 不足以产出完整解法。
-    meta 中 budget_limited/max_tokens 明确标注, 避免把「预算截断」读成「能力为零」。
+
+def solve_rover(task: dict, solve_timeout: float) -> tuple:
+    """真机自检: 用本机 agent.rover 引擎 (GGUF + 字节级 BPE + 采样 + 解码环) 跑一题。
+
+    prompt 对等 (R401): 引擎内建 `--chat` 是硬编码 DeepSeek 版式, 对非 DeepSeek 族模型实测
+    4/4 标签不在其词表 (eval/rover/r401/prompt-parity.json) ⇒ 默认走 PROBE_ROVER_PROMPT_MODE=template:
+    模板取自目标 GGUF 自身 (jinja2 渲染) 并经 `--prompt` 原样送入, 引擎回报 prompt_sha256 做原样送达对账。
+    需要复现旧行为 (引擎自带 chat 渲染) 时显式设 PROBE_ROVER_PROMPT_MODE=engine-chat。
+
+    诚实边界: CPU 上每 token 需流式扫全模型, 实测 2.2 s/token (1.5B) ~ 25 s/token (7B) ⇒ meta 中
+    budget_limited/max_tokens 明确标注, 避免把「预算截断」读成「能力为零」。
     """
     cli = os.environ.get("AGENTFRAMEWORK_ROVER_CLI", os.path.join(ROOT, "src/agent.rover/bin/Release/net10.0/agent.rover"))
-    model = os.environ.get("AGENTFRAMEWORK_ROVER_MODEL", "/tmp/models/prover7b-q4km.gguf")
+    model = _resolve_rover_model()
     max_tokens = int(os.environ.get("PROBE_ROVER_MAX_TOKENS", "8"))
     temp = os.environ.get("PROBE_ROVER_TEMPERATURE", "0.7")
     seed = os.environ.get("PROBE_ROVER_SEED", "12345")
+    mode = os.environ.get("PROBE_ROVER_PROMPT_MODE", "template")
+    system = os.environ.get("PROBE_ROVER_SYSTEM", "你是严谨的编程与数学助手。请直接给出完整可运行的答案。")
     if not os.path.exists(cli):
         raise SystemExit("rover CLI 不存在: %s (先 dotnet build -c Release, 或设 AGENTFRAMEWORK_ROVER_CLI)" % cli)
-    if not os.path.exists(model):
-        raise SystemExit("rover 模型不存在: %s (设 AGENTFRAMEWORK_ROVER_MODEL)" % model)
-    jf = os.path.join(DATA, "rover-gen-%s.json" % task["tid"])
-    cmd = [cli, "generate", model, "--chat",
-           "--system", "你是严谨的编程与数学助手。请直接给出完整可运行的答案。",
-           "--prompt", task["prompt"], "--max-tokens", str(max_tokens),
-           "--temperature", temp, "--seed", seed, "--json", jf]
+    jdir = os.environ.get("PROBE_ROVER_JSON_DIR", DATA)
+    os.makedirs(jdir, exist_ok=True)
+    jf = os.path.join(jdir, "rover-gen-%s.json" % task["tid"])
+    # 跑前清残留: 引擎崩溃时会话残留旧 json 会被误读成本轮答案 (实测踩过)
+    if os.path.exists(jf):
+        os.remove(jf)
+    # 前置: 引擎是 apphost, 找不到共享运行时会 exit 131 (app-launch-failed) ——
+    # 那是「臂不可用」, 不是「能力为零」。显式给 env, 不依赖调用方 shell 是否 export 过。
+    env = dict(os.environ)
+    dotnet_root = os.environ.get("DOTNET_ROOT") or os.path.expanduser("~/.dotnet")
+    if os.path.isdir(dotnet_root):
+        env["DOTNET_ROOT"] = dotnet_root
+        env["PATH"] = dotnet_root + os.pathsep + env.get("PATH", "")
+
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from rover_prompt import render_prompt, attest_verbatim
+
+    attest = {}
+    if mode == "engine-chat":
+        cmd = [cli, "generate", model, "--chat", "--system", system, "--prompt", task["prompt"]]
+        attest = {"prompt_source": "engine-chat(硬编码版式)", "parity_risk": "非 DeepSeek 族模型 prompt 不对等"}
+    else:
+        text_in, attest = render_prompt(model, system, task["prompt"])
+        attest["prompt_head"] = text_in[:64]      # 缺陷哨兵证据: 实际送入的首 64 字符
+        cmd = [cli, "generate", model, "--prompt", text_in]
+    cmd += ["--max-tokens", str(max_tokens), "--temperature", temp, "--seed", seed, "--json", jf]
     t0 = time.time()
     try:
-        p = subprocess.run(cmd, capture_output=True, text=True, timeout=solve_timeout, cwd=ROOT)
+        p = subprocess.run(cmd, capture_output=True, text=True, timeout=solve_timeout, cwd=ROOT, env=env)
     except subprocess.TimeoutExpired:
-        return "", False, {"exit": -9, "elapsed_s": round(time.time() - t0, 2),
-                           "budget_limited": True, "max_tokens": max_tokens, "stderr_tail": "solve timeout"}
+        return "", False, {"exit": -9, "elapsed_s": round(time.time() - t0, 2), "budget_limited": True,
+                           "max_tokens": max_tokens, "prompt_mode": mode, "stderr_tail": "solve timeout", **attest}
     meta = {"exit": p.returncode, "elapsed_s": round(time.time() - t0, 2),
-            "budget_limited": True, "max_tokens": max_tokens,
-            "stderr_tail": (p.stderr or "")[-300:]}
+            "budget_limited": None, "max_tokens": max_tokens, "prompt_mode": mode,
+            "model": os.path.basename(model), "stderr_tail": (p.stderr or "")[-300:], **attest}
+    if p.returncode != 0 and not os.path.exists(jf):
+        meta["arm_status"] = "unavailable"
+        meta["arm_reason"] = ("app-launch-failed(missing-runtime)" if "app-launch-failed" in (p.stderr or "")
+                              else "exit=%d" % p.returncode)
     text = ""
     if os.path.exists(jf):
         try:
@@ -239,6 +284,9 @@ def solve_rover(task: dict, solve_timeout: float) -> tuple:
             meta.update({"steps": j.get("steps"), "ms_per_token": j.get("ms_per_token"),
                          "tokens_per_s": j.get("tokens_per_s"), "stop": j.get("stop"),
                          "prompt_tokens": j.get("prompt_tokens"), "ws_delta_bytes": j.get("ws_delta_bytes")})
+            meta["budget_limited"] = (j.get("stop") == "max_tokens")
+            if mode != "engine-chat":
+                meta["prompt_attested"] = attest_verbatim(attest, j.get("prompt_sha256"))
         except Exception as e:  # noqa: BLE001
             meta["json_error"] = str(e)
     return text, False, meta
@@ -283,6 +331,15 @@ def run(tasks_list, solver: str, timeout: float, solve_timeout: float = 300.0,
         smeta["reply_path"] = os.path.relpath(rp, ROOT)
         if not (reply or "").strip():
             smeta["reply_head"] = ""
+        if smeta.get("arm_status") == "unavailable":
+            tax_all["arm_unavailable"] = tax_all.get("arm_unavailable", 0) + 1
+            per.append({"tid": t["tid"], "kind": t["kind"], "family": t["family"],
+                        "mode": "arm_unavailable", "passed": 0, "total": 0,
+                        "taxonomy": {"arm_unavailable": 1}, "reply_chars": 0, "reply_head": "",
+                        "solve": smeta})
+            print("  %-6s %-8s ARM-UNAVAILABLE (%s) — 不计分母, 不判能力" % (t["tid"], t["kind"], smeta.get("arm_reason")),
+                  flush=True)
+            continue
         r = grade.grade(t, reply, timeout)
         for k, v in r["taxonomy"].items():
             tax_all[k] = tax_all.get(k, 0) + v
@@ -315,7 +372,10 @@ def run(tasks_list, solver: str, timeout: float, solve_timeout: float = 300.0,
         "n_tasks": len(per),
         "passed": sum(p["passed"] for p in per),
         "total": sum(p["total"] for p in per),
-        "rate": round(sum(p["passed"] for p in per) / max(1, sum(p["total"] for p in per)), 4),
+        "rate": (None if per and all(p["mode"] == "arm_unavailable" for p in per)
+                 else round(sum(p["passed"] for p in per) / max(1, sum(p["total"] for p in per)), 4)),
+        "arm_unavailable": sum(1 for p in per if p["mode"] == "arm_unavailable"),
+        "validity": ("arm-unavailable" if any(p["mode"] == "arm_unavailable" for p in per) else "ok"),
         "taxonomy": tax_all,
         "by_kind": agg("kind"),
         "by_family": agg("family"),

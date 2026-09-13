@@ -71,6 +71,29 @@ MAC_BUDGET = 0.05      # G3a 算力增幅 (每次编码乘加数 / 24M 参数嵌
 LAT_BUDGET = 0.15      # G3b 延迟增幅 (适配器实测 ms/向量 ÷ **绕缓存**的真实前向 ms/向量)
 MEM_BUDGET = 0.15      # G3c 内存增幅 (静态代理: 适配器对象字节 / 嵌入模型文件字节)
 
+# R404 修第三个判定器真缺陷 (G1 阈值落"数学上不可能显著"区):
+#   原文 `g["G1"] = best["r@10"] - base_metrics["r@10"] >= 0.025` —— 0.025×120 = **3 条**命中。
+#   而 n=120 口径下, 净增 Δ 条时的最小配对 McNemar 双侧 p = 2^(1−Δ) ⇒ Δ=3 时 p≥0.25、
+#   Δ=4 时 p≥0.125、Δ<6 **数学上不可能** p<0.05。(实测融合线 15:2 才得到 p=0.0023。)
+#   ⇒ 原 G1 会把纯噪声当"提升"放行 (11 轮训练线正是 +2/+4 条被判为"方向对")。
+#   现改为**配对检验 ∧ 净增条数**双判据, 阈值先注册、不事后调; AST 审计防漂移 (auto_cycle.py)。
+G1_ALPHA = 0.05            # G1a: 配对 McNemar 精确检验双侧 p 上限
+G1_MIN_GAIN_QUERIES = 6    # G1b: 净增命中查询数下限 (Δ=6 ⇒ min p=0.0312<0.05; Δ=5 ⇒ 0.0625>0.05)
+
+
+def mcnemar_exact(b, c):
+    """配对 McNemar **精确**检验 (双侧 p): b = 候选命中/基线未命中, c = 基线命中/候选未命中。
+
+    口径: 只用不一致对 (b+c); 双侧 p = min(1, 2·Σ_{k≤min(b,c)} C(b+c,k)/2^(b+c))。
+    与 `eval/bge/paired_test.py` 同式 (该脚本冻结值 15:2→0.0023 在此逐位复现, 见 test_gates.py)。
+    """
+    from math import comb
+    n = b + c
+    if n == 0:
+        return 1.0
+    k = min(b, c)
+    return min(1.0, 2 * sum(comb(n, i) for i in range(k + 1)) / (2 ** n))
+
 
 def adapter_bytes(ad, dim):
     """适配器常驻字节 (**静态代理**: 对象数组字节数, 非进程 RSS 实测 —— 口径明示, 不冒充实测)。"""
@@ -128,6 +151,10 @@ def main():
     cids = [c["id"] for c in corpus]
     golds = [q["gold_id"] for q in queries]
 
+    # R404: 这两个名字原先只在 try/循环内赋值, 静态检查判 "possibly unbound";
+    # G1 配对判据要求它们在到闸门那段时**必然有绑定**, 故提前初始化。
+    base_ranks = None
+    ranks_by_cfg = {}
     proc = L.start_server(pooling="cls", port=L.PORT)
     try:
         t0 = time.time()
@@ -228,7 +255,21 @@ def main():
         results.sort(key=lambda r: (-r.get("r@10", 0), -r.get("r@1", 0)))
         best = results[0]
         g = {}
-        g["G1"] = best["r@10"] - base_metrics["r@10"] >= 0.025
+        # G1 = 配对检验 ∧ 净增条数 (R404; 原料 = 逐查询整数秩, 999=未命中)
+        assert base_ranks is not None, "G1 配对检验缺基线逐查询秩 (base_ranks 未赋值)"
+        _base_r = base_ranks
+        _cand_r = ranks_by_cfg.get(best["config"], [])
+        _b = _c = 0
+        for _br, _cr in zip(_base_r, _cand_r):
+            _bh, _ch = _br <= 10, _cr <= 10
+            _b += 1 if (_ch and not _bh) else 0
+            _c += 1 if (_bh and not _ch) else 0
+        gd["G1_detail"] = {"gained": _b, "lost": _c, "net": _b - _c,
+                           "p": round(mcnemar_exact(_b, _c), 6),
+                           "min_gain": G1_MIN_GAIN_QUERIES, "alpha": G1_ALPHA,
+                           "old_rule_hits": round((best["r@10"] - base_metrics["r@10"]) * len(golds), 2)}
+        g["G1"] = (gd["G1_detail"]["net"] >= G1_MIN_GAIN_QUERIES
+                   and mcnemar_exact(_b, _c) < G1_ALPHA)
         g["G2"] = best["r@1"] >= base_metrics["r@1"] - 0.0083
         mac = 2 * dim * (best["adapter"].r or dim)      # 每次编码的乘加数
         gd["mac_ratio"] = round(mac / (24_000_000 * 2), 5)
@@ -301,10 +342,15 @@ def write_report(path, vnum, ts, base, results, best, verdict, reason, entry, n_
     b = best if best else {"r@1": 0, "r@10": 0, "mrr@10": 0, "median_rank": "-", "config": "-"}
     if gd:
         g5 = gd.get("G5_detail", {})
-        gates_txt = ("- G3 明细：算力增幅 {m}% / 延迟增幅 {l}%（真前向 {f} ms/向量）/ 内存增幅 {c}%\n"
+        gates_txt = ("- G1 明细：净增 {n} 条（得 {b} / 失 {c}），配对 McNemar 精确 p={p}"
+                     "（阈值：净增 ≥{mg} 条 ∧ p<{al}；旧式 2.5pt 阈值在此只值 {old} 条）\n"
+                     "- G3 明细：算力增幅 {m}% / 延迟增幅 {l}%（真前向 {f} ms/向量）/ 内存增幅 {c2}%\n"
                      "- G5 明细：{d5}（负控=True 表示判定器有判别力）").format(
+            n=gd.get("G1_detail", {}).get("net"), b=gd.get("G1_detail", {}).get("gained"),
+            c=gd.get("G1_detail", {}).get("lost"), p=gd.get("G1_detail", {}).get("p"),
+            mg=G1_MIN_GAIN_QUERIES, al=G1_ALPHA, old=gd.get("G1_detail", {}).get("old_rule_hits"),
             m=round(100 * gd.get("mac_ratio", 0), 2), l=round(100 * (gd.get("latency_ratio") or 0), 2),
-            f=gd.get("fwd_ms_per_vec"), c=round(100 * gd.get("mem_ratio", 0), 2),
+            f=gd.get("fwd_ms_per_vec"), c2=round(100 * gd.get("mem_ratio", 0), 2),
             d5=" ".join(f"{k}={v}" for k, v in g5.items()) or "-")
     else:
         gates_txt = "- （本次无候选，无闸门明细）"
@@ -326,7 +372,7 @@ def write_report(path, vnum, ts, base, results, best, verdict, reason, entry, n_
 - 词法基线（字符二元组 Jaccard）：recall@1 {base.get('lexical', {}).get('r@1', '-')} / recall@10 {base.get('lexical', {}).get('r@10', '-')}
 - 择优：**{b['config']}** → recall@1 {b['r@1']} / recall@10 {b['r@10']} / MRR@10 {b['mrr@10']}
 
-## 闸门（G1 收益 ≥2.5pt / G2 r@1 不倒退 / G3 算力 ≤5% ∧ 延迟 ≤15% ∧ 内存 ≤15% / G4 过拟合 ≤15pt / G5 确定性×3+负控）
+## 闸门（G1 净增 ≥6 条 ∧ 配对 McNemar p<0.05 / G2 r@1 不倒退 / G3 算力 ≤5% ∧ 延迟 ≤15% ∧ 内存 ≤15% / G4 过拟合 ≤15pt / G5 确定性×3+负控）
 
 - 判定：**{verdict}** —— {reason}
 {gates_txt}

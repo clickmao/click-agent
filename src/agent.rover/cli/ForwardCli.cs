@@ -13,7 +13,7 @@ namespace agent.rover.cli;
 /// </summary>
 public static class ForwardCli
 {
-    public const string UsageLine = "  forward <gguf> --tokens a,b,c [--ctx N] [--dump DIR] [--drop-pages] [--budget-mb N|--budget-kb N|--budget-bytes N] [--no-pin] [--reclaim-per-token]  前向 logits + top-k";
+    public const string UsageLine = "  forward <gguf> --tokens a,b,c [--ctx N] [--dump DIR] [--drop-pages] [--budget-mb N|--budget-kb N|--budget-bytes N] [--no-pin] [--reclaim-per-token] [--threads N]  前向 logits + top-k (--threads>1 = 行分块并行 GEMV, 数值逐位不变)";
 
     internal static int Forward(string[] a, TextWriter o)
     {
@@ -37,6 +37,9 @@ public static class ForwardCli
             : budgetKb > 0 ? (long)budgetKb * 1024 : (long)budgetMb * 1048576;
         int topk = int.Parse(Opt(a, "--topk") ?? "5", CultureInfo.InvariantCulture);
         int headVals = int.Parse(Opt(a, "--head-vals") ?? "8", CultureInfo.InvariantCulture);
+        // R402 步 2: GEMV 线程数 (默认 1 = 串行 ⇒ 与改造前逐位一致; >1 只影响速度, 不影响数值 —— 由 --threads 对账行自证)。
+        int threads = int.Parse(Opt(a, "--threads") ?? "1", CultureInfo.InvariantCulture);
+        if (threads < 1) { o.WriteLine($"error{{kind=bad_arg arg=--threads value={threads} min=1}}"); return 2; }
 
         long ws0 = Mem();
         var sw = Stopwatch.StartNew();
@@ -56,9 +59,11 @@ public static class ForwardCli
 
         // --no-pin: 不预判热集 (空 pin 集) ⇒ norm 全部纳入预算 + LRU, 驱逐/回收路径真被走到。
         IReadOnlyCollection<string>? pins = noPin ? Array.Empty<string>() : null;
-        using var fp = new ForwardPass(r, cfg, maxPos, budgetBytes, dropPages, pins, reclaimPerToken);
+        using var fp = new ForwardPass(r, cfg, maxPos, budgetBytes, dropPages, pins, reclaimPerToken, threads);
         o.WriteLine($"residency_scope{{budget_bytes={budgetBytes} budget_unlimited={fp.Ledger.BudgetUnlimited} " +
                     $"pin_mode={(noPin ? "none" : "default_norms")} reclaim_each_step={reclaimPerToken}}}");
+        o.WriteLine($"threads{{gemv_threads={threads} processor_count={Environment.ProcessorCount} " +
+                    $"min_parallel_rows={ForwardPass.ParallelMinRows} mode={(threads > 1 ? "row_partitioned" : "serial_baseline")}}}");
         RopeCrossCheck(cfg, o);
 
         TextWriter? stepLog = showSteps ? o : null;
@@ -84,6 +89,9 @@ public static class ForwardCli
         for (int i = 0; i < Math.Min(headVals, logits.Length); i++)
             hd.Add($"[{i}]={logits[i]:R}");
         o.WriteLine($"logits_head{{{string.Join(" ", hd)}}}");
+        // 数值不变性见证: 多线程只改「谁算哪些行」, 不改任何行的算式 ⇒ 1 vs N 线程的 logits 必须**逐位相同**。
+        // 落一个哈希 + 逐位自证所需的最小数 (linear 值哈希, 不受打印格式影响)。
+        o.WriteLine($"logits_hash{{fnv1a64={Fnv1a64(logits)} bitwise_selfcheck_bits={logits.Length * 32} threads={threads}}}");
         o.WriteLine($"last_hidden{{idx0..3=[{logits[0]:R},{logits[1]:R},{logits[2]:R},{logits[3]:R}]}}");
 
         o.WriteLine($"timing{{embed_ms={st.EmbedMs:F1} attn_ms={st.AttnMs:F1} ffn_ms={st.FfnMs:F1} " +
@@ -145,6 +153,7 @@ public static class ForwardCli
     /// <summary>
     /// RoPE 交叉验证: 新建的 <see cref="RopeTable"/> (预计算表) 与既有 <see cref="CpuKernels.Rope"/>。
     /// 仅在不涉及 rope scaling 时可比 (既有内核的缩放公式与本实现口径不同, 不做无意义比较)。
+    /// 两个实现必须传<b>同一</b>配对约定; 另附负控: 另一约定必须给出不同结果 (防"配对参数被忽略"的空心通过)。
     /// </summary>
     private static void RopeCrossCheck(ModelConfig cfg, TextWriter o)
     {
@@ -155,16 +164,26 @@ public static class ForwardCli
         }
         int heads = cfg.NHead;
         int pos = 7;
-        var a = new float[heads * cfg.HeadDim];
-        for (int i = 0; i < a.Length; i++) a[i] = (float)Math.Sin(i * 0.017) * 1.5f + 0.25f;
-        var b = (float[])a.Clone();
-        var table = new RopeTable(cfg.RopeDim, cfg.RopeBase, cfg.RopeScaling, cfg.RopeFactor, pos + 1);
+        var seed = new float[heads * cfg.HeadDim];
+        for (int i = 0; i < seed.Length; i++) seed[i] = (float)Math.Sin(i * 0.017) * 1.5f + 0.25f;
+
+        var a = (float[])seed.Clone();
+        var b = (float[])seed.Clone();
+        var table = new RopeTable(cfg.RopeDim, cfg.RopeBase, cfg.RopeScaling, cfg.RopeFactor, pos + 1, cfg.RopePairing);
         table.Apply(a, heads, cfg.HeadDim, pos);
-        CpuKernels.Rope(b, heads, cfg.HeadDim, pos, cfg.RopeBase, cfg.Ctx, 0f, 0f, 0f);
+        CpuKernels.Rope(b, heads, cfg.HeadDim, pos, cfg.RopeBase, cfg.Ctx, 0f, 0f, 0f, cfg.RopePairing);
         float md = 0;
         for (int i = 0; i < a.Length; i++) md = Math.Max(md, Math.Abs(a[i] - b[i]));
-        o.WriteLine($"rope_check{{impl_a=RopeTable impl_b=CpuKernels.Rope n_heads={heads} head_dim={cfg.HeadDim} " +
+        o.WriteLine($"rope_check{{arch={cfg.Arch} pairing={RopePairings.ToLlamaCppName(cfg.RopePairing)} impl_a=RopeTable impl_b=CpuKernels.Rope n_heads={heads} head_dim={cfg.HeadDim} " +
                     $"rope_dim={cfg.RopeDim} pos={pos} max_abs_diff={md:R} verdict={(md < 1e-5f ? "match" : "MISMATCH")}}}");
+
+        var other = cfg.RopePairing == RopePairing.NormConsecutive ? RopePairing.NeoxHalf : RopePairing.NormConsecutive;
+        var c = (float[])seed.Clone();
+        new RopeTable(cfg.RopeDim, cfg.RopeBase, cfg.RopeScaling, cfg.RopeFactor, pos + 1, other).Apply(c, heads, cfg.HeadDim, pos);
+        float od = 0;
+        for (int i = 0; i < c.Length; i++) od = Math.Max(od, Math.Abs(c[i] - a[i]));
+        o.WriteLine($"rope_pairing_negctl{{active={RopePairings.ToLlamaCppName(cfg.RopePairing)} other={RopePairings.ToLlamaCppName(other)} max_abs_diff={od:R} " +
+                    $"verdict={(od > 0.1f ? "distinct" : "SUSPECT_SAME")}}}");
     }
 
     private static string? Opt(string[] a, string name)
@@ -192,6 +211,22 @@ public static class ForwardCli
         double s = 0;
         foreach (var v in x) s += v;
         return s;
+    }
+
+    /// <summary>logits 的逐位哈希 (FNV-1a 64, 输入是 float 的**原始位**) ⇒ 跨线程数/跨次运行可逐位对账, 不受打印格式影响。</summary>
+    internal static string Fnv1a64(ReadOnlySpan<float> x)
+    {
+        ulong h = 14695981039346656037UL;
+        foreach (var v in x)
+        {
+            uint bits = unchecked((uint)BitConverter.SingleToInt32Bits(v));
+            for (int b = 0; b < 4; b++)
+            {
+                h ^= (byte)(bits >> (b * 8));
+                h *= 1099511628211UL;
+            }
+        }
+        return h.ToString("x16", CultureInfo.InvariantCulture);
     }
 
     private static void WriteF32(string path, ReadOnlySpan<float> data)

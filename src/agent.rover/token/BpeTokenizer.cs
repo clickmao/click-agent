@@ -20,6 +20,7 @@ public sealed class BpeTokenizer
     private readonly Dictionary<string, int> _vocab;
     private readonly Dictionary<long, Merge> _merges;
     private readonly int[] _splitIds;
+    private readonly string[] _splitStrings;
     private readonly Dictionary<char, List<int>> _splitByFirst;
     private readonly HashSet<int> _specialIds;
     private readonly Dictionary<string, int[]> _pieceCache = new(StringComparer.Ordinal);
@@ -73,6 +74,7 @@ public sealed class BpeTokenizer
 
         splitTokens ??= TokenizerAssets.SplitTokens;
         specialTokens ??= TokenizerAssets.SpecialTokens;
+        _splitStrings = [.. splitTokens];
         _splitIds = new int[splitTokens.Count];
         _splitByFirst = new Dictionary<char, List<int>>();
         for (int i = 0; i < splitTokens.Count; i++)
@@ -113,6 +115,12 @@ public sealed class BpeTokenizer
         SplitTokenCount = splitTokens.Count;
         SpecialTokenCount = specialTokens.Count;
     }
+
+    /// <summary>切分符号个数 (随模型走, 见 TryDeriveFromTypes)。</summary>
+    public int SplitCount => _splitStrings.Length;
+
+    /// <summary>特殊符号个数 (解码时跳过)。</summary>
+    public int SpecialCount => _specialIds.Count;
 
     /// <summary>逐行摘要: sha256(join("\n", lines)) — 与 oracle/登记表同构 (无尾随换行)。</summary>
     public static string DigestLines(IReadOnlyList<string> lines)
@@ -186,7 +194,7 @@ public sealed class BpeTokenizer
             }
 
             dst.Add(_splitIds[hit]);
-            i += TokenizerAssets.SplitTokens[hit].Length;
+            i += _splitStrings[hit].Length;
             last = i;
         }
 
@@ -317,7 +325,7 @@ public sealed class BpeTokenizer
         int bestLen = 0;
         foreach (int idx in cands)
         {
-            string t = TokenizerAssets.SplitTokens[idx];
+            string t = _splitStrings[idx];
             if (t.Length > bestLen && i + t.Length <= text.Length && string.CompareOrdinal(text, i, t, 0, t.Length) == 0)
             {
                 best = idx;
@@ -326,6 +334,44 @@ public sealed class BpeTokenizer
         }
 
         return best;
+    }
+
+    /// <summary>
+    /// 从 GGUF token_type 派生切分/特殊符号表 —— 换模型的机械口径。
+    /// 规则与 R400 生成器同源: 切分集 = added_tokens 全体 ↔ 类型 {CONTROL(3), USER_DEFINED(4)};
+    /// 特殊集 = special 标志 ↔ {CONTROL(3)}。
+    /// 返回 false = 该模型无类型信息; 此时调用方必须用**空表**, 不得回退编译期 DeepSeek 表
+    /// (那些符号不在别的词表内, 回退会直接抛 "切分符号不在词表")。
+    /// </summary>
+    public static bool TryDeriveFromTypes(
+        IReadOnlyList<string> tokens,
+        IReadOnlyList<int> types,
+        out List<string> split,
+        out List<string> special)
+    {
+        split = [];
+        special = [];
+        if (tokens.Count == 0 || types.Count != tokens.Count)
+        {
+            return false;
+        }
+
+        bool any = false;
+        for (int i = 0; i < tokens.Count; i++)
+        {
+            int t = types[i];
+            if (t is 3 or 4)
+            {
+                split.Add(tokens[i]);
+                any = true;
+                if (t == 3)
+                {
+                    special.Add(tokens[i]);
+                }
+            }
+        }
+
+        return any;
     }
 
     private static long Key(int a, int b) => ((long)a << 32) | (uint)b;

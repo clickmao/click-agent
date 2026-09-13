@@ -972,3 +972,15 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **真机读数**: GGUF 装载路径 199/199 + 199/199 + 2000/2000 + 405/405（`pass=true`）；`generate --chat` 7B 真跑（逐 token 墙钟 / `tok/s` / 峰值 RSS / 流式字节数，见 `docs/reports/r400/rover-generation-chain.md`）；探针 `solver=rover` 已接线（远端 API 与 rover 同题同判定器，读数标注 `budget_limited`）。
 - **诚实边界**: ① 本机 2 vCPU / 无 GPU / 每 token 流式扫 ≈4.0 GiB ⇒ 生成**不可交互**（≈20–33 s/token），本轮交付「链路正确 + 可对账」，性能线属 R401/R402；② chat template 仅支持 `system/user/assistant` 子集，工具调用与 Jinja 全量属 R403；③ 采样器**不含**重复/存在/频率惩罚；④ 探针 `solver=rover` 为**限量 token 口径**（默认 8），不得读作「rover 能力为零」。
 - **机检**: 新增 22 条测试全绿；形式校验（`VerificationFormTests` / `DevPlanDocRefTests`）+ 全量回归见本轮报告。
+
+### R403 (2026-09-14) — RoPE 配对约定按 arch 选择：prover7b 长期带病运行的根因（静默错误）
+
+- **发现路径**: 追查 `qwen2.5-math-1.5B-Instruct` 端到端「能跑但乱码」时做排除法 —— 分词（HF `tokenizers` 独立 oracle，6 串逐 id 相同）、量化类型（逐张量直方图，全在支持集）、配置读取（HF `config.json` 的 `rope_theta=10000.0` 与 GGUF 一致，此前误记 1e6）全部洗清；对照臂 prover7b 同提示输出 ` 6, ` ⇒ 通用机制正常。遂审 RoPE 约定。
+- **根因**: 引擎只实现了一种 RoPE 配对（`x[i], x[i+n_rot/2]` 半偏移），而**权威源 llama.cpp `llama_model_rope_type()`**（`src/llama-model.cpp:2584`，vendored llama.cpp 源码）规定：`LLM_ARCH_LLAMA`（prover7b 的 arch）⇒ **NORM**（`x[2j], x[2j+1]` 相邻配对），`LLM_ARCH_QWEN2` ⇒ NEOX（半偏移）。⇒ **arch=llama 的模型一直在用错配对**，位置信息错乱且不抛错。
+- **影响面**: R400 那句 `gen_text= 2 2 2 2` **不是模型行为，是本缺陷的症状**；prover7b 全部历史输出在新配对下不可信，需重测。
+- **交付**: `infer/RopePairing.cs`（枚举 + 由 `llama-arch.cpp` **机械提取**的 41 个 NORM arch 名单 + `FromArch()`，未收录⇒NEOX 与上游 default 一致）、`RopeTable`/`CpuKernels.Rope` 双实现支持两约定、`ModelConfig` 增加 `required RopePairing`、`ForwardCli.rope_check` 增加**约定负控行**；权威判定表存档 `eval/rover/oracle/rope-types.json`。
+- **验证（同命令同参数）**: prover7b logits `stdev 2.376802840591207 → 2.48841954302631`（生效）；qwen2 **全部数字逐位不变**（范围隔离）；负控 `rope_pairing_negctl{active=NORM other=NEOX max_abs_diff=3.7959385 verdict=distinct}`；`RoverRopeTests` **7/7**（两种约定金标向量 + 跨实现一致 + 负控 + 频率表不变性 + **实现↔存档逐项机检**）。
+- **通用教训（已落 skill）**: 两个自研实现可能**共享同一个约定误解** ⇒ 交叉验证长期绿灯而实际违规。`skills/independent-verification-before-claim` v1.1.0 新增判据 11「约定负控」：约定取值换成另一种合法值结果必须变；约定必须锚定**外部权威**并提取成存档 + 机检。
+- **附带产出**: `scripts/gguf_probe_remote.py` 远程 GGUF 兼容性预探（HTTP range 取头部 ~24 MB，判 arch/特性/量化可实现性，先探再下）。实测：`DeepSeek-R1-Distill-Qwen-1.5B` RUNNABLE；`Llama-3.2-1B` RUNNABLE；`Qwen2.5-0.5B`/`SmolLM2-360M` 含 **Q5_0** ⇒ BLOCKED（引擎缺内核）；`Qwen3-0.6B` 含 **56 个 qk_norm** ⇒ BLOCKED。
+- **诚实边界**: ① **qwen2 乱码仍未定性**（分词与 RoPE 均已排除 ⇒ 剩 tied 词表 / attn 偏置 / GQA 三条 7B 未覆盖路径；判别实验 `DeepSeek-R1-Distill-Qwen-1.5B`（qwen2 且 untied）已排队）；② 本轮仅重测「平凡续写」，prover7b 解法级重测未做；③ NORM/NEOX 表来自 vendored 上游快照，上游变更需重新提取。
+- **报告**: `docs/reports/r403/rope-pairing.md`。

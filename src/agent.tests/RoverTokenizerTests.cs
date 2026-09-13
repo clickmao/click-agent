@@ -317,6 +317,51 @@ public class RoverTokenizerTests
         Assert.Equal("汉字 héllo ½ ① \U00010400", Tok.Decode(Tok.Encode("汉字 héllo ½ ① \U00010400")));
     }
 
+    // ── 切分/特殊符号表随模型走 (R402 可移植性: 编译期 DeepSeek 表不得是唯一来源) ──
+
+    [Fact]
+    public void DeriveFromTypes_SeparatesControlAndUserDefined()
+    {
+        List<string> tokens = ["a", "<|ctrl|>", "<|user|>", "<unused>"];
+        List<int> types = [1, 3, 4, 5];
+        Assert.True(BpeTokenizer.TryDeriveFromTypes(tokens, types, out List<string> split, out List<string> special));
+        Assert.Equal(["<|ctrl|>", "<|user|>"], split);
+        Assert.Equal(["<|ctrl|>"], special);
+    }
+
+    [Fact]
+    public void DeriveFromTypes_NegativeControls()
+    {
+        // ① 类型表长度不符 ⇒ false + 空表 (绝不回退编译期 DeepSeek 表: 那些符号不在别的词表内)
+        Assert.False(BpeTokenizer.TryDeriveFromTypes(["a"], [], out List<string> s1, out List<string> p1));
+        Assert.Empty(s1);
+        Assert.Empty(p1);
+
+        // ② 纯普通词表 (无 added token) ⇒ false + 空表
+        Assert.False(BpeTokenizer.TryDeriveFromTypes(["a", "b"], [1, 1], out List<string> s2, out List<string> p2));
+        Assert.Empty(s2);
+        Assert.Empty(p2);
+
+        // ③ 空词表 ⇒ false
+        Assert.False(BpeTokenizer.TryDeriveFromTypes([], [], out List<string> s3, out List<string> p3));
+        Assert.Empty(s3);
+        Assert.Empty(p3);
+    }
+
+    [Fact]
+    public void DerivedSplitTableIsHonoredByEncode()
+    {
+        string[] builtin = TokenizerAssets.SplitTokens;
+        string longTok = builtin.OrderByDescending(t => t.Length).First();
+        string shortTok = builtin.OrderBy(t => t.Length).First();
+        Assert.NotEqual(longTok.Length, shortTok.Length);
+
+        // 长符号放在实例表 index 1: 旧实现按编译期表取长度 (index 1 = 别的符号) ⇒ 前进错位
+        BpeTokenizer tk = BuildWith(Merges(), [shortTok, longTok]);
+        Assert.Equal(2, tk.SplitCount);
+        Assert.Single(tk.Encode(longTok));
+    }
+
     // ── helpers ──────────────────────────────────────────────────────────
 
     private static List<string> Merges()

@@ -118,4 +118,39 @@ _body = _src.split('"""')[2] if _src.count('"""') >= 2 else _src    # 剥掉 doc
 assert "L.embed(" in _body and "embed_cached(" not in _body, \
     "前向测量必须**绕开缓存** (embed_cached 命中返回 0.0 ms → 分母变 0 的假判据)"
 print("OK ④ G3 三子判据两侧样例 + 前向测量绕缓存机检")
+
+# ⑤ G1 双判据 (R404 修的第三个真缺陷): 常数注册 + 配对检验数值对账 + **直接取源码右值**两侧样例
+assert (T.G1_ALPHA, T.G1_MIN_GAIN_QUERIES) == (0.05, 6), \
+    ("G1 常量漂移", T.G1_ALPHA, T.G1_MIN_GAIN_QUERIES)
+for _bc, _want in [((15, 2), 0.0023), ((12, 0), 0.0005), ((2, 2), 1.0), ((3, 0), 0.25),
+                   ((5, 0), 0.0625), ((6, 0), 0.03125), ((0, 0), 1.0)]:
+    _got = T.mcnemar_exact(*_bc)
+    assert abs(_got - _want) < 5e-5, "mcnemar_exact%s=%.6f 期望 %.4f" % (_bc, _got, _want)
+_PLAN = os.path.join(REPO, "docs", "plans", "v0.22.0-exp7-bge-idle-training-loop.md")
+assert os.path.isfile(_PLAN), _PLAN
+_rows1 = [l for l in open(_PLAN, encoding="utf-8").read().splitlines() if l.startswith("| G1")]
+assert len(_rows1) == 1 and "McNemar" in _rows1[0] and "6" in _rows1[0] and "0.05" in _rows1[0], \
+    ("文档 G1 行与代码不一致", _rows1)
+import ast, inspect
+_src1 = inspect.getsource(T)
+_node1 = next(n for n in ast.walk(ast.parse(_src1)) if isinstance(n, ast.Assign)
+              and isinstance(n.targets[0], ast.Subscript)
+              and getattr(n.targets[0].slice, "value", None) == "G1")
+_expr1 = ast.get_source_segment(_src1, _node1.value)
+assert all(k in _expr1 for k in ("G1_MIN_GAIN_QUERIES", "G1_ALPHA", "mcnemar_exact")), _expr1
+
+
+def _g1(b, c):
+    ns = {"__builtins__": {}, "gd": {"G1_detail": {"net": b - c}},
+          "G1_MIN_GAIN_QUERIES": T.G1_MIN_GAIN_QUERIES, "G1_ALPHA": T.G1_ALPHA,
+          "mcnemar_exact": T.mcnemar_exact, "_b": b, "_c": c}
+    return eval(compile(ast.Expression(ast.parse("(" + _expr1 + ")", mode="eval").body), "<g1>", "eval"), ns)
+
+
+assert _g1(15, 2) is True, "G1 漏判真增益 (融合线 15:2, p=0.0023)"
+assert _g1(3, 0) is False, "G1 放行噪声 (+3 条 —— 旧式 2.5pt 阈值正是放行它)"
+assert _g1(6, 0) is True, "G1 误杀边界真增益 (+6 条, 最小 p=0.03125)"
+assert _g1(5, 0) is False, "G1 放行 +5 条 (最小 p=0.0625 > 0.05)"
+assert _g1(9, 9) is False, "G1 放行净增 0"
+print("OK ⑤ G1 配对判据: 常数(6, 0.05) + mcnemar 数值冻结 + 两侧样例(+3 拒 / +5 拒 / +6 收 / 15:2 收)")
 print("OK: 闸门判定件判别力机检 全部通过")

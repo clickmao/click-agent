@@ -30,6 +30,7 @@ public static class RoverCli
                 "vulkan" => VulkanCli.Run(args, o),
                 "embed" => EmbedCli.Run(args, o),
                 "readbench" => ReadBenchCli.Run(args, o),
+                "computebench" => ComputeBenchCli.Run(args, o),
                 "--help" or "-h" or "help" => Usage(o),
                 _ => Unknown(args[0], err),
             };
@@ -63,6 +64,7 @@ public static class RoverCli
         o.WriteLine(VulkanCli.UsageLine);
         o.WriteLine(EmbedCli.UsageLine);
         o.WriteLine(ReadBenchCli.UsageLine);
+        o.WriteLine(ComputeBenchCli.UsageLine);
         return 0;
     }
 

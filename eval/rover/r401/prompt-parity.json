@@ -1,0 +1,49 @@
+{
+  "schema": "r401-prompt-parity/1",
+  "ts": "2026-09-14T06:13:27+08:00",
+  "gguf": "/tmp/models/qwen25-math-1.5b-q4km.gguf",
+  "gguf_bytes": 986048832,
+  "gguf_sha256": "9614a50f03c897028920ca0dc4365da570bf587f9ee7768261216fe370b37e8e",
+  "arch": "qwen2",
+  "name": "Qwen2.5 Math 1.5B Instruct",
+  "tokenizer_model": "gpt2",
+  "tokenizer_pre": "qwen2",
+  "n_tokens": 151936,
+  "chat_template_len": 2513,
+  "chat_template_sha256": "c564d12c9977b8942423753b0c409a11f50142508ced170e9fe1c2f5b803cf70",
+  "chat_template_head": "{%- if tools %}\n    {{- '<|im_start|>system\\n' }}\n    {%- if messages[0]['role'] == 'system' %}\n        {{- messages[0]['content'] }}\n    {%- else %}\n        {{- 'Please reason step by step, and put your final answer within \\\\boxed{}.' }}\n    {%- endif %}\n    {{- \"\\n\\n# Tools\\n\\nYou may call one or more functions to assist with the user query.\\n\\nYou are provided with function signatures within <tools></tools> XML tags:\\n<tools>\" }}\n    {%- for tool in tools %}\n        {{- \"\\n\" }}\n        {{- tool | tojson }}\n    {%- endfor %}\n    {{- \"\\n</tools>\\n\\nFor each function call, return a json object",
+  "oracle_render_ok": true,
+  "oracle_attest": {
+    "prompt_source": "gguf-embedded-chat_template+jinja2",
+    "template_sha256": "c564d12c9977b8942423753b0c409a11f50142508ced170e9fe1c2f5b803cf70",
+    "template_len": 2513,
+    "jinja2": "3.1.6",
+    "prompt_sha256": "f55bb56f0468ff8f87a113fb5c9e793a957141d080563198841846655b8605e1",
+    "prompt_chars": 132,
+    "model_arch": "qwen2"
+  },
+  "engine_template": "ChatTemplate.cs (硬编码 DeepSeek 版式)",
+  "engine_prompt": "<｜begin▁of▁sentence｜>你是严谨的编程与数学助手。请直接给出完整可运行的答案。<｜User｜>写一个函数, 返回两数之和, 并给出一个调用示例。<｜Assistant｜>",
+  "oracle_prompt": "<|im_start|>system\n你是严谨的编程与数学助手。请直接给出完整可运行的答案。<|im_end|>\n<|im_start|>user\n写一个函数, 返回两数之和, 并给出一个调用示例。<|im_end|>\n<|im_start|>assistant\n",
+  "first_diff_char": 1,
+  "engine_head60": "<｜begin▁of▁sentence｜>你是严谨的编程与数学助手。请直接给出完整可运行的答案。<｜User｜>写一个函",
+  "oracle_head60": "<|im_start|>system\n你是严谨的编程与数学助手。请直接给出完整可运行的答案。<|im_end|>\n<|i",
+  "parity": "DIVERGENT",
+  "engine_tags_in_target_vocab": {
+    "bos": false,
+    "eos": false,
+    "user": false,
+    "assistant": false
+  },
+  "template_tags_in_target_vocab": [
+    [
+      "<|im_start|>",
+      true
+    ],
+    [
+      "<|im_end|>",
+      true
+    ]
+  ],
+  "verdict": "prompt-parity BROKEN: 引擎硬编码版式与目标模型自带模板结构性不同, 且 4/4 硬编码标签不在目标词表 ⇒ 引擎收到错误 prompt"
+}

@@ -1,0 +1,87 @@
+{
+  "purpose": "R405 预备探针: R1-Distill-Qwen-1.5B 能否承担【非数学专用】的自然语言逻辑验证(Accept/Reject)。隐藏用例 + 陷阱族 + 负控。",
+  "answer_key_hidden": "本文件是 ground truth, 不喂给模型; 只喂 claim 字段。",
+  "items": [
+    {
+      "id": "L1_affirm_consequent",
+      "family": "非形式谬误",
+      "claim": "Claim: If the deploy succeeds, the health check turns green. The health check is green. Therefore the deploy succeeded.\nVerdict (VALID or INVALID):",
+      "truth": "INVALID",
+      "expect_any": [
+        "invalid",
+        "affirm",
+        "consequent",
+        "cannot conclude",
+        "does not follow"
+      ]
+    },
+    {
+      "id": "L2_modus_tollens",
+      "family": "有效式(与L1形似, 是陷阱对照)",
+      "claim": "Claim: If the build passes, tests are green. Tests are not green. Therefore the build did not pass.\nVerdict (VALID or INVALID):",
+      "truth": "VALID",
+      "expect_any": [
+        "valid",
+        "modus tollens",
+        "follows",
+        "contrapositive"
+      ]
+    },
+    {
+      "id": "L3_circular",
+      "family": "循环论证",
+      "claim": "Claim: The log file is trustworthy because the log file itself states that it is trustworthy.\nVerdict (VALID or INVALID):",
+      "truth": "INVALID",
+      "expect_any": [
+        "invalid",
+        "circular",
+        "begs the question",
+        "no independent"
+      ]
+    },
+    {
+      "id": "L4_negative_control_valid",
+      "family": "负控(无缺陷, 平凡有效)",
+      "claim": "Claim: Every file in the directory is a .cs file. Program.cs is in the directory. Therefore Program.cs is a .cs file.\nVerdict (VALID or INVALID):",
+      "truth": "VALID",
+      "expect_any": [
+        "valid",
+        "follows",
+        "syllogism",
+        "deducible"
+      ]
+    },
+    {
+      "id": "L5_quantifier_scope",
+      "family": "量词辖域陷阱",
+      "claim": "Claim: Every reviewer approved at least one change. Therefore at least one change was approved by every reviewer.\nVerdict (VALID or INVALID):",
+      "truth": "INVALID",
+      "expect_any": [
+        "invalid",
+        "scope",
+        "quantifier",
+        "does not follow"
+      ]
+    },
+    {
+      "id": "L6_correlation_causation",
+      "family": "相关/因果混同(工程语料)",
+      "claim": "Claim: The benchmark score rose by 10% after our change. Therefore our change caused the rise.\nVerdict (VALID or INVALID):",
+      "truth": "INVALID",
+      "expect_any": [
+        "invalid",
+        "caus",
+        "correlat",
+        "confound",
+        "coincid"
+      ]
+    }
+  ],
+  "scoring": "verdict = 首行出现 VALID/INVALID 的第一个判定; 命中 truth 记 1 分; reason_hit = 回复小写包含 expect_any 任一项。",
+  "honest_bounds": [
+    "n=6 极小, 只能当方向性证据, 不能当能力分数;",
+    "用例为本仓自建, 非外部 benchmark;",
+    "单臂(仅 R1-Distill-1.5B), 无第二模型对照臂;",
+    "prefill 未批处理时很贵, 本探针只跑一次, 不重采样。"
+  ]
+}

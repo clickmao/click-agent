@@ -17,11 +17,10 @@ namespace agent.rover.cli;
 public static class EmbedCli
 {
     public const string UsageLine =
-        "  embed [--model gguf] [--backend cpu|vulkan] [--device I] [--repeat R] [--text T] [--compare] [--selftest]";
+        "  embed [--model gguf] [--backend cpu|vulkan] [--device I] [--repeat R] [--text T] [--dump-vec FILE] [--compare] [--selftest]";
 
-    /// <summary>每层 6 次矩阵乘 (q/k/v/attn_output/ffn_up/ffn_down), 4 层 ⇒ 一次嵌入 24 次派发。</summary>
+    /// <summary>每层 6 次矩阵乘 (q/k/v/attn_output/ffn_up/ffn_down)。</summary>
     const int MatMulPerLayer = 6;
-    const int Layers = 4;
 
     static readonly string[] DefaultTexts =
     {
@@ -35,7 +34,7 @@ public static class EmbedCli
         var model = Opt(a, "--model")
             ?? Environment.GetEnvironmentVariable("BGE_MODEL")
             ?? Environment.GetEnvironmentVariable("AGENTFRAMEWORK_BGE_MODEL")
-            ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".agentframework", "models", "bge-q8.gguf");
+            ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".agentframework", "models", "bge-base-zh-v1.5-q8.gguf");
         var backend = Opt(a, "--backend") ?? "cpu";
         var device = int.TryParse(Opt(a, "--device"), out var dv) ? dv : 0;
         var repeat = int.TryParse(Opt(a, "--repeat"), out var rp) && rp > 0 ? rp : 1;
@@ -69,8 +68,9 @@ public static class EmbedCli
         }
 
         var port = gpu is null ? (IMatMulBackend)CpuMatMulBackend.Instance : gpu;
-        o.WriteLine($"port{{name={port.Name} engine=BgeCpuEmbedder matmul_per_layer={MatMulPerLayer} layers={Layers}}}");
         using var emb = new BgeCpuEmbedder(model, port);
+        o.WriteLine($"arch{{model={Path.GetFileName(model)} layers={emb.Layers} heads={emb.Heads} dim={emb.Dimension} ffn={emb.FfnDim} max_tokens={emb.MaxTokens}}}");
+        o.WriteLine($"port{{name={port.Name} engine=BgeCpuEmbedder matmul_per_layer={MatMulPerLayer} layers={emb.Layers}}}");
 
         // 内存基线 (泄漏判据): 模型已加载 + 端口已打开之后的 RSS/managed
         o.WriteLine($"membase{{stage=before_passes rss_kb={RssKb()} managed_bytes={GC.GetTotalMemory(true)}}}");
@@ -102,9 +102,25 @@ public static class EmbedCli
         var msPerPass = sw.Elapsed.TotalMilliseconds / repeat;
         o.WriteLine($"timing{{backend={port.Name} texts={texts.Length} repeat={repeat} ms_per_pass_ms={Math.Round(msPerPass)} ms_per_embed_ms={Math.Round(msPerPass / texts.Length)}}}");
 
-        // 端口确实被使用 (防空心): 派发次数必须等于 层数×6×文本数×重复数
-        var expected = Layers * MatMulPerLayer * texts.Length * repeat;
-        var actual = gpu is null ? expected : gpu.Dispatches;
+        // R404: 端口输出落盘 (n,d 头 + 小端 float32) —— 跨实现对账 (vs Python/llama.cpp 缓存) 的原料。
+        // 与 eval/bge/bge_lib.py 的 cache_save 同格式, Python 侧可直接读。
+        var dumpPath = Opt(a, "--dump-vec");
+        if (dumpPath is not null && first is not null)
+        {
+            using var fs = new FileStream(dumpPath, FileMode.Create, FileAccess.Write);
+            using var bw = new BinaryWriter(fs);
+            bw.Write((long)first.Length);
+            bw.Write((long)first[0].Length);
+            for (var i = 0; i < first.Length; i++)
+                for (var d = 0; d < first[i].Length; d++) bw.Write(first[i][d]);
+            o.WriteLine($"dumpvec{{path={dumpPath} n={first.Length} dim={first[0].Length}}}");
+        }
+
+        // 端口确实被使用 (防空心): 派发次数必须等于 层数×6×文本数×重复数。
+        // R404: 层数取自**模型元数据** (emb.Layers), CPU 路也读真实派发计数 —— 原实现
+        // CPU 分支把 actual 直接写成 expected (自证), 且层数写死 4 ⇒ 12 层模型只算 4 层也"通过"。
+        var expected = emb.Layers * MatMulPerLayer * texts.Length * repeat;
+        var actual = gpu is null ? (int)emb.MatMulCalls : gpu.Dispatches;
         var portUsed = actual == expected;
         o.WriteLine($"portcheck{{backend={port.Name} dispatch_calls={actual} expected={expected} match={portUsed}}}");
         if (gpu is not null)

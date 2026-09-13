@@ -1,0 +1,37 @@
+# R406 · P0-1 oracle 决定性证据 (2026-09-14)
+
+独立实现: llama.cpp **b1-4df29be** (vendor 树 `/tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-cli`)
+模型: `/tmp/models/r1-distill-qwen-1.5b-q4km.gguf` (Q4_K - Medium, 1,117,320,800 B, sha256 见 registry)
+命令: `llama-cli -m <model> -st --jinja --verbose-prompt -p "What is 12*12? Answer with the number." -n 64 --temp 0 -s 0 --no-warmup -t 2` (stdin 送 `/exit`)
+日志: `/tmp/probe-r406/math_chat.log` (1,428 B)
+
+## 判据 (运行前预注册)
+若 llama.cpp **在同一 prompt + 同一模型自带模板**下能给出正确推理 ⇒ 我方乱码是**引擎缺陷**；
+若同样答不出 ⇒ 属**模型/量化边界 (OOD)**。
+
+## 读数
+```
+> What is 12*12? Answer with the number.
+[Start thinking]
+To calculate 12 multiplied by 12, I can use the standard multiplication method.
+First, I'll write down the numbers vertically:
+  12
+× 12
+Next, I'll multiply 12 by 2 (the units digit of the second number
+[ Prompt: 37.3 t/s | Generation: 17.1 t/s ]
+```
+（推理连贯，被 `-n 64` 截断在中途，未见最终 `144`——需更大 n 才能看到终点，但**模态正确性已成立**。）
+
+## 判定: **引擎缺陷**
+同一 prompt（`<｜begin▁of▁sentence｜><｜User｜>What is 12*12? Answer with the number.<｜Assistant｜>`，len=80，sha256=d1e94bf720adbab7…）下:
+- llama.cpp: 连贯推理 (上)
+- 本引擎: ` bur'heads therebyoor shall shall shall某 utilizingUponjoint subsequentlyotherou continuously` (gen_text, R406)
+
+⇒ 模型与任务对成熟实现是 in-distribution 的；模板正确性已由 jinja2 三套夹具 32/32 背书 ⇒ 嫌疑集中在**引擎前向**:
+qwen2 arch + GQA(12/2) + `attn_q/k/v.bias` + untied `output.weight` + Q4_K_M 路径。
+
+## 同轮附带读数
+- 会话模式无法关闭（`scripts/r406_oracle_cli_mode_probe.sh`）: `-no-cnv`、`--no-conversation`、`--no-conversation --no-jinja` 三组合**均** `repl_marker=1` ⇒ conv 强制开启；
+  `/exit` 经 stdin 兜底后日志 2.2–2.6 KB（此前无兜底时 4 MB 上限 / 1,397,341 行 `> ` 空转）。
+- 吞吐对比: llama.cpp 生成 **13.8–18.3 tok/s**（prompt 2.5–37.3 t/s）vs 本引擎 **0.257–0.458 tok/s**（差 37–70×；引擎那次采样受 oracle 抢 CPU 污染，仅作量级参考）。
+- trivial prompt `1, 2, 3, 4, 5,` 在 llama.cpp 会话模式下输出 `[Start thinking]\nI`（**不续 "6,"**）⇒ 该 prompt 本身对该模型是 OOD，不可用作引擎判据；**数学 prompt 才是有效判据**。

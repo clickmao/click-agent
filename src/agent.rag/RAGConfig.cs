@@ -20,6 +20,11 @@ public class RAGConfig
     public Func<string, float[]>? EmbeddingFunction { get; set; }
     public int EmbeddingDimension { get; set; } = 384;
     public bool EnableHybridSearch { get; set; } = true;
+
+    /// <summary>R404 (用户钦定): 检索融合配置 —— null = 关闭 (走旧 hybrid 加权路径, 既有单测不受影响);
+    /// 产品 DI 显式开启 = bge-base 语义路 + 词法路 + RRF(k0=10, w=1:1)。
+    /// 冻结集 (1299 语料/120 查询) 实测 r@10 0.6333 → 0.8500, 报告 docs/reports/bge/fusion-knob-grid-2026-09-14.md。</summary>
+    public FusionOptions? Fusion { get; set; }
     public List<string> StopWords { get; set; } = new() { "的", "了", "在", "是", "我", "有", "和", "就", "不", "人" };
 }
 
@@ -140,6 +145,11 @@ public class RAGRecall : IRAGRecall
     private readonly RAGConfig _config;
     private readonly Dictionary<string, RAGDocument> _documents = new();
     private readonly object _lock = new();
+    // R404: 融合召回 (bge-base 语义路 + 词法路 + RRF); null = 关闭 ⇒ 完全走旧路径
+    private readonly FusionRecall? _fusion;
+    // R404: 文档二元组记忆化 — 按 (Id, UpdatedAt) 校验, 内容变了自动失效 (不脏读);
+    // 无它则每次召回对全库重切二元组 (O(库大小) 字符操作)。
+    private readonly Dictionary<string, (DateTime Stamp, string[] Grams)> _bigramMemo = new(StringComparer.Ordinal);
     // v0.11.0 R109 (fix#41): 内容去重索引 (归一化哈希 → 既有文档 Id)
     private readonly object _dedupLock = new();
     private readonly Dictionary<string, string> _contentDedup = new(StringComparer.Ordinal);
@@ -185,9 +195,15 @@ public class RAGRecall : IRAGRecall
     {
         _logger = logger;
         _config = config ?? new RAGConfig();
+        _fusion = _config.Fusion is { Enabled: true }
+            ? new FusionRecall(_config.Fusion, new DenseRoute(), new LexicalRoute())
+            : null;
         // v0.11.0 R79: 构造时恢复上次落盘索引 (跨进程召回)
         LoadPersisted();
     }
+
+    /// <summary>R404: 融合路计数 (证据打点 — 每路真实被用次数/降级次数; null = 融合关闭)。</summary>
+    public FusionCounters? FusionCounters => _fusion?.Counters;
 
     /// <summary>v0.11.0 R79: 读侧恢复 — JSONL 每行一文档 (手写解析, 零反射)</summary>
     private void LoadPersisted()
@@ -423,8 +439,54 @@ public class RAGRecall : IRAGRecall
                     d.Keywords.Any(k => request.FilterKeywords!.Contains(k, StringComparer.OrdinalIgnoreCase)));
             }
             
+            // R404 (用户钦定): 融合路 —— 优化后的 bge 形态 (bge-base 语义路 + 词法路 + RRF)。
+            // 纯 RRF 打分: 不做内容命中下限补偿 / IDF 加成 (那是词袋档补丁, 冻结口径里不存在),
+            // 分数线性归一到 0..1 后再与调用方 MinScore 比较 (RRF 原始分数量纲 ≈ 0.18, 不归一会被阈值全砍)。
+            if (_fusion is not null)
+            {
+                var pool = new List<RetrievalCandidate>();
+                foreach (var d in candidates)
+                {
+                    if (d.Embedding is null && string.IsNullOrEmpty(d.Content)) continue;
+                    var cand = new RetrievalCandidate
+                    {
+                        Id = d.Id,
+                        Text = d.Content ?? string.Empty,
+                        Embedding = d.Embedding,
+                    };
+                    if (_bigramMemo.TryGetValue(d.Id, out var memo) && memo.Stamp == d.UpdatedAt)
+                    {
+                        cand.Bigrams = memo.Grams;
+                        _fusion.Counters.BigramMemoHits++;
+                    }
+                    else
+                    {
+                        _bigramMemo[d.Id] = (d.UpdatedAt, cand.Bigrams);
+                    }
+                    pool.Add(cand);
+                }
+
+                var ranked = _fusion.Rank(new QueryContext(request.Query, queryEmbedding), pool);
+                var max = _fusion.MaxScore();
+                foreach (var kv in ranked)
+                {
+                    var norm = max > 0 ? kv.Value / max : 0.0;
+                    if (request.MinScore.HasValue && norm < request.MinScore.Value) continue;
+                    if (!_documents.TryGetValue(kv.Key.Id, out var doc)) continue;
+                    if (!seen.Add(doc.Id)) continue;
+                    results.Add(new RecallResult
+                    {
+                        Document = doc,
+                        Score = norm,
+                        HighlightedContent = HighlightContent(doc.Content, queryKeywords),
+                        Rank = 0,
+                        MatchType = "rrf",
+                    });
+                }
+            }
+
             // 语义搜索
-            if (_config.EnableHybridSearch || request.TopK > 0)
+            if (_fusion is null && (_config.EnableHybridSearch || request.TopK > 0))
             {
                 foreach (var doc in candidates)
                 {
@@ -476,7 +538,7 @@ public class RAGRecall : IRAGRecall
             }
             
             // 纯关键词搜索（补充）
-            if (_config.EnableHybridSearch)
+            if (_fusion is null && _config.EnableHybridSearch)
             {
                 foreach (var keyword in queryKeywords)
                 {

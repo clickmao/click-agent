@@ -1,0 +1,37 @@
+{
+  "model": "/tmp/models/r1-distill-qwen-1.5b-q4km.gguf",
+  "arch": "qwen2",
+  "n_layer": 28,
+  "hidden": 1536,
+  "n_head": 12,
+  "n_head_kv": 2,
+  "gqa_group": 6,
+  "q_elems": 1536,
+  "kv_elems": 256,
+  "criteria": "per-layer distinct sha256 == NLayer; bit-exact vs independent GGUF read; dims bound to weight output dims",
+  "suffixes": {
+    "q": {
+      "suffix": "attn_q.bias",
+      "dim": 1536,
+      "distinct_sha256": 28,
+      "max_abs_diff_vs_layer0": 121.6875,
+      "raw_read": "GgufReader.TensorWindow (\u6D4B\u8BD5\u72EC\u7ACB\u8BFB\u53D6)"
+    },
+    "k": {
+      "suffix": "attn_k.bias",
+      "dim": 256,
+      "distinct_sha256": 28,
+      "max_abs_diff_vs_layer0": 407.09375,
+      "raw_read": "GgufReader.TensorWindow (\u6D4B\u8BD5\u72EC\u7ACB\u8BFB\u53D6)"
+    },
+    "v": {
+      "suffix": "attn_v.bias",
+      "dim": 256,
+      "distinct_sha256": 28,
+      "max_abs_diff_vs_layer0": 10.60376,
+      "raw_read": "GgufReader.TensorWindow (\u6D4B\u8BD5\u72EC\u7ACB\u8BFB\u53D6)"
+    }
+  },
+  "has_attn_output_bias": false,
+  "verdict": "PASS: per-layer bias bound to file bytes"
+}

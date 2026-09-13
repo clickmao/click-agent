@@ -63,9 +63,14 @@ public sealed unsafe class ForwardPass : IDisposable
     private readonly bool _dropPages;
     /// <summary>每个 token 后主动释放非常驻物化张量 (主动回收入口; 默认关, 以免热 norm 反复重解量化)</summary>
     private readonly bool _reclaimPerToken;
+    /// <summary>GEMV 线程数: 1 = 串行 (默认 ⇒ 行为与改造前逐位一致, 旧读数可作 A/B 基线); &gt;1 = 行分块并行</summary>
+    private readonly int _threads;
+    /// <summary>并行门槛: 行数低于此值时不值得起线程 (线程创建/同步开销 &gt; 计算量)</summary>
+    public const int ParallelMinRows = 64;
 
     private readonly float[] _x, _xn, _q, _k, _v, _attn, _proj, _ff, _gate, _up, _logits, _scores;
-    private readonly float[]? _qBias, _kBias, _vBias, _oBias;
+    /// <summary>逐层 attn bias (R407: 旧实现把 blk.0 的 bias 喂给全部层 ⇒ qwen2 全层算错; null = 该模型无此 bias)</summary>
+    private readonly float[][]? _qBias, _kBias, _vBias, _oBias;
 
     public ModelConfig Config => _c;
     public ResidencyLedger Ledger => _res.Ledger;
@@ -75,9 +80,11 @@ public sealed unsafe class ForwardPass : IDisposable
     public ForwardStats Stats { get; } = new();
 
     public ForwardPass(GgufReader r, ModelConfig c, int maxPositions, long budgetBytes, bool dropPages,
-        IReadOnlyCollection<string>? pins = null, bool reclaimPerToken = false)
+        IReadOnlyCollection<string>? pins = null, bool reclaimPerToken = false, int threads = 1)
     {
         _r = r; _c = c; _dropPages = dropPages; _reclaimPerToken = reclaimPerToken;
+        if (threads < 1) throw new ArgumentOutOfRangeException(nameof(threads), $"forward_threads_lt_1: {threads}");
+        _threads = threads;
 
         // 热集口径: pins == null ⇒ 默认钉住全部 norm (每层每 token 必用, 活性最高);
         // pins 显式给出 (含空集) ⇒ 用调用方口径: 空集 = 不预判热集, 全交给预算 + LRU,
@@ -96,15 +103,15 @@ public sealed unsafe class ForwardPass : IDisposable
         }
         else pinned = pins;
 
-        _qBias = MaybeLoadBias("attn_q.bias", c.QElems);
-        _kBias = MaybeLoadBias("attn_k.bias", c.KvElems);
-        _vBias = MaybeLoadBias("attn_v.bias", c.KvElems);
-        _oBias = MaybeLoadBias("attn_output.bias", c.Hidden);
+        _qBias = MaybeLoadBiasPerLayer("attn_q.bias", c.QElems);
+        _kBias = MaybeLoadBiasPerLayer("attn_k.bias", c.KvElems);
+        _vBias = MaybeLoadBiasPerLayer("attn_v.bias", c.KvElems);
+        _oBias = MaybeLoadBiasPerLayer("attn_output.bias", c.Hidden);
 
         if (c.HeadDim != c.ValueDim)
             throw new NotSupportedException($"v_dim_differs_from_k_dim_unsupported: k={c.HeadDim} v={c.ValueDim}");
         _res = new TensorResidency(r, budgetBytes, pinned);
-        _rope = new RopeTable(c.RopeDim, c.RopeBase, c.RopeScaling, c.RopeFactor, maxPositions);
+        _rope = new RopeTable(c.RopeDim, c.RopeBase, c.RopeScaling, c.RopeFactor, maxPositions, c.RopePairing);
         // KV cache 容量按需增长: 初值取 min(ctx, 8), 不预分配整个上下文
         _cache = new KvCache(c.NLayer, c.NHeadKv, c.HeadDim, c.ValueDim, Math.Min(maxPositions, 8));
 
@@ -125,28 +132,67 @@ public sealed unsafe class ForwardPass : IDisposable
         Stats.CachedKvBytes = _cache.ResidentBytes;
     }
 
-    /// <summary>可选 bias 张量 (本模型无): 有则物化成托管数组; 只看第 0 层, 但要求所有层都存在 (避免层间不一致)。</summary>
-    private float[]? MaybeLoadBias(string suffix, int len)
+    /// <summary>
+    /// 逐层可选 bias: 第 0 层有 ⇒ 全部层都必须有且形状一致 (all-or-none), 每层各物化一份;
+    /// 第 0 层无 ⇒ 任何层有都抛 (层间不一致会静默改变数值语义)。无 ⇒ null (调用方走无 bias 路径)。
+    /// </summary>
+    private float[][]? MaybeLoadBiasPerLayer(string suffix, int len)
     {
-        var t = _r.Find("blk.0." + suffix);
-        if (t is null) return null;
-        if (t.Dims.Length != 1 || t.Dims[0] != len)
-            throw new InvalidDataException($"cfg_shape_mismatch: blk.0.{suffix} dims=[{string.Join(",", t.Dims)}] expect=[{len}]");
+        if (_r.Find("blk.0." + suffix) is null)
+        {
+            for (int k = 1; k < _c.NLayer; k++)
+                if (_r.Find($"blk.{k}.{suffix}") is not null)
+                    throw new InvalidDataException($"cfg_partial_bias: blk.{k}.{suffix} 存在但 blk.0.{suffix} 缺失");
+            return null;
+        }
+        var per = new float[_c.NLayer][];
         for (int l = 0; l < _c.NLayer; l++)
-            if (_r.Find($"blk.{l}.{suffix}") is null)
-                throw new InvalidDataException($"cfg_missing_tensor: blk.{l}.{suffix}");
-        using var tmp = new TensorResidency(_r, 0, new[] { "blk.0." + suffix });
-        return tmp.AcquireF32("blk.0." + suffix).Span.ToArray();
+        {
+            string n = $"blk.{l}.{suffix}";
+            var t = _r.Find(n) ?? throw new InvalidDataException($"cfg_missing_tensor: {n} (blk.0 存在 ⇒ 全层必须存在)");
+            if (t.Dims.Length != 1 || t.Dims[0] != len)
+                throw new InvalidDataException($"cfg_shape_mismatch: {n} dims=[{string.Join(",", t.Dims)}] expect=[{len}]");
+            using var tmp = new TensorResidency(_r, 0, new[] { n });
+            per[l] = tmp.AcquireF32(n).Span.ToArray();
+        }
+        return per;
     }
 
-    /// <summary>量化权重 × 向量 (零拷贝 mmap 窗口 + 块内融合反量化), 可选加 bias。</summary>
-    private void Gemv(string name, int rows, int cols, ReadOnlySpan<float> x, Span<float> y, float[]? bias)
+    /// <summary>对账/诊断入口: 第 l 层第 which∈{q,k,v,o} 个 bias (无此 bias 则 null)。
+    /// 断言可借此绑定「逐层读取」这一行为本身, 而不是相信实现。</summary>
+    public ReadOnlyMemory<float>? AttnBias(int layer, string which)
+    {
+        var arr = which switch
+        {
+            "q" => _qBias,
+            "k" => _kBias,
+            "v" => _vBias,
+            "o" => _oBias,
+            _ => throw new ArgumentOutOfRangeException(nameof(which), $"bias_which_unknown: {which}"),
+        };
+        if (arr is null) return null;
+        if (layer < 0 || layer >= arr.Length)
+            throw new ArgumentOutOfRangeException(nameof(layer), $"bias_layer_out_of_range: {layer} nmax={arr.Length}");
+        return arr[layer];
+    }
+
+    /// <summary>量化权重矩阵 × 向量 (零拷贝 mmap 窗口 + 块内融合反量化), 可选加 bias。
+    /// 线程化只在此处收口: 全前向的 GEMV 都经过它 ⇒ 不存在"某些层并行、某些层串行"的混合口径。</summary>
+    private void Gemv(string name, int rows, int cols, float[] x, float[] y, float[]? bias)
     {
         var t = _r.Require(name);
         if (t.Dims.Length != 2 || t.Dims[0] != cols || t.Dims[1] != rows)
             throw new InvalidDataException($"gemv_shape_mismatch: {name} dims=[{string.Join(",", t.Dims)}] expect=[{cols},{rows}]");
         var w = _res.StreamWindow(name);
-        CpuKernels.Gemv(t.Type, w, rows, cols, x, y);
+        if (_threads > 1 && rows >= ParallelMinRows)
+        {
+            unsafe
+            {
+                fixed (byte* wp = &MemoryMarshal.GetReference(w))
+                    CpuKernels.GemvParallelPtr(t.Type, wp, rows, cols, x, y, _threads);
+            }
+        }
+        else CpuKernels.Gemv(t.Type, w, rows, cols, x, y);
         if (bias is not null)
             for (int i = 0; i < rows; i++) y[i] += bias[i];
         DropPages(t);
@@ -208,9 +254,9 @@ public sealed unsafe class ForwardPass : IDisposable
                 // ---- 注意力 ----
                 var an = NormWeight(p + "attn_norm.weight");
                 CpuKernels.RmsNorm(_x, an, _c.RmsEps, _xn);
-                Gemv(p + "attn_q.weight", _c.QElems, _c.Hidden, _xn, _q, _qBias);
-                Gemv(p + "attn_k.weight", _c.KvElems, _c.Hidden, _xn, _k, _kBias);
-                Gemv(p + "attn_v.weight", _c.KvElems, _c.Hidden, _xn, _v, _vBias);
+                Gemv(p + "attn_q.weight", _c.QElems, _c.Hidden, _xn, _q, _qBias?[l]);
+                Gemv(p + "attn_k.weight", _c.KvElems, _c.Hidden, _xn, _k, _kBias?[l]);
+                Gemv(p + "attn_v.weight", _c.KvElems, _c.Hidden, _xn, _v, _vBias?[l]);
                 _rope.Apply(_q, _c.NHead, _c.HeadDim, pos);
                 _rope.Apply(_k, _c.NHeadKv, _c.HeadDim, pos);
                 _cache.Append(l, _k, _v);
@@ -224,7 +270,7 @@ public sealed unsafe class ForwardPass : IDisposable
                         _cache.Keys(l, kvh, n), _cache.Values(l, kvh, n),
                         n, _c.HeadDim, _c.AttnScale, _scores, _attn.AsSpan(h * _c.HeadDim, _c.HeadDim));
                 }
-                Gemv(p + "attn_output.weight", _c.Hidden, _c.QElems, _attn, _proj, _oBias);
+                Gemv(p + "attn_output.weight", _c.Hidden, _c.QElems, _attn, _proj, _oBias?[l]);
                 CpuKernels.AddInPlace(_x, _proj);
 
                 // ---- SwiGLU FFN ----
@@ -234,7 +280,7 @@ public sealed unsafe class ForwardPass : IDisposable
                 Gemv(p + "ffn_gate.weight", _c.Ffn, _c.Hidden, _xn, _gate, null);
                 Gemv(p + "ffn_up.weight", _c.Ffn, _c.Hidden, _xn, _up, null);
                 CpuKernels.SwiGlu(_gate, _up, _ff);
-                Gemv(p + "ffn_down.weight", _c.Hidden, _c.Ffn, _ff, _xn.AsSpan(0, _c.Hidden), null);
+                Gemv(p + "ffn_down.weight", _c.Hidden, _c.Ffn, _ff, _xn, null);
                 CpuKernels.AddInPlace(_x, _xn.AsSpan(0, _c.Hidden));
                 sw.Stop();
 

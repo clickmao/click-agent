@@ -20,6 +20,8 @@ public static class TableSnapshot
             return false;
         }
 
+        // 快照路径是 DeepSeek 专用对账资产 (eval/rover/tokref/tables): 编译期表即其正解。
+        // 通用/第三方模型走 CLI 的 GGUF 路径 (GenerateCli.ResolveSplitSpecial ⇒ TryDeriveFromTypes)。
         tokenizer = new BpeTokenizer(tokens, types, merges);
         return true;
     }

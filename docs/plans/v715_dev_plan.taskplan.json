@@ -1,128 +1,158 @@
 {
-  "PlanId": "devplan715",
-  "SourceText": "v7.15 开发计划(已全部落地): TaskPlan 体系归拢 + 执行器并发化 + 节点重试 + 隔离任务 + 模型队列与余额查询 + YAML 分层配置体系 + Skill 调度模块 + 日志四通道与思考流协议 + 上下文梯度压缩与防漂移",
-  "CreatedAt": "2026-09-06",
-  "Nodes": [
+ "PlanId": "devplan715",
+ "SourceText": "v7.15 开发计划(已全部落地): TaskPlan 体系归拢 + 执行器并发化 + 节点重试 + 隔离任务 + 模型队列与余额查询 + YAML 分层配置体系 + Skill 调度模块 + 日志四通道与思考流协议 + 上下文梯度压缩与防漂移",
+ "CreatedAt": "2026-09-06",
+ "Nodes": [
+  {
+   "Id": "dev-consolidate",
+   "Text": "TaskPlan 体系归拢: 裁定 agent.planner 遗留去留、删双体系、V2 主链接入计划执行 (影子模式→主路)",
+   "Intent": "code_generation",
+   "Level": 0,
+   "ParallelGroup": 0,
+   "DocRef": "docs/archive/plan_taskplan_consolidation.md",
+   "Parameters": [],
+   "Confidence": 1.0
+  },
+  {
+   "Id": "dev-parallel",
+   "Text": "执行器同层并发化: TaskPlanExecutor 按 Level/ParallelGroup 并发执行同层无关节点",
+   "Intent": "code_generation",
+   "Level": 1,
+   "ParallelGroup": 1,
+   "DocRef": "docs/archive/plan_executor_parallel.md",
+   "Parameters": [],
+   "Confidence": 1.0
+  },
+  {
+   "Id": "dev-retry",
+   "Text": "节点级重试策略: MaxRetries+指数退避, 瞬态/永久失败分类, 重试审计进 TaskPlanRun",
+   "Intent": "code_generation",
+   "Level": 1,
+   "ParallelGroup": 1,
+   "DocRef": "docs/archive/plan_node_retry.md",
+   "Parameters": [],
+   "Confidence": 1.0
+  },
+  {
+   "Id": "dev-modelqueue",
+   "Text": "模型队列模块: 本地 JSON 配置主次模型+手动/自动切换+计价路由+/balance 余额查询指令",
+   "Intent": "code_generation",
+   "Level": 0,
+   "ParallelGroup": 0,
+   "DocRef": "docs/archive/plan_model_queue.md",
+   "Parameters": [
     {
-      "Id": "dev-consolidate",
-      "Text": "TaskPlan 体系归拢: 裁定 agent.planner 遗留去留、删双体系、V2 主链接入计划执行 (影子模式→主路)",
-      "Intent": "code_generation",
-      "Level": 0,
-      "ParallelGroup": 0,
-      "DocRef": "docs/archive/plan_taskplan_consolidation.md",
-      "Parameters": [],
-      "Confidence": 1.0
-    },
-    {
-      "Id": "dev-parallel",
-      "Text": "执行器同层并发化: TaskPlanExecutor 按 Level/ParallelGroup 并发执行同层无关节点",
-      "Intent": "code_generation",
-      "Level": 1,
-      "ParallelGroup": 1,
-      "DocRef": "docs/archive/plan_executor_parallel.md",
-      "Parameters": [],
-      "Confidence": 1.0
-    },
-    {
-      "Id": "dev-retry",
-      "Text": "节点级重试策略: MaxRetries+指数退避, 瞬态/永久失败分类, 重试审计进 TaskPlanRun",
-      "Intent": "code_generation",
-      "Level": 1,
-      "ParallelGroup": 1,
-      "DocRef": "docs/archive/plan_node_retry.md",
-      "Parameters": [],
-      "Confidence": 1.0
-    },
-    {
-      "Id": "dev-modelqueue",
-      "Text": "模型队列模块: 本地 JSON 配置主次模型+手动/自动切换+计价路由+/balance 余额查询指令",
-      "Intent": "code_generation",
-      "Level": 0,
-      "ParallelGroup": 0,
-      "DocRef": "docs/archive/plan_model_queue.md",
-      "Parameters": [
-        {
-          "Name": "module_dir",
-          "DisplayName": "模块目录",
-          "Value": "src/agent/modelqueue",
-          "IsRequired": true
-        }
-      ],
-      "Confidence": 1.0
-    },
-    {
-      "Id": "dev-isolated",
-      "Text": "隔离任务: 无关新提问规则判定→隔离子 agent 执行后销毁 (6 项隔离边界)",
-      "Intent": "code_generation",
-      "Level": 0,
-      "ParallelGroup": 0,
-      "DocRef": "docs/archive/plan_isolated_task.md",
-      "Parameters": [],
-      "Confidence": 1.0
-    },
-    {
-      "Id": "dev-yaml-config",
-      "Text": "全模块 YAML 分层配置体系: base/env/modules/runtime 四级覆盖 + 同名 module 覆盖 base 契约 + 热更新 + 现有硬编码收编",
-      "Intent": "code_generation",
-      "Level": 0,
-      "ParallelGroup": 0,
-      "DocRef": "docs/archive/plan_yaml_config.md",
-      "Parameters": [],
-      "Confidence": 1.0
-    },
-    {
-      "Id": "dev-skill",
-      "Text": "Skill 调度模块: 领域能力封装/注册/三级触发匹配/生命周期/上下文隔离沙箱/口径强约束, 参数全走 YAML 分层配置",
-      "Intent": "code_generation",
-      "Level": 1,
-      "ParallelGroup": 2,
-      "DocRef": "docs/archive/plan_skill_dispatch.md",
-      "Parameters": [],
-      "Confidence": 1.0
-    },
-    {
-      "Id": "dev-context-compression",
-      "Text": "上下文梯度压缩与防漂移子系统: L0-L3 分层/锚点 P0-P3/主题域聚类/三重漂移校验/弹性校正/跨进程持久化复用",
-      "Intent": "code_generation",
-      "Level": 1,
-      "ParallelGroup": 3,
-      "DocRef": "docs/archive/plan_context_compression.md",
-      "Parameters": [],
-      "Confidence": 1.0
-    },
-    {
-      "Id": "9",
-      "Title": "日志细分通道与前端思考流协议",
-      "Level": 1,
-      "ParallelGroup": "B",
-      "Status": "Pending",
-      "DocRef": "docs/archive/plan_log_channels.md",
-      "DependsOn": [
-        "8"
-      ],
-      "Summary": "LogFlags 四位 {console/chatbox思考/chatbox输出/file} 独立路由; MemoryLogBuffer CLI 日志缓存+/log dump 存档; thinking_page_switch/thinking_end 前端 JSON 指令; LogEntry 底层格式"
-    },
-    {
-      "Id": "10",
-      "Title": "模型目录与意图选模 (并入模型队列模块)",
-      "Level": 1,
-      "ParallelGroup": "B",
-      "Status": "Pending",
-      "DocRef": "docs/archive/plan_model_queue.md",
-      "DependsOn": [
-        "8"
-      ],
-      "Summary": "C.6: ReasoningScore/CodingScore 1-10 标准值; config/base/models.yaml 目录 (知名模型全参数, key 只存 env 名); 意图×token预估×费用 综合选模; 余额方案调研后定 scheme; /model verify 真实 http 校验 (假 key 期望 401)"
-    },
-    {
-      "Id": "dev-rover-gen",
-      "Text": "rover 生成链: GGUF 词表→字节级 BPE 分词器 + chat template + 采样 + 解码环 ⇒ 本机引擎可当解法后端 (探针 solver=rover)",
-      "Intent": "code_generation",
-      "Level": 1,
-      "ParallelGroup": 1,
-      "DocRef": "docs/plans/v0.26.0-r400-rover-generation-chain.md",
-      "Parameters": [],
-      "Confidence": 1.0
+     "Name": "module_dir",
+     "DisplayName": "模块目录",
+     "Value": "src/agent/modelqueue",
+     "IsRequired": true
     }
-  ]
+   ],
+   "Confidence": 1.0
+  },
+  {
+   "Id": "dev-isolated",
+   "Text": "隔离任务: 无关新提问规则判定→隔离子 agent 执行后销毁 (6 项隔离边界)",
+   "Intent": "code_generation",
+   "Level": 0,
+   "ParallelGroup": 0,
+   "DocRef": "docs/archive/plan_isolated_task.md",
+   "Parameters": [],
+   "Confidence": 1.0
+  },
+  {
+   "Id": "dev-yaml-config",
+   "Text": "全模块 YAML 分层配置体系: base/env/modules/runtime 四级覆盖 + 同名 module 覆盖 base 契约 + 热更新 + 现有硬编码收编",
+   "Intent": "code_generation",
+   "Level": 0,
+   "ParallelGroup": 0,
+   "DocRef": "docs/archive/plan_yaml_config.md",
+   "Parameters": [],
+   "Confidence": 1.0
+  },
+  {
+   "Id": "dev-skill",
+   "Text": "Skill 调度模块: 领域能力封装/注册/三级触发匹配/生命周期/上下文隔离沙箱/口径强约束, 参数全走 YAML 分层配置",
+   "Intent": "code_generation",
+   "Level": 1,
+   "ParallelGroup": 2,
+   "DocRef": "docs/archive/plan_skill_dispatch.md",
+   "Parameters": [],
+   "Confidence": 1.0
+  },
+  {
+   "Id": "dev-context-compression",
+   "Text": "上下文梯度压缩与防漂移子系统: L0-L3 分层/锚点 P0-P3/主题域聚类/三重漂移校验/弹性校正/跨进程持久化复用",
+   "Intent": "code_generation",
+   "Level": 1,
+   "ParallelGroup": 3,
+   "DocRef": "docs/archive/plan_context_compression.md",
+   "Parameters": [],
+   "Confidence": 1.0
+  },
+  {
+   "Id": "9",
+   "Title": "日志细分通道与前端思考流协议",
+   "Level": 1,
+   "ParallelGroup": "B",
+   "Status": "Pending",
+   "DocRef": "docs/archive/plan_log_channels.md",
+   "DependsOn": [
+    "8"
+   ],
+   "Summary": "LogFlags 四位 {console/chatbox思考/chatbox输出/file} 独立路由; MemoryLogBuffer CLI 日志缓存+/log dump 存档; thinking_page_switch/thinking_end 前端 JSON 指令; LogEntry 底层格式"
+  },
+  {
+   "Id": "10",
+   "Title": "模型目录与意图选模 (并入模型队列模块)",
+   "Level": 1,
+   "ParallelGroup": "B",
+   "Status": "Pending",
+   "DocRef": "docs/archive/plan_model_queue.md",
+   "DependsOn": [
+    "8"
+   ],
+   "Summary": "C.6: ReasoningScore/CodingScore 1-10 标准值; config/base/models.yaml 目录 (知名模型全参数, key 只存 env 名); 意图×token预估×费用 综合选模; 余额方案调研后定 scheme; /model verify 真实 http 校验 (假 key 期望 401)"
+  },
+  {
+   "Id": "dev-rover-gen",
+   "Text": "rover 生成链: GGUF 词表→字节级 BPE 分词器 + chat template + 采样 + 解码环 ⇒ 本机引擎可当解法后端 (探针 solver=rover)",
+   "Intent": "code_generation",
+   "Level": 1,
+   "ParallelGroup": 1,
+   "DocRef": "docs/plans/v0.26.0-r400-rover-generation-chain.md",
+   "Parameters": [],
+   "Confidence": 1.0
+  },
+  {
+   "Id": "dev-r1-enhance",
+   "Text": "本机增强 R1-Distill-1.5B (R405): P0 修链 (qwen2 对账 + chat template 全量 + 官方协议) / P1 提速 (权重常驻 + KV 复用, 目标 ≥2 tok/s; 现 0.458, 每 token 读 3.92× 模型体积) / P2 不改权重能力增强 (抽取/投票/可验证闭环/弃权校准) / P3 权重级本机不做 (64 h/epoch, 判据需 n≈897)",
+   "Intent": "code_generation",
+   "Level": 1,
+   "ParallelGroup": 1,
+   "DocRef": "docs/plans/v0.27.0-r405-r1-local-enhancement.md",
+   "Parameters": [],
+   "Confidence": 1.0
+  },
+  {
+   "Id": "dev-jinja-chat-template",
+   "Text": "模板驱动 chat template (R406 / R403 续作): 从 GGUF 读 tokenizer.chat_template 原文 + Jinja 子集解释器, 与 jinja2 3.1.6 三套夹具 32 例逐字节对齐; 生成路径改用模型自带模板, 无模板显式报错 (不静默回退)",
+   "Intent": "code_generation",
+   "Level": 1,
+   "ParallelGroup": 1,
+   "DocRef": "docs/plans/v0.28.0-r406-jinja-template-and-r1-chain.md",
+   "Parameters": [],
+   "Confidence": 1.0
+  },
+  {
+   "Id": "dev-qwen2-forward-parity",
+   "Text": "qwen2 前向对账 (R407): 定位并修复「全层共用 blk.0 attn bias」缺陷 (qwen2 各层 bias 互异, 与 blk.0 的 max|Δ| q=121.7/k=407.1/v=10.6), 加逐层 AttnBias 端口 + 反向负控回归测试; 新建独立 numpy oracle (第三方 gguf-py 反量化) 与逐位 logits 对账脚本",
+   "Intent": "code_generation",
+   "Level": 1,
+   "ParallelGroup": 1,
+   "DocRef": "docs/plans/v0.29.0-r407-qwen2-attn-bias-and-forward-parity.md",
+   "Parameters": [],
+   "Confidence": 1.0
+  }
+ ]
 }

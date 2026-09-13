@@ -45,6 +45,9 @@ BASE_MODEL_CANDIDATES = (
 RRF_FLOOR = float(os.environ.get("BGE_AUTO_RRF_FLOOR", "0.83"))  # 2pt 容差 (基线 0.8500); 跌破即真回归
 GATE_KEYS = ("G1", "G2", "G3", "G4", "G5")
 G3_CONSTS = {"MAC_BUDGET": 0.05, "LAT_BUDGET": 0.15, "MEM_BUDGET": 0.15}
+# R404: G1 必须是"配对检验 ∧ 净增条数"双判据 —— 原文 2.5pt(=3 条) 落"数学上不可能显著"区
+# (n=120 时净增 Δ 条的最小 McNemar 双侧 p = 2^(1−Δ), Δ<6 不可能 p<0.05) ⇒ 会放行纯噪声。
+G1_CONSTS = {"G1_MIN_GAIN_QUERIES": 6, "G1_ALPHA": 0.05}
 ARTIFACT_MAX_AGE_S = 120
 
 alerts: list = []
@@ -114,7 +117,18 @@ def scan_gates_source(src, label):
             out.append("GATE-SEMANTICS %s:%d  G3 未引用子判据常量 %s (三子判据缺一不可)"
                        % (label, g3[1], missing))
 
-    for name, expect in G3_CONSTS.items():
+    g1 = gates.get("G1")
+    if g1 is not None:
+        used1 = _names(g1[0])
+        calls = {n.func.id for n in ast.walk(g1[0])
+                 if isinstance(n, ast.Call) and isinstance(n.func, ast.Name)}
+        miss1 = sorted(set(G1_CONSTS) - used1)
+        if miss1 or "mcnemar_exact" not in calls:
+            out.append("GATE-NOISE %s:%d  G1 非配对判据 (缺常量 %s / 配对检验调用=%s)"
+                       " —— 净增条数与显著性缺一, 会把噪声当提升放行"
+                       % (label, g1[1], miss1, "mcnemar_exact" in calls))
+
+    for name, expect in {**G3_CONSTS, **G1_CONSTS}.items():
         kind, val = consts.get(name, ("missing", None))
         if kind == "missing":
             out.append("GATE-DRIFT %s 缺常量 %s (应 = %.2f)" % (label, name, expect))
@@ -276,8 +290,10 @@ def selftest():
     LBL = "synthetic.py"
 
     # ① 空心闸门: literal True 必须命中; 真表达式必须放行
+    _g1_ok = 'g["G1"] = gd["G1_detail"]["net"] >= G1_MIN_GAIN_QUERIES and mcnemar_exact(_b, _c) < G1_ALPHA\n'
     bad = 'g = {}\nMAC_BUDGET = 0.05\nLAT_BUDGET = 0.15\nMEM_BUDGET = 0.15\n' \
-          'g["G1"] = a\ng["G2"] = b\ng["G3"] = gd["mac"] <= MAC_BUDGET and gd["lat"] <= LAT_BUDGET and gd["mem"] <= MEM_BUDGET\n' \
+          'G1_MIN_GAIN_QUERIES = 6\nG1_ALPHA = 0.05\n' + _g1_ok + \
+          'g["G2"] = b\ng["G3"] = gd["mac"] <= MAC_BUDGET and gd["lat"] <= LAT_BUDGET and gd["mem"] <= MEM_BUDGET\n' \
           'g["G4"] = c\ng["G5"] = True\n'
     good = bad.replace('g["G5"] = True', 'g["G5"] = all(v is True for v in gd["G5_detail"].values())')
     a_bad = scan_gates_source(bad, LBL)
@@ -311,6 +327,13 @@ def selftest():
     # ⑤ 指标地板
     assert (0.82 < RRF_FLOOR) and not (0.84 < RRF_FLOOR), ("负控⑤: 地板判定错", RRF_FLOOR)
     print("OK ⑤ 指标地板 (0.82 触发 / 0.84 放行, floor=%.2f)" % RRF_FLOOR)
+
+    # ⑥ G1 噪声阈值: 旧式 "r@10 提升 ≥2.5pt" 必须被判 GATE-NOISE (R404 修的真缺陷)
+    noise = good.replace(_g1_ok, 'g["G1"] = best["r@10"] - base_metrics["r@10"] >= 0.025\n')
+    a_noise = scan_gates_source(noise, LBL)
+    assert any(x.startswith("GATE-NOISE") for x in a_noise), ("负控⑥: G1 噪声阈值未报", a_noise)
+    assert not scan_gates_source(good, LBL), ("负控⑥: 合规 G1 被误报", scan_gates_source(good, LBL))
+    print("OK ⑥ G1 配对判据 AST 防漂移 (2.5pt 噪声阈值报警 / 配对判据放行)")
 
     print("OK: 静默巡检器负控 全部通过 (非空心)")
 

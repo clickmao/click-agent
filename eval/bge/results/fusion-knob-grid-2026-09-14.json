@@ -1,0 +1,50 @@
+{
+  "kind": "fusion_knob_grid",
+  "ts": "2026-09-14",
+  "question": "词法融合是否还需继续做测试实验?(用户逐字)",
+  "preregistered_rule": {
+    "metric": "r@10 (1299 语料 / 120 查询, 1 条查询 = 0.8333pt)",
+    "significance_floor": "净增 Δ 条时最小 McNemar 双侧 p = 2^(1-Δ) ⇒ Δ=2 → p≥0.500; Δ=4 → p≥0.125; Δ=6 → p≥0.0312",
+    "verdict_rule": "若最好变体相对冻结版净增 <6 条 ⇒ 可判定空间为零(数学上不可能显著) ⇒ 停止调参实验",
+    "frozen_reference": {"config": "lex+base RRF k0=10 w=1:1", "hits": 102, "r@10": 0.85, "r@1": 0.5333}
+  },
+  "oracle_bounds": {
+    "two_route_union_at_10": {"hits": 104, "r@10": 0.8667, "routes": ["lexical", "dense-base"]},
+    "three_route_union_at_10": {"hits": 104, "r@10": 0.8667, "routes": ["lexical", "dense-base", "dense-small"], "note": "加 dense-small 零新增覆盖 ⇒ 该家族第三路无互补性"}
+  },
+  "variants": [
+    {"tag": "lex+base k0=1 w=1:1", "r@1": 0.5083, "r@10": 0.8500, "hits": 102},
+    {"tag": "lex+base k0=1 w=2:1", "r@1": 0.4667, "r@10": 0.8417, "hits": 101},
+    {"tag": "lex+base k0=1 w=1:2", "r@1": 0.4667, "r@10": 0.8583, "hits": 103},
+    {"tag": "lex+base k0=5 w=1:1", "r@1": 0.5250, "r@10": 0.8500, "hits": 102},
+    {"tag": "lex+base k0=5 w=2:1", "r@1": 0.4500, "r@10": 0.8083, "hits": 97},
+    {"tag": "lex+base k0=5 w=1:2", "r@1": 0.4667, "r@10": 0.8417, "hits": 101},
+    {"tag": "lex+base k0=10 w=1:1 (冻结版)", "r@1": 0.5333, "r@10": 0.8500, "hits": 102},
+    {"tag": "lex+base k0=10 w=2:1", "r@1": 0.4333, "r@10": 0.7833, "hits": 94},
+    {"tag": "lex+base k0=10 w=1:2", "r@1": 0.4667, "r@10": 0.8333, "hits": 100},
+    {"tag": "lex+base k0=20 w=1:1", "r@1": 0.4500, "r@10": 0.8333, "hits": 100},
+    {"tag": "lex+base k0=20 w=2:1", "r@1": 0.4333, "r@10": 0.7833, "hits": 94},
+    {"tag": "lex+base k0=20 w=1:2", "r@1": 0.4417, "r@10": 0.8167, "hits": 98},
+    {"tag": "lex+base k0=60 w=1:1", "r@1": 0.4417, "r@10": 0.8000, "hits": 96},
+    {"tag": "lex+base k0=60 w=2:1", "r@1": 0.4000, "r@10": 0.7917, "hits": 95},
+    {"tag": "lex+base k0=60 w=1:2", "r@1": 0.3917, "r@10": 0.7833, "hits": 94},
+    {"tag": "lex+base+small k0=10 w=1:1:1", "r@1": 0.5417, "r@10": 0.8250, "hits": 99},
+    {"tag": "lex+base+small k0=10 w=1:1:0.5", "r@1": 0.5167, "r@10": 0.8583, "hits": 103},
+    {"tag": "lex+base+small k0=10 w=1:2:1", "r@1": 0.4917, "r@10": 0.8583, "hits": 103},
+    {"tag": "lex+base+small k0=60 w=1:1:1", "r@1": 0.4583, "r@10": 0.8250, "hits": 99},
+    {"tag": "lex+base+small k0=60 w=1:1:0.5", "r@1": 0.4417, "r@10": 0.8167, "hits": 98},
+    {"tag": "lex+base+small k0=60 w=1:2:1", "r@1": 0.4417, "r@10": 0.8167, "hits": 98}
+  ],
+  "result": {
+    "n_variants": 21,
+    "best": {"tag": "lex+base+small k0=10 w=1:1:0.5", "hits": 103, "r@10": 0.8583, "r@1": 0.5167},
+    "best_delta_vs_frozen": "+1 条",
+    "distance_to_oracle_bound": "1 条",
+    "r_at_1_impact": "任何 +1 条 的变体都用 r@1 掉 0.0166–0.0666(2–8 条) 换来"
+  },
+  "conclusion": "词法融合**不必**再做调参实验: 21 个变体最好只比冻结版多 1 条(103 vs 102), 远低于显著性下限 6 条 ⇒ 可判定空间为零; 加 dense-small 第三路 union@10 零新增覆盖; 距两路 oracle 上界只剩 1 条。冻结版 k0=10 w=1:1 即为该组合的最优点(且 r@1 最高 0.5333)。",
+  "what_would_change_the_answer": [
+    "换**不同家族**的第三路(非 bge-small/bge-base 同族)且能吃到剩余 16 条未命中中的 ≥6 条 —— 必须先扩评测集到 n≥800 才可验收",
+    "评测集从 n=120 扩到 n≥800(真实标注), 使 ≤3.34pt 的增益进入可判定区"
+  ]
+}

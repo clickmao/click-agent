@@ -19,7 +19,30 @@ public sealed class BgeCpuEmbedder : agent.contextgradient.ITextEmbedder, IDispo
     private Dictionary<string, float[]>? _weights;
     private bool _initialized;
     private int _dim = 512;
+    private int _layers = 4;
+    private int _heads = 8;
+    private int _ffn = 2048;
     private int _maxTokens = 510; // +CLS+SEP = 512
+    private long _matMulCalls;
+
+    /// <summary>R404: 真实矩阵乘派发次数 (端口确实被使用 —— 对账防空心)。
+    /// 期望值 = 层数 × 6 (q/k/v/attn_output/ffn_up/ffn_down) × 文本数 × 重复数；
+    /// 若层数被写死错 (如 12 层模型只跑 4 层), 该计数会与期望不符 ⇒ 缺陷当场暴露。</summary>
+    public long MatMulCalls => Interlocked.Read(ref _matMulCalls);
+
+    private float[] Mm(float[] input, float[] weight, float[] bias, int seq, int inDim, int outDim)
+    {
+        Interlocked.Increment(ref _matMulCalls);
+        return _mm.MatMulAdd(input, weight, bias, seq, inDim, outDim);
+    }
+
+    /// <summary>R404: 架构参数只读出口 (证据/对账用) — 全部来自 GGUF 元数据, 不再硬编码。
+    /// 读取即触发初始化: 否则在 Embed 之前打印会拿到字段默认值 (假证据)。</summary>
+    public int Dimension { get { EnsureInitialized(); return _dim; } }
+    public int Layers { get { EnsureInitialized(); return _layers; } }
+    public int Heads { get { EnsureInitialized(); return _heads; } }
+    public int FfnDim { get { EnsureInitialized(); return _ffn; } }
+    public int MaxTokens { get { EnsureInitialized(); return _maxTokens; } }
 
     public BgeCpuEmbedder(string modelPath)
         : this(modelPath, null)
@@ -46,7 +69,13 @@ public sealed class BgeCpuEmbedder : agent.contextgradient.ITextEmbedder, IDispo
             if (_initialized) return;
             var model = GgufModel.Load(_modelPath);
             _tokenizer = new WordPieceTokenizer(model.Tokens);
+            // R404 (真缺陷修复): 原实现把 bge-small 的 (4 层/8 头/FFN 2048) 写死在代码里 ——
+            // 换成 bge-base (12 层/12 头/FFN 3072) 会**静默**只算 4 层、按 8 头切 head_dim、
+            // 并按 2048 读 FFN 权重 ⇒ 向量错但无报错。架构参数一律以 GGUF 元数据为权威源。
             _dim = (int)model.IntKv.GetValueOrDefault("bert.embedding_length", 512);
+            _layers = (int)model.IntKv.GetValueOrDefault("bert.block_count", 4);
+            _heads = Math.Max(1, (int)model.IntKv.GetValueOrDefault("bert.attention.head_count", 8));
+            _ffn = (int)model.IntKv.GetValueOrDefault("bert.feed_forward_length", 2048);
             _maxTokens = Math.Min((int)model.IntKv.GetValueOrDefault("bert.context_length", 512) - 2, 510);
             // 预加载全部张量 (Q8_0 反量化; ~30MB F32 常驻 — 与原 BgeEmbedder 同级)
             _weights = new Dictionary<string, float[]>(model.Tensors.Count);
@@ -90,8 +119,8 @@ public sealed class BgeCpuEmbedder : agent.contextgradient.ITextEmbedder, IDispo
             LayerNorm(h, tenW, tenB, seq, hidden);
         }
 
-        // ② 4 层 transformer
-        for (var layer = 0; layer < 4; layer++)
+        // ② transformer 层 (层数来自 GGUF bert.block_count — R404 去硬编码)
+        for (var layer = 0; layer < _layers; layer++)
         {
             var blk = $"blk.{layer}.";
             h = TransformerBlock(h, seq, hidden, blk);
@@ -118,13 +147,13 @@ public sealed class BgeCpuEmbedder : agent.contextgradient.ITextEmbedder, IDispo
 
     private float[] TransformerBlock(float[] h, int seq, int hidden, string blk)
     {
-        var heads = 8;
+        var heads = _heads;                 // R404: 头数来自 GGUF (原写死 8 = 只对 bge-small 成立)
         var headDim = hidden / heads;
 
         // --- 自注意力 (BERT post-LN: attn → attn_output_norm) ---
-        var q = _mm.MatMulAdd(h, _weights![$"{blk}attn_q.weight"], _weights[$"{blk}attn_q.bias"], seq, hidden, hidden);
-        var k = _mm.MatMulAdd(h, _weights[$"{blk}attn_k.weight"], _weights[$"{blk}attn_k.bias"], seq, hidden, hidden);
-        var v = _mm.MatMulAdd(h, _weights[$"{blk}attn_v.weight"], _weights[$"{blk}attn_v.bias"], seq, hidden, hidden);
+        var q = Mm(h, _weights![$"{blk}attn_q.weight"], _weights[$"{blk}attn_q.bias"], seq, hidden, hidden);
+        var k = Mm(h, _weights[$"{blk}attn_k.weight"], _weights[$"{blk}attn_k.bias"], seq, hidden, hidden);
+        var v = Mm(h, _weights[$"{blk}attn_v.weight"], _weights[$"{blk}attn_v.bias"], seq, hidden, hidden);
 
         var attnOut = new float[seq * hidden];
         var scale = 1f / MathF.Sqrt(headDim);
@@ -156,14 +185,14 @@ public sealed class BgeCpuEmbedder : agent.contextgradient.ITextEmbedder, IDispo
                 }
             }
         }
-        var attnProj = _mm.MatMulAdd(attnOut, _weights[$"{blk}attn_output.weight"], _weights[$"{blk}attn_output.bias"], seq, hidden, hidden);
+        var attnProj = Mm(attnOut, _weights[$"{blk}attn_output.weight"], _weights[$"{blk}attn_output.bias"], seq, hidden, hidden);
         TensorPrimitives.Add(h, attnProj, h); // residual
         LayerNorm(h, _weights[$"{blk}attn_output_norm.weight"], _weights[$"{blk}attn_output_norm.bias"], seq, hidden);
 
         // --- FFN (residual → layer_output_norm) ---
-        var ffnOut = _mm.MatMulAdd(h, _weights[$"{blk}ffn_up.weight"], _weights[$"{blk}ffn_up.bias"], seq, hidden, 2048);
+        var ffnOut = Mm(h, _weights![$"{blk}ffn_up.weight"], _weights[$"{blk}ffn_up.bias"], seq, hidden, _ffn);
         Gelu(ffnOut);
-        var down = _mm.MatMulAdd(ffnOut, _weights[$"{blk}ffn_down.weight"], _weights[$"{blk}ffn_down.bias"], seq, 2048, hidden);
+        var down = Mm(ffnOut, _weights[$"{blk}ffn_down.weight"], _weights[$"{blk}ffn_down.bias"], seq, _ffn, hidden);
         TensorPrimitives.Add(h, down, h); // residual
         LayerNorm(h, _weights[$"{blk}layer_output_norm.weight"], _weights[$"{blk}layer_output_norm.bias"], seq, hidden);
         return h;
