@@ -134,6 +134,15 @@ public sealed class RemoteEmbedder : agent.contextgradient.ITextEmbedder, IDispo
 
             if (pidClaimed)
             {
+                // ④b (R368): 抢到锁 ≠ 必须 spawn。锁只在"启动期间"持有, 对手可能在上一步与本步之间
+                // 已完成启动并释放锁 —— 此时无条件 spawn 会产生冗余进程 (生产: 第二个 daemon 白启后
+                // 以退出码 4 自尽; 测试: spawn 计数=2 破坏并发契约)。窗口窄但高负载下可复现
+                // (实测 6 并发跑该用例 1 次失败)。复检用与 ① 相同的廉价 Probe (未就绪时连接即刻失败, 零延迟代价)。
+                if (Probe(_sockPath, 200))
+                {
+                    TryDeleteFile(_startLockPath);
+                    return;
+                }
                 // ⑤ 熔断: 窗口内超预算 → 拒启 (内存/显存反复崩场景)
                 if (!TryCheckRestartBudget(out var budgetDetail))
                 {

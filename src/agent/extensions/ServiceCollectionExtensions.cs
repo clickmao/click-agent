@@ -147,6 +147,15 @@ public static class ServiceCollectionExtensions
         // ✅ 返回内容区段路由 (v7.11): 插件化后处理, 宿主可追加自定义插件
         services.AddSingleton<agent.registry.IResponseSegmentPlugin, agent.registry.UiCapturePlugin>();
         services.AddSingleton<agent.registry.IResponseSegmentPlugin, agent.registry.CodeReviewPlugin>();
+        // ✅ R368: python 段 → 落盘 + py_compile 机器校验 (用户钦定 "内置个PY和PY执行插件")
+        services.AddSingleton<agent.registry.PythonArtifactLedger>();
+        services.AddSingleton<agent.registry.IResponseSegmentPlugin>(sp =>
+        {
+            var opts = sp.GetRequiredService<AgentFrameworkOptions>();
+            return new agent.registry.PythonArtifactPlugin(
+                sp.GetRequiredService<agent.registry.PythonArtifactLedger>(),
+                System.IO.Path.Combine(opts.DataStoragePath, "artifacts"));
+        });
         services.AddSingleton(sp =>
         {
             var plugins = sp.GetServices<agent.registry.IResponseSegmentPlugin>();

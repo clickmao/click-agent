@@ -487,6 +487,8 @@ if (args.Length >= 2 && args[0] == "--frontend-api")
                 session.RecordStep($"LLM 处理 ({intent})");
                 sink.Step(step, "管线执行 (上下文装配 → LLM → 后处理)…");
 
+                var pyLedger = provider.GetService<agent.registry.PythonArtifactLedger>();
+                var pyVersion0 = pyLedger?.Version ?? 0;
                 var reply = await agent.ProcessAsync(msg, CancellationToken.None);
                 session.RecordStep(reply.Success ? "完成" : $"失败: {Truncate(reply.Error, 50)}");
 
@@ -500,8 +502,23 @@ if (args.Length >= 2 && args[0] == "--frontend-api")
                     {
                         step++;
                         session.RecordStep($"区段标记: {string.Join(",", codeLangs)}");
-                        sink.Step(step, "返回区段标记", $"{string.Join(", ", codeLangs)} (已路由插件)");
+                        sink.Step(step, "返回区段标记", string.Join(", ", codeLangs));
                     }
+                }
+
+                // 步骤明细④ (R368): PY 段机器校验台账 — 落盘 + py_compile 真实结论。
+                // 旧文案 "(已路由插件)" 只是显示, 无法证明 python 产出可运行; 这里读真台账。
+                var pyReports = pyLedger?.Snapshot().Skip((int)pyVersion0).ToList();
+                if (pyReports is { Count: > 0 })
+                {
+                    var pass = pyReports.Count(r => r.CompileValid);
+                    step++;
+                    session.RecordStep($"PY 机器校验: {pass}/{pyReports.Count} 通过");
+                    sink.Step(step, "PY 落盘 + py_compile", $"{pass}/{pyReports.Count} 通过");
+                    foreach (var r in pyReports)
+                        sink.Write(CliRenderer.Dim(r.CompileValid
+                            ? $"    · {r.Path} ({r.Bytes}B) ✓ py_compile"
+                            : $"    · {r.Path} ({r.Bytes}B) ✗ exit={r.ExitCode} {Truncate(r.Detail, 120)}"));
                 }
 
                 session.RenderResponse(reply, intent);

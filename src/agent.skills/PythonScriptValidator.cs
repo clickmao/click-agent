@@ -18,23 +18,36 @@ public static class PythonScriptValidator
 {
     public const int CompileTimeoutMs = 30_000;
 
-    public static async Task<PythonValidationResult> ValidateAsync(string scriptPath, CancellationToken ct = default)
+    public static Task<PythonValidationResult> ValidateAsync(string scriptPath, CancellationToken ct = default)
+        => ValidateAsync(scriptPath, pythonPath: null, ct);
+
+    /// <summary>
+    /// R368 重载: 显式指定解释器路径 (env AGENTFRAMEWORK_PYTHON / 插件自解析)。
+    /// pythonPath 为空或不存在 → 回退 PATH 解析 python3/python。
+    /// </summary>
+    public static async Task<PythonValidationResult> ValidateAsync(string scriptPath, string? pythonPath, CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(scriptPath) || !File.Exists(scriptPath))
             return new PythonValidationResult(false, $"脚本不存在: {scriptPath}", -1);
-        var python = SkillScriptRunner.FindOnPath("python3") ?? SkillScriptRunner.FindOnPath("python");
+        var python = !string.IsNullOrWhiteSpace(pythonPath) && File.Exists(pythonPath)
+            ? pythonPath
+            : SkillScriptRunner.FindOnPath("python3") ?? SkillScriptRunner.FindOnPath("python");
         if (python is null)
             return new PythonValidationResult(false, "python3 解释器不可用 (PATH 无 python3/python)", -2);
 
         var psi = new ProcessStartInfo
         {
             FileName = python,
-            Arguments = $"-m py_compile \"{scriptPath}\"",
             UseShellExecute = false,
             RedirectStandardError = true,
             RedirectStandardOutput = true,
             CreateNoWindow = true,
         };
+        // 跨平台铁律 (用户点破 /bin/sh 缺陷): 禁止字符串拼命令 → ArgumentList 直连 spawn。
+        // 旧写法 Arguments = $"-m py_compile \"{scriptPath}\"" 在路径含空格/引号时会被 shell 语义解析。
+        psi.ArgumentList.Add("-m");
+        psi.ArgumentList.Add("py_compile");
+        psi.ArgumentList.Add(scriptPath);
         try
         {
             using var p = new Process { StartInfo = psi };

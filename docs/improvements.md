@@ -12,6 +12,31 @@
 
 ---
 
+## R368 探索轮: 用户 OOB 5 项计划立项 + PY 落盘/机器校验插件落地 (736/736, AOT 0 IL 警)
+
+- **用户指令 (逐字, 两条)**:
+  1. "同步github后继续下轮 并且 新增计划 1.grep本地关键词建索引建立缓存于加载校验能力（需惰性加载）…代码引用索引建立（插件增强服务，需要明确的API规范，要求怎样的数据），全部都建立再一个本质上不主动探索全量（文件索引机制建立插件 返回graph 或 由bge自动建立效果如何？） 2.LLM得到多方案不明确时向用户提出问题menu菜单选择后继续任务… 3. 逻辑校验，修改当前步 看下上一步修改规则对齐当前… 4. agent自动提出需要的工具与工具需求，输入与输出对接参数… 5. 上下文中同类教训/问题记录->应进入教训表…**新增任务全部先列为探索项查找相关数据设计最佳方案后再考虑开发**"
+  2. "我需要你对比自身的上下文，并再运行项目agent内 尝试对话 看看再哪个环节 KPI不行，长任务断链，机器验证失败（如PY执行，**你需要自己先内置个PY和先加个PY执行插件**）导致用户某项任务不达预期…着重看看那步应该交给脚本完成agent却又扔给了llm处理"
+- **探索产出 (5 路并行只读侦察 + 真机实验 + 本机基准, 未改业务代码)**: [docs/plans/v0.22.0-exploration-index.md](docs/plans/v0.22.0-exploration-index.md) + exp1…exp5 五份独立文档 (含现状事实带行号 / 候选方案对比 / 推荐 / 关键约束 / 验收标准 / 排除项 / 待确认)。
+- **关键发现 (5 条, 皆有代码证据)**:
+  1. **头号断链: 框架内不存在"生成脚本"能力** — 两条脚本执行链 (skills `scripts/main.py` / `ScriptPluginRunner`) 都要求脚本**已存在于磁盘**; 任何"帮我写个 X"任务只能一段式由 LLM 在回复里吐代码, 不落盘/不执行/不校验/不可迭代。
+  2. **"宣称≠实现"再添 3 例** (R365 同类): `OutputCritic`/`CriticPipeline`/`FormatRepairLoop` 已实现但生产 0 调用, 而 `skills/critic-rules/SKILL.md:82` 声称"机器侧静态扫描双保险"; `TaskCharter.AcceptanceCriteria` 0 消费方; CLI `(已路由插件)` 文案无对应校验动作 (**本轮删除该空话**)。
+  3. **前端通知层缺失** (探索项 2/5 共用瓶颈): `FormatEvent` 有信封零调用, 域枚举只 3 个, `state.snapshot` 不含 lessons, 无订阅/游标 → "新教训已到达"当前**不可能送达**。
+  4. **跨步产物不落不传** (探索项 3/4 同根因): runner 签名忽略上游产物 + 步骤产物不持久化 + 恢复只恢复状态 → 长任务跨步只能靠上下文猜。
+  5. **bge 全量索引不可行 (本机实测)**: bge-q8 CPU 单线程 203.5 ms/块 / 4.9 块/s / RSS 306 MB → 全仓 6375 块 ≈ **21.6 min** → 与用户"不主动探索全量"直接冲突。
+- **本轮实施 (探索项 4 的 T1/T2/T3)**:
+  - `src/agent/registry/PythonArtifactPlugin.cs` (新增): ```` ```python ```` 段 → 落盘 `data/artifacts/py_<ts>_<sha8>.py` (内容寻址幂等) + 真实 `python3 -m py_compile` 机器校验 + `PythonArtifactLedger` 台账 (线程安全, 单调 Version, 供前端增量读) + telemetry 点 `script_artifact`; **输出恒等** (不改写 LLM 文本/围栏); 非 python 段零损耗透传; `AGENTFRAMEWORK_PY_ARTIFACT=off` 可关。
+  - 接线: DI 注册 (`ServiceCollectionExtensions.cs:150-158`) + CLI 步骤 `[05] PY 落盘 + py_compile N/M 通过` (`Program.cs:490-518`)。
+  - 零 shell 修复: `PythonScriptValidator` `Arguments` 字符串 → **`ArgumentList`** (跨平台铁律); 新增 `ValidateAsync(path, pythonPath, ct)` 重载使 `AGENTFRAMEWORK_PYTHON` 覆盖真正生效。
+  - 测试: `PythonArtifactPluginTests` 6 用例 (好码落盘+过 / 坏码失败不静默 / 非 python 透传零副作用 / 同内容幂等 / 版本单调 / 路由器集成原文还原)。
+- **真机对照证据 (同一句话, 同一模型 `deepseek-flash`)**:
+  - 改造前: `intent=general`, LLM **1 次** 12990 ms / promptTokens=642, **无文件、无校验**, CLI 显示 `(已路由插件)` 实为空话。
+  - 改造后: CLI `[04] 返回区段标记 python` → `[05] PY 落盘 + py_compile 1/1 通过`; 产物 `./data/artifacts/py_20260913_035648_1f3f027c.py` (4573 B / 137 行); telemetry `{"point":"script_artifact","compile_valid":true,"exit":0}`; **独立复核** (不信 agent 自述): 另跑 `python3 -m py_compile` → exit 0 ✓, `ast.parse` 通过。
+- **附带修复 (同步上游后发现)**: 同步远端 R366/R367 后全量测试出现 1 例失败 `LlmServiceTests.ConcurrentClients_SpawnOnce`。定位为**真竞态** (非环境噪声): 启动锁只在启动期持有, 抢锁者释放后, 另一客户端到达 `CreateNew` 时见锁已消失 → 判 stale → 重新抢锁并**冗余 spawn** (生产=第二个 daemon 白启后退出码 4; 测试=fakeSpawn 抛"已在运行"致断言崩)。修复: 抢到锁后**再复检一次探针**, 已就绪则释放锁直接复用。复现基线 6 并发 1 失败 → 修复后 **10/10 通过**。
+- **基线**: 单元测试 **736/736 全绿** (730 + 6 新增); NativeAOT `linux-x64` **0 IL 警告**, 二进制 **13,775,840 B (13.78 MB)**, 体积同比 +0.18%; **AOT 冒烟真机真 LLM 通过** (`E2E: Success=True` / `Multi-turn round2Success=True` / `full-graph AOT smoke passed`)。
+- **诚实边界**: ① 校验仅**语法/编译级** (py_compile), ≠ 逻辑正确, 文档已明写, 不许表述为"已验证可用"; ② 运行级验证 (沙箱+超时+stderr 回灌修复环) **未实现**, 列为 T4/T6 待开发; ③ 探索项 1/2/3/5 全部为**探索态文档**, 未写实现代码; ④ 侦察中的不确定项 (失败簇"超时/停滞"调用点未找到、`CommandWriter` 是否他处接线) 原样保留在各文档 §待确认, 未粉饰。
+
+
 ## R367 v0.21.1 候选 samples WinForms 前端对接 DEMO + FrontendApi 内部问题修复 (提交待 CI 复核)
 
 - **用户指令 (逐字)**: "建立 samples 内创建前端对接 agent.frontendapi 的 UI 项目使用 winform 来做对接 DEMO 查找和继续优化 agent 内部问题"。
