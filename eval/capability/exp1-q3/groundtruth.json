@@ -1,0 +1,86 @@
+{
+  "fixture": "exp1-Q3 引用图人工 ground truth（对应计划 §6-A6「3 个已知符号，人工核对」）",
+  "provenance": "由本 agent 逐行判读 `probe_code_graph.py --enumerate` 的 46 行真实枚举输出后人工分类；枚举=词边界正则（与启发式同源，仅用于列举候选行），分类=人工独立判定（评论/文档/字符串字面量 ⇒ 非边，其余代码行 ⇒ 边）。非第三方独立标注，属自建 fixture，已在报告诚实边界登记。",
+  "classes": {
+    "edge": "代码行：定义点或对符号的真实提及（含定义行、字段/参数类型、new/调用、DI 注册、断言）",
+    "comment": "纯注释行（// 或行内尾注释）",
+    "doc": "XML 文档注释行（///）",
+    "string": "字符串字面量内的文本模式（不是对符号的引用，例如自扫测试里 Contains(\"CacheReuse = false\")）"
+  },
+  "criterion_symbols": ["CapabilityScanner", "CacheReuse", "ThinkMemory"],
+  "holdout_symbols": ["ReuseFor"],
+  "negative_controls": {
+    "missing_symbols": ["CapabilityIndexer", "ZzNoSuchSymbol"],
+    "overmatching_symbols": ["Index", "Cache"]
+  },
+  "symbols": {
+    "CapabilityScanner": {
+      "rows": [
+        ["src/agent.host/Program.cs", 448, "edge"],
+        ["src/agent.tests/V714FeatureTests.cs", 119, "comment"],
+        ["src/agent.tests/V714FeatureTests.cs", 124, "edge"],
+        ["src/agent.tests/V714FeatureTests.cs", 138, "edge"],
+        ["src/agent.tests/V714FeatureTests.cs", 233, "edge"],
+        ["src/agent/IndustrialAgentV2.cs", 131, "edge"],
+        ["src/agent/IndustrialAgentV2.cs", 444, "edge"],
+        ["src/agent/contextassembler/ContextAssembler.cs", 160, "comment"],
+        ["src/agent/registry/CapabilityScanner.cs", 13, "edge"],
+        ["src/agent/registry/PanelData.cs", 10, "doc"],
+        ["src/agent/registry/PanelData.cs", 17, "edge"],
+        ["src/agent/registry/PanelData.cs", 26, "edge"]
+      ]
+    },
+    "CacheReuse": {
+      "rows": [
+        ["src/agent.modelqueue/ModelQueueRouter.cs", 216, "edge"],
+        ["src/agent.modelqueue/ModelQueueRouter.cs", 294, "edge"],
+        ["src/agent.modelqueue/LocalGenerationPort.cs", 49, "edge"],
+        ["src/agent.llamacpp/LlamaCppLocalGenerationPort.cs", 54, "edge"],
+        ["src/agent.tests/DecisionCachePinTests.cs", 22, "doc"],
+        ["src/agent.tests/DecisionCachePinTests.cs", 101, "edge"],
+        ["src/agent.tests/DecisionCachePinTests.cs", 102, "edge"],
+        ["src/agent.tests/DecisionCachePinTests.cs", 115, "edge"],
+        ["src/agent.tests/DecisionCachePinTests.cs", 129, "edge"],
+        ["src/agent.tests/DecisionCachePinTests.cs", 146, "comment"],
+        ["src/agent.tests/DecisionCachePinTests.cs", 157, "string"],
+        ["src/agent.tests/DecisionCachePinTests.cs", 163, "string"]
+      ]
+    },
+    "ThinkMemory": {
+      "rows": [
+        ["src/agent.exploration/ThinkMemory.cs", 54, "edge"],
+        ["src/agent.exploration/ThinkMemory.cs", 60, "edge"],
+        ["src/agent.exploration/ThinkMemory.cs", 170, "edge"],
+        ["src/agent.exploration/ThinkMemory.cs", 172, "edge"],
+        ["src/agent.exploration/LinkRegistry.cs", 47, "doc"],
+        ["src/agent.exploration/ExplorationJsonContext.cs", 7, "doc"],
+        ["src/agent.exploration/ThinkChainSession.cs", 10, "doc"],
+        ["src/agent.exploration/ThinkChainSession.cs", 40, "edge"],
+        ["src/agent.exploration/ThinkChainSession.cs", 44, "edge"],
+        ["src/agent.exploration/ThinkChainSession.cs", 95, "comment"],
+        ["src/agent.tests/ThinkChainTests.cs", 73, "comment"],
+        ["src/agent.tests/ThinkChainTests.cs", 79, "edge"],
+        ["src/agent.tests/ThinkChainTests.cs", 91, "edge"],
+        ["src/agent.tests/ThinkChainTests.cs", 107, "edge"],
+        ["src/agent.tests/ThinkChainTests.cs", 118, "edge"],
+        ["src/agent.tests/ThinkChainTests.cs", 130, "edge"],
+        ["src/agent/IndustrialAgentV2.cs", 80, "edge"],
+        ["src/agent/IndustrialAgentV2.cs", 82, "edge"],
+        ["src/agent/IndustrialAgentV2.cs", 89, "edge"],
+        ["src/agent/IndustrialAgentV2.cs", 93, "edge"],
+        ["src/agent/IndustrialAgentV2.cs", 97, "edge"],
+        ["src/agent/critique/FixMemory.cs", 9, "doc"]
+      ]
+    },
+    "ReuseFor": {
+      "rows": [
+        ["src/agent.llamacpp/LlamaCppLocalGenerationPort.cs", 54, "edge"],
+        ["src/agent.llamacpp/CompletionProfiles.cs", 25, "edge"],
+        ["src/agent.tests/DecisionCachePinTests.cs", 92, "edge"],
+        ["src/agent.tests/DecisionCachePinTests.cs", 93, "edge"],
+        ["src/agent.tests/DecisionCachePinTests.cs", 94, "edge"],
+        ["src/agent.tests/DecisionCachePinTests.cs", 95, "edge"]
+      ]
+    }
+  }
+}

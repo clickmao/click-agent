@@ -1,0 +1,157 @@
+{
+  "step": "EXP1-Q3",
+  "criteria": {
+    "recall_min": 0.8,
+    "precision_min": 0.7,
+    "negative_control_missing_symbol_edges": 0,
+    "note": "预注册于本轮运行前；未通过时如实记录，不改阈值"
+  },
+  "scope": {
+    "path": "src",
+    "files": 396,
+    "scan_ms": 26.0,
+    "mask_ms": 439.5
+  },
+  "criterion_symbols": [
+    "CapabilityScanner",
+    "CacheReuse",
+    "ThinkMemory"
+  ],
+  "arm1_raw_heuristic": {
+    "readings": {
+      "recall": 1.0,
+      "precision": 0.7174,
+      "tp": 33,
+      "fp": 13,
+      "fn": 0
+    },
+    "per_symbol": {
+      "CapabilityScanner": {
+        "got_n": 12,
+        "gt_n": 9,
+        "tp": 9,
+        "fp": 3,
+        "fn": 0,
+        "fp_rows": [
+          "src/agent.tests/V714FeatureTests.cs:119",
+          "src/agent/contextassembler/ContextAssembler.cs:160",
+          "src/agent/registry/PanelData.cs:10"
+        ],
+        "fn_rows": []
+      },
+      "CacheReuse": {
+        "got_n": 12,
+        "gt_n": 8,
+        "tp": 8,
+        "fp": 4,
+        "fn": 0,
+        "fp_rows": [
+          "src/agent.tests/DecisionCachePinTests.cs:146",
+          "src/agent.tests/DecisionCachePinTests.cs:157",
+          "src/agent.tests/DecisionCachePinTests.cs:163",
+          "src/agent.tests/DecisionCachePinTests.cs:22"
+        ],
+        "fn_rows": []
+      },
+      "ThinkMemory": {
+        "got_n": 22,
+        "gt_n": 16,
+        "tp": 16,
+        "fp": 6,
+        "fn": 0,
+        "fp_rows": [
+          "src/agent.exploration/ExplorationJsonContext.cs:7",
+          "src/agent.exploration/LinkRegistry.cs:47",
+          "src/agent.exploration/ThinkChainSession.cs:10",
+          "src/agent.exploration/ThinkChainSession.cs:95",
+          "src/agent.tests/ThinkChainTests.cs:73",
+          "src/agent/critique/FixMemory.cs:9"
+        ],
+        "fn_rows": []
+      }
+    },
+    "fp_by_gt_class": {
+      "comment": 5,
+      "doc": 6,
+      "string": 2
+    }
+  },
+  "arm2_mask_noncode": {
+    "readings": {
+      "recall": 0.9697,
+      "precision": 1.0,
+      "tp": 32,
+      "fp": 0,
+      "fn": 1
+    },
+    "per_symbol": {
+      "CapabilityScanner": {
+        "got_n": 8,
+        "gt_n": 9,
+        "tp": 8,
+        "fp": 0,
+        "fn": 1,
+        "fp_rows": [],
+        "fn_rows": [
+          "src/agent/IndustrialAgentV2.cs:444"
+        ]
+      },
+      "CacheReuse": {
+        "got_n": 8,
+        "gt_n": 8,
+        "tp": 8,
+        "fp": 0,
+        "fn": 0,
+        "fp_rows": [],
+        "fn_rows": []
+      },
+      "ThinkMemory": {
+        "got_n": 16,
+        "gt_n": 16,
+        "tp": 16,
+        "fp": 0,
+        "fn": 0,
+        "fp_rows": [],
+        "fn_rows": []
+      }
+    },
+    "note": "观察臂（不参与红绿）；掩码器不处理字符字面量与插值表达式内部 ⇒ 低估方向偏差"
+  },
+  "negative_control_missing": {
+    "CapabilityIndexer": 0,
+    "ZzNoSuchSymbol": 0
+  },
+  "negative_control_missing_ok": true,
+  "negative_control_overmatching": {
+    "Index": {
+      "exact_token_rows": 34,
+      "substring_rows": 246,
+      "overcollect": 212,
+      "ratio": 7.235
+    },
+    "Cache": {
+      "exact_token_rows": 6,
+      "substring_rows": 332,
+      "overcollect": 326,
+      "ratio": 55.333
+    }
+  },
+  "holdout_observation": {
+    "ReuseFor": {
+      "got_n": 6,
+      "gt_n": 6,
+      "tp": 6,
+      "fp": 0,
+      "fn": 0,
+      "fp_rows": [],
+      "fn_rows": []
+    }
+  },
+  "verdict": "PASS",
+  "honest_boundaries": [
+    "本 fixture 召回结构性恒为 1.0（GT 边 ⊂ 词面出现行），有判别力的是精确率",
+    "GT 由本 agent 人工判读（自建 fixture，非第三方独立标注）",
+    "间接引用（接口/DI 字符串/反射）不在本 fixture 覆盖范围，召回风险未被测量"
+  ],
+  "gt_source": "由本 agent 逐行判读 `probe_code_graph.py --enumerate` 的 46 行真实枚举输出后人工分类；枚举=词边界正则（与启发式同源，仅用于列举候选行），分类=人工独立判定（评论/文档/字符串字面量 ⇒ 非边，其余代码行 ⇒ 边）。非第三方独立标注，属自建 fixture，已在报告诚实边界登记。"
+}
