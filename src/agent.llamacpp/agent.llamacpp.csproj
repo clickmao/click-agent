@@ -10,9 +10,11 @@
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
     <EnableAotAnalyzer>true</EnableAotAnalyzer>
     <InvariantGlobalization>true</InvariantGlobalization>
-    <Description>R408: llama.cpp 进程化后端 (llama-server + 托管 HTTP; 零 P/Invoke, 跨平台, NativeAOT 可用)</Description>
+    <Description>R408: llama.cpp 进程化后端 (llama-server + 托管 HTTP; 零 P/Invoke, 跨平台, NativeAOT 可用)。R413: 实现 agent.modelqueue.ILocalGenerationPort (本地通道执行面)。</Description>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../agent.contextgradient/agent.contextgradient.csproj" />
+    <!-- R413: 只为实现 ILocalGenerationPort (端口接口在 modelqueue, 路由侧不反向依赖本程序集) -->
+    <ProjectReference Include="../agent.modelqueue/agent.modelqueue.csproj" />
   </ItemGroup>
 </Project>

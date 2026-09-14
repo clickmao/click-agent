@@ -12,6 +12,28 @@
 
 ---
 
+## R413 — r1 本地真假判别接进链管道（端口化）：机械 Pass 前置 + 非 LLM 模板 ack ⇒ 一轮总 token ↓58.5% / 远端调用 ↓33.3%（判过）
+
+**版本**: R413 · **日期**: 2026-09-14 · **状态**: 判过（C1–C4 全 PASS；本地 commit，**未推**）
+**主题**: 用户钦定「利用 r1 对真假信息判别（挂载 role 额外数据，管道已接），让用户一轮任务总 token 显著下降 ≥30%（主要是不必要的 LLM API 请求少了）」。
+
+- **落地（端口化，非硬接线）**: `ILocalGenerationPort`（`src/agent.modelqueue/LocalGenerationPort.cs`）+ `LlamaCppLocalGenerationPort`（`src/agent.llamacpp/`，进程 + HTTP，零 P/Invoke）；DI 接线 `ServiceCollectionExtensions.cs`；`ModelQueueRouter` 本地优先分支 —— 端口缺失 ⇒ 判据必拒 ⇒ **全走远端 = 零回归**；`TurnGateJudge`（机械前置门 + 结论区解析 + `ThinkOpen`/`ThinkClose` 常量）。
+- **前置门 v2（本轮定，取代 v1 纯 r1 判别）**: ① 机械 Pass 前置（问号/疑问词、指令/新诉求、纠正/失败词、结构化实体、长文本 ⇒ **直接 Pass，不问 r1**）；② 仅无信号短消息交 r1（二元 S/P、192 token 上限、只读思考块之后的结论区）；③ 被跳过轮回复 = **非 LLM 模板**（`LocalSkipFallback`），不再让 r1 生成（v1 实测会复读前文并反问）。
+- **判据读数（外部真值 = 桩侧逐请求落盘 + 驱动器观测；臂 A = 本地通道关 / 臂 B = 开）**:
+  臂 A **12 调用 / 16,888 token**；臂 B **8 调用 / 7,007 token** ⇒ 调用 **-33.3%**、token **-58.5%**（阈值 30%）。
+  门遥测（臂 B 7 轮到达推理段）：机械 Pass 3（轮1/3/5）+ r1 判别 4（轮2/4/6/8 全 Skip）；逐轮回复：轮2/4/6/8 = 模板（门消化），轮1/3/5 = 远端应答，轮7 = 链侧澄清拦截（两臂同现，与门无关）。
+  **结算 `eval/rover/r413/verdict.py` → `verdict-r413.json`：C1 PASS · C2 PASS · C3 PASS（实质轮零误跳）· C4 PASS（跳过集恰好 = 预注册寒暄集、回复均为模板）⇒ 判过。**
+- **前置门 v1（上轮）读数与换方案理由**: v1 达 -86.7% token / -50% 调用，**但判不通过** —— 负控抓 2 例误跳（新诉求「另外，测试命令呢？」、纠正语「不对，你上一条回答不准确…」）+ ack 退化 ⇒ 换「机械前置 + 模板 ack」。
+- **本轮两处空心根因（真机诊断，均已修 + 已回归）**:
+  ① **判的不是用户原文而是 `prompt.UserMessage`** —— 该字段已被 role 块/计划续跑/微提示追加（R379 Fix A）⇒ 机械门恒 Pass、增益归零；诊断法 = 先补 `local_turn_gate_config` 一次性遥测，把「门有没有开」变成可观测；修 = 判 `message.Content` + **G29 源级回归**（钉死链侧入参）。
+  ② **源码写入通道把尖括号字面量替换成 tokenizer 形态**（思考块结束标记 → 码点 `0x3c,0xff5c,end,0x2581,of,0x2581,thinking,0xff5c,0x3e`）⇒ 解析器恒搜不到 = 空心降级（看着在判、全降级）；修 = 公开常量 `ThinkOpen`/`ThinkClose`（字符码构造）+ G24/G25 回归（含真机原文）。
+- **机检**: `LocalTurnGateTests` **46/46**（含 G24 真机原文、G25 常量形态、G29 链侧入参源级钉死）；全量 **1158 / 0 / 0**（`TEST_EXIT=0`）。
+- **AOT（发布形态验收）**: `dotnet publish src/agent.host/agent.host.csproj -c Release -r linux-x64 -o /tmp/pub_r413` ⇒ `PUBLISH_EXIT=0`、**IL 警告 0**、`agenthost` **15,138,848 B**（R412: 15,093,088 B）。
+- **诚实边界**: ① 单轮脚本 / 单模型（r1-distill-1.5b-q4km）/ 单机单次读数，脚本参数化可重跑；② 机械信号表是**穷举白名单**，表未覆盖的短消息仍交 r1（本次 4 条寒暄全对，样本量小，**不构成 r1 可靠性证据**）；③ 桩侧逐轮归属受「后续轮 prompt 含历史文本」干扰 ⇒ 只作参考，判据只用外部计数 + 驱动器观测；④ 轮7 的 0 主调用是链侧澄清拦截、非门行为；⑤ 本轮改动**未推送**（推送暂停令在位）。
+- **证据**: `eval/rover/r413/{verdict.py,verdict-r413.json,budget-A.json,budget-B.json,calls-A.jsonl,calls-B.jsonl,turns-B.jsonl,probe-struct.jsonl,run-B/data/telemetry/host.jsonl}`、`docs/plans/v0.35.0-r413-r1-local-verdict-token-budget.md`（§7.3–§7.6）。
+
+---
+
 ## R403 — chat template 裁定：自研 Jinja 子集随 R408 退役 + 工具调用模板「无对象可验」（负控证明探针有判别力）
 
 **版本**: R403 · **日期**: 2026-09-14 · **状态**: 关闭（裁定 + 待触发能力登记；**无代码改动**）

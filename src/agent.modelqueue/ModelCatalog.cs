@@ -91,6 +91,21 @@ public sealed class LocalChannelConfig
     /// <summary>vulkan offload 层数 (0 = 纯 CPU)</summary>
     public int GpuLayers { get; set; }
 
+    /// <summary>R413: 本地单轮生成上限 token (0 = 用端口默认)</summary>
+    public int MaxTokens { get; set; } = 256;
+
+    /// <summary>R413: 本地通道可承接的 prompt 预估 token 上限 (超限 → 走远端)</summary>
+    public int MaxPromptTokens { get; set; } = 2048;
+
+    /// <summary>R413: 允许本地化的任务种类名 (空 = 用 LocalChannelPolicy.DefaultAllowedKinds)</summary>
+    public List<string> AllowedKinds { get; set; } = new();
+
+    /// <summary>R413: 是否允许主回答 (General) 也走本地 (默认 false — 质量风险)</summary>
+    public bool AllowGeneral { get; set; }
+
+    /// <summary>R413 前置门: 允许链在「本轮无新增诉求」时跳过远端主调用 (默认 false = 零回归)。</summary>
+    public bool TurnGate { get; set; }
+
     /// <summary>配置路径非空且文件存在 = 通道就绪</summary>
     public bool IsReady => !string.IsNullOrEmpty(ModelPath) && File.Exists(ModelPath);
 }
@@ -171,6 +186,14 @@ public sealed class ModelCatalog
                 ModelPath = AsString(ld, "model_path"),
                 ContextSize = (int)AsDouble(ld, "context_size"),
                 GpuLayers = (int)AsDouble(ld, "gpu_layers"),
+                // R413: 缺省键 = 默认值 (向后兼容旧 models.yaml, 不带 local 段时通道关闭)
+                MaxTokens = ld.ContainsKey("max_tokens") ? (int)AsDouble(ld, "max_tokens") : 256,
+                MaxPromptTokens = ld.ContainsKey("max_prompt_tokens") ? (int)AsDouble(ld, "max_prompt_tokens") : 2048,
+                AllowedKinds = ld.TryGetValue("allowed_kinds", out var ak) && ak is List<object?> akl
+                    ? akl.Where(x => x is string).Select(x => (string)x!).ToList()
+                    : new List<string>(),
+                AllowGeneral = ld.TryGetValue("allow_general", out var ag) && ag is bool agb && agb,
+                TurnGate = ld.TryGetValue("turn_gate", out var tg) && tg is bool tgb && tgb,
             };
         }
         if (section.TryGetValue("balance_schemes", out var bs) && bs is Dictionary<string, object?> schemes)

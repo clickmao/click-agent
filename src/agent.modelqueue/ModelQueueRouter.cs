@@ -100,6 +100,9 @@ public sealed class ModelQueueRouter : IModelQueueCaller
     private readonly TokenUsageService? _tokenUsage;
     private readonly FallbackConfig _fallback;
 
+    /// <summary>R413: 本地生成执行面 (null = 未注册 ⇒ 判据必拒, 全走远端 = 零回归)。</summary>
+    private readonly ILocalGenerationPort? _localPort;
+
     /// <summary>R115 (缺陷 43): 余额快照惰性 fire-once 同步器 (进程内仅一次)</summary>
     private sealed class LazyBalanceSync
     {
@@ -148,7 +151,8 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         Microsoft.Extensions.Logging.ILogger logger,
         ChannelScheduler? scheduler = null,
         TokenUsageService? tokenUsage = null,
-        FallbackConfig? fallbackConfig = null)
+        FallbackConfig? fallbackConfig = null,
+        ILocalGenerationPort? localPort = null)
     {
         _fallback = fallbackConfig ?? new FallbackConfig();
         _catalog = catalog;
@@ -156,8 +160,101 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         _httpClientFactory = httpClientFactory;
         _logger = logger;
         _tokenUsage = tokenUsage;
+        _localPort = localPort;
         Scheduler = scheduler ?? new ChannelScheduler();
     }
+
+    /// <summary>R413: 本地生成通道计数 (可观测/对账; Attempted==0 ⇒ 未尝试, 不得当"通过")。</summary>
+    public LocalChannelCounters LocalChannel { get; } = new();
+
+    /// <summary>R413: 最近一次本地通道决策 (ok / rejected:原因 / degraded:原因→remote)。</summary>
+    public string? LocalChannelLastBasis { get; private set; }
+
+    /// <summary>R413: 本地生成执行面端口 (null = 未注册)。</summary>
+    public ILocalGenerationPort? LocalPort => _localPort;
+
+    /// <summary>R413 前置门: 本地端口已注册 且 配置 <c>local.turn_gate=true</c> (默认 false ⇒ 零回归)。</summary>
+    public bool TurnGateEnabled => _localPort is not null && _catalog.LocalChannel.TurnGate;
+
+    /// <summary>
+    /// 本地通道配置就绪 (gguf 存在) — 遥测可观测: 判定「门没开」到底是配置问题还是角色问题,
+    /// 不靠猜 (R413 事故: 臂B 静默退化成臂A, 只因门未启用而无任何可观测证据)。
+    /// </summary>
+    public bool LocalChannelReady => _catalog.LocalChannel.IsReady;
+
+    /// <summary>R413 前置门计数/依据 (可观测)。</summary>
+    public TurnGateCounters TurnGate { get; } = new();
+
+    /// <summary>
+    /// R413 前置门判别: 本地端口判定「本轮是否携带新增诉求」。
+    /// 失败/空回/记账违规/无法解析 ⇒ <c>Decided=false</c> (调用方必须降级远端, 绝不静默跳过); 取消上抛。
+    /// </summary>
+    public async Task<TurnGateOutcome> JudgeTurnAsync(string userMessage, string? roleSeed, string? growthBlock, CancellationToken ct = default)
+    {
+        var port = _localPort;
+        if (port is null)
+        {
+            TurnGate.RecordDegraded("no_local_port");
+            return TurnGateOutcome.Undecided("no_local_port");
+        }
+        TurnGate.RecordJudged();
+        try
+        {
+            var outcome = await port.GenerateAsync(new LocalGenerationRequest
+            {
+                SessionKey = "r413:turn-gate",
+                TurnIndex = 1,
+                Turns = new List<LocalChatTurn> { new("user", TurnGateJudge.BuildPrompt(userMessage, roleSeed, growthBlock)) },
+                // R413 实测: 8/16 token 会被 r1 思考链吃光 ⇒ 字母没出来 (raw 取证)。128 足够判别句收尾。
+                MaxTokens = 512,   // 实测: 真链里思考链可达 250-350 tok (192 会截断在推理中途) ⇒ 给足上限, 解析只认闭合标记后的结论区
+            }, ct).ConfigureAwait(false);
+
+            if (!outcome.Success || string.IsNullOrWhiteSpace(outcome.Content))
+            {
+                TurnGate.RecordDegraded("failed_or_empty");
+                return TurnGateOutcome.Undecided(outcome.Error ?? "empty_content", outcome.Content ?? string.Empty);
+            }
+            if (!outcome.AccountingConsistent)
+            {
+                TurnGate.RecordAccountingViolation("tokens_evaluated != prompt_n + cache_n");
+                return TurnGateOutcome.Undecided("accounting_inconsistent", outcome.Content ?? string.Empty);
+            }
+
+            var verdict = TurnGateJudge.Parse(outcome.Content);
+            if (!verdict.Decided)
+            {
+                TurnGate.RecordDegraded("unparsed:" + (verdict.Raw.Length > 40 ? verdict.Raw[..40] : verdict.Raw));
+                return verdict;
+            }
+            if (verdict.Verdict == TurnGateVerdict.Skip) TurnGate.RecordSkipped();
+            else TurnGate.RecordPassed();
+            return verdict;
+        }
+        catch (OperationCanceledException) { throw; }
+        catch (Exception ex)
+        {
+            TurnGate.RecordDegraded("exception:" + ex.GetType().Name);
+            return TurnGateOutcome.Undecided("exception:" + ex.GetType().Name);
+        }
+    }
+
+    /// <summary>被跳过轮的本地回复 (本地生成; 失败 → 固定兜底串, 保持"有回复"不变式)。</summary>
+    /// <summary>
+    /// R413: 被跳过轮的回复 —— **非 LLM 模板** (确定性、零 token、零延迟)。
+    ///
+    /// 为什么不本地生成: 真机实证 (2026-09-14 臂B) — 让 r1 生成"确认语"会退化:
+    /// turn4 用户说「收到，谢谢。」它回「收到，谢谢。测试命令是什么？」(复读前文并反问),
+    /// turn6 用户说「嗯。」它回「测试命令是什么？」。纯确认轮不含新信息, 生成没有信息可加,
+    /// 只会引入幻觉; 模板串既安全又可机检 (用户 OOB 口径: 本地匹配 → 非 LLM 修/组装)。
+    /// </summary>
+    public Task<string> ComposeLocalSkipReplyAsync(string userMessage, CancellationToken ct = default)
+    {
+        TurnGate.RecordTemplateAck();
+        return Task.FromResult(LocalSkipFallback);
+    }
+
+    /// <summary>被跳过轮的回复模板 (非 LLM; 保证"有回复"不变式, 且不新增任何内容)。</summary>
+    public const string LocalSkipFallback = "收到，继续按当前方向推进，本轮不重新规划。";
 
     /// <summary>当前手动覆盖模型 id (null = auto 自动选模模式) — /model 指令与 /status 展示</summary>
     public string? ManualOverride => _manualOverride;
@@ -208,9 +305,111 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         }
     }
 
+    /// <summary>
+    /// R413: 本地生成尝试。成功 → 直接可用的 <see cref="QueueResponse"/>; 失败/空回/记账违规 → null (调用方降级远端)。
+    /// 纪律: 取消必须上抛 (绝不把取消当降级); 空内容不得当成功; 记账恒等 (tokens_evaluated == prompt_n + cache_n)
+    /// 不成立 ⇒ 结果**不采信** (R411 口径, 防"自算错而自洽")。
+    /// </summary>
+    private async Task<QueueResponse?> TryLocalAsync(QueuePrompt prompt, TaskKindHint kind, CancellationToken ct)
+    {
+        var port = _localPort!;
+        var cfg = _catalog.LocalChannel;
+
+        var turns = new List<LocalChatTurn>();
+        if (!string.IsNullOrEmpty(prompt.SystemPrompt))
+            turns.Add(new LocalChatTurn("system", prompt.SystemPrompt));
+        if (!string.IsNullOrEmpty(prompt.ContextPrompt))
+            turns.Add(new LocalChatTurn("system", prompt.ContextPrompt));
+        foreach (var h in prompt.History)
+            turns.Add(new LocalChatTurn(h.Role, h.Content));
+        turns.Add(new LocalChatTurn("user", prompt.UserMessage));
+
+        var request = new LocalGenerationRequest
+        {
+            SessionKey = prompt.SessionId,
+            TurnIndex = prompt.TurnIndex <= 0 ? 1 : prompt.TurnIndex,
+            Turns = turns,
+            MaxTokens = cfg.MaxTokens > 0 ? cfg.MaxTokens : 256,
+        };
+
+        LocalChannel.RecordAttempt();
+        LocalGenerationOutcome outcome;
+        try
+        {
+            outcome = await port.GenerateAsync(request, ct).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            LocalChannel.RecordDegrade($"exception:{ex.GetType().Name}");
+            LocalChannelLastBasis = $"local:degraded:exception:{ex.GetType().Name}→remote";
+            _logger.LogWarning("ModelQueue: 本地生成异常 ({Kind}) → 降级远端: {Msg}", kind, ex.Message);
+            return null;
+        }
+
+        if (!outcome.Success)
+        {
+            LocalChannel.RecordDegrade(outcome.Error ?? "failed");
+            LocalChannelLastBasis = $"local:degraded:{outcome.Error ?? "failed"}→remote";
+            return null;
+        }
+
+        if (string.IsNullOrWhiteSpace(outcome.Content))
+        {
+            // 空回不是成功 (本地小模型静默空输出的真实失效形态)
+            LocalChannel.RecordDegrade("empty_content");
+            LocalChannelLastBasis = "local:degraded:empty_content→remote";
+            return null;
+        }
+
+        if (!outcome.AccountingConsistent)
+        {
+            var reason = $"tokens_evaluated({outcome.TokensEvaluated}) != prompt_n({outcome.PromptNewTokens}) + cache_n({outcome.CachedTokens})";
+            LocalChannel.RecordAccountingViolation(reason);
+            LocalChannelLastBasis = "local:degraded:accounting_inconsistent→remote";
+            _logger.LogWarning("ModelQueue: 本地记账恒等违规 → 结果不采信, 降级远端: {Reason}", reason);
+            return null;
+        }
+
+        LocalChannel.RecordSuccess();
+        LocalChannelLastBasis = $"local:ok:{port.BackendId}";
+        LastSelectionBasis = $"local:{port.BackendId}";
+        return new QueueResponse
+        {
+            Content = outcome.Content,
+            Success = true,
+            Model = string.IsNullOrEmpty(outcome.Model) ? $"local:{port.BackendId}" : outcome.Model,
+            PromptTokens = outcome.TokensEvaluated,
+            TokensUsed = outcome.TokensEvaluated + outcome.GeneratedTokens,
+            CacheHitTokens = outcome.CachedTokens,
+            CacheMissTokens = outcome.PromptNewTokens,
+        };
+    }
+
     public async Task<QueueResponse> CallAsync(QueuePrompt prompt, TaskKindHint kind, string intent, CancellationToken ct = default)
     {
-        // R351 (用户钦定): 本地推理通道移除 — 全部经 API 调用 (远端目录)。
+        // R413: 本地生成通道 (计划节点: 重新整理所有能力 → 精炼合理化链管道 → 提高 KPI)。
+        // R351 (用户钦定) 移除的是**旧的「本地 LLM 使用」路径** (全走远端 API), 与本通道无关 —
+        // 新增 r1 本地生成是计划内节点 (用户 2026-09-14 口径纠正)。
+        // 判据 (预注册): 通道就绪 ∧ 非带图 ∧ 种类允许 ∧ prompt 不超限 ∧ 端口真实可用。
+        var localDecision = LocalChannelPolicy.Evaluate(prompt, kind, _catalog.LocalChannel, _localPort);
+        if (localDecision.Allowed)
+        {
+            var local = await TryLocalAsync(prompt, kind, ct).ConfigureAwait(false);
+            if (local is not null)
+                return local;
+            // 失败/记账违规 ⇒ 已计数并落 LocalChannelLastBasis, 继续走远端 (降级永不静默)
+        }
+        else
+        {
+            LocalChannel.RecordReject(localDecision.ReasonText);
+            LocalChannelLastBasis = $"local:rejected:{localDecision.ReasonText}";
+        }
+
+        // R351 (用户钦定): 旧的本地 LLM 推理通道移除 — 远端调用全部经 API (远端目录)。
         // 需求1 混合调度: 手动/粘性优先 → 通道优先级 (远端目录)
         var sticky = _catalog.Find(_manualOverride ?? _activeModelId);
         var entry = sticky

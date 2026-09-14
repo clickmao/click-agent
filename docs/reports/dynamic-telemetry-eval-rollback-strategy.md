@@ -155,7 +155,20 @@ done
 
 ## 7. 迭代状态快照（恢复迭代从这里开始）
 
-> ### ⏱ 最新状态（2026-09-14 R400 — 恢复迭代先读这里；下方为历史逐轮条目）
+> ### ⏱ 最新状态（2026-09-14 R413 — 恢复迭代先读这里；下方为历史快照）
+>
+> - **版本**: **v0.35.0 · R413 已交付（判过）**；主线 = 用户钦定「r1 真假判别 ⇒ 一轮任务总 token ↓≥30%（主要是不必要的 LLM API 请求少了）」。
+> - **HEAD**: `19aff03`(R412 收口) ← `8094faf`(bge chore) ← `4d1bf90` ← `720bce3` ← `20bf988`(R411 主体)；其后本地新增 `cd3c951` + `b29e450`(R403 裁定, cron 轮) 与本轮 R413 提交。远端 `origin/main` = `740ddf2`，**未推**（推送暂停令在效，三道机械闸在位）。
+> - **本轮判据读数（外部真值 = 桩侧逐请求落盘 + 驱动器观测）**: 臂 A（本地通道关）**12 调用 / 16,888 token** vs 臂 B（前置门开）**8 调用 / 7,007 token** ⇒ 调用 **-33.3%**、token **-58.5%**（阈值 30%）；门遥测 = 机械 Pass 3 + r1 判别 4（全 Skip）；**C1–C4 全 PASS ⇒ 判过**（`eval/rover/r413/verdict-r413.json`）。
+> - **前置门 v2**: 机械 Pass 前置（疑问句 / 新指令 / 纠正词 / 结构化实体 / 长文本 ⇒ 直接 Pass，不问 r1）+ 仅无信号短消息交 r1（二元 S/P、192 上限、只读思考块之后的结论区）+ 被跳过轮回复 = **非 LLM 模板**。
+> - **本轮两处空心根因（已修 + 已回归）**: ① 门判的是被追加过 role/计划块的 `prompt.UserMessage` ⇒ 恒 Pass、增益归零（修：判 `message.Content` + G29 源级钉死）；② 源码写入通道把尖括号字面量替换成 tokenizer 形态 ⇒ 解析器恒搜不到 = 空心降级（修：`ThinkOpen`/`ThinkClose` 字符码常量 + G24/G25 回归）。
+> - **机检 / AOT**: `LocalTurnGateTests` **46/46**；全量 **1158/0/0**（`TEST_EXIT=0`）；AOT 重发布 `PUBLISH_EXIT=0`、**IL 警告 0**、`agenthost` **15,138,848 B**。
+> - **cron（2026-09-14 现状 = 2 个）**: `9a97763d5fcd` 30m 节拍（本轮因全局推理配置漂移被 skip ⇒ 已 pin `custom/deepseek-flash` 恢复）+ `b15eb2f40a69` 60m 能力自检。删前备份 = `backups/cron-jobs-before-prune-2026-09-14.json`。
+> - **状态回填缺口（如实标注）**: 本快照自 R400 直接跳到 R413 —— **R401–R412 逐轮条目未回填**（读数分散在 `docs/improvements.md` 顶部各节 / `docs/plans/v0.3x.0-*.md` / `eval/rover/r4xx/`）；补齐属文档轮任务，不假装已同步。
+> - **诚实边界**: 单脚本 / 单模型（r1-distill-1.5b-q4km）/ 单机单次读数；机械信号表是**穷举白名单**（未覆盖的短消息仍交 r1）；桩侧逐轮归属受「后续轮 prompt 含历史文本」干扰 ⇒ 只作参考、不作判据；轮7 的 0 主调用是链侧澄清拦截、非门行为。
+> - **文档同步（本轮）**: `docs/plans/v0.35.0-r413-r1-local-verdict-token-budget.md`（§7.3–§7.6）/ `docs/improvements.md`(+R413 节) / `eval/capability/kpi.jsonl`(+1 行, 8 行) / 本块。
+>
+> ### 🗂 历史快照（2026-09-14 R400 — rover 生成链）（保留以追溯；最新状态见上方 R413 块）
 >
 > - **版本**：**v0.26.0 · R400 已交付**（rover 生成链）；本地 HEAD = `9d2191a`（R400 生成链落地）+ `f75e6f7`（R400 规划入账）+ `4cabcc5`(R399) …；远端 `origin/main` = `740ddf2` **未推**（推送暂停令在效）。
 > - **【推送暂停令 (2026-09-13 用户钦定)】**：**暂停所有 GitHub 推送** —— 三道机械闸在位（`.git/PUSH_PAUSED` + `.git/hooks/pre-push` + `remote.origin.pushurl`→不可达路径）；解除 = 删标记 + 删 hook + `git config --unset remote.origin.pushurl`。

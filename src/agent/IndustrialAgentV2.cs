@@ -80,6 +80,9 @@ public class IndustrialAgentV2 : AgentBase
     private agent.exploration.ThinkMemory? _thinkMemory;
     /// <summary>v0.13.3 R275: 联想库为**进程级**单例 (V2 实例可能每轮重建 — host 生命周期语义), 跨轮保留。
     private static readonly agent.exploration.ThinkMemory _thinkMemoryGlobal = LoadThinkMemory();
+
+    /// <summary>R413: 门配置遥测只发一次 (进程级) — 让「臂B 有没有真的开门」可观测。</summary>
+    private static int _gateConfigEmitted;
     private static readonly string _thinkMemoryPath = Path.Combine("./data", "think-memory.json");
 
     /// <summary>v0.13.3 R283: 联想库持久化 — 进程启动加载 (文件缺失/损坏 → 空库, 行为兼容)。</summary>
@@ -1403,12 +1406,75 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 // 铁律: SentContent = 最终发送字节。任何对 prompt.UserMessage 的事后追加都必须回写。
                 message.SentContent = prompt.UserMessage;
             }
-            // v0.11.0 R129 (PGO v2 D3): LLM 全段耗时 (含队列路由/余额检查; 与 llm_call.ms 差值 = 路由开销)
-            var llmSegSw = System.Diagnostics.Stopwatch.StartNew();
-            var llmResponse = await _llmCaller.CallAsync(prompt, ct);
-            llmSegSw.Stop();
-            agent.config.AgentTelemetry.Emit("phase_timing", "IndustrialAgentV2",
-                ("phase", "llm"), ("ms", llmSegSw.ElapsedMilliseconds), ("intent", intent));
+            // ── R413 前置门 (默认关; role 缺失自动失效 ⇒ 零回归) ──
+            // 语义: 本轮消息无新增诉求 (纯认可/确认/寒暄/重复) ⇒ 本地消化, 不发远端主调用
+            // ⇒ 省掉整轮 prompt (实测基线 2.4k–3.0k tok/轮)。判别失败/无法解析 ⇒ 一律降级远端。
+            LLMResponse llmResponse;
+            var gateOutcome = agent.modelqueue.TurnGateOutcome.Undecided("gate_disabled");
+            if (System.Threading.Interlocked.Exchange(ref _gateConfigEmitted, 1) == 0)
+            {
+                agent.config.AgentTelemetry.Emit("local_turn_gate_config", "IndustrialAgentV2",
+                    ("router_present", (_modelRouter is not null).ToString()),
+                    ("turn_gate_enabled", (_modelRouter?.TurnGateEnabled ?? false).ToString()),
+                    ("local_channel_ready", (_modelRouter?.LocalChannelReady ?? false).ToString()),
+                    ("role", ActiveRole?.Id ?? "(null)"));
+            }
+            if (_modelRouter is { TurnGateEnabled: true } && ActiveRole is not null)
+            {
+                // R413 实测铁律: 判别提示必须**规格化** — role 全文/成长全文灌进去会挤爆生成预算,
+                // 真机表现为输出截断在思考链中途 (无闭合标记) ⇒ 判别恒降级、增益归零。
+                // 只挂「角色标识 + 种子的有界片段」(可对账、可负控), 不灌全文。
+                // ★ 必须判「用户本轮原文」而不是 prompt.UserMessage —— 后者已被 role 块/计划续跑/微提示
+                // 追加过 (R379 Fix A), 里面必然含数字与长文本 ⇒ 机械门恒 Pass、增益归零 (真机诊断实证)。
+                if (agent.modelqueue.TurnGateJudge.MechanicalPass(message.Content))
+                {
+                    // R413 机械前置门 (零 token): 命中「疑问/新诉求/纠正/结构化实体/长文本」⇒ 直接 Pass,
+                    // 根本不问 r1 —— 假阴性 (新诉求被误跳) 是结构性风险, 不能靠小模型判对来兜。
+                    _modelRouter.TurnGate.RecordMechanicalPass();
+                    gateOutcome = agent.modelqueue.TurnGateOutcome.Decide(
+                        agent.modelqueue.TurnGateVerdict.Pass, "mechanical:pass");
+                }
+                else gateOutcome = await _modelRouter.JudgeTurnAsync(
+                    message.Content,
+                    ActiveRole.Id + "|" + agent.modelqueue.TurnGateJudge.Clip(ActiveRole.ProfileSeed, 80),
+                    null,
+                    ct).ConfigureAwait(false);
+                agent.config.AgentTelemetry.Emit("local_turn_gate", "IndustrialAgentV2",
+                    ("decided", gateOutcome.Decided ? "true" : "false"),
+                    ("verdict", gateOutcome.Verdict.ToString()),
+                    ("basis", _modelRouter.TurnGate.LastBasis ?? ""),
+                    ("raw", gateOutcome.Raw.Length > 120 ? gateOutcome.Raw[..120] : gateOutcome.Raw),
+                    ("raw_len", gateOutcome.Raw.Length.ToString()),
+                    ("error", gateOutcome.Error ?? ""),
+                    ("role", ActiveRole.Id));
+            }
+
+            if (gateOutcome.Decided && gateOutcome.Verdict == agent.modelqueue.TurnGateVerdict.Skip)
+            {
+                // 本地消化: 零远端 token (回复由本地 r1 生成, 失败 → 固定兜底串)
+                var localReply = await _modelRouter!.ComposeLocalSkipReplyAsync(prompt.UserMessage, ct).ConfigureAwait(false);
+                llmResponse = new LLMResponse
+                {
+                    Content = localReply,
+                    Success = true,
+                    Model = "local:turn-gate",
+                    PromptTokens = 0,
+                    CompletionTokens = 0,
+                    TokensUsed = 0,
+                    FinishReason = "local_turn_gate_skip",
+                };
+                agent.config.AgentTelemetry.Emit("phase_timing", "IndustrialAgentV2",
+                    ("phase", "llm_local_gate"), ("ms", 0L), ("intent", intent));
+            }
+            else
+            {
+                // v0.11.0 R129 (PGO v2 D3): LLM 全段耗时 (含队列路由/余额检查; 与 llm_call.ms 差值 = 路由开销)
+                var llmSegSw = System.Diagnostics.Stopwatch.StartNew();
+                llmResponse = await _llmCaller.CallAsync(prompt, ct);
+                llmSegSw.Stop();
+                agent.config.AgentTelemetry.Emit("phase_timing", "IndustrialAgentV2",
+                    ("phase", "llm"), ("ms", llmSegSw.ElapsedMilliseconds), ("intent", intent));
+            }
 
             // 5.1 思考结束指令 (L.2.2 指令 2 — 前端关闭思考步骤显示并折叠)
             _logRouter?.EmitThinkingEnd(llmResponse.Content.Length);

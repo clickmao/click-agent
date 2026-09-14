@@ -282,10 +282,31 @@ public static class ServiceCollectionExtensions
                 sp.GetRequiredService<agent.modelqueue.ModelCatalog>(),
                 sp.GetRequiredService<IHttpClientFactory>(),
                 sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<IndustrialAgentV2>>(),
-                tokenUsage: tokenUsageLocal);
+                tokenUsage: tokenUsageLocal,
+                localPort: sp.GetService<agent.modelqueue.ILocalGenerationPort>());
             // auto 选模主路径余额感知 — EstimateBalance (含 CNY→USD 换算) 注入排序强降权
             routerLocal.Scheduler.BalanceProbe = tokenUsageLocal.EstimateBalance;
             return routerLocal;
+        });
+        // R413: 本地生成执行面端口 (llama.cpp 长驻 llama-server; 进程 + HTTP, 零 P/Invoke)。
+        // 通道开关在 config 的 local 段 (catalog.LocalChannel.IsReady) — 未配置 ⇒ 判据必拒 = 零回归;
+        // 端口 IsAvailable 为**真实探测** (gguf 存在 ∧ 二进制可解析), 探测不确定不得当可用。
+        services.AddSingleton<agent.modelqueue.ILocalGenerationPort>(sp =>
+        {
+            var baseOpts = agent.llamacpp.LlamaCppGeneratorOptions.FromEnvironment();
+            var lc = sp.GetRequiredService<agent.modelqueue.ModelCatalog>().LocalChannel;
+            var opts = new agent.llamacpp.LlamaCppGeneratorOptions
+            {
+                ModelPath = lc.IsReady ? lc.ModelPath : baseOpts.ModelPath,
+                BinaryPath = baseOpts.BinaryPath,
+                BinaryEnvVar = baseOpts.BinaryEnvVar,
+                ContextSize = lc.IsReady && lc.ContextSize > 0 ? lc.ContextSize : baseOpts.ContextSize,
+                Threads = baseOpts.Threads,
+                StartTimeoutMs = baseOpts.StartTimeoutMs,
+                AllowRestart = baseOpts.AllowRestart,
+                MaxTokens = lc.MaxTokens > 0 ? lc.MaxTokens : baseOpts.MaxTokens,
+            };
+            return new agent.llamacpp.LlamaCppLocalGenerationPort(opts);
         });
         services.AddSingleton<ModelQueueAdapter>();
         services.AddSingleton<ILLMCaller>(sp => sp.GetRequiredService<ModelQueueAdapter>());
