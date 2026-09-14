@@ -16,4 +16,12 @@ public static class CompletionProfiles
         Samplers = greedy ? ["temperature"] : ["top_k", "top_p", "min_p", "temperature"],
         CachePrompt = reuse == CompletionReuse.Session,
     };
+
+    /// <summary>
+    /// R429: 请求级缓存策略映射 —— 决策路径 (门判/关系判官) 必须**钉死缓存态**。
+    /// 依据 (R429 传输级实测): 同一 prompt 在「全量评估」与「部分前缀复用」下 token 序列不等
+    /// (180 / 97 / 215), 并可直接翻转 S/P 判定 ⇒ 判定结果不得依赖上一次调用的缓存态。
+    /// </summary>
+    public static CompletionReuse ReuseFor(bool cacheReuse) =>
+        cacheReuse ? CompletionReuse.Session : CompletionReuse.Reconciliation;
 }

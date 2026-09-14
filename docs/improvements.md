@@ -1384,3 +1384,31 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **诚实边界（不宣称）**: ① 证的是**去重层行为**，不是召回质量提升；② 被折叠会话的 **id 不可见**（只计数为 `同文副本+N`）⇒ 若需 id 级可追溯，须让 `Hit` 携带被折叠 id 列表（本轮刻意不做，避免改渲染契约）；③ 折叠在 `topK` **之前** ⇒ 会改变原可能进入 topK 末位的候选（对「列出全部相关会话 id」类需求是行为变更）；④ 未测：>3 文档的真实长库内存/时延、**近同文**（非逐字符相同）去重、`/recall` 之外的路径。
 - **产物**: `eval/capability/r428/{run_r428.py, verdict-r428.json, README-evidence.md, stdout-*}`；计划 `docs/plans/v0.49.0-r428-duplicate-collapse.md`。
 - **下轮候选**: ① 被折叠 id 可见化（渲染/打点）；② **近同文**去重（须先过 R427 skill 闸：并列先判同一性 + 可分性预检）；③ R426 遗留首要：门与判官**争用隔离**。
+
+## R429 · 决策路径缓存态钉死（门判 / 关系判官）
+
+**问题（因果链）**：门判与关系判官共用同一个本地推理进程的**单 slot 前缀缓存**（`LlamaCppLocalGenerationPort` 一律 `CompletionReuse.Session`）
+⇒ 「缓存命中多少」由**上一次调用了什么**决定（单飞信号量只排除并发，排除不了调用序列）
+⇒ 同一 prompt 的生成序列随缓存态漂移 ⇒ **判定不可复现**（R426 诚实边界 ① 的 k8 门判翻转）。
+
+**机制取证（传输级，N=5 轮，同一条 gate prompt）**：cache 开 ⇒ `warm/back/mix/mix2` = `197/197/97/197` token（cache_n `226/226/213/226`），
+每轮复现同一形态；cache 关 ⇒ `off1/off2/off3` = `180/180/180`（cache_n 恒 0），5/5 轮逐位相同。
+⇒ **旧式必红 ∧ 新式必绿**（P1/P2/P3 过）。
+
+**产品级取证（真角色 + 真链，同文重复网格）**：同一条用户消息被问到 r1 门 4 次 ——
+改动前 `Pass/Skip/Skip/Skip`（raw_len `148/106/247/102`，判定与文本都不恒定）；改动后 `Skip×4`（`cache_n` 恒 0、`pinned` 1→4），
+同配置重复轮仍 `Skip×4`。远端调用 **4 → 2~3**、token **4243 → 2053~2101**（−51.6%）。
+归因机检：`alignment_ok=true ∧ attribution_ok=true`（顺序分区 + 回复形态交叉校验）。
+
+**改动**：`LocalGenerationRequest.CacheReuse`（默认 true = 逐位零回归）+ `CompletionProfiles.ReuseFor`（唯一映射点）
++ 门判/判官两处显式 `CacheReuse=false` + `TurnGate.CachePinned`/`LastCachedTokens`、`RelationJudgeCounters.CachePinned`
++ 门判 telemetry `cache_n`/`pinned` + 新测 7 例 + repo skill `decision-path-determinism`。
+
+**诚实边界**：① P4 **未过**——传输级 20 次 cache-on 门判全为 P，未观测到 S/P 翻转 ⇒ 只证「判定**输入**不可复现」（弱宣称）；
+② P5c **证伪**——钉死后 raw_len 仍 4 种取值（`113/105/102/100`；重复轮 `128/108/111/113`）⇒ 文本**逐位**复现未达成，
+宣称收窄为「判定结论恒定」；③ 本地判官在本配置**未生效**（2/2 `remote_fallback`、45/66 s，被门判占满单飞槽）；
+④ 判别力负控落空（k8p 的新诉求消息走「[隔离任务]」旁路，没进 r1 门）⇒ 「钉死后门仍能 Pass」**无证据**；
+⑤ 传输级 prompt 由产物代码重建（角色种子等长占位）；⑥ KPI 有轮间抖动（远端调用 2 vs 3）。
+
+**下轮候选**：① 逐位可复现的残余来源（采样档 / 线程归约 / 服务端状态）；② 门与判官的**真隔离**（独立 slot `id_slot` 或独立进程，
+本轮只证「关缓存」这一种隔离）；③ 构造能进 r1 门的新诉求网格（补判别力负控）；④ 打点把规则层单列 `rule`。

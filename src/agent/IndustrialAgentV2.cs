@@ -1491,6 +1491,9 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     ("raw", gateOutcome.Raw.Length > 120 ? gateOutcome.Raw[..120] : gateOutcome.Raw),
                     ("raw_len", gateOutcome.Raw.Length.ToString()),
                     ("error", gateOutcome.Error ?? ""),
+                    // R429: 决策路径缓存钉死可观测 —— cache_n 应恒为 0 (关前缀缓存), pinned = 累计钉死次数
+                    ("cache_n", _modelRouter.TurnGate.LastCachedTokens.ToString()),
+                    ("pinned", _modelRouter.TurnGate.CachePinned.ToString()),
                     ("role", ActiveRole.Id));
             }
 

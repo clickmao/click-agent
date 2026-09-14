@@ -300,6 +300,15 @@
    "DocRef": "docs/plans/v0.49.0-r428-duplicate-collapse.md",
    "Evidence": "eval/capability/r428/verdict-r428.json",
    "Summary": "规范化正文逐字符相同的命中折叠为全序首者(score desc → SessionId Ordinal asc), 折叠数记入 Hit.CollapsedDuplicates 并渲染 同文副本+N; 真机成对 PASS(C1–C7+C2b): 语料A 3→2(p005→p004), 语料D(不同文同分负控)不折叠, 保留者分数逐位不变, 0 LLM; 零参数/零阈值/零开关; AOT IL 0, env -i 自启"
+  },
+  {
+   "Id": "dev-r429-decision-cache-pin",
+   "Title": "决策路径缓存态钉死: 门判/关系判官关前缀缓存 (R429)",
+   "State": "done",
+   "Round": "R429",
+   "DocRef": "docs/plans/v0.50.0-r429-decision-cache-pin.md",
+   "Evidence": "eval/rover/r429/verdict-r429.json",
+   "Summary": "门判与判官共用单 slot 前缀缓存 ⇒ 命中态由调用序列决定 ⇒ 同一 prompt 生成不同 ⇒ 判定不可复现(PRE 同文4次 = Pass/Skip/Skip/Skip)。决策路径显式 CacheReuse=false(默认 true 零回归), 门判 telemetry 增 cache_n/pinned; POST 门判 Skip×4 恒定/cache_n 恒 0/pinned 1→4/远端调用 4→2~3/token 4243→2053。P1/P2/P3/P5a/P5b/P6 过; P4/P5c 未过(如实收窄: 判定输入不可复现已证, 判定翻转与文本逐位复现未证)。AOT IL 0, 15,176,432 B"
   }
  ]
 }

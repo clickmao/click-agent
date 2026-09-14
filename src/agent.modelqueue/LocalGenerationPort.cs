@@ -39,6 +39,14 @@ public sealed class LocalGenerationRequest
     public int TurnIndex { get; init; } = 1;
     public List<LocalChatTurn> Turns { get; init; } = new();
     public int MaxTokens { get; init; } = 256;
+
+    /// <summary>
+    /// R429 决策路径缓存钉死: false ⇒ 该次生成本地关前缀缓存 (CompletionReuse.Reconciliation)。
+    /// 默认 true = 既有生产口径 (逐位零回归)。
+    /// 依据 (R429 传输级实测): 同一 prompt 在「全量评估」与「部分前缀复用」下 token 序列不等
+    /// (180 / 97 / 215), 且可出现 S/P 判定翻转 ⇒ 决策路径不得依赖缓存复用。
+    /// </summary>
+    public bool CacheReuse { get; init; } = true;
 }
 
 /// <summary>
@@ -410,6 +418,9 @@ public sealed class TurnGateCounters
 
     private long _templateAcks;
 
+    private long _cachePinned;
+    private int _lastCachedTokens;
+
     public long Judged => Interlocked.Read(ref _judged);
     public long MechanicalPasses => Interlocked.Read(ref _mechanicalPasses);
     public long TemplateAcks => Interlocked.Read(ref _templateAcks);
@@ -417,6 +428,13 @@ public sealed class TurnGateCounters
     public long Passed => Interlocked.Read(ref _passed);
     public long Degraded => Interlocked.Read(ref _degraded);
     public long AccountingViolations => Interlocked.Read(ref _accountingViolations);
+
+    /// <summary>R429: 门判显式关前缀缓存的次数 (端口纪律: 被使用计数必须可观测)。</summary>
+    public long CachePinned => Interlocked.Read(ref _cachePinned);
+
+    /// <summary>R429: 最近一次门判的缓存命中数 (cache_n) — 钉死后应恒为 0。</summary>
+    public int LastCachedTokens => Volatile.Read(ref _lastCachedTokens);
+
     public string? LastBasis { get; private set; }
 
     /// <summary>机械前置门命中 (零 token 直接 Pass, 未询问 r1) — 必须可观测, 否则看不出"省了判别"。</summary>
@@ -440,6 +458,13 @@ public sealed class TurnGateCounters
         Interlocked.Increment(ref _accountingViolations);
         LastBasis = "gate:accounting_violation:" + reason + "→remote";
     }
+
+    /// <summary>R429: 门判请求已钉死缓存态 (显式关前缀缓存 + 记录本次 cache_n)。</summary>
+    public void RecordCachePinned(int cachedTokens)
+    {
+        Interlocked.Increment(ref _cachePinned);
+        Volatile.Write(ref _lastCachedTokens, cachedTokens);
+    }
 }
 
 /// <summary>R426: 本地关系判官结论 (字母 ∈ {C,A,N}; 交给 CorrectionDetector 的解析面, 不另立语义)。</summary>
@@ -452,15 +477,23 @@ public sealed class RelationJudgeCounters
     private long _local;
     private long _fallback;
     private long _accountingViolations;
+    private long _cachePinned;
 
     public long Attempts => Interlocked.Read(ref _attempts);
     public long Local => Interlocked.Read(ref _local);
     public long Fallback => Interlocked.Read(ref _fallback);
     public long AccountingViolations => Interlocked.Read(ref _accountingViolations);
+
+    /// <summary>R429: 判官显式关前缀缓存的次数。</summary>
+    public long CachePinned => Interlocked.Read(ref _cachePinned);
+
     public string? LastSource { get; private set; }
     public string? LastLetter { get; private set; }
 
     public void RecordAttempt() => Interlocked.Increment(ref _attempts);
+
+    /// <summary>R429: 判官请求已钉死缓存态 (显式关前缀缓存)。</summary>
+    public void RecordCachePinned() => Interlocked.Increment(ref _cachePinned);
 
     public void RecordLocal(string letter)
     {

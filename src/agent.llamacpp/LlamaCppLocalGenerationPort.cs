@@ -51,7 +51,7 @@ public sealed class LlamaCppLocalGenerationPort : ILocalGenerationPort, IAsyncDi
                     sessionKey: request.SessionKey,
                     turnIndex: request.TurnIndex,
                     maxTokens: request.MaxTokens,
-                    reuse: CompletionReuse.Session,
+                    reuse: CompletionProfiles.ReuseFor(request.CacheReuse),
                     ct: ct)
                 .ConfigureAwait(false);
 

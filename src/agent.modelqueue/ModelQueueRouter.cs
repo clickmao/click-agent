@@ -211,7 +211,11 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                 Turns = new List<LocalChatTurn> { new("user", TurnGateJudge.BuildPrompt(userMessage, roleSeed, growthBlock)) },
                 // R413 实测: 8/16 token 会被 r1 思考链吃光 ⇒ 字母没出来 (raw 取证)。128 足够判别句收尾。
                 MaxTokens = 512,   // 实测: 真链里思考链可达 250-350 tok (192 会截断在推理中途) ⇒ 给足上限, 解析只认闭合标记后的结论区
+                // R429: 决策路径钉死缓存态 —— 同一 prompt 在「全量评估」与「部分前缀复用」下 token 序列不等
+                // (传输级实测 180/97/215, 可致 S/P 翻转) ⇒ 门判不得依赖前缀缓存复用。
+                CacheReuse = false,
             }, ct).ConfigureAwait(false);
+            TurnGate.RecordCachePinned(outcome.CachedTokens);
 
             if (!outcome.Success || string.IsNullOrWhiteSpace(outcome.Content))
             {
@@ -286,7 +290,10 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                 TurnIndex = 1,
                 Turns = turns,
                 MaxTokens = maxTokens,
+                // R429: 关系判官同为决策路径 ⇒ 同样钉死缓存态。
+                CacheReuse = false,
             }, ct).ConfigureAwait(false);
+            RelationJudge.RecordCachePinned();
 
             if (!outcome.Success || string.IsNullOrWhiteSpace(outcome.Content))
             {

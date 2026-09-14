@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R428",
+  "updated_round": "R429",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -951,6 +951,23 @@
       "covers": [
         "src/agent/session/SessionHistorySearch.cs",
         "src/agent.tests/SessionHistorySearchTests.cs"
+      ]
+    },
+    {
+      "id": "r429.decision-cache-pin",
+      "owner_round": "R429",
+      "level": "L3",
+      "capability": "决策路径（门判 + 关系判官）缓存态钉死：门判与判官共用同一本地推理单 slot 的前缀缓存 ⇒ 命中/未命中由**调用序列**决定 ⇒ 同一 prompt 生成序列不同 ⇒ 判定不可复现（PRE: 同文 4 次门判 Pass/Skip/Skip/Skip, raw_len 148/106/247/102）。改动：决策路径显式关前缀缓存（CacheReuse=false ⇒ Reconciliation）；非决策路径默认不变（零回归）。POST: 门判 Skip×4 恒定、cache_n 恒 0、pinned 1→4、远端调用 4→2~3、token 4243→2053~2101。",
+      "evidence_cmd": "bash eval/rover/r429/run_arm.sh C k8r 47920 47921 /home/agentuser/AgentFramework/skeptic.rbin",
+      "evidence_path": "eval/rover/r429/README-evidence.md",
+      "negative_control": "① 无端口负控: 无本地端口 ⇒ JudgeTurnAsync 返回 no_local_port 且 CachePinned 保持 0（计数绑定真实请求, 不空心）; ② 全仓不变量: 只有 ModelQueueRouter 两处决策路径置 CacheReuse=false（非决策路径零回归）; ③ 传输级负控: 换用户消息 ⇒ token 序列必不同（仪器有判别力）; ④ PRE（改动前二进制）同网格判定不恒定 ⇒ 判据对「未修」态有判别力; ⑤ V0 形态闸: env -i 自启 + IL apphost 负控必拒",
+      "covers": [
+        "src/agent.modelqueue/LocalGenerationPort.cs",
+        "src/agent.modelqueue/ModelQueueRouter.cs",
+        "src/agent.llamacpp/CompletionProfiles.cs",
+        "src/agent.llamacpp/LlamaCppLocalGenerationPort.cs",
+        "src/agent.tests/DecisionCachePinTests.cs",
+        "skills/decision-path-determinism/SKILL.md"
       ]
     }
   ],
