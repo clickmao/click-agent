@@ -1,0 +1,425 @@
+{
+  "arm": "C",
+  "grid": "r432dp2",
+  "ns": "r432dp2",
+  "binary": "/tmp/pub_r430b/agenthost",
+  "binary_sha256": "bb104dd7f2a021b0f63318ffe5dee474cd54152881cc56008aa7575687e08c08",
+  "binary_bytes": 15180528,
+  "remote_calls": 9,
+  "prompt_tokens_est": 2371,
+  "completion_tokens_est": 63,
+  "total_tokens_est": 2434,
+  "gate_records_all": 12,
+  "gate_r1": 11,
+  "gate_mechanical": 1,
+  "alignment_ok": true,
+  "alignment_unmatched": [],
+  "alignment_ambiguous": [],
+  "attribution_ok": false,
+  "isolation_hits": [],
+  "gated_positions": [
+    1,
+    2,
+    4,
+    6,
+    8,
+    10,
+    11,
+    12,
+    13,
+    14,
+    16,
+    18
+  ],
+  "ungated_positions": [
+    3,
+    5,
+    7,
+    9,
+    15,
+    17,
+    19
+  ],
+  "sequence": [
+    {
+      "pos": 1,
+      "family": "seed",
+      "msg": "我们来把本地判定的可复现性收口。",
+      "branch": "mechanical",
+      "decided": "true",
+      "verdict": "Pass",
+      "decision": "Pass",
+      "basis": "mechanical:pass→remote",
+      "raw_len": "15",
+      "raw_prefix_sha16": "36fb9b3f3eddbb95",
+      "cache_n": "0",
+      "pinned": "0",
+      "prompt_sha": "",
+      "request_sha": "",
+      "remote_calls_in_window": 1,
+      "reply_shape": "stub"
+    },
+    {
+      "pos": 2,
+      "family": "ack",
+      "msg": "好的",
+      "branch": "r1",
+      "decided": "true",
+      "verdict": "Skip",
+      "decision": "Skip",
+      "basis": "gate:skip→local",
+      "raw_len": "474",
+      "raw_prefix_sha16": "a904ac468284c2bc",
+      "cache_n": "0",
+      "pinned": "1",
+      "prompt_sha": "3065398fd8ecf708",
+      "request_sha": "9f47b44ed3c15a81",
+      "remote_calls_in_window": 0,
+      "reply_shape": "local"
+    },
+    {
+      "pos": 4,
+      "family": "ack",
+      "msg": "好的",
+      "branch": "r1",
+      "decided": "true",
+      "verdict": "Skip",
+      "decision": "Skip",
+      "basis": "gate:skip→local",
+      "raw_len": "474",
+      "raw_prefix_sha16": "a904ac468284c2bc",
+      "cache_n": "0",
+      "pinned": "2",
+      "prompt_sha": "3065398fd8ecf708",
+      "request_sha": "9f47b44ed3c15a81",
+      "remote_calls_in_window": 0,
+      "reply_shape": "local"
+    },
+    {
+      "pos": 6,
+      "family": "cont",
+      "msg": "继续",
+      "branch": "r1",
+      "decided": "true",
+      "verdict": "Skip",
+      "decision": "Skip",
+      "basis": "gate:skip→local",
+      "raw_len": "323",
+      "raw_prefix_sha16": "c9a36108af80fe61",
+      "cache_n": "0",
+      "pinned": "3",
+      "prompt_sha": "0611a0af67bf4758",
+      "request_sha": "25dc07c78c05d435",
+      "remote_calls_in_window": 0,
+      "reply_shape": "local"
+    },
+    {
+      "pos": 8,
+      "family": "cont",
+      "msg": "继续",
+      "branch": "r1",
+      "decided": "true",
+      "verdict": "Skip",
+      "decision": "Skip",
+      "basis": "gate:skip→local",
+      "raw_len": "323",
+      "raw_prefix_sha16": "c9a36108af80fe61",
+      "cache_n": "0",
+      "pinned": "4",
+      "prompt_sha": "0611a0af67bf4758",
+      "request_sha": "25dc07c78c05d435",
+      "remote_calls_in_window": 1,
+      "reply_shape": "local"
+    },
+    {
+      "pos": 10,
+      "family": "adversarial_correct",
+      "msg": "重来一次",
+      "branch": "r1",
+      "decided": "true",
+      "verdict": "Skip",
+      "decision": "Skip",
+      "basis": "gate:skip→local",
+      "raw_len": "185",
+      "raw_prefix_sha16": "521b5769a651a165",
+      "cache_n": "0",
+      "pinned": "5",
+      "prompt_sha": "32ea280f13173f92",
+      "request_sha": "43b19ad6a0c0cb0c",
+      "remote_calls_in_window": 1,
+      "reply_shape": "local"
+    },
+    {
+      "pos": 11,
+      "family": "adversarial_correct",
+      "msg": "重来一次",
+      "branch": "r1",
+      "decided": "true",
+      "verdict": "Skip",
+      "decision": "Skip",
+      "basis": "gate:skip→local",
+      "raw_len": "185",
+      "raw_prefix_sha16": "521b5769a651a165",
+      "cache_n": "0",
+      "pinned": "6",
+      "prompt_sha": "32ea280f13173f92",
+      "request_sha": "43b19ad6a0c0cb0c",
+      "remote_calls_in_window": 1,
+      "reply_shape": "local"
+    },
+    {
+      "pos": 12,
+      "family": "adversarial_correct",
+      "msg": "重来一次",
+      "branch": "r1",
+      "decided": "true",
+      "verdict": "Skip",
+      "decision": "Skip",
+      "basis": "gate:skip→local",
+      "raw_len": "185",
+      "raw_prefix_sha16": "521b5769a651a165",
+      "cache_n": "0",
+      "pinned": "7",
+      "prompt_sha": "32ea280f13173f92",
+      "request_sha": "43b19ad6a0c0cb0c",
+      "remote_calls_in_window": 1,
+      "reply_shape": "local"
+    },
+    {
+      "pos": 13,
+      "family": "adversarial_correct",
+      "msg": "重来一次",
+      "branch": "r1",
+      "decided": "true",
+      "verdict": "Skip",
+      "decision": "Skip",
+      "basis": "gate:skip→local",
+      "raw_len": "185",
+      "raw_prefix_sha16": "521b5769a651a165",
+      "cache_n": "0",
+      "pinned": "8",
+      "prompt_sha": "32ea280f13173f92",
+      "request_sha": "43b19ad6a0c0cb0c",
+      "remote_calls_in_window": 1,
+      "reply_shape": "local"
+    },
+    {
+      "pos": 14,
+      "family": "adversarial_park",
+      "msg": "那个方案先放放",
+      "branch": "r1",
+      "decided": "true",
+      "verdict": "Skip",
+      "decision": "Skip",
+      "basis": "gate:skip→local",
+      "raw_len": "261",
+      "raw_prefix_sha16": "accf72afc420383e",
+      "cache_n": "0",
+      "pinned": "9",
+      "prompt_sha": "f2c0e867c06ef80d",
+      "request_sha": "8cfd4fb9eaf5618b",
+      "remote_calls_in_window": 1,
+      "reply_shape": "local"
+    },
+    {
+      "pos": 16,
+      "family": "adversarial_park",
+      "msg": "那个方案先放放",
+      "branch": "r1",
+      "decided": "true",
+      "verdict": "Skip",
+      "decision": "Skip",
+      "basis": "gate:skip→local",
+      "raw_len": "261",
+      "raw_prefix_sha16": "accf72afc420383e",
+      "cache_n": "0",
+      "pinned": "10",
+      "prompt_sha": "f2c0e867c06ef80d",
+      "request_sha": "8cfd4fb9eaf5618b",
+      "remote_calls_in_window": 1,
+      "reply_shape": "local"
+    },
+    {
+      "pos": 18,
+      "family": "filler",
+      "msg": "嗯",
+      "branch": "r1",
+      "decided": "true",
+      "verdict": "Skip",
+      "decision": "Skip",
+      "basis": "gate:skip→local",
+      "raw_len": "170",
+      "raw_prefix_sha16": "070284d657468e98",
+      "cache_n": "0",
+      "pinned": "11",
+      "prompt_sha": "09d8c8d00c381acd",
+      "request_sha": "036e6c4299d4df29",
+      "remote_calls_in_window": 1,
+      "reply_shape": "local"
+    }
+  ],
+  "r1_decisions": [
+    "Skip",
+    "Skip",
+    "Skip",
+    "Skip",
+    "Skip",
+    "Skip",
+    "Skip",
+    "Skip",
+    "Skip",
+    "Skip",
+    "Skip"
+  ],
+  "r1_decisions_identical": true,
+  "r1_has_pass": false,
+  "r1_has_skip": true,
+  "undecided": 0,
+  "C1_r1_discriminates": false,
+  "C1p_pair_discriminates": true,
+  "C2_ack_repeat_stable": true,
+  "C2_cont_repeat_stable": true,
+  "C2_details": {
+    "ack": {
+      "decisions": [
+        "Skip",
+        "Skip"
+      ],
+      "raw_len": [
+        "474",
+        "474"
+      ],
+      "raw_prefix_sha16": [
+        "a904ac468284c2bc",
+        "a904ac468284c2bc"
+      ],
+      "prompt_sha": [
+        "3065398fd8ecf708"
+      ]
+    },
+    "cont": {
+      "decisions": [
+        "Skip",
+        "Skip"
+      ],
+      "raw_len": [
+        "323",
+        "323"
+      ],
+      "raw_prefix_sha16": [
+        "c9a36108af80fe61",
+        "c9a36108af80fe61"
+      ],
+      "prompt_sha": [
+        "0611a0af67bf4758"
+      ]
+    },
+    "adversarial_correct": {
+      "decisions": [
+        "Skip",
+        "Skip",
+        "Skip",
+        "Skip"
+      ],
+      "raw_len": [
+        "185",
+        "185",
+        "185",
+        "185"
+      ],
+      "raw_prefix_sha16": [
+        "521b5769a651a165",
+        "521b5769a651a165",
+        "521b5769a651a165",
+        "521b5769a651a165"
+      ],
+      "prompt_sha": [
+        "32ea280f13173f92"
+      ]
+    },
+    "adversarial_park": {
+      "decisions": [
+        "Skip",
+        "Skip"
+      ],
+      "raw_len": [
+        "261",
+        "261"
+      ],
+      "raw_prefix_sha16": [
+        "accf72afc420383e",
+        "accf72afc420383e"
+      ],
+      "prompt_sha": [
+        "f2c0e867c06ef80d"
+      ]
+    }
+  },
+  "C3_alignment_and_attribution": false,
+  "C4_no_isolation": true,
+  "C5_mechanical_control_ok": false,
+  "cache_n_seq": [
+    "0",
+    "0",
+    "0",
+    "0",
+    "0",
+    "0",
+    "0",
+    "0",
+    "0",
+    "0",
+    "0"
+  ],
+  "pinned_seq": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11"
+  ],
+  "raw_len_seq": [
+    "474",
+    "474",
+    "323",
+    "323",
+    "185",
+    "185",
+    "185",
+    "185",
+    "261",
+    "261",
+    "170"
+  ],
+  "family_decisions": {
+    "ack": [
+      "Skip",
+      "Skip"
+    ],
+    "adversarial_correct": [
+      "Skip",
+      "Skip",
+      "Skip",
+      "Skip"
+    ],
+    "adversarial_park": [
+      "Skip",
+      "Skip"
+    ],
+    "cont": [
+      "Skip",
+      "Skip"
+    ],
+    "filler": [
+      "Skip"
+    ]
+  },
+  "verdict_rule": "PASS = C1 and C2ack and C2cont and C3 and C4 and C5; PARTIAL = (not C1) and C1p and C2ack and C2cont and C3 and C4 and C5; FAIL = (not C3) or (not C4) or (not C5); UNDECIDED = no r1 reading",
+  "verdict": "FAIL"
+}

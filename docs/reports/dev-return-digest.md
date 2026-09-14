@@ -36,6 +36,10 @@
 | r429 | verdict-r429.json | **?** | 0 | `n/a` |
 | r430 | verdict-C-k8r-r430fix1.json | **?** | 8 | `bool_fields` |
 | r430 | verdict-C-k8r-r430post1.json | **?** | 8 | `bool_fields` |
+| r431 | verdict-C-k8r-b431.json | **?** | 12 | `bool_fields` |
+| r431 | verdict-C-k8r-g431.json | **?** | 12 | `bool_fields` |
+| r432 | verdict-C-r432dp-r432dp1.json | **FAIL** | 12 | `bool_fields` |
+| r432 | verdict-C-r432dp2-r432dp2.json | **FAIL** | 12 | `bool_fields` |
 | r421 | verdict-r421.json | **PASS** | 13 | `checks` |
 | r422 | verdict-r422.json | **PARTIAL** | 8 | `checks` |
 | r423 | verdict-r423-run1-predictor-error.json | **FAIL** | 7 | `checks` |
@@ -87,10 +91,13 @@
 
 ## 4. 轮次提交（本地；推送暂停令生效）
 
-- 未推送提交数: **92**
+- 未推送提交数: **96**
 
 | commit | 主题 |
 |---|---|
+| `e7d99e4` | exp1-Q3b 附录B: 补 396->400 文件口径机检说明（对侧 R430/R431 新增 4 个 src/**.cs，非口径变化） |
+| `f319198` | R431: role 额外数据(成长经历)有界挂载进 r1 门判 + 挂载可机检 |
+| `0164cbe` | digest: R430 重建 (含 skill v1.1.0 提交) |
 | `627dd23` | R430: 判定输入指纹 ⇒ 服务端总槽位：决策路径逐位可复现（R429 P5c 收口） |
 | `daa1b92` | digest: R429 重建 (143 行, ahead=87) |
 | `14b6156` | R429: 决策路径缓存态钉死 (门判/关系判官) —— R426 争用归因的产品落地 |
@@ -109,15 +116,11 @@
 | `c8c4652` | R422 跨会话检索打分校准(文档长度归一) + 附带修复词袋 embedding 溢出/随机哈希 |
 | `37d6997` | R421 跨会话检索否定极性: 否定标记(不没未无五)紧邻词元带极性问题(¬存在≠存在) ⇒ `/recall 不存在` 3命中→0 |
 | `7d3165b` | R420 L2-待办①/L7-G1 跨会话检索接线: /recall 本地指令(四表同步, 零LLM, recall_query 通道级打点) + 接线前产物负控(recall_query=0/llm_call=1) + 单测28/28 + 表单13/13; 真机暴露否定无感假阳性(下轮候选, 未修) (未推) |
-| `05b8c94` | R419 收口: 探针多轮化仪器达成 + 真机读数未稳定分化(3/4 饱和) + 三个仪器缺陷修(坏字节崩/NS覆盖/可见性) |
-| `98339a8` | R419 §4/§5: 探针多轮化落地 + 成对控制 + 真机复数（预注册判据反向红） |
-| `77a49bc` | R419: 会话续跑决定性微实验 PASS(同 sid 跨进程 4271 命中) + 口径坑记录(turn N 是进程内轮次, 轮数须取归档文件数) (未推) |
-| `695d6ba` | R419 起步存档: 探针多轮化立案(轮数/首次通过率从恒等变可分化) + 决定性微实验待跑 (未推) |
 
 ## 5. 台账
 
-- `docs/verification-registry.json`: **64** 行, updated_round = **R430**
-- `eval/capability/kpi.jsonl` 已记轮次: R402, loop-mechanism, R401, R411-V, R403-scope, R413, R414, R415, R416, R419, R420, R421, R422, R423, R424, R425, R427, R428, R428-hold, R429, EXP1-Q3, R430
+- `docs/verification-registry.json`: **66** 行, updated_round = **R432**
+- `eval/capability/kpi.jsonl` 已记轮次: R402, loop-mechanism, R401, R411-V, R403-scope, R413, R414, R415, R416, R419, R420, R421, R422, R423, R424, R425, R427, R428, R428-hold, R429, EXP1-Q3, R430, EXP1-Q3b, R432
 - 已知盲区: 状态检测器只读 `data/probe/kpi.jsonl`; 轮次台账另有 `data/probe/capability/kpi.jsonl`（孤儿）
 - **轮号命名空间（R423 实证，轮内已消解）**: 轮号取 `max+1` 前必须复跑「pgrep 活动执行体 + 锁文件 + 目标轮文件存在时比对 mtime（>10min 才算 stale）」全序列。R423 曾与并发执行体撞号（本侧=检索打分；对侧=AOT 发布形态复现），对侧随后**让号**至 R424（`eval/rover/r424/` + `docs/plans/v0.45.0-r424-aot-mainline-replication.md`）⇒ 最终 R423=检索打分 / R424=AOT 形态复现。**处置纪律**: 碰撞当一等事件（两支都登记、不改写历史、不静默改名）；提交只用**显式路径**（禁 `git add -A`，防卷入对侧未跟踪产物）。
 

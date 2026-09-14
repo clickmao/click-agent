@@ -1,0 +1,62 @@
+{
+  "note": "R432 门判别力网格 v2 (偏移无关): 每族 4 连排 ⇒ 无论奇偶位被上一轮 ask 消费, 被门判到的读数都属同族同文; 机械负控置于实测可达位 (奇数位, 由臂1 机检 gated=奇数位 推得)。",
+  "ratio_k": 19,
+  "turn_timeout_s": 900,
+  "turns": [
+    "我们来把本地判定的可复现性收口。",
+    "好的",
+    "好的",
+    "好的",
+    "好的",
+    "继续",
+    "继续",
+    "继续",
+    "继续",
+    "重来一次",
+    "重来一次",
+    "重来一次",
+    "重来一次",
+    "那个方案先放放",
+    "那个方案先放放",
+    "那个方案先放放",
+    "那个方案先放放",
+    "嗯",
+    "现在的情况如何？"
+  ],
+  "family": [
+    "seed",
+    "ack",
+    "ack",
+    "ack",
+    "ack",
+    "cont",
+    "cont",
+    "cont",
+    "cont",
+    "adversarial_correct",
+    "adversarial_correct",
+    "adversarial_correct",
+    "adversarial_correct",
+    "adversarial_park",
+    "adversarial_park",
+    "adversarial_park",
+    "adversarial_park",
+    "filler",
+    "mechanical_control"
+  ],
+  "r1_positions": [
+    3,
+    5,
+    7,
+    9,
+    11,
+    13,
+    15,
+    17
+  ],
+  "mechanical_positions": [
+    1,
+    19
+  ],
+  "derivation": "臂1 机检: seed 回复含问询 ⇒ 其下一轮被消费进计划参数槽 ⇒ 可达位为奇数位 (3,5,7,9,11,13,15,17)。本网格据此把每族文本 4 连排 + 负控置 pos19。"
+}

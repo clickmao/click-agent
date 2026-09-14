@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R431",
+  "updated_round": "R432",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -1009,6 +1009,22 @@
         "src/agent.modelqueue/LocalGenerationPort.cs:TurnGateCounters",
         "src/agent.roles/RoleGrowthLedger.cs:DomainCount",
         "src/agent.tests/TurnGateGrowthMountTests.cs:9"
+      ]
+    },
+    {
+      "id": "r432.turn-gate-discrimination-pair",
+      "owner_round": "R432",
+      "level": "L3",
+      "capability": "门判**判别力与确定性成对**（残余带内，臂 2 裁决）: ① 判别力 = 机械前置门（零 token）与 r1 判官在同一网格产出不同判决（机械 Pass vs r1 Skip 并存；r1 侧若 Pass/Skip 混存则内层判别力亦成立）; ② 确定性 = 同文重复（ack/cont 各≥2 条）判定与 raw 恒定; ③ 归因 = 门判定按 telemetry ts 落入唯一轮时间窗（顺序分区）+ 桩侧逐请求时间戳交叉校验（Pass ⇔ 窗内远端调用≥1）。臂 2 读数: {\"verdict\": \"FAIL\", \"gate_records_all\": 12, \"gate_r1\": 11, \"gate_mechanical\": 1, \"gated_positions\": [1, 2, 4, 6, 8, 10, 11, 12, 13, 14, 16, 18], \"ungated_positions\": [3, 5, 7, 9, 15, 17, 19], \"r1_decisions\": [\"Skip\", \"Skip\", \"Skip\", \"Skip\", \"Skip\", \"Skip\", \"Skip\", \"Skip\", \"Skip\", \"Skip\", \"Skip\"], \"raw_len_seq\": [\"474\", \"474\", \"323\", \"323\", \"185\", \"185\", \"185\", \"185\", \"261\", \"261\", \"170\"], \"cache_n_seq\": [\"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\"], \"family_decisions\": {\"ack\": [\"Skip\", \"Skip\"], \"adversarial_correct\": [\"Skip\", \"Skip\", \"Skip\", \"Skip\"], \"adversarial_park\": [\"Skip\", \"Skip\"], \"cont\": [\"Skip\", \"Skip\"], \"filler\": [\"Skip\"]}, \"C2_details\": {\"ack\": {\"decisions\": [\"Skip\", \"Skip\"], \"raw_len\": [\"474\", \"474\"], \"raw_prefix_sha16\": [\"a904ac468284c2bc\", \"a904ac468284c2bc\"], \"prompt_sha\": [\"3065398fd8ecf708\"]}, \"cont\": {\"decisions\": [\"Skip\", \"Skip\"], \"raw_len\": [\"323\", \"323\"], \"raw_prefix_sha16\": [\"c9a36108af80fe61\", \"c9a36108af80fe61\"], \"prompt_sha\": [\"0611a0af67bf4758\"]}, \"adversarial_correct\": {\"decisions\": [\"Skip\", \"Skip\", \"Skip\", \"Skip\"], \"raw_len\": [\"185\", \"185\", \"185\", \"185\"], \"raw_prefix_sha16\": [\"521b5769a651a165\", \"521b5769a651a165\", \"521b5769a651a165\", \"521b5769a651a165\"], \"prompt_sha\": [\"32ea280f13173f92\"]}, \"adversarial_park\": {\"decisions\": [\"Skip\", \"Skip\"], \"raw_len\": [\"261\", \"261\"], \"raw_prefix_sha16\": [\"accf72afc420383e\", \"accf72afc420383e\"], \"prompt_sha\": [\"f2c0e867c06ef80d\"]}}, \"alignment_ok\": true, \"attribution_ok\": false, \"isolation_hits\": [], \"remote_calls\": 9, \"total_tokens_est\": 2434}",
+      "evidence_cmd": "AGENTFRAMEWORK_HOST_BIN=/tmp/pub_r430b/agenthost R432_NS=-r432dp2 bash eval/rover/r432/run_arm.sh C r432dp2 47930 47931 /home/agentuser/AgentFramework/skeptic.rbin",
+      "evidence_path": "eval/rover/r432/README-evidence.md",
+      "negative_control": "[\"① 机械负控位（`现在的情况如何？`，网格 v2 pos19）: 必落 mechanical 分支且 r1 侧不得出现该位（若落 r1 ⇒ C5 假 ⇒ FAIL）\", \"② 旁路负控: 任何轮回复以 [隔离任务] 开头 ⇒ 该轮作废（C4 假 ⇒ FAIL），防「根本没进门」被当读数\", \"③ 未测到不判通过: 未进门位记 ungated，明确不计入 C1/C2 分子（臂 1 有 9 轮未进门）\", \"④ 归因负控: Pass 必须伴随该轮窗口内远端桩调用 ≥1、Skip 必须为 0（否则 C3 假）\", \"⑤ 族位错配负控（臂 1 实发）: 预注册族落在被 ask 消费位 ⇒ C2/C5 直接判 FAIL，未事后改判据（如实登记 + §3.1 预注册校正臂）\", \"⑥ 对照: R430 fix 臂同文 4 次 raw 同一（127/127/127/127）为该能力的先验正控\"]",
+      "covers": [
+        "eval/rover/r432/settle_r432.py",
+        "eval/rover/r432/run_arm.sh",
+        "eval/rover/r432/grid/task-r432dp2.json",
+        "src/agent.modelqueue/LocalGenerationPort.cs",
+        "src/agent/IndustrialAgentV2.cs"
       ]
     }
   ],
