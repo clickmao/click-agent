@@ -1,0 +1,118 @@
+{
+  "verdict": "PASS",
+  "total": 22,
+  "failed": 0,
+  "criteria_pre_registered_in": "eval/rover/r415/README-evidence.md",
+  "checks": [
+    {
+      "id": "A1 [pin] 门确实问了本地判定器 (apply-template 请求 >= 1)",
+      "pass": true,
+      "detail": "apply-template=3"
+    },
+    {
+      "id": "A2 [pin] 判别请求逐字含用户本轮原文",
+      "pass": true,
+      "detail": "含原文=True judge文本长=1066"
+    },
+    {
+      "id": "A3 [pin] ★判别力核心: 判别请求不含本哨兵 (门吃 message.Content 而非 prompt.UserMessage)",
+      "pass": true,
+      "detail": "哨兵命中=0"
+    },
+    {
+      "id": "A4 [pin] 判别请求不含 [本轮参考上下文]/[技能知识参考] 块",
+      "pass": true,
+      "detail": "参考块=0 技能块=0"
+    },
+    {
+      "id": "A5 [pin] S 轮被跳过: 远端无「末条 user = 寒暄」的请求",
+      "pass": true,
+      "detail": "命中=0 远端调用总数=3"
+    },
+    {
+      "id": "A6 [pin] 假阴性=0: P 轮未被跳过 (远端确有该轮请求)",
+      "pass": true,
+      "detail": "命中=1"
+    },
+    {
+      "id": "A7 [pin] 正控·判别力自证: 远端请求里确实出现哨兵 + 参考块",
+      "pass": true,
+      "detail": "哨兵=3 参考块=8"
+    },
+    {
+      "id": "A10 [pin] 跳过轮回复不来自远端桩 (可见文案来自本地模板)",
+      "pass": true,
+      "detail": "t1回复='收到，继续按当前方向推进，本轮不重新规划。'"
+    },
+    {
+      "id": "A11 [pin] 正控: P 轮回复确实来自远端桩",
+      "pass": true,
+      "detail": "t2回复='桩应答: 收到, 已完成该步。'"
+    },
+    {
+      "id": "A8 [pin] 跳过轮不静默: 每轮都有可见回复",
+      "pass": true,
+      "detail": "轮数=3 reply非空=True"
+    },
+    {
+      "id": "A9 [pin] 负控(本地通道关): 同一轮本就会走远端, 且假后端从未启动",
+      "pass": true,
+      "detail": "off远端命中=1 off本地请求=0"
+    },
+    {
+      "id": "A1 [pin(aot)] 门确实问了本地判定器 (apply-template 请求 >= 1)",
+      "pass": true,
+      "detail": "apply-template=3"
+    },
+    {
+      "id": "A2 [pin(aot)] 判别请求逐字含用户本轮原文",
+      "pass": true,
+      "detail": "含原文=True judge文本长=1066"
+    },
+    {
+      "id": "A3 [pin(aot)] ★判别力核心: 判别请求不含本哨兵 (门吃 message.Content 而非 prompt.UserMessage)",
+      "pass": true,
+      "detail": "哨兵命中=0"
+    },
+    {
+      "id": "A4 [pin(aot)] 判别请求不含 [本轮参考上下文]/[技能知识参考] 块",
+      "pass": true,
+      "detail": "参考块=0 技能块=0"
+    },
+    {
+      "id": "A5 [pin(aot)] S 轮被跳过: 远端无「末条 user = 寒暄」的请求",
+      "pass": true,
+      "detail": "命中=0 远端调用总数=3"
+    },
+    {
+      "id": "A6 [pin(aot)] 假阴性=0: P 轮未被跳过 (远端确有该轮请求)",
+      "pass": true,
+      "detail": "命中=1"
+    },
+    {
+      "id": "A7 [pin(aot)] 正控·判别力自证: 远端请求里确实出现哨兵 + 参考块",
+      "pass": true,
+      "detail": "哨兵=3 参考块=8"
+    },
+    {
+      "id": "A10 [pin(aot)] 跳过轮回复不来自远端桩 (可见文案来自本地模板)",
+      "pass": true,
+      "detail": "t1回复='收到，继续按当前方向推进，本轮不重新规划。'"
+    },
+    {
+      "id": "A11 [pin(aot)] 正控: P 轮回复确实来自远端桩",
+      "pass": true,
+      "detail": "t2回复='桩应答: 收到, 已完成该步。'"
+    },
+    {
+      "id": "A8 [pin(aot)] 跳过轮不静默: 每轮都有可见回复",
+      "pass": true,
+      "detail": "轮数=3 reply非空=True"
+    },
+    {
+      "id": "A9 [pin(aot)] 负控(本地通道关): 同一轮本就会走远端, 且假后端从未启动",
+      "pass": true,
+      "detail": "off远端命中=1 off本地请求=0"
+    }
+  ]
+}

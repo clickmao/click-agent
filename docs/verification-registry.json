@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R414",
+  "updated_round": "R415",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -741,6 +741,24 @@
         "docs/plans/v0.36.0-r414-failure-visibility.md"
       ],
       "owner_round": "R414"
+    },
+    {
+      "id": "r415.gate-input-chain-pin",
+      "level": "L4",
+      "evidence_cmd": "bash eval/rover/r415/run_arm.sh pin 47870 47871 \"$PWD/skeptic.rbin\" jit; bash eval/rover/r415/run_arm.sh off 47880 47881 \"$PWD/skeptic.rbin\" jit; bash eval/rover/r415/run_arm.sh pin 47882 47883 \"$PWD/skeptic.rbin\" aot; bash eval/rover/r415/run_arm.sh off 47884 47885 \"$PWD/skeptic.rbin\" aot; python3 eval/rover/r415/verdict.py aot",
+      "evidence_path": "eval/rover/r415/",
+      "negative_control": "① `off` 臂（本地通道关）: 本地判别请求必须为 0 ∧ `/apply-template` 必须为 0, 且同一轮**本就会**走远端（外部真值 calls-off.jsonl 命中 1）⇒ 证明 pin 臂的「S 轮零远端请求」是门的产物而非链的固有行为; ② ★判别力自证: A3（判别请求不含哨兵 SENTINEL_SKILL_7F3A）必须与 A7（远端请求**确实含**该哨兵 + [本轮参考上下文]）同读 —— 只有 A7 成立时 A3 才说明「门吃的是 message.Content」; 若把门改回 prompt.UserMessage, A3 必失败; ③ 跳过轮回复必须不等于远端桩罐头（t1=21 字本地模板 vs 桩 15 字）⇒ 跳过真实且不静默; ④ 不采信被测量代码自报: 判据只认假后端/桩的逐请求落盘; ⑤ 仪器两次失效已入档（chunked 未解块 ⇒ 请求体读空; 判别规则全文匹配命中 few-shot 示例 ⇒ 三轮全判 S）—— 无 A7 正控时仪器错与门吃错变量无法区分。",
+      "capability": "链级（真 agenthost --frontend-api + 真 DI 装配 + 真 ModelQueueRouter + 真 LlamaCppLocalGenerationPort + 真进程/HTTP）+ 确定性假本地后端（模拟 llama-server /health /props /apply-template /tokenize /completion; 逐请求落盘=外部真值）⇒ 钉死「前置门入参 = message.Content（用户本轮原文）」: 判别请求 3 次、文本长 385/385/387、哨兵 0 / [本轮参考上下文] 0 / [技能知识参考] 0, 而同一轮远端请求含哨兵 1~2 + 参考块 3~5（正控）; S 轮被跳过（远端零请求）、P 轮未被跳过（假阴性 0）; 22 项断言 × JIT/AOT 两形态全 PASS。产品代码未改动（本轮为防线升级, 非缺陷修复）。",
+      "covers": [
+        "src/agent/IndustrialAgentV2.cs",
+        "src/agent.modelqueue/ModelQueueRouter.cs",
+        "src/agent.modelqueue/LocalGenerationPort.cs",
+        "src/agent.llamacpp/LlamaCppLocalGenerationPort.cs",
+        "src/agent.skills/TriggerMatcher.cs",
+        "eval/rover/r415/",
+        "docs/plans/v0.37.0-r415-gate-input-chain-pin.md"
+      ],
+      "owner_round": "R415"
     }
   ],
   "aot_check_policy": "release_tag_only",
