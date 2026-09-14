@@ -53,6 +53,22 @@ def sha256(s: str) -> str:
     return hashlib.sha256(s.encode("utf-8")).hexdigest()
 
 
+def _open_tail(text: str) -> bool:
+    """结构性未闭合哨兵 (与 run_probe._open_tail 同源): 产物非空但停在半行。
+
+    R372 教训: 预算耗尽会让正文停在半行而 success=true, 长度/非空断言全过 ⇒ 需要**结构**判据。
+    """
+    t = (text or "").rstrip()
+    if not t:
+        return False
+    if t[-1] in "：:,、+-*/=（([{<" or t.endswith("->"):
+        return True
+    for op, cl in (("(", ")"), ("[", "]"), ("{", "}"), ("```", "```")):
+        if t.count(op) != t.count(cl):
+            return True
+    return False
+
+
 def arm_summary(p: dict, **extra):
     if not p:
         return {"status": "not-run"}
@@ -142,7 +158,29 @@ def main() -> int:
     facts["engine_fallback_equals_template"] = (crossimpl or {}).get("facts", {}).get(
         "engine_fallback_equals_template_for_this_model")
 
+    # 0 分的**归因分类** (R372 家族): 臂得 0 分是「没答完」还是「答错」? 必须显式分类,
+    # 否则一个被墙钟截断的半成品会被下游当成"模型不会做题"。
+    row = (r_tpl.get("per_task") or [{}])[0]
+    raw = load_json(P("data/probe/r401/raw-template/rover-gen-%s.json" % row.get("tid", "m001"))) or {}
+    tail_text = raw.get("text") or ""
+    open_tail = _open_tail(tail_text)
+    stop = (row.get("solve") or {}).get("stop") or raw.get("stop")
+    if not tail_text:
+        verdict = "no-artifact"
+    elif open_tail or stop in ("seconds", "max_tokens"):
+        verdict = "incomplete-not-wrong"
+    else:
+        verdict = "closed-but-unscored"
+    facts["reply_completeness"] = {
+        "stop": stop, "steps": raw.get("steps"), "reply_chars": len(tail_text),
+        "structural_open_tail": open_tail, "tail": tail_text[-24:],
+        "verdict": verdict,
+    }
+    # A7: 只要臂没拿到分, 就必须有「未完成/不可用」的归因, 不允许 0 分无解释
+    A["A7_zero_score_attributed"] = bool((r_tpl.get("passed") or 0) > 0) or verdict != "closed-but-unscored"
+
     mech = [A["A1_same_taskset_sha"], A["A2_judge_calibrated_oracle_full"], A["A3_mechanism_engaged_template_mode"],
+            A["A7_zero_score_attributed"],
             A["A3b_engine_artifacts_present"], A["A4_prompt_attested_verbatim"], A["A5_special_token_symbol_not_id"],
             A["A6_cross_impl_byte_equal"]]
 

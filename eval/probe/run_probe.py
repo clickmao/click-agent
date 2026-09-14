@@ -217,6 +217,23 @@ def _resolve_rover_model() -> str:
                      "AGENTFRAMEWORK_ROVER_MODEL (不自动换模型, 换模型会改变被测对象)" % (default, cands or "无"))
 
 
+def _open_tail(text: str) -> bool:
+    """结构性未闭合哨兵: 产物非空但停在半行 (悬空冒号/运算符, 括号引号未闭合)。
+
+    R372 教训: 预算耗尽会让正文停在半行而 success=true, 长度/非空断言全过 ⇒ 需要
+    **结构**判据, 不能只看长度。返回 True = 可疑未完成 (只作哨兵, 不替代判定器)。
+    """
+    t = (text or "").rstrip()
+    if not t:
+        return False
+    if t[-1] in "：:,、+-*/=（([{<" or t.endswith("->"):
+        return True
+    for op, cl in (("(", ")"), ("[", "]"), ("{", "}"), ("```", "```")):
+        if t.count(op) != t.count(cl):
+            return True
+    return False
+
+
 def solve_rover(task: dict, solve_timeout: float) -> tuple:
     """真机自检: 用本机 agent.rover 引擎 (GGUF + 字节级 BPE + 采样 + 解码环) 跑一题。
 
@@ -262,6 +279,15 @@ def solve_rover(task: dict, solve_timeout: float) -> tuple:
         text_in, attest = render_prompt(model, system, task["prompt"])
         attest["prompt_head"] = text_in[:64]      # 缺陷哨兵证据: 实际送入的首 64 字符
         cmd = [cli, "generate", model, "--prompt", text_in]
+    # 墙钟 × token 预算协同 (实测校准 2026-09-14): 本机引擎 ms_per_token=2157 / prefill 132s(78tok)
+    # ⇒ 384 token 预算需要 ~960s 生成, 与默认 1000s harness 墙钟几乎相等: 一旦有并发负载,
+    # 引擎被 SIGKILL ⇒ 零证据 (reply_chars=0, raw json 根本没落盘)。给引擎一个**小于**
+    # solve_timeout 的 --max-seconds, 让它优雅停止 (stop=seconds) 并落盘部分产物 ⇒ 至少留下证据。
+    wall = int(float(os.environ.get("PROBE_ROVER_MAX_SECONDS", "0") or 0))
+    if wall <= 0:
+        wall = max(0, int(solve_timeout) - 60)
+    if wall > 0:
+        cmd += ["--max-seconds", str(wall)]
     cmd += ["--max-tokens", str(max_tokens), "--temperature", temp, "--seed", seed, "--json", jf]
     t0 = time.time()
     try:
@@ -279,12 +305,17 @@ def solve_rover(task: dict, solve_timeout: float) -> tuple:
     text = ""
     if os.path.exists(jf):
         try:
-            j = json.load(open(jf, encoding="utf-8"))
+            # errors=replace: 引擎日志/文本混入非 UTF-8 字节时不能崩批 (遥测读取铁律)
+            with open(jf, encoding="utf-8", errors="replace") as fh:
+                j = json.load(fh)
             text = j.get("text", "")
             meta.update({"steps": j.get("steps"), "ms_per_token": j.get("ms_per_token"),
                          "tokens_per_s": j.get("tokens_per_s"), "stop": j.get("stop"),
                          "prompt_tokens": j.get("prompt_tokens"), "ws_delta_bytes": j.get("ws_delta_bytes")})
-            meta["budget_limited"] = (j.get("stop") == "max_tokens")
+            # stop=seconds 同样属「预算受限」(墙钟预算): 只看 max_tokens 会把被墙钟截断的
+            # 半成品读成「未受限」(实测 290<384 + stop=seconds ⇒ 报 false) = 打点语义错误。
+            meta["budget_limited"] = (j.get("stop") in ("max_tokens", "seconds"))
+            meta["structural_open_tail"] = _open_tail(text)
             if mode != "engine-chat":
                 meta["prompt_attested"] = attest_verbatim(attest, j.get("prompt_sha256"))
         except Exception as e:  # noqa: BLE001

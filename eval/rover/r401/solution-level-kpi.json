@@ -1,0 +1,153 @@
+{
+  "schema": "r401-solution-level-kpi/1",
+  "round": "R401",
+  "ts": "2026-09-14T08:03:21+08:00",
+  "line": "rover.solution_level_comparison",
+  "taskset": {
+    "path": "data/probe/r401/taskset-r401.json",
+    "sha": "09d7d4327ede04b7",
+    "kind": "math",
+    "n": 2,
+    "families": [
+      "quadratic_residue_count"
+    ]
+  },
+  "judge": {
+    "impl": "eval/probe/grade.py (math: FINAL 解析 + 数值比对)",
+    "positive_control": "oracle 2/2"
+  },
+  "arms": {
+    "oracle_control": {
+      "status": "ran",
+      "solver": "oracle",
+      "taskset_sha": "09d7d4327ede04b7",
+      "n_tasks": 2,
+      "passed": 2,
+      "total": 2,
+      "rate": 1.0,
+      "taxonomy": {
+        "ok": 2
+      },
+      "elapsed_s": 0.0,
+      "role": "判定器正控",
+      "budget": {
+        "max_tokens": 0,
+        "budget_limited": false
+      }
+    },
+    "agent_remote_api": {
+      "status": "ran",
+      "solver": "agent",
+      "taskset_sha": "09d7d4327ede04b7",
+      "n_tasks": 2,
+      "passed": 2,
+      "total": 2,
+      "rate": 1.0,
+      "taxonomy": {
+        "ok": 2
+      },
+      "elapsed_s": 13.4,
+      "role": "远端 API 臂",
+      "budget": {
+        "max_tokens": null,
+        "budget_limited": null,
+        "stop": [
+          null,
+          null
+        ]
+      },
+      "provider": "remote (不经本机引擎)"
+    },
+    "rover_template": {
+      "status": "ran",
+      "solver": "rover",
+      "taskset_sha": "09d7d4327ede04b7",
+      "n_tasks": 1,
+      "passed": 0,
+      "total": 1,
+      "rate": 0.0,
+      "taxonomy": {
+        "no_final": 1
+      },
+      "elapsed_s": 901.58,
+      "role": "本机引擎臂 (模板对等)",
+      "budget": {
+        "max_tokens": 384,
+        "budget_limited": false,
+        "stop": [
+          "seconds"
+        ]
+      },
+      "model": "r1-distill-qwen-1.5b-q4km.gguf",
+      "prompt_source": "gguf-embedded-chat_template+jinja2"
+    },
+    "rover_enginechat": {
+      "status": "not-run"
+    }
+  },
+  "validity_assertions": {
+    "A1_same_taskset_sha": true,
+    "A2_judge_calibrated_oracle_full": true,
+    "A3_mechanism_engaged_template_mode": true,
+    "A3b_engine_artifacts_present": true,
+    "A4_prompt_attested_verbatim": true,
+    "A5_special_token_symbol_not_id": true,
+    "A6_cross_impl_byte_equal": true,
+    "A7_zero_score_attributed": true
+  },
+  "assertions_passed": 8,
+  "assertions_total": 8,
+  "measurement_valid": true,
+  "facts": {
+    "taskset_sha": "09d7d4327ede04b7",
+    "taskset_sha_by_arm": {
+      "oracle": "09d7d4327ede04b7",
+      "agent": "09d7d4327ede04b7",
+      "rover_template": "09d7d4327ede04b7",
+      "rover_enginechat": null
+    },
+    "oracle_rate": 1.0,
+    "prompt_sha256_sent": {
+      "m001": "5866860630bf53ffcb101fb4c42775d4881c8978400a65d3206dca0a37565e55"
+    },
+    "bos_token_by_task": {
+      "m001": "<｜begin▁of▁sentence｜>"
+    },
+    "prompt_parity_crossimpl": {
+      "verdict": "all-byte-equal",
+      "n": 2,
+      "byte_equal": 2
+    },
+    "engine_fallback_equals_template": true,
+    "reply_completeness": {
+      "stop": "seconds",
+      "steps": 290,
+      "reply_chars": 398,
+      "structural_open_tail": true,
+      "tail": "=1：1²=1 mod3=1，不是2。\nx=2：",
+      "verdict": "incomplete-not-wrong"
+    }
+  },
+  "prompt_parity_defect": {
+    "artifact": "eval/rover/r401/prompt-parity-crossimpl.json",
+    "verdict": "all-byte-equal",
+    "historical_artifact": "eval/rover/r401/prompt-parity.json (旧模型 qwen2.5-math 时的版式闸, 该模型已删档)",
+    "probe_render_bug": {
+      "symptom": "探针把特殊符号 id(int 151646) 当 bos_token 字符串传给模板 ⇒ 渲染出字面 '151646' 前缀",
+      "why_A4_missed_it": "A4 是自证型断言: 我方 sha 与引擎回显 sha 对同一串错误字节恒等",
+      "fix": "rover_prompt.resolve_special(): id → 符号文本 (与 transformers bos_token/eos_token 语义一致)",
+      "detector": "A6 跨实现对照 (引擎 C# 渲染器为独立实现)"
+    }
+  },
+  "deterministic_items": [
+    "prompt_source=gguf-embedded-chat_template+jinja2 (模板 sha256 记录在 facts)",
+    "A4 prompt_attested: 引擎回报 sha256 == 送入 sha256 (只证送达, 不证渲染正确)",
+    "A5 特殊符号以符号文本渲染 (非 id 字面量) —— 缺陷回归哨兵",
+    "A6 跨实现字节相等: python jinja2 == 引擎 C# 模板渲染 (唯一的渲染正确性判据)",
+    "budget: max_tokens 固定, budget_limited 由引擎 stop 原因判定(非硬编码 true)"
+  ],
+  "indicative_items": [
+    "elapsed_s / ms_per_token: 与并发构建/其他会话共享 2 vCPU, 只作指示性",
+    "solve rate 差值: 单批 n=2, 不构成能力结论, 需扩样"
+  ]
+}

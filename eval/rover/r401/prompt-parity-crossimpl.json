@@ -1,0 +1,45 @@
+{
+  "schema": "r401-prompt-parity-crossimpl/1",
+  "ts": "2026-09-14T07:40:26+08:00",
+  "line": "rover.prompt_parity_crossimpl",
+  "model": "/tmp/models/r1-distill-qwen-1.5b-q4km.gguf",
+  "task": "跨实现渲染对照: python(jinja2) vs 引擎(C# Jinja 子集) 对同一 GGUF chat_template",
+  "verdict": "all-byte-equal",
+  "n": 2,
+  "byte_equal": 2,
+  "rows": [
+    {
+      "tid": "m001",
+      "family": "quadratic_residue_count",
+      "python_sha256": "5866860630bf53ffcb101fb4c42775d4881c8978400a65d3206dca0a37565e55",
+      "engine_sha256": "5866860630bf53ffcb101fb4c42775d4881c8978400a65d3206dca0a37565e55",
+      "byte_equal": true,
+      "engine_rc": 0,
+      "engine_prompt_tokens": 78,
+      "python_chars": 153,
+      "bos_token": "<｜begin▁of▁sentence｜>",
+      "special_tokens_resolved": true,
+      "literal_id_prefix": false,
+      "engine_error": null
+    },
+    {
+      "tid": "m002",
+      "family": "quadratic_residue_count",
+      "python_sha256": "b1c529f462b5e05d9c7fd8c5d666dcab753faab95450e019791f9d56f0655236",
+      "engine_sha256": "b1c529f462b5e05d9c7fd8c5d666dcab753faab95450e019791f9d56f0655236",
+      "byte_equal": true,
+      "engine_rc": 0,
+      "engine_prompt_tokens": 78,
+      "python_chars": 153,
+      "bos_token": "<｜begin▁of▁sentence｜>",
+      "special_tokens_resolved": true,
+      "literal_id_prefix": false,
+      "engine_error": null
+    }
+  ],
+  "facts": {
+    "engine_hardcoded_fallback_sha256": "5866860630bf53ffcb101fb4c42775d4881c8978400a65d3206dca0a37565e55",
+    "engine_fallback_equals_template_for_this_model": true,
+    "note": "本模型 (DeepSeek 风格模板) 硬编码兜底与模板渲染相同 ⇒ 'prompt != 硬编码版式' **不能**作为通用有效性断言 (它是模型相关事实, 非缺陷指示)"
+  }
+}
