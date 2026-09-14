@@ -12,6 +12,27 @@
 
 ---
 
+## R410 — 会话长前缀复用（K2b 落点）：「比值不是 KPI」+ 宿主生命周期缺口 + 生成口径分离
+
+**版本**: R410 · **日期**: 2026-09-14 · **状态**: 已落地（代码 `8263ac8`；文档/登记见本提交）
+
+**用户令（逐字）**：「继续下轮」
+
+**完成记录**：
+- **实测（判据先预注册）**：同一 server 内，4255 token 长前缀第二次请求只重算 **5 token**（`cache_n=4250`，复用率 **0.9988 ≥ 0.97**，墙钟 233.9 s → 0.5 s）；负控（前缀首 token 改变）归零；`cache_prompt=false` 恒 0。
+- **关键结论：比值不是 KPI，绝对长度才是** —— 短独立 prompt 的「复用比」0.94 看似不低，但绝对可复用只有 **17 token** ⇒ 对 K2b 红线（≥4224）覆盖 **0.402%**，结构上不可能达标。只看比值会得出相反结论。
+- **宿主生命周期缺口（实测，非推断）**：同样 `--reuse on` + 稳定 487 token 前缀，两次 CLI 调用 `CachedTokens` **都是 0**、`SessionCacheMisses=1` —— 每次调用新起 server（新 KV 缓存）⇒ 跨进程复用 **0%**。⇒ **K2b 达标三条件：长驻 server + 稳定长前缀 + cache 开；缺「长驻」时另两条都白搭**。
+- **代码**：`CompletionReuse {Session, Reconciliation}`（`GenerateAsync` 默认 Session = 生产口径）；`CompletionProfiles.Build()` 收敛为「口径 → 参数」唯一映射点；`CompletionResult.CachedTokens`（服务端 `cache_n`，非估算）；`SessionReuseCalls`/`ReconciliationCalls`/`SessionCacheMisses`（静默失效可见化）；CLI 新增 `--reuse on|off` 与 `--system-file`（会话长前缀入口）。
+- **测试**：新增 `CompletionReuseTests` **4/4**；全量 **1076 / 0 / 0**（R409 基线 1072 + 4）。
+- **顺带修掉两个真缺陷**（均由全量回归暴露、非本轮引入，同属「拿墙钟当闸门」类）：① `SessionPerformanceTests` 的墙钟 3x 比值断言 ⇒ 改为「等价性作判据、计时只作信息」；② `LlmServiceStatusTests` 的 5 s 固定就绪截止 ⇒ 放宽到 30 s 并把实测等待写进失败信息。两者在争用下都产生假红（单独复跑全绿）。
+- **登记**：`docs/verification-registry.json` 新行 `llamacpp.session.prefix_reuse`（L4，45 行，`updated_round=R410`）；TaskPlan 节点 `dev-session-prefix-reuse`；计划文档 `docs/plans/v0.32.0-r410-session-prefix-reuse.md`；证据 `eval/rover/r410/`。
+
+**自错披露**：① 探针 v1 成本估小（单线程 prefill 实测 26 t/s ⇒ 4807 token 一遍 185 s）且只在末尾落盘 ⇒ 被掐断后零证据，v2 才改成分臂增量落盘；② 「会话内复用 99.88%」与「跨进程复用 0%」两条曾混在同一结论里，补跑 CLI 后才分清。
+
+**基线**：全量 1076/0/0；本地生成 17.9 t/s（llama.cpp 不变）；K2b 会话内顺序复用 **0.9988**（达标）/ 跨进程 **0**（缺口）。
+
+**下轮候选（R411）**：① 产品侧长驻 provider 接线（嵌入侧已是 `AddSingleton`，生成侧待接）；② 多会话并发 slot 争用下的复用率；③ 前缀中段变化的截断点分布；④ 微内核 A/B（15× 悬案）；⑤ R402–R407 台账回填。
+
 ## R409 — 本地 prompt 模板闸门（结构性阻断手拼）+「权威 prompt」BOS 口径修正
 
 **版本**: R409 · **日期**: 2026-09-14 · **状态**: 已落地（工作区，待 commit）

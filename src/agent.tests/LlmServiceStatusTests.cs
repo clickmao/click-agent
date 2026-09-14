@@ -43,12 +43,16 @@ public class LlmServiceStatusTests
         var sock = TempSock();
         using var mgr = new LlmManagerHost(_ => { }, sock, memFloorMb: 512, unloadCheckMs: 3_600_000);
         mgr.Start();
-        // 等 manager 就绪
-        var deadline = DateTime.UtcNow.AddSeconds(5);
+        // 等 manager 就绪。
+        // R410: 原为固定 5s 截止 ⇒ 同机负载/争用下会翻转成假红（实测：全量并发时失败、单独复跑 4/4 通过）。
+        // 该截止是**存活上界**而非性能判据，故放宽到 30s 并把实测耗时写进失败信息（暴露就绪延迟的真实分布）。
+        var t0 = DateTime.UtcNow;
+        var deadline = t0.AddSeconds(30);
         while (DateTime.UtcNow < deadline && !RemoteEmbedder.Probe(sock)) Thread.Sleep(30);
+        var readyMs = (DateTime.UtcNow - t0).TotalMilliseconds;
 
         var st = LlmServiceStatus.Query(sock);
-        Assert.True(st.Online);
+        Assert.True(st.Online, $"manager 未在 30s 内就绪（实测等待 {readyMs:F0}ms）");
         Assert.Equal(Environment.ProcessId, st.ManagerPid);
         Assert.False(st.WorkerRunning);       // lazy: 未使用 → worker 未拉起
         Assert.Equal(0, st.Spawns);

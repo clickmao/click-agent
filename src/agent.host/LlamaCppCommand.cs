@@ -35,7 +35,7 @@ public static class LlamaCppCommand
 {
     public static async Task<int> RunAsync(string[] args, TextWriter outp, TextWriter errp)
     {
-        string? model = null, bin = null, prompt = null, promptFile = null, embed = null, jsonPath = null, expectIds = null, vecOut = null, chatText = null;
+        string? model = null, bin = null, prompt = null, promptFile = null, embed = null, jsonPath = null, expectIds = null, vecOut = null, chatText = null, systemFile = null;
         var verifyTemplate = false;
         var reuse = CompletionReuse.Reconciliation;   // E2E 默认对账口径; 生产/会话演示须显式 --reuse on
         var maxTokens = 24;
@@ -48,6 +48,7 @@ public static class LlamaCppCommand
                 case "--prompt": prompt = Val(args, ref i); break;
                 case "--prompt-file": promptFile = Val(args, ref i); break;
                 case "--chat-text": chatText = Val(args, ref i); break;
+                case "--system-file": systemFile = Val(args, ref i); break;
                 case "--reuse":
                     var rv = Val(args, ref i);
                     if (rv is "on" or "session") reuse = CompletionReuse.Session;
@@ -83,6 +84,16 @@ public static class LlamaCppCommand
             catch (Exception ex) { errp.WriteLine($"llamacpp: prompt 文件不可读 {promptFile}: {ex.Message}"); return 2; }
         }
 
+        // R410: 会话长前缀入口（K2b 的前提是「稳定长前缀 + 长驻 server + cache 开」）。
+        string? systemText = null;
+        if (systemFile is not null)
+        {
+            if (string.IsNullOrEmpty(chatText))
+            { errp.WriteLine("llamacpp: --system-file 需要同时给 --chat-text"); return 2; }
+            try { systemText = await File.ReadAllTextAsync(systemFile).ConfigureAwait(false); }
+            catch (Exception ex) { errp.WriteLine($"llamacpp: system 文件不可读 {systemFile}: {ex.Message}"); return 2; }
+        }
+
         // EmbeddingMode: llama-server 的 /v1/embeddings 必须启动时加 --embeddings，
         // 且该开关与文本生成互斥（llama.cpp 限制）⇒ 生成/嵌入是两种进程形态。
         var opts = new LlamaServerOptions { ModelPath = model, BinaryPath = bin, Threads = 1, EmbeddingMode = isEmbed };
@@ -110,7 +121,7 @@ public static class LlamaCppCommand
 
                 var result = isEmbed
                     ? await RunEmbedAsync(provider, model, embed!, vecOut).ConfigureAwait(false)
-                    : await RunGenerateAsync(provider, model, chatText, promptText, maxTokens, expectIds, reuse).ConfigureAwait(false);
+                    : await RunGenerateAsync(provider, model, chatText, promptText, maxTokens, expectIds, reuse, systemText).ConfigureAwait(false);
 
                 var json = JsonSerializer.Serialize(result, LlamaCppE2EJsonContext.Default.LlamaCppE2EResult);
                 outp.WriteLine(json);
@@ -147,17 +158,21 @@ public static class LlamaCppCommand
 
     private static async Task<LlamaCppE2EResult> RunGenerateAsync(
         LlamaCppProvider provider, string model, string? chatText, string? literalPrompt, int maxTokens,
-        string? expectIds, CompletionReuse reuse)
+        string? expectIds, CompletionReuse reuse, string? systemText = null)
     {
         // R409: chatText 走闸门（模板来自模型元数据）；literalPrompt 走诊断通路（绕过闸门，计入 LiteralPromptCalls）。
         // R410: reuse = 口径开关（Session=开前缀缓存，K2b 用；Reconciliation=关缓存，对账用）。
+        // R410: systemText = 会话长前缀（K2b 复用对象；与 user 轮同处一个 message 列表）。
         string promptMode;
         CompletionResult r;
         string promptSha;
         if (chatText is not null)
         {
             promptMode = "chat_template";
-            var rendered = await provider.RenderAsync([new ChatTurn("user", chatText)]).ConfigureAwait(false);
+            var turns = new List<ChatTurn>();
+            if (!string.IsNullOrEmpty(systemText)) turns.Add(new ChatTurn("system", systemText));
+            turns.Add(new ChatTurn("user", chatText));
+            var rendered = await provider.RenderAsync(turns).ConfigureAwait(false);
             promptSha = Sha256Hex(Encoding.UTF8.GetBytes(rendered.Text));
             r = await provider.CompleteRenderedAsync(rendered, maxTokens, reuse: reuse).ConfigureAwait(false);
         }

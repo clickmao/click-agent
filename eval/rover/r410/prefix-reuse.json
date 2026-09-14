@@ -1,0 +1,78 @@
+{
+ "base": "http://127.0.0.1:8933",
+ "required_prefix_tokens": 4224,
+ "arms": {
+  "session_cold": {
+   "prompt_n": 4255,
+   "cache_n": 0,
+   "prompt_ms": 233748.388,
+   "wall_ms": 233939.1,
+   "arm": "session_cold",
+   "cache_prompt": true,
+   "elapsed_s": 233.9
+  },
+  "session_warm_same_prefix": {
+   "prompt_n": 5,
+   "cache_n": 4250,
+   "prompt_ms": 333.365,
+   "wall_ms": 468.2,
+   "arm": "session_warm_same_prefix",
+   "cache_prompt": true,
+   "elapsed_s": 0.5
+  },
+  "session_cache_off": {
+   "prompt_n": 4255,
+   "cache_n": 0,
+   "prompt_ms": 176576.66,
+   "wall_ms": 176590.8,
+   "arm": "session_cache_off",
+   "cache_prompt": false,
+   "elapsed_s": 176.6
+  },
+  "negative_prefix_first_token_changed": {
+   "prompt_n": 4256,
+   "cache_n": 0,
+   "prompt_ms": 161933.302,
+   "wall_ms": 162626.0,
+   "arm": "negative_prefix_first_token_changed",
+   "cache_prompt": true,
+   "elapsed_s": 162.6
+  },
+  "short_cold": {
+   "prompt_n": 18,
+   "cache_n": 0,
+   "prompt_ms": 691.268,
+   "wall_ms": 1029.5,
+   "arm": "short_cold",
+   "cache_prompt": true,
+   "elapsed_s": 1.0
+  },
+  "short_warm": {
+   "prompt_n": 1,
+   "cache_n": 17,
+   "prompt_ms": 105.616,
+   "wall_ms": 112.2,
+   "arm": "short_warm",
+   "cache_prompt": true,
+   "elapsed_s": 0.1
+  }
+ },
+ "system_prefix_tokens": 4249,
+ "block_tokens": 25,
+ "block_reps": 177,
+ "prompt_tokens": {
+  "P1": 4255,
+  "P2": 4255,
+  "P3": 4256
+ },
+ "verdict": {
+  "warm_reuse_ratio": 0.9988,
+  "J1_session_reuse_ge_097": true,
+  "J2_short_absolute_cache_n": 17,
+  "J2_short_coverage_of_required": 0.00402,
+  "J2_short_structurally_below_required": true,
+  "J3_negative_cache_zero": true,
+  "J4_cache_off_zero": true,
+  "session_prefix_meets_required": true
+ }
+}

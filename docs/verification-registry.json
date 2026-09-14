@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R409",
+  "updated_round": "R410",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -652,6 +652,24 @@
         "src/agent.tests/LlamaCppPromptGateTests.cs"
       ],
       "owner_round": "R409"
+    },
+    {
+      "id": "llamacpp.session.prefix_reuse",
+      "capability": "本地生成的 K2b 前缀复用: 口径分离(Session 开 cache_prompt / Reconciliation 关) + 服务端 cache_n 记账 + 会话长前缀入口(--system-file) + 静默失效计数 SessionCacheMisses",
+      "level": "L4",
+      "evidence_cmd": "python3 eval/rover/r410/prefix_reuse_probe.py && agenthost --llamacpp --model <r1-q4km.gguf> --chat-text \"2+2=?\" --system-file eval/rover/r410/session-prefix.txt --reuse on --json eval/rover/r410/e2e-reuse-run1.json && dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~CompletionReuseTests",
+      "evidence_path": "eval/rover/r410/",
+      "negative_control": "① 前缀首 token 改变 ⇒ cache_n 必须归零(实测 0); ② cache_prompt=false ⇒ cache_n 恒 0(实测 0); ③ Reconciliation 口径映射必须关缓存、Session 必须开(单测负控); ④ 短独立 prompt 绝对复用 17 token << 4224 红线(结构不达标); ⑤ 跨进程(每次新起 server) ⇒ 复用 0% 且 SessionCacheMisses=1",
+      "covers": [
+        "src/agent.llamacpp/CompletionProfiles.cs",
+        "src/agent.llamacpp/LlamaCppProvider.cs",
+        "src/agent.llamacpp/LlamaCppClient.cs",
+        "src/agent.llamacpp/LlamaCppJson.cs",
+        "src/agent.host/LlamaCppCommand.cs",
+        "src/agent.tests/CompletionReuseTests.cs",
+        "eval/rover/r410/prefix-reuse.json"
+      ],
+      "owner_round": "R410"
     }
   ],
   "aot_check_policy": "release_tag_only",
