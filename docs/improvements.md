@@ -12,6 +12,26 @@
 
 ---
 
+## R403 — chat template 裁定：自研 Jinja 子集随 R408 退役 + 工具调用模板「无对象可验」（负控证明探针有判别力）
+
+**版本**: R403 · **日期**: 2026-09-14 · **状态**: 关闭（裁定 + 待触发能力登记；**无代码改动**）
+**主题**: backlog R403 的唯一待判项「工具调用模板是否改口径为验证 llama.cpp tool 模板行为」。
+
+- **读数（两臂 + 判别力负控，一条命令 `python3 eval/rover/r403/probe_tool_template.py`）**:
+  default 臂（GGUF 自带模板，`--jinja`）= `caps.supports_tools=false` / `caps.supports_tool_calls=false` /
+  模板源 `tools` 变量 **0** 个 / `/apply-template` ±tools **逐字节相同**（md5 `b89299b3…`，24 B）/ completions ±tools
+  `prompt_tokens` **4 → 4（Δ=0）**，HTTP 200 无报错；
+  control 臂（合成 258 B 全 ASCII 模板，`--chat-template-file`）= `supports_tools=true` / ±tools **md5 不同**（29 B vs 62 B）/
+  `prompt_tokens` **7 → 18（+11）** ⇒ **负控过关 = 探针有判别力**，default 的「相同」是真读数而非探针盲区。
+- **排除替代解释**: `/apply-template` 在 control 臂读到 tools 并改变产物 ⇒ 端点确实转发 tools；default 臂的相同输出来自**模板**（无工具定义位），不是端点不支持 tools。
+- **产品侧消费方**: `grep -rn -E 'tool_choice|ToolCall|tool_calls|"tools"' src/ --include=*.cs` ⇒ **0 命中**（零消费方）。
+- **裁定**: **R403 关闭**。① 自研 Jinja 子集扩展的对象随 R408 退役（R409 已证渲染归引擎、调用方无法手拼）；② 工具调用模板**无对象可验**（引擎自报不支持 ∧ 模板零工具位 ∧ 产品零消费方，三方一致）。
+  「工具调用」转**待触发能力**，准入判据三条**全绿**才开工：(a) `caps.supports_tools == true`；(b) 同 messages ±tools 的 `prompt_tokens` 有差（**不得只看 HTTP 200**）；(c) 产品侧存在发出 tools 的调用点。
+- **诚实边界**: 仅现役模型 `r1-distill-qwen-1.5b-q4km` + 本机 build `b1-4df29be` 的单次读数；负控模板是**合成**的，只证探针判别力，不证任何真实模型支持工具调用；工具调用**出参解析**（`tool_calls` → OpenAI 格式）**未测**，属 (a) 之后的独立课题。
+- **证据**: `eval/rover/r403/tool-template-behavior.json`、`eval/rover/r403/probe_tool_template.py`、`docs/reports/r403/chat-template-tool-scope.md`。
+- **运行纪律入档（两次同族事故）**: ① 测量前清掉 6 个 R412/R413 遗留长驻 server（pid 230833/230849/232136/232152/233614/233632，RSS 合计 ≈3.5 GB，本机共 3.66 GB）⇒ `MemAvailable` 1.14 GB → 2.99 GB；
+  ② `pgrep -f "[4]1999"` **仍自杀**（同一命令行的 `curl …:41999` 含裸端口号）——括号技巧只保护**模式字面量**，不保护同一命令行**别处**出现的目标串（同族：`ps | grep "[l]lama-server"` 被自己的 `echo "no llama-server running"` 命中）⇒ 正解 = 被测进程自落 pid，或同进程内 Popen + `killpg` 收尾。
+
 ## R412 — 多会话 slot 争用：单 slot 不踢缓存（三臂逐位相同）+ 会话级账本（分母不互相污染）
 
 **版本**: R412 · **日期**: 2026-09-14 · **状态**: 已落地（代码/文档/登记见本次提交）
@@ -23,7 +43,7 @@
 - **判据 J1a–J1h（含负控）**: 分桶（反例: 实例级会给 408）/ 首轮 0 / 无键兜底且不建桶 / 并发计数与租约归零 / **纯串行不得报争用**（`MaxConcurrentTurns==1 ∧ ConcurrentTurns==0`）/ 有界 / 夹紧 / 接线。单测 8 例。
 - **诚实边界**: ① 仅 n=2 会话（同机单 server）；② `-np 1 -c 4608` 实测 server RSS **2.39 GB**（本机 3.66 GB）⇒ 更大 n 或更长前缀受内存约束，**未测**；③ 前缀中段截断点分布（R410 候选 ③）仍未测；④ 墙钟不作判据（只报单次形态）。
 - **登记**: registry 新行 `llamacpp.session-ledger`（`updated_round=R412`）；TaskPlan 节点 `dev-multi-session-slot`；计划文档 `docs/plans/v0.34.0-r412-multi-session-slot-contention.md`；证据 `eval/rover/r412/`。
-- **下轮候选（R413）**: ① N>2 会话与内存上限下的复用（含 `-np>1` × 每 slot ≥4224 的可行性）；② 前缀中段变化截断点分布；③ 微内核 A/B（15× 悬案）；④ R402–R407 台账回填；⑤ 接 `ModelQueueRouter` 前的本地/远端选择依据设计（R351 钦定未被推翻）。
+- **下轮候选（R413）**: ① **接产品链路**：本地生成（r1/llama.cpp 长驻端口）作为**链管道精炼计划节点**接入 `ModelQueueRouter` 通道选择（可替换执行面端口 + 数值对账 + 被使用计数 + 无设备负控）—— **与 R351 无关**（R351 只移除旧的「本地 LLM 使用」路径；用户 2026-09-14 纠正 R412 报告里的误读）；② N>2 会话与内存上限下的复用；③ 前缀中段截断点分布；④ 微内核 A/B（15× 悬案）；⑤ R402–R407 台账回填。
 
 ## R411 — 长驻生成端口 + 本地 K2b 台账：「口径必须靠独立实现对账钉死」+ 双条件判据
 
