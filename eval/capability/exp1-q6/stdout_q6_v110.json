@@ -1,0 +1,25 @@
+{
+  "probe": "attribute_failed_refs-v1.1.0",
+  "class_counts": {
+    "stale_path": {
+      "retired_after_write": 13,
+      "dead_after_delete": 1,
+      "ambiguous_no_time_axis": 7
+    },
+    "relocated": {
+      "fixable_direct": 10,
+      "path_elision": 3
+    }
+  },
+  "n_defects": 1,
+  "n_measurement_defects": 0,
+  "defect_items": [
+    {
+      "doc": "docs/plans/v0.23.0-exp10-agent.rover-local-prover-engine.md",
+      "line": 68,
+      "path": "src/agent/registry/CapabilityPlugin.cs",
+      "reason": "两证据(或唯一可得证据)均晚于退役提交 ⇒ 真死引用"
+    }
+  ],
+  "exit_code": 2
+}
