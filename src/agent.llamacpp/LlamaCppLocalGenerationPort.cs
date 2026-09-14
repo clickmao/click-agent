@@ -69,6 +69,9 @@ public sealed class LlamaCppLocalGenerationPort : ILocalGenerationPort, IAsyncDi
                 GeneratedTokens = result.Tokens.Length,
                 ElapsedMs = sw.ElapsedMilliseconds,
                 Model = "local:llama.cpp",
+                PromptSha16 = result.PromptSha16,
+                RequestSha16 = result.RequestSha16,
+                RequestFields = result.RequestFields,
             };
         }
         catch (OperationCanceledException)

@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R429",
+  "updated_round": "R430",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -968,6 +968,30 @@
         "src/agent.llamacpp/LlamaCppLocalGenerationPort.cs",
         "src/agent.tests/DecisionCachePinTests.cs",
         "skills/decision-path-determinism/SKILL.md"
+      ]
+    },
+    {
+      "id": "r430.local-server-parallel-serialization",
+      "owner_round": "R430",
+      "level": "L3",
+      "capability": "决策路径**逐位可复现**（引擎侧总槽位隔离）：① 输入指纹（prompt/请求体/角色种子，只观测）证明判定输入逐字节恒定而输出 4 种 ⇒ 漂移在引擎侧；② 机制 = 本地 llama-server 的 `-np` 默认 **4 槽**（启动日志 n_slots=4 实证）⇒ 门判与关系判官并发在途进同一批 ⇒ 批形状随调用序列变化 ⇒ 同一输入走出不同轨迹；③ 修法 = 服务端**显式** `-np 1`（真串行，不依赖构建默认）。读数：并发探针 pre 变体 2 → fix 变体 1；真机同文 4 次门判 raw 逐字节 sha16 4 种 → 4/4 同一；判定仍 Skip×4、cache_n 恒 0、远端 2→1、token 2053→1996。",
+      "evidence_cmd": "AGENTFRAMEWORK_HOST_BIN=/tmp/pub_r430b/agenthost R430_NS=-r430fix1 bash eval/rover/r430/run_arm.sh C k8r 47930 47931 /home/agentuser/AgentFramework/skeptic.rbin",
+      "evidence_path": "eval/rover/r430/README-evidence.md",
+      "negative_control": "① 并发负控（传输级）：默认 4 槽 + 并发在途 ⇒ 同一 prompt 出现 2 种 token 序列（105/105/108），串行基线 75 ⇒ 判据对「未修」态有判别力；② 修法正控：强制 `-np 1` 后同条件 3/3 逐位相同；③ 单测负控：Parallel≤0 不得漏成「不传 -np」（会退回构建默认 4）⇒ 夹到 1，并断言 `-np` 无条件出现；④ 默认路径零回归：CacheReuse 默认 true、指纹字段默认空（缺失≠错误）；⑤ V0 形态闸：env -i 自启 native + IL apphost 负控必拒（rc=131）",
+      "covers": [
+        "src/agent.llamacpp/LlamaServerHost.cs",
+        "src/agent.llamacpp/LlamaServerOptions.cs",
+        "src/agent.llamacpp/LlamaCppTextGenerator.cs",
+        "src/agent.llamacpp/LlamaCppTextEmbedder.cs",
+        "src/agent.llamacpp/LlamaCppClient.cs",
+        "src/agent.modelqueue/LocalInputFingerprint.cs",
+        "src/agent.modelqueue/LocalGenerationPort.cs",
+        "src/agent.modelqueue/ModelCatalog.cs",
+        "src/agent.modelqueue/ModelQueueRouter.cs",
+        "src/agent.llamacpp/LlamaCppLocalGenerationPort.cs",
+        "src/agent/IndustrialAgentV2.cs",
+        "src/agent.tests/LocalServerParallelTests.cs",
+        "src/agent.tests/DecisionPromptFingerprintTests.cs"
       ]
     }
   ],

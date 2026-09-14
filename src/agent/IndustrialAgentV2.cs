@@ -1456,6 +1456,7 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             // ⇒ 省掉整轮 prompt (实测基线 2.4k–3.0k tok/轮)。判别失败/无法解析 ⇒ 一律降级远端。
             LLMResponse llmResponse;
             var gateOutcome = agent.modelqueue.TurnGateOutcome.Undecided("gate_disabled");
+            string? gateRoleSeed = null;   // R430: 门判实际使用的角色种子 (仅「询问 r1」的分支才非空)
             if (System.Threading.Interlocked.Exchange(ref _gateConfigEmitted, 1) == 0)
             {
                 agent.config.AgentTelemetry.Emit("local_turn_gate_config", "IndustrialAgentV2",
@@ -1479,11 +1480,12 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     gateOutcome = agent.modelqueue.TurnGateOutcome.Decide(
                         agent.modelqueue.TurnGateVerdict.Pass, "mechanical:pass");
                 }
-                else gateOutcome = await _modelRouter.JudgeTurnAsync(
-                    message.Content,
-                    ActiveRole.Id + "|" + agent.modelqueue.TurnGateJudge.Clip(ActiveRole.ProfileSeed, 80),
-                    null,
-                    ct).ConfigureAwait(false);
+                else
+                {
+                    gateRoleSeed = ActiveRole.Id + "|" + agent.modelqueue.TurnGateJudge.Clip(ActiveRole.ProfileSeed, 80);
+                    gateOutcome = await _modelRouter.JudgeTurnAsync(
+                        message.Content, gateRoleSeed, null, ct).ConfigureAwait(false);
+                }
                 agent.config.AgentTelemetry.Emit("local_turn_gate", "IndustrialAgentV2",
                     ("decided", gateOutcome.Decided ? "true" : "false"),
                     ("verdict", gateOutcome.Verdict.ToString()),
@@ -1494,6 +1496,11 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     // R429: 决策路径缓存钉死可观测 —— cache_n 应恒为 0 (关前缀缓存), pinned = 累计钉死次数
                     ("cache_n", _modelRouter.TurnGate.LastCachedTokens.ToString()),
                     ("pinned", _modelRouter.TurnGate.CachePinned.ToString()),
+                    // R430: 判定输入指纹 (只观测) — 逐轮 raw 不同时, 先机械区分「输入不同」与「引擎不确定」
+                    ("prompt_sha", _modelRouter.TurnGate.LastPromptSha ?? ""),
+                    ("request_sha", _modelRouter.TurnGate.LastRequestSha ?? ""),
+                    ("req_fields", _modelRouter.TurnGate.LastRequestFields ?? ""),
+                    ("role_seed_sha", _modelRouter.TurnGate.LastRoleSeedSha ?? ""),
                     ("role", ActiveRole.Id));
             }
 

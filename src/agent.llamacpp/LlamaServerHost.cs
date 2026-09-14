@@ -97,6 +97,36 @@ public sealed class LlamaServerHost : IAsyncDisposable
         return port;
     }
 
+    /// <summary>
+    /// R430: 服务端参数表 (**纯函数**, 可测) —— 三个档位必须显式声明, 绝不依赖构建默认值:
+    ///   • `-np` 总槽位 (默认 1): 该构建默认 4 ⇒ 并发请求进同一批 ⇒ 批形状随调用序列变化 ⇒ 判定不可复现;
+    ///   • `--cache-type-k/v f32`: 对账/复现须 f32 (R407 铁律, f16 会使近并列翻档);
+    ///   • `--flash-attn off`: 与 f32 KV 组合才可逐位对齐。
+    /// </summary>
+    public static List<string> BuildArgumentList(LlamaServerOptions o, int port, bool embedding)
+    {
+        var a = new List<string>
+        {
+            "-m", o.ModelPath,
+            "--host", o.Host,
+            "--port", port.ToString(CultureInfo.InvariantCulture),
+            "-c", o.ContextSize.ToString(CultureInfo.InvariantCulture),
+        };
+        if (o.Threads > 0) { a.Add("-t"); a.Add(o.Threads.ToString(CultureInfo.InvariantCulture)); }
+        a.Add("-np"); a.Add(Math.Max(1, o.Parallel).ToString(CultureInfo.InvariantCulture));
+        a.Add("--cache-type-k"); a.Add(o.CacheTypeK);
+        a.Add("--cache-type-v"); a.Add(o.CacheTypeV);
+        if (!o.FlashAttention) { a.Add("--flash-attn"); a.Add("off"); }
+        if (embedding)
+        {
+            // llama-server 的 /v1/embeddings 必须显式开启; 该开关与文本生成互斥 (llama.cpp 限制)
+            a.Add("--embeddings");
+        }
+        a.Add("--jinja");
+        a.AddRange(o.ExtraArgs);
+        return a;
+    }
+
     public async Task StartAsync(CancellationToken ct = default)
     {
         if (!File.Exists(_o.ModelPath))
@@ -114,21 +144,7 @@ public sealed class LlamaServerHost : IAsyncDisposable
             UseShellExecute = false,
             CreateNoWindow = true,
         };
-        psi.ArgumentList.Add("-m"); psi.ArgumentList.Add(_o.ModelPath);
-        psi.ArgumentList.Add("--host"); psi.ArgumentList.Add(_o.Host);
-        psi.ArgumentList.Add("--port"); psi.ArgumentList.Add(port.ToString(CultureInfo.InvariantCulture));
-        psi.ArgumentList.Add("-c"); psi.ArgumentList.Add(_o.ContextSize.ToString(CultureInfo.InvariantCulture));
-        if (_o.Threads > 0) { psi.ArgumentList.Add("-t"); psi.ArgumentList.Add(_o.Threads.ToString(CultureInfo.InvariantCulture)); }
-        psi.ArgumentList.Add("--cache-type-k"); psi.ArgumentList.Add(_o.CacheTypeK);
-        psi.ArgumentList.Add("--cache-type-v"); psi.ArgumentList.Add(_o.CacheTypeV);
-        if (!_o.FlashAttention) { psi.ArgumentList.Add("--flash-attn"); psi.ArgumentList.Add("off"); }
-        if (_o.EmbeddingMode)
-        {
-            // llama-server 的 /v1/embeddings 必须显式开启; 该开关与文本生成互斥 (llama.cpp 限制)
-            psi.ArgumentList.Add("--embeddings");
-        }
-        psi.ArgumentList.Add("--jinja");
-        foreach (var extra in _o.ExtraArgs) psi.ArgumentList.Add(extra);
+        foreach (var arg in BuildArgumentList(_o, port, _o.EmbeddingMode)) psi.ArgumentList.Add(arg);
 
         var p = new Process { StartInfo = psi };
         p.OutputDataReceived += (_, e) => { if (e.Data is not null) Append(_stdout, e.Data); };

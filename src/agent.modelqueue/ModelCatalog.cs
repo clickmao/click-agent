@@ -94,6 +94,13 @@ public sealed class LocalChannelConfig
     /// <summary>R413: 本地单轮生成上限 token (0 = 用端口默认)</summary>
     public int MaxTokens { get; set; } = 256;
 
+    /// <summary>
+    /// R430: 本地服务端总槽位 (config `local.parallel`)。默认 1 = 真串行。
+    /// 该构建 llama.cpp 的 `-np` 默认 = 4 ⇒ 并发在途请求进同一批 ⇒ 判定不可复现;
+    /// 显式 1 才保证决策路径逐位可复现 (R430 传输级坐实)。
+    /// </summary>
+    public int Parallel { get; set; } = 1;
+
     /// <summary>R413: 本地通道可承接的 prompt 预估 token 上限 (超限 → 走远端)</summary>
     public int MaxPromptTokens { get; set; } = 2048;
 
@@ -194,6 +201,7 @@ public sealed class ModelCatalog
                 GpuLayers = (int)AsDouble(ld, "gpu_layers"),
                 // R413: 缺省键 = 默认值 (向后兼容旧 models.yaml, 不带 local 段时通道关闭)
                 MaxTokens = ld.ContainsKey("max_tokens") ? (int)AsDouble(ld, "max_tokens") : 256,
+                Parallel = ld.ContainsKey("parallel") ? Math.Max(1, (int)AsDouble(ld, "parallel")) : 1,
                 MaxPromptTokens = ld.ContainsKey("max_prompt_tokens") ? (int)AsDouble(ld, "max_prompt_tokens") : 2048,
                 AllowedKinds = ld.TryGetValue("allowed_kinds", out var ak) && ak is List<object?> akl
                     ? akl.Where(x => x is string).Select(x => (string)x!).ToList()

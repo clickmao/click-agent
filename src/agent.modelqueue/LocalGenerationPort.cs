@@ -66,6 +66,15 @@ public sealed class LocalGenerationOutcome
     public string? Error { get; init; }
     public string Model { get; init; } = "local";
 
+    /// <summary>R430: prompt 指纹 (SHA-256 前 16 hex; 空 = 后端未上报 — 缺失不等于错误)。</summary>
+    public string PromptSha16 { get; init; } = string.Empty;
+
+    /// <summary>R430: 请求体指纹 (覆盖全部请求字段: n_predict/samplers/cache_prompt/seed...)。</summary>
+    public string RequestSha16 { get; init; } = string.Empty;
+
+    /// <summary>R430: 请求关键字段摘要 (指纹不同时用于定位)。</summary>
+    public string RequestFields { get; init; } = string.Empty;
+
     /// <summary>记账恒等校验 (口径一致才可采信; 违规 ⇒ 该次结果作废并降级远端)。</summary>
     public bool AccountingConsistent => TokensEvaluated == PromptNewTokens + CachedTokens;
 }
@@ -437,6 +446,18 @@ public sealed class TurnGateCounters
 
     public string? LastBasis { get; private set; }
 
+    /// <summary>R430: 最近一次门判的 prompt 指纹 (空 = 后端未上报)。</summary>
+    public string? LastPromptSha { get; private set; }
+
+    /// <summary>R430: 最近一次门判的请求体指纹。</summary>
+    public string? LastRequestSha { get; private set; }
+
+    /// <summary>R430: 最近一次门判的请求关键字段摘要。</summary>
+    public string? LastRequestFields { get; private set; }
+
+    /// <summary>R430: 上一次门判实际使用的角色种子指纹 (分辨「种子漂移」与「引擎不确定」)。</summary>
+    public string? LastRoleSeedSha { get; private set; }
+
     /// <summary>机械前置门命中 (零 token 直接 Pass, 未询问 r1) — 必须可观测, 否则看不出"省了判别"。</summary>
     public void RecordMechanicalPass() { Interlocked.Increment(ref _mechanicalPasses); LastBasis = "mechanical:pass→remote"; }
 
@@ -460,10 +481,20 @@ public sealed class TurnGateCounters
     }
 
     /// <summary>R429: 门判请求已钉死缓存态 (显式关前缀缓存 + 记录本次 cache_n)。</summary>
-    public void RecordCachePinned(int cachedTokens)
+    public void RecordCachePinned(int cachedTokens, string? promptSha = null, string? requestSha = null, string? requestFields = null)
     {
         Interlocked.Increment(ref _cachePinned);
         Volatile.Write(ref _lastCachedTokens, cachedTokens);
+        LastPromptSha = promptSha;
+        LastRequestSha = requestSha;
+        LastRequestFields = requestFields;
+    }
+
+    /// <summary>R430: 记录本次门判的角色种子指纹 (调用方在构造 prompt 处提供; null = 未走 r1 判别)。</summary>
+    public void RecordRoleSeed(string? roleSeed)
+    {
+        if (roleSeed is null) return;
+        LastRoleSeedSha = LocalInputFingerprint.Sha16(roleSeed);
     }
 }
 

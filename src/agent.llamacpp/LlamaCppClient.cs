@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using System.Text.Json;
+using agent.modelqueue;   // R430: LocalInputFingerprint (共享层; 不引入反向依赖)
 
 namespace agent.llamacpp;
 
@@ -42,7 +43,11 @@ public sealed record CompletionResult(
     double PredictedPerSecond,
     double PromptPerSecond,
     int CachedTokens,
-    string RawJson);
+    string RawJson,
+    // R430: 判定输入指纹 (只观测, 不影响生成) — 逐轮读数不同时先机械区分「输入不同」与「引擎不确定」。
+    string PromptSha16 = "",
+    string RequestSha16 = "",
+    string RequestFields = "");
 
 /// <summary>
 /// llama-server HTTP 客户端: 托管实现, 零 P/Invoke, 跨平台 (HttpClient 与进程二进制解耦)。
@@ -105,6 +110,14 @@ public sealed class LlamaCppClient : IDisposable
             NProbs = 0,
         };
 
+        // R430: 请求指纹 (只观测) — prompt 指纹 = 送达服务端的**渲染后**文本; 请求体指纹覆盖全部字段。
+        var promptSha = LocalInputFingerprint.Sha16(o.Prompt);
+        var requestSha = LocalInputFingerprint.Sha16(
+            JsonSerializer.Serialize(req, LlamaCppJsonContext.Default.CompletionRequest));
+        var requestFields = LocalInputFingerprint.Describe(
+            o.MaxTokens, o.Temperature, o.Samplers, o.CachePrompt, o.Seed,
+            o.TopK, o.TopP, o.MinP, o.RepeatPenalty);
+
         using var resp = await _http.PostAsync("completion",
             JsonContent.Create(req, LlamaCppJsonContext.Default.CompletionRequest), ct).ConfigureAwait(false);
         var body = await resp.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
@@ -134,7 +147,10 @@ public sealed class LlamaCppClient : IDisposable
             r.Timings?.PredictedPerSecond ?? 0,
             r.Timings?.PromptPerSecond ?? 0,
             r.Timings?.CacheN ?? 0,
-            body);
+            body,
+            promptSha,
+            requestSha,
+            requestFields);
     }
 
     /// <summary>文本 → 向量 (/v1/embeddings; 服务端按欧氏范数归一化)。批量输入 ≤ 服务端上限。</summary>

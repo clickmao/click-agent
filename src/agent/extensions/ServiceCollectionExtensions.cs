@@ -302,6 +302,7 @@ public static class ServiceCollectionExtensions
                 BinaryEnvVar = baseOpts.BinaryEnvVar,
                 ContextSize = lc.IsReady && lc.ContextSize > 0 ? lc.ContextSize : baseOpts.ContextSize,
                 Threads = baseOpts.Threads,
+                Parallel = lc.IsReady && lc.Parallel > 0 ? lc.Parallel : baseOpts.Parallel,
                 StartTimeoutMs = baseOpts.StartTimeoutMs,
                 AllowRestart = baseOpts.AllowRestart,
                 MaxTokens = lc.MaxTokens > 0 ? lc.MaxTokens : baseOpts.MaxTokens,

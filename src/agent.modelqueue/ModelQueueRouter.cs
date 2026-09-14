@@ -202,6 +202,7 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             return TurnGateOutcome.Undecided("no_local_port");
         }
         TurnGate.RecordJudged();
+        TurnGate.RecordRoleSeed(roleSeed);   // R430: 先记种子指纹 (区分「种子漂移」与「引擎不确定」)
         try
         {
             var outcome = await port.GenerateAsync(new LocalGenerationRequest
@@ -215,7 +216,7 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                 // (传输级实测 180/97/215, 可致 S/P 翻转) ⇒ 门判不得依赖前缀缓存复用。
                 CacheReuse = false,
             }, ct).ConfigureAwait(false);
-            TurnGate.RecordCachePinned(outcome.CachedTokens);
+            TurnGate.RecordCachePinned(outcome.CachedTokens, outcome.PromptSha16, outcome.RequestSha16, outcome.RequestFields);
 
             if (!outcome.Success || string.IsNullOrWhiteSpace(outcome.Content))
             {

@@ -19,6 +19,9 @@ public sealed class LlamaCppEmbedderOptions
 
     public int Threads { get; init; } = 1;
 
+    /// <summary>R430: 服务端总槽位 (显式; 嵌入向量同样要求可复现)。</summary>
+    public int Parallel { get; init; } = 1;
+
     public int StartTimeoutMs { get; init; } = 300_000;
 
     /// <summary>是否允许在服务进程已死时自动重启一次。</summary>
@@ -97,6 +100,7 @@ public sealed class LlamaCppTextEmbedder : ITextEmbedder, IAsyncDisposable
                 BinaryEnvVar = _o.BinaryEnvVar,
                 ContextSize = _o.ContextSize,
                 Threads = _o.Threads,
+                Parallel = _o.Parallel,
                 StartTimeoutMs = _o.StartTimeoutMs,
                 EmbeddingMode = true,   // 必需: /v1/embeddings 只在 --embeddings 形态存在
             }, ct).ConfigureAwait(false);

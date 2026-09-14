@@ -16,6 +16,9 @@ public sealed class LlamaCppGeneratorOptions
 
     public int Threads { get; init; } = 1;
 
+    /// <summary>R430: 服务端总槽位 (显式; 1 = 真串行, 决策路径逐位可复现的前提)。</summary>
+    public int Parallel { get; init; } = 1;
+
     public int StartTimeoutMs { get; init; } = 300_000;
 
     /// <summary>服务进程已死时是否允许自动重启一次（长驻语义: 重启即丢 KV 缓存 ⇒ 计数可见）。</summary>
@@ -90,6 +93,15 @@ public sealed class LlamaCppTextGenerator : IAsyncDisposable
     /// </summary>
     public int LastPromptTokensRecomputed { get; private set; } = -1;
     public int LastCachedTokens { get; private set; } = -1;
+
+    /// <summary>R430: 最近一次生成的 prompt 指纹 (SHA-256 前 16 hex) — 判定输入可复现性的机械锚点。</summary>
+    public string LastPromptSha16 { get; private set; } = string.Empty;
+
+    /// <summary>R430: 最近一次生成的**请求体**指纹 (覆盖 n_predict/samplers/cache_prompt/seed 等全部字段)。</summary>
+    public string LastRequestSha16 { get; private set; } = string.Empty;
+
+    /// <summary>R430: 最近一次请求的关键字段摘要 (指纹不同 ⇒ 直接指出哪个字段变了)。</summary>
+    public string LastRequestFields { get; private set; } = string.Empty;
     /// <summary>最近一轮生成 token 数（下一轮的可复用上限 = 本轮总长 + 本轮生成）。</summary>
     public int LastGeneratedTokens { get; private set; } = -1;
 
@@ -153,6 +165,10 @@ public sealed class LlamaCppTextGenerator : IAsyncDisposable
         LastPromptTokensRecomputed = recomputed;
         LastPromptTokens = total;
         LastCachedTokens = result.CachedTokens;
+        // R430: 指纹只观测, 不改生成路径 (判定输入可复现性必须先能区分「输入变了」与「引擎漂了」)。
+        LastPromptSha16 = result.PromptSha16;
+        LastRequestSha16 = result.RequestSha16;
+        LastRequestFields = result.RequestFields;
         LastGeneratedTokens = result.Tokens.Length;
         _sessions.Record(sessionKey, total, result.Tokens.Length);   // R412: 按会话记账（下一轮的 ceiling 来源）
         Interlocked.Increment(ref _turns);
@@ -190,6 +206,7 @@ public sealed class LlamaCppTextGenerator : IAsyncDisposable
                 BinaryEnvVar = _o.BinaryEnvVar,
                 ContextSize = _o.ContextSize,
                 Threads = _o.Threads,
+                Parallel = _o.Parallel,
                 StartTimeoutMs = _o.StartTimeoutMs,
                 EmbeddingMode = false,   // 与嵌入互斥 ⇒ 各起一个进程
             }, ct).ConfigureAwait(false);

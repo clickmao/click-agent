@@ -31,6 +31,14 @@ public sealed class LlamaServerOptions
     /// <summary>生成线程数; 0 ⇒ 不传 -t, 交 llama.cpp 自适应。</summary>
     public int Threads { get; init; }
 
+    /// <summary>
+    /// R430: 服务端**总槽位** (-np)。默认 1 = 真串行。
+    /// 依据: 本仓库使用的 llama.cpp 构建 `-np` 默认 = **4** (实测 n_slots=4) ⇒ 并发在途请求进同一批
+    /// ⇒ 每序列批形状随调用序列变化 ⇒ 浮点归约顺序变 ⇒ 同一 prompt/请求体仍产出不同文本。
+    /// 决策路径要逐位可复现 ⇒ 总槽位必须 = 1, 且**显式声明** (绝不依赖构建默认)。
+    /// </summary>
+    public int Parallel { get; init; } = 1;
+
     /// <summary>KV cache 数值档; 对账须 f32 (llama.cpp 默认 f16 会导致近并列翻档, R407 铁律)。</summary>
     public string CacheTypeK { get; init; } = "f32";
 
@@ -54,7 +62,7 @@ public sealed class LlamaServerOptions
 
     /// <summary>构造 P/Invoke 之外的第三个形态参数: 一律走 ArgumentList (零 shell 铁律)。</summary>
     public string Describe() => string.Create(CultureInfo.InvariantCulture,
-        $"model={ModelPath} ctx={ContextSize} threads={(Threads > 0 ? Threads.ToString(CultureInfo.InvariantCulture) : "auto")} kv={CacheTypeK}/{CacheTypeV} fa={(FlashAttention ? "on" : "off")}");
+        $"model={ModelPath} ctx={ContextSize} threads={(Threads > 0 ? Threads.ToString(CultureInfo.InvariantCulture) : "auto")} np={Math.Max(1, Parallel)} kv={CacheTypeK}/{CacheTypeV} fa={(FlashAttention ? "on" : "off")}");
 }
 
 /// <summary>
