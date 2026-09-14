@@ -1,0 +1,53 @@
+start free: Mem:            3659        1271         998         143        1796        2388
+A S1 t1 ok=False total=None cache_n=None reuse=None wall=214816ms
+A S1 t2 ok=False total=None cache_n=None reuse=None wall=2181ms
+A S2 t1 ok=False total=None cache_n=None reuse=None wall=4ms
+A S2 t2 ok=False total=None cache_n=None reuse=None wall=0ms
+B S1 t1 ok=False total=None cache_n=None reuse=None wall=0ms
+B S2 t1 ok=False total=None cache_n=None reuse=None wall=0ms
+B S1 t2 ok=False total=None cache_n=None reuse=None wall=0ms
+B S2 t2 ok=False total=None cache_n=None reuse=None wall=0ms
+C S1 t1 ok=False total=None cache_n=None reuse=None wall=17ms
+C S2 t1 ok=False total=None cache_n=None reuse=None wall=16ms
+C S1 t2 ok=False total=None cache_n=None reuse=None wall=2ms
+C S2 t2 ok=False total=None cache_n=None reuse=None wall=2ms
+D S2 t1 ok=False total=None cache_n=None reuse=None wall=3730ms
+D S1 t1 ok=False total=None cache_n=None reuse=None wall=3731ms
+D S1 t2 ok=False total=None cache_n=None reuse=None wall=0ms
+D S2 t2 ok=False total=None cache_n=None reuse=None wall=0ms
+
+=== 裁决 ===
+{
+  "A_carry_reuse": {
+    "S1": null,
+    "S2": null
+  },
+  "B_carry_reuse": {
+    "S1": null,
+    "S2": null
+  },
+  "C_carry_reuse": {
+    "S1": null,
+    "S2": null
+  },
+  "D_carry_reuse": {
+    "S1": null,
+    "S2": null
+  },
+  "N1_negative_control_ok": false,
+  "C1_contention_in_B": false,
+  "C1_contention_in_C": false,
+  "C2_explicit_failures": 16,
+  "C2_explicit_failure_kinds": [
+    "RemoteDisconnected",
+    "URLError",
+    "http_error"
+  ],
+  "C3_abs_cached_per_arm": {
+    "A": {},
+    "B": {},
+    "C": {},
+    "D": {}
+  },
+  "verdict": "INCONCLUSIVE(负控不达标: A<0.97 ⇒ 探针/环境无效)"
+}

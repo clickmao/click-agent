@@ -1,0 +1,63 @@
+start free: Mem:            3659        2315         118         142        1618        1344  CTX=2048 NP2_CTX=4096  P1/P2 chars=420/420
+A S1 t1 ok=True total=276 cache_n=0 reuse=None wall=7247ms
+A S1 t2 ok=True total=297 cache_n=279 reuse=0.9964 wall=702ms
+A S2 t1 ok=True total=271 cache_n=1 reuse=None wall=7393ms
+A S2 t2 ok=True total=292 cache_n=274 reuse=0.9964 wall=707ms
+B S1 t1 ok=True total=276 cache_n=275 reuse=None wall=288ms
+B S2 t1 ok=True total=271 cache_n=270 reuse=None wall=282ms
+B S1 t2 ok=True total=297 cache_n=279 reuse=0.9964 wall=702ms
+B S2 t2 ok=True total=292 cache_n=274 reuse=0.9964 wall=717ms
+C S1 t1 ok=True total=276 cache_n=275 reuse=None wall=251ms
+C S2 t1 ok=True total=271 cache_n=270 reuse=None wall=510ms
+C S1 t2 ok=True total=297 cache_n=279 reuse=0.9964 wall=702ms
+C S2 t2 ok=True total=292 cache_n=274 reuse=0.9964 wall=1401ms
+D S1 t1 ok=True total=276 cache_n=0 reuse=None wall=15840ms
+D S2 t1 ok=True total=271 cache_n=0 reuse=None wall=15915ms
+D S2 t2 ok=True total=292 cache_n=274 reuse=0.9964 wall=1642ms
+D S1 t2 ok=True total=297 cache_n=279 reuse=0.9964 wall=1644ms
+
+=== 裁决 ===
+{
+  "A_carry_reuse": {
+    "S1": 0.9964,
+    "S2": 0.9964
+  },
+  "B_carry_reuse": {
+    "S1": 0.9964,
+    "S2": 0.9964
+  },
+  "C_carry_reuse": {
+    "S1": 0.9964,
+    "S2": 0.9964
+  },
+  "D_carry_reuse": {
+    "S1": 0.9964,
+    "S2": 0.9964
+  },
+  "N1_negative_control_ok": true,
+  "D_slot_ctx": 2048,
+  "D_judgeable": false,
+  "C1_contention_in_B": false,
+  "C1_contention_in_C": false,
+  "C2_explicit_failures": 0,
+  "C2_explicit_failure_kinds": [],
+  "C3_abs_cached_per_arm": {
+    "A": {
+      "S1": 279,
+      "S2": 274
+    },
+    "B": {
+      "S1": 279,
+      "S2": 274
+    },
+    "C": {
+      "S1": 279,
+      "S2": 274
+    },
+    "D": {
+      "S2": 274,
+      "S1": 279
+    }
+  },
+  "verdict": "NO_CONTENTION"
+}

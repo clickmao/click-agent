@@ -56,6 +56,8 @@ public sealed class LlamaCppTextGenerator : IAsyncDisposable
 {
     private readonly LlamaCppGeneratorOptions _o;
     private readonly SemaphoreSlim _gate = new(1, 1);
+    /// <summary>R412: 会话级账本（多会话交替/并发下保各自的可复用上限）。</summary>
+    private readonly LocalSessionTracker _sessions = new();
     private LlamaCppProvider? _provider;
     private long _starts;
     private long _turns;
@@ -90,6 +92,13 @@ public sealed class LlamaCppTextGenerator : IAsyncDisposable
     public int LastCachedTokens { get; private set; } = -1;
     /// <summary>最近一轮生成 token 数（下一轮的可复用上限 = 本轮总长 + 本轮生成）。</summary>
     public int LastGeneratedTokens { get; private set; } = -1;
+
+    /// <summary>
+    /// R412: 会话级账本 —— 按 <c>sessionKey</c> 分开记「上一轮总长/生成」。
+    /// 实例级 <see cref="LastPromptTokens"/> 在多会话下会互相覆盖；本属性同时暴露
+    /// <c>TrackedSessions</c>/<c>ConcurrentTurns</c>/<c>MaxConcurrentTurns</c>/<c>UnkeyedTurns</c> 计数。
+    /// </summary>
+    public LocalSessionTracker Sessions => _sessions;
 
     /// <summary>
     /// 口径换算（R411 独立实现钉死，**别再改回去**）:
@@ -127,8 +136,11 @@ public sealed class LlamaCppTextGenerator : IAsyncDisposable
         CompletionReuse reuse = CompletionReuse.Session,
         CancellationToken ct = default)
     {
-        // 可复用上限必须在**发请求之前**取（发完就变了）: 上一轮 prompt 总长 + 上一轮生成。
-        var carryOverCeiling = LastPromptTokens >= 0 ? LastPromptTokens + Math.Max(0, LastGeneratedTokens) : 0;
+        // R412: 上限必须取**本会话自己**的上一轮。实例级 LastPromptTokens/LastGeneratedTokens 是全局唯一的，
+        //        多会话交替/并发时会被别的会话覆盖 ⇒ 台账分母污染（判红/判绿都可能失真，且外部看不出来）。
+        //        无 sessionKey 时退回实例级 ⇒ 无会话形态行为不变（零回归）。
+        using var lease = _sessions.EnterTurn(sessionKey);
+        var carryOverCeiling = _sessions.CeilingFor(sessionKey, LastPromptTokens, LastGeneratedTokens);
 
         var provider = await EnsureProviderAsync(ct).ConfigureAwait(false);
         var result = await provider
@@ -142,6 +154,7 @@ public sealed class LlamaCppTextGenerator : IAsyncDisposable
         LastPromptTokens = total;
         LastCachedTokens = result.CachedTokens;
         LastGeneratedTokens = result.Tokens.Length;
+        _sessions.Record(sessionKey, total, result.Tokens.Length);   // R412: 按会话记账（下一轮的 ceiling 来源）
         Interlocked.Increment(ref _turns);
         Interlocked.Add(ref _promptTokens, total);
         Interlocked.Add(ref _cachedTokens, Math.Max(0, result.CachedTokens));

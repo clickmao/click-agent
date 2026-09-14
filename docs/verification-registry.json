@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R411-V",
+  "updated_round": "R412",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -693,6 +693,22 @@
         "eval/rover/r411/"
       ],
       "owner_round": "R411"
+    },
+    {
+      "id": "llamacpp.session-ledger",
+      "level": "L4",
+      "evidence_cmd": "AGENTFRAMEWORK_LLAMA_BIN=<llama-server> python3 eval/rover/r412/template_lcp_probe.py && python3 eval/rover/r412/slot_contention_probe.py && dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~LocalSessionTrackerTests",
+      "evidence_path": "eval/rover/r412/",
+      "negative_control": "① 预注册负控 N1: 臂 A（同会话连续）必须 ≥0.97（实测 0.9998/0.9991）—— 探针/环境失效则判 INCONCLUSIVE，不得判争用；② 设计缺陷自曝并修正: 初版会话 2 前缀 = 会话 1 前缀 + 标记 ⇒ 两会话共享超长公共子序列 ⇒ 三臂读数完全相同（判别力 0），跑前改用互不相同语料并独立量 LCP=0/1（最长公共片段 16 token）才开跑；③ 计数器不单独采信: 冷启 prompt_ms 148.3s/155.8s vs 热轮 0.84s（≈176×）⇒ 命中是真实 KV，非计数器假象；④ 单测负控: 纯串行必须 MaxConcurrentTurns==1 ∧ ConcurrentTurns==0（不得误报争用）；⑤ 单测反例: 若会话分桶退化回实例级，J1a 期望 510 会得到 408 ⇒ 必失败。",
+      "capability": "R412 多会话 slot 争用（本地长驻生成第二 regime）。① 服务端实测（独立实现直连 HTTP，不经过产品代码；-np 1 -c 4608 -b 512、f32 KV、flash-attn off）: 三臂 A 同会话连续 / B 两会话交替 / C 真并发（LCP 预校验: 两前缀 4336 vs 4316 token，LCP=0/1、最长公共片段 16）⇒ 携带复用率四臂（A 连续 / B 交替 / C 真并发 / D `-np 2 -c 9216`（每 slot 4608））**逐位相同**（S1 0.9998 / S2 0.9991）；冷启 prompt_ms 148.3s/155.8s vs 热轮 0.84s ⇒ 真实 KV 命中（非计数器假象）⇒ **单 slot 不互相踢缓存**（服务端保留并恢复 slot 状态）。② 产品侧缺陷（代码事实: LlamaCppTextGenerator.cs:131 旧取实例级 LastPromptTokens/LastGeneratedTokens）: 多会话交替/并发时被别的会话覆盖 ⇒ K2b 台账 carryOverCeiling 分母污染（外部看不出）⇒ 新增 LocalSessionTracker 按 sessionKey 分桶（无键退回实例级 = 零回归）+ 并发计数 TrackedSessions/ConcurrentTurns/MaxConcurrentTurns/UnkeyedTurns。判据 J1a-J1h，含负控: 纯串行 MaxConcurrentTurns==1 且 ConcurrentTurns==0（不得误报争用）。",
+      "covers": [
+        "src/agent.llamacpp/LocalSessionTracker.cs",
+        "src/agent.llamacpp/LlamaCppTextGenerator.cs",
+        "src/agent.tests/LocalSessionTrackerTests.cs",
+        "eval/rover/r412/",
+        "docs/plans/v0.34.0-r412-multi-session-slot-contention.md"
+      ],
+      "owner_round": "R412"
     }
   ],
   "aot_check_policy": "release_tag_only",

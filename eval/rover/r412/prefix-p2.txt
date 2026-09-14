@@ -1,0 +1,97 @@
+【会话B·独立文档语料 a91c】
+# AgentFramework 改进文档 (improvements.md)
+
+> **记录规则 (2026-09-08 重梳)**: 顶部 = 最新版本, 逐版本向下递减; 每节格式统一
+> (版本 / 日期 / 状态 / 主题 / 完成记录 / 基线)。v7.x 为历史遗留版本号体系 (v0.x 前身),
+> 原始记录见文末「历史遗留」区, 详情走 git log。
+>
+> **⚠ 文档严谨性铁律 (2026-09-09 用户钦定, 长期有效)**: 凡【以文档为驱动的循环开发迭代方案】
+> 中的文档 (README 双语 / api.md / architecture.md / CLI指令说明.md / improvements.md 等),
+> 任何修改必须做**全文整体/大区域合法性校验** — 标题与内容对齐 (版本号、批次趋势行归属)、
+> 数据时效 (测试数/批号/评测口径)、版本引用一致性、死链检查; **禁止只改局部不做整体校验**。
+> 空间位置相邻但语义不同段的错挂 (如旧版本标题下挂新数据) 视同违例。
+
+---
+
+## R411 — 长驻生成端口 + 本地 K2b 台账：「口径必须靠独立实现对账钉死」+ 双条件判据
+
+**版本**: R411 · **日期**: 2026-09-14 · **状态**: 已落地（代码/文档/登记见本次提交）
+
+**用户令（逐字）**：「继续下一轮」
+
+**完成记录**：
+- **补上 R410 缺的第三条件**：新增长驻生成端口 `LlamaCppTextGenerator`（懒启动 + 单飞 + 跨调用保活同一 `llama-server`）。E2E（单进程 3 轮）逐轮 `ProcessStarts=1`，命中 **0 → 4352 → 4385**，携带复用率 **0.9998**，整体复用率 **0.9959**，前缀 **4337 ≥ 4224** ⇒ K2b 达标形态首次在产品侧复现（exit 0）。
+- **负控（判据是活的）**：19 token 前缀会话 ⇒ 复用率 0.963、绝对长度不达标 ⇒ **判越线，exit 7**，诊断点名「前缀绝对长度 19 token（需 ≥4224）」；无 turns 的请求 ⇒ 用法错 **exit 2**（首跑曾是 core dump exit 134，已修）。
+- **★ 口径教训（本轮最重要）**：按字段名把 `tokens_evaluated` 当成「新评估数」是错的 —— **它就是 prompt 总长**（`timings.prompt_n` 才是新评估数，`tokens_evaluated == prompt_n + cache_n`）。错算导致总长虚增（530 → 1042）、出现 **有效命中率 1.0302 > 1（物理不可能）** 与随后的假越线。独立实现（`/apply-template` + `/tokenize` + `/completion` 三方对账）把它钉死；**「比率 > 1」= 口径错的可机检特征**，已写成单测。
+- **本地分母不套远端经验界**：远端 provider 的「需要命中的部分」含 64-token 单元打折（mt_fix4 规律），而 llama.cpp 的 KV 缓存连上一轮**生成**的 token 一起持有 ⇒ 本地台账用「可复用上限 = 上一轮总长 + 上一轮生成」，命中超出上限时**弃权**（记 `-1` + `Abstained`，不硬套判决）；命中未上报时**不判红**（缺失 ≠ 错误）。
+- **判据 = 合取**：携带复用率 ≥97% **∧** 前缀绝对长度 ≥4224（沿用 R410「比值不是 KPI」）。单测 11 例（台账 7 + 口径 4，含「口径错 ⇒ 比率 > 1」与「比值达标/长度不足」两个负控分支）。
+- **判据机检**：`eval/rover/r411/verify.py` **12/12 通过**；全量 **1087 / 0 / 0（34 s）**；登记表 **46 行**（新行 `llamacpp.session.long_lived_generation`）、TaskPlan **18 节点**、形式校验 **9/9**。
+- **自错披露**：① 口径换算错（见上）；② 把 R410 的 780 字符前缀当成「4249 token」（4249 是探针运行时重复 25 次的产物）⇒ 首跑正负例结论颠倒；③ 预注册判据 N1 写错（预言「比值达标」，实测比值也不达标），**修正判据并另立单测覆盖该分支**，不为让脚本变绿而放宽；④ 会话分支曾在 `try` 之外 ⇒ 异常逃逸 core dump；⑤ STJ 默认大小写敏感 ⇒ 小写 `turns` 反序列化成空。
+
+**诚实边界**：单 slot 顺序两会话、只测 497/4337 两点、3 轮 n=1 形态；多会话并发争用未测；**产品主链路未接**（`ModelQueueAdapter` 仍走远端）；正例前缀是合成重复文本（4337 token），真实 system/skills 前缀能否天然 ≥4224 未验证；助手轮回放的逐字节一致性未单独取证（本轮复用近全量，但无字节级对照）；墙钟不作判据。
+
+---
+
+## R410 — 会话长前缀复用（K2b 落点）：「比值不是 KPI」+ 宿主生命周期缺口 + 生成口径分离
+
+**版本**: R410 · **日期**: 2026-09-14 · **状态**: 已落地（代码 `8263ac8`；文档/登记见本提交）
+
+**用户令（逐字）**：「继续下轮」
+
+**完成记录**：
+- **实测（判据先预注册）**：同一 server 内，4255 token 长前缀第二次请求只重算 **5 token**（`cache_n=4250`，复用率 **0.9988 ≥ 0.97**，墙钟 233.9 s → 0.5 s）；负控（前缀首 token 改变）归零；`cache_prompt=false` 恒 0。
+- **关键结论：比值不是 KPI，绝对长度才是** —— 短独立 prompt 的「复用比」0.94 看似不低，但绝对可复用只有 **17 token** ⇒ 对 K2b 红线（≥4224）覆盖 **0.402%**，结构上不可能达标。只看比值会得出相反结论。
+- **宿主生命周期缺口（实测，非推断）**：同样 `--reuse on` + 稳定 487 token 前缀，两次 CLI 调用 `CachedTokens` **都是 0**、`SessionCacheMisses=1` —— 每次调用新起 server（新 KV 缓存）⇒ 跨进程复用 **0%**。⇒ **K2b 达标三条件：长驻 server + 稳定长前缀 + cache 开；缺「长驻」时另两条都白搭**。
+- **代码**：`CompletionReuse {Session, Reconciliation}`（`GenerateAsync` 默认 Session = 生产口径）；`CompletionProfiles.Build()` 收敛为「口径 → 参数」唯一映射点；`CompletionResult.CachedTokens`（服务端 `cache_n`，非估算）；`SessionReuseCalls`/`ReconciliationCalls`/`SessionCacheMisses`（静默失效可见化）；CLI 新增 `--reuse on|off` 与 `--system-file`（会话长前缀入口）。
+- **测试**：新增 `CompletionReuseTests` **4/4**；全量 **1076 / 0 / 0**（R409 基线 1072 + 4）。
+- **顺带修掉两个真缺陷**（均由全量回归暴露、非本轮引入，同属「拿墙钟当闸门」类）：① `SessionPerformanceTests` 的墙钟 3x 比值断言 ⇒ 改为「等价性作判据、计时只作信息」；② `LlmServiceStatusTests` 的 5 s 固定就绪截止 ⇒ 放宽到 30 s 并把实测等待写进失败信息。两者在争用下都产生假红（单独复跑全绿）。
+- **登记**：`docs/verification-registry.json` 新行 `llamacpp.session.prefix_reuse`（L4，45 行，`updated_round=R410`）；TaskPlan 节点 `dev-session-prefix-reuse`；计划文档 `docs/plans/v0.32.0-r410-session-prefix-reuse.md`；证据 `eval/rover/r410/`。
+
+**自错披露**：① 探针 v1 成本估小（单线程 prefill 实测 26 t/s ⇒ 4807 token 一遍 185 s）且只在末尾落盘 ⇒ 被掐断后零证据，v2 才改成分臂增量落盘；② 「会话内复用 99.88%」与「跨进程复用 0%」两条曾混在同一结论里，补跑 CLI 后才分清。
+
+**基线**：全量 1076/0/0；本地生成 17.9 t/s（llama.cpp 不变）；K2b 会话内顺序复用 **0.9988**（达标）/ 跨进程 **0**（缺口）。
+
+**下轮候选（R411）**：① 产品侧长驻 provider 接线（嵌入侧已是 `AddSingleton`，生成侧待接）；② 多会话并发 slot 争用下的复用率；③ 前缀中段变化的截断点分布；④ 微内核 A/B（15× 悬案）；⑤ R402–R407 台账回填。
+
+## R409 — 本地 prompt 模板闸门（结构性阻断手拼）+「权威 prompt」BOS 口径修正
+
+**版本**: R409 · **日期**: 2026-09-14 · **状态**: 已落地（工作区，待 commit）
+
+**用户令（逐字）**：「继续下轮」
+
+**完成记录**：
+- **实测（判据先预注册，后改代码）**：模板来源对账 —— GGUF 内嵌 jinja（走 `POST /apply-template`）与归档 `eval/rover/tokref/r1_chat_template.jinja` 在 **3/3 消息形状逐字节一致**（diff 0 B）⇒ K2b 模板来源漂移风险关闭。
+- **BOS 归属裁决（真缺陷）**：96 B 字面权串 + 默认 tokenization（`add_special=true`）= **18 token / 双 BOS**；规范形式 = 渲染串（67 B）+ tokenizer 自动 BOS = **17 token / 单 BOS**，两者 token 流等价（`IdsEquivalent=true`）。产品通路实测：`literal` 18 vs `chat_template` 17，**生成 24 id 逐位相同** ⇒ R408 对账结论不受影响；双 BOS 的实际代价是 **+1 prompt token** 与**两通路前缀不可复用**（K2/K2b）。
+- **闸门落地**：新端口 `ILocalPromptRenderer`（唯一实现经 `/apply-template` 由**模型元数据**渲染 ⇒ 调用方物理上无法手拼）；`LocalPromptGate` 四规则（来源非模型元数据 / 空产物 / 字面含 BOS / 以 EOS 结尾 ⇒ 全判红）；`GenerateAsync` 只收结构化 messages；字面通路降级为 `CompleteLiteralPromptAsync`（显式诊断用 + 计数）；被使用计数 `TemplateRenders` / `PromptGateRejections`。
+- **规则按实测修正**：初版「不得包含 EOS」会**误拦合法多轮**（118 B 含 EOS 轮分隔符、不以 EOS 结尾）⇒ 改为「不得以 EOS 结尾」。
+- **机器验证**：`agenthost --llamacpp --verify-template`（退出码 6 = 未通过）⇒ `Verdict=gated_single_bos`、`RenderedBosCount=1`、`LiteralBosCount=2`、`IdsEquivalent=true`、exit 0。
+- **测试**：新增 `LlamaCppPromptGateTests` **9/9**（sha 锚点钉死 + 5 项注入缺陷负控 + 2 项防误拦反向控制）；全量回归 **1072/0/0**。
+- **AOT**：规范命令复跑 **exit 0 / 0 IL 警告 / 14,950,608 B**（政策 `release_tag_only` ⇒ 仅参考证据）。
+- **登记**：`docs/verification-registry.json` +`llamacpp.prompt.template_gate`（L4，44 行）；TaskPlan 节点 `dev-local-prompt-template-gate`；计划 `docs/plans/v0.31.0-r409-local-prompt-template-gate.md`；证据 `eval/rover/r409/`。
+
+**自错披露（3 处）**：① 首轮把 `2081`（字符）与 `2237`（UTF-8 字节）当成两个模板的长度，误报「差 156 B」（单位错）；② 闸门初版 EOS 规则会误拦合法多轮输入；③ R409 探针脚本内建裁决行问错对象（比较了 `96B/add_special=true`）故打印 False —— 正确等价对由 `--verify-template` 独立确认。
+
+**基线**：R408 全量 1063/0 ⇒ R409 全量 **1072/0/0**；本地生成 17.9 t/s（llama.cpp，与 R408 持平）。
+**台账缺口（遗留）**：R402–R407 未回填本台账，其证据在 `eval/rover/r40x/` 与 `docs/plans/v0.2x-r40x-*.md`。
+
+## R408 — 本地 GGUF 引擎整线退役，产品线全面切 llama.cpp（进程 + HTTP，零 P/Invoke）
+
+**版本**: R408 · **日期**: 2026-09-14 · **状态**: 已落地（commit `b00917c`，本地未推）
+
+**用户令（逐字）**：「去掉所有关于gguf的本地代码开发，完全改用llama.cpp」+「不用对比自研的了，直接用llama」
+
+**完成记录**：
+- **退役范围**：`src/agent.rover/{gguf,quant,infer,runtime,token,cli}/` + `src/agent.embedcpu/` 整工程删除（10.3k+0.6k LOC）；`formal/` + `gpu/spirv/` 保留（非 GGUF 内核）；`agent.rover` 不再产出可执行文件。
+- **接入形态**：`src/agent.llamacpp/`（Host / Client / Provider / TextEmbedder）只走「进程 + HTTP」，全仓 `DllImport`/`LibraryImport` **0 命中**。依据：跨平台（Windows 无 `AddressFamily.Unix`）+ R90 实测 LLamaSharp native interop 在 NativeAOT 下 SIGSEGV。
+- **两进程形态**：生成与嵌入互斥（`/v1/embeddings` 需 `--embeddings` 启动）。
+- **读数**：生成 24/24 token id 与 llama-cli 基线逐位相同（dev 17.891 / AOT 17.64 t/s，`IdsMatch=true`）；嵌入 768 维 L2 归一，命令路径与 DI 路径指纹一致（`sha256=d5336321…`），新旧向量 `cos=0.1586`。全量回归 **1063/0/0**；AOT 0 IL 警告。
+- **登记表**：3 行引擎对账行改写为 `llamacpp.process.boundary` / `llamacpp.embedding.port` / `engine.retired.no_local_gguf`。
+- 口径修正（R409 追认）：R408 所用「96 B 权威 prompt」字面含 BOS，在默认 tokenization 下会双 BOS（18 token）；规范形式为渲染串 + 自动 BOS（17 token）。生成结果 24/24 不受影响。
+
+**基线**：退役前 1130/2/1132 ⇒ 退役后 **1063/0/0**。
+
+## R401 — 能力自检循环常驻化（用户令：R400 后一直执行 + 60 分钟检测机制）
+
+**版本**: R401 · **日期**: 2026-09-14 · **状态**: 已落地（常驻）
+
+**用户令
