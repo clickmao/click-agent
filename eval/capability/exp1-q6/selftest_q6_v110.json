@@ -1,0 +1,93 @@
+{
+  "selftest": "attribute_failed_refs-v1.1.0",
+  "all_pass": true,
+  "passed": 14,
+  "n": 14,
+  "checks": [
+    {
+      "check": "P1_live_path_in_HEAD",
+      "pass": true,
+      "observed": "src/agent.host/Program.cs"
+    },
+    {
+      "check": "P2_deleted_has_commit_and_ancestor",
+      "pass": true,
+      "observed": {
+        "sha": "af9856bb8da8abe2be547e8a35fc28356e1f0f75",
+        "anc": true
+      }
+    },
+    {
+      "check": "N1_never_tracked_not_deleted",
+      "pass": true,
+      "observed": {
+        "tracked": 0
+      }
+    },
+    {
+      "check": "N2_unfiltered_zero_for_deleted",
+      "pass": true,
+      "observed": "CapabilityPlugin.cs"
+    },
+    {
+      "check": "N2b_unfiltered_positive_control",
+      "pass": true,
+      "observed": [
+        "eval/dcr/harness/Program.cs",
+        "probes/bge-probe/Program.cs",
+        "probes/llama-r114-probe/Program.cs"
+      ]
+    },
+    {
+      "check": "F1_dead_after_delete",
+      "pass": true,
+      "observed": ""
+    },
+    {
+      "check": "F2_retired_after_write",
+      "pass": true,
+      "observed": ""
+    },
+    {
+      "check": "F3_axis_conflict_waived",
+      "pass": true,
+      "observed": ""
+    },
+    {
+      "check": "F4_no_deletion_waived",
+      "pass": true,
+      "observed": ""
+    },
+    {
+      "check": "F5_single_evidence_used",
+      "pass": true,
+      "observed": "blame_only"
+    },
+    {
+      "check": "P3_elision_bucket",
+      "pass": true,
+      "observed": ""
+    },
+    {
+      "check": "N3_elision_negative_control",
+      "pass": true,
+      "observed": ""
+    },
+    {
+      "check": "T1_fixture_pre_retire_is_history",
+      "pass": true,
+      "observed": {
+        "pre.md": "retired_after_write",
+        "post.md": "dead_after_delete"
+      }
+    },
+    {
+      "check": "T2_fixture_post_retire_is_defect",
+      "pass": true,
+      "observed": {
+        "pre.md": "retired_after_write",
+        "post.md": "dead_after_delete"
+      }
+    }
+  ]
+}
