@@ -27,6 +27,7 @@
 from __future__ import annotations
 
 import argparse
+import datetime
 import glob
 import hashlib
 import json
@@ -34,6 +35,7 @@ import os
 import random
 import subprocess
 import sys
+import tempfile
 import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -438,6 +440,84 @@ def load_env_local(path: str = ENV_LOCAL) -> dict:
     return env
 
 
+def _telemetry_file(env: dict) -> str:
+    """被测进程写入的遥测文件 (env 覆盖优先, 与产品侧 AgentTelemetry 同规则)。"""
+    d = env.get("AGENTFRAMEWORK_TELEMETRY") or os.path.join(ROOT, "data", "telemetry")
+    return d if str(d).endswith(".jsonl") else os.path.join(d, "host.jsonl")
+
+
+_TS_RE = __import__("re").compile(
+    r"^(\d{4}-\d{2}-\d{2})[T ](\d{2}:\d{2}:\d{2})(?:\.(\d+))?\s*(Z|[+-]\d{2}:?\d{2})?$")
+
+
+def _iso_epoch(ts: str):
+    """ISO8601 → epoch 秒。**必须容错**: .NET 遥测写 7 位小数 (strptime %f 只吃 6 位),
+    解析失败返回 None ⇒ 调用方会跳过窗口过滤 ⇒ 可能把**旧产物**当本次结果 (归属铁律)。
+    """
+    m = _TS_RE.match(str(ts or "").strip())
+    if not m:
+        return None
+    date, tm, frac, off = m.groups()
+    frac = (frac or "")[:6].ljust(6, "0")
+    off = (off or "Z").replace("Z", "+0000").replace(":", "")
+    try:
+        return datetime.datetime.strptime("%sT%s.%s%s" % (date, tm, frac, off),
+                                          "%Y-%m-%dT%H:%M:%S.%f%z").timestamp()
+    except ValueError:
+        return None
+
+
+def harvest_artifacts(t0: float, env: dict, t1: float = None) -> list:
+    """R433: 从**遥测外部真值**收割本任务窗口内的 `script_artifact` 落盘产物。
+
+    铁律 (测量外部真值): 取码通道不得依赖被测量代码自报 ⇒ 路径取自遥测 kv;
+    归属用**闭区间**时间窗 `[t0-0.25, t1+0.25]` (t1 缺省=当前时刻; 单任务单进程 ⇒ 无歧义,
+    见 R418 三级归属)。**缺上界 / 松 slack 会把邻题产物吸进来** ⇒ 可能拿别题的答案判本题
+    (R433 实测: slack ±1.5s 时 p002/p003/m001 各多吸 1 条; 收紧到 0.25s ⇒ 恰好 1 题 1 产物)。
+    缺失记 `[]` (不记 null 冒充"无产物"); `compile_valid` 由产品侧 py_compile 给出, 只作参考。
+    """
+    path = _telemetry_file(env)
+    hi = (time.time() if t1 is None else t1) + 0.25
+    if not os.path.exists(path):
+        return []
+    out = []
+    with open(path, encoding="utf-8-sig", errors="replace") as fh:
+        for line in fh:
+            if '"script_artifact"' not in line:
+                continue
+            try:
+                rec = json.loads(line)
+            except ValueError:
+                continue
+            if rec.get("point") != "script_artifact":
+                continue
+            tv = _iso_epoch(rec.get("ts"))
+            if tv is None:
+                continue                      # 时间戳不可解析 ⇒ **fail-closed** (宁缺勿错)
+            if tv < t0 - 0.25 or tv > hi:
+                continue
+            kv = rec.get("kv") or {}
+            p = kv.get("path")
+            if not p:
+                continue
+            full = p if os.path.isabs(str(p)) else os.path.join(ROOT, str(p).lstrip("./"))
+            if os.path.exists(full):
+                out.append({"path": full, "bytes": kv.get("bytes"),
+                            "compile_valid": bool(kv.get("compile_valid")),
+                            "origin": kv.get("origin")})
+    return out
+
+
+def _art_paths(meta: dict) -> list:
+    """产物记录 → 路径列表 (遥测收割给的是 dict; 判定器只吃路径)。"""
+    out = []
+    for a in (meta or {}).get("artifacts") or []:
+        p = a.get("path") if isinstance(a, dict) else a
+        if p:
+            out.append(p)
+    return out
+
+
 def solve_agent(task: dict, solve_timeout: float, prompt: str | None = None, sid: str | None = None):
     """真机自检: 用 AOT agenthost 跑一题 (一次性 prompt, 独立会话 Id 便于追溯)。
 
@@ -457,11 +537,15 @@ def solve_agent(task: dict, solve_timeout: float, prompt: str | None = None, sid
     try:
         p = subprocess.run(cmd, capture_output=True, text=True, timeout=solve_timeout,
                            cwd=ROOT, env=env)
-        return p.stdout, {"exit": p.returncode, "elapsed_s": round(time.time() - t0, 2),
-                          "session": sid, "stderr_tail": (p.stderr or "")[-300:]}
+        meta = {"exit": p.returncode, "elapsed_s": round(time.time() - t0, 2),
+                "session": sid, "stderr_tail": (p.stderr or "")[-300:]}
+        meta["artifacts"] = harvest_artifacts(t0, env)      # R433: 落盘产物 = 取码外部真值
+        return p.stdout, meta
     except subprocess.TimeoutExpired:
-        return "", {"exit": -9, "elapsed_s": round(time.time() - t0, 2),
-                    "session": sid, "stderr_tail": "solve timeout"}
+        meta = {"exit": -9, "elapsed_s": round(time.time() - t0, 2),
+                "session": sid, "stderr_tail": "solve timeout"}
+        meta["artifacts"] = harvest_artifacts(t0, env)
+        return "", meta
 
 
 def _resolve_rover_model() -> str:
@@ -691,7 +775,7 @@ def run(tasks_list, solver: str, timeout: float, solve_timeout: float = 300.0,
             print("  %-6s %-8s ARM-UNAVAILABLE (%s) — 不计分母, 不判能力" % (t["tid"], t["kind"], smeta.get("arm_reason")),
                   flush=True)
             continue
-        r1 = grade.grade(t, reply, timeout)
+        r1 = grade.grade(t, reply, timeout, artifacts=(_art_paths(smeta) or None))
         r_final, rounds, smeta_final = r1, 1, smeta
         r2 = None
         if turns > 1 and (correction == "always" or r1["mode"] != "ok"):
@@ -707,7 +791,7 @@ def run(tasks_list, solver: str, timeout: float, solve_timeout: float = 300.0,
             reply_paths.append(smeta2["reply_path"])
             if not (rep2 or "").strip():
                 smeta2["reply_head"] = ""
-            r2 = grade.grade(t, rep2, timeout)
+            r2 = grade.grade(t, rep2, timeout, artifacts=(_art_paths(smeta2) or None))
             r_final, rounds, smeta_final = r2, 2, smeta2
             # R419 修正: 首轮行必须**原样打印** (mode/passed) —— 只打最终行 ⇒
             #   「首轮未过、被修正轮修好」在日志里不可见 (可审计性缺口)。
@@ -722,8 +806,11 @@ def run(tasks_list, solver: str, timeout: float, solve_timeout: float = 300.0,
                     "taxonomy": r_final["taxonomy"], "reply_chars": smeta_final.get("reply_chars", 0),
                     "reply_head": (smeta_final.get("reply_head") or ""),
                     "turns": rounds, "reply_paths": reply_paths,
+                    "code_source": r_final.get("code_source"),
+                    "artifacts": [a.get("path") for a in (smeta_final.get("artifacts") or [])],
                     "t1": {"mode": r1["mode"], "passed": r1["passed"], "total": r1["total"],
-                           "reply_chars": smeta.get("reply_chars", 0)},
+                           "reply_chars": smeta.get("reply_chars", 0),
+                           "code_source": r1.get("code_source")},
                     "t2": (None if r2 is None else {"mode": r2["mode"], "passed": r2["passed"],
                                                     "total": r2["total"]}),
                     "solve": smeta})
@@ -946,6 +1033,32 @@ def selftest() -> int:
     chk("修正文案: 含隐藏用例输入与期望输出 (turn1 拿不到的信息), 且不含题面之外的解法提示",
         tight["stdin"] in cp and tight["expected_stdout"] in cp and tight["stdin"] not in
         "".join(c["stdin"] for c in prog[0]["public"]), "len=%d" % len(cp))
+
+    # ---- R433: 取码外部真值通道 (产物收割) 的接线与解析必须被自检钉住
+    chk("产物记录→路径: 容忍 dict/str 混入且丢空值",
+        _art_paths({"artifacts": [{"path": "/a.py"}, {"path": ""}, "/b.py", None]}) == ["/a.py", "/b.py"])
+    chk("遥测时间戳: .NET 7 位小数可解析 (旧解析器静默返回 None ⇒ 窗口失效)",
+        _iso_epoch("2026-09-14T13:00:05.8805300Z") is not None
+        and _iso_epoch("bogus") is None)
+    _td = tempfile.mkdtemp(prefix="probe_tel_")
+    _a, _b, _c = (os.path.join(_td, n) for n in ("a.py", "b.py", "c.py"))
+    for p in (_a, _b, _c):
+        with open(p, "w", encoding="utf-8") as fh:
+            fh.write("print(1)\n")
+    _tel = os.path.join(_td, "host.jsonl")
+    with open(_tel, "w", encoding="utf-8") as fh:
+        fh.write(json.dumps({"ts": "2026-09-14T13:00:05.8805300Z", "point": "script_artifact",
+                             "kv": {"path": _a, "compile_valid": True}}) + "\n")
+        fh.write(json.dumps({"ts": "2026-09-14T13:00:50.0000000Z", "point": "script_artifact",
+                             "kv": {"path": _b, "compile_valid": True}}) + "\n")
+        fh.write(json.dumps({"ts": "not-a-ts", "point": "script_artifact",
+                             "kv": {"path": _c, "compile_valid": True}}) + "\n")
+        fh.write(json.dumps({"ts": "2026-09-14T13:00:07.0000000Z", "point": "script_artifact",
+                             "kv": {"path": _b, "compile_valid": True}}) + "\n")
+    _got = harvest_artifacts(1789390805.88, {"AGENTFRAMEWORK_TELEMETRY": _tel}, 1789390806.0)
+    chk("产物收割: 窗口上界 0.25s 必须生效 (t1+1.0s 的邻题产物不得混入)",
+        [os.path.basename(a["path"]) for a in _got] == ["a.py"],
+        str([a["path"] for a in _got]))
 
     print("selftest %d/%d" % (ok, ok + len(fails)))
     return 0 if not fails else 1

@@ -59,12 +59,41 @@ def _prefixes(text: str):
         yield "\n".join(lines[:k])
 
 
-def candidates(reply: str, since: float = None) -> list:
+def _artifact_paths(paths):
+    """R433: 显式产物路径 → 可读源码文本 (外部真值通道)。
+
+    真机实测缺陷 (R433 冻结题集同 sha 复跑): 渲染后的对话转录里围栏/`__x__` 会被 TUI 吃掉,
+    而产品侧已把**围栏源码**落盘为 `data/artifacts/py_*.py` 且遥测 `script_artifact` 记
+    `compile_valid=true` ⇒ 判分必须优先取落盘产物, 否则取到带 TUI 装饰的转录片段被判
+    `syntax_error` (假红)。本函数只做读取, 新鲜度/归属由调用方的窗口过滤保证。
+    """
+    out = []
+    for p in (paths or []):
+        if isinstance(p, dict):                      # 容错: 允许 {"path": ...} 记录
+            p = p.get("path")
+        if not p:
+            continue
+        full = p if os.path.isabs(p) else os.path.join(ROOT, str(p).lstrip("./"))
+        try:
+            if not os.path.exists(full):
+                continue
+            with open(full, encoding="utf-8", errors="replace") as fh:
+                src = fh.read().strip("\n")
+        except OSError:
+            continue
+        if src:
+            out.append(src)
+    return out
+
+
+def candidates(reply: str, since: float = None, artifacts=None) -> list:
     """候选程序, 按产品真实交付形态多路收集 (真机教训 R398):
        ① 显式围栏代码块  ② CLI 回复区裸代码  ③ 回复中给出的落盘产物路径 (可加新鲜度门槛)
+       ④ **显式产物路径** (R433: 遥测 `script_artifact` 落盘的源码 = 最硬的外部真值通道)
     """
     text = reply or ""
-    out = [b.strip("\n") for b in FENCE.findall(text)]
+    out = _artifact_paths(artifacts)
+    out += [b.strip("\n") for b in FENCE.findall(text)]
     idx = text.find(REPLY_MARK)
     if idx >= 0:
         seg = text[idx:].split("\n", 1)
@@ -84,15 +113,16 @@ def candidates(reply: str, since: float = None) -> list:
 MIN_PREFIX_CHARS = 64
 
 
-def extract_code(reply: str, since: float = None) -> str:
+def extract_code(reply: str, since: float = None, artifacts=None) -> str:
     """抽候选程序: ① 全候选里取**第一个可整体编译**者 (按长度降序);
     ② 都不行才退化为「最长可编译前缀」, 且前缀必须 >= MIN_PREFIX_CHARS;
     ③ 仍不行返回最长候选 (此时 syntax_error 才是真失败)。
 
     R417 实测缺陷: 首版是「逐候选取首个可编译前缀」⇒ 长回复下会把 10 KB 程序误判成
     46 字符的注释残片 (p001 记录 0/18, 真值 12/18)。故前缀回退必须**分两轮**且设长度下限。
+    R433: `artifacts` = 遥测落盘产物路径 (外部真值) ⇒ 并入候选, 且在长度降序里天然优先。
     """
-    cands = [c for c in candidates(reply, since) if c and c.strip()]
+    cands = [c for c in candidates(reply, since, artifacts) if c and c.strip()]
     if not cands:
         return ""
     ordered = sorted(cands, key=len, reverse=True)
@@ -170,18 +200,24 @@ def _syntax_ok(code: str) -> bool:
         return False
 
 
-def grade_program(task: dict, reply: str, timeout: float = 5.0, since: float = None) -> dict:
-    """返回 {mode, passed, total, detail[], taxonomy}。mode ∈ 上面铁律 2 的集合。
+def grade_program(task: dict, reply: str, timeout: float = 5.0, since: float = None,
+                  artifacts=None) -> dict:
+    """返回 {mode, passed, total, detail[], taxonomy, code_source}。mode ∈ 上面铁律 2 的集合。
 
     since: 求解开始墙钟秒; 只接受**该时刻之后**落盘的产物 (防拿旧产物冒充本次结果)。
+    artifacts: R433 显式落盘产物路径 (遥测 `script_artifact` 外部真值) ⇒ 优先取码, 防
+    「渲染转录吃掉围栏/下划线 ⇒ 假 syntax_error」。
+    code_source: 实际取码通道 (artifact | transcript) —— **通道必须可见**, 否则假红不可归因。
     """
-    code = extract_code(reply, since=since)
+    art = [c for c in _artifact_paths(artifacts) if c and c.strip()]
+    code = extract_code(reply, since=since, artifacts=artifacts)
+    cs = "artifact" if (code or "").strip() and (code or "").strip() in art else "transcript"
     if not code or not code.strip():
         return {"mode": "no_code", "passed": 0, "total": len(task["hidden"]),
-                "detail": [], "taxonomy": {"no_code": 1}}
+                "detail": [], "taxonomy": {"no_code": 1}, "code_source": cs}
     if not _syntax_ok(code):
         return {"mode": "syntax_error", "passed": 0, "total": len(task["hidden"]),
-                "detail": [], "taxonomy": {"syntax_error": 1}}
+                "detail": [], "taxonomy": {"syntax_error": 1}, "code_source": cs}
 
     tax, detail = {}, []
     nonzero_ok = 0
@@ -212,7 +248,8 @@ def grade_program(task: dict, reply: str, timeout: float = 5.0, since: float = N
                                         "runtime_error" if "runtime_error" in tax else
                                         "partial" if passed else "wrong_output")
     return {"mode": mode, "passed": passed, "total": total, "detail": detail,
-            "taxonomy": tax, "exit_nonzero_ok": nonzero_ok, "bad_encoding": n_bad_enc}
+            "taxonomy": tax, "exit_nonzero_ok": nonzero_ok, "bad_encoding": n_bad_enc,
+            "code_source": cs}
 
 
 # ---------------------------------------------------------------- 见证型数学题: 独立验证
@@ -298,8 +335,9 @@ def grade_math(task: dict, reply: str) -> dict:
             "taxonomy": {"ok" if ok else "wrong_final": 1}}
 
 
-def grade(task: dict, reply: str, timeout: float = 5.0) -> dict:
-    return grade_program(task, reply, timeout) if task["kind"] == "program" else grade_math(task, reply)
+def grade(task: dict, reply: str, timeout: float = 5.0, artifacts=None) -> dict:
+    return (grade_program(task, reply, timeout, artifacts=artifacts) if task["kind"] == "program"
+            else grade_math(task, reply))
 
 
 # ---------------------------------------------------------------- 负控
@@ -451,6 +489,22 @@ def selftest() -> int:
         chk("负控: 空回复判 no_code", r["mode"] == "no_code")
     finally:
         ROOT = real_root
+
+    # ---- R433 真机假红 (冻结题集同 sha 复跑): 渲染转录吃掉围栏/下划线, 而产品已落盘 artifact
+    p_art = os.path.join(art, name)
+    mangled = ("── 回复 ──\n  ｜ code_generation intent=cg\n  if name == \"main\":\n"
+               "      main()\n(20363ms, intent=code_generation)\n")
+    r = grade_program(t, mangled, artifacts=[p_art])
+    chk("正控 R433: 转录不可编译 + 落盘产物 ⇒ 取产物判满分",
+        r["mode"] == "ok" and r["passed"] == 2 and r["code_source"] == "artifact",
+        "%s src=%s" % (r["taxonomy"], r["code_source"]))
+    r = grade_program(t, mangled)
+    chk("负控 R433: 同转录但缺产物通道 ⇒ 必须仍失败 (证明通道真起作用)",
+        r["mode"] != "ok" and r["code_source"] == "transcript",
+        "mode=%s src=%s" % (r["mode"], r["code_source"]))
+    r = grade_program(t, "```python\n%s\n```" % _GOOD_MAXSUB, artifacts=["/nonexistent/py_x.py"])
+    chk("负控 R433: 产物路径不存在 ⇒ 静默回退转录, 不许崩",
+        r["mode"] == "ok" and r["passed"] == 2, "src=%s" % r["code_source"])
 
     # ---- 判定器自身反向负控: 把比对函数换成恒真, 正向负控必须转红
     global norm

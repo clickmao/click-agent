@@ -8,8 +8,8 @@
 | 文件 | 行数 | 作用 |
 |---|---|---|
 | `tasks.py` | 1598 | 随机题集生成器：程序 10 族（含陷阱族 + **反饱和 3 族**: `topo_min` / `vm_run` / `json_mini`）+ 数学 5 族 + **见证型 2 族**；对抗用例只注入 hidden；每答双路径验算，不一致则拒绝发题；`--selftest` 45 条负控 |
-| `grade.py` | 448 | 判定器：沙箱执行 + 隐藏用例比对 + **失败模式分类** + 判定器自身反向负控 + **见证独立验证**；`--selftest` **29 条** |
-| `run_probe.py` | 821 | 编排器：题集（族池含见证族）→ 适配器 → 判定 → 结构化摘要；`--families` 定向覆盖 / `--dump-tasks` 出题落盘；族级**缺陷注入**（`--solver mutation:<名>`）；`--selftest` 18 条 |
+| `grade.py` | 538 | 判定器：沙箱执行 + 隐藏用例比对 + **失败模式分类** + 判定器自身反向负控 + **见证独立验证** + **落盘产物取码通道**（R433）；`--selftest` **34 条** |
+| `run_probe.py` | 1136 | 编排器：题集（族池含见证族）→ 适配器 → 判定 → 结构化摘要；`--families` 定向覆盖 / `--dump-tasks` 出题落盘；族级**缺陷注入**（`--solver mutation:<名>`）；**遥测产物收割**（R433）；`--selftest` 29 条 |
 | `../../scripts/kpi_probe.py` | 467 | **跑测数据打点**：运行摘要 × 遥测 token → 台账 `data/probe/kpi.jsonl` + 前后对比报告；`--selftest` 24 条 |
 
 ## 反饱和（R417）
@@ -31,7 +31,7 @@
 质量维度会被**饱和**压住（R417），成本维度**不会**：同一题集上 tokens/题、墙钟、轮数仍有区分度。
 
 ```bash
-python3 eval/probe/process_metrics.py --selftest                       # 14/14（含反张冠李戴负控）
+python3 eval/probe/process_metrics.py --selftest                       # 22/22（含反张冠李戴负控）
 python3 eval/probe/process_metrics.py --report                        # 全量人读表
 python3 eval/probe/process_metrics.py --report --glob 'data/probe/probe-r418-*.json' \
         --out data/probe/process-metrics-r418.json
@@ -53,6 +53,12 @@ python3 eval/probe/process_metrics.py --report --glob 'data/probe/probe-r418-*.j
 3. **失败必须分类**：`no_code / syntax_error / runtime_error / timeout / wrong_output / partial / no_final / wrong_final / wrong_witness`。
 4. **判定口径假设错 ⇒ 反向空心指标**（R417 又抓到两处：① 长回复下提取器退化成注释残片 ⇒ 10 KB 程序被判 0 分；② 输出正确但 `sys.exit(1)` 被退出码顶掉 ⇒ 满分程序被判 runtime_error。两处均已修 + 负控入 selftest）：判定器必须按产品真实交付形态取材（无围栏裸代码 / 尾部 CLI 状态行），且必须带真机形态负控。
 
+## 判定取码必须含落盘产物（R433）
+
+**实测假红**：冻结题集 `taskset-m6.json`（sha `b8e796a6d803918d`）同题复跑, 旧判定器两次均 `0.6944`（各 1 题 `syntax_error`, 题不同）。根因不在产品：归档回复是**渲染后的 TUI 转录**（围栏与 `__x__` 会被吃掉, 候选只剩 `｜ code_generation…` 装饰片段 ⇒ `SyntaxError: invalid character '｜'`），而产品侧遥测 `script_artifact` 已记 `origin="fenced"` + `compile_valid=true`（3/3 程序题）。
+
+**修**：`grade.candidates()` 增加**显式产物路径通道**（来自 `run_probe` 的遥测收割 = 外部真值），产出 `code_source`；`run_probe.harvest_artifacts()` 用**闭区间进程窗口** `[t0-0.25, t1+0.25]` 归属（实测松 slack ±1.5s 时 p002/p003/m001 各多吸 1 条 ⇒ 可能拿别题的答案判本题）。修后同题两臂均 `1.0000`（36/36）⇒ 旧读数为 100% 假红。证据: `eval/capability/r433/README-evidence.md`。
+
 ## 题集加硬（M6）
 
 - **对抗用例**（`tasks.py` `HARD_INPUTS`）：全负数组 / 单元素 / 边界长度 / 极大值 / 并列 / 重复，**只进 hidden**；单族对抗用例 <3 条 ⇒ 拒绝发题。
@@ -71,14 +77,14 @@ python3 eval/probe/process_metrics.py --report --glob 'data/probe/probe-r418-*.j
 | `command:<shell>` | 外部解法：prompt 从 stdin 进、回复从 stdout 出 |
 | `agent` | **真机**：AOT `agenthost -q <prompt>`（py 插件落盘产物），env 覆盖 `PROBE_AGENT_BIN` / `PROBE_AGENT_TIMEOUT` |
 
-取值抽取按**产品真实交付形态**三路收集：① 围栏代码块 ② CLI 回复区裸代码 ③ 回复中指出的落盘产物 → 取**第一个可编译者**（否则取最长）。回复原文一律落 `data/probe/replies/`，失败可回放归因。
+取值抽取按**产品真实交付形态**四路收集：① 围栏代码块 ② CLI 回复区裸代码 ③ 回复中指出的落盘产物 ④ **遥测 `script_artifact` 落盘产物（外部真值, R433）** → 取**第一个可编译者**（否则取最长）；实际取码通道记 `code_source`（artifact|transcript），**通道必须可见**否则假红不可归因。产物归属用**闭区间进程窗口** `[t0-0.25, t1+0.25]`（单任务单进程）：无上界或松 slack 会把邻题产物吸进来 ⇒ 可能拿别题的答案判本题。回复原文一律落 `data/probe/replies/`，失败可回放归因。
 
 ## 运行
 
 ```bash
 python3 eval/probe/tasks.py --selftest          # 45/45
-python3 eval/probe/grade.py --selftest          # 25/25
-python3 eval/probe/run_probe.py --selftest      # 18/18
+python3 eval/probe/grade.py --selftest          # 34/34
+python3 eval/probe/run_probe.py --selftest      # 29/29
 python3 scripts/kpi_probe.py --selftest         # 24/24
 
 # 全量（对抗用例生效）

@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R432",
+  "updated_round": "R433",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -1026,6 +1026,24 @@
         "src/agent.modelqueue/LocalGenerationPort.cs",
         "src/agent/IndustrialAgentV2.cs"
       ]
+    },
+    {
+      "id": "r433.probe-code-source-artifact-channel",
+      "owner_round": "R433",
+      "level": "L3",
+      "capability": "文档跑测链（eval/probe/README.md）端到端复位, 并用它裁决「同题质量是否退化」: ① 取码通道必须含**落盘产物**(遥测 `script_artifact` 外部真值) ⇒ 渲染转录吃掉围栏/下划线不再造成假 `syntax_error`; ② 产物归属用闭区间进程窗口 [t0-0.25, t1+0.25](单任务单进程); 无上界/松 slack 会把邻题产物吸进来(实测 slack ±1.5s 时多吸 1 条, 0.25s 时恰好 1 题 1 产物); ③ `code_source`(artifact|transcript) 通道可见; ④ 打点段复位: `kpi_probe` 追加 `data/probe/kpi.jsonl` 6→14 行。冻结题集 sha b8e796a6d803918d 同题读数: 基线 09-13 1.0000(36/36,215.01s) | 旧仪器 run1 0.6944 | 旧仪器 run2 0.6944(同机制换题) | 修后 fix 1.0000(123.77s) | 修后 fix2 1.0000(191.57s) | 抗饱和族 3/3(43/43) | 负控三族整题 0/3",
+      "negative_control": "① `grade.py --selftest` 34/34(含 R433 三条: 转录不可编译+落盘产物⇒判满分且 src=artifact; 同转录缺产物通道⇒仍 syntax_error; 产物路径不存在⇒静默回退不崩); ② `run_probe.py --selftest` 29/29(含产物收割: 7 位小数时间戳可解析、窗口上界 0.25s 生效、dict/str 混入容错); ③ 真机判别力负控三族整题全对=0(topo_dfs 0.4359 / vm_noerr 0.6250 / json_loose 0.7037 用例级)⇒ 判定器未饱和; ④ 反向负控: 比对恒真时差一解必须被误判为通过(证明判据非空心, 测后还原)",
+      "covers": [
+        "eval/probe/grade.py",
+        "eval/probe/run_probe.py",
+        "eval/probe/README.md",
+        "eval/capability/r433/README-evidence.md",
+        "eval/capability/r433/kpi-report.md",
+        "eval/capability/r433/process-metrics.md",
+        "docs/plans/v0.54.0-r433-doc-driven-probe-rerun.md"
+      ],
+      "evidence_path": "eval/capability/r433/README-evidence.md",
+      "evidence_cmd": "python3 eval/probe/grade.py --selftest && python3 eval/probe/run_probe.py --selftest && python3 scripts/kpi_probe.py --glob 'data/probe/probe-*r433*.json' --report eval/capability/r433/kpi-report.md"
     }
   ],
   "aot_check_policy": "release_tag_only",

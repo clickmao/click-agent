@@ -55,6 +55,11 @@
 
 | 文件 | 解法 | 题集 | 题数 | 整题全对 | rate(用例级) | 失败模式 | 判定 | tokens/题 | tokens/满分题 | turn≤ | 墙钟均(ms) | 过程 n/a |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `probe-agent-seed0-r433m6.json` | agent | both seed=0 | 6 | 5/6=0.8333 | 0.6944 | {"ok": 5, "syntax_error": 1} | 非饱和 | n/a | n/a | - | n/a | n/a |
+| `probe-agent-seed0-r433m6fix.json` | agent | both seed=0 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** | n/a | n/a | - | n/a | n/a |
+| `probe-agent-seed0-r433m6fix2.json` | agent | both seed=0 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** | n/a | n/a | - | n/a | n/a |
+| `probe-agent-seed0-r433m6r2.json` | agent | both seed=0 | 6 | 5/6=0.8333 | 0.6944 | {"ok": 5, "syntax_error": 1} | 非饱和 | n/a | n/a | - | n/a | n/a |
+| `probe-agent-seed20260913-r433as.json` | agent | both seed=20260913 | 3 | 3/3=1.0000 | 1.0000 | {"ok": 3} | **饱和** | n/a | n/a | - | n/a | n/a |
 | `probe-agent-seed20260913.json` | agent | both seed=20260913 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** | n/a | n/a | - | n/a | 6 |
 | `probe-agent-seed419-r419bagent-b09141437-t2.json` | agent | program seed=419 | 3 | 3/3=1.0000 | 1.0000 | {"ok": 3} | **饱和** | 11911.3 | 11911.3 | 1 | 144960 | 0 |
 | `probe-agent-seed419-r419bagent-b4095015-t2.json` | agent | program seed=419 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** | 9121.5 | 9121.5 | 1 | 101595 | 0 |
@@ -68,10 +73,13 @@
 | `probe-mutation:delayfix-seed419-r419dctlpos-b3092030-t2.json` | mutation:delayfix | program seed=419 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** | n/a | n/a | - | n/a | 6 |
 | `probe-mutation:delayfix-seed420-r419cctlpos-b2091515-t2.json` | mutation:delayfix | program seed=420 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** | n/a | n/a | - | n/a | 6 |
 | `probe-mutation:hardcode-seed20260913.json` | mutation:hardcode | program seed=20260913 | 3 | 0/3=0.0000 | 0.0625 | {"partial": 2, "wrong_output": 1} | 非饱和 | n/a | n/a | - | n/a | 3 |
+| `probe-mutation:json_loose-seed20260913-r433ctl-json.json` | mutation:json_loose | both seed=20260913 | 3 | 0/3=0.0000 | 0.7037 | {"partial": 3} | 非饱和 | n/a | n/a | - | n/a | n/a |
 | `probe-mutation:nofix-seed419-r419bctlneg-b09141437-t2.json` | mutation:nofix | program seed=419 | 3 | 0/3=0.0000 | 0.3889 | {"wrong_output": 1, "partial": 2} | 非饱和 | n/a | n/a | - | n/a | 3 |
 | `probe-mutation:nofix-seed419-r419bctlneg-b4095015-t2.json` | mutation:nofix | program seed=419 | 6 | 0/6=0.0000 | 0.5140 | {"wrong_output": 1, "partial": 5} | 非饱和 | n/a | n/a | - | n/a | 6 |
 | `probe-mutation:nofix-seed419-r419dctlneg-b3092030-t2.json` | mutation:nofix | program seed=419 | 6 | 0/6=0.0000 | 0.5140 | {"wrong_output": 1, "partial": 5} | 非饱和 | n/a | n/a | - | n/a | 6 |
 | `probe-mutation:nofix-seed420-r419cctlneg-b2091515-t2.json` | mutation:nofix | program seed=420 | 6 | 0/6=0.0000 | 0.2857 | {"partial": 3, "wrong_output": 3} | 非饱和 | n/a | n/a | - | n/a | 6 |
+| `probe-mutation:topo_dfs-seed20260913-r433ctl-topo.json` | mutation:topo_dfs | both seed=20260913 | 3 | 0/3=0.0000 | 0.4359 | {"partial": 3} | 非饱和 | n/a | n/a | - | n/a | n/a |
+| `probe-mutation:vm_noerr-seed20260913-r433ctl-vm.json` | mutation:vm_noerr | both seed=20260913 | 3 | 0/3=0.0000 | 0.6250 | {"runtime_error": 3} | 非饱和 | n/a | n/a | - | n/a | n/a |
 | `probe-oracle-seed20260913.json` | oracle | both seed=20260913 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** | n/a | n/a | - | n/a | 6 |
 | `probe-oracle-seed20260915.json` | oracle | program seed=20260915 | 3 | 3/3=1.0000 | 1.0000 | {"ok": 3} | **饱和** | n/a | n/a | - | n/a | 3 |
 | `probe-r417-agent-seed20260913.json` | agent | both seed=20260913 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** | 6413.8 | 6413.8 | 1 | 3072 | 0 |
@@ -91,10 +99,11 @@
 
 ## 4. 轮次提交（本地；推送暂停令生效）
 
-- 未推送提交数: **96**
+- 未推送提交数: **98**
 
 | commit | 主题 |
 |---|---|
+| `44c6f38` | R432: 门判判别力与确定性成对（残余带内）—— 生成通道零泄漏 + 关系判官回退泄漏坐实 |
 | `e7d99e4` | exp1-Q3b 附录B: 补 396->400 文件口径机检说明（对侧 R430/R431 新增 4 个 src/**.cs，非口径变化） |
 | `f319198` | R431: role 额外数据(成长经历)有界挂载进 r1 门判 + 挂载可机检 |
 | `0164cbe` | digest: R430 重建 (含 skill v1.1.0 提交) |
@@ -114,13 +123,11 @@
 | `a2d6416` | R423 收口: 状态 digest 重生成(未推送 75 / registry 58 行+updated_round R423 / R423=检索打分) + 生成器增「轮号命名空间」纪律行(碰撞登记: 并发执行体让号至 R424; 提交禁 git add -A) (未推) |
 | `e57be12` | R423 跨会话检索打分词元频次饱和: 可分性预检(残留并列对 distinct 90/90 ∧ tf 4/4 逐项相等 ⇒ 词袋计数族不可分边界登记, 不作全称宣称) + 打分子 1+ln(tf)(因子≥1 ⇒ 命中集合可证不变) + 真机成对AOT两臂(等长对 [0.4901×2] 全等 → [1.0286,0.4901] 分档, 比值==1+ln3) + 冻结语料 tf=1 逐位不变/tf=4 ==登记值×(1+ln4) + 单测26/26 + 形式校验13/13; 另: 首跑预测输入纠错与语料目录污染两起事故入档 + 命名空间碰撞登记(对侧R423=AOT形态复现, 其产物未动) (未推) |
 | `c8c4652` | R422 跨会话检索打分校准(文档长度归一) + 附带修复词袋 embedding 溢出/随机哈希 |
-| `37d6997` | R421 跨会话检索否定极性: 否定标记(不没未无五)紧邻词元带极性问题(¬存在≠存在) ⇒ `/recall 不存在` 3命中→0 |
-| `7d3165b` | R420 L2-待办①/L7-G1 跨会话检索接线: /recall 本地指令(四表同步, 零LLM, recall_query 通道级打点) + 接线前产物负控(recall_query=0/llm_call=1) + 单测28/28 + 表单13/13; 真机暴露否定无感假阳性(下轮候选, 未修) (未推) |
 
 ## 5. 台账
 
-- `docs/verification-registry.json`: **66** 行, updated_round = **R432**
-- `eval/capability/kpi.jsonl` 已记轮次: R402, loop-mechanism, R401, R411-V, R403-scope, R413, R414, R415, R416, R419, R420, R421, R422, R423, R424, R425, R427, R428, R428-hold, R429, EXP1-Q3, R430, EXP1-Q3b, R432
+- `docs/verification-registry.json`: **67** 行, updated_round = **R433**
+- `eval/capability/kpi.jsonl` 已记轮次: R402, loop-mechanism, R401, R411-V, R403-scope, R413, R414, R415, R416, R419, R420, R421, R422, R423, R424, R425, R427, R428, R428-hold, R429, EXP1-Q3, R430, EXP1-Q3b, R432, R433
 - 已知盲区: 状态检测器只读 `data/probe/kpi.jsonl`; 轮次台账另有 `data/probe/capability/kpi.jsonl`（孤儿）
 - **轮号命名空间（R423 实证，轮内已消解）**: 轮号取 `max+1` 前必须复跑「pgrep 活动执行体 + 锁文件 + 目标轮文件存在时比对 mtime（>10min 才算 stale）」全序列。R423 曾与并发执行体撞号（本侧=检索打分；对侧=AOT 发布形态复现），对侧随后**让号**至 R424（`eval/rover/r424/` + `docs/plans/v0.45.0-r424-aot-mainline-replication.md`）⇒ 最终 R423=检索打分 / R424=AOT 形态复现。**处置纪律**: 碰撞当一等事件（两支都登记、不改写历史、不静默改名）；提交只用**显式路径**（禁 `git add -A`，防卷入对侧未跟踪产物）。
 
