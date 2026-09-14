@@ -13,7 +13,7 @@ ROOT=/home/agentuser/AgentFramework
 DIR=$ROOT/eval/rover/r434
 TOOLS=$ROOT/eval/rover/r430
 SFX=${R434_NS:-}
-GRID=p8
+GRID=${R434_GRID:-p8}   # R434b: 题集走环境变量 (位置参数是端口! 曾凭位置传 p12 ⇒ 桩端口非法 ⇒ 空跑)
 TASK=$DIR/grid/task-$GRID.json
 HOST=${AGENTFRAMEWORK_HOST_BIN:-/tmp/pub_r434/agenthost}
 MODEL=/tmp/models/r1-distill-qwen-1.5b-q4km.gguf
@@ -43,6 +43,7 @@ case "$ARM" in
   A)  MP=$MODEL; GATE=false; RJ=false; ROLE="";;
   B0) MP=$MODEL; GATE=true;  RJ=false; ROLE="$ROLE_REAL";;
   B)  MP=$MODEL; GATE=true;  RJ=false; ROLE="$ROLE_GROWTH";;
+  BRJ) MP=$MODEL; GATE=true; RJ=true;  ROLE="$ROLE_GROWTH";;   # R434b: 单变量 = 关系判官本地优先 (默认 false)
   BP) MP=/nonexistent/r434-nomodel.gguf; GATE=true; RJ=false; ROLE="$ROLE_GROWTH";;
   *)  echo "[致命] 未知臂: $ARM"; exit 2;;
 esac

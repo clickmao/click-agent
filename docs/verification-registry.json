@@ -1048,10 +1048,10 @@
       "id": "r434.turn-gate-double-condition",
       "owner_round": "R434",
       "level": "L3",
-      "capability": "前置门**质量硬线**: r1 判 Skip 必须再经「认可族」结构确认才生效 (双条件)。残余带 (无机械信号的短消息) 内 1.5B 对短促真诉求 (「再讲一遍。」/「讲细一点。」/「从头再说。」) 误判 Skip ⇒ 用户拿到空话。修: 非认可族 ⇒ 降级 Pass (basis=gate:skip_rejected_nonack→remote), 宁多走一次远端。方向性: 白名单(承认哪些可省) 而非黑名单 ⇒ 任何误判只可能多花 token, 不可能让真诉求变空话。实测 (AOT 54e30c19, IL=0; 同网格 task-p8; 外部真值 = 桩逐请求 + 逐轮回复来源; 通道分离 G 主答/J 判官): 分母臂 A = 8 主答调用/18493 tok; 治疗臂 B(挂载域=3) = 5 主答调用/12338 tok ⇒ 降幅 33.3% ≥ 30%; 假阴性 0 (修前 3) ∧ 假阳性 0; 对照臂 B0(域=0) = 12163 tok/1.000; 无设备臂 BP 跳过 0 次。",
+      "capability": "前置门**质量硬线**: r1 判 Skip 必须再经「认可族」结构确认才生效 (双条件)。残余带 (无机械信号的短消息) 内 1.5B 对短促真诉求 (「再讲一遍。」/「讲细一点。」/「从头再说。」) 误判 Skip ⇒ 用户拿到空话。修: 非认可族 ⇒ 降级 Pass (basis=gate:skip_rejected_nonack→remote), 宁多走一次远端。方向性: 白名单(承认哪些可省) 而非黑名单 ⇒ 任何误判只可能多花 token, 不可能让真诉求变空话。实测 (AOT 54e30c19, IL=0; 同网格 task-p8; 外部真值 = 桩逐请求 + 逐轮回复来源; 通道分离 G 主答/J 判官): 分母臂 A = 8 主答调用/18493 tok; 治疗臂 B(挂载域=3) = 5 主答调用/12338 tok ⇒ 降幅 33.3% ≥ 30%; 假阴性 0 (修前 3) ∧ 假阳性 0; 对照臂 B0(域=0) = 12163 tok/1.000; 无设备臂 BP 跳过 0 次。 附: 单变量臂 BRJ(relation_judge=true) 实测判官本地成功率 1/7(6 次 remote_fallback) ⇒ J 本地化未达成(负结果如实登记)。 扩族题集 task-p12(12 轮, 含带内假断言/带外假断言/纠错): B = 7 主答调用/19990 tok / acc 1.000 / 假阴性 0 / 假阳性 0, 但降幅 **27.8% < 30%** ⇒ 预先登记的 C4 未达, 根因 = 可跳过轮占比 4/12 ⇒ 宣称收窄为「≥30% 依赖认可轮占比」。",
       "evidence_cmd": "bash eval/rover/r434/run_arm.sh B -i1; bash eval/rover/r434/run_arm.sh A -a2; python3 eval/rover/r434/settle_r434.py; $HOME/.dotnet/dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~LocalTurnGateTests",
       "evidence_path": "eval/rover/r434/README-evidence.md",
-      "negative_control": "① 无设备负控 (臂 BP, 模型路径缺失): 门判恒降级 ⇒ 跳过 0 次, 总 token 19465 ≥ 分母 18493 ⇒ 省调用不可能来自「门没起作用」; ② 成对判据: 假阴性(真诉求被跳)与假阳性(认可被花掉)同时计数 —— 修前 3/0, 修后 0/0; ③ 认可族白名单负控 (测试 G31): 「再讲一遍。」族必须 false, 「好，按这个来。」亦 false (保守方向); ④ 带内机检: 8 个测量轮全部 MechanicalPass=false (否则根本到不了 r1); ⑤ 复现负控: 同题同臂重跑逐轮 actual ∧ 主答调用逐位相同 (B -b1 vs -b2)。",
+      "negative_control": "① 无设备负控 (臂 BP, 模型路径缺失): 门判恒降级 ⇒ 跳过 0 次, 总 token 19465 ≥ 分母 18493 ⇒ 省调用不可能来自「门没起作用」; ② 成对判据: 假阴性(真诉求被跳)与假阳性(认可被花掉)同时计数 —— 修前 3/0, 修后 0/0; ③ 认可族白名单负控 (测试 G31): 「再讲一遍。」族必须 false, 「好，按这个来。」亦 false (保守方向); ④ 带内机检: 8 个测量轮全部 MechanicalPass=false (否则根本到不了 r1); ⑤ 复现负控: 同题同臂重跑逐轮 actual ∧ 主答调用逐位相同 (B -b1 vs -b2)。 ⑥ 判官通道负控(单变量 BRJ): local×1 / remote_fallback×6 ⇒ 「本地优先」不得被计成收益。",
       "covers": [
         "src/agent.modelqueue/LocalGenerationPort.cs",
         "src/agent/IndustrialAgentV2.cs",

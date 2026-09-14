@@ -127,4 +127,33 @@ public class PythonArtifactPluginTests : IDisposable
         Assert.True(r.CompileValid);
         Assert.Contains("python-artifact", router.PluginNames);
     }
+
+    // ---------- 契约钉死 (R434): 判分器依赖的产物遥测键不得改名 (R433 假红的机制面) ----------
+    // 归因: `eval/probe/grade.py` 的「产物外部真值通道」读 script_artifact 的 origin/compile_valid/path;
+    // 键一旦改名/删除, 判分器会静默退回**渲染转录**取码 ⇒ R433 实测过的 100% 假红重生。
+    // 本测试同时钉住**生产端**(PythonArtifactPlugin)与**消费端**(eval/probe/grade.py) 两侧契约。
+    [Fact]
+    public void 产物遥测键契约_生产端与判分端两侧钉死()
+    {
+        var root = FindRepoRoot434();
+        var prod = File.ReadAllText(Path.Combine(root, "src", "agent", "registry", "PythonArtifactPlugin.cs"));
+        var flat = string.Join(' ', prod.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
+        Assert.Contains("Emit(\"script_artifact\"", flat);
+        foreach (var k in new[] { "(\"path\"", "(\"compile_valid\"", "(\"origin\"", "(\"sha8\"", "(\"exit\"" })
+            Assert.Contains(k, flat);
+        Assert.Contains("\"heuristic\"", flat);   // origin 取值域必须可归因 (fenced vs heuristic)
+        Assert.Contains("\"fenced\"", flat);
+
+        var grade = File.ReadAllText(Path.Combine(root, "eval", "probe", "grade.py"));
+        Assert.Contains("script_artifact", grade);     // 消费端确实读该通道
+        Assert.Contains("compile_valid", grade);
+        Assert.Contains("code_source", grade);         // 取码来源必须可见 (转录 vs 产物)
+    }
+
+    private static string FindRepoRoot434()
+    {
+        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+        while (dir != null && !File.Exists(Path.Combine(dir.FullName, "agent.sln"))) dir = dir.Parent;
+        return dir?.FullName ?? ".";
+    }
 }
