@@ -1537,6 +1537,19 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
 
             if (gateOutcome.Decided && gateOutcome.Verdict == agent.modelqueue.TurnGateVerdict.Skip)
             {
+                // v0.58.0 R438 (本地消化 × R379 回放不变量的交互缺陷修复):
+                // 本轮**没有任何远端调用** ⇒ 本轮内联块 (下轮预估/会话记忆/召回/技能知识) 从未发往任何 provider
+                // ⇒ 它不是任何 provider 缓存前缀的一部分, **不得落进会话历史**。
+                // 此前 SentContent 在 1267 行无条件写入 (含块), 经 GetConversationHistoryAsync (SentContent ?? Content)
+                // 落盘, 被此后每一次远端调用逐字回放 = 纯白付账 (实测 p12: 4 个跳过轮 × 6 次调用 = 2238 token ≈ 8.1 pt)。
+                // 回放铁律的正确读法: 「发送字节=回放字节」只约束**真正发出去的**轮次; 本地消化轮的规范形态
+                // = 用户轮原文 (扣框架子请求, 与首轮同形——首轮无块可挂)。
+                message.SentContent = outboundText;
+                agent.config.AgentTelemetry.Emit("local_gate_skip_history", "IndustrialAgentV2",
+                    ("persisted_chars", (long)outboundText.Length),
+                    ("would_be_chars", (long)sentUserContent.Length),
+                    ("dropped_chars", (long)(sentUserContent.Length - outboundText.Length)),
+                    ("intent", intent));
                 // 本地消化: 零远端 token (回复由本地 r1 生成, 失败 → 固定兜底串)
                 var localReply = await _modelRouter!.ComposeLocalSkipReplyAsync(prompt.UserMessage, ct).ConfigureAwait(false);
                 llmResponse = new LLMResponse
