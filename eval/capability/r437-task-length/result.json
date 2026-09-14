@@ -1,0 +1,980 @@
+{
+ "model": {
+  "T0": 1814.5114649681527,
+  "g": 108.59681528662422,
+  "delta0": 76.69137931034483,
+  "delta_g": 2.7396551724137934,
+  "J_per_call": 53.23214285714286
+ },
+ "calibration": {
+  "p8": {
+   "T0": 1848.4055201698513,
+   "g": 90.38428874734608,
+   "d0": 78.95,
+   "dg": 2.25,
+   "J_per": 52.714285714285715,
+   "J_n": 7,
+   "J_tok": 369,
+   "measured_A": 18493,
+   "measured_B": 12338
+  },
+  "p12": {
+   "T0": 1814.5114649681527,
+   "g": 108.59681528662422,
+   "d0": 76.69137931034483,
+   "dg": 2.7396551724137934,
+   "J_per": 53.75,
+   "J_n": 8,
+   "J_tok": 430,
+   "measured_A": 27670,
+   "measured_B": 19990
+  }
+ },
+ "validation": [
+  {
+   "grid": "task-p8",
+   "N": 8,
+   "S": [
+    2,
+    6,
+    8
+   ],
+   "model_pct": 34.28373652891765,
+   "measured_pct": 33.282863786297526,
+   "abs_err_pt": 1.0008727426201292,
+   "rel_err_pct": 3.0071713451298208
+  },
+  {
+   "grid": "task-p12",
+   "N": 11,
+   "S": [
+    2,
+    3,
+    4,
+    5
+   ],
+   "model_pct": 27.697650193036427,
+   "measured_pct": 27.755692085290928,
+   "abs_err_pt": 0.05804189225450118,
+   "rel_err_pct": -0.20911707795339163
+  }
+ ],
+ "conservative_factor_k": 0.9847884840880518,
+ "surface": [
+  {
+   "bucket": "单次(只用一次)",
+   "N": 1,
+   "ack_ratio": 0.0,
+   "pattern": "noskip",
+   "skip_turns": [],
+   "model_pct": -6.9,
+   "conservative_pct": -6.8,
+   "A_tok": 1923,
+   "B_tok": 2056
+  },
+  {
+   "bucket": "单次(只用一次)",
+   "N": 1,
+   "ack_ratio": 1.0,
+   "pattern": "late",
+   "skip_turns": [
+    1
+   ],
+   "model_pct": 97.2,
+   "conservative_pct": 95.8,
+   "A_tok": 1923,
+   "B_tok": 53
+  },
+  {
+   "bucket": "短",
+   "N": 2,
+   "ack_ratio": 0.0,
+   "pattern": "noskip",
+   "skip_turns": [],
+   "model_pct": -6.8,
+   "conservative_pct": -6.7,
+   "A_tok": 3955,
+   "B_tok": 4223
+  },
+  {
+   "bucket": "短",
+   "N": 2,
+   "ack_ratio": 0.5,
+   "pattern": "early",
+   "skip_turns": [
+    2
+   ],
+   "model_pct": 46.7,
+   "conservative_pct": 46.0,
+   "A_tok": 3955,
+   "B_tok": 2109
+  },
+  {
+   "bucket": "短",
+   "N": 3,
+   "ack_ratio": 0.0,
+   "pattern": "noskip",
+   "skip_turns": [],
+   "model_pct": -6.7,
+   "conservative_pct": -6.6,
+   "A_tok": 6095,
+   "B_tok": 6501
+  },
+  {
+   "bucket": "短",
+   "N": 3,
+   "ack_ratio": 0.333,
+   "pattern": "early",
+   "skip_turns": [
+    2
+   ],
+   "model_pct": 28.0,
+   "conservative_pct": 27.6,
+   "A_tok": 6095,
+   "B_tok": 4387
+  },
+  {
+   "bucket": "短",
+   "N": 3,
+   "ack_ratio": 0.333,
+   "pattern": "late",
+   "skip_turns": [
+    3
+   ],
+   "model_pct": 29.8,
+   "conservative_pct": 29.4,
+   "A_tok": 6095,
+   "B_tok": 4276
+  },
+  {
+   "bucket": "短",
+   "N": 3,
+   "ack_ratio": 0.667,
+   "pattern": "early",
+   "skip_turns": [
+    2,
+    3
+   ],
+   "model_pct": 64.5,
+   "conservative_pct": 63.5,
+   "A_tok": 6095,
+   "B_tok": 2162
+  },
+  {
+   "bucket": "中",
+   "N": 5,
+   "ack_ratio": 0.0,
+   "pattern": "noskip",
+   "skip_turns": [],
+   "model_pct": -6.5,
+   "conservative_pct": -6.4,
+   "A_tok": 10702,
+   "B_tok": 11392
+  },
+  {
+   "bucket": "中",
+   "N": 5,
+   "ack_ratio": 0.2,
+   "pattern": "early",
+   "skip_turns": [
+    2
+   ],
+   "model_pct": 13.3,
+   "conservative_pct": 13.1,
+   "A_tok": 10702,
+   "B_tok": 9278
+  },
+  {
+   "bucket": "中",
+   "N": 5,
+   "ack_ratio": 0.2,
+   "pattern": "late",
+   "skip_turns": [
+    5
+   ],
+   "model_pct": 16.4,
+   "conservative_pct": 16.2,
+   "A_tok": 10702,
+   "B_tok": 8944
+  },
+  {
+   "bucket": "中",
+   "N": 5,
+   "ack_ratio": 0.4,
+   "pattern": "early",
+   "skip_turns": [
+    2,
+    3
+   ],
+   "model_pct": 34.1,
+   "conservative_pct": 33.6,
+   "A_tok": 10702,
+   "B_tok": 7053
+  },
+  {
+   "bucket": "中",
+   "N": 5,
+   "ack_ratio": 0.4,
+   "pattern": "interleaved",
+   "skip_turns": [
+    2,
+    4
+   ],
+   "model_pct": 35.1,
+   "conservative_pct": 34.6,
+   "A_tok": 10702,
+   "B_tok": 6942
+  },
+  {
+   "bucket": "中",
+   "N": 5,
+   "ack_ratio": 0.4,
+   "pattern": "late",
+   "skip_turns": [
+    4,
+    5
+   ],
+   "model_pct": 38.3,
+   "conservative_pct": 37.7,
+   "A_tok": 10702,
+   "B_tok": 6608
+  },
+  {
+   "bucket": "中",
+   "N": 8,
+   "ack_ratio": 0.0,
+   "pattern": "noskip",
+   "skip_turns": [],
+   "model_pct": -6.2,
+   "conservative_pct": -6.1,
+   "A_tok": 18426,
+   "B_tok": 19564
+  },
+  {
+   "bucket": "中",
+   "N": 8,
+   "ack_ratio": 0.25,
+   "pattern": "early",
+   "skip_turns": [
+    2,
+    3
+   ],
+   "model_pct": 17.4,
+   "conservative_pct": 17.1,
+   "A_tok": 18426,
+   "B_tok": 15225
+  },
+  {
+   "bucket": "中",
+   "N": 8,
+   "ack_ratio": 0.25,
+   "pattern": "interleaved",
+   "skip_turns": [
+    2,
+    6
+   ],
+   "model_pct": 19.2,
+   "conservative_pct": 18.9,
+   "A_tok": 18426,
+   "B_tok": 14890
+  },
+  {
+   "bucket": "中",
+   "N": 8,
+   "ack_ratio": 0.25,
+   "pattern": "late",
+   "skip_turns": [
+    7,
+    8
+   ],
+   "model_pct": 23.4,
+   "conservative_pct": 23.1,
+   "A_tok": 18426,
+   "B_tok": 14111
+  },
+  {
+   "bucket": "中",
+   "N": 8,
+   "ack_ratio": 0.375,
+   "pattern": "early",
+   "skip_turns": [
+    2,
+    3,
+    4
+   ],
+   "model_pct": 30.1,
+   "conservative_pct": 29.6,
+   "A_tok": 18426,
+   "B_tok": 12888
+  },
+  {
+   "bucket": "中",
+   "N": 8,
+   "ack_ratio": 0.375,
+   "pattern": "interleaved",
+   "skip_turns": [
+    2,
+    4,
+    6
+   ],
+   "model_pct": 31.9,
+   "conservative_pct": 31.4,
+   "A_tok": 18426,
+   "B_tok": 12554
+  },
+  {
+   "bucket": "中",
+   "N": 8,
+   "ack_ratio": 0.375,
+   "pattern": "late",
+   "skip_turns": [
+    6,
+    7,
+    8
+   ],
+   "model_pct": 37.3,
+   "conservative_pct": 36.7,
+   "A_tok": 18426,
+   "B_tok": 11552
+  },
+  {
+   "bucket": "中",
+   "N": 8,
+   "ack_ratio": 0.5,
+   "pattern": "early",
+   "skip_turns": [
+    2,
+    3,
+    4,
+    5
+   ],
+   "model_pct": 43.3,
+   "conservative_pct": 42.7,
+   "A_tok": 18426,
+   "B_tok": 10440
+  },
+  {
+   "bucket": "中",
+   "N": 8,
+   "ack_ratio": 0.5,
+   "pattern": "interleaved",
+   "skip_turns": [
+    2,
+    4,
+    6,
+    8
+   ],
+   "model_pct": 47.0,
+   "conservative_pct": 46.3,
+   "A_tok": 18426,
+   "B_tok": 9772
+  },
+  {
+   "bucket": "中",
+   "N": 8,
+   "ack_ratio": 0.5,
+   "pattern": "late",
+   "skip_turns": [
+    5,
+    6,
+    7,
+    8
+   ],
+   "model_pct": 50.6,
+   "conservative_pct": 49.8,
+   "A_tok": 18426,
+   "B_tok": 9104
+  },
+  {
+   "bucket": "中",
+   "N": 12,
+   "ack_ratio": 0.0,
+   "pattern": "noskip",
+   "skip_turns": [],
+   "model_pct": -5.9,
+   "conservative_pct": -5.8,
+   "A_tok": 30245,
+   "B_tok": 32017
+  },
+  {
+   "bucket": "中",
+   "N": 12,
+   "ack_ratio": 0.25,
+   "pattern": "early",
+   "skip_turns": [
+    2,
+    3,
+    4
+   ],
+   "model_pct": 16.2,
+   "conservative_pct": 16.0,
+   "A_tok": 30245,
+   "B_tok": 25342
+  },
+  {
+   "bucket": "中",
+   "N": 12,
+   "ack_ratio": 0.25,
+   "pattern": "interleaved",
+   "skip_turns": [
+    2,
+    6,
+    10
+   ],
+   "model_pct": 19.5,
+   "conservative_pct": 19.2,
+   "A_tok": 30245,
+   "B_tok": 24340
+  },
+  {
+   "bucket": "中",
+   "N": 12,
+   "ack_ratio": 0.25,
+   "pattern": "late",
+   "skip_turns": [
+    10,
+    11,
+    12
+   ],
+   "model_pct": 25.0,
+   "conservative_pct": 24.7,
+   "A_tok": 30245,
+   "B_tok": 22670
+  },
+  {
+   "bucket": "中",
+   "N": 12,
+   "ack_ratio": 0.333,
+   "pattern": "early",
+   "skip_turns": [
+    2,
+    3,
+    4,
+    5
+   ],
+   "model_pct": 24.3,
+   "conservative_pct": 23.9,
+   "A_tok": 30245,
+   "B_tok": 22894
+  },
+  {
+   "bucket": "中",
+   "N": 12,
+   "ack_ratio": 0.333,
+   "pattern": "interleaved",
+   "skip_turns": [
+    2,
+    5,
+    8,
+    11
+   ],
+   "model_pct": 28.7,
+   "conservative_pct": 28.3,
+   "A_tok": 30245,
+   "B_tok": 21558
+  },
+  {
+   "bucket": "中",
+   "N": 12,
+   "ack_ratio": 0.333,
+   "pattern": "late",
+   "skip_turns": [
+    9,
+    10,
+    11,
+    12
+   ],
+   "model_pct": 34.6,
+   "conservative_pct": 34.1,
+   "A_tok": 30245,
+   "B_tok": 19777
+  },
+  {
+   "bucket": "中",
+   "N": 12,
+   "ack_ratio": 0.5,
+   "pattern": "early",
+   "skip_turns": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "model_pct": 41.6,
+   "conservative_pct": 41.0,
+   "A_tok": 30245,
+   "B_tok": 17664
+  },
+  {
+   "bucket": "中",
+   "N": 12,
+   "ack_ratio": 0.5,
+   "pattern": "interleaved",
+   "skip_turns": [
+    2,
+    4,
+    6,
+    8,
+    10,
+    12
+   ],
+   "model_pct": 47.1,
+   "conservative_pct": 46.4,
+   "A_tok": 30245,
+   "B_tok": 15994
+  },
+  {
+   "bucket": "中",
+   "N": 12,
+   "ack_ratio": 0.5,
+   "pattern": "late",
+   "skip_turns": [
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ],
+   "model_pct": 52.6,
+   "conservative_pct": 51.8,
+   "A_tok": 30245,
+   "B_tok": 14324
+  },
+  {
+   "bucket": "长",
+   "N": 20,
+   "ack_ratio": 0.0,
+   "pattern": "noskip",
+   "skip_turns": [],
+   "model_pct": -5.4,
+   "conservative_pct": -5.3,
+   "A_tok": 59096,
+   "B_tok": 62269
+  },
+  {
+   "bucket": "长",
+   "N": 20,
+   "ack_ratio": 0.25,
+   "pattern": "early",
+   "skip_turns": [
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "model_pct": 14.4,
+   "conservative_pct": 14.2,
+   "A_tok": 59096,
+   "B_tok": 50587
+  },
+  {
+   "bucket": "长",
+   "N": 20,
+   "ack_ratio": 0.25,
+   "pattern": "interleaved",
+   "skip_turns": [
+    2,
+    6,
+    10,
+    14,
+    18
+   ],
+   "model_pct": 20.1,
+   "conservative_pct": 19.7,
+   "A_tok": 59096,
+   "B_tok": 47247
+  },
+  {
+   "bucket": "长",
+   "N": 20,
+   "ack_ratio": 0.25,
+   "pattern": "late",
+   "skip_turns": [
+    16,
+    17,
+    18,
+    19,
+    20
+   ],
+   "model_pct": 27.6,
+   "conservative_pct": 27.2,
+   "A_tok": 59096,
+   "B_tok": 42793
+  },
+  {
+   "bucket": "长",
+   "N": 20,
+   "ack_ratio": 0.35,
+   "pattern": "early",
+   "skip_turns": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ],
+   "model_pct": 23.6,
+   "conservative_pct": 23.3,
+   "A_tok": 59096,
+   "B_tok": 45134
+  },
+  {
+   "bucket": "长",
+   "N": 20,
+   "ack_ratio": 0.35,
+   "pattern": "interleaved",
+   "skip_turns": [
+    2,
+    4,
+    6,
+    8,
+    10,
+    12,
+    14
+   ],
+   "model_pct": 27.6,
+   "conservative_pct": 27.2,
+   "A_tok": 59096,
+   "B_tok": 42796
+  },
+  {
+   "bucket": "长",
+   "N": 20,
+   "ack_ratio": 0.35,
+   "pattern": "late",
+   "skip_turns": [
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20
+   ],
+   "model_pct": 39.5,
+   "conservative_pct": 38.9,
+   "A_tok": 59096,
+   "B_tok": 35782
+  },
+  {
+   "bucket": "长",
+   "N": 20,
+   "ack_ratio": 0.5,
+   "pattern": "early",
+   "skip_turns": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+   ],
+   "model_pct": 38.9,
+   "conservative_pct": 38.3,
+   "A_tok": 59096,
+   "B_tok": 36120
+  },
+  {
+   "bucket": "长",
+   "N": 20,
+   "ack_ratio": 0.5,
+   "pattern": "interleaved",
+   "skip_turns": [
+    2,
+    4,
+    6,
+    8,
+    10,
+    12,
+    14,
+    16,
+    18,
+    20
+   ],
+   "model_pct": 47.4,
+   "conservative_pct": 46.6,
+   "A_tok": 59096,
+   "B_tok": 31110
+  },
+  {
+   "bucket": "长",
+   "N": 20,
+   "ack_ratio": 0.5,
+   "pattern": "late",
+   "skip_turns": [
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20
+   ],
+   "model_pct": 55.8,
+   "conservative_pct": 55.0,
+   "A_tok": 59096,
+   "B_tok": 26100
+  },
+  {
+   "bucket": "长",
+   "N": 40,
+   "ack_ratio": 0.0,
+   "pattern": "noskip",
+   "skip_turns": [],
+   "model_pct": -4.6,
+   "conservative_pct": -4.5,
+   "A_tok": 161630,
+   "B_tok": 169073
+  },
+  {
+   "bucket": "长",
+   "N": 40,
+   "ack_ratio": 0.25,
+   "pattern": "early",
+   "skip_turns": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+   ],
+   "model_pct": 11.6,
+   "conservative_pct": 11.4,
+   "A_tok": 161630,
+   "B_tok": 142924
+  },
+  {
+   "bucket": "长",
+   "N": 40,
+   "ack_ratio": 0.25,
+   "pattern": "interleaved",
+   "skip_turns": [
+    2,
+    6,
+    10,
+    14,
+    18,
+    22,
+    26,
+    30,
+    34,
+    38
+   ],
+   "model_pct": 20.9,
+   "conservative_pct": 20.6,
+   "A_tok": 161630,
+   "B_tok": 127894
+  },
+  {
+   "bucket": "长",
+   "N": 40,
+   "ack_ratio": 0.25,
+   "pattern": "late",
+   "skip_turns": [
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40
+   ],
+   "model_pct": 31.5,
+   "conservative_pct": 31.1,
+   "A_tok": 161630,
+   "B_tok": 110637
+  },
+  {
+   "bucket": "长",
+   "N": 40,
+   "ack_ratio": 0.325,
+   "pattern": "early",
+   "skip_turns": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14
+   ],
+   "model_pct": 17.8,
+   "conservative_pct": 17.5,
+   "A_tok": 161630,
+   "B_tok": 132909
+  },
+  {
+   "bucket": "长",
+   "N": 40,
+   "ack_ratio": 0.325,
+   "pattern": "interleaved",
+   "skip_turns": [
+    2,
+    5,
+    8,
+    11,
+    14,
+    17,
+    20,
+    23,
+    26,
+    29,
+    32,
+    35,
+    38
+   ],
+   "model_pct": 28.5,
+   "conservative_pct": 28.1,
+   "A_tok": 161630,
+   "B_tok": 115540
+  },
+  {
+   "bucket": "长",
+   "N": 40,
+   "ack_ratio": 0.325,
+   "pattern": "late",
+   "skip_turns": [
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40
+   ],
+   "model_pct": 41.1,
+   "conservative_pct": 40.4,
+   "A_tok": 161630,
+   "B_tok": 95277
+  },
+  {
+   "bucket": "长",
+   "N": 40,
+   "ack_ratio": 0.5,
+   "pattern": "early",
+   "skip_turns": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21
+   ],
+   "model_pct": 34.6,
+   "conservative_pct": 34.1,
+   "A_tok": 161630,
+   "B_tok": 105642
+  },
+  {
+   "bucket": "长",
+   "N": 40,
+   "ack_ratio": 0.5,
+   "pattern": "interleaved",
+   "skip_turns": [
+    2,
+    4,
+    6,
+    8,
+    10,
+    12,
+    14,
+    16,
+    18,
+    20,
+    22,
+    24,
+    26,
+    28,
+    30,
+    32,
+    34,
+    36,
+    38,
+    40
+   ],
+   "model_pct": 47.7,
+   "conservative_pct": 47.0,
+   "A_tok": 161630,
+   "B_tok": 84488
+  },
+  {
+   "bucket": "长",
+   "N": 40,
+   "ack_ratio": 0.5,
+   "pattern": "late",
+   "skip_turns": [
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40
+   ],
+   "model_pct": 60.8,
+   "conservative_pct": 59.9,
+   "A_tok": 161630,
+   "B_tok": 63334
+  }
+ ]
+}
