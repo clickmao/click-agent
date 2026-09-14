@@ -26,8 +26,11 @@
 | r412 | verdict.json | **NO_CONTENTION** | 4 | `bool_fields` |
 | r413 | verdict-r413.json | **PASS** | 7 | `gate` |
 | r415 | verdict-r415.json | **PASS** | 22 | `checks` |
+| r424 | verdict-r424.json | **PASS** | 2 | `bool_fields` |
 | r421 | verdict-r421.json | **PASS** | 13 | `checks` |
 | r422 | verdict-r422.json | **PARTIAL** | 8 | `checks` |
+| r423 | verdict-r423-run1-predictor-error.json | **FAIL** | 7 | `checks` |
+| r423 | verdict-r423.json | **PASS** | 9 | `checks` |
 
 **正文提及但无独立小节的 D 编号**（文档缺口, 不猜测其状态）: D6(L237), D9-a(L182)
 
@@ -74,10 +77,12 @@
 
 ## 4. 轮次提交（本地；推送暂停令生效）
 
-- 未推送提交数: **73**
+- 未推送提交数: **75**
 
 | commit | 主题 |
 |---|---|
+| `e57be12` | R423 跨会话检索打分词元频次饱和: 可分性预检(残留并列对 distinct 90/90 ∧ tf 4/4 逐项相等 ⇒ 词袋计数族不可分边界登记, 不作全称宣称) + 打分子 1+ln(tf)(因子≥1 ⇒ 命中集合可证不变) + 真机成对AOT两臂(等长对 [0.4901×2] 全等 → [1.0286,0.4901] 分档, 比值==1+ln3) + 冻结语料 tf=1 逐位不变/tf=4 ==登记值×(1+ln4) + 单测26/26 + 形式校验13/13; 另: 首跑预测输入纠错与语料目录污染两起事故入档 + 命名空间碰撞登记(对侧R423=AOT形态复现, 其产物未动) (未推) |
+| `c8c4652` | R422 跨会话检索打分校准(文档长度归一) + 附带修复词袋 embedding 溢出/随机哈希 |
 | `37d6997` | R421 跨会话检索否定极性: 否定标记(不没未无五)紧邻词元带极性问题(¬存在≠存在) ⇒ `/recall 不存在` 3命中→0 |
 | `7d3165b` | R420 L2-待办①/L7-G1 跨会话检索接线: /recall 本地指令(四表同步, 零LLM, recall_query 通道级打点) + 接线前产物负控(recall_query=0/llm_call=1) + 单测28/28 + 表单13/13; 真机暴露否定无感假阳性(下轮候选, 未修) (未推) |
 | `05b8c94` | R419 收口: 探针多轮化仪器达成 + 真机读数未稳定分化(3/4 饱和) + 三个仪器缺陷修(坏字节崩/NS覆盖/可见性) |
@@ -98,13 +103,13 @@
 | `cd3c951` | R403: chat template 裁定 —— 工具调用模板无对象可验(负控证明探针有判别力), R403 关闭 + 待触发能力准入三条 |
 | `19aff03` | R412: 多会话 slot 争用实测 + 会话级账本(分母不互相污染) |
 | `6a7a519` | R411: 通用教训落 skills/delivery-selfcheck (7b 字段语义核查 + 走偏表两行) |
-| `20bf988` | R411: 长驻生成端口 + 本地 K2b 台账(双条件判据) + 口径独立对账钉死 |
 
 ## 5. 台账
 
-- `docs/verification-registry.json`: **57** 行, updated_round = **R422**
-- `eval/capability/kpi.jsonl` 已记轮次: R402, loop-mechanism, R401, R411-V, R403-scope, R413, R414, R415, R416, R419, R420, R421, R422
+- `docs/verification-registry.json`: **58** 行, updated_round = **R423**
+- `eval/capability/kpi.jsonl` 已记轮次: R402, loop-mechanism, R401, R411-V, R403-scope, R413, R414, R415, R416, R419, R420, R421, R422, R423
 - 已知盲区: 状态检测器只读 `data/probe/kpi.jsonl`; 轮次台账另有 `data/probe/capability/kpi.jsonl`（孤儿）
+- **轮号命名空间（R423 实证，轮内已消解）**: 轮号取 `max+1` 前必须复跑「pgrep 活动执行体 + 锁文件 + 目标轮文件存在时比对 mtime（>10min 才算 stale）」全序列。R423 曾与并发执行体撞号（本侧=检索打分；对侧=AOT 发布形态复现），对侧随后**让号**至 R424（`eval/rover/r424/` + `docs/plans/v0.45.0-r424-aot-mainline-replication.md`）⇒ 最终 R423=检索打分 / R424=AOT 形态复现。**处置纪律**: 碰撞当一等事件（两支都登记、不改写历史、不静默改名）；提交只用**显式路径**（禁 `git add -A`，防卷入对侧未跟踪产物）。
 
 ## 6. 口径红线（审计对照）
 

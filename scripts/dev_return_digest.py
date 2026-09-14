@@ -285,6 +285,10 @@ def main() -> int:
     L.append(f"- `docs/verification-registry.json`: **{reg_rows}** 行, updated_round = **{reg_round}**")
     L.append(f"- `eval/capability/kpi.jsonl` 已记轮次: {', '.join(kpi_rounds) if kpi_rounds else '(空)'}")
     L.append("- 已知盲区: 状态检测器只读 `data/probe/kpi.jsonl`; 轮次台账另有 `data/probe/capability/kpi.jsonl`（孤儿）")
+    L.append("- **轮号命名空间（R423 实证，轮内已消解）**: 轮号取 `max+1` 前必须复跑「pgrep 活动执行体 + 锁文件 + "
+             "目标轮文件存在时比对 mtime（>10min 才算 stale）」全序列。R423 曾与并发执行体撞号（本侧=检索打分；对侧=AOT 发布形态复现），"
+             "对侧随后**让号**至 R424（`eval/rover/r424/` + `docs/plans/v0.45.0-r424-aot-mainline-replication.md`）⇒ 最终 R423=检索打分 / R424=AOT 形态复现。"
+             "**处置纪律**: 碰撞当一等事件（两支都登记、不改写历史、不静默改名）；提交只用**显式路径**（禁 `git add -A`，防卷入对侧未跟踪产物）。")
     L.append("")
     L.append("## 6. 口径红线（审计对照）")
     L.append("")
