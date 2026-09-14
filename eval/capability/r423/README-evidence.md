@@ -58,3 +58,4 @@ env -u AGENTFRAMEWORK_PY_RUN dotnet test src/agent.tests/agentframework.tests.cs
 - 两侧路径不重叠；本侧全部产物位于 `eval/capability/r423/`，对侧产物**未动**；台账含 `namespace_collision` 字段。
 - 本侧消歧标识：能力 id `r423.recall-tf-saturation`、计划 `docs/plans/v0.44.0-r423-tf-saturation.md`。
 - 根因（本侧流程）：`max+1` 前未复跑「pgrep + 锁 + 轮文件 mtime」序列；已写下轮复发防线。
+- **轮内已消解**：对侧在本轮内**让号** —— 其产物目录 `eval/rover/r423/` 迁移为 `eval/rover/r424/`，计划文件改名为 `docs/plans/v0.45.0-r424-aot-mainline-replication.md`（迁移时刻 17:10:36，本侧记录于 17:12）。⇒ 最终归属：**R423 = 本侧（跨会话检索打分·词元频次饱和）**，**R424 = 对侧（AOT 发布形态复现）**。
