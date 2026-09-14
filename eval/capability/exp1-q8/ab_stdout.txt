@@ -1,0 +1,85 @@
+versions: 2.3.0 -> 2.4.1
+{
+ "old_version": "2.3.0",
+ "new_version": "2.4.1",
+ "A1_subdivide_does_not_rejudge": true,
+ "A1_key_sets_equal": true,
+ "A1_verdict_diff_n": 0,
+ "A1_verdict_diff_sample": [],
+ "A1_existing_field_diff_n": 0,
+ "A2_new_axis_present_old": 0,
+ "A2_new_axis_present_new": 466,
+ "n_citations_old": 939,
+ "n_citations_new": 939,
+ "verdict_counts_old": {
+  "ok": 753,
+  "symbol_absent": 66,
+  "waived": 70,
+  "stale_lines": 4,
+  "retired": 21,
+  "stale_path": 8
+ },
+ "verdict_counts_new": {
+  "ok": 753,
+  "symbol_absent": 66,
+  "waived": 70,
+  "stale_lines": 4,
+  "retired": 21,
+  "stale_path": 8
+ },
+ "cont_verdict_counts_old": {
+  "ok": 60,
+  "retired": 7,
+  "waived": 2
+ },
+ "cont_verdict_counts_new": {
+  "ok": 60,
+  "retired": 7,
+  "waived": 2
+ },
+ "cont_tiers_old": {
+  "same_line_prev": 55,
+  "stem_symbol": 5,
+  "block_unique_prev": 7,
+  "waived": 2
+ },
+ "cont_tiers_new": {
+  "same_line_prev": 55,
+  "stem_symbol": 5,
+  "block_unique_prev": 7,
+  "waived": 2
+ }
+}
+{
+ "A3_nontrivial": true,
+ "rungs": {
+  "absent": 78,
+  "n/a_kind": 1,
+  "declared_member": 82,
+  "noncode_mention": 29,
+  "code_mention": 64,
+  "declared_type": 316
+ },
+ "real_rungs": [
+  "absent",
+  "code_mention",
+  "declared_member",
+  "declared_type",
+  "noncode_mention"
+ ],
+ "n_symbol_faces": 570,
+ "A4_na_kind_n": 1,
+ "n_candidates": 93,
+ "n_noncode_mention": 29,
+ "n_weak_hits_verdict_ok": 25
+}
+weak_hits files: 12
+   src/agent.frontendapi/FrontendApiContract.cs 1 ['req_id@docs/plans/v0.22.0-exp2-multi-option-ask-menu-protocol.md:53']
+   src/agent.frontendapi/FrontendPromptService.cs 1 ['ask_id@docs/plans/v0.22.0-exp2-multi-option-ask-menu-protocol.md:105']
+   src/agent.gpu/cli/GpuCli.cs 1 ['VulkanNames@docs/plans/v0.22.0-exp1-local-index-and-code-graph.md:288']
+   src/agent.llamacpp/LlamaCppTextEmbedder.cs 2 ['AGENTFRAMEWORK_BGE_MODEL@docs/plans/v0.22.0-exp1-local-index-and-code-graph.md:68', 'NullTextEmbedder@docs/reports/bge/model-lineage-and-inventory-2026-09-14.md:54']
+   src/agent.modelqueue/ModelCatalog.cs 2 ['relation_judge@docs/plans/v0.47.0-r426-relation-judge-localization.md:50', 'turn_gate@docs/plans/v0.47.0-r426-relation-judge-localization.md:50']
+   src/agent.modelqueue/ModelQueueRouter.cs 1 ['failed_or_empty@docs/plans/v0.57.0-r436-e2e-brj-token-kpi.md:18']
+   src/agent/IndustrialAgentV2.cs 9 ['plan_executor_parallel@docs/plans/v0.22.0-exp3-step-alignment-validation.md:59', 'loop_turn@docs/plans/v0.22.0-exp9-subtask-plan-routing-and-local-first.md:73', 'empty_always@docs/plans/v0.22.0-r371-capability-probe-python-game.md:250', 'recall_query@docs/plans/v0.42.0-r421-polarity.md:18']
+   src/agent/contextassembler/ContextAssembler.cs 1 ['_queryEmbedding@docs/reports/function-map-R326.md:288']
+OUT: /home/agentuser/AgentFramework/eval/capability/exp1-q8/ab_ladder_invariance.json

@@ -62,7 +62,9 @@ CRITERIA = {
     "G4_premise_refutation": "计划点名类型在当前 src/*.cs 出现次数==0 ⇒ '复用既有契约' 前提为假",
     "G5_nontrivial": "三个目标族的引用文档集合不得全部相同",
     "G6_cont_nontrivial": "续引数==0 ∨ 续引归属 tier 分布>=2 类 (全同一 tier ⇒ 子探针无判别力)",
+    "G7_ladder_nontrivial": "符号存在性阶梯在真实语料上 >=2 级分布 (恒同一级 ⇒ 该轴无判别力 ⇒ 先查仪器再谈被测)",
 }
+PROBE_VERSION = "2.4.1"
 DECISION_RULES = {
     "D1_versionable_carrier": "若 capability-id+args 形态契约数 == 0 ⇒ Q2 的(a)/(b) 均无既有载体, 只能随**新建**契约定义 schema_version",
     "D2_manifest_loader": "若'外部文件驱动注册'先例数 == 0 ⇒ manifest 形态(b) 需新建加载器(反射受限) ⇒ 不推荐",
@@ -172,6 +174,18 @@ class Repo:
             out = (None, None)
         self._cache[rel] = out
         return out
+
+    def codeface(self, rel: str):
+        """剥离注释/字符串后的「代码面」文本 (缓存); 不可剥离的类型返回 None。"""
+        key = ("__codeface__", rel)
+        if key not in self._cache:
+            text, _ = self.read(rel)
+            if text is None:
+                self._cache[key] = (None, None)
+            else:
+                tok = "#" if os.path.splitext(rel)[1].lower() in (".py", ".sh") else "//"
+                self._cache[key] = (strip_noncode(text, tok), None)
+        return self._cache[key][0]
 
     def exists(self, rel: str) -> bool:
         return (self.root / rel).is_file()
@@ -414,6 +428,121 @@ def resolve_ref(repo: Repo, ref_path: str):
     return "waived", "ambiguous_bare_name"
 
 
+# ---------------------------------------------------------------- 符号存在性阶梯 (v2.4.0)
+# 与主 verdict **平行**的独立测量轴 (只细分, 不改判): 引用指向的文件里被引符号以**什么形态**存在。
+#   五级 (强 -> 弱): declared_type > declared_member > code_mention > noncode_mention > absent
+#   另加 n/a_kind = 该文件类型不做词法剥离 (非 .cs/.py) ⇒ 弃权单列, 不进阶梯分母。
+# 诚实边界: 本轴是**词法级** (剥离注释/字符串 + 声明形态正则), **不是 AST**——
+#   AST 需语法库/编译器 (与本探针「不跑 dotnet / 不引第三方依赖」的纪律冲突),
+#   故候选 #3 提的 "AST 级独立判据" 本轮**降级为词法级**并如实登记。
+#   因此 declared_member 是**启发式** (同句出现修饰符/返回类型), 裸 `Sym(` 在语义上无法区分
+#   「声明」与「调用」⇒ 一律只记 code_mention (宁漏勿错)。
+FACE_NA = "n/a_kind"
+FACE_REAL_RUNGS = ("declared_type", "declared_member", "code_mention", "noncode_mention", "absent")
+STRIPPABLE_EXT = (".cs", ".py")
+DECL_TYPE_TMPL = r'\b(?:class|interface|record|struct|enum|delegate)\s+%s\b'
+# `new Foo(` 是**实例化**不是声明 ⇒ new 不入修饰符表 (误列会把 `new X(` 判成 declared_member)
+DECL_MEMBER_PREFIX = (r'(?:public|private|protected|internal|static|virtual|override|async|sealed|'
+                      r'partial|readonly|extern|unsafe|abstract|const|event|required|'
+                      r'void|bool|int|long|double|string|object|Task|ValueTask|byte|char|float|decimal)')
+
+
+def _blank(seg: str) -> str:
+    """等长空白替换 (换行保留) ⇒ 剥离后行号/列偏移不变。"""
+    return "".join("\n" if ch == "\n" else " " for ch in seg)
+
+
+def strip_noncode(text: str, line_comment: str = "//") -> str:
+    """剥离注释与字符串/字符字面量 (词法级状态机, 非 AST), **逐行保长度**。
+
+    line_comment="//" (C 族) 时块注释为 /* */; "#" (脚本族) 时块注释为三引号。
+    诚实边界: 撇号出现在非字面量语境 (英文缩写等) 会吞到下一个撇号——只影响本平行轴,
+    主 verdict 完全不受影响。
+    """
+    blocks = (('"""', '"""'), (", ")) if line_comment == "#" else (("/*", "*/"),)
+    out, i, n = [], 0, len(text)
+    while i < n:
+        ch = text[i]
+        nxt = text[i + 1] if i + 1 < n else ""
+        if (line_comment == "#" and ch == "#") or (line_comment == "//" and ch == "/" and nxt == "/"):
+            j = text.find("\n", i)
+            j = n if j < 0 else j
+            out.append(_blank(text[i:j]))
+            i = j
+            continue
+        blk = None
+        for op, cl in blocks:
+            if text.startswith(op, i):
+                j = text.find(cl, i + len(op))
+                blk = n if j < 0 else j + len(cl)
+                break
+        if blk is not None:
+            out.append(_blank(text[i:blk]))
+            i = blk
+            continue
+        if ch == "@" and nxt in ('"', "'"):
+            j = i + 2
+            while j < n:
+                if text[j] == nxt:
+                    if nxt == '"' and j + 1 < n and text[j + 1] == '"':
+                        j += 2
+                        continue
+                    j += 1
+                    break
+                j += 1
+            out.append(_blank(text[i:j]))
+            i = j
+            continue
+        if ch in ('"', "'"):
+            j = i + 1
+            while j < n:
+                if j + 1 < n and text[j] == "\\":
+                    j += 2
+                    continue
+                if text[j] == ch:
+                    j += 1
+                    break
+                if text[j] == "\n":
+                    break
+                j += 1
+            out.append(_blank(text[i:j]))
+            i = j
+            continue
+        out.append(ch)
+        i += 1
+    return "".join(out)
+
+
+def symbol_face(sym: str, code_text: str, full_text: str) -> str:
+    """单个符号在**该文件**里的存在形态 (五级之一)。输入: 代码面文本 + 全文。
+
+    防御守卫 (v2.4.1): code_text 为 None (文件不可读/类型不可剥离) ⇒ 弃权 n/a_kind,
+    而不是抛 TypeError —— 测量层必须**出声地弃权**, 不得把"测不到"表现成崩溃或静默命中。
+    """
+    if code_text is None:
+        return FACE_NA
+    esc = re.escape(sym)
+    if re.search(DECL_TYPE_TMPL % esc, code_text):
+        return "declared_type"
+    if re.search(DECL_MEMBER_PREFIX + r'\b[^\n;{}]{0,90}?\b' + esc + r'\s*[\(<{]', code_text):
+        return "declared_member"
+    if re.search(r'\b' + esc + r'\b', code_text):
+        return "code_mention"
+    if re.search(r'\b' + esc + r'\b', full_text):
+        return "noncode_mention"
+    return "absent"
+
+
+def faces_for(repo, rel: str, text: str, syms) -> dict:
+    """该引用全部符号的形态; 不可剥离的文件类型 ⇒ 全 n/a_kind (弃权单列, 不进分母)。"""
+    if os.path.splitext(rel)[1].lower() not in STRIPPABLE_EXT:
+        return {s: FACE_NA for s in syms}
+    code_text = repo.codeface(rel)
+    if code_text is None:
+        return {s: FACE_NA for s in syms}
+    return {s: symbol_face(s, code_text, text) for s in syms}
+
+
 def judge_citation(repo: Repo, c: dict):
     rec = dict(c)
     rec.update({"resolved": None, "resolve_mode": None, "path_exists": False,
@@ -448,6 +577,7 @@ def judge_citation(repo: Repo, c: dict):
                     rec["relocated_fact_verdict"] = (
                         "ok" if (lines_ok and not absent)
                         else ("stale_lines" if not lines_ok else "symbol_absent"))
+                    rec["relocated_symbol_faces"] = faces_for(repo, cands[0], text, c["symbols"])
             return rec
         if c.get("retire_marker"):
             # R409 同族: 显式登记退役的引用是合法留痕, 与"未登记的死引用"分开计。
@@ -473,6 +603,8 @@ def judge_citation(repo: Repo, c: dict):
         return rec
     absent = [s for s in c["symbols"] if not re.search(r'\b' + re.escape(s) + r'\b', text)]
     rec["symbols_absent"] = absent
+    # 平行轴 (v2.4.0): 只记录形态, **不参与** verdict 判定 ⇒ 与主判据解耦
+    rec["symbol_faces"] = faces_for(repo, rel, text, c["symbols"])
     rec["verdict"] = "symbol_absent" if absent else "ok"
     return rec
 
@@ -585,6 +717,19 @@ def run_pass(repo: Repo):
     verdicts = Counter(c["verdict"] for c in live_code)
     waive = Counter(c.get("waive_reason") for c in live_code if c["verdict"] == "waived")
 
+    # ---- v2.4.0 符号存在性阶梯聚合 (平行轴; 与 verdict_counts 分开计, 不互相解释)
+    face_rungs = Counter()
+    for c in live_code:
+        for _rung in (c.get("symbol_faces") or {}).values():
+            face_rungs[_rung] += 1
+    face_candidates = [
+        {"doc": c["doc"], "doc_line": c["doc_line"], "resolved": c["resolved"],
+         "symbol": _sym, "rung": _rung, "verdict": c["verdict"]}
+        for c in live_code
+        for _sym, _rung in sorted((c.get("symbol_faces") or {}).items())
+        if _rung in ("noncode_mention", "code_mention")
+    ]
+
     all_syms = POSITIVE_SYMBOLS + NEGATIVE_SYMBOLS + TARGET_SYMBOLS
     counts, files = symbol_occurrences(repo, all_syms)
     return {
@@ -605,6 +750,9 @@ def run_pass(repo: Repo):
         "cont_tier_counts": dict(cont_tiers),
         "cont_waive_reasons": {str(k): v for k, v in cont_waive.items()},
         "n_continuations_live": len(cont_live),
+        "symbol_face_rungs": dict(face_rungs),
+        "symbol_face_candidates": face_candidates,
+        "n_symbol_faces": sum(face_rungs.values()),
         "fingerprints": repo.fingerprints(),
         "n_inputs_fingerprinted": len(repo.fingerprints()),
     }
@@ -629,7 +777,8 @@ def run_selftest():
     """仪器自证: 每条判据必须两侧都有夹具 (必须绿 + 必须红), 夹具不读真实语料。
 
     覆盖: 单引用兼容 / 多引用归属不串台 / 死引用无标记仍红 / 死引用带标记入 retired /
-          活引用带标记不豁免 / 标记越过窗口仍红 / 常量形态按码点自检。
+          活引用带标记不豁免 / 标记越过窗口仍红 / 常量形态按码点自检 /
+          v2.4.0 符号存在性阶梯五级两侧 + 注释/字符串内声明形态负控 + 细分不改判。
     """
     import tempfile
     checks = []
@@ -645,8 +794,14 @@ def run_selftest():
     (tmp / "src/agent/x").mkdir(parents=True, exist_ok=True)
     # 夹具符号必须满足仪器自身的标识符启发式 (首字符后含大写 或 含下划线),
     # 否则符号根本不会被采 ⇒ 夹具判红而仪器无辜 (首版夹具即踩此坑, 见 checks_posthoc)。
-    (tmp / "src/agent/x/Alpha.cs").write_text("class AlphaThing { void Run() {} }\n" * 40, encoding="utf-8")
-    (tmp / "src/agent/x/Beta.cs").write_text("class BetaThing { void Go() {} }\n" * 40, encoding="utf-8")
+    (tmp / "src/agent/x/Alpha.cs").write_text(
+        "// CommentedThing 只出现在本注释里\n" + "class AlphaThing { void Run() {} }\n" * 40,
+        encoding="utf-8")
+    (tmp / "src/agent/x/Beta.cs").write_text(
+        "class BetaThing { void Go() {} }\n" * 40
+        + "public void DeltaThing() { }\n"
+        + "void useIt() { OtherThing.Factory(); }\n",
+        encoding="utf-8")
     mk = RETIRED_MARKERS[0]
     far = "x" * (RETIRED_WINDOW + 40)
     doc = ("# t\n"
@@ -679,7 +834,13 @@ def run_selftest():
            "- 续引 留痕继承(同行同文件, 标记在本续引窗口外): [src/agent/x/Gone4.cs:3]\u3010" + mk + " deadbee\u3011"
            + "y" * (RETIRED_WINDOW + 10) + " 与 [:2]\n"
            "- 续引 留痕继承负控(同行带标记但**异路径**): [src/agent/x/Alpha.cs:3]\u3010" + mk + " deadbee\u3011"
-           + "y" * (RETIRED_WINDOW + 10) + " [src/agent/x/Gone5.cs:3] 与 [:2]\n")
+           + "y" * (RETIRED_WINDOW + 10) + " [src/agent/x/Gone5.cs:3] 与 [:2]\n"
+           # ---- 符号存在性阶梯 (v2.4.0): 四级端到端 + "细分不改判" 两侧
+           "\n"
+           "- 阶梯 declared_member: `DeltaThing` [src/agent/x/Beta.cs:3]\n"
+           "- 阶梯 code_mention: `OtherThing` [src/agent/x/Beta.cs:3]\n"
+           "- 阶梯 noncode_comment_only: `CommentedThing` [src/agent/x/Alpha.cs:3]\n"
+           "- 阶梯 absent: `MissingThing` [src/agent/x/Beta.cs:3]\n")
     ck("cont_const_codepoints", [ord(CONT_OPEN), ord(CONT_COLON), ord(CONT_CLOSE)],
        [0x5B, 0x3A, 0x5D])
     ck("cont_re_negative_on_plain_cite", CONT_RE.findall("[src/agent/x/Alpha.cs:3]"), [])
@@ -740,8 +901,53 @@ def run_selftest():
     ck("C10_marker_inherited_same_path", [j["verdict"] for j in cby[26]], ["retired"])
     ck("C10_inherited_flag", [j.get("retire_marker_inherited") for j in cby[26]], [True])
     ck("C11_no_inherit_on_other_path", [j["verdict"] for j in cby[27]], ["stale_path"])
+    # ---- v2.4.0 符号存在性阶梯: 五级常量两侧 + 剥离保行 + 注释/字符串内「声明形态」负控
+    cfg = ("class GammaThing { }\n"
+           "public void DeltaThing() { }\n"
+           "var t = OtherThing.Factory();\n"
+           "// EpsilonThing only in comment\n"
+           'var s = "ZetaThing";\n'
+           "var u = new NewThing();\n")
+    cfg_code = strip_noncode(cfg, "//")
+    face = {s: symbol_face(s, cfg_code, cfg) for s in
+            ("GammaThing", "DeltaThing", "OtherThing", "EpsilonThing",
+             "ZetaThing", "NewThing", "NowhereThing")}
+    ck("F1_ladder_declared_type", face["GammaThing"], "declared_type")
+    ck("F2_ladder_declared_member", face["DeltaThing"], "declared_member")
+    ck("F3_ladder_code_mention", face["OtherThing"], "code_mention")
+    ck("F4_ladder_noncode_comment", face["EpsilonThing"], "noncode_mention")
+    ck("F5_ladder_noncode_string", face["ZetaThing"], "noncode_mention")
+    ck("F6_ladder_absent", face["NowhereThing"], "absent")
+    ck("F7_new_expr_not_declaration", face["NewThing"], "code_mention")
+    ck("F8_strip_preserves_lines", len(cfg_code.splitlines()), len(cfg.splitlines()))
+    cmt = "// class CommentedThing { }\n"            # 负控: 注释里的**声明形态**不得算声明
+    ck("F9_comment_decl_not_counted",
+       symbol_face("CommentedThing", strip_noncode(cmt, "//"), cmt), "noncode_mention")
+    strd = 'var q = "class StringThing { }";\n'      # 负控: 字符串里的声明形态同上
+    ck("F10_string_decl_not_counted",
+       symbol_face("StringThing", strip_noncode(strd, "//"), strd), "noncode_mention")
+    # ---- 端到端: 新轴真进主链 (t.md 末尾四条阶梯引用) + 「细分不改判」两侧
+    face_by_sym = {}
+    for _j in judged:
+        if len(_j.get("symbols") or []) == 1:
+            face_by_sym.setdefault(_j["symbols"][0], []).append(_j)
+    ck("F11_e2e_declared_member",
+       [j["symbol_faces"]["DeltaThing"] for j in face_by_sym["DeltaThing"]], ["declared_member"])
+    ck("F12_e2e_code_mention",
+       [j["symbol_faces"]["OtherThing"] for j in face_by_sym["OtherThing"]], ["code_mention"])
+    ck("F13_e2e_noncode_comment",
+       [j["symbol_faces"]["CommentedThing"] for j in face_by_sym["CommentedThing"]],
+       ["noncode_mention"])
+    ck("F14_e2e_absent",
+       [j["symbol_faces"]["MissingThing"] for j in face_by_sym["MissingThing"]], ["absent"])
+    ck("F15_verdict_unchanged_noncode_hit",
+       [j["verdict"] for j in face_by_sym["CommentedThing"]], ["ok"])
+    ck("F16_verdict_unchanged_absent",
+       [j["verdict"] for j in face_by_sym["MissingThing"]], ["symbol_absent"])
+    _rungs = {r for j in judged for r in (j.get("symbol_faces") or {}).values()} - {FACE_NA}
+    ck("F17_ladder_rungs_nontrivial", len(_rungs) >= 4, True)
     ok = all(c["pass"] for c in checks)
-    print(json.dumps({"selftest": "probe_doc_ref_integrity-v2.3.0", "all_pass": ok,
+    print(json.dumps({"selftest": "probe_doc_ref_integrity-v" + PROBE_VERSION, "all_pass": ok,
                       "n_checks": len(checks), "n_pass": sum(1 for c in checks if c["pass"]),
                       "checks": checks, "exit_code": 0 if ok else 2},
                      ensure_ascii=False, indent=2))
@@ -841,6 +1047,10 @@ def main():
 
         # ---- G6 续引子探针非退化 (tier 分布 >= 2 类 ∨ 无量): 必须在 gate_dict 构造**之前**算
         g6 = bool(r1["n_continuations_live"] == 0 or len(r1["cont_tier_counts"]) >= 2)
+
+        # ---- G7 阶梯非退化 (真语料上 >=2 级; 恒同一级 ⇒ 该轴无判别力 ⇒ 先查仪器再谈被测)
+        rungs_real = sorted(k for k in r1["symbol_face_rungs"] if k != FACE_NA)
+        g7 = bool(r1["n_symbol_faces"] == 0 or len(rungs_real) >= 2)
         gate_dict = {
             "G1_instrument_selfproof": g1,
             "G1_positive_counts": pos_counts,
@@ -855,13 +1065,17 @@ def main():
             "G4_premise_refuted": bool(g4),
             "G5_families_distinct": bool(g5),
             "G6_cont_nontrivial": g6,
+            "G7_ladder_nontrivial": g7,
+            "G7_symbol_face_rungs": r1["symbol_face_rungs"],
+            "G7_symbol_face_rungs_real": rungs_real,
+            "G7_n_symbol_faces": r1["n_symbol_faces"],
             "G6_cont_verdict_counts": r1["cont_verdict_counts"],
             "G6_cont_tier_counts": r1["cont_tier_counts"],
             "G6_cont_waive_reasons": r1["cont_waive_reasons"],
             "G6_n_continuations_live": r1["n_continuations_live"],
             "G5_family_docs": {k: v[:6] for k, v in fam_docs.items()},
         }
-        all_pass = bool(g1 and g2 and g5 and g3 and g6)
+        all_pass = bool(g1 and g2 and g5 and g3 and g6 and g7)
         gate_dict["all_pass"] = all_pass
         # 测量有效性闸: 无可判对象 ⇒ 弃权(exit 3), 不判红也不判绿
         measurable = bool(r1["n_docs"] > 0 and r1["n_citations_code_live"] > 0)
@@ -875,7 +1089,7 @@ def main():
 
         result = {
             "probe": "exp1-q4-doc-ref-integrity-and-contract-surface",
-            "probe_version": "2.3.0",
+            "probe_version": PROBE_VERSION,
             "target_doc": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
             "target_question": "§8-Q2 插件 API 是否引入 manifest + schema_version",
             "evidence_level": "L1-static",
@@ -887,6 +1101,9 @@ def main():
             "waive_reasons": r1["waive_reasons"],
             "symbol_occurrences": r1["symbol_occurrences"],
             "symbol_files": r1["symbol_files"],
+            "symbol_face_rungs": r1["symbol_face_rungs"],
+            "symbol_face_candidates": r1["symbol_face_candidates"],
+            "n_symbol_faces": r1["n_symbol_faces"],
             "stale_like_n": stale_like,
             "stale_citations": stale,
             "relocated_n": len(relocated),
@@ -937,7 +1154,8 @@ def main():
             "honest_boundaries": [
                 "证据等级 L1 静态机检 (无真机运行, 无编译/测试/AOT) —— 不得报为 L3/L4",
                 "对侧 30m 作业在改 src/ 产品源码 ⇒ 语料是移动目标; 确定性由两跑 + 被引文件输入指纹归因证明, 不做'文件不动的假设'",
-                "符号命中检查是**全文匹配**启发式 (非 AST): 同名出现在注释/字符串/历史示例里也算命中 ⇒ symbol_absent 只作候选, 不作对外结论",
+                "符号命中检查 (主 verdict) 是**全文匹配**启发式 (非 AST): 同名出现在注释/字符串/历史示例里也算命中 ⇒ symbol_absent 只作候选, 不作对外结论",
+                "v2.4.0 新增**平行轴**「符号存在性阶梯」(declared_type > declared_member > code_mention > noncode_mention > absent): 词法级剥离注释/字符串, **非 AST** (AST 需语法库 ⇒ 与本探针纪律冲突, 候选#3 的 AST 级要求本轮降级为词法级并登记); declared_member 为启发式 (同句修饰符/返回类型), 裸 `Sym(` 只记 code_mention (宁漏勿错); 非 .cs/.py 记 n/a_kind 弃权 ⇒ 该轴**不改判**任何 citation 的 verdict",
                 "引用抽取跳过 ``` 代码围栏内的行 (命令输出/样例不算引用事实); 该规则影响计数, 已在 in_code_fence 字段可见",
                 "文档语料 = docs/**/*.md + 根 *.md; 不含 .txt/.json 与 website/ 站点副本",
                 "契约盘点按正则扫 interface 声明与 'class X : ... IFoo' 形态: 泛型约束/多接口链/partial 可能漏计 (n_impls_prod 是下界)",

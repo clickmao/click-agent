@@ -1,0 +1,42 @@
+{
+  "round": "EXP1-Q8",
+  "written": "2026-09-15T06:53:35+0800",
+  "owner": "60m 自检作业 b15eb2f40a69 (不占主线轮号)",
+  "plan_item": "exp1 本地索引/代码引用图 —— 附录 H.7 候选 #3 (符号存在性独立判据)",
+  "instrument": {
+    "path": "eval/capability/exp1-q4/probe_doc_ref_integrity.py",
+    "version_before": "2.3.0",
+    "version_after": "2.4.1",
+    "note": "v2.4.0 = 设计 (加平行轴); v2.4.1 = 追加防御守卫 (codeface=None ⇒ n/a_kind, 只影响直接误用路径)",
+    "sha256_v241": "8e26787db1b51f8e086888e3de8ce082639d1f1a96e37a85c750c34e698f16e1"
+  },
+  "criteria": {
+    "G7_ladder_nontrivial": "真语料阶梯 >=2 级 (恒同一级 ⇒ 该轴无判别力 ⇒ 先查仪器再谈被测) —— 进 all_pass/exit code",
+    "A1_subdivide_does_not_rejudge": "全量 citation (键 doc|line|pos|path) verdict 逐条相同 ∧ 既有字段零差异 ⇒ 新轴只细分, 不改判",
+    "A2_new_axis_additive": "v2.3.0 该字段条数 == 0 (纯加性)",
+    "A3_ladder_nontrivial_reading": "n_symbol_faces > 0 ∧ 实际级数 >= 2",
+    "A4_waiver_single_counted": "不可剥离/不可读 ⇒ n/a_kind 弃权单列, 不进阶梯分母",
+    "A5_three_pass_determinism": "v2.4.0 存档读数 == v2.4.1 现场读数 (阶梯分布 ∧ 桶面 ∧ 弱边计数)"
+  },
+  "prereg_evidence": [
+    {
+      "file": "patch_v230_to_v240.py",
+      "sha256": "e2476f380b3e23dbda56d2a3b43e3550d30d845eb1d9f78ab0cf72dd2501f746",
+      "mtime": "2026-09-15T06:50:49+0800",
+      "note": "判据文本 (CRITERIA G7 + 阶梯五级定义) 在本文件内, 落盘时间早于首次测量"
+    },
+    {
+      "file": "ab_compare.py",
+      "sha256": "7e5cbb181ae9ad9fd52f902ced80618b6f88f31a612dda13d1f99426cfacdb1b",
+      "mtime": "2026-09-15T06:52:39+0800",
+      "note": "A1–A5 判据在 docstring 内, 先落盘后运行"
+    }
+  ],
+  "excluded": [
+    "不判任何 citation 的红绿 (平行轴)",
+    "不做 AST 归属 (无语法库 ⇒ 词法级, 候选 #3 降级并登记)",
+    "不改产品源码",
+    "不跑 dotnet (对侧 R441 真机臂在跑)",
+    "不动 H.7 候选 #1 (需变更前快照/用户裁定)"
+  ]
+}
