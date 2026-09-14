@@ -1,0 +1,751 @@
+{
+  "arm": "BP",
+  "grid": "p12",
+  "ns": "",
+  "host": "/tmp/pub_r436/agenthost",
+  "bin_sha": "45c37dd5b88ffcf21041065c35a5d9190061927a5fda253c3710e682cfd8f3ba",
+  "marks": {
+    "source_files": {
+      "judge_const": "/home/agentuser/AgentFramework/src/agent/IndustrialAgentV2.cs",
+      "prompt_fn": "/home/agentuser/AgentFramework/src/agent.roles/CorrectionDetector.cs"
+    },
+    "j_system": "只输出一个字母。",
+    "j_system_len": 8,
+    "j_first_line": "判定用户消息相对上一轮回答: 纠正否定上一轮=C, 认可采纳=A, 新话题无关=N。",
+    "j_user_anchor": "用户:",
+    "j_answer_tail": "答案:",
+    "j_prompt_literals_n": 8,
+    "j_prompt_static_len": 274,
+    "checks": {
+      "A1_invisible_free": true,
+      "A2_class_keys": true,
+      "A3_anchors": true,
+      "A4_no_bare_fragment": true
+    }
+  },
+  "calls_total": 18,
+  "tokens_total": 29569,
+  "G_calls": 11,
+  "G_tokens": 28495,
+  "J_calls": 7,
+  "J_tokens": 1074,
+  "unassigned_calls": 0,
+  "attribution": "content_anchor+seq_partition[R415/R425]",
+  "attribution_ok": true,
+  "false_negative": [],
+  "false_negative_by_calls": [],
+  "false_positive": [
+    2,
+    3,
+    4,
+    5
+  ],
+  "false_positive_by_calls": [
+    2,
+    3,
+    4,
+    5
+  ],
+  "fn_n": 0,
+  "fp_n": 4,
+  "accuracy": 0.6363636363636364,
+  "measured_turns": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "measured_n": 11,
+  "consumed_as_ask_answer": [
+    7
+  ],
+  "per_turn": [
+    {
+      "turn": 1,
+      "family": "lead",
+      "want": "pass",
+      "mech": true,
+      "G_calls": 1,
+      "G_tokens": 2027,
+      "J_calls": 0,
+      "J_tokens": 0,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.33,
+      "t_start": 1789401182.9674,
+      "t_end": 1789401183.3001,
+      "window": [
+        0.0,
+        0.333
+      ]
+    },
+    {
+      "turn": 2,
+      "family": "ack",
+      "want": "skip",
+      "mech": false,
+      "G_calls": 1,
+      "G_tokens": 2125,
+      "J_calls": 0,
+      "J_tokens": 0,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": false,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.07,
+      "t_start": 1789401183.3001,
+      "t_end": 1789401183.3743,
+      "window": [
+        0.333,
+        0.407
+      ]
+    },
+    {
+      "turn": 3,
+      "family": "ack",
+      "want": "skip",
+      "mech": false,
+      "G_calls": 1,
+      "G_tokens": 2222,
+      "J_calls": 0,
+      "J_tokens": 0,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": false,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.07,
+      "t_start": 1789401183.3743,
+      "t_end": 1789401183.4478,
+      "window": [
+        0.407,
+        0.48
+      ]
+    },
+    {
+      "turn": 4,
+      "family": "ack",
+      "want": "skip",
+      "mech": false,
+      "G_calls": 1,
+      "G_tokens": 2321,
+      "J_calls": 1,
+      "J_tokens": 153,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": false,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.04,
+      "t_start": 1789401183.4478,
+      "t_end": 1789401183.4903,
+      "window": [
+        0.48,
+        0.523
+      ]
+    },
+    {
+      "turn": 5,
+      "family": "ack",
+      "want": "skip",
+      "mech": false,
+      "G_calls": 1,
+      "G_tokens": 2435,
+      "J_calls": 1,
+      "J_tokens": 152,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": false,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.04,
+      "t_start": 1789401183.4903,
+      "t_end": 1789401183.5333,
+      "window": [
+        0.523,
+        0.566
+      ]
+    },
+    {
+      "turn": 6,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 1,
+      "G_tokens": 2549,
+      "J_calls": 1,
+      "J_tokens": 152,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.08,
+      "t_start": 1789401183.5333,
+      "t_end": 1789401183.6173,
+      "window": [
+        0.566,
+        0.65
+      ]
+    },
+    {
+      "turn": 7,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 0,
+      "G_tokens": 0,
+      "J_calls": 0,
+      "J_tokens": 0,
+      "actual": "consumed",
+      "reply_source": "consumed",
+      "consumed_as_ask_answer": true,
+      "hit": null,
+      "reply_len": 170,
+      "reply_head": "上一轮计划停在等你回答: 「讲一遍」意图不明确。你想让 agent 做什么? (如: 搜索/写文档/执行命令/分析数据)",
+      "secs": 0.0,
+      "t_start": 1789401183.6173,
+      "t_end": 1789401183.6192,
+      "window": [
+        0.65,
+        0.652
+      ]
+    },
+    {
+      "turn": 8,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 1,
+      "G_tokens": 2667,
+      "J_calls": 1,
+      "J_tokens": 152,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.04,
+      "t_start": 1789401183.6192,
+      "t_end": 1789401183.6613,
+      "window": [
+        0.652,
+        0.694
+      ]
+    },
+    {
+      "turn": 9,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 1,
+      "G_tokens": 2802,
+      "J_calls": 1,
+      "J_tokens": 152,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.04,
+      "t_start": 1789401183.6613,
+      "t_end": 1789401183.7033,
+      "window": [
+        0.694,
+        0.736
+      ]
+    },
+    {
+      "turn": 10,
+      "family": "false_claim_mech",
+      "want": "pass",
+      "mech": true,
+      "G_calls": 1,
+      "G_tokens": 2938,
+      "J_calls": 1,
+      "J_tokens": 159,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.09,
+      "t_start": 1789401183.7033,
+      "t_end": 1789401183.7937,
+      "window": [
+        0.736,
+        0.826
+      ]
+    },
+    {
+      "turn": 11,
+      "family": "false_claim_band",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 1,
+      "G_tokens": 3116,
+      "J_calls": 1,
+      "J_tokens": 154,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.05,
+      "t_start": 1789401183.7937,
+      "t_end": 1789401183.8409,
+      "window": [
+        0.826,
+        0.873
+      ]
+    },
+    {
+      "turn": 12,
+      "family": "correction_mech",
+      "want": "pass",
+      "mech": true,
+      "G_calls": 1,
+      "G_tokens": 3293,
+      "J_calls": 0,
+      "J_tokens": 0,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.05,
+      "t_start": 1789401183.8409,
+      "t_end": 1789401183.8949,
+      "window": [
+        0.873,
+        5.928
+      ]
+    }
+  ],
+  "judge_telemetry": [
+    {
+      "source": "remote",
+      "kind": "Neutral",
+      "letter": "",
+      "local_state": "",
+      "prompt_len": 0,
+      "ms": 0,
+      "tokens": 0,
+      "msg_head": "把构建命令写成一行。"
+    },
+    {
+      "source": "remote",
+      "kind": "Adopt",
+      "letter": "",
+      "local_state": "",
+      "prompt_len": 0,
+      "ms": 0,
+      "tokens": 0,
+      "msg_head": "谢谢，收到。"
+    },
+    {
+      "source": "remote",
+      "kind": "Adopt",
+      "letter": "",
+      "local_state": "",
+      "prompt_len": 0,
+      "ms": 0,
+      "tokens": 0,
+      "msg_head": "好的，明白。"
+    },
+    {
+      "source": "remote_fallback",
+      "kind": "Neutral",
+      "letter": "桩应答: 收到, 已完成该步。",
+      "local_state": "remote_fallback:failed_or_empty",
+      "prompt_len": 284,
+      "ms": 43,
+      "tokens": 149,
+      "msg_head": "嗯嗯，知道了。"
+    },
+    {
+      "source": "remote_fallback",
+      "kind": "Neutral",
+      "letter": "桩应答: 收到, 已完成该步。",
+      "local_state": "remote_fallback:failed_or_empty",
+      "prompt_len": 283,
+      "ms": 42,
+      "tokens": 148,
+      "msg_head": "明白，多谢。"
+    },
+    {
+      "source": "remote_fallback",
+      "kind": "Neutral",
+      "letter": "桩应答: 收到, 已完成该步。",
+      "local_state": "remote_fallback:failed_or_empty",
+      "prompt_len": 282,
+      "ms": 42,
+      "tokens": 148,
+      "msg_head": "再讲一遍。"
+    },
+    {
+      "source": "remote_fallback",
+      "kind": "Neutral",
+      "letter": "桩应答: 收到, 已完成该步。",
+      "local_state": "remote_fallback:failed_or_empty",
+      "prompt_len": 282,
+      "ms": 41,
+      "tokens": 148,
+      "msg_head": "换个说法。"
+    },
+    {
+      "source": "remote_fallback",
+      "kind": "Neutral",
+      "letter": "桩应答: 收到, 已完成该步。",
+      "local_state": "remote_fallback:failed_or_empty",
+      "prompt_len": 282,
+      "ms": 42,
+      "tokens": 148,
+      "msg_head": "从头再说。"
+    },
+    {
+      "source": "remote_fallback",
+      "kind": "Neutral",
+      "letter": "桩应答: 收到, 已完成该步。",
+      "local_state": "remote_fallback:failed_or_empty",
+      "prompt_len": 297,
+      "ms": 41,
+      "tokens": 155,
+      "msg_head": "你上一条说 3 加 5 等于 9，对"
+    },
+    {
+      "source": "remote_fallback",
+      "kind": "Neutral",
+      "letter": "桩应答: 收到, 已完成该步。",
+      "local_state": "remote_fallback:failed_or_empty",
+      "prompt_len": 287,
+      "ms": 41,
+      "tokens": 150,
+      "msg_head": "你上一条说的数是九。"
+    },
+    {
+      "source": "remote",
+      "kind": "Correct",
+      "letter": "",
+      "local_state": "remote_fallback:failed_or_empty",
+      "prompt_len": 0,
+      "ms": 0,
+      "tokens": 0,
+      "msg_head": "不对，你上一条不准确，请重新确认。"
+    }
+  ],
+  "judge_source_count": {
+    "local": 0,
+    "non_local": 7,
+    "events": 11,
+    "structural_no_request": 4
+  },
+  "judge_remote_fallback_n": 7,
+  "judge_local_state": {
+    "": 3,
+    "remote_fallback": 8
+  },
+  "judge_local_tokens": 0,
+  "judge_local_ms": [],
+  "cross_check_S2": {
+    "stub_J_remote": 7,
+    "telemetry_remote_constructed": 7,
+    "telemetry_structural_no_request": 4,
+    "delta": 0
+  },
+  "repro_archive_S1": [
+    {
+      "archive": "A-p8-a1",
+      "recomputed": [
+        6,
+        0
+      ],
+      "skip": "该档案未登记 G/J 计数(旧版 verdict)"
+    },
+    {
+      "archive": "B-p8-b1",
+      "recomputed": [
+        2,
+        7
+      ],
+      "recorded": [
+        2,
+        7
+      ],
+      "match": true
+    },
+    {
+      "archive": "BRJ-p8-k1",
+      "recomputed": [
+        5,
+        6
+      ],
+      "recorded": [
+        5,
+        6
+      ],
+      "match": true
+    },
+    {
+      "archive": "BP-p8-d1",
+      "recomputed": [
+        8,
+        7
+      ],
+      "recorded": [
+        8,
+        7
+      ],
+      "match": true
+    },
+    {
+      "archive": "A-p12-n1",
+      "recomputed": [
+        11,
+        0
+      ],
+      "recorded": [
+        11,
+        0
+      ],
+      "match": true
+    },
+    {
+      "archive": "B-p12-o1",
+      "recomputed": [
+        7,
+        8
+      ],
+      "recorded": [
+        7,
+        8
+      ],
+      "match": true
+    }
+  ],
+  "repro_archive_ok": true,
+  "repro_archive_compared": 5,
+  "gate_records": [
+    {
+      "decided": "true",
+      "verdict": "Pass",
+      "basis": "mechanical:pass→remote",
+      "cache_n": 0,
+      "growth_chars": 0,
+      "gate_prompt_len": 0,
+      "role_seed_chars": 0,
+      "error": ""
+    },
+    {
+      "decided": "false",
+      "verdict": "Pass",
+      "basis": "gate:degraded:failed_or_empty→remote",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 453,
+      "role_seed_chars": 78,
+      "error": "local_failed:LlamaCppException"
+    },
+    {
+      "decided": "false",
+      "verdict": "Pass",
+      "basis": "gate:degraded:failed_or_empty→remote",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 453,
+      "role_seed_chars": 78,
+      "error": "local_failed:LlamaCppException"
+    },
+    {
+      "decided": "false",
+      "verdict": "Pass",
+      "basis": "gate:degraded:failed_or_empty→remote",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 454,
+      "role_seed_chars": 78,
+      "error": "local_failed:LlamaCppException"
+    },
+    {
+      "decided": "false",
+      "verdict": "Pass",
+      "basis": "gate:degraded:failed_or_empty→remote",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 453,
+      "role_seed_chars": 78,
+      "error": "local_failed:LlamaCppException"
+    },
+    {
+      "decided": "false",
+      "verdict": "Pass",
+      "basis": "gate:degraded:failed_or_empty→remote",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 452,
+      "role_seed_chars": 78,
+      "error": "local_failed:LlamaCppException"
+    },
+    {
+      "decided": "false",
+      "verdict": "Pass",
+      "basis": "gate:degraded:failed_or_empty→remote",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 452,
+      "role_seed_chars": 78,
+      "error": "local_failed:LlamaCppException"
+    },
+    {
+      "decided": "false",
+      "verdict": "Pass",
+      "basis": "gate:degraded:failed_or_empty→remote",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 452,
+      "role_seed_chars": 78,
+      "error": "local_failed:LlamaCppException"
+    },
+    {
+      "decided": "true",
+      "verdict": "Pass",
+      "basis": "mechanical:pass→remote",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 452,
+      "role_seed_chars": 78,
+      "error": ""
+    },
+    {
+      "decided": "false",
+      "verdict": "Pass",
+      "basis": "gate:degraded:failed_or_empty→remote",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 457,
+      "role_seed_chars": 78,
+      "error": "local_failed:LlamaCppException"
+    },
+    {
+      "decided": "true",
+      "verdict": "Pass",
+      "basis": "mechanical:pass→remote",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 457,
+      "role_seed_chars": 78,
+      "error": ""
+    }
+  ],
+  "r1_records": [
+    {
+      "decided": "false",
+      "verdict": "Pass",
+      "basis": "gate:degraded:failed_or_empty→remote",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 453,
+      "role_seed_chars": 78,
+      "error": "local_failed:LlamaCppException"
+    },
+    {
+      "decided": "false",
+      "verdict": "Pass",
+      "basis": "gate:degraded:failed_or_empty→remote",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 453,
+      "role_seed_chars": 78,
+      "error": "local_failed:LlamaCppException"
+    },
+    {
+      "decided": "false",
+      "verdict": "Pass",
+      "basis": "gate:degraded:failed_or_empty→remote",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 454,
+      "role_seed_chars": 78,
+      "error": "local_failed:LlamaCppException"
+    },
+    {
+      "decided": "false",
+      "verdict": "Pass",
+      "basis": "gate:degraded:failed_or_empty→remote",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 453,
+      "role_seed_chars": 78,
+      "error": "local_failed:LlamaCppException"
+    },
+    {
+      "decided": "false",
+      "verdict": "Pass",
+      "basis": "gate:degraded:failed_or_empty→remote",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 452,
+      "role_seed_chars": 78,
+      "error": "local_failed:LlamaCppException"
+    },
+    {
+      "decided": "false",
+      "verdict": "Pass",
+      "basis": "gate:degraded:failed_or_empty→remote",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 452,
+      "role_seed_chars": 78,
+      "error": "local_failed:LlamaCppException"
+    },
+    {
+      "decided": "false",
+      "verdict": "Pass",
+      "basis": "gate:degraded:failed_or_empty→remote",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 452,
+      "role_seed_chars": 78,
+      "error": "local_failed:LlamaCppException"
+    },
+    {
+      "decided": "false",
+      "verdict": "Pass",
+      "basis": "gate:degraded:failed_or_empty→remote",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 457,
+      "role_seed_chars": 78,
+      "error": "local_failed:LlamaCppException"
+    }
+  ],
+  "gate_r1_n": 8,
+  "gate_mech_n": 3,
+  "r1_skips": 0,
+  "r1_passes": 8,
+  "growth_chars_seen": [
+    70
+  ]
+}

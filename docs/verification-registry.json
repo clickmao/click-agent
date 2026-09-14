@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R433",
+  "updated_round": "R436",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -1058,6 +1058,22 @@
         "src/agent.tests/LocalTurnGateTests.cs",
         "src/agent.tests/TurnGateGrowthMountTests.cs"
       ]
+    },
+    {
+      "id": "r436.e2e-brj-token-kpi",
+      "owner_round": "R436",
+      "level": "L3",
+      "capability": "端到端真假信息判别闭环（R435 新 AOT 二进制，sha16=45c37dd5b88ffcf2）: 门（turn gate）+ 关系判官 J **全本地** 相对「门关/无判官」分母的**用户一轮任务总远端 token** 降幅。网格 task-p12（12 轮；可跳轮 S={2,3,4,5} 为**早簇**）: 分母臂 A = 11 主答调用/27654 tok; 治疗臂 BRJ（门开+J 本地）= 7/19557 tok ⇒ **降幅 29.28%**（目标 30.0% ⇒ 未达标）; 单变量臂 B（门开+J 远端） = 14/20633 tok ⇒ **J 本地化单独贡献 1083 tok = 3.92 pt** 并消除 7 次远端 API 请求（B 的 J 全部远端）。门质量: 假阴性 0 ∧ 假阳性 0, acc 1.0（与 R434 口径同网格可比）。负控臂 BP（设备缺失, model_path 不存在）: 门跳过 0 次（=恒降级）+ 判官 7 次远端兜底 ⇒ 29569 tok = 分母的 -6.92%（**净亏**, 证明收益必须来自本地设备真生效）。p8 网格（可跳轮散布于 S={2,6,8}）: A 8/18481 → BRJ 6/12122 ⇒ 降幅 34.41%（达标）; 该臂判官 5 次本地成功 / 1 次远端兜底（本地率非 100%, 如实记录）。确定性复跑 BRJ#2: Δtoken=7（0.025%）, 逐轮 actual 全同。结论: J 本地成功率自 R434 的 1/7 提升至 **7/7 全本地**, 端到端降幅 27.8%→29.28%（+1.48 pt）; 但 **≥30% 未在 p12 达成**, 与对侧 R437 模型对「早簇」判为最不利位置并预测 J 修复 +1.1…+1.9pt 一致（实测 +1.48 pt 落在该带内）。",
+      "evidence_cmd": "bash eval/rover/r436/run_r436_arms.sh; bash eval/rover/r436/run_r436_arms_p8.sh; python3 eval/rover/r436/channel_marks.py; python3 eval/rover/r436/publish_info.py; python3 eval/rover/r436/compare_r436.py; python3 eval/rover/r436/make_evidence.py",
+      "evidence_path": "eval/rover/r436/README-evidence.md",
+      "negative_control": "① 无设备负控（臂 BP, model_path 缺失）: r1_skips=0 ⇒ 门恒降级, 判官 7 次 remote_fallback ⇒ 总 29569 tok ≥ 分母 27654 tok（-6.92%）⇒ 降幅不可能来自「门没生效」; ② 单变量臂 B vs BRJ 只差 relation_judge ⇒ J 本地化贡献可分离（1083 tok / 3.92 pt）; ③ 分类器复现控制 S1: 用本轮**程序化派生**的 J 标记重跑 R434 五份归档 calls, G/J 计数逐臂与原登记完全一致（第 6 份 A-p8-a1 无 G/J 记录 ⇒ 跳过并计数, 不静默）; ④ 双源交叉 S2: 桩侧 J 远端请求数 == 遥测「真构造请求的远端判决」数（prompt_len>0）, 全臂 delta=0; ⑤ 确定性复跑 BRJ#2: Δtoken=7（0.025%）, 逐轮 actual 全同; ⑥ 形态负控: V0 形态闸裸 IL/脚本伪装配体必拒（rc=131）。",
+      "covers": [
+        "src/agent.roles/CorrectionDetector.cs",
+        "src/agent/IndustrialAgentV2.cs",
+        "src/agent.modelqueue/ModelQueueRouter.cs",
+        "eval/rover/r436/run_arm.sh"
+      ],
+      "note": "承重判据 C4 在 p12 未达（29.28% < 30.0%）⇒ 宣称收窄为「≥30% 依赖可跳轮占比与位置（非早簇）」; R434 登记的「J 本地化未达成(1/7)」在本轮以同网格同器具证伪为 **7/7 本地**（根因 = R435 prompt 形状）。审计注意: 远端读数来自桩(prompt_tokens_est), 非真实计费; 本地 r1 token（判官 1301 tok）不计入 API token。"
     }
   ],
   "aot_check_policy": "release_tag_only",

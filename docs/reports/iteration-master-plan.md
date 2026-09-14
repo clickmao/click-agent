@@ -308,3 +308,10 @@ python3 eval/run_round.py <新轮号> "revert-verify <原commit>" --quick   # �
 2. 数字类内容（用例数、占比、频率）→ 每 5 批审计时刷新；
 3. 与主报告冲突时：**方法以本文档为准，状态以主报告 §7 为准**；
 4. 本文档也遵守记忆分层纪律：不记轮次细节，只记方法与规则。
+
+### R436（已完成）端到端 BRJ 网格: 承重 token 降幅
+- 二进制 sha16 `45c37dd5b88ffcf2`（NativeAOT, IL 警告 0, V0 形态闸 True）
+- p12: A 27654 tok → BRJ 19557 tok = **29.28%**（目标 30.0% ⇒ 未达, 差 0.72 pt）; p8: A 18481 → BRJ 12122 = **34.41%**
+- J 本地化: 远端请求 7 次 → 0（本地 7/7）; 单独贡献 3.92 pt
+- 门质量: 假阴性 0 / 假阳性 0（acc 1.0）; 负控 BP 净亏 -6.92%
+- 证据: `eval/rover/r436/README-evidence.md`｜判据: `docs/plans/v0.57.0-r436-e2e-brj-token-kpi.md`
