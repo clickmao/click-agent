@@ -1,0 +1,83 @@
+{
+  "plan_item": "R371-D2 发布产物自包含 config（仓库外 cwd 真机验收）",
+  "verdict": "pass",
+  "abstain_reason": null,
+  "assertions": [
+    {
+      "id": "A1",
+      "desc": "发布产物自带 config/base/models.yaml（静态）",
+      "ok": true,
+      "detail": "path=/tmp/pub_d2/config/base/models.yaml exists=True"
+    },
+    {
+      "id": "A2",
+      "desc": "自带 config 与仓库 config/base 逐字节相同（非陈旧副本）",
+      "ok": true,
+      "detail": "{\"pub\": \"cbaf999a16588211fdf2941caed8e2fd2640ac88bd55740d02c7d8de241185a2\", \"repo\": \"cbaf999a16588211fdf2941caed8e2fd2640ac88bd55740d02c7d8de241185a2\", \"identical\": true}"
+    },
+    {
+      "id": "A3",
+      "desc": "探针环境洁净：仓库外 cwd 的祖先链中无 config 可被上溯命中（排除行为被 cwd 解释）",
+      "ok": true,
+      "detail": "ancestor_hit=False"
+    },
+    {
+      "id": "A4",
+      "desc": "治疗臂（自包含产物，仓库外 cwd）输出不含『模型目录为空』",
+      "ok": true,
+      "detail": "treatment={'rc': 0, 'size': 849, 'empty_catalog_hit': 0}"
+    },
+    {
+      "id": "A5",
+      "desc": "负控 N1（仅移走产物自带 config，其余不变）必须复现『模型目录为空』",
+      "ok": true,
+      "detail": "neg_remove={'rc': 0, 'size': 830, 'empty_catalog_hit': 1}"
+    },
+    {
+      "id": "A6",
+      "desc": "负控 N2（D2 修复前的发布产物）必须复现『模型目录为空』",
+      "ok": true,
+      "detail": "neg_prefix={'rc': 0, 'size': 829, 'empty_catalog_hit': 1}"
+    }
+  ],
+  "assertions_pass": 6,
+  "assertions_total": 6,
+  "failed": [],
+  "readings": {
+    "cases": {
+      "treatment": {
+        "rc": 0,
+        "size": 849,
+        "empty_catalog_hit": 0
+      },
+      "neg_remove": {
+        "rc": 0,
+        "size": 830,
+        "empty_catalog_hit": 1
+      },
+      "neg_prefix": {
+        "rc": 0,
+        "size": 829,
+        "empty_catalog_hit": 1
+      }
+    },
+    "ancestor_config_hit": false,
+    "cfg_sha": {
+      "models.yaml": {
+        "pub": "cbaf999a16588211fdf2941caed8e2fd2640ac88bd55740d02c7d8de241185a2",
+        "repo": "cbaf999a16588211fdf2941caed8e2fd2640ac88bd55740d02c7d8de241185a2",
+        "identical": true
+      },
+      "core.yaml": {
+        "pub": "671d95b6290deed89561270477e26ac16d9d05a7503173e99778c27db7ed5d70",
+        "repo": "671d95b6290deed89561270477e26ac16d9d05a7503173e99778c27db7ed5d70",
+        "identical": true
+      },
+      "skill.yaml": {
+        "pub": "e814a553b15b9676e3bdb29facf42d7a83291c555b7844f0f987c5039d522aed",
+        "repo": "e814a553b15b9676e3bdb29facf42d7a83291c555b7844f0f987c5039d522aed",
+        "identical": true
+      }
+    }
+  }
+}

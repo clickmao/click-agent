@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R415",
+  "updated_round": "R416",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -759,6 +759,21 @@
         "docs/plans/v0.37.0-r415-gate-input-chain-pin.md"
       ],
       "owner_round": "R415"
+    },
+    {
+      "id": "r416.release-selfcontained-config",
+      "level": "L4",
+      "evidence_cmd": "bash eval/rover/r371d2/run_d2_acceptance.sh && python3 eval/rover/r371d2/verdict.py",
+      "evidence_path": "eval/rover/r371d2/verdict-r371d2.json",
+      "negative_control": "① **撤销修复负控（等价缺陷注入）**: 把产物自带 config/ 移走、其余完全不变 ⇒ 同一命令同一仓库外 cwd 必须复现生产症状「模型目录为空」（实测 EMPTY_CATALOG_HIT=1，与治疗臂 0 成对 ⇒ 断言非恒过）；② **修复前产物负控**: D2 修复前的发布物在同 cwd 必现同症状（实测命中 1），即缺陷可被该探针逮住；③ **探针环境自证**: 仓库外 cwd 及其祖先链不得存在 config/（否则「自包含」可能是误从祖先读到）——裁决前静态校验，实测 /tmp/d2-cwd、/tmp、/ 三级均无；④ **越过错位点的正证**（防「没报错=没跑到」）: 治疗臂必须打印选模之后的证据 —— 实测 stdout 有「prompt 构建完成: ~3385 tokens」且错误后移到「环境变量 AGENTFRAMEWORK_KEYS_DEEPSEEK 未设置 (模型 deepseek-flash 的 API Key 来源)」⇒ 配置确被解析、模型目录非空、已选中模型；⑤ **诚实边界**: 三臂退出码均为 0 ⇒ 判据只认 stdout 外部真值，不认退出码（退出码不体现成败）。",
+      "capability": "发布产物自包含 config（R371-D2 收口）：AOT 发布物在**仓库外 cwd** 运行时自带 config/{base,modules,env}（csproj publish 复制规则，commit f43711a）并据此完成配置解析与选模，不再出现「模型目录为空: 请在 config/base/models.yaml 配置至少一个模型」。真机判据（预注册，合取）: 治疗臂 /tmp/pub_d2/agenthost（cwd=/tmp/d2-cwd，env -u AGENTFRAMEWORK_CONFIG）stdout 不含该症状且出现选模之后的证据；两个负控臂必须复现该症状；另比对产物 config 与仓库 config/base 的 sha256 逐字节相同（非陈旧副本）。裁决器三态（pass/breach/abstain，臂缺失走弃权）。**口径澄清（对齐 aot_check_policy=release_tag_only）**：本行等级依据是**运行期行为 + 两路负控**（配置能否被解析/选模是否越过错位点），**不是** AOT 编译校验——发布/0 IL 警告/体积类结论不作本行等级依据，AOT 产物此处只作「承载运行期证据的载体」。",
+      "covers": [
+        "src/agent.host/agent.host.csproj",
+        "config/base/models.yaml",
+        "eval/rover/r371d2/run_d2_acceptance.sh",
+        "eval/rover/r371d2/verdict.py"
+      ],
+      "owner_round": "R416"
     }
   ],
   "aot_check_policy": "release_tag_only",
