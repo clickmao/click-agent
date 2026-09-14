@@ -1,0 +1,80 @@
+{
+ "p8": {
+  "A_G": 18481,
+  "A_J": 0,
+  "A_calls": 8,
+  "BRJ_G": 11321,
+  "BRJ_J": 155,
+  "BRJ_calls": 5,
+  "drop_strict_pct": 37.9,
+  "drop_G_pct": 38.74,
+  "fn": 0,
+  "fp": 0,
+  "acc": 1.0,
+  "r1_skips": 3,
+  "r1_passes": 4,
+  "judge_local": 5,
+  "judge_fallback": 1,
+  "consumed": [
+   4
+  ],
+  "pred_pre_anchor": 39.2769,
+  "pred_anchor": 39.2769,
+  "dev_vs_anchor_pt": -1.38,
+  "dev_vs_pre_pt": -1.38
+ },
+ "V20": {
+  "A_G": 61210,
+  "A_J": 0,
+  "A_calls": 25,
+  "BRJ_G": 33168,
+  "BRJ_J": 310,
+  "BRJ_calls": 15,
+  "drop_strict_pct": 45.31,
+  "drop_G_pct": 45.81,
+  "fn": 0,
+  "fp": 0,
+  "acc": 1.0,
+  "r1_skips": 7,
+  "r1_passes": 10,
+  "judge_local": 11,
+  "judge_fallback": 2,
+  "consumed": [
+   4,
+   16
+  ],
+  "pred_pre_anchor": 42.3672,
+  "pred_anchor": 45.367,
+  "dev_vs_anchor_pt": -0.06,
+  "dev_vs_pre_pt": 2.94
+ },
+ "A_repro": {
+  "p8_r439": 18481,
+  "p8_r436": 18481,
+  "p12_r438": 27654,
+  "V20_r439": 61210
+ },
+ "A_invariance_p8": true,
+ "A_invariance_p12_rerun": "n/a(本轮未复跑 A-p12)",
+ "baselines": {
+  "p12_r438_drop_pct": 37.37,
+  "p12_r436_drop_pct": 29.28,
+  "p8_r436_drop_G_pct": 35.25,
+  "p8_r436_drop_strict_pct": 34.41,
+  "p8_r436_drop_J_inclusive_pct": 34.41
+ },
+ "disclosure": {
+  "anchor_file_clobbered": "02:01 首次 anchor 预测输出被 `cp predict-r439.json predict-r439-anchor.json` 覆盖 ⇒ 现文件为 02:13:42 重生成（输入仅 A 臂实测 + 跑前标定模型 ⇒ 可复现同值 45.367%），但其时序证据弱化；主判据用 01:51:44 的 pre 预测。",
+  "estimator": "prompt/completion est = 字符数//2（桩 stub_openai.py 口径）⇒ 降幅为估算口径，非 provider 计费口径。",
+  "A_denominator": "V20 的 A 分母为首次实测（无历史对照）；p8 A 分母与 R436 逐位相同。"
+ },
+ "AC": {
+  "AC1_chain_ok": true,
+  "AC2_drop_ge30": true,
+  "AC3_gate_quality": true,
+  "AC4_A_invariance": true,
+  "AC5_pred_within_3pt": true,
+  "AC5_basis": "以 01:51:44 落盘的**跑前**预注册预测为准（锚定版时序证据弱化，见 disclosure）"
+ },
+ "ts": "2026-09-15T02:14:28+0800"
+}

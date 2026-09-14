@@ -1,0 +1,712 @@
+{
+ "facts": {
+  "source": "src/agent.modelqueue/LocalGenerationPort.cs",
+  "QuestionSignals": [
+   "什么",
+   "怎么",
+   "如何",
+   "为什么",
+   "为何",
+   "哪个",
+   "哪一",
+   "谁",
+   "何时",
+   "多少",
+   "是否",
+   "能不能",
+   "可以吗",
+   "行吗",
+   "吗",
+   "呢",
+   "请问",
+   "请教",
+   "解释",
+   "说明",
+   "介绍",
+   "对比",
+   "区别",
+   "分析"
+  ],
+  "RequestSignals": [
+   "请",
+   "帮我",
+   "帮忙",
+   "给我",
+   "我要",
+   "需要",
+   "另外",
+   "还有",
+   "补充",
+   "新增",
+   "加",
+   "删",
+   "改",
+   "修",
+   "写",
+   "生成",
+   "创建",
+   "新建",
+   "执行",
+   "运行",
+   "跑",
+   "测试",
+   "部署",
+   "提交",
+   "回滚",
+   "优化",
+   "重构",
+   "继续做",
+   "下一步",
+   "现在",
+   "把"
+  ],
+  "CorrectionSignals": [
+   "不对",
+   "错了",
+   "不正确",
+   "不准确",
+   "有问题",
+   "漏",
+   "缺",
+   "重新",
+   "再确认",
+   "纠正",
+   "不是",
+   "没对",
+   "失败",
+   "报错",
+   "异常",
+   "崩溃",
+   "不生效"
+  ],
+  "AckFamilyChars": "好嗯行明白了知道谢收到多辛苦可以先就的",
+  "SubstantiveLengthThreshold": 24,
+  "AckFamilyChars_len": 19
+ },
+ "grids": {
+  "p8": [
+   {
+    "turn": 1,
+    "text": "把构建命令写成一行。",
+    "mechanical_pass": true,
+    "why": "request:写",
+    "ack_family": false,
+    "class": "pass:mechanical"
+   },
+   {
+    "turn": 2,
+    "text": "谢谢，收到。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": true,
+    "class": "skip-eligible(ack):r1决定"
+   },
+   {
+    "turn": 3,
+    "text": "再讲一遍。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": false,
+    "class": "pass:residual-band(结构上不可能Skip)"
+   },
+   {
+    "turn": 4,
+    "text": "好的，明白。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": true,
+    "class": "skip-eligible(ack):r1决定"
+   },
+   {
+    "turn": 5,
+    "text": "讲细一点。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": false,
+    "class": "pass:residual-band(结构上不可能Skip)"
+   },
+   {
+    "turn": 6,
+    "text": "嗯嗯，知道了。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": true,
+    "class": "skip-eligible(ack):r1决定"
+   },
+   {
+    "turn": 7,
+    "text": "换个说法。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": false,
+    "class": "pass:residual-band(结构上不可能Skip)"
+   },
+   {
+    "turn": 8,
+    "text": "明白，多谢。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": true,
+    "class": "skip-eligible(ack):r1决定"
+   },
+   {
+    "turn": 9,
+    "text": "从头再说。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": false,
+    "class": "pass:residual-band(结构上不可能Skip)"
+   }
+  ],
+  "p12": [
+   {
+    "turn": 1,
+    "text": "把构建命令写成一行。",
+    "mechanical_pass": true,
+    "why": "request:写",
+    "ack_family": false,
+    "class": "pass:mechanical"
+   },
+   {
+    "turn": 2,
+    "text": "谢谢，收到。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": true,
+    "class": "skip-eligible(ack):r1决定"
+   },
+   {
+    "turn": 3,
+    "text": "好的，明白。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": true,
+    "class": "skip-eligible(ack):r1决定"
+   },
+   {
+    "turn": 4,
+    "text": "嗯嗯，知道了。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": true,
+    "class": "skip-eligible(ack):r1决定"
+   },
+   {
+    "turn": 5,
+    "text": "明白，多谢。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": true,
+    "class": "skip-eligible(ack):r1决定"
+   },
+   {
+    "turn": 6,
+    "text": "再讲一遍。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": false,
+    "class": "pass:residual-band(结构上不可能Skip)"
+   },
+   {
+    "turn": 7,
+    "text": "讲细一点。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": false,
+    "class": "pass:residual-band(结构上不可能Skip)"
+   },
+   {
+    "turn": 8,
+    "text": "换个说法。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": false,
+    "class": "pass:residual-band(结构上不可能Skip)"
+   },
+   {
+    "turn": 9,
+    "text": "从头再说。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": false,
+    "class": "pass:residual-band(结构上不可能Skip)"
+   },
+   {
+    "turn": 10,
+    "text": "你上一条说 3 加 5 等于 9，对吧？",
+    "mechanical_pass": true,
+    "why": "qmark",
+    "ack_family": false,
+    "class": "pass:mechanical"
+   },
+   {
+    "turn": 11,
+    "text": "你上一条说的数是九。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": false,
+    "class": "pass:residual-band(结构上不可能Skip)"
+   },
+   {
+    "turn": 12,
+    "text": "不对，你上一条不准确，请重新确认。",
+    "mechanical_pass": true,
+    "why": "request:请",
+    "ack_family": false,
+    "class": "pass:mechanical"
+   }
+  ],
+  "V20": [
+   {
+    "turn": 1,
+    "text": "用 python 写个贪吃蛇游戏。",
+    "mechanical_pass": true,
+    "why": "request:写",
+    "ack_family": false,
+    "class": "pass:mechanical"
+   },
+   {
+    "turn": 2,
+    "text": "谢谢，收到。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": true,
+    "class": "skip-eligible(ack):r1决定"
+   },
+   {
+    "turn": 3,
+    "text": "再讲一遍。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": false,
+    "class": "pass:residual-band(结构上不可能Skip)"
+   },
+   {
+    "turn": 4,
+    "text": "讲细一点。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": false,
+    "class": "pass:residual-band(结构上不可能Skip)"
+   },
+   {
+    "turn": 5,
+    "text": "好的，明白。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": true,
+    "class": "skip-eligible(ack):r1决定"
+   },
+   {
+    "turn": 6,
+    "text": "换个说法。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": false,
+    "class": "pass:residual-band(结构上不可能Skip)"
+   },
+   {
+    "turn": 7,
+    "text": "从头再说。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": false,
+    "class": "pass:residual-band(结构上不可能Skip)"
+   },
+   {
+    "turn": 8,
+    "text": "嗯嗯，知道了。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": true,
+    "class": "skip-eligible(ack):r1决定"
+   },
+   {
+    "turn": 9,
+    "text": "展开说说。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": false,
+    "class": "pass:residual-band(结构上不可能Skip)"
+   },
+   {
+    "turn": 10,
+    "text": "换个例子。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": false,
+    "class": "pass:residual-band(结构上不可能Skip)"
+   },
+   {
+    "turn": 11,
+    "text": "明白，多谢。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": true,
+    "class": "skip-eligible(ack):r1决定"
+   },
+   {
+    "turn": 12,
+    "text": "说细一些。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": false,
+    "class": "pass:residual-band(结构上不可能Skip)"
+   },
+   {
+    "turn": 13,
+    "text": "重讲一次。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": false,
+    "class": "pass:residual-band(结构上不可能Skip)"
+   },
+   {
+    "turn": 14,
+    "text": "好的，收到。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": true,
+    "class": "skip-eligible(ack):r1决定"
+   },
+   {
+    "turn": 15,
+    "text": "再展开点。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": false,
+    "class": "pass:residual-band(结构上不可能Skip)"
+   },
+   {
+    "turn": 16,
+    "text": "讲具体些。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": false,
+    "class": "pass:residual-band(结构上不可能Skip)"
+   },
+   {
+    "turn": 17,
+    "text": "知道了，谢谢。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": true,
+    "class": "skip-eligible(ack):r1决定"
+   },
+   {
+    "turn": 18,
+    "text": "换个讲法。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": false,
+    "class": "pass:residual-band(结构上不可能Skip)"
+   },
+   {
+    "turn": 19,
+    "text": "从头细讲。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": false,
+    "class": "pass:residual-band(结构上不可能Skip)"
+   },
+   {
+    "turn": 20,
+    "text": "行，可以，明白。",
+    "mechanical_pass": false,
+    "why": "residual-band",
+    "ack_family": true,
+    "class": "skip-eligible(ack):r1决定"
+   }
+  ]
+ },
+ "selftest": {
+  "p8": {
+   "pred": [
+    "pass",
+    "skip-or-pass",
+    "pass",
+    "skip-or-pass",
+    "pass",
+    "skip-or-pass",
+    "pass",
+    "skip-or-pass",
+    "pass"
+   ],
+   "actual": [
+    "pass",
+    "skip",
+    "pass",
+    "consumed",
+    "pass",
+    "skip",
+    "pass",
+    "skip",
+    "pass"
+   ],
+   "want": [
+    "pass",
+    "skip",
+    "pass",
+    "skip",
+    "pass",
+    "skip",
+    "pass",
+    "skip",
+    "pass"
+   ],
+   "family": [
+    "lead",
+    "ack",
+    "terse_new",
+    "ack",
+    "terse_new",
+    "ack",
+    "terse_new",
+    "ack",
+    "terse_new"
+   ],
+   "pred_mech": [
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "verdict_mech": [
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "mech_match": true,
+   "ack_family_match": [
+    [
+     false,
+     "lead"
+    ],
+    [
+     true,
+     "ack"
+    ],
+    [
+     false,
+     "terse_new"
+    ],
+    [
+     true,
+     "ack"
+    ],
+    [
+     false,
+     "terse_new"
+    ],
+    [
+     true,
+     "ack"
+    ],
+    [
+     false,
+     "terse_new"
+    ],
+    [
+     true,
+     "ack"
+    ],
+    [
+     false,
+     "terse_new"
+    ]
+   ],
+   "violations_skip_without_ack": [],
+   "n_violations": 0,
+   "n_measured": 9,
+   "skips": 3,
+   "want_mismatch": [
+    4
+   ]
+  },
+  "p12": {
+   "pred": [
+    "pass",
+    "skip-or-pass",
+    "skip-or-pass",
+    "skip-or-pass",
+    "skip-or-pass",
+    "pass",
+    "pass",
+    "pass",
+    "pass",
+    "pass",
+    "pass",
+    "pass"
+   ],
+   "actual": [
+    "pass",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "pass",
+    "consumed",
+    "pass",
+    "pass",
+    "pass",
+    "pass",
+    "pass"
+   ],
+   "want": [
+    "pass",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "pass",
+    "pass",
+    "pass",
+    "pass",
+    "pass",
+    "pass",
+    "pass"
+   ],
+   "family": [
+    "lead",
+    "ack",
+    "ack",
+    "ack",
+    "ack",
+    "terse_new",
+    "terse_new",
+    "terse_new",
+    "terse_new",
+    "false_claim_mech",
+    "false_claim_band",
+    "correction_mech"
+   ],
+   "pred_mech": [
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    true,
+    false,
+    true
+   ],
+   "verdict_mech": [
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    true,
+    false,
+    true
+   ],
+   "mech_match": true,
+   "ack_family_match": [
+    [
+     false,
+     "lead"
+    ],
+    [
+     true,
+     "ack"
+    ],
+    [
+     true,
+     "ack"
+    ],
+    [
+     true,
+     "ack"
+    ],
+    [
+     true,
+     "ack"
+    ],
+    [
+     false,
+     "terse_new"
+    ],
+    [
+     false,
+     "terse_new"
+    ],
+    [
+     false,
+     "terse_new"
+    ],
+    [
+     false,
+     "terse_new"
+    ],
+    [
+     false,
+     "false_claim_mech"
+    ],
+    [
+     false,
+     "false_claim_band"
+    ],
+    [
+     false,
+     "correction_mech"
+    ]
+   ],
+   "violations_skip_without_ack": [],
+   "n_violations": 0,
+   "n_measured": 12,
+   "skips": 4,
+   "want_mismatch": [
+    7
+   ]
+  }
+ },
+ "V20_summary": {
+  "skips_possible": [
+   2,
+   5,
+   8,
+   11,
+   14,
+   17,
+   20
+  ],
+  "structurally_never_skip": [
+   1,
+   3,
+   4,
+   6,
+   7,
+   9,
+   10,
+   12,
+   13,
+   15,
+   16,
+   18,
+   19
+  ],
+  "skip_eligible_ratio": 0.35,
+  "mechanical_pass_turns": [
+   1
+  ]
+ }
+}
