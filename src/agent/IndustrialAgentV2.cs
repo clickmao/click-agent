@@ -1457,12 +1457,15 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             LLMResponse llmResponse;
             var gateOutcome = agent.modelqueue.TurnGateOutcome.Undecided("gate_disabled");
             string? gateRoleSeed = null;   // R430: 门判实际使用的角色种子 (仅「询问 r1」的分支才非空)
+            string? gateGrowthBlock = null; // R431: 门判实际挂载的 role 额外数据 (成长经历; 空=未挂载)
             if (System.Threading.Interlocked.Exchange(ref _gateConfigEmitted, 1) == 0)
             {
                 agent.config.AgentTelemetry.Emit("local_turn_gate_config", "IndustrialAgentV2",
                     ("router_present", (_modelRouter is not null).ToString()),
                     ("turn_gate_enabled", (_modelRouter?.TurnGateEnabled ?? false).ToString()),
                     ("local_channel_ready", (_modelRouter?.LocalChannelReady ?? false).ToString()),
+                    // R431: 挂载前置条件 (域 = 0 ⇒ 成长块恒空 ⇒ 挂载与不挂载逐位同一; -1 = 无 role/未建账本)
+                    ("role_growth_domains", (GrowthLedger?.DomainCount ?? -1).ToString()),
                     ("role", ActiveRole?.Id ?? "(null)"));
             }
             if (_modelRouter is { TurnGateEnabled: true } && ActiveRole is not null)
@@ -1483,8 +1486,13 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 else
                 {
                     gateRoleSeed = ActiveRole.Id + "|" + agent.modelqueue.TurnGateJudge.Clip(ActiveRole.ProfileSeed, 80);
+                    // R431: role 额外数据 (成长经历) 有界挂载 —— 管道早就支持 (BuildPrompt 内二次 clip 300),
+                    // 但调用点一直传 null; R431 前置机检: 真机臂 role 的 growth 域 = 0 ⇒ 挂载与不挂载在
+                    // 当前真实负载上逐位同一 (所以此前的「已挂载」是不可能被读数区分的空操作)。
+                    // 有界性: RenderForPrompt ≤400 → BuildPrompt clip ≤300 ⇒ 不可能挤爆生成预算 (R413 教训)。
+                    gateGrowthBlock = GrowthLedger?.RenderForPrompt();
                     gateOutcome = await _modelRouter.JudgeTurnAsync(
-                        message.Content, gateRoleSeed, null, ct).ConfigureAwait(false);
+                        message.Content, gateRoleSeed, gateGrowthBlock, ct).ConfigureAwait(false);
                 }
                 agent.config.AgentTelemetry.Emit("local_turn_gate", "IndustrialAgentV2",
                     ("decided", gateOutcome.Decided ? "true" : "false"),
@@ -1501,6 +1509,12 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     ("request_sha", _modelRouter.TurnGate.LastRequestSha ?? ""),
                     ("req_fields", _modelRouter.TurnGate.LastRequestFields ?? ""),
                     ("role_seed_sha", _modelRouter.TurnGate.LastRoleSeedSha ?? ""),
+                    // R431: 挂载形状 (取自实发 prompt, 非二次重建) — 「role 额外数据挂没挂」必须可机检:
+                    // 未挂载臂 growth_chars == 0 ∧ prompt_len == 冻结基线, 挂载臂 growth_chars > 0。
+                    ("gate_prompt_len", _modelRouter.TurnGate.LastPromptChars.ToString()),
+                    ("role_seed_chars", _modelRouter.TurnGate.LastRoleSeedChars.ToString()),
+                    ("growth_chars", _modelRouter.TurnGate.LastGrowthChars.ToString()),
+                    ("growth_lines", _modelRouter.TurnGate.LastGrowthLines.ToString()),
                     ("role", ActiveRole.Id));
             }
 

@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R430",
+  "updated_round": "R431",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -992,6 +992,23 @@
         "src/agent/IndustrialAgentV2.cs",
         "src/agent.tests/LocalServerParallelTests.cs",
         "src/agent.tests/DecisionPromptFingerprintTests.cs"
+      ]
+    },
+    {
+      "id": "r431.gate-role-growth-mount",
+      "owner_round": "R431",
+      "level": "L3",
+      "capability": "r1 门判**挂载 role 额外数据（成长经历）**并使其可机检。① 前置机检（改前）: 真机角色 `skeptic.rbin` 容器 (ARBL+AES-GCM+gzip) 解出键 = ['id','name','profile','tokens'] —— **无 growth 键** ⇒ 域=0 ⇒ RenderForPrompt 恒空; 调用点 `JudgeTurnAsync(content, roleSeed, null, ct)` 第三参恒 null ⇒ 挂载在真实负载上是**空操作**（管道早已支持: BuildPrompt 内 Clip(growthBlock,300)）。② 改动: 挂载点传 `GrowthLedger?.RenderForPrompt()`，prompt **只构造一次**且形状读数取自实发文本（二次重建会漂移），遥测新增 `gate_prompt_len/role_seed_chars/growth_chars/growth_lines`，配置行新增 `role_growth_domains`。③ 有界: RenderForPrompt ≤400 字符 ∧ Clip 300 ⇒ 不可能挤爆生成预算（R413 截断教训）。④ 真机成对臂（同二进制 ac62a739 / 同网格 k8r / 同消息族 ack，唯一变量 = 角色是否携带成长域）: 挂载臂 growth_chars=70(3 行) 且 prompt_len 恒 426 = 基线 355+70+1；对照臂（真角色 0 域）第 1 次门判 growth_chars=0 / prompt_len=355 **恰为基线**，第 2 次起 32(1 行)/388 —— 由链自产账本驱动（`IndustrialAgentV2.cs:1684 GrowthLedger.Record(verdict.Kind, domainKey)`）⇒ 新接线确实消费了链**自产**的 role 额外数据。⑤ 无劣化: 两臂判定 Skip×4 与 R430 基线一致，远端调用 1，门判全部闭合（decided=true，无截断标记）。",
+      "evidence_cmd": "bash eval/rover/r431/run_arm.sh C k8r 47930 47932 /home/agentuser/AgentFramework/eval/rover/r431/fixture/skeptic-growth.rbin; bash eval/rover/r431/run_arm.sh C k8r 47930 47932 /home/agentuser/AgentFramework/skeptic.rbin; python3 eval/rover/r431/precheck_rbin.py skeptic.rbin data/master.key; python3 eval/rover/r431/frozen_baseline.py --port 47951; python3 eval/rover/r431/make_evidence_r431.py; $HOME/.dotnet/dotnet test src/agent.tests/agentframework.tests.csproj -c Release",
+      "evidence_path": "eval/rover/r431/README-evidence.md; eval/rover/r431/summary-r431.json; eval/rover/r431/prov-C-k8r-{g431,b431}.json; eval/rover/r431/verdict-C-k8r-{g431,b431}.json; docs/plans/v0.52.0-r431-growth-mount.md",
+      "negative_control": "① 单测成对: 挂载臂 sha16 ≠ 未挂载臂 sha16，且未挂载臂**逐位等于冻结基线**（355 字符 / sha16 8749b0a15f102f04；该指纹由 python 独立重建 BuildPrompt 后交引擎 /apply-template 渲染复算 = R430 遥测 prompt_sha 850f6cb17181a38f，两套独立实现同指纹 ⇒ 且反证 R430 时 growth 确为 null）；② 真机对照臂 = 真实 `skeptic.rbin`（启动 0 成长域）: 第 1 次门判 growth_chars=0、prompt_len=355（与基线同长）；③ V0 形态闸 IL 负控: IL apphost 在 `env -i` 下 rc=131 拒绝执行 ⇒ 形态判别力存在（被测为 native_ok=True）。",
+      "covers": [
+        "src/agent/IndustrialAgentV2.cs:gate-growth-mount",
+        "src/agent/IndustrialAgentV2.cs:gate-telemetry-shape",
+        "src/agent.modelqueue/ModelQueueRouter.cs:RecordPromptShape",
+        "src/agent.modelqueue/LocalGenerationPort.cs:TurnGateCounters",
+        "src/agent.roles/RoleGrowthLedger.cs:DomainCount",
+        "src/agent.tests/TurnGateGrowthMountTests.cs:9"
       ]
     }
   ],

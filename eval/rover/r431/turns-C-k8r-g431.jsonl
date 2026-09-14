@@ -1,0 +1,409 @@
+{
+  "stats": {
+    "turns": 9,
+    "ok": 9,
+    "events": 27,
+    "asks": 8,
+    "errors": []
+  },
+  "turns": [
+    {
+      "turn": 1,
+      "text": "帮我总结一下刚才的结论。",
+      "reply": "桩应答: 收到, 已完成该步。",
+      "ok": true,
+      "events": [
+        {
+          "event": "plan.created",
+          "keys": [
+            "hybrid",
+            "local",
+            "nodes",
+            "nodes_total",
+            "plan_id",
+            "remote"
+          ]
+        },
+        {
+          "event": "plan.node",
+          "keys": [
+            "artifact",
+            "detail",
+            "elapsed_ms",
+            "executor",
+            "intent",
+            "location"
+          ]
+        },
+        {
+          "event": "plan.finished",
+          "keys": [
+            "failed",
+            "local_first",
+            "local_first_ms",
+            "local_first_nodes",
+            "local_first_us",
+            "local_ok"
+          ]
+        }
+      ],
+      "secs": 0.33,
+      "t_start": 1789388446.8172,
+      "success": true,
+      "error": null,
+      "t_end": 1789388447.1517
+    },
+    {
+      "turn": 2,
+      "text": "好，按这个来。",
+      "reply": "收到，继续按当前方向推进，本轮不重新规划。",
+      "ok": true,
+      "events": [
+        {
+          "event": "ask",
+          "keys": [
+            "ask_id",
+            "group_size",
+            "purpose",
+            "questions",
+            "service",
+            "timeout_s"
+          ]
+        },
+        {
+          "event": "ask_closed",
+          "keys": [
+            "ask_id",
+            "reason"
+          ]
+        },
+        {
+          "event": "plan.created",
+          "keys": [
+            "hybrid",
+            "local",
+            "nodes",
+            "nodes_total",
+            "plan_id",
+            "remote"
+          ]
+        },
+        {
+          "event": "plan.finished",
+          "keys": [
+            "failed",
+            "local_first",
+            "local_first_ms",
+            "local_first_nodes",
+            "local_first_us",
+            "local_ok"
+          ]
+        }
+      ],
+      "secs": 37.6,
+      "t_start": 1789388447.1518,
+      "success": true,
+      "error": null,
+      "t_end": 1789388484.7546
+    },
+    {
+      "turn": 3,
+      "text": "好，按这个来。",
+      "reply": "🔄 续跑计划 5df48ba3fe2e (答复落到参数槽: 子任务1_指代对象)\n上一轮的问题: 「好，按这个来」中的指代 (这个/它/该文件) 具体指向什么? 请给出确切的文件/数据名。\n- n08d3d71d [remote] Skipped: 远程产物未就绪 (主链尚未生成) ⇒ 只登记不执行\n计划状态: Finished",
+      "ok": true,
+      "events": [
+        {
+          "event": "plan.node",
+          "keys": [
+            "artifact",
+            "detail",
+            "elapsed_ms",
+            "executor",
+            "intent",
+            "location"
+          ]
+        },
+        {
+          "event": "plan.finished",
+          "keys": [
+            "failed",
+            "local_first",
+            "local_first_ms",
+            "local_first_nodes",
+            "local_first_us",
+            "local_ok"
+          ]
+        }
+      ],
+      "secs": 0.06,
+      "t_start": 1789388484.7546,
+      "success": true,
+      "error": null,
+      "t_end": 1789388484.8113
+    },
+    {
+      "turn": 4,
+      "text": "好，按这个来。",
+      "reply": "收到，继续按当前方向推进，本轮不重新规划。",
+      "ok": true,
+      "events": [
+        {
+          "event": "ask",
+          "keys": [
+            "ask_id",
+            "group_size",
+            "purpose",
+            "questions",
+            "service",
+            "timeout_s"
+          ]
+        },
+        {
+          "event": "ask_closed",
+          "keys": [
+            "ask_id",
+            "reason"
+          ]
+        },
+        {
+          "event": "plan.created",
+          "keys": [
+            "hybrid",
+            "local",
+            "nodes",
+            "nodes_total",
+            "plan_id",
+            "remote"
+          ]
+        },
+        {
+          "event": "plan.finished",
+          "keys": [
+            "failed",
+            "local_first",
+            "local_first_ms",
+            "local_first_nodes",
+            "local_first_us",
+            "local_ok"
+          ]
+        }
+      ],
+      "secs": 41.65,
+      "t_start": 1789388484.8114,
+      "success": true,
+      "error": null,
+      "t_end": 1789388526.461
+    },
+    {
+      "turn": 5,
+      "text": "好，按这个来。",
+      "reply": "🔄 续跑计划 7da9524cfcd2 (答复落到参数槽: 子任务1_指代对象)\n上一轮的问题: 「好，按这个来」中的指代 (这个/它/该文件) 具体指向什么? 请给出确切的文件/数据名。\n- nd51095f3 [remote] Skipped: 远程产物未就绪 (主链尚未生成) ⇒ 只登记不执行\n计划状态: Finished",
+      "ok": true,
+      "events": [
+        {
+          "event": "plan.node",
+          "keys": [
+            "artifact",
+            "detail",
+            "elapsed_ms",
+            "executor",
+            "intent",
+            "location"
+          ]
+        },
+        {
+          "event": "plan.finished",
+          "keys": [
+            "failed",
+            "local_first",
+            "local_first_ms",
+            "local_first_nodes",
+            "local_first_us",
+            "local_ok"
+          ]
+        }
+      ],
+      "secs": 0.04,
+      "t_start": 1789388526.461,
+      "success": true,
+      "error": null,
+      "t_end": 1789388526.5034
+    },
+    {
+      "turn": 6,
+      "text": "好，按这个来。",
+      "reply": "收到，继续按当前方向推进，本轮不重新规划。",
+      "ok": true,
+      "events": [
+        {
+          "event": "ask",
+          "keys": [
+            "ask_id",
+            "group_size",
+            "purpose",
+            "questions",
+            "service",
+            "timeout_s"
+          ]
+        },
+        {
+          "event": "ask_closed",
+          "keys": [
+            "ask_id",
+            "reason"
+          ]
+        },
+        {
+          "event": "plan.created",
+          "keys": [
+            "hybrid",
+            "local",
+            "nodes",
+            "nodes_total",
+            "plan_id",
+            "remote"
+          ]
+        },
+        {
+          "event": "plan.finished",
+          "keys": [
+            "failed",
+            "local_first",
+            "local_first_ms",
+            "local_first_nodes",
+            "local_first_us",
+            "local_ok"
+          ]
+        }
+      ],
+      "secs": 27.47,
+      "t_start": 1789388526.5034,
+      "success": true,
+      "error": null,
+      "t_end": 1789388553.9689
+    },
+    {
+      "turn": 7,
+      "text": "好，按这个来。",
+      "reply": "🔄 续跑计划 2b28d24f4829 (答复落到参数槽: 子任务1_指代对象)\n上一轮的问题: 「好，按这个来」中的指代 (这个/它/该文件) 具体指向什么? 请给出确切的文件/数据名。\n- ncc01688e [remote] Skipped: 远程产物未就绪 (主链尚未生成) ⇒ 只登记不执行\n计划状态: Finished",
+      "ok": true,
+      "events": [
+        {
+          "event": "plan.node",
+          "keys": [
+            "artifact",
+            "detail",
+            "elapsed_ms",
+            "executor",
+            "intent",
+            "location"
+          ]
+        },
+        {
+          "event": "plan.finished",
+          "keys": [
+            "failed",
+            "local_first",
+            "local_first_ms",
+            "local_first_nodes",
+            "local_first_us",
+            "local_ok"
+          ]
+        }
+      ],
+      "secs": 0.04,
+      "t_start": 1789388553.9689,
+      "success": true,
+      "error": null,
+      "t_end": 1789388554.0113
+    },
+    {
+      "turn": 8,
+      "text": "好，按这个来。",
+      "reply": "收到，继续按当前方向推进，本轮不重新规划。",
+      "ok": true,
+      "events": [
+        {
+          "event": "ask",
+          "keys": [
+            "ask_id",
+            "group_size",
+            "purpose",
+            "questions",
+            "service",
+            "timeout_s"
+          ]
+        },
+        {
+          "event": "ask_closed",
+          "keys": [
+            "ask_id",
+            "reason"
+          ]
+        },
+        {
+          "event": "plan.created",
+          "keys": [
+            "hybrid",
+            "local",
+            "nodes",
+            "nodes_total",
+            "plan_id",
+            "remote"
+          ]
+        },
+        {
+          "event": "plan.finished",
+          "keys": [
+            "failed",
+            "local_first",
+            "local_first_ms",
+            "local_first_nodes",
+            "local_first_us",
+            "local_ok"
+          ]
+        }
+      ],
+      "secs": 25.51,
+      "t_start": 1789388554.0114,
+      "success": true,
+      "error": null,
+      "t_end": 1789388579.5243
+    },
+    {
+      "turn": 9,
+      "text": "好，按这个来。",
+      "reply": "🔄 续跑计划 7f6025e02752 (答复落到参数槽: 子任务1_指代对象)\n上一轮的问题: 「好，按这个来」中的指代 (这个/它/该文件) 具体指向什么? 请给出确切的文件/数据名。\n- n1740fbe9 [remote] Skipped: 远程产物未就绪 (主链尚未生成) ⇒ 只登记不执行\n计划状态: Finished",
+      "ok": true,
+      "events": [
+        {
+          "event": "plan.node",
+          "keys": [
+            "artifact",
+            "detail",
+            "elapsed_ms",
+            "executor",
+            "intent",
+            "location"
+          ]
+        },
+        {
+          "event": "plan.finished",
+          "keys": [
+            "failed",
+            "local_first",
+            "local_first_ms",
+            "local_first_nodes",
+            "local_first_us",
+            "local_ok"
+          ]
+        }
+      ],
+      "secs": 0.04,
+      "t_start": 1789388579.5243,
+      "success": true,
+      "error": null,
+      "t_end": 1789388579.5664
+    }
+  ]
+}

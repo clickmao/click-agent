@@ -458,6 +458,38 @@ public sealed class TurnGateCounters
     /// <summary>R430: 上一次门判实际使用的角色种子指纹 (分辨「种子漂移」与「引擎不确定」)。</summary>
     public string? LastRoleSeedSha { get; private set; }
 
+    private int _lastPromptChars;
+    private int _lastRoleSeedChars;
+    private int _lastGrowthChars;
+    private int _lastGrowthLines;
+
+    /// <summary>R431: 最近一次门判**实发** prompt 的字符数 (未走 r1 = 0)。</summary>
+    public int LastPromptChars => Volatile.Read(ref _lastPromptChars);
+
+    /// <summary>R431: 最近一次门判挂的角色种子字符数 (null ⇒ 0)。</summary>
+    public int LastRoleSeedChars => Volatile.Read(ref _lastRoleSeedChars);
+
+    /// <summary>R431: 最近一次门判挂的 role 额外数据 (成长经历) 字符数 — null/空 ⇒ 0 (未挂载臂的负控读数)。</summary>
+    public int LastGrowthChars => Volatile.Read(ref _lastGrowthChars);
+
+    /// <summary>R431: 成长块渲染出的域行数 (块内 '\n' 计数; 部分行被截断时仍计入已渲染行)。</summary>
+    public int LastGrowthLines => Volatile.Read(ref _lastGrowthLines);
+
+    /// <summary>
+    /// R431: 记录本次门判**实发** prompt 的形状 (长度取自实际被发出的那一份 prompt, 不做二次重建 ⇒ 无漂移)。
+    /// 「挂了 role 额外数据」与「没挂」在读数上必须可区分, 否则挂载只是接口上有字段。
+    /// </summary>
+    public void RecordPromptShape(int promptChars, int roleSeedChars, string? growthBlock)
+    {
+        Volatile.Write(ref _lastPromptChars, promptChars);
+        Volatile.Write(ref _lastRoleSeedChars, roleSeedChars);
+        var g = growthBlock ?? string.Empty;
+        Volatile.Write(ref _lastGrowthChars, g.Length);
+        var lines = 0;
+        foreach (var ch in g) if (ch == '\n') lines++;
+        Volatile.Write(ref _lastGrowthLines, lines);
+    }
+
     /// <summary>机械前置门命中 (零 token 直接 Pass, 未询问 r1) — 必须可观测, 否则看不出"省了判别"。</summary>
     public void RecordMechanicalPass() { Interlocked.Increment(ref _mechanicalPasses); LastBasis = "mechanical:pass→remote"; }
 

@@ -1447,3 +1447,22 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **诚实边界**: 极性作用域仅「否定标记 + 紧邻 1 个二元组」（句中远距否定未测）；`别/勿/莫/甭` **有意排除**（`别` 与 `识别/区别/特别` 碰撞）；`无/非` 复合词（`无线/非常`）碰撞致召回损失**未量化**；**打分无长度归一 ⇒ 同一词元命中的所有文档同分（本轮三份同为 0.5596），命中集内无相关度区分度**（登记 R422）；样本 3 文档/4 查询非分布；**主线 KPI（r1 管道增益 / 一轮 token −30%）本轮未触碰**——`/recall` 是本地确定性指令，`llm_call==0` 恰说明它**不产生**远端调用（是不必要调用的抑制器，不是 token 下降的直接贡献者）。
 - **计划/证据/登记**: `docs/plans/v0.42.0-r421-polarity.md`；`eval/capability/r421/README-evidence.md`（L4）；`docs/verification-registry.json` → `r421.recall-negation-polarity`；TaskPlan **24 节点**（补登 `dev-recall-wiring` + `dev-recall-negation-polarity`）。
 
+
+## R431 — role 额外数据（成长经历）挂载进 r1 门判：可机检 + 有界 + 无截断
+
+> 文档缺口声明：本文件条目止于 R421，R422–R430 的权威记录在各自 `eval/rover/rNNN/README-evidence.md` 与「能力」目录；
+> 未在此补写（不凭记忆回填读数）。本轮起恢复逐轮追加。
+
+- **因果链**: 用户令「利用 r1 对真假信息判别（记得要挂载 role 的额外数据）」→ 前置机检发现真机角色 `skeptic.rbin` 解出键为 `['id','name','profile','tokens']`（**无 growth 键**）且调用点 `JudgeTurnAsync(content, roleSeed, **null**, ct)` → 挂载在真实负载上是**空操作**（管道本身早已支持：`BuildPrompt` 内 `Clip(growthBlock,300)`）→ 本轮把 null 换成 `GrowthLedger?.RenderForPrompt()`，并让「挂没挂」由遥测读数直接判定，而非「代码里有这行」。
+- **产出**: `src/agent/IndustrialAgentV2.cs`（挂载点 + 4 项形状遥测 + `role_growth_domains`）；`src/agent.modelqueue/ModelQueueRouter.cs`（prompt 只构造一次，形状取自实发文本）；`src/agent.modelqueue/LocalGenerationPort.cs`（`TurnGateCounters.LastPromptChars/LastRoleSeedChars/LastGrowthChars/LastGrowthLines`）；`src/agent.roles/RoleGrowthLedger.cs`（`DomainCount`）；`src/agent.tests/TurnGateGrowthMountTests.cs`（**9 条**机检）；`docs/plans/v0.52.0-r431-growth-mount.md`；`eval/rover/r431/`（precheck/frozen_baseline/settle_r431/make_evidence + 双臂读数）。
+- **基线对比**（同二进制 `sha256 ac62a739…`，字节 15,184,624，**IL 告警 0**，V0 形态闸 PASS）:
+  | 臂 | 启动域数 | 门判 prompt_len | growth_chars(行) | 判定 | 远端调用 | 远端 tokens | 闭合/截断 |
+  |---|---|---|---|---|---|---|---|
+  | `-g431` 挂载（fixture 3 域） | 3 | `[426,426,426,426]` | `[70,70,70,70]`(3) | Skip×4 | 1 | 2030 | true / 无 |
+  | `-b431` 对照（真角色 0 域） | 0 | `[355,388,388,388]` | `[0,32,32,32]`(1) | Skip×4 | 1 | 1994 | true / 无 |
+  | R430 基线（挂载前） | — | 无该字段 | 0（未挂载） | Skip×4 | 1 | 1996 | — / — |
+  测试: 新增类 9/9；**全量 1251/0/0**（第 2 次跑；第 1 次 1250 通过 + `TelemetryPendingTests` 1 红，单跑 2/2 通过 ⇒ R421 已登记的仪器假红，与本轮改动无关）。
+- **关键读数**: prompt 长度差恒等于 `块长+1`（挂载追加一个换行）—— 单测不变量与真机读数一致（355+70+1=426）；对照臂第 2 次门判起出现 32 字符/1 行，来自链自产账本（`IndustrialAgentV2.cs:1684`）⇒ 接线消费的是**链自己积累的**角色数据。
+- **诚实边界**: **本轮不宣称 token 下降**（`k8r` 是重复认可族，本不产生额外远端调用；2030/1994/1996 同量级）—— ≥30% 验收需**真假信息判别网格**（假信息/纠错族），未跑；「有成长域时 r1 判得更准」**未测**（只测了生效/有界/不截断/判定不翻转）；`role_growth_domains` 仅启动配置行读一次，运行中新增域看 `growth_chars_seq`；对照臂 = 「角色无域」而非「代码不挂载」（干净对照是 R430 基线的 null 路径，已由引擎复算逐位证明）。
+- **下轮候选**: ① 真假信息判别网格（P 族假信息/纠错），量化挂载对判定准确率与远端调用数的影响（≥30% 验证主战场）；② 遥测补 `growth_sha16`，把未挂载臂「同长」升级为「同指纹」；③ `role_growth_domains` 逐轮携带。
+- **计划/证据/登记**: `docs/plans/v0.52.0-r431-growth-mount.md`；`eval/rover/r431/README-evidence.md`（L3）；`docs/verification-registry.json` → `r431.gate-role-growth-mount`。

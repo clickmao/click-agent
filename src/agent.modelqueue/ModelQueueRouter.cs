@@ -203,13 +203,16 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         }
         TurnGate.RecordJudged();
         TurnGate.RecordRoleSeed(roleSeed);   // R430: 先记种子指纹 (区分「种子漂移」与「引擎不确定」)
+        // R431: prompt 只构造一次 —— 形状读数取自实发文本 (二次重建会与真发内容漂移)。
+        var gatePrompt = TurnGateJudge.BuildPrompt(userMessage, roleSeed, growthBlock);
+        TurnGate.RecordPromptShape(gatePrompt.Length, roleSeed?.Length ?? 0, growthBlock);
         try
         {
             var outcome = await port.GenerateAsync(new LocalGenerationRequest
             {
                 SessionKey = "r413:turn-gate",
                 TurnIndex = 1,
-                Turns = new List<LocalChatTurn> { new("user", TurnGateJudge.BuildPrompt(userMessage, roleSeed, growthBlock)) },
+                Turns = new List<LocalChatTurn> { new("user", gatePrompt) },
                 // R413 实测: 8/16 token 会被 r1 思考链吃光 ⇒ 字母没出来 (raw 取证)。128 足够判别句收尾。
                 MaxTokens = 512,   // 实测: 真链里思考链可达 250-350 tok (192 会截断在推理中途) ⇒ 给足上限, 解析只认闭合标记后的结论区
                 // R429: 决策路径钉死缓存态 —— 同一 prompt 在「全量评估」与「部分前缀复用」下 token 序列不等

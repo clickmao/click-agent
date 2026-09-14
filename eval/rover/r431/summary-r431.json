@@ -1,0 +1,145 @@
+{
+  "round": "R431",
+  "binary": {
+    "path": "/tmp/pub_r431/agenthost",
+    "bytes": 15184624,
+    "sha256": "ac62a739221f7b6bca04eddcf1b3ef5ce903aaa2b9cc355a16bfa20d8016b7a5",
+    "il_warnings": 0,
+    "aot_native_ok": true,
+    "il_negative_control_rejected": true
+  },
+  "baseline_r430": {
+    "decisions": [
+      "Skip",
+      "Skip",
+      "Skip",
+      "Skip"
+    ],
+    "remote_calls": 1,
+    "total_tokens_est": 1996,
+    "raw_len_seq": [
+      "127",
+      "127",
+      "127",
+      "127"
+    ],
+    "gate_r1": 4,
+    "undecided": 0
+  },
+  "arms": {
+    "g431": {
+      "decisions": [
+        "Skip",
+        "Skip",
+        "Skip",
+        "Skip"
+      ],
+      "growth_chars_seq": [
+        70,
+        70,
+        70,
+        70
+      ],
+      "growth_lines_seq": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "gate_prompt_len_seq": [
+        426,
+        426,
+        426,
+        426
+      ],
+      "role_seed_chars_seq": [
+        78,
+        78,
+        78,
+        78
+      ],
+      "growth_mounted": true,
+      "growth_absent": false,
+      "gate_closed_all": true,
+      "no_truncation_marker": true,
+      "remote_calls": 1,
+      "total_tokens_est": 2030,
+      "raw_len_seq": [
+        "155",
+        "97",
+        "155",
+        "99"
+      ],
+      "alignment_ok": true,
+      "attribution_ok": true,
+      "undecided": 0
+    },
+    "b431": {
+      "decisions": [
+        "Skip",
+        "Skip",
+        "Skip",
+        "Skip"
+      ],
+      "growth_chars_seq": [
+        0,
+        32,
+        32,
+        32
+      ],
+      "growth_lines_seq": [
+        0,
+        1,
+        1,
+        1
+      ],
+      "gate_prompt_len_seq": [
+        355,
+        388,
+        388,
+        388
+      ],
+      "role_seed_chars_seq": [
+        78,
+        78,
+        78,
+        78
+      ],
+      "growth_mounted": false,
+      "growth_absent": false,
+      "gate_closed_all": true,
+      "no_truncation_marker": true,
+      "remote_calls": 1,
+      "total_tokens_est": 1994,
+      "raw_len_seq": [
+        "127",
+        "319",
+        "109",
+        "109"
+      ],
+      "alignment_ok": true,
+      "attribution_ok": true,
+      "undecided": 0
+    }
+  },
+  "gate_role_growth_domains_at_startup": {
+    "g431": 3,
+    "b431": 0
+  },
+  "tests": {
+    "mount_class": {
+      "failed": 0,
+      "passed": 9,
+      "total": 9
+    },
+    "full_suite": {
+      "failed": 0,
+      "passed": 1251,
+      "total": 1251
+    }
+  },
+  "precheck": {
+    "real_role": "id=skeptic name=疑问者 profile_len=70\ngrowth_domains=0 {}\nrole_seed_sha16=0aa656fa7eafd93a\n⇒ 域=0 ⇒ RenderForPrompt() 恒空串 ⇒ 门判挂载与不挂载逐位同一 (挂载在当前真实负载上不可测)",
+    "fixture": "[fixture] eval/rover/r431/fixture/skeptic-growth.rbin 域=3 {'g:general': '6|0', 'g:docker': '0|6', 'g:kpi': '4|1'} profile_len=70\n[fixture] 种子指纹 sha16=0aa656fa7eafd93a"
+  }
+}

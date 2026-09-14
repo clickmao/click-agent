@@ -26,6 +26,12 @@ public sealed class RoleGrowthLedger
     private Dictionary<string, (int Reward, int Penalty)> _domains = new(StringComparer.OrdinalIgnoreCase);
     public int TotalTokensUsed { get; private set; }
 
+    /// <summary>
+    /// R431: 本轮 domain 数 (只读) — 「成长经历能不能挂进判别提示」的前置条件必须可机检:
+    /// 域 = 0 ⇒ <see cref="RenderForPrompt"/> 恒空串 ⇒ 挂载与否逐位同一 (此前的调用点传 null 属空操作, 看不出来)。
+    /// </summary>
+    public int DomainCount { get { lock (_lock) return _domains.Count; } }
+
     public RoleGrowthLedger(string roleId, string storeDir = "data/roles")
     {
         _roleId = roleId;
