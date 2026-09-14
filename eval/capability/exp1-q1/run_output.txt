@@ -1,0 +1,97 @@
+{
+  "A": {
+    "files": 400,
+    "payload_kB": 5830.4,
+    "tok": 41586,
+    "scan_ms": 234.8,
+    "edges": 2193,
+    "per_min": 0.033,
+    "sensitive_all": 0,
+    "sensitive_indexable": 0,
+    "verdict": "eligible"
+  },
+  "B": {
+    "files": 587,
+    "payload_kB": 13315.9,
+    "tok": 77153,
+    "scan_ms": 466.6,
+    "edges": 4535,
+    "per_min": 0.133,
+    "sensitive_all": 0,
+    "sensitive_indexable": 0,
+    "verdict": "eligible"
+  },
+  "C": {
+    "files": 1719,
+    "payload_kB": 31070.0,
+    "tok": 106627,
+    "scan_ms": 1161.0,
+    "edges": 7638,
+    "per_min": 2.217,
+    "sensitive_all": 2,
+    "sensitive_indexable": 1,
+    "verdict": "excluded"
+  },
+  "D": {
+    "files": 3430,
+    "payload_kB": 51130.5,
+    "tok": 128282,
+    "scan_ms": 10013.5,
+    "edges": 12597,
+    "per_min": 3.95,
+    "sensitive_all": 60,
+    "sensitive_indexable": 1,
+    "verdict": "excluded"
+  }
+}
+{"gates": {"G1_missing_scope_is_error": true, "G2_two_run_counts_identical": null, "G2_mismatch_detail": {}, "G2_write_attribution": {}, "G3_payload_sha_pairwise_distinct": true, "G4_sensitive_filter_discriminates_both_ways": true, "positive_control_hits": ["data/credentials.json", "data/master.key"], "reverse_control_false_kills": 0}, "masker_cross_check": "agree", "recommended": "A", "gate_pass": true}
+RUN1_EXIT=0
+{
+  "A": {
+    "files": 400,
+    "payload_kB": 5834.1,
+    "tok": 41612,
+    "scan_ms": 359.5,
+    "edges": 2193,
+    "per_min": 0.033,
+    "sensitive_all": 0,
+    "sensitive_indexable": 0,
+    "verdict": "eligible"
+  },
+  "B": {
+    "files": 587,
+    "payload_kB": 13315.9,
+    "tok": 77153,
+    "scan_ms": 885.5,
+    "edges": 4535,
+    "per_min": 0.133,
+    "sensitive_all": 0,
+    "sensitive_indexable": 0,
+    "verdict": "eligible"
+  },
+  "C": {
+    "files": 1719,
+    "payload_kB": 31070.0,
+    "tok": 106627,
+    "scan_ms": 2430.1,
+    "edges": 7638,
+    "per_min": 2.217,
+    "sensitive_all": 2,
+    "sensitive_indexable": 1,
+    "verdict": "excluded"
+  },
+  "D": {
+    "files": 3430,
+    "payload_kB": 51133.3,
+    "tok": 128300,
+    "scan_ms": 2884.6,
+    "edges": 12597,
+    "per_min": 4.067,
+    "sensitive_all": 60,
+    "sensitive_indexable": 1,
+    "verdict": "excluded"
+  }
+}
+{"gates": {"G1_missing_scope_is_error": true, "G2_two_run_counts_identical": true, "G2_mismatch_detail": {"A": {"distinct_tokens": [41612, 41586], "postings": [131980, 131892], "index_payload_bytes": [5974137, 5970333], "payload_sha_full": ["d757930aa7e0f4a116cbef08f679c55555fca30f535d9acd0f1918780d40d68c", "54c886377541dc7a38f19bf4c40423bd95bcf56e4854be1306f070274e189e95"]}, "B": {"payload_sha_full": ["80ad4fc82bf4217f01656c8d376f2f13343094f4a8f4c444e2bfbd1ec1fd277e", "7244e31d512aa415c15d3d169fe7e70037c4a14a441a2cdb8e64e49bbc097fc3"]}, "C": {"payload_sha_full": ["aa82701c95acc8ed7320274e7601e3cb21797a7aaa2b58001b38569d9b08047b", "530b3ccd38a7209885d3f653573f6af479fc1be404dac2e40ed66e5031ff4385"]}, "D": {"distinct_tokens": [128300, 128282], "postings": [1359888, 1359832], "index_payload_bytes": [52360508, 52357651], "payload_sha_full": ["66da9d54a9c969642442d361d36b56ecd0aebb5784a72278e0da9934b450c413", "8dbe51b708aa131e652665e1ea3bfb8ad8dc2f80809b4b237562c51050ef94dc"]}}, "G2_write_attribution": {"A": {"attributed": true, "files_written_in_window": 1, "sample": ["src/agent.tests/LocalTurnGateTests.cs"]}, "B": {"attributed": true, "files_written_in_window": 1, "sample": ["src/agent.tests/LocalTurnGateTests.cs"]}, "C": {"attributed": true, "files_written_in_window": 1, "sample": ["src/agent.tests/LocalTurnGateTests.cs"]}, "D": {"attributed": true, "files_written_in_window": 17, "sample": ["eval/capability/exp1-q1/result_run1.json", "eval/rover/r434/calls-B-p8-e1.jsonl", "eval/rover/r434/host-B-p8-e1.log", "eval/rover/r434/prov-B-p8-e1.json", "eval/rover/r434/run-B-p8-e1/data/activity/514758.json", "eval/rover/r434/run-B-p8-e1/data/agent_profiles.json", "eval/rover/r434/run-B-p8-e1/data/agents/main/forecast.json", "eval/rover/r434/run-B-p8-e1/data/rag/index.jsonl"]}}, "G3_payload_sha_pairwise_distinct": true, "G4_sensitive_filter_discriminates_both_ways": true, "positive_control_hits": ["data/credentials.json", "data/master.key"], "reverse_control_false_kills": 0}, "masker_cross_check": "agree", "recommended": "A", "gate_pass": true}
+RUN2_EXIT=0
+PROBE_CHAIN_DONE
