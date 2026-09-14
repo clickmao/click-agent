@@ -28,10 +28,12 @@
 | r415 | verdict-r415.json | **PASS** | 22 | `checks` |
 | r424 | verdict-r424.json | **PASS** | 3 | `bool_fields` |
 | r425 | verdict-r425-b2.json | **PARTIAL** | 0 | `n/a` |
+| r426 | verdicts.json | **?** | 0 | `n/a` |
 | r421 | verdict-r421.json | **PASS** | 13 | `checks` |
 | r422 | verdict-r422.json | **PARTIAL** | 8 | `checks` |
 | r423 | verdict-r423-run1-predictor-error.json | **FAIL** | 7 | `checks` |
 | r423 | verdict-r423.json | **PASS** | 9 | `checks` |
+| r428 | verdict-r428.json | **PASS** | 0 | `n/a` |
 
 **正文提及但无独立小节的 D 编号**（文档缺口, 不猜测其状态）: D6(L237), D9-a(L182)
 
@@ -78,10 +80,15 @@
 
 ## 4. 轮次提交（本地；推送暂停令生效）
 
-- 未推送提交数: **80**
+- 未推送提交数: **85**
 
 | commit | 主题 |
 |---|---|
+| `52c5622` | R428: 同文折叠 (排序/去重层) —— R427 根因判定的产品落地 |
+| `e0b9058` | R428-hold: 循环入口探针 v3 — 计划项行 (expN) 入账 + 自陈欠项判 open; 自检 15/15 (11 判定 + 4 负控); open 2→8, mode 恒 tasks; 零产品源码改动/零 dotnet/不占轮号 (R428 由 30m 节拍作业占用中) |
+| `974cac7` | R426: 关系判官(CorrectionDetector L2)本地化 — 跳过轮残留远端微调用 4→1; A→C token k6 -67.6%/k8 -81.0%; 判据 PASS12/PARTIAL2/FAIL2/UNDECIDABLE1; k8 门判翻转反例登记; AOT IL 警告0 + 单测23/23 |
+| `a1e9d3b` | R427 修复: improvements 追加节行结构破坏修复 + 行结构检测器 (共享文档一等事件) |
+| `5227cdc` | R427: 「并列」根因判定——真实并列对为同文重复 + R423 闭式基线口径复核 (预检 PREMISE-REFUTED, 零产品改动) |
 | `e8ada93` | R425: 前置门增益的占比敏感性网格 (判决 PARTIAL, 零产品改动) |
 | `f4143b4` | R424 收口: 状态 digest 重生成(registry 59 行 updated_round R424; kpi 已记轮次含 R424; 未推送 78) (未推) |
 | `560fb9c` | R424 主线 KPI 发布形态身份修复: R413 宣称 AOT 而器具跑 IL apphost(78,256B, env -i rc=131) ⇒ 在可自证 AOT 产物(15,168,064B sha 2d363b6d IL警告0)上三臂复现同一判据: A 12/16,888 → B 8/7,007 (-33.3%/-58.5% 均≥30%), 与 R413 JIT 读数逐位相同; 新增 B′(门开·模型缺=无设备负控兼 r1 归因: 12/16,891 ≡ A ⇒ 增益归零 ⇒ 归因 r1 非机械门); 形态闸 V0(env -i 自证+IL 成对负控)/门真身 V1/无效跑 V2 全绿, 判据 9 预注册+5 事后(P1 回复逐字节无回归 / P2 role 额外数据真挂载: IndustrialAgentV2.cs:1481 ProfileSeed 非空 / P3 无设备失败可见性 4/4) PASS; r413 器具 fail-closed 封堵(rc=2) + 更正登记; 轮号碰撞让号至 R424(对侧 R423=检索 tf); 回归抽查 47/47 (未推) |
@@ -101,16 +108,11 @@
 | `f36f897` | R416 收工记录: improvements 轮节 + backlog 看板 D2 证据指针 (形式校验 13/13 PASS, 未推) |
 | `2b831ac` | R416 能力自检循环: R371-D2 发布产物自包含 config 仓库外真机验收 (3 臂/6 断言 PASS) |
 | `e53f8c5` | chore: R415 臂执行脚本与本地提交脚本入库 + r413 裸日志入 .gitignore |
-| `5ac3b43` | R415: 链级钉死前置门入参=用户原文(真链+确定性假本地后端, 22断言x2形态 PASS) + 仪器两项教训入档 |
-| `5fc876f` | R414: R371 断链真机验收(D7 优先) + 失败可见性缺陷闭合(Success=false 的降级文案不再被链侧丢弃) |
-| `f6496ba` | R413 证据补齐: 失效跑(v3 门恒Pass/增益0)原文入档 + 证据清单(有效/失效分列) + 本地提交脚本 |
-| `c400b45` | R413: r1 本地真假判别接进链管道(端口化) + 机械 Pass 前置 + 非 LLM 模板 ack |
-| `b29e450` | R403 报告 §9: 附带发现(三台账/检测器视图缺口 + 主报告 §7 快照滞后), 交下轮裁定 |
 
 ## 5. 台账
 
-- `docs/verification-registry.json`: **61** 行, updated_round = **R427**
-- `eval/capability/kpi.jsonl` 已记轮次: R402, loop-mechanism, R401, R411-V, R403-scope, R413, R414, R415, R416, R419, R420, R421, R422, R423, R424, R425, R427
+- `docs/verification-registry.json`: **62** 行, updated_round = **R428**
+- `eval/capability/kpi.jsonl` 已记轮次: R402, loop-mechanism, R401, R411-V, R403-scope, R413, R414, R415, R416, R419, R420, R421, R422, R423, R424, R425, R427, R428, R428-hold
 - 已知盲区: 状态检测器只读 `data/probe/kpi.jsonl`; 轮次台账另有 `data/probe/capability/kpi.jsonl`（孤儿）
 - **轮号命名空间（R423 实证，轮内已消解）**: 轮号取 `max+1` 前必须复跑「pgrep 活动执行体 + 锁文件 + 目标轮文件存在时比对 mtime（>10min 才算 stale）」全序列。R423 曾与并发执行体撞号（本侧=检索打分；对侧=AOT 发布形态复现），对侧随后**让号**至 R424（`eval/rover/r424/` + `docs/plans/v0.45.0-r424-aot-mainline-replication.md`）⇒ 最终 R423=检索打分 / R424=AOT 形态复现。**处置纪律**: 碰撞当一等事件（两支都登记、不改写历史、不静默改名）；提交只用**显式路径**（禁 `git add -A`，防卷入对侧未跟踪产物）。
 
