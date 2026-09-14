@@ -509,4 +509,57 @@ public sealed class LocalTurnGateTests
         Assert.DoesNotContain("MechanicalPass(prompt.UserMessage)", flat);
         Assert.DoesNotContain("JudgeTurnAsync( prompt.UserMessage", flat);
     }
+
+    // ---------- 判据 R434: 门判示例必须落在「残余带」内 (否则该例在生产链里根本到不了本门) ----------
+    [Fact]
+    public void G30_门判示例必须全部能抵达本门()
+    {
+        var prompt = TurnGateJudge.BuildPrompt("【占位】", null, null);
+        var ex = new List<(string Msg, string Tag)>();
+        foreach (var line in prompt.Split('\n'))
+        {
+            var s = line.Trim();
+            if (!s.StartsWith("用户: ", StringComparison.Ordinal)) continue;
+            var i = s.LastIndexOf("→", StringComparison.Ordinal);
+            if (i < 0) continue;
+            ex.Add((s[3..i].Trim(), s[(i + 1)..].Trim()));
+        }
+        Assert.True(ex.Count >= 6, $"门判示例数过少: {ex.Count}");
+        Assert.Contains(ex, e => e.Tag == "S");
+        Assert.Contains(ex, e => e.Tag == "P");
+        // 承重不变量 (R434 真机根因): **每个 tag 至少要有一条落在残余带内的示例** —— 否则该 tag 在
+        // 生产链里对 r1 不可见 (带外示例必被 MechanicalPass 结构性拦下)。实测: 两条 P 例全带信号
+        // (另外…/不对…) ⇒ 带内只剩 S 例 ⇒ r1 学到「残余带 ⇒ S」⇒ 恒 Skip ⇒ 3 个真诉求轮被跳成空话。
+        foreach (var tag in new[] { "S", "P" })
+        {
+            Assert.Contains(ex, e => e.Tag == tag && !TurnGateJudge.MechanicalPass(e.Msg));
+        }
+    }
+
+    // ---------- 判据 R434: 双条件 —— r1 的 Skip 必须再经「认可族」结构确认 ----------
+    [Theory]
+    [InlineData("谢谢，收到。", true)]
+    [InlineData("好的，明白。", true)]
+    [InlineData("嗯嗯，知道了。", true)]
+    [InlineData("明白，多谢。", true)]
+    [InlineData("收到", true)]
+    [InlineData("再讲一遍。", false)]        // R434 真机被误跳的真诉求
+    [InlineData("讲细一点。", false)]
+    [InlineData("换个说法。", false)]
+    [InlineData("从头再说。", false)]
+    [InlineData("好，按这个来。", false)]    // 保守方向: 非纯认可字符集 ⇒ 走远端
+    [InlineData("明白了先生，我要重新说一下需求", false)]
+    [InlineData("", false)]
+    [InlineData("   ", false)]
+    public void G31_认可族结构确认(string msg, bool expectAck)
+        => Assert.Equal(expectAck, TurnGateJudge.MechanicalAck(msg));
+
+    [Fact]
+    public void G32_链侧必须接双条件()
+    {
+        var src = File.ReadAllText(Path.Combine(FindRepoRootG29(), "src", "agent", "IndustrialAgentV2.cs"));
+        var flat = string.Join(' ', src.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
+        Assert.Contains("TurnGateJudge.MechanicalAck(message.Content)", flat);
+        Assert.Contains("TurnGateVerdict.Pass, \"gate:skip_rejected_nonack\"", flat);
+    }
 }

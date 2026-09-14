@@ -1494,6 +1494,23 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     gateOutcome = await _modelRouter.JudgeTurnAsync(
                         message.Content, gateRoleSeed, gateGrowthBlock, ct).ConfigureAwait(false);
                 }
+                // R434 双条件: r1 的 Skip 只在**结构确认为「认可族」**时生效。真机实测根因: 残余带内
+                // r1 对「再讲一遍。」「讲细一点。」「从头再说。」这类短促真诉求误判 Skip ⇒ 3/4 真诉求轮
+                // 被跳成空话 (质量硬线失守)。非认可族 ⇒ 降级 Pass ⇒ 照常走远端 (宁可多走一次远端)。
+                // 位置纪律: 必须在下面 local_turn_gate 打点**之前** —— 否则遥测 basis 会写 r1 的原始
+                // 判决 (skip→local), 与被测行为的真实走向相反 (R433 同类: 读数不得自报假形态)。
+                if (gateOutcome.Decided && gateOutcome.Verdict == agent.modelqueue.TurnGateVerdict.Skip
+                    && !agent.modelqueue.TurnGateJudge.MechanicalAck(message.Content))
+                {
+                    _modelRouter!.TurnGate.RecordSkipRejected();
+                    agent.config.AgentTelemetry.Emit("local_turn_gate_reject", "IndustrialAgentV2",
+                        ("reason", "skip_not_ack_family"),
+                        ("msg_sha16", agent.modelqueue.LocalInputFingerprint.Sha16(message.Content)),
+                        ("msg_len", message.Content.Length.ToString()),
+                        ("r1_raw_len", gateOutcome.Raw.Length.ToString()));
+                    gateOutcome = agent.modelqueue.TurnGateOutcome.Decide(
+                        agent.modelqueue.TurnGateVerdict.Pass, "gate:skip_rejected_nonack");
+                }
                 agent.config.AgentTelemetry.Emit("local_turn_gate", "IndustrialAgentV2",
                     ("decided", gateOutcome.Decided ? "true" : "false"),
                     ("verdict", gateOutcome.Verdict.ToString()),

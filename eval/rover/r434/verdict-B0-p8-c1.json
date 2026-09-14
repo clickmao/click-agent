@@ -1,0 +1,418 @@
+{
+  "arm": "B0",
+  "grid": "p8",
+  "ns": "-c1",
+  "host": "/tmp/pub_r434/agenthost",
+  "bin_sha": "6be1f35",
+  "calls_total": 11,
+  "tokens_total": 9535,
+  "G_calls": 4,
+  "G_tokens": 9163,
+  "J_calls": 7,
+  "J_tokens": 372,
+  "unassigned_calls": 0,
+  "attribution": "content_anchor+seq_partition[R415/R425]",
+  "attribution_ok": true,
+  "false_negative": [
+    3,
+    7
+  ],
+  "false_negative_by_calls": [
+    3,
+    7
+  ],
+  "false_positive": [
+    2
+  ],
+  "false_positive_by_calls": [
+    2
+  ],
+  "fn_n": 2,
+  "fp_n": 1,
+  "accuracy": 0.625,
+  "measured_turns": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "measured_n": 8,
+  "consumed_as_ask_answer": [
+    4
+  ],
+  "per_turn": [
+    {
+      "turn": 1,
+      "family": "lead",
+      "want": "pass",
+      "mech": true,
+      "G_calls": 1,
+      "G_tokens": 1992,
+      "J_calls": 1,
+      "J_tokens": 47,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.33,
+      "t_start": 1789392912.2712,
+      "t_end": 1789392912.6019,
+      "window": [
+        0.0,
+        0.331
+      ]
+    },
+    {
+      "turn": 2,
+      "family": "ack",
+      "want": "skip",
+      "mech": false,
+      "G_calls": 1,
+      "G_tokens": 2090,
+      "J_calls": 0,
+      "J_tokens": 0,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": false,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 16.38,
+      "t_start": 1789392912.6019,
+      "t_end": 1789392928.978,
+      "window": [
+        0.331,
+        16.707
+      ]
+    },
+    {
+      "turn": 3,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 0,
+      "G_tokens": 0,
+      "J_calls": 1,
+      "J_tokens": 52,
+      "actual": "skip",
+      "reply_source": "skip",
+      "consumed_as_ask_answer": false,
+      "hit": false,
+      "reply_len": 21,
+      "reply_head": "收到，继续按当前方向推进，本轮不重新规划。",
+      "secs": 17.31,
+      "t_start": 1789392928.9783,
+      "t_end": 1789392946.2879,
+      "window": [
+        16.707,
+        34.017
+      ]
+    },
+    {
+      "turn": 4,
+      "family": "ack",
+      "want": "skip",
+      "mech": false,
+      "G_calls": 0,
+      "G_tokens": 0,
+      "J_calls": 0,
+      "J_tokens": 0,
+      "actual": "consumed",
+      "reply_source": "consumed",
+      "consumed_as_ask_answer": true,
+      "hit": null,
+      "reply_len": 170,
+      "reply_head": "上一轮计划停在等你回答: 「讲一遍」意图不明确。你想让 agent 做什么? (如: 搜索/写文档/执行命令/分析数据)",
+      "secs": 0.0,
+      "t_start": 1789392946.2879,
+      "t_end": 1789392946.2895,
+      "window": [
+        34.017,
+        34.018
+      ]
+    },
+    {
+      "turn": 5,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 1,
+      "G_tokens": 2298,
+      "J_calls": 1,
+      "J_tokens": 55,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 22.16,
+      "t_start": 1789392946.2895,
+      "t_end": 1789392968.445,
+      "window": [
+        34.018,
+        56.174
+      ]
+    },
+    {
+      "turn": 6,
+      "family": "ack",
+      "want": "skip",
+      "mech": false,
+      "G_calls": 0,
+      "G_tokens": 0,
+      "J_calls": 1,
+      "J_tokens": 53,
+      "actual": "skip",
+      "reply_source": "skip",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 21,
+      "reply_head": "收到，继续按当前方向推进，本轮不重新规划。",
+      "secs": 28.67,
+      "t_start": 1789392968.4451,
+      "t_end": 1789392997.1131,
+      "window": [
+        56.174,
+        84.842
+      ]
+    },
+    {
+      "turn": 7,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 0,
+      "G_tokens": 0,
+      "J_calls": 1,
+      "J_tokens": 55,
+      "actual": "skip",
+      "reply_source": "skip",
+      "consumed_as_ask_answer": false,
+      "hit": false,
+      "reply_len": 21,
+      "reply_head": "收到，继续按当前方向推进，本轮不重新规划。",
+      "secs": 27.71,
+      "t_start": 1789392997.1132,
+      "t_end": 1789393024.8203,
+      "window": [
+        84.842,
+        112.549
+      ]
+    },
+    {
+      "turn": 8,
+      "family": "ack",
+      "want": "skip",
+      "mech": false,
+      "G_calls": 0,
+      "G_tokens": 0,
+      "J_calls": 1,
+      "J_tokens": 55,
+      "actual": "skip",
+      "reply_source": "skip",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 21,
+      "reply_head": "收到，继续按当前方向推进，本轮不重新规划。",
+      "secs": 12.9,
+      "t_start": 1789393024.8203,
+      "t_end": 1789393037.7201,
+      "window": [
+        112.549,
+        125.449
+      ]
+    },
+    {
+      "turn": 9,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 1,
+      "G_tokens": 2783,
+      "J_calls": 1,
+      "J_tokens": 55,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 40.22,
+      "t_start": 1789393037.7201,
+      "t_end": 1789393077.9373,
+      "window": [
+        125.449,
+        170.666
+      ]
+    }
+  ],
+  "gate_records": [
+    {
+      "decided": "true",
+      "verdict": "Pass",
+      "basis": "mechanical:pass→remote",
+      "cache_n": 0,
+      "growth_chars": 0,
+      "gate_prompt_len": 0,
+      "role_seed_chars": 0,
+      "error": ""
+    },
+    {
+      "decided": "true",
+      "verdict": "Pass",
+      "basis": "gate:pass→remote",
+      "cache_n": 0,
+      "growth_chars": 0,
+      "gate_prompt_len": 354,
+      "role_seed_chars": 78,
+      "error": ""
+    },
+    {
+      "decided": "true",
+      "verdict": "Skip",
+      "basis": "gate:skip→local",
+      "cache_n": 0,
+      "growth_chars": 32,
+      "gate_prompt_len": 386,
+      "role_seed_chars": 78,
+      "error": ""
+    },
+    {
+      "decided": "true",
+      "verdict": "Pass",
+      "basis": "gate:pass→remote",
+      "cache_n": 0,
+      "growth_chars": 32,
+      "gate_prompt_len": 386,
+      "role_seed_chars": 78,
+      "error": ""
+    },
+    {
+      "decided": "true",
+      "verdict": "Skip",
+      "basis": "gate:skip→local",
+      "cache_n": 0,
+      "growth_chars": 32,
+      "gate_prompt_len": 388,
+      "role_seed_chars": 78,
+      "error": ""
+    },
+    {
+      "decided": "true",
+      "verdict": "Skip",
+      "basis": "gate:skip→local",
+      "cache_n": 0,
+      "growth_chars": 32,
+      "gate_prompt_len": 386,
+      "role_seed_chars": 78,
+      "error": ""
+    },
+    {
+      "decided": "true",
+      "verdict": "Skip",
+      "basis": "gate:skip→local",
+      "cache_n": 0,
+      "growth_chars": 32,
+      "gate_prompt_len": 387,
+      "role_seed_chars": 78,
+      "error": ""
+    },
+    {
+      "decided": "false",
+      "verdict": "Pass",
+      "basis": "gate:degraded:unparsed:<think>\n好，我现在要判断这条消息是否携带新的诉求或新信息。用户的消息是“→remote",
+      "cache_n": 0,
+      "growth_chars": 32,
+      "gate_prompt_len": 386,
+      "role_seed_chars": 78,
+      "error": "thinking_truncated"
+    }
+  ],
+  "r1_records": [
+    {
+      "decided": "true",
+      "verdict": "Pass",
+      "basis": "gate:pass→remote",
+      "cache_n": 0,
+      "growth_chars": 0,
+      "gate_prompt_len": 354,
+      "role_seed_chars": 78,
+      "error": ""
+    },
+    {
+      "decided": "true",
+      "verdict": "Skip",
+      "basis": "gate:skip→local",
+      "cache_n": 0,
+      "growth_chars": 32,
+      "gate_prompt_len": 386,
+      "role_seed_chars": 78,
+      "error": ""
+    },
+    {
+      "decided": "true",
+      "verdict": "Pass",
+      "basis": "gate:pass→remote",
+      "cache_n": 0,
+      "growth_chars": 32,
+      "gate_prompt_len": 386,
+      "role_seed_chars": 78,
+      "error": ""
+    },
+    {
+      "decided": "true",
+      "verdict": "Skip",
+      "basis": "gate:skip→local",
+      "cache_n": 0,
+      "growth_chars": 32,
+      "gate_prompt_len": 388,
+      "role_seed_chars": 78,
+      "error": ""
+    },
+    {
+      "decided": "true",
+      "verdict": "Skip",
+      "basis": "gate:skip→local",
+      "cache_n": 0,
+      "growth_chars": 32,
+      "gate_prompt_len": 386,
+      "role_seed_chars": 78,
+      "error": ""
+    },
+    {
+      "decided": "true",
+      "verdict": "Skip",
+      "basis": "gate:skip→local",
+      "cache_n": 0,
+      "growth_chars": 32,
+      "gate_prompt_len": 387,
+      "role_seed_chars": 78,
+      "error": ""
+    },
+    {
+      "decided": "false",
+      "verdict": "Pass",
+      "basis": "gate:degraded:unparsed:<think>\n好，我现在要判断这条消息是否携带新的诉求或新信息。用户的消息是“→remote",
+      "cache_n": 0,
+      "growth_chars": 32,
+      "gate_prompt_len": 386,
+      "role_seed_chars": 78,
+      "error": "thinking_truncated"
+    }
+  ],
+  "gate_r1_n": 7,
+  "gate_mech_n": 1,
+  "r1_skips": 4,
+  "r1_passes": 3,
+  "growth_chars_seen": [
+    0,
+    32
+  ]
+}

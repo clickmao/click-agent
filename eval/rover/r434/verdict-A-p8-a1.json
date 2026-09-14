@@ -1,0 +1,235 @@
+{
+  "arm": "A",
+  "grid": "p8",
+  "ns": "-a1",
+  "host": "/tmp/pub_r434/agenthost",
+  "bin_sha": "8f2a411d",
+  "calls_total": 6,
+  "tokens_total": 13494,
+  "unassigned_calls": 0,
+  "attribution": "sequential_partition[R425]",
+  "attribution_ok": true,
+  "false_negative": [],
+  "false_negative_raw": [
+    5
+  ],
+  "false_positive": [
+    4,
+    6
+  ],
+  "fn_n": 0,
+  "fp_n": 2,
+  "measured_turns": [
+    1,
+    3,
+    4,
+    6,
+    7,
+    9
+  ],
+  "measured_n": 6,
+  "consumed_as_ask_answer": [
+    2,
+    5,
+    8
+  ],
+  "accuracy": 0.6666666666666667,
+  "per_turn": [
+    {
+      "turn": 1,
+      "family": "lead",
+      "want": "pass",
+      "mech": true,
+      "calls": 1,
+      "tokens": 1955,
+      "actual": "pass",
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.34,
+      "t_start": 1789392635.3804,
+      "t_end": 1789392635.72,
+      "window": [
+        0.0,
+        0.34
+      ],
+      "consumed_as_ask_answer": false,
+      "eligible": false
+    },
+    {
+      "turn": 2,
+      "family": "ack",
+      "want": "skip",
+      "mech": false,
+      "calls": 0,
+      "tokens": 0,
+      "actual": "skip",
+      "hit": true,
+      "reply_len": 174,
+      "reply_head": "🔄 续跑计划 00ab128c327e (答复落到参数槽: 子任务1_指代对象)\n上一轮的问题: 「说明这个仓库的构建命令，一句话」中的指代",
+      "secs": 0.04,
+      "t_start": 1789392635.72,
+      "t_end": 1789392635.7623,
+      "window": [
+        0.34,
+        0.382
+      ],
+      "consumed_as_ask_answer": true,
+      "eligible": false
+    },
+    {
+      "turn": 3,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "calls": 1,
+      "tokens": 2079,
+      "actual": "pass",
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.04,
+      "t_start": 1789392635.7623,
+      "t_end": 1789392635.8063,
+      "window": [
+        0.382,
+        0.426
+      ],
+      "consumed_as_ask_answer": false,
+      "eligible": true
+    },
+    {
+      "turn": 4,
+      "family": "ack",
+      "want": "skip",
+      "mech": false,
+      "calls": 1,
+      "tokens": 2195,
+      "actual": "pass",
+      "hit": false,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.04,
+      "t_start": 1789392635.8063,
+      "t_end": 1789392635.8494,
+      "window": [
+        0.426,
+        0.469
+      ],
+      "consumed_as_ask_answer": false,
+      "eligible": false
+    },
+    {
+      "turn": 5,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "calls": 0,
+      "tokens": 0,
+      "actual": "skip",
+      "hit": false,
+      "reply_len": 167,
+      "reply_head": "🔄 续跑计划 5020dd79bf44 (答复落到参数槽: 子任务1_指代对象)\n上一轮的问题: 「嗯，这个我记下了」中的指代 (这个/它/",
+      "secs": 0.04,
+      "t_start": 1789392635.8494,
+      "t_end": 1789392635.8923,
+      "window": [
+        0.469,
+        0.512
+      ],
+      "consumed_as_ask_answer": true,
+      "eligible": false
+    },
+    {
+      "turn": 6,
+      "family": "ack",
+      "want": "skip",
+      "mech": false,
+      "calls": 1,
+      "tokens": 2290,
+      "actual": "pass",
+      "hit": false,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.04,
+      "t_start": 1789392635.8923,
+      "t_end": 1789392635.9343,
+      "window": [
+        0.512,
+        0.554
+      ],
+      "consumed_as_ask_answer": false,
+      "eligible": false
+    },
+    {
+      "turn": 7,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "calls": 1,
+      "tokens": 2420,
+      "actual": "pass",
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.08,
+      "t_start": 1789392635.9343,
+      "t_end": 1789392636.0183,
+      "window": [
+        0.554,
+        0.638
+      ],
+      "consumed_as_ask_answer": false,
+      "eligible": true
+    },
+    {
+      "turn": 8,
+      "family": "ack",
+      "want": "skip",
+      "mech": false,
+      "calls": 0,
+      "tokens": 0,
+      "actual": "skip",
+      "hit": true,
+      "reply_len": 170,
+      "reply_head": "上一轮计划停在等你回答: 「往下说」意图不明确。你想让 agent 做什么? (如: 搜索/写文档/执行命令/分析数据)\n这一轮答复没有落地",
+      "secs": 0.0,
+      "t_start": 1789392636.0183,
+      "t_end": 1789392636.0204,
+      "window": [
+        0.638,
+        0.64
+      ],
+      "consumed_as_ask_answer": true,
+      "eligible": false
+    },
+    {
+      "turn": 9,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "calls": 1,
+      "tokens": 2555,
+      "actual": "pass",
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.04,
+      "t_start": 1789392636.0204,
+      "t_end": 1789392636.0623,
+      "window": [
+        0.64,
+        2.682
+      ],
+      "consumed_as_ask_answer": false,
+      "eligible": true
+    }
+  ],
+  "gate_records": [],
+  "r1_records": [],
+  "gate_r1_n": 0,
+  "gate_mech_n": 0,
+  "r1_skips": 0,
+  "r1_passes": 0,
+  "growth_chars_seen": []
+}

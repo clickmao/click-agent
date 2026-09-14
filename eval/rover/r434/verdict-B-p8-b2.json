@@ -1,0 +1,415 @@
+{
+  "arm": "B",
+  "grid": "p8",
+  "ns": "-b2",
+  "host": "/tmp/pub_r434/agenthost",
+  "bin_sha": "6be1f35",
+  "calls_total": 9,
+  "tokens_total": 4958,
+  "G_calls": 2,
+  "G_tokens": 4583,
+  "J_calls": 7,
+  "J_tokens": 375,
+  "unassigned_calls": 0,
+  "attribution": "content_anchor+seq_partition[R415/R425]",
+  "attribution_ok": true,
+  "false_negative": [
+    3,
+    5,
+    9
+  ],
+  "false_negative_by_calls": [
+    3,
+    5,
+    9
+  ],
+  "false_positive": [],
+  "false_positive_by_calls": [],
+  "fn_n": 3,
+  "fp_n": 0,
+  "accuracy": 0.625,
+  "measured_turns": [
+    1,
+    2,
+    3,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "measured_n": 8,
+  "consumed_as_ask_answer": [
+    4
+  ],
+  "per_turn": [
+    {
+      "turn": 1,
+      "family": "lead",
+      "want": "pass",
+      "mech": true,
+      "G_calls": 1,
+      "G_tokens": 2027,
+      "J_calls": 1,
+      "J_tokens": 47,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.35,
+      "t_start": 1789393133.7077,
+      "t_end": 1789393134.0561,
+      "window": [
+        0.0,
+        0.348
+      ]
+    },
+    {
+      "turn": 2,
+      "family": "ack",
+      "want": "skip",
+      "mech": false,
+      "G_calls": 0,
+      "G_tokens": 0,
+      "J_calls": 0,
+      "J_tokens": 0,
+      "actual": "skip",
+      "reply_source": "skip",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 21,
+      "reply_head": "收到，继续按当前方向推进，本轮不重新规划。",
+      "secs": 28.22,
+      "t_start": 1789393134.0561,
+      "t_end": 1789393162.2728,
+      "window": [
+        0.348,
+        28.565
+      ]
+    },
+    {
+      "turn": 3,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 0,
+      "G_tokens": 0,
+      "J_calls": 1,
+      "J_tokens": 55,
+      "actual": "skip",
+      "reply_source": "skip",
+      "consumed_as_ask_answer": false,
+      "hit": false,
+      "reply_len": 21,
+      "reply_head": "收到，继续按当前方向推进，本轮不重新规划。",
+      "secs": 22.79,
+      "t_start": 1789393162.2729,
+      "t_end": 1789393185.0618,
+      "window": [
+        28.565,
+        51.354
+      ]
+    },
+    {
+      "turn": 4,
+      "family": "ack",
+      "want": "skip",
+      "mech": false,
+      "G_calls": 0,
+      "G_tokens": 0,
+      "J_calls": 0,
+      "J_tokens": 0,
+      "actual": "consumed",
+      "reply_source": "consumed",
+      "consumed_as_ask_answer": true,
+      "hit": null,
+      "reply_len": 170,
+      "reply_head": "上一轮计划停在等你回答: 「讲一遍」意图不明确。你想让 agent 做什么? (如: 搜索/写文档/执行命令/分析数据)",
+      "secs": 0.0,
+      "t_start": 1789393185.0619,
+      "t_end": 1789393185.0637,
+      "window": [
+        51.354,
+        51.356
+      ]
+    },
+    {
+      "turn": 5,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 0,
+      "G_tokens": 0,
+      "J_calls": 1,
+      "J_tokens": 55,
+      "actual": "skip",
+      "reply_source": "skip",
+      "consumed_as_ask_answer": false,
+      "hit": false,
+      "reply_len": 21,
+      "reply_head": "收到，继续按当前方向推进，本轮不重新规划。",
+      "secs": 19.33,
+      "t_start": 1789393185.0637,
+      "t_end": 1789393204.3894,
+      "window": [
+        51.356,
+        70.682
+      ]
+    },
+    {
+      "turn": 6,
+      "family": "ack",
+      "want": "skip",
+      "mech": false,
+      "G_calls": 0,
+      "G_tokens": 0,
+      "J_calls": 1,
+      "J_tokens": 56,
+      "actual": "skip",
+      "reply_source": "skip",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 21,
+      "reply_head": "收到，继续按当前方向推进，本轮不重新规划。",
+      "secs": 31.14,
+      "t_start": 1789393204.3894,
+      "t_end": 1789393235.5245,
+      "window": [
+        70.682,
+        101.817
+      ]
+    },
+    {
+      "turn": 7,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 1,
+      "G_tokens": 2556,
+      "J_calls": 1,
+      "J_tokens": 55,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 33.17,
+      "t_start": 1789393235.5245,
+      "t_end": 1789393268.6963,
+      "window": [
+        101.817,
+        134.989
+      ]
+    },
+    {
+      "turn": 8,
+      "family": "ack",
+      "want": "skip",
+      "mech": false,
+      "G_calls": 0,
+      "G_tokens": 0,
+      "J_calls": 1,
+      "J_tokens": 52,
+      "actual": "skip",
+      "reply_source": "skip",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 21,
+      "reply_head": "收到，继续按当前方向推进，本轮不重新规划。",
+      "secs": 18.38,
+      "t_start": 1789393268.6963,
+      "t_end": 1789393287.0761,
+      "window": [
+        134.989,
+        153.368
+      ]
+    },
+    {
+      "turn": 9,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 0,
+      "G_tokens": 0,
+      "J_calls": 1,
+      "J_tokens": 55,
+      "actual": "skip",
+      "reply_source": "skip",
+      "consumed_as_ask_answer": false,
+      "hit": false,
+      "reply_len": 21,
+      "reply_head": "收到，继续按当前方向推进，本轮不重新规划。",
+      "secs": 29.16,
+      "t_start": 1789393287.0762,
+      "t_end": 1789393316.2335,
+      "window": [
+        153.368,
+        187.526
+      ]
+    }
+  ],
+  "gate_records": [
+    {
+      "decided": "true",
+      "verdict": "Pass",
+      "basis": "mechanical:pass→remote",
+      "cache_n": 0,
+      "growth_chars": 0,
+      "gate_prompt_len": 0,
+      "role_seed_chars": 0,
+      "error": ""
+    },
+    {
+      "decided": "true",
+      "verdict": "Skip",
+      "basis": "gate:skip→local",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 425,
+      "role_seed_chars": 78,
+      "error": ""
+    },
+    {
+      "decided": "true",
+      "verdict": "Skip",
+      "basis": "gate:skip→local",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 424,
+      "role_seed_chars": 78,
+      "error": ""
+    },
+    {
+      "decided": "true",
+      "verdict": "Skip",
+      "basis": "gate:skip→local",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 424,
+      "role_seed_chars": 78,
+      "error": ""
+    },
+    {
+      "decided": "true",
+      "verdict": "Skip",
+      "basis": "gate:skip→local",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 426,
+      "role_seed_chars": 78,
+      "error": ""
+    },
+    {
+      "decided": "true",
+      "verdict": "Pass",
+      "basis": "gate:pass→remote",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 424,
+      "role_seed_chars": 78,
+      "error": ""
+    },
+    {
+      "decided": "true",
+      "verdict": "Skip",
+      "basis": "gate:skip→local",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 425,
+      "role_seed_chars": 78,
+      "error": ""
+    },
+    {
+      "decided": "true",
+      "verdict": "Skip",
+      "basis": "gate:skip→local",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 424,
+      "role_seed_chars": 78,
+      "error": ""
+    }
+  ],
+  "r1_records": [
+    {
+      "decided": "true",
+      "verdict": "Skip",
+      "basis": "gate:skip→local",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 425,
+      "role_seed_chars": 78,
+      "error": ""
+    },
+    {
+      "decided": "true",
+      "verdict": "Skip",
+      "basis": "gate:skip→local",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 424,
+      "role_seed_chars": 78,
+      "error": ""
+    },
+    {
+      "decided": "true",
+      "verdict": "Skip",
+      "basis": "gate:skip→local",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 424,
+      "role_seed_chars": 78,
+      "error": ""
+    },
+    {
+      "decided": "true",
+      "verdict": "Skip",
+      "basis": "gate:skip→local",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 426,
+      "role_seed_chars": 78,
+      "error": ""
+    },
+    {
+      "decided": "true",
+      "verdict": "Pass",
+      "basis": "gate:pass→remote",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 424,
+      "role_seed_chars": 78,
+      "error": ""
+    },
+    {
+      "decided": "true",
+      "verdict": "Skip",
+      "basis": "gate:skip→local",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 425,
+      "role_seed_chars": 78,
+      "error": ""
+    },
+    {
+      "decided": "true",
+      "verdict": "Skip",
+      "basis": "gate:skip→local",
+      "cache_n": 0,
+      "growth_chars": 70,
+      "gate_prompt_len": 424,
+      "role_seed_chars": 78,
+      "error": ""
+    }
+  ],
+  "gate_r1_n": 7,
+  "gate_mech_n": 1,
+  "r1_skips": 6,
+  "r1_passes": 1,
+  "growth_chars_seen": [
+    70
+  ]
+}

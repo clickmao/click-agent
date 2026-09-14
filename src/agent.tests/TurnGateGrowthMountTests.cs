@@ -32,9 +32,13 @@ public sealed class TurnGateGrowthMountTests
 
     private const string AckMsg = "好，按这个来。";
 
-    /// <summary>R430 发布读数冻结基线: BuildPrompt(AckMsg, "skeptic|"+seed, null)。</summary>
-    private const string FrozenPromptSha16 = "8749b0a15f102f04";
-    private const int FrozenPromptLen = 355;
+    /// <summary>R430 发布读数冻结基线: BuildPrompt(AckMsg, "skeptic|"+seed, null)。
+    /// R434 重冻结: 门判 few-shot 新增两条**残余带原生 P 例**(`再说一遍。`/`展开说说。`) ——
+    /// 原两条 P 例全带机械信号、生产里到不了本门 ⇒ 带内只剩 S 例 ⇒ r1 学成「短消息 ⇒ S」(真机恒 Skip)。
+    /// 重冻结留痕: 旧 = 355 / `8749b0a15f102f04` (R430 发布值, 已用独立 python 重建复核逐字节相等);
+    /// 新 = 383 / `2dcfe801651a2cd1` (+28 = 两行示例逐字节长度)。未挂载路径**语义不变**, 仅示例集合扩大。</summary>
+    private const string FrozenPromptSha16 = "2dcfe801651a2cd1";
+    private const int FrozenPromptLen = 383;
 
     // ---------- 夹具 (与 LocalTurnGateTests 同形; 该文件的夹具是 private ⇒ 本文件自带) ----------
     private sealed class FakePort : ILocalGenerationPort

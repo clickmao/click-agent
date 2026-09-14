@@ -309,6 +309,51 @@
    "DocRef": "docs/plans/v0.50.0-r429-decision-cache-pin.md",
    "Evidence": "eval/rover/r429/verdict-r429.json",
    "Summary": "门判与判官共用单 slot 前缀缓存 ⇒ 命中态由调用序列决定 ⇒ 同一 prompt 生成不同 ⇒ 判定不可复现(PRE 同文4次 = Pass/Skip/Skip/Skip)。决策路径显式 CacheReuse=false(默认 true 零回归), 门判 telemetry 增 cache_n/pinned; POST 门判 Skip×4 恒定/cache_n 恒 0/pinned 1→4/远端调用 4→2~3/token 4243→2053。P1/P2/P3/P5a/P5b/P6 过; P4/P5c 未过(如实收窄: 判定输入不可复现已证, 判定翻转与文本逐位复现未证)。AOT IL 0, 15,176,432 B"
+  },
+  {
+   "Id": "dev-r430-input-fingerprint",
+   "Title": "门判输入指纹 + llama-server 显式 -np 1（并行槽定案）",
+   "State": "done",
+   "Round": "R430",
+   "DocRef": "docs/plans/v0.51.0-r430-input-fingerprint.md",
+   "Evidence": "eval/rover/r430/run_arm.sh",
+   "Summary": "同一 prompt 两次调用逐位不同 ⇒ 先机械区分「输入不同」与「引擎不确定」：新增 LocalInputFingerprint(sha16/Describe) 并进遥测 prompt_sha/request_sha/req_fields/role_seed_sha。根因 = 该 llama.cpp 构建 -np 默认 4 slots ⇒ 批组合随调用序列变化 ⇒ logits 漂移；修 = 框架自启 llama-server 显式 -np 1（同文 raw 逐字节同，KPI 远端 2→1 / token 2053→1996）。"
+  },
+  {
+   "Id": "dev-r431-growth-mount",
+   "Title": "role 额外数据（成长经历）挂载进 r1 门判：可机检 + 有界",
+   "State": "done",
+   "Round": "R431",
+   "DocRef": "docs/plans/v0.52.0-r431-growth-mount.md",
+   "Evidence": "eval/rover/r431/README-evidence.md",
+   "Summary": "改前机检: 真角色容器无 growth 键 ⇒ 调用点第三参恒 null ⇒ 挂载是空操作。改: 传 GrowthLedger.RenderForPrompt() + 遥测 prompt 形状(gate_prompt_len/role_seed_chars/growth_chars/growth_lines)；长度差恒 = 块长+1(355+70+1=426)；全量 1251/0/0。诚实边界: 不宣称 token 下降。"
+  },
+  {
+   "Id": "dev-r432-gate-discrimination",
+   "Title": "门判判别力 × 确定性成对判据（残余带）",
+   "State": "done",
+   "Round": "R432",
+   "DocRef": "docs/plans/v0.53.0-r432-gate-discrimination.md",
+   "Evidence": "eval/rover/r432/PEER-GATE-RED.md",
+   "Summary": "成对判据: 确定性 ✓（ack/cont/adv 多连排逐位相同, cache_n 0）; 判别力 ✗（残余带恒定 Skip）。省 token 机制成立（Skip 轮 G=0），泄漏 = 关系判官 J 回退 8/11 轮 ×≈47 tok。判决 FAIL（C1/C3/C5 被证伪 ⇒ 宣称收窄, 后验判据单列）。"
+  },
+  {
+   "Id": "dev-r433-doc-driven-probe",
+   "Title": "严格执行文档跑测计划 + 判分取码通道修复",
+   "State": "done",
+   "Round": "R433",
+   "DocRef": "docs/plans/v0.54.0-r433-doc-driven-probe-rerun.md",
+   "Evidence": "eval/capability/r433/README-evidence.md",
+   "Summary": "机检坐实 KPI sink 停更 ~21h（30 份摘要 24 份未打点）⇒ 复跑文档链: 同题 A/B 一度 1.0→0.6944 ⇒ 根因 = 判分器从**渲染转录**取码（SyntaxError ｜），产品 artifact 3/3 origin=fenced/compile_valid=true ⇒ 旧读数 100% 假红; 修 = 产物优先通道 + 7 位小数时间戳容错(fail-closed) + 归属闭区间 ±0.25s ⇒ 同 sha 36/36=1.0; selftest grade 34/34·run_probe 29/29; ledger 6→14。"
+  },
+  {
+   "Id": "dev-r434-turn-gate-double-condition",
+   "Title": "P 族真假判别网格 + r1-Skip 双条件结构修（质量硬线）",
+   "State": "done",
+   "Round": "R434",
+   "DocRef": "docs/plans/v0.55.0-r434-falseinfo-discrimination-grid.md",
+   "Evidence": "eval/rover/r434/README-evidence.md",
+   "Summary": "残余带 8 轮机检全无机械信号。基线: 降幅 73.2% 但 4 真诉求轮 3 个被 r1 误跳成空话（质量硬线失守）; 少样本修被实测证伪（prompt +28 字符、臂 B 判定逐位不变）。修 = 双条件: Skip 仅在结构确认「认可族」时生效, 否则降级 Pass ⇒ 降幅 33.3%(仍≥30%) ∧ 假阴性 0 ∧ 假阳性 0 ∧ 判定准确率 1.000; 无设备负控跳过 0 次; 同臂复跑逐位一致。"
   }
  ]
 }

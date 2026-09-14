@@ -1,0 +1,29 @@
+{
+  "under_test": {
+    "path": "/tmp/pub_r434b/agenthost",
+    "exists": true,
+    "bytes": 15184624,
+    "sha256": "202481d83dc7552f206ddf30ec428e5128f83a1e45ae6688a3ebf7854eac703d",
+    "bare_rc": 0,
+    "bare_stdout_head": "AgentFramework CLI",
+    "needs_runtime": false,
+    "native_ok": true,
+    "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=dfcf3326d91da73cc67f4248d448bb722d7244d6, for GNU/Linux 3.2.0, stripped"
+  },
+  "negative_controls": [
+    {
+      "path": "/home/agentuser/AgentFramework/src/agent.host/bin/Release/net10.0/agenthost",
+      "exists": true,
+      "bytes": 78256,
+      "sha256": "fe1fb720fb5eedb044014b1c27cd18352e851960102f93920bfb2f57e0820dd3",
+      "bare_rc": 131,
+      "bare_stdout_head": "You must install .NET to run this application.",
+      "needs_runtime": true,
+      "native_ok": false,
+      "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=93c65abf3ff66427178d065d36972e8969f06f4e, stripped"
+    }
+  ],
+  "pos_ok": true,
+  "neg_ok": true,
+  "verdict": "PASS"
+}

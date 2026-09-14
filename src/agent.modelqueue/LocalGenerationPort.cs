@@ -263,6 +263,12 @@ public static class TurnGateJudge
         sb.Append("用户: 收到，谢谢。 → S\n");
         sb.Append("用户: 另外，测试命令是什么？ → P\n");
         sb.Append("用户: 不对，你上一轮不准确，请重新确认。 → P\n");
+        // R434 承重修正 (真机实测根因): 上面两条 P 例**全带机械信号**(另外/不对/？) ⇒ 生产链里
+        // 结构性 MechanicalPass, 根本进不到本门 ⇒ 残余带内 r1 只见 S 例, 学到「短消息 ⇒ S」
+        // ⇒ 恒 Skip (R432 实测恒定 Skip 的因果源)。补两条**残余带原生 P 例**
+        // (无 ?/？、无问句/诉求/纠正词、无数字、长度<24) 构成带内 S/P 对照。
+        sb.Append("用户: 再说一遍。 → P\n");
+        sb.Append("用户: 展开说说。 → P\n");
         sb.Append("先思考, 思考结束后必须另起一行只写一个字母 (S 或 P), 不要写其他内容。\n");
         sb.Append("无法确定时也必须写 P (宁可多走一次远端)。\n");
         // R413 实测 (§7.3): 判别提示必须**短** — 角色全文灌入会挤占上下文与生成预算,
@@ -278,6 +284,33 @@ public static class TurnGateJudge
         sb.Append("【用户消息】").Append((userMessage ?? string.Empty).Trim()).Append('\n');
         sb.Append("答案:\n");
         return sb.ToString();
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // R434 双条件 (真机实测根因): 残余带内 r1 对「短促真诉求」误判 Skip
+    //   (「再讲一遍。」「讲细一点。」「从头再说。」实测 3/4 被跳 ⇒ 用户拿到空话, 真诉求丢失)。
+    // 修: r1 的 Skip 只在**结构上确认为「认可族」**时生效 ⇒ 否则降级 Pass (宁可多走一次远端)。
+    // 方向性: 这是**白名单**(承认哪些可以省) 而非黑名单(猜测哪些不能省) ⇒ 未知一律保守。
+    // ─────────────────────────────────────────────────────────────────────────
+    private const string AckFamilyChars = "好嗯行明白了知道谢收到多辛苦可以先就的";
+
+    /// <summary>
+    /// R434: 「认可族」结构确认 —— 纯认可/确认/致谢短句 (去标点后 ≤10 字, 且字符全属白名单字符集)。
+    /// 只作**第二条件**: r1 判 Skip ∧ 本判为真 ⇒ 才允许跳过远端 (r1 不 Skip 时本判无意义);
+    /// 结构不确认 ⇒ 降级 Pass (宁多走一次远端, 也不让真诉求被跳成空话)。
+    /// </summary>
+    public static bool MechanicalAck(string? userMessage)
+    {
+        var m = (userMessage ?? string.Empty).Trim();
+        if (m.Length == 0) return false;
+        var n = 0;
+        foreach (var ch in m)
+        {
+            if (char.IsPunctuation(ch) || char.IsWhiteSpace(ch) || char.IsSymbol(ch)) continue;
+            if (AckFamilyChars.IndexOf(ch) < 0) return false;
+            if (++n > 10) return false;
+        }
+        return n > 0;
     }
 
     public static string Clip(string s, int max)
@@ -427,6 +460,8 @@ public sealed class TurnGateCounters
 
     private long _templateAcks;
 
+    private long _skipRejected;
+
     private long _cachePinned;
     private int _lastCachedTokens;
 
@@ -499,6 +534,12 @@ public sealed class TurnGateCounters
     public void RecordJudged() => Interlocked.Increment(ref _judged);
     public void RecordSkipped() { Interlocked.Increment(ref _skipped); LastBasis = "gate:skip→local"; }
     public void RecordPassed() { Interlocked.Increment(ref _passed); LastBasis = "gate:pass→remote"; }
+
+    /// <summary>R434: r1 判 Skip 但结构上非「认可族」⇒ 降级 Pass 的次数 (被拒的省钱机会必须可观测)。</summary>
+    public long SkipRejected => Interlocked.Read(ref _skipRejected);
+
+    /// <summary>R434: r1 判 Skip 但结构确认失败 (非认可族) ⇒ 降级 Pass, 宁多走一次远端。</summary>
+    public void RecordSkipRejected() { Interlocked.Increment(ref _skipRejected); LastBasis = "gate:skip_rejected_nonack→remote"; }
 
     public void RecordDegraded(string reason)
     {
