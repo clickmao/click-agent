@@ -1,0 +1,249 @@
+{
+  "C1_gate_quality": {
+    "W8": {
+      "realized_skip": [
+        8
+      ],
+      "declared_skip": [
+        8
+      ],
+      "false_negative": [],
+      "false_positive": [],
+      "verdict": "OK"
+    },
+    "W20": {
+      "realized_skip": [
+        20
+      ],
+      "declared_skip": [
+        20
+      ],
+      "false_negative": [],
+      "false_positive": [],
+      "verdict": "OK"
+    },
+    "M20": {
+      "realized_skip": [
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "declared_skip": [
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "false_negative": [],
+      "false_positive": [],
+      "verdict": "OK"
+    },
+    "A_W8": {
+      "turns_without_remote_call": [],
+      "verdict": "OK"
+    },
+    "A_W20": {
+      "turns_without_remote_call": [],
+      "verdict": "OK"
+    },
+    "A_M20": {
+      "turns_without_remote_call": [],
+      "verdict": "OK"
+    }
+  },
+  "C2_prefix_identity": {
+    "W8": {
+      "prefix_turns": 7,
+      "diffs": [],
+      "verdict": "OK"
+    },
+    "W20": {
+      "prefix_turns": 13,
+      "diffs": [
+        {
+          "turn": 2,
+          "new": 2242,
+          "v4": 2241
+        },
+        {
+          "turn": 5,
+          "new": 2463,
+          "v4": 2462
+        },
+        {
+          "turn": 7,
+          "new": 2712,
+          "v4": 2711
+        },
+        {
+          "turn": 8,
+          "new": 2858,
+          "v4": 2857
+        },
+        {
+          "turn": 13,
+          "new": 3543,
+          "v4": 3542
+        }
+      ],
+      "verdict": "FAIL"
+    }
+  },
+  "C3_prediction_hit": {
+    "W8": {
+      "A_total": 17260,
+      "B_total": 14884,
+      "drop_meas_pct": 13.77,
+      "drop_pred_main_pct": 4.13,
+      "drop_pred_bracket_pct": [
+        2.21,
+        4.2
+      ],
+      "dev_pt": 9.64,
+      "tol_pt": 3.0,
+      "verdict": "FAIL"
+    },
+    "W20": {
+      "A_total": 54326,
+      "B_total": 52590,
+      "drop_meas_pct": 3.2,
+      "drop_pred_main_pct": 5.88,
+      "drop_pred_bracket_pct": [
+        5.88,
+        5.95
+      ],
+      "dev_pt": 2.68,
+      "tol_pt": 3.0,
+      "verdict": "OK"
+    },
+    "M20": {
+      "A_total": 61230,
+      "B_total": 32950,
+      "drop_meas_pct": 46.19,
+      "drop_pred_main_pct": 37.54,
+      "drop_pred_bracket_pct": [
+        28.37,
+        38.01
+      ],
+      "dev_pt": 8.65,
+      "tol_pt": 3.0,
+      "verdict": "FAIL"
+    },
+    "V2b": {
+      "A_total": 6126,
+      "B_total": 4151,
+      "drop_meas_pct": 32.24,
+      "drop_pred_main_pct": 30.31,
+      "drop_pred_bracket_pct": [
+        30.31,
+        30.98
+      ],
+      "dev_pt": 1.93,
+      "tol_pt": 1.0,
+      "verdict": "FAIL"
+    }
+  },
+  "C4_window_floor": {
+    "drop_W8_pct": 13.77,
+    "drop_W20_pct": 3.2,
+    "verdict": "OK"
+  },
+  "C5_position_curve": {
+    "drop_V4_late_cluster_pct": 48.57,
+    "drop_M20_mid_cluster_pct": 46.19,
+    "drop_V20_scattered_pct": 45.31,
+    "order_ok": true,
+    "verdict": "OK"
+  },
+  "C6_quality": {
+    "source": "qverify-r441.json",
+    "grids": {
+      "W8": "OK",
+      "W20": "OK",
+      "M20": "OK",
+      "V2b": "OK"
+    },
+    "verdict": "OK"
+  },
+  "C7_determinism": {
+    "skip_new": [
+      4
+    ],
+    "skip_r440": [
+      4
+    ],
+    "B_new": 4151,
+    "B_r440": 4151,
+    "rel_delta_pct": 0.0,
+    "same_round_W8_pair_rel_delta_pct": 0.011,
+    "detcheck": "OK",
+    "detcheck_pairs": [
+      {
+        "pair": "P1_A_W8_same_round",
+        "verdict": "OK",
+        "calls_identical": false,
+        "prompt_offsets": [
+          1,
+          2
+        ]
+      },
+      {
+        "pair": "P2_BRJ_W8_same_round",
+        "verdict": "OK",
+        "calls_identical": false,
+        "prompt_offsets": [
+          1,
+          2
+        ]
+      },
+      {
+        "pair": "P3_V2b_cross_round_R440",
+        "verdict": "OK",
+        "calls_identical": true,
+        "prompt_offsets": [
+          0
+        ]
+      },
+      {
+        "pair": "P4_V2b_cross_round_R440_BRJ",
+        "verdict": "OK",
+        "calls_identical": true,
+        "prompt_offsets": [
+          0
+        ]
+      }
+    ],
+    "verdict": "OK"
+  },
+  "C8_protocol": {
+    "pred_mtime": 1789425675.3074656,
+    "first_verdict_mtime": 1789425753.3820488,
+    "pred_before_run": true,
+    "A_sources": {
+      "W8": "代理 A(V4), 前缀恒等轮=7",
+      "W20": "代理 A(V4), 前缀恒等轮=13",
+      "M20": "代理 A(V4), 前缀恒等轮=6",
+      "V2b": "同网格实测 A"
+    },
+    "cross_grid_proxy_used": [],
+    "verdict": "OK"
+  },
+  "verdicts": {
+    "C1_gate_quality": "OK",
+    "C2_prefix_identity": "FAIL",
+    "C3_prediction_hit": "FAIL",
+    "C4_window_floor": "OK",
+    "C5_position_curve": "OK",
+    "C6_quality": "OK",
+    "C7_determinism": "OK",
+    "C8_protocol": "OK"
+  },
+  "overall": "FAIL"
+}

@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R440",
+ "updated_round": "R441",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -1120,6 +1120,24 @@
     "docs/plans/v0.60.0-r440-length-ladder-measurement.md"
    ],
    "note": "零产品源码改动 ⇒ 无 AOT 重发布义务; 被测二进制 /tmp/pub_r438/agenthost(AOT native 15,188,768 B, V0 形态闸 PASS, IL 0)"
+  },
+  {
+   "id": "r441.gain-window-floor-and-position-curve",
+   "owner_round": "R441",
+   "level": "L3",
+   "capability": "**收益窗口下界 + 位置曲线**（同网格实测 A 分母, 8 臂, 被测二进制 sha 与 R439/R440 同）: 单跳 1/8 → **+13.77%**（A 17260→BRJ 14884）、单跳 1/20 末轮 → **+3.20%**（54326→52590）⇒ 单次 realized skip 即转正, 「≥30%」的下界不在 30% 附近而在**可跳轮占比×轮均成本占比**; 短任务 1/4 → **+32.24%**（6126→4151）。位置曲线（N=20、可跳 7/20 固定）: 散布 **45.31%** < 中簇 t7–13 **46.19%**（61230→32950）< 晚簇 **48.57%**, 单调, 跨度 3.26pt ⇒ R440 C7「位置效应符号被证伪」修正为**符号为正、幅度小**。质量: 非跳轮回复逐位相同 42/42（跳轮=本地消化族文本, 常量从 C# 权威源派生）; 复现: 跨轮 V2b 逐位相同（Δtot=0）、同轮 W8 双跑 Δ0.011pt。预注册判据 **C2/C3 FAIL**(2/8): C2 根因=工作区路径长度进 system prompt(+1tok/轮), C3 根因=① 预测器代理 A 未按 N 截断（W8 分母取 V4 全长 61281 应 17260）② 块质量 m 非位置函数而是**会话累积状态函数** ⇒ 改同网格实测后 M20 残差 3.79→1.77pt。新发现（入 debt）: BRJ 臂内联块携带累积 [已完成] 列表、A 臂为 [Memory RAG]/[联想] 行 ⇒ 两臂块不同源, 使实测降幅**偏保守**; 跳轮微步骤远端调用 ρ∈{0,41} 无确定触发条件。",
+   "evidence_cmd": "python3 eval/rover/r441/design_check_r441.py (9 网格 OK); python3 eval/rover/r441/predict_r441.py; bash eval/rover/r441/run_all_s1.sh; bash eval/rover/r441/run_all_s3.sh; python3 eval/rover/r441/qverify_r441.py; python3 eval/rover/r441/detcheck_r441.py; python3 eval/rover/r441/blockmass_r441.py; python3 eval/rover/r441/compare_r441.py",
+   "evidence_path": "eval/rover/r441/README-evidence.md; eval/rover/r441/compare-r441.json; eval/rover/r441/predict-r441-pre.json; eval/rover/r441/predict-r441-postfix.json; eval/rover/r441/detcheck-r441.json; eval/rover/r441/qverify-r441.json; eval/rover/r441/blockmass-r441.json",
+   "negative_control": "V5 零可跳 20 轮 −2.40%（存档, 同长同池）与本轮 1/20 单跳 +3.20% 对照 ⇒ 差异只能由「是否发生 1 次 realized skip」解释; W8 与 W20 同为单跳, 降幅 13.77% vs 3.20% 之差由可跳轮占比 1/8 vs 1/20 解释",
+   "covers": [
+    "eval/rover/r441/README-evidence.md",
+    "eval/rover/r441/compare-r441.json",
+    "eval/rover/r441/grid/task-W8.json",
+    "eval/rover/r441/grid/task-W20.json",
+    "eval/rover/r441/grid/task-M20.json",
+    "docs/plans/v0.61.0-r441-gain-window-floor-and-position-curve.md"
+   ],
+   "note": "本轮零源码改动（纯计量）; 被测二进制 = /tmp/pub_r438/agenthost sha256 6167e9…（同 R439/R440）。阶段二脚本把网格当第 4 位置参数（run_arm 只吃 3 个位置参数, 网格走 R441_GRID）⇒ 误跑 W8 一次, 已登记为意外复现对 P1/P2。"
   }
  ],
  "aot_check_policy": "release_tag_only",
