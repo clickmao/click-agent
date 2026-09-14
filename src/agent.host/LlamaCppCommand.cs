@@ -20,7 +20,8 @@ namespace agent.host;
 ///
 /// 用法:
 ///   agenthost --llamacpp --model &lt;gguf&gt; [--bin &lt;llama-server&gt;] (--chat-text &lt;s&gt; | --prompt &lt;s&gt; | --prompt-file &lt;f&gt;)
-///            [--max-tokens N] [--expect-ids a,b,c] [--json &lt;out&gt;]
+///            [--max-tokens N] [--expect-ids a,b,c] [--reuse on|off] [--json &lt;out&gt;]
+///            （--reuse on = Session 口径开前缀缓存/K2b 用；off = Reconciliation 关缓存/对账用，默认 off）
 ///   agenthost --llamacpp --model &lt;gguf&gt; --verify-template [--chat-text &lt;s&gt;] [--prompt-file &lt;f&gt;]
 ///   agenthost --llamacpp --model &lt;embed-gguf&gt; --embed-text &lt;text&gt; [--json &lt;out&gt;]
 ///
@@ -36,6 +37,7 @@ public static class LlamaCppCommand
     {
         string? model = null, bin = null, prompt = null, promptFile = null, embed = null, jsonPath = null, expectIds = null, vecOut = null, chatText = null;
         var verifyTemplate = false;
+        var reuse = CompletionReuse.Reconciliation;   // E2E 默认对账口径; 生产/会话演示须显式 --reuse on
         var maxTokens = 24;
         for (var i = 1; i < args.Length; i++)
         {
@@ -46,6 +48,12 @@ public static class LlamaCppCommand
                 case "--prompt": prompt = Val(args, ref i); break;
                 case "--prompt-file": promptFile = Val(args, ref i); break;
                 case "--chat-text": chatText = Val(args, ref i); break;
+                case "--reuse":
+                    var rv = Val(args, ref i);
+                    if (rv is "on" or "session") reuse = CompletionReuse.Session;
+                    else if (rv is "off" or "reconciliation") reuse = CompletionReuse.Reconciliation;
+                    else { errp.WriteLine($"llamacpp: --reuse 只接受 on|off，实到 {rv}"); return 2; }
+                    break;
                 case "--verify-template": verifyTemplate = true; break;
                 case "--embed-text": embed = Val(args, ref i); break;
                 case "--vec-out": vecOut = Val(args, ref i); break;
@@ -102,7 +110,7 @@ public static class LlamaCppCommand
 
                 var result = isEmbed
                     ? await RunEmbedAsync(provider, model, embed!, vecOut).ConfigureAwait(false)
-                    : await RunGenerateAsync(provider, model, chatText, promptText, maxTokens, expectIds).ConfigureAwait(false);
+                    : await RunGenerateAsync(provider, model, chatText, promptText, maxTokens, expectIds, reuse).ConfigureAwait(false);
 
                 var json = JsonSerializer.Serialize(result, LlamaCppE2EJsonContext.Default.LlamaCppE2EResult);
                 outp.WriteLine(json);
@@ -138,9 +146,11 @@ public static class LlamaCppCommand
     }
 
     private static async Task<LlamaCppE2EResult> RunGenerateAsync(
-        LlamaCppProvider provider, string model, string? chatText, string? literalPrompt, int maxTokens, string? expectIds)
+        LlamaCppProvider provider, string model, string? chatText, string? literalPrompt, int maxTokens,
+        string? expectIds, CompletionReuse reuse)
     {
         // R409: chatText 走闸门（模板来自模型元数据）；literalPrompt 走诊断通路（绕过闸门，计入 LiteralPromptCalls）。
+        // R410: reuse = 口径开关（Session=开前缀缓存，K2b 用；Reconciliation=关缓存，对账用）。
         string promptMode;
         CompletionResult r;
         string promptSha;
@@ -149,13 +159,13 @@ public static class LlamaCppCommand
             promptMode = "chat_template";
             var rendered = await provider.RenderAsync([new ChatTurn("user", chatText)]).ConfigureAwait(false);
             promptSha = Sha256Hex(Encoding.UTF8.GetBytes(rendered.Text));
-            r = await provider.CompleteRenderedAsync(rendered, maxTokens).ConfigureAwait(false);
+            r = await provider.CompleteRenderedAsync(rendered, maxTokens, reuse: reuse).ConfigureAwait(false);
         }
         else
         {
             promptMode = "literal";
             promptSha = Sha256Hex(Encoding.UTF8.GetBytes(literalPrompt!));
-            r = await provider.CompleteLiteralPromptAsync(literalPrompt!, maxTokens).ConfigureAwait(false);
+            r = await provider.CompleteLiteralPromptAsync(literalPrompt!, maxTokens, reuse: reuse).ConfigureAwait(false);
         }
 
         int[] expected = [];
@@ -185,6 +195,11 @@ public static class LlamaCppCommand
             TemplateRenders = provider.TemplateRenders,
             PromptGateRejections = provider.PromptGateRejections,
             LiteralPromptCalls = provider.LiteralPromptCalls,
+            ReuseMode = reuse.ToString(),
+            CachedTokens = r.CachedTokens,
+            SessionReuseCalls = provider.SessionReuseCalls,
+            ReconciliationCalls = provider.ReconciliationCalls,
+            SessionCacheMisses = provider.SessionCacheMisses,
         };
     }
 
@@ -293,6 +308,16 @@ public sealed class LlamaCppE2EResult
     public string Mode { get; set; } = "";
     /// <summary>prompt 通路来源: "chat_template" = 经 /apply-template 渲染（受闸门保护）；"literal" = 诊断通路（绕过闸门，计入 LiteralPromptCalls）。</summary>
     public string PromptMode { get; set; } = "";
+    /// <summary>R410 生成口径: "Session"（开前缀缓存，K2b 用）/"Reconciliation"（关缓存，对账用）。</summary>
+    public string ReuseMode { get; set; } = "";
+    /// <summary>服务端自报的复用前缀 token 数（cache_n）；Reconciliation 口径下恒 0。</summary>
+    public int CachedTokens { get; set; }
+    /// <summary>被使用计数: 会话口径调用数。</summary>
+    public long SessionReuseCalls { get; set; }
+    /// <summary>被使用计数: 对账口径调用数。</summary>
+    public long ReconciliationCalls { get; set; }
+    /// <summary>会话口径下前缀未命中次数（静默失效可见化）。</summary>
+    public long SessionCacheMisses { get; set; }
     public string BaseUrl { get; set; } = "";
     public string Model { get; set; } = "";
     public string PromptSha256 { get; set; } = "";

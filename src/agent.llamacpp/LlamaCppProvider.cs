@@ -19,6 +19,9 @@ public sealed class LlamaCppProvider : IAsyncDisposable, ILocalPromptRenderer
     private ModelProps? _props;
     private long _gateRejections;
     private long _literalCalls;
+    private long _sessionReuseCalls;
+    private long _reconciliationCalls;
+    private long _sessionCacheMisses;
 
     private LlamaCppProvider(LlamaServerHost host, LlamaCppClient client)
     {
@@ -63,6 +66,15 @@ public sealed class LlamaCppProvider : IAsyncDisposable, ILocalPromptRenderer
     /// <summary>绕过闸门的诊断通路调用数（生产路径应当恒为 0；非 0 即缺口）。</summary>
     public long LiteralPromptCalls => Interlocked.Read(ref _literalCalls);
 
+    /// <summary>会话口径（开前缀缓存）调用次数 —— K2b 的被使用计数。</summary>
+    public long SessionReuseCalls => Interlocked.Read(ref _sessionReuseCalls);
+
+    /// <summary>对账口径（关前缀缓存）调用次数。</summary>
+    public long ReconciliationCalls => Interlocked.Read(ref _reconciliationCalls);
+
+    /// <summary>会话口径下前缀未被复用的次数（prompt ≥128 token 且 cache_n=0）—— 让静默失效可见。</summary>
+    public long SessionCacheMisses => Interlocked.Read(ref _sessionCacheMisses);
+
     /// <summary>模型身份与特殊 token（首次访问时经 GET /props 取得并缓存）。</summary>
     public ModelProps? Props => _props;
 
@@ -106,46 +118,57 @@ public sealed class LlamaCppProvider : IAsyncDisposable, ILocalPromptRenderer
     }
 
     /// <summary>
-    /// 生成（默认 greedy、关 cache_prompt，与 R407/R408 对账口径一致）。
+    /// 生成。默认口径 = <see cref="CompletionReuse.Session"/>（开前缀缓存 = 生产口径，K2b 的唯一来源）；
+    /// 对账场景必须显式传 Reconciliation（关缓存 ⇒ 可复现）。
     /// prompt 只接受结构化轮次 ⇒ 模板一定来自模型元数据（R409 闸门）。
     /// </summary>
     public async Task<CompletionResult> GenerateAsync(
-        IReadOnlyList<ChatTurn> turns, int maxTokens = 64, bool greedy = true, CancellationToken ct = default)
+        IReadOnlyList<ChatTurn> turns, int maxTokens = 64, bool greedy = true,
+        CompletionReuse reuse = CompletionReuse.Session, CancellationToken ct = default)
     {
         var rendered = await RenderAsync(turns, ct).ConfigureAwait(false);
-        return await CompleteRenderedAsync(rendered, maxTokens, greedy, ct).ConfigureAwait(false);
+        return await CompleteRenderedAsync(rendered, maxTokens, greedy, reuse, ct).ConfigureAwait(false);
     }
 
     /// <summary>对已渲染产物直接生成（渲染与生成分离时使用；调用方须持有渲染凭证）。</summary>
     public Task<CompletionResult> CompleteRenderedAsync(
-        RenderedPrompt rendered, int maxTokens = 64, bool greedy = true, CancellationToken ct = default)
+        RenderedPrompt rendered, int maxTokens = 64, bool greedy = true,
+        CompletionReuse reuse = CompletionReuse.Session, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(rendered);
-        return CompleteLiteralAsync(rendered.Text, maxTokens, greedy, ct);
+        return CompleteLiteralAsync(rendered.Text, maxTokens, greedy, reuse, ct);
     }
 
     /// <summary>
     /// 诊断/对账通路：直接把字面 prompt 交给 /completion（**绕过闸门**）。
-    /// 仅用于与外部基线做 token id 逐位对比；调用计数见 LiteralPromptCalls，生产路径不得使用。
+    /// 默认 Reconciliation 口径（关前缀缓存 ⇒ 可复现），仅用于与外部基线做 token id 逐位对比；
+    /// 调用计数见 LiteralPromptCalls，生产路径不得使用。
     /// </summary>
     public Task<CompletionResult> CompleteLiteralPromptAsync(
-        string prompt, int maxTokens = 64, bool greedy = true, CancellationToken ct = default)
+        string prompt, int maxTokens = 64, bool greedy = true,
+        CompletionReuse reuse = CompletionReuse.Reconciliation, CancellationToken ct = default)
     {
         Interlocked.Increment(ref _literalCalls);
-        return CompleteLiteralAsync(prompt, maxTokens, greedy, ct);
+        return CompleteLiteralAsync(prompt, maxTokens, greedy, reuse, ct);
     }
 
-    private Task<CompletionResult> CompleteLiteralAsync(string prompt, int maxTokens, bool greedy, CancellationToken ct)
+    private async Task<CompletionResult> CompleteLiteralAsync(
+        string prompt, int maxTokens, bool greedy, CompletionReuse reuse, CancellationToken ct)
     {
-        var opts = new CompletionOptions
+        var opts = CompletionProfiles.Build(prompt, maxTokens, greedy, reuse);
+        var r = await _client.CompleteAsync(opts, ct).ConfigureAwait(false);
+        if (reuse == CompletionReuse.Session)
         {
-            Prompt = prompt,
-            MaxTokens = maxTokens,
-            Temperature = greedy ? 0f : 0.8f,
-            Samplers = greedy ? ["temperature"] : ["top_k", "top_p", "min_p", "temperature"],
-            CachePrompt = false,
-        };
-        return _client.CompleteAsync(opts, ct);
+            Interlocked.Increment(ref _sessionReuseCalls);
+            // 让静默失效可见: 会话口径下前缀没被复用(cache_n=0)且 prompt 足够长 ⇒ 记一次 miss。
+            if (r.CachedTokens == 0 && r.PromptTokens >= 128)
+                Interlocked.Increment(ref _sessionCacheMisses);
+        }
+        else
+        {
+            Interlocked.Increment(ref _reconciliationCalls);
+        }
+        return r;
     }
 
     /// <summary>tokenize 透传（验证/对账通道；不在生成热路径上）。</summary>
