@@ -1,0 +1,83 @@
+{
+  "mode": "selfcheck",
+  "open_count": 0,
+  "open_items": [],
+  "open_items_detail": [],
+  "backlog_open": 0,
+  "master_open": 0,
+  "sources": {
+    "backlog": {
+      "rows_scanned": 8,
+      "closed": 3,
+      "unmarked": 0,
+      "tables": 5,
+      "state_col": {
+        "R400": 2,
+        "R401": 2,
+        "R402": 2,
+        "R403": 2,
+        "R411-V": 2,
+        "R371": 2,
+        "R370": 2
+      },
+      "plan_rows_scanned": 0
+    },
+    "master": {
+      "hits": 0,
+      "format_matched": false,
+      "note": "该来源对当前报告版式零命中 ⇒ 视作「缺失」而非「无未完成事项」(v2 显式化)"
+    },
+    "legacy_logic": true
+  },
+  "kpi_lines": 6,
+  "skills_count": 11,
+  "rule": "mode=tasks ⇒ 推进计划项一步; mode=selfcheck ⇒ 跑 py 随机程序+随机数学题能力自检并沉淀通用性 skill",
+  "last_probe": {
+    "file": "probe-m6-hardcode.json",
+    "ts": "2026-09-13T23:20:31+0800",
+    "solver": "mutation:hardcode",
+    "solver_id": "mutation:hardcode",
+    "oracle": false,
+    "seed": 20260913,
+    "kind_arg": "program",
+    "taskset_sha": "364de23ea7aed840",
+    "n_tasks": 3,
+    "passed": 6,
+    "total": 33,
+    "rate": 0.1818,
+    "elapsed_s": 0.71,
+    "s_per_task": 0.23666666666666666,
+    "reply_chars_mean": 24.333333333333332,
+    "tasks_ok": 0,
+    "task_rate": 0.0,
+    "taxonomy": {
+      "wrong_output": 27,
+      "ok": 6
+    },
+    "by_kind": {
+      "program": {
+        "n": 3,
+        "passed": 6,
+        "total": 33,
+        "modes": {
+          "partial": 3
+        },
+        "rate": 0.1818
+      }
+    },
+    "by_family": {
+      "pair_closest_abs_sum": {
+        "n": 3,
+        "passed": 6,
+        "total": 33,
+        "modes": {
+          "partial": 3
+        },
+        "rate": 0.1818
+      }
+    },
+    "tokens": null,
+    "tok_per_task": null,
+    "tok_per_passed_case": null
+  }
+}

@@ -51,3 +51,57 @@
 2. 来源②正则适配（或改为读结构化状态源），把「缺失≠为空」升级为「真能读」。
 3. `docs/verification-registry.json` 补探针 v2 登记行（L3: `--selftest` 8/8 + 真机 A/B）+ **当轮立即**跑形式校验。
 4. 通用化 skill: 「判定器/测试禁用词面子串断言（结构化键优先）」+「开放标记优先于完成标记」两条已抽象为语言无关判据，待写入 `skills/`（受 `SkillGeneralizationTests` 机检，需 dotnet 构建 ⇒ 顺延）。
+
+## 7. v3 硬化 (R428-hold · 2026-09-14 18:19 · 活跃窗口内零冲突推进)
+
+窗口: 30 分钟节拍作业 (9a97763d5fcd) 正在同一工作树内实现 **R428**（未提交 `src/agent/session/SessionHistorySearch.cs` +
+`src/agent.tests/SessionHistorySearchTests.cs`，mtime 18:14:17/18:14:30；18:15:06 时其 `dotnet test --filter SessionHistorySearchTests` 在跑）
+⇒ 本 tick **不碰产品源码 / 不跑 dotnet / 不占轮号**，只硬化循环自身的检测机制。
+
+### 7.1 因果链
+
+`capability_cycle.py status` 是每 tick 的分支开关（tasks vs selfcheck）。v2 实测输出 `open_items=[R371, R370]` ——
+两条都是**轮历史沉积行**（R371 各断链点已在 R374/R414/R416 修复并留证；R370 的 L1/L2/L3e/L5 全 ✅、L4 转持续线），
+而用户钦定「之前的 5 个开发计划的实施」所在 L3 表的 6 行（exp1/exp2/exp3/exp4/exp8/exp5）**0 行入账**。
+根因是行键硬编码 `^R\d+`：轮次看板行是「轮历史」，不是「计划项」⇒ **「最前的未完成计划项」在该机制下不可能被列出**
+（每 tick 只能看到沉积行，或据此误判 mode）。
+
+### 7.2 修改点
+
+| # | 缺陷 | 修法 |
+|---|---|---|
+| D5 | 计划项行 (expN) 结构性漏读 | 行键 `^(?:R\d+|exp\d+)`；旧键保留 `ROW_KEY_LEGACY`（负控 A/B 必须跑旧键，否则负控失去判别力） |
+| D6 | 「核心已交付 + 自陈欠项」判 closed（exp5 行） | `欠` 入 `OPEN_MARKERS`，并配**反面对照**用例（已交付且无欠项 ⇒ 必须仍 closed） |
+| D7 | 沉积行无法识别 | 每条 open 项随附 `kind`(round/plan-item) + **其余格原文** `other_cells`；**不做机械裁定**（反例：R370 行产出格全 ✅ 但其 L4 是真实持续线，机械判沉积会误杀） |
+| D8 | 自检未覆盖新判据 | `--selftest` 7 判定 + 2 负控 → **11 判定 + 4 负控**（新增 T7 exp 行入账 / T8 kind 判别 / T9 欠项判 open / T10 反面对照 / T11 沉积透明；负控 N3 旧行键必漏 exp1、N4 旧分类必把 exp3 判 closed） |
+
+### 7.3 读数（真机）
+
+- 探针 sha256: pre `d7428582ebc8022f…`（git HEAD 版本，从 `git show` 取回重跑）→ post `e52ebb61ee472da4…`。
+- `open_count` **2 → 8**（新增 6 条计划项），`mode` 恒为 `tasks`，open 集合 pre ⊂ post（只增不漏）。
+- `--selftest` **15/15 passed, rc=0**；负控臂 legacy_open 仅 `[R902]`（旧逻辑在夹具上漏 R901/R910/exp1/exp3）。
+- legacy（v1 逻辑）跑真机看板: `mode=selfcheck, open_count=0` —— v1 连 R371/R370 都读不到（读错列 + 完成标记先过滤），
+  说明「mode 判定」在 v1 下会直接翻转为「无任务」。
+- 证据: `eval/capability/r428-hold/README-evidence.md`（由 `hold-r428.json` 机检渲染）+ `hold-r428.json`（判据 H1–H5 全 PASS）。
+
+### 7.4 基线 / 判据
+
+- 判据 H1–H5 预注册于 `run_hold.py` 头部与本节; 结果 **PASS**（H1 计划项入账 ∧ H2 不回退 ∧ H3 自检全绿 ∧ H4 前态可由
+  git HEAD 复现 ∧ H5 沉积透明）。
+- 台账: `eval/capability/kpi.jsonl` 追加 1 行（tag `R428-hold:loop-detection-probe-v3`，幂等，回读 22 行 1 命中）。
+
+### 7.5 诚实边界
+
+1. `open_count=8` 是**判定口径扩张**（计划项行首次入账），不是待办变多；沉积行 R371/R370 未做归档判断。
+2. 探针不判「沉积」——`other_cells` 只提供原文，最终定性由读者按对应计划文档做（防机械裁定误杀持续线）。
+3. 未登记 `docs/verification-registry.json`（需当轮 dotnet 形式校验，与活跃构建窗口冲突）⇒ 顺延。
+4. 首次跑出现假 FAIL（H2/H4 红）：pre 副本落在 `/tmp` 致其自算 ROOT 退化为 `/` 读不到文档 —— 属**采集侧假失败**，
+   显式传 `--backlog/--master` 后复跑 PASS；已在 `run_hold.py` 注释与本节留档，避免被误读为被测缺陷。
+
+### 7.6 下轮候选（等活跃体释放后）
+
+1. 复用本 tick 的 `kind`/`other_cells`: 把 L7 缺口清单（G1–G9，无「状态」列、判据词在「判定」列）接入探针 —— 需按表适配
+   + 正反对照（G8「不修」⇒ closed、G2「宣称≠实现」⇒ open）。
+2. `exp1` 是否仍受阻于用户裁决（其计划文档 §8 Q1–Q5）——若受阻，循环应把它标为 `blocked-on-user` 而非普通未开始。
+3. 活跃体释放后补 `docs/verification-registry.json` 探针 v3 登记行 + 当轮跑形式校验（`VerificationForm|SkillGeneralization|DevPlanDocRef`）。
+4. 来源②（主报告 §7 正则）仍是残的：`master_open=0` 已知不可作「主报告无未完成事项」的证据。
