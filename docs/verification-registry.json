@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R412",
+  "updated_round": "R414",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -709,6 +709,38 @@
         "docs/plans/v0.34.0-r412-multi-session-slot-contention.md"
       ],
       "owner_round": "R412"
+    },
+    {
+      "id": "r371d7.truncation-continuation",
+      "level": "L3",
+      "evidence_cmd": "bash eval/rover/r371d7/run_arm.sh truncate 47830 47831; bash eval/rover/r371d7/run_arm.sh ok 47830 47831; python3 eval/rover/r371d7/verdict.py",
+      "evidence_path": "eval/rover/r371d7/",
+      "negative_control": "① ok 臂（全程完整正文）必须零恢复提示请求 ∧ 零 llm_call_continue/llm_call_recover ∧ 零 truncated=true —— 无病不治（判别力下限实跑得到）；② 不采信被测量代码自报: after_len 必须等于**独立复刻**的合并长度（异实现、overlap 自算=16），before_len/tail_before 必须等于桩侧截断正文（外部真值）；③ 桩侧请求原文必须出现 TruncatedNudge，证明第二次远端调用是**续写**而非重复调用；④ 口径坑已登记: llm_call.truncated 反映**最终**正文闭合性（救回后 false），只看该字段会漏掉已救回轮。",
+      "capability": "R371-D7（半行截断）真机验收: 真进程 agenthost --frontend-api + 确定性远端桩（逐请求落盘）⇒ 截断被检出（tail_before=断点原文）∧ 有界续写（第二次请求携带断点提示、max_tokens 升级）∧ 去重合并（before=102 + added=58 - overlap=16 = after=144，与独立复刻逐位相同）∧ 救回后结构闭合 ∧ 用户可见回复含续写独有片段；D1（空正文+reasoning 非空）⇒ first_content_len=0/first_reasoning_len=400 ⇒ 抑制推理重试 recovered=true。四臂 24 项断言 verdict=PASS。",
+      "covers": [
+        "src/agent.modelqueue/ModelQueueRouter.cs",
+        "src/agent.tests/EmptyContentRecoveryTests.cs",
+        "eval/rover/r371d7/",
+        "docs/plans/v0.22.0-r371-capability-probe-python-game.md"
+      ],
+      "owner_round": "R414"
+    },
+    {
+      "id": "r414.failure-visibility",
+      "level": "L4",
+      "evidence_cmd": "bash eval/rover/r371d7/run_arm.sh empty_always 47830 47831; python3 eval/rover/r371d7/verdict.py; dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~UserFacingFailureTests",
+      "evidence_path": "eval/rover/r371d7/",
+      "negative_control": "① **判别力实证（缺陷注入等价物）**: 同一探针跑**修复前**二进制 ⇒ empty_always 轮 1 reply_len=0（对照文件 turns-before-fix-empty_always.jsonl 在库），修复后 66 ⇒ 断言确实能逮住该缺陷，不是恒过；② 未标记失败 Content 必须**不外泄**（单测第 3 例: 未标记+有内容 ⇒ 空串）; ③ 源级钉死 2 条: 失败分支必须经 UserFacingFailureContent ∧ 全文不得出现 response.Content = string.Empty；④ 零回归对照: ok/empty/truncate 三臂修复前后读数逐位一致。",
+      "capability": "R414 失败可见性闭合: 真缺陷 = IndustrialAgentV2.cs:1604（修复前）在 !llmResponse.Success 分支 `response.Content = string.Empty` 丢弃上游（ModelQueueRouter D1 empty_content_after_retry）写入的**面向用户降级文案** ⇒ 用户可见回复空白（真机 empty_always 轮 1 reply_len=0、loop_turn.reply_chars=0；既有单测只在 router 层断言 ⇒ 链侧丢弃测不到）。修法 = 内容可见性契约位（QueueResponse/LLMResponse.ContentIsUserFacing，默认 false 零回归）+ ModelQueueAdapter 透传 + 链侧 internal static UserFacingFailureContent 裁定（只透出显式标记内容）+ 可见文案不再拼接 ex.Message（原文留 Error）。判据: 单测 5/5 + 真机 4 臂 24 项 PASS + 修复前对照。",
+      "covers": [
+        "src/agent/IndustrialAgentV2.cs",
+        "src/agent.modelqueue/ModelQueueRouter.cs",
+        "src/agent/modelqueue/ModelQueueAdapter.cs",
+        "src/agent.tests/UserFacingFailureTests.cs",
+        "eval/rover/r371d7/",
+        "docs/plans/v0.36.0-r414-failure-visibility.md"
+      ],
+      "owner_round": "R414"
     }
   ],
   "aot_check_policy": "release_tag_only",

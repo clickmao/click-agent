@@ -56,6 +56,10 @@ public sealed class QueueResponse
 
     /// <summary>R377: prompt 缓存未命中 token (provider 未上报 → null)。</summary>
     public int? CacheMissTokens { get; set; }
+
+    /// <summary>R414: 本响应的 Content 是否为**面向用户的最终文案**(降级说明等) —— Success=false 时也必须在链上透出。
+    /// false = Content 只是内部片段/原始报错, 链侧不得当作用户可见正文(避免错误正文/内部信息外泄)。</summary>
+    public bool ContentIsUserFacing { get; set; }
 }
 
 /// <summary>模型队列调用端口 (adapter 在 agent 主程序集实现 ILLMCaller 时消费)</summary>
@@ -905,6 +909,8 @@ public sealed class ModelQueueRouter : IModelQueueCaller
 
             retried.Success = false;
             retried.Error = "empty_content_after_retry";
+            // R414: 本条 Content 是**面向用户**的降级文案 ⇒ 必须显式标记, 否则链侧按"不可见失败"丢弃 (= 用户看到空白)
+            retried.ContentIsUserFacing = true;
             retried.Content =
                 "⚠ 模型未产出正文: 推理过程占满了输出预算 (已自动放宽输出预算并重试一次仍失败)。"
                 + "请重试, 或改用非推理模型 / 缩小任务范围。";
@@ -916,7 +922,9 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                 ("model", entry.Id), ("reason", "empty_content"), ("recovered", false), ("error", ex.Message));
             first.Success = false;
             first.Error = $"empty_content_retry_failed: {ex.Message}";
-            first.Content = "⚠ 模型未产出正文, 且自动重试失败: " + ex.Message + " — 请重试或切换模型。";
+            first.ContentIsUserFacing = true;
+            // 凭据/内部信息卫生: 可见文案**不带 ex.Message** (原始异常仍完整保留在 Error 字段, 供排查/日志)
+            first.Content = "⚠ 模型未产出正文, 且自动重试失败 — 请重试或切换模型。";
             return first;
         }
     }

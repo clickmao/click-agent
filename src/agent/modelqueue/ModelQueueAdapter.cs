@@ -61,6 +61,8 @@ public sealed class ModelQueueAdapter : ILLMCaller, agent.subagent.ILLMCallerFor
             CacheHitTokens = r.CacheHitTokens,
             CacheMissTokens = r.CacheMissTokens,
             ReasoningContent = r.ReasoningContent,
+            // R414: "失败但有面向用户的文案"的契约位必须透传 (否则链侧无从区分"可展示文案"与"内部片段")
+            ContentIsUserFacing = r.ContentIsUserFacing,
         };
     }
 }

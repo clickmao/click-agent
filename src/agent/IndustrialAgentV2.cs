@@ -155,6 +155,11 @@ public class IndustrialAgentV2 : AgentBase
         return (resp.Success ? resp.Content : "", prompt.Length / 2 + resp.Content.Length / 2);
     }
 
+    /// <summary>R414: 失败轮的可见正文裁定 —— 只有被上游标记为"面向用户"的文案才透出, 其余失败一律空白。
+    /// 该函数是"失败必须可见 vs 内部信息不得外泄"两难的单一裁定点 (源级回归钉死见 UserFacingFailureTests)。</summary>
+    internal static string UserFacingFailureContent(LLMResponse llmResponse)
+        => llmResponse.ContentIsUserFacing ? (llmResponse.Content ?? string.Empty) : string.Empty;
+
     private readonly agent.modelqueue.ModelQueueRouter? _modelRouter;
     /// <summary>R363: 当前激活 Role 文档 (可空 — .rbin 未挂时 null, 行为与无 Role 完全一致)。</summary>
     public agent.roles.RoleBinaryFile.RoleDocument? ActiveRole { get; }
@@ -1603,7 +1608,11 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
 
             if (!llmResponse.Success)
             {
-                response.Content = string.Empty;
+                // R414 (真缺陷闭合): 上游在"空正文重试后仍失败"这类**可命名失败**里写入的是**面向用户的降级文案**;
+                // 此处曾一律丢弃 (string.Empty) ⇒ router 侧"绝不静默返回空白"的契约在链上被推翻, 用户可见回复为空且无任何文案。
+                // 真机证据 (eval/rover/r371d7, empty_always 臂): 轮 1 reply_len=0 / loop_turn.reply_chars=0, 轮 2 才见到文案。
+                // 只透出被上游**显式标记**为面向用户的内容: 未标记的 Content 仍是内部片段/原始报错, 不得外泄。
+                response.Content = UserFacingFailureContent(llmResponse);
                 response.Success = false;
                 // LLM 失败原因必须透传 (否则 Success=False + Error 空, 调用方无从排查)
                 response.Error = llmResponse.Error;
@@ -2792,6 +2801,10 @@ public class LLMResponse
 
     /// <summary>R377: prompt 缓存未命中 token (provider 未上报 → null)。</summary>
     public int? CacheMissTokens { get; set; }
+
+    /// <summary>R414: Content 是否为**面向用户的最终文案**(降级说明) —— Success=false 时链侧也必须透出。
+    /// 未标记的失败响应 Content 一律不外泄 (它是内部片段/原始报错)。裁定点: IndustrialAgentV2.UserFacingFailureContent。</summary>
+    public bool ContentIsUserFacing { get; set; }
 
     /// <summary>响应 ID</summary>
     public string? ResponseId { get; set; }

@@ -1,0 +1,147 @@
+{
+  "verdict": "PASS",
+  "arms": [
+    {
+      "arm": "ok",
+      "requests": 2,
+      "checks": {
+        "1 无恢复提示请求": {
+          "pass": true,
+          "detail": "2 请求 / 0 带提示"
+        },
+        "2 无恢复遥测": {
+          "pass": true,
+          "detail": "continue=0 recover=0"
+        },
+        "3 无截断标记": {
+          "pass": true,
+          "detail": "truncated=true 0 条"
+        },
+        "4 回复非空": {
+          "pass": true,
+          "detail": "reply_chars=82"
+        }
+      }
+    },
+    {
+      "arm": "truncate",
+      "requests": 4,
+      "checks": {
+        "1 存在续写请求(带断点提示)": {
+          "pass": true,
+          "detail": "2 条带 TruncatedNudge (共 4 请求)"
+        },
+        "2 遥测 llm_call_continue recovered=true": {
+          "pass": true,
+          "detail": "[{\"model\": \"deepseek-flash\", \"reason\": \"truncated\", \"max_tokens\": 32768, \"before_len\": 102, \"added_len\": 58, \"after_len\": 144, \"first_completion_tokens\": 8192, \"retry_completion_tokens\": 64, \"still_tr"
+        },
+        "3 after_len=独立复刻合并长度": {
+          "pass": true,
+          "detail": "代码自报 after=144 / 独立复刻 144(overlap=16)"
+        },
+        "4 before_len=桩侧截断正文长": {
+          "pass": true,
+          "detail": "before=102 / 桩侧 102"
+        },
+        "5 added_len=续写原文长度(去重前)": {
+          "pass": true,
+          "detail": "added=58 / 桩侧续写原文 58"
+        },
+        "6 tail_before=桩侧截断尾部": {
+          "pass": true,
+          "detail": "tail_before='s:\\n        acc += n\\n    start_len: int ='"
+        },
+        "7 救回后 truncated=false(口径: 反映最终正文)": {
+          "pass": true,
+          "detail": "truncated=true 0 条 / 断点事实见 continue 事件"
+        },
+        "8 用户可见回复含续写独有片段": {
+          "pass": true,
+          "detail": "含 'return acc'"
+        },
+        "9 合并结果结构闭合(独立纯语法判据)": {
+          "pass": true,
+          "detail": "可见回复尾部='元素之和，空列表返回 0。）'"
+        }
+      }
+    },
+    {
+      "arm": "empty",
+      "requests": 4,
+      "checks": {
+        "1 存在抑制推理重试请求": {
+          "pass": true,
+          "detail": "2 条带 NoReasoningNudge"
+        },
+        "2 遥测 llm_call_recover recovered=true": {
+          "pass": true,
+          "detail": "[{\"model\": \"deepseek-flash\", \"reason\": \"empty_content\", \"max_tokens\": 32768, \"first_content_len\": 0, \"first_reasoning_len\": 400, \"first_completion_tokens\": 8192, \"retry_content_len\": 37, \"retry_reasoning_len\": 0, \"retry_completion_tokens\": 48, \"recovered\": true}]"
+        },
+        "3 first_content_len=0 且 first_reasoning_len>0": {
+          "pass": true,
+          "detail": "first_content=0 first_reasoning=400"
+        },
+        "4 回复为正文(非空)": {
+          "pass": true,
+          "detail": "reply_chars=82"
+        },
+        "5 首轮 reasoning 非空已被识别": {
+          "pass": true,
+          "detail": "桩侧首轮带 reasoning"
+        }
+      }
+    },
+    {
+      "arm": "empty_always",
+      "requests": 4,
+      "checks": {
+        "1 存在抑制推理重试请求": {
+          "pass": true,
+          "detail": "2 条带 NoReasoningNudge"
+        },
+        "2 遥测 recovered=false (如实不救回)": {
+          "pass": true,
+          "detail": "2 条"
+        },
+        "3 回复=可见降级文案": {
+          "pass": true,
+          "detail": "命中=True"
+        },
+        "4 success=False (不假装成功)": {
+          "pass": true,
+          "detail": "success=[False, False]"
+        },
+        "5 修复后失败轮可见文案非空(每轮)": {
+          "pass": true,
+          "detail": "reply_len=[66, 73]"
+        },
+        "6 修复前对照=有轮次为空白(证明变化来自修复)": {
+          "pass": true,
+          "detail": "修复前 reply_len=[0, 73]"
+        }
+      }
+    },
+    {
+      "arm": "AOT-form",
+      "requests": null,
+      "checks": {
+        "empty_always 可见回复/成功位": {
+          "pass": true,
+          "detail": "reply_len=[66, 73] success=[False, False]"
+        },
+        "empty_always 抑制推理重试(外部真值)": {
+          "pass": true,
+          "detail": "请求=4 带抑制提示=2"
+        },
+        "truncate 可见回复/成功位": {
+          "pass": true,
+          "detail": "reply_len=[144, 151] success=[True, True]"
+        },
+        "truncate 续写调用(外部真值)": {
+          "pass": true,
+          "detail": "请求=4 带断点提示=2"
+        }
+      }
+    }
+  ]
+}

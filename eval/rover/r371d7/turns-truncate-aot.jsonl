@@ -1,0 +1,87 @@
+{
+  "stats": {
+    "turns": 2,
+    "ok": 2,
+    "events": 5,
+    "asks": 0,
+    "errors": []
+  },
+  "turns": [
+    {
+      "turn": 1,
+      "text": "写一个 python 函数计算列表元素之和，并给出说明。",
+      "reply": "以下是求和函数的实现(前半):\n\ndef total(nums):\n    acc = 0\n    for n in nums:\n        acc += n\n    start_len: int = 12\n    return acc\n\n（说明：返回列表元素之和，空列表返回 0。）",
+      "ok": true,
+      "success": true,
+      "events": [
+        {
+          "event": "plan.created",
+          "keys": [
+            "hybrid",
+            "local",
+            "nodes",
+            "nodes_total",
+            "plan_id",
+            "remote"
+          ]
+        },
+        {
+          "event": "plan.node",
+          "keys": [
+            "artifact",
+            "detail",
+            "elapsed_ms",
+            "executor",
+            "intent",
+            "location"
+          ]
+        },
+        {
+          "event": "plan.node",
+          "keys": [
+            "artifact",
+            "detail",
+            "elapsed_ms",
+            "executor",
+            "intent",
+            "location"
+          ]
+        },
+        {
+          "event": "plan.node",
+          "keys": [
+            "artifact",
+            "detail",
+            "elapsed_ms",
+            "executor",
+            "intent",
+            "location"
+          ]
+        },
+        {
+          "event": "plan.finished",
+          "keys": [
+            "failed",
+            "local_first",
+            "local_first_ms",
+            "local_first_nodes",
+            "local_first_us",
+            "local_ok"
+          ]
+        }
+      ],
+      "secs": 0.09,
+      "error": null
+    },
+    {
+      "turn": 2,
+      "text": "把这行结论压缩成一句给我。",
+      "reply": "[隔离任务] 以下是求和函数的实现(前半):\n\ndef total(nums):\n    acc = 0\n    for n in nums:\n        acc += n\n    start_len: int = 12\n    return acc\n\n（说明：返回列表元素之和，空列表返回 0。）",
+      "ok": true,
+      "success": true,
+      "events": [],
+      "secs": 0.08,
+      "error": null
+    }
+  ]
+}

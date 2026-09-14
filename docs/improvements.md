@@ -12,6 +12,25 @@
 
 ---
 
+## R414 — R371 断链真机验收（D7 优先）+ 失败可见性缺陷闭合：`Success=false` 的降级文案不再被链侧丢弃
+
+**版本**: R414 · **日期**: 2026-09-14 · **状态**: 已实施（本地 commit，**未推**）
+**主题**: backlog 最前未完成项 = R371 修复串的真机验收读数；验收过程抓到真缺陷并同轮闭合。
+
+- **验收（真机 E2E，`eval/rover/r371d7/`，4 臂 24 项断言 ⇒ `verdict-r371d7.json = PASS`）**：真进程 `agenthost --frontend-api` + 确定性远端桩（逐请求落盘=外部真值）。
+  - D7 截断续写：`llm_call_continue before=102 added=58 after=144 recovered=true`，`after` 与**独立复刻**合并长度逐位相同（overlap=16）；`tail_before` = 断点原文；救回后结构闭合。
+  - D1 空正文恢复：`first_content_len=0 / first_reasoning_len=400 ⇒ recovered=true`。
+  - **负控**：完整正文臂 ⇒ 远端 2 请求 / 恢复遥测 0（无病不治）。
+- **★ 真缺陷（本轮抓到并修复）**: `src/agent/IndustrialAgentV2.cs:1604`（修复前）`if (!llmResponse.Success) response.Content = string.Empty;`
+  ⇒ D1 在「重试后仍空」时写入的**面向用户降级文案被丢弃**，用户看到空白（真机 `empty_always` 轮 1 `reply_len=0`，`loop_turn.reply_chars=0`）。
+  既有单测只在 **router 层**断言文案非空 ⇒ 链侧丢弃测不到（「有实现 ≠ 已接线」）。
+- **落地（最小契约位，非布尔打补丁）**: `QueueResponse.ContentIsUserFacing` / `LLMResponse.ContentIsUserFacing`（默认 false = 零回归）+ `ModelQueueAdapter` 透传
+  + 链侧 `UserFacingFailureContent(...)`裁定：**只透出被显式标记的内容**（未标记 ⇒ 仍为空，原始报错正文不外泄）+ `Success=false` 语义不变。
+  可见降级文案不再拼接 `ex.Message`（内部信息卫生；原文保留在 `Error`）。
+- **回归**: `UserFacingFailureTests` 5/5（含 2 条源级钉死）；修复后 4 臂重跑 `ok/empty/truncate` 读数逐位不变，仅 `empty_always` 轮 1 `reply_len 0→66`（修复前对照文件在库）。
+- **口径澄清（审计须知）**: `llm_call.truncated` 反映**最终**正文闭合性（救回后为 false），截断事实只在 `llm_call_continue`；`added_len` = 续写原文长度（去重前）。
+- **诚实边界**: 桩驱动 ⇒ 证明机制而非自然分布截断率；`empty_always` 为构造病态分布；单机单次读数。
+
 ## R413 — r1 本地真假判别接进链管道（端口化）：机械 Pass 前置 + 非 LLM 模板 ack ⇒ 一轮总 token ↓58.5% / 远端调用 ↓33.3%（判过）
 
 **版本**: R413 · **日期**: 2026-09-14 · **状态**: 判过（C1–C4 全 PASS；本地 commit，**未推**）
