@@ -1,0 +1,343 @@
+{
+  "summary": {
+    "selftest": "exp1-q2-instrument-selfproof",
+    "n_checks": 21,
+    "n_failed": 0,
+    "failed": [],
+    "fixture_tally_A": {
+      "waived": 3,
+      "ok": 2,
+      "relocated": 2,
+      "stale_lines": 1,
+      "stale_path": 1,
+      "symbol_absent": 1
+    },
+    "fixture_waive_A": {
+      "ambiguous_bare_name": 1,
+      "unresolvable_bare_name": 1,
+      "out_of_scope": 1
+    },
+    "probe_rc_A": 0,
+    "exit_code": 0
+  },
+  "checks": [
+    {
+      "id": "S1_ok",
+      "ok": true,
+      "detail": {
+        "doc": "docs/good.md",
+        "doc_line": 1,
+        "path": "src/lib/Foo.cs",
+        "kind": "code",
+        "line_start": 1,
+        "line_end": 1,
+        "verdict": "ok",
+        "in_code_fence": false,
+        "symbols": [
+          "FooHelper"
+        ],
+        "symbols_absent": [],
+        "resolve_mode": "exact",
+        "resolved": "src/lib/Foo.cs",
+        "file_lines": 4,
+        "input_sha": "8abb7b13c4e1892e9d92d7247961f42b844d2c1892f4cd2378a599825495b3ba"
+      }
+    },
+    {
+      "id": "S2_stale_path",
+      "ok": true,
+      "detail": {
+        "doc": "docs/stale_path.md",
+        "doc_line": 1,
+        "path": "src/Deleted.cs",
+        "kind": "code",
+        "line_start": 3,
+        "line_end": 3,
+        "verdict": "stale_path",
+        "in_code_fence": false,
+        "symbols": [
+          "GhostPlugin"
+        ],
+        "symbols_absent": [],
+        "resolve_mode": "in_scope_missing",
+        "resolved": "src/Deleted.cs",
+        "file_lines": null,
+        "input_sha": null
+      }
+    },
+    {
+      "id": "S3_stale_lines",
+      "ok": true,
+      "detail": {
+        "verdict": "stale_lines",
+        "file_lines": 4
+      }
+    },
+    {
+      "id": "S4_symbol_absent",
+      "ok": true,
+      "detail": {
+        "doc": "docs/sym_absent.md",
+        "doc_line": 1,
+        "path": "src/lib/Foo.cs",
+        "kind": "code",
+        "line_start": 1,
+        "line_end": 1,
+        "verdict": "symbol_absent",
+        "in_code_fence": false,
+        "symbols": [
+          "NotThereSymbolZq"
+        ],
+        "symbols_absent": [
+          "NotThereSymbolZq"
+        ],
+        "resolve_mode": "exact",
+        "resolved": "src/lib/Foo.cs",
+        "file_lines": 4,
+        "input_sha": "8abb7b13c4e1892e9d92d7247961f42b844d2c1892f4cd2378a599825495b3ba"
+      }
+    },
+    {
+      "id": "S5_fence_skipped",
+      "ok": true,
+      "detail": {
+        "n_fenced": 1
+      }
+    },
+    {
+      "id": "S6_bare_unique_resolved",
+      "ok": true,
+      "detail": {
+        "doc": "docs/bare_unique.md",
+        "doc_line": 1,
+        "path": "Foo.cs",
+        "kind": "code",
+        "line_start": 2,
+        "line_end": 2,
+        "verdict": "ok",
+        "in_code_fence": false,
+        "symbols": [
+          "FooHelper"
+        ],
+        "symbols_absent": [],
+        "resolve_mode": "unique_basename",
+        "resolved": "src/lib/Foo.cs",
+        "file_lines": 4,
+        "input_sha": "8abb7b13c4e1892e9d92d7247961f42b844d2c1892f4cd2378a599825495b3ba"
+      }
+    },
+    {
+      "id": "S7_bare_ambiguous_waived",
+      "ok": true,
+      "detail": {
+        "doc": "docs/bare_ambig.md",
+        "doc_line": 1,
+        "path": "Dup.cs",
+        "kind": "code",
+        "line_start": 1,
+        "line_end": 1,
+        "verdict": "waived",
+        "in_code_fence": false,
+        "symbols": [
+          "DupA"
+        ],
+        "symbols_absent": [],
+        "resolve_mode": null,
+        "resolved": null,
+        "waive_reason": "ambiguous_bare_name",
+        "file_lines": null,
+        "input_sha": null
+      }
+    },
+    {
+      "id": "S8_bare_missing_waived",
+      "ok": true,
+      "detail": {
+        "doc": "docs/bare_missing.md",
+        "doc_line": 1,
+        "path": "Nope.cs",
+        "kind": "code",
+        "line_start": 1,
+        "line_end": 1,
+        "verdict": "waived",
+        "in_code_fence": false,
+        "symbols": [],
+        "symbols_absent": [],
+        "resolve_mode": null,
+        "resolved": null,
+        "waive_reason": "unresolvable_bare_name",
+        "file_lines": null,
+        "input_sha": null
+      }
+    },
+    {
+      "id": "S9_out_of_scope_waived",
+      "ok": true,
+      "detail": {
+        "doc": "docs/out_of_scope.md",
+        "doc_line": 1,
+        "path": "vendor/third_party/x.cs",
+        "kind": "code",
+        "line_start": 1,
+        "line_end": 1,
+        "verdict": "waived",
+        "in_code_fence": false,
+        "symbols": [],
+        "symbols_absent": [],
+        "resolve_mode": null,
+        "resolved": null,
+        "waive_reason": "out_of_scope",
+        "file_lines": null,
+        "input_sha": null
+      }
+    },
+    {
+      "id": "S17_relocated_single_fact_ok",
+      "ok": true,
+      "detail": {
+        "doc": "docs/relocated.md",
+        "doc_line": 1,
+        "path": "src/legacy/Moved.cs",
+        "kind": "code",
+        "line_start": 1,
+        "line_end": 1,
+        "verdict": "relocated",
+        "in_code_fence": false,
+        "symbols": [
+          "MovedHelper"
+        ],
+        "symbols_absent": [],
+        "resolve_mode": "in_scope_missing",
+        "resolved": "src/legacy/Moved.cs",
+        "file_lines": 1,
+        "input_sha": "a671ba1fae389d3ae6e275490bce85810139703a1cba93cceaefccd910959581",
+        "relocated_to": [
+          "src/lib/Moved.cs"
+        ],
+        "relocated_fact_verdict": "ok"
+      }
+    },
+    {
+      "id": "S18_relocated_multi_no_fact",
+      "ok": true,
+      "detail": {
+        "doc": "docs/relocated_multi.md",
+        "doc_line": 1,
+        "path": "src/legacy/Dup.cs",
+        "kind": "code",
+        "line_start": 1,
+        "line_end": 1,
+        "verdict": "relocated",
+        "in_code_fence": false,
+        "symbols": [],
+        "symbols_absent": [],
+        "resolve_mode": "in_scope_missing",
+        "resolved": "src/legacy/Dup.cs",
+        "file_lines": null,
+        "input_sha": null,
+        "relocated_to": [
+          "src/lib/Dup.cs",
+          "src/other/Dup.cs"
+        ]
+      }
+    },
+    {
+      "id": "S19_relocated_not_stale",
+      "ok": true,
+      "detail": {
+        "tally": {
+          "waived": 3,
+          "ok": 2,
+          "relocated": 2,
+          "stale_lines": 1,
+          "stale_path": 1,
+          "symbol_absent": 1
+        },
+        "stale_like_n": 3
+      }
+    },
+    {
+      "id": "S9b_waived_not_stale",
+      "ok": true,
+      "detail": {
+        "tally": {
+          "waived": 3,
+          "ok": 2,
+          "relocated": 2,
+          "stale_lines": 1,
+          "stale_path": 1,
+          "symbol_absent": 1
+        },
+        "waive": {
+          "ambiguous_bare_name": 1,
+          "unresolvable_bare_name": 1,
+          "out_of_scope": 1
+        }
+      }
+    },
+    {
+      "id": "S10a_G4_true_when_absent",
+      "ok": true,
+      "detail": {
+        "ICapabilityPlugin": 0,
+        "PluginExecutionResult": 0,
+        "CapabilityPluginRegistry": 0
+      }
+    },
+    {
+      "id": "S10b_G4_false_when_present",
+      "ok": true,
+      "detail": {
+        "ICapabilityPlugin": 1,
+        "PluginExecutionResult": 1,
+        "CapabilityPluginRegistry": 1
+      }
+    },
+    {
+      "id": "S11_controls_two_sided",
+      "ok": true,
+      "detail": {
+        "IResponseSegmentPlugin": 2,
+        "CapabilityScanner": 1,
+        "PythonArtifactPlugin": 1,
+        "NoSuchTypeZzq9Xx": 0
+      }
+    },
+    {
+      "id": "S12_two_pass_identical",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "S13_cli_entry_contract",
+      "ok": true,
+      "detail": {
+        "rc": 0,
+        "missing": []
+      }
+    },
+    {
+      "id": "S14_waiver_gate_exit3",
+      "ok": true,
+      "detail": {
+        "rc": 3
+      }
+    },
+    {
+      "id": "S15_env_failure_abstains",
+      "ok": true,
+      "detail": {
+        "rc": 3
+      }
+    },
+    {
+      "id": "S16_nontrivial_families",
+      "ok": true,
+      "detail": {
+        "ICapabilityPlugin": 0,
+        "PluginExecutionResult": 0,
+        "CapabilityPluginRegistry": 0
+      }
+    }
+  ]
+}

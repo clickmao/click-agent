@@ -1,0 +1,30 @@
+形式校验补跑证据 (EXP1-Q2, 60m 自检作业, 2026-09-14)
+====================================================
+
+背景: 附录 C 结转的"下轮首件事: 对侧空闲即补跑形式校验"——本轮首次取得窗口并补跑成功。
+(连续第三次登记后**已清**; 前两次因对侧在途构建/正在编辑产品源码而按"批测与 build 互斥"纪律避让)
+
+命令 (逐字, 与作业 prompt 一致):
+  export DOTNET_ROOT="$HOME/.dotnet"; export PATH="$DOTNET_ROOT:$PATH"
+  env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR \
+    dotnet test src/agent.tests/agentframework.tests.csproj \
+    --filter "FullyQualifiedName~VerificationForm|FullyQualifiedName~SkillGeneralization|FullyQualifiedName~DevPlanDocRef" \
+    --nologo -v q
+
+结果: exit_code = 0
+  Passed!  -  Failed: 0, Passed: 13, Skipped: 0, Total: 13, Duration: 914 ms
+  (agentframework.tests.dll, net10.0)
+
+起跑条件 (记录在案, 供复现判断):
+  - 对侧 30m 作业近 3 分钟**无**产品源码写入 (find src -mmin -3 为空);
+  - 对侧上一批产物 eval/rover/r435/** 与 src/agent.roles/CorrectionDetector.cs 的改动均在 3 分钟窗口之外;
+  - MemAvailable ≈ 2.6 GB (llama-server 已退出; 仅余常驻 MSBuild/VBCSCompiler 编译服务节点)。
+
+本侧本轮改动面 (与校验目标文件的关系):
+  - 改: docs/plans/v0.22.0-exp1-local-index-and-code-graph.md (附录 D + 三处校正块)
+        docs/improvements.md (EXP1-Q2 节, 置顶)
+        docs/plans/v0.22.0-longterm-backlog.md (exp1 行状态)
+        eval/capability/kpi.jsonl (追加 EXP1-Q2 行, 幂等)
+        eval/capability/exp1-q2/** (新增器具与证据)
+  - 未改: docs/verification-registry.json、skills/*/SKILL.md —— 三项校验目标文件本侧零改动;
+          13/13 绿 ⇒ 连带证明本侧文档改动未破坏 DevPlanDocRef/形式校验链。

@@ -10,6 +10,26 @@
 > 数据时效 (测试数/批号/评测口径)、版本引用一致性、死链检查; **禁止只改局部不做整体校验**。
 > 空间位置相邻但语义不同段的错挂 (如旧版本标题下挂新数据) 视同违例。
 
+## EXP1-Q2 · 计划前提核验：被引契约已删 + 文档引用事实机检（60m 自检作业）
+
+**主题**：exp1 §8-Q2（插件 API 是否引入 manifest + `schema_version`）——先把「复用既有契约（不新造）」这个**前提**核验掉，再谈选项。
+
+**判决**：**前提为假**（机器判）。`ICapabilityPlugin` / `PluginExecutionResult` / `CapabilityPluginRegistry` 在当前 `src/**/*.cs` 出现 **0 次**（正控 `IResponseSegmentPlugin` 24 / `CapabilityScanner` 12 / `PythonArtifactPlugin` 19 证明计数器非恒 0）；`src/agent/registry/CapabilityPlugin.cs`（118 行）与 `src/agent.tests/CapabilityPluginTests.cs`（75 行）在 **af9856b**（2026-09-13, v0.23.0 R386/R387）被删除，且该提交是 HEAD 祖先。
+
+**根因**：exp1 §1.2/§1.3 是按 `docs/reports/r385/capability-inventory.md` 抄写的 r385 盘点，**早于** R386/R387（契约删除）与 **b00917c**（2026-09-14, R408「本地 GGUF 引擎整线退役」，70 文件 / −11,039 行，`BgeCpuEmbedder`+`src/agent.embedcpu/` 整条线）⇒ 整节承载实现已不存在或被重排（本仓并存 `src/agent.<模块>/` 与 `src/agent/<模块>/` 两种写法）。
+
+**修改**（零产品源码改动、零 dotnet）：新增 `eval/capability/exp1-q2/{probe_doc_ref_integrity.py(v2.1.0), selftest_doc_ref_integrity.py(21 项自证)}` + `result.json`/`citations.jsonl`/`selftest_result.json`/`git_deletion_evidence.txt`/`probe_stdout.txt`/`append_kpi.py`；计划文档补 附录 D + §1.2/§1.3 校正块 + §4.4 前提证伪块 + §8-Q2 行。
+
+**读数**（174 文档 / 896 条 live 代码引用 / 589 只读输入逐文件 sha256 指纹）：`ok` 649 · `symbol_absent` 119（启发式候选）· `waived` 68（弃权）· `stale_lines` 4 · **`stale_path` 29（真删）** · **`relocated` 27（搬家）**；本档自身 = 真删 8 + 搬家 21。裁定数据：capability-id 分派契约 **0** / 带版本字段契约 **0** / manifest 先例 **0**（DI 静态注册 53）⇒ D1 `no_existing_carrier`（契约须新建，新建即带 `schema_version` 零迁移成本）、D2 `needs_new_loader`（**不推荐** manifest 形态）。
+
+**仪器缺陷（本轮自捕两处 + 自检一处）**：① v1 把无目录裸文件名判 `stale_path`（首读 **389 条虚高**）⇒ 三级归属 + 弃权单列；② v2 未区分**已删除**与**树内搬家** ⇒ 第四级 `relocated`（0 候选才判真删）；③ 自检抓出「不存在的仓库被判红（应弃权）」⇒ 前置结构检查 + 测量有效性闸。修后仪器自证 **21/21 绿**。
+
+**基线**：HEAD `053edbb`。**形式校验（附录 C 三度结转）本轮补跑清账**：取得对侧空闲窗口后执行 `dotnet test --filter "VerificationForm|SkillGeneralization|DevPlanDocRef"` ⇒ **Failed 0 / Passed 13 / Total 13（914 ms, exit 0）**，证据 `eval/capability/exp1-q2/form_check_evidence.txt`（起跑条件：对侧近 3 min 无产品源码写入、`MemAvailable ≈ 2.6 GB`）。前两次因对侧在途构建/正在编辑产品源码按「批测与 build 互斥」避让，记录在案。
+
+**诚实边界**：① 证据等级 **L1 静态机检**（无编译/测试/AOT）；② `symbol_absent` 是全文匹配启发式，不作结论；③ 只判「引用事实是否成立」，不评价计划内容对错；④ 本机读数是对移动目标（对侧在改 `src/`）的快照，确定性由两跑 + 输入指纹归因证明；⑤ 与附录 C 旧登记「引用路径 6/6 存在」冲突：旧口径过窄，**作废不再引用**（口径变更已登记）。
+
+---
+
 ## R433 · 文档跑测链复位 + 取码产物通道（同题假红裁决）
 
 **主题**：用户纠偏令——「仔细审查有没有偏离主题…没怎么严格执行文档中的跑测计划，不看数据只开发是不行的」⇒ 回到 `eval/probe/README.md` 跑测链执行并看数据。

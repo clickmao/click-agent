@@ -1,0 +1,18 @@
+=== HEAD ===
+053edbb R434b: 全候选推进 — 判官本地化(负结论)/扩族 task-p12(质量全绿, 降幅 27.8% 未达 30% ⇒ 宣称收窄)/产物遥测契约钉死/器具修(grid 走 env)
+=== 删除提交 (external truth) ===
+af9856b 2026-09-13 v0.23.0 R386/R387: 节点级形式化闸门(调度器唯一前门) + 断言契约层 + 等待墙钟锚点 + DCR 真装配评测入口
+=== 删除提交的文件面 ===
+ docs/reports/r385/capability-inventory.md          | 433 ++++++++++++
+ src/agent.tests/CapabilityPluginTests.cs           |  75 ---
+ src/agent/registry/CapabilityPlugin.cs             | 118 ----
+ 44 files changed, 5229 insertions(+), 199 deletions(-)
+=== 该提交是否为 HEAD 祖先 ===
+af9856b IS ancestor of HEAD
+=== R408 退役提交 ===
+b00917c 2026-09-14 R408: 本地 GGUF 引擎整线退役, 本地推理/嵌入改走 llama.cpp 进程边界 (零 P/Invoke)
+b00917c IS ancestor of HEAD
+=== 退役的文件数 ===
+ src/agent/agent.csproj                             |  10 +-
+ .../extensions/ServiceCollectionExtensions.cs      |  16 +-
+ 70 files changed, 1314 insertions(+), 11039 deletions(-)
