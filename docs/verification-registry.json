@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R410",
+  "updated_round": "R411-V",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -83,7 +83,7 @@
       "negative_control": "插件改写原文 → Router_RoutesToRegisteredPlugin_AndPreservesFences 断言原文还原必红；html 段传给代码审查 → Router_CodeReviewPlugin_ReceivesNonUiCode 断言 Null 必红",
       "covers": [
         "src/agent/registry/UiCapturePlugin.cs",
-        "src/agent/registry/CodeReviewPlugin.cs"
+        "src/agent/registry/UiCapturePlugin.cs(CodeReviewPlugin)"
       ],
       "owner_round": "R368"
     },
@@ -143,11 +143,11 @@
     },
     {
       "id": "verification.registry.selfcheck",
-      "capability": "验证形式登记表自身(漏项/越级/路径不存在 必红)",
+      "capability": "验证形式登记表自身(R1 漏项 / R2 证据路径不存在 / R2b evidence_cmd 路径不可执行 / R2c covers 路径不存在 / R2d 测试过滤器解析不到测试 / R3 越级缺负控 / R4 静态冒充运行 必红)",
       "level": "L4",
       "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~VerificationFormTests",
       "evidence_path": "src/agent.tests/VerificationFormTests.cs",
-      "negative_control": "删除任一登记行/L≥2 行缺负向控制/静态命令越级申报/新增未登记插件 → 本测试必红",
+      "negative_control": "R411-V 起 7 类注入坏行必须全红: 删除登记行 / L≥2 缺负向控制 / 静态命令越级申报 / 未登记插件 / cmd 引用不存在路径 / covers 引用不存在路径 / 测试过滤器指向已删测试; 另含**正向控制**: cmd_expect_absent 声明的路径确不存在时必须放行, 声明与事实矛盾时必须报红(Validator_CatchesInjectedDefects)。",
       "covers": [],
       "owner_round": "R370"
     },
@@ -387,12 +387,11 @@
       "negative_control": "① 代码类子请求(含 python/程序/游戏 等产物标记) → 不本地化(不扣减); ② 有依赖节点 → 不本地化; ③ 长句(>60字) → 不本地化; ④ 片段在原文出现多次 → 不扣减(无法确定删哪处); ⑤ 扣减后剩余<25% → 不扣减; ⑥ 全本地计划 → 不扣减(不用\"把原文扣成空\"假装实现); ⑦ 未扣减时出站正文逐字等于原文(零改动)。",
       "covers": [
         "docs/plans/v0.22.0-exp9-subtask-plan-routing-and-local-first.md",
-        "src/agent.tests/PlanAblationTests.cs",
+        "src/agent.tests/PlanAblationTests.cs(24例)",
         "src/agent/IndustrialAgentV2.cs",
         "src/agent/intent/PlanRoutePolicy.cs",
         "src/agent/intent/RequestAblation.cs",
-        "src/agent/intent/TaskPlan.cs",
-        "src/agent/tests/PlanAblationTests.cs(24例)"
+        "src/agent/intent/TaskPlan.cs"
       ],
       "owner_round": "R383"
     },
@@ -407,9 +406,8 @@
         "scripts/fetch-py-tool.sh",
         "src/agent.skills/PythonInterpreterResolver.cs",
         "src/agent.skills/PythonRunVerifier.cs",
-        "src/agent.tests/PythonInterpreterResolverTests.cs",
-        "src/agent/registry/PythonArtifactPlugin.cs",
-        "src/agent/tests/PythonInterpreterResolverTests.cs(9例)"
+        "src/agent.tests/PythonInterpreterResolverTests.cs(9例)",
+        "src/agent/registry/PythonArtifactPlugin.cs"
       ],
       "owner_round": "R383"
     },
@@ -444,7 +442,7 @@
         "src/agent.tests/PlanResumeTests.cs(14例)",
         "src/agent/intent/PlanResumeService.cs",
         "src/agent/intent/PlanRunner.cs(RunAsync seedRun)",
-        "src/agent/recovery/ExecutionCheckpoint.cs(PlanJson/RunJson/NodeOutputs/SourceText/AwaitingNodeId/PendingQuestion)",
+        "src/agent.recovery/ExecutionCheckpoint.cs(PlanJson/RunJson/NodeOutputs/SourceText/AwaitingNodeId/PendingQuestion)",
         "src/agent/registry/NodeExecutionResult.cs(seedRun/ClarificationsSettled)",
         "src/agent/IndustrialAgentV2.cs(TryResumePausedPlanAsync)",
         "src/agent/intent/TaskPlan.cs(ClarificationsSettled)"
@@ -473,33 +471,37 @@
     {
       "id": "gpu.spirv.structural-validation",
       "capability": "自研 SPIR-V 汇编器 + **独立结构校验器** + **独立反汇编器** (零 glslang/glslc 环境): Spv.cs 手写指令级汇编器产出模块; SpirvValidator.cs 独立遍历结构 (magic/version/bound/opcode 合法性/结果 id 位置/能力-执行模型一致性); SpvDisassembler.cs 独立解码逐字转储 (**不入执行路径**)。校验器必须有判别力: 5 组负向控制 (坏 magic / bound=1 / 未知 opcode / 缺 Shader 能力 / 丢执行模式字面量) 必须全部被抓。",
-      "level": "L4",
-      "evidence_cmd": "DOTNET_ROOT=$HOME/.dotnet src/agent.rover/bin/Release/net10.0/agent.rover vulkan --spirv-only --elements 16  (及 --spv-dump 反汇编转储)",
+      "level": "L1",
+      "evidence_cmd": "test -f src/agent.rover/gpu/spirv/SpirvValidator.cs && test -f src/agent.rover/gpu/spirv/Spv.cs && test -f src/agent.rover/gpu/spirv/SpvDisassembler.cs && test -f src/agent.rover/gpu/spirv/Kernels.cs && test ! -f src/agent.rover/cli/VulkanCli.cs && echo SPIRV_LIB_PRESENT_DRIVER_RETIRED",
       "evidence_path": "src/agent.rover/gpu/spirv/SpirvValidator.cs",
-      "negative_control": "5 组注入缺陷必须全红 (实测 neg=5/5): magic / bound / 未知 opcode / 缺能力 / 丢 mode 字面量; 反汇编对账另证伪'SPIR-V 层绑定/装饰错位'整类猜测 (R389)。",
+      "negative_control": "R411-V 标注: 5 组注入缺陷负控为 R389 实测读数, 驱动 CLI 随 R408 退役 ⇒ 不可复现。原文: 5 组注入缺陷必须全红 (实测 neg=5/5): magic / bound / 未知 opcode / 缺能力 / 丢 mode 字面量; 反汇编对账另证伪'SPIR-V 层绑定/装饰错位'整类猜测 (R389)。",
       "covers": [
         "src/agent.rover/gpu/spirv/Spv.cs",
         "src/agent.rover/gpu/spirv/Kernels.cs",
         "src/agent.rover/gpu/spirv/SpirvValidator.cs",
-        "src/agent.rover/gpu/spirv/SpvDisassembler.cs",
-        "src/agent.rover/cli/VulkanCli.cs(--spirv-only/--spv-dump)"
+        "src/agent.rover/gpu/spirv/SpvDisassembler.cs"
       ],
-      "owner_round": "R389"
+      "owner_round": "R389",
+      "cmd_expect_absent": [
+        "src/agent.rover/cli/VulkanCli.cs"
+      ],
+      "gap_note": "R411-V: 等级 L4→L1 —— R408 只退役 GGUF 引擎, 明确保留 SPIR-V 汇编器/独立校验器/反汇编器(§H 保留清单), 但驱动它们的 CLI 子命令(--spirv-only/--spv-dump)随 src/agent.rover/cli 一并删除 ⇒ 5 组注入缺陷负控**当前无入口可复现**, 故不得再宣称 L4 运行级; 复现需重建驱动(下轮候选)。库形态的可执行面 = 编译期存在断言(本行 evidence_cmd)。"
     },
     {
       "id": "llamacpp.process.boundary",
       "capability": "本地推理/嵌入的唯一执行面 = llama.cpp 官方二进制, 边界只有「进程 + loopback HTTP」(R408 用户钦定: 本地 GGUF 引擎整线退役、完全改用 llama.cpp, 且禁 P/Invoke 以保跨平台)。形态: LlamaServerHost 以 ArgumentList 起 llama-server(零 shell)、空闲端口探测、/health 就绪探测; LlamaCppClient 走 POST /completion(return_tokens 取原始 id、samplers=[temperature]+temp=0 即 greedy、cache_prompt=false 保确定性) 与 POST /v1/embeddings。真机判据: 同 prompt 同参 24 token 的 id 序列与 llama-cli 基线逐位相同; 单线程生成 17.891 t/s、prompt 33.049 t/s(本机 2 vCPU), 对照已退役自研引擎 AOT 0.2017 t/s。",
       "level": "L3",
-      "evidence_cmd": "export AGENTFRAMEWORK_LLAMA_BIN=<llama-server 二进制> && dotnet src/agent.host/bin/Debug/net10.0/agenthost.dll --llamacpp --model /tmp/models/r1-distill-qwen-1.5b-q4km.gguf --prompt-file /tmp/probe-r408/prompt.txt --max-tokens 24 --expect-ids <24 个基线 id> --json eval/rover/r408/e2e-generate.json   (判据: IdsMatch=true 且 exit 0; 不一致必须 exit 3)",
+      "evidence_cmd": "export AGENTFRAMEWORK_LLAMA_BIN=<llama-server 二进制> && dotnet src/agent.host/bin/Debug/net10.0/agenthost.dll --llamacpp --model /tmp/models/r1-distill-qwen-1.5b-q4km.gguf --prompt-file /tmp/probe-r408/prompt.txt --max-tokens 24 --expect-ids <24 个基线 id> --json eval/rover/r408/aot-generate.json   (判据: IdsMatch=true 且 exit 0; 不一致必须 exit 3)",
       "evidence_path": "src/agent.llamacpp/LlamaServerHost.cs",
-      "negative_control": "① 二进制不可解析(显式路径不存在 / 环境变量未设且 PATH 无) ⇒ 必须 provider_unavailable 显式失败, 无桩实现、无静默兜底; ② --expect-ids 与外部基线不一致 ⇒ exit 3, 不得静默通过; ③ 服务进程提前退出 ⇒ server_start_failed, 绝不假装就绪; ④ 端口被使用计数(requests/tokens/embeddings)必须与响应实际 token 数一致, 缺失不得记 0 冒充已测。",
+      "negative_control": "① 二进制不可解析(显式路径不存在 / 环境变量未设且 PATH 无) ⇒ 必须 provider_unavailable 显式失败, 无桩实现、无静默兜底; ② --expect-ids 与外部基线不一致 ⇒ exit 3, 不得静默通过; ③ 服务进程提前退出 ⇒ server_start_failed, 绝不假装就绪; ④ 端口被使用计数(requests/tokens/embeddings)必须与响应实际 token 数一致, 缺失不得记 0 冒充已测。 ⑤ R411-V: 归档 JSON 为 **AOT 发布物**臂产物(aot-generate.json, 与 §I 的 17.64 t/s / PromptPerSecond=34.458 一致); §E 的 JIT 复现命令落盘名(e2e-generate.json)**未入库归档** ⇒ 引用一律以 aot-generate.json 为准。",
       "covers": [
         "src/agent.llamacpp/LlamaServerHost.cs",
         "src/agent.llamacpp/LlamaCppClient.cs",
         "src/agent.llamacpp/LlamaCppJson.cs",
         "src/agent.llamacpp/LlamaCppProvider.cs",
         "src/agent.host/LlamaCppCommand.cs",
-        "eval/rover/r408/r408-evidence.md"
+        "eval/rover/r408/r408-evidence.md",
+        "eval/rover/r408/aot-generate.json"
       ],
       "owner_round": "R408"
     },
@@ -550,7 +552,13 @@
         "src/agent.rover/formal/FormalKernel.cs",
         "src/agent.rover/gpu/spirv/SpvRegistryAudit.cs"
       ],
-      "owner_round": "R408"
+      "owner_round": "R408",
+      "cmd_expect_absent": [
+        "src/agent.embedcpu",
+        "src/agent.rover/gguf",
+        "src/agent.rover/infer",
+        "src/agent.rover/Program.cs"
+      ]
     },
     {
       "id": "probe.randomized-selfcheck",
@@ -577,27 +585,24 @@
     {
       "id": "rover.generation.chain",
       "capability": "本机 agent.rover 的**生成链**(R400): GGUF 内嵌 gpt2 字节级 BPE(102400 词表/99757 合并) + 预分词标量扫描器(5 条 Split + Digits 逐位 + ByteLevel) + DeepSeek chat template(支持子集) + SplitMix64 确定性采样(greedy/temperature/top-k/top-p) + 复用增量前向的解码环 ⇒ 文本进文本出。对账 oracle = HF tokenizers 0.23.2(**独立实现, 非本仓代码**): 199 encode + 199 预分词 + 2000 压力(encode 与分片双断言) + 405 解码(两种 skip 口径) 夹具逐条相等; chat 渲染 12/12 与 jinja2(transformers 同引擎同参数)逐字节相等; 两张判定谓词表由 oracle **阶段隔离探测**生成(\\s = 25 码点 = Unicode White_Space 全集, 全 BMP 穷举; Digits = {Nd,Nl,No} 全集 1831/1831, 负控 3920 例 0 违规)。常量资产由 tokenizer.json **机器生成**(正则原文 sha256 + 归一化区间表 + 摘要), 禁手抄。",
-      "level": "L4",
-      "evidence_cmd": "agent.rover tokenize eval/... || python3 scripts/rover_gen_tokenizer_assets.py --tokenizer-json <tokenizer.json> --check; agent.rover tokenize --tables eval/rover/tokref/tables --selftest --fixtures --neg-control",
+      "level": "L0",
+      "evidence_cmd": "test -f eval/rover/tokref/fixtures.jsonl && test -f eval/rover/tokref/stress_fixtures.jsonl && test -f eval/rover/tokref/decode_fixtures.jsonl && test -f eval/rover/tokref/pretok_fixtures.jsonl && test -f docs/reports/r400/rover-generation-chain.md && test ! -d src/agent.rover/token && echo R400_RETIRED_ARCHIVE_OK",
       "evidence_path": "docs/reports/r400/rover-generation-chain.md",
-      "negative_control": "5 类必须红: merges 乱序 41.5% / 逆序 56.9% / 清空 95.3% 被检出(依赖合并样本 1814, 阈值 30/40/90%); 空切分集 ⇒ 特殊符号文本 3→15 id; 朴素整片预分词判别 137/199; 采样器退化(恒 argmax)负控 ⇒ 平坦分布 300 抽取需 >5 个不同 id(该负控当场抓到 NextU64 状态未前进的真 bug)",
+      "negative_control": "R411-V 标注: 下列负控为 R400 历史实测读数, 引擎与 CLI 退役后**不可复现**。原文: 5 类必须红: merges 乱序 41.5% / 逆序 56.9% / 清空 95.3% 被检出(依赖合并样本 1814, 阈值 30/40/90%); 空切分集 ⇒ 特殊符号文本 3→15 id; 朴素整片预分词判别 137/199; 采样器退化(恒 argmax)负控 ⇒ 平坦分布 300 抽取需 >5 个不同 id(该负控当场抓到 NextU64 状态未前进的真 bug)",
       "covers": [
-        "src/agent.rover/token/BpeTokenizer.cs",
-        "src/agent.rover/token/Pretokenizer.cs",
-        "src/agent.rover/token/ByteUnicode.cs",
-        "src/agent.rover/token/ChatTemplate.cs",
-        "src/agent.rover/token/TableSnapshot.cs",
-        "src/agent.rover/token/TokenizerAssets.g.cs",
-        "src/agent.rover/infer/Sampler.cs",
-        "src/agent.rover/cli/GenerateCli.cs",
-        "src/agent.tests/RoverTokenizerTests.cs",
-        "src/agent.tests/RoverSamplerTests.cs",
         "eval/rover/tokref/fixtures.jsonl",
         "eval/rover/tokref/stress_fixtures.jsonl",
-        "eval/rover/tokref/decode_fixtures.jsonl"
+        "eval/rover/tokref/decode_fixtures.jsonl",
+        "eval/rover/tokref/pretok_fixtures.jsonl",
+        "docs/reports/r400/rover-generation-chain.md"
       ],
       "owner_round": "R400",
-      "gap_note": "R408: 本地 GGUF 引擎整线退役 ⇒ 本行所验能力已不存在(历史读数留档); 现行推理形态见 llamacpp.process.boundary。"
+      "gap_note": "R408 退役本地 GGUF 引擎 ⇒ 本行所验能力已不存在(历史读数留档)。R411-V 收口: 等级降为 L0(不可复现), evidence_cmd 改为**可执行**的退役账断言(归档件存在 + 源已删), 等级 L4→L0: 夹具(199/199 等)与报告留档, 但分词器/采样器/CLI 已删 ⇒ 逐条读数不可再产出; chat template 职责已移交 llama.cpp 内嵌 jinja(R408/R409), 见 llamacpp.prompt.template_gate 行。",
+      "cmd_expect_absent": [
+        "src/agent.rover/token",
+        "src/agent.rover/cli",
+        "src/agent.rover/infer"
+      ]
     },
     {
       "id": "capability.selfcheck.loop",
@@ -617,23 +622,24 @@
     {
       "id": "rover.io.attribution",
       "capability": "rover 生成链性能归因（盘读 vs 计算）: 进程 `/proc/self/io` + 内核 `/proc/diskstats` + 零运算裸读参照**三通道**同向才下结论。R402 实测: 每 pass 盘读 = 0.765/0.879/0.912 × 模型体积（3.23–3.85 GB，76.5–91.2% 必须从块设备重读）; ledger 流式当量 0.999/pass; 冷页臂−默认臂差 0.000（引擎无缓存复用机制）; 设备通道 vs 进程通道 1.006×（非自我报告）; 裸读 stream 436–544 MiB/s、mmap 229–368 MiB/s，64 MiB 块/提示窗**更慢**（预读负结果）; 计算（减法）9.2–17.0 s/pass ⇒ 本机天花板 0.06–0.11 tok/s（与远端 470.2 tok/s 差 4,300–7,800×）。同题 1-token 前向墙钟 15.97/25.02/22.66 s（极差 1.57×）⇒ 秒表不作 KPI，只认计数器比值。",
-      "level": "L3",
-      "evidence_cmd": "dotnet build src/agent.rover/agent.rover.csproj -c Release --nologo -v q && dotnet test src/agent.tests/agentframework.tests.csproj -c Release --nologo -v q --filter \"FullyQualifiedName~RoverProcIo\" && src/agent.rover/bin/Release/net10.0/agent.rover readbench /tmp/models/prover7b-q4km.gguf --mode stream --chunk-mb 8 --passes 2 && python3 scripts/r402_io_attribution.py --json data/probe/r402/io-attribution-run3.json",
+      "level": "L0",
+      "evidence_cmd": "test -f eval/rover/r402/io-attribution-run3.json && test -f eval/rover/r402/io-attribution-run2-doublecounted-device.json && test -f eval/rover/r402/compute-bench.json && test -f docs/reports/r402/io-attribution.md && test -f scripts/r402_io_attribution.py && test ! -d src/agent.rover/runtime && echo R402_RETIRED_ARCHIVE_OK",
       "evidence_path": "scripts/r402_io_attribution.py",
       "evidence_report": "docs/reports/r402/io-attribution.md",
-      "negative_control": "① 设备通道口径负控: 分区行会双计 —— 修正后 guard 实测 naive=6,502,662,144 vs whole=3,251,081,216 = **2.00×**（首版正则 `vd[a-z]+\\d*` 误匹配 vda1，两个数几乎相等掩盖了错误；双计值与正确值**一并落盘**供第三方复核）；② 不可用即标: 任一通道返回 0/缺失一律 `available=false` 且**不写入归因**（不以 0 充数）；③ 裸读臂自带 `readbench_scope{disk_path_engaged}`：`read_bytes≈0` 时读数只作「内存路径上界」，不得当盘吞吐；④ 解析负控: `/proc` 字段偏移错位会**静默得 0** —— 单测用带空格/括号的 `comm` 夹具钉死 minflt=idx7、majflt=idx9；⑤ 每-pass 分母口径负控: 分母误取 decode 步数会复现 R400 台账错值（单测 InRange 钉死 23.7–23.8e9）；⑥ 冷页对照臂 `--drop-pages` 与默认臂逐字节对照（差 0.000 才算「无缓存复用」成立）",
+      "negative_control": "R411-V 标注: 下列负控为 R402 历史实测读数, 引擎退役后**不可复现**(归档件: io-attribution-run2-doublecounted-device.json)。原文: ① 设备通道口径负控: 分区行会双计 —— 修正后 guard 实测 naive=6,502,662,144 vs whole=3,251,081,216 = **2.00×**（首版正则 `vd[a-z]+\\d*` 误匹配 vda1，两个数几乎相等掩盖了错误；双计值与正确值**一并落盘**供第三方复核）；② 不可用即标: 任一通道返回 0/缺失一律 `available=false` 且**不写入归因**（不以 0 充数）；③ 裸读臂自带 `readbench_scope{disk_path_engaged}`：`read_bytes≈0` 时读数只作「内存路径上界」，不得当盘吞吐；④ 解析负控: `/proc` 字段偏移错位会**静默得 0** —— 单测用带空格/括号的 `comm` 夹具钉死 minflt=idx7、majflt=idx9；⑤ 每-pass 分母口径负控: 分母误取 decode 步数会复现 R400 台账错值（单测 InRange 钉死 23.7–23.8e9）；⑥ 冷页对照臂 `--drop-pages` 与默认臂逐字节对照（差 0.000 才算「无缓存复用」成立）",
       "covers": [
-        "src/agent.rover/runtime/ProcIo.cs",
-        "src/agent.rover/infer/ForwardPass.cs(ForwardStats.Io/Passes)",
-        "src/agent.rover/cli/ForwardCli.cs(io{}/io_scope{})",
-        "src/agent.rover/cli/ReadBenchCli.cs",
-        "src/agent.tests/RoverProcIoTests.cs",
         "scripts/r402_io_attribution.py",
         "eval/rover/r402/io-attribution-run3.json",
+        "eval/rover/r402/compute-bench.json",
         "eval/rover/r402/README.md"
       ],
       "owner_round": "R402",
-      "gap_note": "R408: 本地 GGUF 引擎整线退役 ⇒ 本行所验能力已不存在(历史读数留档); 现行推理形态见 llamacpp.process.boundary。"
+      "gap_note": "R408 退役本地 GGUF 引擎 ⇒ 本行所验能力已不存在(历史读数留档)。R411-V 收口: 等级降为 L0(不可复现), evidence_cmd 改为**可执行**的退役账断言(归档件存在 + 源已删), 归因结论仍是 R402 唯一既有读数(每 pass 盘读 0.765–0.912×模型体积 ⇒ I/O 非瓶颈、计算 9.2–17.0 s/pass 是天花板), 但『线程与 mmap 策略』等靶点随引擎退役失去前提 ⇒ R402 无可续做步骤, 见 docs/reports/r402/io-attribution.md §收口。负向控制(设备通道双计 2.00×)读数留档于 io-attribution-run2-doublecounted-device.json, 复现需重建引擎 ⇒ 下轮候选。步 2 微基准**读数早已存在但此前未登记**: eval/rover/r402/compute-bench.json(R407 提交 cd8feeb 入库) —— 2 张量 × threads{1,2} × reps=3, 加速比 1.034–1.049 **< §7.1 预注册 1.3× ⇒ 裁定「加线程不升级」**(机制: 本机 2 vCPU = 1 物理核 + SMT); 机制启用断言 disk_read_bytes=0/majflt=0(真常驻内存纯计算) 与 y_hash 两档相等(数值不变) 均过。步 3 批量 prefill 臂随引擎退役失去对象。",
+      "cmd_expect_absent": [
+        "src/agent.rover/runtime",
+        "src/agent.rover/infer",
+        "src/agent.rover/cli"
+      ]
     },
     {
       "id": "llamacpp.prompt.template_gate",

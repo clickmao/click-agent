@@ -36,6 +36,41 @@ public class VerificationFormTests
         @"py_compile|csc\s+/t:|compilerserver|仅阅读|仅静态|静态扫描|纯静态",
         RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
+    /// <summary>evidence_cmd 里的仓库相对路径 (跳过省略号占位与构建产物 bin/obj)。</summary>
+    private static readonly Regex CmdPath = new(
+        @"(?<![\w/.-])((?:src|scripts|eval|docs|tests|website)/[A-Za-z0-9_./-]+)", RegexOptions.Compiled);
+
+    /// <summary>--filter FullyQualifiedName~X 里的 X (含中文测试名)。</summary>
+    private static readonly Regex FilterToken = new(
+        @"FullyQualifiedName~([\w\u4e00-\u9fff.]+)", RegexOptions.Compiled);
+
+    private static readonly Regex TestClassName = new(@"class\s+([\w\u4e00-\u9fff]+)", RegexOptions.Compiled);
+    private static readonly Regex TestMethodName = new(
+        @"(?:void|Task|Task<[^>]*>)\s+([\w\u4e00-\u9fff]+)\s*\(", RegexOptions.Compiled);
+
+    /// <summary>测试工程里的类名 + 方法名 (R2d 过滤器可解析性的语料)。</summary>
+    private static List<string> TestNames(string repoRoot)
+    {
+        var names = new List<string>();
+        var dir = Path.Combine(repoRoot, "src", "agent.tests");
+        if (!Directory.Exists(dir)) return names;
+        foreach (var f in Directory.EnumerateFiles(dir, "*.cs", SearchOption.AllDirectories))
+        {
+            var s = f.Replace('\\', '/');
+            if (s.Contains("/bin/") || s.Contains("/obj/")) continue;
+            var t = File.ReadAllText(f, System.Text.Encoding.UTF8);
+            foreach (Match m in TestClassName.Matches(t)) names.Add(m.Groups[1].Value);
+            foreach (Match m in TestMethodName.Matches(t)) names.Add(m.Groups[1].Value);
+        }
+        return names;
+    }
+
+    private static bool Exists(string repoRoot, string rel)
+    {
+        var abs = Path.Combine(repoRoot, rel.Replace('/', Path.DirectorySeparatorChar));
+        return File.Exists(abs) || Directory.Exists(abs);
+    }
+
     /// <summary>校验一份登记表, 返回违规列表 (空=通过)。合成坏表也走同一函数 → 检查器自身可被负向控制。</summary>
     private static List<string> Validate(JsonElement root, string repoRoot)
     {
@@ -44,6 +79,8 @@ public class VerificationFormTests
             return new List<string> { "登记表缺 rows 数组" };
 
         var ids = new HashSet<string>(StringComparer.Ordinal);
+        var testNames = TestNames(repoRoot);
+        if (testNames.Count == 0) v.Add("R2d 检查失效: 未扫描到任何测试类/方法名 (测试工程路径或解析器失效)");
         foreach (var row in rows.EnumerateArray())
         {
             string S(string k) => row.TryGetProperty(k, out var e) && e.ValueKind == JsonValueKind.String ? e.GetString()! : "";
@@ -71,6 +108,46 @@ public class VerificationFormTests
                 v.Add($"{id}: L{level[1..]} 缺 negative_control (R3)");
             if (runLevel && StaticOnly.IsMatch(S("evidence_cmd")))
                 v.Add($"{id}: L{level[1..]} 用静态工具冒充运行级 '{S("evidence_cmd")}' (R4)");
+
+            // R2b (R411): evidence_cmd 引用的仓库路径必须存在 —— "可直接复制执行"而不是纸上命令。
+            //   构建产物 (bin/obj) 不在此列: 干净检出下本就不存在, 其源码侧存活由 covers[] 钉住。
+            //   退役/反证类命令 (断言"某物已不存在") 必须显式声明 cmd_expect_absent, 且声明项必须真的不存在。
+            var declaredAbsent = new HashSet<string>(StringComparer.Ordinal);
+            if (row.TryGetProperty("cmd_expect_absent", out var ca) && ca.ValueKind == JsonValueKind.Array)
+                foreach (var e in ca.EnumerateArray())
+                    if (e.ValueKind == JsonValueKind.String) declaredAbsent.Add(e.GetString()!);
+
+            foreach (Match m in CmdPath.Matches(S("evidence_cmd")))
+            {
+                var tok = m.Groups[1].Value;
+                if (tok.Contains("..") || tok.Contains("/bin/") || tok.Contains("/obj/")) continue;
+                if (declaredAbsent.Contains(tok))
+                {
+                    if (Exists(repoRoot, tok))
+                        v.Add($"{id}: cmd_expect_absent 声明不存在的路径实际存在 '{tok}' (R2b 声明与仓库事实矛盾)");
+                }
+                else if (!Exists(repoRoot, tok))
+                    v.Add($"{id}: evidence_cmd 引用不存在的路径 '{tok}' (R2b 命令不可执行 —— 退役/反证场景须登记 cmd_expect_absent)");
+            }
+
+            // R2d (R411): --filter FullyQualifiedName~X 必须解析到真实测试类/方法。
+            //   被删测试留下的过滤器会让整行"看起来有证据"(实测: RoverProcIo 随 R408 退役后登记行照旧)。
+            foreach (Match m in FilterToken.Matches(S("evidence_cmd")))
+            {
+                var f = m.Groups[1].Value;
+                if (!testNames.Any(n => n.Contains(f, StringComparison.Ordinal)))
+                    v.Add($"{id}: evidence_cmd 的测试过滤器解析不到测试 '{f}' (R2d)");
+            }
+
+            // R2c (R411): covers[] 登记的路径必须存在 (覆盖声称必须指向真实源码; 括号内说明先剥离)。
+            if (row.TryGetProperty("covers", out var cov) && cov.ValueKind == JsonValueKind.Array)
+                foreach (var e in cov.EnumerateArray())
+                {
+                    if (e.ValueKind != JsonValueKind.String) continue;
+                    var p = e.GetString()!.Split('(')[0].Trim();
+                    if (p.Length == 0 || !p.Contains('/')) continue;
+                    if (!Exists(repoRoot, p)) v.Add($"{id}: covers 登记的路径不存在 '{p}' (R2c)");
+                }
         }
         return v;
     }
@@ -96,7 +173,8 @@ public class VerificationFormTests
         Assert.Equal("verification-registry/v1", root.GetProperty("schema").GetString());
     }
 
-    /// <summary>负向控制: 合成 4 类坏行, 检查器必须全部抓出 (R3/R4/R2)。</summary>
+    /// <summary>负向控制: 合成坏行覆盖 R2/R2b/R2c/R2d/R3/R4/重复 id, 检查器必须全部抓出;
+    /// 同时验证 cmd_expect_absent 的正向豁免 (声明→放行, 声明与事实矛盾→必红)。</summary>
     [Fact]
     public void Validator_CatchesInjectedDefects()
     {
@@ -113,6 +191,28 @@ public class VerificationFormTests
           { "id": "d.bad_level", "capability": "c", "level": "L9",
             "evidence_cmd": "dotnet test x", "evidence_path": "agent.sln",
             "negative_control": "n", "owner_round": "R1" },
+          { "id": "e.dead_cmd_path", "capability": "c", "level": "L3",
+            "evidence_cmd": "dotnet test src/agent.tests/deleted-suite.tests.csproj --filter FullyQualifiedName~VerificationFormTests",
+            "evidence_path": "agent.sln",
+            "negative_control": "n", "owner_round": "R1" },
+          { "id": "f.retired_no_decl", "capability": "c", "level": "L3",
+            "evidence_cmd": "src/agent.rover/bin/Release/net10.0/agent.rover tokenize eval/nope/deleted.jsonl",
+            "evidence_path": "agent.sln", "negative_control": "n", "owner_round": "R1" },
+          { "id": "g.dead_filter", "capability": "c", "level": "L3",
+            "evidence_cmd": "dotnet test x --filter FullyQualifiedName~NoSuchTestClassZzz",
+            "evidence_path": "agent.sln", "negative_control": "n", "owner_round": "R1" },
+          { "id": "h.dead_cover", "capability": "c", "level": "L1",
+            "evidence_cmd": "x", "evidence_path": "agent.sln",
+            "covers": ["src/agent/NoSuchPluginZzz.cs", "(整段括号说明, 非路径)", "no-slash-entry"],
+            "owner_round": "R1" },
+          { "id": "i.absent_decl_ok", "capability": "c", "level": "L1",
+            "evidence_cmd": "test ! -d src/agent.retired_zzz_absent && echo OK",
+            "evidence_path": "agent.sln", "cmd_expect_absent": ["src/agent.retired_zzz_absent"],
+            "owner_round": "R1" },
+          { "id": "j.absent_decl_contradiction", "capability": "c", "level": "L1",
+            "evidence_cmd": "test ! -d src/agent && echo OK",
+            "evidence_path": "agent.sln", "cmd_expect_absent": ["src/agent"],
+            "owner_round": "R1" },
           { "id": "a.no_negctl", "capability": "c", "level": "L1",
             "evidence_cmd": "x", "evidence_path": "agent.sln", "owner_round": "R1" }
         ] }
@@ -123,7 +223,13 @@ public class VerificationFormTests
         Assert.Contains(v, s => s.Contains("c.bad_path") && s.Contains("不存在"));
         Assert.Contains(v, s => s.Contains("d.bad_level") && s.Contains("等级非法"));
         Assert.Contains(v, s => s.Contains("id 重复"));
-        Assert.True(v.Count >= 5, "注入缺陷未被完整捕获: " + string.Join(" | ", v));
+        Assert.Contains(v, s => s.Contains("e.dead_cmd_path") && s.Contains("R2b"));
+        Assert.Contains(v, s => s.Contains("f.retired_no_decl") && s.Contains("R2b"));
+        Assert.Contains(v, s => s.Contains("g.dead_filter") && s.Contains("R2d"));
+        Assert.Contains(v, s => s.Contains("h.dead_cover") && s.Contains("R2c"));
+        Assert.Contains(v, s => s.Contains("j.absent_decl_contradiction") && s.Contains("声明与仓库事实矛盾"));
+        Assert.DoesNotContain(v, s => s.Contains("i.absent_decl_ok"));   // 正向豁免: 声明缺位路径不判红
+        Assert.True(v.Count >= 10, "注入缺陷未被完整捕获: " + string.Join(" | ", v));
     }
 
     /// <summary>R1: src/ 下每个 IResponseSegmentPlugin 实现文件必须在某行 covers[] 登记。</summary>

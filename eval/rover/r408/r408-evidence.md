@@ -32,6 +32,8 @@ agenthost --llamacpp --model /tmp/models/r1-distill-qwen-1.5b-q4km.gguf \
 （与 R407「llama.cpp f32-KV = 我方 = numpy oracle」三臂一致的文本相同）
 ids: `151648,198,1249,11047,220,16,17,54916,553,220,16,17,11,358,1191,553,14719,1495,279,46444,1119,34288,5479,13`
 
+> **归档口径（R411-V 补注）**：本仓库只归档了 **AOT 臂**产物 `eval/rover/r408/aot-generate.json`（其 `IdsMatch=true`、`PredictedPerSecond=17.64` / `PromptPerSecond=34.458`，与 §I 逐字一致）；上面这条 JIT 复现命令当时写入的 `e2e-generate.json` **从未入库**（旧登记行却引用了它 ⇒ 已按 R411-V 改指 `aot-generate.json`）。复现 JIT 臂时该文件会重新生成，届时再归档。
+
 ## C. 嵌入端口（llama.cpp `/v1/embeddings`）
 
 `dim=768`、`‖v‖=1.000000`（服务端已 L2 归一）、`sha256=d53363214ddc4d95321c623cec4535d419f303ad85cfa09dd290c4236b0be0d1`
