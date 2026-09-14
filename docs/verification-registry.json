@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R402",
+  "updated_round": "R408",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -160,7 +160,7 @@
       "negative_control": "",
       "covers": [],
       "owner_round": "R369",
-      "gap_note": "仅代码走查 + 静态扫描；无独立运行级机检。已知例外: src/agent.workspace/GitChangeType.cs(死代码, 未接线, 21 处)。运行级机检列入长期看板 L6。"
+      "gap_note": "R408: 该行能力已随本地 GGUF 引擎退役失效(登记仅作历史读数留档); 现行形态见 llamacpp.process.boundary。"
     },
     {
       "id": "code.unfenced.promote",
@@ -487,35 +487,35 @@
       "owner_round": "R389"
     },
     {
-      "id": "gpu.vulkan.dispatch",
-      "capability": "Vulkan 计算后端真机跑通并对账 (v0.23.0 · agent.rover GPU, GPU0 = llvmpipe/lavapipe 软件实现): instance/物理设备/队列/device memory/缓冲上传下载/描述符集/计算管线/dispatch/回读全链自实现 (VulkanBackend.cs, 零 shell 零反射, Silk.NET.Vulkan 2.23.0 与 Silk.NET 同源)。三内核数值对账: fma_vec max_abs_diff=0、silu_mul 2.98e-08<1e-5、scale_inplace max_abs_diff=0; 机制探针 const_b1_hits=4/4、dyn_b2_hits=16/16、dync_b3_hits=16/16、index_value=8∈[0,16)。",
+      "id": "llamacpp.process.boundary",
+      "capability": "本地推理/嵌入的唯一执行面 = llama.cpp 官方二进制, 边界只有「进程 + loopback HTTP」(R408 用户钦定: 本地 GGUF 引擎整线退役、完全改用 llama.cpp, 且禁 P/Invoke 以保跨平台)。形态: LlamaServerHost 以 ArgumentList 起 llama-server(零 shell)、空闲端口探测、/health 就绪探测; LlamaCppClient 走 POST /completion(return_tokens 取原始 id、samplers=[temperature]+temp=0 即 greedy、cache_prompt=false 保确定性) 与 POST /v1/embeddings。真机判据: 同 prompt 同参 24 token 的 id 序列与 llama-cli 基线逐位相同; 单线程生成 17.891 t/s、prompt 33.049 t/s(本机 2 vCPU), 对照已退役自研引擎 AOT 0.2017 t/s。",
       "level": "L3",
-      "evidence_cmd": "DOTNET_ROOT=$HOME/.dotnet src/agent.rover/bin/Release/net10.0/agent.rover vulkan --elements 16   (判据: done{kernels=3 pass=3 fail=0 spirv_valid=3 neg=5/5} 且 exit 0)",
-      "evidence_path": "src/agent.rover/gpu/VulkanBackend.cs",
-      "negative_control": "① 5 组 SPIR-V 结构缺陷必须被校验器抓; ② 机制分解探针 DiagProbe v4 解耦'动态索引/缓冲绑定位置', 逐机制二分而非盲猜 (曾据此否定'只有 binding 2 可写'假说, 最终由 index_value=248∈0..255=LocalSize 指向 BuiltIn 号 ⇒ 再由权威 registry oracle 定位到 opcode 常量错值); ③ 诊断夹具缓冲序必须与内核变量声明序逐位对齐 (错位会伪装成'设备写未落地')。",
+      "evidence_cmd": "export AGENTFRAMEWORK_LLAMA_BIN=<llama-server 二进制> && dotnet src/agent.host/bin/Debug/net10.0/agenthost.dll --llamacpp --model /tmp/models/r1-distill-qwen-1.5b-q4km.gguf --prompt-file /tmp/probe-r408/prompt.txt --max-tokens 24 --expect-ids <24 个基线 id> --json eval/rover/r408/e2e-generate.json   (判据: IdsMatch=true 且 exit 0; 不一致必须 exit 3)",
+      "evidence_path": "src/agent.llamacpp/LlamaServerHost.cs",
+      "negative_control": "① 二进制不可解析(显式路径不存在 / 环境变量未设且 PATH 无) ⇒ 必须 provider_unavailable 显式失败, 无桩实现、无静默兜底; ② --expect-ids 与外部基线不一致 ⇒ exit 3, 不得静默通过; ③ 服务进程提前退出 ⇒ server_start_failed, 绝不假装就绪; ④ 端口被使用计数(requests/tokens/embeddings)必须与响应实际 token 数一致, 缺失不得记 0 冒充已测。",
       "covers": [
-        "src/agent.rover/gpu/VulkanBackend.cs",
-        "src/agent.rover/cli/VulkanCli.cs",
-        "src/agent.rover/gpu/spirv/Kernels.cs",
-        "src/agent.rover/agent.rover.csproj(Silk.NET.Vulkan 2.23.0)"
+        "src/agent.llamacpp/LlamaServerHost.cs",
+        "src/agent.llamacpp/LlamaCppClient.cs",
+        "src/agent.llamacpp/LlamaCppJson.cs",
+        "src/agent.llamacpp/LlamaCppProvider.cs",
+        "src/agent.host/LlamaCppCommand.cs",
+        "eval/rover/r408/r408-evidence.md"
       ],
-      "owner_round": "R389"
+      "owner_round": "R408"
     },
     {
-      "id": "rover.residency.hot_lru_reclaim",
-      "capability": "agent.rover 张量驻留/内存回收接前向真机落地 (v0.23.0 · 焦点① 剩余件): ① 热集常驻 — 默认 pin 全部 norm, 真 7B 实测 61 张/999,424B ≈ 0.023% 模型体积, 第 2 token 起 60/61 命中; ② LRU 主动驱逐 — 超预算按 LastUseTick 最久未用先走, 真 7B --budget-bytes 16384 ⇒ evicts=118/reclaims=120/peak=32768 (=预算+单张量), 受限 vs 默认 logits 逐位一致 (sha256 e34dabd647b50ba0, top-1 均为 185); ③ 显式 ReclaimAll 只释放非常驻且释放额=非常驻驻留之和; ④ 量化权重走 StreamWindow 零拷贝 ⇒ 驻留恒 0; ⑤ 预算语义只声明一次 (0/负 = 无上限 BudgetUnlimited), 判定与打印同源派生。自证套件 10/10 (真 7B + tiny 双夹具, 零 shell)。",
+      "id": "llamacpp.embedding.port",
+      "capability": "产品端口 agent.contextgradient.ITextEmbedder 的 llama.cpp 实现(LlamaCppTextEmbedder): 懒启动专用 llama-server(--embeddings 与文本生成互斥 ⇒ 与生成各起一进程); IsAvailable = 纯配置判定(模型文件 ∧ 二进制可解析, 零 I/O 零进程) ⇒ 不满足即回 NullTextEmbedder 锚词模式(行为兼容)。真机判据: bge-base-zh-q8 出 768 维且服务端已 L2 归一(‖v‖=1.000000), 且两条独立代码路径指纹一致 —— --llamacpp --embed-text 与产品 DI 路径(--embed) 同文本向量 sha256=d53363214ddc4d95321c623cec4535d419f303ad85cfa09dd290c4236b0be0d1。",
       "level": "L3",
-      "evidence_cmd": "DOTNET_ROOT=$HOME/.dotnet src/agent.rover/bin/Release/net10.0/agent.rover residency --selftest <gguf>   (判据: selftest{ran=10 pass=10 fail=0} 且 exit 0; 夹具不足须 exit 3 而非硬凑); 接前向对账: agent.rover forward <gguf> --tokens 1,2,3 --no-pin --budget-bytes 256 --reclaim-per-token --dump A 对比默认 --dump B ⇒ 8/8 文件 cmp 逐位一致",
-      "evidence_path": "src/agent.rover/runtime/TensorResidency.cs",
-      "evidence_report": "docs/reports/r385/residency-evidence.md",
-      "negative_control": "① 真释放判别: 驱逐后对受害者缓冲 Span 访问必须抛 ObjectDisposedException (只加计数不释放的实现在此必红); ② 全 pin + 预算 1B ⇒ 必须 evicts=0 且如实报 budget_exceeded_honest, 不得伪报符合预算; ③ LRU 次序必须在驱逐发生的那一刻判定 (事后观测会被后续驱逐掩盖 — 首版断言即因此误红); ④ 夹具不足 6 张量则 exit 3 报 selftest_insufficient_tensors, 不硬凑。",
+      "evidence_cmd": "export AGENTFRAMEWORK_BGE_MODEL=/tmp/models/bge-base-zh-v1.5-q8.gguf && dotnet src/agent.host/bin/Debug/net10.0/agenthost.dll --embed \"人工智能代理框架\"   (判据: 768 维 JSON 数组 + exit 0, 且与 --llamacpp --embed-text --vec-out 的向量 sha256 相同)",
+      "evidence_path": "src/agent.llamacpp/LlamaCppTextEmbedder.cs",
+      "negative_control": "① 二进制/模型缺失 ⇒ provider_unavailable + exit 4 —— 旧路径(RemoteEmbedder/unix-socket daemon)实为未处理异常 core dump exit 134, 且注释声称的 hash 兜底在实现中并不存在(R408 实测), 已修; ② 服务中途死亡 ⇒ IsRunning 探测后重启一次, 不得静默返回零向量/零维; ③ 失败一律抛 LlamaCppException(带 code) 交调用方决定, 不得静默降级冒充语义向量。",
       "covers": [
-        "src/agent.rover/runtime/TensorResidency.cs",
-        "src/agent.rover/cli/ResidencySelfTest.cs",
-        "src/agent.rover/infer/ForwardPass.cs",
-        "src/agent.rover/cli/ForwardCli.cs"
+        "src/agent.llamacpp/LlamaCppTextEmbedder.cs",
+        "src/agent/extensions/ServiceCollectionExtensions.cs",
+        "src/agent.host/Program.cs"
       ],
-      "owner_round": "R390"
+      "owner_round": "R408"
     },
     {
       "id": "agent.formal.loop_mount",
@@ -540,26 +540,17 @@
       "owner_round": "R391"
     },
     {
-      "id": "agent.bge.vulkan_port",
-      "capability": "本地 BGE 的 **Vulkan GPU 执行端口**(R393): 矩阵乘端口 `IMatMulBackend` 抽在 `agent.embedcpu`(前向只有一份 ⇒ 不产生第二份 LayerNorm/注意力/池化语义), CPU 实现走 `TensorPrimitives.Dot`, Vulkan 实现 `VulkanMatMulBackend` + 形状特化内核 `Kernels.MatMulBias(inDim,outDim)`(4 绑定 W/X/B/Y, inDim/outDim 为编译期常量 ⇒ 内核内不反推维度, 尾线程由 i≥ArrayLength(Y) 守卫返回)。真机判据三项: ① 端口确实被使用(`dispatch_calls == 层4×6×文本×重复`, 72/216/864 三规模 match=True, 接成装饰即红); ② 数值对账(Vulkan vs CPU `max_abs_diff ≤ 2.538E-007` / `cos=1.000000000`; CPU 档差异 0 且逐位相同; 舍入语义: 内核顺序累加 vs CPU SIMD 多累加器 ⇒ **不以逐位一致为判据**, 判据 = ≤1e-3 ∧ cos≥0.99999); ③ 无设备负控(`--device 99` ⇒ ok=false reason=device_unavailable 退出码 1, 绝不静默退回 CPU 冒充 GPU)。附: 引擎侧 NativeAOT 原生二进制真跑 Vulkan 端口 PASS(无 JIT), 产品侧 `agent.host` AOT 仍 IL 警告 0(未引入 Silk.NET)。",
-      "level": "L4",
-      "evidence_cmd": "dotnet publish src/agent.rover/agent.rover.csproj -c Release -r linux-x64 -p:PublishAot=true -o /tmp/r393/rover_aot && /tmp/r393/rover_aot/agent.rover embed --backend vulkan --selftest (判据: portcheck.dispatch_calls==expected ∧ verdict=PASS ∧ worst_cos=1.000000000); 对照: ./src/agent.rover/bin/Release/net10.0/agent.rover embed --backend cpu --selftest (差异 0); 负控: ... embed --backend vulkan --device 99 --compare (必须 ok=false 且退出码 1); 机检: env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~BgeMatMulPortTests",
-      "evidence_path": "src/agent.embedcpu/MatMulBackend.cs",
-      "evidence_report": "docs/reports/r385/r393-bge-vulkan-port.md",
-      "negative_control": "① `--device 99`: 显式请求 GPU 端口而设备不存在 ⇒ 必须 `ok=false reason=device_unavailable` 且退出码 1, **不得产出任何嵌入**(\"静默回退 CPU 冒充 GPU\"在此红); ② 端口空心判定: 若把 Vulkan 端口接成装饰(只在 CPU 路径加一层), `portcheck.dispatch_calls` 立刻 ≠ expected; ③ 内核形状约束有判别力: `BgeMatMulPortTests.MatMulBias_驱动约束检查器有判别力` 把好内核的循环头改回**条件分支**(实测被 lavapipe 拒绝的旧形状), 检查器必须报 1 处违规 —— 改回即红; ④ 结构校验通过 ≠ 可执行: 首版内核自写校验判合法而真机 `VK_ERROR_UNKNOWN`, 故本行等级依据是**真机执行**而非静态校验; ⑤ `SpvRegistryAudit` 常量表机检(新增 `ScFunction` 未绑定别名时审计真红过一次); ⑥ 池读数判据: `pool{slots=7}` 在 864 次派发下恒定(复用率 99.8%), 若逐次分配则该读数随派发增长。",
+      "id": "engine.retired.no_local_gguf",
+      "capability": "本地 GGUF 代码开发整线退役(R408 用户钦定「去掉所有关于gguf的本地代码开发, 完全改用llama.cpp」): 删除 src/agent.rover/{gguf,quant,infer,runtime,token,cli} + Program.cs + gpu/VulkanBackend.cs + gpu/VulkanMatMulBackend.cs(40 文件 / 10,319 LOC) 与 src/agent.embedcpu 整工程(10 文件 / 647 LOC) 及 9 个引擎测试; 保留非 GGUF 内核 agent.rover/formal(形式化判定, 产品节点闸门共享源) 与 gpu/spirv(SPIR-V 汇编 + 独立结构校验器)。",
+      "level": "L1",
+      "evidence_cmd": "test ! -d src/agent.embedcpu && test ! -d src/agent.rover/gguf && test ! -d src/agent.rover/infer && test ! -f src/agent.rover/Program.cs && ! grep -rq \"DllImport\\|LibraryImport\" src/ --include=*.cs && echo RETIRE_OK",
+      "evidence_path": "eval/rover/r408/r408-evidence.md",
+      "negative_control": "① 目录/文件仍存在或仍有 agent.embedcpu 引用 ⇒ 机检非零退出(不得只删不验); ② 删除后整链必须仍可编译(git rm 留档可回溯), 全量回归不得出现新红; ③ 文档宣称的退役清单必须与 git 记录一致 —— 不允许「文档说删了、源码还在」。",
       "covers": [
-        "src/agent.embedcpu/MatMulBackend.cs",
-        "src/agent.embedcpu/BgeCpuEmbedder.cs",
-        "src/agent.rover/gpu/VulkanMatMulBackend.cs",
-        "src/agent.rover/gpu/VulkanBackend.cs",
-        "src/agent.rover/gpu/spirv/Kernels.cs",
-        "src/agent.rover/gpu/spirv/Spv.cs",
-        "src/agent.rover/gpu/spirv/SpvRegistryAudit.cs",
-        "src/agent.rover/cli/EmbedCli.cs",
-        "src/agent.rover/cli/RoverCli.cs",
-        "src/agent.tests/BgeMatMulPortTests.cs"
+        "src/agent.rover/formal/FormalKernel.cs",
+        "src/agent.rover/gpu/spirv/SpvRegistryAudit.cs"
       ],
-      "owner_round": "R393"
+      "owner_round": "R408"
     },
     {
       "id": "probe.randomized-selfcheck",
@@ -605,7 +596,8 @@
         "eval/rover/tokref/stress_fixtures.jsonl",
         "eval/rover/tokref/decode_fixtures.jsonl"
       ],
-      "owner_round": "R400"
+      "owner_round": "R400",
+      "gap_note": "R408: 本地 GGUF 引擎整线退役 ⇒ 本行所验能力已不存在(历史读数留档); 现行推理形态见 llamacpp.process.boundary。"
     },
     {
       "id": "capability.selfcheck.loop",
@@ -640,7 +632,8 @@
         "eval/rover/r402/io-attribution-run3.json",
         "eval/rover/r402/README.md"
       ],
-      "owner_round": "R402"
+      "owner_round": "R402",
+      "gap_note": "R408: 本地 GGUF 引擎整线退役 ⇒ 本行所验能力已不存在(历史读数留档); 现行推理形态见 llamacpp.process.boundary。"
     }
   ],
   "aot_check_policy": "release_tag_only",

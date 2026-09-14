@@ -84,14 +84,30 @@ internal class Program
                 formalEvalPath = args[++i];
         }
 
-        // R136 (D4 reply_rel 基础设施): --embed 输出向量 JSON — R352: 本地 bge 已删,
-        // 走 llm-service (RemoteEmbedder; daemon 离线 → hash 兜底语义), harness 离线算 reply_rel 不变。
+        // R408 (用户钦定: 直接改用 llama.cpp): --embed 走 llama-server --embeddings。
+        // 旧路径 (RemoteEmbedder / unix-socket daemon) 在 daemon 离线时**抛未处理异常 ⇒ core dump (exit 134)**,
+        // 且注释声称的「hash 兜底语义」在实现中并不存在 (本轮 R408 实测) ⇒ 改为显式失败 + 明确退出码。
         if (embedText is not null)
         {
-            var embedder = new agent.llamalocal.RemoteEmbedder();
-            var vec = await embedder.EmbedAsync(embedText, CancellationToken.None);
-            Console.WriteLine("[" + string.Join(",", vec.Select(v => v.ToString("R", System.Globalization.CultureInfo.InvariantCulture))) + "]");
-            return 0;
+            var opts = agent.llamacpp.LlamaCppEmbedderOptions.FromEnvironment();
+            await using var embedder = new agent.llamacpp.LlamaCppTextEmbedder(opts);
+            if (!embedder.IsAvailable)
+            {
+                Console.Error.WriteLine($"embed: provider_unavailable (模型 {opts.ModelPath} 或 llama-server 不可解析;" +
+                                        " 设 AGENTFRAMEWORK_LLAMA_BIN / AGENTFRAMEWORK_BGE_MODEL)");
+                return 4;
+            }
+            try
+            {
+                var vec = await embedder.EmbedAsync(embedText, CancellationToken.None);
+                Console.WriteLine("[" + string.Join(",", vec.Select(v => v.ToString("R", System.Globalization.CultureInfo.InvariantCulture))) + "]");
+                return 0;
+            }
+            catch (agent.llamacpp.LlamaCppException ex)
+            {
+                Console.Error.WriteLine($"embed: {ex.Code}: {ex.Message}");
+                return 4;
+            }
         }
 
         // ── v0.23.0 exp12 · S3/S4（用户钦定：决策合规率必须可证伪）─────────────────────────────
@@ -161,6 +177,14 @@ if (args.Length >= 1 && args[0] == "--llm-service-status")
     var st = agent.llmservice.LlmServiceStatus.Query(sock);
     Console.WriteLine(st.Render(sock));
     return st.Online ? 0 : 5;
+}
+
+// v0.30.0 R408 (用户钦定: 本地 GGUF 引擎整线退役 → llama.cpp 进程化接入):
+// --llamacpp — 真实 llama-server 进程做一次生成/嵌入并输出读数 JSON (零 P/Invoke; 进程+loopback HTTP; 跨平台)。
+// 依据: 进程内 native interop 在 NativeAOT 下 SIGSEGV (R90 实测); --expect-ids 逐位对账, 不一致 exit 3。
+if (args.Length >= 1 && args[0] == "--llamacpp")
+{
+    return await LlamaCppCommand.RunAsync(args, Console.Out, Console.Error);
 }
 
 // v0.13.3 A2 (用户钦定) — 压缩底座 audit (用户钦定) — 压缩底座 audit: ground-truth 样本 × 真实 ContextGradientCompressor

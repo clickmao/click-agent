@@ -1,31 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <!-- v0.30.0 R408 (用户钦定: 本地 GGUF 引擎整线退役 → llama.cpp 进程化接入):
+       本工程自 R408 起**只承载与 GGUF 无关的内核**，且不再产出可执行文件:
+         · formal/      —— 形式化判定内核 (LinTerm/FourierMotzkin/FormalKernel), 产品侧节点级闸门共享源
+         · gpu/spirv/   —— SPIR-V 汇编器 + 内核目录 + 独立结构校验器
+       已退役: gguf/(解析) quant/(反量化) infer/(前向/KV/RoPE) runtime/(驻留/CPU 内核/ProcIo) token/(BPE+Jinja+ChatTemplate)
+               cli/(生成/前向/基准/嵌入) gpu/Vulkan*(Vulkan 后端) Program.cs, 以及整个 agent.embedcpu (托管 BERT 前向)。
+       本地推理与嵌入统一改由 agent.llamacpp 提供: 「进程 + loopback HTTP」边界, 零 P/Invoke (跨平台, AOT 可用)。 -->
+
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <AssemblyName>agent.rover</AssemblyName>
     <RootNamespace>agent.rover</RootNamespace>
-    <Version>0.23.0</Version>
+    <Version>0.30.0</Version>
     <InvariantGlobalization>true</InvariantGlobalization>
-    <!-- AOT: 零反射 / 零 shell; 发布形态 = NativeAOT -->
+    <!-- AOT: 零反射 / 零 shell; 零 NuGet 依赖 (纯 BCL) -->
     <IsAotCompatible>true</IsAotCompatible>
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
   </PropertyGroup>
-
-  <ItemGroup>
-    <!-- R393: BGE 矩阵乘端口契约 (IMatMulBackend) 位于 agent.embedcpu; 本工程提供 Vulkan 实现。
-         方向 rover -> embedcpu, 无环; 产品侧 (agent) 不因此获得 Silk.NET 依赖。 -->
-    <ProjectReference Include="../agent.embedcpu/agent.embedcpu.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="System.Numerics.Tensors" Version="10.0.0" />
-    <!-- C6: 与 Silk.NET 相同的 Vulkan 运行库 -->
-    <PackageReference Include="Silk.NET.Vulkan" Version="2.23.0" />
-    <PackageReference Include="Silk.NET.Core" Version="2.23.0" />
-  </ItemGroup>
 
 </Project>

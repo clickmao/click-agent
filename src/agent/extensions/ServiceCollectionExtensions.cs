@@ -243,14 +243,14 @@ public static class ServiceCollectionExtensions
         // EmbedAsync 异步, 与召回/压缩主链并行 (R352-b)。模型缺失 → NullTextEmbedder (锚词模式, 行为兼容)。
         services.AddSingleton<agent.contextgradient.ITextEmbedder>(sp =>
         {
-            // R404 (用户钦定): 默认嵌入模型换成**优化后的** bge-base-zh-v1.5-q8 (768 维 / 12 层 / 12 头)。
-            // 单此一项 = +10.83pp (配对 p=0.0294); 旧 bge-small-zh-v1.5 (512 维/4 层) 降为回退候选。
-            var modelPath = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_BGE_MODEL")
-                ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                                ".agentframework", "models", "bge-base-zh-v1.5-q8.gguf");
-            return File.Exists(modelPath)
-                ? new agent.embedcpu.BgeCpuEmbedder(modelPath)
-                : new agent.contextgradient.NullTextEmbedder();
+            // R408 (用户钦定: 本地 GGUF 引擎整线退役 → llama.cpp 进程化接入):
+            // 嵌入 = **懒启动**的专用 llama-server 进程 (`--embeddings`; 该开关与生成互斥 ⇒ 与生成各起一个进程)。
+            // 边界只有「进程 + loopback HTTP」⇒ 零 P/Invoke、跨平台、AOT 可用
+            // (对照 R90: LLamaSharp 进程内 interop 在 NativeAOT 下 SIGSEGV)。
+            // IsAvailable = 纯配置判定 (模型文件 ∧ 二进制可解析, 零 I/O 零进程) ⇒ 不满足即锚词回退 (行为兼容)。
+            // 失败不静默兜底: EmbedAsync 抛 LlamaCppException(带 code) 由调用方决定。
+            var embedder = new agent.llamacpp.LlamaCppTextEmbedder(agent.llamacpp.LlamaCppEmbedderOptions.FromEnvironment());
+            return embedder.IsAvailable ? embedder : new agent.contextgradient.NullTextEmbedder();
         });
         services.AddSingleton<IContextAssembler>(sp =>
         {

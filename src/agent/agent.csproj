@@ -49,7 +49,10 @@
     <ProjectReference Include="../agent.logging/agent.logging.csproj" />
     <ProjectReference Include="../agent.skills/agent.skills.csproj" />
     <ProjectReference Include="../agent.contextgradient/agent.contextgradient.csproj" />
-    <ProjectReference Include="../agent.embedcpu/agent.embedcpu.csproj" />
+    <!-- v0.30.0 R408 (用户钦定: 本地 GGUF 引擎整线退役 → llama.cpp 进程化接入):
+         本地推理由 agent.llamacpp 提供 —— 零 P/Invoke 的「进程 + loopback HTTP」边界 (跨平台)。
+         原 ../agent.embedcpu (纯托管 BERT 前向) 退役。 -->
+    <ProjectReference Include="../agent.llamacpp/agent.llamacpp.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -59,9 +62,8 @@
     <!-- v0.23.0 exp12 · vulkan: agent.rover SPIR-V 汇编器 + 内核目录 + **独立结构校验器** (同为纯 BCL),
          使 GPU 内核可被 agent 进程内静态校验 (机检), 不引入 Silk.NET 依赖 (主机侧仅 CLI 引用)。 -->
     <Compile Include="../agent.rover/gpu/spirv/*.cs" Link="gpu/spirv/%(Filename)%(Extension)" />
-    <!-- R400: rover 分词/采样 (纯 BCL / 零反射 / 无 NuGet) —— 与 CLI 同源编译, 供测试与产品侧复用 -->
-    <Compile Include="../agent.rover/token/*.cs" Link="rover-token/%(Filename)%(Extension)" />
-    <Compile Include="../agent.rover/infer/Sampler.cs" Link="rover-infer/%(Filename)%(Extension)" />
+    <!-- R408: rover 分词/ChatTemplate (rover-token) 与 Sampler 的共享源登记已移除 ——
+         产品侧对它们的引用数为 0 (机检), 且分词/聊天模板自 R408 起交 llama.cpp (jinja 模式)。 -->
   </ItemGroup>
 
   <ItemGroup>

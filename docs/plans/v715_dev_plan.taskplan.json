@@ -153,6 +153,16 @@
    "DocRef": "docs/plans/v0.29.0-r407-qwen2-attn-bias-and-forward-parity.md",
    "Parameters": [],
    "Confidence": 1.0
+  },
+  {
+   "Id": "dev-llamacpp-process-pivot",
+   "Text": "本地 GGUF 引擎整线退役 → llama.cpp 进程化接入 (R408): 零 P/Invoke 的「进程 + loopback HTTP」边界; 新工程 src/agent.llamacpp (llama-server 宿主 + HTTP 客户端 + STJ 源生成, AOT 友好); agent.host --llamacpp 命令 (生成 24/24 token id 对外部基线逐位对账 + 嵌入 /v1/embeddings + 端口被使用计数 + provider_unavailable 负控)",
+   "Intent": "code_generation",
+   "Level": 1,
+   "ParallelGroup": 1,
+   "DocRef": "docs/plans/v0.30.0-r408-llamacpp-process-pivot.md",
+   "Parameters": [],
+   "Confidence": 1.0
   }
  ]
 }

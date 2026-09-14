@@ -74,15 +74,10 @@ public class VulkanLoaderParityTests
         return File.Exists(p) ? p : null;
     }
 
-    [Fact]  // ③
-    public void Requested_ApiVersion_Matches_Engine_SilkNet_Path()
+    [Fact]  // ③ (R408 修订: 引擎侧 src/agent.rover/gpu/VulkanBackend.cs 随本地 GGUF 引擎整线退役而删除,
+            //  源码级反漂移锚点消失 —— 此处保留产品侧 VulkanNames 自身的版本算术语义断言, 该部分与引擎无关)
+    public void Requested_ApiVersion_Arithmetic_Is_Consistent()
     {
-        // 我们请求的版本必须与引擎侧 Silk.NET 路径一致 ⇒ 源码级反漂移 (不依赖引用 Silk.NET)
-        var engine = Path.Combine(RepoRoot, "src", "agent.rover", "gpu", "VulkanBackend.cs");
-        Assert.True(File.Exists(engine), $"engine_source_missing: {engine}");
-        var src = File.ReadAllText(engine);
-        Assert.Contains("ApiVersion = Vk.MakeVersion(1, 1, 0)", src);
-
         Assert.Equal(4198400u, VulkanNames.ApiVersion);            // (1<<22)|(1<<12)
         Assert.Equal("1.1.0", VulkanNames.FormatVersion(VulkanNames.ApiVersion));
         Assert.Equal(VulkanNames.ApiVersion, VulkanNames.MakeVersion(1, 1, 0));

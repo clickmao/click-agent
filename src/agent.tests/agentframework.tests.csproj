@@ -22,27 +22,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- R402: 归因读数辅助 (纯 BCL / 零依赖) —— 只被测试使用, 故**只在此处**编译,
-         不放进 agent.csproj 共享源: 产品程序集(AOT 产物)不应含测试专用类型。 -->
-    <Compile Include="../agent.rover/runtime/ProcIo.cs" Link="rover-runtime/%(Filename)%(Extension)" />
-    <!-- R402 步 2: 计算内核 (反量化 + GEMV) 与量化块布局 —— 同源编译, 与 agent.rover 里的**同一份代码**,
-         避免"测试影子实现"。依赖: GgmlType(枚举+块布局) → Dequant → CpuKernels; TensorPrimitives 由包引用提供。 -->
-    <Compile Include="../agent.rover/gguf/GgmlType.cs" Link="rover-gguf/%(Filename)%(Extension)" />
-    <Compile Include="../agent.rover/quant/Dequant.cs" Link="rover-quant/%(Filename)%(Extension)" />
-    <Compile Include="../agent.rover/runtime/CpuKernels.cs" Link="rover-runtime/%(Filename)%(Extension)" />
-    <!-- R403: RoPE 配对约定 (arch→NORM/NEOX) 与其预计算表 —— 静默错误高危点, 需金标向量+负控测试,
-         故与产品侧同源编译 (同一份代码, 不是影子实现)。依赖: RopePairing → RopeTable。 -->
-    <Compile Include="../agent.rover/infer/RopePairing.cs" Link="rover-infer/%(Filename)%(Extension)" />
-    <Compile Include="../agent.rover/infer/RopeTable.cs" Link="rover-infer/%(Filename)%(Extension)" />
-    <!-- R407: qwen2 前向对账第一站 —— attn bias 层归属。需要真 GgufReader/ModelConfig/ForwardPass
-         (同源编译, 同一份代码; 不接受"测试影子实现")。依赖链:
-         GgmlType→GgufMappedFile→GgufReader→ModelConfig→(Dequant+CpuKernels+TensorResidency)→ForwardPass。 -->
-    <Compile Include="../agent.rover/gguf/GgufMappedFile.cs" Link="rover-gguf/%(Filename)%(Extension)" />
-    <Compile Include="../agent.rover/gguf/GgufReader.cs" Link="rover-gguf/%(Filename)%(Extension)" />
-    <Compile Include="../agent.rover/runtime/TensorResidency.cs" Link="rover-runtime/%(Filename)%(Extension)" />
-    <Compile Include="../agent.rover/infer/ModelConfig.cs" Link="rover-infer/%(Filename)%(Extension)" />
-    <Compile Include="../agent.rover/infer/KvCache.cs" Link="rover-infer/%(Filename)%(Extension)" />
-    <Compile Include="../agent.rover/infer/ForwardPass.cs" Link="rover-infer/%(Filename)%(Extension)" />
+    <!-- R408 (用户钦定: 本地 GGUF 引擎整线退役 → llama.cpp 进程化接入):
+         rover gguf/quant/infer/runtime 的同源编译登记**全部移除** (被撤代码已删), 仅保留产品侧
+         真正依赖的 formal/ + gpu/spirv/ (由 agent.csproj 共享源编译)。
+         R402/R403/R407 的对账测试随自研前向一并退役; 数值对账口径改为「对 llama.cpp 官方实现」。 -->
   </ItemGroup>
 
   <ItemGroup>
