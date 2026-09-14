@@ -181,6 +181,18 @@ public sealed class SessionHistorySearch
         return sb.ToString();
     }
 
+    /// <summary>
+    /// 否定极性前缀 (R421): 由否定标记衍生出的二元组带此前缀 ⇒ 与肯定二元组**不互 match**。
+    /// 用 U+0001 (Normalize 会丢弃全部控制字符 ⇒ 真实文本不可能产出该前缀 ⇒ 无碰撞)。
+    /// </summary>
+    internal const char NegMark = '\u0001';
+
+    /// <summary>
+    /// 否定标记 (R421)。取 5 个典型否定语素; **刻意不含** 别/勿/莫/甭 ——
+    /// 「识别/区别/特别」等高频非否定用法会与其碰撞, 收益(禁阻式罕见) 不抵成本。
+    /// </summary>
+    private static bool IsNegationMark(char c) => c is '不' or '没' or '未' or '无' or '非';
+
     /// <summary>词元: ASCII/数字词 (≥2 字符) + CJK 相邻二元组</summary>
     internal static List<string> Tokenize(string s)
     {
@@ -204,7 +216,15 @@ public sealed class SessionHistorySearch
             {
                 FlushWord();
                 if (IsCjk(ch) && i + 1 < norm.Length && IsCjk(norm[i + 1]))
-                    tokens.Add(string.Concat(ch, norm[i + 1]));
+                {
+                    // R421 极性: 否定标记自身及其紧邻的下一个二元组带否定极性。
+                    // 依据: "不存在" 的二元组含 "存在" ⇒ 不做极性区分时, 否定查询会召回到
+                    // 只断言肯定命题的文档, 读起来像**肯定** (R420 真机暴露: 存在/不存在 命中同一批)。
+                    // 边界(诚实): 极性作用域 = 标记 + 其紧邻的 **1 个**二元组, 不做从句级推导。
+                    var negated = IsNegationMark(ch) || (i > 0 && IsNegationMark(norm[i - 1]));
+                    var raw = new string(new[] { ch, norm[i + 1] });
+                    tokens.Add(negated ? NegMark + raw : raw);
+                }
             }
         }
         FlushWord();
@@ -236,7 +256,7 @@ public sealed class SessionHistorySearch
             sb.Append(rank).Append(". ").Append(h.SessionId)
               .Append("  score=").Append(h.Score.ToString("F4", System.Globalization.CultureInfo.InvariantCulture))
               .Append("  entries=").Append(h.EntryCount).AppendLine();
-            sb.Append("   …").Append(h.Snippet);
+            sb.Append("   …").Append(h.Snippet).AppendLine();
         }
         return sb.ToString();
     }

@@ -1219,3 +1219,31 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **仪器**: run_probe **26/26** · grade **31/31** · process_metrics **22/22** · 检查器自证 **7/7** · tasks 45/45。
 - **诚实边界**: 真机侧**未稳定复现**分化 ⇒ 「仪器可用 + 存在分化」**不等于**「r1 链增益已确证」；n=6 单族非分布；`json_mini` 对该链近天花板（R417 的 1/3 读数系**旧提取器**退化所致，提取器修好后分数上移）。
 - **计划**: `docs/plans/v0.40.0-r419-probe-multiturn.md`；证据 `eval/rover/r419/README-evidence.md`；登记 `docs/verification-registry.json` → `r419.probe-multiturn`（L4）；TaskPlan **22 节点**（末条 `dev-probe-multiturn`）。
+
+### R420 (2026-09-14) — 「API 落地 ≠ 已接线」：`/recall` 生产消费点（回填：本轮产物已 commit，轮节补记）
+
+- **目标**: `SessionHistorySearch`（R370 交付）在生产里**消费点为 0** —— 能力存在但无人调用，属于「交付完成」的假象。接到本地指令出口 `/recall`。
+- **交付**: `src/agent/registry/LocalCommandResult.cs`（`KnownCommands += /recall` + `TryRoute` 臂，四表同步）；`src/agent/IndustrialAgentV2.cs` 宿主 dispatch 特判渲染 + `recall_query` 通道级打点；`SessionHistorySearch.Render`（空命中显式文案，失败可见不静默）；测试 +`CommandRouteConsistencyTests` `/recall` 行 + `SessionHistorySearchTests` 3 条渲染断言（28/28）。
+- **真机两臂（L4）**: 治疗臂 `recall_query` 3 事件 / `llm_call` **0**；负控臂（**接线前** AOT 产物）同形输入 `recall_query` **0** / `llm_call` 1 且 stdout **无**渲染 ⇒ 「接线生效且本地指令零 LLM」。C4∧C5 合取才算成立（只有 C4 时，CLI 恒定打印的「意图分析/管线执行」进度行会让人误以为走了 LLM 主链）。
+- **诚实边界**: 负控是「接线前 AOT 产物」级而非源码回滚；真机查询 3+4 条非分布；**`hits=0/2` 的质量读数暴露词面重叠缺陷（`不存在`→2 命中）**，登记为下轮候选（→ R421）。
+- **计划/证据/登记**: `docs/plans/v0.41.0-r420-recall-wiring.md`；`eval/capability/r420/README-evidence.md`（L4）。
+
+### R421 (2026-09-14) — 跨会话检索的**否定极性**：`/recall 不存在` 不再召回到只断言「存在」的文档
+
+- **发现路径**: R420 的真机**质量**读数（`/recall 外星词根zzq不存在` → 2 命中）不是「没接通」，而是「接通了但答反了」——命中文档全部在断言**肯定**命题（`若图中存在拓扑序…`）。先复现再改码。
+- **根因（词元层）**: `Tokenize` 把 `不存在` 切成 `不存`+`存在`，与库里的 `存在` **同词元**；打分为 `score = Σ Idf(t)/√|qSet|`，对否定**无感** ⇒ 否定被丢掉。用受控读数逐位验证公式（n=3、`df(存在)=3` ⇒ `0.5596`；`0.5596/√2=0.3957`；`0.5596/√6=0.2285`）⇒ 缺陷定位在词元层，不在解析/归属层（区别于 R407/R418 的「归属层错误」）。
+- **交付**: `Tokenize` 否定标记（`不 没 未 无 非`）自身及其紧邻 1 个二元组带极性问题（`'\u0001'`；`Normalize` 丢弃全部控制字符 ⇒ 真实文本不可产出 ⇒ 无碰撞）；**查询侧与文档侧同一个 `Tokenize`**（对称性铁律：只做词元身份区分，无查询侧特判）；`Render` 片段行补 `AppendLine`；`+6` 单测。（19/19）
+- **真机两臂（L4，同 harness、逐字节相同语料 sha256 已录）**:
+
+  | 查询 | 治疗臂 `/tmp/pub_r421` | 负控臂 = **R420 产物快照** `/tmp/pub_r420_pre` |
+  |---|---|---|
+  | `存在` | 3 命中（`0.5596`，两个真实正样本） | 3 命中（同） |
+  | `不存在` | **0** | **3**（`0.3957`）← 缺陷 |
+  | `外星词根zzq不存在` | **0** | **3**（`0.2285`）← 缺陷 |
+  | `zzq` | 0 | 0 |
+
+  `llm_call` 两臂全查询 **0**；每查询 `recall_query` 恰 1；语料跑后**未被写**。13/13 判据 PASS。
+- **两个仪器缺陷（都是「读数不可信」类，不是被测不达标）**: ① `Render` 把命中行与片段**粘成一行** ⇒ 任何按行解析的读数**只能取到第 1 条**（本轮 harness 第一版就这么把治疗臂读成 1 命中）⇒ 补 `AppendLine` + 单测「行可寻址」；② R420 记录的「`存在`/`不存在` 分数同为 1.5660」**不可复现**（实测 0.5596 vs 0.3957；真正相同的是**命中集合**）⇒ 口径更正，结论不变。
+- **全量套件**: 1176/0/0（第 3 次跑）。**同一套件前两次各出 1 条顺序/并行相关假红**（`TelemetryPendingTests`；把本轮改动 stash 掉的**基线跑**里则是 `FrontendHandshakeTests`）⇒ 假红与 R421 无关，但「全量绿」这一读数目前**不可一次性复现**，登记为仪器候选。
+- **诚实边界**: 极性作用域仅「否定标记 + 紧邻 1 个二元组」（句中远距否定未测）；`别/勿/莫/甭` **有意排除**（`别` 与 `识别/区别/特别` 碰撞）；`无/非` 复合词（`无线/非常`）碰撞致召回损失**未量化**；**打分无长度归一 ⇒ 同一词元命中的所有文档同分（本轮三份同为 0.5596），命中集内无相关度区分度**（登记 R422）；样本 3 文档/4 查询非分布；**主线 KPI（r1 管道增益 / 一轮 token −30%）本轮未触碰**——`/recall` 是本地确定性指令，`llm_call==0` 恰说明它**不产生**远端调用（是不必要调用的抑制器，不是 token 下降的直接贡献者）。
+- **计划/证据/登记**: `docs/plans/v0.42.0-r421-polarity.md`；`eval/capability/r421/README-evidence.md`（L4）；`docs/verification-registry.json` → `r421.recall-negation-polarity`；TaskPlan **24 节点**（补登 `dev-recall-wiring` + `dev-recall-negation-polarity`）。

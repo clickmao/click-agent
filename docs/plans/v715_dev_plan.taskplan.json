@@ -1,238 +1,258 @@
 {
- "PlanId": "devplan715",
- "SourceText": "v7.15 开发计划(已全部落地): TaskPlan 体系归拢 + 执行器并发化 + 节点重试 + 隔离任务 + 模型队列与余额查询 + YAML 分层配置体系 + Skill 调度模块 + 日志四通道与思考流协议 + 上下文梯度压缩与防漂移",
- "CreatedAt": "2026-09-06",
- "Nodes": [
-  {
-   "Id": "dev-consolidate",
-   "Text": "TaskPlan 体系归拢: 裁定 agent.planner 遗留去留、删双体系、V2 主链接入计划执行 (影子模式→主路)",
-   "Intent": "code_generation",
-   "Level": 0,
-   "ParallelGroup": 0,
-   "DocRef": "docs/archive/plan_taskplan_consolidation.md",
-   "Parameters": [],
-   "Confidence": 1.0
-  },
-  {
-   "Id": "dev-parallel",
-   "Text": "执行器同层并发化: TaskPlanExecutor 按 Level/ParallelGroup 并发执行同层无关节点",
-   "Intent": "code_generation",
-   "Level": 1,
-   "ParallelGroup": 1,
-   "DocRef": "docs/archive/plan_executor_parallel.md",
-   "Parameters": [],
-   "Confidence": 1.0
-  },
-  {
-   "Id": "dev-retry",
-   "Text": "节点级重试策略: MaxRetries+指数退避, 瞬态/永久失败分类, 重试审计进 TaskPlanRun",
-   "Intent": "code_generation",
-   "Level": 1,
-   "ParallelGroup": 1,
-   "DocRef": "docs/archive/plan_node_retry.md",
-   "Parameters": [],
-   "Confidence": 1.0
-  },
-  {
-   "Id": "dev-modelqueue",
-   "Text": "模型队列模块: 本地 JSON 配置主次模型+手动/自动切换+计价路由+/balance 余额查询指令",
-   "Intent": "code_generation",
-   "Level": 0,
-   "ParallelGroup": 0,
-   "DocRef": "docs/archive/plan_model_queue.md",
-   "Parameters": [
+  "PlanId": "devplan715",
+  "SourceText": "v7.15 开发计划(已全部落地): TaskPlan 体系归拢 + 执行器并发化 + 节点重试 + 隔离任务 + 模型队列与余额查询 + YAML 分层配置体系 + Skill 调度模块 + 日志四通道与思考流协议 + 上下文梯度压缩与防漂移",
+  "CreatedAt": "2026-09-06",
+  "Nodes": [
     {
-     "Name": "module_dir",
-     "DisplayName": "模块目录",
-     "Value": "src/agent/modelqueue",
-     "IsRequired": true
+      "Id": "dev-consolidate",
+      "Text": "TaskPlan 体系归拢: 裁定 agent.planner 遗留去留、删双体系、V2 主链接入计划执行 (影子模式→主路)",
+      "Intent": "code_generation",
+      "Level": 0,
+      "ParallelGroup": 0,
+      "DocRef": "docs/archive/plan_taskplan_consolidation.md",
+      "Parameters": [],
+      "Confidence": 1.0
+    },
+    {
+      "Id": "dev-parallel",
+      "Text": "执行器同层并发化: TaskPlanExecutor 按 Level/ParallelGroup 并发执行同层无关节点",
+      "Intent": "code_generation",
+      "Level": 1,
+      "ParallelGroup": 1,
+      "DocRef": "docs/archive/plan_executor_parallel.md",
+      "Parameters": [],
+      "Confidence": 1.0
+    },
+    {
+      "Id": "dev-retry",
+      "Text": "节点级重试策略: MaxRetries+指数退避, 瞬态/永久失败分类, 重试审计进 TaskPlanRun",
+      "Intent": "code_generation",
+      "Level": 1,
+      "ParallelGroup": 1,
+      "DocRef": "docs/archive/plan_node_retry.md",
+      "Parameters": [],
+      "Confidence": 1.0
+    },
+    {
+      "Id": "dev-modelqueue",
+      "Text": "模型队列模块: 本地 JSON 配置主次模型+手动/自动切换+计价路由+/balance 余额查询指令",
+      "Intent": "code_generation",
+      "Level": 0,
+      "ParallelGroup": 0,
+      "DocRef": "docs/archive/plan_model_queue.md",
+      "Parameters": [
+        {
+          "Name": "module_dir",
+          "DisplayName": "模块目录",
+          "Value": "src/agent/modelqueue",
+          "IsRequired": true
+        }
+      ],
+      "Confidence": 1.0
+    },
+    {
+      "Id": "dev-isolated",
+      "Text": "隔离任务: 无关新提问规则判定→隔离子 agent 执行后销毁 (6 项隔离边界)",
+      "Intent": "code_generation",
+      "Level": 0,
+      "ParallelGroup": 0,
+      "DocRef": "docs/archive/plan_isolated_task.md",
+      "Parameters": [],
+      "Confidence": 1.0
+    },
+    {
+      "Id": "dev-yaml-config",
+      "Text": "全模块 YAML 分层配置体系: base/env/modules/runtime 四级覆盖 + 同名 module 覆盖 base 契约 + 热更新 + 现有硬编码收编",
+      "Intent": "code_generation",
+      "Level": 0,
+      "ParallelGroup": 0,
+      "DocRef": "docs/archive/plan_yaml_config.md",
+      "Parameters": [],
+      "Confidence": 1.0
+    },
+    {
+      "Id": "dev-skill",
+      "Text": "Skill 调度模块: 领域能力封装/注册/三级触发匹配/生命周期/上下文隔离沙箱/口径强约束, 参数全走 YAML 分层配置",
+      "Intent": "code_generation",
+      "Level": 1,
+      "ParallelGroup": 2,
+      "DocRef": "docs/archive/plan_skill_dispatch.md",
+      "Parameters": [],
+      "Confidence": 1.0
+    },
+    {
+      "Id": "dev-context-compression",
+      "Text": "上下文梯度压缩与防漂移子系统: L0-L3 分层/锚点 P0-P3/主题域聚类/三重漂移校验/弹性校正/跨进程持久化复用",
+      "Intent": "code_generation",
+      "Level": 1,
+      "ParallelGroup": 3,
+      "DocRef": "docs/archive/plan_context_compression.md",
+      "Parameters": [],
+      "Confidence": 1.0
+    },
+    {
+      "Id": "9",
+      "Title": "日志细分通道与前端思考流协议",
+      "Level": 1,
+      "ParallelGroup": "B",
+      "Status": "Pending",
+      "DocRef": "docs/archive/plan_log_channels.md",
+      "DependsOn": [
+        "8"
+      ],
+      "Summary": "LogFlags 四位 {console/chatbox思考/chatbox输出/file} 独立路由; MemoryLogBuffer CLI 日志缓存+/log dump 存档; thinking_page_switch/thinking_end 前端 JSON 指令; LogEntry 底层格式"
+    },
+    {
+      "Id": "10",
+      "Title": "模型目录与意图选模 (并入模型队列模块)",
+      "Level": 1,
+      "ParallelGroup": "B",
+      "Status": "Pending",
+      "DocRef": "docs/archive/plan_model_queue.md",
+      "DependsOn": [
+        "8"
+      ],
+      "Summary": "C.6: ReasoningScore/CodingScore 1-10 标准值; config/base/models.yaml 目录 (知名模型全参数, key 只存 env 名); 意图×token预估×费用 综合选模; 余额方案调研后定 scheme; /model verify 真实 http 校验 (假 key 期望 401)"
+    },
+    {
+      "Id": "dev-rover-gen",
+      "Text": "rover 生成链: GGUF 词表→字节级 BPE 分词器 + chat template + 采样 + 解码环 ⇒ 本机引擎可当解法后端 (探针 solver=rover)",
+      "Intent": "code_generation",
+      "Level": 1,
+      "ParallelGroup": 1,
+      "DocRef": "docs/plans/v0.26.0-r400-rover-generation-chain.md",
+      "Parameters": [],
+      "Confidence": 1.0
+    },
+    {
+      "Id": "dev-r1-enhance",
+      "Text": "本机增强 R1-Distill-1.5B (R405): P0 修链 (qwen2 对账 + chat template 全量 + 官方协议) / P1 提速 (权重常驻 + KV 复用, 目标 ≥2 tok/s; 现 0.458, 每 token 读 3.92× 模型体积) / P2 不改权重能力增强 (抽取/投票/可验证闭环/弃权校准) / P3 权重级本机不做 (64 h/epoch, 判据需 n≈897)",
+      "Intent": "code_generation",
+      "Level": 1,
+      "ParallelGroup": 1,
+      "DocRef": "docs/plans/v0.27.0-r405-r1-local-enhancement.md",
+      "Parameters": [],
+      "Confidence": 1.0
+    },
+    {
+      "Id": "dev-jinja-chat-template",
+      "Text": "模板驱动 chat template (R406 / R403 续作): 从 GGUF 读 tokenizer.chat_template 原文 + Jinja 子集解释器, 与 jinja2 3.1.6 三套夹具 32 例逐字节对齐; 生成路径改用模型自带模板, 无模板显式报错 (不静默回退)",
+      "Intent": "code_generation",
+      "Level": 1,
+      "ParallelGroup": 1,
+      "DocRef": "docs/plans/v0.28.0-r406-jinja-template-and-r1-chain.md",
+      "Parameters": [],
+      "Confidence": 1.0
+    },
+    {
+      "Id": "dev-qwen2-forward-parity",
+      "Text": "qwen2 前向对账 (R407): 定位并修复「全层共用 blk.0 attn bias」缺陷 (qwen2 各层 bias 互异, 与 blk.0 的 max|Δ| q=121.7/k=407.1/v=10.6), 加逐层 AttnBias 端口 + 反向负控回归测试; 新建独立 numpy oracle (第三方 gguf-py 反量化) 与逐位 logits 对账脚本",
+      "Intent": "code_generation",
+      "Level": 1,
+      "ParallelGroup": 1,
+      "DocRef": "docs/plans/v0.29.0-r407-qwen2-attn-bias-and-forward-parity.md",
+      "Parameters": [],
+      "Confidence": 1.0
+    },
+    {
+      "Id": "dev-llamacpp-process-pivot",
+      "Text": "本地 GGUF 引擎整线退役 → llama.cpp 进程化接入 (R408): 零 P/Invoke 的「进程 + loopback HTTP」边界; 新工程 src/agent.llamacpp (llama-server 宿主 + HTTP 客户端 + STJ 源生成, AOT 友好); agent.host --llamacpp 命令 (生成 24/24 token id 对外部基线逐位对账 + 嵌入 /v1/embeddings + 端口被使用计数 + provider_unavailable 负控)",
+      "Intent": "code_generation",
+      "Level": 1,
+      "ParallelGroup": 1,
+      "DocRef": "docs/plans/v0.30.0-r408-llamacpp-process-pivot.md",
+      "Parameters": [],
+      "Confidence": 1.0
+    },
+    {
+      "Id": "dev-local-prompt-template-gate",
+      "Text": "R409 本地 prompt 模板闸门(结构性阻断手拼)与 BOS 口径修正",
+      "Intent": "code_generation",
+      "Level": 1,
+      "ParallelGroup": 1,
+      "DocRef": "docs/plans/v0.31.0-r409-local-prompt-template-gate.md",
+      "Parameters": [],
+      "Confidence": 1.0
+    },
+    {
+      "Id": "dev-session-prefix-reuse",
+      "Text": "R410 会话长前缀复用: 口径分离 + cache_n 记账 + 静默失效计数",
+      "Intent": "code_generation",
+      "Level": 1,
+      "ParallelGroup": 1,
+      "DocRef": "docs/plans/v0.32.0-r410-session-prefix-reuse.md",
+      "Parameters": [],
+      "Confidence": 1.0
+    },
+    {
+      "Id": "dev-long-lived-generation",
+      "Text": "R411 长驻生成端口 + 本地 K2b 台账（跨轮复用/口径换算/负控）",
+      "Intent": "code_generation",
+      "Level": 1,
+      "ParallelGroup": 1,
+      "DocRef": "docs/plans/v0.33.0-r411-long-lived-generation-port.md",
+      "Parameters": [],
+      "Confidence": 1.0
+    },
+    {
+      "Id": "dev-multi-session-slot",
+      "Text": "R412 多会话 slot 争用: 服务端 regime 实测(三臂逐位相同) + 会话级账本(分母不互相污染)",
+      "Intent": "code_generation",
+      "Level": 1,
+      "ParallelGroup": 1,
+      "DocRef": "docs/plans/v0.34.0-r412-multi-session-slot-contention.md",
+      "Parameters": [],
+      "Confidence": 1.0
+    },
+    {
+      "Id": "dev-probe-anti-saturation",
+      "Text": "R417 探针反饱和: 3 个高判别力族(topo_min/vm_run/json_mini) + tight_gen 强制规格紧用例 + 族级缺陷注入负控(正负控成对); 真机仍饱和如实登记",
+      "Intent": "code_generation",
+      "Level": 1,
+      "ParallelGroup": 1,
+      "DocRef": "docs/plans/v0.38.0-r417-probe-anti-saturation.md",
+      "Parameters": [],
+      "Confidence": 1.0
+    },
+    {
+      "Id": "dev-probe-process-kpi",
+      "Text": "R418 探针过程/成本维度 KPI: process_metrics 提取器(归属铁律=精确名/时间窗/歧义不猜/n-a不记0) + 回复命名空间(seed) + digest 成本列; 真机 json_mini tokens/题=9151 整题全对 2/3 首次通过率 2/3",
+      "Intent": "code_generation",
+      "Level": 1,
+      "ParallelGroup": 1,
+      "DocRef": "docs/plans/v0.39.0-r418-process-kpi.md",
+      "Parameters": [],
+      "Confidence": 1.0
+    },
+    {
+      "Id": "dev-probe-multiturn",
+      "Text": "R419 探针多轮化: --turns 同 sid 跨进程续上下文 + 修正轮默认 onfail(前提为真) + 三读数(轮数=发送次数/归档文件数, 不信转录 turn N) + 检查器 7 态自证 + 判定器坏字节闸 + NS 碰撞闸; 真机 json_mini n=6: 4 次 onfail 跑 3 次饱和(判 EXIT 2 不放行)、1 次 first=0.8333→1.0 fix=1.0 回归 0 (该次产物被同 NS 重跑覆盖, 仅会话记录) ⇒ 仪器达成, 真机未稳定复现",
+      "Intent": "code_generation",
+      "Level": 1,
+      "ParallelGroup": 1,
+      "DocRef": "docs/plans/v0.40.0-r419-probe-multiturn.md",
+      "Parameters": [],
+      "Confidence": 1.0
+    },
+    {
+      "Id": "dev-recall-wiring",
+      "Text": "R420 `/recall` 接线: SessionHistorySearch 自 R370 交付后生产消费点为 0 ⇒ 接到本地指令出口(registry TryRoute + 宿主渲染 + recall_query 通道级打点) + 静态可测 Render; 真机两臂: 治疗臂 recall_query>=1 且 llm_call==0, 接线前产物 recall_query==0 且 llm_call>=1 且无渲染 (L4)",
+      "Intent": "code_generation",
+      "Level": 1,
+      "ParallelGroup": 1,
+      "DocRef": "docs/plans/v0.41.0-r420-recall-wiring.md",
+      "Parameters": [],
+      "Confidence": 1.0
+    },
+    {
+      "Id": "dev-recall-negation-polarity",
+      "Text": "R421 跨会话检索否定极性: 否定标记(不没未无五)紧邻的二元组带极性问题 ⇒ `¬存在`≠`存在`; 真机同语料两臂(治疗 vs R420 快照负控): `不存在`/`外星词根zzq不存在` 3 命中→0, 正控 `存在` 仍 3 命中; 同时修渲染粘连(命中行可机读) (L4)",
+      "Intent": "code_generation",
+      "Level": 1,
+      "ParallelGroup": 1,
+      "DocRef": "docs/plans/v0.42.0-r421-polarity.md",
+      "Parameters": [],
+      "Confidence": 1.0
     }
-   ],
-   "Confidence": 1.0
-  },
-  {
-   "Id": "dev-isolated",
-   "Text": "隔离任务: 无关新提问规则判定→隔离子 agent 执行后销毁 (6 项隔离边界)",
-   "Intent": "code_generation",
-   "Level": 0,
-   "ParallelGroup": 0,
-   "DocRef": "docs/archive/plan_isolated_task.md",
-   "Parameters": [],
-   "Confidence": 1.0
-  },
-  {
-   "Id": "dev-yaml-config",
-   "Text": "全模块 YAML 分层配置体系: base/env/modules/runtime 四级覆盖 + 同名 module 覆盖 base 契约 + 热更新 + 现有硬编码收编",
-   "Intent": "code_generation",
-   "Level": 0,
-   "ParallelGroup": 0,
-   "DocRef": "docs/archive/plan_yaml_config.md",
-   "Parameters": [],
-   "Confidence": 1.0
-  },
-  {
-   "Id": "dev-skill",
-   "Text": "Skill 调度模块: 领域能力封装/注册/三级触发匹配/生命周期/上下文隔离沙箱/口径强约束, 参数全走 YAML 分层配置",
-   "Intent": "code_generation",
-   "Level": 1,
-   "ParallelGroup": 2,
-   "DocRef": "docs/archive/plan_skill_dispatch.md",
-   "Parameters": [],
-   "Confidence": 1.0
-  },
-  {
-   "Id": "dev-context-compression",
-   "Text": "上下文梯度压缩与防漂移子系统: L0-L3 分层/锚点 P0-P3/主题域聚类/三重漂移校验/弹性校正/跨进程持久化复用",
-   "Intent": "code_generation",
-   "Level": 1,
-   "ParallelGroup": 3,
-   "DocRef": "docs/archive/plan_context_compression.md",
-   "Parameters": [],
-   "Confidence": 1.0
-  },
-  {
-   "Id": "9",
-   "Title": "日志细分通道与前端思考流协议",
-   "Level": 1,
-   "ParallelGroup": "B",
-   "Status": "Pending",
-   "DocRef": "docs/archive/plan_log_channels.md",
-   "DependsOn": [
-    "8"
-   ],
-   "Summary": "LogFlags 四位 {console/chatbox思考/chatbox输出/file} 独立路由; MemoryLogBuffer CLI 日志缓存+/log dump 存档; thinking_page_switch/thinking_end 前端 JSON 指令; LogEntry 底层格式"
-  },
-  {
-   "Id": "10",
-   "Title": "模型目录与意图选模 (并入模型队列模块)",
-   "Level": 1,
-   "ParallelGroup": "B",
-   "Status": "Pending",
-   "DocRef": "docs/archive/plan_model_queue.md",
-   "DependsOn": [
-    "8"
-   ],
-   "Summary": "C.6: ReasoningScore/CodingScore 1-10 标准值; config/base/models.yaml 目录 (知名模型全参数, key 只存 env 名); 意图×token预估×费用 综合选模; 余额方案调研后定 scheme; /model verify 真实 http 校验 (假 key 期望 401)"
-  },
-  {
-   "Id": "dev-rover-gen",
-   "Text": "rover 生成链: GGUF 词表→字节级 BPE 分词器 + chat template + 采样 + 解码环 ⇒ 本机引擎可当解法后端 (探针 solver=rover)",
-   "Intent": "code_generation",
-   "Level": 1,
-   "ParallelGroup": 1,
-   "DocRef": "docs/plans/v0.26.0-r400-rover-generation-chain.md",
-   "Parameters": [],
-   "Confidence": 1.0
-  },
-  {
-   "Id": "dev-r1-enhance",
-   "Text": "本机增强 R1-Distill-1.5B (R405): P0 修链 (qwen2 对账 + chat template 全量 + 官方协议) / P1 提速 (权重常驻 + KV 复用, 目标 ≥2 tok/s; 现 0.458, 每 token 读 3.92× 模型体积) / P2 不改权重能力增强 (抽取/投票/可验证闭环/弃权校准) / P3 权重级本机不做 (64 h/epoch, 判据需 n≈897)",
-   "Intent": "code_generation",
-   "Level": 1,
-   "ParallelGroup": 1,
-   "DocRef": "docs/plans/v0.27.0-r405-r1-local-enhancement.md",
-   "Parameters": [],
-   "Confidence": 1.0
-  },
-  {
-   "Id": "dev-jinja-chat-template",
-   "Text": "模板驱动 chat template (R406 / R403 续作): 从 GGUF 读 tokenizer.chat_template 原文 + Jinja 子集解释器, 与 jinja2 3.1.6 三套夹具 32 例逐字节对齐; 生成路径改用模型自带模板, 无模板显式报错 (不静默回退)",
-   "Intent": "code_generation",
-   "Level": 1,
-   "ParallelGroup": 1,
-   "DocRef": "docs/plans/v0.28.0-r406-jinja-template-and-r1-chain.md",
-   "Parameters": [],
-   "Confidence": 1.0
-  },
-  {
-   "Id": "dev-qwen2-forward-parity",
-   "Text": "qwen2 前向对账 (R407): 定位并修复「全层共用 blk.0 attn bias」缺陷 (qwen2 各层 bias 互异, 与 blk.0 的 max|Δ| q=121.7/k=407.1/v=10.6), 加逐层 AttnBias 端口 + 反向负控回归测试; 新建独立 numpy oracle (第三方 gguf-py 反量化) 与逐位 logits 对账脚本",
-   "Intent": "code_generation",
-   "Level": 1,
-   "ParallelGroup": 1,
-   "DocRef": "docs/plans/v0.29.0-r407-qwen2-attn-bias-and-forward-parity.md",
-   "Parameters": [],
-   "Confidence": 1.0
-  },
-  {
-   "Id": "dev-llamacpp-process-pivot",
-   "Text": "本地 GGUF 引擎整线退役 → llama.cpp 进程化接入 (R408): 零 P/Invoke 的「进程 + loopback HTTP」边界; 新工程 src/agent.llamacpp (llama-server 宿主 + HTTP 客户端 + STJ 源生成, AOT 友好); agent.host --llamacpp 命令 (生成 24/24 token id 对外部基线逐位对账 + 嵌入 /v1/embeddings + 端口被使用计数 + provider_unavailable 负控)",
-   "Intent": "code_generation",
-   "Level": 1,
-   "ParallelGroup": 1,
-   "DocRef": "docs/plans/v0.30.0-r408-llamacpp-process-pivot.md",
-   "Parameters": [],
-   "Confidence": 1.0
-  },
-  {
-   "Id": "dev-local-prompt-template-gate",
-   "Text": "R409 本地 prompt 模板闸门(结构性阻断手拼)与 BOS 口径修正",
-   "Intent": "code_generation",
-   "Level": 1,
-   "ParallelGroup": 1,
-   "DocRef": "docs/plans/v0.31.0-r409-local-prompt-template-gate.md",
-   "Parameters": [],
-   "Confidence": 1.0
-  },
-  {
-   "Id": "dev-session-prefix-reuse",
-   "Text": "R410 会话长前缀复用: 口径分离 + cache_n 记账 + 静默失效计数",
-   "Intent": "code_generation",
-   "Level": 1,
-   "ParallelGroup": 1,
-   "DocRef": "docs/plans/v0.32.0-r410-session-prefix-reuse.md",
-   "Parameters": [],
-   "Confidence": 1.0
-  },
-  {
-   "Id": "dev-long-lived-generation",
-   "Text": "R411 长驻生成端口 + 本地 K2b 台账（跨轮复用/口径换算/负控）",
-   "Intent": "code_generation",
-   "Level": 1,
-   "ParallelGroup": 1,
-   "DocRef": "docs/plans/v0.33.0-r411-long-lived-generation-port.md",
-   "Parameters": [],
-   "Confidence": 1.0
-  },
-  {
-   "Id": "dev-multi-session-slot",
-   "Text": "R412 多会话 slot 争用: 服务端 regime 实测(三臂逐位相同) + 会话级账本(分母不互相污染)",
-   "Intent": "code_generation",
-   "Level": 1,
-   "ParallelGroup": 1,
-   "DocRef": "docs/plans/v0.34.0-r412-multi-session-slot-contention.md",
-   "Parameters": [],
-   "Confidence": 1.0
-  },
-  {
-   "Id": "dev-probe-anti-saturation",
-   "Text": "R417 探针反饱和: 3 个高判别力族(topo_min/vm_run/json_mini) + tight_gen 强制规格紧用例 + 族级缺陷注入负控(正负控成对); 真机仍饱和如实登记",
-   "Intent": "code_generation",
-   "Level": 1,
-   "ParallelGroup": 1,
-   "DocRef": "docs/plans/v0.38.0-r417-probe-anti-saturation.md",
-   "Parameters": [],
-   "Confidence": 1.0
-  },
-  {
-   "Id": "dev-probe-process-kpi",
-   "Text": "R418 探针过程/成本维度 KPI: process_metrics 提取器(归属铁律=精确名/时间窗/歧义不猜/n-a不记0) + 回复命名空间(seed) + digest 成本列; 真机 json_mini tokens/题=9151 整题全对 2/3 首次通过率 2/3",
-   "Intent": "code_generation",
-   "Level": 1,
-   "ParallelGroup": 1,
-   "DocRef": "docs/plans/v0.39.0-r418-process-kpi.md",
-   "Parameters": [],
-   "Confidence": 1.0
-  },
-  {
-   "Id": "dev-probe-multiturn",
-   "Text": "R419 探针多轮化: --turns 同 sid 跨进程续上下文 + 修正轮默认 onfail(前提为真) + 三读数(轮数=发送次数/归档文件数, 不信转录 turn N) + 检查器 7 态自证 + 判定器坏字节闸 + NS 碰撞闸; 真机 json_mini n=6: 4 次 onfail 跑 3 次饱和(判 EXIT 2 不放行)、1 次 first=0.8333→1.0 fix=1.0 回归 0 (该次产物被同 NS 重跑覆盖, 仅会话记录) ⇒ 仪器达成, 真机未稳定复现",
-   "Intent": "code_generation",
-   "Level": 1,
-   "ParallelGroup": 1,
-   "DocRef": "docs/plans/v0.40.0-r419-probe-multiturn.md",
-   "Parameters": [],
-   "Confidence": 1.0
-  }
- ]
+  ]
 }

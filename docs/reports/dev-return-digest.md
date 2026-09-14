@@ -17,7 +17,7 @@
 | D8 | 策略实现正确但**接线缺口** → 首轮预算策略是死代码 | (未标注) | L155 |
 | D9 | 经验落库形态 = **思考逻辑 skill | (未标注) | L176 |
 
-## 2. 探针裁决（源: `eval/rover/*/verdict*.json`）
+## 2. 探针裁决（源: `eval/rover/*/verdict*.json` + `eval/capability/*/verdict*.json`）
 
 | 目录 | 裁决文件 | verdict | 判据数 | 来源键 |
 |---|---|---|---|---|
@@ -26,6 +26,7 @@
 | r412 | verdict.json | **NO_CONTENTION** | 4 | `bool_fields` |
 | r413 | verdict-r413.json | **PASS** | 7 | `gate` |
 | r415 | verdict-r415.json | **PASS** | 22 | `checks` |
+| r421 | verdict-r421.json | **PASS** | 13 | `checks` |
 
 **正文提及但无独立小节的 D 编号**（文档缺口, 不猜测其状态）: D6(L237), D9-a(L182)
 
@@ -72,10 +73,11 @@
 
 ## 4. 轮次提交（本地；推送暂停令生效）
 
-- 未推送提交数: **71**
+- 未推送提交数: **72**
 
 | commit | 主题 |
 |---|---|
+| `7d3165b` | R420 L2-待办①/L7-G1 跨会话检索接线: /recall 本地指令(四表同步, 零LLM, recall_query 通道级打点) + 接线前产物负控(recall_query=0/llm_call=1) + 单测28/28 + 表单13/13; 真机暴露否定无感假阳性(下轮候选, 未修) (未推) |
 | `05b8c94` | R419 收口: 探针多轮化仪器达成 + 真机读数未稳定分化(3/4 饱和) + 三个仪器缺陷修(坏字节崩/NS覆盖/可见性) |
 | `98339a8` | R419 §4/§5: 探针多轮化落地 + 成对控制 + 真机复数（预注册判据反向红） |
 | `77a49bc` | R419: 会话续跑决定性微实验 PASS(同 sid 跨进程 4271 命中) + 口径坑记录(turn N 是进程内轮次, 轮数须取归档文件数) (未推) |
@@ -99,8 +101,8 @@
 
 ## 5. 台账
 
-- `docs/verification-registry.json`: **55** 行, updated_round = **R420**
-- `eval/capability/kpi.jsonl` 已记轮次: R402, loop-mechanism, R401, R411-V, R403-scope, R413, R414, R415, R416, R419, R420
+- `docs/verification-registry.json`: **56** 行, updated_round = **R421**
+- `eval/capability/kpi.jsonl` 已记轮次: R402, loop-mechanism, R401, R411-V, R403-scope, R413, R414, R415, R416, R419, R420, R421
 - 已知盲区: 状态检测器只读 `data/probe/kpi.jsonl`; 轮次台账另有 `data/probe/capability/kpi.jsonl`（孤儿）
 
 ## 6. 口径红线（审计对照）

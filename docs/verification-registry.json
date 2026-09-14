@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R420",
+  "updated_round": "R421",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -858,6 +858,19 @@
         "docs/plans/v0.41.0-r420-recall-wiring.md"
       ],
       "owner_round": "R420"
+    },
+    {
+      "id": "r421.recall-negation-polarity",
+      "level": "L4",
+      "evidence_cmd": "python3 eval/capability/r421/run_r421.py && env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR $HOME/.dotnet/dotnet test src/agent.tests/agentframework.tests.csproj --nologo -v q --filter FullyQualifiedName~SessionHistorySearchTests",
+      "evidence_path": "eval/capability/r421/README-evidence.md",
+      "negative_control": "① 撤销修复负控臂 = **修复前二进制快照** /tmp/pub_r420_pre/agenthost(R420 产物, 接线在/极性不在) 跑**同一 harness、逐字节相同语料**: `不存在` 命中 3 条只断言『存在』的文档, 且命中集与 `存在` **逐元素相同** ⇒ 缺陷原样复现(治疗臂同查询 0 命中) —— 差异只能来自二进制; ② 正控 `存在` 两臂都召回同样两个真实正样本 ⇒ 证明「召回未被打死」而非「一刀切全灭」; ③ 阴性对照 `zzq` 两臂皆 0 命中 ⇒ 断言非恒真; ④ 语料 sha256 跑后未变 ⇒ 读数只读、无污染; ⑤ 每查询 recall_query 打点恰 1 ⇒ 读数非缺省非重复; ⑥ 全部查询 llm_call==0(通道级) ⇒ 不产生远端调用; ⑦ 渲染行可寻址闸: 修前命中行与片段粘连 ⇒ 解析器只能取到第 1 条(本 harness 实测踩到), 已补单测。",
+      "capability": "跨会话检索的**否定极性**: Tokenize 让否定标记(`不 没 未 无 非`)自身及紧邻 1 个二元组带极性问题(`'\\u0001'`, Normalize 丢弃控制字符 ⇒ 真实文本不可产出 ⇒ 无碰撞), 使 `¬存在` 与 `存在` 不互 match ⇒ 「X 不存在?」不再被答成断言 X 存在的文档。查询侧与文档侧走**同一个 Tokenize**(对称性铁律 ⇒ 只是词元身份区分, 无查询侧特判)。真机(AOT, 3 文档冻结语料 + 4 查询, 同 harness 双二进制): `存在` 3 命中(score 0.5596) / `不存在` 3→**0** / `外星词根zzq不存在` 3→**0** / `zzq` 0→0; 负控臂分数 0.3957=0.5596/√2、0.2285=0.5596/√6 与公式 `score=ΣIdf/√|qSet|, Idf=ln(1+n/(1+df))` 逐位吻合 ⇒ 缺陷定位在词元层。**诚实边界**: 极性作用域仅「标记+紧邻 1 二元组」(句中远距否定未测), `别/勿/莫/甭` 有意排除, `无/非` 复合词碰撞未量化, 打分无长度归一 ⇒ 命中集内同分无区分度(登记 R422)。",
+      "covers": [
+        "src/agent/session/SessionHistorySearch.cs",
+        "src/agent.tests/SessionHistorySearchTests.cs",
+        "eval/capability/r421/run_r421.py"
+      ]
     }
   ],
   "aot_check_policy": "release_tag_only",

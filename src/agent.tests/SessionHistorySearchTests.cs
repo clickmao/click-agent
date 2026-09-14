@@ -219,6 +219,105 @@ public sealed class SessionHistorySearchTests : IDisposable
             "渲染顺序必须与排序结果一致 (否则读数与判据脱钩)");
     }
 
+    // ===== R421: 否定极性 (打分对否定无感 ⇒ 词面重叠 ≠ 语义相关) =====
+    // 判据 (预注册, 双向): ①肯定查询召肯定文档 ②否定查询召否定文档
+    // ③否定查询**不得**召到只断言肯定命题的文档 ④召回不被打死 (正控仍召)
+
+    [Fact]
+    public void Render_Is_Line_Addressable_One_Hit_Per_Line()
+    {
+        // 仪器: 真机读数靠解析渲染原文取命中集; 片段与下一条命中粘成一行 ⇒ 只解析出第 1 条 (R421 实测踩到)
+        Seed("s-x", "目标服务 存在 于生产环境");
+        Seed("s-y", "目标服务 不存在 于生产环境");
+        var search = NewSearch();
+        var hits = search.Search("存在", topK: 5);
+        var text = SessionHistorySearch.Render(hits, "存在", 5);
+        var lines = text.Split('\n');
+        var hitLines = lines.Where(l => System.Text.RegularExpressions.Regex.IsMatch(l, @"^\d+\. ")).ToList();
+        foreach (var l in hitLines)
+            Assert.Matches(@"^\d+\. \S+  score=\d+\.\d{4}  entries=\d+$", l);
+        Assert.Equal(hits.Count, hitLines.Count);
+        // 片段自成一行 (不粘到下一个排名行)
+        var snippetLines = lines.Where(l => l.TrimStart().StartsWith("…")).ToList();
+        Assert.Equal(hitLines.Count, snippetLines.Count);
+    }
+
+    [Fact]
+    public void Polarity_FourWay_Matrix_Positive_And_Negated_Are_Not_Crossed()
+    {
+        Seed("s-pos", "目标服务 存在 于生产环境");
+        Seed("s-neg", "目标服务 不存在 于生产环境");
+
+        var search = NewSearch();
+        var posQ = search.Search("存在", topK: 5);
+        var negQ = search.Search("不存在", topK: 5);
+
+        // ① 正控: 肯定查询仍召肯定文档 (召回未被打死)
+        Assert.Contains(posQ, h => h.SessionId == "s-pos");
+        // ③ 否定查询不得召到肯定文档
+        Assert.DoesNotContain(negQ, h => h.SessionId == "s-pos");
+        Assert.Contains(negQ, h => h.SessionId == "s-neg");
+        // ② 对称方向: 肯定查询不得召到否定文档 (词面重叠的另一半)
+        Assert.DoesNotContain(posQ, h => h.SessionId == "s-neg");
+    }
+
+    [Fact]
+    public void Polarity_Token_Space_Is_Disjoint_Mechanism_Assertion()
+    {
+        var pos = SessionHistorySearch.Tokenize("存在");
+        var neg = SessionHistorySearch.Tokenize("不存在");
+
+        Assert.Equal(new[] { "存在" }, pos);
+        Assert.Contains(SessionHistorySearch.NegMark + "存在", neg);
+        Assert.Empty(pos.Intersect(neg, StringComparer.Ordinal));
+        // 期望值逐项写死: 防止"极性前缀存在但语义未变"的假修
+        Assert.Equal(2, neg.Count);
+        Assert.Contains(SessionHistorySearch.NegMark + "不存", neg);
+    }
+
+    [Fact]
+    public void Polarity_Real_Machine_Replay_R420_Pair_Negated_Query_Must_Not_Recall_Positive_Doc()
+    {
+        // 语料原文 (R420 真机命中文本, probe-0914125816-p004 / -p005 的题面)
+        const string doc = "若图中存在拓扑序, 输出字典序最小的拓扑序; 若存在环";
+        Seed("s-real-pos", doc);
+
+        var search = NewSearch();
+        var posQ = search.Search("存在", topK: 5);
+        var negQ = search.Search("不存在", topK: 5);
+        var negLongQ = search.Search("外星词根zzq不存在", topK: 5);
+
+        // 正控: 真机原串 "存在" 仍召到该文档 (R420 读数 hits=2 的同族)
+        Assert.Contains(posQ, h => h.SessionId == "s-real-pos");
+        // R420 缺陷: "不存在" 召回同一批、读起来像肯定 ⇒ 本轮必须为 0
+        Assert.Empty(negQ);
+        Assert.Empty(negLongQ);
+    }
+
+    [Fact]
+    public void Polarity_Mixed_Document_Is_Recalled_By_Both_Polarities_No_Blanket_Kill()
+    {
+        // 文档同时断言存在与不存在 ⇒ 两种极性查询都应召到 (证明不是一刀切把召回打死)
+        Seed("s-mixed", "服务 存在 于生产环境; 但缓存 不存在 于测试环境");
+
+        var search = NewSearch();
+        var posQ = search.Search("存在", topK: 5);
+        var negQ = search.Search("不存在", topK: 5);
+
+        Assert.Contains(posQ, h => h.SessionId == "s-mixed");
+        Assert.Contains(negQ, h => h.SessionId == "s-mixed");
+    }
+
+    [Fact]
+    public void Polarity_Does_Not_Touch_Tokens_Without_Negation_Markers_RegressionGuard()
+    {
+        // 回归护栏: 无否定标记的文本, 词元表必须与修复前逐项相同 (修复作用域受控)
+        Assert.Equal(new[] { "向量", "量召", "召回" }, SessionHistorySearch.Tokenize("向量召回"));
+        Assert.Equal(new[] { "topo", "拓扑", "扑序" }, SessionHistorySearch.Tokenize("topo 拓扑序"));
+        // 刻意排除的标记 (别): 不得因"识别"里的"别"而带极性
+        Assert.Equal(new[] { "识别", "别文", "文本" }, SessionHistorySearch.Tokenize("识别文本"));
+    }
+
     private sealed class MixedSource : SessionHistorySearch.ISource
     {
         private readonly SessionHistorySearch.ISource _inner;

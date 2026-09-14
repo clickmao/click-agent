@@ -80,7 +80,11 @@ def d_breakpoints() -> list[tuple[str, str, str, int]]:
 
 def probe_verdicts() -> list[tuple[str, str, str, int, str]]:
     rows: list[tuple[str, str, str, int, str]] = []
-    for f in sorted((ROOT / "eval" / "rover").glob("*/verdict*.json")):
+    # R421: 裁决文件不只在 eval/rover/ 下 —— eval/capability/<轮>/ 也是同级外部真值产物。
+    # 只扫 rover 会让 capability 轮的裁决在单页入口里**整体不可见**（"漏读"比"读错"更隐蔽）。
+    files = sorted((ROOT / "eval" / "rover").glob("*/verdict*.json")) + \
+            sorted((ROOT / "eval" / "capability").glob("*/verdict*.json"))
+    for f in files:
         try:
             d = json.loads(f.read_text(encoding="utf-8"))
         except Exception as e:  # noqa: BLE001
@@ -228,7 +232,7 @@ def main() -> int:
     for did, title, status, ln in sorted(ds, key=lambda r: (int(re.sub(r"\D", "", r[0]) or 0), r[0])):
         L.append(f"| D{did} | {title} | {status} | L{ln} |")
     L.append("")
-    L.append("## 2. 探针裁决（源: `eval/rover/*/verdict*.json`）")
+    L.append("## 2. 探针裁决（源: `eval/rover/*/verdict*.json` + `eval/capability/*/verdict*.json`）")
     L.append("")
     L.append("| 目录 | 裁决文件 | verdict | 判据数 | 来源键 |")
     L.append("|---|---|---|---|---|")
