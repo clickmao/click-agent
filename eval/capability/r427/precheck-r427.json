@@ -1,0 +1,386 @@
+{
+ "round": "R427",
+ "kind": "separability-precheck",
+ "query": "存在",
+ "replica_of": "src/agent/session/SessionHistorySearch.cs (R421 极性 / R422 sqrt|d| / R423 1+ln tf)",
+ "mode": "只读语料 + 机检; 零构建 / 零网络 / 零 LLM / 零产品源码改动",
+ "fixtures": {
+  "A": {
+   "dir": "/home/agentuser/AgentFramework/eval/capability/r422/fixture-sessions",
+   "sha256": {
+    "cli-6bf6dc8d_memory.json": "282bf6a66e0cf08549f9c74aa67079dcd9f8bce3475ea82deb1ae77f065d0784",
+    "probe-0914125816-p004_memory.json": "b9d47da7a95494da2d6134882b7d767eeb0857d3d338e03331531050ead931ac",
+    "probe-0914125831-p005_memory.json": "c048bf912fa09fc477212184def68f25fc556f7a52e5a90f8d9d45fd0c034974"
+   }
+  },
+  "B": {
+   "dir": "/home/agentuser/AgentFramework/eval/capability/r423/fixture-tf",
+   "sha256": {
+    "r423-quiet_memory.json": "57735412ab50bfb9ce1aebe3b27d414bac1eecc876bab36f76fc4671c7aa8170",
+    "r423-tfhi_memory.json": "a4b327558856e4162c1d7ef845eee531cbca35a5c0947f007043716d547c4b30",
+    "r423-tflo_memory.json": "1532dd0a123ba1b87f6f57672fc9061f75997540e5f837480837e10b0c98e43e"
+   }
+  }
+ },
+ "align": {
+  "pinned_r423": {
+   "cli-6bf6dc8d": [
+    4,
+    1
+   ],
+   "probe-0914125816-p004": [
+    90,
+    4
+   ],
+   "probe-0914125831-p005": [
+    90,
+    4
+   ]
+  },
+  "pinned_replica": {
+   "cli-6bf6dc8d": [
+    4,
+    1
+   ],
+   "probe-0914125816-p004": [
+    90,
+    4
+   ],
+   "probe-0914125831-p005": [
+    90,
+    4
+   ]
+  },
+  "pin_match_exact": true,
+  "pinned_replica_B": {
+   "r423-quiet": [
+    7,
+    0
+   ],
+   "r423-tfhi": [
+    2,
+    3
+   ],
+   "r423-tflo": [
+    2,
+    1
+   ]
+  },
+  "score_r423_published": {
+   "cli-6bf6dc8d": 0.2798,
+   "probe-0914125816-p004": 0.14079136730607356,
+   "probe-0914125831-p005": 0.14079136730607356
+  },
+  "score_replica_A": {
+   "cli-6bf6dc8d": 0.279807893968,
+   "probe-0914125816-p004": 0.140764362763,
+   "probe-0914125831-p005": 0.140764362763
+  },
+  "score_delta_vs_published": {
+   "cli-6bf6dc8d": 7.893967711336547e-06,
+   "probe-0914125816-p004": 2.7004542636516193e-05,
+   "probe-0914125831-p005": 2.7004542636516193e-05
+  },
+  "score_delta_within_presentation": true,
+  "B_registered": {
+   "r423-tfhi": 1.0286,
+   "r423-tflo": 0.4901,
+   "r423-quiet": 0.0
+  },
+  "score_replica_B": {
+   "r423-quiet": 0.0,
+   "r423-tfhi": 1.028590892975,
+   "r423-tflo": 0.490129071734
+  },
+  "B_delta_within_presentation": true,
+  "B_ratio_replica": 2.09861228866811,
+  "B_ratio_closed_1_ln3": 2.09861228866811,
+  "closed_form_baseline": {
+   "hypothesis": "R423 A 臂闭式基线 = 0.059 (R422 两位小数呈现值) x TfSat(4)",
+   "product_exact": 0.14079136730607356,
+   "published": 0.14079136730607356,
+   "exact_equality": true,
+   "full_precision_value": 0.14076436276343704,
+   "full_precision_base": 0.05898868348219042,
+   "base_rel_err_of_published": 0.00019184218296707526
+  }
+ },
+ "edge_decision": {
+  "implement_position_family_now": false,
+  "why": "真实并列对为同文(P1b) ⇒ 位置族无从体现; 构造样本(P2b)显示族本身在其可观测维度有效, 但本语料无非同文的真实并列对 ⇒ 无真实判定样本",
+  "next_target": "确定性 tie-break / 去重层 (零 LLM / 零参数 / AOT 友好): 同分时按 (分数, 最近时间, 会话 id) 全序或同文折叠",
+  "gate": "检索面无产品语义变更 ⇒ 不涉 role 挂载, 无需门臂"
+ },
+ "readings": {
+  "tie_pair": {
+   "ids": [
+    "probe-0914125816-p004",
+    "probe-0914125831-p005"
+   ],
+   "bow_scores": [
+    0.140764362763,
+    0.140764362763
+   ],
+   "delta": 0.0,
+   "tied": true,
+   "identity": {
+    "seq_identical": true,
+    "seq_len": [
+     335,
+     335
+    ],
+    "positional_token_diff": 0,
+    "distinct": [
+     90,
+     90
+    ],
+    "jaccard": 1.0
+   },
+   "feat": {
+    "probe-0914125816-p004": {
+     "hits": 4,
+     "first_tok_idx": 73,
+     "last_tok_idx": 248,
+     "spread_tok": 175,
+     "first_char_idx": 131,
+     "first_char_rel": 0.2243150684931507,
+     "first_tok_rel": 0.21791044776119403,
+     "seq_tokens": 335,
+     "norm_chars": 584
+    },
+    "probe-0914125831-p005": {
+     "hits": 4,
+     "first_tok_idx": 73,
+     "last_tok_idx": 248,
+     "spread_tok": 175,
+     "first_char_idx": 131,
+     "first_char_rel": 0.2243150684931507,
+     "first_tok_rel": 0.21791044776119403,
+     "seq_tokens": 335,
+     "norm_chars": 584
+    }
+   }
+  },
+  "real_pair_position_family": {
+   "features": {
+    "first_tok_idx": {
+     "v1": 73,
+     "v2": 73,
+     "differs": false
+    },
+    "first_char_idx": {
+     "v1": 131,
+     "v2": 131,
+     "differs": false
+    },
+    "spread_tok": {
+     "v1": 175,
+     "v2": 175,
+     "differs": false
+    },
+    "first_char_rel": {
+     "v1": 0.2243150684931507,
+     "v2": 0.2243150684931507,
+     "differs": false
+    },
+    "first_tok_rel": {
+     "v1": 0.21791044776119403,
+     "v2": 0.21791044776119403,
+     "differs": false
+    }
+   },
+   "factor": [
+    1.775684931507,
+    1.775684931507
+   ],
+   "ratio": 1.0,
+   "scores_new": [
+    0.249953157852,
+    0.249953157852
+   ],
+   "separable": false
+  },
+  "synthetic_relocated": {
+   "pair": "X1/X2 (同 distinct 计数 ∧ 同 tf ∧ 同 df, 查询词位置不同)",
+   "synthetic": true,
+   "distinct": [
+    5,
+    5
+   ],
+   "bow_scores": [
+    0.228448163878,
+    0.228448163878
+   ],
+   "bow_tied": true,
+   "first_char_rel": [
+    0.4838709677419355,
+    0.967741935483871
+   ],
+   "factor": [
+    1.516129032258,
+    1.032258064516
+   ],
+   "ratio": 1.46875,
+   "ratio_closed_form": 1.46875,
+   "scores_new": [
+    0.346356893621,
+    0.235817459487
+   ],
+   "separable": true,
+   "synthetic_valid": true,
+   "closed_form_match": true
+  },
+  "hit_set_invariance": {
+   "hit_set": {
+    "A": [
+     "cli-6bf6dc8d",
+     "probe-0914125816-p004",
+     "probe-0914125831-p005"
+    ],
+    "B": [
+     "r423-tfhi",
+     "r423-tflo"
+    ]
+   },
+   "invariant": true,
+   "reason": "factor >= 1 且 > 0 ⇒ 不得分项删除/新增 (因子为乘性缩放, 只改分档)",
+   "all_nonneg": true
+  },
+  "negative_control_N3": {
+   "pair": "S1/S2 (同 distinct 计数 ∧ 同 tf ∧ 同 df ∧ 同首现相对位置; 仅尾部块序不同)",
+   "synthetic": true,
+   "distinct": [
+    7,
+    7
+   ],
+   "bow_scores": [
+    0.193073937686,
+    0.193073937686
+   ],
+   "bow_tied": true,
+   "first_char_rel": [
+    0.3225806451612903,
+    0.3225806451612903
+   ],
+   "factor": [
+    1.677419354839,
+    1.677419354839
+   ],
+   "pos_tied": true,
+   "synthetic_valid": true
+  }
+ },
+ "checks": [
+  {
+   "id": "P0",
+   "desc": "口径对齐: pin 精确重现 + 分数落在已发布呈现精度 (F4 半 ulp 5e-5) 内 (A/B 两语料)",
+   "pass": true,
+   "evidence": "align"
+  },
+  {
+   "id": "P0b",
+   "desc": "已发布闭式基线溯源: 0.059 x TfSat(4) 与 R423 登记值逐位相等 ⇒ 基线取自呈现精度",
+   "pass": true,
+   "evidence": "align.closed_form_baseline"
+  },
+  {
+   "id": "P1",
+   "desc": "并列复现: 真实双长文档在词袋计数族下逐位并列",
+   "pass": true,
+   "evidence": "readings.tie_pair"
+  },
+  {
+   "id": "P1b",
+   "desc": "同文检测(承重): 并列对正文逐词元序列是否相同 ⇒ 判定并列根因是否在内容重复",
+   "pass": true,
+   "evidence": "readings.tie_pair.identity",
+   "interpretation": "True ⇒ 任何打分族(含语义/位置)对同文文档必然同分 ⇒ 该对不构成打分族可分性样本"
+  },
+  {
+   "id": "P2",
+   "desc": "位置族在真实并列对上的可分性 (预期 False, 因同文)",
+   "pass": false,
+   "evidence": "readings.real_pair_position_family",
+   "interpretation": "False 且 P1b=True ⇒ 不能据此判位置族无效; 该对无任何打分族可分的可能"
+  },
+  {
+   "id": "P2b",
+   "desc": "族非空判定(构造样本, fail-closed: 先证词袋并列): 词袋并列 ∧ 位置不同 ⇒ 位置族可分且比值闭式复算一致",
+   "pass": true,
+   "evidence": "readings.synthetic_relocated"
+  },
+  {
+   "id": "P4",
+   "desc": "命中集合不变: 因子 >=1 且 >0 ⇒ 命中项逐元素不变 (设计约束机检)",
+   "pass": true,
+   "evidence": "readings.hit_set_invariance"
+  }
+ ],
+ "controls": [
+  {
+   "id": "N1",
+   "desc": "身份控制: 同一文档对自身 ⇒ 比值恒 1.0 (零参数因子无自噪声)",
+   "pass": true
+  },
+  {
+   "id": "N3",
+   "desc": "新族边界(构造, fail-closed): 首现相对位置相同 ⇒ 位置族亦并列 (宣称范围上界)",
+   "pass": true,
+   "evidence": {
+    "pair": "S1/S2 (同 distinct 计数 ∧ 同 tf ∧ 同 df ∧ 同首现相对位置; 仅尾部块序不同)",
+    "synthetic": true,
+    "distinct": [
+     7,
+     7
+    ],
+    "bow_scores": [
+     0.193073937686,
+     0.193073937686
+    ],
+    "bow_tied": true,
+    "first_char_rel": [
+     0.3225806451612903,
+     0.3225806451612903
+    ],
+    "factor": [
+     1.677419354839,
+     1.677419354839
+    ],
+    "pos_tied": true,
+    "synthetic_valid": true
+   }
+  }
+ ],
+ "corrections": [
+  {
+   "id": "C1",
+   "target": "R423 证据 A 臂闭式基线",
+   "finding": "R423 登记值 0.14079136730607356 == 0.059 x TfSat(4) (精确相等) ⇒ 基线取自 R422 的两位小数呈现值 0.059, 非全精度计算值",
+   "full_precision": {
+    "score": 0.14076436276343704,
+    "base": 0.05898868348219042
+   },
+   "consequence": "A 臂 rel 6.8e-5 含呈现舍入; 应按全精度基线重算 (B 臂读数不受影响: 逐位重现)",
+   "verdict_impact": "不改 R423 结论 (B 臂比值 1+ln3 由同一基线的成对读数派生), 但登记为口径缺陷, 后续闭式复算禁用呈现精度值"
+  },
+  {
+   "id": "C2",
+   "target": "R423/R422 并列对定性",
+   "finding": "并列对 probe-0914125816-p004 / probe-0914125831-p005 正文逐词元序列完全相同 (posdiff 0/335, jaccard 1.0)",
+   "consequence": "「换信号族(语义/位置)可分开该对」为伪命题; 正确落点为排序/去重层 (确定性 tie-break), 非打分公式",
+   "verdict_impact": "不改 R423 频次饱和实现本身 (其判据在 fixture-tf 合成语料上成立), 但取消其登记的『下一步换族』方向对该对的有效性"
+  }
+ ],
+ "claim_scope": "机制结论: 已登记的『词袋计数族并列』真实对 = 内容重复(同文), 其不可分性与打分族无关 ⇒ 换族不可解; 位置族(首现相对位置 k)在构造样本上可分且闭式可复算, 但真实语料无非同文并列对 ⇒ 对真实数据的增益未证; 边界: 词元多重集 ∧ 首现相对位置皆相同 ⇒ 位置族亦并列 (N3 机检)。",
+ "verdict": "PREMISE-REFUTED",
+ "heading": "真实并列对 = 重复文本 (逐位相同 0/335, jaccard 1.0) ⇒ 并列根因不在打分族; 位置族在构造样本可分但在真实数据无判定样本 ⇒ 落点改为排序/去重层",
+ "next_round_preregistered": {
+  "target": "确定性 tie-break / 同文折叠 (排序层), 真机成对 AOT",
+  "criteria": [
+   "同分同文的两条命中有确定且可复算的全序 (与输入列举顺序无关)",
+   "非同文同分对不同被错误折叠 = 0 (负控)",
+   "命中集合与各处排序不变量成对机检; 回归全绿"
+  ],
+  "blocked_by_concurrent": "R426 对侧占用工作树/机器 ⇒ 本侧本轮不起构建与测量"
+ }
+}

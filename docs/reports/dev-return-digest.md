@@ -78,10 +78,11 @@
 
 ## 4. 轮次提交（本地；推送暂停令生效）
 
-- 未推送提交数: **79**
+- 未推送提交数: **80**
 
 | commit | 主题 |
 |---|---|
+| `e8ada93` | R425: 前置门增益的占比敏感性网格 (判决 PARTIAL, 零产品改动) |
 | `f4143b4` | R424 收口: 状态 digest 重生成(registry 59 行 updated_round R424; kpi 已记轮次含 R424; 未推送 78) (未推) |
 | `560fb9c` | R424 主线 KPI 发布形态身份修复: R413 宣称 AOT 而器具跑 IL apphost(78,256B, env -i rc=131) ⇒ 在可自证 AOT 产物(15,168,064B sha 2d363b6d IL警告0)上三臂复现同一判据: A 12/16,888 → B 8/7,007 (-33.3%/-58.5% 均≥30%), 与 R413 JIT 读数逐位相同; 新增 B′(门开·模型缺=无设备负控兼 r1 归因: 12/16,891 ≡ A ⇒ 增益归零 ⇒ 归因 r1 非机械门); 形态闸 V0(env -i 自证+IL 成对负控)/门真身 V1/无效跑 V2 全绿, 判据 9 预注册+5 事后(P1 回复逐字节无回归 / P2 role 额外数据真挂载: IndustrialAgentV2.cs:1481 ProfileSeed 非空 / P3 无设备失败可见性 4/4) PASS; r413 器具 fail-closed 封堵(rc=2) + 更正登记; 轮号碰撞让号至 R424(对侧 R423=检索 tf); 回归抽查 47/47 (未推) |
 | `1046899` | R423 证据补齐: 命名空间碰撞的轮内消解入档(对侧让号至 R424, 迁移 17:10:36) — 台账 namespace_collision 字段 + 计划 §11 + 证据 §7 (未推) |
@@ -105,12 +106,11 @@
 | `f6496ba` | R413 证据补齐: 失效跑(v3 门恒Pass/增益0)原文入档 + 证据清单(有效/失效分列) + 本地提交脚本 |
 | `c400b45` | R413: r1 本地真假判别接进链管道(端口化) + 机械 Pass 前置 + 非 LLM 模板 ack |
 | `b29e450` | R403 报告 §9: 附带发现(三台账/检测器视图缺口 + 主报告 §7 快照滞后), 交下轮裁定 |
-| `cd3c951` | R403: chat template 裁定 —— 工具调用模板无对象可验(负控证明探针有判别力), R403 关闭 + 待触发能力准入三条 |
 
 ## 5. 台账
 
-- `docs/verification-registry.json`: **60** 行, updated_round = **R425**
-- `eval/capability/kpi.jsonl` 已记轮次: R402, loop-mechanism, R401, R411-V, R403-scope, R413, R414, R415, R416, R419, R420, R421, R422, R423, R424, R425
+- `docs/verification-registry.json`: **61** 行, updated_round = **R427**
+- `eval/capability/kpi.jsonl` 已记轮次: R402, loop-mechanism, R401, R411-V, R403-scope, R413, R414, R415, R416, R419, R420, R421, R422, R423, R424, R425, R427
 - 已知盲区: 状态检测器只读 `data/probe/kpi.jsonl`; 轮次台账另有 `data/probe/capability/kpi.jsonl`（孤儿）
 - **轮号命名空间（R423 实证，轮内已消解）**: 轮号取 `max+1` 前必须复跑「pgrep 活动执行体 + 锁文件 + 目标轮文件存在时比对 mtime（>10min 才算 stale）」全序列。R423 曾与并发执行体撞号（本侧=检索打分；对侧=AOT 发布形态复现），对侧随后**让号**至 R424（`eval/rover/r424/` + `docs/plans/v0.45.0-r424-aot-mainline-replication.md`）⇒ 最终 R423=检索打分 / R424=AOT 形态复现。**处置纪律**: 碰撞当一等事件（两支都登记、不改写历史、不静默改名）；提交只用**显式路径**（禁 `git add -A`，防卷入对侧未跟踪产物）。
 

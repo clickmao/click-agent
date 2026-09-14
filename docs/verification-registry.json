@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R425",
+  "updated_round": "R427",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -926,6 +926,19 @@
       "evidence_path": "eval/rover/r425/verdict-r425-b2.json",
       "negative_control": "① **无 role 阴性对照** batch b1: A/B 逐格逐位相等 (k1..k8 token %s) ∧ 无本地推理时延 ⇒ 门未进判; 源码坐实 `src/agent/IndustrialAgentV2.cs:1464` = `if (_modelRouter is { TurnGateEnabled: true } && ActiveRole is not null)` ⇒ 门生效必要条件含 ActiveRole!=null (教训: 门相关臂必传 --role); ② 归因负控 = 臂 B′(local.model_path 指不存在) ⇒ 降幅 0.028% ≈ 0; ③ 形态闸负控 = 同目录 IL apphost 78,256 B `env -i` rc=131 (AOT 则 rc=0); ④ 臂 A 本身 = 分母, 且含「意图不明确⇒等你回答」澄清短路轮 (故 A 调用 9–10 < 8 轮)",
       "owner_round": "R425"
+    },
+    {
+      "id": "r427.recall-tie-premise-refuted",
+      "capability": "跨会话检索打分的「并列根因」判定与口径复核: R423 登记的残留并列对 (probe-0914125816-p004 / probe-0914125831-p005, distinct 90/90 ∧ tf(存在)=4) 经同文检测判定为**内容重复** (检索正文逐词元相同, 位置差 0/335, Jaccard 1.0) ⇒ 「换信号族」对该对为伪命题, 正确落点在排序/去重层; 附带溯源: R423 的 A 臂闭式基线取自 R422 的两位小数呈现值 0.059 (0.059×TfSat(4) == 0.14079136730607356 精确相等), 全精度应为 0.14076436276343704。零产品源码改动、零构建、零测量。",
+      "level": "L1",
+      "evidence_cmd": "python3 eval/capability/r427/precheck_position.py",
+      "evidence_path": "eval/capability/r427/precheck-r427.json",
+      "negative_control": "N1 身份控制(同文对自身 ratio 恒 1.0); N3 新边界构造(同 distinct ∧ 同 tf ∧ 同 df ∧ 同首现相对位置 ⇒ 位置族亦并列); P2b 带 fail-closed 的 synthetic_valid(先证词袋并列才允许谈可分); 真实并列对 P2 = FAIL 即本轮发现本身",
+      "covers": [
+        "src/agent/session/SessionHistorySearch.cs (复刻口径来源, 本轮未改动)"
+      ],
+      "owner_round": "R427",
+      "gap_note": "L1 理由(按形式规范 R4): 只读机检 + 独立复刻, 未运行被测组件 ⇒ 不得报 L≥2; 真机成对 AOT 判定预注册于 R428 (加分/去重排序层)"
     }
   ],
   "aot_check_policy": "release_tag_only",
