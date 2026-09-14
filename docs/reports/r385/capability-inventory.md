@@ -148,7 +148,7 @@
 | `CritiqueResult` | `src/agent/critique/SelfCritic.cs:17` | `agent.critique` |
 | `DataEntry` | `src/agent/datastore/DataEntry.cs:6` | `agent.datastore` |
 | `DataQuery` | `src/agent/datastore/DataEntry.cs:20` | `agent.datastore` |
-| `TensorInfo` | `src/agent.embedcpu/GgufModel.cs:20` | `agent.embedcpu` |
+| `TensorInfo` | `src/agent.embedcpu/GgufModel.cs:20`【已删 b00917c】 | `agent.embedcpu` |
 | `ExecutorLesson` | `src/agent/execution/ExecutorLessonMemory.cs:15` | `agent.execution` |
 | `FileWriteResult` | `src/agent/execution/LockedFileWriter.cs:7` | `agent.execution` |
 | `ComplexityVerdict` | `src/agent.exploration/ComplexityGate.cs:7` | `agent.exploration` |
@@ -276,12 +276,12 @@
 | `ParseError` | `src/agent.rover/formal/FormalKernel.cs:31` | `agent.rover.formal` |
 | `Atom` | `src/agent.rover/formal/Formula.cs:14` | `agent.rover.formal` |
 | `Or` | `src/agent.rover/formal/Formula.cs:16` | `agent.rover.formal` |
-| `GgufValueKind` | `src/agent.rover/gguf/GgufReader.cs:6` | `agent.rover.gguf` |
-| `GgufValue` | `src/agent.rover/gguf/GgufReader.cs:13` | `agent.rover.gguf` |
-| `GgufArray` | `src/agent.rover/gguf/GgufReader.cs:44` | `agent.rover.gguf` |
-| `GgufTensorInfo` | `src/agent.rover/gguf/GgufReader.cs:54` | `agent.rover.gguf` |
+| `GgufValueKind` | `src/agent.rover/gguf/GgufReader.cs:6`【已删 b00917c】 | `agent.rover.gguf` |
+| `GgufValue` | `src/agent.rover/gguf/GgufReader.cs:13`【已删 b00917c】 | `agent.rover.gguf` |
+| `GgufArray` | `src/agent.rover/gguf/GgufReader.cs:44`【已删 b00917c】 | `agent.rover.gguf` |
+| `GgufTensorInfo` | `src/agent.rover/gguf/GgufReader.cs:54`【已删 b00917c】 | `agent.rover.gguf` |
 | `Kernels` | `src/agent.rover/gpu/spirv/Kernels.cs:4` | `agent.rover.gpu.spirv` |
-| `TensorBuffer` | `src/agent.rover/runtime/TensorResidency.cs:37` | `agent.rover.runtime` |
+| `TensorBuffer` | `src/agent.rover/runtime/TensorResidency.cs:37`【已删 b00917c】 | `agent.rover.runtime` |
 
 ### 6.2 仅测试态引用 (生产零消费: **49** 个)
 

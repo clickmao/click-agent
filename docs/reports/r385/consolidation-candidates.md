@@ -21,7 +21,7 @@
 | 13 | `src/agent.pipeline/PipelineTask.cs` 6 型 (PipelineTask/PipelineContext/DecompositionResult/DecomposeOptions/ComplexityAssessment/DependencyGraph) | `src/agent/pipeline/PipelineTask.cs:6,23,126,137,147,160`；§6.1 零消费 | 延后/删除 | 低 | 整模块无入口 |
 | 14 | `src/agent.codegen/CodeGenOptions.cs` 6 型 + `LanguageConfig` | `src/agent.codegen/CodeGenOptions.cs:99,143,306,320,338,350`；`CodeGenerator.cs:725` | 延后/删除 | 低 | — |
 | 15 | `src/agent.modelqueue/CogViewClient.cs` 6 型 (图像渲染副线) | `src/agent.modelqueue/CogViewClient.cs:14,27,39,48,54,64`；§6.1 零消费 | 延后 | 低 | — |
-| 16 | `src/agent.contextassembler/ContextAssemblerConfig.cs` 8 型 (含 IContextQualityEvaluator/IContextValidator 契约) | `src/agent.contextassembler/ContextAssemblerConfig.cs:12,81,97,138,179,197,223,244`；§6.1 零消费 | 延后 (契约面) | 中 | 含接口契约, 删除影响扩展面 |
+| 16 | `src/agent/contextassembler/ContextAssemblerConfig.cs` 8 型 (含 IContextQualityEvaluator/IContextValidator 契约) | `src/agent/contextassembler/ContextAssemblerConfig.cs:12,81,97,138,179,197,223,244`；§6.1 零消费 | 延后 (契约面) | 中 | 含接口契约, 删除影响扩展面 |
 | 17 | `src/agent.vectormemory/VectorDocument.cs` 3 型 + `src/agent.rag/RAGStats` | `VectorDocument.cs:26,37,104`；`src/agent.rag/RAGConfig.cs:125` | 延后/删除 | 低 | — |
 | 18 | `src/agent.frontendapi` 契约 DTO (FrontendRequest/AskReply) | `FrontendApiContract.cs:87`；`AskEnvelope.cs:24` | 延后 | 低 | HTTP 序列化契约, 可能由前端调用 |
 | 19 | `src/agent.workspace/GitChangeType.cs` 4 型 | `src/agent.workspace/GitChangeType.cs:8,44,54,68`；§6.1 零消费 | 延后/删除 | 低 | — |

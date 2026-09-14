@@ -10,6 +10,24 @@
 > 数据时效 (测试数/批号/评测口径)、版本引用一致性、死链检查; **禁止只改局部不做整体校验**。
 > 空间位置相邻但语义不同段的错挂 (如旧版本标题下挂新数据) 视同违例。
 
+## EXP1-Q7 · 文档侧定点修复（改写失效路径 + 补退役标记）与「桶归零」的空心绿（60m 自检作业）
+
+**主题**：附录 G.7 结转「把 `relocated` 的 10 条定点可改 + 3 条写法漂移 做文档侧定点修复，并对 `retired_after_write` 引用补退役标记 —— 改动只碰文档，复跑仪器断言两桶归零」。
+
+**判决**：① 文档侧定点修复完成，**只碰 10 个文档**（行数逐文档不变）：`relocated` **13→0**、`stale_path` **21→8**、`retired` **8→21**、`ok` **741→753**、`symbol_absent` **65→66**（唯一迁移项在修前 `relocated_fact_verdict` 即为 `symbol_absent`）、`stale_lines 4`、`waived 70` 未动。② 预注册 P1–P5 **全过**；③ 仪器 v2.3.0 复跑**两跑逐位相同**、自证闸 G1–G6 全 true、`--selftest` exit 0。④ 余 8 条 `stale_path` = 弃权类 `same_commit_as_deletion`（同一删除提交的 8 处），按预注册**零动作**（补标记会把弃权类并入 `retired`，抹掉 G.2 建立的区分）。
+
+**本轮核心发现（自捕测量层缺陷 D1，比修复本身更重要）**：首版修复器按路径**子串**定位插标记 ⇒ 标记落在「路径」与「`:行号`」**之间** ⇒ `CITE_RE` 不再匹配该 token ⇒ **13 条引用从语料中消失**。危险形态在于**目标桶全部"达标"**（`relocated` 13→0 ✓、`stale_path` 21→8 ✓、`exit 0`、两跑逐位相同 ✓）—— **桶判据在缺陷态会放行**。暴露它的是**桶账不平**：`ok +12` 与 `symbol_absent +1` 只能解释 13 条改写，**13 条被标记引用的去向无处安放** ⇒ 语料引用总条数 **922→909**。⇒ 补进预注册的 **P6 计数守恒不变量**：任何改写语料的动作必须断言「引用总条数不变」（修复器层逐文档 + 全语料）。
+
+**修改**：新增 `eval/capability/exp1-q7/{apply_doc_fixes_q7.py(v1.0.0→v1.1.0), prereg_q7.json, edit_plan.json, edit_plan_v100_defect.json, edit_plan_d1_negative_control.json, attribution_q7_{before,after,after_rerun,after_D1repro}.json, selftest_q7_after.txt, README-evidence.md}`；计划文档 **附录 H**；本条目 + `eval/capability/kpi.jsonl`。**未动 `src/`、未动 `skills/`、未动登记表**。
+
+**读数**（修前→修后，仪器 v2.3.0，178 文档 / 594 只读输入逐文件 sha256）：`relocated 13→0`、`stale_path 21→8`、`retired 8→21`、`ok 741→753`、`symbol_absent 65→66`、`stale_lines 4→4`、`waived 70→70`、**引用总条数 922→922**。**负控（可复现）**：`--insert-mode=path_end` 复现 D1 ⇒ 修复器层条数 `582→569`、`count_invariant_ok=false`、`verify_bad=13`（全 `MARK-MISSING`）、`exit 2`；仪器读数落缺陷态档案（**总条数 909，而桶面同样"绿"**）。**绑定仪器真实行为**的读回校验（非文本代理）：13 条改写复跑抽取 + `judge_citation` ⇒ `ok 11 / symbol_absent 1`；13 条标记 ⇒ **`retired` 13/13**。
+
+**基线**：本轮前 HEAD 工作树（本地，未推送；`.git/PUSH_PAUSED` 在位）。证据等级 **L1 静态机检**。形式校验：对侧 30m 主线作业在跑 R440 网格（`eval/rover/r440` + `docs/plans/v0.60.0-r440-*` 为在途产物）⇒ 按「测量纯净闸」**不跑 `dotnet`**，形式校验**结转**（与前两轮同）。
+
+**诚实边界**：① L1 静态，无编译/单测/AOT/真机运行；② 语料是**移动目标**（对侧在改 `src/`/`docs/`）⇒ 读数与 HEAD 绑定，确定性由两跑逐位相同 + 594 输入指纹归因；③ **「两桶归零」按可动作类解读**（`relocated` + `retired_after_write`，两者均 0）——若字面读作 `stale_path→0`，须先裁定那 8 条的语义，**禁止用标记把弃权类洗成 `retired`**；④ `symbol_absent 66` 是全文匹配启发式（非 AST），只作候选不作结论，本轮既未引入新缺陷**也没有修好它**；⑤ 退役标记只声明「路径在 HEAD 不存在 ∧ 删除提交为 HEAD 祖先」，不声明引用何时成形；⑥ 标记/替换串一律由产物派生（仪器常量 + 复核器 `sha7`）并**读回比对码位**，未复现 F.3 的写入通道改写；⑦ 附录 H 正文写入后**复跑仪器零新增引用**（自指控制 922=922）。
+
+
+
 ## EXP1-Q6 · 全仓失效引用的四级归属复核：时间轴锚点 +「当前不成立」vs「写成时就错」（60m 自检作业）
 
 **主题**：附录 F.5 结转「按同一四级归属**逐条复核全仓剩余 `stale_path 21`**」。本轮把仪器 v2.3.0 判定的 `stale_path` **21** 条 + `relocated` **13** 条（10 文档）**逐条**做完归属复核，并补上仪器未建模的第四级：**时间轴**。

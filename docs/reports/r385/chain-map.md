@@ -25,7 +25,7 @@
 | 12 | Prompt 组装 | `V2:1218` (`_promptBuilder.BuildWithHistory`), 定义 `IPromptBuilder.cs:188`; 内联块 `:1181-1216` | SystemPrompt+History+UserMessage → `Prompt` | 是 | `ContextPrompt` 置空 `:1225` (不再发独立 system 消息, 防切前缀) |
 | 13 | 探索链 (条件) | `V2:1298` (`RunThinkChainAsync`), 定义 `:189` | URL/目录线索 → digest | 是 (HTTP 抓取, 无模型) | 开关 `AGENTFRAMEWORK_EXPLORE=0` `:192` |
 | 14 | 隔离微步骤 (条件) | `V2:1301` (`RunMicroStepsAsync`), 定义 `:250`; 调用 `:272` | 每子任务 → 微答案 | **否 (每子任务 1 次 LLM)** | 仅 `ContextGateMode.IsolatedMicro` 且 `subTasks.Count>0` (`:1299`) |
-| 15 | **主 LLM 调用** | `V2:1405` (`_llmCaller.CallAsync`) → `ModelQueueAdapter.CallAsync` `src/agent/modelqueue/ModelQueueAdapter.cs:46` → `ModelQueueRouter.CallAsync` `src/agent/modelqueue/ModelQueueRouter.cs:211` → HTTP `:869` | Prompt → 模型答复 | 否 | ③ 唯一必调点 |
+| 15 | **主 LLM 调用** | `V2:1405` (`_llmCaller.CallAsync`) → `ModelQueueAdapter.CallAsync` `src/agent/modelqueue/ModelQueueAdapter.cs:46` → `ModelQueueRouter.CallAsync` `src/agent.modelqueue/ModelQueueRouter.cs:211` → HTTP `:869` | Prompt → 模型答复 | 否 | ③ 唯一必调点 |
 | 16 | 输出区段路由 (后处理) | `V2:1546` (`_segmentRouter.ProcessAsync`) → `src/agent/registry/SegmentKind.cs:378`; `ResponseSegmenter.Segment` `:75`; 插件 `PythonArtifactPlugin.cs:124` | 答复原文 → 分段+插件(落盘/py_compile) | **是 (插件为本机进程, 非 LLM)** | ⑦ 前半 |
 | 17 | 产物回流修复 (条件) | `V2:1550` (`_artifactRepair.RunAsync`) → `src/agent/registry/ArtifactRepair.cs:187`; 调用 `:217` | 失败产物 → (至多 1 轮)修复后正文 | **否 (仅失败时调 1 次 LLM)** | 闸门 `ArtifactRepairPolicy.IsEnabled` `ArtifactRepair.cs:183/192` |
 | 18 | 计划真执行 (本地节点) | `V2:1556` (`RunPlanAsync`), 定义 `:2069`; `PlanRunner.RunAsync` `PlanRunner.cs:477` | 计划 → `TaskPlanRun` (审计) | **是 (本地执行体 0 token)** | 失败不阻断主链 (`V2:1553-1556`) |
