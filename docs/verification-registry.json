@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R422",
+  "updated_round": "R423",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -892,6 +892,22 @@
         "eval/capability/r422/rag_flake_probe.sh"
       ],
       "owner_round": "R422"
+    },
+    {
+      "id": "r423.recall-tf-saturation",
+      "capability": "跨会话检索打分口径 (R420 接线 → R421 极性 → R422 长度归一 → **R423 词元频次饱和**)。R423 真机成对 AOT 两臂同语料: 等长可区分对 (|d|=2, tf 3 vs 1) 负控 [0.4901×2] 全等 → 治疗 [1.0286, 0.4901] 分档, 比值 2.098755 vs 闭式 1+ln3=2.098612; R422 冻结语料 tf=1 文档分数**逐位不变**(0.2798), tf=4 文档 0.059→0.1408 == 登记值×(1+ln4) (隐含 tf 4.0006 == 机检钉死值); 命中集合六查询逐元素不变; 极性/零 LLM/打点/只读 判据全绿 (10/10)。**可分性预检**: 残留并列对特征向量逐项相等 (distinct 90/90 ∧ tf 4/4) ⇒ 登记为词袋计数信号族不可分边界, **不作**「R422 残留零区分度已消除」全称宣称",
+      "level": "L4",
+      "evidence_cmd": "dotnet publish src/agent.host/agent.host.csproj -c Release -r linux-x64 -o /tmp/pub_r423 && python3 eval/capability/r423/run_r423.py && env -u AGENTFRAMEWORK_PY_RUN $HOME/.dotnet/dotnet test src/agent.tests/agentframework.tests.csproj --nologo -v q --filter FullyQualifiedName~SessionHistorySearchTests",
+      "evidence_path": "eval/capability/r423/verdict-r423.json",
+      "negative_control": "① 负控臂 = R422 AOT 二进制 (无频次) 同 harness 逐字节相同语料: 等长对分数**全等** [0.4901×2] (臂身份自证), 且其在语料 A 上的读数与 R422 判决书登记值**逐位相同** (0.2798/0.059/0.059); ② 首跑归档 `eval/capability/r423/verdict-r423-run1-predictor-error.json` 保留 C4 **红** (预测输入 tf 手算=2 被证伪, 真值 4) ⇒ 判据非恒真、非事后放宽; ③ 成对不变量: 六查询命中集两臂逐元素相同 ∧ 极性 4 查询命中均 0 ⇒ 未把召回打死 (防一刀切); ④ 语料目录条目集机检 (C0, 事后加) + 语料 sha 与 R421 登记逐字节相同且跑后未变 (C7); ⑤ 两臂全查询 llm_call==0 (通道级) ⇒ 本地指令未走 LLM 主链; ⑥ 边界登记单列 checks_boundary, 不与主判据混列 (C8)",
+      "covers": [
+        "src/agent/session/SessionHistorySearch.cs",
+        "src/agent.tests/SessionHistorySearchTests.cs",
+        "eval/capability/r423/run_r423.py",
+        "eval/capability/r423/README-evidence.md",
+        "eval/capability/r423/fixture-tf"
+      ],
+      "owner_round": "R423"
     }
   ],
   "aot_check_policy": "release_tag_only",

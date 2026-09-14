@@ -263,6 +263,16 @@
       "DocRef": "docs/plans/v0.43.0-r422-scoring-normalization.md",
       "Parameters": [],
       "Confidence": 1.0
+    },
+    {
+      "Id": "dev-recall-tf-saturation",
+      "Text": "R423 跨会话检索打分词元频次饱和 (+ 可分性预检): 打分分子加 1+ln(tf) (因子 ≥1 ⇒ 命中集合可证不变); **预检先行** — R422 残留并列对 (distinct 90/90 ∧ tf 4/4 逐项相等) ⇒ 频次对其恒为空操作, 该并列登记为词袋计数信号族不可分边界; 真机成对 AOT 两臂: 等长可区分对 (|d|=2, tf 3 vs 1) 负控全等 [0.4901×2] → 治疗分档 [1.0286, 0.4901] (比值 2.0988 vs 闭式 1+ln3=2.0986), R422 冻结语料 tf=1 文档逐位不变 0.2798 / tf=4 文档 0.059→0.1408 == 登记值×(1+ln4); 命中集/极性/零 LLM/只读 判据全绿 (10/10, 含首跑预测输入纠错归档) (L4)",
+      "Intent": "code_generation",
+      "Level": 1,
+      "ParallelGroup": 1,
+      "DocRef": "docs/plans/v0.44.0-r423-tf-saturation.md",
+      "Parameters": [],
+      "Confidence": 1.0
     }
   ]
 }

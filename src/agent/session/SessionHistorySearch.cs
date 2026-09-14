@@ -15,6 +15,10 @@ namespace agent.session;
 ///   4) 中文友好: CJK 走字符二元组 (与项目既有 trigram/Jaccard 口径同族), ASCII 走词元;
 ///   5) R422 打分校准: 分母带文档词元数 (余弦式 sqrt|d|) ⇒ 同一词元命中时短文更相关;
 ///      除数为正 ⇒ 命中集合不变, 只改集合内分档 (R421 真机三份文档同分 0.5596 的零区分度已消除)。
+///   6) R423 词元频次饱和: 分子按词元在文档内的出现次数加权 (1 + ln tf, ≥1) ⇒
+///      「提到 1 次」与「提到 N 次」不再同分; 因子 ≥1 ⇒ 分数符号不变 ⇒ 命中集合不变。
+///      诚实边界: 词元数相同 ∧ 查询词元出现次数也相同的文档对**仍并列** —— 已真机登记为
+///      词袋计数信号族的不可分边界 (需换信号族, 不属调参空间, 见 R423 计划文档)。
 ///
 /// 诚实边界: 检索面 = 会话记忆摘要 (LongTermMemory / GoalText / KeyEntities /
 /// Constraints / Milestones)。逐轮消息当前**未落盘**, 故不在检索面内 (登记为 L3 前置)。
@@ -55,7 +59,7 @@ public sealed class SessionHistorySearch
         var qSet = new HashSet<string>(qTokens, StringComparer.Ordinal);
 
         // 1) 先取全部会话的文档 (避免二次 Load)
-        var docs = new List<(string Id, string Text, string Norm, HashSet<string> Tokens, int Entries, int Chars)>();
+        var docs = new List<(string Id, string Text, string Norm, HashSet<string> Tokens, Dictionary<string, int> Tf, int Entries, int Chars)>();
         foreach (var id in _source.EnumerateSessionIds())
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -67,7 +71,9 @@ public sealed class SessionHistorySearch
             if (text.Length == 0)
                 continue;
             var norm = Normalize(text);
-            docs.Add((id, text, norm, new HashSet<string>(Tokenize(text), StringComparer.Ordinal), mem.EntryCount, text.Length));
+            // R423: 词元集与词元频次同源 (一次分词, 集合由计数派生 ⇒ 无口径分叉)
+            var tf = CountTokens(text);
+            docs.Add((id, text, norm, new HashSet<string>(tf.Keys, StringComparer.Ordinal), tf, mem.EntryCount, text.Length));
         }
         if (docs.Count == 0)
             return Array.Empty<Hit>();
@@ -88,7 +94,8 @@ public sealed class SessionHistorySearch
             double score = 0;
             foreach (var t in qSet)
                 if (d.Tokens.Contains(t))
-                    score += Idf(t);
+                    // R423: 词元频次饱和因子 (1 + ln tf ≥ 1) ⇒ 每项不小于无频次打分 ⇒ 符号不变。
+                    score += Idf(t) * TfSat(d.Tf.TryGetValue(t, out var tf) ? tf : 1);
             if (score <= 0 && qNorm.Length >= 4 && d.Norm.Contains(qNorm, StringComparison.Ordinal))
                 score = 1.0;   // 整串命中兜底 (分词切不出的长串)
             else if (qNorm.Length >= 4 && d.Norm.Contains(qNorm, StringComparison.Ordinal))
@@ -191,6 +198,25 @@ public sealed class SessionHistorySearch
     /// 用 U+0001 (Normalize 会丢弃全部控制字符 ⇒ 真实文本不可能产出该前缀 ⇒ 无碰撞)。
     /// </summary>
     internal const char NegMark = '\u0001';
+
+    /// <summary>词元 → 出现次数 (与 Tokenize 同源: 逐词元计数, 无二次分词口径分叉)</summary>
+    internal static Dictionary<string, int> CountTokens(string s)
+    {
+        var counts = new Dictionary<string, int>(StringComparer.Ordinal);
+        foreach (var t in Tokenize(s))
+            counts[t] = counts.TryGetValue(t, out var c) ? c + 1 : 1;
+        return counts;
+    }
+
+    /// <summary>
+    /// R423 词元频次饱和因子 = 1 + ln(tf) (tf&lt;1 视作 1)。
+    /// 性质: ① tf ≥ 1 ⇒ 因子 ≥ 1 ⇒ 每一项不小于无频次打分 ⇒ **命中集合逐元素不变**;
+    ///       ② 单调不减 ∧ 对数饱和 (tf 1→2 增益最大, 之后递减) ⇒ 高频不会无界碾压低频;
+    ///       ③ 可解析对账: 单词元查询下 分数(带频次)/分数(无频次) == 1 + ln(tf) (闭式预测)。
+    /// 依据: R422 收窄宣称后登记的残差 = 「词元集合与长度都相同 ⇒ 并列」; 词元集合 (presence)
+    ///       与长度归一都无法区分「提到 1 次」与「提到 N 次」的文档, 频次是族内下一个可用信号。
+    /// </summary>
+    internal static double TfSat(int tf) => 1.0 + Math.Log(tf < 1 ? 1 : tf);
 
     /// <summary>
     /// 否定标记 (R421)。取 5 个典型否定语素; **刻意不含** 别/勿/莫/甭 ——

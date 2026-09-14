@@ -356,6 +356,136 @@ public sealed class SessionHistorySearchTests : IDisposable
         Assert.Empty(negQ);
     }
 
+    // ─────────────────── R423: 词元频次饱和 (分子 ×(1 + ln tf)) ───────────────────
+
+    [Fact]
+    public void Tf_EqualTokens_DifferentOccurrenceCounts_Ranked_By_ClosedForm()
+    {
+        // R423 主断言: 文档词元数相同 (|d|=2) 但查询词元出现次数不同 (3 vs 1) ⇒ 必须分档,
+        // 且分数比值 == 1 + ln(tf) —— 闭式预测, 与实现独立可算 (防"自算错而自洽")。
+        // 特征向量 (查询词元 = 存在):
+        //   "存在存在存在存" → distinct bigram {存在,在存} = 2, tf(存在) = 3
+        //   "存在甲"         → distinct bigram {存在,在甲} = 2, tf(存在) = 1
+        Seed("s-tf3", "存在存在存在存");
+        Seed("s-tf1", "存在甲");
+        Seed("s-nohit", "像素 渲染 通路");
+
+        var hits = NewSearch().Search("存在", topK: 5);
+
+        Assert.Equal(new[] { "s-tf3", "s-tf1" }, hits.Select(h => h.SessionId).ToArray());
+        var ratio = hits[0].Score / hits[1].Score;
+        Assert.True(Math.Abs(ratio - (1.0 + Math.Log(3.0))) < 1e-4,
+            $"词元频次比值必须等于 1+ln(tf)=2.098612, 实测 {ratio}");
+        // 阴性对照: 因子 ≥ 1 不得把无命中文档拉进来 (命中集合不被放大)
+        Assert.DoesNotContain(hits, h => h.SessionId == "s-nohit");
+    }
+
+    [Fact]
+    public void Tf_Boundary_EqualTokensAndEqualCounts_StayTied_NotASeparableDefect()
+    {
+        // 边界登记 (R423 收窄宣称, 与 R422 的「诚实边界」同族): 词元数**与**查询词元出现次数
+        // 皆相同的文档对, 在词袋计数信号族内**数学上不可分** ⇒ 必须并列 (退化为 sessionId 序),
+        // 不得把这类并列当成"零区分度未消除"的缺陷 (真机同族样本: 两份 87 词元 / tf=2 的会话)。
+        //   特征向量: "存在存在存在存" 与 "在存在存在存在" → distinct=2, tf(存在)=3 (逐项相等)
+        Seed("s-dup-a", "存在存在存在存");
+        Seed("s-dup-b", "在存在存在存在");
+
+        var hits = NewSearch().Search("存在", topK: 5);
+
+        Assert.Equal(2, hits.Count);
+        Assert.Equal(hits[0].Score, hits[1].Score);
+        Assert.Equal(new[] { "s-dup-a", "s-dup-b" }, hits.Select(h => h.SessionId).ToArray());
+    }
+
+    [Fact]
+    public void Tf_Factor_Keeps_HitSet_And_Polarity_Invariant_Paired()
+    {
+        // 成对判据 (防一刀切): ① 因子 ≥1 ⇒ 命中集合与 R422 口径 (presence + 长度归一) **逐元素相同**;
+        //                  ② R421 极性判别不得被频次加权破坏 —— 否定查询只命中否定文档, 不回落肯定文档。
+        Seed("s-tf3", "存在存在存在存");
+        Seed("s-tf1", "存在甲");
+        Seed("s-quiet", "若图中存在拓扑序");
+        Seed("s-neg", "服务不存在于测试环境");
+
+        var search = NewSearch();
+        var pos = search.Search("存在", topK: 5);
+        var neg = search.Search("不存在", topK: 5);
+
+        Assert.Equal(new[] { "s-quiet", "s-tf1", "s-tf3" }, pos.Select(h => h.SessionId).OrderBy(x => x, StringComparer.Ordinal).ToArray());
+        Assert.DoesNotContain(pos, h => h.SessionId == "s-neg");        // 阴性对照: 否定文档不得进肯定查询
+        Assert.Equal(new[] { "s-neg" }, neg.Select(h => h.SessionId).ToArray()); // 极性判别仍成立
+    }
+
+    [Fact]
+    public void Tf_Saturates_And_TokenCountsHave_SingleSourceOfTruth()
+    {
+        Assert.Equal(1.0, SessionHistorySearch.TfSat(0));
+        Assert.Equal(1.0, SessionHistorySearch.TfSat(1));
+        Assert.Equal(1.0 + Math.Log(2.0), SessionHistorySearch.TfSat(2));
+        // 饱和的正确形态 = **相对增益递减** (不是绝对增量递减: 对数函数的绝对增量恒等)。
+        // 判据修正记录: 首版断言写"绝对增量递减"被本测试当场否证 (实测 0.693/0.693/0.693 全等)
+        //   ⇒ 属**判据自身出错** ⇒ 改判据、不改实现 (不得为了让断言变绿而动被测代码)。
+        var r1 = SessionHistorySearch.TfSat(2) / SessionHistorySearch.TfSat(1);
+        var r2 = SessionHistorySearch.TfSat(4) / SessionHistorySearch.TfSat(2);
+        var r3 = SessionHistorySearch.TfSat(8) / SessionHistorySearch.TfSat(4);
+        Assert.True(r1 > r2 && r2 > r3, $"相对增益必须递减 (饱和): {r1}/{r2}/{r3}");
+        Assert.True(SessionHistorySearch.TfSat(2) < 2.0 && SessionHistorySearch.TfSat(8) < 8.0,
+            "次线性: 因子增长必须慢于出现次数本身");
+        for (var tf = 1; tf <= 64; tf++)
+            Assert.True(SessionHistorySearch.TfSat(tf) >= SessionHistorySearch.TfSat(tf - 1));
+
+        // 口径单一真源: 计数键集 == Tokenize 词元集 (无二次分词 ⇒ 集合与频次不可能分叉)
+        const string s = "向量召回 与 嵌入缓存";
+        var counts = SessionHistorySearch.CountTokens(s);
+        var tokens = SessionHistorySearch.Tokenize(s);
+        Assert.Equal(tokens.ToHashSet(), counts.Keys.ToHashSet());
+        Assert.Equal(tokens.Count, counts.Values.Sum());
+        Assert.Equal(3, SessionHistorySearch.CountTokens("存在存在存在存")["存在"]);
+    }
+
+    [Fact]
+    public void R423_FrozenCorpus_FeatureVector_IsMachinePinned_NotHandCounted()
+    {
+        // 预检数字必须**取自真机分词器**: 首版人工复算只读了长期记忆段、漏了目标/里程碑段
+        // ⇒ tf 算成 2 (真值 4), 被 r423 harness 的闭式对账 C4 当场证伪。
+        // 本测试把 R422 冻结语料 (三段真实落盘会话) 经 真实存储 Load + BuildDocument + CountTokens
+        // 得到的特征向量钉死; harness 的闭式预测引用同组数字 ⇒ 两处同源, 且改动语料/分词器必红。
+        var fixtureDir = Path.Combine(RepoRootForFixtures(), "eval", "capability", "r422", "fixture-sessions");
+        Assert.True(Directory.Exists(fixtureDir), $"冻结语料缺失: {fixtureDir}");
+        var expected = new Dictionary<string, (int Distinct, int Tf)>
+        {
+            ["cli-6bf6dc8d"] = (4, 1),
+            ["probe-0914125816-p004"] = (90, 4),
+            ["probe-0914125831-p005"] = (90, 4),
+        };
+
+        // 存储按 dataStoragePath/sessions 约定落盘 ⇒ 把冻结语料拷进本用例的隔离会话目录再用真实存储读回
+        var sessionsDir = Path.Combine(_dir, "sessions");
+        Directory.CreateDirectory(sessionsDir);
+        foreach (var f in Directory.GetFiles(fixtureDir))
+            File.Copy(f, Path.Combine(sessionsDir, Path.GetFileName(f)), overwrite: true);
+
+        var ids = _store.EnumerateSessionIds();
+        Assert.Equal(expected.Count, ids.Count);
+        foreach (var id in ids)
+        {
+            var mem = _store.Load(id);
+            Assert.NotNull(mem);
+            var counts = SessionHistorySearch.CountTokens(SessionHistorySearch.BuildDocument(mem!));
+            Assert.True(expected.ContainsKey(id), $"未登记的冻结会话: {id}");
+            Assert.Equal(expected[id].Distinct, counts.Count);
+            Assert.Equal(expected[id].Tf, counts.TryGetValue("存在", out var tf) ? tf : 0);
+        }
+    }
+
+    private static string RepoRootForFixtures()
+    {
+        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+        while (dir != null && !File.Exists(Path.Combine(dir.FullName, "agent.sln")))
+            dir = dir.Parent;
+        return dir?.FullName ?? ".";
+    }
+
     private sealed class MixedSource : SessionHistorySearch.ISource
     {
         private readonly SessionHistorySearch.ISource _inner;

@@ -1,0 +1,15 @@
+AgentFramework CLI
+  /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit
+── 执行中 (turn 1) ──────────────────────────────
+  [01] 意图分析: general
+  [02] 子任务: /recall 存在
+  [03] 管线执行 (上下文装配 → LLM → 后处理)…
+
+── 回复 ────────────────────────────────────────────
+🔎 跨会话检索 "存在" (top-5, 命中 2):
+1. r423-tfhi  score=0.4901  entries=1
+   …存在存在存在存
+2. r423-tflo  score=0.4901  entries=1
+   …存在甲
+
+  (2ms, intent=general)
