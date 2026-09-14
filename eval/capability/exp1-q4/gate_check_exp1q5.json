@@ -1,0 +1,28 @@
+{
+  "pattern": "dotnet|agenthost|llama-server|run_round|agent.host|MSBuild|VBCSCompiler|testhost",
+  "samples": [
+    {
+      "n": "2",
+      "mem_available_mb": 2668,
+      "loadavg": "0.11 0.57 0.72",
+      "procs": "606111 /home/agentuser/.dotnet/sdk/10.0.400/Roslyn/bincore/VBCSCompiler -pipename:d2leacF3_lH7g_7g7IufRblGW4wP3mq1Z20VVnkRM8M\n615411 bash -lc pgrep -af 'dotnet|agenthost|llama-server|run_round|agent.host|MSBuild|VBCSCompiler|testhost' | head -8"
+    },
+    {
+      "n": "2",
+      "mem_available_mb": 2668,
+      "loadavg": "0.10 0.56 0.71",
+      "procs": "606111 /home/agentuser/.dotnet/sdk/10.0.400/Roslyn/bincore/VBCSCompiler -pipename:d2leacF3_lH7g_7g7IufRblGW4wP3mq1Z20VVnkRM8M\n615431 bash -lc pgrep -af 'dotnet|agenthost|llama-server|run_round|agent.host|MSBuild|VBCSCompiler|testhost' | head -8"
+    },
+    {
+      "n": "2",
+      "mem_available_mb": 2668,
+      "loadavg": "0.10 0.56 0.71",
+      "procs": "606111 /home/agentuser/.dotnet/sdk/10.0.400/Roslyn/bincore/VBCSCompiler -pipename:d2leacF3_lH7g_7g7IufRblGW4wP3mq1Z20VVnkRM8M\n615458 bash -lc pgrep -af 'dotnet|agenthost|llama-server|run_round|agent.host|MSBuild|VBCSCompiler|testhost' | head -8"
+    }
+  ],
+  "gate_mem_threshold_mb": 2800,
+  "verdict": {
+    "idle_2_consecutive": false,
+    "mem_ok": false
+  }
+}

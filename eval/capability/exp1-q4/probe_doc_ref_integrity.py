@@ -20,9 +20,19 @@
   G4 前提核验 (机器判): 计划点名的 3 个类型在当前 src/*.cs 出现次数 == 0
                 ⇒ "复用既有契约" 前提为假, Q2 必须改框定 (而非按旧前提写开发计划)
   G5 非平凡: 三个目标族的引用文档集合不得全部相同 (全同 ⇒ 读数可疑, 判测量失败)
+  G6 续引子探针非退化: 续引数 == 0 ∨ 续引**归属 tier 分布 >= 2 类**
+                (tier 全同一 ⇒ 分级规则被单一规则支配, 该子探针无判别力 ⇒ 判测量失败)
 
 三态退出码: 0 判据全过 / 2 判据失败(真红) / 3 测量或环境失败(弃权, 不判红)
 证据等级: **L1 静态机检** (无真机运行) —— 不得对外报为 L3/L4。
+
+续引形态 `[:NNN]` (同一文件内的后续行号, 不重复写路径) 归属四级降级, 逐级只在**有证据**时才认:
+  T1 stem_symbol       前窗 (上一条完整引用之后 -> 本续引之前) 内**反引号包裹**的 `Stem.Member`,
+                       其主干唯一映射到树内某文件 ⇒ 认该文件 (位置无关, 最强证据)
+  T2 same_line_prev    同行最近的前一条完整引用 ⇒ 认其路径
+  T3 block_unique_prev 无同行前引时: 同「块」(连续非空行) 内**所有**前序引用的路径集合唯一 ⇒ 认之
+  T4 弃权              以上皆不成立 (或 stem 多候选互相冲突) ⇒ 弃权单列, 不判红
+  续引判定只查**路径存在 + 行号在文件范围内**; 符号归属仍归其锚点引用 (不重复判符号)。
 
 引用归属三级降级 (照 R418 纪律, 不任取):
   精确相对路径 (含 '/')  → 存在则判事实, 不存在 ⇒ stale_path (语料内命名空间)
@@ -51,6 +61,7 @@ CRITERIA = {
     "G3_waiver_gate": "不可解析引用 (裸名 0/多候选 / 语料外 / 读失败) 弃权单列, 不判红",
     "G4_premise_refutation": "计划点名类型在当前 src/*.cs 出现次数==0 ⇒ '复用既有契约' 前提为假",
     "G5_nontrivial": "三个目标族的引用文档集合不得全部相同",
+    "G6_cont_nontrivial": "续引数==0 ∨ 续引归属 tier 分布>=2 类 (全同一 tier ⇒ 子探针无判别力)",
 }
 DECISION_RULES = {
     "D1_versionable_carrier": "若 capability-id+args 形态契约数 == 0 ⇒ Q2 的(a)/(b) 均无既有载体, 只能随**新建**契约定义 schema_version",
@@ -97,6 +108,42 @@ RETIRED_MARKERS = (
 )
 RETIRE_RE = re.compile("|".join(re.escape(x) for x in RETIRED_MARKERS))
 
+# ---- 续引形态 `[:NNN]` (同文件后续行号): 字面量一律由**码点**构造 (禁手打, 防写入通道替换)
+CONT_OPEN, CONT_COLON, CONT_CLOSE = chr(0x5B), chr(0x3A), chr(0x5D)   # [ : ]
+CONT_RE = re.compile(
+    re.escape(CONT_OPEN) + re.escape(CONT_COLON)
+    + r'([0-9][0-9,\s\-\u2013~]*?)' + re.escape(CONT_CLOSE))
+CONT_WINDOW = 80                       # T1 前窗上限 (字符)
+# `Stem.Member` 形态 (只统计**反引号包裹**者, 防路径文本/散文里的 "a.b" 污染)
+STEM_MEMBER_RE = re.compile(
+    r'(?:^|[^A-Za-z0-9_.])([A-Za-z_][A-Za-z0-9_]{2,})[.][A-Za-z_][A-Za-z0-9_]*')
+
+
+def _cont_line_numbers(group: str):
+    """`42` / `280-287` / `100,106,112` ⇒ 展开后的行号列表。"""
+    out = []
+    for part in group.split(","):
+        part = part.strip()
+        m = re.match(r'^(\d+)\s*[-~\u2013]\s*(\d+)$', part)
+        if m:
+            a, b = int(m.group(1)), int(m.group(2))
+            out.extend(range(a, b + 1) if a <= b else [a, b])
+        elif part.isdigit():
+            out.append(int(part))
+    return out
+
+
+def _block_ids(lines):
+    """连续非空行 = 同一「块」(段落/列表项连排/表格连排); 空行分段。"""
+    ids, cur = [], 0
+    for ln in lines:
+        if not ln.strip():
+            cur += 1
+            ids.append(None)
+        else:
+            ids.append(cur)
+    return ids
+
 
 # ---------------------------------------------------------------- 仓库读取器 (带输入指纹)
 class Repo:
@@ -106,6 +153,7 @@ class Repo:
         self.root = root
         self._cache = {}
         self._by_basename = None
+        self._by_stem = None
 
     def _rel_ok(self, rel: str) -> bool:
         parts = Path(rel).parts
@@ -144,6 +192,16 @@ class Repo:
             self._by_basename = {k: sorted(v) for k, v in idx.items()}
         return self._by_basename
 
+    def stem_index(self):
+        """basename 去扩展名 ⇒ 路径列表 (T1 归属用: `Stem.Member` 的主干 → 文件)。"""
+        if self._by_stem is None:
+            idx = defaultdict(set)
+            for fn, rels in self.basename_index().items():
+                for rel in rels:
+                    idx[Path(fn).stem].add(rel)
+            self._by_stem = {k: sorted(v) for k, v in idx.items()}
+        return self._by_stem
+
     def fingerprints(self):
         return {k: v[1] for k, v in self._cache.items() if v[1]}
 
@@ -176,7 +234,9 @@ def _symbol_tokens(line: str):
 def extract_citations(doc_rel: str, text: str):
     out = []
     in_fence = False
-    for lineno, line in enumerate(text.splitlines(), 1):
+    lines = text.splitlines()
+    bids = _block_ids(lines)
+    for lineno, line in enumerate(lines, 1):
         stripped = line.strip()
         if stripped.startswith("```"):
             in_fence = not in_fence
@@ -211,8 +271,128 @@ def extract_citations(doc_rel: str, text: str):
                 "line_start": l1, "line_end": l2 if l2 else l1,
                 "in_code_fence": in_fence, "symbols": sorted(set(syms)),
                 "symbol_attr": attr, "retire_marker": bool(RETIRE_RE.search(win)),
+                "pos_start": m.start(), "pos_end": m.end(),
+                "block_id": bids[lineno - 1],
             })
     return out
+
+
+def extract_continuations(doc_rel: str, text: str):
+    """抽取续引 `[:NNN]` (与完整引用**不重叠**: 形态带冒号前缀, 不进 CITE_RE)。
+
+    前窗纪律与退役标记窗口同源: 「上一条**完整引用**之后 -> 本续引之前」,
+    截断到 CONT_WINDOW 字符 —— 防路径文本自身 (含 `Stem.cs`) 污染 T1 主干匹配。
+    """
+    lines = text.splitlines()
+    bids = _block_ids(lines)
+    out = []
+    in_fence = False
+    for lineno, line in enumerate(lines, 1):
+        stripped = line.strip()
+        if stripped.startswith("```"):
+            in_fence = not in_fence
+            continue
+        cites = list(CITE_RE.finditer(line))
+        ticks = [(mm.start(), mm.end()) for mm in BACKTICK_RE.finditer(line)]
+        for m in CONT_RE.finditer(line):
+            nums = _cont_line_numbers(m.group(1))
+            if not nums:
+                continue
+            prev_end = max([0] + [c.end() for c in cites if c.end() <= m.start()])
+            win_lo = max(prev_end, m.start() - CONT_WINDOW)
+            pre = line[win_lo:m.start()]
+            # T1 只用**反引号包裹**且落在本续引前窗内的 `Stem.Member`
+            stems = []
+            for mm in STEM_MEMBER_RE.finditer(pre):
+                gs = win_lo + mm.start(1)
+                ge = win_lo + mm.end(0)
+                if any(ts <= gs and ge <= te for (ts, te) in ticks):
+                    stems.append(mm.group(1))
+            win = (line[max(prev_end, m.start() - RETIRED_WINDOW):m.start()]
+                   + line[m.end():min(len(line), m.end() + RETIRED_WINDOW)])
+            out.append({
+                "doc": doc_rel, "doc_line": lineno, "raw": stripped[:160],
+                "cont_lines": nums, "cont_first": nums[0], "cont_last": nums[-1],
+                "pos_start": m.start(), "pos_end": m.end(),
+                "prev_cite_end": prev_end, "pre_window": pre, "stems": stems,
+                "block_id": bids[lineno - 1], "in_code_fence": in_fence,
+                "retire_marker": bool(RETIRE_RE.search(win)),
+            })
+    return out
+
+
+def judge_continuation(repo: Repo, c: dict, idx: dict):
+    """续引归属四级 (T1 stem_symbol > T2 same_line_prev > T3 block_unique_prev > T4 弃权)。
+
+    归属纪律 = R418「精确名 → 唯一候选 → n/a」的续引版: **多候选一律弃权**, 绝不任取。
+    """
+    rec = dict(c)
+    rec.update({"anchor": None, "anchor_tier": None, "resolved": None,
+                "file_lines": None, "input_sha": None, "waive_reason": None,
+                "verdict": None})
+    if c["in_code_fence"]:
+        rec["anchor_tier"], rec["verdict"] = "skipped", "skipped_fence"
+        return rec
+    same_line = [x for x in idx["by_line"].get((c["doc"], c["doc_line"]), [])
+                 if x["pos_start"] < c["pos_start"]]
+    # ---- T1: `Stem.Member` 主干唯一映射到树内文件 (位置无关, 最强)
+    uniq, amb = set(), set()
+    for s in c["stems"]:
+        cands = repo.stem_index().get(s, [])
+        if len(cands) == 1:
+            uniq.add(cands[0])
+        elif len(cands) > 1:
+            amb.add(s)
+    if len(uniq) == 1 and not amb:
+        rec["anchor"], rec["anchor_tier"] = next(iter(uniq)), "stem_symbol"
+    elif len(uniq) > 1 or (uniq and amb):
+        rec["anchor_tier"] = "waived"
+        rec["waive_reason"] = "cont_stem_ambiguous"
+    # ---- T2: 同行最近前引
+    if rec["anchor"] is None and rec["anchor_tier"] is None and same_line:
+        rec["anchor"], rec["anchor_tier"] = same_line[-1]["path"], "same_line_prev"
+    # ---- T3: 块内前序引用路径集合唯一
+    if rec["anchor"] is None and rec["anchor_tier"] is None:
+        prior = [x["path"] for x in idx["by_block"].get((c["doc"], c["block_id"]), [])
+                 if (x["doc_line"], x["pos_start"]) < (c["doc_line"], c["pos_start"])]
+        distinct = sorted(set(prior))
+        if len(distinct) == 1:
+            rec["anchor"], rec["anchor_tier"] = distinct[0], "block_unique_prev"
+        else:
+            rec["anchor_tier"] = "waived"
+            rec["waive_reason"] = ("continuation_unclaimed" if not distinct
+                                   else "cont_block_ambiguous")
+    # ---- 事实判定: 锚点路径存在 + 行号在范围内 (符号仍归锚点引用, 不重复判)
+    if rec["anchor"] is not None:
+        mode, info = resolve_ref(repo, rec["anchor"])
+        if mode == "waived":
+            rec["verdict"], rec["waive_reason"] = "waived", "cont_anchor_" + info
+        elif mode == "absent":
+            cands = [x for x in repo.basename_index().get(Path(info).name, []) if repo._rel_ok(x)]
+            if cands:
+                rec["verdict"], rec["relocated_to"] = "relocated", cands
+            elif c["retire_marker"]:
+                rec["verdict"] = "retired"
+            else:
+                rec["verdict"], rec["resolved"] = "stale_path", info
+        else:
+            text, sha = repo.read(info)
+            if text is None:
+                rec["verdict"], rec["waive_reason"] = "waived", "cont_anchor_unreadable"
+            else:
+                n = len(text.splitlines())
+                rec["resolved"], rec["file_lines"], rec["input_sha"] = info, n, sha
+                rec["verdict"] = ("stale_lines" if any(x > n for x in c["cont_lines"]) else "ok")
+    if rec["verdict"] == "stale_path" and rec["anchor"]:
+        # 留痕继承: 续引与其**同行**某条带退役标记的引用指向**同一路径** ⇒ 该路径的退役登记已覆盖此续引。
+        # 绑「锚点路径相同」(不绑词面位置, 也不跨行) —— 反向控制: 同行异文件带标记不继承 (selftest C11)。
+        for x in idx["by_line"].get((c["doc"], c["doc_line"]), []):
+            if x.get("retire_marker") and x["path"] == rec["anchor"]:
+                rec["verdict"], rec["retire_marker_inherited"] = "retired", True
+                break
+    if rec["verdict"] is None:
+        rec["verdict"] = "waived"
+    return rec
 
 
 def resolve_ref(repo: Repo, ref_path: str):
@@ -379,13 +559,28 @@ def run_pass(repo: Repo):
     doc_rels = []
     for pat in DOC_GLOBS:
         doc_rels.extend(repo.glob(pat))
-    citations = []
+    citations, conts = [], []
     for rel in sorted(set(doc_rels)):
         text, _ = repo.read(rel)
         if text is None:
             continue
-        citations.extend(extract_citations(rel, text))
+        cites = extract_citations(rel, text)
+        citations.extend(cites)
+        conts.extend(extract_continuations(rel, text))
     judged = [judge_citation(repo, c) for c in citations]
+    # 续引归属索引: 按 (文档, 行) 与 (文档, 块) 两套, 组内按 (行号, 位置) 排序
+    idx = {"by_line": defaultdict(list), "by_block": defaultdict(list)}
+    for c in citations:
+        idx["by_line"][(c["doc"], c["doc_line"])].append(c)
+        idx["by_block"][(c["doc"], c["block_id"])].append(c)
+    for k in idx:
+        for kk in list(idx[k]):
+            idx[k][kk].sort(key=lambda x: (x["doc_line"], x["pos_start"]))
+    judged_cont = [judge_continuation(repo, c, idx) for c in conts]
+    cont_live = [c for c in judged_cont if not c["in_code_fence"]]
+    cont_verdicts = Counter(c["verdict"] for c in cont_live)
+    cont_tiers = Counter(c["anchor_tier"] for c in cont_live)
+    cont_waive = Counter(c.get("waive_reason") for c in cont_live if c["verdict"] == "waived")
     live_code = [c for c in judged if c["kind"] == "code" and not c["in_code_fence"]]
     verdicts = Counter(c["verdict"] for c in live_code)
     waive = Counter(c.get("waive_reason") for c in live_code if c["verdict"] == "waived")
@@ -405,6 +600,11 @@ def run_pass(repo: Repo):
         "manifest_like_hits": count_file_driven_registrations(repo),
         "di_registrations": count_di_registrations(repo)[0],
         "di_files": count_di_registrations(repo)[1],
+        "continuations": judged_cont,
+        "cont_verdict_counts": dict(cont_verdicts),
+        "cont_tier_counts": dict(cont_tiers),
+        "cont_waive_reasons": {str(k): v for k, v in cont_waive.items()},
+        "n_continuations_live": len(cont_live),
         "fingerprints": repo.fingerprints(),
         "n_inputs_fingerprinted": len(repo.fingerprints()),
     }
@@ -458,9 +658,50 @@ def run_selftest():
            "- 活引用 带标记: [src/agent/x/Alpha.cs:3]\u3010" + mk + " deadbee\u3011\n"
            "- 死引用 标记越窗: [src/agent/x/Gone.cs:3] " + far + "\u3010" + mk + " deadbee\u3011\n"
            "- 收尾反引号邻接: `AlphaThing`(`src/agent/x/Alpha.cs:3`, 1)\u3001"
-           "`BetaThing`(`src/agent/x/Beta.cs:3`, 1)\n")
+           "`BetaThing`(`src/agent/x/Beta.cs:3`, 1)\n"
+           # ---- 续引 [:NNN] 形态 (v2.3.0): T1/T2/T3/T4 各两侧
+           "- 续引 T1 符号主干锚: `Alpha.Run` 见下 [:5]\n"
+           "- 续引 T1 行号越界: `AlphaThing.Run` [src/agent/x/Alpha.cs:3] 与 [:9999]\n"
+           "- 续引 T2 同行前引锚: [src/agent/x/Beta.cs:3] 与 [:2]\n"
+           "- 续引 死文件无标记: `GoneThing.Run` [src/agent/x/Gone.cs:3] 与 [:2]\n"
+           "- 续引 死文件带标记: `GoneThing.Run` [src/agent/x/Gone.cs:3] 与 [:2]\u3010" + mk + " deadbee\u3011\n"
+           "\n"
+           "- 续引 块内多锚 A: [src/agent/x/Alpha.cs:3]\n"
+           "- 续引 块内多锚 B: [src/agent/x/Beta.cs:3]\n"
+           "- 续引 T4 无同行前引且块内多锚: [:7]\n"
+           "\n"
+           "- 续引 块内唯一前锚: [src/agent/x/Beta.cs:3]\n"
+           "- 续引 T3 承接上行: [:4]\n"
+           "- 续引 形态负控(普通引用不得被续引正则吃掉): [src/agent/x/Alpha.cs:3]\n"
+           "\n"
+           "- 续引 T4b 块内零前锚: [:9]\n"
+           "\n"
+           "- 续引 留痕继承(同行同文件, 标记在本续引窗口外): [src/agent/x/Gone4.cs:3]\u3010" + mk + " deadbee\u3011"
+           + "y" * (RETIRED_WINDOW + 10) + " 与 [:2]\n"
+           "- 续引 留痕继承负控(同行带标记但**异路径**): [src/agent/x/Alpha.cs:3]\u3010" + mk + " deadbee\u3011"
+           + "y" * (RETIRED_WINDOW + 10) + " [src/agent/x/Gone5.cs:3] 与 [:2]\n")
+    ck("cont_const_codepoints", [ord(CONT_OPEN), ord(CONT_COLON), ord(CONT_CLOSE)],
+       [0x5B, 0x3A, 0x5D])
+    ck("cont_re_negative_on_plain_cite", CONT_RE.findall("[src/agent/x/Alpha.cs:3]"), [])
+    ck("cont_re_positive_forms", CONT_RE.findall("a [:280-287] b [:100,106] c [:15]"),
+       ["280-287", "100,106", "15"])
+    ck("cont_expand_range", _cont_line_numbers("280-287")[:3], [280, 281, 282])
+    ck("cont_expand_list", _cont_line_numbers("100,106,112"), [100, 106, 112])
+
     repo = Repo(tmp)
-    judged = [judge_citation(repo, c) for c in extract_citations("t.md", doc)]
+    cites = extract_citations("t.md", doc)
+    idx = {"by_line": defaultdict(list), "by_block": defaultdict(list)}
+    for c in cites:
+        idx["by_line"][(c["doc"], c["doc_line"])].append(c)
+        idx["by_block"][(c["doc"], c["block_id"])].append(c)
+    for k in idx:
+        for kk in list(idx[k]):
+            idx[k][kk].sort(key=lambda x: (x["doc_line"], x["pos_start"]))
+    judged = [judge_citation(repo, c) for c in cites]
+    cj = [judge_continuation(repo, c, idx) for c in extract_continuations("t.md", doc)]
+    cby = {}
+    for j in cj:
+        cby.setdefault(j["doc_line"], []).append(j)
     by_line = {}
     for j in judged:
         by_line.setdefault(j["doc_line"], []).append(j)
@@ -478,8 +719,29 @@ def run_selftest():
     ck("L9_adjacent_closing_tick_no_swallow", [j["verdict"] for j in by_line[9]], ["ok", "ok"])
     ck("L9_symbols_survive_window_slice", [j["symbols"] for j in by_line[9]],
        [["AlphaThing"], ["BetaThing"]])
+    # ---- 续引两侧样例 (v2.3.0)
+    ck("C1_tier_stem_symbol", [j["anchor_tier"] for j in cby[10]], ["stem_symbol"])
+    ck("C1_verdict_ok", [j["verdict"] for j in cby[10]], ["ok"])
+    ck("C1_anchor", [j["resolved"] for j in cby[10]], ["src/agent/x/Alpha.cs"])
+    ck("C2_out_of_range_red", [j["verdict"] for j in cby[11]], ["stale_lines"])
+    ck("C3_tier_same_line", [j["anchor_tier"] for j in cby[12]], ["same_line_prev"])
+    ck("C3_verdict_ok", [j["verdict"] for j in cby[12]], ["ok"])
+    ck("C4_dead_anchor_no_marker_red", [j["verdict"] for j in cby[13]], ["stale_path"])
+    ck("C5_dead_anchor_marker_retired", [j["verdict"] for j in cby[14]], ["retired"])
+    ck("C6_tier_waived_multi_anchor", [j["anchor_tier"] for j in cby[18]], ["waived"])
+    ck("C6_waive_reason_multi_anchor", [j["waive_reason"] for j in cby[18]],
+       ["cont_block_ambiguous"])
+    ck("C7_tier_block_unique", [j["anchor_tier"] for j in cby[21]], ["block_unique_prev"])
+    ck("C7_verdict_ok", [j["verdict"] for j in cby[21]], ["ok"])
+    ck("C8_plain_cite_not_counted_as_cont", [len(cby.get(22, []))], [0])
+    ck("C9_zero_prior_anchor_waived", [j["anchor_tier"] for j in cby[24]], ["waived"])
+    ck("C9_waive_reason_unclaimed", [j["waive_reason"] for j in cby[24]],
+       ["continuation_unclaimed"])
+    ck("C10_marker_inherited_same_path", [j["verdict"] for j in cby[26]], ["retired"])
+    ck("C10_inherited_flag", [j.get("retire_marker_inherited") for j in cby[26]], [True])
+    ck("C11_no_inherit_on_other_path", [j["verdict"] for j in cby[27]], ["stale_path"])
     ok = all(c["pass"] for c in checks)
-    print(json.dumps({"selftest": "probe_doc_ref_integrity-v2.2.0", "all_pass": ok,
+    print(json.dumps({"selftest": "probe_doc_ref_integrity-v2.3.0", "all_pass": ok,
                       "n_checks": len(checks), "n_pass": sum(1 for c in checks if c["pass"]),
                       "checks": checks, "exit_code": 0 if ok else 2},
                      ensure_ascii=False, indent=2))
@@ -577,6 +839,8 @@ def main():
             "d2_manifest_loader": "needs_new_loader" if not manifest_precedents else "precedent_exists",
         }
 
+        # ---- G6 续引子探针非退化 (tier 分布 >= 2 类 ∨ 无量): 必须在 gate_dict 构造**之前**算
+        g6 = bool(r1["n_continuations_live"] == 0 or len(r1["cont_tier_counts"]) >= 2)
         gate_dict = {
             "G1_instrument_selfproof": g1,
             "G1_positive_counts": pos_counts,
@@ -590,9 +854,14 @@ def main():
             "G3_waived_counts": waived,
             "G4_premise_refuted": bool(g4),
             "G5_families_distinct": bool(g5),
+            "G6_cont_nontrivial": g6,
+            "G6_cont_verdict_counts": r1["cont_verdict_counts"],
+            "G6_cont_tier_counts": r1["cont_tier_counts"],
+            "G6_cont_waive_reasons": r1["cont_waive_reasons"],
+            "G6_n_continuations_live": r1["n_continuations_live"],
             "G5_family_docs": {k: v[:6] for k, v in fam_docs.items()},
         }
-        all_pass = bool(g1 and g2 and g5 and g3)
+        all_pass = bool(g1 and g2 and g5 and g3 and g6)
         gate_dict["all_pass"] = all_pass
         # 测量有效性闸: 无可判对象 ⇒ 弃权(exit 3), 不判红也不判绿
         measurable = bool(r1["n_docs"] > 0 and r1["n_citations_code_live"] > 0)
@@ -606,7 +875,7 @@ def main():
 
         result = {
             "probe": "exp1-q4-doc-ref-integrity-and-contract-surface",
-            "probe_version": "2.2.0",
+            "probe_version": "2.3.0",
             "target_doc": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
             "target_question": "§8-Q2 插件 API 是否引入 manifest + schema_version",
             "evidence_level": "L1-static",
@@ -625,10 +894,22 @@ def main():
             "relocated_citations": relocated,
             "retired_n": r1["verdict_counts"].get("retired", 0),
             "retired_citations": [c for c in r1["citations"] if c["verdict"] == "retired"],
+            "continuation_verdicts": r1["cont_verdict_counts"],
+            "continuation_tiers": r1["cont_tier_counts"],
+            "continuation_waive_reasons": r1["cont_waive_reasons"],
+            "continuation_n_live": r1["n_continuations_live"],
+            "continuation_citations": r1["continuations"],
             "contracts": contracts,
             "q2_decision_data": q2,
             "gates": gate_dict,
             "checks_posthoc": {
+                "instrument_gap_v4": (
+                    "v2.3.0 补**续引 `[:NNN]` 形态**建模 (v2.2.0 及以前: 续引既不进 CITE_RE 也无归属规则 "
+                    "⇒ 本档 L80/L81/L82/L83/L85/L89/L90 的多条续引**从未被检查** = 保守漏检)。 "
+                    "归属四级 T1~T4: T1 只用**反引号包裹**的 `Stem.Member`, 且**前窗截断到上一条完整引用之后** "
+                    "(反例: 若把路径文本自身纳入前窗, `.../ContextAssembler.cs` 会被当成主干候选 "
+                    "⇒ 与 `Workspace` 主干冲突 ⇒ 正确锚点被误判弃权); T3 的「块」= 连续非空行, 且**块内前序路径集合必须唯一**。 "
+                    "续引判定只查路径+行号 (符号仍归锚点引用, 不重复判) ⇒ 该子探针不放大符号启发式的假阳性。"),
                 "instrument_defect_v1": ("v1.0.0 把无目录裸文件名判为 stale_path (389 条, 其中多数实为"
                                          "'无法解析' 而非'文件已删') ⇒ v2.0.0 引入三级归属: 裸名唯一候选才解析, "
                                          "0/多候选一律弃权单列, 不判红 (照 R418 纪律)"),
@@ -661,6 +942,10 @@ def main():
                 "文档语料 = docs/**/*.md + 根 *.md; 不含 .txt/.json 与 website/ 站点副本",
                 "契约盘点按正则扫 interface 声明与 'class X : ... IFoo' 形态: 泛型约束/多接口链/partial 可能漏计 (n_impls_prod 是下界)",
                 "stale_lines 只用行号越界判定 (文件变短), 行号偏移但未越界不报 ⇒ 该口径会**低估**",
+                "续引 [:NNN] 归属只有 T1/T2/T3 三级有证据时才认; 归属不成立一律弃权单列 (绝不任取候选) ⇒ 覆盖面受文档写法限制, 未认领的续引不判红",
+                "续引判定不查符号: 续引所在行的符号归其锚点引用 ⇒ 续引读数与符号启发式读数**分开计**, 不可互相解释",
+                "续引留痕**继承**只在「同行 ∧ 锚点路径完全相同」时生效 (绑路径不绑词面位置); 跨行/异路径不继承",
+                "T2/T3 的锚点是**位置**证据: 句子的语义所指与最近前引不一致时 (本档 L68 实例: 括号内说明指向同一路径的 DI 工厂) 会错锚 ⇒ 该类读数须人工复核, 修法是**把路径写显式**而不是改判据",
                 "verdict 分四桶且互斥: ok / stale_path(basename 全树 0 候选=真删) / relocated(路径失效但同名文件在别处) / waived(不可解析, 弃权)",
                 "relocated 仅在同名唯一候选时才给 relocated_fact_verdict (行号/符号按候选文件核对); 多候选只记 relocated_to 列表, 不做事实判定",
                 "本探针只读文件, 不改产品源码, 不跑 dotnet, 不占轮号",
@@ -668,6 +953,13 @@ def main():
         }
         if args.out:
             Path(args.out).write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+            with Path(args.out).with_name("continuations.jsonl").open("w", encoding="utf-8") as fh:
+                for c in r1["continuations"]:
+                    fh.write(json.dumps({k: c[k] for k in
+                                         ("doc", "doc_line", "cont_lines", "anchor", "anchor_tier",
+                                          "verdict", "resolved", "waive_reason", "file_lines",
+                                          "input_sha", "in_code_fence", "retire_marker", "stems",
+                                          "raw") if k in c}, ensure_ascii=False) + "\n")
             with Path(args.out).with_name("citations.jsonl").open("w", encoding="utf-8") as fh:
                 for c in r1["citations"]:
                     fh.write(json.dumps({k: c[k] for k in
@@ -684,6 +976,10 @@ def main():
             "waive_reasons": r1["waive_reasons"],
             "relocated_n": len(relocated),
             "relocated_fact_verdicts": {str(k): v for k, v in relocated_fact.items()},
+            "continuation_n_live": r1["n_continuations_live"],
+            "continuation_verdicts": r1["cont_verdict_counts"],
+            "continuation_tiers": r1["cont_tier_counts"],
+            "continuation_waive_reasons": r1["cont_waive_reasons"],
             "n_inputs_fingerprinted": r1["n_inputs_fingerprinted"],
             "symbol_counts": occ,
             "gates": {k: v for k, v in gate_dict.items() if isinstance(v, bool)},
