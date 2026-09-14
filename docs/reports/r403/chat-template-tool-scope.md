@@ -78,3 +78,20 @@ python3 eval/rover/r403/probe_tool_template.py      # R403_PROBE_EXIT=0 arms_ok=
 - **自匹配事故（第二次同族）**：`pgrep -f "[4]1999"` 仍把**我自己**杀掉（退出码 −15）——括号技巧只保护**模式字面量**，不保护同一命令行里**别处**出现的裸目标串（我的 `curl ... :41999/props` 含端口号）。同族再现：`ps | grep "[l]lama-server"` 匹配到自身，因为同一命令行的 `echo "no llama-server running"` 兜底文案含目标串。
   ⇒ 正确姿势：让被测进程**自己落 pid**，或在**同一进程内** Popen 并 `killpg` 收尾（本脚本用后者，故无孤儿）。
 - **泄漏检查**：脚本收尾 `killpg(SIGTERM→SIGKILL)`；结束后 `MemAvailable` 2.71 GB，无 llama-server 存活。
+
+## 9. 附带发现（非本步范围，如实入档，交下轮裁定）
+
+**(A) 三本台账、检测器只读其中一本（观测面缺口，非记账错误）**
+
+| 文件 | 行数 | 写入者（grep 实证） | 最新 ts | 在检测器视图内 |
+|---|---|---|---|---|
+| `eval/capability/kpi.jsonl` | **7**（+本轮 R403-scope） | `scripts/capability_cycle.py:39-40`（`OUT_DIR=eval/capability`） | **2026-09-14T11:47+0800** | ✗ |
+| `data/probe/kpi.jsonl` | 6 | `scripts/kpi_probe.py:428`（`--ledger` 默认） | 2026-09-13T23:20+0800 | ✓（`status` 的 `kpi_lines`/`last_probe` 取这里） |
+| `data/probe/capability/kpi.jsonl` | 1 | **零命中（孤儿）** | 2026-09-14T03:00+0800 | ✗ |
+
+- 后果：`scripts/capability_cycle_status.py:40` 的 `KPI = data/probe/kpi.jsonl` ⇒ 本轮读数虽然按纪律落在 `eval/capability/kpi.jsonl`（用户 prompt 指定），但 `status` 报出的 `kpi_lines=6` / `last_probe.ts=2026-09-13` 是**另一本台账**，只看 `status` 会误判「今天没落读数」。
+- 不影响 `mode` / `open_items` 判定（本轮的 `mode=tasks`、frontmost=R403 即由此得出），故**非阻塞**。
+- 建议（下轮一步）：`status` 增加「轮次台账」分列读数（`lines` / `last_ts` / `last_round`），与探针台账**分列不合并**（符合「双数据源分开取再 join」纪律）；并处置孤儿台账 `data/probe/capability/kpi.jsonl`（确认无写入者后归档或补回写入方）。
+
+**(B) 状态快照时效缺口**：作业 prompt 要求读 `docs/reports/iteration-master-plan.md` §7 状态 —— 该文档 §7 实为**迭代节奏与角色分工**（无状态表），其 §8.3 明写「**状态以主报告 §7 为准**」；而主报告 `docs/reports/dynamic-telemetry-eval-rollback-strategy.md` §7 的「最新状态」条停在 **R400 / v0.26.0**（`improvements.md` 顶部已到 R412、`eval/capability/kpi.jsonl` 已到 R403-scope）⇒ **状态快照滞后 4+ 轮**。本轮按「文档与记忆冲突时以文档为准」处理：主线状态以 **backlog 表（`轮|主题|产出|状态`）+ `improvements.md` 顶部** 为准，并在报告里显式指出该冲突（此处）。
+
