@@ -1,0 +1,458 @@
+{
+  "probe": "exp1-q1-scope-cost",
+  "instrument_revision": 2,
+  "attribution_window": "files with mtime > previous run STARTED epoch",
+  "attribution_window_note": "reading is a snapshot ACROSS a run, so the window must span it",
+  "scopes": {
+    "A": {
+      "label": "code-only",
+      "roots": [
+        "src"
+      ],
+      "exts": [
+        ".cs"
+      ]
+    },
+    "B": {
+      "label": "code+docs",
+      "roots": [
+        "src",
+        "docs",
+        "skills",
+        ""
+      ],
+      "exts": [
+        ".cs",
+        ".md",
+        ".rst",
+        ".txt"
+      ]
+    },
+    "C": {
+      "label": "code+docs+data",
+      "roots": [
+        "src",
+        "docs",
+        "skills",
+        "data",
+        ""
+      ],
+      "exts": [
+        ".cs",
+        ".csv",
+        ".json",
+        ".jsonl",
+        ".log",
+        ".md",
+        ".ndjson",
+        ".rst",
+        ".txt"
+      ]
+    },
+    "D": {
+      "label": "whole-tree",
+      "roots": [
+        ".ALL"
+      ],
+      "exts": [
+        ".cs",
+        ".csv",
+        ".json",
+        ".jsonl",
+        ".log",
+        ".md",
+        ".ndjson",
+        ".rst",
+        ".txt"
+      ]
+    }
+  },
+  "readings": {
+    "A": {
+      "scope": "A",
+      "label": "code-only",
+      "files": 400,
+      "bytes_native": 3083295,
+      "bytes_text": 2743436,
+      "skipped_large": 0,
+      "distinct_tokens": 41586,
+      "postings": 131892,
+      "index_payload_bytes": 5970333,
+      "index_payload_gzip_bytes": 603598,
+      "fingerprint_bytes": 32337,
+      "cold_scan_ms_median": 234.8,
+      "cold_scan_ms_runs": [
+        232.0,
+        265.7,
+        234.8
+      ],
+      "graph": {
+        "defined_types": 976,
+        "edges_v3": 2193,
+        "graph_ms": 3669.8
+      },
+      "payload_sha": "54c886377541dc7a",
+      "sensitive_files": [],
+      "sensitive_count": 0,
+      "sensitive_indexable": [],
+      "sensitive_indexable_count": 0
+    },
+    "B": {
+      "scope": "B",
+      "label": "code+docs",
+      "files": 587,
+      "bytes_native": 5166584,
+      "bytes_text": 4084381,
+      "skipped_large": 0,
+      "distinct_tokens": 77153,
+      "postings": 296035,
+      "index_payload_bytes": 13635436,
+      "index_payload_gzip_bytes": 1540537,
+      "fingerprint_bytes": 48254,
+      "cold_scan_ms_median": 466.6,
+      "cold_scan_ms_runs": [
+        466.6,
+        504.6,
+        398.6
+      ],
+      "graph": {
+        "defined_types": 976,
+        "edges_v3": 4535,
+        "graph_ms": 3753.6
+      },
+      "payload_sha": "7244e31d512aa415",
+      "sensitive_files": [],
+      "sensitive_count": 0,
+      "sensitive_indexable": [],
+      "sensitive_indexable_count": 0
+    },
+    "C": {
+      "scope": "C",
+      "label": "code+docs+data",
+      "files": 1719,
+      "bytes_native": 17847486,
+      "bytes_text": 15088899,
+      "skipped_large": 2,
+      "distinct_tokens": 106627,
+      "postings": 758914,
+      "index_payload_bytes": 31815718,
+      "index_payload_gzip_bytes": 3425179,
+      "fingerprint_bytes": 142879,
+      "cold_scan_ms_median": 1161.0,
+      "cold_scan_ms_runs": [
+        1161.0,
+        1120.5,
+        1232.1
+      ],
+      "graph": {
+        "defined_types": 976,
+        "edges_v3": 7638,
+        "graph_ms": 5242.4
+      },
+      "payload_sha": "530b3ccd38a72098",
+      "sensitive_files": [
+        "data/credentials.json",
+        "data/master.key"
+      ],
+      "sensitive_count": 2,
+      "sensitive_indexable": [
+        "data/credentials.json"
+      ],
+      "sensitive_indexable_count": 1
+    },
+    "D": {
+      "scope": "D",
+      "label": "whole-tree",
+      "files": 3430,
+      "bytes_native": 44127797,
+      "bytes_text": 37390584,
+      "skipped_large": 3,
+      "distinct_tokens": 128282,
+      "postings": 1359832,
+      "index_payload_bytes": 52357651,
+      "index_payload_gzip_bytes": 5797206,
+      "fingerprint_bytes": 280570,
+      "cold_scan_ms_median": 10013.5,
+      "cold_scan_ms_runs": [
+        5684.7,
+        10447.5,
+        10013.5
+      ],
+      "graph": {
+        "defined_types": 979,
+        "edges_v3": 12597,
+        "graph_ms": 9317.1
+      },
+      "payload_sha": "8dbe51b708aa131e",
+      "sensitive_files": [
+        "data/credentials.json",
+        "data/master.key",
+        "eval/rover/r371d7/run-empty/data/master.key",
+        "eval/rover/r371d7/run-empty_always/data/master.key",
+        "eval/rover/r371d7/run-ok/data/master.key",
+        "eval/rover/r371d7/run-truncate/data/master.key",
+        "eval/rover/r413/run-A/data/master.key",
+        "eval/rover/r413/run-B/data/master.key",
+        "eval/rover/r415/run-off-aot/data/master.key",
+        "eval/rover/r415/run-off/data/master.key",
+        "eval/rover/r415/run-pin-aot/data/master.key",
+        "eval/rover/r415/run-pin/data/master.key",
+        "eval/rover/r424/run-A/data/master.key",
+        "eval/rover/r424/run-B/data/master.key",
+        "eval/rover/r424/run-BP/data/master.key",
+        "eval/rover/r425/run-A-k1-b2/data/master.key",
+        "eval/rover/r425/run-A-k1/data/master.key",
+        "eval/rover/r425/run-A-k2-b2/data/master.key",
+        "eval/rover/r425/run-A-k2/data/master.key",
+        "eval/rover/r425/run-A-k4-b2/data/master.key",
+        "eval/rover/r425/run-A-k4/data/master.key",
+        "eval/rover/r425/run-A-k6-b2/data/master.key",
+        "eval/rover/r425/run-A-k6/data/master.key",
+        "eval/rover/r425/run-A-k8-b2/data/master.key",
+        "eval/rover/r425/run-A-k8/data/master.key",
+        "eval/rover/r425/run-B-k1-b2/data/master.key",
+        "eval/rover/r425/run-B-k1/data/master.key",
+        "eval/rover/r425/run-B-k2-b2/data/master.key",
+        "eval/rover/r425/run-B-k2/data/master.key",
+        "eval/rover/r425/run-B-k4-b2/data/master.key",
+        "eval/rover/r425/run-B-k4/data/master.key",
+        "eval/rover/r425/run-B-k6-b2/data/master.key",
+        "eval/rover/r425/run-B-k6/data/master.key",
+        "eval/rover/r425/run-B-k8-b2/data/master.key",
+        "eval/rover/r425/run-B-k8/data/master.key",
+        "eval/rover/r425/run-BP-k6-b2/data/master.key",
+        "eval/rover/r425/run-BP-k6/data/master.key",
+        "eval/rover/r426/run-A-k6-r426b1/data/master.key",
+        "eval/rover/r426/run-A-k8-r426b1/data/master.key",
+        "eval/rover/r426/run-B-k6-r426b1/data/master.key",
+        "eval/rover/r426/run-B-k8-r426b1/data/master.key",
+        "eval/rover/r426/run-C-k6-r426b1/data/master.key",
+        "eval/rover/r426/run-C-k8-r426b1/data/master.key",
+        "eval/rover/r426/run-D-k6-r426b1/data/master.key",
+        "eval/rover/r429/run-C-k8p-r429post1/data/master.key",
+        "eval/rover/r429/run-C-k8r-r429post1/data/master.key",
+        "eval/rover/r429/run-C-k8r-r429post2/data/master.key",
+        "eval/rover/r429/run-C-k8r-r429pre1/data/master.key",
+        "eval/rover/r430/run-C-k8r-r430fix1/data/master.key",
+        "eval/rover/r430/run-C-k8r-r430post1/data/master.key",
+        "eval/rover/r431/run-C-k8r-b431/data/master.key",
+        "eval/rover/r431/run-C-k8r-g431/data/master.key",
+        "eval/rover/r432/run-C-r432dp-r432dp1/data/master.key",
+        "eval/rover/r432/run-C-r432dp2-r432dp2/data/master.key",
+        "eval/rover/r434/run-A-p8-a1/data/master.key",
+        "eval/rover/r434/run-A-p8-a2/data/master.key",
+        "eval/rover/r434/run-B-p8-b1/data/master.key",
+        "eval/rover/r434/run-B-p8-b2/data/master.key",
+        "eval/rover/r434/run-B0-p8-c1/data/master.key",
+        "eval/rover/r434/run-BP-p8-d1/data/master.key"
+      ],
+      "sensitive_count": 60,
+      "sensitive_indexable": [
+        "data/credentials.json"
+      ],
+      "sensitive_indexable_count": 1
+    }
+  },
+  "determinism_counts": {
+    "A": {
+      "files": 400,
+      "distinct_tokens": 41586,
+      "postings": 131892,
+      "index_payload_bytes": 5970333,
+      "payload_sha_full": "54c886377541dc7a38f19bf4c40423bd95bcf56e4854be1306f070274e189e95",
+      "defined_types": 976,
+      "edges_v3": 2193
+    },
+    "B": {
+      "files": 587,
+      "distinct_tokens": 77153,
+      "postings": 296035,
+      "index_payload_bytes": 13635436,
+      "payload_sha_full": "7244e31d512aa415c15d3d169fe7e70037c4a14a441a2cdb8e64e49bbc097fc3",
+      "defined_types": 976,
+      "edges_v3": 4535
+    },
+    "C": {
+      "files": 1719,
+      "distinct_tokens": 106627,
+      "postings": 758914,
+      "index_payload_bytes": 31815718,
+      "payload_sha_full": "530b3ccd38a7209885d3f653573f6af479fc1be404dac2e40ed66e5031ff4385",
+      "defined_types": 976,
+      "edges_v3": 7638
+    },
+    "D": {
+      "files": 3430,
+      "distinct_tokens": 128282,
+      "postings": 1359832,
+      "index_payload_bytes": 52357651,
+      "payload_sha_full": "8dbe51b708aa131e652665e1ea3bfb8ad8dc2f80809b4b237562c51050ef94dc",
+      "defined_types": 979,
+      "edges_v3": 12597
+    }
+  },
+  "churn_runtime": {
+    "A": {
+      "in_scope": {
+        "5min": 2,
+        "60min": 2,
+        "24h": 55
+      },
+      "incl_build_artifacts": {
+        "5min": 2,
+        "60min": 43,
+        "24h": 182
+      },
+      "events_per_min_60min": 0.033
+    },
+    "B": {
+      "in_scope": {
+        "5min": 2,
+        "60min": 8,
+        "24h": 127
+      },
+      "incl_build_artifacts": {
+        "5min": 2,
+        "60min": 51,
+        "24h": 318
+      },
+      "events_per_min_60min": 0.133
+    },
+    "C": {
+      "in_scope": {
+        "5min": 2,
+        "60min": 133,
+        "24h": 640
+      },
+      "incl_build_artifacts": {
+        "5min": 2,
+        "60min": 289,
+        "24h": 981
+      },
+      "events_per_min_60min": 2.217
+    },
+    "D": {
+      "in_scope": {
+        "5min": 21,
+        "60min": 237,
+        "24h": 1771
+      },
+      "incl_build_artifacts": {
+        "5min": 21,
+        "60min": 393,
+        "24h": 2112
+      },
+      "events_per_min_60min": 3.95
+    }
+  },
+  "churn_vcs": {
+    "A": {
+      "commits_scanned": 50,
+      "scope_file_events": 65,
+      "commits_touching_scope": 13,
+      "commits_touching_multiple_domains": 13
+    },
+    "B": {
+      "commits_scanned": 50,
+      "scope_file_events": 159,
+      "commits_touching_scope": 45,
+      "commits_touching_multiple_domains": 13
+    },
+    "C": {
+      "commits_scanned": 50,
+      "scope_file_events": 190,
+      "commits_touching_scope": 45,
+      "commits_touching_multiple_domains": 13
+    },
+    "D": {
+      "commits_scanned": 50,
+      "scope_file_events": 588,
+      "commits_touching_scope": 49,
+      "commits_touching_multiple_domains": 13
+    }
+  },
+  "criteria_pre_registered": {
+    "gate": {
+      "G1_missing_scope_is_error": true,
+      "G2_two_run_counts_identical_or_attributed": true,
+      "G3_payload_sha_pairwise_distinct": true,
+      "G4_sensitive_filter_discriminates_both_ways": true
+    },
+    "decision": {
+      "D1_invalidation_per_min_threshold": 1.0,
+      "D1_note": "60min 窗内运行时写入文件数 >= 60（即 >=1 次/分钟）⇒ 结果缓存退化为无缓存 ⇒ 不可纳入",
+      "D2_owner_only_secret_files_block": true,
+      "D2_note": "含 owner-only 凭据文件而索引载荷不加密（plan §4.1）⇒ 必须新增排除规则，未加规则前不可纳入"
+    },
+    "declared_before_run": "exp1-q1 v1（体积/成本/失效面/安全面四维，双源失效计数）"
+  },
+  "run_started_epoch": 1789393360.610512,
+  "run_finished_epoch": 1789393420.2204921,
+  "gates": {
+    "G1_missing_scope_is_error": true,
+    "G2_two_run_counts_identical": null,
+    "G2_mismatch_detail": {},
+    "G2_write_attribution": {},
+    "G3_payload_sha_pairwise_distinct": true,
+    "G4_sensitive_filter_discriminates_both_ways": true,
+    "positive_control_hits": [
+      "data/credentials.json",
+      "data/master.key"
+    ],
+    "reverse_control_false_kills": 0
+  },
+  "masker_cross_check": "agree",
+  "decisions": {
+    "A": {
+      "invalidation_per_min": 0.033,
+      "D1_blocked": false,
+      "D2_blocked": false,
+      "sensitive_indexable": [],
+      "verdict": "eligible"
+    },
+    "B": {
+      "invalidation_per_min": 0.133,
+      "D1_blocked": false,
+      "D2_blocked": false,
+      "sensitive_indexable": [],
+      "verdict": "eligible"
+    },
+    "C": {
+      "invalidation_per_min": 2.217,
+      "D1_blocked": true,
+      "D2_blocked": true,
+      "sensitive_indexable": [
+        "data/credentials.json"
+      ],
+      "verdict": "excluded"
+    },
+    "D": {
+      "invalidation_per_min": 3.95,
+      "D1_blocked": true,
+      "D2_blocked": true,
+      "sensitive_indexable": [
+        "data/credentials.json"
+      ],
+      "verdict": "excluded"
+    }
+  },
+  "eligible_scopes": [
+    "A",
+    "B"
+  ],
+  "recommended_scope": "A",
+  "recommendation": "作用域取 **A**（code-only）：在预注册 D1/D2 裁决后唯一体量最小的可纳入作用域；被排除者: C(['D1_blocked', 'D2_blocked']), D(['D1_blocked', 'D2_blocked'])",
+  "gate_pass": true,
+  "exit_code": 0,
+  "honest_boundaries": [
+    "token 口径 = ASCII 标识符(>=3 字符) + CJK 二元组；换口径改绝对值，作用域间比较不受影响",
+    "index_payload_bytes 为自建倒排紧凑 JSON(+gzip) 的实测序列化长度，非磁盘 I/O 开销、非常驻内存",
+    "单文件 >2MB 跳过 ⇒ D 的体积为下界（skipped_large 计数可见）",
+    "运行时窗读数取本机当前负载（对侧 30m 作业构建抬高原始计数）⇒ 已另给含构建产物的对照值",
+    "冷扫耗时含解释器开销，不等于 AOT 产品侧成本，只作相对比较",
+    "D1 阈值 1 次/分钟为**预注册**设计规则（理由见 criteria），非实测分布反解",
+    "sensitive 过滤为命名/权限启发式；只记路径与计数，探针不读取也不输出其内容",
+    "归因窗口基于 mtime：重命名不改 mtime ⇒ 纯改名型树变化对归因不可见",
+    "本机对侧作业在跑（会改 src/ 产品源码）⇒ 作用域读数是对移动目标的快照，只能按同类作用域间相对比较解读"
+  ]
+}
