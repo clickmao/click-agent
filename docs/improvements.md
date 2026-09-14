@@ -1291,3 +1291,23 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **全量套件**: 1176/0/0（第 3 次跑）。**同一套件前两次各出 1 条顺序/并行相关假红**（`TelemetryPendingTests`；把本轮改动 stash 掉的**基线跑**里则是 `FrontendHandshakeTests`）⇒ 假红与 R421 无关，但「全量绿」这一读数目前**不可一次性复现**，登记为仪器候选。
 - **诚实边界**: 极性作用域仅「否定标记 + 紧邻 1 个二元组」（句中远距否定未测）；`别/勿/莫/甭` **有意排除**（`别` 与 `识别/区别/特别` 碰撞）；`无/非` 复合词（`无线/非常`）碰撞致召回损失**未量化**；**打分无长度归一 ⇒ 同一词元命中的所有文档同分（本轮三份同为 0.5596），命中集内无相关度区分度**（登记 R422）；样本 3 文档/4 查询非分布；**主线 KPI（r1 管道增益 / 一轮 token −30%）本轮未触碰**——`/recall` 是本地确定性指令，`llm_call==0` 恰说明它**不产生**远端调用（是不必要调用的抑制器，不是 token 下降的直接贡献者）。
 - **计划/证据/登记**: `docs/plans/v0.42.0-r421-polarity.md`；`eval/capability/r421/README-evidence.md`（L4）；`docs/verification-registry.json` → `r421.recall-negation-polarity`；TaskPlan **24 节点**（补登 `dev-recall-wiring` + `dev-recall-negation-polarity`）。
+
+## R424 — 主线 KPI 的**发布形态身份**修复 + 在 AOT 上复现（零产品改动）
+
+- **起因（身份不可验证）**: R413 台账记 `agenthost_bytes: 15138848 / aot_il_warnings: 0` 并宣称 AOT 读数，但其器具 `eval/rover/r413/run_arm.sh:12` 的被测路径是 `src/agent.host/bin/Release/net10.0/agenthost` = **78,256 B 的 IL apphost 壳**（同目录并存 `agenthost.dll`；`env -i <bin> --version` ⇒ `You must install .NET…` rc=131）。时序亦不合：臂 A/B 落盘 10:57 / 12:04:44，`publish_aot.sh` 产物 mtime **12:07:16** ⇒ AOT 建在测量之后；全仓无 `publish → bin/Release/net10.0/` 拷贝脚本。⇒ R413 读数是 **JIT 中间证据**，`agenthost_bytes` 属事后另做的构建，不是被测对象身份（措辞守界：**不断言「一定不是 AOT」，断言「形态未验证」**）。
+- **动作（一步）**: 在**可自证 AOT 产物**（`/tmp/pub_r423/agenthost`, 15,168,064 B, sha256 `2d363b6d…`, IL/trim 警告 **0**）上重跑**逐字相同**的任务脚本，并把「形态自证 + 成对负控」做成**跑测前 fail-closed 硬闸**（V0）。三臂：A（无 local 段）/ B（门开、模型在）/ **B′（门开、`model_path` 指不存在 ⇒ 无设备负控，兼 r1 归因臂）**。
+- **真机读数（外部真值 = 桩侧逐请求落盘）**:
+
+  | 臂 | 远端调用 | 远端 token(估) | 跳过轮 |
+  |---|---|---|---|
+  | A（分母） | 12 | 16,888 | — |
+  | B（r1 门） | **8** | **7,007** | 2/4/6/8 |
+  | B′（门开·无设备） | 12 | 16,891 | 0 |
+
+  **C1 −33.3% 调用 / C2 −58.5% token（均 ≥30% ✅）**；C3 零假阴性；C4 跳过轮 = 21 字非 LLM 模板；C5 臂 B′ ≡ 臂 A（差 0.018%）；**C6 省下 4 调用 == 4 个非实质轮，且 B′ 无 r1 ⇒ 增益归零 ⇒ 增益归因 r1 而非机械门**。V0/V1/V2 形态与门真身闸全绿 ⇒ **PASS（9 预注册 + 5 事后）**。
+- **与 R413 的关系**: 两臂读数**逐位相同**（12/16,888 · 8/7,007）⇒ **该任务上 JIT 与 AOT 读数不可分**；R413 证据的**本体成立**，本轮补的是**身份**。另：R413 登记字节 15,138,848 与本次 15,168,064 **不同源**。
+- **role 额外数据（用户令「记得要挂载 role 的额外数据」）**: 调用点 `src/agent/IndustrialAgentV2.cs:1481` = `ActiveRole.Id + "|" + Clip(ActiveRole.ProfileSeed, 80)`；`TurnGateJudge.BuildPrompt`（`LocalGenerationPort.cs:234`）把它作为 `【角色设定】` 插入本地门提示。**实证非空**：桩侧捕获的远端系统提示内含 `【角色:疑问者】你是一个低调但执着的追问者…`（同 run 同字段）。**边界**：成长经历形参 `null` = **未挂**；且门提示内容不可直接观测（下轮加打点）。
+- **仪器缺陷 2 起（都是「读数不可信」类）**: ① 器具跑 IL 而台账宣称 AOT（本轮封堵：`eval/rover/r413/run_arm.sh` 现 fail-closed，实测 `rc=2 [REFUSED]`）；② 逐轮调用归属在轮边界对**异步判官调用**有 ±1 轮滑移（已有 `t_start/t_end`+桩 `ts` 口径；总量精确、未归属 0）。⇒ 已登记为下轮候选。
+- **命名空间碰撞（一等事件）**: 与并发执行体撞号 R423（对侧 = 检索 tf 饱和，`eval/capability/r423/`）⇒ **本侧让号至 R424**（17:10:36 迁移 `eval/rover/r423/ → eval/rover/r424/`，计划改名 `v0.45.0-r424-aot-mainline-replication.md`）；R423 归对侧；未改写历史、未删对侧产物。根因：启动占用检查未复跑「活动执行体 + 锁 + 目标轮文件 mtime」全序列。
+- **计划/证据/登记**: `docs/plans/v0.45.0-r424-aot-mainline-replication.md`（§3–§5 预注册 17:05:36 < 首臂 17:06:23）；`eval/rover/r424/README-evidence.md`（L4）；`docs/verification-registry.json` → `r424.mainline-token-budget-aot-replication`；回归抽查 **47/47**（`--filter FullyQualifiedName~TurnGate`）。
+- **下轮候选**: ① 形态闸下沉/统一（标 r413 为历史器具）；② 成长经历块**有界挂载**对假阴/假阳的影响（须成对负控）；③ **占比敏感性网格**（1/8、2/8、4/8、6/8）把 −30% 口径表述为「占比 → 降幅」曲线，替代单点宣称；④ 本地门提示打点（`local_gate_prompt_len`）使挂载可机检。

@@ -3,6 +3,15 @@
 #   臂 A = 本地通道关闭 (基线, 分母)  臂 B = 本地通道开启 (r1 真假判别, 分子)
 # 用法: bash run_arm.sh A|B [桩端口] [api端口] [role.rbin]
 set -u
+# ── R424 形态口径缺陷封堵 (fail-closed)────────────────────────────────────────
+# 本器具的被测路径 = IL apphost (78,256 B)，**不是** AOT 产物 ⇒ 其读数只能算 JIT 中间证据。
+# 依据: docs/plans/v0.45.0-r424-aot-mainline-replication.md §1；AOT 版复现见 eval/rover/r424/。
+if [ "${R413_ALLOW_IL_LEGACY:-0}" != "1" ]; then
+  echo "[REFUSED] eval/rover/r413/run_arm.sh 的被测二进制是 IL apphost，非 AOT 发布形态 ⇒ 不得用于对外宣称 AOT 读数。" >&2
+  echo "          改用 AOT 器具: bash eval/rover/r424/run_arm.sh A|B|BP [桩端口] [api端口] [role.rbin]" >&2
+  echo "          确需复现历史 JIT 读数: R413_ALLOW_IL_LEGACY=1 bash $0 ..." >&2
+  exit 2
+fi
 ARM=${1:?用法: run_arm.sh A|B [桩端口] [api端口] [role.rbin]}
 STUB_PORT=${2:-47820}
 API_PORT=${3:-47810}

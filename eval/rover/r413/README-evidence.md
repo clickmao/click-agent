@@ -1,5 +1,13 @@
 # R413 证据清单（含**失效跑**如实入档）
 
+> **R424 更正登记（形态口径）**：本目录器具 `run_arm.sh` 的被测二进制是 `src/agent.host/bin/Release/net10.0/agenthost`
+> = **78,256 B 的 IL apphost 壳**（`env -i <bin> --version` ⇒ `You must install .NET…`，rc=131），
+> **不是** AOT 产物 ⇒ 本目录读数属 **JIT 中间证据**，其 `agenthost_bytes=15138848` 是事后另做的 AOT 构建，**不是被测对象身份**。
+> 已封堵：`run_arm.sh` 现 **fail-closed** 拒绝执行（需 `R413_ALLOW_IL_LEGACY=1` 才可复现历史 JIT 读数）。
+> 身份补齐：**R424** 在可自证的 AOT 产物（`/tmp/pub_r423/agenthost`, 15,168,064 B, sha256 `2d363b6d…`, IL 警告 0）上重测同一判据，
+> 得到**逐位相同**的器读数（臂 A 12/16,888 · 臂 B 8/7,007，含三臂与形态闸/门真身闸）⇒ 见 `eval/rover/r424/README-evidence.md`
+> 与 `docs/plans/v0.45.0-r424-aot-mainline-replication.md`。**结论：本目录读数之本体成立，仅身份当时未验证。**
+
 判据口径：C1 远端调用 ↓≥30% · C2 总 token ↓≥30% · C3 负控=4 条实质轮(1/3/5/7)零误跳 · C4 跳过集=预注册寒暄集且回复=非 LLM 模板。
 结算器：`python3 verdict.py`（只读桩侧逐请求落盘 + 驱动器观测）⇒ `verdict-r413.json`。
 

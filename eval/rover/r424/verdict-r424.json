@@ -1,0 +1,260 @@
+{
+  "round": "R424",
+  "binary": "/tmp/pub_r423/agenthost",
+  "binary_sha256": "2d363b6d132b06e23a0f994fc91d9de6ab41737d42a3ee3c6e77eb50d2edc15b",
+  "artifact_alias": "/tmp/pub_r424/agenthost",
+  "artifact_alias_sha256": "2d363b6d132b06e23a0f994fc91d9de6ab41737d42a3ee3c6e77eb50d2edc15b",
+  "artifact_alias_same_sha256": true,
+  "arm_A": {
+    "arm": "A",
+    "remote_calls": 12,
+    "prompt_tokens_est": 16804,
+    "completion_tokens_est": 84,
+    "total_tokens_est": 16888,
+    "binary": "/tmp/pub_r423/agenthost",
+    "binary_sha256": "2d363b6d132b06e23a0f994fc91d9de6ab41737d42a3ee3c6e77eb50d2edc15b",
+    "binary_bytes": 15168064
+  },
+  "arm_B": {
+    "arm": "B",
+    "remote_calls": 8,
+    "prompt_tokens_est": 6951,
+    "completion_tokens_est": 56,
+    "total_tokens_est": 7007,
+    "binary": "/tmp/pub_r423/agenthost",
+    "binary_sha256": "2d363b6d132b06e23a0f994fc91d9de6ab41737d42a3ee3c6e77eb50d2edc15b",
+    "binary_bytes": 15168064
+  },
+  "arm_BP": {
+    "arm": "BP",
+    "remote_calls": 12,
+    "prompt_tokens_est": 16807,
+    "completion_tokens_est": 84,
+    "total_tokens_est": 16891,
+    "binary": "/tmp/pub_r423/agenthost",
+    "binary_sha256": "2d363b6d132b06e23a0f994fc91d9de6ab41737d42a3ee3c6e77eb50d2edc15b",
+    "binary_bytes": 15168064
+  },
+  "per_turn_A": {
+    "1": 2,
+    "2": 2,
+    "3": 2,
+    "4": 1,
+    "5": 1,
+    "6": 2,
+    "7": 0,
+    "8": 2
+  },
+  "per_turn_B": {
+    "1": 2,
+    "2": 0,
+    "3": 2,
+    "4": 1,
+    "5": 1,
+    "6": 1,
+    "7": 0,
+    "8": 1
+  },
+  "per_turn_BP": {
+    "1": 2,
+    "2": 2,
+    "3": 2,
+    "4": 1,
+    "5": 1,
+    "6": 2,
+    "7": 0,
+    "8": 2
+  },
+  "unattributed": {
+    "A": 0,
+    "B": 0,
+    "BP": 0
+  },
+  "skipped": {
+    "A": [],
+    "B": [
+      2,
+      4,
+      6,
+      8
+    ],
+    "BP": []
+  },
+  "false_negatives": [],
+  "gate_B_config": {
+    "router_present": "True",
+    "turn_gate_enabled": "True",
+    "local_channel_ready": "True",
+    "role": "skeptic"
+  },
+  "gate_B": [
+    {
+      "decided": "true",
+      "verdict": "Pass",
+      "basis": "mechanical:pass→remote",
+      "raw": "mechanical:pass",
+      "raw_len": "15",
+      "error": "",
+      "role": "skeptic"
+    },
+    {
+      "decided": "true",
+      "verdict": "Skip",
+      "basis": "gate:skip→local",
+      "raw": "<think>\n好，我现在需要判断用户的消息是否携带新的诉求或新信息。用户的消息是“好，知道了。”。首先，这句话看起来像是确认或者认可，没有提到任何新的问题或信息。它只是在确认之前已经知道的事情，没有带来新的需求或要求。因此，这属于“无新增",
+      "raw_len": "144",
+      "error": "",
+      "role": "skeptic"
+    },
+    {
+      "decided": "true",
+      "verdict": "Pass",
+      "basis": "mechanical:pass→remote",
+      "raw": "mechanical:pass",
+      "raw_len": "15",
+      "error": "",
+      "role": "skeptic"
+    },
+    {
+      "decided": "true",
+      "verdict": "Skip",
+      "basis": "gate:skip→local",
+      "raw": "<think>\n好的，我现在需要判断用户的消息是否携带新的诉求或新信息。用户的消息是“收到，谢谢。”。首先，我得分析这句话的内容。收到这个词，通常意味着用户已经收到了某个消息或信息，这可能是因为他们收到了某个产品、服务或者信息。然后，谢谢这",
+      "raw_len": "331",
+      "error": "",
+      "role": "skeptic"
+    },
+    {
+      "decided": "true",
+      "verdict": "Pass",
+      "basis": "mechanical:pass→remote",
+      "raw": "mechanical:pass",
+      "raw_len": "15",
+      "error": "",
+      "role": "skeptic"
+    },
+    {
+      "decided": "true",
+      "verdict": "Skip",
+      "basis": "gate:skip→local",
+      "raw": "<think>\n好，我现在要判断用户的消息“嗯。”是否携带新的诉求或新信息。首先，我需要理解用户的消息是什么意思。用户说“嗯。”，这是一个常见的表情，通常用来表示同意、确认或者感谢。根据规则，S代表无新增，P代表有新增。所以，我需要判断这句",
+      "raw_len": "521",
+      "error": "",
+      "role": "skeptic"
+    },
+    {
+      "decided": "true",
+      "verdict": "Skip",
+      "basis": "gate:skip→local",
+      "raw": "<think>\n好，我来分析一下用户的消息：“好，按这个来。”首先，这句话看起来像是用户在确认或同意某种操作，没有明显的新信息或问题出现。用户只是重复了之前的确认，没有提出新的请求或要求。因此，这属于“无新增”的情况，应该标记为S。\n</t",
+      "raw_len": "128",
+      "error": "",
+      "role": "skeptic"
+    }
+  ],
+  "gate_BP_config": {
+    "router_present": "True",
+    "turn_gate_enabled": "True",
+    "local_channel_ready": "False",
+    "role": "skeptic"
+  },
+  "prov": {
+    "under_test": {
+      "path": "/tmp/pub_r423/agenthost",
+      "exists": true,
+      "bytes": 15168064,
+      "sha256": "2d363b6d132b06e23a0f994fc91d9de6ab41737d42a3ee3c6e77eb50d2edc15b",
+      "bare_rc": 0,
+      "bare_stdout_head": "AgentFramework CLI",
+      "needs_runtime": false,
+      "native_ok": true,
+      "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=71983ba10e4272cfd37693c7b06554b5aeaf3277, for GNU/Linux 3.2.0, stripped"
+    },
+    "negative_controls": [
+      {
+        "path": "/home/agentuser/AgentFramework/src/agent.host/bin/Release/net10.0/agenthost",
+        "exists": true,
+        "bytes": 78256,
+        "sha256": "fe1fb720fb5eedb044014b1c27cd18352e851960102f93920bfb2f57e0820dd3",
+        "bare_rc": 131,
+        "bare_stdout_head": "You must install .NET to run this application.",
+        "needs_runtime": true,
+        "native_ok": false,
+        "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=93c65abf3ff66427178d065d36972e8969f06f4e, stripped"
+      }
+    ],
+    "pos_ok": true,
+    "neg_ok": true,
+    "verdict": "PASS"
+  },
+  "checks": {
+    "V0 形态闸(AOT)": {
+      "pass": true,
+      "detail": "bytes=15168064 bare_stdout='AgentFramework CLI' needs_runtime=False neg_ok=True"
+    },
+    "V1 门真身": {
+      "pass": true,
+      "detail": "config={'router_present': 'True', 'turn_gate_enabled': 'True', 'local_channel_ready': 'True', 'role': 'skeptic'} gate_events=7"
+    },
+    "V2 无效跑闸": {
+      "pass": true,
+      "detail": "A=(12,16888) B=(8,7007) skippedB=[2, 4, 6, 8]"
+    },
+    "C1 远端调用 ↓≥30%": {
+      "pass": true,
+      "detail": "33.3%"
+    },
+    "C2 远端 token ↓≥30%": {
+      "pass": true,
+      "detail": "58.5%"
+    },
+    "C3 假阴性=0": {
+      "pass": true,
+      "detail": "被门跳过的实质轮=无"
+    },
+    "C4 质量(模板+非空+ok)": {
+      "pass": true,
+      "detail": "skippedB=[2, 4, 6, 8] 预注册寒暄=[2, 4, 6, 8]"
+    },
+    "C5 无设备零回归(臂BP≡臂A)": {
+      "pass": true,
+      "detail": "BP=(12,16891) A=(12,16888) skippedBP=[]"
+    },
+    "C6 r1 归因": {
+      "pass": true,
+      "detail": "省下调用=4 非实质轮=4"
+    }
+  },
+  "checks_pre_registered": true,
+  "checks_posthoc": {
+    "P1 质量无回归(非跳过轮回复逐字节同臂A)": {
+      "pass": true,
+      "detail": "比对轮=[1, 3, 5, 7] 差异轮=[]",
+      "posthoc": true
+    },
+    "P2 role 额外数据真挂载(ProfileSeed 非空)": {
+      "pass": true,
+      "detail": "roleSeed 来源=IndustrialAgentV2.cs:1481 ActiveRole.Id+'|'+Clip(ProfileSeed,80); 远端系统提示含 ProfileSeed 片段=True; 门遥测 role=skeptic",
+      "posthoc": true
+    },
+    "P3 失败可见性(无设备真机)": {
+      "pass": true,
+      "detail": "decided=false 且带 error 的门事件=4/4 例: local_failed:LlamaCppException basis=gate:degraded:failed_or_empty→remote",
+      "posthoc": true
+    },
+    "P4 r1 读到本轮用户原文": {
+      "pass": true,
+      "detail": "Skip 事件 raw 内用户原文命中=[True, True, True, True]",
+      "posthoc": true
+    },
+    "P5 归属完整性": {
+      "pass": true,
+      "detail": "未归属 A=0/B=0/BP=0; 逐轮归属和在轮边界对异步判官调用存在 ±1 轮滑移(总量精确)",
+      "posthoc": true
+    }
+  },
+  "posthoc_participates_in_verdict": false,
+  "d_calls": 0.3333333333333333,
+  "d_tokens": 0.5850900047370914,
+  "verdict": "PASS"
+}

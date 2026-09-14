@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R423",
+  "updated_round": "R424",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -908,6 +908,14 @@
         "eval/capability/r423/fixture-tf"
       ],
       "owner_round": "R423"
+    },
+    {
+      "id": "r424.mainline-token-budget-aot-replication",
+      "capability": "主线 KPI 的**发布形态身份**闸 + 复现: R413（r1 前置门 ⇒ 一轮任务总 token 预算）在**可自证 AOT 产物**上重跑同一判据/同任务脚本(逐字相同)。真相 A `12 调用/16,888 tok` → 臂 B `8/7,007`（−33.3%/−58.5%），与 R413 的 JIT 读数**逐位相同** ⇒ 该任务上形态差异不改变读数，R413 缺的只是**身份**。三臂设计: A(无 local) / B(门开+模型在) / **B′(门开+模型缺 = 无设备负控兼 r1 归因臂, 读数 ≡ A ⇒ 增益归零 ⇒ 增益归因 r1 而非机械门)**。形态闸 V0 = `env -i <bin> --version` 自证 + IL apphost 成对负控（rc=131）；门真身闸 V1 = 遥测 config + `gate:*` 事件 ≥1。零产品代码改动",
+      "level": "L4",
+      "evidence_cmd": "bash eval/rover/r424/run_arm.sh A|B|BP 47830 4784{0,1,2} $PWD/skeptic.rbin && python3 eval/rover/r424/verdict_r424.py && env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR $HOME/.dotnet/dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~TurnGate",
+      "evidence_path": "eval/rover/r424/verdict-r424.json",
+      "negative_control": "① 形态闸负控 = IL apphost `src/agent.host/bin/Release/net10.0/agenthost`(78,256 B) 同命令 `env -i <bin> --version` ⇒ `rc=131 You must install .NET…`（AOT 产物则正常打印 CLI）⇒ 闸具判别力；② 增益负控 = 臂 A（local 段删除）= 分母本身；③ **r1 归因负控 = 臂 B′**（`local.model_path` 指向不存在文件, `turn_gate:true`）：读数 12/16,891 ≡ 臂 A, 跳过 0, 4/4 门事件带 `decided=false+error=local_failed:LlamaCppException` ⇒ 无 r1 则增益归零；④ 历史器具封堵负控 = `bash eval/rover/r413/run_arm.sh A` ⇒ `rc=2 [REFUSED]`（需 R413_ALLOW_IL_LEGACY=1 才可复现历史 JIT 读数）"
     }
   ],
   "aot_check_policy": "release_tag_only",
