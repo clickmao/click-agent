@@ -1365,3 +1365,22 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **下轮首要候选**: ① 门与判官**争用隔离**（同一 r1 端口下门判不稳，代价远超判官收益）；② 打点修复：规则层命中现被记为 `source=remote`（须单列 `rule` + 兜底原因）；③ `allowed_kinds` snake_case 永不命中的白名单静默失效；④ 本地判官人工金标（C/A/N 各 ≥20 条）。
 - **产物**: `eval/rover/r426/{run_arm.sh,run_grid.sh,analyze.py,prov_check.py,stub_openai.py,drive_task.py,analyze.py,c11.json,README-evidence.md,verdicts.json}`；`docs/plans/v0.47.0-r426-relation-judge-localization.md`。
 - **轮号**: R426 由本支占用（17:48 占用闸空 ⇒ 起跑 17:54）；并发支已按铁律**让号取 R427**（对侧 `improvements.md` 已登记，本侧不改写对侧产物）。
+
+## R428 · 同文折叠（排序/去重层）：R427 根因判定的产品落地
+
+- **前置因果**: R427 机检坐实「残留并列对 = 同文重复」（位置逐位差 0/335、Jaccard 1.0）⇒ 同文对**任何**打分族恒同分 ⇒ 出口在**排序/去重层**。「换信号族」对该对为伪命题 ⇒ 本轮改的是排序/去重，而非打分。
+- **变更集**: `src/agent/session/SessionHistorySearch.cs`（`Hit.CollapsedDuplicates`；`Search` 第 4 步**同文折叠**；`Render` 输出 `同文副本+N`）+ `src/agent.tests/SessionHistorySearchTests.cs`（+6 例）。
+- **零参数设计**: 无阈值/权重/开关；折叠条件 = 规范化正文**逐字符相等**；保留者 = 既有全序（score desc → `SessionId` Ordinal asc）首者；折叠数**可见**（字段 + 渲染）。
+- **真机成对裁决 = PASS**（C1–C7 + C2b 全绿；判据 T0 冻结于 2026-09-14T10:17:22Z，先于跑测）:
+
+| 语料 | N 臂（pre-fix，sha `2d363b6d132b06e2`） | T 臂（treated，sha `c547b0bec5b8fbf8`） |
+|---|---|---|
+| A（冻结，含同文对） | cli-6bf6dc8d 0.2798 → probe-0914125816-p004 0.1408 → probe-0914125831-p005 0.1408 | cli-6bf6dc8d 0.2798 → probe-0914125816-p004 0.1408（`同文副本+1` on p004） |
+| D（不同文同分·负控） | r428-d1 0.2284 → r428-d2 0.2284 | r428-d1 0.2284 → r428-d2 0.2284（无折叠标记） |
+
+- **臂身份自证（C1）**: N 臂读数与 R423 verdict 已落档的 `T_treated\|A` **逐位相同** ⇒ 两臂唯一变量 = 本轮 diff。
+- **闭式**: 同文组 `[probe-0914125816-p004, probe-0914125831-p005]` ⇒ 保留者**预测 = 观测 = `probe-0914125816-p004`**（Ordinal 较小）；折叠出 = `probe-0914125831-p005`。
+- **不变量**: 全部保留者分数与 N 臂**逐位相同**（含 `cli-6bf6dc8d` 0.2798）；`llm_call` 打点 = 0；每查询恰 1 条 `recall_query`；渲染声明命中数 == 实际命中行数；语料**逐字节未被改动**。
+- **诚实边界（不宣称）**: ① 证的是**去重层行为**，不是召回质量提升；② 被折叠会话的 **id 不可见**（只计数为 `同文副本+N`）⇒ 若需 id 级可追溯，须让 `Hit` 携带被折叠 id 列表（本轮刻意不做，避免改渲染契约）；③ 折叠在 `topK` **之前** ⇒ 会改变原可能进入 topK 末位的候选（对「列出全部相关会话 id」类需求是行为变更）；④ 未测：>3 文档的真实长库内存/时延、**近同文**（非逐字符相同）去重、`/recall` 之外的路径。
+- **产物**: `eval/capability/r428/{run_r428.py, verdict-r428.json, README-evidence.md, stdout-*}`；计划 `docs/plans/v0.49.0-r428-duplicate-collapse.md`。
+- **下轮候选**: ① 被折叠 id 可见化（渲染/打点）；② **近同文**去重（须先过 R427 skill 闸：并列先判同一性 + 可分性预检）；③ R426 遗留首要：门与判官**争用隔离**。

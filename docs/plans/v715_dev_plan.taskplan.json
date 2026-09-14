@@ -291,6 +291,15 @@
    "DocRef": "docs/plans/v0.48.0-r427-duplicate-tie-precheck.md",
    "Evidence": "eval/capability/r427/precheck-r427.json",
    "Summary": "预检判决 PREMISE-REFUTED: 真实并列对为同文(位置差 0/335, Jaccard 1.0) ⇒ 「换信号族」为伪命题, 落点在排序/去重层; R423 闭式基线取自两位小数呈现值 0.059 (精确等式已证) ⇒ 全精度 0.14076436276343704; 位置族仅构造样本可分 ⇒ 不实现; 零产品改动/零构建/零测量"
+  },
+  {
+   "Id": "dev-r428-duplicate-collapse",
+   "Title": "同文折叠: 检索命中列表去重 (排序/去重层) (R428)",
+   "State": "done",
+   "Round": "R428",
+   "DocRef": "docs/plans/v0.49.0-r428-duplicate-collapse.md",
+   "Evidence": "eval/capability/r428/verdict-r428.json",
+   "Summary": "规范化正文逐字符相同的命中折叠为全序首者(score desc → SessionId Ordinal asc), 折叠数记入 Hit.CollapsedDuplicates 并渲染 同文副本+N; 真机成对 PASS(C1–C7+C2b): 语料A 3→2(p005→p004), 语料D(不同文同分负控)不折叠, 保留者分数逐位不变, 0 LLM; 零参数/零阈值/零开关; AOT IL 0, env -i 自启"
   }
  ]
 }

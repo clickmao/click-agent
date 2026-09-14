@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R427",
+  "updated_round": "R428",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -939,6 +939,19 @@
       ],
       "owner_round": "R427",
       "gap_note": "L1 理由(按形式规范 R4): 只读机检 + 独立复刻, 未运行被测组件 ⇒ 不得报 L≥2; 真机成对 AOT 判定预注册于 R428 (加分/去重排序层)"
+    },
+    {
+      "id": "r428.recall-duplicate-collapse",
+      "owner_round": "R428",
+      "level": "L3",
+      "capability": "跨会话检索命中列表的**同文折叠**（排序/去重层）: 规范化正文逐字符相同的命中折叠为全序首者（score desc → SessionId Ordinal asc），被折叠数记入 Hit.CollapsedDuplicates（渲染 `同文副本+N`）。零参数（无阈值/权重/开关）、零 LLM、AOT 可用。真机成对（N=pre-fix 治疗臂 vs T=本轮）：语料 A 命中 3→2（p005 折叠入 p004，与全序规则一致），语料 D（不同文同分负控）不折叠，全部保留者分数与 N 臂逐位相同。依据 R427：同文对任何打分族恒同分 ⇒ 出口在排序/去重层。",
+      "evidence_cmd": "python3 eval/capability/r428/run_r428.py",
+      "evidence_path": "eval/capability/r428/verdict-r428.json",
+      "negative_control": "① 语料 D: 两份**不同文但同分**命中 (0.2284/0.2284) ⇒ 两臂均 2 条且无 `同文副本` 标记 (折叠规则不得误伤); ② 缺陷态保留 (pre-fix 臂 N): 语料 A 上仍 3 条未折叠、p005 未消失 ⇒ 判据对「未修」状态有判别力; ③ 臂身份 C1: N 臂读数与 R423 verdict 已落档读数逐位相同 ⇒ 两臂唯一变量 = 本轮 diff; ④ 次负控: 查询 `不存在` / `外星词zzq` 两臂均 0 命中 (不凭空造命中)",
+      "covers": [
+        "src/agent/session/SessionHistorySearch.cs",
+        "src/agent.tests/SessionHistorySearchTests.cs"
+      ]
     }
   ],
   "aot_check_policy": "release_tag_only",

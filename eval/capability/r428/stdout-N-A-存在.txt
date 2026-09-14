@@ -1,0 +1,17 @@
+AgentFramework CLI
+  /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit
+── 执行中 (turn 1) ──────────────────────────────
+  [01] 意图分析: general
+  [02] 子任务: /recall 存在
+  [03] 管线执行 (上下文装配 → LLM → 后处理)…
+
+── 回复 ────────────────────────────────────────────
+🔎 跨会话检索 "存在" (top-5, 命中 3):
+1. cli-6bf6dc8d  score=0.2798  entries=1
+   …/recall 存在 (general 失败)
+2. probe-0914125816-p004  score=0.1408  entries=5
+   ……一行两个整数 n m (1<=n<=64); 随后 m 行, 每行两个整数 u v (0<=u,v<n), 表示有向边 u->v。输出: 若图中存在拓扑序, 输出字典序最小的拓扑序 (n 个节点编号, 空格分隔为一行); 若存在环…
+3. probe-0914125831-p005  score=0.1408  entries=5
+   ……一行两个整数 n m (1<=n<=64); 随后 m 行, 每行两个整数 u v (0<=u,v<n), 表示有向边 u->v。输出: 若图中存在拓扑序, 输出字典序最小的拓扑序 (n 个节点编号, 空格分隔为一行); 若存在环…
+
+  (3ms, intent=general)

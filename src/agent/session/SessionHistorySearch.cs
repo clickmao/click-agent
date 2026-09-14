@@ -33,7 +33,7 @@ public sealed class SessionHistorySearch
     }
 
     /// <summary>命中项 (排序后)</summary>
-    public sealed record Hit(string SessionId, double Score, string Snippet, int EntryCount, int DocChars);
+    public sealed record Hit(string SessionId, double Score, string Snippet, int EntryCount, int DocChars, int CollapsedDuplicates = 0);
 
     private readonly ISource _source;
     private readonly int _snippetChars;
@@ -89,6 +89,8 @@ public sealed class SessionHistorySearch
 
         // 3) 打分
         var hits = new List<Hit>();
+        // R428: 与 hits 同长, 记录每条命中的规范化正文 (同文折叠用; 零拷贝, 复用既有 Norm 实例)
+        var hitNorms = new List<string>();
         foreach (var d in docs)
         {
             double score = 0;
@@ -108,9 +110,39 @@ public sealed class SessionHistorySearch
             if (score <= minScore || score <= 0)
                 continue;
             hits.Add(new Hit(d.Id, Math.Round(score, 6), Snippet(d.Text, qSet), d.Entries, d.Chars));
+            hitNorms.Add(d.Norm);
         }
 
-        // 4) 稳定排序: score desc → sessionId Ordinal asc (确定性)
+        // 4) R428 同文折叠: 规范化正文**逐字符相同**的命中 = 同一内容的副本。
+        //    依据(R427): 该类文档必然同分, 且**任何**打分族都无法分开 ⇒ 落在排序/去重层, 不是打分问题。
+        //    规则: 只按规范化文本逐字符判等折叠, 保留**全序首者** (score desc → sessionId Ordinal asc);
+        //          被折叠数量记入 CollapsedDuplicates (可见回执); 同分但**不同文**者不折叠 (成对负控见 r428 harness)。
+        if (hits.Count > 1)
+        {
+            var keptIdxByNorm = new Dictionary<string, int>(StringComparer.Ordinal);
+            var kept = new List<Hit>(hits.Count);
+            var folded = new List<int>(hits.Count);
+            for (var i = 0; i < hits.Count; i++)
+            {
+                if (keptIdxByNorm.TryGetValue(hitNorms[i], out var k))
+                {
+                    folded[k]++;
+                    // 同文 ⇒ 分数逐位相同 ⇒ 只比 SessionId Ordinal, 全序更靠前者胜出
+                    if (string.CompareOrdinal(hits[i].SessionId, kept[k].SessionId) < 0)
+                        kept[k] = hits[i];
+                    continue;
+                }
+                keptIdxByNorm[hitNorms[i]] = kept.Count;
+                kept.Add(hits[i]);
+                folded.Add(0);
+            }
+            hits = kept;
+            for (var i = 0; i < hits.Count; i++)
+                if (folded[i] > 0)
+                    hits[i] = hits[i] with { CollapsedDuplicates = folded[i] };
+        }
+
+        // 5) 稳定排序: score desc → sessionId Ordinal asc (确定性)
         hits.Sort((a, b) =>
         {
             var c = b.Score.CompareTo(a.Score);
@@ -286,7 +318,10 @@ public sealed class SessionHistorySearch
             rank++;
             sb.Append(rank).Append(". ").Append(h.SessionId)
               .Append("  score=").Append(h.Score.ToString("F4", System.Globalization.CultureInfo.InvariantCulture))
-              .Append("  entries=").Append(h.EntryCount).AppendLine();
+              .Append("  entries=").Append(h.EntryCount);
+            if (h.CollapsedDuplicates > 0)
+                sb.Append("  同文副本+").Append(h.CollapsedDuplicates);
+            sb.AppendLine();
             sb.Append("   …").Append(h.Snippet).AppendLine();
         }
         return sb.ToString();

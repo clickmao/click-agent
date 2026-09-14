@@ -486,6 +486,101 @@ public sealed class SessionHistorySearchTests : IDisposable
         return dir?.FullName ?? ".";
     }
 
+    // ---------- R428: 同文折叠 (排序/去重层; 依据 R427: 同文对任何打分族恒同分) ----------
+
+    [Fact]
+    public void Search_FoldsIdenticalTextSessions_KeepsTotalOrderFirst()
+    {
+        Seed("s-b", "同一段内容 存在 甲乙丙");
+        Seed("s-a", "同一段内容 存在 甲乙丙");   // 同文 (规范化后逐字符相同)
+        Seed("s-x", "另一段内容 存在 丁戊己");   // 命中但不同文 ⇒ 必须单独保留
+
+        var hits = NewSearch().Search("存在", topK: 5);
+
+        Assert.Equal(2, hits.Count);                                   // 两份同文折叠为 1 + 1 份他文
+        var dup = Assert.Single(hits, h => h.CollapsedDuplicates == 1);
+        Assert.Equal("s-a", dup.SessionId);                             // 全序首者 = SessionId Ordinal 较小者
+        Assert.DoesNotContain(hits, h => h.SessionId == "s-b");
+    }
+
+    [Fact]
+    public void Search_DoesNotFoldSameScoreDistinctText()
+    {
+        // 负控: 同词元数 ∧ 同 tf ⇒ 同分, 但正文不同 ⇒ 折叠只认逐字符判等, 不得误折叠
+        Seed("s-p", "存在 甲甲甲甲甲甲甲甲甲甲 乙乙乙乙乙乙乙乙乙乙");
+        Seed("s-q", "存在 丙丙丙丙丙丙丙丙丙丙 丁丁丁丁丁丁丁丁丁丁");
+
+        var hits = NewSearch().Search("存在", topK: 5);
+
+        Assert.Equal(2, hits.Count);
+        Assert.Equal(hits[0].Score, hits[1].Score);                     // 前提: 确为同分
+        Assert.All(hits, h => Assert.Equal(0, h.CollapsedDuplicates));
+    }
+
+    [Fact]
+    public void Search_AllIdentical_FoldsToOne_WithFullCount()
+    {
+        Seed("s-z", "重复正文 存在 庚辛壬");
+        Seed("s-m", "重复正文 存在 庚辛壬");
+        Seed("s-c", "重复正文 存在 庚辛壬");
+
+        var hits = NewSearch().Search("存在", topK: 5);
+
+        var h = Assert.Single(hits);
+        Assert.Equal("s-c", h.SessionId);
+        Assert.Equal(2, h.CollapsedDuplicates);
+    }
+
+    [Fact]
+    public void Search_Fold_KeeperIsIndependentOfEnumerationOrder()
+    {
+        Seed("s-1", "同文 存在 子丑寅");
+        Seed("s-2", "同文 存在 子丑寅");
+        var first = Assert.Single(NewSearch().Search("存在", topK: 5));
+
+        var dir2 = Path.Combine(Path.GetTempPath(), "af-session-search-" + Guid.NewGuid().ToString("N")[..8]);
+        try
+        {
+            var store2 = new JsonSessionMemoryStore(dir2);
+            var m = new SessionMemory();
+            m.Remember("同文 存在 子丑寅");
+            store2.Save("s-2", m);
+            store2.Save("s-1", m);                                      // 反向写入顺序
+            var second = Assert.Single(new SessionHistorySearch(new SessionHistorySearch.StoreSource(store2)).Search("存在", topK: 5));
+            Assert.Equal(first.SessionId, second.SessionId);             // 保留者与枚举顺序无关
+            Assert.Equal("s-1", second.SessionId);
+        }
+        finally
+        {
+            if (Directory.Exists(dir2)) Directory.Delete(dir2, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void Search_NoDuplicates_CollapsedCountZero()
+    {
+        Seed("s-a1", "甲 存在 内容一");
+        Seed("s-a2", "乙 存在 内容二");
+        Seed("s-a3", "丙 内容三");
+
+        var hits = NewSearch().Search("存在", topK: 5);
+
+        Assert.Equal(2, hits.Count);
+        Assert.All(hits, h => Assert.Equal(0, h.CollapsedDuplicates));
+    }
+
+    [Fact]
+    public void Render_ShowsCollapsedDuplicateCountOnlyWhenFolded()
+    {
+        Seed("s-b", "同一段内容 存在 甲乙丙");
+        Seed("s-a", "同一段内容 存在 甲乙丙");
+        var folded = SessionHistorySearch.Render(NewSearch().Search("存在", topK: 5), "存在", 5);
+        Assert.Contains("同文副本+1", folded);
+
+        var clean = SessionHistorySearch.Render(NewSearch().Search("丁戊己", topK: 0), "丁戊己", 0);
+        Assert.DoesNotContain("同文副本", clean);
+    }
+
     private sealed class MixedSource : SessionHistorySearch.ISource
     {
         private readonly SessionHistorySearch.ISource _inner;

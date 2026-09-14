@@ -1,0 +1,301 @@
+{
+  "round": "R428",
+  "verdict": "PASS",
+  "checks": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true,
+    "C5": true,
+    "C6": true,
+    "C7": true,
+    "C2b": true
+  },
+  "facts": {
+    "unit_tests": {
+      "ok": true,
+      "passed": 32,
+      "failed": 0,
+      "cmd": "dotnet test --filter FullyQualifiedName~SessionHistorySearchTests"
+    },
+    "aot": {
+      "ok": true,
+      "il_warnings": 0,
+      "bytes": 15176432,
+      "env_i_selfstart_rc": 0,
+      "publish_rc_line": "RC=0"
+    }
+  },
+  "arms": {
+    "N": {
+      "binary": "/tmp/pub_r423/agenthost",
+      "sha256": "2d363b6d132b06e23a0f994fc91d9de6ab41737d42a3ee3c6e77eb50d2edc15b",
+      "A": {
+        "存在": {
+          "rc": 0,
+          "hits": [
+            {
+              "rank": 1,
+              "id": "cli-6bf6dc8d",
+              "score": 0.2798,
+              "entries": 1,
+              "folded": 0
+            },
+            {
+              "rank": 2,
+              "id": "probe-0914125816-p004",
+              "score": 0.1408,
+              "entries": 5,
+              "folded": 0
+            },
+            {
+              "rank": 3,
+              "id": "probe-0914125831-p005",
+              "score": 0.1408,
+              "entries": 5,
+              "folded": 0
+            }
+          ],
+          "hit_ids": [
+            "cli-6bf6dc8d",
+            "probe-0914125816-p004",
+            "probe-0914125831-p005"
+          ],
+          "ranked": [
+            [
+              "cli-6bf6dc8d",
+              0.2798
+            ],
+            [
+              "probe-0914125816-p004",
+              0.1408
+            ],
+            [
+              "probe-0914125831-p005",
+              0.1408
+            ]
+          ],
+          "folded": {},
+          "declared": 3,
+          "recall_points": 1,
+          "llm_call_points": 0
+        },
+        "不存在": {
+          "rc": 0,
+          "hits": [],
+          "hit_ids": [],
+          "ranked": [],
+          "folded": {},
+          "declared": 0,
+          "recall_points": 1,
+          "llm_call_points": 0
+        }
+      },
+      "D": {
+        "存在": {
+          "rc": 0,
+          "hits": [
+            {
+              "rank": 1,
+              "id": "r428-d1",
+              "score": 0.2284,
+              "entries": 1,
+              "folded": 0
+            },
+            {
+              "rank": 2,
+              "id": "r428-d2",
+              "score": 0.2284,
+              "entries": 1,
+              "folded": 0
+            }
+          ],
+          "hit_ids": [
+            "r428-d1",
+            "r428-d2"
+          ],
+          "ranked": [
+            [
+              "r428-d1",
+              0.2284
+            ],
+            [
+              "r428-d2",
+              0.2284
+            ]
+          ],
+          "folded": {},
+          "declared": 2,
+          "recall_points": 1,
+          "llm_call_points": 0
+        },
+        "外星词zzq": {
+          "rc": 0,
+          "hits": [],
+          "hit_ids": [],
+          "ranked": [],
+          "folded": {},
+          "declared": 0,
+          "recall_points": 1,
+          "llm_call_points": 0
+        }
+      }
+    },
+    "T": {
+      "binary": "/tmp/pub_r428/agenthost",
+      "sha256": "c547b0bec5b8fbf8acbe5a247164f14fd84afee6bf4d25d62bbede5e8389d761",
+      "A": {
+        "存在": {
+          "rc": 0,
+          "hits": [
+            {
+              "rank": 1,
+              "id": "cli-6bf6dc8d",
+              "score": 0.2798,
+              "entries": 1,
+              "folded": 0
+            },
+            {
+              "rank": 2,
+              "id": "probe-0914125816-p004",
+              "score": 0.1408,
+              "entries": 5,
+              "folded": 1
+            }
+          ],
+          "hit_ids": [
+            "cli-6bf6dc8d",
+            "probe-0914125816-p004"
+          ],
+          "ranked": [
+            [
+              "cli-6bf6dc8d",
+              0.2798
+            ],
+            [
+              "probe-0914125816-p004",
+              0.1408
+            ]
+          ],
+          "folded": {
+            "probe-0914125816-p004": 1
+          },
+          "declared": 2,
+          "recall_points": 1,
+          "llm_call_points": 0
+        },
+        "不存在": {
+          "rc": 0,
+          "hits": [],
+          "hit_ids": [],
+          "ranked": [],
+          "folded": {},
+          "declared": 0,
+          "recall_points": 1,
+          "llm_call_points": 0
+        }
+      },
+      "D": {
+        "存在": {
+          "rc": 0,
+          "hits": [
+            {
+              "rank": 1,
+              "id": "r428-d1",
+              "score": 0.2284,
+              "entries": 1,
+              "folded": 0
+            },
+            {
+              "rank": 2,
+              "id": "r428-d2",
+              "score": 0.2284,
+              "entries": 1,
+              "folded": 0
+            }
+          ],
+          "hit_ids": [
+            "r428-d1",
+            "r428-d2"
+          ],
+          "ranked": [
+            [
+              "r428-d1",
+              0.2284
+            ],
+            [
+              "r428-d2",
+              0.2284
+            ]
+          ],
+          "folded": {},
+          "declared": 2,
+          "recall_points": 1,
+          "llm_call_points": 0
+        },
+        "外星词zzq": {
+          "rc": 0,
+          "hits": [],
+          "hit_ids": [],
+          "ranked": [],
+          "folded": {},
+          "declared": 0,
+          "recall_points": 1,
+          "llm_call_points": 0
+        }
+      }
+    }
+  },
+  "fixtures": {
+    "A": {
+      "dir": "/home/agentuser/AgentFramework/eval/capability/r422/fixture-sessions",
+      "sha256": {
+        "cli-6bf6dc8d_memory.json": "282bf6a66e0cf08549f9c74aa67079dcd9f8bce3475ea82deb1ae77f065d0784",
+        "probe-0914125816-p004_memory.json": "b9d47da7a95494da2d6134882b7d767eeb0857d3d338e03331531050ead931ac",
+        "probe-0914125831-p005_memory.json": "c048bf912fa09fc477212184def68f25fc556f7a52e5a90f8d9d45fd0c034974"
+      }
+    },
+    "D": {
+      "dir": "/tmp/r428-corpus-D",
+      "sha256": {
+        "r428-d1_memory.json": "a82927e5e89b1a4e9d6be7f2bf9c24013ae1d5c16609505b234a972d5e6916f2",
+        "r428-d2_memory.json": "80982e4fe751e670c873c39ac5e0ef28b158334c39da271d9816094d24425577"
+      }
+    }
+  },
+  "closed_form": {
+    "A_dup_groups": [
+      [
+        "probe-0914125816-p004",
+        "probe-0914125831-p005"
+      ]
+    ],
+    "A_docs": 3,
+    "A_keeper_predicted": [
+      "probe-0914125816-p004"
+    ],
+    "A_keeper_observed": [
+      "probe-0914125816-p004"
+    ],
+    "D_dup_groups": [],
+    "D_docs": 2,
+    "folded_out_ids": [
+      "probe-0914125831-p005"
+    ],
+    "keeper_match": true
+  },
+  "registered_anchor_A": [
+    [
+      "cli-6bf6dc8d",
+      0.2798
+    ],
+    [
+      "probe-0914125816-p004",
+      0.1408
+    ],
+    [
+      "probe-0914125831-p005",
+      0.1408
+    ]
+  ]
+}
