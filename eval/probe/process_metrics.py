@@ -93,7 +93,14 @@ def find_replies(solver_id, tag, tid, window=None, ns=None):
     safe = solver_id.replace(":", "_").replace("/", "_")
     if ns:                      # 新归档: 显式命名空间 ⇒ 精确解析, 无需时间窗
         exact = os.path.join(REPLIES, "%s%s-%s.txt" % (safe, ns, tid))
-        return ([exact], "ns_exact") if os.path.exists(exact) else ([], "ns_missing")
+        if os.path.exists(exact):
+            return [exact], "ns_exact"
+        # R419 多轮: 同题每轮一份 `<solver><ns>-<tid>-t<N>.txt` ⇒ 按轮序返回, **不取首份冒充全轮**
+        rounds = sorted(glob.glob(os.path.join(REPLIES, "%s%s-%s-t*.txt" % (safe, ns, tid))),
+                        key=lambda p: int(p.rsplit("-t", 1)[1].split(".")[0]))
+        if rounds:
+            return rounds, "ns_rounds"
+        return [], "ns_missing"
     exact = os.path.join(REPLIES, "%s%s-%s.txt" % (safe, tag, tid))
     cands = ([exact] if os.path.exists(exact) else []) + \
             [p for p in sorted(glob.glob(os.path.join(REPLIES, "*-%s.txt" % tid))) if p != exact]
@@ -143,9 +150,23 @@ def analyse(probe_path):
             na += 1                      # ★歧义 ⇒ 不猜(不取 paths[0]), 记 n/a
             rows.append((t, r))
             continue
-        with open(paths[0], encoding="utf-8", errors="replace") as fh:
-            mt = parse_metrics(fh.read())
-        mt["source"] = os.path.relpath(paths[0], ROOT)
+        mts = []
+        for p in paths:                     # 多轮: 逐轮解析后**跨轮求和**(总成本), 不做首份冒充
+            with open(p, encoding="utf-8", errors="replace") as fh:
+                mts.append(parse_metrics(fh.read()))
+        toks = [m["prompt_tokens"] for m in mts]
+        walls = [m["wall_ms"] for m in mts]
+        mt = {
+            "prompt_tokens": sum(v for v in toks if v is not None) if any(v is not None for v in toks) else None,
+            "wall_ms": sum(v for v in walls if v is not None) if any(v is not None for v in walls) else None,
+            "intent": mts[-1]["intent"], "llm_model": next((m["llm_model"] for m in mts if m["llm_model"]), None),
+            "turns": mts[0]["turns"],            # 首轮口径 (与 first_try 统计同源)
+            "turns_last": mts[-1]["turns"],      # 末轮口径
+            "context_snippets": mts[-1]["context_snippets"],
+            "malformed": [x for m in mts for x in m["malformed"]],
+            "rounds_archived": len(paths),
+        }
+        mt["source"] = os.path.relpath(paths[-1], ROOT)
         mt["note"] = attrib
         if mt["prompt_tokens"] is None:
             na += 1
@@ -175,6 +196,7 @@ def analyse(probe_path):
         "first_try_unknown": sum(1 for t, m in rows if t.get("mode") == "ok" and m.get("turns") is None),
         "first_try_rate": (sum(1 for t, m in rows if t.get("mode") == "ok" and m.get("turns") == 1) / n_total)
         if n_total else None,
+        "rounds_per_task": _avg([t.get("turns") for t, _ in rows if t.get("turns") is not None]),
         "wall_ms_avg": _avg([m["wall_ms"] for _, m in rows]),
         "wall_ms_sum": sum(v for _, m in rows for v in [m["wall_ms"]] if v is not None),
         "turns_max": max([m["turns"] for _, m in rows if m["turns"] is not None], default=None),
@@ -182,6 +204,13 @@ def analyse(probe_path):
         "na_count": na,
         "ambiguous_replies": amb,
         "malformed_fields": mal,
+        # --- R419 多轮口径 (单轮轮次为 None, 消费方须容忍缺失)
+        "turns_arg": d.get("turns_arg"),
+        "rounds_observed": d.get("rounds_observed"),
+        "rounds_expected": d.get("rounds_expected"),
+        "first_try_rate_whole": d.get("first_try_rate_whole"),
+        "fix_rate": d.get("fix_rate"),
+        "saturated": d.get("saturated"),
         "tasks": [{"tid": t.get("tid"), "family": t.get("family"), "mode": t.get("mode"),
                    "passed": t.get("passed"), "total": t.get("total"),
                    "prompt_tokens": m["prompt_tokens"], "wall_ms": m["wall_ms"],
@@ -192,6 +221,28 @@ def analyse(probe_path):
 
 def _fmt(v, nd=1):
     return "n/a" if v is None else ("%.*f" % (nd, v))
+
+
+def multiturn_report(rows):
+    """R419 多轮表: 轮数 / 首次通过率 / 修复率 + **仪器判别力**在批内自证。
+
+    轮数取**归档文件数**(外部真值), 不取进程内轮标记 —— 进程内轮次跨进程会重置 (R419 坑)。
+    饱和标记必须有: 题集首轮全对时「修复率」分母为 0, 此时修复率 n/a **不是满分**。
+    """
+    mt = [r for r in rows if r.get("turns_arg") and r["turns_arg"] > 1]
+    lines = ["| 题集 | 轮数(实/期) | 整题全对 | 首次通过率 | 修复率 | 饱和 | 轮均 | 弃权(未归档) |",
+             "|---|---|---|---|---|---|---|---|"]
+    for r in mt:
+        lines.append("| `%s` | %s/%s | %d/%d | %s | %s | %s | %s | %d |" % (
+            r["probe_file"], r.get("rounds_observed"), r.get("rounds_expected"),
+            r["whole_ok"], r["n_tasks"], _fmt(r.get("first_try_rate_whole"), 4),
+            "n/a(无待修题)" if r.get("fix_rate") is None else _fmt(r.get("fix_rate"), 4),
+            "是" if r.get("saturated") else "否", _fmt(r.get("rounds_per_task"), 2), r["na_count"]))
+        if r.get("rounds_observed") != r.get("rounds_expected"):
+            lines.append("|  ⚠ %s | 轮数实到 ≠ 期望 ⇒ 不得据此算修复率(弃权) | | | | | | |" % r["probe_file"])
+    if not mt:
+        lines.append("| (无 turns>1 的题集) | | | | | | | |")
+    return chr(10).join(lines)
 
 
 def report(rows):
@@ -309,6 +360,35 @@ def selftest():
             r["first_try_ok"] == 1 and r["first_try_unknown"] == 1
             and abs(r["first_try_rate"] - 1 / 3.0) < 1e-9,
             "ok=%d rate=%s unk=%d" % (r["first_try_ok"], r["first_try_rate"], r["first_try_unknown"]))
+
+        # --- R419 多轮读取链: 归档轮数=外部真值 / 跨轮求和 / 轮数实到≠期望 ⇒ 弃权
+        for nm, tok in (("agentr419x-p010-t1.txt", 1000), ("agentr419x-p010-t2.txt", 500),
+                        ("agentr419x-p011-t1.txt", 700)):        # p011 缺第 2 轮 ⇒ 实到 1
+            with open(os.path.join(tmp2, nm), "w", encoding="utf-8") as fh:
+                fh.write("promptTokens=%d%s(10ms, intent=code_generation)%s" % (tok, nl, nl))
+        pj2 = os.path.join(tmp2, "probe-agent-mt.json")
+        with open(pj2, "w", encoding="utf-8") as fh:
+            json.dump({"solver": "agent", "tag": "r419x", "reply_ns": "r419x", "rate": 0.5,
+                       "turns_arg": 2, "rounds_observed": 3, "rounds_expected": 4,
+                       "first_try_rate_whole": 0.0, "fix_rate": 0.5, "saturated": False,
+                       "per_task": [{"tid": "p010", "mode": "ok", "passed": 2, "total": 2, "turns": 2},
+                                    {"tid": "p011", "mode": "partial", "passed": 1, "total": 2, "turns": 1}]}, fh)
+        r2 = analyse(pj2)
+        mtd = {t["tid"]: t for t in r2["tasks"]}
+        paths, at = find_replies("agent", "r419x", "p010", None, "r419x")
+        chk("正控: 多轮归档按轮序取全 (不取首份冒充全轮)",
+            at == "ns_rounds" and [os.path.basename(p) for p in paths] ==
+            ["agentr419x-p010-t1.txt", "agentr419x-p010-t2.txt"], "%s %s" % (at, paths))
+        chk("正控: 多轮成本跨轮求和 (1000+500), 非首轮冒充整题",
+            mtd["p010"]["prompt_tokens"] == 1500, str(mtd["p010"]["prompt_tokens"]))
+        chk("正控: 轮均=归档实到轮数均值 (2,1 ⇒ 1.5)", r2["rounds_per_task"] == 1.5, str(r2["rounds_per_task"]))
+        chk("★负控: 轮数实到≠期望 ⇒ 多轮表如实标弃权 (不得据此算修复率)",
+            r2["rounds_observed"] != r2["rounds_expected"] and "⚠" in multiturn_report([r2]),
+            multiturn_report([r2]).split(nl)[-1][:60])
+        chk("正控: 饱和态修复率记 n/a(无待修题), 不冒充满分",
+            "n/a(无待修题)" in multiturn_report([dict(r2, fix_rate=None, saturated=True, rounds_observed=4)]))
+        chk("负控: 单轮题集不进多轮表 (不按 0 轮摊)",
+            "无 turns>1" in multiturn_report([dict(r2, turns_arg=1)]))
     finally:
         REPLIES = keep
 
@@ -322,6 +402,7 @@ def main(argv=None):
     ap.add_argument("--glob", default=os.path.join(DATA, "probe-*.json"))
     ap.add_argument("--out", default=os.path.join(DATA, "process-metrics.json"))
     ap.add_argument("--report", action="store_true")
+    ap.add_argument("--multiturn", action="store_true")   # R419: 轮数/首次通过率/修复率表
     a = ap.parse_args(argv)
     if a.selftest:
         return selftest()
@@ -344,6 +425,8 @@ def main(argv=None):
                                                    sum(r["malformed_fields"] for r in good)))
     if a.report:
         print(report(good))
+    if a.multiturn:
+        print(multiturn_report(good))
     return 0
 
 

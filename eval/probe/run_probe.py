@@ -367,11 +367,22 @@ FAMILY_MUTATIONS = {
 }
 
 
-def oracle_reply(task: dict, mutation: str = "") -> str:
+def oracle_reply(task: dict, mutation: str = "", turn: int = 1) -> str:
     """参考解回复; mutation 非空时注入指定缺陷 (负控用)。
 
     注入的缺陷都必须是**可判定**的: 多余输出 / 不终止 / 语法错 / 无代码 / 硬编码公开样例。
+
+    turn (R419 多轮): 缺陷解的**行为按轮**定义——
+      `delayfix` = 第 1 轮浅解 / 第 2 轮真解 ⇒ **正控**: 仪器必须记到「修复成功」;
+      `nofix`    = 两轮同浅解       ⇒ **负控**: 修复率必须为 0。
+    无此正控时,「修复率 0」分不清是「仪器坏」还是「题太难」(R415 教训)。
     """
+    if mutation in ("delayfix", "nofix"):
+        if mutation == "delayfix" and turn >= 2:
+            return oracle_reply(task, "", turn)
+        shallow = "hardcode" if task["kind"] == "program" else "wrongfinal"
+        return oracle_reply(task, shallow, turn)
+
     if task["kind"] == "math":
         if mutation == "wrongfinal":
             num = task["answer"].split("/")[0].lstrip("-")
@@ -427,15 +438,21 @@ def load_env_local(path: str = ENV_LOCAL) -> dict:
     return env
 
 
-def solve_agent(task: dict, solve_timeout: float):
-    """真机自检: 用 AOT agenthost 跑一题 (一次性 prompt, 独立会话 Id 便于追溯)。"""
+def solve_agent(task: dict, solve_timeout: float, prompt: str | None = None, sid: str | None = None):
+    """真机自检: 用 AOT agenthost 跑一题 (一次性 prompt, 独立会话 Id 便于追溯)。
+
+    prompt/sid (R419 多轮): 修正轮显式传**修正文案** + **复用同一 session id** ⇒
+    同一 sid 跨进程续上下文 (§3 微实验 PASS: turn2 在新进程里答出 turn1 记住的数字 4271)。
+    sid 由调用方保存复用, 不在此处重算 (重算 = 换会话 = 多轮退化成两个单轮)。
+    """
     if not os.path.exists(AGENT_BIN):
         raise SystemExit("agenthost 不存在: %s (先构建/发布或设 PROBE_AGENT_BIN)" % AGENT_BIN)
     env = load_env_local()
     env["AGENTFRAMEWORK_PY_RUN"] = "1"          # 打开 py 插件 (被测能力)
     env["PYTHONDONTWRITEBYTECODE"] = "1"
-    sid = "probe-%s-%s" % (time.strftime("%m%d%H%M%S"), task["tid"])
-    cmd = [AGENT_BIN, "-q", task["prompt"], "--output-mode", "text", "--session-id", sid]
+    sid = sid or ("probe-%s-%s" % (time.strftime("%m%d%H%M%S"), task["tid"]))
+    ask = task["prompt"] if prompt is None else prompt
+    cmd = [AGENT_BIN, "-q", ask, "--output-mode", "text", "--session-id", sid]
     t0 = time.time()
     try:
         p = subprocess.run(cmd, capture_output=True, text=True, timeout=solve_timeout,
@@ -568,13 +585,45 @@ def solve_rover(task: dict, solve_timeout: float) -> tuple:
     return text, False, meta
 
 
-def solve(task: dict, solver: str, solve_timeout: float = 300.0) -> tuple:
+def _tight_case(task: dict):
+    """取该题的「规格紧」隐藏用例 (R419 修正轮文案的来源)。
+
+    生成器把 tight_gen 用例放在**生成用例组的末位** (cases 的前 n_public 是公开用例,
+    其后 n_hidden 个里最后一个来自 tight_gen), 之后才追加 `hard` 组 ⇒
+    索引 = len(hidden) - meta.hard - 1。取不到就退回最后一个隐藏用例 (仍是隐藏信息)。
+    """
+    hid = task.get("hidden") or []
+    if not hid:
+        return None
+    k = len(hid) - int((task.get("meta") or {}).get("hard", 0) or 0) - 1
+    if k < 0 or k >= len(hid):
+        k = len(hid) - 1
+    return hid[k], k
+
+
+def correction_prompt(task: dict) -> str:
+    """多轮修正文案 (确定性, 与 turn-1 的结论无关)。
+
+    只给**隐藏用例的输入/期望输出**——这是 turn 1 拿不到的信息, 因此「答对」需要真改代码,
+    而不是复述风格; 同时不含解题思路 (不泄漏答案)。
+    """
+    got = _tight_case(task)
+    if got is None:
+        return "你上一条回复不完整。请重发完整、可直接运行的最终版本。"
+    case, k = got
+    return ("你上一条回复未通过隐藏用例 #%d (该用例不在题面公开样例中)。\n"
+            "输入:\n%s\n你程序的输出与上面的期望不符。期望输出:\n%s\n"
+            "请重发**修正后的完整程序**(单个代码块, 不要解释)。" % (k + 1, case["stdin"], case["expected_stdout"]))
+
+
+def solve(task: dict, solver: str, solve_timeout: float = 300.0,
+          prompt: str | None = None, sid: str | None = None, turn: int = 1) -> tuple:
     if solver == "oracle":
-        return oracle_reply(task), True, {}
+        return oracle_reply(task, turn=turn), True, {}
     if solver.startswith("mutation:"):
-        return oracle_reply(task, solver.split(":", 1)[1]), True, {}
+        return oracle_reply(task, solver.split(":", 1)[1], turn=turn), True, {}
     if solver == "agent":
-        rep, meta = solve_agent(task, solve_timeout)
+        rep, meta = solve_agent(task, solve_timeout, prompt=prompt, sid=sid)
         return rep, False, meta
     if solver == "rover":
         return solve_rover(task, solve_timeout)
@@ -585,18 +634,24 @@ def solve(task: dict, solver: str, solve_timeout: float = 300.0) -> tuple:
     if solver.startswith("command:"):
         cmd = solver.split(":", 1)[1]
         t0 = time.time()
-        p = subprocess.run(cmd, shell=True, input=task["prompt"], capture_output=True,
-                           text=True, timeout=solve_timeout)
+        p = subprocess.run(cmd, shell=True, input=(task["prompt"] if prompt is None else prompt),
+                           capture_output=True, text=True, timeout=solve_timeout)
         return p.stdout, False, {"exit": p.returncode, "elapsed_s": round(time.time() - t0, 2)}
     raise SystemExit("未知 solver: %s" % solver)
 
 
 def run(tasks_list, solver: str, timeout: float, solve_timeout: float = 300.0,
-        limit: int = 0, tag: str = "") -> dict:
+        limit: int = 0, tag: str = "", turns: int = 1, correction: str = "onfail") -> dict:
     """跑一批题并归档回复。
 
     归属铁律 (R418): 归档回复名必须带**命名空间**(--tag 或默认 s<seed>), 否则多臂/多轮
     同名文件互相覆盖 ⇒ 过程指标 (promptTokens/墙钟/turn) 会静默张冠李戴。
+
+    多轮 (R419, turns>1):
+      * 修正轮复用**同一 session id** (续上下文), 文案 = correction_prompt(task) (隐藏用例信息);
+      * 归档名加轮次后缀 `-t<N>` ⇒ **轮数取归档文件数** (外部真值), 不读进程内 turn 标记;
+      * `mode/passed/total` 记**末轮**(两轮合并终态), `t1`/`t2` 分列首轮与修正轮;
+      * 汇总额外给 `first_try_*` (首轮整题全对) 与 `fix_*` (首轮未过 → 修正轮过)。
     """
     per, tax_all, t0 = [], {}, time.time()
     if limit:
@@ -604,13 +659,21 @@ def run(tasks_list, solver: str, timeout: float, solve_timeout: float = 300.0,
     ns = tag or ("s%d" % int(os.environ.get("PROBE_NS_SEED", "0") or 0))
     rep_dir = os.path.join(DATA, "replies")
     os.makedirs(rep_dir, exist_ok=True)
-    for t in tasks_list:
-        reply, is_oracle, smeta = solve(t, solver, solve_timeout)
-        safe = solver.replace(":", "_").replace("/", "_")
-        rp = os.path.join(rep_dir, "%s%s-%s.txt" % (safe, ns, t["tid"]))
+    safe = solver.replace(":", "_").replace("/", "_")
+
+    def _archive(t, reply, turn_idx):
+        suf = ("-t%d" % turn_idx) if turns > 1 else ""
+        rp = os.path.join(rep_dir, "%s%s-%s%s.txt" % (safe, ns, t["tid"], suf))
         with open(rp, "w", encoding="utf-8") as fh:      # 原始回复留档 (诊断/审计)
             fh.write(reply or "")
-        smeta["reply_path"] = os.path.relpath(rp, ROOT)
+        return os.path.relpath(rp, ROOT)
+
+    for t in tasks_list:
+        sid = ("probe-%s-%s-%s" % (time.strftime("%m%d%H%M%S"), ns.lstrip("-"), t["tid"]))
+        reply, is_oracle, smeta = solve(t, solver, solve_timeout, sid=sid, turn=1)
+        smeta["reply_path"] = _archive(t, reply, 1)
+        reply_paths = [smeta["reply_path"]]
+        sid = smeta.get("session")
         if not (reply or "").strip():
             smeta["reply_head"] = ""
         if smeta.get("arm_status") == "unavailable":
@@ -618,20 +681,44 @@ def run(tasks_list, solver: str, timeout: float, solve_timeout: float = 300.0,
             per.append({"tid": t["tid"], "kind": t["kind"], "family": t["family"],
                         "mode": "arm_unavailable", "passed": 0, "total": 0,
                         "taxonomy": {"arm_unavailable": 1}, "reply_chars": 0, "reply_head": "",
+                        "turns": 1, "reply_paths": reply_paths,
+                        "t1": {"mode": "arm_unavailable", "passed": 0, "total": 0}, "t2": None,
                         "solve": smeta})
             print("  %-6s %-8s ARM-UNAVAILABLE (%s) — 不计分母, 不判能力" % (t["tid"], t["kind"], smeta.get("arm_reason")),
                   flush=True)
             continue
-        r = grade.grade(t, reply, timeout)
-        for k, v in r["taxonomy"].items():
+        r1 = grade.grade(t, reply, timeout)
+        r_final, rounds, smeta_final = r1, 1, smeta
+        r2 = None
+        if turns > 1 and (correction == "always" or r1["mode"] != "ok"):
+            # R419 修正: 默认 onfail —— 只在**首轮未过**时发修正提示。
+            #   对已达标题发「隐藏用例没过」= 前提为假 ⇒ 实测把 2/3 已对题改坏成 0/3
+            #   (BatchEvidence: r419bagent-b09141437, regressed=2)。
+            #   修正的前提必须为真, 否则量到的不是「修复率」而是「抗误导性」。
+            rep2, _o2, smeta2 = solve(t, solver, solve_timeout,
+                                      prompt=correction_prompt(t), sid=sid, turn=2)
+            smeta2["reply_path"] = _archive(t, rep2, 2)
+            reply_paths.append(smeta2["reply_path"])
+            if not (rep2 or "").strip():
+                smeta2["reply_head"] = ""
+            r2 = grade.grade(t, rep2, timeout)
+            r_final, rounds, smeta_final = r2, 2, smeta2
+            print("    t2 %-6s %-24s fix=%s" % (t["tid"], r2["mode"],
+                                                 "YES" if r2["mode"] == "ok" else "no"), flush=True)
+        for k, v in r_final["taxonomy"].items():
             tax_all[k] = tax_all.get(k, 0) + v
         per.append({"tid": t["tid"], "kind": t["kind"], "family": t["family"],
-                    "mode": r["mode"], "passed": r["passed"], "total": r["total"],
-                    "taxonomy": r["taxonomy"], "reply_chars": len(reply or ""),
-                    "reply_head": (reply or "")[:300].replace("\n", "\u23ce"),
+                    "mode": r_final["mode"], "passed": r_final["passed"], "total": r_final["total"],
+                    "taxonomy": r_final["taxonomy"], "reply_chars": smeta_final.get("reply_chars", 0),
+                    "reply_head": (smeta_final.get("reply_head") or ""),
+                    "turns": rounds, "reply_paths": reply_paths,
+                    "t1": {"mode": r1["mode"], "passed": r1["passed"], "total": r1["total"],
+                           "reply_chars": smeta.get("reply_chars", 0)},
+                    "t2": (None if r2 is None else {"mode": r2["mode"], "passed": r2["passed"],
+                                                    "total": r2["total"]}),
                     "solve": smeta})
         print("  %-6s %-8s %-24s %-14s %d/%d  (%s)" % (t["tid"], t["kind"], t["family"],
-                                                       r["mode"], r["passed"], r["total"],
+                                                       r_final["mode"], r_final["passed"], r_final["total"],
                                                        "%.0fs" % smeta["elapsed_s"] if smeta.get("elapsed_s") else "instant"),
               flush=True)
 
@@ -645,8 +732,20 @@ def run(tasks_list, solver: str, timeout: float, solve_timeout: float = 300.0,
             b["rate"] = round(b["passed"] / b["total"], 4) if b["total"] else 0.0
         return buckets
 
+    # --- 多轮三读数 (R419): 轮数为**外部真值** (归档文件数), 不是进程自报
+    gradable = [p for p in per if p["mode"] != "arm_unavailable"]
+    first_ok = sum(1 for p in gradable if p["t1"]["mode"] == "ok")
+    failed_t1 = [p for p in gradable if p["t1"]["mode"] != "ok"]
+    fixed = sum(1 for p in failed_t1 if (p["t2"] or {}).get("mode") == "ok")
+    final_ok = sum(1 for p in gradable if p["mode"] == "ok")
+    regressed = sum(1 for p in gradable if p["t1"]["mode"] == "ok" and p["mode"] != "ok")
+    # 轮数 = **归档文件数**, 且逐条回读磁盘确认存在 (不采信内存账本; 缺失可见而非静默)
+    archived = [rp for p in per for rp in p["reply_paths"]]
+    rounds_observed = sum(1 for rp in archived if os.path.exists(os.path.join(ROOT, rp)))
+
     return {
         "solver": solver,
+        "tag": tag,
         "oracle": solver == "oracle",
         "solver_id": _solver_id(solver),
         "reply_ns": ns,
@@ -662,6 +761,19 @@ def run(tasks_list, solver: str, timeout: float, solve_timeout: float = 300.0,
         "taxonomy": tax_all,
         "by_kind": agg("kind"),
         "by_family": agg("family"),
+        "turns_arg": turns,
+        "correction_mode": correction,
+        "rounds_observed": rounds_observed,
+        "rounds_expected": sum(p["turns"] for p in gradable),
+        "rounds_missing": len(archived) - rounds_observed,
+        "first_try_whole_ok": first_ok,
+        "first_try_rate_whole": (round(first_ok / len(gradable), 4) if gradable else None),
+        "fix_ok": fixed,
+        "fix_rate": (round(fixed / len(failed_t1), 4) if failed_t1 else None),
+        "regressed": regressed,
+        "final_whole_ok": final_ok,
+        "final_rate_whole": (round(final_ok / len(gradable), 4) if gradable else None),
+        "saturated": (bool(gradable) and first_ok == len(gradable)),
         "per_task": per,
     }
 
@@ -690,6 +802,18 @@ def _solver_id(solver: str) -> str:
     if solver.startswith("command:"):
         return "cmd:" + hashlib.sha256(solver.encode()).hexdigest()[:12]
     return solver
+
+
+def _out_name(solver: str, seed, tag: str = "", turns: int = 1) -> str:
+    """摘要文件名 (R419 缺陷修复): 必须带臂 tag。
+
+    旧写法 `probe-<solver>-seed<N>-t<K>.json` 不含 tag ⇒ 同 solver 不同臂
+    写同一路径 (后被覆) 且下游按名找臂 ⇒ MISSING_ARMS 假「测量失败」。
+    """
+    return "probe-%s-seed%s%s%s.json" % (
+        _solver_id(solver).replace("/", "_"), seed,
+        ("-%s" % tag) if tag else "",
+        ("-t%d" % turns) if turns > 1 else "")
 
 
 # ---------------------------------------------------------------- 自检
@@ -763,6 +887,49 @@ def selftest() -> int:
     r = run(allt, "oracle", 5.0)
     chk("可复现: 同输入同结果", r["rate"] == 1.0)
 
+    # --- R419 多轮: 仪器判别力自证 (正控必须记到修复, 负控必须记到未修)
+    rp = run(prog, "oracle", 5.0, turns=2)
+    chk("多轮正控: oracle 首轮即满分 ⇒ 首次通过率=1.0 且修复率 n/a(无待修题)",
+        rp["first_try_rate_whole"] == 1.0 and rp["fix_rate"] is None
+        and rp["rounds_observed"] == rp["rounds_expected"] and rp["saturated"] is True,
+        "first=%s fix=%s rounds=%s/%s" % (rp["first_try_rate_whole"], rp["fix_rate"],
+                                          rp["rounds_observed"], rp["rounds_expected"]))
+    chk("多轮 onfail: 已过题**不发**修正轮 ⇒ 归档只有 -t1, 轮数=归档文件数",
+        all(p["turns"] == 1 and len(p["reply_paths"]) == 1 and p["reply_paths"][0].endswith("-t1.txt")
+            for p in rp["per_task"]),
+        str([p["reply_paths"] for p in rp["per_task"]][:2]))
+    ra = run(prog, "oracle", 5.0, turns=2, correction="always")
+    chk("多轮 always(对照臂): 每题两轮各一份 (-t1/-t2) 且 oracle 无回归",
+        ra["correction_mode"] == "always"
+        and all(p["turns"] == 2 and len(p["reply_paths"]) == 2 and p["reply_paths"][0].endswith("-t1.txt")
+                and p["reply_paths"][1].endswith("-t2.txt") for p in ra["per_task"])
+        and ra["rounds_observed"] == ra["rounds_expected"] and ra["regressed"] == 0,
+        "mode=%s rounds=%s/%s regressed=%s" % (ra["correction_mode"], ra["rounds_observed"],
+                                               ra["rounds_expected"], ra["regressed"]))
+    chk("摘要名带臂 tag (R419 缺陷): 同 solver 不同臂不得同名互覆",
+        _out_name("agent", 419, "r419a1", 2) == "probe-agent-seed419-r419a1-t2.json"
+        and _out_name("agent", 419, "r419a2", 2) != _out_name("agent", 419, "r419a1", 2)
+        and _out_name("agent", 419) == "probe-agent-seed419.json",
+        "%s | %s | %s" % (_out_name("agent", 419, "r419a1", 2), _out_name("agent", 419, "r419a2", 2),
+                         _out_name("agent", 419)))
+
+    rd = run(prog, "mutation:delayfix", 5.0, turns=2)
+    chk("多轮正控(仪器判别力): 第1轮浅解失败 + 第2轮真解 ⇒ 修复率=1.0",
+        rd["first_try_rate_whole"] == 0.0 and rd["fix_rate"] == 1.0 and rd["final_whole_ok"] == len(prog),
+        "first=%s fix=%s final=%d tax=%s" % (rd["first_try_rate_whole"], rd["fix_rate"],
+                                             rd["final_whole_ok"], rd["taxonomy"]))
+
+    rn = run(prog, "mutation:nofix", 5.0, turns=2)
+    chk("多轮负控: 两轮同浅解 ⇒ 修复率=0.0 (不能把「没修」读成「修了」)",
+        rn["first_try_rate_whole"] == 0.0 and rn["fix_rate"] == 0.0 and rn["final_whole_ok"] == 0,
+        "first=%s fix=%s final=%d" % (rn["first_try_rate_whole"], rn["fix_rate"], rn["final_whole_ok"]))
+
+    cp = correction_prompt(prog[0])
+    tight = (_tight_case(prog[0]) or ({}, -1))[0]
+    chk("修正文案: 含隐藏用例输入与期望输出 (turn1 拿不到的信息), 且不含题面之外的解法提示",
+        tight["stdin"] in cp and tight["expected_stdout"] in cp and tight["stdin"] not in
+        "".join(c["stdin"] for c in prog[0]["public"]), "len=%d" % len(cp))
+
     print("selftest %d/%d" % (ok, ok + len(fails)))
     return 0 if not fails else 1
 
@@ -780,6 +947,9 @@ def main(argv=None) -> int:
     ap.add_argument("--tasks", default="")     # 复用已生成题集 (保证题集哈希可追溯)
     ap.add_argument("--families", default="")  # 定向覆盖: 逗号分隔族白名单(含见证型族)
     ap.add_argument("--dump-tasks", default="", dest="dump_tasks")  # 落盘题集供多解法同批对比
+    ap.add_argument("--turns", type=int, default=1)  # R419: >1 时加修正轮 (同 sid 续上下文)
+    ap.add_argument("--correction", choices=["onfail", "always"], default="onfail",
+                    help="R419: 修正轮触发条件 (onfail=仅首轮未过, 前提为真; always=对照臂)")
     ap.add_argument("--out", default="")
     ap.add_argument("--selftest", action="store_true")
     a = ap.parse_args(argv)
@@ -809,17 +979,24 @@ def main(argv=None) -> int:
     print("题集: %d 题 (kind=%s seed=%s) sha=%s" % (len(raw), a.kind, a.seed, sha))
     print("解法: %s" % a.solver)
     os.environ["PROBE_NS_SEED"] = str(a.seed or 0)   # 无 --tag 时归档名用 s<seed> 命名空间
-    summary = run(raw, a.solver, a.timeout, a.solve_timeout, a.limit, a.tag)
+    summary = run(raw, a.solver, a.timeout, a.solve_timeout, a.limit, a.tag,
+                  turns=a.turns, correction=a.correction)
     summary["taskset_sha"] = sha
     summary["kind_arg"] = a.kind
     summary["seed"] = a.seed
 
-    out = a.out or os.path.join(DATA, "probe-%s-seed%s.json" % (_solver_id(a.solver).replace("/", "_"), a.seed))
+    out = a.out or os.path.join(DATA, _out_name(a.solver, a.seed, a.tag, a.turns))
     os.makedirs(os.path.dirname(out), exist_ok=True)
     with open(out, "w", encoding="utf-8") as fh:
         json.dump(summary, fh, ensure_ascii=False, indent=2)
     print("→ %s" % out)
     print("通过率: %d/%d = %.4f  (%.2fs)" % (summary["passed"], summary["total"], summary["rate"], summary["elapsed_s"]))
+    if a.turns > 1:
+        print("轮数: 实际落盘 %d / 期望 %d (缺 %d)" % (summary["rounds_observed"],
+              summary["rounds_expected"], summary["rounds_missing"]))
+        print("首次通过率(首轮整题全对): %s  修复率(首轮未过→修正轮过): %s  回归=%d  饱和=%s  修正轮=%s" % (
+            summary["first_try_rate_whole"], summary["fix_rate"], summary["regressed"],
+            summary["saturated"], summary["correction_mode"]))
     print("失败模式: %s" % json.dumps(summary["taxonomy"], ensure_ascii=False))
     print("按族: %s" % json.dumps({k: v["rate"] for k, v in summary["by_family"].items()}, ensure_ascii=False))
     return 0
