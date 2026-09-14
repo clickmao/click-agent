@@ -1,0 +1,70 @@
+{
+  "C1 形态闸 (AOT 原生 + IL 负控)": {
+    "state": "PASS",
+    "detail": "每格跑测前 fail-closed 自证; 见 prov-*.json"
+  },
+  "C2 外部真值口径": {
+    "state": "PASS",
+    "detail": "计数只取桩侧 calls-*.jsonl (stub_openai.py 落盘), 不取宿主自报"
+  },
+  "C3 k=6 判官远端调用清零": {
+    "state": "PARTIAL",
+    "detail": "C.judge_calls=1 (原 A=4); 残余来自 fail-visible 兜底 (打点 local=2 ∧ remote_fallback=1)"
+  },
+  "C5 k=6 用户轮 token 降幅≥30%": {
+    "state": "PASS",
+    "detail": "A=14081 → C=4561 (−67.6%); 远端调用 10→3"
+  },
+  "C6 k=6 相对 R425 臂B 同格再降": {
+    "state": "PASS",
+    "detail": "R425 B=4721tok/6调用 → R426 C=4561tok/3调用 (Δ=-164tok); 门 Pass 数 B=2 → C=2 (翻转 +0)"
+  },
+  "C9 k=6 无设备负控 (增益归因 r1)": {
+    "state": "PASS",
+    "detail": "D=14081tok/10调用 ≡ A=14081tok/10调用; 打点 {'rule': 2, 'local': 0, 'remote': 0, 'remote_fallback': 4}"
+  },
+  "C7 k=6 开关关 = 零回归": {
+    "state": "PASS",
+    "detail": "B=4725tok/6调用 (judge 4) vs A=14081tok/10调用"
+  },
+  "C7b k=6 与 R425 臂A 同格跨轮一致": {
+    "state": "PASS",
+    "detail": "R425 A=10调用/14069tok vs R426 A=10调用/14081tok (Δ=+12tok=+0.09%)"
+  },
+  "C3 k=8 判官远端调用清零": {
+    "state": "PARTIAL",
+    "detail": "C.judge_calls=1 (原 A=3); 残余来自 fail-visible 兜底 (打点 local=2 ∧ remote_fallback=1)"
+  },
+  "C5 k=8 用户轮 token 降幅≥30%": {
+    "state": "PASS",
+    "detail": "A=13576 → C=2586 (−81.0%); 远端调用 9→2"
+  },
+  "C6 k=8 相对 R425 臂B 同格再降": {
+    "state": "FAIL",
+    "detail": "R425 B=166tok/3调用 → R426 C=2586tok/2调用 (Δ=+2420tok); 门 Pass 数 B=0 → C=1 (翻转 +1)"
+  },
+  "C4 k=8 跳过轮完全零远端": {
+    "state": "FAIL",
+    "detail": "C 仍有 1 次主链远端调用 (门翻转新增 1 次 ⇒ 单次 ≈2500 tok, 远超判官省下的 0tok)"
+  },
+  "C7 k=8 开关关 = 零回归": {
+    "state": "PASS",
+    "detail": "B=166tok/3调用 (judge 3) vs A=13576tok/9调用"
+  },
+  "C7b k=8 与 R425 臂A 同格跨轮一致": {
+    "state": "PASS",
+    "detail": "R425 A=9调用/13564tok vs R426 A=9调用/13576tok (Δ=+12tok=+0.09%)"
+  },
+  "C8 二进制身份 (题: 被测物自证)": {
+    "state": "PASS",
+    "detail": "臂间 sha 唯一=True"
+  },
+  "C11 单测 + AOT IL 警告": {
+    "state": "PASS",
+    "detail": "单测 23/23 通过 (J1..J14 (配置语义/正常路径/失败可见/记账违规/取消上抛/规范化纯函数/配置解析)); AOT IL 警告=0; sha=538c4e05539734ea…; 两次独立 publish 逐位相同; 「二进制含新代码」由臂 A/C 打点行为自证 (strings 扫描对本 AOT 产物无判别力)"
+  },
+  "C10 本地判官 vs 远端逐轮一致率≥0.8": {
+    "state": "UNDECIDABLE",
+    "detail": "对手是本地桩 (stub 对所有请求回同一句桩应答 ⇒ 恒映射 Neutral), **无判别力**; 读数 A(非规则层 kind)=['Neutral', 'Neutral', 'Neutral', 'Neutral'] vs C=['Correct', 'Neutral', 'Neutral'] 不可作为一致性证据。本地判官语义正确性只有预检 3 例抽查 (见 §5)。"
+  }
+}

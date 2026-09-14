@@ -106,6 +106,12 @@ public sealed class LocalChannelConfig
     /// <summary>R413 前置门: 允许链在「本轮无新增诉求」时跳过远端主调用 (默认 false = 零回归)。</summary>
     public bool TurnGate { get; set; }
 
+    /// <summary>
+    /// R426: 关系判官 (CorrectionDetector L2 微判定) 本地优先 (默认 false = 零回归)。
+    /// 开 = 该次微判定先问 r1; 本地不可用/未判定 ⇒ **远端兜底**(绝不静默给结论)。
+    /// </summary>
+    public bool RelationJudge { get; set; }
+
     /// <summary>配置路径非空且文件存在 = 通道就绪</summary>
     public bool IsReady => !string.IsNullOrEmpty(ModelPath) && File.Exists(ModelPath);
 }
@@ -194,6 +200,7 @@ public sealed class ModelCatalog
                     : new List<string>(),
                 AllowGeneral = ld.TryGetValue("allow_general", out var ag) && ag is bool agb && agb,
                 TurnGate = ld.TryGetValue("turn_gate", out var tg) && tg is bool tgb && tgb,
+                RelationJudge = ld.TryGetValue("relation_judge", out var rj) && rj is bool rjb && rjb,
             };
         }
         if (section.TryGetValue("balance_schemes", out var bs) && bs is Dictionary<string, object?> schemes)

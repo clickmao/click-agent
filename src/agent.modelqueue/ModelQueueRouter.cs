@@ -242,6 +242,79 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         }
     }
 
+    /// <summary>
+    /// R426: 关系判官 (CorrectionDetector L2 微判定) 本地优先 —
+    /// 本地端口已注册 且 配置 <c>local.relation_judge=true</c> (默认 false ⇒ 零回归)。
+    /// </summary>
+    public bool RelationJudgeEnabled => _localPort is not null && _catalog.LocalChannel.RelationJudge;
+
+    /// <summary>R426: 关系判官计数/依据 (可观测: Local==0 ∧ Fallback&gt;0 ⇒ 本地未生效, 不靠猜)。</summary>
+    public RelationJudgeCounters RelationJudge { get; } = new();
+
+    /// <summary>
+    /// R426: 本地关系判官 (r1)。<c>null</c> ⇒ 本地不可用/失败/记账违规/未解析出字母 ⇒
+    /// 调用方**必须远端兜底** (绝不静默给结论)。
+    ///
+    /// 预算: 调用方 (CorrectionDetector) 给远端的是 64/128 tok — 那是远端 API 的保守值;
+    /// r1 的思考链会把 64 tok 吃光 (R413 实测: 8/16 tok 截断在推理中途 ⇒ 恒未判定),
+    /// 故本地**不复用**调用方预算而用 512 (与前置门同值, 实测思考链 250–350 tok)。
+    /// 取消: 本路径由后台赏罚任务调用 (与远端同语义: 不随单轮 ct 取消, 否则会静默降级成 NEUTRAL)。
+    /// </summary>
+    public async Task<RelationJudgeOutcome?> JudgeRelationLocalAsync(
+        string systemPrompt, string judgePrompt, CancellationToken ct = default)
+    {
+        var port = _localPort;
+        if (port is null)
+        {
+            RelationJudge.RecordFallback("no_local_port");
+            return null;
+        }
+        var cfg = _catalog.LocalChannel;
+        var maxTokens = Math.Max(cfg.MaxTokens, 512);
+
+        RelationJudge.RecordAttempt();
+        try
+        {
+            var turns = new List<LocalChatTurn>();
+            if (!string.IsNullOrEmpty(systemPrompt))
+                turns.Add(new LocalChatTurn("system", systemPrompt));
+            turns.Add(new LocalChatTurn("user", judgePrompt));
+
+            var outcome = await port.GenerateAsync(new LocalGenerationRequest
+            {
+                SessionKey = "r426:relation-judge",
+                TurnIndex = 1,
+                Turns = turns,
+                MaxTokens = maxTokens,
+            }, ct).ConfigureAwait(false);
+
+            if (!outcome.Success || string.IsNullOrWhiteSpace(outcome.Content))
+            {
+                RelationJudge.RecordFallback("failed_or_empty");
+                return null;
+            }
+            if (!outcome.AccountingConsistent)
+            {
+                RelationJudge.RecordAccountingViolation("tokens_evaluated != prompt_n + cache_n");
+                return null;
+            }
+            if (!RelationLetterJudge.TryNormalize(outcome.Content, out var letter))
+            {
+                RelationJudge.RecordFallback("unparsed");
+                return null;
+            }
+
+            RelationJudge.RecordLocal(letter);
+            return new RelationJudgeOutcome(letter, outcome.Content ?? string.Empty, outcome.GeneratedTokens);
+        }
+        catch (OperationCanceledException) { throw; }
+        catch (Exception ex)
+        {
+            RelationJudge.RecordFallback("exception:" + ex.GetType().Name);
+            return null;
+        }
+    }
+
     /// <summary>被跳过轮的本地回复 (本地生成; 失败 → 固定兜底串, 保持"有回复"不变式)。</summary>
     /// <summary>
     /// R413: 被跳过轮的回复 —— **非 LLM 模板** (确定性、零 token、零延迟)。

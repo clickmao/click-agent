@@ -143,12 +143,15 @@ public class IndustrialAgentV2 : AgentBase
     private readonly System.Collections.Concurrent.ConcurrentDictionary<string, string> _lastReplyBySession = new();
     private readonly agent.roles.FailureClusters _failureClusters = new();
 
+    /// <summary>R365/R426: 纠正检测微 prompt 的系统行 — 远端与本地**同一输入面** (不许两套提示)。</summary>
+    private const string CorrectionJudgeSystem = "只输出一个字母。";
+
     /// <summary>R365: 纠正检测微 prompt 通道 (走模型队列; ~140 tok/次)。</summary>
     private async Task<(string Content, int TokensUsed)> DetectViaLlm(string prompt, int maxTokens)
     {
         var resp = await _modelRouter!.CallAsync(new agent.modelqueue.QueuePrompt
         {
-            SystemPrompt = "只输出一个字母。",
+            SystemPrompt = CorrectionJudgeSystem,
             UserMessage = prompt,
             EstimatedTokens = prompt.Length / 2,
         }, agent.modelqueue.TaskKindHint.ContextCompression, "general", CancellationToken.None);
@@ -1622,10 +1625,45 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                         {
                             try
                             {
+                                // R426: 关系判官 caller 选择 —— 开关开且端口在 ⇒ 本地优先 (r1),
+                                // 本地不可用/失败/未解析出字母 ⇒ 远端兜底 (绝不静默给结论)。
+                                var judgeSource = "remote";
+                                var judgePromptLen = 0;
+                                var judgeMs = 0L;
+                                var judgeLetter = "";
                                 var verdict = await agent.roles.CorrectionDetector.JudgeAsync(
                                     question, lastReply ?? "",
-                                    async (prompt, maxTokens) => await DetectViaLlm(prompt, maxTokens), ct);
+                                    async (prompt, maxTokens) =>
+                                    {
+                                        judgePromptLen = prompt.Length;
+                                        var t0 = Environment.TickCount64;
+                                        if (_modelRouter?.RelationJudgeEnabled == true)
+                                        {
+                                            // 本地调用不随单轮 ct 取消 (与远端同语义: 后台赏罚任务不能被轮生命周期掐掉,
+                                            // 否则 CorrectionDetector 会把取消吞成 NEUTRAL 而非降级)。
+                                            var local = await _modelRouter.JudgeRelationLocalAsync(
+                                                CorrectionJudgeSystem, prompt, CancellationToken.None);
+                                            if (local is not null)
+                                            {
+                                                judgeSource = "local";
+                                                judgeLetter = local.Letter;
+                                                judgeMs = Environment.TickCount64 - t0;
+                                                return (local.Letter, local.CompletionTokens);
+                                            }
+                                            judgeSource = "remote_fallback";
+                                        }
+                                        var remote = await DetectViaLlm(prompt, maxTokens);
+                                        judgeLetter = (remote.Content ?? string.Empty).Trim();
+                                        judgeMs = Environment.TickCount64 - t0;
+                                        return remote;
+                                    }, ct);
                                 GrowthLedger.Record(verdict.Kind, domainKey);
+                                agent.config.AgentTelemetry.Emit("correction_judge", "IndustrialAgentV2",
+                                    ("source", judgeSource), ("kind", verdict.Kind.ToString()), ("signal", verdict.Signal),
+                                    ("letter", judgeLetter), ("prompt_len", judgePromptLen), ("ms", judgeMs),
+                                    ("tokens", verdict.TokensUsed),
+                                    ("msg_head", question.Length > 18 ? question.Substring(0, 18) : question),
+                                    ("session", memSession.Id), ("domain", domainKey));
                             }
                             catch { /* 赏罚失败不影响主链 */ }
                         }, ct);

@@ -441,3 +441,90 @@ public sealed class TurnGateCounters
         LastBasis = "gate:accounting_violation:" + reason + "→remote";
     }
 }
+
+/// <summary>R426: 本地关系判官结论 (字母 ∈ {C,A,N}; 交给 CorrectionDetector 的解析面, 不另立语义)。</summary>
+public sealed record RelationJudgeOutcome(string Letter, string Raw, int CompletionTokens);
+
+/// <summary>R426: 关系判官本地化计数 (可观测 — <c>Local==0 ∧ Fallback&gt;0</c> ⇒ 本地未生效, 不靠猜)。</summary>
+public sealed class RelationJudgeCounters
+{
+    private long _attempts;
+    private long _local;
+    private long _fallback;
+    private long _accountingViolations;
+
+    public long Attempts => Interlocked.Read(ref _attempts);
+    public long Local => Interlocked.Read(ref _local);
+    public long Fallback => Interlocked.Read(ref _fallback);
+    public long AccountingViolations => Interlocked.Read(ref _accountingViolations);
+    public string? LastSource { get; private set; }
+    public string? LastLetter { get; private set; }
+
+    public void RecordAttempt() => Interlocked.Increment(ref _attempts);
+
+    public void RecordLocal(string letter)
+    {
+        Interlocked.Increment(ref _local);
+        LastSource = "local";
+        LastLetter = letter;
+    }
+
+    public void RecordFallback(string reason)
+    {
+        Interlocked.Increment(ref _fallback);
+        LastSource = "remote_fallback:" + reason;
+    }
+
+    public void RecordAccountingViolation(string reason)
+    {
+        Interlocked.Increment(ref _accountingViolations);
+        LastSource = "local:accounting_violation:" + reason + "→remote";
+    }
+}
+
+/// <summary>
+/// R426: 本地关系判官输出规范化 (纯函数, 可机检 — 不依赖端口/网络)。
+///
+/// 纪律与 <see cref="TurnGateJudge.Parse"/> 同源 (R413 实测铁律): **绝不在思考链正文里找标记**
+/// (那等于把增益建在噪声上)。只认「思考块闭合之后」的结论区:
+/// <list type="bullet">
+/// <item>有开无闭 (被 max_tokens 截断) ⇒ 未判定 ⇒ 调用方**远端兜底**;</item>
+/// <item>结论区无独立字母 ⇒ 未判定 ⇒ 远端兜底 (绝不猜成 Neutral — 「没测到」≠「判过」);</item>
+/// <item>多个独立字母 ⇒ 取**最后**一个 (结论写在推理之后)。</item>
+/// </list>
+/// </summary>
+public static class RelationLetterJudge
+{
+    /// <summary>规范化: 成功 → <c>true</c> 且 <paramref name="letter"/> ∈ {C,A,N}。</summary>
+    public static bool TryNormalize(string? raw, out string letter)
+    {
+        letter = string.Empty;
+        if (string.IsNullOrWhiteSpace(raw)) return false;
+        var text = raw.Trim();
+
+        var close = text.LastIndexOf(TurnGateJudge.ThinkClose, StringComparison.Ordinal);
+        if (close >= 0)
+        {
+            text = text[(close + TurnGateJudge.ThinkClose.Length)..];
+        }
+        else if (text.LastIndexOf(TurnGateJudge.ThinkOpen, StringComparison.Ordinal) >= 0)
+        {
+            return false;   // thinking_truncated: 结论还没写出来
+        }
+
+        text = text.Trim();
+        if (text.Length == 0) return false;
+
+        var last = -1;
+        var pick = '\0';
+        foreach (System.Text.RegularExpressions.Match m in
+                 System.Text.RegularExpressions.Regex.Matches(text, @"(?<![A-Za-z])([CcAaNn])(?![A-Za-z])"))
+        {
+            last = m.Index;
+            pick = char.ToUpperInvariant(m.Groups[1].Value[0]);
+        }
+        if (last < 0) return false;
+        letter = pick.ToString();
+        return true;
+    }
+}

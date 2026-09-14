@@ -1345,3 +1345,23 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **共享文档破坏（一等事件，已修）**: 本节的写入被并发写入者以「逐字符换行」形态落盘（1,512 行 × 1 字符）⇒ **行级判读全部假阴性**（`grep R427` = 0 而那两行文本其实都在）。修复 = 按「逐字符拼接等同性」机器证明后重排为正常行；⚠️ 后续任何写入 `improvements.md` 的轮次都必须做**行结构检测**（1 字符行连跑即判坏）。
 - **产物**: `eval/capability/r427/{precheck_position.py, precheck-r427.json, summarize_r427.py, README-evidence.md, detect_line_explosion.py}`；`docs/plans/v0.48.0-r427-duplicate-tie-precheck.md`。
 - **下轮预注册（R428）**: 确定性 tie-break / 同文折叠（排序层），真机成对 AOT；判据 = 同分同文两条命中存在与输入列举顺序无关的全序 ∧ 非同文同分对误折叠 = 0（负控）∧ 命中集合与排序不变量成对机检。
+
+## R426 · 关系判官（CorrectionDetector L2 微判定）本地化 —— 「每轮一次 ~45 tok 远端小调用」清零
+
+- **靶点（用户令 KPI 的直接残余项）**: R425 已证「门跳过主调用」，但**跳过轮仍残留 1 次远端判官调用**（R425 证据里 k8 格 3 次调用**全是**判官）⇒ 本轮的 1 步 = 把该微判定的 caller 换成 r1 本地优先。
+- **改动**: `ModelCatalog.cs` 增 `local.relation_judge` 键（默认 false）；`LocalGenerationPort.cs` 增 `RelationLetterJudge.TryNormalize`（**只在闭合 `</think>` 之后的结论区**取独立 C/A/N，截断/无字母 ⇒ 未判定；语言无关纯函数）、`RelationJudgeCounters`；`ModelQueueRouter.cs` 增 `RelationJudgeEnabled`/`JudgeRelationLocalAsync`（预算 512 ≠ 调用方 64/128；失败/未判定/记账违规 ⇒ 返回 null ⇒ 调用方**必须**远端兜底）；`IndustrialAgentV2.cs` 判官 caller 选择 + `correction_judge` 打点（source/kind/letter/ms/tokens/prompt_len/msg_head）。
+- **读数（桩侧真值, NS=`-r426b1`, AOT sha `538c4e05…`, IL 警告 0, 单测 23/23）**:
+
+| 臂 | k6 调用/判官/tok | k8 调用/判官/tok |
+|---|---|---|
+| A 本地关 | 10 / 4 / 14081 | 9 / 3 / 13576 |
+| B 门开+judge关（R425 口径） | 6 / 4 / 4725 | 3 / 3 / 166 |
+| C 门开+judge本地 | **3 / 1 / 4561** | 2 / 1 / 2586 |
+| D 负控（无模型） | 10 / 4 / 14081（≡A） | — |
+
+- **判据**: PASS 12 / PARTIAL 2 / FAIL 2 / UNDECIDABLE 1。token 降幅 A→C = **k6 −67.6% / k8 −81.0%**（≥30% 达标）；判官远端调用 4→1、3→1（PARTIAL：残余是 fail-visible 兜底）；负控 D ≡ A 逐位 ⇒ **增益归因 r1 成立**。
+- **反例（必须记）**: k8 格出现**门判翻转**（B 6×Skip → C 5×Skip+1×Pass）⇒ +1 次主链调用（≈2524 tok）**超过**判官省下的量级，该格 token 反高于 R425 臂B（2586 vs 166）⇒ C6/C4 **FAIL**。
+- **未测到（不宣称）**: 本地判官 vs **真远端判官**的一致性（对手是桩 ⇒ 恒 Neutral，无判别力，判 UNDECIDABLE）；跨轮 +12 tok（0.09%）漂移不追因。
+- **下轮首要候选**: ① 门与判官**争用隔离**（同一 r1 端口下门判不稳，代价远超判官收益）；② 打点修复：规则层命中现被记为 `source=remote`（须单列 `rule` + 兜底原因）；③ `allowed_kinds` snake_case 永不命中的白名单静默失效；④ 本地判官人工金标（C/A/N 各 ≥20 条）。
+- **产物**: `eval/rover/r426/{run_arm.sh,run_grid.sh,analyze.py,prov_check.py,stub_openai.py,drive_task.py,analyze.py,c11.json,README-evidence.md,verdicts.json}`；`docs/plans/v0.47.0-r426-relation-judge-localization.md`。
+- **轮号**: R426 由本支占用（17:48 占用闸空 ⇒ 起跑 17:54）；并发支已按铁律**让号取 R427**（对侧 `improvements.md` 已登记，本侧不改写对侧产物）。
