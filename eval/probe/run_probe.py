@@ -593,15 +593,21 @@ def solve(task: dict, solver: str, solve_timeout: float = 300.0) -> tuple:
 
 def run(tasks_list, solver: str, timeout: float, solve_timeout: float = 300.0,
         limit: int = 0, tag: str = "") -> dict:
+    """跑一批题并归档回复。
+
+    归属铁律 (R418): 归档回复名必须带**命名空间**(--tag 或默认 s<seed>), 否则多臂/多轮
+    同名文件互相覆盖 ⇒ 过程指标 (promptTokens/墙钟/turn) 会静默张冠李戴。
+    """
     per, tax_all, t0 = [], {}, time.time()
     if limit:
         tasks_list = tasks_list[:limit]
+    ns = tag or ("s%d" % int(os.environ.get("PROBE_NS_SEED", "0") or 0))
     rep_dir = os.path.join(DATA, "replies")
     os.makedirs(rep_dir, exist_ok=True)
     for t in tasks_list:
         reply, is_oracle, smeta = solve(t, solver, solve_timeout)
         safe = solver.replace(":", "_").replace("/", "_")
-        rp = os.path.join(rep_dir, "%s%s-%s.txt" % (safe, tag, t["tid"]))
+        rp = os.path.join(rep_dir, "%s%s-%s.txt" % (safe, ns, t["tid"]))
         with open(rp, "w", encoding="utf-8") as fh:      # 原始回复留档 (诊断/审计)
             fh.write(reply or "")
         smeta["reply_path"] = os.path.relpath(rp, ROOT)
@@ -643,6 +649,7 @@ def run(tasks_list, solver: str, timeout: float, solve_timeout: float = 300.0,
         "solver": solver,
         "oracle": solver == "oracle",
         "solver_id": _solver_id(solver),
+        "reply_ns": ns,
         "ts": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
         "elapsed_s": round(time.time() - t0, 2),
         "n_tasks": len(per),
@@ -801,6 +808,7 @@ def main(argv=None) -> int:
 
     print("题集: %d 题 (kind=%s seed=%s) sha=%s" % (len(raw), a.kind, a.seed, sha))
     print("解法: %s" % a.solver)
+    os.environ["PROBE_NS_SEED"] = str(a.seed or 0)   # 无 --tag 时归档名用 s<seed> 命名空间
     summary = run(raw, a.solver, a.timeout, a.solve_timeout, a.limit, a.tag)
     summary["taskset_sha"] = sha
     summary["kind_arg"] = a.kind

@@ -158,6 +158,25 @@ def probe_scores() -> list[dict]:
     return rows
 
 
+def process_costs() -> dict:
+    """探针过程/成本 (R418): `data/probe/process-metrics*.json` → {probe_file: 读数}。
+
+    口径: 归档回复**无命名空间**的旧批次不可归属 ⇒ 提取器记 n/a（不猜、不按 0 摊）；
+    只有 prompt 侧与墙钟，**无 completionTokens**（链不落该字段）⇒ 不得当总量读。
+    """
+    out: dict = {}
+    for f in sorted((ROOT / "data" / "probe").glob("process-metrics*.json")):
+        try:
+            d = json.loads(f.read_text(encoding="utf-8"))
+        except Exception:  # noqa: BLE001
+            continue
+        for k, v in (d.get("runs") or {}).items():
+            if "error" not in v:
+                v["_src"] = f.name
+                out[k] = v
+    return out
+
+
 def round_commits(n: int = 25) -> tuple[list[tuple[str, str]], int]:
     log = sh("git", "log", f"-n{n}", "--pretty=%h|%s")
     rows: list[tuple[str, str]] = []
@@ -192,6 +211,7 @@ def main() -> int:
     ds = d_breakpoints()
     probes = probe_verdicts()
     scores = probe_scores()
+    costs = process_costs()
     commits, ahead = round_commits()
     reg_rows, reg_round, kpi_rounds = ledgers()
 
@@ -225,16 +245,27 @@ def main() -> int:
     L.append("打分单元 = **整题全对**（该题全部隐藏用例通过才算过）；`rate` 为用例级率（旁读）。")
     L.append("**饱和** = 整题全对 ∧ 用例级率均为 1.0 ⇒ 该题集对本解法已到天花板，**不能再用于度量质量**（需换更难族）。")
     L.append("")
-    L.append("| 文件 | 解法 | 题集 | 题数 | 整题全对 | rate(用例级) | 失败模式 | 判定 |")
-    L.append("|---|---|---|---|---|---|---|---|")
+    L.append("| 文件 | 解法 | 题集 | 题数 | 整题全对 | rate(用例级) | 失败模式 | 判定 | tokens/题 | tokens/满分题 | turn≤ | 墙钟均(ms) | 过程 n/a |")
+    L.append("|---|---|---|---|---|---|---|---|---|---|---|---|---|")
     for r in scores:
         if "err" in r:
             L.append(f"| `{r['file']}` | - | - | - | - | - | {r['err']} | 不可读 |")
             continue
-        L.append("| `%s` | %s | %s seed=%s | %d | %d/%d=%.4f | %.4f | %s | %s |" % (
+        c = costs.get(r["file"]) or {}
+
+        def _n(v, nd=1):
+            return "n/a" if v is None else ("%.*f" % (nd, v))
+
+        L.append("| `%s` | %s | %s seed=%s | %d | %d/%d=%.4f | %.4f | %s | %s | %s | %s | %s | %s | %s |" % (
             r["file"], r["solver"], r["kind"], r["seed"], r["n"], r["whole"], r["n"],
             r["whole_rate"], r["rate"], json.dumps(r["modes"], ensure_ascii=False),
-            "**饱和**" if r["sat"] else "非饱和"))
+            "**饱和**" if r["sat"] else "非饱和",
+            _n(c.get("tokens_per_task")), _n(c.get("tokens_per_whole_ok_task")),
+            "-" if c.get("turns_max") is None else str(c.get("turns_max")),
+            _n(c.get("wall_ms_avg"), 0), str(c.get("na_count", "n/a"))))
+    L.append("")
+    L.append("过程列（R418）: `tokens/题` = prompt 侧均值（**无 completionTokens**）；`turn≤` > 1 ⇒ 该题发生追问，属成本异常，须可见；")
+    L.append("`n/a` = 归档回复缺失或**不可归属**（旧批次回复名无命名空间 ⇒ 跨轮同名覆盖，不猜）。n/a **不计入均值分母**，也不当 0。")
     L.append("")
     L.append("## 4. 轮次提交（本地；推送暂停令生效）")
     L.append("")

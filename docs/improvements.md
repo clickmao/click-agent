@@ -1185,3 +1185,13 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **诚实结论**: 「加难族」这条路本轮**未打破天花板**（链在程序题上比预期强）；质量从「计数」变成「连续分数」仍需**换维度**（每题 tokens / 轮数 / 首次通过率——对饱和题集仍有区分度，且直接对齐用户 KPI 口径）。
 - **计划**: `docs/plans/v0.38.0-r417-probe-anti-saturation.md`；证据 `eval/rover/r417/`；登记 `docs/verification-registry.json` `r417.probe-anti-saturation`（L4）。
 - **文档缺口（如实登记）**: `docs/improvements.md` 的 **R404–R416 轮节未回填**；`docs/plans/v715_dev_plan.taskplan.json` 只登记到 R412（R413–R417 未登记）。
+
+### R418 (2026-09-14) — 探针「过程/成本」维度 KPI：成本读数的根因是**归属缺失**，不是缺字段
+
+- **发现路径**: 承接 R417 结论「质量维度被天花板压住 ⇒ 换维度（每题 tokens / 轮数 / 首次通过率）」⇒ 写提取器后**先在旧归档上试跑**，三份不同 run 读出**完全相同的成本数**。
+- **根因**: ① `eval/probe/run_probe.py` 回复名 `%s%s-%s`（`--tag` 默认 `""`）⇒ 同一 solver 的不同臂**写同一路径**（R417 已暴露「覆盖」）；② 无命名空间的旧批次**无法确定性归属** ⇒ 若直接取第一个候选，会给出**看似合理的错数**（比缺读数更坏，因为它会被当成证据）。这与 R407 的「自算错而自洽」同族：**错在归属层，不在解析层**。
+- **交付**: 新 `eval/probe/process_metrics.py`（349 行）：质量取**判定器产物**、成本取**归档回复原文**；归属三级 = `reply_ns` 精确名 → **时间窗**（`ts - elapsed_s - 5s … ts + 60s`，取自 probe JSON 的 `ts`/`elapsed_s`）→ 否则 n/a；**窗内多候选判歧义、绝不取第一个**；**n/a 不记 0**、均值剔除 n/a；首次通过率只数 `ok ∧ turn==1`，turn 未知的满分题单列 `first_try_unknown`（保守）。`run_probe.py` 归档名带 seed 命名空间（`agents20260916-p001.txt`）+ 摘要记 `reply_ns`。digest §3 增成本列，**质量与成本拼成同一行**（tokens/题、tokens/满分题、turn≤、墙钟均、过程 n/a）。
+- **读数（真机 AOT，`json_mini` n=3 seed=20260916）**: 整题全对 **2/3 = 0.6667**、用例级 **52/53 = 0.9811**、**tokens/题 = 9151.0**（prompt 侧）、tokens/满分题 9189.0、墙钟均 **77.7 s/题**、**turn≤1**（零多轮/零追问）、n/a 0、畸形 0。**成对负控**（`mutation:json_loose` n=4，同 seed）整题全对 **0/4**、用例级 0.7324 ⇒ 判别力仍在；该臂不走 LLM ⇒ 成本记 **4×n/a**（记 0 会伪造「零成本」）。
+- **诚实边界**: ① 链不落 `completionTokens` ⇒ 只有 **prompt 侧 + 墙钟**；② 探针为单轮 ⇒ 「轮数」目前主要作**异常检测**，首次通过率与整题全对率同分母（真正区分要等链路出现重试/追问）；③ 旧批次（R413–R417，无命名空间）成本**一律 n/a，不做回填**（回填 = 伪造归属）；④ n=3 小样本，非分布。
+- **仪器**: `process_metrics --selftest` **14/14**（含反张冠李戴负控、n/a 分母负控、歧义负控）；判定器 29/29；run_probe 18/18；tasks 45/45；kpi_probe 24/24。TaskPlan 已登记到 R418（**21 节点**，末条 `dev-probe-process-kpi`）。
+- **计划**: `docs/plans/v0.39.0-r418-process-kpi.md`；证据 `eval/rover/r418/`；登记 `docs/verification-registry.json` `r418.probe-process-kpi`（L4）。

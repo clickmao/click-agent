@@ -34,31 +34,38 @@
 打分单元 = **整题全对**（该题全部隐藏用例通过才算过）；`rate` 为用例级率（旁读）。
 **饱和** = 整题全对 ∧ 用例级率均为 1.0 ⇒ 该题集对本解法已到天花板，**不能再用于度量质量**（需换更难族）。
 
-| 文件 | 解法 | 题集 | 题数 | 整题全对 | rate(用例级) | 失败模式 | 判定 |
-|---|---|---|---|---|---|---|---|
-| `probe-agent-seed20260913.json` | agent | both seed=20260913 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** |
-| `probe-m6-agent.json` | agent | both seed=0 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** |
-| `probe-m6-hardcode.json` | mutation:hardcode | program seed=20260913 | 3 | 0/3=0.0000 | 0.1818 | {"partial": 3} | 非饱和 |
-| `probe-m6-oracle.json` | oracle | both seed=20260913 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** |
-| `probe-mutation:hardcode-seed20260913.json` | mutation:hardcode | program seed=20260913 | 3 | 0/3=0.0000 | 0.0625 | {"partial": 2, "wrong_output": 1} | 非饱和 |
-| `probe-oracle-seed20260913.json` | oracle | both seed=20260913 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** |
-| `probe-oracle-seed20260915.json` | oracle | program seed=20260915 | 3 | 3/3=1.0000 | 1.0000 | {"ok": 3} | **饱和** |
-| `probe-r417-agent-seed20260913.json` | agent | both seed=20260913 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** |
-| `probe-r417-hard-agent.json` | agent | program seed=20260914 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** |
-| `probe-r417-json-agent.json` | agent | program seed=20260915 | 3 | 0/3=0.0000 | 0.5000 | {"wrong_output": 1, "runtime_error": 1, "partial": 1} | 非饱和 |
-| `probe-r417-json-mut.json` | mutation:json_loose | program seed=20260915 | 4 | 0/4=0.0000 | 0.7500 | {"partial": 4} | 非饱和 |
-| `probe-r417-json-oracle.json` | oracle | program seed=20260915 | 2 | 2/2=1.0000 | 1.0000 | {"ok": 2} | **饱和** |
-| `probe-r417-json-regrade.json` | file:/tmp/r417-replay | both seed=0 | 3 | 1/3=0.3333 | 0.8704 | {"partial": 2, "ok": 1} | 非饱和 |
-| `probe-r417-mut-topodfs.json` | mutation:topo_dfs | program seed=20260914 | 4 | 0/4=0.0000 | 0.4615 | {"partial": 4} | 非饱和 |
-| `probe-r417-mut-vmnoerr.json` | mutation:vm_noerr | program seed=20260914 | 4 | 0/4=0.0000 | 0.6042 | {"timeout": 2, "runtime_error": 2} | 非饱和 |
-| `probe-r417-new-oracle.json` | oracle | program seed=20260914 | 4 | 4/4=1.0000 | 1.0000 | {"ok": 4} | **饱和** |
+| 文件 | 解法 | 题集 | 题数 | 整题全对 | rate(用例级) | 失败模式 | 判定 | tokens/题 | tokens/满分题 | turn≤ | 墙钟均(ms) | 过程 n/a |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `probe-agent-seed20260913.json` | agent | both seed=20260913 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** | n/a | n/a | - | n/a | 6 |
+| `probe-m6-agent.json` | agent | both seed=0 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** | n/a | n/a | - | n/a | 6 |
+| `probe-m6-hardcode.json` | mutation:hardcode | program seed=20260913 | 3 | 0/3=0.0000 | 0.1818 | {"partial": 3} | 非饱和 | n/a | n/a | - | n/a | 3 |
+| `probe-m6-oracle.json` | oracle | both seed=20260913 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** | n/a | n/a | - | n/a | 6 |
+| `probe-mutation:hardcode-seed20260913.json` | mutation:hardcode | program seed=20260913 | 3 | 0/3=0.0000 | 0.0625 | {"partial": 2, "wrong_output": 1} | 非饱和 | n/a | n/a | - | n/a | 3 |
+| `probe-oracle-seed20260913.json` | oracle | both seed=20260913 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** | n/a | n/a | - | n/a | 6 |
+| `probe-oracle-seed20260915.json` | oracle | program seed=20260915 | 3 | 3/3=1.0000 | 1.0000 | {"ok": 3} | **饱和** | n/a | n/a | - | n/a | 3 |
+| `probe-r417-agent-seed20260913.json` | agent | both seed=20260913 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** | 6413.8 | 6413.8 | 1 | 3072 | 0 |
+| `probe-r417-hard-agent.json` | agent | program seed=20260914 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** | 8737.0 | 8737.0 | 1 | 18304 | 4 |
+| `probe-r417-json-agent.json` | agent | program seed=20260915 | 3 | 0/3=0.0000 | 0.5000 | {"wrong_output": 1, "runtime_error": 1, "partial": 1} | 非饱和 | n/a | n/a | - | n/a | 3 |
+| `probe-r417-json-mut.json` | mutation:json_loose | program seed=20260915 | 4 | 0/4=0.0000 | 0.7500 | {"partial": 4} | 非饱和 | n/a | n/a | - | n/a | 4 |
+| `probe-r417-json-oracle.json` | oracle | program seed=20260915 | 2 | 2/2=1.0000 | 1.0000 | {"ok": 2} | **饱和** | n/a | n/a | - | n/a | 2 |
+| `probe-r417-json-regrade.json` | file:/tmp/r417-replay | both seed=0 | 3 | 1/3=0.3333 | 0.8704 | {"partial": 2, "ok": 1} | 非饱和 | n/a | n/a | - | n/a | 3 |
+| `probe-r417-mut-topodfs.json` | mutation:topo_dfs | program seed=20260914 | 4 | 0/4=0.0000 | 0.4615 | {"partial": 4} | 非饱和 | n/a | n/a | - | n/a | 4 |
+| `probe-r417-mut-vmnoerr.json` | mutation:vm_noerr | program seed=20260914 | 4 | 0/4=0.0000 | 0.6042 | {"timeout": 2, "runtime_error": 2} | 非饱和 | n/a | n/a | - | n/a | 4 |
+| `probe-r417-new-oracle.json` | oracle | program seed=20260914 | 4 | 4/4=1.0000 | 1.0000 | {"ok": 4} | **饱和** | n/a | n/a | - | n/a | 4 |
+| `probe-r418-agent.json` | agent | program seed=20260916 | 3 | 2/3=0.6667 | 0.9811 | {"ok": 2, "partial": 1} | 非饱和 | 9151.0 | 9189.0 | 1 | 77699 | 0 |
+| `probe-r418-json-mut.json` | mutation:json_loose | program seed=20260916 | 4 | 0/4=0.0000 | 0.7324 | {"partial": 4} | 非饱和 | n/a | n/a | - | n/a | 4 |
+
+过程列（R418）: `tokens/题` = prompt 侧均值（**无 completionTokens**）；`turn≤` > 1 ⇒ 该题发生追问，属成本异常，须可见；
+`n/a` = 归档回复缺失或**不可归属**（旧批次回复名无命名空间 ⇒ 跨轮同名覆盖，不猜）。n/a **不计入均值分母**，也不当 0。
 
 ## 4. 轮次提交（本地；推送暂停令生效）
 
-- 未推送提交数: **64**
+- 未推送提交数: **66**
 
 | commit | 主题 |
 |---|---|
+| `737a45d` | R418 起步存档: 探针过程/成本维度KPI 侦察事实+设计+待办 (上下文压缩点恢复指针, 未推) |
+| `0488017` | R417 探针反饱和: 3 个高判别力族(topo_min/vm_run/json_mini)+tight_gen 强制规格紧用例+族级缺陷注入负控(正负控成对); 同题复跑确认饱和; 真机仍饱和如实登记; digest 增探针分数段(含饱和标记) |
 | `f36f897` | R416 收工记录: improvements 轮节 + backlog 看板 D2 证据指针 (形式校验 13/13 PASS, 未推) |
 | `2b831ac` | R416 能力自检循环: R371-D2 发布产物自包含 config 仓库外真机验收 (3 臂/6 断言 PASS) |
 | `e53f8c5` | chore: R415 臂执行脚本与本地提交脚本入库 + r413 裸日志入 .gitignore |
@@ -77,8 +84,6 @@
 | `46e0f37` | R409: 通用教训落 skills/delivery-selfcheck (步骤7 口径核查 + 走偏表三行) |
 | `7bb06fa` | R409: 本地 prompt 模板闸门(结构性阻断手拼) + 权威 prompt BOS 口径修正 |
 | `b00917c` | R408: 本地 GGUF 引擎整线退役, 本地推理/嵌入改走 llama.cpp 进程边界 (零 P/Invoke) |
-| `3b20986` | R401 步2: rover 臂测量链三缺陷归因+修复(渲染/臂可用性/预算协同) + 跨实现字节对账 2/2 + 校准常数实测; 新技能 self-verification-blindspots |
-| `cd8feeb` | R407: qwen2 前向对账 —— 定位并修复「全层共用 blk.0 attn bias」(R403–R407 工作区一并提交) |
 
 ## 5. 台账
 

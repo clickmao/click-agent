@@ -26,6 +26,26 @@
 
 `json_mini` 另有 `tight_gen`：**每题强制注入 1 条"合 JSON 但不合本规格"的隐藏用例**（低码点 uXXXX / 浮点 / NaN / 裸 TAB）⇒ 让"通用 JSON 库套用"式解法**确定性地**拿不到整题全对。
 
+## 过程/成本维度（R418）
+
+质量维度会被**饱和**压住（R417），成本维度**不会**：同一题集上 tokens/题、墙钟、轮数仍有区分度。
+
+```bash
+python3 eval/probe/process_metrics.py --selftest                       # 14/14（含反张冠李戴负控）
+python3 eval/probe/process_metrics.py --report                        # 全量人读表
+python3 eval/probe/process_metrics.py --report --glob 'data/probe/probe-r418-*.json' \
+        --out data/probe/process-metrics-r418.json
+```
+
+口径（写死，勿凭字段名推断）：
+
+1. **质量取判定器产物**（`probe-*.json` 的 `per_task`），**成本取归档回复原文**（`replies/*.txt`）；被测量代码自报只作旁读。
+2. **归属先于读数**：run 带 `reply_ns` ⇒ 精确名匹配；否则退化为**时间窗**（`[ts - elapsed_s - 5s, ts + 60s]`）；**窗内多候选 ⇒ 判歧义记 n/a，绝不取第一个**；`ts` 不可解析 ⇒ 不猜。
+3. **n/a ≠ 0**：缺字段记 `n/a` 且**从均值分母剔除**（记 0 会伪造「零成本」）。
+4. **首次通过率**只数 `mode==ok ∧ turns==1`；`turns` 未知的满分题**不数入分子**并单列 `first_try_unknown`。
+5. **口径边界**：链不落 `completionTokens` ⇒ 只有 **prompt 侧 + 墙钟**；探针单轮 ⇒ `turns` 作异常检测。
+6. 归档命名：`<solver><ns>-<tid>.txt`，`ns` = `--tag` 或该 run 的 seed（如 `agents20260916-p001.txt`）；摘要 JSON 记 `reply_ns`。
+
 ## 判分口径（四条铁律）
 
 1. **只认隐藏用例**：公开样例只用于题面，从不参与判分。
