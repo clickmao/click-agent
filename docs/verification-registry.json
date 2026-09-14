@@ -676,6 +676,23 @@
         "eval/rover/r410/prefix-reuse.json"
       ],
       "owner_round": "R410"
+    },
+    {
+      "id": "llamacpp.session.long_lived_generation",
+      "capability": "本地生成**长驻**端口（补 R410 缺的第三条件）: 单例 LlamaCppTextGenerator 在进程内保活一个 llama-server 跨轮复用 + 逐轮喂本地 K2b 台账 LocalSessionCacheLedger（分母按本地引擎语义: 可复用上限 = 上一轮总长 + 上一轮生成，**不套远端 64 单元经验界**）+ **双条件判据**（携带复用率 ≥97% ∧ 前缀绝对长度 ≥4224）+ 口径独立对账钉死（tokens_evaluated = 总长，prompt_n = 重算数）",
+      "level": "L4",
+      "evidence_cmd": "AGENTFRAMEWORK_LLAMA_BIN=<llama-server> ./eval/rover/r411/run_e2e.sh && python3 eval/rover/r411/verify.py && python3 eval/rover/r411/semantics_probe.py && dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~LocalSessionCacheLedgerTests|FullyQualifiedName~LlamaCppPromptAccountingTests",
+      "evidence_path": "eval/rover/r411/",
+      "negative_control": "① 短前缀会话: 携带复用率 99.81% 达标但前缀 497 < 4224 ⇒ **必然判越线**（实测 exit 7，诊断点名绝对长度）—— 比值不是 KPI; ② 无 turns 请求 ⇒ 用法错 exit 2 且不 core dump（实测）; ③ 口径错（把 tokens_evaluated 当新评估数、总长再加 cache_n）⇒ 出现 >1 的物理不可能比率（单测机检 + 实测 1.0302）; ④ 命中 > 可复用上限 ⇒ 弃权记 -1，不出判决; ⑤ 命中未上报 ⇒ 记 Unknown(-1) **不判红**（缺失≠错误）; ⑥ 跨进程两次调用 ⇒ cache_n 归零（R410 实测，本端口不改变该性质）",
+      "covers": [
+        "src/agent.llamacpp/LlamaCppTextGenerator.cs",
+        "src/agent.host/LlamaCppCommand.cs",
+        "src/agent.modelqueue/LocalSessionCacheLedger.cs",
+        "src/agent.tests/LocalSessionCacheLedgerTests.cs",
+        "src/agent.tests/LlamaCppPromptAccountingTests.cs",
+        "eval/rover/r411/"
+      ],
+      "owner_round": "R411"
     }
   ],
   "aot_check_policy": "release_tag_only",

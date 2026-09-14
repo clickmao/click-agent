@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using agent.llamacpp;
+using agent.modelqueue;
 
 namespace agent.host;
 
@@ -25,18 +26,24 @@ namespace agent.host;
 ///   agenthost --llamacpp --model &lt;gguf&gt; --verify-template [--chat-text &lt;s&gt;] [--prompt-file &lt;f&gt;]
 ///   agenthost --llamacpp --model &lt;embed-gguf&gt; --embed-text &lt;text&gt; [--json &lt;out&gt;]
 ///
+///   agenthost --llamacpp --model &lt;gguf&gt; --session-json &lt;req.json&gt; [--session-id &lt;s&gt;] [--context N] [--json &lt;out&gt;]
+///            （R411 长驻多轮: 单进程内一个 server 逐轮生成，逐轮落 K2b 台账；红线越线 ⇒ exit 7）
+///
 /// R409 模板闸门: chat-text 走「模型元数据模板渲染」（服务端 /apply-template）⇒ 结构性无法手拼；
 /// prompt/prompt-file 是**诊断通路**（绕过闸门、计入 LiteralPromptCalls），只用于与外部基线做 token id 逐位对账。
 /// verify-template 对两条通路做 BOS 计数对账: 渲染通路必须恰好 1 个 BOS；字面串在默认 tokenization 下为 2 个（负控）。
 ///
 /// 退出码: 0 正常（含 ids 一致）/ 2 用法错 / 3 id 与基线不一致 / 4 provider 不可用或 HTTP 失败 / 5 其它异常 / 6 模板验证未通过
+///          7 = R411 会话 K2b 红线越线（非首轮前缀复用率未达 97% 且前缀短于算术必需长度）
 /// </summary>
 public static class LlamaCppCommand
 {
     public static async Task<int> RunAsync(string[] args, TextWriter outp, TextWriter errp)
     {
         string? model = null, bin = null, prompt = null, promptFile = null, embed = null, jsonPath = null, expectIds = null, vecOut = null, chatText = null, systemFile = null;
+        string? sessionJson = null, sessionIdOverride = null;
         var verifyTemplate = false;
+        var contextSize = 6144;
         var reuse = CompletionReuse.Reconciliation;   // E2E 默认对账口径; 生产/会话演示须显式 --reuse on
         var maxTokens = 24;
         for (var i = 1; i < args.Length; i++)
@@ -55,6 +62,13 @@ public static class LlamaCppCommand
                     else if (rv is "off" or "reconciliation") reuse = CompletionReuse.Reconciliation;
                     else { errp.WriteLine($"llamacpp: --reuse 只接受 on|off，实到 {rv}"); return 2; }
                     break;
+                case "--session-json": sessionJson = Val(args, ref i); break;
+                case "--session-id": sessionIdOverride = Val(args, ref i); break;
+                case "--context":
+                    var cs = Val(args, ref i);
+                    if (!int.TryParse(cs, NumberStyles.Integer, CultureInfo.InvariantCulture, out contextSize) || contextSize <= 0)
+                    { errp.WriteLine($"llamacpp: --context 非法: {cs}"); return 2; }
+                    break;
                 case "--verify-template": verifyTemplate = true; break;
                 case "--embed-text": embed = Val(args, ref i); break;
                 case "--vec-out": vecOut = Val(args, ref i); break;
@@ -72,8 +86,9 @@ public static class LlamaCppCommand
         }
         if (string.IsNullOrEmpty(model)) { errp.WriteLine("llamacpp: 缺 --model <gguf>"); return 2; }
         var isEmbed = !string.IsNullOrEmpty(embed);
-        if (!isEmbed && !verifyTemplate && string.IsNullOrEmpty(prompt) && string.IsNullOrEmpty(promptFile) && string.IsNullOrEmpty(chatText))
-        { errp.WriteLine("llamacpp: 缺 --chat-text/--prompt/--prompt-file（或 --embed-text / --verify-template）"); return 2; }
+        var isSession = sessionJson is not null;
+        if (!isEmbed && !verifyTemplate && !isSession && string.IsNullOrEmpty(prompt) && string.IsNullOrEmpty(promptFile) && string.IsNullOrEmpty(chatText))
+        { errp.WriteLine("llamacpp: 缺 --chat-text/--prompt/--prompt-file（或 --embed-text / --verify-template / --session-json）"); return 2; }
         if (prompt is not null && promptFile is not null)
         { errp.WriteLine("llamacpp: --prompt 与 --prompt-file 只能给一个"); return 2; }
 
@@ -92,6 +107,42 @@ public static class LlamaCppCommand
             { errp.WriteLine("llamacpp: --system-file 需要同时给 --chat-text"); return 2; }
             try { systemText = await File.ReadAllTextAsync(systemFile).ConfigureAwait(false); }
             catch (Exception ex) { errp.WriteLine($"llamacpp: system 文件不可读 {systemFile}: {ex.Message}"); return 2; }
+        }
+
+        // R411: 长驻多轮会话（单进程内一个 llama-server 跨轮复用；逐轮落 K2b 台账）。
+        // 本路径自管宿主生命周期 ⇒ 必须发生在下面单发 provider 启动之前。
+        if (sessionJson is not null)
+        {
+            // 输入解析失败 ⇒ 用法错 (exit 2)；运行期失败 ⇒ 4/5（与单发通路一致，绝不 core dump）。
+            if (!TryReadSessionRequest(sessionJson, errp, out var request, out var sessionSystemText)) return 2;
+            try
+            {
+                var (session, sessionOk) = await RunSessionAsync(
+                    model, bin, request!, sessionSystemText, sessionIdOverride, maxTokens, contextSize).ConfigureAwait(false);
+                var sjson = JsonSerializer.Serialize(session, LlamaCppE2EJsonContext.Default.LlamaCppSessionResult);
+                outp.WriteLine(sjson);
+                if (jsonPath is not null)
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(jsonPath))!);
+                    await File.WriteAllTextAsync(jsonPath, sjson + "\n").ConfigureAwait(false);
+                }
+                if (!sessionOk)
+                {
+                    errp.WriteLine($"llamacpp: 会话 K2b 红线越线 (violations={session.Violations}, last_eff={session.EffectiveHitRateLast}) ⇒ exit 7");
+                    return 7;
+                }
+                return 0;
+            }
+            catch (LlamaCppException ex)
+            {
+                errp.WriteLine($"llamacpp: {ex.Code}: {ex.Message}");
+                return 4;
+            }
+            catch (Exception ex)
+            {
+                errp.WriteLine($"llamacpp: 内部异常 {ex.GetType().Name}: {ex.Message}");
+                return 5;
+            }
         }
 
         // EmbeddingMode: llama-server 的 /v1/embeddings 必须启动时加 --embeddings，
@@ -312,6 +363,126 @@ public static class LlamaCppCommand
         };
     }
 
+    /// <summary>
+    /// R411 长驻多轮会话：单进程内一个 llama-server，逐轮复用同一 KV 前缀缓存，逐轮落 K2b 台账。
+    ///
+    /// 判据（开跑前登记）:
+    ///   ① **长驻**: 全程 <c>ProcessStarts == 1</c>（跨轮不重启；重启 ⇒ 前序 KV 缓存丢）；
+    ///   ② **跨轮复用**: 非首轮 <c>CachedTokens &gt; 0</c> 且 携带复用率 ≥ 97%；
+    ///   ③ **绝对长度**: 冷启首轮总长 ≥ 4224（R410: 比值不是 KPI）—— 比值达标但前缀太薄同样判越线；
+    ///   ④ 任一越线 ⇒ <c>Violations &gt; 0</c> ⇒ 返回 false（exit 7）。
+    /// 三条件缺「长驻」时 ②③ 全不成立（R410 实测: 每次新起 server ⇒ cached=0）。
+    /// </summary>
+    private static async Task<(LlamaCppSessionResult Result, bool Ok)> RunSessionAsync(
+        string model, string? bin, LlamaCppSessionRequest req, string? systemText, string? sessionIdOverride, int maxTokens, int contextSize)
+    {
+        var sessionId = sessionIdOverride ?? req.SessionId ?? "e2e-session";
+        var options = new LlamaCppGeneratorOptions
+        {
+            ModelPath = model,
+            BinaryPath = bin,
+            MaxTokens = req.MaxTokens ?? maxTokens,
+            ContextSize = contextSize,
+        };
+
+        await using var generator = new LlamaCppTextGenerator(options);
+        var ledger = new LocalSessionCacheLedger();
+        LocalCacheObservation lastObs = default;
+        generator.OnTurnCompleted = (key, turn, total, cached, ceiling) =>
+            lastObs = ledger.Observe(key, turn, total, cached, ceiling, model);
+
+        var history = new List<ChatTurn>();
+        if (systemText is not null) history.Add(new ChatTurn("system", systemText));
+        var turns = new List<LlamaCppSessionTurnResult>();
+        var systemTokens = 0;
+
+        for (var k = 0; k < req.Turns.Count; k++)
+        {
+            history.Add(new ChatTurn("user", req.Turns[k]));
+            var r = await generator.GenerateTurnAsync(history, sessionId, k + 1).ConfigureAwait(false);
+            if (k == 0) systemTokens = generator.LastPromptTokens;   // 冷启首轮总长 = 前缀 + 首轮输入 + 模板
+            var cached = Math.Max(0, r.CachedTokens);
+            turns.Add(new LlamaCppSessionTurnResult
+            {
+                Turn = k + 1,
+                PromptTokens = generator.LastPromptTokens,
+                PromptTokensRecomputed = generator.LastPromptTokensRecomputed,
+                CachedTokens = cached,
+                GeneratedTokens = generator.LastGeneratedTokens,
+                CarryOverTokens = lastObs.CarryOverTokens,
+                CarryOverReuse = lastObs.CarryOverReuse,
+                SessionReuseRatio = lastObs.SessionReuseRatio,
+                PrefixTokens = lastObs.PrefixTokens,
+                PrefixLengthSatisfied = lastObs.PrefixLengthSatisfied,
+                RedlineApplies = lastObs.RedlineApplies,
+                Violated = lastObs.Violated,
+                Diagnosis = lastObs.Diagnosis,
+                Content = r.Content,
+                ProcessStarts = generator.ProcessStarts,
+            });
+            // 助手输出回填历史 ⇒ 下一轮的前缀 = 本轮全量 ⇒ 可复用性由服务端前缀匹配决定（真实会话形态）。
+            history.Add(new ChatTurn("assistant", r.Content ?? string.Empty));
+        }
+
+        var last = turns[^1];
+        var result = new LlamaCppSessionResult
+        {
+            SessionId = sessionId,
+            Model = model,
+            ProcessStarts = generator.ProcessStarts,
+            Turns = generator.TurnsGenerated,
+            Observations = ledger.Observations,
+            Violations = ledger.Violations,
+            NotApplicable = ledger.NotApplicable,
+            Abstained = ledger.Abstained,
+            CacheMissTurns = generator.CacheMissTurns,
+            SystemTokens = systemTokens,
+            RequiredPrefixTokens = LocalSessionCacheLedger.RequiredPrefixTokens,
+            CarryOverReuseLast = last.CarryOverReuse,
+            SessionReuseRatioLast = last.SessionReuseRatio,
+            EffectiveHitRateLast = last.CarryOverReuse,
+            LongLived = generator.ProcessStarts == 1,
+            CrossTurnReuse = last.CachedTokens > 0,
+            TurnResults = turns,
+        };
+        return (result, ledger.Violations == 0);
+    }
+
+    /// <summary>
+    /// 读入并校验 <c>--session-json</c> 请求。**解析/校验失败一律走用法错 (exit 2)**，不抛到运行期。
+    /// 键名大小写不敏感（见 <see cref="LlamaCppE2EJsonContext"/> 的 <c>PropertyNameCaseInsensitive</c>）
+    /// —— 请求文件格式不得对大小写敏感（R411 首跑就踩了这个坑：小写 `turns` 反序列化成空）。
+    /// </summary>
+    private static bool TryReadSessionRequest(string path, TextWriter errp,
+        out LlamaCppSessionRequest? request, out string? systemText)
+    {
+        request = null;
+        systemText = null;
+        if (!File.Exists(path)) { errp.WriteLine($"llamacpp: --session-json 文件不存在 {path}"); return false; }
+
+        string raw;
+        try { raw = File.ReadAllText(path); }
+        catch (Exception ex) { errp.WriteLine($"llamacpp: --session-json 不可读 {path}: {ex.Message}"); return false; }
+
+        try { request = JsonSerializer.Deserialize(raw, LlamaCppE2EJsonContext.Default.LlamaCppSessionRequest); }
+        catch (Exception ex) { errp.WriteLine($"llamacpp: --session-json 不可解析 {path}: {ex.Message}"); return false; }
+
+        if (request is null || request.Turns.Count == 0)
+        {
+            errp.WriteLine($"llamacpp: --session-json 无 turns（键名大小写不敏感，但 turns 必须非空） {path}");
+            return false;
+        }
+
+        systemText = request.SystemText;
+        if (!string.IsNullOrEmpty(request.SystemFile))
+        {
+            if (!File.Exists(request.SystemFile)) { errp.WriteLine($"llamacpp: system 文件不存在 {request.SystemFile}"); return false; }
+            try { systemText = File.ReadAllText(request.SystemFile); }
+            catch (Exception ex) { errp.WriteLine($"llamacpp: system 文件不可读 {request.SystemFile}: {ex.Message}"); return false; }
+        }
+        return true;
+    }
+
     private static string? Val(string[] args, ref int i) => i + 1 < args.Length ? args[++i] : null;
 
     private static string Sha256Hex(byte[] data) => Convert.ToHexString(SHA256.HashData(data)).ToLowerInvariant();
@@ -388,7 +559,88 @@ public sealed class TemplateVerifyResult
     public long TemplateRenders { get; set; }
 }
 
+/// <summary>R411 多轮会话请求（长驻进程内逐轮生成；K2b 观测用）。</summary>
+public sealed class LlamaCppSessionRequest
+{
+    public string? SessionId { get; set; }
+    /// <summary>稳定长前缀（system 文本）文件；与 <see cref="SystemText"/> 二者其一。</summary>
+    public string? SystemFile { get; set; }
+    public string? SystemText { get; set; }
+    public List<string> Turns { get; set; } = [];
+    public int? MaxTokens { get; set; }
+}
+
+/// <summary>
+/// R411 单轮读数。口径（独立实现钉死，**别按字段名猜**）:
+/// <see cref="PromptTokens"/> = **总长** = llama.cpp <c>tokens_evaluated</c>（含 BOS）；
+/// <see cref="PromptTokensRecomputed"/> = 总长 − 命中 = <c>timings.prompt_n</c>。
+/// </summary>
+public sealed class LlamaCppSessionTurnResult
+{
+    public int Turn { get; set; }
+    /// <summary>本轮 prompt 总长（tokens_evaluated）。</summary>
+    public int PromptTokens { get; set; }
+    /// <summary>本轮重算 token 数（总长 − 命中）。</summary>
+    public int PromptTokensRecomputed { get; set; }
+    public int CachedTokens { get; set; }
+    /// <summary>本轮生成 token 数（下一轮的可复用上限 = 本轮总长 + 本轮生成）。</summary>
+    public int GeneratedTokens { get; set; }
+    /// <summary>可复用上限 = 上一轮总长 + 上一轮生成（首轮 0）。</summary>
+    public int CarryOverTokens { get; set; }
+    /// <summary>携带复用率 = 命中 / 可复用上限（R380 口径的本地等价物）。</summary>
+    public double CarryOverReuse { get; set; } = -1;
+    /// <summary>会话整体复用率 = 命中 / 本轮总长（直接决定 token 成本）。</summary>
+    public double SessionReuseRatio { get; set; } = -1;
+    /// <summary>本会话冷启首轮总长（≈ 常驻前缀厚度）。</summary>
+    public int PrefixTokens { get; set; }
+    /// <summary>前缀绝对长度是否达稳健界（4224 token）。</summary>
+    public bool PrefixLengthSatisfied { get; set; }
+    public bool RedlineApplies { get; set; }
+    public bool Violated { get; set; }
+    public string? Diagnosis { get; set; }
+    public string? Content { get; set; }
+    /// <summary>每轮都必须 = 1 ⇒ 长驻（>1 = 发生重启，前序 KV 缓存已丢）。</summary>
+    public long ProcessStarts { get; set; }
+}
+
+/// <summary>R411 会话汇总（判据: ①长驻 ②跨轮复用 ③比值+绝对长度双条件不越线）。</summary>
+public sealed class LlamaCppSessionResult
+{
+    public string Mode { get; set; } = "session";
+    public string SessionId { get; set; } = "";
+    public string Model { get; set; } = "";
+    public string ReuseMode { get; set; } = "Session";
+    public long ProcessStarts { get; set; }
+    public long Turns { get; set; }
+    public long Observations { get; set; }
+    public long Violations { get; set; }
+    public long NotApplicable { get; set; }
+    /// <summary>弃权次数（命中 &gt; 可复用上限 ⇒ 口径不符，不出判决）。</summary>
+    public long Abstained { get; set; }
+    /// <summary>非首轮「前缀没被复用」轮次数（>0 = 长驻/前缀稳定任一不成立）。</summary>
+    public long CacheMissTurns { get; set; }
+    /// <summary>冷启首轮总长（≈ 稳定前缀 + 首轮输入 + 模板开销）。</summary>
+    public int SystemTokens { get; set; }
+    /// <summary>红线要求的前缀绝对长度（4224）。</summary>
+    public int RequiredPrefixTokens { get; set; }
+    public double CarryOverReuseLast { get; set; } = -1;
+    public double SessionReuseRatioLast { get; set; } = -1;
+    public double EffectiveHitRateLast { get; set; } = -1;
+    public bool LongLived { get; set; }
+    public bool CrossTurnReuse { get; set; }
+    public List<LlamaCppSessionTurnResult> TurnResults { get; set; } = [];
+}
+
+/// <summary>
+/// E2E CLI 的 JSON 上下文（STJ 源生成，AOT 安全）。
+/// R411: <c>PropertyNameCaseInsensitive</c> —— 请求文件（<c>--session-json</c>）的键名不得对大小写敏感。
+/// 只影响**读取**；输出命名不变（既有消费脚本按精确键名读，不受影响）。
+/// </summary>
+[JsonSourceGenerationOptions(PropertyNameCaseInsensitive = true)]
 [JsonSerializable(typeof(LlamaCppE2EResult))]
 [JsonSerializable(typeof(TemplateVerifyResult))]
+[JsonSerializable(typeof(LlamaCppSessionRequest))]
+[JsonSerializable(typeof(LlamaCppSessionTurnResult))]
+[JsonSerializable(typeof(LlamaCppSessionResult))]
 [JsonSerializable(typeof(float[]))]
 internal sealed partial class LlamaCppE2EJsonContext : JsonSerializerContext;

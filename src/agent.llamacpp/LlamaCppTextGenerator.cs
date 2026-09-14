@@ -1,0 +1,213 @@
+namespace agent.llamacpp;
+
+/// <summary>本地生成端口接线配置（产品 DI 用；与嵌入侧同构）。</summary>
+public sealed class LlamaCppGeneratorOptions
+{
+    /// <summary>生成模型 (GGUF) 绝对路径。</summary>
+    public required string ModelPath { get; init; }
+
+    /// <summary>llama-server 路径; null ⇒ 走 <see cref="BinaryEnvVar"/> / PATH。</summary>
+    public string? BinaryPath { get; init; }
+
+    public string BinaryEnvVar { get; init; } = "AGENTFRAMEWORK_LLAMA_BIN";
+
+    /// <summary>上下文长度。K2b 需可复用前缀 ≥4224 token ⇒ 会话形态必须留足（默认 6144）。</summary>
+    public int ContextSize { get; init; } = 6144;
+
+    public int Threads { get; init; } = 1;
+
+    public int StartTimeoutMs { get; init; } = 300_000;
+
+    /// <summary>服务进程已死时是否允许自动重启一次（长驻语义: 重启即丢 KV 缓存 ⇒ 计数可见）。</summary>
+    public bool AllowRestart { get; init; } = true;
+
+    /// <summary>单轮生成上限（调用方可逐轮覆盖）。</summary>
+    public int MaxTokens { get; init; } = 64;
+
+    public static LlamaCppGeneratorOptions FromEnvironment()
+    {
+        var modelPath = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_LLM_MODEL")
+            ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                            ".agentframework", "models", "r1-distill-qwen-1.5b-q4km.gguf");
+        var bin = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_LLAMA_BIN");
+        return new LlamaCppGeneratorOptions
+        {
+            ModelPath = modelPath,
+            BinaryPath = string.IsNullOrWhiteSpace(bin) ? null : bin,
+        };
+    }
+}
+
+/// <summary>
+/// R411: <b>长驻</b>本地生成端口 —— 一个进程内**只起一个** llama-server，跨调用复用同一 KV 前缀缓存。
+///
+/// 为什么必须有这一层（R410 实测的缺口）: K2b 达标三条件 = **长驻进程 + 稳定长前缀 + cache 开**。
+/// R410 已证明「同 server 两请求复用 99.88%」，但宿主侧每次调用都新起 server（`cached=0`/`misses=1`）
+/// ⇒ 缺「长驻」这一条，另两条全白搭。本类就是补这一条的端口：懒启动 + 单飞 + 跨调用保活。
+///
+/// 端口化纪律（与 <see cref="LlamaCppTextEmbedder"/> 同构）:
+///   • <see cref="IsAvailable"/> = 纯配置判定（模型文件 ∧ 二进制可解析），零 I/O、零进程、零副作用；
+///   • 失败**抛** <see cref="LlamaCppException"/>（带 code），不静默兜底；
+///   • 被使用计数: <see cref="ProcessStarts"/>/<see cref="TurnsGenerated"/>/<see cref="PromptTokensTotal"/>/
+///     <see cref="CachedTokensTotal"/>/<see cref="CacheMissTurns"/>；
+///   • 生成必经 <see cref="ILocalPromptRenderer"/>（R409 闸门: 只吃结构化轮次，物理上无法手拼 prompt）。
+/// </summary>
+public sealed class LlamaCppTextGenerator : IAsyncDisposable
+{
+    private readonly LlamaCppGeneratorOptions _o;
+    private readonly SemaphoreSlim _gate = new(1, 1);
+    private LlamaCppProvider? _provider;
+    private long _starts;
+    private long _turns;
+    private long _promptTokens;
+    private long _cachedTokens;
+    private long _cacheMissTurns;
+
+    public LlamaCppTextGenerator(LlamaCppGeneratorOptions options) => _o = options;
+
+    /// <summary>纯配置判定（无副作用）。</summary>
+    public bool IsAvailable => File.Exists(_o.ModelPath) && ResolveBinary() is not null;
+
+    public string? BinaryPath => ResolveBinary();
+
+    /// <summary>进程启动次数（**必须为 1** 才是长驻；>1 说明发生重启 ⇒ 前序 KV 缓存已丢）。</summary>
+    public long ProcessStarts => Interlocked.Read(ref _starts);
+
+    public long TurnsGenerated => Interlocked.Read(ref _turns);
+    public long PromptTokensTotal => Interlocked.Read(ref _promptTokens);
+    public long CachedTokensTotal => Interlocked.Read(ref _cachedTokens);
+
+    /// <summary>会话口径下**非首轮**「前缀没被复用」的轮次数（cached=0 且总长 ≥128；首轮冷启动不计）。</summary>
+    public long CacheMissTurns => Interlocked.Read(ref _cacheMissTurns);
+
+    /// <summary>最近一轮读数（诊断/断言用；-1 = 尚未生成）。<see cref="LastPromptTokens"/> = **总长** = <c>tokens_evaluated</c>。</summary>
+    public int LastPromptTokens { get; private set; } = -1;
+    /// <summary>
+    /// 最近一轮的**重算** token 数 = 总长 − 命中（= <c>timings.prompt_n</c>）。
+    /// R411 实测: 冷启 497/0 ⇒ 重算 497；热轮 530/512 ⇒ 重算 18。
+    /// </summary>
+    public int LastPromptTokensRecomputed { get; private set; } = -1;
+    public int LastCachedTokens { get; private set; } = -1;
+    /// <summary>最近一轮生成 token 数（下一轮的可复用上限 = 本轮总长 + 本轮生成）。</summary>
+    public int LastGeneratedTokens { get; private set; } = -1;
+
+    /// <summary>
+    /// 口径换算（R411 独立实现钉死，**别再改回去**）:
+    /// llama.cpp `/completion` 顶层的 <c>tokens_evaluated</c> = **本轮 prompt 总长**（含 BOS），
+    /// <c>timings.prompt_n</c> = 本轮**新评估**数，<c>timings.cache_n</c> = 命中复用数。
+    /// 实测（同一渲染串，独立实现 /tokenize 对账）: 冷 497/497/0；热 530/18/512 ⇒ 总长 = prompt_n + cache_n ✓。
+    /// 教训: **不能按字段名的字面猜语义**（"evaluated" 看着像新算数，实际是总长）；命名相近的
+    /// <c>tokens_evaluated</c> 与 <c>timings.prompt_n</c> 一个是总长一个是新算数。
+    /// </summary>
+    public static int RecomputedTokens(int promptTotalTokens, int cachedTokens)
+        => Math.Max(0, promptTotalTokens - Math.Max(0, cachedTokens));
+
+    /// <summary>服务端逐轮复用计数（透传 provider；-1 = 未启动）。</summary>
+    public long ProviderSessionReuseCalls => _provider?.SessionReuseCalls ?? 0;
+    public long ProviderSessionCacheMisses => _provider?.SessionCacheMisses ?? 0;
+    public string? BaseUrl => _provider?.BaseUrl;
+
+    /// <summary>
+    /// 每轮生成完成回调: (sessionKey, turnIndex, promptTokens 总长, cachedTokens, carryOverCeiling)。
+    /// <paramref name="carryOverCeiling"/> = 本轮开始时的「可复用上限」= 上一轮总长 + 上一轮生成；
+    /// 首轮传 0（无上一轮）。
+    /// 用途 = 产品侧接 K2b 台账（<c>LocalSessionCacheLedger.Observe</c>）而**不把 modelqueue 依赖塞进本程序集**
+    /// （保持 agent.llamacpp → agent.contextgradient 单向分层）。cachedTokens = -1 表示未上报。
+    /// </summary>
+    public Action<string?, int, int, int, int>? OnTurnCompleted { get; set; }
+
+    /// <summary>
+    /// 生成一轮（长驻: 复用同一 server / 同一前缀缓存）。默认 <see cref="CompletionReuse.Session"/>（生产口径）。
+    /// </summary>
+    public async Task<CompletionResult> GenerateTurnAsync(
+        IReadOnlyList<ChatTurn> turns,
+        string? sessionKey = null,
+        int turnIndex = 1,
+        int? maxTokens = null,
+        CompletionReuse reuse = CompletionReuse.Session,
+        CancellationToken ct = default)
+    {
+        // 可复用上限必须在**发请求之前**取（发完就变了）: 上一轮 prompt 总长 + 上一轮生成。
+        var carryOverCeiling = LastPromptTokens >= 0 ? LastPromptTokens + Math.Max(0, LastGeneratedTokens) : 0;
+
+        var provider = await EnsureProviderAsync(ct).ConfigureAwait(false);
+        var result = await provider
+            .GenerateAsync(turns, maxTokens ?? _o.MaxTokens, greedy: true, reuse, ct)
+            .ConfigureAwait(false);
+
+        // 总长 = tokens_evaluated 本身（**不再做任何加法**；见 RecomputedTokens 的实测依据）。
+        var total = result.PromptTokens;
+        var recomputed = RecomputedTokens(total, result.CachedTokens);
+        LastPromptTokensRecomputed = recomputed;
+        LastPromptTokens = total;
+        LastCachedTokens = result.CachedTokens;
+        LastGeneratedTokens = result.Tokens.Length;
+        Interlocked.Increment(ref _turns);
+        Interlocked.Add(ref _promptTokens, total);
+        Interlocked.Add(ref _cachedTokens, Math.Max(0, result.CachedTokens));
+        if (reuse == CompletionReuse.Session && result.CachedTokens == 0 && total >= 128 && turnIndex > 1)
+            Interlocked.Increment(ref _cacheMissTurns);
+
+        OnTurnCompleted?.Invoke(sessionKey, turnIndex, total, result.CachedTokens, carryOverCeiling);
+        return result;
+    }
+
+    /// <summary>懒启动 + 单飞：并发调用只会起一个进程（长驻语义的机械保证）。</summary>
+    public async Task<LlamaCppProvider> EnsureProviderAsync(CancellationToken ct = default)
+    {
+        if (!IsAvailable)
+            throw new LlamaCppException(LlamaCppException.ProviderUnavailable,
+                $"本地生成不可用: 模型不存在或二进制不可解析 (model={_o.ModelPath})");
+
+        var existing = _provider;
+        if (existing is { IsRunning: true }) return existing;
+
+        await _gate.WaitAsync(ct).ConfigureAwait(false);
+        try
+        {
+            if (_provider is { IsRunning: true }) return _provider;
+            if (_provider is not null && !_o.AllowRestart)
+                throw new LlamaCppException(LlamaCppException.ProviderUnavailable, "生成服务已停止且 AllowRestart=false");
+            if (_provider is not null) await _provider.DisposeAsync().ConfigureAwait(false);
+
+            var provider = await LlamaCppProvider.StartAsync(new LlamaServerOptions
+            {
+                ModelPath = _o.ModelPath,
+                BinaryPath = _o.BinaryPath,
+                BinaryEnvVar = _o.BinaryEnvVar,
+                ContextSize = _o.ContextSize,
+                Threads = _o.Threads,
+                StartTimeoutMs = _o.StartTimeoutMs,
+                EmbeddingMode = false,   // 与嵌入互斥 ⇒ 各起一个进程
+            }, ct).ConfigureAwait(false);
+
+            _provider = provider;
+            Interlocked.Increment(ref _starts);
+            return provider;
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    private string? ResolveBinary()
+    {
+        try
+        {
+            var opts = new LlamaServerOptions { ModelPath = _o.ModelPath, BinaryPath = _o.BinaryPath, BinaryEnvVar = _o.BinaryEnvVar };
+            return LlamaServerHost.TryResolveBinary(opts, out var path, out _) ? path : null;
+        }
+        catch { return null; }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_provider is not null)
+        {
+            await _provider.DisposeAsync().ConfigureAwait(false);
+            _provider = null;
+        }
+        _gate.Dispose();
+    }
+}
