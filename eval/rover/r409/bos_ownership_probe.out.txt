@@ -1,0 +1,11 @@
+case                   add_spec  n    前4个id                          BOS个数  含<｜User｜>
+96B 字面(含BOS文本)         True      18   [151646, 151646, 151644, 3838]   2        False
+96B 字面                 False     17   [151646, 151644, 3838, 374]      1        False
+67B 渲染                 True      17   [151646, 151644, 3838, 374]      1        False
+67B 渲染                 False     16   [151644, 3838, 374, 220]         0        False
+38B 裸文本                True      15   [151646, 3838, 374, 220]         1        False
+
+裁决: ids(96B字面,add_special=T) == ids(67B渲染,add_special=T) ? False
+      ids(96B字面,add_special=T) == [BOS] + ids(67B渲染,add_special=F) ? False
+      96B字面 BOS个数=2  67B渲染前缀=[151646, 151644]
+  sha256(96B)=d1e94bf720adbab7  sha256(67B)=25e467ee2ae3bb0f

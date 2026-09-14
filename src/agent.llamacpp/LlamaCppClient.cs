@@ -42,6 +42,8 @@ public sealed class LlamaCppClient : IDisposable
     private long _requests;
     private long _tokens;
     private long _embeddings;
+    private long _templateRenders;
+    private long _tokenizations;
 
     public LlamaCppClient(string baseUrl, TimeSpan? timeout = null)
     {
@@ -62,6 +64,12 @@ public sealed class LlamaCppClient : IDisposable
 
     /// <summary>已返回的向量条数。</summary>
     public long EmbeddingsServed => Interlocked.Read(ref _embeddings);
+
+    /// <summary>已执行的模板渲染次数（K2b/模板化纪律的被使用计数）。</summary>
+    public long TemplateRenders => Interlocked.Read(ref _templateRenders);
+
+    /// <summary>已执行的 tokenize 次数（验证/对账通道）。</summary>
+    public long Tokenizations => Interlocked.Read(ref _tokenizations);
 
     public async Task<CompletionResult> CompleteAsync(CompletionOptions o, CancellationToken ct = default)
     {
@@ -145,6 +153,92 @@ public sealed class LlamaCppClient : IDisposable
         var vectors = r.Data.OrderBy(d => d.Index).Select(d => d.Embedding).ToArray();
         Interlocked.Add(ref _embeddings, vectors.Length);
         return vectors;
+    }
+
+    /// <summary>
+    /// 模板渲染 (POST /apply-template): 模板取自服务端模型元数据 (GGUF 内嵌 jinja)，
+    /// 调用方只提供结构化 messages ⇒ 物理上无法手拼 prompt (R409 闸门的结构基础)。
+    /// </summary>
+    public async Task<string> ApplyTemplateAsync(IReadOnlyList<ChatTurn> turns, CancellationToken ct = default)
+    {
+        ArgumentNullException.ThrowIfNull(turns);
+        if (turns.Count == 0)
+            throw new LlamaCppException(LlamaCppException.PromptEmpty, "/apply-template 需要至少一条 message");
+
+        Interlocked.Increment(ref _requests);
+        Interlocked.Increment(ref _templateRenders);
+
+        var req = new ApplyTemplateRequest
+        {
+            Messages = [.. turns.Select(t => new TemplateMessage { Role = t.Role, Content = t.Content })],
+            AddGenerationPrompt = true,
+        };
+        using var resp = await _http.PostAsync("apply-template",
+            JsonContent.Create(req, LlamaCppJsonContext.Default.ApplyTemplateRequest), ct).ConfigureAwait(false);
+        var body = await resp.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
+        if (!resp.IsSuccessStatusCode)
+            throw new LlamaCppException(LlamaCppException.HttpError,
+                $"POST /apply-template → {(int)resp.StatusCode}: {Truncate(body, 400)}");
+
+        ApplyTemplateResponse? r;
+        try { r = JsonSerializer.Deserialize(body, LlamaCppJsonContext.Default.ApplyTemplateResponse); }
+        catch (JsonException ex)
+        {
+            throw new LlamaCppException(LlamaCppException.MalformedResponse,
+                $"POST /apply-template 响应无法解析: {Truncate(body, 200)}", ex);
+        }
+
+        if (r is null)
+            throw new LlamaCppException(LlamaCppException.MalformedResponse, "POST /apply-template 返回 null 响应体");
+        return r.Prompt ?? string.Empty;
+    }
+
+    /// <summary>文本 → 原始 token id (POST /tokenize)。仅验证/对账通道使用，不在生成热路径上。</summary>
+    public async Task<int[]> TokenizeAsync(string content, bool addSpecial = true, CancellationToken ct = default)
+    {
+        ArgumentNullException.ThrowIfNull(content);
+        Interlocked.Increment(ref _requests);
+        Interlocked.Increment(ref _tokenizations);
+
+        var req = new TokenizeRequest { Content = content, AddSpecial = addSpecial };
+        using var resp = await _http.PostAsync("tokenize",
+            JsonContent.Create(req, LlamaCppJsonContext.Default.TokenizeRequest), ct).ConfigureAwait(false);
+        var body = await resp.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
+        if (!resp.IsSuccessStatusCode)
+            throw new LlamaCppException(LlamaCppException.HttpError,
+                $"POST /tokenize → {(int)resp.StatusCode}: {Truncate(body, 400)}");
+
+        TokenizeResponse? r;
+        try { r = JsonSerializer.Deserialize(body, LlamaCppJsonContext.Default.TokenizeResponse); }
+        catch (JsonException ex)
+        {
+            throw new LlamaCppException(LlamaCppException.MalformedResponse,
+                $"POST /tokenize 响应无法解析: {Truncate(body, 200)}", ex);
+        }
+
+        return r?.Tokens ?? [];
+    }
+
+    /// <summary>模型身份与特殊 token (GET /props) —— 闸门规则的数据来源，避免硬编码模型字面量。</summary>
+    public async Task<ModelProps> PropsAsync(CancellationToken ct = default)
+    {
+        using var resp = await _http.GetAsync("props", ct).ConfigureAwait(false);
+        var body = await resp.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
+        if (!resp.IsSuccessStatusCode)
+            throw new LlamaCppException(LlamaCppException.HttpError,
+                $"GET /props → {(int)resp.StatusCode}: {Truncate(body, 400)}");
+
+        PropsResponse? p;
+        try { p = JsonSerializer.Deserialize(body, LlamaCppJsonContext.Default.PropsResponse); }
+        catch (JsonException ex)
+        {
+            throw new LlamaCppException(LlamaCppException.MalformedResponse,
+                $"GET /props 响应无法解析: {Truncate(body, 200)}", ex);
+        }
+
+        if (p is null)
+            throw new LlamaCppException(LlamaCppException.MalformedResponse, "GET /props 返回 null 响应体");
+        return new ModelProps(p.BosToken, p.EosToken, p.ChatTemplate?.Length ?? 0, p.ModelPath);
     }
 
     /// <summary>健康检查 (/health: 200 = 就绪; 503 = 仍在加载)。</summary>

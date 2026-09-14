@@ -12,6 +12,43 @@
 
 ---
 
+## R409 — 本地 prompt 模板闸门（结构性阻断手拼）+「权威 prompt」BOS 口径修正
+
+**版本**: R409 · **日期**: 2026-09-14 · **状态**: 已落地（工作区，待 commit）
+
+**用户令（逐字）**：「继续下轮」
+
+**完成记录**：
+- **实测（判据先预注册，后改代码）**：模板来源对账 —— GGUF 内嵌 jinja（走 `POST /apply-template`）与归档 `eval/rover/tokref/r1_chat_template.jinja` 在 **3/3 消息形状逐字节一致**（diff 0 B）⇒ K2b 模板来源漂移风险关闭。
+- **BOS 归属裁决（真缺陷）**：96 B 字面权串 + 默认 tokenization（`add_special=true`）= **18 token / 双 BOS**；规范形式 = 渲染串（67 B）+ tokenizer 自动 BOS = **17 token / 单 BOS**，两者 token 流等价（`IdsEquivalent=true`）。产品通路实测：`literal` 18 vs `chat_template` 17，**生成 24 id 逐位相同** ⇒ R408 对账结论不受影响；双 BOS 的实际代价是 **+1 prompt token** 与**两通路前缀不可复用**（K2/K2b）。
+- **闸门落地**：新端口 `ILocalPromptRenderer`（唯一实现经 `/apply-template` 由**模型元数据**渲染 ⇒ 调用方物理上无法手拼）；`LocalPromptGate` 四规则（来源非模型元数据 / 空产物 / 字面含 BOS / 以 EOS 结尾 ⇒ 全判红）；`GenerateAsync` 只收结构化 messages；字面通路降级为 `CompleteLiteralPromptAsync`（显式诊断用 + 计数）；被使用计数 `TemplateRenders` / `PromptGateRejections`。
+- **规则按实测修正**：初版「不得包含 EOS」会**误拦合法多轮**（118 B 含 EOS 轮分隔符、不以 EOS 结尾）⇒ 改为「不得以 EOS 结尾」。
+- **机器验证**：`agenthost --llamacpp --verify-template`（退出码 6 = 未通过）⇒ `Verdict=gated_single_bos`、`RenderedBosCount=1`、`LiteralBosCount=2`、`IdsEquivalent=true`、exit 0。
+- **测试**：新增 `LlamaCppPromptGateTests` **9/9**（sha 锚点钉死 + 5 项注入缺陷负控 + 2 项防误拦反向控制）；全量回归 **1072/0/0**。
+- **AOT**：规范命令复跑 **exit 0 / 0 IL 警告 / 14,950,608 B**（政策 `release_tag_only` ⇒ 仅参考证据）。
+- **登记**：`docs/verification-registry.json` +`llamacpp.prompt.template_gate`（L4，44 行）；TaskPlan 节点 `dev-local-prompt-template-gate`；计划 `docs/plans/v0.31.0-r409-local-prompt-template-gate.md`；证据 `eval/rover/r409/`。
+
+**自错披露（3 处）**：① 首轮把 `2081`（字符）与 `2237`（UTF-8 字节）当成两个模板的长度，误报「差 156 B」（单位错）；② 闸门初版 EOS 规则会误拦合法多轮输入；③ R409 探针脚本内建裁决行问错对象（比较了 `96B/add_special=true`）故打印 False —— 正确等价对由 `--verify-template` 独立确认。
+
+**基线**：R408 全量 1063/0 ⇒ R409 全量 **1072/0/0**；本地生成 17.9 t/s（llama.cpp，与 R408 持平）。
+**台账缺口（遗留）**：R402–R407 未回填本台账，其证据在 `eval/rover/r40x/` 与 `docs/plans/v0.2x-r40x-*.md`。
+
+## R408 — 本地 GGUF 引擎整线退役，产品线全面切 llama.cpp（进程 + HTTP，零 P/Invoke）
+
+**版本**: R408 · **日期**: 2026-09-14 · **状态**: 已落地（commit `b00917c`，本地未推）
+
+**用户令（逐字）**：「去掉所有关于gguf的本地代码开发，完全改用llama.cpp」+「不用对比自研的了，直接用llama」
+
+**完成记录**：
+- **退役范围**：`src/agent.rover/{gguf,quant,infer,runtime,token,cli}/` + `src/agent.embedcpu/` 整工程删除（10.3k+0.6k LOC）；`formal/` + `gpu/spirv/` 保留（非 GGUF 内核）；`agent.rover` 不再产出可执行文件。
+- **接入形态**：`src/agent.llamacpp/`（Host / Client / Provider / TextEmbedder）只走「进程 + HTTP」，全仓 `DllImport`/`LibraryImport` **0 命中**。依据：跨平台（Windows 无 `AddressFamily.Unix`）+ R90 实测 LLamaSharp native interop 在 NativeAOT 下 SIGSEGV。
+- **两进程形态**：生成与嵌入互斥（`/v1/embeddings` 需 `--embeddings` 启动）。
+- **读数**：生成 24/24 token id 与 llama-cli 基线逐位相同（dev 17.891 / AOT 17.64 t/s，`IdsMatch=true`）；嵌入 768 维 L2 归一，命令路径与 DI 路径指纹一致（`sha256=d5336321…`），新旧向量 `cos=0.1586`。全量回归 **1063/0/0**；AOT 0 IL 警告。
+- **登记表**：3 行引擎对账行改写为 `llamacpp.process.boundary` / `llamacpp.embedding.port` / `engine.retired.no_local_gguf`。
+- 口径修正（R409 追认）：R408 所用「96 B 权威 prompt」字面含 BOS，在默认 tokenization 下会双 BOS（18 token）；规范形式为渲染串 + 自动 BOS（17 token）。生成结果 24/24 不受影响。
+
+**基线**：退役前 1130/2/1132 ⇒ 退役后 **1063/0/0**。
+
 ## R401 — 能力自检循环常驻化（用户令：R400 后一直执行 + 60 分钟检测机制）
 
 **版本**: R401 · **日期**: 2026-09-14 · **状态**: 已落地（常驻）

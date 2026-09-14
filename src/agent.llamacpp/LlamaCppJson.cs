@@ -62,10 +62,51 @@ internal sealed class HealthResponse
     [JsonPropertyName("status")] public string? Status { get; set; }
 }
 
+internal sealed class TemplateMessage
+{
+    [JsonPropertyName("role")] public string Role { get; set; } = "user";
+    [JsonPropertyName("content")] public string Content { get; set; } = string.Empty;
+}
+
+internal sealed class ApplyTemplateRequest
+{
+    [JsonPropertyName("messages")] public TemplateMessage[] Messages { get; set; } = [];
+    [JsonPropertyName("add_generation_prompt")] public bool AddGenerationPrompt { get; set; } = true;
+}
+
+internal sealed class ApplyTemplateResponse
+{
+    [JsonPropertyName("prompt")] public string? Prompt { get; set; }
+}
+
+internal sealed class TokenizeRequest
+{
+    [JsonPropertyName("content")] public string Content { get; set; } = string.Empty;
+    [JsonPropertyName("add_special")] public bool AddSpecial { get; set; } = true;
+}
+
+internal sealed class TokenizeResponse
+{
+    [JsonPropertyName("tokens")] public int[]? Tokens { get; set; }
+}
+
+internal sealed class PropsResponse
+{
+    [JsonPropertyName("bos_token")] public string? BosToken { get; set; }
+    [JsonPropertyName("eos_token")] public string? EosToken { get; set; }
+    [JsonPropertyName("chat_template")] public string? ChatTemplate { get; set; }
+    [JsonPropertyName("model_path")] public string? ModelPath { get; set; }
+}
+
 [JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
 [JsonSerializable(typeof(CompletionRequest))]
 [JsonSerializable(typeof(CompletionResponse))]
 [JsonSerializable(typeof(EmbeddingRequest))]
 [JsonSerializable(typeof(EmbeddingResponse))]
 [JsonSerializable(typeof(HealthResponse))]
+[JsonSerializable(typeof(ApplyTemplateRequest))]
+[JsonSerializable(typeof(ApplyTemplateResponse))]
+[JsonSerializable(typeof(TokenizeRequest))]
+[JsonSerializable(typeof(TokenizeResponse))]
+[JsonSerializable(typeof(PropsResponse))]
 internal sealed partial class LlamaCppJsonContext : JsonSerializerContext;

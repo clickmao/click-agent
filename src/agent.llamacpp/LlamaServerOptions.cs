@@ -69,6 +69,15 @@ public sealed class LlamaCppException : Exception
     public const string HttpError = "http_error";
     public const string MalformedResponse = "malformed_response";
 
+    /// <summary>闸门拒收: prompt 不是由模型元数据模板渲染出来的（手拼 prompt）。</summary>
+    public const string PromptNotTemplated = "prompt_not_templated";
+
+    /// <summary>闸门拒收: 渲染产物为空（模板未生效 / messages 为空）。</summary>
+    public const string PromptEmpty = "prompt_empty";
+
+    /// <summary>闸门拒收: 渲染产物字面包含模型 BOS/EOS 文本（tokenizer 会再添加一次 ⇒ 双 BOS）。</summary>
+    public const string PromptLiteralSpecialToken = "prompt_literal_special_token";
+
     public string Code { get; }
 
     public LlamaCppException(string code, string message, Exception? inner = null) : base(message, inner) => Code = code;

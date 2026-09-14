@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R408",
+  "updated_round": "R409",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -634,6 +634,24 @@
       ],
       "owner_round": "R402",
       "gap_note": "R408: 本地 GGUF 引擎整线退役 ⇒ 本行所验能力已不存在(历史读数留档); 现行推理形态见 llamacpp.process.boundary。"
+    },
+    {
+      "id": "llamacpp.prompt.template_gate",
+      "capability": "本地 prompt 模板闸门(结构性阻断手拼): 生成路径只接受由模型元数据内嵌 jinja 渲染的 prompt(POST /apply-template); 渲染产物字面含 BOS 或以 EOS 结尾一律判红; 被使用计数 TemplateRenders/PromptGateRejections/LiteralPromptCalls",
+      "level": "L4",
+      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~LlamaCppPromptGateTests && agenthost --llamacpp --model <r1-q4km.gguf> --verify-template --chat-text \"What is 12*12? Answer with the number.\" --prompt-file eval/rover/r409/prompt.txt --json eval/rover/r409/verify-template.json",
+      "evidence_path": "eval/rover/r409/",
+      "negative_control": "① 96B 字面权串(含 BOS 文本)当渲染产物注入 ⇒ prompt_literal_special_token 判红; ② 来源标 Literal(手拼) ⇒ prompt_not_templated 判红; ③ 以 EOS 文本结尾 ⇒ 判红; ④ 空产物 ⇒ prompt_empty; ⑤ 反向防误拦: 多轮渲染含 EOS 轮分隔符、元数据 bos/eos 为 null 时必须判绿",
+      "covers": [
+        "src/agent.llamacpp/LocalPrompt.cs",
+        "src/agent.llamacpp/LlamaCppProvider.cs",
+        "src/agent.llamacpp/LlamaCppClient.cs",
+        "src/agent.llamacpp/LlamaCppJson.cs",
+        "src/agent.llamacpp/LlamaServerOptions.cs",
+        "src/agent.host/LlamaCppCommand.cs",
+        "src/agent.tests/LlamaCppPromptGateTests.cs"
+      ],
+      "owner_round": "R409"
     }
   ],
   "aot_check_policy": "release_tag_only",
