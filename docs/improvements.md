@@ -10,6 +10,20 @@
 > 数据时效 (测试数/批号/评测口径)、版本引用一致性、死链检查; **禁止只改局部不做整体校验**。
 > 空间位置相邻但语义不同段的错挂 (如旧版本标题下挂新数据) 视同违例。
 
+## EXP1-Q5 · 续引 `[:NNN]` 形态建模（仪器 v2.3.0）+ exp1 §1.4/§1.5/§3.3/§4.2 引用定点修复（60m 自检作业）
+
+**主题**：exp1 档剩余失效引用（附录 D 结转 3 真删 + 9 搬家）＋ 附录 E 结转的「续引 `[:NNN]` 形态建模」。执行顺序：**先补测量盲区，再修文档** —— v2.2.0 既不认出续引形态也无归属规则 ⇒ 本档 **51 条续引从未被检查**（保守漏检）。
+
+**判决**：① 仪器 **v2.3.0** 落地：续引归属四级（T1 反引号内 `Stem.Member` 主干唯一映射 / T2 同行最近前引 / T3 块内前序路径集合唯一 / T4 弃权单列）+ **留痕继承**（同行 ∧ 同路径的带标记引用覆盖该续引）+ 新判据 G6（子探针非退化），自证 **14 → 37/37**；② 本档 `stale_path` **3→0**、`relocated` **9→0**、续引非绿 **5→0**（续引 `ok` 40→44）；③ 全仓 `stale_path` **24→21**、`relocated` **22→13**、`retired` **5→8**、`ok` **724→734**；判据 G1–G6 全过（exit 0）。
+
+**修改**：`eval/capability/exp1-q4/probe_doc_ref_integrity.py`（v2.3.0）；本档 **11 行**修复（3 处真删加退役留痕 / 9 处写法漂移改真实路径 / 1 处续引改显式路径 / 2 处行号事实漂移 `docs/api.md 1409→1410` / 1 处符号名漂移 `SessionMemoryStore→JsonSessionMemoryStore`），`git diff` **11+/11−**，无标题/锚点变更、行号未位移；新增证据 `selftest_v230.json` / `result_v230_{before_fix,after_fix,final}.json` / `ab_diff_v230.md` / `continuations.jsonl` / `gate_check_exp1q5.json` / `form_check_evidence_v230.txt` / `probe_stdout_v230_*.txt`；计划文档 **附录 F** + `eval/capability/kpi.jsonl`。
+
+**读数**（176 文档 / 591 只读输入逐文件 sha256；修前→修后）：本档完整引用非绿 **12→0**（余 2 条 `symbol_absent` 均为附录 E.3 已裁定的**主语型启发式假阳性**，未改文档）；续引 `retired` 6（其中 5 条由**留痕继承**判入：L52 注册表续引 + L67 四条 —— 其锚点引用已登记退役）。
+
+**基线**：本轮前 HEAD `83f04e7`；本轮提交 = `0af65fc`（本地，未推送；`.git/PUSH_PAUSED` 在位）。**形式校验（附录 D/E 三度结转）本轮清账**：`dotnet test --filter "VerificationForm|SkillGeneralization|DevPlanDocRef"` ⇒ **Failed 0 / Passed 13 / Skipped 0 / Total 13 / 338 ms（exit 0）**；**闸门判定理由外显**：`MemAvailable 2668 MB`（阈值 2800）、`pgrep` 计数 2 = Roslyn `VBCSCompiler` 常驻编译服务器 + **自匹配** ⇒ 按「测量纯净闸」原意（防与**在途**构建/测量互撞）判可跑：无在途 `dotnet build/publish/test`、无 `agenthost`、无 `llama-server`、`loadavg 0.10`、对侧工作树 clean。
+
+**诚实边界**：① 证据等级 **L1 静态机检**（无编译/测试/AOT/真机运行）；② 续引 T1–T3 只有**有证据**时才认，不成立一律**弃权单列**（不判红）⇒ 未认领续引不判红；③ 续引**不查符号**（符号归其锚点引用）⇒ 与符号启发式读数分开计；④ T2/T3 是**位置**证据 ⇒ 语义所指与最近前引不一致时会**错锚**（本档 L68 实测一次：续引被错锚到 137 行的 `LlamaCppTextEmbedder.cs`，实际所指为同文件 `ServiceCollectionExtensions.cs:225-242` 的 RAGConfig DI 工厂）⇒ 处置 = **把路径写显式**，不改判据；⑤ 全仓仍有 `stale_path 21 / relocated 13`（集中他档，本档清零）；⑥ 语料是**移动目标**（对侧 30m 作业在改 `src/`），确定性由两跑逐位相同 + 591 输入指纹归因；⑦ 本轮两次踩到**写入通道改写手打字面量**（长字面量里的斜杠被改成点、路径字面量匹配 0 命中）⇒ 替换串一律由**行内 token / 正则**派生、标记常量由**码点**构造；⑧ 「**记录缺陷的文本本身会被机检当活引用**」实测一次（附录 F 初稿把修复前原文写进正文 ⇒ 本档续引 waived +1 / stale_lines +1）⇒ 引用示例必须入**代码围栏**；⑨ 未动 `src/`、未动登记表（`docs/verification-registry.json`）、未新增/改 `skills/`。
+
 ## EXP1-Q4 · 引用探针符号归属修复 + exp1 §1.2/§1.3/§4.4 引用定点修复（60m 自检作业）
 
 **主题**：exp1 §1.2/§1.3/§4.4 失效引用（附录 D 结转）。执行顺序：**先修测量，再修文档**——附录 D 的 `symbol_absent` 读数经复核含测量层缺陷，照它改会误杀正确引用。
