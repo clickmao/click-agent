@@ -175,6 +175,50 @@ public sealed class SessionHistorySearchTests : IDisposable
         Assert.Equal("s-real", hits[0].SessionId);
     }
 
+    [Fact]
+    public void Render_Empty_Hits_Is_Explicit_Not_Silent()
+    {
+        // R420: /recall 出口的空结果必须有可读回执 (静默空白 = 用户无法区分"无命中"与"功能坏")
+        var text = SessionHistorySearch.Render(Array.Empty<SessionHistorySearch.Hit>(), "不存在词根zzq", 5);
+        Assert.Contains("无命中", text);
+        Assert.Contains("命中 0", text);
+        Assert.Contains("不存在词根zzq", text);
+    }
+
+    [Fact]
+    public void Render_Binds_Count_Order_And_Score_To_Result_Set()
+    {
+        // R420: 渲染是"读数"不是"文案" — 命中数/顺序/分数必须与结果集一致
+        Seed("s-vector", "向量召回 与 嵌入缓存 两层", goal: "提升召回质量");
+        Seed("s-other", "无关内容 像素 渲染");
+
+        var hits = NewSearch().Search("向量召回 嵌入", topK: 5);
+        Assert.Single(hits);
+        var text = SessionHistorySearch.Render(hits, "向量召回 嵌入", 5);
+
+        Assert.Contains("命中 1", text);
+        Assert.Contains("s-vector", text);
+        Assert.Contains("score=", text);
+        Assert.Contains("向量召回", text);
+        Assert.DoesNotContain("s-other", text);
+    }
+
+    [Fact]
+    public void Render_Multi_Hit_Preserves_Rank_Order()
+    {
+        Seed("s-1", "共享标记 甲 甲 甲");
+        Seed("s-2", "共享标记 乙");
+
+        var hits = NewSearch().Search("共享标记", topK: 2);
+        Assert.Equal(2, hits.Count);
+        var text = SessionHistorySearch.Render(hits, "共享标记", 2);
+
+        Assert.Contains("命中 2", text);
+        Assert.True(text.IndexOf("1. " + hits[0].SessionId, StringComparison.Ordinal) <
+                    text.IndexOf("2. " + hits[1].SessionId, StringComparison.Ordinal),
+            "渲染顺序必须与排序结果一致 (否则读数与判据脱钩)");
+    }
+
     private sealed class MixedSource : SessionHistorySearch.ISource
     {
         private readonly SessionHistorySearch.ISource _inner;

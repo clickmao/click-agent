@@ -52,11 +52,23 @@ public class CommandRouteConsistencyTests
     [InlineData("/activity", "activity")]
     [InlineData("/skills-only x,y", "skills-only")]
     [InlineData("/git status", "git")]
+    [InlineData("/recall 会话记忆", "recall")]
+    [InlineData("/recall", "recall")]
     public void ArmedCommands_HandledWithCommand(string input, string expectedCommand)
     {
         var r = LocalCommandRouter.TryRoute(input);
         Assert.True(r.Handled, $"{input} 应被本地拦截 (Handled) — 否则送 LLM 幻觉假执行");
         Assert.Equal(expectedCommand, r.Command);
+    }
+
+    [Fact]
+    public void RecallCommand_CarriesArgument_ForHostRender()
+    {
+        // R420: /recall 参数必须原样透传到 V2 特判渲染 (Argument 丢失 ⇒ 检索退化为全表)
+        var r = LocalCommandRouter.TryRoute("/recall 跨会话检索 3");
+        Assert.True(r.Handled);
+        Assert.Equal("recall", r.Command);
+        Assert.Equal("跨会话检索 3", r.Argument);
     }
 
     [Theory]

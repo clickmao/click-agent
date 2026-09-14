@@ -215,6 +215,32 @@ public sealed class SessionHistorySearch
 
     private static bool IsCjk(char c) => c >= 0x4E00 && c <= 0x9FFF;
 
+    /// <summary>
+    /// 命中项渲染为本地指令回复 (纯文本, 零 LLM/零反射)。
+    /// 空命中 → 显式"无命中"文案 (失败可见: 空结果也必须有可读回执, 不静默空白)。
+    /// </summary>
+    public static string Render(IReadOnlyList<Hit> hits, string query, int topK)
+    {
+        var sb = new StringBuilder();
+        sb.Append("🔎 跨会话检索 \"").Append(query).Append("\" (top-").Append(topK)
+          .Append(", 命中 ").Append(hits.Count).AppendLine("):");
+        if (hits.Count == 0)
+        {
+            sb.Append("(无命中 — 检索面 = 已落盘会话记忆摘要: 目标/长期记忆/关键实体/约束/里程碑)");
+            return sb.ToString();
+        }
+        var rank = 0;
+        foreach (var h in hits)
+        {
+            rank++;
+            sb.Append(rank).Append(". ").Append(h.SessionId)
+              .Append("  score=").Append(h.Score.ToString("F4", System.Globalization.CultureInfo.InvariantCulture))
+              .Append("  entries=").Append(h.EntryCount).AppendLine();
+            sb.Append("   …").Append(h.Snippet);
+        }
+        return sb.ToString();
+    }
+
     /// <summary>生产实现: 包装 JsonSessionMemoryStore (data/sessions/)</summary>
     public sealed class StoreSource : ISource
     {

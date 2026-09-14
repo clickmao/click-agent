@@ -46,6 +46,7 @@ public static class LocalCommandRouter
         "/llm-service", // v0.20.2 (R345): llm-manager/worker 状态观测 (V2 特判渲染)
         "/schedule-run",  // v0.17.2-b/c (R337): 条件定时执行 py 插件脚本 (V2 特判渲染)
         "/git",  // v0.18.0 G1 (R338): git 操作 status/diff/commit/push (凭据卫生: 一次性 URL 不落 config)
+        "/recall",  // v0.22.0 L2-待办① (R420): 跨会话检索出口 (SessionHistorySearch 接线, L7-G1)
         "/help",  // v0.11.0 R86: 帮助菜单本地应答 — 原未注册送 LLM 浪费一轮
     };
 
@@ -142,6 +143,11 @@ public static class LocalCommandRouter
             "/git" => new LocalCommandResult
             {
                 Handled = true, Command = "git", Argument = arg,
+            },
+            // v0.22.0 L2-待办① (R420): 跨会话检索 — Handled=true, V2 特判渲染 (需 JsonSessionMemoryStore)
+            "/recall" => new LocalCommandResult
+            {
+                Handled = true, Command = "recall", Argument = arg,
             },
             _ => NotCommand,
         };

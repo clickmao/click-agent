@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R419",
+  "updated_round": "R420",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -840,6 +840,24 @@
         "eval/rover/r419/evidence-always-correction/RUN.json"
       ],
       "owner_round": "R419"
+    },
+    {
+      "id": "r420.recall-command-wiring",
+      "level": "L4",
+      "evidence_cmd": "cd /home/agentuser/AgentFramework && env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR dotnet test src/agent.tests/agentframework.tests.csproj --filter \"FullyQualifiedName~SessionHistorySearchTests|FullyQualifiedName~CommandRouteConsistencyTests\" --nologo -v q",
+      "evidence_path": "eval/capability/r420/README-evidence.md",
+      "negative_control": "① 撤销接线负控（产物级，真机同输入）: /tmp/pub_r414/agenthost（12:19，接线前 AOT）对 `/recall 存在` 产出 `recall_query`=0 且 `llm_call`=1、stdout 无「跨会话检索」渲染（直接送 LLM ⇒ 凭据未设而报失败）；接线后同形输入 `recall_query`=3 且 `llm_call`=0 ⇒ 「本地指令零 LLM 打点」不是恒真断言。② 四表一致性审计（行为探测，非再维护一份字面表）: CommandRouteConsistencyTests 遍历 KnownCommands 全集断言 TryRoute(cmd).Handled，漏 switch 臂或漏 Known 即红；/recall 另有 Handled/Command/Argument 三元断言。③ 真机负控: `zzq`（无词典面重叠）hits=0 ⇒ 渲染器非恒返回内容；空命中走显式「无命中」文案而非空白。",
+      "capability": "跨会话检索（SessionHistorySearch）从「库面实现 + 单测」变为**有生产消费点**: 新增本地指令 `/recall <查询词> [topK]`（默认 top5，上限 50），经四表接线（Known 白名单 / TryRoute switch 臂 / 宿主 dispatch 特判 / 渲染层）在**零 LLM 调用**下把命中项（会话 id + 分数 + 摘要片段）直出；通道级打点 `recall_query{query_len,topk,hits}` 使「指令是否被拦截」可判（不靠回复文本猜）。R370 交付、R420 接线前该组件的生产消费点为 0（backlog L7-G1 高优先级缺口）。",
+      "covers": [
+        "src/agent/registry/LocalCommandResult.cs",
+        "src/agent/IndustrialAgentV2.cs",
+        "src/agent/session/SessionHistorySearch.cs",
+        "src/agent.tests/CommandRouteConsistencyTests.cs",
+        "src/agent.tests/SessionHistorySearchTests.cs",
+        "eval/capability/r420/README-evidence.md",
+        "docs/plans/v0.41.0-r420-recall-wiring.md"
+      ],
+      "owner_round": "R420"
     }
   ],
   "aot_check_policy": "release_tag_only",

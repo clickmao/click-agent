@@ -794,6 +794,43 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
                     return response;
                 }
+                // v0.22.0 L2-待办① (R420): /recall <查询> [topK] — 跨会话检索接线
+                // (SessionHistorySearch 自 R370 交付后生产 0 消费 = L7-G1 缺口; 本轮回接本地指令出口, 零 LLM)
+                if (localCommand.Command == "recall")
+                {
+                    response.Success = true;
+                    try
+                    {
+                        var recallArg = (localCommand.Argument ?? string.Empty).Trim();
+                        if (recallArg.Length == 0)
+                        {
+                            response.Content = "用法: /recall <查询词> [topK]  (检索面 = 已落盘会话记忆摘要; 零 LLM 调用)";
+                        }
+                        else
+                        {
+                            var q = recallArg;
+                            var topK = 5;
+                            var lastSpace = recallArg.LastIndexOf(' ');
+                            if (lastSpace > 0 &&
+                                int.TryParse(recallArg[(lastSpace + 1)..], System.Globalization.NumberStyles.None,
+                                    System.Globalization.CultureInfo.InvariantCulture, out var k) && k > 0 && k <= 50)
+                            {
+                                topK = k;
+                                q = recallArg[..lastSpace].Trim();
+                            }
+                            var recallSearch = new agent.session.SessionHistorySearch(
+                                new agent.session.SessionHistorySearch.StoreSource(_sessionMemoryStore));
+                            var hits = recallSearch.Search(q, topK);
+                            response.Content = agent.session.SessionHistorySearch.Render(hits, q, topK);
+                            // 通道级打点 (行为类 KPI 不用文本启发式): hits=0 也如实记账
+                            agent.config.AgentTelemetry.Emit("recall_query", "IndustrialAgentV2",
+                                ("query_len", q.Length), ("topk", topK), ("hits", hits.Count));
+                        }
+                    }
+                    catch (Exception ex) { response.Content = $"跨会话检索失败: {ex.Message}"; }
+                    response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
+                    return response;
+                }
                 // v0.17.2-a (R336): /activity 查询全部激活 agent/窗口/任务 (含其他 CLI, job_id/pid)
                 if (localCommand.Command == "activity")
                 {
