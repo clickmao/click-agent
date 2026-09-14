@@ -258,6 +258,700 @@ def _in_pair_closest(rnd):
     return "%d\n%s\n" % (n, " ".join(map(str, vals)))
 
 
+# ---------------------------------------------------------------- 反饱和族 v2 (R417)
+# json_mini: 严格 JSON 规范化器。规格密度高 (转义 / uXXXX 解码 / 键码点序 / 重复键覆盖 / 严格错误)。
+# 公开样例推不出隐藏判据 ⇒ 只有真正实现完整规格才可能整题全对。
+
+BS = chr(92)
+TAB = chr(9)
+NL = chr(10)
+_ERR = object()
+
+
+def _jnorm(v):
+    """规范化输出 (无空白)。"""
+    if v is None:
+        return "null"
+    if v is True:
+        return "true"
+    if v is False:
+        return "false"
+    if isinstance(v, int):
+        return "%d" % v
+    if isinstance(v, str):
+        out = ['"']
+        for ch in v:
+            if ch == '"':
+                out.append(BS + '"')
+            elif ch == BS:
+                out.append(BS + BS)
+            elif ch == NL:
+                out.append(BS + "n")
+            elif ch == TAB:
+                out.append(BS + "t")
+            else:
+                out.append(ch)
+        out.append('"')
+        return "".join(out)
+    if isinstance(v, list):
+        return "[" + ",".join(_jnorm(x) for x in v) + "]"
+    if isinstance(v, dict):
+        return "{" + ",".join(_jnorm(k) + ":" + _jnorm(v[k]) for k in sorted(v)) + "}"
+    return "!"
+
+
+def _p_json_mini_ref(s):
+    """递归下降 (字符级) 解析 + 规范化; 非法输入 ⇒ _ERR。"""
+    i = [0]
+    n = len(s)
+    digits = "0123456789"
+    hexd = "0123456789abcdefABCDEF"
+
+    def ws():
+        while i[0] < n and s[i[0]] in " \t\r\n":
+            i[0] += 1
+
+    def fail():
+        raise ValueError("bad")
+
+    def pstr():
+        i[0] += 1
+        buf = []
+        while True:
+            if i[0] >= n:
+                fail()
+            c = s[i[0]]
+            if c == '"':
+                i[0] += 1
+                return "".join(buf)
+            if c == BS:
+                i[0] += 1
+                if i[0] >= n:
+                    fail()
+                e = s[i[0]]
+                if e == "u":
+                    h = s[i[0] + 1:i[0] + 5]
+                    if len(h) != 4 or any(x not in hexd for x in h):
+                        fail()
+                    cp = int(h, 16)
+                    if cp < 0x20:
+                        fail()
+                    buf.append(chr(cp))
+                    i[0] += 4
+                elif e == '"':
+                    buf.append('"')
+                elif e == BS:
+                    buf.append(BS)
+                elif e == "/":
+                    buf.append("/")
+                elif e == "n":
+                    buf.append(NL)
+                elif e == "t":
+                    buf.append(TAB)
+                else:
+                    fail()
+                i[0] += 1
+            elif ord(c) < 0x20:
+                fail()
+            else:
+                buf.append(c)
+                i[0] += 1
+
+    def pnum():
+        st = i[0]
+        j = st
+        if j < n and s[j] == "-":
+            j += 1
+        if j >= n or s[j] not in digits:
+            fail()
+        if s[j] == "0":
+            j += 1
+        else:
+            while j < n and s[j] in digits:
+                j += 1
+        i[0] = j
+        return int(s[st:j])
+
+    def pval():
+        ws()
+        if i[0] >= n:
+            fail()
+        c = s[i[0]]
+        if c == "{":
+            return pobj()
+        if c == "[":
+            return parr()
+        if c == '"':
+            return pstr()
+        for lit, val in (("null", None), ("true", True), ("false", False)):
+            if s.startswith(lit, i[0]):
+                i[0] += len(lit)
+                return val
+        return pnum()
+
+    def parr():
+        i[0] += 1
+        out = []
+        ws()
+        if i[0] < n and s[i[0]] == "]":
+            i[0] += 1
+            return out
+        while True:
+            out.append(pval())
+            ws()
+            if i[0] >= n:
+                fail()
+            c = s[i[0]]
+            i[0] += 1
+            if c == "]":
+                return out
+            if c != ",":
+                fail()
+
+    def pobj():
+        i[0] += 1
+        d = {}
+        ws()
+        if i[0] < n and s[i[0]] == "}":
+            i[0] += 1
+            return d
+        while True:
+            ws()
+            if i[0] >= n or s[i[0]] != '"':
+                fail()
+            k = pstr()
+            ws()
+            if i[0] >= n or s[i[0]] != ":":
+                fail()
+            i[0] += 1
+            d[k] = pval()
+            ws()
+            if i[0] >= n:
+                fail()
+            c = s[i[0]]
+            i[0] += 1
+            if c == "}":
+                return d
+            if c != ",":
+                fail()
+
+    try:
+        v = pval()
+        ws()
+        if i[0] != n:
+            return _ERR
+        return v
+    except (ValueError, IndexError):
+        return _ERR
+
+
+def _p_json_mini_check(s):
+    """独立路径: 先手工词法切分, 再在 token 流上递归下降 (与字符级实现不同)。"""
+    toks = []
+    i = 0
+    n = len(s)
+    digits = "0123456789"
+    hexd = "0123456789abcdefABCDEF"
+    while i < n:
+        c = s[i]
+        if c in " \t\r\n":
+            i += 1
+        elif c == '"':
+            i += 1
+            buf = []
+            closed = False
+            while i < n:
+                ch = s[i]
+                if ch == '"':
+                    i += 1
+                    closed = True
+                    break
+                if ch == BS:
+                    i += 1
+                    if i >= n:
+                        break
+                    e = s[i]
+                    if e == "u":
+                        h = s[i + 1:i + 5]
+                        if len(h) != 4 or any(x not in hexd for x in h):
+                            return _ERR
+                        cp = int(h, 16)
+                        if cp < 0x20:
+                            return _ERR
+                        buf.append(chr(cp))
+                        i += 5
+                        continue
+                    mp = {'"': '"', BS: BS, "/": "/", "n": NL, "t": TAB}
+                    if e not in mp:
+                        return _ERR
+                    buf.append(mp[e])
+                    i += 1
+                    continue
+                if ord(ch) < 0x20:
+                    return _ERR
+                buf.append(ch)
+                i += 1
+            if not closed:
+                return _ERR
+            toks.append(("str", "".join(buf)))
+        elif c == "-" or c in digits:
+            st = i
+            if c == "-":
+                i += 1
+            if i >= n or s[i] not in digits:
+                return _ERR
+            if s[i] == "0":
+                i += 1
+            else:
+                while i < n and s[i] in digits:
+                    i += 1
+            toks.append(("num", int(s[st:i])))
+        elif s.startswith("true", i):
+            toks.append(("bool", True))
+            i += 4
+        elif s.startswith("false", i):
+            toks.append(("bool", False))
+            i += 5
+        elif s.startswith("null", i):
+            toks.append(("nul", None))
+            i += 4
+        elif c in "{}[],:":
+            toks.append(("punc", c))
+            i += 1
+        else:
+            return _ERR
+
+    ti = [0]
+
+    def peek():
+        return toks[ti[0]] if ti[0] < len(toks) else None
+
+    def take(kind=None):
+        t = peek()
+        if t is None or (kind is not None and t[0] != kind):
+            raise ValueError("take")
+        ti[0] += 1
+        return t
+
+    def val():
+        t = peek()
+        if t is None:
+            raise ValueError("eof")
+        if t[0] in ("str", "num", "bool", "nul"):
+            ti[0] += 1
+            return t[1]
+        if t[1] == "[":
+            return arr()
+        if t[1] == "{":
+            return obj()
+        raise ValueError("val")
+
+    def arr():
+        take("punc")
+        out = []
+        if peek() == ("punc", "]"):
+            ti[0] += 1
+            return out
+        while True:
+            out.append(val())
+            t = take("punc")
+            if t[1] == "]":
+                return out
+            if t[1] != ",":
+                raise ValueError("arr")
+
+    def obj():
+        take("punc")
+        d = {}
+        if peek() == ("punc", "}"):
+            ti[0] += 1
+            return d
+        while True:
+            k = take("str")
+            c = take("punc")
+            if c[1] != ":":
+                raise ValueError("colon")
+            d[k[1]] = val()
+            t = take("punc")
+            if t[1] == "}":
+                return d
+            if t[1] != ",":
+                raise ValueError("obj")
+
+    try:
+        v = val()
+        if ti[0] != len(toks):
+            return _ERR
+        return v
+    except (ValueError, IndexError):
+        return _ERR
+
+
+_JCHARS = "abzXY019 _-/:中é"
+_JTRICK = ['"', BS, "/", NL, TAB]
+
+
+def _jrand_str(rnd):
+    out = []
+    for _ in range(rnd.randint(0, 4)):
+        out.append(rnd.choice(_JTRICK) if rnd.random() < 0.4 else rnd.choice(_JCHARS))
+    return "".join(out)
+
+
+def _jrand_val(rnd, depth):
+    if depth > 0 and rnd.random() < 0.55:
+        if rnd.random() < 0.5:
+            return [_jrand_val(rnd, depth - 1) for _ in range(rnd.randint(1, 3))]
+        pairs = []
+        for _ in range(rnd.randint(1, 3)):
+            pairs.append((_jrand_str(rnd), _jrand_val(rnd, depth - 1)))
+        if rnd.random() < 0.35:
+            pairs.append((pairs[0][0], _jrand_val(rnd, depth - 1)))
+        return ("obj", pairs)
+    k = rnd.choice(["nul", "bool", "int", "int", "str", "str"])
+    if k == "nul":
+        return None
+    if k == "bool":
+        return rnd.random() < 0.5
+    if k == "int":
+        return rnd.randint(-99, 99)
+    return _jrand_str(rnd)
+
+
+def _jws(rnd):
+    return rnd.choice(["", "", " ", NL, "  ", NL + " "])
+
+
+def _jser_str(s, rnd):
+    out = ['"']
+    for ch in s:
+        if ch == '"':
+            out.append(BS + '"')
+        elif ch == BS:
+            out.append(BS + BS)
+        elif ch == NL:
+            out.append(BS + "n")
+        elif ch == TAB:
+            out.append(BS + "t")
+        elif ch == "/":
+            out.append(rnd.choice(["/", BS + "/"]))
+        elif rnd.random() < 0.25:
+            out.append(BS + "u%04x" % ord(ch))
+        else:
+            out.append(ch)
+    out.append('"')
+    return "".join(out)
+
+
+def _jser(v, rnd):
+    if v is None:
+        return "null"
+    if v is True:
+        return "true"
+    if v is False:
+        return "false"
+    if isinstance(v, int):
+        return "%d" % v
+    if isinstance(v, str):
+        return _jser_str(v, rnd)
+    if isinstance(v, list):
+        return "[" + _jws(rnd) + (("," + _jws(rnd)).join(_jser(x, rnd) for x in v)) + _jws(rnd) + "]"
+    pairs = v[1]
+    items = [_jser_str(k, rnd) + _jws(rnd) + ":" + _jws(rnd) + _jser(x, rnd) for k, x in pairs]
+    return "{" + _jws(rnd) + (("," + _jws(rnd)).join(items)) + _jws(rnd) + "}"
+
+
+def _jcorrupt(t, rnd):
+    k = rnd.randrange(6)
+    if k == 0:
+        return t[:-1]
+    if k == 1:
+        return t + " x"
+    if k == 2:
+        return t.replace(",", " ,, ", 1)
+    if k == 3:
+        return "[" + t
+    if k == 4:
+        return t.replace('"', BS + "x", 1)
+    return "01" + t
+
+
+def _jtight(rnd):
+    """规格紧用例: 合法 JSON 但**违反本规格** ⇒ 期望 ERR。用于确定性区分"通用 JSON 库套用"式解法。"""
+    k = rnd.randrange(4)
+    if k == 0:
+        return '["' + BS + "u000" + rnd.choice("0123456789abcdef") + 'x"]'
+    if k == 1:
+        return "[" + rnd.choice(["1.5", "-0.25", "1e3"]) + "]"
+    if k == 2:
+        return "[" + rnd.choice(["NaN", "Infinity", "-Infinity"]) + "]"
+    return '["a' + TAB + 'b"]'
+
+
+def _in_json_mini(rnd):
+    r = rnd.random()
+    if r < 0.3:
+        t = _jser(_jrand_val(rnd, 3), rnd)
+    elif r < 0.75:
+        t = _jcorrupt(_jser(_jrand_val(rnd, 3), rnd), rnd)
+    else:
+        t = _jtight(rnd)
+    return t + NL
+
+
+# ---------------------------------------------------------------- 反饱和族 (R417)
+# 背景: 原 7 族对当前链已饱和 (agent 与 oracle 同为 rate=1.0 = 天花板效应) ⇒ 无法度量质量。
+# 这两族的公开样例**推不出**隐藏判据 (字典序最小 / 栈机错误语义), 必须真正实现规格才能整题全对。
+# 注意: 本族输入一律用 _nl() 拼行, 不用转义字面量 (写入工具会污染特定字符序列)。
+
+def _nl(lines):
+    return NL.join(lines) + NL
+
+
+def _p_topo_min_ref(s):
+    """Kahn + 最小堆 = 字典序最小拓扑序; 有环/自环 ⇒ None。"""
+    import heapq
+    d = s.split()
+    n, m = int(d[0]), int(d[1])
+    adj = [[] for _ in range(n)]
+    deg = [0] * n
+    i = 2
+    for _ in range(m):
+        u, v = int(d[i]), int(d[i + 1])
+        i += 2
+        adj[u].append(v)
+        deg[v] += 1
+    h = [x for x in range(n) if deg[x] == 0]
+    heapq.heapify(h)
+    out = []
+    while h:
+        u = heapq.heappop(h)
+        out.append(u)
+        for v in adj[u]:
+            deg[v] -= 1
+            if deg[v] == 0:
+                heapq.heappush(h, v)
+    return out if len(out) == n else None
+
+
+def _p_topo_min_check(s):
+    """独立路径: 每步线性扫描剩余节点中最小入度 0 者 (O(n^2), 与堆/邻接表独立)。"""
+    d = s.split()
+    n, m = int(d[0]), int(d[1])
+    edges = []
+    i = 2
+    for _ in range(m):
+        edges.append((int(d[i]), int(d[i + 1])))
+        i += 2
+    left = set(range(n))
+    out = []
+    while left:
+        pick = None
+        for u in sorted(left):
+            blocked = False
+            for (v, w) in edges:
+                if w == u and v in left:
+                    blocked = True
+                    break
+            if not blocked:
+                pick = u
+                break
+        if pick is None:
+            return None
+        out.append(pick)
+        left.discard(pick)
+    return out
+
+
+def _in_topo_min(rnd):
+    n = rnd.randint(2, 7)
+    style = rnd.random()
+    if style < 0.3:                     # 汇点收口: 存在多个合法序, 字典序最小非平凡
+        edges = [(i, n - 1) for i in range(n - 1)]
+    elif style < 0.45:                  # 制造环 (含自环可能)
+        edges = [(rnd.randrange(n), rnd.randrange(n)) for _ in range(rnd.randint(1, 3))]
+        edges.append((n - 1, 0))
+    else:
+        edges = [(rnd.randrange(n), rnd.randrange(n)) for _ in range(rnd.randint(0, n + 2))]
+    return _nl(["%d %d" % (n, len(edges))] + ["%d %d" % e for e in edges])
+
+
+def _vm_valid_body(rnd):
+    """构造**确定合法**的栈机程序 (整题全对要求: 错解不能靠"一律 ERR"过关)。"""
+    a, b = rnd.randint(-5, 5), rnd.randint(-5, 5)
+    kind = rnd.randrange(7)
+    if kind == 0:
+        body = ["PUSH %d" % a, "PUSH %d" % b, "ADD", "PRINT", "HALT"]
+    elif kind == 1:
+        body = ["PUSH %d" % a, "PUSH %d" % b, "MUL", "PRINT", "HALT"]
+    elif kind == 2:
+        body = ["PUSH %d" % a, "PUSH %d" % b, "SUB", "PRINT", "HALT"]
+    elif kind == 3:
+        body = ["PUSH %d" % a, "DUP", "ADD", "PRINT", "HALT"]
+    elif kind == 4:
+        body = ["PUSH %d" % a, "PUSH %d" % b, "SWAP", "SUB", "PRINT", "HALT"]
+    elif kind == 5:
+        body = ["PUSH %d" % a, "PRINT", "PUSH %d" % b, "PRINT", "HALT"]
+    else:
+        n = rnd.randint(1, 4)           # 倒计数循环: 打印 n, n-1, ..., 1
+        body = ["PUSH %d" % n, "DUP", "PRINT", "PUSH 1", "SUB", "DUP", "JNZ 1", "POP", "HALT"]
+    if kind < 6:                        # 无跳转模板可插无害 PUSH/POP 对 (打散"照抄公开样例"式解法)
+        for _ in range(rnd.randint(0, 2)):
+            pos = rnd.randint(0, len(body) - 2)
+            body = body[:pos] + ["PUSH %d" % rnd.randint(-3, 3), "POP"] + body[pos:]
+    return body
+
+
+def _vm_err_body(rnd):
+    """构造必须判 ERR 的程序: 栈下溢 / 操作数不足 / 跳转越界 / 无 HALT / 步数上限。"""
+    kind = rnd.randrange(6)
+    if kind == 0:
+        return ["POP", "HALT"]
+    if kind == 1:
+        return ["PUSH %d" % rnd.randint(-3, 3), "ADD", "HALT"]
+    if kind == 2:
+        return ["PUSH 1", "JNZ 99", "HALT"]
+    if kind == 3:
+        return ["PUSH %d" % rnd.randint(-3, 3)]
+    if kind == 4:
+        return ["PUSH 1", "PUSH 2", "SWAP", "SWAP", "POP", "POP", "POP", "HALT"]
+    return ["PUSH %d" % rnd.randint(1, 3), "JNZ 0", "HALT"]
+
+
+def _in_vm_run(rnd):
+    body = _vm_err_body(rnd) if rnd.random() < 0.3 else _vm_valid_body(rnd)
+    return _nl(["%d" % len(body)] + body)
+
+
+def _p_vm_run_ref(s):
+    """参考路径: 列表当栈 + 显式逐指令分支; 任何非法态 ⇒ None (答案格式化为 ERR)。"""
+    L = s.strip().splitlines()
+    k = int(L[0].split()[0])
+    prog = [ln.split() for ln in L[1:1 + k]]
+    st = []
+    pc = 0
+    out = []
+    steps = 0
+    while True:
+        if pc < 0 or pc >= k:
+            return None
+        steps += 1
+        if steps > 10000:
+            return None
+        op, arg = prog[pc][0], prog[pc][1:]
+        pc += 1
+        if op == "PUSH":
+            st.append(int(arg[0]))
+        elif op == "POP":
+            if not st:
+                return None
+            st.pop()
+        elif op in ("ADD", "SUB", "MUL"):
+            if len(st) < 2:
+                return None
+            a2 = st.pop()
+            b2 = st.pop()
+            st.append(b2 + a2 if op == "ADD" else (b2 - a2 if op == "SUB" else b2 * a2))
+        elif op == "DUP":
+            if not st:
+                return None
+            st.append(st[-1])
+        elif op == "SWAP":
+            if len(st) < 2:
+                return None
+            st[-1], st[-2] = st[-2], st[-1]
+        elif op == "PRINT":
+            if not st:
+                return None
+            out.append(st.pop())
+        elif op == "JNZ":
+            if not st:
+                return None
+            v = st.pop()
+            t = int(arg[0])
+            if t < 0 or t >= k:
+                return None
+            if v != 0:
+                pc = t
+        elif op == "HALT":
+            return out
+        else:
+            return None
+
+
+def _p_vm_run_check(s):
+    """独立路径: 预分配栈数组 + 指针 (无 append/pop) + 倒计数步数上限。"""
+    it = iter(s.strip().splitlines())
+    try:
+        k = int(next(it).split()[0])
+    except (StopIteration, ValueError):
+        return None
+    prog = []
+    for _ in range(k):
+        try:
+            prog.append(next(it).split())
+        except StopIteration:
+            return None
+    st = [0] * 10050
+    sp = 0
+    out = []
+    pc = 0
+    budget = 10000
+    while budget > 0:
+        budget -= 1
+        if not (0 <= pc < k):
+            return None
+        op = prog[pc][0]
+        arg = prog[pc][1:]
+        nxt = pc + 1
+        if op == "PUSH":
+            if sp >= len(st):
+                return None
+            st[sp] = int(arg[0])
+            sp += 1
+        elif op == "POP":
+            if sp < 1:
+                return None
+            sp -= 1
+        elif op in ("ADD", "SUB", "MUL"):
+            if sp < 2:
+                return None
+            a2 = st[sp - 1]
+            b2 = st[sp - 2]
+            sp -= 2
+            st[sp] = b2 + a2 if op == "ADD" else (b2 - a2 if op == "SUB" else b2 * a2)
+            sp += 1
+        elif op == "DUP":
+            if sp < 1 or sp >= len(st):
+                return None
+            st[sp] = st[sp - 1]
+            sp += 1
+        elif op == "SWAP":
+            if sp < 2:
+                return None
+            st[sp - 1], st[sp - 2] = st[sp - 2], st[sp - 1]
+        elif op == "PRINT":
+            if sp < 1:
+                return None
+            sp -= 1
+            out.append(st[sp])
+        elif op == "JNZ":
+            if sp < 1:
+                return None
+            sp -= 1
+            t = int(arg[0])
+            if t < 0 or t >= k:
+                return None
+            if st[sp] != 0:
+                nxt = t
+        elif op == "HALT":
+            return out
+        else:
+            return None
+        pc = nxt
+    return None
+
+
 PROGRAM_FAMILIES = {
     "max_subarray": {
         "spec": "读入: 第一行整数 n; 第二行 n 个整数(空格分隔)。输出: 连续子数组的最大和(至少取一个元素)。",
@@ -309,6 +1003,34 @@ PROGRAM_FAMILIES = {
         "check": lambda s: _p_pair_closest_alt([int(x) for x in s.split()[1:]]),
         "gen_input": _in_pair_closest,
         "fmt": lambda r: "%d" % r,
+    },
+    "topo_min": {
+        "spec": "读入: 第一行两个整数 n m (1<=n<=64); 随后 m 行, 每行两个整数 u v (0<=u,v<n), 表示有向边 u->v。输出: 若图中存在拓扑序, 输出**字典序最小**的拓扑序 (n 个节点编号, 空格分隔为一行); 若存在环(含自环), 输出 -1。",
+        "ref": _p_topo_min_ref,
+        "check": _p_topo_min_check,
+        "gen_input": _in_topo_min,
+        "fmt": lambda r: "-1" if r is None else " ".join("%d" % x for x in r),
+    },
+    "vm_run": {
+        "spec": "读入: 第一行整数 k (1<=k<=64, 指令条数); 随后 k 行, 每行一条指令 (地址从 0 开始)。指令集: PUSH n(压入整数 n) / POP(弹出丢弃) / ADD / SUB / MUL(弹出 a=栈顶, b=次顶, 压入 b-a 等运算) / DUP(复制栈顶) / SWAP(交换栈顶两元素) / PRINT(弹出栈顶并输出一行) / JNZ a(弹出栈顶, 非 0 则跳转到地址 a, 否则继续) / HALT(结束)。输出: 按 PRINT 顺序逐行输出整数。若出现栈空弹栈、操作数不足、跳转地址越界、未在 10000 步内执行 HALT, 或执行流越过最后一条指令, 则只输出一行 ERR。",
+        "ref": _p_vm_run_ref,
+        "check": _p_vm_run_check,
+        "gen_input": _in_vm_run,
+        "fmt": lambda r: "ERR" if r is None else NL.join("%d" % x for x in r),
+    },
+    "json_mini": {
+        "spec": ("读入: STDIN 整体为一个 JSON 值 (可含前后空白与换行)。支持 null / true / false / 十进制整数"
+                 "(可选负号; 不允许前导零, 允许 -0 ⇒ 输出为 0) / 字符串 / 数组 / 对象(键为字符串)。"
+                 "字符串内仅允许标准反斜杠转义 (引号 反斜杠 斜杠 n t uXXXX 六种); uXXXX 解码为对应字符, "
+                 "且解码出的码点必须 >= 0x20。对象允许重复键, 重复时后者覆盖前者。"
+                 "输出: 规范化文本, **不含任何空白**: 字符串输出时把 引号/反斜杠/换行/制表符 重新转义, 其余字符原样; "
+                 "对象的键按 Unicode 码点升序; 例: {\"a\":1,\"b\":[2,3]}。"
+                 "若输入非法 (语法错误 / 结尾有多余内容 / 非法转义 / 非法数字 / 空输入), 只输出一行 ERR。"),
+        "ref": _p_json_mini_ref,
+        "check": _p_json_mini_check,
+        "gen_input": _in_json_mini,
+        "tight_gen": _jtight,
+        "fmt": lambda r: "ERR" if r is _ERR else _jnorm(r),
     },
 }
 
@@ -475,6 +1197,26 @@ HARD_INPUTS = {
                       "2 2\n-1 -2\n-3 -4\n", "3 3\n0 0 0\n0 0 0\n0 0 0\n"],
     "csv_agg": ["A,1\n", "Z,5\nA,5\n", "A,-3\nB,4\n", "A,0\n", "M,7\nM,-7\nN,2\n"],
     "pair_closest_abs_sum": ["2\n0 0\n", "2\n-5 5\n", "3\n1 1 1\n", "4\n-3 7 7 -3\n", "2\n-9 -9\n"],
+    "topo_min": [_nl(["1 0"]), _nl(["2 2", "0 1", "1 0"]), _nl(["2 1", "1 1"]),
+                 _nl(["5 0"]), _nl(["3 1", "2 0"]), _nl(["4 3", "3 0", "2 0", "1 0"]),
+                 _nl(["6 5", "5 0", "4 0", "3 0", "2 0", "1 0"])],
+    "vm_run": [_nl(["2", "POP", "HALT"]), _nl(["3", "PUSH 1", "JNZ 9", "HALT"]),
+               _nl(["9", "PUSH 3", "DUP", "PRINT", "PUSH 1", "SUB", "DUP", "JNZ 1", "POP", "HALT"]),
+               _nl(["5", "PUSH 2", "PUSH 3", "MUL", "PRINT", "HALT"]),
+               _nl(["5", "PUSH 3", "PUSH 4", "SWAP", "SUB", "HALT"]),
+               _nl(["3", "PUSH 5", "DUP", "ADD"])],
+    "json_mini": [_nl(['{"a":1,"b":[true,null]}']),
+                  _nl(['{"a": 1']),
+                  "[" + '"a' + BS + 'xb"]' + NL,
+                  "[" + '"' + BS + "u0041" + '"]' + NL,
+                  _nl(['{"b":1,"a":2,"b":3}']),
+                  _nl(["[01]"]),
+                  _nl(["[] x"]),
+                  _nl(["-0"]),
+                  _nl(['{"z":{"b":1,"a":2},"a":[]}']),
+                  "[" + '"' + BS + "u0007x" + '"]' + NL,
+                  _nl(["[1.5]"]),
+                  _nl(["NaN"])],
 }
 
 
@@ -662,7 +1404,10 @@ def gen_program_task(idx, families, rnd, n_public=2, n_hidden=6):
     for _ in range((n_public + n_hidden) * 4):
         if len(cases) >= n_public + n_hidden:
             break
-        stdin_text = f["gen_input"](rnd)
+        if len(cases) == n_public + n_hidden - 1 and f.get("tight_gen"):
+            stdin_text = f["tight_gen"](rnd)
+        else:
+            stdin_text = f["gen_input"](rnd)
         if stdin_text in seen:
             continue
         seen.add(stdin_text)

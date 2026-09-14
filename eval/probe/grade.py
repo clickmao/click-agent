@@ -81,17 +81,33 @@ def candidates(reply: str, since: float = None) -> list:
     return out
 
 
+MIN_PREFIX_CHARS = 64
+
+
 def extract_code(reply: str, since: float = None) -> str:
-    """抽候选程序: 多路候选里取**第一个可编译**的; 都不可编译则返回最长者 (此时 syntax_error 才是真失败)。"""
+    """抽候选程序: ① 全候选里取**第一个可整体编译**者 (按长度降序);
+    ② 都不行才退化为「最长可编译前缀」, 且前缀必须 >= MIN_PREFIX_CHARS;
+    ③ 仍不行返回最长候选 (此时 syntax_error 才是真失败)。
+
+    R417 实测缺陷: 首版是「逐候选取首个可编译前缀」⇒ 长回复下会把 10 KB 程序误判成
+    46 字符的注释残片 (p001 记录 0/18, 真值 12/18)。故前缀回退必须**分两轮**且设长度下限。
+    """
     cands = [c for c in candidates(reply, since) if c and c.strip()]
     if not cands:
         return ""
-    for c in sorted(cands, key=len, reverse=True):
+    ordered = sorted(cands, key=len, reverse=True)
+    for c in ordered:                      # 第一轮: 只看整体可编译
         if _compiles(c):
             return c
+    best = ""                              # 第二轮: 允许前缀, 但要有实体长度
+    for c in ordered:
         for pre in _prefixes(c):
-            if _compiles(pre):
-                return pre
+            if len(pre) >= MIN_PREFIX_CHARS and _compiles(pre):
+                if len(pre) > len(best):
+                    best = pre
+                break
+    if best:
+        return best
     return max(cands, key=len)
 
 
@@ -151,25 +167,31 @@ def grade_program(task: dict, reply: str, timeout: float = 5.0, since: float = N
                 "detail": [], "taxonomy": {"syntax_error": 1}}
 
     tax, detail = {}, []
+    nonzero_ok = 0
     for i, case in enumerate(task["hidden"]):
         r = run_code(code, case["stdin"], timeout)
+        out_ok = norm(r["stdout"]) == norm(case["expected_stdout"])
         if r["timed_out"]:
             v = "timeout"
+        elif out_ok and (r["exit"] == 0 or norm(case["expected_stdout"]) != ""):
+            # R417: 输出正确但退出码非 0 (惯性 sys.exit(1)) 不该判失败; 期望空输出时崩溃仍算失败
+            v = "ok"
+            if r["exit"] != 0:
+                nonzero_ok += 1
         elif r["exit"] != 0:
             v = "runtime_error"
-        elif norm(r["stdout"]) == norm(case["expected_stdout"]):
-            v = "ok"
         else:
             v = "wrong_output"
         tax[v] = tax.get(v, 0) + 1
-        detail.append({"case": i, "verdict": v,
+        detail.append({"case": i, "verdict": v, "exit": r["exit"],
                        "got": norm(r["stdout"])[:120], "want": norm(case["expected_stdout"])[:120]})
     passed = tax.get("ok", 0)
     total = len(task["hidden"])
     mode = "ok" if passed == total else ("timeout" if "timeout" in tax else
                                         "runtime_error" if "runtime_error" in tax else
                                         "partial" if passed else "wrong_output")
-    return {"mode": mode, "passed": passed, "total": total, "detail": detail, "taxonomy": tax}
+    return {"mode": mode, "passed": passed, "total": total, "detail": detail,
+            "taxonomy": tax, "exit_nonzero_ok": nonzero_ok}
 
 
 # ---------------------------------------------------------------- 见证型数学题: 独立验证
@@ -321,6 +343,26 @@ def selftest() -> int:
 
     r = grade_program({"kind": "program", "hidden": t["hidden"]}, "```python\n%s\n```" % _GOOD_MAXSUB)
     chk("正控: 与公开用例无关(判定只用隐藏)", r["passed"] == 2)
+
+    # ---- 提取/分类口径负控 (R417 真机抓到: 长回复下程序被误判成残片 + 正确输出被退出码顶掉)
+    nl = chr(10)
+    stub = "#!/usr/bin/env python3" + nl + "# -*- coding: utf-8 -*-" + nl + "def f(:" + nl
+    good = "import sys" + nl + "print(len(sys.stdin.read().split()))" + nl
+    pad = ("# " + "x" * 40 + nl) * 6
+    fence = "```python" + nl
+    reply = fence + stub + pad + "```" + nl + fence + good + "```" + nl
+    got = extract_code(reply)
+    chk("负控: 长残片候选不得顶掉整体可编译者", got.strip() == good.strip(), "len=%d" % len(got))
+
+    t_exit = {"kind": "program", "hidden": [{"stdin": "x", "expected_stdout": "ERR"}]}
+    r = grade_program(t_exit, fence + "import sys" + nl + "print('ERR')" + nl + "sys.exit(1)" + nl + "```")
+    chk("正控: stdout 正确但退出码非 0 仍判过", r["mode"] == "ok" and r.get("exit_nonzero_ok") == 1,
+        str(r["taxonomy"]))
+    r = grade_program(t_exit, fence + "import sys" + nl + "raise SystemExit(1)" + nl + "```")
+    chk("负控: 无输出 + 非 0 退出判 runtime_error", r["mode"] == "runtime_error", str(r["taxonomy"]))
+    t_empty = {"kind": "program", "hidden": [{"stdin": "x", "expected_stdout": ""}]}
+    r = grade_program(t_empty, fence + "import sys" + nl + "raise SystemExit(1)" + nl + "```")
+    chk("负控: 期望空输出时崩溃不得判过", r["mode"] == "runtime_error", str(r["taxonomy"]))
 
     # ---- 见证型判定负控 ----
     ws = {"kind": "math", "family": "witness_sqrt_mod", "answer": "", "meta": {"witness": {"kind": "sqrt_mod", "p": 101, "a": 4}}}

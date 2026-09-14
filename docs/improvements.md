@@ -1171,3 +1171,17 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **附带产出**: `scripts/gguf_probe_remote.py` 远程 GGUF 兼容性预探（HTTP range 取头部 ~24 MB，判 arch/特性/量化可实现性，先探再下）。实测：`DeepSeek-R1-Distill-Qwen-1.5B` RUNNABLE；`Llama-3.2-1B` RUNNABLE；`Qwen2.5-0.5B`/`SmolLM2-360M` 含 **Q5_0** ⇒ BLOCKED（引擎缺内核）；`Qwen3-0.6B` 含 **56 个 qk_norm** ⇒ BLOCKED。
 - **诚实边界**: ① **qwen2 乱码仍未定性**（分词与 RoPE 均已排除 ⇒ 剩 tied 词表 / attn 偏置 / GQA 三条 7B 未覆盖路径；判别实验 `DeepSeek-R1-Distill-Qwen-1.5B`（qwen2 且 untied）已排队）；② 本轮仅重测「平凡续写」，prover7b 解法级重测未做；③ NORM/NEOX 表来自 vendored 上游快照，上游变更需重新提取。
 - **报告**: `docs/reports/r403/rope-pairing.md`。
+
+### R417 (2026-09-14) — 探针反饱和：质量「分数」缺失的机制根因是**题集饱和**（天花板效应）
+
+- **发现路径**: 用户问「当前链产出质量不高，需要回流的是你自己的上下文」⇒ 想做「质量→分数」的闭环，先清点探针读数 ⇒ 发现 `probe-agent-seed20260913.json` 与 `probe-m6-agent.json` 的 **agent 与 oracle 同为整题全对 100%**，同题复跑逐族一致 ⇒ 题集对当前链已到天花板，**任何质量分数都恒为满分**。
+- **根因（与仪器坏掉的区分）**: 负控 `mutation:hardcode` 仍为整题全对 0 ⇒ 判定器判别力在，是**被测对象到顶**，不是仪器损坏（不区分这两者会误修错地方）。
+- **交付**: `eval/probe/tasks.py` 新增 3 族（程序族 7→10）：`topo_min`（字典序最小拓扑序，有环⇒`-1`）、`vm_run`（微型栈机：跳转/栈下溢/地址越界/10000 步上限 ⇒ `ERR`）、`json_mini`（严格 JSON 规范化：仅 6 种转义、uXXXX 解码且码点 ≥0x20、键按码点升序、重复键后者覆盖、输出无空白、非法输入 ⇒ `ERR`）；每族 `ref`/`check` **两条独立实现**双路径验算（1422 例分歧 0）；`HARD_INPUTS` 增 24 条对抗用例；`gen_program_task()` 支持 `tight_gen` ⇒ **每题强制注入 1 条「合 JSON 但不合本规格」隐藏用例**（浮点/NaN/低码点 uXXXX/裸 TAB）；`run_probe.py` 增族专属缺陷注入 `topo_dfs`/`vm_noerr`/`json_loose`；`scripts/dev_return_digest.py` 增 digest §3「探针分数」（整题全对率 + 用例级率 + 失败模式 + **饱和标记**）。
+- **读数（正负控成对）**: 正控 oracle `topo_min`+`vm_run` 49/49（4/4 整题全对）、`json_mini` 36/36（2/2）；负控 `topo_dfs` 24/52 整题全对 **0/4**、`vm_noerr` 29/48 **0/4**、`json_loose` 54/72=**0.75 用例级但整题全对 0/4**（这条正是「打分单元必须是整题全对」的反例实证）。
+- **真机（AOT `agenthost`）**: agent 在 `topo_min`+`vm_run` 上 **74/74、6/6 整题全对 ⇒ 仍饱和**（单调性论证：旧判定器只会低估 ⇒ 满分读数在修正口径下必然仍满分）。
+- **首个非饱和质量分数（`json_mini`，n=3 真机）**: 记录口径 27/54=0.5 用例级、整题全对 0/3；**修正口径 47/54=0.8704、整题全对 1/3**（p001 12/18 漏引号 · p002 18/18 满分 · p003 17/18，唯一失分 = `tight_gen` 强制的裸 TAB 紧用例）。**用例级 87% vs 整题全对 33% 的落差 = 「判分单元必须是整题全对」的实证。**
+- **仪器两处真缺陷（真机暴露，已修 + 4 条负控入 selftest 29/29）**: ① 提取器"首个可编译前缀"⇒ 长回复下 10 KB 程序被判成 46 字符注释残片；② `grade_program` 先看退出码 ⇒ stdout 正确但 `sys.exit(1)` 被判 runtime_error。修复 ⇒ `eval/probe/grade.py` 提取分两轮 + 前缀下限 64 字符、分类改 stdout 优先（`exit_nonzero_ok`）。
+- **证据卫生缺陷（本轮暴露，下轮修）**: `data/probe/replies/` 无臂命名空间 ⇒ 后一臂覆盖前一臂（topo/vm 臂 p001–p003 已被覆盖）。
+- **诚实结论**: 「加难族」这条路本轮**未打破天花板**（链在程序题上比预期强）；质量从「计数」变成「连续分数」仍需**换维度**（每题 tokens / 轮数 / 首次通过率——对饱和题集仍有区分度，且直接对齐用户 KPI 口径）。
+- **计划**: `docs/plans/v0.38.0-r417-probe-anti-saturation.md`；证据 `eval/rover/r417/`；登记 `docs/verification-registry.json` `r417.probe-anti-saturation`（L4）。
+- **文档缺口（如实登记）**: `docs/improvements.md` 的 **R404–R416 轮节未回填**；`docs/plans/v715_dev_plan.taskplan.json` 只登记到 R412（R413–R417 未登记）。

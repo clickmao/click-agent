@@ -114,6 +114,65 @@ for i in range(n):
 print(best[1])
 """
 
+_REF_TOPO = """
+import sys, heapq
+d = sys.stdin.read().split()
+n = int(d[0]); m = int(d[1])
+adj = [[] for _ in range(n)]; deg = [0] * n
+i = 2
+for _ in range(m):
+    u = int(d[i]); v = int(d[i + 1]); i += 2
+    adj[u].append(v); deg[v] += 1
+h = [x for x in range(n) if deg[x] == 0]; heapq.heapify(h)
+out = []
+while h:
+    u = heapq.heappop(h); out.append(u)
+    for v in adj[u]:
+        deg[v] -= 1
+        if deg[v] == 0: heapq.heappush(h, v)
+print(-1 if len(out) < n else ' '.join(map(str, out)))"""
+
+_REF_VM = """
+import sys
+L = sys.stdin.read().splitlines()
+k = int(L[0].split()[0])
+P = [ln.split() for ln in L[1:1 + k]]
+st = []; pc = 0; out = []; steps = 0
+while True:
+    if pc < 0 or pc >= k:
+        print('ERR'); break
+    steps += 1
+    if steps > 10000:
+        print('ERR'); break
+    op = P[pc][0]; arg = P[pc][1:]; pc += 1
+    if op == 'PUSH':
+        st.append(int(arg[0]))
+    elif op == 'POP':
+        if not st: print('ERR'); break
+        st.pop()
+    elif op in ('ADD', 'SUB', 'MUL'):
+        if len(st) < 2: print('ERR'); break
+        a = st.pop(); b = st.pop()
+        st.append(b + a if op == 'ADD' else (b - a if op == 'SUB' else b * a))
+    elif op == 'DUP':
+        if not st: print('ERR'); break
+        st.append(st[-1])
+    elif op == 'SWAP':
+        if len(st) < 2: print('ERR'); break
+        st[-1], st[-2] = st[-2], st[-1]
+    elif op == 'PRINT':
+        if not st: print('ERR'); break
+        out.append(st.pop())
+    elif op == 'JNZ':
+        if not st: print('ERR'); break
+        v = st.pop(); t = int(arg[0])
+        if t < 0 or t >= k: print('ERR'); break
+        if v != 0: pc = t
+    elif op == 'HALT':
+        print(chr(10).join(map(str, out))); break
+    else:
+        print('ERR'); break"""
+
 REF_SRC = {
     "pair_closest_abs_sum": _REF_PAIRCLOSE.strip(),
     "max_subarray": _REF_MAXSUB.strip(),
@@ -122,9 +181,190 @@ REF_SRC = {
     "interval_sum": _REF_INTERVAL.strip(),
     "matrix_spiral": _REF_SPIRAL.strip(),
     "csv_agg": _REF_CSV.strip(),
+    "topo_min": _REF_TOPO.strip(),
+    "vm_run": _REF_VM.strip(),
+    "json_mini": None,      # 由下方 (定义顺序: _REF_JSON 晚于本字面量) 注入
 }
 
 PROG_MUTATIONS = ("extra", "loop", "syntax", "nocode", "hardcode")   # 程序题缺陷注入族
+
+# ---------------------------------------------------------------- 族专属缺陷注入 (R417 判别力自证)
+# 用途: 证明新族的隐藏判据**真的能**把"看似实现、实则不合规"的解判红 (整题全对=0)。
+# 与通用 mutation 分开, 因为只对特定族有意义 ⇒ 只允许 --families 定向跑。
+
+_MUT_TOPO_DFS = """
+import sys
+d = sys.stdin.read().split()
+n = int(d[0]); m = int(d[1])
+adj = [[] for _ in range(n)]; i = 2
+for _ in range(m):
+    u = int(d[i]); v = int(d[i + 1]); i += 2
+    adj[u].append(v)
+seen = [0] * n; out = []; cyc = [False]
+def dfs(u):
+    seen[u] = 1
+    for v in adj[u]:
+        if seen[v] == 1: cyc[0] = True
+        elif seen[v] == 0: dfs(v)
+    seen[u] = 2; out.append(u)
+for x in range(n):
+    if seen[x] == 0: dfs(x)
+out.reverse()
+print(-1 if cyc[0] else ' '.join(map(str, out)))"""
+
+_MUT_VM_NOERR = """
+import sys
+L = sys.stdin.read().splitlines()
+k = int(L[0].split()[0])
+P = [ln.split() for ln in L[1:1 + k]]
+st = []; pc = 0; out = []
+while True:
+    op = P[pc][0]; arg = P[pc][1:]; pc += 1
+    if op == 'PUSH':
+        st.append(int(arg[0]))
+    elif op == 'POP':
+        st.pop()
+    elif op in ('ADD', 'SUB', 'MUL'):
+        a = st.pop(); b = st.pop()
+        st.append(b + a if op == 'ADD' else (b - a if op == 'SUB' else b * a))
+    elif op == 'DUP':
+        st.append(st[-1])
+    elif op == 'SWAP':
+        st[-1], st[-2] = st[-2], st[-1]
+    elif op == 'PRINT':
+        out.append(st.pop())
+    elif op == 'JNZ':
+        v = st.pop()
+        if v != 0: pc = int(arg[0])
+    elif op == 'HALT':
+        print(chr(10).join(map(str, out))); break"""
+
+_REF_JSON = """
+import sys
+BS = chr(92); NL = chr(10); TAB = chr(9)
+s = sys.stdin.read()
+
+def norm(v):
+    if v is None: return "null"
+    if v is True: return "true"
+    if v is False: return "false"
+    if isinstance(v, int): return "%d" % v
+    if isinstance(v, str):
+        out = ['"']
+        for ch in v:
+            if ch == '"': out.append(BS + '"')
+            elif ch == BS: out.append(BS + BS)
+            elif ch == NL: out.append(BS + "n")
+            elif ch == TAB: out.append(BS + "t")
+            else: out.append(ch)
+        out.append('"')
+        return "".join(out)
+    if isinstance(v, list): return "[" + ",".join(norm(x) for x in v) + "]"
+    return "{" + ",".join(norm(k) + ":" + norm(v[k]) for k in sorted(v)) + "}"
+
+def parse(t):
+    i = [0]; n = len(t)
+    def ws():
+        while i[0] < n and t[i[0]] in " " + chr(9) + chr(13) + chr(10): i[0] += 1
+    def bad(): raise ValueError()
+    def st():
+        i[0] += 1; buf = []
+        while True:
+            if i[0] >= n: bad()
+            c = t[i[0]]
+            if c == '"':
+                i[0] += 1; return "".join(buf)
+            if c == BS:
+                i[0] += 1
+                if i[0] >= n: bad()
+                e = t[i[0]]
+                if e == '"': buf.append('"')
+                elif e == BS: buf.append(BS)
+                elif e == "/": buf.append("/")
+                elif e == "n": buf.append(NL)
+                elif e == "t": buf.append(TAB)
+                elif e == "u":
+                    h = t[i[0] + 1:i[0] + 5]
+                    if len(h) != 4: bad()
+                    cp = int(h, 16)
+                    if cp < 0x20: bad()
+                    buf.append(chr(cp)); i[0] += 4
+                else: bad()
+                i[0] += 1
+            else:
+                if ord(c) < 0x20: bad()
+                buf.append(c); i[0] += 1
+    def num():
+        a = i[0]; j = a
+        if j < n and t[j] == "-": j += 1
+        if j >= n or t[j] not in "0123456789": bad()
+        if t[j] == "0": j += 1
+        else:
+            while j < n and t[j] in "0123456789": j += 1
+        i[0] = j
+        return int(t[a:j])
+    def arr():
+        i[0] += 1; out = []
+        ws()
+        if i[0] < n and t[i[0]] == "]":
+            i[0] += 1; return out
+        while True:
+            out.append(val()); ws()
+            if i[0] >= n: bad()
+            c = t[i[0]]; i[0] += 1
+            if c == "]": return out
+            if c != ",": bad()
+    def obj():
+        i[0] += 1; d = {}
+        ws()
+        if i[0] < n and t[i[0]] == "}":
+            i[0] += 1; return d
+        while True:
+            ws()
+            if i[0] >= n or t[i[0]] != '"': bad()
+            k = st(); ws()
+            if i[0] >= n or t[i[0]] != ":": bad()
+            i[0] += 1
+            d[k] = val(); ws()
+            if i[0] >= n: bad()
+            c = t[i[0]]; i[0] += 1
+            if c == "}": return d
+            if c != ",": bad()
+    def val():
+        ws()
+        if i[0] >= n: bad()
+        c = t[i[0]]
+        if c == "{": return obj()
+        if c == "[": return arr()
+        if c == '"': return st()
+        for lit, v in (("null", None), ("true", True), ("false", False)):
+            if t.startswith(lit, i[0]):
+                i[0] += len(lit); return v
+        return num()
+    v = val(); ws()
+    if i[0] != n: bad()
+    return v
+
+try:
+    print(norm(parse(s)))
+except (ValueError, IndexError):
+    print("ERR")"""
+
+_MUT_JSON_LOOSE = """
+import sys, json
+try:
+    v = json.loads(sys.stdin.read())
+    print(json.dumps(v, ensure_ascii=False, sort_keys=True, separators=(",", ":")))
+except Exception:
+    print("ERR")"""
+
+REF_SRC["json_mini"] = _REF_JSON.strip()
+
+FAMILY_MUTATIONS = {
+    ("topo_min", "topo_dfs"): _MUT_TOPO_DFS.strip(),
+    ("vm_run", "vm_noerr"): _MUT_VM_NOERR.strip(),
+    ("json_mini", "json_loose"): _MUT_JSON_LOOSE.strip(),
+}
 
 
 def oracle_reply(task: dict, mutation: str = "") -> str:
@@ -141,6 +381,11 @@ def oracle_reply(task: dict, mutation: str = "") -> str:
         else:
             rep = "推理: 由题设直接计算。\nFINAL: %s" % task["answer"]
         return rep
+
+    if mutation and (task["family"], mutation) in FAMILY_MUTATIONS:
+        nl = chr(10)
+        return ("思路: 直接实现。" + nl + "```python" + nl
+                + FAMILY_MUTATIONS[(task["family"], mutation)] + nl + "```" + nl)
 
     src = REF_SRC[task["family"]]
     if not mutation:

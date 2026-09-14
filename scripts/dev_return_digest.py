@@ -121,6 +121,43 @@ def inline_only_ds(heading_ids: set[str]) -> list[tuple[str, int]]:
     return sorted((d, ln) for d, ln in seen.items() if d not in heading_ids)
 
 
+def probe_scores() -> list[dict]:
+    """探针质量分数 (R416): 每份 `data/probe/probe-*.json` ⇒ 题数 / 整题全对率 / 用例级率 / 失败模式 / 饱和标记。
+
+    口径铁律: 打分单元 = **整题全对** (所有隐藏用例全过才算过); 用例级率只作旁读。
+    `sat`(饱和) = 整题全对率 == 用例级率 == 1.0 ⇒ 该题集对本解法已到天花板, **无判别力**。
+    """
+    rows: list[dict] = []
+    for f in sorted((ROOT / "data" / "probe").glob("probe-*.json")):
+        try:
+            d = json.loads(f.read_text(encoding="utf-8"))
+        except Exception as e:  # noqa: BLE001
+            rows.append({"file": f.name, "err": e.__class__.__name__})
+            continue
+        per = d.get("per_task", [])
+        n = len(per)
+        modes: dict[str, int] = {}
+        for t in per:
+            m = str(t.get("mode", "?"))
+            modes[m] = modes.get(m, 0) + 1
+        whole = modes.get("ok", 0)
+        rate = d.get("rate")
+        rows.append({
+            "file": f.name,
+            "solver": d.get("solver", "?"),
+            "kind": d.get("kind_arg", "?"),
+            "seed": d.get("seed", "?"),
+            "n": n,
+            "whole": whole,
+            "whole_rate": (whole / n) if n else 0.0,
+            "rate": rate if isinstance(rate, float) else 0.0,
+            "modes": modes,
+            "sat": bool(n) and whole == n and rate == 1.0,
+            "ts": str(d.get("ts", ""))[:19],
+        })
+    return rows
+
+
 def round_commits(n: int = 25) -> tuple[list[tuple[str, str]], int]:
     log = sh("git", "log", f"-n{n}", "--pretty=%h|%s")
     rows: list[tuple[str, str]] = []
@@ -154,6 +191,7 @@ def ledgers() -> tuple[int, str, list[str]]:
 def main() -> int:
     ds = d_breakpoints()
     probes = probe_verdicts()
+    scores = probe_scores()
     commits, ahead = round_commits()
     reg_rows, reg_round, kpi_rounds = ledgers()
 
@@ -182,7 +220,23 @@ def main() -> int:
         L.append("**正文提及但无独立小节的 D 编号**（文档缺口, 不猜测其状态）: "
                  + ", ".join(f"D{d}(L{ln})" for d, ln in inline))
     L.append("")
-    L.append("## 3. 轮次提交（本地；推送暂停令生效）")
+    L.append("## 3. 探针分数（质量；源: `data/probe/probe-*.json`）")
+    L.append("")
+    L.append("打分单元 = **整题全对**（该题全部隐藏用例通过才算过）；`rate` 为用例级率（旁读）。")
+    L.append("**饱和** = 整题全对 ∧ 用例级率均为 1.0 ⇒ 该题集对本解法已到天花板，**不能再用于度量质量**（需换更难族）。")
+    L.append("")
+    L.append("| 文件 | 解法 | 题集 | 题数 | 整题全对 | rate(用例级) | 失败模式 | 判定 |")
+    L.append("|---|---|---|---|---|---|---|---|")
+    for r in scores:
+        if "err" in r:
+            L.append(f"| `{r['file']}` | - | - | - | - | - | {r['err']} | 不可读 |")
+            continue
+        L.append("| `%s` | %s | %s seed=%s | %d | %d/%d=%.4f | %.4f | %s | %s |" % (
+            r["file"], r["solver"], r["kind"], r["seed"], r["n"], r["whole"], r["n"],
+            r["whole_rate"], r["rate"], json.dumps(r["modes"], ensure_ascii=False),
+            "**饱和**" if r["sat"] else "非饱和"))
+    L.append("")
+    L.append("## 4. 轮次提交（本地；推送暂停令生效）")
     L.append("")
     L.append(f"- 未推送提交数: **{ahead if ahead >= 0 else 'n/a'}**")
     L.append("")
@@ -191,18 +245,18 @@ def main() -> int:
     for h, s in commits:
         L.append(f"| `{h}` | {s} |")
     L.append("")
-    L.append("## 4. 台账")
+    L.append("## 5. 台账")
     L.append("")
     L.append(f"- `docs/verification-registry.json`: **{reg_rows}** 行, updated_round = **{reg_round}**")
     L.append(f"- `eval/capability/kpi.jsonl` 已记轮次: {', '.join(kpi_rounds) if kpi_rounds else '(空)'}")
     L.append("- 已知盲区: 状态检测器只读 `data/probe/kpi.jsonl`; 轮次台账另有 `data/probe/capability/kpi.jsonl`（孤儿）")
     L.append("")
-    L.append("## 5. 口径红线（审计对照）")
+    L.append("## 6. 口径红线（审计对照）")
     L.append("")
     for i, p in enumerate(PROTOCOL, 1):
         L.append(f"{i}. {p}")
     L.append("")
-    L.append("## 6. 复验命令")
+    L.append("## 7. 复验命令")
     L.append("")
     L.append("```bash")
     L.append('export DOTNET_ROOT="$HOME/.dotnet"')
@@ -220,7 +274,7 @@ def main() -> int:
 
     print(f"WROTE {OUT.relative_to(ROOT)} bytes={len(txt.encode())} lines={txt.count(chr(10))}")
     print(f"sha256={hashlib.sha256(txt.encode()).hexdigest()[:16]}")
-    print(f"d_items={len(ds)} probes={len(probes)} commits={len(commits)} ahead={ahead} reg_rows={reg_rows} reg_round={reg_round}")
+    print(f"d_items={len(ds)} probes={len(probes)} scores={len(scores)} commits={len(commits)} ahead={ahead} reg_rows={reg_rows} reg_round={reg_round} scores={len(scores)}")
     return 0
 
 

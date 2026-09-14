@@ -7,17 +7,31 @@
 
 | 文件 | 行数 | 作用 |
 |---|---|---|
-| `tasks.py` | 853 | 随机题集生成器：程序 7 族（含陷阱族）+ 数学 6 族 + **见证型 2 族**；对抗用例只注入 hidden；每答双路径验算，不一致则拒绝发题；`--selftest` 39 条负控 |
-| `grade.py` | 406 | 判定器：沙箱执行 + 隐藏用例比对 + **失败模式分类** + 判定器自身反向负控 + **见证独立验证**；`--selftest` 25 条 |
-| `run_probe.py` | 440 | 编排器：题集（族池含见证族）→ 适配器 → 判定 → 结构化摘要；`--families` 定向覆盖 / `--dump-tasks` 出题落盘；`--selftest` 18 条 |
-| `../../scripts/kpi_probe.py` | 418 | **跑测数据打点**：运行摘要 × 遥测 token → 台账 `data/probe/kpi.jsonl` + 前后对比报告；`--selftest` 20 条 |
+| `tasks.py` | 1598 | 随机题集生成器：程序 10 族（含陷阱族 + **反饱和 3 族**: `topo_min` / `vm_run` / `json_mini`）+ 数学 5 族 + **见证型 2 族**；对抗用例只注入 hidden；每答双路径验算，不一致则拒绝发题；`--selftest` 45 条负控 |
+| `grade.py` | 448 | 判定器：沙箱执行 + 隐藏用例比对 + **失败模式分类** + 判定器自身反向负控 + **见证独立验证**；`--selftest` **29 条** |
+| `run_probe.py` | 821 | 编排器：题集（族池含见证族）→ 适配器 → 判定 → 结构化摘要；`--families` 定向覆盖 / `--dump-tasks` 出题落盘；族级**缺陷注入**（`--solver mutation:<名>`）；`--selftest` 18 条 |
+| `../../scripts/kpi_probe.py` | 467 | **跑测数据打点**：运行摘要 × 遥测 token → 台账 `data/probe/kpi.jsonl` + 前后对比报告；`--selftest` 24 条 |
+
+## 反饱和（R417）
+
+原 7 族对当前链**已饱和**：agent 与 oracle 同为整题全对 100%（seed 20260913 复跑逐族一致）⇒ 天花板效应，**该题集不能再度量质量**。判别力自证（负控）仍在（`mutation:hardcode` 整题全对 0），说明仪器没坏，是**被测对象到顶**。
+
+新增 3 族，公开样例推不出隐藏判据（必须真正实现规格）：
+
+| 族 | 判据要点 | 负控（必须整题全对 0） |
+|---|---|---|
+| `topo_min` | 拓扑序**字典序最小**；有环 ⇒ `-1` | `mutation:topo_dfs`（DFS 序） |
+| `vm_run` | 微型栈机：跳转/步数上限/栈下溢 ⇒ `ERR` | `mutation:vm_noerr`（去掉错误语义） |
+| `json_mini` | 严格 JSON 规范化：uXXXX 解码(码点≥0x20)/键码点序/重复键覆盖/禁浮点与 NaN/无空白输出 | `mutation:json_loose`（`json` 模块套用） |
+
+`json_mini` 另有 `tight_gen`：**每题强制注入 1 条"合 JSON 但不合本规格"的隐藏用例**（低码点 uXXXX / 浮点 / NaN / 裸 TAB）⇒ 让"通用 JSON 库套用"式解法**确定性地**拿不到整题全对。
 
 ## 判分口径（四条铁律）
 
 1. **只认隐藏用例**：公开样例只用于题面，从不参与判分。
 2. **整题全对才算过**：用例级通过率会给出作弊空间（实测：硬编码公开样例的解在 v1 题集拿 22.2% 用例通过率，加硬后降到 6.25%，**整题全对 0**）。
 3. **失败必须分类**：`no_code / syntax_error / runtime_error / timeout / wrong_output / partial / no_final / wrong_final / wrong_witness`。
-4. **判定口径假设错 ⇒ 反向空心指标**：判定器必须按产品真实交付形态取材（无围栏裸代码 / 尾部 CLI 状态行），且必须带真机形态负控。
+4. **判定口径假设错 ⇒ 反向空心指标**（R417 又抓到两处：① 长回复下提取器退化成注释残片 ⇒ 10 KB 程序被判 0 分；② 输出正确但 `sys.exit(1)` 被退出码顶掉 ⇒ 满分程序被判 runtime_error。两处均已修 + 负控入 selftest）：判定器必须按产品真实交付形态取材（无围栏裸代码 / 尾部 CLI 状态行），且必须带真机形态负控。
 
 ## 题集加硬（M6）
 
@@ -42,10 +56,10 @@
 ## 运行
 
 ```bash
-python3 eval/probe/tasks.py --selftest          # 39/39
+python3 eval/probe/tasks.py --selftest          # 45/45
 python3 eval/probe/grade.py --selftest          # 25/25
 python3 eval/probe/run_probe.py --selftest      # 18/18
-python3 scripts/kpi_probe.py --selftest         # 20/20
+python3 scripts/kpi_probe.py --selftest         # 24/24
 
 # 全量（对抗用例生效）
 python3 eval/probe/run_probe.py --kind both --n 3 --seed 20260913 --solver agent --tag=run1
@@ -54,6 +68,9 @@ python3 eval/probe/run_probe.py --kind both --n 3 --seed 20260913 \
   --families pair_closest_abs_sum,witness_sqrt_mod,witness_min_counterexample \
   --solver oracle --dump-tasks data/probe/taskset-m6.json --tag=m6
 python3 eval/probe/run_probe.py --tasks data/probe/taskset-m6.json --solver agent
+# 反饱和: 正控(oracle 必须满分) / 负控(缺陷注入必须整题全对 0)
+python3 eval/probe/run_probe.py --kind program --families topo_min,vm_run,json_mini --n 4 --solver oracle
+python3 eval/probe/run_probe.py --kind program --families json_mini --n 4 --solver mutation:json_loose
 # 跑测数据打点 + 前后对比
 python3 scripts/kpi_probe.py --compare probe-oracle probe-agent
 ```

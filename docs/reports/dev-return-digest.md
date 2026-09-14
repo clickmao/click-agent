@@ -8,32 +8,60 @@
 | D | 标题 | 状态 | 源行 |
 |---|---|---|---|
 | D1 | 空正文被判成功 | 已修 | L24 |
-| D2 | 发布产物不自带 config | 待修 | L43 |
-| D3 | 运行结果回流闭环 —— 失败输出回流 + 有界修复 + 复检 | (未标注) | L173 |
-| D4 | 裸代码 → 落盘/校验/运行 链全程不触发 | 已修 | L57 |
-| D4-b | v2 字符串字面量感知 + 机制归因 | (未标注) | L97 |
-| D5 | 运行级验证选参 + 结论上屏 | 已修 | L70 |
-| D7 | 真机验收 | (未标注) | L216 |
-| D8 | 策略实现正确但**接线缺口** → 首轮预算策略是死代码 | (未标注) | L136 |
-| D9 | 经验落库形态 = **思考逻辑 skill | (未标注) | L157 |
+| D2 | 发布产物不自带 config | 已修 | L43 |
+| D3 | 运行结果回流闭环 —— 失败输出回流 + 有界修复 + 复检 | (未标注) | L192 |
+| D4 | 裸代码 → 落盘/校验/运行 链全程不触发 | 已修 | L76 |
+| D4-b | v2 字符串字面量感知 + 机制归因 | (未标注) | L116 |
+| D5 | 运行级验证选参 + 结论上屏 | 已修 | L89 |
+| D7 | 真机验收 | (未标注) | L235 |
+| D8 | 策略实现正确但**接线缺口** → 首轮预算策略是死代码 | (未标注) | L155 |
+| D9 | 经验落库形态 = **思考逻辑 skill | (未标注) | L176 |
 
 ## 2. 探针裁决（源: `eval/rover/*/verdict*.json`）
 
 | 目录 | 裁决文件 | verdict | 判据数 | 来源键 |
 |---|---|---|---|---|
+| r371d2 | verdict-r371d2.json | **pass** | 6 | `assertions` |
 | r371d7 | verdict-r371d7.json | **PASS** | 5 | `arms` |
 | r412 | verdict.json | **NO_CONTENTION** | 4 | `bool_fields` |
 | r413 | verdict-r413.json | **PASS** | 7 | `gate` |
 | r415 | verdict-r415.json | **PASS** | 22 | `checks` |
 
-**正文提及但无独立小节的 D 编号**（文档缺口, 不猜测其状态）: D6(L218), D9-a(L163)
+**正文提及但无独立小节的 D 编号**（文档缺口, 不猜测其状态）: D6(L237), D9-a(L182)
 
-## 3. 轮次提交（本地；推送暂停令生效）
+## 3. 探针分数（质量；源: `data/probe/probe-*.json`）
 
-- 未推送提交数: **60**
+打分单元 = **整题全对**（该题全部隐藏用例通过才算过）；`rate` 为用例级率（旁读）。
+**饱和** = 整题全对 ∧ 用例级率均为 1.0 ⇒ 该题集对本解法已到天花板，**不能再用于度量质量**（需换更难族）。
+
+| 文件 | 解法 | 题集 | 题数 | 整题全对 | rate(用例级) | 失败模式 | 判定 |
+|---|---|---|---|---|---|---|---|
+| `probe-agent-seed20260913.json` | agent | both seed=20260913 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** |
+| `probe-m6-agent.json` | agent | both seed=0 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** |
+| `probe-m6-hardcode.json` | mutation:hardcode | program seed=20260913 | 3 | 0/3=0.0000 | 0.1818 | {"partial": 3} | 非饱和 |
+| `probe-m6-oracle.json` | oracle | both seed=20260913 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** |
+| `probe-mutation:hardcode-seed20260913.json` | mutation:hardcode | program seed=20260913 | 3 | 0/3=0.0000 | 0.0625 | {"partial": 2, "wrong_output": 1} | 非饱和 |
+| `probe-oracle-seed20260913.json` | oracle | both seed=20260913 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** |
+| `probe-oracle-seed20260915.json` | oracle | program seed=20260915 | 3 | 3/3=1.0000 | 1.0000 | {"ok": 3} | **饱和** |
+| `probe-r417-agent-seed20260913.json` | agent | both seed=20260913 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** |
+| `probe-r417-hard-agent.json` | agent | program seed=20260914 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** |
+| `probe-r417-json-agent.json` | agent | program seed=20260915 | 3 | 0/3=0.0000 | 0.5000 | {"wrong_output": 1, "runtime_error": 1, "partial": 1} | 非饱和 |
+| `probe-r417-json-mut.json` | mutation:json_loose | program seed=20260915 | 4 | 0/4=0.0000 | 0.7500 | {"partial": 4} | 非饱和 |
+| `probe-r417-json-oracle.json` | oracle | program seed=20260915 | 2 | 2/2=1.0000 | 1.0000 | {"ok": 2} | **饱和** |
+| `probe-r417-json-regrade.json` | file:/tmp/r417-replay | both seed=0 | 3 | 1/3=0.3333 | 0.8704 | {"partial": 2, "ok": 1} | 非饱和 |
+| `probe-r417-mut-topodfs.json` | mutation:topo_dfs | program seed=20260914 | 4 | 0/4=0.0000 | 0.4615 | {"partial": 4} | 非饱和 |
+| `probe-r417-mut-vmnoerr.json` | mutation:vm_noerr | program seed=20260914 | 4 | 0/4=0.0000 | 0.6042 | {"timeout": 2, "runtime_error": 2} | 非饱和 |
+| `probe-r417-new-oracle.json` | oracle | program seed=20260914 | 4 | 4/4=1.0000 | 1.0000 | {"ok": 4} | **饱和** |
+
+## 4. 轮次提交（本地；推送暂停令生效）
+
+- 未推送提交数: **64**
 
 | commit | 主题 |
 |---|---|
+| `f36f897` | R416 收工记录: improvements 轮节 + backlog 看板 D2 证据指针 (形式校验 13/13 PASS, 未推) |
+| `2b831ac` | R416 能力自检循环: R371-D2 发布产物自包含 config 仓库外真机验收 (3 臂/6 断言 PASS) |
+| `e53f8c5` | chore: R415 臂执行脚本与本地提交脚本入库 + r413 裸日志入 .gitignore |
 | `5ac3b43` | R415: 链级钉死前置门入参=用户原文(真链+确定性假本地后端, 22断言x2形态 PASS) + 仪器两项教训入档 |
 | `5fc876f` | R414: R371 断链真机验收(D7 优先) + 失败可见性缺陷闭合(Success=false 的降级文案不再被链侧丢弃) |
 | `f6496ba` | R413 证据补齐: 失效跑(v3 门恒Pass/增益0)原文入档 + 证据清单(有效/失效分列) + 本地提交脚本 |
@@ -51,17 +79,14 @@
 | `b00917c` | R408: 本地 GGUF 引擎整线退役, 本地推理/嵌入改走 llama.cpp 进程边界 (零 P/Invoke) |
 | `3b20986` | R401 步2: rover 臂测量链三缺陷归因+修复(渲染/臂可用性/预算协同) + 跨实现字节对账 2/2 + 校准常数实测; 新技能 self-verification-blindspots |
 | `cd8feeb` | R407: qwen2 前向对账 —— 定位并修复「全层共用 blk.0 attn bias」(R403–R407 工作区一并提交) |
-| `33baddd` | R402 步1: rover 生成链性能归因 (盘读 vs 计算) —— 三通道取证 |
-| `68e115d` | R401: 能力自检台账追加本轮读数 (cycle-20260914-s20260914 复跑) |
-| `61b684a` | R401: 能力自检循环常驻化 (随机程序题+数学题机械判定 + 判定器自检 SOUND + 通用性 skill 落 skills/) |
 
-## 4. 台账
+## 5. 台账
 
-- `docs/verification-registry.json`: **50** 行, updated_round = **R415**
-- `eval/capability/kpi.jsonl` 已记轮次: R402, loop-mechanism, R401, R411-V, R403-scope, R413, R414, R415
+- `docs/verification-registry.json`: **52** 行, updated_round = **R417**
+- `eval/capability/kpi.jsonl` 已记轮次: R402, loop-mechanism, R401, R411-V, R403-scope, R413, R414, R415, R416
 - 已知盲区: 状态检测器只读 `data/probe/kpi.jsonl`; 轮次台账另有 `data/probe/capability/kpi.jsonl`（孤儿）
 
-## 5. 口径红线（审计对照）
+## 6. 口径红线（审计对照）
 
 1. AOT 是唯一发布形态; JIT 跑通只算中间证据 (IL 警告必须为 0)。
 2. 测量取**外部真值**: 桩/假后端逐请求落盘, 不信被测量代码自报计数器。
@@ -71,7 +96,7 @@
 6. 写源码的尖括号字面量会被工具替换 ⇒ 用转义/字符码构造常量, 写后按码点复核。
 7. 推送暂停令未解除 ⇒ 只本地 commit; 凭据一律不入 git config、不硬编码。
 
-## 6. 复验命令
+## 7. 复验命令
 
 ```bash
 export DOTNET_ROOT="$HOME/.dotnet"
