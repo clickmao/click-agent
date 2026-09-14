@@ -1,0 +1,321 @@
+{
+  "probe": "exp1-q3b-mask-tradeoff",
+  "instrument_revision": 2,
+  "scope": "src",
+  "files": 400,
+  "scan_ms": 1832.96,
+  "class_char_totals": {
+    "C": 2135146,
+    "/": 414824,
+    "s": 170975,
+    "{": 22168
+  },
+  "defined_symbols": 976,
+  "reference_occurrences_by_class": {
+    "C": 10312,
+    "/": 698,
+    "s": 282,
+    "{": 85
+  },
+  "reference_occurrences_total": 11377,
+  "arm1_noise_share_pct": 8.614,
+  "edges": {
+    "v1_all_text": 3170,
+    "v2_code_only": 2845,
+    "v3_code_plus_hole": 2862,
+    "arm2_lost_edges": 325,
+    "v3_recovered_edges": 17
+  },
+  "lost_edge_cause_attribution": {
+    "hole_borne": 17,
+    "string_only": 51,
+    "comment_only": 241,
+    "comment_and_string": 16
+  },
+  "hole_edge_examples": [
+    {
+      "sym": "VulkanNames",
+      "decl_file": "src/agent.gpu/VulkanNames.cs",
+      "edge": "src/agent.gpu/cli/GpuCli.cs",
+      "classes_in_edge_file": "{"
+    },
+    {
+      "sym": "Verdict",
+      "decl_file": "src/agent.rover/formal/FormalKernel.cs",
+      "edge": "src/agent.tests/ModelQueueTests.cs",
+      "classes_in_edge_file": "{"
+    },
+    {
+      "sym": "Message",
+      "decl_file": "src/agent.core/core/Message.cs",
+      "edge": "src/agent.config/ConfigSnapshot.cs",
+      "classes_in_edge_file": "{"
+    },
+    {
+      "sym": "Message",
+      "decl_file": "src/agent.core/core/Message.cs",
+      "edge": "src/agent.config/MiniYaml.cs",
+      "classes_in_edge_file": "{"
+    },
+    {
+      "sym": "Message",
+      "decl_file": "src/agent.core/core/Message.cs",
+      "edge": "src/agent.exploration/JsonRepairPlugin.cs",
+      "classes_in_edge_file": "{"
+    },
+    {
+      "sym": "Message",
+      "decl_file": "src/agent.core/core/Message.cs",
+      "edge": "src/agent.gpu/cli/GpuCli.cs",
+      "classes_in_edge_file": "{"
+    },
+    {
+      "sym": "Message",
+      "decl_file": "src/agent.core/core/Message.cs",
+      "edge": "src/agent.host/FormalEvalCommand.cs",
+      "classes_in_edge_file": "{"
+    },
+    {
+      "sym": "Message",
+      "decl_file": "src/agent.core/core/Message.cs",
+      "edge": "src/agent.host/LlamaCppCommand.cs",
+      "classes_in_edge_file": "{"
+    },
+    {
+      "sym": "Message",
+      "decl_file": "src/agent.core/core/Message.cs",
+      "edge": "src/agent.modelqueue/BalanceQueryService.cs",
+      "classes_in_edge_file": "{"
+    },
+    {
+      "sym": "Message",
+      "decl_file": "src/agent.core/core/Message.cs",
+      "edge": "src/agent.modelqueue/ModelVerifyService.cs",
+      "classes_in_edge_file": "{"
+    },
+    {
+      "sym": "Message",
+      "decl_file": "src/agent.core/core/Message.cs",
+      "edge": "src/agent.skills/PythonRunVerifier.cs",
+      "classes_in_edge_file": "{"
+    },
+    {
+      "sym": "Message",
+      "decl_file": "src/agent.core/core/Message.cs",
+      "edge": "src/agent.skills/PythonScriptValidator.cs",
+      "classes_in_edge_file": "{"
+    },
+    {
+      "sym": "Message",
+      "decl_file": "src/agent.core/core/Message.cs",
+      "edge": "src/agent.tests/ExecutorHardeningTests.cs",
+      "classes_in_edge_file": "{"
+    },
+    {
+      "sym": "Message",
+      "decl_file": "src/agent.core/core/Message.cs",
+      "edge": "src/agent/registry/ArtifactRepair.cs",
+      "classes_in_edge_file": "{"
+    },
+    {
+      "sym": "Message",
+      "decl_file": "src/agent.core/core/Message.cs",
+      "edge": "src/agent/registry/PythonArtifactPlugin.cs",
+      "classes_in_edge_file": "{"
+    },
+    {
+      "sym": "Message",
+      "decl_file": "src/agent.core/core/Message.cs",
+      "edge": "src/agent/search/SearchFailoverService.cs",
+      "classes_in_edge_file": "{"
+    }
+  ],
+  "arm2_recall_cost": {
+    "symbols_losing_edges": 178,
+    "hole_recoverable_symbols": 3,
+    "string_only_loss_symbols": 175,
+    "gate_semantics_note": "G1 判据为**逐边**归因（lost_edge_cause_attribution.hole_borne）：该边在 V1 有、V2 丢、且该边所在文件存在孔洞型出现 ⇒ 孔洞型真引用边被 V2 误删；symbols_losing_edges / hole_recoverable_symbols 仅为样本索引（符号级）",
+    "hole_caused_samples": [
+      {
+        "sym": "VulkanNames",
+        "decl_file": "src/agent.gpu/VulkanNames.cs",
+        "ref_files_v1": 4,
+        "ref_files_v2": 3,
+        "ref_files_v3": 4,
+        "lost_edges_v1_v2": [
+          "src/agent.gpu/cli/GpuCli.cs"
+        ],
+        "recovered_by_v3": [
+          "src/agent.gpu/cli/GpuCli.cs"
+        ]
+      },
+      {
+        "sym": "Verdict",
+        "decl_file": "src/agent.rover/formal/FormalKernel.cs",
+        "ref_files_v1": 17,
+        "ref_files_v2": 16,
+        "ref_files_v3": 17,
+        "lost_edges_v1_v2": [
+          "src/agent.tests/ModelQueueTests.cs"
+        ],
+        "recovered_by_v3": [
+          "src/agent.tests/ModelQueueTests.cs"
+        ]
+      },
+      {
+        "sym": "Message",
+        "decl_file": "src/agent.core/core/Message.cs",
+        "ref_files_v1": 63,
+        "ref_files_v2": 47,
+        "ref_files_v3": 62,
+        "lost_edges_v1_v2": [
+          "src/agent.config/ConfigSnapshot.cs",
+          "src/agent.config/MiniYaml.cs",
+          "src/agent.exploration/JsonRepairPlugin.cs",
+          "src/agent.gpu/cli/GpuCli.cs"
+        ],
+        "recovered_by_v3": [
+          "src/agent.config/ConfigSnapshot.cs",
+          "src/agent.config/MiniYaml.cs",
+          "src/agent.exploration/JsonRepairPlugin.cs",
+          "src/agent.gpu/cli/GpuCli.cs"
+        ]
+      }
+    ],
+    "string_caused_samples": [
+      {
+        "sym": "RAGConfig",
+        "decl_file": "src/agent.rag/RAGConfig.cs",
+        "ref_files_v1": 10,
+        "ref_files_v2": 8,
+        "ref_files_v3": 8,
+        "lost_edges_v1_v2": [
+          "src/agent.tests/HashEmbeddingUnificationTests.cs",
+          "src/agent.vectormemory/EmbeddingProvider.cs"
+        ],
+        "recovered_by_v3": []
+      },
+      {
+        "sym": "RAGRecall",
+        "decl_file": "src/agent.rag/RAGConfig.cs",
+        "ref_files_v1": 10,
+        "ref_files_v2": 8,
+        "ref_files_v3": 8,
+        "lost_edges_v1_v2": [
+          "src/agent/IndustrialAgentV2.cs",
+          "src/agent/memory/IMemoryRecall.cs"
+        ],
+        "recovered_by_v3": []
+      },
+      {
+        "sym": "LocalSvgRenderer",
+        "decl_file": "src/agent.modelqueue/LocalSvgRenderer.cs",
+        "ref_files_v1": 5,
+        "ref_files_v2": 4,
+        "ref_files_v3": 4,
+        "lost_edges_v1_v2": [
+          "src/agent.modelqueue/LocalSvgRenderer.cs"
+        ],
+        "recovered_by_v3": []
+      },
+      {
+        "sym": "QueuePrompt",
+        "decl_file": "src/agent.modelqueue/ModelQueueRouter.cs",
+        "ref_files_v1": 11,
+        "ref_files_v2": 10,
+        "ref_files_v3": 10,
+        "lost_edges_v1_v2": [
+          "src/agent.tests/MultiTurnCachePrefixTests.cs"
+        ],
+        "recovered_by_v3": []
+      },
+      {
+        "sym": "QueueResponse",
+        "decl_file": "src/agent.modelqueue/ModelQueueRouter.cs",
+        "ref_files_v1": 6,
+        "ref_files_v2": 5,
+        "ref_files_v3": 5,
+        "lost_edges_v1_v2": [
+          "src/agent/modelqueue/ModelQueueAdapter.cs"
+        ],
+        "recovered_by_v3": []
+      },
+      {
+        "sym": "ModelQueueRouter",
+        "decl_file": "src/agent.modelqueue/ModelQueueRouter.cs",
+        "ref_files_v1": 20,
+        "ref_files_v2": 17,
+        "ref_files_v3": 17,
+        "lost_edges_v1_v2": [
+          "src/agent.modelqueue/LocalSessionCacheLedger.cs",
+          "src/agent.tests/PromptCacheKpiTests.cs",
+          "src/agent/context/SessionBaseline.cs"
+        ],
+        "recovered_by_v3": []
+      },
+      {
+        "sym": "LocalChannelPolicy",
+        "decl_file": "src/agent.modelqueue/LocalGenerationPort.cs",
+        "ref_files_v1": 3,
+        "ref_files_v2": 2,
+        "ref_files_v3": 2,
+        "lost_edges_v1_v2": [
+          "src/agent.modelqueue/ModelCatalog.cs"
+        ],
+        "recovered_by_v3": []
+      },
+      {
+        "sym": "TurnGateJudge",
+        "decl_file": "src/agent.modelqueue/LocalGenerationPort.cs",
+        "ref_files_v1": 7,
+        "ref_files_v2": 6,
+        "ref_files_v3": 6,
+        "lost_edges_v1_v2": [
+          "src/agent.tests/DecisionCachePinTests.cs"
+        ],
+        "recovered_by_v3": []
+      }
+    ]
+  },
+  "reflection_string_candidates_upper_bound": {
+    "occurrences": 3,
+    "distinct": 2,
+    "samples": [
+      [
+        "CompletionReuse.Session",
+        2
+      ],
+      [
+        "agent.context.ContextAssembler",
+        1
+      ]
+    ]
+  },
+  "negative_control": {
+    "symbols": {
+      "ZzNoSuchSymbol": 0,
+      "CapabilityIndexer": 0
+    },
+    "total_counts": 0
+  },
+  "criteria_pre_registered": {
+    "gate": {
+      "hole_caused_lost_edge_count": 0,
+      "negative_control_total_counts": 0
+    },
+    "observe": {
+      "string_caused_lost_edge_count": "upper_bound_reported"
+    },
+    "declared_before_run": "v2 instrument (decl-line excluded, file-level edges)",
+    "note": "v1 判据被证实退化（恒真），见 result_degenerate.json；本判据为修正后预注册"
+  },
+  "gate_pass": false,
+  "verdict": "G1 **不过**：V2 丢 17 条孔洞型真引用边（V3 追回 17 条）⇒ 掩码规范必须用 V3（掩注释+纯字符串、保留插值孔洞）",
+  "honest_boundaries": [
+    "孔洞内嵌套字符串/括号按最简规则处理（记深度，不解析嵌套串）⇒ 孔洞内容计数方向为『可能少记』",
+    "符号族仅具名类型（方法/字段级引用不在范围）",
+    "string_caused 为**上界**：只判『形如 FQN 且命中已定义符号』，不判该串是否为真引用",
+    "边口径 = 文件级引用集（排除声明行）；与 exp1-Q3 的 GT 行级口径不同，不可直接相除",
+    "v1 判据（符号级）被证实退化（声明行恒使 V2≥1），本文件判据为修正后预注册；旧读数存 result_degenerate.json"
+  ]
+}

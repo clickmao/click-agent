@@ -1,0 +1,79 @@
+{
+  "probe": "exp1-q3b-mask-tradeoff",
+  "scope": "src",
+  "files": 400,
+  "scan_ms": 1858.31,
+  "class_char_totals": {
+    "C": 2135146,
+    "/": 414824,
+    "s": 170975,
+    "{": 22168
+  },
+  "defined_symbols": 976,
+  "occurrence_counts_defined_symbols": {
+    "arm1_v1_all": 12374,
+    "arm2_v2_code_only": 11309,
+    "v3_code_plus_hole": 11394
+  },
+  "views": {
+    "v1_all_text": "词面出现即边（上一轮 arm1）",
+    "v2_code_only": "掩注释+字符串（含孔洞）——上一轮 arm2",
+    "v3_code_plus_hole": "掩注释+纯字符串、**保留插值孔洞**——本探针候选"
+  },
+  "arm2_recall_cost": {
+    "symbols_with_edges_in_v1_lost_in_v2": 0,
+    "hole_type_lost": 0,
+    "string_or_comment_type_lost": 0,
+    "hole_type_samples": [],
+    "string_or_comment_type_samples": []
+  },
+  "reflection_string_candidates_upper_bound": {
+    "count": 3,
+    "distinct": 2,
+    "samples": [
+      [
+        "CompletionReuse.Session",
+        2
+      ],
+      [
+        "agent.context.ContextAssembler",
+        1
+      ]
+    ]
+  },
+  "negative_control": {
+    "symbols": {
+      "ZzNoSuchSymbol": {
+        "C": 0,
+        "/": 0,
+        "s": 0,
+        "{": 0
+      },
+      "CapabilityIndexer": {
+        "C": 0,
+        "/": 0,
+        "s": 0,
+        "{": 0
+      }
+    },
+    "total_counts": 0
+  },
+  "criteria_pre_registered": {
+    "gate": {
+      "hole_only_lost_symbols": 0,
+      "negative_control_absent_symbol_counts": 0
+    },
+    "observe": {
+      "reflection_string_candidates": "upper_bound_reported"
+    },
+    "note": "预注册于本轮运行前；门禁不过则如实记录，不改阈值"
+  },
+  "gate_pass": true,
+  "verdict": "C1 通过（V2 无孔洞型召回损失）",
+  "honest_boundaries": [
+    "孔洞内嵌套字符串/括号按最简规则处理（记深度，不解析嵌套串）⇒ 孔洞内容计数方向为『可能少记』",
+    "符号族仅具名类型（方法/字段级引用不在范围）",
+    "反射式字符串候选为**上界**：只判形如 FQN 且命中已定义符号，不判该串是否为真引用",
+    "occurrence_counts 为『符号×类别出现次数』口径，非行级边集合口径（与 exp1-Q3 的 GT 对账口径不同，两者不可直接相除）"
+  ]
+}
