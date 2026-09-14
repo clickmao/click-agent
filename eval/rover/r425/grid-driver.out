@@ -1,0 +1,463 @@
+===== R425 grid k=1 arm=A 2026-09-14T17:31:22+08:00 =====
+[preflight] k=1 arm=A /dev/vda2        50G   30G   18G  63% /
+=== V0 形态闸（env -i 自证; 无运行时可用）===
+{
+ "path": "/tmp/pub_r423/agenthost",
+ "exists": true,
+ "bytes": 15168064,
+ "sha256": "2d363b6d132b06e23a0f994fc91d9de6ab41737d42a3ee3c6e77eb50d2edc15b",
+ "bare_rc": 0,
+ "bare_stdout_head": "AgentFramework CLI",
+ "needs_runtime": false,
+ "native_ok": true,
+ "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=71983ba10e4272cfd37693c7b06554b5aeaf3277, for GNU/Linux 3.2.0, stripped"
+}
+{
+ "path": "/home/agentuser/AgentFramework/src/agent.host/bin/Release/net10.0/agenthost",
+ "exists": true,
+ "bytes": 78256,
+ "sha256": "fe1fb720fb5eedb044014b1c27cd18352e851960102f93920bfb2f57e0820dd3",
+ "bare_rc": 131,
+ "bare_stdout_head": "You must install .NET to run this application.",
+ "needs_runtime": true,
+ "native_ok": false,
+ "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=93c65abf3ff66427178d065d36972e8969f06f4e, stripped"
+}
+
+V0-a 被测为 AOT 原生 : True   (native_ok=True, bytes=15168064)
+V0-b 负控确有判别力 : True   (IL apphost 在 env -i 下拒绝执行)
+V0 形态闸: PASS
+[written] /home/agentuser/AgentFramework/eval/rover/r425/prov-A-k1.json
+[config] arm=A 改写了 4 处 request_address → 桩 :47910; local 段=无
+[ready] api :47911 (2s)
+[turn 1] ok=True secs=0.35 reply_len=15
+[turn 2] ok=True secs=0.08 reply_len=15
+[turn 3] ok=True secs=0.0 reply_len=169
+[turn 4] ok=True secs=0.07 reply_len=15
+[turn 5] ok=True secs=0.04 reply_len=15
+[turn 6] ok=True secs=0.45 reply_len=15
+[turn 7] ok=True secs=0.04 reply_len=177
+[turn 8] ok=True secs=0.06 reply_len=15
+{"stats": {"turns": 8, "ok": 8, "events": 29, "asks": 10, "errors": []}}
+[budget] {"arm": "A", "k": 1, "remote_calls": 6, "prompt_tokens_est": 14050, "completion_tokens_est": 42, "total_tokens_est": 14092, "binary": "/tmp/pub_r423/agenthost", "binary_sha256": "2d363b6d132b06e23a0f994fc91d9de6ab41737d42a3ee3c6e77eb50d2edc15b", "binary_bytes": 15168064}
+===== R425 grid k=1 arm=B 2026-09-14T17:31:25+08:00 =====
+[preflight] k=1 arm=B /dev/vda2        50G   30G   18G  63% /
+=== V0 形态闸（env -i 自证; 无运行时可用）===
+{
+ "path": "/tmp/pub_r423/agenthost",
+ "exists": true,
+ "bytes": 15168064,
+ "sha256": "2d363b6d132b06e23a0f994fc91d9de6ab41737d42a3ee3c6e77eb50d2edc15b",
+ "bare_rc": 0,
+ "bare_stdout_head": "AgentFramework CLI",
+ "needs_runtime": false,
+ "native_ok": true,
+ "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=71983ba10e4272cfd37693c7b06554b5aeaf3277, for GNU/Linux 3.2.0, stripped"
+}
+{
+ "path": "/home/agentuser/AgentFramework/src/agent.host/bin/Release/net10.0/agenthost",
+ "exists": true,
+ "bytes": 78256,
+ "sha256": "fe1fb720fb5eedb044014b1c27cd18352e851960102f93920bfb2f57e0820dd3",
+ "bare_rc": 131,
+ "bare_stdout_head": "You must install .NET to run this application.",
+ "needs_runtime": true,
+ "native_ok": false,
+ "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=93c65abf3ff66427178d065d36972e8969f06f4e, stripped"
+}
+
+V0-a 被测为 AOT 原生 : True   (native_ok=True, bytes=15168064)
+V0-b 负控确有判别力 : True   (IL apphost 在 env -i 下拒绝执行)
+V0 形态闸: PASS
+[written] /home/agentuser/AgentFramework/eval/rover/r425/prov-B-k1.json
+[config] arm=B 改写了 4 处 request_address → 桩 :47910; local 段=有
+[ready] api :47911 (2s)
+[turn 1] ok=True secs=0.34 reply_len=15
+[turn 2] ok=True secs=0.08 reply_len=15
+[turn 3] ok=True secs=0.0 reply_len=169
+[turn 4] ok=True secs=0.07 reply_len=15
+[turn 5] ok=True secs=0.04 reply_len=15
+[turn 6] ok=True secs=0.42 reply_len=15
+[turn 7] ok=True secs=0.04 reply_len=177
+[turn 8] ok=True secs=0.05 reply_len=15
+{"stats": {"turns": 8, "ok": 8, "events": 29, "asks": 10, "errors": []}}
+[budget] {"arm": "B", "k": 1, "remote_calls": 6, "prompt_tokens_est": 14050, "completion_tokens_est": 42, "total_tokens_est": 14092, "binary": "/tmp/pub_r423/agenthost", "binary_sha256": "2d363b6d132b06e23a0f994fc91d9de6ab41737d42a3ee3c6e77eb50d2edc15b", "binary_bytes": 15168064}
+===== R425 grid k=2 arm=A 2026-09-14T17:31:29+08:00 =====
+[preflight] k=2 arm=A /dev/vda2        50G   30G   18G  63% /
+=== V0 形态闸（env -i 自证; 无运行时可用）===
+{
+ "path": "/tmp/pub_r423/agenthost",
+ "exists": true,
+ "bytes": 15168064,
+ "sha256": "2d363b6d132b06e23a0f994fc91d9de6ab41737d42a3ee3c6e77eb50d2edc15b",
+ "bare_rc": 0,
+ "bare_stdout_head": "AgentFramework CLI",
+ "needs_runtime": false,
+ "native_ok": true,
+ "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=71983ba10e4272cfd37693c7b06554b5aeaf3277, for GNU/Linux 3.2.0, stripped"
+}
+{
+ "path": "/home/agentuser/AgentFramework/src/agent.host/bin/Release/net10.0/agenthost",
+ "exists": true,
+ "bytes": 78256,
+ "sha256": "fe1fb720fb5eedb044014b1c27cd18352e851960102f93920bfb2f57e0820dd3",
+ "bare_rc": 131,
+ "bare_stdout_head": "You must install .NET to run this application.",
+ "needs_runtime": true,
+ "native_ok": false,
+ "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=93c65abf3ff66427178d065d36972e8969f06f4e, stripped"
+}
+
+V0-a 被测为 AOT 原生 : True   (native_ok=True, bytes=15168064)
+V0-b 负控确有判别力 : True   (IL apphost 在 env -i 下拒绝执行)
+V0 形态闸: PASS
+[written] /home/agentuser/AgentFramework/eval/rover/r425/prov-A-k2.json
+[config] arm=A 改写了 4 处 request_address → 桩 :47920; local 段=无
+[ready] api :47921 (2s)
+[turn 1] ok=True secs=0.34 reply_len=15
+[turn 2] ok=True secs=0.04 reply_len=15
+[turn 3] ok=True secs=0.0 reply_len=169
+[turn 4] ok=True secs=0.04 reply_len=15
+[turn 5] ok=True secs=0.06 reply_len=15
+[turn 6] ok=True secs=0.04 reply_len=15
+[turn 7] ok=True secs=0.7 reply_len=15
+[turn 8] ok=True secs=0.04 reply_len=177
+{"stats": {"turns": 8, "ok": 8, "events": 28, "asks": 10, "errors": []}}
+[budget] {"arm": "A", "k": 2, "remote_calls": 6, "prompt_tokens_est": 13781, "completion_tokens_est": 42, "total_tokens_est": 13823, "binary": "/tmp/pub_r423/agenthost", "binary_sha256": "2d363b6d132b06e23a0f994fc91d9de6ab41737d42a3ee3c6e77eb50d2edc15b", "binary_bytes": 15168064}
+===== R425 grid k=2 arm=B 2026-09-14T17:31:33+08:00 =====
+[preflight] k=2 arm=B /dev/vda2        50G   30G   18G  63% /
+=== V0 形态闸（env -i 自证; 无运行时可用）===
+{
+ "path": "/tmp/pub_r423/agenthost",
+ "exists": true,
+ "bytes": 15168064,
+ "sha256": "2d363b6d132b06e23a0f994fc91d9de6ab41737d42a3ee3c6e77eb50d2edc15b",
+ "bare_rc": 0,
+ "bare_stdout_head": "AgentFramework CLI",
+ "needs_runtime": false,
+ "native_ok": true,
+ "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=71983ba10e4272cfd37693c7b06554b5aeaf3277, for GNU/Linux 3.2.0, stripped"
+}
+{
+ "path": "/home/agentuser/AgentFramework/src/agent.host/bin/Release/net10.0/agenthost",
+ "exists": true,
+ "bytes": 78256,
+ "sha256": "fe1fb720fb5eedb044014b1c27cd18352e851960102f93920bfb2f57e0820dd3",
+ "bare_rc": 131,
+ "bare_stdout_head": "You must install .NET to run this application.",
+ "needs_runtime": true,
+ "native_ok": false,
+ "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=93c65abf3ff66427178d065d36972e8969f06f4e, stripped"
+}
+
+V0-a 被测为 AOT 原生 : True   (native_ok=True, bytes=15168064)
+V0-b 负控确有判别力 : True   (IL apphost 在 env -i 下拒绝执行)
+V0 形态闸: PASS
+[written] /home/agentuser/AgentFramework/eval/rover/r425/prov-B-k2.json
+[config] arm=B 改写了 4 处 request_address → 桩 :47920; local 段=有
+[ready] api :47921 (2s)
+[turn 1] ok=True secs=0.35 reply_len=15
+[turn 2] ok=True secs=0.08 reply_len=15
+[turn 3] ok=True secs=0.0 reply_len=169
+[turn 4] ok=True secs=0.04 reply_len=15
+[turn 5] ok=True secs=0.06 reply_len=15
+[turn 6] ok=True secs=0.04 reply_len=15
+[turn 7] ok=True secs=0.42 reply_len=15
+[turn 8] ok=True secs=0.04 reply_len=177
+{"stats": {"turns": 8, "ok": 8, "events": 28, "asks": 10, "errors": []}}
+[budget] {"arm": "B", "k": 2, "remote_calls": 6, "prompt_tokens_est": 13781, "completion_tokens_est": 42, "total_tokens_est": 13823, "binary": "/tmp/pub_r423/agenthost", "binary_sha256": "2d363b6d132b06e23a0f994fc91d9de6ab41737d42a3ee3c6e77eb50d2edc15b", "binary_bytes": 15168064}
+===== R425 grid k=4 arm=A 2026-09-14T17:31:36+08:00 =====
+[preflight] k=4 arm=A /dev/vda2        50G   30G   18G  63% /
+=== V0 形态闸（env -i 自证; 无运行时可用）===
+{
+ "path": "/tmp/pub_r423/agenthost",
+ "exists": true,
+ "bytes": 15168064,
+ "sha256": "2d363b6d132b06e23a0f994fc91d9de6ab41737d42a3ee3c6e77eb50d2edc15b",
+ "bare_rc": 0,
+ "bare_stdout_head": "AgentFramework CLI",
+ "needs_runtime": false,
+ "native_ok": true,
+ "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=71983ba10e4272cfd37693c7b06554b5aeaf3277, for GNU/Linux 3.2.0, stripped"
+}
+{
+ "path": "/home/agentuser/AgentFramework/src/agent.host/bin/Release/net10.0/agenthost",
+ "exists": true,
+ "bytes": 78256,
+ "sha256": "fe1fb720fb5eedb044014b1c27cd18352e851960102f93920bfb2f57e0820dd3",
+ "bare_rc": 131,
+ "bare_stdout_head": "You must install .NET to run this application.",
+ "needs_runtime": true,
+ "native_ok": false,
+ "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=93c65abf3ff66427178d065d36972e8969f06f4e, stripped"
+}
+
+V0-a 被测为 AOT 原生 : True   (native_ok=True, bytes=15168064)
+V0-b 负控确有判别力 : True   (IL apphost 在 env -i 下拒绝执行)
+V0 形态闸: PASS
+[written] /home/agentuser/AgentFramework/eval/rover/r425/prov-A-k4.json
+[config] arm=A 改写了 4 处 request_address → 桩 :47940; local 段=无
+[ready] api :47941 (2s)
+[turn 1] ok=True secs=0.35 reply_len=15
+[turn 2] ok=True secs=0.08 reply_len=15
+[turn 3] ok=True secs=0.0 reply_len=169
+[turn 4] ok=True secs=0.04 reply_len=15
+[turn 5] ok=True secs=0.07 reply_len=15
+[turn 6] ok=True secs=0.08 reply_len=15
+[turn 7] ok=True secs=0.0 reply_len=168
+[turn 8] ok=True secs=0.04 reply_len=15
+{"stats": {"turns": 8, "ok": 8, "events": 22, "asks": 6, "errors": []}}
+[budget] {"arm": "A", "k": 4, "remote_calls": 6, "prompt_tokens_est": 13672, "completion_tokens_est": 42, "total_tokens_est": 13714, "binary": "/tmp/pub_r423/agenthost", "binary_sha256": "2d363b6d132b06e23a0f994fc91d9de6ab41737d42a3ee3c6e77eb50d2edc15b", "binary_bytes": 15168064}
+===== R425 grid k=4 arm=B 2026-09-14T17:31:39+08:00 =====
+[preflight] k=4 arm=B /dev/vda2        50G   30G   18G  63% /
+=== V0 形态闸（env -i 自证; 无运行时可用）===
+{
+ "path": "/tmp/pub_r423/agenthost",
+ "exists": true,
+ "bytes": 15168064,
+ "sha256": "2d363b6d132b06e23a0f994fc91d9de6ab41737d42a3ee3c6e77eb50d2edc15b",
+ "bare_rc": 0,
+ "bare_stdout_head": "AgentFramework CLI",
+ "needs_runtime": false,
+ "native_ok": true,
+ "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=71983ba10e4272cfd37693c7b06554b5aeaf3277, for GNU/Linux 3.2.0, stripped"
+}
+{
+ "path": "/home/agentuser/AgentFramework/src/agent.host/bin/Release/net10.0/agenthost",
+ "exists": true,
+ "bytes": 78256,
+ "sha256": "fe1fb720fb5eedb044014b1c27cd18352e851960102f93920bfb2f57e0820dd3",
+ "bare_rc": 131,
+ "bare_stdout_head": "You must install .NET to run this application.",
+ "needs_runtime": true,
+ "native_ok": false,
+ "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=93c65abf3ff66427178d065d36972e8969f06f4e, stripped"
+}
+
+V0-a 被测为 AOT 原生 : True   (native_ok=True, bytes=15168064)
+V0-b 负控确有判别力 : True   (IL apphost 在 env -i 下拒绝执行)
+V0 形态闸: PASS
+[written] /home/agentuser/AgentFramework/eval/rover/r425/prov-B-k4.json
+[config] arm=B 改写了 4 处 request_address → 桩 :47940; local 段=有
+[ready] api :47941 (2s)
+[turn 1] ok=True secs=0.4 reply_len=15
+[turn 2] ok=True secs=0.13 reply_len=15
+[turn 3] ok=True secs=0.0 reply_len=169
+[turn 4] ok=True secs=0.08 reply_len=15
+[turn 5] ok=True secs=0.19 reply_len=15
+[turn 6] ok=True secs=0.1 reply_len=15
+[turn 7] ok=True secs=0.0 reply_len=168
+[turn 8] ok=True secs=0.04 reply_len=15
+{"stats": {"turns": 8, "ok": 8, "events": 22, "asks": 6, "errors": []}}
+[budget] {"arm": "B", "k": 4, "remote_calls": 6, "prompt_tokens_est": 13672, "completion_tokens_est": 42, "total_tokens_est": 13714, "binary": "/tmp/pub_r423/agenthost", "binary_sha256": "2d363b6d132b06e23a0f994fc91d9de6ab41737d42a3ee3c6e77eb50d2edc15b", "binary_bytes": 15168064}
+===== R425 grid k=6 arm=A 2026-09-14T17:31:43+08:00 =====
+[preflight] k=6 arm=A /dev/vda2        50G   30G   18G  63% /
+=== V0 形态闸（env -i 自证; 无运行时可用）===
+{
+ "path": "/tmp/pub_r423/agenthost",
+ "exists": true,
+ "bytes": 15168064,
+ "sha256": "2d363b6d132b06e23a0f994fc91d9de6ab41737d42a3ee3c6e77eb50d2edc15b",
+ "bare_rc": 0,
+ "bare_stdout_head": "AgentFramework CLI",
+ "needs_runtime": false,
+ "native_ok": true,
+ "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=71983ba10e4272cfd37693c7b06554b5aeaf3277, for GNU/Linux 3.2.0, stripped"
+}
+{
+ "path": "/home/agentuser/AgentFramework/src/agent.host/bin/Release/net10.0/agenthost",
+ "exists": true,
+ "bytes": 78256,
+ "sha256": "fe1fb720fb5eedb044014b1c27cd18352e851960102f93920bfb2f57e0820dd3",
+ "bare_rc": 131,
+ "bare_stdout_head": "You must install .NET to run this application.",
+ "needs_runtime": true,
+ "native_ok": false,
+ "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=93c65abf3ff66427178d065d36972e8969f06f4e, stripped"
+}
+
+V0-a 被测为 AOT 原生 : True   (native_ok=True, bytes=15168064)
+V0-b 负控确有判别力 : True   (IL apphost 在 env -i 下拒绝执行)
+V0 形态闸: PASS
+[written] /home/agentuser/AgentFramework/eval/rover/r425/prov-A-k6.json
+[config] arm=A 改写了 4 处 request_address → 桩 :47960; local 段=无
+[ready] api :47961 (2s)
+[turn 1] ok=True secs=0.4 reply_len=15
+[turn 2] ok=True secs=0.14 reply_len=15
+[turn 3] ok=True secs=0.0 reply_len=169
+[turn 4] ok=True secs=0.1 reply_len=15
+[turn 5] ok=True secs=0.1 reply_len=15
+[turn 6] ok=True secs=0.04 reply_len=165
+[turn 7] ok=True secs=0.06 reply_len=15
+[turn 8] ok=True secs=0.07 reply_len=15
+{"stats": {"turns": 8, "ok": 8, "events": 24, "asks": 6, "errors": []}}
+[budget] {"arm": "A", "k": 6, "remote_calls": 6, "prompt_tokens_est": 13564, "completion_tokens_est": 42, "total_tokens_est": 13606, "binary": "/tmp/pub_r423/agenthost", "binary_sha256": "2d363b6d132b06e23a0f994fc91d9de6ab41737d42a3ee3c6e77eb50d2edc15b", "binary_bytes": 15168064}
+===== R425 grid k=6 arm=B 2026-09-14T17:31:46+08:00 =====
+[preflight] k=6 arm=B /dev/vda2        50G   30G   18G  63% /
+=== V0 形态闸（env -i 自证; 无运行时可用）===
+{
+ "path": "/tmp/pub_r423/agenthost",
+ "exists": true,
+ "bytes": 15168064,
+ "sha256": "2d363b6d132b06e23a0f994fc91d9de6ab41737d42a3ee3c6e77eb50d2edc15b",
+ "bare_rc": 0,
+ "bare_stdout_head": "AgentFramework CLI",
+ "needs_runtime": false,
+ "native_ok": true,
+ "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=71983ba10e4272cfd37693c7b06554b5aeaf3277, for GNU/Linux 3.2.0, stripped"
+}
+{
+ "path": "/home/agentuser/AgentFramework/src/agent.host/bin/Release/net10.0/agenthost",
+ "exists": true,
+ "bytes": 78256,
+ "sha256": "fe1fb720fb5eedb044014b1c27cd18352e851960102f93920bfb2f57e0820dd3",
+ "bare_rc": 131,
+ "bare_stdout_head": "You must install .NET to run this application.",
+ "needs_runtime": true,
+ "native_ok": false,
+ "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=93c65abf3ff66427178d065d36972e8969f06f4e, stripped"
+}
+
+V0-a 被测为 AOT 原生 : True   (native_ok=True, bytes=15168064)
+V0-b 负控确有判别力 : True   (IL apphost 在 env -i 下拒绝执行)
+V0 形态闸: PASS
+[written] /home/agentuser/AgentFramework/eval/rover/r425/prov-B-k6.json
+[config] arm=B 改写了 4 处 request_address → 桩 :47960; local 段=有
+[ready] api :47961 (2s)
+[turn 1] ok=True secs=0.35 reply_len=15
+[turn 2] ok=True secs=0.08 reply_len=15
+[turn 3] ok=True secs=0.0 reply_len=169
+[turn 4] ok=True secs=0.04 reply_len=15
+[turn 5] ok=True secs=0.04 reply_len=15
+[turn 6] ok=True secs=0.04 reply_len=165
+[turn 7] ok=True secs=0.05 reply_len=15
+[turn 8] ok=True secs=0.08 reply_len=15
+{"stats": {"turns": 8, "ok": 8, "events": 24, "asks": 6, "errors": []}}
+[budget] {"arm": "B", "k": 6, "remote_calls": 6, "prompt_tokens_est": 13564, "completion_tokens_est": 42, "total_tokens_est": 13606, "binary": "/tmp/pub_r423/agenthost", "binary_sha256": "2d363b6d132b06e23a0f994fc91d9de6ab41737d42a3ee3c6e77eb50d2edc15b", "binary_bytes": 15168064}
+===== R425 grid k=8 arm=A 2026-09-14T17:31:49+08:00 =====
+[preflight] k=8 arm=A /dev/vda2        50G   30G   18G  63% /
+=== V0 形态闸（env -i 自证; 无运行时可用）===
+{
+ "path": "/tmp/pub_r423/agenthost",
+ "exists": true,
+ "bytes": 15168064,
+ "sha256": "2d363b6d132b06e23a0f994fc91d9de6ab41737d42a3ee3c6e77eb50d2edc15b",
+ "bare_rc": 0,
+ "bare_stdout_head": "AgentFramework CLI",
+ "needs_runtime": false,
+ "native_ok": true,
+ "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=71983ba10e4272cfd37693c7b06554b5aeaf3277, for GNU/Linux 3.2.0, stripped"
+}
+{
+ "path": "/home/agentuser/AgentFramework/src/agent.host/bin/Release/net10.0/agenthost",
+ "exists": true,
+ "bytes": 78256,
+ "sha256": "fe1fb720fb5eedb044014b1c27cd18352e851960102f93920bfb2f57e0820dd3",
+ "bare_rc": 131,
+ "bare_stdout_head": "You must install .NET to run this application.",
+ "needs_runtime": true,
+ "native_ok": false,
+ "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=93c65abf3ff66427178d065d36972e8969f06f4e, stripped"
+}
+
+V0-a 被测为 AOT 原生 : True   (native_ok=True, bytes=15168064)
+V0-b 负控确有判别力 : True   (IL apphost 在 env -i 下拒绝执行)
+V0 形态闸: PASS
+[written] /home/agentuser/AgentFramework/eval/rover/r425/prov-A-k8.json
+[config] arm=A 改写了 4 处 request_address → 桩 :47980; local 段=无
+[ready] api :47981 (2s)
+[turn 1] ok=True secs=0.33 reply_len=15
+[turn 2] ok=True secs=0.12 reply_len=15
+[turn 3] ok=True secs=0.0 reply_len=169
+[turn 4] ok=True secs=0.04 reply_len=15
+[turn 5] ok=True secs=0.05 reply_len=15
+[turn 6] ok=True secs=0.04 reply_len=165
+[turn 7] ok=True secs=0.04 reply_len=15
+[turn 8] ok=True secs=0.04 reply_len=15
+{"stats": {"turns": 8, "ok": 8, "events": 24, "asks": 6, "errors": []}}
+[budget] {"arm": "A", "k": 8, "remote_calls": 6, "prompt_tokens_est": 13113, "completion_tokens_est": 42, "total_tokens_est": 13155, "binary": "/tmp/pub_r423/agenthost", "binary_sha256": "2d363b6d132b06e23a0f994fc91d9de6ab41737d42a3ee3c6e77eb50d2edc15b", "binary_bytes": 15168064}
+===== R425 grid k=8 arm=B 2026-09-14T17:31:52+08:00 =====
+[preflight] k=8 arm=B /dev/vda2        50G   30G   18G  63% /
+=== V0 形态闸（env -i 自证; 无运行时可用）===
+{
+ "path": "/tmp/pub_r423/agenthost",
+ "exists": true,
+ "bytes": 15168064,
+ "sha256": "2d363b6d132b06e23a0f994fc91d9de6ab41737d42a3ee3c6e77eb50d2edc15b",
+ "bare_rc": 0,
+ "bare_stdout_head": "AgentFramework CLI",
+ "needs_runtime": false,
+ "native_ok": true,
+ "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=71983ba10e4272cfd37693c7b06554b5aeaf3277, for GNU/Linux 3.2.0, stripped"
+}
+{
+ "path": "/home/agentuser/AgentFramework/src/agent.host/bin/Release/net10.0/agenthost",
+ "exists": true,
+ "bytes": 78256,
+ "sha256": "fe1fb720fb5eedb044014b1c27cd18352e851960102f93920bfb2f57e0820dd3",
+ "bare_rc": 131,
+ "bare_stdout_head": "You must install .NET to run this application.",
+ "needs_runtime": true,
+ "native_ok": false,
+ "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=93c65abf3ff66427178d065d36972e8969f06f4e, stripped"
+}
+
+V0-a 被测为 AOT 原生 : True   (native_ok=True, bytes=15168064)
+V0-b 负控确有判别力 : True   (IL apphost 在 env -i 下拒绝执行)
+V0 形态闸: PASS
+[written] /home/agentuser/AgentFramework/eval/rover/r425/prov-B-k8.json
+[config] arm=B 改写了 4 处 request_address → 桩 :47980; local 段=有
+[ready] api :47981 (2s)
+[turn 1] ok=True secs=0.33 reply_len=15
+[turn 2] ok=True secs=0.08 reply_len=15
+[turn 3] ok=True secs=0.0 reply_len=169
+[turn 4] ok=True secs=0.04 reply_len=15
+[turn 5] ok=True secs=0.04 reply_len=15
+[turn 6] ok=True secs=0.04 reply_len=165
+[turn 7] ok=True secs=0.04 reply_len=15
+[turn 8] ok=True secs=0.04 reply_len=15
+{"stats": {"turns": 8, "ok": 8, "events": 24, "asks": 6, "errors": []}}
+[budget] {"arm": "B", "k": 8, "remote_calls": 6, "prompt_tokens_est": 13113, "completion_tokens_est": 42, "total_tokens_est": 13155, "binary": "/tmp/pub_r423/agenthost", "binary_sha256": "2d363b6d132b06e23a0f994fc91d9de6ab41737d42a3ee3c6e77eb50d2edc15b", "binary_bytes": 15168064}
+===== R425 负控臂 B' (k=6, 模型缺) 2026-09-14T17:31:55+08:00 =====
+[preflight] k=6 arm=BP /dev/vda2        50G   30G   18G  63% /
+=== V0 形态闸（env -i 自证; 无运行时可用）===
+{
+ "path": "/tmp/pub_r423/agenthost",
+ "exists": true,
+ "bytes": 15168064,
+ "sha256": "2d363b6d132b06e23a0f994fc91d9de6ab41737d42a3ee3c6e77eb50d2edc15b",
+ "bare_rc": 0,
+ "bare_stdout_head": "AgentFramework CLI",
+ "needs_runtime": false,
+ "native_ok": true,
+ "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=71983ba10e4272cfd37693c7b06554b5aeaf3277, for GNU/Linux 3.2.0, stripped"
+}
+{
+ "path": "/home/agentuser/AgentFramework/src/agent.host/bin/Release/net10.0/agenthost",
+ "exists": true,
+ "bytes": 78256,
+ "sha256": "fe1fb720fb5eedb044014b1c27cd18352e851960102f93920bfb2f57e0820dd3",
+ "bare_rc": 131,
+ "bare_stdout_head": "You must install .NET to run this application.",
+ "needs_runtime": true,
+ "native_ok": false,
+ "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=93c65abf3ff66427178d065d36972e8969f06f4e, stripped"
+}
+
+V0-a 被测为 AOT 原生 : True   (native_ok=True, bytes=15168064)
+V0-b 负控确有判别力 : True   (IL apphost 在 env -i 下拒绝执行)
+V0 形态闸: PASS
+[written] /home/agentuser/AgentFramework/eval/rover/r425/prov-BP-k6.json
+[config] arm=BP 改写了 4 处 request_address → 桩 :47936; local 段=有; model_path=/tmp/models/__r423_missing_model.gguf (故意缺失)
+[ready] api :47937 (2s)
+[turn 1] ok=True secs=0.34 reply_len=15
+[turn 2] ok=True secs=0.08 reply_len=15
+[turn 3] ok=True secs=0.0 reply_len=169
+[turn 4] ok=True secs=0.04 reply_len=15
+[turn 5] ok=True secs=0.04 reply_len=15
+[turn 6] ok=True secs=0.04 reply_len=165
+[turn 7] ok=True secs=0.04 reply_len=15
+[turn 8] ok=True secs=0.07 reply_len=15
+{"stats": {"turns": 8, "ok": 8, "events": 24, "asks": 6, "errors": []}}
+[budget] {"arm": "BP", "k": 6, "remote_calls": 6, "prompt_tokens_est": 13568, "completion_tokens_est": 42, "total_tokens_est": 13610, "binary": "/tmp/pub_r423/agenthost", "binary_sha256": "2d363b6d132b06e23a0f994fc91d9de6ab41737d42a3ee3c6e77eb50d2edc15b", "binary_bytes": 15168064}
+===== R425 grid done fail=0 2026-09-14T17:31:58+08:00 =====

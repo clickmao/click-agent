@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R424",
+  "updated_round": "R425",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -915,7 +915,17 @@
       "level": "L4",
       "evidence_cmd": "bash eval/rover/r424/run_arm.sh A|B|BP 47830 4784{0,1,2} $PWD/skeptic.rbin && python3 eval/rover/r424/verdict_r424.py && env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR $HOME/.dotnet/dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~TurnGate",
       "evidence_path": "eval/rover/r424/verdict-r424.json",
-      "negative_control": "① 形态闸负控 = IL apphost `src/agent.host/bin/Release/net10.0/agenthost`(78,256 B) 同命令 `env -i <bin> --version` ⇒ `rc=131 You must install .NET…`（AOT 产物则正常打印 CLI）⇒ 闸具判别力；② 增益负控 = 臂 A（local 段删除）= 分母本身；③ **r1 归因负控 = 臂 B′**（`local.model_path` 指向不存在文件, `turn_gate:true`）：读数 12/16,891 ≡ 臂 A, 跳过 0, 4/4 门事件带 `decided=false+error=local_failed:LlamaCppException` ⇒ 无 r1 则增益归零；④ 历史器具封堵负控 = `bash eval/rover/r413/run_arm.sh A` ⇒ `rc=2 [REFUSED]`（需 R413_ALLOW_IL_LEGACY=1 才可复现历史 JIT 读数）"
+      "negative_control": "① 形态闸负控 = IL apphost `src/agent.host/bin/Release/net10.0/agenthost`(78,256 B) 同命令 `env -i <bin> --version` ⇒ `rc=131 You must install .NET…`（AOT 产物则正常打印 CLI）⇒ 闸具判别力；② 增益负控 = 臂 A（local 段删除）= 分母本身；③ **r1 归因负控 = 臂 B′**（`local.model_path` 指向不存在文件, `turn_gate:true`）：读数 12/16,891 ≡ 臂 A, 跳过 0, 4/4 门事件带 `decided=false+error=local_failed:LlamaCppException` ⇒ 无 r1 则增益归零；④ 历史器具封堵负控 = `bash eval/rover/r413/run_arm.sh A` ⇒ `rc=2 [REFUSED]`（需 R413_ALLOW_IL_LEGACY=1 才可复现历史 JIT 读数）",
+      "owner_round": "R424"
+    },
+    {
+      "id": "r425.gate-ratio-sensitivity",
+      "capability": "主线 R413 增益口径 (r1 前置门省远端调用) 的**敏感性曲线**: 非实质轮占比 k/8 ∈ {12.5%,25%,50%,75%,100%} × 臂 A(本地通道关)/臂 B(门开+r1) 真机 AOT 成对, token 降幅 = 14.23% / 30.17% / 67.97% / 66.44% / 98.78%, 调用降幅 = 10.00% / 20.00% / 44.44% / 40.00% / 66.67%; 归因臂 B′(门开+模型缺) k=6 = 10 调用/14,073 token ≈ 臂 A 10/14,069 ⇒ **无 r1 增益归零**; 判决 **PARTIAL**: 预注册 C_a(严格单调) 被 k=6 66.44% < k=4 67.97% 证伪, C_b(D_k=k·ĉ) 被相对误差 24%/29%/43%/7% 证伪, C_c/C_g 被「跳过轮残留一次 ~50 token 小调用且回复仍来自远端」证伪 ⇒ 宣称收窄为「本任务族内占比 ≥25% 时 token 降幅 >30%」, 且**占比不是充分统计量**; 事后判据 A 参照假阴性 = 0",
+      "level": "L4",
+      "evidence_cmd": "bash eval/rover/r425/run_grid.sh -b2 $PWD/skeptic.rbin && python3 eval/rover/r425/verdict_r425.py -b2 && python3 eval/rover/r425/summarize_r425.py",
+      "evidence_path": "eval/rover/r425/verdict-r425-b2.json",
+      "negative_control": "① **无 role 阴性对照** batch b1: A/B 逐格逐位相等 (k1..k8 token %s) ∧ 无本地推理时延 ⇒ 门未进判; 源码坐实 `src/agent/IndustrialAgentV2.cs:1464` = `if (_modelRouter is { TurnGateEnabled: true } && ActiveRole is not null)` ⇒ 门生效必要条件含 ActiveRole!=null (教训: 门相关臂必传 --role); ② 归因负控 = 臂 B′(local.model_path 指不存在) ⇒ 降幅 0.028% ≈ 0; ③ 形态闸负控 = 同目录 IL apphost 78,256 B `env -i` rc=131 (AOT 则 rc=0); ④ 臂 A 本身 = 分母, 且含「意图不明确⇒等你回答」澄清短路轮 (故 A 调用 9–10 < 8 轮)",
+      "owner_round": "R425"
     }
   ],
   "aot_check_policy": "release_tag_only",

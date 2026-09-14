@@ -1,0 +1,413 @@
+{
+  "stats": {
+    "turns": 8,
+    "ok": 8,
+    "events": 29,
+    "asks": 10,
+    "errors": []
+  },
+  "turns": [
+    {
+      "turn": 1,
+      "text": "用一句话说明这个仓库的构建命令是什么。",
+      "reply": "桩应答: 收到, 已完成该步。",
+      "ok": true,
+      "events": [
+        {
+          "event": "plan.created",
+          "keys": [
+            "hybrid",
+            "local",
+            "nodes",
+            "nodes_total",
+            "plan_id",
+            "remote"
+          ]
+        },
+        {
+          "event": "plan.node",
+          "keys": [
+            "artifact",
+            "detail",
+            "elapsed_ms",
+            "executor",
+            "intent",
+            "location"
+          ]
+        },
+        {
+          "event": "plan.finished",
+          "keys": [
+            "failed",
+            "local_first",
+            "local_first_ms",
+            "local_first_nodes",
+            "local_first_us",
+            "local_ok"
+          ]
+        }
+      ],
+      "secs": 0.34,
+      "t_start": 1789378287.3772,
+      "success": true,
+      "error": null,
+      "t_end": 1789378287.7187
+    },
+    {
+      "turn": 2,
+      "text": "谢谢，先这样。",
+      "reply": "桩应答: 收到, 已完成该步。",
+      "ok": true,
+      "events": [
+        {
+          "event": "ask",
+          "keys": [
+            "ask_id",
+            "group_size",
+            "purpose",
+            "questions",
+            "service",
+            "timeout_s"
+          ]
+        },
+        {
+          "event": "ask_closed",
+          "keys": [
+            "ask_id",
+            "reason"
+          ]
+        },
+        {
+          "event": "ask",
+          "keys": [
+            "ask_id",
+            "group_size",
+            "purpose",
+            "questions",
+            "service",
+            "timeout_s"
+          ]
+        },
+        {
+          "event": "ask_closed",
+          "keys": [
+            "ask_id",
+            "reason"
+          ]
+        },
+        {
+          "event": "plan.created",
+          "keys": [
+            "hybrid",
+            "local",
+            "nodes",
+            "nodes_total",
+            "plan_id",
+            "remote"
+          ]
+        },
+        {
+          "event": "plan.finished",
+          "keys": [
+            "failed",
+            "local_first",
+            "local_first_ms",
+            "local_first_nodes",
+            "local_first_us",
+            "local_ok"
+          ]
+        }
+      ],
+      "secs": 0.08,
+      "t_start": 1789378287.7188,
+      "success": true,
+      "error": null,
+      "t_end": 1789378287.8024
+    },
+    {
+      "turn": 3,
+      "text": "另外，测试命令是什么？",
+      "reply": "上一轮计划停在等你回答: 「谢谢」意图不明确。你想让 agent 做什么? (如: 搜索/写文档/执行命令/分析数据)\n这一轮答复没有落地: 答复不在该条目的可选范围内 [搜索资料/写文档/总结/执行代码/命令/分析数据/读文件/其他 (请补充说明)]\n该续跑入口已作废 —— 请把这一轮内容重新表述为完整任务, 或按上面的问题再答一次。",
+      "ok": true,
+      "events": [],
+      "secs": 0.0,
+      "t_start": 1789378287.8024,
+      "success": false,
+      "error": null,
+      "t_end": 1789378287.804
+    },
+    {
+      "turn": 4,
+      "text": "不对，你上一条回答不准确，请重新确认后再回答一次。",
+      "reply": "桩应答: 收到, 已完成该步。",
+      "ok": true,
+      "events": [
+        {
+          "event": "plan.created",
+          "keys": [
+            "hybrid",
+            "local",
+            "nodes",
+            "nodes_total",
+            "plan_id",
+            "remote"
+          ]
+        },
+        {
+          "event": "plan.node",
+          "keys": [
+            "artifact",
+            "detail",
+            "elapsed_ms",
+            "executor",
+            "intent",
+            "location"
+          ]
+        },
+        {
+          "event": "plan.finished",
+          "keys": [
+            "failed",
+            "local_first",
+            "local_first_ms",
+            "local_first_nodes",
+            "local_first_us",
+            "local_ok"
+          ]
+        }
+      ],
+      "secs": 0.07,
+      "t_start": 1789378287.804,
+      "success": true,
+      "error": null,
+      "t_end": 1789378287.8735
+    },
+    {
+      "turn": 5,
+      "text": "现在把结论压缩成一行给我。",
+      "reply": "桩应答: 收到, 已完成该步。",
+      "ok": true,
+      "events": [
+        {
+          "event": "plan.created",
+          "keys": [
+            "hybrid",
+            "local",
+            "nodes",
+            "nodes_total",
+            "plan_id",
+            "remote"
+          ]
+        },
+        {
+          "event": "plan.node",
+          "keys": [
+            "artifact",
+            "detail",
+            "elapsed_ms",
+            "executor",
+            "intent",
+            "location"
+          ]
+        },
+        {
+          "event": "plan.finished",
+          "keys": [
+            "failed",
+            "local_first",
+            "local_first_ms",
+            "local_first_nodes",
+            "local_first_us",
+            "local_ok"
+          ]
+        }
+      ],
+      "secs": 0.04,
+      "t_start": 1789378287.8735,
+      "success": true,
+      "error": null,
+      "t_end": 1789378287.9184
+    },
+    {
+      "turn": 6,
+      "text": "这个仓库的 AOT 发布命令怎么用？",
+      "reply": "桩应答: 收到, 已完成该步。",
+      "ok": true,
+      "events": [
+        {
+          "event": "ask",
+          "keys": [
+            "ask_id",
+            "group_size",
+            "purpose",
+            "questions",
+            "service",
+            "timeout_s"
+          ]
+        },
+        {
+          "event": "ask_closed",
+          "keys": [
+            "ask_id",
+            "reason"
+          ]
+        },
+        {
+          "event": "plan.created",
+          "keys": [
+            "hybrid",
+            "local",
+            "nodes",
+            "nodes_total",
+            "plan_id",
+            "remote"
+          ]
+        },
+        {
+          "event": "ask",
+          "keys": [
+            "ask_id",
+            "group_size",
+            "purpose",
+            "questions",
+            "service",
+            "timeout_s"
+          ]
+        },
+        {
+          "event": "ask_closed",
+          "keys": [
+            "ask_id",
+            "reason"
+          ]
+        },
+        {
+          "event": "ask",
+          "keys": [
+            "ask_id",
+            "group_size",
+            "purpose",
+            "questions",
+            "service",
+            "timeout_s"
+          ]
+        },
+        {
+          "event": "ask_closed",
+          "keys": [
+            "ask_id",
+            "reason"
+          ]
+        },
+        {
+          "event": "plan.finished",
+          "keys": [
+            "failed",
+            "local_first",
+            "local_first_ms",
+            "local_first_nodes",
+            "local_first_us",
+            "local_ok"
+          ]
+        }
+      ],
+      "secs": 0.42,
+      "t_start": 1789378287.9184,
+      "success": true,
+      "error": null,
+      "t_end": 1789378288.3337
+    },
+    {
+      "turn": 7,
+      "text": "把刚才两条命令的差别写成两行。",
+      "reply": "🔄 续跑计划 564d2d175bab (答复落到参数槽: 子任务1_指代对象)\n上一轮的问题: 「这个仓库的 AOT 发布命令怎么用？」中的指代 (这个/它/该文件) 具体指向什么? 请给出确切的文件/数据名。\n- n2cfd8352 [remote] Skipped: 远程产物未就绪 (主链尚未生成) ⇒ 只登记不执行\n计划状态: Finished",
+      "ok": true,
+      "events": [
+        {
+          "event": "plan.node",
+          "keys": [
+            "artifact",
+            "detail",
+            "elapsed_ms",
+            "executor",
+            "intent",
+            "location"
+          ]
+        },
+        {
+          "event": "plan.finished",
+          "keys": [
+            "failed",
+            "local_first",
+            "local_first_ms",
+            "local_first_nodes",
+            "local_first_us",
+            "local_ok"
+          ]
+        }
+      ],
+      "secs": 0.04,
+      "t_start": 1789378288.3337,
+      "success": true,
+      "error": null,
+      "t_end": 1789378288.3763
+    },
+    {
+      "turn": 8,
+      "text": "再确认一下宿主程序的入口文件是哪个。",
+      "reply": "桩应答: 收到, 已完成该步。",
+      "ok": true,
+      "events": [
+        {
+          "event": "plan.created",
+          "keys": [
+            "hybrid",
+            "local",
+            "nodes",
+            "nodes_total",
+            "plan_id",
+            "remote"
+          ]
+        },
+        {
+          "event": "plan.node",
+          "keys": [
+            "artifact",
+            "detail",
+            "elapsed_ms",
+            "executor",
+            "intent",
+            "location"
+          ]
+        },
+        {
+          "event": "plan.node",
+          "keys": [
+            "artifact",
+            "detail",
+            "elapsed_ms",
+            "executor",
+            "intent",
+            "location"
+          ]
+        },
+        {
+          "event": "plan.finished",
+          "keys": [
+            "failed",
+            "local_first",
+            "local_first_ms",
+            "local_first_nodes",
+            "local_first_us",
+            "local_ok"
+          ]
+        }
+      ],
+      "secs": 0.05,
+      "t_start": 1789378288.3763,
+      "success": true,
+      "error": null,
+      "t_end": 1789378288.4291
+    }
+  ]
+}
