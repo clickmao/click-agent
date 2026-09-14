@@ -1,0 +1,36 @@
+{
+ "note": "R440 分档 V2: N=3 短任务, 可跳 1/3 (t2 认可轮, 早位置)。判据: 降幅 ~25-35%。",
+ "ratio_k": 1,
+ "ratio": "1/3",
+ "turn_timeout_s": 600,
+ "ask_reply": "是",
+ "expected": [
+  {
+   "turn": 1,
+   "family": "terse_new",
+   "want": "pass",
+   "mech": false
+  },
+  {
+   "turn": 2,
+   "family": "ack",
+   "want": "skip"
+  },
+  {
+   "turn": 3,
+   "family": "terse_new",
+   "want": "pass",
+   "mech": false
+  }
+ ],
+ "r1_positions": [
+  1,
+  2,
+  3
+ ],
+ "turns": [
+  "再讲一遍。",
+  "好的，明白。",
+  "讲细一点。"
+ ]
+}

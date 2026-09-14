@@ -1,0 +1,122 @@
+{
+  "stats": {
+    "turns": 3,
+    "ok": 3,
+    "events": 7,
+    "asks": 2,
+    "errors": []
+  },
+  "turns": [
+    {
+      "turn": 1,
+      "text": "再讲一遍。",
+      "reply": "桩应答: 收到, 已完成该步。",
+      "ok": true,
+      "events": [
+        {
+          "event": "ask",
+          "keys": [
+            "ask_id",
+            "group_size",
+            "purpose",
+            "questions",
+            "service",
+            "timeout_s"
+          ]
+        },
+        {
+          "event": "ask_closed",
+          "keys": [
+            "ask_id",
+            "reason"
+          ]
+        },
+        {
+          "event": "plan.created",
+          "keys": [
+            "hybrid",
+            "local",
+            "nodes",
+            "nodes_total",
+            "plan_id",
+            "remote"
+          ]
+        },
+        {
+          "event": "plan.finished",
+          "keys": [
+            "failed",
+            "local_first",
+            "local_first_ms",
+            "local_first_nodes",
+            "local_first_us",
+            "local_ok"
+          ]
+        }
+      ],
+      "secs": 15.55,
+      "t_start": 1789421858.3893,
+      "success": true,
+      "error": null,
+      "t_end": 1789421873.9405
+    },
+    {
+      "turn": 2,
+      "text": "好的，明白。",
+      "reply": "上一轮计划停在等你回答: 「讲一遍」意图不明确。你想让 agent 做什么? (如: 搜索/写文档/执行命令/分析数据)\n这一轮答复没有落地: 答复不在该条目的可选范围内 [搜索资料/写文档/总结/执行代码/命令/分析数据/读文件/其他 (请补充说明)]\n该续跑入口已作废 —— 请把这一轮内容重新表述为完整任务, 或按上面的问题再答一次。",
+      "ok": true,
+      "events": [],
+      "secs": 0.0,
+      "t_start": 1789421873.9405,
+      "success": false,
+      "error": null,
+      "t_end": 1789421873.9427
+    },
+    {
+      "turn": 3,
+      "text": "讲细一点。",
+      "reply": "桩应答: 收到, 已完成该步。",
+      "ok": true,
+      "events": [
+        {
+          "event": "plan.created",
+          "keys": [
+            "hybrid",
+            "local",
+            "nodes",
+            "nodes_total",
+            "plan_id",
+            "remote"
+          ]
+        },
+        {
+          "event": "plan.node",
+          "keys": [
+            "artifact",
+            "detail",
+            "elapsed_ms",
+            "executor",
+            "intent",
+            "location"
+          ]
+        },
+        {
+          "event": "plan.finished",
+          "keys": [
+            "failed",
+            "local_first",
+            "local_first_ms",
+            "local_first_nodes",
+            "local_first_us",
+            "local_ok"
+          ]
+        }
+      ],
+      "secs": 20.2,
+      "t_start": 1789421873.9427,
+      "success": true,
+      "error": null,
+      "t_end": 1789421894.1425
+    }
+  ]
+}

@@ -1,0 +1,428 @@
+{
+  "round": "R440",
+  "ts_utc_plus8": "2026-09-15T06:06:30+08:00",
+  "preregistered_checks": {
+    "C1_door_quality": {
+      "V1": {
+        "fn": 0,
+        "fp": 0,
+        "acc": 1.0
+      },
+      "V2": {
+        "fn": 0,
+        "fp": 0,
+        "acc": 1.0
+      },
+      "V2b": {
+        "fn": 0,
+        "fp": 0,
+        "acc": 1.0
+      },
+      "V4": {
+        "fn": 0,
+        "fp": 0,
+        "acc": 1.0
+      },
+      "V5": {
+        "fn": 0,
+        "fp": 0,
+        "acc": 1.0
+      },
+      "pass": true
+    },
+    "C2_A_denominator": {
+      "V1_vs_p8A": {
+        "turns_compared": 1,
+        "turns_bit_equal": 0,
+        "worst": [
+          3,
+          1,
+          1947,
+          1950
+        ],
+        "total_delta_pct": -89.4649
+      },
+      "V4_vs_V20A": {
+        "turns_compared": 16,
+        "turns_bit_equal": 4,
+        "worst": [
+          208,
+          13,
+          3542,
+          3750
+        ],
+        "total_delta_pct": 0.116
+      },
+      "V5_vs_V20A": {
+        "turns_compared": 14,
+        "turns_bit_equal": 1,
+        "worst": [
+          473,
+          20,
+          4631,
+          5104
+        ],
+        "total_delta_pct": -16.0693
+      },
+      "strict_pass": false,
+      "total_level_pass": false,
+      "pass": false
+    },
+    "C2b_total_level_posthoc": {
+      "pass": false,
+      "note": "预注册的逐位形式被证伪(同长同文本 ≠ 历史同构 ⇒ 逐轮 prompt 差最大见 worst); 总量级 ≤2% 是事后收窄口径"
+    },
+    "C3_prediction_within_3pt": {
+      "V1": {
+        "pred": -3.9487,
+        "measured": -3.9548,
+        "dev_pt": -0.0061,
+        "A_source": "proxy(p8) by turn index",
+        "pass": true
+      },
+      "V2": {
+        "pred": 32.1732,
+        "measured": -3.8567,
+        "dev_pt": -36.0299,
+        "A_source": "proxy(p8) by turn index",
+        "pass": false
+      },
+      "V2b": {
+        "realized_skips": [
+          4
+        ],
+        "realized_consumed": [
+          2
+        ],
+        "branch": "B2a_t2_eaten",
+        "pred": -3.8486,
+        "measured": 32.2396,
+        "dev_pt": 36.0882,
+        "pass": false
+      },
+      "V4": {
+        "pred": 44.092,
+        "measured": 48.5713,
+        "dev_pt": 4.4793,
+        "A_source": "proxy(V20) by turn index",
+        "pass": false
+      },
+      "V5": {
+        "pred": -2.811,
+        "measured": -2.3981,
+        "dev_pt": 0.4129,
+        "A_source": "proxy(V20) by turn index",
+        "pass": true
+      }
+    },
+    "C4_zero_skip_negative": {
+      "V1": -3.9548,
+      "V5": -2.3981,
+      "pass": true
+    },
+    "C5_bp_negative_control": {
+      "BP_drop": -5.4731,
+      "BP_jrem": 13,
+      "BP_skips": [],
+      "pass": true
+    },
+    "C6_quality_no_regression": {
+      "pass": true,
+      "unassigned": {
+        "V1": 0,
+        "V2": 0,
+        "V2b": 0,
+        "V4": 0,
+        "V5": 0
+      },
+      "fn": {
+        "V1": 0,
+        "V2": 0,
+        "V2b": 0,
+        "V4": 0,
+        "V5": 0
+      },
+      "fp": {
+        "V1": 0,
+        "V2": 0,
+        "V2b": 0,
+        "V4": 0,
+        "V5": 0
+      }
+    },
+    "C7_position_single_variable": {
+      "measured_delta_pt": 3.265,
+      "prereg_model_delta_pt": -1.2,
+      "dev_pt": 4.465,
+      "pass": false
+    },
+    "H1_delta_law_posthoc": {
+      "V1": {
+        "delta_emp_tok": 77.0,
+        "n_single_call_turns": 1
+      },
+      "V2": {
+        "delta_emp_tok": 77.0,
+        "n_single_call_turns": 2
+      },
+      "V2b": {
+        "delta_emp_tok": 77.0,
+        "n_single_call_turns": 2
+      },
+      "V4": {
+        "delta_emp_tok": 77.0,
+        "n_single_call_turns": 11
+      },
+      "V5": {
+        "delta_emp_tok": 77.0,
+        "n_single_call_turns": 11
+      }
+    },
+    "H2_reanchored_model_posthoc": {
+      "V1": {
+        "A_denom_tok": 1947,
+        "B_pred_tok": 2024.0,
+        "pred_drop_pct": -3.9548,
+        "measured_drop_pct": -3.9548,
+        "dev_pt": 0.0
+      },
+      "V2": {
+        "A_denom_tok": 3993,
+        "B_pred_tok": 4147.0,
+        "pred_drop_pct": -3.8567,
+        "measured_drop_pct": -3.8567,
+        "dev_pt": 0.0
+      },
+      "V2b": {
+        "A_denom_tok": 6126,
+        "B_pred_tok": 4151.0,
+        "pred_drop_pct": 32.2396,
+        "measured_drop_pct": 32.2396,
+        "dev_pt": 0.0
+      },
+      "V4": {
+        "A_denom_tok": 61281,
+        "B_pred_tok": 31226.0,
+        "pred_drop_pct": 49.0446,
+        "measured_drop_pct": 48.5713,
+        "dev_pt": 0.4732
+      },
+      "V5": {
+        "A_denom_tok": 51374,
+        "B_pred_tok": 52606.0,
+        "pred_drop_pct": -2.3981,
+        "measured_drop_pct": -2.3981,
+        "dev_pt": 0.0
+      },
+      "all_within_1pt": true
+    },
+    "H3_prereg_defects_posthoc": {
+      "A_proxy_inflation_pct": {
+        "V4": 9.2526,
+        "V5": 30.321
+      },
+      "prereg_A_total": {
+        "V4": 66951.1,
+        "V5": 66951.1
+      },
+      "measured_A_total": {
+        "V4": 61281,
+        "V5": 51374
+      },
+      "delta_law": {
+        "prereg_delta_at_t14_20": [
+          100.4,
+          105.8,
+          111.2
+        ],
+        "measured_delta_const": 77.0
+      },
+      "root_cause": "① A 分母跨网格「逐记录下标」代理 ⇒ 多调用轮导致位移(V20 A 臂 25 调用/20 轮); ② δ(i) 线性外推来自 p12 拟合, 实测为常数。二者共同抬高预注册 B 与 A。"
+    }
+  },
+  "table": {
+    "V1": {
+      "A": {
+        "tokens": 1947,
+        "calls": 1,
+        "consumed": [],
+        "skips": [],
+        "fn": 0,
+        "fp": 0,
+        "acc": 1.0
+      },
+      "BRJ": {
+        "tokens": 2024,
+        "calls": 1,
+        "consumed": [],
+        "skips": [],
+        "fn": 0,
+        "fp": 0,
+        "acc": 1.0
+      },
+      "BP": null
+    },
+    "V2": {
+      "A": {
+        "tokens": 3993,
+        "calls": 2,
+        "consumed": [
+          2
+        ],
+        "skips": [],
+        "fn": 0,
+        "fp": 0,
+        "acc": 1.0
+      },
+      "BRJ": {
+        "tokens": 4147,
+        "calls": 2,
+        "consumed": [
+          2
+        ],
+        "skips": [],
+        "fn": 0,
+        "fp": 0,
+        "acc": 1.0
+      },
+      "BP": null
+    },
+    "V2b": {
+      "A": {
+        "tokens": 6126,
+        "calls": 3,
+        "consumed": [
+          2
+        ],
+        "skips": [],
+        "fn": 0,
+        "fp": 1,
+        "acc": 0.6667
+      },
+      "BRJ": {
+        "tokens": 4151,
+        "calls": 2,
+        "consumed": [
+          2
+        ],
+        "skips": [
+          4
+        ],
+        "fn": 0,
+        "fp": 0,
+        "acc": 1.0
+      },
+      "BP": null
+    },
+    "V4": {
+      "A": {
+        "tokens": 61281,
+        "calls": 25,
+        "consumed": [
+          3,
+          11
+        ],
+        "skips": [],
+        "fn": 0,
+        "fp": 7,
+        "acc": 0.6111
+      },
+      "BRJ": {
+        "tokens": 31516,
+        "calls": 18,
+        "consumed": [
+          3,
+          11
+        ],
+        "skips": [
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20
+        ],
+        "fn": 0,
+        "fp": 0,
+        "acc": 1.0
+      },
+      "BP": {
+        "tokens": 64635,
+        "calls": 38,
+        "consumed": [
+          3,
+          11
+        ],
+        "skips": [],
+        "fn": 0,
+        "fp": 7,
+        "acc": 0.6111
+      }
+    },
+    "V5": {
+      "A": {
+        "tokens": 51374,
+        "calls": 21,
+        "consumed": [
+          3,
+          11,
+          15,
+          18
+        ],
+        "skips": [],
+        "fn": 0,
+        "fp": 0,
+        "acc": 1.0
+      },
+      "BRJ": {
+        "tokens": 52606,
+        "calls": 21,
+        "consumed": [
+          3,
+          11,
+          15,
+          18
+        ],
+        "skips": [],
+        "fn": 0,
+        "fp": 0,
+        "acc": 1.0
+      },
+      "BP": null
+    }
+  },
+  "drops_pct": {
+    "V1": {
+      "BRJ": -3.9548,
+      "BP": null
+    },
+    "V2": {
+      "BRJ": -3.8567,
+      "BP": null
+    },
+    "V2b": {
+      "BRJ": 32.2396,
+      "BP": null
+    },
+    "V4": {
+      "BRJ": 48.5713,
+      "BP": -5.4731
+    },
+    "V5": {
+      "BRJ": -2.3981,
+      "BP": null
+    }
+  },
+  "V20_reference_drop_pct": 45.3063,
+  "verdict": {
+    "C1": true,
+    "C2_strict": false,
+    "C3": false,
+    "C4": true,
+    "C5": true,
+    "C6": true,
+    "C7": false,
+    "H2_posthoc": true
+  }
+}

@@ -1,0 +1,625 @@
+{
+  "arm": "A",
+  "grid": "V5",
+  "ns": "",
+  "host": "/tmp/pub_r438/agenthost",
+  "bin_sha": "6167e9da61840bcb87b1b4601bbed6141c38dda293b4fe5580a97cb88aa7b484",
+  "marks": {
+    "source_files": {
+      "judge_const": "/home/agentuser/AgentFramework/src/agent/IndustrialAgentV2.cs",
+      "prompt_fn": "/home/agentuser/AgentFramework/src/agent.roles/CorrectionDetector.cs"
+    },
+    "j_system": "只输出一个字母。",
+    "j_system_len": 8,
+    "j_first_line": "判定用户消息相对上一轮回答: 纠正否定上一轮=C, 认可采纳=A, 新话题无关=N。",
+    "j_user_anchor": "用户:",
+    "j_answer_tail": "答案:",
+    "j_prompt_literals_n": 8,
+    "j_prompt_static_len": 274,
+    "checks": {
+      "A1_invisible_free": true,
+      "A2_class_keys": true,
+      "A3_anchors": true,
+      "A4_no_bare_fragment": true
+    }
+  },
+  "calls_total": 21,
+  "tokens_total": 51374,
+  "G_calls": 21,
+  "G_tokens": 51374,
+  "J_calls": 0,
+  "J_tokens": 0,
+  "unassigned_calls": 0,
+  "attribution": "content_anchor+seq_partition[R415/R425]",
+  "attribution_ok": true,
+  "false_negative": [],
+  "false_negative_by_calls": [],
+  "false_positive": [],
+  "false_positive_by_calls": [],
+  "fn_n": 0,
+  "fp_n": 0,
+  "accuracy": 1.0,
+  "measured_turns": [
+    1,
+    2,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    12,
+    13,
+    14,
+    16,
+    17,
+    19,
+    20
+  ],
+  "measured_n": 16,
+  "consumed_as_ask_answer": [
+    3,
+    11,
+    15,
+    18
+  ],
+  "per_turn": [
+    {
+      "turn": 1,
+      "family": "lead",
+      "want": "pass",
+      "mech": true,
+      "G_calls": 1,
+      "G_tokens": 2111,
+      "J_calls": 0,
+      "J_tokens": 0,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.34,
+      "t_start": 1789422705.5427,
+      "t_end": 1789422705.8794,
+      "window": [
+        0.0,
+        0.337
+      ]
+    },
+    {
+      "turn": 2,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 1,
+      "G_tokens": 2241,
+      "J_calls": 0,
+      "J_tokens": 0,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.07,
+      "t_start": 1789422705.8795,
+      "t_end": 1789422705.9514,
+      "window": [
+        0.337,
+        0.409
+      ]
+    },
+    {
+      "turn": 3,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 0,
+      "G_tokens": 0,
+      "J_calls": 0,
+      "J_tokens": 0,
+      "actual": "consumed",
+      "reply_source": "consumed",
+      "consumed_as_ask_answer": true,
+      "hit": null,
+      "reply_len": 170,
+      "reply_head": "上一轮计划停在等你回答: 「讲一遍」意图不明确。你想让 agent 做什么? (如: 搜索/写文档/执行命令/分析数据)",
+      "secs": 0.0,
+      "t_start": 1789422705.9514,
+      "t_end": 1789422705.9531,
+      "window": [
+        0.409,
+        0.41
+      ]
+    },
+    {
+      "turn": 4,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 1,
+      "G_tokens": 2332,
+      "J_calls": 0,
+      "J_tokens": 0,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.08,
+      "t_start": 1789422705.9531,
+      "t_end": 1789422706.0288,
+      "window": [
+        0.41,
+        0.486
+      ]
+    },
+    {
+      "turn": 5,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 1,
+      "G_tokens": 2462,
+      "J_calls": 0,
+      "J_tokens": 0,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.07,
+      "t_start": 1789422706.0289,
+      "t_end": 1789422706.0988,
+      "window": [
+        0.486,
+        0.556
+      ]
+    },
+    {
+      "turn": 6,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 1,
+      "G_tokens": 2565,
+      "J_calls": 0,
+      "J_tokens": 0,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.07,
+      "t_start": 1789422706.0989,
+      "t_end": 1789422706.1688,
+      "window": [
+        0.556,
+        0.626
+      ]
+    },
+    {
+      "turn": 7,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 1,
+      "G_tokens": 2711,
+      "J_calls": 0,
+      "J_tokens": 0,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.07,
+      "t_start": 1789422706.1688,
+      "t_end": 1789422706.2408,
+      "window": [
+        0.626,
+        0.698
+      ]
+    },
+    {
+      "turn": 8,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 1,
+      "G_tokens": 2857,
+      "J_calls": 0,
+      "J_tokens": 0,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.07,
+      "t_start": 1789422706.2408,
+      "t_end": 1789422706.3106,
+      "window": [
+        0.698,
+        0.768
+      ]
+    },
+    {
+      "turn": 9,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 1,
+      "G_tokens": 3016,
+      "J_calls": 0,
+      "J_tokens": 0,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.07,
+      "t_start": 1789422706.3106,
+      "t_end": 1789422706.3806,
+      "window": [
+        0.768,
+        0.838
+      ]
+    },
+    {
+      "turn": 10,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 1,
+      "G_tokens": 3184,
+      "J_calls": 0,
+      "J_tokens": 0,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.08,
+      "t_start": 1789422706.3807,
+      "t_end": 1789422706.4643,
+      "window": [
+        0.838,
+        0.922
+      ]
+    },
+    {
+      "turn": 11,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 0,
+      "G_tokens": 0,
+      "J_calls": 0,
+      "J_tokens": 0,
+      "actual": "consumed",
+      "reply_source": "consumed",
+      "consumed_as_ask_answer": true,
+      "hit": null,
+      "reply_len": 170,
+      "reply_head": "上一轮计划停在等你回答: 「展开点」意图不明确。你想让 agent 做什么? (如: 搜索/写文档/执行命令/分析数据)",
+      "secs": 0.0,
+      "t_start": 1789422706.4643,
+      "t_end": 1789422706.4662,
+      "window": [
+        0.922,
+        0.924
+      ]
+    },
+    {
+      "turn": 12,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 1,
+      "G_tokens": 3358,
+      "J_calls": 0,
+      "J_tokens": 0,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.04,
+      "t_start": 1789422706.4662,
+      "t_end": 1789422706.5083,
+      "window": [
+        0.924,
+        0.966
+      ]
+    },
+    {
+      "turn": 13,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 1,
+      "G_tokens": 3542,
+      "J_calls": 0,
+      "J_tokens": 0,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.04,
+      "t_start": 1789422706.5083,
+      "t_end": 1789422706.5503,
+      "window": [
+        0.966,
+        1.008
+      ]
+    },
+    {
+      "turn": 14,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 2,
+      "G_tokens": 3789,
+      "J_calls": 0,
+      "J_tokens": 0,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.11,
+      "t_start": 1789422706.5503,
+      "t_end": 1789422706.6648,
+      "window": [
+        1.008,
+        1.122
+      ]
+    },
+    {
+      "turn": 15,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 0,
+      "G_tokens": 0,
+      "J_calls": 0,
+      "J_tokens": 0,
+      "actual": "consumed",
+      "reply_source": "consumed",
+      "consumed_as_ask_answer": true,
+      "hit": null,
+      "reply_len": 170,
+      "reply_head": "上一轮计划停在等你回答: 「说一遍」意图不明确。你想让 agent 做什么? (如: 搜索/写文档/执行命令/分析数据)",
+      "secs": 0.0,
+      "t_start": 1789422706.6648,
+      "t_end": 1789422706.6667,
+      "window": [
+        1.122,
+        1.124
+      ]
+    },
+    {
+      "turn": 16,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 2,
+      "G_tokens": 3986,
+      "J_calls": 0,
+      "J_tokens": 0,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.12,
+      "t_start": 1789422706.6668,
+      "t_end": 1789422706.7837,
+      "window": [
+        1.124,
+        1.241
+      ]
+    },
+    {
+      "turn": 17,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 2,
+      "G_tokens": 4186,
+      "J_calls": 0,
+      "J_tokens": 0,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.11,
+      "t_start": 1789422706.7837,
+      "t_end": 1789422706.8978,
+      "window": [
+        1.241,
+        1.355
+      ]
+    },
+    {
+      "turn": 18,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 0,
+      "G_tokens": 0,
+      "J_calls": 0,
+      "J_tokens": 0,
+      "actual": "consumed",
+      "reply_source": "consumed",
+      "consumed_as_ask_answer": true,
+      "hit": null,
+      "reply_len": 170,
+      "reply_head": "上一轮计划停在等你回答: 「细说下」意图不明确。你想让 agent 做什么? (如: 搜索/写文档/执行命令/分析数据)",
+      "secs": 0.0,
+      "t_start": 1789422706.8978,
+      "t_end": 1789422706.8993,
+      "window": [
+        1.355,
+        1.357
+      ]
+    },
+    {
+      "turn": 19,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 2,
+      "G_tokens": 4403,
+      "J_calls": 0,
+      "J_tokens": 0,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.12,
+      "t_start": 1789422706.8993,
+      "t_end": 1789422707.0188,
+      "window": [
+        1.357,
+        1.476
+      ]
+    },
+    {
+      "turn": 20,
+      "family": "terse_new",
+      "want": "pass",
+      "mech": false,
+      "G_calls": 2,
+      "G_tokens": 4631,
+      "J_calls": 0,
+      "J_tokens": 0,
+      "actual": "pass",
+      "reply_source": "pass",
+      "consumed_as_ask_answer": false,
+      "hit": true,
+      "reply_len": 15,
+      "reply_head": "桩应答: 收到, 已完成该步。",
+      "secs": 0.11,
+      "t_start": 1789422707.0189,
+      "t_end": 1789422707.1337,
+      "window": [
+        1.476,
+        6.591
+      ]
+    }
+  ],
+  "judge_telemetry": [],
+  "judge_source_count": {
+    "local": 0,
+    "non_local": 0,
+    "events": 0,
+    "structural_no_request": 0
+  },
+  "judge_remote_fallback_n": 0,
+  "judge_local_state": {},
+  "judge_local_tokens": 0,
+  "judge_local_ms": [],
+  "cross_check_S2": {
+    "stub_J_remote": 0,
+    "telemetry_remote_constructed": 0,
+    "telemetry_structural_no_request": 0,
+    "delta": 0
+  },
+  "repro_archive_S1": [
+    {
+      "archive": "A-p8-a1",
+      "recomputed": [
+        6,
+        0
+      ],
+      "skip": "该档案未登记 G/J 计数(旧版 verdict)"
+    },
+    {
+      "archive": "B-p8-b1",
+      "recomputed": [
+        2,
+        7
+      ],
+      "recorded": [
+        2,
+        7
+      ],
+      "match": true
+    },
+    {
+      "archive": "BRJ-p8-k1",
+      "recomputed": [
+        5,
+        6
+      ],
+      "recorded": [
+        5,
+        6
+      ],
+      "match": true
+    },
+    {
+      "archive": "BP-p8-d1",
+      "recomputed": [
+        8,
+        7
+      ],
+      "recorded": [
+        8,
+        7
+      ],
+      "match": true
+    },
+    {
+      "archive": "A-p12-n1",
+      "recomputed": [
+        11,
+        0
+      ],
+      "recorded": [
+        11,
+        0
+      ],
+      "match": true
+    },
+    {
+      "archive": "B-p12-o1",
+      "recomputed": [
+        7,
+        8
+      ],
+      "recorded": [
+        7,
+        8
+      ],
+      "match": true
+    }
+  ],
+  "repro_archive_ok": true,
+  "repro_archive_compared": 5,
+  "gate_records": [],
+  "r1_records": [],
+  "gate_r1_n": 0,
+  "gate_mech_n": 0,
+  "r1_skips": 0,
+  "r1_passes": 0,
+  "growth_chars_seen": []
+}
