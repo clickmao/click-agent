@@ -1,0 +1,47 @@
+{
+  "round": "R442",
+  "kind": "D7_denominator_same_grid_assertion",
+  "checks": {
+    "r441:W8": {
+      "ok": true,
+      "why": "分母=17260 同网格; 主调用轮 7 个 ⊆ [1,8]"
+    },
+    "r441:W20": {
+      "ok": true,
+      "why": "分母=54326 同网格; 主调用轮 17 个 ⊆ [1,20]"
+    },
+    "r441:M20": {
+      "ok": true,
+      "why": "分母=61230 同网格; 主调用轮 18 个 ⊆ [1,20]"
+    },
+    "r441:V2b-c2": {
+      "ok": true,
+      "why": "分母=6126 同网格; 主调用轮 3 个 ⊆ [1,4]"
+    },
+    "r440:V4": {
+      "ok": true,
+      "why": "分母=61281 同网格; 主调用轮 18 个 ⊆ [1,20]"
+    },
+    "r440:V5": {
+      "ok": true,
+      "why": "分母=51374 同网格; 主调用轮 16 个 ⊆ [1,20]"
+    },
+    "NC1_w8_with_v4_denominator": {
+      "ok": false,
+      "why": "分母=61281 != 同网格真值 G_tokens=17260（差 +44021）",
+      "expected": "FAIL(必须判红)"
+    },
+    "NC2_v4_verdict_tagged_as_w8": {
+      "ok": false,
+      "why": "A 臂网格不符: V4 != W8（跨网格代理）",
+      "expected": "FAIL(必须判红)"
+    },
+    "PC1_w8_same_grid_same_value": {
+      "ok": true,
+      "why": "分母=17260 同网格; 主调用轮 7 个 ⊆ [1,8]"
+    }
+  },
+  "negative_controls_fired": true,
+  "positive_control_passed": true,
+  "D7_pass": true
+}
