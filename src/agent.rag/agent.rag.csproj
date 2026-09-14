@@ -19,4 +19,9 @@
     <ProjectReference Include="../agent.core/agent.core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- R422 附带修复: 词袋 embedding 哈希/下标契约须可被测试**确定性**钉住 (概率性崩溃不能只靠重跑) -->
+    <InternalsVisibleTo Include="agentframework.tests" />
+  </ItemGroup>
+
 </Project>

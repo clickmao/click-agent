@@ -318,6 +318,44 @@ public sealed class SessionHistorySearchTests : IDisposable
         Assert.Equal(new[] { "识别", "别文", "文本" }, SessionHistorySearch.Tokenize("识别文本"));
     }
 
+    [Fact]
+    public void LengthNorm_ShorterDocument_Outranks_Longer_ForSameSingleToken()
+    {
+        // R422: 同一词元命中、文档词元数 1/3/5 ⇒ 分数必须严格递减 (预注册方向断言, 非"跑通即通过")
+        Seed("s-len1", "存在");
+        Seed("s-len3", "存在 甲乙丙");
+        Seed("s-len5", "存在 甲乙丙丁戊");
+        Seed("s-other", "向量召回 与 嵌入缓存");
+
+        var hits = NewSearch().Search("存在", topK: 5);
+
+        Assert.Equal(new[] { "s-len1", "s-len3", "s-len5" }, hits.Select(h => h.SessionId).ToArray());
+        Assert.True(hits[0].Score > hits[1].Score && hits[1].Score > hits[2].Score,
+            $"分数必须严格递减 (R421 的并列零区分度), 实测 {hits[0].Score}/{hits[1].Score}/{hits[2].Score}");
+        // 阴性对照: 归一不得把无关文档拉进来
+        Assert.DoesNotContain(hits, h => h.SessionId == "s-other");
+    }
+
+    [Fact]
+    public void LengthNorm_And_PolarityInvariants_HoldTogether_OnRealMachineCorpus()
+    {
+        // R421 冻结真机语料 + 同族更长的第二条 ⇒ 两个不变量必须**同时**成立 (成对, 防一刀切)
+        Seed("s-real-pos", "若图中存在拓扑序, 输出字典序最小的拓扑序; 若存在环");
+        Seed("s-real-long", "若图中存在拓扑序, 输出字典序最小的拓扑序; 若存在环; 并输出每个节点的入度与出度统计"
+            + "并按字典序升序给出全部合法序列");
+
+        var search = NewSearch();
+        var posQ = search.Search("存在", topK: 5);
+        var negQ = search.Search("不存在", topK: 5);
+
+        // ① 长度归一在作用: 同词元命中的两文档分数不再并列 (R421 真机 0.5596 三份全等已消除)
+        Assert.Equal(2, posQ.Count);
+        Assert.NotEqual(posQ[0].Score, posQ[1].Score);
+        Assert.Equal("s-real-pos", posQ[0].SessionId);
+        // ② 极性不变量未被归一破坏 (R421 判据回归)
+        Assert.Empty(negQ);
+    }
+
     private sealed class MixedSource : SessionHistorySearch.ISource
     {
         private readonly SessionHistorySearch.ISource _inner;

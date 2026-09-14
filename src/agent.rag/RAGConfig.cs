@@ -703,18 +703,21 @@ public class RAGRecall : IRAGRecall
         var dimension = _config.EmbeddingDimension;
         var embedding = new float[dimension];
         
-        // 使用词袋模型：将每个词哈希到不同维度
+        // 使用词袋模型：将每个词哈希到不同维度 (R422 附带修复)
+        // 真缺陷: 原为 `Math.Abs(word.GetHashCode())` + `(hash + seed * 31337) % dimension`:
+        //   ① string.GetHashCode() 在 .NET 中**进程随机化** ⇒ 同一文档跨进程向量不同 (落盘索引不可复现);
+        //   ② 加法**可溢出为负** (hash 落在 int.MaxValue-62674 窗口) ⇒ `% dimension` 为负 ⇒ `embedding[负]`
+        //      ⇒ IndexOutOfRangeException。实测概率 ~20%/进程 (R422 基线取证: 全量与隔离两跑各红 2 例,
+        //      随后 6 连跑全绿; 700 文档 × ~20 token ⇒ 每进程期望溢出次数 ~0.2)。
+        // 修: FNV-1a 确定性哈希 + **无符号**取模 (恒非负)。两处均抽为可被测试**确定性**钉住的 internal 助手。
         for (int wordIndex = 0; wordIndex < words.Count; wordIndex++)
         {
-            var word = words[wordIndex];
-            var hash = Math.Abs(word.GetHashCode());
-            
+            var hash = StableHash(words[wordIndex]);
+
             // 将词分布到多个维度（使用不同种子）
             for (int seed = 0; seed < 3; seed++)
             {
-                var combinedHash = hash + seed * 31337;
-                var targetIndex = combinedHash % dimension;
-                embedding[targetIndex] += 1.0f;
+                embedding[BucketOf(hash, seed, dimension)] += 1.0f;
             }
         }
         
@@ -731,6 +734,37 @@ public class RAGRecall : IRAGRecall
         return embedding;
     }
     
+    /// <summary>
+    /// R422 附带修复: FNV-1a (32 位) —— 确定性、跨进程/跨平台一致, 替代进程随机化的 string.GetHashCode()。
+    /// 契约: 同输入恒同输出 (可被测试跨实现对账钉住)。
+    /// </summary>
+    internal static uint StableHash(string s)
+    {
+        unchecked
+        {
+            var h = 2166136261u;
+            for (int i = 0; i < s.Length; i++)
+            {
+                h ^= s[i];
+                h *= 16777619u;
+            }
+            return h;
+        }
+    }
+
+    /// <summary>
+    /// R422 附带修复: 词元哈希 → 桶下标。**无符号**运算 ⇒ 结果恒在 [0, dimension);
+    /// 旧实现 `(hash + seed * 31337) % dimension` 在有符号域可溢出为负 ⇒ 负下标 IndexOutOfRange。
+    /// </summary>
+    internal static int BucketOf(uint hash, int seed, int dimension)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThan(dimension, 1);
+        unchecked
+        {
+            return (int)((hash + (uint)seed * 31337u) % (uint)dimension);
+        }
+    }
+
     private List<string> Tokenize(string text)
     {
         // 简单的中文/英文分词

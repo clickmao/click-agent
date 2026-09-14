@@ -12,7 +12,9 @@ namespace agent.session;
 ///   1) 确定性: 同一输入 → 同一排序 (score desc, sessionId Ordinal asc), 无随机/无时间因子;
 ///   2) 零 LLM / 零反射 / AOT 友好: 纯标准库字符统计, 不引入任何模型或序列化;
 ///   3) 只读: 不改动存储格式, 不写盘;
-///   4) 中文友好: CJK 走字符二元组 (与项目既有 trigram/Jaccard 口径同族), ASCII 走词元。
+///   4) 中文友好: CJK 走字符二元组 (与项目既有 trigram/Jaccard 口径同族), ASCII 走词元;
+///   5) R422 打分校准: 分母带文档词元数 (余弦式 sqrt|d|) ⇒ 同一词元命中时短文更相关;
+///      除数为正 ⇒ 命中集合不变, 只改集合内分档 (R421 真机三份文档同分 0.5596 的零区分度已消除)。
 ///
 /// 诚实边界: 检索面 = 会话记忆摘要 (LongTermMemory / GoalText / KeyEntities /
 /// Constraints / Milestones)。逐轮消息当前**未落盘**, 故不在检索面内 (登记为 L3 前置)。
@@ -92,7 +94,10 @@ public sealed class SessionHistorySearch
             else if (qNorm.Length >= 4 && d.Norm.Contains(qNorm, StringComparison.Ordinal))
                 score += 2.0;  // 整串命中加成
 
-            score /= Math.Sqrt(qSet.Count);   // 长查询不因词多而虚高 (对全体同除, 不改排序)
+            // R422: 文档长度归一 (余弦式分母 sqrt|d.Tokens|)。同一词元命中时, 词元数少的文档更相关。
+            // 依据: R421 真机三份命中文档分数**全等** (0.5596) ⇒ 命中集合内零区分度 (短文/长文不分)。
+            // 除数为正 ⇒ **不改分数符号** ⇒ 命中集合逐元素不变, 只改集合内分档与排序 (成对判据见 r422 harness)。
+            score /= Math.Sqrt(qSet.Count) * Math.Sqrt(Math.Max(1, d.Tokens.Count));
             if (score <= minScore || score <= 0)
                 continue;
             hits.Add(new Hit(d.Id, Math.Round(score, 6), Snippet(d.Text, qSet), d.Entries, d.Chars));

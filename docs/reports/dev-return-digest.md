@@ -27,6 +27,7 @@
 | r413 | verdict-r413.json | **PASS** | 7 | `gate` |
 | r415 | verdict-r415.json | **PASS** | 22 | `checks` |
 | r421 | verdict-r421.json | **PASS** | 13 | `checks` |
+| r422 | verdict-r422.json | **PARTIAL** | 8 | `checks` |
 
 **正文提及但无独立小节的 D 编号**（文档缺口, 不猜测其状态）: D6(L237), D9-a(L182)
 
@@ -73,10 +74,11 @@
 
 ## 4. 轮次提交（本地；推送暂停令生效）
 
-- 未推送提交数: **72**
+- 未推送提交数: **73**
 
 | commit | 主题 |
 |---|---|
+| `37d6997` | R421 跨会话检索否定极性: 否定标记(不没未无五)紧邻词元带极性问题(¬存在≠存在) ⇒ `/recall 不存在` 3命中→0 |
 | `7d3165b` | R420 L2-待办①/L7-G1 跨会话检索接线: /recall 本地指令(四表同步, 零LLM, recall_query 通道级打点) + 接线前产物负控(recall_query=0/llm_call=1) + 单测28/28 + 表单13/13; 真机暴露否定无感假阳性(下轮候选, 未修) (未推) |
 | `05b8c94` | R419 收口: 探针多轮化仪器达成 + 真机读数未稳定分化(3/4 饱和) + 三个仪器缺陷修(坏字节崩/NS覆盖/可见性) |
 | `98339a8` | R419 §4/§5: 探针多轮化落地 + 成对控制 + 真机复数（预注册判据反向红） |
@@ -97,12 +99,11 @@
 | `19aff03` | R412: 多会话 slot 争用实测 + 会话级账本(分母不互相污染) |
 | `6a7a519` | R411: 通用教训落 skills/delivery-selfcheck (7b 字段语义核查 + 走偏表两行) |
 | `20bf988` | R411: 长驻生成端口 + 本地 K2b 台账(双条件判据) + 口径独立对账钉死 |
-| `6483721` | R411-V: 登记表可执行性机检(R2b/R2c/R2d) + 9 行死引用纠偏 + 退役能力降级收口 + R402 步2 读数补登记(加线程不升级) |
 
 ## 5. 台账
 
-- `docs/verification-registry.json`: **56** 行, updated_round = **R421**
-- `eval/capability/kpi.jsonl` 已记轮次: R402, loop-mechanism, R401, R411-V, R403-scope, R413, R414, R415, R416, R419, R420, R421
+- `docs/verification-registry.json`: **57** 行, updated_round = **R422**
+- `eval/capability/kpi.jsonl` 已记轮次: R402, loop-mechanism, R401, R411-V, R403-scope, R413, R414, R415, R416, R419, R420, R421, R422
 - 已知盲区: 状态检测器只读 `data/probe/kpi.jsonl`; 轮次台账另有 `data/probe/capability/kpi.jsonl`（孤儿）
 
 ## 6. 口径红线（审计对照）

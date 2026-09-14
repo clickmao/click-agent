@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R421",
+  "updated_round": "R422",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -870,7 +870,28 @@
         "src/agent/session/SessionHistorySearch.cs",
         "src/agent.tests/SessionHistorySearchTests.cs",
         "eval/capability/r421/run_r421.py"
-      ]
+      ],
+      "owner_round": "R421"
+    },
+    {
+      "id": "r422.recall-length-norm",
+      "level": "L4",
+      "evidence_cmd": "python3 eval/capability/r422/run_r422.py && env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR $HOME/.dotnet/dotnet test src/agent.tests/agentframework.tests.csproj --nologo -v q --filter FullyQualifiedName~SessionHistorySearchTests",
+      "evidence_path": "eval/capability/r422/verdict-r422.json",
+      "negative_control": "① 撤销修复负控臂 = **修复前二进制快照** /tmp/pub_r421_pre/agenthost（R421 产物：极性在、长度归一不在）跑**同一 harness、逐字节相同语料**：`存在` 命中 3 份文档且分数**全等 0.5596**（臂身份自证）⇒ 差异只能来自二进制；② 正控（防一刀切）: 治疗臂与负控臂命中集**逐元素相同** ⇒ 归一未把召回打死；③ 极性不变量成对: 两臂 `不存在`/`外星词根zzq不存在`/`zzq` 命中均 0 ⇒ 未破坏 R421 修复（假阴性成对报告）; ④ 语料 sha256 两臂相同且跑后未变（只读）; ⑤ 两臂全查询 llm_call==0（通道级）⇒ 不产生远端调用; ⑥ **预注册判据被证伪如实登记**: B2（命中集内分数不再并列）与 B5（数值近整数，容差 0.02）**红**——根因是语料中两份文档**词元数相同**（任何仅依赖文档长度的归一都不可分）与 F4 渲染精度失配；事后判据单列 checks_posthoc，**不与主判据混列**，判决 PARTIAL 而非 PASS。；⑦ **附带修复(agent.rag，同血缘召回面)**：确定性等价类负控 = 旧公式 `(hash + seed*31337) % dim` 在边界 hash(int.MaxValue-60000, seed=2) **确实产负下标 -15** ∧ 新式 `BucketOf` 恒在 [0,128)（成对断言，`RagWordBagEmbeddingStabilityTests`）；⑧ 概率性缺陷（~20%/进程）**不以重跑变绿为判据**，且红例经 stash 基线对照证与本轮改动无关",
+      "capability": "跨会话检索打分**长度归一**（对齐 R421 §6.4 的『命中集内零区分度』缺陷）：`SessionHistorySearch.cs:97-99` 将分数分母改为 `sqrt(|qSet|) * sqrt(|d.Tokens|)`（余弦式、零参数、无语料均值、不改确定性；除数为正 ⇒ 分数符号不变 ⇒ **命中集合可证不变**）。真机（AOT 成对、3 文档冻结语料 + 4 查询）: T `/tmp/pub_r422/agenthost`（IL/trim 警告 0）`存在` 三份分数 `[0.2798, 0.0590, 0.0590]` vs N 修复前 `[0.5596 ×3]`；**数值对账** `|d|_est=[4.0, 89.96, 89.96]` 与 `S/√|d|` 逐位吻合（0.5596/√4=0.2798、0.5596/√90=0.0590，F4 渲染相对容差 2%）。**claim_scope（按证据收窄）**: 「分数与文档词元数反比、召回集合不变；**等长文档仍并列**」——**不**宣称『零区分度已消除』（全称判据 B2 被证伪）；等长并列的消除需 tf/语义信号（登记后续候选）。 附带修复（独立于打分口径）：词袋 embedding 哈希改为确定性 FNV-1a + 无符号取模 ⇒ 消除 ~20%/进程的 `IndexOutOfRangeException`（溢出窗口）与跨进程向量不可复现（进程随机化 GetHashCode）；契约由 4 例确定性断言钉住（RagWordBagEmbeddingStabilityTests 4/4）。",
+      "covers": [
+        "src/agent/session/SessionHistorySearch.cs",
+        "src/agent.tests/SessionHistorySearchTests.cs",
+        "eval/capability/r422/run_r422.py",
+        "eval/capability/r422/verdict-r422.json",
+        "docs/plans/v0.43.0-r422-scoring-normalization.md",
+        "src/agent.rag/RAGConfig.cs",
+        "src/agent.rag/agent.rag.csproj",
+        "src/agent.tests/RagWordBagEmbeddingStabilityTests.cs",
+        "eval/capability/r422/rag_flake_probe.sh"
+      ],
+      "owner_round": "R422"
     }
   ],
   "aot_check_policy": "release_tag_only",

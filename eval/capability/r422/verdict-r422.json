@@ -1,0 +1,346 @@
+{
+  "round": "R422",
+  "harness": "eval/capability/r422/run_r422.py",
+  "fixture_files": [
+    "cli-6bf6dc8d_memory.json",
+    "probe-0914125816-p004_memory.json",
+    "probe-0914125831-p005_memory.json"
+  ],
+  "fixture_sha256": {
+    "cli-6bf6dc8d_memory.json": "282bf6a66e0cf08549f9c74aa67079dcd9f8bce3475ea82deb1ae77f065d0784",
+    "probe-0914125816-p004_memory.json": "b9d47da7a95494da2d6134882b7d767eeb0857d3d338e03331531050ead931ac",
+    "probe-0914125831-p005_memory.json": "c048bf912fa09fc477212184def68f25fc556f7a52e5a90f8d9d45fd0c034974"
+  },
+  "fixture_sha256_matches_r421": true,
+  "pos_query": "存在",
+  "pos_hits": [
+    "cli-6bf6dc8d",
+    "probe-0914125816-p004",
+    "probe-0914125831-p005"
+  ],
+  "pos_scores_treated": [
+    0.2798,
+    0.059,
+    0.059
+  ],
+  "pos_scores_prefix": [
+    0.5596,
+    0.5596,
+    0.5596
+  ],
+  "doc_token_estimate": [
+    4.0,
+    89.9604,
+    89.9604
+  ],
+  "raw_score_from_negctl": 0.5596,
+  "arms": {
+    "T_treated": {
+      "binary": "/tmp/pub_r422/agenthost",
+      "binary_sha256": "55e1ed1a5d4569af0f07f658d2f5cc612940053c5c85cadc0ba8799f75617a2f",
+      "corpus_digest": {
+        "cli-6bf6dc8d_memory.json": "282bf6a66e0cf08549f9c74aa67079dcd9f8bce3475ea82deb1ae77f065d0784",
+        "probe-0914125816-p004_memory.json": "b9d47da7a95494da2d6134882b7d767eeb0857d3d338e03331531050ead931ac",
+        "probe-0914125831-p005_memory.json": "c048bf912fa09fc477212184def68f25fc556f7a52e5a90f8d9d45fd0c034974"
+      },
+      "corpus_untouched": true,
+      "telemetry_points_per_query": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "readings": {
+        "存在": {
+          "rc": 0,
+          "recall_points": [
+            {
+              "ts": "2026-09-14T08:35:00.9790497Z",
+              "seq": 3,
+              "session": "host",
+              "point": "recall_query",
+              "module": "IndustrialAgentV2",
+              "kv": {
+                "query_len": 2,
+                "topk": 5,
+                "hits": 3
+              }
+            }
+          ],
+          "llm_call_points": 0,
+          "render_header": "🔎 跨会话检索 \"存在\" (top-5, 命中 3):",
+          "hit_ids": [
+            "cli-6bf6dc8d",
+            "probe-0914125816-p004",
+            "probe-0914125831-p005"
+          ],
+          "ranked": [
+            [
+              "cli-6bf6dc8d",
+              0.2798
+            ],
+            [
+              "probe-0914125816-p004",
+              0.059
+            ],
+            [
+              "probe-0914125831-p005",
+              0.059
+            ]
+          ],
+          "stdout_tail": "拓扑序, 输出字典序最小的拓扑序 (n 个节点编号, 空格分隔为一行); 若存在环…\n3. probe-0914125831-p005  score=0.0590  entries=5\n   ……一行两个整数 n m (1<=n<=64); 随后 m 行, 每行两个整数 u v (0<=u,v<n), 表示有向边 u->v。输出: 若图中存在拓扑序, 输出字典序最小的拓扑序 (n 个节点编号, 空格分隔为一行); 若存在环…\n\n  (2ms, intent=general)\n"
+        },
+        "不存在": {
+          "rc": 0,
+          "recall_points": [
+            {
+              "ts": "2026-09-14T08:35:00.9982897Z",
+              "seq": 3,
+              "session": "host",
+              "point": "recall_query",
+              "module": "IndustrialAgentV2",
+              "kv": {
+                "query_len": 3,
+                "topk": 5,
+                "hits": 0
+              }
+            }
+          ],
+          "llm_call_points": 0,
+          "render_header": "🔎 跨会话检索 \"不存在\" (top-5, 命中 0):",
+          "hit_ids": [],
+          "ranked": [],
+          "stdout_tail": "───────────\n  [01] 意图分析: general\n  [02] 子任务: /recall 不存在\n  [03] 管线执行 (上下文装配 → LLM → 后处理)…\n\n── 回复 ────────────────────────────────────────────\n🔎 跨会话检索 \"不存在\" (top-5, 命中 0):\n(无命中 — 检索面 = 已落盘会话记忆摘要: 目标/长期记忆/关键实体/约束/里程碑)\n  (2ms, intent=general)\n"
+        },
+        "外星词根zzq不存在": {
+          "rc": 0,
+          "recall_points": [
+            {
+              "ts": "2026-09-14T08:35:01.0164239Z",
+              "seq": 3,
+              "session": "host",
+              "point": "recall_query",
+              "module": "IndustrialAgentV2",
+              "kv": {
+                "query_len": 10,
+                "topk": 5,
+                "hits": 0
+              }
+            }
+          ],
+          "llm_call_points": 0,
+          "render_header": "🔎 跨会话检索 \"外星词根zzq不存在\" (top-5, 命中 0):",
+          "hit_ids": [],
+          "ranked": [],
+          "stdout_tail": "[01] 意图分析: general\n  [02] 子任务: /recall 外星词根zzq不存在\n  [03] 管线执行 (上下文装配 → LLM → 后处理)…\n\n── 回复 ────────────────────────────────────────────\n🔎 跨会话检索 \"外星词根zzq不存在\" (top-5, 命中 0):\n(无命中 — 检索面 = 已落盘会话记忆摘要: 目标/长期记忆/关键实体/约束/里程碑)\n  (2ms, intent=general)\n"
+        },
+        "zzq": {
+          "rc": 0,
+          "recall_points": [
+            {
+              "ts": "2026-09-14T08:35:01.0360493Z",
+              "seq": 3,
+              "session": "host",
+              "point": "recall_query",
+              "module": "IndustrialAgentV2",
+              "kv": {
+                "query_len": 3,
+                "topk": 5,
+                "hits": 0
+              }
+            }
+          ],
+          "llm_call_points": 0,
+          "render_header": "🔎 跨会话检索 \"zzq\" (top-5, 命中 0):",
+          "hit_ids": [],
+          "ranked": [],
+          "stdout_tail": "───────────\n  [01] 意图分析: general\n  [02] 子任务: /recall zzq\n  [03] 管线执行 (上下文装配 → LLM → 后处理)…\n\n── 回复 ────────────────────────────────────────────\n🔎 跨会话检索 \"zzq\" (top-5, 命中 0):\n(无命中 — 检索面 = 已落盘会话记忆摘要: 目标/长期记忆/关键实体/约束/里程碑)\n  (2ms, intent=general)\n"
+        }
+      }
+    },
+    "N_pre_fix": {
+      "binary": "/tmp/pub_r421_pre/agenthost",
+      "binary_sha256": "95cb0683f1207b5e74aff004d3e66aa1596eeed9427d376b3f787e008d71ed63",
+      "corpus_digest": {
+        "cli-6bf6dc8d_memory.json": "282bf6a66e0cf08549f9c74aa67079dcd9f8bce3475ea82deb1ae77f065d0784",
+        "probe-0914125816-p004_memory.json": "b9d47da7a95494da2d6134882b7d767eeb0857d3d338e03331531050ead931ac",
+        "probe-0914125831-p005_memory.json": "c048bf912fa09fc477212184def68f25fc556f7a52e5a90f8d9d45fd0c034974"
+      },
+      "corpus_untouched": true,
+      "telemetry_points_per_query": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "readings": {
+        "存在": {
+          "rc": 0,
+          "recall_points": [
+            {
+              "ts": "2026-09-14T08:35:01.0695927Z",
+              "seq": 3,
+              "session": "host",
+              "point": "recall_query",
+              "module": "IndustrialAgentV2",
+              "kv": {
+                "query_len": 2,
+                "topk": 5,
+                "hits": 3
+              }
+            }
+          ],
+          "llm_call_points": 0,
+          "render_header": "🔎 跨会话检索 \"存在\" (top-5, 命中 3):",
+          "hit_ids": [
+            "cli-6bf6dc8d",
+            "probe-0914125816-p004",
+            "probe-0914125831-p005"
+          ],
+          "ranked": [
+            [
+              "cli-6bf6dc8d",
+              0.5596
+            ],
+            [
+              "probe-0914125816-p004",
+              0.5596
+            ],
+            [
+              "probe-0914125831-p005",
+              0.5596
+            ]
+          ],
+          "stdout_tail": "拓扑序, 输出字典序最小的拓扑序 (n 个节点编号, 空格分隔为一行); 若存在环…\n3. probe-0914125831-p005  score=0.5596  entries=5\n   ……一行两个整数 n m (1<=n<=64); 随后 m 行, 每行两个整数 u v (0<=u,v<n), 表示有向边 u->v。输出: 若图中存在拓扑序, 输出字典序最小的拓扑序 (n 个节点编号, 空格分隔为一行); 若存在环…\n\n  (2ms, intent=general)\n"
+        },
+        "不存在": {
+          "rc": 0,
+          "recall_points": [
+            {
+              "ts": "2026-09-14T08:35:01.0884238Z",
+              "seq": 3,
+              "session": "host",
+              "point": "recall_query",
+              "module": "IndustrialAgentV2",
+              "kv": {
+                "query_len": 3,
+                "topk": 5,
+                "hits": 0
+              }
+            }
+          ],
+          "llm_call_points": 0,
+          "render_header": "🔎 跨会话检索 \"不存在\" (top-5, 命中 0):",
+          "hit_ids": [],
+          "ranked": [],
+          "stdout_tail": "───────────\n  [01] 意图分析: general\n  [02] 子任务: /recall 不存在\n  [03] 管线执行 (上下文装配 → LLM → 后处理)…\n\n── 回复 ────────────────────────────────────────────\n🔎 跨会话检索 \"不存在\" (top-5, 命中 0):\n(无命中 — 检索面 = 已落盘会话记忆摘要: 目标/长期记忆/关键实体/约束/里程碑)\n  (2ms, intent=general)\n"
+        },
+        "外星词根zzq不存在": {
+          "rc": 0,
+          "recall_points": [
+            {
+              "ts": "2026-09-14T08:35:01.1073634Z",
+              "seq": 3,
+              "session": "host",
+              "point": "recall_query",
+              "module": "IndustrialAgentV2",
+              "kv": {
+                "query_len": 10,
+                "topk": 5,
+                "hits": 0
+              }
+            }
+          ],
+          "llm_call_points": 0,
+          "render_header": "🔎 跨会话检索 \"外星词根zzq不存在\" (top-5, 命中 0):",
+          "hit_ids": [],
+          "ranked": [],
+          "stdout_tail": "[01] 意图分析: general\n  [02] 子任务: /recall 外星词根zzq不存在\n  [03] 管线执行 (上下文装配 → LLM → 后处理)…\n\n── 回复 ────────────────────────────────────────────\n🔎 跨会话检索 \"外星词根zzq不存在\" (top-5, 命中 0):\n(无命中 — 检索面 = 已落盘会话记忆摘要: 目标/长期记忆/关键实体/约束/里程碑)\n  (2ms, intent=general)\n"
+        },
+        "zzq": {
+          "rc": 0,
+          "recall_points": [
+            {
+              "ts": "2026-09-14T08:35:01.1254242Z",
+              "seq": 3,
+              "session": "host",
+              "point": "recall_query",
+              "module": "IndustrialAgentV2",
+              "kv": {
+                "query_len": 3,
+                "topk": 5,
+                "hits": 0
+              }
+            }
+          ],
+          "llm_call_points": 0,
+          "render_header": "🔎 跨会话检索 \"zzq\" (top-5, 命中 0):",
+          "hit_ids": [],
+          "ranked": [],
+          "stdout_tail": "───────────\n  [01] 意图分析: general\n  [02] 子任务: /recall zzq\n  [03] 管线执行 (上下文装配 → LLM → 后处理)…\n\n── 回复 ────────────────────────────────────────────\n🔎 跨会话检索 \"zzq\" (top-5, 命中 0):\n(无命中 — 检索面 = 已落盘会话记忆摘要: 目标/长期记忆/关键实体/约束/里程碑)\n  (2ms, intent=general)\n"
+        }
+      }
+    }
+  },
+  "checks": [
+    {
+      "id": "B1",
+      "desc": "两臂四查询命中集**逐元素相同** (长度归一不改召回: 除数为正不改符号)",
+      "pass": true
+    },
+    {
+      "id": "B2",
+      "desc": "【预注册】治疗臂: 同词元命中集内分数**不再并列** (R421 的三份全等已消除) —— 已被证伪, 见 B2b/verdict_note",
+      "pass": false
+    },
+    {
+      "id": "B3",
+      "desc": "负控臂(修复前二进制): 同词元命中集分数**全等** (臂身份自证: 确为未归一行为)",
+      "pass": true
+    },
+    {
+      "id": "B4",
+      "desc": "极性不变量未退化: 两臂『不存在』/『外星词根zzq不存在』/『zzq』命中均 0",
+      "pass": true
+    },
+    {
+      "id": "B5",
+      "desc": "【预注册】数值对账: |d|_est 近整数 (容差 0.02) —— 已被证伪: 分数按 F4 渲染, 容差定得过紧",
+      "pass": false
+    },
+    {
+      "id": "B6",
+      "desc": "渲染可机读: 命中行数 == 头部声明命中数 (两臂, R421 仪器缺陷回归)",
+      "pass": true
+    },
+    {
+      "id": "B7",
+      "desc": "本地指令零 LLM: 两臂全查询 llm_call == 0 且 recall_query 打点恰 1/查询",
+      "pass": true
+    },
+    {
+      "id": "B8",
+      "desc": "两臂语料逐字节相同且跑后未被写 (只读; 语料非变量)",
+      "pass": true
+    }
+  ],
+  "checks_posthoc": [
+    {
+      "id": "B2b",
+      "desc": "【事后】分档真实存在: distinct ≥ 2 ∧ 最短文档分数最高; 仍并列者 |d|_est **相等** (等长文档, 数学应然)",
+      "pass": true
+    },
+    {
+      "id": "B5b",
+      "desc": "【事后】数值对账 (F4 渲染 ⇒ 相对容差 2%): |d|_est == [4, 90, 90], 且 raw_S == 治疗臂分数 × sqrt|d|",
+      "pass": true
+    }
+  ],
+  "pre_registered_failures": [
+    "B2",
+    "B5"
+  ],
+  "claim_scope": "长度归一使同词元命中集内的分数与文档词元数成反比 (较短文档得分更高); 除数为正 ⇒ 命中集合逐元素不变; 对**等长**文档数学上不产生区分度 (残差并列, 登记的后续候选: tf/语义信号)",
+  "verdict_note": "预注册判据 B2/B5 被证伪: 三份命中文档中有两份词元数相同 (|d|_est 均 ≈90) ⇒ 任何仅依赖文档长度的归一在数学上都不可能为它们分档; 事后判据 B2b/B5b 确认机理成立 (分档真实存在, 比值 == sqrt|d|, 召回集合不变) ⇒ 本轮宣称按 claim_scope **收窄** 登记, 不作「零区分度已消除」的全称宣称。",
+  "verdict": "PARTIAL"
+}

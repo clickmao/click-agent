@@ -253,6 +253,16 @@
       "DocRef": "docs/plans/v0.42.0-r421-polarity.md",
       "Parameters": [],
       "Confidence": 1.0
+    },
+    {
+      "Id": "dev-recall-length-norm",
+      "Text": "R422 跨会话检索打分长度归一: score 分母加 sqrt(|d.Tokens|) (余弦式/零参数, 除数为正 ⇒ 命中集合可证不变); 真机成对 AOT 两臂同语料: 治疗 `存在` 三份分数 [0.2798,0.0590,0.0590] vs 修复前全等 [0.5596×3], 数值对账 |d|_est=[4.0,89.96,89.96]; **判决 PARTIAL** — 预注册 B2/B5 被证伪(命中集内两份文档词元数相同 ⇒ 仅靠长度的归一数学上不可分), 宣称收窄为「分数与 |d| 反比 + 召回不变; 等长仍并列」 (L4)",
+      "Intent": "code_generation",
+      "Level": 1,
+      "ParallelGroup": 1,
+      "DocRef": "docs/plans/v0.43.0-r422-scoring-normalization.md",
+      "Parameters": [],
+      "Confidence": 1.0
     }
   ]
 }
