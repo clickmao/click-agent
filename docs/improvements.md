@@ -1550,3 +1550,12 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **下轮候选**: ① J 判官 prompt 可解析性（本地 1/7 的根因: 查 raw/error，或改判定形式/预算）——「不必要的 API 请求」最大残余；② 认可族白名单扩容（`好，按这个来。`/`照你说的办。` 等），须以**成对判据**（假阴性=0 ∧ 假阳性=0）为准；③ 题集扩族（假信息断言/多轮纠错/跨域）以检验外推；④ R433 遗留 `code_source`/产物通道写入产品侧遥测契约；⑤ 门禁/登记表复用（本轮已复位对侧 R431 行 `evidence_path`/`covers`）。
 - **计划/证据/登记**: `docs/plans/v0.55.0-r434-falseinfo-discrimination-grid.md`；`eval/rover/r434/README-evidence.md`（L3）；`docs/verification-registry.json` → `r434.turn-gate-double-condition`；`eval/capability/kpi.jsonl` 末行 R434。
 
+
+### R435（2026-09-14）关系判官（J 通道）本地化：真机 1/7 → 5/6
+
+- **用户令（逐字）**: 「利用r1对真假信息判别…让用户一轮任务总数tokens使用量显著下降30%以上(主要是不必要的llm api请求少了)」⇒ 本轮攻 R434b 负结论「J 本地 1/7」= 不必要远端调用最大残差。
+- **推进台账（用户令: 所有候选无疑问则全推进）**: ① prompt 形状（承重）**达成**: 本地可解析 1/6 → 5/6（真机 6 例，非空 prev），远端判官调用 6 → 1；② 失败原因遥测 `local_state` **达成**（R434 归因缺口闭环）；③ 空 `previousReply` ⇒ 结构性 Neutral **达成**（确定性规则，0 模型调用，消掉 turn1 的必失败例）；④ 解析层加固（64 字尾窗 + 判定词表 + 负控）**达成但非承重**（四臂 old≡new）；⑤ 预算 512→1024 **负结论（已回退）**（A1≡A2、A5≡A4 逐例相同，turn5/turn9 在 1024 仍耗尽 67.8s）；⑥ 端到端 token KPI（≥30%）**未测** ⇒ 下轮承重。
+- **方法学要点**: ① 先取证: 产品遥测 8 条 + 忠实探针 A0 复现 1/7（**耗时逐例对齐** 18.09↔20.407s…9.76↔9.894s，pred=149=tokens=149）⇒ 器具可信后才改码；② 单变量六臂矩阵（prompt 形状 × 预算 × 解析层）；③ 反教考同一: v2 实例**不用 grid 原句**；④ prompt 单一构造点 `BuildJudgePrompt`（本地/远端同一输入面，结构上不可能两套提示）。
+- **自纠（必须披露）**: 探针 think 标记手打混入 **U+200B** ⇒ `close` 恒 False ⇒ 分类器读思考链 ⇒ 假阳性 8/9（与产品 1/7 冲突暴露）；改由**源码程序化派生 + 长度/码位断言**。另: 同会话覆盖未 commit 的计划案 ⇒ 原 pre-registered 阈值不可恢复，相关阈值改标 `checks_posthoc`。
+- **下轮候选**: ① **端到端 BRJ 网格重跑**（新 AOT 二进制）测 ≥30% token 判据（承重）；② turn9 类「思考链无界」（停发词/思考长度约束）；③ turn7 类 A/N 边界（同族实例）；④ 门+判官**合并单次本地调用**（省一次 prefill，性能向）。
+- **计划/证据/登记**: `docs/plans/v0.56.0-r435-relation-judge-localization.md`；`eval/rover/r435/`（probe_j1..j4 + reclass_j2 + probe-j{2,3,4}-classified.json）；`src/agent.tests/RelationJudgeParseTests.cs`（18/18）；`eval/capability/kpi.jsonl` → R435。

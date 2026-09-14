@@ -1702,6 +1702,9 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                                 agent.config.AgentTelemetry.Emit("correction_judge", "IndustrialAgentV2",
                                     ("source", judgeSource), ("kind", verdict.Kind.ToString()), ("signal", verdict.Signal),
                                     ("letter", judgeLetter), ("prompt_len", judgePromptLen), ("ms", judgeMs),
+                                    // R435: 本地判官状态/失败原因入遥测 (R434 缺口: fallback 时 letter 被远端文本覆盖,
+                                    // 归因不可见)。local_state 取值: local | remote_fallback:unparsed:<reason> | ...
+                                    ("local_state", _modelRouter?.RelationJudge.LastSource ?? ""),
                                     ("tokens", verdict.TokensUsed),
                                     ("msg_head", question.Length > 18 ? question.Substring(0, 18) : question),
                                     ("session", memSession.Id), ("domain", domainKey));

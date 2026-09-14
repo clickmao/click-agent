@@ -278,6 +278,11 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             return null;
         }
         var cfg = _catalog.LocalChannel;
+        // R435: 预算**保持 512** —— 实测证伪了「512 不够」的假设 (且不是承重变量):
+        //   旧 prompt: 512 → 1/7 (turn5/8 思考链未闭合耗尽), 1024 → 2/7, 且 turn5 在 1024 仍耗尽
+        //   ⇒ 加预算只换来 1 例、还让最坏延迟翻倍 (turn1: 32s → 86s)。
+        //   新 prompt: 512 与 1024 **逐例完全同解** (6/7, 同字母) ⇒ 一旦结论区形状对了, 512 足够。
+        //   证据: eval/rover/r435/probe-j2-classified.json (A0/A2/A1/A3)。
         var maxTokens = Math.Max(cfg.MaxTokens, 512);
 
         RelationJudge.RecordAttempt();
@@ -309,9 +314,10 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                 RelationJudge.RecordAccountingViolation("tokens_evaluated != prompt_n + cache_n");
                 return null;
             }
-            if (!RelationLetterJudge.TryNormalize(outcome.Content, out var letter))
+            if (!RelationLetterJudge.TryNormalize(outcome.Content, out var letter, out var parseReason))
             {
-                RelationJudge.RecordFallback("unparsed");
+                // R435: 失败原因入计数 (可机检归因; R434 只能看到「降级了」, 看不到为什么)
+                RelationJudge.RecordFallback("unparsed:" + parseReason);
                 return null;
             }
 

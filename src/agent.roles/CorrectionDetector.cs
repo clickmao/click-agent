@@ -86,6 +86,29 @@ public static class CorrectionDetector
         lower.Contains("that") || lower.Contains("you") || lower.Contains("it ");
 
     /// <summary>
+    /// R435: J 判官 prompt **单一构造点**（本地与远端由同一函数产出 ⇒ 结构上不可能两套提示；
+    /// R365/R426 约束）。原尾行是裸片段「只输出一个字母。」⇒ 真机实测（R435 raw 取证, eval/rover/r435/probe-j1-raw.json）
+    /// r1 在 7 条实发 prompt 里 **3 条把该片段逐字回声**成「答案」（`只输出一个字母。`），
+    /// 结论区不含任何字母 ⇒ 解析失败 ⇒ 每次多打一次**纯多余**的远端请求。
+    /// 故改用**前置门已验证的形状**（TurnGateJudge.BuildPrompt）：示例 + 「思考结束后另起一行只写一个字母」+ 以「答案:」收尾。
+    /// 语义面不变（仍是 C/A/N 同一分类），无法确定时取 **N=Neutral**（不罚不赏, 不误赏误罚）。
+    /// </summary>
+    public static string BuildJudgePrompt(string? userMessage, string? previousReply)
+    {
+        var user = Truncate(userMessage ?? "", 120);
+        var prev = Truncate(previousReply ?? "", 160);
+        return
+            "判定用户消息相对上一轮回答: 纠正否定上一轮=C, 认可采纳=A, 新话题无关=N。\n" +
+            "- C = 指出上一轮错了/不对/不准确, 要求改 (如: 好像不太对。)。\n" +
+            "- A = 只是认可/确认/致谢, 没有提出任何新要求 (如: 嗯，知道了。 / 好，就这样。)。\n" +
+            "- N = 提出新要求, 或要求重复/细化/换说法, 既没认可也没纠正 (如: 详细说说。 / 换一种说法。)。\n" +
+            "先思考, 思考结束后必须另起一行只写一个字母 (C 或 A 或 N), 不要写其他内容。\n" +
+            "无法确定时也必须写 N。\n" +
+            $"上一轮: {prev}\n用户: {user}\n" +
+            "答案:\n";
+    }
+
+    /// <summary>
     /// L2 微 prompt 判定 (仅 L1 模糊时; ~120 tokens)。llmCaller: (prompt, maxTokens) → (content, tokensUsed)。
     /// LLM 不可用/超时 → NEUTRAL (不罚不赏, 诚实语义)。
     /// </summary>
@@ -98,12 +121,16 @@ public static class CorrectionDetector
         var rule = RuleJudge(userMessage, previousReply);
         if (rule is not null) return rule;
 
-        // 微 prompt: 双方各截断 (用户 120 字 / 上一轮 160 字), 指令+输出约束 ≤ 60 tok
-        var user = Truncate(userMessage ?? "", 120);
-        var prev = Truncate(previousReply ?? "", 160);
-        var prompt =
-            "判定用户消息相对上一轮回答: 纠正否定上一轮=C, 认可采纳=A, 新话题无关=N。\n" +
-            $"上一轮: {prev}\n用户: {user}\n只输出一个字母。";
+        // R435: 关系判官定义 = 「用户消息 **相对上一轮回答**」的判定 ⇒ 无上一轮时 C/A/N 无定义。
+        // 结构性 Neutral (确定性, 不调任何模型): 真机取证 turn1 (prev 空) 本地模型把任务理解成
+        // 「给上一轮挑一个字母」⇒ 结论区输出 `\n\nbuild`, 必失败同时白烧一次远端调用。
+        // 证据: eval/rover/r435/probe-j2-classified.json → A0/turn1 (tail='\n\nbuild'), 7/7 臂全一致。
+        if (string.IsNullOrWhiteSpace(previousReply))
+            return new CorrectionVerdict { Kind = CorrectionKind.Neutral, Confidence = 0.9, Signal = "no_prev_reply", Source = "rule", TokensUsed = 0 };
+
+        // R435: prompt 由单一构造点产出 (本地/远端同面); 双方各截断 (用户 120 字 / 上一轮 160 字)
+        var prompt = BuildJudgePrompt(userMessage, previousReply);
+
         string content;
         int tokens;
         try
