@@ -672,6 +672,10 @@ def run(tasks_list, solver: str, timeout: float, solve_timeout: float = 300.0,
         sid = ("probe-%s-%s-%s" % (time.strftime("%m%d%H%M%S"), ns.lstrip("-"), t["tid"]))
         reply, is_oracle, smeta = solve(t, solver, solve_timeout, sid=sid, turn=1)
         smeta["reply_path"] = _archive(t, reply, 1)
+        # R419 修正: reply_chars/head 必须**集中**回填 —— 只在某个 solver 分支里设 ⇒
+        #   真机臂恒 0 (归档有 11.9 KB 而摘要写 0 = 答案不可见, 比缺字段更坏)。
+        smeta["reply_chars"] = len(reply or "")
+        smeta["reply_head"] = (reply or "")[:160].replace("\n", " ")
         reply_paths = [smeta["reply_path"]]
         sid = smeta.get("session")
         if not (reply or "").strip():
@@ -698,11 +702,17 @@ def run(tasks_list, solver: str, timeout: float, solve_timeout: float = 300.0,
             rep2, _o2, smeta2 = solve(t, solver, solve_timeout,
                                       prompt=correction_prompt(t), sid=sid, turn=2)
             smeta2["reply_path"] = _archive(t, rep2, 2)
+            smeta2["reply_chars"] = len(rep2 or "")
+            smeta2["reply_head"] = (rep2 or "")[:160].replace("\n", " ")
             reply_paths.append(smeta2["reply_path"])
             if not (rep2 or "").strip():
                 smeta2["reply_head"] = ""
             r2 = grade.grade(t, rep2, timeout)
             r_final, rounds, smeta_final = r2, 2, smeta2
+            # R419 修正: 首轮行必须**原样打印** (mode/passed) —— 只打最终行 ⇒
+            #   「首轮未过、被修正轮修好」在日志里不可见 (可审计性缺口)。
+            print("    t1 %-6s %-24s %d/%d (首轮未过 ⇒ 发修正轮)" % (t["tid"], r1["mode"],
+                                                              r1["passed"], r1["total"]), flush=True)
             print("    t2 %-6s %-24s fix=%s" % (t["tid"], r2["mode"],
                                                  "YES" if r2["mode"] == "ok" else "no"), flush=True)
         for k, v in r_final["taxonomy"].items():
@@ -918,6 +928,13 @@ def selftest() -> int:
         rd["first_try_rate_whole"] == 0.0 and rd["fix_rate"] == 1.0 and rd["final_whole_ok"] == len(prog),
         "first=%s fix=%s final=%d tax=%s" % (rd["first_try_rate_whole"], rd["fix_rate"],
                                              rd["final_whole_ok"], rd["taxonomy"]))
+    chk("多轮: 两轮各自回复可见 (reply_chars>0) 且首轮未过原样记录 ⇒ 修复可审计",
+        rd["per_task"][0]["t1"]["mode"] != "ok" and (rd["per_task"][0]["t2"] or {}).get("mode") == "ok"
+        and rd["per_task"][0]["reply_chars"] > 0 and rd["per_task"][0]["t1"]["reply_chars"] > 0,
+        "t1=%s t2=%s chars=%s/%s" % (rd["per_task"][0]["t1"]["mode"],
+                                     (rd["per_task"][0]["t2"] or {}).get("mode"),
+                                     rd["per_task"][0]["t1"]["reply_chars"],
+                                     rd["per_task"][0]["reply_chars"]))
 
     rn = run(prog, "mutation:nofix", 5.0, turns=2)
     chk("多轮负控: 两轮同浅解 ⇒ 修复率=0.0 (不能把「没修」读成「修了」)",

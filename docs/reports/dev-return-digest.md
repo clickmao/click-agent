@@ -37,10 +37,22 @@
 | 文件 | 解法 | 题集 | 题数 | 整题全对 | rate(用例级) | 失败模式 | 判定 | tokens/题 | tokens/满分题 | turn≤ | 墙钟均(ms) | 过程 n/a |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `probe-agent-seed20260913.json` | agent | both seed=20260913 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** | n/a | n/a | - | n/a | 6 |
+| `probe-agent-seed419-r419bagent-b09141437-t2.json` | agent | program seed=419 | 3 | 3/3=1.0000 | 1.0000 | {"ok": 3} | **饱和** | 11911.3 | 11911.3 | 1 | 144960 | 0 |
+| `probe-agent-seed419-r419bagent-b4095015-t2.json` | agent | program seed=419 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** | 9121.5 | 9121.5 | 1 | 101595 | 0 |
+| `probe-agent-seed419-r419dagent-b3092030-t2.json` | agent | program seed=419 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** | 10495.0 | 10495.0 | 1 | 92956 | 0 |
+| `probe-agent-seed420-r419cagent-b2091515-t2.json` | agent | program seed=420 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** | 9217.7 | 9217.7 | 1 | 93357 | 0 |
 | `probe-m6-agent.json` | agent | both seed=0 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** | n/a | n/a | - | n/a | 6 |
 | `probe-m6-hardcode.json` | mutation:hardcode | program seed=20260913 | 3 | 0/3=0.0000 | 0.1818 | {"partial": 3} | 非饱和 | n/a | n/a | - | n/a | 3 |
 | `probe-m6-oracle.json` | oracle | both seed=20260913 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** | n/a | n/a | - | n/a | 6 |
+| `probe-mutation:delayfix-seed419-r419bctlpos-b09141437-t2.json` | mutation:delayfix | program seed=419 | 3 | 3/3=1.0000 | 1.0000 | {"ok": 3} | **饱和** | n/a | n/a | - | n/a | 3 |
+| `probe-mutation:delayfix-seed419-r419bctlpos-b4095015-t2.json` | mutation:delayfix | program seed=419 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** | n/a | n/a | - | n/a | 6 |
+| `probe-mutation:delayfix-seed419-r419dctlpos-b3092030-t2.json` | mutation:delayfix | program seed=419 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** | n/a | n/a | - | n/a | 6 |
+| `probe-mutation:delayfix-seed420-r419cctlpos-b2091515-t2.json` | mutation:delayfix | program seed=420 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** | n/a | n/a | - | n/a | 6 |
 | `probe-mutation:hardcode-seed20260913.json` | mutation:hardcode | program seed=20260913 | 3 | 0/3=0.0000 | 0.0625 | {"partial": 2, "wrong_output": 1} | 非饱和 | n/a | n/a | - | n/a | 3 |
+| `probe-mutation:nofix-seed419-r419bctlneg-b09141437-t2.json` | mutation:nofix | program seed=419 | 3 | 0/3=0.0000 | 0.3889 | {"wrong_output": 1, "partial": 2} | 非饱和 | n/a | n/a | - | n/a | 3 |
+| `probe-mutation:nofix-seed419-r419bctlneg-b4095015-t2.json` | mutation:nofix | program seed=419 | 6 | 0/6=0.0000 | 0.5140 | {"wrong_output": 1, "partial": 5} | 非饱和 | n/a | n/a | - | n/a | 6 |
+| `probe-mutation:nofix-seed419-r419dctlneg-b3092030-t2.json` | mutation:nofix | program seed=419 | 6 | 0/6=0.0000 | 0.5140 | {"wrong_output": 1, "partial": 5} | 非饱和 | n/a | n/a | - | n/a | 6 |
+| `probe-mutation:nofix-seed420-r419cctlneg-b2091515-t2.json` | mutation:nofix | program seed=420 | 6 | 0/6=0.0000 | 0.2857 | {"partial": 3, "wrong_output": 3} | 非饱和 | n/a | n/a | - | n/a | 6 |
 | `probe-oracle-seed20260913.json` | oracle | both seed=20260913 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** | n/a | n/a | - | n/a | 6 |
 | `probe-oracle-seed20260915.json` | oracle | program seed=20260915 | 3 | 3/3=1.0000 | 1.0000 | {"ok": 3} | **饱和** | n/a | n/a | - | n/a | 3 |
 | `probe-r417-agent-seed20260913.json` | agent | both seed=20260913 | 6 | 6/6=1.0000 | 1.0000 | {"ok": 6} | **饱和** | 6413.8 | 6413.8 | 1 | 3072 | 0 |
@@ -60,10 +72,14 @@
 
 ## 4. 轮次提交（本地；推送暂停令生效）
 
-- 未推送提交数: **66**
+- 未推送提交数: **70**
 
 | commit | 主题 |
 |---|---|
+| `98339a8` | R419 §4/§5: 探针多轮化落地 + 成对控制 + 真机复数（预注册判据反向红） |
+| `77a49bc` | R419: 会话续跑决定性微实验 PASS(同 sid 跨进程 4271 命中) + 口径坑记录(turn N 是进程内轮次, 轮数须取归档文件数) (未推) |
+| `695d6ba` | R419 起步存档: 探针多轮化立案(轮数/首次通过率从恒等变可分化) + 决定性微实验待跑 (未推) |
+| `1f44c8b` | R418 探针「过程/成本」维度 KPI: 归属铁律 + 真机成本读数 + 成对负控 |
 | `737a45d` | R418 起步存档: 探针过程/成本维度KPI 侦察事实+设计+待办 (上下文压缩点恢复指针, 未推) |
 | `0488017` | R417 探针反饱和: 3 个高判别力族(topo_min/vm_run/json_mini)+tight_gen 强制规格紧用例+族级缺陷注入负控(正负控成对); 同题复跑确认饱和; 真机仍饱和如实登记; digest 增探针分数段(含饱和标记) |
 | `f36f897` | R416 收工记录: improvements 轮节 + backlog 看板 D2 证据指针 (形式校验 13/13 PASS, 未推) |
@@ -80,15 +96,11 @@
 | `20bf988` | R411: 长驻生成端口 + 本地 K2b 台账(双条件判据) + 口径独立对账钉死 |
 | `6483721` | R411-V: 登记表可执行性机检(R2b/R2c/R2d) + 9 行死引用纠偏 + 退役能力降级收口 + R402 步2 读数补登记(加线程不升级) |
 | `612075b` | R410 (2/2): 文档/登记 + 会话长前缀入口 + 两个墙钟假红缺陷修复 |
-| `8263ac8` | R410 (1/2): 生成口径分离(对账 vs 会话) + K2b 前缀复用记账 |
-| `46e0f37` | R409: 通用教训落 skills/delivery-selfcheck (步骤7 口径核查 + 走偏表三行) |
-| `7bb06fa` | R409: 本地 prompt 模板闸门(结构性阻断手拼) + 权威 prompt BOS 口径修正 |
-| `b00917c` | R408: 本地 GGUF 引擎整线退役, 本地推理/嵌入改走 llama.cpp 进程边界 (零 P/Invoke) |
 
 ## 5. 台账
 
-- `docs/verification-registry.json`: **52** 行, updated_round = **R417**
-- `eval/capability/kpi.jsonl` 已记轮次: R402, loop-mechanism, R401, R411-V, R403-scope, R413, R414, R415, R416
+- `docs/verification-registry.json`: **54** 行, updated_round = **R419**
+- `eval/capability/kpi.jsonl` 已记轮次: R402, loop-mechanism, R401, R411-V, R403-scope, R413, R414, R415, R416, R419
 - 已知盲区: 状态检测器只读 `data/probe/kpi.jsonl`; 轮次台账另有 `data/probe/capability/kpi.jsonl`（孤儿）
 
 ## 6. 口径红线（审计对照）

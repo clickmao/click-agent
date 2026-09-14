@@ -1,0 +1,354 @@
+AgentFramework CLI
+  /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit
+── 执行中 (turn 1) ──────────────────────────────
+  [01] 意图分析: code_generation
+  [02] 子任务: 用 Python 3 写一个单文件程序解决下面的任务。程序从标准输入读数...
+  [03] 管线执行 (上下文装配 → LLM → 后处理)…
+[2026-09-14T06:37:06.7837862Z] info thinking IndustrialAgentV2: prompt 构建完成: ~9022 tokens, 意图=code_generation
+@chatbox:{"Type":"thinking_page_switch","Seq":1,"SummaryLength":0}
+@chatbox:{"Type":"thinking_end","Seq":0,"SummaryLength":10923}
+
+── 回复 ────────────────────────────────────────────
+<｜｜DSML｜｜ calls>
+<｜｜DSML｜｜ invoke name="write_file">
+<｜｜DSML｜｜ parameter name="path" string="true">/tmp/json_normalizer.py</｜｜DSML｜｜ parameter>
+<｜｜DSML｜｜ parameter name="content" string="true">#!/usr/bin/env python3
+-*- coding: utf-8 -*-
+"""Restricted-JSON normalizer (stdin -> stdout).
+
+Input : the whole stdin is one JSON value, optionally surrounded by whitespace.
+        null / true / false / integer / string / array / object.
+· integer: optional '-', digits, no leading zeros; "-0" -> "0".
+· string escapes: only  \\" \\\\ \\/ \\n \\t \\uXXXX ; the decoded code
+          point must be >= 0x20 and must be a real character (surrogates are
+          rejected: they are not characters).
+· raw control characters (< 0x20) inside a string are invalid.
+· duplicate object keys: the last occurrence wins.
+Output: compact text, no whitespace anywhere; '"', '\\', newline and tab are
+        re-escaped, every other character is emitted as is; object keys are
+        sorted ascending by Unicode code point.
+        Any invalid input (syntax error, trailing content, bad escape, bad
+        number, empty input) -> a single line "ERR".
+
+Usage:
+    python3 json_normalizer.py < input.txt
+    python3 json_normalizer.py --selftest     # headless self-check, exit 0/1
+"""
+
+import sys
+
+WS = " \t\n\r"
+DIGITS = "0123456789"
+HEX = "0123456789abcdefABCDEF"
+
+
+def skip_ws(s, i, n):
+    while i < n and s[i] in WS:
+        i += 1
+    return i
+
+
+def esc_out(ch):
+    """Re-escape one character for the compact output form."""
+    if ch == '"':
+        return '\\"'
+    if ch == '\\':
+        return '\\\\'
+    if ch == '\n':
+        return '\\n'
+    if ch == '\t':
+        return '\\t'
+    return ch
+
+
+def read_string(s, i, n):
+    """s[i] == '"'.  Return (escaped_body, next_index) or (None, i)."""
+    i += 1
+    out = []
+    while True:
+        if i >= n:
+            return None, i
+        c = s[i]
+        if c == '"':
+            return "".join(out), i + 1
+        if c == '\\':
+            i += 1
+            if i >= n:
+                return None, i
+            e = s[i]
+            if e == '"':
+                out.append('\\"')
+                i += 1
+            elif e == '\\':
+                out.append('\\\\')
+                i += 1
+            elif e == '/':
+                out.append('/')
+                i += 1
+            elif e == 'n':
+                out.append('\\n')
+                i += 1
+            elif e == 't':
+                out.append('\\t')
+                i += 1
+            elif e == 'u':
+                if i + 5 > n:
+                    return None, i
+                h = s[i + 1:i + 5]
+                for hc in h:
+                    if hc not in HEX:
+                        return None, i
+                cp = int(h, 16)
+must be a real character >= U+0020 (no control, no surrogate)
+                if cp < 0x20 or 0xD800 <= cp <= 0xDFFF:
+                    return None, i
+                out.append(esc_out(chr(cp)))
+                i += 5
+            else:
+                return None, i
+        else:
+            if ord(c) < 0x20:
+                return None, i
+            out.append(c)          # raw chars are never '"', '\\' or < 0x20
+            i += 1
+
+
+def read_number(s, i, n):
+    """s[i] is '-' or a digit.  Return (normalized, next_index) or (None, i)."""
+    start = i
+    if s[i] == '-':
+        i += 1
+        if i >= n or s[i] not in DIGITS:
+            return None, start
+    if s[i] == '0':
+        i += 1                     # no leading zeros ("0" / "-0" only)
+    else:
+        while i < n and s[i] in DIGITS:
+            i += 1
+    return str(int(s[start:i])), i  # int() normalizes "-0" to "0"
+
+
+def normalize(s):
+    """Return the normalized text, or None if the input is invalid."""
+    n = len(s)
+    i = skip_ws(s, 0, n)
+    if i >= n:
+        return None                # empty input
+
+    stack = []                     # frames: ['a', items] / ['o', pairs, key]
+    value = None                   # last completed value (output text)
+
+    while True:
+---- expecting either an object key or a value ----
+        if stack and stack[-1][0] == 'o' and stack[-1][2] is None:
+            if i >= n or s[i] != '"':
+                return None
+            key, j = read_string(s, i, n)
+            if key is None:
+                return None
+            i = skip_ws(s, j, n)
+            if i >= n or s[i] != ':':
+                return None
+            i = skip_ws(s, i + 1, n)
+            stack[-1][2] = key
+            continue
+
+        if i >= n:
+            return None
+        c = s[i]
+        if c == '"':
+            body, j = read_string(s, i, n)
+            if body is None:
+                return None
+            value = '"' + body + '"'
+            i = skip_ws(s, j, n)
+        elif c == '{':
+            i = skip_ws(s, i + 1, n)
+            if i < n and s[i] == '}':
+                i = skip_ws(s, i + 1, n)
+                value = '{}'
+            else:
+                stack.append(['o', [], None])
+                continue
+        elif c == '[':
+            i = skip_ws(s, i + 1, n)
+            if i < n and s[i] == ']':
+                i = skip_ws(s, i + 1, n)
+                value = '[]'
+            else:
+                stack.append(['a', []])
+                continue
+        elif c == 't':
+            if s[i:i + 4] != 'true':
+                return None
+            value = 'true'
+            i = skip_ws(s, i + 4, n)
+        elif c == 'f':
+            if s[i:i + 5] != 'false':
+                return None
+            value = 'false'
+            i = skip_ws(s, i + 5, n)
+        elif c == 'n':
+            if s[i:i + 4] != 'null':
+                return None
+            value = 'null'
+            i = skip_ws(s, i + 4, n)
+        elif c == '-' or c in DIGITS:
+            num, j = read_number(s, i, n)
+            if num is None:
+                return None
+            value = num
+            i = skip_ws(s, j, n)
+        else:
+            return None
+
+---- attach the value to its container, close what can be closed ----
+        while True:
+            if not stack:
+                return value if i >= n else None   # trailing content -> ERR
+            fr = stack[-1]
+            if fr[0] == 'a':
+                fr[1].append(value)
+            else:
+                fr[1].append((fr[2], value))
+                fr[2] = None
+            if i < n and s[i] == ',':
+                i = skip_ws(s, i + 1, n)
+                break
+            if i < n and s[i] == ']' and fr[0] == 'a':
+                i = skip_ws(s, i + 1, n)
+                value = '[' + ','.join(fr[1]) + ']'
+                stack.pop()
+                continue
+            if i < n and s[i] == '}' and fr[0] == 'o':
+                i = skip_ws(s, i + 1, n)
+                last = {}
+                for k, v in fr[1]:
+                    last[k] = v                     # later key wins
+                value = '{' + ','.join(
+                    '"' + k + '":' + v
+                    for k, v in sorted(last.items(), key=lambda kv: kv[0])
+                ) + '}'
+                stack.pop()
+                continue
+            return None
+
+
+def process(raw):
+    """raw = stdin bytes; return the bytes to write (without the newline)."""
+    try:
+        s = raw.decode('utf-8')
+    except UnicodeDecodeError:
+        return b'ERR'
+    try:
+        out = normalize(s)
+    except Exception:
+        out = None
+    if out is None:
+        return b'ERR'
+    try:
+        return out.encode('utf-8')
+    except UnicodeEncodeError:
+        return b'ERR'
+
+
+def selftest():
+    """Headless self-check: PASS -> exit 0, FAIL -> exit 1."""
+    import os
+    import subprocess
+
+    cases = [
+        ('{"a":1,"b":[2,3]}', '{"a":1,"b":[2,3]}'),
+        ('{\n"": "/"  }', '{"":"/"}'),
+        ('["a\tb"]', None),                     # raw tab inside a string
+        ('[-0.25]', None),                      # not an integer
+        ('-0', '0'),
+        ('  0  ', '0'),
+        ('01', None),
+        ('-01', None),
+        ('1e5', None),
+        ('+1', None),
+        ('.5', None),
+        ('-', None),
+        ('', None),
+        ('   \r\n ', None),
+        ('{"b":1,"a":2,"b":3}', '{"a":2,"b":3}'),   # dup key: last wins
+        ('{"":1}', '{"":1}'),
+        ('[]', '[]'),
+        ('{}', '{}'),
+        ('[[],{}]', '[[],{}]'),
+        ('[null,true,false]', '[null,true,false]'),
+        ('null', 'null'),
+        ('[ 1 , 2 , 3 ]', '[1,2,3]'),
+        ('{"z":1,"a":{"y":2,"b":3}}', '{"a":{"b":3,"y":2},"z":1}'),
+        ('"a\\"b"', '"a\\"b"'),
+        ('"\\/"', '"/"'),
+        ('"\\\\"', '"\\\\"'),
+        ('"\\u0041"', '"A"'),
+        ('"\\u00e9"', '"\u00e9"'),
+        ('"\\u0020"', '" "'),
+        ('"\\u001f"', None),
+        ('"\\u0000"', None),
+        ('"\\ud83d"', None),                    # lone surrogate
+        ('"\\ud83d\\ude00"', None),             # pair: still not a "char" per >=0x20 rule
+        ('"\\b"', None),                        # \b not an allowed escape
+        ('"\\x"', None),
+        ('"a\\nb\\tc"', '"a\\nb\\tc"'),
+        ('"a\nb"', None),                       # raw newline inside a string
+        ('[1,2', None),
+        ('[1,2,]', None),
+        ('[1 2]', None),
+        ('{"a":1,}', None),
+        ('{"a" 1}', None),
+        ('{"a":1} x', None),
+        ('{"a":1}{"b":2}', None),
+        ('[truefalse]', None),
+        ('[nul]', None),
+        ('{"a":1,"a":{"b":[1,2]}}', '{"a":{"b":[1,2]}}'),
+        ('[[[[1]]]]', '[[[[1]]]]'),
+        ('{"\\u0041":1}', '{"A":1}'),
+    ]
+    fails = 0
+    for src, want in cases:
+        got = process(src.encode('utf-8')).decode('utf-8', 'replace')
+        exp = 'ERR' if want is None else want
+        if got != exp:
+            fails += 1
+            print('FAIL in=%r got=%r want=%r' % (src, got, exp))
+
+end-to-end through the real CLI entry point (stdin -> stdout, no args)
+    cli = [
+        (b'{"a":1,"b":[2,3]}', b'{"a":1,"b":[2,3]}\n'),
+        (b'["a\tb"]', b'ERR\n'),
+        (b'[-0.25]', b'ERR\n'),
+        (b'  {"": "/"  }  ', b'{"":"/"}\n'),
+        ('"\\u00e9"'.encode('utf-8'), '"\u00e9"\n'.encode('utf-8')),
+        (b'', b'ERR\n'),
+    ]
+    script = os.path.abspath(file)
+    for data, want in cli:
+        p = subprocess.run([sys.executable, script], input=data,
+                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if p.stdout != want or p.returncode != 0:
+            fails += 1
+            print('FAIL cli in=%r got=%r rc=%d want=%r'
+                  % (data, p.stdout, p.returncode, want))
+
+    print('PASS' if fails == 0 else 'FAIL %d' % fails)
+    return 0 if fails == 0 else 1
+
+
+def main(argv):
+    if argv and argv[0] == '--selftest':
+        return selftest()
+    sys.stdout.buffer.write(process(sys.stdin.buffer.read()) + b'\n')
+    return 0
+
+
+if name == 'main':
+    sys.exit(main(sys.argv[1:]))
+</｜｜DSML｜｜ parameter>
+</｜｜DSML｜｜ invoke>
+</｜｜DSML｜｜ calls>
+  · intent=code_generation  promptTokens=9022  contextSnippets=8  llmModel=deepseek-flash  forecastTendency=提出新的编码任务或对本次代码的审查  forecastAgentUid=main
+  (87655ms, intent=code_generation)

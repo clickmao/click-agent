@@ -1,0 +1,174 @@
+{
+  "solver": "agent",
+  "tag": "r419bagent-b09141437",
+  "oracle": false,
+  "solver_id": "agent",
+  "reply_ns": "r419bagent-b09141437",
+  "ts": "2026-09-14T14:45:38+0800",
+  "elapsed_s": 512.21,
+  "n_tasks": 3,
+  "passed": 16,
+  "total": 54,
+  "rate": 0.2963,
+  "arm_unavailable": 0,
+  "validity": "ok",
+  "taxonomy": {
+    "syntax_error": 1,
+    "ok": 16,
+    "wrong_output": 5,
+    "runtime_error": 15
+  },
+  "by_kind": {
+    "program": {
+      "n": 3,
+      "passed": 16,
+      "total": 54,
+      "modes": {
+        "syntax_error": 1,
+        "partial": 1,
+        "runtime_error": 1
+      },
+      "rate": 0.2963
+    }
+  },
+  "by_family": {
+    "json_mini": {
+      "n": 3,
+      "passed": 16,
+      "total": 54,
+      "modes": {
+        "syntax_error": 1,
+        "partial": 1,
+        "runtime_error": 1
+      },
+      "rate": 0.2963
+    }
+  },
+  "turns_arg": 2,
+  "rounds_observed": 6,
+  "rounds_expected": 6,
+  "rounds_missing": 0,
+  "first_try_whole_ok": 2,
+  "first_try_rate_whole": 0.6667,
+  "fix_ok": 0,
+  "fix_rate": 0.0,
+  "final_whole_ok": 0,
+  "final_rate_whole": 0.0,
+  "saturated": false,
+  "per_task": [
+    {
+      "tid": "p001",
+      "kind": "program",
+      "family": "json_mini",
+      "mode": "syntax_error",
+      "passed": 0,
+      "total": 18,
+      "taxonomy": {
+        "syntax_error": 1
+      },
+      "reply_chars": 0,
+      "reply_head": "",
+      "turns": 2,
+      "reply_paths": [
+        "data/probe/replies/agentr419bagent-b09141437-p001-t1.txt",
+        "data/probe/replies/agentr419bagent-b09141437-p001-t2.txt"
+      ],
+      "t1": {
+        "mode": "syntax_error",
+        "passed": 0,
+        "total": 18,
+        "reply_chars": 0
+      },
+      "t2": {
+        "mode": "syntax_error",
+        "passed": 0,
+        "total": 18
+      },
+      "solve": {
+        "exit": 0,
+        "elapsed_s": 87.78,
+        "session": "probe-0914143706-r419bagent-b09141437-p001",
+        "stderr_tail": "",
+        "reply_path": "data/probe/replies/agentr419bagent-b09141437-p001-t1.txt"
+      }
+    },
+    {
+      "tid": "p002",
+      "kind": "program",
+      "family": "json_mini",
+      "mode": "partial",
+      "passed": 15,
+      "total": 18,
+      "taxonomy": {
+        "ok": 15,
+        "wrong_output": 3
+      },
+      "reply_chars": 0,
+      "reply_head": "",
+      "turns": 2,
+      "reply_paths": [
+        "data/probe/replies/agentr419bagent-b09141437-p002-t1.txt",
+        "data/probe/replies/agentr419bagent-b09141437-p002-t2.txt"
+      ],
+      "t1": {
+        "mode": "ok",
+        "passed": 18,
+        "total": 18,
+        "reply_chars": 0
+      },
+      "t2": {
+        "mode": "partial",
+        "passed": 15,
+        "total": 18
+      },
+      "solve": {
+        "exit": 0,
+        "elapsed_s": 32.68,
+        "session": "probe-0914144052-r419bagent-b09141437-p002",
+        "stderr_tail": "",
+        "reply_path": "data/probe/replies/agentr419bagent-b09141437-p002-t1.txt"
+      }
+    },
+    {
+      "tid": "p003",
+      "kind": "program",
+      "family": "json_mini",
+      "mode": "runtime_error",
+      "passed": 1,
+      "total": 18,
+      "taxonomy": {
+        "runtime_error": 15,
+        "wrong_output": 2,
+        "ok": 1
+      },
+      "reply_chars": 0,
+      "reply_head": "",
+      "turns": 2,
+      "reply_paths": [
+        "data/probe/replies/agentr419bagent-b09141437-p003-t1.txt",
+        "data/probe/replies/agentr419bagent-b09141437-p003-t2.txt"
+      ],
+      "t1": {
+        "mode": "ok",
+        "passed": 18,
+        "total": 18,
+        "reply_chars": 0
+      },
+      "t2": {
+        "mode": "runtime_error",
+        "passed": 1,
+        "total": 18
+      },
+      "solve": {
+        "exit": 0,
+        "elapsed_s": 23.69,
+        "session": "probe-0914144359-r419bagent-b09141437-p003",
+        "stderr_tail": "",
+        "reply_path": "data/probe/replies/agentr419bagent-b09141437-p003-t1.txt"
+      }
+    }
+  ],
+  "taskset_sha": "5c7044c85ba2b36b",
+  "kind_arg": "program",
+  "seed": 419
+}

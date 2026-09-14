@@ -1,9 +1,28 @@
-runs=21 ok=21 err=0 → data/probe/process-metrics.json
+=== 批次后缀 NS=b09141437 ===
+=== 前置检查 ===
+disk_free_mb=18317 mem_available_mb=2204
+--- 臂 r419bctlpos-b09141437 (mutation:delayfix) ---
+STEP_EXIT_r419bctlpos=0
+首次通过率(首轮整题全对): 0.0  修复率(首轮未过→修正轮过): 1.0  回归=0  饱和=False  修正轮=onfail
+失败模式: {"ok": 54}
+按族: {"json_mini": 1.0}
+--- 臂 r419bctlneg-b09141437 (mutation:nofix) ---
+STEP_EXIT_r419bctlneg=0
+首次通过率(首轮整题全对): 0.0  修复率(首轮未过→修正轮过): 0.0  回归=0  饱和=False  修正轮=onfail
+失败模式: {"wrong_output": 33, "ok": 21}
+按族: {"json_mini": 0.3889}
+--- 臂 r419bagent-b09141437 (agent) ---
+STEP_EXIT_r419bagent=1
+    data = data.decode(encoding, errors)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xe9 in position 59: invalid continuation byte
+=== 多轮表 ===
+STEP_EXIT_metrics=0
+runs=20 ok=20 err=0 → data/probe/process-metrics.json
 na_sum=71 ambiguous=38 malformed=0
 | 题集(solver/tag) | 题数 | 整题全对 | 用例级 | 首次通过率 | tokens/题 | tokens/满分题 | 墙钟均(ms) | turn≤ | n/a | 畸形 |
 |---|---|---|---|---|---|---|---|---|---|---|
 | `probe-agent-seed20260913.json` (agent/) | 6 | 6/6=1.0000 | 1.0000 | 0/6=0.0000 | n/a | n/a | n/a | - | 6 | 0 |
-| `probe-agent-seed419-r419bagent-b09141437-t2.json` (agent/r419bagent-b09141437) | 3 | 3/3=1.0000 | 1.0000 | 3/3=1.0000 | 11911.3 | 11911.3 | 144960 | 1 | 0 | 0 |
 | `probe-m6-agent.json` (agent/) | 6 | 6/6=1.0000 | 1.0000 | 0/6=0.0000 | n/a | n/a | n/a | - | 6 | 0 |
 | `probe-m6-hardcode.json` (mutation:hardcode/) | 3 | 0/3=0.0000 | 0.1818 | 0/3=0.0000 | n/a | n/a | n/a | - | 3 | 0 |
 | `probe-m6-oracle.json` (oracle/) | 6 | 6/6=1.0000 | 1.0000 | 0/6=0.0000 | n/a | n/a | n/a | - | 6 | 0 |
@@ -25,6 +44,16 @@ na_sum=71 ambiguous=38 malformed=0
 | `probe-r418-json-mut.json` (mutation:json_loose/) | 4 | 0/4=0.0000 | 0.7324 | 0/4=0.0000 | n/a | n/a | n/a | - | 4 | 0 |
 | 题集 | 轮数(实/期) | 整题全对 | 首次通过率 | 修复率 | 回归 | 修正轮 | 饱和 | 轮均 | 弃权(未归档) |
 |---|---|---|---|---|---|---|---|---|---|
-| `probe-agent-seed419-r419bagent-b09141437-t2.json` | 3/3 | 3/3 | 1.0000 | n/a(无待修题) | n/a | - | 是 | 1.00 | 0 |
 | `probe-mutation:delayfix-seed419-r419bctlpos-b09141437-t2.json` | 6/6 | 3/3 | 0.0000 | 1.0000 | n/a | - | 否 | 2.00 | 3 |
 | `probe-mutation:nofix-seed419-r419bctlneg-b09141437-t2.json` | 6/6 | 0/3 | 0.0000 | 0.0000 | n/a | - | 否 | 2.00 | 3 |
+=== 判据检查 (预注册) ===
+| 臂 | 文件 | 批次后缀 | 轮数(实/期) | 首次通过率 | 两轮整题全对率 | 修复率 | 饱和 |
+|---|---|---|---|---|---|---|---|
+| `ctlpos` | probe-mutation:delayfix-seed419-r419bctlpos-b09141437-t2.json | `b09141437` | 6/6 | 0.0 | 1.0 | 1.0 | False |
+| `ctlneg` | probe-mutation:nofix-seed419-r419bctlneg-b09141437-t2.json | `b09141437` | 6/6 | 0.0 | 0.0 | 0.0 | False |
+| `agent` | (缺) | | | | | | |
+MISSING_ARMS=agent ⇒ 测量/环境失败, 不下断言结论
+R419_EXIT=3
+ARM_RUN_FAILED pos=0 neg=0 agent=1 ⇒ 测量失败
+R419_EXIT=3
+DRIVER_DONE rc=3

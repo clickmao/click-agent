@@ -2,14 +2,15 @@
 |---|---|---|---|---|---|---|---|
 | `ctlpos` | probe-mutation:delayfix-seed419-r419bctlpos-b09141437-t2.json | `b09141437` | 6/6 | 0.0 | 1.0 | 1.0 | False |
 | `ctlneg` | probe-mutation:nofix-seed419-r419bctlneg-b09141437-t2.json | `b09141437` | 6/6 | 0.0 | 0.0 | 0.0 | False |
-| `agent` | probe-agent-seed419-r419bagent-b09141437-t2.json | `b09141437` | 6/6 | 0.6667 | 0.0 | 0.0 | False |
+| `agent` | probe-agent-seed419-r419bagent-b09141437-t2.json | `b09141437` | 3/3 | 1.0 | 1.0 | None | True |
   [PASS] ctlpos: 轮数实到 == 期望 实=6 期=6 缺=0
   [PASS] ctlneg: 轮数实到 == 期望 实=6 期=6 缺=0
-  [PASS] agent: 轮数实到 == 期望 实=6 期=6 缺=0
+  [PASS] agent: 轮数实到 == 期望 实=3 期=3 缺=0
   [PASS] 正控: 第 2 轮真解 ⇒ 修复率 == 1.0 (仪器能记到修复) fix=1.0
   [PASS] 正控: 第 1 轮浅解 ⇒ 首次通过率 == 0.0 first=0.0
   [PASS] 负控: 两轮同浅解 ⇒ 修复率 == 0.0 (没修不许读成修了) fix=0.0
   [PASS] 真机: turns_arg == 2 2
-  [FAIL] 真机: 首次通过率 < 两轮合并整题全对率, 或如实标饱和 first=0.6667 whole=0.0 sat=False
-fails=1
-R419_EXIT=2
+  [PASS] 真机: 修正轮触发条件 == onfail (前提下真) onfail
+  [NOTE] 真机臂首轮即全对 (饱和) ⇒ 修复率 n/a, 本轮对真机无分辨力 (如实标注, 非失败)
+fails=0
+R419_EXIT=0

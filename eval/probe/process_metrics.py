@@ -230,18 +230,23 @@ def multiturn_report(rows):
     饱和标记必须有: 题集首轮全对时「修复率」分母为 0, 此时修复率 n/a **不是满分**。
     """
     mt = [r for r in rows if r.get("turns_arg") and r["turns_arg"] > 1]
-    lines = ["| 题集 | 轮数(实/期) | 整题全对 | 首次通过率 | 修复率 | 饱和 | 轮均 | 弃权(未归档) |",
-             "|---|---|---|---|---|---|---|---|"]
+    lines = ["| 题集 | 轮数(实/期) | 整题全对 | 首次通过率 | 修复率 | 回归 | 修正轮 | 饱和 | 轮均 | 弃权(未归档) |",
+             "|---|---|---|---|---|---|---|---|---|---|"]
     for r in mt:
-        lines.append("| `%s` | %s/%s | %d/%d | %s | %s | %s | %s | %d |" % (
+        lines.append("| `%s` | %s/%s | %d/%d | %s | %s | %s | %s | %s | %s | %d |" % (
             r["probe_file"], r.get("rounds_observed"), r.get("rounds_expected"),
             r["whole_ok"], r["n_tasks"], _fmt(r.get("first_try_rate_whole"), 4),
             "n/a(无待修题)" if r.get("fix_rate") is None else _fmt(r.get("fix_rate"), 4),
+            "n/a" if r.get("regressed") is None else str(r["regressed"]),
+            r.get("correction_mode") or "-",
             "是" if r.get("saturated") else "否", _fmt(r.get("rounds_per_task"), 2), r["na_count"]))
         if r.get("rounds_observed") != r.get("rounds_expected"):
-            lines.append("|  ⚠ %s | 轮数实到 ≠ 期望 ⇒ 不得据此算修复率(弃权) | | | | | | |" % r["probe_file"])
+            lines.append("|  ⚠ %s | 轮数实到 ≠ 期望 ⇒ 不得据此算修复率(弃权) | | | | | | | | |" % r["probe_file"])
+        if r.get("regressed"):
+            lines.append("|  ⚠ %s | 回归 %d 题: 首轮整题全对 → 末轮不过 (修正轮前提为假?) | | | | | | | | |"
+                         % (r["probe_file"], r["regressed"]))
     if not mt:
-        lines.append("| (无 turns>1 的题集) | | | | | | | |")
+        lines.append("| (无 turns>1 的题集) | | | | | | | | | |")
     return chr(10).join(lines)
 
 
@@ -389,6 +394,11 @@ def selftest():
             "n/a(无待修题)" in multiturn_report([dict(r2, fix_rate=None, saturated=True, rounds_observed=4)]))
         chk("负控: 单轮题集不进多轮表 (不按 0 轮摊)",
             "无 turns>1" in multiturn_report([dict(r2, turns_arg=1)]))
+        chk("★负控: 回归>0 ⇒ 多轮表必须显式标 ⚠ (回归不得静默)",
+            "回归 2 题" in multiturn_report([dict(r2, regressed=2)]))
+        chk("正控: 回归列与修正轮模式如实显示",
+            "| 0 | onfail |" in multiturn_report([dict(r2, regressed=0, correction_mode="onfail")]),
+            multiturn_report([dict(r2, regressed=0, correction_mode="onfail")]).split(nl)[-3][:70])
     finally:
         REPLIES = keep
 

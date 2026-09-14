@@ -1195,3 +1195,15 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **诚实边界**: ① 链不落 `completionTokens` ⇒ 只有 **prompt 侧 + 墙钟**；② 探针为单轮 ⇒ 「轮数」目前主要作**异常检测**，首次通过率与整题全对率同分母（真正区分要等链路出现重试/追问）；③ 旧批次（R413–R417，无命名空间）成本**一律 n/a，不做回填**（回填 = 伪造归属）；④ n=3 小样本，非分布。
 - **仪器**: `process_metrics --selftest` **14/14**（含反张冠李戴负控、n/a 分母负控、歧义负控）；判定器 29/29；run_probe 18/18；tasks 45/45；kpi_probe 24/24。TaskPlan 已登记到 R418（**21 节点**，末条 `dev-probe-process-kpi`）。
 - **计划**: `docs/plans/v0.39.0-r418-process-kpi.md`；证据 `eval/rover/r418/`；登记 `docs/verification-registry.json` `r418.probe-process-kpi`（L4）。
+
+### R419 (2026-09-14) — 探针多轮化：轮数/首次通过率/修复率从「恒等判据」变「可分化」
+
+- **目标**: 让「轮数 / 首次通过率 / 修复率」产生**真分化**（此前单轮 ⇒ 轮数恒 1、首次通过率 ≡ 整题全对率，无区分度）。
+- **落地**: `--turns>1` 用**同 sid 跨进程**续上下文（决定性微实验: turn1「记住 4271」→ turn2 命中）；口径铁律 = 轮数取**发送次数 / 归档文件数**（转录里的 `turn N` 是**进程内**轮次，两个进程都写 turn 1）；修正轮默认 **`onfail`**（只对首轮未过题发 ⇒ 前提为真）。
+- **三个真缺陷（每个都成对配闸）**: ① 判定器 `run_code` 严格按 UTF-8 解码被测程序输出 ⇒ 程序打印一个坏字节（`0xe9`）即整臂 `UnicodeDecodeError` 崩掉（实测 `STEP_EXIT_agent=1`）⇒ 改字节捕获 + `errors="replace"` + `bad_encoding` 计数（grade selftest 29→31）；② **同 NS 重跑静默覆盖既有读数**（★ 一次真分化读数因此只剩会话记录）⇒ `REFUSE_NS_COLLISION` 闸；③ 首轮失败在日志里不可见 + `reply_chars` 恒 0（归档 11.9 KB 而摘要写 0）⇒ 首轮行原样打印 + 集中回填（run_probe 25→26）。
+- **对照臂（假前提）**: `correction=always` 对已达标题谎称「隐藏用例没过」⇒ 首轮 0.6667 → 两轮 **0.0**、回归 **2 题**。教训: **修正轮的前提必须为真**，否则量到的不是「修复率」而是「抗误导性」。产物归档 `eval/rover/r419/evidence-always-correction/`。
+- **真机读数（AOT agenthost，`json_mini` n=6 seed=419/420，turns=2 onfail）**: 4 次跑中 **3 次首轮即全对（饱和 ⇒ 判 EXIT 2，不放行）**、**1 次 first=0.8333(5/6) → 两轮 1.0、fix=1.0、回归 0、轮数 7/7 ≠ 6 ⇒ 真分化**（该次产物被同 NS 重跑覆盖 ⇒ 仅会话记录，见 `eval/rover/r419/README-evidence.md`「归档事故」）。
+- **控制臂（判别力）**: `mutation:delayfix` **fix=1.0** / `mutation:nofix` **fix=0.0**（三批 n=3/6/6 全成立）；轮数**实到 == 期望**（3/3、6/6、12/12）；检查器 7 态自证（正常0/饱和2/混批3/负控误读2/缺字段3/回归2/NS不符3）。
+- **仪器**: run_probe **26/26** · grade **31/31** · process_metrics **22/22** · 检查器自证 **7/7** · tasks 45/45。
+- **诚实边界**: 真机侧**未稳定复现**分化 ⇒ 「仪器可用 + 存在分化」**不等于**「r1 链增益已确证」；n=6 单族非分布；`json_mini` 对该链近天花板（R417 的 1/3 读数系**旧提取器**退化所致，提取器修好后分数上移）。
+- **计划**: `docs/plans/v0.40.0-r419-probe-multiturn.md`；证据 `eval/rover/r419/README-evidence.md`；登记 `docs/verification-registry.json` → `r419.probe-multiturn`（L4）；TaskPlan **22 节点**（末条 `dev-probe-multiturn`）。

@@ -1,0 +1,59 @@
+{
+ "round": "R419",
+ "observation": "correction=always 假前提修正轮（归档对照观测，非通过证据）",
+ "batch_suffix": "b09141437",
+ "arm": "r419bagent",
+ "turns": 2,
+ "correction": "always",
+ "first_try_whole_ok": 2,
+ "final_whole_ok": 0,
+ "fix_ok": 0,
+ "regressed": 2,
+ "regressed_tasks": [
+  {
+   "id": "p002",
+   "t1": "ok(18/18)",
+   "t2": "partial(15/18)"
+  },
+  {
+   "id": "p003",
+   "t1": "ok(18/18)",
+   "t2": "runtime_error(1/18)"
+  }
+ ],
+ "p001": {
+  "t1": "syntax_error",
+  "t2": "syntax_error"
+ },
+ "note": "提示前提为假(题已过) ⇒ 实测把 2/3 已对题改坏; 修=--correction onfail 默认只对首轮未过题发; suite=json_mini n=3 seed=419",
+ "files": {
+  "agentr419bagent-b09141437-p001-t1.txt": {
+   "bytes": 11949,
+   "sha256": "b4a968c14b889b48"
+  },
+  "agentr419bagent-b09141437-p001-t2.txt": {
+   "bytes": 2392,
+   "sha256": "17664072f6eff310"
+  },
+  "agentr419bagent-b09141437-p002-t1.txt": {
+   "bytes": 10167,
+   "sha256": "12824ad6cd7cf5c9"
+  },
+  "agentr419bagent-b09141437-p002-t2.txt": {
+   "bytes": 10184,
+   "sha256": "0c4000e04d231411"
+  },
+  "agentr419bagent-b09141437-p003-t1.txt": {
+   "bytes": 8398,
+   "sha256": "68ebb1bd16cd49d1"
+  },
+  "agentr419bagent-b09141437-p003-t2.txt": {
+   "bytes": 2457,
+   "sha256": "31c66577d2bc0f12"
+  },
+  "probe-agent-seed419-r419bagent-b09141437-t2.json": {
+   "bytes": 3966,
+   "sha256": "45d01559ff06d8d2"
+  }
+ }
+}

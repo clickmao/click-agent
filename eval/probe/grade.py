@@ -117,22 +117,39 @@ def extract_final(reply: str) -> str:
 
 
 def run_code(code: str, stdin_text: str, timeout: float = 5.0) -> dict:
-    """在隔离临时目录里跑候选程序。返回 {stdout, exit, timed_out, err}。"""
+    """在隔离临时目录里跑候选程序。返回 {stdout, exit, timed_out, err, bad_encoding}。
+
+    R419 修正: stdout/stderr **不得**按严格 UTF-8 解码 —— 被测程序可能打印坏字节
+    (实测 0xe9 截断多字节 ⇒ UnicodeDecodeError 把整个臂打崩, EXIT=3)。
+    判定器对坏字节只有两种合法反应: ① 如实记为该用例不过 (替换字符后比对必然不等);
+    ② 显式标 `bad_encoding` 供分类。**不允许抛异常**。
+    """
     work = tempfile.mkdtemp(prefix="probe_")
     try:
         src = os.path.join(work, "sol.py")
         with open(src, "w", encoding="utf-8") as fh:
             fh.write(code)
         try:
-            p = subprocess.run([PY, "-I", "-B", src], input=stdin_text,
-                               capture_output=True, text=True, timeout=timeout,
+            p = subprocess.run([PY, "-I", "-B", src], input=(stdin_text or "").encode("utf-8"),
+                               capture_output=True, timeout=timeout,
                                cwd=work, env=SANDBOX_ENV)
         except subprocess.TimeoutExpired:
-            return {"stdout": "", "exit": -9, "timed_out": True, "err": "timeout"}
+            return {"stdout": "", "exit": -9, "timed_out": True, "err": "timeout",
+                    "bad_encoding": False}
         except OSError as e:  # 解释器缺失等环境性问题: 显式出声, 不静默算失败
-            return {"stdout": "", "exit": -1, "timed_out": False, "err": "oserror: %s" % e}
-        return {"stdout": p.stdout, "exit": p.returncode, "timed_out": False,
-                "err": (p.stderr or "")[-400:]}
+            return {"stdout": "", "exit": -1, "timed_out": False, "err": "oserror: %s" % e,
+                    "bad_encoding": False}
+        raw_out, raw_err = (p.stdout or b""), (p.stderr or b"")
+        bad = False
+        for raw in (raw_out, raw_err):
+            try:
+                raw.decode("utf-8")
+            except UnicodeDecodeError:
+                bad = True
+        return {"stdout": raw_out.decode("utf-8", errors="replace"),
+                "exit": p.returncode, "timed_out": False,
+                "err": raw_err.decode("utf-8", errors="replace")[-400:],
+                "bad_encoding": bad}
     finally:
         shutil.rmtree(work, ignore_errors=True)
 
@@ -168,8 +185,11 @@ def grade_program(task: dict, reply: str, timeout: float = 5.0, since: float = N
 
     tax, detail = {}, []
     nonzero_ok = 0
+    n_bad_enc = 0
     for i, case in enumerate(task["hidden"]):
         r = run_code(code, case["stdin"], timeout)
+        if r.get("bad_encoding"):
+            n_bad_enc += 1
         out_ok = norm(r["stdout"]) == norm(case["expected_stdout"])
         if r["timed_out"]:
             v = "timeout"
@@ -184,6 +204,7 @@ def grade_program(task: dict, reply: str, timeout: float = 5.0, since: float = N
             v = "wrong_output"
         tax[v] = tax.get(v, 0) + 1
         detail.append({"case": i, "verdict": v, "exit": r["exit"],
+                       "bad_encoding": 1 if r.get("bad_encoding") else 0,
                        "got": norm(r["stdout"])[:120], "want": norm(case["expected_stdout"])[:120]})
     passed = tax.get("ok", 0)
     total = len(task["hidden"])
@@ -191,7 +212,7 @@ def grade_program(task: dict, reply: str, timeout: float = 5.0, since: float = N
                                         "runtime_error" if "runtime_error" in tax else
                                         "partial" if passed else "wrong_output")
     return {"mode": mode, "passed": passed, "total": total, "detail": detail,
-            "taxonomy": tax, "exit_nonzero_ok": nonzero_ok}
+            "taxonomy": tax, "exit_nonzero_ok": nonzero_ok, "bad_encoding": n_bad_enc}
 
 
 # ---------------------------------------------------------------- 见证型数学题: 独立验证
@@ -363,6 +384,21 @@ def selftest() -> int:
     t_empty = {"kind": "program", "hidden": [{"stdin": "x", "expected_stdout": ""}]}
     r = grade_program(t_empty, fence + "import sys" + nl + "raise SystemExit(1)" + nl + "```")
     chk("负控: 期望空输出时崩溃不得判过", r["mode"] == "runtime_error", str(r["taxonomy"]))
+
+    # ---- R419 坏字节负控: 判定器不得因被测程序输出坏字节而抛异常 (整臂崩 = 测量失败) ----
+    t_bytes = {"kind": "program", "hidden": [{"stdin": "x", "expected_stdout": "ERR"}]}
+    bad_src = (fence + "import sys" + nl
+               + "sys.stdout.buffer.write(b'\\xe9')" + nl
+               + "sys.stdout.flush()" + nl + "```" + nl)
+    try:
+        rb = grade_program(t_bytes, bad_src)
+        chk("★负控: 坏字节输出判不过且被分类 (不得抛异常打崩整臂)",
+            rb["mode"] == "wrong_output" and rb["bad_encoding"] == 1, str(rb["taxonomy"]))
+    except Exception as e:  # noqa: BLE001 —— 这里有异常就是缺陷本身
+        chk("★负控: 坏字节输出判不过且被分类 (不得抛异常打崩整臂)", False, "raised %r" % e)
+    r = grade_program(t_bytes, fence + "print('ERR')" + nl + "```")
+    chk("正控: 坏字节修正后正常程序仍判过 (改动不误伤)", r["mode"] == "ok" and r["bad_encoding"] == 0,
+        str(r["taxonomy"]))
 
     # ---- 见证型判定负控 ----
     ws = {"kind": "math", "family": "witness_sqrt_mod", "answer": "", "meta": {"witness": {"kind": "sqrt_mod", "p": 101, "a": 4}}}

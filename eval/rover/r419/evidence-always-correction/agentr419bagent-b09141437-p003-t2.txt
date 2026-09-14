@@ -1,0 +1,73 @@
+AgentFramework CLI
+  /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit
+── 执行中 (turn 1) ──────────────────────────────
+  [01] 意图分析: general
+  [02] 子任务: 你上一条回复未通过隐藏用例 #6 (该用例不在题面公开样例中)。
+输入:...
+  [03] 管线执行 (上下文装配 → LLM → 后处理)…
+[2026-09-14T06:44:23.7660077Z] info thinking IndustrialAgentV2: prompt 构建完成: ~7945 tokens, 意图=general
+@chatbox:{"Type":"thinking_page_switch","Seq":1,"SummaryLength":0}
+@chatbox:{"Type":"thinking_end","Seq":0,"SummaryLength":370}
+  [04] 返回区段标记 python
+  [05] PY 落盘 + py_compile 2/2 通过
+    · ./data/artifacts/py_80697db876e65d8d.py (357B) ✓ py_compile · run exit=1 (18ms)
+    · ./data/artifacts/py_5efc1533b1582fc9.py (1221B) ✓ py_compile · run exit=0 (16ms)
+
+── 回复 ────────────────────────────────────────────
+import sys
+import json
+import math
+
+
+def solve(data):
+    """对每个元素求平方根；负数输出 ERR，布尔按 0.0/1.0 处理。"""
+    out = []
+    for x in data:
+        if isinstance(x, bool):
+            x = float(x)
+        x = float(x)
+        if x < 0:
+            out.append("ERR")
+        else:
+            out.append(repr(math.sqrt(x)))
+    return out
+
+
+def selftest():
+    cases = [
+        ([4, 9], ["2.0", "3.0"]),
+        ([2], [repr(math.sqrt(2))]),
+        ([0], ["0.0"]),
+        ([-1, -4], ["ERR", "ERR"]),
+        ([True, False], ["1.0", "0.0"]),
+        ([], []),
+    ]
+    failed = 0
+    for i, (inp, exp) in enumerate(cases, 1):
+        got = solve(inp)
+        ok = got == exp
+        if not ok:
+            failed += 1
+        print("case%d %s" % (i, "PASS" if ok else "FAIL"))
+    print("SELFTEST %s" % ("PASS" if failed == 0 else "FAIL"))
+    return 0 if failed == 0 else 1
+
+
+def main(argv):
+    if "--selftest" in argv:
+        return selftest()
+
+    raw = sys.stdin.read()
+    if not raw.strip():
+        data = []
+    else:
+        data = json.loads(raw)
+
+    sys.stdout.write("\n".join(solve(data)) + "\n")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))
+  · intent=general  promptTokens=7945  contextSnippets=8  llmModel=deepseek-flash  forecastTendency=提出新任务  forecastAgentUid=main
+  (74678ms, intent=general)

@@ -1,0 +1,17 @@
+| 臂 | 文件 | 批次后缀 | 轮数(实/期) | 首次通过率 | 两轮整题全对率 | 修复率 | 饱和 |
+|---|---|---|---|---|---|---|---|
+| `ctlpos` | probe-mutation:delayfix-seed419-r419dctlpos-b3092030-t2.json | `b3092030` | 12/12 | 0.0 | 1.0 | 1.0 | False |
+| `ctlneg` | probe-mutation:nofix-seed419-r419dctlneg-b3092030-t2.json | `b3092030` | 12/12 | 0.0 | 0.0 | 0.0 | False |
+| `agent` | probe-agent-seed419-r419dagent-b3092030-t2.json | `b3092030` | 6/6 | 1.0 | 1.0 | None | True |
+  [PASS] ctlpos: 轮数实到 == 期望 实=12 期=12 缺=0
+  [PASS] ctlneg: 轮数实到 == 期望 实=12 期=12 缺=0
+  [PASS] agent: 轮数实到 == 期望 实=6 期=6 缺=0
+  [PASS] 正控: 第 2 轮真解 ⇒ 修复率 == 1.0 (仪器能记到修复) fix=1.0
+  [PASS] 正控: 第 1 轮浅解 ⇒ 首次通过率 == 0.0 first=0.0
+  [PASS] 负控: 两轮同浅解 ⇒ 修复率 == 0.0 (没修不许读成修了) fix=0.0
+  [PASS] 真机: turns_arg == 2 2
+  [PASS] 真机: 修正轮触发条件 == onfail (前提下真) onfail
+  [FAIL] 真机臂首轮即全对 (饱和) ⇒ 修复率 n/a, 轮数无分化 ⇒ 本轮目标未达成
+RESULT=SATURATED_NO_DISCRIMINATION 处置: 加题/加族/换更紧用例后重跑 (勿视为通过)
+fails=1
+R419_EXIT=2

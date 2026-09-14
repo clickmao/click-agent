@@ -223,6 +223,16 @@
    "DocRef": "docs/plans/v0.39.0-r418-process-kpi.md",
    "Parameters": [],
    "Confidence": 1.0
+  },
+  {
+   "Id": "dev-probe-multiturn",
+   "Text": "R419 探针多轮化: --turns 同 sid 跨进程续上下文 + 修正轮默认 onfail(前提为真) + 三读数(轮数=发送次数/归档文件数, 不信转录 turn N) + 检查器 7 态自证 + 判定器坏字节闸 + NS 碰撞闸; 真机 json_mini n=6: 4 次 onfail 跑 3 次饱和(判 EXIT 2 不放行)、1 次 first=0.8333→1.0 fix=1.0 回归 0 (该次产物被同 NS 重跑覆盖, 仅会话记录) ⇒ 仪器达成, 真机未稳定复现",
+   "Intent": "code_generation",
+   "Level": 1,
+   "ParallelGroup": 1,
+   "DocRef": "docs/plans/v0.40.0-r419-probe-multiturn.md",
+   "Parameters": [],
+   "Confidence": 1.0
   }
  ]
 }

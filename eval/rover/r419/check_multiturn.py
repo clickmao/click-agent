@@ -31,6 +31,11 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.a
 ARMS = (("ctlpos", "r419bctlpos"), ("ctlneg", "r419bctlneg"), ("agent", "r419bagent"))
 
 
+def arms_for(prefix):
+    """臂前缀可换 (第二批反饱和批用 r419c) —— 否则同名档会跨批互覆 (R419 实测事故)。"""
+    return (("ctlpos", prefix + "ctlpos"), ("ctlneg", prefix + "ctlneg"), ("agent", prefix + "agent"))
+
+
 def tag_of(base, prefix):
     """probe-<solver>-seed<N>-<prefix>[-<suffix>]-t<K>.json → `<suffix>` (无后缀则 '')"""
     stem = base[:-5] if base.endswith(".json") else base
@@ -71,11 +76,94 @@ def load(probe_dir):
     return found
 
 
+def _selftest() -> int:
+    """检查器自证: 用夹具驱动**本文件**(子进程) 断言退出码 —— 覆盖「正常/饱和/混批/负控误读/缺字段/回归/NS不符」。
+
+    存在的理由: 判据检查器本身也是仪器。没有这一层,「检查器坏了」与「被测对象不达标」不可区分
+    (R415 教训: 判据必须成对; R417 教训: 仪器错与门吃错变量不可区分 ⇒ 必须自证)。
+    """
+    import shutil
+    import subprocess
+    import tempfile
+
+    base = {"turns_arg": 2, "rounds_observed": 4, "rounds_expected": 4, "rounds_missing": 0,
+            "first_try_rate_whole": 0.5, "final_rate_whole": 1.0, "fix_rate": 1.0,
+            "regressed": 0, "saturated": False, "correction_mode": "onfail",
+            "rounds_missing": 0}
+
+    def run_case(tmp, tag, suffix, agent_over=None, neg_over=None, ns=None, prefix="r419e"):
+        dirp = os.path.join(tmp, tag)
+        os.makedirs(dirp, exist_ok=True)
+        for arm, over in (("ctlpos", None), ("ctlneg", neg_over), ("agent", agent_over)):
+            d = dict(base)
+            if arm == "ctlpos":
+                d.update({"first_try_rate_whole": 0.0, "final_rate_whole": 1.0, "fix_rate": 1.0})
+            if arm == "ctlneg":
+                d.update({"first_try_rate_whole": 0.0, "final_rate_whole": 0.0, "fix_rate": 0.0})
+            if arm == "agent":
+                d.update({"first_try_rate_whole": 0.5, "final_rate_whole": 1.0})
+            d.update(over or {})
+            fn = "probe-x-seed9-%s%s-%s-t2.json" % (prefix, arm, suffix if arm != "agent" else
+                                                   (over or {}).get("__suffix__", suffix))
+            d.pop("__suffix__", None)
+            with open(os.path.join(dirp, fn), "w", encoding="utf-8") as fh:
+                json.dump(d, fh)
+        cmd = [sys.executable, os.path.abspath(__file__), "--probe-dir", dirp, "--prefix", prefix]
+        if ns:
+            cmd += ["--ns", ns]
+        p = subprocess.run(cmd, capture_output=True, text=True)
+        return p.returncode, (p.stdout or "") + (p.stderr or "")
+
+    tmp = tempfile.mkdtemp(prefix="chk_selftest_")
+    n = ok = 0
+    try:
+        cases = [
+            ("正常批 ⇒ 0", "ok", {}, 0, None),
+            ("真机饱和 ⇒ 2 (不得真空变绿)", "sat", {"saturated": True, "first_try_rate_whole": 1.0,
+                                              "final_rate_whole": 1.0, "fix_rate": None},
+             2, "SATURATED_NO_DISCRIMINATION"),
+            ("混批(后缀不一致) ⇒ 3 弃权", "mix", {"__suffix__": "b902"}, 3, "MIXED_BATCH"),
+            ("负控被读成修了 ⇒ 2", "negmis", {}, 2, None),
+            ("真机关键字段缺失 ⇒ 3", "misskey", {"final_rate_whole": None}, 3, "MISSING_KEYS"),
+            ("真机回归(两轮比首轮差) ⇒ 2", "regress", {"first_try_rate_whole": 1.0,
+                                                "final_rate_whole": 0.5, "regressed": 1}, 2, None),
+        ]
+        for name, tag, over, want_code, want_marker in cases:
+            n += 1
+            neg_over = {"fix_rate": 1.0} if tag == "negmis" else None
+            code, out = run_case(tmp, tag, "b901", agent_over=over, neg_over=neg_over)
+            cond = (code == want_code) and (want_marker is None or want_marker in out)
+            if cond:
+                ok += 1
+                print("  [PASS] %s" % name)
+            else:
+                print("  [FAIL] %s 期望码=%s 实得=%s marker=%s" % (name, want_code, code, want_marker))
+        n += 1
+        code, out = run_case(tmp, "nsmis", "b901", ns="b999")
+        if code == 3 and "NS_MISMATCH" in out:
+            ok += 1
+            print("  [PASS] 期望批次后缀不符 ⇒ 3 弃权")
+        else:
+            print("  [FAIL] 期望批次后缀不符 ⇒ 3 弃权 实得=%s" % code)
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+    print("check_multiturn selftest %d/%d" % (ok, n))
+    return 0 if ok == n else 1
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--probe-dir", default=os.path.join(ROOT, "data", "probe"))
     ap.add_argument("--ns", default="", help="期望批次后缀 (空=不校验, 仍打印)")
+    ap.add_argument("--prefix", default="r419b", help="臂 tag 前缀 (默认 r419b; 第二批用 r419c)")
+    ap.add_argument("--selftest", action="store_true", help="检查器自证: 7 态夹具 (不读真数据)")
     a = ap.parse_args()
+
+    if a.selftest:
+        return _selftest()
+
+    global ARMS
+    ARMS = arms_for(a.prefix)
 
     found = load(a.probe_dir)
     miss = [name for name, _ in ARMS if name not in found]
@@ -146,7 +234,11 @@ def main():
     chk("真机: 修正轮触发条件 == onfail (前提下真)", dag.get("correction_mode") == "onfail",
         str(dag.get("correction_mode")))
     if dag.get("saturated") is True:
-        print("  [NOTE] 真机臂首轮即全对 (饱和) ⇒ 修复率 n/a, 本轮对真机无分辨力 (如实标注, 非失败)")
+        # R417 反饱和教训: 饱和 ⇒ 无分辨力, **不是通过**。真机臂饱和时轮数恒为 1 ⇒
+        # 本轮目标(轮数/首次通过率真分化)未达成 ⇒ 判 2 (未分化), 不得真空变绿。
+        print("  [FAIL] 真机臂首轮即全对 (饱和) ⇒ 修复率 n/a, 轮数无分化 ⇒ 本轮目标未达成")
+        print("RESULT=SATURATED_NO_DISCRIMINATION 处置: 加题/加族/换更紧用例后重跑 (勿视为通过)")
+        fails.append("真机未分化(饱和)")
     else:
         # C1 只允增益 (硬): 修正轮只对首轮未过题发 ⇒ 两轮合并必 >= 首轮
         chk("真机 C1 非回归: 两轮合并整题全对率 >= 首次通过率",

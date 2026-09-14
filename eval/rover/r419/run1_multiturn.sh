@@ -17,6 +17,19 @@ export PATH="$DOTNET_ROOT:$PATH"
 LOG_DIR="$HERE/logs"
 mkdir -p "$LOG_DIR"
 NS="${R419_NS:-b$(date +%m%d%H%M)}"
+# 批参数可换 (反饱和批): 题族 / 题数 / 种子 / 臂 tag 前缀
+FAMILIES="${R419_FAMILIES:-json_mini}"
+N="${R419_N:-3}"
+SEED="${R419_SEED:-419}"
+PREFIX="${R419_PREFIX:-r419b}"
+# R419 归档铁律: 每次测量必须**唯一批次后缀** —— 同 NS 重跑会静默覆盖已有读数
+# (本轮实测: 同 NS 二次跑把「首次通过率 0.8333」那次的 JSON 覆盖掉了 ⇒ 读数不可复验)。
+for arm in ctlpos ctlneg agent; do
+  if ls "$REPO/data/probe/"*"${PREFIX}$arm-$NS"*.json >/dev/null 2>&1; then
+    echo "REFUSE_NS_COLLISION: 批次后缀 $NS 已有 $arm 臂产物 ⇒ 换 R419_NS (禁止覆盖既有读数)"
+    exit 3
+  fi
+done
 BIN="src/agent.host/bin/Release/net10.0/linux-x64/native/agenthost"
 
 echo "=== 批次后缀 NS=$NS ==="
@@ -30,20 +43,20 @@ echo "disk_free_mb=$FREE_MB mem_available_mb=$AVAIL_MB"
 if [ "${FREE_MB:-0}" -lt 2048 ]; then echo "ABORT_DISK_FREE (需 ≥2048MB)"; echo "R419_EXIT=3"; exit 3; fi
 if [ "${AVAIL_MB:-0}" -lt 700 ]; then echo "ABORT_MEM_LOW (需 ≥700MB, 子进程内存计入预算)"; echo "R419_EXIT=3"; exit 3; fi
 
-run_arm () {  # $1=臂前缀 $2=solver
-  TAG="$1-$NS"
+run_arm () {  # $1=臂名(ctlpos/ctlneg/agent) $2=solver
+  TAG="$PREFIX$1-$NS"
   echo "--- 臂 $TAG ($2) ---"
-  python3 -u eval/probe/run_probe.py --kind program --families json_mini --n 3 --seed 419 \
-      --turns 2 --solver "$2" --tag "$TAG" > "$LOG_DIR/$TAG.log" 2>&1
+  python3 -u eval/probe/run_probe.py --kind program --families "$FAMILIES" --n "$N" --seed "$SEED" \
+      --turns 2 --correction onfail --solver "$2" --tag "$TAG" > "$LOG_DIR/$TAG.log" 2>&1
   local rc=$?
   echo "STEP_EXIT_$1=$rc"
   tail -3 "$LOG_DIR/$TAG.log"
   return $rc
 }
 
-run_arm r419bctlpos "mutation:delayfix"; pos_rc=$?
-run_arm r419bctlneg "mutation:nofix";    neg_rc=$?
-run_arm r419bagent  "agent";             ag_rc=$?
+run_arm ctlpos "mutation:delayfix"; pos_rc=$?
+run_arm ctlneg "mutation:nofix";    neg_rc=$?
+run_arm agent  "agent";             ag_rc=$?
 
 echo "=== 多轮表 ==="
 python3 eval/probe/process_metrics.py --multiturn --report > "$LOG_DIR/process_metrics-$NS.out" 2>&1
@@ -51,7 +64,7 @@ echo "STEP_EXIT_metrics=$?"
 cat "$LOG_DIR/process_metrics-$NS.out"
 
 echo "=== 判据检查 (预注册) ==="
-python3 eval/rover/r419/check_multiturn.py --ns "$NS" | tee "$LOG_DIR/check-$NS.out"
+python3 eval/rover/r419/check_multiturn.py --ns "$NS" --prefix "$PREFIX" | tee "$LOG_DIR/check-$NS.out"
 chk_rc=${PIPESTATUS[0]}
 
 # 批结论: 任一臂执行失败 ⇒ 测量失败(3); 判据红 ⇒ 断言失败(2); 全绿 ⇒ 0
