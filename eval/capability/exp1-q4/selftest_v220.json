@@ -1,0 +1,177 @@
+{
+  "selftest": "probe_doc_ref_integrity-v2.2.0",
+  "all_pass": true,
+  "n_checks": 14,
+  "n_pass": 14,
+  "checks": [
+    {
+      "check": "const_codepoints_0",
+      "got": [
+        24050,
+        21024
+      ],
+      "want": [
+        24050,
+        21024
+      ],
+      "pass": true
+    },
+    {
+      "check": "const_codepoints_2",
+      "got": [
+        24050,
+        36864,
+        24441
+      ],
+      "want": [
+        24050,
+        36864,
+        24441
+      ],
+      "pass": true
+    },
+    {
+      "check": "const_window",
+      "got": 60,
+      "want": 60,
+      "pass": true
+    },
+    {
+      "check": "L2_single_cite_true_absent",
+      "got": [
+        "symbol_absent"
+      ],
+      "want": [
+        "symbol_absent"
+      ],
+      "pass": true
+    },
+    {
+      "check": "L3_multi_cite_no_cross_flag",
+      "got": [
+        "ok",
+        "ok"
+      ],
+      "want": [
+        "ok",
+        "ok"
+      ],
+      "pass": true
+    },
+    {
+      "check": "L3_attr_mode",
+      "got": [
+        "nearest_prev",
+        "nearest_prev"
+      ],
+      "want": [
+        "nearest_prev",
+        "nearest_prev"
+      ],
+      "pass": true
+    },
+    {
+      "check": "L3_symbols_per_citation",
+      "got": [
+        [
+          "AlphaThing"
+        ],
+        [
+          "BetaThing"
+        ]
+      ],
+      "want": [
+        [
+          "AlphaThing"
+        ],
+        [
+          "BetaThing"
+        ]
+      ],
+      "pass": true
+    },
+    {
+      "check": "L4_single_cite_ok",
+      "got": [
+        "ok"
+      ],
+      "want": [
+        "ok"
+      ],
+      "pass": true
+    },
+    {
+      "check": "L5_dead_no_marker_stays_red",
+      "got": [
+        "stale_path"
+      ],
+      "want": [
+        "stale_path"
+      ],
+      "pass": true
+    },
+    {
+      "check": "L6_dead_marker_retired",
+      "got": [
+        "retired"
+      ],
+      "want": [
+        "retired"
+      ],
+      "pass": true
+    },
+    {
+      "check": "L7_live_path_marker_ignored",
+      "got": [
+        "ok"
+      ],
+      "want": [
+        "ok"
+      ],
+      "pass": true
+    },
+    {
+      "check": "L8_marker_beyond_window_stays_red",
+      "got": [
+        "stale_path"
+      ],
+      "want": [
+        "stale_path"
+      ],
+      "pass": true
+    },
+    {
+      "check": "L9_adjacent_closing_tick_no_swallow",
+      "got": [
+        "ok",
+        "ok"
+      ],
+      "want": [
+        "ok",
+        "ok"
+      ],
+      "pass": true
+    },
+    {
+      "check": "L9_symbols_survive_window_slice",
+      "got": [
+        [
+          "AlphaThing"
+        ],
+        [
+          "BetaThing"
+        ]
+      ],
+      "want": [
+        [
+          "AlphaThing"
+        ],
+        [
+          "BetaThing"
+        ]
+      ],
+      "pass": true
+    }
+  ],
+  "exit_code": 0
+}
