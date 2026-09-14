@@ -232,8 +232,10 @@ public static class ServiceCollectionExtensions
             // R352: EmbeddingRouter = RemoteEmbedder (语义) + hash 兜底 (本地 bge 已移除)
             cfg.EmbeddingFunction = text => new agent.llamalocal.EmbeddingRouter(
                 sp.GetRequiredService<agent.contextgradient.ITextEmbedder>()).Embed(text);
-            // R404 (用户钦定): 检索融合 = 优化后的 bge 落地形态 —— bge-base 语义路 + 词法路 + RRF(k0=10, w=1:1)。
-            // 冻结集 (1299 语料/120 查询) 实测 r@10 0.6333 → 0.8500 (+13 条查询, 配对 McNemar p=0.0023);
+            // R404 (用户钦定): 检索融合 = 词法路 + dense 路 + RRF(k0=10, w=1:1)。
+            // 产品口径 (dense 路喂的是链上真身 bge-q8.gguf = 25.2MB bge-small-zh-v1.5 q8):
+            // 冻结集 (1299 语料/120 查询) 实测 r@10 0.6333 → 0.7833 (+18 条查询, 配对 McNemar p=4e-05);
+            // 旧注释的 0.8500 是 dense-base(110MB) 评测对照口径 —— 跨基座混算之误, 已订正。
             // Fusion=null 时完全退回旧 hybrid 加权路 (行为兼容)。
             cfg.Fusion = new agent.rag.FusionOptions { Enabled = true, K0 = 10, DenseWeight = 1.0, LexicalWeight = 1.0 };
             return cfg;

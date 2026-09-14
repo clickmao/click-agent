@@ -26,9 +26,12 @@ public sealed class LlamaCppEmbedderOptions
 
     public static LlamaCppEmbedderOptions FromEnvironment()
     {
+        // 默认路径 = 链上真身(bge-small-zh-v1.5 的 Q8_0 GGUF, 25.2MB)。此前默认指向 110MB 的
+        // bge-base-zh-v1.5-q8.gguf, 而该文件已按用户令(2026-09-14)从本机删除 ⇒ 若 env 未设,
+        // 旧默认会让 IsAvailable=false 静默降级到 NullTextEmbedder(空心向量)。默认值必须与部署一致。
         var modelPath = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_BGE_MODEL")
             ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                            ".agentframework", "models", "bge-base-zh-v1.5-q8.gguf");
+                            ".agentframework", "models", "bge-q8.gguf");
         var bin = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_LLAMA_BIN");
         return new LlamaCppEmbedderOptions
         {

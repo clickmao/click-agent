@@ -22,8 +22,11 @@ public class RAGConfig
     public bool EnableHybridSearch { get; set; } = true;
 
     /// <summary>R404 (用户钦定): 检索融合配置 —— null = 关闭 (走旧 hybrid 加权路径, 既有单测不受影响);
-    /// 产品 DI 显式开启 = bge-base 语义路 + 词法路 + RRF(k0=10, w=1:1)。
-    /// 冻结集 (1299 语料/120 查询) 实测 r@10 0.6333 → 0.8500, 报告 docs/reports/bge/fusion-knob-grid-2026-09-14.md。</summary>
+    /// 产品 DI 显式开启 = dense 语义路 + 词法路 + RRF(k0=10, w=1:1)。dense 路实际喂的是链上真身
+    /// (25.2MB bge-small-zh-v1.5 q8 = bge-q8.gguf) ⇒ **产品口径** 冻结集实测 r@10 0.6333 → 0.7833
+    /// (+18 条查询, 配对 p=4e-05), 证据 eval/bge/results/fusion-lex-small-2026-09-14.json。
+    /// 旧记的 0.8500 是 dense-base(110MB) 评测对照口径 —— 跨基座混算之误, 已订正
+    /// (该权重已按用户令删除; 向量缓存保留 ⇒ 对照读数仍可复现)。</summary>
     public FusionOptions? Fusion { get; set; }
     public List<string> StopWords { get; set; } = new() { "的", "了", "在", "是", "我", "有", "和", "就", "不", "人" };
 }

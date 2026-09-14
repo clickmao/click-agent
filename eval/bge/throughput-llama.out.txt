@@ -1,0 +1,22 @@
+t=2 L=  32 B= 1 | 冷   0.120s   307.42 tok/s   120.36 ms/条 | 热   0.106s   349.25 tok/s
+t=2 L=  32 B= 8 | 冷   0.780s   379.29 tok/s    97.55 ms/条 | 热   0.755s   391.92 tok/s
+t=2 L=  32 B=32 | 冷   3.081s   384.29 tok/s    96.28 ms/条 | 热   3.219s   367.87 tok/s
+t=2 L= 256 B= 1 | 冷   0.720s   362.58 tok/s   719.83 ms/条 | 热   0.683s   381.93 tok/s
+t=2 L= 256 B= 8 | 冷   5.950s   350.95 tok/s   743.69 ms/条 | 热   5.411s   385.91 tok/s
+t=2 L= 512 B= 1 | FAILED HTTP 500: {"error":{"code":500,"message":"input (517 tokens) is too large to process. increase the physical batch size (current batch size: 512)","type":"server_error"}}
+t=2 L= 512 B= 4 | FAILED HTTP 500: {"error":{"code":500,"message":"input (517 tokens) is too large to process. increase the physical batch size (current batch size: 512)","type":"server_error"}}
+t=1 L=  32 B= 1 | 冷   0.100s   371.30 tok/s    99.65 ms/条 | 热   0.094s   395.02 tok/s
+t=1 L=  32 B= 8 | 冷   0.708s   417.99 tok/s    88.52 ms/条 | 热   0.705s   419.70 tok/s
+t=1 L=  32 B=32 | 冷   2.814s   420.71 tok/s    87.95 ms/条 | 热   2.825s   419.06 tok/s
+t=1 L= 256 B= 1 | 冷   0.677s   385.53 tok/s   676.99 ms/条 | 热   0.668s   390.63 tok/s
+t=1 L= 256 B= 8 | 冷   5.347s   390.50 tok/s   668.37 ms/条 | 热   5.357s   389.78 tok/s
+t=1 L= 512 B= 1 | FAILED HTTP 500: {"error":{"code":500,"message":"input (517 tokens) is too large to process. increase the physical batch size (current batch size: 512)","type":"server_error"}}
+t=1 L= 512 B= 4 | FAILED HTTP 500: {"error":{"code":500,"message":"input (517 tokens) is too large to process. increase the physical batch size (current batch size: 512)","type":"server_error"}}
+
+DONE -> /home/agentuser/AgentFramework/eval/bge/throughput-llama.json
+t=2 L= 490 B= 1 | 冷   1.503s   329.31 tok/s  1503.13 ms/条 | 热   1.484s   333.65 tok/s
+t=2 L= 490 B= 4 | 冷   5.956s   332.46 tok/s  1488.88 ms/条 | 热   6.019s   328.98 tok/s
+t=1 L= 490 B= 1 | 冷   1.606s   308.26 tok/s  1605.77 ms/条 | 热   1.594s   310.63 tok/s
+t=1 L= 490 B= 4 | 冷   6.465s   306.25 tok/s  1616.34 ms/条 | 热   6.358s   311.43 tok/s
+
+DONE -> /home/agentuser/AgentFramework/eval/bge/throughput-llama.json

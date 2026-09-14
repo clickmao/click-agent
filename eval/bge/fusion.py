@@ -170,7 +170,13 @@ def main():
                 dense_scores(cached_vecs("fuse_corpus", ctexts, mt, L.MODEL, L.PORT),
                              cached_vecs("fuse_queries", qtexts, mt, L.MODEL, L.PORT))]
     base_mt = os.path.basename(BASE_MODEL).replace(".gguf", "")
-    assert os.path.exists(BASE_MODEL), BASE_MODEL
+    if not os.path.exists(BASE_MODEL):
+        # 用户令 2026-09-14: 本机只保留链上真身(bge-small q8), 110MB base 已删除。
+        # base 臂降级为**只读缓存复现**; 缓存缺失则明确失败 —— 绝不静默改用 small 顶替
+        # (跨基座混算会把 0.8500 这种 base 口径读数冒充成产品读数 = 空心指标)。
+        _cached = os.path.isdir(L.CACHE) and any(
+            f.startswith(base_mt + "__fuse_") for f in os.listdir(L.CACHE))
+        assert _cached, "base 模型已删且无向量缓存, base 臂不可复现: " + BASE_MODEL
     base_rl = [ranks_from_scores(s) for s in
                dense_scores(cached_vecs("fuse_corpus", ctexts, base_mt, BASE_MODEL, PORT_BASE),
                             cached_vecs("fuse_queries", qtexts, base_mt, BASE_MODEL, PORT_BASE))]
