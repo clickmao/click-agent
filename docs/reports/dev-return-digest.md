@@ -29,6 +29,11 @@
 | r424 | verdict-r424.json | **PASS** | 3 | `bool_fields` |
 | r425 | verdict-r425-b2.json | **PARTIAL** | 0 | `n/a` |
 | r426 | verdicts.json | **?** | 0 | `n/a` |
+| r429 | verdict-C-k8p-r429post1.json | **?** | 4 | `bool_fields` |
+| r429 | verdict-C-k8r-r429post1.json | **?** | 4 | `bool_fields` |
+| r429 | verdict-C-k8r-r429post2.json | **?** | 4 | `bool_fields` |
+| r429 | verdict-C-k8r-r429pre1.json | **?** | 4 | `bool_fields` |
+| r429 | verdict-r429.json | **?** | 0 | `n/a` |
 | r421 | verdict-r421.json | **PASS** | 13 | `checks` |
 | r422 | verdict-r422.json | **PARTIAL** | 8 | `checks` |
 | r423 | verdict-r423-run1-predictor-error.json | **FAIL** | 7 | `checks` |
@@ -80,10 +85,11 @@
 
 ## 4. 轮次提交（本地；推送暂停令生效）
 
-- 未推送提交数: **85**
+- 未推送提交数: **86**
 
 | commit | 主题 |
 |---|---|
+| `b1b5361` | digest: R428 重建 (137 行, ahead=85) |
 | `52c5622` | R428: 同文折叠 (排序/去重层) —— R427 根因判定的产品落地 |
 | `e0b9058` | R428-hold: 循环入口探针 v3 — 计划项行 (expN) 入账 + 自陈欠项判 open; 自检 15/15 (11 判定 + 4 负控); open 2→8, mode 恒 tasks; 零产品源码改动/零 dotnet/不占轮号 (R428 由 30m 节拍作业占用中) |
 | `974cac7` | R426: 关系判官(CorrectionDetector L2)本地化 — 跳过轮残留远端微调用 4→1; A→C token k6 -67.6%/k8 -81.0%; 判据 PASS12/PARTIAL2/FAIL2/UNDECIDABLE1; k8 门判翻转反例登记; AOT IL 警告0 + 单测23/23 |
@@ -111,8 +117,8 @@
 
 ## 5. 台账
 
-- `docs/verification-registry.json`: **62** 行, updated_round = **R428**
-- `eval/capability/kpi.jsonl` 已记轮次: R402, loop-mechanism, R401, R411-V, R403-scope, R413, R414, R415, R416, R419, R420, R421, R422, R423, R424, R425, R427, R428, R428-hold
+- `docs/verification-registry.json`: **63** 行, updated_round = **R429**
+- `eval/capability/kpi.jsonl` 已记轮次: R402, loop-mechanism, R401, R411-V, R403-scope, R413, R414, R415, R416, R419, R420, R421, R422, R423, R424, R425, R427, R428, R428-hold, R429
 - 已知盲区: 状态检测器只读 `data/probe/kpi.jsonl`; 轮次台账另有 `data/probe/capability/kpi.jsonl`（孤儿）
 - **轮号命名空间（R423 实证，轮内已消解）**: 轮号取 `max+1` 前必须复跑「pgrep 活动执行体 + 锁文件 + 目标轮文件存在时比对 mtime（>10min 才算 stale）」全序列。R423 曾与并发执行体撞号（本侧=检索打分；对侧=AOT 发布形态复现），对侧随后**让号**至 R424（`eval/rover/r424/` + `docs/plans/v0.45.0-r424-aot-mainline-replication.md`）⇒ 最终 R423=检索打分 / R424=AOT 形态复现。**处置纪律**: 碰撞当一等事件（两支都登记、不改写历史、不静默改名）；提交只用**显式路径**（禁 `git add -A`，防卷入对侧未跟踪产物）。
 
