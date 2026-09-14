@@ -18,6 +18,7 @@ INSTR = "eval/capability/exp1-q4/probe_doc_ref_integrity.py"
 
 r = json.loads(ATTR.read_text(encoding="utf-8"))
 st = json.loads(SELF.read_text(encoding="utf-8"))
+after = json.loads((Q6 / "attribution_q6_after_docs.json").read_text(encoding="utf-8"))
 S, R = r["stale_path"], r["relocated"]
 sc, rc = Counter(x["class"] for x in S), Counter(x["class"] for x in R)
 dels = Counter((x["del"]["deletion_sha"][:7], x["del"]["deletion_commits"][0]["subject"].split(":")[0],
@@ -39,7 +40,7 @@ reloc_rows = [(x["class"], f"`{x['path']}`", f"`{x['target']}`" if x.get("target
                f"`{x['doc']}`") for x in R]
 del_rows = [(f"`{k[0]}`", k[1], k[2], v) for k, v in sorted(dels.items())]
 
-readme = f"""# EXP1-Q6 证据 · 全仓失效引用的四级归属复核 (R440)
+readme = f"""# EXP1-Q6 证据 · 全仓失效引用的四级归属复核
 
 > 判据 (预注册于复核器头部) / 复核器: `{PROBE}` **{r['probe']}**
 > 输入: `eval/capability/exp1-q6/result_q6_before.json` (仪器 v2.3.0 读数, 未改动)
@@ -101,9 +102,16 @@ python3 {PROBE} --repo . --result eval/capability/exp1-q6/result_q6_before.json 
 　"变更前勘查的记录"与"变更后残留"在时间轴上同形, 判据不可分 (要判别需变更前快照/变更描述, 时间戳无用)。
 ④ 时间轴锚点是**版本库历史**锚: 未入版本库的文档无锚 ⇒ 弃权 (`ambiguous_no_time_axis` 本档 {sc.get('ambiguous_no_time_axis', 0)} 条)。
 ⑤ 语料是**移动目标** (对侧作业在改 `src/`): 本轮读数与 HEAD 绑定; 复跑前先记 HEAD。
-⑥ 本轮**两次被测测量层自身缺陷** (均先于结论修掉, 见 §6)。
+⑥ 本轮**三次被测测量层自身缺陷** (均先于结论修掉, 见 §7)。
 
-## 6. 本轮测量层自捕 (先修仪器, 再谈被测)
+## 6. 确定性复跑 (同输入两跑逐位相同)
+
+`attribution_q6_after_docs.json` = 复核器在**含本附录的语料状态**上重跑同一输入的结果:
+逐条类别 ({len(S)} stale + {len(R)} relocated, 含文档路径与行号) 与 `attribution_q6_v120.json` **逐位相同**
+(`stale {dict(sc)}` / `relocated {dict(rc)}`, `n_defects {after['n_defects']}`)。双重作用: ① 复核器确定性成立;
+② **本附录零 `src/` 路径字面量** ⇒ 未引入新引用 (仪器复跑对照: `stale_path 21→21` / `relocated 13→13` / `symbol_absent 65→65` / `stale_lines 4→4`)。
+
+## 7. 测量层自捕 (先修仪器, 再谈被测)
 
 | # | 版本 | 缺陷 | 症状 | 修法 |
 |---|---|---|---|---|
@@ -118,7 +126,7 @@ out_readme.write_text(readme, encoding="utf-8")
 appendix = f"""
 ---
 
-## 附录 G · EXP1-Q6 全仓剩余失效引用的四级归属复核 (R440, L1 静态)
+## 附录 G · EXP1-Q6 全仓剩余失效引用的四级归属复核 (L1 静态; 本侧 60m 作业不占主线轮号)
 
 ### G.1 触发与范围
 

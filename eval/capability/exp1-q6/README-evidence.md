@@ -1,4 +1,4 @@
-# EXP1-Q6 证据 · 全仓失效引用的四级归属复核 (R440)
+# EXP1-Q6 证据 · 全仓失效引用的四级归属复核
 
 > 判据 (预注册于复核器头部) / 复核器: `eval/capability/exp1-q6/attribute_failed_refs.py` **attribute_failed_refs-v1.2.0**
 > 输入: `eval/capability/exp1-q6/result_q6_before.json` (仪器 v2.3.0 读数, 未改动)
@@ -122,9 +122,10 @@ python3 eval/capability/exp1-q6/attribute_failed_refs.py --repo . --result eval/
 
 ## 6. 确定性复跑 (同输入两跑逐位相同)
 
-`attribution_q6_after_docs.json` = 复核器在**含附录 G 的语料状态**上重跑同一输入的结果:
-逐条类别 (**21 stale + 13 relocated, 含文档路径与行号**) 与 `attribution_q6_v120.json` **逐位相同**,
-`n_defects 0` / `exit 0`。双重作用: ① 复核器确定性成立; ② **附录 G 自身零 `src/` 路径字面量** ⇒ 未引入新引用 (仪器复跑对照见 §1)。
+`attribution_q6_after_docs.json` = 复核器在**含本附录的语料状态**上重跑同一输入的结果:
+逐条类别 (21 stale + 13 relocated, 含文档路径与行号) 与 `attribution_q6_v120.json` **逐位相同**
+(`stale {'retired_after_write': 13, 'same_commit_as_deletion': 8}` / `relocated {'fixable_direct': 10, 'path_elision': 3}`, `n_defects 0`)。双重作用: ① 复核器确定性成立;
+② **本附录零 `src/` 路径字面量** ⇒ 未引入新引用 (仪器复跑对照: `stale_path 21→21` / `relocated 13→13` / `symbol_absent 65→65` / `stale_lines 4→4`)。
 
 ## 7. 测量层自捕 (先修仪器, 再谈被测)
 
