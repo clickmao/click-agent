@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R476",
+ "updated_round": "R477",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -3148,6 +3148,137 @@
     "eval/rover/r476/band_verdict_r476.py"
    ],
    "owner_round": "R476"
+  },
+  {
+   "id": "r477.replay-guard-real-e2e",
+   "level": "L3",
+   "capability": "R475 复述回放守卫**首次真机复演**: 复述轮(t6「再讲一遍。」/t9「从头再说。」)用户可见回复 = 前序**实质**答案逐字回放(298 字符, 非模板/非空正文徽标), 且该轮供应商侧 0 调用; 回放事件按输入指纹对齐(`local_gate_skip_reply.msg_sha16 == LocalInputFingerprint.Sha16(该轮用户消息)`, 与 turns 落盘回复逐字同源); 对照面: 同网格 Arole 臂同轮走远端(1-3 次调用)",
+   "evidence_cmd": "python3 eval/rover/r477/check_r477.py",
+   "evidence_path": "eval/rover/r477/verdict-r477.json",
+   "negative_control": "预注册 C3/C4 **字面被证伪并收窄**(C3 期待 `repeat_degrade_remote` 降级事件=0 例, C4 期待 t9==t8 逐字=false) ⇒ 收窄为事后判据 P1/P2/P3 单列 checks_posthoc, 原文不覆盖; 假绿防线: P3 要求遥测 kind=repeat_verbatim ∧ 用户所见文本 == 前序可回放者逐字 ∧ 输入指纹配对, 三者同时成立; 反例面: 同臂 t2-t5 纯确认轮仍是 kind=template(未被误升级)",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "e55aa0c08189",
+    "instrument": "eval/rover/r477/check_r477.py",
+    "instrument_sha12": "47d3280a39f4",
+    "binding": "audit-pin",
+    "audited_by_round": "R477"
+   },
+   "covers": [
+    "src/agent.modelqueue/ModelQueueRouter.cs",
+    "src/agent.modelqueue/LocalInputFingerprint.cs",
+    "src/agent/IndustrialAgentV2.cs",
+    "eval/rover/r477/prereg_r477.json",
+    "eval/rover/r477/check_r477.py",
+    "eval/rover/r477/run_arm_real_r477.sh",
+    "eval/rover/r477/run_arm_R_only.sh",
+    "eval/rover/r477/verdict-r477.json",
+    "eval/rover/r477/usage-Arole.jsonl",
+    "eval/rover/r477/usage-R.jsonl",
+    "eval/rover/r477/turns-Arole.jsonl",
+    "eval/rover/r477/turns-R.jsonl"
+   ],
+   "owner_round": "R477"
+  },
+  {
+   "id": "r477.kpi-drop-real-endpoint-arms",
+   "level": "L3",
+   "capability": "真端点双臂 KPI 复测(同网格 task-p12/同二进制 agenthost db187e0eae7f26ea/仅门控不同): 供应商 usage 真值(A) 73649 token/21 调用 → (R) 37744 token/10 调用 ⇒ 总 token **-48.75%**(≥30% 达标), prompt -47.9%(68329→35600), completion -59.7%(5320→2144); 成本上界 0.024301→0.011970 CNY(闸 0.15 未触); 命中 58624→28160",
+   "evidence_cmd": "python3 eval/rover/r477/check_r477.py",
+   "evidence_path": "eval/rover/r477/verdict-r477.json",
+   "negative_control": "双臂为同夹具同二进制互控(Arole=门关) ⇒ 非恒绿; 口径 = 供应商 usage(prompt+completion)真值, 非桩估值; 阻塞(402)=0/两臂 12 轮全 ok; 身份式 prompt==hit+miss 逐行可核",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "e55aa0c08189",
+    "instrument": "eval/rover/r477/check_r477.py",
+    "instrument_sha12": "47d3280a39f4",
+    "binding": "audit-pin",
+    "audited_by_round": "R477"
+   },
+   "covers": [
+    "src/agent.modelqueue/ModelQueueRouter.cs",
+    "src/agent.modelqueue/LocalInputFingerprint.cs",
+    "src/agent/IndustrialAgentV2.cs",
+    "eval/rover/r477/prereg_r477.json",
+    "eval/rover/r477/check_r477.py",
+    "eval/rover/r477/run_arm_real_r477.sh",
+    "eval/rover/r477/run_arm_R_only.sh",
+    "eval/rover/r477/verdict-r477.json",
+    "eval/rover/r477/usage-Arole.jsonl",
+    "eval/rover/r477/usage-R.jsonl",
+    "eval/rover/r477/turns-Arole.jsonl",
+    "eval/rover/r477/turns-R.jsonl"
+   ],
+   "owner_round": "R477"
+  },
+  {
+   "id": "r477.band-fields-live",
+   "level": "L3",
+   "capability": "R476 分档 7 字段**实发存在**: 真机每主调用遥测行均带 cache_band/band_source/band_growth/ceiling/target/margin/verdict(Arole 13/13, R 7/7 行); 取值域合法: verdict ∈ 5 态{at_target,below_ceiling,below_target,not_applicable,unreported}, target ∈ {-1}∪(0,1], ceiling ∈ {-1}∪(0,1], growth ∈ [0,~348)",
+   "evidence_cmd": "python3 eval/rover/r477/check_r477.py",
+   "evidence_path": "eval/rover/r477/verdict-r477.json",
+   "negative_control": "器具按**源码派生**字段名判定(fail-closed: 取不到即抛 MISS(src-const)); 预注册名 `cache_growth`/`cache_band_target` 与源码 `cache_band_growth`/`cache_target` 不一致 ⇒ 漂移单列(prereg_band_key_drift), 不改源码迁就预注册",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "e55aa0c08189",
+    "instrument": "eval/rover/r477/check_r477.py",
+    "instrument_sha12": "47d3280a39f4",
+    "binding": "audit-pin",
+    "audited_by_round": "R477"
+   },
+   "covers": [
+    "src/agent.modelqueue/PromptCacheRedline.cs",
+    "src/agent.modelqueue/ModelQueueRouter.cs",
+    "eval/rover/r477/prereg_r477.json",
+    "eval/rover/r477/check_r477.py",
+    "eval/rover/r477/run_arm_real_r477.sh",
+    "eval/rover/r477/run_arm_R_only.sh",
+    "eval/rover/r477/verdict-r477.json",
+    "eval/rover/r477/usage-Arole.jsonl",
+    "eval/rover/r477/usage-R.jsonl",
+    "eval/rover/r477/turns-Arole.jsonl",
+    "eval/rover/r477/turns-R.jsonl"
+   ],
+   "owner_round": "R477"
+  },
+  {
+   "id": "r477.empty-body-root-cause",
+   "level": "L3",
+   "capability": "用户可见「⚠ 模型未产出正文」徽标定因: 真机 20/20 空正文调用的 `finish_reason == tool_calls`(请求携带 4 个 tools), `max_tokens == None`(**非**输出预算截断), `reasoning_tokens_max` 395(Arole)/122(R) ≪ 预算 ⇒ 徽标文案「推理过程占满输出预算」为**误诊**; 对照面: 有正文组 finish_reason=stop",
+   "evidence_cmd": "python3 eval/rover/r477/check_r477.py",
+   "evidence_path": "eval/rover/r477/verdict-r477.json",
+   "negative_control": "R474 Arole 臂请求体与 R477 逐字段同源(仅 rundir 路径不同)而当时 0 徽标 ⇒ 归因**上游行为漂移**, 不归因本轮零改动; 双列: 供应商 finish_reason 与产品徽标分开记, 禁把徽标数当空响应真值",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "e55aa0c08189",
+    "instrument": "eval/rover/r477/check_r477.py",
+    "instrument_sha12": "47d3280a39f4",
+    "binding": "audit-pin",
+    "audited_by_round": "R477"
+   },
+   "covers": [
+    "src/agent.modelqueue/ModelQueueRouter.cs",
+    "src/agent.modelqueue/LocalInputFingerprint.cs",
+    "src/agent/IndustrialAgentV2.cs",
+    "eval/rover/r477/prereg_r477.json",
+    "eval/rover/r477/check_r477.py",
+    "eval/rover/r477/run_arm_real_r477.sh",
+    "eval/rover/r477/run_arm_R_only.sh",
+    "eval/rover/r477/verdict-r477.json",
+    "eval/rover/r477/usage-Arole.jsonl",
+    "eval/rover/r477/usage-R.jsonl",
+    "eval/rover/r477/turns-Arole.jsonl",
+    "eval/rover/r477/turns-R.jsonl"
+   ],
+   "owner_round": "R477"
   }
  ],
  "aot_check_policy": "release_tag_only",

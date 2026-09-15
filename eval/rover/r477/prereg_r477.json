@@ -1,0 +1,55 @@
+{
+ "round": "R477",
+ "date": "2026-09-16",
+ "title": "R475 复述回放守卫的真机 E2E 复演 + R476 分档打点实发验证 + KPI 降幅复测 (relay v2 采 finish_reason/empty_body)",
+ "prereg_written_before_run": true,
+ "why": [
+  "R474 已把 KPI 分母换成供应商 usage 真值(总 token -56.94%), 但同时暴露质量回归: R 臂 12 轮里 6 轮模板应答 + 3 轮用户可见「模型未产出正文」徽标, 实质答复仅 3/12; 其中 t6「再讲一遍。」/t9「从头再说。」被判 mechanical:repeat ⇒ 回模板",
+  "R475 用代码修了这条路径(复述轮取不到可回放实质答复 ⇒ 撤销 Skip 降级远端; 可回放 ⇒ 逐字回放), 但**未做真机 E2E**(诚实边界 #1): 质量修复只经结构门 + 单元测试",
+  "R476 的 7 个分档字段(cache_band*)在真实遥测上**仍未取到实发样本**(诚实边界 #1/#2): 真实流 43 条全 not_applicable, 同会话多轮真机样本 0",
+  "R475 器具 relay v2 已补 finish_reason/content_len/reasoning_tokens/empty_body + 逐调用恒等式, 但**未在真实链路上跑过一次** ⇒ R474 空正文根因未定"
+ ],
+ "step": "同一 p12 网格 / 同一 AOT 二进制(/tmp/pub_r476/agenthost, 含 R475+R476 改动) / 同一 role 夹具(skeptic-growth.rbin), 唯一差异 = 门控与判官路由标志; 唯一器具差异 = 远端中继由 relay_real.py(v1) 换为 relay_real_r475.py(v2, 另存不改 v1)",
+ "arms": {
+  "Arole": "门关 + relation_judge=on ⇒ 生产等价分母",
+  "R": "门开 + rj=on + repeat_skip=on ⇒ 主判据面 (r1 在管道内)"
+ },
+ "budget_guard": {
+  "max_calls": 40,
+  "max_cny_upper": 0.15,
+  "pricing": "config/base/models.yaml deepseek-flash price_in 0.27 / price_out 1.10 CNY per 1M; 命中不折价 ⇒ 记为成本上界",
+  "fail_closed": "越限 ⇒ 中继回 402 并记账, 不静默超额",
+  "mem_gate_mb": 2650
+ },
+ "criteria": {
+  "C1 链真跑通": "双臂 turns_ok=12/12 ∧ 宿主进程正常退出 ∧ 中继 blocked=0",
+  "C2 KPI 降幅": "总 token 降幅 = 1 - total(R)/total(Arole) >= 30% (供应商 usage 真值口径)",
+  "C3 t6(再讲一遍。) 复述轮·上一条=模板不可回放": "用户可见答复非 LocalSkipFallback 模板 ∧ 非空正文徽标(实质) ⇒ R475 的「撤销 Skip 降级远端」真机生效; 遥测出现 repeat_degrade_remote 或 gate:repeat_no_replayable_prev",
+  "C4 t9(从头再说。) 复述轮·上一条=实质可回放": "用户可见答复 == t8 答复逐字 ∧ 该轮远端主调用数 = 0 (本地消化, 零 token)",
+  "C5 空正文定因面": "usage 行须带 finish_reason/choices_n/content_len/reasoning_len/reasoning_tokens/empty_body; 若出现 empty_body=true ⇒ 必须给出其 finish_reason 与 reasoning_tokens 分布 (定因, 非「未测到」)",
+  "C6 R476 分档实发": "tel-<arm>/host.jsonl 的 llm_call 行中 7 字段(cache_band/cache_band_source/cache_ceiling/cache_band_target/cache_margin/cache_growth/cache_band_verdict)齐备者 >= 1 条; cache_band_verdict ∈ {not_applicable, unreported, at_target, below_ceiling, below_target}; cache_ceiling 为 -1(未知) 或 > 0, 禁硬编码 0 冒充",
+  "C7 记账闭合(承 R475)": "llm_call + llm_call_recover 行数 == 中继 usage 行数 (每条远端调用有遥测点) ∧ recover 行含 prompt_tokens/cache_hit_tokens (R475 补的字段真机非 -1)",
+  "C8 预算与形态": "cost_cny_upper <= 0.15 ∧ blocked=0 ∧ 被测二进制 sha16 == db187e0eae7f26ea (本轮零 src 改动 ⇒ 按铁律不触发 AOT 重发布)"
+ },
+ "predicted": {
+  "Arole_calls": 20,
+  "R_calls": 9,
+  "Arole_total_tokens": "~76000 (R474 实测 76094)",
+  "R_total_tokens": "~33000 (R474 实测 32769)",
+  "降幅_pct": "45~60",
+  "t6": "非模板实质答复 (R474 为模板)",
+  "t9": "== t8 答复逐字 且零远端 (R474 为模板)"
+ },
+ "honest_boundary_pre_registered": [
+  "网格语料(p12, 12 轮短句) ≠ 真实用户分布 (R468: 真实轮可跳面 0.00%) ⇒ 本轮的降幅与质量结论**不外推**真实用户分布",
+  "同一网格内容可能已被历史臂/探针调用过 ⇒ 首调用不一定 cold, 命中量以供应商 usage 实测为准",
+  "命中是否折价仍未取到 ⇒ 成本按不折价上界报",
+  "t9 的「逐字回放」是 R466/R475 的设计判决(复述 ⇒ 回放), 本轮只验证其真机成立与否, 不评价该设计是否为最优质量策略"
+ ],
+ "not_in_scope": [
+  "改任何 src/** 代码 (本轮为验证轮; 若验证暴露缺陷 ⇒ 只落证据与下轮候选, 不在同轮改链)",
+  "recover 通道兜底模型切换",
+  "计价折价实测",
+  "真实用户轮语料在真端点的多轮跑"
+ ]
+}

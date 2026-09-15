@@ -1,0 +1,432 @@
+{
+  "binary_sha16": "db187e0eae7f26ea",
+  "source_consts": {
+    "template": "收到，继续按当前方向推进，本轮不重新规划。",
+    "banner": "⚠ 模型未产出正文",
+    "verbatim": "repeat_verbatim",
+    "band_keys": [
+      "cache_band",
+      "cache_band_source",
+      "cache_band_growth",
+      "cache_ceiling",
+      "cache_target",
+      "cache_margin",
+      "cache_band_verdict"
+    ],
+    "band_verdicts": [
+      "at_target",
+      "below_ceiling",
+      "below_target",
+      "not_applicable",
+      "unreported"
+    ]
+  },
+  "prereg_band_key_drift": [
+    "cache_band_growth",
+    "cache_band_target",
+    "cache_growth",
+    "cache_target"
+  ],
+  "per_arm": {
+    "Arole": {
+      "turns_ok": 12,
+      "turns_n": 12,
+      "errors": [],
+      "relay_calls": 21,
+      "prompt": 68329,
+      "completion": 5320,
+      "total": 73649,
+      "hit": 58624,
+      "miss": 9705,
+      "hit_rate": 0.858,
+      "cost_upper": 0.024301,
+      "blocked_402": 0,
+      "llm_call_rows": 13,
+      "recover_rows": 8,
+      "finish_reason": {
+        "tool_calls": 16,
+        "stop": 5
+      },
+      "empty_body_n": 15,
+      "empty_body_reasoning": [
+        74,
+        21,
+        71,
+        226,
+        57,
+        91,
+        57,
+        166,
+        48,
+        27,
+        314,
+        190,
+        162,
+        234,
+        395
+      ],
+      "skip_reply_kinds": [],
+      "tele_points": [
+        "assembly",
+        "balance_sync",
+        "boot",
+        "cache_redline_violation",
+        "context_gate",
+        "continuation_brief",
+        "continuation_closure",
+        "contract_declaration_hidden",
+        "correction_judge",
+        "evidence_gate",
+        "intent",
+        "llm_call",
+        "llm_call_recover",
+        "local_turn_gate_config",
+        "loop_turn",
+        "memory",
+        "micro_decision",
+        "phase_timing",
+        "plan",
+        "plan_ablate",
+        "plan_formal_gate",
+        "plan_formal_segment",
+        "plan_local_first",
+        "plan_node",
+        "plan_resume",
+        "plan_resume_capture",
+        "plan_route",
+        "prompt_build",
+        "skill",
+        "skill_scan",
+        "skill_trigger",
+        "tendency",
+        "tendency_bias",
+        "think_memory",
+        "think_memory_boot",
+        "think_memory_recall_gate",
+        "topic_relevance"
+      ]
+    },
+    "R": {
+      "turns_ok": 12,
+      "turns_n": 12,
+      "errors": [],
+      "relay_calls": 10,
+      "prompt": 35600,
+      "completion": 2144,
+      "total": 37744,
+      "hit": 28160,
+      "miss": 7440,
+      "hit_rate": 0.791,
+      "cost_upper": 0.01197,
+      "blocked_402": 0,
+      "llm_call_rows": 7,
+      "recover_rows": 3,
+      "finish_reason": {
+        "tool_calls": 6,
+        "stop": 4
+      },
+      "empty_body_n": 5,
+      "empty_body_reasoning": [
+        110,
+        79,
+        122,
+        78,
+        40
+      ],
+      "skip_reply_kinds": [
+        "template",
+        "template",
+        "template",
+        "template",
+        "repeat_verbatim",
+        "repeat_verbatim"
+      ],
+      "tele_points": [
+        "assembly",
+        "balance_sync",
+        "boot",
+        "cache_redline_violation",
+        "context_gate",
+        "continuation_brief",
+        "continuation_closure",
+        "contract_declaration_hidden",
+        "correction_judge",
+        "evidence_gate",
+        "intent",
+        "llm_call",
+        "llm_call_recover",
+        "local_gate_skip_history",
+        "local_gate_skip_reply",
+        "local_turn_gate",
+        "local_turn_gate_config",
+        "loop_turn",
+        "memory",
+        "micro_decision",
+        "phase_timing",
+        "plan",
+        "plan_ablate",
+        "plan_formal_gate",
+        "plan_formal_segment",
+        "plan_local_first",
+        "plan_node",
+        "plan_resume",
+        "plan_resume_capture",
+        "plan_route",
+        "prompt_build",
+        "skill",
+        "skill_scan",
+        "skill_trigger",
+        "tendency",
+        "tendency_bias",
+        "think_memory",
+        "think_memory_boot",
+        "think_memory_recall_gate",
+        "topic_relevance"
+      ]
+    }
+  },
+  "empty_body_forensics": {
+    "Arole": {
+      "has_content": {
+        "n": 6,
+        "finish_reason": {
+          "tool_calls": 1,
+          "stop": 5
+        },
+        "tools_n": [
+          "4"
+        ],
+        "max_tokens": [
+          "None"
+        ],
+        "reasoning_effort": [
+          "None",
+          "low"
+        ],
+        "reasoning_tokens_max": 557,
+        "content_len_max": 237
+      },
+      "empty_body": {
+        "n": 15,
+        "finish_reason": {
+          "tool_calls": 15
+        },
+        "tools_n": [
+          "4"
+        ],
+        "max_tokens": [
+          "None"
+        ],
+        "reasoning_effort": [
+          "None",
+          "low"
+        ],
+        "reasoning_tokens_max": 395,
+        "content_len_max": 0
+      }
+    },
+    "R": {
+      "empty_body": {
+        "n": 5,
+        "finish_reason": {
+          "tool_calls": 5
+        },
+        "tools_n": [
+          "4"
+        ],
+        "max_tokens": [
+          "None"
+        ],
+        "reasoning_effort": [
+          "None",
+          "low"
+        ],
+        "reasoning_tokens_max": 122,
+        "content_len_max": 0
+      },
+      "has_content": {
+        "n": 5,
+        "finish_reason": {
+          "stop": 4,
+          "tool_calls": 1
+        },
+        "tools_n": [
+          "4"
+        ],
+        "max_tokens": [
+          "None"
+        ],
+        "reasoning_effort": [
+          "None",
+          "low"
+        ],
+        "reasoning_tokens_max": 179,
+        "content_len_max": 360
+      }
+    }
+  },
+  "criteria": {
+    "C1_chain_ok": true,
+    "C2_kpi_drop_pct": 48.75,
+    "C2_drop_ge_30": true,
+    "C3_t6_substantive_not_template": false,
+    "C4_t9_verbatim_replay_zero_remote": {
+      "verbatim": false,
+      "telem_calls_turn9": 1,
+      "usage_rows_in_window": 0
+    },
+    "C4_ok": false,
+    "C5_empty_body_fields_present": {
+      "ok": true,
+      "missing_by_arm": {
+        "Arole": [],
+        "R": []
+      }
+    },
+    "C6_band_fields_live": {
+      "ok": true,
+      "rows": {
+        "Arole": 13,
+        "R": 7
+      },
+      "verdicts": [
+        "at_target",
+        "below_target",
+        "not_applicable",
+        "unreported"
+      ],
+      "sources": [
+        "growth_upper_bound",
+        "unknown"
+      ],
+      "targets": [
+        "-1",
+        "0.8567",
+        "0.9128",
+        "0.913",
+        "0.9159",
+        "0.9162",
+        "0.9165",
+        "0.9188",
+        "0.9235",
+        "0.9328",
+        "0.97"
+      ],
+      "ceilings": [
+        "-1",
+        "0.8567",
+        "0.9128",
+        "0.913",
+        "0.9159",
+        "0.9162",
+        "0.9165",
+        "0.9188",
+        "0.9235",
+        "0.9328",
+        "0.9751",
+        "0.9812",
+        "0.9843",
+        "0.9854",
+        "0.9879",
+        "0.9923",
+        "0.9925",
+        "1"
+      ]
+    },
+    "C7_accounting_closure": true,
+    "C8_budget_and_form": {
+      "ok": true,
+      "cost_max": 0.024301,
+      "blocked": 0,
+      "bin_sha16": "db187e0eae7f26ea"
+    },
+    "C3_evidence": {
+      "degrade_events": 0,
+      "repeat_no_replayable_prev": 0,
+      "t6_reply_len": 298,
+      "t6_reply_head": "「构建命令」指哪个项目/解决方案还没定——先按默认给出：\n\n```\ndotnet build /home/agentus"
+    }
+  },
+  "verdict_all_pass": false,
+  "checks_posthoc": {
+    "P1_t6_非模板实质_且逐字等于最近可回放前驱": {
+      "pass": true,
+      "replay_from_turn": 1,
+      "t6_len": 298,
+      "t6_sha16": "0c737c2f472422d3"
+    },
+    "P2_t9_可见回复=本地逐字回放_且零远端(因果归属)": {
+      "pass": true,
+      "t9_eq_last_replayable": true,
+      "relay_rows_in_window": 0,
+      "skip_kind_by_input_fp": "repeat_verbatim",
+      "skip_chars_vs_reply": [
+        298,
+        298
+      ],
+      "turn_attributed_calls": 1,
+      "attributed_calls_after_reply_emitted": true
+    },
+    "P3_回放对象已从模板升级为实质答案(按输入指纹对齐遥测与用户所见)": {
+      "pass": true,
+      "verbatim_skips": 2,
+      "template_skips": 4,
+      "t6_input_fp": "a1474688b7358b6a",
+      "t9_input_fp": "eb75f52c2a5c9472",
+      "skip_fps": [
+        "9824e8e64c583c2c",
+        "80e225f33fc6e6b0",
+        "5e8f7d192dafded9",
+        "ee9eb592291689ee",
+        "a1474688b7358b6a",
+        "eb75f52c2a5c9472"
+      ],
+      "t6_len": 298,
+      "t9_len": 298,
+      "t8_len(banner)": 66
+    },
+    "P4_归属漂移计数(单列, 不判红)": {
+      "product_turn_attributed_calls_outside_turn_window": 5,
+      "detail": [
+        {
+          "turn": 7,
+          "ts": 1789508897.495,
+          "t_start": 1789508893.2508,
+          "t_end": 1789508896.3696,
+          "off_s": 1.126
+        },
+        {
+          "turn": 7,
+          "ts": 1789508899.795,
+          "t_start": 1789508893.2508,
+          "t_end": 1789508896.3696,
+          "off_s": 3.426
+        },
+        {
+          "turn": 9,
+          "ts": 1789508901.841,
+          "t_start": 1789508899.798,
+          "t_end": 1789508900.0065,
+          "off_s": 1.835
+        },
+        {
+          "turn": 10,
+          "ts": 1789508903.158,
+          "t_start": 1789508900.0065,
+          "t_end": 1789508901.9301,
+          "off_s": 1.228
+        },
+        {
+          "turn": 11,
+          "ts": 1789508905.689,
+          "t_start": 1789508901.9301,
+          "t_end": 1789508903.2844,
+          "off_s": 2.405
+        }
+      ],
+      "note": "产品按 turn 记账, 但其 ts 落在该轮可见回复窗口之外 ⇒ 因果上不足以归因该轮回复; 外部真值(供应商 usage ts)与因果(回复已产出)两通道为准。"
+    }
+  },
+  "checks_posthoc_all_pass": true,
+  "posthoc_note": "C3/C4 预注册的是**机制**子判据(repeat 轮必须出现降级事件 / t9 逐字等于 t8), 真机证伪: 守卫按「最近可回放」回溯, 恰好证明 R475 守卫修好了 R474 的模板回放缺陷; P1..P3 为同一用户可见目标的收窄判据。"
+}

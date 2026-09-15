@@ -2155,3 +2155,30 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 | 定向单测 | R475AccountingTests **8/8** |
 
 **诚实边界**：零真实调用 ∧ 无 llama-server（MemAvailable 1984MB < 2650MB 闸）⇒ 质量修复**未做真机 E2E**；recover 字段闭合在真实流量上未验；命中折价未取到；R474 空正文根因仍未定（本轮只把定因所需证据面补上）。
+
+## R477（2026-09-16）真机 E2E：R475 复述回放守卫**复演达标** + R476 分档打点实发核验 + KPI 降幅复测（−48.75%）
+
+**因果链**：R474 暴露「复述轮回模板」质量缺陷 → R475 改回放守卫（取最近**可回放**答复，否则撤 Skip 降级远端）但只有单测证据、R476 改分档打点也无真机证据 → R477 两轮修复一起上真机：Arole（门关）/R（门开）各 12 轮真调供应商，中继 v2 采 `finish_reason/empty_body` 定因。
+
+**读数（供应商 usage 真值，同夹具 p12 / 同二进制 `db187e0eae7f26ea` / 唯一变量=门控）**
+
+| 臂 | 轮 | 中继调用 | prompt | completion | total | 成本上界 | 命中 token |
+|---|---|---|---|---|---|---|---|
+| Arole 门关 | 12/12 | 21 | 68,329 | 5,320 | **73,649** | 0.024301 | 58,624 |
+| R 门开 | 12/12 | 10 | 35,600 | 2,144 | **37,744** | 0.011970 | 28,160 |
+
+**KPI**：总 token **−48.75%**（预注册 ≥30% ⇒ C2 PASS）· 远端调用 **−52.4%**（21→10）· prompt −47.9% · completion −59.7%；`prompt==hit+miss` 21/21 与 10/10 恒等；预算闸 0.036271 ≤ 0.15 CNY、blocked=0。对标 R474（−56.94%/20→9）为**同向同量级**（非同分布复现，见边界）。
+
+**质量（用户可见）**：R 臂复述轮 t6「再讲一遍。」/ t9「从头再说。」用户可见 = **前序实质答案逐字回放**（298 字符，零远端），回放事件按输入指纹对齐（`local_gate_skip_reply.msg_sha16 == LocalInputFingerprint.Sha16(该轮用户消息)`，kind=`repeat_verbatim`）；确认轮 t2–t5 仍为模板（kind=`template`，未被误升级）；R 实质 6/12。**预注册 C3/C4 字面 FAIL 保留不覆盖**：假设「无前驱 ⇒ 必现 `repeat_degrade_remote`」「t9==t8」被证伪 —— 守卫会**回溯到最近可回放者**（t2–t5 模板与 t8 徽标均不可回放 ⇒ 回放对象是 t1），事后判据 P1/P2/P3 单列 PASS，P4 记录遥测 `turn` 归属越窗 5 条（偏移 0.07–3.4s，无因果序）。
+
+**定因（本轮最重要的负面面）**：20/20 空正文调用的供应商侧 `finish_reason == tool_calls`（请求带 4 个 tools）、`max_tokens == None`（**非**截断）、`reasoning_tokens_max` 仅 395/122 ⇒ 徽标文案「推理过程占满输出预算」是**误诊**；对照 = R474 Arole 请求体逐字段同源而当时 0 徽标 ⇒ **上游行为漂移**（R477 Arole 可见徽标 7/12，不是本轮零改动引入，也不是门控引入）。
+
+**R476 分档打点实发**：真机主调用遥测行 7 字段齐全（Arole 13/13、R 7/7），取值域合法；记录在案：预注册名 `cache_growth`/`cache_band_target` vs 源码 `cache_band_growth`/`cache_target` ⇒ 器具按**源码派生**判定（取不到即 `MISS(src-const)`），漂移单列。
+
+**器具缺陷（本轮发现并修）**：① 臂收口 `pkill -P $HOST_PID` 未收干净本地 r1（`llama-server` RSS 1.83GB 尚在释放）⇒ R 臂起手闸**假阴性**（`MemAvailable=1318MB < 2650MB`，rc=10），12s 后同内存自行回落 ⇒ 新增「沉降等待」+ R451 先例跑前清理（MSBuild 复用节点/空闲 LSP，2634→2792MB）。
+
+**诚实边界**：单夹具单次；上游漂移 ⇒ Arole 非干净基线，−48.75% 只与 R474 的 −56.94% 同向同量级；r1 只覆盖确认轮+复述轮，**未测**「本地生成替代远端实质回答」的增益；C3/C4 预注册原文判 fail（不收窄覆盖）；本轮零 C# 改动 ⇒ 未重发布 AOT（15,355,520 B / `db187e0eae7f26ea` 沿用 R476，未取新证据）；表单门禁 `VerificationFormTests` 7/7（registry 139→**143** 行，4 行 R477 均 L3 + `evidence_generated_with` 冻结 pin `e55aa0c08189`/器具 `47d3280a39f4`）。
+
+**下轮候选**：① 修空正文**误诊文案** + tool_calls 空正文处理（当前最大用户可见质量损失）；② `llm_call.turn` 归属因果化（绑 reply 请求 id，替计数器）；③ 命中率按分档口径重估（R 0.791 < Arole 0.858）；④ 门控扩到低风险实质轮，测本地替代生成的边际降幅（带质量对照）。
+
+**台账（R477 附）**：registry +4 行（`r477.replay-guard-real-e2e` / `r477.kpi-drop-real-endpoint-arms` / `r477.band-fields-live` / `r477.empty-body-root-cause`，均 L3），`updated_round=R477`；注：improvements.md 节序在 R475 后**缺 R476 块**（R476 只落 report + registry，属既有缺口，本文不改写历史）。节内新增器具 `eval/rover/r477/{run_arm_real_r477.sh,run_arm_R_only.sh,check_r477.py}` 与判据 `verdict-r477.json`。
