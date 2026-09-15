@@ -1,0 +1,110 @@
+{
+ "round": "R462-W",
+ "title": "r1 权重档位/量化档位 对「门判真假判别」能力是否够用 —— 四档权重探针",
+ "status": "pre_registered",
+ "registered_at_utc": "2026-09-15T18:02Z (基线臂启动后、任何判决读数落盘前)",
+ "user_question_verbatim": "先回答我目前用的r1模型参数权重够我们的业务需求么",
+ "business_need": "门判 = 判别一条用户消息是否携带实质新信息(禁跳) 还是仅确认/无缺口(可跳); 该判别当前由本地 r1 出票, 机械认可族守卫兜底。",
+ "corpus": {
+  "source": "产品自身落盘的门判 prompt dump (eval/rover/r452/dump-RJ-REAL-j1.jsonl / dump-RC-M20-c1.jsonl / dump-RC-M20-c2.jsonl), **verbatim 逐位, 零重建**",
+  "n": 28,
+  "negatives_14": "真实驱动消息(「继续下一轮」×13 + 全候选推进令×1) ⇒ oracle=P(禁跳); 来源 grid/meta.json rule_label ∈ {adopt,new_task}",
+  "positives_14": "Ack 族(「谢谢，收到。」/「好的，明白。」等 t7–t13 ×2 轮) ⇒ oracle=S(可跳); 来源 grid/task-M20.json expected[].want=skip",
+  "merged_file": "/tmp/r462_corpus.json",
+  "prompt_truth_note": "prompt 原文含 S/P 二字母判官指令 + 会话成长块; 长度 452–467 字符"
+ },
+ "arms": {
+  "1.5b-q4": {
+   "model": "/tmp/models/r1-distill-qwen-1.5b-q4km.gguf",
+   "note": "现役权重(基线)"
+  },
+  "1.5b-q8": {
+   "model": "/tmp/models/r1-distill-1.5b-q8.gguf",
+   "note": "同族仅换量化 ⇒ 隔离量化效应"
+  },
+  "3b-q4km": {
+   "model": "/tmp/models/qwen2.5-3b-instruct-q4km.gguf",
+   "note": "参数档 ×2, 同量化档"
+  },
+  "3b-q5km": {
+   "model": "/tmp/models/qwen2.5-3b-instruct-q5km.gguf",
+   "note": "参数+量化双升档"
+  },
+  "2b-qwenpaw-q4": {
+   "model": "/tmp/models/qwenpaw-flash-2b-q4km.gguf",
+   "note": "[用户 OOB 追加 2026-09-15 18:0xZ] agentscope-ai/QwenPaw-Flash-2B (base Qwen3.5-2B) Q4_K_M, 文件 QwenPaw-flash-2B-20260330-q4.gguf"
+  }
+ },
+ "amendments": [
+  {
+   "at_utc": "2026-09-15T18:0xZ",
+   "by": "用户 OOB 令",
+   "text": "「qwenpaw-flash-2b也加入测试列表」⇒ arms 增 2b-qwenpaw-q4; 该臂在任何读数前登记; 判据不因新臂放宽"
+  },
+  {
+   "at_utc": "2026-09-15T18:0xZ",
+   "by": "自检",
+   "text": "基线臂首跑发现 token 字段名读错(全部 None) ⇒ 修 gen_truth/prompt_truth 读 tokens_predicted/tokens_evaluated/timings; 判决面读数不受影响, 成本面读数以修订后重跑为准"
+  },
+  {
+   "id": "v2",
+   "round": "R462",
+   "date": "2026-09-15",
+   "trigger": "器具缺陷 (首跑 v1 读数作废): ①判据面 ≠ 产品判据面 —— v1 用「首个非空白字符」定 S/P, 产品 TurnGateJudge.Parse 是「最后一个 </think> 之后的结论区 + 正则 + 关键词表, 最后一次出现胜出, 未判定⇒降级 Pass」; 1.5b-q8 实测 11 条输出形如 </think> 换行 S 被 v1 判成 ?(未解析), 真实假跳率被错记为 0/14。②raw_head 仅留 120 字符 ⇒ 结论在尾部, 事后不可复算。",
+   "impact": "v1 四档读数全部 VOID(含 1.5b-q4 基线 acc=0.321/假跳=0.929), 不可复算 ⇒ 重跑。",
+   "fix": "器具 v2: gate_parse 逐行移植产品 Parse; 器具镐=产品自带用例表 TurnGateParseTests.cs 13 条逐条断言 (ALL PASS); 每行落盘 raw 全文(≤4000 字符) + reason。",
+   "new_metrics": "acc / 假跳率 / 漏跳率 / 未判定数 / S精度 / S召回; 未判定 ⇒ 产品口径降级 Pass(不构成假跳)。",
+   "status": "已重跑 (四档同参同夹具)"
+  },
+  {
+   "id": "v3",
+   "ts": "2026-09-15T19:1x+08:00",
+   "defect": "调用面 ≠ 产品门判调用面: v1/v2 把**渲染前**的 gatePrompt 文本直接喂 /completion, 模型失去生成起点提示 ⇒ 退化为复读机 ('P\\nP\\nP...' / '用户消息:…答案:S' 循环), 结论区取尾字母 = 噪声。实证: 同一臂两次跑 (v1 假跳 13/14 vs v2 假跳 1/14) 不可复现。",
+   "measured_correction": {
+    "v2_1.5b_q4_acc": 0.7143,
+    "v2_1.5b_q4_false_skip": "1/14",
+    "verdict": "VOID"
+   },
+   "fix": "对齐产品链路三面: ① POST /apply-template (messages=[user], add_generation_prompt=true) ⇒ GgufJinja 渲染后再生成; ② 请求体全字段 = CompletionRequest (n_predict=512, samplers=['temperature'], temperature=0, top_k=0, top_p=1, min_p=0, repeat_penalty=1, seed=0, cache_prompt=false, return_tokens=true, stream=false, n_probs=0); ③ 判据面 = TurnGateJudge.Parse 逐行移植 (v2 已建).",
+   "source_anchors": [
+    "ModelQueueRouter.cs:283-293 MaxTokens=512/CacheReuse=false",
+    "LlamaCppProvider.cs:103-107 RenderAsync=/apply-template(GgufJinja)",
+    "CompletionProfiles.cs:11-18 greedy/profile",
+    "LlamaCppJson.cs:7-22 CompletionRequest 字段"
+   ],
+   "evidence": "/tmp/r462_w/w-1.5b-q4.json (v3): raw 形如 '…\\n</think>\\n\\nS' 或 '…\\n</think>\\n\\nP', reason=ok 28/28",
+   "v3_1.5b_q4": {
+    "acc": 0.5,
+    "false_skip": "14/14",
+    "miss_skip": "0/14",
+    "skip_precision": 0.5,
+    "skip_recall": 1.0,
+    "note": "恒 S ⇒ 与 R452 'RJ 14 次 r1 全给 S, 14/14 被守卫否决' 完全对齐 ⇒ 守卫承重, 模型判别面=0"
+   }
+  }
+ ],
+ "inference_contract": "POST /completion, samplers=[\"temperature\"], temperature=0 (greedy), cache_prompt=false, n_predict=256, ctx=1024, -np 1, --cache-type-k/v f32, --flash-attn off —— 与产品 LlamaCppClient/LlamaServerHost 同参; token 真值取 tokens_evaluated/predicted_n (R443 铁律, 禁字符估算)",
+ "criteria": {
+  "P1_gate_usability": "假跳率(S on 负类) ≤ 0.10 且 漏跳率(P on 正类) ≤ 0.20 且 解析失败 = 0 —— 任一档满足 ⇒ 该档可承「门判出票」",
+  "P2_params_gain": "3B 档准确率 − 1.5B 基线准确率 ≥ 0.15 ⇒ 证明**参数规模是瓶颈**",
+  "P3_quant_gain": "1.5b-q8 准确率 − 1.5b-q4 准确率 ≥ 0.10 ⇒ 证明**量化是瓶颈**(优先量化升级, 零换族)",
+  "P4_cost": "平均 gen ≤ 256 tok/次 且 单次 wall ≤ 60 s (2 vCPU 上可长期常驻)"
+ },
+ "negative_controls": [
+  "恒定输出 'S' 的假模型 ⇒ 假跳率必须 = 1.00, 漏跳率 = 0.00 (判据可分辨性)",
+  "恒定输出 'P' 的假模型 ⇒ 假跳率必须 = 0.00, 漏跳率 = 1.00",
+  "基线 1.5b-q4 预期复现 R452 实测形态: 负类 14 条全 S (假跳 14/14) + 正类 7/7 S"
+ ],
+ "decision_rule": [
+  "3B 达 P1 ⇒ 采纳升级到 3B 档(须 ctx 1024 + 量化 KV 以适配 3.66 GiB 内存), 作为 R462 的判别执行面",
+  "仅 Q8 达 P1 ⇒ 采纳量化升级(零换族), 3B 不引入",
+  "四档全不达 P1 ⇒ 本地权重路线在 3.66 GiB 机器上不可承判别 ⇒ 记录负结论, 改远端小模型判别或加守卫承重比例",
+  "任何档出现解析失败 > 0 ⇒ 该档在链上不安全, 不得启用"
+ ],
+ "exclusions": [
+  "不测 7B/14B: 本机 MemTotal 3,659 MB, 7B Q4(≈4.4 GiB) 结构上不可能常驻(已实测每 GiB 权重 ≈1.35 GB RSS)",
+  "不重建 prompt (R451/R452 零重建铁律)",
+  "不用单句对照 (R454b 用户裁定: 单句测不了模块)",
+  "不把迭代驱动类消息当采纳/可跳真值 (R449 用户令筛选)"
+ ]
+}

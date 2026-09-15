@@ -1,0 +1,56 @@
+{
+  "round": "R462",
+  "title": "召回-现实一致性闸 + 语言无关召回探针 (E2E)",
+  "status": "pre_registered",
+  "registered_note": "判据在 E2E 起跑前写入 (judge_r462.py 同步); 首次读数未落盘。",
+  "question": "召回块里引用的、当前工作区并不存在的文件事实, 能否被**机制**标成假 (可见), 且不得为此向每轮 prompt 增字节?",
+  "corpus": {
+    "fixture": "/tmp/r462_env/agent/work (与 R461 逐字节同源 13 项 + delta 3 项)",
+    "delta": [
+      "notes.md 追加 1 行: 'a.py b.py c.py d.py 共 4 个; report.md=已生成 (上一轮)' (含 .py 关键词 ⇒ 必被关键词召回; report.md 不存在 ⇒ 构造陈旧引用)",
+      "新增 logic.unit (文本, 非白名单后缀 ⇒ 承 R447 语言无关令, 必须被召回)",
+      "新增 blob.bin (含 NUL 的二进制 ⇒ 探针必须拒)"
+    ],
+    "turns": "同 R457/R461 六轮 (drive_task.py, frontend-api 48617)",
+    "binary": "/tmp/pub_r462/agenthost (AOT, env -i 自启 rc=0, 15,322,688 B)",
+    "dump": "ADAPTER_DUMP_FULL=1 ⇒ full-*.json (实发全文, 器具只读不重建)"
+  },
+  "checks_prereg": {
+    "P1_recall_reality_gate_visible": "实发面出现 [核验✗ 且同片段引用 report.md (不存在的文件)",
+    "P2_language_agnostic_recall": "实发面含 [工作区文件 logic.unit] 且不含 blob.bin",
+    "P3_fail_only_zero_token": "**工作区召回片段**内不得出现 [核验✓ (一致时零字节注入); 记忆块走全标注, 允许 ✓",
+    "P4_no_regress": "7 轮 ok; count.txt=4; merged.txt 三行(ALPHA/BETA/GAMMA); stats.txt=chars=14; first.txt 首行; 契约声明不上前台"
+  },
+  "amendment_v2": {
+    "when": "v1 首跑后 (报告: P1/P2 false = 召回窗口被运行期新写的 data/ 文件占满; P3 判据口径写错)",
+    "changes": [
+      "轮表 6 → 7 轮: 新增「另外, 把上一会话 report.md 的结论也一起给我」⇒ 记忆块必带不存在路径 (构造与 R460 同形的陈旧引用)",
+      "召回窗口: touch logic.unit notes.md ⇒ 进「修改时间降序前 3」",
+      "P3 口径收窄: 只对工作区召回片段断言无 ✓ (v1 误把记忆块全标注也算作违规)"
+    ],
+    "honesty": "v1 的 4 项 false 属**器具/口径缺陷**, 非产品缺陷; 原判据被证伪 ⇒ 宣称收窄并留档, 不得改写为通过。"
+  },
+  "amendment_v3": {
+    "when": "v2 首跑后 (报告: P4 contract_on_front=true 系**误判** —— 命中的是 system prompt 里对模型的契约说明, 非回复面; P2 blob.bin 命中来自 list_dir 工具结果; P1/P2 仍 false = 运行期 data/ 目录独占召回窗口)",
+    "changes": [
+      "⑥ 夹具移除运行期历史产物目录 data/ (非夹具项) ⇒ 召回窗口 (mtime 降序前 3) 恢复为夹具文件",
+      "P2 口径: 只断言召回通道 ([工作区文件 blob.bin] 不得出现), 不禁止工具结果里合法列出该文件名",
+      "P4 口径: 契约声明只查**回复面** (system prompt 的契约说明不算上前台)"
+    ],
+    "honesty": "v1/v2 的 false 全属器具/口径缺陷 (非产品缺陷), 逐条留档; 只有产品面判据 (P1) 修到可行使后才允许下结论。"
+  },
+  "amendment_v4": {
+    "when": "v3 首跑后 (报告: P2/P3/P4 = true, P1 = false —— 陈旧引用 report.md 只出现在**工具回灌面** (read_file 读到的 notes.md 内容), 而闸当时只覆盖召回块/记忆块)",
+    "changes": [
+      "链机制扩展: 闸接入**工具回灌面** (ActionLoop 回灌前 fail-only 核验; IActionPort 增 WorkspaceRoot 端口, 无工作区实现返回 null ⇒ fail-safe)",
+      "判据 P1 口径不变 (✗ 必须可见), 但可达通道由「记忆块」扩为「召回块 ∪ 工具回灌面」",
+      "新增单测面 3d: 回灌面陈旧路径必标 ✗ (Loop_ToolResult_StalePathIsMarked_BeforeReplay) + 一致时零字节 (Loop_ToolResult_ConsistentPath_ZeroByteInjection)"
+    ],
+    "honesty": "P1 在 v1–v3 为**未行使** (通道未覆盖), 不得当作通过; v4 起该判据在工具回灌通道可行使。"
+  },
+  "negative_control": {
+    "arms": "同判据跑 R461 实发面 (/tmp/r461_env)",
+    "expected": "P1/P2 = false (旧二进制无闸 + 后缀白名单), 证明判据有判别力"
+  },
+  "decision": "P1..P4 全 true ⇒ 本轮机制修复成立; 任一 false ⇒ 收窄宣称并单列 checks_posthoc, 不得静默跳过"
+}

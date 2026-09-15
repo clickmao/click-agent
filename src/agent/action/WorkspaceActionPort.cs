@@ -23,6 +23,9 @@ namespace agent.action;
 public sealed class WorkspaceActionPort : IActionPort
 {
     private readonly string _root;
+
+    /// <summary>R462: 回灌面「召回-现实一致性」机检需要的工作区根。</summary>
+    public string? WorkspaceRoot => _root;
     private readonly string? _auditDir;
     private readonly int _defaultTimeoutMs;
     private static readonly object AuditLock = new();

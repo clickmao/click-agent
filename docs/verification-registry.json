@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R461",
+  "updated_round": "R462",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -1585,81 +1585,150 @@
       ],
       "owner_round": "R457"
     },
-  {
-    "id": "r458.humanized-continuation",
-    "level": "L2",
-    "capability": "承接轮人性化(真机 E2E, 同夹具/同 6 轮/同模型): T5「继续」→ 逐项承接 4 个真实产物 + 「继续什么」反问 + 3 个具体可选项 (固定示例菜单 `(如: 搜索/写文档…)` 消失); T6 内部术语 3 行 → 0 行 (一句人话, 内部理由只进遥测); 承接块仅 T5 触发 1 次 (判定与门同判据: 弱意图 且 置信<0.60), 收口闸 grounded=true; 产物 4/4 不回退, 磁盘伪造 0; 调用 17 (R457 15, codex 冻结 13) —— 增量来自模型自身多用工具, 非承接机制成本",
-    "evidence_cmd": "bash /tmp/r458_setup.sh && bash /tmp/r458_run.sh && python3 eval/rover/r458/judge_r458.py",
-    "evidence_path": "eval/rover/r458/verdict-r458.json",
-    "negative_control": "C1 空工作区负控: 块与兜底反问都不得出现任何文件名 (Block_EmptyState_SaysNone_AndNeverNamesAFile / Fallback_OnlyUsesRealFacts_AndNeverInventsFiles); C2 误判负控: 「当前目录下一共有几个 .py 文件？」(门置信 0.8, 门未发问) 不得判为承接轮 —— run1 真发生过并污染回复, 已机检固化 (Judgement_ConcreteQuestionAtHighConfidence_IsNotContinuation) + 反向正控裸「继续」0.45 必须判真; C3 人话承接句负控: 不得含内部术语 (可选范围/检查点/作废/槽位) 且内部理由不上前台 (HumanizeVoidNotice_IsPlainSpeech_NoInternalJargon); C4 截断负控: 超过上限必须如实标注「共 N 项, 只列最近 M 项」(Block_MarksTruncationHonestly_TotalVsListed); C5 判分只读磁盘产物 (逐字节归一) 不采信回复文本, 承接块证据取遥测 + 实发请求回显 + 引用名与磁盘比对",
-    "covers": [
-      "eval/rover/r458/judge_r458.py",
-      "eval/rover/r458/verdict-r458.json",
-      "src/agent/context/ContinuationBrief.cs",
-      "src/agent/registry/EvidenceGate.cs",
-      "src/agent/intent/PlanResumeService.cs",
-      "src/agent/IndustrialAgentV2.cs",
-      "src/agent.tests/ContinuationBriefTests.cs",
-      "docs/plans/v0.78.0-r458-humanized-continuation.md",
-      "docs/reports/humanized-continuation-r458.md"
-    ],
-    "owner_round": "R458"
-  },
-  {
-    "id": "r460.brevity-menu-cache",
-    "level": "L2",
-    "capability": "承接轮精炼 + 菜单单源 + 命中率/token 归因 (真机 E2E, 同夹具/同 6 轮/同模型, 唯一差异=二进制): T5 回复 241→160 字 (-33.6%), 承接注入块 288→163 字 (-43.6%, MaxArtifacts 8→3 + 紧凑两行 + 截断诚实标注); 门问句与兜底反问同源 (BuildAsk/BuildMenu) ⇒ 空态不再给通用示例菜单 (搜索资料/写文档/…), 有事实时 Choices=3 真实名+「另有新任务」; T5 实发 3 项编号菜单 (①②③) 且首项接地真实产物; prompt ∑ 54,927→39,863 (-27.4%), 调用 17→13 (=codex); 稳态 miss 均价 301.9 tok (R458 310, codex 236), 稳态 hit 90.2% —— 命中率未达标根因 = [SessionMemory] 注入块逐轮膨胀 308→836 字符 (实发全量文本归因, ADAPTER_DUMP_FULL=1)",
-    "evidence_cmd": "bash /tmp/r460_setup.sh && bash /tmp/r460_run.sh && python3 eval/rover/r460/judge_r460.py",
-    "evidence_path": "eval/rover/r460/verdict-r460.json",
-    "negative_control": "C1 空态负控: 空工作区时承接块/反问都不得出现任何文件名 (Block_EmptyState_SaysNone_AndNeverNamesAFile); C2 菜单单源 + 空态无示例菜单负控: 门 Choices 必须逐项等于 ContinuationBrief.BuildMenu 输出, 且空态不得出现「搜索资料/写文档」类通用示例 (EvidenceGate_VagueQuestion_IsGroundedInRealFacts, 含 Assert.Equal(ContinuationBrief.BuildMenu(facts), choices)); C3 精炼负控: 3 项态块 ≤ MaxBlockChars(200) 且菜单 ≤3 项且每项 ≤ MaxMenuItemChars(24) 且首项接地 (R460_BlockAndMenuAndAsk_RespectBrevityCaps); C4 人话负控: 承接句不得含内部术语且 ≤ MaxNoticeChars(48) (HumanizeVoidNotice_IsPlainSpeech_NoInternalJargon); C5 判分器具自检: 首跑把实发「①②③」菜单漏判为 0 项 (器具缺陷, 已修并留痕); 判分只读磁盘产物 + 实发全量文本 (ADAPTER_DUMP_FULL=1), 不采信回复自述",
-    "covers": [
-      "eval/rover/r460/judge_r460.py",
-      "eval/rover/r460/verdict-r460.json",
-      "eval/rover/r460/prereg-r460.json",
-      "eval/rover/r460/attr_r460.py",
-      "src/agent/context/ContinuationBrief.cs",
-      "src/agent/registry/EvidenceGate.cs",
-      "src/agent/intent/PlanResumeService.cs",
-      "src/agent/IndustrialAgentV2.cs",
-      "src/agent.tests/ContinuationBriefTests.cs",
-      "docs/plans/v0.79.0-r460-brevity-menu-cache.md",
-      "docs/reports/brevity-menu-cache-r460.md"
-    ],
-    "owner_round": "R460",
-    "checks_posthoc": [
-      "合同标记上前台 (T4 裸 clickproof/premise/goal 5 行, T6 no_formal 1 行) —— 首跑后新发现, 未列入预注册判据, R461 靶点",
-      "T4 无 tool_call 却宣称 stats.txt 已写入 chars=15 (磁盘 0 B) —— 产物 3/4, 属模型侧方差 + 链未拦截宣称; 承接块过滤 0 B 文件使模型改用记忆假值"
-    ]
-  },
-  {
-    "id": "r461.contract-not-front-and-hit-budget",
-    "level": "L2",
-    "capability": "契约声明不上前台 + 零字节产物可见 + 每轮注入预算收口 (真机 E2E, 同夹具/同 6 轮/同模型, 唯一差异=二进制; 夹具两侧 md5 fe1f5530446bd4ceb8be1b944c8ec005): 前台契约声明行 3 处 (37/59/33 字符) → 0 (SplitFacing 剥围栏/裸块/no_formal 行, 只进遥测 contract_declaration_hidden; 剥离为空 fail-safe 返回原文); 记忆写入同剥离 (召回块不再带 no_formal:); 0 字节产物标 (空) 不再静默省略; ForecastRecord 上轮任务预览 ≤24 字; 每轮新内容预算 MemorySourceBudgetTokens 500→120 / SessionMemory 默认 1000→400 / 【已完成】4→2 条, 三处机检回归锁。读数: 稳态 hit 90.2%→91.2%, 稳态 miss 均价 301.9→274.9 tok (-9.0%); T5 152 字 (R458 241) 且 3 项菜单 ①②③; T6 118 字无内部术语; 调用 15 / prompt∑ 46,616 (R460 13/39,863) —— tokens KPI 未达标根因 = 调用数方差 (R458 17 / R460 13 / R461 15), 非前缀长度; 命中 97% 红线算术条件机检 = 平均前缀 3,118 tok ⇒ 每轮新内容须 ≤93.5 tok (实测 ≈275)",
-    "evidence_cmd": "bash /tmp/r461_setup.sh && bash /tmp/r461_run.sh && python3 eval/rover/r461/judge_r461.py",
-    "evidence_path": "eval/rover/r461/verdict-r461.json",
-    "negative_control": "C1 契约剥离负控 (有判别力): 同一判据跑 R460 落盘回复 ⇒ 命中 3 处 (T1/T3 裸 no_formal: 行 + T4 无围栏 clickproof/premise/goal 块), R461 ⇒ 0; C2 fail-safe 负控: 整条回复只有契约声明时, SplitFacing 必须返回非空可见文本 (宁可少剥不给空回复) + 正控: 非本契约内容 (csharp 围栏/普通段落) 一字不动 (SplitFacing_FailSafe_Never_Blanks_The_Reply / SplitFacing_Keeps_Other_Fences_And_Positive_Control); C3 空产物负控: 0 字节文件必须显示 (空) 而非省略 (Empty_Artifact_Is_Marked_Not_Guessed); C4 预算回退负控: MemorySourceBudgetTokens ≤120 ∧ SessionMemory 默认 ∈[200,400] ∧ 里程碑 ≤2 机检 (R461_Injection_Budget_Locks + V714FeatureTests.SessionConfig_MaxMemoryChars_Default400_R461); C5 判分只读磁盘产物与实发全量文本 (ADAPTER_DUMP_FULL=1), 不采信回复自述; 编造判据 = 回复提到的文件名不在工作区目录列举中",
-    "covers": [
-      "eval/rover/r461/judge_r461.py",
-      "eval/rover/r461/verdict-r461.json",
-      "eval/rover/r461/prereg-r461.json",
-      "src/agent/context/FormalPromptContract.cs",
-      "src/agent/context/ContinuationBrief.cs",
-      "src/agent/registry/ForecastRecord.cs",
-      "src/agent/contextassembler/ContextAssembler.cs",
-      "src/agent/session/SessionMemory.cs",
-      "src/agent/IndustrialAgentV2.cs",
-      "src/agent.tests/FormalPromptContractTests.cs",
-      "src/agent.tests/ContinuationBriefTests.cs",
-      "src/agent.tests/V714FeatureTests.cs",
-      "docs/plans/v0.80.0-r461-contract-and-hitrate.md",
-      "docs/reports/contract-and-hitrate-r461.md"
-    ],
-    "owner_round": "R461",
-    "checks_posthoc": [
-      "召回块引用「上一会话」存在的文件名 stats.txt, 本轮工作区根本不存在 ⇒ 模型 (T5) 宣称 stats.txt=chars=15 属编造; 机检 recall_stale_refs=[stats.txt] = 被编造的那个名字。未列预注册判据, R462 靶点 (召回-现实一致性闸, 用本地 r1 判真假)",
-      "P2 空产物可见性本轮为**空判**: 0 B 文件未进入 top-3 承接块 ⇒ 该判据未被行使 (不得当作通过)"
-    ]
-  }
+    {
+      "id": "r458.humanized-continuation",
+      "level": "L2",
+      "capability": "承接轮人性化(真机 E2E, 同夹具/同 6 轮/同模型): T5「继续」→ 逐项承接 4 个真实产物 + 「继续什么」反问 + 3 个具体可选项 (固定示例菜单 `(如: 搜索/写文档…)` 消失); T6 内部术语 3 行 → 0 行 (一句人话, 内部理由只进遥测); 承接块仅 T5 触发 1 次 (判定与门同判据: 弱意图 且 置信<0.60), 收口闸 grounded=true; 产物 4/4 不回退, 磁盘伪造 0; 调用 17 (R457 15, codex 冻结 13) —— 增量来自模型自身多用工具, 非承接机制成本",
+      "evidence_cmd": "bash /tmp/r458_setup.sh && bash /tmp/r458_run.sh && python3 eval/rover/r458/judge_r458.py",
+      "evidence_path": "eval/rover/r458/verdict-r458.json",
+      "negative_control": "C1 空工作区负控: 块与兜底反问都不得出现任何文件名 (Block_EmptyState_SaysNone_AndNeverNamesAFile / Fallback_OnlyUsesRealFacts_AndNeverInventsFiles); C2 误判负控: 「当前目录下一共有几个 .py 文件？」(门置信 0.8, 门未发问) 不得判为承接轮 —— run1 真发生过并污染回复, 已机检固化 (Judgement_ConcreteQuestionAtHighConfidence_IsNotContinuation) + 反向正控裸「继续」0.45 必须判真; C3 人话承接句负控: 不得含内部术语 (可选范围/检查点/作废/槽位) 且内部理由不上前台 (HumanizeVoidNotice_IsPlainSpeech_NoInternalJargon); C4 截断负控: 超过上限必须如实标注「共 N 项, 只列最近 M 项」(Block_MarksTruncationHonestly_TotalVsListed); C5 判分只读磁盘产物 (逐字节归一) 不采信回复文本, 承接块证据取遥测 + 实发请求回显 + 引用名与磁盘比对",
+      "covers": [
+        "eval/rover/r458/judge_r458.py",
+        "eval/rover/r458/verdict-r458.json",
+        "src/agent/context/ContinuationBrief.cs",
+        "src/agent/registry/EvidenceGate.cs",
+        "src/agent/intent/PlanResumeService.cs",
+        "src/agent/IndustrialAgentV2.cs",
+        "src/agent.tests/ContinuationBriefTests.cs",
+        "docs/plans/v0.78.0-r458-humanized-continuation.md",
+        "docs/reports/humanized-continuation-r458.md"
+      ],
+      "owner_round": "R458"
+    },
+    {
+      "id": "r460.brevity-menu-cache",
+      "level": "L2",
+      "capability": "承接轮精炼 + 菜单单源 + 命中率/token 归因 (真机 E2E, 同夹具/同 6 轮/同模型, 唯一差异=二进制): T5 回复 241→160 字 (-33.6%), 承接注入块 288→163 字 (-43.6%, MaxArtifacts 8→3 + 紧凑两行 + 截断诚实标注); 门问句与兜底反问同源 (BuildAsk/BuildMenu) ⇒ 空态不再给通用示例菜单 (搜索资料/写文档/…), 有事实时 Choices=3 真实名+「另有新任务」; T5 实发 3 项编号菜单 (①②③) 且首项接地真实产物; prompt ∑ 54,927→39,863 (-27.4%), 调用 17→13 (=codex); 稳态 miss 均价 301.9 tok (R458 310, codex 236), 稳态 hit 90.2% —— 命中率未达标根因 = [SessionMemory] 注入块逐轮膨胀 308→836 字符 (实发全量文本归因, ADAPTER_DUMP_FULL=1)",
+      "evidence_cmd": "bash /tmp/r460_setup.sh && bash /tmp/r460_run.sh && python3 eval/rover/r460/judge_r460.py",
+      "evidence_path": "eval/rover/r460/verdict-r460.json",
+      "negative_control": "C1 空态负控: 空工作区时承接块/反问都不得出现任何文件名 (Block_EmptyState_SaysNone_AndNeverNamesAFile); C2 菜单单源 + 空态无示例菜单负控: 门 Choices 必须逐项等于 ContinuationBrief.BuildMenu 输出, 且空态不得出现「搜索资料/写文档」类通用示例 (EvidenceGate_VagueQuestion_IsGroundedInRealFacts, 含 Assert.Equal(ContinuationBrief.BuildMenu(facts), choices)); C3 精炼负控: 3 项态块 ≤ MaxBlockChars(200) 且菜单 ≤3 项且每项 ≤ MaxMenuItemChars(24) 且首项接地 (R460_BlockAndMenuAndAsk_RespectBrevityCaps); C4 人话负控: 承接句不得含内部术语且 ≤ MaxNoticeChars(48) (HumanizeVoidNotice_IsPlainSpeech_NoInternalJargon); C5 判分器具自检: 首跑把实发「①②③」菜单漏判为 0 项 (器具缺陷, 已修并留痕); 判分只读磁盘产物 + 实发全量文本 (ADAPTER_DUMP_FULL=1), 不采信回复自述",
+      "covers": [
+        "eval/rover/r460/judge_r460.py",
+        "eval/rover/r460/verdict-r460.json",
+        "eval/rover/r460/prereg-r460.json",
+        "eval/rover/r460/attr_r460.py",
+        "src/agent/context/ContinuationBrief.cs",
+        "src/agent/registry/EvidenceGate.cs",
+        "src/agent/intent/PlanResumeService.cs",
+        "src/agent/IndustrialAgentV2.cs",
+        "src/agent.tests/ContinuationBriefTests.cs",
+        "docs/plans/v0.79.0-r460-brevity-menu-cache.md",
+        "docs/reports/brevity-menu-cache-r460.md"
+      ],
+      "owner_round": "R460",
+      "checks_posthoc": [
+        "合同标记上前台 (T4 裸 clickproof/premise/goal 5 行, T6 no_formal 1 行) —— 首跑后新发现, 未列入预注册判据, R461 靶点",
+        "T4 无 tool_call 却宣称 stats.txt 已写入 chars=15 (磁盘 0 B) —— 产物 3/4, 属模型侧方差 + 链未拦截宣称; 承接块过滤 0 B 文件使模型改用记忆假值"
+      ]
+    },
+    {
+      "id": "r461.contract-not-front-and-hit-budget",
+      "level": "L2",
+      "capability": "契约声明不上前台 + 零字节产物可见 + 每轮注入预算收口 (真机 E2E, 同夹具/同 6 轮/同模型, 唯一差异=二进制; 夹具两侧 md5 fe1f5530446bd4ceb8be1b944c8ec005): 前台契约声明行 3 处 (37/59/33 字符) → 0 (SplitFacing 剥围栏/裸块/no_formal 行, 只进遥测 contract_declaration_hidden; 剥离为空 fail-safe 返回原文); 记忆写入同剥离 (召回块不再带 no_formal:); 0 字节产物标 (空) 不再静默省略; ForecastRecord 上轮任务预览 ≤24 字; 每轮新内容预算 MemorySourceBudgetTokens 500→120 / SessionMemory 默认 1000→400 / 【已完成】4→2 条, 三处机检回归锁。读数: 稳态 hit 90.2%→91.2%, 稳态 miss 均价 301.9→274.9 tok (-9.0%); T5 152 字 (R458 241) 且 3 项菜单 ①②③; T6 118 字无内部术语; 调用 15 / prompt∑ 46,616 (R460 13/39,863) —— tokens KPI 未达标根因 = 调用数方差 (R458 17 / R460 13 / R461 15), 非前缀长度; 命中 97% 红线算术条件机检 = 平均前缀 3,118 tok ⇒ 每轮新内容须 ≤93.5 tok (实测 ≈275)",
+      "evidence_cmd": "bash /tmp/r461_setup.sh && bash /tmp/r461_run.sh && python3 eval/rover/r461/judge_r461.py",
+      "evidence_path": "eval/rover/r461/verdict-r461.json",
+      "negative_control": "C1 契约剥离负控 (有判别力): 同一判据跑 R460 落盘回复 ⇒ 命中 3 处 (T1/T3 裸 no_formal: 行 + T4 无围栏 clickproof/premise/goal 块), R461 ⇒ 0; C2 fail-safe 负控: 整条回复只有契约声明时, SplitFacing 必须返回非空可见文本 (宁可少剥不给空回复) + 正控: 非本契约内容 (csharp 围栏/普通段落) 一字不动 (SplitFacing_FailSafe_Never_Blanks_The_Reply / SplitFacing_Keeps_Other_Fences_And_Positive_Control); C3 空产物负控: 0 字节文件必须显示 (空) 而非省略 (Empty_Artifact_Is_Marked_Not_Guessed); C4 预算回退负控: MemorySourceBudgetTokens ≤120 ∧ SessionMemory 默认 ∈[200,400] ∧ 里程碑 ≤2 机检 (R461_Injection_Budget_Locks + V714FeatureTests.SessionConfig_MaxMemoryChars_Default400_R461); C5 判分只读磁盘产物与实发全量文本 (ADAPTER_DUMP_FULL=1), 不采信回复自述; 编造判据 = 回复提到的文件名不在工作区目录列举中",
+      "covers": [
+        "eval/rover/r461/judge_r461.py",
+        "eval/rover/r461/verdict-r461.json",
+        "eval/rover/r461/prereg-r461.json",
+        "src/agent/context/FormalPromptContract.cs",
+        "src/agent/context/ContinuationBrief.cs",
+        "src/agent/registry/ForecastRecord.cs",
+        "src/agent/contextassembler/ContextAssembler.cs",
+        "src/agent/session/SessionMemory.cs",
+        "src/agent/IndustrialAgentV2.cs",
+        "src/agent.tests/FormalPromptContractTests.cs",
+        "src/agent.tests/ContinuationBriefTests.cs",
+        "src/agent.tests/V714FeatureTests.cs",
+        "docs/plans/v0.80.0-r461-contract-and-hitrate.md",
+        "docs/reports/contract-and-hitrate-r461.md"
+      ],
+      "owner_round": "R461",
+      "checks_posthoc": [
+        "召回块引用「上一会话」存在的文件名 stats.txt, 本轮工作区根本不存在 ⇒ 模型 (T5) 宣称 stats.txt=chars=15 属编造; 机检 recall_stale_refs=[stats.txt] = 被编造的那个名字。未列预注册判据, R462 靶点 (召回-现实一致性闸, 用本地 r1 判真假)",
+        "P2 空产物可见性本轮为**空判**: 0 B 文件未进入 top-3 承接块 ⇒ 该判据未被行使 (不得当作通过)"
+      ]
+    },
+    {
+      "id": "r462.recall-reality-gate",
+      "level": "L2",
+      "capability": "召回-现实一致性闸 (机制, 非提示词补丁): 召回块/记忆块/工具回灌面里引用的**路径样事实**由当前工作区文件系统裁决, 不一致即显式标 [核验✗ …] (一致时才标 [核验✓ 现存 N B]; 召回片段走 failOnly ⇒ 一致时零字节注入, 守住 token 预算)。同夹具/同 7 轮/同适配器 E2E, 唯一差异=二进制: P1 11 个实发消息带 ✗ (recall_stale_refs 含 report.md) / P2 [工作区文件 logic.unit] 进面 · [工作区文件 blob.bin] 不进面 / P3 召回片段 0 处 ✓ / P4 7 轮 ok + 四产物正确 + 回复面 0 处契约声明 ⇒ 4/4 PASS",
+      "evidence_cmd": "bash /tmp/r462_e2e.sh",
+      "evidence_path": "eval/rover/r462/verdict-r462.json",
+      "negative_control": "NC1 (判别力): 同判据跑 R461 实发面 ⇒ P1/P2 = false (旧二进制无闸 + 后缀白名单), 见 /tmp/r462_negctl.json; NC2 越界: ../etc/hosts 一律判 ✗ 且不探测 (Verify_TraversalToken_RejectedWithoutProbe) + Probe 层 StartsWith(root) 二次校验; NC3 fail-safe: 无 root/不存在/异常 ⇒ 原样返回, 不丢事实不造事实 (Verify_NoRoot_FailSafe_ReturnsOriginal); NC4 幂等: 已带标签的块二次通过不重复追加 (Verify_Idempotent_NoDoubleTagging); NC5 只打假: 一致的召回片段必须逐字节不变 (Verify_FailOnly_ConsistentClaim_ZeroByteInjection) + 回灌面零字节 (Loop_ToolResult_ConsistentPath_ZeroByteInjection); NC6 结构判定负控: 1.5 / 提升3.2倍 / .. / 空 串不得判为路径 (IsPathLike_Structural_NoSuffixWhitelist)",
+      "covers": [
+        "src/agent.core/core/RecallRealityGate.cs",
+        "src/agent.modelqueue/ActionLoop.cs",
+        "src/agent/action/WorkspaceActionPort.cs",
+        "src/agent/contextassembler/ContextAssembler.cs",
+        "src/agent/IndustrialAgentV2.cs",
+        "src/agent.tests/RecallRealityGateTests.cs",
+        "src/agent.tests/ActionLoopTests.cs",
+        "eval/rover/r462/judge_r462.py",
+        "eval/rover/r462/verdict-r462.json",
+        "eval/rover/r462/prereg-r462-e2e.json",
+        "docs/plans/v0.81.0-r462-recall-reality-gate.md",
+        "docs/reports/recall-reality-gate-r462.md"
+      ],
+      "owner_round": "R462",
+      "checks_posthoc": [
+        "P1 在 v1/v2/v3 三轮为**未行使** (通道未覆盖: 陈旧引用只出现在工具回灌面), v4 起接通该通道后才可行使 ⇒ 前三轮的 false 不得当作产品缺陷, 也不得当作通过 (prereg amendment_v4 留档)",
+        "判据修订留档: v1 (召回窗口被运行期 data/ 占满) / v2 (P4 误判 system prompt 契约说明; P2 被 list_dir 结果污染) / v3 (P1 通道缺失) ⇒ 全部记器具/口径缺陷"
+      ]
+    },
+    {
+      "id": "r462.language-agnostic-recall",
+      "level": "L2",
+      "capability": "语言无关召回探针 (承 R447 用户令「管道内一律标通用代码逻辑」): 删 ContextAssembler 工作区召回的**硬编码后缀白名单** (源码逐字列语言后缀), 改结构+内容探针 WorkspaceTextProbe (空文件/NUL/二进制 ⇒ 弃; 后缀集只在 AGENTFRAMEWORK_TEXT_SUFFIX_ALLOWLIST 显式配置时生效); 语言标签集外置为数据文件 config/base/language-tags.txt, 机检只读数据 ⇒ 换语言/新增语言零改码。读数: 非白名单后缀文本 logic.unit 进召回面, 含 NUL 的 blob.bin 不进",
+      "evidence_cmd": "bash /tmp/r462_e2e.sh && python3 eval/rover/r462/judge_r462.py",
+      "evidence_path": "eval/rover/r462/verdict-r462.json",
+      "negative_control": "NC1 判别力: R461 实发面同判据 ⇒ logic.unit 不进面 (旧白名单拒非白名单后缀) = false; NC2 二进制负控: 含 NUL 的文件必须被判非文本 (TextProbe_BinaryAndEmptyRejected_TextAccepted); NC3 空文件负控: 0 字节不得进召回; NC4 源码机检: 闸源码与 ContextAssembler 不得出现语言标签数据文件里的任何后缀字面量 (RecallRealityGate_Source_HasNoLanguageSuffixLiteral / TextProbe_ContextAssemblerPipeline_HasNoSuffixWhitelistLiteral); NC5 白名单语义负控: 未配置 ⇒ 全允许, 配置后按集过滤 (TextProbe_SuffixAllowlistOnlyWhenConfigured)",
+      "covers": [
+        "src/agent/context/WorkspaceTextProbe.cs",
+        "src/agent/contextassembler/ContextAssembler.cs",
+        "config/base/language-tags.txt",
+        "src/agent.tests/RecallRealityGateTests.cs",
+        "eval/rover/r462/r462_setup.sh",
+        "eval/rover/r462/judge_r462.py"
+      ],
+      "owner_round": "R462"
+    },
+    {
+      "id": "r462.weight-probe",
+      "level": "L2",
+      "capability": "本地判别权重档位探针 (回答用户「现役 r1 权重够不够」, 承用户令改用 3B): 28 条**产品实发**门判 prompt (14 负类=真实驱动消息'继续下一轮' / 14 正类=真实 Ack), 调用面与产品门判链路逐字段相同 (/apply-template + add_generation_prompt=true + n_predict=512/seed=0/cache_prompt=false/-np 1/f32 KV), 判据面逐行移植产品 TurnGateJudge.Parse (13/13 产品自带用例逐条相等)。读数 P1(假跳率≤0.10 ∧ 漏跳率≤0.20 ∧ 解析失败=0): 1.5b-q4 假跳 14/14 FAIL · 1.5b-q8 11/14 FAIL · qwenpaw-2b-q4 9/14 FAIL · **3b-q4 0/14 PASS (acc 1.000, gen 2.0 tok/次)** · **3b-q5 0/14 PASS**; P2 参数档增益 +0.500 ⇐ 瓶颈=参数量; P3 量化档增益 +0.107 (Q8 救不回 1.5B); P4 成本: 3b-q4 30.5 s/次 ∧ gen 2 tok/次 (1.5b-q4 17.5 s/次 ∧ 157.8 tok/次 ⇒ 本地生成 token −98.7%)",
+      "evidence_cmd": "python3 /tmp/r462_w_bench.py --corpus /tmp/r462_corpus.json --model <gguf> --port <p> --ctx 1024 --out /tmp/r462_w/w-<tag>.json && python3 /tmp/r462_w_report.py",
+      "evidence_path": "eval/rover/r462/verdict-r462-w.json",
+      "negative_control": "NC1 判据面负控: 器具 gate_parse 与产品 TurnGateJudge.Parse 对 13 条产品自带用例逐条相等 (含 last_wins / tail64_no_think), 自造「首个非空白字符」口径已废 (v1 读数 VOID); NC2 调用面负控: 未走产品渲染 (/apply-template) 时模型退化为复读机 (P\\nP\\nP…) 且同臂两次不可复现 ⇒ v1/v2 读数全部 VOID, 只认 v3; NC3 恒 S 假模型口径: 恒 S ⇒ 假跳 1.00 / 漏跳 0.00, 与 1.5b-q4 实测逐位吻合 (复现 R452 RJ 14/14 全 S); NC4 恒 P 假模型: 假跳 0.00 / 漏跳 1.00 (selftest 合成); NC5 确定性: 同器具/同语料重跑, 3b-q4 与 1.5b-q4 各 28/28 项 (want,got,raw 原文) 逐位相同 ⇒ 非采样噪声; NC6 器具: 语料与实发 dump 逐位比对 (selftest_r462_w.py exit 0)",
+      "owner_round": "R462",
+      "covers": [
+        "eval/rover/r462/prereg-r462-w.json",
+        "eval/rover/r462/verdict-r462-w.json",
+        "eval/rover/r462/bench_r462_w.py",
+        "eval/rover/r462/report_r462_w.py",
+        "eval/rover/r462/selftest_r462_w.py",
+        "eval/rover/r462/corpus-r462-w.json",
+        "eval/rover/r462/w/w-1.5b-q4.json",
+        "eval/rover/r462/w/w-1.5b-q4-r2.json",
+        "eval/rover/r462/w/w-1.5b-q8.json",
+        "eval/rover/r462/w/w-paw2b-q4.json",
+        "eval/rover/r462/w/w-3b-q4.json",
+        "eval/rover/r462/w/w-3b-q4-r2.json",
+        "eval/rover/r462/w/w-3b-q5.json"
+      ],
+      "updated_round": "R462"
+    }
   ],
   "aot_check_policy": "release_tag_only",
   "aot_check_policy_note": "AOT 编译校验(NativeAOT 发布/0 IL 警告/发布体积)仅在【发布 tag】时执行并登记;非发布轮次的 AOT 结果只作参考证据, 不构成该轮能力的登记依据或等级判定(用户口径 2026-09-13)"

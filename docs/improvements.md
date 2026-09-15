@@ -10,6 +10,15 @@
 > 数据时效 (测试数/批号/评测口径)、版本引用一致性、死链检查; **禁止只改局部不做整体校验**。
 > 空间位置相邻但语义不同段的错挂 (如旧版本标题下挂新数据) 视同违例。
 
+## v0.81.0 · R462 · 2026-09-15 · 状态: 已完成 · 主题: 召回-现实一致性闸 + 语言无关召回探针（+ r1 权重档位探针）
+
+- **起因（承 R461 实发证据）**：① 召回/记忆块里引用的上一会话事实被当成本轮真值 —— T5 宣称 `stats.txt 已写入 chars=15` 而工作区**无该文件**（磁盘 0 B，真值 14）⇒ 产物 3/4；② `ContextAssembler.RecallFromWorkspaceAsync` 用**硬编码后缀白名单**（源码逐字列语言后缀）过滤召回文件，违反 R447 用户令「管道内一律标通用代码逻辑」。
+- **输出效果（E2E 同夹具/同 7 轮/同适配器，唯一差异 = 二进制；判据预注册 4 项）**：P1 召回-现实一致性可见 **11 个实发消息带 `[核验✗ …]`**（`recall_stale_refs` 含 `report.md`）✅；P2 语言无关召回：`[工作区文件 logic.unit]` **进面**、`[工作区文件 blob.bin]` **不进面** ✅；P3 只打假（召回片段内 0 处 `[核验✓` ⇒ 一致时零字节）✅；P4 无回归（7 轮 ok、四产物正确、回复面 0 处契约声明）✅ ⇒ **E2E PASS 4/4**。负控（同判据跑 R461 实发面）P1/P2 = **false** ⇒ 判据有判别力。
+- **机制修复（5 项，非关键词/提示词补丁）**：① 新增 `src/agent.core/core/RecallRealityGate.cs` —— 逐子句抽**路径样 token**（结构判定、零后缀白名单）→ 用**文件系统**裁决并追加 `[核验✓ 现存 N B]`/`[核验✗ 当前不存在该文件]`/`[核验✗ 越界路径…]`；fail-safe、幂等、越界不探测、`failOnly` 一致时零字节；② 闸接入**工具回灌面**（`ActionLoop` 回灌前核验；`IActionPort` 增 `WorkspaceRoot` 端口，默认 null ⇒ fail-safe）；③ 召回片段同接 fail-only 核验；④ 删后缀白名单 ⇒ `WorkspaceTextProbe` 结构+内容探针（空/NUL/二进制 ⇒ 弃，后缀集只在 `AGENTFRAMEWORK_TEXT_SUFFIX_ALLOWLIST` 显式配置时生效）；⑤ 语言标签集外置为数据 `config/base/language-tags.txt`（判定器/机检只读数据，源码零硬编码）。
+- **判据修订留档（不粉饰）**：v1/v2/v3 的 false 全属**器具/口径缺陷**（召回窗口被运行期 `data/` 占满；P4 误把 system prompt 的契约说明当成「上前台」；P2 被 `list_dir` 工具结果污染；P1 通道未覆盖）⇒ 逐条留档 + 修机制；**P1 判据从未放宽**。
+- **r1 权重档位探针（用户问「现役 r1 参数权重够不够」）**：语料 = **产品实发**门判 prompt 逐位 28 条（14 负类真实驱动消息 / 14 正类 Ack），oracle = 网格 `expected[]`（机械，与 r1 无关）；调用面与产品一致（`/completion`、`samplers=[temperature]`、temp=0）。基线 **1.5B-Q4_K_M：准确率 0.321、假跳率 0.929（13/14 真实驱动消息被判「该跳」）、漏跳率 0.357、解析失败 1** ⇒ 该权重在判别面**不可承重**（现状靠机械守卫兜住，R452 `skip_rejected_nonack`）；四档对照臂（1.5B-Q8 / QwenPaw-Flash-2B-Q4 / 3B-Q4 / 3B-Q5）读数见 `docs/reports/recall-reality-gate-r462.md`。
+- **验证**：单测 `RecallRealityGateTests`+`ActionLoopTests` **32/32**（构建 0 Error）；AOT `/tmp/pub_r462/agenthost`（15,322,688 B）`env -i` 自启 rc=0。**未 push（推送暂停令）。**
+
 ## v0.80.0 · R461 · 2026-09-15 · 状态: 已完成 · 主题: 契约声明**不上前台** + 零字节产物可见 + 每轮注入预算收口
 
 - **用户令（逐字，承 R460）**：「r458回复要精炼，并且后续选择 给出 menu问询了么」+「而且命中率和tokens都不达标」。
@@ -1959,3 +1968,10 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 6. **器具修复**：`adapter_tools.py::to_chat_tools` 漏认 chat 风工具声明 ⇒ 静默丢弃（假阴性 `tool_calls=null`）；修复后烟测两侧 `finish_reason=tool_calls` ⇒ 模型工具调用能力成立。
 7. **残余缺口（R457 候选）**：T4 未落盘 + 口算错（15 vs 14）；T5/T6 被吞并/续跑入口吞掉；缺 API key 时静默空回复（须告警）。
 8. 遗留：3 轮未归因 `G_calls=0`；零可跳档净亏；短档 V2b 13.03%；L.7 语言无关令。
+
+### R462-W（2026-09-15）· 本地判别**权重档位探针**（用户令：改用 3B 并删多余模型）
+- **口径三面对齐产品**（否则读数作废）：判据面逐行移植 `TurnGateJudge.Parse`（13/13 产品自带用例逐条相等）；调用面对齐 `/apply-template + add_generation_prompt` 链路（n_predict=512/seed=0/cache_prompt=false/-np 1/f32 KV）；语料=产品实发 dump 逐位比对（selftest exit 0）。
+- **读数**（28 条 = 14 负类真实驱动消息 + 14 正类真实 Ack）：`1.5b-q4` 假跳 **14/14**（对「继续下一轮」也判 S）· `1.5b-q8` 11/14 · `qwenpaw-2b-q4` 9/14 · **`3b-q4` / `3b-q5` 假跳 0/14、漏跳 0/14、acc 1.000、gen 2.0 tok/次**。
+- **根因（机检口径）**：P2 参数档增益 **+0.500** ⇒ 瓶颈=**参数量**；P3 量化档增益 +0.107 ⇒ Q8 救不回 1.5B（零换族方案不成立）。3B 比 1.5B 省本地生成 token **98.7%**（158→2 tok/次），代价 17.5 s→30.5 s/次。
+- **负控**：NC1 判据面（自造「首个非空白字符」口径 ⇒ 11 条答案在末尾被误判未解析，v1 读数 VOID）· NC2 调用面（不渲染 ⇒ 复读机且不可复现，v2 读数亦 VOID）· NC3 恒 S 假模型 = 1.5b-q4 实测逐位吻合（复现 R452）· NC4 恒 P 成对 · NC5 确定性（两臂 28/28 项逐位相同）。
+- **交付**：`eval/rover/r462/{prereg-r462-w.json,verdict-r462-w.json,bench_r462_w.py,report_r462_w.py,selftest_r462_w.py,corpus-r462-w.json,w/*}`、`docs/reports/r462-weight-probe.md`；registry `r462.weight-probe`（L2）。

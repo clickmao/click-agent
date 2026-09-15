@@ -65,6 +65,8 @@ public sealed class ActionExecutionResult
 public interface IActionPort
 {
     string Name { get; }
+    /// <summary>R462: 会话工作区根 (供回灌面做「召回-现实一致性」机检); 无工作区概念的实现返回 null。</summary>
+    string? WorkspaceRoot => null;
     Task<ActionExecutionResult> ExecuteAsync(ActionToolCall call, CancellationToken ct);
 }
 
@@ -221,8 +223,12 @@ public static class ActionLoopRunner
                     ArgsSha8 = Sha8(tc.ArgumentsJson ?? string.Empty),
                 });
                 onCall?.Invoke(outcome.Steps, tc, res);
+                var rendered = res.Render(MaxToolResultBytes);
+                // R462 召回-现实一致性闸 (工具回灌面): 结果里引用的路径若当前工作区不存在 ⇒ 显式标 ✗,
+                // 使「读了 A 文件, 里面说 B 文件已完成」这类陈旧引用在下游可见 (只打假 ⇒ 一致时零字节)。
+                rendered = agent.core.RecallRealityGate.Verify(rendered, port.WorkspaceRoot, failOnly: true);
                 postUser.Add(QueuePostUserMessage.ToolResult(tc.Id ?? string.Empty,
-                    res.Render(MaxToolResultBytes) + "\n" + LedgerLine(outcome)));
+                    rendered + "\n" + LedgerLine(outcome)));
             }
             resp = await call(Clone(prompt, postUser), ct);
         }

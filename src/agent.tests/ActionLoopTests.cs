@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using agent.action;
+using agent.core;
 using agent.modelqueue;
 using Xunit;
 
@@ -295,6 +296,80 @@ public sealed class ActionLoopTests
             Assert.Contains("[本轮已执行]", toolMsg.Content);
             Assert.Contains("write_file(rc=0)", toolMsg.Content);
             Assert.Contains("其中 write_file 1 次, run_command 0 次", toolMsg.Content);
+        }
+        finally { Directory.Delete(root, true); }
+    }
+
+    // ---------- 面 3d: 工具回灌面的召回-现实一致性闸 (R462) ----------
+    [Fact]
+    public async Task Loop_ToolResult_StalePathIsMarked_BeforeReplay()
+    {
+        var root = NewTempDir();
+        try
+        {
+            File.WriteAllText(Path.Combine(root, "notes.md"), "report.md=已生成 (上一轮)\n");
+            var port = new WorkspaceActionPort(root);
+            var seen = new List<QueuePrompt>();
+            var step = 0;
+            Task<QueueResponse> Call(QueuePrompt p, CancellationToken ct)
+            {
+                seen.Add(Clone(p));
+                step++;
+                if (step == 1)
+                    return Task.FromResult(new QueueResponse
+                    {
+                        Success = true,
+                        Content = string.Empty,
+                        ToolCalls = new List<ActionToolCall>
+                        {
+                            new() { Id = "c1", Name = "read_file", ArgumentsJson = "{\"path\":\"notes.md\"}" },
+                        },
+                    });
+                return Task.FromResult(new QueueResponse { Success = true, Content = "done" });
+            }
+
+            var (_, _) = await ActionLoopRunner.RunAsync(new QueuePrompt { UserMessage = "u" }, Call, port, 3, CancellationToken.None);
+
+            var toolMsg = seen[1].PostUser!.First(m => m.Role == "tool");
+            Assert.Contains(RecallRealityGate.BadTag, toolMsg.Content, StringComparison.Ordinal); // report.md 不存在 ⇒ 必标 ✗
+            Assert.Contains("report.md", toolMsg.Content, StringComparison.Ordinal);             // 原文本保留可见
+            Assert.DoesNotContain(RecallRealityGate.OkTag, toolMsg.Content, StringComparison.Ordinal); // 只打假
+        }
+        finally { Directory.Delete(root, true); }
+    }
+
+    [Fact]
+    public async Task Loop_ToolResult_ConsistentPath_ZeroByteInjection()
+    {
+        var root = NewTempDir();
+        try
+        {
+            File.WriteAllText(Path.Combine(root, "a.txt"), "x\n");
+            var port = new WorkspaceActionPort(root);
+            var seen = new List<QueuePrompt>();
+            var step = 0;
+            Task<QueueResponse> Call(QueuePrompt p, CancellationToken ct)
+            {
+                seen.Add(Clone(p));
+                step++;
+                if (step == 1)
+                    return Task.FromResult(new QueueResponse
+                    {
+                        Success = true,
+                        Content = string.Empty,
+                        ToolCalls = new List<ActionToolCall>
+                        {
+                            new() { Id = "c1", Name = "read_file", ArgumentsJson = "{\"path\":\"a.txt\"}" },
+                        },
+                    });
+                return Task.FromResult(new QueueResponse { Success = true, Content = "done" });
+            }
+
+            var (_, _) = await ActionLoopRunner.RunAsync(new QueuePrompt { UserMessage = "u" }, Call, port, 3, CancellationToken.None);
+
+            var toolMsg = seen[1].PostUser!.First(m => m.Role == "tool");
+            Assert.DoesNotContain(RecallRealityGate.BadTag, toolMsg.Content, StringComparison.Ordinal);
+            Assert.DoesNotContain(RecallRealityGate.OkTag, toolMsg.Content, StringComparison.Ordinal);
         }
         finally { Directory.Delete(root, true); }
     }

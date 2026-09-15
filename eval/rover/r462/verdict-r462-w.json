@@ -1,0 +1,198 @@
+{
+  "round": "R462-W",
+  "status": "completed",
+  "completed_at": "2026-09-15T20:41+0800",
+  "question": "现役 r1 权重/量化档位 对门判真假判别是否够用",
+  "prereg": "eval/rover/r462/prereg-r462-w.json (amendments 4)",
+  "harness": "/tmp/r462_w_bench.py (v3: 判据面=TurnGateJudge.Parse 逐行移植, 调用面=/apply-template+CompletionRequest 全字段)",
+  "corpus": {
+    "n": 28,
+    "negatives": 14,
+    "positives": 14,
+    "sha256_16": "cd075177be5bea13",
+    "source": "产品自身落盘门判 prompt (dump-RJ-REAL-j1.jsonl 14 / dump-RC-M20-c1.jsonl 7 / dump-RC-M20-c2.jsonl 7), verbatim 零重建"
+  },
+  "arms": {
+    "1.5b-q4": {
+      "tag": "1.5b-q4",
+      "model": "/tmp/models/r1-distill-qwen-1.5b-q4km.gguf",
+      "ctx": 1024,
+      "n": 28,
+      "acc": 0.5,
+      "false_skip_n": 14,
+      "false_skip_rate": 1.0,
+      "miss_skip_n": 0,
+      "unparsed_n": 0,
+      "undecided_n": 0,
+      "skip_n": 28,
+      "skip_precision": 0.5,
+      "skip_recall": 1.0,
+      "gen_truth_sum": 4418,
+      "elapsed_s": 490.5,
+      "sha256_16": "09ad9f01bdbc57ea"
+    },
+    "1.5b-q8": {
+      "tag": "1.5b-q8",
+      "model": "/tmp/models/r1-distill-1.5b-q8.gguf",
+      "ctx": 1024,
+      "n": 28,
+      "acc": 0.6071,
+      "false_skip_n": 11,
+      "false_skip_rate": 0.7857,
+      "miss_skip_n": 0,
+      "unparsed_n": 0,
+      "undecided_n": 0,
+      "skip_n": 25,
+      "skip_precision": 0.56,
+      "skip_recall": 1.0,
+      "gen_truth_sum": 3785,
+      "elapsed_s": 672.8,
+      "sha256_16": "8c8bfb3cf8d8b24b"
+    },
+    "paw2b-q4": {
+      "tag": "paw2b-q4",
+      "model": "/tmp/models/qwenpaw-flash-2b-q4km.gguf",
+      "ctx": 1024,
+      "n": 28,
+      "acc": 0.6429,
+      "false_skip_n": 9,
+      "false_skip_rate": 0.6429,
+      "miss_skip_n": 0,
+      "unparsed_n": 1,
+      "undecided_n": 1,
+      "skip_n": 23,
+      "skip_precision": 0.6087,
+      "skip_recall": 1.0,
+      "gen_truth_sum": 12146,
+      "elapsed_s": 1449.9,
+      "sha256_16": "2116bfc56a4ce9aa"
+    },
+    "3b-q4": {
+      "tag": "3b-q4",
+      "model": "/tmp/models/qwen2.5-3b-instruct-q4km.gguf",
+      "ctx": 1024,
+      "n": 28,
+      "acc": 1.0,
+      "false_skip_n": 0,
+      "false_skip_rate": 0.0,
+      "miss_skip_n": 0,
+      "unparsed_n": 0,
+      "undecided_n": 0,
+      "skip_n": 14,
+      "skip_precision": 1.0,
+      "skip_recall": 1.0,
+      "gen_truth_sum": 56,
+      "elapsed_s": 854.2,
+      "sha256_16": "4b8df532ba06e11c"
+    },
+    "3b-q5": {
+      "tag": "3b-q5",
+      "model": "/tmp/models/qwen2.5-3b-instruct-q5km.gguf",
+      "ctx": 1024,
+      "n": 28,
+      "acc": 1.0,
+      "false_skip_n": 0,
+      "false_skip_rate": 0.0,
+      "miss_skip_n": 0,
+      "unparsed_n": 0,
+      "undecided_n": 0,
+      "skip_n": 14,
+      "skip_precision": 1.0,
+      "skip_recall": 1.0,
+      "gen_truth_sum": 56,
+      "elapsed_s": 1525.0,
+      "sha256_16": "b5c4770f00609be0"
+    }
+  },
+  "criteria": {
+    "P1_gate_usability": {
+      "1.5b-q4": "FAIL",
+      "1.5b-q8": "FAIL",
+      "paw2b-q4": "FAIL",
+      "3b-q4": "PASS",
+      "3b-q5": "PASS"
+    },
+    "P2_params_gain": 0.5,
+    "P3_quant_gain": 0.1071,
+    "P4_cost_per_call": {
+      "1.5b-q4": {
+        "gen_tok_per_call": 157.8,
+        "wall_s_per_call": 17.5
+      },
+      "1.5b-q8": {
+        "gen_tok_per_call": 135.2,
+        "wall_s_per_call": 24.0
+      },
+      "paw2b-q4": {
+        "gen_tok_per_call": 433.8,
+        "wall_s_per_call": 51.8
+      },
+      "3b-q4": {
+        "gen_tok_per_call": 2.0,
+        "wall_s_per_call": 30.5
+      },
+      "3b-q5": {
+        "gen_tok_per_call": 2.0,
+        "wall_s_per_call": 54.5
+      }
+    }
+  },
+  "negative_controls": {
+    "恒S假模型(1.5b-q4 实测形态复现)": {
+      "假跳率": "1.000 (14/14)",
+      "漏跳率": "0.000",
+      "判定": "PASS 复现 R452"
+    },
+    "恒P假模型(合成)": "PASS (r462_w_selftest.py: 假跳 0.00 / 漏跳 1.00)",
+    "oracle 真值合成": "PASS"
+  },
+  "decision": {
+    "P1_met_by": [
+      "3b-q4",
+      "3b-q5"
+    ],
+    "recommend": "Qwen2.5-3B-Instruct Q4_K_M (1.96 GiB): 假跳0/漏跳0, gen 2.0 tok/次 (较现役 1.5B 思考链 157.8 tok/次 省 98.7%), 单次 wall 30.5s (现役 17.5s)",
+    "reject": [
+      "1.5b-q4 (现役, 假跳 1.000)",
+      "1.5b-q8 (假跳 0.786 ⇒ 量化非主因)",
+      "paw2b-q4 (假跳 0.643, gen 433.8 tok/次)",
+      "3b-q5 (同 3b-q4 满分但 54.5s/次, 无额外收益)"
+    ],
+    "root_cause": "参数规模是瓶颈 (P2 +0.500); 量化档仅 +0.107 且仍未过 P1",
+    "production_adoption_blockers": [
+      "ctx 1024 + 内存 3.66 GiB 硬顶 (3B RSS ~1.84-2.1 GB)",
+      "须 E2E: 门判真实链路切换 + 机械守卫承重比例回归",
+      "须重复性负控 (r2 重跑逐位比对) 通过"
+    ]
+  },
+  "honesty_boundaries": [
+    "28 条语料 (14 正 / 14 负); 两类在 prompt 内可分辨 (Ack 族 vs 驱动消息), 3B 可能仅「会读规则」而非真判别 ⇒ 外效须扩样",
+    "本机 2 vCPU 单机读数; wall 时间随负载波动",
+    "不宣称整体 KPI 提升: 本轮只测判别面可承重性, 未接生产门判链路, 无端到端 token 降幅读数",
+    "v1/v2 读数 VOID (判据面 ≠ 产品判据面; 调用面未渲染), 仅 v3 可用"
+  ],
+  "determinism_control": {
+    "method": "同器具/同语料/同调用面重跑一遍, 逐项 (want, got, raw 原文) 逐位比对",
+    "arms": {
+      "3b-q4-r2": {
+        "acc": 1.0,
+        "false_skip_n": 0,
+        "gen_truth_sum": 56,
+        "elapsed_s": 897.0,
+        "identical_items": "28/28",
+        "diff_items": [],
+        "sha256_16": "6c373f5eb346659b"
+      },
+      "1.5b-q4-r2": {
+        "acc": 0.5,
+        "false_skip_n": 14,
+        "gen_truth_sum": 4418,
+        "elapsed_s": 532.5,
+        "identical_items": "28/28",
+        "diff_items": [],
+        "sha256_16": "b2e7af563773f40f"
+      }
+    },
+    "verdict": "确定性成立 (greedy/seed=0/-np 1/f32 KV): 两臂 28/28 逐位相同 ⇒ v3 读数可复现, 非采样噪声"
+  }
+}

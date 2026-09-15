@@ -473,13 +473,10 @@ Interlocked.Increment(ref _cacheMisses);
             if (keywords.Count == 0)
                 return snippets;
 
-            var extensions = new[] { ".md", ".txt", ".cs", ".json", ".py", ".yaml", ".yml" };
+            // R462 (承 R447 语言无关令): 原**硬编码后缀白名单** (源码逐字列语言后缀) 已移除 ——
+            // 判定改为结构+内容探针 (agent.context.WorkspaceTextProbe): 空文件/NUL/二进制 ⇒ 弃,
+            // 后缀集只在显式配置 (AGENTFRAMEWORK_TEXT_SUFFIX_ALLOWLIST) 时生效 ⇒ 换语言复用零噪声。
             var files = Directory.EnumerateFiles(request.WorkspaceRoot!, "*.*", SearchOption.AllDirectories)
-                .Where(f =>
-                {
-                    var ext = Path.GetExtension(f).ToLowerInvariant();
-                    return extensions.Contains(ext);
-                })
                 .Where(f => !f.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}") &&
                             !f.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}") &&
                             !f.Contains($"{Path.DirectorySeparatorChar}node_modules{Path.DirectorySeparatorChar}"))
@@ -504,6 +501,9 @@ Interlocked.Increment(ref _cacheMisses);
                         continue;
                     if (info.Length <= 0)
                         continue; // P4 (R330): 空文件跳过, 免开流
+                    // R462: 结构+内容探针 (空/NUL/二进制 ⇒ 弃; 后缀集仅在显式配置时生效)。
+                    if (!agent.context.WorkspaceTextProbe.IsUsableTextFile(file))
+                        continue;
                     // P4 (R330): 整轮字节预算 — 若读该文件将超预算则停止扫描剩余 (文件按修改时间
                     // 降序, 丢的是最旧文件; 与 Take(300) 同哲学: 扫描窗口内的召回质量)。
                     if (totalBytesRead + info.Length > WorkspaceRecallBytesBudget)
@@ -519,6 +519,9 @@ Interlocked.Increment(ref _cacheMisses);
 
                     var excerpt = hitLine.Length > 400 ? hitLine[..400] + "…" : hitLine;
                     var workspaceContent = $"[工作区文件 {Path.GetRelativePath(request.WorkspaceRoot!, file)}]\n{excerpt}";
+                    // R462 召回-现实一致性闸 (只打假, 一致时零字节注入 ⇒ 不增 token):
+                    //   片段里若引用**别处**的文件事实而当前工作区没有 ⇒ 显式标 ✗, 使「召回陈旧引用」可见。
+                    workspaceContent = agent.core.RecallRealityGate.Verify(workspaceContent, request.WorkspaceRoot, failOnly: true);
                     // v0.11.0 R118 (真缺陷 50): 相关分原硬编码 0.7 — 1 词命中与多词命中同分,
                     // 打点 r0.7rel 恒定失真, 无法支撑后续预算/排序。改按命中关键词数比例化。
                     var relevance = 0.4 + 0.5 * Math.Min(1.0, hitCount / 5.0);

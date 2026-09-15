@@ -2699,7 +2699,9 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             var k1FullIso = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_K1_FULL_ISOLATION") == "1";
             if (!string.IsNullOrEmpty(rendered) && !k1FullIso)
             {
-                request.SessionMemoryBlock = rendered;
+                request.SessionMemoryBlock = agent.core.RecallRealityGate.Verify(
+                    rendered,
+                    _workspace is { RootPath: { Length: > 0 } gateRoot } ? gateRoot : Environment.CurrentDirectory);
                 if (!request.EnabledSources.Contains(agent.context.DataSourceType.SessionMemory))
                     request.EnabledSources.Add(agent.context.DataSourceType.SessionMemory);
             }
