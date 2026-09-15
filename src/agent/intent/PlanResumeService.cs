@@ -64,6 +64,75 @@ public static class PlanResumeService
     public const string RefuseChoiceMismatch = "答复不在该条目的可选范围内";
     public const string RefuseMissingOutputs = "等待节点要吃的产出不在检查点快照里 — 续跑只能伪造或重跑生产者, 两者都不接受";
 
+    /// <summary>R458 禁上前台的内部术语 (机检用: 人话承接句一律不得包含这些词)。</summary>
+    public static readonly string[] InternalJargon = ["可选范围", "检查点", "作废", "槽位"];
+
+    /// <summary>
+    /// R458 人性化承接句: 把"答复落不到槽位 ⇒ 检查点作废"的内部判定变成一句人话 —— 像人一样先承接、
+    /// 只说两个事实 (上一轮在等你回答什么 / 这轮内容对不上), 不出现内部术语, 也不复述内部示例枚举。
+    /// why (内部理由) 不呈现给用户 —— 调用方仍把它送遥测, 事实不丢。
+    /// </summary>
+    public static string HumanizeVoidNotice(string? pendingQuestion, string? why)
+    {
+        _ = why; // 内部理由只进遥测 (调用方 Emit), 不上前台
+        var q = CompactQuestion(pendingQuestion);
+        var sb = new System.Text.StringBuilder(160);
+        sb.Append(q.Length > 0
+            ? "(插一句: 上一轮你说「" + q + "」我没接上上下文, 问过你要继续什么"
+            : "(插一句: 上一轮我还在等你的答复");
+        sb.Append(", 这轮给的内容对不上那个问题 —— 那个问题先搁下, 下面按你这次的意图办。)");
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// 压缩待答问题成"人话主语": 优先取问句里引用的**用户原话** (「…」), 否则取首句;
+    /// 再去括号/方括号补充说明 (示例枚举、参数说明都不上台面), 最后截断。
+    /// 只用真实文本, 不重写语义。
+    /// </summary>
+    public static string CompactQuestion(string? q, int max = 40)
+    {
+        if (string.IsNullOrWhiteSpace(q)) return string.Empty;
+        var t = q.Trim();
+        var open = t.IndexOf('「');
+        if (open >= 0)
+        {
+            var close = t.IndexOf('」', open + 1);
+            if (close > open + 1) t = t.Substring(open + 1, close - open - 1);
+        }
+        else
+        {
+            var cut = t.IndexOfAny(['。', '?', '？', '!', '！', '\n']);
+            if (cut > 0) t = t[..(cut + 1)];
+        }
+        t = StripEnclosed(t, '(', ')', null);
+        t = StripEnclosed(t, '（', '）', null);
+        t = StripEnclosed(t, '[', ']', null);
+        t = t.Trim();
+        if (t.Length > max) t = t[..max];
+        return t.TrimEnd(' ', ',', '，', ';', '；', ':', '：', '—', '-');
+    }
+
+    private static string StripEnclosed(string s, char open, char close, string? mustContain)
+    {
+        var i = s.IndexOf(open);
+        while (i >= 0)
+        {
+            var j = s.IndexOf(close, i + 1);
+            if (j < 0) break;
+            var inner = s.Substring(i + 1, j - i - 1);
+            if (mustContain is null || inner.Contains(mustContain, StringComparison.Ordinal))
+            {
+                s = s.Remove(i, j - i + 1);
+                i = s.IndexOf(open);
+            }
+            else
+            {
+                i = s.IndexOf(open, j + 1);
+            }
+        }
+        return s;
+    }
+
     /// <summary>
     /// ① 捕获: 计划停下来 (等用户 / 等产出) 时把续跑三件套落盘。
     /// 返回 false = 没写 (store 未注入 / 会话 Id 空 / 计划已正常跑完 —— 正常完成不需要续跑入口)。

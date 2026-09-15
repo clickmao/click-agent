@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R457",
+  "updated_round": "R458",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -1584,7 +1584,27 @@
         "docs/reports/effect-closure-r457.md"
       ],
       "owner_round": "R457"
-    }
+    },
+  {
+    "id": "r458.humanized-continuation",
+    "level": "L2",
+    "capability": "承接轮人性化(真机 E2E, 同夹具/同 6 轮/同模型): T5「继续」→ 逐项承接 4 个真实产物 + 「继续什么」反问 + 3 个具体可选项 (固定示例菜单 `(如: 搜索/写文档…)` 消失); T6 内部术语 3 行 → 0 行 (一句人话, 内部理由只进遥测); 承接块仅 T5 触发 1 次 (判定与门同判据: 弱意图 且 置信<0.60), 收口闸 grounded=true; 产物 4/4 不回退, 磁盘伪造 0; 调用 17 (R457 15, codex 冻结 13) —— 增量来自模型自身多用工具, 非承接机制成本",
+    "evidence_cmd": "bash /tmp/r458_setup.sh && bash /tmp/r458_run.sh && python3 eval/rover/r458/judge_r458.py",
+    "evidence_path": "eval/rover/r458/verdict-r458.json",
+    "negative_control": "C1 空工作区负控: 块与兜底反问都不得出现任何文件名 (Block_EmptyState_SaysNone_AndNeverNamesAFile / Fallback_OnlyUsesRealFacts_AndNeverInventsFiles); C2 误判负控: 「当前目录下一共有几个 .py 文件？」(门置信 0.8, 门未发问) 不得判为承接轮 —— run1 真发生过并污染回复, 已机检固化 (Judgement_ConcreteQuestionAtHighConfidence_IsNotContinuation) + 反向正控裸「继续」0.45 必须判真; C3 人话承接句负控: 不得含内部术语 (可选范围/检查点/作废/槽位) 且内部理由不上前台 (HumanizeVoidNotice_IsPlainSpeech_NoInternalJargon); C4 截断负控: 超过上限必须如实标注「共 N 项, 只列最近 M 项」(Block_MarksTruncationHonestly_TotalVsListed); C5 判分只读磁盘产物 (逐字节归一) 不采信回复文本, 承接块证据取遥测 + 实发请求回显 + 引用名与磁盘比对",
+    "covers": [
+      "eval/rover/r458/judge_r458.py",
+      "eval/rover/r458/verdict-r458.json",
+      "src/agent/context/ContinuationBrief.cs",
+      "src/agent/registry/EvidenceGate.cs",
+      "src/agent/intent/PlanResumeService.cs",
+      "src/agent/IndustrialAgentV2.cs",
+      "src/agent.tests/ContinuationBriefTests.cs",
+      "docs/plans/v0.78.0-r458-humanized-continuation.md",
+      "docs/reports/humanized-continuation-r458.md"
+    ],
+    "owner_round": "R458"
+  }
   ],
   "aot_check_policy": "release_tag_only",
   "aot_check_policy_note": "AOT 编译校验(NativeAOT 发布/0 IL 警告/发布体积)仅在【发布 tag】时执行并登记;非发布轮次的 AOT 结果只作参考证据, 不构成该轮能力的登记依据或等级判定(用户口径 2026-09-13)"

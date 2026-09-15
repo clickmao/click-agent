@@ -66,6 +66,12 @@ public class IndustrialAgentV2 : AgentBase
     private readonly System.Collections.Concurrent.ConcurrentDictionary<string, SessionInjectionPlanner.InjectionLedger> _sessionSentLines = new(StringComparer.Ordinal);
 
     private readonly IWorkspace _workspace;
+
+    /// <summary>R458 承接轮: 本轮注入的真实产物事实 (非承接轮恒为 null)。</summary>
+    private IReadOnlyList<agent.context.ArtifactFact>? _continuationFacts;
+
+    /// <summary>R458 承接轮: 本轮用户原话 (兜底反问里引用)。</summary>
+    private string? _continuationUserText;
     private readonly ICodeGenerator _codeGenerator;
     private readonly agent.registry.AgentRegistry _agentRegistry;
     private readonly agent.registry.ResponseSegmentRouter _segmentRouter;
@@ -506,6 +512,9 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
     protected override async Task<AgentResponse> OnProcessAsync(Message message, CancellationToken ct)
     {
         var startTime = DateTime.UtcNow;
+        // R458: 承接轮状态逐轮清零 (早退路径也走这里 ⇒ 不会把上一轮的产物事实/原话带到别的轮)
+        _continuationFacts = null;
+        _continuationUserText = null;
         // v0.17.2-a (R336): 活动心跳 — 每轮注册本进程活动 (任务摘要), 退出由 10s TTL 过期自清
         try { Activity().Heartbeat(message.Content); } catch { /* 活动感知不阻塞主链 */ }
         var response = new AgentResponse();
@@ -1275,6 +1284,27 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             if (dynText.Length > 0)
                 inlineBlocks.Add(dynText);
 
+            // R458 承接轮人性化 (用户令: 「突然说一句"继续"，另一个人肯定反问"继续什么"」):
+            // 判据复用意图层既有分支 (WeakIntent/TooVague 且无更具体缺口), 命中则把**工作区真实产物**
+            // 逐项接地后反问。块只进本轮 user 内容 ⇒ 缓存前缀字节不变; 事实全来自磁盘扫描 ⇒ 零编造。
+            if (agent.context.ContinuationBrief.IsContinuationTurn(subTasks))
+            {
+                _continuationUserText = message.Content;
+                _continuationFacts = agent.context.ContinuationBrief.ScanArtifacts(
+                    _workspace is { RootPath: { Length: > 0 } root } ? root : Environment.CurrentDirectory,
+                    agent.context.ContinuationBrief.MaxArtifacts, out var artTotal);
+                var brief = agent.context.ContinuationBrief.BuildBlock(_continuationFacts, artTotal);
+                inlineBlocks.Add(brief);
+                agent.config.AgentTelemetry.Emit("continuation_brief", "IndustrialAgentV2",
+                    ("artifacts", _continuationFacts.Count), ("total", artTotal), ("chars", brief.Length),
+                    ("state", _continuationFacts.Count > 0 ? "grounded" : "empty"));
+            }
+            else
+            {
+                _continuationUserText = null;
+                _continuationFacts = null;
+            }
+
             // D4b: 出站正文 = 原文扣掉"框架自己做"的子请求 (未扣减时逐字等于原文 ⇒ 零改动)
             var outboundText = _planAblation is { Applied: true } ? _planAblation.Text : message.Content;
             var sentUserContent = outboundText;
@@ -1909,8 +1939,22 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
         if (_resumeVoidNotice is not null)
         {
             // R457: 上一轮检查点已作废, 本轮按新任务执行 —— 前置如实告知, 不静默吞掉。
+            // R458: 告知已改为人话一句 (PlanResumeService.HumanizeVoidNotice), 内部术语只进遥测。
             response.Content = _resumeVoidNotice + response.Content;
             _resumeVoidNotice = null;
+        }
+
+        // R458 收口 (fail-closed): 承接轮的回复必须接地 —— 空回复, 或既无问句又不含任何真实产物名
+        // ⇒ 链自身用同一批真实事实组装反问 (绝不编造; 事实为空时只反问, 不提任何文件名)。
+        if (_continuationFacts is not null)
+        {
+            var grounded = !agent.context.ContinuationBrief.NeedsFallback(response.Content, _continuationFacts);
+            if (!grounded)
+                response.Content = agent.context.ContinuationBrief.ComposeFallback(
+                    _continuationUserText, _continuationFacts);
+            agent.config.AgentTelemetry.Emit("continuation_closure", "IndustrialAgentV2",
+                ("grounded", grounded), ("artifacts", _continuationFacts.Count),
+                ("chars", response.Content.Length));
         }
         response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
         // v0.11.0 R62: 台账度量字段 — 问询数 (回复含问句) 与 executive 直达标记
@@ -2453,10 +2497,9 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
         if (!agent.intent.PlanResumeService.ApplyReply(cand, message.Content, out var applyWhy))
         {
             store.Clear(message.SessionId);
-            var verdict =
-                $"上一轮计划停在等你回答: {Truncate(cand.PendingQuestion ?? "(无问题文本)", 120)}\n" +
-                $"这一轮答复没有落地: {applyWhy}\n" +
-                "(检查点已作废, 本轮内容按新任务处理)\n";
+            // R458 人性化: 内部判定 (答复落不到槽位) 不上前台 —— 只说人话 (上一轮在等什么 / 这轮对不上)。
+            // 内部术语与理由仍进遥测 (plan_resume.reason), 不消失也不静默。
+            var verdict = agent.intent.PlanResumeService.HumanizeVoidNotice(cand.PendingQuestion, applyWhy) + "\n";
             agent.config.AgentTelemetry.Emit("plan_resume", "IndustrialAgentV2",
                 ("plan_id", cand.Plan.PlanId), ("resumed", false), ("reason", applyWhy),
                 ("fallthrough", PlanResumeFallthrough()));
@@ -2468,7 +2511,7 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 return false;
             }
             response.Success = false;
-            response.Content = verdict + "该续跑入口已作废 —— 请把这一轮内容重新表述为完整任务, 或按上面的问题再答一次。";
+            response.Content = verdict + "要接着上一轮, 就把答复写成完整任务再说一次; 否则直接给新任务即可。";
             return true;
         }
 
@@ -2547,7 +2590,7 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             return string.Empty;
         try
         {
-            var gate = new agent.registry.EvidenceGate();
+            var gate = new agent.registry.EvidenceGate(facts: _continuationFacts);
             var verdict = gate.Evaluate(subTasks);
             // v0.11.0: evidence gate 打点 (问询触发率对比数据)
             agent.config.AgentTelemetry.Emit("evidence_gate", "IndustrialAgentV2",
