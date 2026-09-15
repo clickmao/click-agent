@@ -1,0 +1,517 @@
+{
+  "round": "R448",
+  "instrument": "r448_analyze",
+  "prereg_sha256": "8979b3f8072de8c0b33421c84cbc8b6012636a6cfa9783489f3f3b5273d28358",
+  "prereg_probe_sha256": "8979b3f8072de8c0b33421c84cbc8b6012636a6cfa9783489f3f3b5273d28358",
+  "prereg_ok": true,
+  "corpus_gates": {
+    "G1_rebuild_equivalence": {
+      "pass": true,
+      "rebuilt_equal": 18,
+      "n": 18,
+      "limited_built": 18,
+      "mismatches": []
+    },
+    "G1b_faithfulness_vs_golden": {
+      "pass": true,
+      "golden_rows": 9,
+      "match": 9,
+      "mismatches": []
+    },
+    "G2_prev_diversity": {
+      "pass": true,
+      "distinct_prevs": 3,
+      "long_prevs_gt25": 1,
+      "note": "R447 自陈 prev 面弱；本轮只钉可机检下界，不宣称强"
+    },
+    "G3_neg_true_mismatch": {
+      "pass": true,
+      "true_mismatch": 8,
+      "n_neg": 8
+    }
+  },
+  "n_pairs": 18,
+  "n_neg": 8,
+  "criteria": [
+    {
+      "id": "C1_non_hollow",
+      "pass": false
+    },
+    {
+      "id": "C2_gen_cut",
+      "pass": false
+    },
+    {
+      "id": "C3_prompt_only",
+      "pass": false
+    },
+    {
+      "id": "C4_equivalence",
+      "pass": false
+    },
+    {
+      "id": "C5_truncation_closed",
+      "pass": false
+    },
+    {
+      "id": "C6_neg_control",
+      "pass": true
+    },
+    {
+      "id": "C7_accounting_form",
+      "pass": false
+    }
+  ],
+  "readings": {
+    "C1_non_hollow": {
+      "parsed": {
+        "J0": 0.9444,
+        "T2": 1.0,
+        "T1": 0.3333
+      },
+      "letter_mix": {
+        "J0": {
+          "A": 8,
+          "C": 2,
+          "N": 7
+        },
+        "T2": {
+          "N": 12,
+          "A": 4,
+          "C": 2
+        },
+        "T1": {
+          "N": 3,
+          "C": 1,
+          "A": 2
+        }
+      },
+      "t1_kinds": 3
+    },
+    "C2_gen_cut": {
+      "J0": {
+        "n": 18,
+        "mean": 178.6,
+        "median": 169.0,
+        "min": 92,
+        "max": 512,
+        "sum": 3215,
+        "tokens_evaluated_sum": 3832
+      },
+      "T2": {
+        "n": 18,
+        "mean": 138.5,
+        "median": 138.5,
+        "min": 79,
+        "max": 211,
+        "sum": 2493,
+        "tokens_evaluated_sum": 4156
+      },
+      "T1": {
+        "n": 18,
+        "mean": 119.7,
+        "median": 128.0,
+        "min": 79,
+        "max": 128,
+        "sum": 2154,
+        "tokens_evaluated_sum": 4156
+      },
+      "ratio_T1_over_J0": 0.6702,
+      "ref_r447_gen_mean_J0": 178.61
+    },
+    "C3_prompt_only": {
+      "ratio_T2_over_J0": 0.7755,
+      "agree_T2_J0": 0.4444,
+      "n": 18
+    },
+    "C4_equivalence": {
+      "agree_T1_J0": 0.1667,
+      "n_pairs": 18,
+      "agree_T1_archived": 0.1667,
+      "n_archived": 12,
+      "archived_letters": [
+        "A",
+        "C",
+        "N",
+        "A",
+        "N",
+        "A",
+        "N",
+        "A",
+        "N",
+        "A",
+        "N",
+        "A"
+      ],
+      "T1_letters": [
+        "N",
+        null,
+        null,
+        null,
+        null,
+        null,
+        "C",
+        null,
+        "N",
+        "A",
+        null,
+        null,
+        null,
+        null,
+        null,
+        "A",
+        null,
+        "N"
+      ]
+    },
+    "C5_truncation_closed": {
+      "T1_reasons": {
+        "ok": 6,
+        "thinking_truncated": 11,
+        "empty_conclusion": 1
+      },
+      "J0_reasons": {
+        "ok": 17,
+        "thinking_truncated": 1
+      }
+    },
+    "C6_neg_control": {
+      "true_mismatch": 8,
+      "n_neg": 8,
+      "agree_NC1t_T1": 0.0,
+      "n": 8,
+      "NC1t_letters": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "N"
+      ],
+      "T1_letters_same_idx": [
+        "N",
+        null,
+        null,
+        null,
+        null,
+        null,
+        "C",
+        null
+      ]
+    },
+    "C7_accounting_form": {
+      "cache_n_zero_all": true,
+      "n_calls": 62,
+      "identity_tested": 62,
+      "identity_ok": true,
+      "per_sample_prompt_n_equal": "0/18",
+      "argv_ok": true,
+      "argv": [
+        "/tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server",
+        "-m",
+        "/tmp/models/r1-distill-qwen-1.5b-q4km.gguf",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "48481",
+        "-c",
+        "4608",
+        "-t",
+        "1",
+        "-np",
+        "1",
+        "--cache-type-k",
+        "f32",
+        "--cache-type-v",
+        "f32",
+        "--flash-attn",
+        "off",
+        "--jinja"
+      ],
+      "props_ok": true
+    }
+  },
+  "cost": {
+    "gen_J0_sum": 3215,
+    "gen_T2_sum": 2493,
+    "gen_T1_sum": 2154,
+    "gen_saved_T1_vs_J0": 1061,
+    "wall_J0_mean": 16.75,
+    "wall_T1_mean": 13.67
+  },
+  "checks_posthoc": [
+    {
+      "id": "CH1_vs_r447_decode_constraint",
+      "note": "R447 J1（grammar 单字母）= gen 恒 2、字母恒 A（agree 0.4444）；本轮 T1 保留思考",
+      "T1_gen": {
+        "mean": 119.7,
+        "max": 128
+      },
+      "T1_kinds": 3,
+      "R447_J1_gen_sum": 36
+    },
+    {
+      "id": "CH2_J0_faithfulness_vs_archive",
+      "agree_J0_archived": 1.0,
+      "n": 12,
+      "note": "R447 同通道为 12/12；本条为漂移告警，不作 fail-closed"
+    },
+    {
+      "id": "CH3_disagreements",
+      "n": 14,
+      "rows": [
+        {
+          "i": 0,
+          "msg": "换个讲法。",
+          "J0": "A",
+          "T1": "N",
+          "archived": "A"
+        },
+        {
+          "i": 1,
+          "msg": "再讲一遍。",
+          "J0": "C",
+          "T1": null,
+          "archived": "C"
+        },
+        {
+          "i": 2,
+          "msg": "说细一些。",
+          "J0": "N",
+          "T1": null,
+          "archived": "N"
+        },
+        {
+          "i": 3,
+          "msg": "换个例子。",
+          "J0": "A",
+          "T1": null,
+          "archived": "A"
+        },
+        {
+          "i": 4,
+          "msg": "换个例子。",
+          "J0": "N",
+          "T1": null,
+          "archived": "N"
+        },
+        {
+          "i": 5,
+          "msg": "明白，多谢。",
+          "J0": "A",
+          "T1": null,
+          "archived": "A"
+        },
+        {
+          "i": 6,
+          "msg": "从头再说。",
+          "J0": "N",
+          "T1": "C",
+          "archived": "N"
+        },
+        {
+          "i": 7,
+          "msg": "再展开点。",
+          "J0": "A",
+          "T1": null,
+          "archived": "A"
+        },
+        {
+          "i": 10,
+          "msg": "嗯嗯，知道了。",
+          "J0": "N",
+          "T1": null,
+          "archived": "N"
+        },
+        {
+          "i": 11,
+          "msg": "换个说法。",
+          "J0": "A",
+          "T1": null,
+          "archived": "A"
+        },
+        {
+          "i": 12,
+          "msg": "再讲一遍。",
+          "J0": "N",
+          "T1": null,
+          "archived": null
+        },
+        {
+          "i": 13,
+          "msg": "讲细一点。",
+          "J0": "N",
+          "T1": null,
+          "archived": null
+        },
+        {
+          "i": 14,
+          "msg": "换个说法。",
+          "J0": "A",
+          "T1": null,
+          "archived": null
+        },
+        {
+          "i": 17,
+          "msg": "嗯，好像不太对。",
+          "J0": "C",
+          "T1": "N",
+          "archived": null
+        }
+      ]
+    },
+    {
+      "id": "CH4_counterfactual_M20_with_local",
+      "A_remote": 61256,
+      "BRJ_remote": 32968,
+      "local_true_derived": 7878,
+      "judge_gen_m20": 1974,
+      "gen_ratio": 0.6702,
+      "saved_local_tok": 651,
+      "D_remote_plus_local_true_before_pct": 33.32,
+      "D_remote_plus_local_true_after_pct": 34.38,
+      "note": "反事实：仅判官生成侧压缩；未计门通道与预填充；不等于实测"
+    },
+    {
+      "id": "CH5_T1_content_len",
+      "min": 140,
+      "max": 230,
+      "median": 220.0
+    },
+    {
+      "id": "CH6_accounting_corrected_criterion",
+      "defect": "C7 预注册要求「逐样本 prompt_n 跨臂相等」，但 T2/T1 的 prompt 比 J0 多 28 字符（限长子句）⇒ 该断言按定义不可能成立（0/18）。属**判定项设计缺陷**，非功能红。",
+      "same_prompt_arms": "T2 vs T1",
+      "equal_frac": "18/18",
+      "cache_n_zero": true,
+      "identity_ok": true,
+      "argv_ok": true,
+      "J0_prompt_n_vs_T_prompt_n_delta_tokens": [
+        -18
+      ],
+      "rows": [
+        {
+          "i": 0,
+          "T2": 232,
+          "T1": 232
+        },
+        {
+          "i": 1,
+          "T2": 230,
+          "T1": 230
+        },
+        {
+          "i": 2,
+          "T2": 230,
+          "T1": 230
+        },
+        {
+          "i": 3,
+          "T2": 231,
+          "T1": 231
+        },
+        {
+          "i": 4,
+          "T2": 230,
+          "T1": 230
+        },
+        {
+          "i": 5,
+          "T2": 231,
+          "T1": 231
+        },
+        {
+          "i": 6,
+          "T2": 230,
+          "T1": 230
+        },
+        {
+          "i": 7,
+          "T2": 230,
+          "T1": 230
+        },
+        {
+          "i": 8,
+          "T2": 231,
+          "T1": 231
+        },
+        {
+          "i": 9,
+          "T2": 232,
+          "T1": 232
+        },
+        {
+          "i": 10,
+          "T2": 231,
+          "T1": 231
+        },
+        {
+          "i": 11,
+          "T2": 231,
+          "T1": 231
+        },
+        {
+          "i": 12,
+          "T2": 229,
+          "T1": 229
+        },
+        {
+          "i": 13,
+          "T2": 230,
+          "T1": 230
+        },
+        {
+          "i": 14,
+          "T2": 230,
+          "T1": 230
+        },
+        {
+          "i": 15,
+          "T2": 232,
+          "T1": 232
+        },
+        {
+          "i": 16,
+          "T2": 229,
+          "T1": 229
+        },
+        {
+          "i": 17,
+          "T2": 237,
+          "T1": 237
+        }
+      ]
+    },
+    {
+      "id": "CH7_determinism_vs_r447",
+      "gen_J0_sum_now": 3215,
+      "gen_J0_sum_r447": 3215,
+      "identical": true,
+      "agree_J0_archived": 1.0,
+      "note": "同 prompt 同档 ⇒ 逐样本 gen 之和与 R447 存档完全相同 ⇒ 器具可复现（跨轮）"
+    },
+    {
+      "id": "CH8_required_budget_lower_bound",
+      "T2_gen": {
+        "median": 138.5,
+        "max": 211,
+        "mean": 138.5
+      },
+      "T2_any_truncation": 0,
+      "T1_truncation_rate": 0.6111,
+      "note": "限长子句下真实思考长度仍达 T2 的 median 138.5 / max 211 ⇒ 预算 128 必然截断；无截断所需预算 >= 212（即现网 512 已不可再压）"
+    }
+  ],
+  "all_green": false,
+  "red_items": [
+    "C1_non_hollow",
+    "C2_gen_cut",
+    "C3_prompt_only",
+    "C4_equivalence",
+    "C5_truncation_closed",
+    "C7_accounting_form"
+  ],
+  "decision": "存在红项 ['C1_non_hollow', 'C2_gen_cut', 'C3_prompt_only', 'C4_equivalence', 'C5_truncation_closed', 'C7_accounting_form'] ⇒ 负结论归档，限长思考不得启用"
+}

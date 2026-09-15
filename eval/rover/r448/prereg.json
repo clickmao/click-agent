@@ -1,0 +1,59 @@
+{
+ "round": "R448",
+ "title": "判官 prompt 侧「限长思考」消融（保留思考，只压缩其长度）",
+ "plan_doc": "docs/plans/v0.68.0-r448-judge-think-length-cap.md",
+ "preregistered_at_note": "本文件在探针执行前落盘；probe-r448.json 内记录本文件 sha256 与 mtime，供第三方核对先后（判据纪律）",
+ "corpus": "eval/rover/r448/corpus.json",
+ "single_variable": "判官 prompt 内插入限长思考子句（T 臂，唯一变量 A）；n_predict 预算档为第二因子（128 vs 512，唯一变量 B）",
+ "limiter_clause": "思考最多 2 句 (不超过 40 字), 不要展开推理。",
+ "arms": {
+  "J0": {
+   "prompt": "产品原样（源码派生重建）",
+   "n_predict": 512,
+   "note": "现网口径基线；本轮重跑，用于配对比较（不引用 r447 历史读数当分母）"
+  },
+  "T2": {
+   "prompt": "产品 + 限长思考子句",
+   "n_predict": 512,
+   "note": "隔离 prompt 单独效应（预算与 J0 相同）"
+  },
+  "T1": {
+   "prompt": "产品 + 限长思考子句",
+   "n_predict": 128,
+   "note": "候选配置：限长思考 + 收敛预算"
+  },
+  "NC1t": {
+   "prompt": "T1 同 prompt",
+   "n_predict": 128,
+   "note": "负控：prev 真错配（机检 8/8），验 T1 判决仍依赖 prev（非空心）"
+  }
+ },
+ "decode_fixed": {
+  "temperature": 0.0,
+  "samplers": [
+   "temperature"
+  ],
+  "cache_prompt": false,
+  "seed": 0,
+  "stream": false,
+  "return_tokens": true
+ },
+ "reference_numbers_source": "eval/rover/r447/verdict-r447.json（机读取值，禁手打）",
+ "criteria": {
+  "C1_non_hollow": "每臂可解析字母比例 >= 0.90；T1 字母种类 >= 2（非恒定字母）",
+  "C2_gen_cut": "mean(gen|T1) <= 64 且 mean(gen|T1)/mean(gen|J0) <= 0.36",
+  "C3_prompt_only": "mean(gen|T2) <= 0.75 * mean(gen|J0) 且 agree(T2,J0) >= 0.90（prompt 单独效应不破坏等价）",
+  "C4_equivalence": "agree(T1,J0) >= 0.90 且 agree(T1, 归档字母) >= 0.90（归档 = 12 条遥测 local 真值）",
+  "C5_truncation_closed": "count(parse_reason == thinking_truncated | T1) == 0 且 count(... | J0) >= 1（闭合 R447 CH3）",
+  "C6_neg_control": "真错配比例 == 1.0（8/8，语料构建器机检）且 agree(NC1t,T1) <= 0.85",
+  "C7_accounting_form": "全调用 cache_n == 0；逐样本 prompt_n 跨臂相等；tokens_evaluated == timings.prompt_n + cache_n（闭合 R447 C5 未测项）；argv 含 -np 1 / --cache-type-k f32 / --cache-type-v f32 / --flash-attn off / -c 4608 / --jinja"
+ },
+ "decision_rule": "C1..C7 全绿 ⇒ R449 产品化候选（代码开关默认关 + AOT 重发布 + M20 三臂真机 A/B 验证远端 token 口径）；任一红 ⇒ 负结论归档，不得启用",
+ "exclusions": [
+  "不改 src/** 产品代码（本轮零产品代码改动 ⇒ 无 AOT/测试对象）",
+  "不接门通道 local_turn_gate（R449 候选）",
+  "不做远端三臂 A/B",
+  "不做 -c 4608 之外的预算档扫描（R449 候选）",
+  "无链跑 ⇒ 不写 eval/capability/kpi.jsonl"
+ ]
+}

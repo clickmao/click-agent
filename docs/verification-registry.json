@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R445",
+  "updated_round": "R448",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -1381,6 +1381,22 @@
         "eval/rover/r447/r447_analyze.py",
         "src/agent.roles/CorrectionDetector.cs",
         "src/agent.modelqueue/ModelQueueRouter.cs"
+      ]
+    },
+    {
+      "id": "r448.judge-think-length-cap",
+      "capability": "判官 prompt 侧「限长思考」（保留思考、只压缩长度）真机消融 —— 负结论: 生成仅降 33.0%（178.6→119.7）且预算 128 下 61.1% 思考被截断、与产品基线判决一致率 0.1667 ⇒ 不得启用",
+      "level": "L3",
+      "owner_round": "R448",
+      "evidence_cmd": "python3 eval/rover/r448/r448_corpus.py; python3 eval/rover/r448/r448_probe.py; python3 eval/rover/r448/r448_analyze.py",
+      "evidence_path": "eval/rover/r448/verdict-r448.json",
+      "negative_control": "C6 真错配 prev 8/8（语料构建器机检 G3）且 agree(NC1t,T1)=0.0<=0.85 ⇒ 器具非空心; CH2 归档第三通道 J0 12/12 逐条复现产品字母; CH7 同 prompt 同解码档跨轮 gen 和逐位相同（3215/3215, R447 存档）⇒ 器具可复现; C7 恒等式 tokens_evaluated==timings.prompt_n+cache_n 62/62 ⇒ 闭合 R447 C5 未测债; C7 红为判定项设计缺陷（T 臂 prompt 长 28 字符 ⇒ 跨臂 prompt_n 按定义不等）其语义由 CH6 修正口径承接（T2 vs T1 18/18）",
+      "covers": [
+        "eval/rover/r448/r448_corpus.py",
+        "eval/rover/r448/r448_probe.py",
+        "eval/rover/r448/r448_analyze.py",
+        "src/agent.roles/CorrectionDetector.cs",
+        "src/agent.modelqueue/LocalGenerationPort.cs"
       ]
     }
   ],

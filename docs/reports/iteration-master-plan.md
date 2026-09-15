@@ -332,3 +332,13 @@ python3 eval/run_round.py <新轮号> "revert-verify <原commit>" --quick   # �
 - 事后校核: 逐调用开销 **δ ≡ 77 tok 常数**（5/5 网格逐轮一致）+ 同网格实测分母 ⇒ 重锚模型 **5/5 ≤0.47 pt**；二阶项 = 被跳轮内联块不再回放（散布 2227 tok, 晚簇 ≈0）。
 - 证据: `eval/rover/r440/README-evidence.md`；计划: `docs/plans/v0.60.0-r440-length-ladder-measurement.md`；判据: `eval/rover/r440/compare-r440.json`。
 - 下轮候选: ①V4/V2b 同臂复跑（确定性）②p8/p12 realized 配置并入同一两参数律 ③中簇补点定位位置曲线 ④小占比格找收益窗口下界。
+
+## R448（2026-09-15）判官 prompt 侧「限长思考」消融 → **负结论**（本地生成侧压缩通道全部关闭）
+- 臂: J0(产品/512) / T2(限长 prompt/512) / T1(限长 prompt/128) / NC1t(T1+真错配 prev)，18 对忠实语料。
+- 读数: gen 178.6 → T2 **138.5**（0 截断）→ T1 **119.7**；T1 截断 **11/18**、可解析 0.3333；agree(T1,J0)=**0.1667**、agree(T1,归档)=**0.1667**。
+- 判据: C6 PASS，C1/C2/C3/C4/C5 功能性红 + C7 判定项缺陷（CH6 修正口径 18/18 PASS）。
+- 机制: 思考长度不受 prompt 指令控制（T2 median 138.5）且思考承重（改 prompt ⇒ 判决漂移 0.4444）⇒ 压思考=改判决；压预算=截断=fallback 远端=更贵。
+- 反事实上限: 含本地真值口径 33.32% → 34.38%（+1.06 pt），收益/风险不成比例。
+- 器械: G1 重建 18/18｜G1b 忠实性 9/9｜G2 prev 多样性下界（3 / 长 1）｜**G3 真错配 8/8**；C7 恒等式 62/62 闭合 R447 C5 债；跨轮确定性 Σgen 3215/3215 相同。
+- 证据: `eval/rover/r448/README-evidence.md`｜计划: `docs/plans/v0.68.0-r448-judge-think-length-cap.md`｜登记: registry `r448.judge-think-length-cap`。
+- 下轮候选: ①判官**预填充**侧压缩（2764 tok/10 调用）等价性消融 ②判官+门合并单次本地调用 ③门通道同构消融 ④把「跨臂相等类断言须先机检臂定义可满足」升为器具通用闸。
