@@ -1988,3 +1988,19 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **契约边界修订**：`FreeApiModelsTests.Yaml_Stripped_OfRemovedSources` 原「禁 `\nlocal:`」断言与 R351 口径澄清冲突 ⇒ 改为 `Yaml_LocalBlock_DiscriminatorOnly`（allow_general:false / 显式 turn_gate|relation_judge|model_path / 绝对 .gguf / 块内无 chat / 权重 >100 MB）。
 - **新发现（R464 候选）**：`ServiceCollectionExtensions.cs:300` —— 配置 `model_path` 指向不存在文件时**静默回退默认权重**（首跑 BP 负控因此 VOID）；缺模型虽 fail-open 但净亏 7.1%（重试开销）。
 - **证据**：`eval/rover/r463/{verdict-r463.json,run_arm.sh,settle_r463.py,calls-*.jsonl,turns-*.jsonl,deletion-ledger.json}`；`docs/reports/r463-3b-gate-adoption.md`；registry `r463.local-gate-model-switch` / `r463.model-cleanup`。
+
+### R464 (2026-09-15) · 本地判别通道「配置错配」fail-closed（消灭静默回退默认权重）
+
+状态: 已完成 (R464)
+
+- **触发（R463 现场 + 全候选推进令）**：R463 BP 负控首跑 VOID —— 不是负控设计错，而是产品代码静默替换配置意图。缺陷位 `ServiceCollectionExtensions.cs:300`：`lc.IsReady ? lc.ModelPath : baseOpts.ModelPath` 把「配置错配（声明了但文件不存在）」与「配置未声明」塌成同一态，两者都跑内置默认权重。
+- **改动**：① 新增 `src/agent.llamacpp/LocalChannelWiring.cs`（三态来源判定：未声明 / 可用 / **错配**）；② `ModelCatalog` 增 `LocalChannelConfig.Declared`（解析 `local:` 段时置位）；③ 接线改为错配 ⇒ **显式告警 + 通道置不可用 + 降级远端**（fail-open 但可见，不再冒名默认权重）；④ `LocalChannelWiringTests` 8 例机检（含源码形状门，禁注释即可满足）。
+- **E2E（同网格 p12 / 同桩 / 同 role=`skeptic-growth.rbin` / AOT 0 IL 警告二进制 `/tmp/pub_r464/agenthost`）**：Arole(门关) 21 调用/33,323 tok；**B3B(门开) 8 调用/20,487 tok ⇒ 降幅 38.52%**（≥30% 达标）；BP(cfg 错配而 env 默认存在) 21/33,306 **且本地 eval/gen=0/0、告警 2 条、0 次 Skip**；BP2(cfg+env 双缺) 21/33,311。
+- **单一变量分母（事后判据 C10）**：BP 与 B3B 同 role/同 relation_judge/同网格，唯一变量 = 本地通道可用性 ⇒ 降幅 38.49%。
+- **零回归物理证据（C8/C8b）**：跨版本逐位相同 —— R463≡R464 的 BP2 `21/33,311`、B3B `8/20,487`；而 R463 BP `8/20,484`（静默跑默认 3B）→ R464 BP `21/33,306`，**负控冒名消失**即修复的物理证据。
+- **本地承重（C9）**：门开臂 4 次 `gate:skip→local`，每次本地实算 eval≈342 tok / gen 2 tok ⇒ Skip 不是「空跳过」。
+- **判据纪律（C6 FAIL 保留）**：预注册 C6 写成「真缺模型 ⇒ gate_events==0」与产品语义不符（实测 12 条事件全 `Pass` + `gate:degraded:failed_or_empty→remote`）⇒ **C6 保留 FAIL 不改写**，正确形态单列 `checks_posthoc`（C6′ 双绿）。
+- **新发现（R465 首要候选）**：门控轮墙钟 **40.7/40.9/70.8/102.2 s**（门开臂总 256.0 s）vs 门关臂 0.04–0.08 s ⇒ token 降 38.5% 换来被门控轮 +40~100 s 延迟（3B CPU、`gpu_layers:0`、每次本地调用含服务启停）。下一轮做长驻/预热 + prompt cache 复用。
+- **单测诚实口径修正**：全量 **1387/1388**（此前轮次报的「132/132」是**过滤器跑**，不是全量）；唯一失败 `ExecutorHardeningTests.FileLock_ConcurrentAppend_NoLoss_NoInterleave` 满载 120 段得 119，**单跑 3/3 全绿** ⇒ 列 R465 候选（并发下可证，不用重试掩盖）。形式门禁 60/60 非假绿。
+- **证据**：`eval/rover/r464/{verdict-r464.json,run_arm.sh,settle_r464.py,calls-*.jsonl,turns-*.jsonl,host-*.log,prov-*.json}`；`docs/reports/r464-config-fail-closed.md`；registry `r464.local-channel-config-fail-closed`(L2) / `r464.settle-sentinel-and-cross-round-determinism`(L1)。
+- **下轮候选（R465）**：① 本地门延迟（长驻/预热 + 缓存复用，目标 ≤10 s/门控轮）；② 真诉求轮可跳性（按需注入压前缀，97% 命中红线）；③ 并发偶发单测；④ 分母口径升级到真实供应商计费面；⑤ 同臂复跑把确定性升为预注册判据；⑥ bge 嵌入器侧同形接线机器核查。

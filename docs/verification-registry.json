@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R462",
+  "updated_round": "R464",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -1764,6 +1764,40 @@
         "eval/rover/r463/deletion-ledger.json"
       ],
       "owner_round": "R463"
+    },
+    {
+      "id": "r464.local-channel-config-fail-closed",
+      "level": "L2",
+      "capability": "本地判别通道「配置错配」fail-closed：消灭 `lc.IsReady ? lc.ModelPath : baseOpts.ModelPath` 静默回退默认权重（R463 BP 负控 VOID 根因）⇒ 三态来源判定（配置未声明 / 配置可用 / 配置错配）；错配 = 显式告警 + 通道置不可用 + 降级远端（fail-open 但可见，不再冒名默认权重）",
+      "evidence_cmd": "env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter \"FullyQualifiedName~LocalChannelWiringTests\"; python3 eval/rover/r464/settle_r464.py eval/rover/r464 --all",
+      "evidence_path": "eval/rover/r464/verdict-r464.json",
+      "negative_control": "四臂同网格 p12/同桩/同 role: Arole(门关) 21 调用/33,323 tok; B3B(门开) 8/20,487; BP(cfg 指不存在而 env 默认存在) 21/33,306 + 2 条 `R464 config_mismatch` 告警 + 本地 eval/gen=0/0 + 0 次 Skip; BP2(cfg+env 双缺) 21/33,311 同形。对照 R463 同名臂: 旧 BP 8/20,484（静默跑默认 3B ⇒ 冒名 B3B, 负控由此 VOID）⇒ 该漏判路径已被 C3/C4 钉死; checks_posthoc 的 C6'/C8/C9/C10 全 PASS",
+      "covers": [
+        "src/agent.llamacpp/LocalChannelWiring.cs",
+        "src/agent/extensions/ServiceCollectionExtensions.cs",
+        "src/agent.modelqueue/ModelCatalog.cs",
+        "src/agent.tests/LocalChannelWiringTests.cs",
+        "eval/rover/r464/verdict-r464.json"
+      ],
+      "owner_round": "R464"
+    },
+    {
+      "id": "r464.settle-sentinel-and-cross-round-determinism",
+      "level": "L1",
+      "capability": "结算器具修正 + 跨版本确定性等式: ① 非本地调用哨兵 '-1' 不再当读数求和（旧版把 12 条哨兵累成 -8/-12 假读数）; ② 预注册 C6 口径写错 ⇒ 保留 FAIL 不改写, 正确形态单列 checks_posthoc; ③ 跨版本等式 R463≡R464 作为「改造零回归」的物理证据（B3B 8/20,487; BP2 21/33,311 逐位相同）",
+      "evidence_cmd": "python3 -c \"import json,io;print(json.load(io.open('eval/rover/r464/verdict-r464.json'))['checks_posthoc'])\"; python3 -c \"import json,io;print(json.load(io.open('eval/rover/r464/verdict-r464.json'))['B3B']['gate_bases_full'])\"",
+      "evidence_path": "eval/rover/r464/verdict-r464.json",
+      "negative_control": "反例: 若 fail-closed 改造误伤降级路径, C8 等式(21/33,311)必破裂; 若门开臂被改动, C8b(8/20,487)必破裂; 若 Skip 轮是「空跳过」而无本地算力, C9 的 eval=1,370/gen=8 必为 0",
+      "covers": [
+        "eval/rover/r464/settle_r464.py",
+        "eval/rover/r464/run_arm.sh",
+        "eval/rover/r464/calls-B3B.jsonl",
+        "eval/rover/r464/calls-BP2.jsonl",
+        "eval/rover/r464/turns-B3B.jsonl",
+        "eval/rover/r463/calls-B3B.jsonl",
+        "eval/rover/r463/calls-BP2.jsonl"
+      ],
+      "owner_round": "R464"
     }
   ],
   "aot_check_policy": "release_tag_only",

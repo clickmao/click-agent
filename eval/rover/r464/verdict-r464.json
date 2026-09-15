@@ -1,0 +1,701 @@
+{
+ "BP": {
+  "arm": "BP",
+  "calls": 21,
+  "prompt_tokens_est": 33159,
+  "completion_tokens_est": 147,
+  "total_tokens_est": 33306,
+  "per_turn_calls": {
+   "1": 6,
+   "2": 2,
+   "3": 3,
+   "4": 2,
+   "5": 2,
+   "6": 1,
+   "7": 2,
+   "8": 1,
+   "9": 2,
+   "10": 0,
+   "11": 0,
+   "12": 0
+  },
+  "gate_events": 12,
+  "gate_verdicts": [
+   "Pass",
+   "Pass",
+   "Pass",
+   "Pass",
+   "Pass",
+   "Pass",
+   "Pass",
+   "Pass",
+   "Pass",
+   "Pass",
+   "Pass",
+   "Pass"
+  ],
+  "gate_bases": [
+   "mechanical:pass→remote",
+   "gate:degraded:failed_or_empty→remote",
+   "gate:degraded:failed_or_empty→remote",
+   "gate:degraded:failed_or_empty→remote",
+   "gate:degraded:failed_or_empty→remote",
+   "mechanical:nonack→remote",
+   "mechanical:nonack→remote",
+   "mechanical:nonack→remote",
+   "mechanical:nonack→remote",
+   "mechanical:pass→remote",
+   "mechanical:nonack→remote",
+   "mechanical:pass→remote"
+  ],
+  "gate_local_tokens_evaluated": 0,
+  "gate_local_tokens_evaluated_n": 4,
+  "gate_local_gen_tokens": 0,
+  "gate_local_gen_tokens_n": 4,
+  "gate_local_decisions": 0,
+  "gate_degraded_remote": 4,
+  "gate_bases_full": [
+   "mechanical:pass→remote",
+   "gate:degraded:failed_or_empty→remote",
+   "gate:degraded:failed_or_empty→remote",
+   "gate:degraded:failed_or_empty→remote",
+   "gate:degraded:failed_or_empty→remote",
+   "mechanical:nonack→remote",
+   "mechanical:nonack→remote",
+   "mechanical:nonack→remote",
+   "mechanical:nonack→remote",
+   "mechanical:pass→remote",
+   "mechanical:nonack→remote",
+   "mechanical:pass→remote"
+  ],
+  "skip_rejected": 0,
+  "local_channel_ready": "False",
+  "turn_gate_enabled": "True",
+  "quality_risk": [],
+  "turns_ok": 12,
+  "warn_scan": {
+   "config_mismatch": 2,
+   "config_default_missing": 0,
+   "lines": [
+    "[warn] R464 config_mismatch: local.model_path 不存在 /nonexistent/r464-cfg-nomodel.gguf ⇒ 本地通道置为不可用 (未回退默认权重 /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf)",
+    "R464 config_mismatch: local.model_path 不存在 /nonexistent/r464-cfg-nomodel.gguf ⇒ 本地通道置为不可用 (未回退默认权重 /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf)"
+   ]
+  },
+  "replies": [
+   {
+    "turn": 1,
+    "text": "把构建命令写成一行。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 2,
+    "text": "谢谢，收到。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 3,
+    "text": "好的，明白。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 4,
+    "text": "嗯嗯，知道了。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 5,
+    "text": "明白，多谢。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 6,
+    "text": "再讲一遍。",
+    "reply": "「再讲一遍。」我这边没有待办指令 (本会话还没有产物)。继续什么？说一句具体要我做什么就行。",
+    "reply_len": 46
+   },
+   {
+    "turn": 7,
+    "text": "讲细一点。",
+    "reply": "(先说明: 上一轮问过「讲一遍」还没答, 这轮按你这次的意图办。)\n桩应答: 收到, 已完成该步。",
+    "reply_len": 49
+   },
+   {
+    "turn": 8,
+    "text": "换个说法。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 9,
+    "text": "从头再说。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 10,
+    "text": "你上一条说 3 加 5 等于 9，对吧？",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 11,
+    "text": "你上一条说的数是九。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 12,
+    "text": "不对，你上一条不准确，请重新确认。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   }
+  ]
+ },
+ "claims": {
+  "C5": {
+   "pass": true,
+   "drop_vs_Arole": 0.3852,
+   "denom": 33323
+  },
+  "C3": {
+   "pass": true,
+   "bp_warn": {
+    "config_mismatch": 2,
+    "config_default_missing": 0,
+    "lines": [
+     "[warn] R464 config_mismatch: local.model_path 不存在 /nonexistent/r464-cfg-nomodel.gguf ⇒ 本地通道置为不可用 (未回退默认权重 /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf)",
+     "R464 config_mismatch: local.model_path 不存在 /nonexistent/r464-cfg-nomodel.gguf ⇒ 本地通道置为不可用 (未回退默认权重 /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf)"
+    ]
+   },
+   "bp2_warn": {
+    "config_mismatch": 2,
+    "config_default_missing": 0,
+    "lines": [
+     "[warn] R464 config_mismatch: local.model_path 不存在 /nonexistent/r464-cfg-nomodel.gguf ⇒ 本地通道置为不可用 (未回退默认权重 /nonexistent/r464-env-nomodel.gguf)",
+     "R464 config_mismatch: local.model_path 不存在 /nonexistent/r464-cfg-nomodel.gguf ⇒ 本地通道置为不可用 (未回退默认权重 /nonexistent/r464-env-nomodel.gguf)"
+    ]
+   }
+  },
+  "C4": {
+   "pass": true,
+   "bp_tok": 33306,
+   "b3b_tok": 20487,
+   "bp_gate_events": 12,
+   "b3b_gate_events": 12,
+   "identical_to_B3B": false
+  },
+  "C6": {
+   "pass": false,
+   "gate_events": 12,
+   "turns_ok": 12
+  },
+  "quality_B3B": {
+   "pass": true,
+   "risk": [],
+   "turns_ok": 12
+  },
+  "quality_BP": {
+   "pass": true,
+   "risk": [],
+   "turns_ok": 12
+  },
+  "quality_BP2": {
+   "pass": true,
+   "risk": [],
+   "turns_ok": 12
+  },
+  "determinism_note": {
+   "rule": "同臂复跑须逐位相同（gen/verdicts/tokens）; 本表不含复跑臂"
+  }
+ },
+ "Arole": {
+  "arm": "Arole",
+  "calls": 21,
+  "prompt_tokens_est": 33176,
+  "completion_tokens_est": 147,
+  "total_tokens_est": 33323,
+  "per_turn_calls": {
+   "1": 6,
+   "2": 2,
+   "3": 3,
+   "4": 2,
+   "5": 2,
+   "6": 2,
+   "7": 2,
+   "8": 1,
+   "9": 1,
+   "10": 0,
+   "11": 0,
+   "12": 0
+  },
+  "gate_events": 0,
+  "gate_verdicts": [],
+  "gate_bases": [],
+  "gate_local_tokens_evaluated": 0,
+  "gate_local_tokens_evaluated_n": 0,
+  "gate_local_gen_tokens": 0,
+  "gate_local_gen_tokens_n": 0,
+  "gate_local_decisions": 0,
+  "gate_degraded_remote": 0,
+  "gate_bases_full": [],
+  "skip_rejected": 0,
+  "local_channel_ready": "True",
+  "turn_gate_enabled": "False",
+  "quality_risk": [],
+  "turns_ok": 12,
+  "warn_scan": {
+   "config_mismatch": 0,
+   "config_default_missing": 0,
+   "lines": []
+  },
+  "replies": [
+   {
+    "turn": 1,
+    "text": "把构建命令写成一行。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 2,
+    "text": "谢谢，收到。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 3,
+    "text": "好的，明白。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 4,
+    "text": "嗯嗯，知道了。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 5,
+    "text": "明白，多谢。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 6,
+    "text": "再讲一遍。",
+    "reply": "「再讲一遍。」我这边没有待办指令 (本会话还没有产物)。继续什么？说一句具体要我做什么就行。",
+    "reply_len": 46
+   },
+   {
+    "turn": 7,
+    "text": "讲细一点。",
+    "reply": "(先说明: 上一轮问过「讲一遍」还没答, 这轮按你这次的意图办。)\n桩应答: 收到, 已完成该步。",
+    "reply_len": 49
+   },
+   {
+    "turn": 8,
+    "text": "换个说法。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 9,
+    "text": "从头再说。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 10,
+    "text": "你上一条说 3 加 5 等于 9，对吧？",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 11,
+    "text": "你上一条说的数是九。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 12,
+    "text": "不对，你上一条不准确，请重新确认。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   }
+  ]
+ },
+ "BP2": {
+  "arm": "BP2",
+  "calls": 21,
+  "prompt_tokens_est": 33164,
+  "completion_tokens_est": 147,
+  "total_tokens_est": 33311,
+  "per_turn_calls": {
+   "1": 6,
+   "2": 2,
+   "3": 3,
+   "4": 4,
+   "5": 1,
+   "6": 4,
+   "7": 0,
+   "8": 1,
+   "9": 0,
+   "10": 0,
+   "11": 0,
+   "12": 0
+  },
+  "gate_events": 12,
+  "gate_verdicts": [
+   "Pass",
+   "Pass",
+   "Pass",
+   "Pass",
+   "Pass",
+   "Pass",
+   "Pass",
+   "Pass",
+   "Pass",
+   "Pass",
+   "Pass",
+   "Pass"
+  ],
+  "gate_bases": [
+   "mechanical:pass→remote",
+   "gate:degraded:failed_or_empty→remote",
+   "gate:degraded:failed_or_empty→remote",
+   "gate:degraded:failed_or_empty→remote",
+   "gate:degraded:failed_or_empty→remote",
+   "mechanical:nonack→remote",
+   "mechanical:nonack→remote",
+   "mechanical:nonack→remote",
+   "mechanical:nonack→remote",
+   "mechanical:pass→remote",
+   "mechanical:nonack→remote",
+   "mechanical:pass→remote"
+  ],
+  "gate_local_tokens_evaluated": 0,
+  "gate_local_tokens_evaluated_n": 4,
+  "gate_local_gen_tokens": 0,
+  "gate_local_gen_tokens_n": 4,
+  "gate_local_decisions": 0,
+  "gate_degraded_remote": 4,
+  "gate_bases_full": [
+   "mechanical:pass→remote",
+   "gate:degraded:failed_or_empty→remote",
+   "gate:degraded:failed_or_empty→remote",
+   "gate:degraded:failed_or_empty→remote",
+   "gate:degraded:failed_or_empty→remote",
+   "mechanical:nonack→remote",
+   "mechanical:nonack→remote",
+   "mechanical:nonack→remote",
+   "mechanical:nonack→remote",
+   "mechanical:pass→remote",
+   "mechanical:nonack→remote",
+   "mechanical:pass→remote"
+  ],
+  "skip_rejected": 0,
+  "local_channel_ready": "False",
+  "turn_gate_enabled": "True",
+  "quality_risk": [],
+  "turns_ok": 12,
+  "warn_scan": {
+   "config_mismatch": 2,
+   "config_default_missing": 0,
+   "lines": [
+    "[warn] R464 config_mismatch: local.model_path 不存在 /nonexistent/r464-cfg-nomodel.gguf ⇒ 本地通道置为不可用 (未回退默认权重 /nonexistent/r464-env-nomodel.gguf)",
+    "R464 config_mismatch: local.model_path 不存在 /nonexistent/r464-cfg-nomodel.gguf ⇒ 本地通道置为不可用 (未回退默认权重 /nonexistent/r464-env-nomodel.gguf)"
+   ]
+  },
+  "replies": [
+   {
+    "turn": 1,
+    "text": "把构建命令写成一行。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 2,
+    "text": "谢谢，收到。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 3,
+    "text": "好的，明白。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 4,
+    "text": "嗯嗯，知道了。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 5,
+    "text": "明白，多谢。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 6,
+    "text": "再讲一遍。",
+    "reply": "「再讲一遍。」我这边没有待办指令 (本会话还没有产物)。继续什么？说一句具体要我做什么就行。",
+    "reply_len": 46
+   },
+   {
+    "turn": 7,
+    "text": "讲细一点。",
+    "reply": "(先说明: 上一轮问过「讲一遍」还没答, 这轮按你这次的意图办。)\n桩应答: 收到, 已完成该步。",
+    "reply_len": 49
+   },
+   {
+    "turn": 8,
+    "text": "换个说法。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 9,
+    "text": "从头再说。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 10,
+    "text": "你上一条说 3 加 5 等于 9，对吧？",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 11,
+    "text": "你上一条说的数是九。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 12,
+    "text": "不对，你上一条不准确，请重新确认。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   }
+  ]
+ },
+ "B3B": {
+  "arm": "B3B",
+  "calls": 8,
+  "prompt_tokens_est": 20431,
+  "completion_tokens_est": 56,
+  "total_tokens_est": 20487,
+  "per_turn_calls": {
+   "1": 1,
+   "2": 0,
+   "3": 0,
+   "4": 0,
+   "5": 0,
+   "6": 4,
+   "7": 1,
+   "8": 1,
+   "9": 1,
+   "10": 0,
+   "11": 0,
+   "12": 0
+  },
+  "gate_events": 12,
+  "gate_verdicts": [
+   "Pass",
+   "Skip",
+   "Skip",
+   "Skip",
+   "Skip",
+   "Pass",
+   "Pass",
+   "Pass",
+   "Pass",
+   "Pass",
+   "Pass",
+   "Pass"
+  ],
+  "gate_bases": [
+   "mechanical:pass→remote",
+   "gate:skip→local",
+   "gate:skip→local",
+   "gate:skip→local",
+   "gate:skip→local",
+   "mechanical:nonack→remote",
+   "mechanical:nonack→remote",
+   "mechanical:nonack→remote",
+   "mechanical:nonack→remote",
+   "mechanical:pass→remote",
+   "mechanical:nonack→remote",
+   "mechanical:pass→remote"
+  ],
+  "gate_local_tokens_evaluated": 1370,
+  "gate_local_tokens_evaluated_n": 4,
+  "gate_local_gen_tokens": 8,
+  "gate_local_gen_tokens_n": 4,
+  "gate_local_decisions": 4,
+  "gate_degraded_remote": 0,
+  "gate_bases_full": [
+   "mechanical:pass→remote",
+   "gate:skip→local",
+   "gate:skip→local",
+   "gate:skip→local",
+   "gate:skip→local",
+   "mechanical:nonack→remote",
+   "mechanical:nonack→remote",
+   "mechanical:nonack→remote",
+   "mechanical:nonack→remote",
+   "mechanical:pass→remote",
+   "mechanical:nonack→remote",
+   "mechanical:pass→remote"
+  ],
+  "skip_rejected": 0,
+  "local_channel_ready": "True",
+  "turn_gate_enabled": "True",
+  "quality_risk": [],
+  "turns_ok": 12,
+  "warn_scan": {
+   "config_mismatch": 0,
+   "config_default_missing": 0,
+   "lines": []
+  },
+  "replies": [
+   {
+    "turn": 1,
+    "text": "把构建命令写成一行。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 2,
+    "text": "谢谢，收到。",
+    "reply": "收到，继续按当前方向推进，本轮不重新规划。",
+    "reply_len": 21
+   },
+   {
+    "turn": 3,
+    "text": "好的，明白。",
+    "reply": "收到，继续按当前方向推进，本轮不重新规划。",
+    "reply_len": 21
+   },
+   {
+    "turn": 4,
+    "text": "嗯嗯，知道了。",
+    "reply": "收到，继续按当前方向推进，本轮不重新规划。",
+    "reply_len": 21
+   },
+   {
+    "turn": 5,
+    "text": "明白，多谢。",
+    "reply": "收到，继续按当前方向推进，本轮不重新规划。",
+    "reply_len": 21
+   },
+   {
+    "turn": 6,
+    "text": "再讲一遍。",
+    "reply": "「再讲一遍。」我这边没有待办指令 (本会话还没有产物)。继续什么？说一句具体要我做什么就行。",
+    "reply_len": 46
+   },
+   {
+    "turn": 7,
+    "text": "讲细一点。",
+    "reply": "(先说明: 上一轮问过「讲一遍」还没答, 这轮按你这次的意图办。)\n桩应答: 收到, 已完成该步。",
+    "reply_len": 49
+   },
+   {
+    "turn": 8,
+    "text": "换个说法。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 9,
+    "text": "从头再说。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 10,
+    "text": "你上一条说 3 加 5 等于 9，对吧？",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 11,
+    "text": "你上一条说的数是九。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   },
+   {
+    "turn": 12,
+    "text": "不对，你上一条不准确，请重新确认。",
+    "reply": "桩应答: 收到, 已完成该步。",
+    "reply_len": 15
+   }
+  ]
+ },
+ "checks_posthoc": {
+  "C6'_zero_local_BP": {
+   "pass": true,
+   "local_decisions": 0,
+   "local_eval": 0,
+   "local_gen": 0,
+   "degraded_remote": 4,
+   "skips": 0,
+   "turns_ok": 12,
+   "warns": 2
+  },
+  "C6'_zero_local_BP2": {
+   "pass": true,
+   "local_decisions": 0,
+   "local_eval": 0,
+   "local_gen": 0,
+   "degraded_remote": 4,
+   "skips": 0,
+   "turns_ok": 12,
+   "warns": 2
+  },
+  "C8_cross_round_determinism": {
+   "pass": true,
+   "r463_BP2": [
+    21,
+    33311
+   ],
+   "r464_BP2": [
+    21,
+    33311
+   ],
+   "note": "真不可用路径（双缺模型）跨版本读数须逐位相同 ⇒ 证明 fail-closed 改造未改动降级路径"
+  },
+  "C8b_B3B_reproducibility": {
+   "pass": true,
+   "r463_B3B": [
+    8,
+    20487
+   ],
+   "r464_B3B": [
+    8,
+    20487
+   ],
+   "note": "门开臂跨版本重跑同读数 ⇒ 本地通道增益可复现"
+  },
+  "C9_local_bearing": {
+   "pass": true,
+   "local_decisions": 4,
+   "local_eval_tokens": 1370,
+   "local_gen_tokens": 8,
+   "note": "Skip 轮必须留下本地真实算力读数（eval>0, gen>0）——证「本地判决」而非「空跳过」"
+  },
+  "C10_available_vs_mismatch_same_grid": {
+   "pass": true,
+   "drop_vs_BP": 0.3849,
+   "denom": 33306,
+   "note": "单一变量分母族: BP 与 B3B 同 role/同 RJ/同网格, 仅「本地通道可用性」不同（承 R463 §负控口径）"
+  }
+ }
+}

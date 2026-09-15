@@ -367,11 +367,20 @@
     {
       "Id": "dev-r463-local-gate-3b",
       "Title": "本地判别通道切 Qwen2.5-3B-Instruct Q4_K_M（用户令）+ 冗余模型清理",
-      "State": "doing",
+      "State": "done",
       "Round": "R463",
       "DocRef": "docs/plans/v0.82.0-r463-local-gate-3b.md",
       "Evidence": "docs/reports/r463-3b-gate-adoption.md",
       "Summary": "用户令: 改用3b 并删除多余模型。依据 R462-W: 1.5B-Q4 恒 S(假跳 14/14) 不合格, 3B 假跳 0/14 且 gen 2 token/次。改动: config/base/models.yaml 新增 local: 块(第 77 行, turn_gate/relation_judge=true, ctx 4608/parallel 1/max_tokens 512) + LlamaCppTextGenerator 默认权重名同步 + 3B 落 ~/.agentframework/models/ + 删 4 个冗余权重(6.53 GiB, bytes+sha256 台账)。E2E 7 臂: A 12 调用/31,093 tok; B3B 8 调用/20,487 tok = 降幅 34.11%; B15 与 B3B 逐位同读数(前置门开⇒模型档位无差异); 前置门关 B15pf0 假跳 3(守卫否决) vs B3Bpf0 0; BP2 真负控全降级 Pass −7.1%。新发现: 配置指向不存在模型会静默回退默认权重(ServiceCollectionExtensions.cs:300) ⇒ R464 候选。"
+    },
+    {
+      "Id": "dev-r464-channel-config-fail-closed",
+      "Title": "本地判别通道「配置错配」fail-closed（消灭静默回退默认权重）",
+      "State": "doing",
+      "Round": "R464",
+      "DocRef": "docs/plans/v0.83.0-r464-channel-config-fail-closed.md",
+      "Evidence": "docs/reports/r464-config-fail-closed.md",
+      "Summary": "R463 BP 负控首跑 VOID 根因: ServiceCollectionExtensions.cs 旧三目 lc.IsReady ? lc.ModelPath : baseOpts.ModelPath 把「配置错配」静默当「未配置」并跑内置默认权重(3B), 使错配臂读数与 B3B 逐位相同。R464 改为三态来源判定(未声明/可用/错配), 错配 ⇒ 告警 + 通道不可用 + 降级远端。四臂同网格 p12 同 role: Arole(门关) 21 调用/33,323 tok; B3B(门开) 8/20,487 tok = 降幅 38.52%(≥30% 达标); BP(错配) 21/33,306 且本地 eval/gen=0/0 + 2 条告警(对照 R463 同臂 8/20,484 ⇒ 冒名消失); BP2(双缺) 21/33,311 ≡ R463 逐位相同(零回归)。单测 1387/1388(1 例 ExecutorHardeningTests 并发用例满载偶发, 单跑 3/3 绿); AOT 发布 0 IL 警告。"
     }
   ]
 }
