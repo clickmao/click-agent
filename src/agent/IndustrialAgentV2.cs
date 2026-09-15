@@ -1906,6 +1906,12 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             response = AgentResponse.ErrorResponse(ex.Message);
         }
         
+        if (_resumeVoidNotice is not null)
+        {
+            // R457: 上一轮检查点已作废, 本轮按新任务执行 —— 前置如实告知, 不静默吞掉。
+            response.Content = _resumeVoidNotice + response.Content;
+            _resumeVoidNotice = null;
+        }
         response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
         // v0.11.0 R62: 台账度量字段 — 问询数 (回复含问句) 与 executive 直达标记
         var asked = response.Content.Contains('？') || response.Content.Contains('?');
@@ -2408,6 +2414,19 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
     /// <summary>D7b: 计划检查点仓库 (懒建) —— 暂停时写它, 下一轮装载入口读它</summary>
     private agent.recovery.CheckpointStore? _planCheckpoints;
 
+    /// <summary>R457: 续跑答复落不到槽位时的前台提示 (转正常路径后前置到回复, 不吞掉这一轮)。</summary>
+    private string? _resumeVoidNotice;
+
+    /// <summary>R457: 落不到槽位 ⇒ 作废检查点并同轮转正常任务路径 (env AGENTFRAMEWORK_PLAN_RESUME_FALLTHROUGH, 默认 on)。</summary>
+    internal static bool PlanResumeFallthrough()
+    {
+        var v = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_PLAN_RESUME_FALLTHROUGH");
+        if (string.IsNullOrEmpty(v)) return true;
+        return v.Equals("on", StringComparison.OrdinalIgnoreCase)
+               || v.Equals("1", StringComparison.Ordinal)
+               || v.Equals("true", StringComparison.OrdinalIgnoreCase);
+    }
+
     /// <summary>
     /// D7b 跨轮唤醒 (真续跑): 检查点 → 装载 → 答复落到确定参数槽 → 从**上轮运行态**继续跑。
     /// 三条硬纪律:
@@ -2434,13 +2453,22 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
         if (!agent.intent.PlanResumeService.ApplyReply(cand, message.Content, out var applyWhy))
         {
             store.Clear(message.SessionId);
-            response.Success = false;
-            response.Content =
+            var verdict =
                 $"上一轮计划停在等你回答: {Truncate(cand.PendingQuestion ?? "(无问题文本)", 120)}\n" +
                 $"这一轮答复没有落地: {applyWhy}\n" +
-                "该续跑入口已作废 —— 请把这一轮内容重新表述为完整任务, 或按上面的问题再答一次。";
+                "(检查点已作废, 本轮内容按新任务处理)\n";
             agent.config.AgentTelemetry.Emit("plan_resume", "IndustrialAgentV2",
-                ("plan_id", cand.Plan.PlanId), ("resumed", false), ("reason", applyWhy));
+                ("plan_id", cand.Plan.PlanId), ("resumed", false), ("reason", applyWhy),
+                ("fallthrough", PlanResumeFallthrough()));
+            if (PlanResumeFallthrough())
+            {
+                // R457 链机制: 答复落不到槽位 ⇒ 作废检查点后**同轮转正常任务路径**, 不整轮吃掉。
+                // 不伪造仍成立: 检查点已清, 不会拿旧产出凑答案。
+                _resumeVoidNotice = verdict;
+                return false;
+            }
+            response.Success = false;
+            response.Content = verdict + "该续跑入口已作废 —— 请把这一轮内容重新表述为完整任务, 或按上面的问题再答一次。";
             return true;
         }
 

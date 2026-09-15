@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 
@@ -220,13 +221,32 @@ public static class ActionLoopRunner
                     ArgsSha8 = Sha8(tc.ArgumentsJson ?? string.Empty),
                 });
                 onCall?.Invoke(outcome.Steps, tc, res);
-                postUser.Add(QueuePostUserMessage.ToolResult(tc.Id ?? string.Empty, res.Render(MaxToolResultBytes)));
+                postUser.Add(QueuePostUserMessage.ToolResult(tc.Id ?? string.Empty,
+                    res.Render(MaxToolResultBytes) + "\n" + LedgerLine(outcome)));
             }
             resp = await call(Clone(prompt, postUser), ct);
         }
         outcome.Converged = resp.Success && (resp.ToolCalls is null || resp.ToolCalls.Count == 0);
         outcome.MaxStepsHit = !outcome.Converged && resp.Success && resp.ToolCalls is { Count: > 0 };
         return (resp, outcome);
+    }
+
+    /// <summary>R457 回灌事实台账: 让"本轮实际执行了什么"与模型自述可比对 (对齐断言式幻觉, 无关键字判据)。</summary>
+    internal static string LedgerLine(ActionLoopOutcome o)
+    {
+        if (o.Records.Count == 0) return string.Empty;
+        var sb = new StringBuilder("[本轮已执行] ");
+        sb.Append(o.Executed).Append(" 次: ");
+        for (int i = 0; i < o.Records.Count; i++)
+        {
+            if (i > 0) sb.Append(", ");
+            var r = o.Records[i];
+            sb.Append(r.Tool).Append("(rc=").Append(r.ExitCode).Append(")");
+        }
+        sb.Append("; 其中 write_file ").Append(o.Records.Count(r => r.Tool == "write_file"))
+          .Append(" 次, run_command ").Append(o.Records.Count(r => r.Tool == "run_command"))
+          .Append(" 次");
+        return sb.ToString();
     }
 
     public static string Sha8(string text)

@@ -224,6 +224,7 @@ public sealed class WorkspaceActionPort : IActionPort
             var line = "{\"step\":" + step
                 + ",\"tool\":\"" + Esc(call.Name) + "\""
                 + ",\"args_sha8\":\"" + ActionLoopRunner.Sha8(call.ArgumentsJson ?? string.Empty) + "\""
+                + ",\"args_head\":\"" + Esc(Head(call.ArgumentsJson, MaxAuditArgsChars)) + "\""
                 + ",\"ok\":" + (res.Ok ? "true" : "false")
                 + ",\"rc\":" + res.ExitCode
                 + ",\"ms\":" + res.ElapsedMs
@@ -237,6 +238,13 @@ public sealed class WorkspaceActionPort : IActionPort
             // 审计失败不影响主链
         }
     }
+
+    /// <summary>审计用: 参数原文有界截断 (凭据卫生: 只落 200 字符头部)。</summary>
+    internal const int MaxAuditArgsChars = 200;
+
+    internal static string Head(string? s, int max)
+        => string.IsNullOrEmpty(s) ? string.Empty
+           : (s.Length <= max ? s : s.Substring(0, max) + "...");
 
     private static string Esc(string s)
     {

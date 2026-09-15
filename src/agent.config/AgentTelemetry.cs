@@ -47,7 +47,7 @@ public static class AgentTelemetry
                 Directory.CreateDirectory(telemetryDir);
                 _writer?.Dispose();
                 var path = Path.Combine(telemetryDir, _sessionId + ".jsonl");
-                _writer = new StreamWriter(path, append: true, Encoding.UTF8) { AutoFlush = true };
+                _writer = new StreamWriter(path, append: true, new System.Text.UTF8Encoding(false)) { AutoFlush = true };
                 _configured = true;
                 // R121: flush Configure 前缓存的点位 (保持 seq 原序)
                 if (_pendingBeforeConfigure.Count > 0)

@@ -590,10 +590,29 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             : $"auto:{entry?.Id ?? "(none)"}";
         if (entry is null)
         {
+            // R457 链机制: 无候选/缺凭据必须"可见失败" —— 此前只填 Error 不标面向用户,
+            // 经 UserFacingFailureContent 折成空串 ⇒ 用户看到静默空回复 (R456 首跑实测)。
+            var missingKeys = _catalog.Models
+                .Where(m => !string.IsNullOrEmpty(m.ApiKeyEnv)
+                            && string.IsNullOrEmpty(Environment.GetEnvironmentVariable(m.ApiKeyEnv)))
+                .Select(m => m.ApiKeyEnv!).Distinct().OrderBy(x => x, StringComparer.Ordinal).ToArray();
+            var detail = _catalog.Models.Count == 0
+                ? "模型目录为空: 请在 config/base/models.yaml 配置至少一个模型"
+                : missingKeys.Length > 0
+                    ? "目录内 " + _catalog.Models.Count + " 个模型全部不可用: 环境变量未设置 ("
+                      + string.Join(", ", missingKeys) + ")"
+                    : "目录内 " + _catalog.Models.Count + " 个模型均未命中当前请求的选模条件";
+            LastSelectionBasis = "auto:(none)";
+            agent.config.AgentTelemetry.Emit("model_unavailable", "ModelQueueRouter",
+                ("models", _catalog.Models.Count), ("missing_keys", missingKeys.Length),
+                ("kind", kind.ToString()));
             return new QueueResponse
             {
                 Success = false,
-                Error = "模型目录为空: 请在 config/base/models.yaml 配置至少一个模型",
+                Error = detail,
+                Content = "⚠ 无可用模型 — " + detail + "。请设置对应环境变量后重试。",
+                ContentIsUserFacing = true,
+                Model = "(none)",
             };
         }
 
@@ -1247,11 +1266,18 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         var apiKey = Environment.GetEnvironmentVariable(entry.ApiKeyEnv);
         if (string.IsNullOrEmpty(apiKey))
         {
+            // R457 链机制: 缺凭据 ⇒ 必须"可见失败" (此前只填 Error 不标面向用户,
+            // 经 UserFacingFailureContent 折成空串 ⇒ 该轮 reply_len=0 静默; 真机负控 C3 实测)。
+            agent.config.AgentTelemetry.Emit("model_unavailable", "ModelQueueRouter",
+                ("model", entry.Id), ("provider", entry.Provider),
+                ("missing_key", entry.ApiKeyEnv ?? "(未声明)"), ("kind", "api_key_env_missing"));
             return new QueueResponse
             {
                 Success = false,
                 Model = entry.Id,
                 Error = $"环境变量 {entry.ApiKeyEnv} 未设置 (模型 {entry.Id} 的 API Key 来源)",
+                Content = $"⚠ 未配置模型凭据 — 环境变量 {entry.ApiKeyEnv} 未设置, 无法调用 {entry.Id}。请设置该环境变量后重试。",
+                ContentIsUserFacing = true,
             };
         }
 

@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R456",
+  "updated_round": "R457",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -1562,6 +1562,28 @@
         "docs/reports/agent-chain-diagnosis-r455.md"
       ],
       "owner_round": "R456"
+    },
+    {
+      "id": "r457.effect-closure",
+      "level": "L3",
+      "capability": "动作环效果收口(真机 E2E): 同夹具产物 2/4 -> 4/4 (stats.txt=chars=14, first.txt=R455 fixture note), 磁盘伪造 0; 三缺口机制修复: 台账回灌(命中 8 个实发请求) / 落不到槽位不吞并(转正常路径) / 缺凭据可见失败(真机负控 len 0->83 + model_unavailable 遥测); 器具对称: 我方 tool_calls 落盘 + 审计 args_head 命令原文 + 适配器 prompt_sha8/tail_messages",
+      "evidence_cmd": "bash /tmp/r457_run_agent_tools.sh && python3 eval/rover/r457/judge_r457.py && bash /tmp/r457_nokey.sh",
+      "evidence_path": "eval/rover/r457/verdict-r457.json",
+      "negative_control": "C1 无 key 真机: 修前 reply_len=0/无告警/0 上游 -> 修后 len=83 + model_unavailable + empty_reply:false; C2 器具负控: 适配器不落我方 tool_calls(修前假阴性 tool_calls=null) -> 修后 15/15 有值; C3 台账负控: 单测断言工具结果必含 [本轮已执行] 台账(Loop_AppendsExecutionLedger_ToToolResult, 注入缺失即红); C4 判分只读磁盘产物 (norm 逐字节) 不采信回复文本; C5 关环对照 AGENTFRAMEWORK_ACTION_LOOP=off 回 R455 读数",
+      "covers": [
+        "eval/rover/r457/judge_r457.py",
+        "eval/rover/r457/verdict-r457.json",
+        "eval/rover/r457/side_by_side_calls.py",
+        "eval/rover/r455/adapter_tools.py",
+        "src/agent.modelqueue/ActionLoop.cs",
+        "src/agent/action/WorkspaceActionPort.cs",
+        "src/agent/IndustrialAgentV2.cs",
+        "src/agent.modelqueue/ModelQueueRouter.cs",
+        "src/agent.tests/ActionLoopTests.cs",
+        "docs/plans/v0.77.0-r457-effect-closure.md",
+        "docs/reports/effect-closure-r457.md"
+      ],
+      "owner_round": "R457"
     }
   ],
   "aot_check_policy": "release_tag_only",

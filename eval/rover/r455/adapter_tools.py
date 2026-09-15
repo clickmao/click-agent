@@ -88,6 +88,21 @@ def sse(ev, obj):
     return f"event: {ev}\ndata: {json.dumps(obj, ensure_ascii=False)}\n\n".encode()
 
 
+
+def _sha8(txt):
+    import hashlib
+    return hashlib.sha256((txt or '').encode('utf-8', 'replace')).hexdigest()[:8]
+
+
+def _tail(msgs, n=4, head=200):
+    out = []
+    for m in (msgs or [])[-n:]:
+        c = m.get('content')
+        if not isinstance(c, str):
+            c = json.dumps(c, ensure_ascii=False)[:head] if c is not None else ''
+        out.append({'role': m.get('role'), 'len': len(c), 'head': c[:head], 'tool_calls': len(m.get('tool_calls') or []), 'tool_call_id': m.get('tool_call_id')})
+    return out
+
 class H(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
 
@@ -157,8 +172,12 @@ class H(BaseHTTPRequestHandler):
         up_body, up = upstream_chat(body.get("messages") or [], body.get("model", "deepseek-chat"),
                                     to_chat_tools(body.get("tools")), body.get("max_tokens"))
         self._dump(side, {"n_messages": len(body.get("messages") or []), "tools_n": len(to_chat_tools(body.get("tools"))),
-                          "upstream_request": {"model": up_body.get("model"), "n_messages": len(up_body["messages"])}},
-                   {"text": ((up.get("choices") or [{}])[0].get("message") or {}).get("content"), "usage": up.get("usage")})
+                          "upstream_request": {"model": up_body.get("model"), "n_messages": len(up_body["messages"]),
+                                            "prompt_sha8": _sha8(json.dumps(up_body.get("messages") or [], ensure_ascii=False, sort_keys=True)),
+                                            "tail_messages": _tail(up_body.get("messages"))}},
+                   {"text": ((up.get("choices") or [{}])[0].get("message") or {}).get("content"), "usage": up.get("usage"),
+                    "tool_calls": [{"name": (tc.get("function") or {}).get("name"), "args": (tc.get("function") or {}).get("arguments")} for tc in ((up.get("choices") or [{}])[0].get("message") or {}).get("tool_calls") or []],
+                    "finish_reason": (up.get("choices") or [{}])[0].get("finish_reason")})
         b = json.dumps(up).encode()
         self.send_response(200)
         self.send_header("Content-Type", "application/json")

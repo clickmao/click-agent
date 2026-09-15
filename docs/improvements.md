@@ -10,6 +10,15 @@
 > 数据时效 (测试数/批号/评测口径)、版本引用一致性、死链检查; **禁止只改局部不做整体校验**。
 > 空间位置相邻但语义不同段的错挂 (如旧版本标题下挂新数据) 视同违例。
 
+## v0.77.0 · R457 · 2026-09-15 · 状态: 已完成 · 主题: 动作环**效果收口**（2/4 → 4/4）+ 三缺口机制修复 + 器具对称
+
+- **产物（同夹具/同 6 轮/同模型 deepseek-flash，逐字节比对）**：R455 0/4 → R456 2/4 → **R457 4/4**（`count.txt=4`、`merged.txt=ALPHA/BETA/GAMMA`、`stats.txt=chars=14`、`first.txt=R455 fixture note`）；codex 冻结 4/4。
+- **三缺口（机制修复，非关键字补丁）**：① 断言不执行 → 工具结果尾部**执行台账**（`[本轮已执行]`），命中 8 个实发请求，stats.txt 落地且值正确（R456 为口算 15+无文件）；② 吞并轮 → 检查点作废后**同轮转正常任务路径**（`AGENTFRAMEWORK_PLAN_RESUME_FALLTHROUGH` 默认 on），first.txt 落地；③ 缺 key 静默 → **可见失败**（`ContentIsUserFacing` + `model_unavailable` 遥测），真机负控 `len 0 → 83`，`empty_reply:false`；附带修遥测 JSONL BOM。
+- **器具对称**：我方 `tool_calls` 落盘（15/15 有值）、审计 `args_head` 命令原文、适配器 `prompt_sha8`+`tail_messages`；夹具两侧 md5 同 `fe1f5530446bd4ceb8be1b944c8ec005`。
+- **读数**：审计执行 4→8；调用 9→15（真干活回灌成本）；prompt ∑31,537→53,163；缓存总口径 84.8%→**89.8%**（稳态 91.8%）。
+- **交付**：`src/agent.modelqueue/ActionLoop.cs`、`src/agent/action/WorkspaceActionPort.cs`、`src/agent/IndustrialAgentV2.cs`、`src/agent.modelqueue/ModelQueueRouter.cs`、`src/agent.config/AgentTelemetry.cs`、`src/agent.tests/ActionLoopTests.cs`（52/52 绿）、`eval/rover/r457/*`、`docs/plans/v0.77.0-r457-effect-closure.md`、`docs/reports/effect-closure-r457.md`；registry `r457.effect-closure`（L3，含 5 条负控）。
+- **诚实边界**：调用数上升属真执行成本；冷启动首调用读数受 provider 跨运行前缀缓存影响不可跨轮直接比；未 push。
+
 ## v0.66.0 · R446 · 2026-09-15 · 状态: 已完成 · 主题: 判官侧**确定性根因(H2)** + 消息面 0-token 结算**负结论** + 判官 prompt 瘦身**未过等价性** + 器具面并轨
 
 - **确定性（真机产品路径, 26 样本）**: 3×12 轮 + 1×24 轮同消息网格 ⇒ 判官字母全同、`ev/new/gen`=215/215/92 全同

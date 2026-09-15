@@ -260,4 +260,43 @@ public sealed class ActionLoopTests
         ToolsJson = p.ToolsJson,
         PostUser = new List<QueuePostUserMessage>(p.PostUser),
     };
+    // ---------- 面 3c: 回灌事实台账 (R457) ----------
+    [Fact]
+    public async Task Loop_AppendsExecutionLedger_ToToolResult()
+    {
+        var root = NewTempDir();
+        try
+        {
+            var port = new WorkspaceActionPort(root);
+            var seen = new List<QueuePrompt>();
+            var step = 0;
+            Task<QueueResponse> Call(QueuePrompt p, CancellationToken ct)
+            {
+                seen.Add(Clone(p));
+                step++;
+                if (step == 1)
+                    return Task.FromResult(new QueueResponse
+                    {
+                        Success = true,
+                        Content = string.Empty,
+                        ToolCalls = new List<ActionToolCall>
+                        {
+                            new() { Id = "c1", Name = "write_file", ArgumentsJson = "{\"path\":\"a.txt\",\"content\":\"x\"}" },
+                        },
+                    });
+                return Task.FromResult(new QueueResponse { Success = true, Content = "done" });
+            }
+
+            var (_, outcome) = await ActionLoopRunner.RunAsync(new QueuePrompt { UserMessage = "u" }, Call, port, 3, CancellationToken.None);
+
+            Assert.Equal(1, outcome.Executed);
+            Assert.Equal(2, seen.Count);
+            var toolMsg = seen[1].PostUser!.First(m => m.Role == "tool");
+            Assert.Contains("[本轮已执行]", toolMsg.Content);
+            Assert.Contains("write_file(rc=0)", toolMsg.Content);
+            Assert.Contains("其中 write_file 1 次, run_command 0 次", toolMsg.Content);
+        }
+        finally { Directory.Delete(root, true); }
+    }
 }
+
