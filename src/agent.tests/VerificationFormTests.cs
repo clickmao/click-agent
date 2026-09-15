@@ -73,7 +73,8 @@ public class VerificationFormTests
 
     /// <summary>R473: live 行 pin_status 的合法原因词表 (与 eval/capability/bind_evidence.py 同源)。</summary>
     private static readonly string[] PinReasons =
-        { "archived-per-round", "append-only-ledger", "worktree-only", "directory-aggregate", "self-derived" };
+        { "archived-per-round", "append-only-ledger", "worktree-only", "directory-aggregate",
+          "self-derived", "evidence-overtaken" };
 
     private static readonly Regex Hex12 = new("^[0-9a-f]{12}$", RegexOptions.Compiled);
 
@@ -98,6 +99,86 @@ public class VerificationFormTests
         }
         catch { }
         return null;
+    }
+
+
+    /// <summary>EXP1-Q27: 目录清单摘要 —— 目录聚合证据的字节闸
+    /// (与 eval/capability/bind_evidence.py::dir_manifest **逐位同口径**, 两侧改动必须同步)。
+    /// 文件集 = `git ls-files -- &lt;relDir&gt;` (索引来源: .gitignore 产物与未跟踪 scratch 天然不入闸)
+    ///          ∩ 现盘存在, 按 relpath 序号排序;
+    /// 摘要   = sha256[:12] over 拼接的 "relpath:size:sha12\n" (字节取自工作区);
+    /// 无已跟踪文件 ⇒ null (空清单不是闸, 判红)。
+    /// 目录内已跟踪文件被改写/增删 ⇒ 摘要变化 ⇒ 该行判红 (证据易主必须说话)。</summary>
+    private static string? DirManifestSha12(string repoRoot, string relDir)
+    {
+        var psi = new System.Diagnostics.ProcessStartInfo("git")
+        {
+            WorkingDirectory = repoRoot,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+        };
+        psi.ArgumentList.Add("ls-files");
+        psi.ArgumentList.Add("--");
+        psi.ArgumentList.Add(relDir);
+        using var p = System.Diagnostics.Process.Start(psi);
+        if (p == null) return null;
+        var outp = p.StandardOutput.ReadToEnd();
+        p.WaitForExit();
+        if (p.ExitCode != 0) return null;
+
+        var sb = new System.Text.StringBuilder();
+        int n = 0;
+        foreach (var rel in outp.Split('\n', StringSplitOptions.RemoveEmptyEntries)
+                                .Select(s => s.Trim()).Where(s => s.Length > 0)
+                                .Distinct(StringComparer.Ordinal).OrderBy(s => s, StringComparer.Ordinal))
+        {
+            var abs = Path.Combine(repoRoot, rel.Replace('/', Path.DirectorySeparatorChar));
+            if (!File.Exists(abs)) continue;
+            var bytes = File.ReadAllBytes(abs);
+            sb.Append(rel).Append(':').Append(bytes.Length).Append(':')
+              .Append(Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(bytes))[..12].ToLowerInvariant())
+              .Append('\n');
+            n++;
+        }
+        if (n == 0) return null;
+        var digest = System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(sb.ToString()));
+        return Convert.ToHexString(digest)[..12].ToLowerInvariant();
+    }
+
+
+    /// <summary>EXP1-Q27: 目录沿革里是否出现过改写(M)/删除(D) —— 只看 M/D, 首见 A(加入) 不算。
+    /// (与 eval/capability/bind_evidence.py::dir_rewritten 同口径。) 按设计会变的目录不该上清单闸:
+    /// 上闸只会产恒红假警, 应留 live/evidence-overtaken —— 先量后定 (Q27 普查: eval/probe 10 提交/5 改写)。</summary>
+    private static bool DirRewritten(string repoRoot, string relDir)
+    {
+        var psi = new System.Diagnostics.ProcessStartInfo("git")
+        {
+            WorkingDirectory = repoRoot,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+        };
+        psi.ArgumentList.Add("log");
+        psi.ArgumentList.Add("--no-renames");
+        psi.ArgumentList.Add("--name-status");
+        psi.ArgumentList.Add("--pretty=format:%H");
+        psi.ArgumentList.Add("--");
+        psi.ArgumentList.Add(relDir);
+        using var p = System.Diagnostics.Process.Start(psi);
+        if (p == null) return true;                 // fail-closed: 派生不了 ⇒ 不许上冻结闸
+        var outp = p.StandardOutput.ReadToEnd();
+        p.WaitForExit();
+        // 仪器纪律 (Q27 自踩): 首版用非法格式 `--format=@` ⇒ git fatal, stdout 空 ⇒ 恒返回 false (空心闸)。
+        //   ① 用合法格式; ② 检查退出码, 非 0 = 无法证明「沿革只有追加」⇒ fail-closed 返回 true。
+        if (p.ExitCode != 0) return true;
+        foreach (var raw in outp.Split('\n'))
+        {
+            var t = raw.Trim();
+            if (t.Length == 0 || t.StartsWith("commit ", StringComparison.Ordinal)) continue;
+            if (t[0] == 'M' || t[0] == 'D') return true;
+        }
+        return false;
     }
 
 
@@ -212,17 +293,34 @@ public class VerificationFormTests
                     v.Add($"{id}: pin_reason 非法 '{G("pin_reason")}' (R2e)");
                 if (G("binding") != "self-attested" && G("binding") != "audit-pin")
                     v.Add($"{id}: binding 非法 '{G("binding")}' (R2e)");
-                if (!Regex.IsMatch(G("audited_by_round"), @"^R\d+$"))
+                // EXP1-Q27: 轮号命名段 —— 主线 R&lt;n&gt; 与能力自检作业 EXP1-Q&lt;n&gt; 互不占号
+                //   (作业用**自己的命名段**, 不偷主线轮号; 见 unattended-job-reliability 命名空间碰撞铁律)。
+                if (!Regex.IsMatch(G("audited_by_round"), @"^(?:R\d+|EXP1-Q\d+)$"))
                     v.Add($"{id}: audited_by_round 非法 '{G("audited_by_round")}' (R2e)");
 
                 var evAbs = Path.Combine(repoRoot, evPath.Replace('/', Path.DirectorySeparatorChar));
                 if (status == "frozen")
                 {
-                    if (kind != "artifact") v.Add($"{id}: frozen 只允许 artifact (实={kind}) (R2e)");
-                    var cur = Sha12(evAbs);
-                    if (cur == null) v.Add($"{id}: frozen 但证据文件不可读 '{evPath}' (R2e)");
-                    else if (!Hex12.IsMatch(declared) || declared != cur)
-                        v.Add($"{id}: 冻结 pin 与现盘字节不符 (声明 {declared} / 实际 {cur}) (R2e 证据已被改写或未重审)");
+                    if (kind != "artifact" && kind != "directory")
+                        v.Add($"{id}: frozen 只允许 artifact/directory (实={kind}) (R2e)");
+                    if (kind == "directory")
+                    {
+                        // EXP1-Q27: 目录聚合行的清单式闸 (文件集来自索引, 字节来自工作区)
+                        var man = DirManifestSha12(repoRoot, evPath);
+                        if (man == null)
+                            v.Add($"{id}: frozen 但目录清单不可算 (无已跟踪文件或不可读) '{evPath}' (R2e)");
+                        else if (!Hex12.IsMatch(declared) || declared != man)
+                            v.Add($"{id}: 目录清单 pin 与现盘不符 (声明 {declared} / 实际 {man}) (R2e —— 目录内已跟踪文件被改写/增删, 证据已易主或未重审)");
+                        if (DirRewritten(repoRoot, evPath))
+                            v.Add($"{id}: 冻结但目录沿革含改写/删除 '{evPath}' (R2e —— 按设计会变的目录该留 live/evidence-overtaken, 上闸只会产恒红假警)");
+                    }
+                    else
+                    {
+                        var cur = Sha12(evAbs);
+                        if (cur == null) v.Add($"{id}: frozen 但证据文件不可读 '{evPath}' (R2e)");
+                        else if (!Hex12.IsMatch(declared) || declared != cur)
+                            v.Add($"{id}: 冻结 pin 与现盘字节不符 (声明 {declared} / 实际 {cur}) (R2e 证据已被改写或未重审)");
+                    }
                 }
                 else if (declared.Length > 0)
                     v.Add($"{id}: live 行不得带 artifact_sha12 (R2e)");
@@ -361,6 +459,42 @@ public class VerificationFormTests
             "evidence_generated_with": { "evidence_kind": "artifact", "pin_status": "live", "pin_reason": "append-only-ledger",
               "artifact_sha12": null, "instrument": "eval/capability/bind_evidence.py", "instrument_sha12": null,
               "binding": "audit-pin", "audited_by_round": "R473" } },
+          { "id": "r.dir_frozen_ok", "capability": "c", "level": "L3",
+            "evidence_cmd": "python3 eval/capability/bind_evidence.py --check",
+            "evidence_path": "eval/rover/r415/", "negative_control": "n", "owner_round": "R1",
+            "evidence_generated_with": { "evidence_kind": "directory", "pin_status": "frozen", "pin_reason": "archived-per-round",
+              "artifact_sha12": "SHA_DIR", "instrument": null, "instrument_sha12": null,
+              "binding": "audit-pin", "audited_by_round": "EXP1-Q27" } },
+          { "id": "s.dir_frozen_sha_mismatch", "capability": "c", "level": "L3",
+            "evidence_cmd": "python3 eval/capability/bind_evidence.py --check",
+            "evidence_path": "eval/rover/r415/", "negative_control": "n", "owner_round": "R1",
+            "evidence_generated_with": { "evidence_kind": "directory", "pin_status": "frozen", "pin_reason": "archived-per-round",
+              "artifact_sha12": "000000000000", "instrument": null, "instrument_sha12": null,
+              "binding": "audit-pin", "audited_by_round": "R1" } },
+          { "id": "t.dir_frozen_empty", "capability": "c", "level": "L3",
+            "evidence_cmd": "python3 eval/capability/bind_evidence.py --check",
+            "evidence_path": "eval/probe/__pycache__", "negative_control": "n", "owner_round": "R1",
+            "evidence_generated_with": { "evidence_kind": "directory", "pin_status": "frozen", "pin_reason": "archived-per-round",
+              "artifact_sha12": "000000000000", "instrument": null, "instrument_sha12": null,
+              "binding": "audit-pin", "audited_by_round": "R1" } },
+          { "id": "u.bad_round", "capability": "c", "level": "L1",
+            "evidence_cmd": "python3 eval/capability/bind_evidence.py --check",
+            "evidence_path": "eval/capability/kpi.jsonl", "owner_round": "R1",
+            "evidence_generated_with": { "evidence_kind": "artifact", "pin_status": "live", "pin_reason": "append-only-ledger",
+              "artifact_sha12": null, "instrument": null, "instrument_sha12": null,
+              "binding": "audit-pin", "audited_by_round": "Q27" } },
+          { "id": "v.dir_frozen_churny", "capability": "c", "level": "L3",
+            "evidence_cmd": "python3 eval/capability/bind_evidence.py --check",
+            "evidence_path": "eval/probe/", "negative_control": "n", "owner_round": "R1",
+            "evidence_generated_with": { "evidence_kind": "directory", "pin_status": "frozen", "pin_reason": "archived-per-round",
+              "artifact_sha12": "SHA_PROBE", "instrument": null, "instrument_sha12": null,
+              "binding": "audit-pin", "audited_by_round": "R1" } },
+          { "id": "w.ok_live_overtaken", "capability": "c", "level": "L3",
+            "evidence_cmd": "python3 eval/capability/bind_evidence.py --check",
+            "evidence_path": "eval/probe/", "negative_control": "n", "owner_round": "R1",
+            "evidence_generated_with": { "evidence_kind": "directory", "pin_status": "live", "pin_reason": "evidence-overtaken",
+              "artifact_sha12": null, "instrument": null, "instrument_sha12": null,
+              "binding": "audit-pin", "audited_by_round": "EXP1-Q27" } },
           { "id": "p.ok_frozen_pin", "capability": "c", "level": "L3",
             "evidence_cmd": "python3 eval/capability/bind_evidence.py --check",
             "evidence_path": "eval/capability/instruments.json", "negative_control": "n", "owner_round": "R1",
@@ -368,7 +502,9 @@ public class VerificationFormTests
               "artifact_sha12": "SHA_INSTR", "instrument": "eval/capability/bind_evidence.py", "instrument_sha12": "SHA_BIND",
               "binding": "audit-pin", "audited_by_round": "R473" } }
         ] }
-        """).Replace("SHA_BIND", shaBind).Replace("SHA_INSTR", shaInstr);
+        """).Replace("SHA_BIND", shaBind).Replace("SHA_INSTR", shaInstr)
+             .Replace("SHA_DIR", DirManifestSha12(RepoRoot, "eval/rover/r415/")!)
+             .Replace("SHA_PROBE", DirManifestSha12(RepoRoot, "eval/probe/")!);
         var v = Validate(JsonDocument.Parse(bad).RootElement, RepoRoot);
         Assert.Contains(v, s => s.Contains("a.no_negctl") && s.Contains("negative_control"));
         Assert.Contains(v, s => s.Contains("b.static_as_run") && s.Contains("静态工具"));
@@ -389,7 +525,14 @@ public class VerificationFormTests
         Assert.Contains(v, s => s.Contains("o.bad_kind") && s.Contains("evidence_kind"));
         Assert.Contains(v, s => s.Contains("q.instrument_without_sha") && s.Contains("同存同缺"));
         Assert.DoesNotContain(v, s => s.Contains("p.ok_frozen_pin"));   // 正控: 正确冻结 pin 不得判红
-        Assert.True(v.Count >= 17, "注入缺陷未被完整捕获 (实测基线 17 条: 每条注入缺陷 ≥1, q 行同时命中 2 条): " + string.Join(" | ", v));
+        // EXP1-Q27: 目录清单 pin (frozen + evidence_kind=directory) 的两侧样例 + 轮号命名段
+        Assert.DoesNotContain(v, s => s.Contains("r.dir_frozen_ok"));    // 正控: 清单摘要相符不得判红
+        Assert.Contains(v, s => s.Contains("s.dir_frozen_sha_mismatch") && s.Contains("目录清单 pin"));
+        Assert.Contains(v, s => s.Contains("t.dir_frozen_empty") && s.Contains("目录清单不可算"));
+        Assert.Contains(v, s => s.Contains("u.bad_round") && s.Contains("audited_by_round"));
+        Assert.Contains(v, s => s.Contains("v.dir_frozen_churny") && s.Contains("沿革含改写"));
+        Assert.DoesNotContain(v, s => s.Contains("w.ok_live_overtaken"));   // 正控: 沿革会变的目录留 live 不判红
+        Assert.True(v.Count >= 21, "注入缺陷未被完整捕获 (实测基线 21 条: 每条注入缺陷 ≥1, q 行同时命中 2 条): " + string.Join(" | ", v));
     }
 
     /// <summary>R473: 产品面证据的绑定覆盖率与分布 (实测读数; 覆盖由 Validate 判红, 本测试把"字段没退化成注释"钉住)。
@@ -421,7 +564,12 @@ public class VerificationFormTests
                        .GetProperty("evidence_generated_with");
         Assert.Equal("self-attested", r444.GetProperty("binding").GetString());
         Assert.Equal("eval/rover/r444/precheck_prefilter.py", r444.GetProperty("instrument").GetString());
-        Assert.True(r444.GetProperty("audited_by_round").GetString()!.StartsWith("R", StringComparison.Ordinal));
+        // Q27: 轮号命名段扩展为两段 (主线 R<n> / 能力自检作业 EXP1-Q<n>) ⇒ 断言同步放宽为「两段之一」,
+        //   而不是把 R 前缀写死 (写死会让作业轮的审计戳判红, 逼作业去偷主线轮号)。
+        var r444Round = r444.GetProperty("audited_by_round").GetString()!;
+        Assert.True(r444Round.StartsWith("R", StringComparison.Ordinal)
+                    || r444Round.StartsWith("EXP1-Q", StringComparison.Ordinal),
+            $"r444.separability-precheck 的 audited_by_round 轮号命名段非法: '{r444Round}'");
     }
 
     /// <summary>R1: src/ 下每个 IResponseSegmentPlugin 实现文件必须在某行 covers[] 登记。</summary>

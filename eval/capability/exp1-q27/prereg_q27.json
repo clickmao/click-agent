@@ -1,0 +1,33 @@
+{
+ "round": "EXP1-Q27",
+ "date": "2026-09-16",
+ "owner": "60m 自检作业 (不占主线轮号)",
+ "step": "EXP1 §AA.6 候选 1 前半 — live 行的「证据易主」可机检化: 目录聚合 8 行的清单式 pin 先量后定",
+ "why": "8 条 evidence_kind=directory 行目前 pin_status=live (零字节闸), 是「证据易主」最可能的形态; 候选方案=目录清单 (relpath:size:sha12) 摘要作冻结 pin, 但若目录沿革含追加/改写, 整体清单 pin 会随测量抖动 => 恒红假警 (计划文档 AA.6 已预写该风险) => 上闸前必须先量",
+ "measurement": {
+  "instrument": "eval/capability/exp1-q27/dir_history_census.py",
+  "inputs": "仓库既有数据 (git log --name-status / git ls-files / git status / 现盘字节); 不跑任何测量运行, 不启动 dotnet",
+  "faces": ["M1 现盘清单", "M2 版本状态", "M3 逐文件沿革(改写/删除)", "M4 目录沿革(触及提交数)", "M5 清单摘要 sha12"],
+  "artifact": "eval/capability/exp1-q27/dir_census_q27.json"
+ },
+ "decision_rule_pre_registered": {
+  "R1": "全部文件已跟踪 ∧ 工作区无未提交改动 ∧ 沿革无 M/D => freeze_mode=manifest (整体清单可作冻结 pin)",
+  "R2": "存在未跟踪或已改文件 => live (pin_reason=worktree-only-in-dir), 不得上闸",
+  "R3": "沿革出现 M 或 D (即使当前干净) => freeze_mode=baseline-subset (只钉冻结时点已存在的文件: 被改写/删除即红, 允许新增)",
+  "precedence": "R1 > R2 > R3; 逐行给证据行, 禁止只给汇总",
+  "negative_control": "对同一批目录重放哑规则 (恒判 manifest), 断言两套规则分布不同; 相同 => 规则只是装饰 => 读数作废"
+ },
+ "predicted_readings": {
+  "rows": 8,
+  "manifest": "≥1 (eval/<round>/ 归档目录按轮命名, 预期多数为纯追加)",
+  "baseline_subset": "≥1 (r470 类目录工作区已被改写, 沿革含 M)",
+  "live": "≥0",
+  "dummy_rule_differs": true,
+  "note": "预测是「先写后跑」的, 与实测不符时如实记录偏差, 不改规则"
+ },
+ "out_of_scope_this_round": [
+  "3 条 worktree-only 行的「先入库冻结再上闸」: 其证据文件当前属于并发写者 (R476 在飞) 的未提交改动 => 本轮提交会连带他人半成品, 违反提交纪律; 记入下一轮候选",
+  "bind_evidence.py / 登记表的字段改写: 须与本轮形式校验同轮; 若并发 dotnet 未空闲则延后到读数确定的形态上再做 (先量后定)"
+ ],
+ "discipline": "读数落 eval/capability/kpi.jsonl; 失败如实记录分类; 禁 push / gh api 写"
+}

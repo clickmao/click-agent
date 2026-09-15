@@ -1,0 +1,89 @@
+{
+ "round": "EXP1-Q27",
+ "ts": "2026-09-16T06:00+0800",
+ "kind": "instrument-round / 证据易主可机检化 (目录聚合行的清单式冻结 pin)",
+ "step": "EXP1 §AA.6 候选 1 前半: live 行的证据易主可机检化 —— 目录聚合 8 行先量后定后上闸",
+ "artifact": [
+  "eval/capability/exp1-q27/prereg_q27.json",
+  "eval/capability/exp1-q27/dir_history_census.py",
+  "eval/capability/exp1-q27/dir_census_q27.json",
+  "eval/capability/exp1-q27/readings_q27.json",
+  "eval/capability/bind_evidence.py",
+  "docs/verification-registry.json",
+  "src/agent.tests/VerificationFormTests.cs"
+ ],
+ "prereg_vs_measured": {
+  "rule_pre_registered": "R1 全跟踪+干净+沿革无 M/D ⇒ manifest; R2 有未跟踪(非忽略)/已改 ⇒ live; R3 沿革含 M/D ⇒ baseline-subset; 优先 R2>R3>R1",
+  "predicted": {"rows": 8, "manifest": "≥1", "baseline_subset": "≥1", "dummy_rule_differs": true},
+  "measured": {"rows": 8, "frozen_archived_per_round": 7, "live_evidence_overtaken": 1,
+                "baseline_subset": 0, "live_worktree_only": 0,
+                "rows_frozen": ["r371d7.truncation-continuation", "r414.failure-visibility",
+                                "llamacpp.prompt.template_gate", "llamacpp.session.prefix_reuse",
+                                "llamacpp.session.long_lived_generation", "llamacpp.session-ledger",
+                                "r415.gate-input-chain-pin"],
+                "rows_live": ["probe.randomized-selfcheck"]},
+  "verdict": "② baseline_subset 预测被实测证伪 (0 行需要该档): 沿革含 M/D 的那一类 (eval/probe, rew=5/commits=10) 没有上闸价值 —— 它不是「冻结档要放宽」, 而是「该目录按设计每轮都在变」, 应留 live。规则形状因此简化: 只有 frozen(纯追加沿革) 与 live(沿革含改写) 两档, 无中间态 (单一成因: 预注册未按「目录沿革」二分, 而是按「文件级形态」设想了一档中间态)",
+  "dummy_rule_negative_control": "恒判 frozen 的哑规则在 5 例中有 4 例与真规则结论不同 ⇒ 判定规则会动 (SELFTEST=PASS)"
+ },
+ "instrument_defect_found_and_fixed": {
+  "id": "Q27-INST-1 (首版读数空心)",
+  "symptom": "首版普查判 7/7 目录 live (pin_reason=worktree-only, 未跟踪件 1..57) ⇒ 结论「目录清单 pin 不可上闸」",
+  "root_cause": "首版把「现盘 walk − git ls-files」一律当未跟踪, 未建模**忽略态**: 这 7 个目录里 119 个非跟踪文件**全部**是 .gitignore 产物 (!!, __pycache__/裸日志/临时配置), 真正未跟踪(??) 为 0",
+  "evidence": "git status --porcelain --ignored -uall -- <7 dirs> ⇒ 119 行全为 '!!'; git status --porcelain -uall ⇒ 0 行 '??'",
+  "consequence_if_shipped": "会把 7 行的字节闸判成「不可能」并据此放弃上闸 —— 观测面缺口被误读成仓库事实 (与「锚本身出错时全绿毫无意义」同族)",
+  "fix": "三态建模: 已跟踪 / 未跟踪(??) / 忽略(!!) 分列; 闸的文件集取自 `git ls-files` (索引) ⇒ 忽略件与未跟踪 scratch 天然不入闸, 只作信息字段单列",
+  "second_face_check": "8 行 evidence_cmd 逐行派生的引用文件 (2-3 个/行, 共 18 个) 全部 TRACKED+clean ⇒ 目录行引用的**证据**本身在索引内, 与「忽略件是产物不是证据」互相印证",
+  "id2": "Q27-INST-2 (空心闸)",
+  "id2_symptom": "新写的 dir_rewritten() 对**所有**目录恒返回 False ⇒ 稳定性前置条件形同虚设 (eval/probe 被误判可上闸, 靠交叉核对才发现)",
+  "id2_root_cause": "git 命令行用了非法格式 `--format=@` (git: fatal: invalid --pretty format: @) ⇒ stdout 为空, 而返回码从未检查 ⇒ 恒 False",
+  "id2_fix": "① 改合法格式 `--pretty=format:%H`; ② **检查返回码**, 非 0 = 无法证明「沿革只有追加」⇒ fail-closed 返回 True (证明不了就别上闸)。C# 侧 DirRewritten 同口径同修 (且 p.ExitCode!=0 也返回 true)",
+  "id2_detected_by": "同一语义两处实现互相钉住 (普查 rule() ↔ 产侧 derive() 交叉核对) —— 不是代码审查抓到的: 首次交叉核对即报 1 处不一致 (probe: census=live/evidence-overtaken vs derive=frozen), 修后 0 处"
+ },
+ "schema_extension": {
+  "frozen_directory": "pin_status=frozen 不再限于 evidence_kind=artifact: directory 行的 artifact_sha12 = 目录清单摘要 = sha256[:12] over 排序后的 <relpath>:<size>:<sha12>\\n (文件集=git ls-files ∩ 现盘; 字节=工作区; 空清单⇒判红)。目录内已跟踪文件被改写/增删 ⇒ 摘要变化 ⇒ 判红 (证据易主必须说话)",
+  "two_sided_implementation": "eval/capability/bind_evidence.py::dir_manifest 与 src/agent.tests/VerificationFormTests.cs::DirManifestSha12 逐位同口径 (两侧改动必须同步; 未同步即 R2e 判红)",
+  "round_namespace": "audited_by_round 允许两个命名段: 主线 R<n> 与能力自检 EXP1-Q<n> (作业用**自己的命名段**, 不偷主线轮号 ⇒ 承 unattended-job-reliability 命名空间碰撞铁律)"
+ },
+ "registry_before_after": {
+  "before": {"directory_frozen": 0, "directory_live": 8,
+             "dist": "artifact frozen x75 / artifact live worktree-only x7 / artifact live ledger x1 / directory live x8 / self-derived live x1"},
+  "after": {"directory_frozen": 7, "directory_live": 1,
+            "dist": "artifact frozen x78 / artifact live worktree-only x4 / artifact live ledger x1 / directory frozen x7 / directory live evidence-overtaken x1 / self-derived live x1"},
+  "note_by_row_vs_by_dir": "8 行 7 目录: r371d7 目录被 2 行共用 ⇒ 行计数 7 frozen + 1 live, 目录计数 6 frozen + 1 live; 两者都是读数, 不混用",
+  "python_gate": "python3 eval/capability/bind_evidence.py --check ⇒ R2E_R2F_EXIT=0 (live 行不得带 sha12 / 冻结须与现盘一致 两道自检均过)",
+  "applied": "bind_evidence.py --apply --round EXP1-Q27: SER_ASSERT=OK, WRITE_READBACK=OK, UNCHANGED=90 / TOUCHED=2 (含稳定性面新判据生效后 probe 行转 live)",
+  "idempotence": "再次 --apply ⇒ IDEMPOTENT=OK (字节不变, UNCHANGED=92 / TOUCHED=0)",
+  "census_vs_derive": "8 行交叉核对不一致 0 (修 INST-2 前 1)",
+  "collateral": "本轮 --apply 另使 3 条 artifact 行的 live/worktree-only 转 frozen —— 成因是**并发写者的提交**让其证据文件由 dirty 转 clean (非本轮的判据改动), 单列避免误记功劳"
+ },
+ "manifest_digests": {
+  "eval/rover/r415": "a10727afc7ed",
+  "eval/rover/r371d7": "ff85b56fd672",
+  "eval/rover/r409": "b26f0300502b",
+  "eval/rover/r410": "2c218d15622b",
+  "eval/rover/r411": "895591907824",
+  "eval/rover/r412": "92a2320db213",
+  "eval/probe": "ae31a39e32c5 (未上闸, 仅作信息项)"
+ },
+ "cross_writer_incident": {
+  "what": "并发写者 (主线 R476) 的提交 4d796a2 用整树 add 把我**在飞**的改动一并提交: eval/capability/bind_evidence.py 与 docs/verification-registry.json (92 行 audited_by_round 被重刷为 EXP1-Q27) 已入库",
+  "consequence": "该提交不含 C# 侧同口径改动 ⇒ **HEAD 的形式门禁处于红窗** (frozen+directory 会被 R2e 判'frozen 只允许 artifact'); 本轮 C# 补齐后红窗闭合",
+  "secondary": "整树 add 使 C# 侧与 Python 侧落在两个提交里 ⇒ 门禁一致性窗口被拉长; 且我方的首次 --apply 把并发写者上一轮的审计戳 (R476) 改成本轮轮号 = 归属篡改",
+  "fix_this_round": "bind_evidence.py --apply 加最小 diff 纪律: 派生内容逐字段相同 ⇒ 不动一行 (不刷 audited_by_round); 复跑读数 UNCHANGED=88/TOUCHED=4 ⇒ churn 从 92 行降到 4 行 (4 = 3 行证据文件随对方提交由 dirty 变 clean 而转 frozen + 1 行器具 sha 刷新)"
+ },
+ "honest_boundaries": [
+  "本轮**未**给 3 条 worktree-only 行做「先入库冻结」: 它们的证据文件此刻属于并发写者的在飞改动, 提交会连带他人半成品 ⇒ 记为下一轮候选",
+  "7 行上的闸只覆盖**已跟踪文件**: 目录内 119 个忽略件 (pycache/日志/临时配置) 不在闸内 —— 若某行证据实际依赖忽略件, 该依赖不可机检 (本轮 18 个引用文件全为已跟踪, 未发现此类依赖, 但这是抽样而非证明)",
+  "目录清单闸把「新增已跟踪文件」也判红 (摘要变): 对归档目录这是想要的语义 (谁往里写东西必须重审), 但**不是**通用的追加式目录方案",
+  "probe.randomized-selfcheck 行仍 live (沿革 10 提交/5 处改写) ⇒ 该行证据换了主人依然不可机检, 列为下一轮候选",
+  "C# 侧新增 3 条注入缺陷样例 (s/t/u) + 1 正控 (r); 形式校验读数见 formcheck 段",
+  "本轮不提交 C# 之外的其它文件: 提交只取显式路径, 且并发写者未提交改动一律不动"
+ ],
+ "formcheck": {"status": "run",
+  "cmd": "env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR dotnet test src/agent.tests/agentframework.tests.csproj --filter \"FullyQualifiedName~VerificationForm|FullyQualifiedName~SkillGeneralization|FullyQualifiedName~DevPlanDocRef\" --nologo -v q",
+  "log": "eval/capability/exp1-q27/formcheck_q27.log (sha256[:16]=f9c5d4eb0a2a82ce)",
+  "r1": "Failed 1 / Passed 13 / Total 14 rc=1 —— 唯一失败 Registry_EvidenceBindings_CoverProductFace: 该测试把 r444 行的 audited_by_round 断言写死为 StartsWith(R), 而 Q27 起作业轮命名段是 EXP1-Q27 ⇒ 写死的断言把作业轮审计戳判红",
+  "r2": "Failed 0 / Passed 14 / Total 14 rc=0 (断言放宽为「两命名段之一」后复跑)",
+  "note": "r1 的红既不是产物缺陷也不是仪器缺陷, 而是**断言把命名段的自由度写死**了 (与「判据把实现细节钉死」同族); 修正方向 = 放宽判据到语义边界 (两个合法命名段), 而不是让作业去偷主线轮号"
+ }
+}

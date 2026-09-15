@@ -32,7 +32,8 @@ PRODUCT_PREFIXES = ("eval/", "docs/reports/")
 COVER_LEVELS = ("L1", "L2", "L3", "L4")
 KINDS = ("artifact", "directory", "self-derived")
 PIN_STATUSES = ("frozen", "live")
-PIN_REASONS = ("archived-per-round", "append-only-ledger", "worktree-only", "directory-aggregate", "self-derived")
+PIN_REASONS = ("archived-per-round", "append-only-ledger", "worktree-only", "directory-aggregate",
+               "self-derived", "evidence-overtaken")
 BINDINGS = ("self-attested", "audit-pin")
 FIELD_KEYS = ("evidence_kind", "pin_status", "pin_reason", "artifact_sha12", "instrument",
               "instrument_sha12", "binding", "audited_by_round")
@@ -94,6 +95,31 @@ def dir_manifest(root, rel):
     return sha12_bytes("".join(rows).encode()), n
 
 
+def dir_rewritten(root, rel):
+    """EXP1-Q27: 目录沿革里是否出现过**改写(M)/删除(D)** (只看 M/D, 首见 A=加入不算)。
+
+    为什么这是 frozen 的前置条件: 归档目录的清单闸只在「目录不再变」时才是有意义的闸;
+    按设计每轮都变的目录 (实测 eval/probe: 10 提交 / 5 处改写) 上闸 ⇒ 恒红假警,
+    观测面噪声会把真信号淹掉 ⇒ 该留 live/evidence-overtaken (先量后定, 见 Q27 普查读数)。
+
+    仪器纪律 (本轮自己踩过): 首版写 `--format=@` —— 非法格式, git 直接 fatal, stdout 为空 ⇒
+    本函数对**所有**目录恒返回 False (空心闸: 闸永远开着而没人知道)。修法两条:
+      ① 用合法格式 `--pretty=format:%H`; ② **检查返回码**, 非 0 = 无法证明「沿革只有追加」⇒ fail-closed 返回 True
+         (证明不了就别上闸, 而不是默认放行)。
+    """
+    p = subprocess.run(["git", "log", "--no-renames", "--name-status", "--pretty=format:%H", "--", rel],
+                       cwd=root, capture_output=True, text=True)
+    if p.returncode != 0:
+        return True                      # fail-closed: 派生失败 ⇒ 不许上冻结闸
+    for line in p.stdout.splitlines():
+        if not line.strip() or line.startswith("commit "):
+            continue
+        parts = line.split("\t")
+        if parts and parts[0][:1] in ("M", "D"):
+            return True
+    return False
+
+
 def git_state(root):
     tracked = set(subprocess.run(["git", "ls-files"], cwd=root, capture_output=True, text=True).stdout.split())
     dirty = set()
@@ -134,6 +160,8 @@ def derive(root, row, tracked, dirty):
         man = dir_manifest(root, ep)
         if man is None:
             kind, status, reason, pin = "directory", "live", "directory-aggregate", None
+        elif dir_rewritten(root, ep):
+            kind, status, reason, pin = "directory", "live", "evidence-overtaken", None
         else:
             kind, status, reason, pin = "directory", "frozen", "archived-per-round", man[0]
     elif ep in SELF_DERIVED:
@@ -266,9 +294,16 @@ def main():
         print("SER_ASSERT=OK (indent=1, ensure_ascii=False, 尾换行)")
         tracked, dirty = git_state(root)
         n_before = sum(1 for r in rows if "evidence_generated_with" in r)
+        unchanged = 0
         for row in rows:
             if needs_field(row):
                 f = derive(root, row, tracked, dirty)
+                if row.get("evidence_generated_with") == f:
+                    # EXP1-Q27 最小 diff 纪律: 派生内容逐字段相同 ⇒ 一个字节都不动。
+                    #   (此前每次 --apply 会重刷全部行的 audited_by_round ⇒ 92 行 churn 淹没真实改动;
+                    #    且会把并发写者上一轮的审计戳改成自己的轮号 = 归属篡改。)
+                    unchanged += 1
+                    continue
                 if "evidence_generated_with" in row:
                     row["evidence_generated_with"] = f
                 else:
@@ -294,6 +329,7 @@ def main():
             print("WRITE_READBACK=%s" % ("OK" if back == out else "MISMATCH"))
         n_after = sum(1 for r in rows if "evidence_generated_with" in r)
         print("COVERED %d -> %d" % (n_before, n_after))
+        print("UNCHANGED=%d / TOUCHED=%d" % (unchanged, n_after - unchanged))
         print(subprocess.run(["git", "diff", "--numstat", REG], cwd=root, capture_output=True, text=True).stdout.strip())
 
     v, dist, cert = check(root, json.loads(open(reg_abs, encoding="utf-8").read())["rows"])
