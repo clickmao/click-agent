@@ -1507,6 +1507,22 @@
         "docs/plans/v0.73.0-r453-absorb-channel-audit.md"
       ],
       "owner_round": "R453"
+    },
+    {
+      "id": "r454.codex-external-contrast",
+      "level": "L2",
+      "capability": "外部对照: codex-cli 0.154.0 真实请求面(捕获字节) vs click-agent —— 静态面 34,542B/9工具 vs 4,300B/0工具; codex 仅支持 responses wire_api; 带 prompt_cache_key + cached_input_tokens 真值回报",
+      "evidence_cmd": "python3 eval/rover/r454/compare_codex_clickagent.py",
+      "evidence_path": "eval/rover/r454/compare-r454.json",
+      "negative_control": "C5: 「codex 好 = prompt 更小」被 34,542B vs 4,300B (8.0x) 证伪; C1: codex 面必须来自捕获字节 req-001.json 而非文档推断; C2: 我方面须源码+捕获双证",
+      "covers": [
+        "eval/rover/r454/compare_codex_clickagent.py",
+        "eval/rover/r454/compare-r454.json",
+        "eval/rover/r454/codex/req-001.json",
+        "docs/plans/v0.74.0-r454-codex-external-contrast.md",
+        "docs/reports/codex-contrast-r454.md"
+      ],
+      "owner_round": "R454"
     }
   ],
   "aot_check_policy": "release_tag_only",

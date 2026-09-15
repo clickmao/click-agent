@@ -1,0 +1,224 @@
+{
+ "round": "R454",
+ "subject": "外部对照: codex CLI 0.154.0 vs click-agent（同输入 / 真实请求面）",
+ "same_input": "继续下一轮（两侧同字面）",
+ "codex": {
+  "cli_version": "codex-cli 0.154.0",
+  "wire_api": "responses（**chat 已被移除**：`wire_api=\"chat\"` 直接报错, 见 exec1.err）",
+  "instructions_chars": 16979,
+  "tools_n": 9,
+  "tools_bytes": 17563,
+  "tools": [
+   {
+    "type": "function",
+    "name": "exec_command",
+    "keys": [
+     "description",
+     "name",
+     "parameters",
+     "strict",
+     "type"
+    ],
+    "bytes": 1635,
+    "desc_len": 82
+   },
+   {
+    "type": "function",
+    "name": "write_stdin",
+    "keys": [
+     "description",
+     "name",
+     "parameters",
+     "strict",
+     "type"
+    ],
+    "bytes": 819,
+    "desc_len": 80
+   },
+   {
+    "type": "function",
+    "name": "request_user_input",
+    "keys": [
+     "description",
+     "name",
+     "parameters",
+     "strict",
+     "type"
+    ],
+    "bytes": 1425,
+    "desc_len": 120
+   },
+   {
+    "type": "function",
+    "name": "view_image",
+    "keys": [
+     "description",
+     "name",
+     "parameters",
+     "strict",
+     "type"
+    ],
+    "bytes": 391,
+    "desc_len": 124
+   },
+   {
+    "type": "namespace",
+    "name": "multi_agent_v1",
+    "keys": [
+     "description",
+     "name",
+     "tools",
+     "type"
+    ],
+    "bytes": 10178,
+    "desc_len": 43
+   },
+   {
+    "type": "function",
+    "name": "get_goal",
+    "keys": [
+     "description",
+     "name",
+     "parameters",
+     "strict",
+     "type"
+    ],
+    "bytes": 297,
+    "desc_len": 122
+   },
+   {
+    "type": "function",
+    "name": "create_goal",
+    "keys": [
+     "description",
+     "name",
+     "parameters",
+     "strict",
+     "type"
+    ],
+    "bytes": 785,
+    "desc_len": 265
+   },
+   {
+    "type": "function",
+    "name": "update_goal",
+    "keys": [
+     "description",
+     "name",
+     "parameters",
+     "strict",
+     "type"
+    ],
+    "bytes": 1963,
+    "desc_len": 1362
+   },
+   {
+    "type": "web_search",
+    "name": null,
+    "keys": [
+     "external_web_access",
+     "type"
+    ],
+    "bytes": 52,
+    "desc_len": 0
+   }
+  ],
+  "input_items": [
+   {
+    "type": "message",
+    "role": "developer",
+    "bytes": 3015
+   },
+   {
+    "type": "message",
+    "role": "user",
+    "bytes": 559
+   },
+   {
+    "type": "message",
+    "role": "user",
+    "bytes": 139
+   }
+  ],
+  "params": {
+   "model": "gpt-5-codex",
+   "tool_choice": "auto",
+   "parallel_tool_calls": true,
+   "reasoning": {
+    "summary": "auto"
+   },
+   "store": false,
+   "stream": true,
+   "include": [
+    "reasoning.encrypted_content"
+   ],
+   "prompt_cache_key": "01a0a400-ad55-7901-8b46-5150d236361c"
+  },
+  "static_payload_bytes": 34542,
+  "usage_from_stream": {
+   "input_tokens": 100,
+   "cached_input_tokens": 0,
+   "cache_write_input_tokens": 0,
+   "output_tokens": 10,
+   "reasoning_output_tokens": 0
+  }
+ },
+ "ours": {
+  "wire_api": "chat/completions（llegacy OpenAI chat；无 responses 支持）",
+  "captured_call": {
+   "path": "/v1/chat/completions",
+   "model": "deepseek-flash",
+   "n_messages": 2,
+   "prompt_tokens_est": 2467,
+   "completion_tokens_est": 80,
+   "stream": false
+  },
+  "tools_n": 0,
+  "tools_bytes": 0,
+  "src_facts": [
+   {
+    "file": "src/agent.modelqueue/ModelQueueRouter.cs",
+    "lines": "962-966",
+    "fact": "请求体只写 model + messages（无 tools / tool_choice / prompt_cache_key）"
+   },
+   {
+    "file": "config/base/models.yaml",
+    "lines": "16/30/43",
+    "fact": "三个远端模型全走 /v1/chat/completions"
+   },
+   {
+    "file": "eval/rover/r450/anchor-r450.json",
+    "lines": "-",
+    "fact": "远端 system 面 ≈4.3 KB/call（93%），其中 87.7% = [会话基线 v1] 静态块"
+   },
+   {
+    "file": "eval/rover/r452/dump-RJ-REAL-j1.jsonl",
+    "lines": "-",
+    "fact": "门判 r1 prompt 452–467 字符（14 次调用）"
+   }
+  ],
+  "static_payload_bytes": 4300
+ },
+ "criteria": {
+  "C1_codex_side_from_capture": {
+   "pass": true,
+   "path": "eval/rover/r454/codex/req-001.json"
+  },
+  "C2_our_side_dual_evidence": {
+   "pass": true,
+   "src": "ModelQueueRouter.cs:962-966"
+  },
+  "C3_every_cell_reproducible": {
+   "pass": true,
+   "note": "每格带文件/命令"
+  },
+  "C4_evidence_vs_inference": {
+   "pass": true,
+   "note": "结论段逐条标 evidence/inference"
+  },
+  "C5_negative_control_small_prompt": {
+   "pass": true,
+   "detail": "codex 静态面 = 34542 B vs 我方 ≈4300 B ⇒ 「codex 好=prompt 更小」被**证伪**"
+  }
+ }
+}

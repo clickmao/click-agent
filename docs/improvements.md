@@ -1885,7 +1885,16 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **新登记陷阱**：`eval/rover/**/turns-*.jsonl` 实为**单个 JSON 对象**（写 `run_arm_r452.sh:22`、读 `settle_r444.py:100`）；命名误导但读写两侧自洽 ⇒ 本轮**不改**（改可比性属独立预注册轮）。
 - **诚实边界**：省下量是**上界估计**（反事实臂未做）；**质量裁决缺失**（桩回复非真回复）；10 轮 `G_calls=0` 中 **3 轮未归因**（记 n/a）；零产品变更 ⇒ 未重发 AOT、未跑全量。
 
-### 下轮（R454）
-1. **吞并通道的缺陷审计（预注册 + 反事实臂）**：对 `param_slot_fill` 6 例强制走远端，比质量与轮数，判定「吸收是否致用户重发」——这是用户 KPI 的**反向风险**（假省 = 多一轮）；
-2. **3 轮未归因的 `G_calls=0`**：定位路径（吞并判据漏检 or 其他短路），补 `ASK_MARK` 或登记为缺陷；
-3. 关系判官本地成本前置化（29 次/51 轮，本地算力，非 KPI 目标，排后）；主线残留（零可跳档净亏 / 短档 V2b 13.03% / L.7 语言无关令）。
+### R454（2026-09-15）· 外部对照：**codex-cli 0.154.0 vs click-agent**（用户 OOB 钦定：避免无用功）
+- **方法**：codex-cli 0.154.0（npm 装 `/tmp/codexenv`）+ 自建 OpenAI/Responses 兼容桩 ⇒ 用 `-c model_providers.stub.{name,base_url,env_key}` 把 codex 接到本地，**捕获它真实发出的请求体**（`codex/req-001.json`，含 `tools` 全量）；同输入 = `继续下一轮`。
+- **读数（同输入真实字节）**：codex 静态面 **34,542 B**（instructions 16,979 字符 + tools 17,563 B）、**9 工具**（`exec_command`/`write_stdin`/`request_user_input`/`view_image`/`multi_agent_v1`(namespace 10,178 B)/`get|create|update_goal`/`web_search`）、`store=false`+`prompt_cache_key`+`reasoning.summary=auto`、**wire_api 只剩 responses（chat 已删）**；我方 **4,300 B / 0 工具 / chat.completions / 2 条消息**（`ModelQueueRouter.cs:962-966`）。
+- **负控 C5（证伪）**：「codex 好 = prompt 更小」**不成立** —— 它是我们的 **8.0×**。
+- **归因**：codex 把能力放在**模型 + 工具面 + 沙箱**（宿主单一循环）；我们把能力做在**宿主**（plan/absorb/门判/判官），远端零工具面 ⇒ 宿主复杂度膨胀 = 「越做越精细」的根因；codex **不做**本地小模型判真假/Skip（与 R449/R452 实测一致）。
+- **本轮自我抓到的器具缺陷**：R453 收口的「形式门禁 13/13 绿」是**假绿** —— 过滤器 `FullyQualifiedName~FormalCheck` **匹配 0 个测试**而 `dotnet test` 仍 rc=0。真名 `VerificationFormTests`(+`DevPlanDocRefTests`) ⇒ 复跑 **Failed: 0, Passed: 9, Total: 9**。通用教训入 memory：**门禁必须断言执行数 > 0**。
+- **诚实边界**：codex 侧仅 1 次捕获（默认配置、无 AGENTS.md）；我方**未新抓包**（`MemAvailable 2477 < 2650` 内存闸禁起 llama-server）⇒ 已捕获读数 + 源码事实双证；只比请求面/接口面，**不比回答质量**（桩输出非模型输出）。
+- 交付：`eval/rover/r454/{compare_codex_clickagent.py,compare-r454.json,codex/*}`；计划 `docs/plans/v0.74.0-r454-codex-external-contrast.md`；报告 `docs/reports/codex-contrast-r454.md`；登记 `r454.codex-external-contrast`(L2)。零 `src/` 变更。
+
+### 下轮（R455）
+1. **同题双跑回归**（用户钦定「对照相同输入的返回」）：`codex exec --json`（usage 真值 input/cached/output/reasoning）vs `agenthost`，同模型/同模板/同截断，逐项比 token/工具调用/轮数/成功率 —— 这是「避免无用功」的直接量尺；
+2. 若判定补 **P1（远端无工具面）**：给远端请求加最小工具面（read/write/exec + 权限声明）⇒ **独立预注册轮** + AOT 复发布 + 质量 A/B（唯一与 codex 实质对齐的路径）；
+3. 遗留：3 轮未归因 `G_calls=0`；关系判官本地成本前置化；主线残留（零可跳档净亏 / 短档 V2b 13.03% / L.7 语言无关令）。
