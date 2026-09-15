@@ -45,8 +45,42 @@
 | **保**：器具链（预注册 + 外部真值 + 登记表）不动 | P3 修好后仍是我们唯一的护城河 |
 | **若补 P1**：给远端请求加最小工具面（read/write/exec 三件套）+ 沙箱权限声明 ⇒ 结构级改动，须独立预注册轮 + AOT 复发布 + 质量 A/B | 唯一与 codex 实质对齐的路径 |
 
-## 6. 诚实边界
+## 7. 同模型同输入的**实跑输出对照**（用户钦定：打印出来看效果）
+- 设置：两侧**同一真实模型** `deepseek-flash`（真 API，经 `eval/rover/r454/demo/adapter.py` 统一入口），同输入 `继续下一轮`，零本地模型（内存闸）。codex 走 `/v1/responses`、我方走 `/v1/chat/completions`，两侧请求/应答全量落盘 `eval/rover/r454/demo/side-*.json`。
+
+**我方输出（1 次调用，1.41s，68 字符）**
+```
+当前轮次没有新的任务指令,也没有待办的上下文可供推进。
+请给出本轮要做的具体事项(例如:改哪个模块、跑哪个验证、调研什么),我再执行。
+```
+
+**codex 输出（同样无上下文；连发 6 次，第 1 次原文）**
+```
+I don't have context from a previous round in this session — could you share what we're continuing?
+
+A few quick options:
+- Point me at the repo/files we were working on and the last thing we did.
+- Or describe the next step you want, and I'll pick it up.
+
+Note: the sandbox is currently read-only, so I can explore and plan but can't write changes until that's lifted.
+```
+（第 2–6 次逐次升级措辞，最后一条："We're at a standstill without context… the sandbox is `read-only` with `never` approvals"）
+
+**数字对照（真实 usage，来自上游 DeepSeek）**
+| 侧 | 调用数 | 上行 messages | 静态面 | prompt_tokens | 缓存命中 | completion | 结果 |
+|---|---|---|---|---|---|---|---|
+| 我方 | 2（含 1 次 V0 探活 11 tok） | 2（system 3,834 字符 + user 5 字符） | 3,834 字符 | **2,199** | 0（首调用） | 39 | 1 轮收尾 |
+| codex | **6** | 4→9（自增历史） | instructions 16,979 字符 + tools 9 项 | 4,356→4,794（∑27,474） | **4,224→4,608 /次（≈95%）** | 86→176（∑599） | 未收敛（rc=1） |
+
+**解读（诚实）**
+1. **同一输入、同一模型 ⇒ 语义等价的回答**（都在说「给我上下文/具体事项」），差异在**措辞与框架**：codex 额外报告**沙箱只读/审批 never**、点名要 repo/文件；我方按自身口径说「本轮无新指令」。
+2. **codex 的 6 连次不是它的常态**：本 demo 的适配器**丢弃了 codex 的 tools**（未透传），它无法调用工具 ⇒ 重试并反复追问；真机（能调工具）通常 1–2 轮收敛。这一条必须写入边界，**不得当作 codex 的能力读数**。
+3. **缓存对比是本 demo 最有工程价值的一条**：codex 的 34.5 KB 静态面在重复调用里 **≈95% 命中前缀缓存**（`prompt_cache_hit_tokens` 4,224–4,608），每次只新增 162–232 tok ⇒ 大静态面几乎免费；我方同一轮 2,199 tok **0 命中**（首调用，会话内重复调用才会命中）⇒ 与我方 K2b ≥97% 的结论同向。
+4. **单轮成本**：我方 **2,238 tok/1 轮**；codex 首调 4,442 tok。**这一格不可外推成「我方更省」**——两侧静态面/工具面不同源，且 codex 侧被我的适配器降级。
+- 复现：`python3 eval/rover/r454/demo/adapter.py 48600`（需 `.env.local` 注入 key，key 不入盘）+ `codex exec --json -c model_providers.ds.{name,base_url,env_key} -c model_provider=ds -m deepseek-flash 继续下一轮` + `agenthost --frontend-api`（config 指向适配器）+ `drive_task.py`。
+## 8. 诚实边界
 - codex 侧 = **1 次捕获**（1 个输入、默认配置、无 AGENTS.md）；换 `-c` 配置会变（工具可关）。
 - 我方侧**未新抓包**：`MemAvailable 2477 MB < 2650 MB` 内存闸禁起 llama-server ⇒ 用 R452 已捕获读数 + 源码事实双证；「零工具」是**源码事实**而非推断。
-- 只比**请求面/接口面**，**不比回答质量**（桩输出非模型输出）。codex 事件流含 1 条 `Model metadata for gpt-5-codex not found`（我用桩 provider，无元数据），不影响请求面。
+- §7 是**真模型输出对照**（同一 `deepseek-flash`）⇒ 可谈输出差异；但**不可谈「谁更省」**：codex 侧 tools 被适配器降级（6 连次重试是**我这边造成的**，非 codex 常态），且静态面/工具面不同源。
+- 旧边界（R454 §1–6 请求面对照）仍成立：**只比请求面/接口面**时用桩；桩输出非模型输出。
 - codex 的 `web_search`/`multi_agent_v1` 是**服务端/命名空间**工具：真机走 OpenAI 端，本机桩只捕获其 schema。

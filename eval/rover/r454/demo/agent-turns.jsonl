@@ -1,0 +1,57 @@
+{
+  "stats": {
+    "turns": 1,
+    "ok": 1,
+    "events": 3,
+    "asks": 0,
+    "errors": []
+  },
+  "turns": [
+    {
+      "turn": 1,
+      "text": "继续下一轮",
+      "reply": "当前轮次没有新的任务指令,也没有待办的上下文可供推进。\n\n请给出本轮要做的具体事项(例如:改哪个模块、跑哪个验证、调研什么),我再执行。",
+      "ok": true,
+      "events": [
+        {
+          "event": "plan.created",
+          "keys": [
+            "hybrid",
+            "local",
+            "nodes",
+            "nodes_total",
+            "plan_id",
+            "remote"
+          ]
+        },
+        {
+          "event": "plan.node",
+          "keys": [
+            "artifact",
+            "detail",
+            "elapsed_ms",
+            "executor",
+            "intent",
+            "location"
+          ]
+        },
+        {
+          "event": "plan.finished",
+          "keys": [
+            "failed",
+            "local_first",
+            "local_first_ms",
+            "local_first_nodes",
+            "local_first_us",
+            "local_ok"
+          ]
+        }
+      ],
+      "secs": 1.41,
+      "t_start": 1789458120.4446,
+      "success": true,
+      "error": null,
+      "t_end": 1789458121.856
+    }
+  ]
+}
