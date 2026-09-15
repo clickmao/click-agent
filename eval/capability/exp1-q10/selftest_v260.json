@@ -1,0 +1,887 @@
+{
+  "selftest": "probe_doc_ref_integrity-v2.6.0",
+  "all_pass": true,
+  "n_checks": 89,
+  "n_pass": 89,
+  "checks": [
+    {
+      "check": "const_codepoints_0",
+      "got": [
+        24050,
+        21024
+      ],
+      "want": [
+        24050,
+        21024
+      ],
+      "pass": true
+    },
+    {
+      "check": "const_codepoints_2",
+      "got": [
+        24050,
+        36864,
+        24441
+      ],
+      "want": [
+        24050,
+        36864,
+        24441
+      ],
+      "pass": true
+    },
+    {
+      "check": "const_window",
+      "got": 60,
+      "want": 60,
+      "pass": true
+    },
+    {
+      "check": "cont_const_codepoints",
+      "got": [
+        91,
+        58,
+        93
+      ],
+      "want": [
+        91,
+        58,
+        93
+      ],
+      "pass": true
+    },
+    {
+      "check": "cont_re_negative_on_plain_cite",
+      "got": [],
+      "want": [],
+      "pass": true
+    },
+    {
+      "check": "cont_re_positive_forms",
+      "got": [
+        "280-287",
+        "100,106",
+        "15"
+      ],
+      "want": [
+        "280-287",
+        "100,106",
+        "15"
+      ],
+      "pass": true
+    },
+    {
+      "check": "cont_expand_range",
+      "got": [
+        280,
+        281,
+        282
+      ],
+      "want": [
+        280,
+        281,
+        282
+      ],
+      "pass": true
+    },
+    {
+      "check": "cont_expand_list",
+      "got": [
+        100,
+        106,
+        112
+      ],
+      "want": [
+        100,
+        106,
+        112
+      ],
+      "pass": true
+    },
+    {
+      "check": "L2_single_cite_true_absent",
+      "got": [
+        "symbol_absent"
+      ],
+      "want": [
+        "symbol_absent"
+      ],
+      "pass": true
+    },
+    {
+      "check": "L3_multi_cite_no_cross_flag",
+      "got": [
+        "ok",
+        "ok"
+      ],
+      "want": [
+        "ok",
+        "ok"
+      ],
+      "pass": true
+    },
+    {
+      "check": "L3_attr_mode",
+      "got": [
+        "nearest_prev",
+        "nearest_prev"
+      ],
+      "want": [
+        "nearest_prev",
+        "nearest_prev"
+      ],
+      "pass": true
+    },
+    {
+      "check": "L3_symbols_per_citation",
+      "got": [
+        [
+          "AlphaThing"
+        ],
+        [
+          "BetaThing"
+        ]
+      ],
+      "want": [
+        [
+          "AlphaThing"
+        ],
+        [
+          "BetaThing"
+        ]
+      ],
+      "pass": true
+    },
+    {
+      "check": "L4_single_cite_ok",
+      "got": [
+        "ok"
+      ],
+      "want": [
+        "ok"
+      ],
+      "pass": true
+    },
+    {
+      "check": "L5_dead_no_marker_stays_red",
+      "got": [
+        "stale_path"
+      ],
+      "want": [
+        "stale_path"
+      ],
+      "pass": true
+    },
+    {
+      "check": "L6_dead_marker_retired",
+      "got": [
+        "retired"
+      ],
+      "want": [
+        "retired"
+      ],
+      "pass": true
+    },
+    {
+      "check": "L7_live_path_marker_ignored",
+      "got": [
+        "ok"
+      ],
+      "want": [
+        "ok"
+      ],
+      "pass": true
+    },
+    {
+      "check": "L8_marker_beyond_window_stays_red",
+      "got": [
+        "stale_path"
+      ],
+      "want": [
+        "stale_path"
+      ],
+      "pass": true
+    },
+    {
+      "check": "L9_adjacent_closing_tick_no_swallow",
+      "got": [
+        "ok",
+        "ok"
+      ],
+      "want": [
+        "ok",
+        "ok"
+      ],
+      "pass": true
+    },
+    {
+      "check": "L9_symbols_survive_window_slice",
+      "got": [
+        [
+          "AlphaThing"
+        ],
+        [
+          "BetaThing"
+        ]
+      ],
+      "want": [
+        [
+          "AlphaThing"
+        ],
+        [
+          "BetaThing"
+        ]
+      ],
+      "pass": true
+    },
+    {
+      "check": "C1_tier_stem_symbol",
+      "got": [
+        "stem_symbol"
+      ],
+      "want": [
+        "stem_symbol"
+      ],
+      "pass": true
+    },
+    {
+      "check": "C1_verdict_ok",
+      "got": [
+        "ok"
+      ],
+      "want": [
+        "ok"
+      ],
+      "pass": true
+    },
+    {
+      "check": "C1_anchor",
+      "got": [
+        "src/agent/x/Alpha.cs"
+      ],
+      "want": [
+        "src/agent/x/Alpha.cs"
+      ],
+      "pass": true
+    },
+    {
+      "check": "C2_out_of_range_red",
+      "got": [
+        "stale_lines"
+      ],
+      "want": [
+        "stale_lines"
+      ],
+      "pass": true
+    },
+    {
+      "check": "C3_tier_same_line",
+      "got": [
+        "same_line_prev"
+      ],
+      "want": [
+        "same_line_prev"
+      ],
+      "pass": true
+    },
+    {
+      "check": "C3_verdict_ok",
+      "got": [
+        "ok"
+      ],
+      "want": [
+        "ok"
+      ],
+      "pass": true
+    },
+    {
+      "check": "C4_dead_anchor_no_marker_red",
+      "got": [
+        "stale_path"
+      ],
+      "want": [
+        "stale_path"
+      ],
+      "pass": true
+    },
+    {
+      "check": "C5_dead_anchor_marker_retired",
+      "got": [
+        "retired"
+      ],
+      "want": [
+        "retired"
+      ],
+      "pass": true
+    },
+    {
+      "check": "C6_tier_waived_multi_anchor",
+      "got": [
+        "waived"
+      ],
+      "want": [
+        "waived"
+      ],
+      "pass": true
+    },
+    {
+      "check": "C6_waive_reason_multi_anchor",
+      "got": [
+        "cont_block_ambiguous"
+      ],
+      "want": [
+        "cont_block_ambiguous"
+      ],
+      "pass": true
+    },
+    {
+      "check": "C7_tier_block_unique",
+      "got": [
+        "block_unique_prev"
+      ],
+      "want": [
+        "block_unique_prev"
+      ],
+      "pass": true
+    },
+    {
+      "check": "C7_verdict_ok",
+      "got": [
+        "ok"
+      ],
+      "want": [
+        "ok"
+      ],
+      "pass": true
+    },
+    {
+      "check": "C8_plain_cite_not_counted_as_cont",
+      "got": [
+        0
+      ],
+      "want": [
+        0
+      ],
+      "pass": true
+    },
+    {
+      "check": "C9_zero_prior_anchor_waived",
+      "got": [
+        "waived"
+      ],
+      "want": [
+        "waived"
+      ],
+      "pass": true
+    },
+    {
+      "check": "C9_waive_reason_unclaimed",
+      "got": [
+        "continuation_unclaimed"
+      ],
+      "want": [
+        "continuation_unclaimed"
+      ],
+      "pass": true
+    },
+    {
+      "check": "C10_marker_inherited_same_path",
+      "got": [
+        "retired"
+      ],
+      "want": [
+        "retired"
+      ],
+      "pass": true
+    },
+    {
+      "check": "C10_inherited_flag",
+      "got": [
+        true
+      ],
+      "want": [
+        true
+      ],
+      "pass": true
+    },
+    {
+      "check": "C11_no_inherit_on_other_path",
+      "got": [
+        "stale_path"
+      ],
+      "want": [
+        "stale_path"
+      ],
+      "pass": true
+    },
+    {
+      "check": "F1_ladder_declared_type",
+      "got": "declared_type",
+      "want": "declared_type",
+      "pass": true
+    },
+    {
+      "check": "F2_ladder_declared_member",
+      "got": "declared_member",
+      "want": "declared_member",
+      "pass": true
+    },
+    {
+      "check": "F3_ladder_code_mention",
+      "got": "code_mention",
+      "want": "code_mention",
+      "pass": true
+    },
+    {
+      "check": "F4_ladder_noncode_comment",
+      "got": "noncode_mention",
+      "want": "noncode_mention",
+      "pass": true
+    },
+    {
+      "check": "F5_ladder_noncode_string",
+      "got": "noncode_mention",
+      "want": "noncode_mention",
+      "pass": true
+    },
+    {
+      "check": "F6_ladder_absent",
+      "got": "absent",
+      "want": "absent",
+      "pass": true
+    },
+    {
+      "check": "F7_new_expr_not_declaration",
+      "got": "code_mention",
+      "want": "code_mention",
+      "pass": true
+    },
+    {
+      "check": "F8_strip_preserves_lines",
+      "got": 6,
+      "want": 6,
+      "pass": true
+    },
+    {
+      "check": "F9_comment_decl_not_counted",
+      "got": "noncode_mention",
+      "want": "noncode_mention",
+      "pass": true
+    },
+    {
+      "check": "F10_string_decl_not_counted",
+      "got": "noncode_mention",
+      "want": "noncode_mention",
+      "pass": true
+    },
+    {
+      "check": "F11_e2e_declared_member",
+      "got": [
+        "declared_member"
+      ],
+      "want": [
+        "declared_member"
+      ],
+      "pass": true
+    },
+    {
+      "check": "F12_e2e_code_mention",
+      "got": [
+        "code_mention"
+      ],
+      "want": [
+        "code_mention"
+      ],
+      "pass": true
+    },
+    {
+      "check": "F13_e2e_noncode_comment",
+      "got": [
+        "noncode_mention"
+      ],
+      "want": [
+        "noncode_mention"
+      ],
+      "pass": true
+    },
+    {
+      "check": "F14_e2e_absent",
+      "got": [
+        "absent"
+      ],
+      "want": [
+        "absent"
+      ],
+      "pass": true
+    },
+    {
+      "check": "F15_verdict_unchanged_noncode_hit",
+      "got": [
+        "ok"
+      ],
+      "want": [
+        "ok"
+      ],
+      "pass": true
+    },
+    {
+      "check": "F16_verdict_unchanged_absent",
+      "got": [
+        "symbol_absent"
+      ],
+      "want": [
+        "symbol_absent"
+      ],
+      "pass": true
+    },
+    {
+      "check": "F17_ladder_rungs_nontrivial",
+      "got": true,
+      "want": true,
+      "pass": true
+    },
+    {
+      "check": "E1_edge_strong_declared",
+      "got": [
+        "strong"
+      ],
+      "want": [
+        "strong"
+      ],
+      "pass": true
+    },
+    {
+      "check": "E2_edge_weak_code_mention",
+      "got": [
+        "weak"
+      ],
+      "want": [
+        "weak"
+      ],
+      "pass": true
+    },
+    {
+      "check": "E3_edge_weak_sublevel_code",
+      "got": [
+        "weak_code"
+      ],
+      "want": [
+        "weak_code"
+      ],
+      "pass": true
+    },
+    {
+      "check": "E4_edge_weak_noncode_comment",
+      "got": [
+        "weak"
+      ],
+      "want": [
+        "weak"
+      ],
+      "pass": true
+    },
+    {
+      "check": "E5_edge_weak_sublevel_noncode",
+      "got": [
+        "weak_noncode"
+      ],
+      "want": [
+        "weak_noncode"
+      ],
+      "pass": true
+    },
+    {
+      "check": "E6_edge_broken_on_absent",
+      "got": [
+        "broken"
+      ],
+      "want": [
+        "broken"
+      ],
+      "pass": true
+    },
+    {
+      "check": "E7_edge_weak_does_not_rejudge",
+      "got": [
+        "ok"
+      ],
+      "want": [
+        "ok"
+      ],
+      "pass": true
+    },
+    {
+      "check": "E8_edge_broken_verdict_unchanged",
+      "got": [
+        "symbol_absent"
+      ],
+      "want": [
+        "symbol_absent"
+      ],
+      "pass": true
+    },
+    {
+      "check": "E9_edge_mixed_strongest_wins",
+      "got": [
+        "strong"
+      ],
+      "want": [
+        "strong"
+      ],
+      "pass": true
+    },
+    {
+      "check": "E10_edge_mixed_weak_symbols_visible",
+      "got": [
+        1
+      ],
+      "want": [
+        1
+      ],
+      "pass": true
+    },
+    {
+      "check": "E11_edge_waived_when_unresolved",
+      "got": [
+        "waived"
+      ],
+      "want": [
+        "waived"
+      ],
+      "pass": true
+    },
+    {
+      "check": "E12_edge_waived_nonempty",
+      "got": true,
+      "want": true,
+      "pass": true
+    },
+    {
+      "check": "E13_edge_levels_conserved",
+      "got": 26,
+      "want": 26,
+      "pass": true
+    },
+    {
+      "check": "E14_edge_levels_nontrivial_fixture",
+      "got": true,
+      "want": true,
+      "pass": true
+    },
+    {
+      "check": "E15_weak_edges_of_both_sublevels_present",
+      "got": [
+        "weak_code",
+        "weak_noncode"
+      ],
+      "want": [
+        "weak_code",
+        "weak_noncode"
+      ],
+      "pass": true
+    },
+    {
+      "check": "E16_weak_edges_of_conserved",
+      "got": 2,
+      "want": 2,
+      "pass": true
+    },
+    {
+      "check": "E17_weak_edges_of_context_locatable",
+      "got": true,
+      "want": true,
+      "pass": true
+    },
+    {
+      "check": "K1_edge_named_fact",
+      "got": [
+        "named_fact"
+      ],
+      "want": [
+        "named_fact"
+      ],
+      "pass": true
+    },
+    {
+      "check": "K2_unit_separation_edge_vs_symbol",
+      "got": [
+        2
+      ],
+      "want": [
+        2
+      ],
+      "pass": true
+    },
+    {
+      "check": "K2_unit_separation_edge_count",
+      "got": [
+        1
+      ],
+      "want": [
+        1
+      ],
+      "pass": true
+    },
+    {
+      "check": "K6_named_fact_not_cross_file",
+      "got": [
+        0,
+        0
+      ],
+      "want": [
+        0,
+        0
+      ],
+      "pass": true
+    },
+    {
+      "check": "K3a_cross_file_declared_elsewhere",
+      "got": [
+        "cross_file"
+      ],
+      "want": [
+        "cross_file"
+      ],
+      "pass": true
+    },
+    {
+      "check": "K3c_declared_elsewhere_files_visible",
+      "got": [
+        [
+          [
+            "src/agent/x/Lambda.cs"
+          ]
+        ]
+      ],
+      "want": [
+        [
+          [
+            "src/agent/x/Lambda.cs"
+          ]
+        ]
+      ],
+      "pass": true
+    },
+    {
+      "check": "K3b_cross_file_overrides_name_shape",
+      "got": [
+        "cross_file"
+      ],
+      "want": [
+        "cross_file"
+      ],
+      "pass": true
+    },
+    {
+      "check": "K4_comment_only_edge",
+      "got": [
+        "comment_only"
+      ],
+      "want": [
+        "comment_only"
+      ],
+      "pass": true
+    },
+    {
+      "check": "K5_code_mention_falls_to_other",
+      "got": [
+        "other"
+      ],
+      "want": [
+        "other"
+      ],
+      "pass": true
+    },
+    {
+      "check": "K7_kind_conserved_fixture",
+      "got": 5,
+      "want": 5,
+      "pass": true
+    },
+    {
+      "check": "K7_every_weak_edge_classified",
+      "got": true,
+      "want": true,
+      "pass": true
+    },
+    {
+      "check": "K8_kinds_nontrivial_fixture",
+      "got": [
+        "comment_only",
+        "cross_file",
+        "named_fact",
+        "other"
+      ],
+      "want": [
+        "comment_only",
+        "cross_file",
+        "named_fact",
+        "other"
+      ],
+      "pass": true
+    },
+    {
+      "check": "K9_strong_edge_not_classified",
+      "got": [
+        null
+      ],
+      "want": [
+        null
+      ],
+      "pass": true
+    },
+    {
+      "check": "K9_kind_does_not_rejudge_verdicts",
+      "got": [
+        "ok"
+      ],
+      "want": [
+        "ok"
+      ],
+      "pass": true
+    },
+    {
+      "check": "K10_shape_vs_kind_distinct_units",
+      "got": [
+        2,
+        1
+      ],
+      "want": [
+        2,
+        1
+      ],
+      "pass": true
+    },
+    {
+      "check": "K11_mixed_edge_not_classified",
+      "got": [
+        null
+      ],
+      "want": [
+        null
+      ],
+      "pass": true
+    },
+    {
+      "check": "K11_mixed_symbol_kind_visible",
+      "got": [
+        [
+          "comment_only"
+        ]
+      ],
+      "want": [
+        [
+          "comment_only"
+        ]
+      ],
+      "pass": true
+    },
+    {
+      "check": "K11_mixed_edge_out_of_weak_conservation",
+      "got": true,
+      "want": true,
+      "pass": true
+    }
+  ],
+  "exit_code": 0
+}

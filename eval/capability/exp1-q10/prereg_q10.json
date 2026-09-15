@@ -1,0 +1,44 @@
+{
+  "round": "EXP1-Q10",
+  "note": "本文件在**任何读数之前**写入 (mtime 早于 attribution_q10*.json)。不占主线轮号 (对侧 30m 作业在跑 dotnet/AOT 窗口 ⇒ 本侧只跑纯静态仪器, 零 dotnet, 不动 src/)。",
+  "predecessor": "eval/capability/exp1-q9/ (v2.5.0 边强轴; 62 弱边 / 46 弱符号面)",
+  "target": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+  "step": "J.10 下轮候选 #1: 弱边再细分 weak_kind (named_fact / cross_file / comment_only / other) + 两侧夹具 (含「名字类事实不得被计入缺陷」负控)",
+  "instrument_version": {"from": "2.5.0", "to": "2.6.0"},
+  "axioms": [
+    "新增平行轴, 只读 citation 记录里**已记录**的字段 (symbol_faces) + 树内声明索引; 不改判任何 verdict",
+    "不改语料口径: 声明索引复用既有的 src/**/*.cs 迭代 (与 symbol_occurrences 同口径), 不做 AST、不新增语料根",
+    "证据等级上限 L1-static: 本轮无编译/测试/AOT ⇒ 不得对外报 L3/L4",
+    "零产品源码改动; 不跑 dotnet; 不占轮号"
+  ],
+  "kind_definitions_preregistered": {
+    "cross_file": "存在至少一枚该边弱符号在**他处** (src/**/*.cs, 排除被引文件自身) 有声明面 (declared_type|declared_member)",
+    "named_fact": "非 cross_file ∧ 全部弱符号 ①形态 ∈ {snake_case, SCREAMING_SNAKE} ②面 == noncode_mention ③树内他处零声明 —— 即「不能有声明形态」的名字类事实 (环境变量名/遥测键/JSON 键)",
+    "comment_only": "非 cross_file ∧ 非 named_fact ∧ 全部弱符号 面 == noncode_mention ∧ 树内他处零声明 —— 非名字形态的非代码面提及 (PascalCase/camel 仅出现在注释或字符串里)",
+    "other": "其余 (含码面提及 code_mention / 混面 / 形态-面不齐) —— **catch-all, 不硬塞进前三类**",
+    "precedence": "cross_file > named_fact > comment_only > other (顺序预注册, 不许事后调整)",
+    "granularity": "同一条规则同时施加于**符号级**与**引用级边**; 两个计数分开落盘, 互不换算"
+  },
+  "criteria": {
+    "C1_additive_zero_regression": "v2.6.0 与 v2.5.0 的 verdict_counts / edge_strength_counts / edge_sublevel_counts / n_citations_code_live / edge_weak_list(旧字段) 逐位相同; v2.6.0 新增字段在 v2.5.0 侧不存在",
+    "C2_conservation": "Σ kind(弱边) == len(edge_weak_list) == #弱边; 每条弱边恰一类 (kind 非空且互斥)",
+    "C3_nontrivial": "真语料上弱边 kind 分布 >= 2 类 (恒同一类 ⇒ 该轴无判别力 ⇒ 判测量失败, 先查仪器)",
+    "C4_two_sided_fixtures": "四类各有正控; 负控至少三条: (a) 名字形态但树内他处有声明 ⇒ cross_file 非 named_fact (b) 码面提及 ⇒ other 非 comment_only (c) 树内零声明的名字类事实**不得**被计入缺陷桶 (边强轴 verdict 仍为 ok)",
+    "C5_unit_separation": "夹具断言: 同一条边携带 2 枚名字类弱符号 ⇒ 边级 named_fact == 1 而符号级 named_fact == 2 (把「符号级计数 == 边级计数」这一换算永久判死)",
+    "C6_doc_caliber_reconciliation": "用 Q9 表 weak_edge_table.json 里已记录的 (name_shape, n_declared_elsewhere) 机检 Q9 用户面口径「虚增 20 条 (= 62 条弱边的 32%)」; 若不符 ⇒ 记 checks_posthoc 并在计划文档里把该句改写为符号级/边级两个数 (不得为了对齐而改判据)",
+    "C7_three_state": "无法归类者一律落 other 单列 (不判红); 弱边数 == 0 ⇒ 该轴 vacuous pass 但**显式记** vacuous; 测量/环境失败 ⇒ exit 3",
+    "C8_exit_semantics": "0 判据全过 / 2 判据失败(真红) / 3 测量或环境失败(弃权)"
+  },
+  "predictions_falsifiable": {
+    "P1": "边级 named_fact 数 **< 20** (Q9 的 20 是符号级; 符号分布在更少的边上 ⇒ 若边级 == 20 则 Q9 的换算恰好成立)",
+    "P2": "边级 kind 分布类别数 >= 3",
+    "P3": "边级 cross_file >= 1 (Q9 符号级 decl>=1 有 3 枚)",
+    "P4": "符号级 named_fact == 20 (与 Q9 用户面口径一致) —— 若不等, 先查符号选取集是否与 Q9 的 A 集同口径 (A 集 = noncode_mention ∧ verdict==ok), 不得直接宣称 Q9 错",
+    "P5": "零回归: 旧轴读数逐位相同 (含两跑确定性)"
+  },
+  "exclusions": [
+    "不做 AST; 声明面仍是词法启发式 ⇒ declared_elsewhere 是**下界** (漏计不算缺陷)",
+    "不把 kind 写进任何 verdict/门; 不改注册表/证据映射 (本轮只动 eval/ 与 docs/)",
+    "不跑 dotnet test (对侧 publish/AOT 窗口); 该债如实顺延并列明"
+  ]
+}

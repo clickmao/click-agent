@@ -1,0 +1,176 @@
+{
+  "round": "EXP1-Q10",
+  "repo": "/home/agentuser/AgentFramework",
+  "checks": {
+    "C1_old_axis_identical": {
+      "pass": true,
+      "differing_keys": [],
+      "weak_list_identical_old_fields": true
+    },
+    "C1_additive_new_fields": {
+      "pass": true,
+      "absent_in_v250": [
+        "edge_kind_counts",
+        "weak_symbol_kind_counts",
+        "n_weak_edges",
+        "n_weak_symbols_classified",
+        "kind_conserved"
+      ],
+      "present_in_v260": true
+    },
+    "C2_conservation": {
+      "pass": true,
+      "sum_kind": 63,
+      "n_weak_edges": 63,
+      "len_weak_list": 63
+    },
+    "C3_nontrivial": {
+      "pass": true,
+      "n_kinds": 4
+    },
+    "C6_doc_caliber_reconciliation": {
+      "pass": true,
+      "edge_level_named_fact": 11,
+      "prose_claim_edges": 20,
+      "symbol_level_named_fact_from_A_table": 19,
+      "verdict": "prose 换算不成立 ⇒ 计划文档必须改成符号级/边级两个数",
+      "A_caliber_named_fact": 15,
+      "A_caliber_matches_q9_table": false
+    }
+  },
+  "predictions": {
+    "P1_edge_named_fact_lt_20": {
+      "pass": true,
+      "observed": 11
+    },
+    "P2_edge_kinds_ge_3": {
+      "pass": true,
+      "observed": 4
+    },
+    "P3_edge_cross_file_ge_1": {
+      "pass": true,
+      "observed": 33
+    },
+    "P4_symbol_named_fact_eq_20": {
+      "pass": false,
+      "observed": 22,
+      "note": "符号集口径 = 弱边内的 *_mention 符号; 若不等先查是否与 Q9 的 A 集(noncode∧ok)同口径"
+    },
+    "P5_zero_regression": {
+      "pass": true
+    }
+  },
+  "exit_codes": {
+    "v250": 0,
+    "v260": 0
+  },
+  "stderr": {
+    "v250": {},
+    "v260": {}
+  },
+  "old_axis_counts": {
+    "verdict_counts": null,
+    "edge_strength_counts": {
+      "waived": 461,
+      "broken": 39,
+      "strong": 365,
+      "weak": 63
+    },
+    "edge_sublevel_counts": {
+      "weak_code": 46,
+      "weak_noncode": 17
+    },
+    "n_citations_code_live": null,
+    "n_docs": null,
+    "n_edges_strong_with_weak_symbols": 12,
+    "symbol_face_rungs": {
+      "absent": 79,
+      "n/a_kind": 1,
+      "declared_member": 84,
+      "noncode_mention": 31,
+      "code_mention": 64,
+      "declared_type": 316
+    },
+    "cont_verdict_counts": null,
+    "cont_tier_counts": null
+  },
+  "q9_caliber": {
+    "A_table_n": 25,
+    "A_table_rule_classes": {
+      "named_fact": 19,
+      "cross_file": 3,
+      "comment_only": 3
+    },
+    "q9_prose_claim": "20 条名字类事实 (= 62 条弱边的 32%)",
+    "instrument_symbol_kind_counts": {
+      "other": 489,
+      "comment_only": 5,
+      "cross_file": 58,
+      "named_fact": 22
+    },
+    "instrument_edge_kind_counts": {
+      "cross_file": 33,
+      "other": 17,
+      "named_fact": 11,
+      "comment_only": 2
+    },
+    "unit_note": "A 表 = 符号级; edge_kind_counts = 引用级边 ⇒ 两口径不可换算"
+  },
+  "checks_posthoc": {
+    "A_caliber_symbol_kind_counts": {
+      "cross_file": 3,
+      "named_fact": 15,
+      "comment_only": 2
+    },
+    "A_caliber_n": 20,
+    "q9_A_table_rule_classes": {
+      "named_fact": 19,
+      "cross_file": 3,
+      "comment_only": 3
+    },
+    "q9_A_table_n": 25,
+    "caliber_note": "A 口径 = 弱边内 noncode_mention ∧ verdict==ok 的符号; P4 的分母是 weak_symbol_kind_counts (含 code_mention, 全 90 枚) ⇒ 两数不可直接比 (P4 判否是**分母口径**差异, 不是规则不一致)",
+    "match_with_q9_table": false,
+    "A_caliber_strong_edge_symbol_kind_counts": {
+      "named_fact": 6,
+      "comment_only": 1
+    },
+    "A_caliber_strong_edge_n": 7,
+    "A_caliber_combined_counts": {
+      "cross_file": 3,
+      "named_fact": 21,
+      "comment_only": 3
+    },
+    "A_caliber_combined_n": 27,
+    "match_with_q9_table_combined": false,
+    "gap_explanation": "A 表 25 枚 = 弱边内 noncode∧ok (A1) + **强边里混的** noncode∧ok (A2, 被边级「最强胜」聚合吞掉) ⇒ 单看弱边会少算 A2 枚; 边级与符号级的差 = 单位差 + 混强边遮蔽, 两者都要显式",
+    "corpus_drift_note": "A 表产出于 Q9 轮; 本轮 n_weak_edges=63 (Q9 记录 62) ⇒ 语料是移动目标, 逐类差值须先扣语料漂移再谈规则差异",
+    "instrument_defect_q10_v1": "首版事后对账读 attribution JSON 的 citations 键 (不存在) ⇒ 空分布而判定照旧通过 (空心仪器形态); 已改为读 citations.jsonl + 非空硬闸",
+    "item_level_agreement": {
+      "n_q9_items": 25,
+      "n_agree": 25,
+      "n_conflict": 0,
+      "n_q9_only_missing_now": 0,
+      "conflicts": [],
+      "q9_only": [],
+      "instr_only_extra_pairs": [
+        [
+          "local_turn_gate_reject",
+          "src/agent/IndustrialAgentV2.cs"
+        ],
+        [
+          "msg_sha16",
+          "src/agent/IndustrialAgentV2.cs"
+        ]
+      ],
+      "verdict": "逐项全部一致 ⇒ 规则与 Q9 表格字段同口径 (计数差全部来自语料漂移)"
+    }
+  },
+  "criteria_all_pass": true,
+  "predictions_all_pass": false,
+  "verdict": "CRITERIA_PASS",
+  "probe_sha256": {
+    "v250": "ca9bac550e53e95a802d49705f6ab2e4c44c3964df5cde1fe4aef67d4d88125e",
+    "v260": "e90c7d7ff15eb6485ab50adc9aef7fa5ba7695c91dd2e5b88e2038ab9538bb2b"
+  }
+}

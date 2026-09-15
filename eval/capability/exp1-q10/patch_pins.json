@@ -1,0 +1,86 @@
+{
+  "round": "EXP1-Q10",
+  "from_version": "2.5.0",
+  "to_version": "2.6.0",
+  "source": "eval/capability/exp1-q9/probe_v250.py",
+  "source_sha256": "ca9bac550e53e95a802d49705f6ab2e4c44c3964df5cde1fe4aef67d4d88125e",
+  "source_bytes": 75715,
+  "target": "eval/capability/exp1-q10/probe_v260.py",
+  "target_sha256": "e90c7d7ff15eb6485ab50adc9aef7fa5ba7695c91dd2e5b88e2038ab9538bb2b",
+  "target_bytes": 90736,
+  "n_edits": 14,
+  "edits": [
+    {
+      "anchor": "PROBE_VERSION = \"2.5.0\"",
+      "count": 1,
+      "ok": true
+    },
+    {
+      "anchor": "WEAK_RUNGS = (\"code_mention\", \"noncode_mention\")",
+      "count": 1,
+      "ok": true
+    },
+    {
+      "anchor": "def edge_of(c: dict) -> str:",
+      "count": 1,
+      "ok": true
+    },
+    {
+      "anchor": "\"weak_symbols\": e[\"n_weak\"], \"broken_symbols\": e[\"n_broken\"],",
+      "count": 1,
+      "ok": true
+    },
+    {
+      "anchor": "edge_levels_nontrivial = len([k for k in edge_counts if k != EDGE_WAIVED]) >= 2",
+      "count": 1,
+      "ok": true
+    },
+    {
+      "anchor": "\"edge_weak_list\": weak_edges,",
+      "count": 1,
+      "ok": true
+    },
+    {
+      "anchor": "gate_dict = {",
+      "count": 1,
+      "ok": true
+    },
+    {
+      "anchor": "\"G6_n_continuations_live\": r1[\"n_continuations_live\"],",
+      "count": 1,
+      "ok": true
+    },
+    {
+      "anchor": "all_pass = bool(g1 and g2 and g5 and g3 and g6 and g7 and g8)",
+      "count": 1,
+      "ok": true
+    },
+    {
+      "anchor": "\"edge_weak_list\": r1[\"edge_weak_list\"],",
+      "count": 1,
+      "ok": true
+    },
+    {
+      "anchor": "\"edge_weak_n\": len(r1[\"edge_weak_list\"]),",
+      "count": 1,
+      "ok": true
+    },
+    {
+      "anchor": "\"edge_weak_symbols\", \"edge_broken_symbols\") if k in c},",
+      "count": 1,
+      "ok": true
+    },
+    {
+      "anchor": "\"边强只看**被引文件内部**的符号形态, 不做跨文件符号解析 (符号声明在他处的情形由 weak_edge_inspect.py 的 declared_els",
+      "count": 1,
+      "ok": true
+    },
+    {
+      "anchor": "run_selftest: ok = all(...)",
+      "count": 1,
+      "ok": true
+    }
+  ],
+  "additive_only": true,
+  "note": "锚点式纯文本补丁, 每条锚点命中数 == 1 才写入; 未做任何 AST/正则级重写。"
+}

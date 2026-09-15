@@ -1,0 +1,4520 @@
+{
+  "summary": {
+    "unit": "引用级边 (edge); 符号级计数另见 weak_symbol_kind_counts",
+    "n_weak_edges": 63,
+    "edge_kind_counts": {
+      "cross_file": 33,
+      "other": 17,
+      "named_fact": 11,
+      "comment_only": 2
+    },
+    "kind_precedence": "cross_file > named_fact > comment_only > other",
+    "n_edges_with_context": 63,
+    "n_edges_unresolved": 0,
+    "symbol_kind_counts": {
+      "cross_file": 41,
+      "other": 30,
+      "comment_only": 3,
+      "named_fact": 16
+    },
+    "declared_elsewhere_visible": 41,
+    "probe_version": "2.6.0",
+    "instrument_sha256": "e90c7d7ff15eb6485ab50adc9aef7fa5ba7695c91dd2e5b88e2038ab9538bb2b"
+  },
+  "checks": {
+    "all_edges_have_context": true,
+    "conservation": true,
+    "kinds_nontrivial": true,
+    "all_kinds_in_preregistered_set": true,
+    "every_edge_classified": true
+  },
+  "all_checks_pass": true,
+  "edges": [
+    {
+      "doc": "docs/improvements.md",
+      "doc_line": 875,
+      "raw": "",
+      "path": "IndustrialAgentV2.cs",
+      "resolved": "src/agent/IndustrialAgentV2.cs",
+      "verdict": "ok",
+      "line_start": 1232,
+      "line_end": 1232,
+      "symbols": [
+        "SentContent"
+      ],
+      "rungs": {
+        "SentContent": "code_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "SentContent",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 1,
+          "declared_elsewhere_files": [
+            "src/agent.core/core/Message.cs"
+          ],
+          "symbol_kind": "cross_file"
+        }
+      ],
+      "input_sha": "dbdf63358907118c5661af4522f1dad68199ebd811c47a5896130e73cbb190d0",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 1232,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var forecastHeader = agent.registry.NextTurnForecast.ToPromptHeader(forecast);"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.17.0-executor-hardening-plan.md",
+      "doc_line": 7,
+      "raw": "",
+      "path": "SearchFailoverService.cs",
+      "resolved": "src/agent/search/SearchFailoverService.cs",
+      "verdict": "ok",
+      "line_start": 153,
+      "line_end": 153,
+      "symbols": [
+        "SemaphoreSlim"
+      ],
+      "rungs": {
+        "SemaphoreSlim": "code_mention"
+      },
+      "edge_kind": "other",
+      "kind_reason": "含码面提及或形态-面不齐 (catch-all)",
+      "kind_per_symbol": [
+        {
+          "symbol": "SemaphoreSlim",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "other"
+        }
+      ],
+      "input_sha": "b5455b35a2b7a5a2009a0dd5ef6396bad008f67d52879aa0165b44ec43dee938",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 153,
+          "in_code_face": true,
+          "occ_source": "code_identifier",
+          "text": "using var semaphore = new SemaphoreSlim(Math.Max(1, options.MaxConcurrency));"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.21.0-role-system-plan.md",
+      "doc_line": 65,
+      "raw": "",
+      "path": "IndustrialAgentV2.cs",
+      "resolved": "src/agent/IndustrialAgentV2.cs",
+      "verdict": "symbol_absent",
+      "line_start": 1945,
+      "line_end": 1945,
+      "symbols": [
+        "ActiveRoleId",
+        "AgentContext",
+        "AgentProfile",
+        "SenderId"
+      ],
+      "rungs": {
+        "ActiveRoleId": "absent",
+        "AgentContext": "code_mention",
+        "AgentProfile": "absent",
+        "SenderId": "code_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "ActiveRoleId",
+          "rung": "absent",
+          "shape": "other",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "other"
+        },
+        {
+          "symbol": "AgentContext",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 1,
+          "declared_elsewhere_files": [
+            "src/agent.core/core/IAgentContext.cs"
+          ],
+          "symbol_kind": "cross_file"
+        },
+        {
+          "symbol": "AgentProfile",
+          "rung": "absent",
+          "shape": "other",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "other"
+        },
+        {
+          "symbol": "SenderId",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 2,
+          "declared_elsewhere_files": [
+            "src/agent.core/core/Message.cs",
+            "src/agent/registry/PanelData.cs"
+          ],
+          "symbol_kind": "cross_file"
+        }
+      ],
+      "input_sha": "dbdf63358907118c5661af4522f1dad68199ebd811c47a5896130e73cbb190d0",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 1945,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "/// EvidenceGate 裁定 → ClarificationBatch 真实批量问询 (v7.14 ①)。"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+      "doc_line": 46,
+      "raw": "",
+      "path": "src/agent/extensions/ServiceCollectionExtensions.cs",
+      "resolved": "src/agent/extensions/ServiceCollectionExtensions.cs",
+      "verdict": "ok",
+      "line_start": 174,
+      "line_end": 174,
+      "symbols": [
+        "KeywordTagger"
+      ],
+      "rungs": {
+        "KeywordTagger": "code_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "KeywordTagger",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 1,
+          "declared_elsewhere_files": [
+            "src/agent/keywordannotation/KeywordIndex.cs"
+          ],
+          "symbol_kind": "cross_file"
+        }
+      ],
+      "input_sha": "3ce4f211620132051b999889f94b12f602dc83f693f168145e993d8de15f90fe",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 174,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "services.AddSingleton<ISessionManager, SessionManager>();"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+      "doc_line": 54,
+      "raw": "",
+      "path": "src/agent/registry/CapabilityScanner.cs",
+      "resolved": "src/agent/registry/CapabilityScanner.cs",
+      "verdict": "symbol_absent",
+      "line_start": 33,
+      "line_end": 35,
+      "symbols": [
+        "AssemblyLoadContext",
+        "GetTypes"
+      ],
+      "rungs": {
+        "AssemblyLoadContext": "absent",
+        "GetTypes": "noncode_mention"
+      },
+      "edge_kind": "other",
+      "kind_reason": "含码面提及或形态-面不齐 (catch-all)",
+      "kind_per_symbol": [
+        {
+          "symbol": "AssemblyLoadContext",
+          "rung": "absent",
+          "shape": "other",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "other"
+        },
+        {
+          "symbol": "GetTypes",
+          "rung": "noncode_mention",
+          "shape": "other",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "comment_only"
+        }
+      ],
+      "input_sha": "c3e2f843b590cb1c37985cd8f5aefdd24820fb236aab6d0ec857977a8dcdb63b",
+      "n_context_lines": 3,
+      "contexts": [
+        {
+          "line": 33,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// ① 显式注册通道 (AOT 安全): RegisterCapability 由宿主/DI 在启动时登记。"
+        },
+        {
+          "line": 34,
+          "in_code_face": false,
+          "occ_source": "comment",
+          "text": "// v7.14 真机判决: 程序集 GetTypes+Activator 反射扫描在 AOT trim 后类型图不全 → 漏报+IL 警告,"
+        },
+        {
+          "line": 35,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// 已删除; 能力发现走显式注册 + PATH 探嗅双通道。"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+      "doc_line": 68,
+      "raw": "",
+      "path": "src/agent/extensions/ServiceCollectionExtensions.cs",
+      "resolved": "src/agent/extensions/ServiceCollectionExtensions.cs",
+      "verdict": "ok",
+      "line_start": 254,
+      "line_end": 255,
+      "symbols": [
+        "ITextEmbedder",
+        "NullTextEmbedder"
+      ],
+      "rungs": {
+        "ITextEmbedder": "code_mention",
+        "NullTextEmbedder": "code_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "ITextEmbedder",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 5,
+          "declared_elsewhere_files": [
+            "src/agent.contextgradient/ITextEmbedder.cs",
+            "src/agent.contextgradient/NullTextEmbedder.cs",
+            "src/agent.tests/ContextGradientSemanticTests.cs",
+            "src/agent.tests/ContextRelevanceVectorTests.cs",
+            "src/agent.tests/SkillSemanticMatchTests.cs"
+          ],
+          "symbol_kind": "cross_file"
+        },
+        {
+          "symbol": "NullTextEmbedder",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 1,
+          "declared_elsewhere_files": [
+            "src/agent.contextgradient/NullTextEmbedder.cs"
+          ],
+          "symbol_kind": "cross_file"
+        }
+      ],
+      "input_sha": "3ce4f211620132051b999889f94b12f602dc83f693f168145e993d8de15f90fe",
+      "n_context_lines": 2,
+      "contexts": [
+        {
+          "line": 254,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var embedder = new agent.llamacpp.LlamaCppTextEmbedder(agent.llamacpp.LlamaCppEmbedderOptions.FromEnvironment());"
+        },
+        {
+          "line": 255,
+          "in_code_face": true,
+          "occ_source": "code_identifier",
+          "text": "return embedder.IsAvailable ? embedder : new agent.contextgradient.NullTextEmbedder();"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+      "doc_line": 79,
+      "raw": "",
+      "path": "src/agent/registry/CapabilityScanner.cs",
+      "resolved": "src/agent/registry/CapabilityScanner.cs",
+      "verdict": "ok",
+      "line_start": 24,
+      "line_end": 30,
+      "symbols": [
+        "_scanned"
+      ],
+      "rungs": {
+        "_scanned": "code_mention"
+      },
+      "edge_kind": "other",
+      "kind_reason": "含码面提及或形态-面不齐 (catch-all)",
+      "kind_per_symbol": [
+        {
+          "symbol": "_scanned",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "other"
+        }
+      ],
+      "input_sha": "c3e2f843b590cb1c37985cd8f5aefdd24820fb236aab6d0ec857977a8dcdb63b",
+      "n_context_lines": 7,
+      "contexts": [
+        {
+          "line": 24,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "public void Scan()"
+        },
+        {
+          "line": 25,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 26,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "lock (_lock)"
+        },
+        {
+          "line": 27,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 28,
+          "in_code_face": true,
+          "occ_source": "code_identifier",
+          "text": "if (_scanned)"
+        },
+        {
+          "line": 29,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "return;"
+        },
+        {
+          "line": 30,
+          "in_code_face": true,
+          "occ_source": "code_identifier",
+          "text": "_scanned = true;"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+      "doc_line": 80,
+      "raw": "",
+      "path": "src/agent/contextassembler/ContextAssembler.cs",
+      "resolved": "src/agent/contextassembler/ContextAssembler.cs",
+      "verdict": "ok",
+      "line_start": 41,
+      "line_end": 41,
+      "symbols": [
+        "CacheTtl"
+      ],
+      "rungs": {
+        "CacheTtl": "code_mention"
+      },
+      "edge_kind": "other",
+      "kind_reason": "含码面提及或形态-面不齐 (catch-all)",
+      "kind_per_symbol": [
+        {
+          "symbol": "CacheTtl",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "other"
+        }
+      ],
+      "input_sha": "be127d15f5dbc5c3647f87ecf58a35c40189226f3970343084d3df7944ddbc0b",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 41,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "private readonly System.Collections.Concurrent.ConcurrentDictionary<string, CachedResult> _resultCache = new();"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+      "doc_line": 288,
+      "raw": "",
+      "path": "src/agent.gpu/cli/GpuCli.cs",
+      "resolved": "src/agent.gpu/cli/GpuCli.cs",
+      "verdict": "ok",
+      "line_start": 49,
+      "line_end": 51,
+      "symbols": [
+        "VulkanNames"
+      ],
+      "rungs": {
+        "VulkanNames": "noncode_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "VulkanNames",
+          "rung": "noncode_mention",
+          "shape": "other",
+          "declared_elsewhere": 1,
+          "declared_elsewhere_files": [
+            "src/agent.gpu/VulkanNames.cs"
+          ],
+          "symbol_kind": "cross_file"
+        }
+      ],
+      "input_sha": "5a284f3ac348882508972b5d2e43e43c67133f56d900487d358dce3beaad30ee",
+      "n_context_lines": 3,
+      "contexts": [
+        {
+          "line": 49,
+          "in_code_face": false,
+          "occ_source": "string_literal",
+          "text": "o.WriteLine($\"vknames{{package={VulkanNames.SilkNetPackage} version={VulkanNames.SilkNetVersion} \" +"
+        },
+        {
+          "line": 50,
+          "in_code_face": false,
+          "occ_source": "string_literal",
+          "text": "$\"windows={VulkanNames.Windows} linux={VulkanNames.LinuxSoname} linux_fallback={VulkanNames.LinuxFallback} \" +"
+        },
+        {
+          "line": 51,
+          "in_code_face": false,
+          "occ_source": "string_literal",
+          "text": "$\"macos={VulkanNames.MacOs} requested_api={VulkanNames.FormatVersion(VulkanNames.ApiVersion)}}}\");"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.22.0-exp2-multi-option-ask-menu-protocol.md",
+      "doc_line": 37,
+      "raw": "",
+      "path": "src/agent/registry/ClarificationBatch.cs",
+      "resolved": "src/agent/registry/ClarificationBatch.cs",
+      "verdict": "ok",
+      "line_start": 143,
+      "line_end": 153,
+      "symbols": [
+        "DisplayName"
+      ],
+      "rungs": {
+        "DisplayName": "code_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "DisplayName",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 2,
+          "declared_elsewhere_files": [
+            "src/agent.core/userinteraction/PromptOrigin.cs",
+            "src/agent/intent/TaskPlan.cs"
+          ],
+          "symbol_kind": "cross_file"
+        }
+      ],
+      "input_sha": "4e325d2db3e64379fe5500a2f7d908b75bba7c7a2cc4ae9358eb59974228c77d",
+      "n_context_lines": 11,
+      "contexts": [
+        {
+          "line": 143,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "if (ok)"
+        },
+        {
+          "line": 144,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 145,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "preferences?.RecordAnswer(it, normalized); // 偏好学习 (凭据被 Store 内部拒收)"
+        },
+        {
+          "line": 146,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "result.Answers.Add(new ItemAnswer { Item = it, Answered = true, Value = normalized });"
+        },
+        {
+          "line": 147,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "}"
+        },
+        {
+          "line": 148,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "else"
+        },
+        {
+          "line": 149,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "pending.Add(it);"
+        },
+        {
+          "line": 150,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "}"
+        },
+        {
+          "line": 151,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": ""
+        },
+        {
+          "line": 152,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "if (pending.Count == 0)"
+        },
+        {
+          "line": 153,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "return result;"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.22.0-exp2-multi-option-ask-menu-protocol.md",
+      "doc_line": 48,
+      "raw": "",
+      "path": "ConsoleUserInteraction.cs",
+      "resolved": "src/agent/userinteraction/ConsoleUserInteraction.cs",
+      "verdict": "ok",
+      "line_start": 52,
+      "line_end": 52,
+      "symbols": [
+        "IsRecommended"
+      ],
+      "rungs": {
+        "IsRecommended": "code_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "IsRecommended",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 1,
+          "declared_elsewhere_files": [
+            "src/agent/userinteraction/UserConfirmRequest.cs"
+          ],
+          "symbol_kind": "cross_file"
+        }
+      ],
+      "input_sha": "dad44cbe0d13690051a29d246f009ada3c29ab241cb2fe00ac3921b877ba9937",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 52,
+          "in_code_face": true,
+          "occ_source": "code_identifier",
+          "text": "result.Approved = selected.IsRecommended || request.Options.IndexOf(selected) == 0;"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.22.0-exp2-multi-option-ask-menu-protocol.md",
+      "doc_line": 51,
+      "raw": "",
+      "path": "src/agent.frontendapi/FrontendApiServer.cs",
+      "resolved": "src/agent.frontendapi/FrontendApiServer.cs",
+      "verdict": "symbol_absent",
+      "line_start": 131,
+      "line_end": 150,
+      "symbols": [
+        "ask_id",
+        "req_id"
+      ],
+      "rungs": {
+        "ask_id": "absent",
+        "req_id": "noncode_mention"
+      },
+      "edge_kind": "other",
+      "kind_reason": "含码面提及或形态-面不齐 (catch-all)",
+      "kind_per_symbol": [
+        {
+          "symbol": "ask_id",
+          "rung": "absent",
+          "shape": "snake_case",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "other"
+        },
+        {
+          "symbol": "req_id",
+          "rung": "noncode_mention",
+          "shape": "snake_case",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "named_fact"
+        }
+      ],
+      "input_sha": "f9313b40764dd64d4cc39d8e760016b5f24512830077c1cf35e9735747ae41f9",
+      "n_context_lines": 20,
+      "contexts": [
+        {
+          "line": 131,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 132,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var n = await client.ReceiveAsync(new ArraySegment<byte>(buf), SocketFlags.None, timeoutCts.Token).ConfigureAwait(false);"
+        },
+        {
+          "line": 133,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "if (n == 0) return (false, string.Empty);"
+        },
+        {
+          "line": 134,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "sb.Append(Encoding.UTF8.GetString(buf, 0, n));"
+        },
+        {
+          "line": 135,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var text = sb.ToString();"
+        },
+        {
+          "line": 136,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var idx = text.IndexOf('\\n');"
+        },
+        {
+          "line": 137,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// v0.21.1 (R367): 与请求循环同类的无界增长防护。"
+        },
+        {
+          "line": 138,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// 原实现的 4096 检查只在\"找到 '\\n' 之后\"生效, 未遇换行前 sb 可持续增长;"
+        },
+        {
+          "line": 139,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// 且 auth 阶段位于限流/并发准入之前, 5s 窗口内可灌入大量数据 → 提前掐断。"
+        },
+        {
+          "line": 140,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// R376: 上限只约束「尚未出现换行的 auth 行」, 换行之后的残包属请求侧 (另有 1MB 上限)。"
+        },
+        {
+          "line": 141,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "if (idx < 0)"
+        },
+        {
+          "line": 142,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 143,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "if (sb.Length > MaxAuthBytes) return (false, string.Empty);"
+        },
+        {
+          "line": 144,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "continue;"
+        },
+        {
+          "line": 145,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "}"
+        },
+        {
+          "line": 146,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var line = text[..idx].Trim();"
+        },
+        {
+          "line": 147,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var rest = text[(idx + 1)..];"
+        },
+        {
+          "line": 148,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "if (line.Length > 4096) return (false, string.Empty); // 超长 auth 行 = 恶意"
+        },
+        {
+          "line": 149,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "using var doc = System.Text.Json.JsonDocument.Parse(line);"
+        },
+        {
+          "line": 150,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var root = doc.RootElement;"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.22.0-exp2-multi-option-ask-menu-protocol.md",
+      "doc_line": 53,
+      "raw": "",
+      "path": "src/agent.frontendapi/FrontendApiContract.cs",
+      "resolved": "src/agent.frontendapi/FrontendApiContract.cs",
+      "verdict": "ok",
+      "line_start": 34,
+      "line_end": 38,
+      "symbols": [
+        "req_id"
+      ],
+      "rungs": {
+        "req_id": "noncode_mention"
+      },
+      "edge_kind": "named_fact",
+      "kind_reason": "全部弱符号: 名字形态 ∧ 非码面 ∧ 他处零声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "req_id",
+          "rung": "noncode_mention",
+          "shape": "snake_case",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "named_fact"
+        }
+      ],
+      "input_sha": "b6f75eb1336e2fde0ce1833a1b4b76e5663a5736e64fee23f113dfb97c93595a",
+      "n_context_lines": 5,
+      "contexts": [
+        {
+          "line": 34,
+          "in_code_face": false,
+          "occ_source": "string_literal",
+          "text": "if (!r.TryGetProperty(\"req_id\", out var rid)) return null;"
+        },
+        {
+          "line": 35,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "if (!r.TryGetProperty(\"api\", out var api)) return null;"
+        },
+        {
+          "line": 36,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "return new FrontendRequest"
+        },
+        {
+          "line": 37,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 38,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "ReqId = rid.GetString() ?? \"\","
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.22.0-exp2-multi-option-ask-menu-protocol.md",
+      "doc_line": 60,
+      "raw": "",
+      "path": "ServiceCollectionExtensions.cs",
+      "resolved": "src/agent/extensions/ServiceCollectionExtensions.cs",
+      "verdict": "ok",
+      "line_start": 158,
+      "line_end": 158,
+      "symbols": [
+        "IUserPromptService"
+      ],
+      "rungs": {
+        "IUserPromptService": "code_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "IUserPromptService",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 2,
+          "declared_elsewhere_files": [
+            "src/agent.core/userinteraction/PromptOrigin.cs",
+            "src/agent/userinteraction/PromptPersistence.cs"
+          ],
+          "symbol_kind": "cross_file"
+        }
+      ],
+      "input_sha": "3ce4f211620132051b999889f94b12f602dc83f693f168145e993d8de15f90fe",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 158,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.22.0-exp2-multi-option-ask-menu-protocol.md",
+      "doc_line": 105,
+      "raw": "",
+      "path": "FrontendPromptService.cs",
+      "resolved": "src/agent.frontendapi/FrontendPromptService.cs",
+      "verdict": "ok",
+      "line_start": 26,
+      "line_end": 26,
+      "symbols": [
+        "ask_id"
+      ],
+      "rungs": {
+        "ask_id": "noncode_mention"
+      },
+      "edge_kind": "named_fact",
+      "kind_reason": "全部弱符号: 名字形态 ∧ 非码面 ∧ 他处零声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "ask_id",
+          "rung": "noncode_mention",
+          "shape": "snake_case",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "named_fact"
+        }
+      ],
+      "input_sha": "8b4c24774722614a56b5d15efffee65e5fb614a950515a53d3184a98d6d807cb",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 26,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "private Pending? _pending;"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.22.0-exp3-step-alignment-validation.md",
+      "doc_line": 59,
+      "raw": "",
+      "path": "src/agent/IndustrialAgentV2.cs",
+      "resolved": "src/agent/IndustrialAgentV2.cs",
+      "verdict": "ok",
+      "line_start": 1467,
+      "line_end": 1468,
+      "symbols": [
+        "plan_executor_parallel"
+      ],
+      "rungs": {
+        "plan_executor_parallel": "noncode_mention"
+      },
+      "edge_kind": "named_fact",
+      "kind_reason": "全部弱符号: 名字形态 ∧ 非码面 ∧ 他处零声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "plan_executor_parallel",
+          "rung": "noncode_mention",
+          "shape": "snake_case",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "named_fact"
+        }
+      ],
+      "input_sha": "dbdf63358907118c5661af4522f1dad68199ebd811c47a5896130e73cbb190d0",
+      "n_context_lines": 2,
+      "contexts": [
+        {
+          "line": 1467,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 1468,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "agent.config.AgentTelemetry.Emit(\"local_turn_gate_config\", \"IndustrialAgentV2\","
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.22.0-exp3-step-alignment-validation.md",
+      "doc_line": 139,
+      "raw": "",
+      "path": "src/agent/IndustrialAgentV2.cs",
+      "resolved": "src/agent/IndustrialAgentV2.cs",
+      "verdict": "symbol_absent",
+      "line_start": 1984,
+      "line_end": 1993,
+      "symbols": [
+        "ConstraintEvaluator",
+        "GuardrailMemory"
+      ],
+      "rungs": {
+        "ConstraintEvaluator": "absent",
+        "GuardrailMemory": "code_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "ConstraintEvaluator",
+          "rung": "absent",
+          "shape": "other",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "other"
+        },
+        {
+          "symbol": "GuardrailMemory",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 1,
+          "declared_elsewhere_files": [
+            "src/agent/critique/GuardrailMemory.cs"
+          ],
+          "symbol_kind": "cross_file"
+        }
+      ],
+      "input_sha": "dbdf63358907118c5661af4522f1dad68199ebd811c47a5896130e73cbb190d0",
+      "n_context_lines": 10,
+      "contexts": [
+        {
+          "line": 1984,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": ""
+        },
+        {
+          "line": 1985,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "private AgentResponse? HandleModelCommand(string input, long elapsedMs)"
+        },
+        {
+          "line": 1986,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 1987,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);"
+        },
+        {
+          "line": 1988,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var head = parts[0].ToLowerInvariant();"
+        },
+        {
+          "line": 1989,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": ""
+        },
+        {
+          "line": 1990,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// R351: /official-key 指令移除 (官方通道已废弃 — 用户钦定全 API 化)"
+        },
+        {
+          "line": 1991,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": ""
+        },
+        {
+          "line": 1992,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": ""
+        },
+        {
+          "line": 1993,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "if (head == \"/model\")"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.22.0-exp5-lesson-table.md",
+      "doc_line": 37,
+      "raw": "",
+      "path": "src/agent/IndustrialAgentV2.cs",
+      "resolved": "src/agent/IndustrialAgentV2.cs",
+      "verdict": "ok",
+      "line_start": 78,
+      "line_end": 79,
+      "symbols": [
+        "FixMemory"
+      ],
+      "rungs": {
+        "FixMemory": "code_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "FixMemory",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 1,
+          "declared_elsewhere_files": [
+            "src/agent/critique/FixMemory.cs"
+          ],
+          "symbol_kind": "cross_file"
+        }
+      ],
+      "input_sha": "dbdf63358907118c5661af4522f1dad68199ebd811c47a5896130e73cbb190d0",
+      "n_context_lines": 2,
+      "contexts": [
+        {
+          "line": 78,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "private readonly agent.contextgradient.ITextEmbedder? _textEmbedder;"
+        },
+        {
+          "line": 79,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "private readonly string _instanceId = Guid.NewGuid().ToString(\"N\")[..8];"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.22.0-exp5-lesson-table.md",
+      "doc_line": 39,
+      "raw": "",
+      "path": "src/agent/IndustrialAgentV2.cs",
+      "resolved": "src/agent/IndustrialAgentV2.cs",
+      "verdict": "ok",
+      "line_start": 866,
+      "line_end": 895,
+      "symbols": [
+        "TaskCharter"
+      ],
+      "rungs": {
+        "TaskCharter": "code_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "TaskCharter",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 1,
+          "declared_elsewhere_files": [
+            "src/agent/tasks/TaskCharter.cs"
+          ],
+          "symbol_kind": "cross_file"
+        }
+      ],
+      "input_sha": "dbdf63358907118c5661af4522f1dad68199ebd811c47a5896130e73cbb190d0",
+      "n_context_lines": 30,
+      "contexts": [
+        {
+          "line": 866,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var arg = (localCommand.Argument ?? string.Empty).Trim();"
+        },
+        {
+          "line": 867,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var parts = arg.Split(' ', 3, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);"
+        },
+        {
+          "line": 868,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "if (parts.Length < 2 || !int.TryParse(parts[0], System.Globalization.NumberStyles.None,"
+        },
+        {
+          "line": 869,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "System.Globalization.CultureInfo.InvariantCulture, out var dueSecs) || dueSecs < 0)"
+        },
+        {
+          "line": 870,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 871,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "response.Content = \"用法: /schedule-run <延时秒> <py脚本路径> [目标描述]\\n到期且无其他 agent 忙则执行 (脚本须符合 v0.17.2-b JSON Lines 事件流协议; py_compile 验证拒绝则记教训不执行)。\";"
+        },
+        {
+          "line": 872,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "}"
+        },
+        {
+          "line": 873,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "else if (dueSecs > 60)"
+        },
+        {
+          "line": 874,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 875,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "response.Content = \"v1 延时上限 60s (更长延时/跨重启调度 = 下轮候选, 交互语义待用户裁定)。\";"
+        },
+        {
+          "line": 876,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "}"
+        },
+        {
+          "line": 877,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "else"
+        },
+        {
+          "line": 878,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 879,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "try"
+        },
+        {
+          "line": 880,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 881,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var scriptPath = parts[1];"
+        },
+        {
+          "line": 882,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var goal = parts.Length > 2 ? parts[2] : scriptPath;"
+        },
+        {
+          "line": 883,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var payload = new agent.skills.ScriptTaskPayload"
+        },
+        {
+          "line": 884,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 885,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "Id = Guid.NewGuid().ToString(\"N\"),"
+        },
+        {
+          "line": 886,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "Goal = goal.Length > 200 ? goal[..200] : goal,"
+        },
+        {
+          "line": 887,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "OutputDir = Path.Combine(Environment.CurrentDirectory, \"data\", \"script-plugin\", \"outputs\"),"
+        },
+        {
+          "line": 888,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "};"
+        },
+        {
+          "line": 889,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var verdict = await ScriptScheduler().RunWhenIdleAfterAsync("
+        },
+        {
+          "line": 890,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "scriptPath, payload, TimeSpan.FromSeconds(dueSecs), ct).ConfigureAwait(false);"
+        },
+        {
+          "line": 891,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "response.Content = verdict.Render();"
+        },
+        {
+          "line": 892,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "}"
+        },
+        {
+          "line": 893,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "catch (Exception ex)"
+        },
+        {
+          "line": 894,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 895,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "response.Content = $\"schedule-run 失败: {ex.Message}\";"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.22.0-exp5-lesson-table.md",
+      "doc_line": 49,
+      "raw": "",
+      "path": "src/agent.host/Program.cs",
+      "resolved": "src/agent.host/Program.cs",
+      "verdict": "symbol_absent",
+      "line_start": 241,
+      "line_end": 241,
+      "symbols": [
+        "InitializeAsync",
+        "RootPath"
+      ],
+      "rungs": {
+        "InitializeAsync": "code_mention",
+        "RootPath": "absent"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "InitializeAsync",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 9,
+          "declared_elsewhere_files": [
+            "src/agent.core/core/AgentBase.cs",
+            "src/agent.core/core/IAgent.cs",
+            "src/agent.core/subagent/SubAgentTask.cs",
+            "src/agent.modelqueue/TokenUsageService.cs",
+            "src/agent.tests/FrontendAskFlowTests.cs",
+            "src/agent.tests/FrontendAskSameConnTests.cs",
+            "src/agent.workspace/Workspace.cs",
+            "src/agent.workspace/WorkspaceState.cs",
+            "src/agent/subagent/SubAgent.cs"
+          ],
+          "symbol_kind": "cross_file"
+        },
+        {
+          "symbol": "RootPath",
+          "rung": "absent",
+          "shape": "other",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "other"
+        }
+      ],
+      "input_sha": "d83a5ebca74c1f9213cd283e5b4ac6bbc79790eeaa41e5010420a4e25dbf6199",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 241,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var mi = d.InstructionSentence.IndexOf(\"必须\", StringComparison.Ordinal);"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.22.0-exp5-lesson-table.md",
+      "doc_line": 65,
+      "raw": "",
+      "path": "src/agent/extensions/ServiceCollectionExtensions.cs",
+      "resolved": "src/agent/extensions/ServiceCollectionExtensions.cs",
+      "verdict": "ok",
+      "line_start": 158,
+      "line_end": 161,
+      "symbols": [
+        "IUserPromptService"
+      ],
+      "rungs": {
+        "IUserPromptService": "code_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "IUserPromptService",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 2,
+          "declared_elsewhere_files": [
+            "src/agent.core/userinteraction/PromptOrigin.cs",
+            "src/agent/userinteraction/PromptPersistence.cs"
+          ],
+          "symbol_kind": "cross_file"
+        }
+      ],
+      "input_sha": "3ce4f211620132051b999889f94b12f602dc83f693f168145e993d8de15f90fe",
+      "n_context_lines": 4,
+      "contexts": [
+        {
+          "line": 158,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 159,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var opts = sp.GetRequiredService<AgentFrameworkOptions>();"
+        },
+        {
+          "line": 160,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "return new agent.registry.PythonArtifactPlugin("
+        },
+        {
+          "line": 161,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "sp.GetRequiredService<agent.registry.PythonArtifactLedger>(),"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.22.0-exp9-subtask-plan-routing-and-local-first.md",
+      "doc_line": 27,
+      "raw": "",
+      "path": "IndustrialAgentV2.cs",
+      "resolved": "src/agent/IndustrialAgentV2.cs",
+      "verdict": "ok",
+      "line_start": 848,
+      "line_end": 860,
+      "symbols": [
+        "SubTask"
+      ],
+      "rungs": {
+        "SubTask": "code_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "SubTask",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 2,
+          "declared_elsewhere_files": [
+            "src/agent/intent/IntentDecomposer.cs",
+            "src/agent/registry/EvidenceGate.cs"
+          ],
+          "symbol_kind": "cross_file"
+        }
+      ],
+      "input_sha": "dbdf63358907118c5661af4522f1dad68199ebd811c47a5896130e73cbb190d0",
+      "n_context_lines": 13,
+      "contexts": [
+        {
+          "line": 848,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "return response;"
+        },
+        {
+          "line": 849,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "}"
+        },
+        {
+          "line": 850,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// v0.20.2 (R345): /llm-service — llm-manager/worker 状态观测 (独立进程; manager 不在 → 提示启动)"
+        },
+        {
+          "line": 851,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "if (localCommand.Command == \"llm-service\")"
+        },
+        {
+          "line": 852,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 853,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var sock = agent.llamalocal.RemoteEmbedder.GetSockFromEnv();"
+        },
+        {
+          "line": 854,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var st = agent.llmservice.LlmServiceStatus.Query(sock);"
+        },
+        {
+          "line": 855,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "response.Success = true;"
+        },
+        {
+          "line": 856,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "response.Content = st.Render(sock);"
+        },
+        {
+          "line": 857,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;"
+        },
+        {
+          "line": 858,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "return response;"
+        },
+        {
+          "line": 859,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "}"
+        },
+        {
+          "line": 860,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// v0.17.2-b/c (R337): /schedule-run 条件定时执行 py 插件脚本 —"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.22.0-exp9-subtask-plan-routing-and-local-first.md",
+      "doc_line": 35,
+      "raw": "",
+      "path": "src/agent.host/Program.cs",
+      "resolved": "src/agent.host/Program.cs",
+      "verdict": "ok",
+      "line_start": 499,
+      "line_end": 542,
+      "symbols": [
+        "RecordStep"
+      ],
+      "rungs": {
+        "RecordStep": "code_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "RecordStep",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 1,
+          "declared_elsewhere_files": [
+            "src/agent.host/CliSession.cs"
+          ],
+          "symbol_kind": "cross_file"
+        }
+      ],
+      "input_sha": "d83a5ebca74c1f9213cd283e5b4ac6bbc79790eeaa41e5010420a4e25dbf6199",
+      "n_context_lines": 44,
+      "contexts": [
+        {
+          "line": 499,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var parts = trimmed.Split(' ', StringSplitOptions.RemoveEmptyEntries);"
+        },
+        {
+          "line": 500,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "if (parts.Length < 2)"
+        },
+        {
+          "line": 501,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 502,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "sink.Write(\"{\\\"error\\\": \\\"用法: /session <agent_uid> [index]\\\", \\\"found\\\": false}\");"
+        },
+        {
+          "line": 503,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "if (oneShot != null) return 2;"
+        },
+        {
+          "line": 504,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "continue;"
+        },
+        {
+          "line": 505,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "}"
+        },
+        {
+          "line": 506,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var uid = parts[1];"
+        },
+        {
+          "line": 507,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "sink.Write(parts.Length >= 3 && int.TryParse(parts[2], out var idx)"
+        },
+        {
+          "line": 508,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "? panel.RenderSessionDetail(uid, idx)"
+        },
+        {
+          "line": 509,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": ": panel.RenderSessionList(uid));"
+        },
+        {
+          "line": 510,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "if (oneShot != null) return 0;"
+        },
+        {
+          "line": 511,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "continue;"
+        },
+        {
+          "line": 512,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "}"
+        },
+        {
+          "line": 513,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "if (trimmed == \"/reset\")"
+        },
+        {
+          "line": 514,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 515,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "turnCount = 0;"
+        },
+        {
+          "line": 516,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "lastIntent = null;"
+        },
+        {
+          "line": 517,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "sink.Write(CliRenderer.Yellow(\"🔄 会话已重置\"));"
+        },
+        {
+          "line": 518,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "if (oneShot != null) return 0;"
+        },
+        {
+          "line": 519,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "continue;"
+        },
+        {
+          "line": 520,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "}"
+        },
+        {
+          "line": 521,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": ""
+        },
+        {
+          "line": 522,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "try"
+        },
+        {
+          "line": 523,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 524,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var step = 0;"
+        },
+        {
+          "line": 525,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "sink.Write(CliRenderer.Dim($\"── 执行中 (turn {++turnCount}) \" + new string('─', 30)));"
+        },
+        {
+          "line": 526,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": ""
+        },
+        {
+          "line": 527,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var msg = new Message"
+        },
+        {
+          "line": 528,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 529,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "Role = MessageRole.User,"
+        },
+        {
+          "line": 530,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "Content = input,"
+        },
+        {
+          "line": 531,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "ImageAttachments = imageAttachments ?? new List<string>(),"
+        },
+        {
+          "line": 532,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "SessionId = session.SessionId,"
+        },
+        {
+          "line": 533,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "SenderId = \"cli-user\","
+        },
+        {
+          "line": 534,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "};"
+        },
+        {
+          "line": 535,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": ""
+        },
+        {
+          "line": 536,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// 步骤明细①: 意图/拆解预览 (快速标记给用户看, 与 V2 内部一致)"
+        },
+        {
+          "line": 537,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "step++;"
+        },
+        {
+          "line": 538,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var subTasks = IntentDecomposer.Decompose(input);"
+        },
+        {
+          "line": 539,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var intent = IntentDecomposer.PrimaryIntent(subTasks);"
+        },
+        {
+          "line": 540,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "lastIntent = intent;"
+        },
+        {
+          "line": 541,
+          "in_code_face": true,
+          "occ_source": "code_identifier",
+          "text": "session.RecordStep($\"意图={intent} 子任务={subTasks.Count}\");"
+        },
+        {
+          "line": 542,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "sink.Step(step, $\"意图分析: {CliRenderer.Cyan(intent)}\","
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.22.0-exp9-subtask-plan-routing-and-local-first.md",
+      "doc_line": 73,
+      "raw": "",
+      "path": "IndustrialAgentV2.cs",
+      "resolved": "src/agent/IndustrialAgentV2.cs",
+      "verdict": "ok",
+      "line_start": 1555,
+      "line_end": 1558,
+      "symbols": [
+        "loop_turn"
+      ],
+      "rungs": {
+        "loop_turn": "noncode_mention"
+      },
+      "edge_kind": "named_fact",
+      "kind_reason": "全部弱符号: 名字形态 ∧ 非码面 ∧ 他处零声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "loop_turn",
+          "rung": "noncode_mention",
+          "shape": "snake_case",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "named_fact"
+        }
+      ],
+      "input_sha": "dbdf63358907118c5661af4522f1dad68199ebd811c47a5896130e73cbb190d0",
+      "n_context_lines": 4,
+      "contexts": [
+        {
+          "line": 1555,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// R431: 挂载形状 (取自实发 prompt, 非二次重建) — 「role 额外数据挂没挂」必须可机检:"
+        },
+        {
+          "line": 1556,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// 未挂载臂 growth_chars == 0 ∧ prompt_len == 冻结基线, 挂载臂 growth_chars > 0。"
+        },
+        {
+          "line": 1557,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "(\"gate_prompt_len\", _modelRouter.TurnGate.LastPromptChars.ToString()),"
+        },
+        {
+          "line": 1558,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "(\"role_seed_chars\", _modelRouter.TurnGate.LastRoleSeedChars.ToString()),"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.22.0-r371-capability-probe-python-game.md",
+      "doc_line": 250,
+      "raw": "",
+      "path": "IndustrialAgentV2.cs",
+      "resolved": "src/agent/IndustrialAgentV2.cs",
+      "verdict": "ok",
+      "line_start": 1604,
+      "line_end": 1604,
+      "symbols": [
+        "empty_always"
+      ],
+      "rungs": {
+        "empty_always": "noncode_mention"
+      },
+      "edge_kind": "named_fact",
+      "kind_reason": "全部弱符号: 名字形态 ∧ 非码面 ∧ 他处零声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "empty_always",
+          "rung": "noncode_mention",
+          "shape": "snake_case",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "named_fact"
+        }
+      ],
+      "input_sha": "dbdf63358907118c5661af4522f1dad68199ebd811c47a5896130e73cbb190d0",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 1604,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "};"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.23.0-exp10-agent.rover-local-prover-engine.md",
+      "doc_line": 73,
+      "raw": "",
+      "path": "src/agent/extensions/ServiceCollectionExtensions.cs",
+      "resolved": "src/agent/extensions/ServiceCollectionExtensions.cs",
+      "verdict": "ok",
+      "line_start": 153,
+      "line_end": 167,
+      "symbols": [
+        "ResponseSegmentRouter"
+      ],
+      "rungs": {
+        "ResponseSegmentRouter": "code_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "ResponseSegmentRouter",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 1,
+          "declared_elsewhere_files": [
+            "src/agent/registry/SegmentKind.cs"
+          ],
+          "symbol_kind": "cross_file"
+        }
+      ],
+      "input_sha": "3ce4f211620132051b999889f94b12f602dc83f693f168145e993d8de15f90fe",
+      "n_context_lines": 15,
+      "contexts": [
+        {
+          "line": 153,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "if (agent.registry.ClickRoverSegmentPlugin.Enabled)"
+        },
+        {
+          "line": 154,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "services.AddSingleton<agent.registry.IResponseSegmentPlugin, agent.registry.ClickRoverSegmentPlugin>();"
+        },
+        {
+          "line": 155,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// ✅ R368: python 段 → 落盘 + py_compile 机器校验 (用户钦定 \"内置个PY和PY执行插件\")"
+        },
+        {
+          "line": 156,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "services.AddSingleton<agent.registry.PythonArtifactLedger>();"
+        },
+        {
+          "line": 157,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "services.AddSingleton<agent.registry.IResponseSegmentPlugin>(sp =>"
+        },
+        {
+          "line": 158,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 159,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var opts = sp.GetRequiredService<AgentFrameworkOptions>();"
+        },
+        {
+          "line": 160,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "return new agent.registry.PythonArtifactPlugin("
+        },
+        {
+          "line": 161,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "sp.GetRequiredService<agent.registry.PythonArtifactLedger>(),"
+        },
+        {
+          "line": 162,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "System.IO.Path.Combine(opts.DataStoragePath, \"artifacts\"));"
+        },
+        {
+          "line": 163,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "});"
+        },
+        {
+          "line": 164,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// v0.22.0 exp9 D3: 计划真执行体 — 本地节点零 token 真跑 (需 python 产物台账定位产物路径)"
+        },
+        {
+          "line": 165,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "services.AddSingleton(sp => new agent.intent.PlanRunner("
+        },
+        {
+          "line": 166,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "executors: null,"
+        },
+        {
+          "line": 167,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "ledger: sp.GetRequiredService<agent.registry.PythonArtifactLedger>(),"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.23.0-exp10-agent.rover-local-prover-engine.md",
+      "doc_line": 74,
+      "raw": "",
+      "path": "src/agent/IndustrialAgentV2.cs",
+      "resolved": "src/agent/IndustrialAgentV2.cs",
+      "verdict": "ok",
+      "line_start": 71,
+      "line_end": 71,
+      "symbols": [
+        "_segmentRouter"
+      ],
+      "rungs": {
+        "_segmentRouter": "code_mention"
+      },
+      "edge_kind": "other",
+      "kind_reason": "含码面提及或形态-面不齐 (catch-all)",
+      "kind_per_symbol": [
+        {
+          "symbol": "_segmentRouter",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "other"
+        }
+      ],
+      "input_sha": "dbdf63358907118c5661af4522f1dad68199ebd811c47a5896130e73cbb190d0",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 71,
+          "in_code_face": true,
+          "occ_source": "code_identifier",
+          "text": "private readonly agent.registry.ResponseSegmentRouter _segmentRouter;"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.23.0-exp12-agent-chain-dcr-90p5-feasibility.md",
+      "doc_line": 93,
+      "raw": "",
+      "path": "ServiceCollectionExtensions.cs",
+      "resolved": "src/agent/extensions/ServiceCollectionExtensions.cs",
+      "verdict": "symbol_absent",
+      "line_start": 148,
+      "line_end": 148,
+      "symbols": [
+        "CodeReviewPlugin",
+        "IArtifactCheckSource",
+        "IResponseSegmentPlugin",
+        "PythonArtifactPlugin",
+        "UiCapturePlugin"
+      ],
+      "rungs": {
+        "CodeReviewPlugin": "code_mention",
+        "IArtifactCheckSource": "absent",
+        "IResponseSegmentPlugin": "code_mention",
+        "PythonArtifactPlugin": "code_mention",
+        "UiCapturePlugin": "code_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "CodeReviewPlugin",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 1,
+          "declared_elsewhere_files": [
+            "src/agent/registry/UiCapturePlugin.cs"
+          ],
+          "symbol_kind": "cross_file"
+        },
+        {
+          "symbol": "IArtifactCheckSource",
+          "rung": "absent",
+          "shape": "other",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "other"
+        },
+        {
+          "symbol": "IResponseSegmentPlugin",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 3,
+          "declared_elsewhere_files": [
+            "src/agent/registry/ClickRoverSegmentPlugin.cs",
+            "src/agent/registry/SegmentKind.cs",
+            "src/agent/registry/UiCapturePlugin.cs"
+          ],
+          "symbol_kind": "cross_file"
+        },
+        {
+          "symbol": "PythonArtifactPlugin",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 1,
+          "declared_elsewhere_files": [
+            "src/agent/registry/PythonArtifactPlugin.cs"
+          ],
+          "symbol_kind": "cross_file"
+        },
+        {
+          "symbol": "UiCapturePlugin",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 1,
+          "declared_elsewhere_files": [
+            "src/agent/registry/UiCapturePlugin.cs"
+          ],
+          "symbol_kind": "cross_file"
+        }
+      ],
+      "input_sha": "3ce4f211620132051b999889f94b12f602dc83f693f168145e993d8de15f90fe",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 148,
+          "in_code_face": true,
+          "occ_source": "code_identifier",
+          "text": "services.AddSingleton<agent.registry.IResponseSegmentPlugin, agent.registry.UiCapturePlugin>();"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.25.0-r399-probe-hardening-and-kpi.md",
+      "doc_line": 14,
+      "raw": "",
+      "path": "eval/probe/tasks.py",
+      "resolved": "eval/probe/tasks.py",
+      "verdict": "ok",
+      "line_start": 261,
+      "line_end": 261,
+      "symbols": [
+        "PROGRAM_FAMILIES"
+      ],
+      "rungs": {
+        "PROGRAM_FAMILIES": "code_mention"
+      },
+      "edge_kind": "other",
+      "kind_reason": "含码面提及或形态-面不齐 (catch-all)",
+      "kind_per_symbol": [
+        {
+          "symbol": "PROGRAM_FAMILIES",
+          "rung": "code_mention",
+          "shape": "SCREAMING_SNAKE",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "other"
+        }
+      ],
+      "input_sha": "80ba09e8bd507c9a6d9b594ffacc346abc7d3002d9e30df4453eba5d2297edc7",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 261,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "# ---------------------------------------------------------------- 反饱和族 v2 (R417)"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.25.0-r399-probe-hardening-and-kpi.md",
+      "doc_line": 15,
+      "raw": "",
+      "path": "eval/probe/tasks.py",
+      "resolved": "eval/probe/tasks.py",
+      "verdict": "ok",
+      "line_start": 586,
+      "line_end": 586,
+      "symbols": [
+        "MATH_FAMILIES"
+      ],
+      "rungs": {
+        "MATH_FAMILIES": "code_mention"
+      },
+      "edge_kind": "other",
+      "kind_reason": "含码面提及或形态-面不齐 (catch-all)",
+      "kind_per_symbol": [
+        {
+          "symbol": "MATH_FAMILIES",
+          "rung": "code_mention",
+          "shape": "SCREAMING_SNAKE",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "other"
+        }
+      ],
+      "input_sha": "80ba09e8bd507c9a6d9b594ffacc346abc7d3002d9e30df4453eba5d2297edc7",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 586,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "except (ValueError, IndexError):"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.25.0-r399-probe-hardening-and-kpi.md",
+      "doc_line": 17,
+      "raw": "",
+      "path": "eval/probe/run_probe.py",
+      "resolved": "eval/probe/run_probe.py",
+      "verdict": "symbol_absent",
+      "line_start": 101,
+      "line_end": 101,
+      "symbols": [
+        "KeyError",
+        "REF_SRC"
+      ],
+      "rungs": {
+        "KeyError": "absent",
+        "REF_SRC": "code_mention"
+      },
+      "edge_kind": "other",
+      "kind_reason": "含码面提及或形态-面不齐 (catch-all)",
+      "kind_per_symbol": [
+        {
+          "symbol": "KeyError",
+          "rung": "absent",
+          "shape": "other",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "other"
+        },
+        {
+          "symbol": "REF_SRC",
+          "rung": "code_mention",
+          "shape": "SCREAMING_SNAKE",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "other"
+        }
+      ],
+      "input_sha": "9de4511eb8a42a40c2ff5c760b4559fea31fa76f633255268e6720f700bbeeed",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 101,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "pairs=sorted((ln.split(',')[0], int(ln.split(',')[1])) for ln in sys.stdin.read().strip().splitlines())"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.34.0-r412-multi-session-slot-contention.md",
+      "doc_line": 25,
+      "raw": "",
+      "path": "src/agent.modelqueue/LocalSessionCacheLedger.cs",
+      "resolved": "src/agent.modelqueue/LocalSessionCacheLedger.cs",
+      "verdict": "ok",
+      "line_start": 91,
+      "line_end": 99,
+      "symbols": [
+        "carryOverCeiling"
+      ],
+      "rungs": {
+        "carryOverCeiling": "code_mention"
+      },
+      "edge_kind": "other",
+      "kind_reason": "含码面提及或形态-面不齐 (catch-all)",
+      "kind_per_symbol": [
+        {
+          "symbol": "carryOverCeiling",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "other"
+        }
+      ],
+      "input_sha": "c76432cf68914ae6ca483a6f0ccc560aeb0818f292a4d50b3fc214e9baa7d3bc",
+      "n_context_lines": 9,
+      "contexts": [
+        {
+          "line": 91,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "public LocalCacheObservation Observe("
+        },
+        {
+          "line": 92,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "string? sessionKey,"
+        },
+        {
+          "line": 93,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "int turnIndex,"
+        },
+        {
+          "line": 94,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "int promptTokens,"
+        },
+        {
+          "line": 95,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "int cachedTokens,"
+        },
+        {
+          "line": 96,
+          "in_code_face": true,
+          "occ_source": "code_identifier",
+          "text": "int carryOverCeiling = 0,"
+        },
+        {
+          "line": 97,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "string? model = null,"
+        },
+        {
+          "line": 98,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "string source = DefaultSource)"
+        },
+        {
+          "line": 99,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.40.0-r419-probe-multiturn.md",
+      "doc_line": 10,
+      "raw": "",
+      "path": "eval/probe/run_probe.py",
+      "resolved": "eval/probe/run_probe.py",
+      "verdict": "ok",
+      "line_start": 430,
+      "line_end": 430,
+      "symbols": [
+        "solve_agent"
+      ],
+      "rungs": {
+        "solve_agent": "code_mention"
+      },
+      "edge_kind": "other",
+      "kind_reason": "含码面提及或形态-面不齐 (catch-all)",
+      "kind_per_symbol": [
+        {
+          "symbol": "solve_agent",
+          "rung": "code_mention",
+          "shape": "snake_case",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "other"
+        }
+      ],
+      "input_sha": "9de4511eb8a42a40c2ff5c760b4559fea31fa76f633255268e6720f700bbeeed",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 430,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "env = dict(os.environ)"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.40.0-r419-probe-multiturn.md",
+      "doc_line": 16,
+      "raw": "",
+      "path": "eval/probe/run_probe.py",
+      "resolved": "eval/probe/run_probe.py",
+      "verdict": "ok",
+      "line_start": 430,
+      "line_end": 447,
+      "symbols": [
+        "solve_agent"
+      ],
+      "rungs": {
+        "solve_agent": "code_mention"
+      },
+      "edge_kind": "other",
+      "kind_reason": "含码面提及或形态-面不齐 (catch-all)",
+      "kind_per_symbol": [
+        {
+          "symbol": "solve_agent",
+          "rung": "code_mention",
+          "shape": "snake_case",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "other"
+        }
+      ],
+      "input_sha": "9de4511eb8a42a40c2ff5c760b4559fea31fa76f633255268e6720f700bbeeed",
+      "n_context_lines": 18,
+      "contexts": [
+        {
+          "line": 430,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "env = dict(os.environ)"
+        },
+        {
+          "line": 431,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "if not os.path.exists(path):"
+        },
+        {
+          "line": 432,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "return env"
+        },
+        {
+          "line": 433,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "with open(path, encoding=\"utf-8\") as fh:"
+        },
+        {
+          "line": 434,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "for ln in fh:"
+        },
+        {
+          "line": 435,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "ln = ln.strip()"
+        },
+        {
+          "line": 436,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "if not ln or ln.startswith(\"#\") or \"=\" not in ln:"
+        },
+        {
+          "line": 437,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "continue"
+        },
+        {
+          "line": 438,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "k, v = ln.split(\"=\", 1)"
+        },
+        {
+          "line": 439,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "env[k.strip()] = v.strip().strip('\"').strip(\"'\")"
+        },
+        {
+          "line": 440,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "return env"
+        },
+        {
+          "line": 441,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": ""
+        },
+        {
+          "line": 442,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": ""
+        },
+        {
+          "line": 443,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "def _telemetry_file(env: dict) -> str:"
+        },
+        {
+          "line": 444,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "\"\"\"被测进程写入的遥测文件 (env 覆盖优先, 与产品侧 AgentTelemetry 同规则)。\"\"\""
+        },
+        {
+          "line": 445,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "d = env.get(\"AGENTFRAMEWORK_TELEMETRY\") or os.path.join(ROOT, \"data\", \"telemetry\")"
+        },
+        {
+          "line": 446,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "return d if str(d).endswith(\".jsonl\") else os.path.join(d, \"host.jsonl\")"
+        },
+        {
+          "line": 447,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": ""
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.42.0-r421-polarity.md",
+      "doc_line": 18,
+      "raw": "",
+      "path": "src/agent/IndustrialAgentV2.cs",
+      "resolved": "src/agent/IndustrialAgentV2.cs",
+      "verdict": "ok",
+      "line_start": 795,
+      "line_end": 835,
+      "symbols": [
+        "recall_query"
+      ],
+      "rungs": {
+        "recall_query": "noncode_mention"
+      },
+      "edge_kind": "named_fact",
+      "kind_reason": "全部弱符号: 名字形态 ∧ 非码面 ∧ 他处零声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "recall_query",
+          "rung": "noncode_mention",
+          "shape": "snake_case",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "named_fact"
+        }
+      ],
+      "input_sha": "dbdf63358907118c5661af4522f1dad68199ebd811c47a5896130e73cbb190d0",
+      "n_context_lines": 41,
+      "contexts": [
+        {
+          "line": 795,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var p = git.PushOnce(url);"
+        },
+        {
+          "line": 796,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var verify = git.VerifyPush(url);"
+        },
+        {
+          "line": 797,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "response.Content = RenderGit(p) + \"\\n复核: \" + verify + \"\\n(一次性 URL 已用; 凭据卫生: 未写入 git config)\";"
+        },
+        {
+          "line": 798,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "}"
+        },
+        {
+          "line": 799,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "else response.Content = \"用法: /git status|diff|commit <msg>|push <一次性url>\";"
+        },
+        {
+          "line": 800,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "}"
+        },
+        {
+          "line": 801,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "catch (Exception ex) { response.Content = $\"git 操作失败: {ex.Message}\"; }"
+        },
+        {
+          "line": 802,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;"
+        },
+        {
+          "line": 803,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "return response;"
+        },
+        {
+          "line": 804,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "}"
+        },
+        {
+          "line": 805,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// v0.22.0 L2-待办① (R420): /recall <查询> [topK] — 跨会话检索接线"
+        },
+        {
+          "line": 806,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// (SessionHistorySearch 自 R370 交付后生产 0 消费 = L7-G1 缺口; 本轮回接本地指令出口, 零 LLM)"
+        },
+        {
+          "line": 807,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "if (localCommand.Command == \"recall\")"
+        },
+        {
+          "line": 808,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 809,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "response.Success = true;"
+        },
+        {
+          "line": 810,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "try"
+        },
+        {
+          "line": 811,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 812,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var recallArg = (localCommand.Argument ?? string.Empty).Trim();"
+        },
+        {
+          "line": 813,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "if (recallArg.Length == 0)"
+        },
+        {
+          "line": 814,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 815,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "response.Content = \"用法: /recall <查询词> [topK]  (检索面 = 已落盘会话记忆摘要; 零 LLM 调用)\";"
+        },
+        {
+          "line": 816,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "}"
+        },
+        {
+          "line": 817,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "else"
+        },
+        {
+          "line": 818,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 819,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var q = recallArg;"
+        },
+        {
+          "line": 820,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var topK = 5;"
+        },
+        {
+          "line": 821,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var lastSpace = recallArg.LastIndexOf(' ');"
+        },
+        {
+          "line": 822,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "if (lastSpace > 0 &&"
+        },
+        {
+          "line": 823,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "int.TryParse(recallArg[(lastSpace + 1)..], System.Globalization.NumberStyles.None,"
+        },
+        {
+          "line": 824,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "System.Globalization.CultureInfo.InvariantCulture, out var k) && k > 0 && k <= 50)"
+        },
+        {
+          "line": 825,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 826,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "topK = k;"
+        },
+        {
+          "line": 827,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "q = recallArg[..lastSpace].Trim();"
+        },
+        {
+          "line": 828,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "}"
+        },
+        {
+          "line": 829,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var recallSearch = new agent.session.SessionHistorySearch("
+        },
+        {
+          "line": 830,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "new agent.session.SessionHistorySearch.StoreSource(_sessionMemoryStore));"
+        },
+        {
+          "line": 831,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "var hits = recallSearch.Search(q, topK);"
+        },
+        {
+          "line": 832,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "response.Content = agent.session.SessionHistorySearch.Render(hits, q, topK);"
+        },
+        {
+          "line": 833,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// 通道级打点 (行为类 KPI 不用文本启发式): hits=0 也如实记账"
+        },
+        {
+          "line": 834,
+          "in_code_face": false,
+          "occ_source": "string_literal",
+          "text": "agent.config.AgentTelemetry.Emit(\"recall_query\", \"IndustrialAgentV2\","
+        },
+        {
+          "line": 835,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "(\"query_len\", q.Length), (\"topk\", topK), (\"hits\", hits.Count));"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.47.0-r426-relation-judge-localization.md",
+      "doc_line": 53,
+      "raw": "",
+      "path": "src/agent/IndustrialAgentV2.cs",
+      "resolved": "src/agent/IndustrialAgentV2.cs",
+      "verdict": "ok",
+      "line_start": 1625,
+      "line_end": 1627,
+      "symbols": [
+        "correction_judge"
+      ],
+      "rungs": {
+        "correction_judge": "noncode_mention"
+      },
+      "edge_kind": "named_fact",
+      "kind_reason": "全部弱符号: 名字形态 ∧ 非码面 ∧ 他处零声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "correction_judge",
+          "rung": "noncode_mention",
+          "shape": "snake_case",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "named_fact"
+        }
+      ],
+      "input_sha": "dbdf63358907118c5661af4522f1dad68199ebd811c47a5896130e73cbb190d0",
+      "n_context_lines": 3,
+      "contexts": [
+        {
+          "line": 1625,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// 超过 2 轮未回锚 → 过期撤防 (不 emit false — 只度量成功回锚, 避免噪声)。"
+        },
+        {
+          "line": 1626,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "if (_clarifyArmed)"
+        },
+        {
+          "line": 1627,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.57.0-r436-e2e-brj-token-kpi.md",
+      "doc_line": 18,
+      "raw": "",
+      "path": "ModelQueueRouter.cs",
+      "resolved": "src/agent.modelqueue/ModelQueueRouter.cs",
+      "verdict": "ok",
+      "line_start": 307,
+      "line_end": 322,
+      "symbols": [
+        "failed_or_empty"
+      ],
+      "rungs": {
+        "failed_or_empty": "noncode_mention"
+      },
+      "edge_kind": "named_fact",
+      "kind_reason": "全部弱符号: 名字形态 ∧ 非码面 ∧ 他处零声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "failed_or_empty",
+          "rung": "noncode_mention",
+          "shape": "snake_case",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "named_fact"
+        }
+      ],
+      "input_sha": "08c6179a8af3fb213fde94834b6ccc947d64a859f5de6b50c25286b903c90082",
+      "n_context_lines": 16,
+      "contexts": [
+        {
+          "line": 307,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": ""
+        },
+        {
+          "line": 308,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "if (!outcome.Success || string.IsNullOrWhiteSpace(outcome.Content))"
+        },
+        {
+          "line": 309,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 310,
+          "in_code_face": false,
+          "occ_source": "string_literal",
+          "text": "RelationJudge.RecordFallback(\"failed_or_empty\");"
+        },
+        {
+          "line": 311,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "return null;"
+        },
+        {
+          "line": 312,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "}"
+        },
+        {
+          "line": 313,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "if (!outcome.AccountingConsistent)"
+        },
+        {
+          "line": 314,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 315,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "RelationJudge.RecordAccountingViolation(\"tokens_evaluated != prompt_n + cache_n\");"
+        },
+        {
+          "line": 316,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "return null;"
+        },
+        {
+          "line": 317,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "}"
+        },
+        {
+          "line": 318,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "if (!RelationLetterJudge.TryNormalize(outcome.Content, out var letter, out var parseReason))"
+        },
+        {
+          "line": 319,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 320,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// R435: 失败原因入计数 (可机检归因; R434 只能看到「降级了」, 看不到为什么)"
+        },
+        {
+          "line": 321,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "RelationJudge.RecordFallback(\"unparsed:\" + parseReason);"
+        },
+        {
+          "line": 322,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "return null;"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.59.0-r439-domain-extension.md",
+      "doc_line": 18,
+      "raw": "",
+      "path": "src/agent/IndustrialAgentV2.cs",
+      "resolved": "src/agent/IndustrialAgentV2.cs",
+      "verdict": "ok",
+      "line_start": 1547,
+      "line_end": 1548,
+      "symbols": [
+        "dropped_chars",
+        "local_gate_skip_history",
+        "persisted_chars",
+        "would_be_chars"
+      ],
+      "rungs": {
+        "dropped_chars": "noncode_mention",
+        "local_gate_skip_history": "noncode_mention",
+        "persisted_chars": "noncode_mention",
+        "would_be_chars": "noncode_mention"
+      },
+      "edge_kind": "named_fact",
+      "kind_reason": "全部弱符号: 名字形态 ∧ 非码面 ∧ 他处零声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "dropped_chars",
+          "rung": "noncode_mention",
+          "shape": "snake_case",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "named_fact"
+        },
+        {
+          "symbol": "local_gate_skip_history",
+          "rung": "noncode_mention",
+          "shape": "snake_case",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "named_fact"
+        },
+        {
+          "symbol": "persisted_chars",
+          "rung": "noncode_mention",
+          "shape": "snake_case",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "named_fact"
+        },
+        {
+          "symbol": "would_be_chars",
+          "rung": "noncode_mention",
+          "shape": "snake_case",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "named_fact"
+        }
+      ],
+      "input_sha": "dbdf63358907118c5661af4522f1dad68199ebd811c47a5896130e73cbb190d0",
+      "n_context_lines": 2,
+      "contexts": [
+        {
+          "line": 1547,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// R429: 决策路径缓存钉死可观测 —— cache_n 应恒为 0 (关前缀缓存), pinned = 累计钉死次数"
+        },
+        {
+          "line": 1548,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "(\"cache_n\", _modelRouter.TurnGate.LastCachedTokens.ToString()),"
+        }
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.64.0-r444-cheap-necessary-condition-prefilter.md",
+      "doc_line": 15,
+      "raw": "",
+      "path": "src/agent/IndustrialAgentV2.cs",
+      "resolved": "src/agent/IndustrialAgentV2.cs",
+      "verdict": "ok",
+      "line_start": 1500,
+      "line_end": 1519,
+      "symbols": [
+        "local_turn_gate_reject",
+        "msg_sha16"
+      ],
+      "rungs": {
+        "local_turn_gate_reject": "noncode_mention",
+        "msg_sha16": "noncode_mention"
+      },
+      "edge_kind": "named_fact",
+      "kind_reason": "全部弱符号: 名字形态 ∧ 非码面 ∧ 他处零声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "local_turn_gate_reject",
+          "rung": "noncode_mention",
+          "shape": "snake_case",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "named_fact"
+        },
+        {
+          "symbol": "msg_sha16",
+          "rung": "noncode_mention",
+          "shape": "snake_case",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "named_fact"
+        }
+      ],
+      "input_sha": "dbdf63358907118c5661af4522f1dad68199ebd811c47a5896130e73cbb190d0",
+      "n_context_lines": 20,
+      "contexts": [
+        {
+          "line": 1500,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "agent.modelqueue.TurnGateVerdict.Pass, \"mechanical:nonack\");"
+        },
+        {
+          "line": 1501,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "}"
+        },
+        {
+          "line": 1502,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "else"
+        },
+        {
+          "line": 1503,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 1504,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "gateRoleSeed = ActiveRole.Id + \"|\" + agent.modelqueue.TurnGateJudge.Clip(ActiveRole.ProfileSeed, 80);"
+        },
+        {
+          "line": 1505,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// R431: role 额外数据 (成长经历) 有界挂载 —— 管道早就支持 (BuildPrompt 内二次 clip 300),"
+        },
+        {
+          "line": 1506,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// 但调用点一直传 null; R431 前置机检: 真机臂 role 的 growth 域 = 0 ⇒ 挂载与不挂载在"
+        },
+        {
+          "line": 1507,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// 当前真实负载上逐位同一 (所以此前的「已挂载」是不可能被读数区分的空操作)。"
+        },
+        {
+          "line": 1508,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// 有界性: RenderForPrompt ≤400 → BuildPrompt clip ≤300 ⇒ 不可能挤爆生成预算 (R413 教训)。"
+        },
+        {
+          "line": 1509,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "gateGrowthBlock = GrowthLedger?.RenderForPrompt();"
+        },
+        {
+          "line": 1510,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "gateOutcome = await _modelRouter.JudgeTurnAsync("
+        },
+        {
+          "line": 1511,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "message.Content, gateRoleSeed, gateGrowthBlock, ct).ConfigureAwait(false);"
+        },
+        {
+          "line": 1512,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "}"
+        },
+        {
+          "line": 1513,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// R434 双条件: r1 的 Skip 只在**结构确认为「认可族」**时生效。真机实测根因: 残余带内"
+        },
+        {
+          "line": 1514,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// r1 对「再讲一遍。」「讲细一点。」「从头再说。」这类短促真诉求误判 Skip ⇒ 3/4 真诉求轮"
+        },
+        {
+          "line": 1515,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// 被跳成空话 (质量硬线失守)。非认可族 ⇒ 降级 Pass ⇒ 照常走远端 (宁可多走一次远端)。"
+        },
+        {
+          "line": 1516,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// 位置纪律: 必须在下面 local_turn_gate 打点**之前** —— 否则遥测 basis 会写 r1 的原始"
+        },
+        {
+          "line": 1517,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// 判决 (skip→local), 与被测行为的真实走向相反 (R433 同类: 读数不得自报假形态)。"
+        },
+        {
+          "line": 1518,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "if (gateOutcome.Decided && gateOutcome.Verdict == agent.modelqueue.TurnGateVerdict.Skip"
+        },
+        {
+          "line": 1519,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "&& !agent.modelqueue.TurnGateJudge.MechanicalAck(message.Content))"
+        }
+      ]
+    },
+    {
+      "doc": "docs/reports/bge/model-lineage-and-inventory-2026-09-14.md",
+      "doc_line": 54,
+      "raw": "",
+      "path": "src/agent.llamacpp/LlamaCppTextEmbedder.cs",
+      "resolved": "src/agent.llamacpp/LlamaCppTextEmbedder.cs",
+      "verdict": "ok",
+      "line_start": 31,
+      "line_end": 31,
+      "symbols": [
+        "NullTextEmbedder"
+      ],
+      "rungs": {
+        "NullTextEmbedder": "noncode_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "NullTextEmbedder",
+          "rung": "noncode_mention",
+          "shape": "other",
+          "declared_elsewhere": 1,
+          "declared_elsewhere_files": [
+            "src/agent.contextgradient/NullTextEmbedder.cs"
+          ],
+          "symbol_kind": "cross_file"
+        }
+      ],
+      "input_sha": "35acfbb82d7b9ccad1c116626c9743b4267aa201d5eed9d28893252869d1b08a",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 31,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        }
+      ]
+    },
+    {
+      "doc": "docs/reports/function-map-R326.md",
+      "doc_line": 288,
+      "raw": "",
+      "path": "ContextAssembler.cs",
+      "resolved": "src/agent/contextassembler/ContextAssembler.cs",
+      "verdict": "ok",
+      "line_start": 1287,
+      "line_end": 1287,
+      "symbols": [
+        "_queryEmbedding"
+      ],
+      "rungs": {
+        "_queryEmbedding": "noncode_mention"
+      },
+      "edge_kind": "comment_only",
+      "kind_reason": "全部弱符号: 非名字形态 ∧ 非码面 ∧ 他处零声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "_queryEmbedding",
+          "rung": "noncode_mention",
+          "shape": "other",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "comment_only"
+        }
+      ],
+      "input_sha": "be127d15f5dbc5c3647f87ecf58a35c40189226f3970343084d3df7944ddbc0b",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 1287,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "}"
+        }
+      ]
+    },
+    {
+      "doc": "docs/reports/function-map-R326.md",
+      "doc_line": 289,
+      "raw": "",
+      "path": "ContextAssembler.cs",
+      "resolved": "src/agent/contextassembler/ContextAssembler.cs",
+      "verdict": "ok",
+      "line_start": 40,
+      "line_end": 40,
+      "symbols": [
+        "_resultCache"
+      ],
+      "rungs": {
+        "_resultCache": "code_mention"
+      },
+      "edge_kind": "other",
+      "kind_reason": "含码面提及或形态-面不齐 (catch-all)",
+      "kind_per_symbol": [
+        {
+          "symbol": "_resultCache",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "other"
+        }
+      ],
+      "input_sha": "be127d15f5dbc5c3647f87ecf58a35c40189226f3970343084d3df7944ddbc0b",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 40,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// R326 (P17): Dictionary 无锁并发写不安全 (DI 单例 + subagent/多会话并发装配) → ConcurrentDictionary"
+        }
+      ]
+    },
+    {
+      "doc": "docs/reports/r385/capability-inventory.md",
+      "doc_line": 24,
+      "raw": "",
+      "path": "src/agent/registry/CapabilityScanner.cs",
+      "resolved": "src/agent/registry/CapabilityScanner.cs",
+      "verdict": "ok",
+      "line_start": 33,
+      "line_end": 33,
+      "symbols": [
+        "RegisterCapability"
+      ],
+      "rungs": {
+        "RegisterCapability": "noncode_mention"
+      },
+      "edge_kind": "comment_only",
+      "kind_reason": "全部弱符号: 非名字形态 ∧ 非码面 ∧ 他处零声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "RegisterCapability",
+          "rung": "noncode_mention",
+          "shape": "other",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "comment_only"
+        }
+      ],
+      "input_sha": "c3e2f843b590cb1c37985cd8f5aefdd24820fb236aab6d0ec857977a8dcdb63b",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 33,
+          "in_code_face": false,
+          "occ_source": "comment",
+          "text": "// ① 显式注册通道 (AOT 安全): RegisterCapability 由宿主/DI 在启动时登记。"
+        }
+      ]
+    },
+    {
+      "doc": "docs/reports/r385/capability-inventory.md",
+      "doc_line": 34,
+      "raw": "",
+      "path": "SegmentKind.cs",
+      "resolved": "src/agent/registry/SegmentKind.cs",
+      "verdict": "ok",
+      "line_start": 315,
+      "line_end": 315,
+      "symbols": [
+        "InlineCode",
+        "PlainText"
+      ],
+      "rungs": {
+        "InlineCode": "code_mention",
+        "PlainText": "code_mention"
+      },
+      "edge_kind": "other",
+      "kind_reason": "含码面提及或形态-面不齐 (catch-all)",
+      "kind_per_symbol": [
+        {
+          "symbol": "InlineCode",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "other"
+        },
+        {
+          "symbol": "PlainText",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "other"
+        }
+      ],
+      "input_sha": "f68f9261a679cb0b75cabff8cb8d9d2ebb2a5803e8a9c1a21dc1986c464ea576",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 315,
+          "in_code_face": true,
+          "occ_source": "code_identifier",
+          "text": "Kind = SegmentKind.InlineCode,"
+        }
+      ]
+    },
+    {
+      "doc": "docs/reports/r385/capability-inventory.md",
+      "doc_line": 38,
+      "raw": "",
+      "path": "ServiceCollectionExtensions.cs",
+      "resolved": "src/agent/extensions/ServiceCollectionExtensions.cs",
+      "verdict": "ok",
+      "line_start": 163,
+      "line_end": 163,
+      "symbols": [
+        "ResponseSegmentRouter"
+      ],
+      "rungs": {
+        "ResponseSegmentRouter": "code_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "ResponseSegmentRouter",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 1,
+          "declared_elsewhere_files": [
+            "src/agent/registry/SegmentKind.cs"
+          ],
+          "symbol_kind": "cross_file"
+        }
+      ],
+      "input_sha": "3ce4f211620132051b999889f94b12f602dc83f693f168145e993d8de15f90fe",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 163,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "});"
+        }
+      ]
+    },
+    {
+      "doc": "docs/reports/r385/capability-inventory.md",
+      "doc_line": 45,
+      "raw": "",
+      "path": "ServiceCollectionExtensions.cs",
+      "resolved": "src/agent/extensions/ServiceCollectionExtensions.cs",
+      "verdict": "symbol_absent",
+      "line_start": 148,
+      "line_end": 158,
+      "symbols": [
+        "IResponseSegmentPlugin",
+        "SegmentKind"
+      ],
+      "rungs": {
+        "IResponseSegmentPlugin": "code_mention",
+        "SegmentKind": "absent"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "IResponseSegmentPlugin",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 3,
+          "declared_elsewhere_files": [
+            "src/agent/registry/ClickRoverSegmentPlugin.cs",
+            "src/agent/registry/SegmentKind.cs",
+            "src/agent/registry/UiCapturePlugin.cs"
+          ],
+          "symbol_kind": "cross_file"
+        },
+        {
+          "symbol": "SegmentKind",
+          "rung": "absent",
+          "shape": "other",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "other"
+        }
+      ],
+      "input_sha": "3ce4f211620132051b999889f94b12f602dc83f693f168145e993d8de15f90fe",
+      "n_context_lines": 11,
+      "contexts": [
+        {
+          "line": 148,
+          "in_code_face": true,
+          "occ_source": "code_identifier",
+          "text": "services.AddSingleton<agent.registry.IResponseSegmentPlugin, agent.registry.UiCapturePlugin>();"
+        },
+        {
+          "line": 149,
+          "in_code_face": true,
+          "occ_source": "code_identifier",
+          "text": "services.AddSingleton<agent.registry.IResponseSegmentPlugin, agent.registry.CodeReviewPlugin>();"
+        },
+        {
+          "line": 150,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// ✅ R391(C8): 本地形式化验证段插件 — **在场** ⇒ 静态前缀注入 clickproof 输出契约 (不在场 ⇒ 前缀与 R380 逐字一致)。"
+        },
+        {
+          "line": 151,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "//    非 clickproof 段恒等透传 (零改动模型正文); clickproof 段 → 本地内核确定性裁决 + 遥测 (零 token)。"
+        },
+        {
+          "line": 152,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "//    环境开关 AGENTFRAMEWORK_FORMAL_SEGMENT=0 可整段关闭 (缺省开)。"
+        },
+        {
+          "line": 153,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "if (agent.registry.ClickRoverSegmentPlugin.Enabled)"
+        },
+        {
+          "line": 154,
+          "in_code_face": true,
+          "occ_source": "code_identifier",
+          "text": "services.AddSingleton<agent.registry.IResponseSegmentPlugin, agent.registry.ClickRoverSegmentPlugin>();"
+        },
+        {
+          "line": 155,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "// ✅ R368: python 段 → 落盘 + py_compile 机器校验 (用户钦定 \"内置个PY和PY执行插件\")"
+        },
+        {
+          "line": 156,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "services.AddSingleton<agent.registry.PythonArtifactLedger>();"
+        },
+        {
+          "line": 157,
+          "in_code_face": true,
+          "occ_source": "code_identifier",
+          "text": "services.AddSingleton<agent.registry.IResponseSegmentPlugin>(sp =>"
+        },
+        {
+          "line": 158,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        }
+      ]
+    },
+    {
+      "doc": "docs/reports/r385/capability-inventory.md",
+      "doc_line": 102,
+      "raw": "",
+      "path": "SkillDispatcher.cs",
+      "resolved": "src/agent.skills/SkillDispatcher.cs",
+      "verdict": "ok",
+      "line_start": 107,
+      "line_end": 107,
+      "symbols": [
+        "KnowledgeHint"
+      ],
+      "rungs": {
+        "KnowledgeHint": "code_mention"
+      },
+      "edge_kind": "other",
+      "kind_reason": "含码面提及或形态-面不齐 (catch-all)",
+      "kind_per_symbol": [
+        {
+          "symbol": "KnowledgeHint",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "other"
+        }
+      ],
+      "input_sha": "9794b785bfecfcb543b2aeb0509b7b315250523acc1545064b57c624adc3bf69",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 107,
+          "in_code_face": true,
+          "occ_source": "code_identifier",
+          "text": "if (top.Skill.Type == SkillType.KnowledgeHint)"
+        }
+      ]
+    },
+    {
+      "doc": "docs/reports/r385/capability-inventory.md",
+      "doc_line": 105,
+      "raw": "",
+      "path": "ServiceCollectionExtensions.cs",
+      "resolved": "src/agent/extensions/ServiceCollectionExtensions.cs",
+      "verdict": "ok",
+      "line_start": 338,
+      "line_end": 344,
+      "symbols": [
+        "IndustrialAgentV2"
+      ],
+      "rungs": {
+        "IndustrialAgentV2": "code_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "IndustrialAgentV2",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 1,
+          "declared_elsewhere_files": [
+            "src/agent/IndustrialAgentV2.cs"
+          ],
+          "symbol_kind": "cross_file"
+        }
+      ],
+      "input_sha": "3ce4f211620132051b999889f94b12f602dc83f693f168145e993d8de15f90fe",
+      "n_context_lines": 7,
+      "contexts": [
+        {
+          "line": 338,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "if (!string.IsNullOrEmpty(extraDirs))"
+        },
+        {
+          "line": 339,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 340,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "foreach (var dir in extraDirs.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))"
+        },
+        {
+          "line": 341,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 342,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "if (!Directory.Exists(dir))"
+        },
+        {
+          "line": 343,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "continue;"
+        },
+        {
+          "line": 344,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "foreach (var pkg in agent.skills.SkillPackageLoader.LoadPackages(dir))"
+        }
+      ]
+    },
+    {
+      "doc": "docs/reports/r385/capability-inventory.md",
+      "doc_line": 108,
+      "raw": "",
+      "path": "SkillDispatcher.cs",
+      "resolved": "src/agent.skills/SkillDispatcher.cs",
+      "verdict": "symbol_absent",
+      "line_start": 107,
+      "line_end": 107,
+      "symbols": [
+        "IndustrialAgentV2",
+        "KnowledgeHint"
+      ],
+      "rungs": {
+        "IndustrialAgentV2": "absent",
+        "KnowledgeHint": "code_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "IndustrialAgentV2",
+          "rung": "absent",
+          "shape": "other",
+          "declared_elsewhere": 1,
+          "declared_elsewhere_files": [
+            "src/agent/IndustrialAgentV2.cs"
+          ],
+          "symbol_kind": "cross_file"
+        },
+        {
+          "symbol": "KnowledgeHint",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "other"
+        }
+      ],
+      "input_sha": "9794b785bfecfcb543b2aeb0509b7b315250523acc1545064b57c624adc3bf69",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 107,
+          "in_code_face": true,
+          "occ_source": "code_identifier",
+          "text": "if (top.Skill.Type == SkillType.KnowledgeHint)"
+        }
+      ]
+    },
+    {
+      "doc": "docs/reports/r385/capability-inventory.md",
+      "doc_line": 111,
+      "raw": "",
+      "path": "SkillDispatcher.cs",
+      "resolved": "src/agent.skills/SkillDispatcher.cs",
+      "verdict": "ok",
+      "line_start": 36,
+      "line_end": 36,
+      "symbols": [
+        "ExecuteAsync"
+      ],
+      "rungs": {
+        "ExecuteAsync": "code_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "ExecuteAsync",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 9,
+          "declared_elsewhere_files": [
+            "src/agent.core/subagent/SubAgentTask.cs",
+            "src/agent.exploration/HostExploreExecutor.cs",
+            "src/agent.exploration/ThinkChainSession.cs",
+            "src/agent.recovery/ErrorInfo.cs",
+            "src/agent.skills/SkillExecutor.cs",
+            "src/agent.tests/SubAgentTests.cs",
+            "src/agent/registry/NodeExecutionResult.cs",
+            "src/agent/subagent/IsolatedTaskRunner.cs",
+            "src/agent/subagent/SubAgent.cs"
+          ],
+          "symbol_kind": "cross_file"
+        }
+      ],
+      "input_sha": "9794b785bfecfcb543b2aeb0509b7b315250523acc1545064b57c624adc3bf69",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 36,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "_executor = new SkillExecutor(Lifecycle, cfg);"
+        }
+      ]
+    },
+    {
+      "doc": "docs/reports/r385/capability-inventory.md",
+      "doc_line": 396,
+      "raw": "",
+      "path": "src/agent/extensions/ServiceCollectionExtensions.cs",
+      "resolved": "src/agent/extensions/ServiceCollectionExtensions.cs",
+      "verdict": "ok",
+      "line_start": 276,
+      "line_end": 278,
+      "symbols": [
+        "ILLMCaller"
+      ],
+      "rungs": {
+        "ILLMCaller": "code_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "ILLMCaller",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 2,
+          "declared_elsewhere_files": [
+            "src/agent.tests/ArtifactRepairTests.cs",
+            "src/agent/IndustrialAgentV2.cs"
+          ],
+          "symbol_kind": "cross_file"
+        }
+      ],
+      "input_sha": "3ce4f211620132051b999889f94b12f602dc83f693f168145e993d8de15f90fe",
+      "n_context_lines": 3,
+      "contexts": [
+        {
+          "line": 276,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "sp.GetRequiredService<agent.modelqueue.BalanceQueryService>(),"
+        },
+        {
+          "line": 277,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "sp.GetRequiredService<agent.modelqueue.ModelCatalog>()));"
+        },
+        {
+          "line": 278,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "services.AddSingleton(sp =>"
+        }
+      ]
+    },
+    {
+      "doc": "docs/reports/r385/chain-map.md",
+      "doc_line": 13,
+      "raw": "",
+      "path": "src/agent.host/Program.cs",
+      "resolved": "src/agent.host/Program.cs",
+      "verdict": "symbol_absent",
+      "line_start": 408,
+      "line_end": 408,
+      "symbols": [
+        "AgentResponse",
+        "ProcessAsync"
+      ],
+      "rungs": {
+        "AgentResponse": "absent",
+        "ProcessAsync": "code_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "AgentResponse",
+          "rung": "absent",
+          "shape": "other",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "other"
+        },
+        {
+          "symbol": "ProcessAsync",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 5,
+          "declared_elsewhere_files": [
+            "src/agent.core/core/AgentBase.cs",
+            "src/agent.core/core/IAgent.cs",
+            "src/agent.tests/FrontendAskFlowTests.cs",
+            "src/agent.tests/FrontendAskSameConnTests.cs",
+            "src/agent/registry/SegmentKind.cs"
+          ],
+          "symbol_kind": "cross_file"
+        }
+      ],
+      "input_sha": "d83a5ebca74c1f9213cd283e5b4ac6bbc79790eeaa41e5010420a4e25dbf6199",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 408,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "await entryAgent.InitializeAsync(agentCtx);"
+        }
+      ]
+    },
+    {
+      "doc": "docs/reports/r385/chain-map.md",
+      "doc_line": 15,
+      "raw": "",
+      "path": "src/agent/IndustrialAgentV2.cs",
+      "resolved": "src/agent/IndustrialAgentV2.cs",
+      "verdict": "ok",
+      "line_start": 870,
+      "line_end": 871,
+      "symbols": [
+        "PrimaryIntent"
+      ],
+      "rungs": {
+        "PrimaryIntent": "code_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "PrimaryIntent",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 1,
+          "declared_elsewhere_files": [
+            "src/agent/intent/IntentDecomposer.cs"
+          ],
+          "symbol_kind": "cross_file"
+        }
+      ],
+      "input_sha": "dbdf63358907118c5661af4522f1dad68199ebd811c47a5896130e73cbb190d0",
+      "n_context_lines": 2,
+      "contexts": [
+        {
+          "line": 870,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "{"
+        },
+        {
+          "line": 871,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "response.Content = \"用法: /schedule-run <延时秒> <py脚本路径> [目标描述]\\n到期且无其他 agent 忙则执行 (脚本须符合 v0.17.2-b JSON Lines 事件流协议; py_compile 验证拒绝则记教训不执行)。\";"
+        }
+      ]
+    },
+    {
+      "doc": "docs/reports/r385/chain-map.md",
+      "doc_line": 19,
+      "raw": "",
+      "path": "src/agent/intent/PlanRoutePolicy.cs",
+      "resolved": "src/agent/intent/PlanRoutePolicy.cs",
+      "verdict": "symbol_absent",
+      "line_start": 408,
+      "line_end": 408,
+      "symbols": [
+        "BuildRoutedPlan",
+        "TaskPlan"
+      ],
+      "rungs": {
+        "BuildRoutedPlan": "absent",
+        "TaskPlan": "code_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "BuildRoutedPlan",
+          "rung": "absent",
+          "shape": "other",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "other"
+        },
+        {
+          "symbol": "TaskPlan",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 1,
+          "declared_elsewhere_files": [
+            "src/agent/intent/TaskPlan.cs"
+          ],
+          "symbol_kind": "cross_file"
+        }
+      ],
+      "input_sha": "1bea2dc7aa0d8a64cfebd9474f83582e112dc9d785878ffb737f82aa7a631b9f",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 408,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "return added;"
+        }
+      ]
+    },
+    {
+      "doc": "docs/reports/r385/chain-map.md",
+      "doc_line": 20,
+      "raw": "",
+      "path": "PlanRunner.cs",
+      "resolved": "src/agent/intent/PlanRunner.cs",
+      "verdict": "ok",
+      "line_start": 411,
+      "line_end": 411,
+      "symbols": [
+        "_gate"
+      ],
+      "rungs": {
+        "_gate": "code_mention"
+      },
+      "edge_kind": "other",
+      "kind_reason": "含码面提及或形态-面不齐 (catch-all)",
+      "kind_per_symbol": [
+        {
+          "symbol": "_gate",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "other"
+        }
+      ],
+      "input_sha": "f02437a7e931c01b0eb7697cf903b2c23ef2ea698afb4c40f442f9a66e8fb8a9",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 411,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "public LocalFirstRun? StartLocalFirst(TaskPlan plan, LocalNodeContext ctx, CancellationToken ct = default)"
+        }
+      ]
+    },
+    {
+      "doc": "docs/reports/r385/chain-map.md",
+      "doc_line": 22,
+      "raw": "",
+      "path": "src/agent/contextassembler/ContextAssembler.cs",
+      "resolved": "src/agent/contextassembler/ContextAssembler.cs",
+      "verdict": "ok",
+      "line_start": 239,
+      "line_end": 239,
+      "symbols": [
+        "PromptHeader"
+      ],
+      "rungs": {
+        "PromptHeader": "code_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "PromptHeader",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 1,
+          "declared_elsewhere_files": [
+            "src/agent/contextassembler/DataSourceType.cs"
+          ],
+          "symbol_kind": "cross_file"
+        }
+      ],
+      "input_sha": "be127d15f5dbc5c3647f87ecf58a35c40189226f3970343084d3df7944ddbc0b",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 239,
+          "in_code_face": true,
+          "occ_source": "code_identifier",
+          "text": "result.PromptHeader = BuildPromptHeader(allSnippets, request);"
+        }
+      ]
+    },
+    {
+      "doc": "docs/reports/r385/chain-map.md",
+      "doc_line": 31,
+      "raw": "",
+      "path": "PlanRunner.cs",
+      "resolved": "src/agent/intent/PlanRunner.cs",
+      "verdict": "symbol_absent",
+      "line_start": 477,
+      "line_end": 477,
+      "symbols": [
+        "RunPlanAsync",
+        "TaskPlanRun"
+      ],
+      "rungs": {
+        "RunPlanAsync": "absent",
+        "TaskPlanRun": "code_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "RunPlanAsync",
+          "rung": "absent",
+          "shape": "other",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "other"
+        },
+        {
+          "symbol": "TaskPlanRun",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 1,
+          "declared_elsewhere_files": [
+            "src/agent/intent/TaskPlanRun.cs"
+          ],
+          "symbol_kind": "cross_file"
+        }
+      ],
+      "input_sha": "f02437a7e931c01b0eb7697cf903b2c23ef2ea698afb4c40f442f9a66e8fb8a9",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 477,
+          "in_code_face": true,
+          "occ_source": "code_identifier",
+          "text": "public async Task<TaskPlanRun> RunAsync(TaskPlan plan, LocalNodeContext? ctx = null, CancellationToken ct = default,"
+        }
+      ]
+    },
+    {
+      "doc": "docs/reports/r385/chain-map.md",
+      "doc_line": 32,
+      "raw": "",
+      "path": "PlanResumeService.cs",
+      "resolved": "src/agent/intent/PlanResumeService.cs",
+      "verdict": "ok",
+      "line_start": 71,
+      "line_end": 71,
+      "symbols": [
+        "CheckpointStore"
+      ],
+      "rungs": {
+        "CheckpointStore": "code_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "CheckpointStore",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 1,
+          "declared_elsewhere_files": [
+            "src/agent.recovery/ExecutionCheckpoint.cs"
+          ],
+          "symbol_kind": "cross_file"
+        }
+      ],
+      "input_sha": "f5e953595f8f1065d011f75100f918a9b7b49436db4f52caf49ac2a9adba3503",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 71,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "public static bool Capture("
+        }
+      ]
+    },
+    {
+      "doc": "docs/reports/r385/chain-map.md",
+      "doc_line": 49,
+      "raw": "",
+      "path": "src/agent/registry/ArtifactRepair.cs",
+      "resolved": "src/agent/registry/ArtifactRepair.cs",
+      "verdict": "ok",
+      "line_start": 217,
+      "line_end": 217,
+      "symbols": [
+        "DrainArtifactChecks",
+        "ILLMCaller",
+        "_caller"
+      ],
+      "rungs": {
+        "DrainArtifactChecks": "code_mention",
+        "ILLMCaller": "code_mention",
+        "_caller": "code_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "DrainArtifactChecks",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 1,
+          "declared_elsewhere_files": [
+            "src/agent/registry/SegmentKind.cs"
+          ],
+          "symbol_kind": "cross_file"
+        },
+        {
+          "symbol": "ILLMCaller",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 2,
+          "declared_elsewhere_files": [
+            "src/agent.tests/ArtifactRepairTests.cs",
+            "src/agent/IndustrialAgentV2.cs"
+          ],
+          "symbol_kind": "cross_file"
+        },
+        {
+          "symbol": "_caller",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "other"
+        }
+      ],
+      "input_sha": "7f0bec2f25e0ee4b84a947f4711c3792818353f529ff81eb340c3e497ff4ffb6",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 217,
+          "in_code_face": true,
+          "occ_source": "code_identifier",
+          "text": "resp = await _caller.CallAsync(prompt, ct).ConfigureAwait(false);"
+        }
+      ]
+    },
+    {
+      "doc": "docs/reports/r385/chain-map.md",
+      "doc_line": 51,
+      "raw": "",
+      "path": "src/agent/extensions/ServiceCollectionExtensions.cs",
+      "resolved": "src/agent/extensions/ServiceCollectionExtensions.cs",
+      "verdict": "ok",
+      "line_start": 276,
+      "line_end": 277,
+      "symbols": [
+        "ILLMCaller",
+        "ModelQueueAdapter",
+        "OpenAILLMCaller"
+      ],
+      "rungs": {
+        "ILLMCaller": "code_mention",
+        "ModelQueueAdapter": "code_mention",
+        "OpenAILLMCaller": "noncode_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "ILLMCaller",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 2,
+          "declared_elsewhere_files": [
+            "src/agent.tests/ArtifactRepairTests.cs",
+            "src/agent/IndustrialAgentV2.cs"
+          ],
+          "symbol_kind": "cross_file"
+        },
+        {
+          "symbol": "ModelQueueAdapter",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 1,
+          "declared_elsewhere_files": [
+            "src/agent/modelqueue/ModelQueueAdapter.cs"
+          ],
+          "symbol_kind": "cross_file"
+        },
+        {
+          "symbol": "OpenAILLMCaller",
+          "rung": "noncode_mention",
+          "shape": "other",
+          "declared_elsewhere": 1,
+          "declared_elsewhere_files": [
+            "src/agent/IndustrialAgentV2.cs"
+          ],
+          "symbol_kind": "cross_file"
+        }
+      ],
+      "input_sha": "3ce4f211620132051b999889f94b12f602dc83f693f168145e993d8de15f90fe",
+      "n_context_lines": 2,
+      "contexts": [
+        {
+          "line": 276,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "sp.GetRequiredService<agent.modelqueue.BalanceQueryService>(),"
+        },
+        {
+          "line": 277,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "sp.GetRequiredService<agent.modelqueue.ModelCatalog>()));"
+        }
+      ]
+    },
+    {
+      "doc": "docs/reports/r385/chain-map.md",
+      "doc_line": 128,
+      "raw": "",
+      "path": "PlanRunner.cs",
+      "resolved": "src/agent/intent/PlanRunner.cs",
+      "verdict": "ok",
+      "line_start": 39,
+      "line_end": 40,
+      "symbols": [
+        "AGENTFRAMEWORK_PY_RUN"
+      ],
+      "rungs": {
+        "AGENTFRAMEWORK_PY_RUN": "noncode_mention"
+      },
+      "edge_kind": "named_fact",
+      "kind_reason": "全部弱符号: 名字形态 ∧ 非码面 ∧ 他处零声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "AGENTFRAMEWORK_PY_RUN",
+          "rung": "noncode_mention",
+          "shape": "SCREAMING_SNAKE",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "named_fact"
+        }
+      ],
+      "input_sha": "f02437a7e931c01b0eb7697cf903b2c23ef2ea698afb4c40f442f9a66e8fb8a9",
+      "n_context_lines": 2,
+      "contexts": [
+        {
+          "line": 39,
+          "in_code_face": false,
+          "occ_source": "comment",
+          "text": "/// <summary>运行级闸门 (null = 读 AGENTFRAMEWORK_PY_RUN)</summary>"
+        },
+        {
+          "line": 40,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "public Func<bool>? PythonRunGate { get; init; }"
+        }
+      ]
+    },
+    {
+      "doc": "docs/reports/r385/consolidation-candidates.md",
+      "doc_line": 17,
+      "raw": "",
+      "path": "ServiceCollectionExtensions.cs",
+      "resolved": "src/agent/extensions/ServiceCollectionExtensions.cs",
+      "verdict": "ok",
+      "line_start": 276,
+      "line_end": 278,
+      "symbols": [
+        "ModelQueueAdapter"
+      ],
+      "rungs": {
+        "ModelQueueAdapter": "code_mention"
+      },
+      "edge_kind": "cross_file",
+      "kind_reason": "至少一枚弱符号在树内他处有声明",
+      "kind_per_symbol": [
+        {
+          "symbol": "ModelQueueAdapter",
+          "rung": "code_mention",
+          "shape": "other",
+          "declared_elsewhere": 1,
+          "declared_elsewhere_files": [
+            "src/agent/modelqueue/ModelQueueAdapter.cs"
+          ],
+          "symbol_kind": "cross_file"
+        }
+      ],
+      "input_sha": "3ce4f211620132051b999889f94b12f602dc83f693f168145e993d8de15f90fe",
+      "n_context_lines": 3,
+      "contexts": [
+        {
+          "line": 276,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "sp.GetRequiredService<agent.modelqueue.BalanceQueryService>(),"
+        },
+        {
+          "line": 277,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "sp.GetRequiredService<agent.modelqueue.ModelCatalog>()));"
+        },
+        {
+          "line": 278,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": "services.AddSingleton(sp =>"
+        }
+      ]
+    },
+    {
+      "doc": "docs/reports/r399/r399-m6-hardening-and-kpi-datapoints.md",
+      "doc_line": 35,
+      "raw": "",
+      "path": "tasks.py",
+      "resolved": "eval/probe/tasks.py",
+      "verdict": "ok",
+      "line_start": 437,
+      "line_end": 437,
+      "symbols": [
+        "HARD_INPUTS"
+      ],
+      "rungs": {
+        "HARD_INPUTS": "code_mention"
+      },
+      "edge_kind": "other",
+      "kind_reason": "含码面提及或形态-面不齐 (catch-all)",
+      "kind_per_symbol": [
+        {
+          "symbol": "HARD_INPUTS",
+          "rung": "code_mention",
+          "shape": "SCREAMING_SNAKE",
+          "declared_elsewhere": 0,
+          "declared_elsewhere_files": [],
+          "symbol_kind": "other"
+        }
+      ],
+      "input_sha": "80ba09e8bd507c9a6d9b594ffacc346abc7d3002d9e30df4453eba5d2297edc7",
+      "n_context_lines": 1,
+      "contexts": [
+        {
+          "line": 437,
+          "in_code_face": false,
+          "occ_source": "n/a",
+          "text": ""
+        }
+      ]
+    }
+  ]
+}
