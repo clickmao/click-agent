@@ -1845,3 +1845,20 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 1. **判官输入侧特征块 A/B**（用户建议的 NLP 前置）：同批真实样本 × {原始文本, 结构化特征块}，判据 = 退化率 / 判决分布 / 单调用 token；
 2. **器具锚改「产品实发 prompt 落盘」**（新增 `--gate-prompt-dump`）——本轮失锚的根因对策，并给门通道加「源锚版本」闸；
 3. 残留：`本地口径降幅 V5/V1 净亏`、`15x 决定性实验`、doc HTML 报告 T8。
+
+## R450（2026-09-15）· 门判实发 prompt 落盘锚：器具失锚定案 + AOT 两条硬教训
+
+用户指令：把输入输出的数据预处理成 r1 能很好识别的数据（**先修锚**，否则任何输入友好化实验都会重复 R449 的 VOID）。
+
+- **交付**：`ModelQueueRouter` 加 `AGENTFRAMEWORK_GATE_PROMPT_DUMP`（默认关=零产品变更；JSONL `seq/len/sha16/prompt`；**UTF8 无 BOM**；**零反射手写 JSON 转义**）。
+- **失锚定案**：`derive_template()` 越界把 3 个插值标签（`【角色设定】`+`【用户消息】`+`答案:` = 恰好 **16 字符**）抽进模板，`build_prompt()` 再追加 ⇒ R449 探针实发 = **标签重复的畸形 prompt**（产品永不产生）⇒ `gen=6` 无思考、正控 3/7、I2 0/13。三处独立读数（R443 记录 / 遥测长度代数 / 修正后实测）= tpl **280**。
+- **逐位锚建立**：修正后与产品**实发文本**比对 —— 同成长态条目 **delta=0（453 字符逐位相同）**；其余条目首差异**全部落在成长块计数**（`赏6/罚0` vs `赏8/罚1`/`赏9/罚1`/`赏11/罚1`）⇒ 残余差 = **会话累积态**（可归因、可机检）。
+- **默认档零变更（实机背书）**：开档跑 M20 ⇒ `tokens_total = 32968`（= R444 BRJ 原值）、`gate_r1_n = 7`、`r1_skips = 7`、`r1_passes = 0`、`accuracy = 1.0`、`repro_archive_ok = true`。
+- **AOT 两条硬教训（本轮实发）**：① STJ **反射**序列化在 AOT 被禁用（实测 `InvalidOperationException`）⇒ 仪器必须零反射；② `Encoding.UTF8` 建文件**写 BOM** ⇒ 下游 JSONL 解析器炸，必须 `new UTF8Encoding(false)`。两条都**由仪器自己在日志留告警 / 在 s1 首跑暴露**，否则会静默产出空证据（"没测到"伪装成"测过"）。
+- 器具：`GatePromptDumpTests` 4/4；全量 **1325 中 1324 绿 + 1 负载型偶发红**（`FileLock_ConcurrentAppend_NoLoss_NoInterleave` 期望 120 实际 119，单跑 3/3 绿；与 R450 无关，登记为偶发）。
+- 登记：`r450.gate-prompt-anchor`(L2)；计划 `docs/plans/v0.70.0-r450-gate-prompt-anchor.md` §6；证据 `eval/rover/r450/anchor-r450.json`、`dump-BRJ-M20-s2.jsonl`。
+
+### 下轮（R450-B）
+1. 用**修正后的器具**重跑真实流量探针 ⇒ 外部效度真读数（R449 判官侧读数仍记 **n/a**，不得翻案）；
+2. 之后做用户要求的「判官输入/输出友好化」A/B（判据：退化率 / 判决一致性 / 单调用 token）；
+3. 主线残留：**零可跳档净亏已量化**（角色块 152 字符/调用 ≈ 3.3%，与 V5 −2.40% 同量级 ⇒ 属特性成本，动它需质量等价证明）；短档 V2b 13.03%；L.7 语言无关令。

@@ -1,0 +1,31 @@
+{
+  "round": "R450",
+  "kind": "instrument_anchor",
+  "decision": "GATE_PROMPT_ANCHOR_ESTABLISHED",
+  "root_cause_closed": {
+    "defect": "eval/rover/r443/reconstruct_gate_prompt.py::derive_template() 越界抽取 BuildPrompt 的 3 个插值标签",
+    "labels_leaked": ["【角色设定】", "【用户消息】", "答案:"],
+    "extra_chars": 16,
+    "consequence": "build_prompt 再追加同 3 个标签 ⇒ R449 探针实发 = 标签重复的畸形 prompt (产品永不产生) ⇒ 正控 3/7 (产品 7/7)、gen=6 无思考 (产品 raw_len 127..515)",
+    "verification": [
+      "tpl 长度三处独立读数一致 = 280 (R443 记录 tpl_len / 遥测长度代数 452=tpl+78+growth+5+19 / 修正后实测)",
+      "修正后与产品**实发** prompt 逐位比对: 同成长态条目 delta=0 (453 字符, 逐位相同)",
+      "其余条目首差异全部落在成长块计数 (赏6/罚0 vs 赏8/罚1 / 赏9/罚1 / 赏11/罚1) ⇒ 残余差 = 会话累积态"
+    ]
+  },
+  "delivered": {
+    "dump_gate": "AGENTFRAMEWORK_GATE_PROMPT_DUMP=<path> (未设/纯空白=关闭; 其余按原样路径; JSONL 逐行 seq/len/sha16/prompt; UTF8 no-BOM; IO 异常吞掉但记告警)",
+    "aot_lessons": [
+      "STJ 反射序列化在 AOT 被禁用 (实测 InvalidOperationException) ⇒ 手写零反射 JSON 转义",
+      "Encoding.UTF8 建文件会写 BOM ⇒ 必须 new UTF8Encoding(false) (下游 JSONL 解析器会炸)"
+    ],
+    "tests": "GatePromptDumpTests 4/4 (默认关不落盘 / 空白串关闭且不 trim 猜测 / 转义可回读 / 落盘 len+sha16+原文逐位可核 + 无 BOM)"
+  },
+  "evidence_paths": [
+    "eval/rover/r450/dump-BRJ-M20-s2.jsonl",
+    "eval/rover/r450/run-BRJ-M20-s2/data/telemetry/host.jsonl",
+    "eval/rover/r450/run_arm_r450.sh",
+    "src/agent.modelqueue/ModelQueueRouter.cs"
+  ],
+  "next": "R450-B: 用锚重跑真实流量探针 (修正后的 real_gate_probe) ⇒ 外部效度真读数; 之后才做输入友好化 A/B"
+}

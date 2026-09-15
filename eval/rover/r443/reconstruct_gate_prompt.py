@@ -54,10 +54,23 @@ def derive_template() -> str:
     i = src.index('public static string BuildPrompt(')
     j = src.index('public static bool MechanicalAck(', i)
     body = src[i:j]
-    lits = re.findall(r'sb\.Append\("((?:[^"\\]|\\.)*)"\)', body)
+    # R450 器具缺陷修正 (R449 VOID 的根因):
+    #   模板 = **固定前缀**的字面量。其后是 `if (roleSeed) sb.Append("【角色设定】")…` 的插值装配段,
+    #   该段含 3 个标签字面量 ("【角色设定】" / "【用户消息】" / "答案:\n" = 恰好 16 字符),
+    #   build_prompt() 会再次追加它们 ⇒ 旧实现抽出 296 字符模板并把标签**重复**一次,
+    #   产出产品从不发送的畸形 prompt (实测探针 gen=6 直接出字母、正控 3/7 ⇒ 失锚)。
+    k = body.index('if (!string.IsNullOrWhiteSpace(roleSeed))')
+    fixed = body[:k]
+    lits = re.findall(r'sb\.Append\("((?:[^"\\]|\\.)*)"\)', fixed)
     if len(lits) < 10:
         raise SystemExit(f'模板字面量抽取失败: {len(lits)}')
-    return ''.join(csharp_unescape(x) for x in lits)
+    tpl = ''.join(csharp_unescape(x) for x in lits)
+    # 版本锚 (fail-closed): 长度必须等于 R443 记录值 (280) —— 产品模板变更时此闸必须先更新锚
+    rec = json.loads((ROOT / 'eval/rover/r443/prompt-reconstruction.json').read_text(encoding='utf-8'))
+    exp = int(rec['tpl_len'])
+    if len(tpl) != exp:
+        raise SystemExit(f'模板长度锚不符: got {len(tpl)} expected {exp} ⇒ 模板或重建器已漂移, 需重锚')
+    return tpl
 
 
 def derive_growth_format():

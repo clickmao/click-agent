@@ -1443,6 +1443,21 @@
         "eval/rover/r449/prereg-probe.json",
         "eval/rover/r449/verdict-r449-close.json"
       ]
+    },
+    {
+      "id": "r450.gate-prompt-anchor",
+      "level": 2,
+      "capability": "门判**实发 prompt** 落盘锚 (env AGENTFRAMEWORK_GATE_PROMPT_DUMP, 默认关/零产品变更) + 零反射 JSON 转义 + UTF8 no-BOM + 源码派生重建器的版本锚 fail-closed",
+      "evidence_cmd": "R450_GRID=M20 R450_NS=-s2 AGENTFRAMEWORK_HOST_BIN=/tmp/pub_r450/agenthost bash eval/rover/r450/run_arm_r450.sh BRJ; python3 eval/rover/r449/real_gate_probe.py --selftest",
+      "evidence_path": "eval/rover/r450/anchor-r450.json",
+      "negative_control": "默认档不落盘(断言 False) / 空白串=关闭且带尾空格路径不得被 trim 猜测 / 转义必须能被标准解析器回读 / 不得写 BOM / 首差异定位必须给反例: 残余差只能落在成长块, 若落在模板或消息段即判『非成长态』并推翻结论",
+      "covers": [
+        "src/agent.modelqueue/ModelQueueRouter.cs",
+        "src/agent.tests/GatePromptDumpTests.cs",
+        "eval/rover/r450/run_arm_r450.sh",
+        "eval/rover/r443/reconstruct_gate_prompt.py"
+      ],
+      "owner_round": "R450"
     }
   ],
   "aot_check_policy": "release_tag_only",

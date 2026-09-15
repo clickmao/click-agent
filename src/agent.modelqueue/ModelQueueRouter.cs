@@ -163,6 +163,7 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         _policy = new ModelSelectionPolicy();
         _httpClientFactory = httpClientFactory;
         _logger = logger;
+        _dumpLogger = logger;   // R450: 落盘闸为静态方法 ⇒ 借最近构造实例的 logger 记告警 (仅诊断用)
         _tokenUsage = tokenUsage;
         _localPort = localPort;
         Scheduler = scheduler ?? new ChannelScheduler();
@@ -193,6 +194,64 @@ public sealed class ModelQueueRouter : IModelQueueCaller
     /// R413 前置门判别: 本地端口判定「本轮是否携带新增诉求」。
     /// 失败/空回/记账违规/无法解析 ⇒ <c>Decided=false</c> (调用方必须降级远端, 绝不静默跳过); 取消上抛。
     /// </summary>
+    /// <summary>
+    /// R450: 门判**实发 prompt** 落盘闸 —— 器具锚的唯一权威源。
+    /// 动机 (R449 实测): 源码派生重建器与产品实发文本漂移 (重建 480 vs 遥测 452 字符;
+    ///   seed sha 逐位相同、模板源码未变) ⇒ 拿重建 prompt 做外部效度探针会得到
+    ///   **产品不产生的行为** (探针 gen=6 直接出字母 vs 产品长思考, 正控 3/7 而产品 7/7)。
+    /// 契约: 未设/空 ⇒ **完全关闭** (零产品变更: 不落盘、不建目录、不读文件);
+    ///   设 = 追加 JSONL 一行 {seq,len,sha16,prompt}; 任何 IO 异常吞掉(记 warning)
+    ///   —— 仪器绝不改变决策路径。
+    /// </summary>
+    internal static void DumpGatePrompt(string prompt)
+    {
+        var path = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_GATE_PROMPT_DUMP");
+        if (string.IsNullOrWhiteSpace(path)) return;
+        try
+        {
+            var sha16 = Convert.ToHexString(
+                System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(prompt)))[..16];
+            var seq = System.Threading.Interlocked.Increment(ref _gateDumpSeq);
+            // R450 修正: AOT 下 STJ 反射序列化被禁用 (实测 InvalidOperationException)
+            //   ⇒ 手写 JSON 字符串转义 (零反射; 铁律: STJ Source Generator 或不用)
+            var line = "{\"seq\":" + seq + ",\"len\":" + prompt.Length + ",\"sha16\":\"" + sha16 + "\",\"prompt\":\""
+                       + JsonEscape(prompt) + "\"}\n";
+            // R450: UTF8 必须显式 no-BOM —— `Encoding.UTF8` 建文件时会写 BOM, 下游 JSONL 解析器会炸
+            System.IO.File.AppendAllText(path, line, new System.Text.UTF8Encoding(false));
+        }
+        catch (Exception ex)
+        {
+            _dumpLogger?.LogWarning(ex, "R450: 门判 prompt 落盘失败 (已忽略, 不影响决策)");
+        }
+    }
+
+    private static Microsoft.Extensions.Logging.ILogger? _dumpLogger;
+    private static int _gateDumpSeq;
+
+    /// <summary>R450: 零反射 JSON 字符串转义 (AOT 安全; 覆盖 \" \\ 与 &lt;0x20 控制字符)。</summary>
+    internal static string JsonEscape(string s)
+    {
+        var sb = new System.Text.StringBuilder(s.Length + 8);
+        foreach (var c in s)
+        {
+            switch (c)
+            {
+                case '"': sb.Append("\\\""); break;
+                case '\\': sb.Append("\\\\"); break;
+                case '\n': sb.Append("\\n"); break;
+                case '\r': sb.Append("\\r"); break;
+                case '\t': sb.Append("\\t"); break;
+                default:
+                    if (c < 0x20)
+                        sb.Append("\\u").Append(((int)c).ToString("x4"));
+                    else
+                        sb.Append(c);
+                    break;
+            }
+        }
+        return sb.ToString();
+    }
+
     public async Task<TurnGateOutcome> JudgeTurnAsync(string userMessage, string? roleSeed, string? growthBlock, CancellationToken ct = default)
     {
         var port = _localPort;
@@ -206,6 +265,7 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         // R431: prompt 只构造一次 —— 形状读数取自实发文本 (二次重建会与真发内容漂移)。
         var gatePrompt = TurnGateJudge.BuildPrompt(userMessage, roleSeed, growthBlock);
         TurnGate.RecordPromptShape(gatePrompt.Length, roleSeed?.Length ?? 0, growthBlock);
+        DumpGatePrompt(gatePrompt);   // R450: 门判实发 prompt 落盘闸 (默认关 ⇒ 现网零变更)
         try
         {
             var outcome = await port.GenerateAsync(new LocalGenerationRequest
