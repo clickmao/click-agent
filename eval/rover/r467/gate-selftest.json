@@ -1,0 +1,27 @@
+{
+ "cases": [
+  {
+   "id": "S1_real_drift_r465_Arole_vs_r467_Arole",
+   "expect": "RED",
+   "got": "VOID_NOT_COMPARABLE",
+   "pass": true,
+   "detail": "同名臂(必须逐键同) ⇒ 可比=False; 标志差异={'relation_judge': ['false', 'true']}; 仅一侧声明={'repeat_priority': ['<未声明>', 'on'], 'role_sha256': ['<未声明>', 'ecb75f53c5fd712b1a60567bf7e8fb1a19242d3389bfabf2196f2e86f72cb1f1']}; 器具差异(不判红)={'host_bin': [None, '/tmp/pub_r466/agenthost'], 'host_sha256': [None, '9f5f9e696da8b8d5b06f54ca741463c13e2a43b4f472c1876a62ca6dcb5ac7c2'], 'config_sha256': [None, 'b8341dcc6427e8113eb1e147c688f787cf472504fea2ccb8fc794aec72de0e0c'], 'rundir_cwd': ['eval/rover/r465/run-Arole', 'eval/rover/r467/run-Arole']}"
+  },
+  {
+   "id": "S2_doctored_identity",
+   "expect": "RED",
+   "got": "VOID_NOT_COMPARABLE",
+   "pass": true,
+   "detail": "恒等式 14=13 且 judge 调用两侧一致=True"
+  },
+  {
+   "id": "S3_instrument_only_diff_must_pass",
+   "expect": "GREEN",
+   "got": "OK_COMPARABLE",
+   "pass": true,
+   "detail": "器具差异={'host_bin': ['/tmp/pub_r466/agenthost', 'different_/tmp/pub_r466/agenthost'], 'host_sha256': ['9f5f9e696da8b8d5b06f54ca741463c13e2a43b4f472c1876a62ca6dcb5ac7c2', 'different_9f5f9e696da8b8d5b06f54ca741463c13e2a43b4f472c1876a62ca6dcb5ac7c2'], 'config_sha256': ['b8341dcc6427e8113eb1e147c688f787cf472504fea2ccb8fc794aec72de0e0c', 'different_b8341dcc6427e8113eb1e147c688f787cf472504fea2ccb8fc794aec72de0e0c'], 'rundir_cwd': ['eval/rover/r467/run-Arole', 'different_eval/rover/r467/run-Arole']} (不判红)"
+  }
+ ],
+ "all_pass": true,
+ "summary": "3/3 通过 (S1→VOID_NOT_COMPARABLE; S2→VOID_NOT_COMPARABLE; S3→OK_COMPARABLE)"
+}

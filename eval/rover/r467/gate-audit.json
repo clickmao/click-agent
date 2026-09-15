@@ -1,0 +1,85 @@
+[
+ {
+  "id": "X1_cross_round_same_arm_R(r466→r467)",
+  "verdict": "OK_COMPARABLE",
+  "expect": "OK_COMPARABLE",
+  "pass": true,
+  "mode": "同名臂(必须逐键同)",
+  "diffs": {},
+  "undeclared": {
+   "warmup": [
+    "<未声明>",
+    "off"
+   ],
+   "role_sha256": [
+    "<未声明>",
+    "ecb75f53c5fd712b1a60567bf7e8fb1a19242d3389bfabf2196f2e86f72cb1f1"
+   ]
+  },
+  "red": []
+ },
+ {
+  "id": "X2_cross_round_same_arm_Arole(r466→r467)",
+  "verdict": "OK_COMPARABLE",
+  "expect": "OK_COMPARABLE",
+  "pass": true,
+  "mode": "同名臂(必须逐键同)",
+  "diffs": {},
+  "undeclared": {
+   "warmup": [
+    "<未声明>",
+    "off"
+   ],
+   "role_sha256": [
+    "<未声明>",
+    "ecb75f53c5fd712b1a60567bf7e8fb1a19242d3389bfabf2196f2e86f72cb1f1"
+   ]
+  },
+  "red": []
+ },
+ {
+  "id": "X3_same_class_pre_r1_baseline(r465.Arole→r467.Aroff)",
+  "verdict": "OK_COMPARABLE",
+  "expect": "OK_COMPARABLE",
+  "pass": true,
+  "mode": "异名同类(合法重命名)",
+  "diffs": {},
+  "undeclared": {
+   "repeat_priority": [
+    "<未声明>",
+    "on"
+   ],
+   "role_sha256": [
+    "<未声明>",
+    "ecb75f53c5fd712b1a60567bf7e8fb1a19242d3389bfabf2196f2e86f72cb1f1"
+   ]
+  },
+  "red": []
+ },
+ {
+  "id": "X4_NEGCTL_real_drift(r465.Arole→r467.Arole)",
+  "verdict": "VOID_NOT_COMPARABLE",
+  "expect": "VOID_NOT_COMPARABLE",
+  "pass": true,
+  "mode": "同名臂(必须逐键同)",
+  "diffs": {
+   "relation_judge": [
+    "false",
+    "true"
+   ]
+  },
+  "undeclared": {
+   "repeat_priority": [
+    "<未声明>",
+    "on"
+   ],
+   "role_sha256": [
+    "<未声明>",
+    "ecb75f53c5fd712b1a60567bf7e8fb1a19242d3389bfabf2196f2e86f72cb1f1"
+   ]
+  },
+  "red": [
+   "G4_cross_round_comparable"
+  ]
+ }
+]

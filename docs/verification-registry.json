@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R466",
+ "updated_round": "R467",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -1889,6 +1889,35 @@
     "src/agent/context/ContinuationBrief.cs"
    ],
    "owner_round": "R466"
+  },
+  {
+   "id": "r467.call-decomposition-ledger",
+   "level": "L2",
+   "capability": "远端调用分解台账：桩侧 calls-<ARM>.jsonl 逐条分类(main/judge/micro/other) + 宿主 correction_judge 路由(source·prompt_len·ms) + llm_call 内部计数，落 ledger-<ARM>.json；分解恒等式与内外计数一致由机检给出（恒等式 calls == main + judge_remote + micro + other；桩侧 calls == 宿主 llm_call 事件数）",
+   "evidence_cmd": "python3 eval/rover/r467/settle_r467.py eval/rover/r467 ALL",
+   "evidence_path": "eval/rover/r467/verdict-r467.json",
+   "negative_control": "Aroff(RJ=false) 与 Arole(RJ=on) 同二进制/同桩/同网格单变量对照：前者 21 调用/33,323 tok(含 8 条桩侧判官调用 prompt 1,170 + completion 56 = 1,226 tok)，后者 13/32,097；差值与桩侧判官调用逐位吻合 ⇒ 若台账分解错位，两臂差不会等于 1,226",
+   "covers": [
+    "eval/rover/r467/settle_r467.py",
+    "eval/rover/r467/ledger-Arole.json",
+    "eval/rover/r467/ledger-Aroff.json",
+    "docs/reports/r467-denominator-pinned.md"
+   ],
+   "owner_round": "R467"
+  },
+  {
+   "id": "r467.arm-flag-comparability-gate",
+   "level": "L4",
+   "capability": "臂可比性闸(fail-closed)：同名臂跨轮 arm_flags 必须逐键同，不同 ⇒ 该臂读数 VOID_NOT_COMPARABLE(不可作分母/不可同题对比)；异名异类 ⇒ NA 拒绝背书；含 G1 分解恒等式 / G2 桩-遥测内外一致 / G3 路由干净(禁静默远端兜底) / G5 声明完备；arm_class 单一来源 = denominator_gate.arm_class_of",
+   "evidence_cmd": "python3 eval/rover/r467/denominator_gate.py --selftest --dir eval/rover/r467",
+   "evidence_path": "eval/rover/r467/gate-selftest.json",
+   "negative_control": "S1=用【真实历史】R465 Arole 台账当生产等价分母 ⇒ 判红(差异键恰为 relation_judge，即 R465→R466 的真实漂移)；S2=人为破坏分解恒等式 ⇒ 判红；S3=只改器具 sha(host_sha256)而行为标志不变 ⇒ 判绿(不把二进制换代误判成分母漂移)",
+   "covers": [
+    "eval/rover/r467/denominator_gate.py",
+    "eval/rover/r467/gate-selftest.json",
+    "eval/rover/r467/gate-audit.json"
+   ],
+   "owner_round": "R467"
   }
  ],
  "aot_check_policy": "release_tag_only",

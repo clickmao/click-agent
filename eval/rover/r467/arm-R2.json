@@ -1,0 +1,195 @@
+{
+ "arm": "R2",
+ "calls": 6,
+ "prompt_tokens": 14489,
+ "completion_tokens": 42,
+ "total_tokens": 14531,
+ "turns": 12,
+ "turns_ok": 12,
+ "secs": [
+  0.33,
+  53.67,
+  19.59,
+  19.81,
+  19.66,
+  0.1,
+  0.27,
+  0.08,
+  0.07,
+  0.11,
+  0.08,
+  0.13
+ ],
+ "secs_median": 0.2,
+ "secs_total": 113.9,
+ "gate_events": 12,
+ "gate_bases": [
+  "mechanical:pass→remote",
+  "gate:skip→local",
+  "gate:skip→local",
+  "gate:skip→local",
+  "gate:skip→local",
+  "mechanical:repeat→local",
+  "mechanical:nonack→remote",
+  "mechanical:nonack→remote",
+  "mechanical:repeat→local",
+  "mechanical:pass→remote",
+  "mechanical:nonack→remote",
+  "mechanical:pass→remote"
+ ],
+ "gate_verdicts": [
+  "Pass",
+  "Skip",
+  "Skip",
+  "Skip",
+  "Skip",
+  "Skip",
+  "Pass",
+  "Pass",
+  "Skip",
+  "Pass",
+  "Pass",
+  "Pass"
+ ],
+ "prefilter_repeat": 2,
+ "prefilter_violations": 0,
+ "local_calls": 4,
+ "local_eval_tokens": 1370,
+ "local_gen_tokens": 8,
+ "gate_config": {
+  "router_present": "True",
+  "turn_gate_enabled": "True",
+  "local_channel_ready": "True",
+  "role_growth_domains": "3",
+  "repeat_skip": "on",
+  "role": "skeptic"
+ },
+ "skip_reply_kinds": [
+  "template",
+  "template",
+  "template",
+  "template",
+  "repeat_verbatim",
+  "repeat_verbatim"
+ ],
+ "closure_events": [
+  {
+   "grounded": false,
+   "apply_fallback": false,
+   "settle_kind": "repeat_verbatim",
+   "suppressed": true,
+   "priority": "on",
+   "artifacts": 0,
+   "chars": 21
+  }
+ ],
+ "server_pids": [
+  "pid=1229737",
+  "pid=1229757"
+ ],
+ "server_pid_n": 2,
+ "warn_lines": 0,
+ "replies": [
+  "桩应答: 收到, 已完成该步。",
+  "收到，继续按当前方向推进，本轮不重新规划。",
+  "收到，继续按当前方向推进，本轮不重新规划。",
+  "收到，继续按当前方向推进，本轮不重新规划。",
+  "收到，继续按当前方向推进，本轮不重新规划。",
+  "收到，继续按当前方向推进，本轮不重新规划。",
+  "(先说明: 上一轮问过「讲一遍」还没答, 这轮按你这次的意图办。)\n桩应答: 收到, 已完成该步。",
+  "桩应答: 收到, 已完成该步。",
+  "桩应答: 收到, 已完成该步。",
+  "桩应答: 收到, 已完成该步。",
+  "桩应答: 收到, 已完成该步。",
+  "桩应答: 收到, 已完成该步。"
+ ],
+ "texts": [
+  "把构建命令写成一行。",
+  "谢谢，收到。",
+  "好的，明白。",
+  "嗯嗯，知道了。",
+  "明白，多谢。",
+  "再讲一遍。",
+  "讲细一点。",
+  "换个说法。",
+  "从头再说。",
+  "你上一条说 3 加 5 等于 9，对吧？",
+  "你上一条说的数是九。",
+  "不对，你上一条不准确，请重新确认。"
+ ],
+ "stats": {
+  "turns": 12,
+  "ok": 12,
+  "events": 37,
+  "asks": 2,
+  "errors": []
+ },
+ "calls_class": {
+  "main": 6,
+  "judge": 0,
+  "micro": 0,
+  "other": 0
+ },
+ "calls_class_idx": {
+  "main": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "judge": [],
+  "micro": [],
+  "other": []
+ },
+ "judge_route": {
+  "events": 12,
+  "local": 8,
+  "shortcircuit": 4,
+  "remote_real": 0,
+  "remote_fallback": 0,
+  "local_ms": [
+   32427.0,
+   25120.0,
+   37228.0,
+   49098.0,
+   61395.0,
+   73645.0,
+   86621.0,
+   98854.0
+  ],
+  "remote_real_ms": [],
+  "local_prompt_len": [
+   290,
+   289,
+   288,
+   288,
+   282,
+   282,
+   297,
+   287
+  ],
+  "remote_real_tokens_est": [],
+  "heads": [
+   "把构建命令写成一行。",
+   "谢谢，收到。",
+   "好的，明白。",
+   "不对，你上一条不准确，请重新确认。",
+   "嗯嗯，知道了。",
+   "明白，多谢。",
+   "再讲一遍。",
+   "讲细一点。",
+   "换个说法。",
+   "从头再说。",
+   "你上一条说 3 加 5 等于 9，对",
+   "你上一条说的数是九。"
+  ]
+ },
+ "remote_llm_events": 6,
+ "judge_calls_tokens": {
+  "prompt": 0,
+  "completion": 0,
+  "total": 0
+ }
+}
