@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R472",
+ "updated_round": "R474",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -2922,6 +2922,91 @@
     "docs/reports/r472-cache-cap-experiment.md"
    ],
    "owner_round": "R472"
+  },
+  {
+   "id": "r474.provider-truth-denominator-arms",
+   "level": "L3",
+   "capability": "KPI 分母升级: 供应商 usage 真值双臂(门关 Arole 20 调用/76094 token vs 门开 R 9 调用/32769 token) ⇒ 总 token -56.94%/远端调用 -55.0%; 桩口径(字符/2)低估 1.323-1.402x; identity prompt==hit+miss 20/20 与 9/9; 桩口径对照 -54.74% vs 真值 -56.94% 同向同量级",
+   "evidence_cmd": "env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR python3 eval/rover/r474/settle_r474.py eval/rover/r474 ALL",
+   "evidence_path": "eval/rover/r474/verdict-r474.json",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "143b87a6cb63",
+    "instrument": "eval/rover/r474/settle_r474.py",
+    "instrument_sha12": "5098337fbf78",
+    "binding": "audit-pin",
+    "audited_by_round": "R474"
+   },
+   "negative_control": "预注册 C2(relay==host llm_call) 字面 FAIL 保留不覆盖(Arole 20vs16, R 9vs6) + 事后归因 P1(llm_call+llm_call_recover 恒等成立) 单列; 中止试点 2 次调用单独计入成本; 桩口径与真值双列并出(禁混算)",
+   "covers": [
+    "eval/rover/r474/relay_real.py",
+    "eval/rover/r474/run_arm_real.sh",
+    "eval/rover/r474/run_both.sh",
+    "eval/rover/r474/settle_r474.py",
+    "eval/rover/r474/prereg_r474.json",
+    "eval/rover/r474/verdict-r474.json",
+    "eval/rover/r474/calls-Arole.jsonl",
+    "eval/rover/r474/calls-R.jsonl",
+    "eval/rover/r474/usage-Arole.jsonl",
+    "eval/rover/r474/usage-R.jsonl",
+    "docs/reports/r474-real-provider-arms.md",
+    "docs/plans/v0.90.0-r474-kpi-denominator-provider-truth.md"
+   ],
+   "owner_round": "R474"
+  },
+  {
+   "id": "r474.relay-instrument-and-budget-guard",
+   "level": "L4",
+   "capability": "真转发中继器具: 双证据(请求体落盘 + 供应商 usage 落盘) + 预算闸 fail-closed(cap 0 -> HTTP 402 且零外发); 负控/正控成对(G1 402, G2 无转发行, G3 进程存活, G4 正控透传)",
+   "evidence_cmd": "python3 eval/rover/r474/selfcheck_guard.py --out eval/rover/r474/selfcheck_guard.json",
+   "evidence_path": "eval/rover/r474/selfcheck_guard.json",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "11b55cb6182d",
+    "instrument": "eval/rover/r474/selfcheck_guard.py",
+    "instrument_sha12": "bb36323d3570",
+    "binding": "audit-pin",
+    "audited_by_round": "R474"
+   },
+   "negative_control": "负控 cap=0 必 402 且 usage-*.jsonl 无 status>0 转发行为; 正控(黑洞上游)必有转发尝试 ⇒ 证明闸不是恒 402 的哑器; 自检零 API 调用, 不外发",
+   "covers": [
+    "eval/rover/r474/relay_real.py",
+    "eval/rover/r474/selfcheck_guard.py",
+    "eval/rover/r474/selfcheck_guard.json"
+   ],
+   "owner_round": "R474"
+  },
+  {
+   "id": "r474.quality-regression-evidence",
+   "level": "L2",
+   "capability": "真端点暴露的回复质量面: R 臂 12 轮中 6 轮模板应答 + 3 轮用户可见「模型未产出正文」横幅(t1/t7/t8), 而同轮 Arole 为 371-644 字实质回答; recover 双态 Arole 4/4 recovered vs R 0/3; 门事件 12 = Pass6/Skip6",
+   "evidence_cmd": "env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR python3 eval/rover/r474/settle_r474.py eval/rover/r474 R",
+   "evidence_path": "eval/rover/r474/turns-R.jsonl",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "aca0c8072b6b",
+    "instrument": "eval/rover/r474/settle_r474.py",
+    "instrument_sha12": "5098337fbf78",
+    "binding": "audit-pin",
+    "audited_by_round": "R474"
+   },
+   "negative_control": "同轮 Arole 对照(turns-Arole.jsonl) + recover 双态对照(recovered true/false) + 归因边界明写(空正文为供应商侧失败模式, n=3/4 不足以断言与门控相关, 器具缺采样参数/finish_reason ⇒ 根因未定位)",
+   "covers": [
+    "eval/rover/r474/turns-Arole.jsonl",
+    "eval/rover/r474/turns-R.jsonl",
+    "eval/rover/r474/arm-Arole.json",
+    "eval/rover/r474/arm-R.json",
+    "eval/rover/r474/tel-Arole/host.jsonl",
+    "eval/rover/r474/tel-R/host.jsonl",
+    "docs/reports/r474-real-provider-arms.md"
+   ],
+   "owner_round": "R474"
   }
  ],
  "aot_check_policy": "release_tag_only",

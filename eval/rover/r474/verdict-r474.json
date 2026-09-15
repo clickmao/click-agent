@@ -1,0 +1,379 @@
+{
+ "round": "R474",
+ "dir": "eval/rover/r474",
+ "arms": {
+  "Arole": {
+   "calls": 20,
+   "provider": {
+    "prompt_tokens": 70890,
+    "completion_tokens": 5204,
+    "total_tokens": 76094,
+    "cache_hit_tokens": 61952,
+    "cache_miss_tokens": 8938,
+    "hit_share": 0.8739,
+    "identity_prompt_eq_hit_plus_miss": true,
+    "cost_cny_upper": 0.024865,
+    "cost_cny_lower": 0.00981
+   },
+   "turns_ok": 12,
+   "hit_share": 0.8739,
+   "calls_class": {
+    "main": 16,
+    "judge": 0,
+    "micro": 4,
+    "other": 0
+   }
+  },
+  "R": {
+   "calls": 9,
+   "provider": {
+    "prompt_tokens": 29477,
+    "completion_tokens": 3292,
+    "total_tokens": 32769,
+    "cache_hit_tokens": 22912,
+    "cache_miss_tokens": 6565,
+    "hit_share": 0.7773,
+    "identity_prompt_eq_hit_plus_miss": true,
+    "cost_cny_upper": 0.01158,
+    "cost_cny_lower": 0.006012
+   },
+   "turns_ok": 12,
+   "hit_share": 0.7773,
+   "calls_class": {
+    "main": 9,
+    "judge": 0,
+    "micro": 0,
+    "other": 0
+   }
+  }
+ },
+ "checks": [
+  {
+   "id": "C1_chain_ok",
+   "pass": true,
+   "value": {
+    "Arole": "12/12",
+    "R": "12/12",
+    "blocked": [
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "id": "C2_internal_external_agree",
+   "pass": false,
+   "value": {
+    "Arole": [
+     20,
+     16
+    ],
+    "R": [
+     9,
+     6
+    ]
+   }
+  },
+  {
+   "id": "C3_provider_truth",
+   "pass": true,
+   "value": {
+    "Arole": true,
+    "R": true
+   }
+  },
+  {
+   "id": "C4_cache_hit_samples",
+   "pass": true,
+   "value": {
+    "Arole_hit": 61952,
+    "R_hit": 22912,
+    "Arole_first_main_hit": 2688,
+    "R_first_main_hit": 640
+   }
+  },
+  {
+   "id": "C5_kpi_total_tokens",
+   "pass": true,
+   "value": {
+    "Arole_total": 76094,
+    "R_total": 32769,
+    "降幅_pct": 56.94,
+    "调用次数降幅_pct": 55.0,
+    "prompt降幅_pct": 58.42,
+    "桩口径对照": {
+     "R467_R_total": 14529,
+     "R467_Arole_total": 32097,
+     "R467_降幅_pct": 54.74
+    }
+   }
+  },
+  {
+   "id": "C6_effective_hit_rate_computable",
+   "pass": true,
+   "value": {
+    "Arole": 11,
+    "R": 5,
+    "rows_Arole": [
+     {
+      "turn": 1,
+      "effective_hit_rate": -1,
+      "cache_hit_rate": 0.9266,
+      "cacheable_tokens": 0,
+      "prompt_tokens": 2901
+     },
+     {
+      "turn": 2,
+      "effective_hit_rate": 1.0589,
+      "cache_hit_rate": 0.9281,
+      "cacheable_tokens": 2901,
+      "prompt_tokens": 3310
+     },
+     {
+      "turn": 3,
+      "effective_hit_rate": 0.9668,
+      "cache_hit_rate": 0.9321,
+      "cacheable_tokens": 3310,
+      "prompt_tokens": 3433
+     },
+     {
+      "turn": 4,
+      "effective_hit_rate": 0.9694,
+      "cache_hit_rate": 0.934,
+      "cacheable_tokens": 3433,
+      "prompt_tokens": 3563
+     },
+     {
+      "turn": 5,
+      "effective_hit_rate": 0.97,
+      "cache_hit_rate": 0.9238,
+      "cacheable_tokens": 3563,
+      "prompt_tokens": 3741
+     },
+     {
+      "turn": 6,
+      "effective_hit_rate": 0.9922,
+      "cache_hit_rate": 0.9417,
+      "cacheable_tokens": 3741,
+      "prompt_tokens": 3942
+     },
+     {
+      "turn": 7,
+      "effective_hit_rate": 1.0066,
+      "cache_hit_rate": 0.9407,
+      "cacheable_tokens": 3942,
+      "prompt_tokens": 4218
+     },
+     {
+      "turn": 8,
+      "effective_hit_rate": 0.9711,
+      "cache_hit_rate": 0.8879,
+      "cacheable_tokens": 4218,
+      "prompt_tokens": 4613
+     },
+     {
+      "turn": 0,
+      "effective_hit_rate": -1,
+      "cache_hit_rate": 0,
+      "cacheable_tokens": 0,
+      "prompt_tokens": 601
+     },
+     {
+      "turn": 9,
+      "effective_hit_rate": 1.0822,
+      "cache_hit_rate": 0.968,
+      "cacheable_tokens": 4613,
+      "prompt_tokens": 5157
+     },
+     {
+      "turn": 0,
+      "effective_hit_rate": -1,
+      "cache_hit_rate": 0.6244,
+      "cacheable_tokens": 0,
+      "prompt_tokens": 615
+     },
+     {
+      "turn": 10,
+      "effective_hit_rate": 0.9928,
+      "cache_hit_rate": 0.9102,
+      "cacheable_tokens": 5157,
+      "prompt_tokens": 5625
+     },
+     {
+      "turn": 0,
+      "effective_hit_rate": -1,
+      "cache_hit_rate": 0.6347,
+      "cacheable_tokens": 0,
+      "prompt_tokens": 605
+     },
+     {
+      "turn": 11,
+      "effective_hit_rate": 0.9785,
+      "cache_hit_rate": 0.9166,
+      "cacheable_tokens": 5625,
+      "prompt_tokens": 6005
+     },
+     {
+      "turn": 0,
+      "effective_hit_rate": -1,
+      "cache_hit_rate": 0.6295,
+      "cacheable_tokens": 0,
+      "prompt_tokens": 610
+     },
+     {
+      "turn": 12,
+      "effective_hit_rate": 0.9805,
+      "cache_hit_rate": 0.9068,
+      "cacheable_tokens": 6005,
+      "prompt_tokens": 6493
+     }
+    ],
+    "rows_R": [
+     {
+      "turn": 1,
+      "effective_hit_rate": -1,
+      "cache_hit_rate": 0.9269,
+      "cacheable_tokens": 0,
+      "prompt_tokens": 2900
+     },
+     {
+      "turn": 6,
+      "effective_hit_rate": 1.0152,
+      "cache_hit_rate": 0.9376,
+      "cacheable_tokens": 2900,
+      "prompt_tokens": 3140
+     },
+     {
+      "turn": 7,
+      "effective_hit_rate": 0.9783,
+      "cache_hit_rate": 0.952,
+      "cacheable_tokens": 3140,
+      "prompt_tokens": 3227
+     },
+     {
+      "turn": 8,
+      "effective_hit_rate": 0.952,
+      "cache_hit_rate": 0.9198,
+      "cacheable_tokens": 3227,
+      "prompt_tokens": 3340
+     },
+     {
+      "turn": 9,
+      "effective_hit_rate": 0.9964,
+      "cache_hit_rate": 0.9017,
+      "cacheable_tokens": 3340,
+      "prompt_tokens": 3691
+     },
+     {
+      "turn": 10,
+      "effective_hit_rate": 0.971,
+      "cache_hit_rate": 0.8942,
+      "cacheable_tokens": 3691,
+      "prompt_tokens": 4008
+     }
+    ]
+   }
+  },
+  {
+   "id": "C7_budget",
+   "pass": true,
+   "value": {
+    "Arole_upper": 0.024865,
+    "R_upper": 0.01158,
+    "sum_upper": 0.036445
+   }
+  },
+  {
+   "id": "C8_quality_no_regression",
+   "pass": null,
+   "value": {
+    "Arole_replies_nonempty": 12,
+    "R_replies_nonempty": 12,
+    "Arole_asks": 2,
+    "R_asks": 2,
+    "Arole_errors": [],
+    "R_errors": [],
+    "identical_replies": 0,
+    "common_reply_slots": 12
+   }
+  },
+  {
+   "id": "C9_guard_instrument",
+   "pass": true,
+   "value": "PASS"
+  },
+  {
+   "id": "C10_aborted_pilot_cost_counted",
+   "pass": true,
+   "value": 0.002039
+  }
+ ],
+ "posthoc": [
+  {
+   "id": "P1_recover_attribution",
+   "note": "C2 按字面 20 != 16 失败 ⇒ 逐点归因: 差值全部来自 llm_call_recover(empty_content 重试) 的裸调用, 该点只记 first_completion_tokens, 不记 prompt/缓存 ⇒ 产品自记账漏计 recover 的 prompt 面",
+   "value": {
+    "Arole_recover_calls": 4,
+    "Arole_recover_prompt": 15458,
+    "R_recover_calls": 3,
+    "R_recover_prompt": 9171,
+    "identity_calls": true,
+    "identity_calls_R": true
+   }
+  },
+  {
+   "id": "P2_降幅分解",
+   "note": "把降幅拆成 (a) 门控减少的调用面 (b) 重试面 分别读数, 避免把「重试变少」记成「r1 增益」",
+   "value": {
+    "Arole_excl_recover_total": 59721,
+    "R_excl_recover_total": 22607,
+    "降幅_pct": 62.15,
+    "Arole_calls_excl": 16,
+    "R_calls_excl": 6
+   }
+  },
+  {
+   "id": "P3_effective_hit_rate_gt1",
+   "note": "产品 effective_hit_rate = hit / cacheable(=上轮 prompt) ⇒ 可 >1 (本臂 3 处); 红线 97% 的分母口径需固化 (R469 遗留)",
+   "value": {
+    "Arole_gt1": [
+     {
+      "turn": 2,
+      "effective_hit_rate": 1.0589,
+      "cache_hit_rate": 0.9281,
+      "cacheable_tokens": 2901,
+      "prompt_tokens": 3310
+     },
+     {
+      "turn": 7,
+      "effective_hit_rate": 1.0066,
+      "cache_hit_rate": 0.9407,
+      "cacheable_tokens": 3942,
+      "prompt_tokens": 4218
+     },
+     {
+      "turn": 9,
+      "effective_hit_rate": 1.0822,
+      "cache_hit_rate": 0.968,
+      "cacheable_tokens": 4613,
+      "prompt_tokens": 5157
+     }
+    ],
+    "R_gt1": [
+     {
+      "turn": 6,
+      "effective_hit_rate": 1.0152,
+      "cache_hit_rate": 0.9376,
+      "cacheable_tokens": 2900,
+      "prompt_tokens": 3140
+     }
+    ]
+   }
+  }
+ ],
+ "artifact_defects_found": [
+  "flags 生成器把配置目录当文件 (IsADirectoryError) ⇒ 该轮 2 次真实调用被中止并单列记账",
+  "端点改写正则误含 /user/balance ⇒ 已排除 (余额面非聊天面; dummy key 下只读 401 不计费)",
+  "自检器正控首版把 max_cny 硬编码为 0.0 导致正控假红 ⇒ 已参数化"
+ ]
+}

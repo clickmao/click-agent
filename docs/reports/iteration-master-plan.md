@@ -343,7 +343,7 @@ python3 eval/run_round.py <新轮号> "revert-verify <原commit>" --quick   # �
 - 证据: `eval/rover/r448/README-evidence.md`｜计划: `docs/plans/v0.68.0-r448-judge-think-length-cap.md`｜登记: registry `r448.judge-think-length-cap`。
 - 下轮候选: ①判官**预填充**侧压缩（2764 tok/10 调用）等价性消融 ②判官+门合并单次本地调用 ③门通道同构消融 ④把「跨臂相等类断言须先机检臂定义可满足」升为器具通用闸。
 
-## R441–R472 轮次索引（2026-09-15 首次回填，R472 扩展到 R472；机取自 `docs/verification-registry.json`，勿手改）
+## R441–R474 轮次索引（2026-09-15 首次回填，R474 扩展到 R474；机取自 `docs/verification-registry.json`，勿手改）
 
 > 每轮的权威内容在其 `docs/plans/v0.xx…` 计划、`docs/improvements.md` 对应块与 registry 行；本表只做索引与状态汇总，避免双写漂移。R449 起全部未 push（推送暂停令）。
 
@@ -408,5 +408,8 @@ python3 eval/run_round.py <新轮号> "revert-verify <原commit>" --quick   # �
 | R471 | `r471.derived-vs-emitted-separation` | L2 | 派生 vs 实发分离(诚实面): 真实流 43 条 llm_call 中**含 cache_channel 字段者 0 条(0/43)** ⇒ R470 的「shared_pr… |
 | R472 | `r472.criteria-posthoc-and-mechanism-law` | L2 | 事后判据处置 + 机制定律: (a) 预注册 C7(判定函数自检)判 FAIL 的原判保留不覆盖, 根因定位为 v1 CAP 分支阈值与前缀臂尺寸不自洽(P_MID 需 >= … |
 | R472 | `r472.prefix-cache-no-provider-cap` | L3 | 真机受控实验裁决「远端命中饱和成因」: 8 次真实调用(deepseek-flash, 与 config/base/models.yaml:9,16 同模型同端点), 共享前缀… |
-覆盖自检: 轮号 [441, 442, 443, 444, 445, 446, 447, 448, 449, 450, 451, 452, 453, 454, 455, 456, 457, 458, 460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 470, 471, 472]；registry rows=129，updated_round=R472。**缺登记行轮号: 459**（**该号未被使用(improvements.md 亦无块): 459**）。
+| R474 | `r474.provider-truth-denominator-arms` | L3 | KPI 分母升级: 供应商 usage 真值双臂(门关 Arole 20 调用/76094 token vs 门开 R 9 调用/32769 token) ⇒ 总 token … |
+| R474 | `r474.quality-regression-evidence` | L2 | 真端点暴露的回复质量面: R 臂 12 轮中 6 轮模板应答 + 3 轮用户可见「模型未产出正文」横幅(t1/t7/t8), 而同轮 Arole 为 371-644 字实质回答… |
+| R474 | `r474.relay-instrument-and-budget-guard` | L4 | 真转发中继器具: 双证据(请求体落盘 + 供应商 usage 落盘) + 预算闸 fail-closed(cap 0 -> HTTP 402 且零外发); 负控/正控成对(G1… |
+覆盖自检: 轮号 [441, 442, 443, 444, 445, 446, 447, 448, 449, 450, 451, 452, 453, 454, 455, 456, 457, 458, 460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 470, 471, 472, 474]；registry rows=132，updated_round=R474。**缺登记行轮号: 459, 473**（**该号未被使用(improvements.md 亦无块): 459, 473**）。
 

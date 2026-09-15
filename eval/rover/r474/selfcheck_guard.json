@@ -1,0 +1,59 @@
+{
+ "G0_负控中继启动": true,
+ "G1_HTTP==402": true,
+ "G1_body": "{\"error\": {\"message\": \"R474 budget guard: max_calls exceeded\", \"type\": \"budget_guard\"}}",
+ "G2_无转发行": true,
+ "G2_rows": [
+  {
+   "ts": 1789503700.388055,
+   "blocked": true,
+   "n_messages": 1,
+   "reason": "max_calls",
+   "state": {
+    "n": 0,
+    "cost_upper": 0.0,
+    "blocked": 1,
+    "prompt": 0,
+    "completion": 0,
+    "hit": 0,
+    "miss": 0
+   }
+  },
+  {
+   "ts": 1789503703.7158077,
+   "blocked": true,
+   "n_messages": 1,
+   "reason": "max_calls",
+   "state": {
+    "n": 0,
+    "cost_upper": 0.0,
+    "blocked": 1,
+    "prompt": 0,
+    "completion": 0,
+    "hit": 0,
+    "miss": 0
+   }
+  },
+  {
+   "ts": 1789504526.755717,
+   "blocked": true,
+   "n_messages": 1,
+   "reason": "max_calls",
+   "state": {
+    "n": 0,
+    "cost_upper": 0.0,
+    "blocked": 1,
+    "prompt": 0,
+    "completion": 0,
+    "hit": 0,
+    "miss": 0
+   }
+  }
+ ],
+ "G3_进程存活": true,
+ "G4_正控中继启动": true,
+ "G4_正控非402": true,
+ "G4_body": "{\"error\": {\"message\": \"relay upstream failure: URLError: <urlopen error [Errno 111] Connection refused>\", \"type\": \"relay_upstream\"}}",
+ "G4_正控有转发尝试": true,
+ "verdict": "PASS"
+}

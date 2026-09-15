@@ -1,0 +1,52 @@
+{
+ "round": "R474",
+ "date": "2026-09-16",
+ "title": "KPI 分母从桩估算升级为供应商 usage 真值 (双臂真端点 + 实发缓存字段首批样本)",
+ "prereg_written_before_run": true,
+ "step": "同一 p12 网格 / 同一 AOT 二进制 / 同一 role 夹具, 唯一差异 = 门控与判官路由标志; 唯一器具差异 = 远端由桩换为「本地中继 → 真端点」(请求面仍可外部捕获, 读数面 = 供应商 usage)",
+ "arms": {
+  "Arole": "门关 + relation_judge=on  ⇒ 生产等价分母 (无跳过面)",
+  "R": "门开 + rj=on + repeat_skip=on ⇒ 主判据面 (r1 在管道内)"
+ },
+ "why": [
+  "R465–R467 的 32,097 / 14,529 tok 来自桩侧字符数//2 估算 ⇒ 与供应商真值不同源; 用户 KPI 是「总 token 使用量」, 必须取供应商 usage",
+  "R471 记录: 真实流 43 条 llm_call 含 cache_channel 字段者 0 条 ⇒ 产品链实发缓存样本仍 0",
+  "R472 记录: 真实流 43 条全为会话首调(effective_hit_rate 43/43=-1) ⇒ 多轮命中无样本; 机制定律 hit==64*floor((prompt-c)/64), c=142 只在合成 filler 上验过"
+ ],
+ "budget_guard": {
+  "max_calls": 40,
+  "max_cny_upper": 0.15,
+  "pricing": "config/base/models.yaml deepseek-flash price_in 0.27 / price_out 1.10 CNY per 1M; 命中不折价 ⇒ 记为成本上界",
+  "fail_closed": "越限 ⇒ 中继回 402 并记账, 不静默超额"
+ },
+ "criteria": {
+  "C1 链真跑通": "双臂 turns_ok=12/12 ∧ 宿主进程正常退出 ∧ 中继 blocked=0",
+  "C2 内外一致": "中继 usage 行数 == 宿主 llm_call 行数 (两家独立计数)",
+  "C3 缓存真值": "至少 1 条 usage 行 cache_hit_tokens>0 ∧ 每条 prompt_tokens == cache_hit + cache_miss (恒等式)",
+  "C4 多轮命中": "R 臂主调用逐条 hit 与「与上一主调用实发 messages 的最长公共前缀」单调相关, 且首调用(会话冷启)hit 记为最小",
+  "C5 KPI 对比": "总 token 降幅 = 1 - total(R)/total(Arole); 远端调用次数降幅 = 1 - calls(R)/calls(Arole); 桩口径对照 13→6 / 32,097→14,529 (-54.7%)",
+  "C6 红线可算": "至少 1 条 llm_call 的 effective_hit_rate != -1 (真实多轮首发样本)",
+  "C7 预算": "cum_cost_cny_upper <= 0.15",
+  "C8 零产品改动": "本轮不改 src/** ⇒ 无 AOT 重发布 (二进制 = /tmp/r470_publish/agenthost, 是「不触发」不是「未测到」)"
+ },
+ "predicted": {
+  "Arole_calls": 13,
+  "R_calls": 6,
+  "Arole_total_tokens": ">= 32097 (真端点 completion 为真实回复, 远长于桩 14 tok/次)",
+  "R_total_tokens": ">= 14529",
+  "Arole_hit_tokens": "首调用 hit 可能 >0 或被 provider 判 cold; 多轮 hit 单调升",
+  "effective_hit_rate_nonminus1_n": ">=1",
+  "cost_cny_upper": "<=0.15"
+ },
+ "honest_boundary_pre_registered": [
+  "网格语料 ≠ 真实用户分布 (R468: 真实轮可跳面 0.00%, 网格 50%) ⇒ 本轮证明的是「记账同源 + 命中真值 + 产品链机制」, 不外推真实用户降幅",
+  "真端点同一网格若曾被历史臂调用过, 首调用可能非 cold ⇒ 以 usage 实测为准, 不假设",
+  "命中是否折价仍未取到 ⇒ 成本按不折价上界报, 另列折价口径下界",
+  "p12 网格用户轮为短句 ⇒ 私有增量以「上一条答复」为主, 与真实用户(长轮)不同"
+ ],
+ "not_in_scope": [
+  "真实用户轮语料的产品链多轮跑 (下一轮候选)",
+  "私有增量压缩 A/B (下一轮候选)",
+  "红线迁移为分档判据"
+ ]
+}

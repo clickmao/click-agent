@@ -2113,3 +2113,22 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 **下轮候选**：① 真机多轮会话（同会话 ≥5 轮）实测 `hit_n ≈ prompt_{n-1}` 与每轮新算占比 ⇒ 直接给出用户 KPI（一轮任务 token）的分母分解，并把红线重述为「首调 vs 多轮」分档判据；② 产品链**实发样本**（仍 0 样本）并用机制定律锁 `hit == 64×⌊(可复用前缀−c)/64⌋`；③ 私有增量压缩（按需注入）A/B 对 miss tokens。
 
 **台账/索引（R472 附）**：`docs/reports/iteration-master-plan.md` 的「轮次索引」由 R441–R458 扩展为 **R441–R472**（+27 行，`eval/rover/r472/refresh_master_index_r472.py` 机取自 registry；**幂等重跑 `rows_added=0`**），覆盖自检行改为机派生：`轮号 [441…458, 460…472]；registry rows=129，updated_round=R472`，并显式标出 **459 号未被使用**（registry 无行、improvements.md 亦无块）。registry 追加 2 行（`r472.prefix-cache-no-provider-cap` L3 / `r472.criteria-posthoc-and-mechanism-law` L2），`git diff --numstat` = **+32/−1 行**（IO 保形，非整档重写）。
+
+## R474（2026-09-16）KPI 分母升级：桩估算 → **供应商 usage 真值**（真端点双臂，首次拿到产品链实发缓存样本）
+
+**外部真值**（`eval/rover/r474/usage-*.jsonl`，中继 `relay_real.py` 捕获的供应商 `usage`，非派生）：同一 AOT 二进制 / 同一 p12 网格 12 轮 / 同一 role 夹具，唯一变量 = 门控标志。
+
+| 臂 | 轮 | 中继调用 | prompt | hit | miss | completion | total | 命中占比 | 成本上界 |
+|---|---|---|---|---|---|---|---|---|---|
+| Arole 门关 | 12/12 | 20 | 70,890 | 61,952 | 8,938 | 5,204 | **76,094** | 87.4% | 0.024865 CNY |
+| R 门开 | 12/12 | 9 | 29,477 | 22,912 | 6,565 | 3,292 | **32,769** | 77.7% | 0.011580 CNY |
+
+**读数**：**总 token 降幅 56.94% / 远端调用次数降幅 55.0% / prompt 降幅 58.42%**（预注册判据 ≥30% ⇒ C5 PASS）；恒等式 `prompt==hit+miss` **20/20 与 9/9 全成立**；预算闸 0.036445 ≤ 0.15 CNY、blocked=0、负控（cap=0 → 402 零外发）PASS。**分母对照**：桩口径（字符/2）Arole 53,565 → 供应商 70,890 = **1.323×**，R 21,026 → 29,477 = **1.402×** ⇒ 桩口径系统性低估 24–29%，但降幅在两种分母下同向同量级（桩口径 R467 **−54.74%** vs 真值 R474 **−56.94%**，差 2.2pp）⇒ R465–R467 的结论**不是分母假象**，绝对读数此后以供应商 usage 为准。**缓存真值首批**：逐主调用 hit_rate 0.894–0.952；`Pearson(lcp_est_tokens, 供应商 hit)=0.8175(Arole)/0.7593(R)` ⇒ R472 机制定律首次在**真实链路**上得到同向强相关印证；`effective_hit_rate` 首次可算 11/16 与 5/6，其中 **3 例 >1.0（1.0589/1.0066/1.0822）** ⇒ 该指标分母取「上一条 prompt」的口径缺陷（命中可超上一条全量）。
+
+**判据**：C1/C3/C4/C5/C6/C7/C9/C10 PASS；**C2（relay == host `llm_call`）字面 FAIL 保留不覆盖**（Arole 20 vs 16、R 9 vs 6），事后归因 P1：`llm_call + llm_call_recover` 恒等成立（20=16+4、9=6+3）⇒ 每条远端调用都有遥测点，但 **recover 行缺 prompt/缓存字段 ⇒ 产品自记账漏 15,458 prompt tokens = Arole prompt 总量的 21.8%**（R 臂 34.5%）；P2 扣除 recover 同类比较 −62.1% ⇒ 降幅不靠重试差异解释。
+
+**诚实边界（本轮 KPI 达标，质量判据不达标）**：真端点首次把**回复正文**暴露出来 —— R 臂 12 轮里 **6 轮模板应答**（`收到，继续按当前方向推进，本轮不重新规划。`）+ **3 轮用户可见「模型未产出正文…请重试」横幅**（t1/t7/t8），仅 3 轮（t10–t12）为实质回答；同轮 Arole 12/12 全实质。`llm_call_recover` 双态：Arole **4/4 recovered=true**，R **0/3 recovered=false**（retry_len=0）。可用性缺陷（非设计预期）：t6「再讲一遍。」与 t9「从头再说。」被判 `mechanical:repeat→local` 回模板 ⇒ 重复类指令必须**回放上一条正文**（零 token）而非模板。归因边界：空正文是**供应商侧**失败模式（两臂均出现首次空正文），本轮 3 例重试全败 vs Arole 4 例全成，n=3/4 **不足以**断言与门控相关；器具未落盘采样参数与 `finish_reason` ⇒ 根因**未定位**（下轮补）。**无 C# 改动 ⇒ 按铁律不触发 AOT 重发布**（体积沿用 `agenthost` 15,343,232 B）；未测：命中/未命中的计价差、其它 provider、recover 通道的兜底模型。
+
+**下轮候选**：① **repeat-skip 回放上一条正文**（修 t6/t9 质量 + 省 token，改链 ⇒ 需 AOT 重发布 + IL 警告 0）；② **recover 通道加固**（空正文失败时降采样/换非推理模型兜底 + 给 recover 行补 prompt/cache 字段，补 21.8% 漏账）；③ `effective_hit_rate` 口径修正（`hit/min(prompt, cacheable)`）并回归红线 97%；④ 中继器具补采样参数/`finish_reason`/响应尾部落盘以定位空正文根因；⑤ `kpi.jsonl` 接入供应商 usage 真值列（与产品 `llm_call` 双列并行，禁混算）。
+
+**台账/索引（R474 附）**：`eval/rover/r474/refresh_master_index_r474.py`（由 r472 版机派生，`FROM,TO=459,474`）把「轮次索引」表扩到 **R441–R474**（`rows_added=3`，幂等重跑 0）；registry 追加 3 行（`r474.provider-truth-denominator-arms` L3 / `r474.relay-instrument-and-budget-guard` L4 / `r474.quality-regression-evidence` L2），`git diff --numstat` = **+86/−1**（IO 保形）。覆盖自检把 **473** 列为「无登记行」——属实：R473 为审计轮（只补 85 行 `evidence_generated_with`），无 id 行、无 improvements 块。
