@@ -1,0 +1,67 @@
+{
+  "round": "EXP1-Q17",
+  "title": "「归档缺字段」归因判定：落盘块白名单 vs 生产者字段集（承附录 Q 候选①）",
+  "owner_round": "exp1-q17(60m 自检作业; 不占主线轮号)",
+  "utc_date": "2026-09-15",
+  "evidence_level_declared": "L1-static (真源码 AST 派生 + 真归档语料 + 夹具自检 + 两跑逐字节; 无编译/测试/AOT)",
+  "question": "已登记读数 n_symbol_faces(575) / symbol_face_rungs(574) 所计数的**逐行字段** `symbol_faces` 在归档语料 citations.jsonl 中出现 0 次。二选一归因：(①) 落盘块（写点）字段集**丢了**生产者已产出的字段；(②) 该字段在落盘后另行填充（写点当时不存在）。",
+  "inputs": {
+    "producer_source": "eval/capability/exp1-q10/probe_v260.py (v2.6.0, 本轮一字不动)",
+    "archive": "eval/capability/exp1-q10/citations.jsonl",
+    "previous_round_appendix": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md 附录 Q (EXP1-Q16)",
+    "carried_typed_reason": "symbol_face_rungs / n_symbol_faces = ARCHIVE_FACE_FIELD_ABSENT"
+  },
+  "method": {
+    "producer_key_set": "AST 并集 P1∪P2∪P3 —— P1 = extract_citations 内 out.append({...}) 字面键; P2 = judge_citation 内 rec[...] / rec.update({...}) 键; P3 = run_pass 内**接收者为外层循环变量**的 c[...] 赋值键 (Q16 同款纪律: 只认外层循环变量接收者)",
+    "dump_key_set": "AST: 定位 open(\"citations.jsonl\") 的 with 语句 → 其体内 DictComp 的 iter 元组字面键; 并机检 `if k in c` 守卫存在 (该守卫即「静默丢弃」机制)",
+    "archive_key_set": "真归档语料逐行键并集 + 逐键行数",
+    "classifier_MECE": [
+      "C_archive_foreign_key        : ∉dump ∧ ∈archive   (归档含写点从未写过的键 ⇒ 代码版本与归档不同源, provenance 失效)",
+      "C_dump_dead_entry            : ∈dump ∧ ∉producer ∧ ∉archive (白名单要了一个从不存在的键, 守卫静默丢)",
+      "C_dump_producer_branch_unhit : ∈dump ∧ ∈producer ∧ ∉archive (字段条件分支, 本语料 0 行命中)",
+      "C_producer_dump_omission     : ∈producer ∧ ∉dump ∧ ∉archive (生产者产出后被白名单**丢掉**)",
+      "C_written_and_archived       : ∈dump ∧ ∈archive"
+    ],
+    "conservation": "Σ classes == |P ∪ dump|",
+    "attribution_map": {
+      "① 落盘块丢字段": "class == C_producer_dump_omission",
+      "② 落盘后另行填充": "class == C_dump_dead_entry (或 ∉P)"
+    }
+  },
+  "challenges": [
+    {"id": "C1", "claim": "symbol_faces 在归档语料中出现行数 == 0（独立复现 Q16 证据）", "evidence": "archive_key_set 逐键行数"},
+    {"id": "C2", "claim": "symbol_faces ∈ producer 字段集（P2 赋值点带行号）", "evidence": "AST 赋值 span"},
+    {"id": "C3", "claim": "symbol_faces ∉ dump 白名单", "evidence": "AST 元组字面键"},
+    {"id": "C4", "claim": "class(symbol_faces) == C_producer_dump_omission ⇒ 归因 = ①", "evidence": "classifier 输出"},
+    {"id": "C5", "claim": "class(relocated_symbol_faces) 同 C4（两枚同源字段同因）", "evidence": "classifier 输出"},
+    {"id": "C6", "claim": "写点存在静默丢弃机制: `if k in c` 守卫在场", "evidence": "AST 守卫检测"},
+    {"id": "C7", "claim": "归档域自洽: 由归档字段独立复算的 live 行数 == 带 edge_* 字段的行数（两路读数一致）", "evidence": "archive 域重算"},
+    {"id": "C8", "claim": "分类非平凡: ≥2 类非零", "evidence": "分布"},
+    {"id": "C9", "claim": "修法天花板可量化: 补 9 枚漏字段后「不可重放」登记键由 4 → 2（解除 symbol_face_rungs/n_symbol_faces）", "evidence": "AST: 结果字典键中引用被漏字段名者"},
+    {"id": "C10", "claim": "闭环守恒: P∪dump 的每个键恰属一类且 Σ == |universe|", "evidence": "conservation 机检"},
+    {"id": "C11", "claim": "归档面缺字段的行是**分支条件**产物（而非写点丢数据）: judge_citation 内在 face 赋值前存在 7 条早退 return rec", "evidence": "AST 早退计数"},
+    {"id": "C12", "claim": "确定性: 两跑 verdict 核心逐字节相同", "evidence": "两次运行 sha256 比对"},
+    {"id": "C13", "claim": "夹具全绿（含 4 枚负控 + 1 正控 + 1 fail-closed）", "evidence": "selftest 退出码与格数"},
+    {"id": "C14", "claim": "零回归: 不触碰 probe_v260.py / src/ / skills/ / registry / instruments.json / rover; 零 dotnet", "evidence": "文件 mtime + 命令日志"}
+  ],
+  "pre_registered_prediction": {
+    "universe_size": 35,
+    "class_distribution": {
+      "C_written_and_archived": 24,
+      "C_dump_producer_branch_unhit": 2,
+      "C_producer_dump_omission": 9,
+      "C_dump_dead_entry": 0,
+      "C_archive_foreign_key": 0
+    },
+    "omitted_fields": ["raw", "pos_start", "pos_end", "block_id", "path_exists", "relocated_lines_ok", "relocated_symbols_absent", "relocated_symbol_faces", "symbol_faces"],
+    "branch_unhit_fields": ["relocated_to", "relocated_fact_verdict"],
+    "attribution_verdict": "① 落盘块丢字段 (写点白名单漏 9 枚生产者字段, 由 `if k in c` 静默丢弃)",
+    "falsifier": "若 symbol_faces ∉ producer ⇒ 归因② 成立、本预测否证（如实改写宣称，不放宽判据）"
+  },
+  "not_in_scope_this_round": [
+    "修法（把漏字段加进白名单并重跑探针/重刷归档）—— 属写点改动, 会改变归档可比性, 须独立预注册轮次",
+    "L2 器具登记（对侧忙; instruments_check 全量面会覆盖既有读数）",
+    "任何 dotnet 编译/测试/AOT"
+  ],
+  "exit_codes": {"0": "全绿", "2": "断言失败(真红)", "3": "测量/环境失败(弃权, 不判红)"}
+}
