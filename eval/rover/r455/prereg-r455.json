@@ -1,0 +1,25 @@
+{
+ "round": "R455",
+ "kind": "module_coverage_suite",
+ "authored": "2026-09-15",
+ "authored_when": "套件首跑进行中（写时未读取套件任何数字；此前只有 T1/T2 单轮探针，不属本器具读数）",
+ "prereg_scope": "只声明结构性不变量与判据定义；一切描述性数值单列 checks_posthoc（R453 铁律）",
+ "user_ruling_that_voids_prior": "用户裁定 R454b「继续下一轮」单句对照为无效数据：单句输入测不了模块(命中率/闸门)，且 codex 侧 6 连次破坏返回基准 ⇒ 必须同环境同输入且输入能逐模块测出效果",
+ "structural_invariants": [
+  {"id": "S1", "claim": "两侧输入文本逐字节同（同一 suite-turns.json 驱动两侧）", "check": "md5(turns.txt) 与套件文件一致；逐轮 echo 记录在 logs/suite.log"},
+  {"id": "S2", "claim": "两侧走同一入口(adapter)与同一真实模型(deepseek-flash)；Authorization 不落盘", "check": "logs/adapter/side-{codex,agent}-*.json 的 model 字段与 request 面"},
+  {"id": "S3", "claim": "两侧均为单会话 6 轮（我方一轮一 driver 轮；codex 用 exec + exec resume 同一 thread）", "check": "agent-turns.jsonl 的 turns 长度==6；codex 事件流 thread.started 仅出现 1 次"},
+  {"id": "S4", "claim": "无重试：每轮上游调用均有完整 usage（in/out 非空），无因缺 input_tokens 的重复请求", "check": "calls() 每行 usage 非空；同轮调用数 <= 2"}
+ ],
+ "criteria": [
+  {"id": "J1", "kind": "structural", "claim": "产物判定为机械等值判定（非模型裁判）：count.txt=='4'；merged.txt=='ALPHA\\nBETA\\nGAMMA\\n'；stats.txt=='chars=14'；first.txt 含 'R455 fixture note'", "falsifiable_by": "判分器读到不同字节"},
+  {"id": "J2", "kind": "descriptive", "claim": "两侧产物通过数（x/4）逐侧报告，不预设方向", "note": "post-hoc 数值"},
+  {"id": "J3", "kind": "gate_coverage", "claim": "若套件期间我方门本地 r1 调用>0，则必有对应落盘证据；若=0 则记 n/a 并注明成因（本地通道默认关/内存闸），不得记为『闸门通过』", "falsifiable_by": "声称门有效但无证据"},
+  {"id": "J4", "kind": "cache", "claim": "命中率两侧同式：Σcached/Σin（prompt_cache_hit_tokens 或 prompt_tokens_details.cached_tokens）", "note": "post-hoc 数值"},
+  {"id": "J5", "kind": "honesty", "claim": "两侧静态面/工具面不同源 ⇒ 即便本轮同为 6 轮，也不得据 token 总量推断『谁更省』；只允许同侧内逐轮趋势与同输入下的行为差异", "note": "承重边界"}
+ ],
+ "checks_posthoc": ["两侧 in/out/cached token 总量", "两侧逐轮调用数", "命中率百分比", "产物通过数", "我方伪工具调用文本出现次数"],
+ "expected_artifacts": ["count.txt", "merged.txt", "stats.txt", "first.txt"],
+ "fixture": "/tmp/r455_env/{codex,agent}/work（逐字节同：a-d.py, x/y/z.txt, notes.md）",
+ "adapter": "eval/rover/r455/adapter_tools.py @48615（透传 codex tools；chat tool_calls→Responses function_call 回译；usage 注入 input_tokens/output_tokens）"
+}

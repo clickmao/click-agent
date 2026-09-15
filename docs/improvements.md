@@ -1898,3 +1898,19 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 1. **同题双跑回归**（用户钦定「对照相同输入的返回」）：`codex exec --json`（usage 真值 input/cached/output/reasoning）vs `agenthost`，同模型/同模板/同截断，逐项比 token/工具调用/轮数/成功率 —— 这是「避免无用功」的直接量尺；
 2. 若判定补 **P1（远端无工具面）**：给远端请求加最小工具面（read/write/exec + 权限声明）⇒ **独立预注册轮** + AOT 复发布 + 质量 A/B（唯一与 codex 实质对齐的路径）；
 3. 遗留：3 轮未归因 `G_calls=0`；关系判官本地成本前置化；主线残留（零可跳档净亏 / 短档 V2b 13.03% / L.7 语言无关令）。
+
+### R455（2026-09-15）· 模块覆盖对照套件 + **agent 链机制诊断**（用户裁定 R454b→R455；**零产品变更**）
+- **用户裁定（驱动）**：R454b「单句对照」= **无效数据**（测不了模块/命中率/闸门；codex 6 连次毁基准）⇒ 建「同环境/同输入/逐模块可测」套件。
+- **套件**：`eval/rover/r455/run_suite.sh`（双侧 `/tmp/r455_env/{codex,agent}/work` 逐字节同夹具 + 同一 `suite-turns.json` 6 轮 + 同一真模型 `deepseek-flash` + **零重试**）；判分 `judge_suite.py` 只读落盘证据；adapter 透传 codex `tools`。
+- **读数（五格全可复核）**：M4 执行 **我方 0/4 vs codex 4/4**（`4` / `ALPHA\nBETA\nGAMMA` / `chars=14` / `R455 fixture note`）；M3 问询 **1 vs 0**；M1 缓存 **86.6% vs 96.6%**；M6 调用 **7 vs 13**、in **18,039 vs 91,002**、out **957 vs 597**；M2 闸门 **n/a**（`MemAvailable<2650MB` ⇒ 不记通过）。
+- **一等发现（机制根因，源码级）**：**管道无动作环** —— ① 远端请求体无 `tools`（`ModelQueueRouter.cs:950-1000 SerializeChatRequest()` 只写 `model`/`messages`）；② 全仓 `grep tool_calls`（*.cs）= **0 命中**；③ 唯一执行入口吃的是**用户输入**（`IndustrialAgentV2.cs:633-636 _skillDispatcher.DispatchAsync(message.Content)`）⇒ 模型没有结构化动作出口，可执行任务只能产出**承诺/澄清**，且会**伪造成果**（T2「已完成：count.txt 写入」+ 伪命令行，盘上无文件；T3/T4 断言 x/y/z.txt 不存在 = 幻觉）。
+- **KPI 归因**：该缺陷是「一轮任务总 token ↓≥30%（不必要的 LLM 请求少了）」的**反向承重项**（无动作 ⇒ 澄清轮 ⇒ 轮数↑）；**问询次数**升为一等指标。
+- **器具修正（诚实）**：① `resume` 用**进程 cwd** 而非记录 cwd ⇒ 首跑 cwd 漂到仓库根（已修：进夹具目录再 resume）；② adapter `response.completed` 必须带 `input_tokens`/`output_tokens`（否则 codex 自连）；③ 判分器期望值须 `norm()` 归一（首判 `merged.txt` 假 FAIL，修 1 行后 codex 4/4）。
+- **常态流程入册**：`docs/external-reference-harness.md`（用户钦定「可以将对比流程加入开发文档内」）—— 同环境/同输入/同模型/零重试/单句不算/判分只读落盘/负控成对。
+- 交付：`eval/rover/r455/*`、`docs/plans/v0.75.0-r455-codex-capability-ab.md`、`docs/reports/agent-chain-diagnosis-r455.md`、`docs/external-reference-harness.md`；registry `r455.module-coverage-ab`（L2，含 5 条负控）。
+
+### 下轮（R456）· 动作环（Action Loop）：链机制修复（用户钦定「不是关键字/补丁」）
+1. **声明面**：按能力注册表派生 `tools[]` 入远端请求（手写 JSON / STJ Source Generator，AOT 零反射），**会话内恒定**以保缓存前缀；
+2. **解析面**：解析 `tool_calls` → 映射既有执行面（`SkillScriptRunner` / 文件端口 / `GitOperations`），**零关键字路由**；
+3. **回灌面**：`role:"tool"` 结果回灌 + 步数上限 N≤3 + 每步审计落盘（命令/rc/stdout 有界），失败 fail-closed；
+4. **验收**：重跑 R455 套件（目标 4/4 产物、0 问询、调用数 ≤ 基线、缓存不退化）+ 越界/超时负控 + AOT 复发布形态自证。

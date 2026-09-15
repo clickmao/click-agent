@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R449",
+  "updated_round": "R455",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -1523,6 +1523,25 @@
         "docs/reports/codex-contrast-r454.md"
       ],
       "owner_round": "R454"
+    },
+    {
+      "id": "r455.module-coverage-ab",
+      "level": "L2",
+      "capability": "同环境/同输入/同模型(deepseek-flash)/零重试的模块覆盖对照: 我方 0/4 产物 + 1 次问询 vs codex 4/4 产物 + 0 问询; M1 缓存 86.6% vs 96.6%; 远端调用 7 vs 13; M2 闸门 n/a(内存闸<2650MB, 不记通过)",
+      "evidence_cmd": "python3 eval/rover/r455/judge_suite.py",
+      "evidence_path": "eval/rover/r455/verdict-r455.json",
+      "negative_control": "C1 单句输入不构成能力读数(用户裁定 R454 §7 VOID); C2 任一侧多连次/重试即破坏基准(本轮零重试); C3 夹具两侧须逐字节同; C4 「我方更省 token」被 M4 0/4 产物证伪(省 token != 任务完成); C5 判分器只读落盘证据且期望值须归一",
+      "covers": [
+        "eval/rover/r455/run_suite.sh",
+        "eval/rover/r455/judge_suite.py",
+        "eval/rover/r455/prereg-r455.json",
+        "eval/rover/r455/adapter_tools.py",
+        "eval/rover/r455/verdict-r455.json",
+        "docs/plans/v0.75.0-r455-codex-capability-ab.md",
+        "docs/reports/agent-chain-diagnosis-r455.md",
+        "docs/external-reference-harness.md"
+      ],
+      "owner_round": "R455"
     }
   ],
   "aot_check_policy": "release_tag_only",
