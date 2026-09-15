@@ -1,0 +1,105 @@
+{
+  "round": "R449",
+  "instrument": "real_gate_probe",
+  "purpose": "外部效度: 把产品前置门判官 (r1, prompt 源码逐位重现) 打到**真实流量** (state.db 用户轮), 量出「判官在真实分布上判 S(可跳) 的比例」与「D 类真工作指令被误判 S 的比例」, 以此裁定 state.db 数据能否为 KPI (远端请求降幅 ≥30%) 提供实现路径。",
+  "corpus": {
+    "path": "eval/rover/r449/real-corpus.jsonl",
+    "rows": 1542,
+    "sha256": "a89cc0c70f988605f097a77d12750dec1bb9d2e4fe6b962d6c533ddf36c1c5ae"
+  },
+  "sample": {
+    "seed": 449,
+    "filter": "user_len <= 1024 (60-71% 覆盖; 超长=文档粘贴, 产品路径上必然 MechanicalPass 且会打爆 4608 上下文)",
+    "strata": {
+      "D": 40,
+      "S": 24,
+      "O": 8
+    },
+    "rule": "层内按 (session, mid) 升序排序, random.Random(449).sample 无放回; 层内不足则全取",
+    "oversample_note": "D 层(23.4%)故意过采样 —— 它是唯一候选类; 总体率必须按层权重回算, 不得直接把样本均值当总体率"
+  },
+  "arm": {
+    "name": "G0",
+    "prompt": "TurnGateJudge.BuildPrompt —— 从 LocalGenerationPort.cs 程序化派生 (r443 reconstruct_gate_prompt.derive_template/build_prompt; 该重建已与遥测 gate_prompt_len/prompt_sha 逐位互证)",
+    "role_seed": "skeptic.rbin profile (master.key 解密)",
+    "growth_block": "eval/rover/r431/fixture/skeptic-growth.rbin 初值块 (同 R441/R443 网格口径)",
+    "decode": {
+      "n_predict": 512,
+      "temperature": 0.0,
+      "samplers": [
+        "temperature"
+      ],
+      "cache_prompt": false,
+      "seed": 0
+    },
+    "server": [
+      "-c",
+      "4608",
+      "-t",
+      "1",
+      "-np",
+      "1",
+      "--cache-type-k",
+      "f32",
+      "--cache-type-v",
+      "f32",
+      "--flash-attn",
+      "off",
+      "--jinja"
+    ],
+    "note": "唯一变量 = 语料(合成网格 -> 真实流量); prompt 构造/解码档/服务端档与 R447 J0 基线同源"
+  },
+  "controls": {
+    "grid_M20": {
+      "path": "eval/rover/r441/turns-BRJ-M20.jsonl",
+      "expect_ack_family": 7,
+      "I1": "认可族 (MechanicalAck=true) 判 S >= 5/7 ⇒ 器具在合成正控上复现产品方向",
+      "I2": "非认可族判 P >= 9/13 ⇒ 器具不是恒 S 的空心探头"
+    }
+  },
+  "criteria": [
+    {
+      "id": "V0",
+      "kind": "void",
+      "desc": "I1 未过 ⇒ 器具无效 ⇒ 全部读数记 n/a (R380: 「没测到」≠「失败」)"
+    },
+    {
+      "id": "I1",
+      "kind": "instrument_positive_control"
+    },
+    {
+      "id": "I2",
+      "kind": "instrument_negative_control"
+    },
+    {
+      "id": "D1",
+      "kind": "reading",
+      "desc": "真实流量 r1 判 S 率: 分层读数 + 层权重回算总体, 各带 Wilson 95% 区间"
+    },
+    {
+      "id": "D2",
+      "kind": "reading",
+      "desc": "D 类假 S 率 = P(r1 判 S | klass=D)。D 类经用户亲口定义 = 「仅是让你执行下一轮」= 真工作指令, 跳过即丢工作"
+    },
+    {
+      "id": "D3",
+      "kind": "reading",
+      "desc": "每次门判的本地成本 (tokens_evaluated/gen), 供「若让判官跑真实流量」的成本模型"
+    },
+    {
+      "id": "V1",
+      "kind": "verdict",
+      "desc": "若 (机械 ack = 0/1542, 已实测) ∧ (D 类假 S 率 >= 0.50) ⇒ STATE_DB_CANNOT_IMPROVE_KPI: 真实流量无「安全可跳」类, 唯一 KPI 路径(去掉 R434 安全条件)会把真工作指令跳成空话 ⇒ 结案 R449, 回归主线开发(等新数据)。否则 ⇒ 记录候选, 需用户裁定是否进入等价性实验。"
+    }
+  ],
+  "budget": {
+    "total_calls": 92,
+    "remote_tokens": 0,
+    "est_wall_min": 25
+  },
+  "discipline": {
+    "rule_first": "本文件先落盘, 探针只读 corpus, 不改产品源码",
+    "faithfulness": "prompt/解码/服务端三档全部源码派生或与既往基线同源; 判官字母解析逐字重现 TurnGateJudge.Parse",
+    "honesty": "层权重回算总体; 超长语料被排除的比例必须一并报告"
+  }
+}

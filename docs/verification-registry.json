@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R448",
+  "updated_round": "R449",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -1397,6 +1397,48 @@
         "eval/rover/r448/r448_analyze.py",
         "src/agent.roles/CorrectionDetector.cs",
         "src/agent.modelqueue/LocalGenerationPort.cs"
+      ]
+    },
+    {
+      "id": "r449.think-memory-switch",
+      "capability": "think-memory 四档开关 (on 默认/off/recall0/write0) + 反空心召回计数 + HitCount 与 refs 采纳次数分离 (修「命中恒 0」根因); 宿主零改动",
+      "level": "L2",
+      "owner_round": "R449",
+      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~ThinkMemorySwitchTests",
+      "evidence_path": "src/agent.exploration/ThinkMemory.cs",
+      "negative_control": "off 档三闸逐条断言: Load 不读盘 / Save 不落盘 (库文件 mtime 不变) / ApplyCitationBoost 返回 false; recall0 与 write0 各自只抑制一侧 (召回尝试计数仍增) ⇒ 单闸失效必红; 档位映射含未知取值 fail-open 到 on ⇒ 默认档逐位等价现网行为",
+      "covers": [
+        "src/agent.exploration/ThinkMemory.cs",
+        "src/agent.tests/ThinkMemorySwitchTests.cs"
+      ]
+    },
+    {
+      "id": "r449.turn-gate-parse-crosslang-fixture",
+      "capability": "门判解析器 (TurnGateJudge.Parse) 跨语言同位夹具: 13 用例在 C# 与 py 两侧逐条同判, 解析索引口径 = UTF-16 码元 (emoji 代理对不移位)",
+      "level": "L2",
+      "owner_round": "R449",
+      "evidence_cmd": "python3 eval/rover/r449/real_gate_probe.py --selftest; dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~TurnGateParseTests",
+      "evidence_path": "src/agent.tests/TurnGateParseTests.cs",
+      "negative_control": "13 用例含 5 条拒绝路径 (empty/thinking_truncated/empty_conclusion/no_marker) + 「最后位置大者胜」双向对 (S 然后 P ⇒ Pass; P 然后 S ⇒ Skip) + 无思考块走尾部窗口路径 ⇒ 只认首字母或忽略思考边界的实现必红",
+      "covers": [
+        "src/agent.tests/TurnGateParseTests.cs",
+        "eval/rover/r449/real_gate_probe.py"
+      ]
+    },
+    {
+      "id": "r449.real-traffic-external-validity",
+      "capability": "真实流量外部效度裁决 (机械面, 与判官无关): 可跳轮 = Ack ∧ ¬MechanicalPass ⇒ state.db 1542 轮中 ack 0/1542、gate_eligible 0/1542 ⇒ 远端降幅实现额 0 ⇒ 通道结案 STATE_DB_CANNOT_IMPROVE_KPI; 判官探针按预注册判 VOID (I1 3/7、I2 0/13) ⇒ 判官读数 n/a",
+      "level": "L3",
+      "owner_round": "R449",
+      "evidence_cmd": "python3 eval/rover/r449/filter_and_validate.py; python3 eval/rover/r449/real_gate_probe.py; python3 eval/rover/r449/analyze_r449.py",
+      "evidence_path": "eval/rover/r449/verdict-r449-close.json",
+      "negative_control": "器具自证失败即宣布 VOID (I1 正控 3/7 < 5/7; I2 负控 0/13 < 9/13), 事后读数单列 checks_posthoc 且明标不得引用为产品结论; 对照面: 产品自身遥测同网格 = 7 Skip + 3 reject(skip_not_ack_family) + 8 Pass、raw_len 127..515, 探针 gen=6 无思考 ⇒ 生成形态失锚可机检 (seed sha16 逐位对齐 0aa656fa7eafd93a, 模板源码 git diff 空)",
+      "covers": [
+        "eval/rover/r449/filter_and_validate.py",
+        "eval/rover/r449/real_gate_probe.py",
+        "eval/rover/r449/analyze_r449.py",
+        "eval/rover/r449/prereg-probe.json",
+        "eval/rover/r449/verdict-r449-close.json"
       ]
     }
   ],

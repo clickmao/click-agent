@@ -1,0 +1,48 @@
+{
+  "round": "R449",
+  "kind": "channel_close_decision",
+  "decision": "STATE_DB_CANNOT_IMPROVE_KPI",
+  "consequence": "结案「真实流量外部真值通道」扩建, 回归主线开发任务 (think-memory 开关已交付)",
+  "bearing_evidence_mechanical": {
+    "invariant": "可跳轮 = Ack ∧ ¬MechanicalPass  (源码: src/agent.modelqueue/LocalGenerationPort.cs MechanicalAck/AckFamilyChars/GATE_PREFILTER; src/agent/IndustrialAgentV2.cs ¬Ack⇒Pass)",
+    "real_traffic": {
+      "n_user_turns": 1542,
+      "ack": "0/1542 = 0.0%",
+      "gate_eligible": "0/1542 = 0.0%",
+      "by_class": {"D": {"n": 361, "ack": 0, "mech_pass": 127, "gate_eligible": 0},
+                   "S": {"n": 1138, "ack": 0, "mech_pass": 1100, "gate_eligible": 0},
+                   "O": {"n": 43, "ack": 0, "mech_pass": 43, "gate_eligible": 0}}
+    },
+    "reading": "现网契约下真实流量可跳轮 = 0 ⇒ 远端 LLM 调用降幅实现额 = 0 (与判官行为无关)"
+  },
+  "bearing_evidence_semantic": {
+    "user_statement_1": "大部分时候我的回复仅是让你执行下一轮",
+    "user_statement_2_r449_oob": "「原来如此, 你很专业且聪明!」→ 语义 = 批准继续执行你的计划 (即认可类消息在真实 DM 里是『继续指令』, 不是对话终止)",
+    "reading": "「认可 ⇒ 可跳过远端」的功能前提在真实使用形态里不成立: 跳过 ⇒ 不继续执行 ⇒ 质量坍塌"
+  },
+  "instrument_status": {
+    "name": "real_gate_probe",
+    "verdict": "VOID_INSTRUMENT",
+    "I1_positive_control": {"expect": "网格认可族 >=5/7 判 S", "got": "3/7", "pass": false},
+    "I2_negative_control": {"expect": "网格非认可族 >=9/13 判 P", "got": "0/13", "pass": false},
+    "product_same_grid_r441": "7 Skip + 3 reject(skip_not_ack_family) + 8 Pass; r1 raw_len 127..515",
+    "probe_form": "gen=6 直接出字母 (无思考), raw 形如 'S\\n</think>\\n\\nS'",
+    "anchor_checked": {"seed_sha16_now": "0aa656fa7eafd93a", "seed_sha16_r443": "0aa656fa7eafd93a",
+                       "seed_sha16_product_telemetry": "0aa656fa7eafd93a", "template_source_unchanged_since_r443": true},
+    "conclusion": "重建链在『生成形态』上失锚 (seed/模板已排除) ⇒ 本探针的真实流量读数 n/a (R380: 没测到 != 失败)"
+  },
+  "checks_posthoc_not_product_conclusions": {
+    "note": "预注册判据 I1 未过 ⇒ 下列数字只作下轮设计参考, 不得引用为产品门判真值",
+    "D_S_rate_decided": "19/30 = 63.3% [45.5, 78.1]",
+    "S_S_rate_decided": "7/13 = 53.8%",
+    "O_S_rate_decided": "2/7 = 28.6%",
+    "weighted_S_rate_decided": "33.4%",
+    "degenerate_rate_512tok": {"D": "45%", "S": "58.3%", "O": "25%"}
+  },
+  "next_candidates": [
+    "R450-A: 判官输入侧特征块 A/B (用户建议的 NLP 前置) —— 同批真实样本 {原始文本, 结构化特征块}, 判据 = 退化率/判决分布/单调用 token",
+    "R450-B: 器具锚从『源码派生重建』换成『产品实发 prompt 落盘』(增 --gate-prompt-dump) —— 本次失锚的根因对策",
+    "R450-C: 若新数据到达(真实流量出现『真认可 + 可跳形态』) 再开通道; 判据不变 = 可跳轮机械可达 ∧ 假 S 率 < 0.5"
+  ],
+  "excluded": ["未 push (推送暂停令在位)", "未改产品门/判官行为 (本轮只加开关 + 读数 + 器具)", "未删库未迁移"]
+}

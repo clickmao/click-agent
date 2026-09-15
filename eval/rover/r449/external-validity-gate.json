@@ -1,0 +1,92 @@
+{
+  "round": "R449",
+  "corpus": "/home/agentuser/AgentFramework/eval/rover/r449/real-corpus.jsonl",
+  "prereg_rules": {
+    "D_drive": "(继续|下一轮|下轮|开下?一轮|进行下|接着下|不用问|照做|执行吧|按计划|go on|next round|继续跑|往下|推进|不等|自动下一轮|30m|60m)",
+    "O_ops": "(lightvela|lightclaw|console|api\\.|dns|证书|域名|部署|线上|服务端|nginx|http|端点|运维)",
+    "S_substantive": "其余全部",
+    "ack_chars_derived": "好嗯行明白了知道谢收到多辛苦可以先就的",
+    "note": "规则先落盘(本脚本)后读数; D 类不作采纳/纠正标签"
+  },
+  "class_counts": {
+    "S": 1138,
+    "O": 43,
+    "D": 361
+  },
+  "stats": {
+    "S": {
+      "n": 1138,
+      "ack": 0,
+      "ack_pct": 0.0,
+      "mech_pass": 1100,
+      "mech_pass_pct": 96.7,
+      "gate_eligible": 0,
+      "gate_eligible_pct": 0.0,
+      "label": {
+        "correct": 403,
+        "new_task": 726,
+        "adopt": 9
+      },
+      "label_gate_eligible": {},
+      "elig_examples": []
+    },
+    "D": {
+      "n": 361,
+      "ack": 0,
+      "ack_pct": 0.0,
+      "mech_pass": 127,
+      "mech_pass_pct": 35.2,
+      "gate_eligible": 0,
+      "gate_eligible_pct": 0.0,
+      "label": {
+        "new_task": 124,
+        "adopt": 193,
+        "correct": 44
+      },
+      "label_gate_eligible": {},
+      "elig_examples": []
+    },
+    "O": {
+      "n": 43,
+      "ack": 0,
+      "ack_pct": 0.0,
+      "mech_pass": 43,
+      "mech_pass_pct": 100.0,
+      "gate_eligible": 0,
+      "gate_eligible_pct": 0.0,
+      "label": {
+        "correct": 18,
+        "new_task": 25
+      },
+      "label_gate_eligible": {},
+      "elig_examples": []
+    },
+    "ALL": {
+      "n": 1542,
+      "ack": 0,
+      "ack_pct": 0.0,
+      "mech_pass": 1270,
+      "mech_pass_pct": 82.4,
+      "gate_eligible": 0,
+      "gate_eligible_pct": 0.0,
+      "label": {
+        "correct": 465,
+        "new_task": 875,
+        "adopt": 202
+      },
+      "label_gate_eligible": {},
+      "elig_examples": []
+    }
+  },
+  "grid_M20": {
+    "grid_turns": 20,
+    "gate_eligible": 7,
+    "declared_ratio": "7/20",
+    "gate_eligible_pct": 35.0
+  },
+  "verdict_by_class": {
+    "S": "带真值标签",
+    "D": "不作标签",
+    "O": "不作标签"
+  }
+}

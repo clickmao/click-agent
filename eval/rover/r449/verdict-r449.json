@@ -1,0 +1,45 @@
+{
+  "round": "R449",
+  "channel": "A0 用户↔agent 真实对话 (用户钦定: 「我给你发任务, 你给我反馈, 这个过程本就是真实流量」)",
+  "corpus": {
+    "sessions": 142,
+    "user_turns_raw": 2201,
+    "after_injection_filter": 1542,
+    "with_prev_reply_for_triple": 862,
+    "filtered_D_drive": 361,
+    "filtered_O_ops": 43,
+    "filtered_S_substantive": 1138
+  },
+  "prereg_filter_rule": "D(迭代驱动) 不作采纳/纠正标签; O(运维质询) 单列; S(实质反馈) 才带真值标签",
+  "external_validity": {
+    "ack_family_derived_from_source": "好嗯行明白了知道谢收到多辛苦可以先就的",
+    "real_traffic_ack_rate_pct": 0.0,
+    "independent_recount_pure_ack_msgs": 0,
+    "grid_M20_gate_eligible_pct": 35.0,
+    "reading": "真实流量 ack=0/1542 ⇒ ¬Ack 恒真 ⇒ 机械门前置**每轮都命中**",
+    "consequence_local": "门 r1 调用 = 0 ⇒ 省掉「必然 Pass 的浪费调用」(源码自述 ≈638.8 tok/轮) —— 该收益真实且在真实流量上**满额**",
+    "consequence_remote": "远端可跳 (Skip) 需 Ack 成立 ⇒ 真实流量上 **Skip = 0** ⇒ 「不必要远端 API 请求下降」在真实流量上**实现额 = 0**",
+    "claim_scope": "M20 上 33.32% 的远端降幅来自网格构造的 7/20 认可族轮; 真实分布同类占比 0/1542 = 0% ⇒ 该降幅对本交互形态**无外部效度**"
+  },
+  "real_distribution_leads": {
+    "drive_class_share_pct": 23.4,
+    "drive_examples": [
+      "继续",
+      "持续",
+      "停止",
+      "继续下一轮"
+    ],
+    "note": "用户最高频(23.4%)的真实消息类 = 迭代驱动, 而其中「继续/持续」不在认可族 ⇒ 结构性不可跳; 这是**数据驱动的族扩候选**, 不是结论",
+    "adopt_label_pollution_if_unfiltered": {
+      "new_task": 124,
+      "adopt": 193,
+      "correct": 44
+    }
+  },
+  "honest_bounds": [
+    "语料 = 用户↔Hermes agent 的真实对话; 被测门在产品 (agenthost) 链上 ⇒ 结论限「同类交互形态」, 不直接等同产品终端用户分布",
+    "标签为规则分类(D/O/S + 采纳/纠正/换题), 可复算但有噪声; 未做人评校准",
+    "未跑 r1 ⇒ 无本轮真机 token 读数(对侧 R448 真机在跑, 本侧不占资源)"
+  ],
+  "verdict": "EXTERNAL_VALIDITY_GAP_CONFIRMED"
+}

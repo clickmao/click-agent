@@ -1827,3 +1827,20 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 2. **判官 + 门合并为单次本地调用**（R435/R438 遗留候选）：省一次冷启动与一次预填充；先只读复现两通道 prompt 形状与调用次数（判官 10 / 门 7，M20）。
 3. **门通道同构消融**（`local_turn_gate` 生成 ~130 tok ×7）：先只读机制复现，再与判官同臂。
 4. **把「判定项设计缺陷」前置成器具闸**：预注册里凡出现「跨臂相等」类断言，构建器须先机检该断言在**臂定义层面**可满足（本轮 C7 / R447 C4a 同类错误两次复发 ⇒ 升为通用闸）。
+
+## R449（2026-09-15）· think-memory 开关交付 + 真实流量外部通道结案
+
+用户裁定：think-memory 加开关；「用户↔agent 对话即真实流量」且**有效性须筛选**；用性价比最高的方案落地；**state.db 数据若无法提 KPI 则结案回归主线**。
+
+- **交付（源码/测试）**：`src/agent.exploration/ThinkMemory.cs` 新增 `ThinkMemorySwitch` 四档（env `AGENTFRAMEWORK_THINK_MEMORY` = `on` 默认 / `off` / `recall0` / `write0`）；`off` 档三闸 = 不读盘 / 不落盘（库文件 mtime 不变，可机检）/ 不改库；`Recall` 首行 `RecordRecallAttempt()`（反空心）；`HitCount` 与「refs 采纳次数」分离（修「命中恒 0」根因）；**宿主零改动**。测试：`ThinkMemorySwitchTests` 26 条 + `TurnGateParseTests` 13 用例（跨语言同位夹具）⇒ 定向 **33/33**、全量 **1321/1321 绿**；AOT 重发布。
+- **通道结案**（`eval/rover/r449/verdict-r449-close.json`）：**`STATE_DB_CANNOT_IMPROVE_KPI`**。承重证据（机械、与判官无关）：`可跳轮 = Ack ∧ ¬MechanicalPass` ⇒ state.db 1,542 轮中 ack **0/1542**、`gate_eligible` **0/1542** ⇒ 远端降幅实现额 **0**；语义侧：用户 OOB 实证「认可类消息 = 批准继续执行」⇒「认可 ⇒ 可跳远端」前提不成立。
+- **判官探针 VOID**（预注册判据 I1 3/7 < 5/7、I2 0/13 < 9/13）：产品同网格自身读数 7 Skip + 3 reject + 8 Pass、`raw_len 127..515`，探针 `gen=6` 无思考 ⇒ 生成形态失锚（seed sha16 逐位对齐 `0aa656fa7eafd93a`、模板源码 `git diff` 空）⇒ 真实流量判官读数一律 **n/a**（R380：没测到 ≠ 失败）。
+- **事后读数**（`checks_posthoc`，不得引用为产品结论）：D 类 S 63.3%（19/30）、S 53.8%、O 28.6%、加权 33.4%；退化率 D 45% / S 58.3% / O 25%。
+- **器具缺陷 3 处**（已修，登记于计划 §10）：`labels` 三元组误用 `dict()`；`csharp_unescape` 不解 `\uXXXX`（think 标记被派生成 15/16 字符 ⇒ 解析必走尾部窗口）；`POST /props` 误用（501，该端点仅 GET）。
+- **登记**：`docs/verification-registry.json` → `r449.think-memory-switch`(L2) / `r449.turn-gate-parse-crosslang-fixture`(L2) / `r449.real-traffic-external-validity`(L3)；证据 `eval/rover/r449/README-evidence.md` §6；计划 `docs/plans/v0.69.0-r449-think-memory-switch-and-external-truth-channel.md` §10–11。
+- **诚实边界**：① 语料 = 用户↔Hermes agent 对话（≠ 产品终端分布，通道 A1 需部署端日志）；② 判官侧读数因失锚作废 ⇒ 本轮无真机远端 A/B；③ `real-corpus.jsonl`（21.6 MB，含真实文本）不入库；④ 无链跑 ⇒ 不写 `eval/capability/kpi.jsonl`。
+
+### 下轮候选（R450，按优先级）
+1. **判官输入侧特征块 A/B**（用户建议的 NLP 前置）：同批真实样本 × {原始文本, 结构化特征块}，判据 = 退化率 / 判决分布 / 单调用 token；
+2. **器具锚改「产品实发 prompt 落盘」**（新增 `--gate-prompt-dump`）——本轮失锚的根因对策，并给门通道加「源锚版本」闸；
+3. 残留：`本地口径降幅 V5/V1 净亏`、`15x 决定性实验`、doc HTML 报告 T8。

@@ -426,10 +426,21 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
         _ragRecall = ragRecall;
         _textEmbedder = textEmbedder;
         _thinkMemory = _thinkMemoryGlobal;
+        // R449 验收补 (2026-09-15): think-memory 档位必须**在遥测面可机检** —— 计划 §4 机检② 预注册了
+        // `think_memory_boot` 必带 enabled/mode/loaded 字段, 但首版只发了 embedder_injected/available/instance
+        // ⇒ 开关只改行为、不可观测 ⇒ 消融 C5(各档打点形状互不相同) 无法机检。此处按预注册补齐 (加性, 不改旧字段):
+        //   mode    = on|off|recall0|write0  (进程级档位实读值, 非手抄)
+        //   enabled = mode != "off"          (off 档三闸全关)
+        //   loaded  = 进程内累计入库条数      (反空心: on 档 0 ⇒ 库没读到, 与 off 档可区分)
+        // 读数纪律: 缺任一字段 ⇒ 该轮「开关生效」结论记 n/a, 不得以「没打点」冒充「档位无效」。
         agent.config.AgentTelemetry.Emit("think_memory_boot", "IndustrialAgentV2",
             ("embedder_injected", textEmbedder is not null),
             ("available", textEmbedder is { IsAvailable: true }),
-            ("instance", Guid.NewGuid().ToString("N")[..8]));
+            ("instance", Guid.NewGuid().ToString("N")[..8]),
+            ("mode", _thinkMemory?.ModeName ?? "unknown"),
+            ("enabled", !string.Equals(_thinkMemory?.ModeName, "off", StringComparison.Ordinal)),
+            ("loaded", agent.exploration.ThinkMemoryStats.Snapshot().Loaded),
+            ("records", _thinkMemory?.Count ?? -1));
         _templateStore = templateStore;
         _searchService = searchService;
         _subAgentPool = subAgentPool;

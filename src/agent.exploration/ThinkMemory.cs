@@ -24,6 +24,12 @@ public sealed class ThinkRecord
     public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
     /// <summary>历史命中引用次数</summary>
     public int HitCount { get; set; }
+    /// <summary>
+    /// R449: 引用"依据"真正被采纳的次数 (refs 命中)。原实现把 HitCount 兼作此用,
+    /// 但仅在 reference 命中 Refs 时才自增 ⇒ refs 全空时 HitCount 恒 0, 「被引用」无法计数。
+    /// 现: HitCount = 被引用次数(无条件), RefHitCount = 其中命中具体依据的次数。
+    /// </summary>
+    public int RefHitCount { get; set; }
 }
 
 public sealed class ThinkMemoryConfig
@@ -51,20 +57,146 @@ public sealed class ThinkMemoryHit
     public List<string> PreferredRefs { get; set; } = new();
 }
 
+/// <summary>
+/// R449: think-memory 总开关 — 最低面实现 (宿主零改动, 默认档零产品变更)。
+/// 环境变量 <c>AGENTFRAMEWORK_THINK_MEMORY</c>:
+///   未设 / "1" / "on" / "true" ⇒ On (现网行为, 默认)
+///   "off"        ⇒ 全关: 不加载 / 不写入 / 不召回 / 不落盘 (库文件 mtime 不变)
+///   "recall0"    ⇒ 禁召回 (仍写入): 用于 A/B 消融「召回是否有用」
+///   "write0"     ⇒ 禁写入 (仍召回): 用于 A/B 消融「写入是否有用」
+/// 取值在进程启动时读一次 (AOT 安全, 无反射); 测试可经 Mode 参数注入。
+/// </summary>
+public static class ThinkMemorySwitch
+{
+    public enum Mode { On = 0, Off = 1, RecallOff = 2, WriteOff = 3 }
+
+    /// <summary>进程级档位 (env 读一次)。</summary>
+    public static readonly Mode Current = Parse(Environment.GetEnvironmentVariable("AGENTFRAMEWORK_THINK_MEMORY"));
+
+    /// <summary>未知取值 ⇒ On (fail-open: 开关本身不得成为主链故障点)。</summary>
+    public static Mode Parse(string? raw) => (raw ?? string.Empty).Trim().ToLowerInvariant() switch
+    {
+        "off" or "0" or "false" or "disable" or "disabled" => Mode.Off,
+        "recall0" or "recall-off" or "no-recall" => Mode.RecallOff,
+        "write0" or "write-off" or "no-write" => Mode.WriteOff,
+        _ => Mode.On,
+    };
+
+    public static string Name(Mode m) => m switch
+    {
+        Mode.Off => "off", Mode.RecallOff => "recall0", Mode.WriteOff => "write0", _ => "on",
+    };
+}
+
+/// <summary>
+/// R449: think-memory 计数器 — 反「空心读数」闸。任何「开关有效果」的结论必须先满足
+/// <c>Recalls &gt; 0</c> (尝试过召回) 或 <c>Writes &gt; 0</c>, 否则该臂记 n/a 而不是 0
+/// (R380 铁律: 「没测到」≠「测过通过/无效果」)。
+/// </summary>
+public static class ThinkMemoryStats
+{
+    private static int _writes, _writesSuppressed, _negativeWrites, _unbackedWrites;
+    private static int _recalls, _recallsSuppressed, _recallHits, _dimMismatch;
+    private static int _hits, _refHits, _loaded;
+
+    public static void RecordWrite(bool isNegative, int refCount)
+    {
+        Interlocked.Increment(ref _writes);
+        if (isNegative) Interlocked.Increment(ref _negativeWrites);
+        if (refCount <= 0) Interlocked.Increment(ref _unbackedWrites);
+    }
+
+    public static void RecordWriteSuppressed() => Interlocked.Increment(ref _writesSuppressed);
+    public static void RecordRecallAttempt() => Interlocked.Increment(ref _recalls);
+    public static void RecordRecallSuppressed() => Interlocked.Increment(ref _recallsSuppressed);
+    public static void RecordRecallHits(int n) { if (n > 0) Interlocked.Add(ref _recallHits, n); }
+    public static void RecordDimMismatch() => Interlocked.Increment(ref _dimMismatch);
+    public static void RecordHit() => Interlocked.Increment(ref _hits);
+    public static void RecordRefHit() => Interlocked.Increment(ref _refHits);
+    public static void RecordLoaded(int n) => Interlocked.Add(ref _loaded, n);
+
+    public static (int Writes, int WritesSuppressed, int NegativeWrites, int UnbackedWrites,
+                   int Recalls, int RecallsSuppressed, int RecallHits, int DimMismatch,
+                   int Hits, int RefHits, int Loaded) Snapshot()
+        => (Volatile.Read(ref _writes), Volatile.Read(ref _writesSuppressed), Volatile.Read(ref _negativeWrites),
+            Volatile.Read(ref _unbackedWrites), Volatile.Read(ref _recalls), Volatile.Read(ref _recallsSuppressed),
+            Volatile.Read(ref _recallHits), Volatile.Read(ref _dimMismatch), Volatile.Read(ref _hits),
+            Volatile.Read(ref _refHits), Volatile.Read(ref _loaded));
+
+    /// <summary>测试/测量用 (生产不调用)。</summary>
+    public static void Reset()
+    {
+        Interlocked.Exchange(ref _writes, 0); Interlocked.Exchange(ref _writesSuppressed, 0);
+        Interlocked.Exchange(ref _negativeWrites, 0); Interlocked.Exchange(ref _unbackedWrites, 0);
+        Interlocked.Exchange(ref _recalls, 0); Interlocked.Exchange(ref _recallsSuppressed, 0);
+        Interlocked.Exchange(ref _recallHits, 0); Interlocked.Exchange(ref _dimMismatch, 0);
+        Interlocked.Exchange(ref _hits, 0); Interlocked.Exchange(ref _refHits, 0);
+        Interlocked.Exchange(ref _loaded, 0);
+    }
+}
+
+/// <summary>R449: 库形状快照 (只读; 供普查/遥测 — 不含内容)。</summary>
+public sealed class ThinkMemoryShape
+{
+    public int Count { get; set; }
+    public int Negative { get; set; }
+    public int Unbacked { get; set; }
+    public int ZeroDim { get; set; }
+    public int HitPositive { get; set; }
+    public int RefHitPositive { get; set; }
+    public string Dimensions { get; set; } = string.Empty;
+    public string Mode { get; set; } = "on";
+}
+
 public sealed class ThinkMemory
 {
     private readonly ThinkMemoryConfig _config;
+    private readonly ThinkMemorySwitch.Mode _mode;
     private readonly List<ThinkRecord> _records = new();
     private readonly object _lock = new();
 
-    public ThinkMemory(ThinkMemoryConfig? config = null) => _config = config ?? new ThinkMemoryConfig();
+    public ThinkMemory(ThinkMemoryConfig? config = null, ThinkMemorySwitch.Mode? mode = null)
+        => (_config, _mode) = (config ?? new ThinkMemoryConfig(), mode ?? ThinkMemorySwitch.Current);
+
+    /// <summary>R449: 本实例档位 (遥测/普查可见)。</summary>
+    public string ModeName => ThinkMemorySwitch.Name(_mode);
 
     public int Count { get { lock (_lock) return _records.Count; } }
 
-    /// <summary>写入 (高质量思考; 低置信/负样本同样可写 — outcome 标记供降权)。</summary>
+    /// <summary>R449: 库形状快照 (只读计数, 无内容) — 供普查与「非空心」判据。</summary>
+    public ThinkMemoryShape Shape()
+    {
+        lock (_lock)
+        {
+            var dims = _records.Where(r => r.QuestionEmbedding is { Length: > 0 })
+                .GroupBy(r => r.QuestionEmbedding!.Length)
+                .OrderByDescending(g => g.Count())
+                .Select(g => g.Key + ":" + g.Count());
+            return new ThinkMemoryShape
+            {
+                Count = _records.Count,
+                Negative = _records.Count(r => r.Outcome == "negative"),
+                Unbacked = _records.Count(r => r.Refs.Count == 0),
+                ZeroDim = _records.Count(r => r.QuestionEmbedding is null || r.QuestionEmbedding.Length == 0),
+                HitPositive = _records.Count(r => r.HitCount > 0),
+                RefHitPositive = _records.Count(r => r.RefHitCount > 0),
+                Dimensions = string.Join("|", dims),
+                Mode = ModeName,
+            };
+        }
+    }
+
+    /// <summary>写入 (高质量思考; 低置信/负样本同样可写 — outcome 标记供降权)。
+    /// R449: `write0`/`off` 档抑制写入 (但计数可见 — 反空心)。</summary>
     public string Write(ThinkRecord record)
     {
+        if (_mode is ThinkMemorySwitch.Mode.Off or ThinkMemorySwitch.Mode.WriteOff)
+        {
+            ThinkMemoryStats.RecordWriteSuppressed();
+            return record.Id;
+        }
         lock (_lock) _records.Add(record);
+        ThinkMemoryStats.RecordWrite(record.Outcome == "negative", record.Refs.Count);
         return record.Id;
     }
 
@@ -74,18 +206,30 @@ public sealed class ThinkMemory
     /// </summary>
     public IReadOnlyList<ThinkMemoryHit> Recall(float[] questionEmbedding, int topK = 3)
     {
+        ThinkMemoryStats.RecordRecallAttempt();   // R449: 尝试计数先行 (反空心: 结论必须能引用它)
+        if (_mode is ThinkMemorySwitch.Mode.Off or ThinkMemorySwitch.Mode.RecallOff)
+        {
+            ThinkMemoryStats.RecordRecallSuppressed();
+            return Array.Empty<ThinkMemoryHit>();
+        }
         lock (_lock)
         {
             var hits = new List<(ThinkRecord r, double sim, double rank)>();
             foreach (var r in _records)
             {
                 if (r.QuestionEmbedding is null || r.QuestionEmbedding.Length == 0) continue;
+                if (r.QuestionEmbedding.Length != questionEmbedding.Length)
+                {
+                    // R449: 维度不一致原被静默吃成 sim=0 (记录不可达但读数看不见) ⇒ 显式计数
+                    ThinkMemoryStats.RecordDimMismatch();
+                    continue;
+                }
                 var sim = Cosine(questionEmbedding, r.QuestionEmbedding);
                 if (sim < _config.MinSimilarity) continue;
                 var penalty = r.Outcome == "negative" ? _config.NegativePenalty : 1.0;
                 hits.Add((r, sim, sim * Math.Max(0.05, r.AvgConfidence) * penalty));
             }
-            return hits.OrderByDescending(h => h.rank)
+            var ordered = hits.OrderByDescending(h => h.rank)
                 .Take(topK)
                 .Select(h => new ThinkMemoryHit
                 {
@@ -98,6 +242,8 @@ public sealed class ThinkMemory
                         .ToList(),
                 })
                 .ToList();
+            ThinkMemoryStats.RecordRecallHits(ordered.Count);
+            return ordered;
         }
     }
 
@@ -107,13 +253,19 @@ public sealed class ThinkMemory
     /// </summary>
     public bool ApplyCitationBoost(string recordId, string reference)
     {
+        if (_mode == ThinkMemorySwitch.Mode.Off) return false;   // R449: off 档不改库
         lock (_lock)
         {
             var r = _records.FirstOrDefault(x => x.Id == recordId);
             if (r is null) return false;
+            // R449 修复: 「被引用一次」无条件计数。原实现只在 reference 命中 Refs 时才 HitCount++,
+            // 而写入侧 refs 恒空 ⇒ HitCount 永远 0, 衰减逻辑 (HitCount>0 豁免) 与遥测双失效。
             r.HitCount++;
+            ThinkMemoryStats.RecordHit();
             var i = r.Refs.FindIndex(x => string.Equals(x, reference, StringComparison.OrdinalIgnoreCase));
             if (i < 0) return false;
+            r.RefHitCount++;
+            ThinkMemoryStats.RecordRefHit();
             r.RefConfidences[i] = Math.Min(_config.MaxConfidence, r.RefConfidences[i] + _config.CitationBoost);
             r.AvgConfidence = r.RefConfidences.Count > 0 ? r.RefConfidences.Average() : r.AvgConfidence;
             return true;
@@ -151,6 +303,7 @@ public sealed class ThinkMemory
     /// </summary>
     public void Save(string path)
     {
+        if (_mode == ThinkMemorySwitch.Mode.Off) return;   // R449: off 档不落盘 ⇒ 库文件 mtime 不变 (可机检)
         try
         {
             List<ThinkRecord> snapshot;
@@ -166,10 +319,12 @@ public sealed class ThinkMemory
         }
     }
 
-    /// <summary>加载 (宿主启动时调用; 文件缺失/损坏 → 空库启动, 行为兼容)。</summary>
-    public static ThinkMemory Load(string path)
+    /// <summary>加载 (宿主启动时调用; 文件缺失/损坏 → 空库启动, 行为兼容)。
+    /// R449: 可注入档位; `off` 档不读盘 ⇒ 空库 (库文件不被触碰)。</summary>
+    public static ThinkMemory Load(string path, ThinkMemorySwitch.Mode? mode = null)
     {
-        var mem = new ThinkMemory();
+        var mem = new ThinkMemory(null, mode);
+        if (mem._mode == ThinkMemorySwitch.Mode.Off) return mem;
         try
         {
             if (!File.Exists(path)) return mem;
@@ -178,6 +333,7 @@ public sealed class ThinkMemory
             if (records != null)
             {
                 lock (mem._lock) mem._records.AddRange(records);
+                ThinkMemoryStats.RecordLoaded(records.Count);
             }
         }
         catch
