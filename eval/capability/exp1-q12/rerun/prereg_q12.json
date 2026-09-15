@@ -1,0 +1,34 @@
+{
+  "owner_round": "EXP1-Q12",
+  "prereg_id": "exp1-q12-form-check",
+  "written_at_local": "2026-09-15T11:22",
+  "step": "exp1 L.7 #4 —— 形式校验补跑（附录 C/E/J-K/L 连续四次结转的那一笔债务）",
+  "target": "VerificationForm | SkillGeneralization | DevPlanDocRef 三个测试族在当前工作树（HEAD b441616）上的真机运行结论",
+  "hypothesis": "本侧 exp1 各轮改动面 = docs/plans/*.md + eval/capability/exp1-q*/，未触及 docs/verification-registry.json、skills/、src/ ⇒ 三个测试族全绿；若红，则红项属他侧改动或真实回归，须逐条定位而非放宽阈值。",
+  "criteria_frozen_before_run": {
+    "C1_exit": "显式标记 FORM_CHECK_EXIT == 0（不由末条辅助命令决定）",
+    "C2_outcome": "trx 聚合 Failed == 0 且 Skipped == 0（Skipped > 0 记为不合格：不得用跳过冒充通过）",
+    "C3_nondegenerate": "Total >= 13（exp1-q2 已登记基线 13；少于基数为非平凡性失败 ⇒ 判测量失败，不判绿）",
+    "C4_three_families": "trx 里三个命名空间各自 >= 1 条测试结果（防「过滤器把某一族整个漏掉」被记成全绿）",
+    "C5_freshness": "trx 内时间戳晚于本 prereg 的 mtime（防复用旧证据/旧二进制）",
+    "C6_attribution": "记录 HEAD + 测试目标面指纹（registry sha256 / skills 计数）；本侧本轮改动面不含 registry/skills",
+    "C7_leak_gate": "运行前并发闸：无 MSBuild/VBCSCompiler/agenthost/llama-server/run_round/drive_task 进程（真缺陷 71 同族规避）；闸不过 ⇒ 退出码 3 环境失败，不入结论"
+  },
+  "negative_control": "解析器自带 selftest：注入 Failed=1 / Skipped=1 / 缺一族 / Total<13 / 陈旧时间戳 的伪 trx ⇒ 必须分别判红；全绿伪 trx ⇒ 判绿",
+  "exit_code_semantics": {
+    "0": "断言通过（全绿）",
+    "2": "断言失败（测试真红）",
+    "3": "测量或环境失败（并发闸不过 / build 失败 / trx 缺失 / 解析失败）"
+  },
+  "exclusions": [
+    "不放宽任何阈值；红就是红",
+    "不重跑掩盖（§R410 假红分诊纪律：红项先隔离复跑分诊）",
+    "本轮不改仪器、不改 docs/verification-registry.json、不改 skills/、不改 src/"
+  ],
+  "predicted": {
+    "Total": ">= 13",
+    "Failed": 0,
+    "Skipped": 0,
+    "FORM_CHECK_EXIT": 0
+  }
+}

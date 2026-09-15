@@ -1,0 +1,186 @@
+{
+  "n_fixtures": 13,
+  "n_pass": 13,
+  "exit": 0,
+  "fixtures": [
+    {
+      "fixture": "green",
+      "exit": 0,
+      "class": "none",
+      "expected_exit": 0,
+      "expected_class": "none",
+      "as_expected": true,
+      "checks": {
+        "C5_freshness": true,
+        "C1_exit_zero": true,
+        "C2_no_fail_no_skip": true,
+        "C3_nondegenerate": true,
+        "C4_three_families": true,
+        "C6_attribution": true
+      },
+      "err": null
+    },
+    {
+      "fixture": "inject_failed",
+      "exit": 2,
+      "class": "assertion",
+      "expected_exit": 2,
+      "expected_class": "assertion",
+      "as_expected": true,
+      "checks": {
+        "C5_freshness": true,
+        "C1_exit_zero": false,
+        "C2_no_fail_no_skip": false,
+        "C3_nondegenerate": true,
+        "C4_three_families": true,
+        "C6_attribution": true
+      },
+      "err": null
+    },
+    {
+      "fixture": "inject_skipped",
+      "exit": 2,
+      "class": "assertion",
+      "expected_exit": 2,
+      "expected_class": "assertion",
+      "as_expected": true,
+      "checks": {
+        "C5_freshness": true,
+        "C1_exit_zero": true,
+        "C2_no_fail_no_skip": false,
+        "C3_nondegenerate": true,
+        "C4_three_families": true,
+        "C6_attribution": true
+      },
+      "err": null
+    },
+    {
+      "fixture": "missing_family",
+      "exit": 2,
+      "class": "assertion",
+      "expected_exit": 2,
+      "expected_class": "assertion",
+      "as_expected": true,
+      "checks": {
+        "C5_freshness": true,
+        "C1_exit_zero": true,
+        "C2_no_fail_no_skip": true,
+        "C3_nondegenerate": true,
+        "C4_three_families": false,
+        "C6_attribution": true
+      },
+      "err": null
+    },
+    {
+      "fixture": "below_min_total",
+      "exit": 2,
+      "class": "assertion",
+      "expected_exit": 2,
+      "expected_class": "assertion",
+      "as_expected": true,
+      "checks": {
+        "C5_freshness": true,
+        "C1_exit_zero": true,
+        "C2_no_fail_no_skip": true,
+        "C3_nondegenerate": false,
+        "C4_three_families": true,
+        "C6_attribution": true
+      },
+      "err": null
+    },
+    {
+      "fixture": "counters_mismatch",
+      "exit": 3,
+      "class": "measurement",
+      "expected_exit": 3,
+      "expected_class": "measurement",
+      "as_expected": true,
+      "checks": {},
+      "err": "counters.total=99 != results=15"
+    },
+    {
+      "fixture": "no_counters",
+      "exit": 3,
+      "class": "measurement",
+      "expected_exit": 3,
+      "expected_class": "measurement",
+      "as_expected": true,
+      "checks": {},
+      "err": "trx 无 Counters 节点（第二数据源缺失 ⇒ 无法交叉）"
+    },
+    {
+      "fixture": "build_failure_zero_results",
+      "exit": 3,
+      "class": "measurement",
+      "expected_exit": 3,
+      "expected_class": "measurement",
+      "as_expected": true,
+      "checks": {},
+      "err": "dotnet test rc=1 且零测试结果 ⇒ 构建/环境失败"
+    },
+    {
+      "fixture": "stale_evidence",
+      "exit": 3,
+      "class": "measurement",
+      "expected_exit": 3,
+      "expected_class": "measurement",
+      "as_expected": true,
+      "checks": {},
+      "err": "stale evidence: trx mtime 1789442571 < prereg 1789442671"
+    },
+    {
+      "fixture": "same_second_not_stale",
+      "exit": 0,
+      "class": "none",
+      "expected_exit": 0,
+      "expected_class": "none",
+      "as_expected": true,
+      "checks": {
+        "C5_freshness": true,
+        "C1_exit_zero": true,
+        "C2_no_fail_no_skip": true,
+        "C3_nondegenerate": true,
+        "C4_three_families": true,
+        "C6_attribution": true
+      },
+      "err": null
+    },
+    {
+      "fixture": "gate_concurrent_nonzero",
+      "exit": 3,
+      "class": "measurement",
+      "expected_exit": 3,
+      "expected_class": "measurement",
+      "as_expected": true,
+      "checks": {},
+      "err": "gate_concurrent_procs=1 != 0（对侧并发在跑 ⇒ 读数不纯净）"
+    },
+    {
+      "fixture": "gate_mem_below_threshold",
+      "exit": 3,
+      "class": "measurement",
+      "expected_exit": 3,
+      "expected_class": "measurement",
+      "as_expected": true,
+      "checks": {},
+      "err": "gate_MemAvailable_MB=2500 < 2600（来源 prereg_q12_amend1.json）"
+    },
+    {
+      "fixture": "no_attribution",
+      "exit": 2,
+      "class": "assertion",
+      "expected_exit": 2,
+      "expected_class": "assertion",
+      "as_expected": true,
+      "checks": {
+        "C5_freshness": true,
+        "C1_exit_zero": true,
+        "C2_no_fail_no_skip": true,
+        "C3_nondegenerate": true,
+        "C4_three_families": true,
+        "C6_attribution": false
+      },
+      "err": null
+    }
+  ]
+}

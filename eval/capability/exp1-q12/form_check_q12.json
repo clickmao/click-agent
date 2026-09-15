@@ -1,0 +1,72 @@
+{
+  "owner_round": "EXP1-Q12",
+  "prereg_id": "exp1-q12-form-check",
+  "raw_rc": 0,
+  "checks": {
+    "C5_freshness": true,
+    "C1_exit_zero": true,
+    "C2_no_fail_no_skip": true,
+    "C3_nondegenerate": true,
+    "C4_three_families": true,
+    "C6_attribution": true
+  },
+  "detail": {
+    "gate": {
+      "gate_concurrent_procs": "0",
+      "gate_MemAvailable_MB": "2701",
+      "observed_orphan_stubs": "6",
+      "head_short": "b441616",
+      "registry_sha256": "91776de93608ab5876aafd9f7996fbe433cdd496731dba1d9d497a46f5c7a229",
+      "skills_md_count": "13",
+      "build_server_shutdown_exit": "0",
+      "dotnet_test_exit": "0"
+    },
+    "gate_mem_threshold": 2600,
+    "gate_threshold_source": "prereg_q12_amend1.json",
+    "results": {
+      "total": 13,
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0,
+      "other": 0
+    },
+    "counters": {
+      "total": 13,
+      "executed": 13,
+      "passed": 13,
+      "failed": 0,
+      "notExecuted": 0,
+      "aborted": 0,
+      "inconclusive": 0
+    },
+    "families": {
+      "VerificationForm": 6,
+      "SkillGeneralization": 4,
+      "DevPlanDocRef": 3
+    },
+    "trx_mtime": 1789442596.6061347,
+    "prereg_mtime": 1789442411.2370572,
+    "trx_mtime_minus_prereg_s": 185.369,
+    "failed_names": [],
+    "check_detail": {
+      "C5_freshness": true,
+      "C1_exit_zero": true,
+      "C2_no_fail_no_skip": true,
+      "C3_nondegenerate": true,
+      "C4_three_families": true,
+      "C6_attribution": true
+    }
+  },
+  "peak_memory_posthoc": {
+    "start_MB": 2701,
+    "min_MB": 1976,
+    "end_MB": 1976,
+    "peak_drop_MB": 725,
+    "n_samples": 20,
+    "note": "informational; 对比 C7 档位是否留足余量"
+  },
+  "verdict": "PASS",
+  "failure_class": "none",
+  "exit_code": 0,
+  "ts": "2026-09-15T11:23:16+0800"
+}

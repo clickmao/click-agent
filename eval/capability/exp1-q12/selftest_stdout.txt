@@ -1,0 +1,14 @@
+[OK ] green: exit=0 class=none (want 0/none)
+[OK ] inject_failed: exit=2 class=assertion (want 2/assertion)
+[OK ] inject_skipped: exit=2 class=assertion (want 2/assertion)
+[OK ] missing_family: exit=2 class=assertion (want 2/assertion)
+[OK ] below_min_total: exit=2 class=assertion (want 2/assertion)
+[OK ] counters_mismatch: exit=3 class=measurement (want 3/measurement) err=counters.total=99 != results=15
+[OK ] no_counters: exit=3 class=measurement (want 3/measurement) err=trx 无 Counters 节点（第二数据源缺失 ⇒ 无法交叉）
+[OK ] build_failure_zero_results: exit=3 class=measurement (want 3/measurement) err=dotnet test rc=1 且零测试结果 ⇒ 构建/环境失败
+[OK ] stale_evidence: exit=3 class=measurement (want 3/measurement) err=stale evidence: trx mtime 1789442457 < prereg 1789442557
+[OK ] same_second_not_stale: exit=0 class=none (want 0/none)
+[OK ] gate_concurrent_nonzero: exit=3 class=measurement (want 3/measurement) err=gate_concurrent_procs=1 != 0（对侧并发在跑 ⇒ 读数不纯净）
+[OK ] gate_mem_below_threshold: exit=3 class=measurement (want 3/measurement) err=gate_MemAvailable_MB=2500 < 2600（来源 prereg_q12_amend1.json）
+[OK ] no_attribution: exit=2 class=assertion (want 2/assertion)
+SELFTEST 13/13  exit=0

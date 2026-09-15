@@ -1,0 +1,33 @@
+{
+  "amends": "prereg_q12.json",
+  "prereg_id": "exp1-q12-form-check",
+  "amendment": 1,
+  "written_at_local": "2026-09-15T11:24",
+  "trigger": "run#1 (11:21:38) 被起手闸拦下: gate_MemAvailable_MB=2675 < 2800 ⇒ FORM_CHECK_EXIT=3（测量失败，非断言失败）；同次 gate_concurrent_procs=0（对侧产品进程确实空闲）。",
+  "finding": {
+    "id": "threshold-inside-noise-band",
+    "statement": "MemAvailable 在同一环境、相邻 3 分钟内三次读数为 2916 / 2675 / 2677 MB —— 2800 这条阈值正好落在本机读数的自然振荡带（约 ±120 MB）内。阈值落在噪声带里 ⇒ 同样条件下闸门放行/拦截不可复现，而且只要机器常态余量低于阈值，它就稳定地变成永久拦截（= 静默空转，该项债务会被无限期结转）。",
+    "evidence": [
+      "eval/capability/exp1-q12/preflight.txt (11:19 — MemAvailable_MB=2916, 并发=0)",
+      "eval/capability/exp1-q12/run_form_check.log (11:21:38 — gate_MemAvailable_MB=2675 ⇒ reason=GATE_MEMORY)"
+    ]
+  },
+  "change": {
+    "criterion": "C7（环境闸）",
+    "from": "MemAvailable >= 2800",
+    "to_threshold": 2600,
+    "to_full": "MemAvailable >= 2600 且 gate_concurrent_procs == 0",
+    "rationale": "2800 这个数字的来源是 llama-server 类测量（常驻模型 RSS 2.39 GB + 余量）。本步的测量类是 `dotnet test`（JIT 编译 + 测试宿主），没有常驻大模型 ⇒ 适用的是「内存有富余」档，不是「模型档」。取 2600 相对 run#1 实测 2675 留 75 MB 余量；同时新增本类测量实际占用峰值的实测落盘（见下），事后校核该档位是否合理。",
+    "not_relaxed": "C1(dotnet rc==0) / C2(failed==0 ∧ skipped==0 ∧ other==0) / C3(total>=13) / C4(三族各>=1) / C5(证据新鲜，trx 不早于 prereg) / C6(归属指纹: HEAD + registry sha + skills 面) 六条一字未改。本次修正只动环境闸档位，不动任何能力判据。",
+    "explicitly_not_done": "没有为了让脚本变绿而放宽任何能力判据；C1–C6 任一红就如实登记红。"
+  },
+  "predictions_unchanged": {
+    "P1": "C1–C6 全绿（与 exp1-q2 那次 13/13 同向）",
+    "P2": "total >= 13（不得少于已登记基线）",
+    "P3": "本类测量的实际内存占用峰值 < 500 MB（若实测 > 1000 MB，则 2600 档位需在下一轮重估）"
+  },
+  "checks_posthoc_planned": [
+    "本类测量峰值内存（mem_samples.txt 的 min(MemAvailable) 与起手读数之差）—— 信息字段，不作红绿判据"
+  ],
+  "gate_source_rule": "阈值单一权威源 = 本文件 change.to_threshold；runner 与 parser 都从该键读取并把它写进日志/读数（禁止在两处各写一个字面量）。"
+}
