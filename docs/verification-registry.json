@@ -1401,15 +1401,18 @@
     },
     {
       "id": "r449.think-memory-switch",
-      "capability": "think-memory 四档开关 (on 默认/off/recall0/write0) + 反空心召回计数 + HitCount 与 refs 采纳次数分离 (修「命中恒 0」根因); 宿主零改动",
+      "capability": "think-memory 四档开关 (on 默认/off/recall0/write0) + 反空心召回计数 + HitCount 与 refs 采纳次数分离 (修「命中恒 0」根因); ★收尾轮补: 开关**在遥测面可机检** (boot 打点加性补 mode/enabled/loaded/records) ⇒ AOT 形态三臂机检 OFF loaded=0/records=0 · ON loaded=1342/records=1342 (成对) · OFF 库文件跑前跑后逐位相同, V1–V5+NC 10/10 PASS",
       "level": "L2",
       "owner_round": "R449",
-      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~ThinkMemorySwitchTests",
+      "evidence_cmd": "python3 eval/rover/r449/verify_boot_telemetry.py --bin /tmp/pub_r449b/agenthost --json eval/rover/r449/verdict-boot-telemetry.json; env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR $HOME/.dotnet/dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~ThinkMemorySwitchTests",
       "evidence_path": "src/agent.exploration/ThinkMemory.cs",
-      "negative_control": "off 档三闸逐条断言: Load 不读盘 / Save 不落盘 (库文件 mtime 不变) / ApplyCitationBoost 返回 false; recall0 与 write0 各自只抑制一侧 (召回尝试计数仍增) ⇒ 单闸失效必红; 档位映射含未知取值 fail-open 到 on ⇒ 默认档逐位等价现网行为",
+      "negative_control": "① off 档三闸逐条断言: Load 不读盘 / Save 不落盘 (库文件 mtime 不变) / ApplyCitationBoost 返回 false; recall0 与 write0 各自只抑制一侧 (召回尝试计数仍增) ⇒ 单闸失效必红; 档位映射含未知取值 fail-open 到 on ⇒ 默认档逐位等价现网行为。② AOT 机检成对负控: ARM-ON 同库种子 loaded=1342 ⇒ 证明 ARM-OFF 的 loaded=0 是短路读盘而非「库本来就空」; ③ 器具负控 NC-TEL (AGENTFRAMEWORK_TELEMETRY=off) 必须读不到 boot 记录, 否则「记录存在」可能是文件残留/仪器噪声; ④ 形态负控: 读数只认 stdout 含 NativeAOT + rc=0 的原生产物 (V5), 且被测二进制 sha256 落在裁决件内",
       "covers": [
         "src/agent.exploration/ThinkMemory.cs",
-        "src/agent.tests/ThinkMemorySwitchTests.cs"
+        "src/agent.tests/ThinkMemorySwitchTests.cs",
+        "src/agent/IndustrialAgentV2.cs",
+        "eval/rover/r449/verify_boot_telemetry.py",
+        "eval/rover/r449/verdict-boot-telemetry.json"
       ]
     },
     {

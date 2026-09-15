@@ -1,0 +1,135 @@
+{
+  "bin": "/tmp/pub_r449b/agenthost",
+  "bin_sha256": "fa3292068970740abbe755c268f61d3122cd55e1739c47a026d6f0b246f180fe",
+  "ts": "2026-09-15T05:06:39.832700+00:00",
+  "arms": [
+    {
+      "arm": "ARM-OFF",
+      "env": {
+        "AGENTFRAMEWORK_THINK_MEMORY": "off",
+        "AGENTFRAMEWORK_TELEMETRY": null
+      },
+      "rc": 0,
+      "stdout_has_nativeaot": true,
+      "stdout_head": "AgentFramework host (NativeAOT) starting...",
+      "telemetry_lines": 48,
+      "boot_found": true,
+      "boot": {
+        "ts": "2026-09-15T05:06:39.6373008Z",
+        "seq": 2,
+        "session": "host",
+        "point": "think_memory_boot",
+        "module": "IndustrialAgentV2",
+        "kv": {
+          "embedder_injected": true,
+          "available": false,
+          "instance": "7c259d44",
+          "mode": "off",
+          "enabled": false,
+          "loaded": 0,
+          "records": 0
+        }
+      },
+      "lib_before": {
+        "exists": true,
+        "bytes": 7002586,
+        "sha256": "40b3081abf2d8377fd3b9845b27eb7533a01e7a3350fa4299d49fd9479149bd3",
+        "mtime_ns": 1789354590266996502
+      },
+      "lib_after": {
+        "exists": true,
+        "bytes": 7002586,
+        "sha256": "40b3081abf2d8377fd3b9845b27eb7533a01e7a3350fa4299d49fd9479149bd3",
+        "mtime_ns": 1789354590266996502
+      },
+      "lib_unchanged": true,
+      "lib_seeded": true
+    },
+    {
+      "arm": "ARM-ON",
+      "env": {
+        "AGENTFRAMEWORK_THINK_MEMORY": null,
+        "AGENTFRAMEWORK_TELEMETRY": null
+      },
+      "rc": 0,
+      "stdout_has_nativeaot": true,
+      "stdout_head": "AgentFramework host (NativeAOT) starting...",
+      "telemetry_lines": 48,
+      "boot_found": true,
+      "boot": {
+        "ts": "2026-09-15T05:06:39.7643763Z",
+        "seq": 2,
+        "session": "host",
+        "point": "think_memory_boot",
+        "module": "IndustrialAgentV2",
+        "kv": {
+          "embedder_injected": true,
+          "available": false,
+          "instance": "3f71c07b",
+          "mode": "on",
+          "enabled": true,
+          "loaded": 1342,
+          "records": 1342
+        }
+      },
+      "lib_before": {
+        "exists": true,
+        "bytes": 7002586,
+        "sha256": "40b3081abf2d8377fd3b9845b27eb7533a01e7a3350fa4299d49fd9479149bd3",
+        "mtime_ns": 1789354590266996502
+      },
+      "lib_after": {
+        "exists": true,
+        "bytes": 7002586,
+        "sha256": "40b3081abf2d8377fd3b9845b27eb7533a01e7a3350fa4299d49fd9479149bd3",
+        "mtime_ns": 1789354590266996502
+      },
+      "lib_unchanged": true,
+      "lib_seeded": true
+    },
+    {
+      "arm": "NC-TEL",
+      "env": {
+        "AGENTFRAMEWORK_THINK_MEMORY": "off",
+        "AGENTFRAMEWORK_TELEMETRY": "off"
+      },
+      "rc": 0,
+      "stdout_has_nativeaot": true,
+      "stdout_head": "AgentFramework host (NativeAOT) starting...",
+      "telemetry_lines": 0,
+      "boot_found": false,
+      "boot": null,
+      "lib_before": {
+        "exists": true,
+        "bytes": 7002586,
+        "sha256": "40b3081abf2d8377fd3b9845b27eb7533a01e7a3350fa4299d49fd9479149bd3",
+        "mtime_ns": 1789354590266996502
+      },
+      "lib_after": {
+        "exists": true,
+        "bytes": 7002586,
+        "sha256": "40b3081abf2d8377fd3b9845b27eb7533a01e7a3350fa4299d49fd9479149bd3",
+        "mtime_ns": 1789354590266996502
+      },
+      "lib_unchanged": true,
+      "lib_seeded": true
+    }
+  ],
+  "checks": {
+    "V1a_off_boot_has_fields": true,
+    "V1b_on_boot_has_fields": true,
+    "V2a_off_mode_enabled": true,
+    "V2b_on_mode_enabled": true,
+    "V3a_off_no_read": true,
+    "V3b_on_read_nonempty": true,
+    "V4_off_no_persist": true,
+    "V5a_rc_zero": true,
+    "V5b_nativeaot_banner": true,
+    "NC_telemetry_off_yields_no_boot": true
+  },
+  "missing_fields": {
+    "off": [],
+    "on": []
+  },
+  "verdict": "PASS"
+}

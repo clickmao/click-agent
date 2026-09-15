@@ -79,3 +79,38 @@
 - **R450-B** 器具锚从「源码派生重建」改为「产品实发 prompt 落盘」（增 `--gate-prompt-dump`）——本次失锚的根因对策；
 - **R450-C** 新数据到达（真实流量出现「真认可 + 可跳形态」）再开通道，判据不变：机械可达 ∧ 假 S 率 < 0.5。
 
+
+### 6.4 R449 收尾（2026-09-15 · 千轮循环 cron 轮）: AOT 形态首验 + 开关可观测性缺陷修补
+
+**起因（机械发现）**: `git status` 显示 R449 源码/测试未提交，且 `src/agent.exploration/ThinkMemory.cs`（09-15 12:01）
+**新于** 已发布的 AOT 产物（09-14 15:55）⇒ 上一轮「AOT 重发布」是**对旧源码的发布**，R449 交付实际上没有发布形态核验。
+
+**G1 缺陷（首版未交付预注册项）**: 计划 §4 机检② 预注册「每档 `think_memory_boot` 必带 `enabled/mode/loaded` 字段，
+缺字段 fail-closed」，但 `IndustrialAgentV2.cs:429` 实际只发 `embedder_injected/available/instance`
+⇒ 开关**只改行为、不可观测** ⇒ 消融判据 C5（各档打点形状互不相同）**无法机检**（与「开关只改了标签」同类风险）。
+已按预注册补齐（**加性**，不动旧字段）：`mode` / `enabled` / `loaded` / `records`。
+
+| 项 | 读数 | 命令/路径 |
+|---|---|---|
+| 全量单测 | **1321/1321 绿**（0 fail, 30 s） | `env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR $HOME/.dotnet/dotnet test src/agent.tests/agentframework.tests.csproj -c Release` |
+| AOT 发布 | rc=0，**IL 警告 0**（仅 2×NU1510 NuGet 修剪提示，非 IL） | `$HOME/.dotnet/dotnet publish src/agent.host/agent.host.csproj -c Release -r linux-x64 -o /tmp/pub_r449b`（不带 `-p:PublishAot`） |
+| 产物身份 | 15,201,152 B，sha256 `fa3292068970740a…` | `/tmp/pub_r449b/agenthost` |
+| V0 形态闸 | **PASS**（`env -i` 自证 `AgentFramework CLI`；IL apphost 负控 rc=131） | `python3 eval/rover/r424/prov_check.py --json eval/rover/r449/v0-form-gate-b.json /tmp/pub_r449b/agenthost` |
+
+**AOT 形态三臂机检（`verify_boot_telemetry.py` → `verdict-boot-telemetry.json`，预注册 V1–V5 + 器具负控，10/10 PASS）**:
+
+| 臂 | 环境 | `boot.kv`（实测） | 库文件 (bytes,sha256,mtime_ns) |
+|---|---|---|---|
+| ARM-OFF | `AGENTFRAMEWORK_THINK_MEMORY=off` | `mode=off, enabled=false, loaded=0, records=0` | 跑前跑后**逐位相同** |
+| ARM-ON | 不设（默认档） | `mode=on, enabled=true, loaded=1342, records=1342` | 未改 |
+| NC-TEL | off + `AGENTFRAMEWORK_TELEMETRY=off` | **无 boot 记录**（0 行） | 未改 |
+
+- **成对判别力**（V3，关键）：OFF 的 `loaded=0` 单独看可能只是「库本来就空」；与 ON 臂 `loaded=1342/records=1342`
+  同库种子成对 ⇒ 证明 `off` 确实**短路了读盘**，而非库存量差异。
+- **负控**（NC-TEL）：`AGENTFRAMEWORK_TELEMETRY=off` ⇒ 用具必须**读不到** boot 记录（否则「记录存在」可能是文件残留/仪器噪声）。
+- 三臂均 rc=0 ∧ stdout 含 `NativeAOT` ⇒ 读数来自原生产物（V5）。
+
+**诚实边界（本轮新增）**: ① 三臂均为 **`/exit` 空转**（无真实任务轮）⇒ 覆盖「启动期档位生效」，
+**未**覆盖「运行期召回/写入路径的档位差异」（该面仍只有 JIT 单测）；② 未测 `recall0`/`write0` 两档的 AOT 读数；
+③ 未复跑主线 token 网格（本轮无链跑 ⇒ 不写 `eval/capability/kpi.jsonl`）；④ 打点字段为产品面**加性**变更 ⇒
+跨轮遥测形状对比须以本 sha16 (`fa3292068970740a`) 为分界（此前归档的 boot 记录无 4 字段，属正常历史差异）。
