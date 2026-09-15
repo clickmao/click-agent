@@ -1492,6 +1492,21 @@
         "docs/plans/v0.72.0-r452-product-native-real-traffic.md"
       ],
       "owner_round": "R452"
+    },
+    {
+      "id": "r453.absorb-channel-audit",
+      "level": "L2",
+      "capability": "真实分布 token 通道台账 + 吞并轮通道审计: 7/51=13.7% 轮 0 远端调用(上界省 54,852 tok=14.0%); 前置门省 14 次本地 r1=7,204 tok; 可跳面=0(判官 S 票 14/14 被守卫否决)",
+      "evidence_cmd": "python3 eval/rover/r453/audit_absorb.py",
+      "evidence_path": "eval/rover/r453/verdict-r453.json",
+      "negative_control": "P1 结构性不变量(吸收轮必 G_calls=0)+P2 子集关系+P3 省下量≤16%上界+P4 禁质量宣称; 任一违例 ⇒ exit 3 fail-closed",
+      "covers": [
+        "eval/rover/r453/audit_absorb.py",
+        "eval/rover/r453/prereg-r453.json",
+        "eval/rover/r453/verdict-r453.json",
+        "docs/plans/v0.73.0-r453-absorb-channel-audit.md"
+      ],
+      "owner_round": "R453"
     }
   ],
   "aot_check_policy": "release_tag_only",

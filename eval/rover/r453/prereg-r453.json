@@ -1,0 +1,19 @@
+{
+ "round": "R453",
+ "kind": "审计器（描述性台账）· 无确认性判据",
+ "declaration": "本审计器在首跑**之后**才写入本预注册文件（探索侦察先于定型）。因此除结构性不变量（可由源码/归档结构判定，与读数无关）外，本文件**不对任何描述性数字作预测**；全部描述项单列 checks_posthoc（R446/R447 纪律：事后判据不得回灌为预注册判据）。",
+ "pre_registered": [
+  {"id": "P1", "assert": "「吸收轮」⇔ 该轮 G_calls == 0（结构性不变量：吸收 = 未发远端请求）", "check": "absorbed_with_G_calls_violation == []", "basis": "settle ASK_MARK 定义 + 产品遥测 G_calls"},
+  {"id": "P2", "assert": "吸收轮集合 ⊆ G_calls==0 轮集合（不允许吸收轮反而发了远端调用）", "check": "set(absorbed) ⊆ set(g_zero)", "basis": "同上"},
+  {"id": "P3", "assert": "省下的远端 token 估计 ≤ 16% 的远端总量（量级上界；用同 run 远端均价 × 吸收轮数）", "check": "saved_rate_vs_remote_total <= 0.16", "basis": "上界口径：吸收轮若走远端也未必等于均价，故只作上界"},
+  {"id": "P4", "assert": "不得作质量裁决：本轮 verdict 中不含任何「吸收是否误吞用户诉求」的判定", "check": "scope_note 存在且 quality_claim == false", "basis": "桩回复非真回复 ⇒ 参数槽语义不可判"}
+ ],
+ "checks_posthoc": [
+  {"id": "H1", "desc": "吸收轮数/占比（13.7% 量级）", "status": "描述项"},
+  {"id": "H2", "desc": "形状分布 param_slot_fill / clarify_ask（类目在侦察后定型）", "status": "描述项"},
+  {"id": "H3", "desc": "缺陷信号计数（下一轮重复/含抱怨词/驱动类被吸收/长消息被吸收）", "status": "描述项，不作因果断言"},
+  {"id": "H4", "desc": "kpi_channels 台账（远端/本地 r1/可跳面/吞并/前缀缓存）", "status": "描述项"}
+ ],
+ "fail_closed": "缺 R452 产物、或 P1/P2 违例 ⇒ exit 3；描述项不得被读成 KPI 提升。",
+ "known_trap": "eval/rover/**/turns-*.jsonl 实为**单个 JSON 对象**（非 JSONL）；本审计器只读 verdict 的 per_turn 以规避该陷阱。"
+}

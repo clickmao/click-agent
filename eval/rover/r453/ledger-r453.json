@@ -1,0 +1,203 @@
+{
+ "round": "R453",
+ "source": "R452 RP 臂（真实 51 轮·生产配置·产品自身遥测）",
+ "channel": "吞并轮（产品吸收该轮进既有计划 ⇒ 远端调用 0）",
+ "kpi_channels": {
+  "remote_api": {
+   "calls": 50,
+   "tokens": 391800
+  },
+  "local_r1_gate": {
+   "calls_production": 0,
+   "calls_if_prefilter_off": 14,
+   "calls_if_prefilter_off_tokens": 7204,
+   "note": "前置门(机械认可族)把 ¬Ack 挡在 r1 之前 ⇒ 真实轮省下的本地 r1 调用"
+  },
+  "skip_channel": {
+   "skips_production": 0,
+   "skips_judge_forced": 0,
+   "judge_S_votes_vetoed": 14,
+   "note": "真实流量可跳面 = 0（三臂独立佐证）"
+  },
+  "absorb_channel": {
+   "turns": 7,
+   "remote_calls_saved": 7,
+   "note": "真实分布上唯一有量级的省远端调用通道（与门无关）"
+  },
+  "prefix_cache": {
+   "claim": "K2b 命中 ≥97%（R4xx 已收口, 非本轮实测）",
+   "billed_note": "计费口径的降幅主项; 本轮未重测"
+  }
+ },
+ "counts": {
+  "turns_total": 51,
+  "absorbed_n": 7,
+  "absorbed_rate": 0.1373,
+  "g_zero_n": 10,
+  "absorbed_with_G_calls_violation": [],
+  "g_zero_not_marked_absorbed": [
+   21,
+   23,
+   48
+  ],
+  "shapes": {
+   "param_slot_fill": 6,
+   "clarify_ask": 1
+  },
+  "remote_calls": 50,
+  "remote_tokens": 391800,
+  "avg_remote_tokens_per_call": 7836.0,
+  "saved_remote_tokens_est": 54852.0,
+  "saved_rate_vs_remote_total": 0.14
+ },
+ "defect_signals": {
+  "next_is_repeat": [
+   12,
+   31
+  ],
+  "next_has_complaint": [
+   33,
+   44
+  ],
+  "driver_head_absorbed": [
+   12
+  ],
+  "long_msg_absorbed": [
+   2,
+   25,
+   44
+  ]
+ },
+ "items": [
+  {
+   "turn": 2,
+   "shape": "param_slot_fill",
+   "session": "20260906_070359_b183e6e4",
+   "rule_label": "new_task",
+   "msg_len": 549,
+   "msg_head": "[IMPORTANT: 2 background processes completed for this sessio",
+   "reply_head": "🔄 续跑计划 8b6916237bb7 (答复落到参数槽: 子任务1_指代对象)\n上一轮的问题: 「[IMPORTANT",
+   "G_calls": 0,
+   "G_tokens": 0,
+   "next_msg_overlap": 0.0,
+   "next_msg_head": "继续下一轮",
+   "next_is_repeat": false,
+   "next_has_complaint": false,
+   "driver_head": false
+  },
+  {
+   "turn": 12,
+   "shape": "param_slot_fill",
+   "session": "20260906_070359_b183e6e4",
+   "rule_label": "adopt",
+   "msg_len": 5,
+   "msg_head": "继续下一轮",
+   "reply_head": "🔄 续跑计划 b5db4b5f5302 (答复落到参数槽: 子任务1_指代对象)\n上一轮的问题: 「[IMPORTANT",
+   "G_calls": 0,
+   "G_tokens": 0,
+   "next_msg_overlap": 1.0,
+   "next_msg_head": "继续下一轮",
+   "next_is_repeat": true,
+   "next_has_complaint": false,
+   "driver_head": true
+  },
+  {
+   "turn": 25,
+   "shape": "clarify_ask",
+   "session": "20260906_070359_b183e6e4",
+   "rule_label": "new_task",
+   "msg_len": 1142,
+   "msg_head": "[IMPORTANT: 2 background processes completed for this sessio",
+   "reply_head": "上一轮计划停在等你回答: 「下一轮」意图不明确。你想让 agent 做什么? (如: 搜索/写文档/执行命令/分析数据)",
+   "G_calls": 0,
+   "G_tokens": 0,
+   "next_msg_overlap": 0.0,
+   "next_msg_head": "你在30m报告后有启动下一轮任务么",
+   "next_is_repeat": false,
+   "next_has_complaint": false,
+   "driver_head": false
+  },
+  {
+   "turn": 31,
+   "shape": "param_slot_fill",
+   "session": "20260906_070359_b183e6e4",
+   "rule_label": "new_task",
+   "msg_len": 97,
+   "msg_head": "你可以安排测试计划，顺便看下里面的那个think memory加个开关 在你的机制内效果变化来脱离封闭系统得知外部真实情",
+   "reply_head": "🔄 续跑计划 1a5d4a58f001 (答复落到参数槽: 子任务1_指代对象)\n上一轮的问题: 「近100轮都在构建闸",
+   "G_calls": 0,
+   "G_tokens": 0,
+   "next_msg_overlap": 1.0,
+   "next_msg_head": "你可以安排测试计划，顺便看下里面的那个think memory加个开关 在你的机",
+   "next_is_repeat": true,
+   "next_has_complaint": false,
+   "driver_head": false
+  },
+  {
+   "turn": 33,
+   "shape": "param_slot_fill",
+   "session": "20260906_070359_b183e6e4",
+   "rule_label": "new_task",
+   "msg_len": 24,
+   "msg_head": "我给你发任务，你给我反馈，这个过程本就是真实流量",
+   "reply_head": "🔄 续跑计划 350854929952 (答复落到参数槽: 子任务1_指代对象)\n上一轮的问题: 「你可以安排测试计划，",
+   "G_calls": 0,
+   "G_tokens": 0,
+   "next_msg_overlap": 0.0,
+   "next_msg_head": "检查一下，用户每次提问时，agent有没有从所有数据源，包括会话session，",
+   "next_is_repeat": false,
+   "next_has_complaint": true,
+   "driver_head": false
+  },
+  {
+   "turn": 44,
+   "shape": "param_slot_fill",
+   "session": "20260905_102140_6ce72e21",
+   "rule_label": "new_task",
+   "msg_len": 240,
+   "msg_head": "{\"code\":\"10050000\",\"message\":\"Request failed with status cod",
+   "reply_head": "🔄 续跑计划 6ba2415c1e39 (答复落到参数槽: 子任务1_指代对象)\n上一轮的问题: 「[The user ",
+   "G_calls": 0,
+   "G_tokens": 0,
+   "next_msg_overlap": 0.0,
+   "next_msg_head": "啥也没有啊",
+   "next_is_repeat": false,
+   "next_has_complaint": true,
+   "driver_head": false
+  },
+  {
+   "turn": 47,
+   "shape": "param_slot_fill",
+   "session": "20260905_102140_6ce72e21",
+   "rule_label": "new_task",
+   "msg_len": 120,
+   "msg_head": "rule content_line<Match>\n    : any                          ",
+   "reply_head": "🔄 续跑计划 11c7dcdee903 (答复落到参数槽: 子任务1_指代对象)\n上一轮的问题: 「你在做什么？为何没实",
+   "G_calls": 0,
+   "G_tokens": 0,
+   "next_msg_overlap": 0.008,
+   "next_msg_head": "用C# 基于微软的MAF框架（https://github.com/micros",
+   "next_is_repeat": false,
+   "next_has_complaint": false,
+   "driver_head": false
+  }
+ ],
+ "scope_note": "只做形态与计数; **不作质量裁决**（「吸收是否误吞用户诉求」需独立预注册轮次, 因本轮桩回复非真回复, 参数槽语义不可判）",
+ "checks": {
+  "P1_absorbed_implies_no_remote_call": {
+   "pass": true,
+   "detail": []
+  },
+  "P2_absorbed_subset_of_g_zero": {
+   "pass": true
+  },
+  "P3_saved_upper_bound_16pct": {
+   "pass": true
+  },
+  "P4_no_quality_claim": {
+   "pass": true,
+   "detail": "quality_claim=false（桩回复非真回复 ⇒ 参数槽语义不可判）"
+  }
+ },
+ "quality_claim": false
+}
