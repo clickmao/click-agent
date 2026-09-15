@@ -1,0 +1,56 @@
+{
+ "declared": {
+  "class": "declared_ok",
+  "traces": 0,
+  "regs": 0
+ },
+ "promise_unreg": {
+  "class": "unregistered_promise_drift",
+  "traces": 0,
+  "regs": 0
+ },
+ "promise_reg": {
+  "class": "registered_promise_drift",
+  "traces": 0,
+  "regs": 1
+ },
+ "traced": {
+  "class": "retired_trace_same_line",
+  "traces": 1,
+  "regs": 1
+ },
+ "trap_adjacent": {
+  "class": "unregistered_promise_drift",
+  "traces": 0,
+  "regs": 0
+ },
+ "missing_path": {
+  "class": "waived",
+  "traces": 0,
+  "regs": 0
+ },
+ "prio_swap": {
+  "a": "registered_promise_drift",
+  "b": "retired_trace_same_line"
+ },
+ "dead_branch": {
+  "dead_literals": [],
+  "ctor_lits": [
+   "assembly",
+   "path"
+  ]
+ },
+ "counter": {
+  "pos": 1,
+  "neg": 0
+ },
+ "expected": {
+  "declared": "declared_ok",
+  "promise_unreg": "unregistered_promise_drift",
+  "promise_reg": "registered_promise_drift",
+  "traced": "retired_trace_same_line",
+  "trap_adjacent": "unregistered_promise_drift",
+  "missing_path": "waived"
+ },
+ "pass": true
+}

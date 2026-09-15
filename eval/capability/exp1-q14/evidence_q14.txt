@@ -1,0 +1,26 @@
+EXP1-Q14 真候选复核 · 行=3 符号=2 类分布={'retired_trace_same_line': 1, 'registered_promise_drift': 2} 弃权=0
+  - _queryEmbedding @ docs/reports/function-map-R326.md:288 -> src/agent/contextassembler/ContextAssembler.cs :: retired_trace_same_line
+    形态={'noncode_mention': 1} 出现=[('src/agent/contextassembler/ContextAssembler.cs', 1420)]
+    留痕=1 他处登记=2 交叉={'path_exists': True, 'doc_line_has_token': True, 'tree_decl_zero': True, 'noncode_only': True, 'agrees': True}
+      登记: docs/plans/v0.22.0-exp1-local-index-and-code-graph.md:859 | ③**注释里的历史/漂移符号** (真候选) | 3 行 / **2 枚** | PascalCase + 树内零声明 + 仅注释 | `_queryEmbedding`(注释明写"实例字段已消除") / `Regi
+      登记: docs/plans/v0.22.0-longterm-backlog.md:22 | exp1 本地索引/代码引用图 | `v0.22.0-exp1-local-index-and-code-graph.md` | 按 agent 关注范围建索引（非全量）；trigram/倒排；KPI 已判定 | *
+    引用行: | P16 | ContextAssembler.cs:1287 `_queryEmbedding` 实例字段 | 装配器为 DI 单例, 多会话并发装配会互相覆写该字段 → Session 源相关分可能串会话 (Session 源主链默认关闭, 风险潜伏); 建议改为按调用传递
+  - RegisterCapability @ docs/reports/r385/capability-inventory.md:24 -> src/agent/registry/CapabilityScanner.cs :: registered_promise_drift
+    形态={'noncode_mention': 1} 出现=[('src/agent/registry/CapabilityScanner.cs', 8), ('src/agent/registry/CapabilityScanner.cs', 33)]
+    留痕=0 他处登记=3 交叉={'path_exists': True, 'doc_line_has_token': True, 'tree_decl_zero': True, 'noncode_only': True, 'agrees': True}
+      登记: docs/plans/v0.22.0-exp1-local-index-and-code-graph.md:859 | ③**注释里的历史/漂移符号** (真候选) | 3 行 / **2 枚** | PascalCase + 树内零声明 + 仅注释 | `_queryEmbedding`(注释明写"实例字段已消除") / `Regi
+      登记: docs/plans/v0.22.0-longterm-backlog.md:22 | exp1 本地索引/代码引用图 | `v0.22.0-exp1-local-index-and-code-graph.md` | 按 agent 关注范围建索引（非全量）；trigram/倒排；KPI 已判定 | *
+      登记: docs/reports/r385/consolidation-candidates.md:19 | 11 | `CapabilityScanner` 文档承诺的「显式注册」通道未实现 | `src/agent/registry/CapabilityScanner.cs:33` (注释) vs 无 `Register
+    引用行: | 显式注册通道 (文档承诺) | — | `src/agent/registry/CapabilityScanner.cs:33` (注释「显式注册」) | 未找到(已扫: `RegisterCapability` 全 src) | — | ⚠ 注释承诺的「显式注册」方法**不
+  - RegisterCapability @ docs/reports/r385/consolidation-candidates.md:19 -> src/agent/registry/CapabilityScanner.cs :: registered_promise_drift
+    形态={'noncode_mention': 1} 出现=[('src/agent/registry/CapabilityScanner.cs', 8), ('src/agent/registry/CapabilityScanner.cs', 33)]
+    留痕=0 他处登记=3 交叉={'path_exists': True, 'doc_line_has_token': True, 'tree_decl_zero': True, 'noncode_only': True, 'agrees': True}
+      登记: docs/plans/v0.22.0-exp1-local-index-and-code-graph.md:859 | ③**注释里的历史/漂移符号** (真候选) | 3 行 / **2 枚** | PascalCase + 树内零声明 + 仅注释 | `_queryEmbedding`(注释明写"实例字段已消除") / `Regi
+      登记: docs/plans/v0.22.0-longterm-backlog.md:22 | exp1 本地索引/代码引用图 | `v0.22.0-exp1-local-index-and-code-graph.md` | 按 agent 关注范围建索引（非全量）；trigram/倒排；KPI 已判定 | *
+      登记: docs/reports/r385/capability-inventory.md:24 | 显式注册通道 (文档承诺) | — | `src/agent/registry/CapabilityScanner.cs:33` (注释「显式注册」) | 未找到(已扫: `RegisterCapability` 全
+    引用行: | 11 | `CapabilityScanner` 文档承诺的「显式注册」通道未实现 | `src/agent/registry/CapabilityScanner.cs:33` (注释) vs 无 `RegisterCapability` (§1) | 延后: 实现通道或删注
+  ! 文件内不可生产字面量 assembly @ src/agent/registry/CapabilityScanner.cs 出现行=[76] 比较行=[76] 构造实参=['path', 'path-missing', '系统工具 (PATH 可达)', '系统工具 (不可用)']
+      语料他处: src/agent/IndustrialAgentV2.cs:1160 agent.config.AgentTelemetry.Emit("assembly", "ContextAssembler", (构造实参内=False)
+      语料他处: src/agent/registry/CapabilityScanner.cs:76 available.Select(c => c.Source == "assembly" ? $"{c.Name}({c.Description})" : c.Name)); (构造实参内=False)
+counter={"caliber": "occurrence_count", "positive": {"IResponseSegmentPlugin": 24, "CapabilityScanner": 12, "PythonArtifactPlugin": 19}, "negative": {"NoSuchTypeZzq9Xx": 0, "RegistryThatNeverExistedZq": 0}, "candidates": {"Regis
+checks={'P1_partition_conserved': True, 'P2_three_rows_two_symbols': True, 'P3_conservation': True, 'P4_nontrivial': True, 'P5_cross_agrees': True, 'P6_no_declared_for_promise': True, 'P7_counter_same_caliber': True, 'P8_dead_branch_found': True, 'P9_fixtures_and_prio': True, 'P10_dispositions_complete': True} sha=eee47c6e90c362c5

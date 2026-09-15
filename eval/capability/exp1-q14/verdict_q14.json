@@ -1,0 +1,283 @@
+{
+ "stage": "EXP1-Q14",
+ "selector": "归档 rung==noncode_mention ∧ verdict==ok ∧ 非下划线式命名 ∧ 树内零声明 ∧ 仅非代码形态",
+ "partition": {
+  "rung_ok": 27,
+  "accepted": 3,
+  "rejected_naming": 21,
+  "rejected_decl_or_codeface": 3
+ },
+ "n_rows": 3,
+ "n_symbols": 2,
+ "n_symbol_faces_archived": 575,
+ "rungs_archived": {
+  "absent": 79,
+  "n/a_kind": 1,
+  "declared_member": 84,
+  "noncode_mention": 31,
+  "code_mention": 64,
+  "declared_type": 316
+ },
+ "candidates": [
+  {
+   "symbol": "_queryEmbedding",
+   "doc": "docs/reports/function-map-R326.md",
+   "doc_line": 288,
+   "resolved": "src/agent/contextassembler/ContextAssembler.cs",
+   "class": "retired_trace_same_line",
+   "decl_census": {
+    "noncode_mention": 1
+   },
+   "occurrences": [
+    {
+     "rel": "src/agent/contextassembler/ContextAssembler.cs",
+     "line": 1420,
+     "text": "// R326 (P16): _queryEmbedding 实例字段已消除 — RecallFromSessionAsync 内局部变量 (DI 单例并发串话修复)",
+     "in_code_face": false
+    }
+   ],
+   "traces": [
+    {
+     "rel": "src/agent/contextassembler/ContextAssembler.cs",
+     "line": 1420,
+     "text": "// R326 (P16): _queryEmbedding 实例字段已消除 — RecallFromSessionAsync 内局部变量 (DI 单例并发串话修复)",
+     "in_code_face": false
+    }
+   ],
+   "registrations_elsewhere": [
+    {
+     "doc": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+     "line": 859,
+     "text": "| ③**注释里的历史/漂移符号** (真候选) | 3 行 / **2 枚** | PascalCase + 树内零声明 + 仅注释 | `_queryEmbedding`(注释明写\"实例字段已消除\") / `RegisterCapability`(注释宣称登记入口, 树内零声明) |",
+     "same_doc_as_citation": false
+    },
+    {
+     "doc": "docs/plans/v0.22.0-longterm-backlog.md",
+     "line": 22,
+     "text": "| exp1 本地索引/代码引用图 | `v0.22.0-exp1-local-index-and-code-graph.md` | 按 agent 关注范围建索引（非全量）；trigram/倒排；KPI 已判定 | **进行中（探索，零产品代码）**：Q1/Q3/Q3b/Q2 已由数据题实测（附录 A–D）；**Q2 前提被机检证伪**（`Capabili",
+     "same_doc_as_citation": false
+    }
+   ],
+   "cross": {
+    "path_exists": true,
+    "doc_line_has_token": true,
+    "tree_decl_zero": true,
+    "noncode_only": true,
+    "agrees": true
+   },
+   "doc_line_text": "| P16 | ContextAssembler.cs:1287 `_queryEmbedding` 实例字段 | 装配器为 DI 单例, 多会话并发装配会互相覆写该字段 → Session 源相关分可能串会话 (Session 源主链默认关闭, 风险潜伏); 建议改为按调用传递的局部量 |"
+  },
+  {
+   "symbol": "RegisterCapability",
+   "doc": "docs/reports/r385/capability-inventory.md",
+   "doc_line": 24,
+   "resolved": "src/agent/registry/CapabilityScanner.cs",
+   "class": "registered_promise_drift",
+   "decl_census": {
+    "noncode_mention": 1
+   },
+   "occurrences": [
+    {
+     "rel": "src/agent/registry/CapabilityScanner.cs",
+     "line": 8,
+     "text": "///   ①显式注册: RegisterCapability 由宿主/DI 在启动时登记 (代码级技能)",
+     "in_code_face": false
+    },
+    {
+     "rel": "src/agent/registry/CapabilityScanner.cs",
+     "line": 33,
+     "text": "// ① 显式注册通道 (AOT 安全): RegisterCapability 由宿主/DI 在启动时登记。",
+     "in_code_face": false
+    }
+   ],
+   "traces": [],
+   "registrations_elsewhere": [
+    {
+     "doc": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+     "line": 859,
+     "text": "| ③**注释里的历史/漂移符号** (真候选) | 3 行 / **2 枚** | PascalCase + 树内零声明 + 仅注释 | `_queryEmbedding`(注释明写\"实例字段已消除\") / `RegisterCapability`(注释宣称登记入口, 树内零声明) |",
+     "same_doc_as_citation": false
+    },
+    {
+     "doc": "docs/plans/v0.22.0-longterm-backlog.md",
+     "line": 22,
+     "text": "| exp1 本地索引/代码引用图 | `v0.22.0-exp1-local-index-and-code-graph.md` | 按 agent 关注范围建索引（非全量）；trigram/倒排；KPI 已判定 | **进行中（探索，零产品代码）**：Q1/Q3/Q3b/Q2 已由数据题实测（附录 A–D）；**Q2 前提被机检证伪**（`Capabili",
+     "same_doc_as_citation": false
+    },
+    {
+     "doc": "docs/reports/r385/consolidation-candidates.md",
+     "line": 19,
+     "text": "| 11 | `CapabilityScanner` 文档承诺的「显式注册」通道未实现 | `src/agent/registry/CapabilityScanner.cs:33` (注释) vs 无 `RegisterCapability` (§1) | 延后: 实现通道或删注释 | 低 | 仅注释-实现漂移 |",
+     "same_doc_as_citation": false
+    }
+   ],
+   "cross": {
+    "path_exists": true,
+    "doc_line_has_token": true,
+    "tree_decl_zero": true,
+    "noncode_only": true,
+    "agrees": true
+   },
+   "doc_line_text": "| 显式注册通道 (文档承诺) | — | `src/agent/registry/CapabilityScanner.cs:33` (注释「显式注册」) | 未找到(已扫: `RegisterCapability` 全 src) | — | ⚠ 注释承诺的「显式注册」方法**不存在**，仅 PATH 探测通道已实现 |"
+  },
+  {
+   "symbol": "RegisterCapability",
+   "doc": "docs/reports/r385/consolidation-candidates.md",
+   "doc_line": 19,
+   "resolved": "src/agent/registry/CapabilityScanner.cs",
+   "class": "registered_promise_drift",
+   "decl_census": {
+    "noncode_mention": 1
+   },
+   "occurrences": [
+    {
+     "rel": "src/agent/registry/CapabilityScanner.cs",
+     "line": 8,
+     "text": "///   ①显式注册: RegisterCapability 由宿主/DI 在启动时登记 (代码级技能)",
+     "in_code_face": false
+    },
+    {
+     "rel": "src/agent/registry/CapabilityScanner.cs",
+     "line": 33,
+     "text": "// ① 显式注册通道 (AOT 安全): RegisterCapability 由宿主/DI 在启动时登记。",
+     "in_code_face": false
+    }
+   ],
+   "traces": [],
+   "registrations_elsewhere": [
+    {
+     "doc": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+     "line": 859,
+     "text": "| ③**注释里的历史/漂移符号** (真候选) | 3 行 / **2 枚** | PascalCase + 树内零声明 + 仅注释 | `_queryEmbedding`(注释明写\"实例字段已消除\") / `RegisterCapability`(注释宣称登记入口, 树内零声明) |",
+     "same_doc_as_citation": false
+    },
+    {
+     "doc": "docs/plans/v0.22.0-longterm-backlog.md",
+     "line": 22,
+     "text": "| exp1 本地索引/代码引用图 | `v0.22.0-exp1-local-index-and-code-graph.md` | 按 agent 关注范围建索引（非全量）；trigram/倒排；KPI 已判定 | **进行中（探索，零产品代码）**：Q1/Q3/Q3b/Q2 已由数据题实测（附录 A–D）；**Q2 前提被机检证伪**（`Capabili",
+     "same_doc_as_citation": false
+    },
+    {
+     "doc": "docs/reports/r385/capability-inventory.md",
+     "line": 24,
+     "text": "| 显式注册通道 (文档承诺) | — | `src/agent/registry/CapabilityScanner.cs:33` (注释「显式注册」) | 未找到(已扫: `RegisterCapability` 全 src) | — | ⚠ 注释承诺的「显式注册」方法**不存在**，仅 PATH 探测通道已实现 |",
+     "same_doc_as_citation": false
+    }
+   ],
+   "cross": {
+    "path_exists": true,
+    "doc_line_has_token": true,
+    "tree_decl_zero": true,
+    "noncode_only": true,
+    "agrees": true
+   },
+   "doc_line_text": "| 11 | `CapabilityScanner` 文档承诺的「显式注册」通道未实现 | `src/agent/registry/CapabilityScanner.cs:33` (注释) vs 无 `RegisterCapability` (§1) | 延后: 实现通道或删注释 | 低 | 仅注释-实现漂移 |"
+  }
+ ],
+ "classes": {
+  "retired_trace_same_line": 1,
+  "registered_promise_drift": 2
+ },
+ "dead_branch": [
+  {
+   "rel": "src/agent/registry/CapabilityScanner.cs",
+   "literal": "assembly",
+   "all_sites": [
+    76
+   ],
+   "cmp_sites": [
+    76
+   ],
+   "ctor_lits": [
+    "path",
+    "path-missing",
+    "系统工具 (PATH 可达)",
+    "系统工具 (不可用)"
+   ],
+   "corpus_sites": [
+    {
+     "rel": "src/agent/IndustrialAgentV2.cs",
+     "line": 1160,
+     "text": "agent.config.AgentTelemetry.Emit(\"assembly\", \"ContextAssembler\",",
+     "inside_ctor_args": false
+    },
+    {
+     "rel": "src/agent/registry/CapabilityScanner.cs",
+     "line": 76,
+     "text": "available.Select(c => c.Source == \"assembly\" ? $\"{c.Name}({c.Description})\" : c.Name));",
+     "inside_ctor_args": false
+    }
+   ]
+  }
+ ],
+ "input_fingerprints": {
+  "docs/reports/function-map-R326.md": "01e7db8024f5a69674e87e4bb6fe196ac4fdb3c9d9db384c8e3f6b8f23e343a7",
+  "docs/reports/r385/capability-inventory.md": "f2311551f4df517efcf895ff363155f946d7cc01aaf288a29dc7c5e0994e86d6",
+  "docs/reports/r385/consolidation-candidates.md": "2ce4ced3a07bf091d11ea314e35b2334631170c9ba9914b79a76785b0785910b",
+  "src/agent/contextassembler/ContextAssembler.cs": "be127d15f5dbc5c3647f87ecf58a35c40189226f3970343084d3df7944ddbc0b",
+  "src/agent/registry/CapabilityScanner.cs": "c3e2f843b590cb1c37985cd8f5aefdd24820fb236aab6d0ec857977a8dcdb63b"
+ },
+ "exit": 0,
+ "dispositions": {
+  "retired_trace_same_line": "文档时效(历史快照; 符号已退役且有同行留痕) ⇒ 非引用图缺陷; 可选动作=给快照行补修复留痕",
+  "registered_promise_drift": "注释承诺无实现(树内零声明) ∧ 他处已登记 ⇒ 归口既有登记, 非引用图缺陷; 新增精度事实=文件内不可生产字面量",
+  "unregistered_promise_drift": "尚未登记 ⇒ 需移交(本轮该类为零, 单列)",
+  "declared_ok": "树内有声明 ⇒ 非缺陷",
+  "waived": "测量面不可解析/路径歧义 ⇒ 弃权单列, 不判红"
+ },
+ "counter": {
+  "caliber": "occurrence_count",
+  "positive": {
+   "IResponseSegmentPlugin": 24,
+   "CapabilityScanner": 12,
+   "PythonArtifactPlugin": 19
+  },
+  "negative": {
+   "NoSuchTypeZzq9Xx": 0,
+   "RegistryThatNeverExistedZq": 0
+  },
+  "candidates": {
+   "RegisterCapability": 2,
+   "_queryEmbedding": 1
+  },
+  "archive": {
+   "IResponseSegmentPlugin": 24,
+   "CapabilityScanner": 12,
+   "PythonArtifactPlugin": 19,
+   "NoSuchTypeZzq9Xx": 0,
+   "RegistryThatNeverExistedZq": 0,
+   "RegisterCapability": null,
+   "_queryEmbedding": null
+  },
+  "same_caliber_equal": {
+   "IResponseSegmentPlugin": true,
+   "CapabilityScanner": true,
+   "PythonArtifactPlugin": true,
+   "NoSuchTypeZzq9Xx": true,
+   "RegistryThatNeverExistedZq": true
+  },
+  "not_comparable": [
+   "RegisterCapability",
+   "_queryEmbedding"
+  ],
+  "nondegenerate": true,
+  "file_caliber_positive": {
+   "IResponseSegmentPlugin": 10,
+   "CapabilityScanner": 6,
+   "PythonArtifactPlugin": 8
+  }
+ },
+ "output_sha": "eee47c6e90c362c5715a4e4f2f2a2239c9047f8d18cc689d4062dd66c344687a",
+ "checks": {
+  "P1_partition_conserved": true,
+  "P2_three_rows_two_symbols": true,
+  "P3_conservation": true,
+  "P4_nontrivial": true,
+  "P5_cross_agrees": true,
+  "P6_no_declared_for_promise": true,
+  "P7_counter_same_caliber": true,
+  "P8_dead_branch_found": true,
+  "P9_fixtures_and_prio": true,
+  "P10_dispositions_complete": true
+ }
+}

@@ -1,0 +1,51 @@
+{
+ "criteria": {
+  "P1_partition_conserved": true,
+  "P2_three_rows_two_symbols": true,
+  "P3_conservation": true,
+  "P4_nontrivial": true,
+  "P5_cross_agrees": true,
+  "P6_no_declared_for_promise": true,
+  "P7_counter_same_caliber": true,
+  "P8_dead_branch_found": true,
+  "P9_fixtures_and_prio": true,
+  "P10_dispositions_complete": true
+ },
+ "class_priority": [
+  "declared_ok",
+  "retired_trace_same_line",
+  "registered_promise_drift",
+  "unregistered_promise_drift",
+  "code_mention_unresolved"
+ ],
+ "retired_markers": [
+  "已删",
+  "已删除",
+  "已退役",
+  "退役于",
+  "RETIRED",
+  "removed in",
+  "deleted in",
+  "已消除",
+  "已移除",
+  "已废弃",
+  "不再存在",
+  "已下线",
+  "已淘汰"
+ ],
+ "reg_markers": [
+  "延后",
+  "待办",
+  "未实现",
+  "不存在",
+  "漂移",
+  "已修",
+  "已删",
+  "承诺"
+ ],
+ "selector": "归档 rung==noncode_mention ∧ verdict==ok ∧ 非下划线式命名 ∧ 树内零声明 ∧ 仅非代码形态",
+ "line_window": [
+  0,
+  60
+ ]
+}
