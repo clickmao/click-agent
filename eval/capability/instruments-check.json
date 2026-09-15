@@ -1,10 +1,18 @@
 {
- "schema": "instruments-check/2",
+ "schema": "instruments-check/3",
  "manifest": "eval/capability/instruments.json",
  "l2_field_checks": true,
+ "input_surface_checks": true,
  "drift_injected": false,
- "side_effects": [],
- "passed": 18,
+ "inject_mode": null,
+ "inject_note": "",
+ "side_effects": [
+  "docs/improvements.md",
+  "docs/plans/v715_dev_plan.taskplan.json",
+  "docs/verification-registry.json",
+  "eval/bge/r404/csharp-fusion-replay.json"
+ ],
+ "passed": 17,
  "total": 18,
  "results": [
   {
@@ -26,6 +34,7 @@
    "l2_fields": {
     "version": "ok",
     "instrument_sha12": "ok",
+    "input_surface": "ok:self_contained",
     "input_fingerprint": "ok(n=0)",
     "kpi_quad": "ok"
    },
@@ -59,6 +68,7 @@
    "l2_fields": {
     "version": "ok",
     "instrument_sha12": "ok",
+    "input_surface": "ok:self_contained",
     "input_fingerprint": "ok(n=0)",
     "kpi_quad": "ok"
    },
@@ -92,6 +102,7 @@
    "l2_fields": {
     "version": "ok",
     "instrument_sha12": "ok",
+    "input_surface": "ok:self_contained",
     "input_fingerprint": "ok(n=0)",
     "kpi_quad": "ok"
    },
@@ -125,6 +136,7 @@
    "l2_fields": {
     "version": "ok",
     "instrument_sha12": "ok",
+    "input_surface": "ok:self_contained",
     "input_fingerprint": "ok(n=0)",
     "kpi_quad": "ok"
    },
@@ -158,6 +170,7 @@
    "l2_fields": {
     "version": "declared:2.4.1",
     "instrument_sha12": "ok",
+    "input_surface": "ok:self_contained",
     "input_fingerprint": "ok(n=0)",
     "kpi_quad": "ok"
    },
@@ -191,6 +204,7 @@
    "l2_fields": {
     "version": "ok",
     "instrument_sha12": "ok",
+    "input_surface": "ok:dynamic_corpus",
     "input_fingerprint": "ok(n=0)",
     "kpi_quad": "ok"
    },
@@ -224,7 +238,8 @@
    "l2_fields": {
     "version": "ok",
     "instrument_sha12": "ok",
-    "input_fingerprint": "ok(n=0)",
+    "input_surface": "ok:external_files",
+    "input_fingerprint": "ok(n=16)",
     "kpi_quad": "ok"
    },
    "l2_ok": true,
@@ -264,7 +279,8 @@
    "l2_fields": {
     "version": "ok",
     "instrument_sha12": "ok",
-    "input_fingerprint": "ok(n=0)",
+    "input_surface": "ok:external_files",
+    "input_fingerprint": "ok(n=16)",
     "kpi_quad": "ok"
    },
    "l2_ok": true,
@@ -297,6 +313,7 @@
    "l2_fields": {
     "version": "ok",
     "instrument_sha12": "ok",
+    "input_surface": "ok:dynamic_corpus",
     "input_fingerprint": "ok(n=0)",
     "kpi_quad": "ok"
    },
@@ -330,6 +347,7 @@
    "l2_fields": {
     "version": "ok",
     "instrument_sha12": "ok",
+    "input_surface": "ok:dynamic_corpus",
     "input_fingerprint": "ok(n=0)",
     "kpi_quad": "ok"
    },
@@ -370,6 +388,7 @@
    "l2_fields": {
     "version": "ok",
     "instrument_sha12": "ok",
+    "input_surface": "ok:self_contained",
     "input_fingerprint": "ok(n=0)",
     "kpi_quad": "ok"
    },
@@ -403,6 +422,7 @@
    "l2_fields": {
     "version": "ok",
     "instrument_sha12": "ok",
+    "input_surface": "ok:external_files",
     "input_fingerprint": "ok(n=2)",
     "kpi_quad": "ok"
    },
@@ -436,6 +456,7 @@
    "l2_fields": {
     "version": "ok",
     "instrument_sha12": "ok",
+    "input_surface": "ok:external_files",
     "input_fingerprint": "ok(n=2)",
     "kpi_quad": "ok"
    },
@@ -476,6 +497,7 @@
    "l2_fields": {
     "version": "ok",
     "instrument_sha12": "ok",
+    "input_surface": "ok:external_files",
     "input_fingerprint": "ok(n=2)",
     "kpi_quad": "ok"
    },
@@ -509,6 +531,7 @@
    "l2_fields": {
     "version": "ok",
     "instrument_sha12": "ok",
+    "input_surface": "ok:external_files",
     "input_fingerprint": "ok(n=3)",
     "kpi_quad": "ok"
    },
@@ -549,6 +572,7 @@
    "l2_fields": {
     "version": "ok",
     "instrument_sha12": "ok",
+    "input_surface": "ok:external_files",
     "input_fingerprint": "ok(n=1)",
     "kpi_quad": "ok"
    },
@@ -571,7 +595,7 @@
    "expect_rc": 0,
    "substr_ok": true,
    "pass": true,
-   "sha12": "df05321a3d04",
+   "sha12": "4dba181cd528",
    "owner_round": "EXP1-Q19",
    "kpi_quad": {
     "单位": "器具行",
@@ -582,7 +606,8 @@
    "l2_fields": {
     "version": "ok",
     "instrument_sha12": "ok",
-    "input_fingerprint": "ok(n=0)",
+    "input_surface": "ok:external_files",
+    "input_fingerprint": "ok(n=4)",
     "kpi_quad": "ok"
    },
    "l2_ok": true,
@@ -592,7 +617,7 @@
      "rc": 1,
      "expect": "nonzero",
      "pass": true,
-     "head": "DRIFT-INJECT-APPLIED: 机检已判红 (见上表 DRIFT) —— 负控成立"
+     "head": "  ⇒ 机检结果: 判红 (负控成立)"
     }
    ]
   },
@@ -615,6 +640,7 @@
    "l2_fields": {
     "version": "ok",
     "instrument_sha12": "ok",
+    "input_surface": "ok:external_files",
     "input_fingerprint": "ok(n=4)",
     "kpi_quad": "ok"
    },

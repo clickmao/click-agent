@@ -27,7 +27,14 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 MAN = ROOT / 'eval/capability/instruments.json'
 OUT = ROOT / 'eval/capability/instruments-check.json'
 OUT_DRIFT = ROOT / 'eval/capability/instruments-check-drift.json'   # 负控模式独立命名空间 (不得覆盖正控证据)
+OUT_SURF_CLAIM = ROOT / 'eval/capability/instruments-check-surface-claim.json'
+OUT_SURF_UNKNOWN = ROOT / 'eval/capability/instruments-check-surface-unknown.json'
+OUT_NC_NOTAPPLIED = ROOT / 'eval/capability/instruments-check-nc-notapplied.json'
 L2_QUAD_KEYS = ('单位', '分母', '真值源', '口径档')
+# EXP1-Q21: 输入面语义 (契约 §L2 扩展) —— 空指纹不再默认放行。
+SURFACES = ('external_files', 'self_contained', 'dynamic_corpus', 'env_only')
+# prior_round_registration = Q19/Q20 轮登记的既往指纹, 未经审计钩子重推导 (显式标为欠账, 不冒充 derived)
+SURFACE_SOURCES = ('audit_hook', 'static_literals', 'prior_round_registration')
 
 
 def sha12(p):
@@ -44,8 +51,12 @@ def run(cmd):
 
 # 器具自身合法写点 (白名单): 全量面**不得**弄脏既有轮次产物 —— 实测事故: q17 的 `--selftest`
 # 默认 `--out` 指向轮次证据 `verdict_q17.json`, 跑一次就把 C12 确定性块抹掉 (证据降级)。
-FACE_OUTPUTS = {'eval/capability/instruments-check.json', 'eval/capability/instruments-check-drift.json'}
-SCRATCH_PREFIXES = ('eval/capability/exp1-q19/l2runs/', 'eval/capability/exp1-q20/l2runs/')
+FACE_OUTPUTS = {'eval/capability/instruments-check.json', 'eval/capability/instruments-check-drift.json',
+                'eval/capability/instruments-check-surface-claim.json',
+                'eval/capability/instruments-check-surface-unknown.json',
+                'eval/capability/instruments-check-nc-notapplied.json'}
+SCRATCH_PREFIXES = ('eval/capability/exp1-q19/l2runs/', 'eval/capability/exp1-q20/l2runs/',
+                    'eval/capability/exp1-q21/', 'eval/capability/exp1-q21-selfcheck/')
 
 
 def dirt_set():
@@ -79,21 +90,42 @@ def check_l2_fields(e):
     d['instrument_sha12'] = 'ok' if (want and got and want == got) else f'DRIFT(want={want} got={got})'
 
     fps = e.get('input_fingerprint')
+    surf = e.get('input_surface')
+    src = e.get('input_surface_source')
+    # EXP1-Q21 语义机检: 「空指纹」不再默认放行 —— 必须显式声明输入面, 且声明与指纹一致。
+    if surf not in SURFACES:
+        d['input_surface'] = 'BAD/MISSING:%r' % (surf,)
+    elif src not in SURFACE_SOURCES:
+        d['input_surface_source'] = 'BAD/MISSING:%r' % (src,)
+    else:
+        d['input_surface'] = 'ok:' + surf
     if not isinstance(fps, list):
         d['input_fingerprint'] = 'MISSING'
     else:
         bad = []
         for it in fps:
-            p = (it or {}).get('path')
-            w = (it or {}).get('sha12')
+            p = (it or {}).get('path') if isinstance(it, dict) else None
+            w = (it or {}).get('sha12') if isinstance(it, dict) else None
             if not p:
-                bad.append('NO_PATH')
+                bad.append('NOT_DICT_OR_NO_PATH')
                 continue
             g = sha12(p)
             if g is None:
                 bad.append(f'MISSING_FILE:{p}')
             elif w != g:
                 bad.append(f'DRIFT:{p}(want={w} got={g})')
+        if surf == 'external_files' and not fps:
+            bad.append('EMPTY_FP_FOR_EXTERNAL')
+        if surf in ('self_contained', 'dynamic_corpus', 'env_only') and fps:
+            bad.append(f'FP_WITHOUT_EXTERNAL_SURFACE(n={len(fps)})')
+        if surf == 'dynamic_corpus':
+            c = e.get('corpus_dynamic_count')
+            if not isinstance(c, int) or c <= 0:
+                bad.append('BAD_DYNAMIC_COUNT:%r' % (c,))
+        if surf == 'undetermined':
+            bad.append('SURFACE_UNDETERMINED')
+        if not str(e.get('input_surface_reason') or '').strip():
+            bad.append('NO_SURFACE_REASON')
         d['input_fingerprint'] = 'ok(n=%d)' % len(fps) if not bad else ';'.join(bad)
 
     quad = e.get('kpi_quad')
@@ -114,28 +146,61 @@ def declared_version(path):
     return m.group(2) if m else None
 
 
+INJECTS = {
+    '--fingerprint-drift-inject': ('drift', OUT_DRIFT),
+    '--surface-claim-inject': ('surface-claim', OUT_SURF_CLAIM),
+    '--surface-unknown-inject': ('surface-unknown', OUT_SURF_UNKNOWN),
+    '--surface-missing-inject': ('surface-missing', OUT_NC_NOTAPPLIED),
+}
+
+
+def apply_inject(e, mode):
+    """机检自身的注入缺陷负控: 只改**内存中的**字段, 不动文件。返回 (是否施加, 说明)。"""
+    if mode == 'drift':
+        fps = e.get('input_fingerprint') or []
+        if fps and isinstance(fps[0], dict):
+            fps[0]['sha12'] = 'deadbeef0000'
+            return True, 'fingerprint sha12 → deadbeef0000 (期望 DRIFT)'
+        return False, ''
+    if mode == 'surface-claim':
+        if e.get('input_surface') == 'external_files' and (e.get('input_fingerprint') or []):
+            e['input_surface'] = 'self_contained'          # 谎报自包含, 但指纹还在
+            return True, 'input_surface → self_contained 而指纹非空 (期望 FP_WITHOUT_EXTERNAL_SURFACE)'
+        return False, ''
+    if mode == 'surface-unknown':
+        e['input_surface'] = 'bogus_surface'
+        return True, 'input_surface → bogus_surface (期望 BAD/MISSING)'
+    if mode == 'surface-missing':
+        e.pop('input_surface', None)
+        e.pop('input_surface_source', None)
+        return True, 'input_surface 字段移除 (期望 BAD/MISSING —— 旧行未补字段必须判红)'
+    return False, ''
+
+
 def main():
     man = json.loads(MAN.read_text(encoding='utf-8'))
     only = None
     if '--only' in sys.argv:
         only = set(sys.argv[sys.argv.index('--only') + 1].split(','))
-    drift_inject = '--fingerprint-drift-inject' in sys.argv
+    inj_mode, target = None, OUT
+    for flag, (mode, path) in INJECTS.items():
+        if flag in sys.argv:
+            inj_mode, target = mode, path
+    drift_inject = inj_mode is not None
     dirt_before = dirt_set()
-    res, bad, injected = [], 0, False
+    res, bad, injected, inj_note = [], 0, False, ''
     for e in man['instruments']:
         if only and e['id'] not in only:
             continue
         rc, out = run(e['cmd'])
         ok = (rc == e.get('expect_rc', 0)) and (e.get('expect_substr', '') in out)
         l2_ok, l2 = check_l2_fields(e)
-        if drift_inject and not injected:
-            # 机检自身的注入缺陷负控: 只改**内存中的期望值**, 不动文件
-            fps = e.get('input_fingerprint') or []
-            if fps:
-                fps[0]['sha12'] = 'deadbeef0000'
+        if inj_mode and not injected:
+            applied, note = apply_inject(e, inj_mode)   # 逐行尝试, 首个可施加者生效 (确定性顺序)
+            if applied:
                 l2_ok, l2 = check_l2_fields(e)
-                injected = True
-                l2['DRIFT_INJECTED'] = 'expect-FAIL'
+                injected, inj_note = True, note
+                l2['INJECTED'] = inj_mode + ': expect-FAIL'
         rec = {'id': e['id'], 'kind': e['kind'], 'cmd': e['cmd'], 'rc': rc, 'expect_rc': e.get('expect_rc', 0),
                'substr_ok': e.get('expect_substr', '') in out, 'pass': bool(ok), 'sha12': sha12(e['evidence_path']),
                'owner_round': e.get('owner_round'), 'kpi_quad': e.get('kpi_quad'),
@@ -172,18 +237,19 @@ def main():
     if new_dirt:
         bad += 1
         print('SIDE-EFFECT: 全量面弄脏既有产物 (证据降级风险) ⇒', new_dirt)
-    doc = {'schema': 'instruments-check/2', 'manifest': 'eval/capability/instruments.json',
-           'l2_field_checks': True, 'drift_injected': bool(drift_inject and injected),
+    doc = {'schema': 'instruments-check/3', 'manifest': 'eval/capability/instruments.json',
+           'l2_field_checks': True, 'input_surface_checks': True,
+           'drift_injected': bool(inj_mode and injected), 'inject_mode': inj_mode, 'inject_note': inj_note,
            'side_effects': new_dirt,
            'passed': len(res) - bad, 'total': len(res), 'results': res}
-    target = OUT_DRIFT if drift_inject else OUT
     target.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
     print(f"\nL2 器具验收面: {len(res) - bad}/{len(res)} 通过; 落盘 {target.relative_to(ROOT)}")
-    if drift_inject and not injected:
-        print('DRIFT-INJECT-NOT-APPLIED: 被选行无 input_fingerprint ⇒ 负控未施加 (判红)')
+    if inj_mode and not injected:
+        print('INJECT-NOT-APPLIED (%s): 无可施加行 ⇒ 负控未施加 (判红)' % inj_mode)
         return 1
-    if drift_inject:
-        print('DRIFT-INJECT-APPLIED: 机检已判红 (见上表 DRIFT) —— 负控成立')
+    if inj_mode:
+        print('INJECT-APPLIED (%s): %s' % (inj_mode, inj_note))
+        print('  ⇒ 机检结果: %s' % ('判红 (负控成立)' if bad else '仍全绿 (负控失败!)'))
     return 1 if bad else 0
 
 

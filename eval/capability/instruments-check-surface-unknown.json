@@ -1,0 +1,49 @@
+{
+ "schema": "instruments-check/3",
+ "manifest": "eval/capability/instruments.json",
+ "l2_field_checks": true,
+ "input_surface_checks": true,
+ "drift_injected": true,
+ "inject_mode": "surface-unknown",
+ "inject_note": "input_surface → bogus_surface (期望 BAD/MISSING)",
+ "side_effects": [],
+ "passed": 0,
+ "total": 1,
+ "results": [
+  {
+   "id": "probe.grade",
+   "kind": "grader",
+   "cmd": "python3 eval/probe/grade.py --selftest",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": false,
+   "sha12": "ef0a81d495ee",
+   "owner_round": "R444",
+   "kpi_quad": {
+    "单位": "轮",
+    "分母": "题集",
+    "真值源": "桩侧落盘",
+    "口径档": "n/a"
+   },
+   "l2_fields": {
+    "version": "ok",
+    "instrument_sha12": "ok",
+    "input_surface": "BAD/MISSING:'bogus_surface'",
+    "input_fingerprint": "ok(n=0)",
+    "kpi_quad": "ok",
+    "INJECTED": "surface-unknown: expect-FAIL"
+   },
+   "l2_ok": false,
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/probe/grade.py --selftest --bogus-flag-that-must-not-silently-pass",
+     "rc": 2,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "grade.py: error: unrecognized arguments: --bogus-flag-that-must-not-silently-pass"
+    }
+   ]
+  }
+ ]
+}

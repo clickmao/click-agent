@@ -1,0 +1,57 @@
+{
+ "round": "EXP1-Q21",
+ "ts": "2026-09-15T21:58:57+0800",
+ "step": "L.8 候选 ② 后半: 旧 11 行 input_fingerprint 补全 (T.7 剩余项)",
+ "why": "T.7 候选② 后半; 附录 T 诚实边界第 4 条: 旧 11 行 input_fingerprint n=0 ⇒ 不得宣称『全器具输入已冻结』。本轮把『空指纹』拆成可判定的两类: 结构上无外部输入 vs 有外部输入但未冻结。",
+ "gate": {
+  "peer_activity": "对侧在场: 2 个 llama-server 常驻 (bge-q8 :42563 / r1-distill :37549) + /tmp/cxprobe stub",
+  "mem_available_kb": 1879200,
+  "mem_gate_kb": 2800000,
+  "locks": "无 .git/*.lock",
+  "namespace": "eval/capability/exp1-q21/ 不存在 (本轮自用, 不占主线轮号)",
+  "decision": "禁 dotnet / 禁占轮号 (对侧测量体在场 + 内存低于闸值) ⇒ 本轮全部 python/文档面; 形式校验 (dotnet) 继续结转",
+  "base_dirt_eval_docs": 19
+ },
+ "method": {
+  "tracer": "sys.addaudithook 采集 open/os.scandir/os.mkdir/os.rename/os.remove/subprocess.Popen 事件; 子 python 经 PYTHONPATH=sitecustomize 继承同钩子 (env Q21_TRACE_FILE)",
+  "input_surface_enum": {
+   "external_files": "跟踪到的仓内只读文件 (存在 ∧ 非排除面) ≤ cap",
+   "self_contained": "跟踪面无仓内只读文件 (判定逻辑与夹具内嵌在器具自身, 已由 instrument_sha12 冻结)",
+   "dynamic_corpus": "跟踪到目录/glob 动态语料, 观测文件数 > cap 或路径面非确定 ⇒ 显式声明不冻结",
+   "env_only": "只读环境/.git 内部状态等不可冻结面"
+  },
+  "input_surface_source_enum": ["audit_hook", "static_literals"],
+  "cap_files_per_row": 24,
+  "exclusions_preregistered": [
+   "仓外路径 (sys.prefix / site-packages / /proc / /dev / /sys / /tmp)",
+   "__pycache__ / *.pyc",
+   "该行自身 evidence_path (已由 instrument_sha12 冻结, 避免双计)",
+   "本轮 tracer 自身产物 eval/capability/exp1-q21/*",
+   ".git/ 内部状态 ⇒ 归 env_only (计数, 不冻指纹: 其字节随 git 操作变化, 冻结即恒漂移)"
+  ],
+  "second_implementation_for_sha": "sha256sum(1) 二进制独立复算 sha12, 与 hashlib 结果比对 (交叉验证, 非自证)"
+ },
+ "prereg_judges": [
+  {"id": "P1", "判据": "11/11 行产出跟踪记录, 且全局 read 事件数 > 0", "通过条件": "rows_traced == 11 ∧ total_read_events > 0", "失败分类": "测量失败(rc=3)"},
+  {"id": "P2", "判据": "tracer 自证双边: (a) 看到父进程读取夹具文件 (b) 看到子 python 读取标记文件 (c) 读写可分类", "通过条件": "3/3", "类型": "正控"},
+  {"id": "P3", "判据": "tracer 负控: 关钩子 (`--no-hook`) 时同一夹具读**不出现**", "通过条件": "fixture 不在事件里 ⇒ 证明该读只经钩子可见 (非空心)", "类型": "负控"},
+  {"id": "P4", "判据": "每行 input_surface ∈ 4 值枚举 且 input_surface_source ∈ {audit_hook, static_literals} 且由跟踪/字面量派生 (非手填)", "通过条件": "11/11 派生字段齐", "类型": "机检"},
+  {"id": "P5", "判据": "external_files 行指纹非空, 每个指纹: 文件存在 ∧ hashlib sha12 == sha256sum sha12", "通过条件": "全部一致 (不一致 ⇒ 判红)", "类型": "机检+交叉实现"},
+  {"id": "P6", "判据": "self_contained / dynamic_corpus / env_only 行**不得**伪造指纹; 必须带 input_surface_reason", "通过条件": "全部满足 (空指纹 + 原因齐)", "类型": "机检 (防『空指纹冒充已冻结』)"},
+  {"id": "P7", "判据": "instruments_check.py 扩展后语义机检: 全 18 行 input_surface 必填且合法; external_files ⇒ 指纹非空", "通过条件": "扩展机检对现状 18/18 绿", "类型": "机检"},
+  {"id": "P8", "判据": "新语义的注入缺陷负控 (内存注入, 独立命名空间): (a) external_files+空指纹 (b) self_contained+非空指纹 (c) 未知分类值", "通过条件": "3/3 被判红 (rc!=0); 未施加 ⇒ 判红", "类型": "负控"},
+  {"id": "P9", "判据": "零回归: 全量面 18/18 通过 ∧ side_effects == [] ∧ 既有字段 (rc/pass/l2 旧四项) 与改写前逐位相同", "通过条件": "全部满足", "类型": "零回归"},
+  {"id": "P10", "判据": "证据等级自陈: 无编译/测试/AOT ⇒ 只报 L2-static", "通过条件": "报告不得出现 L3/L4", "类型": "诚实性"}
+ ],
+ "prereg_predictions": {
+  "note": "预测可被证伪; realized 分类以跟踪为准, 不符如实记录, 不改判据",
+  "H1": "行 0-4 (selftest 类) 多为 self_contained 或仅读仓内夹具",
+  "H2": "行 5-10 (审计/分析/预检类) 多为 external_files 或 dynamic_corpus",
+  "H3": "hooks.pre-commit 读 .git 内部状态 ⇒ 落 env_only 或 external_files(仓内脚本)"
+ },
+ "recording": {
+  "kpi": "eval/capability/kpi.jsonl 追加 1 行 (round=EXP1-Q21)",
+  "artifact_writes": ["instruments.json (旧 11 行补字段)", "instruments_check.py (语义机检扩展)", "exp1-q21/* 证据面"],
+  "side_effect_whitelist_note": "instruments-check*.json 属 FACE_OUTPUTS; exp1-q21 为新增面, 与既有轮次产物不相交"
+ }
+}

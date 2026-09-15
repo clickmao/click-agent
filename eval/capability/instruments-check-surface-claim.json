@@ -1,0 +1,49 @@
+{
+ "schema": "instruments-check/3",
+ "manifest": "eval/capability/instruments.json",
+ "l2_field_checks": true,
+ "input_surface_checks": true,
+ "drift_injected": true,
+ "inject_mode": "surface-claim",
+ "inject_note": "input_surface → self_contained 而指纹非空 (期望 FP_WITHOUT_EXTERNAL_SURFACE)",
+ "side_effects": [],
+ "passed": 0,
+ "total": 1,
+ "results": [
+  {
+   "id": "r444.analyze",
+   "kind": "analyzer",
+   "cmd": "python3 eval/rover/r444/analyze_r444.py",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": false,
+   "sha12": "37e379c212b8",
+   "owner_round": "R444",
+   "kpi_quad": {
+    "单位": "轮",
+    "分母": "同网格同 NS 分母臂实测",
+    "真值源": "桩侧 calls jsonl + llama-server 遥测",
+    "口径档": "三档并列(远端/含本地真值/减本地)"
+   },
+   "l2_fields": {
+    "version": "ok",
+    "instrument_sha12": "ok",
+    "input_surface": "ok:self_contained",
+    "input_fingerprint": "FP_WITHOUT_EXTERNAL_SURFACE(n=16)",
+    "kpi_quad": "ok",
+    "INJECTED": "surface-claim: expect-FAIL"
+   },
+   "l2_ok": false,
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/rover/r444/analyze_r444.py --neg-control",
+     "rc": 0,
+     "expect": "detect:负控注入",
+     "pass": true,
+     "head": "负控注入: 期望检出 >=1 差异 ⇒ OK(检出); 检出 1 条"
+    }
+   ]
+  }
+ ]
+}

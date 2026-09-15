@@ -22,7 +22,11 @@
    "version": "content-sha12:ef0a81d495ee",
    "version_source": "content-sha12",
    "instrument_sha12": "ef0a81d495ee",
-   "input_fingerprint": []
+   "input_fingerprint": [],
+   "input_surface": "self_contained",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "无仓库内输入文件 (仅自身/运行时/环境态)",
+   "input_surface_evidence": "eval/capability/exp1-q21/derived_inputs_q21.json"
   },
   {
    "id": "probe.run_probe",
@@ -43,7 +47,11 @@
    "version": "content-sha12:9de4511eb8a4",
    "version_source": "content-sha12",
    "instrument_sha12": "9de4511eb8a4",
-   "input_fingerprint": []
+   "input_fingerprint": [],
+   "input_surface": "self_contained",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "无仓库内输入文件 (仅自身/运行时/环境态)",
+   "input_surface_evidence": "eval/capability/exp1-q21/derived_inputs_q21.json"
   },
   {
    "id": "exp1q1.scope-selftest",
@@ -65,7 +73,11 @@
    "version_source": "content-sha12",
    "instrument_sha12": "0d5d243ac686",
    "input_fingerprint": [],
-   "cmd_override_reason": "原 cmd 的 selftest 把 selftest.json 写回轮次产物路径 (硬编码) ⇒ 复跑即改写入口证据"
+   "cmd_override_reason": "原 cmd 的 selftest 把 selftest.json 写回轮次产物路径 (硬编码) ⇒ 复跑即改写入口证据",
+   "input_surface": "self_contained",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "无仓库内输入文件 (仅自身/运行时/环境态)",
+   "input_surface_evidence": "eval/capability/exp1-q21/derived_inputs_q21.json"
   },
   {
    "id": "exp1q2.docref-selftest",
@@ -86,7 +98,11 @@
    "version": "content-sha12:1650e550247b",
    "version_source": "content-sha12",
    "instrument_sha12": "1650e550247b",
-   "input_fingerprint": []
+   "input_fingerprint": [],
+   "input_surface": "self_contained",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "无仓库内输入文件 (仅自身/运行时/环境态)",
+   "input_surface_evidence": "eval/capability/exp1-q21/derived_inputs_q21.json"
   },
   {
    "id": "exp1q4.docref-probe",
@@ -107,7 +123,11 @@
    "version": "2.4.1",
    "version_source": "declared",
    "instrument_sha12": "8e26787db1b5",
-   "input_fingerprint": []
+   "input_fingerprint": [],
+   "input_surface": "self_contained",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "无仓库内输入文件 (仅自身/运行时/环境态)",
+   "input_surface_evidence": "eval/capability/exp1-q21/derived_inputs_q21.json"
   },
   {
    "id": "audit.status_gen",
@@ -128,6 +148,11 @@
    "version": "content-sha12:607d3680253b",
    "version_source": "content-sha12",
    "instrument_sha12": "607d3680253b",
+   "input_surface": "dynamic_corpus",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "仓库内输入面 97 > 上限 24 ⇒ 不冻结",
+   "input_surface_evidence": "eval/capability/exp1-q21/derived_inputs_q21.json",
+   "corpus_dynamic_count": 97,
    "input_fingerprint": []
   },
   {
@@ -151,7 +176,76 @@
    "version": "content-sha12:ea8aab20b377",
    "version_source": "content-sha12",
    "instrument_sha12": "ea8aab20b377",
-   "input_fingerprint": []
+   "input_fingerprint": [
+    {
+     "path": "eval/rover/r441/grid/task-M20.json",
+     "sha12": "84ade5bd0ca8"
+    },
+    {
+     "path": "eval/rover/r441/grid/task-V2b.json",
+     "sha12": "1081cbae0a53"
+    },
+    {
+     "path": "eval/rover/r441/grid/task-W20.json",
+     "sha12": "61fd76dd8b76"
+    },
+    {
+     "path": "eval/rover/r441/grid/task-W8.json",
+     "sha12": "dd22a113627d"
+    },
+    {
+     "path": "eval/rover/r441/run-BRJ-M20/data/telemetry/host.jsonl",
+     "sha12": "50587fd388ab"
+    },
+    {
+     "path": "eval/rover/r441/run-BRJ-V2b-c2/data/telemetry/host.jsonl",
+     "sha12": "ebc3d818b328"
+    },
+    {
+     "path": "eval/rover/r441/run-BRJ-W20/data/telemetry/host.jsonl",
+     "sha12": "ace998beee79"
+    },
+    {
+     "path": "eval/rover/r441/run-BRJ-W8-b2/data/telemetry/host.jsonl",
+     "sha12": "55644b3987fa"
+    },
+    {
+     "path": "eval/rover/r441/run-BRJ-W8/data/telemetry/host.jsonl",
+     "sha12": "56661c8a6b77"
+    },
+    {
+     "path": "eval/rover/r441/run_all_s1.log",
+     "sha12": "7b37210906d0"
+    },
+    {
+     "path": "eval/rover/r441/run_all_s2.log",
+     "sha12": "c5a81be32798"
+    },
+    {
+     "path": "eval/rover/r441/run_all_s3.log",
+     "sha12": "c64950f26b75"
+    },
+    {
+     "path": "eval/rover/r443/run-BRJ-M20-s1/data/telemetry/host.jsonl",
+     "sha12": "6097eefd0e95"
+    },
+    {
+     "path": "eval/rover/r443/run-BRJ-M20/data/telemetry/host.jsonl",
+     "sha12": "b600066c0414"
+    },
+    {
+     "path": "eval/rover/r443/run-BRJRP-M20-s1/data/telemetry/host.jsonl",
+     "sha12": "304ac945d2fc"
+    },
+    {
+     "path": "eval/rover/r443/run_all_s1.log",
+     "sha12": "542e0116d01c"
+    }
+   ],
+   "input_surface": "external_files",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "仓库内输入文件 16 ≤ 上限 24",
+   "input_surface_evidence": "eval/capability/exp1-q21/derived_inputs_q21.json"
   },
   {
    "id": "r444.analyze",
@@ -172,7 +266,76 @@
    "version": "content-sha12:37e379c212b8",
    "version_source": "content-sha12",
    "instrument_sha12": "37e379c212b8",
-   "input_fingerprint": []
+   "input_fingerprint": [
+    {
+     "path": "eval/rover/r444/run-A-M20-s4/data/telemetry/host.jsonl",
+     "sha12": "25a908217f33"
+    },
+    {
+     "path": "eval/rover/r444/run-A-V2b-s4/data/telemetry/host.jsonl",
+     "sha12": "a14e681d2b6e"
+    },
+    {
+     "path": "eval/rover/r444/run-A-W8-s4/data/telemetry/host.jsonl",
+     "sha12": "e0e31ab0ce3a"
+    },
+    {
+     "path": "eval/rover/r444/run-BRJ-M20-s4/data/telemetry/host.jsonl",
+     "sha12": "0ad4677825de"
+    },
+    {
+     "path": "eval/rover/r444/run-BRJ-M20-s5/data/telemetry/host.jsonl",
+     "sha12": "54738c3e3b38"
+    },
+    {
+     "path": "eval/rover/r444/run-BRJ-V2b-s4/data/telemetry/host.jsonl",
+     "sha12": "2c3f55dbfb0a"
+    },
+    {
+     "path": "eval/rover/r444/run-BRJ-W8-s4/data/telemetry/host.jsonl",
+     "sha12": "b8594d190387"
+    },
+    {
+     "path": "eval/rover/r444/run-BRJL-M20-s4/data/telemetry/host.jsonl",
+     "sha12": "8b85b9847518"
+    },
+    {
+     "path": "eval/rover/r444/verdict-A-M20-s4.json",
+     "sha12": "50827b81cdcc"
+    },
+    {
+     "path": "eval/rover/r444/verdict-A-V2b-s4.json",
+     "sha12": "10decd0f1e92"
+    },
+    {
+     "path": "eval/rover/r444/verdict-A-W8-s4.json",
+     "sha12": "5d75457066bc"
+    },
+    {
+     "path": "eval/rover/r444/verdict-BRJ-M20-s4.json",
+     "sha12": "9dd26d7aaf55"
+    },
+    {
+     "path": "eval/rover/r444/verdict-BRJ-M20-s5.json",
+     "sha12": "7f2067b7b431"
+    },
+    {
+     "path": "eval/rover/r444/verdict-BRJ-V2b-s4.json",
+     "sha12": "8f82e7fb0e0a"
+    },
+    {
+     "path": "eval/rover/r444/verdict-BRJ-W8-s4.json",
+     "sha12": "02c11f56098e"
+    },
+    {
+     "path": "eval/rover/r444/verdict-BRJL-M20-s4.json",
+     "sha12": "c9d1d0fd1ced"
+    }
+   ],
+   "input_surface": "external_files",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "仓库内输入文件 16 ≤ 上限 24",
+   "input_surface_evidence": "eval/capability/exp1-q21/derived_inputs_q21.json"
   },
   {
    "id": "hooks.pre-commit",
@@ -192,6 +355,11 @@
    "version": "content-sha12:022e1b7bdee1",
    "version_source": "content-sha12",
    "instrument_sha12": "022e1b7bdee1",
+   "input_surface": "dynamic_corpus",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "仓库内输入面 98 > 上限 24 ⇒ 不冻结",
+   "input_surface_evidence": "eval/capability/exp1-q21/derived_inputs_q21.json",
+   "corpus_dynamic_count": 98,
    "input_fingerprint": []
   },
   {
@@ -215,6 +383,11 @@
    "version": "content-sha12:9157725483d0",
    "version_source": "content-sha12",
    "instrument_sha12": "9157725483d0",
+   "input_surface": "dynamic_corpus",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "仓库内输入面 243 > 上限 24 ⇒ 不冻结",
+   "input_surface_evidence": "eval/capability/exp1-q21/derived_inputs_q21.json",
+   "corpus_dynamic_count": 243,
    "input_fingerprint": []
   },
   {
@@ -236,7 +409,11 @@
    "version": "content-sha12:5ca7dc39735b",
    "version_source": "content-sha12",
    "instrument_sha12": "5ca7dc39735b",
-   "input_fingerprint": []
+   "input_fingerprint": [],
+   "input_surface": "self_contained",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "无仓库内输入文件 (仅自身/运行时/环境态)",
+   "input_surface_evidence": "eval/capability/exp1-q21/derived_inputs_q21.json"
   },
   {
    "id": "exp1q11.other-bucket-decompose",
@@ -266,7 +443,10 @@
    "owner_round": "EXP1-Q19",
    "evidence_path": "eval/capability/exp1-q11/other_bucket_decompose.py",
    "nc_cmd": "python3 eval/capability/exp1-q11/other_bucket_decompose.py --citations eval/capability/exp1-q19/_absent_corpus.jsonl --out eval/capability/exp1-q20/l2runs/_q11_nc.json",
-   "nc_expect": "nonzero"
+   "nc_expect": "nonzero",
+   "input_surface": "external_files",
+   "input_surface_source": "prior_round_registration",
+   "input_surface_reason": "Q19/Q20 轮登记的既往指纹; 未经审计钩子重推导 (欠账, 记入下轮候选)"
   },
   {
    "id": "exp1q15.unit-axis-guard",
@@ -298,7 +478,10 @@
    "nc_cmd": "python3 eval/capability/exp1-q15/unit_axis_guard.py --run --cites eval/capability/exp1-q19/_absent_corpus.jsonl --json eval/capability/exp1-q20/l2runs/_q15_nc.json",
    "nc_expect": "nonzero",
    "nc_cmd2": "python3 eval/capability/exp1-q15/unit_axis_guard.py --run --cites eval/capability/exp1-q18/arm_v270_VOID_self_include/citations.jsonl --json eval/capability/exp1-q20/l2runs/_q15_nc2.json",
-   "nc_expect2": "nonzero"
+   "nc_expect2": "nonzero",
+   "input_surface": "external_files",
+   "input_surface_source": "prior_round_registration",
+   "input_surface_reason": "Q19/Q20 轮登记的既往指纹; 未经审计钩子重推导 (欠账, 记入下轮候选)"
   },
   {
    "id": "exp1q15.unit-axis-guard-q16",
@@ -328,7 +511,10 @@
    "owner_round": "EXP1-Q19",
    "evidence_path": "eval/capability/exp1-q16/unit_axis_guard.py",
    "nc_cmd": "python3 eval/capability/exp1-q16/unit_axis_guard.py --run --cites eval/capability/exp1-q19/_absent_corpus.jsonl --json eval/capability/exp1-q20/l2runs/_q16_nc.json",
-   "nc_expect": "nonzero"
+   "nc_expect": "nonzero",
+   "input_surface": "external_files",
+   "input_surface_source": "prior_round_registration",
+   "input_surface_reason": "Q19/Q20 轮登记的既往指纹; 未经审计钩子重推导 (欠账, 记入下轮候选)"
   },
   {
    "id": "exp1q17.archive-field-provenance",
@@ -364,7 +550,10 @@
    "nc_cmd": "python3 eval/capability/exp1-q17/archive_field_provenance.py --archive eval/capability/exp1-q18/arm_v270_VOID_self_include/citations.jsonl --out eval/capability/exp1-q20/l2runs/_q17_nc.json --fixtures-out eval/capability/exp1-q20/l2runs/_q17_nc_fx.json",
    "nc_expect": "nonzero",
    "nc_cmd2": "python3 eval/capability/exp1-q17/archive_field_provenance.py --archive eval/capability/exp1-q19/_absent_corpus.jsonl --out eval/capability/exp1-q20/l2runs/_q17_nc2.json --fixtures-out eval/capability/exp1-q20/l2runs/_q17_nc2_fx.json",
-   "nc_expect2": "nonzero"
+   "nc_expect2": "nonzero",
+   "input_surface": "external_files",
+   "input_surface_source": "prior_round_registration",
+   "input_surface_reason": "Q19/Q20 轮登记的既往指纹; 未经审计钩子重推导 (欠账, 记入下轮候选)"
   },
   {
    "id": "exp1q18.rebuild-constructor",
@@ -390,7 +579,10 @@
    "owner_round": "EXP1-Q19",
    "evidence_path": "eval/capability/exp1-q18/build_q18_probe.py",
    "nc_cmd": "python3 eval/capability/exp1-q19/nc_rebuild_mutated.py",
-   "nc_expect": "detect:NC_OK"
+   "nc_expect": "detect:NC_OK",
+   "input_surface": "external_files",
+   "input_surface_source": "prior_round_registration",
+   "input_surface_reason": "Q19/Q20 轮登记的既往指纹; 未经审计钩子重推导 (欠账, 记入下轮候选)"
   },
   {
    "id": "l2.instruments-check",
@@ -400,10 +592,27 @@
    "expect_substr": "L2 器具验收面",
    "nc_cmd": "python3 eval/capability/instruments_check.py --only exp1q17.archive-field-provenance --fingerprint-drift-inject",
    "nc_expect": "nonzero",
-   "version": "content-sha12:df05321a3d04",
+   "version": "content-sha12:4dba181cd528",
    "version_source": "content-sha12",
-   "instrument_sha12": "df05321a3d04",
-   "input_fingerprint": [],
+   "instrument_sha12": "4dba181cd528",
+   "input_fingerprint": [
+    {
+     "path": "eval/capability/exp1-q10/attribution_q10.json",
+     "sha12": "7c4e1144921a"
+    },
+    {
+     "path": "eval/capability/exp1-q10/citations.jsonl",
+     "sha12": "08c99bd67a41"
+    },
+    {
+     "path": "eval/capability/exp1-q16/verdict_q16.json",
+     "sha12": "674bb15292e1"
+    },
+    {
+     "path": "eval/capability/exp1-q17/archive_field_provenance.py",
+     "sha12": "cac4530579fd"
+    }
+   ],
    "kpi_quad": {
     "单位": "器具行",
     "分母": "instruments.json 行数",
@@ -411,7 +620,11 @@
     "口径档": "L2 全字段 + 正/负控"
    },
    "owner_round": "EXP1-Q19",
-   "evidence_path": "eval/capability/instruments_check.py"
+   "evidence_path": "eval/capability/instruments_check.py",
+   "input_surface": "external_files",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "仓库内输入文件 4 ≤ 上限 24",
+   "input_surface_evidence": "eval/capability/exp1-q21/derived_inputs_q21.json"
   },
   {
    "id": "exp1q13.index-scope-out-classifier",
@@ -451,7 +664,10 @@
    "nc_cmd": "python3 eval/capability/exp1-q13/index_scope_out_classify.py --inject-defect=caliber-delta-applied",
    "nc_expect": "nonzero",
    "nc_cmd2": "python3 eval/capability/exp1-q13/index_scope_out_classify.py --inject-defect=phantom-ineffective",
-   "nc_expect2": "nonzero"
+   "nc_expect2": "nonzero",
+   "input_surface": "external_files",
+   "input_surface_source": "prior_round_registration",
+   "input_surface_reason": "Q19/Q20 轮登记的既往指纹; 未经审计钩子重推导 (欠账, 记入下轮候选)"
   }
  ]
 }

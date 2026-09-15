@@ -1,0 +1,63 @@
+EXP1-Q21 · 证据清单 (输入面声明 + 审计钩子实测派生) — 2026-09-15
+=================================================================
+
+0. 本轮做了什么 (一句话)
+   把「旧行 input_fingerprint 恒为空」升级为「输入面声明 + 审计钩子实测派生 + 机检语义」:
+   用 sys.addaudithook 跟踪器实测每条正控命令实际读了哪些文件, 按预注册排除规则分类, 指纹由文件字节派生;
+   机检新增 input_surface 语义 (空指纹不再默认放行)。零产品代码改动 / 零 dotnet / 不占主线轮号。
+
+1. 复现命令 (逐条可重跑)
+   python3 eval/capability/exp1-q21/io_trace.py --selfcheck --out eval/capability/exp1-q21/tracer_selfcheck.json
+   python3 eval/capability/exp1-q21/derive_inputs_q21.py --out eval/capability/exp1-q21/derived_inputs_q21.json --timeout 300
+   python3 eval/capability/exp1-q21/register_q21.py --apply
+   python3 eval/capability/exp1-q21/refresh_changed_q21.py --apply
+   python3 eval/capability/exp1-q21/verify_registry_zeroregress.py
+   bash    eval/capability/exp1-q21/run_l2_face_and_nc.sh
+   python3 eval/capability/exp1-q21/append_kpi_q21.py
+
+2. 读数
+   [跟踪器自证] ok=true | P2 正控 5/5 (父读/子读/写分类/spawn 分类/仓内夹具未被过滤)
+                      | P3 负控成立 (无钩子环境同读命令 stdout 仍有内容)
+                      | P4 过滤器成立 (仓外夹具只计数不进事件面)
+                      | P5 归因成立 (递归删除 4 事件全落夹具子树; 错归仓库根 0 处; fd 相对 open 5 条只计数不猜)
+   [派生成效]   目标 12 行 / undetermined 0 / hard_fail [] | external_files 3 / self_contained 6 / dynamic_corpus 3
+                      | dynamic 观察条数 97 / 98 / 243 (超上限 24 ⇒ 不冻结)
+                      | 指纹条目 36, hashlib vs GNU sha256sum 交叉 **0 不一致**
+                      | 跟踪文件合计 332 KB, capped=false
+   [登记面]     18 行全部有 input_surface (audit_hook 12 / prior_round_registration 6);
+                external_files 9 行 / 指纹条目 50; 重跑幂等 (sha 相等)
+   [零回归]     既有键取值零漂移 (唯一变化 = 3 行 input_fingerprint 由 [] 填充, 显式白名单)
+   [器具刷新]   l2.instruments-check: content-sha12:df05321a3d04 → 4dba181cd528 (显式 allowlist, residual_drift=[])
+   [L2 全量面]  行级 18/18 ok; 批次 **17/18**; side_effects = 4 个 tracked 文件 (见 §4)
+   [负控矩阵]   drift rc=1 / surface-claim rc=1 / surface-unknown rc=1 / surface-missing rc=1 (各写独立命名空间)
+
+3. 本轮抓到的两个**器具缺陷** (均为测量层, 均非被测对象缺陷)
+   (a) 无上限跟踪写: 9 条命令 5 分钟写出 2.1 GB (单条最大 258 MB) ⇒ 加物理上限 + 按类过滤后 12 行合计 332 KB。
+   (b) dir_fd 相对名错归: 递归删除以 (相对名, dir_fd) 发起事件, 按进程 cwd 解析会把 temp 夹具错报成仓库根同名文件
+       (假读数表现为「q1/q2 selftest 在仓库根删 a.cs/b.cs/src/docs/data」); 经 /proc/self/fd 解析后错归 0 处。
+       **修一次不够**: 先修父钩子, 子钩子仍是旧实现 ⇒ 第二版缺陷; 现两处共用 q21_filter.resolve_path 单源。
+
+4. 事件: 误复原对侧 R463 未提交改动 (重要, 已原文入档)
+   - 22:19 全量面 SIDE-EFFECT 报 4 个 tracked 文件: docs/improvements.md, docs/plans/v715_dev_plan.taskplan.json,
+     docs/verification-registry.json, eval/bge/r404/csharp-fusion-replay.json
+   - 归因实验: 复原后单跑 status_gen --check 与 tools/hooks/pre-commit ⇒ **均零改写** ⇒ 这 4 个改动不是本面命令写的,
+     而是对侧 R463 在飞写入 (eval/rover/r463/ 同期有 22:11-22:16 产物)
+   - 本侧在实验里用 git checkout 复原了这 4 个路径 ⇒ **对侧未提交改动被抹掉**
+   - 恢复尝试: 4919 blob / 近 8h 564 松散对象逐一无命中 ⇒ 对象库无备份; 再生路径 = 对侧 settle 步
+   - 捕获碎片 (供对侧复核): registry 行 id=r463.local-gate-model-switch level=L2;
+     improvements 段 "### R463 (2026-09-15) · 本地判别通道切 3B + 冗余模型清理（用户令）";
+     bge r404 replay 单行 JSON (ts=2026-09-15T14:17:20.2561124Z, corpus=1299, queries=120, rrf_r@10=0.85, rrf_mrr@10=0.6439)
+   - 根因与下轮修法: 副作用闸只做 git status 集合差 ⇒ 无法区分「本轮命令写的」与「并发写者写的」; 且对已脏文件的重复写入不可见。
+     修法 = 归因式闸 (用本轮落地的跟踪器给 dirty 路径标 PID/命令, 并发写者记 foreign_write 单列)。
+
+5. 预注册判据结果
+   P1 PASS | P2 PASS | P3 PASS | P4 PASS | P5 PASS | P6 PASS | P7 PASS | P9 PASS | P10 PASS | **P8 FAIL**
+   (P8 = 全量面 passed==total ∧ side_effects==[]; 行级 18/18 ok 但副作用闸非空 ⇒ 按预注册原样判 FAIL, 不翻绿)
+
+6. 诚实边界
+   - 6 行既往指纹仍为 prior_round_registration (未用审计钩子重推导), 不冒充「全量输入已冻结」。
+   - dynamic_corpus 3 行为目录级动态语料, 结构上不可冻结, 只登记观察条数。
+   - 审计面固有上限: 事件形参不含 dir_fd 的 open 不可解析 (只计数); 非 python 子进程 (bash/git/外部二进制) 的访问不在审计面
+     ⇒ 「输入面」是全量输入的下界, 不是全集。
+   - 零 dotnet ⇒ 形式校验 (VerificationForm|SkillGeneralization|DevPlanDocRef) 第七轮结转。
+   - 测量窗口非纯净 (对侧 R463 臂 + llama-server 在场); 本侧未用模型 / 未跑 dotnet / 未占主线轮号。

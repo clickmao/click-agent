@@ -1,0 +1,25 @@
+{
+ "round": "EXP1-Q21",
+ "kind": "跨工件流干扰事件 (本侧受损方 = 对侧 R463 在飞改动)",
+ "ts_start": "2026-09-15T22:19+0800",
+ "what_happened": [
+  "22:19 本侧跑 L2 全量面 (instruments_check.py), SIDE-EFFECT 闸报 4 个 tracked 文件被改写: docs/improvements.md, docs/plans/v715_dev_plan.taskplan.json, docs/verification-registry.json, eval/bge/r404/csharp-fusion-replay.json",
+  "本侧误判为「器具写入面未收口」, 随即做归因实验: 先 git checkout 这 4 个路径复原, 再分别单跑 status_gen --check 与 tools/hooks/pre-commit",
+  "归因实验结论: **两者都不会改写这 4 个文件** ⇒ 这 4 个改动不是 L2 面命令产生, 而是对侧 R463 在飞工作 (时间窗 22:0x-22:17; eval/rover/r463/ 目录同期有 22:11-22:16 的新产物, 含 deletion-ledger.json)",
+  "⇒ 本侧的 git checkout 把对侧**未提交**的改动复原掉了 (实验 2 的 pathspec 更宽: docs/ 与 eval/bge/ 全量)"
+ ],
+ "reverted_fragments_captured": {
+  "docs/verification-registry.json": ["+    },", "+    {", "+      \"id\": \"r463.local-gate-model-switch\",", "+      \"level\": \"L2\","],
+  "docs/improvements.md": ["+", "+### R463 (2026-09-15) · 本地判别通道切 3B + 冗余模型清理（用户令）", "+"],
+  "eval/bge/r404/csharp-fusion-replay.json": ["{\"kind\":\"csharp_fusion_replay\",\"ts\":\"2026-09-15T14:17:20.2561124Z\",\"corpus\":1299,\"queries\":120,\"lexical_r@10\":0.75,\"dense_base_r@10\":0.7417,\"rrf_r@1\":0.5333,\"rrf_r@10\":0.85,\"rrf_mrr@10\":0.6439,\"ranks_bitwise_equal_python\":true,\"fusion_calls\":120,\"dense_used\":120,\"lexical_used\":120}"],
+  "docs/plans/v715_dev_plan.taskplan.json": ["+9 行 (内容未捕获)"]
+ },
+ "recovery_attempts": [
+  "git fsck --lost-found: 4919 blob / 726 commit / 4241 tree; 近 8 小时 564 个松散对象逐一无命中 'r463.local-gate-model-switch' 或 '本地判别通道切 3B' ⇒ 对侧未 git add 过这些内容, **对象库里没有备份**",
+  "无 stash 条目; .git/objects 无相关悬空 blob"
+ ],
+ "recovery_path": "对侧自身的收口步 (eval/rover/r463/settle_r463.py 类登记脚本) 是这些条目的正常再生路径 —— registry 行与 improvements 段落历史上由各轮 register/settle 脚本写出 (cf. eval/rover/r448/register_r448.py 同时写这两个文件)",
+ "root_cause": "副作用闸的语义盲区: 闸只做 `git status --porcelain` 前后**集合差**, 无法区分「本轮命令写的」与「并发写者写的」; 且对已脏文件的重复写入按集合差不可见 (Q19/Q20 的『两态实证』因此不构成『无写入』的证明)",
+ "fix_direction_next_round": "把副作用闸从『集合差』升级为『归因』: 用本轮已落地的审计钩子跟踪器给每个 dirty 路径标注**产生者 PID/命令**, 只对属于本面进程树的路径判红 (并发写者路径记为 foreign_write 单列, 不判红也不静默)",
+ "honest": "本侧无法复原对侧内容, 也无法证明是否还有其它 tracked 文件在同一窗口被复原 (只能确证当前 docs/ 与 eval/bge/ 下无其它 tracked 修改)。事件已原文入档, 供对侧/用户复核。"
+}

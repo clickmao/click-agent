@@ -1,0 +1,47 @@
+{
+ "tmpdir": "/tmp/q21-trace-selfcheck-0d6u33fd",
+ "selfcheck_dir": "eval/capability/exp1-q21-selfcheck",
+ "repo_fixture": "eval/capability/exp1-q21-selfcheck/fixture_read_me.txt",
+ "repo_marker": "eval/capability/exp1-q21-selfcheck/child_marker.txt",
+ "outside_fixture": "/tmp/q21-trace-selfcheck-0d6u33fd/outside_read_me.txt",
+ "rc": 0,
+ "stdout_tail": "q21-repo-child-marker",
+ "parent_read_ok": true,
+ "outside_read_ok": true,
+ "events_n": 5,
+ "parent_events_n": 4,
+ "child_events_n": 1,
+ "child_summaries_n": 1,
+ "child_malformed_n": 0,
+ "P2a_parent_read_fixture": true,
+ "P2b_child_read_marker": true,
+ "P2c_write_classified": true,
+ "P2c_spawn_classified": true,
+ "P2d_repo_fixture_not_filtered": true,
+ "P4_outside_filtered_n": 3,
+ "P4_outside_examples": [
+  "/tmp/q21-trace-selfcheck-0d6u33fd/outside_read_me.txt",
+  "/tmp/q21-trace-selfcheck-0d6u33fd/child_trace.jsonl"
+ ],
+ "P4_pass": true,
+ "P2_pass": true,
+ "P5_rmtree_events_n": 5,
+ "P5_all_under_subtree": true,
+ "P5_misattributed_to_repo_root": 0,
+ "P5_unresolved_relative_n": 1,
+ "P5_accounted_n": 6,
+ "P5_total_events_n": 5,
+ "P5_boundary": "fd 相对 open 事件在审计面不带 dir_fd ⇒ 不可解析 (只计数, 不猜路径)",
+ "P5_pass": true,
+ "P3_neg_stdout_has_marker": true,
+ "P3_pass": true,
+ "P3_note": "负控 = 同一读命令在无钩子环境下 stdout 仍有内容 (读发生了), 但事件面只由钩子/注入面产生",
+ "ok": true,
+ "summary": {
+  "P2_正控(父读/子读/读写分类/spawn分类/仓内夹具)": "5/5",
+  "P3_负控(无钩子×读发生)": "成立",
+  "P4_过滤器(仓外夹具必须只计数不进事件面)": "成立",
+  "P5_归因(dir_fd 相对名不得错归到仓库根)": "成立"
+ }
+}
+SELFCHECK_EXIT=0

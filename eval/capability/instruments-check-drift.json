@@ -1,8 +1,11 @@
 {
- "schema": "instruments-check/2",
+ "schema": "instruments-check/3",
  "manifest": "eval/capability/instruments.json",
  "l2_field_checks": true,
+ "input_surface_checks": true,
  "drift_injected": true,
+ "inject_mode": "drift",
+ "inject_note": "fingerprint sha12 → deadbeef0000 (期望 DRIFT)",
  "side_effects": [],
  "passed": 0,
  "total": 1,
@@ -26,9 +29,10 @@
    "l2_fields": {
     "version": "ok",
     "instrument_sha12": "ok",
+    "input_surface": "ok:external_files",
     "input_fingerprint": "DRIFT:eval/capability/exp1-q10/citations.jsonl(want=deadbeef0000 got=08c99bd67a41)",
     "kpi_quad": "ok",
-    "DRIFT_INJECTED": "expect-FAIL"
+    "INJECTED": "drift: expect-FAIL"
    },
    "l2_ok": false,
    "negative_controls": [

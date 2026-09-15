@@ -1,0 +1,39 @@
+{
+ "round": "EXP1-Q21",
+ "ts": "2026-09-15T22:2x+0800",
+ "step": "L.8 候选② 后半: 旧 11 行 (realized 12 行) input_fingerprint 补全 → 升级为「输入面声明 + 审计钩子实测派生」",
+ "approach": "sys.addaudithook 跟踪器 (父进程 + 经 PYTHONPATH 注入子 python) 实测每条正控命令**实际读了什么**, 按预注册排除规则分类, 由文件字节派生 sha12 —— 不读源码猜、不手打指纹",
+ "judges": {
+  "P1_目标集与覆盖": {"expect": "目标行 (台账 input_fingerprint 为空) 逐行产出读数, 无测量失败", "got": "目标 12 行 (预注册写 11 → 实测 12, 差异=Q20 自己登记的 l2.instruments-check, 见 amendments A2); 12/12 有读数, undetermined=0, hard_fail=[]", "verdict": "PASS"},
+  "P2_跟踪器自证": {"expect": "正控 4 项 + 参考读数只能经钩子可见 + 过滤器 + 归因护栏", "got": "P2 5/5 (父读/子读/写分类/spawn分类/仓内夹具未被过滤); P3 负控成立 (无钩子环境同读命令 stdout 仍有内容); P4 过滤器成立 (仓外夹具只计数不进事件面); P5 归因成立 (递归删除 4 事件全部落在夹具子树, 错归仓库根 = 0 处)", "verdict": "PASS"},
+  "P3_分类须派生": {"expect": "每行 input_surface ∈ 4 值 + source 记录来源", "got": "12 行 source=audit_hook; 6 行既往指纹标 source=prior_round_registration (显式欠账, 不冒充 derived)", "verdict": "PASS"},
+  "P4_外部输入面指纹": {"expect": "external_files 行指纹非空且逐条可重算 + 第三方实现一致", "got": "3 行 (r444.prefilter-precheck / r444.analyze / l2.instruments-check) 共 36 条; python hashlib vs GNU sha256sum 交叉 **0 处不一致**", "verdict": "PASS"},
+  "P5_不得伪造冻结": {"expect": "self_contained / dynamic_corpus 行指纹必须为空 + 记 reason; dynamic 记观察条数", "got": "6 行 self_contained (fp=[]), 3 行 dynamic_corpus (fp=[] 且 corpus_dynamic_count=97/98/243, 超上限 24 ⇒ 不冻结)", "verdict": "PASS"},
+  "P6_机检语义落地": {"expect": "18 行全部通过扩展后的语义机检 (空指纹不再默认放行)", "got": "18/18 行 l2_ok=True (含新增 BAD_SURFACE/EMPTY_FP_FOR_EXTERNAL/FP_WITHOUT_EXTERNAL_SURFACE/BAD_DYNAMIC_COUNT/NO_SURFACE_REASON 判据)", "verdict": "PASS"},
+  "P7_注入负控": {"expect": "4 类注入各判红, 各写独立命名空间", "got": "drift rc=1 (DRIFT 命中) / surface-claim rc=1 (FP_WITHOUT_EXTERNAL_SURFACE) / surface-unknown rc=1 (BAD/MISSING) / surface-missing rc=1 (字段移除必判红); 注册行内负控 nc=[1] 通过", "verdict": "PASS"},
+  "P8_零回归与副作用": {"expect": "全量面 passed==total ∧ side_effects==[]", "got": "行级 18/18 全 ok (FAIL 行=0), 但批次 **17/18** ∧ side_effects = 4 个 tracked 文件 (docs/improvements.md, docs/plans/v715_dev_plan.taskplan.json, docs/verification-registry.json, eval/bge/r404/csharp-fusion-replay.json)", "verdict": "FAIL (预注册判据原样判定)", "root_cause": "归因实验证明 4 个文件**不是**本面命令所写 (status_gen --check 与 pre-commit 单独跑均零改写), 而是对侧 R463 在飞写入被本面副作用闸按『集合差』误记为自身副作用; 本侧随后误复原对侧改动 (见 incident_q21_crossworkstream.json)"},
+  "P9_零回归_台账取值": {"expect": "既有键取值逐位不变, 只允许新增键", "got": "ids/top-level keys 相等; removed_keys={}; 唯一取值变化 = 3 行的 input_fingerprint 由 [] 填充 (本轮产出本身, 显式白名单); 其余 0 处漂移", "verdict": "PASS"},
+  "P10_证据等级": {"expect": "不得越级宣称", "got": "L2-static (真机执行 + 注入矩阵 + 字节派生重算); 本轮零 dotnet (对侧在飞 + 内存未过闸) ⇒ 不报 L3/L4", "verdict": "PASS (如实申报)"}
+ },
+ "registry_after": {"rows": 18, "surface_declared": 18, "external_files": 9, "self_contained": 6, "dynamic_corpus": 3, "fingerprint_entries": 50, "source_audit_hook": 12, "source_prior_round_registration": 6, "idempotent_reapply_sha_equal": true},
+ "instrument_refresh": {"row": "l2.instruments-check", "version_before": "content-sha12:df05321a3d04", "version_after": "content-sha12:4dba181cd528", "residual_drift": [], "note": "显式 allowlist (本轮确实改动的器具文件), before→after 全量入档, 不静默刷新"},
+ "instrument_defects_found": [
+  {"id": "无上限跟踪写 2.1GB", "evidence": "9 条命令 5 分钟写出 2.1 GB (每条 ~250 MB, 单条最大 258 MB); 有界版本同 12 行合计 **332 KB** (capped=false)", "fix": "写侧物理上限 (MAX_EVENTS=4000 / MAX_BYTES=2 MiB) + 按类过滤 (仓内事件才写; runtime/台账/版本库内部/仓外只计数+样例) + summary 行"},
+  {"id": "dir_fd 相对名错归到进程 cwd", "evidence": "递归删除以 `os.remove(name, dir_fd=fd)` / `os.open(name, dir_fd=fd)` 发起; 按 cwd 解析把 temp 夹具错报成仓库根同名文件 (读数显示 q1/q2 selftest 在仓库根删 a.cs/b.cs/src/docs/data —— 全为假读数)", "fix": "经 /proc/self/fd 解析 dir_fd; 审计形参不含 dir_fd 的 open 记 unresolved_relative 计数 (实测该行 4 条, 只计数不猜路径) ⇒ 错归 0 处", "note": "父钩子修好后子钩子仍是旧实现 ⇒ 修复必须**两处同源** (第二版缺陷); 现两处共用 q21_filter.resolve_path 单源"}
+ ],
+ "readings_face": {"rows_ok": 18, "rows_total": 18, "batch_passed": 17, "batch_fail_cause": "side_effect_gate", "side_effects": ["docs/improvements.md", "docs/plans/v715_dev_plan.taskplan.json", "docs/verification-registry.json", "eval/bge/r404/csharp-fusion-replay.json"]},
+ "criterion_summary": "10 项判据: 9 PASS / 1 FAIL (P8)。FAIL 的直接成因是并发写者, 但**按预注册原样判定为 FAIL**, 不以『成因不在本轮 diff』为由翻绿。",
+ "evidence_level": "L2-static (真机执行 + 审计钩子实测 + 注入矩阵 + 字节派生重算; 零 dotnet)",
+ "honest": [
+  "① P8 FAIL: 副作用闸在并发写者在场时无法区分写入归属 ⇒ 该闸当前形态下『side_effects=[]』不构成『本面无写入』的证明。",
+  "② 本侧误复原对侧 R463 未提交改动 (4 个 tracked 文件), 内容不可从 git 对象库恢复 (564 个近 8h 松散对象逐一无命中); 只能靠对侧收口脚本再生。见 incident_q21_crossworkstream.json。",
+  "③ 6 行既往指纹仍为 prior_round_registration (未用审计钩子重推导) —— 本轮只补空指纹行, 不冒充全量已冻结。",
+  "④ dynamic_corpus 3 行 (status_gen / pre-commit / r446.judge-precheck) 的输入面为目录级动态语料 (97/98/243 条), 结构上不可冻结 ⇒ 只登记观察条数。",
+  "⑤ 审计面固有上限: 事件形参不含 dir_fd 的 open 无法解析 (只计数), 且非 python 子进程 (bash/git/外部二进制) 的文件访问不在审计面内 —— 故『输入面』是全量输入的下界, 不是全集。",
+  "⑥ 零 dotnet ⇒ 形式校验 (VerificationForm|SkillGeneralization|DevPlanDocRef) 第七轮结转; 本轮改动了 instruments_check.py (python 侧) 与台账字段, dotnet 侧消费者未跑。",
+  "⑦ 测量窗口非纯净: 对侧 R463 臂运行 + llama-server 在场 (本侧未用模型/未跑 dotnet/未占主线轮号)。"
+ ],
+ "debt": ["(1) 形式校验结转清账 (需对侧空闲 + 内存过闸)", "(2) 副作用闸升级为归因式 (foreign_write 单列) —— 本轮已具备跟踪器基础", "(3) 6 行既往指纹用审计钩子重推导 (消 prior_round_registration)", "(4) 对侧 R463 的 registry/improvements 条目需由其 settle 步再生 (本侧已原文入档碎片)", "(5) relocated 面正例语料 / 阶段B 可语言集 (各需独立预注册轮次)"],
+ "next": "① 归因式副作用闸 (跟踪器给 dirty 路径标 PID/命令 → foreign_write 不判红) → ② 6 行既往指纹重推导 → ③ 形式校验结转清账 → ④ relocated 面正例语料",
+ "owner_round": "EXP1-Q21 (60m 自检作业; 不占主线轮号)"
+}

@@ -1,0 +1,49 @@
+{
+ "schema": "instruments-check/3",
+ "manifest": "eval/capability/instruments.json",
+ "l2_field_checks": true,
+ "input_surface_checks": true,
+ "drift_injected": true,
+ "inject_mode": "surface-missing",
+ "inject_note": "input_surface 字段移除 (期望 BAD/MISSING —— 旧行未补字段必须判红)",
+ "side_effects": [],
+ "passed": 0,
+ "total": 1,
+ "results": [
+  {
+   "id": "exp1q4.docref-probe",
+   "kind": "static-probe",
+   "cmd": "python3 eval/capability/exp1-q4/probe_doc_ref_integrity.py --selftest",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": false,
+   "sha12": "8e26787db1b5",
+   "owner_round": "R444",
+   "kpi_quad": {
+    "单位": "引用",
+    "分母": "全库引用",
+    "真值源": "git 树",
+    "口径档": "静态"
+   },
+   "l2_fields": {
+    "version": "declared:2.4.1",
+    "instrument_sha12": "ok",
+    "input_surface": "BAD/MISSING:None",
+    "input_fingerprint": "ok(n=0)",
+    "kpi_quad": "ok",
+    "INJECTED": "surface-missing: expect-FAIL"
+   },
+   "l2_ok": false,
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/capability/exp1-q4/probe_doc_ref_integrity.py --selftest --bogus-flag",
+     "rc": 2,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "probe_doc_ref_integrity.py: error: unrecognized arguments: --bogus-flag"
+    }
+   ]
+  }
+ ]
+}

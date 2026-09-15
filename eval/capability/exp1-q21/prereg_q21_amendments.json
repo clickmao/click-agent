@@ -1,0 +1,22 @@
+{
+ "round": "EXP1-Q21",
+ "kind": "pre-measurement amendments to prereg_q21.json (测量前追加, 未运行任何目标命令)",
+ "ts": "2026-09-15T22:0x",
+ "A1": {
+  "what": "新增排除类 ledger_self: docs/verification-registry.json / eval/capability/instruments.json / eval/capability/kpi.jsonl 不得进 input_fingerprint",
+  "why": "台账类输入按设计逐轮变动 ⇒ 冻结它 = 自指冻结: 任何合法登记都会让器具判红 (把『设计行为』误判成『输入漂移』)",
+  "scope": "只排除台账**本体**; 台账的格式/契约由各自形式校验器负责 (口径分工写明)",
+  "negative_control": "派生器须能报告 ledger_self 类别计数; 若为 0 则说明该排除规则从未命中 ⇒ 该规则不可解释 (需如实标注)"
+ },
+ "A2": {
+  "what": "目标行数口径修正: 预注册写『旧 11 行』, 实测台账空指纹行 = 12 行",
+  "why": "第 12 行 = l2.instruments-check (Q20 自己登记的器具行), 属性与旧 11 行相同 (无输入指纹)",
+  "decision": "目标集按**机检定义**取 (input_fingerprint 为空的行), 而非手写清单 ⇒ realized=12; 汇报口径由 11 改 12 并写明差异来源",
+  "old_reading_void": "附录 T 诚实边界所述『旧 11 行』仅指当时台账状态; 本轮以 12 行为准, 旧数字标注为『当时读数』"
+ },
+ "A3": {
+  "what": "selfcheck 正控从 3 项改为 4 项 (父读 / 子读 / 写事件分类 / spawn 事件分类)",
+  "why": "缺『写事件分类』时, 读写分类这条仪器能力无正控; 缺『子读』时, 子进程注入面 (PYTHONPATH) 失效不可见",
+  "evidence": "eval/capability/exp1-q21/tracer_selfcheck.json (4/4 + 负控成立)"
+ }
+}

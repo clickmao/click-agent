@@ -1,0 +1,31 @@
+=== [face] cmd: eval/capability/instruments_check.py ===
+[face] EXIT=1
+PASS exp1q13.index-scope-out-classifier rc=0 substr=True nc=[2, 3] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_surface': 'ok:external_files', 'input_fingerprint': 'ok(n=4)', 'kpi_quad': 'ok'}
+
+L2 器具验收面: 17/18 通过; 落盘 eval/capability/instruments-check.json
+
+=== [nc_drift] cmd: eval/capability/instruments_check.py --only exp1q17.archive-field-provenance --fingerprint-drift-inject ===
+[nc_drift] EXIT=1
+L2 器具验收面: 0/1 通过; 落盘 eval/capability/instruments-check-drift.json
+INJECT-APPLIED (drift): fingerprint sha12 → deadbeef0000 (期望 DRIFT)
+  ⇒ 机检结果: 判红 (负控成立)
+
+=== [nc_claim] cmd: eval/capability/instruments_check.py --only r444.analyze --surface-claim-inject ===
+[nc_claim] EXIT=1
+L2 器具验收面: 0/1 通过; 落盘 eval/capability/instruments-check-surface-claim.json
+INJECT-APPLIED (surface-claim): input_surface → self_contained 而指纹非空 (期望 FP_WITHOUT_EXTERNAL_SURFACE)
+  ⇒ 机检结果: 判红 (负控成立)
+
+=== [nc_unknown] cmd: eval/capability/instruments_check.py --only probe.grade --surface-unknown-inject ===
+[nc_unknown] EXIT=1
+L2 器具验收面: 0/1 通过; 落盘 eval/capability/instruments-check-surface-unknown.json
+INJECT-APPLIED (surface-unknown): input_surface → bogus_surface (期望 BAD/MISSING)
+  ⇒ 机检结果: 判红 (负控成立)
+
+=== [nc_missing] cmd: eval/capability/instruments_check.py --only exp1q4.docref-probe --surface-missing-inject ===
+[nc_missing] EXIT=1
+L2 器具验收面: 0/1 通过; 落盘 eval/capability/instruments-check-nc-notapplied.json
+INJECT-APPLIED (surface-missing): input_surface 字段移除 (期望 BAD/MISSING —— 旧行未补字段必须判红)
+  ⇒ 机检结果: 判红 (负控成立)
+
+ALL_STEPS_DONE
