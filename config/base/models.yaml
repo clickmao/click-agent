@@ -62,3 +62,26 @@ balance_schemes:
   deepseek:
     request_address: https://api.deepseek.com/user/balance
     note: GET + Bearer; 返回 balance_infos[].currency(CNY)/total_balance (实测, 非 USD)
+
+# ==============================================
+# 本地判别通道 (R463, 用户钦定改用 3B)
+# 口径: 这不是 R351 移除的「本地加载 LLM 推理/对话」; 而是计划节点 —— 用本地小模型对
+#       真假信息判别 (挂载 role 额外数据), 把「无新增诉求」的轮次挡在远端 API 之外。
+#       主指标 = 每轮任务总 token 下降 (主要是不必要的 LLM API 请求少了)。
+# 依据: R462-W 权重档位探针 (docs/reports/r462-weight-probe.md, eval/rover/r462/verdict-r462-w.json)
+#       1.5B-Q4 对「继续下一轮」恒判 S (假跳 14/14) 不合格; Qwen2.5-3B-Instruct-Q4_K_M
+#       假跳 0/14 / 漏跳 0/14 / gen 2 token 次 / 确定性 28/28 逐位复现 ⇒ 达标采用。
+# 权重文件: ~/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf (2,104,932,768 B,
+#       sha256 626b4a66…, 原 /tmp/models 副本已删除, 见 registry r463.local-gate-model-switch)
+# ==============================================
+local:
+  model_path: /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf
+  context_size: 4608     # K2b 复用需 ≥4224 前缀; 3B f32 KV ≈ 340 MB @4608
+  parallel: 1            # R430: 显式 1 (禁多 slot)
+  gpu_layers: 0
+  max_tokens: 512        # 与门判 LocalGenerationRequest.MaxTokens 对齐
+  max_prompt_tokens: 4096
+  allowed_kinds: [context_compression, keyword_tagging, tendency_analysis, intent_classification]
+  allow_general: false
+  turn_gate: true
+  relation_judge: true

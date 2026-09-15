@@ -29,9 +29,12 @@ public sealed class LlamaCppGeneratorOptions
 
     public static LlamaCppGeneratorOptions FromEnvironment()
     {
+        // R463 (用户钦定改用 3B): 默认权重 = Qwen2.5-3B-Instruct-Q4_K_M —— R462-W 权重档位探针实证
+        //   1.5B-Q4 对「继续下一轮」恒判 S (假跳 14/14) 不承重; 3B 假跳 0/14 且 gen 2 token/次
+        //   (docs/reports/r462-weight-probe.md)。仍可用 AGENTFRAMEWORK_LLM_MODEL 覆盖。
         var modelPath = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_LLM_MODEL")
             ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                            ".agentframework", "models", "r1-distill-qwen-1.5b-q4km.gguf");
+                            ".agentframework", "models", "qwen2.5-3b-instruct-q4km.gguf");
         var bin = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_LLAMA_BIN");
         return new LlamaCppGeneratorOptions
         {

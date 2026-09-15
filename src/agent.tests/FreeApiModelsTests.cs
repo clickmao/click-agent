@@ -39,12 +39,43 @@ public class FreeApiModelsTests
     }
 
     [Fact]
+    public void Yaml_LocalBlock_DiscriminatorOnly()
+    {
+        // R463 (用户令「改用3b」): `local:` 段仅作判别通道存在, 边界机检。
+        // 存在性 = 允许 (计划节点); 但一旦存在, 下列不变量必须成立:
+        //   ① 不得开启通用本地推理 (allow_general: false);
+        //   ② 必须显式声明 turn_gate / relation_judge 与 model_path (禁隐式默认);
+        //   ③ allowed_kinds 不得含通用对话 kind; model_path 必须是绝对 .gguf;
+        //   ④ 权重文件若在盘上, 体量必须 > 100 MB (防 0 字节/占位文件被当权重)。
+        var yaml = Yaml();
+        var idx = yaml.IndexOf("\nlocal:", StringComparison.Ordinal);
+        if (idx < 0) return; // 未配置判别通道 ⇒ 合法
+        var block = yaml.Substring(idx + 1);
+        var end = block.IndexOf("\n\n", StringComparison.Ordinal);
+        if (end >= 0) block = block.Substring(0, end);
+
+        Assert.Contains("allow_general: false", block);
+        Assert.Contains("turn_gate:", block);
+        Assert.Contains("relation_judge:", block);
+        Assert.DoesNotContain("chat", block, StringComparison.OrdinalIgnoreCase);
+
+        var pathLine = block.Split('\n').First(l => l.TrimStart().StartsWith("model_path:", StringComparison.Ordinal));
+        var path = pathLine.Substring(pathLine.IndexOf(':') + 1).Trim();
+        Assert.StartsWith("/", path);
+        Assert.EndsWith(".gguf", path);
+        var fi = new FileInfo(path);
+        if (fi.Exists) Assert.True(fi.Length > 100 * 1024 * 1024, $"权重体量异常: {fi.Length} B");
+    }
+
+    [Fact]
     public void Yaml_Stripped_OfRemovedSources()
     {
         var yaml = Yaml();
         // 本地 LLM / 官方通道 / 免费池预留 全部移除 (用户钦定)
         Assert.DoesNotContain("LocalLlamaCaller", yaml);
-        Assert.DoesNotContain("\nlocal:", yaml); // 本地推理通道段已删 (bypass_local 是代理配置, 保留)
+        // R463 修订 (用户令「改用3b」+ R351 口径澄清「移除的是本地 llm **使用**, 新增的 r1 判别是计划节点」):
+        //   `local:` 段不再一律禁止 —— 只允许作**判别通道** (turn_gate / relation_judge),
+        //   禁止回到「通用本地 LLM 对话/推理」。边界由 Yaml_LocalBlock_DiscriminatorOnly 机检。
         Assert.DoesNotContain("OfficialModels", yaml);
         Assert.DoesNotContain(":free", yaml);
         Assert.DoesNotContain("groq", yaml, StringComparison.OrdinalIgnoreCase);
