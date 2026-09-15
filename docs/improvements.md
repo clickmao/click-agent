@@ -1855,10 +1855,18 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **逐位锚建立**：修正后与产品**实发文本**比对 —— 同成长态条目 **delta=0（453 字符逐位相同）**；其余条目首差异**全部落在成长块计数**（`赏6/罚0` vs `赏8/罚1`/`赏9/罚1`/`赏11/罚1`）⇒ 残余差 = **会话累积态**（可归因、可机检）。
 - **默认档零变更（实机背书）**：开档跑 M20 ⇒ `tokens_total = 32968`（= R444 BRJ 原值）、`gate_r1_n = 7`、`r1_skips = 7`、`r1_passes = 0`、`accuracy = 1.0`、`repro_archive_ok = true`。
 - **AOT 两条硬教训（本轮实发）**：① STJ **反射**序列化在 AOT 被禁用（实测 `InvalidOperationException`）⇒ 仪器必须零反射；② `Encoding.UTF8` 建文件**写 BOM** ⇒ 下游 JSONL 解析器炸，必须 `new UTF8Encoding(false)`。两条都**由仪器自己在日志留告警 / 在 s1 首跑暴露**，否则会静默产出空证据（"没测到"伪装成"测过"）。
-- 器具：`GatePromptDumpTests` 4/4；全量 **1325 中 1324 绿 + 1 负载型偶发红**（`FileLock_ConcurrentAppend_NoLoss_NoInterleave` 期望 120 实际 119，单跑 3/3 绿；与 R450 无关，登记为偶发）。
+- 器具：`GatePromptDumpTests` 4/4；全量 **1323/1325**（2 个**环境型偶发红**：① `ExecutorHardeningTests.FileLock_ConcurrentAppend_NoLoss_NoInterleave` 期望 120 实际 119，单跑 **3/3 绿**；② `TelemetryPendingTests.Emit_Before_Configure_Is_Flushed_On_Configure`，与已知「残留 host 进程写遥测 ⇒ 假红」同源。**两个均须在无在飞执行体时复跑定性**，不得当"已绿"报）。
 - 登记：`r450.gate-prompt-anchor`(L2)；计划 `docs/plans/v0.70.0-r450-gate-prompt-anchor.md` §6；证据 `eval/rover/r450/anchor-r450.json`、`dump-BRJ-M20-s2.jsonl`。
 
-### 下轮（R450-B）
-1. 用**修正后的器具**重跑真实流量探针 ⇒ 外部效度真读数（R449 判官侧读数仍记 **n/a**，不得翻案）；
-2. 之后做用户要求的「判官输入/输出友好化」A/B（判据：退化率 / 判决一致性 / 单调用 token）；
-3. 主线残留：**零可跳档净亏已量化**（角色块 152 字符/调用 ≈ 3.3%，与 V5 −2.40% 同量级 ⇒ 属特性成本，动它需质量等价证明）；短档 V2b 13.03%；L.7 语言无关令。
+### R451（2026-09-15）· 真实流量探针重跑（器具锚修复后）：**再判 VOID，但失锚被逐出模板段**
+- 判决 `VOID_INSTRUMENT`（`eval/rover/r451/verdict-r451.json`）：I1 正控 **3/7**（需 ≥5/7）⇒ 真实流量读数一律 **n/a**（I4 闸，与 R449 同处置）。
+- **正面进展**：文本层锚**成立** —— `tpl_len=280`（== R443 记录）、`seed_sha16=0aa656fa7eafd93a` 逐位相同、17 条 pin 对残余 delta ∈ [−3,+12] **全落成长块**（会话累积态）⇒ R450 修的越界 +16 已闭合，**prompt 文本不再是失锚嫌疑**。
+- **残余失锚（本轮新定位）= 调用/解码面**：同一份对齐文本下，产品同 7 条 = **7/7 Skip**，探针 = **3/7 S**；探针 ack 行两种形态（`gen=6` 裸字母 / `gen=512` 复读 prompt 自身结构「用户消息：…答案：S」）⇒ 模型处于**续写文档**而非**助手作答**模式。可疑差异：聊天模板应用方式/端点、采样与 `n_predict`/stop、上下文尺寸。
+- **反空心（两控成对直接兑现）**：I2 平凡通过（13 条非认可 11/13 判 P）**不构成证据** —— 同调用面下判官近似恒定 P（认可族也只 3/7 放行）⇒ 判别力不足，只有 I1 能拦下。
+- 器具：`real_gate_probe.py --ns r451`（NS 参数本轮新增，避免覆盖 R449 的 VOID 证据）；偏差声明：`MemAvailable 2587 < 2650` ⇒ **读数前**下修 `-c 3584`（探针 prompt<600tok、gen≤512，语义不变）。
+- 登记：`r451.real-traffic-reprobe`(L2)；计划 `docs/plans/v0.71.0-r451-real-traffic-reprobe.md` §6；证据 `eval/rover/r451/{verdict-r451.json,probe-real.jsonl}`。
+
+### 下轮（R452）
+1. **停止重建路线**：改由**产品自身**跑真实语料门判（零重建 ⇒ 锚自动成立）—— 仿 `eval/rover/r450/run_arm_r450.sh`，把真实语料 D/S/O 分档做成 turn（含 prev），喂产品 host + 桩远端后端，读产品自身遥测（`gate_r1_n`/`gate_truth_*`/archive raw）与 Skip 判定；
+2. 取真实分布上的 S 率 + 门 r1 调用数（= 用户要的「一轮任务 token 降幅」的真实分母）；
+3. 主线残留：零可跳档净亏（角色块 ≈3.3%）；短档 V2b 13.03%；L.7 语言无关令。

@@ -1458,6 +1458,21 @@
         "eval/rover/r443/reconstruct_gate_prompt.py"
       ],
       "owner_round": "R450"
+    },
+    {
+      "id": "r451.real-traffic-reprobe",
+      "level": 2,
+      "capability": "真实流量外部效度探针重跑: 文本层锚(tpl_len=280/seed_sha16 与 R443 逐位相同)与行为层(I1 正控)分离判据; 残余失锚定位=调用/解码面; 判决 VOID ⇒ 真实读数一律 n/a",
+      "evidence_cmd": "R449_SRV_CTX=3584 python3 eval/rover/r449/real_gate_probe.py --ns r451; python3 eval/rover/r449/real_gate_probe.py --selftest",
+      "evidence_path": "eval/rover/r451/verdict-r451.json",
+      "negative_control": "I2 负控 11/13 平凡通过不构成证据 ⇒ 必须与 I1 正控成对(同调用面下判官近似恒定 P); I1 不过 ⇒ 真实流量读数一律 n/a 且事后读数单列 checks_posthoc_invalid; 若 pin 对残余差落在模板段或 seed 段即推翻『文本层已锚』结论; 器具必须带版本锚 fail-closed(tpl!=280 即拒跑)",
+      "covers": [
+        "eval/rover/r449/real_gate_probe.py",
+        "eval/rover/r451/verdict-r451.json",
+        "eval/rover/r451/prereg-probe.json",
+        "docs/plans/v0.71.0-r451-real-traffic-reprobe.md"
+      ],
+      "owner_round": "R451"
     }
   ],
   "aot_check_policy": "release_tag_only",

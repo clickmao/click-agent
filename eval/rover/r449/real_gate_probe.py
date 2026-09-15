@@ -29,11 +29,18 @@ BIN = os.environ.get("AGENTFRAMEWORK_LLAMA_BIN",
                      "/tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server")
 PORT = int(os.environ.get("R449_PORT", "47982"))
 BASE = f"http://127.0.0.1:{PORT}"
-SRV_ARGS_TAIL = ["-c", "4608", "-t", "1", "-np", "1", "--cache-type-k", "f32",
+SRV_ARGS_TAIL = ["-c", os.environ.get("R449_SRV_CTX", "4608"), "-t", "1", "-np", "1", "--cache-type-k", "f32",
                  "--cache-type-v", "f32", "--flash-attn", "off", "--jinja"]
-OUTJ = R449 / "probe-r449-real.jsonl"
-OUTD = R449 / "probe-r449-real.json"
-SRVLOG = R449 / "probe-r449-server.log"
+_NS = ""
+_argv = sys.argv[1:]
+for _i, _a in enumerate(_argv):
+    if _a == "--ns" and _i + 1 < len(_argv):
+        _NS = _argv[_i + 1].strip("-")
+OUTDIR = (ROOT / "eval/rover" / _NS) if _NS else R449
+OUTDIR.mkdir(parents=True, exist_ok=True)
+OUTJ = OUTDIR / "probe-real.jsonl"
+OUTD = OUTDIR / "probe-real.json"
+SRVLOG = OUTDIR / "server.log"
 CORPUS = R449 / "real-corpus.jsonl"
 GRID = ROOT / "eval/rover/r441/turns-BRJ-M20.jsonl"
 ALLOC = {"D": 40, "S": 24, "O": 8}
@@ -267,7 +274,15 @@ def main():
     sha = hashlib.sha256(CORPUS.read_bytes()).hexdigest()
     pre = json.loads((R449 / "prereg-probe.json").read_text(encoding="utf-8"))
     pre["corpus"]["sha256"] = sha
-    (R449 / "prereg-probe.json").write_text(json.dumps(pre, ensure_ascii=False, indent=2), encoding="utf-8")
+    if _NS:
+        pre["round"] = _NS.upper()
+        pre["supersedes"] = ("R449 同预注册 (该轮 instrument VOID: 重建器模板越界 +16 标签 ⇒ 实发畸形 prompt); "
+                             "本轮用修正后器具 (tpl=280, 版本锚 fail-closed) 重跑, 判据不变")
+        pre["instrument_fix"] = "eval/rover/r443/reconstruct_gate_prompt.py::derive_template + eval/rover/r450/anchor-r450.json"
+    PREG = OUTDIR / "prereg-probe.json"
+    PREG.write_text(json.dumps(pre, ensure_ascii=False, indent=2), encoding="utf-8")
+    if not _NS:
+        PREG = R449 / "prereg-probe.json"
 
     print(f"[form] tpl_len={len(tpl)} seed_len={len(seed)} growth_len={len(growth)} "
           f"think=({len(t_open)},{len(t_close)}) words={len(words)} corpus_sha={sha[:16]}")
@@ -351,7 +366,7 @@ def main():
                      "local_cost_per_call": {"tok_eval_mean": round(sum(r["tok_eval"] or 0 for r in res) / len(res), 1),
                                              "tok_gen_mean": round(sum(r["tok_gen"] or 0 for r in res) / len(res), 1),
                                              "wall_mean_s": round(sum(r["wall_s"] for r in res) / len(res), 2)}},
-        "raw_file": str(OUTJ), "prereg": str(R449 / "prereg-probe.json"),
+        "raw_file": str(OUTJ), "prereg": str(PREG),
     }
     i1_ok = len(g_ack) and sum(1 for r in g_ack if r["letter"] == "S") >= max(1, -(-5 * len(g_ack) // 7))
     i2_ok = len(g_non) and sum(1 for r in g_non if r["letter"] == "P") >= max(1, -(-9 * len(g_non) // 13))

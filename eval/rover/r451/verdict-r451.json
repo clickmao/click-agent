@@ -1,0 +1,59 @@
+{
+  "round": "R451",
+  "kind": "instrument_probe_verdict",
+  "instrument": "eval/rover/r449/real_gate_probe.py --ns r451",
+  "prereg": "eval/rover/r451/prereg-probe.json",
+  "raw": "eval/rover/r451/probe-real.jsonl",
+  "report": "eval/rover/r451/probe-real.json",
+  "corpus": {
+    "file": "eval/rover/r449/real-corpus.jsonl",
+    "n_turns_harvested": 1542,
+    "sample": {"D": 40, "S": 24, "O": 8}
+  },
+  "verdict": "VOID_INSTRUMENT",
+  "criteria": {
+    "I1_positive_control": "3/7 判 S（需 >=5/7）⇒ FAIL",
+    "I2_negative_control": "11/13 判 P（需 >=9/13）⇒ PASS",
+    "I3_fidelity_text": "PASS（模板段 delta=0）",
+    "I4_consequence": "真实流量全部读数记 n/a，不得引用（与 R449 同处置）"
+  },
+  "text_level_anchor": {
+    "status": "ANCHORED",
+    "tpl_len_now": 280,
+    "tpl_len_r443": 280,
+    "delta_tpl": 0,
+    "seed_sha16_now": "0aa656fa7eafd93a",
+    "seed_sha16_r443": "0aa656fa7eafd93a",
+    "pinned_pairs_compared": 17,
+    "residual_deltas_chars": [-3, -2, -1, 0, 1, 2, 12],
+    "residual_location": "全部落在成长块（会话累积态：赏/罚计数、growth 长度 70 vs 71 等），模板段与 seed 段逐位相同",
+    "conclusion": "R450 修的模板越界（+16）已闭合；prompt 文本不再是失锚嫌疑"
+  },
+  "behavior_level_mismatch": {
+    "product_baseline": "同网格 M20 认可族 7 条：产品侧 7/7 判 Skip（R444/R450 s2 逐位复现，accuracy=1.0）",
+    "probe_result": "同 7 条：3/7 判 S（4 条判 P）",
+    "probe_ack_row_shapes": {
+      "bare_letter": "t6/t8/t9/t11：gen=6，raw = 'S\\n</think>\\n\\nS' 形态（思考区被立即闭合，直接出字母）",
+      "document_continuation": "t7/t10/t12：gen=512 复读，raw 反复重放 prompt 自身结构（'用户消息：好的，明白。\\n答案：\\nS'…）⇒ 模型处于『续写文档』而非『助手作答』模式"
+    },
+    "reading": "prompt 文本对齐后行为仍不一致 ⇒ 残余失锚在【调用/解码面】（聊天模板应用方式、端点、采样参数/n_predict/stop、上下文尺寸），不在 prompt 文本",
+    "judge_near_constant": "该调用面下判官近似恒定 P：grid 13 条非认可 11/13 P（I2 平凡通过）∧ 7 条认可仅 3/7 S ⇒ 判别力不足，I1 正是拦此"
+  },
+  "checks_posthoc_invalid": {
+    "note": "以下读数由 I1 失败 ⇒ 一律 n/a，仅作器具对照留存，禁作产品结论",
+    "real_n": 72,
+    "real_D": {"n": 40, "S": 2, "S_pct": 5.0, "wilson95": [1.4, 16.5], "letter_dist": {"P": 38, "S": 2}},
+    "real_S": {"n": 24, "S": 8, "S_pct": 33.3, "wilson95": [18.0, 53.3]},
+    "real_O": {"n": 8, "S": 1, "S_pct": 12.5},
+    "weighted_overall_S_pct": 26.1,
+    "degenerate_gen512": "40/72 (56%)",
+    "cost_per_call": {"tok_eval_mean": 362.5, "tok_gen_mean": 286.4, "wall_mean_s": 27.29}
+  },
+  "deviation_this_round": "MemAvailable 2587MB < 2650MB 起手闸 ⇒ 读数前声明下修 llama-server -c 4608→3584（探针 prompt<600tok、gen<=512，语义不变）；其它参数同 R443-R450 档",
+  "next_round_candidate": {
+    "id": "R452",
+    "design": "停止【重建 prompt】路线，改跑【产品自身】门判真实流量（零重建 ⇒ 锚自动成立）",
+    "how": "仿 eval/rover/r450/run_arm_r450.sh：把真实语料按 D/S/O 分档做成网格 turn（含 prev 上一轮回答），喂产品 host + 桩远端后端，读产品自身遥测（gate_r1_n / gate_truth_* / archive raw）与 Skip 判定",
+    "why": "本器具两次（R449/R451）均 VOID 且残余失锚已定位到调用/解码面；产品原生跑法把『器具』变成『产品本身』，外部效度读数不再依赖任何重建"
+  }
+}
