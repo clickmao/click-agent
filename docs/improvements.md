@@ -2016,3 +2016,14 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **诚实边界**：C3 FAIL（t6 用户可见答复被 R458 承接反问覆盖：「本会话还没有产物。继续什么？」⇒ R466 候选①）、C6 FAIL（Δ+2 tok）；两者正确口径单列 `checks_posthoc`（C3p/C6p/C4b2）。全量单测 **1409/1409**；AOT **15,335,040 B** 0 IL。
 - **证据**：`eval/rover/r465/{verdict-r465.json,arm-*.json,run_arm.sh,run_all.sh,settle_r465.py,mech_unlink_race.{py,json},real_billing_probe.{py,json}}`；`docs/reports/r465-repeat-skip.md`；registry `r465.pure-repeat-skip`(L2) / `r465.filelock-release-no-unlink`(L2) / `r465.local-channel-warmup`(L1) / `r465.embedder-channel-three-state`(L1)。
 - **下轮候选（R466）**：① 承接反问 vs 复述回放优先级（有指代 ⇒ 回放优先）② 真实成本口径（k=1.221 + cache 命中纳入结算）③ 门控轮稳态延迟（参数/门判输入瘦身，禁前缀缓存）④ 复跑口径固化（RUNDIR 名与臂名无关）⑤ 嵌入通道告警真实命中取证。
+
+## R466（2026-09-16）复述回放 vs 承接反问优先级（修 R465 C3 FAIL）+ 结算类口径单源
+
+- **因果链**：R465 的 C3 FAIL —— `再讲一遍。`(t6) 是纯复述轮，skip 层已按 `repeat_verbatim` 逐字回放上一条答复（21 字，零 r1 零远端），但 R458 承接反问**收口面无条件覆盖**，用户可见答复变成 46 字「本会话还没有产物。继续什么？」。根因 = 结算类只在打点处算过一次，收口面不知道本轮已本地确定性结算，于是拿空事实集重算接地性并覆盖。
+- **实现（单源 + 可消融）**：① `ContinuationBrief.SettleRepeatVerbatim`（口径唯一字面值）+ `ShouldApplyFallback(settleKind, reply, facts)`；② 主链 skip 支把结算类写入 `_localSettleKind`（打点与收口面同源）+ 逐轮清零；③ 收口面改读该判据；④ 开关 `AGENTFRAMEWORK_CONTINUATION_REPEAT_PRIORITY`（默认 on；置 0 = R465 行为）。
+- **同网格 4 臂（p12 / 同桩 / 同 role / 同一 AOT 二进制 `/tmp/pub_r466/agenthost` 0 IL）**：Arole(门关) 13 调用/32,097 tok；**R(默认) 6 调用/14,529 tok = −54.73%**；NC(开关 off，同二进制) 6/14,531 且 **t6 复现 46 字缺陷**（外部真值：`suppressed=false/apply_fallback=true`）；R2 复跑与 R 逐位同（Δ+2 tok = RUNDIR 名 +1 char × 2 次调用）。
+- **预注册判据 C1–C6 全绿**，另 posthoc：Δtok（本版 R vs R465-R）= **+0**；机制可证 = 两臂 skip 事件逐位同（同 msg_sha16 / 21 字回放），差异只在收口优先级遥测单源。
+- **单测**：全量 **1411/1411**（基线 1409 + 新增 2）；G37 强化「主链禁 `repeat_verbatim` 字面值」+ 新 G40（写入先于消费/开关可见/逐轮清零），负控实测（还原调用点 ⇒ G40 红，源文件 sha256 复原一致）。
+- **诚实边界**：Arole 分母跨轮漂移未消除（R465 21/33,323 vs R466 13/32,097），已定位 = 判官路由（R465 8 次 judge 走远端、R466 同 prompt 走本地 ⇒ 0 远端 token），故「Arole 为稳定分母」前提本轮被证伪；两种分母下降幅 56.40%/54.73% 均达标。未做真实流量复验、未测运行期内存。
+- **证据**：`eval/rover/r466/{verdict-r466.json,arm-*.json,calls-*.jsonl,turns-*.jsonl,run_arm.sh,settle_r466.py}`；`docs/reports/r466-repeat-priority.md`；registry `r466.repeat-replay-priority`(L2) / `r466.settle-kind-single-source`(L4)。
+- **下轮候选（R467）**：① 分母固化（判官强制本地 + 就绪门，消 13↔21 漂移）② 真实流量（state.db 1542 轮）复验 −54.7% 外部效度 ③ 门控轮稳态延迟（17.6 tok/s 下界）④ 真实计费口径（k=1.221 + cache 命中）纳入结算 ⑤ 嵌入通道告警真实命中取证。

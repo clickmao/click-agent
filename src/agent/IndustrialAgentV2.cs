@@ -67,8 +67,17 @@ public class IndustrialAgentV2 : AgentBase
 
     private readonly IWorkspace _workspace;
 
+    /// <summary>R466 优先级开关 —— **默认开** (生产行为: 复述回放优先于承接反问); 置 "0"
+    /// 复原 R465 行为 (承接反问覆盖回放), 供**同一二进制**上的单变量负控 (判据必须绑机制)。</summary>
+    private static readonly bool ContinuationRepeatPriorityOn =
+        Environment.GetEnvironmentVariable("AGENTFRAMEWORK_CONTINUATION_REPEAT_PRIORITY") != "0";
+
     /// <summary>R458 承接轮: 本轮注入的真实产物事实 (非承接轮恒为 null)。</summary>
     private IReadOnlyList<agent.context.ArtifactFact>? _continuationFacts;
+
+    /// <summary>R466: 本轮**本地确定结算**的类别 (与 skip 层打点同源; null = 本轮未经本地结算)。
+    /// 只由前置门 Skip 支写入 ⇒ "为什么这轮不走远端" 在收口面可复查。</summary>
+    private string? _localSettleKind;
 
     /// <summary>R458 承接轮: 本轮用户原话 (兜底反问里引用)。</summary>
     private string? _continuationUserText;
@@ -523,6 +532,8 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
         // R458: 承接轮状态逐轮清零 (早退路径也走这里 ⇒ 不会把上一轮的产物事实/原话带到别的轮)
         _continuationFacts = null;
         _continuationUserText = null;
+        // R466: 本地结算类同批清零 —— 上一轮的 repeat_verbatim 不得粘到本轮 (否则本轮承接反问被误抑制)
+        _localSettleKind = null;
         // v0.17.2-a (R336): 活动心跳 — 每轮注册本进程活动 (任务摘要), 退出由 10s TTL 过期自清
         try { Activity().Heartbeat(message.Content); } catch { /* 活动感知不阻塞主链 */ }
         var response = new AgentResponse();
@@ -1678,8 +1689,12 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     }
                 }
                 var localReply = prevReply ?? await _modelRouter!.ComposeLocalSkipReplyAsync(prompt.UserMessage, ct).ConfigureAwait(false);
+                // R466: 结算类**单源** —— 打点与收口面优先级读同一个变量 (两处各写一份字符串必漂移)
+                var replyKind = prevReply is null ? (repeatTurn ? "repeat_no_prev" : "template")
+                                                  : agent.context.ContinuationBrief.SettleRepeatVerbatim;
+                _localSettleKind = replyKind;
                 agent.config.AgentTelemetry.Emit("local_gate_skip_reply", "IndustrialAgentV2",
-                    ("kind", prevReply is null ? (repeatTurn ? "repeat_no_prev" : "template") : "repeat_verbatim"),
+                    ("kind", replyKind),
                     ("chars", (long)localReply.Length),
                     ("msg_sha16", agent.modelqueue.LocalInputFingerprint.Sha16(message.Content)));
                 llmResponse = new LLMResponse
@@ -2001,14 +2016,25 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
 
         // R458 收口 (fail-closed): 承接轮的回复必须接地 —— 空回复, 或既无问句又不含任何真实产物名
         // ⇒ 链自身用同一批真实事实组装反问 (绝不编造; 事实为空时只反问, 不提任何文件名)。
+        // R466 优先级 (修 R465 C3): 本地**已确定性结算**的轮次 (纯复述 ⇒ 回放上一条答复原文)
+        // 答复对象就是会话里的真实上一条答复 ⇒ 承接反问的前提不成立, 不得覆盖 (判据单源:
+        // ContinuationBrief.ShouldApplyFallback)。开关默认开; 置 0 复原 R465 行为, 供同二进制负控。
         if (_continuationFacts is not null)
         {
+            var settleKind = ContinuationRepeatPriorityOn ? _localSettleKind : null;
             var grounded = !agent.context.ContinuationBrief.NeedsFallback(response.Content, _continuationFacts);
-            if (!grounded)
+            var applyFallback = agent.context.ContinuationBrief.ShouldApplyFallback(
+                settleKind, response.Content, _continuationFacts);
+            if (applyFallback)
                 response.Content = agent.context.ContinuationBrief.ComposeFallback(
                     _continuationUserText, _continuationFacts, _continuationTotal);
             agent.config.AgentTelemetry.Emit("continuation_closure", "IndustrialAgentV2",
-                ("grounded", grounded), ("artifacts", _continuationFacts.Count),
+                ("grounded", grounded), ("apply_fallback", applyFallback),
+                ("settle_kind", settleKind ?? ""),
+                // 本会覆盖却被优先级抑制 ⇒ 必须可见 (静默抑制 = 读数与真实走向相反, R433 教训)
+                ("suppressed", (!grounded && !applyFallback)),
+                ("priority", ContinuationRepeatPriorityOn ? "on" : "off"),
+                ("artifacts", _continuationFacts.Count),
                 ("chars", response.Content.Length));
         }
         response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;

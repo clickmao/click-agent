@@ -1,0 +1,183 @@
+{
+ "round": "R466",
+ "arms": {
+  "Arole": {
+   "calls": 13,
+   "prompt_tokens": 32006,
+   "completion_tokens": 91,
+   "total_tokens": 32097,
+   "turns_ok": 12,
+   "turns": 12,
+   "secs_median": 0.07,
+   "secs_total": 1.1,
+   "gate_events": 0,
+   "prefilter_repeat": null,
+   "prefilter_violations": null,
+   "local_calls": 0,
+   "local_eval_tokens": 0,
+   "local_gen_tokens": 0,
+   "server_pid_n": 2,
+   "skip_reply_kinds": []
+  },
+  "R": {
+   "calls": 6,
+   "prompt_tokens": 14487,
+   "completion_tokens": 42,
+   "total_tokens": 14529,
+   "turns_ok": 12,
+   "turns": 12,
+   "secs_median": 0.22,
+   "secs_total": 128.9,
+   "gate_events": 12,
+   "prefilter_repeat": 2,
+   "prefilter_violations": 0,
+   "local_calls": 4,
+   "local_eval_tokens": 1370,
+   "local_gen_tokens": 8,
+   "server_pid_n": 2,
+   "skip_reply_kinds": [
+    "template",
+    "template",
+    "template",
+    "template",
+    "repeat_verbatim",
+    "repeat_verbatim"
+   ]
+  },
+  "NC": {
+   "calls": 6,
+   "prompt_tokens": 14489,
+   "completion_tokens": 42,
+   "total_tokens": 14531,
+   "turns_ok": 12,
+   "turns": 12,
+   "secs_median": 0.22,
+   "secs_total": 132.7,
+   "gate_events": 12,
+   "prefilter_repeat": 2,
+   "prefilter_violations": 0,
+   "local_calls": 4,
+   "local_eval_tokens": 1370,
+   "local_gen_tokens": 8,
+   "server_pid_n": 2,
+   "skip_reply_kinds": [
+    "template",
+    "template",
+    "template",
+    "template",
+    "repeat_verbatim",
+    "repeat_verbatim"
+   ]
+  },
+  "R2": {
+   "calls": 6,
+   "prompt_tokens": 14489,
+   "completion_tokens": 42,
+   "total_tokens": 14531,
+   "turns_ok": 12,
+   "turns": 12,
+   "secs_median": 0.24,
+   "secs_total": 132.8,
+   "gate_events": 12,
+   "prefilter_repeat": 2,
+   "prefilter_violations": 0,
+   "local_calls": 4,
+   "local_eval_tokens": 1370,
+   "local_gen_tokens": 8,
+   "server_pid_n": 2,
+   "skip_reply_kinds": [
+    "template",
+    "template",
+    "template",
+    "template",
+    "repeat_verbatim",
+    "repeat_verbatim"
+   ]
+  }
+ },
+ "refs": {
+  "r465_R_total_tokens": 14529,
+  "r465_Arole_total_tokens": 33323
+ },
+ "checks": [
+  {
+   "id": "C1_drop_vs_Arole",
+   "value": 54.73,
+   "pass": true,
+   "note": "R 14529 vs Arole 32097 tokens (calls 6 vs 13, 降幅 54.73%)"
+  },
+  {
+   "id": "C2_quality",
+   "value": [
+    "t6=verbatim(len=21)",
+    "t9=verbatim(len=15)"
+   ],
+   "pass": true,
+   "note": "turns_ok=12/12; 复述轮 t6=verbatim(len=21),t9=verbatim(len=15); t6 长度=21 (R465=46 被覆盖)"
+  },
+  {
+   "id": "C5_zero_fake_skip",
+   "value": 0,
+   "pass": true,
+   "note": "prefilter_violations=0; repeat 命中=2 (期望 2)"
+  },
+  {
+   "id": "C3_zero_regression_vs_R465",
+   "value": {
+    "mismatch_turns": [],
+    "repeat_pos": [
+     6,
+     9
+    ]
+   },
+   "pass": true,
+   "note": "非复述 10 位与 R465 R 逐位同=True (mismatch=[]); skip kinds 同=True; repeat=2"
+  },
+  {
+   "id": "C4_negctl_injectable",
+   "value": {
+    "nc_t6_len": 46,
+    "ref_t6_len": 46,
+    "same_calls": true
+   },
+   "pass": true,
+   "note": "NC(PRIORITY=0) t6 == R465 缺陷答复(46 字符)=True 且 != 上一条答复; NC calls=6 vs R calls=6 ⇒ 判据绑机制(同二进制/同网格/单变量)"
+  },
+  {
+   "id": "C6_rerun",
+   "value": {
+    "dtok": 2,
+    "expected": 2
+   },
+   "pass": true,
+   "note": "判决面+答复逐位同=True; Δtok=+2 (RUNDIR 归因律 Δchar×2=2)"
+  }
+ ],
+ "checks_posthoc": [
+  {
+   "id": "C3p_token_delta_vs_R465",
+   "value": {
+    "dtok": 0,
+    "dchar_dir": 0
+   },
+   "pass": null,
+   "note": "Δtok=+0 (R465 14529 → R466 14529); 目录名等长 ⇒ 差异只来自 t6 答复长度(-25 字符)进入后续轮历史。不得当回归, 也不得当增益 (C1 只在 r466 内部比 Arole)"
+  },
+  {
+   "id": "C2p_closure_events",
+   "value": [
+    {
+     "grounded": false,
+     "apply_fallback": false,
+     "settle_kind": "repeat_verbatim",
+     "suppressed": true,
+     "priority": "on",
+     "artifacts": 0,
+     "chars": 21
+    }
+   ],
+   "pass": null,
+   "note": "收口面事件数=1 (承接轮才有); suppressed=真 ⇒ 优先级生效且可见"
+  }
+ ]
+}

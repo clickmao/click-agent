@@ -355,4 +355,40 @@ public sealed class ContinuationBriefTests
         Assert.True(agent.session.SessionMemory.MilestonesInPrompt <= 2);
         Assert.True(agent.registry.NextTurnForecast.HeaderTaskPreviewChars <= 24);
     }
+
+    // ── R466: 承接反问 vs 本地确定性结算的优先级 (修 R465 预注册判据 C3 FAIL) ─────────────
+
+    /// <summary>
+    /// 因果: 承接反问的前提 = 「本轮无可确定的答复对象」; 纯复述轮的对象 = 会话里上一条答复原文
+    /// (真实、逐字可核验) ⇒ 前提不成立 ⇒ 不得覆盖。负控反向 (template / null / 已接地) 必须仍走原行为。
+    /// 读数来源: R465 p12 网格同二进制实测 t6「再讲一遍。」被覆盖成 46 字符承接反问 (应 21 字符回放)。
+    /// </summary>
+    [Fact]
+    public void R466_RepeatReplay_Wins_Over_ContinuationAsk()
+    {
+        var facts = new[] { new ArtifactFact("count.txt", 4, "4") };
+        // R465 t6 应回放的上一条答复 (21 字符; 无问句、无产物名)
+        const string replay = "收到，继续按当前方向推进，本轮不重新规划。";
+
+        // 前提自证: 这条答复**本来**会被覆盖 (否则 suppress 断言是虚的)
+        Assert.True(ContinuationBrief.NeedsFallback(replay, facts));
+        Assert.True(ContinuationBrief.NeedsFallback(replay, Array.Empty<ArtifactFact>()));
+
+        // 正控: 复述结算 ⇒ 不覆盖 (两种事实集口径都不覆盖 ⇒ 与工作区有无产物无关)
+        Assert.False(ContinuationBrief.ShouldApplyFallback(ContinuationBrief.SettleRepeatVerbatim, replay, facts));
+        Assert.False(ContinuationBrief.ShouldApplyFallback(ContinuationBrief.SettleRepeatVerbatim, replay, Array.Empty<ArtifactFact>()));
+
+        // 负控: 其它结算类 / 无结算 ⇒ 仍按接地收口覆盖 (优先级面必须**窄**)
+        Assert.True(ContinuationBrief.ShouldApplyFallback("template", replay, facts));
+        Assert.True(ContinuationBrief.ShouldApplyFallback("repeat_no_prev", replay, facts));
+        Assert.True(ContinuationBrief.ShouldApplyFallback(null, replay, facts));
+        Assert.True(ContinuationBrief.ShouldApplyFallback("", replay, facts));
+
+        // 负控: 已接地的回复一律不覆盖 (与既有 NeedsFallback 语义逐位一致)
+        Assert.False(ContinuationBrief.ShouldApplyFallback(null, "上一步 count.txt 已写定；要继续哪一项？", facts));
+        Assert.False(ContinuationBrief.ShouldApplyFallback("template", "上一步 count.txt 已写定；要继续哪一项？", facts));
+
+        // 口径单源: 常量必须等于 skip 层打点字面 (漂移 ⇒ 规则静默失效)
+        Assert.Equal("repeat_verbatim", ContinuationBrief.SettleRepeatVerbatim);
+    }
 }

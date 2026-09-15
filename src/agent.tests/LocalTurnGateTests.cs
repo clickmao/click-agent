@@ -647,7 +647,12 @@ public sealed class LocalTurnGateTests
         var src = File.ReadAllText(Path.Combine(FindRepoRootG29(), "src", "agent", "IndustrialAgentV2.cs"));
         var code = StripLineComments(src);
         Assert.Contains("GetConversationHistoryAsync(message.SessionId, ct)", code);
-        Assert.Contains("repeat_verbatim", code);
+        // R466 口径单源: 主链只准**引用常量** (字面值只准出现在 ContinuationBrief)
+        // —— 两处各写一份字符串必漂移, 漂移后优先级规则静默失效 (R466 收口面读同一口径)
+        Assert.Contains("ContinuationBrief.SettleRepeatVerbatim", code);
+        Assert.DoesNotContain("\"repeat_verbatim\"", code);
+        var cb = StripLineComments(File.ReadAllText(Path.Combine(FindRepoRootG29(), "src", "agent", "context", "ContinuationBrief.cs")));
+        Assert.Contains("public const string SettleRepeatVerbatim = \"repeat_verbatim\";", cb);
         Assert.Contains("MessageRole.Assistant", code);
         // 兜底必须仍在 (取不到上一条答复时不得抛、不得走远端)
         Assert.Contains("ComposeLocalSkipReplyAsync", code);
@@ -699,5 +704,34 @@ public sealed class LocalTurnGateTests
         var iResolve = code.IndexOf("LocalChannelWiring.ResolveEmbedder", StringComparison.Ordinal);
         Assert.True(iResolve > iEmb, "嵌入注册处没有调用三态解析器 (声明却缺失仍会静默空心)");
         Assert.Contains("EmbedderWiring", code);
+    }
+
+    // ---------- 判据 R466: 复述回放优先级必须在收口面被消费, 且结算类单源 ----------
+    // 缺陷 (R465 实测): 收口面 `if (!grounded) → 承接反问` 无条件覆盖本地已结算的复述回放
+    // (t6 应回放 21 字符, 实得 46 字符承接反问) ⇒ 预注册 C3 FAIL。修法 = 优先级判据单源 + 默认开。
+    [Fact]
+    public void G40_复述结算优先于承接反问且单源()
+    {
+        var src = File.ReadAllText(Path.Combine(FindRepoRootG29(), "src", "agent", "IndustrialAgentV2.cs"));
+        var code = StripLineComments(src);
+        var flat = string.Join(' ', code.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
+
+        // ① skip 支把结算类写入单一变量 (打点与收口面读同一处)
+        var iWrite = flat.IndexOf("_localSettleKind = replyKind", StringComparison.Ordinal);
+        Assert.True(iWrite > 0, "skip 支没有记录本地结算类 (收口面无从判定优先级)");
+        Assert.DoesNotContain("(\"kind\", prevReply is null ?", flat);   // 旧的两处各写一份字面已消除
+
+        // ② 收口面必须消费同源判据 (不得再无条件覆盖); 位置纪律: 写入早于消费
+        var iUse = flat.IndexOf("ContinuationBrief.ShouldApplyFallback(", StringComparison.Ordinal);
+        Assert.True(iUse > iWrite, "收口面没有消费优先级判据 ⇒ 复述回放仍会被承接反问覆盖");
+        Assert.Contains("if (applyFallback)", flat);
+
+        // ③ 消融开关可见 + 抑制必须落盘 (静默抑制 = 读数与真实走向相反)
+        Assert.Contains("AGENTFRAMEWORK_CONTINUATION_REPEAT_PRIORITY", flat);
+        Assert.Contains("(\"suppressed\",", flat);
+        Assert.Contains("(\"priority\",", flat);
+
+        // ④ 逐轮清零 (粘滞 ⇒ 下一轮的承接反问被误抑制)
+        Assert.Contains("_localSettleKind = null", flat);
     }
 }

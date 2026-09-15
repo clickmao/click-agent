@@ -256,6 +256,28 @@ public static class ContinuationBrief
         return true;
     }
 
+    /// <summary>
+    /// R466 本地结算类的**唯一字符串口径** —— 与 IndustrialAgentV2 的 skip 层打点
+    /// (「kind」字段) 及判据同源; 两处漂移会让优先级规则静默失效 (机检见 G40)。
+    /// </summary>
+    public const string SettleRepeatVerbatim = "repeat_verbatim";
+
+    /// <summary>
+    /// R466 优先级判定 (纯函数, 单源): 承接反问**不得**覆盖已经确定性落地的本地答复。
+    ///
+    /// 因果链 (不是文风评判): 承接反问的**前提**是「本轮无可确定的答复对象」——
+    /// 见 <see cref="IsContinuationTurn"/> 判据 (意图弱 + 无更具体缺口)。
+    /// 而纯复述轮 (settleKind = <see cref="SettleRepeatVerbatim"/>) 的答复对象**就是**
+    /// 会话里上一条助手答复原文: 真实存在、逐字可核验、链自己刚取到 ⇒ 前提不成立 ⇒ 覆盖非法。
+    ///
+    /// 实测依据 (R465 p12 网格 / role=skeptic / 同 AOT 二进制): t6「再讲一遍。」本应回放
+    /// 上一条答复 (21 字符), 却被承接反问覆盖成 46 字符 ⇒ 预注册判据 C3 FAIL ("回复质量不降" 硬线失守)。
+    /// 开关消融: 关掉优先级 (settleKind 视作 null) 必须复现该覆盖 —— 否则判据没绑到机制上 (负控)。
+    /// </summary>
+    public static bool ShouldApplyFallback(string? settleKind, string? reply, IReadOnlyList<ArtifactFact>? artifacts)
+        => !string.Equals(settleKind, SettleRepeatVerbatim, StringComparison.Ordinal)
+           && NeedsFallback(reply, artifacts);
+
     /// <summary>确定性兜底反问 —— R460 起与门问句**同源** (<see cref="BuildAsk"/>): 事实为空时绝不提任何文件名。</summary>
     public static string ComposeFallback(string? userText, IReadOnlyList<ArtifactFact>? artifacts, int total = -1)
         => BuildAsk(userText, artifacts, total);
