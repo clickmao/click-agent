@@ -1975,3 +1975,16 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **根因（机检口径）**：P2 参数档增益 **+0.500** ⇒ 瓶颈=**参数量**；P3 量化档增益 +0.107 ⇒ Q8 救不回 1.5B（零换族方案不成立）。3B 比 1.5B 省本地生成 token **98.7%**（158→2 tok/次），代价 17.5 s→30.5 s/次。
 - **负控**：NC1 判据面（自造「首个非空白字符」口径 ⇒ 11 条答案在末尾被误判未解析，v1 读数 VOID）· NC2 调用面（不渲染 ⇒ 复读机且不可复现，v2 读数亦 VOID）· NC3 恒 S 假模型 = 1.5b-q4 实测逐位吻合（复现 R452）· NC4 恒 P 成对 · NC5 确定性（两臂 28/28 项逐位相同）。
 - **交付**：`eval/rover/r462/{prereg-r462-w.json,verdict-r462-w.json,bench_r462_w.py,report_r462_w.py,selftest_r462_w.py,corpus-r462-w.json,w/*}`、`docs/reports/r462-weight-probe.md`；registry `r462.weight-probe`（L2）。
+
+### R463 (2026-09-15) · 本地判别通道切 3B + 冗余模型清理（用户令）
+
+状态: 已完成 (commit b18a61b)
+
+- **用户令（逐字）**：「改用3b 并且 删除多余模型 3b q4」。
+- **依据**：R462-W 权重档位探针 —— 1.5B-Q4 恒 S（假跳 14/14）不合格；Qwen2.5-3B-Instruct-Q4_K_M 假跳 0/14、gen 2 token/次、确定性 28/28 逐位复现。
+- **改动**：① `config/base/models.yaml` 新增顶层 `local:` 块（第 77 行，`turn_gate/relation_judge=true`，ctx 4608 / parallel 1 / max_tokens 512）；② `src/agent.llamacpp/LlamaCppTextGenerator.cs:35` 默认权重名同步；③ 3B 权重落 `~/.agentframework/models/`；④ 删 4 个冗余权重（6.53 GiB，先落 bytes+sha256 台账）。
+- **E2E（同网格 p12 / 同桩 / 同 role / 同二进制，7 臂）**：A 分母 12 调用/31,093 tok；**B3B 8 调用/20,487 tok ⇒ 降幅 34.11%**；B15 与 B3B **逐位同读数**（前置门开时模型档位无差异 ⇒ 承重的是机械 Ack 规则）；前置门关 B15pf0 真诉求假跳 3 次（守卫否决 3）vs B3Bpf0 **0 次**；BP2 真负控（双缺模型）全降级 Pass、降幅 −7.1%。
+- **质量**：7 臂 12/12 轮 ok、残余带/纠正轮零 Skip（quality_risk=0）。
+- **契约边界修订**：`FreeApiModelsTests.Yaml_Stripped_OfRemovedSources` 原「禁 `\nlocal:`」断言与 R351 口径澄清冲突 ⇒ 改为 `Yaml_LocalBlock_DiscriminatorOnly`（allow_general:false / 显式 turn_gate|relation_judge|model_path / 绝对 .gguf / 块内无 chat / 权重 >100 MB）。
+- **新发现（R464 候选）**：`ServiceCollectionExtensions.cs:300` —— 配置 `model_path` 指向不存在文件时**静默回退默认权重**（首跑 BP 负控因此 VOID）；缺模型虽 fail-open 但净亏 7.1%（重试开销）。
+- **证据**：`eval/rover/r463/{verdict-r463.json,run_arm.sh,settle_r463.py,calls-*.jsonl,turns-*.jsonl,deletion-ledger.json}`；`docs/reports/r463-3b-gate-adoption.md`；registry `r463.local-gate-model-switch` / `r463.model-cleanup`。

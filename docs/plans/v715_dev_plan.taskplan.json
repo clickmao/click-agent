@@ -363,6 +363,15 @@
       "DocRef": "docs/plans/v0.81.0-r462-recall-reality-gate.md",
       "Evidence": "docs/reports/recall-reality-gate-r462.md",
       "Summary": "R460/R461 实发: 召回块旧事实被当本轮真值 ⇒ T5 宣称 stats.txt chars=15 而磁盘无此文件（产物 3/4）。修 = 外部真值面: 注入前逐子句机检路径样 token 对当前工作区探测, 附 [核验✓ 现存 N B]/[核验✗ 不存在], 无 root/越界/异常 fail-safe; 同时删召回器硬编码后缀白名单（承 R447 语言无关令）, 后缀集改数据文件 config/base/language-tags.txt。"
+    },
+    {
+      "Id": "dev-r463-local-gate-3b",
+      "Title": "本地判别通道切 Qwen2.5-3B-Instruct Q4_K_M（用户令）+ 冗余模型清理",
+      "State": "doing",
+      "Round": "R463",
+      "DocRef": "docs/plans/v0.82.0-r463-local-gate-3b.md",
+      "Evidence": "docs/reports/r463-3b-gate-adoption.md",
+      "Summary": "用户令: 改用3b 并删除多余模型。依据 R462-W: 1.5B-Q4 恒 S(假跳 14/14) 不合格, 3B 假跳 0/14 且 gen 2 token/次。改动: config/base/models.yaml 新增 local: 块(第 77 行, turn_gate/relation_judge=true, ctx 4608/parallel 1/max_tokens 512) + LlamaCppTextGenerator 默认权重名同步 + 3B 落 ~/.agentframework/models/ + 删 4 个冗余权重(6.53 GiB, bytes+sha256 台账)。E2E 7 臂: A 12 调用/31,093 tok; B3B 8 调用/20,487 tok = 降幅 34.11%; B15 与 B3B 逐位同读数(前置门开⇒模型档位无差异); 前置门关 B15pf0 假跳 3(守卫否决) vs B3Bpf0 0; BP2 真负控全降级 Pass −7.1%。新发现: 配置指向不存在模型会静默回退默认权重(ServiceCollectionExtensions.cs:300) ⇒ R464 候选。"
     }
   ]
 }

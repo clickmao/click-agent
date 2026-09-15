@@ -1728,6 +1728,42 @@
         "eval/rover/r462/w/w-3b-q5.json"
       ],
       "updated_round": "R462"
+    },
+    {
+      "id": "r463.local-gate-model-switch",
+      "level": "L2",
+      "capability": "本地判别通道权重档位切换 (用户令「改用3b 并且 删除多余模型 3b q4」): 现役 r1-distill-1.5B-Q4 → Qwen2.5-3B-Instruct-Q4_K_M。同网格 (R438 task-p12) / 同桩 / 同 role / 同二进制 (prov V0 PASS) 7 臂: A 门关 12 调用 31,093 tok; B3B(3B) 8 调用 20,487 tok ⇒ **降幅 34.11%**; B15(1.5B) 与 B3B **逐位同读数** ⇒ 前置门开时省 token 的是机械 Ack 规则、模型档位不产生差异; 前置门关 B15pf0 真诉求假跳 3 次(全被 skip_rejected_nonack 守卫否决) vs B3Bpf0 **0 次** ⇒ 3B 价值=纵深防御。质量面: 7 臂 12/12 ok、quality_risk=0。3B 单判 2 token/raw 1 字符 vs 1.5B 58–275 token/raw 112–483 字符; 本地 prompt 342 tok; 门判延迟 30–60s vs 12–27s。",
+      "evidence_cmd": "bash eval/rover/r463/run_arm.sh B3B  # 臂 A/B15/B3B/B15pf0/B3Bpf0/BP/BP2; 结算 python3 eval/rover/r463/settle_r463.py eval/rover/r463 '' A,B15,B3B,B15pf0,B3Bpf0,BP,BP2",
+      "evidence_path": "eval/rover/r463/verdict-r463.json",
+      "negative_control": "NC1 (真缺模型, BP2): cfg model_path ∧ env AGENTFRAMEWORK_LLM_MODEL 双缺 ⇒ 门全降级 Pass、零 Skip、降幅 **−7.1%** (21 调用/33,311 tok ⇒ 增益归零 + 重试开销), 质量不退化; NC2 (判别力/作废留档): 首跑 BP 仅 cfg 缺 ⇒ 静默回退默认权重跑了 3B, 读数与 B3B 逐位相同 ⇒ 负控 VOID 并重做; NC3 形态闸 V0-a 原生=True / V0-b IL 负控有判别力=True; NC4 质量硬线: 残余带轮 6–9 与纠正轮 10–12 在全部 7 臂 quality_risk=0",
+      "covers": [
+        "config/base/models.yaml",
+        "src/agent.llamacpp/LlamaCppTextGenerator.cs",
+        "src/agent/extensions/ServiceCollectionExtensions.cs",
+        "eval/rover/r463/run_arm.sh",
+        "eval/rover/r463/settle_r463.py",
+        "eval/rover/r463/verdict-r463.json",
+        "eval/rover/r463/deletion-ledger.json",
+        "docs/plans/v0.82.0-r463-local-gate-3b.md",
+        "docs/reports/r463-3b-gate-adoption.md"
+      ],
+      "owner_round": "R463",
+      "checks_posthoc": [
+        "token 口径为桩侧启发式估计 (prompt_tokens_est) ⇒ 只作跨臂同估计器比较, 绝对值不宣称; 真机 API 真值口径沿用 R461/R462 实测",
+        "B15/B15pf0 两臂依赖已删除的 1.5B 权重 (用户令清理): 档案已入库、sha256 已登记, 复跑须按 sha 重新下载"
+      ]
+    },
+    {
+      "id": "r463.model-cleanup",
+      "level": "L1",
+      "capability": "冗余权重清理 (用户令): 先算 (bytes, sha256) 落台账再删。删除 1.5B-Q4 (1,117,320,800 B) / 1.5B-Q8 (1,894,532,192 B) / QwenPaw-2B-Q4 (1,560,460,928 B) / 3B-Q5 (2,438,740,384 B) 合计 7,011,054,304 B (6.53 GiB); 保留采用档 3B-Q4 (2,104,932,768 B / sha256 626b4a6678b86442240e33df819e0013) + bge-q8 嵌入器; 磁盘 / 7.6G → 14G",
+      "evidence_cmd": "python3 -c \"import json,io;print(json.load(io.open('eval/rover/r463/deletion-ledger.json')))\"; ls -l ~/.agentframework/models/",
+      "evidence_path": "eval/rover/r463/deletion-ledger.json",
+      "negative_control": "删除前逐文件算 sha256 并留档 (台账含 path/bytes/sha256); 删除后 `ls /tmp/models` 空、保留档仍在且大小一致; 未删任何被 config/env 引用的路径 (config local.model_path 指向保留档)",
+      "covers": [
+        "eval/rover/r463/deletion-ledger.json"
+      ],
+      "owner_round": "R463"
     }
   ],
   "aot_check_policy": "release_tag_only",
