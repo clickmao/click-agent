@@ -291,18 +291,31 @@ public static class ServiceCollectionExtensions
         // R413: 本地生成执行面端口 (llama.cpp 长驻 llama-server; 进程 + HTTP, 零 P/Invoke)。
         // 通道开关在 config 的 local 段 (catalog.LocalChannel.IsReady) — 未配置 ⇒ 判据必拒 = 零回归;
         // 端口 IsAvailable 为**真实探测** (gguf 存在 ∧ 二进制可解析), 探测不确定不得当可用。
+        // R464: 路径解析走**三态** (未声明 / 配置可用 / 配置错配)。原接线 `lc.IsReady ? lc.ModelPath : baseOpts.ModelPath`
+        //   把「配置错配」当「未配置」⇒ **静默改用默认权重**, 既不告警也不留痕 ⇒ 以权重档位为单变量的测量
+        //   在该配置下读数是错的且看不出来 (R463 负控 BP 因此 VOID)。现在: 声明即意图, 错配 ⇒ 通道不可用 +
+        //   必落告警 (ILogger + stderr), **绝不替换**。
         services.AddSingleton<agent.modelqueue.ILocalGenerationPort>(sp =>
         {
             var baseOpts = agent.llamacpp.LlamaCppGeneratorOptions.FromEnvironment();
             var lc = sp.GetRequiredService<agent.modelqueue.ModelCatalog>().LocalChannel;
+            var wiring = agent.llamacpp.LocalChannelWiring.ResolveForHost(lc.Declared, lc.ModelPath, baseOpts.ModelPath);
+            if (wiring.Warning is not null)
+            {
+                // 仪器异常必留痕 (双通道: DI logger + stderr —— headless 宿主也必须可见; 标记 ASCII 便于机检)
+                sp.GetService<Microsoft.Extensions.Logging.ILoggerFactory>()
+                  ?.CreateLogger("agent.llamacpp.LocalChannelWiring")
+                  .LogWarning("{LocalChannelWiringWarning}", wiring.Warning);
+                Console.Error.WriteLine("[warn] " + wiring.Warning);
+            }
             var opts = new agent.llamacpp.LlamaCppGeneratorOptions
             {
-                ModelPath = lc.IsReady ? lc.ModelPath : baseOpts.ModelPath,
+                ModelPath = wiring.ModelPath,
                 BinaryPath = baseOpts.BinaryPath,
                 BinaryEnvVar = baseOpts.BinaryEnvVar,
-                ContextSize = lc.IsReady && lc.ContextSize > 0 ? lc.ContextSize : baseOpts.ContextSize,
+                ContextSize = wiring.UseConfiguredWidths && lc.ContextSize > 0 ? lc.ContextSize : baseOpts.ContextSize,
                 Threads = baseOpts.Threads,
-                Parallel = lc.IsReady && lc.Parallel > 0 ? lc.Parallel : baseOpts.Parallel,
+                Parallel = wiring.UseConfiguredWidths && lc.Parallel > 0 ? lc.Parallel : baseOpts.Parallel,
                 StartTimeoutMs = baseOpts.StartTimeoutMs,
                 AllowRestart = baseOpts.AllowRestart,
                 MaxTokens = lc.MaxTokens > 0 ? lc.MaxTokens : baseOpts.MaxTokens,

@@ -121,6 +121,12 @@ public sealed class LocalChannelConfig
 
     /// <summary>配置路径非空且文件存在 = 通道就绪</summary>
     public bool IsReady => !string.IsNullOrEmpty(ModelPath) && File.Exists(ModelPath);
+
+    /// <summary>
+    /// R464: 配置里是否**声明**了 `local:` 段。声明即「配置意图」——与「路径此刻是否可用」分离;
+    /// 二者混用会导致「配置错配」被当成「未配置」而静默回退默认权重（R463 负控 VOID 的根因）。
+    /// </summary>
+    public bool Declared { get; set; }
 }
 
 public sealed class BalanceScheme
@@ -196,6 +202,7 @@ public sealed class ModelCatalog
         {
             catalog.LocalChannel = new LocalChannelConfig
             {
+                Declared = true,
                 ModelPath = AsString(ld, "model_path"),
                 ContextSize = (int)AsDouble(ld, "context_size"),
                 GpuLayers = (int)AsDouble(ld, "gpu_layers"),
