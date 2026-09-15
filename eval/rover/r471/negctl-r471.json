@@ -1,0 +1,50 @@
+{
+ "a_double_count": {
+  "verdict": "FAIL_CHANNEL_SEMANTICS",
+  "violations": [
+   "double_count"
+  ],
+  "red": true
+ },
+ "b_unreported_not_zero": {
+  "hit_tokens": 0,
+  "hit_na": 1,
+  "ok": true,
+  "note": "hit_tokens 求和为 0 但 hit_na=1 ⇒ 「0 命中」与「未上报」可分"
+ },
+ "c_unknown_zero_prompt": {
+  "by_channel": {
+   "same_session": 0,
+   "shared_prefix": 0,
+   "unknown": 1
+  },
+  "violations": 0,
+  "ok": true
+ },
+ "d_absent_field": {
+  "absent_field": 1,
+  "emitted_rows": 0,
+  "by_channel": {
+   "same_session": 0,
+   "shared_prefix": 0,
+   "unknown": 0
+  },
+  "ok": true
+ },
+ "e_attribution_rewrite": {
+  "normal": {
+   "same_session": 0,
+   "shared_prefix": 1,
+   "unknown": 0
+  },
+  "note": "反写规则下该行应为 same_session ⇒ derived 通道计数改变 ⇒ 判据有判别力",
+  "ok": true
+ },
+ "f_wiring_hole": {
+  "verdict": "FAIL_CHANNEL_SEMANTICS",
+  "kinds": [
+   "wiring_hole"
+  ],
+  "ok": true
+ }
+}

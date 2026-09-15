@@ -1,0 +1,127 @@
+{
+ "fixtures": [
+  {
+   "kv": {
+    "agent_session": "s1",
+    "turn": 1,
+    "prompt_tokens": 5553,
+    "cache_hit_tokens": 2048,
+    "cache_miss_tokens": 3505,
+    "cache_channel": "shared_prefix",
+    "shared_prefix_hit_tokens": 2048,
+    "shared_prefix_hit_rate": 0.3688
+   },
+   "expect": {
+    "channel": "shared_prefix",
+    "hit": 2048
+   }
+  },
+  {
+   "kv": {
+    "agent_session": "s1",
+    "turn": 2,
+    "prompt_tokens": 6100,
+    "cache_hit_tokens": 4096,
+    "cache_miss_tokens": 2004,
+    "cache_channel": "same_session",
+    "shared_prefix_hit_tokens": -1,
+    "shared_prefix_hit_rate": -1
+   },
+   "expect": {
+    "channel": "same_session",
+    "hit": null
+   }
+  },
+  {
+   "kv": {
+    "agent_session": "s1",
+    "turn": 3,
+    "prompt_tokens": 6400,
+    "cache_hit_tokens": 5120,
+    "cache_miss_tokens": 1280,
+    "cache_channel": "same_session",
+    "shared_prefix_hit_tokens": -1,
+    "shared_prefix_hit_rate": -1
+   },
+   "expect": {
+    "channel": "same_session",
+    "hit": null
+   }
+  },
+  {
+   "kv": {
+    "agent_session": "s2",
+    "turn": 1,
+    "prompt_tokens": 2304,
+    "cache_hit_tokens": -1,
+    "cache_miss_tokens": -1,
+    "cache_channel": "shared_prefix",
+    "shared_prefix_hit_tokens": -1,
+    "shared_prefix_hit_rate": -1
+   },
+   "expect": {
+    "channel": "shared_prefix",
+    "hit": null
+   }
+  },
+  {
+   "kv": {
+    "agent_session": "s3",
+    "turn": 1,
+    "prompt_tokens": 0,
+    "cache_hit_tokens": -1,
+    "cache_miss_tokens": -1,
+    "cache_channel": "unknown",
+    "shared_prefix_hit_tokens": -1,
+    "shared_prefix_hit_rate": -1
+   },
+   "expect": {
+    "channel": "unknown",
+    "hit": null
+   }
+  }
+ ],
+ "aggregated": {
+  "semantics": "只读实发字段 cache_channel/shared_prefix_hit_tokens/shared_prefix_hit_rate; 缺字段 ⇒ unreported (禁 0 / 禁 shared_prefix 冒充); 非 shared_prefix 通道两字段须 -1 (禁双计)",
+  "emitted": {
+   "rows": 5,
+   "by_channel": {
+    "same_session": 2,
+    "shared_prefix": 2,
+    "unknown": 1
+   },
+   "shared_prefix": {
+    "calls": 2,
+    "hit_tokens": 2048,
+    "hit_reported": 1,
+    "hit_na": 1,
+    "rate_weighted": 0.3688,
+    "unit": "token"
+   }
+  },
+  "unreported": {
+   "absent_field": 0,
+   "invalid_value": 0,
+   "total": 0
+  },
+  "derived_recompute": {
+   "rows": 5,
+   "by_channel": {
+    "same_session": 2,
+    "shared_prefix": 2,
+    "unknown": 1
+   },
+   "shared_prefix_hit_tokens": 2048,
+   "note": "对照列 (R470 派生口径, 独立重算); **禁止与 emitted 相加/混算** —— 实发字段是 R470 起才铺的, 历史遥测 0 行含此字段"
+  },
+  "conservation": {
+   "emitted_rows": 5,
+   "unreported": 0,
+   "calls": 5,
+   "ok": true,
+   "identity": "emitted.rows + unreported.total == calls"
+  },
+  "violations": [],
+  "verdict": "PASS"
+ }
+}

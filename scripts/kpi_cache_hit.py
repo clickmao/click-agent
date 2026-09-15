@@ -13,9 +13,19 @@
 
 参考值: 旧口径 hit/(hit+miss) 一并列出 (含本轮新增, 仅作参考, **不作判定口径**)。
 
+分通道段 (R471, **只增不改**): 读**产品实发字段** `cache_channel` / `shared_prefix_hit_tokens` /
+  `shared_prefix_hit_rate` (键名派生自 src/agent.modelqueue/PromptCacheKpi.cs:135-140 ChannelFields)。
+  铁律 (fail-closed):
+   ① 行内缺 `cache_channel` ⇒ 计入 `unreported.absent_field` —— **既不得算 0, 也不得冒充 shared_prefix**;
+   ② `cache_channel` 落在三级之外 ⇒ `unreported.invalid_value`;
+   ③ 非 `shared_prefix` 通道上的 `shared_prefix_*` 必须为 -1 (禁双计) ⇒ 否则 `violations[kind=double_count]` 判红;
+   ④ `shared_prefix` 通道 hit=-1 (提供方未上报) ⇒ **不入命中求和**, 计 `hit_na` (不得当 0);
+   ⑤ `derived_recompute` 列用同规则**离线重算** (对照 R470 派生读数), **禁止与实发列相加/混算** ——
+      真实历史遥测 (R470 打点之前) 没有这三个字段, R470 报出的 shared_prefix=43 是**推导值**, 不是实发值。
+
 数据源: data/telemetry/host.jsonl (point=llm_call, 字段在 kv 内)
 用法: kpi_cache_hit.py [--since ISO8601] [--file PATH] [--json OUT]
-退出码: 0 = 达标/无多轮数据; 1 = 存在越线; 2 = 数据缺失
+退出码: 0 = 达标/无多轮数据; 1 = 存在越线 **或 R471 分通道判据判红**; 2 = 数据缺失
 """
 import argparse, io, json, os, sys
 from datetime import datetime
@@ -47,6 +57,101 @@ def num(v, d=-1):
         return int(v)
     except Exception:
         return d
+
+
+# ── R471: 分通道聚合 (只读产品实发字段; 缺字段 fail-closed, 禁推导冒充) ──────────
+CHANNELS = ("same_session", "shared_prefix", "unknown")
+
+
+def chan_of(prompt_tokens, last_prompt_tokens):
+    """产品口径逐字移植 (PromptCacheKpi.Channel, src/agent.modelqueue/PromptCacheKpi.cs:117-118)。"""
+    return "unknown" if prompt_tokens <= 0 else ("same_session" if last_prompt_tokens > 0 else "shared_prefix")
+
+
+def aggregate_channels(calls):
+    """按 llm_call 逐行读**实发**通道字段并聚合。
+
+    返回 dict: emitted(实发) / unreported(缺字段或非法值) / derived_recompute(离线重算对照, 禁混算)
+               / conservation(守恒) / violations(判红明细) / verdict。
+    """
+    emitted = dict.fromkeys(CHANNELS, 0)
+    derived = dict.fromkeys(CHANNELS, 0)
+    absent = invalid = 0
+    hit_sum = miss_sum = hit_reported = hit_na = 0
+    derived_hit_sum = 0
+    violations = []
+    last_prompt = {}
+    for r in calls:
+        kv = r.get("kv") or {}
+        pt = num(kv.get("prompt_tokens"), 0)
+        sk = kv.get("agent_session") or ""
+        prev = last_prompt.get(sk, 0)
+        dc = chan_of(pt, prev)                      # 派生列 (对照 R470, 独立重算)
+        derived[dc] += 1
+        if dc == "shared_prefix":
+            h = num(kv.get("cache_hit_tokens"), -1)
+            if h >= 0:
+                derived_hit_sum += h
+        if sk:
+            last_prompt[sk] = pt
+        # ── 实发列 ──
+        if "cache_channel" not in kv:
+            absent += 1
+            continue
+        ch = kv.get("cache_channel")
+        if ch not in CHANNELS:
+            invalid += 1
+            continue
+        emitted[ch] += 1
+        sh = num(kv.get("shared_prefix_hit_tokens"), -2)     # -2 = 字段缺失/不可解析
+        sr_raw = kv.get("shared_prefix_hit_rate", None)
+        sr = num(sr_raw, -2) if sr_raw is not None else -2
+        if ch != "shared_prefix":
+            # 禁双计: 非该通道两字段必须显式为 -1
+            if sh >= 0 or sr >= 0:
+                violations.append({"kind": "double_count", "channel": ch, "ts": r.get("ts"),
+                                   "shared_prefix_hit_tokens": sh, "shared_prefix_hit_rate": sr_raw,
+                                   "why": "非 shared_prefix 通道的 shared_prefix_* 必须 -1 (禁双计)"})
+            elif sh == -2 or sr == -2:
+                violations.append({"kind": "wiring_hole", "channel": ch, "ts": r.get("ts"),
+                                   "shared_prefix_hit_tokens": sh, "shared_prefix_hit_rate": sr_raw,
+                                   "why": "非 shared_prefix 通道的两字段必须显式铺 -1 (缺失 = 接线不完整)"})
+            continue
+        if sh < 0:
+            hit_na += 1                                      # 未上报: 不入求和, 不得当 0
+        else:
+            hit_sum += sh
+            hit_reported += 1
+            miss_sum += max(num(kv.get("cache_miss_tokens"), 0), 0)
+    total = len(calls)
+    emitted_rows = sum(emitted.values())
+    conserved = emitted_rows + absent + invalid == total
+    return {
+        "semantics": "只读实发字段 cache_channel/shared_prefix_hit_tokens/shared_prefix_hit_rate; "
+                     "缺字段 ⇒ unreported (禁 0 / 禁 shared_prefix 冒充); 非 shared_prefix 通道两字段须 -1 (禁双计)",
+        "emitted": {
+            "rows": emitted_rows,
+            "by_channel": dict(emitted),
+            "shared_prefix": {
+                "calls": emitted["shared_prefix"],
+                "hit_tokens": hit_sum,
+                "hit_reported": hit_reported,
+                "hit_na": hit_na,
+                "rate_weighted": round(hit_sum / (hit_sum + miss_sum), 4) if (hit_sum + miss_sum) > 0 else -1,
+                "unit": "token",
+            },
+        },
+        "unreported": {"absent_field": absent, "invalid_value": invalid, "total": absent + invalid},
+        "derived_recompute": {
+            "rows": total, "by_channel": dict(derived), "shared_prefix_hit_tokens": derived_hit_sum,
+            "note": "对照列 (R470 派生口径, 独立重算); **禁止与 emitted 相加/混算** —— 实发字段是 R470 起才铺的, "
+                    "历史遥测 0 行含此字段",
+        },
+        "conservation": {"emitted_rows": emitted_rows, "unreported": absent + invalid, "calls": total,
+                         "ok": conserved, "identity": "emitted.rows + unreported.total == calls"},
+        "violations": violations,
+        "verdict": "PASS" if (conserved and not violations) else "FAIL_CHANNEL_SEMANTICS",
+    }
 
 
 def main():
@@ -109,6 +214,7 @@ def main():
 
     eff_all = round(tot_hit / tot_cacheable, 4) if tot_cacheable else -1
     rep_all = round(tot_rep_hit / (tot_rep_hit + tot_rep_miss), 4) if (tot_rep_hit + tot_rep_miss) else -1
+    chan = aggregate_channels(calls)     # R471: 分通道 (实发字段)
 
     print("=" * 74)
     print("prompt 缓存命中率 KPI (口径: 只算需要命中的部分; 本轮新增不计入) — 首要 KPI")
@@ -124,6 +230,23 @@ def main():
     print(f"{'合计':<6}{'':<6}{tot_cacheable:<10}{tot_hit:<8}{eff_all:<12.4f}"
           f"{'达标 ✓' if eff_all >= REDLINE or eff_all < 0 else '**越线 ✗**'}")
     print(f"\n[参考] 旧口径 hit/(hit+miss) = {rep_all:.4f}  (含本轮新增, 不作判定口径)")
+
+    # ── R471: 分通道段 (实发字段; 缺字段不冒充) ──
+    em, un, dv = chan["emitted"], chan["unreported"], chan["derived_recompute"]
+    print(f"\n[分通道·实发] 有通道字段 {em['rows']}/{len(calls)} 行 "
+          f"(缺字段 {un['absent_field']}, 非法值 {un['invalid_value']}) — 缺字段**不得**冒充 0 或 shared_prefix")
+    for c in CHANNELS:
+        print(f"  · {c:<14}{em['by_channel'][c]:>6} 行")
+    sp = em["shared_prefix"]
+    print(f"[分通道·shared_prefix] 调用 {sp['calls']} | 命中求和 {sp['hit_tokens']} tok "
+          f"(已上报 {sp['hit_reported']} / 未上报 {sp['hit_na']} 不计入) | 占比 {sp['rate_weighted']}")
+    print(f"[分通道·对照] 派生重算 (R470 口径, 禁与实发相加): shared_prefix {dv['by_channel']['shared_prefix']} 行, "
+          f"命中求和 {dv['shared_prefix_hit_tokens']} tok")
+    print(f"[分通道·守恒] {chan['conservation']['identity']} ⇒ "
+          f"{chan['conservation']['emitted_rows']}+{chan['conservation']['unreported']}=={chan['conservation']['calls']} "
+          f"{'✓' if chan['conservation']['ok'] else '✗'}; 判红 {len(chan['violations'])} 条 ⇒ {chan['verdict']}")
+    for v in chan["violations"][:6]:
+        print(f"  · {v['kind']}: {v['why']} (channel={v['channel']})")
 
     if viol_points:
         print(f"\n[代码闸门越线记录] {len(viol_points)} 条 (point=cache_redline_violation)")
@@ -142,6 +265,8 @@ def main():
            "effective_hit_rate": eff_all, "reference_hit_rate": rep_all, "redline": REDLINE,
            "by_turn": {str(k): v for k, v in by_turn.items()}, "violations": violations,
            "redline_points": len(viol_points),
+           "channels": chan,
+           "channel_verdict": chan["verdict"],
            "verdict": ("PASS" if not violations else "FAIL_REDLINE")}
 
     # ── 按会话判定 (VERDICT 以**最新会话**为准: 历史越线单列, 不掩盖当前状态) ──
@@ -174,8 +299,8 @@ def main():
         json.dump(out, io.open(default, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
         print(f"\n落盘: {default}")
 
-    print(f"VERDICT: {out['verdict']}")
-    return 0 if out["verdict"] == "PASS" else 1
+    print(f"VERDICT: {out['verdict']}  |  通道判据: {out['channel_verdict']}")
+    return 0 if (out["verdict"] == "PASS" and chan["verdict"] == "PASS") else 1
 
 
 if __name__ == "__main__":

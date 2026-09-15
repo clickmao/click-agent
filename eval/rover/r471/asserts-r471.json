@@ -1,0 +1,163 @@
+{
+ "round": "R471",
+ "prereg": "eval/rover/r471/prereg-r471.json",
+ "script": "scripts/kpi_cache_hit.py",
+ "script_sha256": "0025d67cc9c5229982616258d7d77a17055167a5c5da7412d8149e71b79bbf18",
+ "checks": [
+  {
+   "id": "C1",
+   "desc": "源 sha256 == R470 记录值 ∧ llm_call 行数 == 43 (utf-8-sig 首行 BOM 不得吞)",
+   "ok": true,
+   "value": {
+    "sha256": "2a9e34490b2d92e776d5a9c364daa64adc9168cbc9bc69a1787bf2438cd59a13",
+    "n_calls": 43
+   }
+  },
+  {
+   "id": "C2",
+   "desc": "实发面: emitted.rows == 0 ∧ unreported.absent_field == 43 ∧ shared_prefix 行数 == 0 (≠43)",
+   "ok": true,
+   "value": {
+    "emitted_rows": 0,
+    "absent_field": 43,
+    "emitted_shared_prefix": 0
+   }
+  },
+  {
+   "id": "C3",
+   "desc": "派生对照列分离: derived.shared_prefix == 43 ∧ 守恒 emitted+unreported == calls ∧ 派生命中 == 59518 (R470 值)",
+   "ok": true,
+   "value": {
+    "derived_shared_prefix": 43,
+    "derived_hit_tokens": 59518,
+    "conservation": {
+     "emitted_rows": 0,
+     "unreported": 43,
+     "calls": 43,
+     "ok": true,
+     "identity": "emitted.rows + unreported.total == calls"
+    }
+   }
+  },
+  {
+   "id": "C4",
+   "desc": "正控(器具非空心): 同形夹具 emitted.rows==5 ∧ 分通道计数精确 ∧ 命中求和精确 ∧ 未上报不计入 ∧ rate 逐行同式",
+   "ok": true,
+   "value": {
+    "rows": 5,
+    "by_channel": {
+     "same_session": 2,
+     "shared_prefix": 2,
+     "unknown": 1
+    },
+    "exp_by_channel": {
+     "shared_prefix": 2,
+     "same_session": 2,
+     "unknown": 1
+    },
+    "hit_tokens": 2048,
+    "exp_hit_tokens": 2048,
+    "hit_na": 1,
+    "unreported": {
+     "absent_field": 0,
+     "invalid_value": 0,
+     "total": 0
+    },
+    "verdict": "PASS",
+    "rate_semantics_ok": true
+   }
+  },
+  {
+   "id": "C5",
+   "desc": "负控 6 例: (a)双计判红 (b)未上报不入和 (c)unknown (d)缺字段不冒充 (e)归因反写有判别力 (f)接线洞判红",
+   "ok": true,
+   "value": {
+    "a_double_count": {
+     "verdict": "FAIL_CHANNEL_SEMANTICS",
+     "violations": [
+      "double_count"
+     ],
+     "red": true
+    },
+    "b_unreported_not_zero": {
+     "hit_tokens": 0,
+     "hit_na": 1,
+     "ok": true,
+     "note": "hit_tokens 求和为 0 但 hit_na=1 ⇒ 「0 命中」与「未上报」可分"
+    },
+    "c_unknown_zero_prompt": {
+     "by_channel": {
+      "same_session": 0,
+      "shared_prefix": 0,
+      "unknown": 1
+     },
+     "violations": 0,
+     "ok": true
+    },
+    "d_absent_field": {
+     "absent_field": 1,
+     "emitted_rows": 0,
+     "by_channel": {
+      "same_session": 0,
+      "shared_prefix": 0,
+      "unknown": 0
+     },
+     "ok": true
+    },
+    "e_attribution_rewrite": {
+     "normal": {
+      "same_session": 0,
+      "shared_prefix": 1,
+      "unknown": 0
+     },
+     "note": "反写规则下该行应为 same_session ⇒ derived 通道计数改变 ⇒ 判据有判别力",
+     "ok": true
+    },
+    "f_wiring_hole": {
+     "verdict": "FAIL_CHANNEL_SEMANTICS",
+     "kinds": [
+      "wiring_hole"
+     ],
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "C6",
+   "desc": "零回归: 新脚本 legacy 键逐键 == HEAD 版脚本 (只增不改, 新增键仅 channels/channel_verdict)",
+   "ok": true,
+   "value": {
+    "head_available": true,
+    "rc_new": 0,
+    "rc_old": 0,
+    "legacy_keys": 11,
+    "diffs": [],
+    "new_only_keys": [
+     "channel_verdict",
+     "channels"
+    ],
+    "old_had_channels": false,
+    "verdict_same": true
+   }
+  },
+  {
+   "id": "C7",
+   "desc": "形式门禁: dotnet test 过滤集全绿 ∧ 执行数>0 (PromptCacheRedlineTests 读 scripts/kpi_cache_hit.py 断言 REDLINE=0.97 ⇒ 证明只增不改)",
+   "ok": true,
+   "value": {
+    "filter": "VerificationFormTests|DevPlanDocRefTests|PromptCacheRedlineTests|PromptCacheChannelTests",
+    "failed": 0,
+    "passed": 27,
+    "skipped": 0,
+    "total": 27,
+    "exit_code": 0,
+    "executed_gt_zero": true,
+    "log": "eval/rover/r471/formgate-r471.log",
+    "log_sha256": "ae84f4394fea9bd446b0d85997ac01f548f17ddcd60860eda18db3d95617944a"
+   }
+  }
+ ],
+ "passed": 7,
+ "total": 7,
+ "verdict": "PASS"
+}

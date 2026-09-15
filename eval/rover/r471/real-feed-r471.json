@@ -1,0 +1,49 @@
+{
+ "source": "data/telemetry/host.jsonl",
+ "source_sha256": "2a9e34490b2d92e776d5a9c364daa64adc9168cbc9bc69a1787bf2438cd59a13",
+ "n_calls": 43,
+ "emitted_present_rows": 0,
+ "aggregated": {
+  "semantics": "只读实发字段 cache_channel/shared_prefix_hit_tokens/shared_prefix_hit_rate; 缺字段 ⇒ unreported (禁 0 / 禁 shared_prefix 冒充); 非 shared_prefix 通道两字段须 -1 (禁双计)",
+  "emitted": {
+   "rows": 0,
+   "by_channel": {
+    "same_session": 0,
+    "shared_prefix": 0,
+    "unknown": 0
+   },
+   "shared_prefix": {
+    "calls": 0,
+    "hit_tokens": 0,
+    "hit_reported": 0,
+    "hit_na": 0,
+    "rate_weighted": -1,
+    "unit": "token"
+   }
+  },
+  "unreported": {
+   "absent_field": 43,
+   "invalid_value": 0,
+   "total": 43
+  },
+  "derived_recompute": {
+   "rows": 43,
+   "by_channel": {
+    "same_session": 0,
+    "shared_prefix": 43,
+    "unknown": 0
+   },
+   "shared_prefix_hit_tokens": 59518,
+   "note": "对照列 (R470 派生口径, 独立重算); **禁止与 emitted 相加/混算** —— 实发字段是 R470 起才铺的, 历史遥测 0 行含此字段"
+  },
+  "conservation": {
+   "emitted_rows": 0,
+   "unreported": 43,
+   "calls": 43,
+   "ok": true,
+   "identity": "emitted.rows + unreported.total == calls"
+  },
+  "violations": [],
+  "verdict": "PASS"
+ }
+}

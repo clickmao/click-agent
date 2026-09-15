@@ -2085,3 +2085,15 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 **诚实边界**：未发起真机调用（配额）⇒ 样本仅 43 条且全为会话首调用；`shared_prefix` 因果（跨会话复用 vs 同文本缓存）不可分；**命中是否在计费上打折未取到** ⇒「命中⇒省钱」仍是未验证前提。
 
 **下轮候选**：① `scripts/kpi_cache_hit.py` 纳入新通道聚合（否则新字段落盘无人聚合 = 空心）；② C 档 3,320 tok 新算的组成分解（共享 2.1k + 私有 3.3k），把「升前缀」可执行化；③ 红线迁移为「分档上限 + 达成轮占比 + 分通道」。
+
+## R471（2026-09-16）分通道聚合：真实流**实发 0/43** ⇒ R470 的 43 是派生值
+
+**外部真值**（`data/telemetry/host.jsonl`，sha256 `2a9e3449…9a13`，`llm_call` 43 条）：含 `cache_channel` 字段者 **0 条（0/43）** ⇒ R470 的「shared_prefix 100%（43/43）」是**证据脚本派生值**，产品遥测侧无物可读。聚合器此前不认识这些字段 ⇒ 任何后续聚合都会把**派生量当实发量**读走（空心 + 不可外部复核）。
+
+**改动（只增不改，`scripts/kpi_cache_hit.py` sha256 `0025d67c…3f18`，307 行）**：新增 `CHANNELS`(:63) / `chan_of`(:66，`PromptCacheKpi.Channel` 逐字移植) / `aggregate_channels`(:71-166)；打印段(:236-254) 与 JSON 键 `channels`/`channel_verdict`(:268-269)；退出码 `1` 亦含分通道判红。**fail-closed 语义**：缺字段 ⇒ `unreported.absent_field`（**既不算 0 也不算 `shared_prefix`**）；非 `shared_prefix` 通道两字段须显式 -1（≥0 ⇒ `double_count` 判红，缺失 ⇒ `wiring_hole` 判红）；`shared_prefix` 内 `hit=-1` ⇒ 入 `hit_na` 不进求和（「0 命中」与「未上报」可分）；守恒式 `emitted.rows+unreported.total==calls` 不闭合即判红。`effective_hit_rate`/`cacheable_tokens`/97% 红线**一字未动**。
+
+**读数**：`check_channels_r471.py` **C1~C6 全绿 6/6，rc=0** + **C7（形式门禁）全绿**（`dotnet test` **27/27**，failed 0/skipped 0/exit 0/执行数>0，读数自 `eval/rover/r471/formgate-r471.log` 机检取值）⇒ **合计 7/7 PASS** —— 实发 `emitted.rows=0`／`absent_field=43`／**`emitted.shared_prefix=0`（≠43）**；对照列 `derived.shared_prefix=43`、派生命中 **59,518**（=R470 值），守恒 `0+43==43 ✓`；**正控**同形夹具 5 行精确读回（`{shared_prefix:2, same_session:2, unknown:1}`，命中求和 2,048，已上报 1/未上报 1，`emitted.rows=5>0` 非空跑）；**负控 6/6**（双计判红／未上报不入和／`unknown`／缺字段不冒充／归因反写有判别力／接线洞判红）；**零回归**：legacy 键与 `HEAD` 版脚本逐键相同，新增键仅 `channels`/`channel_verdict`。形式门禁 `dotnet test` **27/27**（含 `PromptCacheRedlineTests` 对脚本的逐串锁 `REDLINE = 0.97` 仍绿）。
+
+**诚实边界**：本轮**无 C# 改动** ⇒ 按铁律**不触发** AOT 重发布（体积沿用 R470 `agenthost` 15,343,232 B）——是「不触发」不是「未测到」。**实发面在真实流上零样本**（43 条全部早于 R470 接线）⇒ 实发正确性由同形夹具 + 负控背书，**不由真实流量背书**；真实流只能证明「聚合器不再把派生量冒充实发量」。未做真机调用；不改链/不改红线 ⇒ 本轮无 KPI 数值变化，只产生**可复核性**。
+
+**下轮候选**：① C 档 3,320 tok 新算的组成分解（共享 ≈2.1k 不随 prompt 增长 + 私有），把「升前缀」可执行化；② 红线迁移为「分档上限 + 达成轮占比 + 分通道」联合判据；③ **实发字段的真实样本**（当前 0 样本是本轮最大未覆盖面）。
