@@ -1,0 +1,92 @@
+[
+  {
+    "id": "FX01",
+    "claim": "三集合派生非平凡且互不空",
+    "passed": true,
+    "detail": "|P1|=14 |P2|=14 |P3|=7 |D|=26"
+  },
+  {
+    "id": "FX02",
+    "claim": "落盘守卫 `if k in c` 在场",
+    "passed": true,
+    "detail": "guard=True"
+  },
+  {
+    "id": "FX03",
+    "claim": "正控 edge_kind → C_written_and_archived",
+    "passed": true,
+    "detail": "class=C_written_and_archived"
+  },
+  {
+    "id": "FX04",
+    "claim": "组合负控(白名单补 face + 归档含 face) → C_written_and_archived",
+    "passed": true,
+    "detail": "class=C_written_and_archived attr=未预期类: C_written_and_archived"
+  },
+  {
+    "id": "FX05",
+    "claim": "单变量负控(只改白名单) → 类目离开 4 且键进 D",
+    "passed": true,
+    "detail": "class=C_dump_producer_branch_unhit in_D=True"
+  },
+  {
+    "id": "FX06",
+    "claim": "负控(白名单插入从不产出键) → C_dump_dead_entry 命中",
+    "passed": true,
+    "detail": "class=C_dump_dead_entry"
+  },
+  {
+    "id": "FX07",
+    "claim": "负控(归档含外来键) → C_archive_foreign_key 命中",
+    "passed": true,
+    "detail": "class=C_archive_foreign_key"
+  },
+  {
+    "id": "FX08",
+    "claim": "负控(归档缺条件分支字段 edge_kind) → C_dump_producer_branch_unhit",
+    "passed": true,
+    "detail": "class=C_dump_producer_branch_unhit"
+  },
+  {
+    "id": "FX09",
+    "claim": "守恒式在合成输入上成立",
+    "passed": true,
+    "detail": "Σ==|universe| on fx04/fx07/fx08"
+  },
+  {
+    "id": "FX10",
+    "claim": "fail-closed: 归档缺失 ⇒ 异常(映射为弃权 3)",
+    "passed": true,
+    "detail": "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/q17_selftest_h1d2u2_2/nonexistent.jsonl'"
+  },
+  {
+    "id": "FX11",
+    "claim": "fail-closed: 空归档 ⇒ 弃权",
+    "passed": true,
+    "detail": "ValueError"
+  },
+  {
+    "id": "FX12",
+    "claim": "fail-closed: 源码缺 run_pass ⇒ 弃权",
+    "passed": true,
+    "detail": "ValueError"
+  },
+  {
+    "id": "FX13",
+    "claim": "universe == P ∪ D ∪ A",
+    "passed": true,
+    "detail": "|universe|=35"
+  },
+  {
+    "id": "FX14",
+    "claim": "真语料域双读数一致",
+    "passed": true,
+    "detail": "live=928 edge_rows=928"
+  },
+  {
+    "id": "FX15",
+    "claim": "负控: 去枢纽规则 ⇒ 依赖面变宽（规则承重）",
+    "passed": true,
+    "detail": "with_hub_rule=6 without=28"
+  }
+]

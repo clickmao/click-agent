@@ -1,0 +1,111 @@
+{
+ "schema": "q23-side-effect-drift/1",
+ "round": "EXP1-Q23",
+ "ts": null,
+ "note": "本轮命令窗口内既有产物的内容漂移; 原件已复制归档于 l2runs/regenerated_*, 工作树复原到 HEAD",
+ "paths": [
+  {
+   "path": "eval/capability/exp1-q20/l2runs/verdict_q17.json",
+   "head_sha12": "45da38af0781",
+   "regenerated_sha12": "b8904b4d54d5",
+   "archived_copy": "eval/capability/exp1-q23/l2runs/regenerated_eval_capability_exp1-q20_l2runs_verdict_q17.json",
+   "semantic_diff_keys_n": 1,
+   "keyset_equal": true,
+   "diff_sample": {
+    "fixtures.[9].detail": [
+     "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/q17_selftest_bxhp0",
+     "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/q17_selftest_h1d2u"
+    ]
+   }
+  },
+  {
+   "path": "eval/capability/exp1-q20/l2runs/selftest_q17.json",
+   "head_sha12": "957362266c5a",
+   "regenerated_sha12": "3b33c34d95d8",
+   "archived_copy": "eval/capability/exp1-q23/l2runs/regenerated_eval_capability_exp1-q20_l2runs_selftest_q17.json",
+   "semantic_diff_keys_n": 1,
+   "keyset_equal": true,
+   "diff_sample": {
+    "[9].detail": [
+     "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/q17_selftest_bxhp0",
+     "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/q17_selftest_h1d2u"
+    ]
+   }
+  },
+  {
+   "path": "eval/rover/r444/precheck-prefilter.json",
+   "head_sha12": "ec57f5664141",
+   "regenerated_sha12": "b74e791ccca7",
+   "archived_copy": "eval/capability/exp1-q23/l2runs/regenerated_eval_rover_r444_precheck-prefilter.json",
+   "semantic_diff_keys_n": 25,
+   "keyset_equal": false,
+   "diff_sample": {
+    "criteria.P1_no_counterexample.counterexamples": [
+     "4",
+     "0"
+    ],
+    "criteria.P1_no_counterexample.pass": [
+     "False",
+     "True"
+    ],
+    "criteria.P3_avoidable_r1_calls.avoidable": [
+     "71",
+     "67"
+    ],
+    "criteria.P3_avoidable_r1_calls.saved_ratio": [
+     "0.7172",
+     "0.6768"
+    ],
+    "runs.[0].avoidable_r1": [
+     "11",
+     "10"
+    ],
+    "runs.[0].counterexamples.[0].msg": [
+     "把这个改成另一种方式",
+     "None"
+    ],
+    "runs.[0].counterexamples.[0].turn": [
+     "7",
+     "None"
+    ],
+    "runs.[0].counterexamples.[0].verdict": [
+     "Skip",
+     "None"
+    ],
+    "runs.[0].rows.[5].mech_ack": [
+     "False",
+     "True"
+    ],
+    "runs.[5].avoidable_r1": [
+     "11",
+     "10"
+    ],
+    "runs.[5].counterexamples.[0].msg": [
+     "把这个改成另一种方式",
+     "None"
+    ],
+    "runs.[5].counterexamples.[0].turn": [
+     "7",
+     "None"
+    ]
+   }
+  }
+ ],
+ "r444_reproducibility": {
+  "runs_n": 3,
+  "identical_outputs": true,
+  "output_sha12": "b74e791ccca7",
+  "head_evidence_sha12": "ec57f5664141",
+  "input_fingerprint_n": 16,
+  "input_drift_n": 0,
+  "unregistered_reads": [
+   "eval/rover/r444/precheck_prefilter.py (instrument_self)",
+   "eval/rover/r444/precheck-prefilter.json (自身输出/写后读)"
+  ],
+  "input_mtimes_all_before_evidence_commit": true,
+  "evidence_commit": "e32b946 2026-09-15 09:40:24",
+  "instrument_commit": "e32b946 (与证据同回合)",
+  "verdict": "器具确定性 ∧ 输入面冻结 ∧ 落盘证据在当前器具下不可复现 ⇒ 证据与器具版本未绑定 (证据疑似定稿前产出) — 不得静默复原为「一致」",
+  "verdict_flip": "criteria.P1_no_counterexample.pass False→True; P3 avoidable 71→67"
+ }
+}

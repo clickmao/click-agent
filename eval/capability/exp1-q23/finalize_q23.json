@@ -1,0 +1,382 @@
+{
+ "schema": "q23-finalize/1",
+ "ts": "2026-09-16 00:39:39",
+ "P6_ok": true,
+ "P7_ok": true,
+ "P8_ok": true,
+ "P10_ok": true,
+ "P4_ok": true,
+ "P9_ok": true,
+ "apply": {
+  "changed_n": 6,
+  "changed": [
+   "exp1q11.other-bucket-decompose",
+   "exp1q15.unit-axis-guard",
+   "exp1q15.unit-axis-guard-q16",
+   "exp1q17.archive-field-provenance",
+   "exp1q18.rebuild-constructor",
+   "exp1q13.index-scope-out-classifier"
+  ],
+  "idempotent": true,
+  "readback_ok": true,
+  "readback": [
+   {
+    "id": "exp1q11.other-bucket-decompose",
+    "source": "audit_hook",
+    "surface": "self_contained",
+    "fp_n": 0,
+    "fp_matches_derived": true,
+    "round": "EXP1-Q23",
+    "superseded_kept": 2
+   },
+   {
+    "id": "exp1q15.unit-axis-guard",
+    "source": "audit_hook",
+    "surface": "self_contained",
+    "fp_n": 0,
+    "fp_matches_derived": true,
+    "round": "EXP1-Q23",
+    "superseded_kept": 2
+   },
+   {
+    "id": "exp1q15.unit-axis-guard-q16",
+    "source": "audit_hook",
+    "surface": "self_contained",
+    "fp_n": 0,
+    "fp_matches_derived": true,
+    "round": "EXP1-Q23",
+    "superseded_kept": 2
+   },
+   {
+    "id": "exp1q17.archive-field-provenance",
+    "source": "audit_hook",
+    "surface": "external_files",
+    "fp_n": 4,
+    "fp_matches_derived": true,
+    "round": "EXP1-Q23",
+    "superseded_kept": 3
+   },
+   {
+    "id": "exp1q18.rebuild-constructor",
+    "source": "audit_hook",
+    "surface": "external_files",
+    "fp_n": 2,
+    "fp_matches_derived": true,
+    "round": "EXP1-Q23",
+    "superseded_kept": 1
+   },
+   {
+    "id": "exp1q13.index-scope-out-classifier",
+    "source": "audit_hook",
+    "surface": "external_files",
+    "fp_n": 1,
+    "fp_matches_derived": true,
+    "round": "EXP1-Q23",
+    "superseded_kept": 4
+   }
+  ]
+ },
+ "verify": {
+  "zeroregress_ok": true,
+  "rows_n_before": 18,
+  "rows_n_after": 18,
+  "rows": [
+   {
+    "id": "probe.grade",
+    "ok": true,
+    "changed_keys": []
+   },
+   {
+    "id": "probe.run_probe",
+    "ok": true,
+    "changed_keys": []
+   },
+   {
+    "id": "exp1q1.scope-selftest",
+    "ok": true,
+    "changed_keys": []
+   },
+   {
+    "id": "exp1q2.docref-selftest",
+    "ok": true,
+    "changed_keys": []
+   },
+   {
+    "id": "exp1q4.docref-probe",
+    "ok": true,
+    "changed_keys": []
+   },
+   {
+    "id": "audit.status_gen",
+    "ok": true,
+    "changed_keys": []
+   },
+   {
+    "id": "r444.prefilter-precheck",
+    "ok": true,
+    "changed_keys": []
+   },
+   {
+    "id": "r444.analyze",
+    "ok": true,
+    "changed_keys": []
+   },
+   {
+    "id": "hooks.pre-commit",
+    "ok": true,
+    "changed_keys": []
+   },
+   {
+    "id": "r446.judge-precheck",
+    "ok": true,
+    "changed_keys": []
+   },
+   {
+    "id": "r446.judge-det-analyzer",
+    "ok": true,
+    "changed_keys": []
+   },
+   {
+    "id": "exp1q11.other-bucket-decompose",
+    "ok": true,
+    "changed_keys": [
+     "input_fingerprint",
+     "input_fingerprint_round",
+     "input_surface",
+     "input_surface_reason",
+     "input_surface_source",
+     "superseded_input_fingerprint"
+    ],
+    "unexpected_keys": []
+   },
+   {
+    "id": "exp1q15.unit-axis-guard",
+    "ok": true,
+    "changed_keys": [
+     "input_fingerprint",
+     "input_fingerprint_round",
+     "input_surface",
+     "input_surface_reason",
+     "input_surface_source",
+     "superseded_input_fingerprint"
+    ],
+    "unexpected_keys": []
+   },
+   {
+    "id": "exp1q15.unit-axis-guard-q16",
+    "ok": true,
+    "changed_keys": [
+     "input_fingerprint",
+     "input_fingerprint_round",
+     "input_surface",
+     "input_surface_reason",
+     "input_surface_source",
+     "superseded_input_fingerprint"
+    ],
+    "unexpected_keys": []
+   },
+   {
+    "id": "exp1q17.archive-field-provenance",
+    "ok": true,
+    "changed_keys": [
+     "input_fingerprint",
+     "input_fingerprint_round",
+     "input_surface_reason",
+     "input_surface_source",
+     "superseded_input_fingerprint"
+    ],
+    "unexpected_keys": []
+   },
+   {
+    "id": "exp1q18.rebuild-constructor",
+    "ok": true,
+    "changed_keys": [
+     "input_fingerprint",
+     "input_fingerprint_round",
+     "input_surface_reason",
+     "input_surface_source",
+     "superseded_input_fingerprint"
+    ],
+    "unexpected_keys": []
+   },
+   {
+    "id": "l2.instruments-check",
+    "ok": true,
+    "changed_keys": []
+   },
+   {
+    "id": "exp1q13.index-scope-out-classifier",
+    "ok": true,
+    "changed_keys": [
+     "input_fingerprint",
+     "input_fingerprint_round",
+     "input_surface_reason",
+     "input_surface_source",
+     "superseded_input_fingerprint"
+    ],
+    "unexpected_keys": []
+   }
+  ],
+  "P9_l2_field_check_ok": true,
+  "l2": [
+   {
+    "id": "exp1q11.other-bucket-decompose",
+    "l2_ok": true,
+    "detail": {
+     "version": "ok",
+     "instrument_sha12": "ok",
+     "input_surface": "ok:self_contained",
+     "input_fingerprint": "ok(n=0)",
+     "kpi_quad": "ok"
+    }
+   },
+   {
+    "id": "exp1q15.unit-axis-guard",
+    "l2_ok": true,
+    "detail": {
+     "version": "ok",
+     "instrument_sha12": "ok",
+     "input_surface": "ok:self_contained",
+     "input_fingerprint": "ok(n=0)",
+     "kpi_quad": "ok"
+    }
+   },
+   {
+    "id": "exp1q15.unit-axis-guard-q16",
+    "l2_ok": true,
+    "detail": {
+     "version": "ok",
+     "instrument_sha12": "ok",
+     "input_surface": "ok:self_contained",
+     "input_fingerprint": "ok(n=0)",
+     "kpi_quad": "ok"
+    }
+   },
+   {
+    "id": "exp1q17.archive-field-provenance",
+    "l2_ok": true,
+    "detail": {
+     "version": "ok",
+     "instrument_sha12": "ok",
+     "input_surface": "ok:external_files",
+     "input_fingerprint": "ok(n=4)",
+     "kpi_quad": "ok"
+    }
+   },
+   {
+    "id": "exp1q18.rebuild-constructor",
+    "l2_ok": true,
+    "detail": {
+     "version": "ok",
+     "instrument_sha12": "ok",
+     "input_surface": "ok:external_files",
+     "input_fingerprint": "ok(n=2)",
+     "kpi_quad": "ok"
+    }
+   },
+   {
+    "id": "exp1q13.index-scope-out-classifier",
+    "l2_ok": true,
+    "detail": {
+     "version": "ok",
+     "instrument_sha12": "ok",
+     "input_surface": "ok:external_files",
+     "input_fingerprint": "ok(n=1)",
+     "kpi_quad": "ok"
+    }
+   }
+  ]
+ },
+ "nc": [
+  {
+   "case": "control_unmutated",
+   "expect": "非 equal (真值 superset)",
+   "got": "superset",
+   "ok": true
+  },
+  {
+   "case": "NC-a drop-one",
+   "expect": "superset ∧ added 含被删项",
+   "got": "superset/['eval/capability/exp1-q10/citations.jsonl', 'eval/capabilit",
+   "ok": true
+  },
+  {
+   "case": "NC-b add-bogus",
+   "expect": "removed 含伪路径 ∧ added == 基线 added (注入项只进 removed)",
+   "got": "mixed/removed=['eval/capability/_nc_bogus_q23.json']/added_eq_base=True",
+   "ok": true
+  },
+  {
+   "case": "NC-c sha-mutate",
+   "expect": "sha_changed 非空且含该项",
+   "got": "mixed/['eval/capability/exp1-q10/citations.jsonl']",
+   "ok": true
+  },
+  {
+   "case": "NC-d self-compare",
+   "expect": "equal",
+   "got": "equal",
+   "ok": true
+  }
+ ],
+ "compare": [
+  {
+   "id": "exp1q11.other-bucket-decompose",
+   "surface_same": true,
+   "fp_same": true,
+   "sha12_same": true,
+   "rc_same": true,
+   "events_same": true,
+   "surface": "self_contained"
+  },
+  {
+   "id": "exp1q15.unit-axis-guard",
+   "surface_same": true,
+   "fp_same": true,
+   "sha12_same": true,
+   "rc_same": true,
+   "events_same": true,
+   "surface": "self_contained"
+  },
+  {
+   "id": "exp1q15.unit-axis-guard-q16",
+   "surface_same": true,
+   "fp_same": true,
+   "sha12_same": true,
+   "rc_same": true,
+   "events_same": true,
+   "surface": "self_contained"
+  },
+  {
+   "id": "exp1q17.archive-field-provenance",
+   "surface_same": true,
+   "fp_same": true,
+   "sha12_same": true,
+   "rc_same": true,
+   "events_same": true,
+   "surface": "external_files"
+  },
+  {
+   "id": "exp1q18.rebuild-constructor",
+   "surface_same": true,
+   "fp_same": true,
+   "sha12_same": true,
+   "rc_same": true,
+   "events_same": true,
+   "surface": "external_files"
+  },
+  {
+   "id": "exp1q13.index-scope-out-classifier",
+   "surface_same": true,
+   "fp_same": true,
+   "sha12_same": true,
+   "rc_same": true,
+   "events_same": true,
+   "surface": "external_files"
+  }
+ ],
+ "kpi": {
+  "appended": true,
+  "lines_after": 70
+ }
+}

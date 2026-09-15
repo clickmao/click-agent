@@ -424,16 +424,7 @@
    "version": "content-sha12:a5e952141582",
    "version_source": "content-sha12",
    "instrument_sha12": "a5e952141582",
-   "input_fingerprint": [
-    {
-     "path": "eval/capability/exp1-q10/citations.jsonl",
-     "sha12": "08c99bd67a41"
-    },
-    {
-     "path": "eval/capability/exp1-q10/attribution_q10.json",
-     "sha12": "7c4e1144921a"
-    }
-   ],
+   "input_fingerprint": [],
    "kpi_quad": {
     "单位": "边",
     "分母": "v2.6.0 边级 kind 轴 other 桶",
@@ -444,9 +435,20 @@
    "evidence_path": "eval/capability/exp1-q11/other_bucket_decompose.py",
    "nc_cmd": "python3 eval/capability/exp1-q11/other_bucket_decompose.py --citations eval/capability/exp1-q19/_absent_corpus.jsonl --out eval/capability/exp1-q20/l2runs/_q11_nc.json",
    "nc_expect": "nonzero",
-   "input_surface": "external_files",
-   "input_surface_source": "prior_round_registration",
-   "input_surface_reason": "Q19/Q20 轮登记的既往指纹; 未经审计钩子重推导 (欠账, 记入下轮候选)"
+   "input_surface": "self_contained",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "EXP1-Q23 审计钩子重推导: 无仓库内输入文件 (登记命令走内建夹具/自身产物); 既往登记的语料面与「登记命令真实读面」口径不同 ⇒ 旧口径作废",
+   "input_fingerprint_round": "EXP1-Q23",
+   "superseded_input_fingerprint": [
+    {
+     "path": "eval/capability/exp1-q10/citations.jsonl",
+     "sha12": "08c99bd67a41"
+    },
+    {
+     "path": "eval/capability/exp1-q10/attribution_q10.json",
+     "sha12": "7c4e1144921a"
+    }
+   ]
   },
   {
    "id": "exp1q15.unit-axis-guard",
@@ -457,16 +459,7 @@
    "version": "content-sha12:002c73121e33",
    "version_source": "content-sha12",
    "instrument_sha12": "002c73121e33",
-   "input_fingerprint": [
-    {
-     "path": "eval/capability/exp1-q10/probe_v260.py",
-     "sha12": "e90c7d7ff15e"
-    },
-    {
-     "path": "eval/capability/exp1-q10/citations.jsonl",
-     "sha12": "08c99bd67a41"
-    }
-   ],
+   "input_fingerprint": [],
    "kpi_quad": {
     "单位": "轴(单位×分母)",
     "分母": "登记面 cited_edges 总数",
@@ -479,9 +472,20 @@
    "nc_expect": "nonzero",
    "nc_cmd2": "python3 eval/capability/exp1-q15/unit_axis_guard.py --run --cites eval/capability/exp1-q18/arm_v270_VOID_self_include/citations.jsonl --json eval/capability/exp1-q20/l2runs/_q15_nc2.json",
    "nc_expect2": "nonzero",
-   "input_surface": "external_files",
-   "input_surface_source": "prior_round_registration",
-   "input_surface_reason": "Q19/Q20 轮登记的既往指纹; 未经审计钩子重推导 (欠账, 记入下轮候选)"
+   "input_surface": "self_contained",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "EXP1-Q23 审计钩子重推导: 无仓库内输入文件 (登记命令走内建夹具/自身产物); 既往登记的语料面与「登记命令真实读面」口径不同 ⇒ 旧口径作废",
+   "input_fingerprint_round": "EXP1-Q23",
+   "superseded_input_fingerprint": [
+    {
+     "path": "eval/capability/exp1-q10/probe_v260.py",
+     "sha12": "e90c7d7ff15e"
+    },
+    {
+     "path": "eval/capability/exp1-q10/citations.jsonl",
+     "sha12": "08c99bd67a41"
+    }
+   ]
   },
   {
    "id": "exp1q15.unit-axis-guard-q16",
@@ -492,16 +496,7 @@
    "version": "content-sha12:8d22d7d76002",
    "version_source": "content-sha12",
    "instrument_sha12": "8d22d7d76002",
-   "input_fingerprint": [
-    {
-     "path": "eval/capability/exp1-q10/probe_v260.py",
-     "sha12": "e90c7d7ff15e"
-    },
-    {
-     "path": "eval/capability/exp1-q10/citations.jsonl",
-     "sha12": "08c99bd67a41"
-    }
-   ],
+   "input_fingerprint": [],
    "kpi_quad": {
     "单位": "轴(单位×分母)",
     "分母": "登记面 cited_edges 总数",
@@ -512,9 +507,20 @@
    "evidence_path": "eval/capability/exp1-q16/unit_axis_guard.py",
    "nc_cmd": "python3 eval/capability/exp1-q16/unit_axis_guard.py --run --cites eval/capability/exp1-q19/_absent_corpus.jsonl --json eval/capability/exp1-q20/l2runs/_q16_nc.json",
    "nc_expect": "nonzero",
-   "input_surface": "external_files",
-   "input_surface_source": "prior_round_registration",
-   "input_surface_reason": "Q19/Q20 轮登记的既往指纹; 未经审计钩子重推导 (欠账, 记入下轮候选)"
+   "input_surface": "self_contained",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "EXP1-Q23 审计钩子重推导: 无仓库内输入文件 (登记命令走内建夹具/自身产物); 既往登记的语料面与「登记命令真实读面」口径不同 ⇒ 旧口径作废",
+   "input_fingerprint_round": "EXP1-Q23",
+   "superseded_input_fingerprint": [
+    {
+     "path": "eval/capability/exp1-q10/probe_v260.py",
+     "sha12": "e90c7d7ff15e"
+    },
+    {
+     "path": "eval/capability/exp1-q10/citations.jsonl",
+     "sha12": "08c99bd67a41"
+    }
+   ]
   },
   {
    "id": "exp1q17.archive-field-provenance",
@@ -527,12 +533,16 @@
    "instrument_sha12": "cac4530579fd",
    "input_fingerprint": [
     {
+     "path": "eval/capability/exp1-q10/attribution_q10.json",
+     "sha12": "7c4e1144921a"
+    },
+    {
      "path": "eval/capability/exp1-q10/citations.jsonl",
      "sha12": "08c99bd67a41"
     },
     {
-     "path": "eval/capability/exp1-q10/attribution_q10.json",
-     "sha12": "7c4e1144921a"
+     "path": "eval/capability/exp1-q10/probe_v260.py",
+     "sha12": "e90c7d7ff15e"
     },
     {
      "path": "eval/capability/exp1-q16/verdict_q16.json",
@@ -552,8 +562,23 @@
    "nc_cmd2": "python3 eval/capability/exp1-q17/archive_field_provenance.py --archive eval/capability/exp1-q19/_absent_corpus.jsonl --out eval/capability/exp1-q20/l2runs/_q17_nc2.json --fixtures-out eval/capability/exp1-q20/l2runs/_q17_nc2_fx.json",
    "nc_expect2": "nonzero",
    "input_surface": "external_files",
-   "input_surface_source": "prior_round_registration",
-   "input_surface_reason": "Q19/Q20 轮登记的既往指纹; 未经审计钩子重推导 (欠账, 记入下轮候选)"
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "EXP1-Q23 审计钩子重推导: 仓库内输入文件 4 ≤ 上限 24 (口径=登记命令的真实读面)",
+   "input_fingerprint_round": "EXP1-Q23",
+   "superseded_input_fingerprint": [
+    {
+     "path": "eval/capability/exp1-q10/citations.jsonl",
+     "sha12": "08c99bd67a41"
+    },
+    {
+     "path": "eval/capability/exp1-q10/attribution_q10.json",
+     "sha12": "7c4e1144921a"
+    },
+    {
+     "path": "eval/capability/exp1-q16/verdict_q16.json",
+     "sha12": "674bb15292e1"
+    }
+   ]
   },
   {
    "id": "exp1q18.rebuild-constructor",
@@ -568,6 +593,10 @@
     {
      "path": "eval/capability/exp1-q10/probe_v260.py",
      "sha12": "e90c7d7ff15e"
+    },
+    {
+     "path": "eval/capability/exp1-q18/probe_v270.py",
+     "sha12": "fe8dc0d7e3d3"
     }
    ],
    "kpi_quad": {
@@ -581,8 +610,15 @@
    "nc_cmd": "python3 eval/capability/exp1-q19/nc_rebuild_mutated.py",
    "nc_expect": "detect:NC_OK",
    "input_surface": "external_files",
-   "input_surface_source": "prior_round_registration",
-   "input_surface_reason": "Q19/Q20 轮登记的既往指纹; 未经审计钩子重推导 (欠账, 记入下轮候选)"
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "EXP1-Q23 审计钩子重推导: 仓库内输入文件 2 ≤ 上限 24 (口径=登记命令的真实读面)",
+   "input_fingerprint_round": "EXP1-Q23",
+   "superseded_input_fingerprint": [
+    {
+     "path": "eval/capability/exp1-q10/probe_v260.py",
+     "sha12": "e90c7d7ff15e"
+    }
+   ]
   },
   {
    "id": "l2.instruments-check",
@@ -637,20 +673,8 @@
    "instrument_sha12": "690560e01e7e",
    "input_fingerprint": [
     {
-     "path": "eval/capability/exp1-q10/attribution_q10.json",
-     "sha12": "7c4e1144921a"
-    },
-    {
-     "path": "eval/capability/exp1-q10/citations.jsonl",
-     "sha12": "08c99bd67a41"
-    },
-    {
      "path": "eval/capability/exp1-q10/probe_v260.py",
      "sha12": "e90c7d7ff15e"
-    },
-    {
-     "path": "eval/capability/exp1-q11/decomposition_q11.json",
-     "sha12": "7c8edae571d5"
     }
    ],
    "kpi_quad": {
@@ -666,8 +690,27 @@
    "nc_cmd2": "python3 eval/capability/exp1-q13/index_scope_out_classify.py --inject-defect=phantom-ineffective",
    "nc_expect2": "nonzero",
    "input_surface": "external_files",
-   "input_surface_source": "prior_round_registration",
-   "input_surface_reason": "Q19/Q20 轮登记的既往指纹; 未经审计钩子重推导 (欠账, 记入下轮候选)"
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "EXP1-Q23 审计钩子重推导: 仓库内输入文件 1 ≤ 上限 24 (口径=登记命令的真实读面)",
+   "input_fingerprint_round": "EXP1-Q23",
+   "superseded_input_fingerprint": [
+    {
+     "path": "eval/capability/exp1-q10/attribution_q10.json",
+     "sha12": "7c4e1144921a"
+    },
+    {
+     "path": "eval/capability/exp1-q10/citations.jsonl",
+     "sha12": "08c99bd67a41"
+    },
+    {
+     "path": "eval/capability/exp1-q10/probe_v260.py",
+     "sha12": "e90c7d7ff15e"
+    },
+    {
+     "path": "eval/capability/exp1-q11/decomposition_q11.json",
+     "sha12": "7c8edae571d5"
+    }
+   ]
   }
  ]
 }

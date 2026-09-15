@@ -1,0 +1,1061 @@
+{
+ "ts": "2026-09-16 00:37:23",
+ "round": "EXP1-Q23",
+ "tag": "run1",
+ "method": "audit_hook_run (Q21 io_trace 原样) + A1 前缀扩展 + 白名单 ('generated', 'elapsed_s')",
+ "targets_n": 6,
+ "rows": [
+  {
+   "id": "exp1q11.other-bucket-decompose",
+   "cmd": "python3 eval/capability/exp1-q11/other_bucket_decompose.py --selftest",
+   "rc": 0,
+   "elapsed_s": 0.06,
+   "stdout_tail": "belled non_cs n=3\n  [ok] NEG-b declared rung -> not structural class other_residual\n  [ok] NEG-c precedence permutation changes label default=target_non_cs perm=mixed_rung\n  [ok] VAC other_edges==0 记为 vacuous 且 C8 判 false other_edges=0\n  [ok] CONS exhaustive single-label 5/5\nRESULT: PASS (0 failing)",
+   "sink_n": 2,
+   "child_n": 2,
+   "trace_bytes": 1558,
+   "capped": false,
+   "malformed_lines": 0,
+   "tracer_excluded_counters": {
+    "outside": 8
+   },
+   "tracer_excluded_examples": {
+    "tracer": [
+     "eval/capability/exp1-q21/derived_inputs_q21.json"
+    ]
+   },
+   "events_n": 4,
+   "reads_n": 3,
+   "writes_n": 0,
+   "scans_n": 0,
+   "spawns_n": 1,
+   "input_surface": "self_contained",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "无仓库内输入文件 (仅自身/运行时/环境态)",
+   "corpus_dynamic_count": null,
+   "excluded_categories": {
+    "instrument_self": 1,
+    "tracer_self": 1
+   },
+   "write_paths_in_repo": [],
+   "write_paths_in_repo_n": 0,
+   "write_paths_outside_repo_n": 0,
+   "input_fingerprint": [],
+   "fingerprint_detail": [],
+   "prior_fingerprint": [
+    {
+     "path": "eval/capability/exp1-q10/citations.jsonl",
+     "sha12": "08c99bd67a41"
+    },
+    {
+     "path": "eval/capability/exp1-q10/attribution_q10.json",
+     "sha12": "7c4e1144921a"
+    }
+   ],
+   "relation_vs_prior": {
+    "relation": "subset",
+    "added": [],
+    "removed": [
+     "eval/capability/exp1-q10/attribution_q10.json",
+     "eval/capability/exp1-q10/citations.jsonl"
+    ],
+    "sha_changed": [],
+    "prior_n": 2,
+    "derived_n": 0
+   },
+   "cmd_write_targets_guess": [],
+   "expect_rc": 0,
+   "expect_substr": "RESULT: PASS",
+   "substr_ok": true,
+   "crosscheck": false
+  },
+  {
+   "id": "exp1q15.unit-axis-guard",
+   "cmd": "python3 eval/capability/exp1-q15/unit_axis_guard.py --selftest",
+   "rc": 0,
+   "elapsed_s": 0.2,
+   "stdout_tail": "declared         expect=2 got=2 findings=['C8_ratio_undeclared']\n  OK  FX8_missing_input            expect=3 got=3 findings=['MEASUREMENT']\n  OK  FX9_vacuous_single_axis      expect=2 got=2 findings=['C4_self_derived_total', 'C9_vacuous']\n  OK  FX10_legit_other_names       expect=0 got=0 findings=[]",
+   "sink_n": 2,
+   "child_n": 3,
+   "trace_bytes": 1662,
+   "capped": false,
+   "malformed_lines": 0,
+   "tracer_excluded_counters": {
+    "outside": 104
+   },
+   "tracer_excluded_examples": {
+    "tracer": [
+     "eval/capability/exp1-q21/derived_inputs_q21.json"
+    ]
+   },
+   "events_n": 5,
+   "reads_n": 3,
+   "writes_n": 1,
+   "scans_n": 0,
+   "spawns_n": 1,
+   "input_surface": "self_contained",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "无仓库内输入文件 (仅自身/运行时/环境态)",
+   "corpus_dynamic_count": null,
+   "excluded_categories": {
+    "instrument_self": 1,
+    "tracer_self": 1
+   },
+   "write_paths_in_repo": [
+    "eval/capability/exp1-q15/selftest_q15.json"
+   ],
+   "write_paths_in_repo_n": 1,
+   "write_paths_outside_repo_n": 0,
+   "input_fingerprint": [],
+   "fingerprint_detail": [],
+   "prior_fingerprint": [
+    {
+     "path": "eval/capability/exp1-q10/probe_v260.py",
+     "sha12": "e90c7d7ff15e"
+    },
+    {
+     "path": "eval/capability/exp1-q10/citations.jsonl",
+     "sha12": "08c99bd67a41"
+    }
+   ],
+   "relation_vs_prior": {
+    "relation": "subset",
+    "added": [],
+    "removed": [
+     "eval/capability/exp1-q10/citations.jsonl",
+     "eval/capability/exp1-q10/probe_v260.py"
+    ],
+    "sha_changed": [],
+    "prior_n": 2,
+    "derived_n": 0
+   },
+   "cmd_write_targets_guess": [],
+   "expect_rc": 0,
+   "expect_substr": "SELFTEST 10/10 pass",
+   "substr_ok": false,
+   "crosscheck": false
+  },
+  {
+   "id": "exp1q15.unit-axis-guard-q16",
+   "cmd": "python3 eval/capability/exp1-q16/unit_axis_guard.py --selftest",
+   "rc": 0,
+   "elapsed_s": 0.23,
+   "stdout_tail": "ASUREMENT:重放与登记读数不一致（先查派生/总体链，不调参）: ['symbol_face_rungs']\"]\n  OK  FX14_archive_face_field_absent expect=0 got=0 findings=[]\n  OK  FX13_untyped_skip_fail_closed expect=3 got=3 findings=['MEASUREMENT', \"MEASUREMENT:过滤表达式引用未派生名 'mystery_gate(c)': name 'mystery_gate' is not defined（fail-closed，不回落默认值）\"]",
+   "sink_n": 2,
+   "child_n": 3,
+   "trace_bytes": 1662,
+   "capped": false,
+   "malformed_lines": 0,
+   "tracer_excluded_counters": {
+    "outside": 136
+   },
+   "tracer_excluded_examples": {
+    "tracer": [
+     "eval/capability/exp1-q21/derived_inputs_q21.json"
+    ]
+   },
+   "events_n": 5,
+   "reads_n": 3,
+   "writes_n": 1,
+   "scans_n": 0,
+   "spawns_n": 1,
+   "input_surface": "self_contained",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "无仓库内输入文件 (仅自身/运行时/环境态)",
+   "corpus_dynamic_count": null,
+   "excluded_categories": {
+    "instrument_self": 1,
+    "tracer_self": 1
+   },
+   "write_paths_in_repo": [
+    "eval/capability/exp1-q16/selftest_q16.json"
+   ],
+   "write_paths_in_repo_n": 1,
+   "write_paths_outside_repo_n": 0,
+   "input_fingerprint": [],
+   "fingerprint_detail": [],
+   "prior_fingerprint": [
+    {
+     "path": "eval/capability/exp1-q10/probe_v260.py",
+     "sha12": "e90c7d7ff15e"
+    },
+    {
+     "path": "eval/capability/exp1-q10/citations.jsonl",
+     "sha12": "08c99bd67a41"
+    }
+   ],
+   "relation_vs_prior": {
+    "relation": "subset",
+    "added": [],
+    "removed": [
+     "eval/capability/exp1-q10/citations.jsonl",
+     "eval/capability/exp1-q10/probe_v260.py"
+    ],
+    "sha_changed": [],
+    "prior_n": 2,
+    "derived_n": 0
+   },
+   "cmd_write_targets_guess": [],
+   "expect_rc": 0,
+   "expect_substr": "SELFTEST 14/14 pass",
+   "substr_ok": false,
+   "crosscheck": false
+  },
+  {
+   "id": "exp1q17.archive-field-provenance",
+   "cmd": "python3 eval/capability/exp1-q17/archive_field_provenance.py --selftest --out eval/capability/exp1-q20/l2runs/verdict_q17.json --fixtures-out eval/capability/exp1-q20/l2runs/selftest_q17.json",
+   "rc": 0,
+   "elapsed_s": 1.2,
+   "stdout_tail": "cer_branch_unhit': 2, 'C_producer_dump_omission': 9, 'C_written_and_archived': 24}  Σ=35 == |P∪D∪A|=35\n漏字段(9): ['block_id', 'path_exists', 'pos_end', 'pos_start', 'raw', 'relocated_lines_ok', 'relocated_symbol_faces', 'relocated_symbols_absent', 'symbol_faces']\nchecks 15/15 · fixtures 15/15 · exit=0",
+   "sink_n": 2,
+   "child_n": 907,
+   "trace_bytes": 86664,
+   "capped": false,
+   "malformed_lines": 0,
+   "tracer_excluded_counters": {
+    "outside": 47
+   },
+   "tracer_excluded_examples": {
+    "tracer": [
+     "eval/capability/exp1-q21/derived_inputs_q21.json"
+    ]
+   },
+   "events_n": 909,
+   "reads_n": 24,
+   "writes_n": 4,
+   "scans_n": 880,
+   "spawns_n": 1,
+   "input_surface": "external_files",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "仓库内输入文件 4 ≤ 上限 24",
+   "corpus_dynamic_count": null,
+   "excluded_categories": {
+    "instrument_self": 1,
+    "tracer_self": 1,
+    "missing_or_dir": 440
+   },
+   "write_paths_in_repo": [
+    "eval/capability/exp1-q20/l2runs",
+    "eval/capability/exp1-q20/l2runs/selftest_q17.json",
+    "eval/capability/exp1-q20/l2runs/verdict_q17.json"
+   ],
+   "write_paths_in_repo_n": 3,
+   "write_paths_outside_repo_n": 0,
+   "input_fingerprint": [
+    "eval/capability/exp1-q10/attribution_q10.json",
+    "eval/capability/exp1-q10/citations.jsonl",
+    "eval/capability/exp1-q10/probe_v260.py",
+    "eval/capability/exp1-q16/verdict_q16.json"
+   ],
+   "fingerprint_detail": [
+    {
+     "path": "eval/capability/exp1-q10/attribution_q10.json",
+     "sha12": "7c4e1144921a",
+     "sha256sum12": "7c4e1144921a"
+    },
+    {
+     "path": "eval/capability/exp1-q10/citations.jsonl",
+     "sha12": "08c99bd67a41",
+     "sha256sum12": "08c99bd67a41"
+    },
+    {
+     "path": "eval/capability/exp1-q10/probe_v260.py",
+     "sha12": "e90c7d7ff15e",
+     "sha256sum12": "e90c7d7ff15e"
+    },
+    {
+     "path": "eval/capability/exp1-q16/verdict_q16.json",
+     "sha12": "674bb15292e1",
+     "sha256sum12": "674bb15292e1"
+    }
+   ],
+   "prior_fingerprint": [
+    {
+     "path": "eval/capability/exp1-q10/citations.jsonl",
+     "sha12": "08c99bd67a41"
+    },
+    {
+     "path": "eval/capability/exp1-q10/attribution_q10.json",
+     "sha12": "7c4e1144921a"
+    },
+    {
+     "path": "eval/capability/exp1-q16/verdict_q16.json",
+     "sha12": "674bb15292e1"
+    }
+   ],
+   "relation_vs_prior": {
+    "relation": "superset",
+    "added": [
+     "eval/capability/exp1-q10/probe_v260.py"
+    ],
+    "removed": [],
+    "sha_changed": [],
+    "prior_n": 3,
+    "derived_n": 4
+   },
+   "cmd_write_targets_guess": [
+    "eval/capability/exp1-q20/l2runs/selftest_q17.json",
+    "eval/capability/exp1-q20/l2runs/verdict_q17.json"
+   ],
+   "expect_rc": 0,
+   "expect_substr": "checks 15/15",
+   "substr_ok": true,
+   "crosscheck": false
+  },
+  {
+   "id": "exp1q18.rebuild-constructor",
+   "cmd": "python3 eval/capability/exp1-q18/build_q18_probe.py",
+   "rc": 0,
+   "elapsed_s": 0.05,
+   "stdout_tail": "n_bumped\": true,\n    \"version_gone_old\": true,\n    \"keys_inserted_once_each\": true,\n    \"insert_literal_count\": 1,\n    \"guard_line_has_keys\": true,\n    \"changed_line_count\": 2,\n    \"changed_line_indices\": [\n      67,\n      1590\n    ],\n    \"only_two_lines_changed\": true\n  },\n  \"ok\": true\n}\nBUILDER_OK",
+   "sink_n": 2,
+   "child_n": 7,
+   "trace_bytes": 1185,
+   "capped": false,
+   "malformed_lines": 0,
+   "tracer_excluded_counters": {
+    "outside": 1
+   },
+   "tracer_excluded_examples": {
+    "tracer": [
+     "eval/capability/exp1-q21/derived_inputs_q21.json"
+    ]
+   },
+   "events_n": 9,
+   "reads_n": 5,
+   "writes_n": 3,
+   "scans_n": 0,
+   "spawns_n": 1,
+   "input_surface": "external_files",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "仓库内输入文件 2 ≤ 上限 24",
+   "corpus_dynamic_count": null,
+   "excluded_categories": {
+    "instrument_self": 1,
+    "tracer_self": 1
+   },
+   "write_paths_in_repo": [
+    "eval/capability/exp1-q18",
+    "eval/capability/exp1-q18/build_q18.json",
+    "eval/capability/exp1-q18/probe_v270.py"
+   ],
+   "write_paths_in_repo_n": 3,
+   "write_paths_outside_repo_n": 0,
+   "input_fingerprint": [
+    "eval/capability/exp1-q10/probe_v260.py",
+    "eval/capability/exp1-q18/probe_v270.py"
+   ],
+   "fingerprint_detail": [
+    {
+     "path": "eval/capability/exp1-q10/probe_v260.py",
+     "sha12": "e90c7d7ff15e",
+     "sha256sum12": "e90c7d7ff15e"
+    },
+    {
+     "path": "eval/capability/exp1-q18/probe_v270.py",
+     "sha12": "fe8dc0d7e3d3",
+     "sha256sum12": "fe8dc0d7e3d3"
+    }
+   ],
+   "prior_fingerprint": [
+    {
+     "path": "eval/capability/exp1-q10/probe_v260.py",
+     "sha12": "e90c7d7ff15e"
+    }
+   ],
+   "relation_vs_prior": {
+    "relation": "superset",
+    "added": [
+     "eval/capability/exp1-q18/probe_v270.py"
+    ],
+    "removed": [],
+    "sha_changed": [],
+    "prior_n": 1,
+    "derived_n": 2
+   },
+   "cmd_write_targets_guess": [],
+   "expect_rc": 0,
+   "expect_substr": "BUILDER_OK",
+   "substr_ok": true,
+   "crosscheck": false
+  },
+  {
+   "id": "exp1q13.index-scope-out-classifier",
+   "cmd": "python3 eval/capability/exp1-q13/index_scope_out_classify.py --selftest --no-write",
+   "rc": 0,
+   "elapsed_s": 0.06,
+   "stdout_tail": "mutated_copy\": [\n    \".zzz\"\n   ]\n  },\n  \"T6_self_source_no_suffix_literal\": {\n   \"pass\": true,\n   \"hits\": [],\n   \"regex\": \"standalone quoted dot+suffix literal\"\n  },\n  \"T7_derivation_failure_raises\": {\n   \"pass\": true,\n   \"reason\": \"语料根声明行未找到 (CODE_GLOBS) —— 派生失败, 不回落默认值\"\n  }\n },\n \"all_pass\": true\n}",
+   "sink_n": 2,
+   "child_n": 10,
+   "trace_bytes": 2474,
+   "capped": false,
+   "malformed_lines": 0,
+   "tracer_excluded_counters": {
+    "outside": 8
+   },
+   "tracer_excluded_examples": {
+    "tracer": [
+     "eval/capability/exp1-q21/derived_inputs_q21.json"
+    ]
+   },
+   "events_n": 12,
+   "reads_n": 9,
+   "writes_n": 2,
+   "scans_n": 0,
+   "spawns_n": 1,
+   "input_surface": "external_files",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "仓库内输入文件 1 ≤ 上限 24",
+   "corpus_dynamic_count": null,
+   "excluded_categories": {
+    "missing_or_dir": 1,
+    "instrument_self": 1,
+    "tracer_self": 1
+   },
+   "write_paths_in_repo": [
+    "eval/capability/exp1-q13/_selftest_target.py"
+   ],
+   "write_paths_in_repo_n": 1,
+   "write_paths_outside_repo_n": 0,
+   "input_fingerprint": [
+    "eval/capability/exp1-q10/probe_v260.py"
+   ],
+   "fingerprint_detail": [
+    {
+     "path": "eval/capability/exp1-q10/probe_v260.py",
+     "sha12": "e90c7d7ff15e",
+     "sha256sum12": "e90c7d7ff15e"
+    }
+   ],
+   "prior_fingerprint": [
+    {
+     "path": "eval/capability/exp1-q10/attribution_q10.json",
+     "sha12": "7c4e1144921a"
+    },
+    {
+     "path": "eval/capability/exp1-q10/citations.jsonl",
+     "sha12": "08c99bd67a41"
+    },
+    {
+     "path": "eval/capability/exp1-q10/probe_v260.py",
+     "sha12": "e90c7d7ff15e"
+    },
+    {
+     "path": "eval/capability/exp1-q11/decomposition_q11.json",
+     "sha12": "7c8edae571d5"
+    }
+   ],
+   "relation_vs_prior": {
+    "relation": "subset",
+    "added": [],
+    "removed": [
+     "eval/capability/exp1-q10/attribution_q10.json",
+     "eval/capability/exp1-q10/citations.jsonl",
+     "eval/capability/exp1-q11/decomposition_q11.json"
+    ],
+    "sha_changed": [],
+    "prior_n": 4,
+    "derived_n": 1
+   },
+   "cmd_write_targets_guess": [],
+   "expect_rc": 0,
+   "expect_substr": "\"all_pass\": true",
+   "substr_ok": true,
+   "crosscheck": false
+  },
+  {
+   "id": "r444.prefilter-precheck",
+   "cmd": "python3 eval/rover/r444/precheck_prefilter.py",
+   "rc": 0,
+   "elapsed_s": 0.07,
+   "stdout_tail": "0  门行=21 r1行=17 skip=7  可省=10 反例=0 三通道一致=True\n  BRJ    M20  门行=21 r1行=17 skip=7  可省=10 反例=0 三通道一致=True\n  BRJRP  M20  门行=21 r1行=17 skip=7  可省=10 反例=0 三通道一致=True\n  P1 反例=0 | P2 通道一致=False | P3 r1 99→可省 67 (67.7%)\n  判定: SEPARABLE -> /home/agentuser/AgentFramework/eval/rover/r444/precheck-prefilter.json",
+   "sink_n": 2,
+   "child_n": 24,
+   "trace_bytes": 3107,
+   "capped": false,
+   "malformed_lines": 0,
+   "tracer_excluded_counters": {
+    "outside": 2
+   },
+   "tracer_excluded_examples": {
+    "tracer": [
+     "eval/capability/exp1-q21/derived_inputs_q21.json"
+    ]
+   },
+   "events_n": 26,
+   "reads_n": 19,
+   "writes_n": 2,
+   "scans_n": 4,
+   "spawns_n": 1,
+   "input_surface": "external_files",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "仓库内输入文件 16 ≤ 上限 24",
+   "corpus_dynamic_count": null,
+   "excluded_categories": {
+    "tracer_self": 1,
+    "missing_or_dir": 2,
+    "instrument_self": 1
+   },
+   "write_paths_in_repo": [
+    "eval/rover/r444",
+    "eval/rover/r444/precheck-prefilter.json"
+   ],
+   "write_paths_in_repo_n": 2,
+   "write_paths_outside_repo_n": 0,
+   "input_fingerprint": [
+    "eval/rover/r441/grid/task-M20.json",
+    "eval/rover/r441/grid/task-V2b.json",
+    "eval/rover/r441/grid/task-W20.json",
+    "eval/rover/r441/grid/task-W8.json",
+    "eval/rover/r441/run-BRJ-M20/data/telemetry/host.jsonl",
+    "eval/rover/r441/run-BRJ-V2b-c2/data/telemetry/host.jsonl",
+    "eval/rover/r441/run-BRJ-W20/data/telemetry/host.jsonl",
+    "eval/rover/r441/run-BRJ-W8-b2/data/telemetry/host.jsonl",
+    "eval/rover/r441/run-BRJ-W8/data/telemetry/host.jsonl",
+    "eval/rover/r441/run_all_s1.log",
+    "eval/rover/r441/run_all_s2.log",
+    "eval/rover/r441/run_all_s3.log",
+    "eval/rover/r443/run-BRJ-M20-s1/data/telemetry/host.jsonl",
+    "eval/rover/r443/run-BRJ-M20/data/telemetry/host.jsonl",
+    "eval/rover/r443/run-BRJRP-M20-s1/data/telemetry/host.jsonl",
+    "eval/rover/r443/run_all_s1.log"
+   ],
+   "fingerprint_detail": [
+    {
+     "path": "eval/rover/r441/grid/task-M20.json",
+     "sha12": "84ade5bd0ca8",
+     "sha256sum12": "84ade5bd0ca8"
+    },
+    {
+     "path": "eval/rover/r441/grid/task-V2b.json",
+     "sha12": "1081cbae0a53",
+     "sha256sum12": "1081cbae0a53"
+    },
+    {
+     "path": "eval/rover/r441/grid/task-W20.json",
+     "sha12": "61fd76dd8b76",
+     "sha256sum12": "61fd76dd8b76"
+    },
+    {
+     "path": "eval/rover/r441/grid/task-W8.json",
+     "sha12": "dd22a113627d",
+     "sha256sum12": "dd22a113627d"
+    },
+    {
+     "path": "eval/rover/r441/run-BRJ-M20/data/telemetry/host.jsonl",
+     "sha12": "50587fd388ab",
+     "sha256sum12": "50587fd388ab"
+    },
+    {
+     "path": "eval/rover/r441/run-BRJ-V2b-c2/data/telemetry/host.jsonl",
+     "sha12": "ebc3d818b328",
+     "sha256sum12": "ebc3d818b328"
+    },
+    {
+     "path": "eval/rover/r441/run-BRJ-W20/data/telemetry/host.jsonl",
+     "sha12": "ace998beee79",
+     "sha256sum12": "ace998beee79"
+    },
+    {
+     "path": "eval/rover/r441/run-BRJ-W8-b2/data/telemetry/host.jsonl",
+     "sha12": "55644b3987fa",
+     "sha256sum12": "55644b3987fa"
+    },
+    {
+     "path": "eval/rover/r441/run-BRJ-W8/data/telemetry/host.jsonl",
+     "sha12": "56661c8a6b77",
+     "sha256sum12": "56661c8a6b77"
+    },
+    {
+     "path": "eval/rover/r441/run_all_s1.log",
+     "sha12": "7b37210906d0",
+     "sha256sum12": "7b37210906d0"
+    },
+    {
+     "path": "eval/rover/r441/run_all_s2.log",
+     "sha12": "c5a81be32798",
+     "sha256sum12": "c5a81be32798"
+    },
+    {
+     "path": "eval/rover/r441/run_all_s3.log",
+     "sha12": "c64950f26b75",
+     "sha256sum12": "c64950f26b75"
+    },
+    {
+     "path": "eval/rover/r443/run-BRJ-M20-s1/data/telemetry/host.jsonl",
+     "sha12": "6097eefd0e95",
+     "sha256sum12": "6097eefd0e95"
+    },
+    {
+     "path": "eval/rover/r443/run-BRJ-M20/data/telemetry/host.jsonl",
+     "sha12": "b600066c0414",
+     "sha256sum12": "b600066c0414"
+    },
+    {
+     "path": "eval/rover/r443/run-BRJRP-M20-s1/data/telemetry/host.jsonl",
+     "sha12": "304ac945d2fc",
+     "sha256sum12": "304ac945d2fc"
+    },
+    {
+     "path": "eval/rover/r443/run_all_s1.log",
+     "sha12": "542e0116d01c",
+     "sha256sum12": "542e0116d01c"
+    }
+   ],
+   "prior_fingerprint": [
+    {
+     "path": "eval/rover/r441/grid/task-M20.json",
+     "sha12": "84ade5bd0ca8"
+    },
+    {
+     "path": "eval/rover/r441/grid/task-V2b.json",
+     "sha12": "1081cbae0a53"
+    },
+    {
+     "path": "eval/rover/r441/grid/task-W20.json",
+     "sha12": "61fd76dd8b76"
+    },
+    {
+     "path": "eval/rover/r441/grid/task-W8.json",
+     "sha12": "dd22a113627d"
+    },
+    {
+     "path": "eval/rover/r441/run-BRJ-M20/data/telemetry/host.jsonl",
+     "sha12": "50587fd388ab"
+    },
+    {
+     "path": "eval/rover/r441/run-BRJ-V2b-c2/data/telemetry/host.jsonl",
+     "sha12": "ebc3d818b328"
+    },
+    {
+     "path": "eval/rover/r441/run-BRJ-W20/data/telemetry/host.jsonl",
+     "sha12": "ace998beee79"
+    },
+    {
+     "path": "eval/rover/r441/run-BRJ-W8-b2/data/telemetry/host.jsonl",
+     "sha12": "55644b3987fa"
+    },
+    {
+     "path": "eval/rover/r441/run-BRJ-W8/data/telemetry/host.jsonl",
+     "sha12": "56661c8a6b77"
+    },
+    {
+     "path": "eval/rover/r441/run_all_s1.log",
+     "sha12": "7b37210906d0"
+    },
+    {
+     "path": "eval/rover/r441/run_all_s2.log",
+     "sha12": "c5a81be32798"
+    },
+    {
+     "path": "eval/rover/r441/run_all_s3.log",
+     "sha12": "c64950f26b75"
+    },
+    {
+     "path": "eval/rover/r443/run-BRJ-M20-s1/data/telemetry/host.jsonl",
+     "sha12": "6097eefd0e95"
+    },
+    {
+     "path": "eval/rover/r443/run-BRJ-M20/data/telemetry/host.jsonl",
+     "sha12": "b600066c0414"
+    },
+    {
+     "path": "eval/rover/r443/run-BRJRP-M20-s1/data/telemetry/host.jsonl",
+     "sha12": "304ac945d2fc"
+    },
+    {
+     "path": "eval/rover/r443/run_all_s1.log",
+     "sha12": "542e0116d01c"
+    }
+   ],
+   "relation_vs_prior": {
+    "relation": "equal",
+    "added": [],
+    "removed": [],
+    "sha_changed": [],
+    "prior_n": 16,
+    "derived_n": 16
+   },
+   "cmd_write_targets_guess": [],
+   "expect_rc": 0,
+   "expect_substr": "P1",
+   "substr_ok": true,
+   "crosscheck": true
+  },
+  {
+   "id": "r444.analyze",
+   "cmd": "python3 eval/rover/r444/analyze_r444.py",
+   "rc": 0,
+   "elapsed_s": 0.22,
+   "stdout_tail": "k=True\n  M20/BRJL   桩 13 = G 13+J  0+未归属0 ok=True\n  V2b/A      桩  3 = G  3+J  0+未归属0 ok=True\n  V2b/BRJ    桩  2 = G  2+J  0+未归属0 ok=True\n  W8/A       桩  7 = G  7+J  0+未归属0 ok=True\n  W8/BRJ     桩  6 = G  6+J  0+未归属0 ok=True\n已落盘: /home/agentuser/AgentFramework/eval/rover/r444/verdict-r444-analysis.json",
+   "sink_n": 2,
+   "child_n": 91,
+   "trace_bytes": 11346,
+   "capped": false,
+   "malformed_lines": 0,
+   "tracer_excluded_counters": {
+    "outside": 1
+   },
+   "tracer_excluded_examples": {
+    "tracer": [
+     "eval/capability/exp1-q21/derived_inputs_q21.json"
+    ]
+   },
+   "events_n": 93,
+   "reads_n": 91,
+   "writes_n": 1,
+   "scans_n": 0,
+   "spawns_n": 1,
+   "input_surface": "external_files",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "仓库内输入文件 16 ≤ 上限 24",
+   "corpus_dynamic_count": null,
+   "excluded_categories": {
+    "tracer_self": 1,
+    "instrument_self": 1
+   },
+   "write_paths_in_repo": [
+    "eval/rover/r444/verdict-r444-analysis.json"
+   ],
+   "write_paths_in_repo_n": 1,
+   "write_paths_outside_repo_n": 0,
+   "input_fingerprint": [
+    "eval/rover/r444/run-A-M20-s4/data/telemetry/host.jsonl",
+    "eval/rover/r444/run-A-V2b-s4/data/telemetry/host.jsonl",
+    "eval/rover/r444/run-A-W8-s4/data/telemetry/host.jsonl",
+    "eval/rover/r444/run-BRJ-M20-s4/data/telemetry/host.jsonl",
+    "eval/rover/r444/run-BRJ-M20-s5/data/telemetry/host.jsonl",
+    "eval/rover/r444/run-BRJ-V2b-s4/data/telemetry/host.jsonl",
+    "eval/rover/r444/run-BRJ-W8-s4/data/telemetry/host.jsonl",
+    "eval/rover/r444/run-BRJL-M20-s4/data/telemetry/host.jsonl",
+    "eval/rover/r444/verdict-A-M20-s4.json",
+    "eval/rover/r444/verdict-A-V2b-s4.json",
+    "eval/rover/r444/verdict-A-W8-s4.json",
+    "eval/rover/r444/verdict-BRJ-M20-s4.json",
+    "eval/rover/r444/verdict-BRJ-M20-s5.json",
+    "eval/rover/r444/verdict-BRJ-V2b-s4.json",
+    "eval/rover/r444/verdict-BRJ-W8-s4.json",
+    "eval/rover/r444/verdict-BRJL-M20-s4.json"
+   ],
+   "fingerprint_detail": [
+    {
+     "path": "eval/rover/r444/run-A-M20-s4/data/telemetry/host.jsonl",
+     "sha12": "25a908217f33",
+     "sha256sum12": "25a908217f33"
+    },
+    {
+     "path": "eval/rover/r444/run-A-V2b-s4/data/telemetry/host.jsonl",
+     "sha12": "a14e681d2b6e",
+     "sha256sum12": "a14e681d2b6e"
+    },
+    {
+     "path": "eval/rover/r444/run-A-W8-s4/data/telemetry/host.jsonl",
+     "sha12": "e0e31ab0ce3a",
+     "sha256sum12": "e0e31ab0ce3a"
+    },
+    {
+     "path": "eval/rover/r444/run-BRJ-M20-s4/data/telemetry/host.jsonl",
+     "sha12": "0ad4677825de",
+     "sha256sum12": "0ad4677825de"
+    },
+    {
+     "path": "eval/rover/r444/run-BRJ-M20-s5/data/telemetry/host.jsonl",
+     "sha12": "54738c3e3b38",
+     "sha256sum12": "54738c3e3b38"
+    },
+    {
+     "path": "eval/rover/r444/run-BRJ-V2b-s4/data/telemetry/host.jsonl",
+     "sha12": "2c3f55dbfb0a",
+     "sha256sum12": "2c3f55dbfb0a"
+    },
+    {
+     "path": "eval/rover/r444/run-BRJ-W8-s4/data/telemetry/host.jsonl",
+     "sha12": "b8594d190387",
+     "sha256sum12": "b8594d190387"
+    },
+    {
+     "path": "eval/rover/r444/run-BRJL-M20-s4/data/telemetry/host.jsonl",
+     "sha12": "8b85b9847518",
+     "sha256sum12": "8b85b9847518"
+    },
+    {
+     "path": "eval/rover/r444/verdict-A-M20-s4.json",
+     "sha12": "50827b81cdcc",
+     "sha256sum12": "50827b81cdcc"
+    },
+    {
+     "path": "eval/rover/r444/verdict-A-V2b-s4.json",
+     "sha12": "10decd0f1e92",
+     "sha256sum12": "10decd0f1e92"
+    },
+    {
+     "path": "eval/rover/r444/verdict-A-W8-s4.json",
+     "sha12": "5d75457066bc",
+     "sha256sum12": "5d75457066bc"
+    },
+    {
+     "path": "eval/rover/r444/verdict-BRJ-M20-s4.json",
+     "sha12": "9dd26d7aaf55",
+     "sha256sum12": "9dd26d7aaf55"
+    },
+    {
+     "path": "eval/rover/r444/verdict-BRJ-M20-s5.json",
+     "sha12": "7f2067b7b431",
+     "sha256sum12": "7f2067b7b431"
+    },
+    {
+     "path": "eval/rover/r444/verdict-BRJ-V2b-s4.json",
+     "sha12": "8f82e7fb0e0a",
+     "sha256sum12": "8f82e7fb0e0a"
+    },
+    {
+     "path": "eval/rover/r444/verdict-BRJ-W8-s4.json",
+     "sha12": "02c11f56098e",
+     "sha256sum12": "02c11f56098e"
+    },
+    {
+     "path": "eval/rover/r444/verdict-BRJL-M20-s4.json",
+     "sha12": "c9d1d0fd1ced",
+     "sha256sum12": "c9d1d0fd1ced"
+    }
+   ],
+   "prior_fingerprint": [
+    {
+     "path": "eval/rover/r444/run-A-M20-s4/data/telemetry/host.jsonl",
+     "sha12": "25a908217f33"
+    },
+    {
+     "path": "eval/rover/r444/run-A-V2b-s4/data/telemetry/host.jsonl",
+     "sha12": "a14e681d2b6e"
+    },
+    {
+     "path": "eval/rover/r444/run-A-W8-s4/data/telemetry/host.jsonl",
+     "sha12": "e0e31ab0ce3a"
+    },
+    {
+     "path": "eval/rover/r444/run-BRJ-M20-s4/data/telemetry/host.jsonl",
+     "sha12": "0ad4677825de"
+    },
+    {
+     "path": "eval/rover/r444/run-BRJ-M20-s5/data/telemetry/host.jsonl",
+     "sha12": "54738c3e3b38"
+    },
+    {
+     "path": "eval/rover/r444/run-BRJ-V2b-s4/data/telemetry/host.jsonl",
+     "sha12": "2c3f55dbfb0a"
+    },
+    {
+     "path": "eval/rover/r444/run-BRJ-W8-s4/data/telemetry/host.jsonl",
+     "sha12": "b8594d190387"
+    },
+    {
+     "path": "eval/rover/r444/run-BRJL-M20-s4/data/telemetry/host.jsonl",
+     "sha12": "8b85b9847518"
+    },
+    {
+     "path": "eval/rover/r444/verdict-A-M20-s4.json",
+     "sha12": "50827b81cdcc"
+    },
+    {
+     "path": "eval/rover/r444/verdict-A-V2b-s4.json",
+     "sha12": "10decd0f1e92"
+    },
+    {
+     "path": "eval/rover/r444/verdict-A-W8-s4.json",
+     "sha12": "5d75457066bc"
+    },
+    {
+     "path": "eval/rover/r444/verdict-BRJ-M20-s4.json",
+     "sha12": "9dd26d7aaf55"
+    },
+    {
+     "path": "eval/rover/r444/verdict-BRJ-M20-s5.json",
+     "sha12": "7f2067b7b431"
+    },
+    {
+     "path": "eval/rover/r444/verdict-BRJ-V2b-s4.json",
+     "sha12": "8f82e7fb0e0a"
+    },
+    {
+     "path": "eval/rover/r444/verdict-BRJ-W8-s4.json",
+     "sha12": "02c11f56098e"
+    },
+    {
+     "path": "eval/rover/r444/verdict-BRJL-M20-s4.json",
+     "sha12": "c9d1d0fd1ced"
+    }
+   ],
+   "relation_vs_prior": {
+    "relation": "equal",
+    "added": [],
+    "removed": [],
+    "sha_changed": [],
+    "prior_n": 16,
+    "derived_n": 16
+   },
+   "cmd_write_targets_guess": [],
+   "expect_rc": 0,
+   "expect_substr": "D4",
+   "substr_ok": false,
+   "crosscheck": true
+  }
+ ],
+ "provider": "eval/capability/exp1-q21/io_trace.py",
+ "side_effects": {
+  "scope": [
+   "eval",
+   "docs"
+  ],
+  "dirty_before_n": 34,
+  "dirty_after_n": 45,
+  "new_dirty_n": 11,
+  "new_dirty": [
+   "eval/capability/exp1-q20/l2runs/selftest_q17.json",
+   "eval/capability/exp1-q20/l2runs/verdict_q17.json",
+   "eval/capability/exp1-q23/l2runs/trace_exp1q11-other-bucket-decompose.jsonl",
+   "eval/capability/exp1-q23/l2runs/trace_exp1q13-index-scope-out-classifier.jsonl",
+   "eval/capability/exp1-q23/l2runs/trace_exp1q15-unit-axis-guard-q16.jsonl",
+   "eval/capability/exp1-q23/l2runs/trace_exp1q15-unit-axis-guard.jsonl",
+   "eval/capability/exp1-q23/l2runs/trace_exp1q17-archive-field-provenance.jsonl",
+   "eval/capability/exp1-q23/l2runs/trace_exp1q18-rebuild-constructor.jsonl",
+   "eval/capability/exp1-q23/l2runs/trace_r444-analyze.jsonl",
+   "eval/capability/exp1-q23/l2runs/trace_r444-prefilter-precheck.jsonl",
+   "eval/rover/r444/precheck-prefilter.json"
+  ],
+  "drift": [
+   {
+    "path": "eval/capability/exp1-q20/l2runs/selftest_q17.json",
+    "self_written_by_this_face": true,
+    "attribution": "self",
+    "vs_head_semantic_equal": false,
+    "vs_head_method": "json-minus-nonsemantic",
+    "sha12_in_dirty_snapshot_before": null
+   },
+   {
+    "path": "eval/capability/exp1-q20/l2runs/verdict_q17.json",
+    "self_written_by_this_face": true,
+    "attribution": "self",
+    "vs_head_semantic_equal": false,
+    "vs_head_method": "json-minus-nonsemantic",
+    "sha12_in_dirty_snapshot_before": null
+   },
+   {
+    "path": "eval/capability/exp1-q23/l2runs/trace_exp1q11-other-bucket-decompose.jsonl",
+    "self_written_by_this_face": false,
+    "attribution": "foreign",
+    "vs_head_semantic_equal": null,
+    "vs_head_method": "untracked-new",
+    "sha12_in_dirty_snapshot_before": null
+   },
+   {
+    "path": "eval/capability/exp1-q23/l2runs/trace_exp1q13-index-scope-out-classifier.jsonl",
+    "self_written_by_this_face": false,
+    "attribution": "foreign",
+    "vs_head_semantic_equal": null,
+    "vs_head_method": "untracked-new",
+    "sha12_in_dirty_snapshot_before": null
+   },
+   {
+    "path": "eval/capability/exp1-q23/l2runs/trace_exp1q15-unit-axis-guard-q16.jsonl",
+    "self_written_by_this_face": false,
+    "attribution": "foreign",
+    "vs_head_semantic_equal": null,
+    "vs_head_method": "untracked-new",
+    "sha12_in_dirty_snapshot_before": null
+   },
+   {
+    "path": "eval/capability/exp1-q23/l2runs/trace_exp1q15-unit-axis-guard.jsonl",
+    "self_written_by_this_face": false,
+    "attribution": "foreign",
+    "vs_head_semantic_equal": null,
+    "vs_head_method": "untracked-new",
+    "sha12_in_dirty_snapshot_before": null
+   },
+   {
+    "path": "eval/capability/exp1-q23/l2runs/trace_exp1q17-archive-field-provenance.jsonl",
+    "self_written_by_this_face": false,
+    "attribution": "foreign",
+    "vs_head_semantic_equal": null,
+    "vs_head_method": "untracked-new",
+    "sha12_in_dirty_snapshot_before": null
+   },
+   {
+    "path": "eval/capability/exp1-q23/l2runs/trace_exp1q18-rebuild-constructor.jsonl",
+    "self_written_by_this_face": false,
+    "attribution": "foreign",
+    "vs_head_semantic_equal": null,
+    "vs_head_method": "untracked-new",
+    "sha12_in_dirty_snapshot_before": null
+   },
+   {
+    "path": "eval/capability/exp1-q23/l2runs/trace_r444-analyze.jsonl",
+    "self_written_by_this_face": false,
+    "attribution": "foreign",
+    "vs_head_semantic_equal": null,
+    "vs_head_method": "untracked-new",
+    "sha12_in_dirty_snapshot_before": null
+   },
+   {
+    "path": "eval/capability/exp1-q23/l2runs/trace_r444-prefilter-precheck.jsonl",
+    "self_written_by_this_face": false,
+    "attribution": "foreign",
+    "vs_head_semantic_equal": null,
+    "vs_head_method": "untracked-new",
+    "sha12_in_dirty_snapshot_before": null
+   },
+   {
+    "path": "eval/rover/r444/precheck-prefilter.json",
+    "self_written_by_this_face": true,
+    "attribution": "self",
+    "vs_head_semantic_equal": false,
+    "vs_head_method": "json-minus-nonsemantic",
+    "sha12_in_dirty_snapshot_before": null
+   }
+  ],
+  "self_drift_semantic_nonzero": [
+   "eval/capability/exp1-q20/l2runs/selftest_q17.json",
+   "eval/capability/exp1-q20/l2runs/verdict_q17.json",
+   "eval/rover/r444/precheck-prefilter.json"
+  ],
+  "pre_existing_untracked": []
+ },
+ "crosscheck_q21": [
+  {
+   "id": "r444.prefilter-precheck",
+   "surface_match": true,
+   "fp_match": true,
+   "q21_surface": "external_files",
+   "q23_surface": "external_files",
+   "q21_fp_n": 16,
+   "q23_fp_n": 16
+  },
+  {
+   "id": "r444.analyze",
+   "surface_match": true,
+   "fp_match": true,
+   "q21_surface": "external_files",
+   "q23_surface": "external_files",
+   "q21_fp_n": 16,
+   "q23_fp_n": 16
+  }
+ ],
+ "hard_fail": [],
+ "summary": {
+  "rows_n": 6,
+  "external_files": 3,
+  "dynamic_corpus": 0,
+  "self_contained": 3,
+  "undetermined": 0,
+  "fingerprint_entries": 7,
+  "fingerprint_sets_distinct": 4,
+  "relation_counts": {
+   "equal": 0,
+   "superset": 2,
+   "subset": 4,
+   "disjoint": 0,
+   "mixed": 0,
+   "both_empty": 0
+  },
+  "sha256sum_cross_mismatch": 0
+ }
+}

@@ -1,0 +1,47 @@
+{
+ "round": "EXP1-Q23",
+ "topic": "6 行 prior_round_registration 指纹的审计钩子重推导 + 登记口径切换 (欠账清账)",
+ "window_note": "对侧 R466 (v0.83.1-r466 重复优先级) dotnet 全量测试在建; 本面只跑静态 python 器具, 不占主环轮号, 不跑 dotnet",
+ "inherits": "EXP1-Q21 的推导机具 (io_trace 审计钩子 + 预注册排除规则) 原样复用, 不复制分类逻辑",
+ "targets": [
+  "exp1q11.other-bucket-decompose",
+  "exp1q15.unit-axis-guard",
+  "exp1q15.unit-axis-guard-q16",
+  "exp1q17.archive-field-provenance",
+  "exp1q18.rebuild-constructor",
+  "exp1q13.index-scope-out-classifier"
+ ],
+ "predictions": {
+  "P1_measurement": "6/6 行 rc==expect_rc 且 stdout 含 expect_substr 且 events_n>0 (非空测)",
+  "P2_surface": "6/6 行 derived input_surface=='external_files' 且 0<|fp|<=24; 任一行超上限 ⇒ 如实记 dynamic_corpus (不伪造指纹)",
+  "P3_relation": "关系逐行机检并如实记录, 不对方向预设对错: 预测以 equal/superset 为主, 至少 1 行严格上位 (既往手登记漏项); 若出现 subset ⇒ 记为审计发现 (既往登记多记了未被读的文件)",
+  "P4_zeroregress": "instruments.json 改动只限这 6 行的 input_surface_source / input_surface_reason / input_fingerprint / input_fingerprint_round; 其余 12 行逐字节不变",
+  "P5_sideeffect": "本面既有产物语义漂移 == 0 (非语义字段白名单 generated/elapsed_s 不计); 他人改动归 foreign 不判红; 既有未跟踪残留 (exp1-q22-controls/…) 归 pre_existing",
+  "P6_determinism": "两次独立重推导 (独立命名空间) 逐行 input_surface 与指纹集合逐位相同; 非语义字段白名单 = [generated, elapsed_s]",
+  "P7_nontrivial": "6 行的指纹集合至少 2 类互异 (防恒定输出冒充可复现)",
+  "P8_comparator_NC": "给关系判定器喂 3 类变异 prior (删 1 项 / 加 1 项不存在路径 / 改 1 项 sha12) ⇒ 必须逐类报出差异; 未变异者必须报 equal (比较器非恒真门)",
+  "P9_form_nonprocess": "切换后 6 行的 L2 输入面字段机检全绿 (sha12 与磁盘文件一致), 用 instruments_check.check_l2_fields 直调 (不执行 cmd)",
+  "P10_crosscheck": "Q23 管线对 Q21 已登记行 (l2.instruments-check, r444.*) 重跑 ⇒ 与 Q21 落盘结果逐位相同 (证明重实现未漂移, 单源分类语义)",
+  "P11_q17_evidence_drift": "已实测: exp1q17 正控命令重跑会把两处 tracked 证据改写成同语义内容 (仅 generated/elapsed_s 变) ⇒ 记为非语义漂移, 派生时原样跑 + 事后复原 + 语义等价机检 (不豁免、不掩盖)"
+ },
+ "judgments": {
+  "J1": "P1 ∧ P2 ⇒ 本次重推导有效 (测量成立)",
+  "J2": "P3 关系为发现项, 不设红绿; subset/不等一律如实入档",
+  "J3": "P4 (零回归)",
+  "J4": "P5 (副作用归属)",
+  "J5": "P6 ∧ P7 (确定性 ∧ 非平凡)",
+  "J6": "P8 (比较器判别力)",
+  "J7": "P9 (输入面字段机检)",
+  "J8": "P10 (与 Q21 落盘交叉一致)",
+  "J9": "P11 (非语义漂移定性正确)"
+ },
+ "amendments": {
+  "A1": "跟踪器自身产物前缀从 eval/capability/exp1-q21/ 扩为 + eval/capability/exp1-q23/ (只加前缀, 类别语义不变; Q21 的 prereg 已有同类 A1 先例)",
+  "A2": "负控期望修正 (非判据放宽): NC-b 原期望「加伪项 ⇒ subset」未考虑基线关系已是 superset ⇒ 比较器 如实报 mixed (removed 含伪项 ∧ added 仍含 probe_v260)。修正为「removed ∋ 伪项 ∧ added == 基线 added」 (比原期望更严: 约束 added 不得漂移)。首跑该例 FAIL 如实保留于 finalize_q23 首跑记录。",
+  "A3": "checks_posthoc (非预注册): P5 的三处语义漂移经逐键比对定性 — q17 两文件仅 1 键 (错误文案内的 /tmp 临时路径名) 变化; r444 一处 25 键含判据方向翻转 (P1 反例 4→0 / P3 可省 71→67), 属**证据不可复现**, 不是本轮命令的副作用缺陷 (原件已归档 + 复原)。"
+ },
+ "carry_over": {
+  "dotnet_form_check": "VerificationForm|SkillGeneralization|DevPlanDocRef 三件套未跑: 对侧 R466 dotnet 在建 + MemAvailable 1287MB < 准入 2600MB ⇒ 结转下轮, 不伪造绿",
+  "next_round_candidate": "① 先于本次登记跑 dotnet 形式校验 (10/10) ② exp1q17 证据稳定性: 评估给器具加 --no-write/确定性输出, 再决定是否收紧登记命令"
+ }
+}
