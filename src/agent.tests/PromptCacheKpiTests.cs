@@ -100,13 +100,20 @@ public class PromptCacheKpiTests
         var dataBlocks = blocks.Where(b => b.Contains("(\"total_tokens\", ")).ToArray();
         Assert.Equal(3, dataBlocks.Length);                     // 带真实响应对象的三处
         foreach (var b in dataBlocks)
+        {
             // R380 加强: 三处都要同时铺 R377 三元组 + R380 二元组 (只铺前三个 → "算了不用"复发)
             // R470 再加强: 还必须铺 R470 通道三元组 (channel/shared_prefix_hit_tokens/shared_prefix_hit_rate)
-            Assert.Contains("cacheKv[0], cacheKv[1], cacheKv[2], effKv[0], effKv[1], chanKv[0], chanKv[1], chanKv[2]);", b);
+            Assert.Contains("cacheKv[0], cacheKv[1], cacheKv[2], effKv[0], effKv[1], chanKv[0], chanKv[1], chanKv[2]", b);
+            // R476: 还必须在同一条打点里铺**分档判定** 7 字段 (档/档来源/上限/分档目标/余量/实测增量/分档判决)
+            Assert.Matches(@"bandKv2?\[0\], bandKv2?\[1\], bandKv2?\[2\], bandKv2?\[3\], bandKv2?\[4\], bandKv2?\[5\], bandKv2?\[6\]\);", b);
+        }
         Assert.Equal(3, src.Split("var effKv = PromptCacheKpi.EffectiveFields(").Length - 1);
         Assert.Equal(3, src.Split("var cacheKv = PromptCacheKpi.Fields(").Length - 1);
         Assert.Equal(3, src.Split("var chanKv = PromptCacheKpi.ChannelFields(").Length - 1);   // R470 接线
+        Assert.Equal(3, src.Split("PromptCacheRedline.BandFields(").Length - 1);   // R476 接线: 三处同源
+        Assert.Equal(3, src.Split("var bandKv").Length - 1);                        // 主调用 bandKv + 两处回退 bandKv2
         Assert.DoesNotContain("(\"cache_hit_rate\", 0)", src);   // 不得硬编码 0 冒充未上报
+        Assert.DoesNotContain("(\"cache_ceiling\", 0)", src);    // R476 同上: 上限未知一律 -1
         Assert.Contains("CacheHitTokens = parsed?.Usage?.PromptCacheHitTokens", src);
     }
 }

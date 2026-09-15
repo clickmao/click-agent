@@ -5,7 +5,11 @@
   evidence_kind     artifact | directory | self-derived   —— 证据本体形态
   pin_status        frozen | live                           —— 是否对"证据字节"上闸
   pin_reason        frozen 固定 archived-per-round; live 记原因 (词表见下)
-  artifact_sha12    frozen 时 = 证据文件字节 sha256[:12] (闸); live 时为 null
+  artifact_sha12    frozen 时 = 证据字节 sha256[:12] (闸); live 时为 null
+                     · artifact  : 该文件字节 sha256[:12]
+                     · directory : **目录清单摘要** (EXP1-Q27) = sha256[:12] over 按 relpath 排序的
+                                   "<relpath>:<size>:<sha12>\\n"; 文件集取自 `git ls-files` (索引, 忽略件/未跟踪不入闸);
+                                   目录内已跟踪文件被改写/增删 ⇒ 摘要变化 ⇒ 判红 (证据易主可见)
   instrument        生成该证据的器具 (仓库相对路径) 或 null (缺口单列, 不猜)
   instrument_sha12  器具字节 sha256[:12] (闸) 或 null
   binding           self-attested (产物自己声明了来源, 我方逐字段核对) | audit-pin (审计时绑定)
@@ -38,6 +42,9 @@ SELF_DERIVED = {"docs/reports/status.json": "self-derived"}
 SRC_EXT = (".py", ".sh", ".cs", ".ps1", ".js", ".ts")
 CMD_PATH = re.compile(r"(?<![\w/.-])((?:src|scripts|eval|docs|tests|website|tools)/[A-Za-z0-9_./-]+)")
 HEX12 = re.compile(r"^[0-9a-f]{12}$")
+# EXP1-Q27: 轮号命名段 —— 主线轮号 R<n> 与能力自检作业轮号 EXP1-Q<n> 互不占号 (承 unattended-job-reliability
+#   「作业与前台循环的命名空间碰撞」铁律: 作业用**自己的命名段**, 而不是偷主线轮号)。
+ROUND_RE = re.compile(r"^(?:R\d+|EXP1-Q\d+)$")
 
 
 def repo_root():
@@ -58,6 +65,33 @@ def sha12_file(root, rel):
 
 def isdir(root, rel):
     return os.path.isdir(os.path.join(root, rel))
+
+
+def dir_manifest(root, rel):
+    """EXP1-Q27: 目录清单摘要 — 目录聚合证据的字节闸 (可算则返回 (sha12, n_files), 否则 None)。
+
+    语义 (与 C# VerificationFormTests.DirManifestSha12 逐位同口径):
+      文件集 = `git ls-files -- <rel>` (索引来源) ∩ 现盘存在  —— 索引来源是关键:
+        .gitignore 的产物 (__pycache__/日志/临时配置) 与未跟踪 scratch 天然不入闸, 不会被当成"未入库证据";
+        (首版按现盘 walk - ls-files 判"未跟踪" ⇒ 把 119 个忽略件误报成缺证据, 见 Q27 仪器缺陷记录)
+      digest = sha256[:12] of concat("<relpath>:<size>:<sha12>\n") 按 relpath 排序 —— 字节取自工作区。
+      n_files == 0 ⇒ None (空清单不是闸, 判红)。
+    任何改写/删除/新增已跟踪文件 ⇒ digest 变化 ⇒ 该行判红 (证据易主必须说话)。
+    """
+    files = subprocess.run(["git", "ls-files", "--", rel], cwd=root, capture_output=True,
+                           text=True).stdout.split()
+    rows, n = [], 0
+    for p in sorted(set(files)):
+        abs_p = os.path.join(root, p)
+        if not os.path.isfile(abs_p):
+            continue
+        with open(abs_p, "rb") as fh:
+            b = fh.read()
+        rows.append("%s:%d:%s\n" % (p, len(b), sha12_bytes(b)))
+        n += 1
+    if n == 0:
+        return None
+    return sha12_bytes("".join(rows).encode()), n
 
 
 def git_state(root):
@@ -97,7 +131,11 @@ def provenance_of(root, rel):
 def derive(root, row, tracked, dirty):
     ep = row.get("evidence_path", "")
     if isdir(root, ep):
-        kind, status, reason, pin = "directory", "live", "directory-aggregate", None
+        man = dir_manifest(root, ep)
+        if man is None:
+            kind, status, reason, pin = "directory", "live", "directory-aggregate", None
+        else:
+            kind, status, reason, pin = "directory", "frozen", "archived-per-round", man[0]
     elif ep in SELF_DERIVED:
         kind, status, reason, pin = "self-derived", "live", "self-derived", None
     elif ep in LIVE_LEDGERS:
@@ -150,20 +188,29 @@ def check(root, rows):
             v.append("%s: pin_reason 非法 '%s' (R2e)" % (rid, f.get("pin_reason")))
         if f.get("binding") not in BINDINGS:
             v.append("%s: binding 非法 '%s' (R2e)" % (rid, f.get("binding")))
-        if not re.match(r"^R\d+$", str(f.get("audited_by_round", ""))):
-            v.append("%s: audited_by_round 非法 (R2e)" % rid)
+        if not ROUND_RE.match(str(f.get("audited_by_round", ""))):
+            v.append("%s: audited_by_round 非法 (R2e —— 允许主线 R<n> 或能力自检 EXP1-Q<n> 两个命名段)" % rid)
         dist[(kind, status, f.get("pin_reason"))] = dist.get((kind, status, f.get("pin_reason")), 0) + 1
 
         ep = row.get("evidence_path", "")
         a = f.get("artifact_sha12")
         if status == "frozen":
-            if kind != "artifact":
-                v.append("%s: frozen 只允许 artifact (实=%s) (R2e)" % (rid, kind))
-            cur = sha12_file(root, ep)
-            if cur is None:
-                v.append("%s: frozen 但证据文件不可读 '%s' (R2e)" % (rid, ep))
-            elif not isinstance(a, str) or not HEX12.match(a) or a != cur:
-                v.append("%s: 冻结 pin 与现盘字节不符 (声明 %s / 实际 %s) (R2e —— 证据已被改写或未重审)" % (rid, a, cur))
+            if kind not in ("artifact", "directory"):
+                v.append("%s: frozen 只允许 artifact/directory (实=%s) (R2e)" % (rid, kind))
+            if kind == "directory":
+                # EXP1-Q27: 目录聚合行的清单式闸 (文件集来自索引, 字节来自工作区)
+                man = dir_manifest(root, ep)
+                if man is None:
+                    v.append("%s: frozen 但目录清单不可算 (无已跟踪文件或不可读) '%s' (R2e)" % (rid, ep))
+                elif not isinstance(a, str) or not HEX12.match(a) or a != man[0]:
+                    v.append("%s: 目录清单 pin 与现盘不符 (声明 %s / 实际 %s) (R2e —— 目录内已跟踪文件被改写/增删, 证据已易主或未重审)"
+                             % (rid, a, man[0]))
+            else:
+                cur = sha12_file(root, ep)
+                if cur is None:
+                    v.append("%s: frozen 但证据文件不可读 '%s' (R2e)" % (rid, ep))
+                elif not isinstance(a, str) or not HEX12.match(a) or a != cur:
+                    v.append("%s: 冻结 pin 与现盘字节不符 (声明 %s / 实际 %s) (R2e —— 证据已被改写或未重审)" % (rid, a, cur))
         else:
             if a is not None:
                 v.append("%s: live 行不得带 artifact_sha12 (R2e)" % rid)
@@ -196,10 +243,15 @@ def check(root, rows):
 
 
 def main():
+    global AUDITED_BY_ROUND
     ap = argparse.ArgumentParser()
     ap.add_argument("--apply", action="store_true")
     ap.add_argument("--check", action="store_true")
+    ap.add_argument("--round", default=AUDITED_BY_ROUND,
+                    help="写入/复核 audited_by_round 的轮号 (默认 %s ⇒ 历史行为逐字不变)" % AUDITED_BY_ROUND)
     a = ap.parse_args()
+    AUDITED_BY_ROUND = a.round   # 默认 = 历史常量 ⇒ 无参调用行为逐字不变
+    print("AUDITED_BY_ROUND=%s" % AUDITED_BY_ROUND)
     root = repo_root()
     reg_abs = os.path.join(root, REG)
     with open(reg_abs, encoding="utf-8", newline="") as fh:

@@ -736,6 +736,9 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             // R470: 归因通道 (只增不改) —— 真实流量无同会话前驱 ⇒ 命中属 shared_prefix, 既有 -1 通道看不见
             var chanKv = PromptCacheKpi.ChannelFields(resp.CacheHitTokens, resp.CacheMissTokens, resp.PromptTokens, LastPromptTokensFor(sessKey));
             var effRate = (double)(effKv[1].Value ?? -1d);
+            // R476: 分档判定面 (只增不改) —— 单值 97% 对长轮结构性不可达 (R469) ⇒ 逐调用落
+            // 档/上限/目标/余量/判定 + 口径标记 (growth 是用户轮的上偏代理, 禁当实测用户轮档)。
+            var bandKv = PromptCacheRedline.BandFields(prompt.TurnIndex, (int)(effKv[0].Value ?? 0), resp.PromptTokens, effRate);
             agent.config.AgentTelemetry.Emit("llm_call", "ModelQueueRouter",
                 ("model", entry.Id), ("provider", entry.Provider),
                 // R379: 逐轮归属 (红线判据: 多轮第 2 轮起命中率 ≥ PromptCacheRedline.Threshold, 现 97%) — 无此字段则无法把 KPI 追到"第几轮"
@@ -755,7 +758,8 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                 ("first_budget", firstBudget), ("intent", intent ?? ""),
                 // v0.11.0 R129 (D3): LLM 真耗时 ms
                 ("ms", llmSw.ElapsedMilliseconds),
-                cacheKv[0], cacheKv[1], cacheKv[2], effKv[0], effKv[1], chanKv[0], chanKv[1], chanKv[2]);
+                cacheKv[0], cacheKv[1], cacheKv[2], effKv[0], effKv[1], chanKv[0], chanKv[1], chanKv[2],
+                bandKv[0], bandKv[1], bandKv[2], bandKv[3], bandKv[4], bandKv[5], bandKv[6]);
             // R380 (+R379 逐轮归属) 红线闸门 —— 用户逐字: "一旦越过红线必然检查问题为什么发生并修复"。
             // 越线不得只记数字: 必须同时落盘**可执行诊断**(按 R379 实测四类破坏点排序) + 响亮告警。
             if (sessKey.Length > 0)
@@ -775,7 +779,10 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                     ("hit", PromptCacheKpi.HitTokens(resp.CacheHitTokens)),
                     ("miss", PromptCacheKpi.MissTokens(resp.CacheMissTokens)),
                     ("prompt_tokens", resp.PromptTokens), ("last_prompt_tokens", lastPrompt),
-                    ("threshold", PromptCacheRedline.Threshold), ("diagnosis", diag));
+                    ("threshold", PromptCacheRedline.Threshold), ("diagnosis", diag),
+                    ("band_verdict", PromptCacheRedline.JudgeByGrowth(prompt.TurnIndex, cacheable, resp.PromptTokens, effRate)),
+                    ("band_ceiling", Math.Round(PromptCacheRedline.CeilingFromGrowth(cacheable, resp.PromptTokens - cacheable), 4)),
+                    ("band_target", Math.Round(PromptCacheRedline.TargetFromGrowth(cacheable, resp.PromptTokens - cacheable), 4)));
             }
             // 阈值再同步 (fire-and-forget, 不阻塞主链)
             if (_tokenUsage is not null && _tokenUsage.NeedsResync(entry.Provider))
@@ -847,6 +854,7 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                     // R380: 重试路径同样只算"需要命中的部分" (否则 KPI 漏掉重试调用)
                     var effKv = PromptCacheKpi.EffectiveFields(retried.CacheHitTokens, retried.PromptTokens, LastPromptTokensFor(prompt.SessionId));
                     var chanKv = PromptCacheKpi.ChannelFields(retried.CacheHitTokens, retried.CacheMissTokens, retried.PromptTokens, LastPromptTokensFor(prompt.SessionId));
+                    var bandKv2 = PromptCacheRedline.BandFields(prompt.TurnIndex, (int)(effKv[0].Value ?? 0), retried.PromptTokens, (double)(effKv[1].Value ?? -1d));
                     agent.config.AgentTelemetry.Emit("llm_call", "ModelQueueRouter",
                         ("model", entry.Id), ("provider", entry.Provider),
                         ("prompt_tokens", retried.PromptTokens), ("completion_tokens", retried.CompletionTokens),
@@ -854,7 +862,8 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                         ("content_len", retried.Content?.Length ?? 0),
                         ("reasoning_len", retried.ReasoningContent?.Length ?? 0),
                         ("ms", retrySw.ElapsedMilliseconds), ("attempt", attempt + 1),
-                        cacheKv[0], cacheKv[1], cacheKv[2], effKv[0], effKv[1], chanKv[0], chanKv[1], chanKv[2]);
+                        cacheKv[0], cacheKv[1], cacheKv[2], effKv[0], effKv[1], chanKv[0], chanKv[1], chanKv[2],
+                        bandKv2[0], bandKv2[1], bandKv2[2], bandKv2[3], bandKv2[4], bandKv2[5], bandKv2[6]);
                     return retried;
                 }
                 // 软失败 (Success=false 但未抛异常) 也算本次失败, 继续走切备
@@ -922,6 +931,7 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                     // R380: 备选 provider 路径同样只算"需要命中的部分"
                     var effKv = PromptCacheKpi.EffectiveFields(backupResp.CacheHitTokens, backupResp.PromptTokens, LastPromptTokensFor(prompt.SessionId));
                     var chanKv = PromptCacheKpi.ChannelFields(backupResp.CacheHitTokens, backupResp.CacheMissTokens, backupResp.PromptTokens, LastPromptTokensFor(prompt.SessionId));
+                        var bandKv2 = PromptCacheRedline.BandFields(prompt.TurnIndex, (int)(effKv[0].Value ?? 0), backupResp.PromptTokens, (double)(effKv[1].Value ?? -1d));
                     agent.config.AgentTelemetry.Emit("llm_call", "ModelQueueRouter",
                         ("model", backup.Id), ("provider", backup.Provider),
                         ("prompt_tokens", backupResp.PromptTokens), ("completion_tokens", backupResp.CompletionTokens),
@@ -929,7 +939,8 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                         ("content_len", backupResp.Content?.Length ?? 0),
                         ("reasoning_len", backupResp.ReasoningContent?.Length ?? 0),
                         ("ms", backupSw.ElapsedMilliseconds), ("attempt", "failover"),
-                        cacheKv[0], cacheKv[1], cacheKv[2], effKv[0], effKv[1], chanKv[0], chanKv[1], chanKv[2]);
+                        cacheKv[0], cacheKv[1], cacheKv[2], effKv[0], effKv[1], chanKv[0], chanKv[1], chanKv[2],
+                        bandKv2[0], bandKv2[1], bandKv2[2], bandKv2[3], bandKv2[4], bandKv2[5], bandKv2[6]);
                     return backupResp;
                 }
                 agent.config.AgentTelemetry.Emit("fallback_verify_fail", "ModelQueueRouter",

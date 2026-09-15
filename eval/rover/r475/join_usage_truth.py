@@ -111,8 +111,32 @@ def arms():
     return ["Arole", "R"]
 
 
+# ── R476 ④ 计价面 (fail-closed) ──────────────────────────────────────────────────
+# 用户判据「省了多少」最终要落到**钱**上; 但供应商**命中的计费折价**尚未取到 ⇒
+# 本节只允许两种状态: unreported (无价格表) / from_table (显式价格表)。**禁按 0、禁估算**。
+# 违约检测: cost_cny 为 0 而 status != "from_table" ⇒ 视为伪造 ⇒ 调用方判红。
+def pricing_block(table=None):
+    if not table:
+        return {"status": "unreported", "source": "no_provider_price_table", "cost_cny": None,
+                "hit_discount_known": False,
+                "note": "命中折价/单价未取到 ⇒ 不报数 (禁 0 冒充; 口径见 R470/R474 诚实边界)"}
+    blocks = json.load(open(table, encoding="utf-8"))
+    return {"status": "from_table", "source": table, "table": blocks, "hit_discount_known": True}
+
+
+def pricing_violations(pr):
+    bad = []
+    if pr.get("cost_cny") is not None and not isinstance(pr.get("cost_cny"), (int, float)):
+        bad.append("cost_cny_not_numeric")
+    if pr.get("status") != "from_table" and pr.get("cost_cny") == 0:
+        bad.append("fabricated_zero_cost")
+    if pr.get("status") == "unreported" and pr.get("cost_cny") is not None:
+        bad.append("unreported_with_cost_value")
+    return bad
+
+
 def build():
-    out = {"round": "R475", "mix_forbidden": True,
+    out = {"round": "R475", "mix_forbidden": True, "pricing": pricing_block(PRICE_TABLE),
            "column_rule": "truth/product 分列; 唯一跨列运算是 gap.*, 且必须显式列名",
            "arms": {}}
     verdicts = []
@@ -160,15 +184,28 @@ def selftest():
     real = build()
     res["NC4_real_data_has_red"] = len(real["red"]) > 0
     res["NC4_real_red_list"] = real["red"]
+    # NC5 (R476 ④): 无价格表 ⇒ 必须 unreported 且 cost 为 None (禁 0); 伪造 0 ⇒ 判红
+    pr = pricing_block(None)
+    res["NC5_pricing_unreported"] = (pr["status"] == "unreported" and pr["cost_cny"] is None)
+    res["NC5_fabricated_zero_red"] = bool(pricing_violations(
+        {"status": "unreported", "cost_cny": 0}))
+    res["PC_pricing_table_ok"] = bool(pricing_block(
+        "eval/rover/r475/verdict-r475.json").get("status") == "from_table") if os.path.exists(
+        "eval/rover/r475/verdict-r475.json") else True
     print(json.dumps(res, ensure_ascii=False, indent=1))
     ok = all(v for k, v in res.items() if k != "NC4_real_red_list")
     print("SELFTEST:", "PASS" if ok else "FAIL")
     return 0 if ok else 1
 
 
+PRICE_TABLE = None   # 显式价格表路径 (命令行 --price 覆盖); None ⇒ 一律 unreported
+
+
 if __name__ == "__main__":
     if "--selftest" in sys.argv:
         sys.exit(selftest())
+    if "--price" in sys.argv:
+        PRICE_TABLE = sys.argv[sys.argv.index("--price") + 1]
     data = build()
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=1)
@@ -178,6 +215,9 @@ if __name__ == "__main__":
               % (a, blk["truth"]["calls"], blk["truth"]["prompt_tokens"], blk["truth"]["cache_hit_tokens"],
                  blk["truth"]["hit_rate"] or 0, blk["product"]["calls"], blk["product"]["calls_recover"],
                  blk["product"]["prompt_tokens_call"], json.dumps(blk["gap"], ensure_ascii=False)))
+    pv = pricing_violations(data["pricing"])
+    print("pricing:", json.dumps(data["pricing"], ensure_ascii=False))
+    print("pricing_violations:", pv)
     print("red:", data["red"])
     print("wrote", OUT)
-    sys.exit(1 if data["red"] else 0)
+    sys.exit(1 if (data["red"] or pv) else 0)

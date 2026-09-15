@@ -33,6 +33,113 @@ from datetime import datetime
 REDLINE = 0.97
 DEFAULT_TEL = "data/telemetry/host.jsonl"
 
+# ── R476: 红线判定**分档化** (只增不改) ──────────────────────────────────────────────
+# 缘由 (R469 收口): 命中率 = 1 − 新/前缀, 用户轮长度**不可压** ⇒ 结构上限 = prefix/(prefix + 新增);
+# 长档上限 < 97% ⇒ 单值口径对长轮**结构性不可达**, 只能误判。判定改为逐档目标 = min(红线, 该轮上限),
+# 报「达成轮占比」(按档 + 按通道), 不再用单值 97% 一票否决长轮。
+#
+# 口径纪律:
+#   · 档来源: 真实遥测**没有用户轮长度** ⇒ 档由 `growth = prompt_tokens − cacheable_tokens` 派生,
+#     且 growth ≥ 用户轮 ⇒ 是**上偏代理** ⇒ 输出必须标 `band_source=growth_upper_bound` (禁当实测档);
+#   · 未上报(-1) 轮 **既不判红也不计达成**, 单列 `unreported`;
+#   · 容差 = 一个缓存单元 (64 token) 的占比 ⇒ 缺口 ≤64 token 属对齐损耗, 判「达上限」;
+#   · 常数 (红线/承接/单元/档界) **必须与产品源码逐值同值** ⇒ 由 check_source_parity() 机检, 不符即 fail-closed。
+TURN_OVERHEAD_TOKENS = 21          # ← src/agent.modelqueue/PromptCacheRedline.cs TurnOverheadTokens
+CACHE_UNIT_TOKENS = 64             # ← src/agent.modelqueue/PromptCacheKpi.cs CacheUnitTokens
+BANDS = [(0, 30), (31, 93), (94, 200), (201, -1)]
+BAND_LABELS = ["0-30", "31-93", "94-200", "201+"]
+
+VERDICT_NOT_APPLICABLE = "not_applicable"
+VERDICT_UNREPORTED = "unreported"
+VERDICT_AT_TARGET = "at_target"
+VERDICT_BELOW_CEILING = "below_ceiling"
+VERDICT_BELOW_TARGET = "below_target"
+
+
+def band_of(growth):
+    if growth < 0:
+        return -1
+    for i, (lo, hi) in enumerate(BANDS):
+        if hi < 0 or growth <= hi:
+            return i
+    return len(BANDS) - 1
+
+
+def ceiling_for_turn(cacheable, user_tokens):
+    """模型口径 (与产品 PromptCacheRedline.CeilingFor 同签名): 承接开销 TURN_OVERHEAD_TOKENS 已含在分母。
+    夹具 (r469 hit-ceiling.json) 的 ceilings 用**本口径**复算; 真实遥测用 band_ceiling (growth 已实测含开销)。"""
+    if cacheable <= 0 or user_tokens < 0:
+        return -1
+    return cacheable / (cacheable + user_tokens + TURN_OVERHEAD_TOKENS)
+
+
+def band_ceiling(cacheable, growth):
+    if cacheable <= 0 or growth < 0:
+        return -1.0
+    return cacheable / float(cacheable + growth)
+
+
+def band_target(cacheable, growth):
+    c = band_ceiling(cacheable, growth)
+    return REDLINE if c < 0 else min(REDLINE, c)
+
+
+def band_tolerance(cacheable):
+    return (CACHE_UNIT_TOKENS / float(cacheable)) if cacheable > 0 else 0.0
+
+
+def prefix_needed(user_tokens, target=REDLINE):
+    """达 target 所需稳定前缀 (R469 口径): p/(p+u+overhead) ≥ target ⇒ p ≥ (u+overhead)·t/(1−t)。"""
+    if user_tokens < 0 or not (0.0 < target < 1.0):
+        return -1
+    return (user_tokens + TURN_OVERHEAD_TOKENS) * target / (1.0 - target)
+
+
+def tolerance(cacheable):
+    """容差 = 1 缓存单元 (64 tok) 的对齐损耗, 折算成命中率。"""
+    return CACHE_UNIT_TOKENS / cacheable if cacheable > 0 else 0.0
+
+
+def band_verdict(turn, cacheable, growth, rate):
+    """与 src/agent.modelqueue/PromptCacheRedline.cs JudgeByGrowth 逐字同值 (机检见 check_source_parity)。"""
+    if turn < 2 or cacheable <= 0:
+        return VERDICT_NOT_APPLICABLE
+    if rate is None or rate < 0:
+        return VERDICT_UNREPORTED
+    if growth < 0:
+        return VERDICT_UNREPORTED
+    tgt = band_target(cacheable, growth)
+    if rate + band_tolerance(cacheable) >= tgt:
+        return VERDICT_AT_TARGET
+    return VERDICT_BELOW_TARGET if tgt >= REDLINE else VERDICT_BELOW_CEILING
+
+
+def check_source_parity(repo_root=None):
+    """常数机检: py 侧档界/红线/承接/单元 必须与产品源码逐值同值; 不符 ⇒ 返回差异列表 (调用方 fail-closed)。"""
+    import re
+    root = repo_root or os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    diffs = []
+    try:
+        red = io.open(os.path.join(root, "src/agent.modelqueue/PromptCacheRedline.cs"), encoding="utf-8").read()
+        kpi = io.open(os.path.join(root, "src/agent.modelqueue/PromptCacheKpi.cs"), encoding="utf-8").read()
+    except Exception as ex:
+        return [f"源码不可读: {ex}"]
+    m = re.search(r"TurnOverheadTokens\s*=\s*(\d+)", red)
+    if not m or int(m.group(1)) != TURN_OVERHEAD_TOKENS:
+        diffs.append(f"TurnOverheadTokens py={TURN_OVERHEAD_TOKENS} cs={m.group(1) if m else 'NOT_FOUND'}")
+    m = re.search(r"Threshold\s*=\s*([0-9.]+)", red)
+    if not m or abs(float(m.group(1)) - REDLINE) > 1e-12:
+        diffs.append(f"Threshold py={REDLINE} cs={m.group(1) if m else 'NOT_FOUND'}")
+    m = re.search(r"CacheUnitTokens\s*=\s*(\d+)", kpi)
+    if not m or int(m.group(1)) != CACHE_UNIT_TOKENS:
+        diffs.append(f"CacheUnitTokens py={CACHE_UNIT_TOKENS} cs={m.group(1) if m else 'NOT_FOUND'}")
+    m = re.search(r"TurnBands\s*=\s*\{([^}]*)\}", red)
+    cs_bands = [(int(a), int(b) if b.strip() != "int.MaxValue" else -1)
+                for a, b in re.findall(r"\((\d+)\s*,\s*(int\.MaxValue|\d+)\)", m.group(1))] if m else []
+    if cs_bands != BANDS:
+        diffs.append(f"TurnBands py={BANDS} cs={cs_bands or 'NOT_FOUND'}")
+    return diffs
+
 
 def load(path, since=None):
     if not os.path.exists(path):
@@ -154,12 +261,83 @@ def aggregate_channels(calls):
     }
 
 
+
+def aggregate_bands(rows):
+    """R476 分档聚合: 达成轮占比 (按档 + 按通道)。
+
+    rows: [{turn, cacheable, growth, rate, channel}]  —— 全部来自**实发**遥测, 不重建 prompt。
+    判定串与产品 `PromptCacheRedline.JudgeByGrowth` 逐字同值; 未上报单列, 不进达成率分子/分母。
+    """
+    def _blank():
+        return {"runs": 0, VERDICT_AT_TARGET: 0, VERDICT_BELOW_CEILING: 0,
+                VERDICT_BELOW_TARGET: 0, VERDICT_UNREPORTED: 0, "ceilings": []}
+
+    per_band = {i: _blank() for i in range(len(BANDS))}
+    per_band["unknown"] = _blank()
+    per_chan = {}
+    not_applicable = 0
+    for r in rows:
+        v = band_verdict(r["turn"], r["cacheable"], r["growth"], r["rate"])
+        if v == VERDICT_NOT_APPLICABLE:
+            not_applicable += 1
+            continue
+        key = band_of(r["growth"]) if r["growth"] >= 0 else "unknown"
+        for scope in (per_band[key], per_chan.setdefault(r.get("channel") or "unknown", _blank())):
+            scope["runs"] += 1
+            scope[v] += 1
+            c = band_ceiling(r["cacheable"], r["growth"])
+            if c >= 0:
+                scope["ceilings"].append(c)
+
+    def _fin(scope):
+        judged = scope["runs"] - scope[VERDICT_UNREPORTED]
+        ok = scope[VERDICT_AT_TARGET]
+        ceils = sorted(scope["ceilings"])
+        return {
+            "runs": scope["runs"],
+            "judged": judged,
+            "at_target": ok,
+            "below_ceiling": scope[VERDICT_BELOW_CEILING],
+            "below_target": scope[VERDICT_BELOW_TARGET],
+            "unreported": scope[VERDICT_UNREPORTED],
+            "at_target_rate": round(ok / judged, 4) if judged else -1,
+            "ceiling_median": round(ceils[len(ceils) // 2], 4) if ceils else -1,
+            "verdict": ("PASS" if scope[VERDICT_BELOW_CEILING] == 0 and scope[VERDICT_BELOW_TARGET] == 0
+                        else ("FAIL_BELOW_CEILING" if scope[VERDICT_BELOW_CEILING] else "FAIL_BELOW_TARGET")),
+        }
+
+    bands = {BAND_LABELS[i]: _fin(per_band[i]) for i in range(len(BANDS))}
+    unknown = _fin(per_band["unknown"])
+    chans = {k: _fin(v) for k, v in sorted(per_chan.items())}
+    agg = _blank()
+    for scope in list(per_band.values()):
+        for k in ("runs", VERDICT_AT_TARGET, VERDICT_BELOW_CEILING, VERDICT_BELOW_TARGET, VERDICT_UNREPORTED):
+            agg[k] += scope[k]
+        agg["ceilings"] += scope["ceilings"]
+    total = _fin(agg)
+    return {"band_source": "growth_upper_bound", "note": "档由 growth(≥用户轮) 上偏代理派生; 未上报单列",
+            "not_applicable": not_applicable, "bands": bands, "unknown_band": unknown,
+            "by_channel": chans, "total": total,
+            "verdict": total["verdict"],
+            "structural_note": ("单值 %d%% 口径对上限<红线的档结构性不可达 ⇒ 该档目标=上限 (R469)"
+                                % round(REDLINE * 100))}
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--since", default=None, help="ISO8601 起始 (含)")
     ap.add_argument("--file", default=DEFAULT_TEL)
     ap.add_argument("--json", dest="json_out", default=None)
+    ap.add_argument("--no-parity", action="store_true", help="跳过常数机检 (仅自检用; 默认必查)")
     a = ap.parse_args()
+
+    # R476 铁律: 常数 (红线/承接/单元/档界) 与产品源码不同值 ⇒ fail-closed (禁两处漂移静默)
+    parity = [] if a.no_parity else check_source_parity()
+    if parity:
+        print("常数机检失败 (py 侧与产品源码不同值) ⇒ fail-closed:")
+        for d in parity:
+            print("  ·", d)
+        return 1
 
     rows = load(a.file, a.since)
     calls = [r for r in rows if r.get("point") == "llm_call"]
@@ -182,7 +360,8 @@ def main():
         eff = round(hit / cacheable, 4) if (cacheable > 0 and hit >= 0) else None
         turn = num(kv.get("turn"), 0)
         s["calls"].append({"ts": r.get("ts"), "turn": turn, "prompt": pt, "hit": hit, "miss": miss,
-                           "cacheable": cacheable, "effective": eff})
+                           "cacheable": cacheable, "effective": eff,
+                           "channel": kv.get("cache_channel")})
         s["last_prompt"] = pt
 
     # 聚合
@@ -215,6 +394,13 @@ def main():
     eff_all = round(tot_hit / tot_cacheable, 4) if tot_cacheable else -1
     rep_all = round(tot_rep_hit / (tot_rep_hit + tot_rep_miss), 4) if (tot_rep_hit + tot_rep_miss) else -1
     chan = aggregate_channels(calls)     # R471: 分通道 (实发字段)
+    # R476: 分档判定 (只增不改) —— 档由 growth 上偏代理派生, 判定串与产品 JudgeByGrowth 同值
+    band_rows = [{"turn": c["turn"], "cacheable": c["cacheable"],
+                  "growth": (c["prompt"] - c["cacheable"]) if c["cacheable"] > 0 else -1,
+                  "rate": (c["effective"] if c["effective"] is not None else -1),
+                  "channel": c.get("channel")}
+                 for sk in order for c in sessions[sk]["calls"]]
+    bands = aggregate_bands(band_rows)
 
     print("=" * 74)
     print("prompt 缓存命中率 KPI (口径: 只算需要命中的部分; 本轮新增不计入) — 首要 KPI")
@@ -248,6 +434,22 @@ def main():
     for v in chan["violations"][:6]:
         print(f"  · {v['kind']}: {v['why']} (channel={v['channel']})")
 
+    # ── R476: 分档段 (达成轮占比; 单值 97% 对长档不可达) ──
+    bt = bands["total"]
+    print(f"\n[分档·达成轮占比] 档来源={bands['band_source']} (growth≥用户轮 ⇒ 上偏代理, 禁当实测档) — "
+          f"目标 = min(红线 {REDLINE:.0%}, 该轮上限); 容差 = 1 缓存单元 ({CACHE_UNIT_TOKENS} tok)")
+    print(f"{'档(用户轮 tok 代理)':<20}{'判定轮':<8}{'达上限':<8}{'达成率':<10}{'未达上限':<10}{'未达红线':<10}{'上限中位':<10}{'判定'}")
+    for lbl in BAND_LABELS:
+        b = bands["bands"][lbl]
+        print(f"{lbl:<20}{b['judged']:<8}{b['at_target']:<8}{b['at_target_rate']:<10}{b['below_ceiling']:<10}"
+              f"{b['below_target']:<10}{b['ceiling_median']:<10}{b['verdict']}")
+    print(f"{'合计':<20}{bt['judged']:<8}{bt['at_target']:<8}{bt['at_target_rate']:<10}{bt['below_ceiling']:<10}"
+          f"{bt['below_target']:<10}{bt['ceiling_median']:<10}{bt['verdict']}   "
+          f"(不适用 {bands['not_applicable']} | 未上报 {bt['unreported']} 不计入)")
+    for cn, cb in bands["by_channel"].items():
+        print(f"  · 通道 {cn:<14} 判定 {cb['judged']:<5} 达成率 {cb['at_target_rate']:<8} {cb['verdict']}")
+    print(f"[分档·结论] {bands['structural_note']}; 判红条件 = 存在「未达上限(结构性可修)」或「未达红线(短档)」轮")
+
     if viol_points:
         print(f"\n[代码闸门越线记录] {len(viol_points)} 条 (point=cache_redline_violation)")
         for v in viol_points[-3:]:
@@ -267,6 +469,9 @@ def main():
            "redline_points": len(viol_points),
            "channels": chan,
            "channel_verdict": chan["verdict"],
+           "bands": bands,
+           "band_verdict": bands["verdict"],
+           "source_parity": "ok" if not parity else parity,
            "verdict": ("PASS" if not violations else "FAIL_REDLINE")}
 
     # ── 按会话判定 (VERDICT 以**最新会话**为准: 历史越线单列, 不掩盖当前状态) ──
@@ -299,8 +504,10 @@ def main():
         json.dump(out, io.open(default, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
         print(f"\n落盘: {default}")
 
-    print(f"VERDICT: {out['verdict']}  |  通道判据: {out['channel_verdict']}")
-    return 0 if (out["verdict"] == "PASS" and chan["verdict"] == "PASS") else 1
+    band_ok = bands["total"]["judged"] == 0 or bands["verdict"] == "PASS"
+    print(f"VERDICT: {out['verdict']}  |  通道判据: {out['channel_verdict']}  |  分档判据: {bands['verdict']}"
+          f" (判定轮 {bands['total']['judged']})  |  常数机检: {'ok' if not parity else 'FAIL'}")
+    return 0 if (out["verdict"] == "PASS" and chan["verdict"] == "PASS" and band_ok) else 1
 
 
 if __name__ == "__main__":

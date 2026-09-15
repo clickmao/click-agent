@@ -1,0 +1,141 @@
+{
+ "since": null,
+ "calls": 43,
+ "sessions": 29,
+ "unreported": 0,
+ "effective_hit_rate": 0.2332,
+ "reference_hit_rate": 0.4544,
+ "redline": 0.97,
+ "by_turn": {
+  "0": {
+   "hit": 766,
+   "cacheable": 3285,
+   "calls": 14
+  }
+ },
+ "violations": [],
+ "redline_points": 0,
+ "channels": {
+  "semantics": "只读实发字段 cache_channel/shared_prefix_hit_tokens/shared_prefix_hit_rate; 缺字段 ⇒ unreported (禁 0 / 禁 shared_prefix 冒充); 非 shared_prefix 通道两字段须 -1 (禁双计)",
+  "emitted": {
+   "rows": 0,
+   "by_channel": {
+    "same_session": 0,
+    "shared_prefix": 0,
+    "unknown": 0
+   },
+   "shared_prefix": {
+    "calls": 0,
+    "hit_tokens": 0,
+    "hit_reported": 0,
+    "hit_na": 0,
+    "rate_weighted": -1,
+    "unit": "token"
+   }
+  },
+  "unreported": {
+   "absent_field": 43,
+   "invalid_value": 0,
+   "total": 43
+  },
+  "derived_recompute": {
+   "rows": 43,
+   "by_channel": {
+    "same_session": 0,
+    "shared_prefix": 43,
+    "unknown": 0
+   },
+   "shared_prefix_hit_tokens": 59518,
+   "note": "对照列 (R470 派生口径, 独立重算); **禁止与 emitted 相加/混算** —— 实发字段是 R470 起才铺的, 历史遥测 0 行含此字段"
+  },
+  "conservation": {
+   "emitted_rows": 0,
+   "unreported": 43,
+   "calls": 43,
+   "ok": true,
+   "identity": "emitted.rows + unreported.total == calls"
+  },
+  "violations": [],
+  "verdict": "PASS"
+ },
+ "channel_verdict": "PASS",
+ "bands": {
+  "band_source": "growth_upper_bound",
+  "note": "档由 growth(≥用户轮) 上偏代理派生; 未上报单列",
+  "not_applicable": 43,
+  "bands": {
+   "0-30": {
+    "runs": 0,
+    "judged": 0,
+    "at_target": 0,
+    "below_ceiling": 0,
+    "below_target": 0,
+    "unreported": 0,
+    "at_target_rate": -1,
+    "ceiling_median": -1,
+    "verdict": "PASS"
+   },
+   "31-93": {
+    "runs": 0,
+    "judged": 0,
+    "at_target": 0,
+    "below_ceiling": 0,
+    "below_target": 0,
+    "unreported": 0,
+    "at_target_rate": -1,
+    "ceiling_median": -1,
+    "verdict": "PASS"
+   },
+   "94-200": {
+    "runs": 0,
+    "judged": 0,
+    "at_target": 0,
+    "below_ceiling": 0,
+    "below_target": 0,
+    "unreported": 0,
+    "at_target_rate": -1,
+    "ceiling_median": -1,
+    "verdict": "PASS"
+   },
+   "201+": {
+    "runs": 0,
+    "judged": 0,
+    "at_target": 0,
+    "below_ceiling": 0,
+    "below_target": 0,
+    "unreported": 0,
+    "at_target_rate": -1,
+    "ceiling_median": -1,
+    "verdict": "PASS"
+   }
+  },
+  "unknown_band": {
+   "runs": 0,
+   "judged": 0,
+   "at_target": 0,
+   "below_ceiling": 0,
+   "below_target": 0,
+   "unreported": 0,
+   "at_target_rate": -1,
+   "ceiling_median": -1,
+   "verdict": "PASS"
+  },
+  "by_channel": {},
+  "total": {
+   "runs": 0,
+   "judged": 0,
+   "at_target": 0,
+   "below_ceiling": 0,
+   "below_target": 0,
+   "unreported": 0,
+   "at_target_rate": -1,
+   "ceiling_median": -1,
+   "verdict": "PASS"
+  },
+  "verdict": "PASS",
+  "structural_note": "单值 97% 口径对上限<红线的档结构性不可达 ⇒ 该档目标=上限 (R469)"
+ },
+ "band_verdict": "PASS",
+ "source_parity": "ok",
+ "verdict": "PASS"
+}

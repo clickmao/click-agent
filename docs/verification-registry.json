@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R475",
+ "updated_round": "R476",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -145,7 +145,7 @@
     "instrument": "eval/bge/eval_recall.py",
     "instrument_sha12": "88666584ddc6",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "打乱 gold_id 映射 → 指标必须塌到随机水平(r@1 ≈ 1/1299)",
    "covers": [],
@@ -565,7 +565,7 @@
     "instrument": null,
     "instrument_sha12": null,
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "① 目录/文件仍存在或仍有 agent.embedcpu 引用 ⇒ 机检非零退出(不得只删不验); ② 删除后整链必须仍可编译(git rm 留档可回溯), 全量回归不得出现新红; ③ 文档宣称的退役清单必须与 git 记录一致 —— 不允许「文档说删了、源码还在」。",
    "covers": [
@@ -588,13 +588,13 @@
    "evidence_path": "eval/probe",
    "evidence_generated_with": {
     "evidence_kind": "directory",
-    "pin_status": "live",
-    "pin_reason": "directory-aggregate",
-    "artifact_sha12": null,
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "ae31a39e32c5",
     "instrument": "eval/probe/tasks.py",
     "instrument_sha12": "80ba09e8bd50",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "生成器 39/39(含双路径不一致⇒拒发题 + **每条 HARD_INPUTS 必须≥3 条** + 浅解负控: 只背公开样例的解法在 hidden 上必须 0 通过); 判定器 25/25(差一/死循环/语法错/单值硬编码/无围栏 CLI 回复+尾部状态行/产物路径回退, **见证型**: 错见证/越界/非整数必须 wrong_witness, 且把判定谓词打坏后必须被抓) + **反向负控**(比对恒真时差一解被判通过 ⇒ 判据非空心); 编排器 18/18(含**反死代码**: 见证型族必须可达; hardcode 作弊解仅 6.25% 用例级/0 整题)",
    "covers": "eval/probe/tasks.py, eval/probe/grade.py, eval/probe/run_probe.py, skills/independent-verification-before-claim/, src/agent.tests/SkillGeneralizationTests.cs",
@@ -648,7 +648,7 @@
     "instrument": "scripts/capability_cycle.py",
     "instrument_sha12": "ca4a732b07e3",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "注入缺陷必红 (实测 8/8): roman_canonical:lenient_decode 19/27(should_reject×8) / merge_intervals:drop_adjacent 9/16(wrong_output×7) / merge_intervals:no_sort 5/16 / topo_order:skip_cycle_check / ttl_cache:expire_after_boundary 3/4(expired_at_boundary×1) / ttl_cache:recency_by_clock 3/4(lru_after_touch×1) 等; 判定器自检出现「参考解不绿」或「变异解没红」即判 SOUND=False 拒绝记分。",
    "covers": [
@@ -689,13 +689,13 @@
    "evidence_path": "eval/rover/r409/",
    "evidence_generated_with": {
     "evidence_kind": "directory",
-    "pin_status": "live",
-    "pin_reason": "directory-aggregate",
-    "artifact_sha12": null,
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "b26f0300502b",
     "instrument": null,
     "instrument_sha12": null,
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "① 96B 字面权串(含 BOS 文本)当渲染产物注入 ⇒ prompt_literal_special_token 判红; ② 来源标 Literal(手拼) ⇒ prompt_not_templated 判红; ③ 以 EOS 文本结尾 ⇒ 判红; ④ 空产物 ⇒ prompt_empty; ⑤ 反向防误拦: 多轮渲染含 EOS 轮分隔符、元数据 bos/eos 为 null 时必须判绿",
    "covers": [
@@ -717,13 +717,13 @@
    "evidence_path": "eval/rover/r410/",
    "evidence_generated_with": {
     "evidence_kind": "directory",
-    "pin_status": "live",
-    "pin_reason": "directory-aggregate",
-    "artifact_sha12": null,
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "2c218d15622b",
     "instrument": "eval/rover/r410/prefix_reuse_probe.py",
     "instrument_sha12": "741da6aa9854",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "① 前缀首 token 改变 ⇒ cache_n 必须归零(实测 0); ② cache_prompt=false ⇒ cache_n 恒 0(实测 0); ③ Reconciliation 口径映射必须关缓存、Session 必须开(单测负控); ④ 短独立 prompt 绝对复用 17 token << 4224 红线(结构不达标); ⑤ 跨进程(每次新起 server) ⇒ 复用 0% 且 SessionCacheMisses=1",
    "covers": [
@@ -745,13 +745,13 @@
    "evidence_path": "eval/rover/r411/",
    "evidence_generated_with": {
     "evidence_kind": "directory",
-    "pin_status": "live",
-    "pin_reason": "directory-aggregate",
-    "artifact_sha12": null,
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "895591907824",
     "instrument": "eval/rover/r411/verify.py",
     "instrument_sha12": "3182adb42cb8",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "① 短前缀会话: 携带复用率 99.81% 达标但前缀 497 < 4224 ⇒ **必然判越线**（实测 exit 7，诊断点名绝对长度）—— 比值不是 KPI; ② 无 turns 请求 ⇒ 用法错 exit 2 且不 core dump（实测）; ③ 口径错（把 tokens_evaluated 当新评估数、总长再加 cache_n）⇒ 出现 >1 的物理不可能比率（单测机检 + 实测 1.0302）; ④ 命中 > 可复用上限 ⇒ 弃权记 -1，不出判决; ⑤ 命中未上报 ⇒ 记 Unknown(-1) **不判红**（缺失≠错误）; ⑥ 跨进程两次调用 ⇒ cache_n 归零（R410 实测，本端口不改变该性质）",
    "covers": [
@@ -771,13 +771,13 @@
    "evidence_path": "eval/rover/r412/",
    "evidence_generated_with": {
     "evidence_kind": "directory",
-    "pin_status": "live",
-    "pin_reason": "directory-aggregate",
-    "artifact_sha12": null,
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "92a2320db213",
     "instrument": "eval/rover/r412/template_lcp_probe.py",
     "instrument_sha12": "938f36b5a108",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "① 预注册负控 N1: 臂 A（同会话连续）必须 ≥0.97（实测 0.9998/0.9991）—— 探针/环境失效则判 INCONCLUSIVE，不得判争用；② 设计缺陷自曝并修正: 初版会话 2 前缀 = 会话 1 前缀 + 标记 ⇒ 两会话共享超长公共子序列 ⇒ 三臂读数完全相同（判别力 0），跑前改用互不相同语料并独立量 LCP=0/1（最长公共片段 16 token）才开跑；③ 计数器不单独采信: 冷启 prompt_ms 148.3s/155.8s vs 热轮 0.84s（≈176×）⇒ 命中是真实 KV，非计数器假象；④ 单测负控: 纯串行必须 MaxConcurrentTurns==1 ∧ ConcurrentTurns==0（不得误报争用）；⑤ 单测反例: 若会话分桶退化回实例级，J1a 期望 510 会得到 408 ⇒ 必失败。",
    "capability": "R412 多会话 slot 争用（本地长驻生成第二 regime）。① 服务端实测（独立实现直连 HTTP，不经过产品代码；-np 1 -c 4608 -b 512、f32 KV、flash-attn off）: 三臂 A 同会话连续 / B 两会话交替 / C 真并发（LCP 预校验: 两前缀 4336 vs 4316 token，LCP=0/1、最长公共片段 16）⇒ 携带复用率四臂（A 连续 / B 交替 / C 真并发 / D `-np 2 -c 9216`（每 slot 4608））**逐位相同**（S1 0.9998 / S2 0.9991）；冷启 prompt_ms 148.3s/155.8s vs 热轮 0.84s ⇒ 真实 KV 命中（非计数器假象）⇒ **单 slot 不互相踢缓存**（服务端保留并恢复 slot 状态）。② 产品侧缺陷（代码事实: LlamaCppTextGenerator.cs:131 旧取实例级 LastPromptTokens/LastGeneratedTokens）: 多会话交替/并发时被别的会话覆盖 ⇒ K2b 台账 carryOverCeiling 分母污染（外部看不出）⇒ 新增 LocalSessionTracker 按 sessionKey 分桶（无键退回实例级 = 零回归）+ 并发计数 TrackedSessions/ConcurrentTurns/MaxConcurrentTurns/UnkeyedTurns。判据 J1a-J1h，含负控: 纯串行 MaxConcurrentTurns==1 且 ConcurrentTurns==0（不得误报争用）。",
@@ -797,13 +797,13 @@
    "evidence_path": "eval/rover/r371d7/",
    "evidence_generated_with": {
     "evidence_kind": "directory",
-    "pin_status": "live",
-    "pin_reason": "directory-aggregate",
-    "artifact_sha12": null,
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "ff85b56fd672",
     "instrument": "eval/rover/r371d7/run_arm.sh",
     "instrument_sha12": "ef89b81b1ca1",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "① ok 臂（全程完整正文）必须零恢复提示请求 ∧ 零 llm_call_continue/llm_call_recover ∧ 零 truncated=true —— 无病不治（判别力下限实跑得到）；② 不采信被测量代码自报: after_len 必须等于**独立复刻**的合并长度（异实现、overlap 自算=16），before_len/tail_before 必须等于桩侧截断正文（外部真值）；③ 桩侧请求原文必须出现 TruncatedNudge，证明第二次远端调用是**续写**而非重复调用；④ 口径坑已登记: llm_call.truncated 反映**最终**正文闭合性（救回后 false），只看该字段会漏掉已救回轮。",
    "capability": "R371-D7（半行截断）真机验收: 真进程 agenthost --frontend-api + 确定性远端桩（逐请求落盘）⇒ 截断被检出（tail_before=断点原文）∧ 有界续写（第二次请求携带断点提示、max_tokens 升级）∧ 去重合并（before=102 + added=58 - overlap=16 = after=144，与独立复刻逐位相同）∧ 救回后结构闭合 ∧ 用户可见回复含续写独有片段；D1（空正文+reasoning 非空）⇒ first_content_len=0/first_reasoning_len=400 ⇒ 抑制推理重试 recovered=true。四臂 24 项断言 verdict=PASS。",
@@ -822,13 +822,13 @@
    "evidence_path": "eval/rover/r371d7/",
    "evidence_generated_with": {
     "evidence_kind": "directory",
-    "pin_status": "live",
-    "pin_reason": "directory-aggregate",
-    "artifact_sha12": null,
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "ff85b56fd672",
     "instrument": "eval/rover/r371d7/run_arm.sh",
     "instrument_sha12": "ef89b81b1ca1",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "① **判别力实证（缺陷注入等价物）**: 同一探针跑**修复前**二进制 ⇒ empty_always 轮 1 reply_len=0（对照文件 turns-before-fix-empty_always.jsonl 在库），修复后 66 ⇒ 断言确实能逮住该缺陷，不是恒过；② 未标记失败 Content 必须**不外泄**（单测第 3 例: 未标记+有内容 ⇒ 空串）; ③ 源级钉死 2 条: 失败分支必须经 UserFacingFailureContent ∧ 全文不得出现 response.Content = string.Empty；④ 零回归对照: ok/empty/truncate 三臂修复前后读数逐位一致。",
    "capability": "R414 失败可见性闭合: 真缺陷 = IndustrialAgentV2.cs:1604（修复前）在 !llmResponse.Success 分支 `response.Content = string.Empty` 丢弃上游（ModelQueueRouter D1 empty_content_after_retry）写入的**面向用户降级文案** ⇒ 用户可见回复空白（真机 empty_always 轮 1 reply_len=0、loop_turn.reply_chars=0；既有单测只在 router 层断言 ⇒ 链侧丢弃测不到）。修法 = 内容可见性契约位（QueueResponse/LLMResponse.ContentIsUserFacing，默认 false 零回归）+ ModelQueueAdapter 透传 + 链侧 internal static UserFacingFailureContent 裁定（只透出显式标记内容）+ 可见文案不再拼接 ex.Message（原文留 Error）。判据: 单测 5/5 + 真机 4 臂 24 项 PASS + 修复前对照。",
@@ -849,13 +849,13 @@
    "evidence_path": "eval/rover/r415/",
    "evidence_generated_with": {
     "evidence_kind": "directory",
-    "pin_status": "live",
-    "pin_reason": "directory-aggregate",
-    "artifact_sha12": null,
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "a10727afc7ed",
     "instrument": "eval/rover/r415/run_arm.sh",
     "instrument_sha12": "55357a6f6767",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "① `off` 臂（本地通道关）: 本地判别请求必须为 0 ∧ `/apply-template` 必须为 0, 且同一轮**本就会**走远端（外部真值 calls-off.jsonl 命中 1）⇒ 证明 pin 臂的「S 轮零远端请求」是门的产物而非链的固有行为; ② ★判别力自证: A3（判别请求不含哨兵 SENTINEL_SKILL_7F3A）必须与 A7（远端请求**确实含**该哨兵 + [本轮参考上下文]）同读 —— 只有 A7 成立时 A3 才说明「门吃的是 message.Content」; 若把门改回 prompt.UserMessage, A3 必失败; ③ 跳过轮回复必须不等于远端桩罐头（t1=21 字本地模板 vs 桩 15 字）⇒ 跳过真实且不静默; ④ 不采信被测量代码自报: 判据只认假后端/桩的逐请求落盘; ⑤ 仪器两次失效已入档（chunked 未解块 ⇒ 请求体读空; 判别规则全文匹配命中 few-shot 示例 ⇒ 三轮全判 S）—— 无 A7 正控时仪器错与门吃错变量无法区分。",
    "capability": "链级（真 agenthost --frontend-api + 真 DI 装配 + 真 ModelQueueRouter + 真 LlamaCppLocalGenerationPort + 真进程/HTTP）+ 确定性假本地后端（模拟 llama-server /health /props /apply-template /tokenize /completion; 逐请求落盘=外部真值）⇒ 钉死「前置门入参 = message.Content（用户本轮原文）」: 判别请求 3 次、文本长 385/385/387、哨兵 0 / [本轮参考上下文] 0 / [技能知识参考] 0, 而同一轮远端请求含哨兵 1~2 + 参考块 3~5（正控）; S 轮被跳过（远端零请求）、P 轮未被跳过（假阴性 0）; 22 项断言 × JIT/AOT 两形态全 PASS。产品代码未改动（本轮为防线升级, 非缺陷修复）。",
@@ -883,7 +883,7 @@
     "instrument": "eval/rover/r371d2/run_d2_acceptance.sh",
     "instrument_sha12": "8d34b85e2aeb",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "① **撤销修复负控（等价缺陷注入）**: 把产物自带 config/ 移走、其余完全不变 ⇒ 同一命令同一仓库外 cwd 必须复现生产症状「模型目录为空」（实测 EMPTY_CATALOG_HIT=1，与治疗臂 0 成对 ⇒ 断言非恒过）；② **修复前产物负控**: D2 修复前的发布物在同 cwd 必现同症状（实测命中 1），即缺陷可被该探针逮住；③ **探针环境自证**: 仓库外 cwd 及其祖先链不得存在 config/（否则「自包含」可能是误从祖先读到）——裁决前静态校验，实测 /tmp/d2-cwd、/tmp、/ 三级均无；④ **越过错位点的正证**（防「没报错=没跑到」）: 治疗臂必须打印选模之后的证据 —— 实测 stdout 有「prompt 构建完成: ~3385 tokens」且错误后移到「环境变量 AGENTFRAMEWORK_KEYS_DEEPSEEK 未设置 (模型 deepseek-flash 的 API Key 来源)」⇒ 配置确被解析、模型目录非空、已选中模型；⑤ **诚实边界**: 三臂退出码均为 0 ⇒ 判据只认 stdout 外部真值，不认退出码（退出码不体现成败）。",
    "capability": "发布产物自包含 config（R371-D2 收口）：AOT 发布物在**仓库外 cwd** 运行时自带 config/{base,modules,env}（csproj publish 复制规则，commit f43711a）并据此完成配置解析与选模，不再出现「模型目录为空: 请在 config/base/models.yaml 配置至少一个模型」。真机判据（预注册，合取）: 治疗臂 /tmp/pub_d2/agenthost（cwd=/tmp/d2-cwd，env -u AGENTFRAMEWORK_CONFIG）stdout 不含该症状且出现选模之后的证据；两个负控臂必须复现该症状；另比对产物 config 与仓库 config/base 的 sha256 逐字节相同（非陈旧副本）。裁决器三态（pass/breach/abstain，臂缺失走弃权）。**口径澄清（对齐 aot_check_policy=release_tag_only）**：本行等级依据是**运行期行为 + 两路负控**（配置能否被解析/选模是否越过错位点），**不是** AOT 编译校验——发布/0 IL 警告/体积类结论不作本行等级依据，AOT 产物此处只作「承载运行期证据的载体」。",
@@ -908,7 +908,7 @@
     "instrument": "eval/rover/r417/run1_same_seed.sh",
     "instrument_sha12": "f46eb6d3f86e",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "三族**族专属缺陷注入**（`--solver mutation:<名>`，注入源 = 正确参考解的结构性改动）：`topo_dfs`（DFS 序代替字典序最小）用例级 24/52、整题全对 **0/4**；`vm_noerr`（去掉栈/跳转/步数错误语义）用例级 29/48、整题全对 **0/4**（timeout 2/runtime_error 2~17）；`json_loose`（`json` 模块套用）用例级 54/72=0.75、整题全对 **0/4**。正控成对：`oracle` 对同族同 seed 必须满分（49/49、36/36、整题全对 4/4 与 2/2）。另：`json_mini` 每题**强制注入 1 条** `tight_gen` 用例（合 JSON 但不合本规格：低码点 uXXXX / 浮点 / NaN / 裸 TAB）⇒ 通用 JSON 库套用式解法**确定性**拿不到整题全对，而非靠概率。 **仪器自证（本轮真机暴露的 2 处真缺陷，已修 + 固化负控）**：① 提取器逐候选取『首个可编译前缀』⇒ 长回复下把 10 KB 程序判成 46 字符注释残片（p001 记录 0/18，真值 12/18）；② `grade_program` 先判退出码 ⇒ stdout 正确但 `sys.exit(1)` 被顶成 runtime_error（p002 记录 10/18，真值 18/18）。修后 `eval/probe/grade.py --selftest` **29/29**（新增 4 条：长残片不得顶掉整体可编译者 / 输出正确+非 0 退出仍判过 / 无输出+非 0 退出判 runtime_error / 期望空输出时崩溃不得判过）。**单调性**：两处缺陷都只会低估 ⇒ 修正口径恒 ≥ 旧口径，故 `topo_min`+`vm_run` 的旧满分读数（74/74、6/6）在修正口径下必然仍成立。",
    "capability": "探针反饱和（质量度量前置）：原程序 7 族对当前链已**饱和**（agent 与 oracle 同为整题全对 100%，seed 20260913 同题复跑逐族一致）⇒ 天花板效应，不能度量质量。本轮新增 3 族 `topo_min`（字典序最小拓扑序/环⇒-1）、`vm_run`（微型栈机与 ERR 语义）、`json_mini`（严格 JSON 规范化与非法输入ERR），每族 ref/check **两条独立实现**双路径验算（本轮 1422 例分歧 0，不一致即拒发题），并给出族级缺陷注入负控 + 正控成对；真机（AOT agenthost）读数为 `topo_min`+`vm_run` 74/74 与 6/6 整题全对（**仍饱和**，如实登记）、`json_mini` 见 digest §3。**等级依据 = 运行期行为 + 成对正负控**，不是 AOT 编译校验。 **真机读数（首个非饱和质量分数）**：`json_mini` n=3 ⇒ 记录口径 27/54=0.5000 用例级 / 整题全对 0/3；修正口径（同批归档回复离线复判、无新跑 LLM）**47/54=0.8704 / 整题全对 1/3**（p001 12/18 输出漏引号 · p002 18/18 · p003 17/18，唯一失分 = `tight_gen` 强制的裸 TAB 紧用例）。**用例级 87% vs 整题全对 33% = 「判分单元必须是整题全对」的实证。** 原始读数文件：`data/probe/probe-r417-new-oracle.json`（正控）、`probe-r417-mut-topodfs.json` / `probe-r417-mut-vmnoerr.json`（负控）、`probe-r417-json-oracle.json` / `probe-r417-json-mut.json`（json_mini 正负控）、`probe-r417-hard-agent.json`（真机新族）、`probe-r417-json-agent.json`（记录口径）、`probe-r417-json-regrade.json`（修正口径复判）、`data/probe/taskset-r417-json.json`（题集）。",
@@ -939,7 +939,7 @@
     "instrument": "eval/rover/r418/run1_process_kpi.sh",
     "instrument_sha12": "19e2da8add44",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "① **负控成对（判别力）**: 同题集同 seed 的 `mutation:json_loose` 臂整题全对 **0/4**、用例级 0.7324，而 `oracle` 正控满分（54/54 用例级、2/2 整题全对）⇒ 判分器未失效。② **成本口径负控**: 负控臂不走 LLM ⇒ 过程指标记 **4×n/a**；若把缺字段记 0 会伪造「零成本」假象（`--selftest` 断言 n/a 排除分母: 1500.0 而非 1000.0）。③ **反张冠李戴负控（本轮新增，承重）**: 归档回复若不在该 run 的时间窗内 ⇒ **不得归属**，一律 n/a；窗内多候选 ⇒ 判歧义记 n/a，**绝不取第一个**（实测：修窗前 3 份旧 run 会读到同一批回复 = 静默张冠李戴，修窗后 ambiguous=0、na_sum=61 全部如实标 n/a）。④ `ts` 不可解析 ⇒ 不做窗匹配（不猜）。",
    "capability": "探针「过程/成本」维度 KPI（对**饱和题集仍有区分度**，直接对齐用户 KPI 口径：每题 tokens / 轮数 / 首次通过率）：`eval/probe/process_metrics.py` 把**质量（判定器产物，外部真值）与成本（归档回复原文）拼成同一行**；`run_probe.py` 归档名带 seed 命名空间（`agents20260916-p001.txt`）+ 摘要记 `reply_ns` 供确定性归属。真机（AOT agenthost，`json_mini` n=3 seed=20260916）读数：整题全对 **2/3 = 0.6667**、用例级 **52/53 = 0.9811**、**tokens/题 = 9151.0**（prompt 侧）、tokens/满分题 9189.0、墙钟均 **77.7 s/题**、**turn≤1**（零多轮/零追问）、n/a 0、畸形 0。**口径边界（如实登记）**: 链不落 `completionTokens` ⇒ 只能报 **prompt 侧 + 墙钟**；探针为单轮，故「轮数」主要作异常检测。**等级依据 = 运行期行为 + 成对正负控 + 外部真值归属**，不是编译校验。",
@@ -973,7 +973,7 @@
     "instrument": "eval/rover/r419/run1_multiturn.sh",
     "instrument_sha12": "34d3ffc72c4a",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "① 成对控制(判别力): mutation:delayfix 臂 fix_rate=1.0、mutation:nofix 臂 fix_rate=0.0 (n=3/6/6 三批全成立) ⇒ 仪器能记到修复、且不把「没修」读成「修了」; ② 检查器 7 态自证 (正常0/饱和2/混批3/负控误读2/缺字段3/回归2/NS不符3) —— 检查器本身也是仪器, 无此层则「检查器坏了」与「被测不达标」不可区分; ③ 坏字节闸: 被测程序打印非 UTF-8 字节时判不过而**不崩** (修前实测一条 0xe9 截断字节即整臂 UnicodeDecodeError 退出); ④ 假前提对照臂 correction=always: 首轮 0.6667 → 两轮 0.0、回归 2 题 ⇒ 修正轮前提必须为真; ⑤ NS 碰撞闸 REFUSE_NS_COLLISION (同后缀重跑会静默覆盖读数, 本轮已发生一次)。",
    "capability": "探针多轮化 —— 让「轮数 / 首次通过率 / 修复率」从恒等判据变成可分化判据: `--turns>1` 用**同 sid 跨进程**续上下文 (决定性微实验: turn1 记住 4271 → turn2 命中); 轮数一律取**发送次数/归档文件数**(外部真值, 不信转录里的 `turn N` —— 那是进程内轮次, 两次进程都写 turn 1); 修正轮默认 `onfail`(只对首轮未过题发 ⇒ 前提为真)。真机 (AOT agenthost, json_mini, n=6 seed=419/420): 4 次 onfail 跑中 **3 次首轮即全对(饱和, 判 EXIT 2 不放行)**、**1 次 first=0.8333(5/6) → 两轮 1.0、fix=1.0、回归 0、轮数 7/7 ≠ 6 ⇒ 真分化**(该次产物被同 NS 重跑覆盖, 仅会话记录, 见 evidence 文档「归档事故」); 控制臂三批 实到==期望。**诚实边界**: 真机侧未稳定复现 ⇒ 本行证明「仪器可用 + 存在分化」, 不等于「链增益已确证」; n=6 单族非分布。",
@@ -1004,7 +1004,7 @@
     "instrument": null,
     "instrument_sha12": null,
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "① 撤销接线负控（产物级，真机同输入）: /tmp/pub_r414/agenthost（12:19，接线前 AOT）对 `/recall 存在` 产出 `recall_query`=0 且 `llm_call`=1、stdout 无「跨会话检索」渲染（直接送 LLM ⇒ 凭据未设而报失败）；接线后同形输入 `recall_query`=3 且 `llm_call`=0 ⇒ 「本地指令零 LLM 打点」不是恒真断言。② 四表一致性审计（行为探测，非再维护一份字面表）: CommandRouteConsistencyTests 遍历 KnownCommands 全集断言 TryRoute(cmd).Handled，漏 switch 臂或漏 Known 即红；/recall 另有 Handled/Command/Argument 三元断言。③ 真机负控: `zzq`（无词典面重叠）hits=0 ⇒ 渲染器非恒返回内容；空命中走显式「无命中」文案而非空白。",
    "capability": "跨会话检索（SessionHistorySearch）从「库面实现 + 单测」变为**有生产消费点**: 新增本地指令 `/recall <查询词> [topK]`（默认 top5，上限 50），经四表接线（Known 白名单 / TryRoute switch 臂 / 宿主 dispatch 特判 / 渲染层）在**零 LLM 调用**下把命中项（会话 id + 分数 + 摘要片段）直出；通道级打点 `recall_query{query_len,topk,hits}` 使「指令是否被拦截」可判（不靠回复文本猜）。R370 交付、R420 接线前该组件的生产消费点为 0（backlog L7-G1 高优先级缺口）。",
@@ -1032,7 +1032,7 @@
     "instrument": "eval/capability/r421/run_r421.py",
     "instrument_sha12": "7c795d174016",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "① 撤销修复负控臂 = **修复前二进制快照** /tmp/pub_r420_pre/agenthost(R420 产物, 接线在/极性不在) 跑**同一 harness、逐字节相同语料**: `不存在` 命中 3 条只断言『存在』的文档, 且命中集与 `存在` **逐元素相同** ⇒ 缺陷原样复现(治疗臂同查询 0 命中) —— 差异只能来自二进制; ② 正控 `存在` 两臂都召回同样两个真实正样本 ⇒ 证明「召回未被打死」而非「一刀切全灭」; ③ 阴性对照 `zzq` 两臂皆 0 命中 ⇒ 断言非恒真; ④ 语料 sha256 跑后未变 ⇒ 读数只读、无污染; ⑤ 每查询 recall_query 打点恰 1 ⇒ 读数非缺省非重复; ⑥ 全部查询 llm_call==0(通道级) ⇒ 不产生远端调用; ⑦ 渲染行可寻址闸: 修前命中行与片段粘连 ⇒ 解析器只能取到第 1 条(本 harness 实测踩到), 已补单测。",
    "capability": "跨会话检索的**否定极性**: Tokenize 让否定标记(`不 没 未 无 非`)自身及紧邻 1 个二元组带极性问题(`'\\u0001'`, Normalize 丢弃控制字符 ⇒ 真实文本不可产出 ⇒ 无碰撞), 使 `¬存在` 与 `存在` 不互 match ⇒ 「X 不存在?」不再被答成断言 X 存在的文档。查询侧与文档侧走**同一个 Tokenize**(对称性铁律 ⇒ 只是词元身份区分, 无查询侧特判)。真机(AOT, 3 文档冻结语料 + 4 查询, 同 harness 双二进制): `存在` 3 命中(score 0.5596) / `不存在` 3→**0** / `外星词根zzq不存在` 3→**0** / `zzq` 0→0; 负控臂分数 0.3957=0.5596/√2、0.2285=0.5596/√6 与公式 `score=ΣIdf/√|qSet|, Idf=ln(1+n/(1+df))` 逐位吻合 ⇒ 缺陷定位在词元层。**诚实边界**: 极性作用域仅「标记+紧邻 1 二元组」(句中远距否定未测), `别/勿/莫/甭` 有意排除, `无/非` 复合词碰撞未量化, 打分无长度归一 ⇒ 命中集内同分无区分度(登记 R422)。",
@@ -1056,7 +1056,7 @@
     "instrument": "eval/capability/r422/run_r422.py",
     "instrument_sha12": "4c27f9dd6b38",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "① 撤销修复负控臂 = **修复前二进制快照** /tmp/pub_r421_pre/agenthost（R421 产物：极性在、长度归一不在）跑**同一 harness、逐字节相同语料**：`存在` 命中 3 份文档且分数**全等 0.5596**（臂身份自证）⇒ 差异只能来自二进制；② 正控（防一刀切）: 治疗臂与负控臂命中集**逐元素相同** ⇒ 归一未把召回打死；③ 极性不变量成对: 两臂 `不存在`/`外星词根zzq不存在`/`zzq` 命中均 0 ⇒ 未破坏 R421 修复（假阴性成对报告）; ④ 语料 sha256 两臂相同且跑后未变（只读）; ⑤ 两臂全查询 llm_call==0（通道级）⇒ 不产生远端调用; ⑥ **预注册判据被证伪如实登记**: B2（命中集内分数不再并列）与 B5（数值近整数，容差 0.02）**红**——根因是语料中两份文档**词元数相同**（任何仅依赖文档长度的归一都不可分）与 F4 渲染精度失配；事后判据单列 checks_posthoc，**不与主判据混列**，判决 PARTIAL 而非 PASS。；⑦ **附带修复(agent.rag，同血缘召回面)**：确定性等价类负控 = 旧公式 `(hash + seed*31337) % dim` 在边界 hash(int.MaxValue-60000, seed=2) **确实产负下标 -15** ∧ 新式 `BucketOf` 恒在 [0,128)（成对断言，`RagWordBagEmbeddingStabilityTests`）；⑧ 概率性缺陷（~20%/进程）**不以重跑变绿为判据**，且红例经 stash 基线对照证与本轮改动无关",
    "capability": "跨会话检索打分**长度归一**（对齐 R421 §6.4 的『命中集内零区分度』缺陷）：`SessionHistorySearch.cs:97-99` 将分数分母改为 `sqrt(|qSet|) * sqrt(|d.Tokens|)`（余弦式、零参数、无语料均值、不改确定性；除数为正 ⇒ 分数符号不变 ⇒ **命中集合可证不变**）。真机（AOT 成对、3 文档冻结语料 + 4 查询）: T `/tmp/pub_r422/agenthost`（IL/trim 警告 0）`存在` 三份分数 `[0.2798, 0.0590, 0.0590]` vs N 修复前 `[0.5596 ×3]`；**数值对账** `|d|_est=[4.0, 89.96, 89.96]` 与 `S/√|d|` 逐位吻合（0.5596/√4=0.2798、0.5596/√90=0.0590，F4 渲染相对容差 2%）。**claim_scope（按证据收窄）**: 「分数与文档词元数反比、召回集合不变；**等长文档仍并列**」——**不**宣称『零区分度已消除』（全称判据 B2 被证伪）；等长并列的消除需 tf/语义信号（登记后续候选）。 附带修复（独立于打分口径）：词袋 embedding 哈希改为确定性 FNV-1a + 无符号取模 ⇒ 消除 ~20%/进程的 `IndexOutOfRangeException`（溢出窗口）与跨进程向量不可复现（进程随机化 GetHashCode）；契约由 4 例确定性断言钉住（RagWordBagEmbeddingStabilityTests 4/4）。",
@@ -1087,7 +1087,7 @@
     "instrument": "eval/capability/r423/run_r423.py",
     "instrument_sha12": "5624d993eaf2",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "① 负控臂 = R422 AOT 二进制 (无频次) 同 harness 逐字节相同语料: 等长对分数**全等** [0.4901×2] (臂身份自证), 且其在语料 A 上的读数与 R422 判决书登记值**逐位相同** (0.2798/0.059/0.059); ② 首跑归档 `eval/capability/r423/verdict-r423-run1-predictor-error.json` 保留 C4 **红** (预测输入 tf 手算=2 被证伪, 真值 4) ⇒ 判据非恒真、非事后放宽; ③ 成对不变量: 六查询命中集两臂逐元素相同 ∧ 极性 4 查询命中均 0 ⇒ 未把召回打死 (防一刀切); ④ 语料目录条目集机检 (C0, 事后加) + 语料 sha 与 R421 登记逐字节相同且跑后未变 (C7); ⑤ 两臂全查询 llm_call==0 (通道级) ⇒ 本地指令未走 LLM 主链; ⑥ 边界登记单列 checks_boundary, 不与主判据混列 (C8)",
    "covers": [
@@ -1113,7 +1113,7 @@
     "instrument": "eval/rover/r424/run_arm.sh",
     "instrument_sha12": "2661068e96e8",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "① 形态闸负控 = IL apphost `src/agent.host/bin/Release/net10.0/agenthost`(78,256 B) 同命令 `env -i <bin> --version` ⇒ `rc=131 You must install .NET…`（AOT 产物则正常打印 CLI）⇒ 闸具判别力；② 增益负控 = 臂 A（local 段删除）= 分母本身；③ **r1 归因负控 = 臂 B′**（`local.model_path` 指向不存在文件, `turn_gate:true`）：读数 12/16,891 ≡ 臂 A, 跳过 0, 4/4 门事件带 `decided=false+error=local_failed:LlamaCppException` ⇒ 无 r1 则增益归零；④ 历史器具封堵负控 = `bash eval/rover/r413/run_arm.sh A` ⇒ `rc=2 [REFUSED]`（需 R413_ALLOW_IL_LEGACY=1 才可复现历史 JIT 读数）",
    "owner_round": "R424"
@@ -1132,7 +1132,7 @@
     "instrument": "eval/rover/r425/run_grid.sh",
     "instrument_sha12": "c1201cb325f9",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "① **无 role 阴性对照** batch b1: A/B 逐格逐位相等 (k1..k8 token %s) ∧ 无本地推理时延 ⇒ 门未进判; 源码坐实 `src/agent/IndustrialAgentV2.cs:1464` = `if (_modelRouter is { TurnGateEnabled: true } && ActiveRole is not null)` ⇒ 门生效必要条件含 ActiveRole!=null (教训: 门相关臂必传 --role); ② 归因负控 = 臂 B′(local.model_path 指不存在) ⇒ 降幅 0.028% ≈ 0; ③ 形态闸负控 = 同目录 IL apphost 78,256 B `env -i` rc=131 (AOT 则 rc=0); ④ 臂 A 本身 = 分母, 且含「意图不明确⇒等你回答」澄清短路轮 (故 A 调用 9–10 < 8 轮)",
    "owner_round": "R425"
@@ -1151,7 +1151,7 @@
     "instrument": "eval/capability/r427/precheck_position.py",
     "instrument_sha12": "8ebf809b15e2",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "N1 身份控制(同文对自身 ratio 恒 1.0); N3 新边界构造(同 distinct ∧ 同 tf ∧ 同 df ∧ 同首现相对位置 ⇒ 位置族亦并列); P2b 带 fail-closed 的 synthetic_valid(先证词袋并列才允许谈可分); 真实并列对 P2 = FAIL 即本轮发现本身",
    "covers": [
@@ -1175,7 +1175,7 @@
     "instrument": "eval/capability/r428/run_r428.py",
     "instrument_sha12": "28cf03246f64",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "① 语料 D: 两份**不同文但同分**命中 (0.2284/0.2284) ⇒ 两臂均 2 条且无 `同文副本` 标记 (折叠规则不得误伤); ② 缺陷态保留 (pre-fix 臂 N): 语料 A 上仍 3 条未折叠、p005 未消失 ⇒ 判据对「未修」状态有判别力; ③ 臂身份 C1: N 臂读数与 R423 verdict 已落档读数逐位相同 ⇒ 两臂唯一变量 = 本轮 diff; ④ 次负控: 查询 `不存在` / `外星词zzq` 两臂均 0 命中 (不凭空造命中)",
    "covers": [
@@ -1198,7 +1198,7 @@
     "instrument": "eval/rover/r429/run_arm.sh",
     "instrument_sha12": "1063e810b79f",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "① 无端口负控: 无本地端口 ⇒ JudgeTurnAsync 返回 no_local_port 且 CachePinned 保持 0（计数绑定真实请求, 不空心）; ② 全仓不变量: 只有 ModelQueueRouter 两处决策路径置 CacheReuse=false（非决策路径零回归）; ③ 传输级负控: 换用户消息 ⇒ token 序列必不同（仪器有判别力）; ④ PRE（改动前二进制）同网格判定不恒定 ⇒ 判据对「未修」态有判别力; ⑤ V0 形态闸: env -i 自启 + IL apphost 负控必拒",
    "covers": [
@@ -1225,7 +1225,7 @@
     "instrument": "eval/rover/r430/run_arm.sh",
     "instrument_sha12": "b4b420f98e81",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "① 并发负控（传输级）：默认 4 槽 + 并发在途 ⇒ 同一 prompt 出现 2 种 token 序列（105/105/108），串行基线 75 ⇒ 判据对「未修」态有判别力；② 修法正控：强制 `-np 1` 后同条件 3/3 逐位相同；③ 单测负控：Parallel≤0 不得漏成「不传 -np」（会退回构建默认 4）⇒ 夹到 1，并断言 `-np` 无条件出现；④ 默认路径零回归：CacheReuse 默认 true、指纹字段默认空（缺失≠错误）；⑤ V0 形态闸：env -i 自启 native + IL apphost 负控必拒（rc=131）",
    "covers": [
@@ -1259,7 +1259,7 @@
     "instrument": "eval/rover/r431/run_arm.sh",
     "instrument_sha12": "131e2675483c",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "① 单测成对: 挂载臂 sha16 ≠ 未挂载臂 sha16，且未挂载臂**逐位等于冻结基线**（355 字符 / sha16 8749b0a15f102f04；该指纹由 python 独立重建 BuildPrompt 后交引擎 /apply-template 渲染复算 = R430 遥测 prompt_sha 850f6cb17181a38f，两套独立实现同指纹 ⇒ 且反证 R430 时 growth 确为 null）；② 真机对照臂 = 真实 `skeptic.rbin`（启动 0 成长域）: 第 1 次门判 growth_chars=0、prompt_len=355（与基线同长）；③ V0 形态闸 IL 负控: IL apphost 在 `env -i` 下 rc=131 拒绝执行 ⇒ 形态判别力存在（被测为 native_ok=True）。",
    "covers": [
@@ -1285,7 +1285,7 @@
     "instrument": "eval/rover/r432/run_arm.sh",
     "instrument_sha12": "05c0d8d6a254",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "[\"① 机械负控位（`现在的情况如何？`，网格 v2 pos19）: 必落 mechanical 分支且 r1 侧不得出现该位（若落 r1 ⇒ C5 假 ⇒ FAIL）\", \"② 旁路负控: 任何轮回复以 [隔离任务] 开头 ⇒ 该轮作废（C4 假 ⇒ FAIL），防「根本没进门」被当读数\", \"③ 未测到不判通过: 未进门位记 ungated，明确不计入 C1/C2 分子（臂 1 有 9 轮未进门）\", \"④ 归因负控: Pass 必须伴随该轮窗口内远端桩调用 ≥1、Skip 必须为 0（否则 C3 假）\", \"⑤ 族位错配负控（臂 1 实发）: 预注册族落在被 ask 消费位 ⇒ C2/C5 直接判 FAIL，未事后改判据（如实登记 + §3.1 预注册校正臂）\", \"⑥ 对照: R430 fix 臂同文 4 次 raw 同一（127/127/127/127）为该能力的先验正控\"]",
    "covers": [
@@ -1320,7 +1320,7 @@
     "instrument": "eval/probe/grade.py",
     "instrument_sha12": "ef0a81d495ee",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "evidence_cmd": "python3 eval/probe/grade.py --selftest && python3 eval/probe/run_probe.py --selftest && python3 scripts/kpi_probe.py --glob 'data/probe/probe-*r433*.json' --report eval/capability/r433/kpi-report.md"
   },
@@ -1339,7 +1339,7 @@
     "instrument": "eval/rover/r434/run_arm.sh",
     "instrument_sha12": "aa09ccea78e4",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "① 无设备负控 (臂 BP, 模型路径缺失): 门判恒降级 ⇒ 跳过 0 次, 总 token 19465 ≥ 分母 18493 ⇒ 省调用不可能来自「门没起作用」; ② 成对判据: 假阴性(真诉求被跳)与假阳性(认可被花掉)同时计数 —— 修前 3/0, 修后 0/0; ③ 认可族白名单负控 (测试 G31): 「再讲一遍。」族必须 false, 「好，按这个来。」亦 false (保守方向); ④ 带内机检: 8 个测量轮全部 MechanicalPass=false (否则根本到不了 r1); ⑤ 复现负控: 同题同臂重跑逐轮 actual ∧ 主答调用逐位相同 (B -b1 vs -b2)。 ⑥ 判官通道负控(单变量 BRJ): local×1 / remote_fallback×6 ⇒ 「本地优先」不得被计成收益。",
    "covers": [
@@ -1364,7 +1364,7 @@
     "instrument": "eval/rover/r436/run_r436_arms.sh",
     "instrument_sha12": "d64bd758ee7a",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "① 无设备负控（臂 BP, model_path 缺失）: r1_skips=0 ⇒ 门恒降级, 判官 7 次 remote_fallback ⇒ 总 29569 tok ≥ 分母 27654 tok（-6.92%）⇒ 降幅不可能来自「门没生效」; ② 单变量臂 B vs BRJ 只差 relation_judge ⇒ J 本地化贡献可分离（1083 tok / 3.92 pt）; ③ 分类器复现控制 S1: 用本轮**程序化派生**的 J 标记重跑 R434 五份归档 calls, G/J 计数逐臂与原登记完全一致（第 6 份 A-p8-a1 无 G/J 记录 ⇒ 跳过并计数, 不静默）; ④ 双源交叉 S2: 桩侧 J 远端请求数 == 遥测「真构造请求的远端判决」数（prompt_len>0）, 全臂 delta=0; ⑤ 确定性复跑 BRJ#2: Δtoken=7（0.025%）, 逐轮 actual 全同; ⑥ 形态负控: V0 形态闸裸 IL/脚本伪装配体必拒（rc=131）。",
    "covers": [
@@ -1390,7 +1390,7 @@
     "instrument": "eval/rover/r438/run_arm.sh",
     "instrument_sha12": "0b0d2f75d433",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "① **臂 A 不变性**(关闸路径): 修复后 A 的 11 次调用逐调用 prompt_tokens_est 与 R436 冻结档案完全相同(27654 tok) ⇒ 修复无附带效应; ② **无设备负控**(臂 BP, model_path 缺失): r1_skips=0、远端兜底 7、总 29569 tok = 分母 −6.92%(净亏) ⇒ 增益必须来自真实本地设备; ③ **预注册预测器**: predict_r438.py 用 R436 归档 calls 逐字节重放 + 同估算器(char//2) 预判 37.37%, 实测同值(偏离 0.0 pt), 且 A 臂预测=实测=27654 ⇒ 估算器复现校验通过; ④ **独立第二实现**: verify_r438.py 与 settle_r438.py 分属两套实现, 判据结论一致; ⑤ **首轮豁免反证**: 「首轮条目无块」在 R436 档案中本就如此(A 11/11、BRJ 7/7) ⇒ 非本轮修复引入。",
    "covers": [
@@ -1415,7 +1415,7 @@
     "instrument": "eval/rover/r440/run_all.sh",
     "instrument_sha12": "7b434bcdb49a",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "V4-BP(无本地设备, model_path=/nonexistent): 门/判官 fail-open ⇒ 远端调用全量(25 调用)、r1_skips=0、远端判官回退 13 次、降幅 **−5.47% ≤ 0** ⇒ 「降幅」必须来自真实本地设备而非口径; 另有 A 臂(门关)作分母负控、V5(零可跳)作「增益不存在时不得为正」的负控(−2.40%)。",
    "covers": [
@@ -1456,7 +1456,7 @@
     "instrument": "eval/rover/r441/design_check_r441.py",
     "instrument_sha12": "3cbcd0e4ffb6",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "V5 零可跳 20 轮 −2.40%（存档, 同长同池）与本轮 1/20 单跳 +3.20% 对照 ⇒ 差异只能由「是否发生 1 次 realized skip」解释; W8 与 W20 同为单跳, 降幅 13.77% vs 3.20% 之差由可跳轮占比 1/8 vs 1/20 解释",
    "covers": [
@@ -1489,7 +1489,7 @@
     "instrument": "eval/rover/r442/design_check_r442.py",
     "instrument_sha12": "384ca973dcf8",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "D7 负控 2 例（NC1: W8 分母注入 r440 V4 全长 61281 = R440 预测器真实缺陷 ⇒ D7a 判红差 +44021; NC2: V4 verdict 冒充 W8 ⇒ 网格不符判红）+ 正控（同网格同值 PASS）⇒ D7_pass=true。口径自身负向对照: W8/W20 单跳格在 ① 为正、在 ③ 为负 ⇒ 本地成本项确实被计入且足以翻号。",
    "covers": [
@@ -1520,7 +1520,7 @@
     "instrument": "eval/rover/r443/analyze_r443.py",
     "instrument_sha12": "6b23007f6e5b",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "① A 臂对照 fp=7/acc=0.611（门不接入 ⇒ 判别力正控）; ② D4 反向预言: 跨 NS 逐位比较出现 +18（11 轮 +1~2）⇒ 按预注册判红, 由 D2b（A 臂对 61230→61256 = +1.04 tok/调用, 同二进制仅目录名不同）与 D4b（无 NS 臂逐轮 0 差异）两独立通道定位为路径后缀混淆, 非行为回归; ③ 记账恒等若被违反 ⇒ design 判定 fail-closed。",
    "covers": [
@@ -1550,7 +1550,7 @@
     "instrument": "eval/rover/r444/analyze_r444.py",
     "instrument_sha12": "37e379c212b8",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "BRJL 臂(AGENTFRAMEWORK_GATE_PREFILTER=0)必须观测到 gate:skip_rejected_nonack ≥3(否则'不变量不可达'空心); BRJ 臂必须 0 条且 prefilter_violations=0",
    "covers": [
@@ -1573,7 +1573,7 @@
     "instrument": "eval/rover/r444/analyze_r444.py",
     "instrument_sha12": "37e379c212b8",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "门 r1 调用数必须 BRJ<BRJL 且真值 token 差 >0; 用「字符/2」折算复算必须方向一致但幅度不同(证折算低估)",
    "covers": [
@@ -1595,7 +1595,7 @@
     "instrument": "eval/rover/r444/precheck_prefilter.py",
     "instrument_sha12": "b4ecd4c1bf3c",
     "binding": "self-attested",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "--neg-control 注入非 ack 的 Skip 轮必须检出 ≥1 反例 (落独立产物 eval/rover/r444/runs/precheck-prefilter.neg.json, 真值臂产物 sha/mtime 必须逐位不变); --grid-dir /nonexistent 必须 fail-closed 非零; --legacy-single-out 单槽缺陷态: 两臂共用产物 ⇒ 真值臂身份必须丢失 (缺陷可复现); 8 判据读数见 eval/capability/exp1-q25/harden_check_q25.json",
    "covers": [
@@ -1617,7 +1617,7 @@
     "instrument": "eval/capability/status_gen.py",
     "instrument_sha12": "607d3680253b",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "bash eval/capability/_nc_status_gen.sh —— 注入 evidence_path 分号串联坏行必须判 FAIL 非零",
    "covers": [
@@ -1639,7 +1639,7 @@
     "instrument": "eval/capability/instruments_check.py",
     "instrument_sha12": "0370be98b442",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "每条器具必带 nc_cmd 且必须非零; 缺负控的器具不许进面",
    "covers": [
@@ -1675,7 +1675,7 @@
     "instrument": "eval/rover/r444/analyze_r444.py",
     "instrument_sha12": "37e379c212b8",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "缺臂(无同网格同 NS 分母臂)时分析器必须非零退出, 禁跨网格代理",
    "covers": [
@@ -1697,7 +1697,7 @@
     "instrument": "eval/rover/r445/judge_prefilter_precheck.py",
     "instrument_sha12": "9157725483d0",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "弱谓词 len(msg)<=0 必须检出反例(实测 k=128 ⇒ 器具非空转); 桩/兜底行(source=remote|remote_fallback)必须排除出真值集(实测排除 297/541); 缺 turns 归档的 run 必须跳过而非按序号猜对齐",
    "covers": [
@@ -1720,7 +1720,7 @@
     "instrument": "eval/rover/r445/judge_prefilter_precheck.py",
     "instrument_sha12": "9157725483d0",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "负控 k>=1 (实测 128); 正控 signal=no_prev_reply ⇒ Kind=Neutral ∧ prompt_len=0 (实测 30/30 合规); fail-closed 不存在 grid-dir ⇒ rc=2 且不产出结果文件",
    "covers": [
@@ -1745,7 +1745,7 @@
     "instrument": null,
     "instrument_sha12": null,
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "EMPTY 类 9 行裁决非 Neutral ⇒ 证伪『按相邻轮 reply 重建上一轮回答』与产品 _lastReplyBySession 等价, 故本行只作指示不作判据",
    "covers": [
@@ -1767,7 +1767,7 @@
     "instrument": "eval/rover/r446/run_judge_det.sh",
     "instrument_sha12": "7849bc8afbdf",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "预注册门槛 n_local>=8: 12 轮版仅 5 次判官调用 ⇒ INVALID_PREMISE(未事后改阈值, 加长 24 轮重测); D2 要求 prompt_len 唯一且样本数达标; D3 记账 ev-new=0 全行; D4 形态 argv 直取(-np 1/f32/flash-attn off)",
    "covers": [
@@ -1791,7 +1791,7 @@
     "instrument": "eval/rover/r446/l1_ext_precheck.py",
     "instrument_sha12": "3ec8bce0d523",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "v1 必须检出 Correct->Adopt 误赏(实测 9 行 ⇒ FAIL); v2 按 run 划分被自纠为方法缺陷(同消息跨半泄漏) ⇒ 其 Q1 PASS 不成立",
    "covers": [
@@ -1814,7 +1814,7 @@
     "instrument": "eval/rover/r444/channel_marks.py",
     "instrument_sha12": "aaafd166b811",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "改动前同脚本抛 ValueError: 未找到 BuildJudgePrompt 函数体(rc=1); 零回归对照: settle 复跑 R444 归档 calls-BRJ-M20-s4 得 32968/13 调用逐位同 + S1 5 档案 match",
    "covers": [
@@ -1837,7 +1837,7 @@
     "instrument": "eval/rover/r446/run_all_r446.sh",
     "instrument_sha12": "71f9728c0779",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "N1 非空心: 两臂各须 >=3 条 local 判官行; D4 远端 token 逐位零回归; 分母取同网格 A 臂实测(禁跨网格代理)",
    "covers": [
@@ -1861,7 +1861,7 @@
     "instrument": "eval/rover/r447/r447_probe.py",
     "instrument_sha12": "23523bd5b9db",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "C4b 恒 N 平凡结算器 agree=0.3889<0.90(指标有判别力); C4c 归档第三通道 J0 12/12 逐条复现产品字母(探针非空心); CH1 真错配 prev(NC1b, 8/8 真错配) agree=0.50 ⇒ 基线确实依赖 prev; CH2 语法臂 vs 产品真值 0.50(独立复现 C3 红); C4a(预注册错配 prev)因 prev 候选仅 2 常量而 8 条仅 2 条真错配 ⇒ 判定项设计缺陷, 语义由 CH1 承接(posthoc)",
    "covers": [
@@ -1888,7 +1888,7 @@
     "instrument": "eval/rover/r448/r448_corpus.py",
     "instrument_sha12": "7870347aa28e",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "C6 真错配 prev 8/8（语料构建器机检 G3）且 agree(NC1t,T1)=0.0<=0.85 ⇒ 器具非空心; CH2 归档第三通道 J0 12/12 逐条复现产品字母; CH7 同 prompt 同解码档跨轮 gen 和逐位相同（3215/3215, R447 存档）⇒ 器具可复现; C7 恒等式 tokens_evaluated==timings.prompt_n+cache_n 62/62 ⇒ 闭合 R447 C5 未测债; C7 红为判定项设计缺陷（T 臂 prompt 长 28 字符 ⇒ 跨臂 prompt_n 按定义不等）其语义由 CH6 修正口径承接（T2 vs T1 18/18）",
    "covers": [
@@ -1943,7 +1943,7 @@
     "instrument": "eval/rover/r449/filter_and_validate.py",
     "instrument_sha12": "ab9681e22aae",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "器具自证失败即宣布 VOID (I1 正控 3/7 < 5/7; I2 负控 0/13 < 9/13), 事后读数单列 checks_posthoc 且明标不得引用为产品结论; 对照面: 产品自身遥测同网格 = 7 Skip + 3 reject(skip_not_ack_family) + 8 Pass、raw_len 127..515, 探针 gen=6 无思考 ⇒ 生成形态失锚可机检 (seed sha16 逐位对齐 0aa656fa7eafd93a, 模板源码 git diff 空)",
    "covers": [
@@ -1968,7 +1968,7 @@
     "instrument": "eval/rover/r450/run_arm_r450.sh",
     "instrument_sha12": "adb5c1e34d3b",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "默认档不落盘(断言 False) / 空白串=关闭且带尾空格路径不得被 trim 猜测 / 转义必须能被标准解析器回读 / 不得写 BOM / 首差异定位必须给反例: 残余差只能落在成长块, 若落在模板或消息段即判『非成长态』并推翻结论",
    "covers": [
@@ -1993,7 +1993,7 @@
     "instrument": "eval/rover/r449/real_gate_probe.py",
     "instrument_sha12": "91bd70a5c5dc",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "I2 负控 11/13 平凡通过不构成证据 ⇒ 必须与 I1 正控成对(同调用面下判官近似恒定 P); I1 不过 ⇒ 真实流量读数一律 n/a 且事后读数单列 checks_posthoc_invalid; 若 pin 对残余差落在模板段或 seed 段即推翻『文本层已锚』结论; 器具必须带版本锚 fail-closed(tpl!=280 即拒跑)",
    "covers": [
@@ -2018,7 +2018,7 @@
     "instrument": "eval/rover/r452/run_all_r452.sh",
     "instrument_sha12": "7cf69d146cd0",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "① RC-c2 正控复现 R450(32,961 vs 32,968) ⇒ 证明读数可比; ② RC-c1(匹配器开) 读数 39,364 作废 ⇒ 器具缺陷当场被已知期望值抓住; ③ 守卫否决事件 14 条为判官 S 票的反证; ④ 若 RP 出现 gate_r1_n>0 或 skip>0 ⇒ 推翻 P1",
    "covers": [
@@ -2047,7 +2047,7 @@
     "instrument": "eval/rover/r453/audit_absorb.py",
     "instrument_sha12": "d32d31d8a48a",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "P1 结构性不变量(吸收轮必 G_calls=0)+P2 子集关系+P3 省下量≤16%上界+P4 禁质量宣称; 任一违例 ⇒ exit 3 fail-closed",
    "covers": [
@@ -2072,7 +2072,7 @@
     "instrument": "eval/rover/r454/compare_codex_clickagent.py",
     "instrument_sha12": "c144fb90e6c2",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "C5: 「codex 好 = prompt 更小」被 34,542B vs 4,300B (8.0x) 证伪; C1: codex 面必须来自捕获字节 req-001.json 而非文档推断; C2: 我方面须源码+捕获双证",
    "covers": [
@@ -2098,7 +2098,7 @@
     "instrument": "eval/rover/r455/judge_suite.py",
     "instrument_sha12": "f85cfc5a362e",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "C1 单句输入不构成能力读数(用户裁定 R454 §7 VOID); C2 任一侧多连次/重试即破坏基准(本轮零重试); C3 夹具两侧须逐字节同; C4 「我方更省 token」被 M4 0/4 产物证伪(省 token != 任务完成); C5 判分器只读落盘证据且期望值须归一",
    "covers": [
@@ -2127,7 +2127,7 @@
     "instrument": "eval/rover/r456/run_agent_tools.sh",
     "instrument_sha12": "293feb6f742b",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "C1 关环对照: AGENTFRAMEWORK_ACTION_LOOP=off 回到 R455 读数(0/4 + 伪造「已完成」); C2 器具负控: 适配器 to_chat_tools 漏 chat 风声明 -> 假阴性 tool_calls=null(已修, 修复前结论 VOID); C3 静默失败: 无 API key -> 0 上游调用 + 空回复 + 无告警; C4 缓存前缀不变式: 回灌消息只追加在尾部, 单测断言前缀逐字节相同; C5 判分只读磁盘产物, 不采信回复文本",
    "covers": [
@@ -2157,7 +2157,7 @@
     "instrument": "eval/rover/r457/judge_r457.py",
     "instrument_sha12": "31efe841df84",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "C1 无 key 真机: 修前 reply_len=0/无告警/0 上游 -> 修后 len=83 + model_unavailable + empty_reply:false; C2 器具负控: 适配器不落我方 tool_calls(修前假阴性 tool_calls=null) -> 修后 15/15 有值; C3 台账负控: 单测断言工具结果必含 [本轮已执行] 台账(Loop_AppendsExecutionLedger_ToToolResult, 注入缺失即红); C4 判分只读磁盘产物 (norm 逐字节) 不采信回复文本; C5 关环对照 AGENTFRAMEWORK_ACTION_LOOP=off 回 R455 读数",
    "covers": [
@@ -2189,7 +2189,7 @@
     "instrument": "eval/rover/r458/judge_r458.py",
     "instrument_sha12": "4ceb8bc64f23",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "C1 空工作区负控: 块与兜底反问都不得出现任何文件名 (Block_EmptyState_SaysNone_AndNeverNamesAFile / Fallback_OnlyUsesRealFacts_AndNeverInventsFiles); C2 误判负控: 「当前目录下一共有几个 .py 文件？」(门置信 0.8, 门未发问) 不得判为承接轮 —— run1 真发生过并污染回复, 已机检固化 (Judgement_ConcreteQuestionAtHighConfidence_IsNotContinuation) + 反向正控裸「继续」0.45 必须判真; C3 人话承接句负控: 不得含内部术语 (可选范围/检查点/作废/槽位) 且内部理由不上前台 (HumanizeVoidNotice_IsPlainSpeech_NoInternalJargon); C4 截断负控: 超过上限必须如实标注「共 N 项, 只列最近 M 项」(Block_MarksTruncationHonestly_TotalVsListed); C5 判分只读磁盘产物 (逐字节归一) 不采信回复文本, 承接块证据取遥测 + 实发请求回显 + 引用名与磁盘比对",
    "covers": [
@@ -2219,7 +2219,7 @@
     "instrument": "eval/rover/r460/judge_r460.py",
     "instrument_sha12": "a671c561c26a",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "C1 空态负控: 空工作区时承接块/反问都不得出现任何文件名 (Block_EmptyState_SaysNone_AndNeverNamesAFile); C2 菜单单源 + 空态无示例菜单负控: 门 Choices 必须逐项等于 ContinuationBrief.BuildMenu 输出, 且空态不得出现「搜索资料/写文档」类通用示例 (EvidenceGate_VagueQuestion_IsGroundedInRealFacts, 含 Assert.Equal(ContinuationBrief.BuildMenu(facts), choices)); C3 精炼负控: 3 项态块 ≤ MaxBlockChars(200) 且菜单 ≤3 项且每项 ≤ MaxMenuItemChars(24) 且首项接地 (R460_BlockAndMenuAndAsk_RespectBrevityCaps); C4 人话负控: 承接句不得含内部术语且 ≤ MaxNoticeChars(48) (HumanizeVoidNotice_IsPlainSpeech_NoInternalJargon); C5 判分器具自检: 首跑把实发「①②③」菜单漏判为 0 项 (器具缺陷, 已修并留痕); 判分只读磁盘产物 + 实发全量文本 (ADAPTER_DUMP_FULL=1), 不采信回复自述",
    "covers": [
@@ -2255,7 +2255,7 @@
     "instrument": "eval/rover/r461/judge_r461.py",
     "instrument_sha12": "7c09380f0ea7",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "C1 契约剥离负控 (有判别力): 同一判据跑 R460 落盘回复 ⇒ 命中 3 处 (T1/T3 裸 no_formal: 行 + T4 无围栏 clickproof/premise/goal 块), R461 ⇒ 0; C2 fail-safe 负控: 整条回复只有契约声明时, SplitFacing 必须返回非空可见文本 (宁可少剥不给空回复) + 正控: 非本契约内容 (csharp 围栏/普通段落) 一字不动 (SplitFacing_FailSafe_Never_Blanks_The_Reply / SplitFacing_Keeps_Other_Fences_And_Positive_Control); C3 空产物负控: 0 字节文件必须显示 (空) 而非省略 (Empty_Artifact_Is_Marked_Not_Guessed); C4 预算回退负控: MemorySourceBudgetTokens ≤120 ∧ SessionMemory 默认 ∈[200,400] ∧ 里程碑 ≤2 机检 (R461_Injection_Budget_Locks + V714FeatureTests.SessionConfig_MaxMemoryChars_Default400_R461); C5 判分只读磁盘产物与实发全量文本 (ADAPTER_DUMP_FULL=1), 不采信回复自述; 编造判据 = 回复提到的文件名不在工作区目录列举中",
    "covers": [
@@ -2294,7 +2294,7 @@
     "instrument": null,
     "instrument_sha12": null,
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "NC1 (判别力): 同判据跑 R461 实发面 ⇒ P1/P2 = false (旧二进制无闸 + 后缀白名单), 见 /tmp/r462_negctl.json; NC2 越界: ../etc/hosts 一律判 ✗ 且不探测 (Verify_TraversalToken_RejectedWithoutProbe) + Probe 层 StartsWith(root) 二次校验; NC3 fail-safe: 无 root/不存在/异常 ⇒ 原样返回, 不丢事实不造事实 (Verify_NoRoot_FailSafe_ReturnsOriginal); NC4 幂等: 已带标签的块二次通过不重复追加 (Verify_Idempotent_NoDoubleTagging); NC5 只打假: 一致的召回片段必须逐字节不变 (Verify_FailOnly_ConsistentClaim_ZeroByteInjection) + 回灌面零字节 (Loop_ToolResult_ConsistentPath_ZeroByteInjection); NC6 结构判定负控: 1.5 / 提升3.2倍 / .. / 空 串不得判为路径 (IsPathLike_Structural_NoSuffixWhitelist)",
    "covers": [
@@ -2331,7 +2331,7 @@
     "instrument": "eval/rover/r462/judge_r462.py",
     "instrument_sha12": "7df046e7eb9e",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "NC1 判别力: R461 实发面同判据 ⇒ logic.unit 不进面 (旧白名单拒非白名单后缀) = false; NC2 二进制负控: 含 NUL 的文件必须被判非文本 (TextProbe_BinaryAndEmptyRejected_TextAccepted); NC3 空文件负控: 0 字节不得进召回; NC4 源码机检: 闸源码与 ContextAssembler 不得出现语言标签数据文件里的任何后缀字面量 (RecallRealityGate_Source_HasNoLanguageSuffixLiteral / TextProbe_ContextAssemblerPipeline_HasNoSuffixWhitelistLiteral); NC5 白名单语义负控: 未配置 ⇒ 全允许, 配置后按集过滤 (TextProbe_SuffixAllowlistOnlyWhenConfigured)",
    "covers": [
@@ -2358,7 +2358,7 @@
     "instrument": null,
     "instrument_sha12": null,
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "NC1 判据面负控: 器具 gate_parse 与产品 TurnGateJudge.Parse 对 13 条产品自带用例逐条相等 (含 last_wins / tail64_no_think), 自造「首个非空白字符」口径已废 (v1 读数 VOID); NC2 调用面负控: 未走产品渲染 (/apply-template) 时模型退化为复读机 (P\\nP\\nP…) 且同臂两次不可复现 ⇒ v1/v2 读数全部 VOID, 只认 v3; NC3 恒 S 假模型口径: 恒 S ⇒ 假跳 1.00 / 漏跳 0.00, 与 1.5b-q4 实测逐位吻合 (复现 R452 RJ 14/14 全 S); NC4 恒 P 假模型: 假跳 0.00 / 漏跳 1.00 (selftest 合成); NC5 确定性: 同器具/同语料重跑, 3b-q4 与 1.5b-q4 各 28/28 项 (want,got,raw 原文) 逐位相同 ⇒ 非采样噪声; NC6 器具: 语料与实发 dump 逐位比对 (selftest_r462_w.py exit 0)",
    "owner_round": "R462",
@@ -2393,7 +2393,7 @@
     "instrument": "eval/rover/r463/run_arm.sh",
     "instrument_sha12": "57c2965bdba0",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "NC1 (真缺模型, BP2): cfg model_path ∧ env AGENTFRAMEWORK_LLM_MODEL 双缺 ⇒ 门全降级 Pass、零 Skip、降幅 **−7.1%** (21 调用/33,311 tok ⇒ 增益归零 + 重试开销), 质量不退化; NC2 (判别力/作废留档): 首跑 BP 仅 cfg 缺 ⇒ 静默回退默认权重跑了 3B, 读数与 B3B 逐位相同 ⇒ 负控 VOID 并重做; NC3 形态闸 V0-a 原生=True / V0-b IL 负控有判别力=True; NC4 质量硬线: 残余带轮 6–9 与纠正轮 10–12 在全部 7 臂 quality_risk=0",
    "covers": [
@@ -2427,7 +2427,7 @@
     "instrument": null,
     "instrument_sha12": null,
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "删除前逐文件算 sha256 并留档 (台账含 path/bytes/sha256); 删除后 `ls /tmp/models` 空、保留档仍在且大小一致; 未删任何被 config/env 引用的路径 (config local.model_path 指向保留档)",
    "covers": [
@@ -2449,7 +2449,7 @@
     "instrument": "eval/rover/r464/settle_r464.py",
     "instrument_sha12": "aaf3771999ba",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "四臂同网格 p12/同桩/同 role: Arole(门关) 21 调用/33,323 tok; B3B(门开) 8/20,487; BP(cfg 指不存在而 env 默认存在) 21/33,306 + 2 条 `R464 config_mismatch` 告警 + 本地 eval/gen=0/0 + 0 次 Skip; BP2(cfg+env 双缺) 21/33,311 同形。对照 R463 同名臂: 旧 BP 8/20,484（静默跑默认 3B ⇒ 冒名 B3B, 负控由此 VOID）⇒ 该漏判路径已被 C3/C4 钉死; checks_posthoc 的 C6'/C8/C9/C10 全 PASS",
    "covers": [
@@ -2475,7 +2475,7 @@
     "instrument": null,
     "instrument_sha12": null,
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "反例: 若 fail-closed 改造误伤降级路径, C8 等式(21/33,311)必破裂; 若门开臂被改动, C8b(8/20,487)必破裂; 若 Skip 轮是「空跳过」而无本地算力, C9 的 eval=1,370/gen=8 必为 0",
    "covers": [
@@ -2503,7 +2503,7 @@
     "instrument": "eval/rover/r465/settle_r465.py",
     "instrument_sha12": "a34a36f10403",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "同网格 p12/同桩/同 role/同二进制 5 臂: Arole(门关) 21 调用/33,323 tok; B3B(复述关) 8/20,487 ⇒ 逐位复现 R464/R463(零回归); R(复述开) 6/14,529 = −56.40%, repeat 命中 2 (t6/t9) 且复述两轮 eval/gen=-1, 本地 r1 只 4 次(Ack 轮); R 与 B3B 判决面除第 6/9 位逐位相同(posthoc C4b2)。反例守卫: 白名单外内容字/疑问句/长句一律 false(G35 15 例), 吸收面越界 ⇒ C5(面窄=2) 必破",
    "covers": [
@@ -2529,7 +2529,7 @@
     "instrument": "eval/rover/r465/mech_unlink_race.py",
     "instrument_sha12": "989c9b4e9274",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "确定性机理复现: 删锁文件 ⇒ b_holds=true ∧ c_holds=true（both_inside=true）; 不删 ⇒ c_holds=false（互斥成立）。跨进程真值 G43: python 子进程持 flock 时我方拒锁, 子进程退出 ⇒ 内核自动放锁、我方接管且锁文件全程保留; G44 剥注释后断言源码不得出现 File.Delete(LockPath/lockPath)（旧形态即回归）",
    "covers": [
@@ -2554,7 +2554,7 @@
     "instrument": "eval/rover/r465/settle_r465.py",
     "instrument_sha12": "a34a36f10403",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "同二进制单变量: 首个门控轮 49.93s(R) → 22.19s(W1)，warm_ms=26036 ok=true；稳态 19.4s 不变(预热不改变 prefill 成本)；llama-server pid 数 2=2（常驻性未被预热改变）；token 面 14,529 vs 14,531 零回归",
    "covers": [
@@ -2594,7 +2594,7 @@
     "instrument": "eval/rover/r466/settle_r466.py",
     "instrument_sha12": "b2429107d983",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "同 AOT 二进制 / 同网格 p12 / 同桩 / 同 role，单变量 = 开关: NC(PRIORITY=0) 复现 R465 缺陷（t6 可见答复 46 字承接反问 ≠ 上一条答复, closure apply_fallback=true/suppressed=false），R(PRIORITY=1) t6 = 21 字逐字回放（suppressed=true/apply_fallback=false），两臂均 6 调用 14,529/14,531 tok ⇒ 开关只动覆盖面、不动跳面与调用数",
    "covers": [
@@ -2634,7 +2634,7 @@
     "instrument": "eval/rover/r467/settle_r467.py",
     "instrument_sha12": "beee3d6f7291",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "Aroff(RJ=false) 与 Arole(RJ=on) 同二进制/同桩/同网格单变量对照：前者 21 调用/33,323 tok(含 8 条桩侧判官调用 prompt 1,170 + completion 56 = 1,226 tok)，后者 13/32,097；差值与桩侧判官调用逐位吻合 ⇒ 若台账分解错位，两臂差不会等于 1,226",
    "covers": [
@@ -2659,7 +2659,7 @@
     "instrument": "eval/rover/r467/denominator_gate.py",
     "instrument_sha12": "fdd264e279b7",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "S1=用【真实历史】R465 Arole 台账当生产等价分母 ⇒ 判红(差异键恰为 relation_judge，即 R465→R466 的真实漂移)；S2=人为破坏分解恒等式 ⇒ 判红；S3=只改器具 sha(host_sha256)而行为标志不变 ⇒ 判绿(不把二进制换代误判成分母漂移)",
    "covers": [
@@ -2683,7 +2683,7 @@
     "instrument": "eval/rover/r468/settle_r468.py",
     "instrument_sha12": "fbab609f5ba5",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "① 注入负控: 向语料注入可跳行(\"好的，明白。\"/\"再讲一遍。\") ⇒ 指标必须变非 0, 实测 labels=[ack,repeat] skip_face=2 (eval/rover/r468/neg-control-r468.json) ⇒ 指标非恒 0; ② 存在性断言: 产品侧测试 RealTraffic_Rows_Have_Zero_Product_SkipFace 只要语料出现认可族/复述族即 FAIL",
    "covers": [
@@ -2710,7 +2710,7 @@
     "instrument": null,
     "instrument_sha12": null,
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "① 端口禁手抄: gate_rules.py --selftest 的期望值取自产品 InlineData(28 例), rc!=0 即失败; ② 语料四族覆盖断言 Corpus_Covers_Archive_And_Repeat_And_Pass_Families(防单族恒真); ③ 差分测试三例均为等值断言, 非同义恒真式",
    "covers": [
@@ -2735,7 +2735,7 @@
     "instrument": "eval/rover/r469/hit_ceiling_bands.py",
     "instrument_sha12": "49f31b204c28",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "prefix_stability.py --neg-control: 正控(纯尾部追加) share=1.0 ∧ 负控(system 首段注入动态字段) share=0.7918 分歧前移 ⇒ 前缀占比指标非恒真",
    "covers": [
@@ -2759,7 +2759,7 @@
     "instrument": "eval/rover/r469/prefix_stability.py",
     "instrument_sha12": "d815e75984fa",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "同 --neg-control 正/负控对(见 r469.hit-ceiling-bands); 且真实低值对(share 0.0010~0.0013)来自跨类调用交错, 证明指标对非 tail-only 输入不恒真",
    "covers": [
@@ -2783,7 +2783,7 @@
     "instrument": "eval/rover/r470/real_calls.py",
     "instrument_sha12": "e10c395da077",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "real_calls.py 判据 C6: (a)有前驱 ⇒ shared_prefix_* 必须 -1(禁双计) (b)未上报 ⇒ -1 不得 0 (c)prompt=0 ⇒ unknown ∧ -1 (d)归因规则反写 ⇒ 原判据不成立(4/4 true); C# 侧 PromptCacheChannelTests 同语义 8 例含真值回放",
    "covers": [
@@ -2811,7 +2811,7 @@
     "instrument": "eval/rover/r470/real_calls.py",
     "instrument_sha12": "e10c395da077",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "同 C6(d) 归因反写; 且断言逐值比对直方图(C3b)与对齐例外(C4)逐条列出 ⇒ 指标非恒真且不得静默过滤",
    "covers": [
@@ -2835,7 +2835,7 @@
     "instrument": "eval/rover/r471/check_channels_r471.py",
     "instrument_sha12": "98b16329487b",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "C5 六例(全部红或必须不冒充): (a)same_session 带非 -1 shared_prefix_* ⇒ double_count 判红 (b)shared_prefix 行 hit=-1 ⇒ hit_tokens 求和 0 且 hit_na=1(非静默当 0) (c)prompt=0 ⇒ unknown 且两字段 -1 且无判红 (d)无字段行 ⇒ unreported.absent_field=1 ∧ emitted.rows=0(不得 0/不得 shared_prefix) (e)归因条件反写 ⇒ derived_recompute 分通道计数改变(判据有判别力) (f)非 shared_prefix 通道缺字段 ⇒ wiring_hole 判红; C4 正控同形夹具 5 行精确读回且 emitted.rows=5>0(rc=0≠绿, 必查执行数>0); C6 零回归逐键比对 HEAD 版脚本",
    "covers": [
@@ -2862,7 +2862,7 @@
     "instrument": "eval/rover/r471/check_channels_r471.py",
     "instrument_sha12": "98b16329487b",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "C2: emitted.shared_prefix 必须 == 0(断言「不得为 43」—— 若聚合器把派生量冒充实发量即判红); C3: 派生命中 == 59518 必须与 R470 记录值一致(证明对照列确实复现 R470 而非恒真); C1: 源 sha256 与 43 条计数机检(utf-8-sig 防 BOM 吞行)",
    "covers": [
@@ -2886,7 +2886,7 @@
     "instrument": "eval/rover/r472/probe_cache_cap.py",
     "instrument_sha12": "901a810f9b79",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "C3 负控: 三条 cold 以唯一 nonce 开头(与任何既有文本无共享前缀) ⇒ hit 必须 == 0, 任一 >0 即判 UNDECIDABLE(防把环境偶然缓存当成实验效应); C4 正控: 小臂 hit >= 0.80 x P_hat(排除「缓存根本没生效」的假阴性, 实测 0.844 通过); C2 恒等式 8/8; C6 复现臂 BIG.warm2.hit == BIG.warm.hit(5,632 == 5,632); C7 判定函数合成自检 FAIL(见 r472.criteria-posthoc-and-mechanism-law 行, 原判不覆盖)",
    "covers": [
@@ -2912,7 +2912,7 @@
     "instrument": "eval/rover/r472/check_criteria_r472.py",
     "instrument_sha12": "cf0db66c2808",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "本文件 new_api_calls == 0(禁用新调用补测); P1 复现预注册 C7 失败而不是掩盖/重写历史; P3 v2 合成 4 例含 UNDECIDABLE 与 PARTIAL 两例(证明判定函数非恒真、非恒 CAP/NO_CAP 二值); P4 c 的唯一性即判别力(c=141 被 MID 臂排除: 3789-141=3648=57x64 但实测 3584); P0 用数据级证伪(5,632 > 2,304)避免依赖判定函数",
    "covers": [
@@ -2937,7 +2937,7 @@
     "instrument": "eval/rover/r474/settle_r474.py",
     "instrument_sha12": "5098337fbf78",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "预注册 C2(relay==host llm_call) 字面 FAIL 保留不覆盖(Arole 20vs16, R 9vs6) + 事后归因 P1(llm_call+llm_call_recover 恒等成立) 单列; 中止试点 2 次调用单独计入成本; 桩口径与真值双列并出(禁混算)",
    "covers": [
@@ -2970,7 +2970,7 @@
     "instrument": "eval/rover/r474/selfcheck_guard.py",
     "instrument_sha12": "bb36323d3570",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "负控 cap=0 必 402 且 usage-*.jsonl 无 status>0 转发行为; 正控(黑洞上游)必有转发尝试 ⇒ 证明闸不是恒 402 的哑器; 自检零 API 调用, 不外发",
    "covers": [
@@ -2994,7 +2994,7 @@
     "instrument": "eval/rover/r474/settle_r474.py",
     "instrument_sha12": "5098337fbf78",
     "binding": "audit-pin",
-    "audited_by_round": "R473"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "同轮 Arole 对照(turns-Arole.jsonl) + recover 双态对照(recovered true/false) + 归因边界明写(空正文为供应商侧失败模式, n=3/4 不足以断言与门控相关, 器具缺采样参数/finish_reason ⇒ 根因未定位)",
    "covers": [
@@ -3048,9 +3048,9 @@
     "pin_reason": "worktree-only",
     "artifact_sha12": null,
     "instrument": "eval/rover/r475/join_usage_truth.py",
-    "instrument_sha12": "3404cd9b7f10",
+    "instrument_sha12": "0dde5ef48554",
     "binding": "audit-pin",
-    "audited_by_round": "R475"
+    "audited_by_round": "EXP1-Q27"
    },
    "negative_control": "join_usage_truth.py --selftest: NC1 缺字段 ⇒ prompt_delta=null(不冒充 0) ∧ NC2 恒等式破坏 ⇒ J1 红 ∧ NC3 混算可辨 ∧ NC4 真数据必有红(判别力非恒绿)",
    "covers": [
@@ -3060,6 +3060,94 @@
     "eval/rover/r475/selftest_relay_r475.py"
    ],
    "owner_round": "R475"
+  },
+  {
+   "id": "r476.band-aware-redline-verdict",
+   "level": "L2",
+   "capability": "红线判定**分档化**(只增不改): 单值 0.97 不变, 但判据目标改为 min(红线, 该轮结构上限 prefix/(prefix+用户轮+21)) ⇒ 5 态判决 not_applicable/unreported/at_target/below_ceiling(上限内有空间⇒判红)/below_target(短档未达红线⇒判红); 档界 0-30/31-93/94-200/201+ 与 R469 夹具逐值同源; 遥测 7 字段 cache_band/band_source/ceiling/target/margin/growth/verdict",
+   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj --filter PromptCacheBandTests",
+   "evidence_path": "src/agent.tests/PromptCacheBandTests.cs",
+   "negative_control": "NC1 长档 rate<上限−容差 ⇒ below_ceiling(必判红) ∧ NC2 短档 rate<红线−容差 ⇒ below_target ∧ NC3 rate=−1 ⇒ unreported 且不入分子分母 ∧ NC4 两向(全 at_target⇒PASS / 注入退化⇒FAIL) 非恒绿",
+   "covers": [
+    "src/agent.modelqueue/PromptCacheRedline.cs",
+    "src/agent.modelqueue/ModelQueueRouter.cs",
+    "src/agent.tests/PromptCacheBandTests.cs",
+    "src/agent.tests/PromptCacheKpiTests.cs"
+   ],
+   "owner_round": "R476"
+  },
+  {
+   "id": "r476.band-kpi-instrument",
+   "level": "L2",
+   "capability": "分档聚合器具(达成轮占比 + 分通道) + **常数与产品源码 fail-closed 机检**: py 侧红线/承接开销/缓存单元/档界 与 PromptCacheRedline.cs+PromptCacheKpi.cs 逐值比对, 差异非空 ⇒ 退出码非 0; 三方一致校验 r469 json ↔ py 复算 ↔ 产品单测字面量",
+   "evidence_cmd": "python3 eval/rover/r476/band_verdict_r476.py",
+   "evidence_path": "eval/rover/r476/verdict-r476.json",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "live",
+    "pin_reason": "worktree-only",
+    "artifact_sha12": null,
+    "instrument": "eval/rover/r476/band_verdict_r476.py",
+    "instrument_sha12": "9d72e6eeac2f",
+    "binding": "audit-pin",
+    "audited_by_round": "EXP1-Q27"
+   },
+   "negative_control": "C4 口径**非换皮**证明(长档 rate 0.9234 < 单值红线 0.97 但 ≥ 上限 0.9386−容差 ⇒ 单值判越线 ∧ 分档判 at_target) ∧ C5 判定轮=0 时**禁宣称达标** ∧ NC1–NC5 五例负控",
+   "covers": [
+    "eval/rover/r476/band_verdict_r476.py",
+    "eval/rover/r476/band-table.json",
+    "eval/rover/r476/real-bands.json",
+    "eval/rover/r476/asserts_r476.json",
+    "eval/rover/r476/negctl_r476.json",
+    "scripts/kpi_cache_hit.py",
+    "eval/rover/r469/hit-ceiling.json"
+   ],
+   "owner_round": "R476"
+  },
+  {
+   "id": "r476.pricing-fail-closed",
+   "level": "L2",
+   "capability": "计价面 fail-closed: 无显式价格表 ⇒ pricing.status=unreported 且 cost_cny=None/hit_discount_known=False(禁按 0 冒充); 仅当 --price <json> 显式给出价格表才置 from_table; pricing_violations() 抓「非 from_table 却报 cost=0」的伪造 0",
+   "evidence_cmd": "python3 eval/rover/r475/join_usage_truth.py --selftest",
+   "evidence_path": "eval/rover/r475/usage-truth.json",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "live",
+    "pin_reason": "worktree-only",
+    "artifact_sha12": null,
+    "instrument": "eval/rover/r475/join_usage_truth.py",
+    "instrument_sha12": "0dde5ef48554",
+    "binding": "audit-pin",
+    "audited_by_round": "EXP1-Q27"
+   },
+   "negative_control": "selftest NC5_pricing_unreported(表缺席 ⇒ unreported 且 cost=None) + NC5_pricing_fabricated_zero_red(伪造 0 ⇒ violations 非空 ⇒ 判红) 两向",
+   "covers": [
+    "eval/rover/r475/join_usage_truth.py"
+   ],
+   "owner_round": "R476"
+  },
+  {
+   "id": "r476.evidence-binding-round-param",
+   "level": "L2",
+   "capability": "证据绑定器具轮号参数化: bind_evidence.py 加 --round(默认 = 历史常量 AUDITED_BY_ROUND ⇒ 无参调用逐字不变), 消除「audited_by_round 写死旧轮号」的收口缺陷",
+   "evidence_cmd": "python3 eval/capability/bind_evidence.py --help",
+   "evidence_path": "eval/capability/bind_evidence.py",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "live",
+    "pin_reason": "worktree-only",
+    "artifact_sha12": null,
+    "instrument": "eval/capability/bind_evidence.py",
+    "instrument_sha12": "1e665dacc788",
+    "binding": "audit-pin",
+    "audited_by_round": "EXP1-Q27"
+   },
+   "negative_control": "C8 四检: --help 必须列出 --round ∧ default=AUDITED_BY_ROUND 逐字保留 ∧ main 内 global 声明必须在首次使用之前(本轮曾因此报 SyntaxError ⇒ --help 非 0 ⇒ 判红被抓)",
+   "covers": [
+    "eval/capability/bind_evidence.py",
+    "eval/rover/r476/band_verdict_r476.py"
+   ],
+   "owner_round": "R476"
   }
  ],
  "aot_check_policy": "release_tag_only",
