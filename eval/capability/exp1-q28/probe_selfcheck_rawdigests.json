@@ -1,0 +1,29 @@
+{
+ "schema": "exp1-q28/probe-selfcheck-rawdigests/v1",
+ "round": "EXP1-Q28",
+ "note": "信息项: raw stdout digest 对 run_probe 阶段逐跑变化 (墙钟装饰未规范化); 本文件**不在** registry 的 evidence_path 内, 不参与字节 pin (amendment A1)。",
+ "runs": [
+  {
+   "run": 1,
+   "raw_sha12": {
+    "tasks": "0ed6d8fce584",
+    "grade": "6219fde1d039",
+    "run_probe": "6e52c3e26aa9"
+   }
+  },
+  {
+   "run": 2,
+   "raw_sha12": {
+    "tasks": "0ed6d8fce584",
+    "grade": "6219fde1d039",
+    "run_probe": "223b8f898f5d"
+   }
+  }
+ ],
+ "raw_stable": [
+  true,
+  true,
+  false
+ ],
+ "divergence_located": "run_probe: 第 47 行 \"(0s)\" vs \"(instant)\" = 墙钟装饰; tasks/grade 两阶段 raw 亦稳定"
+}

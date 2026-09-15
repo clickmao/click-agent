@@ -1,0 +1,241 @@
+{
+ "schema": "exp1-q28/probe-selfcheck-evidence/v1",
+ "round": "EXP1-Q28",
+ "row_id": "probe.randomized-selfcheck",
+ "covers_face": "自检三连 (python3 eval/probe/{tasks,grade,run_probe}.py --selftest) 的**规范化 stdout** 与落盘件面 —— 即该行 evidence_cmd 的**确定性面**; 真机 6 题读数 (R398 73.33s / R399 56.09s) 不在本产物内, 仍以 evidence_report 为锚",
+ "evidence_cmd_selfcheck": "python3 eval/probe/tasks.py --selftest && python3 eval/probe/grade.py --selftest && python3 eval/probe/run_probe.py --selftest",
+ "norm_whitelist": {
+  "applied": [
+   "<TMP>: /tmp/[A-Za-z0-9_./-]+",
+   "(T): \\((?:\\d+s|instant)\\)"
+  ],
+  "rule": "「规范化 stdout 逐位相等」只在该白名单下成立; 白名单外差异一律判不稳定, 不得事后扩大"
+ },
+ "stages": [
+  {
+   "stage": "tasks",
+   "cmd": "python3 eval/probe/tasks.py --selftest",
+   "rc": 0,
+   "selftest_count": [
+    45,
+    45
+   ],
+   "pass_lines_n": 45,
+   "stdout_norm_sha12": "0ed6d8fce584",
+   "stdout_norm": "selftest: 生成器负控\n  [PASS] 双路径一致时可发题 hid=7 hard=5\n  [PASS] program 族双路径一致:bracket_fix hid=8 hard=5\n  [PASS] program 族双路径一致:csv_agg hid=8 hard=5\n  [PASS] program 族双路径一致:interval_sum hid=8 hard=5\n  [PASS] program 族双路径一致:json_mini hid=15 hard=12\n  [PASS] program 族双路径一致:longest_unique hid=8 hard=5\n  [PASS] program 族双路径一致:matrix_spiral hid=8 hard=5\n  [PASS] program 族双路径一致:max_subarray hid=8 hard=5\n  [PASS] program 族双路径一致:pair_closest_abs_sum hid=8 hard=5\n  [PASS] program 族双路径一致:topo_min hid=10 hard=7\n  [PASS] program 族双路径一致:vm_run hid=8 hard=5\n  [PASS] program 假答案拒绝发题 \n  [PASS] math 族双路径一致:comb_mod \n  [PASS] math 族双路径一致:det_mod \n  [PASS] math 族双路径一致:expectation_urn \n  [PASS] math 族双路径一致:quadratic_residue_count \n  [PASS] math 族双路径一致:shortest_path \n  [PASS] math 假答案拒绝发题 \n  [PASS] 公开/隐藏用例不重叠 pub=2 hid=9\n  [PASS] math 答案可解析:comb_mod '90'\n  [PASS] math 答案可解析:det_mod '5'\n  [PASS] math 答案可解析:expectation_urn '40/9'\n  [PASS] math 答案可解析:quadratic_residue_count '0'\n  [PASS] math 答案可解析:shortest_path '7'\n  [PASS] 同种子同题 \n  [PASS] 对抗输入覆盖全部 program 族 10 族 / 最少 5 条\n  [PASS] 浅解(只硬编码公开样例)在 bracket_fix 上零通过 passed=0\n  [PASS] 浅解(只硬编码公开样例)在 csv_agg 上零通过 passed=0\n  [PASS] 浅解(只硬编码公开样例)在 interval_sum 上零通过 passed=0\n  [PASS] 浅解(只硬编码公开样例)在 json_mini 上零通过 passed=0\n  [PASS] 浅解(只硬编码公开样例)在 longest_unique 上零通过 passed=0\n  [PASS] 浅解(只硬编码公开样例)在 matrix_spiral 上零通过 passed=0\n  [PASS] 浅解(只硬编码公开样例)在 max_subarray 上零通过 passed=0\n  [PASS] 浅解(只硬编码公开样例)在 pair_closest_abs_sum 上零通过 passed=0\n  [PASS] 浅解(只硬编码公开样例)在 topo_min 上零通过 passed=0\n  [PASS] 浅解(只硬编码公开样例)在 vm_run 上零通过 passed=0\n  [PASS] 浅解跨族零通过 \n  [PASS] 见证型 answer 是最小反例 answer='41' n=41\n  [PASS] 见证型 最小反例正确且最小 poly41_prime n=41\n  [PASS] 见证型 最小反例双实现一致:poly41_prime \n  [PASS] 见证型 answer 就位且判定=验见证非比对标签:witness_min_counterexample \n  [PASS] 见证型 answer 是合法见证(oracle 正控可用) answer='8' p=167 a=64\n  [PASS] 见证型 sqrt_mod 有解且非平凡 p=167 a=64 解数=2\n  [PASS] 见证型 sqrt_mod 错见证必须被拒 反例 x=65\n  [PASS] 见证型 answer 就位且判定=验见证非比对标签:witness_sqrt_mod \nselftest 45/45\n",
+   "trace_events_n": 2
+  },
+  {
+   "stage": "grade",
+   "cmd": "python3 eval/probe/grade.py --selftest",
+   "rc": 0,
+   "selftest_count": [
+    34,
+    34
+   ],
+   "pass_lines_n": 34,
+   "stdout_norm_sha12": "6219fde1d039",
+   "stdout_norm": "selftest: 判定器正控 / 负控\n  [PASS] 正控: 正确解判满分 {'ok': 2}\n  [PASS] 负控: 无代码块判 no_code \n  [PASS] 负控: 语法错判 syntax_error \n  [PASS] 负控: 死循环判 timeout \n  [PASS] 负控: 差一错误判 wrong_output passed=0/2\n  [PASS] 负控: 单值硬编码判部分/错 passed=1/2\n  [PASS] 正控: 与公开用例无关(判定只用隐藏) \n  [PASS] 负控: 长残片候选不得顶掉整体可编译者 len=47\n  [PASS] 正控: stdout 正确但退出码非 0 仍判过 {'ok': 1}\n  [PASS] 负控: 无输出 + 非 0 退出判 runtime_error {'runtime_error': 1}\n  [PASS] 负控: 期望空输出时崩溃不得判过 {'runtime_error': 1}\n  [PASS] ★负控: 坏字节输出判不过且被分类 (不得抛异常打崩整臂) {'wrong_output': 1}\n  [PASS] 正控: 坏字节修正后正常程序仍判过 (改动不误伤) {'ok': 1}\n  [PASS] 正控: sqrt_mod 正确见证通过 \n  [PASS] 负控: sqrt_mod 错见证被拒 \n  [PASS] 负控: sqrt_mod 越界被拒 \n  [PASS] 负控: 见证非整数被拒 \n  [PASS] 正控: 最小反例 4 通过 \n  [PASS] 负控: 非最小反例被拒(5) \n  [PASS] 负控: 命题为真的 n 被拒(3) \n  [PASS] 负控: 缺 FINAL 判 no_final \n  [PASS] 反向负控: 谓词恒真时 4 必须被判命题为真 mode=wrong_witness\n  [PASS] 还原后判据仍严 \n  [PASS] 正控: math FINAL 解析 \n  [PASS] 负控: math 无 FINAL 判 no_final \n  [PASS] 负控: math 错答判 wrong_final \n  [PASS] 负控: 无围栏 CLI 回复+尾部状态行 ⇒ 仍能抽到可编译前缀 {'ok': 2}\n  [PASS] 正控: 回复只给产物路径 ⇒ 读产物判分 {'ok': 2}\n  [PASS] 负控: 空回复判 no_code \n  [PASS] 正控 R433: 转录不可编译 + 落盘产物 ⇒ 取产物判满分 {'ok': 2} src=artifact\n  [PASS] 负控 R433: 同转录但缺产物通道 ⇒ 必须仍失败 (证明通道真起作用) mode=syntax_error src=transcript\n  [PASS] 负控 R433: 产物路径不存在 ⇒ 静默回退转录, 不许崩 src=transcript\n  [PASS] 反向负控: 比对恒真时差一解被误判为通过 (证明判据非空心) mode=ok\n  [PASS] 反向负控: 比对恢复后差一解再次被抓 \nselftest 34/34\n",
+   "trace_events_n": 29
+  },
+  {
+   "stage": "run_probe",
+   "cmd": "python3 eval/probe/run_probe.py --selftest",
+   "rc": 0,
+   "selftest_count": [
+    29,
+    29
+   ],
+   "pass_lines_n": 29,
+   "stdout_norm_sha12": "ddc94d5fd92e",
+   "stdout_norm": "selftest: 流水线正控 + 缺陷注入负控\n  [PASS] 见证型族在数学池内(非死代码) witness=['witness_min_counterexample', 'witness_sqrt_mod']\n  [PASS] --families 白名单可定向且不混入程序族 \n  [PASS] 见证型题 meta.witness 就位且 answer 非空(仅供 oracle 正控) \n  m001   math     witness_sqrt_mod         ok             1/1  (T)\n  m002   math     witness_sqrt_mod         ok             1/1  (T)\n  [PASS] 正控: 见证型题 oracle 满分 rate=1.0000 tax={'ok': 2}\n  m001   math     witness_sqrt_mod         wrong_witness  0/1  (T)\n  m002   math     witness_sqrt_mod         wrong_witness  0/1  (T)\n  [PASS] 负控: 见证型题错见证被判红 rate=0.0000 tax={'wrong_witness': 2}\n  [PASS] oracle 参考解覆盖全部程序族(反覆盖缺口) 缺: []\n  [PASS] 规范题集哈希与复用路径一致 \n  p001   program  max_subarray             ok             11/11  (T)\n  p002   program  pair_closest_abs_sum     ok             11/11  (T)\n  p003   program  longest_unique           ok             11/11  (T)\n  m001   math     det_mod                  ok             1/1  (T)\n  m002   math     quadratic_residue_count  ok             1/1  (T)\n  [PASS] 正控: oracle 满分 rate=1.0000 tax={'ok': 35}\n  p001   program  max_subarray             wrong_output   0/11  (T)\n  p002   program  pair_closest_abs_sum     wrong_output   0/11  (T)\n  p003   program  longest_unique           wrong_output   0/11  (T)\n  [PASS] 负控: 程序题 extra 被判红 rate=0.0000 tax={'wrong_output': 33}\n  p001   program  max_subarray             timeout        0/11  (T)\n  p002   program  pair_closest_abs_sum     timeout        0/11  (T)\n  p003   program  longest_unique           timeout        0/11  (T)\n  [PASS] 负控: 程序题 loop 被判红 rate=0.0000 tax={'timeout': 33}\n  p001   program  max_subarray             syntax_error   0/11  (T)\n  p002   program  pair_closest_abs_sum     syntax_error   0/11  (T)\n  p003   program  longest_unique           syntax_error   0/11  (T)\n  [PASS] 负控: 程序题 syntax 被判红 rate=0.0000 tax={'syntax_error': 3}\n  p001   program  max_subarray             no_code        0/11  (T)\n  p002   program  pair_closest_abs_sum     no_code        0/11  (T)\n  p003   program  longest_unique           no_code        0/11  (T)\n  [PASS] 负控: 程序题 nocode 被判红 rate=0.0000 tax={'no_code': 3}\n  p001   program  max_subarray             wrong_output   0/11  (T)\n  p002   program  pair_closest_abs_sum     wrong_output   0/11  (T)\n  p003   program  longest_unique           partial        2/11  (T)\n  [PASS] 负控: 程序题 hardcode 被判红 rate=0.0606 tax={'wrong_output': 31, 'ok': 2}\n  m001   math     det_mod                  wrong_final    0/1  (T)\n  m002   math     quadratic_residue_count  wrong_final    0/1  (T)\n  [PASS] 负控: 数学错答被判红 {'wrong_final': 2}\n  m001   math     det_mod                  no_final       0/1  (T)\n  m002   math     quadratic_residue_count  no_final       0/1  (T)\n  [PASS] 负控: 数学无 FINAL 被判红 {'no_final': 2}\n  p001   program  max_subarray             no_code        0/11  (T)\n  [PASS] 负控: 缺失回复判 no_code {'no_code': 1}\n  p001   program  max_subarray             no_code        0/11  (T)\n  [PASS] 适配器: command 通道可用(prompt 原样回灌 ⇒ 应判红) rate=0.0000\n  p001   program  max_subarray             ok             11/11  (T)\n  p002   program  pair_closest_abs_sum     ok             11/11  (T)\n  p003   program  longest_unique           ok             11/11  (T)\n  m001   math     det_mod                  ok             1/1  (T)\n  m002   math     quadratic_residue_count  ok             1/1  (T)\n  [PASS] 可复现: 同输入同结果 \n  p001   program  max_subarray             ok             11/11  (T)\n  p002   program  pair_closest_abs_sum     ok             11/11  (T)\n  p003   program  longest_unique           ok             11/11  (T)\n  [PASS] 多轮正控: oracle 首轮即满分 ⇒ 首次通过率=1.0 且修复率 n/a(无待修题) first=1.0 fix=None rounds=3/3\n  [PASS] 多轮 onfail: 已过题**不发**修正轮 ⇒ 归档只有 -t1, 轮数=归档文件数 [['data/probe/replies/oracles0-p001-t1.txt'], ['data/probe/replies/oracles0-p002-t1.txt']]\n    t1 p001   ok                       11/11 (首轮未过 ⇒ 发修正轮)\n    t2 p001   ok                       fix=YES\n  p001   program  max_subarray             ok             11/11  (T)\n    t1 p002   ok                       11/11 (首轮未过 ⇒ 发修正轮)\n    t2 p002   ok                       fix=YES\n  p002   program  pair_closest_abs_sum     ok             11/11  (T)\n    t1 p003   ok                       11/11 (首轮未过 ⇒ 发修正轮)\n    t2 p003   ok                       fix=YES\n  p003   program  longest_unique           ok             11/11  (T)\n  [PASS] 多轮 always(对照臂): 每题两轮各一份 (-t1/-t2) 且 oracle 无回归 mode=always rounds=6/6 regressed=0\n  [PASS] 摘要名带臂 tag (R419 缺陷): 同 solver 不同臂不得同名互覆 probe-agent-seed419-r419a1-t2.json | probe-agent-seed419-r419a2-t2.json | probe-agent-seed419.json\n    t1 p001   wrong_output             0/11 (首轮未过 ⇒ 发修正轮)\n    t2 p001   ok                       fix=YES\n  p001   program  max_subarray             ok             11/11  (T)\n    t1 p002   wrong_output             0/11 (首轮未过 ⇒ 发修正轮)\n    t2 p002   ok                       fix=YES\n  p002   program  pair_closest_abs_sum     ok             11/11  (T)\n    t1 p003   partial                  2/11 (首轮未过 ⇒ 发修正轮)\n    t2 p003   ok                       fix=YES\n  p003   program  longest_unique           ok             11/11  (T)\n  [PASS] 多轮正控(仪器判别力): 第1轮浅解失败 + 第2轮真解 ⇒ 修复率=1.0 first=0.0 fix=1.0 final=3 tax={'ok': 33}\n  [PASS] 多轮: 两轮各自回复可见 (reply_chars>0) 且首轮未过原样记录 ⇒ 修复可审计 t1=wrong_output t2=ok chars=25/184\n    t1 p001   wrong_output             0/11 (首轮未过 ⇒ 发修正轮)\n    t2 p001   wrong_output             fix=no\n  p001   program  max_subarray             wrong_output   0/11  (T)\n    t1 p002   wrong_output             0/11 (首轮未过 ⇒ 发修正轮)\n    t2 p002   wrong_output             fix=no\n  p002   program  pair_closest_abs_sum     wrong_output   0/11  (T)\n    t1 p003   partial                  2/11 (首轮未过 ⇒ 发修正轮)\n    t2 p003   partial                  fix=no\n  p003   program  longest_unique           partial        2/11  (T)\n  [PASS] 多轮负控: 两轮同浅解 ⇒ 修复率=0.0 (不能把「没修」读成「修了」) first=0.0 fix=0.0 final=0\n  [PASS] 修正文案: 含隐藏用例输入与期望输出 (turn1 拿不到的信息), 且不含题面之外的解法提示 len=111\n  [PASS] 产物记录→路径: 容忍 dict/str 混入且丢空值 \n  [PASS] 遥测时间戳: .NET 7 位小数可解析 (旧解析器静默返回 None ⇒ 窗口失效) \n  [PASS] 产物收割: 窗口上界 0.25s 必须生效 (t1+1.0s 的邻题产物不得混入) ['<TMP>']\nselftest 29/29\n",
+   "trace_events_n": 472
+  }
+ ],
+ "runs": [
+  {
+   "run": 1,
+   "stages": [
+    {
+     "stage": "tasks",
+     "rc": 0,
+     "selftest_count": [
+      45,
+      45
+     ],
+     "pass_lines_n": 45,
+     "stdout_norm_sha12": "0ed6d8fce584"
+    },
+    {
+     "stage": "grade",
+     "rc": 0,
+     "selftest_count": [
+      34,
+      34
+     ],
+     "pass_lines_n": 34,
+     "stdout_norm_sha12": "6219fde1d039"
+    },
+    {
+     "stage": "run_probe",
+     "rc": 0,
+     "selftest_count": [
+      29,
+      29
+     ],
+     "pass_lines_n": 29,
+     "stdout_norm_sha12": "ddc94d5fd92e"
+    }
+   ]
+  },
+  {
+   "run": 2,
+   "stages": [
+    {
+     "stage": "tasks",
+     "rc": 0,
+     "selftest_count": [
+      45,
+      45
+     ],
+     "pass_lines_n": 45,
+     "stdout_norm_sha12": "0ed6d8fce584"
+    },
+    {
+     "stage": "grade",
+     "rc": 0,
+     "selftest_count": [
+      34,
+      34
+     ],
+     "pass_lines_n": 34,
+     "stdout_norm_sha12": "6219fde1d039"
+    },
+    {
+     "stage": "run_probe",
+     "rc": 0,
+     "selftest_count": [
+      29,
+      29
+     ],
+     "pass_lines_n": 29,
+     "stdout_norm_sha12": "ddc94d5fd92e"
+    }
+   ]
+  }
+ ],
+ "determinism": {
+  "norm_stable": true,
+  "raw_stable": [
+   true,
+   true,
+   false
+  ],
+  "raw_divergence_located": "run_probe: 第 47 行 \"(0s)\" vs \"(instant)\" = 墙钟装饰; tasks/grade 两阶段 raw 亦稳定",
+  "runs_n": 2
+ },
+ "write_face": {
+  "tasks": {
+   "repo_writes": [],
+   "events_n": 2,
+   "malformed_lines": 0,
+   "reads_repo_n": 1
+  },
+  "grade": {
+   "repo_writes": [],
+   "events_n": 29,
+   "malformed_lines": 0,
+   "reads_repo_n": 1
+  },
+  "run_probe": {
+   "repo_writes": [
+    "data/probe/replies",
+    "data/probe/replies/command_cats0-p001.txt",
+    "data/probe/replies/file__nonexistent-dir-xyzs0-p001.txt",
+    "data/probe/replies/mutation_delayfixs0-p001-t1.txt",
+    "data/probe/replies/mutation_delayfixs0-p001-t2.txt",
+    "data/probe/replies/mutation_delayfixs0-p002-t1.txt",
+    "data/probe/replies/mutation_delayfixs0-p002-t2.txt",
+    "data/probe/replies/mutation_delayfixs0-p003-t1.txt",
+    "data/probe/replies/mutation_delayfixs0-p003-t2.txt",
+    "data/probe/replies/mutation_extras0-p001.txt",
+    "data/probe/replies/mutation_extras0-p002.txt",
+    "data/probe/replies/mutation_extras0-p003.txt",
+    "data/probe/replies/mutation_hardcodes0-p001.txt",
+    "data/probe/replies/mutation_hardcodes0-p002.txt",
+    "data/probe/replies/mutation_hardcodes0-p003.txt",
+    "data/probe/replies/mutation_loops0-p001.txt",
+    "data/probe/replies/mutation_loops0-p002.txt",
+    "data/probe/replies/mutation_loops0-p003.txt",
+    "data/probe/replies/mutation_nocodes0-p001.txt",
+    "data/probe/replies/mutation_nocodes0-p002.txt",
+    "data/probe/replies/mutation_nocodes0-p003.txt",
+    "data/probe/replies/mutation_nofinals0-m001.txt",
+    "data/probe/replies/mutation_nofinals0-m002.txt",
+    "data/probe/replies/mutation_nofixs0-p001-t1.txt",
+    "data/probe/replies/mutation_nofixs0-p001-t2.txt",
+    "data/probe/replies/mutation_nofixs0-p002-t1.txt",
+    "data/probe/replies/mutation_nofixs0-p002-t2.txt",
+    "data/probe/replies/mutation_nofixs0-p003-t1.txt",
+    "data/probe/replies/mutation_nofixs0-p003-t2.txt",
+    "data/probe/replies/mutation_syntaxs0-p001.txt",
+    "data/probe/replies/mutation_syntaxs0-p002.txt",
+    "data/probe/replies/mutation_syntaxs0-p003.txt",
+    "data/probe/replies/mutation_wrongfinals0-m001.txt",
+    "data/probe/replies/mutation_wrongfinals0-m002.txt",
+    "data/probe/replies/oracles0-m001.txt",
+    "data/probe/replies/oracles0-m002.txt",
+    "data/probe/replies/oracles0-p001-t1.txt",
+    "data/probe/replies/oracles0-p001-t2.txt",
+    "data/probe/replies/oracles0-p001.txt",
+    "data/probe/replies/oracles0-p002-t1.txt",
+    "data/probe/replies/oracles0-p002-t2.txt",
+    "data/probe/replies/oracles0-p002.txt",
+    "data/probe/replies/oracles0-p003-t1.txt",
+    "data/probe/replies/oracles0-p003-t2.txt",
+    "data/probe/replies/oracles0-p003.txt"
+   ],
+   "events_n": 472,
+   "malformed_lines": 0,
+   "reads_repo_n": 1
+  }
+ },
+ "write_face_status": "has-repo-writes",
+ "plain_cross_check": {
+  "tasks": {
+   "rc": 0,
+   "stdout_norm_sha12": "0ed6d8fce584",
+   "selftest_count": [
+    45,
+    45
+   ]
+  },
+  "grade": {
+   "rc": 0,
+   "stdout_norm_sha12": "6219fde1d039",
+   "selftest_count": [
+    34,
+    34
+   ]
+  },
+  "run_probe": {
+   "rc": 0,
+   "stdout_norm_sha12": "ddc94d5fd92e",
+   "selftest_count": [
+    29,
+    29
+   ]
+  }
+ },
+ "provenance": {
+  "instrument": "eval/probe/tasks.py",
+  "instrument_sha12": "80ba09e8bd50",
+  "arm": "selfcheck-triple",
+  "round": "EXP1-Q28"
+ },
+ "wall_clock_excluded": true,
+ "stable_fields_only": true,
+ "raw_digest_side_file": "eval/capability/exp1-q28/probe_selfcheck_rawdigests.json",
+ "generator": "eval/capability/exp1-q28/gen_probe_evidence_q28.py",
+ "prereg": "eval/capability/exp1-q28/prereg_q28.json"
+}

@@ -1,0 +1,81 @@
+{
+  "round": "EXP1-Q28",
+  "date": "2026-09-16",
+  "job": "60m 能力自检作业 (不占主线轮号 R480)",
+  "candidate_source": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md §AB.7 下轮候选 第 2 条 (verbatim)",
+  "candidate_verbatim": "`probe.randomized-selfcheck` 行的证据面从「器具目录」换成「具体产物」（自检三连的 stdout/落盘件），使 `evidence-overtaken` 那一族也能上闸。",
+  "why_not_candidate_1": "候选① (worktree-only 行先入库冻结) 前提未成立：round 起手核 `eval/capability/bind_evidence.py --check` 实测 artifact live worktree-only = 6 行 (>0)，其证据文件仍处于并发写者的在飞改动中 (git status 显示 eval/rover/r470/*.json 为 M) ⇒ 按纪律不代提交他人半成品，本轮不碰。",
+  "concurrency_note": "同机主线 R479 (Responses 协议面) 正在跑 /tmp/r479_verify.sh (含 dotnet test)；本轮**零 dotnet**，只做 py + 登记行；形式校验 (dotnet) 若窗口未开则如实结转，不并发起测。",
+  "step_scope": {
+    "one_step": "只把 `probe.randomized-selfcheck` **一行**的证据面由「器具目录 eval/probe」换成「自检三连的具体产物」，并落盘该产物。",
+    "explicitly_not_in_scope": [
+      "候选③ (9 行未派生器具) — 后继轮",
+      "候选④ L2 全量面复跑 — 需 dotnet，窗口未开",
+      "候选⑤ 检查器输出按面分区 — 后继轮",
+      "真机 6 题面 (R398/R399 读数) 本轮不重跑，仍以 evidence_report 为锚"
+    ]
+  },
+  "design": {
+    "artifact": "eval/capability/exp1-q28/probe_selfcheck_evidence.json",
+    "artifact_content": "自检三连 (tasks/grade/run_probe --selftest) 的**规范化 stdout 全文** + 每阶段 rc/计数/摘要 + 两跑确定性读数 + 跟踪器读出的落盘件面 + provenance (产物自证来源)",
+    "instrument": "eval/probe/tasks.py (由 evidence_cmd 首路径派生, 口径与 bind_evidence.py 同源)",
+    "binding_transition": "audit-pin → self-attested (产物自带 provenance 且我方逐字段核对 instrument_sha12)；本轮只对 1 行生效，9 行扫描属候选③",
+    "idempotency": "产物内**不含墙钟字段** (elapsed 只落 stderr 日志，不进产物字节) ⇒ 重跑产物逐字节相同，可机检幂等",
+    "why_this_face": "eval/probe 目录的 git 沿革含 5 处改写 (dir_rewritten=true) ⇒ 结构上不可能冻结；换成具体产物文件后 pin 面是字节，可冻结、可篡改检出。"
+  },
+  "data_first": {
+    "note": "写判据前先实测真实输出样本 (断言设计原则 3)，以下数字均来自本轮探测跑，非推断。",
+    "measured": {
+      "tasks_selftest": "selftest 45/45, rc=0, 45 条 [PASS]",
+      "grade_selftest": "selftest 34/34, rc=0, 34 条 [PASS]",
+      "run_probe_selftest": "selftest 29/29, rc=0, 29 条 [PASS]",
+      "raw_stdout_byte_stable": [true, true, false],
+      "raw_divergence_located": "run_probe stdout 第 47 行 '(0s)' vs '(instant)' — 墙钟装饰 (非语义字段)",
+      "norm_stdout_byte_stable_3of3": true
+    },
+    "non_semantic_whitelist": {
+      "tmp_paths": "正则 /tmp/[A-Za-z0-9_./-]+ → <TMP>",
+      "wall_clock": "正则 \\((\\d+s|instant)\\) → (T)",
+      "rule": "「规范 stdout 逐位相等」这一判据**只在该白名单下**成立 (skill: 逐位相等判据必须先声明非语义字段白名单)；白名单外的任何差异一律判不稳定，不得事后扩大白名单。"
+    }
+  },
+  "criteria": {
+    "P1_正控_自检真绿": "三阶段 rc==0 ∧ 各自输出末行 'selftest N/N' 的 N==N_total ∧ N>0；N 由正则从输出取，禁手打字面量。",
+    "P2_确定性": "同一命令两跑，三阶段**规范化 stdout** sha12 逐位相同。",
+    "P3_非平凡": "三阶段规范化 sha12 互异 (跨阶段互异 ⇒ 产物不是恒定文本；防『恒定输出冒充确定性』)。",
+    "P4_落盘件面": "记录自检三连在仓内的写入面 (跟踪器读出)。为空 ⇒ 记 [] + status=no-repo-writes (信息项，不判红：数据先行，不为未到期场景预建判据)。",
+    "P5_产物自证": "产物含 provenance{instrument, instrument_sha12, arm, round} 且 instrument_sha12 == 现算 sha12(eval/probe/tasks.py)。",
+    "P6_幂等": "生成器连跑两次，产物**逐字节**相同 (墙钟字段已排除)。",
+    "P7_第三方交叉": "产物自身 sha12 == coreutils sha256sum 前 12 位 (第三方实现交叉，非自算自证)。",
+    "P8_仪器不动被测": "跟踪器在场的规范化 sha12 == 无跟踪器探测跑的同值 (证明采集面不改变被测输出)。",
+    "P9_上闸": "`bind_evidence.py --apply` 后该行 evidence_kind=artifact ∧ pin_status=frozen ∧ artifact_sha12 非 null ∧ 校验器整体 R2E_R2F_EXIT=0。",
+    "P10_零回归": "其余行 evidence_generated_with **逐字段逐位**不变 (本轮前 --check 快照 vs apply 后快照做差集 == {probe.randomized-selfcheck})。"
+  },
+  "negative_controls": {
+    "N1_篡改必须判红": "对产物改 1 字节 → `--check` 必须 rc=2 且报文点名该行 (证明 pin 非空心)。",
+    "N2_缺失必须判红": "临时移走产物 → `--check` 必须 rc=2 (不得静默通过)。",
+    "N3_还原后必须回绿且逐位": "还原 (按备份字节写回) → sha12 复现 ∧ rc=0 ⇒ 证明 N1/N2 读数来自被篡改状态，不是坏仪器。",
+    "N4_白名单不得吞真差异": "把一条真实语义差异 (改 PASS 计数) 规范化后必须**不同** ⇒ 白名单不掩盖语义。",
+    "N5_未上闸前该行仍应为旧态": "apply **之前**该行必须仍是 directory/live/evidence-overtaken ⇒ 证明变化由本轮动作引起，非外部漂移。"
+  },
+  "verdict_states": {
+    "PASS": "P1–P10 全过 ∧ N1–N5 全过",
+    "FAIL": "任一 P/N 不过 ⇒ 如实记红 + 保留原样",
+    "弃权": "测量失败 (跟踪器 0 事件 / 命令超时 / 产物缺失) ⇒ 记 rc=3，不判红也不判绿"
+  },
+  "amendments": [
+    {
+      "id": "A1",
+      "when": "首跑判据落盘后 (产物已生成, 尚未提交)",
+      "observed": "P6 (幂等) **首跑实测红**: 连跑两次产物字节不同 —— diff 仅 3 行, 全部是 `stdout_raw_sha12` (run_probe 阶段 `5049b688f79c` vs `56dcd38a0ab5`, runs[].stages 内同值)。",
+      "root_cause": "我把一个**已知不稳定**的读数 (raw stdout digest, 内含墙钟装饰 '(0s)'/'(instant)') 放进了被字节 pin 的产物面 ⇒ 产物自身不可能逐字节复现。归因是**产物格式缺陷**, 不是被测对象缺陷, 也不是判据缺陷。",
+      "action": "P6 判据**照原样保留并如实记首跑为红** (不翻案、不放宽)。修**产物格式**: 被 pin 的字节面只放稳定读数 (rc / selftest 计数 / [PASS] 行数 / 规范化 sha12 / 规范化 stdout 全文 / 落盘件路径集 / 来源自证); raw digest 与 raw_stable 移入 side 件 `probe_selfcheck_rawdigests.json` (显式标注不参与 pin, 只作信息项)。修后复跑 P6 转绿并落盘。",
+      "not_claimed": "不以『修后转绿』回写首跑命中; 首跑红与修后绿并列入档。"
+    }
+  ],
+  "honest_boundaries": [
+    "本产物冻结的是**确定性面** (自检三连)；真机 6 题读数 (73.33s/56.09s) 不在本产物内，仍以 evidence_report=docs/reports/r399/r399-m6-hardening-and-kpi-datapoints.md 为锚 ⇒ 不得据本产物宣称 L4 真机面已被重新验证。",
+    "run_probe 的 raw stdout **不可逐位复现** (墙钟装饰已定位)；只有白名单下的规范化 stdout 稳定。",
+    "候选①(worktree-only) 前提未成立，本轮零改动。"
+  ]
+}
