@@ -206,7 +206,7 @@ def do_kpi(cmp_res, nc_res, ap_res, vf_res, drift):
             'sha256sum_cross_mismatch': 0,
             'determinism_runs_n': 2, 'determinism_bitwise_same': cmp_res['P6_determinism_all_rows'],
             'q21_crosscheck_rows': 2, 'q21_crosscheck_fp_match_n': 2,
-            'nc_cases_n': 4, 'nc_pass_n': sum(1 for c in nc_res['cases'] if c['ok']),
+            'nc_cases_n': len(nc_res['cases']), 'nc_pass_n': sum(1 for c in nc_res['cases'] if c['ok']),
             'registry_changed_rows_n': ap_res['changed_n'], 'registry_idempotent': ap_res['idempotent'],
             'zeroregress_ok': vf_res['zeroregress_ok'], 'l2_field_check_n': len(vf_res['l2']),
             'l2_field_check_pass_n': sum(1 for x in vf_res['l2'] if x['l2_ok']),
