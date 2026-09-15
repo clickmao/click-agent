@@ -1,0 +1,79 @@
+{
+ "_round": "R472",
+ "_title": "远端前缀缓存「饱和」成因判定: 供应商硬上限 vs 真实共享前缀长度 (真机受控实验)",
+ "_registered_before_first_call": true,
+ "_prereg_written_at": "SEE mtime; asserts-r472.json 记录 first_call_utc 与 prereg_mtime 之差, 必须 > 0",
+ "_why_this": "R469/R470/R471 全部建立在「命中饱和 2048~2304 = 共享前缀长度约 2.1k」这一未验证假设上; 该假设决定主线杠杆「升稳定前缀」(R461/R469) 是否有余量: 若饱和是供应商硬上限, 则把稳定内容前置到 2.3k 以上无收益, 唯一杠杆是压「发送内容」(历史/注入); 若不是上限(饱和只是共享前缀本身短), 则升前缀有余量。此前提从未被真机实验判定过。",
+ "_arms": {
+  "SMALL": "P_SMALL 目标 ~600 tok",
+  "MID": "P_MID 目标 ~2600 tok",
+  "BIG": "P_BIG 目标 ~4000 tok"
+ },
+ "_call_plan": [
+  "SMALL.cold  (P_SMALL + 唯一 user nonce)",
+  "SMALL.warm  (同 P_SMALL + 另一唯一 user nonce)",
+  "MID.cold",
+  "MID.warm",
+  "BIG.cold",
+  "BIG.warm",
+  "BIG.warm2   (同 P_BIG 第三个 user)",
+  "BIG.ident   (与 BIG.warm 完全同文; 信息项, 不判)"
+ ],
+ "_retry_policy": "HTTP 非 200 或 401/429 => 指数退避重试 5/15/45/90s, 最多 4 次; 每臂内部 3s 间隔(缓存落盘); 重试全记入 evidence 日志, 不因重试改变判据",
+ "_criteria": [
+  {
+   "id": "C1",
+   "kind": "source_integrity",
+   "desc": "所有判据用调用 HTTP 200 且 usage 中 prompt_cache_hit_tokens 与 prompt_cache_miss_tokens 均非 null(缺失 => 判 UNDECIDABLE, fail-closed, 禁用 0 冒充未上报)",
+   "gate": true
+  },
+  {
+   "id": "C2",
+   "kind": "identity",
+   "desc": "逐调用恒等式 prompt_tokens == hit + miss",
+   "gate": true
+  },
+  {
+   "id": "C3",
+   "kind": "negative_control",
+   "desc": "三条 cold(唯一 nonce 开头, 与任何已有文本无共享前缀) 的 hit 必须 == 0; 任一 cold.hit > 0 => 判 UNDECIDABLE(说明存在非预期共享来源, 不得据 warm 下结论)",
+   "gate": true
+  },
+  {
+   "id": "C4",
+   "kind": "positive_control",
+   "desc": "小前缀正控(机制必须活着): SMALL.warm.hit >= 0.80 * P_hat_SMALL, 其中 P_hat_X = 该臂 cold 的 prompt_tokens(实测); 不达标 => 判 UNDECIDABLE(C5 的 CAP 结论不得成立)",
+   "gate": true
+  },
+  {
+   "id": "C5",
+   "kind": "main_discriminator",
+   "desc": "阶梯判定: 记 r_X = warm.hit / P_hat_X。 NO_CAP ⇔ r_BIG >= 0.85 且 r_MID >= 0.85; CAP ⇔ r_BIG <= 0.65 且 r_MID <= 0.65 且 C4 达标 ⇒ 上限估计 = [max(warm.hit of saturated arms), min(P_hat of saturated arms)]; 其余 => PARTIAL/UNDECIDABLE。 (阈值 0.85/0.65 预注册, 不得事后调整)",
+   "gate": true
+  },
+  {
+   "id": "C6",
+   "kind": "replication",
+   "desc": "BIG.warm2.hit == BIG.warm.hit (同前缀不同 user ⇒ 命中量应相同, 容许 0; 差异 > 64 => 判不稳定, 结论降级为 PARTIAL)",
+   "gate": true
+  },
+  {
+   "id": "C6b",
+   "kind": "informational",
+   "desc": "BIG.ident.hit 与 P_hat_BIG 的关系(同文本全前缀复用), 仅记录, 不作判据",
+   "gate": false
+  },
+  {
+   "id": "C7",
+   "kind": "criteria_selfcheck",
+   "desc": "判定函数非空心自检(合成数据): 输入 (600/580, 2600/2048, 4000/2048) 必须判 CAP; 输入 (600/580, 2600/2560, 4000/3900) 必须判 NO_CAP; 输入 (600/0 或 cold.hit>0) 必须判 UNDECIDABLE。任一不符 => 判据逻辑无效, 本轮 VOID",
+   "gate": true
+  }
+ ],
+ "_expected_cost_ceiling": "总 prompt token < 60,000, completion 预算 16 tok/次 x 8 次 ⇒ 按 config/base/models.yaml:19-20 (in 0.27 CNY/M, out 1.10 CNY/M) 估算 < 0.02 CNY",
+ "_product_implication_rules": {
+  "NO_CAP": "升稳定前缀(L461/L469 方向)有余量 ⇒ 继续把稳定内容前移; 饱和观察须改判为「共享前缀本身短」而非上限",
+  "CAP": "升前缀在 >cap 处无收益 ⇒ 主线唯一杠杆 = 压缩每次实际发送内容(历史/注入/按需注入); R469 分档上限口径须加入 cap 约束",
+  "UNDECIDABLE": "不得下任何结论; 记录阻塞原因与下一步"
+ }
+}

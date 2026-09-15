@@ -1,0 +1,145 @@
+{
+ "round": "R472",
+ "kind": "post_hoc_criteria_analysis",
+ "label": "POST-HOC: 本文件全部为事后分析, 与预注册判据分开计; 预注册版 C7 判 FAIL 不被覆盖",
+ "new_api_calls": 0,
+ "P0_data_level_falsification": {
+  "observed_warm_hits": {
+   "SMALL": 768,
+   "MID": 3584,
+   "BIG": 5632
+  },
+  "observed_prompt_tokens": {
+   "SMALL": 910,
+   "MID": 3789,
+   "BIG": 5811
+  },
+  "assumed_cap_upper_bound": 2304,
+  "max_observed_hit": 5632,
+  "falsified_by_single_observation": true,
+  "statement": "单条观察即证伪: BIG 臂 hit=5632 > 2304 ⇒ 「缓存命中存在约 2.1k 硬上限」为假",
+  "hit_are_64_aligned": {
+   "SMALL": true,
+   "MID": true,
+   "BIG": true
+  },
+  "tail_tokens": {
+   "SMALL": 142,
+   "MID": 205,
+   "BIG": 179
+  }
+ },
+ "P1_prereg_C7_failure_root_cause": {
+  "v1_synth_results": {
+   "synth_cap": "PARTIAL",
+   "synth_nocap": "NO_CAP",
+   "synth_cold_polluted": "UNDECIDABLE",
+   "synth_partial": "PARTIAL"
+  },
+  "expected": {
+   "synth_cap": "CAP",
+   "synth_nocap": "NO_CAP",
+   "synth_cold_polluted": "UNDECIDABLE",
+   "synth_partial": "PARTIAL"
+  },
+  "first_failure": "synth_cap",
+  "root_cause": "cap=2048 且 mid 前缀=2600 ⇒ r_MID=0.788 > 0.65 ⇒ 即使存在 2048 硬上限, v1 的 CAP 分支也不可达 ⇒ v1 的 CAP 判定条件与前缀臂尺寸不自洽(阈值设计缺陷, 非数据问题)",
+  "reachability_condition_v1_mid": "需要 P_MID >= 2048/0.65 = 3150 才能触发 CAP 分支",
+  "impact_on_real_data": "零: 本轮真实数据命中随前缀线性增长, 根本不进入 CAP 分支"
+ },
+ "P3_corrected_criteria_and_robustness": {
+  "v2_synth_results": {
+   "synth_cap": "CAP",
+   "synth_nocap": "NO_CAP",
+   "synth_cold_polluted": "UNDECIDABLE",
+   "synth_partial": "PARTIAL"
+  },
+  "expected": {
+   "synth_cap": "CAP",
+   "synth_nocap": "NO_CAP",
+   "synth_cold_polluted": "UNDECIDABLE",
+   "synth_partial": "PARTIAL"
+  },
+  "v2_selfcheck_pass": true,
+  "real_verdict_v1_prereg": "NO_CAP",
+  "real_verdict_v2_posthoc": "NO_CAP",
+  "verdict_robust_to_criteria_fix": true
+ },
+ "P4_mechanism_law": {
+  "law": "prompt_cache_hit_tokens == 64 * floor((prompt_tokens - c) / 64)",
+  "block_size_tokens": 64,
+  "c_star_unique": 142,
+  "c_intersection_interval": [
+   142,
+   142
+  ],
+  "points": [
+   {
+    "tag": "SMALL.warm",
+    "prompt": 910,
+    "hit_actual": 768,
+    "hit_pred(c_star)": 768,
+    "hit_64_aligned": true,
+    "tail": 142
+   },
+   {
+    "tag": "MID.warm",
+    "prompt": 3789,
+    "hit_actual": 3584,
+    "hit_pred(c_star)": 3584,
+    "hit_64_aligned": true,
+    "tail": 205
+   },
+   {
+    "tag": "BIG.warm",
+    "prompt": 5811,
+    "hit_actual": 5632,
+    "hit_pred(c_star)": 5632,
+    "hit_64_aligned": true,
+    "tail": 179
+   },
+   {
+    "tag": "BIG.warm2",
+    "prompt": 5812,
+    "hit_actual": 5632,
+    "hit_pred(c_star)": 5632,
+    "hit_64_aligned": true,
+    "tail": 180
+   },
+   {
+    "tag": "BIG.ident",
+    "prompt": 5811,
+    "hit_actual": 5632,
+    "hit_pred(c_star)": 5632,
+    "hit_64_aligned": true,
+    "tail": 179
+   }
+  ],
+  "all_points_match": true,
+  "note": "c = 该请求形状下不可复用尾部(聊天模板 + 用户消息)的 token 数; 命中量只由「与历史调用共享的前缀长度」决定, 精确到 64 token 块; 不存在 ~2k 级上限"
+ },
+ "posthoc_checks": [
+  {
+   "id": "P0",
+   "ok": true,
+   "desc": "数据级直接证伪: 观察最大 hit 5632 > 假设上限 2304 (无需判定函数)"
+  },
+  {
+   "id": "P1",
+   "ok": true,
+   "desc": "预注册 C7 失败根因定位: CAP 分支阈值与前缀臂尺寸不自洽"
+  },
+  {
+   "id": "P3",
+   "ok": true,
+   "desc": "修正判据 v2 自检全过 ∧ 真实数据 v1/v2 同判 NO_CAP ⇒ 结论不依赖判据修正"
+  },
+  {
+   "id": "P4",
+   "ok": true,
+   "desc": "机制定律: 5 条 warm 调用全部满足 hit == 64*floor((prompt-c)/64), c 唯一解"
+  }
+ ],
+ "verdict": "NO_CAP",
+ "verdict_line": "命中随共享前缀线性增长(hit/前缀 = 0.844/0.946/0.969), 不存在约 2.1k 供应商硬上限; 真实流中 2048~2304 的饱和是「共享前缀本身只有 ~2.1k」, 不是上限"
+}

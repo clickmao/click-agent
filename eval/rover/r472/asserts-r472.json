@@ -1,0 +1,225 @@
+{
+ "round": "R472",
+ "prereg": "eval/rover/r472/prereg-r472.json",
+ "prereg_mtime": 1789501419.97466,
+ "first_call_utc": "2026-09-15T19:43:45.373947+00:00",
+ "prereg_before_first_call": true,
+ "endpoint": "https://api.deepseek.com/v1/chat/completions",
+ "model": "deepseek-flash",
+ "max_tokens": 16,
+ "calls": 8,
+ "retry_events": 0,
+ "attempt_log": [],
+ "checks": [
+  {
+   "id": "C1",
+   "desc": "全部 8 调用 HTTP 200 且 usage 三字段(hit/miss/prompt)齐备 ⇒ 未上报禁止用 0 冒充",
+   "ok": true,
+   "gate": true,
+   "value": {
+    "missing": []
+   }
+  },
+  {
+   "id": "C2",
+   "desc": "逐调用恒等式 prompt_tokens == hit + miss",
+   "ok": true,
+   "gate": true,
+   "value": {
+    "violations": []
+   }
+  },
+  {
+   "id": "C3",
+   "desc": "负控: 三条 cold(唯一 nonce) hit == 0; 任一 >0 ⇒ UNDECIDABLE(存在非预期共享来源)",
+   "ok": true,
+   "gate": true,
+   "value": {
+    "SMALL.cold": 0,
+    "MID.cold": 0,
+    "BIG.cold": 0
+   }
+  },
+  {
+   "id": "C4",
+   "desc": "正控(机制必须活着): SMALL.warm.hit >= 0.80 x P_hat_SMALL",
+   "ok": true,
+   "gate": true,
+   "value": {
+    "P_hat_SMALL": 910,
+    "warm_hit": 768,
+    "ratio": 0.843956043956044
+   }
+  },
+  {
+   "id": "C5",
+   "desc": "主判据(预注册阈值): NO_CAP ⇔ r_BIG,r_MID >= 0.85 | CAP ⇔ r_BIG,r_MID <= 0.65 且小臂正控达标",
+   "ok": true,
+   "gate": true,
+   "value": {
+    "verdict": "NO_CAP",
+    "ratios": {
+     "SMALL": 0.843956043956044,
+     "MID": 0.9458960147796253,
+     "BIG": 0.9691963517466873
+    },
+    "P_hat": {
+     "SMALL": 910,
+     "MID": 3789,
+     "BIG": 5811
+    },
+    "cap_band": null,
+    "warm_hits": {
+     "SMALL": 768,
+     "MID": 3584,
+     "BIG": 5632
+    }
+   }
+  },
+  {
+   "id": "C6",
+   "desc": "复现: BIG.warm2.hit == BIG.warm.hit (差 <= 64)",
+   "ok": true,
+   "gate": true,
+   "value": {
+    "warm": 5632,
+    "warm2": 5632
+   }
+  },
+  {
+   "id": "C6b",
+   "desc": "信息项(不判): 同文本全前缀复用的 hit 与 P_hat_BIG 关系",
+   "ok": true,
+   "gate": false,
+   "value": {
+    "ident_hit": 5632,
+    "P_hat_BIG": 5811
+   }
+  },
+  {
+   "id": "C7",
+   "desc": "判据自检: 合成输入必须分别判 CAP / NO_CAP / UNDECIDABLE / PARTIAL",
+   "ok": false,
+   "gate": true,
+   "value": {
+    "synth_cap": "PARTIAL",
+    "synth_nocap": "NO_CAP",
+    "synth_cold_polluted": "UNDECIDABLE",
+    "synth_partial": "PARTIAL"
+   }
+  }
+ ],
+ "verdict": "NO_CAP",
+ "verdict_line": "饱和不是供应商上限 ⇒ 升稳定前缀有余量",
+ "cap_band": null,
+ "total_prompt_tokens": 32643,
+ "total_completion_tokens": 128,
+ "est_cost_cny": 0.008954,
+ "all_gates_pass": false,
+ "raw_usage": {
+  "SMALL.cold": {
+   "prompt_tokens": 910,
+   "completion_tokens": 16,
+   "total_tokens": 926,
+   "prompt_tokens_details": {
+    "cached_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 16
+   },
+   "prompt_cache_hit_tokens": 0,
+   "prompt_cache_miss_tokens": 910
+  },
+  "SMALL.warm": {
+   "prompt_tokens": 910,
+   "completion_tokens": 16,
+   "total_tokens": 926,
+   "prompt_tokens_details": {
+    "cached_tokens": 768
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 16
+   },
+   "prompt_cache_hit_tokens": 768,
+   "prompt_cache_miss_tokens": 142
+  },
+  "MID.cold": {
+   "prompt_tokens": 3789,
+   "completion_tokens": 16,
+   "total_tokens": 3805,
+   "prompt_tokens_details": {
+    "cached_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 16
+   },
+   "prompt_cache_hit_tokens": 0,
+   "prompt_cache_miss_tokens": 3789
+  },
+  "MID.warm": {
+   "prompt_tokens": 3789,
+   "completion_tokens": 16,
+   "total_tokens": 3805,
+   "prompt_tokens_details": {
+    "cached_tokens": 3584
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 16
+   },
+   "prompt_cache_hit_tokens": 3584,
+   "prompt_cache_miss_tokens": 205
+  },
+  "BIG.cold": {
+   "prompt_tokens": 5811,
+   "completion_tokens": 16,
+   "total_tokens": 5827,
+   "prompt_tokens_details": {
+    "cached_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 16
+   },
+   "prompt_cache_hit_tokens": 0,
+   "prompt_cache_miss_tokens": 5811
+  },
+  "BIG.warm": {
+   "prompt_tokens": 5811,
+   "completion_tokens": 16,
+   "total_tokens": 5827,
+   "prompt_tokens_details": {
+    "cached_tokens": 5632
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 16
+   },
+   "prompt_cache_hit_tokens": 5632,
+   "prompt_cache_miss_tokens": 179
+  },
+  "BIG.warm2": {
+   "prompt_tokens": 5812,
+   "completion_tokens": 16,
+   "total_tokens": 5828,
+   "prompt_tokens_details": {
+    "cached_tokens": 5632
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 16
+   },
+   "prompt_cache_hit_tokens": 5632,
+   "prompt_cache_miss_tokens": 180
+  },
+  "BIG.ident": {
+   "prompt_tokens": 5811,
+   "completion_tokens": 16,
+   "total_tokens": 5827,
+   "prompt_tokens_details": {
+    "cached_tokens": 5632
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 16
+   },
+   "prompt_cache_hit_tokens": 5632,
+   "prompt_cache_miss_tokens": 179
+  }
+ }
+}
