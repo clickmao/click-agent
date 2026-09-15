@@ -1473,6 +1473,25 @@
         "docs/plans/v0.71.0-r451-real-traffic-reprobe.md"
       ],
       "owner_round": "R451"
+    },
+    {
+      "id": "r452.product-native-real-traffic",
+      "level": "L2",
+      "capability": "产品原生跑真实语料(零重建): 生产行为门 r1=0/Skip=0; 判官强制面 14 票 S 全被机械认可族守卫否决(13 票落『继续下一轮』驱动类); 门判 prompt 无 prev 段 ⇒ 门判=f(msg); 吞并轮 7/51 远端调用 0",
+      "evidence_cmd": "bash eval/rover/r452/run_all_r452.sh && R452_GRID=M20 R452_NS=-c2 R452_MATCH=0 bash eval/rover/r452/run_arm_r452.sh RC 48470 48472 && python3 eval/rover/r452/analyze_r452.py",
+      "evidence_path": "eval/rover/r452/summary-r452.json",
+      "negative_control": "① RC-c2 正控复现 R450(32,961 vs 32,968) ⇒ 证明读数可比; ② RC-c1(匹配器开) 读数 39,364 作废 ⇒ 器具缺陷当场被已知期望值抓住; ③ 守卫否决事件 14 条为判官 S 票的反证; ④ 若 RP 出现 gate_r1_n>0 或 skip>0 ⇒ 推翻 P1",
+      "covers": [
+        "eval/rover/r452/run_arm_r452.sh",
+        "eval/rover/r452/run_all_r452.sh",
+        "eval/rover/r452/build_real_grid.py",
+        "eval/rover/r452/stub_seq.py",
+        "eval/rover/r452/analyze_r452.py",
+        "eval/rover/r452/prereg-r452.json",
+        "eval/rover/r452/summary-r452.json",
+        "docs/plans/v0.72.0-r452-product-native-real-traffic.md"
+      ],
+      "owner_round": "R452"
     }
   ],
   "aot_check_policy": "release_tag_only",

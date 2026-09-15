@@ -1,0 +1,32 @@
+{
+ "round": "R452",
+ "kind": "prereg",
+ "written_before": "任何读数落盘之前（本文件先写, 再起臂）",
+ "承": "R449 机械面裁决(STATE_DB_CANNOT_IMPROVE_KPI) + R450 器具锚修复 + R451 次判 VOID(残余失锚=调用/解码面)",
+ "路线": "弃「重建 prompt」; 由**产品自身**跑真实语料 ⇒ 锚自动成立(实发 prompt 由产品自己发出)",
+ "语料": {
+  "source": "eval/rover/r449/real-corpus.jsonl",
+  "turns_total": 51,
+  "measured": 48,
+  "sessions": 3,
+  "rule_label_measured": {"new_task": 23, "adopt": 15, "correct": 10},
+  "hygiene_defect": "1,542 行中 276 行属 cron 会话(user_len 达 80k+ 的定时作业提示面) ⇒ 本轮只用非 cron 会话; 缺陷登记待修"
+ },
+ "arms": {
+  "RC": "M20 网格(前置门开) — 同窗口正控, 期望 7/7 Skip（复现 R450 s2: tokens_total 32968 / gate_r1_n 7）",
+  "RP": "真实语料(前置门开=生产行为) — 期望 r1 调用 0 / Skip 0",
+  "RJ": "真实语料(前置门关=AGENTFRAMEWORK_GATE_PREFILTER=0) — 强制门判吃真实 (msg, prev) 对"
+ },
+ "predictions": [
+  {"id": "P1", "claim": "RP 臂 r1 调用 = 0 且 Skip = 0", "basis": "R444 可证等价: Skip ⇒ Ack; 机械面前提 ¬Ack ⇒ Pass 且不调 r1", "falsified_by": "r1 调用 > 0 或 Skip > 0 ⇒ 推翻机械面结论(一等发现)"},
+  {"id": "P2", "claim": "RC 臂 7/7 Skip 且 gate_r1_n=7（与 R450 s2 逐位一致; ctx 4608→3584 对短 prompt 无语义影响）", "falsified_by": "读数不同 ⇒ ctx 偏差不再是「语义不变」"},
+  {"id": "P3", "claim": "RJ 臂判官在真实对上 A 率 < 35%（rule-label adopt 率 = 15/48 = 31.2% 为独立弱参照）", "falsified_by": "A 率 ≥ 35% ⇒ 判官在真实 D/S 类上假阳, 与机械面 ack=0 冲突"},
+  {"id": "P4", "claim": "prev 链保真: stub 调用序 k 的 last_user == turns[k-1]", "falsified_by": "不符 ⇒ 记 prev_chain_drift, 该轮判官读数记 n/a"}
+ ],
+ "readings_invalid_if": ["臂未跑完/宿主崩溃", "align drift 未量化", "OOM"],
+ "偏差预声明": {
+  "ctx": "3584(默认 4608) — 起臂前 MemAvailable 若 < 2650MB 闸值, 按 R451 先例下修并记偏差; 长轮(>ctx)由**产品自身**行为决定, 不静默丢弃",
+  "无关变量": "桩后端回复 = 该会话真实 prev_reply（按调用序对齐）⇒ 门判 prev 为真值, 但主回答文本仍是桩(不参与门判)"
+ },
+ "判据归属": {"本臂读数只回答": "真实分布上的可跳面与判官行为", "不回答": "真实流量远端 token 降幅的上界之外的东西(需真实远端 API, 未做)"}
+}
