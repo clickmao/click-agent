@@ -1,0 +1,64 @@
+{
+ "round": "EXP1-Q26",
+ "date": "2026-09-16",
+ "owner": "60m 自检作业 (不占主线轮号)",
+ "step": "Y.5 候选 2 (最前未完成): 登记表加 evidence_generated_with 字段 —— 证据 ↔ 器具/输入 版本绑定",
+ "why": "Q24/Q25 定因: r444 precheck 证据曾被控制臂静默覆盖(candidate0)、产物自证 sha 已落地, 但登记行仍无显式字段说明'这份证据由谁、以哪个版本生成', 审计者无法从登记行判断证据归属",
+ "fill_rule_pre_registered": {
+  "coverage": "evidence_path 以 eval/ 或 docs/reports/ 开头 且 level in {L1,L2,L3,L4} 的行必须有字段 (L0=未验证 不强制)",
+  "evidence_kind": "目录 -> directory; docs/reports/status.json -> self-derived; 其余 -> artifact",
+  "pin_status": "artifact 且 git 已跟踪 且 工作区未修改 -> frozen (绑 sha12); 否则 live (不绑, 记原因)",
+  "pin_reason_vocab": [
+   "archived-per-round",
+   "append-only-ledger",
+   "worktree-only",
+   "directory-aggregate",
+   "self-derived"
+  ],
+  "instrument_precedence": "产物自证 provenance.instrument 优先于 evidence_cmd 派生 (前者是产物自己的说法, 后者是我方阅读)",
+  "binding": "产物内确有 provenance 且与声明逐字段一致 -> self-attested; 否则 audit-pin (不冒充自证)",
+  "audited_by_round": "R473"
+ },
+ "criteria": {
+  "D1 覆盖": "86 产品面行 100% 有字段; 非产品面行 0 行被强制",
+  "D2 形状": "各枚举取值合法; instrument 与 instrument_sha12 同存同缺 (预测 76 有 / 10 缺)",
+  "D3 冻结 pin 可验": "每个 pin_status=frozen 的行 artifact_sha12 == 现盘字节 sha256[:12]",
+  "D4 live 无 pin": "pin_status=live 的行 artifact_sha12 为空",
+  "D5 器具绑定可验": "instrument 非空的行 instrument_sha12 == 器具现盘字节 sha256[:12]",
+  "D6 自证一致性": "r444.separability-precheck 为 self-attested 且与产物 provenance 逐字段一致",
+  "D7 负控(机制)": "6 条注入缺陷全部判红 + 1 条正控(正确 sha 的冻结行)不判红",
+  "D8 幂等/保形": "写前断言序列化器逐字节复现原文件; 二次运行字节不变; diff 无删除行",
+  "D9 形式校验": "dotnet 形式校验 Failed=0 且 Total >= 14 (计数以实测为准)"
+ },
+ "predicted_readings": {
+  "product_rows": 86,
+  "artifact": 77,
+  "directory": 8,
+  "self_derived": 1,
+  "instrument_declared": 76,
+  "instrument_null": 10,
+  "frozen": 74,
+  "live": 12,
+  "self_attested": 1,
+  "audit_pin": 85
+ },
+ "predicted_negcontrols_red": [
+  "k.frozen_sha_mismatch",
+  "l.instrument_sha_mismatch",
+  "m.missing_binding",
+  "n.false_self_attested",
+  "o.bad_kind",
+  "q.instrument_without_sha"
+ ],
+ "positive_control_must_not_red": "p.ok_frozen_pin",
+ "honest_boundary_pre_registered": [
+  "R473 不宣称'证据由该器具版本生成'——除 self-attested 行(产物自证)外, 其余为 audit-pin(审计时绑定, 器具一改即判红要求重审)",
+  "源码/测试文件作为证据的行不纳入绑定(绑源码 sha 会让每次代码改动判红) —— 排除理由数据先行",
+  "live 行(未入库/追加台账/目录聚合)不做字节 pin; 其覆盖缺口作为读数单列, 不冒充冻结"
+ ],
+ "not_in_scope": [
+  "L2 全量面复跑(候选4)",
+  "检查器输出按面分区(候选5)",
+  "附录V §V.6 其余遗留(候选3)"
+ ]
+}

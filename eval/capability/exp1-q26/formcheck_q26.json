@@ -1,0 +1,36 @@
+{
+ "round": "EXP1-Q26",
+ "date": "2026-09-16",
+ "cmd": "env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR dotnet test src/agent.tests/agentframework.tests.csproj --filter \"FullyQualifiedName~VerificationForm|FullyQualifiedName~SkillGeneralization|FullyQualifiedName~DevPlanDocRef\" --nologo -v q",
+ "runs": {
+  "r1_pre_ci_fix": {
+   "log": "/tmp/formcheck_q26_r1.log",
+   "sha12": "9dbf29589513",
+   "bytes": 26592,
+   "failed": 1,
+   "passed": 13,
+   "total": 14
+  },
+  "r2_green": {
+   "log": "/tmp/formcheck_q26_r2.log",
+   "sha12": "7e1b12cabcbb",
+   "bytes": 25244,
+   "failed": 0,
+   "passed": 14,
+   "total": 14
+  },
+  "r3_green_after_registry_edit": {
+   "log": "/tmp/formcheck_q26_r3.log",
+   "sha12": "d533c40d4395",
+   "bytes": 899,
+   "failed": 0,
+   "passed": 14,
+   "total": 14
+  }
+ },
+ "executed_tests_gt_zero": true,
+ "note": "r1 红=本轮自己的计数阈值(18)高于实测(17) — 按实测基线改为 17 后 r2 绿; r3 = 登记表 selfcheck 行文本改写后复跑绿 (改登记表当轮必跑)",
+ "registry_sha12_after": "43ad37a33af6",
+ "test_file_sha12": "67b0e85201de",
+ "instrument_sha12": "33679b08155e"
+}

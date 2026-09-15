@@ -71,6 +71,36 @@ public class VerificationFormTests
         return File.Exists(abs) || Directory.Exists(abs);
     }
 
+    /// <summary>R473: live 行 pin_status 的合法原因词表 (与 eval/capability/bind_evidence.py 同源)。</summary>
+    private static readonly string[] PinReasons =
+        { "archived-per-round", "append-only-ledger", "worktree-only", "directory-aggregate", "self-derived" };
+
+    private static readonly Regex Hex12 = new("^[0-9a-f]{12}$", RegexOptions.Compiled);
+
+    /// <summary>文件现盘字节的 sha256 前 12 位 (小写十六进制); 不可读返回 null。</summary>
+    private static string? Sha12(string absPath)
+    {
+        if (!File.Exists(absPath)) return null;
+        using var sha = System.Security.Cryptography.SHA256.Create();
+        return Convert.ToHexString(sha.ComputeHash(File.ReadAllBytes(absPath)))[..12].ToLowerInvariant();
+    }
+
+    /// <summary>产物自证: JSON 顶层 provenance 对象 (否则 null)。</summary>
+    private static JsonElement? ProvenanceOf(string absPath)
+    {
+        if (!absPath.EndsWith(".json", StringComparison.Ordinal) || !File.Exists(absPath)) return null;
+        try
+        {
+            using var doc = JsonDocument.Parse(File.ReadAllText(absPath, System.Text.Encoding.UTF8));
+            if (doc.RootElement.ValueKind == JsonValueKind.Object
+                && doc.RootElement.TryGetProperty("provenance", out var p) && p.ValueKind == JsonValueKind.Object)
+                return p.Clone();
+        }
+        catch { }
+        return null;
+    }
+
+
     /// <summary>校验一份登记表, 返回违规列表 (空=通过)。合成坏表也走同一函数 → 检查器自身可被负向控制。</summary>
     private static List<string> Validate(JsonElement root, string repoRoot)
     {
@@ -148,6 +178,87 @@ public class VerificationFormTests
                     if (p.Length == 0 || !p.Contains('/')) continue;
                     if (!Exists(repoRoot, p)) v.Add($"{id}: covers 登记的路径不存在 '{p}' (R2c)");
                 }
+            // R2e/R2f (R473): evidence_generated_with —— 证据 ↔ 器具/输入 版本绑定。
+            //   覆盖 R2f: 产品面证据行 (eval/ 或 docs/reports/ 前缀, L1–L4) 必须有本字段 (L0=未验证 不强制)。
+            //   闸门 R2e: frozen 行的 artifact_sha12 必须等于证据文件**现盘字节** sha256[:12]; instrument 非空的
+            //     行 instrument_sha12 必须等于器具现盘字节 —— 证据/器具被改写即判红(重审信号)。这正是 Q24 缺陷族
+            //     (r444 precheck 证据被控制臂静默覆盖) 在登记层的根因护栏: 证据换了主人, 登记表必须说话。
+            //   live 行 (追加式台账/未入库产物/目录聚合/派生件) 不上字节闸, 原因入 pin_reason (不冒充冻结)。
+            //   binding=self-attested 只在产物自带 provenance 且逐字段一致时成立; 产物已自证却登记成 audit-pin 亦判红。
+            var gen = row.TryGetProperty("evidence_generated_with", out var ge) ? ge : default;
+            var hasGen = gen.ValueKind == JsonValueKind.Object;
+            var productFace = evPath.StartsWith("eval/", StringComparison.Ordinal)
+                              || evPath.StartsWith("docs/reports/", StringComparison.Ordinal);
+            if (!hasGen)
+            {
+                if (productFace && level is "L1" or "L2" or "L3" or "L4")
+                    v.Add($"{id}: 产品面证据行缺 evidence_generated_with (R2f)");
+            }
+            else
+            {
+                string G(string k) => gen.TryGetProperty(k, out var e) && e.ValueKind == JsonValueKind.String ? e.GetString()! : "";
+                foreach (var k in new[] { "evidence_kind", "pin_status", "pin_reason", "artifact_sha12",
+                                          "instrument", "instrument_sha12", "binding", "audited_by_round" })
+                    if (!gen.TryGetProperty(k, out _)) v.Add($"{id}: evidence_generated_with 缺键 {k} (R2e)");
+
+                var kind = G("evidence_kind");
+                var status = G("pin_status");
+                var declared = G("artifact_sha12");
+                if (kind != "artifact" && kind != "directory" && kind != "self-derived")
+                    v.Add($"{id}: evidence_kind 非法 '{kind}' (R2e)");
+                if (status != "frozen" && status != "live")
+                    v.Add($"{id}: pin_status 非法 '{status}' (R2e)");
+                if (!PinReasons.Contains(G("pin_reason")))
+                    v.Add($"{id}: pin_reason 非法 '{G("pin_reason")}' (R2e)");
+                if (G("binding") != "self-attested" && G("binding") != "audit-pin")
+                    v.Add($"{id}: binding 非法 '{G("binding")}' (R2e)");
+                if (!Regex.IsMatch(G("audited_by_round"), @"^R\d+$"))
+                    v.Add($"{id}: audited_by_round 非法 '{G("audited_by_round")}' (R2e)");
+
+                var evAbs = Path.Combine(repoRoot, evPath.Replace('/', Path.DirectorySeparatorChar));
+                if (status == "frozen")
+                {
+                    if (kind != "artifact") v.Add($"{id}: frozen 只允许 artifact (实={kind}) (R2e)");
+                    var cur = Sha12(evAbs);
+                    if (cur == null) v.Add($"{id}: frozen 但证据文件不可读 '{evPath}' (R2e)");
+                    else if (!Hex12.IsMatch(declared) || declared != cur)
+                        v.Add($"{id}: 冻结 pin 与现盘字节不符 (声明 {declared} / 实际 {cur}) (R2e 证据已被改写或未重审)");
+                }
+                else if (declared.Length > 0)
+                    v.Add($"{id}: live 行不得带 artifact_sha12 (R2e)");
+
+                var inst = G("instrument");
+                var isha = G("instrument_sha12");
+                if ((inst.Length == 0) != (isha.Length == 0))
+                    v.Add($"{id}: instrument 与 instrument_sha12 必须同存同缺 (R2e)");
+                if (inst.Length > 0)
+                {
+                    var cur = Sha12(Path.Combine(repoRoot, inst.Replace('/', Path.DirectorySeparatorChar)));
+                    if (cur == null) v.Add($"{id}: instrument 路径不存在 '{inst}' (R2e)");
+                    else if (!Hex12.IsMatch(isha) || isha != cur)
+                        v.Add($"{id}: 器具绑定与现盘不符 (声明 {isha} / 实际 {cur}) (R2e 器具已改, 引用它的证据须重审)");
+                }
+
+                var prov = ProvenanceOf(evAbs);
+                if (G("binding") == "self-attested")
+                {
+                    if (prov == null) v.Add($"{id}: binding=self-attested 但产物无 provenance 自证 (R2e)");
+                    else
+                    {
+                        var pv = prov.Value;
+                        var psha = pv.TryGetProperty("instrument_sha12", out var pe) && pe.ValueKind == JsonValueKind.String ? pe.GetString()! : "";
+                        if (psha != isha)
+                            v.Add($"{id}: 自证器具 sha 与声明不符 (产物 {psha} / 声明 {isha}) (R2e)");
+                        var parm = pv.TryGetProperty("arm", out var pa) && pa.ValueKind == JsonValueKind.String ? pa.GetString()! : "";
+                        if (parm.Length == 0) v.Add($"{id}: 产物 provenance 缺 arm, 不足以为自证 (R2e)");
+                        var pinst = pv.TryGetProperty("instrument", out var pi) && pi.ValueKind == JsonValueKind.String ? pi.GetString()! : "";
+                        if (pinst.Length > 0 && inst.Length > 0 && pinst != inst)
+                            v.Add($"{id}: 自证器具路径与声明不符 (R2e)");
+                    }
+                }
+                else if (prov != null)
+                    v.Add($"{id}: 产物已自证来源, 登记行不得降级为 audit-pin (R2f)");
+            }
         }
         return v;
     }
@@ -178,7 +289,9 @@ public class VerificationFormTests
     [Fact]
     public void Validator_CatchesInjectedDefects()
     {
-        const string bad = """
+        var shaBind = Sha12(Path.Combine(RepoRoot, "eval/capability/bind_evidence.py"))!;
+        var shaInstr = Sha12(Path.Combine(RepoRoot, "eval/capability/instruments.json"))!;
+        var bad = ("""
         { "schema": "verification-registry/v1", "rows": [
           { "id": "a.no_negctl", "capability": "c", "level": "L3",
             "evidence_cmd": "dotnet test x", "evidence_path": "agent.sln", "owner_round": "R1" },
@@ -214,9 +327,48 @@ public class VerificationFormTests
             "evidence_path": "agent.sln", "cmd_expect_absent": ["src/agent"],
             "owner_round": "R1" },
           { "id": "a.no_negctl", "capability": "c", "level": "L1",
-            "evidence_cmd": "x", "evidence_path": "agent.sln", "owner_round": "R1" }
+            "evidence_cmd": "x", "evidence_path": "agent.sln", "owner_round": "R1" },
+          { "id": "k.frozen_sha_mismatch", "capability": "c", "level": "L3",
+            "evidence_cmd": "python3 eval/capability/bind_evidence.py --check",
+            "evidence_path": "eval/capability/instruments.json", "negative_control": "n", "owner_round": "R1",
+            "evidence_generated_with": { "evidence_kind": "artifact", "pin_status": "frozen", "pin_reason": "archived-per-round",
+              "artifact_sha12": "000000000000", "instrument": "eval/capability/bind_evidence.py", "instrument_sha12": "SHA_BIND",
+              "binding": "audit-pin", "audited_by_round": "R473" } },
+          { "id": "l.instrument_sha_mismatch", "capability": "c", "level": "L3",
+            "evidence_cmd": "python3 eval/capability/bind_evidence.py --check",
+            "evidence_path": "eval/capability/kpi.jsonl", "negative_control": "n", "owner_round": "R1",
+            "evidence_generated_with": { "evidence_kind": "artifact", "pin_status": "live", "pin_reason": "append-only-ledger",
+              "artifact_sha12": null, "instrument": "eval/capability/bind_evidence.py", "instrument_sha12": "000000000000",
+              "binding": "audit-pin", "audited_by_round": "R473" } },
+          { "id": "m.missing_binding", "capability": "c", "level": "L3",
+            "evidence_cmd": "python3 eval/capability/bind_evidence.py --check",
+            "evidence_path": "eval/capability/kpi.jsonl", "negative_control": "n", "owner_round": "R1" },
+          { "id": "n.false_self_attested", "capability": "c", "level": "L3",
+            "evidence_cmd": "python3 eval/capability/bind_evidence.py --check",
+            "evidence_path": "eval/capability/instruments.json", "negative_control": "n", "owner_round": "R1",
+            "evidence_generated_with": { "evidence_kind": "artifact", "pin_status": "frozen", "pin_reason": "archived-per-round",
+              "artifact_sha12": "SHA_INSTR", "instrument": "eval/capability/bind_evidence.py", "instrument_sha12": "SHA_BIND",
+              "binding": "self-attested", "audited_by_round": "R473" } },
+          { "id": "o.bad_kind", "capability": "c", "level": "L1",
+            "evidence_cmd": "python3 eval/capability/bind_evidence.py --check",
+            "evidence_path": "eval/capability/kpi.jsonl", "owner_round": "R1",
+            "evidence_generated_with": { "evidence_kind": "banana", "pin_status": "live", "pin_reason": "append-only-ledger",
+              "artifact_sha12": null, "instrument": null, "instrument_sha12": null,
+              "binding": "audit-pin", "audited_by_round": "R473" } },
+          { "id": "q.instrument_without_sha", "capability": "c", "level": "L1",
+            "evidence_cmd": "python3 eval/capability/bind_evidence.py --check",
+            "evidence_path": "eval/capability/kpi.jsonl", "owner_round": "R1",
+            "evidence_generated_with": { "evidence_kind": "artifact", "pin_status": "live", "pin_reason": "append-only-ledger",
+              "artifact_sha12": null, "instrument": "eval/capability/bind_evidence.py", "instrument_sha12": null,
+              "binding": "audit-pin", "audited_by_round": "R473" } },
+          { "id": "p.ok_frozen_pin", "capability": "c", "level": "L3",
+            "evidence_cmd": "python3 eval/capability/bind_evidence.py --check",
+            "evidence_path": "eval/capability/instruments.json", "negative_control": "n", "owner_round": "R1",
+            "evidence_generated_with": { "evidence_kind": "artifact", "pin_status": "frozen", "pin_reason": "archived-per-round",
+              "artifact_sha12": "SHA_INSTR", "instrument": "eval/capability/bind_evidence.py", "instrument_sha12": "SHA_BIND",
+              "binding": "audit-pin", "audited_by_round": "R473" } }
         ] }
-        """;
+        """).Replace("SHA_BIND", shaBind).Replace("SHA_INSTR", shaInstr);
         var v = Validate(JsonDocument.Parse(bad).RootElement, RepoRoot);
         Assert.Contains(v, s => s.Contains("a.no_negctl") && s.Contains("negative_control"));
         Assert.Contains(v, s => s.Contains("b.static_as_run") && s.Contains("静态工具"));
@@ -229,7 +381,47 @@ public class VerificationFormTests
         Assert.Contains(v, s => s.Contains("h.dead_cover") && s.Contains("R2c"));
         Assert.Contains(v, s => s.Contains("j.absent_decl_contradiction") && s.Contains("声明与仓库事实矛盾"));
         Assert.DoesNotContain(v, s => s.Contains("i.absent_decl_ok"));   // 正向豁免: 声明缺位路径不判红
-        Assert.True(v.Count >= 10, "注入缺陷未被完整捕获: " + string.Join(" | ", v));
+        // R473: evidence_generated_with 的六条注入缺陷 + 一条正控
+        Assert.Contains(v, s => s.Contains("k.frozen_sha_mismatch") && s.Contains("冻结 pin"));
+        Assert.Contains(v, s => s.Contains("l.instrument_sha_mismatch") && s.Contains("器具绑定"));
+        Assert.Contains(v, s => s.Contains("m.missing_binding") && s.Contains("R2f"));
+        Assert.Contains(v, s => s.Contains("n.false_self_attested") && s.Contains("自证"));
+        Assert.Contains(v, s => s.Contains("o.bad_kind") && s.Contains("evidence_kind"));
+        Assert.Contains(v, s => s.Contains("q.instrument_without_sha") && s.Contains("同存同缺"));
+        Assert.DoesNotContain(v, s => s.Contains("p.ok_frozen_pin"));   // 正控: 正确冻结 pin 不得判红
+        Assert.True(v.Count >= 17, "注入缺陷未被完整捕获 (实测基线 17 条: 每条注入缺陷 ≥1, q 行同时命中 2 条): " + string.Join(" | ", v));
+    }
+
+    /// <summary>R473: 产品面证据的绑定覆盖率与分布 (实测读数; 覆盖由 Validate 判红, 本测试把"字段没退化成注释"钉住)。
+    /// 分布 = frozen/live 的原因构成 —— live 行不是缺陷, 是"字节可变故不上闸"的显式声明, 但其条数必须可见。</summary>
+    [Fact]
+    public void Registry_EvidenceBindings_CoverProductFace()
+    {
+        var rows = LoadRealRegistry().GetProperty("rows").EnumerateArray().ToList();
+        int product = 0, covered = 0, frozen = 0, live = 0, selfAttested = 0, noInstrument = 0;
+        foreach (var row in rows)
+        {
+            var ep = row.GetProperty("evidence_path").GetString()!;
+            var lv = row.GetProperty("level").GetString()!;
+            var isProduct = ep.StartsWith("eval/", StringComparison.Ordinal) || ep.StartsWith("docs/reports/", StringComparison.Ordinal);
+            if (!isProduct || lv == "L0") continue;
+            product++;
+            if (!row.TryGetProperty("evidence_generated_with", out var g) || g.ValueKind != JsonValueKind.Object) continue;
+            covered++;
+            var st = g.TryGetProperty("pin_status", out var s) ? s.GetString() : "";
+            if (st == "frozen") frozen++; else if (st == "live") live++;
+            if (g.TryGetProperty("binding", out var b) && b.GetString() == "self-attested") selfAttested++;
+            if (g.TryGetProperty("instrument", out var i) && i.ValueKind == JsonValueKind.Null) noInstrument++;
+        }
+        Assert.True(product > 0 && covered == product, $"产品面证据绑定覆盖不完整: {covered}/{product} (R2f)");
+        Assert.True(frozen > 0, "无任何冻结 pin —— 字段会退化成注释 (R2e 闸门空转)");
+        Assert.True(selfAttested >= 1, "自证行消失 —— Q24 缺陷族 (证据静默易主) 的登记层护栏被移除");
+        // r444 收口回归钉 (Q24/Q25): 分臂 + 产物自证 + 登记行自证三者仍一致。
+        var r444 = rows.First(r => r.GetProperty("id").GetString() == "r444.separability-precheck")
+                       .GetProperty("evidence_generated_with");
+        Assert.Equal("self-attested", r444.GetProperty("binding").GetString());
+        Assert.Equal("eval/rover/r444/precheck_prefilter.py", r444.GetProperty("instrument").GetString());
+        Assert.True(r444.GetProperty("audited_by_round").GetString()!.StartsWith("R", StringComparison.Ordinal));
     }
 
     /// <summary>R1: src/ 下每个 IResponseSegmentPlugin 实现文件必须在某行 covers[] 登记。</summary>

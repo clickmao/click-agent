@@ -1,0 +1,155 @@
+{
+ "round": "EXP1-Q26",
+ "date": "2026-09-16",
+ "step": "Y.5 候选2: 登记表加 evidence_generated_with (证据↔器具/输入 版本绑定)",
+ "fill_rule": "覆盖=产品面(eval/|docs/reports/) L1-L4; kind=目录->directory / status.json->self-derived / 其余->artifact; pin=已入库且工作区未改->frozen(绑字节) 否则 live+原因; instrument: 产物自证优先, 否则由 evidence_cmd 派生; binding: 产物有 provenance 且一致->self-attested 否则 audit-pin",
+ "registry_sha12": {
+  "before_HEAD": "fca87a039e55",
+  "after": "43ad37a33af6"
+ },
+ "numstat": "852 insertions / 2 deletions (2 deletions = selfcheck 行 capability/negative_control 文本改写)",
+ "distribution": {
+  "covered": 85,
+  "product_face_L1_L4": 85,
+  "product_face_L0_excluded": 1,
+  "artifact_frozen": 72,
+  "artifact_live_worktree_only": 3,
+  "artifact_live_ledger": 1,
+  "directory": 8,
+  "self_derived": 1,
+  "self_attested": 1,
+  "audit_pin": 84,
+  "instrument_declared": 76,
+  "instrument_null": 9
+ },
+ "instrument_null_ids": [
+  "engine.retired.no_local_gguf",
+  "llamacpp.prompt.template_gate",
+  "r420.recall-command-wiring",
+  "r445.prev-reply-face-indicative",
+  "r462.recall-reality-gate",
+  "r462.weight-probe",
+  "r463.model-cleanup",
+  "r464.settle-sentinel-and-cross-round-determinism",
+  "r468.gate-rules-port-diff"
+ ],
+ "live_rows": [
+  {
+   "id": "probe.randomized-selfcheck",
+   "kind": "directory",
+   "reason": "directory-aggregate"
+  },
+  {
+   "id": "capability.selfcheck.loop",
+   "kind": "artifact",
+   "reason": "append-only-ledger"
+  },
+  {
+   "id": "llamacpp.prompt.template_gate",
+   "kind": "directory",
+   "reason": "directory-aggregate"
+  },
+  {
+   "id": "llamacpp.session.prefix_reuse",
+   "kind": "directory",
+   "reason": "directory-aggregate"
+  },
+  {
+   "id": "llamacpp.session.long_lived_generation",
+   "kind": "directory",
+   "reason": "directory-aggregate"
+  },
+  {
+   "id": "llamacpp.session-ledger",
+   "kind": "directory",
+   "reason": "directory-aggregate"
+  },
+  {
+   "id": "r371d7.truncation-continuation",
+   "kind": "directory",
+   "reason": "directory-aggregate"
+  },
+  {
+   "id": "r414.failure-visibility",
+   "kind": "directory",
+   "reason": "directory-aggregate"
+  },
+  {
+   "id": "r415.gate-input-chain-pin",
+   "kind": "directory",
+   "reason": "directory-aggregate"
+  },
+  {
+   "id": "r444.status-single-audit",
+   "kind": "self-derived",
+   "reason": "self-derived"
+  },
+  {
+   "id": "r468.gate-rules-port-diff",
+   "kind": "artifact",
+   "reason": "worktree-only"
+  },
+  {
+   "id": "r470.cache-channel-attribution",
+   "kind": "artifact",
+   "reason": "worktree-only"
+  },
+  {
+   "id": "r470.real-feed-cache-actuals",
+   "kind": "artifact",
+   "reason": "worktree-only"
+  }
+ ],
+ "self_attested_rows": [
+  "r444.separability-precheck"
+ ],
+ "predicted_vs_realized": {
+  "product_rows": [
+   86,
+   85
+  ],
+  "artifact": [
+   77,
+   76
+  ],
+  "directory": [
+   8,
+   8
+  ],
+  "self_derived": [
+   1,
+   1
+  ],
+  "instrument_declared": [
+   76,
+   76
+  ],
+  "instrument_null": [
+   10,
+   9
+  ],
+  "frozen": [
+   74,
+   72
+  ],
+  "live": [
+   12,
+   13
+  ],
+  "self_attested": [
+   1,
+   1
+  ],
+  "audit_pin": [
+   85,
+   84
+  ]
+ },
+ "prediction_miss_cause": "预测读数用一个更简单的临时分类器算出: 未应用 (a) 覆盖规则里的 L0 排除 (rover.generation.chain), (b) 追加式台账特例 (eval/capability/kpi.jsonl). 判据文本本身含这两条 -> 判据全过, 仅数字预测偏移 (承 '预注册读数预测必须与判据同分类器' 教训).",
+ "gates": {
+  "pgrep_executor_count": 0,
+  "MemAvailable_MB": 2828,
+  "gate_MB": 2600,
+  "self_match_pitfall": "pgrep -f 'dotnet' 自匹配调用者命令行 -> 计数 2 全为自匹配; 改用 ps -eo comm 判真身 (0)"
+ }
+}
