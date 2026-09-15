@@ -1,0 +1,39 @@
+{
+  "round": "EXP1-Q20",
+  "ts": "2026-09-15T20:54:00+0800",
+  "owner_round": "EXP1-Q20(60m 自检作业; 不占主线轮号)",
+  "note": "本文件在**本轮定量读数之前**写盘 (mtime 早于 verdict_q20.json / l2_probe_q20.json / instruments.json 改写)。判据在此刻冻结, 读数后不得改。对侧活跃 (R462 W 臂探针 + llama-server) ⇒ 本侧零 dotnet、不动 src/、不占主线轮号。",
+  "step": "exp1-L.8 候选② 前半: 给 exp1q13.index-scope-out-classifier 补**外部可调用**的缺陷注入入口, 使该器具通过双证 (5/6 ⇒ 6/6) 并登记进 L2 登记表。不含候选② 后半 (旧 11 行输入指纹补全), 不含候选① (形式校验结转), 不含候选③/④ (独立预注册轮次)。",
+  "object": "eval/capability/exp1-q13/index_scope_out_classify.py  (器具版本 2.7.0 -> 2.8.0, 纯加性)",
+  "invariant": "注入只改**测量输入** (登记基线 / 语言集派生结果 / 桶划分 / 收益计数), **不改任何 check 表达式**; 器具自带 T6 机检 (源码不得含独立后缀字面量) 在加性改动后仍须 7/7 绿。",
+  "prereg_injections": [
+    {"kind": "kind-count-drift", "primary_red": "C1_conservation", "expect_rc": 2, "expect_marker": "INJECT_APPLIED", "mutates": "登记 kind 聚合 +1", "cascade_predicted": "无 (C2 用 strength_counts, 不受影响)"},
+    {"kind": "strength-registry-drift", "primary_red": "C2_zero_regression", "expect_rc": 2, "expect_marker": "INJECT_APPLIED", "mutates": "登记强计数 +1", "cascade_predicted": "无 (C6 只判 0<=m<=|scope-out|)"},
+    {"kind": "caliber-delta-applied", "primary_red": "C3_ruling_A_landed", "expect_rc": 2, "expect_marker": "INJECT_APPLIED", "mutates": "口径 delta_applied 置真 (阶段A 名义被破)", "cascade_predicted": "无"},
+    {"kind": "suffix-set-hardcoded", "primary_red": "C4_language_set_from_source", "expect_rc": 2, "expect_marker": "INJECT_APPLIED", "mutates": "语言集脱离源码声明 (写死)", "cascade_predicted": "有: 桶划分随之变化 ⇒ C3/C5 (可能 C6) 一并变红; 逐条如实记录, 不以「只红一条」为通过条件"},
+    {"kind": "bucket-one-sided", "primary_red": "C5_nontrivial", "expect_rc": 2, "expect_marker": "INJECT_APPLIED", "mutates": "两桶之一被清空", "cascade_predicted": "有: C1 的 two_buckets_partition_weak 变假"},
+    {"kind": "payoff-overflow", "primary_red": "C6_payoff_ceiling", "expect_rc": 2, "expect_marker": "INJECT_APPLIED", "mutates": "收益计数越界 m=|scope-out|+1", "cascade_predicted": "无"},
+    {"kind": "phantom-noop", "primary_red": null, "expect_rc": 0, "expect_marker": "INJECT_APPLIED_NOOP_OK", "mutates": "无 (审计桩: 不改任何输入)", "cascade_predicted": "期望红判据集合必须为**空** —— 非空则判 3 (INJECT_PHANTOM_RED)"},
+    {"kind": "phantom-ineffective", "primary_red": "C1_conservation", "expect_rc": 3, "expect_marker": "INJECT_NOT_RED", "mutates": "无 (声称改 C1 却不改任何输入 ⇒ 注入面失效)", "cascade_predicted": "证明 fail-closed 分支可达: 期望红未红 ⇒ 判 3, 不静默报绿"}
+  ],
+  "prereg_judgments": {
+    "zero_regression": "(a) `--selftest` 7/7 且 rc=0; (b) 全量跑 rc=0 ∧ verdict 与已归档 verdict_q13.json **除 `instrument_version` 单键外逐位相同** ∧ evidence_q13.txt 逐字节相同。白名单显式声明: {instrument_version} 为非语义字段 (版本声明), 只有它允许不同; 其余任一键不同即判本轮零回归不成立。",
+    "fail_closed": "未知 kind ⇒ rc=3 + INJECT_UNKNOWN_KIND; 注入运行一律不落盘 (自动强制 --no-write + INJECT_NO_WRITE_ENFORCED)。",
+    "double_proof": "l2_probe_q20.json: verified_pairs==6, unpaired==0, 且 q13 行 pending_nc==false。",
+    "registry": "eval/capability/instruments.json 行数 17 -> 18; 新增行 id=exp1q13.index-scope-out-classifier, 含 version/version_source/instrument_sha12/input_fingerprint(n>=1)/kpi_quad 四键; 登记只在双证成立后写入 (register_l2_q20 只认 verified_pair=true)。",
+    "full_face": "python3 eval/capability/instruments_check.py: 18/18 且 SIDE-EFFECT 为空。",
+    "input_fingerprint_scope": "q13 行输入面 = 器具真读的 4 个文件 (citations.jsonl / attribution_q10.json / decomposition_q11.json / probe_v260.py); 这是**新行**的指纹补全, 不等于候选② 后半「旧 11 行指纹补全」已完成。"
+  },
+  "secondary_defect_prereg": {
+    "id": "q17-nc-output-dirties-tracked-artifact",
+    "observed_before_this_round": "本轮 BEFORE 全量面读数 = 16/17, SIDE-EFFECT ⇒ ['eval/capability/exp1-q19/_q17_nc.json']",
+    "root_cause": "q17 负控把读数写回**已提交**的 eval/capability/exp1-q19/_q17_nc.json, 该文件含 generated 时间戳 ⇒ 每次复跑 git 视为修改 ⇒ 副作用闸恒红 (不在 FACE_OUTPUTS 也不在 SCRATCH_PREFIX)",
+    "fix": "把 l2_probe_q20 里 q17 两条负控的输出指向 scratch (eval/capability/exp1-q19/l2runs/), 并以 register_l2_q20 按**读数为单源**刷新该行命令面",
+    "judgment": "修后 SIDE-EFFECT==[] 且 exp1-q19 的 tracked 产物经 git checkout 复原 (不留我这一跑的副作用); 该修复属**本轮验证环内的器具卫生修复**, 与主步骤分开报数"
+  },
+  "not_doing": [
+    "形式校验 (dotnet test) 仍**结转**: 对侧 R462 W 臂探针 (python /tmp/r462_w_bench.py) + llama-server (RSS ~1.8GB) 在场, MemAvailable 1608MB 远低于 2800MB 闸 ⇒ 不得声称已跑, 不得写「10/10 绿」",
+    "阶段B (可配语言集) 与 relocated 面正例语料: 独立预注册轮次, 本轮零动作",
+    "旧 11 行输入指纹补全: 候选② 后半, 下一轮"
+  ]
+}

@@ -10,7 +10,7 @@
   {
    "id": "exp1q17.archive-field-provenance",
    "kind": "analyzer",
-   "cmd": "python3 eval/capability/exp1-q17/archive_field_provenance.py --selftest --out eval/capability/exp1-q19/l2runs/verdict_q17.json --fixtures-out eval/capability/exp1-q19/l2runs/selftest_q17.json",
+   "cmd": "python3 eval/capability/exp1-q17/archive_field_provenance.py --selftest --out eval/capability/exp1-q20/l2runs/verdict_q17.json --fixtures-out eval/capability/exp1-q20/l2runs/selftest_q17.json",
    "rc": 0,
    "expect_rc": 0,
    "substr_ok": true,
@@ -33,14 +33,14 @@
    "l2_ok": false,
    "negative_controls": [
     {
-     "cmd": "python3 eval/capability/exp1-q17/archive_field_provenance.py --archive eval/capability/exp1-q18/arm_v270_VOID_self_include/citations.jsonl --out eval/capability/exp1-q19/_q17_nc.json --fixtures-out eval/capability/exp1-q19/_q17_nc_fx.json",
+     "cmd": "python3 eval/capability/exp1-q17/archive_field_provenance.py --archive eval/capability/exp1-q18/arm_v270_VOID_self_include/citations.jsonl --out eval/capability/exp1-q20/l2runs/_q17_nc.json --fixtures-out eval/capability/exp1-q20/l2runs/_q17_nc_fx.json",
      "rc": 2,
      "expect": "nonzero",
      "pass": true,
      "head": "  RED C13: 夹具全绿（含 4 负控 + 1 正控 + 3 fail-closed + 组合） | 0/0"
     },
     {
-     "cmd": "python3 eval/capability/exp1-q17/archive_field_provenance.py --archive eval/capability/exp1-q19/_absent_corpus.jsonl --out eval/capability/exp1-q19/_q17_nc2.json --fixtures-out eval/capability/exp1-q19/_q17_nc2_fx.json",
+     "cmd": "python3 eval/capability/exp1-q17/archive_field_provenance.py --archive eval/capability/exp1-q19/_absent_corpus.jsonl --out eval/capability/exp1-q20/l2runs/_q17_nc2.json --fixtures-out eval/capability/exp1-q20/l2runs/_q17_nc2_fx.json",
      "rc": 3,
      "expect": "nonzero",
      "pass": true,

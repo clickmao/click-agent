@@ -12,6 +12,12 @@ EXP1-Q13 · index-scope-out 裁定落地器 (v2.7.0, additive)
   * 目标文件读取为**词法声明扫描 (代理量)**, 不作 AST 级结论; 与现值强/弱判定严格分桶。
 
 输出: verdict_q13.json + evidence_q13.txt; 退出码 0 判据全过 / 2 判据失败 / 3 测量或环境失败。
+
+v2.8.0 (Q20 加性): 新增**外部可调用**的缺陷注入入口 `--inject-defect=<kind>`。
+  纪律: 只改**测量输入** (登记基线 / 语言集派生结果 / 桶划分 / 收益计数), 不改任何 check 表达式;
+        注入运行一律**不落盘** (自动强制 no-write, 保护既有归档);
+        「期望红判据未红」⇒ 判 3 (fail-closed), 绝不静默报绿。
+  目的: 让**环外审计者**能施加已知缺陷, 证明既有判据真有判别力 (登记行的负控面 = 该入口)。
 """
 import argparse
 import builtins as _builtins_mod
@@ -39,6 +45,64 @@ OWN_SUFFIX = SELF_SRC.suffix  # 由自身文件名派生 (非字面量)
 SUFFIX_LITERAL_RE = re.compile(r"""["']\.[A-Za-z0-9]{1,6}["']""")
 # 语料根声明行: <NAME> = [ "...", ... ]
 GLOBS_RE = re.compile(r"^\s*CODE_GLOBS\s*=\s*\[(.*?)\]", re.M)
+
+
+# ---------------------------------------------------------------- 外部注入入口 (Q20)
+# kind -> (primary_red, expect_rc, expect_marker, 说明)。primary_red=None 表示审计桩 (期望无判据变红)。
+INJECT_KINDS = {
+    "kind-count-drift": ("C1_conservation", 2, "INJECT_APPLIED",
+                         "登记 kind 聚合被改动 (守恒/逐位判据必须红)"),
+    "strength-registry-drift": ("C2_zero_regression", 2, "INJECT_APPLIED",
+                                "登记强弱基线被改动 (零回归判据必须红)"),
+    "caliber-delta-applied": ("C3_ruling_A_landed", 2, "INJECT_APPLIED",
+                              "把剔除**施加**到登记口径 (阶段A 名义被破)"),
+    "suffix-set-hardcoded": ("C4_language_set_from_source", 2, "INJECT_APPLIED",
+                             "语言集脱离源码声明 (写死)"),
+    "bucket-one-sided": ("C5_nontrivial", 2, "INJECT_APPLIED",
+                         "两桶之一被清空 (非平凡判据必须红)"),
+    "payoff-overflow": ("C6_payoff_ceiling", 2, "INJECT_APPLIED",
+                        "收益计数越界 (m > 桶内边数)"),
+    "phantom-noop": (None, 0, "INJECT_APPLIED_NOOP_OK",
+                     "审计桩: 不改任何输入 ⇒ 期望红集合必须为空"),
+    "phantom-ineffective": ("C1_conservation", 3, "INJECT_NOT_RED",
+                            "审计桩: 声称改 C1 却不改输入 ⇒ 证明 fail-closed 分支可达"),
+}
+
+INJECT_AUDIT_ONLY = ("phantom-noop", "phantom-ineffective")
+
+
+def inject_baseline(kind, baseline):
+    """只改**登记基线输入** (不触碰任何判据表达式)。"""
+    base = dict(baseline)
+    if kind == "kind-count-drift":
+        kc = dict(base["kind_counts"])
+        kc["other"] = kc.get("other", 0) + 1
+        base["kind_counts"] = kc
+    elif kind == "strength-registry-drift":
+        sc = dict(base["strength_counts"])
+        sc["strong"] = (sc.get("strong") or 0) + 1
+        base["strength_counts"] = sc
+    elif kind == "caliber-delta-applied":
+        cal = dict(base["caliber"] or {})
+        cal["delta_applied_to_registered_caliber"] = True
+        base["caliber"] = cal
+    return base
+
+
+def injection_rc(kind, checks):
+    """判定注入结果: 返回 (rc, 行)。期望红未红 ⇒ rc=3 (fail-closed), 不静默报绿。"""
+    meta = INJECT_KINDS[kind]
+    prim, expect_rc, expect_marker = meta[0], meta[1], meta[2]
+    red = sorted(k for k, v in checks.items() if v.get("pass") is False)
+    if prim is None:
+        ok = (len(red) == 0)
+        marker = expect_marker if ok else "INJECT_PHANTOM_RED"
+    else:
+        ok = prim in red
+        marker = expect_marker if ok else "INJECT_NOT_RED"
+    line = (f"{marker} kind={kind} primary_red={prim} observed_red={red} "
+            f"expect_rc={expect_rc} observed_rc={2 if red else 0}")
+    return (expect_rc if ok else 3), line
 
 
 class MeasurementError(RuntimeError):
@@ -196,9 +260,13 @@ def read_weak_baseline():
 
 
 # ---------------------------------------------------------------- 主分析
-def analyse(records, src_text, baseline):
+def analyse(records, src_text, baseline, inject=None):
     suffixes, globs, line_no = derive_language_suffixes(src_text)
+    if inject == "suffix-set-hardcoded":
+        suffixes = [DOT + "zzz"]          # 注入: 语言集脱离源码声明 (只改输入)
     weak, in_scope, scope_out, kind_counts, by_ext = classify(records, suffixes)
+    if inject == "bucket-one-sided":
+        in_scope = []                     # 注入: 两桶退化
     po = payoff(scope_out, OWN_SUFFIX)
 
     base_kind = baseline["kind_counts"]
@@ -252,6 +320,8 @@ def analyse(records, src_text, baseline):
     # C6 收益天花板 (上限估计, 不与现值混)
     strong_now = base_str.get("strong")
     m = po["would_promote_edges_proxy"]
+    if inject == "payoff-overflow":
+        m = len(scope_out) + 1            # 注入: 收益计数越界 (只改输入)
     po["ceiling"] = {
         "weak_after": (len(weak) - m) if len(weak) else None,
         "strong_after": (strong_now + m) if strong_now is not None else None,
@@ -274,8 +344,8 @@ def analyse(records, src_text, baseline):
     }
 
 
-def run_pass(records, src_text, baseline):
-    r = analyse(records, src_text, baseline)
+def run_pass(records, src_text, baseline, inject=None):
+    r = analyse(records, src_text, baseline, inject)
     payload = {"checks": r["checks"], "kind_counts": r["kind_counts"], "by_ext": r["by_ext"],
                "in_scope_n": len(r["in_scope"]), "scope_out_n": len(r["scope_out"]),
                "payoff_fingerprint": [
@@ -348,7 +418,23 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--selftest", action="store_true")
     ap.add_argument("--no-write", action="store_true")
+    ap.add_argument("--out", default=None,
+                    help="verdict 输出路径覆盖 (默认回写轮次证据; 供全量面复跑指向 scratch 防证据降级)")
+    ap.add_argument("--evidence-out", default=None,
+                    help="evidence 输出路径覆盖 (默认回写轮次证据)")
+    ap.add_argument("--inject-defect", metavar="KIND", default=None,
+                    help="外部注入已知缺陷 (只改测量输入; 期望红未红即 fail-closed)。已知: "
+                         + " ".join(sorted(INJECT_KINDS)))
     args = ap.parse_args()
+
+    inject = args.inject_defect
+    if inject is not None:
+        if inject not in INJECT_KINDS:
+            print(f"INJECT_UNKNOWN_KIND: {inject}  known={sorted(INJECT_KINDS)}")
+            return 3
+        if not args.no_write:
+            print("INJECT_NO_WRITE_ENFORCED: 注入运行不落盘 (保护既有归档)")
+            args.no_write = True
 
     try:
         src_text = PROBE_SRC.read_text(encoding="utf-8", errors="replace")
@@ -369,14 +455,16 @@ def main():
         raw = CITATIONS.read_bytes()
         records = [json.loads(l) for l in raw.decode("utf-8", errors="replace").splitlines() if l.strip()]
         baseline = read_weak_baseline()
+        if inject is not None:
+            baseline = inject_baseline(inject, baseline)
         if not records:
             raise MeasurementError("输入语料为空")
     except (OSError, ValueError, MeasurementError) as e:
         print(f"MEASUREMENT_FAIL input: {e}")
         return 3
 
-    r1, sha1 = run_pass(records, src_text, baseline)
-    r2, sha2 = run_pass(records, src_text, baseline)
+    r1, sha1 = run_pass(records, src_text, baseline, inject)
+    r2, sha2 = run_pass(records, src_text, baseline, inject)
     c = r1["checks"]
     c["C7_determinism"] = {
         "pass": sha1 == sha2,
@@ -398,9 +486,14 @@ def main():
     c["C10_exit_semantics"] = {"pass": True, "code": 0 if all_pass else 2,
                                "map": {"0": "判据全过", "2": "判据失败", "3": "测量/环境失败"}}
 
+    if inject is not None:
+        irc, iline = injection_rc(inject, c)
+        print(iline)
+        return irc
+
     verdict = {
         "round": "EXP1-Q13",
-        "instrument_version": "2.7.0 (additive; v2.6.0 零改动)",
+        "instrument_version": "2.8.0 (additive; 外部注入入口; 判据零改动 vs v2.7.0)",
         "ruling": {
             "phase_A_now": "登记口径不动 (63); index_scope_out 为一等桶 + 分母双栏 (63|57); delta_applied=false",
             "phase_B_deferred": "扩声明索引语料根到可配语言集 = 独立预注册轮次 (用户 R447 语言无关令背书主题)",
@@ -429,7 +522,9 @@ def main():
     }
 
     if not args.no_write:
-        VERDICT.write_text(json.dumps(verdict, ensure_ascii=False, indent=2), encoding="utf-8")
+        out_verdict = pathlib.Path(args.out) if args.out else VERDICT
+        out_evidence = pathlib.Path(args.evidence_out) if args.evidence_out else EVIDENCE
+        out_verdict.write_text(json.dumps(verdict, ensure_ascii=False, indent=2), encoding="utf-8")
         lines = [f"EXP1-Q13 index-scope-out 裁定落地 · verdict={verdict['verdict']} · {verdict['evidence_level']}", ""]
         lines.append("语言集 (源码派生): " + " ".join(suffixes) + f"  @ {PROBE_SRC.name}:{line_no}")
         lines.append(f"弱边 {len(r1['weak'])} = in-scope {len(r1['in_scope'])} + index_scope_out {len(r1['scope_out'])}  by_ext={r1['by_ext']}")
@@ -444,7 +539,7 @@ def main():
         for k in sorted(c):
             v = c[k]
             lines.append(f"[{'PASS' if v.get('pass') else 'FAIL'}] {k}")
-        EVIDENCE.write_text("\n".join(lines) + "\n", encoding="utf-8")
+        out_evidence.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
     print(f"verdict={verdict['verdict']} weak={len(r1['weak'])} in_scope={len(r1['in_scope'])} "
           f"scope_out={len(r1['scope_out'])} promote={r1['payoff']['would_promote_edges_proxy']} "

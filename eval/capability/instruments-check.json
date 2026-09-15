@@ -4,8 +4,8 @@
  "l2_field_checks": true,
  "drift_injected": false,
  "side_effects": [],
- "passed": 17,
- "total": 17,
+ "passed": 18,
+ "total": 18,
  "results": [
   {
    "id": "probe.grade",
@@ -409,7 +409,7 @@
    "l2_ok": true,
    "negative_controls": [
     {
-     "cmd": "python3 eval/capability/exp1-q11/other_bucket_decompose.py --citations eval/capability/exp1-q19/_absent_corpus.jsonl --out eval/capability/exp1-q19/_q11_nc.json",
+     "cmd": "python3 eval/capability/exp1-q11/other_bucket_decompose.py --citations eval/capability/exp1-q19/_absent_corpus.jsonl --out eval/capability/exp1-q20/l2runs/_q11_nc.json",
      "rc": 3,
      "expect": "nonzero",
      "pass": true,
@@ -442,14 +442,14 @@
    "l2_ok": true,
    "negative_controls": [
     {
-     "cmd": "python3 eval/capability/exp1-q15/unit_axis_guard.py --run --cites eval/capability/exp1-q19/_absent_corpus.jsonl --json eval/capability/exp1-q19/_q15_nc.json",
+     "cmd": "python3 eval/capability/exp1-q15/unit_axis_guard.py --run --cites eval/capability/exp1-q19/_absent_corpus.jsonl --json eval/capability/exp1-q20/l2runs/_q15_nc.json",
      "rc": 2,
      "expect": "nonzero",
      "pass": true,
      "head": "TOTAL verdict=INVARIANT_VIOLATED exit=2 artifacts=1 ground_truth weak_edge_symbol_slots=90 two_paths_agree=True"
     },
     {
-     "cmd": "python3 eval/capability/exp1-q15/unit_axis_guard.py --run --cites eval/capability/exp1-q18/arm_v270_VOID_self_include/citations.jsonl --json eval/capability/exp1-q19/_q15_nc2.json",
+     "cmd": "python3 eval/capability/exp1-q15/unit_axis_guard.py --run --cites eval/capability/exp1-q18/arm_v270_VOID_self_include/citations.jsonl --json eval/capability/exp1-q20/l2runs/_q15_nc2.json",
      "rc": 2,
      "expect": "nonzero",
      "pass": true,
@@ -482,7 +482,7 @@
    "l2_ok": true,
    "negative_controls": [
     {
-     "cmd": "python3 eval/capability/exp1-q16/unit_axis_guard.py --run --cites eval/capability/exp1-q19/_absent_corpus.jsonl --json eval/capability/exp1-q19/_q16_nc.json",
+     "cmd": "python3 eval/capability/exp1-q16/unit_axis_guard.py --run --cites eval/capability/exp1-q19/_absent_corpus.jsonl --json eval/capability/exp1-q20/l2runs/_q16_nc.json",
      "rc": 2,
      "expect": "nonzero",
      "pass": true,
@@ -493,7 +493,7 @@
   {
    "id": "exp1q17.archive-field-provenance",
    "kind": "analyzer",
-   "cmd": "python3 eval/capability/exp1-q17/archive_field_provenance.py --selftest --out eval/capability/exp1-q19/l2runs/verdict_q17.json --fixtures-out eval/capability/exp1-q19/l2runs/selftest_q17.json",
+   "cmd": "python3 eval/capability/exp1-q17/archive_field_provenance.py --selftest --out eval/capability/exp1-q20/l2runs/verdict_q17.json --fixtures-out eval/capability/exp1-q20/l2runs/selftest_q17.json",
    "rc": 0,
    "expect_rc": 0,
    "substr_ok": true,
@@ -515,14 +515,14 @@
    "l2_ok": true,
    "negative_controls": [
     {
-     "cmd": "python3 eval/capability/exp1-q17/archive_field_provenance.py --archive eval/capability/exp1-q18/arm_v270_VOID_self_include/citations.jsonl --out eval/capability/exp1-q19/_q17_nc.json --fixtures-out eval/capability/exp1-q19/_q17_nc_fx.json",
+     "cmd": "python3 eval/capability/exp1-q17/archive_field_provenance.py --archive eval/capability/exp1-q18/arm_v270_VOID_self_include/citations.jsonl --out eval/capability/exp1-q20/l2runs/_q17_nc.json --fixtures-out eval/capability/exp1-q20/l2runs/_q17_nc_fx.json",
      "rc": 2,
      "expect": "nonzero",
      "pass": true,
      "head": "  RED C13: 夹具全绿（含 4 负控 + 1 正控 + 3 fail-closed + 组合） | 0/0"
     },
     {
-     "cmd": "python3 eval/capability/exp1-q17/archive_field_provenance.py --archive eval/capability/exp1-q19/_absent_corpus.jsonl --out eval/capability/exp1-q19/_q17_nc2.json --fixtures-out eval/capability/exp1-q19/_q17_nc2_fx.json",
+     "cmd": "python3 eval/capability/exp1-q17/archive_field_provenance.py --archive eval/capability/exp1-q19/_absent_corpus.jsonl --out eval/capability/exp1-q20/l2runs/_q17_nc2.json --fixtures-out eval/capability/exp1-q20/l2runs/_q17_nc2_fx.json",
      "rc": 3,
      "expect": "nonzero",
      "pass": true,
@@ -571,7 +571,7 @@
    "expect_rc": 0,
    "substr_ok": true,
    "pass": true,
-   "sha12": "864df9a41835",
+   "sha12": "df05321a3d04",
    "owner_round": "EXP1-Q19",
    "kpi_quad": {
     "单位": "器具行",
@@ -593,6 +593,46 @@
      "expect": "nonzero",
      "pass": true,
      "head": "DRIFT-INJECT-APPLIED: 机检已判红 (见上表 DRIFT) —— 负控成立"
+    }
+   ]
+  },
+  {
+   "id": "exp1q13.index-scope-out-classifier",
+   "kind": "classifier",
+   "cmd": "python3 eval/capability/exp1-q13/index_scope_out_classify.py --selftest --no-write",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "690560e01e7e",
+   "owner_round": "EXP1-Q20",
+   "kpi_quad": {
+    "单位": "弱边(边级)",
+    "分母": "归因轴 weak 桶 (63, 双栏 63|57)",
+    "真值源": "归档 citations.jsonl + attribution_q10.json + decomposition_q11.json",
+    "口径档": "边级/单标签 + 分母双栏 (delta_applied=false)"
+   },
+   "l2_fields": {
+    "version": "ok",
+    "instrument_sha12": "ok",
+    "input_fingerprint": "ok(n=4)",
+    "kpi_quad": "ok"
+   },
+   "l2_ok": true,
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/capability/exp1-q13/index_scope_out_classify.py --inject-defect=caliber-delta-applied",
+     "rc": 2,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "INJECT_APPLIED kind=caliber-delta-applied primary_red=C3_ruling_A_landed observed_red=['C3_ruling_A_landed'] expect_rc=2 observed_rc=2"
+    },
+    {
+     "cmd": "python3 eval/capability/exp1-q13/index_scope_out_classify.py --inject-defect=phantom-ineffective",
+     "rc": 3,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "INJECT_NOT_RED kind=phantom-ineffective primary_red=C1_conservation observed_red=[] expect_rc=3 observed_rc=0"
     }
    ]
   }

@@ -45,7 +45,7 @@ def run(cmd):
 # 器具自身合法写点 (白名单): 全量面**不得**弄脏既有轮次产物 —— 实测事故: q17 的 `--selftest`
 # 默认 `--out` 指向轮次证据 `verdict_q17.json`, 跑一次就把 C12 确定性块抹掉 (证据降级)。
 FACE_OUTPUTS = {'eval/capability/instruments-check.json', 'eval/capability/instruments-check-drift.json'}
-SCRATCH_PREFIX = 'eval/capability/exp1-q19/l2runs/'
+SCRATCH_PREFIXES = ('eval/capability/exp1-q19/l2runs/', 'eval/capability/exp1-q20/l2runs/')
 
 
 def dirt_set():
@@ -168,7 +168,7 @@ def main():
                 if not n['pass']:
                     print('    nc FAIL:', n['cmd'], '->', n['head'])
     new_dirt = sorted(p for p in (dirt_set() - dirt_before)
-                      if p not in FACE_OUTPUTS and not p.startswith(SCRATCH_PREFIX))
+                      if p not in FACE_OUTPUTS and not p.startswith(SCRATCH_PREFIXES))
     if new_dirt:
         bad += 1
         print('SIDE-EFFECT: 全量面弄脏既有产物 (证据降级风险) ⇒', new_dirt)

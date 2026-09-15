@@ -1,0 +1,18 @@
+[pre] Q13 归档与备份 sha256 一致: verdict=a501bff2de45 evidence=0999397596a8
+[正控A] selftest rc=0 n=7 all_pass=True ⇒ PASS
+[正控B] 全量跑 rc=0 ⇒ PASS  verdict=PASS weak=63 in_scope=57 scope_out=6 promote=6 fail=[]
+[零回归] 除白名单外逐位相同=True 白名单=['instrument_version', '2.7.0 (additive; v2.6.0 零改动)', '2.8.0 (additive; 外部注入入口; 判据零改动 vs v2.7.0)'] 新增键=[] evidence 逐字节相同=True ⇒ PASS
+[负控] kind-count-drift         rc=2(期望2) marker=INJECT_APPLIED primary_in_red=True red=['C1_conservation'] ⇒ OK
+[负控] strength-registry-drift  rc=2(期望2) marker=INJECT_APPLIED primary_in_red=True red=['C2_zero_regression'] ⇒ OK
+[负控] caliber-delta-applied    rc=2(期望2) marker=INJECT_APPLIED primary_in_red=True red=['C3_ruling_A_landed'] ⇒ OK
+[负控] suffix-set-hardcoded     rc=2(期望2) marker=INJECT_APPLIED primary_in_red=True red=['C3_ruling_A_landed', 'C4_language_set_from_source', 'C5_nontrivial'] ⇒ OK
+[负控] bucket-one-sided         rc=2(期望2) marker=INJECT_APPLIED primary_in_red=True red=['C5_nontrivial'] ⇒ OK
+[负控] payoff-overflow          rc=2(期望2) marker=INJECT_APPLIED primary_in_red=True red=['C6_payoff_ceiling'] ⇒ OK
+[负控] phantom-noop             rc=0(期望0) marker=INJECT_APPLIED_NOOP_OK primary_in_red=True red=[] ⇒ OK
+[负控] phantom-ineffective      rc=3(期望3) marker=INJECT_NOT_RED primary_in_red=False red=[] ⇒ OK
+[编码器自检] 反向喂入判 False=True 空红桩=True=True 缺陷注入桩=True=True ⇒ OK
+[fail-closed] 未知 kind rc=3 marker=INJECT_UNKNOWN_KIND: __not-a-kind__  known=['bucket-one-side ⇒ OK
+[自洁] eval/capability/exp1-q13/ 内容变化=[] ⇒ OK
+
+Q20_EXIT=0  (0 判据全过 / 2 判据失败 / 3 测量或环境失败)
+汇总: 正控A=True 正控B=True 零回归=True 负控8/8 fail-closed=True 自洁=True

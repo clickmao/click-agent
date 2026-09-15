@@ -1,0 +1,180 @@
+{
+ "round": "EXP1-Q20",
+ "ts": "2026-09-15T20:56:41+0800",
+ "kind": "instrument-nc-entry+registry(exp1-L.8候选②前半)",
+ "artifact": "eval/capability/exp1-q20/{prereg_q20.json,run_q20.py,verdict_q20.json,evidence_q20.txt,l2_probe_q20.py,l2_probe_q20.json,register_l2_q20.py,l2_face_before.log,l2_face_after.log,q13_rerun_verdict.json,q13_rerun_evidence.txt,kpi_line_q20.json}; eval/capability/exp1-q13/index_scope_out_classify.py(2.7.0->2.8.0); eval/capability/{instruments.json(17->18),instruments_check.py}; docs/plans/v0.22.0-exp1-local-index-and-code-graph.md 附录U + T.3/T.7",
+ "change": "L.8 候选② 前半只推进一步 = 给 exp1q13.index-scope-out-classifier 补**外部可调用**缺陷注入入口 (--inject-defect=<kind>: 6 缺陷注入 + 2 审计桩; 纯加性, 判据表达式零改动; 注入只改测量输入, 强制不落盘, 期望红未红即 rc=3 fail-closed) + 输出面 --out/--evidence-out; 双证 5/6->6/6 后转登记 (instruments.json 17->18)。同期自捕并修三件测量层缺陷: ①q17 负控写回已提交的 exp1-q19/_q17_nc.json (含时间戳)⇒副作用闸恒红(BEFORE 16/17) 改指 scratch + 白名单扩展 SCRATCH_PREFIXES; ②driver 结论行取到前置提示行⇒8/8 假红; ③driver 期望编码把 fail-closed 证明反判为假红(7/8)⇒按 marker 分三型 + 编码器自检。零 dotnet(对侧 R462 W 臂探针 + llama-server 在场, MemAvailable 1608MB<<2800MB 闸), 零 src 改动, 不占主线轮号。",
+ "readings": {
+  "selftest": {
+   "rc": 0,
+   "n": 7,
+   "all_pass": true,
+   "pass": true
+  },
+  "main_run": {
+   "rc": 0,
+   "verdict": "PASS",
+   "weak": 63,
+   "in_scope": 57,
+   "index_scope_out": 6,
+   "promote": 6
+  },
+  "zero_regression": {
+   "beyond_whitelist_identical": true,
+   "whitelist": [
+    "instrument_version"
+   ],
+   "whitelist_values": [
+    "2.7.0 (additive; v2.6.0 零改动)",
+    "2.8.0 (additive; 外部注入入口; 判据零改动 vs v2.7.0)"
+   ],
+   "evidence_bytes_identical": true,
+   "added_keys": []
+  },
+  "injections": [
+   {
+    "kind": "kind-count-drift",
+    "rc": 2,
+    "marker": "INJECT_APPLIED",
+    "observed_red": [
+     "C1_conservation"
+    ],
+    "ok": true
+   },
+   {
+    "kind": "strength-registry-drift",
+    "rc": 2,
+    "marker": "INJECT_APPLIED",
+    "observed_red": [
+     "C2_zero_regression"
+    ],
+    "ok": true
+   },
+   {
+    "kind": "caliber-delta-applied",
+    "rc": 2,
+    "marker": "INJECT_APPLIED",
+    "observed_red": [
+     "C3_ruling_A_landed"
+    ],
+    "ok": true
+   },
+   {
+    "kind": "suffix-set-hardcoded",
+    "rc": 2,
+    "marker": "INJECT_APPLIED",
+    "observed_red": [
+     "C3_ruling_A_landed",
+     "C4_language_set_from_source",
+     "C5_nontrivial"
+    ],
+    "ok": true
+   },
+   {
+    "kind": "bucket-one-sided",
+    "rc": 2,
+    "marker": "INJECT_APPLIED",
+    "observed_red": [
+     "C5_nontrivial"
+    ],
+    "ok": true
+   },
+   {
+    "kind": "payoff-overflow",
+    "rc": 2,
+    "marker": "INJECT_APPLIED",
+    "observed_red": [
+     "C6_payoff_ceiling"
+    ],
+    "ok": true
+   },
+   {
+    "kind": "phantom-noop",
+    "rc": 0,
+    "marker": "INJECT_APPLIED_NOOP_OK",
+    "observed_red": [],
+    "ok": true
+   },
+   {
+    "kind": "phantom-ineffective",
+    "rc": 3,
+    "marker": "INJECT_NOT_RED",
+    "observed_red": [],
+    "ok": true
+   }
+  ],
+  "fail_closed_unknown_kind": {
+   "rc": 3,
+   "ok": true
+  },
+  "driver_encoder_selftest": {
+   "inverted_case_judged_false": true,
+   "noop_case_judged_true": true,
+   "applied_case_judged_true": true,
+   "pass": true
+  },
+  "self_clean_q13_dir": {
+   "dirty": [],
+   "ok": true
+  },
+  "l2_double_proof": {
+   "verified_pairs": 6,
+   "total": 6,
+   "unpaired": 0,
+   "q13_nc": [
+    [
+     "inject-caliber-delta-applied",
+     2,
+     true
+    ],
+    [
+     "inject-failclosed-ineffective",
+     3,
+     true
+    ]
+   ],
+   "q13_pending_nc": [
+    false
+   ]
+  },
+  "registry_row": {
+   "rows": 18,
+   "id": "exp1q13.index-scope-out-classifier",
+   "version": "content-sha12:690560e01e7e",
+   "instrument_sha12": "690560e01e7e",
+   "input_fingerprint_n": 4,
+   "kpi_quad_keys": [
+    "分母",
+    "单位",
+    "口径档",
+    "真值源"
+   ],
+   "nc_cmd": "python3 eval/capability/exp1-q13/index_scope_out_classify.py --inject-defect=caliber-delta-applied",
+   "nc_cmd2": "python3 eval/capability/exp1-q13/index_scope_out_classify.py --inject-defect=phantom-ineffective",
+   "owner_round": "EXP1-Q20"
+  },
+  "full_face": {
+   "before": "L2 器具验收面: 16/17 通过; 落盘 eval/capability/instruments-check.json",
+   "after": "L2 器具验收面: 18/18 通过; 落盘 eval/capability/instruments-check.json",
+   "side_effect_after": []
+  }
+ },
+ "criterion": "正控(selftest 7/7 ∧ 全量 rc=0) ∧ 零回归(除白名单单键 instrument_version 外逐位相同 ∧ evidence 逐字节相同) ∧ 8/8 注入按预注册红(含 pre 注册的 cascade) ∧ fail-closed rc=3 ∧ driver 编码器自检 ∧ 不弄脏 Q13 轮次产物 ∧ 双证 6/6 ∧ 登记 18 行四键齐 ∧ 全量面 18/18 ∧ SIDE-EFFECT 为空",
+ "evidence_level": "L2-static（真机执行 + 注入矩阵 + 逐位比对 + 登记字段重算 + 全量面副作用闸；无编译/测试/AOT ⇒ 不报 L3/L4）",
+ "honest": "① 注入面只证既有判据对已知缺陷有判别力, 不证判据口径完整(词法代理量边界不变); ② suffix-set-hardcoded 按预注册 cascade 到 C3/C5, 如实记录; ③ 形式校验(dotnet)仍结转(第六轮): 对侧 R462 探针 + llama-server 在场、内存未过闸 ⇒ 不得声称已跑; ④ 候选② 后半(旧 11 行输入指纹补全)未做, q13 新行指纹 n=4 只覆盖该行自身输入面; ⑤ 本轮自捕三件器具缺陷全属测量层, 预注册文件逐字未动; ⑥ R462 的未提交 src/ 改动属对侧在飞工作, 本侧未触碰/未提交/未评测",
+ "debt": "(1) 形式校验 10/10 绿仍结转(第六轮, 需对侧空闲 + 内存过闸) | (2) 旧 11 行输入指纹补全未做 | (3) relocated 面正例语料须独立预注册轮次 | (4) 阶段B 可配语言集须独立预注册轮次 | (5) q13 行 cmd 仅覆盖 selftest 正控面, 全量跑面未进登记 cmd(下一轮可补 --out scratch 形态)",
+ "next": "① 形式校验结转清账(对侧空闲时) → ② 旧 11 行输入指纹补全 → ③/④ 独立预注册轮次",
+ "owner_round": "EXP1-Q20(60m 自检作业; 不占主线轮号)",
+ "covers": [
+  "eval/capability/exp1-q20/prereg_q20.json",
+  "eval/capability/exp1-q20/run_q20.py",
+  "eval/capability/exp1-q20/verdict_q20.json",
+  "eval/capability/exp1-q20/evidence_q20.txt",
+  "eval/capability/exp1-q20/l2_probe_q20.json",
+  "eval/capability/exp1-q13/index_scope_out_classify.py",
+  "eval/capability/instruments.json",
+  "eval/capability/instruments_check.py",
+  "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md"
+ ],
+ "negative_control": "8 项外部注入面 (6 缺陷注入各判 rc=2 且 primary_red 落红; phantom-noop rc=0 且红集合为空; phantom-ineffective rc=3 + INJECT_NOT_RED 证明 fail-closed 分支可达) + 未知 kind rc=3 + driver 编码器反向喂入必须判 False + 全量面副作用闸(修前真红 16/17, 修后为空) + 自洁断言(Q13 目录 sha 全不变)"
+}

@@ -1,0 +1,382 @@
+{
+  "round": "EXP1-Q13",
+  "instrument_version": "2.8.0 (additive; 外部注入入口; 判据零改动 vs v2.7.0)",
+  "ruling": {
+    "phase_A_now": "登记口径不动 (63); index_scope_out 为一等桶 + 分母双栏 (63|57); delta_applied=false",
+    "phase_B_deferred": "扩声明索引语料根到可配语言集 = 独立预注册轮次 (用户 R447 语言无关令背书主题)"
+  },
+  "language_set": {
+    "suffixes": [
+      ".cs"
+    ],
+    "globs": [
+      "src/**/*.cs"
+    ],
+    "declared_at": "probe_v260.py:78",
+    "derived_from_source": true
+  },
+  "counts": {
+    "weak": 63,
+    "in_scope": 57,
+    "index_scope_out": 6,
+    "kind_counts": {
+      "cross_file": 33,
+      "other": 17,
+      "named_fact": 11,
+      "comment_only": 2
+    },
+    "index_scope_out_by_ext": {
+      ".py": 6
+    }
+  },
+  "payoff_ceiling": {
+    "weak_after": 57,
+    "strong_after": 371,
+    "other_after": 11,
+    "max_affected_edges": 6,
+    "note": "上限估计 (词法代理); 阶段B 实现后须用声明面真测复核"
+  },
+  "payoff_detail": [
+    {
+      "doc": "docs/plans/v0.25.0-r399-probe-hardening-and-kpi.md",
+      "doc_line": 14,
+      "resolved": "eval/probe/tasks.py",
+      "ext": ".py",
+      "edge_kind": "other",
+      "symbols": [
+        "PROGRAM_FAMILIES"
+      ],
+      "target_exists": true,
+      "target_sha256": "80ba09e8bd507c9a6d9b594ffacc346abc7d3002d9e30df4453eba5d2297edc7",
+      "target_lines": 1599,
+      "symbol_evidence": [
+        {
+          "symbol": "PROGRAM_FAMILIES",
+          "declared_in_file": true,
+          "decl_line": 955,
+          "runtime_builtin": false,
+          "counts_as_declaration_evidence": true
+        }
+      ],
+      "edge_would_promote_proxy": true,
+      "nonbuiltin_evidence_symbols": [
+        "PROGRAM_FAMILIES"
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.25.0-r399-probe-hardening-and-kpi.md",
+      "doc_line": 15,
+      "resolved": "eval/probe/tasks.py",
+      "ext": ".py",
+      "edge_kind": "other",
+      "symbols": [
+        "MATH_FAMILIES"
+      ],
+      "target_exists": true,
+      "target_sha256": "80ba09e8bd507c9a6d9b594ffacc346abc7d3002d9e30df4453eba5d2297edc7",
+      "target_lines": 1599,
+      "symbol_evidence": [
+        {
+          "symbol": "MATH_FAMILIES",
+          "declared_in_file": true,
+          "decl_line": 1332,
+          "runtime_builtin": false,
+          "counts_as_declaration_evidence": true
+        }
+      ],
+      "edge_would_promote_proxy": true,
+      "nonbuiltin_evidence_symbols": [
+        "MATH_FAMILIES"
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.25.0-r399-probe-hardening-and-kpi.md",
+      "doc_line": 17,
+      "resolved": "eval/probe/run_probe.py",
+      "ext": ".py",
+      "edge_kind": "other",
+      "symbols": [
+        "KeyError",
+        "REF_SRC"
+      ],
+      "target_exists": true,
+      "target_sha256": "9de4511eb8a42a40c2ff5c760b4559fea31fa76f633255268e6720f700bbeeed",
+      "target_lines": 1137,
+      "symbol_evidence": [
+        {
+          "symbol": "KeyError",
+          "declared_in_file": false,
+          "decl_line": null,
+          "runtime_builtin": true,
+          "counts_as_declaration_evidence": false
+        },
+        {
+          "symbol": "REF_SRC",
+          "declared_in_file": true,
+          "decl_line": 178,
+          "runtime_builtin": false,
+          "counts_as_declaration_evidence": true
+        }
+      ],
+      "edge_would_promote_proxy": true,
+      "nonbuiltin_evidence_symbols": [
+        "REF_SRC"
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.40.0-r419-probe-multiturn.md",
+      "doc_line": 10,
+      "resolved": "eval/probe/run_probe.py",
+      "ext": ".py",
+      "edge_kind": "other",
+      "symbols": [
+        "solve_agent"
+      ],
+      "target_exists": true,
+      "target_sha256": "9de4511eb8a42a40c2ff5c760b4559fea31fa76f633255268e6720f700bbeeed",
+      "target_lines": 1137,
+      "symbol_evidence": [
+        {
+          "symbol": "solve_agent",
+          "declared_in_file": true,
+          "decl_line": 521,
+          "runtime_builtin": false,
+          "counts_as_declaration_evidence": true
+        }
+      ],
+      "edge_would_promote_proxy": true,
+      "nonbuiltin_evidence_symbols": [
+        "solve_agent"
+      ]
+    },
+    {
+      "doc": "docs/plans/v0.40.0-r419-probe-multiturn.md",
+      "doc_line": 16,
+      "resolved": "eval/probe/run_probe.py",
+      "ext": ".py",
+      "edge_kind": "other",
+      "symbols": [
+        "solve_agent"
+      ],
+      "target_exists": true,
+      "target_sha256": "9de4511eb8a42a40c2ff5c760b4559fea31fa76f633255268e6720f700bbeeed",
+      "target_lines": 1137,
+      "symbol_evidence": [
+        {
+          "symbol": "solve_agent",
+          "declared_in_file": true,
+          "decl_line": 521,
+          "runtime_builtin": false,
+          "counts_as_declaration_evidence": true
+        }
+      ],
+      "edge_would_promote_proxy": true,
+      "nonbuiltin_evidence_symbols": [
+        "solve_agent"
+      ]
+    },
+    {
+      "doc": "docs/reports/r399/r399-m6-hardening-and-kpi-datapoints.md",
+      "doc_line": 35,
+      "resolved": "eval/probe/tasks.py",
+      "ext": ".py",
+      "edge_kind": "other",
+      "symbols": [
+        "HARD_INPUTS"
+      ],
+      "target_exists": true,
+      "target_sha256": "80ba09e8bd507c9a6d9b594ffacc346abc7d3002d9e30df4453eba5d2297edc7",
+      "target_lines": 1599,
+      "symbol_evidence": [
+        {
+          "symbol": "HARD_INPUTS",
+          "declared_in_file": true,
+          "decl_line": 1188,
+          "runtime_builtin": false,
+          "counts_as_declaration_evidence": true
+        }
+      ],
+      "edge_would_promote_proxy": true,
+      "nonbuiltin_evidence_symbols": [
+        "HARD_INPUTS"
+      ]
+    }
+  ],
+  "input_fingerprint": {
+    "citations_sha256": "08c99bd67a410a87a1134feafc044814860c148ce642f119b680ca2cfac423c9",
+    "citations_bytes": 722762,
+    "probe_src_sha256": "e90c7d7ff15eb6485ab50adc9aef7fa5ba7695c91dd2e5b88e2038ab9538bb2b",
+    "probe_src": "eval/capability/exp1-q10/probe_v260.py"
+  },
+  "registered_baseline": {
+    "kind_counts": {
+      "cross_file": 33,
+      "other": 17,
+      "named_fact": 11,
+      "comment_only": 2
+    },
+    "strength_counts": {
+      "waived": 461,
+      "broken": 39,
+      "strong": 365,
+      "weak": 63
+    },
+    "strong_edges": 365,
+    "weak_edges": 63,
+    "other_edges": 17,
+    "other_class_counts": {
+      "mixed_rung": 2,
+      "pure_code_mention": 9,
+      "target_non_cs": 6
+    },
+    "caliber": {
+      "delta_applied_to_registered_caliber": false,
+      "index_scope_out_edges": 6,
+      "weak_minus_index_scope_out": 57,
+      "weak_total_as_registered": 63
+    },
+    "q11_verdict": "PASS"
+  },
+  "checks": {
+    "C1_conservation": {
+      "pass": true,
+      "recomputed_kind_counts": {
+        "cross_file": 33,
+        "other": 17,
+        "named_fact": 11,
+        "comment_only": 2
+      },
+      "registered_kind_counts": {
+        "cross_file": 33,
+        "other": 17,
+        "named_fact": 11,
+        "comment_only": 2
+      },
+      "sum_kind_equals_weak": true,
+      "two_buckets_partition_weak": true,
+      "n_weak": 63
+    },
+    "C2_zero_regression": {
+      "pass": true,
+      "recomputed": {
+        "strong": 365,
+        "weak": 63,
+        "other": 17
+      },
+      "registered": {
+        "strong": 365,
+        "weak": 63,
+        "other": 17
+      },
+      "note": "同输入重算, 应当逐位相同; 不同即归因漂移, 先查仪器"
+    },
+    "C3_ruling_A_landed": {
+      "pass": true,
+      "index_scope_out_edges": 6,
+      "weak_denominator_two_columns": {
+        "as_registered": 63,
+        "minus_scope_out": 57
+      },
+      "delta_applied_to_registered_caliber": false,
+      "phase_B_deferred": true
+    },
+    "C4_language_set_from_source": {
+      "pass": true,
+      "suffixes": [
+        ".cs"
+      ],
+      "globs": [
+        "src/**/*.cs"
+      ],
+      "declared_at": "probe_v260.py:78",
+      "source_sha256": "e90c7d7ff15eb6485ab50adc9aef7fa5ba7695c91dd2e5b88e2038ab9538bb2b",
+      "derivation": "由语料根声明行派生; 派生失败即 MeasurementError ⇒ 退出码 3"
+    },
+    "C5_nontrivial": {
+      "pass": true,
+      "index_scope_out": 6,
+      "in_scope": 57
+    },
+    "C6_payoff_ceiling": {
+      "pass": true,
+      "would_promote_edges_proxy": 6,
+      "edges_with_nonbuiltin_declared_hit": 6,
+      "ceiling": {
+        "weak_after": 57,
+        "strong_after": 371,
+        "other_after": 11,
+        "max_affected_edges": 6,
+        "note": "上限估计 (词法代理); 阶段B 实现后须用声明面真测复核"
+      }
+    },
+    "C7_determinism": {
+      "pass": true,
+      "sha_run1": "b7dc2f4d62a9df668dfcecc29a6da08ff6140783650c7154f1dbc1a77c4e8fdc",
+      "sha_run2": "b7dc2f4d62a9df668dfcecc29a6da08ff6140783650c7154f1dbc1a77c4e8fdc",
+      "nontrivial": true,
+      "note": "确定性 ∧ 非平凡 (两桶读数互异); 恒同值 ⇒ 先查仪器"
+    },
+    "C8_negative_controls": {
+      "pass": true,
+      "subchecks": {
+        "T1_two_sided": {
+          "pass": true,
+          "in_scope": 1,
+          "scope_out": 1
+        },
+        "T2_vacuous": {
+          "pass": true,
+          "vacuous": true
+        },
+        "T3_negative_control_in_lang": {
+          "pass": true
+        },
+        "T4_predict_bucket_separate_from_strong": {
+          "pass": true,
+          "promote_positive": 1,
+          "promote_negative": 0,
+          "strong_now_untouched": true
+        },
+        "T5_derivation_not_hardcoded": {
+          "pass": true,
+          "original": [
+            ".cs"
+          ],
+          "mutated_copy": [
+            ".zzz"
+          ]
+        },
+        "T6_self_source_no_suffix_literal": {
+          "pass": true,
+          "hits": [],
+          "regex": "standalone quoted dot+suffix literal"
+        },
+        "T7_derivation_failure_raises": {
+          "pass": true,
+          "reason": "语料根声明行未找到 (CODE_GLOBS) —— 派生失败, 不回落默认值"
+        }
+      }
+    },
+    "C9_vacuous": {
+      "pass": true,
+      "vacuous": false,
+      "note": "该轴 vacuous 时显式记录, 不静默当通过"
+    },
+    "C10_exit_semantics": {
+      "pass": true,
+      "code": 0,
+      "map": {
+        "0": "判据全过",
+        "2": "判据失败",
+        "3": "测量/环境失败"
+      }
+    }
+  },
+  "verdict": "PASS",
+  "evidence_level": "L1-static (真跑: 真归档语料 + 真树文件读取; 无编译/测试/AOT ⇒ 不得报 L3/L4)",
+  "honest_boundaries": [
+    "词法声明扫描 = 代理量 (别名/动态/多行会误判) ⇒ 收益为上限估计, 非实测转强数",
+    "「非该语言集目标不可达强档」由源码事实 + 语料级零反例推得, 非跨语言索引实验结论",
+    "docs 语料是活动靶: 快照绑 input_fingerprint; 树内目标文件随时间漂移"
+  ]
+}

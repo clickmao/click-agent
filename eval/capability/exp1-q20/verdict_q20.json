@@ -1,0 +1,183 @@
+{
+  "round": "EXP1-Q20",
+  "marker": "Q20_EXIT=0",
+  "object": "eval/capability/exp1-q13/index_scope_out_classify.py (2.7.0 -> 2.8.0, 纯加性)",
+  "change": "外部可调用缺陷注入入口 --inject-defect=<kind> (8 kind: 6 缺陷注入 + 2 审计桩) + 输出面 --out/--evidence-out; 判据表达式零改动",
+  "prereg": "eval/capability/exp1-q20/prereg_q20.json",
+  "readings": {
+    "preflight_archive_sha256": {
+      "verdict_q13.json": {
+        "archived_sha256": "a501bff2de45ae700e35df5cbb5d8675ea931dd567f3ce7142c3fd5bc42a7d7f",
+        "backup_sha256": "a501bff2de45ae700e35df5cbb5d8675ea931dd567f3ce7142c3fd5bc42a7d7f",
+        "identical": true
+      },
+      "evidence_q13.txt": {
+        "archived_sha256": "0999397596a843c9693d612227211782c6b8528d745f4d4aebb261e3c979e3fb",
+        "backup_sha256": "0999397596a843c9693d612227211782c6b8528d745f4d4aebb261e3c979e3fb",
+        "identical": true
+      },
+      "index_scope_out_classify.py": {
+        "archived_sha256": "57fea45fb3684616051b7846f7d7542acb1a2e62bf6d13a0e48d3b363d1b39bc",
+        "backup_sha256": "57fea45fb3684616051b7846f7d7542acb1a2e62bf6d13a0e48d3b363d1b39bc",
+        "identical": true
+      }
+    },
+    "selftest": {
+      "rc": 0,
+      "n": 7,
+      "all_pass": true,
+      "pass": true
+    },
+    "main_run": {
+      "pass": true,
+      "rerun_verdict": "eval/capability/exp1-q20/q13_rerun_verdict.json"
+    },
+    "zero_regression": {
+      "pass": true,
+      "diffs": {},
+      "added_keys": [],
+      "whitelist": [
+        "instrument_version"
+      ],
+      "removed_keys": [],
+      "whitelisted": [
+        "instrument_version",
+        "2.7.0 (additive; v2.6.0 零改动)",
+        "2.8.0 (additive; 外部注入入口; 判据零改动 vs v2.7.0)"
+      ],
+      "evidence_bytes_identical": true
+    },
+    "injections": [
+      {
+        "kind": "kind-count-drift",
+        "primary_red": "C1_conservation",
+        "expect_rc": 2,
+        "rc": 2,
+        "marker": "INJECT_APPLIED",
+        "expect_marker": "INJECT_APPLIED",
+        "observed_red": [
+          "C1_conservation"
+        ],
+        "ok": true
+      },
+      {
+        "kind": "strength-registry-drift",
+        "primary_red": "C2_zero_regression",
+        "expect_rc": 2,
+        "rc": 2,
+        "marker": "INJECT_APPLIED",
+        "expect_marker": "INJECT_APPLIED",
+        "observed_red": [
+          "C2_zero_regression"
+        ],
+        "ok": true
+      },
+      {
+        "kind": "caliber-delta-applied",
+        "primary_red": "C3_ruling_A_landed",
+        "expect_rc": 2,
+        "rc": 2,
+        "marker": "INJECT_APPLIED",
+        "expect_marker": "INJECT_APPLIED",
+        "observed_red": [
+          "C3_ruling_A_landed"
+        ],
+        "ok": true
+      },
+      {
+        "kind": "suffix-set-hardcoded",
+        "primary_red": "C4_language_set_from_source",
+        "expect_rc": 2,
+        "rc": 2,
+        "marker": "INJECT_APPLIED",
+        "expect_marker": "INJECT_APPLIED",
+        "observed_red": [
+          "C3_ruling_A_landed",
+          "C4_language_set_from_source",
+          "C5_nontrivial"
+        ],
+        "ok": true
+      },
+      {
+        "kind": "bucket-one-sided",
+        "primary_red": "C5_nontrivial",
+        "expect_rc": 2,
+        "rc": 2,
+        "marker": "INJECT_APPLIED",
+        "expect_marker": "INJECT_APPLIED",
+        "observed_red": [
+          "C5_nontrivial"
+        ],
+        "ok": true
+      },
+      {
+        "kind": "payoff-overflow",
+        "primary_red": "C6_payoff_ceiling",
+        "expect_rc": 2,
+        "rc": 2,
+        "marker": "INJECT_APPLIED",
+        "expect_marker": "INJECT_APPLIED",
+        "observed_red": [
+          "C6_payoff_ceiling"
+        ],
+        "ok": true
+      },
+      {
+        "kind": "phantom-noop",
+        "primary_red": null,
+        "expect_rc": 0,
+        "rc": 0,
+        "marker": "INJECT_APPLIED_NOOP_OK",
+        "expect_marker": "INJECT_APPLIED_NOOP_OK",
+        "observed_red": [],
+        "ok": true
+      },
+      {
+        "kind": "phantom-ineffective",
+        "primary_red": "C1_conservation",
+        "expect_rc": 3,
+        "rc": 3,
+        "marker": "INJECT_NOT_RED",
+        "expect_marker": "INJECT_NOT_RED",
+        "observed_red": [],
+        "ok": true
+      }
+    ],
+    "fail_closed_unknown_kind": {
+      "rc": 3,
+      "ok": true
+    },
+    "driver_encoder_selftest": {
+      "inverted_case_judged_false": true,
+      "noop_case_judged_true": true,
+      "applied_case_judged_true": true,
+      "pass": true
+    },
+    "self_clean_q13_dir": {
+      "dirty": [],
+      "ok": true
+    },
+    "q13_artifact_sha256": {
+      "evidence_q13.txt": "0999397596a843c9693d612227211782c6b8528d745f4d4aebb261e3c979e3fb",
+      "index_scope_out_classify.py": "690560e01e7ed0a2e1825e481eede145aeefeeccb3030bdbf8bd1cdd5144d65e",
+      "kpi_line_q13.json": "92568038987c36a9807044886d092047d19f7b1c70f61813e0c3c813bbc3dd19",
+      "prereg_q13.json": "03d3f71a6fb57f839a78ed15ff72f0648b0cdd2b0488f4e865fb3d62cc7d61c7",
+      "verdict_q13.json": "a501bff2de45ae700e35df5cbb5d8675ea931dd567f3ce7142c3fd5bc42a7d7f"
+    }
+  },
+  "criterion": "正控(signature 7/7 ∧ 全量 rc=0) ∧ 零回归(除白名单单键外逐位相同 ∧ evidence 逐字节相同) ∧ 8/8 注入按预注册红 ∧ fail-closed rc=3 ∧ 不弄脏 Q13 轮次产物",
+  "verdict": "PASS",
+  "evidence_level": "L2-static (真机执行 + 注入矩阵 + 逐位比对; 无编译/测试/AOT ⇒ 不报 L3/L4)",
+  "driver_defects_fixed_in_round": [
+    "driver 首版缺陷①: 结论行取「首个以 INJECT_ 开头的行」⇒ 取到前置提示 INJECT_NO_WRITE_ENFORCED ⇒ 8/8 假红; 修 = 取含 primary_red= 的行",
+    "driver 首版缺陷②: 期望编码只判「primary 必须在红集合内」⇒ 把 phantom-ineffective 的 fail-closed 证明反判为 FAIL (读数 7/8); 修 = 按 expect_marker 分三型编码 + 编码器自检 (反向喂入必须判 False)",
+    "两处均为 driver(测量层)缺陷, 非判据变更: 预注册判据/prereg_q20.json 逐字未动, 修正后仍按同一判据判定"
+  ],
+  "honest_boundaries": [
+    "注入面只证明**既有判据**对已知缺陷有判别力; 不证明判据口径本身完整 (词法代理量的既有边界不变)",
+    "suffix-set-hardcoded 注入按预注册产生 cascade (桶划分随之变化 ⇒ C3/C5 一并红), 已逐条如实记录, 不以「只红一条」为通过条件",
+    "phantom-* 两个审计桩证明 fail-closed 分支可达, 不构成产品侧能力",
+    "形式校验 (dotnet) 仍结转: 对侧 R462 W 臂探针 + llama-server 在场, MemAvailable 低于 2800MB 闸"
+  ],
+  "next": "形式校验结转清账 (对侧空闲时) → 旧 11 行输入指纹补全 → relocated 面正例语料 / 阶段B 可配语言集 (各独立预注册轮次)"
+}

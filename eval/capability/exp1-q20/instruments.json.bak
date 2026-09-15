@@ -265,7 +265,7 @@
    },
    "owner_round": "EXP1-Q19",
    "evidence_path": "eval/capability/exp1-q11/other_bucket_decompose.py",
-   "nc_cmd": "python3 eval/capability/exp1-q11/other_bucket_decompose.py --citations eval/capability/exp1-q19/_absent_corpus.jsonl --out eval/capability/exp1-q20/l2runs/_q11_nc.json",
+   "nc_cmd": "python3 eval/capability/exp1-q11/other_bucket_decompose.py --citations eval/capability/exp1-q19/_absent_corpus.jsonl --out eval/capability/exp1-q19/_q11_nc.json",
    "nc_expect": "nonzero"
   },
   {
@@ -295,9 +295,9 @@
    },
    "owner_round": "EXP1-Q19",
    "evidence_path": "eval/capability/exp1-q15/unit_axis_guard.py",
-   "nc_cmd": "python3 eval/capability/exp1-q15/unit_axis_guard.py --run --cites eval/capability/exp1-q19/_absent_corpus.jsonl --json eval/capability/exp1-q20/l2runs/_q15_nc.json",
+   "nc_cmd": "python3 eval/capability/exp1-q15/unit_axis_guard.py --run --cites eval/capability/exp1-q19/_absent_corpus.jsonl --json eval/capability/exp1-q19/_q15_nc.json",
    "nc_expect": "nonzero",
-   "nc_cmd2": "python3 eval/capability/exp1-q15/unit_axis_guard.py --run --cites eval/capability/exp1-q18/arm_v270_VOID_self_include/citations.jsonl --json eval/capability/exp1-q20/l2runs/_q15_nc2.json",
+   "nc_cmd2": "python3 eval/capability/exp1-q15/unit_axis_guard.py --run --cites eval/capability/exp1-q18/arm_v270_VOID_self_include/citations.jsonl --json eval/capability/exp1-q19/_q15_nc2.json",
    "nc_expect2": "nonzero"
   },
   {
@@ -327,13 +327,13 @@
    },
    "owner_round": "EXP1-Q19",
    "evidence_path": "eval/capability/exp1-q16/unit_axis_guard.py",
-   "nc_cmd": "python3 eval/capability/exp1-q16/unit_axis_guard.py --run --cites eval/capability/exp1-q19/_absent_corpus.jsonl --json eval/capability/exp1-q20/l2runs/_q16_nc.json",
+   "nc_cmd": "python3 eval/capability/exp1-q16/unit_axis_guard.py --run --cites eval/capability/exp1-q19/_absent_corpus.jsonl --json eval/capability/exp1-q19/_q16_nc.json",
    "nc_expect": "nonzero"
   },
   {
    "id": "exp1q17.archive-field-provenance",
    "kind": "analyzer",
-   "cmd": "python3 eval/capability/exp1-q17/archive_field_provenance.py --selftest --out eval/capability/exp1-q20/l2runs/verdict_q17.json --fixtures-out eval/capability/exp1-q20/l2runs/selftest_q17.json",
+   "cmd": "python3 eval/capability/exp1-q17/archive_field_provenance.py --selftest --out eval/capability/exp1-q19/l2runs/verdict_q17.json --fixtures-out eval/capability/exp1-q19/l2runs/selftest_q17.json",
    "expect_rc": 0,
    "expect_substr": "checks 15/15",
    "version": "content-sha12:cac4530579fd",
@@ -361,9 +361,9 @@
    },
    "owner_round": "EXP1-Q19",
    "evidence_path": "eval/capability/exp1-q17/archive_field_provenance.py",
-   "nc_cmd": "python3 eval/capability/exp1-q17/archive_field_provenance.py --archive eval/capability/exp1-q18/arm_v270_VOID_self_include/citations.jsonl --out eval/capability/exp1-q20/l2runs/_q17_nc.json --fixtures-out eval/capability/exp1-q20/l2runs/_q17_nc_fx.json",
+   "nc_cmd": "python3 eval/capability/exp1-q17/archive_field_provenance.py --archive eval/capability/exp1-q18/arm_v270_VOID_self_include/citations.jsonl --out eval/capability/exp1-q19/_q17_nc.json --fixtures-out eval/capability/exp1-q19/_q17_nc_fx.json",
    "nc_expect": "nonzero",
-   "nc_cmd2": "python3 eval/capability/exp1-q17/archive_field_provenance.py --archive eval/capability/exp1-q19/_absent_corpus.jsonl --out eval/capability/exp1-q20/l2runs/_q17_nc2.json --fixtures-out eval/capability/exp1-q20/l2runs/_q17_nc2_fx.json",
+   "nc_cmd2": "python3 eval/capability/exp1-q17/archive_field_provenance.py --archive eval/capability/exp1-q19/_absent_corpus.jsonl --out eval/capability/exp1-q19/_q17_nc2.json --fixtures-out eval/capability/exp1-q19/_q17_nc2_fx.json",
    "nc_expect2": "nonzero"
   },
   {
@@ -400,9 +400,9 @@
    "expect_substr": "L2 器具验收面",
    "nc_cmd": "python3 eval/capability/instruments_check.py --only exp1q17.archive-field-provenance --fingerprint-drift-inject",
    "nc_expect": "nonzero",
-   "version": "content-sha12:df05321a3d04",
+   "version": "content-sha12:864df9a41835",
    "version_source": "content-sha12",
-   "instrument_sha12": "df05321a3d04",
+   "instrument_sha12": "864df9a41835",
    "input_fingerprint": [],
    "kpi_quad": {
     "单位": "器具行",
@@ -412,46 +412,6 @@
    },
    "owner_round": "EXP1-Q19",
    "evidence_path": "eval/capability/instruments_check.py"
-  },
-  {
-   "id": "exp1q13.index-scope-out-classifier",
-   "kind": "classifier",
-   "cmd": "python3 eval/capability/exp1-q13/index_scope_out_classify.py --selftest --no-write",
-   "expect_rc": 0,
-   "expect_substr": "\"all_pass\": true",
-   "version": "content-sha12:690560e01e7e",
-   "version_source": "content-sha12",
-   "instrument_sha12": "690560e01e7e",
-   "input_fingerprint": [
-    {
-     "path": "eval/capability/exp1-q10/attribution_q10.json",
-     "sha12": "7c4e1144921a"
-    },
-    {
-     "path": "eval/capability/exp1-q10/citations.jsonl",
-     "sha12": "08c99bd67a41"
-    },
-    {
-     "path": "eval/capability/exp1-q10/probe_v260.py",
-     "sha12": "e90c7d7ff15e"
-    },
-    {
-     "path": "eval/capability/exp1-q11/decomposition_q11.json",
-     "sha12": "7c8edae571d5"
-    }
-   ],
-   "kpi_quad": {
-    "单位": "弱边(边级)",
-    "分母": "归因轴 weak 桶 (63, 双栏 63|57)",
-    "真值源": "归档 citations.jsonl + attribution_q10.json + decomposition_q11.json",
-    "口径档": "边级/单标签 + 分母双栏 (delta_applied=false)"
-   },
-   "owner_round": "EXP1-Q20",
-   "evidence_path": "eval/capability/exp1-q13/index_scope_out_classify.py",
-   "nc_cmd": "python3 eval/capability/exp1-q13/index_scope_out_classify.py --inject-defect=caliber-delta-applied",
-   "nc_expect": "nonzero",
-   "nc_cmd2": "python3 eval/capability/exp1-q13/index_scope_out_classify.py --inject-defect=phantom-ineffective",
-   "nc_expect2": "nonzero"
   }
  ]
 }
