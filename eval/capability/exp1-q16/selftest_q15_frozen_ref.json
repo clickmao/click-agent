@@ -1,0 +1,155 @@
+{
+ "schema": "exp1-q15-selftest/1",
+ "instrument": "unit_axis_guard.py v1.0",
+ "n_cases": 10,
+ "n_pass": 10,
+ "cases": [
+  {
+   "fixture": "FX1_clean_weak_domain",
+   "expect_exit": 0,
+   "exit": 0,
+   "expect_findings": [],
+   "findings": [],
+   "unexpected_findings": [],
+   "pass": true
+  },
+  {
+   "fixture": "FX2_domain_label_mismatch",
+   "expect_exit": 2,
+   "exit": 2,
+   "expect_findings": [
+    "C3_domain_label_mismatch"
+   ],
+   "findings": [
+    "C3_domain_label_mismatch",
+    "C4_self_derived_total",
+    "C7_qualifier_collision"
+   ],
+   "unexpected_findings": [
+    "C4_self_derived_total",
+    "C7_qualifier_collision"
+   ],
+   "pass": true
+  },
+  {
+   "fixture": "FX3_self_derived_total",
+   "expect_exit": 2,
+   "exit": 2,
+   "expect_findings": [
+    "C4_self_derived_total"
+   ],
+   "findings": [
+    "C4_self_derived_total"
+   ],
+   "unexpected_findings": [],
+   "pass": true
+  },
+  {
+   "fixture": "FX4_bare_count_key",
+   "expect_exit": 2,
+   "exit": 2,
+   "expect_findings": [
+    "C2_axis_label_missing"
+   ],
+   "findings": [
+    "C2_axis_label_missing",
+    "C4_self_derived_total"
+   ],
+   "unexpected_findings": [
+    "C4_self_derived_total"
+   ],
+   "pass": true
+  },
+  {
+   "fixture": "FX5_confusable_totals",
+   "expect_exit": 2,
+   "exit": 2,
+   "expect_findings": [
+    "C6_confusable_totals"
+   ],
+   "findings": [
+    "C3_domain_label_mismatch",
+    "C4_self_derived_total",
+    "C6_confusable_totals",
+    "C7_qualifier_collision"
+   ],
+   "unexpected_findings": [
+    "C3_domain_label_mismatch",
+    "C4_self_derived_total",
+    "C7_qualifier_collision"
+   ],
+   "pass": true
+  },
+  {
+   "fixture": "FX6_qualifier_collision",
+   "expect_exit": 2,
+   "exit": 2,
+   "expect_findings": [
+    "C7_qualifier_collision"
+   ],
+   "findings": [
+    "C3_domain_label_mismatch",
+    "C4_self_derived_total",
+    "C7_qualifier_collision"
+   ],
+   "unexpected_findings": [
+    "C3_domain_label_mismatch",
+    "C4_self_derived_total"
+   ],
+   "pass": true
+  },
+  {
+   "fixture": "FX7_ratio_undeclared",
+   "expect_exit": 2,
+   "exit": 2,
+   "expect_findings": [
+    "C8_ratio_undeclared"
+   ],
+   "findings": [
+    "C8_ratio_undeclared"
+   ],
+   "unexpected_findings": [],
+   "pass": true
+  },
+  {
+   "fixture": "FX8_missing_input",
+   "expect_exit": 3,
+   "exit": 3,
+   "expect_findings": [
+    "MEASUREMENT"
+   ],
+   "findings": [
+    "MEASUREMENT"
+   ],
+   "unexpected_findings": [],
+   "pass": true
+  },
+  {
+   "fixture": "FX9_vacuous_single_axis",
+   "expect_exit": 2,
+   "exit": 2,
+   "expect_findings": [
+    "C9_vacuous"
+   ],
+   "findings": [
+    "C4_self_derived_total",
+    "C9_vacuous"
+   ],
+   "unexpected_findings": [
+    "C4_self_derived_total"
+   ],
+   "pass": true
+  },
+  {
+   "fixture": "FX10_legit_other_names",
+   "expect_exit": 0,
+   "exit": 0,
+   "expect_findings": [],
+   "findings": [],
+   "unexpected_findings": [],
+   "pass": true
+  }
+ ],
+ "determinism_two_runs_identical": true,
+ "exit": 0
+}

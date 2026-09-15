@@ -1,0 +1,31 @@
+EXP1-Q16 · 真跑读数（unit_axis_guard.py v1.3, 无 dotnet, 对侧 R455 套件在场）
+verdict_total=INVARIANT_VIOLATED exit=2 ground_truth={}
+instrument_sha256=8d22d7d7600246386d44a4be503d986118f8dc4e5aa2fbcab2a9b00a846f06fa
+
+== 逐字段零回归（Q15 v1.0 → Q16 v1.3） ==
+[probe_stdout.json] exit 2→2 same=True | findings same=True | axes/domains same=True/True | C1 checked 7→7 all_equal=True n_boundary=0
+[attribution_q10.json] exit 2→2 same=True | findings same=True | axes/domains same=True/True | C1 checked 10→12 all_equal=True n_boundary=2
+
+== C1 覆盖 / 不可重放（Q16） ==
+[probe_stdout.json] checked=7 all_equal=True n_boundary=0 name_unresolved=6 not_replayable=[]
+    typed={}
+    detail={}
+[attribution_q10.json] checked=12 all_equal=True n_boundary=2 name_unresolved=26 not_replayable=['n_symbol_faces', 'stale_like_n', 'symbol_face_rungs', 'symbol_occurrences']
+    typed={"n_symbol_faces": "ARCHIVE_FACE_FIELD_ABSENT", "stale_like_n": "SELF_REFERENTIAL_CROSS_ARTIFACT", "symbol_face_rungs": "ARCHIVE_FACE_FIELD_ABSENT", "symbol_occurrences": "PARAM_SCOPE"}
+    detail={"symbol_face_rungs": {"missing_fields": ["symbol_faces"], "n_rows": 928, "field_presence": {"symbol_faces": 0}}, "n_symbol_faces": {"missing_fields": ["symbol_faces"], "n_rows": 928, "field_presence": {"symbol_faces": 0}}}
+
+== 预注册判据裁定（P1..P10） ==
+P1_attribution_C1_10_to_12: pred=10 → 12 | got=10 → 12 | hold=True
+P2_new_keys_bitwise_equal: pred=symbol_face_rungs / n_symbol_faces 重放值与登记逐位相同 | got=二者均落 ARCHIVE_FACE_FIELD_ABSENT 边界（不可比）: {'n_symbol_faces': 'ARCHIVE_FACE_FIELD_ABSENT', 'stale_like_n': 'SELF_REFERENTIAL_CROSS_ARTIFACT', 'symbol_face_rungs': 'ARCHIVE_FACE_FIELD_ABSENT', 'symbol_occurrences': 'PARAM_SCOPE'} | hold=False
+P3_not_replayable_4_to_2_typed: pred=4 → 2 且余下两键带类型化原因 | got=4: {'n_symbol_faces': 'ARCHIVE_FACE_FIELD_ABSENT', 'stale_like_n': 'SELF_REFERENTIAL_CROSS_ARTIFACT', 'symbol_face_rungs': 'ARCHIVE_FACE_FIELD_ABSENT', 'symbol_occurrences': 'PARAM_SCOPE'} | hold=False
+P5_zero_regression_C2_C10: pred=findings/axes/domains/ground_truth 与 Q15 逐位相同 | got={"probe_stdout.json": [true, true], "attribution_q10.json": [true, true]} | hold=True
+P6_fixtures_13: pred=FX1-13 全绿 | got=selftest_q16.json n_pass/n_cases=14/14（含新增 FX11/FX12/FX13/FX14） | hold=True
+P7_determinism: pred=两跑逐字节相同 | got=sha256 相同（674bb152…） | hold=True
+
+== v1.1 首跑（未分类）读数：测量层归并缺陷的原始证据 ==
+rived_domain": "all", "filters": [], "value": {"other": 489, "comment_only": 5, "cross_file": 58, "named_fact": 22}}
+  FINDING C7_qualifier_collision: 1
+      {"token": "weak", "domains": ["EDGE_STRONG=strong", "all"], "keys": ["n_edges_strong_with_weak_symbols", "weak_symbol_kind_counts"]}
+  C5 ungated_axes=['citation', 'continuation', 'doc', 'symbol'] gated=['edge'] det=True
+MEASUREMENT_FAILURE attribution_q10.json: 重放与登记读数不一致（先查派生/总体链，不调参）: ['symbol_face_rungs', 'n_symbol_faces']
+TOTAL verdict=MEASUREMENT_FAILURE exit=3 artifacts=1 ground_truth weak_edge_symbol_slots=90 two_paths_agree=True

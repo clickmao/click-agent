@@ -1,0 +1,261 @@
+{
+ "schema": "exp1-q16-selftest/1",
+ "instrument": "unit_axis_guard.py v1.3 (EXP1-Q16)",
+ "n_cases": 14,
+ "n_pass": 14,
+ "cases": [
+  {
+   "fixture": "FX1_clean_weak_domain",
+   "expect_exit": 0,
+   "exit": 0,
+   "expect_findings": [],
+   "findings": [],
+   "expect_msg_contains": null,
+   "msg_ok": true,
+   "c1_equal_keys": {},
+   "typed_reasons": {},
+   "unexpected_findings": [],
+   "pass": true
+  },
+  {
+   "fixture": "FX2_domain_label_mismatch",
+   "expect_exit": 2,
+   "exit": 2,
+   "expect_findings": [
+    "C3_domain_label_mismatch"
+   ],
+   "findings": [
+    "C3_domain_label_mismatch",
+    "C4_self_derived_total",
+    "C7_qualifier_collision"
+   ],
+   "expect_msg_contains": null,
+   "msg_ok": true,
+   "c1_equal_keys": {},
+   "typed_reasons": {},
+   "unexpected_findings": [
+    "C4_self_derived_total",
+    "C7_qualifier_collision"
+   ],
+   "pass": true
+  },
+  {
+   "fixture": "FX3_self_derived_total",
+   "expect_exit": 2,
+   "exit": 2,
+   "expect_findings": [
+    "C4_self_derived_total"
+   ],
+   "findings": [
+    "C4_self_derived_total"
+   ],
+   "expect_msg_contains": null,
+   "msg_ok": true,
+   "c1_equal_keys": {},
+   "typed_reasons": {},
+   "unexpected_findings": [],
+   "pass": true
+  },
+  {
+   "fixture": "FX4_bare_count_key",
+   "expect_exit": 2,
+   "exit": 2,
+   "expect_findings": [
+    "C2_axis_label_missing"
+   ],
+   "findings": [
+    "C2_axis_label_missing",
+    "C4_self_derived_total"
+   ],
+   "expect_msg_contains": null,
+   "msg_ok": true,
+   "c1_equal_keys": {},
+   "typed_reasons": {},
+   "unexpected_findings": [
+    "C4_self_derived_total"
+   ],
+   "pass": true
+  },
+  {
+   "fixture": "FX5_confusable_totals",
+   "expect_exit": 2,
+   "exit": 2,
+   "expect_findings": [
+    "C6_confusable_totals"
+   ],
+   "findings": [
+    "C3_domain_label_mismatch",
+    "C4_self_derived_total",
+    "C6_confusable_totals",
+    "C7_qualifier_collision"
+   ],
+   "expect_msg_contains": null,
+   "msg_ok": true,
+   "c1_equal_keys": {},
+   "typed_reasons": {},
+   "unexpected_findings": [
+    "C3_domain_label_mismatch",
+    "C4_self_derived_total",
+    "C7_qualifier_collision"
+   ],
+   "pass": true
+  },
+  {
+   "fixture": "FX6_qualifier_collision",
+   "expect_exit": 2,
+   "exit": 2,
+   "expect_findings": [
+    "C7_qualifier_collision"
+   ],
+   "findings": [
+    "C3_domain_label_mismatch",
+    "C4_self_derived_total",
+    "C7_qualifier_collision"
+   ],
+   "expect_msg_contains": null,
+   "msg_ok": true,
+   "c1_equal_keys": {},
+   "typed_reasons": {},
+   "unexpected_findings": [
+    "C3_domain_label_mismatch",
+    "C4_self_derived_total"
+   ],
+   "pass": true
+  },
+  {
+   "fixture": "FX7_ratio_undeclared",
+   "expect_exit": 2,
+   "exit": 2,
+   "expect_findings": [
+    "C8_ratio_undeclared"
+   ],
+   "findings": [
+    "C8_ratio_undeclared"
+   ],
+   "expect_msg_contains": null,
+   "msg_ok": true,
+   "c1_equal_keys": {},
+   "typed_reasons": {},
+   "unexpected_findings": [],
+   "pass": true
+  },
+  {
+   "fixture": "FX8_missing_input",
+   "expect_exit": 3,
+   "exit": 3,
+   "expect_findings": [
+    "MEASUREMENT"
+   ],
+   "findings": [
+    "MEASUREMENT"
+   ],
+   "expect_msg_contains": null,
+   "msg_ok": true,
+   "c1_equal_keys": {},
+   "typed_reasons": {},
+   "unexpected_findings": [],
+   "pass": true
+  },
+  {
+   "fixture": "FX9_vacuous_single_axis",
+   "expect_exit": 2,
+   "exit": 2,
+   "expect_findings": [
+    "C9_vacuous"
+   ],
+   "findings": [
+    "C4_self_derived_total",
+    "C9_vacuous"
+   ],
+   "expect_msg_contains": null,
+   "msg_ok": true,
+   "c1_equal_keys": {},
+   "typed_reasons": {},
+   "unexpected_findings": [
+    "C4_self_derived_total"
+   ],
+   "pass": true
+  },
+  {
+   "fixture": "FX10_legit_other_names",
+   "expect_exit": 0,
+   "exit": 0,
+   "expect_findings": [],
+   "findings": [],
+   "expect_msg_contains": null,
+   "msg_ok": true,
+   "c1_equal_keys": {},
+   "typed_reasons": {},
+   "unexpected_findings": [],
+   "pass": true
+  },
+  {
+   "fixture": "FX11_nested_loop_replay",
+   "expect_exit": 0,
+   "exit": 0,
+   "expect_findings": [],
+   "findings": [],
+   "expect_msg_contains": null,
+   "msg_ok": true,
+   "c1_equal_keys": {
+    "symbol_face_rungs": true
+   },
+   "typed_reasons": {},
+   "unexpected_findings": [],
+   "pass": true
+  },
+  {
+   "fixture": "FX12_nested_loop_registered_corrupted",
+   "expect_exit": 3,
+   "exit": 3,
+   "expect_findings": [
+    "MEASUREMENT"
+   ],
+   "findings": [
+    "MEASUREMENT",
+    "MEASUREMENT:重放与登记读数不一致（先查派生/总体链，不调参）: ['symbol_face_rungs']"
+   ],
+   "expect_msg_contains": "重放与登记读数不一致",
+   "msg_ok": true,
+   "c1_equal_keys": {},
+   "typed_reasons": {},
+   "unexpected_findings": [],
+   "pass": true
+  },
+  {
+   "fixture": "FX14_archive_face_field_absent",
+   "expect_exit": 0,
+   "exit": 0,
+   "expect_findings": [],
+   "findings": [],
+   "expect_msg_contains": null,
+   "msg_ok": true,
+   "c1_equal_keys": {},
+   "typed_reasons": {
+    "symbol_face_rungs": "ARCHIVE_FACE_FIELD_ABSENT"
+   },
+   "unexpected_findings": [],
+   "pass": true
+  },
+  {
+   "fixture": "FX13_untyped_skip_fail_closed",
+   "expect_exit": 3,
+   "exit": 3,
+   "expect_findings": [
+    "MEASUREMENT"
+   ],
+   "findings": [
+    "MEASUREMENT",
+    "MEASUREMENT:过滤表达式引用未派生名 'mystery_gate(c)': name 'mystery_gate' is not defined（fail-closed，不回落默认值）"
+   ],
+   "expect_msg_contains": "未派生名",
+   "msg_ok": true,
+   "c1_equal_keys": {},
+   "typed_reasons": {},
+   "unexpected_findings": [],
+   "pass": true
+  }
+ ],
+ "determinism_two_runs_identical": true,
+ "exit": 0
+}

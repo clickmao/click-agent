@@ -1,0 +1,123 @@
+{
+ "schema": "exp1-q16-evidence/1",
+ "zero_regression": {
+  "probe_stdout.json": {
+   "exit_15": 2,
+   "exit_16": 2,
+   "exit_same": true,
+   "findings_15": {
+    "C3_domain_label_mismatch": 1,
+    "C7_qualifier_collision": 1
+   },
+   "findings_16": {
+    "C3_domain_label_mismatch": 1,
+    "C7_qualifier_collision": 1
+   },
+   "findings_same": true,
+   "c1_checked_15": 7,
+   "c1_checked_16": 7,
+   "c1_all_equal_16": true,
+   "c1_n_boundary_16": 0,
+   "axes_same": true,
+   "domains_same": true,
+   "not_replayable_15": [],
+   "not_replayable_16": [],
+   "not_replayable_typed_16": {},
+   "not_replayable_detail_16": {}
+  },
+  "attribution_q10.json": {
+   "exit_15": 2,
+   "exit_16": 2,
+   "exit_same": true,
+   "findings_15": {
+    "C3_domain_label_mismatch": 1,
+    "C4_self_derived_total": 3,
+    "C7_qualifier_collision": 1
+   },
+   "findings_16": {
+    "C3_domain_label_mismatch": 1,
+    "C4_self_derived_total": 3,
+    "C7_qualifier_collision": 1
+   },
+   "findings_same": true,
+   "c1_checked_15": 10,
+   "c1_checked_16": 12,
+   "c1_all_equal_16": true,
+   "c1_n_boundary_16": 2,
+   "axes_same": true,
+   "domains_same": true,
+   "not_replayable_15": [
+    "n_symbol_faces",
+    "stale_like_n",
+    "symbol_face_rungs",
+    "symbol_occurrences"
+   ],
+   "not_replayable_16": [
+    "n_symbol_faces",
+    "stale_like_n",
+    "symbol_face_rungs",
+    "symbol_occurrences"
+   ],
+   "not_replayable_typed_16": {
+    "n_symbol_faces": "ARCHIVE_FACE_FIELD_ABSENT",
+    "stale_like_n": "SELF_REFERENTIAL_CROSS_ARTIFACT",
+    "symbol_face_rungs": "ARCHIVE_FACE_FIELD_ABSENT",
+    "symbol_occurrences": "PARAM_SCOPE"
+   },
+   "not_replayable_detail_16": {
+    "symbol_face_rungs": {
+     "missing_fields": [
+      "symbol_faces"
+     ],
+     "n_rows": 928,
+     "field_presence": {
+      "symbol_faces": 0
+     }
+    },
+    "n_symbol_faces": {
+     "missing_fields": [
+      "symbol_faces"
+     ],
+     "n_rows": 928,
+     "field_presence": {
+      "symbol_faces": 0
+     }
+    }
+   }
+  }
+ },
+ "prereg_verdicts": {
+  "P1_attribution_C1_10_to_12": {
+   "pred": "10 → 12",
+   "got": "10 → 12",
+   "hold": true
+  },
+  "P2_new_keys_bitwise_equal": {
+   "pred": "symbol_face_rungs / n_symbol_faces 重放值与登记逐位相同",
+   "got": "二者均落 ARCHIVE_FACE_FIELD_ABSENT 边界（不可比）: {'n_symbol_faces': 'ARCHIVE_FACE_FIELD_ABSENT', 'stale_like_n': 'SELF_REFERENTIAL_CROSS_ARTIFACT', 'symbol_face_rungs': 'ARCHIVE_FACE_FIELD_ABSENT', 'symbol_occurrences': 'PARAM_SCOPE'}",
+   "hold": false
+  },
+  "P3_not_replayable_4_to_2_typed": {
+   "pred": "4 → 2 且余下两键带类型化原因",
+   "got": "4: {'n_symbol_faces': 'ARCHIVE_FACE_FIELD_ABSENT', 'stale_like_n': 'SELF_REFERENTIAL_CROSS_ARTIFACT', 'symbol_face_rungs': 'ARCHIVE_FACE_FIELD_ABSENT', 'symbol_occurrences': 'PARAM_SCOPE'}",
+   "hold": false
+  },
+  "P5_zero_regression_C2_C10": {
+   "pred": "findings/axes/domains/ground_truth 与 Q15 逐位相同",
+   "got": "{\"probe_stdout.json\": [true, true], \"attribution_q10.json\": [true, true]}",
+   "hold": true
+  },
+  "P6_fixtures_13": {
+   "pred": "FX1-13 全绿",
+   "got": "selftest_q16.json n_pass/n_cases=14/14（含新增 FX11/FX12/FX13/FX14）",
+   "hold": true
+  },
+  "P7_determinism": {
+   "pred": "两跑逐字节相同",
+   "got": "sha256 相同（674bb152…）",
+   "hold": true
+  }
+ },
+ "instrument_sha256": "8d22d7d7600246386d44a4be503d986118f8dc4e5aa2fbcab2a9b00a846f06fa",
+ "determinism_sha256": "674bb15292e1e11218960bf84ab6cd7aa0b95151e16c586ff9dc6706f103a812"
+}

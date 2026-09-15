@@ -1,0 +1,35 @@
+{
+ "schema": "exp1-q16-prereg/1",
+ "round": "EXP1-Q16",
+ "owner_round": "EXP1-Q16（60m 自检作业；不占主线轮号）",
+ "ts_written_before_run": "2026-09-15T16:1x+08:00",
+ "item": "v0.22.0 exp1 计划项 · 附录 P L.8 候选 ③ —— 循环累加型计数重放（把 4 个「不可重放」键从笼统跳过改为「可重放者真重放 + 残余者类型化原因」）",
+ "why_this_step": "附录 P P.6.2 声明 4 个登记键为不可重放（n_symbol_faces / symbol_face_rungs / symbol_occurrences / stale_like_n），C1 的 all_equal 只覆盖已重放者；「不可重放」与「重放失败」不可分 ⇒ 测量保真面存在静默缺口。",
+ "preflight_machine_facts": {
+  "script": "eval/capability/exp1-q16/preflight_q16.py",
+  "out": "eval/capability/exp1-q16/preflight.json",
+  "augassign_accumulation_sites": 2,
+  "site_1": {"line": 895, "acc": "face_rungs", "inner_iter": "(c.get('symbol_faces') or {}).values()", "outer": ["c in live_code"], "outer_var_in_inner_iter": "c", "verdict": "总体根 live_code 可落归档 ⇒ 补外层绑定后应可重放"},
+  "site_2": {"line": 826, "acc": "counts", "outer": ["rel in repo.glob('src/**/*.cs')"], "verdict": "语料根是活文件系统 glob（非归档面）⇒ 预期类型化原因"},
+  "instrument_now_records_only_inner_loop": true,
+  "live_code_pop_resolvable": true
+ },
+ "judgment_unit": "「重放保真 C1 的覆盖键数」+ 「被跳过键的原因类型化」；二者必须一起报，单独报覆盖数会把静默跳过当通过。",
+ "prereg_checks": {
+  "P1_C1_coverage": "attribution_q10.json: checked 10 → 12（新增 symbol_face_rungs、n_symbol_faces）；probe_stdout.json: 7 → 7（不变）。",
+  "P2_bitwise_equal": "新增覆盖的两键，重放值必须与登记值逐位相同：symbol_face_rungs（dict 相等）、n_symbol_faces（= sum(重放 face_rungs.values())，登记值 575）。",
+  "P3_not_replayable_shrink": "not_replayable 4 → 2，且余下 2 键各带类型化原因（闭集 UNREPLAYABLE_REASONS），零「无类型」跳过。",
+  "P4_reason_prediction": {
+   "symbol_occurrences": ["PARAM_SCOPE", "POPULATION_NOT_ARCHIVED"],
+   "stale_like_n": ["SELF_REFERENTIAL_CROSS_ARTIFACT"]
+  },
+  "P5_zero_regression_behavioral": "C2–C10 读数与 Q15 逐位相同（C3=1、C4=3、C6=0、C7=1、C5 ungated 五轴、axes/domains 集合、independent_ground_truth=90/two_paths_agree=true）；非字节级零回归（模板增占位符），差异只允许出现在 C1 覆盖与 not_replayable 两项。",
+  "P6_fixtures": "FX1–FX10 期望不变；新增 FX11（嵌套累加·正确 ⇒ exit 0 且 C1 覆盖包装键）、FX12（嵌套累加·登记值被污染 ⇒ exit 3 且报文含「不一致」）、FX13（非循环累加·过滤引用未定义名 ⇒ exit 3 fail-closed）⇒ 13/13。",
+  "P7_determinism": "同输入两跑逐字节相同（C10）。",
+  "P8_rebuttal_if_replay_mismatch": "若 symbol_face_rungs / n_symbol_faces 重放成功但值与登记不等 ⇒ 判 FAIL 并如实入档（不改判据、不调参、不放过）。",
+  "P9_boundaries": "证据等级 L1-static（真归档语料 + 真源码 AST 派生 + 夹具自检）；零 dotnet（对侧 R455 套件在场 + MemAvailable 低于起手闸）⇒ 不报 L3/L4；不改 src/、skills/、docs/verification-registry.json、eval/capability/instruments.json、probe_v260.py。",
+  "P10_rebuttal_if_still_unreplayable": "若 face_rungs 仍不可重放（落 not_replayable）⇒ 记录类型化原因、**不宣称覆盖增益**，本轮产出收窄为「类型化原因机制」。",
+  "P11_non_triviality": "类型化原因不得只有一种（否则等于换个名字的笼统跳过）：真实语料上 ≥2 类原因，且闭集内至少各有一条真语料实例。"
+ },
+ "instrument_version": "unit_axis_guard.py v1.1（v1.0 = EXP1-Q15 冻结件，本轮机检不改其文件）"
+}

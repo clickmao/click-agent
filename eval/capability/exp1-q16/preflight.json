@@ -1,0 +1,114 @@
+{
+ "augassign_rows_total": 2,
+ "rows": [
+  {
+   "line": 895,
+   "acc_name": "face_rungs",
+   "key_expr": "_rung",
+   "inner": {
+    "vars": [
+     "_rung"
+    ],
+    "iter": "(c.get('symbol_faces') or {}).values()"
+   },
+   "outer_chain": [
+    {
+     "vars": [
+      "c"
+     ],
+     "iter": "live_code"
+    }
+   ],
+   "conds": [],
+   "outer_vars_used_in_inner_iter": [
+    "c"
+   ],
+   "key_is_inner_var": true
+  },
+  {
+   "line": 826,
+   "acc_name": "counts",
+   "key_expr": "s",
+   "inner": {
+    "vars": [
+     "s"
+    ],
+    "iter": "symbols"
+   },
+   "outer_chain": [
+    {
+     "vars": [
+      "rel"
+     ],
+     "iter": "repo.glob('src/**/*.cs')"
+    }
+   ],
+   "conds": [
+    "n"
+   ],
+   "outer_vars_used_in_inner_iter": [],
+   "key_is_inner_var": true
+  }
+ ],
+ "from_loop_defs_now": {
+  "counts": {
+   "iters": [
+    {
+     "var": "s",
+     "iter": "symbols"
+    }
+   ],
+   "element": "s",
+   "filters": [
+    "n"
+   ]
+  },
+  "face_rungs": {
+   "iters": [
+    {
+     "var": "_rung",
+     "iter": "(c.get('symbol_faces') or {}).values()"
+    }
+   ],
+   "element": "_rung",
+   "filters": []
+  }
+ },
+ "pops_have_live_code": true,
+ "live_code_pop": {
+  "var": "c",
+  "base": "judged",
+  "conds": [
+   "c['kind'] == 'code' and (not c['in_code_fence'])"
+  ],
+  "element": "c",
+  "identity_element": false
+ },
+ "pop_names": [
+  "_mix",
+  "_wk",
+  "_wv",
+  "absent",
+  "cands",
+  "cj",
+  "cont_live",
+  "face_candidates",
+  "files",
+  "hit",
+  "judged",
+  "judged_cont",
+  "judged_k",
+  "live_code",
+  "manifest_precedents",
+  "prior",
+  "relocated",
+  "same_line",
+  "sigs",
+  "spans",
+  "stale",
+  "sym_kinds",
+  "ticks",
+  "versionable",
+  "with_version"
+ ]
+}
