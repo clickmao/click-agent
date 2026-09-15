@@ -1,0 +1,72 @@
+{
+ "schema": "exp1-q28/whitelist-coverage/v1",
+ "round": "EXP1-Q28",
+ "note": "在**原始** stdout 上核验归一化白名单的覆盖面; 本文件不在 registry 的 evidence_path 内 (不参与字节 pin), 只作读数。",
+ "whitelist": {
+  "tmp": "/tmp/[A-Za-z0-9_./-]+ -> <TMP>",
+  "clock": "\\((\\d+s|instant)\\) -> (T)"
+ },
+ "stages": {
+  "tasks": {
+   "rc": 0,
+   "stdout_bytes": 2816,
+   "tmp_tokens_in_raw": 0,
+   "clock_tokens_in_raw": {},
+   "clock_forms": [],
+   "residual_clock_tokens_after_norm": 0,
+   "tmp_tokens_after_norm": 0,
+   "semantic_paren_raw": 11,
+   "semantic_paren_after_norm": 11,
+   "clock_forms_all_whitelisted": true,
+   "n4b1_residual_zero": true,
+   "n4b2_semantic_preserved": true,
+   "n4b3_forms_covered": true,
+   "n4a_semantic_diff_survives_norm": true,
+   "n4a_mutated_token": "selftest 44/45",
+   "anti_hollow_identity_norm_would_flag": false
+  },
+  "grade": {
+   "rc": 0,
+   "stdout_bytes": 2154,
+   "tmp_tokens_in_raw": 0,
+   "clock_tokens_in_raw": {},
+   "clock_forms": [],
+   "residual_clock_tokens_after_norm": 0,
+   "tmp_tokens_after_norm": 0,
+   "semantic_paren_raw": 7,
+   "semantic_paren_after_norm": 7,
+   "clock_forms_all_whitelisted": true,
+   "n4b1_residual_zero": true,
+   "n4b2_semantic_preserved": true,
+   "n4b3_forms_covered": true,
+   "n4a_semantic_diff_survives_norm": true,
+   "n4a_mutated_token": "selftest 33/34",
+   "anti_hollow_identity_norm_would_flag": false
+  },
+  "run_probe": {
+   "rc": 0,
+   "stdout_bytes": 7395,
+   "tmp_tokens_in_raw": 1,
+   "clock_tokens_in_raw": {
+    "(instant)": 47
+   },
+   "clock_forms": [
+    "(instant)"
+   ],
+   "residual_clock_tokens_after_norm": 0,
+   "tmp_tokens_after_norm": 0,
+   "semantic_paren_raw": 70,
+   "semantic_paren_after_norm": 70,
+   "clock_forms_all_whitelisted": false,
+   "n4b1_residual_zero": true,
+   "n4b2_semantic_preserved": true,
+   "n4b3_forms_covered": true,
+   "n4a_semantic_diff_survives_norm": true,
+   "n4a_mutated_token": "selftest 28/29",
+   "anti_hollow_identity_norm_would_flag": true
+  }
+ },
+ "anti_hollow_ok": true,
+ "fails": [],
+ "ok": true
+}

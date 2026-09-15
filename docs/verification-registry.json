@@ -585,16 +585,16 @@
    "capability": "随机化能力自检探针: 随机程序题(7 族, 含新陷阱族 pair_closest_abs_sum) + 随机数学题(5 古典 + 2 见证型); 每题**双路径验算**(不一致 ⇒ 拒发题); 判分**只认隐藏用例**且**整题全对**才算过; 失败模式分类(no_code/syntax_error/runtime_error/timeout/wrong_output/partial/no_final/wrong_final/**wrong_witness**)。R398 真机(seed 20260913, 题集 95d6bb1b1a6cdacf): 6 题 21 用例 21/21(73.33s)。R399 加硬: 每程序族强制并入 3-5 条**对抗用例**(只进 hidden, 不足则拒发题) + 见证型数学题(判定=**独立验证见证**, 不比对标签) ⇒ 同种子隐藏用例 21→35; 真机 agent 35/35 用例、6/6 整题全对(56.09s); **作弊解(mutation:hardcode) 用例级 22.2%→6.25% 且整题全对恒 0/3**",
    "level": "L4",
    "evidence_cmd": "python3 eval/probe/tasks.py --selftest && python3 eval/probe/grade.py --selftest && python3 eval/probe/run_probe.py --selftest && python3 eval/probe/run_probe.py --kind both --n 3 --seed 20260913 --solver agent --solve-timeout 420 --tag=run1",
-   "evidence_path": "eval/probe",
+   "evidence_path": "eval/capability/exp1-q28/probe_selfcheck_evidence.json",
    "evidence_generated_with": {
-    "evidence_kind": "directory",
-    "pin_status": "live",
-    "pin_reason": "evidence-overtaken",
-    "artifact_sha12": null,
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "8683b9a67318",
     "instrument": "eval/probe/tasks.py",
     "instrument_sha12": "80ba09e8bd50",
-    "binding": "audit-pin",
-    "audited_by_round": "R478"
+    "binding": "self-attested",
+    "audited_by_round": "EXP1-Q28"
    },
    "negative_control": "生成器 39/39(含双路径不一致⇒拒发题 + **每条 HARD_INPUTS 必须≥3 条** + 浅解负控: 只背公开样例的解法在 hidden 上必须 0 通过); 判定器 25/25(差一/死循环/语法错/单值硬编码/无围栏 CLI 回复+尾部状态行/产物路径回退, **见证型**: 错见证/越界/非整数必须 wrong_witness, 且把判定谓词打坏后必须被抓) + **反向负控**(比对恒真时差一解被判通过 ⇒ 判据非空心); 编排器 18/18(含**反死代码**: 见证型族必须可达; hardcode 作弊解仅 6.25% 用例级/0 整题)",
    "covers": "eval/probe/tasks.py, eval/probe/grade.py, eval/probe/run_probe.py, skills/independent-verification-before-claim/, src/agent.tests/SkillGeneralizationTests.cs",
