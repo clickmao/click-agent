@@ -54,7 +54,23 @@ public static class PromptCacheKpi
     {
         if (cacheableTokens <= 0) return Unknown;
         if (hit is null || hit.Value < 0) return Unknown;   // 未上报 → 不适用 (机检 PromptCacheRedlineTests 覆盖)
+        // R475: 命中量 > 可缓存上界 **在物理上不可能** (超出部分只可能来自比同会话上一轮更长的共享前缀)。
+        // 保留 >1 会直接污染红线统计 (R474 实测 hit=2,944 > cacheable=2,900 ⇒ 1.0152) ⇒ 该轮不适用 K2b,
+        // 归因交 shared_prefix 通道 (见 ExceedsSameSession / Channel) —— 禁用 min() 掩盖, 也禁静默 0。
+        if (hit.Value > cacheableTokens) return Unknown;
         return Math.Round(hit.Value / (double)cacheableTokens, 4);
+    }
+
+    /// <summary>
+    /// R475: 该轮命中量是否**超出同会话可复用上界** (min(prompt, 上一轮 prompt))。
+    /// 成立 ⇒ 命中不可能来自同会话前缀复用 (只可能来自更长的跨会话共享前缀/同文本缓存)
+    ///   ⇒ 归 `shared_prefix` 通道、`effective_hit_rate` 置 -1 (不适用), 防 >1 污染红线。
+    /// 单源: Channel / SharedPrefixHitTokens / SharedPrefixHitRate 共用本判据, 禁各处各写。
+    /// </summary>
+    public static bool ExceedsSameSession(int? hit, int promptTokens, int lastPromptTokens)
+    {
+        if (hit is null || hit.Value <= 0 || lastPromptTokens <= 0) return false;
+        return hit.Value > Math.Min(promptTokens, lastPromptTokens);
     }
 
     /// <summary>
@@ -114,27 +130,30 @@ public static class PromptCacheKpi
     ///                     (含提供方同文本缓存; 二者同 token 数下不可分 ⇒ 因果不在本字段声明内);
     ///   `unknown`       : prompt == 0          —— 无数据。
     /// </summary>
-    public static string Channel(int promptTokens, int lastPromptTokens)
-        => promptTokens <= 0 ? "unknown" : (lastPromptTokens > 0 ? "same_session" : "shared_prefix");
+    public static string Channel(int promptTokens, int lastPromptTokens, int? hit = null)
+        => promptTokens <= 0 ? "unknown"
+            : (lastPromptTokens > 0 && !ExceedsSameSession(hit, promptTokens, lastPromptTokens) ? "same_session" : "shared_prefix");
 
     /// <summary>跨会话共享前缀通道的命中 token (**仅该通道**; 其余通道 -1 ⇒ 禁双计; 未上报 -1, 不得冒充 0)。</summary>
     public static int SharedPrefixHitTokens(int? hit, int promptTokens, int lastPromptTokens)
     {
-        if (promptTokens <= 0 || lastPromptTokens > 0) return Unknown;
+        if (promptTokens <= 0) return Unknown;
+        if (lastPromptTokens > 0 && !ExceedsSameSession(hit, promptTokens, lastPromptTokens)) return Unknown;
         return HitTokens(hit);
     }
 
     /// <summary>跨会话共享前缀通道的命中占比 = hit/(hit+miss) (**仅该通道**; 其余通道/无分母/未上报 → -1)。</summary>
     public static double SharedPrefixHitRate(int? hit, int? miss, int promptTokens, int lastPromptTokens)
     {
-        if (promptTokens <= 0 || lastPromptTokens > 0) return Unknown;
+        if (promptTokens <= 0) return Unknown;
+        if (lastPromptTokens > 0 && !ExceedsSameSession(hit, promptTokens, lastPromptTokens)) return Unknown;
         return HitRate(hit, miss);
     }
 
-    /// <summary>R470 通道字段 (顺序固定): channel + 该通道命中量 + 该通道命中占比。</summary>
+    /// <summary>R470 通道字段 (顺序固定): channel + 该通道命中量 + 该通道命中占比。R475: 逐字段传 hit (超同会话上界 ⇒ 归共享前缀通道)。</summary>
     public static (string Key, object? Value)[] ChannelFields(int? hit, int? miss, int promptTokens, int lastPromptTokens) => new (string, object?)[]
     {
-        ("cache_channel", Channel(promptTokens, lastPromptTokens)),
+        ("cache_channel", Channel(promptTokens, lastPromptTokens, hit)),
         ("shared_prefix_hit_tokens", SharedPrefixHitTokens(hit, promptTokens, lastPromptTokens)),
         ("shared_prefix_hit_rate", SharedPrefixHitRate(hit, miss, promptTokens, lastPromptTokens)),
     };

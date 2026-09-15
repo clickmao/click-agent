@@ -426,6 +426,15 @@
       "DocRef": "docs/plans/v0.86.0-r469-hit-ceiling-bands.md",
       "Evidence": "eval/rover/r469/hit-ceiling.json",
       "Summary": "主调用 5/5 对 tail-only(share=1.0); 短档 49.5% 可达 97%, 长档上限 86.8~96.2% 结构性不可达; 负控 share 1.0→0.7918"
+    },
+    {
+      "Id": "dev-r475-replay-guard-and-accounting",
+      "Title": "R475 复述回放取实质答复 + 命中率口径禁>1 + 记账/证据面补齐",
+      "State": "done",
+      "Round": "R475",
+      "DocRef": "docs/plans/v0.91.0-r475-replay-and-cache-accounting.md",
+      "Evidence": "eval/rover/r475/verdict-r475.json",
+      "Summary": "R474 真端点暴露: R 臂 3/12 用户可见空正文徽标 + 6/12 模板应答 ⇒ 回放守卫(无实质答复则降级远端); 命中率 >1 三例 ⇒ channel 归 shared_prefix + effective=-1; recover 补 prompt/缓存字段(漏账 21.8%); 中继 v2 补 finish_reason/采样面"
     }
   ]
 }

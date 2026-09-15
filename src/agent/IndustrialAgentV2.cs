@@ -1537,6 +1537,10 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     ("repeat_skip", GateRepeatSkipOn ? "on" : "off"),
                     ("role", ActiveRole?.Id ?? "(null)"));
             }
+            // R475: 复述轮回放候选 —— 在门控块内确定 (必须先于 local_turn_gate 打点),
+            // 供块外的 Skip 执行支复用 (两处各自取历史会漂移, R466 单源教训)。
+            var repeatTurnFlag = false;
+            string? repeatPrevReply = null;
             if (_modelRouter is { TurnGateEnabled: true } && ActiveRole is not null)
             {
                 // R413 实测铁律: 判别提示必须**规格化** — role 全文/成长全文灌进去会挤爆生成预算,
@@ -1611,6 +1615,35 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     gateOutcome = agent.modelqueue.TurnGateOutcome.Decide(
                         agent.modelqueue.TurnGateVerdict.Pass, "gate:skip_rejected_nonack");
                 }
+                // R475: 纯复述族 = **明确指代** (「再讲一遍。」) ⇒ 本地消化 (回放上一条答复原文) 只在
+                // **存在可回放的实质答复**时成立。取不到 (空/模板/空正文徽标) ⇒ 撤销 Skip 降级远端 ——
+                // 不得以模板冒充答复 (R474 真端点实测: R 臂 12 轮 6 轮模板 + 3 轮用户可见横幅, 实质回答仅 3/12,
+                // 同轮 Arole 12/12 全实质)。判据单源: 用户轮 IsPureRepeat + Assistant 侧 IsReplayableReply。
+                repeatTurnFlag = gateOutcome.Decided
+                    && gateOutcome.Verdict == agent.modelqueue.TurnGateVerdict.Skip
+                    && agent.modelqueue.TurnGateJudge.IsPureRepeat(message.Content);
+                if (repeatTurnFlag)
+                {
+                    var hist0 = await GetConversationHistoryAsync(message.SessionId, ct).ConfigureAwait(false);
+                    for (var hi = hist0.Count - 1; hi >= 0; hi--)
+                    {
+                        var h0 = hist0[hi];
+                        if (h0.Role != MessageRole.Assistant) continue;
+                        if (!agent.modelqueue.ModelQueueRouter.IsReplayableReply(h0.Content)) continue;
+                        repeatPrevReply = h0.Content;
+                        break;
+                    }
+                    if (repeatPrevReply is null)
+                    {
+                        _modelRouter!.TurnGate.RecordRepeatDegrade();
+                        agent.config.AgentTelemetry.Emit("repeat_degrade_remote", "IndustrialAgentV2",
+                            ("msg_sha16", agent.modelqueue.LocalInputFingerprint.Sha16(message.Content)),
+                            ("msg_len", message.Content.Length.ToString()),
+                            ("reason", "no_replayable_prev"));
+                        gateOutcome = agent.modelqueue.TurnGateOutcome.Decide(
+                            agent.modelqueue.TurnGateVerdict.Pass, "gate:repeat_no_replayable_prev");
+                    }
+                }
                 // R444: 本轮是否真的走过本地 r1 (机械判定轮 = 未走) —— 决定真值字段是 -1 还是实测值。
                 var gateLocalCall = !(_modelRouter.TurnGate.LastBasis ?? "").StartsWith("mechanical", System.StringComparison.Ordinal);
                 agent.config.AgentTelemetry.Emit("local_turn_gate", "IndustrialAgentV2",
@@ -1647,6 +1680,7 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     ("prefilter", GatePrefilterOn ? "1" : "0"),
                     ("prefilter_nonack", _modelRouter.TurnGate.MechanicalNonAcks.ToString()),
                     ("prefilter_repeat", _modelRouter.TurnGate.MechanicalRepeats.ToString()),
+                    ("prefilter_repeat_degrade", _modelRouter.TurnGate.RepeatDegrades.ToString()),
                     ("prefilter_violations", _modelRouter.TurnGate.PrefilterViolations.ToString()),
                     ("role", ActiveRole.Id));
             }
@@ -1672,25 +1706,12 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     ("intent", intent));
                 // 本地消化: 零远端 token (回复由本地 r1 生成, 失败 → 固定兜底串)
                 // R465: 纯复述族 ⇒ 本地消化 = **回放上一条答复原文** (用户要的就是原样重来, 不需要新内容)。
-                // 取不到上一条答复 (空/无) ⇒ 退回既有兜底串 (仍零远端调用, 与 Ack 轮同形)。
-                var repeatTurn = agent.modelqueue.TurnGateJudge.IsPureRepeat(message.Content);
-                string? prevReply = null;
-                if (repeatTurn)
-                {
-                    var hist = await GetConversationHistoryAsync(message.SessionId, ct).ConfigureAwait(false);
-                    for (var hi = hist.Count - 1; hi >= 0; hi--)
-                    {
-                        var h = hist[hi];
-                        if (h.Role != MessageRole.Assistant) continue;
-                        var c = h.Content ?? string.Empty;
-                        if (c.Trim().Length == 0) continue;
-                        prevReply = c;
-                        break;
-                    }
-                }
-                var localReply = prevReply ?? await _modelRouter!.ComposeLocalSkipReplyAsync(prompt.UserMessage, ct).ConfigureAwait(false);
+                // R475: 回放候选在 Skip 判定点已按 `IsReplayableReply` 过滤 (实质答复才可回放) ⇒
+                //       走到这里时 `repeatTurnFlag ⇒ repeatPrevReply != null`; 无实质上一条的复述轮已在上面降级远端。
+                //       取不到 (非复述轮) ⇒ 退回既有兜底串 (仍零远端调用, 与 Ack 轮同形)。
+                var localReply = repeatPrevReply ?? await _modelRouter!.ComposeLocalSkipReplyAsync(prompt.UserMessage, ct).ConfigureAwait(false);
                 // R466: 结算类**单源** —— 打点与收口面优先级读同一个变量 (两处各写一份字符串必漂移)
-                var replyKind = prevReply is null ? (repeatTurn ? "repeat_no_prev" : "template")
+                var replyKind = repeatPrevReply is null ? (repeatTurnFlag ? "repeat_no_prev" : "template")
                                                   : agent.context.ContinuationBrief.SettleRepeatVerbatim;
                 _localSettleKind = replyKind;
                 agent.config.AgentTelemetry.Emit("local_gate_skip_reply", "IndustrialAgentV2",

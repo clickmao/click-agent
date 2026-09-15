@@ -2132,3 +2132,26 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 **下轮候选**：① **repeat-skip 回放上一条正文**（修 t6/t9 质量 + 省 token，改链 ⇒ 需 AOT 重发布 + IL 警告 0）；② **recover 通道加固**（空正文失败时降采样/换非推理模型兜底 + 给 recover 行补 prompt/cache 字段，补 21.8% 漏账）；③ `effective_hit_rate` 口径修正（`hit/min(prompt, cacheable)`）并回归红线 97%；④ 中继器具补采样参数/`finish_reason`/响应尾部落盘以定位空正文根因；⑤ `kpi.jsonl` 接入供应商 usage 真值列（与产品 `llm_call` 双列并行，禁混算）。
 
 **台账/索引（R474 附）**：`eval/rover/r474/refresh_master_index_r474.py`（由 r472 版机派生，`FROM,TO=459,474`）把「轮次索引」表扩到 **R441–R474**（`rows_added=3`，幂等重跑 0）；registry 追加 3 行（`r474.provider-truth-denominator-arms` L3 / `r474.relay-instrument-and-budget-guard` L4 / `r474.quality-regression-evidence` L2），`git diff --numstat` = **+86/−1**（IO 保形）。覆盖自检把 **473** 列为「无登记行」——属实：R473 为审计轮（只补 85 行 `evidence_generated_with`），无 id 行、无 improvements 块。
+
+## R475（2026-09-16）复述回放取实质答复 + 命中率口径禁 >1 + 记账面补齐
+
+**因果链**：R474 首次让真端点回话，暴露两件事：① **质量缺陷** —— R 臂 12 轮里 6 轮模板应答、3 轮用户可见「模型未产出正文…」徽标，实质回答仅 3/12（同轮 Arole 12/12 实质）；② **记账缺口** —— 产品 `llm_call` 自报 16 调用 / 55,432 prompt tokens，而供应商 usage 是 20 调用 / 70,890 tokens，差的 15,458（21.8%）全在 `llm_call_recover` 行（不带 prompt/缓存字段）。同时 R474 报告里 `effective_hit_rate` 出现 **3 例 >1**（1.0589 / 1.0066 / 1.0822），因为「同会话可缓存上界 = min(prompt, 上一条 prompt)」小于真实命中量（命中来自更长的共享前缀）。
+
+**改动（单源 + 可机检）**
+1. **回放守卫** `ModelQueueRouter.IsReplayableReply`：空/空白/`LocalSkipFallback` 模板/空正文徽标前缀 ⇒ 不可回放；纯复述轮取不到可回放答复 ⇒ **撤销 Skip 降级远端**（`gate:repeat_no_replayable_prev`），遥测 `repeat_degrade_remote` + `prefilter_repeat_degrade`。徽标文本改由 `EmptyBodyBannerPrefix` 单源常量拼出（判据作用于 Assistant 侧历史文本，非新增用户轮关键词表）。
+2. **记账补齐**：`llm_call_recover` 两条 emit（成功/异常路径）补 `prompt_tokens` + `cache_hit_tokens/cache_miss_tokens/cache_hit_rate`（同源 `first`，未上报 -1）。
+3. **口径禁 >1**：`EffectiveHitRate` 加 `hit > cacheable ⇒ -1` 钳制；`Channel/SharedPrefix*` 增加 `ExceedsSameSession` 判据（命中量超过同会话上界 ⇒ 归 `shared_prefix`）。
+4. **器具**：中继 v2（`relay_real_r475.py`，另存不改 R474 器具 = 证据↔器具绑定）补采样面 + `finish_reason/content_len/reasoning_len/reasoning_tokens/empty_body` + **逐调用**恒等式；`join_usage_truth.py` 双列并账（真值列/自记列硬分离，唯一跨列运算 gap.*，缺字段 ⇒ unreconciled 禁按 0）。
+
+**读数**
+| 项 | 值 |
+|---|---|
+| R474 质量缺陷（R 臂） | 实质 3/12 · 模板 6/12 · 可见徽标 3/12 |
+| R474 漏账（Arole / R） | 15,458 tok (21.8%) / 9,171 tok (31.1%) |
+| `effective_hit_rate` >1 | 3 例 ⇒ 本轮口径后不再可能（-1 + 归 shared_prefix） |
+| 中继 v2 自检 | S1–S7 **7/7**（零真实调用） |
+| 并账自检 | PC + NC1–NC4 **5/5**（真数据必有红 ⇒ 判据非恒绿） |
+| AOT | 15,343,232 B · sha16 `b03ee2bbb015e972` · IL 警告 0 · V0 rc=0 |
+| 定向单测 | R475AccountingTests **8/8** |
+
+**诚实边界**：零真实调用 ∧ 无 llama-server（MemAvailable 1984MB < 2650MB 闸）⇒ 质量修复**未做真机 E2E**；recover 字段闭合在真实流量上未验；命中折价未取到；R474 空正文根因仍未定（本轮只把定因所需证据面补上）。

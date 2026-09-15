@@ -1,0 +1,131 @@
+=== run 1 2026-09-16T04:55:47+08:00 ===
+  Determining projects to restore...
+  Restored /home/agentuser/AgentFramework/src/agent.workspace/agent.workspace.csproj (in 256 ms).
+  Restored /home/agentuser/AgentFramework/src/agent/agent.csproj (in 256 ms).
+  Restored /home/agentuser/AgentFramework/src/agent.logging/agent.logging.csproj (in 2 ms).
+  Restored /home/agentuser/AgentFramework/src/agent.vectormemory/agent.vectormemory.csproj (in 3 ms).
+  Restored /home/agentuser/AgentFramework/src/agent.io/agent.io.csproj (in 7 ms).
+  Restored /home/agentuser/AgentFramework/src/agent.llamacpp/agent.llamacpp.csproj (in 7 ms).
+  Restored /home/agentuser/AgentFramework/src/agent.exploration/agent.exploration.csproj (in 3 ms).
+  Restored /home/agentuser/AgentFramework/src/agent.core/agent.core.csproj (in 2 ms).
+  Restored /home/agentuser/AgentFramework/src/agent.contextgradient/agent.contextgradient.csproj (in 2 ms).
+  Restored /home/agentuser/AgentFramework/src/agent.config/agent.config.csproj (in 2 ms).
+  Restored /home/agentuser/AgentFramework/src/agent.frontendapi/agent.frontendapi.csproj (in 15 ms).
+  Restored /home/agentuser/AgentFramework/src/agent.codegen/agent.codegen.csproj (in 3 ms).
+  Restored /home/agentuser/AgentFramework/src/agent.skills/agent.skills.csproj (in 3 ms).
+  Restored /home/agentuser/AgentFramework/src/agent.roles/agent.roles.csproj (in 6 ms).
+  Restored /home/agentuser/AgentFramework/src/agent.recovery/agent.recovery.csproj (in 5 ms).
+  Restored /home/agentuser/AgentFramework/src/agent.output/agent.output.csproj (in 4 ms).
+  Restored /home/agentuser/AgentFramework/src/agent.modelqueue/agent.modelqueue.csproj (in 5 ms).
+/home/agentuser/AgentFramework/src/agent.rag/agent.rag.csproj : warning NU1510: PackageReference System.Text.Json will not be pruned. This package is automatically available and does not need to be referenced explicitly. Remove the PackageReference item. [/home/agentuser/AgentFramework/src/agent.tests/agentframework.tests.csproj]
+  Restored /home/agentuser/AgentFramework/src/agent.rag/agent.rag.csproj (in 37 ms).
+  2 of 20 projects are up-to-date for restore.
+  agent.config -> /home/agentuser/AgentFramework/src/agent.config/bin/Debug/net10.0/agent.config.dll
+/home/agentuser/AgentFramework/src/agent.rag/agent.rag.csproj : warning NU1510: PackageReference System.Text.Json will not be pruned. This package is automatically available and does not need to be referenced explicitly. Remove the PackageReference item.
+  agent.core -> /home/agentuser/AgentFramework/src/agent.core/bin/Debug/net10.0/agent.core.dll
+  agent.contextgradient -> /home/agentuser/AgentFramework/src/agent.contextgradient/bin/Debug/net10.0/agent.contextgradient.dll
+  agent.io -> /home/agentuser/AgentFramework/src/agent.io/bin/Debug/netstandard2.1/agent.io.dll
+  agent.vectormemory -> /home/agentuser/AgentFramework/src/agent.vectormemory/bin/Debug/net10.0/agent.VectorMemory.dll
+  agent.codegen -> /home/agentuser/AgentFramework/src/agent.codegen/bin/Debug/net10.0/agent.CodeGen.dll
+  agent.workspace -> /home/agentuser/AgentFramework/src/agent.workspace/bin/Debug/net10.0/agent.Workspace.dll
+  agent.rag -> /home/agentuser/AgentFramework/src/agent.rag/bin/Debug/net10.0/agent.RAG.dll
+  agent.recovery -> /home/agentuser/AgentFramework/src/agent.recovery/bin/Debug/net10.0/agent.Recovery.dll
+  agent.logging -> /home/agentuser/AgentFramework/src/agent.logging/bin/Debug/net10.0/agent.logging.dll
+  agent.gpu -> /home/agentuser/AgentFramework/src/agent.gpu/bin/Debug/net10.0/agent.gpu.dll
+  agent.output -> /home/agentuser/AgentFramework/src/agent.output/bin/Debug/net10.0/agent.output.dll
+  agent.roles -> /home/agentuser/AgentFramework/src/agent.roles/bin/Debug/net10.0/agent.roles.dll
+  agent.exploration -> /home/agentuser/AgentFramework/src/agent.exploration/bin/Debug/net10.0/agent.exploration.dll
+  agent.modelqueue -> /home/agentuser/AgentFramework/src/agent.modelqueue/bin/Debug/net10.0/agent.modelqueue.dll
+  agent.skills -> /home/agentuser/AgentFramework/src/agent.skills/bin/Debug/net10.0/agent.skills.dll
+  agent.llamacpp -> /home/agentuser/AgentFramework/src/agent.llamacpp/bin/Debug/net10.0/agent.llamacpp.dll
+  agent -> /home/agentuser/AgentFramework/src/agent/bin/Debug/net10.0/agent.dll
+  agent.frontendapi -> /home/agentuser/AgentFramework/src/agent.frontendapi/bin/Debug/net10.0/agent.frontendapi.dll
+  agentframework.tests -> /home/agentuser/AgentFramework/src/agent.tests/bin/Debug/net10.0/agentframework.tests.dll
+Test run for /home/agentuser/AgentFramework/src/agent.tests/bin/Debug/net10.0/agentframework.tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:34.47]     agentframework.tests.TelemetryPendingTests.Emit_Before_Configure_Is_Flushed_On_Configure [FAIL]
+  Failed agentframework.tests.TelemetryPendingTests.Emit_Before_Configure_Is_Flushed_On_Configure [3 ms]
+  Error Message:
+   Assert.Contains() Failure: Filter not matched in collection
+Collection: ["{\"ts\":\"2026-09-15T20:55:57.4472772Z\",\"seq\":1"···, "{\"ts\":\"2026-09-15T20:55:57.4484145Z\",\"seq\":2"···, "{\"ts\":\"2026-09-15T20:55:57.4488897Z\",\"seq\":3"···, "{\"ts\":\"2026-09-15T20:55:57.4679903Z\",\"seq\":4"···, "{\"ts\":\"2026-09-15T20:55:58.4362277Z\",\"seq\":5"···, ···]
+  Stack Trace:
+     at agentframework.tests.TelemetryPendingTests.Emit_Before_Configure_Is_Flushed_On_Configure() in /home/agentuser/AgentFramework/src/agent.tests/TelemetryPendingTests.cs:line 32
+   at System.RuntimeMethodHandle.InvokeMethod(ObjectHandleOnStack target, Void** arguments, ObjectHandleOnStack sig, BOOL isConstructor, ObjectHandleOnStack result)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Failed!  - Failed:     1, Passed:  1430, Skipped:     0, Total:  1431, Duration: 33 s - agentframework.tests.dll (net10.0)
+rc=1 run=1
+=== run 2 2026-09-16T04:56:29+08:00 ===
+  Determining projects to restore...
+/home/agentuser/AgentFramework/src/agent.rag/agent.rag.csproj : warning NU1510: PackageReference System.Text.Json will not be pruned. This package is automatically available and does not need to be referenced explicitly. Remove the PackageReference item. [/home/agentuser/AgentFramework/src/agent.tests/agentframework.tests.csproj]
+  All projects are up-to-date for restore.
+  agent.core -> /home/agentuser/AgentFramework/src/agent.core/bin/Debug/net10.0/agent.core.dll
+/home/agentuser/AgentFramework/src/agent.rag/agent.rag.csproj : warning NU1510: PackageReference System.Text.Json will not be pruned. This package is automatically available and does not need to be referenced explicitly. Remove the PackageReference item.
+  agent.config -> /home/agentuser/AgentFramework/src/agent.config/bin/Debug/net10.0/agent.config.dll
+  agent.rag -> /home/agentuser/AgentFramework/src/agent.rag/bin/Debug/net10.0/agent.RAG.dll
+  agent.recovery -> /home/agentuser/AgentFramework/src/agent.recovery/bin/Debug/net10.0/agent.Recovery.dll
+  agent.codegen -> /home/agentuser/AgentFramework/src/agent.codegen/bin/Debug/net10.0/agent.CodeGen.dll
+  agent.vectormemory -> /home/agentuser/AgentFramework/src/agent.vectormemory/bin/Debug/net10.0/agent.VectorMemory.dll
+  agent.workspace -> /home/agentuser/AgentFramework/src/agent.workspace/bin/Debug/net10.0/agent.Workspace.dll
+  agent.modelqueue -> /home/agentuser/AgentFramework/src/agent.modelqueue/bin/Debug/net10.0/agent.modelqueue.dll
+  agent.roles -> /home/agentuser/AgentFramework/src/agent.roles/bin/Debug/net10.0/agent.roles.dll
+  agent.exploration -> /home/agentuser/AgentFramework/src/agent.exploration/bin/Debug/net10.0/agent.exploration.dll
+  agent.contextgradient -> /home/agentuser/AgentFramework/src/agent.contextgradient/bin/Debug/net10.0/agent.contextgradient.dll
+  agent.io -> /home/agentuser/AgentFramework/src/agent.io/bin/Debug/netstandard2.1/agent.io.dll
+  agent.output -> /home/agentuser/AgentFramework/src/agent.output/bin/Debug/net10.0/agent.output.dll
+  agent.gpu -> /home/agentuser/AgentFramework/src/agent.gpu/bin/Debug/net10.0/agent.gpu.dll
+  agent.llamacpp -> /home/agentuser/AgentFramework/src/agent.llamacpp/bin/Debug/net10.0/agent.llamacpp.dll
+  agent.logging -> /home/agentuser/AgentFramework/src/agent.logging/bin/Debug/net10.0/agent.logging.dll
+  agent.skills -> /home/agentuser/AgentFramework/src/agent.skills/bin/Debug/net10.0/agent.skills.dll
+  agent -> /home/agentuser/AgentFramework/src/agent/bin/Debug/net10.0/agent.dll
+  agent.frontendapi -> /home/agentuser/AgentFramework/src/agent.frontendapi/bin/Debug/net10.0/agent.frontendapi.dll
+  agentframework.tests -> /home/agentuser/AgentFramework/src/agent.tests/bin/Debug/net10.0/agentframework.tests.dll
+Test run for /home/agentuser/AgentFramework/src/agent.tests/bin/Debug/net10.0/agentframework.tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:28.03]     agentframework.tests.FrontendAskSameConnTests.请求处理中触发ask_同连接答复可被读取并续跑 [FAIL]
+  Failed agentframework.tests.FrontendAskSameConnTests.请求处理中触发ask_同连接答复可被读取并续跑 [10 s]
+  Error Message:
+   System.IO.IOException : Unable to read data from the transport connection: Connection timed out.
+---- System.Net.Sockets.SocketException : Connection timed out
+  Stack Trace:
+     at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+   at agentframework.tests.FrontendAskSameConnTests.ReadLine(NetworkStream st) in /home/agentuser/AgentFramework/src/agent.tests/FrontendAskSameConnTests.cs:line 106
+   at agentframework.tests.FrontendAskSameConnTests.ReadUntil(NetworkStream st, String type, String reqId) in /home/agentuser/AgentFramework/src/agent.tests/FrontendAskSameConnTests.cs:line 118
+   at agentframework.tests.FrontendAskSameConnTests.请求处理中触发ask_同连接答复可被读取并续跑() in /home/agentuser/AgentFramework/src/agent.tests/FrontendAskSameConnTests.cs:line 177
+--- End of stack trace from previous location ---
+----- Inner Stack Trace -----
+   at System.Net.Sockets.Socket.Receive(Byte[] buffer, Int32 offset, Int32 size, SocketFlags socketFlags)
+   at System.Net.Sockets.NetworkStream.Read(Byte[] buffer, Int32 offset, Int32 count)
+
+Failed!  - Failed:     1, Passed:  1430, Skipped:     0, Total:  1431, Duration: 37 s - agentframework.tests.dll (net10.0)
+rc=1 run=2
+=== run 3 2026-09-16T04:57:15+08:00 ===
+  Determining projects to restore...
+/home/agentuser/AgentFramework/src/agent.rag/agent.rag.csproj : warning NU1510: PackageReference System.Text.Json will not be pruned. This package is automatically available and does not need to be referenced explicitly. Remove the PackageReference item. [/home/agentuser/AgentFramework/src/agent.tests/agentframework.tests.csproj]
+  All projects are up-to-date for restore.
+  agent.core -> /home/agentuser/AgentFramework/src/agent.core/bin/Debug/net10.0/agent.core.dll
+  agent.contextgradient -> /home/agentuser/AgentFramework/src/agent.contextgradient/bin/Debug/net10.0/agent.contextgradient.dll
+/home/agentuser/AgentFramework/src/agent.rag/agent.rag.csproj : warning NU1510: PackageReference System.Text.Json will not be pruned. This package is automatically available and does not need to be referenced explicitly. Remove the PackageReference item.
+  agent.rag -> /home/agentuser/AgentFramework/src/agent.rag/bin/Debug/net10.0/agent.RAG.dll
+  agent.config -> /home/agentuser/AgentFramework/src/agent.config/bin/Debug/net10.0/agent.config.dll
+  agent.workspace -> /home/agentuser/AgentFramework/src/agent.workspace/bin/Debug/net10.0/agent.Workspace.dll
+  agent.exploration -> /home/agentuser/AgentFramework/src/agent.exploration/bin/Debug/net10.0/agent.exploration.dll
+  agent.codegen -> /home/agentuser/AgentFramework/src/agent.codegen/bin/Debug/net10.0/agent.CodeGen.dll
+  agent.modelqueue -> /home/agentuser/AgentFramework/src/agent.modelqueue/bin/Debug/net10.0/agent.modelqueue.dll
+  agent.llamacpp -> /home/agentuser/AgentFramework/src/agent.llamacpp/bin/Debug/net10.0/agent.llamacpp.dll
+  agent.gpu -> /home/agentuser/AgentFramework/src/agent.gpu/bin/Debug/net10.0/agent.gpu.dll
+  agent.io -> /home/agentuser/AgentFramework/src/agent.io/bin/Debug/netstandard2.1/agent.io.dll
+  agent.vectormemory -> /home/agentuser/AgentFramework/src/agent.vectormemory/bin/Debug/net10.0/agent.VectorMemory.dll
+  agent.recovery -> /home/agentuser/AgentFramework/src/agent.recovery/bin/Debug/net10.0/agent.Recovery.dll
+  agent.skills -> /home/agentuser/AgentFramework/src/agent.skills/bin/Debug/net10.0/agent.skills.dll
+  agent.logging -> /home/agentuser/AgentFramework/src/agent.logging/bin/Debug/net10.0/agent.logging.dll
+  agent.roles -> /home/agentuser/AgentFramework/src/agent.roles/bin/Debug/net10.0/agent.roles.dll
+  agent.output -> /home/agentuser/AgentFramework/src/agent.output/bin/Debug/net10.0/agent.output.dll
+  agent -> /home/agentuser/AgentFramework/src/agent/bin/Debug/net10.0/agent.dll
+  agent.frontendapi -> /home/agentuser/AgentFramework/src/agent.frontendapi/bin/Debug/net10.0/agent.frontendapi.dll
+  agentframework.tests -> /home/agentuser/AgentFramework/src/agent.tests/bin/Debug/net10.0/agentframework.tests.dll
+Test run for /home/agentuser/AgentFramework/src/agent.tests/bin/Debug/net10.0/agentframework.tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:  1431, Skipped:     0, Total:  1431, Duration: 36 s - agentframework.tests.dll (net10.0)
+rc=0 run=3

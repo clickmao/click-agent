@@ -1,0 +1,59 @@
+{
+ "round": "R475",
+ "declared": "docs/plans/v0.91.0-r475-replay-and-cache-accounting.md (动手前落盘; 本文件为机器可读副本)",
+ "frozen_at": "before implementation (plan doc written first; criteria text below is verbatim from it)",
+ "criteria": [
+  {
+   "id": "C1",
+   "claim": "纯复述轮无「可回放实质答复」时**不得**本地消化 (禁模板冒充), 必须撤销 Skip 降级远端",
+   "check": "结构门 A3 (IndustrialAgentV2.cs 含 gate:repeat_no_replayable_prev 且为 Pass 判定; 含 IsReplayableReply 调用) + A4 (回放候选与执行支同源, 执行支无历史扫描)",
+   "criterion_type": "structural"
+  },
+  {
+   "id": "C2",
+   "claim": "回放守卫判据有判别力: 空/空白/模板/空正文徽标 ⇒ 拒回放; 实质答复 ⇒ 可回放",
+   "check": "单测 A1 (4 真 + 4 假) + A2 (徽标前缀判定, 含'非开头出现'用例)",
+   "criterion_type": "unit"
+  },
+  {
+   "id": "C3",
+   "claim": "命中量 > 同会话可缓存上界 ⇒ 该轮归 shared_prefix 且 effective_hit_rate = -1 (禁 >1 进红线统计)",
+   "check": "单测 C1–C4: Channel(prompt,last,hit) 三分 + EffectiveHitRate 钳制; 真实 43 条夹具零回归 (last=0 路径不变)",
+   "criterion_type": "unit"
+  },
+  {
+   "id": "C4",
+   "claim": "llm_call_recover 行必须带 prompt/缓存字段 (与 llm_call 同源, 未上报 -1)",
+   "check": "结构门 A5/A6 (两处 emit 含 prompt_tokens + cache_hit_tokens/miss/rate 且无 old form)",
+   "criterion_type": "structural"
+  },
+  {
+   "id": "C5",
+   "claim": "中继 v2 落盘 finish_reason / 正文长度 / 推理长度 / 推理token / 采样参数, 且逐调用恒等式 prompt==hit+miss 当场判",
+   "check": "selftest_relay_r475.py S1–S7 全绿 (零真实调用, 本地假上游)",
+   "criterion_type": "instrument_selftest"
+  },
+  {
+   "id": "C6",
+   "claim": "双列并账: 真值列与自记列硬分离; recover 缺字段 ⇒ unreconciled (禁按 0); 混算可机检",
+   "check": "join_usage_truth.py --selftest: PC_closed ∧ NC1/NC2/NC3 ∧ NC4 (真数据有红)",
+   "criterion_type": "instrument_selftest"
+  },
+  {
+   "id": "C7",
+   "claim": "改链后 AOT 重发布: IL 警告 0 且 V0 形态门 rc=0 (env -i, 无 libcoreclr)",
+   "check": "publish 日志 IL 计数 + printf '/exit' | env -i agenthost --version",
+   "criterion_type": "form_gate"
+  },
+  {
+   "id": "C8",
+   "claim": "全量单测 ×3 连续顺序隔离, 每次 Failed 0 且执行数一致",
+   "check": "eval/rover/r475/run_tests_x3.sh",
+   "criterion_type": "form_gate"
+  }
+ ],
+ "excluded": [
+  "真机 llama-server E2E 复演 R 臂 (内存闸 MemAvailable 1984MB < 2650MB ⇒ 本轮不开闸; 记诚实边界)",
+  "真实供应商新一轮调用 (配额/成本; 本轮零真实调用)"
+ ]
+}

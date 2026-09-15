@@ -424,6 +424,27 @@ public sealed class ModelQueueRouter : IModelQueueCaller
     /// <summary>被跳过轮的回复模板 (非 LLM; 保证"有回复"不变式, 且不新增任何内容)。</summary>
     public const string LocalSkipFallback = "收到，继续按当前方向推进，本轮不重新规划。";
 
+    /// <summary>
+    /// R475: 空正文降级徽标的**公共前缀** (单源) —— 两处徽标文案均由本常量拼出,
+    /// 回放守卫 (`IsReplayableReply`) 据此识别"非实质答复", 避免徽标文案改动后守卫失明。
+    /// </summary>
+    public const string EmptyBodyBannerPrefix = "⚠ 模型未产出正文";
+
+    /// <summary>
+    /// R475 回放守卫: 纯复述轮的本地消化 = **回放上一条 Assistant 答复原文**, 只对**实质答复**成立。
+    /// 空/模板/空正文徽标 ⇒ 回放等于把失败当答复端给用户 (R474 真端点实测: R 臂 12 轮里 6 轮模板 + 3 轮用户可见横幅,
+    /// 实质回答仅 3 轮, 而同轮 Arole 12/12 全实质) ⇒ 调用方**撤销 Skip 降级远端**, 不得以模板冒充。
+    /// 注: 本判据作用于 **Assistant 侧历史文本**, 且只吃产品自身常量 (非新增用户轮关键词表 ⇒ 不违 R458 铁律)。
+    /// </summary>
+    public static bool IsReplayableReply(string? reply)
+    {
+        if (string.IsNullOrWhiteSpace(reply)) return false;
+        var t = reply.Trim();
+        if (t == LocalSkipFallback) return false;
+        if (t.StartsWith(EmptyBodyBannerPrefix, StringComparison.Ordinal)) return false;
+        return true;
+    }
+
     /// <summary>当前手动覆盖模型 id (null = auto 自动选模模式) — /model 指令与 /status 展示</summary>
     public string? ManualOverride => _manualOverride;
 
@@ -1123,6 +1144,13 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                 ("retry_content_len", retried.Content?.Length ?? 0),
                 ("retry_reasoning_len", retried.ReasoningContent?.Length ?? 0),
                 ("retry_completion_tokens", retried.CompletionTokens),
+                // R475 记账补齐 (R474 实测: recover 行缺 prompt/缓存字段 ⇒ 产品自记账漏 15,458 prompt tok = Arole 的 21.8%):
+                // 取值**同源于 first/retried**, 禁二次估算; 未上报一律 -1 (不冒充 0)。
+                ("prompt_tokens", first.PromptTokens),
+                ("cache_hit_tokens", PromptCacheKpi.HitTokens(first.CacheHitTokens)),
+                ("cache_miss_tokens", PromptCacheKpi.MissTokens(first.CacheMissTokens)),
+                ("cache_hit_rate", PromptCacheKpi.HitRate(first.CacheHitTokens, first.CacheMissTokens)),
+                ("retry_prompt_tokens", retried.PromptTokens),
                 ("recovered", recovered));
             if (recovered) return retried;
 
@@ -1131,19 +1159,24 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             // R414: 本条 Content 是**面向用户**的降级文案 ⇒ 必须显式标记, 否则链侧按"不可见失败"丢弃 (= 用户看到空白)
             retried.ContentIsUserFacing = true;
             retried.Content =
-                "⚠ 模型未产出正文: 推理过程占满了输出预算 (已自动放宽输出预算并重试一次仍失败)。"
+                EmptyBodyBannerPrefix + ": 推理过程占满了输出预算 (已自动放宽输出预算并重试一次仍失败)。"
                 + "请重试, 或改用非推理模型 / 缩小任务范围。";
             return retried;
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
             agent.config.AgentTelemetry.Emit("llm_call_recover", "ModelQueueRouter",
-                ("model", entry.Id), ("reason", "empty_content"), ("recovered", false), ("error", ex.Message));
+                ("model", entry.Id), ("reason", "empty_content"), ("recovered", false), ("error", ex.Message),
+                // R475 记账补齐: 异常路径同样落 prompt/缓存取值 (同源 first), 未上报 -1。
+                ("prompt_tokens", first.PromptTokens),
+                ("cache_hit_tokens", PromptCacheKpi.HitTokens(first.CacheHitTokens)),
+                ("cache_miss_tokens", PromptCacheKpi.MissTokens(first.CacheMissTokens)),
+                ("cache_hit_rate", PromptCacheKpi.HitRate(first.CacheHitTokens, first.CacheMissTokens)));
             first.Success = false;
             first.Error = $"empty_content_retry_failed: {ex.Message}";
             first.ContentIsUserFacing = true;
             // 凭据/内部信息卫生: 可见文案**不带 ex.Message** (原始异常仍完整保留在 Error 字段, 供排查/日志)
-            first.Content = "⚠ 模型未产出正文, 且自动重试失败 — 请重试或切换模型。";
+            first.Content = EmptyBodyBannerPrefix + ", 且自动重试失败 — 请重试或切换模型。";
             return first;
         }
     }

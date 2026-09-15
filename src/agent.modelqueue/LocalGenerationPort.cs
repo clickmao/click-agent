@@ -518,6 +518,9 @@ public sealed class TurnGateCounters
     // R465: 纯复述族直接 Skip 计数 (零 r1 + 零远端调用)。
     private long _mechanicalRepeats;
 
+    // R475: 纯复述族**无可回放实质答复** ⇒ 撤销 Skip 降级远端的次数 (质量优先, 必须可见)。
+    private long _repeatDegrades;
+
     private long _cachePinned;
     private int _lastCachedTokens;
     private int _lastEvalTokens = -1;
@@ -617,6 +620,12 @@ public sealed class TurnGateCounters
 
     /// <summary>R465: 前置门直接 Skip —— 纯复述族 (只要求原样重来, 无新诉求)。</summary>
     public void RecordMechanicalRepeat() { Interlocked.Increment(ref _mechanicalRepeats); LastBasis = "mechanical:repeat→local"; }
+
+    /// <summary>R475: 纯复述族被**撤销 Skip** 的次数 (无实质上一条可回放 ⇒ 降级远端, 不得以模板冒充答复)。</summary>
+    public long RepeatDegrades => Interlocked.Read(ref _repeatDegrades);
+
+    /// <summary>R475: 纯复述轮无实质答复可回放 ⇒ 降级远端 (质量优先于省钱; 判据可见)。</summary>
+    public void RecordRepeatDegrade() { Interlocked.Increment(ref _repeatDegrades); LastBasis = "gate:repeat_no_replayable_prev→remote"; }
 
     /// <summary>R434: r1 判 Skip 但结构确认失败 (非认可族) ⇒ 降级 Pass, 宁多走一次远端。</summary>
     public void RecordSkipRejected() { Interlocked.Increment(ref _skipRejected); LastBasis = "gate:skip_rejected_nonack→remote"; }

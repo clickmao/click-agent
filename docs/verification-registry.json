@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R474",
+ "updated_round": "R475",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -2937,7 +2937,7 @@
     "instrument": "eval/rover/r474/settle_r474.py",
     "instrument_sha12": "5098337fbf78",
     "binding": "audit-pin",
-    "audited_by_round": "R474"
+    "audited_by_round": "R473"
    },
    "negative_control": "预注册 C2(relay==host llm_call) 字面 FAIL 保留不覆盖(Arole 20vs16, R 9vs6) + 事后归因 P1(llm_call+llm_call_recover 恒等成立) 单列; 中止试点 2 次调用单独计入成本; 桩口径与真值双列并出(禁混算)",
    "covers": [
@@ -2970,7 +2970,7 @@
     "instrument": "eval/rover/r474/selfcheck_guard.py",
     "instrument_sha12": "bb36323d3570",
     "binding": "audit-pin",
-    "audited_by_round": "R474"
+    "audited_by_round": "R473"
    },
    "negative_control": "负控 cap=0 必 402 且 usage-*.jsonl 无 status>0 转发行为; 正控(黑洞上游)必有转发尝试 ⇒ 证明闸不是恒 402 的哑器; 自检零 API 调用, 不外发",
    "covers": [
@@ -2994,7 +2994,7 @@
     "instrument": "eval/rover/r474/settle_r474.py",
     "instrument_sha12": "5098337fbf78",
     "binding": "audit-pin",
-    "audited_by_round": "R474"
+    "audited_by_round": "R473"
    },
    "negative_control": "同轮 Arole 对照(turns-Arole.jsonl) + recover 双态对照(recovered true/false) + 归因边界明写(空正文为供应商侧失败模式, n=3/4 不足以断言与门控相关, 器具缺采样参数/finish_reason ⇒ 根因未定位)",
    "covers": [
@@ -3007,6 +3007,59 @@
     "docs/reports/r474-real-provider-arms.md"
    ],
    "owner_round": "R474"
+  },
+  {
+   "id": "r475.repeat-replay-substantive-guard",
+   "level": "L2",
+   "capability": "纯复述轮的回放守卫: 只有存在**可回放的实质答复**才允许本地消化; 上一条为空/模板/空正文徽标 ⇒ 撤销 Skip 降级远端(禁以模板冒充答复)。判据单源: 用户轮 IsPureRepeat + Assistant 侧 ModelQueueRouter.IsReplayableReply(基于产品自身徽标常量, 非新增关键词表)",
+   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj --filter R475AccountingTests",
+   "evidence_path": "src/agent.tests/R475AccountingTests.cs",
+   "negative_control": "A1 反向样例(空/空白/模板/徽标 ⇒ false) ∧ A3 结构门(判定必须是 Pass, 出现 Skip 即判红) ⇒ 判据非恒真",
+   "covers": [
+    "src/agent/IndustrialAgentV2.cs",
+    "src/agent.modelqueue/ModelQueueRouter.cs",
+    "src/agent.tests/R475AccountingTests.cs",
+    "docs/reports/r475-replay-and-cache-accounting.md"
+   ],
+   "owner_round": "R475"
+  },
+  {
+   "id": "r475.recover-channel-accounting-fields",
+   "level": "L2",
+   "capability": "llm_call_recover 行补齐 prompt_tokens/cache_hit_tokens/cache_miss_tokens/cache_hit_rate(与 llm_call 同源, 未上报 -1) ⇒ 产品自记账不再漏账(R474 实测漏 15,458 prompt tokens = Arole 的 21.8%)",
+   "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj --filter R475AccountingTests",
+   "evidence_path": "src/agent.tests/R475AccountingTests.cs",
+   "negative_control": "A5/A6 反向断言: 任一 emit 出现 old form(无 prompt_tokens 或无 cache_hit_tokens) ⇒ 判红; 且字段缺失时取值为 -1(不冒充 0)",
+   "covers": [
+    "src/agent.modelqueue/ModelQueueRouter.cs",
+    "eval/rover/r475/usage-truth.json"
+   ],
+   "owner_round": "R475"
+  },
+  {
+   "id": "r475.usage-truth-twin-column",
+   "level": "L2",
+   "capability": "双列并账(供应商 usage 真值列 vs 产品自记列): 硬分离禁混算; recover 缺字段 ⇒ unreconciled(禁按 0); 唯一跨列运算 gap.* 显式列名; 并账闭合判据 truth.prompt == product.prompt_call + product.prompt_recover",
+   "evidence_cmd": "python3 eval/rover/r475/join_usage_truth.py",
+   "evidence_path": "eval/rover/r475/usage-truth.json",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "live",
+    "pin_reason": "worktree-only",
+    "artifact_sha12": null,
+    "instrument": "eval/rover/r475/join_usage_truth.py",
+    "instrument_sha12": "3404cd9b7f10",
+    "binding": "audit-pin",
+    "audited_by_round": "R475"
+   },
+   "negative_control": "join_usage_truth.py --selftest: NC1 缺字段 ⇒ prompt_delta=null(不冒充 0) ∧ NC2 恒等式破坏 ⇒ J1 红 ∧ NC3 混算可辨 ∧ NC4 真数据必有红(判别力非恒绿)",
+   "covers": [
+    "eval/rover/r475/join_usage_truth.py",
+    "eval/rover/r475/usage-truth.json",
+    "eval/rover/r475/relay_real_r475.py",
+    "eval/rover/r475/selftest_relay_r475.py"
+   ],
+   "owner_round": "R475"
   }
  ],
  "aot_check_policy": "release_tag_only",

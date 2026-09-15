@@ -1,0 +1,60 @@
+{
+ "round": "R475",
+ "kind": "质量修复 + 记账口径 + 器具硬化 (含产品改链 ⇒ AOT 重发布)",
+ "verdicts": {
+  "C1": {
+   "status": "PASS",
+   "evidence": "R475AccountingTests A3/A4; dotnet test 定向 8/8"
+  },
+  "C2": {
+   "status": "PASS",
+   "evidence": "R475AccountingTests A1/A2 (4 真 4 假 + 前缀判定)"
+  },
+  "C3": {
+   "status": "PASS",
+   "evidence": "R475AccountingTests C1-C4 + PromptCacheChannelTests/PromptCacheKpiTests 零回归"
+  },
+  "C4": {
+   "status": "PASS",
+   "evidence": "R475AccountingTests A5/A6 (两处 emit 同源字段)"
+  },
+  "C5": {
+   "status": "PASS",
+   "evidence": "selftest_relay_r475.py S1-S7 = 7/7 (零真实调用)"
+  },
+  "C6": {
+   "status": "PASS_with_red_on_legacy",
+   "evidence": "join_usage_truth --selftest PC+NC1-4 全绿; 真数据(R474 产物) J2/J3 红 = 修复前产物无 recover 字段 (预期)"
+  },
+  "C7": {
+   "status": "PASS",
+   "evidence": "/tmp/pub_r475/agenthost sha256 b03ee2bbb015e972… 15,343,232B, IL 警告 0, env -i --version rc=0, ldd 无 libcoreclr"
+  },
+  "C8": {
+   "status": "PASS_WITH_FLAKE",
+   "evidence": "3 连跑: run3 = 1431/1431 Failed 0; run1/run2 各 1 例 (FrontendAskSameConnTests 10s 超时 / TelemetryPendingTests 3ms) ⇒ 隔离复跑 ×5 全绿 (4/4 ×5) ⇒ 判为并行/负载 flake; FrontendAskSameConnTests 在**改前**首跑亦红过 ⇒ 先于本轮存在; 见 eval/rover/r475/tests_x3_r475.log"
+  }
+ },
+ "posthoc": [
+  {
+   "id": "P1",
+   "note": "join_usage_truth 首跑 J1 判红系器具缺陷 (对无 identity_ok 字段的 R474 行按 not None 误判) ⇒ 改为显式存在性判定 + 标注 identity_checked_by; 修正后 29/29 成立, 与 R474 报告一致"
+  },
+  {
+   "id": "P2",
+   "note": "selftest_relay 首跑 2 次失败 (health 缺 blocked 字段 / 上游被提前 shutdown) ⇒ 均为器具自捕, 已修; 未影响判据语义"
+  },
+  {
+   "id": "P3",
+   "note": "首次全量单测 2-3 例红: 新增 3 行 registry 触发 R2f 产品面证据绑定闸 (88/89) ⇒ 用 eval/capability/bind_evidence.py --apply 补 evidence_generated_with; 该器具把 audited_by_round 写死为 R473 ⇒ 已对本轮新增行手工改回 R475 (校验只要求 ^R\\d+$)。器具常量应参数化, 列下轮候选"
+  },
+  {
+   "id": "P4",
+   "note": "AOT 在注释修订后重发布 (同一批源码): sha16 63dbe9f5f20e19f1 → b03ee2bbb015e972, 体积与 IL 警告数不变 ⇒ 以 b03ee2bbb015e972 为 R475 正式形态"
+  },
+  {
+   "id": "P5",
+   "note": "全量 ×3 未达成三次全零 (1 例 flake×2 次): 需在 2 vCPU/1.9GB 环境下把并行集合并行度下调或给 socket/telemetry 用例加隔离标签; 本轮以「隔离 ×5 全绿 + 改前已现」定性, 未改测试语义"
+  }
+ ]
+}

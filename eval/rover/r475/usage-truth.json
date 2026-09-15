@@ -1,0 +1,116 @@
+{
+ "round": "R475",
+ "mix_forbidden": true,
+ "column_rule": "truth/product 分列; 唯一跨列运算是 gap.*, 且必须显式列名",
+ "arms": {
+  "Arole": {
+   "truth": {
+    "source": "provider_usage_relay",
+    "identity_checked_by": "recomputed",
+    "calls": 20,
+    "prompt_tokens": 70890,
+    "cache_hit_tokens": 61952,
+    "cache_miss_tokens": 8938,
+    "hit_rate": 0.8739,
+    "cost_cny_upper": 0.024865,
+    "identity_violations": []
+   },
+   "product": {
+    "source": "product_telemetry",
+    "calls": 16,
+    "calls_recover": 4,
+    "prompt_tokens_call": 55432,
+    "prompt_tokens_recover": null,
+    "recover_rows_missing_prompt": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "recover_fields_present": false
+   },
+   "gap": {
+    "calls_delta": 0,
+    "prompt_delta": null,
+    "prompt_delta_share": null,
+    "unreconciled_tokens_upper": 15458,
+    "unreconciled_share_upper": 0.2181,
+    "unreconciled_allowed_use": "accounting_gap_evidence_only_forbidden_as_kpi_denominator",
+    "note": "prompt_delta = truth.prompt − (product.prompt_call + product.prompt_recover)；recover 缺字段 ⇒ null (禁按 0 记账)"
+   },
+   "asserts": {
+    "J1_truth_identity": true,
+    "J2_recover_fields_present": false,
+    "J3_reconcile_closed": false,
+    "J4_no_mix": true
+   }
+  },
+  "R": {
+   "truth": {
+    "source": "provider_usage_relay",
+    "identity_checked_by": "recomputed",
+    "calls": 9,
+    "prompt_tokens": 29477,
+    "cache_hit_tokens": 22912,
+    "cache_miss_tokens": 6565,
+    "hit_rate": 0.7773,
+    "cost_cny_upper": 0.01158,
+    "identity_violations": []
+   },
+   "product": {
+    "source": "product_telemetry",
+    "calls": 6,
+    "calls_recover": 3,
+    "prompt_tokens_call": 20306,
+    "prompt_tokens_recover": null,
+    "recover_rows_missing_prompt": [
+     0,
+     1,
+     2
+    ],
+    "recover_fields_present": false
+   },
+   "gap": {
+    "calls_delta": 0,
+    "prompt_delta": null,
+    "prompt_delta_share": null,
+    "unreconciled_tokens_upper": 9171,
+    "unreconciled_share_upper": 0.3111,
+    "unreconciled_allowed_use": "accounting_gap_evidence_only_forbidden_as_kpi_denominator",
+    "note": "prompt_delta = truth.prompt − (product.prompt_call + product.prompt_recover)；recover 缺字段 ⇒ null (禁按 0 记账)"
+   },
+   "asserts": {
+    "J1_truth_identity": true,
+    "J2_recover_fields_present": false,
+    "J3_reconcile_closed": false,
+    "J4_no_mix": true
+   }
+  }
+ },
+ "verdicts": [
+  {
+   "arm": "Arole",
+   "asserts": {
+    "J1_truth_identity": true,
+    "J2_recover_fields_present": false,
+    "J3_reconcile_closed": false,
+    "J4_no_mix": true
+   }
+  },
+  {
+   "arm": "R",
+   "asserts": {
+    "J1_truth_identity": true,
+    "J2_recover_fields_present": false,
+    "J3_reconcile_closed": false,
+    "J4_no_mix": true
+   }
+  }
+ ],
+ "red": [
+  "Arole.J2_recover_fields_present",
+  "Arole.J3_reconcile_closed",
+  "R.J2_recover_fields_present",
+  "R.J3_reconcile_closed"
+ ]
+}
