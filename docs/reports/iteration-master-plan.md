@@ -342,3 +342,44 @@ python3 eval/run_round.py <新轮号> "revert-verify <原commit>" --quick   # �
 - 器械: G1 重建 18/18｜G1b 忠实性 9/9｜G2 prev 多样性下界（3 / 长 1）｜**G3 真错配 8/8**；C7 恒等式 62/62 闭合 R447 C5 债；跨轮确定性 Σgen 3215/3215 相同。
 - 证据: `eval/rover/r448/README-evidence.md`｜计划: `docs/plans/v0.68.0-r448-judge-think-length-cap.md`｜登记: registry `r448.judge-think-length-cap`。
 - 下轮候选: ①判官**预填充**侧压缩（2764 tok/10 调用）等价性消融 ②判官+门合并单次本地调用 ③门通道同构消融 ④把「跨臂相等类断言须先机检臂定义可满足」升为器具通用闸。
+
+## R441–R458 轮次索引（2026-09-15 回填；机取自 `docs/verification-registry.json`，勿手改）
+
+> 每轮的权威内容在其 `docs/plans/v0.xx…` 计划、`docs/improvements.md` 对应块与 registry 行；本表只做索引与状态汇总，避免双写漂移。R449 起全部未 push（推送暂停令）。
+
+| 轮 | registry id | level | 能力/结论（截断 90 字） |
+|---|---|---|---|
+| R441 | `r441.gain-window-floor-and-position-curve` | L3 | **收益窗口下界 + 位置曲线**（同网格实测 A 分母, 8 臂, 被测二进制 sha 与 R439/R440 同）: 单跳 1/8 → **+13.77%**（A 17260→… |
+| R442 | `r442.accounting-and-asymmetry` | L2 | **口径钉死 + 两臂内联块不对称定量 + D7 分母断言**（纯离线复算 R441 档案）: 三档口径 ①D_remote W8 13.77/W20 3.20/M20 46.19… |
+| R443 | `r443.local-token-truth-and-replay-ablation` | L2 | **本地 r1 成本 tokenizer 真值化 + 「被跳轮不回放」同网格单变量消融**: 产品侧新增真值遥测 (tokens_evaluated/prompt_n/gen, l… |
+| R444 | `r444.instrument-acceptance` | L4 | L2 器具验收面(正控+负控成对) |
+| R444 | `r444.prefilter-cost` | L3 | 前置门本地 r1 成本下降(真值口径) |
+| R444 | `r444.prefilter-equivalence` | L3 | **廉价必要条件前置 (¬Ack ⇒ Pass) — 可证等价 + 含本地真值口径首次转正**: 把既有的后置否决 `Skip ∧ ¬MechanicalAck ⇒ Pass` 反… |
+| R444 | `r444.separability-precheck` | L4 | R423 可分性预检(Skip⇒Ack 必要性) |
+| R444 | `r444.short-tier-truth` | L3 | 短档/单跳档本地真值补列 |
+| R444 | `r444.status-single-audit` | L4 | L3 单一审计面(registry 派生) |
+| R444 | `r444.writer-arbitration` | L4 | L4 写者仲裁(心跳+pre-commit) |
+| R445 | `r445.judge-prefilter-controls` | L4 | 器具三控(正控/负控/fail-closed) |
+| R445 | `r445.judge-prefilter-separability` | L1 | 判官侧机械前置的可分性(消息面) |
+| R445 | `r445.prev-reply-face-indicative` | L1 | 上一轮来源面的指示性上界(不作判据) |
+| R446 | `r446.channel-marks-multivariant` | L3 | 器具: 判官 prompt 多形态派生(公共前缀标记) + 零回归 |
+| R446 | `r446.judge-determinism` | L1 | 判官路径确定性(真机产品路径) |
+| R446 | `r446.judge-prompt-compact` | L1 | 判官 prompt 瘦身消融(开关默认关) |
+| R446 | `r446.zero-token-settlement-precheck` | L1 | 判官 0-token 结算可行性(消息面) —— 负结论 |
+| R447 | `r447.judge-decode-constraint-grammar` | L1 | 判官解码侧约束(单字母 GBNF)等价性真机消融 —— 负结论: 生成可降 98.9% 但判决不等价(18/18 恒 A), 不得启用 |
+| R448 | `r448.judge-think-length-cap` | L3 | 判官 prompt 侧「限长思考」（保留思考、只压缩长度）真机消融 —— 负结论: 生成仅降 33.0%（178.6→119.7）且预算 128 下 61.1% 思考被截断、与产品… |
+| R449 | `r449.real-traffic-external-validity` | L3 | 真实流量外部效度裁决 (机械面, 与判官无关): 可跳轮 = Ack ∧ ¬MechanicalPass ⇒ state.db 1542 轮中 ack 0/1542、gate_el… |
+| R449 | `r449.think-memory-switch` | L2 | think-memory 四档开关 (on 默认/off/recall0/write0) + 反空心召回计数 + HitCount 与 refs 采纳次数分离 (修「命中恒 0」根… |
+| R449 | `r449.turn-gate-parse-crosslang-fixture` | L2 | 门判解析器 (TurnGateJudge.Parse) 跨语言同位夹具: 13 用例在 C# 与 py 两侧逐条同判, 解析索引口径 = UTF-16 码元 (emoji 代理对不… |
+| R450 | `r450.gate-prompt-anchor` | L2 | 门判**实发 prompt** 落盘锚 (env AGENTFRAMEWORK_GATE_PROMPT_DUMP, 默认关/零产品变更) + 零反射 JSON 转义 + UTF8 … |
+| R451 | `r451.real-traffic-reprobe` | L2 | 真实流量外部效度探针重跑: 文本层锚(tpl_len=280/seed_sha16 与 R443 逐位相同)与行为层(I1 正控)分离判据; 残余失锚定位=调用/解码面; 判决 V… |
+| R452 | `r452.product-native-real-traffic` | L2 | 产品原生跑真实语料(零重建): 生产行为门 r1=0/Skip=0; 判官强制面 14 票 S 全被机械认可族守卫否决(13 票落『继续下一轮』驱动类); 门判 prompt 无 … |
+| R453 | `r453.absorb-channel-audit` | L2 | 真实分布 token 通道台账 + 吞并轮通道审计: 7/51=13.7% 轮 0 远端调用(上界省 54,852 tok=14.0%); 前置门省 14 次本地 r1=7,204… |
+| R454 | `r454.codex-external-contrast` | L2 | 外部对照: codex-cli 0.154.0 真实请求面(捕获字节) vs click-agent —— 静态面 34,542B/9工具 vs 4,300B/0工具; codex… |
+| R455 | `r455.module-coverage-ab` | L2 | 同环境/同输入/同模型(deepseek-flash)/零重试的模块覆盖对照: 我方 0/4 产物 + 1 次问询 vs codex 4/4 产物 + 0 问询; M1 缓存 86… |
+| R456 | `r456.action-loop` | L2 | 动作环(声明/解析/回灌/执行)链机制修复: 同套件(同夹具/同6轮/同模型)产物 0/4 -> 2/4(count.txt=4, merged.txt=ALPHA/BETA/GA… |
+| R457 | `r457.effect-closure` | L3 | 动作环效果收口(真机 E2E): 同夹具产物 2/4 -> 4/4 (stats.txt=chars=14, first.txt=R455 fixture note), 磁盘伪造 … |
+| R458 | `r458.humanized-continuation` | L2 | 承接轮人性化(真机 E2E, 同夹具/同 6 轮/同模型): T5「继续」→ 逐项承接 4 个真实产物 + 「继续什么」反问 + 3 个具体可选项 (固定示例菜单 `(如: 搜索/… |
+
+覆盖自检: 轮号 [441, 442, 443, 444, 445, 446, 447, 448, 449, 450, 451, 452, 453, 454, 455, 456, 457, 458]；registry rows=102，updated_round=R458。
+
