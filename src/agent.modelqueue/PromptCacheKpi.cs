@@ -100,4 +100,42 @@ public static class PromptCacheKpi
         ("cacheable_tokens", CacheableTokens(promptTokens, lastPromptTokens)),
         ("effective_hit_rate", EffectiveHitRate(hit, CacheableTokens(promptTokens, lastPromptTokens))),
     };
+
+    /// <summary>
+    /// R470: 命中**归因通道**。机检真实远端遥测 (`data/telemetry/host.jsonl`, 43 条 `llm_call`) 的结论:
+    /// `effective_hit_rate` **43/43 = -1** (全部无同会话前驱 ⇒ 真实流量几乎全是「每会话一次调用」),
+    /// 而提供方侧**确实命中** 2,048~2,304 tok (32/43 命中 &gt; 0, 64-token 单元对齐)
+    /// ⇒ 既有 K2b 通道对**真实流量结构性不可测**: 收益客观存在却无度量、无驱动信号。
+    ///
+    /// 本通道**只增不改**: 既有 `cacheable_tokens` / `effective_hit_rate` 与红线阈值一字不动。
+    /// 语义 (last = 同会话上一轮已发 prompt, 无记录 = 0):
+    ///   `same_session`  : last &gt; 0            —— 会话内前缀复用 (R380 既定区间);
+    ///   `shared_prefix` : last == 0 ∧ prompt &gt; 0 —— 无同会话前驱 ⇒ 命中只可能来自**跨会话共享前缀**
+    ///                     (含提供方同文本缓存; 二者同 token 数下不可分 ⇒ 因果不在本字段声明内);
+    ///   `unknown`       : prompt == 0          —— 无数据。
+    /// </summary>
+    public static string Channel(int promptTokens, int lastPromptTokens)
+        => promptTokens <= 0 ? "unknown" : (lastPromptTokens > 0 ? "same_session" : "shared_prefix");
+
+    /// <summary>跨会话共享前缀通道的命中 token (**仅该通道**; 其余通道 -1 ⇒ 禁双计; 未上报 -1, 不得冒充 0)。</summary>
+    public static int SharedPrefixHitTokens(int? hit, int promptTokens, int lastPromptTokens)
+    {
+        if (promptTokens <= 0 || lastPromptTokens > 0) return Unknown;
+        return HitTokens(hit);
+    }
+
+    /// <summary>跨会话共享前缀通道的命中占比 = hit/(hit+miss) (**仅该通道**; 其余通道/无分母/未上报 → -1)。</summary>
+    public static double SharedPrefixHitRate(int? hit, int? miss, int promptTokens, int lastPromptTokens)
+    {
+        if (promptTokens <= 0 || lastPromptTokens > 0) return Unknown;
+        return HitRate(hit, miss);
+    }
+
+    /// <summary>R470 通道字段 (顺序固定): channel + 该通道命中量 + 该通道命中占比。</summary>
+    public static (string Key, object? Value)[] ChannelFields(int? hit, int? miss, int promptTokens, int lastPromptTokens) => new (string, object?)[]
+    {
+        ("cache_channel", Channel(promptTokens, lastPromptTokens)),
+        ("shared_prefix_hit_tokens", SharedPrefixHitTokens(hit, promptTokens, lastPromptTokens)),
+        ("shared_prefix_hit_rate", SharedPrefixHitRate(hit, miss, promptTokens, lastPromptTokens)),
+    };
 }

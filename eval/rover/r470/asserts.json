@@ -1,0 +1,113 @@
+{
+ "round": "R470",
+ "generated_at": "2026-09-15T18:29:20.189011+00:00",
+ "source": "data/telemetry/host.jsonl",
+ "source_sha256": "2a9e34490b2d92e776d5a9c364daa64adc9168cbc9bc69a1787bf2438cd59a13",
+ "filter": "point==llm_call",
+ "n_calls": 43,
+ "n_with_same_session_predecessor": 0,
+ "channels": {
+  "shared_prefix": 43
+ },
+ "shared_prefix_hit_histogram": {
+  "127": 2,
+  "256": 2,
+  "2048": 19,
+  "2176": 7,
+  "2304": 2
+ },
+ "unaligned_hits": [
+  {
+   "hit": 127,
+   "prompt": 261,
+   "session": ""
+  },
+  {
+   "hit": 127,
+   "prompt": 261,
+   "session": ""
+  }
+ ],
+ "shared_prefix_hit_rate_min_med_max": [
+  0.1666,
+  0.4086,
+  0.7079
+ ],
+ "k2b_effective_hit_rate": {
+  "minus_one": 43,
+  "applicable": 0,
+  "verdict": "真实流量 100% 不适用 (无同会话前驱) ⇒ 既有 K2b 通道对真实流量不可测"
+ },
+ "checks": [
+  {
+   "id": "C1",
+   "desc": "真实 llm_call 行数 = 43 (BOM 行不得被吞)",
+   "ok": true,
+   "value": 43
+  },
+  {
+   "id": "C2",
+   "desc": "归因守恒: shared_prefix=43 ∧ same_session=0 ∧ 总数=43",
+   "ok": true,
+   "value": {
+    "shared_prefix": 43
+   }
+  },
+  {
+   "id": "C3",
+   "desc": "shared_prefix 通道命中>0 的调用 ≥30",
+   "ok": true,
+   "value": 32
+  },
+  {
+   "id": "C3b",
+   "desc": "命中直方图 = {2048:19, 2176:7, 2304:2, 256:2, 127:2}",
+   "ok": true,
+   "value": {
+    "127": 2,
+    "256": 2,
+    "2048": 19,
+    "2176": 7,
+    "2304": 2
+   }
+  },
+  {
+   "id": "C4",
+   "desc": "非 64 对齐命中必须逐条列出 (实测 2 条, hit=127)",
+   "ok": true,
+   "value": [
+    {
+     "hit": 127,
+     "prompt": 261,
+     "session": ""
+    },
+    {
+     "hit": 127,
+     "prompt": 261,
+     "session": ""
+    }
+   ]
+  },
+  {
+   "id": "C5",
+   "desc": "K2b 有效命中率对真实流量结构性不可测: 同会话前驱=0 ⇒ eff=-1 43/43",
+   "ok": true,
+   "value": {
+    "same_session_predecessors": 0,
+    "eff_-1": 43
+   }
+  },
+  {
+   "id": "C6",
+   "desc": "负控 a/b/c 全绿 ∧ d 反写后原判据不成立",
+   "ok": true,
+   "value": {
+    "a_有前驱时shared字段必须-1": true,
+    "b_未上报记-1不得0": true,
+    "c_prompt0记unknown": true,
+    "d_反写规则下C2必红": true
+   }
+  }
+ ],
+ "failed": []
+}

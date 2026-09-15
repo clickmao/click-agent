@@ -101,9 +101,11 @@ public class PromptCacheKpiTests
         Assert.Equal(3, dataBlocks.Length);                     // 带真实响应对象的三处
         foreach (var b in dataBlocks)
             // R380 加强: 三处都要同时铺 R377 三元组 + R380 二元组 (只铺前三个 → "算了不用"复发)
-            Assert.Contains("cacheKv[0], cacheKv[1], cacheKv[2], effKv[0], effKv[1]);", b);
+            // R470 再加强: 还必须铺 R470 通道三元组 (channel/shared_prefix_hit_tokens/shared_prefix_hit_rate)
+            Assert.Contains("cacheKv[0], cacheKv[1], cacheKv[2], effKv[0], effKv[1], chanKv[0], chanKv[1], chanKv[2]);", b);
         Assert.Equal(3, src.Split("var effKv = PromptCacheKpi.EffectiveFields(").Length - 1);
         Assert.Equal(3, src.Split("var cacheKv = PromptCacheKpi.Fields(").Length - 1);
+        Assert.Equal(3, src.Split("var chanKv = PromptCacheKpi.ChannelFields(").Length - 1);   // R470 接线
         Assert.DoesNotContain("(\"cache_hit_rate\", 0)", src);   // 不得硬编码 0 冒充未上报
         Assert.Contains("CacheHitTokens = parsed?.Usage?.PromptCacheHitTokens", src);
     }

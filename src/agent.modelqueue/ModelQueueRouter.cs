@@ -712,6 +712,8 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             var lastPrompt = 0;
             if (sessKey.Length > 0 && _lastPromptTokens.TryGetValue(sessKey, out var lp)) lastPrompt = lp;
             var effKv = PromptCacheKpi.EffectiveFields(resp.CacheHitTokens, resp.PromptTokens, LastPromptTokensFor(sessKey));
+            // R470: 归因通道 (只增不改) —— 真实流量无同会话前驱 ⇒ 命中属 shared_prefix, 既有 -1 通道看不见
+            var chanKv = PromptCacheKpi.ChannelFields(resp.CacheHitTokens, resp.CacheMissTokens, resp.PromptTokens, LastPromptTokensFor(sessKey));
             var effRate = (double)(effKv[1].Value ?? -1d);
             agent.config.AgentTelemetry.Emit("llm_call", "ModelQueueRouter",
                 ("model", entry.Id), ("provider", entry.Provider),
@@ -732,7 +734,7 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                 ("first_budget", firstBudget), ("intent", intent ?? ""),
                 // v0.11.0 R129 (D3): LLM 真耗时 ms
                 ("ms", llmSw.ElapsedMilliseconds),
-                cacheKv[0], cacheKv[1], cacheKv[2], effKv[0], effKv[1]);
+                cacheKv[0], cacheKv[1], cacheKv[2], effKv[0], effKv[1], chanKv[0], chanKv[1], chanKv[2]);
             // R380 (+R379 逐轮归属) 红线闸门 —— 用户逐字: "一旦越过红线必然检查问题为什么发生并修复"。
             // 越线不得只记数字: 必须同时落盘**可执行诊断**(按 R379 实测四类破坏点排序) + 响亮告警。
             if (sessKey.Length > 0)
@@ -823,6 +825,7 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                     var cacheKv = PromptCacheKpi.Fields(retried.CacheHitTokens, retried.CacheMissTokens);
                     // R380: 重试路径同样只算"需要命中的部分" (否则 KPI 漏掉重试调用)
                     var effKv = PromptCacheKpi.EffectiveFields(retried.CacheHitTokens, retried.PromptTokens, LastPromptTokensFor(prompt.SessionId));
+                    var chanKv = PromptCacheKpi.ChannelFields(retried.CacheHitTokens, retried.CacheMissTokens, retried.PromptTokens, LastPromptTokensFor(prompt.SessionId));
                     agent.config.AgentTelemetry.Emit("llm_call", "ModelQueueRouter",
                         ("model", entry.Id), ("provider", entry.Provider),
                         ("prompt_tokens", retried.PromptTokens), ("completion_tokens", retried.CompletionTokens),
@@ -830,7 +833,7 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                         ("content_len", retried.Content?.Length ?? 0),
                         ("reasoning_len", retried.ReasoningContent?.Length ?? 0),
                         ("ms", retrySw.ElapsedMilliseconds), ("attempt", attempt + 1),
-                        cacheKv[0], cacheKv[1], cacheKv[2], effKv[0], effKv[1]);
+                        cacheKv[0], cacheKv[1], cacheKv[2], effKv[0], effKv[1], chanKv[0], chanKv[1], chanKv[2]);
                     return retried;
                 }
                 // 软失败 (Success=false 但未抛异常) 也算本次失败, 继续走切备
@@ -897,6 +900,7 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                     var cacheKv = PromptCacheKpi.Fields(backupResp.CacheHitTokens, backupResp.CacheMissTokens);
                     // R380: 备选 provider 路径同样只算"需要命中的部分"
                     var effKv = PromptCacheKpi.EffectiveFields(backupResp.CacheHitTokens, backupResp.PromptTokens, LastPromptTokensFor(prompt.SessionId));
+                    var chanKv = PromptCacheKpi.ChannelFields(backupResp.CacheHitTokens, backupResp.CacheMissTokens, backupResp.PromptTokens, LastPromptTokensFor(prompt.SessionId));
                     agent.config.AgentTelemetry.Emit("llm_call", "ModelQueueRouter",
                         ("model", backup.Id), ("provider", backup.Provider),
                         ("prompt_tokens", backupResp.PromptTokens), ("completion_tokens", backupResp.CompletionTokens),
@@ -904,7 +908,7 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                         ("content_len", backupResp.Content?.Length ?? 0),
                         ("reasoning_len", backupResp.ReasoningContent?.Length ?? 0),
                         ("ms", backupSw.ElapsedMilliseconds), ("attempt", "failover"),
-                        cacheKv[0], cacheKv[1], cacheKv[2], effKv[0], effKv[1]);
+                        cacheKv[0], cacheKv[1], cacheKv[2], effKv[0], effKv[1], chanKv[0], chanKv[1], chanKv[2]);
                     return backupResp;
                 }
                 agent.config.AgentTelemetry.Emit("fallback_verify_fail", "ModelQueueRouter",
