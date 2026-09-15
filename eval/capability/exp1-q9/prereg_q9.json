@@ -1,0 +1,39 @@
+{
+  "round": "EXP1-Q9",
+  "created_utc": "measurement-time (见 run_finished_epoch)",
+  "target_doc": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+  "plan_item": "docs/plans/v0.22.0-longterm-backlog.md 最前未完成项: 把 25 条弱边接入「文档→代码」引用图分类 (强边 declared_* / 弱边 *_mention), 弱边先全量抽检",
+  "instrument_before": "eval/capability/exp1-q4/probe_doc_ref_integrity.py v2.4.1",
+  "instrument_after": "eval/capability/exp1-q9/probe_v250.py v2.5.0",
+  "pre_registered_criteria": {
+    "B1_split_does_not_rejudge": "v2.4.1 与 v2.5.0 在同进程、同语料下逐条 citation 的 verdict 完全相同 (diff == 0) ∧ 既有字段逐条相同 (edge/子级字段除外)",
+    "B2_purely_additive": "v2.4.1 侧不存在 edge_strength/edge_sublevel 字段 (旧版字段集 ∩ 新字段集 == 空)",
+    "B3_conservation": "边强计数之和 == n_citations_code_live (live 代码引用数) ∧ n_citations_total 与 v2.4.1 相同",
+    "B4_nontrivial": "真实语料上边强档位 (非弃权) >= 2 类; 弃权单列且不计入分母",
+    "B5_determinism": "同语料两跑, 边强分布与逐条 edge 字段逐位相同",
+    "B6_full_inspection": "weak_noncode 边**全量**抽检 (inspected/total == 1.0), 每条必须有 >=1 条上下文行证据 (非空)",
+    "B7_cross_tree_truth": "每条弱边给「该符号在树内其他文件是否有声明」的计数 (declared_elsewhere_files), 与「弱边≠缺陷」的裁定挂钩",
+    "B8_selftest_two_sided": "selftest 含边强轴两侧夹具 (强/弱码面/弱非码/断/弃权 + 强边内混弱符号可见 + 弱边不改判负控), 且 exit_code==0"
+  },
+  "definitions": {
+    "strong": "至少一枚被引符号在被引文件里有声明 (declared_type / declared_member) —— 计划定义: 强边 = declared_*",
+    "weak": "无任何声明, 但至少一枚符号出现在被引文件里 —— 计划定义: 弱边 = *_mention",
+    "weak_sublevel": "weak_code (至少一枚落在代码面) / weak_noncode (全部只落在注释/字符串面)",
+    "broken": "全部被引符号在该文件里查无 (verdict=symbol_absent)",
+    "waived": "引用未解析 / 文件不可剥离 / 引用本身 waived ⇒ 弃权, 不进分母 (三态判决: 测不到 != 判为弱边)"
+  },
+  "aggregation_rule_preregistered": "最强胜 (strongest-wins): 一条边只要有**一枚**符号有声明即判强边; 同边内较弱/断符号数 (edge_weak_symbols / edge_broken_symbols) 单独计数, 不丢信息",
+  "excluded": [
+    "围栏内引用 (in_code_fence=true, verdict=skipped_fence) 不进图",
+    "非 code 类引用 (kind != code) 不进图",
+    "围栏外但引用本身 waived/unresolved 的引用记 waived 边, 不进分母",
+    "不改任何 verdict / 不改打分层",
+    "本轮不做 AST 级形态 (词法级剥离), 不做跨文件符号解析 (只用词法声明形态)"
+  ],
+  "evidence_level_expected": "L1-static (真跑仪器输出; 无编译/测试/AOT)",
+  "honest_boundaries_preregistered": [
+    "弱边 != 缺陷: noncode_mention 只说明「该符号在此文件不是代码事实的声明/使用」, 不说明引用错误",
+    "name_shape / declared_elsewhere 是**旁证**不是判据 (词法级, 非 AST)",
+    "对侧 30m 作业在改 src/ 产品源码 ⇒ 语料移动目标"
+  ]
+}
