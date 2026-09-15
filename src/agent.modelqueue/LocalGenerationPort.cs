@@ -464,6 +464,9 @@ public sealed class TurnGateCounters
 
     private long _cachePinned;
     private int _lastCachedTokens;
+    private int _lastEvalTokens = -1;
+    private int _lastNewTokens = -1;
+    private int _lastGenTokens = -1;
 
     public long Judged => Interlocked.Read(ref _judged);
     public long MechanicalPasses => Interlocked.Read(ref _mechanicalPasses);
@@ -478,6 +481,15 @@ public sealed class TurnGateCounters
 
     /// <summary>R429: 最近一次门判的缓存命中数 (cache_n) — 钉死后应恒为 0。</summary>
     public int LastCachedTokens => Volatile.Read(ref _lastCachedTokens);
+
+    /// <summary>R443: 最近一次门判的 prompt 总 token 数 (llama-server 真值; -1 = 未走 r1)。</summary>
+    public int LastEvalTokens => Volatile.Read(ref _lastEvalTokens);
+
+    /// <summary>R443: 最近一次门判的**新评估** token 数 (真值; -1 = 未走 r1)。</summary>
+    public int LastNewTokens => Volatile.Read(ref _lastNewTokens);
+
+    /// <summary>R443: 最近一次门判的**生成** token 数 (真值; -1 = 未走 r1)。</summary>
+    public int LastGenTokens => Volatile.Read(ref _lastGenTokens);
 
     public string? LastBasis { get; private set; }
 
@@ -553,11 +565,17 @@ public sealed class TurnGateCounters
         LastBasis = "gate:accounting_violation:" + reason + "→remote";
     }
 
-    /// <summary>R429: 门判请求已钉死缓存态 (显式关前缀缓存 + 记录本次 cache_n)。</summary>
-    public void RecordCachePinned(int cachedTokens, string? promptSha = null, string? requestSha = null, string? requestFields = null)
+    /// <summary>R429: 门判请求已钉死缓存态 (显式关前缀缓存 + 记录本次 cache_n)。
+    /// R443: 同时记录 llama-server 上报的**真值** token 三元组 (tokens_evaluated / prompt_n / gen_n),
+    /// 用于把本地 r1 成本口径从「字符/2 折算」升级为「tokenizer 真值」。</summary>
+    public void RecordCachePinned(int cachedTokens, string? promptSha = null, string? requestSha = null, string? requestFields = null,
+        int evalTokens = -1, int newTokens = -1, int genTokens = -1)
     {
         Interlocked.Increment(ref _cachePinned);
         Volatile.Write(ref _lastCachedTokens, cachedTokens);
+        Volatile.Write(ref _lastEvalTokens, evalTokens);
+        Volatile.Write(ref _lastNewTokens, newTokens);
+        Volatile.Write(ref _lastGenTokens, genTokens);
         LastPromptSha = promptSha;
         LastRequestSha = requestSha;
         LastRequestFields = requestFields;
@@ -572,7 +590,7 @@ public sealed class TurnGateCounters
 }
 
 /// <summary>R426: 本地关系判官结论 (字母 ∈ {C,A,N}; 交给 CorrectionDetector 的解析面, 不另立语义)。</summary>
-public sealed record RelationJudgeOutcome(string Letter, string Raw, int CompletionTokens);
+public sealed record RelationJudgeOutcome(string Letter, string Raw, int CompletionTokens, int PromptTokens = -1, int PromptNewTokens = -1);
 
 /// <summary>R426: 关系判官本地化计数 (可观测 — <c>Local==0 ∧ Fallback&gt;0</c> ⇒ 本地未生效, 不靠猜)。</summary>
 public sealed class RelationJudgeCounters

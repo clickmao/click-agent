@@ -219,7 +219,8 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                 // (传输级实测 180/97/215, 可致 S/P 翻转) ⇒ 门判不得依赖前缀缓存复用。
                 CacheReuse = false,
             }, ct).ConfigureAwait(false);
-            TurnGate.RecordCachePinned(outcome.CachedTokens, outcome.PromptSha16, outcome.RequestSha16, outcome.RequestFields);
+            TurnGate.RecordCachePinned(outcome.CachedTokens, outcome.PromptSha16, outcome.RequestSha16, outcome.RequestFields,
+                outcome.TokensEvaluated, outcome.PromptNewTokens, outcome.GeneratedTokens);
 
             if (!outcome.Success || string.IsNullOrWhiteSpace(outcome.Content))
             {
@@ -322,7 +323,8 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             }
 
             RelationJudge.RecordLocal(letter);
-            return new RelationJudgeOutcome(letter, outcome.Content ?? string.Empty, outcome.GeneratedTokens);
+            return new RelationJudgeOutcome(letter, outcome.Content ?? string.Empty, outcome.GeneratedTokens,
+                outcome.TokensEvaluated, outcome.PromptNewTokens);
         }
         catch (OperationCanceledException) { throw; }
         catch (Exception ex)

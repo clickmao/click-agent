@@ -10,6 +10,21 @@
 > 数据时效 (测试数/批号/评测口径)、版本引用一致性、死链检查; **禁止只改局部不做整体校验**。
 > 空间位置相邻但语义不同段的错挂 (如旧版本标题下挂新数据) 视同违例。
 
+## v0.63.0 · R443 · 2026-09-15 · 状态: 已完成 · 主题: 本地 r1 成本 **tokenizer 真值化** + 「被跳轮不回放」**同网格单变量消融**
+
+- **问题**: ① 本地 r1 的真实 tokenizer 成本 vs「字符/2」折算的偏差方向与幅度？②「被跳轮不回放内联块」的真机单变量效应 vs R442 的离线代数分解？
+- **产品侧改动（默认零行为回归）**: `RecordCachePinned` 增记 llama-server 上报的 `tokens_evaluated/prompt_n/gen`（`LocalGenerationPort.cs`）；`RelationJudgeOutcome` 增 `PromptTokens/PromptNewTokens`；`local_turn_gate`/`correction_judge` 遥测增真值字段；新增诊断开关 `AGENTFRAMEWORK_GATE_REPLAY_SKIPPED`（默认关）。AOT `127b4ff5…`，0 IL 警告，V0 形态闸 PASS。
+- **读数（M20 同网格三臂）**: A 61256 / BRJ 32968 / BRJRP 39508；
+  `D_remote` **46.18%** → +本地(R442 字符/2 折算) 33.25%（逐位复现 R442 的 33.26）→ **+本地(真值) 25.32%**。
+- **★ 真值化结果**: 本地合计折算 **7919.5 → 12775 = 1.613×**（门 prompt 1.398×、门生成 1.267×、判官 prompt 1.496×）；轮均本地成本 c=**638.8 tok**（折算口径 396）；转正闭式 `k/N > c/s` = 15.81%。
+  ⇒ **「≥30%」只在「用户 API token」口径成立；含本地 r1 真值口径下 M20 = 25.32% < 30%**（口径必须绑定，不得混算）。
+- **★ 单变量消融**: Δ 实测 **6540 tok** vs R442 离线代数分解 4830.5 ⇒ **离线分解低估 26%（1.354×）**；R442「实测偏保守」的方向成立、幅度被修正。
+- **记账**: `tokens_evaluated == prompt_new + cache_n` 门 17/17、判官 13/13、**违规 0**；开关可机检（`replay_skipped` 0→1、`dropped_sum` 2024→0）；ρ(micro_step) token **恒 0**（对 token 判据零影响，触发条件仍 undetermined）。
+- **D4 预注册被证伪 + 收窄**: 跨 NS 逐位比较 Δ=+18（11 轮 +1~2）⇒ 判红；由两独立通道定位为**路径后缀混淆**（D2b: A 臂对 61230→61256 = **+1.04 tok/调用**，同二进制仅目录名不同；D4b: 无 NS 同名臂 vs R441 归档 **逐轮 0 差异 / 32950==32950**）⇒ 零回归成立（事后判据单列，不改写预注册）。
+- **诚实边界**: ① 真值只覆盖 M20 一列（短档/单跳档仍折算口径）；② 真值=该构建分词器，**不等于计费口径**（未测真实计费/时延）；③ `BRJRP` 是诊断臂非产品路径；④ D5 的 ±20% 预注册未命中，结论以「离线分解低估 26%」表述。
+- **下轮候选**: ① 零测量落地**验收矩阵 + status.json 生成器 + 器具闸**（见 `docs/reports/endpoint-and-audit-contract.md`）；② 真值口径补测短档(V2b)/单跳档(W8/W20)；③ **压低 c**：门前置筛选（只在可能 skip 的轮跑门）⇒ 低占比档转正；④ 写者心跳 + pre-commit 仲裁（R443 双写者实发）。
+- **计划/证据/登记**: `docs/plans/v0.63.0-r443-local-token-truth-and-replay-ablation.md`；`eval/rover/r443/README-evidence.md`；`docs/verification-registry.json` → `r443.local-token-truth-and-replay-ablation`；`eval/capability/kpi.jsonl` → R443；架构提案 `docs/reports/endpoint-and-audit-contract.md`。
+
 ## v0.62.0 · R442 · 2026-09-15 · 状态: 已完成 · 主题: **口径钉死**（本地 r1 入账）+ 两臂块不对称定量 + D7 分母断言
 
 - **背景**: R441（`40748e0`，4 网格 8 臂同网格实测）留下三条挂账 —— 降幅口径只算远端 G、A/B 两臂内联块不同源但幅度未定量、A 分母跨网格代理已复发两次。

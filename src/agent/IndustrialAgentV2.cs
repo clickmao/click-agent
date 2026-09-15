@@ -1532,6 +1532,11 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     ("role_seed_chars", _modelRouter.TurnGate.LastRoleSeedChars.ToString()),
                     ("growth_chars", _modelRouter.TurnGate.LastGrowthChars.ToString()),
                     ("growth_lines", _modelRouter.TurnGate.LastGrowthLines.ToString()),
+                    // R443: 本地 r1 成本的 **tokenizer 真值** (llama-server 上报; -1 = 该轮未走 r1)。
+                    // 口径: tokens_evaluated = prompt 总长, prompt_new = 新评估, gen = 生成长度。
+                    ("tokens_evaluated", _modelRouter.TurnGate.LastEvalTokens.ToString()),
+                    ("prompt_new", _modelRouter.TurnGate.LastNewTokens.ToString()),
+                    ("gen_tokens", _modelRouter.TurnGate.LastGenTokens.ToString()),
                     ("role", ActiveRole.Id));
             }
 
@@ -1544,11 +1549,15 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 // 落盘, 被此后每一次远端调用逐字回放 = 纯白付账 (实测 p12: 4 个跳过轮 × 6 次调用 = 2238 token ≈ 8.1 pt)。
                 // 回放铁律的正确读法: 「发送字节=回放字节」只约束**真正发出去的**轮次; 本地消化轮的规范形态
                 // = 用户轮原文 (扣框架子请求, 与首轮同形——首轮无块可挂)。
-                message.SentContent = outboundText;
+                // R443: 反事实消融臂 (默认关 = 生产行为)。开 ⇒ 显式回放「本地消化轮」的内联块,
+                // 把「被跳轮不回放」这条改动做成同网格**单变量**对照 (与 R442 的离线代数分解互为独立通道)。
+                var replaySkipped = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_GATE_REPLAY_SKIPPED") == "1";
+                message.SentContent = replaySkipped ? sentUserContent : outboundText;
                 agent.config.AgentTelemetry.Emit("local_gate_skip_history", "IndustrialAgentV2",
-                    ("persisted_chars", (long)outboundText.Length),
+                    ("persisted_chars", (long)message.SentContent.Length),
                     ("would_be_chars", (long)sentUserContent.Length),
-                    ("dropped_chars", (long)(sentUserContent.Length - outboundText.Length)),
+                    ("dropped_chars", (long)(sentUserContent.Length - message.SentContent.Length)),
+                    ("replay_skipped", replaySkipped ? "1" : "0"),
                     ("intent", intent));
                 // 本地消化: 零远端 token (回复由本地 r1 生成, 失败 → 固定兜底串)
                 var localReply = await _modelRouter!.ComposeLocalSkipReplyAsync(prompt.UserMessage, ct).ConfigureAwait(false);
@@ -1685,6 +1694,10 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                                 var judgePromptLen = 0;
                                 var judgeMs = 0L;
                                 var judgeLetter = "";
+                                // R443: 本地判官的 prompt/生成 tokenizer 真值 (远端兜底 ⇒ -1)
+                                var judgeEvalTokens = -1;
+                                var judgeNewTokens = -1;
+                                var judgeGenTokens = -1;
                                 var verdict = await agent.roles.CorrectionDetector.JudgeAsync(
                                     question, lastReply ?? "",
                                     async (prompt, maxTokens) =>
@@ -1702,6 +1715,9 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                                                 judgeSource = "local";
                                                 judgeLetter = local.Letter;
                                                 judgeMs = Environment.TickCount64 - t0;
+                                                judgeEvalTokens = local.PromptTokens;
+                                                judgeNewTokens = local.PromptNewTokens;
+                                                judgeGenTokens = local.CompletionTokens;
                                                 return (local.Letter, local.CompletionTokens);
                                             }
                                             judgeSource = "remote_fallback";
@@ -1719,6 +1735,10 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                                     // 归因不可见)。local_state 取值: local | remote_fallback:unparsed:<reason> | ...
                                     ("local_state", _modelRouter?.RelationJudge.LastSource ?? ""),
                                     ("tokens", verdict.TokensUsed),
+                                    // R443: 本地判官 tokenizer 真值 (source=local 时有效; 远端/兜底 = -1)
+                                    ("tokens_evaluated", judgeEvalTokens.ToString()),
+                                    ("prompt_new", judgeNewTokens.ToString()),
+                                    ("gen_tokens", judgeGenTokens.ToString()),
                                     ("msg_head", question.Length > 18 ? question.Substring(0, 18) : question),
                                     ("session", memSession.Id), ("domain", domainKey));
                             }

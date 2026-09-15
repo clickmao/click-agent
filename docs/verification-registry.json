@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R442",
+  "updated_round": "R443",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -1164,6 +1164,26 @@
         "eval/rover/r442/token_accounting.py"
       ],
       "note": "纯离线计量: 零源码改动、零 dotnet、零新真机跑; 数据源 = R441 已落盘档案。本地 token 折算 = 字符/2（**非 tokenizer 真值**, 已登记）。ρ 触发条件记 undetermined（条件不可控, 9 事件）。"
+    },
+    {
+      "id": "r443.local-token-truth-and-replay-ablation",
+      "owner_round": "R443",
+      "level": "L2",
+      "capability": "**本地 r1 成本 tokenizer 真值化 + 「被跳轮不回放」同网格单变量消融**: 产品侧新增真值遥测 (tokens_evaluated/prompt_n/gen, llama-server 上报) + 反事实诊断开关 AGENTFRAMEWORK_GATE_REPLAY_SKIPPED (默认关, 零行为回归)。M20 同网格三臂 A/BRJ/BRJRP: 远端 61256/32968/39508; D_remote 46.18%; +本地(R442 字符/2 折算) 33.25%（复现 R442 33.26）; +本地(**真值**) **25.32%** ⇒ 折算低估 1.613×（门 prompt 1.398×/门生成 1.267×/判官 prompt 1.496×）。单变量消融 Δ 实测 **6540** vs R442 离线代数分解 4830.5 = **1.354×**（离线低估 26%）。记账恒等 tokens_evaluated==prompt_new+cache_n: 门 17/17、判官 13/13、违规 0。开关可机检: replay0/1=7、dropped_sum 2024→0。ρ(micro_step) token 恒 0。D4b 零回归: 新二进制 vs R441 归档逐轮 0 差异 / 32950==32950 / fn=fp=0 acc=1.0。",
+      "evidence_cmd": "python3 eval/rover/r443/analyze_r443.py",
+      "evidence_path": "eval/rover/r443/README-evidence.md",
+      "negative_control": "① A 臂对照 fp=7/acc=0.611（门不接入 ⇒ 判别力正控）; ② D4 反向预言: 跨 NS 逐位比较出现 +18（11 轮 +1~2）⇒ 按预注册判红, 由 D2b（A 臂对 61230→61256 = +1.04 tok/调用, 同二进制仅目录名不同）与 D4b（无 NS 臂逐轮 0 差异）两独立通道定位为路径后缀混淆, 非行为回归; ③ 记账恒等若被违反 ⇒ design 判定 fail-closed。",
+      "covers": [
+        "eval/rover/r443/README-evidence.md",
+        "eval/rover/r443/verdict-r443-analysis.json",
+        "eval/rover/r443/analyze_r443.py",
+        "eval/rover/r443/run_arm_r443.sh",
+        "eval/rover/r443/run_all_r443.sh",
+        "eval/rover/r443/run_extra_r443.sh",
+        "docs/plans/v0.63.0-r443-local-token-truth-and-replay-ablation.md"
+      ],
+      "reason": "R443 判定器机械裁定 D1/D2/D3/D6/D7 PASS、D4/D5 预注册被证伪并收窄（事后判据 D2b+D4b 单列）。",
+      "path": "eval/rover/r443/README-evidence.md"
     }
   ],
   "aot_check_policy": "release_tag_only",
