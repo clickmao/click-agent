@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R479",
+ "updated_round": "R481",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -3288,13 +3288,13 @@
    "evidence_path": "eval/rover/r478/verdict-r478.json",
    "evidence_generated_with": {
     "evidence_kind": "artifact",
-    "pin_status": "live",
-    "pin_reason": "worktree-only",
-    "artifact_sha12": null,
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "329c98873cc7",
     "instrument": "eval/rover/r478/check_r478.py",
     "instrument_sha12": "c4ec66edaa4c",
     "binding": "audit-pin",
-    "audited_by_round": "R478"
+    "audited_by_round": "R481"
    },
    "negative_control": "NC1 旧误诊文案若作为发文案出现 ⇒ C2 判红; NC2 关键词驱动的退化分类器 ⇒ C1 判红(用户文本关键词 + 非协议字面量); NC3 adapter 未透传 ResponseId ⇒ C4 判红 —— 三条负控由同一器具机检(verdict.negative_controls.*.ok); 判据面 **fail-closed**: 取不到源码常量即抛 MISS, 不静默通过; **不含真机 E2E**(起手闸 MemAvailable 2293 MB < 2650 MB 未达 ⇒ 本轮机侧禁起真机测量)",
    "covers": [
@@ -3315,13 +3315,13 @@
    "evidence_path": "eval/rover/r478/verdict-r478.json",
    "evidence_generated_with": {
     "evidence_kind": "artifact",
-    "pin_status": "live",
-    "pin_reason": "worktree-only",
-    "artifact_sha12": null,
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "329c98873cc7",
     "instrument": "eval/rover/r478/check_r478.py",
     "instrument_sha12": "c4ec66edaa4c",
     "binding": "audit-pin",
-    "audited_by_round": "R478"
+    "audited_by_round": "R481"
    },
    "negative_control": "C4 = 8 个源码派生断言的**合取**(缺任一即判红, 非恒绿): RequestId 字段/单调签发/成功路径赋值/adapter 透传/两侧遥测带 request_id/捕获/清零; 透传缺席时 `adapter_passthrough=False` ⇒ C4 红(NC3); **真机 join 未验**(本轮无真机轮) ⇒ 只主张机制存在, 不主张真机成立",
    "covers": [
@@ -3340,13 +3340,13 @@
    "evidence_path": "eval/rover/r478/band-reestimate-r477.json",
    "evidence_generated_with": {
     "evidence_kind": "artifact",
-    "pin_status": "live",
-    "pin_reason": "worktree-only",
-    "artifact_sha12": null,
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "f01394c7165e",
     "instrument": "eval/rover/r478/band_reestimate_r477.py",
     "instrument_sha12": "6a5fc8ed509b",
     "binding": "audit-pin",
-    "audited_by_round": "R478"
+    "audited_by_round": "R481"
    },
    "negative_control": "器具逐行断言恒等式 `hit+miss==prompt`(不成立即记 `identity_violations`) ∧ usage 缺失/`prompt_tokens<=0` ⇒ **VOID rc=2**(不静默通过); 两臂互控(同夹具 task-p12 / 同二进制 / 仅门控不同); 冷/稳态阈值 0.5 **显式落盘**(`cold_threshold`), 禁事后挪界凑结论",
    "covers": [
@@ -3362,13 +3362,13 @@
    "evidence_path": "eval/rover/r479/verdict-r479.json",
    "evidence_generated_with": {
     "evidence_kind": "artifact",
-    "pin_status": "live",
-    "pin_reason": "worktree-only",
-    "artifact_sha12": null,
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "3bf281ff7d7b",
     "instrument": "eval/rover/r479/check_r479.py",
     "instrument_sha12": "8ed3b5efce11",
     "binding": "audit-pin",
-    "audited_by_round": "R479"
+    "audited_by_round": "R481"
    },
    "negative_control": "NC1 用户任务文本若出现在 `instructions` 内 ⇒ 判红; NC2 请求体出现 `store:true` ⇒ 判红; NC3 请求体带 UTF-8 BOM ⇒ 判红; C1/C5 为源码派生断言(缺字段即红), C2 真机三读数(本地 answer/本地 tool/远端 answer) 缺一即 FAIL —— 禁以推断代替读数。**不含**: 路由器接线(默认通道未变)。",
    "covers": [
@@ -3386,13 +3386,13 @@
    "evidence_path": "eval/rover/r479/verdict-r479.json",
    "evidence_generated_with": {
     "evidence_kind": "artifact",
-    "pin_status": "live",
-    "pin_reason": "worktree-only",
-    "artifact_sha12": null,
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "3bf281ff7d7b",
     "instrument": "eval/rover/r479/check_r479.py",
     "instrument_sha12": "8ed3b5efce11",
     "binding": "audit-pin",
-    "audited_by_round": "R479"
+    "audited_by_round": "R481"
    },
    "negative_control": "C3 机检: 校准面 `EmptyBodyDiagnosis.Banner(` 调用 >=4 ∧ 失效文案字面量 = 0(出现第二处文案实现即红); 单测 `F1`(`R479_E2E_DIR` 真机证据回放): 本地 3B 真机 `function_call` ⇒ 必须判 `RunTools`; 远端真机 `incomplete/max_output_tokens` ⇒ 必须判 `Retry`; 缺真机证据文件 ⇒ 该断言不判(禁伪造)—— 单测 `F1` 与环境变量 `R479_E2E_DIR` 绑定, 无证据时不冒充通过。",
    "covers": [
@@ -3410,13 +3410,13 @@
    "evidence_path": "eval/rover/r479/verdict-r479.json",
    "evidence_generated_with": {
     "evidence_kind": "artifact",
-    "pin_status": "live",
-    "pin_reason": "worktree-only",
-    "artifact_sha12": null,
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "3bf281ff7d7b",
     "instrument": "eval/rover/r479/check_r479.py",
     "instrument_sha12": "8ed3b5efce11",
     "binding": "audit-pin",
-    "audited_by_round": "R479"
+    "audited_by_round": "R481"
    },
    "negative_control": "C4 机检: 必须存在 chat 形态与既有常量逐字节相等的断言, 否则判红(禁双份手写常量); B 组单测断言 responses 形态为平铺(含 `\"function\"` 嵌套即红); 真机工具臂若未出现 `function_call` ⇒ 只主张「协议接受声明面」, 不主张「模型必然调用」。",
    "covers": [
@@ -3425,6 +3425,31 @@
     "src/agent.tests/ResponsesWireTests.cs"
    ],
    "owner_round": "R479"
+  },
+  {
+   "id": "r481.recall-d9-alternating-verify",
+   "level": "L2",
+   "capability": "**目录 mtime 剪枝盲区**修复 = 交替核验: 指纹头 stamp 改 `(stampTicks << 1) | 上轮是否剪枝`(低位), 读侧 `(ticks >> 1)` + `(ticks & 1UL) != 0UL`; 剪枝开关 = `options.PruneUnchangedDirs && store is not null && !prevScanPruned` ⇒ 上轮剪过的目录本轮**强制 readdir+stat 全量核验**(不读内容), idle 轮仍剪枝(保 `DirsPruned >= 1`); 语义变化 = 核验轮 `DirsPruned == 0` 且 `VerifiedAllDirs == true` **单列**(不冒充「无变化」)。真读数: `agent.recall.tests` **12/13 → 14/14**(新增「等字节长度改写」回归用例, size 不变只有文件 mtime 变), 0 failed / 0 skipped; 修前 1 红(改写态 `Modified==0`)。",
+   "evidence_cmd": "python3 eval/recall/r481/check_r481d9.py",
+   "evidence_path": "eval/recall/r481/verdict-r481d9.json",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "38d71089389a",
+    "instrument": "eval/recall/r481/check_r481d9.py",
+    "instrument_sha12": "3e53605c0f9e",
+    "binding": "audit-pin",
+    "audited_by_round": "R481"
+   },
+   "negative_control": "变异测试(判据必须对注入缺陷翻红, 否则判据恒绿): **NC1** 剪枝门 `!prevScanPruned` 反转 ⇒ C1 红; **NC2** 删 stamp 左移编码 ⇒ C1 红; **NC3** 删读侧标志位解码 ⇒ C1 红(3/3 实测全部翻红); 正向面 C1 源码派生(读/写两侧成对, 缺一即红) + C2 真跑读数(trx 结果行数 > 0, 0 行 ⇒ 假绿判红) + C3 核验轮语义锁存(`Assert.Equal(0, DirsPruned)` / `VerifiedAllDirs`) —— **不含**: 旧格式 store 的实读行为(仅推理: ticks 量级 LEB128 恒 9 B ⇒ 左移前后字节数不变 ⇒ 旧值被读成更早 stamp ⇒ 只多核验不误剪; 未实测), 亦不含内容级哈希兜底 (`VerifyMode.Hash` / 周期全量核验, 当前未实现)。",
+   "covers": [
+    "src/agent.recall/RecallFingerprint.cs",
+    "src/agent.recall/RecallUpdater.cs",
+    "src/agent.recall.tests/RecallModuleTests.cs",
+    "eval/recall/r481/check_r481d9.py"
+   ],
+   "owner_round": "R481"
   }
  ],
  "aot_check_policy": "release_tag_only",
