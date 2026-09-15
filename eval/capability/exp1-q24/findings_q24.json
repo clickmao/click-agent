@@ -1,0 +1,102 @@
+{
+  "round": "EXP1-Q24",
+  "ts": "2026-09-16T01:45+08:00",
+  "owner": "60m capability self-check job (不占主线轮号)",
+  "source": "附录 X §X.5 候选② —— 承接 Q23 发现 3(r444.prefilter-precheck 证据不可复现)",
+  "peer_state_at_measure": {
+    "peer_job": "9a97763d5fcd (30m 主线循环) 正在跑 R467 臂阵 Arole/Aroff/R/R2 + settle",
+    "mem_available_mb": 1097,
+    "decision": "本侧不跑 dotnet / 不占轮号 (仅 python 只读器具)"
+  },
+  "prereg": "eval/capability/exp1-q24/prereg_q24.json",
+  "artifacts": {
+    "fresh_primary": "eval/capability/exp1-q24/runs/fresh-a.json (sha12 b74e791ccca7, 30690 B)",
+    "fresh_primary_repeat": "eval/capability/exp1-q24/runs/fresh-b.json",
+    "fresh_neg_control": "eval/capability/exp1-q24/runs/fresh-neg.json (sha12 ec57f5664141, 31207 B)",
+    "committed_artifact_archived": "eval/capability/exp1-q24/runs/head-committed-negcontrol.json"
+  },
+  "judgments": {
+    "A1_determinism_and_nontriviality": {
+      "pass": true,
+      "同臂": "主臂 2 次(独立进程/独立 OUT) sha12 均 b74e791ccca7 ⇒ 逐位相同",
+      "跨臂": "控制臂(--neg-control) sha12 ec57f5664141 ≠ 主臂 ⇒ 非平凡(不是恒定输出)",
+      "读数": "主臂 P1 反例=0 / P3 可省 67(99 r1 行) ; 控制臂 P1 反例=4 / P3 可省 71"
+    },
+    "A2_instrument_identity": {
+      "pass": true,
+      "实测": "工作树 sha12=ea8aab20b377 = HEAD blob sha12 = instruments.json registered instrument_sha12",
+      "结论": "器具字节与「证据提交时」一致 ⇒ 漂移不可能来自器具文件被改"
+    },
+    "A3_input_surface": {
+      "pass": true,
+      "实测": "输入面与登记 16 文件同集; 目录 mtime 全部 ≤ 08:21(早于证据提交 09:38)、run 目录集合与 HEAD 证据内 runs[].dir 8 条逐条相同",
+      "结论": "H2(样本增长/输入漂移) 否证"
+    },
+    "A4_cause_attribution": {
+      "pass": true,
+      "定因": "H1 —— 已提交证据 = 控制臂产物",
+      "硬证据": "本轮 --neg-control 产物 sha12 ec57f5664141 == git show HEAD:eval/rover/r444/precheck-prefilter.json sha12 ec57f5664141 == 工作树同文件 sha12 ⇒ 三者逐字节同一(31207 B)",
+      "次级证据": "该文件含负控注入串 4 次(4 个 M20 臂各 1 次), criteria.P1_no_counterexample.pass=false、verdict=NOT_SEPARABLE"
+    },
+    "A5_conclusion_direction_recheck": {
+      "pass": true,
+      "结论": "R444 已落库结论(¬Ack⇒Pass 可证等价 / 前置门)与**真值产物(主臂)一致**(反例 0 ⇒ SEPARABLE); 与**已提交证据文件**相反(NOT_SEPARABLE)",
+      "定性": "产品缺陷=无; 证据绑定缺陷=有(登记表 L4 行 evidence_path 指向控制臂产物)"
+    },
+    "A6_negative_controls": {
+      "pass": true,
+      "nc_cmd": "--neg-control 实测 检出反例 4 ≥1, rc=2 ⇒ 注入必检成立",
+      "nc_cmd2": "--grid-dir /nonexistent-grid-dir 实测 rc=3 fail-closed 且**未落盘任何产物**(wrapper 读不到输出文件即此证据)"
+    },
+    "A7_conservation": {
+      "pass": true,
+      "实测": "Σ runs.n_r1_rows(99) == P3.total_r1_rows(99); Σ runs.avoidable_r1(67) == P3.avoidable(67); 每臂 avoidable_r1 ≤ n_r1_rows 且 skips ≤ len(rows)"
+    },
+    "A8_structural_invariant": {
+      "pass": false,
+      "预言": "len(rows) == n_turns",
+      "实测": "len(rows)=18 而 n_turns=20(M20) —— rows 只装**驱动日志里带门行的轮**",
+      "posthoc_correction": {
+        "不变量": "len(rows) == len(c1_turns_with_gate) 且 rows[i].turn == c1_turns_with_gate[i]",
+        "实测": "M20: rows.turn == [1,2,4,5,6,7,8,9,10,11,12,13,14,15,16,17,19,20] = c1_turns_with_gate(18 条, 缺 3/18 两轮)",
+        "性质": "**预言错误**(非被测错误); 按判据纪律: 预注册判据照原样 FAIL, 修正形态单列 checks_posthoc, 不改写 A8 的原判定"
+      }
+    }
+  },
+  "mechanism": {
+    "name": "控制臂与主臂共用同一落盘路径 ⇒ 控制臂静默覆盖主臂证据",
+    "code_fact": "eval/rover/r444/precheck_prefilter.py: main() 中 --neg-control 只改注入内容与退出码(rc=2), OUT 常量对两臂**同一路径**; 产物 JSON 顶层键 {probe,runs,channels,criteria,verdict} 中**无 arm/mode 字段** ⇒ 该文件不自证属于哪一臂",
+    "触发序列": "验证负控(rc=2) → 覆盖主臂证据 → 提交时把控制臂产物当主证据入库",
+    "可比性": "同族既有教训(派生件名必须由批次标签参数化, 禁默认后缀)在本器具上未被落实"
+  },
+  "corrected_readings": {
+    "verdict": "SEPARABLE",
+    "P1_no_counterexample": {"pass": true, "counterexamples": 0},
+    "P2_channels_agree": {"pass": false, "note": "7/8 三通道一致; W20 重跑目录遥测混合(与 README-evidence.md § 描述一致), 已隔离"},
+    "P3": {"total_r1_rows": 99, "avoidable": 67, "saved_ratio": 0.6768},
+    "per_run_M20_avoidable": 10,
+    "对照(控制臂)": {"verdict": "NOT_SEPARABLE", "P1": 4, "P3_avoidable": 71, "saved_ratio": 0.7172, "per_run_M20_avoidable": 11}
+  },
+  "doc_registry_conflict": {
+    "docs_prose": "eval/rover/r444/README-evidence.md:30 「P1 反例 = 0/8 运行」 ⇒ 与真值产物一致",
+    "registry_row": "docs/verification-registry.json:1213-1223 id=r444.separability-precheck level=L4 evidence_path=eval/rover/r444/precheck-prefilter.json ⇒ 指向控制臂产物(verdict=NOT_SEPARABLE)",
+    "instruments_row": "eval/capability/instruments.json:159 r444.prefilter-precheck expect_rc=0 evidence_path=eval/rover/r444/precheck_prefilter.py ⇒ 指向脚本, 不受影响",
+    "conflict_statement": "同一能力的三处(文档散文 / 能力登记表证据 / 器具登记表)中, 能力登记表的证据文件与另两处相反; 以**真值产物**为准"
+  },
+  "non_actions_this_round": [
+    "未改产品代码(src/** 零改动)",
+    "未改器具字节(改 sha 会连带登记表重绑, 必须与形式校验同轮原子完成 —— 见候选③)",
+    "未覆写已提交证据文件 eval/rover/r444/precheck-prefilter.json(Q23 曾复原 HEAD; 本轮保持工作树在该文件上零改动, 归因证据已归档到 exp1-q24/runs/)",
+    "未占主线轮号 / 未跑 dotnet / 未写 kpi.jsonl(单轮探针不入能力台账, 防污染趋势口径)"
+  ],
+  "carry_over": {
+    "item": "形式校验 10/10 (dotnet test --filter VerificationForm|SkillGeneralization|DevPlanDocRef)",
+    "gate": "对侧 R467 臂阵活跃 + MemAvailable 1097MB < 2600MB 门槛",
+    "since": "Q23 结转 (现为第 2 轮结转)"
+  },
+  "next_candidates": [
+    "①(A) 形式校验 10/10 —— 待对侧空闲窗口(第一优先, 结转 2 轮)",
+    "②(B) 器具硬化: OUT 名按臂参数化(main-negcontrol / main) + 产物内加 arm/mode 字段 + 登记表 evidence_path 重绑真值产物 + 重生已提交文件 ⇒ 与形式校验**同轮原子**完成",
+    "③(C) 附录 V §V.6 其余遗留 / relocated 面正例语料"
+  ]
+}
