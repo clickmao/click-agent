@@ -1,0 +1,249 @@
+{
+ "schema": "instruments-check/1",
+ "manifest": "eval/capability/instruments.json",
+ "passed": 9,
+ "total": 9,
+ "results": [
+  {
+   "id": "probe.grade",
+   "kind": "grader",
+   "cmd": "python3 eval/probe/grade.py --selftest",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "ef0a81d495ee",
+   "owner_round": "R444",
+   "kpi_quad": {
+    "单位": "轮",
+    "分母": "题集",
+    "真值源": "桩侧落盘",
+    "口径档": "n/a"
+   },
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/probe/grade.py --selftest --bogus-flag-that-must-not-silently-pass",
+     "rc": 2,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "grade.py: error: unrecognized arguments: --bogus-flag-that-must-not-silently-pass"
+    }
+   ]
+  },
+  {
+   "id": "probe.run_probe",
+   "kind": "pipeline",
+   "cmd": "python3 eval/probe/run_probe.py --selftest",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "9de4511eb8a4",
+   "owner_round": "R444",
+   "kpi_quad": {
+    "单位": "轮",
+    "分母": "题集",
+    "真值源": "桩侧落盘",
+    "口径档": "n/a"
+   },
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/probe/run_probe.py --selftest --bogus-flag-that-must-not-silently-pass",
+     "rc": 2,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "run_probe.py: error: unrecognized arguments: --bogus-flag-that-must-not-silently-pass"
+    }
+   ]
+  },
+  {
+   "id": "exp1q1.scope-selftest",
+   "kind": "static-probe",
+   "cmd": "python3 eval/capability/exp1-q1/selftest_scope.py",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "47cc74c5e070",
+   "owner_round": "R444",
+   "kpi_quad": {
+    "单位": "引用",
+    "分母": "全库引用",
+    "真值源": "git 树",
+    "口径档": "静态"
+   },
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/capability/exp1-q1/selftest_scope.py --bogus",
+     "rc": 2,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "用法错误: 未知参数 ['--bogus']"
+    }
+   ]
+  },
+  {
+   "id": "exp1q2.docref-selftest",
+   "kind": "static-probe",
+   "cmd": "python3 eval/capability/exp1-q2/selftest_doc_ref_integrity.py",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "1650e550247b",
+   "owner_round": "R444",
+   "kpi_quad": {
+    "单位": "引用",
+    "分母": "全库引用",
+    "真值源": "git 树",
+    "口径档": "静态"
+   },
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/capability/exp1-q2/selftest_doc_ref_integrity.py --bogus",
+     "rc": 2,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "用法错误: 未知参数 ['--bogus']"
+    }
+   ]
+  },
+  {
+   "id": "exp1q4.docref-probe",
+   "kind": "static-probe",
+   "cmd": "python3 eval/capability/exp1-q4/probe_doc_ref_integrity.py --selftest",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "8e26787db1b5",
+   "owner_round": "R444",
+   "kpi_quad": {
+    "单位": "引用",
+    "分母": "全库引用",
+    "真值源": "git 树",
+    "口径档": "静态"
+   },
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/capability/exp1-q4/probe_doc_ref_integrity.py --selftest --bogus-flag",
+     "rc": 2,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "probe_doc_ref_integrity.py: error: unrecognized arguments: --bogus-flag"
+    }
+   ]
+  },
+  {
+   "id": "audit.status_gen",
+   "kind": "audit-surface",
+   "cmd": "python3 eval/capability/status_gen.py --check",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "607d3680253b",
+   "owner_round": "R444",
+   "kpi_quad": {
+    "单位": "行",
+    "分母": "registry 总行",
+    "真值源": "docs/verification-registry.json",
+    "口径档": "派生"
+   },
+   "negative_controls": [
+    {
+     "cmd": "bash eval/capability/_nc_status_gen.sh",
+     "rc": 1,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "[nc status_gen] rc=1 (期望非零 = 注入坏行被拒)"
+    }
+   ]
+  },
+  {
+   "id": "r444.prefilter-precheck",
+   "kind": "separability-precheck",
+   "cmd": "python3 eval/rover/r444/precheck_prefilter.py",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "ea8aab20b377",
+   "owner_round": "R444",
+   "kpi_quad": {
+    "单位": "轮",
+    "分母": "门 r1 调用行",
+    "真值源": "llama-server 遥测 + 驱动日志",
+    "口径档": "本地真值"
+   },
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/rover/r444/precheck_prefilter.py --neg-control",
+     "rc": 2,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "负控注入: 期望检出 >=1 反例 ⇒ OK(检出)"
+    },
+    {
+     "cmd": "python3 eval/rover/r444/precheck_prefilter.py --grid-dir /nonexistent-grid-dir",
+     "rc": 3,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "[fail-closed] 网格缺失: /nonexistent-grid-dir/task-V2b.json ⇒ 空样本不得静默通过"
+    }
+   ]
+  },
+  {
+   "id": "r444.analyze",
+   "kind": "analyzer",
+   "cmd": "python3 eval/rover/r444/analyze_r444.py",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "37e379c212b8",
+   "owner_round": "R444",
+   "kpi_quad": {
+    "单位": "轮",
+    "分母": "同网格同 NS 分母臂实测",
+    "真值源": "桩侧 calls jsonl + llama-server 遥测",
+    "口径档": "三档并列(远端/含本地真值/减本地)"
+   },
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/rover/r444/analyze_r444.py --neg-control",
+     "rc": 0,
+     "expect": "detect:负控注入",
+     "pass": true,
+     "head": "负控注入: 期望检出 >=1 差异 ⇒ OK(检出); 检出 1 条"
+    }
+   ]
+  },
+  {
+   "id": "hooks.pre-commit",
+   "kind": "arbitration",
+   "cmd": "bash tools/hooks/pre-commit",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "022e1b7bdee1",
+   "owner_round": "R444",
+   "kpi_quad": {
+    "单位": "提交",
+    "分母": "提交尝试",
+    "真值源": "git-dir/ROUND_CLAIM",
+    "口径档": "n/a"
+   },
+   "negative_controls": [
+    {
+     "cmd": "bash eval/capability/_nc_hook_claim.sh",
+     "rc": 1,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "  若确认对侧已停: bash tools/round_claim.sh release"
+    }
+   ]
+  }
+ ]
+}

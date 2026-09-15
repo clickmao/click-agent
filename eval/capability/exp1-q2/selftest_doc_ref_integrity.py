@@ -72,6 +72,12 @@ DOCS = {
 }
 
 
+# R444 加固: 未知参数必须 fail-closed (L2 器具验收面负控) —— 原实现静默忽略未知参数。
+_UNKNOWN = [a for a in sys.argv[1:] if a.startswith("--") and a.split("=")[0] not in ("--expect-mixed", "--out", "--repo")]
+if _UNKNOWN:
+    print("用法错误: 未知参数 %s" % _UNKNOWN, file=sys.stderr)
+    sys.exit(2)
+
 def build_fixture(root: Path, legacy: bool = False):
     (root / "src" / "lib").mkdir(parents=True, exist_ok=True)
     (root / "src" / "other").mkdir(parents=True, exist_ok=True)

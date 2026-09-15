@@ -562,4 +562,38 @@ public sealed class LocalTurnGateTests
         Assert.Contains("TurnGateJudge.MechanicalAck(message.Content)", flat);
         Assert.Contains("TurnGateVerdict.Pass, \"gate:skip_rejected_nonack\"", flat);
     }
+
+    // ---------- 判据 R444: 廉价必要条件前置 (¬Ack ⇒ 构造性 Pass) ----------
+    [Fact]
+    public void G33_前置门命中必须可观测()
+    {
+        var c = new TurnGateCounters();
+        Assert.Equal(0, c.MechanicalNonAcks);
+        Assert.Equal(0, c.PrefilterViolations);
+        c.RecordMechanicalNonAck();
+        Assert.Equal(1, c.MechanicalNonAcks);
+        Assert.Equal("mechanical:nonack\u2192remote", c.LastBasis);
+        Assert.Equal(0, c.Judged);                    // 前置门命中 ⇒ 零判别调用 (省钱的可观测证据)
+        c.RecordPrefilterViolation();
+        Assert.Equal(1, c.PrefilterViolations);
+    }
+
+    [Fact]
+    public void G34_链侧Ack必须前置在r1调用之前()
+    {
+        var src = File.ReadAllText(Path.Combine(FindRepoRootG29(), "src", "agent", "IndustrialAgentV2.cs"));
+        var flat = string.Join(' ', src.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
+        // 正向: 前置门开关存在, 且默认值即「非 0 即开」(默认 = 被测行为)
+        Assert.Contains("AGENTFRAMEWORK_GATE_PREFILTER", flat);
+        Assert.Contains("\"0\"", flat);
+        // 承重: 廉价必要条件 (¬Ack) 的检查位置必须在 JudgeTurnAsync **之前** —
+        // 否则省不掉任何 r1 调用, 前置门退化为后置否决 (R444 的增益来源就是这一行位置)。
+        var iPre = flat.IndexOf("GatePrefilterOn && !agent.modelqueue.TurnGateJudge.MechanicalAck(message.Content)", StringComparison.Ordinal);
+        var iR1 = flat.IndexOf("JudgeTurnAsync( message.Content", StringComparison.Ordinal);
+        Assert.True(iPre > 0, "前置门分支缺失");
+        Assert.True(iR1 > 0, "r1 判别调用缺失");
+        Assert.True(iPre < iR1, "Ack 前置必须早于 r1 调用");
+        // fail-closed: 后置否决若在前置门开启时命中, 必须落盘不变量破坏事件 (静默 = 读数反向)
+        Assert.Contains("gate_prefilter_invariant_violation", flat);
+    }
 }

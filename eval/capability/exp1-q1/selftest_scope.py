@@ -41,6 +41,12 @@ FIXTURE = {
 OWNER_ONLY = {"data/credentials.json", "data/master.key"}
 
 
+# R444 加固: 未知参数必须 fail-closed (L2 器具验收面负控) —— 原实现静默忽略未知参数。
+_UNKNOWN = [a for a in sys.argv[1:] if a.startswith("--") and a not in ("--result", "--scopes")]
+if _UNKNOWN:
+    print("用法错误: 未知参数 %s" % _UNKNOWN, file=sys.stderr)
+    sys.exit(2)
+
 def build_fixture(root: Path) -> None:
     for rel, body in FIXTURE.items():
         p = root / rel

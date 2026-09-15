@@ -1,0 +1,161 @@
+{
+ "schema": "instruments/1",
+ "spec": "docs/reports/endpoint-and-audit-contract.md (L2 器具验收面)",
+ "note": "每条器具必须成对: 正控(应通过) + 负控(注入缺陷必失败/必检出)。未过 L2 的读数不得进台账。清口径四元组 = 单位/分母/真值源/口径档。",
+ "instruments": [
+  {
+   "id": "probe.grade",
+   "kind": "grader",
+   "cmd": "python3 eval/probe/grade.py --selftest",
+   "expect_rc": 0,
+   "expect_substr": "selftest",
+   "nc_cmd": "python3 eval/probe/grade.py --selftest --bogus-flag-that-must-not-silently-pass",
+   "nc_expect": "nonzero",
+   "kpi_quad": {
+    "单位": "轮",
+    "分母": "题集",
+    "真值源": "桩侧落盘",
+    "口径档": "n/a"
+   },
+   "owner_round": "R444",
+   "evidence_path": "eval/probe/grade.py"
+  },
+  {
+   "id": "probe.run_probe",
+   "kind": "pipeline",
+   "cmd": "python3 eval/probe/run_probe.py --selftest",
+   "expect_rc": 0,
+   "expect_substr": "selftest",
+   "nc_cmd": "python3 eval/probe/run_probe.py --selftest --bogus-flag-that-must-not-silently-pass",
+   "nc_expect": "nonzero",
+   "kpi_quad": {
+    "单位": "轮",
+    "分母": "题集",
+    "真值源": "桩侧落盘",
+    "口径档": "n/a"
+   },
+   "owner_round": "R444",
+   "evidence_path": "eval/probe/run_probe.py"
+  },
+  {
+   "id": "exp1q1.scope-selftest",
+   "kind": "static-probe",
+   "cmd": "python3 eval/capability/exp1-q1/selftest_scope.py",
+   "expect_rc": 0,
+   "nc_cmd": "python3 eval/capability/exp1-q1/selftest_scope.py --bogus",
+   "nc_expect": "nonzero",
+   "kpi_quad": {
+    "单位": "引用",
+    "分母": "全库引用",
+    "真值源": "git 树",
+    "口径档": "静态"
+   },
+   "owner_round": "R444",
+   "evidence_path": "eval/capability/exp1-q1/selftest_scope.py",
+   "expect_substr": "\"verdict\": \"pass\""
+  },
+  {
+   "id": "exp1q2.docref-selftest",
+   "kind": "static-probe",
+   "cmd": "python3 eval/capability/exp1-q2/selftest_doc_ref_integrity.py",
+   "expect_rc": 0,
+   "nc_cmd": "python3 eval/capability/exp1-q2/selftest_doc_ref_integrity.py --bogus",
+   "nc_expect": "nonzero",
+   "kpi_quad": {
+    "单位": "引用",
+    "分母": "全库引用",
+    "真值源": "git 树",
+    "口径档": "静态"
+   },
+   "owner_round": "R444",
+   "evidence_path": "eval/capability/exp1-q2/selftest_doc_ref_integrity.py",
+   "expect_substr": "\"exit_code\": 0"
+  },
+  {
+   "id": "exp1q4.docref-probe",
+   "kind": "static-probe",
+   "cmd": "python3 eval/capability/exp1-q4/probe_doc_ref_integrity.py --selftest",
+   "expect_rc": 0,
+   "expect_substr": "\"n_pass\": 54",
+   "nc_cmd": "python3 eval/capability/exp1-q4/probe_doc_ref_integrity.py --selftest --bogus-flag",
+   "nc_expect": "nonzero",
+   "kpi_quad": {
+    "单位": "引用",
+    "分母": "全库引用",
+    "真值源": "git 树",
+    "口径档": "静态"
+   },
+   "owner_round": "R444",
+   "evidence_path": "eval/capability/exp1-q4/probe_doc_ref_integrity.py"
+  },
+  {
+   "id": "audit.status_gen",
+   "kind": "audit-surface",
+   "cmd": "python3 eval/capability/status_gen.py --check",
+   "expect_rc": 0,
+   "expect_substr": "CHECK: PASS",
+   "nc_cmd": "bash eval/capability/_nc_status_gen.sh",
+   "nc_expect": "nonzero",
+   "kpi_quad": {
+    "单位": "行",
+    "分母": "registry 总行",
+    "真值源": "docs/verification-registry.json",
+    "口径档": "派生"
+   },
+   "owner_round": "R444",
+   "evidence_path": "eval/capability/status_gen.py"
+  },
+  {
+   "id": "r444.prefilter-precheck",
+   "kind": "separability-precheck",
+   "cmd": "python3 eval/rover/r444/precheck_prefilter.py",
+   "expect_rc": 0,
+   "expect_substr": "P1",
+   "nc_cmd": "python3 eval/rover/r444/precheck_prefilter.py --neg-control",
+   "nc_expect": "nonzero",
+   "nc_cmd2": "python3 eval/rover/r444/precheck_prefilter.py --grid-dir /nonexistent-grid-dir",
+   "nc_expect2": "nonzero",
+   "kpi_quad": {
+    "单位": "轮",
+    "分母": "门 r1 调用行",
+    "真值源": "llama-server 遥测 + 驱动日志",
+    "口径档": "本地真值"
+   },
+   "owner_round": "R444",
+   "evidence_path": "eval/rover/r444/precheck_prefilter.py"
+  },
+  {
+   "id": "r444.analyze",
+   "kind": "analyzer",
+   "cmd": "python3 eval/rover/r444/analyze_r444.py",
+   "expect_rc": 0,
+   "expect_substr": "D4",
+   "nc_cmd": "python3 eval/rover/r444/analyze_r444.py --neg-control",
+   "nc_expect": "detect:负控注入",
+   "kpi_quad": {
+    "单位": "轮",
+    "分母": "同网格同 NS 分母臂实测",
+    "真值源": "桩侧 calls jsonl + llama-server 遥测",
+    "口径档": "三档并列(远端/含本地真值/减本地)"
+   },
+   "owner_round": "R444",
+   "evidence_path": "eval/rover/r444/analyze_r444.py"
+  },
+  {
+   "id": "hooks.pre-commit",
+   "kind": "arbitration",
+   "cmd": "bash tools/hooks/pre-commit",
+   "expect_rc": 0,
+   "nc_cmd": "bash eval/capability/_nc_hook_claim.sh",
+   "nc_expect": "nonzero",
+   "kpi_quad": {
+    "单位": "提交",
+    "分母": "提交尝试",
+    "真值源": "git-dir/ROUND_CLAIM",
+    "口径档": "n/a"
+   },
+   "owner_round": "R444",
+   "evidence_path": "tools/hooks/pre-commit"
+  }
+ ]
+}

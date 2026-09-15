@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# 推送暂停令 (2026-09-13 用户钦定: 「暂停所有github推送」)
+# 解除方式: 用户明确解除后删除 .git/PUSH_PAUSED 与 .git/hooks/pre-push + tools/hooks/pre-push
+# 并 unset remote.origin.pushurl。R444 起随 core.hooksPath=tools/hooks 一并生效 (原件在 .git/hooks/pre-push)。
+if [ -f "$(git rev-parse --git-dir)/PUSH_PAUSED" ]; then
+  echo "BLOCKED: 推送已暂停 (用户令 2026-09-13)。未解除前禁止任何 git push。" >&2
+  exit 1
+fi
+exit 0

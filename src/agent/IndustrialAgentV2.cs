@@ -81,6 +81,11 @@ public class IndustrialAgentV2 : AgentBase
     /// <summary>v0.13.3 R275: 联想库为**进程级**单例 (V2 实例可能每轮重建 — host 生命周期语义), 跨轮保留。
     private static readonly agent.exploration.ThinkMemory _thinkMemoryGlobal = LoadThinkMemory();
 
+    /// <summary>R444: 门前置消融开关 —— **默认开** (Ack 前置 = 生产行为); 置 "0" 复原 R443 的
+    /// 后置否决行为, 供同网格单变量对照 (默认值即被测行为, 开关只用于消融)。</summary>
+    private static readonly bool GatePrefilterOn =
+        Environment.GetEnvironmentVariable("AGENTFRAMEWORK_GATE_PREFILTER") != "0";
+
     /// <summary>R413: 门配置遥测只发一次 (进程级) — 让「臂B 有没有真的开门」可观测。</summary>
     private static int _gateConfigEmitted;
     private static readonly string _thinkMemoryPath = Path.Combine("./data", "think-memory.json");
@@ -1483,6 +1488,17 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     gateOutcome = agent.modelqueue.TurnGateOutcome.Decide(
                         agent.modelqueue.TurnGateVerdict.Pass, "mechanical:pass");
                 }
+                // R444: **廉价必要条件前置** —— 不变量「r1 的 Skip 只在 MechanicalAck 成立时生效」
+                // (见下方后置否决) 蕴含 Skip ⇒ Ack; 其逆否 ¬Ack ⇒ 无论 r1 判什么都终局 Pass。
+                // 故对 ¬Ack 轮直接 Pass: 不建 prompt、不问 r1 ⇒ 省掉该轮本地 r1 成本 (R443 真值口径
+                // ≈ 638.8 tok/轮), 而判决/远端走向/内联块/落盘内容与后置否决路径**逐位等价**。
+                // 依据: eval/rover/r444/precheck-prefilter.json (8 运行 99 门行, Skip⇒Ack 反例 0)。
+                else if (GatePrefilterOn && !agent.modelqueue.TurnGateJudge.MechanicalAck(message.Content))
+                {
+                    _modelRouter.TurnGate.RecordMechanicalNonAck();
+                    gateOutcome = agent.modelqueue.TurnGateOutcome.Decide(
+                        agent.modelqueue.TurnGateVerdict.Pass, "mechanical:nonack");
+                }
                 else
                 {
                     gateRoleSeed = ActiveRole.Id + "|" + agent.modelqueue.TurnGateJudge.Clip(ActiveRole.ProfileSeed, 80);
@@ -1502,6 +1518,16 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 if (gateOutcome.Decided && gateOutcome.Verdict == agent.modelqueue.TurnGateVerdict.Skip
                     && !agent.modelqueue.TurnGateJudge.MechanicalAck(message.Content))
                 {
+                    // R444: 前置门开启时本支**不可达** (¬Ack 已在调用前 Pass) ⇒ 命中 = 不变量被破坏。
+                    // 必须 fail-closed 落盘 (静默降级 = 读数与真实走向相反, R433 教训)。
+                    if (GatePrefilterOn)
+                    {
+                        _modelRouter!.TurnGate.RecordPrefilterViolation();
+                        agent.config.AgentTelemetry.Emit("gate_prefilter_invariant_violation", "IndustrialAgentV2",
+                            ("msg_sha16", agent.modelqueue.LocalInputFingerprint.Sha16(message.Content)),
+                            ("msg_len", message.Content.Length.ToString()),
+                            ("r1_raw_len", gateOutcome.Raw.Length.ToString()));
+                    }
                     _modelRouter!.TurnGate.RecordSkipRejected();
                     agent.config.AgentTelemetry.Emit("local_turn_gate_reject", "IndustrialAgentV2",
                         ("reason", "skip_not_ack_family"),
@@ -1511,6 +1537,8 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     gateOutcome = agent.modelqueue.TurnGateOutcome.Decide(
                         agent.modelqueue.TurnGateVerdict.Pass, "gate:skip_rejected_nonack");
                 }
+                // R444: 本轮是否真的走过本地 r1 (机械判定轮 = 未走) —— 决定真值字段是 -1 还是实测值。
+                var gateLocalCall = !(_modelRouter.TurnGate.LastBasis ?? "").StartsWith("mechanical", System.StringComparison.Ordinal);
                 agent.config.AgentTelemetry.Emit("local_turn_gate", "IndustrialAgentV2",
                     ("decided", gateOutcome.Decided ? "true" : "false"),
                     ("verdict", gateOutcome.Verdict.ToString()),
@@ -1519,7 +1547,7 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     ("raw_len", gateOutcome.Raw.Length.ToString()),
                     ("error", gateOutcome.Error ?? ""),
                     // R429: 决策路径缓存钉死可观测 —— cache_n 应恒为 0 (关前缀缓存), pinned = 累计钉死次数
-                    ("cache_n", _modelRouter.TurnGate.LastCachedTokens.ToString()),
+                    ("cache_n", (gateLocalCall ? _modelRouter.TurnGate.LastCachedTokens : -1).ToString()),
                     ("pinned", _modelRouter.TurnGate.CachePinned.ToString()),
                     // R430: 判定输入指纹 (只观测) — 逐轮 raw 不同时, 先机械区分「输入不同」与「引擎不确定」
                     ("prompt_sha", _modelRouter.TurnGate.LastPromptSha ?? ""),
@@ -1528,15 +1556,23 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     ("role_seed_sha", _modelRouter.TurnGate.LastRoleSeedSha ?? ""),
                     // R431: 挂载形状 (取自实发 prompt, 非二次重建) — 「role 额外数据挂没挂」必须可机检:
                     // 未挂载臂 growth_chars == 0 ∧ prompt_len == 冻结基线, 挂载臂 growth_chars > 0。
-                    ("gate_prompt_len", _modelRouter.TurnGate.LastPromptChars.ToString()),
+                    ("gate_prompt_len", (gateLocalCall ? _modelRouter.TurnGate.LastPromptChars : -1).ToString()),
                     ("role_seed_chars", _modelRouter.TurnGate.LastRoleSeedChars.ToString()),
                     ("growth_chars", _modelRouter.TurnGate.LastGrowthChars.ToString()),
                     ("growth_lines", _modelRouter.TurnGate.LastGrowthLines.ToString()),
                     // R443: 本地 r1 成本的 **tokenizer 真值** (llama-server 上报; -1 = 该轮未走 r1)。
                     // 口径: tokens_evaluated = prompt 总长, prompt_new = 新评估, gen = 生成长度。
-                    ("tokens_evaluated", _modelRouter.TurnGate.LastEvalTokens.ToString()),
-                    ("prompt_new", _modelRouter.TurnGate.LastNewTokens.ToString()),
-                    ("gen_tokens", _modelRouter.TurnGate.LastGenTokens.ToString()),
+                    // R444 修: 契约「-1 = 该轮未走 r1」必须**逐轮**成立 —— 机械判定轮 (mechanical:pass /
+                    // mechanical:nonack) 既未建 prompt 也未问 r1, 若直接读 LastXxx 会继承**上次调用的粘滞值**
+                    // ⇒ 前置门臂的本地成本被虚增 (实测 M20: 6 行 × (319+78) = 2382 tok, 把 33.31% 压成 29.43%)。
+                    ("tokens_evaluated", (gateLocalCall ? _modelRouter.TurnGate.LastEvalTokens : -1).ToString()),
+                    ("prompt_new", (gateLocalCall ? _modelRouter.TurnGate.LastNewTokens : -1).ToString()),
+                    ("gen_tokens", (gateLocalCall ? _modelRouter.TurnGate.LastGenTokens : -1).ToString()),
+                    // R444: 前置门形状 (可机检) — prefilter=1 且 basis=mechanical:nonack→remote 的轮
+                    // 就是「本来会花一次 r1、现在零成本」的轮; 不变量破坏数必须恒 0。
+                    ("prefilter", GatePrefilterOn ? "1" : "0"),
+                    ("prefilter_nonack", _modelRouter.TurnGate.MechanicalNonAcks.ToString()),
+                    ("prefilter_violations", _modelRouter.TurnGate.PrefilterViolations.ToString()),
                     ("role", ActiveRole.Id));
             }
 

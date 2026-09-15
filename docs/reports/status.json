@@ -1,0 +1,499 @@
+{
+ "acceptance_matrix": {
+  "cells": [
+   {
+    "A_remote": 61256,
+    "BRJ_remote": 32968,
+    "D_remote_pct": 46.18,
+    "D_remote_plus_local_true_pct": 33.32,
+    "grid": "M20",
+    "k_over_N": "7/20",
+    "quality_acc": 1.0,
+    "quality_fn": 0,
+    "quality_fp": 0,
+    "verdict_25pct_with_local": true,
+    "verdict_30pct_api": true
+   },
+   {
+    "A_remote": 6126,
+    "BRJ_remote": 4151,
+    "D_remote_pct": 32.24,
+    "D_remote_plus_local_true_pct": 13.03,
+    "grid": "V2b",
+    "k_over_N": "1/4",
+    "quality_acc": 1.0,
+    "quality_fn": 0,
+    "quality_fp": 0,
+    "verdict_25pct_with_local": false,
+    "verdict_30pct_api": true
+   },
+   {
+    "A_remote": 17270,
+    "BRJ_remote": 14893,
+    "D_remote_pct": 13.76,
+    "D_remote_plus_local_true_pct": 1.11,
+    "grid": "W8",
+    "k_over_N": "1/8",
+    "quality_acc": 1.0,
+    "quality_fn": 0,
+    "quality_fp": 0,
+    "verdict_25pct_with_local": false,
+    "verdict_30pct_api": false
+   }
+  ],
+  "equivalence": {
+   "gate_r1_calls_BRJ": 7,
+   "gate_r1_calls_BRJL": 17,
+   "per_turn_diffs": 0,
+   "remote_tokens_identical": false
+  },
+  "paired_controls": {
+   "BRJL_nonack_rows": 0,
+   "BRJL_prefilter_flag": [
+    "0"
+   ],
+   "BRJL_skip_rejected_n": 3,
+   "BRJ_nonack_rows": 10,
+   "BRJ_prefilter_flag": [
+    "1"
+   ],
+   "BRJ_skip_rejected_n": 0,
+   "BRJ_violations": 0,
+   "PASS_N1_正控": true,
+   "PASS_N2_负控": true
+  },
+  "unmeasured": [
+   "W20(本轮排除)"
+  ]
+ },
+ "derived_from": {
+  "kpi": "eval/capability/kpi.jsonl",
+  "registry": "verification-registry.json"
+ },
+ "kpi": {
+  "latest": {
+   "bin_sha": "",
+   "grid": null,
+   "kind": null,
+   "readouts": null,
+   "ts": "2026-09-14T03:03:23+0800"
+  },
+  "lines": 52,
+  "rounds": [
+   "EXP1-Q1",
+   "EXP1-Q10",
+   "EXP1-Q2",
+   "EXP1-Q3",
+   "EXP1-Q3b",
+   "EXP1-Q4",
+   "EXP1-Q5",
+   "EXP1-Q6",
+   "EXP1-Q7",
+   "EXP1-Q8",
+   "EXP1-Q9",
+   "R401",
+   "R402",
+   "R403-scope",
+   "R411-V",
+   "R413",
+   "R414",
+   "R415",
+   "R416",
+   "R419",
+   "R420",
+   "R421",
+   "R422",
+   "R423",
+   "R424",
+   "R425",
+   "R427",
+   "R428",
+   "R428-hold",
+   "R429",
+   "R430",
+   "R432",
+   "R433",
+   "R434",
+   "R434b",
+   "R434c",
+   "R435",
+   "R435b",
+   "R435c",
+   "R436",
+   "R437-task-length-stratification",
+   "R438",
+   "R439",
+   "R440",
+   "R441",
+   "R442",
+   "R443",
+   "R444",
+   "loop-mechanism",
+   "unknown"
+  ],
+  "sha12": "3a30c1995662"
+ },
+ "plans": [
+  {
+   "plan": "skill-extraction-assessment.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.13.3-topic-clarify-l3-plan.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.14.0-master-plan.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.14.0-t2-llm-selfcritic-plan.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.14.0-thinkchain-self-critique-plan.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.15.0-task-lifecycle-plan.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.15.2-guardrail-persistence-plan.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.15.3-perf-memory-plan.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.16.1-hash-unify-plan.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.16.3-rag-prune-amortize-plan.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.17.0-executor-hardening-plan.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.17.1-staged-approval-plan.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.17.2-activity-script-plan.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.17.3-collision-detection-plan.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.18.0-command-route-hardening-plan.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.19.0-frontend-api-plan.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.20.0-llm-service-plan.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.20.1-llm-service-integration-plan.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.21.0-role-system-plan.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.22.0-exp1-local-index-and-code-graph.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.22.0-exp2-multi-option-ask-menu-protocol.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.22.0-exp3-step-alignment-validation.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.22.0-exp4-tool-request-and-local-script.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.22.0-exp5-lesson-table.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.22.0-exp6-embedding-model-selection.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.22.0-exp7-bge-idle-training-loop.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.22.0-exp8-artifact-to-skill-and-kpi-ab.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.22.0-exp9-subtask-plan-routing-and-local-first.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.22.0-exploration-index.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.22.0-kpi-decision.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.22.0-l2-capability-diff.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.22.0-longterm-backlog.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.22.0-r371-capability-probe-python-game.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.23.0-exp10-agent.rover-local-prover-engine.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.23.0-exp11-formal-verification-agent-augmentation.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.23.0-exp12-agent-chain-dcr-90p5-feasibility.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.23.0-exp13-r385-tail-hardening.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.24.0-exp14-random-probe-selfcheck.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.25.0-r399-probe-hardening-and-kpi.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.26.0-r400-rover-generation-chain.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.27.0-r405-r1-local-enhancement.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.28.0-r406-jinja-template-and-r1-chain.md",
+   "status": "已完成 (P0-2a 解释器 / P0-2b 生成路径接线)；进行中 (P0-1 llama.cpp oracle 收尾)"
+  },
+  {
+   "plan": "v0.29.0-r407-qwen2-attn-bias-and-forward-parity.md",
+   "status": "已完成 (V1–V6 全部真实读数；AOT 发布与全量回归已跑)"
+  },
+  {
+   "plan": "v0.30.0-r408-llamacpp-process-pivot.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.31.0-r409-local-prompt-template-gate.md",
+   "status": "已实施（R409，2026-09-14）"
+  },
+  {
+   "plan": "v0.32.0-r410-session-prefix-reuse.md",
+   "status": "已实施（R410，2026-09-14）"
+  },
+  {
+   "plan": "v0.33.0-r411-long-lived-generation-port.md",
+   "status": "已实施（R411，2026-09-14）"
+  },
+  {
+   "plan": "v0.34.0-r412-multi-session-slot-contention.md",
+   "status": "判据预注册（2026-09-14，R411 收口后自动续轮）"
+  },
+  {
+   "plan": "v0.35.0-r413-r1-local-verdict-token-budget.md",
+   "status": "进行中（端口层已落地并通过机检；判据未开测）"
+  },
+  {
+   "plan": "v0.36.0-r414-failure-visibility.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.37.0-r415-gate-input-chain-pin.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.38.0-r417-probe-anti-saturation.md",
+   "status": "已收口（判别力自证 PASS；**首个非饱和真机读数**：整题全对 1/3、用例级 47/54；仪器两处真缺陷已修）"
+  },
+  {
+   "plan": "v0.39.0-r418-process-kpi.md",
+   "status": "已收口（2026-09-14；仪器 + 真机读数 + 登记齐；本地提交未推）"
+  },
+  {
+   "plan": "v0.40.0-r419-probe-multiturn.md",
+   "status": "已收口（2026-09-14）—— 仪器侧达成（成对正负控 + 7 态自证 + 三缺陷闸）；真机侧**未稳定复现分化**（4 次 onfail 跑 3 次饱和 1 次分化）⇒ 本轮不判通过，下轮反饱和（见 §7）"
+  },
+  {
+   "plan": "v0.41.0-r420-recall-wiring.md",
+   "status": "已实施（本地 commit，**未推** —— 推送暂停令在效）"
+  },
+  {
+   "plan": "v0.42.0-r421-polarity.md",
+   "status": "已实施（本地 commit 37d6997，**未推** —— 推送暂停令在效）"
+  },
+  {
+   "plan": "v0.43.0-r422-scoring-normalization.md",
+   "status": "已收口（PARTIAL —— 预注册全称判据被证伪，宣称按证据收窄登记；另含**附带修复**一项，见 §8）"
+  },
+  {
+   "plan": "v0.44.0-r423-tf-saturation.md",
+   "status": "已收口（PASS —— 主判据 10/10 绿；**含一次预测输入纠错与一次语料目录污染事故**，见 §6/§7；边界登记见 §5）"
+  },
+  {
+   "plan": "v0.45.0-r424-aot-mainline-replication.md",
+   "status": "判据预注册（本文件 §3–§5 于跑测前落盘：**17:05:36**，首臂产物 `budget-A.json` mtime 17:06:23 ⇒ 判据先于读数）"
+  },
+  {
+   "plan": "v0.46.0-r425-ratio-sensitivity-grid.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.47.0-r426-relation-judge-localization.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.48.0-r427-duplicate-tie-precheck.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.49.0-r428-duplicate-collapse.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.50.0-r429-decision-cache-pin.md",
+   "status": "进行中（T0 预注册：判据先冻结，后跑测）"
+  },
+  {
+   "plan": "v0.51.0-r430-input-fingerprint.md",
+   "status": "已完成 (PASS; 证据 eval/rover/r430/README-evidence.md)（T0 预注册；本文件在读取本轮任何读数**之前**写入，器具代码与判据同批冻结）"
+  },
+  {
+   "plan": "v0.52.0-r431-growth-mount.md",
+   "status": "已完成（对侧 R431，本地提交 `f319198`）"
+  },
+  {
+   "plan": "v0.53.0-r432-gate-discrimination.md",
+   "status": "已完成 (FAIL; 证据 eval/rover/r432/README-evidence.md)"
+  },
+  {
+   "plan": "v0.54.0-r433-doc-driven-probe-rerun.md",
+   "status": "已完成（本地提交 `6be1f35` + `69d405c`）"
+  },
+  {
+   "plan": "v0.55.0-r434-falseinfo-discrimination-grid.md",
+   "status": "进行中（预注册先于跑测；本文件 mtime 必须先于首臂产物）"
+  },
+  {
+   "plan": "v0.56.0-r435-relation-judge-localization.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.57.0-r436-e2e-brj-token-kpi.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.58.0-r438-localskip-no-replay.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.59.0-r439-domain-extension.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.60.0-r440-length-ladder-measurement.md",
+   "status": "已完成（结果见 §5bis / §7；判据机判见 `eval/rover/r440/compare-r440.json`）"
+  },
+  {
+   "plan": "v0.61.0-r441-gain-window-floor-and-position-curve.md",
+   "status": "n/a"
+  },
+  {
+   "plan": "v0.62.0-r442-accounting-and-asymmetry.md",
+   "status": "已完成"
+  },
+  {
+   "plan": "v0.63.0-r443-local-token-truth-and-replay-ablation.md",
+   "status": "已完成"
+  },
+  {
+   "plan": "v0.64.0-r444-cheap-necessary-condition-prefilter.md",
+   "status": "已完成（判据于测量前预注册；结果见文末 §9）"
+  }
+ ],
+ "registry": {
+  "by_level": {
+   "L0": 2,
+   "L1": 4,
+   "L2": 16,
+   "L3": 31,
+   "L4": 28
+  },
+  "rows": 81,
+  "sha12": "700e78033687",
+  "updated_round": "R444",
+  "violations": [],
+  "warnings": [
+   {
+    "id": "credential.aesgcm",
+    "why": "L>=2 未登记 covers[] (形式规范未强制, 记为告警)"
+   },
+   {
+    "id": "devplan.docref",
+    "why": "L>=2 未登记 covers[] (形式规范未强制, 记为告警)"
+   },
+   {
+    "id": "aot.publish.zero_il",
+    "why": "L>=2 未登记 covers[] (形式规范未强制, 记为告警)"
+   },
+   {
+    "id": "bge.recall.frozen_bench",
+    "why": "L>=2 未登记 covers[] (形式规范未强制, 记为告警)"
+   },
+   {
+    "id": "verification.registry.selfcheck",
+    "why": "L>=2 未登记 covers[] (形式规范未强制, 记为告警)"
+   },
+   {
+    "id": "r424.mainline-token-budget-aot-replication",
+    "why": "L>=2 未登记 covers[] (形式规范未强制, 记为告警)"
+   },
+   {
+    "id": "r425.gate-ratio-sensitivity",
+    "why": "L>=2 未登记 covers[] (形式规范未强制, 记为告警)"
+   }
+  ]
+ },
+ "schema": "status/1",
+ "writer_arbitration": {
+  "heartbeat": "eval/capability/.round_heartbeat",
+  "hook": "tools/hooks/pre-commit",
+  "policy": "docs/reports/endpoint-and-audit-contract.md L4"
+ }
+}

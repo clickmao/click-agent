@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# ---------------------------------------------------------------------------
+# L4 写者仲裁 (R444)  —— docs/reports/endpoint-and-audit-contract.md L4 层
+#
+# 背景: R423/R431/R436/R440/R441/R442/R443 连续多轮发生**同 worktree 双写者**
+#       (两个 hermes 进程同轮同目录), 症状是「轮号碰撞 + 对侧未跟踪文件混入」。
+# 机制: 心跳文件 <git-dir>/ROUND_CLAIM 记录当前轮号的持有者 (round/pid/writer/ts)。
+#       本钩子: 若心跳新鲜(pid 存活) 且 持有者 != $AGENTFRAMEWORK_WRITER ⇒ 拒绝提交。
+#       陈旧心跳(pid 已死) 只告警并放行 (避免死锁)。
+# 另加 L3 门禁: registry 机检违规 ⇒ 拒绝提交。
+# 安装: bash tools/install_hooks.sh   (设置 core.hooksPath=tools/hooks)
+# ---------------------------------------------------------------------------
+set -u
+GD="$(git rev-parse --git-dir 2>/dev/null || echo .git)"
+# R444: 路径可覆盖 (AGENTFRAMEWORK_ROUND_CLAIM) —— 供 L2 负控在**不干扰真心跳**的前提下走同一代码路径。
+CLAIM="${AGENTFRAMEWORK_ROUND_CLAIM:-$GD/ROUND_CLAIM}"
+me="${AGENTFRAMEWORK_WRITER:-}"
+
+if [ -f "$CLAIM" ]; then
+  pid="$(sed -n 's/^pid=//p' "$CLAIM" | head -1)"
+  ts="$(sed -n 's/^ts=//p' "$CLAIM" | head -1)"
+  age="$(date -u +%s)"; age=$(( age - $(date -u -d "$ts" +%s 2>/dev/null || echo 0) ))
+  [ "$age" -lt 5400 ] && [ "$age" -ge 0 ] && FRESH_AGE=1 || FRESH_AGE=0
+  wr="$(sed -n 's/^writer=//p' "$CLAIM" | head -1)"
+  rd="$(sed -n 's/^round=//p' "$CLAIM" | head -1)"
+  if { [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; } || [ "$FRESH_AGE" = 1 ]; then
+    if [ -n "$me" ] && [ "$wr" != "$me" ]; then
+      echo "BLOCKED(L4 写者仲裁): 轮 $rd 正被另一写者持有 (pid=$pid writer=$wr)。" >&2
+      echo "  本提交者 AGENTFRAMEWORK_WRITER=$me ⇒ 拒绝 (防撞号/防混入对侧文件)。" >&2
+      echo "  若确认对侧已停: bash tools/round_claim.sh release" >&2
+      exit 1
+    fi
+  else
+    echo "WARN(L4): 心跳陈旧 (pid=$pid 不存活 且 age=${age}s ≥ TTL 5400s) ⇒ 放行; 清理: tools/round_claim.sh release --force" >&2
+  fi
+fi
+
+if command -v python3 >/dev/null 2>&1 && [ -f eval/capability/status_gen.py ]; then
+  if ! python3 eval/capability/status_gen.py --check >/tmp/status_gen_precommit.log 2>&1; then
+    echo "BLOCKED(L3 审计面门禁): registry 机检违规。" >&2
+    tail -10 /tmp/status_gen_precommit.log >&2
+    exit 1
+  fi
+fi
+exit 0

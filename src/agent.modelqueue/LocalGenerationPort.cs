@@ -461,6 +461,9 @@ public sealed class TurnGateCounters
     private long _templateAcks;
 
     private long _skipRejected;
+    // R444: 前置门 (§ Ack 前置) 相关计数 —— 省下的 r1 调用与被破坏的不变量都必须可见。
+    private long _mechanicalNonAcks;
+    private long _prefilterViolations;
 
     private long _cachePinned;
     private int _lastCachedTokens;
@@ -550,8 +553,20 @@ public sealed class TurnGateCounters
     /// <summary>R434: r1 判 Skip 但结构上非「认可族」⇒ 降级 Pass 的次数 (被拒的省钱机会必须可观测)。</summary>
     public long SkipRejected => Interlocked.Read(ref _skipRejected);
 
+    /// <summary>R444: 前置门命中次数 (¬Ack ⇒ 构造性必然 Pass, 未询问 r1)。</summary>
+    public long MechanicalNonAcks => Interlocked.Read(ref _mechanicalNonAcks);
+
+    /// <summary>R444: 前置门不变量被破坏次数 (Skip ∧ ¬Ack 本应不可达) — 恒 0 才是 fail-closed。</summary>
+    public long PrefilterViolations => Interlocked.Read(ref _prefilterViolations);
+
     /// <summary>R434: r1 判 Skip 但结构确认失败 (非认可族) ⇒ 降级 Pass, 宁多走一次远端。</summary>
     public void RecordSkipRejected() { Interlocked.Increment(ref _skipRejected); LastBasis = "gate:skip_rejected_nonack→remote"; }
+
+    /// <summary>R444: 前置门命中 (¬Ack, 零 token 直接 Pass) — 不建 prompt、不问 r1, 判决与后置否决逐位同。</summary>
+    public void RecordMechanicalNonAck() { Interlocked.Increment(ref _mechanicalNonAcks); LastBasis = "mechanical:nonack→remote"; }
+
+    /// <summary>R444: 前置门不变量被破坏 (Skip ∧ ¬Ack 竟抵达后置否决) — fail-closed 落盘, 恒 0。</summary>
+    public void RecordPrefilterViolation() { Interlocked.Increment(ref _prefilterViolations); }
 
     public void RecordDegraded(string reason)
     {
