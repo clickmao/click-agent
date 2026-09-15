@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R464",
+  "updated_round": "R465",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -1798,6 +1798,67 @@
         "eval/rover/r463/calls-BP2.jsonl"
       ],
       "owner_round": "R464"
+    },
+    {
+      "id": "r465.pure-repeat-skip",
+      "level": "L2",
+      "capability": "纯复述族直 Skip（真诉求轮可跳面）: TurnGateJudge.IsPureRepeat 三道全过（① 完整复述标记 ② 去标点后 ≤14 字且字符全属复述白名单 ③ 无问号）⇒ 在 MechanicalPass 之后直接 Skip：零 r1、零远端调用；本地消化 = 回放上一条 Assistant 答复原文（取不到 ⇒ 兜底串）。开关 AGENTFRAMEWORK_GATE_REPEAT_SKIP（默认 on；off 复原 R464 行为）",
+      "evidence_cmd": "python3 eval/rover/r465/settle_r465.py eval/rover/r465 ALL; env -u AGENTFRAMEWORK_PY_RUN dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter \"FullyQualifiedName~LocalTurnGateTests\"",
+      "evidence_path": "eval/rover/r465/verdict-r465.json",
+      "negative_control": "同网格 p12/同桩/同 role/同二进制 5 臂: Arole(门关) 21 调用/33,323 tok; B3B(复述关) 8/20,487 ⇒ 逐位复现 R464/R463(零回归); R(复述开) 6/14,529 = −56.40%, repeat 命中 2 (t6/t9) 且复述两轮 eval/gen=-1, 本地 r1 只 4 次(Ack 轮); R 与 B3B 判决面除第 6/9 位逐位相同(posthoc C4b2)。反例守卫: 白名单外内容字/疑问句/长句一律 false(G35 15 例), 吸收面越界 ⇒ C5(面窄=2) 必破",
+      "covers": [
+        "src/agent.modelqueue/LocalGenerationPort.cs",
+        "src/agent/IndustrialAgentV2.cs",
+        "src/agent.tests/LocalTurnGateTests.cs",
+        "eval/rover/r465/verdict-r465.json",
+        "eval/rover/r465/run_arm.sh"
+      ],
+      "owner_round": "R465"
+    },
+    {
+      "id": "r465.filelock-release-no-unlink",
+      "level": "L2",
+      "capability": "FileLock 释放路径不得 unlink 锁文件（锁身份 = inode，存在性 ≠ 是否被持有）: Release 只关 fd；TryBreakStaleLock ⇒ 只读 IsHolderDead；Describe 优先 /proc/locks 的活持有者。删锁文件会让「已 unlink inode 的老持有者」与「新 inode 的新持有者」同时持锁 ⇒ 临界区互斥失效（历史: 120 段得 119）",
+      "evidence_cmd": "python3 eval/rover/r465/mech_unlink_race.py; env -u AGENTFRAMEWORK_PY_RUN dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter \"FullyQualifiedName~ExecutorHardeningTests\"",
+      "evidence_path": "eval/rover/r465/mech_unlink_race.json",
+      "negative_control": "确定性机理复现: 删锁文件 ⇒ b_holds=true ∧ c_holds=true（both_inside=true）; 不删 ⇒ c_holds=false（互斥成立）。跨进程真值 G43: python 子进程持 flock 时我方拒锁, 子进程退出 ⇒ 内核自动放锁、我方接管且锁文件全程保留; G44 剥注释后断言源码不得出现 File.Delete(LockPath/lockPath)（旧形态即回归）",
+      "covers": [
+        "src/agent/execution/FileLocking.cs",
+        "src/agent.tests/ExecutorHardeningTests.cs",
+        "eval/rover/r465/mech_unlink_race.py",
+        "eval/rover/r465/mech_unlink_race.json"
+      ],
+      "owner_round": "R465"
+    },
+    {
+      "id": "r465.local-channel-warmup",
+      "level": "L1",
+      "capability": "本地生成通道预热（AGENTFRAMEWORK_LOCAL_WARMUP=1）: 宿主启动即调 ILocalGenerationPort.WarmupAsync（接口默认实现 ⇒ 测试桩零改动）⇒ 权重装载移出用户可见的门控轮路径；遥测 local_channel_warmup{ok,ms}",
+      "evidence_cmd": "python3 eval/rover/r465/settle_r465.py eval/rover/r465 ALL",
+      "evidence_path": "eval/rover/r465/arm-W1.json",
+      "negative_control": "同二进制单变量: 首个门控轮 49.93s(R) → 22.19s(W1)，warm_ms=26036 ok=true；稳态 19.4s 不变(预热不改变 prefill 成本)；llama-server pid 数 2=2（常驻性未被预热改变）；token 面 14,529 vs 14,531 零回归",
+      "covers": [
+        "src/agent.modelqueue/LocalGenerationPort.cs",
+        "src/agent.llamacpp/LlamaCppLocalGenerationPort.cs",
+        "src/agent.host/Program.cs",
+        "eval/rover/r465/arm-W1.json"
+      ],
+      "owner_round": "R465"
+    },
+    {
+      "id": "r465.embedder-channel-three-state",
+      "level": "L1",
+      "capability": "嵌入(bge)通道同形三态接线: ServiceCollectionExtensions 的 embedder 注册改用 LocalChannelWiring.ResolveEmbedder(declared, envPath, DefaultModelPath) —— 「env 声明了却文件缺失」⇒ 告警可见 + 通道降级（不再与「未声明」塌成同一态, R464 同类缺陷）",
+      "evidence_cmd": "env -u AGENTFRAMEWORK_PY_RUN dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter \"FullyQualifiedName~LocalTurnGateTests\"",
+      "evidence_path": "src/agent.tests/LocalTurnGateTests.cs",
+      "negative_control": "G38 三态纯函数: 声明缺失 ⇒ ConfiguredMissing + 通道专属告警标记; 未声明且默认缺失 ⇒ Unconfigured + 告警; 存在 ⇒ 无告警。G39 剥注释后断言接线点确实调用 ResolveEmbedder（防注释即可满足的空心门）",
+      "covers": [
+        "src/agent.llamacpp/LocalChannelWiring.cs",
+        "src/agent.llamacpp/LlamaCppTextEmbedder.cs",
+        "src/agent/extensions/ServiceCollectionExtensions.cs",
+        "src/agent.tests/LocalTurnGateTests.cs"
+      ],
+      "owner_round": "R465"
     }
   ],
   "aot_check_policy": "release_tag_only",

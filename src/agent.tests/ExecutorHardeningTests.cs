@@ -28,7 +28,10 @@ public class ExecutorHardeningTests
         l1.Release();
         Assert.True(l2.TryAcquire(TimeSpan.FromMilliseconds(500)), "释放后第二个锁应能拿到");
         l2.Release();
-        Assert.False(File.Exists(target + ".lock"), "释放后锁文件应删除");
+        // R465 (真修): 锁文件**保留** —— 删除 file 会 unlink inode, 下一个竞争者拿到新 inode 的新锁,
+        // 与被 unlink 但仍被持有的旧 inode 形成两个持有者 (实测 119/120 段丢一段)。
+        Assert.True(File.Exists(target + ".lock"), "锁文件必须保留 (存在性 ≠ 是否被持有)");
+        Assert.Equal(Environment.ProcessId.ToString(), File.ReadAllText(target + ".lock").Trim());
     }
 
     [Fact]
@@ -37,11 +40,12 @@ public class ExecutorHardeningTests
         var dir = TempDir();
         var target = Path.Combine(dir, "b.json");
         var lockPath = target + ".lock";
-        File.WriteAllText(lockPath, "999999999"); // 不存在的 pid → stale
-        Assert.True(OccupantDetector.TryBreakStaleLock(lockPath), "死 pid 锁应被判定 stale 清除");
-        Assert.False(File.Exists(lockPath), "stale 锁文件应被删");
+        File.WriteAllText(lockPath, "999999999"); // 不存在的 pid → 僵尸锁文件
+        // R465: 僵尸**锁文件**不需要也无法被「清除」——文件不是锁, 内核 flock 才是。
+        Assert.True(OccupantDetector.IsHolderDead(lockPath), "死 pid 应可被判定为无持有者 (只读探测)");
+        Assert.True(File.Exists(lockPath), "只读探测不得删文件");
         using var l1 = new FileLock(target);
-        Assert.True(l1.TryAcquire(TimeSpan.FromMilliseconds(300)), "stale 清除后可正常拿锁");
+        Assert.True(l1.TryAcquire(TimeSpan.FromMilliseconds(300)), "死持有者的锁由内核自动放行 ⇒ 直接接管");
     }
 
     [Fact]
@@ -51,7 +55,7 @@ public class ExecutorHardeningTests
         var target = Path.Combine(dir, "c.json");
         using var l1 = new FileLock(target);
         Assert.True(l1.TryAcquire(TimeSpan.FromMilliseconds(300)));
-        Assert.False(OccupantDetector.TryBreakStaleLock(target + ".lock"), "活持有者锁不得被误判 stale");
+        Assert.False(OccupantDetector.IsHolderDead(target + ".lock"), "活持有者不得被误判为死");
     }
 
     [Fact]
@@ -196,5 +200,80 @@ public class ExecutorHardeningTests
     {
         var mem = new ExecutorLessonMemory(Path.Combine(TempDir(), "l.json"));
         Assert.Equal("", mem.RenderInjectionHint("never-recorded"));
+    }
+
+    // ================= R465: 跨进程放锁 + 不 unlink 的结构门 =================
+
+    /// <summary>R465: 跨进程真值 —— python 子进程持 flock, 我方必须拿不到; 子进程**被退出**后
+    /// 内核自动放锁 ⇒ 我方直接接管, 且锁文件自始至终未被删除 (这是修复的核心不变量)。</summary>
+    [Fact]
+    public void G43_跨进程死持有者_内核放锁且不删文件()
+    {
+        if (!OperatingSystem.IsLinux()) return; // 依赖 flock(2) + python3 (本机 Linux)
+        var dir = TempDir();
+        var target = Path.Combine(dir, "x.json");
+        var lockPath = target + ".lock";
+        var flag = Path.Combine(dir, "held.flag");
+        var script = Path.Combine(dir, "hold.py");
+        File.WriteAllText(script,
+            "import fcntl,sys,time\n" +
+            "f=open(sys.argv[1],'a+')\n" +
+            "fcntl.flock(f,fcntl.LOCK_EX)\n" +
+            "open(sys.argv[2],'w').write('held')\n" +
+            "time.sleep(6)\n");
+        System.Diagnostics.Process? child = null;
+        try
+        {
+            child = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("python3",
+                $"\"{script}\" \"{lockPath}\" \"{flag}\"") { UseShellExecute = false });
+        }
+        catch (Exception) { return; } // 无 python3 ⇒ 本机不可做该证据 (不伪绿)
+        if (child is null) return;
+        try
+        {
+            var waited = 0;
+            while (!File.Exists(flag) && waited < 6000) { Thread.Sleep(50); waited += 50; }
+            Assert.True(File.Exists(flag), "子进程未能在 6s 内持锁");
+            using var mine = new FileLock(target);
+            Assert.False(mine.TryAcquire(TimeSpan.FromMilliseconds(700)), "子进程持锁期间我方不得拿到");
+            Assert.True(OccupantDetector.IsHolderDead(lockPath) == false, "子进程活着 ⇒ 不得判死");
+            child.WaitForExit(15000);
+            Assert.True(mine.TryAcquire(TimeSpan.FromSeconds(3)), "持有者退出后内核自动放锁 ⇒ 应能接管");
+            Assert.True(File.Exists(lockPath), "全程不得删除锁文件 (unlink 会破坏互斥)");
+            mine.Release();
+            Assert.True(File.Exists(lockPath), "释放后锁文件仍须保留");
+        }
+        finally
+        {
+            try { if (!child.HasExited) child.Kill(true); } catch { /* 已退出 */ }
+        }
+    }
+
+    /// <summary>R465: 结构门 —— 剥掉注释后源码不得再出现「删除锁文件」(历史缺陷形态)。
+    /// 剥注释是为了让断言不能被「加一行注释」满足。</summary>
+    [Fact]
+    public void G44_锁实现不得删除锁文件()
+    {
+        var root = FindRepoRoot();
+        var src = File.ReadAllText(Path.Combine(root, "src", "agent", "execution", "FileLocking.cs"));
+        var kept = new System.Collections.Generic.List<string>();
+        foreach (var l in src.Split('\n'))
+        {
+            var s = l.TrimStart();
+            if (s.StartsWith("//", StringComparison.Ordinal)) continue;
+            kept.Add(l);
+        }
+        var code = string.Join(' ', kept);
+        Assert.DoesNotContain("File.Delete(LockPath)", code);
+        Assert.DoesNotContain("File.Delete(lockPath)", code);
+        Assert.Contains("IsHolderDead", code);
+    }
+
+    private static string FindRepoRoot()
+    {
+        var d = new DirectoryInfo(AppContext.BaseDirectory);
+        while (d is not null && !Directory.Exists(Path.Combine(d.FullName, "src", "agent"))) d = d.Parent;
+        if (d is null) throw new InvalidOperationException("找不到仓库根");
+        return d.FullName;
     }
 }

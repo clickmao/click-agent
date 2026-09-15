@@ -26,6 +26,15 @@ public interface ILocalGenerationPort
 
     /// <summary>生成一轮。失败必须回 <c>Success=false</c> + <c>Error</c> (不得抛穿调用方)。</summary>
     Task<LocalGenerationOutcome> GenerateAsync(LocalGenerationRequest request, CancellationToken ct = default);
+
+    /// <summary>
+    /// R465: 预热 —— 把长驻推理服务的**权重装载**提前到宿主启动期, 使它不再落在用户可见的门控轮路径上。
+    /// 默认空实现 (测试桩/无本地后端无需实现)。纪律: 预热失败**不得抛穿** (只记账, 供遥测读取)。
+    /// </summary>
+    Task WarmupAsync(CancellationToken ct = default) => Task.CompletedTask;
+
+    /// <summary>R465: 预热是否成功过 (未预热/失败 ⇒ false); 仅观测用。</summary>
+    bool WarmupOk => false;
 }
 
 /// <summary>本地生成对话轮 (协议自洽, 不依赖 agent 主程序集)。</summary>
@@ -313,6 +322,47 @@ public static class TurnGateJudge
         return n > 0;
     }
 
+    /// <summary>
+    /// R465: 「纯复述族」结构确认 —— 用户只要求把**上一条答复原样重来**, 不含任何新诉求。
+    /// 机械判据 (三道全过才算, 任一道不过 ⇒ false):
+    ///   ① 归一化 (去标点/空白/符号) 后必须含**完整复述标记** (再讲一遍 / 从头再说 / 重复一遍 ...);
+    ///      只含「再讲」「继续」「详细」这类不完整词的**不算** (它们可能要求新内容 ⇒ 走远端)。
+    ///   ② 归一化后长度 ≤14 且**每个字符都属复述白名单字符集** ⇒ 任何内容字 (细/换/法/增加/命令...) 立即 false。
+    ///   ③ 无问号 ⇒ 疑问句永远走远端。
+    /// 用途限制: 本判只允许**前置门直接 Skip** (本地消化 = 回放上一条答复原文, 零远端调用);
+    /// 调用方必须让 <see cref="MechanicalPass"/> 优先于本判 (新诉求/疑问/长文本永不被吸收)。
+    /// </summary>
+    public static bool IsPureRepeat(string? userMessage)
+    {
+        var m = (userMessage ?? string.Empty).Trim();
+        if (m.Length == 0 || m.Length > 24) return false;
+        var sb = new System.Text.StringBuilder(m.Length);
+        foreach (var ch in m)
+        {
+            if (ch is '?' or '？') return false;                                   // ③ 疑问句永不吸收
+            if (char.IsPunctuation(ch) || char.IsWhiteSpace(ch) || char.IsSymbol(ch)) continue;
+            sb.Append(ch);
+        }
+        var n = sb.ToString();
+        if (n.Length is 0 or > 14) return false;
+        foreach (var ch in n)                                                      // ② 白名单字符集
+            if (RepeatFamilyChars.IndexOf(ch) < 0) return false;
+        foreach (var marker in RepeatMarkers)                                       // ① 完整复述标记
+            if (n.Contains(marker, StringComparison.Ordinal)) return true;
+        return false;
+    }
+
+    /// <summary>R465: 复述族白名单字符集 (复述标记 + 指代词的全部用字; 任何集合外字符 ⇒ 不是纯复述)。</summary>
+    private const string RepeatFamilyChars = "再讲遍次重复述从头说要你上面那条这句话的来回新下念看给把一吧哦嗯啊呀啦哇";
+
+    /// <summary>R465: 完整复述标记 (穷举; 表外一律不吸收) —— 语义 = 「把上一条答复原样给我」。</summary>
+    private static readonly string[] RepeatMarkers =
+    {
+        "再讲一遍", "再说一遍", "再讲一次", "再说一次", "重复一遍", "重复一次", "复述一遍",
+        "从头再说", "从头再讲", "重新说一遍", "重新讲一遍", "再来一遍", "再念一遍", "再看一遍",
+        "再说下", "再讲下",
+    };
+
     public static string Clip(string s, int max)
     {
         var t = s.Trim();
@@ -465,6 +515,9 @@ public sealed class TurnGateCounters
     private long _mechanicalNonAcks;
     private long _prefilterViolations;
 
+    // R465: 纯复述族直接 Skip 计数 (零 r1 + 零远端调用)。
+    private long _mechanicalRepeats;
+
     private long _cachePinned;
     private int _lastCachedTokens;
     private int _lastEvalTokens = -1;
@@ -558,6 +611,12 @@ public sealed class TurnGateCounters
 
     /// <summary>R444: 前置门不变量被破坏次数 (Skip ∧ ¬Ack 本应不可达) — 恒 0 才是 fail-closed。</summary>
     public long PrefilterViolations => Interlocked.Read(ref _prefilterViolations);
+
+    /// <summary>R465: 纯复述族命中次数 (零 r1 + 零远端调用, 本地回放上一条答复原文)。</summary>
+    public long MechanicalRepeats => Interlocked.Read(ref _mechanicalRepeats);
+
+    /// <summary>R465: 前置门直接 Skip —— 纯复述族 (只要求原样重来, 无新诉求)。</summary>
+    public void RecordMechanicalRepeat() { Interlocked.Increment(ref _mechanicalRepeats); LastBasis = "mechanical:repeat→local"; }
 
     /// <summary>R434: r1 判 Skip 但结构确认失败 (非认可族) ⇒ 降级 Pass, 宁多走一次远端。</summary>
     public void RecordSkipRejected() { Interlocked.Increment(ref _skipRejected); LastBasis = "gate:skip_rejected_nonack→remote"; }

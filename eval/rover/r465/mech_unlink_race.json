@@ -1,0 +1,21 @@
+{
+ "unlink_race": {
+  "b_holds": true,
+  "c_holds": true,
+  "both_inside": true,
+  "path_exists_after": true,
+  "same_inode_after": true
+ },
+ "no_unlink": {
+  "b_holds": true,
+  "c_holds": false,
+  "both_inside": false,
+  "path_exists_after": true,
+  "same_inode_after": true
+ },
+ "verdict": {
+  "旧机理可复现": true,
+  "新纪律互斥成立": true
+ },
+ "note": "unlink_race.both_inside=True ⇒ 「删锁文件」放进了第二个持有者; no_unlink.both_inside=False ⇒ 不删则互斥成立"
+}

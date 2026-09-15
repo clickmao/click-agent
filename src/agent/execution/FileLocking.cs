@@ -57,8 +57,8 @@ public sealed class FileLock : IDisposable
             }
             catch (IOException)
             {
-                if (OccupantDetector.TryBreakStaleLock(LockPath))
-                    continue; // stale 锁被清除 → 下一轮重试
+                // R465: 不再「清 stale 锁文件」(unlink 会破坏 flock 互斥 — 见 Release 注释)。
+                // 死持有者的锁由内核在 fd 关闭时释放, 这里只需退避重试。
             }
             catch (UnauthorizedAccessException)
             {
@@ -74,20 +74,17 @@ public sealed class FileLock : IDisposable
     public void Release()
     {
         if (_stream is null) return;
-        var myPid = _ownerPid;
-        try { _stream.Dispose(); } catch { /* 锁文件已删等 */ }
+        try { _stream.Dispose(); } catch { /* 已关闭等 */ }
         _stream = null;
-        // 删除竞态防护: 先释放 fd (flock 释放) 再删 — 但删除前校验锁文件仍是自己的
-        // (A 释放瞬间 B 可能已建新锁 → 内容=B pid → 不删, 避免误删他人新锁破坏互斥)。
-        try
-        {
-            if (!string.IsNullOrEmpty(myPid) && File.Exists(LockPath))
-            {
-                var content = File.ReadAllText(LockPath).Trim();
-                if (content == myPid) File.Delete(LockPath);
-            }
-        }
-        catch { /* 已删或瞬态 */ }
+        // ───────────────────────────────────────────────────────────────────────
+        // R465 (真修): **绝不 unlink 锁文件** —— 这是 flock 纪律的硬要求。
+        // 旧实现「释放 fd 后按 pid 校验删锁文件」有一个致命窗口: A 关 fd 的瞬间 B 的
+        // Open 已成功(B 拿到同一 inode 的 flock), 但 A 此刻读到的内容仍是自己的 pid
+        // ⇒ A 删文件 ⇒ B 持有的是**已 unlink 的 inode** 上的锁, 而 C 打开同名路径得到
+        // 新 inode 并拿到锁 ⇒ 两个持有者同时进入临界区 (实测 119/120 段 = 一次读改写被覆盖)。
+        // 锁文件因此是**长期存在的信号对象**: 锁身份 = inode, 存在性 ≠ 是否被持有;
+        // 死持有者的锁由内核在 fd 关闭时自动释放 (下一次 Open 直接成功), 无需任何人删文件。
+        // ───────────────────────────────────────────────────────────────────────
     }
 
     public void Dispose()
@@ -135,19 +132,25 @@ public static class OccupantDetector
     public static string Describe(string targetPath)
     {
         var lockPath = targetPath + ".lock";
+        // 主路径: /proc/locks 里的**活持有者** (锁加了 inode, 与文件是否可读无关)
+        var byLocks = ScanProcLocks(lockPath);
+        if (!string.IsNullOrEmpty(byLocks)) return byLocks;
+        // 次路径: 锁文件内容 = 最后持有者 pid (文件长期保留 ⇒ 须判活, 否则会把已退出的持有者报成占用者)
         try
         {
             if (File.Exists(lockPath))
             {
                 var pid = File.ReadAllText(lockPath).Trim();
                 if (int.TryParse(pid, out var p) && p > 0)
-                    return $"PID {p} ({ReadComm(p)}) 持有锁 {Path.GetFileName(lockPath)}";
+                {
+                    return Directory.Exists($"/proc/{p}")
+                        ? $"PID {p} ({ReadComm(p)}) 持有锁 {Path.GetFileName(lockPath)}"
+                        : $"无持有者 (锁文件保留; 上次持有者 PID {p} 已退出)";
+                }
             }
         }
-        catch { /* FileShare.None 拒读 → 走 /proc/locks */ }
-        // flock 加在锁文件 (LockPath) 的 inode 上 — 必须扫锁文件而非目标文件
-        var byLocks = ScanProcLocks(lockPath);
-        return string.IsNullOrEmpty(byLocks) ? "未知占用者 (平台无 /proc/locks 或锁未记录)" : byLocks;
+        catch { /* 读被拒 → 未知 */ }
+        return "未知占用者 (平台无 /proc/locks 或锁未记录)";
     }
 
     private static string ReadComm(int pid)
@@ -207,20 +210,16 @@ public static class OccupantDetector
         catch { return -1; }
     }
 
-    /// <summary>stale 锁清除: 锁文件内容 pid 无对应进程 (Linux /proc/&lt;pid&gt;) → 删锁文件。返回是否清除。</summary>
-    public static bool TryBreakStaleLock(string lockPath)
+    /// <summary>R465: 锁文件内容 pid 对应的进程是否已退出 (只读探测, **不删文件**)。
+    /// 保留本方法只为诊断/审计可读性; 锁的接管不再依赖它 (内核在持有者退出时自动放锁)。</summary>
+    public static bool IsHolderDead(string lockPath)
     {
         try
         {
-            if (!File.Exists(lockPath)) return false;
+            if (!File.Exists(lockPath)) return true;
             var content = File.ReadAllText(lockPath).Trim();
-            if (!int.TryParse(content, out var pid) || pid <= 0) return false; // 无 pid 信息, 不擅动
-            if (!Directory.Exists($"/proc/{pid}")) // 持有者已死
-            {
-                File.Delete(lockPath);
-                return true;
-            }
-            return false;
+            if (!int.TryParse(content, out var pid) || pid <= 0) return false; // 无 pid 信息, 不擅断
+            return !Directory.Exists($"/proc/{pid}");
         }
         catch { return false; }
     }

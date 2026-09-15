@@ -596,4 +596,108 @@ public sealed class LocalTurnGateTests
         // fail-closed: 后置否决若在前置门开启时命中, 必须落盘不变量破坏事件 (静默 = 读数反向)
         Assert.Contains("gate_prefilter_invariant_violation", flat);
     }
+
+    // ================= R465: 纯复述族可跳面 + 嵌入通道三态 =================
+
+    // ---------- 判据 R465-A: 纯复述族结构确认 (机械; 白名单字符集 + 完整标记) ----------
+    [Theory]
+    [InlineData("再讲一遍。", true)]           // R434 曾判「真诉求」⇒ 本轮起为合法 Skip 面 (回放原文)
+    [InlineData("从头再说。", true)]
+    [InlineData("再说一遍", true)]
+    [InlineData("重复一遍吧", true)]
+    [InlineData("你再说一遍。", true)]
+    [InlineData("重新讲一遍", true)]
+    [InlineData("讲细一点。", false)]          // 要新内容 ⇒ 必须走远端
+    [InlineData("换个说法。", false)]          // 要新内容 ⇒ 必须走远端
+    [InlineData("继续", false)]               // 驱动类: 既不 Ack 也不复述 (R449 教训: 不得当采纳)
+    [InlineData("继续下一轮", false)]
+    [InlineData("你上一条说 3 加 5 等于 9，对吧？", false)]  // 含实体/问号
+    [InlineData("把构建命令写成一行。", false)]
+    [InlineData("再讲一遍，顺便把命令也写上", false)]        // 加料 ⇒ 不吸收
+    [InlineData("", false)]
+    [InlineData("   ", false)]
+    public void G35_纯复述族结构确认(string msg, bool expectRepeat)
+        => Assert.Equal(expectRepeat, TurnGateJudge.IsPureRepeat(msg));
+
+    // ---------- 判据 R465-B: 复述 Skip 的面必须窄于 Ack 面, 且两道前置都早于 r1 ----------
+    [Fact]
+    public void G36_复述前置门位置与窄面()
+    {
+        var src = File.ReadAllText(Path.Combine(FindRepoRootG29(), "src", "agent", "IndustrialAgentV2.cs"));
+        var flat = string.Join(' ', src.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
+        // ① 复述分支必须存在, 且**在** MechanicalPass 之后 (Pass 优先 = 新诉求/疑问永不被复述规则吸收)
+        var iPass = flat.IndexOf("TurnGateJudge.MechanicalPass(message.Content)", StringComparison.Ordinal);
+        var iRep = flat.IndexOf("TurnGateJudge.IsPureRepeat(message.Content)", StringComparison.Ordinal);
+        var iR1 = flat.IndexOf("JudgeTurnAsync( message.Content", StringComparison.Ordinal);
+        Assert.True(iPass > 0 && iRep > 0 && iR1 > 0, "分支缺失");
+        Assert.True(iPass < iRep, "MechanicalPass 必须优先于复述族 (否则疑问/新诉求会被复述规则吸走)");
+        Assert.True(iRep < iR1, "复述前置必须早于 r1 调用 (否则省不掉 r1)");
+        // ② 后置否决条件必须已含复述族 (否则复述 Skip 会被当不变量破坏而翻 Pass ⇒ 功能静默失效)
+        Assert.Contains("GatePrefilterOn && GateRepeatSkipOn && agent.modelqueue.TurnGateJudge.IsPureRepeat", flat);
+        Assert.Contains("&& !agent.modelqueue.TurnGateJudge.IsPureRepeat(message.Content))", flat);
+        // ③ 计数可见
+        Assert.Contains("RecordMechanicalRepeat", flat);
+        Assert.Contains("prefilter_repeat", flat);
+    }
+
+    // ---------- 判据 R465-C: 复述 Skip 的本地消化 = 回放上一条答复原文 (非兜底串) ----------
+    [Fact]
+    public void G37_复述Skip必须回放上一条答复()
+    {
+        var src = File.ReadAllText(Path.Combine(FindRepoRootG29(), "src", "agent", "IndustrialAgentV2.cs"));
+        var code = StripLineComments(src);
+        Assert.Contains("GetConversationHistoryAsync(message.SessionId, ct)", code);
+        Assert.Contains("repeat_verbatim", code);
+        Assert.Contains("MessageRole.Assistant", code);
+        // 兜底必须仍在 (取不到上一条答复时不得抛、不得走远端)
+        Assert.Contains("ComposeLocalSkipReplyAsync", code);
+    }
+
+    private static string StripLineComments(string src)
+    {
+        var kept = new List<string>();
+        foreach (var l in src.Split('\n'))
+        {
+            var s = l.TrimStart();
+            if (s.StartsWith("//", StringComparison.Ordinal)) continue;
+            kept.Add(l);
+        }
+        return string.Join(' ', kept);
+    }
+
+    // ---------- 判据 R465-D: 嵌入 (bge) 通道三态 (与生成通道同形纪律) ----------
+    [Fact]
+    public void G38_嵌入通道三态解析()
+    {
+        var missing = Path.Combine(Path.GetTempPath(), "r465-not-exist-bge.gguf");
+        var r1 = agent.llamacpp.LocalChannelWiring.ResolveEmbedder(true, missing, missing);
+        Assert.True(r1.ConfigMismatch, "声明却缺失必须判错配");
+        Assert.StartsWith(agent.llamacpp.LocalChannelWiring.EmbedderMismatchMarker, r1.Warning ?? "");
+        Assert.Equal(string.Empty, r1.ModelPath);                 // 不回退默认 = 不静默替换意图
+
+        var r2 = agent.llamacpp.LocalChannelWiring.ResolveEmbedder(false, null, missing);
+        Assert.False(r2.ConfigMismatch);
+        Assert.StartsWith(agent.llamacpp.LocalChannelWiring.EmbedderDefaultMissingMarker, r2.Warning ?? "");
+
+        var r3 = agent.llamacpp.LocalChannelWiring.ResolveEmbedder(false, null, null!);
+        Assert.False(r3.ConfigMismatch);
+        Assert.NotNull(r3.Warning);
+
+        // 默认路径单一来源: FromEnvironment 的兜底 == DefaultModelPath (两处各写一份 ⇒ 会漂移)
+        Assert.Equal(agent.llamacpp.LlamaCppEmbedderOptions.DefaultModelPath,
+            agent.llamacpp.LlamaCppEmbedderOptions.FromEnvironment().ModelPath);
+    }
+
+    // ---------- 判据 R465-E: 接线侧必须真的调用同形解析器 (机检; 先剥注释 ⇒ 注释不可满足) ----------
+    [Fact]
+    public void G39_嵌入接线必须调用同形解析器()
+    {
+        var src = File.ReadAllText(Path.Combine(FindRepoRootG29(), "src", "agent", "extensions", "ServiceCollectionExtensions.cs"));
+        var code = StripLineComments(src);
+        var iEmb = code.IndexOf("ITextEmbedder", StringComparison.Ordinal);
+        Assert.True(iEmb > 0, "嵌入注册缺失");
+        var iResolve = code.IndexOf("LocalChannelWiring.ResolveEmbedder", StringComparison.Ordinal);
+        Assert.True(iResolve > iEmb, "嵌入注册处没有调用三态解析器 (声明却缺失仍会静默空心)");
+        Assert.Contains("EmbedderWiring", code);
+    }
 }

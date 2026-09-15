@@ -328,6 +328,26 @@ if (args.Length >= 2 && args[0] == "--frontend-api")
     var frontendCtx = new AgentContext(provider) { SessionId = "frontend-main", UserId = "frontend-user" };
     await entryAgent.InitializeAsync(frontendCtx);
 
+    // R465: 本地通道预热 (env 开关, 默认关 ⇒ 现有行为逐位不变)。
+    // 目的: 把长驻 llama-server 的**权重装载**从「首次门控轮」挪到宿主启动期 ——
+    // 冷启动装载是门控轮墙钟的主项 (R464 实测 40~100 s/门控轮), 用户不该为它等待。
+    if (Environment.GetEnvironmentVariable("AGENTFRAMEWORK_LOCAL_WARMUP") == "1")
+    {
+        var localPort = provider.GetService<agent.modelqueue.ILocalGenerationPort>();
+        if (localPort is not null && localPort.IsAvailable)
+        {
+            var warmSw = System.Diagnostics.Stopwatch.StartNew();
+            await localPort.WarmupAsync();
+            warmSw.Stop();
+            var concrete = localPort as agent.llamacpp.LlamaCppLocalGenerationPort;
+            agent.config.AgentTelemetry.Emit("local_channel_warmup", "Program",
+                ("ok", localPort.WarmupOk ? "true" : "false"),
+                ("warm_ms", localPort.WarmupOk ? (concrete?.WarmupMs ?? warmSw.ElapsedMilliseconds).ToString() : "-1"),
+                ("wall_ms", warmSw.ElapsedMilliseconds.ToString()),
+                ("error", concrete?.WarmupError ?? ""));
+        }
+    }
+
     // v0.21.1 (R367): 版本跟随发布线 (原硬编码 "0.20.5", 与 v0.21.0 实际版本漂移 — 前端无从得知真实版本)
     var metaJson = "{\"version\":\"0.21.0\",\"contract\":1,\"domains\":[\"chat\",\"meta\",\"state\",\"plan\"]}";
     // R375 (exp2 P0-1): 挂接事件出站 + ask 应答面 (hub 为唯一出站口; 未挂接时事件丢弃并计数)

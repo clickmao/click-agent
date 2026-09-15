@@ -33,8 +33,7 @@ public sealed class LlamaCppEmbedderOptions
         // bge-base-zh-v1.5-q8.gguf, 而该文件已按用户令(2026-09-14)从本机删除 ⇒ 若 env 未设,
         // 旧默认会让 IsAvailable=false 静默降级到 NullTextEmbedder(空心向量)。默认值必须与部署一致。
         var modelPath = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_BGE_MODEL")
-            ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                            ".agentframework", "models", "bge-q8.gguf");
+            ?? DefaultModelPath;
         var bin = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_LLAMA_BIN");
         return new LlamaCppEmbedderOptions
         {
@@ -42,6 +41,14 @@ public sealed class LlamaCppEmbedderOptions
             BinaryPath = string.IsNullOrWhiteSpace(bin) ? null : bin,
         };
     }
+
+    /// <summary>
+    /// R465: 内置默认权重路径 (**单一来源**) —— 接线侧的三态判定与 <see cref="FromEnvironment"/> 必须同源,
+    /// 否则两处各写一份默认路径 ⇒ 改一处就悄悄漂移 (与 R463 端点错配同类失效)。
+    /// </summary>
+    public static string DefaultModelPath => Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+        ".agentframework", "models", "bge-q8.gguf");
 }
 
 /// <summary>

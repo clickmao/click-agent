@@ -376,11 +376,20 @@
     {
       "Id": "dev-r464-channel-config-fail-closed",
       "Title": "本地判别通道「配置错配」fail-closed（消灭静默回退默认权重）",
-      "State": "doing",
+      "State": "done",
       "Round": "R464",
       "DocRef": "docs/plans/v0.83.0-r464-channel-config-fail-closed.md",
       "Evidence": "docs/reports/r464-config-fail-closed.md",
       "Summary": "R463 BP 负控首跑 VOID 根因: ServiceCollectionExtensions.cs 旧三目 lc.IsReady ? lc.ModelPath : baseOpts.ModelPath 把「配置错配」静默当「未配置」并跑内置默认权重(3B), 使错配臂读数与 B3B 逐位相同。R464 改为三态来源判定(未声明/可用/错配), 错配 ⇒ 告警 + 通道不可用 + 降级远端。四臂同网格 p12 同 role: Arole(门关) 21 调用/33,323 tok; B3B(门开) 8/20,487 tok = 降幅 38.52%(≥30% 达标); BP(错配) 21/33,306 且本地 eval/gen=0/0 + 2 条告警(对照 R463 同臂 8/20,484 ⇒ 冒名消失); BP2(双缺) 21/33,311 ≡ R463 逐位相同(零回归)。单测 1387/1388(1 例 ExecutorHardeningTests 并发用例满载偶发, 单跑 3/3 绿); AOT 发布 0 IL 警告。"
+    },
+    {
+      "Id": "dev-r465-repeat-skip",
+      "Title": "真诉求轮可跳面（纯复述族直 Skip）+ 本地通道预热 + FileLock 释放不 unlink",
+      "State": "doing",
+      "Round": "R465",
+      "DocRef": "docs/plans/v0.83.0-r465-repeat-skip.md",
+      "Evidence": "docs/reports/r465-repeat-skip.md",
+      "Summary": "承 R464(−38.52%)。三处「不必要的 API 请求/代价」: ① 再讲一遍/从头再说 仍走远端(不需要新内容, 可回放上一条答复) ② 本地 3B 的装载+prefill 全在用户可见路径 ③ FileLock.Release 的 unlink 竞态。实现: TurnGateJudge.IsPureRepeat(完整标记+白名单字符集+无问号, 三道全过) 在 MechanicalPass 之后前置判 Skip(零 r1 零远端), 本地消化=回放上一条 Assistant 答复原文, 开关 AGENTFRAMEWORK_GATE_REPEAT_SKIP(默认 on); ILocalGenerationPort.WarmupAsync + AGENTFRAMEWORK_LOCAL_WARMUP=1; FileLock.Release 不再 unlink(只读 IsHolderDead, Describe 优先 /proc/locks); embedder 通道同形三态接线。五臂同网格 p12/同桩/同 role/同二进制: Arole 21/33,323; B3B(复述关) 8/20,487 ≡ R464/R463 逐位; R(默认) 6/14,529 = −56.40%, repeat 命中 2, 本地 r1 仅 4 次(Ack 轮), 复述两轮 eval/gen=-1; R2 复跑 Δ+2 tok 已归因(工作区目录名 +1 char ×2 调用); W1 首门控轮 49.9→22.2s(warm_ms=26036)。真实计费面 n=6: 桩侧估算低估 18.1%(est/real 0.8192 ⇒ k=1.221), 真实侧出现 prompt cache 命中 640/2304/2816。全量单测 1409/1409; AOT 15,335,040B 0 IL。诚实边界: C3 FAIL(t6 被承接反问覆盖) + C6 FAIL(Δ+2 tok) 保留, 正确口径单列 checks_posthoc。"
     }
   ]
 }

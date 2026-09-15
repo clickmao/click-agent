@@ -95,6 +95,11 @@ public class IndustrialAgentV2 : AgentBase
     private static readonly bool GatePrefilterOn =
         Environment.GetEnvironmentVariable("AGENTFRAMEWORK_GATE_PREFILTER") != "0";
 
+    /// <summary>R465: 纯复述族直 Skip —— **默认开** (生产行为); 置 "off" 复原 R464 行为,
+    /// 供同网格单变量对照 (开关只用于消融, 默认值即被测行为)。</summary>
+    private static readonly bool GateRepeatSkipOn =
+        Environment.GetEnvironmentVariable("AGENTFRAMEWORK_GATE_REPEAT_SKIP") != "off";
+
     /// <summary>R413: 门配置遥测只发一次 (进程级) — 让「臂B 有没有真的开门」可观测。</summary>
     private static int _gateConfigEmitted;
     private static readonly string _thinkMemoryPath = Path.Combine("./data", "think-memory.json");
@@ -1517,6 +1522,8 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     ("local_channel_ready", (_modelRouter?.LocalChannelReady ?? false).ToString()),
                     // R431: 挂载前置条件 (域 = 0 ⇒ 成长块恒空 ⇒ 挂载与不挂载逐位同一; -1 = 无 role/未建账本)
                     ("role_growth_domains", (GrowthLedger?.DomainCount ?? -1).ToString()),
+                    // R465: 复述族直 Skip 开关状态 (默认 on; 消融臂须可见, 否则「省了没省」不可归因)
+                    ("repeat_skip", GateRepeatSkipOn ? "on" : "off"),
                     ("role", ActiveRole?.Id ?? "(null)"));
             }
             if (_modelRouter is { TurnGateEnabled: true } && ActiveRole is not null)
@@ -1539,6 +1546,15 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 // 故对 ¬Ack 轮直接 Pass: 不建 prompt、不问 r1 ⇒ 省掉该轮本地 r1 成本 (R443 真值口径
                 // ≈ 638.8 tok/轮), 而判决/远端走向/内联块/落盘内容与后置否决路径**逐位等价**。
                 // 依据: eval/rover/r444/precheck-prefilter.json (8 运行 99 门行, Skip⇒Ack 反例 0)。
+                else if (GatePrefilterOn && GateRepeatSkipOn && agent.modelqueue.TurnGateJudge.IsPureRepeat(message.Content))
+                {
+                    // R465: 纯复述族 (只要求把上一条答复原样重来, 无新诉求) ⇒ 前置门直接 Skip。
+                    // 本地消化 = **回放上一条答复原文** (见下 Skip 支), 零 r1、零远端调用、零 token。
+                    // 安全性靠上面 MechanicalPass 优先 + IsPureRepeat 的字符白名单 (任何内容字/问号 ⇒ 不吸收)。
+                    _modelRouter.TurnGate.RecordMechanicalRepeat();
+                    gateOutcome = agent.modelqueue.TurnGateOutcome.Decide(
+                        agent.modelqueue.TurnGateVerdict.Skip, "mechanical:repeat");
+                }
                 else if (GatePrefilterOn && !agent.modelqueue.TurnGateJudge.MechanicalAck(message.Content))
                 {
                     _modelRouter.TurnGate.RecordMechanicalNonAck();
@@ -1562,7 +1578,8 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 // 位置纪律: 必须在下面 local_turn_gate 打点**之前** —— 否则遥测 basis 会写 r1 的原始
                 // 判决 (skip→local), 与被测行为的真实走向相反 (R433 同类: 读数不得自报假形态)。
                 if (gateOutcome.Decided && gateOutcome.Verdict == agent.modelqueue.TurnGateVerdict.Skip
-                    && !agent.modelqueue.TurnGateJudge.MechanicalAck(message.Content))
+                    && !agent.modelqueue.TurnGateJudge.MechanicalAck(message.Content)
+                    && !agent.modelqueue.TurnGateJudge.IsPureRepeat(message.Content))
                 {
                     // R444: 前置门开启时本支**不可达** (¬Ack 已在调用前 Pass) ⇒ 命中 = 不变量被破坏。
                     // 必须 fail-closed 落盘 (静默降级 = 读数与真实走向相反, R433 教训)。
@@ -1618,6 +1635,7 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     // 就是「本来会花一次 r1、现在零成本」的轮; 不变量破坏数必须恒 0。
                     ("prefilter", GatePrefilterOn ? "1" : "0"),
                     ("prefilter_nonack", _modelRouter.TurnGate.MechanicalNonAcks.ToString()),
+                    ("prefilter_repeat", _modelRouter.TurnGate.MechanicalRepeats.ToString()),
                     ("prefilter_violations", _modelRouter.TurnGate.PrefilterViolations.ToString()),
                     ("role", ActiveRole.Id));
             }
@@ -1642,7 +1660,28 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     ("replay_skipped", replaySkipped ? "1" : "0"),
                     ("intent", intent));
                 // 本地消化: 零远端 token (回复由本地 r1 生成, 失败 → 固定兜底串)
-                var localReply = await _modelRouter!.ComposeLocalSkipReplyAsync(prompt.UserMessage, ct).ConfigureAwait(false);
+                // R465: 纯复述族 ⇒ 本地消化 = **回放上一条答复原文** (用户要的就是原样重来, 不需要新内容)。
+                // 取不到上一条答复 (空/无) ⇒ 退回既有兜底串 (仍零远端调用, 与 Ack 轮同形)。
+                var repeatTurn = agent.modelqueue.TurnGateJudge.IsPureRepeat(message.Content);
+                string? prevReply = null;
+                if (repeatTurn)
+                {
+                    var hist = await GetConversationHistoryAsync(message.SessionId, ct).ConfigureAwait(false);
+                    for (var hi = hist.Count - 1; hi >= 0; hi--)
+                    {
+                        var h = hist[hi];
+                        if (h.Role != MessageRole.Assistant) continue;
+                        var c = h.Content ?? string.Empty;
+                        if (c.Trim().Length == 0) continue;
+                        prevReply = c;
+                        break;
+                    }
+                }
+                var localReply = prevReply ?? await _modelRouter!.ComposeLocalSkipReplyAsync(prompt.UserMessage, ct).ConfigureAwait(false);
+                agent.config.AgentTelemetry.Emit("local_gate_skip_reply", "IndustrialAgentV2",
+                    ("kind", prevReply is null ? (repeatTurn ? "repeat_no_prev" : "template") : "repeat_verbatim"),
+                    ("chars", (long)localReply.Length),
+                    ("msg_sha16", agent.modelqueue.LocalInputFingerprint.Sha16(message.Content)));
                 llmResponse = new LLMResponse
                 {
                     Content = localReply,

@@ -97,4 +97,37 @@ public static class LocalChannelWiring
             return false;
         }
     }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // R465: 嵌入 (bge) 通道 —— 与生成通道**同一三态纪律**, 但通道独立、标记独立
+    // ─────────────────────────────────────────────────────────────────────────
+    /// <summary>R465: 嵌入通道的环境变量名 (声明 = 用户意图)。</summary>
+    public const string EmbedderEnvVar = "AGENTFRAMEWORK_BGE_MODEL";
+
+    /// <summary>R465: 嵌入通道错配标记 (ASCII, 便于机检 grep)。</summary>
+    public const string EmbedderMismatchMarker = "R465 embedder_config_mismatch:";
+
+    /// <summary>R465: 嵌入通道「未声明且内置默认权重不存在」标记。</summary>
+    public const string EmbedderDefaultMissingMarker = "R465 embedder_default_missing:";
+
+    /// <summary>
+    /// R465: 嵌入通道接线解析 (纯函数, 零 I/O 之外的 File.Exists 探测)。
+    ///
+    /// 立规背景: 原接线 `embedder.IsAvailable ? embedder : new NullTextEmbedder()` 把
+    /// 「env 声明了 bge 权重但文件不存在」与「未声明」塌成同一态 ⇒ 静默降级为**空心向量**
+    /// (锚词回退), 用户看不出 bge 通道没生效, 测量也区分不了 —— 与 R463/R464 生成通道同一类缺陷
+    /// (声明即意图; 错配必须留痕, 不得静默替换)。
+    /// 返回: 未声明且默认缺失 / 声明却缺失 ⇒ Warning 非空; 声明且存在 ⇒ Configured, 无告警。
+    /// </summary>
+    public static LocalModelPathResolution ResolveEmbedder(bool declared, string? configuredPath, string fallbackPath)
+    {
+        var r = ResolveForHost(declared, configuredPath, fallbackPath);
+        if (r.Source == LocalModelPathSource.ConfiguredMissing)
+            return new LocalModelPathResolution(string.Empty, r.Source,
+                EmbedderMismatchMarker + " " + (r.Warning ?? string.Empty).Trim());
+        if (r.Source == LocalModelPathSource.Unconfigured && r.Warning is not null)
+            return new LocalModelPathResolution(r.ModelPath, r.Source,
+                EmbedderDefaultMissingMarker + " " + r.Warning.Trim());
+        return r;
+    }
 }

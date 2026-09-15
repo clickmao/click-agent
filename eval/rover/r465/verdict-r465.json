@@ -1,0 +1,212 @@
+{
+ "round": "R465",
+ "arms": {
+  "Arole": {
+   "calls": 21,
+   "prompt_tokens": 33176,
+   "completion_tokens": 147,
+   "total_tokens": 33323,
+   "turns_ok": 12,
+   "turns": 12,
+   "secs_median": 0.05,
+   "secs_total": 1.0,
+   "gate_events": 0,
+   "prefilter_repeat": null,
+   "prefilter_violations": null,
+   "local_calls": 0,
+   "local_eval_tokens": 0,
+   "local_gen_tokens": 0,
+   "server_pid_n": 1,
+   "skip_reply_kinds": []
+  },
+  "B3B": {
+   "calls": 8,
+   "prompt_tokens": 20431,
+   "completion_tokens": 56,
+   "total_tokens": 20487,
+   "turns_ok": 12,
+   "turns": 12,
+   "secs_median": 0.21,
+   "secs_total": 109.0,
+   "gate_events": 12,
+   "prefilter_repeat": 0,
+   "prefilter_violations": 0,
+   "local_calls": 4,
+   "local_eval_tokens": 1370,
+   "local_gen_tokens": 8,
+   "server_pid_n": 2,
+   "skip_reply_kinds": [
+    "template",
+    "template",
+    "template",
+    "template"
+   ]
+  },
+  "R": {
+   "calls": 6,
+   "prompt_tokens": 14487,
+   "completion_tokens": 42,
+   "total_tokens": 14529,
+   "turns_ok": 12,
+   "turns": 12,
+   "secs_median": 0.19,
+   "secs_total": 109.5,
+   "gate_events": 12,
+   "prefilter_repeat": 2,
+   "prefilter_violations": 0,
+   "local_calls": 4,
+   "local_eval_tokens": 1370,
+   "local_gen_tokens": 8,
+   "server_pid_n": 2,
+   "skip_reply_kinds": [
+    "template",
+    "template",
+    "template",
+    "template",
+    "repeat_verbatim",
+    "repeat_verbatim"
+   ]
+  },
+  "R2": {
+   "calls": 6,
+   "prompt_tokens": 14489,
+   "completion_tokens": 42,
+   "total_tokens": 14531,
+   "turns_ok": 12,
+   "turns": 12,
+   "secs_median": 0.18,
+   "secs_total": 112.7,
+   "gate_events": 12,
+   "prefilter_repeat": 2,
+   "prefilter_violations": 0,
+   "local_calls": 4,
+   "local_eval_tokens": 1370,
+   "local_gen_tokens": 8,
+   "server_pid_n": 2,
+   "skip_reply_kinds": [
+    "template",
+    "template",
+    "template",
+    "template",
+    "repeat_verbatim",
+    "repeat_verbatim"
+   ]
+  },
+  "W1": {
+   "calls": 6,
+   "prompt_tokens": 14489,
+   "completion_tokens": 42,
+   "total_tokens": 14531,
+   "turns_ok": 12,
+   "turns": 12,
+   "secs_median": 0.14,
+   "secs_total": 81.7,
+   "gate_events": 12,
+   "prefilter_repeat": 2,
+   "prefilter_violations": 0,
+   "local_calls": 4,
+   "local_eval_tokens": 1370,
+   "local_gen_tokens": 8,
+   "server_pid_n": 2,
+   "skip_reply_kinds": [
+    "template",
+    "template",
+    "template",
+    "template",
+    "repeat_verbatim",
+    "repeat_verbatim"
+   ]
+  }
+ },
+ "checks": [
+  {
+   "id": "C1_drop_vs_Arole",
+   "value": 56.4,
+   "pass": true,
+   "note": "R 14529 vs Arole 33323 (calls 6 vs 21)"
+  },
+  {
+   "id": "C2_increment_vs_B3B",
+   "value": 29.08,
+   "pass": true,
+   "note": "R 14529 vs B3B 20487 (calls 6 vs 8)"
+  },
+  {
+   "id": "C3_quality",
+   "value": [
+    "t6=DIFF(len=46,prev=21,fallback=21)",
+    "t9=verbatim(len=15,prev=15,fallback=21)"
+   ],
+   "pass": false,
+   "note": "turns_ok=12/12; 复述轮回放 t6=DIFF(len=46,prev=21,fallback=21),t9=verbatim(len=15,prev=15,fallback=21)"
+  },
+  {
+   "id": "C4_zero_fake_skip",
+   "value": 0,
+   "pass": true,
+   "note": "prefilter_violations=0"
+  },
+  {
+   "id": "C5_narrow_face",
+   "value": 2,
+   "pass": true,
+   "note": "复述族命中 2 (期望 2 = t6/t9)"
+  },
+  {
+   "id": "C4b_其余轮逐位不变",
+   "value": null,
+   "pass": false,
+   "note": "按预注册实现（R 去掉 repeat 后与 B3B 全序列比）⇒ R(10) vs B3B(12)，长度不等必 FAIL；正确口径见 checks_posthoc.C4b2"
+  },
+  {
+   "id": "C6_rerun_bitwise",
+   "value": 2,
+   "pass": false,
+   "note": "R calls=6 tok=14529 / R2 calls=6 tok=14531 ⇒ Δtok=+2 (预注册要求逐位, 未达)"
+  },
+  {
+   "id": "C7_warmup",
+   "value": {
+    "w1_pids": 2,
+    "r_pids": 2,
+    "warm_events": 1
+   },
+   "pass": true,
+   "note": "W1 pids=2 vs R pids=2; warmup 事件=1 ok=true; turn1 0.76s vs 0.34s"
+  }
+ ],
+ "checks_posthoc": [
+  {
+   "id": "C6p_复跑判决面逐位+Δ归因",
+   "value": {
+    "dtok": 2,
+    "dchar_per_call": 1
+   },
+   "pass": true,
+   "note": "判决面(basis+verdict 序列, 调用数)逐位相同=True; Δtok=+2 = Δchar(+1)×2 次含工作区行的调用 (calls-R/R2 首调 prompt 逐字长 4036/4037)"
+  },
+  {
+   "id": "C3p_skip层回放成立",
+   "value": [
+    "template",
+    "template",
+    "template",
+    "template",
+    "repeat_verbatim",
+    "repeat_verbatim"
+   ],
+   "pass": true,
+   "note": "复述 2 轮 kind=repeat_verbatim 且 eval/gen=-1 (零 r1); 用户可见层 t6 被承接反问覆盖 ⇒ C3 仍 FAIL"
+  },
+  {
+   "id": "C4b2_其余轮逐位不变(对齐去重复位)",
+   "value": [
+    5,
+    8
+   ],
+   "pass": true,
+   "note": "R 的 repeat 位=[6, 9]; 其余 10 位与 B3B 同位置逐位相同=True"
+  }
+ ],
+ "notes": []
+}

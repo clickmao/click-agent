@@ -252,7 +252,20 @@ public static class ServiceCollectionExtensions
             // IsAvailable = 纯配置判定 (模型文件 ∧ 二进制可解析, 零 I/O 零进程) ⇒ 不满足即锚词回退 (行为兼容)。
             // 失败不静默兜底: EmbedAsync 抛 LlamaCppException(带 code) 由调用方决定。
             var embedder = new agent.llamacpp.LlamaCppTextEmbedder(agent.llamacpp.LlamaCppEmbedderOptions.FromEnvironment());
-            return embedder.IsAvailable ? embedder : new agent.contextgradient.NullTextEmbedder();
+            if (embedder.IsAvailable) return embedder;
+            // R465: 三态 —— 「env 声明了 bge 权重但文件缺失」**必须留痕**, 不再与「未声明」不可区分
+            //   (与 R464 生成通道同一纪律: 声明即意图; 错配不静默替换, 但通道仍 fail-open 回锚词)。
+            var embEnvPath = Environment.GetEnvironmentVariable(agent.llamacpp.LocalChannelWiring.EmbedderEnvVar);
+            var embWiring = agent.llamacpp.LocalChannelWiring.ResolveEmbedder(
+                !string.IsNullOrWhiteSpace(embEnvPath), embEnvPath, agent.llamacpp.LlamaCppEmbedderOptions.DefaultModelPath);
+            if (embWiring.Warning is not null)
+            {
+                sp.GetService<Microsoft.Extensions.Logging.ILoggerFactory>()
+                  ?.CreateLogger("agent.llamacpp.EmbedderWiring")
+                  .LogWarning("{EmbedderWiringWarning}", embWiring.Warning);
+                Console.Error.WriteLine("[warn] " + embWiring.Warning);
+            }
+            return new agent.contextgradient.NullTextEmbedder();
         });
         services.AddSingleton<IContextAssembler>(sp =>
         {

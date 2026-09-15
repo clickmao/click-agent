@@ -2004,3 +2004,15 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **单测诚实口径修正**：全量 **1387/1388**（此前轮次报的「132/132」是**过滤器跑**，不是全量）；唯一失败 `ExecutorHardeningTests.FileLock_ConcurrentAppend_NoLoss_NoInterleave` 满载 120 段得 119，**单跑 3/3 全绿** ⇒ 列 R465 候选（并发下可证，不用重试掩盖）。形式门禁 60/60 非假绿。
 - **证据**：`eval/rover/r464/{verdict-r464.json,run_arm.sh,settle_r464.py,calls-*.jsonl,turns-*.jsonl,host-*.log,prov-*.json}`；`docs/reports/r464-config-fail-closed.md`；registry `r464.local-channel-config-fail-closed`(L2) / `r464.settle-sentinel-and-cross-round-determinism`(L1)。
 - **下轮候选（R465）**：① 本地门延迟（长驻/预热 + 缓存复用，目标 ≤10 s/门控轮）；② 真诉求轮可跳性（按需注入压前缀，97% 命中红线）；③ 并发偶发单测；④ 分母口径升级到真实供应商计费面；⑤ 同臂复跑把确定性升为预注册判据；⑥ bge 嵌入器侧同形接线机器核查。
+
+## R465（2026-09-16）真诉求轮可跳面（纯复述族）+ 本地通道预热 + FileLock 释放不 unlink
+
+- **因果链**：R464 已 −38.52%，但 ① `再讲一遍。`/`从头再说。`（t6/t9）是「把上一条答复原样重来」的真诉求却仍走远端主调用（不需要新内容 ⇒ 可直接回放）；② 本地 3B 的装载（实测 **26.0 s**）与 prefill 全落在用户可见门控轮上；③ `FileLock.Release()` 在「关 fd 后按 pid 校验删锁文件」有 unlink 竞态（老持有者持已 unlink inode、新来者持新 inode ⇒ 两个持有者，历史 120 段得 119）。
+- **实现**：`TurnGateJudge.IsPureRepeat`（三道：完整复述标记 / 去标点 ≤14 字且字符全属复述白名单 / 无问号）在 `MechanicalPass` **之后**前置判 Skip ⇒ 零 r1 零远端；本地消化 = **回放上一条 Assistant 答复原文**；开关 `AGENTFRAMEWORK_GATE_REPEAT_SKIP`（默认 on，off=R464 行为）；后置否决条件同步加 `¬IsPureRepeat`（漏改会静默失效）。`ILocalGenerationPort.WarmupAsync` + `AGENTFRAMEWORK_LOCAL_WARMUP=1`。`FileLock.Release` 不再 unlink（锁身份=inode），`TryBreakStaleLock`→只读 `IsHolderDead`，`Describe` 优先 `/proc/locks`；bge 嵌入通道改用 `ResolveEmbedder` 三态接线。
+- **同网格 5 臂（p12/同桩/同 role/同 AOT 二进制 `e895ae3d…`）**：Arole(门关) **21 调用/33,323 tok**；B3B(复述关) **8/20,487**（逐位复现 R464/R463 ⇒ 零回归）；**R(默认) 6/14,529 = −56.40%**（≥30% 达标），repeat 命中 2、本地 r1 只 4 次（Ack 轮）、复述两轮 `eval/gen=-1`；R2 复跑 Δ+2 tok 已归因（工作区目录名 `run-R` vs `run-R2` +1 char × 2 次调用）；W1 预热首个门控轮 **49.9 → 22.2 s**（`warm_ms=26036`），稳态 19.4 s 不变。
+- **延迟归因**：llama-server **常驻**（每臂 2 个 pid：bge + 3B，各 1 个，4 次本地调用无重复装载）⇒ 稳态 19.4 s/轮 = 342 token prefill ≈ **17.6 tok/s**（2 vCPU）= 当前硬件的结构性下界，≤10 s 目标未达。
+- **真实计费面（n=6 回放真实端点）**：桩侧估算器**系统性低估 18.1%**（`est/real` 均值 0.8192 ⇒ **k=1.221**）；真实侧出现 prompt cache 命中 640/2,304/2,816 ⇒ 真实成本降幅可能大于 token 降幅（未量化）。
+- **锁纪律**：确定性机理复现（删锁文件 ⇒ `both_inside=true`；不删 ⇒ 互斥成立）+ 跨进程真值 G43（子进程持 flock ⇒ 拒锁；退出 ⇒ 内核放锁、接管、锁文件全程保留）+ G44 剥注释结构门；`ExecutorHardeningTests` **10×13 全绿**。
+- **诚实边界**：C3 FAIL（t6 用户可见答复被 R458 承接反问覆盖：「本会话还没有产物。继续什么？」⇒ R466 候选①）、C6 FAIL（Δ+2 tok）；两者正确口径单列 `checks_posthoc`（C3p/C6p/C4b2）。全量单测 **1409/1409**；AOT **15,335,040 B** 0 IL。
+- **证据**：`eval/rover/r465/{verdict-r465.json,arm-*.json,run_arm.sh,run_all.sh,settle_r465.py,mech_unlink_race.{py,json},real_billing_probe.{py,json}}`；`docs/reports/r465-repeat-skip.md`；registry `r465.pure-repeat-skip`(L2) / `r465.filelock-release-no-unlink`(L2) / `r465.local-channel-warmup`(L1) / `r465.embedder-channel-three-state`(L1)。
+- **下轮候选（R466）**：① 承接反问 vs 复述回放优先级（有指代 ⇒ 回放优先）② 真实成本口径（k=1.221 + cache 命中纳入结算）③ 门控轮稳态延迟（参数/门判输入瘦身，禁前缀缓存）④ 复跑口径固化（RUNDIR 名与臂名无关）⑤ 嵌入通道告警真实命中取证。

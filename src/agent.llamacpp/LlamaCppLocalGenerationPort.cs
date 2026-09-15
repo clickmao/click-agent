@@ -93,4 +93,38 @@ public sealed class LlamaCppLocalGenerationPort : ILocalGenerationPort, IAsyncDi
     }
 
     public ValueTask DisposeAsync() => _generator.DisposeAsync();
+
+    /// <summary>R465: 预热 = 提前把 llama-server 拉起并装载权重 (幂等; 失败只记账, 不抛)。</summary>
+    public async Task WarmupAsync(CancellationToken ct = default)
+    {
+        var sw = Stopwatch.StartNew();
+        try
+        {
+            await _generator.EnsureProviderAsync(ct).ConfigureAwait(false);
+            sw.Stop();
+            _warmupMs = sw.ElapsedMilliseconds;
+            _warmupOk = _generator.ProcessStarts > 0;
+            _warmupError = _warmupOk ? null : "provider_not_started";
+        }
+        catch (Exception ex)
+        {
+            sw.Stop();
+            _warmupMs = sw.ElapsedMilliseconds;
+            _warmupOk = false;
+            _warmupError = ex.GetType().Name + ":" + ex.Message;
+        }
+    }
+
+    private volatile bool _warmupOk;
+    private long _warmupMs;
+    private string? _warmupError;
+
+    /// <summary>R465: 预热是否成功 (server 已拉起)。</summary>
+    public bool WarmupOk => _warmupOk;
+
+    /// <summary>R465: 预热耗时 (ms) —— 冷启动装载成本的直接读数。</summary>
+    public long WarmupMs => Interlocked.Read(ref _warmupMs);
+
+    /// <summary>R465: 预热失败原因 (空 = 未失败)。</summary>
+    public string? WarmupError => Volatile.Read(ref _warmupError);
 }
