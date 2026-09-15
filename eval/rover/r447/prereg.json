@@ -1,0 +1,26 @@
+{
+  "round": "R447",
+  "title": "判官解码侧约束（单字母 GBNF）的等价性与收益",
+  "plan_doc": "docs/plans/v0.67.0-r447-judge-decode-constraint.md",
+  "preregistered_at_note": "本文件在探针执行前落盘；probe-r447.json 内记录本文件 sha256 与 mtime 供第三方核对先后",
+  "corpus": "eval/rover/r447/corpus.json",
+  "single_variable": "解码约束（grammar / n_predict），prompt 与采样档逐字不变",
+  "arms": {
+    "J0": {"grammar": null, "n_predict": 512},
+    "J1": {"grammar": "root ::= \"A\" | \"C\" | \"N\"", "n_predict": 8},
+    "J2": {"grammar": null, "n_predict": 8},
+    "NC1": {"grammar": null, "n_predict": 512, "note": "prev 错配（用 i+1 的 prev），仅前 8 对"},
+    "NC2": {"note": "平凡结算器 恒 'N'，不调模型"}
+  },
+  "decode_fixed": {"temperature": 0.0, "samplers": ["temperature"], "cache_prompt": false, "seed": 0, "stream": false, "return_tokens": true},
+  "criteria": {
+    "C1_non_hollow": "每臂可解析字母比例 >= 0.90；J0 字母种类 >= 2",
+    "C2_gen_cut": "mean(gen|J1) <= 0.20 * mean(gen|J0) 且 max(gen|J1) <= 8",
+    "C3_equivalence": "agree(J1, J0) >= 0.90（逐样本）",
+    "C4_neg_control": "agree(NC1,J0) <= agree(J1,J0) - 0.15；NC2 与 J0 一致率 < 0.90；J0 与归档字母一致率 >= 0.85（告警通道）",
+    "C5_accounting": "每请求 tokens_evaluated == prompt_n + cache_n；J0/J1 逐样本 prompt_n 相等",
+    "C6_form_selfproof": "argv 含 -np 1/--cache-type-k f32/--cache-type-v f32/--flash-attn off/-c 4608/--jinja；/props 采样档 = population 默认（仅 temperature 生效）"
+  },
+  "decision_rule": "C1..C6 全绿 ⇒ R448 产品化候选（开关默认关 + M20 三臂真机 A/B）；任一红 ⇒ 负结论归档，不得启用",
+  "exclusions": ["不改 src/** 产品代码", "不接门通道 TurnGateJudge", "不做远端三臂 A/B（R448）"]
+}

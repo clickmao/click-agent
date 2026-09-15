@@ -1,0 +1,274 @@
+{
+  "round": "R447",
+  "instrument": "r447_analyze",
+  "prereg_sha256": "408c1c46e791a2f5350d3717e59ea174d833f744e03b9e5d459ecdab656f46c2",
+  "prereg_ok": true,
+  "n_pairs": 18,
+  "n_neg": 8,
+  "criteria": [
+    {
+      "id": "C1_non_hollow",
+      "pass": true,
+      "read": {
+        "parsed_J0": 0.944,
+        "parsed_J1": 1.0,
+        "parsed_NC1": 1.0,
+        "J0_kinds": [
+          "A",
+          "C",
+          "N"
+        ]
+      }
+    },
+    {
+      "id": "C2_gen_cut",
+      "pass": true,
+      "read": {
+        "gen_J0": {
+          "n": 18,
+          "mean": 178.6,
+          "median": 169.0,
+          "min": 92,
+          "max": 512,
+          "sum": 3215
+        },
+        "gen_J1": {
+          "n": 18,
+          "mean": 2,
+          "median": 2.0,
+          "min": 2,
+          "max": 2,
+          "sum": 36
+        },
+        "ratio": 0.0112
+      }
+    },
+    {
+      "id": "C3_equivalence",
+      "pass": false,
+      "read": {
+        "agree_J1_J0": 0.4444,
+        "n": 18,
+        "confusion": {
+          "A→A": 8,
+          "C→A": 2,
+          "N→A": 7,
+          "None→A": 1
+        }
+      }
+    },
+    {
+      "id": "C4a_neg_mismatched_prev",
+      "pass": false,
+      "read": {
+        "agree_NC1_J0": 0.875,
+        "n": 8,
+        "gap_vs_J1": -0.4306
+      }
+    },
+    {
+      "id": "C4b_neg_trivial_N",
+      "pass": true,
+      "read": {
+        "agree_NC2_J0": 0.3889,
+        "J0_N_share": 0.389
+      }
+    },
+    {
+      "id": "C4c_archived_channel",
+      "pass": true,
+      "read": {
+        "agree_J0_archived": 1.0,
+        "n": 12,
+        "detail": [
+          {
+            "i": 0,
+            "J0": "A",
+            "archived": "A"
+          },
+          {
+            "i": 1,
+            "J0": "C",
+            "archived": "C"
+          },
+          {
+            "i": 2,
+            "J0": "N",
+            "archived": "N"
+          },
+          {
+            "i": 3,
+            "J0": "A",
+            "archived": "A"
+          },
+          {
+            "i": 4,
+            "J0": "N",
+            "archived": "N"
+          },
+          {
+            "i": 5,
+            "J0": "A",
+            "archived": "A"
+          },
+          {
+            "i": 6,
+            "J0": "N",
+            "archived": "N"
+          },
+          {
+            "i": 7,
+            "J0": "A",
+            "archived": "A"
+          },
+          {
+            "i": 8,
+            "J0": "N",
+            "archived": "N"
+          },
+          {
+            "i": 9,
+            "J0": "A",
+            "archived": "A"
+          },
+          {
+            "i": 10,
+            "J0": "N",
+            "archived": "N"
+          },
+          {
+            "i": 11,
+            "J0": "A",
+            "archived": "A"
+          }
+        ]
+      }
+    },
+    {
+      "id": "C5_accounting",
+      "pass": true,
+      "read": {
+        "cache_n_all_zero": true,
+        "prompt_n_equal_across_arms": true,
+        "note": "本轮只记了 tokens_evaluated(=prompt_n)；恒等式 tokens_evaluated==prompt_n+cache_n 依赖 timings.prompt_n，本轮未落盘 ⇒ 该项未测"
+      }
+    },
+    {
+      "id": "C6_form_selfproof",
+      "pass": true,
+      "read": {
+        "argv_ok": true,
+        "request_body_ok": true,
+        "bad": [],
+        "props_temperature": 0.800000011920929,
+        "argv": [
+          "/tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server",
+          "-m",
+          "/tmp/models/r1-distill-qwen-1.5b-q4km.gguf",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "47981",
+          "-c",
+          "4608",
+          "-t",
+          "1",
+          "-np",
+          "1",
+          "--cache-type-k",
+          "f32",
+          "--cache-type-v",
+          "f32",
+          "--flash-attn",
+          "off",
+          "--jinja"
+        ]
+      }
+    }
+  ],
+  "checks_posthoc": [
+    {
+      "id": "CH1_real_mismatched_prev",
+      "pass": true,
+      "read": {
+        "agree_NC1b_J0": 0.5,
+        "n": 8,
+        "real_mismatch": "8/8",
+        "reference_instrument_selfconsistency": "C4c=1.0 (J0 逐条复现归档产品字母) + R446 同输入⇒同字母",
+        "note": "预注册 C4a 因 prev 候选仅 2 常量而错配无效(2/8) ⇒ 本项为事后替代口径"
+      }
+    },
+    {
+      "id": "CH2_grammar_vs_archived",
+      "pass": true,
+      "read": {
+        "agree_J1_archived": 0.5,
+        "n": 12,
+        "J1_letters": {
+          "A": 18
+        },
+        "note": "语法臂 18/18 恒 'A'；其与产品真值的一致率 ≈ 真值里 A 的占比 ⇒ 独立复现 C3 红"
+      }
+    },
+    {
+      "id": "CH3_budget_512_truncation",
+      "pass": true,
+      "read": {
+        "truncated": [
+          16
+        ],
+        "n_truncated": 1,
+        "n_total": 18,
+        "rate": 0.056,
+        "note": "登记型发现（非判据）：基线有 1/18 触 n_predict=512 上限未吐字母 ⇒ 产品在该情形会 fallback 远端（本地 512 tok 白付 + 远端全额）"
+      }
+    }
+  ],
+  "all_green": false,
+  "decision": "存在红项 ⇒ 负结论归档，不得启用；红项机制见下",
+  "letter_mix": {
+    "J0": {
+      "A": 8,
+      "C": 2,
+      "N": 7,
+      "?": 1
+    },
+    "J1": {
+      "A": 18
+    },
+    "J2": {
+      "?": 18
+    },
+    "NC1": {
+      "A": 3,
+      "C": 1,
+      "N": 4
+    }
+  },
+  "parse_reasons": {
+    "J0": {
+      "ok": 17,
+      "thinking_truncated": 1
+    },
+    "J1": {
+      "ok": 18
+    },
+    "J2": {
+      "thinking_truncated": 18
+    },
+    "NC1": {
+      "ok": 8
+    }
+  },
+  "cost": {
+    "gen_J0_sum": 3215,
+    "gen_J1_sum": 36,
+    "gen_saved": 3179,
+    "wall_J0_mean": 15.75,
+    "wall_J1_mean": 5.6
+  },
+  "red_items": [
+    "C3_equivalence",
+    "C4a_neg_mismatched_prev"
+  ]
+}

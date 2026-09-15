@@ -1365,6 +1365,23 @@
         "eval/rover/r446/analyze_r446.py",
         "eval/rover/r446/grid/task-M20.json"
       ]
+    },
+    {
+      "id": "r447.judge-decode-constraint-grammar",
+      "capability": "判官解码侧约束(单字母 GBNF)等价性真机消融 —— 负结论: 生成可降 98.9% 但判决不等价(18/18 恒 A), 不得启用",
+      "level": "L1",
+      "owner_round": "R447",
+      "evidence_cmd": "python3 eval/rover/r447/r447_probe.py; python3 eval/rover/r447/r447_probe_nc1b.py; python3 eval/rover/r447/r447_analyze.py",
+      "evidence_path": "eval/rover/r447/verdict-r447.json",
+      "negative_control": "C4b 恒 N 平凡结算器 agree=0.3889<0.90(指标有判别力); C4c 归档第三通道 J0 12/12 逐条复现产品字母(探针非空心); CH1 真错配 prev(NC1b, 8/8 真错配) agree=0.50 ⇒ 基线确实依赖 prev; CH2 语法臂 vs 产品真值 0.50(独立复现 C3 红); C4a(预注册错配 prev)因 prev 候选仅 2 常量而 8 条仅 2 条真错配 ⇒ 判定项设计缺陷, 语义由 CH1 承接(posthoc)",
+      "covers": [
+        "eval/rover/r447/r447_corpus.py",
+        "eval/rover/r447/r447_probe.py",
+        "eval/rover/r447/r447_probe_nc1b.py",
+        "eval/rover/r447/r447_analyze.py",
+        "src/agent.roles/CorrectionDetector.cs",
+        "src/agent.modelqueue/ModelQueueRouter.cs"
+      ]
     }
   ],
   "aot_check_policy": "release_tag_only",
