@@ -453,6 +453,15 @@
    "DocRef": "docs/plans/v0.94.0-r478-empty-body-cause-and-request-binding.md",
    "Evidence": "eval/rover/r478/verdict-r478.json",
    "Summary": "R477 真机 20/20 空正文 = 上游 finish_reason=tool_calls, 产品徽标误诊为「推理占满输出预算」且白跑 32k 重试 ⇒ 定因只取协议字段(ToolCall/LengthExhausted/UpstreamStop/Unknown)+单源文案+动作环出口可见; QueueResponse.RequestId 贯穿 llm_call/loop_turn 因果绑定; 命中率按 R456b 冷/稳态分列(稳态差 -0.41pp, 聚合差 -6.70pp 系冷启动占比伪影)"
+  },
+  {
+   "Id": "dev-r479-responses-wire-and-typed-semantics",
+   "Title": "R479 Responses 真实 I/O 数据格式(instructions/input 字段分离) + 精准语义单出口校准 + 工具声明面单源",
+   "State": "done",
+   "Round": "R479",
+   "DocRef": "docs/plans/v0.95.0-r479-responses-wire-and-typed-semantics.md",
+   "Evidence": "eval/rover/r479/verdict-r479.json",
+   "Summary": "用户口径纠正「传 JSON ≠ 结构化语义」⇒ instructions 与 input 拆成独立字段、输入项 typed; 「LLM 返回后本地该做什么」收敛为单一函数(本地/远端同用), 判据只取协议字段、文案单源 R478; 工具声明面一份规格派生 chat(逐字节相等)/responses(平铺)两形态; 真机: 本地 llama /v1/responses 200(cached 0→67/68, 原生 function_call read_file), 远端 DeepSeek /responses 200(reasoning 吃满 128 预算 ⇒ incomplete/max_output_tokens ⇒ 判 Retry)。"
   }
  ]
 }

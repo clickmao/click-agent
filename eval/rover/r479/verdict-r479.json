@@ -1,0 +1,138 @@
+{
+ "round": "R479",
+ "checks": {
+  "C1_protocol_invariants": {
+   "ok": true,
+   "detail": {
+    "requests/request_answer.json": {
+     "ok": true,
+     "detail": {
+      "top_keys": [
+       "input",
+       "instructions",
+       "max_output_tokens",
+       "model",
+       "prompt_cache_key",
+       "store"
+      ],
+      "input_types": [
+       "message"
+      ],
+      "tools_flat": null,
+      "store": false
+     }
+    },
+    "requests/request_tool.json": {
+     "ok": true,
+     "detail": {
+      "top_keys": [
+       "input",
+       "instructions",
+       "max_output_tokens",
+       "model",
+       "prompt_cache_key",
+       "store",
+       "tools"
+      ],
+      "input_types": [
+       "message"
+      ],
+      "tools_flat": true,
+      "store": false
+     }
+    }
+   }
+  },
+  "C2_real_endpoint": {
+   "ok": true,
+   "detail": {
+    "local_answer_1": {
+     "ok": true,
+     "detail": {
+      "http": 200,
+      "status": "completed",
+      "input_tokens": 68,
+      "cached_tokens": 0,
+      "item_types": [
+       "message"
+      ],
+      "tool_names": []
+     }
+    },
+    "local_tool_1": {
+     "ok": true,
+     "detail": {
+      "http": 200,
+      "status": "completed",
+      "input_tokens": 496,
+      "cached_tokens": 11,
+      "item_types": [
+       "function_call"
+      ],
+      "tool_names": [
+       "read_file"
+      ]
+     }
+    },
+    "remote_answer_1": {
+     "ok": true,
+     "detail": {
+      "http": 200,
+      "status": "incomplete",
+      "input_tokens": 78,
+      "cached_tokens": 0,
+      "item_types": [
+       "reasoning",
+       "message"
+      ],
+      "tool_names": null
+     }
+    },
+    "cache_visibility_local": {
+     "ok": true,
+     "detail": {
+      "call1": 0,
+      "call2": 67
+     }
+    }
+   }
+  },
+  "C3_banner_single_source": {
+   "ok": true,
+   "detail": {
+    "banner_calls": 4,
+    "inline_banner_literals": 0
+   }
+  },
+  "C4_tool_decl_single_source": {
+   "ok": true,
+   "detail": {
+    "byte_equal_assertion": true
+   }
+  },
+  "C5_usage_unreported_not_zero": {
+   "ok": true,
+   "detail": {
+    "present_flag": true,
+    "cached_present_flag": true,
+    "newtokens_guarded": true
+   }
+  }
+ },
+ "negative_controls": {
+  "NC1_user_text_not_in_instructions": {
+   "ok": true,
+   "detail": "pass"
+  },
+  "NC2_no_store_true": {
+   "ok": true,
+   "detail": "pass"
+  },
+  "NC3_no_bom": {
+   "ok": true,
+   "detail": "pass"
+  }
+ },
+ "failed": [],
+ "verdict": "PASS"
+}
