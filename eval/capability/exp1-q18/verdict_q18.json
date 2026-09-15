@@ -1,0 +1,370 @@
+{
+ "schema": "exp1-q18-verdict/1",
+ "cycle": "EXP1-Q18",
+ "instrument": "probe_v270.py (v2.6.0+2 单变量) + unit_axis_guard.py v1.3 (零改动) + archive_field_provenance.py (零改动)",
+ "corpus_fingerprint": "bcde4dfc1bcc5939c63bc60148749a2cf0e73f4c046fc953f202dacb1cffdc6",
+ "checks": {
+  "C1_单变量": {
+   "status": "达标",
+   "ok": true,
+   "detail": {
+    "changed_lines": [
+     67,
+     1590
+    ],
+    "src_sha256": "e90c7d7ff15eb6485ab50adc9aef7fa5ba7695c91dd2e5b88e2038ab9538bb2b",
+    "dst_sha256": "fe8dc0d7e3d3f75c8b66516ceeec026872f3a16942ad175891f4e76aa45d92b3"
+   },
+   "note": "预注册: 恰好 2 行 (版本常量 + 白名单); 实测 changed_line_count=2"
+  },
+  "C2_语义零回归": {
+   "status": "达标",
+   "ok": true,
+   "detail": {
+    "probe_version": [
+     "2.6.0",
+     "2.7.0"
+    ],
+    "ignored_nonsemantic_fields": [
+     "probe_version",
+     "run_started_epoch",
+     "run_finished_epoch"
+    ],
+    "equal_after_strip": true
+   },
+   "note": "预注册文本只写了剥离 probe_version; 实测还须剥离 2 个墙钟字段 ⇒ 判据**收窄**(事后白名单), 已单列 checks_posthoc"
+  },
+  "C4_行覆盖": {
+   "status": "越线",
+   "ok": false,
+   "detail": {
+    "rows_with_symbol_faces_present": 887,
+    "rows_with_symbol_faces_nonempty": 488,
+    "rows_with_relocated_symbol_faces": 0,
+    "predicted_rows_with_symbol_faces": 921,
+    "rows_total": 997,
+    "q17_checker_reading_present": 887,
+    "early_returns_before_face_assign": 7
+   },
+   "note": "预注册预测 921, 实测 present=887 / nonempty=488 ⇒ **预注册判据被证伪**: 预测模型错(把「未早退」当成「有 face」的充分条件; 实际 presence 由「行内确有候选符号」等前提决定); relocated 0 命中与预测一致。**字段存在性(887/997) ≠ 字段非空(488/997) 两个数分开报**"
+  },
+  "C3_归档键面": {
+   "status": "达标",
+   "ok": true,
+   "detail": {
+    "keys_before": 24,
+    "keys_after": 25,
+    "added": [
+     "symbol_faces"
+    ],
+    "removed": [],
+    "predicted": "A 24->25, 新增恰为 symbol_faces"
+   },
+   "note": "预注册预测 24->25; 实测 24->25 ⇒ 结构性命中; 绝对数因语料漂移(见 C5 note)与登记值不同属预期"
+  },
+  "C5_可重放性(结构性)": {
+   "status": "达标",
+   "ok": true,
+   "detail": {
+    "treatment_not_replayable": [
+     "stale_like_n",
+     "symbol_occurrences"
+    ],
+    "treatment_typed": {
+     "stale_like_n": "SELF_REFERENTIAL_CROSS_ARTIFACT",
+     "symbol_occurrences": "PARAM_SCOPE"
+    },
+    "n_symbol_faces_registered_vs_replayed": [
+     622,
+     622
+    ],
+    "symbol_face_rungs_equal": true,
+    "symbol_face_rungs_registered": {
+     "absent": 112,
+     "n/a_kind": 1,
+     "declared_member": 84,
+     "noncode_mention": 40,
+     "code_mention": 69,
+     "declared_type": 316
+    },
+    "symbol_face_rungs_replayed": {
+     "absent": 112,
+     "n/a_kind": 1,
+     "declared_member": 84,
+     "noncode_mention": 40,
+     "code_mention": 69,
+     "declared_type": 316
+    },
+    "control_not_replayable": [
+     "n_symbol_faces",
+     "stale_like_n",
+     "symbol_face_rungs",
+     "symbol_occurrences"
+    ]
+   },
+   "note": "结构性结论(4->2 + 逐桶可复算)成立; 预注册并列的**登记数值面**子句另立 C5b 单判"
+  },
+  "C5b_登记数值面": {
+   "status": "越线",
+   "ok": false,
+   "detail": {
+    "preregistered_buckets": {
+     "absent": 79,
+     "n/a_kind": 1,
+     "declared_member": 84,
+     "noncode_mention": 31,
+     "code_mention": 64,
+     "declared_type": 316
+    },
+    "measured_frozen_corpus": {
+     "absent": 112,
+     "n/a_kind": 1,
+     "declared_member": 84,
+     "noncode_mention": 40,
+     "code_mention": 69,
+     "declared_type": 316
+    },
+    "sum_0908": 575,
+    "sum_frozen": 622,
+    "rows_0908": 928,
+    "rows_frozen": 997
+   },
+   "note": "⇒ 数值面**证伪**: 冻结语料行数 997 ≠ 登记券 928 (同机并行执行体推进 R462 新增源码/文档所致) ⇒ 登记数值与冻结语料读数**不可并列**; 该子句按证伪入档, 不作降级解释"
+  },
+  "C9_负控成对": {
+   "status": "达标",
+   "ok": true,
+   "detail": {
+    "control_not_replayable": [
+     "n_symbol_faces",
+     "stale_like_n",
+     "symbol_face_rungs",
+     "symbol_occurrences"
+    ],
+    "control_typed": {
+     "n_symbol_faces": "ARCHIVE_FACE_FIELD_ABSENT",
+     "stale_like_n": "SELF_REFERENTIAL_CROSS_ARTIFACT",
+     "symbol_face_rungs": "ARCHIVE_FACE_FIELD_ABSENT",
+     "symbol_occurrences": "PARAM_SCOPE"
+    }
+   },
+   "note": "对照臂 = 同语料 + 旧器具 ⇒ 2 枚面字段仍判 ARCHIVE_FACE_FIELD_ABSENT; 两臂仅器具版本一个变量"
+  },
+  "C6_分类位移(预注册数值面)": {
+   "status": "越线",
+   "ok": false,
+   "detail": {
+    "predicted": {
+     "C_written_and_archived": 25,
+     "C_producer_dump_omission": 8,
+     "C_dump_producer_branch_unhit": 3,
+     "C_dump_dead_entry": 0,
+     "C_archive_foreign_key": 0,
+     "conserved_sum": 35
+    },
+    "measured_v270": {
+     "C_archive_foreign_key": 0,
+     "C_dump_dead_entry": 0,
+     "C_dump_producer_branch_unhit": 3,
+     "C_producer_dump_omission": 7,
+     "C_written_and_archived": 25
+    },
+    "measured_v260": {
+     "C_archive_foreign_key": 0,
+     "C_dump_dead_entry": 0,
+     "C_dump_producer_branch_unhit": 2,
+     "C_producer_dump_omission": 9,
+     "C_written_and_archived": 24
+    },
+    "v260_D_size": 26,
+    "v270_D_size": 28,
+    "v260_omitted_fields": [
+     "block_id",
+     "path_exists",
+     "pos_end",
+     "pos_start",
+     "raw",
+     "relocated_lines_ok",
+     "relocated_symbol_faces",
+     "relocated_symbols_absent",
+     "symbol_faces"
+    ],
+    "v270_omitted_fields": [
+     "block_id",
+     "path_exists",
+     "pos_end",
+     "pos_start",
+     "raw",
+     "relocated_lines_ok",
+     "relocated_symbols_absent"
+    ]
+   },
+   "note": "预注册写 omission 9->8, 实测 9->**7** ⇒ 数值面**证伪**(推导错误: 键一旦进白名单即**构造性**移出 omission 类, 不可能留在 omission); 修正后的正确分布单列 C6b"
+  },
+  "C6b_分类位移(事后修正)": {
+   "status": "达标",
+   "ok": true,
+   "detail": {
+    "corrected_v270": {
+     "C_archive_foreign_key": 0,
+     "C_dump_dead_entry": 0,
+     "C_dump_producer_branch_unhit": 3,
+     "C_producer_dump_omission": 7,
+     "C_written_and_archived": 25
+    },
+    "conserved_sum": 35,
+    "v260_baseline": {
+     "C_archive_foreign_key": 0,
+     "C_dump_dead_entry": 0,
+     "C_dump_producer_branch_unhit": 2,
+     "C_producer_dump_omission": 9,
+     "C_written_and_archived": 24
+    }
+   },
+   "note": "事后修正判据: v2.7.0 归档 => archived 25 / omission 7 / branch_unhit 3, Σ=35 守恒, omitted_fields = [block_id, path_exists, pos_end, pos_start, raw, relocated_lines_ok, relocated_symbols_absent] (7 枚仍不落盘); 与 C5b 同属 checks_posthoc 族"
+  },
+  "C7_发现面零变化": {
+   "status": "达标",
+   "ok": true,
+   "detail": {
+    "v270_counts": {
+     "C3_domain_label_mismatch": 1,
+     "C4_self_derived_total": 3,
+     "C7_qualifier_collision": 1
+    },
+    "v260_counts": {
+     "C3_domain_label_mismatch": 1,
+     "C4_self_derived_total": 3,
+     "C7_qualifier_collision": 1
+    },
+    "q16_registered_counts": {
+     "C3_domain_label_mismatch": 1,
+     "C7_qualifier_collision": 1
+    }
+   },
+   "note": "同语料双臂 findings 逐键相同 ⇒ 本轮 diff 未引入/未消除任何 finding; 与 Q16 登记值的差异属语料漂移, 单列信息项"
+  },
+  "C8_产物零回归": {
+   "status": "达标",
+   "ok": true,
+   "detail": {
+    "before": {
+     "eval/capability/exp1-q10/probe_v260.py": "e90c7d7ff15eb6485ab50adc9aef7fa5ba7695c91dd2e5b88e2038ab9538bb2b",
+     "eval/capability/exp1-q10/citations.jsonl": "08c99bd67a410a87a1134feafc044814860c148ce642f119b680ca2cfac423c9",
+     "eval/capability/exp1-q10/attribution_q10.json": "7c4e1144921a38a3b62d99856cd4c4c2fbba88c6e926b7006fcf9f7402951175",
+     "eval/capability/exp1-q10/probe_stdout.json": "f4f506673867bccfbfc0e1fa450c0fbbb1783f2d116adfcaa54415427c9b54e4"
+    },
+    "now": {
+     "eval/capability/exp1-q10/probe_v260.py": "e90c7d7ff15eb6485ab50adc9aef7fa5ba7695c91dd2e5b88e2038ab9538bb2b",
+     "eval/capability/exp1-q10/citations.jsonl": "08c99bd67a410a87a1134feafc044814860c148ce642f119b680ca2cfac423c9",
+     "eval/capability/exp1-q10/attribution_q10.json": "7c4e1144921a38a3b62d99856cd4c4c2fbba88c6e926b7006fcf9f7402951175",
+     "eval/capability/exp1-q10/probe_stdout.json": "f4f506673867bccfbfc0e1fa450c0fbbb1783f2d116adfcaa54415427c9b54e4"
+    }
+   },
+   "note": "q10 冻结件 sha 逐位不变; 新增产物全部落在 exp1-q18/ 与 q18a-*/ 命名空间"
+  }
+ },
+ "n_checks": 11,
+ "n_fail": 3,
+ "n_waived": 0,
+ "corpus_drift": {
+  "rows_0908_registered": 928,
+  "rows_frozen_corpus": 997,
+  "face_rungs_registered_0908": {
+   "absent": 79,
+   "n/a_kind": 1,
+   "declared_member": 84,
+   "noncode_mention": 31,
+   "code_mention": 64,
+   "declared_type": 316,
+   "sum": 575
+  },
+  "face_rungs_frozen": {
+   "absent": 112,
+   "n/a_kind": 1,
+   "declared_member": 84,
+   "noncode_mention": 40,
+   "code_mention": 69,
+   "declared_type": 316
+  },
+  "face_rungs_frozen_sum": 622,
+  "cause": "同机并行执行体在推进 R462 (新增源码/文档) + 本轮 Q16-Q17 之后文档增长 ⇒ 语料行数 928->997",
+  "impact": "登记数值面(575 等)与冻结语料读数不可直接并列; 结构性判据(可重放性/分类位移)不受影响"
+ },
+ "provenance": {
+  "v270": {
+   "rc": 2,
+   "exit_code": 2,
+   "class_distribution": {
+    "C_archive_foreign_key": 0,
+    "C_dump_dead_entry": 0,
+    "C_dump_producer_branch_unhit": 3,
+    "C_producer_dump_omission": 7,
+    "C_written_and_archived": 25
+   },
+   "class_conserved_sum": 35,
+   "D_size": 28,
+   "A_size": 25,
+   "rows_with_symbol_faces": 887,
+   "rows_with_symbol_faces_nonempty": null,
+   "early_returns_before_face_assign": 7,
+   "omitted_fields": [
+    "block_id",
+    "path_exists",
+    "pos_end",
+    "pos_start",
+    "raw",
+    "relocated_lines_ok",
+    "relocated_symbols_absent"
+   ],
+   "branch_unhit_fields": [
+    "relocated_fact_verdict",
+    "relocated_symbol_faces",
+    "relocated_to"
+   ],
+   "face_field_class": "C_written_and_archived",
+   "relocated_face_field_class": "C_dump_producer_branch_unhit"
+  },
+  "v260": {
+   "rc": 2,
+   "exit_code": 2,
+   "class_distribution": {
+    "C_archive_foreign_key": 0,
+    "C_dump_dead_entry": 0,
+    "C_dump_producer_branch_unhit": 2,
+    "C_producer_dump_omission": 9,
+    "C_written_and_archived": 24
+   },
+   "class_conserved_sum": 35,
+   "D_size": 26,
+   "A_size": 24,
+   "rows_with_symbol_faces": 0,
+   "rows_with_symbol_faces_nonempty": null,
+   "early_returns_before_face_assign": 7,
+   "omitted_fields": [
+    "block_id",
+    "path_exists",
+    "pos_end",
+    "pos_start",
+    "raw",
+    "relocated_lines_ok",
+    "relocated_symbol_faces",
+    "relocated_symbols_absent",
+    "symbol_faces"
+   ],
+   "branch_unhit_fields": [
+    "relocated_fact_verdict",
+    "relocated_to"
+   ],
+   "face_field_class": "C_producer_dump_omission",
+   "relocated_face_field_class": "C_producer_dump_omission"
+  }
+ },
+ "checks_posthoc": [
+  "C2 的非语义字段白名单 (run_started_epoch/run_finished_epoch) 为事后补充: 预注册只写了 probe_version",
+  "C4 的 921 预测被证伪; 修正模型 = presence 另有「行内确有候选符号」前提 (事后), relocated 0 命中仍成立",
+  "C5b = 预注册的登记数值面子句, 因语料漂移判证伪; 结构性判据 C5 达标",
+  "C6b = C6 预注册数值 (omission 8) 被证伪后的修正判据 (omission 7), Σ=35 守恒"
+ ],
+ "exit": 2
+}

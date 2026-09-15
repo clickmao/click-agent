@@ -1,0 +1,733 @@
+# EXP1-Q10 弱边细分全量清单 (v2.6.0)
+
+- 弱边数: 73 / kind 分布: {'cross_file': 33, 'named_fact': 13, 'other': 24, 'comment_only': 3}
+- 符号级分布: {'cross_file': 41, 'named_fact': 24, 'other': 48, 'comment_only': 4}
+- 检查: {'all_edges_have_context': True, 'conservation': True, 'kinds_nontrivial': True, 'all_kinds_in_preregistered_set': True, 'every_edge_classified': True}
+
+## cross_file (33)
+- `946` IndustrialAgentV2.cs:1232-1232 符号=['SentContent'] 面={'SentContent': 'code_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `SentContent` 形态=other 面=code_mention 他处声明=1 ['src/agent.core/core/Message.cs']
+    - L1232 [n/a] _frozenSystemPrompt.Set(sysKey, frozen);
+- `65` IndustrialAgentV2.cs:1945-1945 符号=['ActiveRoleId', 'AgentContext', 'AgentProfile', 'SenderId'] 面={'ActiveRoleId': 'absent', 'AgentContext': 'code_mention', 'AgentProfile': 'absent', 'SenderId': 'code_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `ActiveRoleId` 形态=other 面=absent 他处声明=0 []
+    - `AgentContext` 形态=other 面=code_mention 他处声明=1 ['src/agent.core/core/IAgentContext.cs']
+    - `AgentProfile` 形态=other 面=absent 他处声明=0 []
+    - `SenderId` 形态=other 面=code_mention 他处声明=2 ['src/agent.core/core/Message.cs', 'src/agent/registry/PanelData.cs']
+    - L1945 [n/a] {
+- `46` src/agent/extensions/ServiceCollectionExtensions.cs:174-174 符号=['KeywordTagger'] 面={'KeywordTagger': 'code_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `KeywordTagger` 形态=other 面=code_mention 他处声明=1 ['src/agent/keywordannotation/KeywordIndex.cs']
+    - L174 [n/a] services.AddSingleton<ISessionManager, SessionManager>();
+- `68` src/agent/extensions/ServiceCollectionExtensions.cs:254-255 符号=['ITextEmbedder', 'NullTextEmbedder'] 面={'ITextEmbedder': 'code_mention', 'NullTextEmbedder': 'code_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `ITextEmbedder` 形态=other 面=code_mention 他处声明=5 ['src/agent.contextgradient/ITextEmbedder.cs', 'src/agent.contextgradient/NullTextEmbedder.cs', 'src/agent.tests/ContextGradientSemanticTests.cs', 'src/agent.tests/ContextRelevanceVectorTests.cs', 'src/agent.tests/SkillSemanticMatchTests.cs']
+    - `NullTextEmbedder` 形态=other 面=code_mention 他处声明=1 ['src/agent.contextgradient/NullTextEmbedder.cs']
+    - L254 [n/a] var embedder = new agent.llamacpp.LlamaCppTextEmbedder(agent.llamacpp.LlamaCppEmbedderOptions.FromEnvironment());
+    - L255 [code_identifier] return embedder.IsAvailable ? embedder : new agent.contextgradient.NullTextEmbedder();
+- `288` src/agent.gpu/cli/GpuCli.cs:49-51 符号=['VulkanNames'] 面={'VulkanNames': 'noncode_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `VulkanNames` 形态=other 面=noncode_mention 他处声明=1 ['src/agent.gpu/VulkanNames.cs']
+    - L49 [string_literal] o.WriteLine($"vknames{{package={VulkanNames.SilkNetPackage} version={VulkanNames.SilkNetVersion} " +
+    - L50 [string_literal] $"windows={VulkanNames.Windows} linux={VulkanNames.LinuxSoname} linux_fallback={VulkanNames.LinuxFallback} " +
+    - L51 [string_literal] $"macos={VulkanNames.MacOs} requested_api={VulkanNames.FormatVersion(VulkanNames.ApiVersion)}}}");
+- `37` src/agent/registry/ClarificationBatch.cs:143-153 符号=['DisplayName'] 面={'DisplayName': 'code_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `DisplayName` 形态=other 面=code_mention 他处声明=2 ['src/agent.core/userinteraction/PromptOrigin.cs', 'src/agent/intent/TaskPlan.cs']
+    - L143 [n/a] if (ok)
+    - L144 [n/a] {
+    - L145 [n/a] preferences?.RecordAnswer(it, normalized); // 偏好学习 (凭据被 Store 内部拒收)
+    - L146 [n/a] result.Answers.Add(new ItemAnswer { Item = it, Answered = true, Value = normalized });
+    - L147 [n/a] }
+    - L148 [n/a] else
+    - L149 [n/a] pending.Add(it);
+    - L150 [n/a] }
+    - L151 [n/a] 
+    - L152 [n/a] if (pending.Count == 0)
+    - L153 [n/a] return result;
+- `48` ConsoleUserInteraction.cs:52-52 符号=['IsRecommended'] 面={'IsRecommended': 'code_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `IsRecommended` 形态=other 面=code_mention 他处声明=1 ['src/agent/userinteraction/UserConfirmRequest.cs']
+    - L52 [code_identifier] result.Approved = selected.IsRecommended || request.Options.IndexOf(selected) == 0;
+- `60` ServiceCollectionExtensions.cs:158-158 符号=['IUserPromptService'] 面={'IUserPromptService': 'code_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `IUserPromptService` 形态=other 面=code_mention 他处声明=2 ['src/agent.core/userinteraction/PromptOrigin.cs', 'src/agent/userinteraction/PromptPersistence.cs']
+    - L158 [n/a] {
+- `139` src/agent/IndustrialAgentV2.cs:1984-1993 符号=['ConstraintEvaluator', 'GuardrailMemory'] 面={'ConstraintEvaluator': 'absent', 'GuardrailMemory': 'code_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `ConstraintEvaluator` 形态=other 面=absent 他处声明=0 []
+    - `GuardrailMemory` 形态=other 面=code_mention 他处声明=1 ['src/agent/critique/GuardrailMemory.cs']
+    - L1984 [n/a] 
+    - L1985 [n/a] /// <summary>
+    - L1986 [n/a] /// v0.11.0 R70 (真缺陷 30): 从任务陈述提取约束子句 ("约束：X"/"只能X"/"不许Y"/"必须Z"/"避免W")。
+    - L1987 [n/a] /// 零 LLM 纯规则; 每约束截 60 字; 上限 8 条 (防噪声)。
+    - L1988 [n/a] /// </summary>
+    - L1989 [n/a] internal static List<string> ExtractConstraints(string text)
+    - L1990 [n/a] {
+    - L1991 [n/a] var constraints = new List<string>();
+    - L1992 [n/a] if (string.IsNullOrWhiteSpace(text)) return constraints;
+    - L1993 [n/a] // 冒号显式标记: "约束：..." / "限制：..." 整段
+- `37` src/agent/IndustrialAgentV2.cs:78-79 符号=['FixMemory'] 面={'FixMemory': 'code_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `FixMemory` 形态=other 面=code_mention 他处声明=1 ['src/agent/critique/FixMemory.cs']
+    - L78 [n/a] private readonly ICodeGenerator _codeGenerator;
+    - L79 [n/a] private readonly agent.registry.AgentRegistry _agentRegistry;
+- `39` src/agent/IndustrialAgentV2.cs:866-895 符号=['TaskCharter'] 面={'TaskCharter': 'code_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `TaskCharter` 形态=other 面=code_mention 他处声明=1 ['src/agent/tasks/TaskCharter.cs']
+    - L866 [n/a] if (localCommand.Command == "activity")
+    - L867 [n/a] {
+    - L868 [n/a] response.Success = true;
+    - L869 [n/a] response.Content = Activity().Render();
+    - L870 [n/a] response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
+    - L871 [n/a] return response;
+    - L872 [n/a] }
+    - L873 [n/a] // v0.20.2 (R345): /llm-service — llm-manager/worker 状态观测 (独立进程; manager 不在 → 提示启动)
+    - L874 [n/a] if (localCommand.Command == "llm-service")
+    - L875 [n/a] {
+    - L876 [n/a] var sock = agent.llamalocal.RemoteEmbedder.GetSockFromEnv();
+    - L877 [n/a] var st = agent.llmservice.LlmServiceStatus.Query(sock);
+    - L878 [n/a] response.Success = true;
+    - L879 [n/a] response.Content = st.Render(sock);
+    - L880 [n/a] response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
+    - L881 [n/a] return response;
+    - L882 [n/a] }
+    - L883 [n/a] // v0.17.2-b/c (R337): /schedule-run 条件定时执行 py 插件脚本 —
+    - L884 [n/a] // 用法: /schedule-run <延时秒> <py脚本路径> [目标描述]; 到期且无其他 agent 忙则执行
+    - L885 [n/a] // (v0.17.2-b 事件流协议; 坏 py 拒绝 + 教训落盘)。v1 延时上限 60s (长延时/跨重启调度交互语义待用户裁定)。
+    - L886 [n/a] if (localCommand.Command == "schedule-run")
+    - L887 [n/a] {
+    - L888 [n/a] response.Success = true;
+    - L889 [n/a] var arg = (localCommand.Argument ?? string.Empty).Trim();
+    - L890 [n/a] var parts = arg.Split(' ', 3, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+    - L891 [n/a] if (parts.Length < 2 || !int.TryParse(parts[0], System.Globalization.NumberStyles.None,
+    - L892 [n/a] System.Globalization.CultureInfo.InvariantCulture, out var dueSecs) || dueSecs < 0)
+    - L893 [n/a] {
+    - L894 [n/a] response.Content = "用法: /schedule-run <延时秒> <py脚本路径> [目标描述]\n到期且无其他 agent 忙则执行 (脚本须符合 v0.17.2-b JSON Lines 事件流协议; py_compile 验证拒绝则记教训不执行)。";
+    - L895 [n/a] }
+- `49` src/agent.host/Program.cs:241-241 符号=['InitializeAsync', 'RootPath'] 面={'InitializeAsync': 'code_mention', 'RootPath': 'absent'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `InitializeAsync` 形态=other 面=code_mention 他处声明=9 ['src/agent.core/core/AgentBase.cs', 'src/agent.core/core/IAgent.cs', 'src/agent.core/subagent/SubAgentTask.cs', 'src/agent.modelqueue/TokenUsageService.cs', 'src/agent.tests/FrontendAskFlowTests.cs', 'src/agent.tests/FrontendAskSameConnTests.cs', 'src/agent.workspace/Workspace.cs', 'src/agent.workspace/WorkspaceState.cs', 'src/agent/subagent/SubAgent.cs']
+    - `RootPath` 形态=other 面=absent 他处声明=0 []
+    - L241 [n/a] var mi = d.InstructionSentence.IndexOf("必须", StringComparison.Ordinal);
+- `65` src/agent/extensions/ServiceCollectionExtensions.cs:158-161 符号=['IUserPromptService'] 面={'IUserPromptService': 'code_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `IUserPromptService` 形态=other 面=code_mention 他处声明=2 ['src/agent.core/userinteraction/PromptOrigin.cs', 'src/agent/userinteraction/PromptPersistence.cs']
+    - L158 [n/a] {
+    - L159 [n/a] var opts = sp.GetRequiredService<AgentFrameworkOptions>();
+    - L160 [n/a] return new agent.registry.PythonArtifactPlugin(
+    - L161 [n/a] sp.GetRequiredService<agent.registry.PythonArtifactLedger>(),
+- `27` IndustrialAgentV2.cs:848-860 符号=['SubTask'] 面={'SubTask': 'code_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `SubTask` 形态=other 面=code_mention 他处声明=2 ['src/agent/intent/IntentDecomposer.cs', 'src/agent/registry/EvidenceGate.cs']
+    - L848 [n/a] {
+    - L849 [n/a] topK = k;
+    - L850 [n/a] q = recallArg[..lastSpace].Trim();
+    - L851 [n/a] }
+    - L852 [n/a] var recallSearch = new agent.session.SessionHistorySearch(
+    - L853 [n/a] new agent.session.SessionHistorySearch.StoreSource(_sessionMemoryStore));
+    - L854 [n/a] var hits = recallSearch.Search(q, topK);
+    - L855 [n/a] response.Content = agent.session.SessionHistorySearch.Render(hits, q, topK);
+    - L856 [n/a] // 通道级打点 (行为类 KPI 不用文本启发式): hits=0 也如实记账
+    - L857 [n/a] agent.config.AgentTelemetry.Emit("recall_query", "IndustrialAgentV2",
+    - L858 [n/a] ("query_len", q.Length), ("topk", topK), ("hits", hits.Count));
+    - L859 [n/a] }
+    - L860 [n/a] }
+- `35` src/agent.host/Program.cs:499-542 符号=['RecordStep'] 面={'RecordStep': 'code_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `RecordStep` 形态=other 面=code_mention 他处声明=1 ['src/agent.host/CliSession.cs']
+    - L499 [n/a] var parts = trimmed.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+    - L500 [n/a] if (parts.Length < 2)
+    - L501 [n/a] {
+    - L502 [n/a] sink.Write("{\"error\": \"用法: /session <agent_uid> [index]\", \"found\": false}");
+    - L503 [n/a] if (oneShot != null) return 2;
+    - L504 [n/a] continue;
+    - L505 [n/a] }
+    - L506 [n/a] var uid = parts[1];
+    - L507 [n/a] sink.Write(parts.Length >= 3 && int.TryParse(parts[2], out var idx)
+    - L508 [n/a] ? panel.RenderSessionDetail(uid, idx)
+    - L509 [n/a] : panel.RenderSessionList(uid));
+    - L510 [n/a] if (oneShot != null) return 0;
+    - L511 [n/a] continue;
+    - L512 [n/a] }
+    - L513 [n/a] if (trimmed == "/reset")
+    - L514 [n/a] {
+    - L515 [n/a] turnCount = 0;
+    - L516 [n/a] lastIntent = null;
+    - L517 [n/a] sink.Write(CliRenderer.Yellow("🔄 会话已重置"));
+    - L518 [n/a] if (oneShot != null) return 0;
+    - L519 [n/a] continue;
+    - L520 [n/a] }
+    - L521 [n/a] 
+    - L522 [n/a] try
+    - L523 [n/a] {
+    - L524 [n/a] var step = 0;
+    - L525 [n/a] sink.Write(CliRenderer.Dim($"── 执行中 (turn {++turnCount}) " + new string('─', 30)));
+    - L526 [n/a] 
+    - L527 [n/a] var msg = new Message
+    - L528 [n/a] {
+    - L529 [n/a] Role = MessageRole.User,
+    - L530 [n/a] Content = input,
+    - L531 [n/a] ImageAttachments = imageAttachments ?? new List<string>(),
+    - L532 [n/a] SessionId = session.SessionId,
+    - L533 [n/a] SenderId = "cli-user",
+    - L534 [n/a] };
+    - L535 [n/a] 
+    - L536 [n/a] // 步骤明细①: 意图/拆解预览 (快速标记给用户看, 与 V2 内部一致)
+    - L537 [n/a] step++;
+    - L538 [n/a] var subTasks = IntentDecomposer.Decompose(input);
+    - L539 [n/a] var intent = IntentDecomposer.PrimaryIntent(subTasks);
+    - L540 [n/a] lastIntent = intent;
+    - L541 [code_identifier] session.RecordStep($"意图={intent} 子任务={subTasks.Count}");
+    - L542 [n/a] sink.Step(step, $"意图分析: {CliRenderer.Cyan(intent)}",
+- `73` src/agent/extensions/ServiceCollectionExtensions.cs:153-167 符号=['ResponseSegmentRouter'] 面={'ResponseSegmentRouter': 'code_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `ResponseSegmentRouter` 形态=other 面=code_mention 他处声明=1 ['src/agent/registry/SegmentKind.cs']
+    - L153 [n/a] if (agent.registry.ClickRoverSegmentPlugin.Enabled)
+    - L154 [n/a] services.AddSingleton<agent.registry.IResponseSegmentPlugin, agent.registry.ClickRoverSegmentPlugin>();
+    - L155 [n/a] // ✅ R368: python 段 → 落盘 + py_compile 机器校验 (用户钦定 "内置个PY和PY执行插件")
+    - L156 [n/a] services.AddSingleton<agent.registry.PythonArtifactLedger>();
+    - L157 [n/a] services.AddSingleton<agent.registry.IResponseSegmentPlugin>(sp =>
+    - L158 [n/a] {
+    - L159 [n/a] var opts = sp.GetRequiredService<AgentFrameworkOptions>();
+    - L160 [n/a] return new agent.registry.PythonArtifactPlugin(
+    - L161 [n/a] sp.GetRequiredService<agent.registry.PythonArtifactLedger>(),
+    - L162 [n/a] System.IO.Path.Combine(opts.DataStoragePath, "artifacts"));
+    - L163 [n/a] });
+    - L164 [n/a] // v0.22.0 exp9 D3: 计划真执行体 — 本地节点零 token 真跑 (需 python 产物台账定位产物路径)
+    - L165 [n/a] services.AddSingleton(sp => new agent.intent.PlanRunner(
+    - L166 [n/a] executors: null,
+    - L167 [n/a] ledger: sp.GetRequiredService<agent.registry.PythonArtifactLedger>(),
+- `93` ServiceCollectionExtensions.cs:148-148 符号=['CodeReviewPlugin', 'IArtifactCheckSource', 'IResponseSegmentPlugin', 'PythonArtifactPlugin', 'UiCapturePlugin'] 面={'CodeReviewPlugin': 'code_mention', 'IArtifactCheckSource': 'absent', 'IResponseSegmentPlugin': 'code_mention', 'PythonArtifactPlugin': 'code_mention', 'UiCapturePlugin': 'code_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `CodeReviewPlugin` 形态=other 面=code_mention 他处声明=1 ['src/agent/registry/UiCapturePlugin.cs']
+    - `IArtifactCheckSource` 形态=other 面=absent 他处声明=0 []
+    - `IResponseSegmentPlugin` 形态=other 面=code_mention 他处声明=3 ['src/agent/registry/ClickRoverSegmentPlugin.cs', 'src/agent/registry/SegmentKind.cs', 'src/agent/registry/UiCapturePlugin.cs']
+    - `PythonArtifactPlugin` 形态=other 面=code_mention 他处声明=1 ['src/agent/registry/PythonArtifactPlugin.cs']
+    - `UiCapturePlugin` 形态=other 面=code_mention 他处声明=1 ['src/agent/registry/UiCapturePlugin.cs']
+    - L148 [code_identifier] services.AddSingleton<agent.registry.IResponseSegmentPlugin, agent.registry.UiCapturePlugin>();
+- `54` src/agent.llamacpp/LlamaCppTextEmbedder.cs:31-31 符号=['NullTextEmbedder'] 面={'NullTextEmbedder': 'noncode_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `NullTextEmbedder` 形态=other 面=noncode_mention 他处声明=1 ['src/agent.contextgradient/NullTextEmbedder.cs']
+    - L31 [n/a] {
+- `38` ServiceCollectionExtensions.cs:163-163 符号=['ResponseSegmentRouter'] 面={'ResponseSegmentRouter': 'code_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `ResponseSegmentRouter` 形态=other 面=code_mention 他处声明=1 ['src/agent/registry/SegmentKind.cs']
+    - L163 [n/a] });
+- `45` ServiceCollectionExtensions.cs:148-158 符号=['IResponseSegmentPlugin', 'SegmentKind'] 面={'IResponseSegmentPlugin': 'code_mention', 'SegmentKind': 'absent'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `IResponseSegmentPlugin` 形态=other 面=code_mention 他处声明=3 ['src/agent/registry/ClickRoverSegmentPlugin.cs', 'src/agent/registry/SegmentKind.cs', 'src/agent/registry/UiCapturePlugin.cs']
+    - `SegmentKind` 形态=other 面=absent 他处声明=0 []
+    - L148 [code_identifier] services.AddSingleton<agent.registry.IResponseSegmentPlugin, agent.registry.UiCapturePlugin>();
+    - L149 [code_identifier] services.AddSingleton<agent.registry.IResponseSegmentPlugin, agent.registry.CodeReviewPlugin>();
+    - L150 [n/a] // ✅ R391(C8): 本地形式化验证段插件 — **在场** ⇒ 静态前缀注入 clickproof 输出契约 (不在场 ⇒ 前缀与 R380 逐字一致)。
+    - L151 [n/a] //    非 clickproof 段恒等透传 (零改动模型正文); clickproof 段 → 本地内核确定性裁决 + 遥测 (零 token)。
+    - L152 [n/a] //    环境开关 AGENTFRAMEWORK_FORMAL_SEGMENT=0 可整段关闭 (缺省开)。
+    - L153 [n/a] if (agent.registry.ClickRoverSegmentPlugin.Enabled)
+    - L154 [code_identifier] services.AddSingleton<agent.registry.IResponseSegmentPlugin, agent.registry.ClickRoverSegmentPlugin>();
+    - L155 [n/a] // ✅ R368: python 段 → 落盘 + py_compile 机器校验 (用户钦定 "内置个PY和PY执行插件")
+    - L156 [n/a] services.AddSingleton<agent.registry.PythonArtifactLedger>();
+    - L157 [code_identifier] services.AddSingleton<agent.registry.IResponseSegmentPlugin>(sp =>
+    - L158 [n/a] {
+- `105` ServiceCollectionExtensions.cs:338-344 符号=['IndustrialAgentV2'] 面={'IndustrialAgentV2': 'code_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `IndustrialAgentV2` 形态=other 面=code_mention 他处声明=1 ['src/agent/IndustrialAgentV2.cs']
+    - L338 [n/a] //   外挂与内置不冲突: 同 SkillId 时外挂覆盖内置 (后注册者胜 — Register 语义确认)。
+    - L339 [n/a] services.AddSingleton(sp =>
+    - L340 [n/a] {
+    - L341 [n/a] var registry = agent.skills.SkillRegistry.LoadFromDirectory("skills");
+    - L342 [n/a] var extraDirs = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_SKILLS_EXTRA_DIRS");
+    - L343 [n/a] if (!string.IsNullOrEmpty(extraDirs))
+    - L344 [n/a] {
+- `108` SkillDispatcher.cs:107-107 符号=['IndustrialAgentV2', 'KnowledgeHint'] 面={'IndustrialAgentV2': 'absent', 'KnowledgeHint': 'code_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `IndustrialAgentV2` 形态=other 面=absent 他处声明=1 ['src/agent/IndustrialAgentV2.cs']
+    - `KnowledgeHint` 形态=other 面=code_mention 他处声明=0 []
+    - L107 [code_identifier] if (top.Skill.Type == SkillType.KnowledgeHint)
+- `111` SkillDispatcher.cs:36-36 符号=['ExecuteAsync'] 面={'ExecuteAsync': 'code_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `ExecuteAsync` 形态=other 面=code_mention 他处声明=11 ['src/agent.core/subagent/SubAgentTask.cs', 'src/agent.exploration/HostExploreExecutor.cs', 'src/agent.exploration/ThinkChainSession.cs', 'src/agent.modelqueue/ActionLoop.cs', 'src/agent.recovery/ErrorInfo.cs', 'src/agent.skills/SkillExecutor.cs', 'src/agent.tests/SubAgentTests.cs', 'src/agent/action/WorkspaceActionPort.cs', 'src/agent/registry/NodeExecutionResult.cs', 'src/agent/subagent/IsolatedTaskRunner.cs', 'src/agent/subagent/SubAgent.cs']
+    - L36 [n/a] _executor = new SkillExecutor(Lifecycle, cfg);
+- `396` src/agent/extensions/ServiceCollectionExtensions.cs:276-278 符号=['ILLMCaller'] 面={'ILLMCaller': 'code_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `ILLMCaller` 形态=other 面=code_mention 他处声明=2 ['src/agent.tests/ArtifactRepairTests.cs', 'src/agent/IndustrialAgentV2.cs']
+    - L276 [n/a] sp.GetRequiredService<agent.modelqueue.BalanceQueryService>(),
+    - L277 [n/a] sp.GetRequiredService<agent.modelqueue.ModelCatalog>()));
+    - L278 [n/a] services.AddSingleton(sp =>
+- `13` src/agent.host/Program.cs:408-408 符号=['AgentResponse', 'ProcessAsync'] 面={'AgentResponse': 'absent', 'ProcessAsync': 'code_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `AgentResponse` 形态=other 面=absent 他处声明=0 []
+    - `ProcessAsync` 形态=other 面=code_mention 他处声明=5 ['src/agent.core/core/AgentBase.cs', 'src/agent.core/core/IAgent.cs', 'src/agent.tests/FrontendAskFlowTests.cs', 'src/agent.tests/FrontendAskSameConnTests.cs', 'src/agent/registry/SegmentKind.cs']
+    - L408 [n/a] await entryAgent.InitializeAsync(agentCtx);
+- `15` src/agent/IndustrialAgentV2.cs:870-871 符号=['PrimaryIntent'] 面={'PrimaryIntent': 'code_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `PrimaryIntent` 形态=other 面=code_mention 他处声明=1 ['src/agent/intent/IntentDecomposer.cs']
+    - L870 [n/a] response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
+    - L871 [n/a] return response;
+- `19` src/agent/intent/PlanRoutePolicy.cs:408-408 符号=['BuildRoutedPlan', 'TaskPlan'] 面={'BuildRoutedPlan': 'absent', 'TaskPlan': 'code_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `BuildRoutedPlan` 形态=other 面=absent 他处声明=0 []
+    - `TaskPlan` 形态=other 面=code_mention 他处声明=1 ['src/agent/intent/TaskPlan.cs']
+    - L408 [n/a] return added;
+- `22` src/agent/contextassembler/ContextAssembler.cs:239-239 符号=['PromptHeader'] 面={'PromptHeader': 'code_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `PromptHeader` 形态=other 面=code_mention 他处声明=1 ['src/agent/contextassembler/DataSourceType.cs']
+    - L239 [n/a] allSnippets = allSnippets
+- `31` PlanRunner.cs:477-477 符号=['RunPlanAsync', 'TaskPlanRun'] 面={'RunPlanAsync': 'absent', 'TaskPlanRun': 'code_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `RunPlanAsync` 形态=other 面=absent 他处声明=0 []
+    - `TaskPlanRun` 形态=other 面=code_mention 他处声明=1 ['src/agent/intent/TaskPlanRun.cs']
+    - L477 [code_identifier] public async Task<TaskPlanRun> RunAsync(TaskPlan plan, LocalNodeContext? ctx = null, CancellationToken ct = default,
+- `32` PlanResumeService.cs:71-71 符号=['CheckpointStore'] 面={'CheckpointStore': 'code_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `CheckpointStore` 形态=other 面=code_mention 他处声明=1 ['src/agent.recovery/ExecutionCheckpoint.cs']
+    - L71 [n/a] /// R458/R460 人性化承接句: 把"答复落不到槽位 ⇒ 检查点作废"的内部判定变成一句人话 —— 像人一样先承接、
+- `49` src/agent/registry/ArtifactRepair.cs:217-217 符号=['DrainArtifactChecks', 'ILLMCaller', '_caller'] 面={'DrainArtifactChecks': 'code_mention', 'ILLMCaller': 'code_mention', '_caller': 'code_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `DrainArtifactChecks` 形态=other 面=code_mention 他处声明=1 ['src/agent/registry/SegmentKind.cs']
+    - `ILLMCaller` 形态=other 面=code_mention 他处声明=2 ['src/agent.tests/ArtifactRepairTests.cs', 'src/agent/IndustrialAgentV2.cs']
+    - `_caller` 形态=other 面=code_mention 他处声明=0 []
+    - L217 [code_identifier] resp = await _caller.CallAsync(prompt, ct).ConfigureAwait(false);
+- `51` src/agent/extensions/ServiceCollectionExtensions.cs:276-277 符号=['ILLMCaller', 'ModelQueueAdapter', 'OpenAILLMCaller'] 面={'ILLMCaller': 'code_mention', 'ModelQueueAdapter': 'code_mention', 'OpenAILLMCaller': 'noncode_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `ILLMCaller` 形态=other 面=code_mention 他处声明=2 ['src/agent.tests/ArtifactRepairTests.cs', 'src/agent/IndustrialAgentV2.cs']
+    - `ModelQueueAdapter` 形态=other 面=code_mention 他处声明=1 ['src/agent/modelqueue/ModelQueueAdapter.cs']
+    - `OpenAILLMCaller` 形态=other 面=noncode_mention 他处声明=1 ['src/agent/IndustrialAgentV2.cs']
+    - L276 [n/a] sp.GetRequiredService<agent.modelqueue.BalanceQueryService>(),
+    - L277 [n/a] sp.GetRequiredService<agent.modelqueue.ModelCatalog>()));
+- `17` ServiceCollectionExtensions.cs:276-278 符号=['ModelQueueAdapter'] 面={'ModelQueueAdapter': 'code_mention'}
+  - 依据: 至少一枚弱符号在树内他处有声明
+    - `ModelQueueAdapter` 形态=other 面=code_mention 他处声明=1 ['src/agent/modelqueue/ModelQueueAdapter.cs']
+    - L276 [n/a] sp.GetRequiredService<agent.modelqueue.BalanceQueryService>(),
+    - L277 [n/a] sp.GetRequiredService<agent.modelqueue.ModelCatalog>()));
+    - L278 [n/a] services.AddSingleton(sp =>
+
+## named_fact (13)
+- `1871` IndustrialAgentV2.cs:429-429 符号=['think_memory_boot'] 面={'think_memory_boot': 'noncode_mention'}
+  - 依据: 全部弱符号: 名字形态 ∧ 非码面 ∧ 他处零声明
+    - `think_memory_boot` 形态=snake_case 面=noncode_mention 他处声明=0 []
+    - L429 [n/a] _promptService = promptService;
+- `53` src/agent.frontendapi/FrontendApiContract.cs:34-38 符号=['req_id'] 面={'req_id': 'noncode_mention'}
+  - 依据: 全部弱符号: 名字形态 ∧ 非码面 ∧ 他处零声明
+    - `req_id` 形态=snake_case 面=noncode_mention 他处声明=0 []
+    - L34 [string_literal] if (!r.TryGetProperty("req_id", out var rid)) return null;
+    - L35 [n/a] if (!r.TryGetProperty("api", out var api)) return null;
+    - L36 [n/a] return new FrontendRequest
+    - L37 [n/a] {
+    - L38 [n/a] ReqId = rid.GetString() ?? "",
+- `105` FrontendPromptService.cs:26-26 符号=['ask_id'] 面={'ask_id': 'noncode_mention'}
+  - 依据: 全部弱符号: 名字形态 ∧ 非码面 ∧ 他处零声明
+    - `ask_id` 形态=snake_case 面=noncode_mention 他处声明=0 []
+    - L26 [n/a] private Pending? _pending;
+- `59` src/agent/IndustrialAgentV2.cs:1467-1468 符号=['plan_executor_parallel'] 面={'plan_executor_parallel': 'noncode_mention'}
+  - 依据: 全部弱符号: 名字形态 ∧ 非码面 ∧ 他处零声明
+    - `plan_executor_parallel` 形态=snake_case 面=noncode_mention 他处声明=0 []
+    - L1467 [n/a] ("error", ex.Message[..Math.Min(60, ex.Message.Length)]));
+    - L1468 [n/a] }
+- `73` IndustrialAgentV2.cs:1555-1558 符号=['loop_turn'] 面={'loop_turn': 'noncode_mention'}
+  - 依据: 全部弱符号: 名字形态 ∧ 非码面 ∧ 他处零声明
+    - `loop_turn` 形态=snake_case 面=noncode_mention 他处声明=0 []
+    - L1555 [n/a] gateGrowthBlock = GrowthLedger?.RenderForPrompt();
+    - L1556 [n/a] gateOutcome = await _modelRouter.JudgeTurnAsync(
+    - L1557 [n/a] message.Content, gateRoleSeed, gateGrowthBlock, ct).ConfigureAwait(false);
+    - L1558 [n/a] }
+- `250` IndustrialAgentV2.cs:1604-1604 符号=['empty_always'] 面={'empty_always': 'noncode_mention'}
+  - 依据: 全部弱符号: 名字形态 ∧ 非码面 ∧ 他处零声明
+    - `empty_always` 形态=snake_case 面=noncode_mention 他处声明=0 []
+    - L1604 [n/a] // 未挂载臂 growth_chars == 0 ∧ prompt_len == 冻结基线, 挂载臂 growth_chars > 0。
+- `18` src/agent/IndustrialAgentV2.cs:795-835 符号=['recall_query'] 面={'recall_query': 'noncode_mention'}
+  - 依据: 全部弱符号: 名字形态 ∧ 非码面 ∧ 他处零声明
+    - `recall_query` 形态=snake_case 面=noncode_mention 他处声明=0 []
+    - L795 [n/a] }
+    - L796 [n/a] catch (Exception ex)
+    - L797 [n/a] {
+    - L798 [n/a] response.Content = $"staging 操作失败: {ex.Message}";
+    - L799 [n/a] }
+    - L800 [n/a] response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
+    - L801 [n/a] return response;
+    - L802 [n/a] }
+    - L803 [n/a] // v0.18.0 G1 (R338): /git status|diff|commit <msg>|push <一次性url>
+    - L804 [n/a] if (localCommand.Command == "git")
+    - L805 [n/a] {
+    - L806 [n/a] response.Success = true;
+    - L807 [n/a] try
+    - L808 [n/a] {
+    - L809 [n/a] var git = new agent.gitops.GitOperations(Environment.CurrentDirectory);
+    - L810 [n/a] var arg2 = (localCommand.Argument ?? "").Trim();
+    - L811 [n/a] if (arg2 == "status") response.Content = RenderGit(git.Status());
+    - L812 [n/a] else if (arg2 == "diff") response.Content = RenderGit(git.DiffStat()) + "\n" + RenderGit(git.Diff());
+    - L813 [n/a] else if (arg2.StartsWith("commit ", StringComparison.Ordinal))
+    - L814 [n/a] response.Content = RenderGit(git.StageAndCommit(arg2["commit ".Length..].Trim()));
+    - L815 [n/a] else if (arg2.StartsWith("push ", StringComparison.Ordinal))
+    - L816 [n/a] {
+    - L817 [n/a] var url = arg2["push ".Length..].Trim();
+    - L818 [n/a] var p = git.PushOnce(url);
+    - L819 [n/a] var verify = git.VerifyPush(url);
+    - L820 [n/a] response.Content = RenderGit(p) + "\n复核: " + verify + "\n(一次性 URL 已用; 凭据卫生: 未写入 git config)";
+    - L821 [n/a] }
+    - L822 [n/a] else response.Content = "用法: /git status|diff|commit <msg>|push <一次性url>";
+    - L823 [n/a] }
+    - L824 [n/a] catch (Exception ex) { response.Content = $"git 操作失败: {ex.Message}"; }
+    - L825 [n/a] response.ExecutionTimeMs = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
+    - L826 [n/a] return response;
+    - L827 [n/a] }
+    - L828 [n/a] // v0.22.0 L2-待办① (R420): /recall <查询> [topK] — 跨会话检索接线
+    - L829 [n/a] // (SessionHistorySearch 自 R370 交付后生产 0 消费 = L7-G1 缺口; 本轮回接本地指令出口, 零 LLM)
+    - L830 [n/a] if (localCommand.Command == "recall")
+    - L831 [n/a] {
+    - L832 [n/a] response.Success = true;
+    - L833 [n/a] try
+    - L834 [n/a] {
+    - L835 [n/a] var recallArg = (localCommand.Argument ?? string.Empty).Trim();
+- `53` src/agent/IndustrialAgentV2.cs:1625-1627 符号=['correction_judge'] 面={'correction_judge': 'noncode_mention'}
+  - 依据: 全部弱符号: 名字形态 ∧ 非码面 ∧ 他处零声明
+    - `correction_judge` 形态=snake_case 面=noncode_mention 他处声明=0 []
+    - L1625 [n/a] if (gateOutcome.Decided && gateOutcome.Verdict == agent.modelqueue.TurnGateVerdict.Skip)
+    - L1626 [n/a] {
+    - L1627 [n/a] // v0.58.0 R438 (本地消化 × R379 回放不变量的交互缺陷修复):
+- `18` ModelQueueRouter.cs:307-322 符号=['failed_or_empty'] 面={'failed_or_empty': 'noncode_mention'}
+  - 依据: 全部弱符号: 名字形态 ∧ 非码面 ∧ 他处零声明
+    - `failed_or_empty` 形态=snake_case 面=noncode_mention 他处声明=0 []
+    - L307 [n/a] 
+    - L308 [n/a] var verdict = TurnGateJudge.Parse(outcome.Content);
+    - L309 [n/a] if (!verdict.Decided)
+    - L310 [n/a] {
+    - L311 [n/a] TurnGate.RecordDegraded("unparsed:" + (verdict.Raw.Length > 40 ? verdict.Raw[..40] : verdict.Raw));
+    - L312 [n/a] return verdict;
+    - L313 [n/a] }
+    - L314 [n/a] if (verdict.Verdict == TurnGateVerdict.Skip) TurnGate.RecordSkipped();
+    - L315 [n/a] else TurnGate.RecordPassed();
+    - L316 [n/a] return verdict;
+    - L317 [n/a] }
+    - L318 [n/a] catch (OperationCanceledException) { throw; }
+    - L319 [n/a] catch (Exception ex)
+    - L320 [n/a] {
+    - L321 [n/a] TurnGate.RecordDegraded("exception:" + ex.GetType().Name);
+    - L322 [n/a] return TurnGateOutcome.Undecided("exception:" + ex.GetType().Name);
+- `18` src/agent/IndustrialAgentV2.cs:1547-1548 符号=['dropped_chars', 'local_gate_skip_history', 'persisted_chars', 'would_be_chars'] 面={'dropped_chars': 'noncode_mention', 'local_gate_skip_history': 'noncode_mention', 'persisted_chars': 'noncode_mention', 'would_be_chars': 'noncode_mention'}
+  - 依据: 全部弱符号: 名字形态 ∧ 非码面 ∧ 他处零声明
+    - `dropped_chars` 形态=snake_case 面=noncode_mention 他处声明=0 []
+    - `local_gate_skip_history` 形态=snake_case 面=noncode_mention 他处声明=0 []
+    - `persisted_chars` 形态=snake_case 面=noncode_mention 他处声明=0 []
+    - `would_be_chars` 形态=snake_case 面=noncode_mention 他处声明=0 []
+    - L1547 [n/a] }
+    - L1548 [n/a] else
+- `15` src/agent/IndustrialAgentV2.cs:1500-1519 符号=['local_turn_gate_reject', 'msg_sha16'] 面={'local_turn_gate_reject': 'noncode_mention', 'msg_sha16': 'noncode_mention'}
+  - 依据: 全部弱符号: 名字形态 ∧ 非码面 ∧ 他处零声明
+    - `local_turn_gate_reject` 形态=snake_case 面=noncode_mention 他处声明=0 []
+    - `msg_sha16` 形态=snake_case 面=noncode_mention 他处声明=0 []
+    - L1500 [n/a] // 该追加发生在 SentContent 快照之后 → 存进会话的是"旧字节", 回放时少这一个块 (实测 turn2 的
+    - L1501 [n/a] // user 消息被回放成 1150 字符, 而当时实发 1222 字符 → 前缀在历史中部断裂)。
+    - L1502 [n/a] // 铁律: SentContent = 最终发送字节。任何对 prompt.UserMessage 的事后追加都必须回写。
+    - L1503 [n/a] message.SentContent = prompt.UserMessage;
+    - L1504 [n/a] }
+    - L1505 [n/a] // ── R413 前置门 (默认关; role 缺失自动失效 ⇒ 零回归) ──
+    - L1506 [n/a] // 语义: 本轮消息无新增诉求 (纯认可/确认/寒暄/重复) ⇒ 本地消化, 不发远端主调用
+    - L1507 [n/a] // ⇒ 省掉整轮 prompt (实测基线 2.4k–3.0k tok/轮)。判别失败/无法解析 ⇒ 一律降级远端。
+    - L1508 [n/a] LLMResponse llmResponse;
+    - L1509 [n/a] var gateOutcome = agent.modelqueue.TurnGateOutcome.Undecided("gate_disabled");
+    - L1510 [n/a] string? gateRoleSeed = null;   // R430: 门判实际使用的角色种子 (仅「询问 r1」的分支才非空)
+    - L1511 [n/a] string? gateGrowthBlock = null; // R431: 门判实际挂载的 role 额外数据 (成长经历; 空=未挂载)
+    - L1512 [n/a] if (System.Threading.Interlocked.Exchange(ref _gateConfigEmitted, 1) == 0)
+    - L1513 [n/a] {
+    - L1514 [n/a] agent.config.AgentTelemetry.Emit("local_turn_gate_config", "IndustrialAgentV2",
+    - L1515 [n/a] ("router_present", (_modelRouter is not null).ToString()),
+    - L1516 [n/a] ("turn_gate_enabled", (_modelRouter?.TurnGateEnabled ?? false).ToString()),
+    - L1517 [n/a] ("local_channel_ready", (_modelRouter?.LocalChannelReady ?? false).ToString()),
+    - L1518 [n/a] // R431: 挂载前置条件 (域 = 0 ⇒ 成长块恒空 ⇒ 挂载与不挂载逐位同一; -1 = 无 role/未建账本)
+    - L1519 [n/a] ("role_growth_domains", (GrowthLedger?.DomainCount ?? -1).ToString()),
+- `136` src/agent/IndustrialAgentV2.cs:429-429 符号=['think_memory_boot'] 面={'think_memory_boot': 'noncode_mention'}
+  - 依据: 全部弱符号: 名字形态 ∧ 非码面 ∧ 他处零声明
+    - `think_memory_boot` 形态=snake_case 面=noncode_mention 他处声明=0 []
+    - L429 [n/a] _promptService = promptService;
+- `128` PlanRunner.cs:39-40 符号=['AGENTFRAMEWORK_PY_RUN'] 面={'AGENTFRAMEWORK_PY_RUN': 'noncode_mention'}
+  - 依据: 全部弱符号: 名字形态 ∧ 非码面 ∧ 他处零声明
+    - `AGENTFRAMEWORK_PY_RUN` 形态=SCREAMING_SNAKE 面=noncode_mention 他处声明=0 []
+    - L39 [comment] /// <summary>运行级闸门 (null = 读 AGENTFRAMEWORK_PY_RUN)</summary>
+    - L40 [n/a] public Func<bool>? PythonRunGate { get; init; }
+
+## comment_only (3)
+- `864` CapabilityScanner.cs:19-19 符号=['RegisterCapability'] 面={'RegisterCapability': 'noncode_mention'}
+  - 依据: 全部弱符号: 非名字形态 ∧ 非码面 ∧ 他处零声明
+    - `RegisterCapability` 形态=other 面=noncode_mention 他处声明=0 []
+    - L19 [n/a] private bool _scanned;
+- `288` ContextAssembler.cs:1287-1287 符号=['_queryEmbedding'] 面={'_queryEmbedding': 'noncode_mention'}
+  - 依据: 全部弱符号: 非名字形态 ∧ 非码面 ∧ 他处零声明
+    - `_queryEmbedding` 形态=other 面=noncode_mention 他处声明=0 []
+    - L1287 [n/a] // 中文字符范围 (CJK Unified Ideographs)
+- `24` src/agent/registry/CapabilityScanner.cs:33-33 符号=['RegisterCapability'] 面={'RegisterCapability': 'noncode_mention'}
+  - 依据: 全部弱符号: 非名字形态 ∧ 非码面 ∧ 他处零声明
+    - `RegisterCapability` 形态=other 面=noncode_mention 他处声明=0 []
+    - L33 [comment] // ① 显式注册通道 (AOT 安全): RegisterCapability 由宿主/DI 在启动时登记。
+
+## other (24)
+- `7` SearchFailoverService.cs:153-153 符号=['SemaphoreSlim'] 面={'SemaphoreSlim': 'code_mention'}
+  - 依据: 含码面提及或形态-面不齐 (catch-all)
+    - `SemaphoreSlim` 形态=other 面=code_mention 他处声明=0 []
+    - L153 [code_identifier] using var semaphore = new SemaphoreSlim(Math.Max(1, options.MaxConcurrency));
+- `54` src/agent/registry/CapabilityScanner.cs:33-35 符号=['AssemblyLoadContext', 'GetTypes'] 面={'AssemblyLoadContext': 'absent', 'GetTypes': 'noncode_mention'}
+  - 依据: 含码面提及或形态-面不齐 (catch-all)
+    - `AssemblyLoadContext` 形态=other 面=absent 他处声明=0 []
+    - `GetTypes` 形态=other 面=noncode_mention 他处声明=0 []
+    - L33 [n/a] // ① 显式注册通道 (AOT 安全): RegisterCapability 由宿主/DI 在启动时登记。
+    - L34 [comment] // v7.14 真机判决: 程序集 GetTypes+Activator 反射扫描在 AOT trim 后类型图不全 → 漏报+IL 警告,
+    - L35 [n/a] // 已删除; 能力发现走显式注册 + PATH 探嗅双通道。
+- `79` src/agent/registry/CapabilityScanner.cs:24-30 符号=['_scanned'] 面={'_scanned': 'code_mention'}
+  - 依据: 含码面提及或形态-面不齐 (catch-all)
+    - `_scanned` 形态=other 面=code_mention 他处声明=0 []
+    - L24 [n/a] public void Scan()
+    - L25 [n/a] {
+    - L26 [n/a] lock (_lock)
+    - L27 [n/a] {
+    - L28 [code_identifier] if (_scanned)
+    - L29 [n/a] return;
+    - L30 [code_identifier] _scanned = true;
+- `80` src/agent/contextassembler/ContextAssembler.cs:41-41 符号=['CacheTtl'] 面={'CacheTtl': 'code_mention'}
+  - 依据: 含码面提及或形态-面不齐 (catch-all)
+    - `CacheTtl` 形态=other 面=code_mention 他处声明=0 []
+    - L41 [n/a] private long _totalSnippets;
+- `1085` probe_v260.py:78-78 符号=['declaration_index'] 面={'declaration_index': 'code_mention'}
+  - 依据: 含码面提及或形态-面不齐 (catch-all)
+    - `declaration_index` 形态=snake_case 面=code_mention 他处声明=0 []
+    - L78 [n/a] CODE_GLOBS = ["src/**/*.cs"]
+- `1588` probe_v260.py:778-778 符号=['C_producer_dump_omission', 'symbol_faces'] 面={'C_producer_dump_omission': 'absent', 'symbol_faces': 'noncode_mention'}
+  - 依据: 含码面提及或形态-面不齐 (catch-all)
+    - `C_producer_dump_omission` 形态=other 面=absent 他处声明=0 []
+    - `symbol_faces` 形态=snake_case 面=noncode_mention 他处声明=0 []
+    - L778 [string_literal] rec["symbol_faces"] = faces_for(repo, rel, text, c["symbols"])
+- `51` src/agent.frontendapi/FrontendApiServer.cs:131-150 符号=['ask_id', 'req_id'] 面={'ask_id': 'absent', 'req_id': 'noncode_mention'}
+  - 依据: 含码面提及或形态-面不齐 (catch-all)
+    - `ask_id` 形态=snake_case 面=absent 他处声明=0 []
+    - `req_id` 形态=snake_case 面=noncode_mention 他处声明=0 []
+    - L131 [n/a] {
+    - L132 [n/a] var n = await client.ReceiveAsync(new ArraySegment<byte>(buf), SocketFlags.None, timeoutCts.Token).ConfigureAwait(false);
+    - L133 [n/a] if (n == 0) return (false, string.Empty);
+    - L134 [n/a] sb.Append(Encoding.UTF8.GetString(buf, 0, n));
+    - L135 [n/a] var text = sb.ToString();
+    - L136 [n/a] var idx = text.IndexOf('\n');
+    - L137 [n/a] // v0.21.1 (R367): 与请求循环同类的无界增长防护。
+    - L138 [n/a] // 原实现的 4096 检查只在"找到 '\n' 之后"生效, 未遇换行前 sb 可持续增长;
+    - L139 [n/a] // 且 auth 阶段位于限流/并发准入之前, 5s 窗口内可灌入大量数据 → 提前掐断。
+    - L140 [n/a] // R376: 上限只约束「尚未出现换行的 auth 行」, 换行之后的残包属请求侧 (另有 1MB 上限)。
+    - L141 [n/a] if (idx < 0)
+    - L142 [n/a] {
+    - L143 [n/a] if (sb.Length > MaxAuthBytes) return (false, string.Empty);
+    - L144 [n/a] continue;
+    - L145 [n/a] }
+    - L146 [n/a] var line = text[..idx].Trim();
+    - L147 [n/a] var rest = text[(idx + 1)..];
+    - L148 [n/a] if (line.Length > 4096) return (false, string.Empty); // 超长 auth 行 = 恶意
+    - L149 [n/a] using var doc = System.Text.Json.JsonDocument.Parse(line);
+    - L150 [n/a] var root = doc.RootElement;
+- `22` probe_v260.py:78-78 符号=['BgeCpuEmbedder', 'CapabilityPlugin', 'KeyError', 'MemAvailable', 'RegisterCapability', '_queryEmbedding', 'checks_posthoc', 'declaration_index', 'fake_llama', 'index_scope_out', 'judge_citation', 'local_turn_gate_reject', 'msg_sha16', 'pos_end', 'stale_path'] 面={'BgeCpuEmbedder': 'absent', 'CapabilityPlugin': 'absent', 'KeyError': 'absent', 'MemAvailable': 'absent', 'RegisterCapability': 'absent', '_queryEmbedding': 'absent', 'checks_posthoc': 'noncode_mention', 'declaration_index': 'code_mention', 'fake_llama': 'absent', 'index_scope_out': 'absent', 'judge_citation': 'code_mention', 'local_turn_gate_reject': 'absent', 'msg_sha16': 'absent', 'pos_end': 'noncode_mention', 'stale_path': 'noncode_mention'}
+  - 依据: 含码面提及或形态-面不齐 (catch-all)
+    - `BgeCpuEmbedder` 形态=other 面=absent 他处声明=0 []
+    - `CapabilityPlugin` 形态=other 面=absent 他处声明=0 []
+    - `KeyError` 形态=other 面=absent 他处声明=0 []
+    - `MemAvailable` 形态=other 面=absent 他处声明=0 []
+    - `RegisterCapability` 形态=other 面=absent 他处声明=0 []
+    - `_queryEmbedding` 形态=other 面=absent 他处声明=0 []
+    - `checks_posthoc` 形态=snake_case 面=noncode_mention 他处声明=0 []
+    - `declaration_index` 形态=snake_case 面=code_mention 他处声明=0 []
+    - `fake_llama` 形态=snake_case 面=absent 他处声明=0 []
+    - `index_scope_out` 形态=snake_case 面=absent 他处声明=0 []
+    - `judge_citation` 形态=snake_case 面=code_mention 他处声明=0 []
+    - `local_turn_gate_reject` 形态=snake_case 面=absent 他处声明=0 []
+    - `msg_sha16` 形态=snake_case 面=absent 他处声明=0 []
+    - `pos_end` 形态=snake_case 面=noncode_mention 他处声明=0 []
+    - `stale_path` 形态=snake_case 面=noncode_mention 他处声明=0 []
+    - L78 [n/a] CODE_GLOBS = ["src/**/*.cs"]
+- `74` src/agent/IndustrialAgentV2.cs:71-71 符号=['_segmentRouter'] 面={'_segmentRouter': 'code_mention'}
+  - 依据: 含码面提及或形态-面不齐 (catch-all)
+    - `_segmentRouter` 形态=other 面=code_mention 他处声明=0 []
+    - L71 [n/a] private IReadOnlyList<agent.context.ArtifactFact>? _continuationFacts;
+- `14` eval/probe/tasks.py:261-261 符号=['PROGRAM_FAMILIES'] 面={'PROGRAM_FAMILIES': 'code_mention'}
+  - 依据: 含码面提及或形态-面不齐 (catch-all)
+    - `PROGRAM_FAMILIES` 形态=SCREAMING_SNAKE 面=code_mention 他处声明=0 []
+    - L261 [n/a] # ---------------------------------------------------------------- 反饱和族 v2 (R417)
+- `15` eval/probe/tasks.py:586-586 符号=['MATH_FAMILIES'] 面={'MATH_FAMILIES': 'code_mention'}
+  - 依据: 含码面提及或形态-面不齐 (catch-all)
+    - `MATH_FAMILIES` 形态=SCREAMING_SNAKE 面=code_mention 他处声明=0 []
+    - L586 [n/a] except (ValueError, IndexError):
+- `17` eval/probe/run_probe.py:101-101 符号=['KeyError', 'REF_SRC'] 面={'KeyError': 'absent', 'REF_SRC': 'code_mention'}
+  - 依据: 含码面提及或形态-面不齐 (catch-all)
+    - `KeyError` 形态=other 面=absent 他处声明=0 []
+    - `REF_SRC` 形态=SCREAMING_SNAKE 面=code_mention 他处声明=0 []
+    - L101 [n/a] pairs=sorted((ln.split(',')[0], int(ln.split(',')[1])) for ln in sys.stdin.read().strip().splitlines())
+- `25` src/agent.modelqueue/LocalSessionCacheLedger.cs:91-99 符号=['carryOverCeiling'] 面={'carryOverCeiling': 'code_mention'}
+  - 依据: 含码面提及或形态-面不齐 (catch-all)
+    - `carryOverCeiling` 形态=other 面=code_mention 他处声明=0 []
+    - L91 [n/a] public LocalCacheObservation Observe(
+    - L92 [n/a] string? sessionKey,
+    - L93 [n/a] int turnIndex,
+    - L94 [n/a] int promptTokens,
+    - L95 [n/a] int cachedTokens,
+    - L96 [code_identifier] int carryOverCeiling = 0,
+    - L97 [n/a] string? model = null,
+    - L98 [n/a] string source = DefaultSource)
+    - L99 [n/a] {
+- `10` eval/probe/run_probe.py:430-430 符号=['solve_agent'] 面={'solve_agent': 'code_mention'}
+  - 依据: 含码面提及或形态-面不齐 (catch-all)
+    - `solve_agent` 形态=snake_case 面=code_mention 他处声明=0 []
+    - L430 [n/a] env = dict(os.environ)
+- `16` eval/probe/run_probe.py:430-447 符号=['solve_agent'] 面={'solve_agent': 'code_mention'}
+  - 依据: 含码面提及或形态-面不齐 (catch-all)
+    - `solve_agent` 形态=snake_case 面=code_mention 他处声明=0 []
+    - L430 [n/a] env = dict(os.environ)
+    - L431 [n/a] if not os.path.exists(path):
+    - L432 [n/a] return env
+    - L433 [n/a] with open(path, encoding="utf-8") as fh:
+    - L434 [n/a] for ln in fh:
+    - L435 [n/a] ln = ln.strip()
+    - L436 [n/a] if not ln or ln.startswith("#") or "=" not in ln:
+    - L437 [n/a] continue
+    - L438 [n/a] k, v = ln.split("=", 1)
+    - L439 [n/a] env[k.strip()] = v.strip().strip('"').strip("'")
+    - L440 [n/a] return env
+    - L441 [n/a] 
+    - L442 [n/a] 
+    - L443 [n/a] def _telemetry_file(env: dict) -> str:
+    - L444 [n/a] """被测进程写入的遥测文件 (env 覆盖优先, 与产品侧 AgentTelemetry 同规则)。"""
+    - L445 [n/a] d = env.get("AGENTFRAMEWORK_TELEMETRY") or os.path.join(ROOT, "data", "telemetry")
+    - L446 [n/a] return d if str(d).endswith(".jsonl") else os.path.join(d, "host.jsonl")
+    - L447 [n/a] 
+- `21` eval/rover/r444/settle_r444.py:104-104 符号=['ASK_MARK'] 面={'ASK_MARK': 'code_mention'}
+  - 依据: 含码面提及或形态-面不齐 (catch-all)
+    - `ASK_MARK` 形态=SCREAMING_SNAKE 面=code_mention 他处声明=0 []
+    - L104 [code_identifier] ASK_MARK = ("续跑计划", "没有落地", "等你回答")
+- `21` src/agent.modelqueue/ModelQueueRouter.cs:950-1000 符号=['reasoning_effort', 'response_format'] 面={'reasoning_effort': 'noncode_mention', 'response_format': 'absent'}
+  - 依据: 含码面提及或形态-面不齐 (catch-all)
+    - `reasoning_effort` 形态=snake_case 面=noncode_mention 他处声明=0 []
+    - `response_format` 形态=snake_case 面=absent 他处声明=0 []
+    - L950 [n/a] /// 本地通道可用 → 本地优先 (无余额概念, 天然充足)。
+    - L951 [n/a] /// </summary>
+    - L952 [n/a] private ModelCatalogEntry? SelectAlternativeByBalance(ModelCatalogEntry current, int estimatedTokens)
+    - L953 [n/a] {
+    - L954 [n/a] if (_tokenUsage is null) return null;
+    - L955 [n/a] var candidates = _catalog.Models
+    - L956 [n/a] .Where(m => !string.Equals(m.Id, current.Id, StringComparison.OrdinalIgnoreCase))
+    - L957 [n/a] // v0.11.0 R115 (真缺陷 46): 候选必须 key 已配置 (曾选中 claude-sonnet-4-5 而
+    - L958 [n/a] // ANTHROPIC_KEY 未设 → 切换后调用必败, 比不切更糟)
+    - L959 [n/a] .Where(m => !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(m.ApiKeyEnv)))
+    - L960 [n/a] .Select(m => (Model: m, Est: _tokenUsage!.EstimateBalance(m.Provider, estimatedTokens)))
+    - L961 [n/a] .Where(t => t.Est.Sufficient)
+    - L962 [n/a] .OrderByDescending(t => t.Model.ReasoningScore + t.Model.CodingScore)
+    - L963 [n/a] .ToList();
+    - L964 [n/a] return candidates.Count == 0 ? null : candidates[0].Model;
+    - L965 [n/a] }
+    - L966 [n/a] 
+    - L967 [n/a] /// <summary>
+    - L968 [n/a] /// 通道优先级选模 (R351: 本地/官方通道移除 — 纯远端目录选优)。
+    - L969 [n/a] /// 通道满 (AcquireChannel=null) → 不阻塞主链, 退回目录首模型由其自身失败语义兜底。
+    - L970 [n/a] /// </summary>
+    - L971 [n/a] private ModelCatalogEntry? SelectByChannelPriority(TaskKindHint kind, string intent, int estimatedTokens)
+    - L972 [n/a] {
+    - L973 [n/a] var remoteRanked = Scheduler.RankCandidates(_catalog.Models, kind, estimatedTokens);
+    - L974 [n/a] if (remoteRanked.Count == 0)
+    - L975 [n/a] return null;
+    - L976 [n/a] LastSelectionBasis = $"channel:remote:{remoteRanked[0].Model.Id}";
+    - L977 [n/a] return remoteRanked[0].Model;
+    - L978 [n/a] }
+    - L979 [n/a] 
+    - L980 [n/a] /// <summary>按目录条目真实调用 OpenAI 兼容 chat completions (endpoint/keyEnv 来自目录)</summary>
+    - L981 [n/a] 
+    - L982 [n/a] /// <summary>
+    - L983 [n/a] /// v0.12.0 A2: 请求序列化 — 无 parts 走 source-gen (原路); 任一消息 HasParts → 手写
+    - L984 [n/a] /// Utf8JsonWriter 输出 parts[] 形态 (source-gen 对 union 不友好, 手写 AOT 安全)。
+    - L985 [n/a] /// </summary>
+    - L986 [n/a] internal static string SerializeChatRequest(QueueChatRequest request)
+    - L987 [n/a] {
+    - L988 [n/a] // R456: 工具声明/回灌消息必须走手写 writer (source-gen DTO 不含这两个字段);
+    - L989 [n/a] // 无工具请求仍走 source-gen ⇒ 与旧版逐字节相同 (缓存前缀不受影响)。
+    - L990 [n/a] var manual = !string.IsNullOrEmpty(request.ToolsJson) || request.Messages.Any(m => m.HasParts || m.HasToolPayload);
+    - L991 [n/a] if (!manual)
+    - L992 [n/a] return JsonSerializer.Serialize(request, ModelQueueJsonContext.Default.QueueChatRequest);
+    - L993 [n/a] using var ms = new System.IO.MemoryStream();
+    - L994 [n/a] using (var w = new Utf8JsonWriter(ms))
+    - L995 [n/a] {
+    - L996 [n/a] w.WriteStartObject();
+    - L997 [n/a] w.WriteString("model", request.Model);
+    - L998 [n/a] w.WritePropertyName("messages");
+    - L999 [n/a] w.WriteStartArray();
+    - L1000 [n/a] foreach (var m in request.Messages)
+- `24` src/agent/IndustrialAgentV2.cs:329-329 符号=['_skillDispatcher'] 面={'_skillDispatcher': 'code_mention'}
+  - 依据: 含码面提及或形态-面不齐 (catch-all)
+    - `_skillDispatcher` 形态=other 面=code_mention 他处声明=0 []
+    - L329 [n/a] if (userMessage.Contains("分析") || userMessage.Contains("对比") || userMessage.Contains("设计") ||
+- `25` src/agent.modelqueue/ModelQueueRouter.cs:950-1000 符号=['reasoning_effort', 'response_format'] 面={'reasoning_effort': 'noncode_mention', 'response_format': 'absent'}
+  - 依据: 含码面提及或形态-面不齐 (catch-all)
+    - `reasoning_effort` 形态=snake_case 面=noncode_mention 他处声明=0 []
+    - `response_format` 形态=snake_case 面=absent 他处声明=0 []
+    - L950 [n/a] /// 本地通道可用 → 本地优先 (无余额概念, 天然充足)。
+    - L951 [n/a] /// </summary>
+    - L952 [n/a] private ModelCatalogEntry? SelectAlternativeByBalance(ModelCatalogEntry current, int estimatedTokens)
+    - L953 [n/a] {
+    - L954 [n/a] if (_tokenUsage is null) return null;
+    - L955 [n/a] var candidates = _catalog.Models
+    - L956 [n/a] .Where(m => !string.Equals(m.Id, current.Id, StringComparison.OrdinalIgnoreCase))
+    - L957 [n/a] // v0.11.0 R115 (真缺陷 46): 候选必须 key 已配置 (曾选中 claude-sonnet-4-5 而
+    - L958 [n/a] // ANTHROPIC_KEY 未设 → 切换后调用必败, 比不切更糟)
+    - L959 [n/a] .Where(m => !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(m.ApiKeyEnv)))
+    - L960 [n/a] .Select(m => (Model: m, Est: _tokenUsage!.EstimateBalance(m.Provider, estimatedTokens)))
+    - L961 [n/a] .Where(t => t.Est.Sufficient)
+    - L962 [n/a] .OrderByDescending(t => t.Model.ReasoningScore + t.Model.CodingScore)
+    - L963 [n/a] .ToList();
+    - L964 [n/a] return candidates.Count == 0 ? null : candidates[0].Model;
+    - L965 [n/a] }
+    - L966 [n/a] 
+    - L967 [n/a] /// <summary>
+    - L968 [n/a] /// 通道优先级选模 (R351: 本地/官方通道移除 — 纯远端目录选优)。
+    - L969 [n/a] /// 通道满 (AcquireChannel=null) → 不阻塞主链, 退回目录首模型由其自身失败语义兜底。
+    - L970 [n/a] /// </summary>
+    - L971 [n/a] private ModelCatalogEntry? SelectByChannelPriority(TaskKindHint kind, string intent, int estimatedTokens)
+    - L972 [n/a] {
+    - L973 [n/a] var remoteRanked = Scheduler.RankCandidates(_catalog.Models, kind, estimatedTokens);
+    - L974 [n/a] if (remoteRanked.Count == 0)
+    - L975 [n/a] return null;
+    - L976 [n/a] LastSelectionBasis = $"channel:remote:{remoteRanked[0].Model.Id}";
+    - L977 [n/a] return remoteRanked[0].Model;
+    - L978 [n/a] }
+    - L979 [n/a] 
+    - L980 [n/a] /// <summary>按目录条目真实调用 OpenAI 兼容 chat completions (endpoint/keyEnv 来自目录)</summary>
+    - L981 [n/a] 
+    - L982 [n/a] /// <summary>
+    - L983 [n/a] /// v0.12.0 A2: 请求序列化 — 无 parts 走 source-gen (原路); 任一消息 HasParts → 手写
+    - L984 [n/a] /// Utf8JsonWriter 输出 parts[] 形态 (source-gen 对 union 不友好, 手写 AOT 安全)。
+    - L985 [n/a] /// </summary>
+    - L986 [n/a] internal static string SerializeChatRequest(QueueChatRequest request)
+    - L987 [n/a] {
+    - L988 [n/a] // R456: 工具声明/回灌消息必须走手写 writer (source-gen DTO 不含这两个字段);
+    - L989 [n/a] // 无工具请求仍走 source-gen ⇒ 与旧版逐字节相同 (缓存前缀不受影响)。
+    - L990 [n/a] var manual = !string.IsNullOrEmpty(request.ToolsJson) || request.Messages.Any(m => m.HasParts || m.HasToolPayload);
+    - L991 [n/a] if (!manual)
+    - L992 [n/a] return JsonSerializer.Serialize(request, ModelQueueJsonContext.Default.QueueChatRequest);
+    - L993 [n/a] using var ms = new System.IO.MemoryStream();
+    - L994 [n/a] using (var w = new Utf8JsonWriter(ms))
+    - L995 [n/a] {
+    - L996 [n/a] w.WriteStartObject();
+    - L997 [n/a] w.WriteString("model", request.Model);
+    - L998 [n/a] w.WritePropertyName("messages");
+    - L999 [n/a] w.WriteStartArray();
+    - L1000 [n/a] foreach (var m in request.Messages)
+- `289` ContextAssembler.cs:40-40 符号=['_resultCache'] 面={'_resultCache': 'code_mention'}
+  - 依据: 含码面提及或形态-面不齐 (catch-all)
+    - `_resultCache` 形态=other 面=code_mention 他处声明=0 []
+    - L40 [n/a] private long _totalAssemblies;
+- `34` SegmentKind.cs:315-315 符号=['InlineCode', 'PlainText'] 面={'InlineCode': 'code_mention', 'PlainText': 'code_mention'}
+  - 依据: 含码面提及或形态-面不齐 (catch-all)
+    - `InlineCode` 形态=other 面=code_mention 他处声明=0 []
+    - `PlainText` 形态=other 面=code_mention 他处声明=0 []
+    - L315 [code_identifier] Kind = SegmentKind.InlineCode,
+- `102` SkillDispatcher.cs:107-107 符号=['KnowledgeHint'] 面={'KnowledgeHint': 'code_mention'}
+  - 依据: 含码面提及或形态-面不齐 (catch-all)
+    - `KnowledgeHint` 形态=other 面=code_mention 他处声明=0 []
+    - L107 [code_identifier] if (top.Skill.Type == SkillType.KnowledgeHint)
+- `20` PlanRunner.cs:411-411 符号=['_gate'] 面={'_gate': 'code_mention'}
+  - 依据: 含码面提及或形态-面不齐 (catch-all)
+    - `_gate` 形态=other 面=code_mention 他处声明=0 []
+    - L411 [n/a] public LocalFirstRun? StartLocalFirst(TaskPlan plan, LocalNodeContext ctx, CancellationToken ct = default)
+- `35` tasks.py:437-437 符号=['HARD_INPUTS'] 面={'HARD_INPUTS': 'code_mention'}
+  - 依据: 含码面提及或形态-面不齐 (catch-all)
+    - `HARD_INPUTS` 形态=SCREAMING_SNAKE 面=code_mention 他处声明=0 []
+    - L437 [n/a] 

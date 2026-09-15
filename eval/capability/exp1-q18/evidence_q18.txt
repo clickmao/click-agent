@@ -1,0 +1,24 @@
+EXP1-Q18 证据 (自检循环, 零 dotnet, 零轮号占用)
+============================================================
+语料: 冻结快照 /tmp/q18_corpus  fingerprint bcde4dfc1bcc5939c63bc60148749a2cf0e73f4c046fc953f202dacb1cffdc6
+双臂: eval/capability/q18a-v260 (v2.6.0 对照) / q18a-v270 (v2.7.0 治疗)
+
+[达标] C1_单变量  :: 预注册: 恰好 2 行 (版本常量 + 白名单); 实测 changed_line_count=2
+[达标] C2_语义零回归  :: 预注册文本只写了剥离 probe_version; 实测还须剥离 2 个墙钟字段 ⇒ 判据**收窄**(事后白名单), 已单列 checks_posthoc
+[越线] C4_行覆盖  :: 预注册预测 921, 实测 present=887 / nonempty=488 ⇒ **预注册判据被证伪**: 预测模型错(把「未早退」当成「有 face」的充分条件; 实际 presence 由「行内确有候选符号」等前提决定); relocated 0 命中与预测一致。**字段存在性(887/9
+[达标] C3_归档键面  :: 预注册预测 24->25; 实测 24->25 ⇒ 结构性命中; 绝对数因语料漂移(见 C5 note)与登记值不同属预期
+[达标] C5_可重放性(结构性)  :: 结构性结论(4->2 + 逐桶可复算)成立; 预注册并列的**登记数值面**子句另立 C5b 单判
+[越线] C5b_登记数值面  :: ⇒ 数值面**证伪**: 冻结语料行数 997 ≠ 登记券 928 (同机并行执行体推进 R462 新增源码/文档所致) ⇒ 登记数值与冻结语料读数**不可并列**; 该子句按证伪入档, 不作降级解释
+[达标] C9_负控成对  :: 对照臂 = 同语料 + 旧器具 ⇒ 2 枚面字段仍判 ARCHIVE_FACE_FIELD_ABSENT; 两臂仅器具版本一个变量
+[越线] C6_分类位移(预注册数值面)  :: 预注册写 omission 9->8, 实测 9->**7** ⇒ 数值面**证伪**(推导错误: 键一旦进白名单即**构造性**移出 omission 类, 不可能留在 omission); 修正后的正确分布单列 C6b
+[达标] C6b_分类位移(事后修正)  :: 事后修正判据: v2.7.0 归档 => archived 25 / omission 7 / branch_unhit 3, Σ=35 守恒, omitted_fields = [block_id, path_exists, pos_end, pos_start, raw, relocated_l
+[达标] C7_发现面零变化  :: 同语料双臂 findings 逐键相同 ⇒ 本轮 diff 未引入/未消除任何 finding; 与 Q16 登记值的差异属语料漂移, 单列信息项
+[达标] C8_产物零回归  :: q10 冻结件 sha 逐位不变; 新增产物全部落在 exp1-q18/ 与 q18a-*/ 命名空间
+
+关键读数:
+  n_symbol_faces: registered 622 / replayed 622 (equal=True)
+  symbol_face_rungs: equal=True
+  不可重放 对照 ['n_symbol_faces', 'stale_like_n', 'symbol_face_rungs', 'symbol_occurrences'] -> 治疗 ['stale_like_n', 'symbol_occurrences']
+  语料漂移: 行数 928 -> 997; face_rungs Σ 575 -> 622
+
+n_fail=3 n_waived=0 exit=2

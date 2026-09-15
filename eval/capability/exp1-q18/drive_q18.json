@@ -1,0 +1,44 @@
+{
+  "driver": "drive_q18.py v1.0",
+  "corpus": "/tmp/q18_corpus",
+  "arms": {
+    "v260": {
+      "dir": "eval/capability/q18a-v260",
+      "probe": "probe_v260.py",
+      "probe_sha256": "e90c7d7ff15eb6485ab50adc9aef7fa5ba7695c91dd2e5b88e2038ab9538bb2b",
+      "probe_sha_match_src": true,
+      "probe_rc": 0,
+      "attribution_sha256": "d79e191df97a50c57aa0e6e5157b37eaa850a90e233595b0e1bb1c4f955eb2e8",
+      "citations_sha256": "cadbc42ebc73590b0ccf8ce5a787d8182aab24e50f039b38577b4e5ff581cedb",
+      "citations_bytes": 764526,
+      "kind_table_adapt": "one_line_probe_name",
+      "kind_rc": 0,
+      "weak_kind_table_sha256": "6beb6159734d03e03b1dcb7b715dcc84f3582c4509af048c291e47ed38fbd5a4",
+      "guard_rc": 2,
+      "guard_tail": [
+        "      {\"token\": \"weak\", \"domains\": [\"EDGE_STRONG=strong\", \"EDGE_WEAK=weak\", \"all\"], \"keys\": [\"n_edges_strong_with_weak_symbols\", \"n_weak_edges\", \"n_weak_symbols_classified\", \"weak_symbol_kind_counts\"]}",
+        "  C5 ungated_axes=['citation', 'continuation', 'symbol'] gated=['edge'] det=True",
+        "TOTAL verdict=INVARIANT_VIOLATED exit=2 artifacts=1 ground_truth weak_edge_symbol_slots=90 two_paths_agree=True"
+      ]
+    },
+    "v270": {
+      "dir": "eval/capability/q18a-v270",
+      "probe": "probe_v270.py",
+      "probe_sha256": "fe8dc0d7e3d3f75c8b66516ceeec026872f3a16942ad175891f4e76aa45d92b3",
+      "probe_sha_match_src": true,
+      "probe_rc": 0,
+      "attribution_sha256": "5243abd906fc300db70fca1b6e627ef8971fbb8c52547766e8a7b68fcac97688",
+      "citations_sha256": "736d24b8898e458e3aad50a2236c93942bf20f850343fddcf80fde38d84b635c",
+      "citations_bytes": 802865,
+      "kind_table_adapt": "one_line_probe_name",
+      "kind_rc": 1,
+      "weak_kind_table_sha256": null,
+      "guard_rc": 2,
+      "guard_tail": [
+        "      {\"token\": \"weak\", \"domains\": [\"EDGE_STRONG=strong\", \"EDGE_WEAK=weak\", \"all\"], \"keys\": [\"n_edges_strong_with_weak_symbols\", \"n_weak_edges\", \"n_weak_symbols_classified\", \"weak_symbol_kind_counts\"]}",
+        "  C5 ungated_axes=['citation', 'continuation', 'symbol'] gated=['edge'] det=True",
+        "TOTAL verdict=INVARIANT_VIOLATED exit=2 artifacts=1 ground_truth weak_edge_symbol_slots=90 two_paths_agree=True"
+      ]
+    }
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "cycle": "EXP1-Q18",
+  "prereg_version": "1.0",
+  "written_before_measurement": true,
+  "title": "落盘白名单缺字段修复 (承 Q17 §R.3 归因①) + 独立重放性证明",
+  "instrument": "eval/capability/exp1-q18/probe_v270.py (由 v2.6.0 派生, 单变量)",
+  "single_variable": [
+    "PROBE_VERSION 2.6.0 -> 2.7.0",
+    "citations.jsonl 落盘白名单元组追加 \"symbol_faces\" / \"relocated_symbol_faces\""
+  ],
+  "discipline": "独立命名空间分桶 (exp1-q18/); exp1-q10/ 的 probe 与归档一字不动; 零 dotnet; 不占主线轮号",
+  "checks": [
+    {
+      "id": "C1_单变量",
+      "claim": "v2.7.0 与 v2.6.0 逐行 diff 恰好 2 行 (版本常量行 + 白名单行), 其余逐字不变",
+      "predicted": {"changed_line_count": 2},
+      "evidence": "build_q18.json.checks"
+    },
+    {
+      "id": "C2_语义零回归",
+      "claim": "v2.7.0 的 stdout JSON 在移除 probe_version 字段后与 v2.6.0 stdout **逐位相等** (改动只在落盘面, 不触碰任何判决/计数)",
+      "predicted": {"equal_after_version_strip": true},
+      "evidence": "zeroregress_q18.json"
+    },
+    {
+      "id": "C3_归档键面",
+      "claim": "新 citations.jsonl 键并集 A: 24 -> 25 (仅 symbol_faces 真正落地; relocated_symbol_faces 的生产者分支在本语料零命中, 故落 C_dump_producer_branch_unhit 而非 A)",
+      "predicted": {"A_before": 24, "A_after": 25, "keys_added": ["symbol_faces"]},
+      "evidence": "verdict_q18.json.keyset"
+    },
+    {
+      "id": "C4_行覆盖",
+      "claim": "携带 symbol_faces 的行数 == 928 - 7 == 921 (7 = Q17 §R.3 实测的 face 赋值前早退行数); relocated_symbol_faces 行数 == 0",
+      "predicted": {"rows_with_symbol_faces": 921, "rows_with_relocated_symbol_faces": 0},
+      "evidence": "verdict_q18.json.field_presence"
+    },
+    {
+      "id": "C5_可重放性",
+      "claim": "attribution_q10.json 的 not_replayable 4 -> 2; 剩余恰为 {stale_like_n: SELF_REFERENTIAL_CROSS_ARTIFACT, symbol_occurrences: PARAM_SCOPE}; symbol_face_rungs 逐桶重放 == 登记 {absent 79, n/a_kind 1, declared_member 84, noncode_mention 31, code_mention 64, declared_type 316} (Σ 575); n_symbol_faces 重放 == 575",
+      "predicted": {
+        "not_replayable_before": 4,
+        "not_replayable_after": 2,
+        "remaining_typed": {"stale_like_n": "SELF_REFERENTIAL_CROSS_ARTIFACT", "symbol_occurrences": "PARAM_SCOPE"}
+      },
+      "fallback_C5b": "若逐桶重放与登记不等, 差额必须可归因到那 7 行缺字段行 (残差 <= 7 行贡献) 并 typed 为 ARCHIVE_FACE_FIELD_ABSENT 残留; 不得静默放行, 也不得改登记值凑数",
+      "evidence": "verdict_q18_replay.json"
+    },
+    {
+      "id": "C6_分类位移",
+      "claim": "Q17 归因分类: archived 24->25, omission 9->8, branch_unhit 2->3, dead_entry 0, foreign 0; Σ=35 守恒",
+      "predicted": {"archived": 25, "omission": 8, "branch_unhit": 3, "dead_entry": 0, "foreign": 0, "sum": 35},
+      "evidence": "verdict_q18.json.provenance"
+    },
+    {
+      "id": "C7_发现面零变化",
+      "claim": "unit_axis_guard 在**新归档**上的 findings 集合与此前 (旧归档) 读数同集同数 (改动不新增也不消除任何 finding)",
+      "predicted": {"findings_equal_to_baseline": true},
+      "evidence": "verdict_q18.json.findings_ab"
+    },
+    {
+      "id": "C8_产物零回归",
+      "claim": "exp1-q10/probe_v260.py 与 exp1-q10/citations.jsonl 的 sha256 与改动前**逐位相同**; src/ / skills/ / docs/verification-registry.json / eval/rover/ 未改",
+      "evidence": "build_q18.json.src_sha256 + zeroregress_q18.json.q10_shas"
+    },
+    {
+      "id": "C9_负控成对",
+      "claim": "同一复算器喂**旧归档**仍须报 ARCHIVE_FACE_FIELD_ABSENT (n=2) ⇒ 复算器非空心; 与 C5 组成正/负两臂",
+      "predicted": {"old_archive_not_replayable": ["n_symbol_faces", "symbol_face_rungs"]},
+      "evidence": "verdict_q18_replay_old.json"
+    }
+  ],
+  "verdict_form": "三态 (达标 / 越线 / 弃权); 缺字段或无法归属记 n/a 并单列计数, 不记 0",
+  "honest_boundaries_predeclared": [
+    "本修复只覆盖**被已登记读数派生链消费**的 2 枚字段; Q17 报告的 9 枚漏字段中其余 7 枚仍不落盘 (修复范围由证据驱动, 非一次补全)",
+    "补字段后新归档与原归档**不可直接并列比较** (键面变化); 本轮用独立命名空间分桶, 旧读数作废声明见附录",
+    "relocated_symbol_faces 在本语料为**分支未命中**, 本轮不产生正例; 其可重放性**未被证明**, 只登记为待触发口径",
+    "本探针只读文件, 不改产品源码, 不跑 dotnet, 不占轮号"
+  ]
+}

@@ -1,0 +1,726 @@
+{
+ "schema": "exp1-q16-verdict/1",
+ "instrument": "unit_axis_guard.py v1.3 (EXP1-Q16)",
+ "src": "eval/capability/q18a-v270/probe_v270.py",
+ "src_sha256_12": "fe8dc0d7e3d3",
+ "cites": "eval/capability/q18a-v270/citations.jsonl",
+ "artifacts": {
+  "attribution_q10.json": {
+   "instrument": "unit_axis_guard.py v1.3 (EXP1-Q16)",
+   "src": "eval/capability/q18a-v270/probe_v270.py",
+   "cites": "eval/capability/q18a-v270/citations.jsonl",
+   "emit": "eval/capability/q18a-v270/attribution_q10.json",
+   "src_sha256_12": "fe8dc0d7e3d3",
+   "cites_sha256_12": "736d24b8898e",
+   "archive_map": {
+    "citations": "eval/capability/q18a-v270/citations.jsonl",
+    "cites": "eval/capability/q18a-v270/citations.jsonl",
+    "continuations": "eval/capability/q18a-v270/continuations.jsonl",
+    "conts": "eval/capability/q18a-v270/continuations.jsonl",
+    "judged": "eval/capability/q18a-v270/citations.jsonl",
+    "judged_cont": "eval/capability/q18a-v270/continuations.jsonl"
+   },
+   "archive_map_source": "derived-from-write-block",
+   "alias_inherited": [
+    "cites",
+    "conts"
+   ],
+   "n_row_archive": {
+    "citations.jsonl": 997,
+    "continuations.jsonl": 70
+   },
+   "C1_replay": {
+    "checked": 12,
+    "n_boundary": 0,
+    "all_equal": true,
+    "n_self_referential": 0,
+    "hollow_replay": [],
+    "rows": [
+     {
+      "emitted_key": "citation_verdicts",
+      "source_name": "verdicts",
+      "reduce": null,
+      "registered": {
+       "ok": 793,
+       "symbol_absent": 76,
+       "waived": 71,
+       "stale_lines": 4,
+       "retired": 21,
+       "stale_path": 8
+      },
+      "replayed": {
+       "ok": 793,
+       "symbol_absent": 76,
+       "waived": 71,
+       "stale_lines": 4,
+       "retired": 21,
+       "stale_path": 8
+      },
+      "equal": true,
+      "self_referential": false
+     },
+     {
+      "emitted_key": "symbol_face_rungs",
+      "source_name": "face_rungs",
+      "reduce": null,
+      "registered": {
+       "absent": 112,
+       "n/a_kind": 1,
+       "declared_member": 84,
+       "noncode_mention": 40,
+       "code_mention": 69,
+       "declared_type": 316
+      },
+      "replayed": {
+       "absent": 112,
+       "n/a_kind": 1,
+       "declared_member": 84,
+       "noncode_mention": 40,
+       "code_mention": 69,
+       "declared_type": 316
+      },
+      "equal": true,
+      "self_referential": false
+     },
+     {
+      "emitted_key": "n_symbol_faces",
+      "source_name": "face_rungs",
+      "reduce": "sum_values",
+      "registered": 622,
+      "replayed": 622,
+      "equal": true,
+      "self_referential": false
+     },
+     {
+      "emitted_key": "edge_strength_counts",
+      "source_name": "edge_counts",
+      "reduce": null,
+      "registered": {
+       "waived": 491,
+       "broken": 44,
+       "strong": 365,
+       "weak": 73
+      },
+      "replayed": {
+       "waived": 491,
+       "broken": 44,
+       "strong": 365,
+       "weak": 73
+      },
+      "equal": true,
+      "self_referential": false
+     },
+     {
+      "emitted_key": "edge_sublevel_counts",
+      "source_name": "edge_subs",
+      "reduce": null,
+      "registered": {
+       "weak_code": 50,
+       "weak_noncode": 23
+      },
+      "replayed": {
+       "weak_code": 50,
+       "weak_noncode": 23
+      },
+      "equal": true,
+      "self_referential": false
+     },
+     {
+      "emitted_key": "edge_kind_counts",
+      "source_name": "kind_counts",
+      "reduce": null,
+      "registered": {
+       "cross_file": 33,
+       "named_fact": 13,
+       "other": 24,
+       "comment_only": 3
+      },
+      "replayed": {
+       "cross_file": 33,
+       "named_fact": 13,
+       "other": 24,
+       "comment_only": 3
+      },
+      "equal": true,
+      "self_referential": false
+     },
+     {
+      "emitted_key": "weak_symbol_kind_counts",
+      "source_name": "kind_sym_counts",
+      "reduce": null,
+      "registered": {
+       "other": 527,
+       "comment_only": 6,
+       "cross_file": 58,
+       "named_fact": 30
+      },
+      "replayed": {
+       "other": 527,
+       "comment_only": 6,
+       "cross_file": 58,
+       "named_fact": 30
+      },
+      "equal": true,
+      "self_referential": false
+     },
+     {
+      "emitted_key": "mixed_strong_symbol_kind_counts",
+      "source_name": "mixed_strong_kind_counts",
+      "reduce": null,
+      "registered": {
+       "comment_only": 2,
+       "other": 5,
+       "named_fact": 6,
+       "cross_file": 5
+      },
+      "replayed": {
+       "comment_only": 2,
+       "other": 5,
+       "named_fact": 6,
+       "cross_file": 5
+      },
+      "equal": true,
+      "self_referential": false
+     },
+     {
+      "emitted_key": "n_mixed_strong_symbols_classified",
+      "source_name": "mixed_strong_kind_counts",
+      "reduce": "sum_values",
+      "registered": 18,
+      "replayed": 18,
+      "equal": true,
+      "self_referential": false
+     },
+     {
+      "emitted_key": "n_weak_edges",
+      "source_name": "n_weak_edges",
+      "reduce": null,
+      "registered": 73,
+      "replayed": 73,
+      "equal": true,
+      "self_referential": false
+     },
+     {
+      "emitted_key": "n_weak_symbols_classified",
+      "source_name": "kind_sym_counts",
+      "reduce": "sum_values",
+      "registered": 621,
+      "replayed": 621,
+      "equal": true,
+      "self_referential": false
+     },
+     {
+      "emitted_key": "n_edges_strong_with_weak_symbols",
+      "source_name": "mixed_weak_in_strong",
+      "reduce": null,
+      "registered": 12,
+      "replayed": 12,
+      "equal": true,
+      "self_referential": false
+     }
+    ],
+    "mismatch": []
+   },
+   "unit_axes_present": [
+    "citation",
+    "continuation",
+    "edge",
+    "symbol"
+   ],
+   "domains_present": [
+    "EDGE_STRONG=strong",
+    "EDGE_STRONG=strong+rung=weak_rungs",
+    "EDGE_WEAK=weak",
+    "all",
+    "underived"
+   ],
+   "keys": {
+    "checks_posthoc": {
+     "axis": null,
+     "axis_how": "none",
+     "domain": "underived",
+     "provenance": "underived",
+     "value": {
+      "instrument_gap_v4": "v2.3.0 补**续引 `[:NNN]` 形态**建模 (v2.2.0 及以前: 续引既不进 CITE_RE 也无归属规则 ⇒ 本档 L80/L81/L82/L83/L85/L89/L90 的多条续引**从未被检查** = 保守漏检)。 归属四级 T1~T4: T1 只用**反引号包裹**的 `Stem.Member`, 且**前窗截断到上一条完整引用之后** (反例: 若把路径文本自身纳入前窗, `.../ContextAssembler.cs` 会被当成主干候选 ⇒ 与 `Workspace` 主干冲突 ⇒ 正确锚点被误判弃权); T3 的「块」= 连续非空行, 且**块内前序路径集合必须唯一**。 续引判定只查路径+行号 (符号仍归锚点引用, 不重复判) ⇒ 该子探针不放大符号启发式的假阳性。",
+      "instrument_defect_v1": "v1.0.0 把无目录裸文件名判为 stale_path (389 条, 其中多数实为'无法解析' 而非'文件已删') ⇒ v2.0.0 引入三级归属: 裸名唯一候选才解析, 0/多候选一律弃权单列, 不判红 (照 R418 纪律)",
+      "fixture_defect_v1": "夹具缺陷(非仪器缺陷): selftest 首版夹具用了 `Nope`/`Alpha` 作符号, 但仪器采符号的启发式要求**首字符之后含大写或含下划线** ⇒ 符号压根没被采 ⇒ 夹具判红而仪器无辜。与「夹具派生字段单位错」同族: 夹具自身出错时, 全绿/全红都不承载任何关于被测对象的结论; 夹具符号必须先过与仪器同一套采集规则。",
+      "instrument_defect_v3": "v2.2.0 修两处**测量层**缺陷: (a) 符号归属原为**整行**——一行内多条引用时, 每条引用都被拿整行符号去验 ⇒ 多引用行产出成片假 symbol_absent (实测本档 L62/L406 一行三接口互相串台); 改为逐引用就近窗口 (上一条引用结束→本条起点), 单引用行 = 整行 ⇒ 与旧版逐位兼容。(b) 原判据'路径必须存在'对**显式登记退役**的引用误杀 (R409 同族: 标记出现≠误用) ⇒ 新增 retired 判定: 引用两侧 60 字符内出现退役标记且不得越过相邻引用, **且仅当路径确实不存在**才生效; 无标记的死引用仍判 stale_path (反向控制)。",
+      "instrument_defect_v2": "v2.0.0 把'路径失效'一律判 stale_path, 未区分**已删除**与**树内搬家** (实测本仓 src/agent.embedcpu/ 等 21 个项目目录已重排, 同名文件多在别处) ⇒ v2.1.0 加第四级 relocated: 同名唯一候选⇒按候选文件核对行号/符号事实; 0 候选才是 stale_path(真删); 多候选⇒relocated 且不做事实判定"
+     },
+     "source": null
+    },
+    "citation_verdicts": {
+     "axis": "citation",
+     "axis_how": "name",
+     "domain": "all",
+     "provenance": "replayed",
+     "value": {
+      "ok": 793,
+      "symbol_absent": 76,
+      "waived": 71,
+      "stale_lines": 4,
+      "retired": 21,
+      "stale_path": 8
+     },
+     "source": "verdicts"
+    },
+    "continuation_n_live": {
+     "axis": "continuation",
+     "axis_how": "name",
+     "domain": "underived",
+     "provenance": "underived",
+     "value": 69,
+     "source": null
+    },
+    "corpus": {
+     "axis": null,
+     "axis_how": "none",
+     "domain": "underived",
+     "provenance": "underived",
+     "value": {
+      "n_docs": 208,
+      "n_inputs_fingerprinted": 638
+     },
+     "source": null
+    },
+    "criteria_pre_registered": {
+     "axis": null,
+     "axis_how": "none",
+     "domain": "underived",
+     "provenance": "underived",
+     "value": {
+      "G1_instrument_selfproof": "正控符号出现数>0 ∧ 负控符号出现数==0 ∧ 两者结论不同",
+      "G2_determinism": "两跑读数逐位相同 ∨ 差异文档的被引文件输入指纹已变 (可归因)",
+      "G3_waiver_gate": "不可解析引用 (裸名 0/多候选 / 语料外 / 读失败) 弃权单列, 不判红",
+      "G4_premise_refutation": "计划点名类型在当前 src/*.cs 出现次数==0 ⇒ '复用既有契约' 前提为假",
+      "G5_nontrivial": "三个目标族的引用文档集合不得全部相同",
+      "G6_cont_nontrivial": "续引数==0 ∨ 续引归属 tier 分布>=2 类 (全同一 tier ⇒ 子探针无判别力)",
+      "G7_ladder_nontrivial": "符号存在性阶梯在真实语料上 >=2 级分布 (恒同一级 ⇒ 该轴无判别力 ⇒ 先查仪器再谈被测)",
+      "G8_edge_levels_nontrivial_and_conserved": "边强档位 (非弃权) >=2 类 ∧ 边强计数之和 == live 代码引用数 (恒同一档 ⇒ 该轴无判别力; 和不等 ⇒ 归属漏项)"
+     },
+     "source": null
+    },
+    "decision_rules": {
+     "axis": null,
+     "axis_how": "none",
+     "domain": "underived",
+     "provenance": "underived",
+     "value": {
+      "D1_versionable_carrier": "若 capability-id+args 形态契约数 == 0 ⇒ Q2 的(a)/(b) 均无既有载体, 只能随**新建**契约定义 schema_version",
+      "D2_manifest_loader": "若'外部文件驱动注册'先例数 == 0 ⇒ manifest 形态(b) 需新建加载器(反射受限) ⇒ 不推荐"
+     },
+     "source": null
+    },
+    "edge_kind_counts": {
+     "axis": "edge",
+     "axis_how": "derived",
+     "domain": "all",
+     "provenance": "replayed",
+     "value": {
+      "cross_file": 33,
+      "named_fact": 13,
+      "other": 24,
+      "comment_only": 3
+     },
+     "source": "kind_counts"
+    },
+    "edge_kind_definitions": {
+     "axis": "edge",
+     "axis_how": "name",
+     "domain": "underived",
+     "provenance": "underived",
+     "value": {
+      "cross_file": "存在弱符号在树内他处有声明 (declared_type|declared_member)",
+      "named_fact": "名字形态(snake/SCREAMING) ∧ 非码面 ∧ 他处零声明",
+      "comment_only": "非名字形态 ∧ 非码面 ∧ 他处零声明",
+      "other": "含码面提及或形态-面不齐 (catch-all, 不判红)",
+      "precedence": "cross_file > named_fact > comment_only > other",
+      "granularity": "符号级与边级两计数分开, 互不换算"
+     },
+     "source": null
+    },
+    "edge_strength_counts": {
+     "axis": "edge",
+     "axis_how": "derived",
+     "domain": "all",
+     "provenance": "replayed",
+     "value": {
+      "waived": 491,
+      "broken": 44,
+      "strong": 365,
+      "weak": 73
+     },
+     "source": "edge_counts"
+    },
+    "edge_strength_criteria": {
+     "axis": "edge",
+     "axis_how": "name",
+     "domain": "underived",
+     "provenance": "underived",
+     "value": {
+      "strong": "至少一枚被引符号在该文件里有声明 (declared_type/declared_member)",
+      "weak": "无声明但至少一枚符号在该文件里出现 (*_mention)",
+      "broken": "全部符号在该文件查无",
+      "waived": "引用未解析/不可剥离/本身 waived ⇒ 弃权, 不进分母",
+      "aggregation": "strongest-wins (混边内弱/断符号数单独计数, 不丢信息)"
+     },
+     "source": null
+    },
+    "edge_sublevel_counts": {
+     "axis": "edge",
+     "axis_how": "derived",
+     "domain": "all",
+     "provenance": "replayed",
+     "value": {
+      "weak_code": 50,
+      "weak_noncode": 23
+     },
+     "source": "edge_subs"
+    },
+    "edge_weak_n": {
+     "axis": "edge",
+     "axis_how": "name",
+     "domain": "underived",
+     "provenance": "underived",
+     "value": 73,
+     "source": null
+    },
+    "mixed_strong_symbol_kind_counts": {
+     "axis": "symbol",
+     "axis_how": "derived",
+     "domain": "EDGE_STRONG=strong+rung=weak_rungs",
+     "provenance": "replayed",
+     "value": {
+      "comment_only": 2,
+      "other": 5,
+      "named_fact": 6,
+      "cross_file": 5
+     },
+     "source": "mixed_strong_kind_counts"
+    },
+    "n_edges_strong_with_weak_symbols": {
+     "axis": "edge",
+     "axis_how": "name",
+     "domain": "EDGE_STRONG=strong",
+     "provenance": "independent",
+     "value": 12,
+     "source": "mixed_weak_in_strong"
+    },
+    "n_mixed_strong_symbols_classified": {
+     "axis": "symbol",
+     "axis_how": "derived",
+     "domain": "EDGE_STRONG=strong+rung=weak_rungs",
+     "provenance": "self_derived",
+     "of": "mixed_strong_kind_counts",
+     "value": 18,
+     "source": "mixed_strong_kind_counts"
+    },
+    "n_symbol_faces": {
+     "axis": "symbol",
+     "axis_how": "name",
+     "domain": "all",
+     "provenance": "self_derived",
+     "of": "face_rungs",
+     "value": 622,
+     "source": "face_rungs"
+    },
+    "n_weak_edges": {
+     "axis": "edge",
+     "axis_how": "name",
+     "domain": "EDGE_WEAK=weak",
+     "provenance": "independent",
+     "value": 73,
+     "source": "n_weak_edges"
+    },
+    "n_weak_symbols_classified": {
+     "axis": "symbol",
+     "axis_how": "derived",
+     "domain": "all",
+     "provenance": "self_derived",
+     "of": "kind_sym_counts",
+     "value": 621,
+     "source": "kind_sym_counts"
+    },
+    "q2_decision_data": {
+     "axis": null,
+     "axis_how": "none",
+     "domain": "underived",
+     "provenance": "underived",
+     "value": {
+      "premise_reuse_existing_contract_holds": false,
+      "target_symbol_counts": {
+       "ICapabilityPlugin": 0,
+       "PluginExecutionResult": 0,
+       "CapabilityPluginRegistry": 0
+      },
+      "target_symbol_files": {
+       "ICapabilityPlugin": [],
+       "PluginExecutionResult": [],
+       "CapabilityPluginRegistry": []
+      },
+      "n_versionable_contracts": 0,
+      "versionable_contracts": [],
+      "n_contracts_with_version_field": 0,
+      "contracts_with_version_field": [],
+      "n_manifest_like_registration_precedents": 0,
+      "manifest_like_precedents": [],
+      "n_di_registrations": 54,
+      "d1_versionable_carrier": "no_existing_carrier",
+      "d2_manifest_loader": "needs_new_loader"
+     },
+     "source": null
+    },
+    "relocated_n": {
+     "axis": null,
+     "axis_how": "none",
+     "domain": "underived",
+     "provenance": "underived",
+     "value": 0,
+     "source": null
+    },
+    "retired_n": {
+     "axis": null,
+     "axis_how": "none",
+     "domain": "underived",
+     "provenance": "underived",
+     "value": 21,
+     "source": null
+    },
+    "stale_like_n": {
+     "axis": null,
+     "axis_how": "none",
+     "domain": "all",
+     "provenance": "independent",
+     "value": 88,
+     "source": "stale_like"
+    },
+    "symbol_face_rungs": {
+     "axis": "symbol",
+     "axis_how": "name",
+     "domain": "all",
+     "provenance": "replayed",
+     "value": {
+      "absent": 112,
+      "n/a_kind": 1,
+      "declared_member": 84,
+      "noncode_mention": 40,
+      "code_mention": 69,
+      "declared_type": 316
+     },
+     "source": "face_rungs"
+    },
+    "symbol_occurrences": {
+     "axis": "symbol",
+     "axis_how": "name",
+     "domain": "all",
+     "provenance": "replayed",
+     "value": {
+      "IResponseSegmentPlugin": 24,
+      "CapabilityScanner": 12,
+      "PythonArtifactPlugin": 19,
+      "NoSuchTypeZzq9Xx": 0,
+      "RegistryThatNeverExistedZq": 0,
+      "ICapabilityPlugin": 0,
+      "PluginExecutionResult": 0,
+      "CapabilityPluginRegistry": 0
+     },
+     "source": "counts"
+    },
+    "weak_symbol_kind_counts": {
+     "axis": "symbol",
+     "axis_how": "derived",
+     "domain": "all",
+     "provenance": "replayed",
+     "value": {
+      "other": 527,
+      "comment_only": 6,
+      "cross_file": 58,
+      "named_fact": 30
+     },
+     "source": "kind_sym_counts"
+    }
+   },
+   "C5_gates": [
+    {
+     "gate": "kind_conserved",
+     "buckets": "kind_counts",
+     "denominator": "n_weak_edges",
+     "denominator_provenance": "independent",
+     "axis": "edge",
+     "emitted": true
+    }
+   ],
+   "C5_ungated_axes": [
+    "citation",
+    "continuation",
+    "symbol"
+   ],
+   "C5_gated_axes": [
+    "edge"
+   ],
+   "qualifier_domains": {
+    "mixed_strong": [
+     "EDGE_STRONG=strong+rung=weak_rungs"
+    ],
+    "strong": [
+     "EDGE_STRONG=strong",
+     "EDGE_STRONG=strong+rung=weak_rungs"
+    ],
+    "weak": [
+     "EDGE_STRONG=strong",
+     "EDGE_WEAK=weak",
+     "all"
+    ]
+   },
+   "n_ratio_fields": 0,
+   "axis_underived": [
+    "checks_posthoc",
+    "corpus",
+    "criteria_pre_registered",
+    "decision_rules",
+    "q2_decision_data",
+    "relocated_n",
+    "retired_n"
+   ],
+   "underived_emitted_keys": [
+    "continuation_n_live",
+    "edge_kind_definitions",
+    "edge_strength_criteria",
+    "edge_weak_n"
+   ],
+   "name_unresolved": [
+    "checks_posthoc",
+    "continuation_citations",
+    "continuation_n_live",
+    "corpus",
+    "criteria_pre_registered",
+    "decision_rules",
+    "edge_kind_definitions",
+    "edge_strength_criteria",
+    "edge_weak_list",
+    "edge_weak_n",
+    "evidence_level",
+    "gate_pass",
+    "honest_boundaries",
+    "probe",
+    "probe_version",
+    "q2_decision_data",
+    "relocated_citations",
+    "relocated_n",
+    "repo",
+    "retired_citations",
+    "retired_n",
+    "run_finished_epoch",
+    "run_started_epoch",
+    "stale_citations",
+    "target_doc",
+    "target_question"
+   ],
+   "not_replayable": [
+    "stale_like_n",
+    "symbol_occurrences"
+   ],
+   "not_replayable_typed": {
+    "stale_like_n": "SELF_REFERENTIAL_CROSS_ARTIFACT",
+    "symbol_occurrences": "PARAM_SCOPE"
+   },
+   "not_replayable_detail": {},
+   "C11_unreplayable_reason": {
+    "n_skipped": 2,
+    "reasons": {
+     "symbol_occurrences": "PARAM_SCOPE",
+     "stale_like_n": "SELF_REFERENTIAL_CROSS_ARTIFACT"
+    },
+    "closed_set": [
+     "SELF_REFERENTIAL_CROSS_ARTIFACT",
+     "PARAM_SCOPE",
+     "POPULATION_NOT_ARCHIVED",
+     "LOOP_SHAPE_UNMODELED",
+     "ARCHIVE_FACE_FIELD_ABSENT"
+    ],
+    "all_typed": true,
+    "n_distinct_reasons": 2
+   },
+   "findings": {
+    "C3_domain_label_mismatch": [
+     {
+      "key": "weak_symbol_kind_counts",
+      "label_tokens": [
+       "weak"
+      ],
+      "derived_domain": "all",
+      "filters": [],
+      "value": {
+       "other": 527,
+       "comment_only": 6,
+       "cross_file": 58,
+       "named_fact": 30
+      }
+     }
+    ],
+    "C4_self_derived_total": [
+     {
+      "key": "n_symbol_faces",
+      "defined_as": "sum(face_rungs.values())",
+      "value": 622
+     },
+     {
+      "key": "n_mixed_strong_symbols_classified",
+      "defined_as": "sum(mixed_strong_kind_counts.values())",
+      "value": 18
+     },
+     {
+      "key": "n_weak_symbols_classified",
+      "defined_as": "sum(kind_sym_counts.values())",
+      "value": 621
+     }
+    ],
+    "C7_qualifier_collision": [
+     {
+      "token": "weak",
+      "domains": [
+       "EDGE_STRONG=strong",
+       "EDGE_WEAK=weak",
+       "all"
+      ],
+      "keys": [
+       "n_edges_strong_with_weak_symbols",
+       "n_weak_edges",
+       "n_weak_symbols_classified",
+       "weak_symbol_kind_counts"
+      ]
+     }
+    ]
+   },
+   "counts": {
+    "C3_domain_label_mismatch": 1,
+    "C4_self_derived_total": 3,
+    "C7_qualifier_collision": 1
+   },
+   "vacuous": false,
+   "exit": 2,
+   "verdict": "INVARIANT_VIOLATED",
+   "C10_determinism": {
+    "two_runs_identical": true
+   }
+  }
+ },
+ "measurement_failures": {},
+ "independent_ground_truth": {
+  "paths": {
+   "weak_kind_table.symbol_slots": {
+    "n_edges": 63,
+    "symbol_slots": 90,
+    "kind_per_symbol_slots": 90
+   },
+   "attribution.edge_weak_list.symbol_slots": {
+    "n_edges": 63,
+    "symbol_slots": 90
+   }
+  },
+  "two_paths_agree": true,
+  "weak_edge_symbol_slots": 90
+ },
+ "exit": 2,
+ "verdict": "INVARIANT_VIOLATED"
+}
