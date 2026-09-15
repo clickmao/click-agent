@@ -49,9 +49,15 @@ def upstream_chat(messages, model, tools=None, max_tokens=None):
 
 
 def to_chat_tools(tools):
+    # R456: 兼容两种声明形态 —— Responses 风({type,name,parameters}) 与 chat 风({type,function:{...}})。
+    #   旧版只认 Responses 风 ⇒ 我方(chat 风)的 tools 会被静默丢弃 (器具缺陷, 本轮实测捕获)。
     out = []
     for t in tools or []:
-        if t.get("type") == "function" and t.get("name"):
+        if t.get("type") == "function" and t.get("function"):
+            fn = t["function"] or {}
+            out.append({"type": "function", "function": {"name": fn.get("name"), "description": fn.get("description") or "",
+                                                         "parameters": fn.get("parameters") or {"type": "object", "properties": {}}}})
+        elif t.get("type") == "function" and t.get("name"):
             out.append({"type": "function", "function": {"name": t["name"], "description": t.get("description") or "",
                                                          "parameters": t.get("parameters") or {"type": "object", "properties": {}}}})
     return out

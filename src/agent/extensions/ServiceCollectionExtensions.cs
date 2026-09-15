@@ -309,6 +309,11 @@ public static class ServiceCollectionExtensions
             };
             return new agent.llamacpp.LlamaCppLocalGenerationPort(opts);
         });
+        // R456 动作环: 执行面端口 (可替换)。默认实现 = 工作区受限文件/命令端口;
+        //   AGENTFRAMEWORK_WORKSPACE 指定工作区根 (缺省 = 进程 cwd)。
+        //   AGENTFRAMEWORK_ACTION_LOOP=off 可整体关闭 (关闭时请求体与旧版逐字节相同)。
+        services.AddSingleton<agent.modelqueue.IActionPort>(_ =>
+            agent.action.WorkspaceActionPort.FromEnvironment(Environment.CurrentDirectory));
         services.AddSingleton<ModelQueueAdapter>();
         services.AddSingleton<ILLMCaller>(sp => sp.GetRequiredService<ModelQueueAdapter>());
         services.AddSingleton<agent.subagent.ILLMCallerForIsolated>(sp => sp.GetRequiredService<ModelQueueAdapter>());

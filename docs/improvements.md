@@ -1914,3 +1914,13 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 2. **解析面**：解析 `tool_calls` → 映射既有执行面（`SkillScriptRunner` / 文件端口 / `GitOperations`），**零关键字路由**；
 3. **回灌面**：`role:"tool"` 结果回灌 + 步数上限 N≤3 + 每步审计落盘（命令/rc/stdout 有界），失败 fail-closed；
 4. **验收**：重跑 R455 套件（目标 4/4 产物、0 问询、调用数 ≤ 基线、缓存不退化）+ 越界/超时负控 + AOT 复发布形态自证。
+
+### R456（2026-09-15）· **动作环实施**（机制修复，非关键字补丁；产物 0/4 → 2/4）
+1. **声明面**：`ActionToolDecl.ToolsJson` 静态常量（list_dir / read_file / write_file / run_command），AOT 零反射；`QueueChatRequest.ToolsJson` 手写 writer 输出。
+2. **解析面**：source-gen DTO 加 `tool_calls` + `finish_reason` → `QueueResponse.ToolCalls`（无 tool_calls 时与旧版行为逐字节一致）。
+3. **回灌面**：`QueuePrompt.PostUser` 追加 messages 尾部（前缀不变 ⇒ 缓存前缀单调增长），`SerializeChatRequest` 输出 `tool_calls` / `tool_call_id`。
+4. **执行面**：`WorkspaceActionPort`——工作区根约束（越界即拒）、8 KB 输出上限、120 s 超时、进程树回收、UTF8 无 BOM 审计。
+5. **E2E（同夹具/同 6 轮/同模型）**：产物 **2/4**（count.txt=4、merged.txt 与 codex 逐字节同）；审计 4 次真实工具执行；**磁盘级伪造「已完成」消失**（R455 有 4 处）；prompt ∑31,537 / 缓存 84.8% / 调用 9（codex 冻结 91,002 / 96.6% / 13）。
+6. **器具修复**：`adapter_tools.py::to_chat_tools` 漏认 chat 风工具声明 ⇒ 静默丢弃（假阴性 `tool_calls=null`）；修复后烟测两侧 `finish_reason=tool_calls` ⇒ 模型工具调用能力成立。
+7. **残余缺口（R457 候选）**：T4 未落盘 + 口算错（15 vs 14）；T5/T6 被吞并/续跑入口吞掉；缺 API key 时静默空回复（须告警）。
+8. 遗留：3 轮未归因 `G_calls=0`；零可跳档净亏；短档 V2b 13.03%；L.7 语言无关令。

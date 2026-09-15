@@ -27,6 +27,12 @@ public sealed class QueuePrompt
     /// <summary>v0.12.0 A2: 图像附件 (URL/base64 data URL) — 非空时路由强制云端 + user 消息 parts[] 形态。</summary>
     public List<string> ImageUrls { get; set; } = new();
     public int ImageCount => ImageUrls.Count;
+
+    /// <summary>R456 声明面: 工具声明 JSON (OpenAI function-calling 形态; null/空 = 不带工具, 行为与旧版逐字节一致)。</summary>
+    public string? ToolsJson { get; set; }
+
+    /// <summary>R456 回灌面: user 之后的追加消息 (assistant(tool_calls) / tool(...)) —— 前缀不变, 只增长尾部。</summary>
+    public List<QueuePostUserMessage> PostUser { get; set; } = new();
 }
 
 public sealed class QueueHistoryMessage
@@ -56,6 +62,12 @@ public sealed class QueueResponse
 
     /// <summary>R377: prompt 缓存未命中 token (provider 未上报 → null)。</summary>
     public int? CacheMissTokens { get; set; }
+
+    /// <summary>R456 解析面: 模型请求的工具调用 (空 = 纯文本回复, 与旧版行为一致)。</summary>
+    public List<ActionToolCall>? ToolCalls { get; set; }
+
+    /// <summary>R456: 上游 finish_reason (tool_calls/stop/length — 归因用)。</summary>
+    public string? FinishReason { get; set; }
 
     /// <summary>R414: 本响应的 Content 是否为**面向用户的最终文案**(降级说明等) —— Success=false 时也必须在链上透出。
     /// false = Content 只是内部片段/原始报错, 链侧不得当作用户可见正文(避免错误正文/内部信息外泄)。</summary>
@@ -954,7 +966,10 @@ public sealed class ModelQueueRouter : IModelQueueCaller
     /// </summary>
     internal static string SerializeChatRequest(QueueChatRequest request)
     {
-        if (!request.Messages.Any(m => m.HasParts))
+        // R456: 工具声明/回灌消息必须走手写 writer (source-gen DTO 不含这两个字段);
+        // 无工具请求仍走 source-gen ⇒ 与旧版逐字节相同 (缓存前缀不受影响)。
+        var manual = !string.IsNullOrEmpty(request.ToolsJson) || request.Messages.Any(m => m.HasParts || m.HasToolPayload);
+        if (!manual)
             return JsonSerializer.Serialize(request, ModelQueueJsonContext.Default.QueueChatRequest);
         using var ms = new System.IO.MemoryStream();
         using (var w = new Utf8JsonWriter(ms))
@@ -988,13 +1003,42 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                     }
                     w.WriteEndArray();
                 }
+                else if (m.ToolCalls is { Count: > 0 })
+                {
+                    // assistant 请求工具: content 省略 (协议允许), 只带 tool_calls
+                }
                 else
                 {
                     w.WriteString("content", m.Content);
                 }
+                if (m.ToolCalls is { Count: > 0 })
+                {
+                    w.WritePropertyName("tool_calls");
+                    w.WriteStartArray();
+                    foreach (var tc in m.ToolCalls)
+                    {
+                        w.WriteStartObject();
+                        w.WriteString("id", tc.Id);
+                        w.WriteString("type", "function");
+                        w.WritePropertyName("function");
+                        w.WriteStartObject();
+                        w.WriteString("name", tc.Name);
+                        w.WriteString("arguments", tc.ArgumentsJson);
+                        w.WriteEndObject();
+                        w.WriteEndObject();
+                    }
+                    w.WriteEndArray();
+                }
+                if (!string.IsNullOrEmpty(m.ToolCallId))
+                    w.WriteString("tool_call_id", m.ToolCallId);
                 w.WriteEndObject();
             }
             w.WriteEndArray();
+            if (!string.IsNullOrEmpty(request.ToolsJson))
+            {
+                w.WritePropertyName("tools");
+                w.WriteRawValue(request.ToolsJson, skipInputValidation: true);
+            }
             if (!string.IsNullOrEmpty(request.ReasoningEffort))
             {
                 w.WriteString("reasoning_effort", request.ReasoningEffort);
@@ -1214,7 +1258,7 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         var client = _httpClientFactory.CreateClient("modelqueue");
         var targetEndpoint = prompt.ImageUrls.Count > 0 ? VisionPayload.ToChatEndpoint(entry.Endpoint) : entry.Endpoint;
         var messages = BuildMessages(prompt, extraSystemSuffix);
-        var request = new QueueChatRequest { Model = entry.Id, Messages = messages, ReasoningEffort = prompt.ReasoningEffort };
+        var request = new QueueChatRequest { Model = entry.Id, Messages = messages, ReasoningEffort = prompt.ReasoningEffort, ToolsJson = prompt.ToolsJson };
         if (maxTokensOverride is int mt && mt > 0) request.MaxTokens = mt;
         var requestBody = SerializeChatRequest(request);
         // R378 归因: 请求体按需落盘 (env AGENTFRAMEWORK_DUMP_REQUEST=目录) —— 缓存命中率前缀分歧点可测
@@ -1237,6 +1281,19 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         var content = choice?.Message?.Content ?? string.Empty;
         // v0.21.1: 推理模型思考链捕获 (DeepSeek deepseek-flash/reasoner 实测返回 reasoning_content)
         var reasoning = choice?.Message?.ReasoningContent;
+        // R456 解析面: tool_calls → 链上动作请求 (无 tool_calls 时为 null, 行为与旧版一致)
+        List<ActionToolCall>? toolCalls = null;
+        if (choice?.Message?.ToolCalls is { Count: > 0 } raw)
+        {
+            toolCalls = new List<ActionToolCall>(raw.Count);
+            foreach (var tc in raw)
+                toolCalls.Add(new ActionToolCall
+                {
+                    Id = tc.Id ?? string.Empty,
+                    Name = tc.Function?.Name ?? string.Empty,
+                    ArgumentsJson = string.IsNullOrEmpty(tc.Function?.Arguments) ? "{}" : tc.Function!.Arguments!,
+                });
+        }
         return new QueueResponse
         {
             Content = content,
@@ -1247,6 +1304,8 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             CacheHitTokens = parsed?.Usage?.PromptCacheHitTokens,
             CacheMissTokens = parsed?.Usage?.PromptCacheMissTokens,
             ReasoningContent = reasoning,
+            ToolCalls = toolCalls,
+            FinishReason = choice?.FinishReason,
         };
     }
 
@@ -1291,6 +1350,16 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         // 带图请求改写标准 v4 chat 端点 (glm-5.3-flash 视觉走 v4, data URL 真机已验 1445tok)。
         if (!string.IsNullOrWhiteSpace(extraSystemSuffix))
             messages.Add(new QueueChatMessage { Role = "system", Content = extraSystemSuffix });
+        // R456 回灌面: 动作环追加消息 (assistant(tool_calls)/tool(...)) 一律在**最尾部** ——
+        // 前缀 system/context/history/user/extra 逐字节不变 ⇒ provider 缓存前缀单调增长 (R377 红线)。
+        foreach (var pm in prompt.PostUser)
+            messages.Add(new QueueChatMessage
+            {
+                Role = pm.Role,
+                Content = pm.Content,
+                ToolCalls = pm.ToolCalls,
+                ToolCallId = pm.ToolCallId,
+            });
         return messages;
     }
 

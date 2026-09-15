@@ -8,12 +8,23 @@ namespace agent;
 /// 模型队列适配器 (v7.15 C.3.3): ILLMCaller → ModelQueueRouter。
 /// 协议转换: agent Prompt → QueuePrompt; QueueResponse → LLMResponse。
 /// DI: ILLMCaller = ModelQueueAdapter (内部持 Router); /model /balance 指令直接用 Router/服务。
+/// R456: 动作环在此收口 —— 声明 tools → 解析 tool_calls → 执行(端口) → 回灌 → 再调用 (≤MaxSteps)。
 /// </summary>
 public sealed class ModelQueueAdapter : ILLMCaller, agent.subagent.ILLMCallerForIsolated
 {
     private readonly ModelQueueRouter _router;
+    private readonly IActionPort? _actionPort;
+    private readonly Action<int, ActionToolCall, ActionExecutionResult>? _onAction;
 
-    public ModelQueueAdapter(ModelQueueRouter router) => _router = router;
+    public ModelQueueAdapter(ModelQueueRouter router, IActionPort? actionPort = null)
+    {
+        _router = router;
+        _actionPort = actionPort;
+        _onAction = actionPort is agent.action.WorkspaceActionPort wap ? wap.Audit : null;
+    }
+
+    /// <summary>R456: 最近一次动作环结果 (遥测/证据用; 无动作环时为 null)。</summary>
+    public ActionLoopOutcome? LastActionOutcome { get; private set; }
 
     /// <summary>
     /// R379: Prompt → QueuePrompt 协议转换 (自 CallAsync 抽出为单一事实源, 缓存前缀机检直接消费)。
@@ -49,7 +60,26 @@ public sealed class ModelQueueAdapter : ILLMCaller, agent.subagent.ILLMCallerFor
         // R373: 意图透传 (此前硬编码 "general" → 首轮预算策略永远匹配不上, 真机铁证:
         // 代码任务首轮 completion_tokens=8192 被推理吃满 → content 空/半截, 每题 2 次调用)。
         var intent = string.IsNullOrWhiteSpace(prompt.Intent) ? "general" : prompt.Intent!;
-        var r = await _router.CallAsync(qp, TaskKindHint.General, intent, ct);
+        QueueResponse r;
+        if (_actionPort is not null && ActionLoopRunner.IsEnabled())
+        {
+            // R456 声明面: 仅在动作环开启时注入 tools —— 关闭时请求体与旧版逐字节相同 (零回归)
+            qp.ToolsJson = ActionToolDecl.ToolsJson;
+            var (resp, outcome) = await ActionLoopRunner.RunAsync(
+                qp,
+                (p, c) => _router.CallAsync(p, TaskKindHint.General, intent, c),
+                _actionPort,
+                ActionLoopRunner.MaxSteps(),
+                ct,
+                _onAction).ConfigureAwait(false);
+            r = resp;
+            LastActionOutcome = outcome;
+        }
+        else
+        {
+            r = await _router.CallAsync(qp, TaskKindHint.General, intent, ct);
+            LastActionOutcome = null;
+        }
         return new LLMResponse
         {
             Content = r.Content,

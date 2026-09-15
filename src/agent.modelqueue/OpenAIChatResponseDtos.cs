@@ -22,6 +22,10 @@ public sealed class QueueChatRequest
     /// <summary>v0.11.0 R22: 推理档位 (glm/deepseek 实测 low 档 reasoning 大降)。null=默认。</summary>
     [JsonPropertyName("reasoning_effort")]
     public string? ReasoningEffort { get; set; }
+
+    /// <summary>R456: 工具声明 JSON (OpenAI 形态)。[JsonIgnore] —— 仅手写 writer 输出 (AOT 安全, 不参与 source-gen)。</summary>
+    [JsonIgnore]
+    public string? ToolsJson { get; set; }
 }
 
 public sealed class QueueChatMessage
@@ -36,8 +40,19 @@ public sealed class QueueChatMessage
     [JsonIgnore]
     public List<QueueContentPart>? ContentParts { get; set; }
 
+    /// <summary>R456 回灌: assistant 消息携带的 tool_calls (手写 writer 输出; source-gen 不参与)。</summary>
+    [JsonIgnore]
+    public List<ActionToolCall>? ToolCalls { get; set; }
+
+    /// <summary>R456 回灌: role=tool 消息对应的 tool_call_id。</summary>
+    [JsonIgnore]
+    public string? ToolCallId { get; set; }
+
     [JsonIgnore]
     public bool HasParts => ContentParts is { Count: > 0 };
+
+    [JsonIgnore]
+    public bool HasToolPayload => (ToolCalls is { Count: > 0 }) || !string.IsNullOrEmpty(ToolCallId);
 }
 
 /// <summary>v0.12.0 A2: content part (text | image_url)</summary>
@@ -102,6 +117,33 @@ public sealed class OpenAIChatResponseMessage
     /// </summary>
     [JsonPropertyName("reasoning_content")]
     public string? ReasoningContent { get; set; }
+
+    /// <summary>R456 解析面: OpenAI 兼容 tool_calls (source-gen 反序列化, 零反射)。</summary>
+    [JsonPropertyName("tool_calls")]
+    public List<OpenAIToolCall>? ToolCalls { get; set; }
+}
+
+/// <summary>R456: OpenAI tool_call 条目。</summary>
+public sealed class OpenAIToolCall
+{
+    [JsonPropertyName("id")]
+    public string? Id { get; set; }
+
+    [JsonPropertyName("type")]
+    public string? Type { get; set; }
+
+    [JsonPropertyName("function")]
+    public OpenAIToolFunction? Function { get; set; }
+}
+
+/// <summary>R456: OpenAI tool_call.function (name + arguments 原文)。</summary>
+public sealed class OpenAIToolFunction
+{
+    [JsonPropertyName("name")]
+    public string? Name { get; set; }
+
+    [JsonPropertyName("arguments")]
+    public string? Arguments { get; set; }
 }
 
 public sealed class OpenAIChatUsage

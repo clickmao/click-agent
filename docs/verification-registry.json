@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R455",
+  "updated_round": "R456",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -1542,6 +1542,26 @@
         "docs/external-reference-harness.md"
       ],
       "owner_round": "R455"
+    },
+    {
+      "id": "r456.action-loop",
+      "level": "L2",
+      "capability": "动作环(声明/解析/回灌/执行)链机制修复: 同套件(同夹具/同6轮/同模型)产物 0/4 -> 2/4(count.txt=4, merged.txt=ALPHA/BETA/GAMMA 逐字节同 codex), 磁盘伪造执行记录消失, 审计 4 次真实工具执行; 残余: T4 未落盘+口算错(15 vs 真值14), T5/T6 被吞并/续跑入口吞, 缺 key 时静默空回复",
+      "evidence_cmd": "bash eval/rover/r456/run_agent_tools.sh && python3 eval/rover/r456/judge_r456.py",
+      "evidence_path": "eval/rover/r456/verdict-r456.json",
+      "negative_control": "C1 关环对照: AGENTFRAMEWORK_ACTION_LOOP=off 回到 R455 读数(0/4 + 伪造「已完成」); C2 器具负控: 适配器 to_chat_tools 漏 chat 风声明 -> 假阴性 tool_calls=null(已修, 修复前结论 VOID); C3 静默失败: 无 API key -> 0 上游调用 + 空回复 + 无告警; C4 缓存前缀不变式: 回灌消息只追加在尾部, 单测断言前缀逐字节相同; C5 判分只读磁盘产物, 不采信回复文本",
+      "covers": [
+        "eval/rover/r456/run_agent_tools.sh",
+        "eval/rover/r456/judge_r456.py",
+        "eval/rover/r456/verdict-r456.json",
+        "src/agent.modelqueue/ActionLoop.cs",
+        "src/agent/action/WorkspaceActionPort.cs",
+        "src/agent.tests/ActionLoopTests.cs",
+        "docs/plans/v0.76.0-r456-action-loop.md",
+        "docs/reports/action-loop-r456.md",
+        "docs/reports/agent-chain-diagnosis-r455.md"
+      ],
+      "owner_round": "R456"
     }
   ],
   "aot_check_policy": "release_tag_only",
