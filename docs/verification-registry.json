@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R444",
+  "updated_round": "R445",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -1270,6 +1270,43 @@
       "negative_control": "缺臂(无同网格同 NS 分母臂)时分析器必须非零退出, 禁跨网格代理",
       "covers": [
         "eval/rover/r444/analyze_r444.py"
+      ]
+    },
+    {
+      "id": "r445.judge-prefilter-separability",
+      "capability": "判官侧机械前置的可分性(消息面)",
+      "level": "L1",
+      "owner_round": "R445",
+      "evidence_cmd": "python3 eval/rover/r445/judge_prefilter_precheck.py",
+      "evidence_path": "eval/rover/r445/precheck-judge-prefilter.json",
+      "negative_control": "弱谓词 len(msg)<=0 必须检出反例(实测 k=128 ⇒ 器具非空转); 桩/兜底行(source=remote|remote_fallback)必须排除出真值集(实测排除 297/541); 缺 turns 归档的 run 必须跳过而非按序号猜对齐",
+      "covers": [
+        "eval/rover/r445/judge_prefilter_precheck.py",
+        "eval/rover/r445/README-evidence.md"
+      ]
+    },
+    {
+      "id": "r445.judge-prefilter-controls",
+      "capability": "器具三控(正控/负控/fail-closed)",
+      "level": "L4",
+      "owner_round": "R445",
+      "evidence_cmd": "python3 eval/rover/r445/judge_prefilter_precheck.py --neg-control --out eval/rover/r445/precheck-negcontrol.json && python3 eval/rover/r445/judge_prefilter_precheck.py --grid-dir eval/rover/NOPE_R445; echo rc=$?",
+      "evidence_path": "eval/rover/r445/precheck-negcontrol.json",
+      "negative_control": "负控 k>=1 (实测 128); 正控 signal=no_prev_reply ⇒ Kind=Neutral ∧ prompt_len=0 (实测 30/30 合规); fail-closed 不存在 grid-dir ⇒ rc=2 且不产出结果文件",
+      "covers": [
+        "eval/rover/r445/precheck-negcontrol.json"
+      ]
+    },
+    {
+      "id": "r445.prev-reply-face-indicative",
+      "capability": "上一轮来源面的指示性上界(不作判据)",
+      "level": "L1",
+      "owner_round": "R445",
+      "evidence_cmd": "python3 -c \"import json;print(json.load(open('eval/rover/r445/precheck-judge-prefilter.json'))['posthoc'])\"",
+      "evidence_path": "eval/rover/r445/precheck-judge-prefilter.json",
+      "negative_control": "EMPTY 类 9 行裁决非 Neutral ⇒ 证伪『按相邻轮 reply 重建上一轮回答』与产品 _lastReplyBySession 等价, 故本行只作指示不作判据",
+      "covers": [
+        "eval/rover/r445/README-evidence.md"
       ]
     }
   ],

@@ -1,0 +1,1070 @@
+{
+ "round": "R445",
+ "instrument": "judge_prefilter_precheck",
+ "derived_from": {
+  "detector": "src/agent.roles/CorrectionDetector.cs",
+  "correct_markers": [
+   "不对",
+   "错了",
+   "不是这样",
+   "你说错",
+   "理解错了",
+   "搞错了",
+   "不对吧",
+   "重新",
+   "应该是",
+   "我说的是",
+   "你理解成",
+   "纠正",
+   "不是这个意思",
+   "wrong",
+   "incorrect",
+   "no,",
+   "not what i meant",
+   "you misunderstood"
+  ],
+  "adopt_markers": [
+   "好的",
+   "明白了",
+   "懂了",
+   "收到",
+   "谢谢",
+   "没错",
+   "对",
+   "正是",
+   "thanks",
+   "got it",
+   "correct",
+   "exactly"
+  ]
+ },
+ "counts": {
+  "judge_rows_total": 541,
+  "real_local_llm_rows": 244,
+  "stub_or_remote_rows": 297,
+  "unaligned_rows": 0,
+  "runs_used": 60,
+  "struct_rows": 30,
+  "kind_hist_real": {
+   "Correct": 28,
+   "Neutral": 116,
+   "Adopt": 100
+  }
+ },
+ "runs_used": [
+  "r426/A-k6-r426b1",
+  "r426/A-k8-r426b1",
+  "r426/B-k6-r426b1",
+  "r426/B-k8-r426b1",
+  "r426/C-k6-r426b1",
+  "r426/C-k8-r426b1",
+  "r426/D-k6-r426b1",
+  "r429/C-k8p-r429post1",
+  "r429/C-k8r-r429post1",
+  "r429/C-k8r-r429post2",
+  "r429/C-k8r-r429pre1",
+  "r430/C-k8r-r430fix1",
+  "r430/C-k8r-r430post1",
+  "r431/C-k8r-b431",
+  "r431/C-k8r-g431",
+  "r432/C-r432dp-r432dp1",
+  "r432/C-r432dp2-r432dp2",
+  "r434/B-p12-o1",
+  "r434/B-p8-b1",
+  "r434/B-p8-b2",
+  "r434/B-p8-e1",
+  "r434/B-p8-g1",
+  "r434/B-p8-i1",
+  "r434/B-p8-m1",
+  "r434/B0-p8-c1",
+  "r434/B0-p8-f1",
+  "r434/B0-p8-h1",
+  "r434/B0-p8-j1",
+  "r434/BP-p8-d1",
+  "r434/BRJ-p8-k1",
+  "r436/B-p12",
+  "r436/B-p8",
+  "r436/BP-p12",
+  "r436/BRJ-p12",
+  "r436/BRJ-p12-2",
+  "r436/BRJ-p8",
+  "r438/BP-p12",
+  "r438/BRJ-p12",
+  "r438/BRJ-p12-2",
+  "r439/BRJ-V20",
+  "r439/BRJ-p8",
+  "r440/BP-V4",
+  "r440/BRJ-V1",
+  "r440/BRJ-V2",
+  "r440/BRJ-V2b-b1",
+  "r440/BRJ-V4",
+  "r440/BRJ-V5",
+  "r441/BRJ-M20",
+  "r441/BRJ-V2b-c2",
+  "r441/BRJ-W20",
+  "r441/BRJ-W8",
+  "r441/BRJ-W8-b2",
+  "r443/BRJ-M20",
+  "r443/BRJ-M20-s1",
+  "r443/BRJRP-M20-s1",
+  "r444/BRJ-M20-s4",
+  "r444/BRJ-M20-s5",
+  "r444/BRJ-V2b-s4",
+  "r444/BRJ-W8-s4",
+  "r444/BRJL-M20-s4"
+ ],
+ "per_run_real_rows": {
+  "r426/C-k6-r426b1": 2,
+  "r426/C-k8-r426b1": 2,
+  "r429/C-k8p-r429post1": 1,
+  "r429/C-k8r-r429post1": 3,
+  "r429/C-k8r-r429post2": 1,
+  "r430/C-k8r-r430fix1": 5,
+  "r430/C-k8r-r430post1": 3,
+  "r431/C-k8r-b431": 5,
+  "r431/C-k8r-g431": 5,
+  "r432/C-r432dp-r432dp1": 9,
+  "r432/C-r432dp2-r432dp2": 2,
+  "r434/BRJ-p8-k1": 1,
+  "r436/BRJ-p12": 7,
+  "r436/BRJ-p12-2": 7,
+  "r436/BRJ-p8": 5,
+  "r438/BRJ-p12": 7,
+  "r438/BRJ-p12-2": 7,
+  "r439/BRJ-V20": 11,
+  "r439/BRJ-p8": 5,
+  "r440/BRJ-V2": 1,
+  "r440/BRJ-V2b-b1": 2,
+  "r440/BRJ-V4": 13,
+  "r440/BRJ-V5": 15,
+  "r441/BRJ-M20": 13,
+  "r441/BRJ-V2b-c2": 2,
+  "r441/BRJ-W20": 15,
+  "r441/BRJ-W8": 5,
+  "r441/BRJ-W8-b2": 5,
+  "r443/BRJ-M20": 13,
+  "r443/BRJ-M20-s1": 13,
+  "r443/BRJRP-M20-s1": 13,
+  "r444/BRJ-M20-s4": 13,
+  "r444/BRJ-M20-s5": 13,
+  "r444/BRJ-V2b-s4": 2,
+  "r444/BRJ-W8-s4": 5,
+  "r444/BRJL-M20-s4": 13
+ },
+ "predicates": {
+  "NC_weak_len0": {
+   "desc": "负控: len(msg) <= 0",
+   "counterexamples_k": 128,
+   "saved_calls_s": 116,
+   "k_rows": [
+    {
+     "run": "r426/C-k6-r426b1",
+     "msg": "用一句话说明这个仓库的构建命令是什么。",
+     "msg_len": 19,
+     "kind": "Correct",
+     "letter": "C"
+    },
+    {
+     "run": "r426/C-k8-r426b1",
+     "msg": "好，知道了。",
+     "msg_len": 6,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r429/C-k8p-r429post1",
+     "msg": "帮我总结一下刚才的结论。",
+     "msg_len": 12,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r429/C-k8r-r429post1",
+     "msg": "帮我总结一下刚才的结论。",
+     "msg_len": 12,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r429/C-k8r-r429post2",
+     "msg": "好，按这个来。",
+     "msg_len": 7,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r430/C-k8r-r430fix1",
+     "msg": "帮我总结一下刚才的结论。",
+     "msg_len": 12,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r430/C-k8r-r430fix1",
+     "msg": "好，按这个来。",
+     "msg_len": 7,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r430/C-k8r-r430fix1",
+     "msg": "好，按这个来。",
+     "msg_len": 7,
+     "kind": "Correct",
+     "letter": "C"
+    },
+    {
+     "run": "r430/C-k8r-r430fix1",
+     "msg": "好，按这个来。",
+     "msg_len": 7,
+     "kind": "Correct",
+     "letter": "C"
+    },
+    {
+     "run": "r430/C-k8r-r430fix1",
+     "msg": "好，按这个来。",
+     "msg_len": 7,
+     "kind": "Correct",
+     "letter": "C"
+    },
+    {
+     "run": "r430/C-k8r-r430post1",
+     "msg": "好，按这个来。",
+     "msg_len": 7,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r430/C-k8r-r430post1",
+     "msg": "帮我总结一下刚才的结论。",
+     "msg_len": 12,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r430/C-k8r-r430post1",
+     "msg": "好，按这个来。",
+     "msg_len": 7,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r431/C-k8r-b431",
+     "msg": "帮我总结一下刚才的结论。",
+     "msg_len": 12,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r431/C-k8r-b431",
+     "msg": "好，按这个来。",
+     "msg_len": 7,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r431/C-k8r-b431",
+     "msg": "好，按这个来。",
+     "msg_len": 7,
+     "kind": "Correct",
+     "letter": "C"
+    },
+    {
+     "run": "r431/C-k8r-b431",
+     "msg": "好，按这个来。",
+     "msg_len": 7,
+     "kind": "Correct",
+     "letter": "C"
+    },
+    {
+     "run": "r431/C-k8r-b431",
+     "msg": "好，按这个来。",
+     "msg_len": 7,
+     "kind": "Correct",
+     "letter": "C"
+    },
+    {
+     "run": "r431/C-k8r-g431",
+     "msg": "帮我总结一下刚才的结论。",
+     "msg_len": 12,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r431/C-k8r-g431",
+     "msg": "好，按这个来。",
+     "msg_len": 7,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r431/C-k8r-g431",
+     "msg": "好，按这个来。",
+     "msg_len": 7,
+     "kind": "Correct",
+     "letter": "C"
+    },
+    {
+     "run": "r431/C-k8r-g431",
+     "msg": "好，按这个来。",
+     "msg_len": 7,
+     "kind": "Correct",
+     "letter": "C"
+    },
+    {
+     "run": "r431/C-k8r-g431",
+     "msg": "好，按这个来。",
+     "msg_len": 7,
+     "kind": "Correct",
+     "letter": "C"
+    },
+    {
+     "run": "r432/C-r432dp-r432dp1",
+     "msg": "帮我总结一下刚才的结论。",
+     "msg_len": 12,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r432/C-r432dp-r432dp1",
+     "msg": "嗯",
+     "msg_len": 1,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r432/C-r432dp-r432dp1",
+     "msg": "嗯",
+     "msg_len": 1,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r432/C-r432dp-r432dp1",
+     "msg": "嗯",
+     "msg_len": 1,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r432/C-r432dp-r432dp1",
+     "msg": "嗯",
+     "msg_len": 1,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r432/C-r432dp-r432dp1",
+     "msg": "嗯",
+     "msg_len": 1,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r432/C-r432dp-r432dp1",
+     "msg": "嗯",
+     "msg_len": 1,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r432/C-r432dp-r432dp1",
+     "msg": "嗯",
+     "msg_len": 1,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r432/C-r432dp-r432dp1",
+     "msg": "嗯",
+     "msg_len": 1,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r432/C-r432dp2-r432dp2",
+     "msg": "我们来把本地判定的可复现性收口。",
+     "msg_len": 16,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r432/C-r432dp2-r432dp2",
+     "msg": "嗯",
+     "msg_len": 1,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r436/BRJ-p12",
+     "msg": "明白，多谢。",
+     "msg_len": 6,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r436/BRJ-p12",
+     "msg": "换个说法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r436/BRJ-p12",
+     "msg": "你上一条说 3 加 5 等于 9，对吧？",
+     "msg_len": 20,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r436/BRJ-p12-2",
+     "msg": "明白，多谢。",
+     "msg_len": 6,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r436/BRJ-p12-2",
+     "msg": "换个说法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r436/BRJ-p12-2",
+     "msg": "你上一条说 3 加 5 等于 9，对吧？",
+     "msg_len": 20,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r436/BRJ-p8",
+     "msg": "嗯嗯，知道了。",
+     "msg_len": 7,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r436/BRJ-p8",
+     "msg": "换个说法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r436/BRJ-p8",
+     "msg": "明白，多谢。",
+     "msg_len": 6,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r438/BRJ-p12",
+     "msg": "明白，多谢。",
+     "msg_len": 6,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r438/BRJ-p12",
+     "msg": "换个说法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r438/BRJ-p12",
+     "msg": "你上一条说 3 加 5 等于 9，对吧？",
+     "msg_len": 20,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r438/BRJ-p12-2",
+     "msg": "明白，多谢。",
+     "msg_len": 6,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r438/BRJ-p12-2",
+     "msg": "换个说法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r438/BRJ-p12-2",
+     "msg": "你上一条说 3 加 5 等于 9，对吧？",
+     "msg_len": 20,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r439/BRJ-V20",
+     "msg": "换个说法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r439/BRJ-V20",
+     "msg": "嗯嗯，知道了。",
+     "msg_len": 7,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r439/BRJ-V20",
+     "msg": "换个例子。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r439/BRJ-V20",
+     "msg": "明白，多谢。",
+     "msg_len": 6,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r439/BRJ-V20",
+     "msg": "说细一些。",
+     "msg_len": 5,
+     "kind": "Correct",
+     "letter": "C"
+    },
+    {
+     "run": "r439/BRJ-V20",
+     "msg": "行，可以，明白。",
+     "msg_len": 8,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r439/BRJ-p8",
+     "msg": "嗯嗯，知道了。",
+     "msg_len": 7,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r439/BRJ-p8",
+     "msg": "换个说法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r439/BRJ-p8",
+     "msg": "明白，多谢。",
+     "msg_len": 6,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r440/BRJ-V2b-b1",
+     "msg": "嗯嗯，知道了。",
+     "msg_len": 7,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r440/BRJ-V4",
+     "msg": "再讲一遍。",
+     "msg_len": 5,
+     "kind": "Correct",
+     "letter": "C"
+    },
+    {
+     "run": "r440/BRJ-V4",
+     "msg": "换个说法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r440/BRJ-V4",
+     "msg": "换个例子。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r440/BRJ-V4",
+     "msg": "再展开点。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r440/BRJ-V4",
+     "msg": "换个讲法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r440/BRJ-V4",
+     "msg": "明白，多谢。",
+     "msg_len": 6,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r440/BRJ-V5",
+     "msg": "再讲一遍。",
+     "msg_len": 5,
+     "kind": "Correct",
+     "letter": "C"
+    },
+    {
+     "run": "r440/BRJ-V5",
+     "msg": "换个说法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r440/BRJ-V5",
+     "msg": "换个例子。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r440/BRJ-V5",
+     "msg": "再展开点。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r440/BRJ-V5",
+     "msg": "换个讲法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r440/BRJ-V5",
+     "msg": "再说一遍。",
+     "msg_len": 5,
+     "kind": "Correct",
+     "letter": "C"
+    },
+    {
+     "run": "r440/BRJ-V5",
+     "msg": "换种说法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r440/BRJ-V5",
+     "msg": "多说两句。",
+     "msg_len": 5,
+     "kind": "Correct",
+     "letter": "C"
+    },
+    {
+     "run": "r440/BRJ-V5",
+     "msg": "讲透一些。",
+     "msg_len": 5,
+     "kind": "Correct",
+     "letter": "C"
+    },
+    {
+     "run": "r441/BRJ-M20",
+     "msg": "再讲一遍。",
+     "msg_len": 5,
+     "kind": "Correct",
+     "letter": "C"
+    },
+    {
+     "run": "r441/BRJ-M20",
+     "msg": "换个说法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r441/BRJ-M20",
+     "msg": "明白，多谢。",
+     "msg_len": 6,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r441/BRJ-M20",
+     "msg": "再展开点。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r441/BRJ-M20",
+     "msg": "换个讲法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r441/BRJ-V2b-c2",
+     "msg": "嗯嗯，知道了。",
+     "msg_len": 7,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r441/BRJ-W20",
+     "msg": "再讲一遍。",
+     "msg_len": 5,
+     "kind": "Correct",
+     "letter": "C"
+    },
+    {
+     "run": "r441/BRJ-W20",
+     "msg": "换个说法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r441/BRJ-W20",
+     "msg": "换个例子。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r441/BRJ-W20",
+     "msg": "再展开点。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r441/BRJ-W20",
+     "msg": "换个讲法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r441/BRJ-W20",
+     "msg": "再讲一遍。",
+     "msg_len": 5,
+     "kind": "Correct",
+     "letter": "C"
+    },
+    {
+     "run": "r441/BRJ-W20",
+     "msg": "换个说法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r441/BRJ-W20",
+     "msg": "换个例子。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r441/BRJ-W8",
+     "msg": "再讲一遍。",
+     "msg_len": 5,
+     "kind": "Correct",
+     "letter": "C"
+    },
+    {
+     "run": "r441/BRJ-W8",
+     "msg": "换个说法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r441/BRJ-W8",
+     "msg": "换个例子。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r441/BRJ-W8-b2",
+     "msg": "再讲一遍。",
+     "msg_len": 5,
+     "kind": "Correct",
+     "letter": "C"
+    },
+    {
+     "run": "r441/BRJ-W8-b2",
+     "msg": "换个说法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r441/BRJ-W8-b2",
+     "msg": "换个例子。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r443/BRJ-M20",
+     "msg": "再讲一遍。",
+     "msg_len": 5,
+     "kind": "Correct",
+     "letter": "C"
+    },
+    {
+     "run": "r443/BRJ-M20",
+     "msg": "换个说法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r443/BRJ-M20",
+     "msg": "明白，多谢。",
+     "msg_len": 6,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r443/BRJ-M20",
+     "msg": "再展开点。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r443/BRJ-M20",
+     "msg": "换个讲法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r443/BRJ-M20-s1",
+     "msg": "再讲一遍。",
+     "msg_len": 5,
+     "kind": "Correct",
+     "letter": "C"
+    },
+    {
+     "run": "r443/BRJ-M20-s1",
+     "msg": "换个说法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r443/BRJ-M20-s1",
+     "msg": "明白，多谢。",
+     "msg_len": 6,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r443/BRJ-M20-s1",
+     "msg": "再展开点。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r443/BRJ-M20-s1",
+     "msg": "换个讲法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r443/BRJRP-M20-s1",
+     "msg": "再讲一遍。",
+     "msg_len": 5,
+     "kind": "Correct",
+     "letter": "C"
+    },
+    {
+     "run": "r443/BRJRP-M20-s1",
+     "msg": "换个说法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r443/BRJRP-M20-s1",
+     "msg": "明白，多谢。",
+     "msg_len": 6,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r443/BRJRP-M20-s1",
+     "msg": "再展开点。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r443/BRJRP-M20-s1",
+     "msg": "换个讲法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r444/BRJ-M20-s4",
+     "msg": "换个说法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r444/BRJ-M20-s4",
+     "msg": "再讲一遍。",
+     "msg_len": 5,
+     "kind": "Correct",
+     "letter": "C"
+    },
+    {
+     "run": "r444/BRJ-M20-s4",
+     "msg": "明白，多谢。",
+     "msg_len": 6,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r444/BRJ-M20-s4",
+     "msg": "再展开点。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r444/BRJ-M20-s4",
+     "msg": "换个讲法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r444/BRJ-M20-s5",
+     "msg": "再讲一遍。",
+     "msg_len": 5,
+     "kind": "Correct",
+     "letter": "C"
+    },
+    {
+     "run": "r444/BRJ-M20-s5",
+     "msg": "换个说法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r444/BRJ-M20-s5",
+     "msg": "明白，多谢。",
+     "msg_len": 6,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r444/BRJ-M20-s5",
+     "msg": "再展开点。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r444/BRJ-M20-s5",
+     "msg": "换个讲法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r444/BRJ-V2b-s4",
+     "msg": "嗯嗯，知道了。",
+     "msg_len": 7,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r444/BRJ-W8-s4",
+     "msg": "换个例子。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r444/BRJ-W8-s4",
+     "msg": "换个说法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r444/BRJ-W8-s4",
+     "msg": "再讲一遍。",
+     "msg_len": 5,
+     "kind": "Correct",
+     "letter": "C"
+    },
+    {
+     "run": "r444/BRJL-M20-s4",
+     "msg": "再讲一遍。",
+     "msg_len": 5,
+     "kind": "Correct",
+     "letter": "C"
+    },
+    {
+     "run": "r444/BRJL-M20-s4",
+     "msg": "换个说法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r444/BRJL-M20-s4",
+     "msg": "明白，多谢。",
+     "msg_len": 6,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r444/BRJL-M20-s4",
+     "msg": "再展开点。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    },
+    {
+     "run": "r444/BRJL-M20-s4",
+     "msg": "换个讲法。",
+     "msg_len": 5,
+     "kind": "Adopt",
+     "letter": "A"
+    }
+   ],
+   "s_share": 0.4754
+  },
+  "C6_struct_no_prev_reply": {
+   "n": 30,
+   "violations": 0,
+   "rule": "signal=no_prev_reply ⇒ Kind=Neutral ∧ prompt_len=0"
+  }
+ },
+ "verdict": {
+  "NC_weak_len0": "PASS",
+  "C6_struct_no_prev_reply": "PASS"
+ },
+ "neg_control_mode": true
+}

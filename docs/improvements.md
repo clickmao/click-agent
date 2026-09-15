@@ -1759,3 +1759,16 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
   4. **R443：A 分母截断回归闸** — 把 `a_map_proxy` 的 N 截断写成 `design_check` 的机械断言 D7，防同类器具缺陷复发。
 - **计划/证据/登记**: `docs/plans/v0.61.0-r441-gain-window-floor-and-position-curve.md`；`eval/rover/r441/README-evidence.md`；`docs/verification-registry.json` → `r441.gain-window-floor-and-position-curve`；`eval/capability/kpi.jsonl` → R441。
 
+
+## R445 — 判官侧机械前置：**可分性预检为负**（零测量轮）
+- 器具 `eval/rover/r445/judge_prefilter_precheck.py`（标记表程序化派生自 `CorrectionDetector.cs`；三控齐备）。
+- 读数：541 判官行 / 244 行真机 r1 实答（排除 297 行桩回声、0 行未对齐、60 run）。
+- C1（无标记 ⇒ Neutral）**FAIL k=124**；C3（len≤16）**FAIL k=5**；C2/C4 空心通过（s=0）；C5 负控 k=128；C6 正控 30/30；C7 rc=2。
+- 结论：**判官侧不存在消息面廉价必要条件**（归档范围内）⇒ R444 候选 ① 不可实现，登记为负结论（`docs/verification-registry.json` r445.*）。
+- 附带发现（事后）：同一消息跨 run 拿到不同 verdict（7 条，`好，按这个来。` 三态并存）⇒ 赏罚信号不稳，是质量缺陷而非 token 缺陷。
+
+### 下轮候选（R446，按优先级）
+1. **判官降级消融**：短 prompt / 更小 maxTokens / 去 `CorrectionDetector.cs:143` 空内容翻倍重试 ⇒ 真机测本地 tok 降幅 + 与归档 244 行裁决一致率（对照基线已落盘）。
+2. **修赏罚信号不稳**：把高信采纳词扩展到 `好，`/`行，`/`可以，` 前缀+短消息形态（0 token 结算），用 244 行做回归。
+3. 把 R445 三控并入 `eval/capability/instruments-check.json` 常规器具面。
+4. 结构性短路只可扩展「上一轮回答空 ∨ 会话首轮」（已实现），其余需真机 A/B，禁止凭离线推。
