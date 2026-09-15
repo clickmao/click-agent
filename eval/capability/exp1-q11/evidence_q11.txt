@@ -1,0 +1,81 @@
+EXP1-Q11 evidence · 2026-09-15 10:16:09 +0800
+
+## 对侧占用/共享机闸 (本侧零 dotnet 的依据)
+- .git/ROUND_CLAIM: round=R446 writer=r446-main paths=eval/rover/r446, src/agent*, docs/plans/v0.66.0-r446*
+- ps 活跃执行体:
+ 808784     331 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && R446_GRID=JDET24 R446_NS=-s1 bash eval/rover/r446/run_judge_det.sh 48330 48332 >> /tmp/r446_det.log 2>&1; echo "[jdet24 done]"; tail -8 /tmp/r446_det.log
+ 808795     331 bash eval/rover/r446/run_judge_det.sh 48330 48332
+ 808836     330 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 46049 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+ 808851     329 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /tmp/models/r1-distill-qwen-1.5b-q4km.gguf --host 127.0.0.1 --port 44553 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+- MemAvailable: 1678 MB (测量闸阈值 2800MB)
+
+## 仪器源码事实 (只读)
+CODE_GLOBS: CODE_GLOBS = ["src/**/*.cs"]
+628:    for rel in repo.glob("src/**/*.cs"):
+819:    for rel in repo.glob("src/**/*.cs"):
+
+## 判据 (prereg_q11.json 冻结于 10:15:37, 早于读数 10:16:00)
+selftest_exit=0 (11/11 ok; 含 3 负控 + 1 真空控 + 1 穷尽性)
+run1_exit=0 VERDICT=PASS 9/9
+determinism: sha256 两跑一致 7c8edae571d518fa8e8b874032ebeb20a0dbe517867e803a9270d631635f4720
+
+## 分布读数 (other 桶, 边级)
+{"mixed_rung": 2, "pure_code_mention": 9, "target_non_cs": 6}
+  pure_code_mention  ['SemaphoreSlim']                  -> src/agent/search/SearchFailoverService.cs  rungs=['code_mention']
+  mixed_rung         ['AssemblyLoadContext', 'GetTypes'] -> src/agent/registry/CapabilityScanner.cs  rungs=['absent', 'noncode_mention']
+  pure_code_mention  ['_scanned']                       -> src/agent/registry/CapabilityScanner.cs  rungs=['code_mention']
+  pure_code_mention  ['CacheTtl']                       -> src/agent/contextassembler/ContextAssembler.cs  rungs=['code_mention']
+  mixed_rung         ['ask_id', 'req_id']               -> src/agent.frontendapi/FrontendApiServer.cs  rungs=['absent', 'noncode_mention']
+  pure_code_mention  ['_segmentRouter']                 -> src/agent/IndustrialAgentV2.cs  rungs=['code_mention']
+  target_non_cs      ['PROGRAM_FAMILIES']               -> eval/probe/tasks.py  rungs=['code_mention']
+  target_non_cs      ['MATH_FAMILIES']                  -> eval/probe/tasks.py  rungs=['code_mention']
+  target_non_cs      ['KeyError', 'REF_SRC']            -> eval/probe/run_probe.py  rungs=['absent', 'code_mention']
+  pure_code_mention  ['carryOverCeiling']               -> src/agent.modelqueue/LocalSessionCacheLedger.cs  rungs=['code_mention']
+  target_non_cs      ['solve_agent']                    -> eval/probe/run_probe.py  rungs=['code_mention']
+  target_non_cs      ['solve_agent']                    -> eval/probe/run_probe.py  rungs=['code_mention']
+  pure_code_mention  ['_resultCache']                   -> src/agent/contextassembler/ContextAssembler.cs  rungs=['code_mention']
+  pure_code_mention  ['InlineCode', 'PlainText']        -> src/agent/registry/SegmentKind.cs  rungs=['code_mention']
+  pure_code_mention  ['KnowledgeHint']                  -> src/agent.skills/SkillDispatcher.cs  rungs=['code_mention']
+  pure_code_mention  ['_gate']                          -> src/agent/intent/PlanRunner.cs  rungs=['code_mention']
+  target_non_cs      ['HARD_INPUTS']                    -> eval/probe/tasks.py  rungs=['code_mention']
+
+## 结构可达性 census (全语料, 按 strength×目标扩展名)
+{
+  "<none>": {
+    ".md": 11,
+    "<NONE>": 6
+  },
+  "broken": {
+    ".cs": 38,
+    ".py": 1
+  },
+  "strong": {
+    ".cs": 365
+  },
+  "waived": {
+    ".cs": 371,
+    ".csproj": 8,
+    ".py": 9,
+    ".sh": 3,
+    "<NONE>": 70
+  },
+  "weak": {
+    ".cs": 57,
+    ".py": 6
+  }
+}
+
+strong=365 strong_non_cs=0 ; py_target_weak=6 in_other=6
+caliber={"delta_applied_to_registered_caliber": false, "index_scope_out_edges": 6, "weak_minus_index_scope_out": 57, "weak_total_as_registered": 63}
+
+## 判据明细
+[ok] C1_conservation: Σclasses=17 other_edges=17
+[ok] C2_nontrivial: non_zero_classes=3 dist={'pure_code_mention': 9, 'mixed_rung': 2, 'target_non_cs': 6}
+[ok] C3_structural_reachability: strong=365 strong_non_cs=0
+[ok] C4_py_target_census: py_weak=6 in_other=6 class_target_non_cs=6
+[ok] C5_aggregate_reproduction: recomputed={'cross_file': 33, 'other': 17, 'named_fact': 11, 'comment_only': 2} registered={'cross_file': 33, 'other': 17, 'named_fact': 11, 'comment_only': 2}
+[ok] C7b_declared_rung_weak_not_structural: declared_rung_weak=0 misclassified=0
+[ok] C7c_precedence_effective: default={'pure_code_mention': 9, 'mixed_rung': 2, 'target_non_cs': 6} permuted={'pure_code_mention': 14, 'mixed_rung': 3}
+[ok] C8_vacuous_explicit: other_edges=17 vacuous=False
+[ok] C10_caliber_not_applied: registered=63 minus_scope_out=57
+VERDICT=PASS

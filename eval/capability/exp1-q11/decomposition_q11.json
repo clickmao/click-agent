@@ -1,0 +1,320 @@
+{
+  "caliber": {
+    "delta_applied_to_registered_caliber": false,
+    "index_scope_out_edges": 6,
+    "weak_minus_index_scope_out": 57,
+    "weak_total_as_registered": 63
+  },
+  "checks": [
+    {
+      "name": "C1_conservation",
+      "note": "Σclasses=17 other_edges=17",
+      "ok": true
+    },
+    {
+      "name": "C2_nontrivial",
+      "note": "non_zero_classes=3 dist={'pure_code_mention': 9, 'mixed_rung': 2, 'target_non_cs': 6}",
+      "ok": true
+    },
+    {
+      "name": "C3_structural_reachability",
+      "note": "strong=365 strong_non_cs=0",
+      "ok": true
+    },
+    {
+      "name": "C4_py_target_census",
+      "note": "py_weak=6 in_other=6 class_target_non_cs=6",
+      "ok": true
+    },
+    {
+      "name": "C5_aggregate_reproduction",
+      "note": "recomputed={'cross_file': 33, 'other': 17, 'named_fact': 11, 'comment_only': 2} registered={'cross_file': 33, 'other': 17, 'named_fact': 11, 'comment_only': 2}",
+      "ok": true
+    },
+    {
+      "name": "C7b_declared_rung_weak_not_structural",
+      "note": "declared_rung_weak=0 misclassified=0",
+      "ok": true
+    },
+    {
+      "name": "C7c_precedence_effective",
+      "note": "default={'pure_code_mention': 9, 'mixed_rung': 2, 'target_non_cs': 6} permuted={'pure_code_mention': 14, 'mixed_rung': 3}",
+      "ok": true
+    },
+    {
+      "name": "C8_vacuous_explicit",
+      "note": "other_edges=17 vacuous=False",
+      "ok": true
+    },
+    {
+      "name": "C10_caliber_not_applied",
+      "note": "registered=63 minus_scope_out=57",
+      "ok": true
+    }
+  ],
+  "declared_rung_weak_edges": 0,
+  "declared_rung_weak_misclassified": 0,
+  "input_records": 945,
+  "kind_counts_recomputed": {
+    "comment_only": 2,
+    "cross_file": 33,
+    "named_fact": 11,
+    "other": 17
+  },
+  "other_class_counts": {
+    "mixed_rung": 2,
+    "pure_code_mention": 9,
+    "target_non_cs": 6
+  },
+  "other_class_edges": [
+    {
+      "class": "pure_code_mention",
+      "doc": "docs/plans/v0.17.0-executor-hardening-plan.md",
+      "doc_line": 7,
+      "rungs": [
+        "code_mention"
+      ],
+      "symbols": [
+        "SemaphoreSlim"
+      ],
+      "target": "src/agent/search/SearchFailoverService.cs"
+    },
+    {
+      "class": "mixed_rung",
+      "doc": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+      "doc_line": 54,
+      "rungs": [
+        "absent",
+        "noncode_mention"
+      ],
+      "symbols": [
+        "AssemblyLoadContext",
+        "GetTypes"
+      ],
+      "target": "src/agent/registry/CapabilityScanner.cs"
+    },
+    {
+      "class": "pure_code_mention",
+      "doc": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+      "doc_line": 79,
+      "rungs": [
+        "code_mention"
+      ],
+      "symbols": [
+        "_scanned"
+      ],
+      "target": "src/agent/registry/CapabilityScanner.cs"
+    },
+    {
+      "class": "pure_code_mention",
+      "doc": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+      "doc_line": 80,
+      "rungs": [
+        "code_mention"
+      ],
+      "symbols": [
+        "CacheTtl"
+      ],
+      "target": "src/agent/contextassembler/ContextAssembler.cs"
+    },
+    {
+      "class": "mixed_rung",
+      "doc": "docs/plans/v0.22.0-exp2-multi-option-ask-menu-protocol.md",
+      "doc_line": 51,
+      "rungs": [
+        "absent",
+        "noncode_mention"
+      ],
+      "symbols": [
+        "ask_id",
+        "req_id"
+      ],
+      "target": "src/agent.frontendapi/FrontendApiServer.cs"
+    },
+    {
+      "class": "pure_code_mention",
+      "doc": "docs/plans/v0.23.0-exp10-agent.rover-local-prover-engine.md",
+      "doc_line": 74,
+      "rungs": [
+        "code_mention"
+      ],
+      "symbols": [
+        "_segmentRouter"
+      ],
+      "target": "src/agent/IndustrialAgentV2.cs"
+    },
+    {
+      "class": "target_non_cs",
+      "doc": "docs/plans/v0.25.0-r399-probe-hardening-and-kpi.md",
+      "doc_line": 14,
+      "rungs": [
+        "code_mention"
+      ],
+      "symbols": [
+        "PROGRAM_FAMILIES"
+      ],
+      "target": "eval/probe/tasks.py"
+    },
+    {
+      "class": "target_non_cs",
+      "doc": "docs/plans/v0.25.0-r399-probe-hardening-and-kpi.md",
+      "doc_line": 15,
+      "rungs": [
+        "code_mention"
+      ],
+      "symbols": [
+        "MATH_FAMILIES"
+      ],
+      "target": "eval/probe/tasks.py"
+    },
+    {
+      "class": "target_non_cs",
+      "doc": "docs/plans/v0.25.0-r399-probe-hardening-and-kpi.md",
+      "doc_line": 17,
+      "rungs": [
+        "absent",
+        "code_mention"
+      ],
+      "symbols": [
+        "KeyError",
+        "REF_SRC"
+      ],
+      "target": "eval/probe/run_probe.py"
+    },
+    {
+      "class": "pure_code_mention",
+      "doc": "docs/plans/v0.34.0-r412-multi-session-slot-contention.md",
+      "doc_line": 25,
+      "rungs": [
+        "code_mention"
+      ],
+      "symbols": [
+        "carryOverCeiling"
+      ],
+      "target": "src/agent.modelqueue/LocalSessionCacheLedger.cs"
+    },
+    {
+      "class": "target_non_cs",
+      "doc": "docs/plans/v0.40.0-r419-probe-multiturn.md",
+      "doc_line": 10,
+      "rungs": [
+        "code_mention"
+      ],
+      "symbols": [
+        "solve_agent"
+      ],
+      "target": "eval/probe/run_probe.py"
+    },
+    {
+      "class": "target_non_cs",
+      "doc": "docs/plans/v0.40.0-r419-probe-multiturn.md",
+      "doc_line": 16,
+      "rungs": [
+        "code_mention"
+      ],
+      "symbols": [
+        "solve_agent"
+      ],
+      "target": "eval/probe/run_probe.py"
+    },
+    {
+      "class": "pure_code_mention",
+      "doc": "docs/reports/function-map-R326.md",
+      "doc_line": 289,
+      "rungs": [
+        "code_mention"
+      ],
+      "symbols": [
+        "_resultCache"
+      ],
+      "target": "src/agent/contextassembler/ContextAssembler.cs"
+    },
+    {
+      "class": "pure_code_mention",
+      "doc": "docs/reports/r385/capability-inventory.md",
+      "doc_line": 34,
+      "rungs": [
+        "code_mention"
+      ],
+      "symbols": [
+        "InlineCode",
+        "PlainText"
+      ],
+      "target": "src/agent/registry/SegmentKind.cs"
+    },
+    {
+      "class": "pure_code_mention",
+      "doc": "docs/reports/r385/capability-inventory.md",
+      "doc_line": 102,
+      "rungs": [
+        "code_mention"
+      ],
+      "symbols": [
+        "KnowledgeHint"
+      ],
+      "target": "src/agent.skills/SkillDispatcher.cs"
+    },
+    {
+      "class": "pure_code_mention",
+      "doc": "docs/reports/r385/chain-map.md",
+      "doc_line": 20,
+      "rungs": [
+        "code_mention"
+      ],
+      "symbols": [
+        "_gate"
+      ],
+      "target": "src/agent/intent/PlanRunner.cs"
+    },
+    {
+      "class": "target_non_cs",
+      "doc": "docs/reports/r399/r399-m6-hardening-and-kpi-datapoints.md",
+      "doc_line": 35,
+      "rungs": [
+        "code_mention"
+      ],
+      "symbols": [
+        "HARD_INPUTS"
+      ],
+      "target": "eval/probe/tasks.py"
+    }
+  ],
+  "other_edges": 17,
+  "output_sha256": "a300a174e9782e058a37778f5b466af59a98ca1f5823f9c66e2c15d79b672ce7",
+  "precedence_permutation_changed": true,
+  "precedence_permuted_counts": {
+    "mixed_rung": 3,
+    "pure_code_mention": 14
+  },
+  "prereg_version": "q11.1",
+  "py_target_weak_edges": 6,
+  "py_target_weak_in_other": 6,
+  "strength_by_target_ext": {
+    "<none>": {
+      ".md": 11,
+      "<NONE>": 6
+    },
+    "broken": {
+      ".cs": 38,
+      ".py": 1
+    },
+    "strong": {
+      ".cs": 365
+    },
+    "waived": {
+      ".cs": 371,
+      ".csproj": 8,
+      ".py": 9,
+      ".sh": 3,
+      "<NONE>": 70
+    },
+    "weak": {
+      ".cs": 57,
+      ".py": 6
+    }
+  },
+  "strong_edges": 365,
+  "strong_non_cs": 0,
+  "verdict": "PASS",
+  "weak_edges": 63
+}

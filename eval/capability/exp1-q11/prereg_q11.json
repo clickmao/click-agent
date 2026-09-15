@@ -1,0 +1,59 @@
+{
+  "round": "EXP1-Q11",
+  "note": "本文件在**本轮的定量分布读数之前**写盘 (mtime 早于 decomposition_q11.json)。类别设计取自已归档的 Q10 真实输出样本 (探索性通读, 见 exp1 文档 K.2/K.7), 属「写断言前先查历史真实输出样本」; 判据/预测/判决规则在此刻冻结, 读数后不得改。不占主线轮号 (对侧 30m 作业持 R446 轮号占用 + dotnet 窗口 ⇒ 本侧零 dotnet、不动 src/、不动 eval/rover/r446)。",
+  "predecessor": "eval/capability/exp1-q10/ (v2.6.0 边级 kind 轴: cross_file 33 / other 17 / named_fact 11 / comment_only 2)",
+  "target": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+  "step": "K.7 下轮候选 #1: `other` 桶**先落分布再谈细分** (不给未到期场景预建死代码) —— 本轮只做分布 + 判决, 不动仪器版本",
+  "instrument": {
+    "version": "2.6.0 (本轮**不修改**)",
+    "input": "eval/capability/exp1-q10/citations.jsonl (945 条 live 引用记录)",
+    "source_facts_cited": [
+      "probe_v260.py:78 CODE_GLOBS = [\"src/**/*.cs\"] —— 声明索引语料根只有 C#",
+      "probe_v260.py:621-639 declaration_index(): for rel in repo.glob(\"src/**/*.cs\") ⇒ 非 .cs 目标永不可能取得 declared_type/declared_member",
+      "edge_strength_criteria.strong = 至少一枚被引符号在该文件里有声明 (declared_type/declared_member)"
+    ]
+  },
+  "axioms": [
+    "只读已落盘字段 (edge_strength / edge_kind / kind_per_symbol / resolved), 不做 AST、不新增语料根、不改判任何 verdict",
+    "证据等级上限 L1-static: 本轮无编译/测试/AOT ⇒ 不得对外报 L3/L4",
+    "零产品源码改动; 不跑 dotnet; 不占轮号; 不改 v2.6.0 仪器 (细分**决策**先于细分实现)"
+  ],
+  "classes_preregistered": {
+    "target_non_cs": "被引文件扩展名 != .cs ⇒ 落 declaration_index 语料根之外, 声明面**结构性不可达** (非文档缺陷)",
+    "target_unresolved": "resolved 为空/缺失 ⇒ 无被引文件, 声明面不可达",
+    "mixed_rung": "同一条边内弱符号 rung 取值 >= 2 种 (混面 / 形态-面不齐)",
+    "pure_code_mention": "全部弱符号 rung == code_mention (形态-面齐的纯码面提及: 外部/基类库名、或私有成员在其**自身**文件中被提及而 he-处零声明)",
+    "other_residual": "其余 (catch-all, 弃权单列, 不判红)",
+    "precedence": "target_non_cs > target_unresolved > mixed_rung > pure_code_mention > other_residual (顺序预注册, 不许事后调整)",
+    "granularity": "本轮只做**边级**分解; 边级/符号级两计数不互相换算 (承 Q10 C5)"
+  },
+  "criteria": {
+    "C1_conservation": "Σ classes(边级) == len(other 边) == attribution_q10.json.edge_kind_counts['other'] == 17; 每条 other 边恰一类",
+    "C2_nontrivial": "非零类别数 >= 2 (恒同一类 ⇒ 该桶同质 ⇒ 判测量失败, 先查仪器)",
+    "C3_structural_reachability": "全语料 strong 边中目标非 .cs 者 == 0 ∧ strong 边总数 == 365 (结构命题: 非 C# 目标不可达 strong)",
+    "C4_py_target_census": "全语料弱边中目标 .py 者全部落 other (目标 .py 弱边数 == target_non_cs 类计数)",
+    "C5_aggregate_reproduction": "本分析器从 citations.jsonl 重算的 edge_kind 四类计数与 Q10 已登记聚合逐位相同 (归因可复现, 非新读数)",
+    "C6_determinism": "两跑输出逐字节相同 (sha256 相等)",
+    "C7_negative_controls": "(a) 目标为 .cs 的边不得被判 target_non_cs; (b) .cs 目标且含 declared_* rung 的边在本轮输入(弱边)中应为 0 且若注入则必须落 other_residual 而非任一结构类; (c) precedence 置换 ⇒ 至少一条边分类改变 (证明顺序真在起作用, 分类器非恒真)",
+    "C8_vacuous": "other 边数 == 0 ⇒ 该轴 vacuous pass, 但显式记 vacuous=true (不得静默当通过)",
+    "C9_exit_semantics": "0 判据全过 / 2 判据失败(真红) / 3 测量或环境失败(弃权)",
+    "C10_caliber_delta_reported_not_applied": "同时报「含 index-scope-out 边」与「剔除后」两套弱边分母 (63 vs 63-n); 本轮只登记口径候选, **不改**已登记的用户面口径 (预注册被证伪/收窄走 §宣称收窄)"
+  },
+  "predictions_falsifiable": {
+    "P1": "other 桶非零类别数 >= 3 (预计 target_non_cs / mixed_rung / pure_code_mention 均非零)",
+    "P2": "target_non_cs == 6 (全部 .py 目标弱边)",
+    "P3": "mixed_rung == 2 (键 [KeyError, REF_SRC] 与 [ask_id, req_id] 两族)",
+    "P4": "pure_code_mention >= 5",
+    "P5": "C3 成立: strong 目标非 .cs == 0",
+    "P6": "零回归: C5 + C6 全过"
+  },
+  "exclusions": [
+    "不实现仪器 v2.7.0 细分轴 (本轮只判决; 实现前需先看本分布)",
+    "不扩声明索引语料根到 .py (会改语料口径, 属独立预注册轮次)",
+    "不重跑 v2.6.0 全量探针 (输入 = Q10 已归档 citations.jsonl, 避免在共享机 dotnet 窗口抢核)"
+  ],
+  "honest_boundaries_preregistered": [
+    "本分布只覆盖 Q10 归档语料的当下形态 (docs 语料是活动靶; 对侧正在改 src/ ⇒ 树内声明数可能漂移, 但本轮不重跑探针 ⇒ 不影响读数)",
+    "target_non_cs 的「结构性不可达」是**从源码事实推得** (CODE_GLOBS + declaration_index 实现), 未做跨语言声明索引实验 ⇒ 记为源码级事实 + 语料级零反例, 不升级为实验结论"
+  ]
+}
