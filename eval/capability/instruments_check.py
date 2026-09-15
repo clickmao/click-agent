@@ -14,16 +14,30 @@ EXP1-Q19 扩展 (L2 全字段机检, 契约 §L2):
   自检: `--fingerprint-drift-inject` 在内存中篡改首条被选行的指纹期望值 ⇒ 机检必须判红 (rc!=0)。
         这是**机检规范自身**的注入缺陷负控 —— 不配负控的机检是空心的。
 
+EXP1-Q22 扩展 (归因式副作用闸; schema instruments-check/3 → /4):
+  * 取代旧判据「`git status` 前后**集合差**」: 每条本面命令经 `strace -f -y` 跟踪写类系统调用,
+    窗内脏路径按**写者**归因 —— self_write(判红; 证据=命令序号/pid/系统调用) /
+    foreign_write(并发写者, 单列**不判红**, 佐证=持写句柄的外部 pid, 可为空=写者已关句柄) /
+    pre_existing(窗内内容未变, 单列不判红); 内容变化且无法归因 ⇒ 判红 (fail-closed)。
+    动机: Q21 实测事故 —— 集合差无法区分写者, 对侧在飞的 4 个 tracked 文件被错判成「本面弄脏」,
+    本侧据此 `git checkout` 复原, 抹掉对侧未提交改动; 且对已脏路径的重复写入结构性不可见。
+  * 输出 `side_effect_attribution` (trace 读数 / live_fd 佐证 / 仓内 cwd 普查 / 守恒式 / 旧闸对比列);
+    `side_effects` 语义收窄为「本面命令自己写的路径」(旧值是集合差, 两者不可比)。
+  * 跟踪通道不可用 / 被物理上限截断 / 存在不可解析相对名 ⇒ **rc=3 (弃权)**: 既不判绿也不判红。
+
 用法: python3 eval/capability/instruments_check.py [--only id1,id2] [--fingerprint-drift-inject]
 """
 import hashlib
 import json
+import os
 import pathlib
 import re
 import subprocess
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / 'eval/capability/exp1-q22'))
+import side_effect_gate as seg  # noqa: E402   (EXP1-Q22 归因式副作用闸)
 MAN = ROOT / 'eval/capability/instruments.json'
 OUT = ROOT / 'eval/capability/instruments-check.json'
 OUT_DRIFT = ROOT / 'eval/capability/instruments-check-drift.json'   # 负控模式独立命名空间 (不得覆盖正控证据)
@@ -45,6 +59,10 @@ def sha12(p):
 
 
 def run(cmd):
+    """跑一条本面命令。EXP1-Q22: 经归因式副作用闸包装 (strace -f 跟踪写类系统调用),
+    以便对窗内脏路径按写者归因 —— 见 eval/capability/exp1-q22/side_effect_gate.py。"""
+    if GATE is not None:
+        return GATE.run(cmd)
     p = subprocess.run(['bash', '-lc', cmd], cwd=str(ROOT), capture_output=True, text=True, timeout=900)
     return p.returncode, (p.stdout or '') + (p.stderr or '')
 
@@ -57,6 +75,9 @@ FACE_OUTPUTS = {'eval/capability/instruments-check.json', 'eval/capability/instr
                 'eval/capability/instruments-check-nc-notapplied.json'}
 SCRATCH_PREFIXES = ('eval/capability/exp1-q19/l2runs/', 'eval/capability/exp1-q20/l2runs/',
                     'eval/capability/exp1-q21/', 'eval/capability/exp1-q21-selfcheck/')
+
+# EXP1-Q22: 全量面窗口的归因式副作用闸 (None = 未启用, 兼容库调用面)。
+GATE = None
 
 
 def dirt_set():
@@ -178,6 +199,7 @@ def apply_inject(e, mode):
 
 
 def main():
+    global GATE
     man = json.loads(MAN.read_text(encoding='utf-8'))
     only = None
     if '--only' in sys.argv:
@@ -187,7 +209,12 @@ def main():
         if flag in sys.argv:
             inj_mode, target = mode, path
     drift_inject = inj_mode is not None
-    dirt_before = dirt_set()
+    if os.environ.get(seg.GATE_MARKER):
+        print('SIDE-EFFECT-GATE: 外层闸标记在场 (嵌套调用) ⇒ 本层不重复挂闸 '
+              '(外层 strace 已覆盖本进程树; 实测嵌套 strace 被内核拒绝)')
+    else:
+        GATE = seg.SideEffectGate(ROOT, face_outputs=FACE_OUTPUTS, scratch=SCRATCH_PREFIXES)
+        GATE.begin()
     res, bad, injected, inj_note = [], 0, False, ''
     for e in man['instruments']:
         if only and e['id'] not in only:
@@ -232,15 +259,27 @@ def main():
             for n in ncs:
                 if not n['pass']:
                     print('    nc FAIL:', n['cmd'], '->', n['head'])
-    new_dirt = sorted(p for p in (dirt_set() - dirt_before)
-                      if p not in FACE_OUTPUTS and not p.startswith(SCRATCH_PREFIXES))
-    if new_dirt:
+    gate_rep = GATE.end() if GATE is not None else seg.inherited_report()
+    self_dirt = [w['path'] for w in gate_rep['self_writes']] + [w['path'] for w in gate_rep['touched_and_gone']]
+    if not gate_rep['measurement_ok']:
+        print('SIDE-EFFECT-GATE: 测量失败 (%s) ⇒ 弃权 (rc=3, 既不判绿也不判红)' % ','.join(gate_rep['reasons']))
+    elif self_dirt:
         bad += 1
-        print('SIDE-EFFECT: 全量面弄脏既有产物 (证据降级风险) ⇒', new_dirt)
-    doc = {'schema': 'instruments-check/3', 'manifest': 'eval/capability/instruments.json',
+        print('SIDE-EFFECT: 本面命令弄脏既有产物 (归因证据完备) ⇒', self_dirt)
+    for w in gate_rep['foreign_writes']:
+        print('SIDE-EFFECT(foreign ≈ 并发写者, 不判红): %s live_fd=%s' %
+              (w['path'], [e['pid'] for e in w.get('live_fd', [])]))
+    if gate_rep['pre_existing']:
+        print('SIDE-EFFECT(pre-existing, 不判红): %d 条窗内内容未变' % len(gate_rep['pre_existing']))
+    if gate_rep['old_gate_false_reds']:
+        print('OLD-GATE-FALSE-RED (Q21 事故类): %s' % gate_rep['old_gate_false_reds'])
+    for c in gate_rep['census_in_repo_cwd']:
+        print('  census(仓内 cwd, 信息项): pid=%s cwd=%s cmd=%s' % (c['pid'], c['cwd'], c['cmd'][:70]))
+    doc = {'schema': 'instruments-check/4', 'manifest': 'eval/capability/instruments.json',
            'l2_field_checks': True, 'input_surface_checks': True,
            'drift_injected': bool(inj_mode and injected), 'inject_mode': inj_mode, 'inject_note': inj_note,
-           'side_effects': new_dirt,
+           'side_effects': self_dirt,
+           'side_effect_attribution': gate_rep,
            'passed': len(res) - bad, 'total': len(res), 'results': res}
     target.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
     print(f"\nL2 器具验收面: {len(res) - bad}/{len(res)} 通过; 落盘 {target.relative_to(ROOT)}")
@@ -250,6 +289,8 @@ def main():
     if inj_mode:
         print('INJECT-APPLIED (%s): %s' % (inj_mode, inj_note))
         print('  ⇒ 机检结果: %s' % ('判红 (负控成立)' if bad else '仍全绿 (负控失败!)'))
+    elif not gate_rep['measurement_ok']:
+        return 3
     return 1 if bad else 0
 
 

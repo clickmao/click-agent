@@ -1,0 +1,41 @@
+{
+ "round": "EXP1-Q22",
+ "owner_round": "EXP1-Q22(60m 自检作业; 不占主线轮号)",
+ "ts": "2026-09-15T23:40:00+0800",
+ "kind": "instrument-side-effect-attribution(exp1-L.8 后续候选①: 归因式副作用闸)",
+ "source": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md 附录V V.5/V.6 (下轮修法) + kpi.jsonl EXP1-Q21 段 next[0]",
+ "change_intent": "把 L2 全量面副作用闸从「git 前后集合差」升级为「按写者归因」: self_write 判红; foreign_write(并发写者) 单列不判红; pre_existing 单列不判红; 内容变化且无法归因 ⇒ 判红(fail-closed)。跟踪通道 = strace -f -y (任意语言/全部后代) + 本闸进程 audithook 备用通道; 内容通道 = 窗内 sha12 前后快照。",
+ "why": "Q21 事故: 集合差无法区分写者 ⇒ 对侧 R463 在飞的 4 个 tracked 文件被判成「本面弄脏」⇒ 本侧误做 git checkout 复原, 抹掉对侧未提交改动(对象库无备份); 且对已脏路径的重复写入结构性不可见。",
+ "never_change": [
+  "不改 src/ (零产品代码改动)",
+  "不跑 dotnet (对侧 R465 门控延迟探针 + llama-server 在飞 ⇒ 形式校验第 8 轮结转)",
+  "不占主线轮号 (对侧 R465 在飞, 本侧只用 EXP1-Q22 命名空间)",
+  "不跑全量 L2 面 (probe.run_probe 会拉起 llama-server, 与对侧测量互污) ⇒ 只跑轻量子集做集成零回归",
+  "不 git push / gh api 写 / 镜像上传 (推送暂停令在效)",
+  "不回滚对侧未提交改动 (Q21 教训)"
+ ],
+ "control_matrix_predictions": [
+  {"tag": "C0_baseline", "commands": ["probe-write"], "predict": {"self_writes": [], "foreign_writes": [], "red": false, "measurement_ok": true, "trace.events_min": 1}},
+  {"tag": "C1_self_on_dirty_before", "commands": ["probe-write", "append fixtures/c1.txt"], "predict": {"self_writes": ["eval/capability/exp1-q22-controls/fixtures/c1.txt"], "red": true, "old_gate_delta": "empty(旧闸漏检)"}},
+  {"tag": "C2_foreign_live_fd", "commands": ["probe-write", "signal"], "predict": {"foreign_writes": [".../fixtures/c2.txt"], "red": false, "live_fd": "nonempty(pid)"}},
+  {"tag": "C2b_self_same_path", "commands": ["probe-write", "append fixtures/c2b.txt"], "predict": {"self_writes": [".../fixtures/c2b.txt"], "red": true}},
+  {"tag": "C3_pre_existing", "commands": ["probe-write"], "predict": {"pre_existing": [".../fixtures/c3.txt"], "red": false}},
+  {"tag": "C3b_self_repeat_on_dirty", "commands": ["probe-write", "append fixtures/c3b.txt"], "predict": {"self_writes": [".../fixtures/c3b.txt"], "red": true, "old_gate_delta": "empty(旧闸盲区)"}},
+  {"tag": "C4_foreign_closed_fd", "commands": ["probe-write", "signal"], "predict": {"foreign_writes": [".../fixtures/c4.txt"], "red": false, "live_fd": "empty(写者已关句柄)", "old_gate_delta": [".../fixtures/c4.txt(旧闸判红=Q21 事故类)"]}},
+  {"tag": "C6_clean_to_dirty_tracked", "commands": ["probe-write", "append tracked_fixture.txt"], "predict": {"self_writes": ["eval/capability/exp1-q22-controls/tracked_fixture.txt"], "red": true, "old_gate_delta": "nonempty(两闸一致)"}},
+  {"tag": "C7_trace_unavailable", "commands": ["probe-write", "append fixtures/c7.txt"], "predict": {"verdict": "measure-failed", "measurement_ok": false, "red": false}}
+ ],
+ "criteria": {
+  "P1": "守恒: 四类归属数 == 窗末在册脏路径数 + 窗内被我方动过且已不脏路径数 (逐控制机检)",
+  "P2": "self 通道自证: C1 落 self_write 且判红; 且每控制 trace.events>=1 (通道非空心)",
+  "P3": "foreign 通道自证 + 非空心(成对): C4 落 foreign_write 且不判红; C2 落 foreign_write 且 live_fd 带 pid; C2b 同路径由本侧写 ⇒ self_write 判红",
+  "P4": "Q21 盲区闭合: C3b 新闸 self 命中 ∧ 旧闸集合差为空 (机器证据: old_gate_missed_self_writes 非空)",
+  "P5": "不回归旧闸检出类: C6 clean→dirty 时新闸 self 判红 ∧ 旧闸集合差亦非空",
+  "P6": "白名单语义不变: 白名单内写入 (probe) 不判红且 trace 可见",
+  "P7": "测量失败可见: 跟踪通道不可用 ⇒ verdict=measure-failed ∧ measurement_ok=false ∧ red=false (弃权, 不判绿不判红)",
+  "P8": "集成零回归(L2 轻量子集): 新闸下跑 instruments_check.py --only <轻量子集> ⇒ 各行 rc/pass/substr_ok/l2_fields 与归档全量面对应行逐位相同; 且批次不因对侧写者判红(落 foreign_write 单列)",
+  "P9": "登记侧: 本轮改动 l2.instruments-check 器具字节 ⇒ 刷新该行 instrument_sha12/version(字节派生) 并读回核对; 无残留漂移"
+ },
+ "evidence_level_target": "L2-static (真机执行 + 控制矩阵 + 注入 + 守恒机检; 零 dotnet ⇒ 不报 L3/L4)",
+ "stop_rule": "任一 P 判 FAIL 即如实记录, 不修判据凑绿; 预注册文件逐字不改 (补充走 *_amendments.json"
+}

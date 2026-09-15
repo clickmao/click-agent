@@ -1,0 +1,2373 @@
+{
+ "round": "EXP1-Q22",
+ "schema": "q22-controls/1",
+ "controls_pass": 10,
+ "controls_total": 10,
+ "criteria": {
+  "P1_conservation": true,
+  "P2_self_channel": true,
+  "P3_foreign_channel": true,
+  "P4_q21_blind_spot_closed": true,
+  "P5_no_detection_regression": true,
+  "P6_whitelist_semantics": true,
+  "P7_measure_failure_visible": true,
+  "P8_integration_zero_regress": null,
+  "P9_registry_refresh": null
+ },
+ "checks_posthoc": {
+  "P10_nested_gate_reentrancy": true
+ },
+ "all_pass_except_deferred": true,
+ "results": [
+  {
+   "tag": "C0_baseline",
+   "expect": {
+    "red": false,
+    "measurement_ok": true,
+    "self_empty": true,
+    "foreign_empty": true,
+    "raw_events_min": 1,
+    "probe_in_raw": true,
+    "conservation_ok": true,
+    "probe_not_flagged": true
+   },
+   "observed": {
+    "verdict": "clean",
+    "red": false,
+    "measurement_ok": true,
+    "reasons": [],
+    "self_writes": [],
+    "touched_and_gone": [],
+    "foreign_writes": [],
+    "pre_existing": [
+     "eval/bge/r404/csharp-fusion-replay.json",
+     "eval/capability/exp1-q19/l2runs/selftest_q1.json",
+     "eval/capability/exp1-q20/l2runs/_q17_nc.json",
+     "eval/capability/exp1-q20/l2runs/selftest_q17.json",
+     "eval/capability/exp1-q20/l2runs/verdict_q17.json",
+     "eval/capability/exp1-q22-controls/fixtures/c1.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c4.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c7.txt",
+     "eval/capability/exp1-q22/controls_q22.json",
+     "eval/capability/exp1-q22/evidence_q22.txt",
+     "eval/capability/exp1-q22/face_prev_q21.json",
+     "eval/capability/exp1-q22/l2_face_scoped_q22.json",
+     "eval/capability/exp1-q22/prereg_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.py",
+     "eval/capability/exp1-q22/run_controls_q22.py",
+     "eval/capability/exp1-q22/side_effect_gate.py",
+     "eval/capability/instruments-check-drift.json",
+     "eval/capability/instruments-check.json",
+     "eval/capability/instruments.json",
+     "eval/capability/instruments_check.py",
+     "eval/rover/r443/extract_growth_from_calls.py",
+     "eval/rover/r443/perm_search.py",
+     "eval/rover/r443/pin_msg_search.py",
+     "eval/rover/r443/r1_gate_samples.json",
+     "eval/rover/r443/recon_prompt_origin.sh",
+     "eval/rover/r443/reconstruct_from_calls.py",
+     "eval/rover/r443/search_growth_block.py",
+     "eval/rover/r443/search_growth_v2.py",
+     "eval/rover/r443/search_growth_v3.py",
+     "eval/rover/r443/solve_prompts.py",
+     "eval/rover/r446/probe-judge-det-s1.json",
+     "eval/rover/r446/probe-judge-det-s2.json",
+     "eval/rover/r446/probe-judge-det-s3.json",
+     "eval/rover/r446/probe-judge-det-st.json",
+     "eval/rover/r446/probe-judge-detJDET-s1.json",
+     "eval/rover/r446/probe-judge-detJDET24-s1.json",
+     "eval/rover/r449/real-corpus.jsonl",
+     "eval/rover/r465/probe_latency.py"
+    ],
+    "old_gate_delta": [],
+    "old_gate_false_reds": [],
+    "old_gate_missed_self_writes": [],
+    "live_fd_pids": [],
+    "trace": {
+     "commands": 1,
+     "events": 0,
+     "raw_events": 1,
+     "raw_paths_n": 1,
+     "raw_paths_sample": [
+      "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/probe.txt"
+     ],
+     "log_bytes": 4571,
+     "capped": false,
+     "unresolved_relative": 0,
+     "channel": "strace+audithook"
+    },
+    "conservation": {
+     "classified": 43,
+     "expected": 43,
+     "in_scope_after": 43,
+     "ok": true
+    },
+    "census_n": 3,
+    "census_cmds": [
+     "/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/he",
+     "/usr/bin/bash -c source /home/agentuser/.hermes/cache/termin",
+     "timeout 560 python3 eval/capability/exp1-q22/run_controls_q2"
+    ],
+    "log_bytes": 4571
+   },
+   "checks": {
+    "red": true,
+    "measurement_ok": true,
+    "self_empty": true,
+    "foreign_empty": true,
+    "raw_events_min": true,
+    "probe_in_raw": true,
+    "conservation_ok": true,
+    "probe_not_flagged": true
+   },
+   "pass": true,
+   "cmds": [
+    {
+     "cmd": "printf 'probe\\n' >> /home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/probe.txt; true",
+     "rc": 0,
+     "out_tail": ""
+    }
+   ],
+   "report": {
+    "schema": "side-effect-attribution/1",
+    "verdict": "clean",
+    "red": false,
+    "measurement_ok": true,
+    "reasons": [],
+    "window": {
+     "t0": 1789486216.1292677,
+     "t1": 1789486216.2246735,
+     "trace_dir": "/tmp/q22gate-9ka45e4g"
+    },
+    "trace": {
+     "commands": 1,
+     "events": 0,
+     "raw_events": 1,
+     "raw_paths_n": 1,
+     "raw_paths_sample": [
+      "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/probe.txt"
+     ],
+     "log_bytes": 4571,
+     "capped": false,
+     "unresolved_relative": 0,
+     "channel": "strace+audithook"
+    },
+    "self_writes": [],
+    "touched_and_gone": [],
+    "foreign_writes": [],
+    "pre_existing": [
+     "eval/bge/r404/csharp-fusion-replay.json",
+     "eval/capability/exp1-q19/l2runs/selftest_q1.json",
+     "eval/capability/exp1-q20/l2runs/_q17_nc.json",
+     "eval/capability/exp1-q20/l2runs/selftest_q17.json",
+     "eval/capability/exp1-q20/l2runs/verdict_q17.json",
+     "eval/capability/exp1-q22-controls/fixtures/c1.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c4.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c7.txt",
+     "eval/capability/exp1-q22/controls_q22.json",
+     "eval/capability/exp1-q22/evidence_q22.txt",
+     "eval/capability/exp1-q22/face_prev_q21.json",
+     "eval/capability/exp1-q22/l2_face_scoped_q22.json",
+     "eval/capability/exp1-q22/prereg_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.py",
+     "eval/capability/exp1-q22/run_controls_q22.py",
+     "eval/capability/exp1-q22/side_effect_gate.py",
+     "eval/capability/instruments-check-drift.json",
+     "eval/capability/instruments-check.json",
+     "eval/capability/instruments.json",
+     "eval/capability/instruments_check.py",
+     "eval/rover/r443/extract_growth_from_calls.py",
+     "eval/rover/r443/perm_search.py",
+     "eval/rover/r443/pin_msg_search.py",
+     "eval/rover/r443/r1_gate_samples.json",
+     "eval/rover/r443/recon_prompt_origin.sh",
+     "eval/rover/r443/reconstruct_from_calls.py",
+     "eval/rover/r443/search_growth_block.py",
+     "eval/rover/r443/search_growth_v2.py",
+     "eval/rover/r443/search_growth_v3.py",
+     "eval/rover/r443/solve_prompts.py",
+     "eval/rover/r446/probe-judge-det-s1.json",
+     "eval/rover/r446/probe-judge-det-s2.json",
+     "eval/rover/r446/probe-judge-det-s3.json",
+     "eval/rover/r446/probe-judge-det-st.json",
+     "eval/rover/r446/probe-judge-detJDET-s1.json",
+     "eval/rover/r446/probe-judge-detJDET24-s1.json",
+     "eval/rover/r449/real-corpus.jsonl",
+     "eval/rover/r465/probe_latency.py"
+    ],
+    "old_gate_delta": [],
+    "old_gate_false_reds": [],
+    "old_gate_missed_self_writes": [],
+    "live_fd_scan": {
+     "scanned": 458,
+     "errors": 106
+    },
+    "census_in_repo_cwd": [
+     {
+      "pid": 1090262,
+      "cwd": ".",
+      "cmd": "/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/hermes_kernel_ac9x78t3/hermes_kernel_runner.py"
+     },
+     {
+      "pid": 1163964,
+      "cwd": ".",
+      "cmd": "/usr/bin/bash -c source /home/agentuser/.hermes/cache/terminal/hermes-snap-0e250fa1ba3a.sh >/dev/null 2>&1 || true\nexport AI_AGENT=\"${AI_AGENT:-hermes-agent}\" H"
+     },
+     {
+      "pid": 1163966,
+      "cwd": ".",
+      "cmd": "timeout 560 python3 eval/capability/exp1-q22/run_controls_q22.py"
+     }
+    ],
+    "conservation": {
+     "classified": 43,
+     "expected": 43,
+     "in_scope_after": 43,
+     "ok": true
+    }
+   }
+  },
+  {
+   "tag": "C1_self_on_dirty_before",
+   "expect": {
+    "red": true,
+    "self_has": "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/fixtures/c1.txt",
+    "old_delta_empty": true,
+    "old_missed_has": "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/fixtures/c1.txt",
+    "probe_not_flagged": true,
+    "conservation_ok": true
+   },
+   "observed": {
+    "verdict": "self-side-effect",
+    "red": true,
+    "measurement_ok": true,
+    "reasons": [],
+    "self_writes": [
+     "eval/capability/exp1-q22-controls/fixtures/c1.txt"
+    ],
+    "touched_and_gone": [],
+    "foreign_writes": [],
+    "pre_existing": [
+     "eval/bge/r404/csharp-fusion-replay.json",
+     "eval/capability/exp1-q19/l2runs/selftest_q1.json",
+     "eval/capability/exp1-q20/l2runs/_q17_nc.json",
+     "eval/capability/exp1-q20/l2runs/selftest_q17.json",
+     "eval/capability/exp1-q20/l2runs/verdict_q17.json",
+     "eval/capability/exp1-q22-controls/fixtures/c2.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c4.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c7.txt",
+     "eval/capability/exp1-q22/controls_q22.json",
+     "eval/capability/exp1-q22/evidence_q22.txt",
+     "eval/capability/exp1-q22/face_prev_q21.json",
+     "eval/capability/exp1-q22/l2_face_scoped_q22.json",
+     "eval/capability/exp1-q22/prereg_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.py",
+     "eval/capability/exp1-q22/run_controls_q22.py",
+     "eval/capability/exp1-q22/side_effect_gate.py",
+     "eval/capability/instruments-check-drift.json",
+     "eval/capability/instruments-check.json",
+     "eval/capability/instruments.json",
+     "eval/capability/instruments_check.py",
+     "eval/rover/r443/extract_growth_from_calls.py",
+     "eval/rover/r443/perm_search.py",
+     "eval/rover/r443/pin_msg_search.py",
+     "eval/rover/r443/r1_gate_samples.json",
+     "eval/rover/r443/recon_prompt_origin.sh",
+     "eval/rover/r443/reconstruct_from_calls.py",
+     "eval/rover/r443/search_growth_block.py",
+     "eval/rover/r443/search_growth_v2.py",
+     "eval/rover/r443/search_growth_v3.py",
+     "eval/rover/r443/solve_prompts.py",
+     "eval/rover/r446/probe-judge-det-s1.json",
+     "eval/rover/r446/probe-judge-det-s2.json",
+     "eval/rover/r446/probe-judge-det-s3.json",
+     "eval/rover/r446/probe-judge-det-st.json",
+     "eval/rover/r446/probe-judge-detJDET-s1.json",
+     "eval/rover/r446/probe-judge-detJDET24-s1.json",
+     "eval/rover/r449/real-corpus.jsonl",
+     "eval/rover/r465/probe_latency.py"
+    ],
+    "old_gate_delta": [],
+    "old_gate_false_reds": [],
+    "old_gate_missed_self_writes": [
+     "eval/capability/exp1-q22-controls/fixtures/c1.txt"
+    ],
+    "live_fd_pids": [],
+    "trace": {
+     "commands": 2,
+     "events": 1,
+     "raw_events": 2,
+     "raw_paths_n": 2,
+     "raw_paths_sample": [
+      "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/fixtures/c1.txt",
+      "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/probe.txt"
+     ],
+     "log_bytes": 9154,
+     "capped": false,
+     "unresolved_relative": 0,
+     "channel": "strace+audithook"
+    },
+    "conservation": {
+     "classified": 43,
+     "expected": 43,
+     "in_scope_after": 43,
+     "ok": true
+    },
+    "census_n": 3,
+    "census_cmds": [
+     "/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/he",
+     "/usr/bin/bash -c source /home/agentuser/.hermes/cache/termin",
+     "timeout 560 python3 eval/capability/exp1-q22/run_controls_q2"
+    ],
+    "log_bytes": 9154
+   },
+   "checks": {
+    "red": true,
+    "self_has": true,
+    "old_delta_empty": true,
+    "old_missed_has": true,
+    "probe_not_flagged": true,
+    "conservation_ok": true
+   },
+   "pass": true,
+   "cmds": [
+    {
+     "cmd": "printf 'probe\\n' >> /home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/probe.txt",
+     "rc": 0,
+     "out_tail": ""
+    },
+    {
+     "cmd": "printf 'x\\n' >> /home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/fixtures/c1.txt",
+     "rc": 0,
+     "out_tail": ""
+    }
+   ],
+   "report": {
+    "schema": "side-effect-attribution/1",
+    "verdict": "self-side-effect",
+    "red": true,
+    "measurement_ok": true,
+    "reasons": [],
+    "window": {
+     "t0": 1789486216.2267034,
+     "t1": 1789486216.319082,
+     "trace_dir": "/tmp/q22gate-xjkg50bm"
+    },
+    "trace": {
+     "commands": 2,
+     "events": 1,
+     "raw_events": 2,
+     "raw_paths_n": 2,
+     "raw_paths_sample": [
+      "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/fixtures/c1.txt",
+      "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/probe.txt"
+     ],
+     "log_bytes": 9154,
+     "capped": false,
+     "unresolved_relative": 0,
+     "channel": "strace+audithook"
+    },
+    "self_writes": [
+     {
+      "path": "eval/capability/exp1-q22-controls/fixtures/c1.txt",
+      "evidence": {
+       "cmd": 2,
+       "pid": "1164002",
+       "syscall": "openat",
+       "path": "eval/capability/exp1-q22-controls/fixtures/c1.txt",
+       "failed_ret": false
+      },
+      "sha_before": "4a6689419b00",
+      "sha_after": "549bc1cae4f3"
+     }
+    ],
+    "touched_and_gone": [],
+    "foreign_writes": [],
+    "pre_existing": [
+     "eval/bge/r404/csharp-fusion-replay.json",
+     "eval/capability/exp1-q19/l2runs/selftest_q1.json",
+     "eval/capability/exp1-q20/l2runs/_q17_nc.json",
+     "eval/capability/exp1-q20/l2runs/selftest_q17.json",
+     "eval/capability/exp1-q20/l2runs/verdict_q17.json",
+     "eval/capability/exp1-q22-controls/fixtures/c2.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c4.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c7.txt",
+     "eval/capability/exp1-q22/controls_q22.json",
+     "eval/capability/exp1-q22/evidence_q22.txt",
+     "eval/capability/exp1-q22/face_prev_q21.json",
+     "eval/capability/exp1-q22/l2_face_scoped_q22.json",
+     "eval/capability/exp1-q22/prereg_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.py",
+     "eval/capability/exp1-q22/run_controls_q22.py",
+     "eval/capability/exp1-q22/side_effect_gate.py",
+     "eval/capability/instruments-check-drift.json",
+     "eval/capability/instruments-check.json",
+     "eval/capability/instruments.json",
+     "eval/capability/instruments_check.py",
+     "eval/rover/r443/extract_growth_from_calls.py",
+     "eval/rover/r443/perm_search.py",
+     "eval/rover/r443/pin_msg_search.py",
+     "eval/rover/r443/r1_gate_samples.json",
+     "eval/rover/r443/recon_prompt_origin.sh",
+     "eval/rover/r443/reconstruct_from_calls.py",
+     "eval/rover/r443/search_growth_block.py",
+     "eval/rover/r443/search_growth_v2.py",
+     "eval/rover/r443/search_growth_v3.py",
+     "eval/rover/r443/solve_prompts.py",
+     "eval/rover/r446/probe-judge-det-s1.json",
+     "eval/rover/r446/probe-judge-det-s2.json",
+     "eval/rover/r446/probe-judge-det-s3.json",
+     "eval/rover/r446/probe-judge-det-st.json",
+     "eval/rover/r446/probe-judge-detJDET-s1.json",
+     "eval/rover/r446/probe-judge-detJDET24-s1.json",
+     "eval/rover/r449/real-corpus.jsonl",
+     "eval/rover/r465/probe_latency.py"
+    ],
+    "old_gate_delta": [],
+    "old_gate_false_reds": [],
+    "old_gate_missed_self_writes": [
+     "eval/capability/exp1-q22-controls/fixtures/c1.txt"
+    ],
+    "live_fd_scan": {
+     "scanned": 458,
+     "errors": 106
+    },
+    "census_in_repo_cwd": [
+     {
+      "pid": 1090262,
+      "cwd": ".",
+      "cmd": "/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/hermes_kernel_ac9x78t3/hermes_kernel_runner.py"
+     },
+     {
+      "pid": 1163964,
+      "cwd": ".",
+      "cmd": "/usr/bin/bash -c source /home/agentuser/.hermes/cache/terminal/hermes-snap-0e250fa1ba3a.sh >/dev/null 2>&1 || true\nexport AI_AGENT=\"${AI_AGENT:-hermes-agent}\" H"
+     },
+     {
+      "pid": 1163966,
+      "cwd": ".",
+      "cmd": "timeout 560 python3 eval/capability/exp1-q22/run_controls_q22.py"
+     }
+    ],
+    "conservation": {
+     "classified": 43,
+     "expected": 43,
+     "in_scope_after": 43,
+     "ok": true
+    }
+   }
+  },
+  {
+   "tag": "C2_foreign_live_fd",
+   "expect": {
+    "red": false,
+    "measurement_ok": true,
+    "foreign_has": "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/fixtures/c2.txt",
+    "live_fd_nonempty": true,
+    "probe_not_flagged": true,
+    "conservation_ok": true
+   },
+   "observed": {
+    "verdict": "clean",
+    "red": false,
+    "measurement_ok": true,
+    "reasons": [],
+    "self_writes": [],
+    "touched_and_gone": [],
+    "foreign_writes": [
+     "eval/capability/exp1-q22-controls/fixtures/c2.txt"
+    ],
+    "pre_existing": [
+     "eval/bge/r404/csharp-fusion-replay.json",
+     "eval/capability/exp1-q19/l2runs/selftest_q1.json",
+     "eval/capability/exp1-q20/l2runs/_q17_nc.json",
+     "eval/capability/exp1-q20/l2runs/selftest_q17.json",
+     "eval/capability/exp1-q20/l2runs/verdict_q17.json",
+     "eval/capability/exp1-q22-controls/fixtures/c1.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c4.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c7.txt",
+     "eval/capability/exp1-q22/controls_q22.json",
+     "eval/capability/exp1-q22/evidence_q22.txt",
+     "eval/capability/exp1-q22/face_prev_q21.json",
+     "eval/capability/exp1-q22/l2_face_scoped_q22.json",
+     "eval/capability/exp1-q22/prereg_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.py",
+     "eval/capability/exp1-q22/run_controls_q22.py",
+     "eval/capability/exp1-q22/side_effect_gate.py",
+     "eval/capability/instruments-check-drift.json",
+     "eval/capability/instruments-check.json",
+     "eval/capability/instruments.json",
+     "eval/capability/instruments_check.py",
+     "eval/rover/r443/extract_growth_from_calls.py",
+     "eval/rover/r443/perm_search.py",
+     "eval/rover/r443/pin_msg_search.py",
+     "eval/rover/r443/r1_gate_samples.json",
+     "eval/rover/r443/recon_prompt_origin.sh",
+     "eval/rover/r443/reconstruct_from_calls.py",
+     "eval/rover/r443/search_growth_block.py",
+     "eval/rover/r443/search_growth_v2.py",
+     "eval/rover/r443/search_growth_v3.py",
+     "eval/rover/r443/solve_prompts.py",
+     "eval/rover/r446/probe-judge-det-s1.json",
+     "eval/rover/r446/probe-judge-det-s2.json",
+     "eval/rover/r446/probe-judge-det-s3.json",
+     "eval/rover/r446/probe-judge-det-st.json",
+     "eval/rover/r446/probe-judge-detJDET-s1.json",
+     "eval/rover/r446/probe-judge-detJDET24-s1.json",
+     "eval/rover/r449/real-corpus.jsonl",
+     "eval/rover/r465/probe_latency.py"
+    ],
+    "old_gate_delta": [
+     "eval/capability/exp1-q22-controls/fixtures/c2.txt"
+    ],
+    "old_gate_false_reds": [
+     "eval/capability/exp1-q22-controls/fixtures/c2.txt"
+    ],
+    "old_gate_missed_self_writes": [],
+    "live_fd_pids": [
+     1164018
+    ],
+    "trace": {
+     "commands": 1,
+     "events": 0,
+     "raw_events": 1,
+     "raw_paths_n": 1,
+     "raw_paths_sample": [
+      "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/probe.txt"
+     ],
+     "log_bytes": 4571,
+     "capped": false,
+     "unresolved_relative": 0,
+     "channel": "strace+audithook"
+    },
+    "conservation": {
+     "classified": 43,
+     "expected": 43,
+     "in_scope_after": 43,
+     "ok": true
+    },
+    "census_n": 4,
+    "census_cmds": [
+     "/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/he",
+     "/usr/bin/bash -c source /home/agentuser/.hermes/cache/termin",
+     "timeout 560 python3 eval/capability/exp1-q22/run_controls_q2",
+     "/home/agentuser/.hermes/hermes-agent/venv/bin/python3 -c imp"
+    ],
+    "log_bytes": 4571
+   },
+   "checks": {
+    "red": true,
+    "measurement_ok": true,
+    "foreign_has": true,
+    "live_fd_nonempty": true,
+    "probe_not_flagged": true,
+    "conservation_ok": true,
+    "foreign_write_landed": true
+   },
+   "pass": true,
+   "cmds": [
+    {
+     "cmd": "printf 'probe\\n' >> /home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/probe.txt",
+     "rc": 0,
+     "out_tail": ""
+    }
+   ],
+   "report": {
+    "schema": "side-effect-attribution/1",
+    "verdict": "clean",
+    "red": false,
+    "measurement_ok": true,
+    "reasons": [],
+    "window": {
+     "t0": 1789486216.320751,
+     "t1": 1789486216.4486618,
+     "trace_dir": "/tmp/q22gate-9p9wc3sn"
+    },
+    "trace": {
+     "commands": 1,
+     "events": 0,
+     "raw_events": 1,
+     "raw_paths_n": 1,
+     "raw_paths_sample": [
+      "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/probe.txt"
+     ],
+     "log_bytes": 4571,
+     "capped": false,
+     "unresolved_relative": 0,
+     "channel": "strace+audithook"
+    },
+    "self_writes": [],
+    "touched_and_gone": [],
+    "foreign_writes": [
+     {
+      "path": "eval/capability/exp1-q22-controls/fixtures/c2.txt",
+      "sha_before": null,
+      "sha_after": "ed308f714288",
+      "note": "changed-in-window",
+      "live_fd": [
+       {
+        "pid": 1164018,
+        "fd": "3",
+        "accmode": 1,
+        "path": "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/fixtures/c2.txt",
+        "cmd": "/home/agentuser/.hermes/hermes-agent/venv/bin/python3 -c import os, sys, time\nsig, target, mode = sys.argv[1], sys.argv[2], sys.argv[3]\nfor _ in range(600):"
+       }
+      ]
+     }
+    ],
+    "pre_existing": [
+     "eval/bge/r404/csharp-fusion-replay.json",
+     "eval/capability/exp1-q19/l2runs/selftest_q1.json",
+     "eval/capability/exp1-q20/l2runs/_q17_nc.json",
+     "eval/capability/exp1-q20/l2runs/selftest_q17.json",
+     "eval/capability/exp1-q20/l2runs/verdict_q17.json",
+     "eval/capability/exp1-q22-controls/fixtures/c1.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c4.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c7.txt",
+     "eval/capability/exp1-q22/controls_q22.json",
+     "eval/capability/exp1-q22/evidence_q22.txt",
+     "eval/capability/exp1-q22/face_prev_q21.json",
+     "eval/capability/exp1-q22/l2_face_scoped_q22.json",
+     "eval/capability/exp1-q22/prereg_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.py",
+     "eval/capability/exp1-q22/run_controls_q22.py",
+     "eval/capability/exp1-q22/side_effect_gate.py",
+     "eval/capability/instruments-check-drift.json",
+     "eval/capability/instruments-check.json",
+     "eval/capability/instruments.json",
+     "eval/capability/instruments_check.py",
+     "eval/rover/r443/extract_growth_from_calls.py",
+     "eval/rover/r443/perm_search.py",
+     "eval/rover/r443/pin_msg_search.py",
+     "eval/rover/r443/r1_gate_samples.json",
+     "eval/rover/r443/recon_prompt_origin.sh",
+     "eval/rover/r443/reconstruct_from_calls.py",
+     "eval/rover/r443/search_growth_block.py",
+     "eval/rover/r443/search_growth_v2.py",
+     "eval/rover/r443/search_growth_v3.py",
+     "eval/rover/r443/solve_prompts.py",
+     "eval/rover/r446/probe-judge-det-s1.json",
+     "eval/rover/r446/probe-judge-det-s2.json",
+     "eval/rover/r446/probe-judge-det-s3.json",
+     "eval/rover/r446/probe-judge-det-st.json",
+     "eval/rover/r446/probe-judge-detJDET-s1.json",
+     "eval/rover/r446/probe-judge-detJDET24-s1.json",
+     "eval/rover/r449/real-corpus.jsonl",
+     "eval/rover/r465/probe_latency.py"
+    ],
+    "old_gate_delta": [
+     "eval/capability/exp1-q22-controls/fixtures/c2.txt"
+    ],
+    "old_gate_false_reds": [
+     "eval/capability/exp1-q22-controls/fixtures/c2.txt"
+    ],
+    "old_gate_missed_self_writes": [],
+    "live_fd_scan": {
+     "scanned": 462,
+     "errors": 106
+    },
+    "census_in_repo_cwd": [
+     {
+      "pid": 1090262,
+      "cwd": ".",
+      "cmd": "/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/hermes_kernel_ac9x78t3/hermes_kernel_runner.py"
+     },
+     {
+      "pid": 1163964,
+      "cwd": ".",
+      "cmd": "/usr/bin/bash -c source /home/agentuser/.hermes/cache/terminal/hermes-snap-0e250fa1ba3a.sh >/dev/null 2>&1 || true\nexport AI_AGENT=\"${AI_AGENT:-hermes-agent}\" H"
+     },
+     {
+      "pid": 1163966,
+      "cwd": ".",
+      "cmd": "timeout 560 python3 eval/capability/exp1-q22/run_controls_q22.py"
+     },
+     {
+      "pid": 1164018,
+      "cwd": ".",
+      "cmd": "/home/agentuser/.hermes/hermes-agent/venv/bin/python3 -c import os, sys, time\nsig, target, mode = sys.argv[1], sys.argv[2], sys.argv[3]\nfor _ in range(600):"
+     }
+    ],
+    "conservation": {
+     "classified": 43,
+     "expected": 43,
+     "in_scope_after": 43,
+     "ok": true
+    }
+   }
+  },
+  {
+   "tag": "C2b_self_same_shape",
+   "expect": {
+    "red": true,
+    "self_has": "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/fixtures/c2b.txt",
+    "old_delta_has": "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/fixtures/c2b.txt",
+    "probe_not_flagged": true,
+    "conservation_ok": true
+   },
+   "observed": {
+    "verdict": "self-side-effect",
+    "red": true,
+    "measurement_ok": true,
+    "reasons": [],
+    "self_writes": [
+     "eval/capability/exp1-q22-controls/fixtures/c2b.txt"
+    ],
+    "touched_and_gone": [],
+    "foreign_writes": [],
+    "pre_existing": [
+     "eval/bge/r404/csharp-fusion-replay.json",
+     "eval/capability/exp1-q19/l2runs/selftest_q1.json",
+     "eval/capability/exp1-q20/l2runs/_q17_nc.json",
+     "eval/capability/exp1-q20/l2runs/selftest_q17.json",
+     "eval/capability/exp1-q20/l2runs/verdict_q17.json",
+     "eval/capability/exp1-q22-controls/fixtures/c1.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c4.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c7.txt",
+     "eval/capability/exp1-q22/controls_q22.json",
+     "eval/capability/exp1-q22/evidence_q22.txt",
+     "eval/capability/exp1-q22/face_prev_q21.json",
+     "eval/capability/exp1-q22/l2_face_scoped_q22.json",
+     "eval/capability/exp1-q22/prereg_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.py",
+     "eval/capability/exp1-q22/run_controls_q22.py",
+     "eval/capability/exp1-q22/side_effect_gate.py",
+     "eval/capability/instruments-check-drift.json",
+     "eval/capability/instruments-check.json",
+     "eval/capability/instruments.json",
+     "eval/capability/instruments_check.py",
+     "eval/rover/r443/extract_growth_from_calls.py",
+     "eval/rover/r443/perm_search.py",
+     "eval/rover/r443/pin_msg_search.py",
+     "eval/rover/r443/r1_gate_samples.json",
+     "eval/rover/r443/recon_prompt_origin.sh",
+     "eval/rover/r443/reconstruct_from_calls.py",
+     "eval/rover/r443/search_growth_block.py",
+     "eval/rover/r443/search_growth_v2.py",
+     "eval/rover/r443/search_growth_v3.py",
+     "eval/rover/r443/solve_prompts.py",
+     "eval/rover/r446/probe-judge-det-s1.json",
+     "eval/rover/r446/probe-judge-det-s2.json",
+     "eval/rover/r446/probe-judge-det-s3.json",
+     "eval/rover/r446/probe-judge-det-st.json",
+     "eval/rover/r446/probe-judge-detJDET-s1.json",
+     "eval/rover/r446/probe-judge-detJDET24-s1.json",
+     "eval/rover/r449/real-corpus.jsonl",
+     "eval/rover/r465/probe_latency.py"
+    ],
+    "old_gate_delta": [
+     "eval/capability/exp1-q22-controls/fixtures/c2b.txt"
+    ],
+    "old_gate_false_reds": [],
+    "old_gate_missed_self_writes": [],
+    "live_fd_pids": [],
+    "trace": {
+     "commands": 2,
+     "events": 1,
+     "raw_events": 2,
+     "raw_paths_n": 2,
+     "raw_paths_sample": [
+      "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/fixtures/c2b.txt",
+      "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/probe.txt"
+     ],
+     "log_bytes": 9156,
+     "capped": false,
+     "unresolved_relative": 0,
+     "channel": "strace+audithook"
+    },
+    "conservation": {
+     "classified": 43,
+     "expected": 43,
+     "in_scope_after": 43,
+     "ok": true
+    },
+    "census_n": 3,
+    "census_cmds": [
+     "/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/he",
+     "/usr/bin/bash -c source /home/agentuser/.hermes/cache/termin",
+     "timeout 560 python3 eval/capability/exp1-q22/run_controls_q2"
+    ],
+    "log_bytes": 9156
+   },
+   "checks": {
+    "red": true,
+    "self_has": true,
+    "old_delta_has": true,
+    "probe_not_flagged": true,
+    "conservation_ok": true
+   },
+   "pass": true,
+   "cmds": [
+    {
+     "cmd": "printf 'probe\\n' >> /home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/probe.txt",
+     "rc": 0,
+     "out_tail": ""
+    },
+    {
+     "cmd": "printf 'x\\n' >> /home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/fixtures/c2b.txt",
+     "rc": 0,
+     "out_tail": ""
+    }
+   ],
+   "report": {
+    "schema": "side-effect-attribution/1",
+    "verdict": "self-side-effect",
+    "red": true,
+    "measurement_ok": true,
+    "reasons": [],
+    "window": {
+     "t0": 1789486216.4516137,
+     "t1": 1789486216.5485604,
+     "trace_dir": "/tmp/q22gate-w5273w4a"
+    },
+    "trace": {
+     "commands": 2,
+     "events": 1,
+     "raw_events": 2,
+     "raw_paths_n": 2,
+     "raw_paths_sample": [
+      "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/fixtures/c2b.txt",
+      "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/probe.txt"
+     ],
+     "log_bytes": 9156,
+     "capped": false,
+     "unresolved_relative": 0,
+     "channel": "strace+audithook"
+    },
+    "self_writes": [
+     {
+      "path": "eval/capability/exp1-q22-controls/fixtures/c2b.txt",
+      "evidence": {
+       "cmd": 2,
+       "pid": "1164046",
+       "syscall": "openat",
+       "path": "eval/capability/exp1-q22-controls/fixtures/c2b.txt",
+       "failed_ret": false
+      },
+      "sha_before": null,
+      "sha_after": "73cb3858a687"
+     }
+    ],
+    "touched_and_gone": [],
+    "foreign_writes": [],
+    "pre_existing": [
+     "eval/bge/r404/csharp-fusion-replay.json",
+     "eval/capability/exp1-q19/l2runs/selftest_q1.json",
+     "eval/capability/exp1-q20/l2runs/_q17_nc.json",
+     "eval/capability/exp1-q20/l2runs/selftest_q17.json",
+     "eval/capability/exp1-q20/l2runs/verdict_q17.json",
+     "eval/capability/exp1-q22-controls/fixtures/c1.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c4.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c7.txt",
+     "eval/capability/exp1-q22/controls_q22.json",
+     "eval/capability/exp1-q22/evidence_q22.txt",
+     "eval/capability/exp1-q22/face_prev_q21.json",
+     "eval/capability/exp1-q22/l2_face_scoped_q22.json",
+     "eval/capability/exp1-q22/prereg_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.py",
+     "eval/capability/exp1-q22/run_controls_q22.py",
+     "eval/capability/exp1-q22/side_effect_gate.py",
+     "eval/capability/instruments-check-drift.json",
+     "eval/capability/instruments-check.json",
+     "eval/capability/instruments.json",
+     "eval/capability/instruments_check.py",
+     "eval/rover/r443/extract_growth_from_calls.py",
+     "eval/rover/r443/perm_search.py",
+     "eval/rover/r443/pin_msg_search.py",
+     "eval/rover/r443/r1_gate_samples.json",
+     "eval/rover/r443/recon_prompt_origin.sh",
+     "eval/rover/r443/reconstruct_from_calls.py",
+     "eval/rover/r443/search_growth_block.py",
+     "eval/rover/r443/search_growth_v2.py",
+     "eval/rover/r443/search_growth_v3.py",
+     "eval/rover/r443/solve_prompts.py",
+     "eval/rover/r446/probe-judge-det-s1.json",
+     "eval/rover/r446/probe-judge-det-s2.json",
+     "eval/rover/r446/probe-judge-det-s3.json",
+     "eval/rover/r446/probe-judge-det-st.json",
+     "eval/rover/r446/probe-judge-detJDET-s1.json",
+     "eval/rover/r446/probe-judge-detJDET24-s1.json",
+     "eval/rover/r449/real-corpus.jsonl",
+     "eval/rover/r465/probe_latency.py"
+    ],
+    "old_gate_delta": [
+     "eval/capability/exp1-q22-controls/fixtures/c2b.txt"
+    ],
+    "old_gate_false_reds": [],
+    "old_gate_missed_self_writes": [],
+    "live_fd_scan": {
+     "scanned": 458,
+     "errors": 106
+    },
+    "census_in_repo_cwd": [
+     {
+      "pid": 1090262,
+      "cwd": ".",
+      "cmd": "/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/hermes_kernel_ac9x78t3/hermes_kernel_runner.py"
+     },
+     {
+      "pid": 1163964,
+      "cwd": ".",
+      "cmd": "/usr/bin/bash -c source /home/agentuser/.hermes/cache/terminal/hermes-snap-0e250fa1ba3a.sh >/dev/null 2>&1 || true\nexport AI_AGENT=\"${AI_AGENT:-hermes-agent}\" H"
+     },
+     {
+      "pid": 1163966,
+      "cwd": ".",
+      "cmd": "timeout 560 python3 eval/capability/exp1-q22/run_controls_q22.py"
+     }
+    ],
+    "conservation": {
+     "classified": 43,
+     "expected": 43,
+     "in_scope_after": 43,
+     "ok": true
+    }
+   }
+  },
+  {
+   "tag": "C3_pre_existing",
+   "expect": {
+    "red": false,
+    "self_empty": true,
+    "pre_has": "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/fixtures/c3.txt",
+    "foreign_empty": true,
+    "probe_not_flagged": true,
+    "conservation_ok": true
+   },
+   "observed": {
+    "verdict": "clean",
+    "red": false,
+    "measurement_ok": true,
+    "reasons": [],
+    "self_writes": [],
+    "touched_and_gone": [],
+    "foreign_writes": [],
+    "pre_existing": [
+     "eval/bge/r404/csharp-fusion-replay.json",
+     "eval/capability/exp1-q19/l2runs/selftest_q1.json",
+     "eval/capability/exp1-q20/l2runs/_q17_nc.json",
+     "eval/capability/exp1-q20/l2runs/selftest_q17.json",
+     "eval/capability/exp1-q20/l2runs/verdict_q17.json",
+     "eval/capability/exp1-q22-controls/fixtures/c1.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c4.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c7.txt",
+     "eval/capability/exp1-q22/controls_q22.json",
+     "eval/capability/exp1-q22/evidence_q22.txt",
+     "eval/capability/exp1-q22/face_prev_q21.json",
+     "eval/capability/exp1-q22/l2_face_scoped_q22.json",
+     "eval/capability/exp1-q22/prereg_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.py",
+     "eval/capability/exp1-q22/run_controls_q22.py",
+     "eval/capability/exp1-q22/side_effect_gate.py",
+     "eval/capability/instruments-check-drift.json",
+     "eval/capability/instruments-check.json",
+     "eval/capability/instruments.json",
+     "eval/capability/instruments_check.py",
+     "eval/rover/r443/extract_growth_from_calls.py",
+     "eval/rover/r443/perm_search.py",
+     "eval/rover/r443/pin_msg_search.py",
+     "eval/rover/r443/r1_gate_samples.json",
+     "eval/rover/r443/recon_prompt_origin.sh",
+     "eval/rover/r443/reconstruct_from_calls.py",
+     "eval/rover/r443/search_growth_block.py",
+     "eval/rover/r443/search_growth_v2.py",
+     "eval/rover/r443/search_growth_v3.py",
+     "eval/rover/r443/solve_prompts.py",
+     "eval/rover/r446/probe-judge-det-s1.json",
+     "eval/rover/r446/probe-judge-det-s2.json",
+     "eval/rover/r446/probe-judge-det-s3.json",
+     "eval/rover/r446/probe-judge-det-st.json",
+     "eval/rover/r446/probe-judge-detJDET-s1.json",
+     "eval/rover/r446/probe-judge-detJDET24-s1.json",
+     "eval/rover/r449/real-corpus.jsonl",
+     "eval/rover/r465/probe_latency.py"
+    ],
+    "old_gate_delta": [],
+    "old_gate_false_reds": [],
+    "old_gate_missed_self_writes": [],
+    "live_fd_pids": [],
+    "trace": {
+     "commands": 1,
+     "events": 0,
+     "raw_events": 1,
+     "raw_paths_n": 1,
+     "raw_paths_sample": [
+      "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/probe.txt"
+     ],
+     "log_bytes": 4571,
+     "capped": false,
+     "unresolved_relative": 0,
+     "channel": "strace+audithook"
+    },
+    "conservation": {
+     "classified": 43,
+     "expected": 43,
+     "in_scope_after": 43,
+     "ok": true
+    },
+    "census_n": 3,
+    "census_cmds": [
+     "/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/he",
+     "/usr/bin/bash -c source /home/agentuser/.hermes/cache/termin",
+     "timeout 560 python3 eval/capability/exp1-q22/run_controls_q2"
+    ],
+    "log_bytes": 4571
+   },
+   "checks": {
+    "red": true,
+    "self_empty": true,
+    "pre_has": true,
+    "foreign_empty": true,
+    "probe_not_flagged": true,
+    "conservation_ok": true
+   },
+   "pass": true,
+   "cmds": [
+    {
+     "cmd": "printf 'probe\\n' >> /home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/probe.txt; true",
+     "rc": 0,
+     "out_tail": ""
+    }
+   ],
+   "report": {
+    "schema": "side-effect-attribution/1",
+    "verdict": "clean",
+    "red": false,
+    "measurement_ok": true,
+    "reasons": [],
+    "window": {
+     "t0": 1789486216.550238,
+     "t1": 1789486216.6284504,
+     "trace_dir": "/tmp/q22gate-mjp_dgh_"
+    },
+    "trace": {
+     "commands": 1,
+     "events": 0,
+     "raw_events": 1,
+     "raw_paths_n": 1,
+     "raw_paths_sample": [
+      "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/probe.txt"
+     ],
+     "log_bytes": 4571,
+     "capped": false,
+     "unresolved_relative": 0,
+     "channel": "strace+audithook"
+    },
+    "self_writes": [],
+    "touched_and_gone": [],
+    "foreign_writes": [],
+    "pre_existing": [
+     "eval/bge/r404/csharp-fusion-replay.json",
+     "eval/capability/exp1-q19/l2runs/selftest_q1.json",
+     "eval/capability/exp1-q20/l2runs/_q17_nc.json",
+     "eval/capability/exp1-q20/l2runs/selftest_q17.json",
+     "eval/capability/exp1-q20/l2runs/verdict_q17.json",
+     "eval/capability/exp1-q22-controls/fixtures/c1.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c4.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c7.txt",
+     "eval/capability/exp1-q22/controls_q22.json",
+     "eval/capability/exp1-q22/evidence_q22.txt",
+     "eval/capability/exp1-q22/face_prev_q21.json",
+     "eval/capability/exp1-q22/l2_face_scoped_q22.json",
+     "eval/capability/exp1-q22/prereg_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.py",
+     "eval/capability/exp1-q22/run_controls_q22.py",
+     "eval/capability/exp1-q22/side_effect_gate.py",
+     "eval/capability/instruments-check-drift.json",
+     "eval/capability/instruments-check.json",
+     "eval/capability/instruments.json",
+     "eval/capability/instruments_check.py",
+     "eval/rover/r443/extract_growth_from_calls.py",
+     "eval/rover/r443/perm_search.py",
+     "eval/rover/r443/pin_msg_search.py",
+     "eval/rover/r443/r1_gate_samples.json",
+     "eval/rover/r443/recon_prompt_origin.sh",
+     "eval/rover/r443/reconstruct_from_calls.py",
+     "eval/rover/r443/search_growth_block.py",
+     "eval/rover/r443/search_growth_v2.py",
+     "eval/rover/r443/search_growth_v3.py",
+     "eval/rover/r443/solve_prompts.py",
+     "eval/rover/r446/probe-judge-det-s1.json",
+     "eval/rover/r446/probe-judge-det-s2.json",
+     "eval/rover/r446/probe-judge-det-s3.json",
+     "eval/rover/r446/probe-judge-det-st.json",
+     "eval/rover/r446/probe-judge-detJDET-s1.json",
+     "eval/rover/r446/probe-judge-detJDET24-s1.json",
+     "eval/rover/r449/real-corpus.jsonl",
+     "eval/rover/r465/probe_latency.py"
+    ],
+    "old_gate_delta": [],
+    "old_gate_false_reds": [],
+    "old_gate_missed_self_writes": [],
+    "live_fd_scan": {
+     "scanned": 458,
+     "errors": 106
+    },
+    "census_in_repo_cwd": [
+     {
+      "pid": 1090262,
+      "cwd": ".",
+      "cmd": "/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/hermes_kernel_ac9x78t3/hermes_kernel_runner.py"
+     },
+     {
+      "pid": 1163964,
+      "cwd": ".",
+      "cmd": "/usr/bin/bash -c source /home/agentuser/.hermes/cache/terminal/hermes-snap-0e250fa1ba3a.sh >/dev/null 2>&1 || true\nexport AI_AGENT=\"${AI_AGENT:-hermes-agent}\" H"
+     },
+     {
+      "pid": 1163966,
+      "cwd": ".",
+      "cmd": "timeout 560 python3 eval/capability/exp1-q22/run_controls_q22.py"
+     }
+    ],
+    "conservation": {
+     "classified": 43,
+     "expected": 43,
+     "in_scope_after": 43,
+     "ok": true
+    }
+   }
+  },
+  {
+   "tag": "C3b_self_repeat_on_dirty",
+   "expect": {
+    "red": true,
+    "self_has": "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/fixtures/c3b.txt",
+    "old_delta_empty": true,
+    "old_missed_has": "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/fixtures/c3b.txt",
+    "probe_not_flagged": true,
+    "conservation_ok": true
+   },
+   "observed": {
+    "verdict": "self-side-effect",
+    "red": true,
+    "measurement_ok": true,
+    "reasons": [],
+    "self_writes": [
+     "eval/capability/exp1-q22-controls/fixtures/c3b.txt"
+    ],
+    "touched_and_gone": [],
+    "foreign_writes": [],
+    "pre_existing": [
+     "eval/bge/r404/csharp-fusion-replay.json",
+     "eval/capability/exp1-q19/l2runs/selftest_q1.json",
+     "eval/capability/exp1-q20/l2runs/_q17_nc.json",
+     "eval/capability/exp1-q20/l2runs/selftest_q17.json",
+     "eval/capability/exp1-q20/l2runs/verdict_q17.json",
+     "eval/capability/exp1-q22-controls/fixtures/c1.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c4.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c7.txt",
+     "eval/capability/exp1-q22/controls_q22.json",
+     "eval/capability/exp1-q22/evidence_q22.txt",
+     "eval/capability/exp1-q22/face_prev_q21.json",
+     "eval/capability/exp1-q22/l2_face_scoped_q22.json",
+     "eval/capability/exp1-q22/prereg_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.py",
+     "eval/capability/exp1-q22/run_controls_q22.py",
+     "eval/capability/exp1-q22/side_effect_gate.py",
+     "eval/capability/instruments-check-drift.json",
+     "eval/capability/instruments-check.json",
+     "eval/capability/instruments.json",
+     "eval/capability/instruments_check.py",
+     "eval/rover/r443/extract_growth_from_calls.py",
+     "eval/rover/r443/perm_search.py",
+     "eval/rover/r443/pin_msg_search.py",
+     "eval/rover/r443/r1_gate_samples.json",
+     "eval/rover/r443/recon_prompt_origin.sh",
+     "eval/rover/r443/reconstruct_from_calls.py",
+     "eval/rover/r443/search_growth_block.py",
+     "eval/rover/r443/search_growth_v2.py",
+     "eval/rover/r443/search_growth_v3.py",
+     "eval/rover/r443/solve_prompts.py",
+     "eval/rover/r446/probe-judge-det-s1.json",
+     "eval/rover/r446/probe-judge-det-s2.json",
+     "eval/rover/r446/probe-judge-det-s3.json",
+     "eval/rover/r446/probe-judge-det-st.json",
+     "eval/rover/r446/probe-judge-detJDET-s1.json",
+     "eval/rover/r446/probe-judge-detJDET24-s1.json",
+     "eval/rover/r449/real-corpus.jsonl",
+     "eval/rover/r465/probe_latency.py"
+    ],
+    "old_gate_delta": [],
+    "old_gate_false_reds": [],
+    "old_gate_missed_self_writes": [
+     "eval/capability/exp1-q22-controls/fixtures/c3b.txt"
+    ],
+    "live_fd_pids": [],
+    "trace": {
+     "commands": 2,
+     "events": 1,
+     "raw_events": 2,
+     "raw_paths_n": 2,
+     "raw_paths_sample": [
+      "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/fixtures/c3b.txt",
+      "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/probe.txt"
+     ],
+     "log_bytes": 9156,
+     "capped": false,
+     "unresolved_relative": 0,
+     "channel": "strace+audithook"
+    },
+    "conservation": {
+     "classified": 43,
+     "expected": 43,
+     "in_scope_after": 43,
+     "ok": true
+    },
+    "census_n": 3,
+    "census_cmds": [
+     "/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/he",
+     "/usr/bin/bash -c source /home/agentuser/.hermes/cache/termin",
+     "timeout 560 python3 eval/capability/exp1-q22/run_controls_q2"
+    ],
+    "log_bytes": 9156
+   },
+   "checks": {
+    "red": true,
+    "self_has": true,
+    "old_delta_empty": true,
+    "old_missed_has": true,
+    "probe_not_flagged": true,
+    "conservation_ok": true
+   },
+   "pass": true,
+   "cmds": [
+    {
+     "cmd": "printf 'probe\\n' >> /home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/probe.txt",
+     "rc": 0,
+     "out_tail": ""
+    },
+    {
+     "cmd": "printf 'x\\n' >> /home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/fixtures/c3b.txt",
+     "rc": 0,
+     "out_tail": ""
+    }
+   ],
+   "report": {
+    "schema": "side-effect-attribution/1",
+    "verdict": "self-side-effect",
+    "red": true,
+    "measurement_ok": true,
+    "reasons": [],
+    "window": {
+     "t0": 1789486216.6300845,
+     "t1": 1789486216.7233655,
+     "trace_dir": "/tmp/q22gate-mb84cydr"
+    },
+    "trace": {
+     "commands": 2,
+     "events": 1,
+     "raw_events": 2,
+     "raw_paths_n": 2,
+     "raw_paths_sample": [
+      "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/fixtures/c3b.txt",
+      "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/probe.txt"
+     ],
+     "log_bytes": 9156,
+     "capped": false,
+     "unresolved_relative": 0,
+     "channel": "strace+audithook"
+    },
+    "self_writes": [
+     {
+      "path": "eval/capability/exp1-q22-controls/fixtures/c3b.txt",
+      "evidence": {
+       "cmd": 2,
+       "pid": "1164089",
+       "syscall": "openat",
+       "path": "eval/capability/exp1-q22-controls/fixtures/c3b.txt",
+       "failed_ret": false
+      },
+      "sha_before": "4a6689419b00",
+      "sha_after": "549bc1cae4f3"
+     }
+    ],
+    "touched_and_gone": [],
+    "foreign_writes": [],
+    "pre_existing": [
+     "eval/bge/r404/csharp-fusion-replay.json",
+     "eval/capability/exp1-q19/l2runs/selftest_q1.json",
+     "eval/capability/exp1-q20/l2runs/_q17_nc.json",
+     "eval/capability/exp1-q20/l2runs/selftest_q17.json",
+     "eval/capability/exp1-q20/l2runs/verdict_q17.json",
+     "eval/capability/exp1-q22-controls/fixtures/c1.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c4.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c7.txt",
+     "eval/capability/exp1-q22/controls_q22.json",
+     "eval/capability/exp1-q22/evidence_q22.txt",
+     "eval/capability/exp1-q22/face_prev_q21.json",
+     "eval/capability/exp1-q22/l2_face_scoped_q22.json",
+     "eval/capability/exp1-q22/prereg_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.py",
+     "eval/capability/exp1-q22/run_controls_q22.py",
+     "eval/capability/exp1-q22/side_effect_gate.py",
+     "eval/capability/instruments-check-drift.json",
+     "eval/capability/instruments-check.json",
+     "eval/capability/instruments.json",
+     "eval/capability/instruments_check.py",
+     "eval/rover/r443/extract_growth_from_calls.py",
+     "eval/rover/r443/perm_search.py",
+     "eval/rover/r443/pin_msg_search.py",
+     "eval/rover/r443/r1_gate_samples.json",
+     "eval/rover/r443/recon_prompt_origin.sh",
+     "eval/rover/r443/reconstruct_from_calls.py",
+     "eval/rover/r443/search_growth_block.py",
+     "eval/rover/r443/search_growth_v2.py",
+     "eval/rover/r443/search_growth_v3.py",
+     "eval/rover/r443/solve_prompts.py",
+     "eval/rover/r446/probe-judge-det-s1.json",
+     "eval/rover/r446/probe-judge-det-s2.json",
+     "eval/rover/r446/probe-judge-det-s3.json",
+     "eval/rover/r446/probe-judge-det-st.json",
+     "eval/rover/r446/probe-judge-detJDET-s1.json",
+     "eval/rover/r446/probe-judge-detJDET24-s1.json",
+     "eval/rover/r449/real-corpus.jsonl",
+     "eval/rover/r465/probe_latency.py"
+    ],
+    "old_gate_delta": [],
+    "old_gate_false_reds": [],
+    "old_gate_missed_self_writes": [
+     "eval/capability/exp1-q22-controls/fixtures/c3b.txt"
+    ],
+    "live_fd_scan": {
+     "scanned": 458,
+     "errors": 106
+    },
+    "census_in_repo_cwd": [
+     {
+      "pid": 1090262,
+      "cwd": ".",
+      "cmd": "/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/hermes_kernel_ac9x78t3/hermes_kernel_runner.py"
+     },
+     {
+      "pid": 1163964,
+      "cwd": ".",
+      "cmd": "/usr/bin/bash -c source /home/agentuser/.hermes/cache/terminal/hermes-snap-0e250fa1ba3a.sh >/dev/null 2>&1 || true\nexport AI_AGENT=\"${AI_AGENT:-hermes-agent}\" H"
+     },
+     {
+      "pid": 1163966,
+      "cwd": ".",
+      "cmd": "timeout 560 python3 eval/capability/exp1-q22/run_controls_q22.py"
+     }
+    ],
+    "conservation": {
+     "classified": 43,
+     "expected": 43,
+     "in_scope_after": 43,
+     "ok": true
+    }
+   }
+  },
+  {
+   "tag": "C4_foreign_closed_fd",
+   "expect": {
+    "red": false,
+    "measurement_ok": true,
+    "foreign_has": "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/fixtures/c4.txt",
+    "live_fd_empty": true,
+    "old_delta_has": "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/fixtures/c4.txt",
+    "probe_not_flagged": true,
+    "conservation_ok": true
+   },
+   "observed": {
+    "verdict": "clean",
+    "red": false,
+    "measurement_ok": true,
+    "reasons": [],
+    "self_writes": [],
+    "touched_and_gone": [],
+    "foreign_writes": [
+     "eval/capability/exp1-q22-controls/fixtures/c4.txt"
+    ],
+    "pre_existing": [
+     "eval/bge/r404/csharp-fusion-replay.json",
+     "eval/capability/exp1-q19/l2runs/selftest_q1.json",
+     "eval/capability/exp1-q20/l2runs/_q17_nc.json",
+     "eval/capability/exp1-q20/l2runs/selftest_q17.json",
+     "eval/capability/exp1-q20/l2runs/verdict_q17.json",
+     "eval/capability/exp1-q22-controls/fixtures/c1.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c7.txt",
+     "eval/capability/exp1-q22/controls_q22.json",
+     "eval/capability/exp1-q22/evidence_q22.txt",
+     "eval/capability/exp1-q22/face_prev_q21.json",
+     "eval/capability/exp1-q22/l2_face_scoped_q22.json",
+     "eval/capability/exp1-q22/prereg_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.py",
+     "eval/capability/exp1-q22/run_controls_q22.py",
+     "eval/capability/exp1-q22/side_effect_gate.py",
+     "eval/capability/instruments-check-drift.json",
+     "eval/capability/instruments-check.json",
+     "eval/capability/instruments.json",
+     "eval/capability/instruments_check.py",
+     "eval/rover/r443/extract_growth_from_calls.py",
+     "eval/rover/r443/perm_search.py",
+     "eval/rover/r443/pin_msg_search.py",
+     "eval/rover/r443/r1_gate_samples.json",
+     "eval/rover/r443/recon_prompt_origin.sh",
+     "eval/rover/r443/reconstruct_from_calls.py",
+     "eval/rover/r443/search_growth_block.py",
+     "eval/rover/r443/search_growth_v2.py",
+     "eval/rover/r443/search_growth_v3.py",
+     "eval/rover/r443/solve_prompts.py",
+     "eval/rover/r446/probe-judge-det-s1.json",
+     "eval/rover/r446/probe-judge-det-s2.json",
+     "eval/rover/r446/probe-judge-det-s3.json",
+     "eval/rover/r446/probe-judge-det-st.json",
+     "eval/rover/r446/probe-judge-detJDET-s1.json",
+     "eval/rover/r446/probe-judge-detJDET24-s1.json",
+     "eval/rover/r449/real-corpus.jsonl",
+     "eval/rover/r465/probe_latency.py"
+    ],
+    "old_gate_delta": [
+     "eval/capability/exp1-q22-controls/fixtures/c4.txt"
+    ],
+    "old_gate_false_reds": [
+     "eval/capability/exp1-q22-controls/fixtures/c4.txt"
+    ],
+    "old_gate_missed_self_writes": [],
+    "live_fd_pids": [],
+    "trace": {
+     "commands": 1,
+     "events": 0,
+     "raw_events": 1,
+     "raw_paths_n": 1,
+     "raw_paths_sample": [
+      "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/probe.txt"
+     ],
+     "log_bytes": 4571,
+     "capped": false,
+     "unresolved_relative": 0,
+     "channel": "strace+audithook"
+    },
+    "conservation": {
+     "classified": 43,
+     "expected": 43,
+     "in_scope_after": 43,
+     "ok": true
+    },
+    "census_n": 3,
+    "census_cmds": [
+     "/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/he",
+     "/usr/bin/bash -c source /home/agentuser/.hermes/cache/termin",
+     "timeout 560 python3 eval/capability/exp1-q22/run_controls_q2"
+    ],
+    "log_bytes": 4571
+   },
+   "checks": {
+    "red": true,
+    "measurement_ok": true,
+    "foreign_has": true,
+    "live_fd_empty": true,
+    "old_delta_has": true,
+    "probe_not_flagged": true,
+    "conservation_ok": true,
+    "foreign_write_landed": true
+   },
+   "pass": true,
+   "cmds": [
+    {
+     "cmd": "printf 'probe\\n' >> /home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/probe.txt",
+     "rc": 0,
+     "out_tail": ""
+    }
+   ],
+   "report": {
+    "schema": "side-effect-attribution/1",
+    "verdict": "clean",
+    "red": false,
+    "measurement_ok": true,
+    "reasons": [],
+    "window": {
+     "t0": 1789486216.7250473,
+     "t1": 1789486216.8591297,
+     "trace_dir": "/tmp/q22gate-2kti5e75"
+    },
+    "trace": {
+     "commands": 1,
+     "events": 0,
+     "raw_events": 1,
+     "raw_paths_n": 1,
+     "raw_paths_sample": [
+      "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/probe.txt"
+     ],
+     "log_bytes": 4571,
+     "capped": false,
+     "unresolved_relative": 0,
+     "channel": "strace+audithook"
+    },
+    "self_writes": [],
+    "touched_and_gone": [],
+    "foreign_writes": [
+     {
+      "path": "eval/capability/exp1-q22-controls/fixtures/c4.txt",
+      "sha_before": null,
+      "sha_after": "ed308f714288",
+      "note": "changed-in-window",
+      "live_fd": []
+     }
+    ],
+    "pre_existing": [
+     "eval/bge/r404/csharp-fusion-replay.json",
+     "eval/capability/exp1-q19/l2runs/selftest_q1.json",
+     "eval/capability/exp1-q20/l2runs/_q17_nc.json",
+     "eval/capability/exp1-q20/l2runs/selftest_q17.json",
+     "eval/capability/exp1-q20/l2runs/verdict_q17.json",
+     "eval/capability/exp1-q22-controls/fixtures/c1.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c7.txt",
+     "eval/capability/exp1-q22/controls_q22.json",
+     "eval/capability/exp1-q22/evidence_q22.txt",
+     "eval/capability/exp1-q22/face_prev_q21.json",
+     "eval/capability/exp1-q22/l2_face_scoped_q22.json",
+     "eval/capability/exp1-q22/prereg_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.py",
+     "eval/capability/exp1-q22/run_controls_q22.py",
+     "eval/capability/exp1-q22/side_effect_gate.py",
+     "eval/capability/instruments-check-drift.json",
+     "eval/capability/instruments-check.json",
+     "eval/capability/instruments.json",
+     "eval/capability/instruments_check.py",
+     "eval/rover/r443/extract_growth_from_calls.py",
+     "eval/rover/r443/perm_search.py",
+     "eval/rover/r443/pin_msg_search.py",
+     "eval/rover/r443/r1_gate_samples.json",
+     "eval/rover/r443/recon_prompt_origin.sh",
+     "eval/rover/r443/reconstruct_from_calls.py",
+     "eval/rover/r443/search_growth_block.py",
+     "eval/rover/r443/search_growth_v2.py",
+     "eval/rover/r443/search_growth_v3.py",
+     "eval/rover/r443/solve_prompts.py",
+     "eval/rover/r446/probe-judge-det-s1.json",
+     "eval/rover/r446/probe-judge-det-s2.json",
+     "eval/rover/r446/probe-judge-det-s3.json",
+     "eval/rover/r446/probe-judge-det-st.json",
+     "eval/rover/r446/probe-judge-detJDET-s1.json",
+     "eval/rover/r446/probe-judge-detJDET24-s1.json",
+     "eval/rover/r449/real-corpus.jsonl",
+     "eval/rover/r465/probe_latency.py"
+    ],
+    "old_gate_delta": [
+     "eval/capability/exp1-q22-controls/fixtures/c4.txt"
+    ],
+    "old_gate_false_reds": [
+     "eval/capability/exp1-q22-controls/fixtures/c4.txt"
+    ],
+    "old_gate_missed_self_writes": [],
+    "live_fd_scan": {
+     "scanned": 458,
+     "errors": 106
+    },
+    "census_in_repo_cwd": [
+     {
+      "pid": 1090262,
+      "cwd": ".",
+      "cmd": "/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/hermes_kernel_ac9x78t3/hermes_kernel_runner.py"
+     },
+     {
+      "pid": 1163964,
+      "cwd": ".",
+      "cmd": "/usr/bin/bash -c source /home/agentuser/.hermes/cache/terminal/hermes-snap-0e250fa1ba3a.sh >/dev/null 2>&1 || true\nexport AI_AGENT=\"${AI_AGENT:-hermes-agent}\" H"
+     },
+     {
+      "pid": 1163966,
+      "cwd": ".",
+      "cmd": "timeout 560 python3 eval/capability/exp1-q22/run_controls_q22.py"
+     }
+    ],
+    "conservation": {
+     "classified": 43,
+     "expected": 43,
+     "in_scope_after": 43,
+     "ok": true
+    }
+   }
+  },
+  {
+   "tag": "C6_clean_to_dirty_tracked",
+   "expect": {
+    "red": true,
+    "self_has": "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/tracked_fixture.txt",
+    "old_delta_has": "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/tracked_fixture.txt",
+    "probe_not_flagged": true,
+    "conservation_ok": true
+   },
+   "observed": {
+    "verdict": "self-side-effect",
+    "red": true,
+    "measurement_ok": true,
+    "reasons": [],
+    "self_writes": [
+     "eval/capability/exp1-q22-controls/tracked_fixture.txt"
+    ],
+    "touched_and_gone": [],
+    "foreign_writes": [],
+    "pre_existing": [
+     "eval/bge/r404/csharp-fusion-replay.json",
+     "eval/capability/exp1-q19/l2runs/selftest_q1.json",
+     "eval/capability/exp1-q20/l2runs/_q17_nc.json",
+     "eval/capability/exp1-q20/l2runs/selftest_q17.json",
+     "eval/capability/exp1-q20/l2runs/verdict_q17.json",
+     "eval/capability/exp1-q22-controls/fixtures/c1.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c4.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c7.txt",
+     "eval/capability/exp1-q22/controls_q22.json",
+     "eval/capability/exp1-q22/evidence_q22.txt",
+     "eval/capability/exp1-q22/face_prev_q21.json",
+     "eval/capability/exp1-q22/l2_face_scoped_q22.json",
+     "eval/capability/exp1-q22/prereg_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.py",
+     "eval/capability/exp1-q22/run_controls_q22.py",
+     "eval/capability/exp1-q22/side_effect_gate.py",
+     "eval/capability/instruments-check-drift.json",
+     "eval/capability/instruments-check.json",
+     "eval/capability/instruments.json",
+     "eval/capability/instruments_check.py",
+     "eval/rover/r443/extract_growth_from_calls.py",
+     "eval/rover/r443/perm_search.py",
+     "eval/rover/r443/pin_msg_search.py",
+     "eval/rover/r443/r1_gate_samples.json",
+     "eval/rover/r443/recon_prompt_origin.sh",
+     "eval/rover/r443/reconstruct_from_calls.py",
+     "eval/rover/r443/search_growth_block.py",
+     "eval/rover/r443/search_growth_v2.py",
+     "eval/rover/r443/search_growth_v3.py",
+     "eval/rover/r443/solve_prompts.py",
+     "eval/rover/r446/probe-judge-det-s1.json",
+     "eval/rover/r446/probe-judge-det-s2.json",
+     "eval/rover/r446/probe-judge-det-s3.json",
+     "eval/rover/r446/probe-judge-det-st.json",
+     "eval/rover/r446/probe-judge-detJDET-s1.json",
+     "eval/rover/r446/probe-judge-detJDET24-s1.json",
+     "eval/rover/r449/real-corpus.jsonl",
+     "eval/rover/r465/probe_latency.py"
+    ],
+    "old_gate_delta": [
+     "eval/capability/exp1-q22-controls/tracked_fixture.txt"
+    ],
+    "old_gate_false_reds": [],
+    "old_gate_missed_self_writes": [],
+    "live_fd_pids": [],
+    "trace": {
+     "commands": 2,
+     "events": 1,
+     "raw_events": 2,
+     "raw_paths_n": 2,
+     "raw_paths_sample": [
+      "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/probe.txt",
+      "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/tracked_fixture.txt"
+     ],
+     "log_bytes": 9162,
+     "capped": false,
+     "unresolved_relative": 0,
+     "channel": "strace+audithook"
+    },
+    "conservation": {
+     "classified": 44,
+     "expected": 44,
+     "in_scope_after": 44,
+     "ok": true
+    },
+    "census_n": 3,
+    "census_cmds": [
+     "/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/he",
+     "/usr/bin/bash -c source /home/agentuser/.hermes/cache/termin",
+     "timeout 560 python3 eval/capability/exp1-q22/run_controls_q2"
+    ],
+    "log_bytes": 9162
+   },
+   "checks": {
+    "red": true,
+    "self_has": true,
+    "old_delta_has": true,
+    "probe_not_flagged": true,
+    "conservation_ok": true,
+    "restored_byte_identical": true
+   },
+   "pass": true,
+   "cmds": [
+    {
+     "cmd": "printf 'probe\\n' >> /home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/probe.txt",
+     "rc": 0,
+     "out_tail": ""
+    },
+    {
+     "cmd": "printf 'x\\n' >> /home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/tracked_fixture.txt",
+     "rc": 0,
+     "out_tail": ""
+    }
+   ],
+   "report": {
+    "schema": "side-effect-attribution/1",
+    "verdict": "self-side-effect",
+    "red": true,
+    "measurement_ok": true,
+    "reasons": [],
+    "window": {
+     "t0": 1789486216.8726778,
+     "t1": 1789486216.9734907,
+     "trace_dir": "/tmp/q22gate-cum9vh6t"
+    },
+    "trace": {
+     "commands": 2,
+     "events": 1,
+     "raw_events": 2,
+     "raw_paths_n": 2,
+     "raw_paths_sample": [
+      "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/probe.txt",
+      "/home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/tracked_fixture.txt"
+     ],
+     "log_bytes": 9162,
+     "capped": false,
+     "unresolved_relative": 0,
+     "channel": "strace+audithook"
+    },
+    "self_writes": [
+     {
+      "path": "eval/capability/exp1-q22-controls/tracked_fixture.txt",
+      "evidence": {
+       "cmd": 2,
+       "pid": "1164147",
+       "syscall": "openat",
+       "path": "eval/capability/exp1-q22-controls/tracked_fixture.txt",
+       "failed_ret": false
+      },
+      "sha_before": null,
+      "sha_after": "c71bb016169d"
+     }
+    ],
+    "touched_and_gone": [],
+    "foreign_writes": [],
+    "pre_existing": [
+     "eval/bge/r404/csharp-fusion-replay.json",
+     "eval/capability/exp1-q19/l2runs/selftest_q1.json",
+     "eval/capability/exp1-q20/l2runs/_q17_nc.json",
+     "eval/capability/exp1-q20/l2runs/selftest_q17.json",
+     "eval/capability/exp1-q20/l2runs/verdict_q17.json",
+     "eval/capability/exp1-q22-controls/fixtures/c1.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c4.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c7.txt",
+     "eval/capability/exp1-q22/controls_q22.json",
+     "eval/capability/exp1-q22/evidence_q22.txt",
+     "eval/capability/exp1-q22/face_prev_q21.json",
+     "eval/capability/exp1-q22/l2_face_scoped_q22.json",
+     "eval/capability/exp1-q22/prereg_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.py",
+     "eval/capability/exp1-q22/run_controls_q22.py",
+     "eval/capability/exp1-q22/side_effect_gate.py",
+     "eval/capability/instruments-check-drift.json",
+     "eval/capability/instruments-check.json",
+     "eval/capability/instruments.json",
+     "eval/capability/instruments_check.py",
+     "eval/rover/r443/extract_growth_from_calls.py",
+     "eval/rover/r443/perm_search.py",
+     "eval/rover/r443/pin_msg_search.py",
+     "eval/rover/r443/r1_gate_samples.json",
+     "eval/rover/r443/recon_prompt_origin.sh",
+     "eval/rover/r443/reconstruct_from_calls.py",
+     "eval/rover/r443/search_growth_block.py",
+     "eval/rover/r443/search_growth_v2.py",
+     "eval/rover/r443/search_growth_v3.py",
+     "eval/rover/r443/solve_prompts.py",
+     "eval/rover/r446/probe-judge-det-s1.json",
+     "eval/rover/r446/probe-judge-det-s2.json",
+     "eval/rover/r446/probe-judge-det-s3.json",
+     "eval/rover/r446/probe-judge-det-st.json",
+     "eval/rover/r446/probe-judge-detJDET-s1.json",
+     "eval/rover/r446/probe-judge-detJDET24-s1.json",
+     "eval/rover/r449/real-corpus.jsonl",
+     "eval/rover/r465/probe_latency.py"
+    ],
+    "old_gate_delta": [
+     "eval/capability/exp1-q22-controls/tracked_fixture.txt"
+    ],
+    "old_gate_false_reds": [],
+    "old_gate_missed_self_writes": [],
+    "live_fd_scan": {
+     "scanned": 458,
+     "errors": 106
+    },
+    "census_in_repo_cwd": [
+     {
+      "pid": 1090262,
+      "cwd": ".",
+      "cmd": "/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/hermes_kernel_ac9x78t3/hermes_kernel_runner.py"
+     },
+     {
+      "pid": 1163964,
+      "cwd": ".",
+      "cmd": "/usr/bin/bash -c source /home/agentuser/.hermes/cache/terminal/hermes-snap-0e250fa1ba3a.sh >/dev/null 2>&1 || true\nexport AI_AGENT=\"${AI_AGENT:-hermes-agent}\" H"
+     },
+     {
+      "pid": 1163966,
+      "cwd": ".",
+      "cmd": "timeout 560 python3 eval/capability/exp1-q22/run_controls_q22.py"
+     }
+    ],
+    "conservation": {
+     "classified": 44,
+     "expected": 44,
+     "in_scope_after": 44,
+     "ok": true
+    }
+   }
+  },
+  {
+   "tag": "C7_trace_unavailable",
+   "expect": {
+    "verdict": "measure-failed",
+    "measurement_ok": false,
+    "red": false,
+    "self_empty": true,
+    "conservation_ok": true
+   },
+   "observed": {
+    "verdict": "measure-failed",
+    "red": false,
+    "measurement_ok": false,
+    "reasons": [
+     "trace-channel-unavailable:forced-no-trace"
+    ],
+    "self_writes": [],
+    "touched_and_gone": [],
+    "foreign_writes": [
+     "eval/capability/exp1-q22-controls/fixtures/c7.txt"
+    ],
+    "pre_existing": [
+     "eval/bge/r404/csharp-fusion-replay.json",
+     "eval/capability/exp1-q19/l2runs/selftest_q1.json",
+     "eval/capability/exp1-q20/l2runs/_q17_nc.json",
+     "eval/capability/exp1-q20/l2runs/selftest_q17.json",
+     "eval/capability/exp1-q20/l2runs/verdict_q17.json",
+     "eval/capability/exp1-q22-controls/fixtures/c1.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c4.txt",
+     "eval/capability/exp1-q22/controls_q22.json",
+     "eval/capability/exp1-q22/evidence_q22.txt",
+     "eval/capability/exp1-q22/face_prev_q21.json",
+     "eval/capability/exp1-q22/l2_face_scoped_q22.json",
+     "eval/capability/exp1-q22/prereg_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.py",
+     "eval/capability/exp1-q22/run_controls_q22.py",
+     "eval/capability/exp1-q22/side_effect_gate.py",
+     "eval/capability/instruments-check-drift.json",
+     "eval/capability/instruments-check.json",
+     "eval/capability/instruments.json",
+     "eval/capability/instruments_check.py",
+     "eval/rover/r443/extract_growth_from_calls.py",
+     "eval/rover/r443/perm_search.py",
+     "eval/rover/r443/pin_msg_search.py",
+     "eval/rover/r443/r1_gate_samples.json",
+     "eval/rover/r443/recon_prompt_origin.sh",
+     "eval/rover/r443/reconstruct_from_calls.py",
+     "eval/rover/r443/search_growth_block.py",
+     "eval/rover/r443/search_growth_v2.py",
+     "eval/rover/r443/search_growth_v3.py",
+     "eval/rover/r443/solve_prompts.py",
+     "eval/rover/r446/probe-judge-det-s1.json",
+     "eval/rover/r446/probe-judge-det-s2.json",
+     "eval/rover/r446/probe-judge-det-s3.json",
+     "eval/rover/r446/probe-judge-det-st.json",
+     "eval/rover/r446/probe-judge-detJDET-s1.json",
+     "eval/rover/r446/probe-judge-detJDET24-s1.json",
+     "eval/rover/r449/real-corpus.jsonl",
+     "eval/rover/r465/probe_latency.py"
+    ],
+    "old_gate_delta": [],
+    "old_gate_false_reds": [],
+    "old_gate_missed_self_writes": [],
+    "live_fd_pids": [],
+    "trace": {
+     "commands": 2,
+     "events": 0,
+     "raw_events": 0,
+     "raw_paths_n": 0,
+     "raw_paths_sample": [],
+     "log_bytes": 0,
+     "capped": false,
+     "unresolved_relative": 0,
+     "channel": "none"
+    },
+    "conservation": {
+     "classified": 43,
+     "expected": 43,
+     "in_scope_after": 43,
+     "ok": true
+    },
+    "census_n": 3,
+    "census_cmds": [
+     "/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/he",
+     "/usr/bin/bash -c source /home/agentuser/.hermes/cache/termin",
+     "timeout 560 python3 eval/capability/exp1-q22/run_controls_q2"
+    ],
+    "log_bytes": 0
+   },
+   "checks": {
+    "verdict": true,
+    "measurement_ok": true,
+    "red": true,
+    "self_empty": true,
+    "conservation_ok": true
+   },
+   "pass": true,
+   "cmds": [
+    {
+     "cmd": "printf 'probe\\n' >> /home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/probe.txt",
+     "rc": 0,
+     "out_tail": ""
+    },
+    {
+     "cmd": "printf 'x\\n' >> /home/agentuser/AgentFramework/eval/capability/exp1-q22-controls/fixtures/c7.txt",
+     "rc": 0,
+     "out_tail": ""
+    }
+   ],
+   "report": {
+    "schema": "side-effect-attribution/1",
+    "verdict": "measure-failed",
+    "red": false,
+    "measurement_ok": false,
+    "reasons": [
+     "trace-channel-unavailable:forced-no-trace"
+    ],
+    "window": {
+     "t0": 1789486216.9804423,
+     "t1": 1789486217.0496974,
+     "trace_dir": "/tmp/q22gate-yx76m25v"
+    },
+    "trace": {
+     "commands": 2,
+     "events": 0,
+     "raw_events": 0,
+     "raw_paths_n": 0,
+     "raw_paths_sample": [],
+     "log_bytes": 0,
+     "capped": false,
+     "unresolved_relative": 0,
+     "channel": "none"
+    },
+    "self_writes": [],
+    "touched_and_gone": [],
+    "foreign_writes": [
+     {
+      "path": "eval/capability/exp1-q22-controls/fixtures/c7.txt",
+      "sha_before": "4a6689419b00",
+      "sha_after": "549bc1cae4f3",
+      "note": "changed-in-window",
+      "live_fd": []
+     }
+    ],
+    "pre_existing": [
+     "eval/bge/r404/csharp-fusion-replay.json",
+     "eval/capability/exp1-q19/l2runs/selftest_q1.json",
+     "eval/capability/exp1-q20/l2runs/_q17_nc.json",
+     "eval/capability/exp1-q20/l2runs/selftest_q17.json",
+     "eval/capability/exp1-q20/l2runs/verdict_q17.json",
+     "eval/capability/exp1-q22-controls/fixtures/c1.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c4.txt",
+     "eval/capability/exp1-q22/controls_q22.json",
+     "eval/capability/exp1-q22/evidence_q22.txt",
+     "eval/capability/exp1-q22/face_prev_q21.json",
+     "eval/capability/exp1-q22/l2_face_scoped_q22.json",
+     "eval/capability/exp1-q22/prereg_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.py",
+     "eval/capability/exp1-q22/run_controls_q22.py",
+     "eval/capability/exp1-q22/side_effect_gate.py",
+     "eval/capability/instruments-check-drift.json",
+     "eval/capability/instruments-check.json",
+     "eval/capability/instruments.json",
+     "eval/capability/instruments_check.py",
+     "eval/rover/r443/extract_growth_from_calls.py",
+     "eval/rover/r443/perm_search.py",
+     "eval/rover/r443/pin_msg_search.py",
+     "eval/rover/r443/r1_gate_samples.json",
+     "eval/rover/r443/recon_prompt_origin.sh",
+     "eval/rover/r443/reconstruct_from_calls.py",
+     "eval/rover/r443/search_growth_block.py",
+     "eval/rover/r443/search_growth_v2.py",
+     "eval/rover/r443/search_growth_v3.py",
+     "eval/rover/r443/solve_prompts.py",
+     "eval/rover/r446/probe-judge-det-s1.json",
+     "eval/rover/r446/probe-judge-det-s2.json",
+     "eval/rover/r446/probe-judge-det-s3.json",
+     "eval/rover/r446/probe-judge-det-st.json",
+     "eval/rover/r446/probe-judge-detJDET-s1.json",
+     "eval/rover/r446/probe-judge-detJDET24-s1.json",
+     "eval/rover/r449/real-corpus.jsonl",
+     "eval/rover/r465/probe_latency.py"
+    ],
+    "old_gate_delta": [],
+    "old_gate_false_reds": [],
+    "old_gate_missed_self_writes": [],
+    "live_fd_scan": {
+     "scanned": 458,
+     "errors": 106
+    },
+    "census_in_repo_cwd": [
+     {
+      "pid": 1090262,
+      "cwd": ".",
+      "cmd": "/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/hermes_kernel_ac9x78t3/hermes_kernel_runner.py"
+     },
+     {
+      "pid": 1163964,
+      "cwd": ".",
+      "cmd": "/usr/bin/bash -c source /home/agentuser/.hermes/cache/terminal/hermes-snap-0e250fa1ba3a.sh >/dev/null 2>&1 || true\nexport AI_AGENT=\"${AI_AGENT:-hermes-agent}\" H"
+     },
+     {
+      "pid": 1163966,
+      "cwd": ".",
+      "cmd": "timeout 560 python3 eval/capability/exp1-q22/run_controls_q22.py"
+     }
+    ],
+    "conservation": {
+     "classified": 43,
+     "expected": 43,
+     "in_scope_after": 43,
+     "ok": true
+    }
+   }
+  },
+  {
+   "tag": "C8_nested_gate_reentrancy",
+   "expect": {
+    "nested_rc0": true,
+    "no_ptrace_reject": true,
+    "nested_marks_inherit": true,
+    "outer_gate_clean": true,
+    "conservation_ok": true
+   },
+   "observed": {
+    "verdict": "clean",
+    "red": false,
+    "measurement_ok": true,
+    "reasons": [],
+    "self_writes": [],
+    "touched_and_gone": [],
+    "foreign_writes": [],
+    "pre_existing": [
+     "eval/bge/r404/csharp-fusion-replay.json",
+     "eval/capability/exp1-q22-controls/fixtures/c1.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c4.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c7.txt",
+     "eval/capability/exp1-q22-controls/probe.txt",
+     "eval/capability/exp1-q22/controls_q22.json",
+     "eval/capability/exp1-q22/evidence_q22.txt",
+     "eval/capability/exp1-q22/face_prev_q21.json",
+     "eval/capability/exp1-q22/l2_face_scoped_q22.json",
+     "eval/capability/exp1-q22/prereg_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.py",
+     "eval/capability/exp1-q22/run_controls_q22.py",
+     "eval/capability/exp1-q22/side_effect_gate.py",
+     "eval/capability/instruments.json",
+     "eval/capability/instruments_check.py",
+     "eval/rover/r443/extract_growth_from_calls.py",
+     "eval/rover/r443/perm_search.py",
+     "eval/rover/r443/pin_msg_search.py",
+     "eval/rover/r443/r1_gate_samples.json",
+     "eval/rover/r443/recon_prompt_origin.sh",
+     "eval/rover/r443/reconstruct_from_calls.py",
+     "eval/rover/r443/search_growth_block.py",
+     "eval/rover/r443/search_growth_v2.py",
+     "eval/rover/r443/search_growth_v3.py",
+     "eval/rover/r443/solve_prompts.py",
+     "eval/rover/r446/probe-judge-det-s1.json",
+     "eval/rover/r446/probe-judge-det-s2.json",
+     "eval/rover/r446/probe-judge-det-s3.json",
+     "eval/rover/r446/probe-judge-det-st.json",
+     "eval/rover/r446/probe-judge-detJDET-s1.json",
+     "eval/rover/r446/probe-judge-detJDET24-s1.json",
+     "eval/rover/r449/real-corpus.jsonl",
+     "eval/rover/r465/probe_latency.py"
+    ],
+    "old_gate_delta": [],
+    "old_gate_false_reds": [],
+    "old_gate_missed_self_writes": [],
+    "live_fd_pids": [],
+    "trace": {
+     "commands": 1,
+     "events": 1,
+     "raw_events": 33,
+     "raw_paths_n": 31,
+     "raw_paths_sample": [
+      "/dev/null",
+      "/home/agentuser/AgentFramework/ApiKeyResolver.cs",
+      "/home/agentuser/AgentFramework/a.cs",
+      "/home/agentuser/AgentFramework/b.cs",
+      "/home/agentuser/AgentFramework/cli_result.json",
+      "/home/agentuser/AgentFramework/credentials.json",
+      "/home/agentuser/AgentFramework/d.md",
+      "/home/agentuser/AgentFramework/data",
+      "/home/agentuser/AgentFramework/docs",
+      "/home/agentuser/AgentFramework/eval/capability/exp1-q19/l2runs/selftest_q1.json",
+      "/home/agentuser/AgentFramework/eval/capability/instruments-check.json",
+      "/home/agentuser/AgentFramework/master.key",
+      "/home/agentuser/AgentFramework/skills",
+      "/home/agentuser/AgentFramework/src",
+      "/home/agentuser/AgentFramework/store.bin",
+      "/home/agentuser/AgentFramework/trace.jsonl",
+      "/tmp/exp1q1-6qm1_dir",
+      "/tmp/exp1q1-6qm1_dir/cli_result.json",
+      "/tmp/exp1q1-6qm1_dir/data",
+      "/tmp/exp1q1-6qm1_dir/data/credentials.json",
+      "/tmp/exp1q1-6qm1_dir/data/master.key",
+      "/tmp/exp1q1-6qm1_dir/data/store.bin",
+      "/tmp/exp1q1-6qm1_dir/data/trace.jsonl",
+      "/tmp/exp1q1-6qm1_dir/docs",
+      "/tmp/exp1q1-6qm1_dir/docs/d.md",
+      "/tmp/exp1q1-6qm1_dir/skills",
+      "/tmp/exp1q1-6qm1_dir/src",
+      "/tmp/exp1q1-6qm1_dir/src/ApiKeyResolver.cs",
+      "/tmp/exp1q1-6qm1_dir/src/a.cs",
+      "/tmp/exp1q1-6qm1_dir/src/b.cs",
+      "/tmp/ithkpjb1"
+     ],
+     "log_bytes": 120460,
+     "capped": false,
+     "unresolved_relative": 0,
+     "channel": "strace+audithook"
+    },
+    "conservation": {
+     "classified": 38,
+     "expected": 38,
+     "in_scope_after": 38,
+     "ok": true
+    },
+    "census_n": 3,
+    "census_cmds": [
+     "/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/he",
+     "/usr/bin/bash -c source /home/agentuser/.hermes/cache/termin",
+     "timeout 560 python3 eval/capability/exp1-q22/run_controls_q2"
+    ],
+    "log_bytes": 120460
+   },
+   "checks": {
+    "nested_rc0": true,
+    "no_ptrace_reject": true,
+    "nested_marks_inherit": true,
+    "outer_gate_clean": true,
+    "conservation_ok": true
+   },
+   "pass": true,
+   "cmds": [
+    {
+     "cmd": "python3 eval/capability/instruments_check.py --only exp1q1.scope-selftest",
+     "rc": 0,
+     "out_tail": "SIDE-EFFECT-GATE: 外层闸标记在场 (嵌套调用) ⇒ 本层不重复挂闸 (外层 strace 已覆盖本进程树; 实测嵌套 strace 被内核拒绝)"
+    }
+   ],
+   "report": {
+    "schema": "side-effect-attribution/1",
+    "verdict": "clean",
+    "red": false,
+    "measurement_ok": true,
+    "reasons": [],
+    "window": {
+     "t0": 1789486217.0507104,
+     "t1": 1789486217.4867773,
+     "trace_dir": "/tmp/q22gate-a48zgx3d"
+    },
+    "trace": {
+     "commands": 1,
+     "events": 1,
+     "raw_events": 33,
+     "raw_paths_n": 31,
+     "raw_paths_sample": [
+      "/dev/null",
+      "/home/agentuser/AgentFramework/ApiKeyResolver.cs",
+      "/home/agentuser/AgentFramework/a.cs",
+      "/home/agentuser/AgentFramework/b.cs",
+      "/home/agentuser/AgentFramework/cli_result.json",
+      "/home/agentuser/AgentFramework/credentials.json",
+      "/home/agentuser/AgentFramework/d.md",
+      "/home/agentuser/AgentFramework/data",
+      "/home/agentuser/AgentFramework/docs",
+      "/home/agentuser/AgentFramework/eval/capability/exp1-q19/l2runs/selftest_q1.json",
+      "/home/agentuser/AgentFramework/eval/capability/instruments-check.json",
+      "/home/agentuser/AgentFramework/master.key",
+      "/home/agentuser/AgentFramework/skills",
+      "/home/agentuser/AgentFramework/src",
+      "/home/agentuser/AgentFramework/store.bin",
+      "/home/agentuser/AgentFramework/trace.jsonl",
+      "/tmp/exp1q1-6qm1_dir",
+      "/tmp/exp1q1-6qm1_dir/cli_result.json",
+      "/tmp/exp1q1-6qm1_dir/data",
+      "/tmp/exp1q1-6qm1_dir/data/credentials.json",
+      "/tmp/exp1q1-6qm1_dir/data/master.key",
+      "/tmp/exp1q1-6qm1_dir/data/store.bin",
+      "/tmp/exp1q1-6qm1_dir/data/trace.jsonl",
+      "/tmp/exp1q1-6qm1_dir/docs",
+      "/tmp/exp1q1-6qm1_dir/docs/d.md",
+      "/tmp/exp1q1-6qm1_dir/skills",
+      "/tmp/exp1q1-6qm1_dir/src",
+      "/tmp/exp1q1-6qm1_dir/src/ApiKeyResolver.cs",
+      "/tmp/exp1q1-6qm1_dir/src/a.cs",
+      "/tmp/exp1q1-6qm1_dir/src/b.cs",
+      "/tmp/ithkpjb1"
+     ],
+     "log_bytes": 120460,
+     "capped": false,
+     "unresolved_relative": 0,
+     "channel": "strace+audithook"
+    },
+    "self_writes": [],
+    "touched_and_gone": [],
+    "foreign_writes": [],
+    "pre_existing": [
+     "eval/bge/r404/csharp-fusion-replay.json",
+     "eval/capability/exp1-q22-controls/fixtures/c1.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c2b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c3b.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c4.txt",
+     "eval/capability/exp1-q22-controls/fixtures/c7.txt",
+     "eval/capability/exp1-q22-controls/probe.txt",
+     "eval/capability/exp1-q22/controls_q22.json",
+     "eval/capability/exp1-q22/evidence_q22.txt",
+     "eval/capability/exp1-q22/face_prev_q21.json",
+     "eval/capability/exp1-q22/l2_face_scoped_q22.json",
+     "eval/capability/exp1-q22/prereg_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.json",
+     "eval/capability/exp1-q22/refresh_changed_q22.py",
+     "eval/capability/exp1-q22/run_controls_q22.py",
+     "eval/capability/exp1-q22/side_effect_gate.py",
+     "eval/capability/instruments.json",
+     "eval/capability/instruments_check.py",
+     "eval/rover/r443/extract_growth_from_calls.py",
+     "eval/rover/r443/perm_search.py",
+     "eval/rover/r443/pin_msg_search.py",
+     "eval/rover/r443/r1_gate_samples.json",
+     "eval/rover/r443/recon_prompt_origin.sh",
+     "eval/rover/r443/reconstruct_from_calls.py",
+     "eval/rover/r443/search_growth_block.py",
+     "eval/rover/r443/search_growth_v2.py",
+     "eval/rover/r443/search_growth_v3.py",
+     "eval/rover/r443/solve_prompts.py",
+     "eval/rover/r446/probe-judge-det-s1.json",
+     "eval/rover/r446/probe-judge-det-s2.json",
+     "eval/rover/r446/probe-judge-det-s3.json",
+     "eval/rover/r446/probe-judge-det-st.json",
+     "eval/rover/r446/probe-judge-detJDET-s1.json",
+     "eval/rover/r446/probe-judge-detJDET24-s1.json",
+     "eval/rover/r449/real-corpus.jsonl",
+     "eval/rover/r465/probe_latency.py"
+    ],
+    "old_gate_delta": [],
+    "old_gate_false_reds": [],
+    "old_gate_missed_self_writes": [],
+    "live_fd_scan": {
+     "scanned": 458,
+     "errors": 106
+    },
+    "census_in_repo_cwd": [
+     {
+      "pid": 1090262,
+      "cwd": ".",
+      "cmd": "/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/hermes_kernel_ac9x78t3/hermes_kernel_runner.py"
+     },
+     {
+      "pid": 1163964,
+      "cwd": ".",
+      "cmd": "/usr/bin/bash -c source /home/agentuser/.hermes/cache/terminal/hermes-snap-0e250fa1ba3a.sh >/dev/null 2>&1 || true\nexport AI_AGENT=\"${AI_AGENT:-hermes-agent}\" H"
+     },
+     {
+      "pid": 1163966,
+      "cwd": ".",
+      "cmd": "timeout 560 python3 eval/capability/exp1-q22/run_controls_q22.py"
+     }
+    ],
+    "conservation": {
+     "classified": 38,
+     "expected": 38,
+     "in_scope_after": 38,
+     "ok": true
+    }
+   }
+  }
+ ]
+}

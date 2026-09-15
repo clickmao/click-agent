@@ -1,0 +1,84 @@
+{
+ "round": "EXP1-Q22",
+ "schema": "q22-integration/1",
+ "prev_face": "instruments-check/3",
+ "new_face": "instruments-check/4",
+ "prev_batch": {
+  "passed": 17,
+  "total": 18,
+  "side_effects": [
+   "docs/improvements.md",
+   "docs/plans/v715_dev_plan.taskplan.json",
+   "docs/verification-registry.json",
+   "eval/bge/r404/csharp-fusion-replay.json"
+  ]
+ },
+ "new_batch": {
+  "passed": 6,
+  "total": 6,
+  "side_effects": []
+ },
+ "new_gate": {
+  "verdict": "clean",
+  "measurement_ok": true,
+  "self_n": 0,
+  "foreign": [],
+  "foreign_live_fd": {},
+  "pre_existing_n": 39,
+  "old_gate_false_reds": [],
+  "conservation": {
+   "classified": 39,
+   "expected": 39,
+   "in_scope_after": 39,
+   "ok": true
+  },
+  "trace": {
+   "commands": 14,
+   "events": 11,
+   "raw_events": 227,
+   "raw_paths_n": 184,
+   "log_bytes": 1831377,
+   "capped": false,
+   "unresolved_relative": 0,
+   "channel": "strace+audithook"
+  },
+  "census_n": 3
+ },
+ "shared_ids": [
+  "audit.status_gen",
+  "exp1q1.scope-selftest",
+  "exp1q13.index-scope-out-classifier",
+  "exp1q15.unit-axis-guard",
+  "exp1q2.docref-selftest",
+  "l2.instruments-check"
+ ],
+ "compared_clean": [
+  "audit.status_gen",
+  "exp1q1.scope-selftest",
+  "exp1q13.index-scope-out-classifier",
+  "exp1q15.unit-axis-guard",
+  "exp1q2.docref-selftest",
+  "l2.instruments-check"
+ ],
+ "uncompared_ids": [
+  "exp1q11.other-bucket-decompose",
+  "exp1q15.unit-axis-guard-q16",
+  "exp1q17.archive-field-provenance",
+  "exp1q18.rebuild-constructor",
+  "exp1q4.docref-probe",
+  "hooks.pre-commit",
+  "probe.grade",
+  "probe.run_probe",
+  "r444.analyze",
+  "r444.prefilter-precheck",
+  "r446.judge-det-analyzer",
+  "r446.judge-precheck"
+ ],
+ "whitelist": {
+  "l2.instruments-check": [
+   "sha12"
+  ]
+ },
+ "drift": [],
+ "P8_pass": true
+}
