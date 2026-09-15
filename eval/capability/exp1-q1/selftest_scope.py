@@ -42,7 +42,8 @@ OWNER_ONLY = {"data/credentials.json", "data/master.key"}
 
 
 # R444 加固: 未知参数必须 fail-closed (L2 器具验收面负控) —— 原实现静默忽略未知参数。
-_UNKNOWN = [a for a in sys.argv[1:] if a.startswith("--") and a not in ("--result", "--scopes")]
+# EXP1-Q19: 白名单补 `--out` (L2 全量面必须把输出指向 scratch, 否则复跑改写轮次证据 `selftest.json`)。
+_UNKNOWN = [a for a in sys.argv[1:] if a.startswith("--") and a not in ("--result", "--scopes", "--out")]
 if _UNKNOWN:
     print("用法错误: 未知参数 %s" % _UNKNOWN, file=sys.stderr)
     sys.exit(2)
@@ -185,7 +186,11 @@ def main() -> int:
                            "3_负控": sum(1 for r in results if r["state"].startswith("3")),
                            "4_缺失": sum(1 for r in results if r["state"].startswith("4")),
                            "5_端到端CLI": sum(1 for r in results if r["state"].startswith("5"))}}
-    (HERE / "selftest.json").write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
+    out_path = HERE / "selftest.json"
+    if "--out" in sys.argv:
+        out_path = Path(sys.argv[sys.argv.index("--out") + 1])
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps({"passed": passed, "total": n, "verdict": verdict, "failed_cases": failures,
                       "four_states": out["four_states"]}, ensure_ascii=False))
     return 0 if not failures else 2

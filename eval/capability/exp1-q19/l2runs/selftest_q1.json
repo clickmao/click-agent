@@ -1,0 +1,217 @@
+{
+  "selftest": "exp1-q1-scope-cost",
+  "cases": [
+    {
+      "state": "1-正常",
+      "case": "scopeA_files",
+      "ok": true,
+      "detail": {
+        "files": [
+          "src/ApiKeyResolver.cs",
+          "src/a.cs",
+          "src/b.cs"
+        ]
+      }
+    },
+    {
+      "state": "1-正常",
+      "case": "scopeB_files",
+      "ok": true,
+      "detail": {
+        "files": 4
+      }
+    },
+    {
+      "state": "1-正常",
+      "case": "scopeC_analyzed",
+      "ok": true,
+      "detail": {
+        "analyzed": 5
+      }
+    },
+    {
+      "state": "1-正常",
+      "case": "positive_control_sensitive",
+      "ok": true,
+      "detail": {
+        "sensitive": [
+          "data/credentials.json",
+          "data/master.key"
+        ]
+      }
+    },
+    {
+      "state": "1-正常",
+      "case": "sensitive_indexable_split",
+      "ok": true,
+      "detail": {
+        "indexable": [
+          "data/credentials.json"
+        ],
+        "note": "仅 credentials.json 属可索引扩展名 ⇒ 真实暴露；master.key/.bin 只算凭据面"
+      }
+    },
+    {
+      "state": "1-正常",
+      "case": "reverse_control_no_false_kill",
+      "ok": true,
+      "detail": {
+        "scopeA_sensitive": [],
+        "note": "ApiKeyResolver.cs(644) 不得被按名排除"
+      }
+    },
+    {
+      "state": "1-正常",
+      "case": "name_based_positive",
+      "ok": true,
+      "detail": {}
+    },
+    {
+      "state": "1-正常",
+      "case": "name_based_reverse_code_file",
+      "ok": true,
+      "detail": {}
+    },
+    {
+      "state": "1-正常",
+      "case": "tokenizer_ascii",
+      "ok": true,
+      "detail": {
+        "has": [
+          "Alpha",
+          "Beta"
+        ]
+      }
+    },
+    {
+      "state": "1-正常",
+      "case": "tokenizer_cjk_bigram",
+      "ok": true,
+      "detail": {}
+    },
+    {
+      "state": "1-正常",
+      "case": "graph_edges_nonzero",
+      "ok": true,
+      "detail": {
+        "defined_types": 3,
+        "edges_v3": 1,
+        "graph_ms": 0.3
+      }
+    },
+    {
+      "state": "1-正常",
+      "case": "determinism_two_calls",
+      "ok": true,
+      "detail": {}
+    },
+    {
+      "state": "2-混读",
+      "case": "A期望核B读数_必须不一致",
+      "ok": true,
+      "detail": {
+        "A_expected": {
+          "files": 3,
+          "distinct_tokens": 0
+        },
+        "B_actual_files": 4
+      }
+    },
+    {
+      "state": "2-混读",
+      "case": "同读数自核_必须一致",
+      "ok": true,
+      "detail": {}
+    },
+    {
+      "state": "3-负控",
+      "case": "正确过滤器抓owner_only无敏感名",
+      "ok": true,
+      "detail": {}
+    },
+    {
+      "state": "3-负控",
+      "case": "坏过滤器①_只看名_漏掉它",
+      "ok": true,
+      "detail": {
+        "note": "判红=该坏过滤器被抓"
+      }
+    },
+    {
+      "state": "3-负控",
+      "case": "坏过滤器②_误杀合法源码",
+      "ok": true,
+      "detail": {
+        "note": "判red=合法源码被误杀"
+      }
+    },
+    {
+      "state": "4-缺失",
+      "case": "缺失夹具_弃权",
+      "ok": true,
+      "detail": {
+        "rc": 3
+      }
+    },
+    {
+      "state": "4-缺失",
+      "case": "缺字段读数_弃权",
+      "ok": true,
+      "detail": {}
+    },
+    {
+      "state": "4-缺失",
+      "case": "空读数_弃权",
+      "ok": true,
+      "detail": {}
+    },
+    {
+      "state": "5-端到端CLI",
+      "case": "CLI夹具回放_门禁全过_rc0",
+      "ok": true,
+      "detail": {
+        "rc": 0
+      }
+    },
+    {
+      "state": "5-端到端CLI",
+      "case": "CLI产物含读数与门禁",
+      "ok": true,
+      "detail": {
+        "files": 5
+      }
+    },
+    {
+      "state": "5-端到端CLI",
+      "case": "CLI产物敏感面两分计数",
+      "ok": true,
+      "detail": {
+        "all": [
+          "data/credentials.json",
+          "data/master.key",
+          "data/store.bin"
+        ],
+        "indexable": [
+          "data/credentials.json"
+        ]
+      }
+    },
+    {
+      "state": "5-端到端CLI",
+      "case": "CLI产物含预注册判据",
+      "ok": true,
+      "detail": {}
+    }
+  ],
+  "passed": 24,
+  "total": 24,
+  "failed_cases": [],
+  "verdict": "pass",
+  "four_states": {
+    "1_正常": 12,
+    "2_混读": 2,
+    "3_负控": 3,
+    "4_缺失": 3,
+    "5_端到端CLI": 4
+  }
+}

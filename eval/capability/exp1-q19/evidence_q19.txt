@@ -1,0 +1,212 @@
+=== EXP1-Q19 真机证据 2026-09-15 19:37:18 CST ===
+
+### [A] 器具文件被改动后, 机检立即抓漂移 (期望 FAIL)
+FAIL l2.instruments-check         rc=0 substr=True nc=[1] l2={'version': 'DRIFT', 'instrument_sha12': 'DRIFT(want=bf9d38151bb0 got=601c9fb3683b)', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+    ["PASS exp1q17.archive-field-provenance rc=0 substr=True nc=[2, 3] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=3)', 'kpi_quad': 'ok'}", '', 'L2 器具验收面: 1/1 通过; 落盘 eval/capability/instruments-check.json']
+
+L2 器具验收面: 0/1 通过; 落盘 eval/capability/instruments-check.json
+STEP_A_rc=1
+
+### [B] 刷新登记 (instrument_sha12 由字节重算)
+roundtrip_byte_identical=True  bytes=13745
+WROTE rows=17 (updated=17 added=0 [])
+READBACK missing_fields=[]
+ids: ['probe.grade', 'probe.run_probe', 'exp1q1.scope-selftest', 'exp1q2.docref-selftest', 'exp1q4.docref-probe', 'audit.status_gen', 'r444.prefilter-precheck', 'r444.analyze', 'hooks.pre-commit', 'r446.judge-precheck', 'r446.judge-det-analyzer', 'exp1q11.other-bucket-decompose', 'exp1q15.unit-axis-guard', 'exp1q15.unit-axis-guard-q16', 'exp1q17.archive-field-provenance', 'exp1q18.rebuild-constructor', 'l2.instruments-check']
+STEP_B_rc=0
+
+### [C] 全量面复跑 (17 行)
+PASS probe.grade                  rc=0 substr=True nc=[2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS probe.run_probe              rc=0 substr=True nc=[2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS exp1q1.scope-selftest        rc=0 substr=True nc=[2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS exp1q2.docref-selftest       rc=0 substr=True nc=[2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS exp1q4.docref-probe          rc=0 substr=True nc=[2] l2={'version': 'declared:2.4.1', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS audit.status_gen             rc=0 substr=True nc=[1] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS r444.prefilter-precheck      rc=0 substr=True nc=[2, 3] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS r444.analyze                 rc=0 substr=True nc=[0] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS hooks.pre-commit             rc=0 substr=True nc=[1] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS r446.judge-precheck          rc=0 substr=True nc=[0, 2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS r446.judge-det-analyzer      rc=0 substr=True nc=[1] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS exp1q11.other-bucket-decompose rc=0 substr=True nc=[3] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=2)', 'kpi_quad': 'ok'}
+PASS exp1q15.unit-axis-guard      rc=0 substr=True nc=[2, 2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=2)', 'kpi_quad': 'ok'}
+PASS exp1q15.unit-axis-guard-q16  rc=0 substr=True nc=[2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=2)', 'kpi_quad': 'ok'}
+PASS exp1q17.archive-field-provenance rc=0 substr=True nc=[2, 3] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=3)', 'kpi_quad': 'ok'}
+PASS exp1q18.rebuild-constructor  rc=0 substr=True nc=[0] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=1)', 'kpi_quad': 'ok'}
+PASS l2.instruments-check         rc=0 substr=True nc=[1] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+
+L2 器具验收面: 17/17 通过; 落盘 eval/capability/instruments-check.json
+STEP_C_rc=0
+
+### [D] 机检自身负控 (注入指纹漂移, 期望 rc!=0)
+FAIL exp1q17.archive-field-provenance rc=0 substr=True nc=[2, 3] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'DRIFT:eval/capability/exp1-q10/citations.jsonl(want=deadbeef0000 got=08c99bd67a41)', 'kpi_quad': 'ok', 'DRIFT_INJECTED': 'expect-FAIL'}
+    ["类分布: {'C_archive_foreign_key': 0, 'C_dump_dead_entry': 0, 'C_dump_producer_branch_unhit': 2, 'C_producer_dump_omission': 9, 'C_written_and_archived': 24}  Σ=35 == |P∪D∪A|=35", "漏字段(9): ['block_id', 'path_exists', 'pos_end', 'pos_start', 'raw', 'relocated_lines_ok', 'relocated_symbol_faces', 'relocated_symbols_absent', 'symbol_faces']", 'checks 15/15 · fixtures 15/15 · exit=0']
+
+L2 器具验收面: 0/1 通过; 落盘 eval/capability/instruments-check-drift.json
+DRIFT-INJECT-APPLIED: 机检已判红 (见上表 DRIFT) —— 负控成立
+STEP_D_rc=1
+
+### [E] 重建器外部负控
+NC_OK: mutated source rejected rc=3 dst_written=False | FATAL: unexpected source version 9.9.9
+STEP_E_rc=0
+
+=== [F] 器具缺陷修正后复跑 (2026-09-15 19:39:51 CST) ===
+### F1 双证读数重跑 (q17 输出改落 scratch)
+PAIR-OK  exp1q11.other-bucket-decompose     pos_rc=0 substr=True nc=[('absent-corpus', 3, True)] file_unchanged=True
+PAIR-OK  exp1q15.unit-axis-guard            pos_rc=0 substr=True nc=[('absent-cites', 2, True), ('void-arm-cites', 2, True)] file_unchanged=True
+PAIR-OK  exp1q15.unit-axis-guard-q16        pos_rc=0 substr=True nc=[('absent-cites', 2, True)] file_unchanged=True
+PAIR-OK  exp1q17.archive-field-provenance   pos_rc=0 substr=True nc=[('void-arm-archive', 2, True), ('absent-archive', 3, True)] file_unchanged=True
+PAIR-OK  exp1q18.rebuild-constructor        pos_rc=0 substr=True nc=[('mutated-source-version', 0, True)] file_unchanged=True
+PAIR-NO  exp1q13.index-scope-out-classifier pos_rc=0 substr=True nc=[] file_unchanged=True
+
+L2 候选双证: 5/6 双证成立; 落盘 eval/capability/exp1-q19/l2_probe.json
+F1_rc=0
+
+### F2 登记刷新 (cmd/sha 由读数+字节派生)
+roundtrip_byte_identical=True  bytes=13745
+WROTE rows=17 (updated=17 added=0 [])
+READBACK missing_fields=[]
+ids: ['probe.grade', 'probe.run_probe', 'exp1q1.scope-selftest', 'exp1q2.docref-selftest', 'exp1q4.docref-probe', 'audit.status_gen', 'r444.prefilter-precheck', 'r444.analyze', 'hooks.pre-commit', 'r446.judge-precheck', 'r446.judge-det-analyzer', 'exp1q11.other-bucket-decompose', 'exp1q15.unit-axis-guard', 'exp1q15.unit-axis-guard-q16', 'exp1q17.archive-field-provenance', 'exp1q18.rebuild-constructor', 'l2.instruments-check']
+F2_rc=0
+
+### F3 q17 既有产物是否仍干净 (期望: 无输出)
+F3_done
+
+### F4 全量面复跑 (带副作用闸)
+PASS probe.grade                  rc=0 substr=True nc=[2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS probe.run_probe              rc=0 substr=True nc=[2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS exp1q1.scope-selftest        rc=0 substr=True nc=[2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS exp1q2.docref-selftest       rc=0 substr=True nc=[2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS exp1q4.docref-probe          rc=0 substr=True nc=[2] l2={'version': 'declared:2.4.1', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS audit.status_gen             rc=0 substr=True nc=[1] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS r444.prefilter-precheck      rc=0 substr=True nc=[2, 3] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS r444.analyze                 rc=0 substr=True nc=[0] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS hooks.pre-commit             rc=0 substr=True nc=[1] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS r446.judge-precheck          rc=0 substr=True nc=[0, 2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS r446.judge-det-analyzer      rc=0 substr=True nc=[1] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS exp1q11.other-bucket-decompose rc=0 substr=True nc=[3] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=2)', 'kpi_quad': 'ok'}
+PASS exp1q15.unit-axis-guard      rc=0 substr=True nc=[2, 2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=2)', 'kpi_quad': 'ok'}
+PASS exp1q15.unit-axis-guard-q16  rc=0 substr=True nc=[2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=2)', 'kpi_quad': 'ok'}
+PASS exp1q17.archive-field-provenance rc=0 substr=True nc=[2, 3] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=3)', 'kpi_quad': 'ok'}
+PASS exp1q18.rebuild-constructor  rc=0 substr=True nc=[0] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=1)', 'kpi_quad': 'ok'}
+PASS l2.instruments-check         rc=0 substr=True nc=[1] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+SIDE-EFFECT: 全量面弄脏既有产物 (证据降级风险) ⇒ ['eval/capability/exp1-q17/selftest_q17.json', 'eval/capability/exp1-q17/verdict_q17.json']
+
+L2 器具验收面: 16/17 通过; 落盘 eval/capability/instruments-check.json
+F4_rc=1
+
+### F5 机检自身负控
+FAIL exp1q17.archive-field-provenance rc=0 substr=True nc=[2, 3] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'DRIFT:eval/capability/exp1-q10/citations.jsonl(want=deadbeef0000 got=08c99bd67a41)', 'kpi_quad': 'ok', 'DRIFT_INJECTED': 'expect-FAIL'}
+    ["类分布: {'C_archive_foreign_key': 0, 'C_dump_dead_entry': 0, 'C_dump_producer_branch_unhit': 2, 'C_producer_dump_omission': 9, 'C_written_and_archived': 24}  Σ=35 == |P∪D∪A|=35", "漏字段(9): ['block_id', 'path_exists', 'pos_end', 'pos_start', 'raw', 'relocated_lines_ok', 'relocated_symbol_faces', 'relocated_symbols_absent', 'symbol_faces']", 'checks 15/15 · fixtures 15/15 · exit=0']
+
+L2 器具验收面: 0/1 通过; 落盘 eval/capability/instruments-check-drift.json
+DRIFT-INJECT-APPLIED: 机检已判红 (见上表 DRIFT) —— 负控成立
+F5_rc=1
+
+=== [G] 单源刷新修正后复跑 (2026-09-15 19:41:26 CST) ===
+### G1 登记刷新 (命令面以读数为单源)
+roundtrip_byte_identical=True  bytes=13745
+WROTE rows=17 (updated=17 refreshed=5 ['exp1q11.other-bucket-decompose', 'exp1q15.unit-axis-guard', 'exp1q15.unit-axis-guard-q16', 'exp1q17.archive-field-provenance', 'exp1q18.rebuild-constructor'] added=0 [])
+READBACK missing_fields=[]
+ids: ['probe.grade', 'probe.run_probe', 'exp1q1.scope-selftest', 'exp1q2.docref-selftest', 'exp1q4.docref-probe', 'audit.status_gen', 'r444.prefilter-precheck', 'r444.analyze', 'hooks.pre-commit', 'r446.judge-precheck', 'r446.judge-det-analyzer', 'exp1q11.other-bucket-decompose', 'exp1q15.unit-axis-guard', 'exp1q15.unit-axis-guard-q16', 'exp1q17.archive-field-provenance', 'exp1q18.rebuild-constructor', 'l2.instruments-check']
+G1_rc=0
+
+### G2 q17 行命令面 (期望含 l2runs)
+cmd: python3 eval/capability/exp1-q17/archive_field_provenance.py --selftest --out eval/capability/exp1-q19/l2runs/verdict_q17.json --fixtures-out eval/capability/exp1-q19/l2runs/selftest_q17.json
+nc : python3 eval/capability/exp1-q17/archive_field_provenance.py --archive eval/capability/exp1-q18/arm_v270_VOID_self_include/citations.jsonl --out eval/capability/exp1-q19/_q17_nc.json --fixtures-out eval/capability/exp1-q19/_q17_nc_fx.json
+
+### G3 q17 既有产物干净? (期望无输出)
+G3_done
+
+### G4 全量面复跑
+PASS probe.grade                  rc=0 substr=True nc=[2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS probe.run_probe              rc=0 substr=True nc=[2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS exp1q1.scope-selftest        rc=0 substr=True nc=[2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS exp1q2.docref-selftest       rc=0 substr=True nc=[2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS exp1q4.docref-probe          rc=0 substr=True nc=[2] l2={'version': 'declared:2.4.1', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS audit.status_gen             rc=0 substr=True nc=[1] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS r444.prefilter-precheck      rc=0 substr=True nc=[2, 3] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS r444.analyze                 rc=0 substr=True nc=[0] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS hooks.pre-commit             rc=0 substr=True nc=[1] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS r446.judge-precheck          rc=0 substr=True nc=[0, 2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS r446.judge-det-analyzer      rc=0 substr=True nc=[1] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS exp1q11.other-bucket-decompose rc=0 substr=True nc=[3] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=2)', 'kpi_quad': 'ok'}
+PASS exp1q15.unit-axis-guard      rc=0 substr=True nc=[2, 2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=2)', 'kpi_quad': 'ok'}
+PASS exp1q15.unit-axis-guard-q16  rc=0 substr=True nc=[2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=2)', 'kpi_quad': 'ok'}
+PASS exp1q17.archive-field-provenance rc=0 substr=True nc=[2, 3] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=3)', 'kpi_quad': 'ok'}
+PASS exp1q18.rebuild-constructor  rc=0 substr=True nc=[0] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=1)', 'kpi_quad': 'ok'}
+PASS l2.instruments-check         rc=0 substr=True nc=[1] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+SIDE-EFFECT: 全量面弄脏既有产物 (证据降级风险) ⇒ ['eval/capability/exp1-q1/selftest.json']
+
+L2 器具验收面: 16/17 通过; 落盘 eval/capability/instruments-check.json
+G4_rc=1
+
+### G5 复跑后 q17 产物仍干净? (期望无输出)
+G5_done
+
+### G6 机检自身负控
+    ["类分布: {'C_archive_foreign_key': 0, 'C_dump_dead_entry': 0, 'C_dump_producer_branch_unhit': 2, 'C_producer_dump_omission': 9, 'C_written_and_archived': 24}  Σ=35 == |P∪D∪A|=35", "漏字段(9): ['block_id', 'path_exists', 'pos_end', 'pos_start', 'raw', 'relocated_lines_ok', 'relocated_symbol_faces', 'relocated_symbols_absent', 'symbol_faces']", 'checks 15/15 · fixtures 15/15 · exit=0']
+
+L2 器具验收面: 0/1 通过; 落盘 eval/capability/instruments-check-drift.json
+DRIFT-INJECT-APPLIED: 机检已判红 (见上表 DRIFT) —— 负控成立
+
+=== [H] q1 证据覆盖修正后复跑 (2026-09-15 19:43:08 CST) ===
+### H1 登记刷新 (含 CMD_OVERRIDE)
+roundtrip_byte_identical=True  bytes=13865
+WROTE rows=17 (updated=17 refreshed=5 ['exp1q11.other-bucket-decompose', 'exp1q15.unit-axis-guard', 'exp1q15.unit-axis-guard-q16', 'exp1q17.archive-field-provenance', 'exp1q18.rebuild-constructor'] added=0 [])
+READBACK missing_fields=[]
+ids: ['probe.grade', 'probe.run_probe', 'exp1q1.scope-selftest', 'exp1q2.docref-selftest', 'exp1q4.docref-probe', 'audit.status_gen', 'r444.prefilter-precheck', 'r444.analyze', 'hooks.pre-commit', 'r446.judge-precheck', 'r446.judge-det-analyzer', 'exp1q11.other-bucket-decompose', 'exp1q15.unit-axis-guard', 'exp1q15.unit-axis-guard-q16', 'exp1q17.archive-field-provenance', 'exp1q18.rebuild-constructor', 'l2.instruments-check']
+H1_rc=0
+
+### H2 全量面复跑
+PASS probe.grade                  rc=0 substr=True nc=[2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS probe.run_probe              rc=0 substr=True nc=[2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+FAIL exp1q1.scope-selftest        rc=2 substr=False nc=[2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+    ["用法错误: 未知参数 ['--out']"]
+PASS exp1q2.docref-selftest       rc=0 substr=True nc=[2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS exp1q4.docref-probe          rc=0 substr=True nc=[2] l2={'version': 'declared:2.4.1', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS audit.status_gen             rc=0 substr=True nc=[1] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS r444.prefilter-precheck      rc=0 substr=True nc=[2, 3] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS r444.analyze                 rc=0 substr=True nc=[0] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS hooks.pre-commit             rc=0 substr=True nc=[1] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS r446.judge-precheck          rc=0 substr=True nc=[0, 2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS r446.judge-det-analyzer      rc=0 substr=True nc=[1] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS exp1q11.other-bucket-decompose rc=0 substr=True nc=[3] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=2)', 'kpi_quad': 'ok'}
+PASS exp1q15.unit-axis-guard      rc=0 substr=True nc=[2, 2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=2)', 'kpi_quad': 'ok'}
+PASS exp1q15.unit-axis-guard-q16  rc=0 substr=True nc=[2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=2)', 'kpi_quad': 'ok'}
+PASS exp1q17.archive-field-provenance rc=0 substr=True nc=[2, 3] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=3)', 'kpi_quad': 'ok'}
+PASS exp1q18.rebuild-constructor  rc=0 substr=True nc=[0] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=1)', 'kpi_quad': 'ok'}
+PASS l2.instruments-check         rc=0 substr=True nc=[1] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+
+L2 器具验收面: 16/17 通过; 落盘 eval/capability/instruments-check.json
+H2_rc=1
+
+### H3 复跑后: q1/q17 既有产物是否被弄脏 (期望无输出)
+ M eval/capability/exp1-q1/selftest_scope.py
+H3_done
+
+### H4 机检自身负控
+
+L2 器具验收面: 0/1 通过; 落盘 eval/capability/instruments-check-drift.json
+DRIFT-INJECT-APPLIED: 机检已判红 (见上表 DRIFT) —— 负控成立
+
+### H5 重建器外部负控
+NC_OK: mutated source rejected rc=3 dst_written=False | FATAL: unexpected source version 9.9.9
+
+=== [I] 未知参数白名单修正后复跑 (2026-09-15 19:44:37 CST) ===
+I1 register_rc=0
+### I2 全量面复跑
+PASS exp1q11.other-bucket-decompose rc=0 substr=True nc=[3] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=2)', 'kpi_quad': 'ok'}
+PASS exp1q15.unit-axis-guard      rc=0 substr=True nc=[2, 2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=2)', 'kpi_quad': 'ok'}
+PASS exp1q15.unit-axis-guard-q16  rc=0 substr=True nc=[2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=2)', 'kpi_quad': 'ok'}
+PASS exp1q17.archive-field-provenance rc=0 substr=True nc=[2, 3] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=3)', 'kpi_quad': 'ok'}
+PASS exp1q18.rebuild-constructor  rc=0 substr=True nc=[0] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=1)', 'kpi_quad': 'ok'}
+PASS l2.instruments-check         rc=0 substr=True nc=[1] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+
+L2 器具验收面: 17/17 通过; 落盘 eval/capability/instruments-check.json
+### I3 全量面 rc=0
+### I4 既有产物是否被弄脏 (期望无输出)
+?? eval/capability/instruments-check-drift.json
+I4_done
+### I5 机检自身负控
+
+L2 器具验收面: 0/1 通过; 落盘 eval/capability/instruments-check-drift.json
+DRIFT-INJECT-APPLIED: 机检已判红 (见上表 DRIFT) —— 负控成立

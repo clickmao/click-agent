@@ -1,0 +1,54 @@
+{
+  "schema": "exp1-verdict/1",
+  "cycle_id": "EXP1-Q19",
+  "owner_round": "EXP1-Q19 (60m 自检作业; 不占主线轮号)",
+  "plan_item": "L.8 候选① 前半 — L2 器具登记（登记写入 + 机检字段扩展 + 全量面复跑 + 证据覆盖闸）",
+  "judgments": [
+    {"id": "P1", "claim": "≥4 件 exp1 器具可同时建立 正控 ∧ 机械负控",
+     "reading": "verified_pairs = 5/6 (q11 / q15 / q15-q16 / q17 / q18 重建器)", "verdict": "达标"},
+    {"id": "P2", "claim": "instruments.json 每行具备契约 L2 机械化字段",
+     "reading": "rows=17, READBACK missing_fields=[]; L2 机检 17/17 行 version/instrument_sha12/input_fingerprint/kpi_quad 全 ok",
+     "verdict": "达标（带边界: 旧 11 行 input_fingerprint n=0，见 honest ②）"},
+    {"id": "P3", "claim": "机检自身有注入缺陷负控（篡改指纹必判红）",
+     "reading": "--fingerprint-drift-inject ⇒ rc=1，输出 DRIFT:...citations.jsonl(want=deadbeef0000 got=08c99bd67a41)",
+     "verdict": "达标"},
+    {"id": "P4", "claim": "全量面复跑全过（含副作用闸）",
+     "reading": "终态 [I]: passed=17 total=17, rc=0, side_effects=[] （收敛过程见 bonus_readings）", "verdict": "达标"}
+  ],
+  "bonus_readings": {
+    "自捕漂移": "本轮改了 instruments_check.py 后，机检**当场**抓到自己的登记 sha 漂移: STEP_A rc=1, instrument_sha12 DRIFT(want=bf9d38151bb0 got=601c9fb3683b) —— 机制非空心（若不是机检，这次改动会静默通过）。",
+    "副作用闸的两态实证": "同一闸在缺陷未修时报红（SIDE-EFFECT ⇒ exp1-q17 两件 / 接着 exp1-q1 一件），在修正后为空 ⇒ 有判别力，不是恒绿。",
+    "三件器具缺陷（自捕，均非被测对象缺陷）": [
+      "① 负控模式覆盖正控证据（instruments-check.json 被写成 0/1）⇒ 负控独立命名空间。",
+      "② 器具把结果写回轮次证据路径 ⇒ 复跑即证据降级：q17 --selftest 把 C12 确定性块抹成 determinism:null（实测 diff）；q1 selftest_scope.py 硬编码写 selftest.json。两支已 git checkout 复原。",
+      "③ 登记写入器只刷新字段不刷新已存在行的 cmd ⇒ 改了调用方式仍跑旧命令（第 [F] 轮复现同一条副作用）。"
+    ]
+  },
+  "readings": {
+    "registry": {"rows_before": 11, "rows_after": 17, "added": ["exp1q11.other-bucket-decompose", "exp1q15.unit-axis-guard", "exp1q15.unit-axis-guard-q16", "exp1q17.archive-field-provenance", "exp1q18.rebuild-constructor", "l2.instruments-check"], "backup": "eval/capability/exp1-q19/instruments.json.bak"},
+    "l2_fields": {"version_source": {"declared": "器具内声明 *_version（排除 prereg_*）", "content-sha12": "其余由文件字节派生"}, "instrument_sha12": "全部由字节重算并比对", "input_fingerprint": {"new_rows_n": [1, 2, 2, 3], "old_rows_n": 0}},
+    "negative_controls": {
+      "exp1q11": "缺语料 ⇒ MEASUREMENT_FAILURE rc=3",
+      "exp1q15": "缺 cites rc=2 / Q18 冻结 VOID 臂 rc=2",
+      "exp1q15-q16": "缺 cites rc=2",
+      "exp1q17": "VOID 臂 rc=2 / 缺归档 rc=3",
+      "exp1q18": "注入变异源版本 ⇒ NC_OK、dst_written=False、rc=3（fail-closed，动作全在 mktemp 树内）",
+      "l2.instruments-check": "注入指纹漂移 ⇒ rc=1"
+    },
+    "face_final": {"passed": 17, "total": 17, "rc": 0, "side_effects": []}
+  },
+  "criterion": "P1 verified_pairs>=4（实测 5/6）| P2 READBACK missing_fields==[] ∧ L2 机检 17/17 行全 ok | P3 注入指纹漂移 ⇒ rc!=0 且含 DRIFT（实测 rc=1）| P4 全量面 passed==total ∧ side_effects==[]（实测 17/17, rc=0）",
+  "evidence_level": "L2-static（真机执行器具自检 + 正/负控双证 + 字段重算机检 + 副作用闸；零 dotnet ⇒ 不报 L3/L4）",
+  "honest": [
+    "① 本轮零产品代码改动（src/ 未动）⇒ 无产品性能/KPI 读数可报；本轮的『读数』是器具验收面自身的读数。",
+    "② **旧 11 行 input_fingerprint n=0**：其 cmd 字面量里没有输入文件路径（输入面在驱动脚本/内部 fixture 里）⇒ 指纹面**只**覆盖本轮新登记的 exp1 行（n=1..3）。不得宣称『全部器具输入已冻结』。",
+    "③ exp1q13 分类器**未登记**：内部虽有 mutated_copy 缺陷对，但缺**外部可调用**的缺陷注入入口 ⇒ 记 pending_nc（下一轮补入口再登记），不补假负控充数。",
+    "④ 形式校验（VerificationForm|SkillGeneralization|DevPlanDocRef）**结转（第五轮）**：起手闸实测 对侧 R462 W-bench 活跃（llama-server RSS 2.08GB / arm 3-5 串行中），MemAvailable 1860MB < 2600MB ⇒ 按并发纪律零 dotnet。",
+    "⑤ 口径四元组**命名分叉已登记**：契约文本 {分子范围,分母来源,本地入账,截断规则} vs registry 实际 {单位,分母,真值源,口径档}（机检按后者）；不伪造前者内容。",
+    "⑥ 测量窗口**非纯净**：对侧 bench 在跑（其 wall_s 可能被本侧静态 python 轻微抬高）；本侧全程未用模型/未跑 dotnet。",
+    "⑦ 起手闸的并发计数含**本侧命令行**自匹配 1 条（净对侧 = 2 进程）——宽模式设计使然，登记为已知偏置。",
+    "⑧ 本轮**改了 `eval/capability/exp1-q1/selftest_scope.py`**（补 `--out` + unknown-arg 白名单）：默认无参行为逐字未变，但只声明写入面变了，不构成该器具语义已复核。"
+  ],
+  "debt": "(1) 形式校验结转清账（对侧空闲后）| (2) 旧 11 行输入指纹补全（把驱动脚本内的输入路径也登记）| (3) exp1q13 补外部缺陷注入入口后登记 | (4) 口径四元组命名统一（待用户裁定）| (5) relocated 面正例语料（独立预注册轮次）| (6) 其余旧器具是否还有「写回轮次证据」的同病（本轮只抓到 q17/q1 两件，闸已常驻）",
+  "next": "L.8 剩余候选：① 形式校验结转清账（需对侧空闲）→ ② 旧 11 行输入指纹补全 + q13 负控入口 → ③ relocated 面正例语料（独立预注册轮次）→ ④ 阶段 B 可配语言集（独立预注册轮次）。"
+}

@@ -1,0 +1,32 @@
+{
+ "schema": "exp1-gate/1",
+ "owner_round": "EXP1-Q19",
+ "conc_pattern": "MSBuild|VBCSCompiler|agenthost|llama-server|run_round|drive_task|capability_cycle|r462_w_bench",
+ "conc_samples": [
+  4,
+  4,
+  4
+ ],
+ "conc_max": 0,
+ "mem_available_mb": 1860,
+ "mem_total_mb": 3659,
+ "mem_min_mb": 2600,
+ "busy_detail": [
+  {
+   "pid": 1061989,
+   "ppid": "1056672",
+   "cmd": "python3 /tmp/r462_w_bench.py --model /tmp/models/qwenpaw-flash-2b-q4km.gguf --tag paw2b-q4 --port 48802 --ctx 1024 --out /tmp/r462_w/w-paw2b-q4.json"
+  },
+  {
+   "pid": 1061991,
+   "ppid": "1061989",
+   "cmd": "/tmp/llama-full/build/bin/llama-server -m /tmp/models/qwenpaw-flash-2b-q4km.gguf --host 127.0.0.1 --port 48802 -c 1024 -t 2 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn"
+  },
+  {
+   "pid": 1063212,
+   "ppid": "97891",
+   "cmd": "/usr/bin/bash -c source /home/agentuser/.hermes/cache/terminal/hermes-snap-b0e30d679119.sh >/dev/null 2>&1 || true\nexport AI_AGENT=\"${AI_AGENT:-hermes-agent}\" HERMES_AGENT=\"${HERME"
+  }
+ ],
+ "pass": false
+}

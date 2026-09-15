@@ -1,0 +1,70 @@
+{
+  "cycle_id": "EXP1-Q19",
+  "owner_round": "EXP1-Q19 (60m 自检作业; 不占主线轮号)",
+  "date": "2026-09-15",
+  "plan_item": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md L.8 候选① 前半: L2 器具登记（登记行写入部分; 全量面复跑见 verdict_q19.json）",
+  "goal": "把 EXP1-Q11..Q18 产出的 exp1 侧器具按契约 L2「器具验收面」字段集登记进 eval/capability/instruments.json, 并让机器闸机检这些字段; 只推进一步, 不跑 dotnet (对侧活跃)。",
+  "prereg": [
+    {
+      "id": "P1",
+      "claim": "EXP1-Q11..Q18 侧器具中 >=4 件可在本轮同时建立『正控通过 ∧ 外部可调用的机械负控判红』",
+      "judge": "l2_probe.json 中 verified_pair=true 的器具数 >= 4 ⇒ PASS",
+      "falsifier": "<4 件 ⇒ 如实记『未达』并按证据阶梯定级; 缺外部负控入口者记 pending_nc, 不补假行"
+    },
+    {
+      "id": "P2",
+      "claim": "instruments.json 每行具备契约 L2 的机械化字段: version / instrument_sha12 / input_fingerprint / 正控 / 负控",
+      "judge": "扩展后的 instruments_check.py 对新字段机检且全过 (L2_FIELDS 段全 PASS)",
+      "falsifier": "任一字段缺失或指纹与磁盘不符 ⇒ 判红并列名; 不得放宽"
+    },
+    {
+      "id": "P3",
+      "claim": "机检规范自身有注入缺陷负控: 篡改注册指纹必须判红 (checker 不空心)",
+      "judge": "python3 eval/capability/instruments_check.py --only probe.grade --fingerprint-drift-inject 必须 rc!=0 且输出含 DRIFT",
+      "falsifier": "注入后仍 rc=0 ⇒ checker 空心 ⇒ 本轮判红"
+    },
+    {
+      "id": "P4",
+      "claim": "全量面复跑 (旧 11 行 + 本轮新行) 全过",
+      "judge": "instruments-check.json passed == total",
+      "falsifier": "任一 FAIL ⇒ 单列器具缺陷, 不得改门限/删行"
+    }
+  ],
+  "version_semantics": {
+    "声明版本优先": "脚本内自带版本常量/字段者取其字面值 (如 index_scope_out_classify 的 instrument_version=2.7.0)",
+    "否则内容地址": "version = 'content-sha12:<sha256[:12]>' —— 由器具文件字节派生, 严禁手打",
+    "note": "登记写入器必须由文件字节计算, 与写通道字面量改写风险隔离 (承 R435/R450 铁律)"
+  },
+  "fingerprint_semantics": "input_fingerprint = [{path, sha12}] 覆盖该器具**默认读取语料**的全部路径; 机检重算并逐条比对 (漂移 ⇒ 判红)。语料冻结纪律: 指纹即冻结声明的机器可读形式。",
+  "known_conflicts_to_flag": [
+    {
+      "id": "C1",
+      "what": "口径四元组命名分叉: 契约文本写 {分子范围, 分母来源, 本地入账, 截断规则}; registry schema 实际落地为 kpi_quad{单位, 分母, 真值源, 口径档}",
+      "handling": "本轮以 registry schema 为准 (文档/机检的唯一消费者), 在报告与附录中显式登记冲突; 不伪造未记录的字段内容"
+    }
+  ],
+  "gates": {
+    "conc_max": 0,
+    "mem_min_mb": 2600,
+    "measured": "见 gate_q19.json (起手闸读数)"
+  },
+  "deferred": [
+    {
+      "item": "dotnet 形式校验 (VerificationForm|SkillGeneralization|DevPlanDocRef)",
+      "why": "对侧 30m 作业活跃 (R462 W-bench: /tmp/r462_w_all.sh -> llama-server pid 1058639 RSS 2.08GB) ⇒ 并发闸按设计拒绝 dotnet; 且本轮改动面无 dotnet 侧消费者 (status_gen --check 只读 docs/verification-registry.json)",
+      "carry": "第五轮结转 (前: Q12 已清一轮; Q13/Q14/Q15/Q16/Q17/Q18 各挂一笔, 其中 Q18 已跑 dotnet 10/10)"
+    }
+  ],
+  "scope_freeze": {
+    "no_src_change": true,
+    "no_product_verdict_change": true,
+    "no_dotnet": true,
+    "no_corpus_rewrite": "只读语料; 不改 exp1-q10/q11/q15/q16/q17/q18 既有产物内容"
+  },
+  "predicted": {
+    "P1": "PASS (预期 4-5 件: q11 分解器 / q15-Q16 单位轴 guard / q17 归因器 / q18 重建器)",
+    "P2": "PASS",
+    "P3": "PASS",
+    "P4": "PASS (旧 11 行 R444/R446 时代已全过)"
+  }
+}

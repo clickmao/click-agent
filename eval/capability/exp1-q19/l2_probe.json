@@ -1,0 +1,264 @@
+{
+ "schema": "exp1-l2-probe/1",
+ "owner_round": "EXP1-Q19",
+ "manifest": "eval/capability/instruments.json",
+ "candidates": [
+  {
+   "id": "exp1q11.other-bucket-decompose",
+   "file": "eval/capability/exp1-q11/other_bucket_decompose.py",
+   "file_sha12_before": "a5e952141582",
+   "pos_cmd": "python3 eval/capability/exp1-q11/other_bucket_decompose.py --selftest",
+   "pos_rc": 0,
+   "pos_substr": "RESULT: PASS",
+   "pos_substr_found": true,
+   "pos_pass": true,
+   "pos_tail": [
+    "  [ok] VAC other_edges==0 记为 vacuous 且 C8 判 false other_edges=0",
+    "  [ok] CONS exhaustive single-label 5/5",
+    "RESULT: PASS (0 failing)"
+   ],
+   "inputs": [
+    {
+     "path": "eval/capability/exp1-q10/citations.jsonl",
+     "sha12": "08c99bd67a41"
+    },
+    {
+     "path": "eval/capability/exp1-q10/attribution_q10.json",
+     "sha12": "7c4e1144921a"
+    }
+   ],
+   "negs": [
+    {
+     "name": "absent-corpus",
+     "expect": "nonzero",
+     "cmd": "python3 eval/capability/exp1-q11/other_bucket_decompose.py --citations eval/capability/exp1-q19/_absent_corpus.jsonl --out eval/capability/exp1-q19/_q11_nc.json",
+     "rc": 3,
+     "nok": true,
+     "tail": [
+      "MEASUREMENT_FAILURE: [Errno 2] No such file or directory: 'eval/capability/exp1-q19/_absent_corpus.jsonl'"
+     ]
+    }
+   ],
+   "file_sha12_after": "a5e952141582",
+   "file_unchanged_by_pos": true,
+   "verified_pair": true,
+   "pending_nc": false
+  },
+  {
+   "id": "exp1q15.unit-axis-guard",
+   "file": "eval/capability/exp1-q15/unit_axis_guard.py",
+   "file_sha12_before": "002c73121e33",
+   "pos_cmd": "python3 eval/capability/exp1-q15/unit_axis_guard.py --selftest",
+   "pos_rc": 0,
+   "pos_substr": "SELFTEST 10/10 pass",
+   "pos_substr_found": true,
+   "pos_pass": true,
+   "pos_tail": [
+    "  OK  FX8_missing_input            expect=3 got=3 findings=['MEASUREMENT']",
+    "  OK  FX9_vacuous_single_axis      expect=2 got=2 findings=['C4_self_derived_total', 'C9_vacuous']",
+    "  OK  FX10_legit_other_names       expect=0 got=0 findings=[]"
+   ],
+   "inputs": [
+    {
+     "path": "eval/capability/exp1-q10/probe_v260.py",
+     "sha12": "e90c7d7ff15e"
+    },
+    {
+     "path": "eval/capability/exp1-q10/citations.jsonl",
+     "sha12": "08c99bd67a41"
+    }
+   ],
+   "negs": [
+    {
+     "name": "absent-cites",
+     "expect": "nonzero",
+     "cmd": "python3 eval/capability/exp1-q15/unit_axis_guard.py --run --cites eval/capability/exp1-q19/_absent_corpus.jsonl --json eval/capability/exp1-q19/_q15_nc.json",
+     "rc": 2,
+     "nok": true,
+     "tail": [
+      "      {\"token\": \"weak\", \"domains\": [\"EDGE_STRONG=strong\", \"all\"], \"keys\": [\"n_edges_strong_with_weak_symbols\", \"weak_symbol_kind_counts\"]}",
+      "  C5 ungated_axes=['citation', 'continuation', 'doc', 'symbol'] gated=['edge'] det=True",
+      "TOTAL verdict=INVARIANT_VIOLATED exit=2 artifacts=1 ground_truth weak_edge_symbol_slots=90 two_paths_agree=True"
+     ]
+    },
+    {
+     "name": "void-arm-cites",
+     "expect": "nonzero",
+     "cmd": "python3 eval/capability/exp1-q15/unit_axis_guard.py --run --cites eval/capability/exp1-q18/arm_v270_VOID_self_include/citations.jsonl --json eval/capability/exp1-q19/_q15_nc2.json",
+     "rc": 2,
+     "nok": true,
+     "tail": [
+      "      {\"token\": \"weak\", \"domains\": [\"EDGE_STRONG=strong\", \"all\"], \"keys\": [\"n_edges_strong_with_weak_symbols\", \"weak_symbol_kind_counts\"]}",
+      "  C5 ungated_axes=['citation', 'continuation', 'doc', 'symbol'] gated=['edge'] det=True",
+      "TOTAL verdict=INVARIANT_VIOLATED exit=2 artifacts=1 ground_truth weak_edge_symbol_slots=90 two_paths_agree=True"
+     ]
+    }
+   ],
+   "file_sha12_after": "002c73121e33",
+   "file_unchanged_by_pos": true,
+   "verified_pair": true,
+   "pending_nc": false
+  },
+  {
+   "id": "exp1q15.unit-axis-guard-q16",
+   "file": "eval/capability/exp1-q16/unit_axis_guard.py",
+   "file_sha12_before": "8d22d7d76002",
+   "pos_cmd": "python3 eval/capability/exp1-q16/unit_axis_guard.py --selftest",
+   "pos_rc": 0,
+   "pos_substr": "SELFTEST 14/14 pass",
+   "pos_substr_found": true,
+   "pos_pass": true,
+   "pos_tail": [
+    "  OK  FX12_nested_loop_registered_corrupted expect=3 got=3 findings=['MEASUREMENT', \"MEASUREMENT:重放与登记读数不一致（先查派生/总体链，不调参）: ['symbol_face_rungs']\"]",
+    "  OK  FX14_archive_face_field_absent expect=0 got=0 findings=[]",
+    "  OK  FX13_untyped_skip_fail_closed expect=3 got=3 findings=['MEASUREMENT', \"MEASUREMENT:过滤表达式引用未派生名 'mystery_gate(c)': name 'mystery_gate' is not defined（fail-closed，不回落默认值）\"]"
+   ],
+   "inputs": [
+    {
+     "path": "eval/capability/exp1-q10/probe_v260.py",
+     "sha12": "e90c7d7ff15e"
+    },
+    {
+     "path": "eval/capability/exp1-q10/citations.jsonl",
+     "sha12": "08c99bd67a41"
+    }
+   ],
+   "negs": [
+    {
+     "name": "absent-cites",
+     "expect": "nonzero",
+     "cmd": "python3 eval/capability/exp1-q16/unit_axis_guard.py --run --cites eval/capability/exp1-q19/_absent_corpus.jsonl --json eval/capability/exp1-q19/_q16_nc.json",
+     "rc": 2,
+     "nok": true,
+     "tail": [
+      "      {\"token\": \"weak\", \"domains\": [\"EDGE_STRONG=strong\", \"all\"], \"keys\": [\"n_edges_strong_with_weak_symbols\", \"weak_symbol_kind_counts\"]}",
+      "  C5 ungated_axes=['citation', 'continuation', 'doc', 'symbol'] gated=['edge'] det=True",
+      "TOTAL verdict=INVARIANT_VIOLATED exit=2 artifacts=1 ground_truth weak_edge_symbol_slots=90 two_paths_agree=True"
+     ]
+    }
+   ],
+   "file_sha12_after": "8d22d7d76002",
+   "file_unchanged_by_pos": true,
+   "verified_pair": true,
+   "pending_nc": false
+  },
+  {
+   "id": "exp1q17.archive-field-provenance",
+   "file": "eval/capability/exp1-q17/archive_field_provenance.py",
+   "file_sha12_before": "cac4530579fd",
+   "pos_cmd": "python3 eval/capability/exp1-q17/archive_field_provenance.py --selftest --out eval/capability/exp1-q19/l2runs/verdict_q17.json --fixtures-out eval/capability/exp1-q19/l2runs/selftest_q17.json",
+   "pos_rc": 0,
+   "pos_substr": "checks 15/15",
+   "pos_substr_found": true,
+   "pos_pass": true,
+   "pos_tail": [
+    "类分布: {'C_archive_foreign_key': 0, 'C_dump_dead_entry': 0, 'C_dump_producer_branch_unhit': 2, 'C_producer_dump_omission': 9, 'C_written_and_archived': 24}  Σ=35 == |P∪D∪A|=35",
+    "漏字段(9): ['block_id', 'path_exists', 'pos_end', 'pos_start', 'raw', 'relocated_lines_ok', 'relocated_symbol_faces', 'relocated_symbols_absent', 'symbol_faces']",
+    "checks 15/15 · fixtures 15/15 · exit=0"
+   ],
+   "inputs": [
+    {
+     "path": "eval/capability/exp1-q10/citations.jsonl",
+     "sha12": "08c99bd67a41"
+    },
+    {
+     "path": "eval/capability/exp1-q10/attribution_q10.json",
+     "sha12": "7c4e1144921a"
+    },
+    {
+     "path": "eval/capability/exp1-q16/verdict_q16.json",
+     "sha12": "674bb15292e1"
+    }
+   ],
+   "negs": [
+    {
+     "name": "void-arm-archive",
+     "expect": "nonzero",
+     "cmd": "python3 eval/capability/exp1-q17/archive_field_provenance.py --archive eval/capability/exp1-q18/arm_v270_VOID_self_include/citations.jsonl --out eval/capability/exp1-q19/_q17_nc.json --fixtures-out eval/capability/exp1-q19/_q17_nc_fx.json",
+     "rc": 2,
+     "nok": true,
+     "tail": [
+      "  RED C4: class(symbol_faces) == C_producer_dump_omission ⇒ 归因① | class=C_archive_foreign_key verdict=未预期类: C_archive_foreign_key",
+      "  RED PH1: （事后）归档键集 ⊆ 落盘白名单 ⇒ 同源 | foreign=['symbol_faces']",
+      "  RED C13: 夹具全绿（含 4 负控 + 1 正控 + 3 fail-closed + 组合） | 0/0"
+     ]
+    },
+    {
+     "name": "absent-archive",
+     "expect": "nonzero",
+     "cmd": "python3 eval/capability/exp1-q17/archive_field_provenance.py --archive eval/capability/exp1-q19/_absent_corpus.jsonl --out eval/capability/exp1-q19/_q17_nc2.json --fixtures-out eval/capability/exp1-q19/_q17_nc2_fx.json",
+     "rc": 3,
+     "nok": true,
+     "tail": [
+      "MEASUREMENT_FAILURE: 输入缺失 probe=True archive=False"
+     ]
+    }
+   ],
+   "file_sha12_after": "cac4530579fd",
+   "file_unchanged_by_pos": true,
+   "verified_pair": true,
+   "pending_nc": false
+  },
+  {
+   "id": "exp1q18.rebuild-constructor",
+   "file": "eval/capability/exp1-q18/build_q18_probe.py",
+   "file_sha12_before": "500033412cc0",
+   "pos_cmd": "python3 eval/capability/exp1-q18/build_q18_probe.py",
+   "pos_rc": 0,
+   "pos_substr": "BUILDER_OK",
+   "pos_substr_found": true,
+   "pos_pass": true,
+   "pos_tail": [
+    "  \"ok\": true",
+    "}",
+    "BUILDER_OK"
+   ],
+   "inputs": [
+    {
+     "path": "eval/capability/exp1-q10/probe_v260.py",
+     "sha12": "e90c7d7ff15e"
+    }
+   ],
+   "negs": [
+    {
+     "name": "mutated-source-version",
+     "expect": "detect:NC_OK",
+     "cmd": "python3 eval/capability/exp1-q19/nc_rebuild_mutated.py",
+     "rc": 0,
+     "nok": true,
+     "tail": [
+      "NC_OK: mutated source rejected rc=3 dst_written=False | FATAL: unexpected source version 9.9.9"
+     ]
+    }
+   ],
+   "file_sha12_after": "500033412cc0",
+   "file_unchanged_by_pos": true,
+   "verified_pair": true,
+   "pending_nc": false
+  },
+  {
+   "id": "exp1q13.index-scope-out-classifier",
+   "file": "eval/capability/exp1-q13/index_scope_out_classify.py",
+   "file_sha12_before": "57fea45fb368",
+   "pos_cmd": "python3 eval/capability/exp1-q13/index_scope_out_classify.py --selftest --no-write",
+   "pos_rc": 0,
+   "pos_substr": "\"all_pass\": true",
+   "pos_substr_found": true,
+   "pos_pass": true,
+   "pos_tail": [
+    " },",
+    " \"all_pass\": true",
+    "}"
+   ],
+   "inputs": [],
+   "negs": [],
+   "file_sha12_after": "57fea45fb368",
+   "file_unchanged_by_pos": true,
+   "verified_pair": false,
+   "pending_nc": true
+  }
+ ],
+ "verified_pairs": 5,
+ "total_candidates": 6,
+ "unpaired": 1
+}
