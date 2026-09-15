@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Version>0.1.0</Version>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>agent.Recall</RootNamespace>
+    <AssemblyName>agent.recall</AssemblyName>
+    <IsPackable>false</IsPackable>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <EnableDefaultCompileItems>true</EnableDefaultCompileItems>
+    <!-- R480 (用户钦定焦点): 独立文本召回模块测试项目.
+         刻意不进 agent.sln: 检索能力成熟后再合并回主工程.
+         纯 BCL 零第三方依赖 + 零反射 + 零 unsafe ⇒ AOT 可用为验收前提. -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="agent.recall.tests" />
+  </ItemGroup>
+
+</Project>

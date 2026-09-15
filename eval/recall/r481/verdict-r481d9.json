@@ -1,0 +1,63 @@
+{
+ "round": "R481",
+ "subject": "D9 交替核验 (目录 mtime 剪枝盲区: 纯内容改写)",
+ "checks": {
+  "C1_source_derived_contract": {
+   "ok": true,
+   "detail": {
+    "read_shift": true,
+    "read_flag": true,
+    "prune_enabled_decl": "options.PruneUnchangedDirs && store is not null && !prevScanPruned",
+    "prune_gate_suppresses": true,
+    "write_encode": true,
+    "backfill_ulong": true
+   }
+  },
+  "C3_verify_round_semantics_locked": {
+   "ok": true,
+   "detail": {
+    "d9_test_present": true,
+    "asserts_zero_prune_on_verify_round": true,
+    "asserts_verify_flag": true,
+    "asserts_alternation_recovers": true
+   }
+  },
+  "C2_real_test_readout": {
+   "ok": true,
+   "detail": {
+    "ran": true,
+    "rc": 0,
+    "tail": "Test run for /home/agentuser/AgentFramework/src/agent.recall.tests/bin/Release/net10.0/agent.recall.tests.dll (.NETCoreApp,Version=v10.0)\nA total of 1 test files matched the specified pattern.\nResults File: /home/agentuser/AgentFramework/eval/recall/r481/results/r481d9.trx\n\nPassed!  - Failed:     0, Passed:    14, Skipped:     0, Total:    14, Duration: 949 ms - agent.recall.tests.dll (net10.0)\n",
+    "result_rows": 14,
+    "failed": 0,
+    "passed": 14,
+    "d9_case": [
+     "agent.Recall.Tests.RecallIncrementalTests.Update_AlternatingVerify_CatchesSameSizeContentRewrite"
+    ],
+    "d9_passed": true
+   }
+  }
+ },
+ "negative_controls": {
+  "NC1_invert_prune_gate": {
+   "ok": true,
+   "detail": {
+    "detector_ok_on_mutant": false
+   }
+  },
+  "NC2_drop_stamp_shift": {
+   "ok": true,
+   "detail": {
+    "detector_ok_on_mutant": false
+   }
+  },
+  "NC3_drop_flag_decode": {
+   "ok": true,
+   "detail": {
+    "detector_ok_on_mutant": false
+   }
+  }
+ },
+ "verdict": "PASS",
+ "note": "C2 为真跑读数 (trx 结果行数 = 断言执行面代理, 0 行 ⇒ 假绿判红); 变异负控在**临时副本**上求值, 不动工作树源码。"
+}
