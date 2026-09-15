@@ -177,4 +177,25 @@ public sealed class RelationJudgeParseTests
         Assert.True(File.Exists(path));
         Assert.Equal(cases.Length, File.ReadAllLines(path).Length);
     }
+
+    // ── R446: 判官 prompt 紧凑变体 (消融用; 截断口径必须与 verbose 逐字一致) ──
+    [Fact]
+    public void K14_紧凑prompt_形状与截断口径一致且更短()
+    {
+        var u = new string('用', 200);
+        var p = new string('回', 300);
+        var c = CorrectionDetector.BuildJudgePromptCompact(u, p);
+        var v = CorrectionDetector.BuildJudgePrompt(u, p); // 默认 (无开关) = verbose
+
+        Assert.EndsWith("答案:\n", c);
+        Assert.Contains("无法确定时也必须写 N。", c);
+        Assert.Contains("用户: " + new string('用', 120), c);
+        Assert.Contains("上一轮: " + new string('回', 160), c);
+        Assert.DoesNotContain(new string('用', 121), c);
+        Assert.DoesNotContain(new string('回', 161), c);
+
+        Assert.True(c.Length < v.Length, $"紧凑变体未变短: {c.Length} vs {v.Length}");
+        // 尾部两行 (上一轮/用户/答案) 必须逐字同源 ⇒ 消融只改指令块
+        Assert.Equal(v[v.IndexOf("上一轮: ", StringComparison.Ordinal)..], c[c.IndexOf("上一轮: ", StringComparison.Ordinal)..]);
+    }
 }

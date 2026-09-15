@@ -72,16 +72,48 @@ def _const_of(path: str, name: str) -> str:
     return _decode_cs(m.group(1))
 
 
+def _variants_of(path: str) -> dict:
+    """R446: 判官 prompt 可能有多形态 (verbose/compact) —— 逐形态取字面量, 缺失即跳过。"""
+    out = {}
+    for name in ("BuildJudgePromptVerbose", "BuildJudgePromptCompact", "BuildJudgePrompt"):
+        try:
+            out[name] = [x for x in _literals_of(path, name) if x != ""]
+        except ValueError:
+            continue
+    if not out:
+        raise ValueError("未找到判官 prompt 构造点 (任一形态)")
+    return out
+
+
+def _common_prefix(strs) -> str:
+    if not strs:
+        return ""
+    p = strs[0]
+    for s in strs[1:]:
+        while p and not s.startswith(p):
+            p = p[:-1]
+    return p
+
+
 def derive() -> dict:
     j_system = _const_of(CS_JUDGE, "CorrectionJudgeSystem")
-    lits = [x for x in _literals_of(CS_DETECT, "BuildJudgePrompt") if x != ""]
+    vs = _variants_of(CS_DETECT)
+    vname = "BuildJudgePromptVerbose" if "BuildJudgePromptVerbose" in vs else next(iter(vs))
+    lits = vs[vname]
     body = "".join(lits)
     first_line = lits[0].split("\n")[0]
     tail = lits[-1]
+    # R446: 识别标记 = 各形态首行的**公共前缀** (两种 prompt 形态都能被同一标记命中);
+    # 单形态 / 公共前缀过短时退化为 verbose 首行。
+    by_variant = {k: v[0].split("\n")[0] for k, v in vs.items()}
+    mark = _common_prefix(list(by_variant.values()))
+    if len(mark) < 10:
+        mark = first_line
 
     assert not (INVISIBLE & set(j_system + body)), "A1 失败: 标记含不可见码位"
     assert len(j_system) >= 4 and j_system.endswith("。"), f"A1' 失败: system 形状异常 {j_system!r}"
-    assert all(k in first_line for k in ("C", "A", "N")), f"A2 失败: 首行缺分类键 {first_line!r}"
+    assert all(all(k in fl for k in ("C", "A", "N")) for fl in by_variant.values()), \
+        f"A2 失败: 某形态首行缺分类键 {by_variant!r}"
     assert "用户:" in lits[-2] and tail.startswith("答案:"), f"A3 失败: 锚点缺失 {lits[-2]!r} / {tail!r}"
     # A4: 裸片段（= system 文本）不得出现在 user 模板中（R435 回归闸; 片段来源派生, 非手打）
     assert j_system not in body, "A4 失败: user 模板内出现裸片段（R435 回归）"
@@ -90,7 +122,8 @@ def derive() -> dict:
         "source_files": {"judge_const": CS_JUDGE, "prompt_fn": CS_DETECT},
         "j_system": j_system,
         "j_system_len": len(j_system),
-        "j_first_line": first_line,
+        "j_first_line": mark,
+        "j_first_line_by_variant": by_variant,
         "j_user_anchor": "用户:",
         "j_answer_tail": "答案:",
         "j_prompt_literals_n": len(lits),

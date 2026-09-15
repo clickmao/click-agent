@@ -1,0 +1,199 @@
+{
+  "dir": "eval/rover/r446",
+  "grid": "M20",
+  "arms": {
+    "A": {
+      "arm": "A",
+      "remote": 61256.0,
+      "remote_calls": 25,
+      "local_total": 0,
+      "local_rows": 0,
+      "judge_all": 0,
+      "judge_local": 0,
+      "judge_tok": 0,
+      "judge_prompt": 0,
+      "judge_gen": 0,
+      "letters": [],
+      "msg_heads": [],
+      "kinds": [],
+      "cost": 61256.0,
+      "gate_tok": 0,
+      "by_point": {}
+    },
+    "BRJ": {
+      "arm": "BRJ",
+      "remote": 32968.0,
+      "remote_calls": 13,
+      "local_total": 7841.0,
+      "local_rows": 20,
+      "judge_all": 18,
+      "judge_local": 13,
+      "judge_tok": 4738.0,
+      "judge_prompt": 2764.0,
+      "judge_gen": 1974.0,
+      "letters": [
+        "A",
+        "N",
+        "C",
+        "N",
+        "N",
+        "A",
+        "N",
+        "N",
+        "N",
+        "N",
+        "A",
+        "A",
+        "N"
+      ],
+      "msg_heads": [
+        "换个说法。",
+        "从头再说。",
+        "再讲一遍。",
+        "展开说说。",
+        "嗯嗯，知道了。",
+        "明白，多谢。",
+        "行，可以，明白。",
+        "换个例子。",
+        "说细一些。",
+        "重讲一次。",
+        "再展开点。",
+        "换个讲法。",
+        "从头细讲。"
+      ],
+      "kinds": [
+        "Adopt",
+        "Neutral",
+        "Correct",
+        "Neutral",
+        "Neutral",
+        "Adopt",
+        "Neutral",
+        "Neutral",
+        "Neutral",
+        "Neutral",
+        "Adopt",
+        "Adopt",
+        "Neutral"
+      ],
+      "cost": 40809.0,
+      "gate_tok": 3103.0,
+      "by_point": {
+        "correction_judge": 13,
+        "local_turn_gate": 7
+      }
+    },
+    "BRJC": {
+      "arm": "BRJC",
+      "remote": 33231.0,
+      "remote_calls": 16,
+      "local_total": 6291.0,
+      "local_rows": 17,
+      "judge_all": 18,
+      "judge_local": 10,
+      "judge_tok": 3334.0,
+      "judge_prompt": 1096.0,
+      "judge_gen": 2238.0,
+      "letters": [
+        "N",
+        "N",
+        "N",
+        "C",
+        "A",
+        "N",
+        "A",
+        "A",
+        "A",
+        "A"
+      ],
+      "msg_heads": [
+        "从头再说。",
+        "换个说法。",
+        "展开说说。",
+        "明白，多谢。",
+        "行，可以，明白。",
+        "换个例子。",
+        "说细一些。",
+        "重讲一次。",
+        "再展开点。",
+        "换个讲法。"
+      ],
+      "kinds": [
+        "Neutral",
+        "Neutral",
+        "Neutral",
+        "Correct",
+        "Adopt",
+        "Neutral",
+        "Adopt",
+        "Adopt",
+        "Adopt",
+        "Adopt"
+      ],
+      "cost": 39522.0,
+      "gate_tok": 2957.0,
+      "by_point": {
+        "correction_judge": 10,
+        "local_turn_gate": 7
+      }
+    }
+  },
+  "checks_posthoc": {
+    "D1b_按msg_head对齐一致率": {
+      "n_common_msgs": 10,
+      "n_agree": 5,
+      "agree_rate": 0.5,
+      "diffs": {
+        "换个说法。": [
+          "A",
+          "N"
+        ],
+        "明白，多谢。": [
+          "A",
+          "C"
+        ],
+        "行，可以，明白。": [
+          "N",
+          "A"
+        ],
+        "说细一些。": [
+          "N",
+          "A"
+        ],
+        "重讲一次。": [
+          "N",
+          "A"
+        ]
+      }
+    }
+  },
+  "kpi_brj": 0.33379587305733316,
+  "kpi_brjc": 0.3548060598145488,
+  "checks": {
+    "D1_字母逐轮一致": {
+      "pass": false,
+      "brj": "ANCNNANNNNAAN",
+      "brjc": "NNNCANAAAA"
+    },
+    "D2_判官本地降幅>=10%": {
+      "pass": true,
+      "brj": 4738.0,
+      "brjc": 3334.0
+    },
+    "D3_生成不升": {
+      "pass": false,
+      "brj": 1974.0,
+      "brjc": 2238.0
+    },
+    "D4_远端零回归": {
+      "pass": false,
+      "brj": 32968.0,
+      "brjc": 33231.0
+    },
+    "N1_非空心": {
+      "pass": true,
+      "brj": 13,
+      "brjc": 10
+    }
+  }
+}

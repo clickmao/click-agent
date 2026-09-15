@@ -156,6 +156,42 @@
    },
    "owner_round": "R444",
    "evidence_path": "tools/hooks/pre-commit"
+  },
+  {
+   "id": "r446.judge-precheck",
+   "kind": "separability-precheck",
+   "cmd": "python3 eval/rover/r445/judge_prefilter_precheck.py --run-glob 'r4[0-4]*' --out /tmp/r446_instr_jp.json",
+   "expect_rc": 0,
+   "expect_substr": "C6_struct_no_prev_reply",
+   "nc_cmd": "python3 eval/rover/r445/judge_prefilter_precheck.py --neg-control --run-glob 'r4[0-4]*' --out /tmp/r446_instr_jp_nc.json",
+   "nc_expect": "detect:[neg-control] OK",
+   "nc_cmd2": "python3 eval/rover/r445/judge_prefilter_precheck.py --grid-dir /nonexistent-grid-dir --out /tmp/r446_instr_jp_fc.json",
+   "nc_expect2": "nonzero",
+   "kpi_quad": {
+    "单位": "调用",
+    "分母": "判官本地真答行(244, 冻结集)",
+    "真值源": "归档 telemetry + 源码字面量派生",
+    "口径档": "判官侧可分性"
+   },
+   "owner_round": "R446",
+   "evidence_path": "eval/rover/r445/judge_prefilter_precheck.py"
+  },
+  {
+   "id": "r446.judge-det-analyzer",
+   "kind": "determinism-probe",
+   "cmd": "python3 eval/rover/r446/analyze_judge_det.py --selftest /tmp",
+   "expect_rc": 0,
+   "expect_substr": "[selftest] ALL OK",
+   "nc_cmd": "python3 eval/rover/r446/analyze_judge_det.py /tmp/nonexistent-r446.jsonl /tmp -x deadbeef",
+   "nc_expect": "nonzero",
+   "kpi_quad": {
+    "单位": "调用",
+    "分母": "同输入判官行组",
+    "真值源": "真机遥测 letter 列",
+    "口径档": "判官确定性"
+   },
+   "owner_round": "R446",
+   "evidence_path": "eval/rover/r446/analyze_judge_det.py"
   }
  ]
 }

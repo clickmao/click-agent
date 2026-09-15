@@ -92,8 +92,32 @@ public static class CorrectionDetector
     /// 结论区不含任何字母 ⇒ 解析失败 ⇒ 每次多打一次**纯多余**的远端请求。
     /// 故改用**前置门已验证的形状**（TurnGateJudge.BuildPrompt）：示例 + 「思考结束后另起一行只写一个字母」+ 以「答案:」收尾。
     /// 语义面不变（仍是 C/A/N 同一分类），无法确定时取 **N=Neutral**（不罚不赏, 不误赏误罚）。
+    /// R446: 判官 prompt 形态开关 (默认关; =1 ⇒ 紧凑变体, 见 BuildJudgePromptCompact)。
     /// </summary>
+    private static readonly bool JudgePromptCompact =
+        Environment.GetEnvironmentVariable("AGENTFRAMEWORK_JUDGE_PROMPT_COMPACT") is "1" or "true";
+
+    /// <summary>R446: 单一构造点按开关分派 (本地/远端同面)。</summary>
     public static string BuildJudgePrompt(string? userMessage, string? previousReply)
+        => JudgePromptCompact
+            ? BuildJudgePromptCompact(userMessage, previousReply)
+            : BuildJudgePromptVerbose(userMessage, previousReply);
+
+    /// <summary>R446: 紧凑变体 (去 4 行示例; 截断口径与 verbose 逐字一致)。</summary>
+    public static string BuildJudgePromptCompact(string? userMessage, string? previousReply)
+    {
+        var cu = Truncate(userMessage ?? "", 120);
+        var cp = Truncate(previousReply ?? "", 160);
+        return
+            "判定用户消息相对上一轮回答: C=纠正/否定上一轮, A=认可/确认/致谢(无新要求), N=新要求或换说法。\n" +
+            "先思考, 思考结束后必须另起一行只写一个字母 (C 或 A 或 N), 不要写其他内容。\n" +
+            "无法确定时也必须写 N。\n" +
+            $"上一轮: {cp}\n用户: {cu}\n" +
+            "答案:\n";
+    }
+
+    /// <summary>R446: 原 verbose 变体 (逐字未改)。</summary>
+    private static string BuildJudgePromptVerbose(string? userMessage, string? previousReply)
     {
         var user = Truncate(userMessage ?? "", 120);
         var prev = Truncate(previousReply ?? "", 160);

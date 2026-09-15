@@ -1,0 +1,209 @@
+{
+ "round": "R446",
+ "instrument": "judge_determinism_probe",
+ "ns": "-s1",
+ "bin_sha256": "c28e86d3072ac8837ead49650aaa11bfa8b08a469311456b0af36c8a468c9260",
+ "judge_rows_total": 12,
+ "local_rows": 11,
+ "source_hist": {
+  "remote": 1,
+  "local": 11
+ },
+ "local_state_hist": {
+  "local": 11
+ },
+ "rows": [
+  {
+   "i": 1,
+   "source": "remote",
+   "local_state": "",
+   "kind": "Neutral",
+   "letter": "",
+   "signal": "no_prev_reply",
+   "prompt_len": 0,
+   "ev": -1,
+   "new": -1,
+   "gen": -1,
+   "ms": 0,
+   "msg_head": "好，按这个来。"
+  },
+  {
+   "i": 2,
+   "source": "local",
+   "local_state": "local",
+   "kind": "Neutral",
+   "letter": "N",
+   "signal": "llm:N",
+   "prompt_len": 284,
+   "ev": 215,
+   "new": 215,
+   "gen": 92,
+   "ms": 12780,
+   "msg_head": "好，按这个来。"
+  },
+  {
+   "i": 3,
+   "source": "local",
+   "local_state": "local",
+   "kind": "Neutral",
+   "letter": "N",
+   "signal": "llm:N",
+   "prompt_len": 284,
+   "ev": 215,
+   "new": 215,
+   "gen": 92,
+   "ms": 23441,
+   "msg_head": "好，按这个来。"
+  },
+  {
+   "i": 4,
+   "source": "local",
+   "local_state": "local",
+   "kind": "Neutral",
+   "letter": "N",
+   "signal": "llm:N",
+   "prompt_len": 284,
+   "ev": 215,
+   "new": 215,
+   "gen": 92,
+   "ms": 33959,
+   "msg_head": "好，按这个来。"
+  },
+  {
+   "i": 5,
+   "source": "local",
+   "local_state": "local",
+   "kind": "Neutral",
+   "letter": "N",
+   "signal": "llm:N",
+   "prompt_len": 284,
+   "ev": 215,
+   "new": 215,
+   "gen": 92,
+   "ms": 45122,
+   "msg_head": "好，按这个来。"
+  },
+  {
+   "i": 6,
+   "source": "local",
+   "local_state": "local",
+   "kind": "Neutral",
+   "letter": "N",
+   "signal": "llm:N",
+   "prompt_len": 284,
+   "ev": 215,
+   "new": 215,
+   "gen": 92,
+   "ms": 55401,
+   "msg_head": "好，按这个来。"
+  },
+  {
+   "i": 7,
+   "source": "local",
+   "local_state": "local",
+   "kind": "Neutral",
+   "letter": "N",
+   "signal": "llm:N",
+   "prompt_len": 284,
+   "ev": 215,
+   "new": 215,
+   "gen": 92,
+   "ms": 66397,
+   "msg_head": "好，按这个来。"
+  },
+  {
+   "i": 8,
+   "source": "local",
+   "local_state": "local",
+   "kind": "Neutral",
+   "letter": "N",
+   "signal": "llm:N",
+   "prompt_len": 284,
+   "ev": 215,
+   "new": 215,
+   "gen": 92,
+   "ms": 10824,
+   "msg_head": "好，按这个来。"
+  },
+  {
+   "i": 9,
+   "source": "local",
+   "local_state": "local",
+   "kind": "Neutral",
+   "letter": "N",
+   "signal": "llm:N",
+   "prompt_len": 284,
+   "ev": 215,
+   "new": 215,
+   "gen": 92,
+   "ms": 23432,
+   "msg_head": "好，按这个来。"
+  },
+  {
+   "i": 10,
+   "source": "local",
+   "local_state": "local",
+   "kind": "Neutral",
+   "letter": "N",
+   "signal": "llm:N",
+   "prompt_len": 284,
+   "ev": 215,
+   "new": 215,
+   "gen": 92,
+   "ms": 34156,
+   "msg_head": "好，按这个来。"
+  },
+  {
+   "i": 11,
+   "source": "local",
+   "local_state": "local",
+   "kind": "Neutral",
+   "letter": "N",
+   "signal": "llm:N",
+   "prompt_len": 284,
+   "ev": 215,
+   "new": 215,
+   "gen": 92,
+   "ms": 44772,
+   "msg_head": "好，按这个来。"
+  },
+  {
+   "i": 12,
+   "source": "local",
+   "local_state": "local",
+   "kind": "Neutral",
+   "letter": "N",
+   "signal": "llm:N",
+   "prompt_len": 284,
+   "ev": 215,
+   "new": 215,
+   "gen": 92,
+   "ms": 55381,
+   "msg_head": "好，按这个来。"
+  }
+ ],
+ "criteria": {
+  "D1_deterministic": {
+   "pass": true,
+   "value": {
+    "N": 11
+   },
+   "n_local": 11
+  },
+  "D2_inputs_identical": {
+   "pass": true,
+   "value": {
+    "284": 11
+   }
+  },
+  "D3_accounting": {
+   "pass": true,
+   "value": "ev-new 分布={0: 11}"
+  },
+  "D4_form": {
+   "pass": true,
+   "value": "/tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /tmp/models/r1-distill-qwen-1.5b-q4km.gguf --host 127.0.0.1 --port 44553 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja "
+  }
+ },
+ "conclusion": "H2_DETERMINISTIC"
+}

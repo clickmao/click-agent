@@ -1,0 +1,93 @@
+{
+  "round": "R446",
+  "instrument": "eval/rover/r443|r444/channel_marks.py",
+  "defect_before": {
+    "symptom": "ValueError: 未找到 BuildJudgePrompt 函数体",
+    "cause": "R446 把 BuildJudgePrompt 改为表达式体分派 + 拆出 Verbose/Compact 两形态 ⇒ 源码结构耦合型器具真红",
+    "rc": 1
+  },
+  "fix": {
+    "kind": "多形态派生",
+    "mark": "各形态首行公共前缀",
+    "mark_value": "判定用户消息相对上一轮回答: ",
+    "a2": "改为逐形态校验 C/A/N",
+    "fallback": "单形态 ⇒ 退化为首行"
+  },
+  "zero_regression_check": {
+    "cmd": "python3 eval/rover/r444/settle_r444.py <归档 calls-BRJ-M20-s4 副本> BRJ <临时目录> /tmp/pub_r444b/agenthost deadbeef M20 -s4 <run 目录>",
+    "rc": 0,
+    "settle_line": "calls=13(G=13/J=0) tok=32968(G=32968/J=0) unassigned=0 FN=[] FP=[] acc=1.0 meas=18 consumed=[3, 18] gate:r1=7/mech=11",
+    "recorded_in_r444": {
+      "G_calls": 13,
+      "G_tokens": 32968,
+      "J_calls": 0,
+      "J_tokens": 0,
+      "unassigned_calls": 0,
+      "attribution_ok": true
+    },
+    "match": true,
+    "S1_repro": {
+      "ok": true,
+      "compared": 5,
+      "details": [
+        [
+          "B-p8-b1",
+          [
+            2,
+            7
+          ],
+          [
+            2,
+            7
+          ]
+        ],
+        [
+          "BRJ-p8-k1",
+          [
+            5,
+            6
+          ],
+          [
+            5,
+            6
+          ]
+        ],
+        [
+          "BP-p8-d1",
+          [
+            8,
+            7
+          ],
+          [
+            8,
+            7
+          ]
+        ],
+        [
+          "A-p12-n1",
+          [
+            11,
+            0
+          ],
+          [
+            11,
+            0
+          ]
+        ],
+        [
+          "B-p12-o1",
+          [
+            7,
+            8
+          ],
+          [
+            7,
+            8
+          ]
+        ]
+      ]
+    },
+    "temp_dir_cleaned": true
+  },
+  "usage_note": "临时目录必须置于 eval/rover/ 下一级 (settle 内 ARCHIVE=dirname(dir)/r434), 否则 S1 归档比对缺失 ⇒ rc=6"
+}

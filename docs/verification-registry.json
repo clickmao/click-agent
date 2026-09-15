@@ -1295,6 +1295,9 @@
       "negative_control": "负控 k>=1 (实测 128); 正控 signal=no_prev_reply ⇒ Kind=Neutral ∧ prompt_len=0 (实测 30/30 合规); fail-closed 不存在 grid-dir ⇒ rc=2 且不产出结果文件",
       "covers": [
         "eval/rover/r445/precheck-negcontrol.json"
+      ],
+      "cmd_expect_absent": [
+        "eval/rover/NOPE_R445"
       ]
     },
     {
@@ -1307,6 +1310,60 @@
       "negative_control": "EMPTY 类 9 行裁决非 Neutral ⇒ 证伪『按相邻轮 reply 重建上一轮回答』与产品 _lastReplyBySession 等价, 故本行只作指示不作判据",
       "covers": [
         "eval/rover/r445/README-evidence.md"
+      ]
+    },
+    {
+      "id": "r446.judge-determinism",
+      "capability": "判官路径确定性(真机产品路径)",
+      "level": "L1",
+      "owner_round": "R446",
+      "evidence_cmd": "R446_GRID=JDET24 R446_NS=-s1 bash eval/rover/r446/run_judge_det.sh 48330 48332",
+      "evidence_path": "eval/rover/r446/verdict-JDET24-s1.json",
+      "negative_control": "预注册门槛 n_local>=8: 12 轮版仅 5 次判官调用 ⇒ INVALID_PREMISE(未事后改阈值, 加长 24 轮重测); D2 要求 prompt_len 唯一且样本数达标; D3 记账 ev-new=0 全行; D4 形态 argv 直取(-np 1/f32/flash-attn off)",
+      "covers": [
+        "eval/rover/r446/analyze_judge_det.py",
+        "eval/rover/r446/grid/task-JDET24.json",
+        "eval/rover/r446/README-evidence.md"
+      ]
+    },
+    {
+      "id": "r446.zero-token-settlement-precheck",
+      "capability": "判官 0-token 结算可行性(消息面) —— 负结论",
+      "level": "L1",
+      "owner_round": "R446",
+      "evidence_cmd": "python3 eval/rover/r446/l1_ext_precheck.py >/dev/null; python3 eval/rover/r446/l1_ext_precheck_v2.py >/dev/null",
+      "evidence_path": "eval/rover/r446/l1_ext_precheck.json",
+      "negative_control": "v1 必须检出 Correct->Adopt 误赏(实测 9 行 ⇒ FAIL); v2 按 run 划分被自纠为方法缺陷(同消息跨半泄漏) ⇒ 其 Q1 PASS 不成立",
+      "covers": [
+        "eval/rover/r446/l1_ext_precheck_v2.py",
+        "eval/rover/r446/README-evidence.md"
+      ]
+    },
+    {
+      "id": "r446.channel-marks-multivariant",
+      "capability": "器具: 判官 prompt 多形态派生(公共前缀标记) + 零回归",
+      "level": "L3",
+      "owner_round": "R446",
+      "evidence_cmd": "python3 eval/rover/r444/channel_marks.py",
+      "evidence_path": "eval/rover/r446/toolregress-channel-marks.json",
+      "negative_control": "改动前同脚本抛 ValueError: 未找到 BuildJudgePrompt 函数体(rc=1); 零回归对照: settle 复跑 R444 归档 calls-BRJ-M20-s4 得 32968/13 调用逐位同 + S1 5 档案 match",
+      "covers": [
+        "eval/rover/r443/channel_marks.py",
+        "eval/rover/r444/channel_marks.py"
+      ]
+    },
+    {
+      "id": "r446.judge-prompt-compact",
+      "capability": "判官 prompt 瘦身消融(开关默认关)",
+      "level": "L1",
+      "owner_round": "R446",
+      "evidence_cmd": "bash eval/rover/r446/run_all_r446.sh",
+      "evidence_path": "eval/rover/r446/verdict-r446-analysis-M20.json",
+      "negative_control": "N1 非空心: 两臂各须 >=3 条 local 判官行; D4 远端 token 逐位零回归; 分母取同网格 A 臂实测(禁跨网格代理)",
+      "covers": [
+        "src/agent.roles/CorrectionDetector.cs",
+        "eval/rover/r446/analyze_r446.py",
+        "eval/rover/r446/grid/task-M20.json"
       ]
     }
   ],

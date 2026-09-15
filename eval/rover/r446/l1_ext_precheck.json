@@ -1,0 +1,201 @@
+{
+ "round": "R446",
+ "instrument": "l1_ext_precheck",
+ "source_rows": 244,
+ "derived_from": {
+  "instrument": "eval/rover/r445/judge_prefilter_precheck.py"
+ },
+ "archive_kind_hist": {
+  "Correct": 28,
+  "Neutral": 116,
+  "Adopt": 100
+ },
+ "polymorphic_msgs": {
+  "n_msgs": 7,
+  "of_total_msgs": 28,
+  "examples": {
+   "好，按这个来。": [
+    "Adopt",
+    "Correct",
+    "Neutral"
+   ],
+   "嗯嗯，知道了。": [
+    "Adopt",
+    "Neutral"
+   ],
+   "再讲一遍。": [
+    "Correct",
+    "Neutral"
+   ],
+   "换个例子。": [
+    "Adopt",
+    "Neutral"
+   ],
+   "说细一些。": [
+    "Correct",
+    "Neutral"
+   ],
+   "再展开点。": [
+    "Adopt",
+    "Neutral"
+   ],
+   "行，可以，明白。": [
+    "Adopt",
+    "Neutral"
+   ]
+  }
+ },
+ "polymorphic_row_share": 0.4221,
+ "cur_l1": {
+  "name": "cur_l1",
+  "settled_rows": 0,
+  "settled_hist": {
+   "Adopt": 0,
+   "Correct": 0,
+   "Neutral": 0
+  },
+  "agree": 0,
+  "mis_adopt_on_Correct": 0,
+  "mis_correct_on_Adopt": 0,
+  "adopt_on_Neutral": 0,
+  "adopt_on_Neutral_rate": 0.0,
+  "examples_mis": []
+ },
+ "ext_l1": {
+  "name": "ext_l1",
+  "settled_rows": 46,
+  "settled_hist": {
+   "Adopt": 46,
+   "Correct": 0,
+   "Neutral": 0
+  },
+  "agree": 14,
+  "mis_adopt_on_Correct": 9,
+  "mis_correct_on_Adopt": 0,
+  "adopt_on_Neutral": 23,
+  "adopt_on_Neutral_rate": 0.5,
+  "examples_mis": [
+   {
+    "msg": "好，按这个来。",
+    "arch": "Correct",
+    "run": "r430/C-k8r-r430fix1"
+   },
+   {
+    "msg": "好，按这个来。",
+    "arch": "Correct",
+    "run": "r430/C-k8r-r430fix1"
+   },
+   {
+    "msg": "好，按这个来。",
+    "arch": "Correct",
+    "run": "r430/C-k8r-r430fix1"
+   },
+   {
+    "msg": "好，按这个来。",
+    "arch": "Correct",
+    "run": "r431/C-k8r-b431"
+   },
+   {
+    "msg": "好，按这个来。",
+    "arch": "Correct",
+    "run": "r431/C-k8r-b431"
+   },
+   {
+    "msg": "好，按这个来。",
+    "arch": "Correct",
+    "run": "r431/C-k8r-b431"
+   }
+  ]
+ },
+ "neg_control": {
+  "name": "neg_control_all_adopt",
+  "settled_rows": 244,
+  "settled_hist": {
+   "Adopt": 244,
+   "Correct": 0,
+   "Neutral": 0
+  },
+  "agree": 100,
+  "mis_adopt_on_Correct": 28,
+  "mis_correct_on_Adopt": 0,
+  "adopt_on_Neutral": 116,
+  "adopt_on_Neutral_rate": 0.4754,
+  "examples_mis": [
+   {
+    "msg": "用一句话说明这个仓库的构建命令是什么。",
+    "arch": "Correct",
+    "run": "r426/C-k6-r426b1"
+   },
+   {
+    "msg": "好，按这个来。",
+    "arch": "Correct",
+    "run": "r430/C-k8r-r430fix1"
+   },
+   {
+    "msg": "好，按这个来。",
+    "arch": "Correct",
+    "run": "r430/C-k8r-r430fix1"
+   },
+   {
+    "msg": "好，按这个来。",
+    "arch": "Correct",
+    "run": "r430/C-k8r-r430fix1"
+   },
+   {
+    "msg": "好，按这个来。",
+    "arch": "Correct",
+    "run": "r431/C-k8r-b431"
+   },
+   {
+    "msg": "好，按这个来。",
+    "arch": "Correct",
+    "run": "r431/C-k8r-b431"
+   }
+  ]
+ },
+ "newly_settled": {
+  "n": 46,
+  "hist": {
+   "Adopt": 14,
+   "Correct": 9,
+   "Neutral": 23
+  },
+  "msgs": [
+   "嗯嗯，知道了。",
+   "好，按这个来。",
+   "好，知道了。",
+   "行，可以，明白。"
+  ]
+ },
+ "token_estimate": {
+  "judge_prompt_tok": 213,
+  "judge_gen_tok": 152,
+  "saved_tok_per_settled_call": 365,
+  "saved_tok_on_M20_scale": 16790
+ },
+ "criteria": {
+  "P1_mis_adopt_on_correct_zero": {
+   "pass": false,
+   "value": 9
+  },
+  "P2_adopt_on_neutral_within_noise": {
+   "pass": false,
+   "value": 0.5,
+   "noise_share": 0.4221
+  },
+  "P3_newly_settled_ge_20": {
+   "pass": true,
+   "value": 46
+  },
+  "P4_neg_control_caught": {
+   "pass": true,
+   "value": 28
+  },
+  "P5_conservation": {
+   "pass": true,
+   "value": 244,
+   "n": 244
+  }
+ },
+ "verdict": "FAIL"
+}

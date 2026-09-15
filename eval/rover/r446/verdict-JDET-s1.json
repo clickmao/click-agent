@@ -1,0 +1,125 @@
+{
+ "round": "R446",
+ "instrument": "judge_determinism_probe",
+ "ns": "-s1",
+ "bin_sha256": "c28e86d3072ac8837ead49650aaa11bfa8b08a469311456b0af36c8a468c9260",
+ "judge_rows_total": 6,
+ "local_rows": 5,
+ "source_hist": {
+  "remote": 1,
+  "local": 5
+ },
+ "local_state_hist": {
+  "local": 5
+ },
+ "rows": [
+  {
+   "i": 1,
+   "source": "remote",
+   "local_state": "",
+   "kind": "Neutral",
+   "letter": "",
+   "signal": "no_prev_reply",
+   "prompt_len": 0,
+   "ev": -1,
+   "new": -1,
+   "gen": -1,
+   "ms": 0,
+   "msg_head": "好，按这个来。"
+  },
+  {
+   "i": 2,
+   "source": "local",
+   "local_state": "local",
+   "kind": "Neutral",
+   "letter": "N",
+   "signal": "llm:N",
+   "prompt_len": 284,
+   "ev": 215,
+   "new": 215,
+   "gen": 92,
+   "ms": 13746,
+   "msg_head": "好，按这个来。"
+  },
+  {
+   "i": 3,
+   "source": "local",
+   "local_state": "local",
+   "kind": "Neutral",
+   "letter": "N",
+   "signal": "llm:N",
+   "prompt_len": 284,
+   "ev": 215,
+   "new": 215,
+   "gen": 92,
+   "ms": 25064,
+   "msg_head": "好，按这个来。"
+  },
+  {
+   "i": 4,
+   "source": "local",
+   "local_state": "local",
+   "kind": "Neutral",
+   "letter": "N",
+   "signal": "llm:N",
+   "prompt_len": 284,
+   "ev": 215,
+   "new": 215,
+   "gen": 92,
+   "ms": 36033,
+   "msg_head": "好，按这个来。"
+  },
+  {
+   "i": 5,
+   "source": "local",
+   "local_state": "local",
+   "kind": "Neutral",
+   "letter": "N",
+   "signal": "llm:N",
+   "prompt_len": 284,
+   "ev": 215,
+   "new": 215,
+   "gen": 92,
+   "ms": 46983,
+   "msg_head": "好，按这个来。"
+  },
+  {
+   "i": 6,
+   "source": "local",
+   "local_state": "local",
+   "kind": "Neutral",
+   "letter": "N",
+   "signal": "llm:N",
+   "prompt_len": 284,
+   "ev": 215,
+   "new": 215,
+   "gen": 92,
+   "ms": 58212,
+   "msg_head": "好，按这个来。"
+  }
+ ],
+ "criteria": {
+  "D1_deterministic": {
+   "pass": true,
+   "value": {
+    "N": 5
+   },
+   "n_local": 5
+  },
+  "D2_inputs_identical": {
+   "pass": false,
+   "value": {
+    "284": 5
+   }
+  },
+  "D3_accounting": {
+   "pass": true,
+   "value": "ev-new 分布={0: 5}"
+  },
+  "D4_form": {
+   "pass": false,
+   "value": "no-hostlog"
+  }
+ },
+ "conclusion": "INVALID_PREMISE"
+}
