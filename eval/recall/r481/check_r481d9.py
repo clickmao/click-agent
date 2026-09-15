@@ -21,15 +21,18 @@ import argparse
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 import xml.etree.ElementTree as ET
 
 BASE = "/home/agentuser/AgentFramework"
 SRC = os.path.join(BASE, "src/agent.recall/RecallFingerprint.cs")
 TESTS_SRC = os.path.join(BASE, "src/agent.recall.tests/RecallModuleTests.cs")
 OUT_DIR = os.path.join(BASE, "eval/recall/r481")
-TRX_DIR = os.path.join(OUT_DIR, "results")
+# trx 含机器名/时间戳 ⇒ 逐轮不可复现, 故落**仓外临时目录** (只把解析出的计数写进 verdict; 归档物 = verdict json 单件)
+TRX_DIR = os.path.join(tempfile.gettempdir(), "r481d9-results")
 DOTNET = os.path.expanduser("~/.dotnet/dotnet")
 D9_TEST = "Update_AlternatingVerify_CatchesSameSizeContentRewrite"
 
@@ -91,6 +94,7 @@ record(checks, "C3_verify_round_semantics_locked", all(c3.values()), c3)
 # ---------- C2 真读数 (真跑测试工程) ----------
 c2 = {"ran": False}
 if not args.no_test:
+    shutil.rmtree(TRX_DIR, ignore_errors=True)          # 旧 trx 先清 ⇒ 无 Overwriting 噪声
     os.makedirs(TRX_DIR, exist_ok=True)
     cmd = [
         DOTNET, "test", "src/agent.recall.tests/agent.recall.tests.csproj", "-c", "Release",
@@ -104,7 +108,11 @@ if not args.no_test:
     p = subprocess.run(cmd, cwd=BASE, env=env, capture_output=True, text=True, timeout=1800)
     c2["rc"] = p.returncode
     c2["ran"] = True
-    c2["tail"] = (p.stdout or "")[-400:]
+    # 归档物必须逐字节可复现 ⇒ 掐掉易变项 (绝对路径 / 本次耗时)
+    tail = (p.stdout or "")[-400:]
+    tail = tail.replace(BASE + "/", "")
+    tail = re.sub(r"Duration: \d+ ms", "Duration: <ms>", tail)
+    c2["tail_norm"] = tail
     trx = os.path.join(TRX_DIR, "r481d9.trx")
     if os.path.exists(trx):
         root = ET.parse(trx).getroot()
@@ -149,7 +157,8 @@ verdict = {
     "checks": checks,
     "negative_controls": negs,
     "verdict": "PASS" if all_ok else "FAIL",
-    "note": "C2 为真跑读数 (trx 结果行数 = 断言执行面代理, 0 行 ⇒ 假绿判红); 变异负控在**临时副本**上求值, 不动工作树源码。",
+    "note": ("C2 为真跑读数 (trx 结果行数 = 断言执行面代理, 0 行 ⇒ 假绿判红); 变异负控在**临时副本**上求值, 不动工作树源码; "
+             "归档物逐字节可复现 (已掐绝对路径与耗时; trx 含时间戳 ⇒ 只落仓外临时目录, 不入库)。"),
 }
 if not args.no_test:
     os.makedirs(OUT_DIR, exist_ok=True)

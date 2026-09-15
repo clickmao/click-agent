@@ -85,3 +85,13 @@
 因果链 (已定位到机制, 非猜测): 扫描的目录剪枝条件 = `dir.mtime <= 上次快照 stamp`; **改写文件内容不改变父目录 mtime** ⇒ 第三次更新把该目录整目录剪掉 ⇒ 文件级 (size, mtime) 比对根本没发生。证据: 第二次 (idle) `DirsPruned >= 1` 且 `Dirty == false` (剪枝生效); 改写后文件尺寸 +12 B 仍报 Modified=0 ⇒ 唯一可能是目录被剪。
 修法设计 (下轮实施): 指纹头 stamp 低位记为「上轮曾剪枝」; 上轮剪过 ⇒ 本轮该目录**强制核验** (列表+stat, 不读内容) ⇒ 内容改写最多 1 轮后被捕获; 交替策略下 idle 轮仍剪枝 (保 `DirsPruned>=1`), 删除类变更因目录 mtime 变化天然可见。真值边界: 纯内容改写对目录 mtime 不可见 ⇒ 任何「仅按目录 mtime 剪枝」的实现都存在该盲区, 需 `VerifyMode.Hash` 或周期性全量核验兜底 (**当前未实现**)。
 
+## R481-E: 器具归档物可复现化 + 台账卫生（2026-09-16）
+
+1) **归档物确定性**：`check_r481d9.py` 原先把 `dotnet test` 的 stdout 尾部原样写进 verdict（`tail`，内含**绝对路径**与 `Duration: N ms`），且 trx 落**仓内** `eval/recall/r481/results/` ⇒ 每重跑一次就改字节 ⇒ 与 registry 的 `frozen` pin（`artifact_sha12` 取 **HEAD blob** 的 sha12）天然不符：工作区重跑一次即失配（本轮实测 pin `aacb931b8029` ≠ 工作区 `dd80fad72cb0`）。
+   修法：掐掉路径前缀 + `Duration: <ms>` 归一；trx 改落**仓外**临时目录（`$TMPDIR/r481d9-results`，运行前清目录）。
+   读数：连跑两次 ⇒ verdict `sha256[:16] = 38d71089389acc10`，**两次逐字节一致**（DETERMINISM=OK），且 `verdict=PASS`（C2: rc=0 / result_rows=14 / failed=0 / passed=14 / D9 用例 Passed）。
+   出库：删除 `eval/recall/r481/results/r481d9.trx` —— (bytes, sha256) = (19889, `0506ba3c77a571acc19aa3b966d5bc11ec4dbf1feff71fc14ec3123d637df4e0`)。无信息损失：解析出的计数与 D9 用例名已固化进 verdict 归档物，trx 可由器具重跑复现。
+2) **台账卫生（bind_evidence 归属漂移）**：`bind_evidence.py --apply --round R481` 会把**全部**已覆盖行的 `audited_by_round` 刷成 R481（其最小 diff 判据把该字段也算进「派生内容」）⇒ 实测 147+/122- 行级 churn，其中 **96 行除 `audited_by_round` 外逐字段相同 = 纯归属漂移**（把 R478/R479 的审计戳改成 R481）。
+   处置：`eval/recall/r481/repair_registry_attribution.py` 逐行回退这 96 行到 HEAD 值（写前 `SER_ASSERT` 逐字节复现 + 写后逐行核 scope 一致 + 读回；幂等，二次运行 `IDEMPOTENT=OK`）。**保留 6 行真重派生**（R478×3 / R479×3：`live/worktree-only` → `frozen/archived-per-round` + 真 pin，因其证据已入库且工作区未改）。churn 由 147+/122- 收敛到 **51+/26-**（= 新增行 + 6 行重派生 + `updated_round` + 尾换行）。
+   未修：工具本身「换轮号必刷全部行」的判据缺陷 ⇒ 下轮候选。
+3) **registry**：149 → **150 行**（新增 `r481.recall-d9-alternating-verify`；`updated_round` R479 → R481）。尾部**换行 1 B 修复**：原文件缺尾换行 ⇒ `bind_evidence` 的序列化器自检 `SER_ASSERT` 会 fail-closed 拒写（本轮实测 rc=3）；按其自身契约补 1 B，语义零变化。

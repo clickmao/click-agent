@@ -91,10 +91,17 @@ def main():
     reg_raw = io.open(R, encoding="utf-8", newline="").read()
     doc = json.loads(reg_raw, object_pairs_hook=collections.OrderedDict)
     ser = json.dumps(doc, indent=1, ensure_ascii=False)
-    if ser + "\n" != reg_raw:
+    repair = 0
+    if ser + "\n" == reg_raw:
+        print("SER_ASSERT=OK (indent=1, ensure_ascii=False, 尾换行)")
+    elif ser == reg_raw:
+        # 现场漂移: 现盘文件缺尾换行 ⇒ bind_evidence.py --apply 的同一断言会 FAIL(器具有主地拒绝写)。
+        # 以其自身序列化器契约为准补 1 B (只补尾换行, 不动任何 JSON 内容), 使两个写者口径一致。
+        repair = 1
+        print("SER_ASSERT=REPAIR_TRAILING_NEWLINE (现盘缺尾换行; 非 JSON 内容差异, 只补 1 B)")
+    else:
         print("SER_ASSERT=FAIL 序列化器未能逐字节复现原文件 (禁改写)")
         return 3
-    print("SER_ASSERT=OK (indent=1, ensure_ascii=False, 尾换行)")
     rows = doc["rows"]
     row_added = 0
     if all(r.get("id") != ROW["id"] for r in rows):
@@ -118,7 +125,7 @@ def main():
     if "R481-D" not in imp:
         # ① 状态行
         new_imp = new_imp.replace(anchors["status"],
-                                  "## v0.97.0 · R481 · 2026-09-16 · 状态: 进行中（D9 已验收：测试面 14/14；【探索】G1/G3/G4 未达） · 主题: recall 模块工程收口 + 【探索】精度判据锁定（承 v0.96.0）", 1)
+                                  "## v0.97.0 · R481 · 2026-09-16 · 状态: 进行中（D9 已验收：测试面 14/14；【探索】G1/G3/G4 未达）", 1)
         # ② R481-C 条之后插 R481-D
         i = new_imp.index(anchors["c"])
         j = new_imp.index("\n", i) + 1
@@ -140,8 +147,12 @@ def main():
         return 2
     lines = mp.splitlines(keepends=True)
     i_hdr = next(i for i, l in enumerate(lines) if l.startswith(hdr))
+    # 旧正文 = 标题之后直到下一个 "## " 段头 (或 EOF) —— 必须**替换**而非插入, 否则旧基线整段残留 (本轮实测踩过)
+    i_end = i_hdr + 1
+    while i_end < len(lines) and not lines[i_end].startswith("## "):
+        i_end += 1
     body_new = "\n" + "\n".join(MP_SECTION_NEW_BODY) + "\n"
-    out = lines[:i_hdr + 1] + [body_new] + lines[i_hdr + 1:]
+    out = lines[:i_hdr + 1] + [body_new] + lines[i_end:]
 
     idx_txt = subprocess.run(["python3", IDX, ROUND], cwd=ROOT, capture_output=True, text=True)
     if idx_txt.returncode != 0 or not idx_txt.stdout.strip():
@@ -174,6 +185,7 @@ def main():
         print("MP_IDEMPOTENT=OK")
 
     print(json.dumps({"registry_rows": len(rows), "row_added": row_added,
+                      "trailing_newline_repaired": repair,
                       "updated_round": doc["updated_round"]}, ensure_ascii=False))
     print(subprocess.run(["git", "diff", "--numstat", "docs/verification-registry.json",
                           "docs/improvements.md", "docs/reports/iteration-master-plan.md"],

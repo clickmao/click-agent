@@ -10,6 +10,21 @@
 > 数据时效 (测试数/批号/评测口径)、版本引用一致性、死链检查; **禁止只改局部不做整体校验**。
 > 空间位置相邻但语义不同段的错挂 (如旧版本标题下挂新数据) 视同违例。
 
+## v0.97.0 · R481 · 2026-09-16 · 状态: 进行中（D9 已验收：测试面 14/14；【探索】G1/G3/G4 未达） · 主题: recall 模块工程收口 + 【探索】精度判据锁定（承 v0.96.0）
+
+> 版本区间说明: 本文档上一节停在 **v0.81.0 · R462**；**R463–R478** 的逐轮记录见 `docs/reports/iteration-master-plan.md` 的「R441–R478 轮次索引」段（机取自 `docs/verification-registry.json`，含 38 个轮号）与 `docs/plans/v0.9*.md` 各轮计划，本文件不重写历史。
+
+- **R479（已收口并提交 `058bc77` + `e157deb`）**：Responses 真实 I/O 格式 + 内部精准语义单出口 + 工具声明面单一事实源。真读数：形式面 **1490/1490**；形式门 **10/10 × 3**；AOT sha16 `c8974f6b34dcc7b3`；台账 146→149 / 46→47 幂等。
+- **R480（在飞，未提交）**：独立工程 `src/agent.recall`（**不并入 `agent.sln`**，成熟后合回），15 个文件落盘（binary 格式 / LEB128 varint / postings 在线 delta + 每 128 文档 block-max / 词表二级跳表 / BM25 + WAND / 目录 mtime 剪枝 + 流式归并指纹 / 只重建脏文档 + tombstone），库编译 `rc=0 / 0 warning / 0 error`。
+- **R480-C（结论已落盘，`docs/reports/r480c-summary-vs-classification.md`）**：**摘要→分类当过滤器路线证伪** —— 一级分类当过滤器漏 **81.83%**（灾难）、二级分类漏 **5.83%**（不可恢复）；分类聚焦收益≈0（rankP50 92→90、r@10 36.67%→36.50%）；主凶是**候选截断**（top-10 漏 **63.33%**）。裁定：分类只能当排序特征/剪枝（**永不排除**），截断必须可回退；规模 5,747 文件 / 98 MB / 1,456 叶子目录 / 600 查询 / 19.1 s。
+- **R481-A（基线已取，`eval/recall/prereg_r481a.json` 先于首跑落盘）**：【探索】跨文件/跨 URL 精度基线 —— 解析率 **0.8508**（目标 ≥0.90 ❌）、悬空 **0.1492** ✅、相对引用落地 **0.2718 = 309 条** ❌、地址覆盖 **p50=0 / 76.11% 文件零地址** ❌、跨 URL **2,720 条 = unreported**。规模 6,647 文件 / 20,155 条自带地址。
+- **R481-B（统计结案，用户授权「按统计学规律则优」）**：点号是否算词字符 —— 2,500 真实文件 × 300 真实查询（stem / 全名 / 相对路径 各 1/3），hit@5 差 **+0.67 pt**（p=0.856 不显著），而不算点号侧查询词数 **−16.05%**、postings **−0.254%** ⇒ 取成本更低者：**点号不算词字符**（`RecallTokenizer.cs:31` `WordSymbols="_/+#"`）。
+- **R481-C（本轮，测试面收口）**：`agent.recall.tests` **2/13 → 12/13**；`OutOfMemoryException` **16 → 0**；用例耗时 **2m12s → 391 ms**；库 `rc=0 / 0 warning`。7 处根因全为**读写契约不一致 / 越界 / 未 fail-closed**（F1 `RecallIndexMeta.Read` varint 错位 ⇒ OOM；F2 `RecallSegmentMeta.Read` 同类；F3 `RecallPostings.Flush` 记词表内偏移；F4 `RecallLinks.Read` 游标未推进；F5 `RecallUpdater` 首建硬 `Open`；F6 孤立 CJK 段零 token；F7 `RecallFormat.DocLength` lens 表头 12 B 被按 4 B 读 ⇒ BM25 分数漂移 `3.4674924292638662 vs 4.005845527737886`，修后与独立暴力打分逐位一致），**无一处改断言凑绿**。
+- **R481-D（本轮，D9 收口）**：`agent.recall.tests` **12/13 → 14/14**（Failed 0 / Skipped 0 / trx 结果行 14）。根因(承 R481-C 定位)：目录剪枝条件 `dir.mtime <= 上次 stamp` 对**纯内容改写**不可见(改写文件不改父目录 mtime) ⇒ 整目录被剪 ⇒ 文件级 `(size, mtime)` 比对根本没发生。修法 = **交替核验**：指纹头 stamp 低位记「上轮是否剪枝」，上轮剪过的目录本轮**强制核验**(readdir + stat，不读内容)，idle 轮仍剪枝；纯内容改写最多滞后 1 轮被捕获。语义变化单列：核验轮 `DirsPruned == 0` ∧ `VerifiedAllDirs == true`(不冒充「无变化」)。新增回归用例刻意用**等字节长度**改写(size 不变) ⇒ 逼出「文件级比对必须真的发生」，并锁「核验轮 DirsPruned 恒 0」「下一轮恢复剪枝」两条。器具 `eval/recall/r481/check_r481d9.py` 判 `verdict=PASS`：C1 源码派生(读写契约成对) + C2 真跑读数(trx 14 行) + C3 语义锁存 + 变异负控 **3/3**(NC1 反转剪枝门 / NC2 删 stamp 左移 / NC3 删标志位解码 ⇒ 全部翻红)。
+- **基线(修后)**：`agent.recall.tests` **Failed 0 / Passed 14 / Total 14**（rc=0，`Duration 949 ms`，`Skipped 0`；R481-C 前为 **Failed 1 / Passed 12 / Total 13**）；库 `dotnet build src/agent.recall -c Release` = `0 warning / 0 error`。
+- **诚实边界**：`agent.recall` **尚未并入 `agent.host`** ⇒ 本面无 AOT 重发布验证；`src/agent.recall*/` 仍 **untracked**；全程**未 push**（`PUSH_PAUSED`，ahead 196）；R480-C / R481-A 均为 **Python 代理面**，不测产品面延迟/实现；**LLM 生成摘要臂与 1e5 文件档均未测**；跨 URL 一律 `unreported` 不冒充 0。
+- **下轮候选**：① 内容级哈希兜底（`VerifyMode.Hash` 或周期全量核验：D9 只保证「最多滞后 1 轮」，**不保证**任意改写当轮可见）② 相对地址按引用方目录解析 ⇒ G3 0.2718↑、G1 ≥0.90 ③ 判据锁进 `prereg_r481a.json` ④ 1e5 规模臂 ⑤ R479 遗留（路由器接线 / 入链 prompt 正文槽位化）—— 注意：recall 模块**尚未入链**，R413 主线「用户一轮 tasks tokens −30%」在本面无贡献（本面只做模块正确性收口，不冒充主线 KPI）。
+
 ## v0.81.0 · R462 · 2026-09-15 · 状态: 已完成 · 主题: 召回-现实一致性闸 + 语言无关召回探针（+ r1 权重档位探针）
 
 - **起因（承 R461 实发证据）**：① 召回/记忆块里引用的上一会话事实被当成本轮真值 —— T5 宣称 `stats.txt 已写入 chars=15` 而工作区**无该文件**（磁盘 0 B，真值 14）⇒ 产物 3/4；② `ContextAssembler.RecallFromWorkspaceAsync` 用**硬编码后缀白名单**（源码逐字列语言后缀）过滤召回文件，违反 R447 用户令「管道内一律标通用代码逻辑」。

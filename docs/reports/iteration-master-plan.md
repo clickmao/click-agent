@@ -427,3 +427,40 @@ python3 eval/run_round.py <新轮号> "revert-verify <原commit>" --quick   # �
 | R478 | `r478.hit-rate-cold-steady-split` | L3 | R477 真机 usage(**供应商真值**, 恒等式 `hit+miss==prompt` 21/21 + 10/10 逐行成立)命中率按 **R456b** 分列: 稳态… |
 覆盖自检: 轮号 [441, 442, 443, 444, 445, 446, 447, 448, 449, 450, 451, 452, 453, 454, 455, 456, 457, 458, 460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 470, 471, 472, 474, 475, 476, 477, 478]；registry rows=146，updated_round=R478。**缺登记行轮号: 459, 473**（**该号未被使用(improvements.md 亦无块): 459, 473**）。
 
+## R479 轮次索引增量（2026-09-16 机取自 `docs/verification-registry.json`，勿手改）
+
+器具: `python3 eval/tools/master_plan_round_index.py R479`（只读 JSON，输出可直接粘的 Markdown 行）。
+
+| 轮号 | id | level | 能力摘要 |
+|---|---|---|---|
+| R479 | `r479.local-decision-calibration` | L2 | **精准语义 = 校准 LLM 返回后本地该做什么的单一出口**(`src/agent.modelqueue/LocalDecisionMap.cs`) … |
+| R479 | `r479.responses-io-wire` | L2 | 真实 I/O 数据格式按 **Responses 协议** 落成 typed 面(`src/agent.modelqueue/ResponsesWire.cs`)：① **字段分离** … |
+| R479 | `r479.tool-decl-single-source` | L3 | 工具声明面**单一事实源**(`src/agent.modelqueue/ActionToolSpec.cs`)：一份规格派生两种线格式 … |
+
+覆盖自检: 轮号 ['R479']；registry rows=**149**，updated_round=**R479**。
+**缺登记行轮号: 无**
+
+> 取代关系: 本增量取代下方「R441–R478 轮次索引」段的 `registry rows=146 / updated_round=R478`（row 数 146 → 149，最新轮号 R478 → R479）。旧段正文保留为历史读数，不再作为当前口径。
+
+## R481（2026-09-16）recall 模块收口 — 当前基线（承焦点令 A/B/C）
+
+- 状态: **D9 面已验收**（`agent.recall.tests` **14/14**，rc=0，trx 结果行 14，Failed 0 / Skipped 0）
+- 权威计划: `docs/plans/v0.97.0-r481-consolidation.md`；缺陷与证据台账: `docs/reports/r480-recall-test-ledger.md`
+- 本机实跑读数（2026-09-16）: 测试 **2/13 → 12/13 → 14/14**；`OutOfMemoryException` **16 → 0**；用例耗时 **2m12s → 391 ms → 949 ms**（多 1 用例）；`agent.recall` 库 **rc=0 / 0 warning / 0 error**
+- 已修 7 处真根因（F1–F7）+ 本轮 **D9**（交替核验：stamp 低位记「上轮剪枝」⇒ 核验轮强制 readdir+stat；核验轮 `DirsPruned == 0` 单列 `VerifiedAllDirs`），**全为读写契约/缓存可见性错误，无一处改断言凑绿**
+- 证据器具: `python3 eval/recall/r481/check_r481d9.py` ⇒ `verdict=PASS`（C1 源码派生 / C2 真跑 trx 14 行 / C3 语义锁存 / 变异负控 3/3 翻红）；`eval/recall/r481/verdict-r481d9.json`
+- 【探索】判据基线（R481-A，Python 代理面）: 解析率 **0.8508**（目标 ≥0.90 ❌）/ 悬空 **0.1492**（✅ ≤0.35）/ 相对引用落地 **0.2718 = 309 条**（❌）/ 地址覆盖 **p50=0、76.11% 零地址**（❌）/ 跨 URL **2,720 = unreported**
+- 诚实边界: `agent.recall` 尚未并入 `agent.host`（本面无 AOT 重发布验证）；recall **未入链** ⇒ 对 R413 主线「tokens −30%」**本轮无贡献**（不冒充）；旧格式 store 兼容**只推理未实测**；内容级哈希兜底**未实现**（D9 只保证最多滞后 1 轮）；全程未 push（`PUSH_PAUSED`）
+- 下轮候选: ① `VerifyMode.Hash` / 周期全量核验兜底 ② 相对地址按引用方目录解析 ⇒ G3↑ ③ G2 四条判据锁进 `prereg_r481a.json` ④ 1e5 规模臂 ⑤ R479 遗留（路由器接线 / 入链 prompt 正文槽位化）
+
+## R481 轮次索引增量（2026-09-16 机取自 `docs/verification-registry.json`，勿手改）
+
+器具: `python3 eval/tools/master_plan_round_index.py R481`（只读 JSON，输出可直接粘的 Markdown 行）。
+
+| 轮号 | id | level | 能力摘要 |
+|---|---|---|---|
+
+覆盖自检: 轮号 []；registry rows=149，updated_round=R479。
+**缺登记行轮号: 无**
+
+> 取代关系: 本增量取代上方各段「轮次索引」的 row 数口径（149 → 150，最新轮号 R479 → R481）。旧段正文保留为历史读数。
