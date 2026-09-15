@@ -1215,9 +1215,9 @@
    "capability": "R423 可分性预检(Skip⇒Ack 必要性)",
    "level": "L4",
    "owner_round": "R444",
-   "evidence_cmd": "python3 eval/rover/r444/precheck_prefilter.py",
+   "evidence_cmd": "python3 eval/rover/r444/precheck_prefilter.py --out eval/rover/r444/precheck-prefilter.json",
    "evidence_path": "eval/rover/r444/precheck-prefilter.json",
-   "negative_control": "--neg-control 注入非 ack 的 Skip 轮必须检出 ≥1 反例; --grid-dir /nonexistent 必须 fail-closed 非零",
+   "negative_control": "--neg-control 注入非 ack 的 Skip 轮必须检出 ≥1 反例 (落独立产物 eval/rover/r444/runs/precheck-prefilter.neg.json, 真值臂产物 sha/mtime 必须逐位不变); --grid-dir /nonexistent 必须 fail-closed 非零; --legacy-single-out 单槽缺陷态: 两臂共用产物 ⇒ 真值臂身份必须丢失 (缺陷可复现); 8 判据读数见 eval/capability/exp1-q25/harden_check_q25.json",
    "covers": [
     "eval/rover/r444/precheck_prefilter.py"
    ]

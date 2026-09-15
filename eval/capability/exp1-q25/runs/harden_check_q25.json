@@ -1,0 +1,112 @@
+{
+ "round": "EXP1-Q25",
+ "instrument": "eval/rover/r444/precheck_prefilter.py",
+ "instrument_sha12": "b4ecd4c1bf3c",
+ "rc_contract": {
+  "all_pass": 0,
+  "assert_fail": 2,
+  "measure_or_env_fail": 3
+ },
+ "rc": 0,
+ "criteria": [
+  {
+   "id": "D7_provenance",
+   "pass": true,
+   "detail": "产物 instrument_sha12=b4ecd4c1bf3c vs 源码 b4ecd4c1bf3c; arm=main"
+  },
+  {
+   "id": "D8_main_arm_integrity",
+   "pass": true,
+   "detail": "rc=0 verdict=SEPARABLE P1反例=0"
+  },
+  {
+   "id": "D8_neg_arm_integrity",
+   "pass": true,
+   "detail": "rc=2 (期望 2) P1反例=4 (期望 >=1) channels={} 串出现=0"
+  },
+  {
+   "id": "D2_truth_unpolluted",
+   "pass": true,
+   "detail": "跑控制臂前 sha12=d380c0706ec1 mtime_ns=1789498968808377835 | 后 sha12=d380c0706ec1 mtime_ns=1789498968808377835"
+  },
+  {
+   "id": "D1_arm_partition",
+   "pass": true,
+   "detail": "真值 sha12=d380c0706ec1 arm=main/arm-partitioned | 控制 sha12=4aaaaff690c3 arm=neg_control/arm-partitioned"
+  },
+  {
+   "id": "D3_determinism",
+   "pass": true,
+   "detail": "同路径复跑 main 6dd4e0364d0f==6dd4e0364d0f rc=0/0 | neg e4734e2c1aa2==e4734e2c1aa2 rc=2/2"
+  },
+  {
+   "id": "D4_defect_reproducible",
+   "pass": true,
+   "detail": "首跑 arm=main sha12=13b0f94674cc ⇒ 次跑 arm=neg_control sha12=e4a15f638651; 残留 main 臂产物数=0 (期望 0) ⇒ 真值臂身份丢失"
+  },
+  {
+   "id": "D4b_legacy_isolated",
+   "pass": true,
+   "detail": "legacy 开关未触碰默认真值路径 (sha12=d380c0706ec1)"
+  },
+  {
+   "id": "D5_fail_closed",
+   "pass": true,
+   "detail": "rc=3 (期望 3) out 存在=False (期望 False) msg=[fail-closed] 网格缺失: /nonexistent-grid-dir/task-V2b.json ⇒ 空样本不得静默通过"
+  },
+  {
+   "id": "D6_conservation",
+   "pass": true,
+   "detail": "Σ行=99 vs P3 99; Σ可省=67 vs P3 67; 逐行 ≤ 成立=True"
+  }
+ ],
+ "checks_posthoc": {
+  "D3b_path_fields_only": {
+   "pass": true,
+   "detail": "mask(out,argv) 后 main 相等=True neg 相等=True (未 mask 时逐字节不同=True ⇒ 差异仅来自已声明路径字段)",
+   "posthoc": true
+  },
+  "D9_whitelist_targeted": {
+   "pass": true,
+   "detail": "白名单路径写事件被判脏=False (期望 False); 非白名单同 scope 路径写事件被判脏=True (期望 True); verdict=self-side-effect self_writes=['eval/capability/exp1-q25/runs/d9_probe.json']",
+   "posthoc": true
+  }
+ },
+ "failed": [],
+ "env_failures": [],
+ "artifacts": {
+  "truth": {
+   "path": "eval/rover/r444/precheck-prefilter.json",
+   "sha12": "d380c0706ec1",
+   "bytes": 30946,
+   "arm": "main"
+  },
+  "neg_default": {
+   "path": "eval/rover/r444/runs/precheck-prefilter.neg.json",
+   "sha12": "4aaaaff690c3",
+   "arm": "neg_control"
+  },
+  "main_runs_sha12": [
+   "6dd4e0364d0f",
+   "026fea35067f"
+  ],
+  "neg_runs_sha12": [
+   "e4734e2c1aa2",
+   "0bedc8d3a29f"
+  ],
+  "legacy_slot": {
+   "path": "eval/capability/exp1-q25/runs/legacy/one_slot.json",
+   "sha12_after_overwrite": "e4a15f638651",
+   "arm_after": "neg_control"
+  }
+ },
+ "readings": {
+  "truth_P1_counterexamples": 0,
+  "truth_verdict": "SEPARABLE",
+  "truth_total_r1_rows": 99,
+  "truth_avoidable": 67,
+  "truth_saved_ratio": 0.6768,
+  "neg_P1_counterexamples": 4,
+  "neg_rc": 2
+ }
+}

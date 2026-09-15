@@ -1,0 +1,105 @@
+{
+ "round": "EXP1-Q25",
+ "instrument": "eval/rover/r444/precheck_prefilter.py",
+ "instrument_sha12": "d8dfb52241ba",
+ "rc_contract": {
+  "all_pass": 0,
+  "assert_fail": 2,
+  "measure_or_env_fail": 3
+ },
+ "rc": 2,
+ "criteria": [
+  {
+   "id": "D7_provenance",
+   "pass": false,
+   "detail": "产物 instrument_sha12=d8dfb52241ba vs 源码 d8dfb52241ba; arm=BRJRP"
+  },
+  {
+   "id": "D8_main_arm_integrity",
+   "pass": true,
+   "detail": "rc=0 verdict=SEPARABLE P1反例=0"
+  },
+  {
+   "id": "D8_neg_arm_integrity",
+   "pass": true,
+   "detail": "rc=2 (期望 2) P1反例=4 (期望 >=1) channels={} 串出现=0"
+  },
+  {
+   "id": "D2_truth_unpolluted",
+   "pass": true,
+   "detail": "跑控制臂前 sha12=0cc030f56a41 mtime_ns=1789498752384514540 | 后 sha12=0cc030f56a41 mtime_ns=1789498752384514540"
+  },
+  {
+   "id": "D1_arm_partition",
+   "pass": false,
+   "detail": "真值 sha12=0cc030f56a41 arm=BRJRP/arm-partitioned | 控制 sha12=6f0a270ee4ca arm=BRJRP/arm-partitioned"
+  },
+  {
+   "id": "D3_determinism",
+   "pass": false,
+   "detail": "main 967d80855c59==0984c2374042 rc=0/0 | neg c8724389d851==22b373706e7d rc=2/2"
+  },
+  {
+   "id": "D4_defect_reproducible",
+   "pass": false,
+   "detail": "首跑 arm=BRJRP sha12=a85d6dad780f ⇒ 次跑 arm=BRJRP sha12=eef34318bc81; 残留 main 臂产物数=0 (期望 0) ⇒ 真值臂身份丢失"
+  },
+  {
+   "id": "D4b_legacy_isolated",
+   "pass": true,
+   "detail": "legacy 开关未触碰默认真值路径 (sha12=0cc030f56a41)"
+  },
+  {
+   "id": "D5_fail_closed",
+   "pass": true,
+   "detail": "rc=3 (期望 3) out 存在=False (期望 False) msg=[fail-closed] 网格缺失: /nonexistent-grid-dir/task-V2b.json ⇒ 空样本不得静默通过"
+  },
+  {
+   "id": "D6_conservation",
+   "pass": true,
+   "detail": "Σ行=99 vs P3 99; Σ可省=67 vs P3 67; 逐行 ≤ 成立=True"
+  }
+ ],
+ "failed": [
+  "D7_provenance",
+  "D1_arm_partition",
+  "D3_determinism",
+  "D4_defect_reproducible"
+ ],
+ "env_failures": [],
+ "artifacts": {
+  "truth": {
+   "path": "eval/rover/r444/precheck-prefilter.json",
+   "sha12": "0cc030f56a41",
+   "bytes": 30963,
+   "arm": "BRJRP"
+  },
+  "neg_default": {
+   "path": "eval/rover/r444/runs/precheck-prefilter.neg.json",
+   "sha12": "6f0a270ee4ca",
+   "arm": "BRJRP"
+  },
+  "main_runs_sha12": [
+   "967d80855c59",
+   "0984c2374042"
+  ],
+  "neg_runs_sha12": [
+   "c8724389d851",
+   "22b373706e7d"
+  ],
+  "legacy_slot": {
+   "path": "eval/capability/exp1-q25/runs/legacy/one_slot.json",
+   "sha12_after_overwrite": "eef34318bc81",
+   "arm_after": "BRJRP"
+  }
+ },
+ "readings": {
+  "truth_P1_counterexamples": 0,
+  "truth_verdict": "SEPARABLE",
+  "truth_total_r1_rows": 99,
+  "truth_avoidable": 67,
+  "truth_saved_ratio": 0.6768,
+  "neg_P1_counterexamples": 4,
+  "neg_rc": 2
+ }
+}

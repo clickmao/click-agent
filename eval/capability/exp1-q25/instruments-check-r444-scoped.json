@@ -1,0 +1,161 @@
+{
+ "schema": "instruments-check/4",
+ "manifest": "eval/capability/instruments.json",
+ "l2_field_checks": true,
+ "input_surface_checks": true,
+ "drift_injected": false,
+ "inject_mode": null,
+ "inject_note": "",
+ "side_effects": [],
+ "side_effect_attribution": {
+  "schema": "side-effect-attribution/1",
+  "verdict": "clean",
+  "red": false,
+  "measurement_ok": true,
+  "reasons": [],
+  "window": {
+   "t0": 1789498971.7002077,
+   "t1": 1789498972.0933383,
+   "trace_dir": "/tmp/q22gate-mlgiqlnb"
+  },
+  "trace": {
+   "commands": 3,
+   "events": 0,
+   "raw_events": 2,
+   "raw_paths_n": 2,
+   "raw_paths_sample": [
+    "/home/agentuser/AgentFramework/eval/rover/r444/precheck-prefilter.json",
+    "/home/agentuser/AgentFramework/eval/rover/r444/runs/precheck-prefilter.neg.json"
+   ],
+   "log_bytes": 89108,
+   "capped": false,
+   "unresolved_relative": 0,
+   "channel": "strace+audithook"
+  },
+  "self_writes": [],
+  "touched_and_gone": [],
+  "foreign_writes": [],
+  "pre_existing": [
+   "docs/verification-registry.json",
+   "eval/bge/r404/csharp-fusion-replay.json",
+   "eval/capability/exp1-q22-controls/fixtures/c1.txt",
+   "eval/capability/exp1-q22-controls/fixtures/c2.txt",
+   "eval/capability/exp1-q22-controls/fixtures/c2b.txt",
+   "eval/capability/exp1-q22-controls/fixtures/c3.txt",
+   "eval/capability/exp1-q22-controls/fixtures/c3b.txt",
+   "eval/capability/exp1-q22-controls/fixtures/c4.txt",
+   "eval/capability/exp1-q22-controls/fixtures/c7.txt",
+   "eval/capability/exp1-q22-controls/probe.txt",
+   "eval/capability/exp1-q24/runs/fresh-a.json",
+   "eval/capability/exp1-q24/runs/fresh-b.json",
+   "eval/capability/exp1-q24/runs/fresh-neg.json",
+   "eval/capability/exp1-q24/runs/head-committed-negcontrol.json",
+   "eval/capability/exp1-q25/harden_check_q25.py",
+   "eval/capability/exp1-q25/prereg_q25.json",
+   "eval/capability/exp1-q25/runs/harden_check_q25.json",
+   "eval/capability/exp1-q25/runs/harden_check_q25.run1_pre_fix.json",
+   "eval/capability/exp1-q25/runs/legacy/one_slot.json",
+   "eval/capability/exp1-q25/runs/main-1.json",
+   "eval/capability/exp1-q25/runs/main-2.json",
+   "eval/capability/exp1-q25/runs/neg-1.json",
+   "eval/capability/exp1-q25/runs/neg-2.json",
+   "eval/capability/instruments.json",
+   "eval/capability/instruments_check.py",
+   "eval/rover/r443/extract_growth_from_calls.py",
+   "eval/rover/r443/perm_search.py",
+   "eval/rover/r443/pin_msg_search.py",
+   "eval/rover/r443/r1_gate_samples.json",
+   "eval/rover/r443/recon_prompt_origin.sh",
+   "eval/rover/r443/reconstruct_from_calls.py",
+   "eval/rover/r443/search_growth_block.py",
+   "eval/rover/r443/search_growth_v2.py",
+   "eval/rover/r443/search_growth_v3.py",
+   "eval/rover/r443/solve_prompts.py",
+   "eval/rover/r444/precheck_prefilter.py",
+   "eval/rover/r446/probe-judge-det-s1.json",
+   "eval/rover/r446/probe-judge-det-s2.json",
+   "eval/rover/r446/probe-judge-det-s3.json",
+   "eval/rover/r446/probe-judge-det-st.json",
+   "eval/rover/r446/probe-judge-detJDET-s1.json",
+   "eval/rover/r446/probe-judge-detJDET24-s1.json",
+   "eval/rover/r449/real-corpus.jsonl",
+   "eval/rover/r470/asserts.json",
+   "eval/rover/r470/real-calls.json"
+  ],
+  "old_gate_delta": [],
+  "old_gate_false_reds": [],
+  "old_gate_missed_self_writes": [],
+  "live_fd_scan": {
+   "scanned": 280,
+   "errors": 105
+  },
+  "census_in_repo_cwd": [
+   {
+    "pid": 1265933,
+    "cwd": ".",
+    "cmd": "/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/hermes_kernel_uqois446/hermes_kernel_runner.py"
+   },
+   {
+    "pid": 1267688,
+    "cwd": ".",
+    "cmd": "/usr/bin/bash -c source /home/agentuser/.hermes/cache/terminal/hermes-snap-bff459d5d1b8.sh >/dev/null 2>&1 || true\nexport AI_AGENT=\"${AI_AGENT:-hermes-agent}\" H"
+   },
+   {
+    "pid": 1267691,
+    "cwd": ".",
+    "cmd": "grep -v census"
+   }
+  ],
+  "conservation": {
+   "classified": 45,
+   "expected": 45,
+   "in_scope_after": 45,
+   "ok": true
+  }
+ },
+ "passed": 1,
+ "total": 1,
+ "results": [
+  {
+   "id": "r444.prefilter-precheck",
+   "kind": "separability-precheck",
+   "cmd": "python3 eval/rover/r444/precheck_prefilter.py --out eval/rover/r444/precheck-prefilter.json",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "b4ecd4c1bf3c",
+   "owner_round": "R444",
+   "kpi_quad": {
+    "单位": "轮",
+    "分母": "门 r1 调用行",
+    "真值源": "llama-server 遥测 + 驱动日志",
+    "口径档": "本地真值"
+   },
+   "l2_fields": {
+    "version": "ok",
+    "instrument_sha12": "ok",
+    "input_surface": "ok:external_files",
+    "input_fingerprint": "ok(n=16)",
+    "kpi_quad": "ok"
+   },
+   "l2_ok": true,
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/rover/r444/precheck_prefilter.py --neg-control --out eval/rover/r444/runs/precheck-prefilter.neg.json",
+     "rc": 2,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "负控注入: 期望检出 >=1 反例 ⇒ OK(检出)"
+    },
+    {
+     "cmd": "python3 eval/rover/r444/precheck_prefilter.py --grid-dir /nonexistent-grid-dir",
+     "rc": 3,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "[fail-closed] 网格缺失: /nonexistent-grid-dir/task-V2b.json ⇒ 空样本不得静默通过"
+    }
+   ]
+  }
+ ]
+}

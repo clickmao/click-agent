@@ -20,7 +20,12 @@ R444 前置可分性预检 v2 (R423 铁律 + R402 三通道取证).
 import json, pathlib, sys, re, hashlib, unicodedata
 
 ROOT = pathlib.Path("/home/agentuser/AgentFramework")
-OUT = ROOT / "eval/rover/r444/precheck-prefilter.json"
+INSTRUMENT = pathlib.Path(__file__).resolve()
+# EXP1-Q25 硬化 (缺陷本体 = 两臂共用常量 OUT ⇒ 控制臂静默覆盖真值臂产物):
+#   真值臂与 控制臂 默认输出按臂分区; 显式 --out 可覆盖; --legacy-single-out 复现缺陷态(负控)
+OUT_DEFAULT = ROOT / "eval/rover/r444/precheck-prefilter.json"
+OUT_NEG_DEFAULT = ROOT / "eval/rover/r444/runs/precheck-prefilter.neg.json"
+OUT = OUT_DEFAULT
 
 ACK_CHARS = "好嗯行明白了知道谢收到多辛苦可以先就的"
 ACK_MAX = 10
@@ -116,11 +121,30 @@ NEG_CONTROL = False
 
 
 def main():
-    global GRID_DIR, NEG_CONTROL
+    global GRID_DIR, NEG_CONTROL, OUT
     if "--grid-dir" in sys.argv:
         GRID_DIR = sys.argv[sys.argv.index("--grid-dir") + 1]
     NEG_CONTROL = "--neg-control" in sys.argv
-    rec = {"probe": "R444-precheck-prefilter-v2", "runs": [], "channels": {}}
+    LEGACY_SINGLE_OUT = "--legacy-single-out" in sys.argv
+    if "--out" in sys.argv:
+        _o = pathlib.Path(sys.argv[sys.argv.index("--out") + 1])
+        OUT = _o if _o.is_absolute() else (ROOT / _o)
+    elif LEGACY_SINGLE_OUT:
+        OUT = ROOT / "eval/rover/r444/runs/legacy-single-slot.json"
+    elif NEG_CONTROL:
+        OUT = OUT_NEG_DEFAULT
+    rec = {"probe": "R444-precheck-prefilter-v3", "runs": [], "channels": {}}
+    # 身份自证: 在网格臂循环之前固化 —— 循环变量名 arm/grid 会覆盖同名局部量
+    # (EXP1-Q25 run-1 实测: 延迟构造时 provenance.arm 被覆盖成网格臂名, D7 判红)
+    rec["provenance"] = {
+        "arm": "neg_control" if NEG_CONTROL else "main",
+        "mode": "legacy-single-slot" if LEGACY_SINGLE_OUT else "arm-partitioned",
+        "out": str(OUT),
+        "instrument": str(INSTRUMENT.relative_to(ROOT)) if INSTRUMENT.is_relative_to(ROOT) else str(INSTRUMENT),
+        "instrument_sha12": hashlib.sha256(INSTRUMENT.read_bytes()).hexdigest()[:12],
+        # 注: 不落 argv —— 调用形态(默认档 vs 显式 --out)会改变产物字节 ⇒ 破坏"同内容同 sha";
+        #     调用语义已由 arm(--neg-control) 与 mode(--legacy-single-out) 规范化承载。
+    }
     all_cp, tot_r1, tot_avoid = 0, 0, 0
     grids = {}
     for g in ("V2b", "W8", "W20", "M20"):
@@ -236,7 +260,7 @@ def main():
     rec["verdict"] = "SEPARABLE" if all_cp == 0 else "NOT_SEPARABLE"
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(rec, ensure_ascii=False, indent=2), encoding="utf-8")
-    print("== R444 可分性预检 v2 (Skip ⇒ Ack) ==")
+    print("== R444 可分性预检 v3 (Skip ⇒ Ack; 分臂产物 + 身份自证) ==")
     for r in rec["runs"]:
         print(f"  {r['arm']:6s} {r['grid']:4s} 门行={r['n_gate_rows']:<2d} r1行={r['n_r1_rows']:<2d} "
               f"skip={r['skips']:<2d} 可省={r['avoidable_r1']:<2d} 反例={len(r['counterexamples'])} "

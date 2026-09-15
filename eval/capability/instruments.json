@@ -158,10 +158,10 @@
   {
    "id": "r444.prefilter-precheck",
    "kind": "separability-precheck",
-   "cmd": "python3 eval/rover/r444/precheck_prefilter.py",
+   "cmd": "python3 eval/rover/r444/precheck_prefilter.py --out eval/rover/r444/precheck-prefilter.json",
    "expect_rc": 0,
    "expect_substr": "P1",
-   "nc_cmd": "python3 eval/rover/r444/precheck_prefilter.py --neg-control",
+   "nc_cmd": "python3 eval/rover/r444/precheck_prefilter.py --neg-control --out eval/rover/r444/runs/precheck-prefilter.neg.json",
    "nc_expect": "nonzero",
    "nc_cmd2": "python3 eval/rover/r444/precheck_prefilter.py --grid-dir /nonexistent-grid-dir",
    "nc_expect2": "nonzero",
@@ -173,9 +173,9 @@
    },
    "owner_round": "R444",
    "evidence_path": "eval/rover/r444/precheck_prefilter.py",
-   "version": "content-sha12:ea8aab20b377",
+   "version": "content-sha12:b4ecd4c1bf3c",
    "version_source": "content-sha12",
-   "instrument_sha12": "ea8aab20b377",
+   "instrument_sha12": "b4ecd4c1bf3c",
    "input_fingerprint": [
     {
      "path": "eval/rover/r441/grid/task-M20.json",
@@ -628,9 +628,9 @@
    "expect_substr": "L2 器具验收面",
    "nc_cmd": "python3 eval/capability/instruments_check.py --only exp1q17.archive-field-provenance --fingerprint-drift-inject",
    "nc_expect": "nonzero",
-   "version": "content-sha12:27ae9c5a53ce",
+   "version": "content-sha12:0370be98b442",
    "version_source": "content-sha12",
-   "instrument_sha12": "27ae9c5a53ce",
+   "instrument_sha12": "0370be98b442",
    "input_fingerprint": [
     {
      "path": "eval/capability/exp1-q10/attribution_q10.json",

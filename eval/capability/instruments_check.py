@@ -73,6 +73,12 @@ FACE_OUTPUTS = {'eval/capability/instruments-check.json', 'eval/capability/instr
                 'eval/capability/instruments-check-surface-claim.json',
                 'eval/capability/instruments-check-surface-unknown.json',
                 'eval/capability/instruments-check-nc-notapplied.json'}
+# EXP1-Q25 增补: r444 可分性预检的**自身产物**是器具的合法写点 (与 q17 事故同族 ——
+#   仪器默认 --out 指向轮次证据, 跑一次就改写它)。该器具已按臂分区 (--out 参数化 + 产物带
+#   provenance.arm/mode/instrument_sha12), 其内容稳定性由 eval/capability/exp1-q25/harden_check_q25.py
+#   的 D1/D2/D3/D7 判据另行钉住 (白名单释放的是"写事件"判定, 不是内容一致性判定)。
+FACE_OUTPUTS |= {'eval/rover/r444/precheck-prefilter.json',
+                 'eval/rover/r444/runs/precheck-prefilter.neg.json'}
 SCRATCH_PREFIXES = ('eval/capability/exp1-q19/l2runs/', 'eval/capability/exp1-q20/l2runs/',
                     'eval/capability/exp1-q21/', 'eval/capability/exp1-q21-selfcheck/')
 

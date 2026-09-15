@@ -1,0 +1,38 @@
+{
+  "round": "EXP1-Q25",
+  "ts_preregistered": "2026-09-16",
+  "target": "Y.5 候选① = 器具硬化 + 证据重绑 (原子一轮)",
+  "source_doc": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md (附录 X.5 / Y.5 / Y.6)",
+  "defect_under_fix": {
+    "instrument": "eval/rover/r444/precheck_prefilter.py",
+    "instrument_sha12_before": "ea8aab20b377",
+    "truth_artifact": "eval/rover/r444/precheck-prefilter.json",
+    "truth_artifact_sha12_before": "b74e791ccca7",
+    "mechanism": "两臂(--neg-control 与 main)共用同一常量 OUT 路径 ⇒ 后跑者静默覆盖前跑者; 产物无 arm/mode 字段 ⇒ 产物不可自证身份; 登记表 evidence_path 与仪器之间缺『由哪一臂生成』的绑定",
+    "observed_in": "EXP1-Q24 (三方 sha 同一性判据)"
+  },
+  "scope": "只动器具与证据绑定; 不动判据语义、不动产品侧代码",
+  "preregistered_criteria": {
+    "D1_arm_partition": "main 与 neg 两臂产物 sha256 互异, 且各自 (arm,mode) = (main,arm-partitioned) / (neg_control,arm-partitioned)",
+    "D2_truth_unpolluted": "跑 neg 臂前后, tracked 真值产物 sha256 与 mtime_ns 逐位不变",
+    "D3_determinism": "main 臂连跑 2 次逐字节相同; neg 臂连跑 2 次逐字节相同",
+    "D4_defect_reproducible": "--legacy-single-out 下两臂共用同一 out ⇒ 第二臂(neg)覆盖第一臂(main): 该文件 arm=neg_control 且 main 臂身份不可追 ⇒ 缺陷被机检复现(负控); 该开关不得影响默认真值路径",
+    "D5_fail_closed": "--grid-dir /nonexistent-grid-dir ⇒ rc=3 且该 out 路径未被写入",
+    "D6_conservation": "Σruns.n_r1_rows == P3.total_r1_rows ∧ Σruns.avoidable_r1 == P3.avoidable ∧ ∀r: avoidable_r1 <= n_r1_rows",
+    "D7_provenance": "main 产物 instrument_sha12 == 当前仪器源码 sha12 (防陈旧仪器产物冒充)",
+    "D8_arm_integrity": "main: P1 反例=0 ∧ verdict=SEPARABLE ∧ rc=0; neg: P1 反例>=1 ∧ rc=2"
+  },
+  "verdict_rule": "8/8 全过 ⇒ 硬化成立并重绑登记表; 任一失败 ⇒ 如实 FAIL 单列, 不得放宽阈值; 预注册后不得改判据",
+  "exit_code_contract": "0=全过 / 2=断言失败 / 3=测量或环境失败 (三态不同码)",
+  "out_of_scope": [
+    "判据语义与阈值",
+    "产品侧 C# 代码",
+    "能力面 KPI 趋势分 (本轮为器具轮, 只落轮次读数行)"
+  ],
+  "rebind_plan": [
+    "eval/capability/instruments.json: r444.prefilter-precheck 的 instrument_sha12/version 重绑到新 sha12",
+    "docs/verification-registry.json: r444.separability-precheck 增 evidence_generated_with (仪器 sha12 + arm + mode), evidence_path 不变",
+    "docs/验证形式规范.md: 增字段说明一行 (文档=唯一权威源)",
+    "改登记表后立刻跑形式校验 (不搭在全量回归尾巴上)"
+  ]
+}
