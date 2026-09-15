@@ -93,6 +93,9 @@ public sealed class ModelQueueAdapter : ILLMCaller, agent.subagent.ILLMCallerFor
             ReasoningContent = r.ReasoningContent,
             // R414: "失败但有面向用户的文案"的契约位必须透传 (否则链侧无从区分"可展示文案"与"内部片段")
             ContentIsUserFacing = r.ContentIsUserFacing,
+            // R478: 逐调用因果 id + 上游 finish_reason 透传 (loop_turn.request_id 与 llm_call.request_id 同值可 join)
+            ResponseId = r.RequestId,
+            FinishReason = r.FinishReason,
         };
     }
 }

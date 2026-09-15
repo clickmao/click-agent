@@ -1,0 +1,311 @@
+{
+  "round": "R478",
+  "kind": "R477 真机 usage 命中率按 R456b 分列(冷启动 vs 稳态); 分档轴=prompt_tokens(代理)",
+  "source": "eval/rover/r477/usage-{Arole,R}.jsonl",
+  "units": "rate = hit/prompt (供应商 usage 真值); tokens",
+  "arms": {
+    "Arole": {
+      "calls": 21,
+      "per_call": [
+        {
+          "seq": 1,
+          "prompt": 2869,
+          "hit": 640,
+          "rate": 0.223074,
+          "band": "201+"
+        },
+        {
+          "seq": 2,
+          "prompt": 3111,
+          "hit": 2816,
+          "rate": 0.905175,
+          "band": "201+"
+        },
+        {
+          "seq": 3,
+          "prompt": 3143,
+          "hit": 2816,
+          "rate": 0.895959,
+          "band": "201+"
+        },
+        {
+          "seq": 4,
+          "prompt": 2897,
+          "hit": 2688,
+          "rate": 0.927856,
+          "band": "201+"
+        },
+        {
+          "seq": 5,
+          "prompt": 2929,
+          "hit": 2688,
+          "rate": 0.917719,
+          "band": "201+"
+        },
+        {
+          "seq": 6,
+          "prompt": 2919,
+          "hit": 2688,
+          "rate": 0.920863,
+          "band": "201+"
+        },
+        {
+          "seq": 7,
+          "prompt": 2951,
+          "hit": 2816,
+          "rate": 0.954253,
+          "band": "201+"
+        },
+        {
+          "seq": 8,
+          "prompt": 2942,
+          "hit": 2688,
+          "rate": 0.913664,
+          "band": "201+"
+        },
+        {
+          "seq": 9,
+          "prompt": 2974,
+          "hit": 2816,
+          "rate": 0.946873,
+          "band": "201+"
+        },
+        {
+          "seq": 10,
+          "prompt": 2986,
+          "hit": 2816,
+          "rate": 0.943068,
+          "band": "201+"
+        },
+        {
+          "seq": 11,
+          "prompt": 3018,
+          "hit": 2816,
+          "rate": 0.933068,
+          "band": "201+"
+        },
+        {
+          "seq": 12,
+          "prompt": 3063,
+          "hit": 640,
+          "rate": 0.208945,
+          "band": "201+"
+        },
+        {
+          "seq": 13,
+          "prompt": 3095,
+          "hit": 2944,
+          "rate": 0.951212,
+          "band": "201+"
+        },
+        {
+          "seq": 14,
+          "prompt": 3345,
+          "hit": 2944,
+          "rate": 0.88012,
+          "band": "201+"
+        },
+        {
+          "seq": 15,
+          "prompt": 3377,
+          "hit": 3200,
+          "rate": 0.947587,
+          "band": "201+"
+        },
+        {
+          "seq": 16,
+          "prompt": 3399,
+          "hit": 2944,
+          "rate": 0.866137,
+          "band": "201+"
+        },
+        {
+          "seq": 17,
+          "prompt": 3431,
+          "hit": 3200,
+          "rate": 0.932673,
+          "band": "201+"
+        },
+        {
+          "seq": 18,
+          "prompt": 3473,
+          "hit": 3328,
+          "rate": 0.958249,
+          "band": "201+"
+        },
+        {
+          "seq": 19,
+          "prompt": 3804,
+          "hit": 3328,
+          "rate": 0.874869,
+          "band": "201+"
+        },
+        {
+          "seq": 20,
+          "prompt": 4152,
+          "hit": 3712,
+          "rate": 0.894027,
+          "band": "201+"
+        },
+        {
+          "seq": 21,
+          "prompt": 4451,
+          "hit": 4096,
+          "rate": 0.920243,
+          "band": "201+"
+        }
+      ],
+      "max_call_rate": 0.958249,
+      "identity_hit_plus_miss_eq_prompt": true,
+      "identity_violations": [],
+      "cold_threshold": 0.5,
+      "cold_calls": {
+        "n": 2,
+        "prompt_tokens": 5932,
+        "hit_tokens": 1280,
+        "hit_rate": 0.215779
+      },
+      "steady_calls": {
+        "n": 19,
+        "prompt_tokens": 62397,
+        "hit_tokens": 57344,
+        "hit_rate": 0.919019
+      },
+      "aggregate_all_calls": {
+        "n": 21,
+        "prompt_tokens": 68329,
+        "hit_tokens": 58624,
+        "hit_rate": 0.857967
+      }
+    },
+    "R": {
+      "calls": 10,
+      "per_call": [
+        {
+          "seq": 1,
+          "prompt": 2868,
+          "hit": 640,
+          "rate": 0.223152,
+          "band": "201+"
+        },
+        {
+          "seq": 2,
+          "prompt": 2900,
+          "hit": 2688,
+          "rate": 0.926897,
+          "band": "201+"
+        },
+        {
+          "seq": 3,
+          "prompt": 3353,
+          "hit": 640,
+          "rate": 0.190874,
+          "band": "201+"
+        },
+        {
+          "seq": 4,
+          "prompt": 3385,
+          "hit": 3200,
+          "rate": 0.945347,
+          "band": "201+"
+        },
+        {
+          "seq": 5,
+          "prompt": 3450,
+          "hit": 3200,
+          "rate": 0.927536,
+          "band": "201+"
+        },
+        {
+          "seq": 6,
+          "prompt": 3723,
+          "hit": 3328,
+          "rate": 0.893903,
+          "band": "201+"
+        },
+        {
+          "seq": 7,
+          "prompt": 3755,
+          "hit": 3328,
+          "rate": 0.886285,
+          "band": "201+"
+        },
+        {
+          "seq": 8,
+          "prompt": 3716,
+          "hit": 3328,
+          "rate": 0.895587,
+          "band": "201+"
+        },
+        {
+          "seq": 9,
+          "prompt": 4057,
+          "hit": 3712,
+          "rate": 0.914962,
+          "band": "201+"
+        },
+        {
+          "seq": 10,
+          "prompt": 4393,
+          "hit": 4096,
+          "rate": 0.932392,
+          "band": "201+"
+        }
+      ],
+      "max_call_rate": 0.945347,
+      "identity_hit_plus_miss_eq_prompt": true,
+      "identity_violations": [],
+      "cold_threshold": 0.5,
+      "cold_calls": {
+        "n": 2,
+        "prompt_tokens": 6221,
+        "hit_tokens": 1280,
+        "hit_rate": 0.205755
+      },
+      "steady_calls": {
+        "n": 8,
+        "prompt_tokens": 29379,
+        "hit_tokens": 26880,
+        "hit_rate": 0.914939
+      },
+      "aggregate_all_calls": {
+        "n": 10,
+        "prompt_tokens": 35600,
+        "hit_tokens": 28160,
+        "hit_rate": 0.791011
+      }
+    }
+  },
+  "comparison": {
+    "aggregate_delta": {
+      "hit_rate": -0.066956,
+      "prompt_tokens": -32729
+    },
+    "steady_delta": {
+      "hit_rate": -0.00408,
+      "prompt_tokens": -33018
+    },
+    "cold_share": {
+      "Arole": 0.0952,
+      "R": 0.2
+    },
+    "conclusion": "聚合差被冷启动占比差放大; 稳态两臂命中率近等 ⇒ 聚合口径不可用作机制结论 (R456b)"
+  },
+  "band_note": {
+    "degenerate": true,
+    "reason": "该夹具每轮 prompt 均落 201+ 档 ⇒ 分档轴无分辨力; 正确轴=用户轮 token(R477 未落盘) ⇒ 禁冒充分档结论",
+    "band_bounds": [
+      0,
+      30,
+      93,
+      200,
+      null
+    ],
+    "band_labels": [
+      "0-30",
+      "31-93",
+      "94-200",
+      "201+"
+    ]
+  }
+}

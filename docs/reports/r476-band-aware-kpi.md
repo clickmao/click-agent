@@ -13,7 +13,7 @@
 | 面 | 改动 | 事实位置 |
 |---|---|---|
 | 判定器 | `TurnOverheadTokens=21` / `TurnBands{0-30,31-93,94-200,201+}` / `BandOf` / `CeilingFor` / `CeilingFromGrowth` / `TargetFor` / `ToleranceFor(64/cacheable)` / `PrefixTokensNeededForBand` / `BandVerdict` 5 态 / `BandFields`(7 字段) / `BandLine` | `src/agent.modelqueue/PromptCacheRedline.cs` |
-| 打点 | 三处 `llm_call` 同源铺：`cache_band` / `cache_band_source` / `cache_ceiling` / `cache_band_target` / `cache_margin` / `cache_growth` / `cache_band_verdict` | `src/agent.modelqueue/ModelQueueRouter.cs` |
+| 打点 | 三处 `llm_call` 同源铺：`cache_band` / `cache_band_source` / `cache_ceiling` / `cache_target` / `cache_margin` / `cache_band_growth` / `cache_band_verdict` | `src/agent.modelqueue/ModelQueueRouter.cs` |
 | KPI 脚本 | 分档聚合（达成轮占比 + 分通道 + unknown_band）+ **常数源码 fail-closed 机检**（py ↔ C# 逐值，差异非空 ⇒ 退出码非 0） | `scripts/kpi_cache_hit.py` |
 | 计价面④ | 无价格表 ⇒ `pricing.status=unreported`、`cost_cny=None`；伪造 0 被 `pricing_violations()` 判红 | `eval/rover/r475/join_usage_truth.py` |
 | 器具⑤ | `bind_evidence.py --round`（默认 = 旧常量 ⇒ 无参调用逐字不变） | `eval/capability/bind_evidence.py` |

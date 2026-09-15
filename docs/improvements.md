@@ -2182,3 +2182,27 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 **下轮候选**：① 修空正文**误诊文案** + tool_calls 空正文处理（当前最大用户可见质量损失）；② `llm_call.turn` 归属因果化（绑 reply 请求 id，替计数器）；③ 命中率按分档口径重估（R 0.791 < Arole 0.858）；④ 门控扩到低风险实质轮，测本地替代生成的边际降幅（带质量对照）。
 
 **台账（R477 附）**：registry +4 行（`r477.replay-guard-real-e2e` / `r477.kpi-drop-real-endpoint-arms` / `r477.band-fields-live` / `r477.empty-body-root-cause`，均 L3），`updated_round=R477`；注：improvements.md 节序在 R475 后**缺 R476 块**（R476 只落 report + registry，属既有缺口，本文不改写历史）。节内新增器具 `eval/rover/r477/{run_arm_real_r477.sh,run_arm_R_only.sh,check_r477.py}` 与判据 `verdict-r477.json`。
+
+## R478（2026-09-16）空正文定因机制化（finish_reason 判据）+ 请求-轮次因果绑定 + 命中率冷/稳态分列
+
+**因果链**：R477 真机复演抓到两处同源缺陷。① **误诊**：20/20 条「用户可见空正文」调用的上游 `finish_reason == tool_calls`（`max_tokens == None`、`reasoning_tokens` 395/122 ≪ 预算）⇒ 不是预算被推理吃满，而是上游在请求执行工具动作；产品徽标却写「推理过程占满了输出预算」，并据此**白跑一次 32k 预算的重试**（调用数与 token 双浪费）。② **归属漂移**：5 条 `llm_call` 落在所记轮次窗口之外 ⇒ 轮次归属只能靠时间窗猜。③ **读数伪影**：R 臂命中率 0.791 < Arole 0.858 看似机制退化，按 R456b 分列后 **稳态两臂近等（0.9149 vs 0.9190，−0.41pp）**，聚合差 −6.70pp 中 −6.29pp 系**冷启动窗口占比差**（9.5% vs 20.0%）。
+
+**改动（单源 + 可机检）**
+1. **定因机制** `src/agent.modelqueue/EmptyBodyDiagnosis.cs`：`EmptyBodyCause{ToolCall,LengthExhausted,UpstreamStop,Unknown}`；判据**只取上游协议字段**（`finish_reason` / `tool_calls` / reasoning 长度），**零用户文本关键词**；文案单源 `Banner(cause, finishReason)`（**产品面仅 3 个调用点**：`ActionLoop.cs:243`、`ModelQueueRouter.cs:736`（空正文）、`:1217`（恢复通告））。
+2. **不浪费重试**：`ToolCall` 因 `Retryable=false` ⇒ 空正文分支 `retry_skipped=true`（×2 emit 路径），恢复路径被 `LengthExhausted ∨ reasoning 非空` 守卫。
+3. **因果绑定**：`QueueResponse.RequestId`（单调签发）→ `llm_call` 遥测带 `request_id`/`finish_reason`/`tool_calls_n`/`empty_cause` → 透传 `llmResponse.ResponseId` → 链侧 `_replyRequestId` 捕获并逐轮清零、`loop_turn` 打点带 `request_id` ⇒ 轮次归属可按 id **严格 join**。
+4. **动作环出口可见**：出口空正文 ⇒ 单源文案 + `ContentIsUserFacing = true`，**禁静默空回复**。
+5. **器具**：`eval/rover/r478/check_r478.py`（C1–C7 + 负控 NC1–NC3，fail-closed：取不到源码常量即抛 MISS）、`band_reestimate_r477.py`（R456b 冷/稳态分列）。
+6. **台账机派生刷新**：`bind_evidence.py --apply --round R478`（附带抓到本方 3 行缺 `owner_round` ⇒ 形式门禁判红 ⇒ 已补）。
+
+**读数**
+| 项 | 值 |
+|---|---|
+| 定因面机检 | `verdict=PASS 7/7` + 负控 `NC 3/3`（NC1 旧文案⇒C2 红 / NC2 关键词分类器⇒C1 红 / NC3 未透传⇒C4 红） |
+| 全量单测 | **1469/1469 ×3**（R476 时 1451 ⇒ 净增 18；Failed 0） |
+| 焦点单测 | 30/30 → 43/43 |
+| AOT | 15,363,712 B · sha16 `499a7552897992f1` · IL 0 · `env -i --version` rc=0 |
+| 命中率（供应商真值） | 稳态 Arole `0.919019`(19 调用) vs R `0.914939`(8 调用) = **−0.41pp**；聚合 `0.857967` vs `0.791011` = −6.70pp（−6.29pp 系冷启动占比伪影） |
+| 恒等式 | `hit + miss == prompt` 逐行成立 21/21 + 10/10 |
+
+**诚实边界**：起手闸 `MemAvailable 2293 MB < 2650 MB` ⇒ **本轮无真机 E2E**；`request_id` 因果绑定只证机制存在（真机 join 未验）；分档轴 `prompt_tokens` 代理全落 `201+` 档 ⇒ `band_degenerate=true`，**不冒充分档结论**；预注册晚于焦点单测首跑 ⇒ 描述性数字入 `checks_posthoc`（承 R453）。

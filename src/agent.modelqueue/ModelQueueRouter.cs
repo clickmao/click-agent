@@ -44,6 +44,10 @@ public sealed class QueueHistoryMessage
 /// <summary>队列调用响应 (协议自洽)</summary>
 public sealed class QueueResponse
 {
+    /// <summary>R478: 逐调用因果 id —— llm_call.request_id ↔ loop_turn.request_id 同一值 join,
+    /// 取代「时间窗归属」(R477 P4: 5 次调用落在 turn 窗口外 ⇒ 归属不可因果)。</summary>
+    public string RequestId { get; set; } = "";
+
     public string Content { get; set; } = string.Empty;
     public bool Success { get; set; } = true;
     public string? Error { get; set; }
@@ -705,8 +709,37 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             // 用户侧表现为"执行 ~30s 后回复空白" (E2E 铁证: completion 8192/8192, content_len=0, reasoning_len=22633,
             // loop_turn reply_chars=0 且 success=true)。旧修 (R19: max_tokens 2000→8192) 只是抬高天花板 —
             // 推理可吃满任意上限 → 改为"检测 + 有界恢复 + 诚实降级"。
-            if (string.IsNullOrWhiteSpace(resp.Content) && !string.IsNullOrWhiteSpace(resp.ReasoningContent))
-                resp = await RecoverFromEmptyContentAsync(entry, prompt, resp, ct).ConfigureAwait(false);
+            // R478 (承 R477 真机 20/20 空正文调用): 先**定因**再处置 —— 上游 finish_reason=tool_calls 时
+            // 旧逻辑既白跑一次 32k 预算重试, 又把成因误诊为"推理占满输出预算"。判据只取协议字段 (机制面)。
+            var emptyCause = EmptyBodyDiagnosis.Classify(resp.FinishReason, resp.ToolCalls?.Count ?? 0,
+                resp.ReasoningContent?.Length ?? 0);
+            if (string.IsNullOrWhiteSpace(resp.Content))
+            {
+                if (EmptyBodyDiagnosis.RoutableToActionLoop(emptyCause, resp.ToolCalls?.Count ?? 0, ActionLoopRunner.IsEnabled()))
+                {
+                    // 协议级动作请求 ∧ 工具执行面已启用 ⇒ 保留 tool_calls 上抛交动作环 (重试不可能产出正文: 省 1 次调用)
+                    agent.config.AgentTelemetry.Emit("llm_call_empty_body", "ModelQueueRouter",
+                        ("request_id", resp.RequestId), ("cause", EmptyBodyDiagnosis.CauseName(emptyCause)),
+                        ("finish_reason", resp.FinishReason ?? ""), ("tool_calls_n", resp.ToolCalls!.Count),
+                        ("retry_skipped", true), ("routed_to", "action_loop"), ("turn", prompt.TurnIndex));
+                }
+                else if (emptyCause == EmptyBodyCause.ToolCall)
+                {
+                    // 工具执行面未启用 ⇒ 诚实文案 (带上游真实 finish_reason) + 显式失败, 且**不再重试**
+                    agent.config.AgentTelemetry.Emit("llm_call_empty_body", "ModelQueueRouter",
+                        ("request_id", resp.RequestId), ("cause", EmptyBodyDiagnosis.CauseName(emptyCause)),
+                        ("finish_reason", resp.FinishReason ?? ""), ("tool_calls_n", resp.ToolCalls?.Count ?? 0),
+                        ("retry_skipped", true), ("routed_to", "user_banner"), ("turn", prompt.TurnIndex));
+                    resp.Success = false;
+                    resp.Error = "empty_body_tool_calls_not_executed";
+                    resp.ContentIsUserFacing = true;
+                    resp.Content = EmptyBodyBannerPrefix + EmptyBodyDiagnosis.Banner(emptyCause, resp.FinishReason);
+                }
+                else if (emptyCause == EmptyBodyCause.LengthExhausted || !string.IsNullOrWhiteSpace(resp.ReasoningContent))
+                {
+                    resp = await RecoverFromEmptyContentAsync(entry, prompt, resp, emptyCause, ct).ConfigureAwait(false);
+                }
+            }
             // R371 D7 真缺陷 (真机 RUN3 实证): 正文被输出预算**截断** (completion=8192 上限, content=1209 字符,
             // 断在 `start_len: int =` 的半行) 却 success=true → 用户拿到半份实现, 且 artifact 命中率看起来只是"抖动"。
             // 判据纯语法 (与模型无关): 尾部是未完结构 (= ( [ { , + - * / \ : 或未闭合三引号/围栏)。
@@ -746,6 +779,12 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                 ("prompt_tokens", resp.PromptTokens), ("completion_tokens", resp.CompletionTokens),
                 ("total_tokens", resp.TokensUsed), ("success", resp.Success),
                 ("empty_reply", string.IsNullOrEmpty(resp.Content)),
+                // R478: 逐调用因果 id + 空正文定因 (R477 教训: 无 finish_reason 就只剩"猜成因")
+                ("request_id", resp.RequestId),
+                ("finish_reason", resp.FinishReason ?? ""),
+                ("tool_calls_n", resp.ToolCalls?.Count ?? 0),
+                ("empty_cause", EmptyBodyDiagnosis.CauseName(EmptyBodyDiagnosis.Classify(resp.FinishReason,
+                    resp.ToolCalls?.Count ?? 0, resp.ReasoningContent?.Length ?? 0))),
                 ("error_kind", resp.Error ?? ""),
                 // v0.11.0 R19: 内容长度诊断 (C03 曾现 completion 2000 tok 但回复渲染空 — 定位内容丢在链路哪段)
                 ("content_len", resp.Content?.Length ?? 0),
@@ -1139,7 +1178,7 @@ public sealed class ModelQueueRouter : IModelQueueCaller
     /// 有界: 只重试 1 次, 不做循环; 失败判定与遥测绑定 (success/empty_reply/error_kind)。
     /// </summary>
     private async Task<QueueResponse> RecoverFromEmptyContentAsync(
-        ModelCatalogEntry entry, QueuePrompt prompt, QueueResponse first, CancellationToken ct)
+        ModelCatalogEntry entry, QueuePrompt prompt, QueueResponse first, EmptyBodyCause cause, CancellationToken ct)
     {
         var firstReasoning = first.ReasoningContent?.Length ?? 0;
         var firstCompletion = first.CompletionTokens;
@@ -1150,6 +1189,10 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             var recovered = !string.IsNullOrWhiteSpace(retried.Content);
             agent.config.AgentTelemetry.Emit("llm_call_recover", "ModelQueueRouter",
                 ("model", entry.Id), ("reason", "empty_content"), ("max_tokens", MaxTokensEscalated),
+                // R478: 定因 + 因果 id + 首/重试 finish_reason (禁把"上游请求工具"记成"预算不足")
+                ("request_id", first.RequestId), ("cause", EmptyBodyDiagnosis.CauseName(cause)),
+                ("first_finish_reason", first.FinishReason ?? ""), ("retry_finish_reason", retried.FinishReason ?? ""),
+                ("retry_skipped", false),
                 ("first_content_len", first.Content?.Length ?? 0), ("first_reasoning_len", firstReasoning),
                 ("first_completion_tokens", firstCompletion),
                 ("retry_content_len", retried.Content?.Length ?? 0),
@@ -1169,15 +1212,16 @@ public sealed class ModelQueueRouter : IModelQueueCaller
             retried.Error = "empty_content_after_retry";
             // R414: 本条 Content 是**面向用户**的降级文案 ⇒ 必须显式标记, 否则链侧按"不可见失败"丢弃 (= 用户看到空白)
             retried.ContentIsUserFacing = true;
-            retried.Content =
-                EmptyBodyBannerPrefix + ": 推理过程占满了输出预算 (已自动放宽输出预算并重试一次仍失败)。"
-                + "请重试, 或改用非推理模型 / 缩小任务范围。";
+            // R478: 文案**由定因单源生成**并带上游真实 finish_reason (旧文案把 tool_calls 也写成"推理占满预算")
+            retried.Content = EmptyBodyBannerPrefix
+                + EmptyBodyDiagnosis.Banner(cause, retried.FinishReason ?? first.FinishReason);
             return retried;
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
             agent.config.AgentTelemetry.Emit("llm_call_recover", "ModelQueueRouter",
                 ("model", entry.Id), ("reason", "empty_content"), ("recovered", false), ("error", ex.Message),
+                ("request_id", first.RequestId), ("cause", EmptyBodyDiagnosis.CauseName(cause)),
                 // R475 记账补齐: 异常路径同样落 prompt/缓存取值 (同源 first), 未上报 -1。
                 ("prompt_tokens", first.PromptTokens),
                 ("cache_hit_tokens", PromptCacheKpi.HitTokens(first.CacheHitTokens)),
@@ -1307,9 +1351,16 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         }
     }
 
+    /// <summary>R478: 逐调用序号 (进程内单调; 仅归因用, 不参与任何判定)。</summary>
+    private long _callSeq;
+
     private async Task<QueueResponse> CallEntryAsync(ModelCatalogEntry entry, QueuePrompt prompt, CancellationToken ct,
         int? maxTokensOverride = null, string? extraSystemSuffix = null)
     {
+        // R478: 逐调用 id 生成点 = 唯一入口 (成功/缺凭据/降级三路共用同一值 ⇒ 可因果 join)
+        var requestId = string.Concat(entry.Id, "#",
+            System.Threading.Interlocked.Increment(ref _callSeq).ToString(System.Globalization.CultureInfo.InvariantCulture),
+            "@", DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(System.Globalization.CultureInfo.InvariantCulture));
         // R351: 全通道 key 走环境变量 (官方内存通道已移除; 凭据铁律不变)
         var apiKey = Environment.GetEnvironmentVariable(entry.ApiKeyEnv);
         if (string.IsNullOrEmpty(apiKey))
@@ -1321,6 +1372,7 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                 ("missing_key", entry.ApiKeyEnv ?? "(未声明)"), ("kind", "api_key_env_missing"));
             return new QueueResponse
             {
+                RequestId = requestId,
                 Success = false,
                 Model = entry.Id,
                 Error = $"环境变量 {entry.ApiKeyEnv} 未设置 (模型 {entry.Id} 的 API Key 来源)",
@@ -1370,6 +1422,7 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         }
         return new QueueResponse
         {
+            RequestId = requestId,
             Content = content,
             Success = true,
             Model = entry.Id,

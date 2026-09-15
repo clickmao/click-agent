@@ -1,0 +1,106 @@
+{
+  "round": "R478",
+  "ts": "2026-09-16T06:11+0800",
+  "criteria": {
+    "C1_classify_protocol_only": {
+      "ok": true,
+      "user_text_keywords_in_classify": [],
+      "non_protocol_literals": [],
+      "protocol_literals": [
+        "ReasonLength",
+        "ReasonStop",
+        "ReasonToolCalls"
+      ]
+    },
+    "C2_banner_single_source": {
+      "ok": true,
+      "Banner_call_sites": [
+        "src/agent.modelqueue/ActionLoop.cs:243",
+        "src/agent.modelqueue/ModelQueueRouter.cs:736",
+        "src/agent.modelqueue/ModelQueueRouter.cs:1217"
+      ],
+      "old_banner_still_emitted": []
+    },
+    "C3_no_wasted_retry_on_tool_calls": {
+      "retry_skipped_true": 2,
+      "retry_skipped_false_in_recover": 1,
+      "routable_guard": 1,
+      "recover_guarded_by_retryable_or_reasoning": true,
+      "ok": true
+    },
+    "C4_causal_request_binding": {
+      "QueueResponse.RequestId": true,
+      "id_issued_in_CallEntry": true,
+      "id_set_on_success": true,
+      "llm_call_telemetry_has_request_id": true,
+      "adapter_passthrough": true,
+      "loop_turn_telemetry_has_request_id": true,
+      "capture_in_try": true,
+      "reset_per_turn": true,
+      "ok": true
+    },
+    "C5_action_loop_exit_visible": {
+      "exit_guard_present": true,
+      "uses_single_source_banner": true,
+      "sets_user_facing": true,
+      "ok": true
+    },
+    "C6_full_suite_x3": {
+      "ok": true,
+      "runs": {
+        "run1": {
+          "status": "ok",
+          "failed": 0,
+          "passed": 1469,
+          "skipped": 0,
+          "total": 1469
+        },
+        "run2": {
+          "status": "ok",
+          "failed": 0,
+          "passed": 1469,
+          "skipped": 0,
+          "total": 1469
+        },
+        "run3": {
+          "status": "ok",
+          "failed": 0,
+          "passed": 1469,
+          "skipped": 0,
+          "total": 1469
+        }
+      }
+    },
+    "C7_aot_publish": {
+      "publish_log": "/tmp/publish_r478b.log",
+      "exists": true,
+      "publish_rc0": true,
+      "IL_warnings": 0,
+      "aot_bin": "/tmp/pub_r478b/agenthost",
+      "ok": true
+    }
+  },
+  "negative_controls": {
+    "NC1_old_banner_would_fail_C2": {
+      "ok": true,
+      "note": "同一过滤规则下旧文案被识别为发文案 ⇒ 判据非恒绿"
+    },
+    "NC2_keyword_classifier_would_fail_C1": {
+      "ok": true,
+      "detail": {
+        "has_keyword": true,
+        "literals_outside_protocol": []
+      }
+    },
+    "NC3_missing_passthrough_would_fail_C4": {
+      "ok": true,
+      "note": "透传缺席时 c4['adapter_passthrough']=False ⇒ C4 判红"
+    }
+  },
+  "source_pins": {
+    "EmptyBodyDiagnosis.cs": "ae11ca1570d2",
+    "banner_call_sites_n": 3
+  },
+  "verdict": "PASS",
+  "failed_criteria": []
+}

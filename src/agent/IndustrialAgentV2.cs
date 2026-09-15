@@ -78,6 +78,10 @@ public class IndustrialAgentV2 : AgentBase
     /// <summary>R466: 本轮**本地确定结算**的类别 (与 skip 层打点同源; null = 本轮未经本地结算)。
     /// 只由前置门 Skip 支写入 ⇒ "为什么这轮不走远端" 在收口面可复查。</summary>
     private string? _localSettleKind;
+    // R478: 本轮回复的因果绑定 (llmResponse 在 try 作用域内 ⇒ 出域前捕获到字段, 供 loop_turn 打点)
+    private string _replyRequestId = "";
+    private string _replyFinishReason = "";
+    private bool _replyEmptyBody;
 
     /// <summary>R458 承接轮: 本轮用户原话 (兜底反问里引用)。</summary>
     private string? _continuationUserText;
@@ -534,6 +538,9 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
         _continuationUserText = null;
         // R466: 本地结算类同批清零 —— 上一轮的 repeat_verbatim 不得粘到本轮 (否则本轮承接反问被误抑制)
         _localSettleKind = null;
+        _replyRequestId = "";
+        _replyFinishReason = "";
+        _replyEmptyBody = false;
         // v0.17.2-a (R336): 活动心跳 — 每轮注册本进程活动 (任务摘要), 退出由 10s TTL 过期自清
         try { Activity().Heartbeat(message.Content); } catch { /* 活动感知不阻塞主链 */ }
         var response = new AgentResponse();
@@ -1723,6 +1730,8 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     Content = localReply,
                     Success = true,
                     Model = "local:turn-gate",
+                    // R478: 本地消化轮**不是**远端调用 ⇒ 用显式标记替代空值 (join 时与远端 id 不相混)
+                    ResponseId = "local:turn-gate",
                     PromptTokens = 0,
                     CompletionTokens = 0,
                     TokensUsed = 0,
@@ -1740,6 +1749,11 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 agent.config.AgentTelemetry.Emit("phase_timing", "IndustrialAgentV2",
                     ("phase", "llm"), ("ms", llmSegSw.ElapsedMilliseconds), ("intent", intent));
             }
+
+            // R478: 因果绑定捕获 (R477 P4: 时间窗归属把 5 次调用判成"窗口外" ⇒ 改用同值 id join)
+            _replyRequestId = llmResponse.ResponseId ?? "";
+            _replyFinishReason = llmResponse.FinishReason ?? "";
+            _replyEmptyBody = string.IsNullOrEmpty(llmResponse.Content);
 
             // 5.1 思考结束指令 (L.2.2 指令 2 — 前端关闭思考步骤显示并折叠)
             _logRouter?.EmitThinkingEnd(llmResponse.Content.Length);
@@ -2064,6 +2078,10 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
         agent.config.AgentTelemetry.Emit("loop_turn", "IndustrialAgentV2",
             ("total_ms", response.ExecutionTimeMs), ("success", response.Success),
             ("reply_chars", response.Content.Length), ("asked", asked),
+            // R478: 本轮答复**因果绑定**到具体调用 (R477 P4: 时间窗归属把 5 次调用判成"窗口外")
+            ("request_id", _replyRequestId),
+            ("finish_reason", _replyFinishReason),
+            ("empty_body", _replyEmptyBody),
             ("executive", response.Content.StartsWith('{') && response.Content.Contains("\"skill\"")));
         return response;
     }

@@ -181,6 +181,37 @@ public sealed class ActionLoopTests
         finally { Directory.Delete(root, true); }
     }
 
+    [Fact]
+    public async Task Loop_EmptyContentAtExit_IsVisibleNotBlank()
+    {
+        // R478: 环出口空正文 ⇒ 用户可见文案 (定因取协议字段), 禁空回复
+        var root = NewTempDir();
+        try
+        {
+            var port = new WorkspaceActionPort(root);
+            var calls = 0;
+            Task<QueueResponse> Call(QueuePrompt p, CancellationToken ct)
+            {
+                calls++;
+                return Task.FromResult(new QueueResponse
+                {
+                    Success = true,
+                    Content = string.Empty,
+                    FinishReason = "tool_calls",
+                    ToolCalls = new List<ActionToolCall> { new() { Id = "c" + calls, Name = "list_dir", ArgumentsJson = "{}" } },
+                });
+            }
+            var (resp, outcome) = await ActionLoopRunner.RunAsync(new QueuePrompt { UserMessage = "u" }, Call, port, 2, CancellationToken.None);
+            Assert.True(outcome.MaxStepsHit);
+            Assert.True(resp.ContentIsUserFacing);
+            Assert.StartsWith(ModelQueueRouter.EmptyBodyBannerPrefix, resp.Content);
+            Assert.Contains("finish_reason=tool_calls", resp.Content);
+            Assert.Equal("action_loop_max_steps_no_content", resp.Error);
+            Assert.False(ModelQueueRouter.IsReplayableReply(resp.Content));
+        }
+        finally { Directory.Delete(root, true); }
+    }
+
     // ---------- 面 5: 执行面边界 ----------
     [Fact]
     public async Task Port_FileRoundTrip_AndPathEscapeRejected()

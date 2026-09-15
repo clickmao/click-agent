@@ -131,7 +131,9 @@ public class UserFacingFailureTests
         // R475: 两条徽标**单源于公共前缀常量** (回放守卫 `IsReplayableReply` 据此识别非实质答复)
         Assert.Contains("public const string EmptyBodyBannerPrefix = \"⚠ 模型未产出正文\";", flat);
         Assert.Contains("EmptyBodyBannerPrefix + \", 且自动重试失败 — 请重试或切换模型。\"", flat);
-        Assert.Contains("EmptyBodyBannerPrefix + \": 推理过程占满了输出预算", flat);
+        // R478: 徽标文案改由**定因单源**生成 (带上游真实 finish_reason) —— 旧误诊文案不得回落
+        Assert.Contains("EmptyBodyBannerPrefix + EmptyBodyDiagnosis.Banner(cause, retried.FinishReason ?? first.FinishReason)", flat);
+        Assert.DoesNotContain("推理过程占满了输出预算", flat);
         Assert.DoesNotContain("\"⚠ 模型未产出正文, 且自动重试失败: \" + ex.Message", flat);  // 凭据/内部信息卫生
 
         var adapter = Flat(Path.Combine("src", "agent", "modelqueue", "ModelQueueAdapter.cs"));

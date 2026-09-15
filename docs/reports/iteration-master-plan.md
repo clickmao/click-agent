@@ -343,7 +343,7 @@ python3 eval/run_round.py <新轮号> "revert-verify <原commit>" --quick   # �
 - 证据: `eval/rover/r448/README-evidence.md`｜计划: `docs/plans/v0.68.0-r448-judge-think-length-cap.md`｜登记: registry `r448.judge-think-length-cap`。
 - 下轮候选: ①判官**预填充**侧压缩（2764 tok/10 调用）等价性消融 ②判官+门合并单次本地调用 ③门通道同构消融 ④把「跨臂相等类断言须先机检臂定义可满足」升为器具通用闸。
 
-## R441–R475 轮次索引（2026-09-15 首次回填，R475 扩展到 R475；机取自 `docs/verification-registry.json`，勿手改）
+## R441–R478 轮次索引（2026-09-15 首次回填，R478 扩展到 R478；机取自 `docs/verification-registry.json`，勿手改）
 
 > 每轮的权威内容在其 `docs/plans/v0.xx…` 计划、`docs/improvements.md` 对应块与 registry 行；本表只做索引与状态汇总，避免双写漂移。R449 起全部未 push（推送暂停令）。
 
@@ -414,5 +414,16 @@ python3 eval/run_round.py <新轮号> "revert-verify <原commit>" --quick   # �
 | R475 | `r475.repeat-replay-substantive-guard` | L2 | 纯复述轮的回放守卫: 只有存在**可回放的实质答复**才允许本地消化; 上一条为空/模板/空正文徽标 ⇒ 撤销 Skip 降级远端(禁以模板冒充答复)。判据单源: 用户轮 Is… |
 | R475 | `r475.recover-channel-accounting-fields` | L2 | llm_call_recover 行补齐 prompt_tokens/cache_hit_tokens/cache_miss_tokens/cache_hit_rate(与 l… |
 | R475 | `r475.usage-truth-twin-column` | L2 | 双列并账(供应商 usage 真值列 vs 产品自记列): 硬分离禁混算; recover 缺字段 ⇒ unreconciled(禁按 0); 唯一跨列运算 gap.* 显式列… |
-覆盖自检: 轮号 [441, 442, 443, 444, 445, 446, 447, 448, 449, 450, 451, 452, 453, 454, 455, 456, 457, 458, 460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 470, 471, 472, 474, 475]；registry rows=135，updated_round=R475。**缺登记行轮号: 459, 473**（**该号未被使用(improvements.md 亦无块): 459, 473**）。
+| R476 | `r476.band-aware-redline-verdict` | L2 | 红线判定**分档化**(只增不改): 单值 0.97 不变, 但判据目标改为 min(红线, 该轮结构上限 prefix/(prefix+用户轮+21)) ⇒ 5 态判决 no… |
+| R476 | `r476.band-kpi-instrument` | L2 | 分档聚合器具(达成轮占比 + 分通道) + **常数与产品源码 fail-closed 机检**: py 侧红线/承接开销/缓存单元/档界 与 PromptCacheRedli… |
+| R476 | `r476.pricing-fail-closed` | L2 | 计价面 fail-closed: 无显式价格表 ⇒ pricing.status=unreported 且 cost_cny=None/hit_discount_known=F… |
+| R476 | `r476.evidence-binding-round-param` | L2 | 证据绑定器具轮号参数化: bind_evidence.py 加 --round(默认 = 历史常量 AUDITED_BY_ROUND ⇒ 无参调用逐字不变), 消除「audit… |
+| R477 | `r477.replay-guard-real-e2e` | L3 | R475 复述回放守卫**首次真机复演**: 复述轮(t6「再讲一遍。」/t9「从头再说。」)用户可见回复 = 前序**实质**答案逐字回放(298 字符, 非模板/非空正文徽… |
+| R477 | `r477.kpi-drop-real-endpoint-arms` | L3 | 真端点双臂 KPI 复测(同网格 task-p12/同二进制 agenthost db187e0eae7f26ea/仅门控不同): 供应商 usage 真值(A) 73649 … |
+| R477 | `r477.band-fields-live` | L3 | R476 分档 7 字段**实发存在**: 真机每主调用遥测行均带 cache_band/band_source/band_growth/ceiling/target/marg… |
+| R477 | `r477.empty-body-root-cause` | L3 | 用户可见「⚠ 模型未产出正文」徽标定因: 真机 20/20 空正文调用的 `finish_reason == tool_calls`(请求携带 4 个 tools), `max… |
+| R478 | `r478.empty-body-cause-protocol-only` | L2 | 空正文定因机制化(承 R477 真机 20/20 `finish_reason == tool_calls` 事实): ① 定因判据**只取上游协议字段**(finish_re… |
+| R478 | `r478.request-turn-causal-binding` | L2 | 请求-轮次**因果绑定**(替代时间窗归属): `QueueResponse.RequestId` 单调签发(`entry.Id#seq`, `Interlocked`, AO… |
+| R478 | `r478.hit-rate-cold-steady-split` | L3 | R477 真机 usage(**供应商真值**, 恒等式 `hit+miss==prompt` 21/21 + 10/10 逐行成立)命中率按 **R456b** 分列: 稳态… |
+覆盖自检: 轮号 [441, 442, 443, 444, 445, 446, 447, 448, 449, 450, 451, 452, 453, 454, 455, 456, 457, 458, 460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 470, 471, 472, 474, 475, 476, 477, 478]；registry rows=146，updated_round=R478。**缺登记行轮号: 459, 473**（**该号未被使用(improvements.md 亦无块): 459, 473**）。
 

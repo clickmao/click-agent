@@ -39,7 +39,9 @@ public class R475AccountingTests
         Assert.False(ModelQueueRouter.IsReplayableReply(ModelQueueRouter.LocalSkipFallback));            // 模板
         Assert.False(ModelQueueRouter.IsReplayableReply("  " + ModelQueueRouter.LocalSkipFallback + " ")); // 带空白
         Assert.False(ModelQueueRouter.IsReplayableReply(ModelQueueRouter.EmptyBodyBannerPrefix + ", 且自动重试失败 — 请重试或切换模型。"));
-        Assert.False(ModelQueueRouter.IsReplayableReply(ModelQueueRouter.EmptyBodyBannerPrefix + ": 推理过程占满了输出预算 (已自动放宽输出预算并重试一次仍失败)。请重试, 或改用非推理模型 / 缩小任务范围。"));
+        // R478: 徽标文案由定因单源生成 (带真实 finish_reason) —— 不可回放的性质不变, 两个成因各钉一例
+        Assert.False(ModelQueueRouter.IsReplayableReply(ModelQueueRouter.EmptyBodyBannerPrefix + EmptyBodyDiagnosis.Banner(EmptyBodyCause.LengthExhausted, "length")));
+        Assert.False(ModelQueueRouter.IsReplayableReply(ModelQueueRouter.EmptyBodyBannerPrefix + EmptyBodyDiagnosis.Banner(EmptyBodyCause.ToolCall, "tool_calls")));
     }
 
     [Fact]

@@ -444,6 +444,15 @@
    "DocRef": "docs/plans/v0.92.0-r476-band-aware-kpi.md",
    "Evidence": "eval/rover/r476/verdict-r476.json",
    "Summary": "R469 已证单值 97% 对长档结构性不可达 ⇒ 判据改为 min(红线, 该轮结构上限)+5 态判决, 遥测铺 7 分档字段(三处打点同源); py 侧常数与源码 fail-closed 机检; r469 夹具三方一致(json↔py↔产品单测字面量); 计价面 unreported fail-closed; bind_evidence --round 参数化"
+  },
+  {
+   "Id": "dev-r478-empty-body-cause-and-request-binding",
+   "Title": "R478 空正文定因机制化(finish_reason 判据) + 请求-轮次因果绑定 + 台账机派生刷新",
+   "State": "done",
+   "Round": "R478",
+   "DocRef": "docs/plans/v0.94.0-r478-empty-body-cause-and-request-binding.md",
+   "Evidence": "eval/rover/r478/verdict-r478.json",
+   "Summary": "R477 真机 20/20 空正文 = 上游 finish_reason=tool_calls, 产品徽标误诊为「推理占满输出预算」且白跑 32k 重试 ⇒ 定因只取协议字段(ToolCall/LengthExhausted/UpstreamStop/Unknown)+单源文案+动作环出口可见; QueueResponse.RequestId 贯穿 llm_call/loop_turn 因果绑定; 命中率按 R456b 冷/稳态分列(稳态差 -0.41pp, 聚合差 -6.70pp 系冷启动占比伪影)"
   }
  ]
 }

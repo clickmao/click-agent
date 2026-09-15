@@ -1,0 +1,42 @@
+{
+  "round": "R478",
+  "ts_declared": "2026-09-16T05:5x+0800",
+  "declaration_note": "本预注册文件在**焦点单测首跑之后**落盘（首跑 30/30 早于本文件）—— 依 R453 铁律：首跑后写预注册 ⇒ 描述性数字单列 checks_posthoc，预注册面只留判据语义，不追溯粉饰。",
+  "upstream_fact_source": {
+    "path": "docs/reports/r477-real-e2e-replay-and-band-live.md",
+    "fact": "真机 20/20 空正文调用的上游 finish_reason == tool_calls；max_tokens == None（非预算截断）；reasoning_tokens_max 395(Arole)/122(R) ≪ 预算",
+    "consequence": "产品徽标「推理过程占满了输出预算」= 误诊；且白跑一次 32k 预算重试（调用数 + token 双浪费）"
+  },
+  "scope": [
+    "A. 空正文定因机制化（判据只取协议字段 finish_reason/tool_calls/reasoning 长度）",
+    "B. 请求-轮次因果绑定（request_id 单一 id 贯穿：发放 → llm_call 遥测 → llmResponse.ResponseId → loop_turn 打点）",
+    "C. 器具 + 台账机派生刷新（check_r478.py / band_reestimate_r477.py / bind_evidence --round R478）"
+  ],
+  "criteria_preregistered": {
+    "C1": "定因判据只用协议字段：Classify 方法体内 0 个用户文本关键词，字面量 ⊆ {tool_calls, length, stop}",
+    "C2": "用户可见空正文文案单源：EmptyBodyDiagnosis.Banner( 调用点 ≥3（router 空正文/recover 两路 + ActionLoop 出口），旧误诊文案 0 处作为发文案出现",
+    "C3": "ToolCall 因不重试：源码含 retry_skipped=true 两处 + recover 被 (LengthExhausted ∨ reasoning 非空) 守卫",
+    "C4": "因果绑定：QueueResponse.RequestId 存在 ∧ 发放处单调签发 ∧ adapter 透传 ResponseId ∧ llm_call 与 loop_turn 遥测均带 request_id ∧ 链侧捕获并逐轮清零",
+    "C5": "动作环出口：动作环步数耗尽/空正文出口 ⇒ 可见文案（单源 Banner）+ ContentIsUserFacing=true，禁静默空回复",
+    "C6": "全量单测 ×3 全绿（Failed=0），缺日志 = VOID（不静默通过）",
+    "C7": "AOT：/tmp/pub_r478b 发布日志 IL 警告 0 ∧ 二进制存在"
+  },
+  "negative_controls_preregistered": {
+    "NC1": "旧误诊文案若作为发文案出现 ⇒ C2 判红（证明 C2 非恒绿）",
+    "NC2": "关键词驱动的退化分类器 ⇒ C1 判红（非协议字面量 + 用户文本关键词命中）",
+    "NC3": "adapter 未透传 ResponseId ⇒ C4 判红"
+  },
+  "declared_axis_caveats": [
+    "命中率分档轴：R477 未落用户轮 token 分量 ⇒ 本器具分档轴=prompt_tokens（代理），且该夹具全落 201+ 档 ⇒ band_note.degenerate=true，禁冒充分档结论",
+    "跨臂命中率：按 R456b 分列冷启动/稳态，禁用聚合值作机制结论"
+  ],
+  "checks_posthoc": [
+    {"id": "PH1", "text": "焦点单测首跑（本预注册落盘前）：EmptyBodyDiagnosisTests|R475AccountingTests|UserFacingFailureTests = Passed 30 / Failed 0", "kind": "descriptive"},
+    {"id": "PH2", "text": "焦点单测扩容后（含 ActionLoopTests）= Passed 43 / Failed 0", "kind": "descriptive"},
+    {"id": "PH3", "text": "全量 1469/1469 ×3（R476 时总数 1451 ⇒ 本轮净增 18 例）", "kind": "descriptive"}
+  ],
+  "excluded_from_this_round": {
+    "real_e2e": "起手闸 MemAvailable ≥ 2650 MB 未达（实测 2293 MB ⇒ 本轮机侧禁起真机测量）；不得以离线/结构证据冒充真机",
+    "action_loop_semantics": "上游 tool_calls 是否该由本链路执行 —— 产品策略待确认"
+  }
+}

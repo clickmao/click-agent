@@ -234,6 +234,15 @@ public static class ActionLoopRunner
         }
         outcome.Converged = resp.Success && (resp.ToolCalls is null || resp.ToolCalls.Count == 0);
         outcome.MaxStepsHit = !outcome.Converged && resp.Success && resp.ToolCalls is { Count: > 0 };
+        // R478: 环出口仍无正文 (max_steps 命中 / 上游只回工具调用) ⇒ 必须给**可见文案**, 禁静默空回复 (R457 铁律 ③)。
+        // 定因只取协议字段; 文案与主链同源 (EmptyBodyDiagnosis) ⟹ 不新增第二处文案实现。
+        if (resp.Success && string.IsNullOrWhiteSpace(resp.Content))
+        {
+            var exitCause = EmptyBodyDiagnosis.Classify(resp.FinishReason, resp.ToolCalls?.Count ?? 0, resp.ReasoningContent?.Length ?? 0);
+            resp.ContentIsUserFacing = true;
+            resp.Content = ModelQueueRouter.EmptyBodyBannerPrefix + EmptyBodyDiagnosis.Banner(exitCause, resp.FinishReason);
+            resp.Error = outcome.MaxStepsHit ? "action_loop_max_steps_no_content" : "action_loop_empty_content";
+        }
         return (resp, outcome);
     }
 
