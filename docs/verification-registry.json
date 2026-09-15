@@ -1446,7 +1446,7 @@
     },
     {
       "id": "r450.gate-prompt-anchor",
-      "level": 2,
+      "level": "L2",
       "capability": "门判**实发 prompt** 落盘锚 (env AGENTFRAMEWORK_GATE_PROMPT_DUMP, 默认关/零产品变更) + 零反射 JSON 转义 + UTF8 no-BOM + 源码派生重建器的版本锚 fail-closed",
       "evidence_cmd": "R450_GRID=M20 R450_NS=-s2 AGENTFRAMEWORK_HOST_BIN=/tmp/pub_r450/agenthost bash eval/rover/r450/run_arm_r450.sh BRJ; python3 eval/rover/r449/real_gate_probe.py --selftest",
       "evidence_path": "eval/rover/r450/anchor-r450.json",
@@ -1461,7 +1461,7 @@
     },
     {
       "id": "r451.real-traffic-reprobe",
-      "level": 2,
+      "level": "L2",
       "capability": "真实流量外部效度探针重跑: 文本层锚(tpl_len=280/seed_sha16 与 R443 逐位相同)与行为层(I1 正控)分离判据; 残余失锚定位=调用/解码面; 判决 VOID ⇒ 真实读数一律 n/a",
       "evidence_cmd": "R449_SRV_CTX=3584 python3 eval/rover/r449/real_gate_probe.py --ns r451; python3 eval/rover/r449/real_gate_probe.py --selftest",
       "evidence_path": "eval/rover/r451/verdict-r451.json",
