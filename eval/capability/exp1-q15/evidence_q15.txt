@@ -1,0 +1,74 @@
+EXP1-Q15 · §L.7 #3 计数「单位轴 / 口径域」一等不变量 —— 真归档语料读数
+生成时间: 2026-09-15T15:00:10+08:00
+仪器: unit_axis_guard.py v1.0 (EXP1-Q15)  |  被测生产者: eval/capability/exp1-q10/probe_v260.py (sha12=e90c7d7ff15e, 未改动)
+语料: eval/capability/exp1-q10/citations.jsonl
+
+== 自检（夹具 10 格，双侧）==
+  OK  FX1_clean_weak_domain          expect=0 got=0 findings=[]
+  OK  FX2_domain_label_mismatch      expect=2 got=2 findings=['C3_domain_label_mismatch', 'C4_self_derived_total', 'C7_qualifier_collision']
+  OK  FX3_self_derived_total         expect=2 got=2 findings=['C4_self_derived_total']
+  OK  FX4_bare_count_key             expect=2 got=2 findings=['C2_axis_label_missing', 'C4_self_derived_total']
+  OK  FX5_confusable_totals          expect=2 got=2 findings=['C3_domain_label_mismatch', 'C4_self_derived_total', 'C6_confusable_totals', 'C7_qualifier_collision']
+  OK  FX6_qualifier_collision        expect=2 got=2 findings=['C3_domain_label_mismatch', 'C4_self_derived_total', 'C7_qualifier_collision']
+  OK  FX7_ratio_undeclared           expect=2 got=2 findings=['C8_ratio_undeclared']
+  OK  FX8_missing_input              expect=3 got=3 findings=['MEASUREMENT']
+  OK  FX9_vacuous_single_axis        expect=2 got=2 findings=['C4_self_derived_total', 'C9_vacuous']
+  OK  FX10_legit_other_names         expect=0 got=0 findings=[]
+  => 10/10 pass; 两跑逐字节相同=True; exit=0
+
+== 登记产物 probe_stdout.json : INVARIANT_VIOLATED (exit 2) ==
+  归档面: derived-from-write-block {'citations': 'eval/capability/exp1-q10/citations.jsonl', 'cites': 'eval/capability/exp1-q10/citations.jsonl', 'continuations': 'eval/capability/exp1-q10/continuations.jsonl', 'conts': 'eval/capability/exp1-q10/continuations.jsonl', 'judged': 'eval/capability/exp1-q10/citations.jsonl', 'judged_cont': 'eval/capability/exp1-q10/continuations.jsonl'}
+  行数: {'citations.jsonl': 945, 'continuations.jsonl': 70}
+  C1 重放保真: checked=7 all_equal=True self_referential=0 hollow=[]
+  单位轴: ['citation', 'continuation', 'doc', 'edge', 'symbol']
+  口径域: ['EDGE_STRONG=strong', 'EDGE_STRONG=strong+rung=weak_rungs', 'all', 'underived']
+  守恒门: [('kind_conserved', 'kind_counts', 'n_weak_edges', 'independent')]
+  有门轴: ['edge'] | **无门轴**: ['citation', 'continuation', 'doc', 'symbol']
+  不可重放(声明): []
+  比值字段数: 0 | vacuous: False | 两跑一致: True
+  --- C3_domain_label_mismatch: 1
+      {"key": "weak_symbol_kind_counts", "label_tokens": ["weak"], "derived_domain": "all", "filters": [], "value": {"other": 489, "comment_only": 5, "cross_file": 58, "named_fact": 22}}
+  --- C7_qualifier_collision: 1
+      {"token": "weak", "domains": ["EDGE_STRONG=strong", "all"], "keys": ["n_edges_strong_with_weak_symbols", "weak_symbol_kind_counts"]}
+
+== 登记产物 attribution_q10.json : INVARIANT_VIOLATED (exit 2) ==
+  归档面: derived-from-write-block {'citations': 'eval/capability/exp1-q10/citations.jsonl', 'cites': 'eval/capability/exp1-q10/citations.jsonl', 'continuations': 'eval/capability/exp1-q10/continuations.jsonl', 'conts': 'eval/capability/exp1-q10/continuations.jsonl', 'judged': 'eval/capability/exp1-q10/citations.jsonl', 'judged_cont': 'eval/capability/exp1-q10/continuations.jsonl'}
+  行数: {'citations.jsonl': 945, 'continuations.jsonl': 70}
+  C1 重放保真: checked=10 all_equal=True self_referential=0 hollow=[]
+  单位轴: ['citation', 'continuation', 'edge', 'symbol']
+  口径域: ['EDGE_STRONG=strong', 'EDGE_STRONG=strong+rung=weak_rungs', 'EDGE_WEAK=weak', 'all', 'underived']
+  守恒门: [('kind_conserved', 'kind_counts', 'n_weak_edges', 'independent')]
+  有门轴: ['edge'] | **无门轴**: ['citation', 'continuation', 'symbol']
+  不可重放(声明): ['n_symbol_faces', 'stale_like_n', 'symbol_face_rungs', 'symbol_occurrences']
+  比值字段数: 0 | vacuous: False | 两跑一致: True
+  --- C3_domain_label_mismatch: 1
+      {"key": "weak_symbol_kind_counts", "label_tokens": ["weak"], "derived_domain": "all", "filters": [], "value": {"other": 489, "comment_only": 5, "cross_file": 58, "named_fact": 22}}
+  --- C4_self_derived_total: 3
+      {"key": "n_symbol_faces", "defined_as": "sum(face_rungs.values())", "value": 575}
+      {"key": "n_mixed_strong_symbols_classified", "defined_as": "sum(mixed_strong_kind_counts.values())", "value": 18}
+      {"key": "n_weak_symbols_classified", "defined_as": "sum(kind_sym_counts.values())", "value": 574}
+  --- C7_qualifier_collision: 1
+      {"token": "weak", "domains": ["EDGE_STRONG=strong", "EDGE_WEAK=weak", "all"], "keys": ["n_edges_strong_with_weak_symbols", "n_weak_edges", "n_weak_symbols_classified", "weak_symbol_kind_counts"]}
+
+== 独立真值（与被测引擎零共享；两条归档路径复算）==
+  {"paths": {"weak_kind_table.symbol_slots": {"n_edges": 63, "symbol_slots": 90, "kind_per_symbol_slots": 90}, "attribution.edge_weak_list.symbol_slots": {"n_edges": 63, "symbol_slots": 90}}, "two_paths_agree": true, "weak_edge_symbol_slots": 90}
+  574 / 90 = 6.378×  （登记键 n_weak_symbols_classified 的派生域 = 全部 live 代码引用）
+
+== 预注册判据 vs 实测 ==
+  P1 重放逐位复现登记读数            : 成立（7/7 + 10/10 all_equal=True）
+  P2 C3 命中 weak_symbol_kind_counts : 成立（派生域=all，值 574=489+5+58+22）
+  P3 C4 命中 n_weak_symbols_classified: 成立（= sum(kind_sym_counts.values())）
+  P4 覆盖不对称                      : 成立（仅 edge 轴有门且分母独立；symbol/citation/continuation/doc 轴无门）
+  P5 C6 易混对 574/575               : **未成立**（同轴 symbol、同派生域 all ⇒ 按预注册 C6 定义（要求跨域）不触发；不事后改判据）
+  P6 C7 命中质词 weak                : 成立（all / EDGE_WEAK=weak / EDGE_STRONG=strong 三域并用）
+  P7 比值字段数=0 ⇒ C8 真跑未行使    : 成立（仅夹具行使，不得声称已验证）
+  P8 夹具 10/10（6 注入必抓 + 2 合法不误杀 + 缺输入 exit3 + 单轴 vacuous）: 成立
+  P9 弱边符号槽真值 90（两路一致）    : 成立
+
+== 诚实边界 ==
+  1) 未改生产者 v2.6.0 一字 ⇒ 已登记读数（strong 365 / weak 63 / 574 / 575）可比性未被破坏；修正登记缺陷属独立预注册轮次。
+  2) 证据等级 L1-static：真归档语料 + 真源码 AST 派生 + 夹具自检；无编译/测试/AOT（对侧执行体在场 ⇒ 不跑 dotnet、不占轮号）。
+  3) 4 个登记键声明为「不可重放」（n_symbol_faces / symbol_face_rungs / symbol_occurrences / stale_like_n） ⇒ 它们的相等性未经独立复算；C1 的 all_equal 只覆盖已重放者。
+  4) C7 的判据本次收窄为「同质词跨 all 与受限域」（防误杀复合名 *_strong_with_weak_symbols）；收窄发生在真跑之前，且夹具 FX6 覆盖该判据、FX10 覆盖反例。
+  5) P5 未成立：C6 要求跨 (轴,域)；574 vs 575 同轴同派生域 ⇒ 不触发。该对只作 checks_posthoc 观察（两键标签语义不同、值差 1）。
+  6) 本器对「同轴同域重复登记」不设判据（如实例 n_weak_edges 63 与 edge_weak_n 63 为别名）—— 未建模，不作宣称。

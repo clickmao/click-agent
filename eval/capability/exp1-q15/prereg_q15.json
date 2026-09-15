@@ -1,0 +1,42 @@
+{
+  "schema": "exp1-prereg/1",
+  "round": "EXP1-Q15",
+  "owner_round": "EXP1-Q15 (60m 自检作业; 不占主线轮号)",
+  "plan_item": "v0.22.0-exp1-local-index-and-code-graph.md §L.7 #3 —— 把「符号级/引用级两计数分开、互不换算」升为仪器侧一等不变量",
+  "predecessors": ["EXP1-Q10 (仪器 v2.6.0 弱边再细分轴; 读数 574/63)", "EXP1-Q13 (§L.7 #1 裁定)", "EXP1-Q14 (§L.7 #2 复核)"],
+  "scope_lock": {
+    "no_product_code": "未改 src/、skills/、docs/verification-registry.json",
+    "no_instrument_mutation": "probe_v260.py（v2.6.0）一字不改 —— 改它会使已登记读数不可比，属独立预注册轮次",
+    "no_registry_write": "不改 eval/capability/instruments.json（该文件是全 11 条器具的 L2 验收面，逐条执行；用 --only 单跑会覆盖 instruments-check.json 上的既有全量面读数 ⇒ 登记动作留待对侧空闲窗口的下一轮）",
+    "zero_dotnet": "对侧执行体在场 ⇒ 不跑 dotnet、不占主线轮号；本轮证据等级上限 = L1-static（真归档语料 + 真源码 AST 派生 + 夹具自检）"
+  },
+  "deliverable": "eval/capability/exp1-q15/unit_axis_guard.py v1.0 —— 把「单位轴 + 口径域必须显式且机检」做成可执行一等不变量（C1–C10），并给出真归档语料上的机器读数",
+  "preregistered_criteria": {
+    "C1_replay_fidelity": "由生产者源码 AST 派生计数定义（元素表达式 + 过滤条件 + 总体链）并在归档语料上重放 ⇒ 必须与登记读数逐位相同；不符判**测量失败** exit 3（不判红、不放过）",
+    "C2_axis_label": "每个计数键必须含其派生单位轴 token；缺 token ⇒ 违规（轴不可派生者列入 axis_underived 可见清单，不算违规）",
+    "C3_domain_label": "键名口径质词（weak/strong/broken/mixed_strong）必须与派生过滤域一致；不一致 ⇒ 违规 + 给出逐域分解",
+    "C4_self_derived_total": "登记总数若定义为 sum(自身各桶) ⇒ 无独立分母 ⇒ 恒真，判违规登记",
+    "C5_conservation_coverage": "逐 *_conserved 门反解分母来源（独立总体 / 自证），并列出**无门**的单位轴",
+    "C6_confusable_totals": "不同 (轴, 域) 的两个总数相对差 <5% ⇒ 必须带显式区分 token，否则违规",
+    "C7_qualifier_collision": "同一质词跨两个不同 (轴, 域) 使用 ⇒ 违规（给出比值）",
+    "C8_ratio_declared": "比值类字段必须带 *_unit / *_of 声明且两侧轴一致",
+    "C9_nontrivial": "轴集合或域集合为单元素 ⇒ vacuous=true 显式判红（不静默放过）",
+    "C10_determinism": "同输入两跑逐字节相同"
+  },
+  "preregistered_predictions": {
+    "P1_replay": "重放逐位复现登记计数：edge_kind_counts 合计 63 == edge_weak_n，weak_symbol_kind_counts 合计 574",
+    "P2_domain_mismatch_hit": "C3 命中 weak_symbol_kind_counts / n_weak_symbols_classified（键名质词 weak，派生域 = 全部 live 代码引用）",
+    "P3_self_derived_hit": "C4 命中 n_weak_symbols_classified（= sum(kind_sym_counts.values())）",
+    "P4_coverage_asymmetry": "C5 读数：边轴有独立分母 + 真门（kind_conserved，分母 n_weak_edges 由独立计数得来）；符号/面轴的**全部**总数均为自证，且无门",
+    "P5_confusable_pair": "C6 命中一对跨域总数，相对差 <1%",
+    "P6_qualifier_collision_hit": "C7 命中质词 weak（边轴弱边域 63 vs 符号轴全域 574）",
+    "P7_ratio_fields": "真归档产物中比值类字段数 = 0 ⇒ C8 在真跑上**未被行使**，仅由夹具行使（诚实边界，不得声称已验证）",
+    "P8_guard_judgement_power": "自检 10/10：6 个注入缺陷夹具全部被抓（C2/C3/C4/C6/C7/C8），2 个合法夹具（含命名/域与真文件不同者）全部不误杀，缺输入判 exit 3，单轴判 vacuous",
+    "P9_independent_ground_truth": "弱边符号槽真值 = 90，由**两条互不依赖的归档路径**复算一致（weak_kind_table.json 逐边符号表；attribution_q10.json edge_weak_list）——与 574 的比值 6.378×"
+  },
+  "thresholds": {
+    "confusable_relative_gap": 0.05,
+    "note": "5% 为预注册常量；真跑命中的一对相对差 0.17%（574 vs 575）"
+  },
+  "non_fabrication": "若 C1 重放与登记读数不符，本轮判测量失败（exit 3）并如实记录，不得调参使其相符"
+}
