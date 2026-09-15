@@ -1,0 +1,24 @@
+EXP1-Q13 index-scope-out 裁定落地 · verdict=PASS · L1-static (真跑: 真归档语料 + 真树文件读取; 无编译/测试/AOT ⇒ 不得报 L3/L4)
+
+语言集 (源码派生): .cs  @ probe_v260.py:78
+弱边 63 = in-scope 57 + index_scope_out 6  by_ext={'.py': 6}
+kind 重算 {'cross_file': 33, 'other': 17, 'named_fact': 11, 'comment_only': 2}  (登记 {'cross_file': 33, 'other': 17, 'named_fact': 11, 'comment_only': 2})
+分母双栏: 登记 63 | 剔除 scope-out 57   delta_applied=false
+收益上限 (词法代理): 转强边 6 / 6 ⇒ 弱 63→57, 强 365→371
+  - docs/plans/v0.25.0-r399-probe-hardening-and-kpi.md:14 → eval/probe/tasks.py syms=['PROGRAM_FAMILIES'] promote=True evidence=['PROGRAM_FAMILIES']
+  - docs/plans/v0.25.0-r399-probe-hardening-and-kpi.md:15 → eval/probe/tasks.py syms=['MATH_FAMILIES'] promote=True evidence=['MATH_FAMILIES']
+  - docs/plans/v0.25.0-r399-probe-hardening-and-kpi.md:17 → eval/probe/run_probe.py syms=['KeyError', 'REF_SRC'] promote=True evidence=['REF_SRC']
+  - docs/plans/v0.40.0-r419-probe-multiturn.md:10 → eval/probe/run_probe.py syms=['solve_agent'] promote=True evidence=['solve_agent']
+  - docs/plans/v0.40.0-r419-probe-multiturn.md:16 → eval/probe/run_probe.py syms=['solve_agent'] promote=True evidence=['solve_agent']
+  - docs/reports/r399/r399-m6-hardening-and-kpi-datapoints.md:35 → eval/probe/tasks.py syms=['HARD_INPUTS'] promote=True evidence=['HARD_INPUTS']
+
+[PASS] C10_exit_semantics
+[PASS] C1_conservation
+[PASS] C2_zero_regression
+[PASS] C3_ruling_A_landed
+[PASS] C4_language_set_from_source
+[PASS] C5_nontrivial
+[PASS] C6_payoff_ceiling
+[PASS] C7_determinism
+[PASS] C8_negative_controls
+[PASS] C9_vacuous

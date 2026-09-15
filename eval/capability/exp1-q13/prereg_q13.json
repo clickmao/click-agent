@@ -1,0 +1,60 @@
+{
+  "round": "EXP1-Q13",
+  "note": "本文件在**本轮的定量读数之前**写盘 (mtime 早于 verdict_q13.json / evidence_q13.txt)。裁定与判据在此刻冻结, 读数后不得改。不占主线轮号 (对侧活跃执行体持 R449 轮号 + dotnet/llama 窗口 ⇒ 本侧零 dotnet、不动 src/、不动 eval/rover/r449)。",
+  "predecessor": "eval/capability/exp1-q11/ (other 桶边级分布: target_non_cs 6 / pure_code_mention 9 / mixed_rung 2; 口径候选 caliber.index_scope_out_edges=6, weak_minus_index_scope_out=57, delta_applied_to_registered_caliber=false)",
+  "target": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+  "step": "L.7 下轮候选 #1 = 裁定「非声明语料根内扩展名 (index-scope-out) 的被引文件」如何处置, 并把裁定落成**仪器一等不变量 + 一次真跑** (口径候选不改判定, 分档收益先量天花板)",
+  "ruling_frozen_before_reading": {
+    "阶段A_now": "登记口径**不动** (用户面弱边分母仍记 63)。新增一等桶 `index_scope_out` + 分母**双栏并列** (63 | 63-n) 与 `delta_applied_to_registered_caliber=false`。该边界只作**口径候选登记**, 不改 v2.6.0 任何 verdict、不改已登记口径。理由: 单方面改口径 ⇒ 前后读数不可比 (跨轮可比性是一等资产)。",
+    "阶段B_deferred": "「扩声明索引语料根到可配语言集」**不入本轮**, 必须作**独立预注册轮次** —— 它会改 §分母与分子 (弱 63→63-n, 强 365→365+m), 改变前后可比性。其主题**已有用户钦定背书**: R447 语言无关令 (.py 等被引文件 = in-scope 代码目标; 索引/判定器语言集须**可配** + 机检**无硬编码扩展名**)。本轮只为其产出「天花板/收益」读数, 不实现。",
+    "判据形态依据": "天花板先于实现: 先量「扩展语料根最多能改多少条读数」, 再决定是否值得一轮实现 (占比 < 目标 ⇒ 单类杠杆不够 ⇒ 换靶或组合)。"
+  },
+  "instrument": {
+    "version": "2.7.0 (本轮**新增** 分析器 eval/capability/exp1-q13/index_scope_out_classify.py; v2.6.0 探针**零改动**)",
+    "input": "eval/capability/exp1-q10/citations.jsonl (945 条 live 引用记录, 与 Q11 同一输入 ⇒ 可比性冻结)",
+    "language_set_derivation": {
+      "禁硬编码": "分析器**不得**写死 '.cs' 字面量作为语言集 —— 语言集必须从仪器源码派生 (probe_v260.py 的 CODE_GLOBS 声明行), 派生失败 ⇒ 判 3 (测量失败), 不回落默认值。",
+      "source_fact": "eval/capability/exp1-q10/probe_v260.py:78: CODE_GLOBS = [\"src/**/*.cs\"]",
+      "source_fact_impl": "probe_v260.py:628 declaration_index(): for rel in repo.glob(\"src/**/*.cs\") ⇒ 非该语言集的被引文件在声明面上**结构性不可达**"
+    },
+    "真树读取": "index_scope_out 边的「收益」读数需**读真实被引文件**(仓库内真实路径), 做**词法声明扫描** (不建 AST): 这是**代理量**, 必须与 AST 级结论分开标注。"
+  },
+  "axioms": [
+    "只读已落盘字段 (edge_kind / edge_strength / symbols / kind_per_symbol / resolved) + 真树文件读取; 不做 AST、不新增语料根、不改判任何 verdict",
+    "证据等级上限 L1-static: 本轮无编译/测试/AOT ⇒ 不得对外报 L3/L4 (真跑 = 真语料 + 真树读取, 但无构建/测试背书)",
+    "零产品源码改动; 不跑 dotnet (对侧活跃); 不占轮号; 不改 v2.6.0 仪器",
+    "词法声明扫描 = 代理 (可能误判: 多行声明/动态生成/别名导入); 判读时标 proxy=true, 不作强宣称"
+  ],
+  "criteria": {
+    "C1_conservation": "本分析器重算的四类 kind 计数 (cross_file 33 / other 17 / named_fact 11 / comment_only 2) 与 Q10 已登记聚合逐位相同 ∧ Σ kind == 弱边 63; 分桶守恒 Σ index_scope_out ∪ ¬index_scope_out == 63, 每条弱边恰一桶",
+    "C2_zero_regression": "strong == 365 ∧ other == 17 ∧ target_non_cs 类计数 == 6, 与 Q11 登记逐位相同 (本轮是**同输入重算**, 不是新读数)",
+    "C3_ruling_A_landed": "index_scope_out 桶计数 == 6 (与 Q11 caliber.index_scope_out_edges 一致) ∧ 分母双栏两值都在产物中 (63 | 57) ∧ delta_applied_to_registered_caliber == false",
+    "C4_language_set_from_source": "语言集由源码派生成功且 == {'.cs'}; 负控: 用**改窄了语言集声明的源码副本**跑同一分析器 ⇒ 派生集随之变化 (证明非硬编码), 副本改动不落真源码",
+    "C5_nontrivial": "两桶均非空 (index_scope_out == 6 > 0 ∧ in-scope 弱边 == 57 > 0) —— 恒同桶 ⇒ 判测量失败先查仪器",
+    "C6_payoff_ceiling": "为每个 index_scope_out 边报「若语料根扩到该语言集, 该边会否转强」的**上限**读数: 边级 m (转强数 ≤ 6) ⇒ 弱分母 63→63-m、强 365→365+m; 并显式区分**内置符号** (如运行时内置异常名) 不作声明面证据",
+    "C7_determinism": "两跑输出逐字节相同 (sha256 相等), 且**非平凡**: 两桶读数互异 (跨桶不得同值)",
+    "C8_negative_controls": "(a) 目标扩展名 ∈ 语言集的边**不得**被判 index_scope_out; (b) 注入虚拟边 (.py 目标 + declared_member rung) ⇒ 必须落「语料根扩后可转强」预测桶, 且**不得**被算作现值 strong (现状与预测面分得开); (c) C4 的语言集派生负控",
+    "C9_vacuous": "index_scope_out 桶 == 0 ⇒ 该轴 vacuous pass, 但显式记 vacuous=true (不得静默当通过)",
+    "C10_exit_semantics": "0 判据全过 / 2 判据失败(真红) / 3 测量或环境失败(弃权) —— 三者不同码; 缺输入/派生失败/真树读取全失败一律走 3, 不判红"
+  },
+  "predictions_falsifiable": {
+    "P1": "C1/C2 全过: 重算四类计数与 Q10 登记逐位相同, strong 365 / other 17",
+    "P2": "index_scope_out == 6 且全部为 .py 目标 (2 个文件: eval/probe/tasks.py 3 边, eval/probe/run_probe.py 3 边)",
+    "P3": "源码派生语言集 == {'.cs'} 且派生行号 == probe_v260.py:78",
+    "P4": "payoff 上限 m 的**边界**: 转强候选**至多** 6 边, 且其中**非内置符号**在自身文件内被词法声明命中的边数 >= 3",
+    "P5": "C7 确定性两跑 sha 相等",
+    "P6": "C8 三条负控全过 (含 C4 副本负控)"
+  },
+  "exclusions": [
+    "不实现语言集可配 / 不扩声明索引语料根 (阶段B, 独立预注册轮次)",
+    "不改 v2.6.0 探针源码 (语言集负控用**副本**)",
+    "不改登记表/证据映射 (改则必须立刻形式校验, 当前对侧活跃 ⇒ 不占 dotnet 窗口)",
+    "不改 src/、不跑 dotnet、不占轮号、不动 eval/rover/r449",
+    "不重跑 v2.6.0 全量探针 (输入 = Q10 已归档 citations.jsonl)"
+  ],
+  "honest_boundaries_preregistered": [
+    "词法声明扫描是代理量: 别名导入 / 动态生成 / 多行声明会误判 ⇒ 收益读数标 proxy, 标为**上限估计**而非实测转强数; 阶段B 实现后必须用 AST 级重测复核本上限",
+    "「非 .cs 目标不可达 strong」是**从源码事实推得** (CODE_GLOBS + declaration_index 实现) + 语料级零反例, 不是跨语言索引实验结论",
+    "docs 语料是活动靶: 树内 .py 文件可能随开发漂移; 本轮读数绑定输入指纹 (citations.jsonl sha256) 与文件行号快照"
+  ]
+}
