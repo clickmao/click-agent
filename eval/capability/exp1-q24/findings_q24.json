@@ -1,19 +1,26 @@
 {
   "round": "EXP1-Q24",
   "ts": "2026-09-16T01:45+08:00",
+  "closed_ts": "2026-09-16T02:00+08:00",
   "owner": "60m capability self-check job (不占主线轮号)",
   "source": "附录 X §X.5 候选② —— 承接 Q23 发现 3(r444.prefilter-precheck 证据不可复现)",
   "peer_state_at_measure": {
     "peer_job": "9a97763d5fcd (30m 主线循环) 正在跑 R467 臂阵 Arole/Aroff/R/R2 + settle",
-    "mem_available_mb": 1097,
-    "decision": "本侧不跑 dotnet / 不占轮号 (仅 python 只读器具)"
+    "peer_battery_end": "01:47:52 (ALL rc=0); 对侧随后自跑形式校验, 01:54 结束",
+    "mem_available_mb_at_measure": 1097,
+    "decision": "测量阶段: 本侧不跑 dotnet / 不占轮号 (仅 python 只读器具); 结算阶段(窗口开)才跑形式校验"
   },
   "prereg": "eval/capability/exp1-q24/prereg_q24.json",
   "artifacts": {
     "fresh_primary": "eval/capability/exp1-q24/runs/fresh-a.json (sha12 b74e791ccca7, 30690 B)",
-    "fresh_primary_repeat": "eval/capability/exp1-q24/runs/fresh-b.json",
+    "fresh_primary_repeat": "eval/capability/exp1-q24/runs/fresh-b.json (逐位相同)",
     "fresh_neg_control": "eval/capability/exp1-q24/runs/fresh-neg.json (sha12 ec57f5664141, 31207 B)",
-    "committed_artifact_archived": "eval/capability/exp1-q24/runs/head-committed-negcontrol.json"
+    "committed_control_archived": "eval/capability/exp1-q24/runs/head-committed-negcontrol.json",
+    "tracked_evidence_regenerated": "eval/rover/r444/precheck-prefilter.json (sha12 b74e791ccca7 —— 真值产物)",
+    "formcheck_logs": [
+      "eval/capability/exp1-q24/formcheck_q24.log",
+      "eval/capability/exp1-q24/formcheck_q24_postregen.log"
+    ]
   },
   "judgments": {
     "A1_determinism_and_nontriviality": {
@@ -29,23 +36,23 @@
     },
     "A3_input_surface": {
       "pass": true,
-      "实测": "输入面与登记 16 文件同集; 目录 mtime 全部 ≤ 08:21(早于证据提交 09:38)、run 目录集合与 HEAD 证据内 runs[].dir 8 条逐条相同",
+      "实测": "输入面与登记 16 文件同集; r441/r443 run 目录 mtime 全 ≤ 08:21(早于证据提交 09:38); runs[].dir 8 条与 HEAD 证据逐条相同",
       "结论": "H2(样本增长/输入漂移) 否证"
     },
     "A4_cause_attribution": {
       "pass": true,
       "定因": "H1 —— 已提交证据 = 控制臂产物",
-      "硬证据": "本轮 --neg-control 产物 sha12 ec57f5664141 == git show HEAD:eval/rover/r444/precheck-prefilter.json sha12 ec57f5664141 == 工作树同文件 sha12 ⇒ 三者逐字节同一(31207 B)",
-      "次级证据": "该文件含负控注入串 4 次(4 个 M20 臂各 1 次), criteria.P1_no_counterexample.pass=false、verdict=NOT_SEPARABLE"
+      "硬证据": "本轮 --neg-control 产物 sha12 ec57f5664141 == git show HEAD:eval/rover/r444/precheck-prefilter.json sha12 == 工作树同文件 sha12 ⇒ 三方逐字节同一(31207 B)",
+      "次级证据": "该文件含负控注入串 4 次(4 个 M20 臂各 1 次); criteria.P1_no_counterexample.pass=false、verdict=NOT_SEPARABLE"
     },
     "A5_conclusion_direction_recheck": {
       "pass": true,
       "结论": "R444 已落库结论(¬Ack⇒Pass 可证等价 / 前置门)与**真值产物(主臂)一致**(反例 0 ⇒ SEPARABLE); 与**已提交证据文件**相反(NOT_SEPARABLE)",
-      "定性": "产品缺陷=无; 证据绑定缺陷=有(登记表 L4 行 evidence_path 指向控制臂产物)"
+      "定性": "产品缺陷=无; 证据绑定缺陷=有(登记表 L4 行 evidence_path 曾指向控制臂产物)"
     },
     "A6_negative_controls": {
       "pass": true,
-      "nc_cmd": "--neg-control 实测 检出反例 4 ≥1, rc=2 ⇒ 注入必检成立",
+      "nc_cmd": "--neg-control 实测 检出反例 4 ≥1, rc=2",
       "nc_cmd2": "--grid-dir /nonexistent-grid-dir 实测 rc=3 fail-closed 且**未落盘任何产物**(wrapper 读不到输出文件即此证据)"
     },
     "A7_conservation": {
@@ -59,15 +66,16 @@
       "posthoc_correction": {
         "不变量": "len(rows) == len(c1_turns_with_gate) 且 rows[i].turn == c1_turns_with_gate[i]",
         "实测": "M20: rows.turn == [1,2,4,5,6,7,8,9,10,11,12,13,14,15,16,17,19,20] = c1_turns_with_gate(18 条, 缺 3/18 两轮)",
-        "性质": "**预言错误**(非被测错误); 按判据纪律: 预注册判据照原样 FAIL, 修正形态单列 checks_posthoc, 不改写 A8 的原判定"
+        "性质": "**预言错误**(非被测错误); 预注册判据照原样 FAIL, 修正形态单列 checks_posthoc, 不改写原判定"
       }
     }
   },
   "mechanism": {
     "name": "控制臂与主臂共用同一落盘路径 ⇒ 控制臂静默覆盖主臂证据",
-    "code_fact": "eval/rover/r444/precheck_prefilter.py: main() 中 --neg-control 只改注入内容与退出码(rc=2), OUT 常量对两臂**同一路径**; 产物 JSON 顶层键 {probe,runs,channels,criteria,verdict} 中**无 arm/mode 字段** ⇒ 该文件不自证属于哪一臂",
+    "code_fact": "eval/rover/r444/precheck_prefilter.py: main() 中 --neg-control 只改注入内容与退出码(rc=2), OUT 常量对两臂**同一路径**; 产物顶层键 {probe,runs,channels,criteria,verdict} 中**无 arm/mode 字段** ⇒ 该文件不自证属于哪一臂",
     "触发序列": "验证负控(rc=2) → 覆盖主臂证据 → 提交时把控制臂产物当主证据入库",
-    "可比性": "同族既有教训(派生件名必须由批次标签参数化, 禁默认后缀)在本器具上未被落实"
+    "可比性": "同族既有教训(派生件名必须由批次标签参数化, 禁默认后缀)在本器具上未被落实",
+    "状态": "**未修** —— 根因修法(OUT 名按臂参数化 + 产物内 arm 字段 + 登记表重绑)需与形式校验同轮原子完成, 列为下轮候选①"
   },
   "corrected_readings": {
     "verdict": "SEPARABLE",
@@ -77,26 +85,37 @@
     "per_run_M20_avoidable": 10,
     "对照(控制臂)": {"verdict": "NOT_SEPARABLE", "P1": 4, "P3_avoidable": 71, "saved_ratio": 0.7172, "per_run_M20_avoidable": 11}
   },
-  "doc_registry_conflict": {
-    "docs_prose": "eval/rover/r444/README-evidence.md:30 「P1 反例 = 0/8 运行」 ⇒ 与真值产物一致",
-    "registry_row": "docs/verification-registry.json:1213-1223 id=r444.separability-precheck level=L4 evidence_path=eval/rover/r444/precheck-prefilter.json ⇒ 指向控制臂产物(verdict=NOT_SEPARABLE)",
-    "instruments_row": "eval/capability/instruments.json:159 r444.prefilter-precheck expect_rc=0 evidence_path=eval/rover/r444/precheck_prefilter.py ⇒ 指向脚本, 不受影响",
-    "conflict_statement": "同一能力的三处(文档散文 / 能力登记表证据 / 器具登记表)中, 能力登记表的证据文件与另两处相反; 以**真值产物**为准"
+  "actions_taken": {
+    "evidence_regeneration": "把真值产物写入被跟踪路径 eval/rover/r444/precheck-prefilter.json (sha12 b74e791ccca7; 注入串 0 次) —— 定因确证后执行, 非猜测性覆写",
+    "form_check": {
+      "cmd": "env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR dotnet test src/agent.tests/agentframework.tests.csproj --filter \"FullyQualifiedName~VerificationForm|FullyQualifiedName~SkillGeneralization|FullyQualifiedName~DevPlanDocRef\" --nologo -v q",
+      "exit": 0,
+      "execution_check": "Failed: 0, Passed: 13, Total: 13 (两次都 >0 执行数 ⇒ 非假绿)",
+      "runs": [
+        {"when": "01:57 (regen 前, 含附录 Y 与 exp1-q24 记录)", "reading": "13/13, 362 ms", "log": "eval/capability/exp1-q24/formcheck_q24.log"},
+        {"when": "02:00 (regen 后)", "reading": "13/13, 419 ms", "log": "eval/capability/exp1-q24/formcheck_q24_postregen.log"}
+      ],
+      "口径注": "指令写「10/10」为历史值; 实测 13/13 ⇒ 口径已增长(新 Form 测试并入), 以实测为准, 不按旧值判红",
+      "gate": "对侧 R467 电池 01:47:52 收尾 + 关停残留构建服务后 mem 2770MB 过闸 ⇒ 窗口开"
+    }
   },
   "non_actions_this_round": [
     "未改产品代码(src/** 零改动)",
-    "未改器具字节(改 sha 会连带登记表重绑, 必须与形式校验同轮原子完成 —— 见候选③)",
-    "未覆写已提交证据文件 eval/rover/r444/precheck-prefilter.json(Q23 曾复原 HEAD; 本轮保持工作树在该文件上零改动, 归因证据已归档到 exp1-q24/runs/)",
-    "未占主线轮号 / 未跑 dotnet / 未写 kpi.jsonl(单轮探针不入能力台账, 防污染趋势口径)"
+    "未改器具字节(sha 保持 ea8aab20b377; 改它会连带登记表重绑 ⇒ 与形式校验同轮原子, 见候选①)",
+    "未占主线轮号 / 未写 kpi.jsonl(单轮探针不入能力台账, 防污染趋势口径)"
   ],
   "carry_over": {
-    "item": "形式校验 10/10 (dotnet test --filter VerificationForm|SkillGeneralization|DevPlanDocRef)",
-    "gate": "对侧 R467 臂阵活跃 + MemAvailable 1097MB < 2600MB 门槛",
-    "since": "Q23 结转 (现为第 2 轮结转)"
+    "item": "形式校验 10/10 → 实测 13/13",
+    "status": "**已清账**(本轮窗口内跑两次, 均绿)",
+    "history": "Q23 起结转 2 轮(对侧臂阵活跃 + MemAvailable 775MB ≪ 2600MB 门槛)"
   },
+  "gate_lessons": [
+    "自检闸门读数必须带单位: 本轮首版轮询把 /proc/meminfo 的 kB 当 MB 比较(2155656 -ge 2600 恒真) ⇒ 若未先看 busy 计数, 会得到「内存已过闸」的**假通过**; 单位须写进字段名/printf 格式化。",
+    "pgrep 自匹配: `pgrep -f 'run_arm.sh|settle_r467'` 会命中调用者自身的命令行(实测 busy=2 全为自匹配) ⇒ 判断对侧活跃必须用 `pgrep -af` 后肉眼/裁剪核对, 或括号技巧 + 排除自身 pid。"
+  ],
   "next_candidates": [
-    "①(A) 形式校验 10/10 —— 待对侧空闲窗口(第一优先, 结转 2 轮)",
-    "②(B) 器具硬化: OUT 名按臂参数化(main-negcontrol / main) + 产物内加 arm/mode 字段 + 登记表 evidence_path 重绑真值产物 + 重生已提交文件 ⇒ 与形式校验**同轮原子**完成",
-    "③(C) 附录 V §V.6 其余遗留 / relocated 面正例语料"
+    "①(A) 器具硬化 + 证据重绑(原子一轮): OUT 名按臂参数化 + 产物内 arm/mode 字段 + instruments.json/verification-registry.json 重绑 + 重生已提交文件 ⇒ 与形式校验同轮完成(根因修法, 本轮已定因未修)",
+    "②(B) 登记表加 evidence_generated_with 字段(证据 ↔ 器具/输入 版本绑定)",
+    "③(C) 附录 V §V.6 其余遗留 / relocated 面正例语料(eval/rover/r443 现场)"
   ]
 }

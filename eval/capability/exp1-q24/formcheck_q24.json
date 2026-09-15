@@ -1,0 +1,36 @@
+{
+  "round": "EXP1-Q24",
+  "cmd": "env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR dotnet test src/agent.tests/agentframework.tests.csproj --filter \"FullyQualifiedName~VerificationForm|FullyQualifiedName~SkillGeneralization|FullyQualifiedName~DevPlanDocRef\" --nologo -v q",
+  "note": "原始 .log 被 .gitignore 忽略(不入库); 本文件为定长读数摘要, 原始日志留在工作树",
+  "runs": [
+    {
+      "log": "eval/capability/exp1-q24/formcheck_q24.log",
+      "bytes": 26181,
+      "sha12": "897f67471f80",
+      "failed": 0,
+      "passed": 13,
+      "skipped": 0,
+      "total": 13,
+      "duration": "362",
+      "exec_gt0": true,
+      "test_dll": "Test run for /home/agentuser/AgentFramework/src/agent.tests/bin/Debug/net10.0/agentframework.tests.dll (.NETCoreApp,Version=v10.0)"
+    },
+    {
+      "log": "eval/capability/exp1-q24/formcheck_q24_postregen.log",
+      "bytes": 899,
+      "sha12": "0c91e135f70a",
+      "failed": 0,
+      "passed": 13,
+      "skipped": 0,
+      "total": 13,
+      "duration": "419",
+      "exec_gt0": true,
+      "test_dll": "Test run for /home/agentuser/AgentFramework/src/agent.tests/bin/Debug/net10.0/agentframework.tests.dll (.NETCoreApp,Version=v10.0)"
+    }
+  ],
+  "gate": {
+    "peer_battery_end": "2026-09-16T01:47:52 (ALL rc=0)",
+    "build_server_shutdown": "Roslyn VBCSCompiler 504MB RSS 释放后 MemAvailable 2770MB > 2600MB 闸"
+  },
+  "口径注": "历史/指令记 10/10; 实测 13/13 (计数随新 Form 测试增长)"
+}

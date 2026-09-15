@@ -45,14 +45,8 @@
       "n_r1_rows": 17,
       "n_rejects": 3,
       "skips": 7,
-      "avoidable_r1": 11,
-      "counterexamples": [
-        {
-          "turn": 7,
-          "msg": "把这个改成另一种方式",
-          "verdict": "Skip"
-        }
-      ],
+      "avoidable_r1": 10,
+      "counterexamples": [],
       "rows": [
         {
           "turn": 1,
@@ -104,7 +98,7 @@
           "family": "ack",
           "verdict": "Skip",
           "basis": "gate:skip→local",
-          "mech_ack": false,
+          "mech_ack": true,
           "want": "skip",
           "is_r1": true
         },
@@ -754,14 +748,8 @@
       "n_r1_rows": 17,
       "n_rejects": 3,
       "skips": 7,
-      "avoidable_r1": 11,
-      "counterexamples": [
-        {
-          "turn": 7,
-          "msg": "把这个改成另一种方式",
-          "verdict": "Skip"
-        }
-      ],
+      "avoidable_r1": 10,
+      "counterexamples": [],
       "rows": [
         {
           "turn": 1,
@@ -813,7 +801,7 @@
           "family": "ack",
           "verdict": "Skip",
           "basis": "gate:skip→local",
-          "mech_ack": false,
+          "mech_ack": true,
           "want": "skip",
           "is_r1": true
         },
@@ -975,14 +963,8 @@
       "n_r1_rows": 17,
       "n_rejects": 3,
       "skips": 7,
-      "avoidable_r1": 11,
-      "counterexamples": [
-        {
-          "turn": 7,
-          "msg": "把这个改成另一种方式",
-          "verdict": "Skip"
-        }
-      ],
+      "avoidable_r1": 10,
+      "counterexamples": [],
       "rows": [
         {
           "turn": 1,
@@ -1034,7 +1016,7 @@
           "family": "ack",
           "verdict": "Skip",
           "basis": "gate:skip→local",
-          "mech_ack": false,
+          "mech_ack": true,
           "want": "skip",
           "is_r1": true
         },
@@ -1196,14 +1178,8 @@
       "n_r1_rows": 17,
       "n_rejects": 3,
       "skips": 7,
-      "avoidable_r1": 11,
-      "counterexamples": [
-        {
-          "turn": 7,
-          "msg": "把这个改成另一种方式",
-          "verdict": "Skip"
-        }
-      ],
+      "avoidable_r1": 10,
+      "counterexamples": [],
       "rows": [
         {
           "turn": 1,
@@ -1255,7 +1231,7 @@
           "family": "ack",
           "verdict": "Skip",
           "basis": "gate:skip→local",
-          "mech_ack": false,
+          "mech_ack": true,
           "want": "skip",
           "is_r1": true
         },
@@ -1377,17 +1353,17 @@
   "channels": {},
   "criteria": {
     "P1_no_counterexample": {
-      "pass": false,
-      "counterexamples": 4
+      "pass": true,
+      "counterexamples": 0
     },
     "P2_channels_agree": {
       "pass": false
     },
     "P3_avoidable_r1_calls": {
       "total_r1_rows": 99,
-      "avoidable": 71,
-      "saved_ratio": 0.7172
+      "avoidable": 67,
+      "saved_ratio": 0.6768
     }
   },
-  "verdict": "NOT_SEPARABLE"
+  "verdict": "SEPARABLE"
 }
