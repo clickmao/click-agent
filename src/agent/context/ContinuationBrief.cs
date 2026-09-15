@@ -167,9 +167,7 @@ public static class ContinuationBrief
             for (var i = 0; i < arts.Count; i++)
             {
                 if (i > 0) sb.Append(" | ");
-                sb.Append(arts[i].Name);
-                if (arts[i].FirstLine.Length > 0) sb.Append('=').Append(arts[i].FirstLine);
-                sb.Append(" (").Append(arts[i].Bytes).Append("B)");
+                AppendFact(sb, arts[i]);
             }
             // 如实标注截断: 免得模型自己发现"清单被截断"并写进回复 (R458 run1 实测)
             if (total > arts.Count)
@@ -219,13 +217,27 @@ public static class ContinuationBrief
         {
             if (i > 0) sb.Append('、');
             sb.Append(arts[i].Name);
-            if (arts[i].FirstLine.Length > 0) sb.Append('=').Append(arts[i].FirstLine);
+            if (arts[i].Bytes == 0 && arts[i].FirstLine.Length == 0) sb.Append("=(空)");
+            else if (arts[i].FirstLine.Length > 0) sb.Append('=').Append(arts[i].FirstLine);
         }
         if (total > arts.Count) sb.Append(" 等 ").Append(total).Append(" 项");
         sb.Append("。你要接着哪一项？\n");
         var menu = BuildMenu(arts, total);
         for (var i = 0; i < menu.Count; i++) sb.Append(i + 1).Append(". ").Append(menu[i]).Append('\n');
         return sb.ToString().TrimEnd();
+    }
+
+    /// <summary>
+    /// R461: 单条产物事实的渲染 (块与问句共用) —— **零字节文件如实标 "(空)"**。
+    /// 实发证据 (R460 run T4): 0 B 产物未标空 ⇒ 模型改用记忆里的假值宣称"已写入 chars=15" ⇒ 产物不落地。
+    /// 诚实边界: 标空只让缺口**可见**, 不阻止模型编造 (编造面由产物收口闸单独负责)。
+    /// </summary>
+    private static void AppendFact(StringBuilder sb, ArtifactFact a)
+    {
+        sb.Append(a.Name);
+        if (a.Bytes == 0 && a.FirstLine.Length == 0) sb.Append("=(空)");
+        else if (a.FirstLine.Length > 0) sb.Append('=').Append(a.FirstLine);
+        sb.Append(" (").Append(a.Bytes).Append("B)");
     }
 
     /// <summary>

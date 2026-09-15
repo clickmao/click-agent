@@ -1,0 +1,43 @@
+{
+ "round": "R461",
+ "theme": "契约声明不上前台 + 零字节产物可见 + 命中率/token 逐块收",
+ "user_order_verbatim": [
+  "r458回复要精炼，并且后续选择 给出 menu问询了么",
+  "而且命中率和tokens都不达标"
+ ],
+ "env": {
+  "env_dir": "/tmp/r461_env",
+  "binary": "/tmp/pub_r461/agenthost",
+  "fixture_source": "/tmp/r457_env (pristine 8 文件, 与 R458/R460 逐字节同源)",
+  "adapter_dump_full": "1 (实发全量消息落盘 full-*.json; 不重建 prompt)"
+ },
+ "frozen_baselines": {
+  "R458": {"t5_chars": 241, "t6_chars": 146, "calls": 17, "prompt_sum": 54927, "hit_pct": 90.4, "steady_hit_pct": 91.6, "miss_avg": 310},
+  "R460": {"t5_chars": 160, "calls": 13, "prompt_sum": 39863, "hit_pct": 85.1, "steady_hit_pct": 90.2, "miss_avg": 301.9, "products_ok": 3},
+  "codex_frozen": {"calls": 13, "prompt_sum": 91002, "hit_pct": 96.6}
+ },
+ "criteria": {
+  "P1_contract_not_front": {
+   "claim": "任何一轮的前台回复里 0 条契约声明行 (clickproof / premise … / goal … / no_formal: …)",
+   "assert": "leak_lines_total == 0",
+   "negative_control": "同一判据在 R460 落盘 turns 上必须 >0 (证明判据有判别力, 不是恒真)"
+  },
+  "P2_empty_artifact_visible": {
+   "claim": "0 字节产物若进了承接块, 必须标 (空), 不留给模型编造空间",
+   "assert": "blocks_with_empty_fact == blocks_marking_empty"
+  },
+  "P3_tokens": {
+   "claim": "prompt ∑ ≤ 39,863 (R460 非回退) 且远端调用 ≤ 13",
+   "assert": "prompt_sum <= 39863 and calls <= 13"
+  },
+  "P4_cache_hit": {
+   "claim": "稳态 (2..n) 命中率 ≥ 90.2% (R460 非回退); 目标 ≥ 93%",
+   "assert": "steady_hit_pct >= 90.2",
+   "arithmetic_ceiling_note": "hit% = 1 − 每轮新内容/前缀。本跑平均前缀 ≈ 3,000 tok ⇒ 97% 需要每轮新内容 ≤ ~92 tok ≈ 275 字符 (召回块+记忆块+承接块合计)。写进报告, 不得隐去。"
+  },
+  "P5_no_regress": {
+   "claim": "产物 4/4; T6 内部术语 0; T5 含编号菜单且首项接地真实产物名; 磁盘级伪造 0",
+   "assert": "products_ok == 4 and jargon == 0 and menu_n >= 1 and invented == 0"
+  }
+ }
+}

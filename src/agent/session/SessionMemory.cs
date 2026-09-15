@@ -11,9 +11,13 @@ namespace agent.session;
 /// </summary>
 public sealed class SessionMemory
 {
-    /// <summary>长期记忆上限字符数 (默认 1000, 构造可调; 硬上限 10000 防滥用)</summary>
-    public const int DefaultMaxChars = 1000;
+    /// <summary>长期记忆上限字符数 (默认 400, 构造可调; 硬上限 10000 防滥用)。
+    /// R461: 默认 1000 → 400 —— 该块每轮重渲染, 是每轮新内容 (miss) 的固定成本; 400 字仍是完整目标句 + 关键事实。</summary>
+    public const int DefaultMaxChars = 400;
     public const int HardMaxChars = 10000;
+
+    /// <summary>R461: RenderForPrompt 里【已完成】列的条数上限 (原 4)。</summary>
+    public const int MilestonesInPrompt = 2;
 
     private readonly int _maxChars;
     private readonly object _lock = new();
@@ -132,7 +136,8 @@ public sealed class SessionMemory
                 if (Goal.Constraints.Count > 0)
                     sb.Append("【约束】").AppendLine(string.Join("; ", Goal.Constraints));
                 if (Goal.Milestones.Count > 0)
-                    sb.Append("【已完成】").AppendLine(string.Join("; ", Goal.Milestones.TakeLast(4)));
+                    // R461: 里程碑 4 → 2 条 (实测该块每轮全是新内容; 任务方向已表达同一信息)。
+                    sb.Append("【已完成】").AppendLine(string.Join("; ", Goal.Milestones.TakeLast(MilestonesInPrompt)));
             }
             if (!string.IsNullOrEmpty(LongTermMemory))
                 sb.Append("【长期记忆】").Append(LongTermMemory);

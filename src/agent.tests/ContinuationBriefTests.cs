@@ -323,4 +323,36 @@ public sealed class ContinuationBriefTests
         Assert.True(PlanResumeService.CompactQuestion(longQ, 20).Length <= 20);
         Assert.Equal(string.Empty, PlanResumeService.CompactQuestion(null));
     }
+
+    // ── R461: 零字节产物必须如实标 "(空)", 不给模型留编造空间 ─────────────
+
+    [Fact]
+    public void Empty_Artifact_Is_Marked_Empty_In_Block_And_Ask()
+    {
+        var facts = new[]
+        {
+            new ArtifactFact("stats.txt", 0, string.Empty),
+            new ArtifactFact("count.txt", 4, "4"),
+        };
+
+        var block = ContinuationBrief.BuildBlock(facts, 2);
+        Assert.Contains("stats.txt=(空)", block);
+        Assert.Contains("count.txt=4", block);
+
+        var ask = ContinuationBrief.BuildAsk("继续", facts, 2);
+        Assert.Contains("stats.txt=(空)", ask);
+    }
+
+    /// <summary>
+    /// R461 (命中率): 每轮注入的"新内容"是 miss 的唯一来源 —— 这些预算常量是命中率红线的**算术杠杆**,
+    /// 回退任何一个都会把命中率打回去。它们不是风格参数, 所以用机检锁住 (改了必须走一轮重新测量)。
+    /// </summary>
+    [Fact]
+    public void R461_Injection_Budget_Locks()
+    {
+        Assert.True(agent.context.ContextAssembler.MemorySourceBudgetTokens <= 120);
+        Assert.True(agent.session.SessionMemory.DefaultMaxChars <= 400);
+        Assert.True(agent.session.SessionMemory.MilestonesInPrompt <= 2);
+        Assert.True(agent.registry.NextTurnForecast.HeaderTaskPreviewChars <= 24);
+    }
 }

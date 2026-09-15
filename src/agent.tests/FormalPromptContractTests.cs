@@ -111,4 +111,58 @@ public sealed class FormalPromptContractTests
         Assert.False(FormalPromptContract.IsPresent([ClickRoverSegmentPlugin.PluginId + ".extra"]));
         Assert.False(FormalPromptContract.IsPresent(["x" + ClickRoverSegmentPlugin.PluginId]));
     }
+
+    // ── R461: 契约声明不上前台 (契约是给本地验证器看的, 用户不该读到) ──────
+
+    [Fact]
+    public void SplitFacing_Removes_Fenced_Block()
+    {
+        var text = "已写入 first.txt (3 行)。\n\n```" + FormalPromptContract.FenceLanguage +
+                   "\npremise 1 > 0\ngoal 3 == 3\n```";
+        var (visible, declaration) = FormalPromptContract.SplitFacing(text);
+
+        Assert.Contains("已写入", visible);
+        Assert.DoesNotContain("premise", visible);
+        Assert.DoesNotContain("```", visible);
+        Assert.Contains("premise 1 > 0", declaration);
+    }
+
+    [Fact]
+    public void SplitFacing_Removes_Bare_Block_Then_Resumes_Normal_Text()
+    {
+        // 实发形态 (R460 run T4): 模型不写围栏, 直接裸写 5 行
+        var bare = "已写入 stats.txt。\n" + FormalPromptContract.FenceLanguage +
+                   "\npremise 1 > 0\ngoal 2 > 1\n后面还有正常文字。";
+        var (visible, declaration) = FormalPromptContract.SplitFacing(bare);
+
+        Assert.DoesNotContain("premise", visible);
+        Assert.Contains("已写入 stats.txt。", visible);
+        Assert.Contains("后面还有正常文字。", visible);   // 裸块结束即恢复正文
+        Assert.Contains("goal 2 > 1", declaration);
+
+        var (v2, d2) = FormalPromptContract.SplitFacing("结果是这样。\nno_formal: 本步无法用整数断言表达");
+        Assert.Equal("结果是这样。", v2.Trim());
+        Assert.Contains("no_formal:", d2);
+    }
+
+    [Fact]
+    public void SplitFacing_FailSafe_Never_Blanks_The_Reply()
+    {
+        var onlyDeclaration = "```" + FormalPromptContract.FenceLanguage + "\nno_formal: 无\n```";
+        var (visible, declaration) = FormalPromptContract.SplitFacing(onlyDeclaration);
+
+        Assert.False(string.IsNullOrWhiteSpace(visible));   // 宁可少剥, 也不给用户空回复
+        Assert.NotEmpty(declaration);
+    }
+
+    [Fact]
+    public void SplitFacing_Leaves_Non_Contract_Content_Byte_Identical()
+    {
+        // 正控: 不含契约时一个字都不动
+        Assert.Equal("正常回复。", FormalPromptContract.SplitFacing("正常回复。").Visible);
+        // 其它语言围栏 = 正常内容 (不能被误剥)
+        var (visible, declaration) = FormalPromptContract.SplitFacing("看代码:\n```csharp\nvar x = 1;\n```\n完。");
+        Assert.Contains("var x = 1;", visible);
+        Assert.Empty(declaration);
+    }
 }

@@ -1949,6 +1949,17 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             _resumeVoidNotice = null;
         }
 
+        // R461: 契约声明 (clickproof 围栏/裸块/no_formal 行) 只进验证面与遥测, **不上前台**。
+        // 位置: 在全部内容变更 (段路由 / 产物修复 / 承接兜底) 之后, 收口判定之前 —— 验证面此时已消费过声明,
+        // 剥离不影响机检; 剥离后为空时 SplitFacing 内部 fail-safe 返回原文 (宁可少剥, 不给用户空回复)。
+        var facingSplit = agent.context.FormalPromptContract.SplitFacing(response.Content);
+        if (facingSplit.Declaration.Length > 0)
+        {
+            response.Content = facingSplit.Visible;
+            agent.config.AgentTelemetry.Emit("contract_declaration_hidden", "IndustrialAgentV2",
+                ("decl_chars", facingSplit.Declaration.Length), ("facing_chars", facingSplit.Visible.Length));
+        }
+
         // R458 收口 (fail-closed): 承接轮的回复必须接地 —— 空回复, 或既无问句又不含任何真实产物名
         // ⇒ 链自身用同一批真实事实组装反问 (绝不编造; 事实为空时只反问, 不提任何文件名)。
         if (_continuationFacts is not null)
@@ -2849,12 +2860,16 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 return;
             }
 
+            // R461: 记忆只存**面向用户的正文** —— 契约声明 (clickproof 围栏/裸块/no_formal) 是给本地验证器看的,
+            // 存进记忆后会被下一轮原样召回 (R460 实测: 召回块里带 no_formal: 行) ⇒ 既污染上下文又白付 token。
+            var facing = agent.context.FormalPromptContract.SplitFacing(output.Content).Visible;
+
             var entry = new VectorDocument
             {
-                Content = $"Q: {input.Content}\nA: {output.Content}",
-                Summary = output.Content.Length > 100
-                    ? output.Content[..100] + "..."
-                    : output.Content,
+                Content = $"Q: {input.Content}\nA: {facing}",
+                Summary = facing.Length > 100
+                    ? facing[..100] + "..."
+                    : facing,
                 Keywords = new List<string> { intent },
                 Metadata = new Dictionary<string, object>
                 {

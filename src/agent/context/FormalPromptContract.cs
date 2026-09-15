@@ -68,4 +68,112 @@ public static class FormalPromptContract
         var rest = text.Length - cjk;
         return cjk + (int)Math.Ceiling(rest / 4.0);
     }
+
+    /// <summary>
+    /// R461: **面向用户正文的契约声明剥离** —— 契约是"给本地验证器看的", 不该出现在用户读到的回复里。
+    /// 实发证据 (R460 run): 模型有时不写围栏而写裸块 ⇒ 用户看到 5 行 clickproof/premise/goal 或 1 行 no_formal。
+    ///
+    /// 规则 (零正则、零反射, 逐行状态机):
+    ///   · ```<FenceLanguage> … ``` 围栏块整块进 declaration;
+    ///   · 独占一行且以 "no_formal:" 开头 ⇒ 进 declaration;
+    ///   · 裸块: 出现独占一行等于 FenceLanguage 时, 其后紧跟的 premise/goal 行进 declaration, 遇到第一行非声明行即结束裸块;
+    ///   · 其余行原样进 visible; 连续空行折叠为一行。
+    /// 兜底 (fail-safe): 剥离后 visible 为空 ⇒ 返回**原文本**, 宁可少剥也不给用户空回复。
+    /// </summary>
+    public static (string Visible, string Declaration) SplitFacing(string? content)
+    {
+        if (string.IsNullOrEmpty(content))
+            return (content ?? string.Empty, string.Empty);
+
+        var normalized = content.Replace("\r\n", "\n").Replace('\r', '\n');
+        var lines = normalized.Split('\n');
+        var visible = new List<string>(lines.Length);
+        var declaration = new List<string>();
+        var inFence = false;
+        var inBare = false;
+
+        foreach (var raw in lines)
+        {
+            var line = raw.TrimEnd();
+            var trimmed = line.Trim();
+
+            if (inFence)
+            {
+                declaration.Add(line);
+                if (trimmed.StartsWith("```", StringComparison.Ordinal))
+                    inFence = false;
+                continue;
+            }
+
+            if (trimmed.StartsWith("```", StringComparison.Ordinal))
+            {
+                var lang = trimmed.TrimStart('`').Trim();
+                if (string.Equals(lang, FenceLanguage, StringComparison.OrdinalIgnoreCase))
+                {
+                    inFence = true;
+                    declaration.Add(line);
+                    continue;
+                }
+                visible.Add(line);   // 别的语言围栏 = 正常内容
+                continue;
+            }
+
+            if (trimmed.StartsWith("no_formal:", StringComparison.OrdinalIgnoreCase))
+            {
+                declaration.Add(line);
+                continue;
+            }
+
+            if (string.Equals(trimmed, FenceLanguage, StringComparison.OrdinalIgnoreCase))
+            {
+                inBare = true;
+                declaration.Add(line);
+                continue;
+            }
+
+            if (inBare)
+            {
+                if (IsBareDeclarationLine(trimmed))
+                {
+                    declaration.Add(line);
+                    continue;
+                }
+                inBare = false;      // 裸块结束, 本行按正常内容处理
+            }
+
+            visible.Add(line);
+        }
+
+        var shown = CollapseBlankLines(visible);
+        if (shown.Trim().Length == 0)
+            return (normalized, string.Join("\n", declaration));   // fail-safe: 不产生空回复
+        return (shown, string.Join("\n", declaration));
+    }
+
+    /// <summary>裸块里的声明行形态: premise/goal + 空格/制表符开头 (只此两种)。</summary>
+    private static bool IsBareDeclarationLine(string trimmed)
+    {
+        if (trimmed.Length == 0) return true;   // 裸块内的空行也算块内
+        return StartsWithWord(trimmed, "premise") || StartsWithWord(trimmed, "goal");
+    }
+
+    private static bool StartsWithWord(string s, string word)
+        => s.Length > word.Length
+           && s.StartsWith(word, StringComparison.OrdinalIgnoreCase)
+           && (s[word.Length] == ' ' || s[word.Length] == '\t' || s[word.Length] == ':' || s[word.Length] == '=');
+
+    /// <summary>连续空行折叠为一行 (精炼; 不改变非空行内容)。</summary>
+    private static string CollapseBlankLines(List<string> lines)
+    {
+        var sb = new StringBuilder(lines.Sum(l => l.Length + 1));
+        var blank = false;
+        foreach (var l in lines)
+        {
+            var isBlank = l.Trim().Length == 0;
+            if (isBlank && blank) continue;
+            blank = isBlank;
+            sb.Append(l).Append('\n');
+        }
+        return sb.ToString().TrimEnd('\n');
+    }
 }

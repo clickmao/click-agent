@@ -214,13 +214,16 @@ public class V714FeatureTests
     // ── ② vulkan env (纯逻辑段: 已在真机验证过; 这里只验用户显式设置不被覆盖) ──
 
     [Fact]
-    public void SessionConfig_MaxMemoryChars_Default1000()
+    public void SessionConfig_MaxMemoryChars_Default400_R461()
     {
+        // R461 (命中率): 默认 1000 → 400。该块每轮重渲染 = 每轮新内容 (prompt miss) 的固定成本;
+        // 400 字仍保住完整目标句 + 关键事实。回归由 ContinuationBriefTests.R461_Injection_Budget_Locks 机检锁住。
         var cfg = new SessionConfig();
-        Assert.Equal(1000, cfg.MaxMemoryChars);
+        Assert.Equal(SessionMemory.DefaultMaxChars, cfg.MaxMemoryChars);
+        Assert.InRange(cfg.MaxMemoryChars, 200, 400);
         var s = new Session { };
         _ = s.Memory; // 懒创建
-        Assert.Equal(1000, s.Memory.MaxChars);
+        Assert.Equal(cfg.MaxMemoryChars, s.Memory.MaxChars);
     }
 
     private static (PanelDataService Panel, string Dir) MakePanel()

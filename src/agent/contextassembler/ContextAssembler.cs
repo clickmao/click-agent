@@ -18,6 +18,13 @@ namespace agent.context;
 /// </summary>
 public class ContextAssembler : IContextAssembler
 {
+    /// <summary>
+    /// R461: Memory (RAG) 源的 per-source token 预算 (R117 起 500)。
+    /// 口径: 每轮注入的召回块是**新内容**, 直接吃 prompt 缓存命中率; 500 tok 与 97% 命中红线算术不相容。
+    /// 诚实边界: 这是质量↔命中率的显式取舍点, 不是"免费优化"。
+    /// </summary>
+    public const int MemorySourceBudgetTokens = 120;
+
     private readonly ILogger<ContextAssembler> _logger;
     private readonly IRAGRecall _ragRecall;
     private readonly ISessionManager _sessionManager;
@@ -658,7 +665,10 @@ Interlocked.Increment(ref _cacheMisses);
             // 带变密, 低相关 (rel~0.35) 大片段 (708tok/3snip) 整体挤进 prompt (C11 +34%)。
             // 治理: 相关性降序 → 逐段累加, 超出 per-source 预算 (500tok) 即停; rel<0.4 只保留 best 1 段。
             var ordered = results.OrderByDescending(r => r.Score).ToList();
-            var budgetTokens = 500;
+            // R461 (命中率): per-source 预算 500 → <see cref="MemorySourceBudgetTokens"/> tok。
+            // 实测 (R460 run): [Memory (RAG)] 块 197→359 字符逐轮膨胀, 是每轮**新内容** (miss) 的最大单项;
+            // 每轮新内容 ≤ ~92 tok 才够 97% 命中 ⇒ 召回块必须按预算硬收。
+            var budgetTokens = MemorySourceBudgetTokens;
             var usedTokens = 0;
             var keptCount = 0;
             var selected = new List<(rag.RecallResult Result, int Tokens)>();

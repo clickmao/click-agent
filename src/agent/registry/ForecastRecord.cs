@@ -41,6 +41,9 @@ public static class NextTurnForecast
 {
     private const string FileName = "forecast.json";
 
+    /// <summary>R461: 上轮任务在 prompt header 里的预览上限 (完整文本在 [SessionMemory] 任务方向里, 去重)。</summary>
+    public const int HeaderTaskPreviewChars = 24;
+
     /// <summary>任务循环完成后调用: 生成并落盘下轮预估 (规则式, 零 LLM 成本)</summary>
     public static ForecastRecord Save(string dataStoragePath, string agentUid, string taskText, string intent)
     {
@@ -80,7 +83,12 @@ public static class NextTurnForecast
         if (record == null || string.IsNullOrWhiteSpace(record.TaskSummary))
             return string.Empty;
 
-        var header = $"[下轮预估·上轮任务: {record.TaskSummary}";
+        // R461 (命中率): 上轮任务只留**前缀预览** —— 完整任务文本已在 [SessionMemory] 的任务方向里,
+        // 这里重复整句只是把每轮新内容 (miss) 顶大; 落盘记录仍是全文 (诚实面不动)。
+        var preview = record.TaskSummary.Length > HeaderTaskPreviewChars
+            ? record.TaskSummary[..HeaderTaskPreviewChars] + "…"
+            : record.TaskSummary;
+        var header = $"[下轮预估·上轮任务: {preview}";
         if (record.LikelyContinues)
             header += $" | 倾向: {record.Tendency}";
         header += "]";
