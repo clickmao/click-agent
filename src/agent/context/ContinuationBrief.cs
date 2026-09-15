@@ -22,8 +22,23 @@ public static class ContinuationBrief
 {
     public const string BlockTitle = "[承接状态 v1]";
 
-    /// <summary>注入块里最多列几项 (长工作区不刷屏, 且控制本轮 token 增量)。</summary>
-    public const int MaxArtifacts = 8;
+    /// <summary>
+    /// R460 精炼令: 注入块里最多列几项。用户令「r458回复要精炼」实测根因 = 块里列 8 项 ⇒
+    /// 模型逐项复述 (T5 回复 241 字符)。降到 3 项 + 如实标注总数 (截断诚实性不丢)。
+    /// </summary>
+    public const int MaxArtifacts = 3;
+
+    /// <summary>注入块长度上限 (机检: BuildBlock ≤ 此值; 控每轮 token 增量)。</summary>
+    public const int MaxBlockChars = 200;
+
+    /// <summary>菜单项数上限 (R460: 后续选择必须以「编号菜单」给出, 且不超过 3 项)。</summary>
+    public const int MaxMenuItems = 3;
+
+    /// <summary>菜单单项长度上限 (机检: 每项 ≤ 此值; 「精炼」的可验证形态)。</summary>
+    public const int MaxMenuItemChars = 24;
+
+    /// <summary>确定性反问长度上限 (机检: BuildAsk ≤ 此值)。</summary>
+    public const int MaxAskChars = 220;
 
     /// <summary>
     /// 承接轮置信下限 —— 与 <see cref="agent.registry.EvidenceGate"/> 默认阈值同源。
@@ -135,38 +150,82 @@ public static class ContinuationBrief
         return list;
     }
 
-    /// <summary>承接块正文 (只列真实项; 空态 ⇒ 明确写"(无)"并禁止臆造)。</summary>
+    /// <summary>承接块正文 (只列真实项; 空态写成"(无产物)"并禁止臆造)。R460: 紧凑 2 行, ≤ <see cref="MaxBlockChars"/>。</summary>
     public static string BuildBlock(IReadOnlyList<ArtifactFact>? artifacts, int total = -1)
     {
         var arts = artifacts ?? Array.Empty<ArtifactFact>();
         if (total < arts.Count) total = arts.Count;
-        var sb = new StringBuilder(320);
-        sb.Append(BlockTitle).Append(" (真实状态; 只列实际存在的项)\n");
+        var sb = new StringBuilder(MaxBlockChars + 40);
+        sb.Append(BlockTitle).Append('\n');
         if (arts.Count == 0)
         {
-            sb.Append("- 工作区产物: (无)\n");
+            sb.Append("已有: (无产物)\n");
         }
         else
         {
-            sb.Append("- 工作区产物: ");
+            sb.Append("已有: ");
             for (var i = 0; i < arts.Count; i++)
             {
                 if (i > 0) sb.Append(" | ");
-                sb.Append(arts[i].Name).Append('=');
-                sb.Append(arts[i].FirstLine.Length > 0 ? arts[i].FirstLine : "(空)");
-                sb.Append(" (").Append(arts[i].Bytes).Append(" B)");
+                sb.Append(arts[i].Name);
+                if (arts[i].FirstLine.Length > 0) sb.Append('=').Append(arts[i].FirstLine);
+                sb.Append(" (").Append(arts[i].Bytes).Append("B)");
             }
             // 如实标注截断: 免得模型自己发现"清单被截断"并写进回复 (R458 run1 实测)
             if (total > arts.Count)
-                sb.Append(" (共 ").Append(total).Append(" 项, 只列最近 ").Append(arts.Count).Append(" 项)");
+                sb.Append(" …共 ").Append(total).Append(" 项, 只列最近 ").Append(arts.Count).Append(" 项");
             sb.Append('\n');
         }
-        sb.Append("- 本轮性质: 承接/追问式输入 —— 没有给出新的任务对象。\n");
-        sb.Append("- 回复要求: 先用一句话按上面的真实项承接 (逐项, 像人一样");
+        sb.Append("本轮=承接/追问(无新任务对象)。回复: 一句承接");
         sb.Append(arts.Count == 0
-            ? "); 再反问\"继续什么\"并请对方给出具体动作。不得列举任何文件或完成状态 —— 确实没有。\n"
-            : "); 再反问\"继续什么\"并给 2–3 个具体可选项。不得增补上面没列出的文件或完成状态。\n");
+            ? " + 反问\"继续什么\"并请对方给具体动作; 不得列举任何文件或完成状态 —— 确实没有。\n"
+            : " + 反问\"继续什么\" + 2–3 句可选项(用上面的真实项); 不复述本块, 不加解释。\n");
         return sb.ToString();
+    }
+
+    /// <summary>
+    /// R460: 后续选择的**编号菜单** (单源 —— 门问句与兜底反问共用同一批真实事实)。
+    /// 首项接地到最近改动的真实产物; 无产物 ⇒ 单项「说清要我做什么」, 绝不臆造候选。
+    /// </summary>
+    public static IReadOnlyList<string> BuildMenu(IReadOnlyList<ArtifactFact>? artifacts, int total = -1)
+    {
+        var arts = artifacts ?? Array.Empty<ArtifactFact>();
+        if (total < arts.Count) total = arts.Count;
+        if (arts.Count == 0) return ["说清要我做什么"];
+        var list = new List<string>(MaxMenuItems) { "接着 " + Shorten(arts[0].Name, MaxMenuItemChars - 6) + " 往下做" };
+        if (total > 1) list.Add("汇总现有 " + total + " 项产物");
+        list.Add("换一个新任务");
+        return list;
+    }
+
+    /// <summary>
+    /// R460 单源反问: 门问句 (EvidenceGate) 与链兜底 (ComposeFallback) 用**同一个**构造器 ⇒
+    /// 「先承接真实事实 + 再反问『继续什么』+ 编号菜单」在两条路径上恒同形, 不靠模型自觉。
+    /// </summary>
+    public static string BuildAsk(string? userText, IReadOnlyList<ArtifactFact>? artifacts, int total = -1)
+    {
+        var arts = artifacts ?? Array.Empty<ArtifactFact>();
+        if (total < arts.Count) total = arts.Count;
+        var head = Shorten(userText, 12);
+        var sb = new StringBuilder(MaxAskChars + 40);
+        sb.Append('「').Append(head).Append("」我这边没有待办指令");
+        if (arts.Count == 0)
+        {
+            sb.Append(" (本会话还没有产物)。继续什么？说一句具体要我做什么就行。");
+            return sb.ToString();
+        }
+        sb.Append("。已有: ");
+        for (var i = 0; i < arts.Count; i++)
+        {
+            if (i > 0) sb.Append('、');
+            sb.Append(arts[i].Name);
+            if (arts[i].FirstLine.Length > 0) sb.Append('=').Append(arts[i].FirstLine);
+        }
+        if (total > arts.Count) sb.Append(" 等 ").Append(total).Append(" 项");
+        sb.Append("。你要接着哪一项？\n");
+        var menu = BuildMenu(arts, total);
+        for (var i = 0; i < menu.Count; i++) sb.Append(i + 1).Append(". ").Append(menu[i]).Append('\n');
+        return sb.ToString().TrimEnd();
     }
 
     /// <summary>
@@ -185,28 +244,9 @@ public static class ContinuationBrief
         return true;
     }
 
-    /// <summary>确定性兜底反问 (只用真实事实; 事实为空时绝不提任何文件名)。</summary>
-    public static string ComposeFallback(string? userText, IReadOnlyList<ArtifactFact>? artifacts)
-    {
-        var head = Shorten(userText, 12);
-        var arts = artifacts ?? Array.Empty<ArtifactFact>();
-        var sb = new StringBuilder(200);
-        if (arts.Count == 0)
-        {
-            sb.Append('「').Append(head).Append("」这句我这边没有可对齐的待办上下文 (本会话还没有产物)。");
-            sb.Append("继续什么？说一句具体要我做什么就行。");
-            return sb.ToString();
-        }
-        sb.Append('「').Append(head).Append("」我这边没有待办指令。会话里已经有的产物: ");
-        for (var i = 0; i < arts.Count; i++)
-        {
-            if (i > 0) sb.Append("、");
-            sb.Append(arts[i].Name);
-            if (arts[i].FirstLine.Length > 0) sb.Append('=').Append(arts[i].FirstLine);
-        }
-        sb.Append("。你是想接着其中哪一项, 还是换新任务？");
-        return sb.ToString();
-    }
+    /// <summary>确定性兜底反问 —— R460 起与门问句**同源** (<see cref="BuildAsk"/>): 事实为空时绝不提任何文件名。</summary>
+    public static string ComposeFallback(string? userText, IReadOnlyList<ArtifactFact>? artifacts, int total = -1)
+        => BuildAsk(userText, artifacts, total);
 
     private static bool IsNoise(string name)
     {

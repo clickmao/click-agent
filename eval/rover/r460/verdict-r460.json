@@ -1,0 +1,270 @@
+{
+ "round": "R460",
+ "prereg": {
+  "t5_max": 170,
+  "t6_max": 110,
+  "block_max": 200,
+  "prompt_max": 46688,
+  "calls_max": 17,
+  "steady_hit_min": 92.0,
+  "steady_miss_max": 280,
+  "menu_max_items": 3
+ },
+ "P1_brevity": {
+  "t5": {
+   "chars": 160,
+   "ok": true,
+   "max": 170
+  },
+  "t6": {
+   "chars": 123,
+   "ok": false,
+   "max": 110
+  },
+  "block": {
+   "chars": 163,
+   "ok": true,
+   "max": 200
+  },
+  "basis": "chars (块长取自实发 full-*.json)"
+ },
+ "P2_menu": {
+  "t5_menu_n": 3,
+  "t5_menu": [
+   "校验 stats.txt 与 merged.txt 一致性",
+   "汇总 count/merged/stats 到一份报告",
+   "处理 data/ 下其他文件。"
+  ],
+  "ok": true,
+  "t5_question": true,
+  "grounded_first": true
+ },
+ "P3_tokens": {
+  "prompt_sum": 39863,
+  "max": 46688,
+  "ok": true,
+  "calls": 13,
+  "calls_ok": true
+ },
+ "P4_cache": {
+  "total_hit_pct": 85.1,
+  "steady_hit_pct": 90.2,
+  "steady_miss_avg": 301.9,
+  "ok": false
+ },
+ "P5_no_regress": {
+  "products_ok": 3,
+  "jargon": [],
+  "grounded_refs": 2,
+  "invented_files": [
+   "stats.txt"
+  ],
+  "ok": false
+ },
+ "t5_text": "前面几步已完成：count.txt=4、merged.txt=ALPHA/BETA/GAMMA、stats.txt=chars=15。\n\n\"继续\"指哪一项？可选：① 校验 stats.txt 与 merged.txt 一致性；② 汇总 count/merged/stats 到一份报告；③ 处理 data/ 下其他文件。",
+ "t6_text": "(先说明: 上一轮问过「继续」还没答, 这轮按你这次的意图办。)\nfirst.txt 已写入：`R455 fixture note`（notes.md 第一行，退出码 0）。\n\nno_formal: 首行提取为文本切片操作，非整数算术断言可表达。",
+ "calls": [
+  {
+   "file": "side-agent-001.json",
+   "in": 2960,
+   "cached": 640,
+   "out": 79
+  },
+  {
+   "file": "side-agent-002.json",
+   "in": 3199,
+   "cached": 2944,
+   "out": 67
+  },
+  {
+   "file": "side-agent-003.json",
+   "in": 3230,
+   "cached": 2944,
+   "out": 98
+  },
+  {
+   "file": "side-agent-004.json",
+   "in": 3445,
+   "cached": 3200,
+   "out": 33
+  },
+  {
+   "file": "side-agent-005.json",
+   "in": 3550,
+   "cached": 3200,
+   "out": 73
+  },
+  {
+   "file": "side-agent-006.json",
+   "in": 3682,
+   "cached": 3456,
+   "out": 124
+  },
+  {
+   "file": "side-agent-007.json",
+   "in": 3878,
+   "cached": 3712,
+   "out": 55
+  },
+  {
+   "file": "side-agent-008.json",
+   "in": 4011,
+   "cached": 3456,
+   "out": 101
+  },
+  {
+   "file": "side-agent-009.json",
+   "in": 4695,
+   "cached": 4096,
+   "out": 72
+  },
+  {
+   "file": "side-agent-010.json",
+   "in": 588,
+   "cached": 384,
+   "out": 38
+  },
+  {
+   "file": "side-agent-011.json",
+   "in": 689,
+   "cached": 512,
+   "out": 58
+  },
+  {
+   "file": "side-agent-012.json",
+   "in": 814,
+   "cached": 640,
+   "out": 22
+  },
+  {
+   "file": "side-agent-013.json",
+   "in": 5122,
+   "cached": 4736,
+   "out": 44
+  }
+ ],
+ "blocks": [
+  {
+   "file": "full-agent-001.json",
+   "last_user_chars": 202,
+   "brief_block_chars": 0
+  },
+  {
+   "file": "full-agent-002.json",
+   "last_user_chars": 202,
+   "brief_block_chars": 0
+  },
+  {
+   "file": "full-agent-003.json",
+   "last_user_chars": 382,
+   "brief_block_chars": 0
+  },
+  {
+   "file": "full-agent-004.json",
+   "last_user_chars": 382,
+   "brief_block_chars": 0
+  },
+  {
+   "file": "full-agent-005.json",
+   "last_user_chars": 543,
+   "brief_block_chars": 0
+  },
+  {
+   "file": "full-agent-006.json",
+   "last_user_chars": 543,
+   "brief_block_chars": 0
+  },
+  {
+   "file": "full-agent-007.json",
+   "last_user_chars": 543,
+   "brief_block_chars": 0
+  },
+  {
+   "file": "full-agent-008.json",
+   "last_user_chars": 777,
+   "brief_block_chars": 0
+  },
+  {
+   "file": "full-agent-009.json",
+   "last_user_chars": 1096,
+   "brief_block_chars": 163
+  },
+  {
+   "file": "full-agent-010.json",
+   "last_user_chars": 61,
+   "brief_block_chars": 0
+  },
+  {
+   "file": "full-agent-011.json",
+   "last_user_chars": 61,
+   "brief_block_chars": 0
+  },
+  {
+   "file": "full-agent-012.json",
+   "last_user_chars": 61,
+   "brief_block_chars": 0
+  },
+  {
+   "file": "full-agent-013.json",
+   "last_user_chars": 683,
+   "brief_block_chars": 0
+  }
+ ],
+ "brief_events": [
+  {
+   "point": "continuation_brief",
+   "artifacts": 3,
+   "total": 10,
+   "chars": 164,
+   "state": "grounded"
+  },
+  {
+   "point": "continuation_closure",
+   "grounded": true,
+   "artifacts": 3,
+   "chars": 160
+  }
+ ],
+ "codex_frozen": {
+  "calls": 13,
+  "in": 91002,
+  "hit_pct": 96.6
+ },
+ "r458_frozen": {
+  "t5_chars": 241,
+  "t6_chars": 146,
+  "calls": 17,
+  "prompt_sum": 54927,
+  "hit_pct": 90.4,
+  "miss_avg": 310
+ },
+ "audit_tools": [
+  "run_command",
+  "list_dir",
+  "run_command",
+  "write_file",
+  "run_command",
+  "run_command",
+  "read_file",
+  "write_file"
+ ],
+ "checks_posthoc": {
+  "leak_t4": [
+   "clickproof",
+   "premise 5 + 4 == 9",
+   "premise 9 + 5 == 14",
+   "goal 5 + 4 + 5 == 14",
+   "goal 14 + 1 == 15"
+  ],
+  "leak_t6": [
+   "no_formal: 首行提取为文本切片操作，非整数算术断言可表达。"
+  ],
+  "t9_stripped": {
+   "t5": 160,
+   "t6": 87,
+   "t4": 89
+  },
+  "note": "剥离合同标记后的字符数 = 整流修复后的预计值 (估算, 非实测)"
+ },
+ "generated_utc": "2026-09-15T09:35:38Z"
+}

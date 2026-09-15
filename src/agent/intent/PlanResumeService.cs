@@ -68,21 +68,22 @@ public static class PlanResumeService
     public static readonly string[] InternalJargon = ["可选范围", "检查点", "作废", "槽位"];
 
     /// <summary>
-    /// R458 人性化承接句: 把"答复落不到槽位 ⇒ 检查点作废"的内部判定变成一句人话 —— 像人一样先承接、
+    /// R458/R460 人性化承接句: 把"答复落不到槽位 ⇒ 检查点作废"的内部判定变成一句人话 —— 像人一样先承接、
     /// 只说两个事实 (上一轮在等你回答什么 / 这轮内容对不上), 不出现内部术语, 也不复述内部示例枚举。
+    /// R460 精炼令: 从 78 字符压到 ≤ <see cref="MaxNoticeChars"/> (用户令「r458回复要精炼」)。
     /// why (内部理由) 不呈现给用户 —— 调用方仍把它送遥测, 事实不丢。
     /// </summary>
     public static string HumanizeVoidNotice(string? pendingQuestion, string? why)
     {
         _ = why; // 内部理由只进遥测 (调用方 Emit), 不上前台
-        var q = CompactQuestion(pendingQuestion);
-        var sb = new System.Text.StringBuilder(160);
-        sb.Append(q.Length > 0
-            ? "(插一句: 上一轮你说「" + q + "」我没接上上下文, 问过你要继续什么"
-            : "(插一句: 上一轮我还在等你的答复");
-        sb.Append(", 这轮给的内容对不上那个问题 —— 那个问题先搁下, 下面按你这次的意图办。)");
-        return sb.ToString();
+        var q = CompactQuestion(pendingQuestion, 16);
+        return q.Length > 0
+            ? "(先说明: 上一轮问过「" + q + "」还没答, 这轮按你这次的意图办。)"
+            : "(先说明: 上一轮的问题还没答, 这轮按你这次的意图办。)";
     }
+
+    /// <summary>R460: 人话承接句的硬上限 (机检: HumanizeVoidNotice ≤ 此值)。</summary>
+    public const int MaxNoticeChars = 48;
 
     /// <summary>
     /// 压缩待答问题成"人话主语": 优先取问句里引用的**用户原话** (「…」), 否则取首句;

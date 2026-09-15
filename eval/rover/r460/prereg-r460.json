@@ -1,0 +1,21 @@
+{
+  "round": "R460",
+  "title": "精炼 + 菜单单源 + 命中率/token 归因",
+  "frozen_at": "2026-09-15",
+  "basis": "用户令: 「r458回复要精炼，并且后续选择 给出 menu问询了么」+「而且命中率和tokens都不达标」",
+  "reference_readings": {
+    "r458_run2": {"reply_t5_chars": 241, "reply_t6_chars": 146, "block_chars_est": 288,
+                  "calls": 17, "prompt_sum": 54927, "cached_sum": 49664, "hit_pct": 90.4,
+                  "miss_avg": 310, "artifacts_ok": "4/4", "jargon_lines": 0},
+    "codex_0_154": {"calls": 13, "prompt_sum": 91002, "hit_pct": 96.6, "miss_avg": 236}
+  },
+  "criteria": {
+    "P1_brevity": {"t5_reply_max_chars": 170, "t6_reply_max_chars": 110, "inject_block_max_chars": 200},
+    "P2_menu": {"t5_reply_menu_items": "1..3", "menu_grounded": "首项含真实产物名",
+                "gate_choices_grounded": true, "empty_state_no_example_menu": true},
+    "P3_tokens": {"prompt_sum_max": 46688, "calls_max": 17},
+    "P4_cache": {"steady_hit_min_pct": 92.0, "steady_miss_avg_max": 280},
+    "P5_no_regress": {"artifacts_ok": "4/4", "jargon_lines": 0, "grounded_artifacts_min": 3, "disk_forgeries": 0}
+  },
+  "posthoc_note": "若 P3/P4 未达标, 必须给出逐块归因 (attr_r460.py 实发文本) 与 R461 收口路径; 不得只报结论"
+}

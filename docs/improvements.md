@@ -10,6 +10,15 @@
 > 数据时效 (测试数/批号/评测口径)、版本引用一致性、死链检查; **禁止只改局部不做整体校验**。
 > 空间位置相邻但语义不同段的错挂 (如旧版本标题下挂新数据) 视同违例。
 
+## v0.79.0 · R460 · 2026-09-15 · 状态: 已完成 · 主题: 承接轮**精炼** + 菜单**单源** + 命中率/token 归因
+
+- **用户令（逐字）**：「r458回复要精炼，并且后续选择 给出 menu问询了么」+「而且命中率和tokens都不达标」。
+- **输出效果（同夹具/同 6 轮/同模型，唯一差异 = 二进制）**：T5 回复 **241 → 160 字（−33.6%）**；承接注入块 **288 → 163 字（−43.6%）**；T6 146 → 123 字（剥离合同标记后 **87 字**）；**菜单问询 = 给了**（门 `ask` 事件 T5 触发，`Choices` = 3 真实产物名 + 「另有新任务」；回复自带 3 项编号菜单 ①②③，首项接地真实产物）；**空态通用示例菜单（搜索资料/写文档/…）已删除**。
+- **tokens**：prompt ∑ **54,927 → 39,863（−27.4%）**，调用 **17 → 13（= codex 同数）**，每调用 prompt 均价 3,231 → 3,066。**命中率未达标**：总 90.4% → 85.1%、稳态 90.2%（miss 均价 301.9 tok/call，R458 310、codex 236）—— 根因 = 前缀被主动压小（分母 3,066）而新内容未同比压缩；实发全量文本归因显示 **`[SessionMemory]` 注入块逐轮膨胀 308→417→613→836 字符**，是 miss 主质量。
+- **机制（禁关键字/提示词补丁）**：① `MaxArtifacts` 8 → 3 + 紧凑两行块（`MaxBlockChars=200`，截断诚实标注保留）；② 新增 `BuildMenu`/`BuildAsk`，`ComposeFallback` 改调 `BuildAsk` ⇒ **门问句与兜底反问同源**（菜单必现，机检 `Assert.Equal(BuildMenu, Choices)`）；③ 空态不再给通用示例枚举；④ 人话承接句 78 → ≤48 字（`MaxNoticeChars`）；⑤ 器具面新增 `ADAPTER_DUMP_FULL=1`（实发全量消息落盘，禁重建）。
+- **本跑暴露的真实缺陷（R461 靶点）**：① **合同标记上前台** —— T4 裸 `clickproof/premise/goal` 5 行、T6 `no_formal: …` 1 行；② **空产物未接地 + 宣称即伪造** —— T4 无任何 tool_call 却回复「stats.txt 已写入 chars=15」（磁盘 0 B、真值 14），承接块过滤 0 B 文件使模型改用记忆假值 ⇒ 产物 3/4。
+- **交付**：`src/agent/context/ContinuationBrief.cs`、`src/agent/registry/EvidenceGate.cs`、`src/agent/intent/PlanResumeService.cs`、`src/agent/IndustrialAgentV2.cs`、`src/agent.tests/ContinuationBriefTests.cs`（**16/16 绿**）、`eval/rover/r460/*`、`docs/plans/v0.79.0-r460-brevity-menu-cache.md`、`docs/reports/brevity-menu-cache-r460.md`；registry `r460.brevity-menu-cache`（L2，5 条负控）。未 push。
+
 ## v0.78.0 · R458 · 2026-09-15 · 状态: 已完成 · 主题: 承接轮**人性化**（像人一样先承接事实、再反问「继续什么」）
 
 - **用户令（逐字）**：「…得做一些人性化的补充，比如t5感觉codex更胜一筹，比如一个人对另一个人突然说一句，"继续"，另一个人不明所以，肯定就会反问"继续什么"」。

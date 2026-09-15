@@ -106,12 +106,25 @@ def _tail(msgs, n=4, head=200):
 class H(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
 
-    def _dump(self, side, req, resp, extra=None):
+    def _dump(self, side, req, resp, extra=None, full=None):
         with LOCK:
             N[side] += 1
             p = os.path.join(OUT, f"side-{side}-{N[side]:03d}.json")
             with open(p, "w", encoding="utf-8") as f:
                 json.dump({"side": side, "request": req, "response": resp, "extra": extra or {}}, f, ensure_ascii=False, indent=1)
+            # R460 器具: 全量实发消息落盘 (ADAPTER_DUMP_FULL=1) ⇒ 逐块归因, 禁重建/禁估算。
+            if os.environ.get("ADAPTER_DUMP_FULL") == "1" and full is not None:
+                slim = []
+                for m in full:
+                    c = m.get("content")
+                    if not isinstance(c, str):
+                        c = "" if c is None else json.dumps(c, ensure_ascii=False)
+                    slim.append({"role": m.get("role"), "content": c[:12000],
+                                 "tool_calls": len(m.get("tool_calls") or []), "tool_call_id": m.get("tool_call_id")})
+                fp = os.path.join(OUT, f"full-{side}-{N[side]:03d}.json")
+                with open(fp, "w", encoding="utf-8") as f2:
+                    json.dump(slim, f2, ensure_ascii=False)
+                print(f"[adapter] FULL {side} #{N[side]} -> {fp}", flush=True)
             print(f"[adapter] {side} #{N[side]} -> {p}", flush=True)
 
     def do_POST(self):
@@ -157,7 +170,7 @@ class H(BaseHTTPRequestHandler):
                               "upstream_request": {"model": up_body.get("model"), "n_messages": len(up_body["messages"]),
                                                    "tools": [t["function"]["name"] for t in up_body.get("tools") or []]}},
                        {"tool_calls": [{"name": (tc.get("function") or {}).get("name"), "args": (tc.get("function") or {}).get("arguments")} for tc in (msg.get("tool_calls") or [])],
-                        "text": _txt, "usage": up.get("usage")})
+                        "text": _txt, "usage": up.get("usage")}, full=up_body.get("messages"))
             payload = b"".join(sse(e, o) for e, o in [
                 ("response.created", {"type": "response.created", "response": {"id": "resp_r455", "status": "in_progress", "output": []}})] + evs + [
                 ("response.completed", {"type": "response.completed", "response": {"id": "resp_r455", "status": "completed",
@@ -177,7 +190,7 @@ class H(BaseHTTPRequestHandler):
                                             "tail_messages": _tail(up_body.get("messages"))}},
                    {"text": ((up.get("choices") or [{}])[0].get("message") or {}).get("content"), "usage": up.get("usage"),
                     "tool_calls": [{"name": (tc.get("function") or {}).get("name"), "args": (tc.get("function") or {}).get("arguments")} for tc in ((up.get("choices") or [{}])[0].get("message") or {}).get("tool_calls") or []],
-                    "finish_reason": (up.get("choices") or [{}])[0].get("finish_reason")})
+                    "finish_reason": (up.get("choices") or [{}])[0].get("finish_reason")}, full=up_body.get("messages"))
         b = json.dumps(up).encode()
         self.send_response(200)
         self.send_header("Content-Type", "application/json")

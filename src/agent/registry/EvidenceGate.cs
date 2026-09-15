@@ -152,24 +152,16 @@ public sealed class EvidenceGate
             (task.Flags.HasFlag(ConfidenceFlags.WeakIntent) ||
              task.Flags.HasFlag(ConfidenceFlags.TooVague)))
         {
-            // R458 人性化接地: 像人一样先承接"我们手上有什么", 再反问"继续什么"。
-            // 有真实产物 ⇒ 逐项列出 (名字=首行) 让对方指认; 没有 ⇒ 明说没有, 不得臆造清单。
-            var hasFacts = _facts is { Count: > 0 };
-            var grounding = hasFacts
-                ? "工作区里已有: " + string.Join("、", _facts!.Select(f =>
-                    f.FirstLine.Length > 0 ? f.Name + "=" + f.FirstLine : f.Name)) + "。"
-                : "工作区里还没有产物。";
+            // R458 人性化接地 / R460 单源 + 精炼: 问句与菜单都由 ContinuationBrief 构造 (门与兜底同形),
+            // 空态**不再**给通用示例菜单 ("搜索资料/写文档/…" = 用户点名的机器味), 只反问一句。
+            var facts = _facts ?? Array.Empty<agent.context.ArtifactFact>();
             items.Add(new ClarificationItem
             {
                 NodeId = $"subtask-{task.Order}",
                 ParameterName = $"子任务{task.Order + 1}_意图确认",
-                Question = hasFacts
-                    ? $"「{task.Text}」这句我没带上下文 —— {grounding}你要接着的是其中哪一项, 还是另有新任务?"
-                    : $"「{task.Text}」这句我没带上下文 —— {grounding}具体要我做什么?",
+                Question = agent.context.ContinuationBrief.BuildAsk(task.Text, facts),
                 DataType = PromptDataType.Choice,
-                Choices = hasFacts
-                    ? [.. _facts!.Take(3).Select(f => "继续 " + f.Name), "另有新任务"]
-                    : ["搜索资料", "写文档/总结", "执行代码/命令", "分析数据", "读文件", "其他 (请补充说明)"],
+                Choices = [.. agent.context.ContinuationBrief.BuildMenu(facts)],
                 Authority = "MainAgentAllowed",
             });
         }

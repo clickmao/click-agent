@@ -72,6 +72,9 @@ public class IndustrialAgentV2 : AgentBase
 
     /// <summary>R458 承接轮: 本轮用户原话 (兜底反问里引用)。</summary>
     private string? _continuationUserText;
+
+    /// <summary>R460: 本轮扫描到的产物**总项数** (菜单「汇总现有 N 项」用; 与块内截断标注同源)。</summary>
+    private int _continuationTotal;
     private readonly ICodeGenerator _codeGenerator;
     private readonly agent.registry.AgentRegistry _agentRegistry;
     private readonly agent.registry.ResponseSegmentRouter _segmentRouter;
@@ -1293,6 +1296,7 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 _continuationFacts = agent.context.ContinuationBrief.ScanArtifacts(
                     _workspace is { RootPath: { Length: > 0 } root } ? root : Environment.CurrentDirectory,
                     agent.context.ContinuationBrief.MaxArtifacts, out var artTotal);
+                _continuationTotal = artTotal;
                 var brief = agent.context.ContinuationBrief.BuildBlock(_continuationFacts, artTotal);
                 inlineBlocks.Add(brief);
                 agent.config.AgentTelemetry.Emit("continuation_brief", "IndustrialAgentV2",
@@ -1303,6 +1307,7 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             {
                 _continuationUserText = null;
                 _continuationFacts = null;
+                _continuationTotal = 0;
             }
 
             // D4b: 出站正文 = 原文扣掉"框架自己做"的子请求 (未扣减时逐字等于原文 ⇒ 零改动)
@@ -1951,7 +1956,7 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             var grounded = !agent.context.ContinuationBrief.NeedsFallback(response.Content, _continuationFacts);
             if (!grounded)
                 response.Content = agent.context.ContinuationBrief.ComposeFallback(
-                    _continuationUserText, _continuationFacts);
+                    _continuationUserText, _continuationFacts, _continuationTotal);
             agent.config.AgentTelemetry.Emit("continuation_closure", "IndustrialAgentV2",
                 ("grounded", grounded), ("artifacts", _continuationFacts.Count),
                 ("chars", response.Content.Length));

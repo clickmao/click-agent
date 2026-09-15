@@ -161,7 +161,7 @@ public sealed class ContinuationBriefTests
     public void Block_EmptyState_SaysNone_AndNeverNamesAFile()
     {
         var block = ContinuationBrief.BuildBlock(Array.Empty<ArtifactFact>());
-        Assert.Contains("(无)", block);
+        Assert.Contains("无产物", block);
         Assert.DoesNotContain(".txt", block);                     // 负控: 空态不得列举任何文件名
         Assert.DoesNotContain(".md", block);
         Assert.Contains("继续什么", block);
@@ -224,13 +224,56 @@ public sealed class ContinuationBriefTests
         Assert.Contains("count.txt=4", q);
         Assert.Contains("stats.txt=chars=14", q);
         Assert.DoesNotContain("(如:", q);                          // 内部示例枚举不再上前台
-        Assert.Contains("继续", grounded.ToAsk[0].Questions[0].Choices[0]);
+        var choices = grounded.ToAsk[0].Questions[0].Choices;
+        Assert.Contains(choices, c => c.Contains("count.txt", StringComparison.Ordinal));  // 菜单接地到真实项
+        Assert.DoesNotContain(choices, c => c.Contains("搜索资料", StringComparison.Ordinal)); // R460: 示例菜单禁止
+        Assert.Equal(ContinuationBrief.BuildMenu(facts), choices);  // R460: 菜单单源 (门 == 构造器)
 
         var plain = new EvidenceGate().Evaluate(tasks);
         Assert.NotEmpty(plain.ToAsk);
         var q2 = plain.ToAsk[0].Questions[0].Question;
         Assert.DoesNotContain(".txt", q2);                        // 负控: 无事实 ⇒ 不得出现任何文件名
         Assert.Contains("还没有", q2);
+        // R460: 空态**不再**给通用示例菜单 (用户点名的机器味)
+        Assert.DoesNotContain(plain.ToAsk[0].Questions[0].Choices, c => c.Contains("搜索资料", StringComparison.Ordinal));
+        Assert.DoesNotContain(plain.ToAsk[0].Questions[0].Choices, c => c.Contains("写文档", StringComparison.Ordinal));
+    }
+
+    // ---------- 面 5b: R460 精炼 + 菜单 (可机检形态) ----------
+
+    [Fact]
+    public void R460_BlockAndMenuAndAsk_RespectBrevityCaps()
+    {
+        var facts = new[]
+        {
+            new ArtifactFact("count.txt", 2, "4"),
+            new ArtifactFact("merged.txt", 18, "ALPHA"),
+            new ArtifactFact("stats.txt", 9, "chars=14"),
+        };
+        var block = ContinuationBrief.BuildBlock(facts, 11);
+        Assert.True(block.Length <= ContinuationBrief.MaxBlockChars,
+            $"注入块须 ≤ {ContinuationBrief.MaxBlockChars} 字符 (实际 {block.Length})");
+        Assert.Contains("共 11 项, 只列最近 3 项", block);          // 截断诚实性不因瘦身丢失
+
+        var menu = ContinuationBrief.BuildMenu(facts, 11);
+        Assert.True(menu.Count <= ContinuationBrief.MaxMenuItems, "菜单不超过 3 项");
+        foreach (var m in menu)
+            Assert.True(m.Length <= ContinuationBrief.MaxMenuItemChars, $"菜单项过长 ({m.Length}): {m}");
+        Assert.Contains("count.txt", menu[0]);                     // 首项接地最近真实产物
+
+        var ask = ContinuationBrief.BuildAsk("继续", facts, 11);
+        Assert.True(ask.Length <= ContinuationBrief.MaxAskChars, $"反问须 ≤ {ContinuationBrief.MaxAskChars} (实际 {ask.Length})");
+        Assert.Contains("1. ", ask);                               // 编号菜单
+        Assert.Contains("2. ", ask);
+        Assert.Contains("继续什么", ContinuationBrief.BuildBlock(facts, 11));
+
+        // 单源: 兜底反问 == 门问句 (同形 ⇒ 不靠模型自觉)
+        Assert.Equal(ask, ContinuationBrief.ComposeFallback("继续", facts, 11));
+        // 空态: 单项菜单, 且绝不出现示例枚举/文件名
+        var emptyAsk = ContinuationBrief.BuildAsk("继续", Array.Empty<ArtifactFact>());
+        Assert.DoesNotContain("搜索资料", emptyAsk);
+        Assert.DoesNotContain(".txt", emptyAsk);
+        Assert.Single(ContinuationBrief.BuildMenu(Array.Empty<ArtifactFact>()));
     }
 
     // ---------- 面 6: 作废告知人性化 (内部术语机检) ----------
@@ -248,6 +291,9 @@ public sealed class ContinuationBriefTests
         foreach (var bad in PlanResumeService.InternalJargon)
             Assert.DoesNotContain(bad, text);                     // 负控: 内部术语一律不上前台
         Assert.DoesNotContain(PlanResumeService.RefuseChoiceMismatch, text); // 内部理由(可选范围)不上前台
+        // R460 精炼令: 承接句硬上限 (78 → ≤48 字符)
+        Assert.True(text.Length <= PlanResumeService.MaxNoticeChars,
+            $"人话承接句须 ≤ {PlanResumeService.MaxNoticeChars} 字符 (实际 {text.Length})");
     }
 
     [Fact]
