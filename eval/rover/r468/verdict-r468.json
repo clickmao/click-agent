@@ -1,0 +1,99 @@
+{
+ "round": "R468",
+ "head": "f55d6cc",
+ "checks": {
+  "C6_port_dual_source_selftest": {
+   "pass": true,
+   "ack_cases": 13,
+   "repeat_cases": 15
+  },
+  "C5_composition_table": {
+   "pass": true,
+   "real": {
+    "n": 1179,
+    "pass": 890,
+    "other": 173,
+    "driver": 116,
+    "ack": 0,
+    "repeat": 0,
+    "skip_face": 0,
+    "skip_share": 0.0
+   },
+   "grid_p12": {
+    "n": 12,
+    "pass": 2,
+    "ack": 4,
+    "repeat": 2,
+    "other": 4,
+    "skip_face": 6,
+    "skip_share": 0.5
+   },
+   "injected_or_system_excluded": 1406,
+   "sessions_with_genuine": 21
+  },
+  "C1C2C3_diff_harness": {
+   "pass": true,
+   "failed": 0,
+   "passed": 3,
+   "total": 3,
+   "corpus_rows": 423,
+   "tests": [
+    "Port_Corpus_Labels_Match_Product_Judges",
+    "Corpus_Covers_Archive_And_Repeat_And_Pass_Families",
+    "RealTraffic_Rows_Have_Zero_Product_SkipFace"
+   ]
+  },
+  "C4_full_suite_x3_sequential": {
+   "pass": true,
+   "runs": 3,
+   "faileds": [
+    0,
+    0,
+    0
+   ],
+   "totals": [
+    1414,
+    1414,
+    1414
+   ]
+  }
+ },
+ "posthoc": {
+  "checks_posthoc_note": "① 探索性首跑 (早于预注册) 与本复现跑读数逐项相同: genuine=1,179 / pass=890 / other=173 / driver=116 / ack=0 / repeat=0 / corpus=423",
+  "first_run_equals_repro": true,
+  "driver_examples_top": [
+   "持续",
+   "持续",
+   "持续",
+   "持续",
+   "继续",
+   "继续",
+   "持续",
+   "持续"
+  ],
+  "len_hist_bucket": {
+   "0": 292,
+   "10": 118,
+   "20": 101,
+   "30": 42,
+   "40": 36,
+   "50": 60,
+   "60": 20,
+   "70": 17,
+   "80": 27,
+   "90": 35,
+   "100": 22,
+   "110": 13,
+   "120": 26,
+   "130": 7,
+   "140": 9,
+   "150": 17,
+   "160": 7,
+   "170": 6,
+   "180": 7,
+   "190": 4,
+   "200": 313
+  }
+ },
+ "verdict": "PASS"
+}

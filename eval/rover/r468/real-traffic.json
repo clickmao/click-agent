@@ -1,0 +1,93 @@
+{
+ "source": "/home/agentuser/.hermes/state.db",
+ "rules_meta": {
+  "gate_source": "src/agent.modelqueue/LocalGenerationPort.cs",
+  "gate_source_sha256": "bacea89e5604433ca7294e799576b49bd85cf60e8b4b71759ce4d2f2248c29cd",
+  "test_source": "src/agent.tests/LocalTurnGateTests.cs",
+  "test_source_sha256": "aa9b571a51647bc57e49298513d90d85fe063736c38ac5dda8e6adedd33e7b7f",
+  "repeat_markers_n": 16,
+  "question_signals_n": 24,
+  "request_signals_n": 31,
+  "correction_signals_n": 17,
+  "substantive_len": 24
+ },
+ "counts": {
+  "genuine_user_turns": 1179,
+  "pass": 890,
+  "injected_or_system": 1406,
+  "other": 173,
+  "driver": 116
+ },
+ "genuine_user_turns": 1179,
+ "skip_face": {
+  "ack": 0,
+  "repeat": 0,
+  "total": 0,
+  "share": 0.0
+ },
+ "driver_share": 0.0984,
+ "pass_share": 0.7549,
+ "other_share": 0.1467,
+ "sessions_total": 21,
+ "sessions_with_skip_face": 0,
+ "len_hist_bucket": {
+  "0": 292,
+  "10": 118,
+  "20": 101,
+  "30": 42,
+  "40": 36,
+  "50": 60,
+  "60": 20,
+  "70": 17,
+  "80": 27,
+  "90": 35,
+  "100": 22,
+  "110": 13,
+  "120": 26,
+  "130": 7,
+  "140": 9,
+  "150": 17,
+  "160": 7,
+  "170": 6,
+  "180": 7,
+  "190": 4,
+  "200": 313
+ },
+ "driver_examples": [
+  "持续",
+  "持续",
+  "持续",
+  "持续",
+  "继续",
+  "继续",
+  "持续",
+  "持续",
+  "继续",
+  "继续",
+  "持续优化",
+  "持续优化",
+  "持续优化",
+  "继续",
+  "继续",
+  "继续",
+  "继续",
+  "继续",
+  "继续",
+  "继续"
+ ],
+ "grid_p12": {
+  "pass": 2,
+  "ack": 4,
+  "repeat": 2,
+  "other": 4
+ },
+ "active_only_counts": {
+  "genuine_user_turns": 50,
+  "pass": 45,
+  "other": 4,
+  "driver": 1,
+  "injected_or_system": 213
+ },
+ "sql_scope": "all user rows (active 不限); active_only_* 为仅 active=1 子集",
+ "corpus_rows": 423
+}

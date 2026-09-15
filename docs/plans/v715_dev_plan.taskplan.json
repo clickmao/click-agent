@@ -358,7 +358,7 @@
     {
       "Id": "dev-r462-recall-reality-gate",
       "Title": "召回-现实一致性闸 + 语言无关召回探针（编造面收口）",
-      "State": "doing",
+      "State": "done",
       "Round": "R462",
       "DocRef": "docs/plans/v0.81.0-r462-recall-reality-gate.md",
       "Evidence": "docs/reports/recall-reality-gate-r462.md",
@@ -385,11 +385,38 @@
     {
       "Id": "dev-r465-repeat-skip",
       "Title": "真诉求轮可跳面（纯复述族直 Skip）+ 本地通道预热 + FileLock 释放不 unlink",
-      "State": "doing",
+      "State": "done",
       "Round": "R465",
       "DocRef": "docs/plans/v0.83.0-r465-repeat-skip.md",
       "Evidence": "docs/reports/r465-repeat-skip.md",
       "Summary": "承 R464(−38.52%)。三处「不必要的 API 请求/代价」: ① 再讲一遍/从头再说 仍走远端(不需要新内容, 可回放上一条答复) ② 本地 3B 的装载+prefill 全在用户可见路径 ③ FileLock.Release 的 unlink 竞态。实现: TurnGateJudge.IsPureRepeat(完整标记+白名单字符集+无问号, 三道全过) 在 MechanicalPass 之后前置判 Skip(零 r1 零远端), 本地消化=回放上一条 Assistant 答复原文, 开关 AGENTFRAMEWORK_GATE_REPEAT_SKIP(默认 on); ILocalGenerationPort.WarmupAsync + AGENTFRAMEWORK_LOCAL_WARMUP=1; FileLock.Release 不再 unlink(只读 IsHolderDead, Describe 优先 /proc/locks); embedder 通道同形三态接线。五臂同网格 p12/同桩/同 role/同二进制: Arole 21/33,323; B3B(复述关) 8/20,487 ≡ R464/R463 逐位; R(默认) 6/14,529 = −56.40%, repeat 命中 2, 本地 r1 仅 4 次(Ack 轮), 复述两轮 eval/gen=-1; R2 复跑 Δ+2 tok 已归因(工作区目录名 +1 char ×2 调用); W1 首门控轮 49.9→22.2s(warm_ms=26036)。真实计费面 n=6: 桩侧估算低估 18.1%(est/real 0.8192 ⇒ k=1.221), 真实侧出现 prompt cache 命中 640/2304/2816。全量单测 1409/1409; AOT 15,335,040B 0 IL。诚实边界: C3 FAIL(t6 被承接反问覆盖) + C6 FAIL(Δ+2 tok) 保留, 正确口径单列 checks_posthoc。"
+    },
+    {
+      "Id": "dev-r466-repeat-priority",
+      "Title": "复述回放 vs 承接反问优先级（修 R465 C3 FAIL）+ 结算类口径单源",
+      "State": "done",
+      "Round": "R466",
+      "DocRef": "docs/plans/v0.83.1-r466-repeat-priority.md",
+      "Evidence": "docs/reports/r466-repeat-priority.md",
+      "Summary": "R465 遗留 C3 FAIL: 纯复述轮 skip 层已逐字回放, 但 R458 承接反问收口面无条件覆盖 ⇒ 用户可见答复 46 字反问。修法: ContinuationBrief.SettleRepeatVerbatim 口径单源 + ShouldApplyFallback(settleKind, reply, facts) + 主链写 _localSettleKind(打点/收口同源) + 逐轮清零; 开关 AGENTFRAMEWORK_CONTINUATION_REPEAT_PRIORITY(默认 on, 置 0 = R465 行为 ⇒ 同二进制负控)。读数: Arole 13/32,097; R 6/14,529(−54.73%); NC(off) 6/14,531 且 t6 复现 46 字反问; R2 6/14,531 逐位同; 全量 1411/1411。"
+    },
+    {
+      "Id": "dev-r467-denominator-pinning",
+      "Title": "分母固化：远端调用分解台账 + 臂可比性闸 + 同二进制判官标志复现裁决",
+      "State": "done",
+      "Round": "R467",
+      "DocRef": "docs/plans/v0.84.0-r467-denominator-pinning.md",
+      "Evidence": "docs/reports/r467-denominator-pinned.md",
+      "Summary": "R466 遗留「Arole 分母跨轮漂移(21/33,323 ↔ 13/32,097)」无字段无机检。定因: 产品里真发远端判官的唯一路径 = RelationJudgeEnabled != true ⇒ 臂定义漂移。四臂串行真跑: Arole 13/32,097(rj on) vs Aroff 21/33,323(rj off) 差 8 调用/1,226 tok 与桩侧逐位吻合; R 6/14,529(−54.73%); R2 6/14,531。新器具 settle_r467.py(calls_class/judge_route) + denominator_gate.py(G1–G5, 自检 3/3), registry +2 行(L2/L4)。"
+    },
+    {
+      "Id": "dev-r468-real-traffic-composition",
+      "Title": "真实流量组成 vs 网格组成：门判降幅的外部效度机检",
+      "State": "done",
+      "Round": "R468",
+      "DocRef": "docs/plans/v0.85.0-r468-real-traffic-composition.md",
+      "Evidence": "docs/reports/r468-real-traffic-composition.md",
+      "Summary": "把「降幅外部效度」变机检判据: 源码派生规则端口(gate_rules.py, 双源自检 13+15 例) + 产品差分测试 GateRulesPortDiffTests(423 行 0 不一致) + state.db 真实用户轮组成复算。读数: 网格 ack4+repeat2 = 50% 可跳(降幅 −54.7%/−56.4%); 真实 1,179 轮 ack 0 + repeat 0 = 0.00% 可跳, driver 116(9.8%)/pass 890/other 173 ⇒ 90.2% 轮必走远端; 注入负控 skip_face=2; 全量单测 ×3 连续 1414/1414。"
     }
   ]
 }

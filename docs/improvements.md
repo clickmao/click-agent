@@ -2040,3 +2040,14 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **证据**：`eval/rover/r467/{verdict-r467.json,ledger-*.json,arm-*.json,gate-selftest.json,gate-audit.json,flags-*.json,calls-*.jsonl,turns-*.jsonl,run_arm.sh,settle_r467.py,denominator_gate.py}`；`docs/reports/r467-denominator-pinned.md`；`docs/plans/v0.84.0-r467-denominator-pinning.md`；registry `r467.call-decomposition-ledger`(L2) / `r467.arm-flag-comparability-gate`(L4)。
 - **执行证据**：形式门禁 9/9 绿（执行数 9>0）；全量首跑 1410/1411（1 例**既有 flake**：`TelemetryPendingTests` 依赖 `AgentTelemetry` 静态类 pending ring，对执行顺序敏感），该例隔离跑 2/2 绿、全量复跑 **1411/1411** 绿 —— 如实记录，**不以复跑代替修复**。
 - **下轮候选（R468）**：① 判官**延迟面**（judge 与门共用常驻端口的合并/优先级；判据 = `local_ms` 首末 + 门控轮稳态延迟，**禁以 token 面代替**）② 真实流量 1542 轮用 `calls_class` 分解复验（判定「守卫承重」承在哪类调用）③ 前缀按需注入（主调用 prompt 逐轮单调增 2,019→3,461 tok = 当前最大单项成本）④ 历史器具键回填 ⑤ `TelemetryPendingTests` 顺序隔离（判据 = 连续 3 次全量 1411/1411）。
+
+
+## R468（2026-09-16）真实流量组成 vs 网格组成：门判降幅的**外部效度**机检
+
+- **因**: R465/R466 的 −56.40%/−54.73% 分子分母同取一张 12 轮网格（4 认可 + 2 复述 + 6 其他 = **50% 可跳面**）；该组成系为族覆盖而设计，从未机检是否代表真实分布。R449/R452 的「真实 ack = 0/1542」是**旧规则**结论，未在新规则（Ack 主闸 + 纯复述直跳 + MechanicalPass 优先）上复验。
+- **法**: `eval/rover/r468/gate_rules.py` 从 `LocalGenerationPort.cs` **正则派生**规则（`:304`/`:356`/`:359`/`:458`/`:461`/`:469`/`:477`，记源 sha256），期望值取产品自身 `InlineData`（认可族 13 / 纯复述族 15）⇒ `--selftest` PASS；新测试 `GateRulesPortDiffTests`（3 例）在 **423 行**语料（真实轮 + 网格 p12 + InlineData）上断言端口标签 ≡ 产品三判组合。
+- **读数（机检）**: 真实语料 = `state.db` `role='user'` 2,585 行 − 1,406 系统注入 = **1,179 真实轮**；`pass 890 (75.5%) / other 173 (14.7%) / driver 116 (9.8%) / ack 0 / repeat 0` ⇒ **机械可跳面 0.00%**，需远端主调用 **90.2%**。对照网格 **50.0%** 可跳。
+- **结论**: 「≥30% 降幅」绑定**具备可跳结构的语料**，在唯一可得的外部真值通道上出现率 0 ⇒ 不外推真实用户面；真实分布 90.2% 轮必走远端 ⇒ 撬动真实 KPI 的杠杆是**单次调用 token 量**（前缀按需注入/缓存命中），列为 R469 首选。
+- **负控**: 注入「好的，明白。」/「再讲一遍。」⇒ `skip_face=2`（指标非恒 0）；产品侧存在性断言「真实行可跳面 == 0」存在即 FAIL。
+- **形式校验**: 全量单测 **×3 顺序隔离连续 1414/1414**（`Failed 0` ×3，执行数一致）；定向差分 3/3；零产品行为改动、零 llama-server、零远端、未 push。
+- **边界**: 判据落盘晚于探索性首跑（C1–C6 为复现跑，首跑读数单列 posthoc）；端口 ≡ 产品仅覆盖 423 行；「系统注入剔除」前缀规则本身未机检；真实语料 ≠ 产品最终用户分布（待确认）。

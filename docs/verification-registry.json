@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R467",
+ "updated_round": "R468",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -1918,6 +1918,38 @@
     "eval/rover/r467/gate-audit.json"
    ],
    "owner_round": "R467"
+  },
+  {
+   "id": "r468.real-traffic-composition-external-validity",
+   "level": "L2",
+   "capability": "降幅外部效度机检：用产品判据（源码派生端口 + 产品差分校验）在【真实用户轮语料】(state.db 只读; 1,179 真实轮, 剔除 1,406 系统注入) 上复算机械可跳面, 与网格 p12 组成并列。读数: 网格 ack4+repeat2=50% 可跳; 真实 ack 0 + repeat 0 = 0.00% 可跳; 真实面 90.2% 轮必走远端主调用 ⇒ 「≥30% 降幅」只在具备可跳结构的语料上成立, 不外推真实分布",
+   "evidence_cmd": "python3 eval/rover/r468/settle_r468.py",
+   "evidence_path": "eval/rover/r468/verdict-r468.json",
+   "negative_control": "① 注入负控: 向语料注入可跳行(\"好的，明白。\"/\"再讲一遍。\") ⇒ 指标必须变非 0, 实测 labels=[ack,repeat] skip_face=2 (eval/rover/r468/neg-control-r468.json) ⇒ 指标非恒 0; ② 存在性断言: 产品侧测试 RealTraffic_Rows_Have_Zero_Product_SkipFace 只要语料出现认可族/复述族即 FAIL",
+   "covers": [
+    "eval/rover/r468/settle_r468.py",
+    "eval/rover/r468/real_traffic_classify.py",
+    "eval/rover/r468/real-traffic.json",
+    "eval/rover/r468/neg-control-r468.json",
+    "eval/rover/r468/verdict-r468.json",
+    "docs/reports/r468-real-traffic-composition.md"
+   ],
+   "owner_round": "R468"
+  },
+  {
+   "id": "r468.gate-rules-port-diff",
+   "level": "L2",
+   "capability": "门判规则 Python 端口与产品判据的差分一致性: 端口从 src/agent.modelqueue/LocalGenerationPort.cs 正则派生(7 组规则: AckFamilyChars:304 / RepeatFamilyChars:356 / RepeatMarkers:359 / SubstantiveLengthThreshold:458 / 三信号表:461,469,477 + 源 sha256), 期望值取产品自身测试 InlineData(认可族 13 例 / 纯复述族 15 例); 423 行语料(真实轮+网格 p12+InlineData)逐条标签 ≡ 产品 MechanicalPass|IsPureRepeat|MechanicalAck 组合, 不一致 0; 规则改动即把该测试判红 ⇒ 强制重生语料(证据↔器具版本绑定)",
+   "evidence_cmd": "$HOME/.dotnet/dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~GateRulesPortDiffTests",
+   "evidence_path": "eval/rover/r468/difftest_r468.log",
+   "negative_control": "① 端口禁手抄: gate_rules.py --selftest 的期望值取自产品 InlineData(28 例), rc!=0 即失败; ② 语料四族覆盖断言 Corpus_Covers_Archive_And_Repeat_And_Pass_Families(防单族恒真); ③ 差分测试三例均为等值断言, 非同义恒真式",
+   "covers": [
+    "src/agent.tests/GateRulesPortDiffTests.cs",
+    "eval/rover/r468/gate_rules.py",
+    "eval/rover/r468/real-traffic-corpus.jsonl",
+    "eval/rover/r468/difftest_r468.log"
+   ],
+   "owner_round": "R468"
   }
  ],
  "aot_check_policy": "release_tag_only",
