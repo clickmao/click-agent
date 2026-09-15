@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R468",
+ "updated_round": "R469",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -1950,6 +1950,34 @@
     "eval/rover/r468/difftest_r468.log"
    ],
    "owner_round": "R468"
+  },
+  {
+   "id": "r469.hit-ceiling-bands",
+   "level": "L2",
+   "capability": "命中率理论上限分档: 把用户轮长度从命中率分母剥离, 机检真实轮(400)在四档下的命中上限与达97%所需前缀; 显式声明长档(>93 tok)结构性不可达(86.8~96.2%), 97%单值红线不得对长中档报出",
+   "evidence_cmd": "python3 eval/rover/r469/hit_ceiling_bands.py",
+   "evidence_path": "eval/rover/r469/hit-ceiling.json",
+   "negative_control": "prefix_stability.py --neg-control: 正控(纯尾部追加) share=1.0 ∧ 负控(system 首段注入动态字段) share=0.7918 分歧前移 ⇒ 前缀占比指标非恒真",
+   "covers": [
+    "eval/rover/r469/hit_ceiling_bands.py",
+    "eval/rover/r469/hit-ceiling.json",
+    "docs/reports/r469-hit-ceiling-bands.md"
+   ],
+   "owner_round": "R469"
+  },
+  {
+   "id": "r469.main-call-prefix-stability",
+   "level": "L2",
+   "capability": "主调用 prompt 前缀逐字节稳定性(离线, 无 llama-server): 从桩侧落盘全量 messages 复算逐对公共前缀/新增字符数; 门控臂 R 主调用 5/5 对 tail_only ∧ share=1.0, 新增由用户轮主导(206~367 字符) ⇒ 注入侧无压缩空间",
+   "evidence_cmd": "python3 eval/rover/r469/prefix_stability.py",
+   "evidence_path": "eval/rover/r469/prefix_stability_r467.json",
+   "negative_control": "同 --neg-control 正/负控对(见 r469.hit-ceiling-bands); 且真实低值对(share 0.0010~0.0013)来自跨类调用交错, 证明指标对非 tail-only 输入不恒真",
+   "covers": [
+    "eval/rover/r469/prefix_stability.py",
+    "eval/rover/r469/prefix_stability_r467.json",
+    "eval/rover/r469/prefix_stability_negctl.json"
+   ],
+   "owner_round": "R469"
   }
  ],
  "aot_check_policy": "release_tag_only",

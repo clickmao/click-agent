@@ -417,6 +417,15 @@
       "DocRef": "docs/plans/v0.85.0-r468-real-traffic-composition.md",
       "Evidence": "docs/reports/r468-real-traffic-composition.md",
       "Summary": "把「降幅外部效度」变机检判据: 源码派生规则端口(gate_rules.py, 双源自检 13+15 例) + 产品差分测试 GateRulesPortDiffTests(423 行 0 不一致) + state.db 真实用户轮组成复算。读数: 网格 ack4+repeat2 = 50% 可跳(降幅 −54.7%/−56.4%); 真实 1,179 轮 ack 0 + repeat 0 = 0.00% 可跳, driver 116(9.8%)/pass 890/other 173 ⇒ 90.2% 轮必走远端; 注入负控 skip_face=2; 全量单测 ×3 连续 1414/1414。"
+    },
+    {
+      "Id": "dev-r469-hit-ceiling-bands",
+      "Title": "R469 命中率理论上限分档(用户轮不可压 ⇒ 97% 对长档不可用)",
+      "State": "done",
+      "Round": "R469",
+      "DocRef": "docs/plans/v0.86.0-r469-hit-ceiling-bands.md",
+      "Evidence": "eval/rover/r469/hit-ceiling.json",
+      "Summary": "主调用 5/5 对 tail-only(share=1.0); 短档 49.5% 可达 97%, 长档上限 86.8~96.2% 结构性不可达; 负控 share 1.0→0.7918"
     }
   ]
 }
