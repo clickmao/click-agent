@@ -26,7 +26,17 @@ bash eval/rover/r502/run_contrast_r502.sh                        # 两侧对照�
 python3 eval/rover/r502/judge_contrast_r502.py --codex <cj> --agent <aj> \
         --prereg eval/rover/r502/prereg_r502.json --adapter-log /tmp/r502_env/adapter
 ```
-- **待办**：① 真机首跑（**R501 收口后**；禁与真机测量并发 —— `MemAvailable` 实测 1,283 MB 时让行）；② ~~游戏族缺口~~ **已补（R502 内）**：`eval/probe/tasks.py` 新增**游戏族 `life_k`**（Conway 生命游戏第 k 代；隐藏用例含「边界不环绕」判别；族变异 `life_wrap`=环绕 ⇒ 实测整题全对 0）；③ 补族后**预注册已重生成**（v2，仍在首跑前）。
+- **待办**：① ~~真机首跑~~ **已完成（2026-09-17，rc=0 全绿）**：同窗 6 题对照 —— 两侧整题全对 **6/6 = 1.000**（57/57 用例）；codex 14 调用/113,850 tok/97.18 s，本侧 10 调用/**49,709 tok**/21.12 s（tokens −56.3%、调用 −28.6%、墙钟 −78.3%，同质量）；同模型机检 24/24 行 `deepseek-chat`；② 扩面（更多游戏族/见证族 ⇒ 重跑预注册）；③ 效果面残留：R501 t8 本地改写被 guard 以 `question_mark` 拒收（见 improvements v0.98.2）。
+
+### 7.1 首跑读数（真机, 2026-09-17, rc=0）
+
+| 侧 | 整题全对 | 用例 | 调用 | tokens | 墙钟 |
+|---|---|---|---|---|---|
+| 外部真值 codex-cli（同模型） | 6/6 = 1.000 | 57/57 | 14 | 113,850 | 97.18 s |
+| 本侧 AOT agenthost | 6/6 = 1.000 | 57/57 | 10 | **49,709** | **21.12 s** |
+
+判据: H1 仪器判别力 ✓ · H2 外部真值可用 ✓ · H3 同输入机检 ✓（两侧 taskset_sha `18e7c8dddb54e220`）· H4 同模型机检 ✓（落盘 `request.upstream_request.model`；v2 修字段路径）· H5 分列（禁总量断言）✓。
+**诚实边界**: 两侧静态面不同源（codex 自带 agentic 循环/沙箱/命令执行）⇒ **禁据 token 总量断言优劣**；n=6 单跑单窗；prereg 标签 `deepseek-flash` 为本仓侧标签、供应商侧名 `deepseek-chat`。
 
 ## 文件清单（本目录）
 

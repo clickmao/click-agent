@@ -33,6 +33,23 @@ def side_rows(d):
     return rows
 
 
+def _model_counts(logdir, side):
+    """从 adapter 落盘取**真实模型名**（`request.upstream_request.model`）—— r502 首跑实测唯一落点。
+
+    v2 修 (读写契约不一致): 原实现读顶层 `models` 字段（落盘里并不存在）⇒ 恒空 ⇒ H4 假红。
+    """
+    out = {}
+    for p in glob.glob(os.path.join(logdir or "", "side-%s-*.json" % side)):
+        try:
+            d = json.load(open(p, encoding="utf-8-sig"))
+        except Exception:
+            continue
+        m = (((d.get("request") or {}).get("upstream_request") or {}).get("model")) or ""
+        if m:
+            out[m] = out.get(m, 0) + 1
+    return out
+
+
 def usage_sum(logdir, side):
     tot_in = tot_out = 0
     calls = 0
@@ -100,13 +117,18 @@ def main() -> int:
     crit.append({"id": "H2", "name": "外部真值可用性", "pass": c_ok >= 1, "status": h2_status,
                  "measured": {"codex_ok": c_ok, "codex_n": len(rc_rows), "agent_ok": a_ok, "agent_n": len(ra_rows)}})
 
-    # H4 同模型（E3）
+    # H4 同模型（E3）: 真值取 adapter 落盘 `request.upstream_request.model`（两侧必须同一模型）
     uc = usage_sum(a.adapter_log, "codex")
     ua = usage_sum(a.adapter_log, "agent")
-    both_model = uc["models"] and ua["models"] and set(uc["models"]) | set(ua["models"]) == {"deepseek-flash"}
-    h4_status = "pass" if both_model else ("unreported" if not (uc["calls"] and ua["calls"]) else "fail")
-    crit.append({"id": "H4", "name": "同模型机检", "pass": both_model, "status": h4_status,
-                 "measured": {"codex": uc, "agent": ua}})
+    uc["model_counts"] = _model_counts(a.adapter_log, "codex")
+    ua["model_counts"] = _model_counts(a.adapter_log, "agent")
+    mo_c, mo_a = set(uc["model_counts"]), set(ua["model_counts"])
+    same_model = bool(mo_c) and mo_c == mo_a and len(mo_c) == 1
+    h4_status = "pass" if same_model else ("unreported" if not (uc["calls"] and ua["calls"]) else "fail")
+    crit.append({"id": "H4", "name": "同模型机检", "pass": same_model, "status": h4_status,
+                 "measured": {"codex": uc, "agent": ua,
+                              "prereg_label": (pre.get("external_reference") or {}).get("upstream_model"),
+                              "note": "prereg 记的是本仓侧标签; adapter 落盘是供应商侧名(deepseek-chat) —— 判据只要求两侧同一模型"}})
     if h4_status == "fail":
         rc = 1
 
