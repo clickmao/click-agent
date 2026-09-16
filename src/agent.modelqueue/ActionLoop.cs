@@ -172,6 +172,11 @@ public static class ActionLoopRunner
             TurnIndex = src.TurnIndex,
             ReasoningEffort = src.ReasoningEffort,
             ToolsJson = src.ToolsJson,
+            Intent = src.Intent,
+            // R490: 计数器必须随 Clone 透传 —— 否则经动作环的每一次远端调用都会把
+            // 「剪裁了 N 条本地模板答复」打点成 0 (R490 T 臂首跑实测踩中: 请求体内模板串确已
+            // 消失, 但 tool_decl_gate.replay_trimmed 恒 0) ⇒ 打点与实发面脱钩。
+            ReplayTrimmedLocalTemplates = src.ReplayTrimmedLocalTemplates,
         };
         copy.History.AddRange(src.History);
         copy.ImageUrls.AddRange(src.ImageUrls);

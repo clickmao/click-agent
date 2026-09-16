@@ -728,6 +728,17 @@ python3 eval/run_round.py <新轮号> "revert-verify <原commit>" --quick   # �
 - 诚实边界：n=3 跑 / 单夹具 / 无置信区间；**H5 为预注册缺陷**（B 臂 gate=off ⇒ 模板 0 是应然）保留 FAIL 不回改；跨轮不可比（H0 FAIL）；去空正文为 **post-hoc 单列**；候选⑤（R479 遗留）/⑥（上下文剪裁）**未做**（改链 ⇒ 换被测二进制，与稳定性窗口互斥）。
 - registry：本轮 +5 行（`updated_round=R489`）；提交 `1ebaae8`（79 paths，仅本地；`PUSH_PAUSED` 在位，未 push）。
 
+## R490（2026-09-16）声明面按需：**用户一轮任务 token −60.96%**（同二进制单变量）；门默认关
+
+- 靶点承接：R489 的归因（调用数 = 远端轮 + 上游空正文工具轮；51/51 请求每次带 4 工具、intent 全 `general`）。本轮把「不必要的远端请求」直接压掉：**只在工作区动作类意图下声明工具**。
+- 代码：`src/agent.modelqueue/ToolDeclGate.cs`（新，门 `AGENTFRAMEWORK_TOOL_DECL_GATE` 默认关，判据只吃 `IntentRecognizer.Intents` 常量，未知意图保守下发）；`ModelQueueAdapter.cs`（声明点 + `ToQueuePrompt` 回放剪裁）；`ModelQueueRouter.cs`（`QueuePrompt.Intent`/`ReplayTrimmedLocalTemplates` + `tool_decl_gate` 逐调用打点）；`ActionLoop.cs`（Clone 透传）；`R490ToolDeclGateTests.cs`（11 例）。
+- 真机（同一 AOT `7dc4f117…` / 同一 12 轮夹具 / 同窗）：B 15 调用 **65,958 tok** ¥0.020412 → R 9 调用 **37,396 tok**（−43.30%）→ T1（声明门开）**6 调用 25,753 tok** ¥0.009222（**−60.96%**，空正文工具轮 3→0，finish 全 stop）；R→T1 = −31.13%。质量：真假判别轮 T1/R 全过、B 臂 FAIL ⇒ 不降。
+- 回放剪裁：本地模板答复不进远端回放（R489 基线 100 条/51 请求 → R490 三臂 0；user→user 相邻对作非空判据）。
+- 器具：`eval/rover/r490/{run_arm_real_r490.sh(+.diff vs R489), run_rest_r490.sh, analyze_r490.py, register_r490.py, publish_and_il_check.sh, teardown_assert.py}`；`verdict-r490.json`。
+- 测试/AOT：1521/1521；IL 警告 0；15,367,840 B。
+- 诚实边界：T2 复现臂**未跑**（起手闸红 MemAvailable 2,615 < 2,650 MB，按纪律让行）；T 臂 I5 打点红（Clone 未透传剪裁计数 ⇒ 已修 + 单测锁，新 sha `8b4efbb7…` 真机复测待下轮）；门默认关；n=12 单夹具单跑。
+- 下轮候选：① 门开质量真机复测（新 sha）+ 未知意图兜底 ② T2 复现臂（查 4 个 R476/R479 遗留 role host 对起手闸内存的影响）③ 上下文剪裁/前缀复用 ④ R479 遗留（路由器接线 / 入链 prompt 正文槽位化）⑤ 门开重复 3 跑求下界 ⑥ 起手闸内存阈值专项。
+
 ### R489 · 轮次索引增量（机取自 `docs/verification-registry.json`，禁手改）
 | R489 | `r489.action-loop-empty-body-diff` | L2 | **R486 差分夹具在 `ACTION_LOOP=on` 下重跑** (R488 只测了 off 形态): 桩请求数 pre-empty **7** vs post-empty  … |
 | R489 | `r489.arm-stability-repeat3` | L2 | **主臂同窗三跑稳定性 (否定单次读数)**: 同一 AOT `e9b86fc9…` / 同一夹具 p12 / 同一 role / 同一窗口, 分母取同窗 B 臂。B=17 调用  … |

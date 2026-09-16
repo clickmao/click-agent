@@ -29,6 +29,8 @@ public sealed class ModelQueueAdapter : ILLMCaller, agent.subagent.ILLMCallerFor
     /// <summary>
     /// R379: Prompt → QueuePrompt 协议转换 (自 CallAsync 抽出为单一事实源, 缓存前缀机检直接消费)。
     /// 契约: History 按时间正序**全量**映射 (倒序窗口/截断都会让 provider 缓存前缀失配)。
+    /// R490 例外 (唯一): **本地模板答复** (零远端调用轮次的产物, 从未发往任何 provider)
+    /// 不是缓存前缀的一部分 ⇒ 剔除 (见 <see cref="IsLocalTemplateReply"/>)。
     /// </summary>
     public static QueuePrompt ToQueuePrompt(Prompt prompt)
     {
@@ -44,15 +46,38 @@ public sealed class ModelQueueAdapter : ILLMCaller, agent.subagent.ILLMCallerFor
             ReasoningEffort = prompt.ReasoningEffort,
             // v0.12.0 A2: 图像附件透传 (Router 带图强制云端 + parts[] — 本地 qwen 无视觉, 缺陷 62)
             ImageUrls = prompt.ImageUrls,
+            Intent = prompt.Intent,
         };
+        var trimmedLocalTemplates = 0;
         foreach (var msg in prompt.History)
+        {
+            var role = msg.Role == MessageRole.User ? "user" : "assistant";
+            // R490 回放剪裁: 本地模板答复 (「收到。」= 零远端调用 Skip 轮的产物) **不是任何 provider 的产出**,
+            // 从未发往任何 provider ⇒ 不是任何缓存前缀的一部分。此前被逐字回放 (R489 实测: 51 次请求体内
+            // 共 100 条 assistant 「收到。」) ⇒ 纯白付账 + 上下文噪声 (R438 只修了 user 侧, assistant 侧是缺口)。
+            // 注: 复述轮 (R465/R475) 的本地答复 = **回放上一条实质答复原文** (provider 产出) ⇒ 不在此列。
+            if (role == "assistant" && IsLocalTemplateReply(msg.Content))
+            {
+                trimmedLocalTemplates++;
+                continue;
+            }
             qp.History.Add(new QueueHistoryMessage
             {
-                Role = msg.Role == MessageRole.User ? "user" : "assistant",
+                Role = role,
                 Content = msg.Content,
             });
+        }
+        qp.ReplayTrimmedLocalTemplates = trimmedLocalTemplates;
         return qp;
     }
+
+    /// <summary>
+    /// R490: 本地模板答复判别 (回放剪裁的唯一判据)。
+    /// 只吃产品自身常量 <see cref="ModelQueueRouter.LocalSkipFallback"/> (= 零 token 模板串),
+    /// 非用户文本关键词表 (R458 铁律)。复述轮回放的**实质原文**与模板串不等 ⇒ 不受影响。
+    /// </summary>
+    public static bool IsLocalTemplateReply(string? content)
+        => content is not null && content.Trim() == ModelQueueRouter.LocalSkipFallback;
 
     public async Task<LLMResponse> CallAsync(Prompt prompt, CancellationToken ct = default)
     {
@@ -64,7 +89,10 @@ public sealed class ModelQueueAdapter : ILLMCaller, agent.subagent.ILLMCallerFor
         if (_actionPort is not null && ActionLoopRunner.IsEnabled())
         {
             // R456 声明面: 仅在动作环开启时注入 tools —— 关闭时请求体与旧版逐字节相同 (零回归)
-            qp.ToolsJson = ActionToolDecl.ToolsJson;
+            // R490 声明面按需: 门开 (AGENTFRAMEWORK_TOOL_DECL_GATE) 时只对**工作区动作类意图**下发。
+            // 门关 (未设) ⇒ 恒下发 ⇒ 与 R456..R489 逐字节相同。
+            if (ToolDeclGate.ShouldDeclare(prompt.Intent, ToolDeclGate.IsEnabled()))
+                qp.ToolsJson = ActionToolDecl.ToolsJson;
             var (resp, outcome) = await ActionLoopRunner.RunAsync(
                 qp,
                 (p, c) => _router.CallAsync(p, TaskKindHint.General, intent, c),

@@ -31,6 +31,15 @@ public sealed class QueuePrompt
     /// <summary>R456 声明面: 工具声明 JSON (OpenAI function-calling 形态; null/空 = 不带工具, 行为与旧版逐字节一致)。</summary>
     public string? ToolsJson { get; set; }
 
+    /// <summary>R490: 意图键透传 (仅用于声明面打点/判据归属; 选模仍走 CallAsync 的 intent 形参)。</summary>
+    public string? Intent { get; set; }
+
+    /// <summary>
+    /// R490 回放剪裁: 被剔出远端回放的**本地模板答复**条数。
+    /// 剪裁依据 = 该答复从未发往任何 provider (零远端调用的 Skip 轮产物) ⇒ 不是任何缓存前缀的一部分。
+    /// </summary>
+    public int ReplayTrimmedLocalTemplates { get; set; }
+
     /// <summary>R456 回灌面: user 之后的追加消息 (assistant(tool_calls) / tool(...)) —— 前缀不变, 只增长尾部。</summary>
     public List<QueuePostUserMessage> PostUser { get; set; } = new();
 }
@@ -1395,6 +1404,18 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         var targetEndpoint = prompt.ImageUrls.Count > 0 ? VisionPayload.ToChatEndpoint(entry.Endpoint) : entry.Endpoint;
         var messages = BuildMessages(prompt, extraSystemSuffix);
         var request = new QueueChatRequest { Model = entry.Id, Messages = messages, ReasoningEffort = prompt.ReasoningEffort, ToolsJson = prompt.ToolsJson };
+        // R490 声明面按需 + 回放剪裁: 逐调用打点 (可机检「非工具意图调用不带 tools」)
+        {
+            var gateOn = ToolDeclGate.IsEnabled();
+            var declared = !string.IsNullOrEmpty(prompt.ToolsJson);
+            agent.config.AgentTelemetry.Emit("tool_decl_gate", "ModelQueueRouter",
+                ("declared", declared),
+                ("gate", gateOn ? "1" : "0"),
+                ("intent", prompt.Intent ?? "(null)"),
+                ("reason", ToolDeclGate.DecideReason(prompt.Intent, gateOn)),
+                ("replay_trimmed", prompt.ReplayTrimmedLocalTemplates),
+                ("turn", prompt.TurnIndex));
+        }
         if (maxTokensOverride is int mt && mt > 0) request.MaxTokens = mt;
         var requestBody = SerializeChatRequest(request);
         // R378 归因: 请求体按需落盘 (env AGENTFRAMEWORK_DUMP_REQUEST=目录) —— 缓存命中率前缀分歧点可测
