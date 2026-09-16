@@ -1,0 +1,59 @@
+{
+ "round": "EXP1-Q40",
+ "schema": "selftest-q40/1",
+ "prereg": "eval/capability/exp1-q40/prereg_q40.json",
+ "fixture": {
+  "dirty_tracked": "eval/bge/r404/csharp-fusion-replay.json",
+  "head_pin": "8685330dce82",
+  "disk_pin": "2caed12a1478",
+  "tool_pre_sha12": "c9e3f4053d9f",
+  "tool_now_sha12": "4ddeba16758b"
+ },
+ "checks": {
+  "C1_pre_downgraded(缺陷复现)": true,
+  "C1_post_not_downgraded(修复生效)": true,
+  "C1_post_visible_skip": true,
+  "C2_pre_targeted_also_downgraded(修法此前不可用)": true,
+  "C2_post_targeted_reaudit_works": true,
+  "C3_archive_consistent_drift_visible_not_red": true,
+  "C3_bogus_pin_still_red": true
+ },
+ "detail": {
+  "C1_pre": {
+   "rc": 0,
+   "pin_status": "live",
+   "reason": "worktree-only",
+   "artifact_sha12": null,
+   "skip_line": false,
+   "downgraded": true
+  },
+  "C1_post": {
+   "rc": 0,
+   "pin_status": "frozen",
+   "reason": "archived-per-round",
+   "artifact_sha12": "8685330dce82",
+   "skip_line": true,
+   "downgraded": false
+  },
+  "C2_pre": {
+   "rc": 0,
+   "pin_status": "live",
+   "artifact_sha12": null
+  },
+  "C2_post": {
+   "rc": 0,
+   "pin_status": "frozen",
+   "artifact_sha12": "2caed12a1478"
+  },
+  "C3_drift": {
+   "rc": 2,
+   "drift_n": 1,
+   "violation_for_nc": false
+  },
+  "C3_bogus_pin": {
+   "rc": 2,
+   "violation_for_nc": true
+  }
+ },
+ "verdict": "PASS"
+}

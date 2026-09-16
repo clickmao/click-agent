@@ -63,6 +63,17 @@ class ProjectionPinUnavailable(RuntimeError):
     apply 时跳过该行 (fail-visible), 绝不写入 artifact_sha12=null 的假冻结行。"""
 
 
+class FrozenEvidenceDirty(RuntimeError):
+    """EXP1-Q40 ③: 行上已声明 frozen 但证据文件在工作区**脏** —— **非定向** apply 路径上
+    拒绝把它静默降级为 live/worktree-only (闸的丢失必须是一次显式决策)。
+
+    为什么不是「保持 frozen + 按现盘字节重钉」: 那等于把**未经重审的新字节**悄悄记为已审
+    (洗白)。为什么不判红就了事: 提交闸默认开 ⇒ 判红无人可提交 ⇒ 该证据永远无法入库
+    (死锁)。⇒ 正解 = 跳过并**出声** (打印现盘/归档两侧读数 + 处置命令), 由操作者显式
+    跑定向重审 (`--only <id> --round <轮> --apply`) 完成「记录 → 重审」工序。
+    """
+
+
 def emit_run_record(rec, path):
     """EXP1-Q38 候选③: 落一份**机器可读**运行记录 (供该轮产物归属)。
 
@@ -130,6 +141,42 @@ def sha12_file(root, rel):
         return None
     with open(p, "rb") as f:
         return sha12_bytes(f.read())
+
+
+def dir_manifest_head(root, rel):
+    """EXP1-Q40 ③ 附属: 目录聚合行的**归档(HEAD)清单摘要** —— 同 dir_manifest 的格式与单位,
+    文件集取 `git ls-tree -r HEAD -- <rel>` (归档树), 字节取 `git show HEAD:<p>`。
+    仅在「现盘清单 ≠ 声明 pin」时调用一次 (解释该不符是**工作区漂移**还是**真失效**)。
+    不可算 (git 失败) ⇒ None (调用方照旧判红: 证明不了不是漂移)。
+    """
+    p = subprocess.run(["git", "ls-tree", "-r", "--name-only", "HEAD", "--", rel], cwd=root,
+                       capture_output=True, text=True)
+    if p.returncode != 0:
+        return None
+    rows, n = [], 0
+    for rel_p in sorted(set(x for x in p.stdout.split("\n") if x.strip())):
+        b = blob_bytes(root, rel_p)
+        if b is None:
+            continue
+        rows.append("%s:%d:%s\n" % (rel_p, len(b), sha12_bytes(b)))
+        n += 1
+    if n == 0:
+        return None
+    return sha12_bytes("".join(rows).encode()), n
+
+
+def blob_bytes(root, rel, rev="HEAD"):
+    """归档(HEAD)里该路径的原始字节; 不在归档树 ⇒ None。"""
+    p = subprocess.run(["git", "show", "%s:%s" % (rev, rel)], cwd=root, capture_output=True)
+    if p.returncode != 0:
+        return None
+    return p.stdout
+
+
+def sha12_blob(root, rel, rev="HEAD"):
+    """归档(HEAD)字节的 sha256[:12]; 不可得 ⇒ None。"""
+    b = blob_bytes(root, rel, rev)
+    return None if b is None else sha12_bytes(b)
 
 
 def isdir(root, rel):
@@ -245,7 +292,12 @@ def source_self_gated(root, row, ep, inst):
     return declared in (None, ep)
 
 
-def derive(root, row, tracked, dirty):
+def derive(root, row, tracked, dirty, targeted=False):
+    """派生一行的 evidence_generated_with。
+
+    targeted=True (EXP1-Q40 ②/③): 该行在本轮被 `--only` **显式点名** ⇒ 允许对现盘字节重钉
+    (这是登记表契约里写明的「记录 → 重审」工序)。缺省 False 与历史行为一致 (供 Q27 普查器等调用方)。
+    """
     ep = row.get("evidence_path", "")
     # EXP1-Q39: 器具/绑定**先算** —— 新规则 (源码自拄) 需要知道器具是谁才判类。
     prov = provenance_of(root, ep)
@@ -255,6 +307,8 @@ def derive(root, row, tracked, dirty):
         inst = instrument_from_cmd(root, row.get("evidence_cmd", ""))
         isha = sha12_file(root, inst) if inst else None
         binding = "audit-pin"
+    proj_declared = existing_pin_kind(row) == "semantic-projection"
+    frozen_declared = existing_pin_status(row) == "frozen"
     if isdir(root, ep):
         man = dir_manifest(root, ep)
         if man is None:
@@ -269,8 +323,23 @@ def derive(root, row, tracked, dirty):
         kind, status, reason, pin = "artifact", "live", LIVE_LEDGERS[ep], None
     elif source_self_gated(root, row, ep, inst):
         kind, status, reason, pin = "self-derived", "live", "self-derived", None
-    elif ep in tracked and ep not in dirty:
+    elif ep in tracked and (ep not in dirty or proj_declared or targeted):
+        # EXP1-Q40 ②: 声明 pin_kind=semantic-projection 的行按**声明语义**判类 —— 证据已入库即
+        #   frozen/artifact, 与工作区脏净无关 (pin 值随后由投影摘要覆盖; 投影口径本身已遮蔽
+        #   运行期读数)。修前: 记录脏 ⇒ 落到末尾 else 支 ⇒ 该行抛 ProjectionPinUnavailable
+        #   被跳过 ⇒ 「记录 → 重审」出现次序依赖 (Q39 附录 AN.4.3 实测)。
+        # EXP1-Q40 ③-t: **定向**路径 (--only 点名) = 显式重审决策 ⇒ 按现盘字节重钉 (契约里的
+        #   处置命令), 与修前干净态语义一致。
         kind, status, reason, pin = "artifact", "frozen", "archived-per-round", sha12_file(root, ep)
+    elif frozen_declared:
+        # EXP1-Q40 ③: 已声明 frozen 的行在**非定向**路径上证据脏 ⇒ 不得静默降级为
+        #   live/worktree-only (一次 `--apply` 的侧效就把闸丢掉, 且 live 行无 pin 可判 ⇒ 无声)。
+        #   出声跳过, 保留行上原声明 (pin 不动), 由操作者显式定向重审。
+        raise FrozenEvidenceDirty(
+            "%s: 证据在工作区脏 (现盘 %s / 归档 %s) ⇒ 保持 frozen 原声明不变; 处置: "
+            "--only %s --round <轮号> --apply (记录 → 重审)"
+            % (row.get("id"), sha12_file(root, ep) or "缺失", sha12_blob(root, ep) or "不在归档树",
+               row.get("id")))
     else:
         kind, status, reason, pin = "artifact", "live", "worktree-only", None
 
@@ -299,13 +368,24 @@ def existing_pin_kind(row):
     return f.get("pin_kind") if isinstance(f, dict) else None
 
 
+def existing_pin_status(row):
+    """行上已声明的 pin_status (缺省 None = 未声明)。derive 只尊重不发明 (EXP1-Q40 ③)。"""
+    f = row.get("evidence_generated_with")
+    return f.get("pin_status") if isinstance(f, dict) else None
+
+
 def needs_field(row):
     ep = row.get("evidence_path", "")
     return row.get("level") in COVER_LEVELS and ep.startswith(PRODUCT_PREFIXES)
 
 
-def check(root, rows):
-    """与 C# R2e/R2f 同口径的机检: 返回 (违规列表, 分布, 带字段行数)。"""
+def check(root, rows, drift=None):
+    """与 C# R2e/R2f 同口径的机检: 返回 (违规列表, 分布, 带字段行数)。
+
+    drift (EXP1-Q40 ③, 可选): 传入 list 时, 把「**归档自洽 ∧ 工作区漂移**」的冻结行记进它
+    —— 该态**不判红** (committed 态自洽 ⇒ 提交闸不得被工作区半成品卡死), 但必须**可见**;
+    处置 = 显式定向重审 (登记表契约里的工序)。判红只留给「连归档也不自洽」的真失效。
+    """
     v, dist = [], {}
     cert = 0
     for row in rows:
@@ -362,14 +442,31 @@ def check(root, rows):
                 if man is None:
                     v.append("%s: frozen 但目录清单不可算 (无已跟踪文件或不可读) '%s' (R2e)" % (rid, ep))
                 elif not isinstance(a, str) or not HEX12.match(a) or a != man[0]:
-                    v.append("%s: 目录清单 pin 与现盘不符 (声明 %s / 实际 %s) (R2e —— 目录内已跟踪文件被改写/增删, 证据已易主或未重审)"
-                             % (rid, a, man[0]))
+                    hm = dir_manifest_head(root, ep)
+                    if (isinstance(a, str) and HEX12.match(a) and hm is not None and a == hm[0]
+                            and man[0] != hm[0]):
+                        # EXP1-Q40 ③: 归档清单自洽 ∧ 工作区目录漂移 ⇒ 可见项 (不判红)
+                        if drift is not None:
+                            drift.append({"id": rid, "kind": "directory", "pin": a, "disk": man[0],
+                                          "evidence_path": ep,
+                                          "why": "worktree-drift (归档自洽; 处置: --only %s --round <轮> --apply)" % rid})
+                    else:
+                        v.append("%s: 目录清单 pin 与现盘不符 (声明 %s / 实际 %s) (R2e —— 目录内已跟踪文件被改写/增删, 证据已易主或未重审)"
+                                 % (rid, a, man[0]))
             else:
                 cur = sha12_file(root, ep)
                 if cur is None:
                     v.append("%s: frozen 但证据文件不可读 '%s' (R2e)" % (rid, ep))
                 elif not isinstance(a, str) or not HEX12.match(a) or a != cur:
-                    v.append("%s: 冻结 pin 与现盘字节不符 (声明 %s / 实际 %s) (R2e —— 证据已被改写或未重审)" % (rid, a, cur))
+                    if (isinstance(a, str) and HEX12.match(a) and cur != a
+                            and a == sha12_blob(root, ep)):
+                        # EXP1-Q40 ③: 归档字节自洽 ∧ 工作区漂移 ⇒ 可见项 (不判红)
+                        if drift is not None:
+                            drift.append({"id": rid, "kind": "artifact", "pin": a, "disk": cur,
+                                          "evidence_path": ep,
+                                          "why": "worktree-drift (归档自洽; 处置: --only %s --round <轮> --apply)" % rid})
+                    else:
+                        v.append("%s: 冻结 pin 与现盘字节不符 (声明 %s / 实际 %s) (R2e —— 证据已被改写或未重审)" % (rid, a, cur))
         else:
             if a is not None:
                 v.append("%s: live 行不得带 artifact_sha12 (R2e)" % rid)
@@ -449,7 +546,8 @@ def main():
         "noncanonical_reason": NONCANON_REASON if noncanonical else None,
         "ser_assert": None, "scope": None, "covered_before": None, "covered_after": None,
         "covered_total": None, "unchanged": None, "touched": None, "idempotent": None,
-        "write_readback": None, "proj_pin_skipped": [], "numstat": None,
+        "write_readback": None, "proj_pin_skipped": [], "frozen_evidence_dirty_skipped": [],
+        "frozen_evidence_drift": [], "numstat": None,
         "violations": [], "violations_total": None, "rc": None,
     }
 
@@ -496,12 +594,18 @@ def main():
         n_before = sum(1 for r in scope_rows if "evidence_generated_with" in r)
         unchanged = 0
         proj_skipped = []
+        frozen_skipped = []
         for row in scope_rows:
             try:
-                f = derive(root, row, tracked, dirty)
+                f = derive(root, row, tracked, dirty,
+                           targeted=(ids is not None and row.get("id") in ids))
             except ProjectionPinUnavailable as exc:
                 # 声明了投影 pin 但当前盘面复算不可得 ⇒ 跳过该行并**出声** (不写 null 假冻结行)
                 proj_skipped.append(str(exc))
+                continue
+            except FrozenEvidenceDirty as exc:
+                # EXP1-Q40 ③: 已声明 frozen 而行证据脏 ⇒ 非定向路径不出声改类, 保留原声明并**出声**。
+                frozen_skipped.append(str(exc))
                 continue
             if row.get("evidence_generated_with") == f:
                 # EXP1-Q27 最小 diff 纪律: 派生内容逐字段相同 ⇒ 一个字节都不动。
@@ -541,7 +645,8 @@ def main():
         runrec.update({"scope": "full" if ids is None else "only(n=%d)" % len(ids),
                        "covered_before": n_before, "covered_after": n_after, "covered_total": n_total,
                        "unchanged": unchanged, "touched": n_after - unchanged,
-                       "proj_pin_skipped": list(proj_skipped)})
+                       "proj_pin_skipped": list(proj_skipped),
+                       "frozen_evidence_dirty_skipped": list(frozen_skipped)})
         print("SCOPE=%s" % ("full" if ids is None else "only(n=%d)" % len(ids)))
         print("COVERED %d -> %d (scope); 全表 COVERED=%d" % (n_before, n_after, n_total))
         print("UNCHANGED=%d / TOUCHED=%d (scope)" % (unchanged, n_after - unchanged))
@@ -549,6 +654,10 @@ def main():
             print("PROJ_PIN_SKIPPED=%d" % len(proj_skipped))
             for s in proj_skipped[:10]:
                 print("  PROJ_PIN_SKIP %s" % s)
+        if frozen_skipped:
+            print("FROZEN_EVIDENCE_DIRTY_SKIP=%d (非定向路径不得静默改类; 保留原声明)" % len(frozen_skipped))
+            for s in frozen_skipped[:10]:
+                print("  FROZEN_DIRTY_SKIP %s" % s)
         if os.path.isabs(reg_rel):
             print("NUMSTAT=skip (scratch 副本, 非仓内路径)")
             runrec["numstat"] = "skip (scratch 副本)"
@@ -561,7 +670,8 @@ def main():
     crows = json.loads(open(reg_abs, encoding="utf-8").read())["rows"]
     if ids is not None:
         crows = [r for r in crows if r.get("id") in ids]
-    v, dist, cert = check(root, crows)
+    drift = []
+    v, dist, cert = check(root, crows, drift)
     n_proj = sum(1 for r in crows if isinstance(r.get("evidence_generated_with"), dict)
                  and r["evidence_generated_with"].get("pin_kind") == "semantic-projection")
     print("PIN_KIND_SEMANTIC_PROJECTION=%d" % n_proj)
@@ -570,11 +680,15 @@ def main():
         print("DIST_SCOPE=only(n=%d) —— 与全表口径分布不可比" % len(crows))
     for k in sorted(dist, key=lambda t: (str(t[0]), str(t[1]), str(t[2]))):
         print("  dist %-12s %-6s %-22s x%d" % (k[0], k[1], k[2], dist[k]))
+    print("FROZEN_EVIDENCE_DRIFT=%d (归档自洽 ∧ 工作区漂移; 可见项, 不判红)" % len(drift))
+    for d in drift[:10]:
+        print("  FROZEN_DRIFT %s kind=%s pin=%s disk=%s" % (d["id"], d["kind"], d["pin"], d["disk"]))
     for s in v[:20]:
         print("VIOLATION", s)
     print("R2E_R2F_EXIT=%d" % (0 if not v else 2))
     runrec["violations"] = v[:20]
     runrec["violations_total"] = len(v)
+    runrec["frozen_evidence_drift"] = drift
     return finish(0 if not v else 2)
 
 

@@ -1,0 +1,76 @@
+{
+ "round": "EXP1-Q40",
+ "schema": "selftest-q40-denom/1",
+ "prereg": "eval/capability/exp1-q40/prereg_q40.json",
+ "fixture": {
+  "registered_nodes_n": 29,
+  "injected_node": "/tmp/aot_r373.log",
+  "tool_pre_sha12": "6043cd5c222a",
+  "tool_now_sha12": "1540be100673"
+ },
+ "checks": {
+  "D1_real_record_zero_regression": true,
+  "D2_pre_abstains_on_denominator_shift(缺陷复现)": true,
+  "D3_post_judges_on_actual_denominator": true,
+  "D3_registered_nodes_readings_unchanged": true,
+  "D4_empty_denominator_still_abstains": true
+ },
+ "detail": {
+  "D1": {
+   "rc": 0,
+   "registered_keys": 22,
+   "now_keys": 29,
+   "shared_key_diffs": {},
+   "diff_n": 0,
+   "extra_keys": [
+    "denominator_actual",
+    "denominator_expected_registered",
+    "denominator_registered_keys_n",
+    "denominator_registry_source",
+    "missing_nodes",
+    "new_nodes",
+    "source_record"
+   ],
+   "nonsem_whitelist": {
+    "archive_root": "../../../tmp/q40_denom/arch_real"
+   },
+   "nonsem_ok": true
+  },
+  "D2": {
+   "rc": 3,
+   "mismatch_line": true,
+   "tail": [
+    "PLUMBING root=/home/agentuser/AgentFramework rec=/tmp/q40_denom/q37_injected.json out=/tmp/q40_denom/pre.json arch=/tmp/q40_denom/arch_pre",
+    "DENOMINATOR_MISMATCH=30 (期望 29) ⇒ rc=3 弃权"
+   ]
+  },
+  "D3": {
+   "rc": 0,
+   "denominator_actual": 30,
+   "new_nodes": [
+    "/tmp/aot_r373.log"
+   ],
+   "conservation": {
+    "c0_rows_eq_denominator": true,
+    "c1_dispositions_sum": true,
+    "c1b_dispositions_in_closed_set": true,
+    "c2_rerun_equivalent_on_complete": true,
+    "c3_nontrivial_face": true,
+    "c4_listonly_insufficient": true,
+    "c5_truncation_safe": true,
+    "p7_negative_control": true
+   },
+   "node_diffs": [],
+   "node_diff_n": 0,
+   "extern_holdout": 29,
+   "denominator_line": [
+    "DENOMINATOR expected=29(登记) actual=30 new=1 missing=0 registry_source=archive_dir_nodes_q38.json"
+   ]
+  },
+  "D4": {
+   "rc": 3,
+   "empty_line": true
+  }
+ },
+ "verdict": "PASS"
+}

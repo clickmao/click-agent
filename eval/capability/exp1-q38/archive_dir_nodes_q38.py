@@ -47,6 +47,12 @@ ARCH = HERE / 'archived_deps_depth3_dirs'
 OUT = HERE / 'archive_dir_nodes_q38.json'
 LISTONLY = pathlib.Path('/tmp/q38_listonly')
 REASONS = ('copy_complete', 'copy_truncated', 'gone', 'unreadable')
+# EXP1-Q40 ⑤: 分母不再写死 29。**已登记读数**是分母的权威来源 (其 per_node 键集 = 上次登记过的结点集);
+#   实际分母 ≠ 登记值时**不再整体弃权** (旧行为: 分母一变即 rc=3 ⇒ 面失去分辨力), 改为:
+#   在**实际分母**上判据 (守恒式用实分母) + 新增结点**单列** (new_nodes), 29 个固有结点的读数仍须逐字段不变。
+#   仅有「实分母为 0」仍弃权 (无可判对象 ⇒ 不伪造 PASS)。
+DENOM_REGISTERED_EXPECT = 29
+REGISTERED_OUT = HERE / 'archive_dir_nodes_q38.json'
 # 修订 (Q38 第二次运行, 由**凭据卫生**驱动, 不是为凑绿): 首跑把 5 个 `/tmp` 夹具密钥 (`data/master.key`,
 #   32 B 随机字节) 逐字节复制进仓 ⇒ 与「凭据不入仓」纪律冲突。修订 = 名字命中即跳 (**不复制**),
 #   跳过的件按「必须贡献 0 引用」计入 c5; 代价 = 该结点从「完整」变「截断」, 故等价面定义同步改为
@@ -164,14 +170,51 @@ def listonly_replay(node, row, q34):
     return len(set(got))
 
 
+def registered_keys():
+    """已登记读数的 per_node 键集 = 上次登记过的结点集 (分母的权威来源)。缺文件 ⇒ (set(), None)。"""
+    if not REGISTERED_OUT.is_file():
+        return set(), None
+    try:
+        doc = json.load(open(REGISTERED_OUT, encoding='utf-8'))
+        return set(doc.get('per_node', {}).keys()), doc
+    except (ValueError, KeyError):
+        return set(), None
+
+
+def argv_opt(flag, default):
+    """极简 --flag VALUE 读取 (保持本件零依赖; 缺省 = 历史常量 ⇒ 无参调用逐字不变)。"""
+    if flag in sys.argv:
+        i = sys.argv.index(flag)
+        if i + 1 < len(sys.argv):
+            return pathlib.Path(sys.argv[i + 1])
+    return default
+
+
 def main():
+    global ARCH, OUT
+    rec_path = argv_opt('--record', pathlib.Path(Q37_REC))
+    OUT = argv_opt('--out', OUT)
+    ARCH = argv_opt('--archive-root', ARCH)
     q37 = load_mod('q37_arch', ROOT / 'eval/capability/exp1-q37/archive_selfsufficiency_q37.py')
     q34 = q37.q34mod()
-    rec = json.load(open(Q37_REC, encoding='utf-8'))
+    rec = json.load(open(rec_path, encoding='utf-8'))
     nodes = [r['node'] for r in rec['disposition'] if r.get('reason') == 'directory_node']
-    if len(nodes) != 29:
-        print('DENOMINATOR_MISMATCH=%d (期望 29) ⇒ rc=3 弃权' % len(nodes))
+    reg_keys, reg_doc = registered_keys()
+    denom_actual = len(nodes)
+    new_nodes = sorted(set(nodes) - reg_keys) if reg_keys else []
+    missing_nodes = sorted(reg_keys - set(nodes)) if reg_keys else []
+    print('DENOMINATOR expected=%s(登记) actual=%d new=%d missing=%d registry_source=%s'
+          % (DENOM_REGISTERED_EXPECT, denom_actual, len(new_nodes), len(missing_nodes),
+             REGISTERED_OUT.name if reg_doc else 'NONE'))
+    if denom_actual == 0:
+        print('DENOMINATOR_EMPTY=0 ⇒ rc=3 弃权 (无可判对象; 不伪造 PASS)')
         return 3
+    if new_nodes:
+        for n in new_nodes:
+            print('  NEW_NODE %s' % n)
+    if missing_nodes:
+        for n in missing_nodes:
+            print('  MISSING_NODE %s' % n)
 
     # 预算守卫: 先算计划总量, 越界则一个字节都不落盘
     plan_bytes = 0
@@ -271,8 +314,8 @@ def main():
     for row in rows:
         by_disp[row['disposition']] = by_disp.get(row['disposition'], 0) + 1
     conservation = {
-        'c0_rows_eq_denominator': len(rows) == 29,
-        'c1_dispositions_sum': sum(by_disp.values()) == 29,
+        'c0_rows_eq_denominator': len(rows) == denom_actual,
+        'c1_dispositions_sum': sum(by_disp.values()) == denom_actual,
         'c1b_dispositions_in_closed_set': all(k in REASONS for k in by_disp),
         'c2_rerun_equivalent_on_complete': not diffs,
         'c3_nontrivial_face': sum((per[n]['q37_n_refs'] or 0) for n in face) > 0,
@@ -289,6 +332,12 @@ def main():
                           'c4 清单不足(负控)', 'c5 截断安全(文本贡献=0)'],
                    'P4': '0 全绿 / 2 判据红 / 3 弃权', 'P7': '摘文件 ⇒ n_refs 必降'},
         'denominator': len(nodes), 'by_disposition': by_disp,
+        'denominator_expected_registered': DENOM_REGISTERED_EXPECT,
+        'denominator_actual': denom_actual,
+        'denominator_registry_source': REGISTERED_OUT.name if reg_doc else None,
+        'denominator_registered_keys_n': len(reg_keys),
+        'new_nodes': new_nodes, 'missing_nodes': missing_nodes,
+        'source_record': str(rec_path),
         'face_definition': ('抽取可得 ∧ 被跳过件(含密钥件)引用贡献 == 0 (修订版; 首跑面定义 = copy_complete)'),
         'secret_like_skipped': sum(1 for r in rows for s in r['skipped'] if s.get('reason') == 'secret_like'),
         'archive_bytes_total': sum(r['copied_bytes'] for r in rows),

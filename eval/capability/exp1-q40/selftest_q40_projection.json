@@ -1,0 +1,130 @@
+{
+ "round": "EXP1-Q40",
+ "schema": "selftest-q40-projection/1",
+ "prereg": "eval/capability/exp1-q40/prereg_q40.json",
+ "fixture": {
+  "real_record": "eval/capability/instruments-check.json",
+  "registered_pin": "8b1c01380a33",
+  "record_sha_before": "274e200175fa5f58b28d39bc8673a780a8d8e9524bd84f412f60546271d0783d",
+  "tool_pre_sha12": "c9e3f4053d9f",
+  "tool_now_sha12": "4ddeba16758b"
+ },
+ "checks": {
+  "H2_pre_dirty_record_reaudit_refused(次序依赖复现)": true,
+  "H1_post_dirty_record_reaudited_same_pin(解耦生效)": true,
+  "H_real_record_restored_byte_identical": true,
+  "H3_dirty_clean_same_value": true,
+  "H3_negative_control_semantic_change_moves_digest": true,
+  "H4_out_of_tree_record_no_silent_downgrade": true,
+  "C4_non_projection_row_zero_regression": true
+ },
+ "detail": {
+  "H_pre": {
+   "rc": 0,
+   "pin_status": "frozen",
+   "reason": "archived-per-round",
+   "artifact_sha12": "8b1c01380a33",
+   "pin_kind": "semantic-projection",
+   "audited_by_round": "EXP1-Q39",
+   "proj_skip_line": true,
+   "git_status": "M eval/capability/instruments-check.json"
+  },
+  "H_post": {
+   "rc": 0,
+   "pin_status": "frozen",
+   "reason": "archived-per-round",
+   "artifact_sha12": "8b1c01380a33",
+   "pin_kind": "semantic-projection",
+   "audited_by_round": "EXP1-Q40",
+   "proj_skip_line": false,
+   "git_status": "M eval/capability/instruments-check.json"
+  },
+  "H_restore": {
+   "sha_before": "274e200175fa",
+   "sha_after": "274e200175fa",
+   "byte_identical": true,
+   "git_status": ""
+  },
+  "H3_digests": {
+   "clean_committed": "8b1c01380a33",
+   "dirty_reindent": "8b1c01380a33",
+   "dirty_keyorder": "8b1c01380a33"
+  },
+  "H3_tampered": {
+   "digest": "72c8b8edf237",
+   "why": {
+    "rules_applied": {
+     "side_effect_attribution/window/t0": 1,
+     "side_effect_attribution/window/t1": 1,
+     "side_effect_attribution/window/trace_dir": 1,
+     "side_effect_attribution/census_in_repo_cwd": 42,
+     "side_effect_attribution/foreign_writes": 8,
+     "side_effect_attribution/pre_existing": 161,
+     "side_effect_attribution/self_writes": 0,
+     "side_effect_attribution/conservation/classified": 1,
+     "side_effect_attribution/conservation/expected": 1,
+     "side_effect_attribution/conservation/in_scope_after": 1,
+     "side_effect_attribution/live_fd_scan/errors": 1,
+     "side_effect_attribution/live_fd_scan/scanned": 1,
+     "side_effect_attribution/trace/log_bytes": 1,
+     "side_effect_attribution/trace/raw_paths_sample": 200,
+     "out": 1,
+     "canon/runtime_sidecar": 1,
+     "side_effect_attribution/old_gate_delta": 0,
+     "side_effect_attribution/old_gate_false_reds": 0,
+     "results[*]": 55,
+     "side_effect_attribution/trace/commands": 1,
+     "side_effect_attribution/trace/events": 1,
+     "side_effect_attribution/trace/raw_events": 1,
+     "side_effect_attribution/trace/raw_paths_n": 1
+    },
+    "hollow_rules": [
+     "side_effect_attribution/self_writes",
+     "side_effect_attribution/old_gate_delta",
+     "side_effect_attribution/old_gate_false_reds"
+    ],
+    "leaf_stream_bytes": 36511
+   }
+  },
+  "H4_pre": {
+   "rc": 0,
+   "pin_status": "frozen",
+   "reason": "archived-per-round",
+   "artifact_sha12": "8b1c01380a33",
+   "audited_by_round": "EXP1-Q39",
+   "skip_line": false
+  },
+  "H4_post": {
+   "rc": 0,
+   "pin_status": "frozen",
+   "reason": "archived-per-round",
+   "artifact_sha12": "8b1c01380a33",
+   "audited_by_round": "EXP1-Q39",
+   "skip_line": false
+  },
+  "C4": {
+   "id": "bge.recall.frozen_bench",
+   "pre": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "fa7c448c505d",
+    "instrument": "eval/bge/eval_recall.py",
+    "instrument_sha12": "88666584ddc6",
+    "binding": "audit-pin",
+    "audited_by_round": "EXP1-Q40"
+   },
+   "post": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "fa7c448c505d",
+    "instrument": "eval/bge/eval_recall.py",
+    "instrument_sha12": "88666584ddc6",
+    "binding": "audit-pin",
+    "audited_by_round": "EXP1-Q40"
+   }
+  }
+ },
+ "verdict": "PASS"
+}

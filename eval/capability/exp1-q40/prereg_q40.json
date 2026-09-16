@@ -1,0 +1,75 @@
+{
+ "round": "EXP1-Q40",
+ "schema": "prereg/exp1-q40",
+ "written_before_any_measurement": true,
+ "theme": "pin 分类与工作区脏净解耦 (②) + 冻结行不得被 apply 静默降级 (③) + 归档面分母参数化 (⑤) + 提交面尾 LF 闸 opt-in (④)",
+ "source_candidates": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md 附录 AN.5 候选 ②③④⑤ (Q39 下轮候选)",
+ "premise_readings": {
+  "registry_rows": 197,
+  "rows_with_evidence_generated_with": 150,
+  "frozen_rows": 143,
+  "semantic_projection_rows": ["r444.instrument-acceptance"],
+  "frozen_rows_currently_with_dirty_evidence": 0,
+  "dirty_evidence_rows_total": 2,
+  "note": "两个缺陷本轮均为**潜在态** (0 行咬人) ⇒ 判据必须由 scratch 夹具构造触发态, 不得靠真实态偶然命中"
+ },
+ "H1_projection_classification_dirty_invariant": {
+  "claim": "声明 pin_kind=semantic-projection 的行在**记录脏**时仍可按声明语义判 frozen/artifact 并重审 (AN.4.3 次序依赖消除)",
+  "judge": "r444: 记录脏态下 --apply --only ⇒ PROJ_PIN_SKIPPED=0 ∧ 该行被真实重审 (touched>=1 或 audited_by_round==EXP1-Q40)",
+  "predict": "PASS"
+ },
+ "H2_projection_defect_reproduction": {
+  "claim": "修前同一脏态 ⇒ 该行被跳过 (PROJ_PIN_SKIPPED=1) 且零重审",
+  "judge": "git show HEAD:eval/capability/bind_evidence.py 副本 (前态器具) 在同一脏态上 ⇒ PROJ_PIN_SKIPPED=1 ∧ audited_by_round 未变",
+  "predict": "PASS (缺陷可复现 = 修复有对象)"
+ },
+ "H3_projection_digest_dirty_clean_same_value": {
+  "claim": "投影摘要与工作区脏净无关 (脏/净两态同值)",
+  "judge": "同一行: 脏态 apply 得到的 artifact_sha12 == 记录被提交后的净态 apply 得到的值 (逐字符相等)",
+  "predict": "PASS"
+ },
+ "H4_frozen_not_downgraded": {
+  "claim": "已声明 frozen 的行在自身证据脏时**不得**被一次 --apply 降级为 live/worktree-only",
+  "judge": "scratch 登记表 (一行 pin_status=frozen, 证据文件为现盘已知脏件) ⇒ apply 后 pin_status 仍 frozen ∧ pin == 归档(HEAD)字节 sha12 ∧ ≠ 现盘 sha12",
+  "predict": "PASS (修后); 修前副本同态 ⇒ live/worktree-only (缺陷态)",
+  "control_pair": "同一 scratch 上净态行 ⇒ 与修前逐字段相同 (零回归)"
+ },
+ "H5_frozen_dirty_visible_red": {
+  "claim": "冻结 pin 与现盘不符必须**可见** (判红) 而不是被静默改写",
+  "judge": "H4 的 scratch 上 --check ⇒ 出现 VIOLATION (冻结 pin 与现盘字节不符) ∧ R2E_R2F_EXIT=2",
+  "predict": "PASS"
+ },
+ "H6_zero_regression_real_registry": {
+  "claim": "真登记表在净态下逐字段零变更 (修后器具的幂等性)",
+  "judge": "--apply --only <一行 frozen artifact> ,<一行 frozen directory> ,<一行 live> --round EXP1-Q40 ⇒ IDEMPOTENT=OK ∨ UNCHANGED==3 ∧ TOUCHED==0 ∧ 登记表 sha 前后相同",
+  "predict": "PASS"
+ },
+ "H7_archive_denominator_parameterized": {
+  "claim": "归档面分母不再写死 29: 分母变化时**单列新结点**并在实分母上判定, 不再整体 rc=3 弃权",
+  "judge": "scratch Q37 记录 (注入 1 个新 directory_node) ⇒ rc!=3 ∧ 输出含 denominator_actual 与新结点单列 ∧ 守恒式在实分母上成立",
+  "predict": "PASS",
+  "pin": "真 Q37 记录 (29 结点) 读数必须与 Q38/AS 已登记读数逐位相同 (零回归)"
+ },
+ "H8_commit_face_tail_gate_opt_in": {
+  "claim": "尾 LF 契约纳入提交面自检, 但**默认关** (零回归), opt-in 时成对生效",
+  "judge": "关 (默认) ⇒ 无尾 LF 的 scratch 登记表放行; 开 ⇒ 同态拒提交 (rc!=0); 真仓两态均 rc=0",
+  "predict": "PASS",
+  "cost_measured": "单次闸耗时 (ms) 与「提交时修 vs 拦」的代价对比写入读数"
+ },
+ "H9_form_gate": {
+  "claim": "形式门禁 (VerificationForm|SkillGeneralization|DevPlanDocRef) 全绿",
+  "judge": "dotnet test --filter ... ⇒ Failed 0",
+  "predict": "PASS"
+ },
+ "verdict_rules": {
+  "0": "全绿",
+  "2": "判据红 (照原样记录, 不放宽)",
+  "3": "弃权 (环境不可判 / 对侧在飞导致共享面不可用)"
+ },
+ "honest_boundary_commitments": [
+  "单轮 n=1, 无置信区间; 跨轮禁相减",
+  "两个缺陷当前均为潜在态 ⇒ 证据来自 scratch 夹具而非真实受害者行",
+  "若对侧 (R498) 在飞导致共享登记表/提交闸不可用, 记 EXECUTION_BLOCKED 并暂存不提交, 不伪造绿",
+  "不 push (推送暂停令)"
+ ]
+}

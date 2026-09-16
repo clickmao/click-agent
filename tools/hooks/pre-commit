@@ -96,4 +96,18 @@ if [ "${AGENTFRAMEWORK_EVIDENCE_CHECK:-1}" != "0" ] && [ -f eval/capability/bind
   rm -f "$BE_LOG"
 fi
 
+# EXP1-Q40 ④: 提交面「尾 LF 契约」闸 —— 默认**关** (opt-in), 与前面几闸同族 (只读 + env 开关)。
+#   目的: 把「规范形被破坏」在**提交时**拦下 (此前只在下游器具的 NONCANONICAL_INPUT 里可见)。
+#   作用面 = 声明常量 (tail_lf_guard.py 的 DEFAULT_TARGETS); 契约名/原因码取自 bind_evidence (单一权威源)。
+if [ "${AGENTFRAMEWORK_TAIL_LF_GUARD:-0}" = "1" ] && [ -f eval/capability/exp1-q31/instruments/tail_lf_guard.py ]; then
+  TL_ARGS=""
+  [ -n "${AGENTFRAMEWORK_TAIL_LF_TARGETS:-}" ] && TL_ARGS="--targets ${AGENTFRAMEWORK_TAIL_LF_TARGETS}"
+  if ! python3 eval/capability/exp1-q31/instruments/tail_lf_guard.py $TL_ARGS >/tmp/tail_lf_precommit.log 2>&1; then
+    echo "BLOCKED(EXP1-Q40 尾 LF 契约闸): 作用面内件的提交态字节不符合规范形 (末字节须 LF; 无 CRLF/BOM)。" >&2
+    echo "  处置: 修该件规范形后重提交; 关闸 (诊断): AGENTFRAMEWORK_TAIL_LF_GUARD=0" >&2
+    tail -8 /tmp/tail_lf_precommit.log >&2
+    exit 1
+  fi
+fi
+
 exit 0

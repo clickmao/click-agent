@@ -1,0 +1,84 @@
+{
+ "round": "EXP1-Q40",
+ "schema": "selftest-q40-taillf/1",
+ "prereg": "eval/capability/exp1-q40/prereg_q40.json",
+ "fixtures": [
+  "eval/capability/exp1-q40/fixtures/tail_ok.txt",
+  "eval/capability/exp1-q40/fixtures/tail_missing.txt",
+  "eval/capability/exp1-q40/fixtures/tail_crlf.txt",
+  "eval/capability/exp1-q40/fixtures/tail_bom.txt",
+  "eval/capability/exp1-q40/fixtures/tail_absent.txt"
+ ],
+ "checks": {
+  "E1_canonical_passes": true,
+  "E2_three_defect_kinds_named": true,
+  "E2_canonical_file_not_named": true,
+  "E3_unresolved_is_blocked_not_green": true,
+  "E4_missing_list_abstains": true,
+  "E5_hook_default_off_passes_bad_list": true,
+  "E6_hook_opt_in_blocks_bad_list": true,
+  "E7_hook_opt_in_passes_canonical": true,
+  "E8_real_repo_default_scope_green": true,
+  "E9_cost_measured": true
+ },
+ "detail": {
+  "E1": {
+   "rc": 0,
+   "line": [
+    "TAIL_LF_GUARD contract=R481-tail-lf targets=1 violations=0 unresolved=0"
+   ],
+   "ms": 37.8
+  },
+  "E2": {
+   "rc": 2,
+   "violations": [
+    "VIOLATION eval/capability/exp1-q40/fixtures/tail_missing.txt source=worktree why=tail_lf_missing bytes=19",
+    "VIOLATION eval/capability/exp1-q40/fixtures/tail_crlf.txt source=worktree why=crlf_present bytes=14",
+    "VIOLATION eval/capability/exp1-q40/fixtures/tail_bom.txt source=worktree why=bom_present bytes=12"
+   ]
+  },
+  "E3": {
+   "rc": 2,
+   "line": [
+    "TAIL_LF_GUARD_UNRESOLVED=1 ⇒ rc=2 (不可判 = 拦; 不判绿)"
+   ]
+  },
+  "E4": {
+   "rc": 3
+  },
+  "E5": {
+   "rc": 0,
+   "tail": [],
+   "ms": 48.6
+  },
+  "E6": {
+   "rc": 1,
+   "blocked": true,
+   "ms": 93.7
+  },
+  "E7": {
+   "rc": 0,
+   "ms": 84.3
+  },
+  "E8": {
+   "rc": 0,
+   "line": [
+    "TAIL_LF_GUARD contract=R481-tail-lf targets=2 violations=0 unresolved=0"
+   ],
+   "ms": 41.5
+  },
+  "E9": {
+   "guard_ms_median": 39.2,
+   "guard_ms_samples": [
+    39.2,
+    39.2,
+    41.9
+   ],
+   "hook_off_ms": 48.6,
+   "hook_on_ms": 93.7,
+   "hook_delta_ms": 45.0,
+   "note": "「提交时修」的成本 = 0 (闸只读); 「拦下」的代价 = 一次重提交。闸本身耗时见 guard_ms_median"
+  }
+ },
+ "verdict": "PASS"
+}
