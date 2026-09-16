@@ -1,0 +1,34 @@
+{
+  "round": "R484",
+  "topic": "微步骤隔离问询 → 本地 r1 可行性 · 离线真机对照探针 (先落盘, 再运行)",
+  "written_before_run": true,
+  "why": "R482 真机读数: Arole 臂 21 次远端调用中 7 次(33%)带前缀 [微步骤隔离问询] 且带 tools_n=4; 其中 5 次为单发(n_messages==2), 2 次自身又走了工具轮。该面是当前『远端调用数』最大的未开发面, 且按定义就是轻任务/短输出 ⇒ 与 models.yaml local.allowed_kinds 的定位同类。实施前必须先证明 r1 能替代。",
+  "pins": {
+    "input_calls": {"path": "eval/rover/r482/calls-Arole.jsonl", "sha256": "89f53b568fd08e46147a03bf783c5d62230ebb175f23f434dfac5c5aa8ee0941"},
+    "local_model": {"path": "/home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf", "sha256": "626b4a6678b86442240e33df819e00132d3ba7dddfe1cdc4fbb18e0a9615c62d"},
+    "server_args_source": "src/agent.llamacpp/LlamaServerHost.cs:106-127 (BuildArgumentList) ⇒ -c 4608 -np 1 --cache-type-k/v f32 --flash-attn off --jinja",
+    "remote_path": "https://api.deepseek.com/v1/chat/completions (key 取自 .env.local, 不落盘/不打印)"
+  },
+  "sample": "calls-Arole.jsonl 中 n_messages==2 且 user 文本含『微步骤隔离问询』的记录 (预期 5 条, 逐条按 seq 记录)",
+  "hypotheses": [
+    {"id": "H1", "claim": "r1 对 5 条真实单发微问询 5/5 产出非空答案", "check": "strip(content)!='' 计数", "pass_if": "5/5", "fail_action": "若 <5/5 ⇒ 微步骤本地化在 r1 上不可行, 候选结案=否, 不写 C#"},
+    {"id": "H2", "claim": "本地答案满足机械可用判据: 非空 ∧ ≤400字符 ∧ 非逐字复读 ∧ 无 AI 套话拒答 ∧ 含 CJK", "check": "5 项与合取, 逐条落盘", "pass_if": "≥4/5", "fail_action": "若 <4/5 ⇒ 记录逐条失败项, 不实施"},
+    {"id": "H3", "claim": "同题同判据下 local 与 remote 的输出长度同量级", "check": "0.25×remote_len ≤ local_len ≤ 3×remote_len", "pass_if": "5/5 同量级", "fail_action": "越界条目显式记为『格式退化(不可直接替换)』"},
+    {"id": "H4", "claim": "算术型微问询(形如『a 加 b 等于 c, 对吧』)两臂都能给出可机检的纠错", "check": "答案含 (a+b) 文本且含否定标记之一(不对/不是/错误/≠/并不/其实)", "pass_if": "同判据施于两臂, 逐条对照; 不计绝对胜负, 只要 local 不出现 0/x 而 remote ≥1/x", "fail_action": "若 local=0 而 remote≥1 ⇒ 记为语义退化"},
+    {"id": "H5", "claim": "本地单发微问询延迟在可接受带内", "check": "本地逐条 wall ≤60s 且 completion_tokens ≤512", "pass_if": "5/5", "fail_action": ">60s 记『延迟阻塞』, 需先解决推理速度再谈替换"}
+  ],
+  "kpi_ceiling": {
+    "note": "上限口径 (仅当微问询全部本地化且主调用 prompt 不因此变长时才成立; 本探针只测可行性, 不测该上限)",
+    "Arole_denominator": {"calls": 21, "tokens": 72634},
+    "micro_face_all": {"calls": 7, "tokens": 6032, "calls_pct": 33.3, "tokens_pct": 8.3},
+    "micro_face_single_shot_only": {"calls": 5, "tokens": 3852, "seqs": [10, 12, 16, 18, 20]},
+    "if_all_micro_local": {"Arole_calls": "21→14 (-33%)", "Arole_tokens": "72634→66602 (-8.3% 相对 Arole 自身)", "R_calls": "14→10 (-29%)", "R_tokens": "49237→46148 (-6.3%)"}
+  },
+  "not_tested": [
+    "工具轮微问询(2 次调用, t9)的本地化——需要本地侧支持工具循环, 本探针回避",
+    "隔离语义正确性的人工/判官结论(本探针只用机械判据)",
+    "微答案回注主 prompt 后对主答案质量的影响(端到端面, 需另设轮次)",
+    "真实链路上把微问询路由到本地是否可行(路由/端口接线 = C# 改动, 本探针不含)"
+  ],
+  "fail_closed": "任何一项 ✗ 按 fail_action 逐字记录; 『没测到』不得充当『测过通过』; 若 llama-server 起不来或内存不足, 记 setup_blocked 并保留原始日志路径。"
+}

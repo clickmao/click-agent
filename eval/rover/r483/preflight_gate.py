@@ -28,12 +28,43 @@ def mem_available_mb():
     return -1
 
 
-def scan_procs():
-    """返回 [(pid, name, rss_mb)]: 命中 WATCH 的进程 (排除自身)。"""
+SHELLS = ("bash", "sh", "dash", "zsh", "ash", "ksh", "busybox")
+
+
+def self_and_ancestors():
+    """自身 + 全部祖先进程 pid 集 (沿 PPid 链)。
+
+    修 R484 自匹配假阳性: R483 首跑被闸, blocker 是 `rss=3MB` 的 **bash wrapper**,
+    其 cmdline 只是**参数里含** `llama-server`(调用方自己的 grep 字面量) —— 被当成了作业。
+    ⇒ 判据必须区分「进程**是**被监视程序」与「进程**提到**该字串」。
+    """
+    pids = set()
+    pid = os.getpid()
+    for _ in range(64):
+        if pid <= 0 or pid in pids:
+            break
+        pids.add(pid)
+        try:
+            stat = Path("/proc/%d/stat" % pid).read_text()
+            pid = int(stat.rsplit(")", 1)[1].split()[1])   # 跳过 comm(含空格/括号)后取 PPid
+        except (OSError, IndexError, ValueError):
+            break
+    return pids
+
+
+def scan_procs(skip_shells=True, legacy_self_only=False):
+    """返回命中 WATCH 的进程 (排除自身/祖先; 默认再排除 shell 包装进程)。
+
+    为什么排除 shell: 监视对象 (llama-server / VBCSCompiler / MSBuild / dotnet) 都是**可执行本体**,
+    而 shell 只会「在参数里提到」它们 ⇒ shell 命中必为假阳性 (调用方命令字面量或日志文本)。
+    `--nc-selfmatch`(legacy_self_only=True: 只排除自身、不排除祖先/shell) 即该修复的**负控** ——
+    同环境只翻此开关, 须复现 R483 的 GATE_BLOCKED。
+    """
     me = os.getpid()
+    ancestors = {me} if legacy_self_only else self_and_ancestors()
     hits = []
     for pe in Path("/proc").iterdir():
-        if not pe.name.isdigit() or int(pe.name) == me:
+        if not pe.name.isdigit() or int(pe.name) == me or int(pe.name) in ancestors:
             continue
         try:
             raw = (pe / "cmdline").read_bytes().decode("utf-8", "replace")
@@ -42,6 +73,9 @@ def scan_procs():
         if not raw:
             continue
         cmd = raw.replace("\x00", " ").strip()
+        argv0 = os.path.basename(raw.split("\x00")[0].strip())
+        if skip_shells and argv0 in SHELLS:
+            continue      # shell 只是「提到」被监视程序 ⇒ 假阳性 (见 --nc-selfmatch 负控)
         for w in WATCH:
             if w in cmd:
                 try:
@@ -66,6 +100,26 @@ def recent_src_writes(window_s):
     return n
 
 
+def count_shell_mentions():
+    """被排除的 shell 进程里「提到」监视字串的条数 (审计用: 明细可见, 但判决不受其影响)。"""
+    n = 0
+    for pe in Path("/proc").iterdir():
+        if not pe.name.isdigit():
+            continue
+        try:
+            raw = (pe / "cmdline").read_bytes().decode("utf-8", "replace")
+        except OSError:
+            continue
+        if not raw:
+            continue
+        if os.path.basename(raw.split("\x00")[0].strip()) not in SHELLS:
+            continue
+        cmd = raw.replace("\x00", " ")
+        if any(w in cmd for w in WATCH):
+            n += 1
+    return n
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=str(OUT))
@@ -73,6 +127,9 @@ def main(argv=None) -> int:
     ap.add_argument("--settle-max", type=int, default=40, help="沉降等待上限秒")
     ap.add_argument("--gate-mb", type=int, default=GATE_MB)
     ap.add_argument("--nc-block", action="store_true", help="负控: 把门槛抬到不可达 ⇒ 须 rc=2")
+    ap.add_argument("--nc-selfmatch", action="store_true",
+                    help="负控(修前行为): 不排除 shell 包装进程 ⇒ 自身/旁支 shell 提到监视字串时须 rc=2")
+    ap.add_argument("--round", default="R484", help="记录里的轮号标签")
     a = ap.parse_args(argv)
 
     dotnet = Path(os.environ.get("DOTNET_ROOT", Path.home() / ".dotnet")) / "dotnet"
@@ -81,8 +138,12 @@ def main(argv=None) -> int:
         return 3
     gate = 10 ** 6 if a.nc_block else a.gate_mb
 
-    rec = {"round": "R483", "gate_mb": gate, "shutdown_done": False, "settle_s": 0,
-           "mem_available_mb": None, "blockers": [], "recent_src_writes_120s": None}
+    skip_shells = not a.nc_selfmatch
+    rec = {"round": a.round, "gate_mb": gate, "shutdown_done": False, "settle_s": 0,
+           "mem_available_mb": None, "blockers": [], "recent_src_writes_120s": None,
+           "shell_skip": skip_shells, "legacy_self_only": a.nc_selfmatch,
+           "self_ancestors": sorted(self_and_ancestors()),
+           "shells_skipped_n": None}
     if not a.no_shutdown:
         try:
             subprocess.run([str(dotnet), "build-server", "shutdown"], capture_output=True, timeout=90)
@@ -93,7 +154,7 @@ def main(argv=None) -> int:
     t0 = time.time()
     while True:
         mem = mem_available_mb()
-        procs = scan_procs()
+        procs = scan_procs(skip_shells, a.nc_selfmatch)
         blockers = [p for p in procs if p["watch"] != "dotnet"]
         if mem >= gate and not blockers:
             break
@@ -103,7 +164,8 @@ def main(argv=None) -> int:
 
     rec["settle_s"] = round(time.time() - t0, 1)
     rec["mem_available_mb"] = mem_available_mb()
-    rec["blockers"] = [p for p in scan_procs() if p["watch"] != "dotnet"]
+    rec["blockers"] = [p for p in scan_procs(skip_shells, a.nc_selfmatch) if p["watch"] != "dotnet"]
+    rec["shells_skipped_n"] = count_shell_mentions()
     rec["recent_src_writes_120s"] = recent_src_writes(120)
     ok = rec["mem_available_mb"] >= gate and not rec["blockers"]
     rec["verdict"] = "PASS" if ok else "GATE_BLOCKED"

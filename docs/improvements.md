@@ -2270,3 +2270,20 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
   根相对档 0.1608 ⇒ `a/b/c` 形态串基本是**词面 token**，只能进倒排候选，不能当跳转依据。
 - 器具纪律新增两条：① 档分母必须与端口 `measure()` 一致过滤 external（否则读数被伪污染）；
   ② 探针产物目录必须自排除（否则每跑一次语料 pin 漂移、读数不可复现）。
+
+## R484 · 【探索】微步骤隔离问询 → 本地 r1：可行性探针**判否**（附起手闸假阳性修复）
+- 靶点来源（R482 真机读数）：Arole 21 次远端调用中 **7 次(33.3%)** 带 `[微步骤隔离问询]` 前缀（5 次单发 `n_messages==2` + 2 次自身走工具轮），占 token **8.3%** ⇒ 「远端调用数」最大未开发面。
+- 器具 `eval/rover/r484/micro_local_probe.py`（预注册 `prereg_r484.json` 先落盘）：5 条真实单发微问询，两臂同题同判据 —— local = 产品同参 llama-server（`-c 4608 -np 1 --cache-type-k/v f32 --flash-attn off --jinja`，模型 sha `626b4a66…`）vs remote = 真供应商（`calls-Arole.jsonl` sha `89f53b56…` 钉住）。
+- 预注册读数：H1 非空 **5/5** · H2 机械判据 **5/5** · H3 长度带 **3/4** · H4 算术纠错 local **0/1** vs remote **1/1** · H5 本地延迟 max **4.09s**（n=5）。llama-server 已回收（`alive_after=0`）。
+- **判据缺陷两条（post-hoc 单列，不覆盖预注册）**：① `not_echo` 拿整条 qn 比对 ⇒ seq20 本地**逐字复读问题首行**仍判过（严格规则下 H2=4/5）；② H4 要求「含 8 ∧ 含否定词」过严 ⇒ 本地 `3 加 5 等于 8。`（H4 local=1/1，n=1 证据薄弱）。
+- 语义面（人读）：**2/5 本地答案实质空洞**（seq12「从头再说」⇒ `好的，让我们从头开始。`；seq20 ⇒ 复读首行），而远端**正确指出「隔离执行未携带前文」** ⇒ 失败模式 = 隔离语境下 r1 不复现「指出缺失指代」，与 R475 反证（r1 生成确认语退化）同族。
+- 附带外部真值：远端**自身 1 次空正文**（seq18 `finish_reason=length` / 512 reasoning / content 0，**直连未经 relay**）⇒ 独立复现「推理预算吃满 ⇒ 空正文」，排除 relay 伪影。
+- 判定：**微问询整体替换本地 = 否**；残留候选 = **微问询形态分流**（含指代词者隔离无效 ⇒ 直接不发该微问询，省调用且零信息损失）。
+- 诚实边界：n=5（H4 n=1）；未测回注主 prompt 后端到端质量；未测工具轮微问询；未入 registry；未刷轮次索引表；未 push。
+
+### R484 附 · 起手闸自匹配假阳性修复（R483b 器具被实跑触发）
+- 现象：R484 首跑 `preflight_gate.py` 报 **GATE_BLOCKED**，blocker = `rss=3MB` 的 **bash wrapper**（其 cmd 内含 `llama-server` 字面量，实为**调用方自己的命令行**）⇒ 假阳性（修前只排除自身 pid）。
+- 修复：`scan_procs` 改为**排除自身 + 全祖先链**（`/proc/<pid>/stat` PPid 上溯）并**跳过 shell argv0**（监视对象 llama-server/VBCSCompiler/MSBuild/dotnet 均为可执行本体，shell 只会「提到」它们）；新增审计字段 `self_ancestors` / `shells_skipped_n` / `legacy_self_only`。
+- **差分负控**（同环境只翻开关）：`--nc-selfmatch`（只排除自身）⇒ **GATE_BLOCKED rc=2**，blocker 指纹与 R483 一致（bash wrapper / rss 3MB）；开关打开 ⇒ **PASS rc=0**（`shells_skipped_n=1`）。器具 sha 修前 `193cc18b…` → 修后 `1a64ceb6…`。
+- 附：该负控记录里 `blocker_cause` 标为「内存不足」（mem 2609<2650 同时成立）⇒ **标签不精确**（明细仍在 `blockers`），留作器具候选。
+- 复原：本首跑曾覆写 `eval/rover/r483/preflight.json` ⇒ 已 `git checkout` 复原为提交态；其他未提交改动未动。

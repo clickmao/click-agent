@@ -522,3 +522,11 @@ python3 eval/run_round.py <新轮号> "revert-verify <原commit>" --quick   # �
 ### R483 附 · 真机起手闸器具化（修 R482 假归因）
 - 新增 `eval/rover/r483/preflight_gate.py`：`build-server shutdown` → 沉降轮询 → 三态判定（rc=0 PASS / rc=2 GATE_BLOCKED / rc=3 MISS）。
 - 实跑 rc=0（2758 MB / shutdown_done=true）；负控 `--nc-block` rc=2 ✔。**真机测量起手前必跑**。
+
+### R484 · 【探索】微步骤隔离问询 → 本地 r1：探针判否 + 起手闸假阳性修复
+- 器具：`eval/rover/r484/prereg_r484.json`（先落盘）+ `micro_local_probe.py`；读数 `eval/rover/r484/micro_local_probe.json`（`checks_posthoc` / `verdict` 字段）。
+- 读数：H1 5/5 · H2 5/5→**post-hoc 4/5** · H3 3/4 · H4 local 0/1 vs remote 1/1→**post-hoc 1/1** · H5 max 4.09s。语义面 **2/5 空洞**（远端反而正确指出「隔离无前文」）。
+- 判定：**微问询整体替换本地 = 否**（R475 反证同族）；残留 = **微问询形态分流**。
+- 起手闸：`preflight_gate.py` 自匹配假阳性修复（排除自身+祖先+shell argv0）；差分负控 `--nc-selfmatch` rc=2 / 修后 rc=0；sha `1a64ceb6…`。**真机测量起手前必跑**。
+- 注：本段为手写追加；**轮次索引表未刷新**（待 R484 入 registry 后由 `eval/tools/master_plan_round_index.py` 生成，禁手改该表）。
+- 下轮候选（本段产出）：① **微问询形态分流**（含 `上一条/从头/刚才` 等指代词的隔离微问询 ⇒ 直接不发，省 1 次远端调用/条，零信息损失；无指代轻问询才谈本地化）；② 空正文基数可测化（确定性 stub 造 `finish_reason=tool_calls`+0 tool_calls，对 修前 `/tmp/pub_r476/agenthost` vs 修后 `/tmp/pub_r479v2/agenthost` 做调用数差分）；③ `blocker_cause` 标签精确化；④ R479 遗留（路由器接线 / 入链 prompt 正文槽位化）；⑤ R481-G 遗留（by_subband 分档 / 语料钉四元组）。

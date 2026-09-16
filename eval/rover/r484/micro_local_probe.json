@@ -1,0 +1,469 @@
+{
+ "round": "R484",
+ "ts": "2026-09-16T09:16:15+0800",
+ "input": {
+  "path": "eval/rover/r482/calls-Arole.jsonl",
+  "sha256": "89f53b568fd08e46147a03bf783c5d62230ebb175f23f434dfac5c5aa8ee0941"
+ },
+ "gguf": {
+  "path": "/home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf",
+  "sha256": "626b4a6678b86442240e33df819e00132d3ba7dddfe1cdc4fbb18e0a9615c62d"
+ },
+ "server_args": [
+  "-m",
+  "/home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf",
+  "--host",
+  "127.0.0.1",
+  "--port",
+  "48711",
+  "-c",
+  "4608",
+  "-np",
+  "1",
+  "--cache-type-k",
+  "f32",
+  "--cache-type-v",
+  "f32",
+  "--flash-attn",
+  "off",
+  "--jinja"
+ ],
+ "remote_ok": true,
+ "calls": [
+  {
+   "seq": 10,
+   "model_rec": "deepseek-flash",
+   "sampling_rec": {
+    "model": "deepseek-flash",
+    "temperature": null,
+    "max_tokens": null,
+    "top_p": null,
+    "presence_penalty": null,
+    "frequency_penalty": null,
+    "stream": false,
+    "reasoning_effort": null,
+    "thinking": null,
+    "response_format_type": null,
+    "tools_n": 4
+   },
+   "q": "[微步骤隔离问询] 换个说法\n(只回答本微问题, 不引申)",
+   "arith": false,
+   "local": {
+    "error": null,
+    "latency_s": 4.09,
+    "content": "重新表述",
+    "len": 4,
+    "finish_reason": "stop",
+    "usage": {
+     "completion_tokens": 3,
+     "prompt_tokens": 61,
+     "total_tokens": 64,
+     "prompt_tokens_details": {
+      "cached_tokens": 0
+     }
+    },
+    "empty_body": false
+   },
+   "remote": {
+    "error": null,
+    "latency_s": 2.54,
+    "content": "换种表述方式。",
+    "len": 7,
+    "finish_reason": "stop",
+    "usage": {
+     "prompt_tokens": 75,
+     "completion_tokens": 357,
+     "total_tokens": 432,
+     "prompt_tokens_details": {
+      "cached_tokens": 0
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 351
+     },
+     "prompt_cache_hit_tokens": 0,
+     "prompt_cache_miss_tokens": 75
+    },
+    "empty_body": false
+   },
+   "crit_local": {
+    "non_empty": true,
+    "len_le_400": true,
+    "not_echo": true,
+    "no_boiler": true,
+    "has_cjk": true
+   },
+   "crit_remote": {
+    "non_empty": true,
+    "len_le_400": true,
+    "not_echo": true,
+    "no_boiler": true,
+    "has_cjk": true
+   },
+   "arith_local": null,
+   "arith_remote": null
+  },
+  {
+   "seq": 12,
+   "model_rec": "deepseek-flash",
+   "sampling_rec": {
+    "model": "deepseek-flash",
+    "temperature": null,
+    "max_tokens": null,
+    "top_p": null,
+    "presence_penalty": null,
+    "frequency_penalty": null,
+    "stream": false,
+    "reasoning_effort": null,
+    "thinking": null,
+    "response_format_type": null,
+    "tools_n": 4
+   },
+   "q": "[微步骤隔离问询] 从头再说\n(只回答本微问题, 不引申)",
+   "arith": false,
+   "local": {
+    "error": null,
+    "latency_s": 2.12,
+    "content": "好的，让我们从头开始。",
+    "len": 11,
+    "finish_reason": "stop",
+    "usage": {
+     "completion_tokens": 8,
+     "prompt_tokens": 60,
+     "total_tokens": 68,
+     "prompt_tokens_details": {
+      "cached_tokens": 39
+     }
+    },
+    "empty_body": false
+   },
+   "remote": {
+    "error": null,
+    "latency_s": 1.53,
+    "content": "我这里没有可重复的前文——本问询是隔离执行的，没有携带之前的会话内容。请把需要\"从头再说\"的具体内容（问题或材料）发给我，我再从头完整作答。",
+    "len": 70,
+    "finish_reason": "stop",
+    "usage": {
+     "prompt_tokens": 75,
+     "completion_tokens": 132,
+     "total_tokens": 207,
+     "prompt_tokens_details": {
+      "cached_tokens": 0
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 89
+     },
+     "prompt_cache_hit_tokens": 0,
+     "prompt_cache_miss_tokens": 75
+    },
+    "empty_body": false
+   },
+   "crit_local": {
+    "non_empty": true,
+    "len_le_400": true,
+    "not_echo": true,
+    "no_boiler": true,
+    "has_cjk": true
+   },
+   "crit_remote": {
+    "non_empty": true,
+    "len_le_400": true,
+    "not_echo": true,
+    "no_boiler": true,
+    "has_cjk": true
+   },
+   "arith_local": null,
+   "arith_remote": null
+  },
+  {
+   "seq": 16,
+   "model_rec": "deepseek-flash",
+   "sampling_rec": {
+    "model": "deepseek-flash",
+    "temperature": null,
+    "max_tokens": null,
+    "top_p": null,
+    "presence_penalty": null,
+    "frequency_penalty": null,
+    "stream": false,
+    "reasoning_effort": null,
+    "thinking": null,
+    "response_format_type": null,
+    "tools_n": 4
+   },
+   "q": "[微步骤隔离问询] 你上一条说 3 加 5 等于 9，对吧？\n(只回答本微问题, 不引申)",
+   "arith": true,
+   "local": {
+    "error": null,
+    "latency_s": 3.25,
+    "content": "3 加 5 等于 8。",
+    "len": 11,
+    "finish_reason": "stop",
+    "usage": {
+     "completion_tokens": 12,
+     "prompt_tokens": 75,
+     "total_tokens": 87,
+     "prompt_tokens_details": {
+      "cached_tokens": 40
+     }
+    },
+    "empty_body": false
+   },
+   "remote": {
+    "error": null,
+    "latency_s": 1.38,
+    "content": "不对，3 加 5 等于 8，不是 9。",
+    "len": 19,
+    "finish_reason": "stop",
+    "usage": {
+     "prompt_tokens": 89,
+     "completion_tokens": 173,
+     "total_tokens": 262,
+     "prompt_tokens_details": {
+      "cached_tokens": 0
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 156
+     },
+     "prompt_cache_hit_tokens": 0,
+     "prompt_cache_miss_tokens": 89
+    },
+    "empty_body": false
+   },
+   "crit_local": {
+    "non_empty": true,
+    "len_le_400": true,
+    "not_echo": true,
+    "no_boiler": true,
+    "has_cjk": true
+   },
+   "crit_remote": {
+    "non_empty": true,
+    "len_le_400": true,
+    "not_echo": true,
+    "no_boiler": true,
+    "has_cjk": true
+   },
+   "arith_local": {
+    "expected": "8",
+    "stated": "9",
+    "has_expected": true,
+    "has_neg": false
+   },
+   "arith_remote": {
+    "expected": "8",
+    "stated": "9",
+    "has_expected": true,
+    "has_neg": true
+   }
+  },
+  {
+   "seq": 18,
+   "model_rec": "deepseek-flash",
+   "sampling_rec": {
+    "model": "deepseek-flash",
+    "temperature": null,
+    "max_tokens": null,
+    "top_p": null,
+    "presence_penalty": null,
+    "frequency_penalty": null,
+    "stream": false,
+    "reasoning_effort": null,
+    "thinking": null,
+    "response_format_type": null,
+    "tools_n": 4
+   },
+   "q": "[微步骤隔离问询] 你上一条说的数是九\n(只回答本微问题, 不引申)",
+   "arith": false,
+   "local": {
+    "error": null,
+    "latency_s": 1.45,
+    "content": "九",
+    "len": 1,
+    "finish_reason": "stop",
+    "usage": {
+     "completion_tokens": 2,
+     "prompt_tokens": 65,
+     "total_tokens": 67,
+     "prompt_tokens_details": {
+      "cached_tokens": 44
+     }
+    },
+    "empty_body": false
+   },
+   "remote": {
+    "error": null,
+    "latency_s": 3.05,
+    "content": "",
+    "len": 0,
+    "finish_reason": "length",
+    "usage": {
+     "prompt_tokens": 79,
+     "completion_tokens": 512,
+     "total_tokens": 591,
+     "prompt_tokens_details": {
+      "cached_tokens": 0
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 512
+     },
+     "prompt_cache_hit_tokens": 0,
+     "prompt_cache_miss_tokens": 79
+    },
+    "empty_body": true
+   },
+   "crit_local": {
+    "non_empty": true,
+    "len_le_400": true,
+    "not_echo": true,
+    "no_boiler": true,
+    "has_cjk": true
+   },
+   "crit_remote": {
+    "non_empty": false,
+    "len_le_400": true,
+    "not_echo": true,
+    "no_boiler": true,
+    "has_cjk": false
+   },
+   "arith_local": null,
+   "arith_remote": null
+  },
+  {
+   "seq": 20,
+   "model_rec": "deepseek-flash",
+   "sampling_rec": {
+    "model": "deepseek-flash",
+    "temperature": null,
+    "max_tokens": null,
+    "top_p": null,
+    "presence_penalty": null,
+    "frequency_penalty": null,
+    "stream": false,
+    "reasoning_effort": null,
+    "thinking": null,
+    "response_format_type": null,
+    "tools_n": 4
+   },
+   "q": "[微步骤隔离问询] 不对，你上一条不准确，请重新确认\n(只回答本微问题, 不引申)",
+   "arith": false,
+   "local": {
+    "error": null,
+    "latency_s": 3.79,
+    "content": "[微步骤隔离问询] 不对，你上一条不准确，请重新确认",
+    "len": 26,
+    "finish_reason": "stop",
+    "usage": {
+     "completion_tokens": 18,
+     "prompt_tokens": 67,
+     "total_tokens": 85,
+     "prompt_tokens_details": {
+      "cached_tokens": 39
+     }
+    },
+    "empty_body": false
+   },
+   "remote": {
+    "error": null,
+    "latency_s": 2.23,
+    "content": "本微步骤未提供“上一条”的具体内容，且隔离执行下无法访问会话历史，因此无法重新确认。请把需要确认的微问题或原表述完整贴出，我将仅就此回答。",
+    "len": 69,
+    "finish_reason": "stop",
+    "usage": {
+     "prompt_tokens": 84,
+     "completion_tokens": 289,
+     "total_tokens": 373,
+     "prompt_tokens_details": {
+      "cached_tokens": 0
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 243
+     },
+     "prompt_cache_hit_tokens": 0,
+     "prompt_cache_miss_tokens": 84
+    },
+    "empty_body": false
+   },
+   "crit_local": {
+    "non_empty": true,
+    "len_le_400": true,
+    "not_echo": true,
+    "no_boiler": true,
+    "has_cjk": true
+   },
+   "crit_remote": {
+    "non_empty": true,
+    "len_le_400": true,
+    "not_echo": true,
+    "no_boiler": true,
+    "has_cjk": true
+   },
+   "arith_local": null,
+   "arith_remote": null
+  }
+ ],
+ "setup_blocked": null,
+ "cleanup": {
+  "llama_server_killed": true,
+  "alive_after": 0
+ },
+ "summary": {
+  "H1": "5/5",
+  "H2": "5/5",
+  "H3": "3/4",
+  "H4": {
+   "local": "0/1",
+   "remote": "1/1"
+  },
+  "H5": "max_latency=4.09s / n=5"
+ },
+ "checks_posthoc": {
+  "note": "预注册判据有两条过宽/过严, 预注册读数保留不动, 修正单列于此 (判据纪律: 被证伪⇒宣称收窄+post-hoc单列)",
+  "not_echo_too_weak": {
+   "evidence": "seq20 本地答案 == 问题首行逐字复读 '[微步骤隔离问询] 不对，你上一条不准确，请重新确认'",
+   "why_passed": "预注册用整条 qn (含 '…(只回答本微问题, 不引申)' 尾) 做子串判定 ⇒ 复读首行不触发",
+   "strict_rule": "答案 ⊂ 问题正文 (去空白后) ⇒ 判 echo",
+   "H2_corrected": "4/5"
+  },
+  "H4_negation_too_strict": {
+   "evidence": "本地 '3 加 5 等于 8。' 只给正确和值, 未加否定词",
+   "why_failed": "预注册要求 (含 8 ∧ 含否定词), 否定词非表达『纠错』的必要条件",
+   "H4_corrected": {
+    "local": "1/1",
+    "remote": "1/1",
+    "n": 1,
+    "weak": "n=1 ⇒ 证据薄弱"
+   }
+  }
+ },
+ "semantic_observations": [
+  {
+   "seq": 12,
+   "q": "从头再说",
+   "local": "好的，让我们从头开始。",
+   "remote": "我这里没有可重复的前文——本问询是隔离执行的…请把需要『从头再说』的具体内容发给我…",
+   "read": "隔离语境下正确行为=指出缺失指代; 本地答成空洞承诺(声称开始却无内容)"
+  },
+  {
+   "seq": 20,
+   "q": "不对，你上一条不准确，请重新确认",
+   "local": "(复读首行)",
+   "remote": "本微步骤未提供『上一条』的具体内容…无法重新确认",
+   "read": "同型: 本地逐字复读 ⇒ 零信息"
+  }
+ ],
+ "fresh_empty_body_repro": {
+  "seq": 18,
+  "arm": "remote",
+  "finish_reason": "length",
+  "reasoning_tokens": 512,
+  "content_len": 0,
+  "note": "本条远端调用**未经 relay** 直连真供应商 ⇒ 独立复现『推理预算吃满 ⇒ 空正文』成因, 排除 relay 侧伪影; 与 R477/R478 诊断 (EmptyBodyCause.LengthExhausted) 一致"
+ },
+ "verdict": {
+  "micro_all_local_substitution": "NO",
+  "basis": "预注册 fail_action: H2<4/5 或 local 算术 0/x 而 remote ≥1/x ⇒ 不实施; 修正后 H2=4/5(勉强过) 但语义面 2/5 空洞 ⇒ 按语义面结案=否",
+  "kpi_ceiling_hit": false,
+  "kpi_ceiling_note": "本探针只测可行性, 未改变任何 KPI 读数 (R482 分母/分子不动)",
+  "residual_candidate": "微问询形态分流: 含指代词(上一条/从头/刚才)者隔离无效 ⇒ 可**直接不发**该微问询(省 1 次远端调用/条, 零信息损失——远端 2 条只花了 132+289 completion 说『没有前文』); 无指代的轻问询才谈本地化"
+ }
+}
