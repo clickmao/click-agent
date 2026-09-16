@@ -129,6 +129,9 @@ def main(argv=None) -> int:
     ap.add_argument("--nc-block", action="store_true", help="负控: 把门槛抬到不可达 ⇒ 须 rc=2")
     ap.add_argument("--nc-selfmatch", action="store_true",
                     help="负控(修前行为): 不排除 shell 包装进程 ⇒ 自身/旁支 shell 提到监视字串时须 rc=2")
+    ap.add_argument("--nc-both", action="store_true",
+                    help="负控(候选④): 门槛抬到不可达 + 不排除 shell ⇒ mem 因与 proc 因**同时**成立, "
+                         "须并列报出 2 条 (禁二选一)")
     ap.add_argument("--round", default="R484", help="记录里的轮号标签")
     a = ap.parse_args(argv)
 
@@ -136,12 +139,13 @@ def main(argv=None) -> int:
     if not dotnet.is_file():
         print("MISS: 找不到 dotnet 可执行:", dotnet)
         return 3
-    gate = 10 ** 6 if a.nc_block else a.gate_mb
+    gate = 10 ** 6 if (a.nc_block or a.nc_both) else a.gate_mb
 
-    skip_shells = not a.nc_selfmatch
+    skip_shells = not (a.nc_selfmatch or a.nc_both)
     rec = {"round": a.round, "gate_mb": gate, "shutdown_done": False, "settle_s": 0,
-           "mem_available_mb": None, "blockers": [], "recent_src_writes_120s": None,
-           "shell_skip": skip_shells, "legacy_self_only": a.nc_selfmatch,
+           "mem_available_mb": None, "blockers": [], "blocker_causes": [],
+           "recent_src_writes_120s": None,
+           "shell_skip": skip_shells, "legacy_self_only": a.nc_selfmatch or a.nc_both,
            "self_ancestors": sorted(self_and_ancestors()),
            "shells_skipped_n": None}
     if not a.no_shutdown:
@@ -170,9 +174,19 @@ def main(argv=None) -> int:
     ok = rec["mem_available_mb"] >= gate and not rec["blockers"]
     rec["verdict"] = "PASS" if ok else "GATE_BLOCKED"
     if not ok:
-        rec["blocker_cause"] = ("build-server 残留" if any(p["watch"] in ("VBCSCompiler", "MSBuild")
-                                                          for p in rec["blockers"]) else
-                                "内存不足" if rec["mem_available_mb"] < gate else "其他进程")
+        # R487 候选④ 精确化: 多因**并列**, 禁二选一。
+        #   修前 (R483/R484) 是一条三元表达式 ⇒ mem 因与 build-server 因同时成立时只报一条,
+        #   R484 附注已记录该失真 (真因被措辞掩盖)。现在: 全因入 blocker_causes;
+        #   legacy blocker_cause 单因时词面不变, 多因时以 '+' 连接 (不静默丢因, 不改既有单因语义)。
+        causes = []
+        if rec["mem_available_mb"] < gate:
+            causes.append("内存不足")
+        if any(p["watch"] in ("VBCSCompiler", "MSBuild") for p in rec["blockers"]):
+            causes.append("build-server 残留")
+        if any(p["watch"] not in ("VBCSCompiler", "MSBuild") for p in rec["blockers"]):
+            causes.append("其他进程")
+        rec["blocker_causes"] = causes
+        rec["blocker_cause"] = (causes[0] if len(causes) == 1 else "+".join(causes)) if causes else "未判定"
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text(json.dumps(rec, ensure_ascii=False, indent=1, sort_keys=True) + "\n", encoding="utf-8")
     print(json.dumps(rec, ensure_ascii=False))

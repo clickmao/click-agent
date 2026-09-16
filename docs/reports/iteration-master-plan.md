@@ -646,3 +646,36 @@ python3 eval/run_round.py <新轮号> "revert-verify <原commit>" --quick   # �
 5. R479 遗留（路由器接线 / 入链 prompt 正文槽位化）
 6. R481-G 遗留（`by_subband` 分档读数 / 语料钉四元组）
 7. 起手闸 + 沉降等待并入 `run_both_*`（禁手抄）
+
+## R487（2026-09-16）真机三臂隔离微闸 — **主 KPI 判负**，闸效应首次真机读数 −20.6%
+
+- 靶点：R413 验收②③（用户一轮任务总 token 降 ≥30% / r1 对管道有可测增益）；R485 只交付器具未跑真机臂。
+- 设计（为什么是三臂）：微闸接线在 `src/agent/IndustrialAgentV2.cs` **两臂均无条件** ⇒ 闸开/闸关两臂**结构上无法隔离**该闸；
+  改用 **同臂参只换二进制**的差分：`A0`(r479v2 `6a9b7aed22a22f48…`) vs `Arole485`(r485 `03c77d56e8c485af…`) = 微闸单独效应；
+  `R485` = 新二进制 + `turn_gate=on` + `repeat_skip=on`（生产 R 形态）。
+- 真跑：`bash eval/rover/r487/run_both_r487.sh` ⇒ **rc=0 / ALLDONE 11:29:51**，三臂各 12 轮（本地中继 → 真供应商）。
+- 读数（供应商 usage 真值列）：A0 **22 调用 / 80,302 tok**；Arole485 **15 / 63,825**；R485 **14 / 81,770**。
+- **主 KPI：FAIL**（A0→R485 = **+1.83%**，不降反升）；H3 配对方向 FAIL（Arole485→R485 **+28.1%**）；H4 质量 FAIL（R485 实质轮 6/12）。
+- **post-hoc 正读数（预注册未点名，单列）**：A0→Arole485 = 调用 **−31.8%** / token **−20.6%** / 质量 12/12 未降
+  ⇒ **微闸确有可测增益，但 < 30%**；`micro_step_skipped`：A0 **0** / Arole485 **4** / R485 **2** ⇒ H1 PASS（闸在管道内活着）。
+- 归因（算术可验）：R485 每次调用 prompt **5,540** vs Arole485 **4,071**（+36%），调用数只少 1 ⇒ 总 token 上升；
+  与 skip 类答复 6/12（模板 4 + 复述回放 2，t9「从头说」逐字等于 t8）同时出现。**未做因果分离实验**（两开关同时改动）⇒ 只报相关。
+- H0 锚 **FAIL**（A0=22 调用 vs R482 锚 21 / 72,634 tok）⇒ 上游在飞漂移，本轮**不与 R482 相减**，只用同刻差分。
+- 器具收口：④ `blocker_cause` **多因并列** + 三态差分负控（C1 rc=0 / C2 [内存不足] / C3 [内存不足, build-server 残留]）；
+  ⑦ `run_arm/run_both` **机派生** 28 条替换逐条计数断言 + 起手闸**单一源**（`grep -c 2650` = 0）⇒ H6/H7 PASS。
+- ⑥ R481-G 遗留：`eval/recall/r487/band_probe_r487.py` ⇒ markdown **0.8125**（阈值 0.90，与已注册 R481-B 器具**同值**）/
+  explicit_rel **0.0913**（0.85）/ root_rel **1.0**（PASS）/ slash_token 58,155；守恒式 True；负控 `--nc-blind` 1.0→0.0；
+  语料清单导出（6882 文件 / `files_sha16=3da4c878e2b160bb`，与 R481-B 6658 文件**不可比**）。
+- 诚实边界：单夹具单次（n=12，无置信区间）；`turn_gate` 与 `repeat_skip` 混淆未分离；③（对侧 R486 承接）/⑤（会换被测二进制）未做；
+  自检出器具缺陷：relay/prov 命名未并入 TAG（本轮三臂 ARM token 互不相同 ⇒ 无覆盖，列为遗留）；未 push；未跑全量回归。
+- registry：本轮 +3 行（`updated_round=R487`）。
+
+### R487 · 轮次索引增量（机取自 `docs/verification-registry.json`，禁手改）
+
+| R487 | `r487.band-subband-and-corpus-list` | L2 | R481-G 遗留收口: rel 候选**子档分档读数** (explicit_rel / root_rel / slash_token / escape 顺序分区, 每 local rel 候选恰好一桶 ⇒ 守恒式可机检) + 语料钉** … |
+| R487 | `r487.blocker-multi-cause-and-gate-single-source` | L2 | 起手闸器具两条收口: (a) blocker_cause **多因并列** (取消 either/or; 修前 tagged 三元表达式只留一因 ⇒ 内存不足与 build-server 残留同时成立时只报后者, 归因错误); 差分负控三态 … |
+| R487 | `r487.three-arm-realand-kpi-negative` | L3 | 真机三臂同夹具全链跑通 (rc=0, 三臂各 12 轮): A0 = /tmp/pub_r479v2/agenthost (门关+rj 开, 无微闸; sha256 6a9b7aed22a22f48…) / Arole485 = /tmp/ … |
+
+覆盖自检: 轮号 ['R487']；registry rows=160，updated_round=R487。
+**缺登记行轮号: 无**
+

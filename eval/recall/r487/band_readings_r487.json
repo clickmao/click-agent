@@ -1,0 +1,82 @@
+{
+ "round": "R487",
+ "candidate": "⑥ R481-G 遗留 (by_subband + 语料钉清单)",
+ "instrument": {
+  "path": "eval/recall/r487/band_probe_r487.py",
+  "port_rule_source": "eval/recall/links_port_r482.py",
+  "prereg": "eval/recall/prereg_r481g.json",
+  "definitions_from": "prereg_r481g.bands.definitions",
+  "negative_control": false
+ },
+ "corpus": {
+  "files": 6882,
+  "files_sha16": "3da4c878e2b160bb",
+  "self_excluded": 3,
+  "self_excluded_dirs": [
+   "eval/recall/r487/"
+  ],
+  "comparability": "(files_sha16, rule_source_sha16) 二元组相等才可与旧读数同批对照; 本读数自成一钉 (含 R487 新增文件) ⇒ 与 R481-B/R482 读数标『不可比』"
+ },
+ "bands": {
+  "markdown": {
+   "refs": 96,
+   "local": 80,
+   "resolved": 65,
+   "dangling": 15,
+   "resolved_rate": 0.8125
+  },
+  "url": {
+   "refs": 1570,
+   "external_unreported": 1570,
+   "resolved_rate": "unreported"
+  },
+  "rel": {
+   "refs": 78265,
+   "local": 78265
+  },
+  "explicit_rel": {
+   "refs": 646,
+   "rewrite_ok": 59,
+   "rewrite_ok_rate": 0.0913,
+   "kept_raw": 0
+  },
+  "root_rel": {
+   "refs": 11720,
+   "resolved": 11720,
+   "resolved_rate": 1.0
+  },
+  "slash_token": {
+   "refs": 58155,
+   "dangling": 58155
+  },
+  "escape": {
+   "refs": 7744,
+   "note": "非 explicit_rel 且不可解析 (代码 token / 文件名串; 越根逃逸者另单列)"
+  }
+ },
+ "conservation": {
+  "origin_sum_eq_total": 79931,
+  "rel_subband_sum": 78265,
+  "rel_local": 78265,
+  "ok": true
+ },
+ "judgment_source": {
+  "markdown": "resolved_rate >= 0.90 (唯一真链接语境档, 设门槛)",
+  "url": "unreported (禁作 0, 禁入分母)",
+  "rel": "不设全局门槛; 只报 baseline 并分档",
+  "explicit_rel": "rewrite_ok_rate >= 0.85 (沿用 R481-B)",
+  "root_rel": "resolved_rate >= 0.90",
+  "slash_token": "不设门槛; 只作命名噪声计量 (dangling 单列)"
+ },
+ "judgments": {
+  "markdown_ge_0.90": false,
+  "explicit_rel_rewrite_ge_0.85": false,
+  "root_rel_ge_0.90": true,
+  "total_refs_reported": 79931
+ },
+ "honest": [
+  "n/a 全局门槛: prereg 已判全局单一阈值结构不可达 (slash token 面), 本器具不重报全局档",
+  "url 档离线不可验证 ⇒ unreported 单列, 禁作 0 禁入分母",
+  "Python 代理面, 不测产品面 agent.recall"
+ ]
+}

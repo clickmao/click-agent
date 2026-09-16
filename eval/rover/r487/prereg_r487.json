@@ -1,0 +1,74 @@
+{
+ "round": "R487",
+ "created": "2026-09-16T11:06:32+08:00",
+ "owner": "cron:9a97763d5fcd (30m 节拍)",
+ "user_order": "全候选并轮令 (2026-09-16 用户钦定): 全部候选 + 未闭合遗留并入同一轮",
+ "main_line": "R413 验收②③ — 链真跑通 + 用户一轮任务总 token 降幅 ≥30% (主因=不必要远端 LLM 调用减少) + r1 对管道有可测增益",
+ "precondition_facts": {
+  "occupancy_gate": "起手前 pgrep -af 'llama-server|dotnet test|dotnet publish|probe' ⇒ 仅 /tmp/cxprobe 陈旧桩 (19h+); 无 dotnet/llama-server; load 0.00; MemAvailable 2915MB >> 2650MB",
+  "sibling_writer": "60m 作业 b15eb2f40a69 末次执行 10:17-10:44 (next 11:44) ⇒ 本刻无对侧写者",
+  "uncommitted_foreign": "eval/rover/r486/ + eval/recall/r486/ + docs/reports/r486-*.md 属对侧在飞产物 ⇒ 本侧不改/不提交/不还原"
+ },
+ "anchors": {
+  "R482_Arole_denominator": {"bin_sha256_prefix": "6a9b7aed22a22f48", "calls": 21, "total_tokens": 72634, "prompt": 68083, "completion": 4551},
+  "R482_R_main": {"calls": 14, "total_tokens": 49237, "drop_pct": 32.2122},
+  "R485_offline_projection_of_micro_face": {"Arole_micro_calls": "7/21 = 33.3%", "Arole_micro_tok_share": "6032/72634 = 8.30%", "R_micro_calls": "4/14 = 28.6%"}
+ },
+ "arms": [
+  {
+   "arm_key": "A0",
+   "bin": "/tmp/pub_r479v2/agenthost",
+   "bin_sha256": "6a9b7aed22a22f48ee52579c0c4c48f94828bec878aafbb5112226ffe73f102a",
+   "turn_gate": false, "relation_judge": true, "repeat_skip": "off",
+   "relay_port": 48710, "api_port": 48712,
+   "role": "生产等价分母锚 (与 R482 Arole 同二进制同臂参 ⇒ 跨轮可比性锚 + 确定性锚)"
+  },
+  {
+   "arm_key": "Arole485",
+   "bin": "/tmp/pub_r485/agenthost",
+   "bin_sha256": "03c77d56e8c485af895001094e5bda2adb2bb5e40b42e3d71d1d8ab6591396f1",
+   "turn_gate": false, "relation_judge": true, "repeat_skip": "off",
+   "relay_port": 48714, "api_port": 48713,
+   "role": "同二进制门关 ⇒ 单独隔离「R485 微问询预发送闸」在真链上的效应 (与 A0 只差二进制)"
+  },
+  {
+   "arm_key": "R485",
+   "bin": "/tmp/pub_r485/agenthost",
+   "bin_sha256": "03c77d56e8c485af895001094e5bda2adb2bb5e40b42e3d71d1d8ab6591396f1",
+   "turn_gate": true, "relation_judge": true, "repeat_skip": "on",
+   "relay_port": 48716, "api_port": 48715,
+   "role": "主判据面 (门开 + r1 在管道内)"
+  }
+ ],
+ "arm_comparability_declaration": "R467 臂可比性闸: 三个 arm_key 跨轮均无同名臂 (与 R482 的 Arole/R 名字不同 ⇒ 禁混算); A0 与 R482/Arole 的 arm_flags 逐键同但属跨轮同配置复现, 只用于确定性锚, 不用于宣称新增益; Arole485↔R485 同二进制只翻 turn_gate/repeat_skip ⇒ 唯一合法可翻转对。",
+ "hypotheses": [
+  {"id": "H0", "kind": "determinism_anchor", "claim": "A0 复现 R482 Arole 读数: relay_calls=21 且 total_tokens=72634", "rule": "PASS 判双侧逐值相等"},
+  {"id": "H1", "kind": "causal", "claim": "R485 微闸真机生效: Arole485.relay_calls < A0.relay_calls 且 R485 臂 telemetry 中 micro_step_skipped > 0", "rule": "PASS 判两者同时成立"},
+  {"id": "H2", "kind": "main_kpi", "claim": "R485 vs A0: 供应商 usage 真值总 token 降幅 ≥30%", "rule": "PASS 判 (A0.total-R485.total)/A0.total ≥ 0.30"},
+  {"id": "H3", "kind": "secondary_kpi", "claim": "R485 vs Arole485 (同二进制可翻转面): 总 token 降幅 >0 且调用数下降", "rule": "方向性判据 (无 30% 门槛; 该面只含 turn_gate/repeat_skip)"},
+  {"id": "H4", "kind": "quality", "claim": "质量面不降: R485 臂用户可见答复 substantive_turns ≥ Arole485, 且 banner/模板冒充/空正文 回复数 = 0 (skip 类答复单列不算实质轮)", "rule": "PASS 判 R485.substantive_turns >= Arole485.substantive_turns 且 R485.banner_replies==0"},
+  {"id": "H5", "kind": "form", "claim": "被测二进制形态: prov_check V0 rc=0 (AOT 原生, 负控 IL 被拒) 且实测 sha256 == 本文件登记的 bin_sha256", "rule": "fail-closed: 不符则整个测量 VOID"},
+  {"id": "H6", "kind": "instrument_candidate4", "claim": "起手闸 blocker_cause 精确化(候选④): mem 与 proc 因同时成立时**并列**输出 (blocker_causes 含 2 条), 不再二选一", "rule": "PASS 判 --nc-both 读数 causes_n==2 且集合 == [内存不足, build-server 残留], rc=2; 且常规读数 rc=0"},
+  {"id": "H7", "kind": "instrument_candidate7", "claim": "起手闸/沉降单一源(候选⑦): run_arm_real_r487.sh 内**零**字面阈值 (无 '2650'), 闸一律经 eval/rover/r483/preflight_gate.py", "rule": "PASS 判机检 grep -c '2650' == 0 且脚本内存在 preflight_gate.py 调用"}
+ ],
+ "verdict_rules": {
+  "main_acceptance": "H2 达线 ⇒ R413 验收② 在本轮形态下闭合; 否则如实报未达线, 不许换分母",
+  "token_source": "供应商 usage 真值列 (relay 落盘 usage-*.jsonl), 桩口径/派生列一律另列禁混算",
+  "unknown": "缺字段 ⇒ unreported, 禁按 0"
+ },
+ "honest_boundaries_prereg": [
+  "本轮不改 src ⇒ 不触发 AOT 重发布; 被测二进制 = R485 发布物 (sha 03c77d56…, IL 警告 0)",
+  "微闸效应只在 A0↔Arole485 这一对差分中可读; 两臂均可翻 turn_gate, 微闸本身在二进制内不可关 (无条件接线, IndustrialAgentV2.cs:308)",
+  "n=12 轮单夹具 (grid p12) ⇒ 外部效度有限",
+  "候选⑤ (R479 遗留 src 接线) 若实施会替换本轮被测二进制 ⇒ 与真机读数互斥, 处置见报告"
+ ],
+ "candidates_scope": [
+  "① 真机双臂 H2/H3 (闸开 vs 同夹具基线) + 起手闸/沉降",
+  "② 端到端质量面 (答复级)",
+  "③ 空正文基数可测化 (确定性桩差分)",
+  "④ blocker_cause 标签精确化",
+  "⑤ R479 遗留 (路由器接线 / 入链 prompt 正文槽位化)",
+  "⑥ R481-G 遗留 (by_subband 分档读数 / 语料钉四元组)",
+  "⑦ 起手闸 + 沉降等待并入 run_both_* (禁手抄)"
+ ]
+}

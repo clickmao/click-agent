@@ -1,0 +1,46 @@
+{
+ "asserts": {
+  "C1_pass_and_empty_causes": true,
+  "C2_single_cause_mem": true,
+  "C3_two_causes_parallel": true
+ },
+ "cases": {
+  "C1_plain": {
+   "blocker_causes": [],
+   "mem_available_mb": 2708,
+   "rc": 0,
+   "verdict": "PASS"
+  },
+  "C2_nc_block": {
+   "blocker_cause": "内存不足",
+   "blocker_causes": [
+    "内存不足"
+   ],
+   "rc": 2,
+   "verdict": "GATE_BLOCKED"
+  },
+  "C3_nc_both": {
+   "blocker_cause": "内存不足+build-server 残留",
+   "blocker_causes": [
+    "内存不足",
+    "build-server 残留"
+   ],
+   "blockers": [
+    {
+     "cmd": "/tmp/nc_r487/VBCSCompiler 60",
+     "pid": 1573125,
+     "rss_mb": 2,
+     "watch": "VBCSCompiler"
+    }
+   ],
+   "causes_n": 2,
+   "fake_proc_seen_by_scan": true,
+   "rc": 2,
+   "verdict": "GATE_BLOCKED"
+  }
+ },
+ "gate_tool": "eval/rover/r483/preflight_gate.py",
+ "round": "R487",
+ "verdict": "PASS",
+ "instrument_gate_sha16": "344419f044aa85e3"
+}

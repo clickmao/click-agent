@@ -1,0 +1,423 @@
+{
+ "round": "R487",
+ "dir": "/home/agentuser/AgentFramework/eval/rover/r487",
+ "arms_order": [
+  "A0",
+  "Arole485",
+  "R485"
+ ],
+ "arm_tokens": {
+  "A0": "A0",
+  "Arole485": "Arole",
+  "R485": "R"
+ },
+ "prereg_created": "2026-09-16T11:06:32+08:00",
+ "missing_arms": [],
+ "arms": {
+  "A0": {
+   "turns_n": 12,
+   "turns_ok": 12,
+   "turn_errors": [],
+   "relay_calls": 22,
+   "prompt": 74693,
+   "completion": 5609,
+   "total": 80302,
+   "hit": 63360,
+   "miss": 11333,
+   "identity_all_rows": true,
+   "blocked": 0,
+   "usage_err": 0,
+   "empty_body_rows": 6,
+   "finish_reason_hist": {
+    "tool_calls": 6,
+    "stop": 16
+   },
+   "cost_cny_upper": 0.026337,
+   "micro_step_skipped_n": 0,
+   "micro_step_n": 4,
+   "micro_step_tokens": 0,
+   "skip_reply_n": 0,
+   "skip_reply_kinds": [],
+   "banner_replies": 0,
+   "template_replies": 0,
+   "empty_replies": 0,
+   "substantive_turns": 12,
+   "replies": [
+    "工作区里没有构建入口可依 — 根目录只有 `data/`，`src/` 不存在，也没有 `.sln`/`.csproj`/脚本。\n\n一句话澄清：你指的是模块地图里 `src/agent.host/Program.cs` 那个主机的构建命令吗",
+    "收到。已复跑确认当前工作区根仍只有 `data/`（list_dir rc=0），所以那行 `dotnet build` 仍是**未经执行验证**的默认方案。\n\n需要我做的话，下一步二选一：告诉我实际项目路径，或允许我在 `data/` 里",
+    "明白，随时叫我。",
+    "好。",
+    "嗯。",
+    "「再讲一遍。」我这边没有待办指令 (本会话还没有产物)。继续什么？说一句具体要我做什么就行。",
+    "(先说明: 上一轮问过「讲一遍」还没答, 这轮按你这次的意图办。)\n刚复跑取数（本轮真实执行）：\n- `list_dir` 根目录 → 仅 `data`，rc=0\n- `find ... -name '*.csproj' -o '*.sln",
+    "换个说法，用一句话+打比方讲同一件事：\n\n**那行命令** = 告诉 .NET：「拿这套 SDK，把指定项目文件按 Release 档编译一遍，产物丢进 `bin/Release/`。」\n\n```\ndotnet build /home/ag",
+    "从头说，完整版就三句：\n\n1. **背景**：你要的是本仓库主机的构建命令（对应模块地图 `src/agent.host/Program.cs` 那个 CLI 宿主）。\n2. **命令（一行）**：\n```\ndotnet build /ho",
+    "不对。我上一条没写过任何加法，也从未说 3+5=9。事实上 3+5=8。",
+    "半对：数字 9 确实出现在我上一条里，但不是「3+5=9」的意思。\n\n原文那段是：\n\n`9` 只出现在 `goal 3 + 5 != 9` 里，是「**3 加 5 不等于 9**」这条不等断言。所以是「提到了 9」≠「说 3+5 等于 9」",
+    "你说得对，我上一条不准确，纠正。\n\n我上一条说「9 只出现在 `goal 3 + 5 != 9` 里」——**错**。回看再上一条（那句「不对。……也从未说 3+5=9……」），`9` 其实出现**两处**：\n1. 散文里的 **`0`**"
+   ],
+   "host_sha256": "6a9b7aed22a22f48ee52579c0c4c48f94828bec878aafbb5112226ffe73f102a",
+   "relay_token_files": "usage-A0.jsonl / tel-A0/host.jsonl",
+   "self_usage_bytes": 14026,
+   "flags_arm_shape": {
+    "turn_gate": "false",
+    "relation_judge": "true",
+    "repeat_skip": "off",
+    "grid": "p12",
+    "model_path": "/home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf"
+   }
+  },
+  "Arole485": {
+   "turns_n": 12,
+   "turns_ok": 12,
+   "turn_errors": [],
+   "relay_calls": 15,
+   "prompt": 61063,
+   "completion": 2762,
+   "total": 63825,
+   "hit": 52352,
+   "miss": 8711,
+   "identity_all_rows": true,
+   "blocked": 0,
+   "usage_err": 0,
+   "empty_body_rows": 3,
+   "finish_reason_hist": {
+    "tool_calls": 3,
+    "stop": 12
+   },
+   "cost_cny_upper": 0.019525,
+   "micro_step_skipped_n": 4,
+   "micro_step_n": 0,
+   "micro_step_tokens": 0,
+   "skip_reply_n": 0,
+   "skip_reply_kinds": [],
+   "banner_replies": 0,
+   "template_replies": 0,
+   "empty_replies": 0,
+   "substantive_turns": 12,
+   "replies": [
+    "问一句：要合并的是哪条构建命令？本会话里没有出现过它，且工作区顶层只有 `data/`（没有 `src/`），我无法从现场取到原文。\n\n如果你指的是会话基线里那套 dotnet 工程（`src/agent.host`），默认可写成一行：\n\n",
+    "收到。需要时把原命令或工程路径贴来，我按你的实际那条并成单行。",
+    "明白，随时说。",
+    "收到，需要时喊我。",
+    "不客气，随时吩咐。",
+    "承接：上一条实质内容就是构建命令的单行写法。\n\n要我再讲哪一段？默认就是把那条重复一次：\n\n```bash\ndotnet build /home/agentuser/AgentFramework/eval/rover/r487/run-Ar",
+    "(先说明: 上一轮问过「讲一遍」还没答, 这轮按你这次的意图办。)\n一句话结论：那条单行命令就是把 `dotnet build` 的四个要素拼在一行——工程路径、配置、可选输出、可选附加属性；但我在现场没找到 `src/`，所以它目前**无",
+    "换种说法：一句话就能编译整个宿主项目——把工程文件路径和 Release 配置放进同一条命令。\n\n```bash\ndotnet build /home/agentuser/AgentFramework/eval/rover/r487/run",
+    "从头说：你要的\"一行构建命令\"，就是把工程路径、配置、输出三样写进同一条 `dotnet build`。\n\n```bash\ndotnet build /home/agentuser/AgentFramework/eval/rover/r48",
+    "没有。我前后各条都只在说构建命令，从未出现过算术。3 加 5 等于 8，不是 9。\n\n如果你是在试我会不会顺着错前提走：不会。需要的话把真正想问的贴出来。",
+    "不是。我上一条写的数是 8，还写明了「不等于 9」。整段里没有任何地方出现\"九\"。\n\nno_formal 已由上块覆盖；此句为纠错复述。",
+    "确认结果：我上一条里数字\"9\"确实出现过——两次，但都是在否定语境里（\"不是 9\"、\"3 + 5 != 9\"）。我给出的值是 **8**。所以：\n\n- `3 + 5 == 8` 是我说的；\n- `3 + 5 == 9` 我没说过，且明确否认"
+   ],
+   "host_sha256": "03c77d56e8c485af895001094e5bda2adb2bb5e40b42e3d71d1d8ab6591396f1",
+   "relay_token_files": "usage-Arole.jsonl / tel-Arole/host.jsonl",
+   "self_usage_bytes": 0,
+   "flags_arm_shape": {
+    "turn_gate": "false",
+    "relation_judge": "true",
+    "repeat_skip": "off",
+    "grid": "p12",
+    "model_path": "/home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf"
+   }
+  },
+  "R485": {
+   "turns_n": 12,
+   "turns_ok": 12,
+   "turn_errors": [],
+   "relay_calls": 14,
+   "prompt": 77566,
+   "completion": 4204,
+   "total": 81770,
+   "hit": 63872,
+   "miss": 13694,
+   "identity_all_rows": true,
+   "blocked": 0,
+   "usage_err": 0,
+   "empty_body_rows": 8,
+   "finish_reason_hist": {
+    "tool_calls": 8,
+    "stop": 6
+   },
+   "cost_cny_upper": 0.025567,
+   "micro_step_skipped_n": 2,
+   "micro_step_n": 0,
+   "micro_step_tokens": 0,
+   "skip_reply_n": 6,
+   "skip_reply_kinds": [
+    "template",
+    "template",
+    "template",
+    "template",
+    "repeat_verbatim",
+    "repeat_verbatim"
+   ],
+   "banner_replies": 0,
+   "template_replies": 4,
+   "empty_replies": 0,
+   "substantive_turns": 6,
+   "replies": [
+    "当前工作区 `/home/agentuser/AgentFramework/eval/rover/r487/run-R485` 下只有 `data/`，没有任何 `.csproj/.sln/Makefile/*.sh`（find 已确认为空",
+    "收到，继续按当前方向推进，本轮不重新规划。",
+    "收到，继续按当前方向推进，本轮不重新规划。",
+    "收到，继续按当前方向推进，本轮不重新规划。",
+    "收到，继续按当前方向推进，本轮不重新规划。",
+    "当前工作区 `/home/agentuser/AgentFramework/eval/rover/r487/run-R485` 下只有 `data/`，没有任何 `.csproj/.sln/Makefile/*.sh`（find 已确认为空",
+    "(先说明: 上一轮问过「讲一遍」还没答, 这轮按你这次的意图办。)\n**先更正上一轮的错误**：我此前说\"没有任何 .csproj/.sln\"是错的——那次只搜了评测工作区 `run-R485/`（里面确实只有 `data/`）。往上一级搜",
+    "换句话说，一句话就是：\n\n**用绝对路径调用 SDK 里的 dotnet，对解决方案文件跑 Release 构建。**\n\n```\n/home/agentuser/.dotnet/dotnet build /home/agentuser/Ag",
+    "换句话说，一句话就是：\n\n**用绝对路径调用 SDK 里的 dotnet，对解决方案文件跑 Release 构建。**\n\n```\n/home/agentuser/.dotnet/dotnet build /home/agentuser/Ag",
+    "不对，我上一条没有任何关于加法的内容——上一条讲的是构建命令（dotnet build + .sln + PATH）。这是把不存在的前提安到我头上。\n\n3 + 5 = **8**，不是 9。\n\n```\npremise 3 + 5 == 8\n",
+    "不是。我上一条写的是\"3 + 5 = **8**，不是 9\"，而且更早那条讲的是构建命令，全程没出现 9 这个数。所以\"我说数是九\"这个前提不成立——我不接受这个前提。\n\n3 + 5 = 8。\n\n```\npremise 3 + 5 == 8",
+    "确认过了，结论不变：我上一条的原文是「3 + 5 = **8**，不是 9」，我给出的数是 **8**。文中出现的\"9\"只是我引用来否定它的，不是我的答案。\n\n所以\"我说的数是九\"仍不成立。\n\n3 + 5 = 8。\n\n```\npremise"
+   ],
+   "host_sha256": "03c77d56e8c485af895001094e5bda2adb2bb5e40b42e3d71d1d8ab6591396f1",
+   "relay_token_files": "usage-R.jsonl / tel-R/host.jsonl",
+   "self_usage_bytes": 0,
+   "flags_arm_shape": {
+    "turn_gate": "true",
+    "relation_judge": "true",
+    "repeat_skip": "on",
+    "grid": "p12",
+    "model_path": "/home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf"
+   }
+  }
+ },
+ "binary_form": {
+  "A0": {
+   "path": "/tmp/pub_r479v2/agenthost",
+   "sha256_actual": "6a9b7aed22a22f48ee52579c0c4c48f94828bec878aafbb5112226ffe73f102a",
+   "sha256_prereg": "6a9b7aed22a22f48ee52579c0c4c48f94828bec878aafbb5112226ffe73f102a",
+   "match": true
+  },
+  "Arole485": {
+   "path": "/tmp/pub_r485/agenthost",
+   "sha256_actual": "03c77d56e8c485af895001094e5bda2adb2bb5e40b42e3d71d1d8ab6591396f1",
+   "sha256_prereg": "03c77d56e8c485af895001094e5bda2adb2bb5e40b42e3d71d1d8ab6591396f1",
+   "match": true
+  },
+  "R485": {
+   "path": "/tmp/pub_r485/agenthost",
+   "sha256_actual": "03c77d56e8c485af895001094e5bda2adb2bb5e40b42e3d71d1d8ab6591396f1",
+   "sha256_prereg": "03c77d56e8c485af895001094e5bda2adb2bb5e40b42e3d71d1d8ab6591396f1",
+   "match": true
+  }
+ },
+ "kpi": {
+  "A0_total": 80302,
+  "R485_total": 81770,
+  "drop_pct_vs_A0": -1.83,
+  "A0_calls": 22,
+  "R485_calls": 14,
+  "call_delta": 8,
+  "Arole485_total": 63825,
+  "Arole485_calls": 15,
+  "drop_pct_pair_vs_Arole485": -28.12,
+  "call_delta_pair": 1,
+  "micro_gate_effect_calls": 7,
+  "micro_gate_effect_tokens": 16477,
+  "micro_gate_effect_pct": 20.52
+ },
+ "prov": {
+  "A0": {
+   "under_test": {
+    "path": "/tmp/pub_r479v2/agenthost",
+    "exists": true,
+    "bytes": 15363712,
+    "sha256": "6a9b7aed22a22f48ee52579c0c4c48f94828bec878aafbb5112226ffe73f102a",
+    "bare_rc": 0,
+    "bare_stdout_head": "AgentFramework CLI",
+    "needs_runtime": false,
+    "native_ok": true,
+    "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=d67da55d5112d920d92f6c19404b7ad150179ead, for GNU/Linux 3.2.0, stripped"
+   },
+   "negative_controls": [
+    {
+     "path": "/home/agentuser/AgentFramework/src/agent.host/bin/Release/net10.0/agenthost",
+     "exists": true,
+     "bytes": 78256,
+     "sha256": "fe1fb720fb5eedb044014b1c27cd18352e851960102f93920bfb2f57e0820dd3",
+     "bare_rc": 131,
+     "bare_stdout_head": "You must install .NET to run this application.",
+     "needs_runtime": true,
+     "native_ok": false,
+     "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=93c65abf3ff66427178d065d36972e8969f06f4e, stripped"
+    }
+   ],
+   "pos_ok": true,
+   "neg_ok": true,
+   "verdict": "PASS"
+  },
+  "Arole485": {
+   "under_test": {
+    "path": "/tmp/pub_r485/agenthost",
+    "exists": true,
+    "bytes": 15363728,
+    "sha256": "03c77d56e8c485af895001094e5bda2adb2bb5e40b42e3d71d1d8ab6591396f1",
+    "bare_rc": 0,
+    "bare_stdout_head": "AgentFramework CLI",
+    "needs_runtime": false,
+    "native_ok": true,
+    "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=9ef9228f9746600b28feee1a6ffbe3276904b469, for GNU/Linux 3.2.0, stripped"
+   },
+   "negative_controls": [
+    {
+     "path": "/home/agentuser/AgentFramework/src/agent.host/bin/Release/net10.0/agenthost",
+     "exists": true,
+     "bytes": 78256,
+     "sha256": "fe1fb720fb5eedb044014b1c27cd18352e851960102f93920bfb2f57e0820dd3",
+     "bare_rc": 131,
+     "bare_stdout_head": "You must install .NET to run this application.",
+     "needs_runtime": true,
+     "native_ok": false,
+     "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=93c65abf3ff66427178d065d36972e8969f06f4e, stripped"
+    }
+   ],
+   "pos_ok": true,
+   "neg_ok": true,
+   "verdict": "PASS"
+  },
+  "R485": {
+   "under_test": {
+    "path": "/tmp/pub_r485/agenthost",
+    "exists": true,
+    "bytes": 15363728,
+    "sha256": "03c77d56e8c485af895001094e5bda2adb2bb5e40b42e3d71d1d8ab6591396f1",
+    "bare_rc": 0,
+    "bare_stdout_head": "AgentFramework CLI",
+    "needs_runtime": false,
+    "native_ok": true,
+    "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=9ef9228f9746600b28feee1a6ffbe3276904b469, for GNU/Linux 3.2.0, stripped"
+   },
+   "negative_controls": [
+    {
+     "path": "/home/agentuser/AgentFramework/src/agent.host/bin/Release/net10.0/agenthost",
+     "exists": true,
+     "bytes": 78256,
+     "sha256": "fe1fb720fb5eedb044014b1c27cd18352e851960102f93920bfb2f57e0820dd3",
+     "bare_rc": 131,
+     "bare_stdout_head": "You must install .NET to run this application.",
+     "needs_runtime": true,
+     "native_ok": false,
+     "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=93c65abf3ff66427178d065d36972e8969f06f4e, stripped"
+    }
+   ],
+   "pos_ok": true,
+   "neg_ok": true,
+   "verdict": "PASS"
+  }
+ },
+ "verdict": {
+  "H0_determinism_anchor": {
+   "pass": false,
+   "detail": "A0 calls=22(want 21) total=80302(want 72634)"
+  },
+  "H1_micro_gate_live": {
+   "pass": true,
+   "detail": "Arole485.calls=15 < A0.calls=22 : True; R485.micro_step_skipped=2 (A0=0, Arole485=4) [A0 二进制无微闸 ⇒ 期望 0 为对照]"
+  },
+  "H2_main_kpi_drop_ge_30pct": {
+   "pass": false,
+   "detail": "drop=-1.83% (A0=80302 → R485=81770), 门槛 30%"
+  },
+  "H3_pair_direction": {
+   "pass": false,
+   "detail": "Arole485=63825 → R485=81770: drop=-28.12%, calls 15→14"
+  },
+  "H4_quality_not_worse": {
+   "pass": false,
+   "detail": "R485 substantive=6 >= Arole485 12 : False; banner=0 template=4 empty=0; skip类答复单列=6(['template', 'template', 'template', 'template', 'repeat_verbatim', 'repeat_verbatim'])"
+  },
+  "H5_form_native_aot": {
+   "pass": true,
+   "detail": "sha 匹配={'A0': True, 'Arole485': True, 'R485': True}; prov native_ok={'A0': None, 'Arole485': None, 'R485': None}"
+  },
+  "H6_blocker_cause_multi": {
+   "pass": true,
+   "detail": "候选④机检读数: {\"blocker_cause\": \"内存不足+build-server 残留\", \"blocker_causes\": [\"内存不足\", \"build-server 残留\"], \"blockers\": [{\"cmd\": \"/tmp/nc_r487/VBCSCompiler 60\", \"pid\": 1573125, \"rss_mb\": 2, \"watch\": \"VBCSCompiler\"}], \"causes_n\": 2, \"fake_proc_seen_by_scan\": true, \"rc\": 2, \"verdict\": \"GATE_BLOCKED\"}"
+  },
+  "H7_gate_single_source": {
+   "pass": true,
+   "detail": "候选⑦机检读数: 2650 计数=0 residue={}"
+  }
+ },
+ "verdict_all_pass": false,
+ "checks_posthoc": {
+  "empty_body_rows": {
+   "A0": 6,
+   "Arole485": 3,
+   "R485": 8
+  },
+  "finish_reason_hist": {
+   "A0": {
+    "tool_calls": 6,
+    "stop": 16
+   },
+   "Arole485": {
+    "tool_calls": 3,
+    "stop": 12
+   },
+   "R485": {
+    "tool_calls": 8,
+    "stop": 6
+   }
+  },
+  "cache_identity_all_rows": {
+   "A0": true,
+   "Arole485": true,
+   "R485": true
+  },
+  "cost_cny_upper": {
+   "A0": 0.026337,
+   "Arole485": 0.019525,
+   "R485": 0.025567
+  },
+  "micro_step_rows": {
+   "A0": {
+    "skipped": 0,
+    "steps": 4,
+    "tokens": 0
+   },
+   "Arole485": {
+    "skipped": 4,
+    "steps": 0,
+    "tokens": 0
+   },
+   "R485": {
+    "skipped": 2,
+    "steps": 0,
+    "tokens": 0
+   }
+  },
+  "substantive_turns": {
+   "A0": 12,
+   "Arole485": 12,
+   "R485": 6
+  },
+  "skip_reply_kinds": {
+   "A0": [],
+   "Arole485": [],
+   "R485": [
+    "template",
+    "template",
+    "template",
+    "template",
+    "repeat_verbatim",
+    "repeat_verbatim"
+   ]
+  },
+  "usage_err_rows": {
+   "A0": 0,
+   "Arole485": 0,
+   "R485": 0
+  }
+ },
+ "drift_notes": [
+  "[checker-fix #4 / R487] 臂调用 relay/prov 时只传 \"$ARM\"(不含 TAG) ⇒ 供应商 usage 真值列落在 usage-<ARM>.jsonl (tag 无关), 而臂自身 tag 化的 $USAGE 文件被 `: >` 预建后**从未写入**(0 字节) ⇒ 判据器改为「从驱动器 run_both 派生臂 token」读真值列, 并把空的自报通道记 unreported。本轮三臂 token (A0/Arole/R) 互不相同 ⇒ 无覆盖/无污染; 但同名 ARM 不同 TAG 会相撞 ⇒ 列为遗留, 下一轮派生时把 relay/prov 命名并入 TAG。",
+  "[drift] A0 臂实测 relay_calls=22 (R482 锚 21) ⇒ 供应商/链路非确定性或在飞漂移, H0 逐值锚未复现, 差分判据不受影响 (同刻同供应商)。"
+ ],
+ "honest_boundaries": [
+  "单夹具单次 (grid p12, n=12 轮) ⇒ 点估计, 无置信区间, 外部效度有限",
+  "上游真供应商可漂移 ⇒ A0 是跨轮锚; H0 不达线时 A0↔Arole485↔R485 的差分仍成立(同一时刻同供应商)",
+  "微闸效应只在 A0↔Arole485 差分可读; 两臂均可翻 turn_gate, 微闸在二进制内不可关",
+  "empty_cause/retry_skipped/micro_* 取自产品遥测 (kv), 与供应商 usage 分列"
+ ]
+}

@@ -1,0 +1,230 @@
+{
+ "round": "R487",
+ "derived_from": {
+  "run_arm_real_r487.sh": "eval/rover/r482/run_arm_real_r482.sh",
+  "run_both_r487.sh": "eval/rover/r482/run_both_r482.sh"
+ },
+ "rules_total": 29,
+ "asserts": [
+  {
+   "file": "run_arm_real_r487.sh",
+   "rule": 0,
+   "old_head": "# R482 臂执行器 —— 由 R477 版**机派生** (只改: DIR r477→r482 / key 变量名 R477_→R482",
+   "want": 1,
+   "got": 1
+  },
+  {
+   "file": "run_arm_real_r487.sh",
+   "rule": 1,
+   "old_head": "DIR=$ROOT/eval/rover/r482",
+   "want": 1,
+   "got": 1
+  },
+  {
+   "file": "run_arm_real_r487.sh",
+   "rule": 2,
+   "old_head": "R482_UPSTREAM_KEY",
+   "want": 3,
+   "got": 3
+  },
+  {
+   "file": "run_arm_real_r487.sh",
+   "rule": 3,
+   "old_head": "# R482 臂 (端点 = 本地中继 v2 → 真供应商; 其余与生产 config/base/models.yaml 逐字同)",
+   "want": 1,
+   "got": 1
+  },
+  {
+   "file": "run_arm_real_r487.sh",
+   "rule": 4,
+   "old_head": "HOST=${AGENTFRAMEWORK_HOST_BIN:-/tmp/pub_r479v2/agenthost}",
+   "want": 1,
+   "got": 1
+  },
+  {
+   "file": "run_arm_real_r487.sh",
+   "rule": 5,
+   "old_head": "ARM=${1:?用法: run_arm_real.sh <Arole|R>}",
+   "want": 1,
+   "got": 1
+  },
+  {
+   "file": "run_arm_real_r487.sh",
+   "rule": 6,
+   "old_head": "RELAY_PORT=${2:-48110}",
+   "want": 1,
+   "got": 1
+  },
+  {
+   "file": "run_arm_real_r487.sh",
+   "rule": 7,
+   "old_head": "API_PORT=${3:-48112}",
+   "want": 1,
+   "got": 1
+  },
+  {
+   "file": "run_arm_real_r487.sh",
+   "rule": 8,
+   "old_head": "CFG=$DIR/config-$ARM",
+   "want": 1,
+   "got": 1
+  },
+  {
+   "file": "run_arm_real_r487.sh",
+   "rule": 9,
+   "old_head": "CALLS=$DIR/calls-$ARM.jsonl",
+   "want": 1,
+   "got": 1
+  },
+  {
+   "file": "run_arm_real_r487.sh",
+   "rule": 10,
+   "old_head": "USAGE=$DIR/usage-$ARM.jsonl",
+   "want": 1,
+   "got": 1
+  },
+  {
+   "file": "run_arm_real_r487.sh",
+   "rule": 11,
+   "old_head": "TURNS=$DIR/turns-$ARM.jsonl",
+   "want": 1,
+   "got": 1
+  },
+  {
+   "file": "run_arm_real_r487.sh",
+   "rule": 12,
+   "old_head": "HOSTLOG=$DIR/host-$ARM.log",
+   "want": 1,
+   "got": 1
+  },
+  {
+   "file": "run_arm_real_r487.sh",
+   "rule": 13,
+   "old_head": "RELAYLOG=$DIR/relay-$ARM.log",
+   "want": 1,
+   "got": 1
+  },
+  {
+   "file": "run_arm_real_r487.sh",
+   "rule": 14,
+   "old_head": "SERVLOG=$DIR/server-$ARM.txt",
+   "want": 1,
+   "got": 1
+  },
+  {
+   "file": "run_arm_real_r487.sh",
+   "rule": 15,
+   "old_head": "  Arole) CWD_NAME=run-Arole ;;",
+   "want": 1,
+   "got": 1
+  },
+  {
+   "file": "run_arm_real_r487.sh",
+   "rule": 16,
+   "old_head": "RUNDIR=$DIR/$CWD_NAME",
+   "want": 1,
+   "got": 1
+  },
+  {
+   "file": "run_arm_real_r487.sh",
+   "rule": 17,
+   "old_head": "  Arole) MP=$M3B; GATE=false; RJ=true;  ROLE=\"$ROLE_GROWTH\"; RS=off ;;",
+   "want": 1,
+   "got": 1
+  },
+  {
+   "file": "run_arm_real_r487.sh",
+   "rule": 18,
+   "old_head": "\"$DIR\" \"$ARM\" \"$CFG/base/models.yaml\" \"$HOST\" \"$ROLE_GROWTH\" \"$GRID\" \"",
+   "want": 1,
+   "got": 1
+  },
+  {
+   "file": "run_arm_real_r487.sh",
+   "rule": 19,
+   "old_head": "d, arm, cfg, host, role, grid, rs, bsha, task, cwdname = sys.argv[1:11",
+   "want": 1,
+   "got": 1
+  },
+  {
+   "file": "run_arm_real_r487.sh",
+   "rule": 20,
+   "old_head": "open(os.path.join(d, \"flags-%s.json\" % arm), \"w\", encoding=\"utf-8\")",
+   "want": 1,
+   "got": 1
+  },
+  {
+   "file": "run_arm_real_r487.sh",
+   "rule": 21,
+   "old_head": "\"rundir_cwd\": \"eval/rover/%s/%s\" % (os.path.basename(d), cwdname),",
+   "want": 1,
+   "got": 1
+  },
+  {
+   "file": "run_arm_real_r487.sh",
+   "rule": 22,
+   "old_head": "MEM_GATE_MB=2650",
+   "want": 1,
+   "got": 1
+  },
+  {
+   "file": "run_both_r487.sh",
+   "rule": 0,
+   "old_head": "# R482 双臂顺序执行 (Arole → R)",
+   "want": 1,
+   "got": 1
+  },
+  {
+   "file": "run_both_r487.sh",
+   "rule": 1,
+   "old_head": "R482_UPSTREAM_KEY",
+   "want": 3,
+   "got": 3
+  },
+  {
+   "file": "run_both_r487.sh",
+   "rule": 2,
+   "old_head": "bash eval/rover/r482/run_arm_real_r482.sh Arole 48210 48212 || { echo ",
+   "want": 1,
+   "got": 1
+  },
+  {
+   "file": "run_both_r487.sh",
+   "rule": 3,
+   "old_head": "bash eval/rover/r482/run_arm_real_r482.sh R 48214 48213 || { echo \"[bo",
+   "want": 1,
+   "got": 1
+  },
+  {
+   "file": "run_both_r487.sh",
+   "rule": 4,
+   "old_head": "[both-r482]",
+   "want": 4,
+   "got": 4
+  },
+  {
+   "file": "run_both_r487.sh",
+   "rule": 5,
+   "old_head": "echo \"[both-r487] Arole ok $(date +%H:%M:%S)\"",
+   "want": 1,
+   "got": 1
+  }
+ ],
+ "postcheck": {
+  "run_arm_real_r487.sh": {
+   "literal_2650_count": 0,
+   "preflight_gate_refs": 3,
+   "old_namespace_residue": {},
+   "lines": 179,
+   "sha256": "f10aebc84fbdd93180e0e84f5b9abeaf517f390328573f73cf86649065a332a8"
+  },
+  "run_both_r487.sh": {
+   "literal_2650_count": 0,
+   "preflight_gate_refs": 1,
+   "old_namespace_residue": {},
+   "lines": 18,
+   "sha256": "7fb92a096c558ffbed90999ece85635843bddc4158939f4ab49b9491d8516a1e"
+  }
+ },
+ "verdict": "PASS"
+}
