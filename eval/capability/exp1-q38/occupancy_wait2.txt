@@ -1,201 +1,189 @@
-ts=2026-09-16T22:15:20+08:00
+ts=2026-09-16T22:20:06+08:00
 root=/home/agentuser/AgentFramework
 MEM_MIN_MB=2600 WAIT_S=300
---- 采样(a1) 2026-09-16T22:15:20+08:00 ---
-2050668 /home/agentuser/.dotnet/sdk/10.0.400/Roslyn/bincore/VBCSCompiler -pipename:d2leacF3_lH7g_7g7IufRblGW4wP3mq1Z20VVnkRM8M
-n_a1=1
---- 采样(b1) 2026-09-16T22:15:25+08:00 ---
-2050668 /home/agentuser/.dotnet/sdk/10.0.400/Roslyn/bincore/VBCSCompiler -pipename:d2leacF3_lH7g_7g7IufRblGW4wP3mq1Z20VVnkRM8M
-n_b1=1
-mem_kb=2126900
-mem_mb=2077
-round1 n1=1 n2=1 mem_mb=2077
-WAIT: 仍 BUSY (n1=1 n2=1 mem_mb=2077) ⇒ 15s 后重采样
---- 采样(a2) 2026-09-16T22:15:40+08:00 ---
-2050668 /home/agentuser/.dotnet/sdk/10.0.400/Roslyn/bincore/VBCSCompiler -pipename:d2leacF3_lH7g_7g7IufRblGW4wP3mq1Z20VVnkRM8M
-n_a2=1
---- 采样(b2) 2026-09-16T22:15:45+08:00 ---
-2050668 /home/agentuser/.dotnet/sdk/10.0.400/Roslyn/bincore/VBCSCompiler -pipename:d2leacF3_lH7g_7g7IufRblGW4wP3mq1Z20VVnkRM8M
-n_b2=1
-mem_kb=2200264
-mem_mb=2148
-round2 n1=1 n2=1 mem_mb=2148
-WAIT: 仍 BUSY (n1=1 n2=1 mem_mb=2148) ⇒ 15s 后重采样
---- 采样(a3) 2026-09-16T22:16:00+08:00 ---
+--- 采样(a1) 2026-09-16T22:20:06+08:00 ---
 2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
-n_a3=1
---- 采样(b3) 2026-09-16T22:16:05+08:00 ---
+2051981 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 41855 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2052012 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 39119 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a1=3
+--- 采样(b1) 2026-09-16T22:20:11+08:00 ---
 2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
-n_b3=1
-mem_kb=2703912
-mem_mb=2640
-round3 n1=1 n2=1 mem_mb=2640
-WAIT: 仍 BUSY (n1=1 n2=1 mem_mb=2640) ⇒ 15s 后重采样
---- 采样(a4) 2026-09-16T22:16:20+08:00 ---
+2051981 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 41855 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2052012 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 39119 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b1=3
+mem_kb=1207132
+mem_mb=1178
+round1 n1=3 n2=3 mem_mb=1178
+WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1178) ⇒ 15s 后重采样
+--- 采样(a2) 2026-09-16T22:20:26+08:00 ---
+2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
+2051981 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 41855 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2052012 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 39119 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a2=3
+--- 采样(b2) 2026-09-16T22:20:31+08:00 ---
+2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
+2051981 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 41855 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2052012 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 39119 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b2=3
+mem_kb=1201288
+mem_mb=1173
+round2 n1=3 n2=3 mem_mb=1173
+WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1173) ⇒ 15s 后重采样
+--- 采样(a3) 2026-09-16T22:20:46+08:00 ---
+2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
+2051981 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 41855 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2052012 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 39119 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a3=3
+--- 采样(b3) 2026-09-16T22:20:51+08:00 ---
+2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
+2051981 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 41855 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2052012 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 39119 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b3=3
+mem_kb=1209112
+mem_mb=1180
+round3 n1=3 n2=3 mem_mb=1180
+WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1180) ⇒ 15s 后重采样
+--- 采样(a4) 2026-09-16T22:21:06+08:00 ---
 2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
 2051981 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 41855 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
 2052012 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 39119 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
 n_a4=3
---- 采样(b4) 2026-09-16T22:16:25+08:00 ---
+--- 采样(b4) 2026-09-16T22:21:12+08:00 ---
 2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
 2051981 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 41855 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
 2052012 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 39119 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
 n_b4=3
-mem_kb=1516884
-mem_mb=1481
-round4 n1=3 n2=3 mem_mb=1481
-WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1481) ⇒ 15s 后重采样
---- 采样(a5) 2026-09-16T22:16:41+08:00 ---
+mem_kb=1229276
+mem_mb=1200
+round4 n1=3 n2=3 mem_mb=1200
+WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1200) ⇒ 15s 后重采样
+--- 采样(a5) 2026-09-16T22:21:27+08:00 ---
 2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
 2051981 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 41855 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
 2052012 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 39119 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
 n_a5=3
---- 采样(b5) 2026-09-16T22:16:46+08:00 ---
+--- 采样(b5) 2026-09-16T22:21:32+08:00 ---
 2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
 2051981 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 41855 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
 2052012 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 39119 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
-n_b5=5
-mem_kb=1158164
-mem_mb=1131
-round5 n1=3 n2=5 mem_mb=1131
-WAIT: 仍 BUSY (n1=3 n2=5 mem_mb=1131) ⇒ 15s 后重采样
---- 采样(a6) 2026-09-16T22:17:01+08:00 ---
+n_b5=3
+mem_kb=1230592
+mem_mb=1201
+round5 n1=3 n2=3 mem_mb=1201
+WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1201) ⇒ 15s 后重采样
+--- 采样(a6) 2026-09-16T22:21:47+08:00 ---
 2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
 2051981 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 41855 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
 2052012 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 39119 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
 n_a6=3
---- 采样(b6) 2026-09-16T22:17:06+08:00 ---
+--- 采样(b6) 2026-09-16T22:21:52+08:00 ---
 2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
 2051981 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 41855 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
 2052012 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 39119 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
 n_b6=3
-mem_kb=1131804
-mem_mb=1105
-round6 n1=3 n2=3 mem_mb=1105
-WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1105) ⇒ 15s 后重采样
---- 采样(a7) 2026-09-16T22:17:21+08:00 ---
+mem_kb=1229236
+mem_mb=1200
+round6 n1=3 n2=3 mem_mb=1200
+WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1200) ⇒ 15s 后重采样
+--- 采样(a7) 2026-09-16T22:22:07+08:00 ---
 2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
 2051981 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 41855 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
 2052012 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 39119 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
 n_a7=3
---- 采样(b7) 2026-09-16T22:17:26+08:00 ---
+--- 采样(b7) 2026-09-16T22:22:12+08:00 ---
 2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
 2051981 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 41855 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
 2052012 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 39119 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
 n_b7=3
-mem_kb=1093364
-mem_mb=1067
-round7 n1=3 n2=3 mem_mb=1067
-WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1067) ⇒ 15s 后重采样
---- 采样(a8) 2026-09-16T22:17:41+08:00 ---
+mem_kb=1236436
+mem_mb=1207
+round7 n1=3 n2=3 mem_mb=1207
+WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1207) ⇒ 15s 后重采样
+--- 采样(a8) 2026-09-16T22:22:27+08:00 ---
 2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
 2051981 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 41855 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
 2052012 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 39119 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
 n_a8=3
---- 采样(b8) 2026-09-16T22:17:46+08:00 ---
+--- 采样(b8) 2026-09-16T22:22:32+08:00 ---
 2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
 2051981 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 41855 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
 2052012 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 39119 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
 n_b8=3
-mem_kb=1128804
-mem_mb=1102
-round8 n1=3 n2=3 mem_mb=1102
-WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1102) ⇒ 15s 后重采样
---- 采样(a9) 2026-09-16T22:18:01+08:00 ---
+mem_kb=1226416
+mem_mb=1197
+round8 n1=3 n2=3 mem_mb=1197
+WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1197) ⇒ 15s 后重采样
+--- 采样(a9) 2026-09-16T22:22:47+08:00 ---
 2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
 2051981 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 41855 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
 2052012 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 39119 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
 n_a9=3
---- 采样(b9) 2026-09-16T22:18:06+08:00 ---
+--- 采样(b9) 2026-09-16T22:22:52+08:00 ---
 2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
 2051981 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 41855 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
 2052012 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 39119 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
 n_b9=3
-mem_kb=1168108
-mem_mb=1140
-round9 n1=3 n2=3 mem_mb=1140
-WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1140) ⇒ 15s 后重采样
---- 采样(a10) 2026-09-16T22:18:21+08:00 ---
+mem_kb=1232408
+mem_mb=1203
+round9 n1=3 n2=3 mem_mb=1203
+WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1203) ⇒ 15s 后重采样
+--- 采样(a10) 2026-09-16T22:23:07+08:00 ---
 2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
-2051981 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 41855 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
-2052012 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 39119 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
-n_a10=3
---- 采样(b10) 2026-09-16T22:18:26+08:00 ---
+n_a10=1
+--- 采样(b10) 2026-09-16T22:23:12+08:00 ---
 2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
-2051981 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 41855 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
-2052012 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 39119 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
-n_b10=3
-mem_kb=1190396
-mem_mb=1162
-round10 n1=3 n2=3 mem_mb=1162
-WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1162) ⇒ 15s 后重采样
---- 采样(a11) 2026-09-16T22:18:41+08:00 ---
+n_b10=1
+mem_kb=2699756
+mem_mb=2636
+round10 n1=1 n2=1 mem_mb=2636
+WAIT: 仍 BUSY (n1=1 n2=1 mem_mb=2636) ⇒ 15s 后重采样
+--- 采样(a11) 2026-09-16T22:23:27+08:00 ---
 2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
-2051981 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 41855 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
-2052012 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 39119 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
-n_a11=3
---- 采样(b11) 2026-09-16T22:18:46+08:00 ---
+n_a11=1
+--- 采样(b11) 2026-09-16T22:23:32+08:00 ---
 2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
-2051981 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 41855 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
-2052012 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 39119 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
-n_b11=3
-mem_kb=1198500
-mem_mb=1170
-round11 n1=3 n2=3 mem_mb=1170
-WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1170) ⇒ 15s 后重采样
---- 采样(a12) 2026-09-16T22:19:01+08:00 ---
+n_b11=1
+mem_kb=2702412
+mem_mb=2639
+round11 n1=1 n2=1 mem_mb=2639
+WAIT: 仍 BUSY (n1=1 n2=1 mem_mb=2639) ⇒ 15s 后重采样
+--- 采样(a12) 2026-09-16T22:23:47+08:00 ---
 2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
-2051981 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 41855 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
-2052012 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 39119 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
-n_a12=3
---- 采样(b12) 2026-09-16T22:19:06+08:00 ---
+n_a12=1
+--- 采样(b12) 2026-09-16T22:23:52+08:00 ---
 2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
-2051981 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 41855 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
-2052012 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 39119 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
-n_b12=3
-mem_kb=1187712
-mem_mb=1159
-round12 n1=3 n2=3 mem_mb=1159
-WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1159) ⇒ 15s 后重采样
---- 采样(a13) 2026-09-16T22:19:21+08:00 ---
+n_b12=1
+mem_kb=2704316
+mem_mb=2640
+round12 n1=1 n2=1 mem_mb=2640
+WAIT: 仍 BUSY (n1=1 n2=1 mem_mb=2640) ⇒ 15s 后重采样
+--- 采样(a13) 2026-09-16T22:24:07+08:00 ---
 2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
-2051981 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 41855 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
-2052012 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 39119 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
-n_a13=3
---- 采样(b13) 2026-09-16T22:19:26+08:00 ---
+n_a13=1
+--- 采样(b13) 2026-09-16T22:24:12+08:00 ---
 2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
-2051981 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 41855 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
-2052012 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 39119 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
-n_b13=3
-mem_kb=1196496
-mem_mb=1168
-round13 n1=3 n2=3 mem_mb=1168
-WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1168) ⇒ 15s 后重采样
---- 采样(a14) 2026-09-16T22:19:41+08:00 ---
+n_b13=1
+mem_kb=2701948
+mem_mb=2638
+round13 n1=1 n2=1 mem_mb=2638
+WAIT: 仍 BUSY (n1=1 n2=1 mem_mb=2638) ⇒ 15s 后重采样
+--- 采样(a14) 2026-09-16T22:24:27+08:00 ---
 2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
-2051981 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 41855 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
-2052012 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 39119 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
-n_a14=3
---- 采样(b14) 2026-09-16T22:19:46+08:00 ---
+n_a14=1
+--- 采样(b14) 2026-09-16T22:24:32+08:00 ---
 2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
-2051981 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 41855 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
-2052012 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 39119 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
-n_b14=3
-mem_kb=1206228
-mem_mb=1177
-round14 n1=3 n2=3 mem_mb=1177
-WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1177) ⇒ 15s 后重采样
---- 采样(a15) 2026-09-16T22:20:01+08:00 ---
+n_b14=1
+mem_kb=2703876
+mem_mb=2640
+round14 n1=1 n2=1 mem_mb=2640
+WAIT: 仍 BUSY (n1=1 n2=1 mem_mb=2640) ⇒ 15s 后重采样
+--- 采样(a15) 2026-09-16T22:24:47+08:00 ---
 2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
-2051981 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 41855 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
-2052012 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 39119 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
-n_a15=3
---- 采样(b15) 2026-09-16T22:20:06+08:00 ---
+n_a15=1
+--- 采样(b15) 2026-09-16T22:24:52+08:00 ---
 2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
-2051981 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 41855 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
-2052012 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 39119 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
-n_b15=3
-mem_kb=1207036
-mem_mb=1178
-round15 n1=3 n2=3 mem_mb=1178
+n_b15=1
+mem_kb=2712144
+mem_mb=2648
+round15 n1=1 n2=1 mem_mb=2648
 PRE_GATE_VERDICT=BUSY

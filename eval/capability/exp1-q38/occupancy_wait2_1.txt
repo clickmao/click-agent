@@ -1,0 +1,13 @@
+ts=2026-09-16T22:25:29+08:00
+root=/home/agentuser/AgentFramework
+MEM_MIN_MB=2600 WAIT_S=300
+--- 采样(a1) 2026-09-16T22:25:29+08:00 ---
+2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
+n_a1=1
+--- 采样(b1) 2026-09-16T22:25:34+08:00 ---
+2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
+n_b1=1
+mem_kb=2745464
+mem_mb=2681
+round1 n1=1 n2=1 mem_mb=2681
+WAIT: 仍 BUSY (n1=1 n2=1 mem_mb=2681) ⇒ 15s 后重采样
