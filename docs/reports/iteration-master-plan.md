@@ -463,9 +463,10 @@ python3 eval/run_round.py <新轮号> "revert-verify <原commit>" --quick   # �
 | 轮号 | id | level | 能力摘要 |
 |---|---|---|---|
 | R481 | `r481.recall-d9-alternating-verify` | L2 | **目录 mtime 剪枝盲区**修复 = 交替核验: 指纹头 stamp 改 `(stampTicks << 1) \| 上轮是否剪枝`(低位), 读侧 `(ticks >> 1)` + `(ticks & 1UL) != 0UL`; `pruneEnabled = PruneUnchangedDirs && store is not null && !prevScanPruned` ⇒ 上轮剪过的目录本轮**强制 readdir+stat 全量核验**(不读内容)，idle 轮仍剪枝；核验轮 `DirsPruned == 0` ∧ `VerifiedAllDirs == true` **单列**（不冒充「无变化」）… |
+| R481 | `r481f.recall-link-port-derivation` | L1 | **链接面规则端口(源码派生)** —— 把产品 `RecallLinkExtractor` 的接受规则与显式相对引用解析基准移植成可批量跑的端口: 7 组规则常量由 `src/agent.recall/RecallLinks.cs` 正则 … |
 
-覆盖自检: 轮号 ['R481']；registry rows=**150**，updated_round=**R481**。
+覆盖自检: 轮号 ['R481']；registry rows=**151**，updated_round=**R481**。
 **缺登记行轮号: 无**
 
-> 取代关系: 本增量取代上方各段「轮次索引」的 row 数口径（149 → 150，最新轮号 R479 → R481）。旧段正文保留为历史读数，不再作为当前口径。
-> 机取复现: 本表由 `eval/tools/master_plan_round_index.py R481` 直接产出（2026-09-16 实跑 rc=0 / 336 B）；**禁手改**。
+> 取代关系: 本增量取代上方各段「轮次索引」的 row 数口径（149 → 150 → **151**，最新轮号 R479 → R481）。旧段正文保留为历史读数，不再作为当前口径。
+> 机取复现: 本表由 `eval/tools/master_plan_round_index.py R481` 直接产出（2026-09-16 实跑 rc=0 / 336 B；新增 `r481f` 行后**二次实跑重取**，输出上表两行）；**禁手改**。
