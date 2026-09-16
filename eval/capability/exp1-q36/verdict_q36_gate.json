@@ -106,7 +106,8 @@
       "pin_kind": "semantic-projection",
       "before": "2c324c3f4c83",
       "repin_cmd": "python3 eval/capability/bind_evidence.py --apply --only r444.instrument-acceptance --round EXP1-Q36",
-      "result": "TOUCHED=1, R2E_R2F_EXIT=0"
+      "result": "TOUCHED=1, R2E_R2F_EXIT=0",
+      "after": "3d67a383412b (audited_by_round=EXP1-Q36)"
     },
     "external_asset_stability": {
       "kill": "PID 945082/945094/945253 TERM; pgrep 零残留",
@@ -116,6 +117,12 @@
         "STABLE=True (逐位相同 ⇒ 漂移根因消除)",
         "残留进程复核: ps -e | grep stub.py|stub2.py => 零匹配 (pgrep 自身 shell 会假命中, 已排除)"
       ]
+    },
+    "face_selfref_postcommit": {
+      "tree": "171f42b",
+      "cmd": "python3 eval/capability/instruments_check.py --only bind_evidence.check,bind_evidence.committed-state",
+      "result": "2/2 通过 (两成员 rc=0)",
+      "implication": "提交后自指成员转绿 ⇒ 面在提交后为 26/27 (仅余面自身脏项罚分); 证明该两成员的真值是**树态耦合**量, 不可冻结 (drop_by_id 遮蔽依据)"
     }
   },
   "honest_boundaries": [
