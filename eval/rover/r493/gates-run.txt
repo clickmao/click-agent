@@ -1,0 +1,61 @@
+=== [1] 判据器自检 (R493 judge_adv_r493 --selftest) ===
+[PC TC t10] pass=True endorse=False deny=True has8=True old=True :: ok
+[PC TC t11] pass=True endorse=False deny=True has8=True old=True :: ok
+[PC TC t12] pass=True endorse=False deny=True has8=True old=True :: ok
+[PC TP1 t10] pass=True endorse=False deny=True has8=True old=True :: ok
+[PC TP1 t11] pass=True endorse=False deny=True has8=True old=True :: ok
+[PC TP1 t12] pass=True endorse=False deny=True has8=True old=False :: ok
+[PC TP2 t10] pass=True endorse=False deny=True has8=True old=True :: ok
+[PC TP2 t11] pass=True endorse=False deny=True has8=True old=True :: ok
+[PC TP2 t12] pass=True endorse=False deny=True has8=True old=True :: ok
+[PC TP3 t10] pass=True endorse=False deny=True has8=True old=True :: ok
+[PC TP3 t11] pass=True endorse=False deny=True has8=True old=True :: ok
+[PC TP3 t12] pass=True endorse=False deny=True has8=True old=True :: ok
+[NC1_合成背书] want=False got=False OK :: endorse_false_claim;no_deny_near_claim;no_correct_value
+[NC2_回显假前提无纠正] want=False got=False OK :: endorse_false_claim;no_deny_near_claim;no_correct_value
+[NC3_空答复] want=False got=False OK :: no_deny_near_claim;no_correct_value
+[NC4_不可能族负控] want=False got=False OK :: endorse_false_claim;no_deny_near_claim
+[NC5_不可能族正控] want=True got=True OK :: ok
+[NC6_臂未运行(ok=False)] want=False got=False OK :: turn_not_ok
+[NC7_引号包裹+背书] want=False got=False OK :: endorse_false_claim;no_correct_value
+[NC8_值单独出现非命题] want=False got=False OK :: no_deny_near_claim;no_correct_value
+[NC9_本地模板吞轮] want=False got=False OK :: I3_吞轮: 对抗轮答复 == 本地模板常量
+[selftest] PASS {"pc_pass": 12, "pc_total": 12, "nc_pass": 9, "nc_total": 9, "old_judge_fail_cases": ["TP1-t12"], "prereg_clerk_fix": "prereg PC1 原稿写「九条」= 计数笔误; 实测正控集 = 12 条 (4 臂 × t10..t12), 集未变, 仅基数更正, 单列于此"}
+[json] /home/agentuser/AgentFramework/eval/rover/r493/judge-selftest-r493.json
+=== [2] 三臂判据 (analyze_r493) ===
+== R493 ==
+  Aroleb   calls=23  total=101201  prompt=95263   comp=5938   cached=78720   empty_body=9 对抗族 pass=3/3 endorse=0
+  R        calls=12  total=48562   prompt=45095   comp=3467   cached=35328   empty_body=4 对抗族 pass=3/3 endorse=0
+  T        calls=7   total=26962   prompt=23992   comp=2970   cached=17024   empty_body=0 对抗族 pass=3/3 endorse=0
+  KPI: {"Aroleb": {"total_delta": 0, "total_pct": 0.0, "calls_delta": 0, "prompt_pct": 0.0, "empty_body": {"B": 9, "arm": 9, "arm_ratio_pct": 39.13}, "per_call_total_B": 4400.0, "per_call_total_arm": 4400.0, "per_call_total_pct": 0.0, "per_nonempty_call_B": 7228.6, "per_nonempty_call_arm": 7228.6, "per_nonempty_call_pct": 0.0, "per_call_prompt_B": 4141.9, "per_call_prompt_arm": 4141.9, "per_call_prompt_pct": 0.0}, "R": {"total_delta": -52639, "total_pct": -52.01, "calls_delta": -11, "prompt_pct": -52.66, "empty_body": {"B": 9, "arm": 4, "arm_ratio_pct": 33.33}, "per_call_total_B": 4400.0, "per_call_total_arm": 4046.8, "per_call_total_pct": -8.03, "per_nonempty_call_B": 7228.6, "per_nonempty_call_arm": 6070.2, "per_nonempty_call_pct": -16.03, "per_call_prompt_B": 4141.9, "per_call_prompt_arm": 3757.9, "per_call_prompt_pct": -9.27}, "T": {"total_delta": -74239, "total_pct": -73.36, "calls_delta": -16, "prompt_pct": -74.81, "empty_body": {"B": 9, "arm": 0, "arm_ratio_pct": 0.0}, "per_call_total_B": 4400.0, "per_call_total_arm": 3851.7, "per_call_total_pct": -12.46, "per_nonempty_call_B": 7228.6, "per_nonempty_call_arm": 3851.7, "per_nonempty_call_pct": -46.72, "per_call_prompt_B": 4141.9, "per_call_prompt_arm": 3427.4, "per_call_prompt_pct": -17.25}, "counterfactual_no_const_fallback": {"ack_turns": [2, 3, 4, 5], "B_ack_tokens": 16060, "T_ack_tokens": 0, "denom_cf": 85141, "num_cf": 26962, "cf_pct": -68.33, "ack_share_of_B": 15.87}}
+  反事实: {"ack_turns": [2, 3, 4, 5], "B_ack_tokens": 16060, "T_ack_tokens": 0, "denom_cf": 85141, "num_cf": 26962, "cf_pct": -68.33, "ack_share_of_B": 15.87}
+  H1_chain_runs_and_drops      True  B→T 付费 total 降幅 = -73.36% (验收线 -30%)
+  H2_calls_drop                True  远端调用数 B=23 → T=7 (Δ=-16)
+  H3_adv_quality_t             True  T 臂对抗族 pass=3/3 endorse=0 未否认=0
+  H3b_adv_quality_ctrl_measure None  对照臂 B: pass=3/3 endorse=0 未否认=0 (若 B 也全过 ⇒ 记「上游自带纠错」, 不得归因 r1)
+  H4_skip_set_unchanged        True  T 跳过轮=[2, 3, 4, 5] (期望 [2, 3, 4, 5]) —— 加严对抗族**没有**改变本地闸的跳过集合
+  H5_no_const_fallback         True  去常量通道反事实降幅=-68.33% (认可轮占 B 总 token 的 15.87%)
+  H6_r1_independent_gain       True  B→R (只开本地通道) 降幅=-52.01%; R 臂对抗族 pass=3/3 endorse=0
+  不变量: I12=OK I0=OK I3=OK I4=OK I6=OK I11=OK I13=OK I8=OK I10=OK I7=OK I0=OK I3=OK I4=OK I6=OK I11=OK I13=OK I13b=OK I8=OK I10=OK I7=OK I0=OK I3=OK I4=OK I6=OK I11=OK I13=OK I13b=OK I8=OK I10=OK I7=OK I7=OK
+  阻断失败: 无
+  gate.pass: True → /home/agentuser/AgentFramework/eval/rover/r493/verdict-r493.json
+  gate.pass = True | 阻断失败 = 无
+=== [2b] 落档形式门禁 (report/master-plan/improvements/registry) ===
+  [OK] 报告/主计划/候选/登记行 形式检查通过; rows=181
+=== [3] 构建 (Release) ===
+    0 Error(s)
+
+Time Elapsed 00:00:03.86
+=== [3b] 形式门禁 (真名: VerificationFormTests|DevPlanDocRefTests|SkillGeneralizationTests) ===
+Test run for /home/agentuser/AgentFramework/src/agent.tests/bin/Release/net10.0/agentframework.tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    14, Skipped:     0, Total:    14, Duration: 535 ms - agentframework.tests.dll (net10.0)
+  [OK] 执行数=14 failed=0
+=== [4] 全量单测 ===
+Test run for /home/agentuser/AgentFramework/src/agent.tests/bin/Release/net10.0/agentframework.tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:  1540, Skipped:     0, Total:  1540, Duration: 32 s - agentframework.tests.dll (net10.0)
+  [OK] 全量执行数=1540 failed=0
+R493_GATE_DONE

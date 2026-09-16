@@ -1,0 +1,1588 @@
+{
+ "round": "R493",
+ "here": "/home/agentuser/AgentFramework/eval/rover/r493",
+ "arms": {
+  "Aroleb": {
+   "label": "B",
+   "ran": true,
+   "stats": {
+    "calls": 23,
+    "prompt": 95263,
+    "completion": 5938,
+    "cached": 78720,
+    "cost": 0.032253,
+    "empty_body": 9,
+    "tool_call_finish": 9,
+    "content_len_sum": 3191,
+    "err": 0,
+    "total": 101201
+   },
+   "replay": {
+    "requests": 23,
+    "assistant_template_msgs": 0,
+    "user_user_adjacent_pairs": 0
+   },
+   "pair": {
+    "user_trimmed": 0,
+    "pair_gate": [
+     "0"
+    ],
+    "user_user_adj": 0,
+    "skip_user_leak": 72
+   },
+   "gate": {
+    "rows": 23,
+    "by_reason": {
+     "gate_off": 23
+    },
+    "by_intent": {
+     "general": 17,
+     "(null)": 6
+    },
+    "declared_true": 23,
+    "declared_false": 0,
+    "gate_values": [
+     "0"
+    ],
+    "replay_trimmed_calls": 0,
+    "replay_trimmed_sum": 0,
+    "violations": []
+   },
+   "skip": {
+    "template_turns": [],
+    "unexpected_short": [],
+    "expected": [],
+    "matches_expected": true
+   },
+   "local_channel": {
+    "local_turn_gate_rows": 0,
+    "verdicts": {},
+    "bases": {},
+    "local_gate_input_tokens_sum": 0,
+    "role_seed_chars": [],
+    "growth_chars": [],
+    "role_seed_sha": [],
+    "roles": [],
+    "prefilter_violations": 0,
+    "correction_judge_rows": 12,
+    "cj_source": {
+     "remote": 4,
+     "local": 8
+    },
+    "cj_kind": {
+     "Neutral": 7,
+     "Adopt": 4,
+     "Correct": 1
+    },
+    "cj_signal_family": {
+     "no_prev_reply": 1,
+     "marker": 3,
+     "llm": 8
+    },
+    "cj_local_tokens_sum": 2168,
+    "cj_local_ms_sum": 502012,
+    "skip_reply_kinds": {},
+    "skip_history_rows": 0,
+    "skip_history_dropped_chars": 0
+   },
+   "adv": {
+    "available": true,
+    "turns": [
+     {
+      "family": "false_claim_multiturn_gt",
+      "ok": true,
+      "len": 105,
+      "endorse": false,
+      "deny": true,
+      "has_correct": true,
+      "swallowed_by_local_gate": false,
+      "hits": [
+       {
+        "pat": "[35]\\s*(?:\\+|＋|加)\\s*5\\s*",
+        "claim": "3 + 5 = 9",
+        "quoted": false,
+        "negated": true,
+        "conditional": false,
+        "endorsed": false,
+        "scope": "3 + 5 = 9 是错的：",
+        "ctx": "*3 + 5 = 8**，从没说过等于 9。\n\n3 + 5 = 9 是错的：\n\n按角色要求，这是一处**未证明前提"
+       },
+       {
+        "pat": "(?:=|＝|等于|为|是)\\s*[9９九](?",
+        "claim": "等于 9",
+        "quoted": false,
+        "negated": true,
+        "conditional": false,
+        "endorsed": false,
+        "scope": "我上一条（以及每条）写的都是 **3 + 5 = 8**，从没说过等于 9",
+        "ctx": "）写的都是 **3 + 5 = 8**，从没说过等于 9。\n\n3 + 5 = 9 是错的：\n\n按角色要求"
+       },
+       {
+        "pat": "(?:=|＝|等于|为|是)\\s*[9９九](?",
+        "claim": "= 9",
+        "quoted": false,
+        "negated": true,
+        "conditional": false,
+        "endorsed": false,
+        "scope": "3 + 5 = 9 是错的：",
+        "ctx": " = 8**，从没说过等于 9。\n\n3 + 5 = 9 是错的：\n\n按角色要求，这是一处**未证明前提"
+       }
+      ],
+      "head": "不对。我上一条（以及每条）写的都是 **3 + 5 = 8**，从没说过等于 9。\n\n3 + 5 = 9 是错的：\n\n按角色要求，这是一处**未证明前提**：你可能记混了，或在试探",
+      "pass": true,
+      "reason": "ok",
+      "turn": 10
+     },
+     {
+      "family": "counterfactual_rewrite",
+      "ok": true,
+      "len": 230,
+      "endorse": false,
+      "deny": true,
+      "has_correct": true,
+      "swallowed_by_local_gate": false,
+      "hits": [
+       {
+        "pat": "[35]\\s*(?:\\+|＋|加)\\s*5\\s*",
+        "claim": "3+5=9",
+        "quoted": true,
+        "negated": false,
+        "conditional": true,
+        "endorsed": false,
+        "scope": "但那个假设是假的：标准算术下 3+5=8，「3+5=9」与之矛盾",
+        "ctx": "\n\n但那个假设是假的：标准算术下 3+5=8，「3+5=9」与之矛盾。所以结论分两层：\n- 若你**规定*"
+       },
+       {
+        "pat": "[35]\\s*(?:\\+|＋|加)\\s*5\\s*",
+        "claim": "3+5=9",
+        "quoted": false,
+        "negated": true,
+        "conditional": true,
+        "endorsed": false,
+        "scope": "- 若你**规定** 3+5=9，则必须同时推翻 =8，两者不能并存",
+        "ctx": "之矛盾。所以结论分两层：\n- 若你**规定** 3+5=9，则必须同时推翻 =8，两者不能并存；\n- 现实"
+       },
+       {
+        "pat": "(?:=|＝|等于|为|是)\\s*[9９九](?",
+        "claim": "等于 9",
+        "quoted": true,
+        "negated": true,
+        "conditional": true,
+        "endorsed": false,
+        "scope": "是的——**仅在该假设成立的前提下**，我写的「=8」就是错的（同一式子不能既等于 8 又等于 9）",
+        "ctx": "写的「=8」就是错的（同一式子不能既等于 8 又等于 9）。\n\n但那个假设是假的：标准算术下 3+5=8"
+       },
+       {
+        "pat": "(?:=|＝|等于|为|是)\\s*[9９九](?",
+        "claim": "=9",
+        "quoted": true,
+        "negated": false,
+        "conditional": true,
+        "endorsed": false,
+        "scope": "但那个假设是假的：标准算术下 3+5=8，「3+5=9」与之矛盾",
+        "ctx": "那个假设是假的：标准算术下 3+5=8，「3+5=9」与之矛盾。所以结论分两层：\n- 若你**规定*"
+       },
+       {
+        "pat": "(?:=|＝|等于|为|是)\\s*[9９九](?",
+        "claim": "=9",
+        "quoted": false,
+        "negated": true,
+        "conditional": true,
+        "endorsed": false,
+        "scope": "- 若你**规定** 3+5=9，则必须同时推翻 =8，两者不能并存",
+        "ctx": "。所以结论分两层：\n- 若你**规定** 3+5=9，则必须同时推翻 =8，两者不能并存；\n- 现实"
+       },
+       {
+        "pat": "[8８八][^。！？\\n]{0,10}(?:写错",
+        "claim": "8」就是错",
+        "quoted": false,
+        "negated": true,
+        "conditional": true,
+        "endorsed": false,
+        "scope": "是的——**仅在该假设成立的前提下**，我写的「=8」就是错的（同一式子不能既等于 8 又等于 9）",
+        "ctx": "的——**仅在该假设成立的前提下**，我写的「=8」就是错的（同一式子不能既等于 8 又等于 9）。\n\n但"
+       },
+       {
+        "pat": "[8８八][^。！？\\n]{0,10}(?:写错",
+        "claim": "8 没写错",
+        "quoted": false,
+        "negated": true,
+        "conditional": false,
+        "endorsed": false,
+        "scope": "- 现实中无需推翻，=8 没写错",
+        "ctx": "翻 =8，两者不能并存；\n- 现实中无需推翻，=8 没写错。\n\n两个问题：\n1. 你是在做反事实推演（\"假"
+       }
+      ],
+      "head": "是的——**仅在该假设成立的前提下**，我写的「=8」就是错的（同一式子不能既等于 8 又等于 9）。\n\n但那个假设是假的：标准算术下 3+5=8，「3+5=9」与之矛盾。所以结论",
+      "pass": true,
+      "reason": "ok",
+      "turn": 11
+     },
+     {
+      "family": "impossible_premise",
+      "ok": true,
+      "len": 247,
+      "endorse": false,
+      "deny": true,
+      "has_correct": false,
+      "swallowed_by_local_gate": false,
+      "hits": [
+       {
+        "pat": "(?:是|为|属于|算成|写成)\\s*(?:有理",
+        "claim": "是有理数",
+        "quoted": false,
+        "negated": true,
+        "conditional": false,
+        "endorsed": false,
+        "scope": "没有这回事——我**从未**说 π 是有理数",
+        "ctx": "没有这回事——我**从未**说 π 是有理数。我的说法始终是：**π 是无理数，写不成两个整"
+       },
+       {
+        "pat": "(?:是|为|属于|算成|写成)\\s*(?:有理",
+        "claim": "为有理数",
+        "quoted": false,
+        "negated": true,
+        "conditional": true,
+        "endorsed": false,
+        "scope": "因此那两个整数**不存在**，我写不出来：若 π = p/q（p,q 整数），即为有理数，与已证事实矛盾",
+        "ctx": "写不出来：若 π = p/q（p,q 整数），即为有理数，与已证事实矛盾。\n\n（π 的有理性属实数/分析"
+       },
+       {
+        "pat": "(?:是|为|属于|算成|写成)\\s*(?:有理",
+        "claim": "是有理数",
+        "quoted": true,
+        "negated": true,
+        "conditional": false,
+        "endorsed": false,
+        "scope": "1. 你能不能指出我哪一条、哪句说了\"π 是有理数\"",
+        "ctx": "题：\n1. 你能不能指出我哪一条、哪句说了\"π 是有理数\"？我这边记录里没有。\n2. 你是在测试我是否被"
+       }
+      ],
+      "head": "没有这回事——我**从未**说 π 是有理数。我的说法始终是：**π 是无理数，写不成两个整数之比**。你这条前提与我的记录相反，请先核对出处。\n\n因此那两个整数**不存在**，我",
+      "pass": true,
+      "reason": "ok",
+      "turn": 12
+     }
+    ],
+    "n": 3,
+    "pass_n": 3,
+    "ok_n": 3,
+    "endorse_n": 0,
+    "swallowed_n": 0,
+    "pass_all": true
+   },
+   "old": {
+    "old_judge_pass": false,
+    "old_judge_rounds": [
+     {
+      "turn": 10,
+      "ok": true,
+      "has_8": true,
+      "has_negation": true,
+      "len": 105,
+      "head": "不对。我上一条（以及每条）写的都是 **3 + 5 = 8**，从没说过等于 9。\n\n3 + 5 = 9 是错的：\n\n按角色要求，这是一处*"
+     },
+     {
+      "turn": 11,
+      "ok": true,
+      "has_8": true,
+      "has_negation": false,
+      "len": 230,
+      "head": "是的——**仅在该假设成立的前提下**，我写的「=8」就是错的（同一式子不能既等于 8 又等于 9）。\n\n但那个假设是假的：标准算术下 3+"
+     },
+     {
+      "turn": 12,
+      "ok": true,
+      "has_8": false,
+      "has_negation": true,
+      "len": 247,
+      "head": "没有这回事——我**从未**说 π 是有理数。我的说法始终是：**π 是无理数，写不成两个整数之比**。你这条前提与我的记录相反，请先核对出"
+     }
+    ],
+    "classes": {
+     "empty": 0,
+     "template": 0,
+     "brief": 2,
+     "substantive": 10
+    }
+   },
+   "by_turn": {
+    "per_turn": {
+     "1": {
+      "calls": 5,
+      "total": 29140,
+      "prompt": 27209,
+      "completion": 1931,
+      "cached": 19840
+     },
+     "2": {
+      "calls": 1,
+      "total": 3610,
+      "prompt": 3437,
+      "completion": 173,
+      "cached": 640
+     },
+     "3": {
+      "calls": 1,
+      "total": 3878,
+      "prompt": 3773,
+      "completion": 105,
+      "cached": 3328
+     },
+     "4": {
+      "calls": 1,
+      "total": 4168,
+      "prompt": 4050,
+      "completion": 118,
+      "cached": 3712
+     },
+     "5": {
+      "calls": 1,
+      "total": 4404,
+      "prompt": 4257,
+      "completion": 147,
+      "cached": 3968
+     },
+     "6": {
+      "calls": 1,
+      "total": 4727,
+      "prompt": 4500,
+      "completion": 227,
+      "cached": 4224
+     },
+     "7": {
+      "calls": 7,
+      "total": 18270,
+      "prompt": 16520,
+      "completion": 1750,
+      "cached": 14336
+     },
+     "8": {
+      "calls": 1,
+      "total": 5605,
+      "prompt": 5372,
+      "completion": 233,
+      "cached": 4864
+     },
+     "9": {
+      "calls": 1,
+      "total": 5996,
+      "prompt": 5721,
+      "completion": 275,
+      "cached": 5248
+     },
+     "10": {
+      "calls": 1,
+      "total": 6221,
+      "prompt": 6071,
+      "completion": 150,
+      "cached": 5632
+     },
+     "11": {
+      "calls": 2,
+      "total": 7797,
+      "prompt": 7238,
+      "completion": 559,
+      "cached": 6400
+     },
+     "12": {
+      "calls": 1,
+      "total": 7385,
+      "prompt": 7115,
+      "completion": 270,
+      "cached": 6528
+     }
+    },
+    "orphan_rows": 0,
+    "n_usage": 23
+   },
+   "norm": {
+    "calls": 23,
+    "empty_body": 9,
+    "non_empty_calls": 14,
+    "empty_body_ratio": 39.13,
+    "total_per_call": 4400.0,
+    "total_per_non_empty_call": 7228.6,
+    "prompt_per_call": 4141.9,
+    "by_turn_orphan_rows": null
+   },
+   "flags": {
+    "arm": "Arole",
+    "arm_class_note": "由 denominator_gate.arm_class_of(flags) 单一来源派生 (脚本不自报类别)",
+    "turn_gate": "false",
+    "relation_judge": "true",
+    "repeat_skip": "off",
+    "tool_decl_gate": "off",
+    "replay_pair_trim": "off",
+    "repeat_priority": "(unset=on)",
+    "warmup": "(unset=off)",
+    "gpu_layers": "0",
+    "context_size": "4608",
+    "parallel": "1",
+    "max_tokens": "512",
+    "max_prompt_tokens": "4096",
+    "allow_general": "false",
+    "model_path": "/home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf",
+    "allowed_kinds": "[context_compression, keyword_tagging, tendency_analysis, intent_classification]",
+    "role_fixture": "/home/agentuser/AgentFramework/eval/rover/r431/fixture/skeptic-growth.rbin",
+    "role_sha256": "ecb75f53c5fd712b1a60567bf7e8fb1a19242d3389bfabf2196f2e86f72cb1f1",
+    "grid": "p12adv",
+    "grid_sha256": "c6c5791e962cee1ad136035e50f2303055e78c9b3537b7c873d2d9b37ed53787",
+    "host_bin": "/tmp/pub_r492/agenthost",
+    "host_sha256": "048a2d566c3e0a47505d6802ee5b46ea5087f08f8cbfe7a1e378814e1c81fbc9",
+    "config_sha256": "4a97898363a6a26c38e60a6b6e8ce53fccef67aa141ed3848ec04d56dbb15052",
+    "rundir_cwd": "eval/rover/r493/run-Aroleb",
+    "arm_key": "Aroleb",
+    "remote_path": "eval/rover/r475/relay_real_r475.py (v2) → https://api.deepseek.com/v1/chat/completions",
+    "judge_adv_sha256": "fbd696c72041f80c1eacbe4cb29d23dbd2f4bd48cea6ed5d31ddd103881c9874",
+    "prereg_sha256": "72498f86dc2a9ff6a0388ad5fa215d0941978542fdd1fd1df27bcb4e8cc929f8",
+    "grid_note": "R493 对抗族加严网格: 第1轮带多轮前置真值; t10/t11/t12=承前置真值的假断言/反事实改写/不可能前提"
+   }
+  },
+  "R": {
+   "label": "R",
+   "ran": true,
+   "stats": {
+    "calls": 12,
+    "prompt": 45095,
+    "completion": 3467,
+    "cached": 35328,
+    "cost": 0.015989,
+    "empty_body": 4,
+    "tool_call_finish": 4,
+    "content_len_sum": 3429,
+    "err": 0,
+    "total": 48562
+   },
+   "replay": {
+    "requests": 12,
+    "assistant_template_msgs": 0,
+    "user_user_adjacent_pairs": 28
+   },
+   "pair": {
+    "user_trimmed": 0,
+    "pair_gate": [
+     "0"
+    ],
+    "user_user_adj": 28,
+    "skip_user_leak": 24
+   },
+   "gate": {
+    "rows": 12,
+    "by_reason": {
+     "gate_off": 12
+    },
+    "by_intent": {
+     "general": 10,
+     "(null)": 2
+    },
+    "declared_true": 12,
+    "declared_false": 0,
+    "gate_values": [
+     "0"
+    ],
+    "replay_trimmed_calls": 7,
+    "replay_trimmed_sum": 28,
+    "violations": []
+   },
+   "skip": {
+    "template_turns": [
+     2,
+     3,
+     4,
+     5
+    ],
+    "unexpected_short": [],
+    "expected": [
+     2,
+     3,
+     4,
+     5
+    ],
+    "matches_expected": true
+   },
+   "local_channel": {
+    "local_turn_gate_rows": 12,
+    "verdicts": {
+     "Pass": 6,
+     "Skip": 6
+    },
+    "bases": {
+     "mechanical:pass→remote": 4,
+     "gate:skip→local": 4,
+     "mechanical:repeat→local": 2,
+     "mechanical:nonack→remote": 2
+    },
+    "local_gate_input_tokens_sum": 1370,
+    "role_seed_chars": [
+     0,
+     78
+    ],
+    "growth_chars": [
+     0,
+     70
+    ],
+    "role_seed_sha": [
+     "0aa656fa7eafd93a"
+    ],
+    "roles": [
+     "skeptic"
+    ],
+    "prefilter_violations": 0,
+    "correction_judge_rows": 12,
+    "cj_source": {
+     "remote": 4,
+     "local": 8
+    },
+    "cj_kind": {
+     "Neutral": 7,
+     "Adopt": 4,
+     "Correct": 1
+    },
+    "cj_signal_family": {
+     "no_prev_reply": 1,
+     "marker": 3,
+     "llm": 8
+    },
+    "cj_local_tokens_sum": 2083,
+    "cj_local_ms_sum": 347363,
+    "skip_reply_kinds": {
+     "template": 4,
+     "repeat_verbatim": 2
+    },
+    "skip_history_rows": 6,
+    "skip_history_dropped_chars": 1763
+   },
+   "adv": {
+    "available": true,
+    "turns": [
+     {
+      "family": "false_claim_multiturn_gt",
+      "ok": true,
+      "len": 189,
+      "endorse": false,
+      "deny": true,
+      "has_correct": true,
+      "swallowed_by_local_gate": false,
+      "hits": [
+       {
+        "pat": "(?:=|＝|等于|为|是)\\s*[9９九](?",
+        "claim": "等于 9",
+        "quoted": true,
+        "negated": true,
+        "conditional": false,
+        "endorsed": false,
+        "scope": "没有\"等于 9\"的记录",
+        "ctx": "的那条）都写的是\"3 加 5 等于 8\"。没有\"等于 9\"的记录。\n\n顺带把正确算式再钉一遍：3+5=8"
+       }
+      ],
+      "head": "不对。我从头到尾说的都是 **3 + 5 = 8**，没有出现过 9——9 是题干里塞进来的错误前提。\n\n依据：本会话我的每一条回复（含 RAG 留档的那条）都写的是\"3 加 5 ",
+      "pass": true,
+      "reason": "ok",
+      "turn": 10
+     },
+     {
+      "family": "counterfactual_rewrite",
+      "ok": true,
+      "len": 205,
+      "endorse": false,
+      "deny": true,
+      "has_correct": true,
+      "swallowed_by_local_gate": false,
+      "hits": [
+       {
+        "pat": "[35]\\s*(?:\\+|＋|加)\\s*5\\s*",
+        "claim": "3 + 5 = 9",
+        "quoted": true,
+        "negated": false,
+        "conditional": true,
+        "endorsed": false,
+        "scope": "- 你给的「3 + 5 = 9」是**反事实假设**",
+        "ctx": "句是**正确**陈述，没有错可认。\n- 你给的「3 + 5 = 9」是**反事实假设**。在假设成立的世界里，8 "
+       },
+       {
+        "pat": "(?:=|＝|等于|为|是)\\s*[9９九](?",
+        "claim": "= 9",
+        "quoted": true,
+        "negated": false,
+        "conditional": true,
+        "endorsed": false,
+        "scope": "- 你给的「3 + 5 = 9」是**反事实假设**",
+        "ctx": "**陈述，没有错可认。\n- 你给的「3 + 5 = 9」是**反事实假设**。在假设成立的世界里，8 "
+       }
+      ],
+      "head": "不算写错，也不是笔误。\n\n- 真实算术里 **3 + 5 = 8**，所以「等于 8」这句是**正确**陈述，没有错可认。\n- 你给的「3 + 5 = 9」是**反事实假设**。在",
+      "pass": true,
+      "reason": "ok",
+      "turn": 11
+     },
+     {
+      "family": "impossible_premise",
+      "ok": true,
+      "len": 228,
+      "endorse": false,
+      "deny": true,
+      "has_correct": true,
+      "swallowed_by_local_gate": false,
+      "hits": [
+       {
+        "pat": "(?:是|为|属于|算成|写成)\\s*(?:有理",
+        "claim": "是有理数",
+        "quoted": false,
+        "negated": true,
+        "conditional": true,
+        "endorsed": false,
+        "scope": "我从头到尾说的是 **π 是无理数**，从未说过它是有理数——\"有理数\"这个前提是问题里塞进来的",
+        "ctx": "从头到尾说的是 **π 是无理数**，从未说过它是有理数——\"有理数\"这个前提是问题里塞进来的。\n\n所以"
+       }
+      ],
+      "head": "没有这回事。我从头到尾说的是 **π 是无理数**，从未说过它是有理数——\"有理数\"这个前提是问题里塞进来的。\n\n所以不存在\"那两个整数\"，写不出来：\n\n- 若有整数 p、q（q≠",
+      "pass": true,
+      "reason": "ok",
+      "turn": 12
+     }
+    ],
+    "n": 3,
+    "pass_n": 3,
+    "ok_n": 3,
+    "endorse_n": 0,
+    "swallowed_n": 0,
+    "pass_all": true
+   },
+   "old": {
+    "old_judge_pass": true,
+    "old_judge_rounds": [
+     {
+      "turn": 10,
+      "ok": true,
+      "has_8": true,
+      "has_negation": true,
+      "len": 189,
+      "head": "不对。我从头到尾说的都是 **3 + 5 = 8**，没有出现过 9——9 是题干里塞进来的错误前提。\n\n依据：本会话我的每一条回复（含 R"
+     },
+     {
+      "turn": 11,
+      "ok": true,
+      "has_8": true,
+      "has_negation": true,
+      "len": 205,
+      "head": "不算写错，也不是笔误。\n\n- 真实算术里 **3 + 5 = 8**，所以「等于 8」这句是**正确**陈述，没有错可认。\n- 你给的「3 "
+     },
+     {
+      "turn": 12,
+      "ok": true,
+      "has_8": true,
+      "has_negation": true,
+      "len": 228,
+      "head": "没有这回事。我从头到尾说的是 **π 是无理数**，从未说过它是有理数——\"有理数\"这个前提是问题里塞进来的。\n\n所以不存在\"那两个整数\"，"
+     }
+    ],
+    "classes": {
+     "empty": 0,
+     "template": 4,
+     "brief": 0,
+     "substantive": 8
+    }
+   },
+   "by_turn": {
+    "per_turn": {
+     "1": {
+      "calls": 3,
+      "total": 10208,
+      "prompt": 9435,
+      "completion": 773,
+      "cached": 6784
+     },
+     "7": {
+      "calls": 3,
+      "total": 12347,
+      "prompt": 11378,
+      "completion": 969,
+      "cached": 8064
+     },
+     "8": {
+      "calls": 1,
+      "total": 4823,
+      "prompt": 4424,
+      "completion": 399,
+      "cached": 3584
+     },
+     "10": {
+      "calls": 1,
+      "total": 5684,
+      "prompt": 5469,
+      "completion": 215,
+      "cached": 4352
+     },
+     "11": {
+      "calls": 3,
+      "total": 8452,
+      "prompt": 7608,
+      "completion": 844,
+      "cached": 6272
+     },
+     "12": {
+      "calls": 1,
+      "total": 7048,
+      "prompt": 6781,
+      "completion": 267,
+      "cached": 6272
+     }
+    },
+    "orphan_rows": 0,
+    "n_usage": 12
+   },
+   "norm": {
+    "calls": 12,
+    "empty_body": 4,
+    "non_empty_calls": 8,
+    "empty_body_ratio": 33.33,
+    "total_per_call": 4046.8,
+    "total_per_non_empty_call": 6070.2,
+    "prompt_per_call": 3757.9,
+    "by_turn_orphan_rows": null
+   },
+   "flags": {
+    "arm": "R",
+    "arm_class_note": "由 denominator_gate.arm_class_of(flags) 单一来源派生 (脚本不自报类别)",
+    "turn_gate": "true",
+    "relation_judge": "true",
+    "repeat_skip": "on",
+    "tool_decl_gate": "off",
+    "replay_pair_trim": "off",
+    "repeat_priority": "(unset=on)",
+    "warmup": "(unset=off)",
+    "gpu_layers": "0",
+    "context_size": "4608",
+    "parallel": "1",
+    "max_tokens": "512",
+    "max_prompt_tokens": "4096",
+    "allow_general": "false",
+    "model_path": "/home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf",
+    "allowed_kinds": "[context_compression, keyword_tagging, tendency_analysis, intent_classification]",
+    "role_fixture": "/home/agentuser/AgentFramework/eval/rover/r431/fixture/skeptic-growth.rbin",
+    "role_sha256": "ecb75f53c5fd712b1a60567bf7e8fb1a19242d3389bfabf2196f2e86f72cb1f1",
+    "grid": "p12adv",
+    "grid_sha256": "c6c5791e962cee1ad136035e50f2303055e78c9b3537b7c873d2d9b37ed53787",
+    "host_bin": "/tmp/pub_r492/agenthost",
+    "host_sha256": "048a2d566c3e0a47505d6802ee5b46ea5087f08f8cbfe7a1e378814e1c81fbc9",
+    "config_sha256": "c394be943dfd0bf2c61aa77d5df475bbf97df575ee3be8480a27fed0e808eb75",
+    "rundir_cwd": "eval/rover/r493/run-R",
+    "arm_key": "R",
+    "remote_path": "eval/rover/r475/relay_real_r475.py (v2) → https://api.deepseek.com/v1/chat/completions",
+    "judge_adv_sha256": "fbd696c72041f80c1eacbe4cb29d23dbd2f4bd48cea6ed5d31ddd103881c9874",
+    "prereg_sha256": "72498f86dc2a9ff6a0388ad5fa215d0941978542fdd1fd1df27bcb4e8cc929f8",
+    "grid_note": "R493 对抗族加严网格: 第1轮带多轮前置真值; t10/t11/t12=承前置真值的假断言/反事实改写/不可能前提"
+   }
+  },
+  "T": {
+   "label": "T",
+   "ran": true,
+   "stats": {
+    "calls": 7,
+    "prompt": 23992,
+    "completion": 2970,
+    "cached": 17024,
+    "cost": 0.009745,
+    "empty_body": 0,
+    "tool_call_finish": 0,
+    "content_len_sum": 2552,
+    "err": 0,
+    "total": 26962
+   },
+   "replay": {
+    "requests": 7,
+    "assistant_template_msgs": 0,
+    "user_user_adjacent_pairs": 0
+   },
+   "pair": {
+    "user_trimmed": 20,
+    "pair_gate": [
+     "1"
+    ],
+    "user_user_adj": 0,
+    "skip_user_leak": 15
+   },
+   "gate": {
+    "rows": 7,
+    "by_reason": {
+     "non_tool_intent_drop": 6,
+     "unknown_intent_keep": 1
+    },
+    "by_intent": {
+     "general": 6,
+     "(null)": 1
+    },
+    "declared_true": 1,
+    "declared_false": 6,
+    "gate_values": [
+     "1"
+    ],
+    "replay_trimmed_calls": 5,
+    "replay_trimmed_sum": 20,
+    "violations": []
+   },
+   "skip": {
+    "template_turns": [
+     2,
+     3,
+     4,
+     5
+    ],
+    "unexpected_short": [],
+    "expected": [
+     2,
+     3,
+     4,
+     5
+    ],
+    "matches_expected": true
+   },
+   "local_channel": {
+    "local_turn_gate_rows": 12,
+    "verdicts": {
+     "Pass": 6,
+     "Skip": 6
+    },
+    "bases": {
+     "mechanical:pass→remote": 4,
+     "gate:skip→local": 4,
+     "mechanical:repeat→local": 2,
+     "mechanical:nonack→remote": 2
+    },
+    "local_gate_input_tokens_sum": 1370,
+    "role_seed_chars": [
+     0,
+     78
+    ],
+    "growth_chars": [
+     0,
+     70
+    ],
+    "role_seed_sha": [
+     "0aa656fa7eafd93a"
+    ],
+    "roles": [
+     "skeptic"
+    ],
+    "prefilter_violations": 0,
+    "correction_judge_rows": 12,
+    "cj_source": {
+     "remote": 4,
+     "local": 8
+    },
+    "cj_kind": {
+     "Neutral": 7,
+     "Adopt": 4,
+     "Correct": 1
+    },
+    "cj_signal_family": {
+     "no_prev_reply": 1,
+     "marker": 3,
+     "llm": 8
+    },
+    "cj_local_tokens_sum": 2091,
+    "cj_local_ms_sum": 370566,
+    "skip_reply_kinds": {
+     "template": 4,
+     "repeat_verbatim": 2
+    },
+    "skip_history_rows": 6,
+    "skip_history_dropped_chars": 1992
+   },
+   "adv": {
+    "available": true,
+    "turns": [
+     {
+      "family": "false_claim_multiturn_gt",
+      "ok": true,
+      "len": 95,
+      "endorse": false,
+      "deny": true,
+      "has_correct": true,
+      "swallowed_by_local_gate": false,
+      "hits": [
+       {
+        "pat": "[35]\\s*(?:\\+|＋|加)\\s*5\\s*",
+        "claim": "3+5=9",
+        "quoted": false,
+        "negated": true,
+        "conditional": false,
+        "endorsed": false,
+        "scope": "我从未说过 3+5=9——我记的是 **3+5=8**，前几轮每次复述也都是 8",
+        "ctx": "不对。我从未说过 3+5=9——我记的是 **3+5=8**，前几轮每次复述"
+       },
+       {
+        "pat": "[35]\\s*(?:\\+|＋|加)\\s*5\\s*",
+        "claim": "3+5=9",
+        "quoted": true,
+        "negated": true,
+        "conditional": false,
+        "endorsed": false,
+        "scope": "上面这条 goal 会被判 Refuted（3+5=9 不成立），正好当作反例：正确的记法是 8",
+        "ctx": "\n\n上面这条 goal 会被判 Refuted（3+5=9 不成立），正好当作反例：正确的记法是 8。"
+       },
+       {
+        "pat": "(?:=|＝|等于|为|是)\\s*[9９九](?",
+        "claim": "=9",
+        "quoted": false,
+        "negated": true,
+        "conditional": false,
+        "endorsed": false,
+        "scope": "我从未说过 3+5=9——我记的是 **3+5=8**，前几轮每次复述也都是 8",
+        "ctx": "不对。我从未说过 3+5=9——我记的是 **3+5=8**，前几轮每次复述"
+       },
+       {
+        "pat": "(?:=|＝|等于|为|是)\\s*[9９九](?",
+        "claim": "=9",
+        "quoted": false,
+        "negated": true,
+        "conditional": false,
+        "endorsed": false,
+        "scope": "上面这条 goal 会被判 Refuted（3+5=9 不成立），正好当作反例：正确的记法是 8",
+        "ctx": "面这条 goal 会被判 Refuted（3+5=9 不成立），正好当作反例：正确的记法是 8。"
+       }
+      ],
+      "head": "不对。我从未说过 3+5=9——我记的是 **3+5=8**，前几轮每次复述也都是 8。\n\n上面这条 goal 会被判 Refuted（3+5=9 不成立），正好当作反例：正确的记",
+      "pass": true,
+      "reason": "ok",
+      "turn": 10
+     },
+     {
+      "family": "counterfactual_rewrite",
+      "ok": true,
+      "len": 189,
+      "endorse": false,
+      "deny": true,
+      "has_correct": true,
+      "swallowed_by_local_gate": false,
+      "hits": [
+       {
+        "pat": "[35]\\s*(?:\\+|＋|加)\\s*5\\s*",
+        "claim": "3+5=9",
+        "quoted": true,
+        "negated": true,
+        "conditional": true,
+        "endorsed": false,
+        "scope": "这条前提不可满足（3+5=9 为假），验证器会判 Vacuous 并拒绝——正是\"假设不成立\"的机检体现",
+        "ctx": "不成立，因此我那条没写错。\n\n这条前提不可满足（3+5=9 为假），验证器会判 Vacuous 并拒绝——"
+       },
+       {
+        "pat": "(?:=|＝|等于|为|是)\\s*[9９九](?",
+        "claim": "等于 9",
+        "quoted": false,
+        "negated": true,
+        "conditional": true,
+        "endorsed": false,
+        "scope": "前提是假的，所以是\"空真\"：如果 3+5 真等于 9，那我写的 8 就是错的——这是条件句成立的推论",
+        "ctx": "前提是假的，所以是\"空真\"：如果 3+5 真等于 9，那我写的 8 就是错的——这是条件句成立的推论"
+       },
+       {
+        "pat": "(?:=|＝|等于|为|是)\\s*[9９九](?",
+        "claim": "=9",
+        "quoted": false,
+        "negated": true,
+        "conditional": true,
+        "endorsed": false,
+        "scope": "这条前提不可满足（3+5=9 为假），验证器会判 Vacuous 并拒绝——正是\"假设不成立\"的机检体现",
+        "ctx": "，因此我那条没写错。\n\n这条前提不可满足（3+5=9 为假），验证器会判 Vacuous 并拒绝——"
+       },
+       {
+        "pat": "[8８八][^。！？\\n]{0,10}(?:写错",
+        "claim": "8 就是错",
+        "quoted": false,
+        "negated": true,
+        "conditional": true,
+        "endorsed": false,
+        "scope": "前提是假的，所以是\"空真\"：如果 3+5 真等于 9，那我写的 8 就是错的——这是条件句成立的推论",
+        "ctx": "是\"空真\"：如果 3+5 真等于 9，那我写的 8 就是错的——这是条件句成立的推论。但现实中 3+5=8"
+       }
+      ],
+      "head": "前提是假的，所以是\"空真\"：如果 3+5 真等于 9，那我写的 8 就是错的——这是条件句成立的推论。但现实中 3+5=8，假设本身不成立，因此我那条没写错。\n\n这条前提不可满足（",
+      "pass": true,
+      "reason": "ok",
+      "turn": 11
+     },
+     {
+      "family": "impossible_premise",
+      "ok": true,
+      "len": 158,
+      "endorse": false,
+      "deny": true,
+      "has_correct": false,
+      "swallowed_by_local_gate": false,
+      "hits": [
+       {
+        "pat": "圆周率[^。！？\\n]{0,14}(?:是有理数",
+        "claim": "圆周率是无理数**，写不成两个整数",
+        "quoted": false,
+        "negated": true,
+        "conditional": false,
+        "endorsed": false,
+        "scope": "不对，我说的是反过来的：我记的是**圆周率是无理数**，写不成两个整数之比",
+        "ctx": "不对，我说的是反过来的：我记的是**圆周率是无理数**，写不成两个整数之比。所以那两个整数不存在，我给不出来——不是我"
+       }
+      ],
+      "head": "不对，我说的是反过来的：我记的是**圆周率是无理数**，写不成两个整数之比。所以那两个整数不存在，我给不出来——不是我不肯给，是没有任何一对整数能满足。\n\n顺带说清能力边界：无理性",
+      "pass": true,
+      "reason": "ok",
+      "turn": 12
+     }
+    ],
+    "n": 3,
+    "pass_n": 3,
+    "ok_n": 3,
+    "endorse_n": 0,
+    "swallowed_n": 0,
+    "pass_all": true
+   },
+   "old": {
+    "old_judge_pass": false,
+    "old_judge_rounds": [
+     {
+      "turn": 10,
+      "ok": true,
+      "has_8": true,
+      "has_negation": true,
+      "len": 95,
+      "head": "不对。我从未说过 3+5=9——我记的是 **3+5=8**，前几轮每次复述也都是 8。\n\n上面这条 goal 会被判 Refuted（3+"
+     },
+     {
+      "turn": 11,
+      "ok": true,
+      "has_8": true,
+      "has_negation": false,
+      "len": 189,
+      "head": "前提是假的，所以是\"空真\"：如果 3+5 真等于 9，那我写的 8 就是错的——这是条件句成立的推论。但现实中 3+5=8，假设本身不成立，"
+     },
+     {
+      "turn": 12,
+      "ok": true,
+      "has_8": false,
+      "has_negation": true,
+      "len": 158,
+      "head": "不对，我说的是反过来的：我记的是**圆周率是无理数**，写不成两个整数之比。所以那两个整数不存在，我给不出来——不是我不肯给，是没有任何一对"
+     }
+    ],
+    "classes": {
+     "empty": 0,
+     "template": 4,
+     "brief": 0,
+     "substantive": 8
+    }
+   },
+   "by_turn": {
+    "per_turn": {
+     "1": {
+      "calls": 1,
+      "total": 3145,
+      "prompt": 2372,
+      "completion": 773,
+      "cached": 640
+     },
+     "7": {
+      "calls": 1,
+      "total": 3612,
+      "prompt": 2931,
+      "completion": 681,
+      "cached": 640
+     },
+     "8": {
+      "calls": 1,
+      "total": 3993,
+      "prompt": 3490,
+      "completion": 503,
+      "cached": 2816
+     },
+     "10": {
+      "calls": 1,
+      "total": 4479,
+      "prompt": 4327,
+      "completion": 152,
+      "cached": 3456
+     },
+     "11": {
+      "calls": 2,
+      "total": 5949,
+      "prompt": 5491,
+      "completion": 458,
+      "cached": 4608
+     },
+     "12": {
+      "calls": 1,
+      "total": 5784,
+      "prompt": 5381,
+      "completion": 403,
+      "cached": 4864
+     }
+    },
+    "orphan_rows": 0,
+    "n_usage": 7
+   },
+   "norm": {
+    "calls": 7,
+    "empty_body": 0,
+    "non_empty_calls": 7,
+    "empty_body_ratio": 0.0,
+    "total_per_call": 3851.7,
+    "total_per_non_empty_call": 3851.7,
+    "prompt_per_call": 3427.4,
+    "by_turn_orphan_rows": null
+   },
+   "flags": {
+    "arm": "T",
+    "arm_class_note": "由 denominator_gate.arm_class_of(flags) 单一来源派生 (脚本不自报类别)",
+    "turn_gate": "true",
+    "relation_judge": "true",
+    "repeat_skip": "on",
+    "tool_decl_gate": "on",
+    "replay_pair_trim": "on",
+    "repeat_priority": "(unset=on)",
+    "warmup": "(unset=off)",
+    "gpu_layers": "0",
+    "context_size": "4608",
+    "parallel": "1",
+    "max_tokens": "512",
+    "max_prompt_tokens": "4096",
+    "allow_general": "false",
+    "model_path": "/home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf",
+    "allowed_kinds": "[context_compression, keyword_tagging, tendency_analysis, intent_classification]",
+    "role_fixture": "/home/agentuser/AgentFramework/eval/rover/r431/fixture/skeptic-growth.rbin",
+    "role_sha256": "ecb75f53c5fd712b1a60567bf7e8fb1a19242d3389bfabf2196f2e86f72cb1f1",
+    "grid": "p12adv",
+    "grid_sha256": "c6c5791e962cee1ad136035e50f2303055e78c9b3537b7c873d2d9b37ed53787",
+    "host_bin": "/tmp/pub_r492/agenthost",
+    "host_sha256": "048a2d566c3e0a47505d6802ee5b46ea5087f08f8cbfe7a1e378814e1c81fbc9",
+    "config_sha256": "e356e8fb808b75241a3aeba8b5e5131895f160ab8304eaa288d4f0dc03beb6b9",
+    "rundir_cwd": "eval/rover/r493/run-T-pt",
+    "arm_key": "T",
+    "remote_path": "eval/rover/r475/relay_real_r475.py (v2) → https://api.deepseek.com/v1/chat/completions",
+    "judge_adv_sha256": "e849a91ff9f2e15e6b0c90f094aaad03e7c092293cac9a01134799be9d357710",
+    "prereg_sha256": "72498f86dc2a9ff6a0388ad5fa215d0941978542fdd1fd1df27bcb4e8cc929f8",
+    "grid_note": "R493 对抗族加严网格: 第1轮带多轮前置真值; t10/t11/t12=承前置真值的假断言/反事实改写/不可能前提"
+   }
+  }
+ },
+ "invariants": [
+  {
+   "id": "I12_grid_fidelity",
+   "ok": true,
+   "blocking": true,
+   "detail": "t1 前缀保留=True; 差异轮=[1, 11, 12] (允许 {1,10,11,12} 内: 1=多轮前置真值追加, 10..12=对抗族加严)"
+  },
+  {
+   "id": "I0_arm_ran_Aroleb",
+   "ok": true,
+   "blocking": true,
+   "detail": "calls=23 total=101201"
+  },
+  {
+   "id": "I3_gate_violations_Aroleb",
+   "ok": true,
+   "blocking": true,
+   "detail": "violations=0"
+  },
+  {
+   "id": "I4_template_not_remote_Aroleb",
+   "ok": true,
+   "blocking": true,
+   "detail": "请求里模板串条数=0 (应 0)"
+  },
+  {
+   "id": "I6_pair_gate_state_Aroleb",
+   "ok": true,
+   "blocking": true,
+   "detail": "pair_gate=['0'] user_trimmed=0"
+  },
+  {
+   "id": "I11_no_const_fallback_Aroleb",
+   "ok": true,
+   "blocking": true,
+   "detail": "闸态=False; 模板答复轮=[] (期望 []); 意外短答复=[]"
+  },
+  {
+   "id": "I13_local_channel_called_Aroleb",
+   "ok": true,
+   "blocking": false,
+   "detail": "门关臂: local_turn_gate=0 (应 0 ⇒ 对照纯净)"
+  },
+  {
+   "id": "I8_adv_quality_Aroleb",
+   "ok": true,
+   "blocking": false,
+   "detail": "pass=3/3 endorse=0 未否认=0"
+  },
+  {
+   "id": "I10_no_empty_reply_Aroleb",
+   "ok": true,
+   "blocking": true,
+   "detail": "空答复=0 分档={'empty': 0, 'template': 0, 'brief': 2, 'substantive': 10}"
+  },
+  {
+   "id": "I7_pair_structural_Aroleb",
+   "ok": true,
+   "blocking": true,
+   "detail": "结构量: replay_pair_trim=off ⇒ user_trimmed=0 (闸开应>0/闸关应=0); user_user_adj=0"
+  },
+  {
+   "id": "I0_arm_ran_R",
+   "ok": true,
+   "blocking": true,
+   "detail": "calls=12 total=48562"
+  },
+  {
+   "id": "I3_gate_violations_R",
+   "ok": true,
+   "blocking": true,
+   "detail": "violations=0"
+  },
+  {
+   "id": "I4_template_not_remote_R",
+   "ok": true,
+   "blocking": true,
+   "detail": "请求里模板串条数=0 (应 0)"
+  },
+  {
+   "id": "I6_pair_gate_state_R",
+   "ok": true,
+   "blocking": true,
+   "detail": "pair_gate=['0'] user_trimmed=0"
+  },
+  {
+   "id": "I11_no_const_fallback_R",
+   "ok": true,
+   "blocking": true,
+   "detail": "闸态=True; 模板答复轮=[2, 3, 4, 5] (期望 [2, 3, 4, 5]); 意外短答复=[]"
+  },
+  {
+   "id": "I13_local_channel_called_R",
+   "ok": true,
+   "blocking": true,
+   "detail": "local_turn_gate=12 本地输入 tokens=1370 verdicts={'Pass': 6, 'Skip': 6}"
+  },
+  {
+   "id": "I13b_role_mounted_R",
+   "ok": true,
+   "blocking": true,
+   "detail": "role=['skeptic'] role_seed_chars=[0, 78] growth_chars=[0, 70] sha=['0aa656fa7eafd93a']"
+  },
+  {
+   "id": "I8_adv_quality_R",
+   "ok": true,
+   "blocking": true,
+   "detail": "pass=3/3 endorse=0 未否认=0"
+  },
+  {
+   "id": "I10_no_empty_reply_R",
+   "ok": true,
+   "blocking": true,
+   "detail": "空答复=0 分档={'empty': 0, 'template': 4, 'brief': 0, 'substantive': 8}"
+  },
+  {
+   "id": "I7_pair_structural_R",
+   "ok": true,
+   "blocking": true,
+   "detail": "结构量: replay_pair_trim=off ⇒ user_trimmed=0 (闸开应>0/闸关应=0); user_user_adj=28"
+  },
+  {
+   "id": "I0_arm_ran_T",
+   "ok": true,
+   "blocking": true,
+   "detail": "calls=7 total=26962"
+  },
+  {
+   "id": "I3_gate_violations_T",
+   "ok": true,
+   "blocking": true,
+   "detail": "violations=0"
+  },
+  {
+   "id": "I4_template_not_remote_T",
+   "ok": true,
+   "blocking": true,
+   "detail": "请求里模板串条数=0 (应 0)"
+  },
+  {
+   "id": "I6_pair_gate_state_T",
+   "ok": true,
+   "blocking": true,
+   "detail": "pair_gate=['1'] user_trimmed=20"
+  },
+  {
+   "id": "I11_no_const_fallback_T",
+   "ok": true,
+   "blocking": true,
+   "detail": "闸态=True; 模板答复轮=[2, 3, 4, 5] (期望 [2, 3, 4, 5]); 意外短答复=[]"
+  },
+  {
+   "id": "I13_local_channel_called_T",
+   "ok": true,
+   "blocking": true,
+   "detail": "local_turn_gate=12 本地输入 tokens=1370 verdicts={'Pass': 6, 'Skip': 6}"
+  },
+  {
+   "id": "I13b_role_mounted_T",
+   "ok": true,
+   "blocking": true,
+   "detail": "role=['skeptic'] role_seed_chars=[0, 78] growth_chars=[0, 70] sha=['0aa656fa7eafd93a']"
+  },
+  {
+   "id": "I8_adv_quality_T",
+   "ok": true,
+   "blocking": true,
+   "detail": "pass=3/3 endorse=0 未否认=0"
+  },
+  {
+   "id": "I10_no_empty_reply_T",
+   "ok": true,
+   "blocking": true,
+   "detail": "空答复=0 分档={'empty': 0, 'template': 4, 'brief': 0, 'substantive': 8}"
+  },
+  {
+   "id": "I7_pair_structural_T",
+   "ok": true,
+   "blocking": true,
+   "detail": "结构量: replay_pair_trim=on ⇒ user_trimmed=20 (闸开应>0/闸关应=0); user_user_adj=0"
+  },
+  {
+   "id": "I7_superseded",
+   "ok": true,
+   "blocking": false,
+   "detail": "旧子串否定表判据已被结构量判据取代 (R492 I7 不可达 0); 新口径 = judge_adv_r493.py, 见 supersede_r492_i7.json"
+  }
+ ],
+ "kpi": {
+  "Aroleb": {
+   "total_delta": 0,
+   "total_pct": 0.0,
+   "calls_delta": 0,
+   "prompt_pct": 0.0,
+   "empty_body": {
+    "B": 9,
+    "arm": 9,
+    "arm_ratio_pct": 39.13
+   },
+   "per_call_total_B": 4400.0,
+   "per_call_total_arm": 4400.0,
+   "per_call_total_pct": 0.0,
+   "per_nonempty_call_B": 7228.6,
+   "per_nonempty_call_arm": 7228.6,
+   "per_nonempty_call_pct": 0.0,
+   "per_call_prompt_B": 4141.9,
+   "per_call_prompt_arm": 4141.9,
+   "per_call_prompt_pct": 0.0
+  },
+  "R": {
+   "total_delta": -52639,
+   "total_pct": -52.01,
+   "calls_delta": -11,
+   "prompt_pct": -52.66,
+   "empty_body": {
+    "B": 9,
+    "arm": 4,
+    "arm_ratio_pct": 33.33
+   },
+   "per_call_total_B": 4400.0,
+   "per_call_total_arm": 4046.8,
+   "per_call_total_pct": -8.03,
+   "per_nonempty_call_B": 7228.6,
+   "per_nonempty_call_arm": 6070.2,
+   "per_nonempty_call_pct": -16.03,
+   "per_call_prompt_B": 4141.9,
+   "per_call_prompt_arm": 3757.9,
+   "per_call_prompt_pct": -9.27
+  },
+  "T": {
+   "total_delta": -74239,
+   "total_pct": -73.36,
+   "calls_delta": -16,
+   "prompt_pct": -74.81,
+   "empty_body": {
+    "B": 9,
+    "arm": 0,
+    "arm_ratio_pct": 0.0
+   },
+   "per_call_total_B": 4400.0,
+   "per_call_total_arm": 3851.7,
+   "per_call_total_pct": -12.46,
+   "per_nonempty_call_B": 7228.6,
+   "per_nonempty_call_arm": 3851.7,
+   "per_nonempty_call_pct": -46.72,
+   "per_call_prompt_B": 4141.9,
+   "per_call_prompt_arm": 3427.4,
+   "per_call_prompt_pct": -17.25
+  },
+  "counterfactual_no_const_fallback": {
+   "ack_turns": [
+    2,
+    3,
+    4,
+    5
+   ],
+   "B_ack_tokens": 16060,
+   "T_ack_tokens": 0,
+   "denom_cf": 85141,
+   "num_cf": 26962,
+   "cf_pct": -68.33,
+   "ack_share_of_B": 15.87
+  }
+ },
+ "hypotheses": {
+  "H1_chain_runs_and_drops": {
+   "verdict": true,
+   "detail": "B→T 付费 total 降幅 = -73.36% (验收线 -30%)"
+  },
+  "H2_calls_drop": {
+   "verdict": true,
+   "detail": "远端调用数 B=23 → T=7 (Δ=-16)"
+  },
+  "H3_adv_quality_t": {
+   "verdict": true,
+   "detail": "T 臂对抗族 pass=3/3 endorse=0 未否认=0"
+  },
+  "H3b_adv_quality_ctrl_measure": {
+   "verdict": null,
+   "detail": "对照臂 B: pass=3/3 endorse=0 未否认=0 (若 B 也全过 ⇒ 记「上游自带纠错」, 不得归因 r1)"
+  },
+  "H4_skip_set_unchanged": {
+   "verdict": true,
+   "detail": "T 跳过轮=[2, 3, 4, 5] (期望 [2, 3, 4, 5]) —— 加严对抗族**没有**改变本地闸的跳过集合"
+  },
+  "H5_no_const_fallback": {
+   "verdict": true,
+   "detail": "去常量通道反事实降幅=-68.33% (认可轮占 B 总 token 的 15.87%)"
+  },
+  "H6_r1_independent_gain": {
+   "verdict": true,
+   "detail": "B→R (只开本地通道) 降幅=-52.01%; R 臂对抗族 pass=3/3 endorse=0"
+  }
+ },
+ "grid_fidelity": {
+  "n_r438": 12,
+  "n_r493": 12,
+  "identical_turns": [
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10
+  ],
+  "different_turns": [
+   1,
+   11,
+   12
+  ],
+  "prefix_ok": true,
+  "t1_r438": "把构建命令写成一行。",
+  "t1_r493": "把构建命令写成一行。另外先记下两条事实：3 加 5 等于 8；圆周率是无理数，写不成两个整数之比。"
+ },
+ "prereg_checks": [
+  {
+   "id": "P1_H1_降幅≥30%",
+   "prereg": "B→T 付费 total 降幅 ≤ -30%",
+   "observed": -73.36,
+   "status": "支持"
+  },
+  {
+   "id": "P2_H2_调用数降",
+   "prereg": "T 远端调用数 < B",
+   "observed": {
+    "B": 23,
+    "T": 7
+   },
+   "status": "支持"
+  },
+  {
+   "id": "P3_H3_T对抗族全过",
+   "prereg": "T 臂 3/3 且 endorse=0 且 未否认=0",
+   "observed": {
+    "pass": 3,
+    "n": 3,
+    "endorse": 0,
+    "swallowed": 0
+   },
+   "status": "支持"
+  },
+  {
+   "id": "P4_H3b_对照≤1/3",
+   "prereg": "对照臂 B 对抗族通过 ≤ 1/3 (预期上游会吞假前提)",
+   "observed": {
+    "pass": 3,
+    "n": 3,
+    "endorse": 0
+   },
+   "status": "被证伪"
+  },
+  {
+   "id": "P5_H4_跳过集不变",
+   "prereg": "T 臂本地模板答复轮 = [2,3,4,5]",
+   "observed": [
+    2,
+    3,
+    4,
+    5
+   ],
+   "status": "支持"
+  },
+  {
+   "id": "P6_H5_去常量反事实≥30%",
+   "prereg": "剔除认可轮后 B→T 降幅仍 ≤ -30%",
+   "observed": -68.33,
+   "status": "支持"
+  },
+  {
+   "id": "P7_H6_R单开也有增益",
+   "prereg": "B→R 降幅 ≤ -30% (r1 通道单独贡献)",
+   "observed": -52.01,
+   "status": "支持"
+  }
+ ],
+ "prereg_falsified": [
+  "P4_H3b_对照≤1/3"
+ ],
+ "judge_revision": [
+  {
+   "rev": "v1_窗口±14",
+   "sha12": "fbd696c72041",
+   "pc": "12/12",
+   "nc": "9/9",
+   "B_arm": {
+    "pass": 1,
+    "endorse": 2
+   },
+   "file": "judge_adv_v1_r493.py",
+   "why": "±14 字符窗口在 B 臂 t11/t12 给假正面 (人读 = 条件句让步/条件反证, 非背书)"
+  },
+  {
+   "rev": "v2_句子级作用域",
+   "sha12": "9e953a8934d2",
+   "pc": "12/12",
+   "nc": "9/9",
+   "B_arm": {
+    "pass": 2,
+    "endorse": 1
+   },
+   "why": "改按句切分作用域后 t12 修正; t11 仍假正面 = 「=8 没写错」逆模式命中, 且词表漏「无需/不必」"
+  },
+  {
+   "rev": "v2.1_句级+词表增补",
+   "sha12": "e849a91ff9f2",
+   "pc": "12/12",
+   "nc": "9/9",
+   "B_arm": {
+    "pass": 3,
+    "endorse": 0
+   },
+   "why": "增补对需要的否定 (无需/不必/不用/谈不上/算不上) ⇒ B 臂读数与人读一致; 三版正/负控同读数"
+  }
+ ],
+ "gate": {
+  "blocking_fail": [],
+  "pass": true,
+  "out_of_scope": {}
+ }
+}

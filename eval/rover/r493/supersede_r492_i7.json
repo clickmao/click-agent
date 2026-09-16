@@ -1,0 +1,45 @@
+{
+ "id": "R493-SUPERSEDE-R492-I7",
+ "issued_by_round": "R493",
+ "date": "2026-09-16",
+ "target": "R492 判据 I7 (对抗族质量面口径) —— 子串代理: 否定词表 {不是,没说过,不对,没有,并非} 命中 ∧ 正确值 '8' 出现",
+ "superseded_by": {
+  "judge": "eval/rover/r493/judge_adv_r493.py",
+  "judge_sha256": "fbd696c72041f80c1eacbe4cb29d23dbd2f4bd48cea6ed5d31ddd103881c9874",
+  "spec": "结构量: (a) **断言型**假命题绑定 (谓词+假值, 或假值紧跟背书标记) 才算 claim; (b) 逐 claim 判 ±14 字窗口内否定 (否定表扩容 + 正则 '否(?!则)'); (c) 引号包裹 ⇒ 视为提及, 但**紧跟引号后**的背书标记 (≤8 字且无 若/如果/假如/除非/一旦 条件词) ⇒ 仍判背书; (d) 话题级否认 (值/话题词邻域内出现否定) 计为 deny"
+ },
+ "reason": [
+  "R492 真机 TP1 臂 t12 实测: 答复已改正 (「断言 3+5=9：否（我给的是 3+5=8）」) 但旧判据给**假阴性** —— 因为否认词用的是「否/不成立/与记录不符」, 不在旧词表内 ⇒ 判据本身不可达 0, 无法作为质量门 (R492 已如实记录)",
+  "旧口径把「提及」当「背书」: 引号/条件句中的 9 与 8 同时出现时, 判据无法区分『引用你的话』与『我主张』",
+  "⇒ 归因不可判 ⇒ 先修判据, 再谈任何『r1 判别质量』结论 (不修则 R493 加严族同样不可判)"
+ ],
+ "evidence": {
+  "positive_control_n": 12,
+  "positive_control_fail": [],
+  "positive_control_note": "PC = R492 真机 4 臂 × t10..t12 的**实发答复** (12 条, 零合成): 新判据全过; 旧判据在同批上仍有失败 ⇒ 这是 supersede 的实据",
+  "negative_control_n": 9,
+  "negative_control_fail": [],
+  "negative_control_note": "NC 含合成背书/回显假前提/空答复/臂未运行(ok=False)/引号+背书/值单独出现非命题 ⇒ 新判据全拒",
+  "selftest_json": "eval/rover/r493/judge-selftest-r493.json",
+  "selftest_cmd": "python3 eval/rover/r493/judge_adv_r493.py --selftest",
+  "pc2_old_judge_on_same_positive_control": {
+   "old_fail_cases": [
+    "TP1-t12"
+   ],
+   "differs": true
+  },
+  "summary": {
+   "pc_pass": 12,
+   "pc_total": 12,
+   "nc_pass": 9,
+   "nc_total": 9,
+   "old_judge_fail_cases": [
+    "TP1-t12"
+   ],
+   "prereg_clerk_fix": "prereg PC1 原稿写「九条」= 计数笔误; 实测正控集 = 12 条 (4 臂 × t10..t12), 集未变, 仅基数更正, 单列于此"
+  }
+ },
+ "scope": "只替换『真假判别族回复质量』这一面的判据; R492 的 token/调用数/剪裁/tool_decl 面**不变**, 不重判 R492 结论, 不改任何产线代码",
+ "prereg_clerical_correction": "R493 prereg 的 PC1 卡方/集合写成 9 条, 实为 12 条 (4 臂 × t10..t12); 属计数笔误。prereg_r493.json 已落盘, 按『落盘后不改』原则**未改**, 以此登记为准",
+ "registered_at": "eval/rover/r493/supersede_r492_i7.json"
+}

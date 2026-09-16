@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R492",
+ "updated_round": "R493",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -4432,6 +4432,60 @@
     "eval/rover/r492/teardown_assert.py"
    ],
    "owner_round": "R492"
+  },
+  {
+   "id": "r493.adv-family-hardening",
+   "level": "L2",
+   "capability": "**真假判别对抗族加严**: 承 R438 p12 骨架 (4 认可轮 + 4 真诉求轮, 唯一改动 = 第 1 轮写入多轮前置真值), t10..t12 换成 多轮真值假断言 / 反事实改写 / 不可能前提 ⇒ 让「可核性」在场; 同窗三臂 B(闸关)/R(r1 通道)/T(全链) 一次跑完, 主线 KPI = 用户口径付费 total tokens 同窗降幅。实测 B=101201 / R=48562 / T=26962 total; 对抗族 B=3/3 R=3/3 T=3/3 (对照臂也全过 ⇒ 「r1 提升正确率」宣称收窄为「成本面增益 + 质量不降」)。",
+   "evidence_cmd": "bash eval/rover/r493/run_rest_r493.sh && python3 eval/rover/r493/analyze_r493.py",
+   "evidence_path": "eval/rover/r493/verdict-r493.json",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "81abb8b93b46",
+    "instrument": "eval/rover/r493/run_arm_real_r493.sh",
+    "instrument_sha12": "d7f83e0048c6",
+    "binding": "audit-pin",
+    "audited_by_round": "R493"
+   },
+   "negative_control": "判据器负控 9 条 (合成背书/回显假前提/空答复/压缩摘要/不可能前提背书/未跑轮/引号+背书/本地模板吞轮/异常空判) 全 FAIL; 正控 12 条 (R492 真机四臂 t10..t12 实发答复) 全 PASS。",
+   "covers": [
+    "eval/rover/r493/prereg_r493.json",
+    "eval/rover/r493/grid/task-p12-adv.json",
+    "eval/rover/r493/run_arm_real_r493.sh",
+    "eval/rover/r493/run_rest_r493.sh",
+    "eval/rover/r493/run_arm_real_r493.diff",
+    "eval/rover/r493/gates-run.txt"
+   ],
+   "owner_round": "R493"
+  },
+  {
+   "id": "r493.judge-structural-supersede",
+   "level": "L2",
+   "capability": "**判据结构量 + R492-I7 supersede**: 旧判据 = 单个否定词表子串 + 正确值出现 的代理, 在真机给假阴性 ⇒ 不可达 0 不可作阻断项。新判据 = 断言型假命题绑定 (谓词+值) × 句级作用域 × 引号/条件句豁免 × 话题级否认; 三版修订 (窗口±14 → 句级 → 词表增补) 正控 12/12、负控 9/9 全程同读数 ⇒ 修订不含阈值松动。",
+   "evidence_cmd": "python3 eval/rover/r493/judge_adv_r493.py --selftest",
+   "evidence_path": "eval/rover/r493/judge_adv_r493.py",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "e849a91ff9f2",
+    "instrument": "eval/rover/r493/judge_adv_r493.py",
+    "instrument_sha12": "e849a91ff9f2",
+    "binding": "audit-pin",
+    "audited_by_round": "R493"
+   },
+   "negative_control": "R492 设备 15: 旧子串判据在 R492-TP1-t12 真机答复上给假阴性 (pass=False) ⇒ supersede 有实测理由; 记录 `eval/rover/r493/supersede_r492_i7.json`。 【R493 形式门禁抓到一次 pin 漂移】首版把**自检产物 json** 当冻结 pin 目标 ⇒ 每次重跑自检 sha 必变 (自指成员) ⇒ 已改为 pin 器具源码 (稳定字节), 自检产物只作 covers 证据。",
+   "covers": [
+    "eval/rover/r493/judge_adv_r493.py",
+    "eval/rover/r493/judge_adv_v1_r493.py",
+    "eval/rover/r493/supersede_r492_i7.json",
+    "eval/rover/r493/analyze_r493.py",
+    "eval/rover/r493/gates_r493.sh",
+    "eval/rover/r493/judge-selftest-r493.json"
+   ],
+   "owner_round": "R493"
   }
  ],
  "aot_check_policy": "release_tag_only",
