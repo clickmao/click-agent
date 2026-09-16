@@ -1,0 +1,81 @@
+{
+  "round": "EXP1-Q41",
+  "schema": "exp1-prereg/1",
+  "written_before_any_measurement": true,
+  "theme": "尾 LF 契约闸转正评估 (全仓历史回放) + pin_kind 扩大面 census + 冻结漂移报文噪声",
+  "source_candidates": [
+    "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md AN.7 #2 (④ 转正评估: 先在全仓历史提交上回放)",
+    "AN.7 #4 (③ 的 drift 可见项接入提交面: 先量噪声贡献)",
+    "AN.7 #3 (② 的扩大面: 其余 pin_kind 是否也该与脏净解耦)",
+    "AN.5 #4 (① 的扩大面: 把 only-equivalence 输入规范形纳入提交面)"
+  ],
+  "premise_readings": {
+    "note": "前提读数 (非判据测量), 于本文件落盘之前取得; 只作候选可行性判断, 不构成红绿",
+    "prereg_locked_readings": [
+      {
+        "id": "P1",
+        "what": "登记表 pin_kind 取值集 (evidence_generated_with.pin_kind)",
+        "cmd": "python3 -c \"...json.load(docs/verification-registry.json)...\"",
+        "value": {"rows": 214, "with_evidence_generated_with": 164, "census": {"None": 163, "semantic-projection": 1}},
+        "used_for": "AN.7 #3 是否可测 —— 只有一种非缺省 pin_kind ⇒ 无可测对象"
+      },
+      {
+        "id": "P2",
+        "what": "钩子接线状态 (core.hooksPath + 四闸存在性)",
+        "cmd": "git config --get core.hooksPath; ls -l tools/hooks/pre-commit",
+        "value": {"hooksPath": "tools/hooks", "pre_commit": "6704 B, mtime 2026-09-17 01:24", "gates": ["L4-writer-claim", "L3-status_gen", "Q31-stage-manifest(opt-in)", "Q32-reaudit(opt-in)", "Q39-decl-sweep(default-on)", "Q39-evidence-check(default-on)", "Q40-tail-lf(opt-in)"]},
+        "used_for": "作用面/闸位确认; .git/hooks/pre-commit 缺席不是异常 (hooksPath 已重定向)"
+      }
+    ]
+  },
+  "H1_scopeA_history_zero_false_positive": {
+    "claim": "默认作用面 (tail_lf_guard.DEFAULT_TARGETS = 登记表 + 器具清单) 在**全部历史提交**上回放, 逐提交零违规 ⇒ 转正 (默认开) 的历史误报率 = 0",
+    "judge": "遍历 `git log --format=%H -- <targets>` 的每个提交, 取 `git show <sha>:<path>` 字节, 用 tail_lf_guard.judge() 判定; violations == 0 ⇒ PASS; >0 ⇒ 逐条列出并分类 (真缺陷 / 历史形态), 判「不可转正」",
+    "predict": "PASS (violations=0)",
+    "falsified_if": "任一历史提交的该两件字节非规范形"
+  },
+  "H2_scopeB_broaden_cost": {
+    "claim": "把作用面从默认 2 件**扩到全仓**会拦下大量历史提交 (误报率 >> 0) ⇒ 判「不扩面」; 扩面收益必须证明 > 代价",
+    "judge": "最近 N=200 个提交, 逐提交取变更件 (git show --name-only), 内容法判二进制 (含 NUL ⇒ 跳过), 对文本件取提交态字节判定; 记 violations / 提交数 = 命中率; 命中率 > 0.02 ⇒ 判「不扩面」",
+    "predict": "命中率 > 0.02 (⇒ 维持默认作用面, 不扩全仓)",
+    "note": "此判据的用途是**否决扩面**, 故 predict 写成「会拦下」; 若实测为 0 则须改判并另查 (可能是文本件普遍规范形)"
+  },
+  "H3_zero_regression_real_repo": {
+    "claim": "闸默认关 → 真仓零行为变化; opt-in 开 → 真仓当前态 rc=0 (零误拦)",
+    "judge": "同一真仓同态跑钩子两次: AGENTFRAMEWORK_TAIL_LF_GUARD=0 (默认) 与 =1, 断言两次 rc 均为 0 且第二次输出 TAIL_LF_GUARD=OK",
+    "predict": "PASS (两态 rc=0)"
+  },
+  "H4_gate_cost": {
+    "claim": "闸单次耗时 (中位, n=5) 相对提交总耗时占比可忽略 ⇒ 代价不构成转正阻碍",
+    "judge": "对 tail_lf_guard.py 单测 n=5 记 min/median/max (ms); 与 pre-commit 全钩子耗时对比; 墙钟只作**信息项**, 不作红绿 (R410: 墙钟不作判据)",
+    "predict": "median < 300 ms (指示性)"
+  },
+  "H5_pin_kind_census": {
+    "claim": "AN.7 #3 (把语义投影的分类/脏净解耦推广到其余 pin_kind) 无被测对象 ⇒ 记**排除项**, 零产品改动、零死代码",
+    "judge": "登记表全行 evidence_generated_with.pin_kind 去重; 取值集 ⊆ {None, 'semantic-projection'} ⇒ 排除项成立; 另配负控: 同一 census 器对注入的假取值必须响 (非恒 1)",
+    "predict": "PASS (取值集 = {None, semantic-projection})"
+  },
+  "H6_drift_report_noise": {
+    "claim": "把 FROZEN_EVIDENCE_DRIFT 作提交时报文 (不判红) 的噪声 = 0 行 (干净态) 且漂移态可见 ⇒ 接入零噪声",
+    "judge": "① 当前真仓 bind_evidence.py --check 的输出里 FROZEN_EVIDENCE_DRIFT 行数 == 0; ② scratch 夹具 (真登记表副本 + 改动一个 frozen 行的落盘记录) 下同一闸必须打出 >=1 行 FROZEN_DRIFT (可见性正控); 两读数并列",
+    "predict": "PASS (0 / >=1)"
+  },
+  "H7_form_gate": {
+    "claim": "形式门禁 (VerificationForm|SkillGeneralization|DevPlanDocRef)",
+    "judge": "env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR dotnet test src/agent.tests/agentframework.tests.csproj --filter \"...\" --nologo -v q",
+    "predict": "NOT_RUN 或 14/14",
+    "constraint": "对侧 R501 真机臂在飞 (dotnet publish + 探针), MemAvailable 1.41 GB < 闸值 ⇒ 本轮**不得**起 dotnet; 若本轮登记表新增行, 该义务**结转**并在读数里显式记 NOT_RUN + 原因 (不冒充绿)"
+  },
+  "verdict_rules": {
+    "0": "全绿",
+    "2": "判据红 (照原样记录, 不放宽)",
+    "3": "弃权 (环境不可判 / 对侧在飞导致共享面不可用)"
+  },
+  "honest_boundary_commitments": [
+    "单轮 n=1; 历史回放是**静态面**读数 (L2 器具/机检), 不是产品面真机读数",
+    "历史回放用的是**当前版**判据函数对历史字节判定 ⇒ 只证明「当前判据在过去数据上的误报率」, 不证明「历史判据当时会怎样」",
+    "跳过件 (路径在该提交不存在 / 二进制) 必须单列计数, 不得计入合规",
+    "对侧 R501 在飞 ⇒ 本轮不起 dotnet; 形式门禁若被触发义务则记 NOT_RUN 并结转",
+    "不 push (推送暂停令); 只本地提交, 且提交用显式路径 + AGENTFRAMEWORK_STAGE_MANIFEST 闸防对侧在飞文件混入"
+  ]
+}

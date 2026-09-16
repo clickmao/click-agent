@@ -1,0 +1,35 @@
+{
+ "real_registry_sha12_before": "316603b75cf9",
+ "round_tag": "EXP1-Q41T",
+ "probe_row_id": "r444.instrument-acceptance",
+ "probe_row_choice": "semantic-projection",
+ "writer_bind_evidence_apply": {
+  "rc": 3,
+  "tail_byte": "\n",
+  "canonical": true,
+  "bytes": 414082,
+  "stdout_tail": [
+   "ONLY_SCOPE=n=1 r444.instrument-acceptance",
+   "SER_ASSERT=FAIL 序列化器未能逐字节复现原文件 (禁改写)",
+   "  TAIL=LF RAWLEN=327371 SERLEN=309225 (差异不止尾换行 ⇒ 格式漂移)"
+  ]
+ },
+ "writer_append_rows": {
+  "rc": 0,
+  "tail_byte": "\n",
+  "canonical": true,
+  "bytes": 414082
+ },
+ "negative_control_tail_stripped": {
+  "tail_byte": "}",
+  "canonical_if_judged": false
+ },
+ "real_registry_sha12_after": "316603b75cf9",
+ "real_registry_untouched": true,
+ "verdict": {
+  "writer_canonical": true,
+  "negative_control_flips": true,
+  "real_registry_untouched": true
+ },
+ "exit_code": 0
+}

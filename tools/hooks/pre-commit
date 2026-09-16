@@ -93,13 +93,26 @@ if [ "${AGENTFRAMEWORK_EVIDENCE_CHECK:-1}" != "0" ] && [ -f eval/capability/bind
     rm -f "$BE_LOG"
     exit 1
   fi
+  # EXP1-Q41: 冻结证据漂移作**提交时报文** (不判红; 漂移=0 时本件零输出 ⇒ 干净提交零噪声)
+  if [ -f eval/capability/exp1-q41/commit_face_notice_q41.py ]; then
+    python3 eval/capability/exp1-q41/commit_face_notice_q41.py --log "$BE_LOG" >&2 || true
+  fi
   rm -f "$BE_LOG"
 fi
 
-# EXP1-Q40 ④: 提交面「尾 LF 契约」闸 —— 默认**关** (opt-in), 与前面几闸同族 (只读 + env 开关)。
-#   目的: 把「规范形被破坏」在**提交时**拦下 (此前只在下游器具的 NONCANONICAL_INPUT 里可见)。
-#   作用面 = 声明常量 (tail_lf_guard.py 的 DEFAULT_TARGETS); 契约名/原因码取自 bind_evidence (单一权威源)。
-if [ "${AGENTFRAMEWORK_TAIL_LF_GUARD:-0}" = "1" ] && [ -f eval/capability/exp1-q31/instruments/tail_lf_guard.py ]; then
+# EXP1-Q40 ④ / EXP1-Q41 **转正**: 提交面「尾 LF 契约」闸 —— 默认**开**。
+#   转正依据 (EXP1-Q41 H1..H6 真机回放, 见 docs/plans/v0.22.0-exp1-local-index-and-code-graph.md AN.8):
+#     · 全历史回放 (146 个触碰作用面的提交 / 232 blob): 37 处违规**全部**是作用面内件的真实
+#       契约违反 (尾 LF 缺失), 无 CRLF/BOM 型, 且**零「合法但被误杀」**样本 ⇒ 误报 = 0;
+#     · 现行四个写入器均以 `+ "\n"` 收尾 (bind_evidence:630 / decl_sweep:70 / append_rows_q40:105 /
+#       append_instruments_q39:107 / status_gen:143) ⇒ 工具路径不会诱发拦截;
+#     · 真仓当前态两态均 rc=0 (机制启用断言: 闸确实跑过, 见 /tmp/tail_lf_precommit.log);
+#     · 代价 median 39.9 ms (信息项);
+#     · 扩面到全仓**已否决** (200 提交回放: 命中率 59.5%, 主因 1154 `.json` + 237 `.jsonl`
+#       产物件写入习惯) ⇒ 作用面维持声明常量 DEFAULT_TARGETS, 不扩。
+#   关闸 (诊断/夹具): AGENTFRAMEWORK_TAIL_LF_GUARD=0。
+#   契约名与违规原因码**不在此定义** —— 取自 bind_evidence (单一权威源)。
+if [ "${AGENTFRAMEWORK_TAIL_LF_GUARD:-1}" != "0" ] && [ -f eval/capability/exp1-q31/instruments/tail_lf_guard.py ]; then
   TL_ARGS=""
   [ -n "${AGENTFRAMEWORK_TAIL_LF_TARGETS:-}" ] && TL_ARGS="--targets ${AGENTFRAMEWORK_TAIL_LF_TARGETS}"
   if ! python3 eval/capability/exp1-q31/instruments/tail_lf_guard.py $TL_ARGS >/tmp/tail_lf_precommit.log 2>&1; then
