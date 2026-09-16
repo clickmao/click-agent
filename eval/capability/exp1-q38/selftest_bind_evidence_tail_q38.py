@@ -26,7 +26,11 @@ HERE = pathlib.Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 REG = ROOT / 'docs/verification-registry.json'
 SCRATCH = pathlib.Path('/tmp/q38_bind_scratch')
-OUT = HERE / 'bind_evidence_tail_selftest_q38.json'
+# EXP1-Q39: 两处**环境覆盖**(默认值 = 原行为逐字不变) —— 只为让「判别力自证」(变异被测工具后
+#   本自检必须判红) 成为可执行实验; 不覆盖时一切与 Q38 相同。
+TOOL = os.environ.get('AGENTFRAMEWORK_BIND_TOOL', 'eval/capability/bind_evidence.py')
+OUT = pathlib.Path(os.environ.get('AGENTFRAMEWORK_TAIL_SELFTEST_OUT')
+                   or (HERE / 'bind_evidence_tail_selftest_q38.json'))
 ROW = 'r476.evidence-binding-round-param'
 KEYS = ('noncanonical_input', 'noncanonical_reason', 'tail_contract', 'registry_tail_input',
         'ser_assert', 'rc')
@@ -38,7 +42,7 @@ def sha(p):
 
 def run(reg, tag):
     rec = SCRATCH / ('record_%s.json' % tag)
-    cmd = [sys.executable, 'eval/capability/bind_evidence.py', '--registry', str(reg),
+    cmd = [sys.executable, TOOL, '--registry', str(reg),
            '--apply', '--only', ROW, '--round', 'EXP1-Q38', '--run-record', str(rec)]
     p = subprocess.run(cmd, cwd=str(ROOT), capture_output=True, text=True)
     out = (p.stdout or '') + (p.stderr or '')

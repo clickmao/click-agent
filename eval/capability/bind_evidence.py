@@ -27,6 +27,8 @@
     故记 live + 原因 (不冒充冻结, 缺口作读数单列);
   - 器具 sha 是闸: 器具一改, 引用它的证据就必须重审 (Q24 缺陷族 = 证据静默易主);
   - 源码/测试文件作为证据的行不纳入 (pin 源码 sha 会让每次代码改动判红) —— 覆盖面按产品面切.
+    EXP1-Q39 细化: 「源码证据 ∧ 该文件就是本行器具」⇒ **显式**归 self-derived/live (与工作区脏净无关);
+    该文件字节仍由 instrument_sha12 钉 (闸等价, 见 source_self_gated); 声明了另一个器具的行不改判。
 
 写盘纪律 (承 R409/R473, EXP1-Q29): 写前断言序列化器逐字节复现原文件; 尾形态二态容忍而回写规范化到 LF
 (缺 LF 时补 1 B 并显式报告 —— 不再让尾字节风格差异静默禁用整条通路); 幂等; 写后读回复核; 打印 git numstat.
@@ -220,8 +222,39 @@ def provenance_of(root, rel):
     return None
 
 
+def source_self_gated(root, row, ep, inst):
+    """EXP1-Q39: 证据本体是**源码文件**且**它自己就是本行的器具** ⇒ 归 self-derived/live。
+
+    缺陷动机 (Q38 AM.5.5 实测侧效): 原判据只看「已入库 ∧ 工作区干净」⇒ 同一条行在脏/净两态下
+    分类**不同** (live/worktree-only ⇄ frozen/archived-per-round), 一次 `--apply` 的侧效即可翻转其语义。
+    本规则把它改成**由行自身结构决定**、与工作区状态无关的类。
+
+    闸不丢 (机检, 不是口头保证): 该文件字节由 `instrument_sha12` 继续钉 —— 与 frozen 档下
+    `artifact_sha12` **同源同值** (同一个文件), 变异字节 ⇒ 两侧都判红 (Q39 census 夹具 c6/c8)。
+
+    例外 (P4): 行上**声明**了另一个器具 (或从 evidence_cmd 现算出另一个器具) 时**不改判** ——
+    那种情形下源码 pin 是唯一闸, 改类会静默丢闸 (实测 `r492.arm-runner-derive-aux-carry`:
+    声明器具 = `eval/rover/r491/run_arm_real_r491.sh` ≠ 证据文件)。
+    """
+    if not ep or not inst or inst != ep:
+        return False
+    if not ep.endswith(SRC_EXT) or not os.path.isfile(os.path.join(root, ep)):
+        return False
+    f = row.get("evidence_generated_with")
+    declared = f.get("instrument") if isinstance(f, dict) else None
+    return declared in (None, ep)
+
+
 def derive(root, row, tracked, dirty):
     ep = row.get("evidence_path", "")
+    # EXP1-Q39: 器具/绑定**先算** —— 新规则 (源码自拄) 需要知道器具是谁才判类。
+    prov = provenance_of(root, ep)
+    if prov is not None and prov.get("instrument"):
+        inst, isha, binding = prov.get("instrument"), prov.get("instrument_sha12"), "self-attested"
+    else:
+        inst = instrument_from_cmd(root, row.get("evidence_cmd", ""))
+        isha = sha12_file(root, inst) if inst else None
+        binding = "audit-pin"
     if isdir(root, ep):
         man = dir_manifest(root, ep)
         if man is None:
@@ -234,18 +267,13 @@ def derive(root, row, tracked, dirty):
         kind, status, reason, pin = "self-derived", "live", "self-derived", None
     elif ep in LIVE_LEDGERS:
         kind, status, reason, pin = "artifact", "live", LIVE_LEDGERS[ep], None
+    elif source_self_gated(root, row, ep, inst):
+        kind, status, reason, pin = "self-derived", "live", "self-derived", None
     elif ep in tracked and ep not in dirty:
         kind, status, reason, pin = "artifact", "frozen", "archived-per-round", sha12_file(root, ep)
     else:
         kind, status, reason, pin = "artifact", "live", "worktree-only", None
 
-    prov = provenance_of(root, ep)
-    if prov is not None and prov.get("instrument"):
-        inst, isha, binding = prov.get("instrument"), prov.get("instrument_sha12"), "self-attested"
-    else:
-        inst = instrument_from_cmd(root, row.get("evidence_cmd", ""))
-        isha = sha12_file(root, inst) if inst else None
-        binding = "audit-pin"
     out = {"evidence_kind": kind, "pin_status": status, "pin_reason": reason}
     # EXP1-Q34: pin_kind 是**行上已声明**的语义属性, derive 只尊重不发明 ——
     #   声明了语义投影且该行确实是 frozen/artifact ⇒ pin 值改为投影摘要 (跨语言同口径);

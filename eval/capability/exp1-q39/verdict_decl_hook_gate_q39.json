@@ -1,0 +1,57 @@
+{
+ "round": "EXP1-Q39",
+ "schema": "decl-hook-gate/1",
+ "hook_sha12": "eabad34dd2ee",
+ "checks": {
+  "G6_real_repo_default_off_rc0": true,
+  "G7_real_repo_escape_hatch_rc0": true,
+  "G1_fixture_decl_drift_rc1": true,
+  "G3_escape_hatch_rc0_on_same_state": true,
+  "G5_gates_write_nothing_in_repo": true,
+  "G2_fixture_evidence_violation_rc1": true,
+  "G4_hollow_hook_detected": true
+ },
+ "detail": {
+  "G6": {
+   "rc": 0,
+   "tail": [
+    "DECL_SWEEP=OK (0 处漂移; 只读, 一个字节都没动)"
+   ]
+  },
+  "G7": {
+   "rc": 0
+  },
+  "G1_fixture_decl_drift_rc1": {
+   "rc": 1,
+   "needle_found": true,
+   "tail": [
+    "  DRIFT fx.decl-a                        eval/capability/decl_sweep.py",
+    "        before version=content-sha12:000000000000 instrument_sha12=000000000000",
+    "        after  version=content-sha12:49a6910e15f1 instrument_sha12=49a6910e15f1",
+    "DECL_SWEEP=DRIFT (只读模式; 加 --apply 才刷新 —— 判据未放宽, 只是把声明补齐)"
+   ]
+  },
+  "G3": {
+   "rc": 0,
+   "tail": []
+  },
+  "G5": {
+   "changed_paths": []
+  },
+  "G2_fixture_evidence_violation_rc1": {
+   "rc": 1,
+   "needle_found": true,
+   "tail": [
+    "BLOCKED(EXP1-Q39 证据绑定闸): 登记表 pin/器具绑定与现盘不符 (R2e/R2f 违规)。",
+    "  处置: python3 eval/capability/bind_evidence.py --only <行id> --round <轮号> --apply",
+    "  跳过本闸 (夹具/诊断): AGENTFRAMEWORK_EVIDENCE_CHECK=0",
+    "VIOLATION fx.reg-1: 冻结 pin 与现盘字节不符 (声明 000000000000 / 实际 49a6910e15f1) (R2e —— 证据已被改写或未重审)"
+   ]
+  },
+  "G4": {
+   "rc": 0,
+   "note": "空心钩子在漂移夹具上 rc=0 ⇒ 本闸的判别力来自新段本身"
+  }
+ },
+ "verdict": "PASS"
+}

@@ -1,0 +1,34 @@
+{
+ "round": "EXP1-Q39",
+ "schema": "own-outputs-release/1",
+ "checks": {
+  "W1_declared_own_output_released": true,
+  "W2_undeclared_write_still_red": true,
+  "W3_new_outputs_in_declared_set": true,
+  "W3b_stdout_marker_present": true,
+  "W4_content_pinned_elsewhere": true
+ },
+ "detail": {
+  "W1": {
+   "red": false,
+   "verdict": "clean",
+   "self_writes": []
+  },
+  "W2": {
+   "red": true,
+   "verdict": "self-side-effect",
+   "self_writes": [
+    "eval/capability/fixture_undeclared.json"
+   ]
+  },
+  "W3": {
+   "declared_n": 22,
+   "wanted_subset_ok": true
+  },
+  "W4": {
+   "census_c8": true,
+   "note": "写事件释放; 内容闸仍由 instrument_sha12 / 投影 pin 承担"
+  }
+ },
+ "verdict": "PASS"
+}

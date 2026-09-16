@@ -1,0 +1,300 @@
+{
+ "round": "EXP1-Q39",
+ "schema": "artifact-class-census/1",
+ "tag": "post",
+ "bind_evidence_sha12": "c9e3f4053d9f",
+ "registry_sha12": "3a504cd2f6b7",
+ "census": {
+  "tag": "post",
+  "n_rows": 192,
+  "src_ext_rows": [
+   {
+    "id": "r476.evidence-binding-round-param",
+    "ep": "eval/capability/bind_evidence.py",
+    "level": "L2",
+    "cmd": "python3 eval/capability/bind_evidence.py --help",
+    "declared_kind": "artifact",
+    "declared_status": "live",
+    "declared_reason": "worktree-only",
+    "declared_pin": null,
+    "declared_inst": "eval/capability/bind_evidence.py",
+    "raw_cmd": null,
+    "derive_clean": {
+     "evidence_kind": "self-derived",
+     "pin_status": "live",
+     "pin_reason": "self-derived",
+     "artifact_sha12": null,
+     "instrument": "eval/capability/bind_evidence.py",
+     "instrument_sha12": "c9e3f4053d9f",
+     "binding": "audit-pin",
+     "audited_by_round": "R473"
+    },
+    "derive_dirty": {
+     "evidence_kind": "self-derived",
+     "pin_status": "live",
+     "pin_reason": "self-derived",
+     "artifact_sha12": null,
+     "instrument": "eval/capability/bind_evidence.py",
+     "instrument_sha12": "c9e3f4053d9f",
+     "binding": "audit-pin",
+     "audited_by_round": "R473"
+    },
+    "file_is_source": true,
+    "declared_instrument": "eval/capability/bind_evidence.py",
+    "self_gated": true,
+    "deterministic": true
+   },
+   {
+    "id": "r492.arm-runner-derive-aux-carry",
+    "ep": "eval/rover/r492/derive_runner_r492.py",
+    "level": "L2",
+    "cmd": "python3 eval/rover/r492/derive_runner_r492.py",
+    "declared_kind": "artifact",
+    "declared_status": "frozen",
+    "declared_reason": "archived-per-round",
+    "declared_pin": "352dd2dc162b",
+    "declared_inst": "eval/rover/r491/run_arm_real_r491.sh",
+    "raw_cmd": null,
+    "derive_clean": {
+     "evidence_kind": "artifact",
+     "pin_status": "frozen",
+     "pin_reason": "archived-per-round",
+     "artifact_sha12": "352dd2dc162b",
+     "instrument": "eval/rover/r492/derive_runner_r492.py",
+     "instrument_sha12": "352dd2dc162b",
+     "binding": "audit-pin",
+     "audited_by_round": "R473"
+    },
+    "derive_dirty": {
+     "evidence_kind": "artifact",
+     "pin_status": "live",
+     "pin_reason": "worktree-only",
+     "artifact_sha12": null,
+     "instrument": "eval/rover/r492/derive_runner_r492.py",
+     "instrument_sha12": "352dd2dc162b",
+     "binding": "audit-pin",
+     "audited_by_round": "R473"
+    },
+    "file_is_source": true,
+    "declared_instrument": "eval/rover/r491/run_arm_real_r491.sh",
+    "self_gated": false,
+    "deterministic": false
+   },
+   {
+    "id": "r493.judge-structural-supersede",
+    "ep": "eval/rover/r493/judge_adv_r493.py",
+    "level": "L2",
+    "cmd": "python3 eval/rover/r493/judge_adv_r493.py --selftest",
+    "declared_kind": "artifact",
+    "declared_status": "frozen",
+    "declared_reason": "archived-per-round",
+    "declared_pin": "e849a91ff9f2",
+    "declared_inst": "eval/rover/r493/judge_adv_r493.py",
+    "raw_cmd": null,
+    "derive_clean": {
+     "evidence_kind": "self-derived",
+     "pin_status": "live",
+     "pin_reason": "self-derived",
+     "artifact_sha12": null,
+     "instrument": "eval/rover/r493/judge_adv_r493.py",
+     "instrument_sha12": "e849a91ff9f2",
+     "binding": "audit-pin",
+     "audited_by_round": "R473"
+    },
+    "derive_dirty": {
+     "evidence_kind": "self-derived",
+     "pin_status": "live",
+     "pin_reason": "self-derived",
+     "artifact_sha12": null,
+     "instrument": "eval/rover/r493/judge_adv_r493.py",
+     "instrument_sha12": "e849a91ff9f2",
+     "binding": "audit-pin",
+     "audited_by_round": "R473"
+    },
+    "file_is_source": true,
+    "declared_instrument": "eval/rover/r493/judge_adv_r493.py",
+    "self_gated": true,
+    "deterministic": true
+   }
+  ],
+  "class_dist": {
+   "('artifact', 'frozen', 'archived-per-round')": 132,
+   "('artifact', 'live', 'append-only-ledger')": 1,
+   "('directory', 'frozen', 'archived-per-round')": 7,
+   "('self-derived', 'live', 'self-derived')": 3,
+   "(None, None, None)": 1,
+   "('artifact', 'live', 'worktree-only')": 1
+  },
+  "frozen_rows_apply_would_change_now": [
+   {
+    "id": "r444.instrument-acceptance",
+    "ep": "eval/capability/instruments-check.json",
+    "declared": "frozen",
+    "class": "derive_unavailable_apply_skips_row",
+    "reason": "ProjectionPinUnavailable:r444.instrument-acceptance: rules_module_unavailable:No module named 'face_record_canon'",
+    "ep_is_dirty": false
+   },
+   {
+    "id": "r493.judge-structural-supersede",
+    "ep": "eval/rover/r493/judge_adv_r493.py",
+    "declared": "frozen",
+    "declared_pin": "e849a91ff9f2",
+    "derive_now": [
+     "self-derived",
+     "live",
+     "self-derived"
+    ],
+    "ep_is_dirty": false
+   }
+  ],
+  "frozen_rows_apply_would_change_now_n": 2
+ },
+ "fixture_derive": {
+  "F1_self_gated_src": {
+   "evidence_kind": "self-derived",
+   "pin_status": "live",
+   "pin_reason": "self-derived",
+   "artifact_sha12": null,
+   "instrument": "eval/capability/exp1-q39/fixtures/fixture_runner.py",
+   "instrument_sha12": "d4466db650a5",
+   "binding": "audit-pin",
+   "audited_by_round": "R473"
+  },
+  "F3_src_declared_foreign_instrument": {
+   "evidence_kind": "artifact",
+   "pin_status": "frozen",
+   "pin_reason": "archived-per-round",
+   "artifact_sha12": "d4466db650a5",
+   "instrument": "eval/capability/exp1-q39/fixtures/fixture_runner.py",
+   "instrument_sha12": "d4466db650a5",
+   "binding": "audit-pin",
+   "audited_by_round": "R473"
+  },
+  "F4_artifact_json": {
+   "evidence_kind": "artifact",
+   "pin_status": "frozen",
+   "pin_reason": "archived-per-round",
+   "artifact_sha12": "e8c628edc996",
+   "instrument": null,
+   "instrument_sha12": null,
+   "binding": "audit-pin",
+   "audited_by_round": "R473"
+  },
+  "F5_src_derived_foreign": {
+   "evidence_kind": "artifact",
+   "pin_status": "frozen",
+   "pin_reason": "archived-per-round",
+   "artifact_sha12": "2477f9f055ec",
+   "instrument": "eval/capability/exp1-q39/fixtures/fixture_runner.py",
+   "instrument_sha12": "d4466db650a5",
+   "binding": "audit-pin",
+   "audited_by_round": "R473"
+  }
+ },
+ "fixture_equivalence": {
+  "self_gated": {
+   "violations_before": [],
+   "violations_after_mutation": [
+    "fx.F1: 器具绑定与现盘不符 (声明 d4466db650a5 / 实际 c79b29a92299) (R2e —— 器具已改, 引用它的证据须重审)"
+   ],
+   "detects": true
+  },
+  "artifact": {
+   "violations_before": [],
+   "violations_after_mutation": [
+    "fx.F4: 冻结 pin 与现盘字节不符 (声明 e8c628edc996 / 实际 4356524800e9) (R2e —— 证据已被改写或未重审)"
+   ],
+   "detects": true
+  },
+  "broken_instrument_sha_violations": [
+   "fx.F1: 器具绑定与现盘不符 (声明 000000000000 / 实际 d4466db650a5) (R2e —— 器具已改, 引用它的证据须重审)"
+  ],
+  "two_state_nonself_gated": {
+   "F1_self_gated_src": {
+    "clean": [
+     "self-derived",
+     "live",
+     "self-derived"
+    ],
+    "dirty": [
+     "self-derived",
+     "live",
+     "self-derived"
+    ]
+   },
+   "F3_src_declared_foreign_instrument": {
+    "clean": [
+     "artifact",
+     "frozen",
+     "archived-per-round"
+    ],
+    "dirty": [
+     "artifact",
+     "live",
+     "worktree-only"
+    ]
+   },
+   "F4_artifact_json": {
+    "clean": [
+     "artifact",
+     "frozen",
+     "archived-per-round"
+    ],
+    "dirty": [
+     "artifact",
+     "live",
+     "worktree-only"
+    ]
+   },
+   "F5_src_derived_foreign": {
+    "clean": [
+     "artifact",
+     "frozen",
+     "archived-per-round"
+    ],
+    "dirty": [
+     "artifact",
+     "live",
+     "worktree-only"
+    ]
+   }
+  }
+ },
+ "fixture_checks": {
+  "c1_self_gated_src_is_self_derived_live": true,
+  "c2_deterministic_dirty_vs_clean_for_self_gated": true,
+  "c2b_nonself_gated_two_state_recorded": true,
+  "c3_declared_foreign_instrument_not_flipped": true,
+  "c4_derived_foreign_instrument_not_flipped": true,
+  "c5_artifact_row_class_unchanged": true,
+  "c6_source_row_still_gated": true,
+  "c7_artifact_row_still_gated": true,
+  "c8_broken_instrument_sha_is_red": true
+ },
+ "apply_side_effect": {
+  "rc": 0,
+  "stdout_tail": [
+   "CHECKED_WITH_FIELD=1",
+   "DIST_SCOPE=only(n=1) —— 与全表口径分布不可比",
+   "  dist self-derived live   self-derived           x1",
+   "R2E_R2F_EXIT=0"
+  ],
+  "pre_status": "live",
+  "pre_reason": "worktree-only",
+  "post_status": "live",
+  "post_reason": "self-derived",
+  "post_pin": null,
+  "post_round": "EXP1-Q39",
+  "fields_changed": [
+   "audited_by_round",
+   "evidence_kind",
+   "instrument_sha12",
+   "pin_reason"
+  ],
+  "tail_lf_after": true,
+  "check_rc": 0,
+  "no_flip_to_frozen": true,
+  "scratch_is_outside_repo": true
+ },
+ "verdict": "PASS"
+}

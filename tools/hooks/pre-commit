@@ -66,4 +66,34 @@ if [ "${AGENTFRAMEWORK_REAUDIT_GUARD:-0}" = "1" ] && [ -f eval/capability/exp1-q
   fi
 fi
 
+# EXP1-Q39: 声明一致性闸 + 证据绑定闸 (默认**开**) —— 把「器具改了而 manifest 声明未重审」与
+#   「登记表 pin 与现盘不符」在**提交时**拦下 (Q38 实证: 这两类缺陷此前只能靠下一轮真机面偶然抓到)。
+#   两闸都**只读** (不写仓内任何字节); 越权关闸: AGENTFRAMEWORK_DECL_SWEEP=0 / AGENTFRAMEWORK_EVIDENCE_CHECK=0
+#   (夹具/诊断用; 关闸本身不改变判据, 只跳过)。
+if [ "${AGENTFRAMEWORK_DECL_SWEEP:-1}" != "0" ] && [ -f eval/capability/decl_sweep.py ]; then
+  DS_LOG="$(mktemp /tmp/decl_sweep_precommit.XXXXXX)"
+  if ! python3 eval/capability/decl_sweep.py >"$DS_LOG" 2>&1; then
+    echo "BLOCKED(EXP1-Q39 声明一致性闸): instruments.json 声明与现盘字节不符 (器具改了而声明未重审)。" >&2
+    echo "  处置: python3 eval/capability/decl_sweep.py --apply   # 只刷 version/instrument_sha12, 判据不放宽" >&2
+    echo "  跳过本闸 (夹具/诊断): AGENTFRAMEWORK_DECL_SWEEP=0" >&2
+    tail -8 "$DS_LOG" >&2
+    rm -f "$DS_LOG"
+    exit 1
+  fi
+  tail -1 "$DS_LOG" >&2
+  rm -f "$DS_LOG"
+fi
+if [ "${AGENTFRAMEWORK_EVIDENCE_CHECK:-1}" != "0" ] && [ -f eval/capability/bind_evidence.py ]; then
+  BE_LOG="$(mktemp /tmp/bind_evidence_precommit.XXXXXX)"
+  if ! python3 eval/capability/bind_evidence.py --check >"$BE_LOG" 2>&1; then
+    echo "BLOCKED(EXP1-Q39 证据绑定闸): 登记表 pin/器具绑定与现盘不符 (R2e/R2f 违规)。" >&2
+    echo "  处置: python3 eval/capability/bind_evidence.py --only <行id> --round <轮号> --apply" >&2
+    echo "  跳过本闸 (夹具/诊断): AGENTFRAMEWORK_EVIDENCE_CHECK=0" >&2
+    grep -m 5 '^VIOLATION' "$BE_LOG" >&2 || tail -5 "$BE_LOG" >&2
+    rm -f "$BE_LOG"
+    exit 1
+  fi
+  rm -f "$BE_LOG"
+fi
+
 exit 0

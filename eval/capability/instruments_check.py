@@ -113,6 +113,15 @@ FACE_OUTPUTS |= {'eval/rover/r444/precheck-prefilter.json',
 #   实测依据 (EXP1-Q36/T8/T9 与 Q37/T10 三次): 唯一的 self_writes 恒为这两个侧车, 位置与内容都随运行期变;
 #   白名单释放的只是「写事件 → 自身产物」的判定, **不是**内容一致性判定 (记录字节面由 face_record_canon 钉住)。
 FACE_OUTPUTS |= {p[:-len('.json')] + '.runtime.json' for p in list(FACE_OUTPUTS) if p.endswith('.json')}
+# EXP1-Q39: 新登记的两件 Q38 器具 (候选②) 的**自身证据产物** —— 面每跑必重写, 与 Q25/Q33 同族:
+#   证据字节的内容稳定性由**别处**钉住 (② 由等价面/守恒判据 + q37 现场读数比对; ③ 由其成对判据 +
+#   instrument_sha12 绑定), 这里释放的只是「写事件 → 自身产物」的判定。
+#   实测依据 (Q39/T15): 唯一 self_write = `.../bind_evidence_tail_selftest_q38.json` (sha_before None →
+#   e978459297b9), 同面 ② 的 `archive_dir_nodes_q38.json` 字节未变 (归 pre_existing) ⇒ 两件都显式声明。
+#   成对控制见 `eval/capability/exp1-q39/verify_own_outputs_release_q39.py`
+#   (未声明的写仍判红 / 声明的写被释放但**逐条可见**: 面 stdout 打 `FACE_OUTPUTS_DECLARED n=`)。
+FACE_OUTPUTS |= {'eval/capability/exp1-q38/archive_dir_nodes_q38.json',
+                 'eval/capability/exp1-q38/bind_evidence_tail_selftest_q38.json'}
 SCRATCH_PREFIXES = ('eval/capability/exp1-q19/l2runs/', 'eval/capability/exp1-q20/l2runs/',
                     'eval/capability/exp1-q21/', 'eval/capability/exp1-q21-selfcheck/',
                     # EXP1-Q30: 新增器具 (bind_evidence 负控 / 提交态核验 / 白名单覆盖面) 的 scratch 面
@@ -390,6 +399,9 @@ def main():
                  counts['passable_passed'], counts['passable_total']))
     for e in counts['errors']:
         print('MEMBER-CLASS-ERROR (fail-closed): %s' % e)
+    # EXP1-Q39: 声明式自身产物白名单**逐条可见** (释放写事件判定 ≠ 静默)—— 面 stdout 恒打行, 由
+    #   verify_own_outputs_release_q39.py 与轮内断言器核读; 顺序稳定 (sorted) 便于逐字比对。
+    print('FACE_OUTPUTS_DECLARED n=%d %s' % (len(FACE_OUTPUTS), ','.join(sorted(FACE_OUTPUTS))))
     doc = {'schema': 'instruments-check/6', 'manifest': 'eval/capability/instruments.json',
            'manifest_sha12': man_sha12, 'instrument_sha12': self_sha12,
            'face': face, 'only': sorted(only) if only else None,

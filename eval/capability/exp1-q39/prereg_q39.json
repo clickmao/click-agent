@@ -1,0 +1,83 @@
+{
+ "round": "EXP1-Q39",
+ "schema": "exp1-prereg/1",
+ "written_utc": "2026-09-16T15:58Z",
+ "timing_note": "本件的**候选②③⑤ 三节**写于其取证前(逐项见各节 written_before_evidence); 末节『本轮全量面』(T15/T16) 写于三节收口**之后**、面运行**之前** —— 时序如实标注, 不冒充全程前置预注册。",
+ "source": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md 附录 AM.5 下轮候选 ②③⑤ (候选①已完成, ④⑥归属对侧)",
+ "candidates": {
+  "C5_artifact_class_of_source_evidence": {
+   "from": "AM.5.5 新发现: r476 行的 artifact pin 在『器具已提交且工作区干净』时被 derive() 从 live/worktree-only 翻成 frozen/archived-per-round",
+   "written_before_evidence": true,
+   "pre_registered_rules": [
+    "P1 分母 = 登记表全部行; 『源码扩展名证据』集合逐项列出 (机检计数)",
+    "P2 源码证据 ∧ 该文件就是本行器具 (现算 inst == ep ∧ 声明器具 ∈ {空, ep}) ⇒ self-derived/live/self-derived ∧ artifact_sha12=null; 与工作区脏净无关",
+    "P3 闸等价: 源码自拄行的字节闸必须仍存在 (载体从 artifact_sha12 换成 instrument_sha12, 同源同值); 机检 = 变异字节 ⇒ 该行仍判红",
+    "P4 例外: 声明了另一个器具 / 现算器具另有其人的源码行**不改判** (那里源码 pin 是唯一闸)",
+    "P5 非源码证据行分类与 pin 逐位不变 (负控: 不许借机放宽)",
+    "P6 确定性: 自拄行在 dirty={ep} 与 dirty=∅ 两态下逐字段相等 (修前不等 = 缺陷复现; 修后相等 = 修复成立)",
+    "P7 侧效: scratch 副本上对 r476 行 --apply ⇒ 修后 pin_status 仍 live (修前翻 frozen)",
+    "P8 三态: 0 全绿 / 2 判据红 / 3 弃权"
+   ],
+   "stop_condition": "P3 若在夹具上不成立 (源码行变异后不再判红) ⇒ 撤销实现, 只落读数",
+   "evidence_paths": ["eval/capability/exp1-q39/census_artifact_class_q39_pre.json",
+                      "eval/capability/exp1-q39/census_artifact_class_q39_post.json",
+                      "eval/capability/exp1-q39/census_artifact_class_q39.py"],
+   "result": "PASS (9/9 夹具判据; 修前 2 项红 + 侧效翻转实测复现)"
+  },
+  "C2_register_q38_instruments": {
+   "from": "AM.5.2 未做项 (为避免 Q38 分母断裂而顺延一轮)",
+   "written_before_evidence": true,
+   "pre_registered": [
+    "分母 27 → 29 行: exp1q38.dir-node-archive + exp1q38.tail-contract-selftest",
+    "两行都必须带正控 (expect_rc/expect_substr) 与**负控** (Q39 新写的判别力自证)",
+    "负控形态: 把被测组件置空/置常量 ⇒ 该器具必须判红; 若仍绿 ⇒ 面必红 (空心)",
+    "登记改写纪律: 序列化器逐字节复现断言 + 只追加不重排 + 幂等 + 写后读回"
+   ],
+   "evidence_paths": ["eval/capability/instruments.json",
+                      "eval/capability/exp1-q39/append_instruments_q39.py",
+                      "eval/capability/exp1-q39/_nc_dir_node_archive_q39.py",
+                      "eval/capability/exp1-q39/_nc_tail_selftest_hollow_q39.py"],
+   "result": "PASS (27→29, 幂等重跑 no-op, 读回 29/29; 两个负控 NC_DETECTED)"
+  },
+  "C3_decl_sweep_and_evidence_gates_into_pre_commit": {
+   "from": "AM.5.3 建议: refresh 无参模式 + bind_evidence --check 挂进提交钩子 (提交时即红)",
+   "written_before_evidence": true,
+   "pre_registered": [
+    "G1 夹具制造声明漂移 ⇒ 钩子 rc=1 且文案点名『声明一致性闸』+ 处置命令",
+    "G2 夹具制造证据绑定违规 ⇒ 钩子 rc=1 且文案点名『证据绑定闸』",
+    "G3 关闸 (env=0) 后同一漂移态 ⇒ rc=0 (负控: 证明红来自新闸而非别处)",
+    "G4 空心钩子反证: 删掉两段新闸 ⇒ 验证器判红 (自己抓自己)",
+    "G5 两闸只读: 跑完后夹具树无文件被改",
+    "G6/G7 真仓默认态 rc=0 / 关闸态 rc=0",
+    "升格纪律: 钩子不得依赖轮次命名目录 ⇒ 常设工具落 eval/capability/decl_sweep.py, Q38 件保留为委托 shim (单实现)"
+   ],
+   "evidence_paths": ["tools/hooks/pre-commit", "eval/capability/decl_sweep.py",
+                      "eval/capability/exp1-q39/verify_decl_hook_gate_q39.py",
+                      "eval/capability/exp1-q39/verdict_decl_hook_gate_q39.json"],
+   "result": "PASS (7/7: G1..G7)"
+  },
+  "C4_full_face_with_29_rows": {
+   "from": "候选②的收口条件",
+   "written_before_evidence": true,
+   "pre_registered": [
+    "T15 = 全量面 (29 行): 期望 rc=0 · 可判据 29/29 · 信息项 2/2 · side_effects [] · measurement_ok=True",
+    "T16 = 重审后复跑: 期望与 T15 **投影语义相同** (登记表 r444 投影 pin 不必再刷即绿) ⇒ 证明面记录确定性",
+    "窗口: 对侧 R497 真机臂在飞 (23:44 起) ⇒ 墙钟读数只作**指示性**, 不作判据 (承 Q38 口径)",
+    "非判据项: 单行耗时; 判据项: rc / pass / side_effects / foreign_writes"
+   ],
+   "evidence_paths": ["eval/capability/exp1-q39/face_q39_t15.json",
+                      "eval/capability/exp1-q39/face_q39_t16.json",
+                      "eval/capability/exp1-q39/face_q39_t15.stdout.txt"],
+   "result": "见附录 AN"
+  }
+ },
+ "not_ours": {
+  "C6_r494_p1_closure": "归属对侧 r494 登记轮; 本侧只提供 T15/T16 全量面读数",
+  "C4_shared_registry_tail_lf": "写侧归属对侧; 本侧只做规范化修复并记因 (Q38 已办), 另新增提交时闸 (候选③) 使未来同类违规在提交面即红"
+ },
+ "new_findings": [
+  "全范围 --apply --round <本轮> 会把**全部 145 行**的 audited_by_round 重刷成本轮号 (归属篡改); 正确工序 = 定向 --only <本行> ⇒ 本轮已实测并回退 (numstat 285→9 行)",
+  "bind_evidence 的 `import face_record_canon` 只在『以脚本方式运行』时成立 (脚本目录自动入 sys.path[0]); 以模块方式加载时投影 pin 复算不可得 ⇒ 同一工具两种加载方式行为不同 (下轮候选)",
+  "同族第二缺陷 (已声明 frozen 的行被一次 apply 降级为 live/worktree-only): 本轮实测 132 冻结行中 0 行处于该态 ⇒ 当前不咬人, 机理同源, 下轮预注册"
+ ]
+}

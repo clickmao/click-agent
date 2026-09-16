@@ -3,8 +3,8 @@
  "schema": "bind-evidence-tail-selftest/1",
  "subject": "eval/capability/bind_evidence.py --run-record / noncanonical_input",
  "scratch_root": "/tmp/q38_bind_scratch",
- "real_registry_sha12_before": "f725f7647cea",
- "real_registry_sha12_after": "f725f7647cea",
+ "real_registry_sha12_before": "3fca750c6e5c",
+ "real_registry_sha12_after": "3fca750c6e5c",
  "cases": {
   "canonical": {
    "rc": 0,
@@ -12,7 +12,7 @@
     "PIN_KIND_SEMANTIC_PROJECTION=0",
     "CHECKED_WITH_FIELD=1",
     "DIST_SCOPE=only(n=1) —— 与全表口径分布不可比",
-    "  dist artifact     live   worktree-only          x1",
+    "  dist self-derived live   self-derived           x1",
     "R2E_R2F_EXIT=0",
     "RUN_RECORD=/tmp/q38_bind_scratch/record_canonical.json (OK)"
    ],
@@ -23,7 +23,7 @@
     "mode": "apply",
     "registry": "/tmp/q38_bind_scratch/canonical.json",
     "registry_is_scratch": true,
-    "ts_utc": "2026-09-16T14:09:11+00:00",
+    "ts_utc": "2026-09-16T16:03:51+00:00",
     "tail_contract": "R481-tail-lf",
     "registry_tail_input": "LF",
     "noncanonical_input": false,
@@ -32,11 +32,11 @@
     "scope": "only(n=1)",
     "covered_before": 1,
     "covered_after": 1,
-    "covered_total": 140,
-    "unchanged": 1,
-    "touched": 0,
-    "idempotent": true,
-    "write_readback": "NOT_WRITTEN",
+    "covered_total": 145,
+    "unchanged": 0,
+    "touched": 1,
+    "idempotent": false,
+    "write_readback": "OK",
     "proj_pin_skipped": [],
     "numstat": "skip (scratch 副本)",
     "violations": [],
@@ -44,7 +44,7 @@
     "rc": 0
    },
    "file_tail_lf": true,
-   "file_sha12": "f725f7647cea"
+   "file_sha12": "4759ed4888c1"
   },
   "noncanonical": {
    "rc": 0,
@@ -52,7 +52,7 @@
     "PIN_KIND_SEMANTIC_PROJECTION=0",
     "CHECKED_WITH_FIELD=1",
     "DIST_SCOPE=only(n=1) —— 与全表口径分布不可比",
-    "  dist artifact     live   worktree-only          x1",
+    "  dist self-derived live   self-derived           x1",
     "R2E_R2F_EXIT=0",
     "RUN_RECORD=/tmp/q38_bind_scratch/record_noncanonical.json (OK)"
    ],
@@ -63,7 +63,7 @@
     "mode": "apply",
     "registry": "/tmp/q38_bind_scratch/noncanonical.json",
     "registry_is_scratch": true,
-    "ts_utc": "2026-09-16T14:09:11+00:00",
+    "ts_utc": "2026-09-16T16:03:51+00:00",
     "tail_contract": "R481-tail-lf",
     "registry_tail_input": "NONE",
     "noncanonical_input": true,
@@ -72,9 +72,9 @@
     "scope": "only(n=1)",
     "covered_before": 1,
     "covered_after": 1,
-    "covered_total": 140,
-    "unchanged": 1,
-    "touched": 0,
+    "covered_total": 145,
+    "unchanged": 0,
+    "touched": 1,
     "idempotent": false,
     "write_readback": "OK",
     "proj_pin_skipped": [],
@@ -84,7 +84,7 @@
     "rc": 0
    },
    "file_tail_lf": true,
-   "file_sha12": "f725f7647cea"
+   "file_sha12": "4759ed4888c1"
   },
   "canonical_rerun": {
    "rc": 0,
@@ -92,7 +92,7 @@
     "PIN_KIND_SEMANTIC_PROJECTION=0",
     "CHECKED_WITH_FIELD=1",
     "DIST_SCOPE=only(n=1) —— 与全表口径分布不可比",
-    "  dist artifact     live   worktree-only          x1",
+    "  dist self-derived live   self-derived           x1",
     "R2E_R2F_EXIT=0",
     "RUN_RECORD=/tmp/q38_bind_scratch/record_canonical_rerun.json (OK)"
    ],
@@ -103,7 +103,7 @@
     "mode": "apply",
     "registry": "/tmp/q38_bind_scratch/canonical.json",
     "registry_is_scratch": true,
-    "ts_utc": "2026-09-16T14:09:12+00:00",
+    "ts_utc": "2026-09-16T16:03:51+00:00",
     "tail_contract": "R481-tail-lf",
     "registry_tail_input": "LF",
     "noncanonical_input": false,
@@ -112,7 +112,7 @@
     "scope": "only(n=1)",
     "covered_before": 1,
     "covered_after": 1,
-    "covered_total": 140,
+    "covered_total": 145,
     "unchanged": 1,
     "touched": 0,
     "idempotent": true,
@@ -124,7 +124,7 @@
     "rc": 0
    },
    "file_tail_lf": true,
-   "file_sha12": "f725f7647cea"
+   "file_sha12": "4759ed4888c1"
   }
  },
  "checks": {

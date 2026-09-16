@@ -3361,14 +3361,14 @@
    "evidence_cmd": "python3 eval/capability/bind_evidence.py --help",
    "evidence_path": "eval/capability/bind_evidence.py",
    "evidence_generated_with": {
-    "evidence_kind": "artifact",
+    "evidence_kind": "self-derived",
     "pin_status": "live",
-    "pin_reason": "worktree-only",
+    "pin_reason": "self-derived",
     "artifact_sha12": null,
     "instrument": "eval/capability/bind_evidence.py",
-    "instrument_sha12": "9d629b75dd61",
+    "instrument_sha12": "c9e3f4053d9f",
     "binding": "audit-pin",
-    "audited_by_round": "EXP1-Q38"
+    "audited_by_round": "EXP1-Q39"
    },
    "negative_control": "C8 四检: --help 必须列出 --round ∧ default=AUDITED_BY_ROUND 逐字保留 ∧ main 内 global 声明必须在首次使用之前(本轮曾因此报 SyntaxError ⇒ --help 非 0 ⇒ 判红被抓)",
    "covers": [
@@ -4467,14 +4467,14 @@
    "evidence_cmd": "python3 eval/rover/r493/judge_adv_r493.py --selftest",
    "evidence_path": "eval/rover/r493/judge_adv_r493.py",
    "evidence_generated_with": {
-    "evidence_kind": "artifact",
-    "pin_status": "frozen",
-    "pin_reason": "archived-per-round",
-    "artifact_sha12": "e849a91ff9f2",
+    "evidence_kind": "self-derived",
+    "pin_status": "live",
+    "pin_reason": "self-derived",
+    "artifact_sha12": null,
     "instrument": "eval/rover/r493/judge_adv_r493.py",
     "instrument_sha12": "e849a91ff9f2",
     "binding": "audit-pin",
-    "audited_by_round": "R493"
+    "audited_by_round": "EXP1-Q39"
    },
    "negative_control": "R492 设备 15: 旧子串判据在 R492-TP1-t12 真机答复上给假阴性 (pass=False) ⇒ supersede 有实测理由; 记录 `eval/rover/r493/supersede_r492_i7.json`。 【R493 形式门禁抓到一次 pin 漂移】首版把**自检产物 json** 当冻结 pin 目标 ⇒ 每次重跑自检 sha 必变 (自指成员) ⇒ 已改为 pin 器具源码 (稳定字节), 自检产物只作 covers 证据。",
    "covers": [
