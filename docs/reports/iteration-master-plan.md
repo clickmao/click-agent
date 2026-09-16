@@ -459,6 +459,30 @@ python3 eval/run_round.py <新轮号> "revert-verify <原commit>" --quick   # �
 - **R481-G（本侧，语料钉健康检查 + 分档口径预注册，2026-09-16）**: ① 独立复核 R481-F（不采信自述）: `links_port_r482.py --selftest` ⇒ **rc=0**（6/6 变异被抓）; `--out` ⇒ **rc=0**; 读数同向同量级 —— G1 **0.1449**（报 0.1450）/ G2 **0.8551**（0.8550）/ G3 **0.1086**（0.1091，72/663）/ G4 **p50=5 达标**; `by_origin` = markdown **0.8125**(65/96) / rel **0.1442**(10,831/75,106) / url **1,518 = unreported**; `old_arm.vs_registered_r481a.match=false` 已自标**不可比（语料漂移）**。② **发现（机制缺口）**: 器具只绑定 `corpus.files_sha16`, 不绑 commit/工作树 ⇒ 四个读数出现 **3 个不同语料钉**（`251b1c166eca7dbe`/6,659、`1000893f7926c08c`/6,658、`737b2cca752d55bc`/6,683; `head=ccb132b`, `dirty=37`）, 而**规则钉恒定**（`9e9104ca601f8849`）⇒ R481-F「两次独立运行核心字段逐字节相同」**只在同一语料成立**（其首跑 6,659 与第二跑 6,658 之间语料已漂移）, 且漂移**无报警**。③ 器具 `eval/recall/r481/check_corpus_pin.py`: 三态 fail-closed —— **UNIFORM rc=0 / DRIFT rc=1 / MISSING rc=3**; 负控真跑 **N1 rc=3 / N2 rc=1 / N3 rc=0**。④ 预注册 `eval/recall/prereg_r481g.json`（先于分档首跑）: 语料钉三元组 + 可比性规则（仅当 `(files_sha16, rule_source_sha16)` 全等才可同批对照）+ 分档判据（markdown ≥0.90 / root_rel ≥0.90 / explicit_rel ≥0.85 / slash_token 不设门槛 / url `unreported`）⇒ 全局 `resolved_rate≥0.90`、`dangling_rate≤0.10` 在含 slash token 的候选面上**结构不可达**, 判据收窄（计划 §1 G2 与 prereg_r481a 的 0.10/0.35 冲突一并收窄）。⑤ **诚实边界**: 分档读数**未取得**（器具需加 `by_subband` 输出）⇒ 不宣称任何档达标; `files_sha16` 不导出参与文件清单 ⇒ 漂移**可判不可归因**; 漂移观测早于本预注册落盘 ⇒ 按 R453 单列 `posthoc_observation`; Python 代理面, 不测产品面延迟/实现; 未 push。
 - 下轮候选（R481-G 更新）: ① 器具加 `by_subband`（markdown / explicit_rel / root_rel / slash_token）并取得**分档首跑读数** ② 语料钉：读数落盘须同时记 `files_sha16` + `rule_source_sha16` + `HEAD` + `worktree_dirty_files`, 且导出参与文件清单以支持漂移归因 ③ 产品侧器具与端口交叉核对（`agent.recall` 度量模式）④ 1e5 规模臂 ⑤ R479 遗留（路由器接线 / 入链 prompt 正文槽位化）。**不建议**继续投「相对引用改写」: 可达面 0.88%, 天花板 ≤ +0.88 pt。
 
+## R482（2026-09-16）真机双臂：R478 修复上真链 + 主 KPI 首次达线（−32.21%）+ 模板兜底的质量代价
+
+**因果链**：R477 真机复演留下两条未决 —— ①R478「tool_calls 因 Retryable=false ⇒ 不重试」只在**单测面**验过，未上真链；②R413 验收②「一轮 token −30%」在真上游同轮双臂里从未达线。R482 用同网格 `p12` + 同夹具 + 同二进制、唯一变量=门控，把两者一起上真链，并按 prereg 逐条判。
+
+**改动（本轮无 C# 改动；只加器具与判据）**：`eval/rover/r482/{prereg_r482.json(先于首跑落盘),run_both_r482.sh,run_arm_R_only_r482.sh,check_r482.py,verdict-r482.json}`；`check_r482.py` 全部常量**源码派生**（取不到抛 MISS，不兜底）。
+
+| 项 | Arole（门控关=生产等价分母） | R（r1 在管道内） |
+|---|---|---|
+| 远端调用 | 21 | 14 |
+| prompt/completion | 68083/4551 | 44444/4793 |
+| **total** | **72634** | **49237** ⇒ **−32.21%** |
+| 12 轮 | ok 12/12 · events 37 · blocked 0 | ok 12/12 · events 37 · blocked 0 |
+
+**判据（prereg 原文）**：H1 PASS（32.21% ≥30%，**R413 验收② 真上游同轮首次达线**）· H2 PASS（Δ7 ≥5，验收③ 可测增益）· **H3 FAIL**（`A.calls=21` 未 <21 ⇒ 按 prereg `fail_action` 记「R478 修复在真链上**无可测效果**」并单列，不重跑凑数）· **H4 FAIL**（`R.calls=14 >` R477 的 10；跨二进制参考列）· H5 PASS（恒等式逐行 21/21 + 14/14）· H6 PASS（逐字回放 `t6←t1`(434B)、`t9←t8`(606B)；旧误诊文案 0 次）。`verdict_all_pass=False`。
+
+**H3 成因（post-hoc，机制在位/收益被漂移吃掉）**：`point='llm_call_empty_body'` 行 Arole 4 / R 2，`retry_skipped=True` 逐行成立，`empty_cause='tool_call'` 与上游 `finish_reason='tool_calls'` 4/4 对齐 ⇒ 修复**确实生效**；但**空正文基数 15（R477）→4（R482）**（同配置同夹具）⇒ 可省调用数被上游漂移抽空，`A.calls` 无位移。**结论收窄**：本轮只证「机制在位」，不证「调用数收益」。
+
+**诚实边界（本轮最重要）**：−32.21% 中 R 臂 `t2–t5` 的用户可见答复是**同一条 21B 模板**（Arole 同轮为 4 条各不相同的实质短答）⇒ **实质答复轮 R 6 < A 12**，更严质量变体判红并单列 `checks_posthoc.quality_verdict_H6c_strict_variant`。即降幅的一部分来自「模板兜底」而非「本地 r1 生成替代远端」——与 prereg 预置边界吻合，**R483 第一顺位**。另有：单夹具单次无置信区间；上游真供应商可漂移（本轮实测漂移）；跨二进制只作参考列；本轮无 C# 改动 ⇒ 不重发布 AOT、不冒充新 AOT 证据（`binary_match=true`，实发 sha16 `6a9b7aed22a22f48` = prereg pin）。
+
+**起手闸归因修正（可复用）**：R 臂首跑被闸（`MemAvailable=2590 < 2650`，Arole 的 llama-server RSS 未释放，同 R477）；加沉降等待后**仍红**且 `pgrep llama-server=0` ⇒ 真因是**本方 `dotnet test` 遗留 `VBCSCompiler`（RSS 206MB）**；`$HOME/.dotnet/dotnet build-server shutdown` ⇒ `2730MB` 通过、R 臂跑完 EXIT=0。即占用源不止 llama-server，**含本方编译服务器**。
+
+- 下轮候选（R482 更新）: ① **R483 第一顺位**：把模板兜底换成**本地 r1 生成**再重测同网格 KPI 与质量（否则 −32% 含模板替代，不可宣称「本地生成替代远端」）② 空正文基数漂移：Arole 臂加**基数记录/多重复臂**，让 R478 修复的调用数收益可测（本轮 headroom 被抽空）③ 起手闸器具化：把 `build-server shutdown` + 沉降等待并入 `run_both_*`（禁手抄）④ R481-G 遗留（`by_subband` 分档读数 / 语料钉四元组）⑤ R479 遗留（路由器接线 / 入链 prompt 正文槽位化）
+
+
 ## R481 轮次索引增量（2026-09-16 机取自 `docs/verification-registry.json`，勿手改）
 
 器具: `python3 eval/tools/master_plan_round_index.py R481`（只读 JSON，输出可直接粘的 Markdown 行）。

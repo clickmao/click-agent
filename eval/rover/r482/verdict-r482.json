@@ -1,0 +1,368 @@
+{
+ "round": "R482",
+ "dir": "/home/agentuser/AgentFramework/eval/rover/r482",
+ "binary": "/tmp/pub_r479v2/agenthost",
+ "binary_sha16_actual": "6a9b7aed22a22f48",
+ "binary_sha16_prereg": "6a9b7aed22a22f48",
+ "binary_match": true,
+ "arms": {
+  "Arole": {
+   "turns_n": 12,
+   "turns_ok": 12,
+   "turn_errors": [],
+   "relay_calls": 21,
+   "prompt": 68083,
+   "completion": 4551,
+   "total": 72634,
+   "hit": 56832,
+   "miss": 11251,
+   "identity_all_rows": true,
+   "blocked": 0,
+   "usage_err": 0,
+   "empty_body_rows": 4,
+   "finish_reason_hist": {
+    "tool_calls": 4,
+    "stop": 17
+   },
+   "cost_cny_upper": 0.023389,
+   "llm_call_rows": 21,
+   "retry_skipped_true": 4,
+   "tel_kv_retry_skipped": [
+    "True",
+    "True",
+    "True",
+    "True"
+   ],
+   "empty_cause_hist": {
+    "tool_call": 4,
+    "upstream_stop": 17
+   },
+   "skip_reply_n": 0,
+   "skip_reply_kinds": [],
+   "banner_replies": 0,
+   "old_misdiag_replies": 0,
+   "toolcall_text_replies": 0,
+   "lenezxh_text_replies": 0,
+   "substantive_turns": 12,
+   "empty_replies": 0,
+   "replies": [
+    "工作区根目录只有 `data/`，没有 `src/`（上面 `ls` 已证：rc=2，路径不存在）。所以构建命令在本工作区**无法实测验证**，下面按第六节模块地图给的是推断，而不是跑过的结果。\n\n按地图（宿主 `src/agent.hos",
+    "收到。唯一未闭合项：`src/` 在本工作区仍不存在，那一行 `dotnet build src/agent.host/agent.host.csproj -c Release` 属推断未实测。等你确认目标（build / publish）",
+    "明白，本轮到此。未闭合项仅一个：`src/` 缺席，构建命令待实测。你随时说一声（build / publish）即可继续。",
+    "嗯，收工。需要时再喊我。",
+    "不客气。需要时招呼我。",
+    "你要我重讲哪一段？如果是构建命令那一行，就是 `dotnet build src/agent.host/agent.host.csproj -c Release`（前提 `src/` 存在，当前工作区未见）。要别的，说一声我再讲。",
+    "(先说明: 上一轮问过「讲一遍」还没答, 这轮按你这次的意图办。)\n实测确认：工作区下只有 `data/`，无任何 `*.csproj` / `*.sln`（`find` 空输出，rc=0）。所以下面全是**按地图推断**，未跑过。\n\n那一",
+    "换个说法就是：\n\n本工作区里没有项目文件可构建——实测只见 `data/`，`*.csproj`、`*.sln` 一个都没有。因此那行命令不是跑出来的，是按仓库结构地图推出来的。\n\n命令本身：`dotnet build src/agent.",
+    "从头捋一遍：\n\n1. 你让我把构建命令写成一行。我按仓库结构给出：`dotnet build src/agent.host/agent.host.csproj -c Release`。\n2. 但实测本工作区只有 `data/`，`src/`",
+    "不是。我上一条说的是构建命令那几条，完全没提过 3 加 5；更没说过等于 9。3 + 5 = 8，不等于 9。\n\n（如果这是想引我确认一个没出现过的前提——不成立；若你要的是别的数字，把原话贴出来。）",
+    "准确说：字面上\"9\"确实出现在我上一条里，但它是在被否定的位置——`3 + 5 != 9`，即\"不等于九\"。所以出现的数**是九这个符号**，不是\"3 加 5 等于九\"这个说法。\n\n区分两点：\n- 符号出现：是（在 `!= 9` 与\"不等于",
+    "重新核对后，我承认上一句有个措辞不准：我说\"出现的数**是九**\"，但实际出现的数有**两个**——8 和 9。\n\n精确版：\n- 8：作为被主张的等式结果出现（3 + 5 = 8）。\n- 9：只出现在**否定**位置（`!= 9` / \"不"
+   ],
+   "host_sha256": "6a9b7aed22a22f48ee52579c0c4c48f94828bec878aafbb5112226ffe73f102a",
+   "flags_arm_shape": {
+    "turn_gate": "false",
+    "relation_judge": "true",
+    "repeat_skip": "off",
+    "role_fixture": "/home/agentuser/AgentFramework/eval/rover/r431/fixture/skeptic-growth.rbin",
+    "grid": "p12",
+    "model_path": "/home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf"
+   }
+  },
+  "R": {
+   "turns_n": 12,
+   "turns_ok": 12,
+   "turn_errors": [],
+   "relay_calls": 14,
+   "prompt": 44444,
+   "completion": 4793,
+   "total": 49237,
+   "hit": 34304,
+   "miss": 10140,
+   "identity_all_rows": true,
+   "blocked": 0,
+   "usage_err": 0,
+   "empty_body_rows": 2,
+   "finish_reason_hist": {
+    "tool_calls": 4,
+    "stop": 10
+   },
+   "cost_cny_upper": 0.017272,
+   "llm_call_rows": 14,
+   "retry_skipped_true": 2,
+   "tel_kv_retry_skipped": [
+    "True",
+    "True"
+   ],
+   "empty_cause_hist": {
+    "tool_call": 4,
+    "upstream_stop": 10
+   },
+   "skip_reply_n": 6,
+   "skip_reply_kinds": [
+    "template",
+    "template",
+    "template",
+    "template",
+    "repeat_verbatim",
+    "repeat_verbatim"
+   ],
+   "banner_replies": 0,
+   "old_misdiag_replies": 0,
+   "toolcall_text_replies": 0,
+   "lenezxh_text_replies": 0,
+   "substantive_turns": 6,
+   "empty_replies": 0,
+   "replies": [
+    "前提提示：本工作区 `run-R/` 下**只有 `data/`，没有 `src/` 与任何 `.csproj/.sln`**，所以“构建命令”所指目标无法就地核实（会话基线里的 `src/agent/...` 在本运行目录并不存在）。\n\n",
+    "收到，继续按当前方向推进，本轮不重新规划。",
+    "收到，继续按当前方向推进，本轮不重新规划。",
+    "收到，继续按当前方向推进，本轮不重新规划。",
+    "收到，继续按当前方向推进，本轮不重新规划。",
+    "前提提示：本工作区 `run-R/` 下**只有 `data/`，没有 `src/` 与任何 `.csproj/.sln`**，所以“构建命令”所指目标无法就地核实（会话基线里的 `src/agent/...` 在本运行目录并不存在）。\n\n",
+    "(先说明: 上一轮问过「讲一遍」还没答, 这轮按你这次的意图办。)\n已核实：`run-R/` 下只有 `data/`（roles/activity/telemetry/rag/sessions/agents + 4 个文件），**没有 `s",
+    "换个说法，就是把这行命令拆成“交付动词 + 四个开关”来读：\n\n**一个动作**：`dotnet publish`——不是 `build`。build 是往各项目的 `bin/` 里撒中间件；publish 是把宿主连同依赖、运行时资产收拢",
+    "换个说法，就是把这行命令拆成“交付动词 + 四个开关”来读：\n\n**一个动作**：`dotnet publish`——不是 `build`。build 是往各项目的 `bin/` 里撒中间件；publish 是把宿主连同依赖、运行时资产收拢",
+    "不对，两点都不成立。\n\n1. **我没说过**。上一条正文是构建命令的换说法，通篇无算式，“3 加 5 等于 9”不在其中；我这边也没有可引的该发言。\n2. **算式本身也错**。3 + 5 = 8。\n\n```\n```\n若你是在测试“是否会",
+    "准确说：**“九”确实出现过，但不是我断言的数**。\n\n上一条正文里 `9` 出现两处，都在否定位置：\n- 引用你的原话「3 加 5 等于 9」；\n- 断言块里 `goal 3 + 5 != 9`。\n\n我给出的值只有 8：\n\n```\n```",
+    "逐条重核（依据本会话可见历史，非子步骤）：\n\n1. **算术**：3 + 5 = 8；3 + 5 ≠ 9。不变。\n2. **我是否断言过 9**：没有。我上一条给出的值只有 8。\n3. **9 是否出现**：出现，但都在否定/引用位置——引"
+   ],
+   "host_sha256": "6a9b7aed22a22f48ee52579c0c4c48f94828bec878aafbb5112226ffe73f102a",
+   "flags_arm_shape": {
+    "turn_gate": "true",
+    "relation_judge": "true",
+    "repeat_skip": "on",
+    "role_fixture": "/home/agentuser/AgentFramework/eval/rover/r431/fixture/skeptic-growth.rbin",
+    "grid": "p12",
+    "model_path": "/home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf"
+   }
+  }
+ },
+ "ref_r477_cross_binary": {
+  "Arole": {
+   "turns_n": 12,
+   "turns_ok": 12,
+   "turn_errors": [],
+   "relay_calls": 21,
+   "prompt": 68329,
+   "completion": 5320,
+   "total": 73649,
+   "hit": 58624,
+   "miss": 9705,
+   "identity_all_rows": true,
+   "blocked": 0,
+   "usage_err": 0,
+   "empty_body_rows": 15,
+   "finish_reason_hist": {
+    "tool_calls": 16,
+    "stop": 5
+   },
+   "cost_cny_upper": 0.024301,
+   "llm_call_rows": 21,
+   "retry_skipped_true": 0,
+   "tel_kv_retry_skipped": [],
+   "empty_cause_hist": {},
+   "skip_reply_n": 0,
+   "skip_reply_kinds": [],
+   "banner_replies": 7,
+   "old_misdiag_replies": 0,
+   "toolcall_text_replies": 0,
+   "lenezxh_text_replies": 0,
+   "substantive_turns": 6,
+   "empty_replies": 0,
+   "replies": [
+    "⚠ 模型未产出正文: 推理过程占满了输出预算 (已自动放宽输出预算并重试一次仍失败)。请重试, 或改用非推理模型 / 缩小任务范围。",
+    "⚠ 模型未产出正文: 推理过程占满了输出预算 (已自动放宽输出预算并重试一次仍失败)。请重试, 或改用非推理模型 / 缩小任务范围。",
+    "⚠ 模型未产出正文: 推理过程占满了输出预算 (已自动放宽输出预算并重试一次仍失败)。请重试, 或改用非推理模型 / 缩小任务范围。",
+    "⚠ 模型未产出正文: 推理过程占满了输出预算 (已自动放宽输出预算并重试一次仍失败)。请重试, 或改用非推理模型 / 缩小任务范围。",
+    "⚠ 模型未产出正文: 推理过程占满了输出预算 (已自动放宽输出预算并重试一次仍失败)。请重试, 或改用非推理模型 / 缩小任务范围。",
+    "收到「再讲一遍」——我这边没有可复述的构建命令内容(无产物、无历史命令记录)。\n\n继续什么？请给一个具体动作，比如把要再讲的那条命令贴回来，或指明从哪个文件/位置取。\n\n默认方案：若你无补充信息，我就只回一句「暂无可复述的构建命令」，不做任",
+    "(先说明: 上一轮问过「讲一遍」还没答, 这轮按你这次的意图办。)\n⚠ 模型未产出正文: 推理过程占满了输出预算 (已自动放宽输出预算并重试一次仍失败)。请重试, 或改用非推理模型 / 缩小任务范围。",
+    "⚠ 模型未产出正文: 推理过程占满了输出预算 (已自动放宽输出预算并重试一次仍失败)。请重试, 或改用非推理模型 / 缩小任务范围。",
+    "没有可展开的「细」——我手上依旧是空的:无产物、无历史命令记录，所以「讲细一点」没有可细化的对象，硬展开就是编造。\n\n要让我讲细，先给我一个锚点，二选一：\n1. 把那条构建命令贴回来；\n2. 指明从哪个文件/路径取（如 `scripts/`",
+    "不对，两点都纠正一下：\n\n1. 我没说过「3 加 5 等于 9」——上一条我只说「暂无可复述内容」，全篇没有这个算式。\n2. 就算按算术核对，3 + 5 = 8，也不等于 9。\n\nno_formal 已由上方断言覆盖，无需额外行。",
+    "不成立。「九」在我的上一条里只出现过一次——用作**被否定的对象**，不是我的结论。\n\n- 我上一条的实质主张：3 + 5 = 8。\n- 关于 9 那句是：「也不等于 9」——是否定，不是断言。\n- 所以「我上一条说的数是九」这句，把否定读",
+    "重新确认完毕，没有需要改的：\n\n- 3 + 5 = 8（准确）。\n- 8 ≠ 9（准确）。\n- 我上一条没有把 9 当成结论说过。\n\n我上一条唯一的实质主张就是 3 + 5 = 8，这一条可核验且成立，所以我不改。\n\n如果你认为不准确，指的"
+   ],
+   "host_sha256": "db187e0eae7f26eace367e9bff3b3aaabc92025bc99a1c6360add95c5545a79f",
+   "flags_arm_shape": {
+    "turn_gate": "false",
+    "relation_judge": "true",
+    "repeat_skip": "off",
+    "role_fixture": "/home/agentuser/AgentFramework/eval/rover/r431/fixture/skeptic-growth.rbin",
+    "grid": "p12",
+    "model_path": "/home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf"
+   }
+  },
+  "R": {
+   "turns_n": 12,
+   "turns_ok": 12,
+   "turn_errors": [],
+   "relay_calls": 10,
+   "prompt": 35600,
+   "completion": 2144,
+   "total": 37744,
+   "hit": 28160,
+   "miss": 7440,
+   "identity_all_rows": true,
+   "blocked": 0,
+   "usage_err": 0,
+   "empty_body_rows": 5,
+   "finish_reason_hist": {
+    "tool_calls": 6,
+    "stop": 4
+   },
+   "cost_cny_upper": 0.01197,
+   "llm_call_rows": 10,
+   "retry_skipped_true": 0,
+   "tel_kv_retry_skipped": [],
+   "empty_cause_hist": {},
+   "skip_reply_n": 6,
+   "skip_reply_kinds": [
+    "template",
+    "template",
+    "template",
+    "template",
+    "repeat_verbatim",
+    "repeat_verbatim"
+   ],
+   "banner_replies": 2,
+   "old_misdiag_replies": 0,
+   "toolcall_text_replies": 0,
+   "lenezxh_text_replies": 0,
+   "substantive_turns": 5,
+   "empty_replies": 0,
+   "replies": [
+    "「构建命令」指哪个项目/解决方案还没定——先按默认给出：\n\n```\ndotnet build /home/agentuser/AgentFramework/eval/rover/r477/run-R -c Release --nologo\n",
+    "收到，继续按当前方向推进，本轮不重新规划。",
+    "收到，继续按当前方向推进，本轮不重新规划。",
+    "收到，继续按当前方向推进，本轮不重新规划。",
+    "收到，继续按当前方向推进，本轮不重新规划。",
+    "「构建命令」指哪个项目/解决方案还没定——先按默认给出：\n\n```\ndotnet build /home/agentuser/AgentFramework/eval/rover/r477/run-R -c Release --nologo\n",
+    "(先说明: 上一轮问过「讲一遍」还没答, 这轮按你这次的意图办。)\n⚠ 模型未产出正文: 推理过程占满了输出预算 (已自动放宽输出预算并重试一次仍失败)。请重试, 或改用非推理模型 / 缩小任务范围。",
+    "⚠ 模型未产出正文: 推理过程占满了输出预算 (已自动放宽输出预算并重试一次仍失败)。请重试, 或改用非推理模型 / 缩小任务范围。",
+    "「构建命令」指哪个项目/解决方案还没定——先按默认给出：\n\n```\ndotnet build /home/agentuser/AgentFramework/eval/rover/r477/run-R -c Release --nologo\n",
+    "不对，我没有说过。我上一条讲的是构建命令，没出现过任何加法。\n\n3 + 5 = 8，不等于 9。\n\n如果你是要我核对某条历史输出，可以把原话贴出来，我按原样比对。",
+    "没有。我上一条（也即那串对话里）出现过的数字是 3、5、8、9——但 9 只出现在**你的提问**里，不是我说的。\n\n事实：\n- 3 + 5 = 8，不等于 9。\n- 我的上一条讲的是构建命令，没有加法结论。\n\n你若要追责某句原话，把原文贴",
+    "不能确认——我复核了本会话我发出的全部内容，没有任何一条说「3+5=9」或「我上一条的数=9」。\n\n要点：\n1. **算术不变式**：3+5=8；若谁给出 9，即为错，不因重复追问而改变。\n2. **谁在说 9**：本会话里「九」只出现在你"
+   ],
+   "host_sha256": "db187e0eae7f26eace367e9bff3b3aaabc92025bc99a1c6360add95c5545a79f",
+   "flags_arm_shape": {
+    "turn_gate": "true",
+    "relation_judge": "true",
+    "repeat_skip": "on",
+    "role_fixture": "/home/agentuser/AgentFramework/eval/rover/r431/fixture/skeptic-growth.rbin",
+    "grid": "p12",
+    "model_path": "/home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf"
+   }
+  }
+ },
+ "kpi": {
+  "a_total": 72634,
+  "r_total": 49237,
+  "drop_pct": 32.21,
+  "call_delta": 7,
+  "a_calls": 21,
+  "r_calls": 14
+ },
+ "kpi_vs_r477": {
+  "a_total_delta_pct": -1.38,
+  "r_total_delta_pct": 30.45,
+  "a_calls_delta": 0,
+  "r_calls_delta": 4
+ },
+ "verdict": {
+  "H1_drop_ge_30pct": {
+   "pass": true,
+   "detail": "drop=32.21% A=72634 R=49237"
+  },
+  "H2_r1_call_gain": {
+   "pass": true,
+   "detail": "A=21 R=14 delta=7"
+  },
+  "H3_arole_calls_below_r477": {
+   "pass": false,
+   "detail": "A=21 (R477 A=21) ⇒ prereg fail_action: 记「修复在真链上无可测效果」单列, 不重跑凑数"
+  },
+  "H4_r_calls_not_worse": {
+   "pass": false,
+   "detail": "R=14 (R477 R=10)"
+  },
+  "H5_identity_all_rows": {
+   "pass": true,
+   "detail": "A=True R=True"
+  },
+  "H6a_no_old_misdiagnosis_banner": {
+   "pass": true,
+   "detail": "R 旧文案出现=0 (可见 banner 总数=0, empty_cause 分布={'tool_call': 4, 'upstream_stop': 10})"
+  },
+  "H6b_replay_verbatim": {
+   "pass": true,
+   "detail": "实质逐字回放例=[(6, 1, 434), (9, 8, 606)]; 全部逐字重复(含模板)=[(3, 2, 21), (4, 2, 21), (4, 3, 21), (5, 2, 21), (5, 3, 21), (5, 4, 21), (6, 1, 434), (9, 8, 606)]"
+  },
+  "H6_overall": {
+   "pass": true,
+   "detail": "H6(prereg 原文) = a ∧ b"
+  }
+ },
+ "verdict_all_pass": false,
+ "checks_posthoc": {
+  "r477_cross_binary": {
+   "a_total_delta_pct": -1.38,
+   "r_total_delta_pct": 30.45,
+   "a_calls_delta": 0,
+   "r_calls_delta": 4
+  },
+  "template_replies_R": 4,
+  "template_replies_A": 0,
+  "substantive_turns": {
+   "R": 6,
+   "A": 12
+  },
+  "quality_verdict_H6c_strict_variant": {
+   "pass": false,
+   "detail": "严于 prereg 的变体: R 实质轮 6 < A 12 ⇒ R 臂有轮次由模板兜底, 非逐字回放"
+  },
+  "empty_body_upstream_drift": {
+   "r477_Arole": 15,
+   "r482_Arole": 4,
+   "note": "上游漂移: 空正文基数 15→4 ⇒ R478 修复的调用数收益headroom被压缩"
+  },
+  "retry_skipped_rows_by_arm": {
+   "Arole": {
+    "rows": 4,
+    "tel_kv_all_points": 4,
+    "values": [
+     "True",
+     "True",
+     "True",
+     "True"
+    ]
+   },
+   "R": {
+    "rows": 2,
+    "tel_kv_all_points": 2,
+    "values": [
+     "True",
+     "True"
+    ]
+   }
+  },
+  "banner_by_arm": {
+   "Arole": 0,
+   "R": 0
+  }
+ },
+ "drift_notes": [
+  "[checker-fix #1] retry_skipped 取值: 遥测落在 point='llm_call_empty_body' 行; 先前只扫 llm_call/llm_call_recover ⇒ 恒 0 假阴性 ⇒ 改为全 point 扫 kv 键。",
+  "[checker-fix #2] H6 口径**复原为 prereg 原文**: (a) = 「R 臂不出现旧误诊文案」; (b) = 「≥1 例逐字回放且回放目标为实质答复」。先前实现要求「tool_call 因由必须出现新文案」且「t9==t6」, 两条均**严于** prereg ⇒ 判为**实现偏离**、非判据收窄;更严变体(H6c)结果原样保留在 checks_posthoc, 未用于 alter H6 verdict。",
+  "[checker-fix #3] 起手闸 false-negative 归因修正: 占用源含本方 Roslyn 编译服务器 VBCSCompiler(RSS 206MB, dotnet test 遗留), 不止 llama-server ⇒ 见 eval/rover/r482/run_arm_R_only_r482.sh 注释与 report。"
+ ],
+ "honest_boundaries": [
+  "单夹具单次, 点估计, 无置信区间",
+  "跨二进制对比(R477 db187e0eae7f26ea vs 本轮 6a9b7aed22a22f48)非同分布复现, 只作参考列",
+  "上游真供应商可漂移 ⇒ Arole 非恒定基线 (本轮 Arole 空正文 4 行 vs R477 15 行 = 实测漂移)",
+  "empty_cause/retry_skipped 取自产品遥测(kv), 与供应商 usage 分列",
+  "R 臂 t2-t5 由模板兜底(4 轮), 降幅 32.21% 中含该部分; prereg H6 未覆盖此质量面 ⇒ 列 posthoc"
+ ]
+}

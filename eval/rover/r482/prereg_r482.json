@@ -1,0 +1,52 @@
+{
+  "round": "R482",
+  "id_draft": "r482.r478-fix-real-e2e",
+  "kind": "pre-registration (落盘于首跑之前)",
+  "written_at": "2026-09-16T08:27+08:00",
+  "question": "R478 的「空正文定因(tool_calls)+不浪费重试(retryable=false ⇒ retry_skipped)」与 R479 协议面改动, 在**真实上游链**上是否按预期减少远端调用与 token? 同网格同夹具、唯一变量=门控, 双臂内部对比给主 KPI。",
+  "mainline": "R413 主线验收 ②「用户一轮任务总 token 下降 ≥30%(主因=不必要的远端 LLM API 请求变少)」③「r1 对管道有可测增益」",
+  "grid": "p12 (eval/rover/r438/grid/task-p12.json)",
+  "turns": 12,
+  "relay": "eval/rover/r475/relay_real_r475.py (v2) → https://api.deepseek.com/v1/chat/completions (真供应商, 逐调用 usage 落盘)",
+  "arms": {
+    "Arole": "turn_gate=false + relation_judge=on + repeat_skip=off + --role skeptic-growth.rbin  ← 生产等价分母",
+    "R":     "turn_gate=true  + relation_judge=on + repeat_skip=on  + --role skeptic-growth.rbin  ← r1 在管道内"
+  },
+  "binary": {"path": "/tmp/pub_r479v2/agenthost", "sha256_16": "6a9b7aed22a22f48", "bytes": 15363712, "il_warnings": 0, "publish_log": "/tmp/publish_r479v2.log"},
+  "binary_boundary": "发布时刻 06:34 早于 R481(recall) 提交; recall 未入 agent.host ⇒ 宿主代码事实等于当前 HEAD 的宿主面; 但这**不是**本轮新发布的 AOT(本轮无 C# 改动), 不冒充新 AOT 证据",
+  "baseline_r477_machine_read": {
+    "source": "eval/rover/r477/usage-{Arole,R}.jsonl (本侧机读重算, 不采信文档自记)",
+    "binary_sha16": "db187e0eae7f26ea",
+    "Arole": {"calls": 21, "prompt": 68329, "completion": 5320, "total": 73649, "hit": 58624, "miss": 9705},
+    "R":     {"calls": 10, "prompt": 35600, "completion": 2144, "total": 37744, "hit": 28160, "miss": 7440},
+    "note": "跨二进制(不同 sha16) ⇒ 与本轮对比属同向同量级参考, **不作为**主判据"
+  },
+  "primary_hypotheses": [
+    {"id": "H1", "claim": "主 KPI: (Arole.total - R.total)/Arole.total >= 0.30", "basis": "R413 验收 ②(同一轮内双臂对比, 与 R477 无关)", "verdict_rule": "机检 round((A-R)/A, 4)"},
+    {"id": "H2", "claim": "r1 增益: Arole.calls - R.calls >= 5 且 R.calls < Arole.calls", "basis": "验收 ③ 远端调用次数下降"},
+    {"id": "H3", "claim": "R478 修复生效: Arole.calls < 21 (低于 R477 同臂, 浪费重试被消除)", "basis": "R478 ToolCall 因 Retryable=false ⇒ retry_skipped", "fail_action": "若 Arole.calls >= 21 ⇒ 记为「修复在真链上无可测效果」并单列, 不重跑凑数"},
+    {"id": "H4", "claim": "不劣化: R.calls <= 10 (不高于 R477 同臂)"},
+    {"id": "H5", "claim": "恒等式: 逐行 cache_hit_tokens + cache_miss_tokens == prompt_tokens (两臂全行成立)"},
+    {"id": "H6", "claim": "质量: R 臂复述/确认轮用户可见答复非空且为前序实质答复逐字回放(至少 1 例), 且**不出现**「推理过程占满输出预算」文案(该文案在 cause=tool_calls 下已是误诊, R478 已改)"}
+  ],
+  "checks_posthoc_expected": [
+    "与 R477 的跨二进制读数对比(降幅差、调用数差)",
+    "命中率按 R456b 冷/稳态分列",
+    "分档(0-30/31-93/94-200/201+)聚合",
+    "遥测 retry_skipped / empty_cause 取值分布"
+  ],
+  "gates": {
+    "mem_available_mb_min": 2650,
+    "note": "起手闸 fail-closed; 沉降等待: 起跑前确认无 llama-server 残留(pgrep -f '[l]lama-server')",
+    "budget_cny_upper_per_arm": 0.15,
+    "push": "PUSH_PAUSED 在位 ⇒ 全程仅本地"
+  },
+  "denominator_pin": "A 分母 = 本轮 Arole 臂实测(同网格/同夹具/同二进制/仅门控不同), 禁拿历史档当分母",
+  "total_definition": "total := prompt_tokens + completion_tokens (中继 v2 不落 total_tokens 字段)",
+  "honest_boundaries_pre": [
+    "单夹具单次, 无重复臂 ⇒ 只给点估计, 不给置信区间",
+    "上游为真供应商, 行为可漂移(R477 已观测上游漂移) ⇒ Arole 非「恒定基线」",
+    "本地 r1(3B, Q4) 只覆盖门控/判定与本地回放路径, 未覆盖「本地生成替代远端实质回答」",
+    "本轮无 C# 改动 ⇒ 不重发布 AOT, 不宣称新 AOT 证据"
+  ]
+}

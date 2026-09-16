@@ -2225,3 +2225,26 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 | 恒等式 | `hit + miss == prompt` 逐行成立 21/21 + 10/10 |
 
 **诚实边界**：起手闸 `MemAvailable 2293 MB < 2650 MB` ⇒ **本轮无真机 E2E**；`request_id` 因果绑定只证机制存在（真机 join 未验）；分档轴 `prompt_tokens` 代理全落 `201+` 档 ⇒ `band_degenerate=true`，**不冒充分档结论**；预注册晚于焦点单测首跑 ⇒ 描述性数字入 `checks_posthoc`（承 R453）。
+
+## R482（2026-09-16）真机双臂：R478 修复上真链 + 主 KPI 首次达线（−32.21%）+ 模板兜底的质量代价
+
+**因果链**：R478 的「tool_calls ⇒ Retryable=false ⇒ 不重试」只在单测面验过；R413 验收②「一轮 token −30%」从未在真上游同轮双臂达线。R482 把两者一起上真链（同网格 `p12` + 同夹具 `skeptic-growth.rbin` + 同二进制 `6a9b7aed22a22f48`，唯一变量=门控）。
+
+**读数（供应商 usage，逐调用落盘）**
+
+| 臂 | 远端调用 | prompt | completion | total | 轮 | 遥测 |
+|---|---|---|---|---|---|---|
+| Arole（门控关） | 21 | 68083 | 4551 | **72634** | ok 12/12 | events 37 · blocked 0 |
+| R（r1 在管道内） | 14 | 44444 | 4793 | **49237** | ok 12/12 | events 37 · blocked 0 |
+
+**主 KPI**：`(72634−49237)/72634 = **32.21%** ≥30%` ⇒ **R413 验收② 真上游同轮首次达线**；调用 −7 ⇒ 验收③ 可测增益成立。恒等式 `hit+miss==prompt` 逐行 21/21 + 14/14。
+
+**判据（`eval/rover/r482/prereg_r482.json`，先于首跑落盘；prereg 原文）**：H1 **PASS** · H2 **PASS**（Δ7）· **H3 FAIL**（`A.calls=21` 未 <21 ⇒ 按 prereg `fail_action` 记「修复在真链上无可测效果」并单列，不重跑凑数）· **H4 FAIL**（`R.calls=14 >` R477 的 10，跨二进制参考列）· H5 **PASS** · H6 **PASS**（逐字回放 `t6←t1`(434B)、`t9←t8`(606B)；旧误诊文案 0 次）。`verdict_all_pass=False`。
+
+**H3 成因（post-hoc）**：`llm_call_empty_body` 行 `retry_skipped=True` 逐行成立、`empty_cause='tool_call'` 与上游 `finish_reason='tool_calls'` 4/4 对齐 ⇒ 修复**在位**；但空正文基数 **15（R477）→4（R482）** ⇒ 可省调用被上游漂移抽空。**结论收窄**：只证机制在位，不证调用数收益。
+
+**诚实边界**：−32.21% 中 R 臂 `t2–t5` 答复为**同一条 21B 模板**（Arole 同轮 4 条各不相同）⇒ 实质答复轮 **R 6 < A 12**（`checks_posthoc.quality_verdict_H6c_strict_variant`），即降幅一部分来自**模板兜底**而非「本地 r1 生成替代远端」⇒ **R483 第一顺位**；单夹具单次无置信区间；上游可漂移（本轮实测）；本轮无 C# 改动 ⇒ 不重发布 AOT、不冒充新 AOT 证据；未 push（`PUSH_PAUSED`）。
+
+**起手闸归因修正**：R 臂首跑 `MemAvailable=2590 < 2650` 被闸（同 R477 的 llama-server 未释放）；加沉降等待仍红且 `pgrep llama-server=0` ⇒ 真因 = 本方 `dotnet test` 遗留 `VBCSCompiler`（RSS 206MB）；`$HOME/.dotnet/dotnet build-server shutdown` ⇒ `2730MB` 通过、R 臂 EXIT=0。**占用源不止 llama-server，含本方编译服务器**。
+
+**器具**：`eval/rover/r482/{prereg_r482.json,run_both_r482.sh,run_arm_R_only_r482.sh,check_r482.py,verdict-r482.json}`（判据器常量全源码派生、取不到抛 MISS）；本轮 3 条实现偏离/归因修正已留痕 `verdict-r482.json.drift_notes`。登记行刷新（registry +`r482.*` 行）**未做**，列下轮候选。
