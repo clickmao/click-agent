@@ -924,3 +924,4 @@ python3 eval/run_round.py <新轮号> "revert-verify <原commit>" --quick   # �
 - **门禁**: `VerificationFormTests` **14/14** (Failed 0) / `bind_evidence --check` **VIOLATION 0 · R2E_R2F_EXIT=0** / `decl_sweep` **drifted=0**。
 - **诚实边界**: 候选③ **未测到** (内存闸 + 对侧在飞, 非 0.0 读数); 候选①② 为**对侧 R505 占用** (不采信其自报、本轮未复核); ⑤ 排除项; 等价性口径 = 「除墙钟行外逐字节」+ 两处输出替身 (`--report` 转 scratch 防覆盖冻结归档 / `--no-ledger` 防污染在账台账); 本轮**未新增主线真机读数**, 按证据阶梯如实定级 **L2** (不冒充 L3/L4)。
 - **下轮候选 (R507)**: ① (主线) 质量面 n≥3 同窗对照 ② 判据② 调用数 17→≤14 ③ 本地 3B 长原文退化率 (先起 server + 起手闸 2 PASS) ④ **全表 `evidence_cmd` 可重放性普查** (现守卫只覆盖 r433 一行, 其余 217 行未知 ⇒ 先落分布再谈扩面) ⑤ MCP 链级 E2E (排除项)。
+- **并发事件 (本轮取证, 非碰撞)**: 兄弟会话 R505 于本侧两次提交**之间**入库 (`ce4e86f`, 252 文件, 全部在 `eval/rover/r505/**`) ⇒ 共享登记表**无冲突** (registry 提交序列 R503 → R504 → **R506 ×2**); 对侧 R505 **未** 触及登记表/improvements/master-plan/轮志。本侧**不采信**其读数 (未复核), 归属记 `foreign`。
