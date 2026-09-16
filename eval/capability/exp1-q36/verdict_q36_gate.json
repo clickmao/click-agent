@@ -1,0 +1,134 @@
+{
+  "schema": "exp1-gate-verdict/1",
+  "round": "EXP1-Q36",
+  "owner_round": "EXP1-Q36",
+  "scope": "60m 能力自检作业 (不占主线轮号); 承接 EXP1-Q35 附录 AJ.4 的六项下轮候选, 全部并入本轮",
+  "candidates": [
+    {
+      "id": "AJ.4-1",
+      "item": "投影规则新模式 (drop: 整子树含基数剔除) + 成员级 id 选择性遮蔽 (自指成员), 两侧 (Python/C#) + 向量同步",
+      "status": "done",
+      "evidence": [
+        "eval/capability/projection_rules.json (16 -> 23 条; modes = scalar/array_count/drop/drop_by_id)",
+        "eval/capability/face_record_canon.py (--selftest 28/28; 新增 drop/drop_by_id 两侧样例 + 形态拒载三例)",
+        "src/agent.tests/VerificationFormTests.cs (ProjDigest 同口径实现; RuleShape/RuleBase; 真表行 pin 双向钉住)",
+        "eval/capability/exp1-q36/extend_rules_q36.py, extend_rules_q36b.py (逐字节复现闸 ROUNDTRIP_IDENTICAL=True)"
+      ]
+    },
+    {
+      "id": "AJ.4-2",
+      "item": "面记录纪律化: 同名重跑 + 窗口零仓内写入 (日志/归档落仓外); foreign_writes != [] => pin 需重取 入口径声明",
+      "status": "done",
+      "evidence": [
+        "eval/capability/exp1-q31/instruments/README.md (器具纪律)",
+        "eval/capability/projection_rules.json :: clean_window_condition",
+        "eval/capability/exp1-q36/run_face_q36.sh (输出与日志全落 /tmp)"
+      ]
+    },
+    {
+      "id": "AJ.4-3",
+      "item": "exp1q31.only-equivalence 反证去饱和 (scratch 注入待派生行)",
+      "status": "done",
+      "evidence": [
+        "eval/capability/exp1-q31/instruments/only_equivalence_guard.py :: pick_second_anchor/break_pin",
+        "真机读数: P6_反证_去作用域不同字节 OK, verdict=PASS (8/8); 面项 exp1q31.only-equivalence T8 pass=True rc=0"
+      ]
+    },
+    {
+      "id": "AJ.4-4",
+      "item": "face_cap_headroom.py --append 轮号参数化 (原硬编码 EXP1-Q31)",
+      "status": "done",
+      "evidence": [
+        "eval/capability/exp1-q31/instruments/face_cap_headroom.py (--round; --append 缺轮号 => rc=3 fail-closed; 幂等键含轮号)",
+        "eval/capability/face-scale-ledger.jsonl 尾行 round=EXP1-Q36 (读回校验 OK)",
+        "器具 content-sha 同步: dac3f65fd6b8 -> a04b3a56676e (eval/capability/instruments.json, readback=OK)"
+      ]
+    },
+    {
+      "id": "AJ.4-5",
+      "item": "depth-3 结点 (177) 分类裁定 + 归档自足闭包判定",
+      "status": "done (基于 Q35 归档的再分类, L2/L3)",
+      "evidence": [
+        "depth3_recursion_q35.json: 177 唯一结点; 155 扫 (archive 90 / live 兜底 65); 21 弃权 (gone_at_audit_time 10 / unreadable_at_audit_time 11); 边 445",
+        "裁定: 归档**不自足** (归档可解析 90/177 = 50.8%); 按预注册判据「闭包成立 <=> 无 live 兜底 ∧ 无弃权」=> 不成立"
+      ]
+    },
+    {
+      "id": "AJ.4-6",
+      "item": "/tmp 遗留进程清理与 external_asset 稳定化 (bytes 漂移根因)",
+      "status": "done",
+      "evidence": [
+        "PID 945082 (bash) / 945094 (stub.py 48510) / 945253 (stub2.py 48522) 自 2026-09-15 存活, 按 pid TERM 终止; pgrep 复核零残留",
+        "eval/capability/exp1-q36/verdict_q36_gate.json :: external_asset_stability"
+      ]
+    }
+  ],
+  "readings": {
+    "face_t8": {
+      "tree": "7e20495",
+      "window": "clean (无仓内写入; 日志/记录落 /tmp)",
+      "passed": 25,
+      "total": 27,
+      "wall_s": 202.14,
+      "reds": [
+        "bind_evidence.committed-state (rc=2, 自指成员, 提交前恒红)"
+      ],
+      "dirty_penalty": "side_effect_attribution.red=true (面自身脏项, 1 项罚分)",
+      "prior_round": "EXP1-Q35 = 23/27"
+    },
+    "face_t9": {
+      "tree": "7e20495",
+      "passed": 24,
+      "total": 27,
+      "wall_s": 273.88,
+      "delta_vs_t8": [
+        "results/16 l2.instruments-check rc 0->1 (行为面, 待分诊)",
+        "4 条窗口计数 (兄弟写者 R494 在场)"
+      ]
+    },
+    "fixed_point": {
+      "replay_same_tree_clean_window": [
+        "T1/T2/T3 (Q35, 同树态): 投影后差异叶 0, 摘要 da93a845cde0 全同",
+        "T5 vs T7 (Q35, 同树态 + 干净窗口): 摘要 ac43d4336758 逐位相同"
+      ],
+      "new_pair": "T8 vs T9: 差异 = 4 条声明条件计数 + 1 条行为面翻转 (非遮蔽面)",
+      "condition": "同一树态 ∧ 窗口零外来写入 ∧ 本机无 cwd=仓内外来进程"
+    },
+    "instruments": {
+      "face_record_canon_selftest": "28/28",
+      "only_equivalence_guard": "8/8 (PASS)",
+      "face_cap_headroom_selftest": "4/4",
+      "rules_n": 23,
+      "cross_language_vector_sha12": "07ffb38d2500 (Q35 = b989a219bcf4)"
+    },
+    "pin": {
+      "row": "r444.instrument-acceptance",
+      "pin_kind": "semantic-projection",
+      "before": "2c324c3f4c83",
+      "repin_cmd": "python3 eval/capability/bind_evidence.py --apply --only r444.instrument-acceptance --round EXP1-Q36",
+      "result": "TOUCHED=1, R2E_R2F_EXIT=0"
+    },
+    "external_asset_stability": {
+      "kill": "PID 945082/945094/945253 TERM; pgrep 零残留",
+      "samples": [
+        "sample_a: files=69 bytes=346161 content_sha12=df78ce8b46ae",
+        "sample_b (t+20s): files=69 bytes=346161 content_sha12=df78ce8b46ae",
+        "STABLE=True (逐位相同 ⇒ 漂移根因消除)",
+        "残留进程复核: ps -e | grep stub.py|stub2.py => 零匹配 (pgrep 自身 shell 会假命中, 已排除)"
+      ]
+    }
+  },
+  "honest_boundaries": [
+    "不动点带条件: 兄弟写者 (前端 R494 会话) 在飞时计数族非零 => pin 需重取 (口径声明已写)。",
+    "T9 的 l2.instruments-check rc=1 未分诊 (同机并发负荷下 273.88s vs 202.14s); 不宣称回归, 下轮隔离复跑。",
+    "drop_by_id 的例外是写死的两个自指成员身份枚举, 不是模式匹配; 其裁决不再入 pin, 由提交态核验器独立判。",
+    "depth-3 闭包裁定是对 Q35 归档的再分类, 依赖其 scan_source 自报口径, 未做新测量。",
+    "遮蔽族 16->23 ⇒ 与 EXP1-Q35 及以前的投影 pin 不可比。"
+  ],
+  "next": [
+    "面 l2.instruments-check 偶发 rc=1 隔离复跑分诊 + 面跑前占用核验闸 (兄弟写者在飞 => 有界等待/暂存不提交)",
+    "depth-3 归档自足补法: 65 live 兜底结点归档化或登记不可归档理由",
+    "自指成员真值改由独立轮核验并在面里降级为信息项",
+    "遮蔽族扩容后的 pin 历史值不可比标注进报告面"
+  ]
+}
