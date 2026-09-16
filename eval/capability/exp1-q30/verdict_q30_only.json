@@ -1,0 +1,98 @@
+{
+ "round": "EXP1-Q30",
+ "readings": {
+  "fixture_sha12": "6bc648198998",
+  "derived_field": {
+   "evidence_kind": "artifact",
+   "pin_status": "frozen",
+   "pin_reason": "archived-per-round",
+   "artifact_sha12": "3bf281ff7d7b",
+   "instrument": "eval/rover/r479/check_r479.py",
+   "instrument_sha12": "8ed3b5efce11",
+   "binding": "audit-pin",
+   "audited_by_round": "EXP1-Q30"
+  },
+  "declared_before_fixture": {
+   "evidence_kind": "artifact",
+   "pin_status": "frozen",
+   "pin_reason": "archived-per-round",
+   "artifact_sha12": "deadbeef0001",
+   "instrument": "eval/rover/r479/check_r479.py",
+   "instrument_sha12": "8ed3b5efce11",
+   "binding": "audit-pin",
+   "audited_by_round": "R481"
+  },
+  "A_stdout_head": [
+   "AUDITED_BY_ROUND=EXP1-Q30",
+   "ONLY_SCOPE=n=1 r479.responses-io-wire",
+   "SER_ASSERT=OK (indent=1, ensure_ascii=False, tail=LF)",
+   "WRITE_READBACK=OK",
+   "SCOPE=only(n=1)",
+   "COVERED 1 -> 1 (scope); 全表 COVERED=110"
+  ],
+  "block_changed_keys": [
+   "artifact_sha12",
+   "audited_by_round"
+  ],
+  "A_sha12": "e4187bfc39c5",
+  "B_sha12": "e4187bfc39c5",
+  "changed_rows": [
+   "r479.responses-io-wire"
+  ],
+  "A2_idempotent_line": [
+   "IDEMPOTENT=OK (字节不变, 无需写盘)"
+  ],
+  "P4_line": [
+   "AUDITED_BY_ROUND=EXP1-Q30",
+   "ONLY_SCOPE=UNKNOWN_IDS ['bogus.id.does-not-exist'] (fail-closed, 零字节写入)"
+  ],
+  "P5_line": [
+   "AUDITED_BY_ROUND=R473",
+   "ONLY_SCOPE=REQUIRES_EXPLICIT_ROUND (定向重审缺显式 --round ⇒ rc=3, 零字节写入)"
+  ],
+  "C_stdout_touched": [
+   "UNCHANGED=0 / TOUCHED=110"
+  ],
+  "reg_real_sha12": "92f40d92af6a",
+  "check_exit": {
+   "new": 2,
+   "old": 2
+  },
+  "check_tail": [
+   "VIOLATION r476.evidence-binding-round-param: 器具绑定与现盘不符 (声明 5127b5c0592b / 实际 8613fc2468c6) (R2e —— 器具已改, 引用它的证据须重审)",
+   "R2E_R2F_EXIT=2"
+  ],
+  "zeroregress_apply": {
+   "old_rc": 0,
+   "new_rc": 0,
+   "old_sha12": "3b8fcc070947",
+   "new_sha12": "3b8fcc070947",
+   "old_touched": [
+    "UNCHANGED=0 / TOUCHED=110"
+   ],
+   "new_touched": [
+    "UNCHANGED=0 / TOUCHED=110 (scope)"
+   ]
+  },
+  "stale_worktree_only_ids": []
+ },
+ "checks": {
+  "A_rc": true,
+  "P1_逐字节等价": true,
+  "P1b_非空转": true,
+  "N3_夹具有效": true,
+  "P2_作用域": true,
+  "P3_幂等": true,
+  "P4_未知id": true,
+  "P5_缺轮号": true,
+  "N1_零写入": true,
+  "P6_负控_去作用域": true,
+  "P7_真登记表零副作用": true,
+  "P8_无参零回归_check": true,
+  "P8b_无参零回归_apply": true,
+  "P9_候选②前提为假(已闭合)": true
+ },
+ "verdict": "PASS",
+ "failed": [],
+ "n_checks": "14/14"
+}

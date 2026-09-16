@@ -1,0 +1,84 @@
+{
+ "round": "EXP1-Q30",
+ "face_partition": {
+  "full_face_sha12_before_nc": "f956daa6eda1",
+  "nc_old_instrument_clobber": {
+   "rc": 0,
+   "total_after": 1,
+   "face_field": null,
+   "sha12_after": "fc8e2c81a010"
+  },
+  "scoped_face": {
+   "rc": 3,
+   "face": "scoped",
+   "only": [
+    "bind_evidence.check",
+    "bind_evidence.committed-state",
+    "exp1q28.whitelist-coverage"
+   ],
+   "passed": 2,
+   "total": 3,
+   "manifest_sha12": "7d5784551aef",
+   "instrument_sha12": "13f8872cb070",
+   "schema": "instruments-check/5",
+   "out": "eval/capability/instruments-check-scoped.json"
+  }
+ },
+ "committed_state_check": {
+  "probe": "COMMITTED_STATE_CHECK=OK (rows=157 claims=189 blobs=163)",
+  "nc_inject_unpinned_drift": "NC_DETECTED"
+ },
+ "repin_readings": {
+  "r444.instrument-acceptance": {
+   "artifact_sha12": [
+    "f956daa6eda1",
+    "099682f1c227"
+   ],
+   "instrument_sha12": [
+    "0370be98b442",
+    "13f8872cb070"
+   ],
+   "audited_by_round": [
+    "R478",
+    "EXP1-Q30"
+   ]
+  },
+  "r476.evidence-binding-round-param": {
+   "artifact_sha12": [
+    "5127b5c0592b",
+    "8613fc2468c6"
+   ],
+   "instrument_sha12": [
+    "5127b5c0592b",
+    "8613fc2468c6"
+   ],
+   "audited_by_round": [
+    "EXP1-Q29",
+    "EXP1-Q30"
+   ]
+  },
+  "basis": "PIN_BASIS=file-bytes (未提交态; 提交后该字节即冻结态) —— 块级写路径; --only 的 derive 读 git 状态 ⇒ 未提交文件结构性只能派生成 live/worktree-only"
+ },
+ "stage_guard": {
+  "selftest_rc": 0,
+  "selftest_tail": [
+   "same_count_wrong_content   expect_ok=False got=False extra=['sibling/x.py'] missing=['a/b.py']  OK",
+   "NC_len_only_comparison_would_miss=True (期望 True: 条数相同、内容不同 ⇒ 条数口径漏检)",
+   "SELFTEST PASS (7/7)"
+  ]
+ },
+ "formal_gate": {
+  "exit_line": [
+   "GATE_EXIT=0"
+  ],
+  "summary_lines": [
+   "Passed!  - Failed:     0, Passed:    14, Skipped:     0, Total:    14, Duration: 615 ms - agentframework.tests.dll (net10.0)"
+  ]
+ },
+ "evidence_degradation_repaired": {
+  "path": "eval/capability/exp1-q28/whitelist_coverage_q28.json",
+  "cause": "新增器具 exp1q28.whitelist-coverage 的默认 --out 指向冻结的 Q28 证据 ⇒ 全量面跑一次就改写它 (与 Q17 同族: 「器具默认 --out 指向轮次证据」)",
+  "observed_diff": "stdout_bytes 7395→7390, clock_tokens (instant) 47→46 (该器具输出本身非逐字节确定)",
+  "fix": "器具行显式 --out 到 scratch 面; 被改写文件已按 HEAD blob 还原 (sha e1e51aa9f07f 复原)"
+ }
+}

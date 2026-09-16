@@ -1635,11 +1635,11 @@
     "evidence_kind": "artifact",
     "pin_status": "frozen",
     "pin_reason": "archived-per-round",
-    "artifact_sha12": "f956daa6eda1",
+    "artifact_sha12": "099682f1c227",
     "instrument": "eval/capability/instruments_check.py",
-    "instrument_sha12": "0370be98b442",
+    "instrument_sha12": "13f8872cb070",
     "binding": "audit-pin",
-    "audited_by_round": "R478"
+    "audited_by_round": "EXP1-Q30"
    },
    "negative_control": "每条器具必带 nc_cmd 且必须非零; 缺负控的器具不许进面",
    "covers": [
@@ -1735,7 +1735,7 @@
    "capability": "上一轮来源面的指示性上界(不作判据)",
    "level": "L1",
    "owner_round": "R445",
-   "evidence_cmd": "python3 -c \"import json;print(json.load(open('eval/rover/r445/precheck-judge-prefilter.json'))['posthoc'])\"",
+   "evidence_cmd": "python3 eval/rover/r445/judge_prefilter_precheck.py --out eval/rover/r445/precheck-judge-prefilter.json",
    "evidence_path": "eval/rover/r445/precheck-judge-prefilter.json",
    "evidence_generated_with": {
     "evidence_kind": "artifact",
@@ -1745,7 +1745,7 @@
     "instrument": null,
     "instrument_sha12": null,
     "binding": "audit-pin",
-    "audited_by_round": "R478"
+    "audited_by_round": "EXP1-Q30"
    },
    "negative_control": "EMPTY 类 9 行裁决非 Neutral ⇒ 证伪『按相邻轮 reply 重建上一轮回答』与产品 _lastReplyBySession 等价, 故本行只作指示不作判据",
    "covers": [
@@ -2284,17 +2284,17 @@
    "id": "r462.recall-reality-gate",
    "level": "L2",
    "capability": "召回-现实一致性闸 (机制, 非提示词补丁): 召回块/记忆块/工具回灌面里引用的**路径样事实**由当前工作区文件系统裁决, 不一致即显式标 [核验✗ …] (一致时才标 [核验✓ 现存 N B]; 召回片段走 failOnly ⇒ 一致时零字节注入, 守住 token 预算)。同夹具/同 7 轮/同适配器 E2E, 唯一差异=二进制: P1 11 个实发消息带 ✗ (recall_stale_refs 含 report.md) / P2 [工作区文件 logic.unit] 进面 · [工作区文件 blob.bin] 不进面 / P3 召回片段 0 处 ✓ / P4 7 轮 ok + 四产物正确 + 回复面 0 处契约声明 ⇒ 4/4 PASS",
-   "evidence_cmd": "bash /tmp/r462_e2e.sh",
+   "evidence_cmd": "python3 eval/rover/r462/judge_r462.py   # verdict-r462.json 写入者 (R462_OUT 或默认 eval/rover/r462/); 编排器 = eval/rover/r462/r462_run.sh (原声明 bash /tmp/r462_e2e.sh 已不存在)",
    "evidence_path": "eval/rover/r462/verdict-r462.json",
    "evidence_generated_with": {
     "evidence_kind": "artifact",
     "pin_status": "frozen",
     "pin_reason": "archived-per-round",
     "artifact_sha12": "7d21f45595fd",
-    "instrument": null,
-    "instrument_sha12": null,
+    "instrument": "eval/rover/r462/judge_r462.py",
+    "instrument_sha12": "7df046e7eb9e",
     "binding": "audit-pin",
-    "audited_by_round": "R478"
+    "audited_by_round": "EXP1-Q30"
    },
    "negative_control": "NC1 (判别力): 同判据跑 R461 实发面 ⇒ P1/P2 = false (旧二进制无闸 + 后缀白名单), 见 /tmp/r462_negctl.json; NC2 越界: ../etc/hosts 一律判 ✗ 且不探测 (Verify_TraversalToken_RejectedWithoutProbe) + Probe 层 StartsWith(root) 二次校验; NC3 fail-safe: 无 root/不存在/异常 ⇒ 原样返回, 不丢事实不造事实 (Verify_NoRoot_FailSafe_ReturnsOriginal); NC4 幂等: 已带标签的块二次通过不重复追加 (Verify_Idempotent_NoDoubleTagging); NC5 只打假: 一致的召回片段必须逐字节不变 (Verify_FailOnly_ConsistentClaim_ZeroByteInjection) + 回灌面零字节 (Loop_ToolResult_ConsistentPath_ZeroByteInjection); NC6 结构判定负控: 1.5 / 提升3.2倍 / .. / 空 串不得判为路径 (IsPathLike_Structural_NoSuffixWhitelist)",
    "covers": [
@@ -2465,17 +2465,17 @@
    "id": "r464.settle-sentinel-and-cross-round-determinism",
    "level": "L1",
    "capability": "结算器具修正 + 跨版本确定性等式: ① 非本地调用哨兵 '-1' 不再当读数求和（旧版把 12 条哨兵累成 -8/-12 假读数）; ② 预注册 C6 口径写错 ⇒ 保留 FAIL 不改写, 正确形态单列 checks_posthoc; ③ 跨版本等式 R463≡R464 作为「改造零回归」的物理证据（B3B 8/20,487; BP2 21/33,311 逐位相同）",
-   "evidence_cmd": "python3 -c \"import json,io;print(json.load(io.open('eval/rover/r464/verdict-r464.json'))['checks_posthoc'])\"; python3 -c \"import json,io;print(json.load(io.open('eval/rover/r464/verdict-r464.json'))['B3B']['gate_bases_full'])\"",
+   "evidence_cmd": "python3 eval/rover/r464/settle_r464.py <run_root> <arm>   # verdict-r464.json 写入者 (逐臂累加)",
    "evidence_path": "eval/rover/r464/verdict-r464.json",
    "evidence_generated_with": {
     "evidence_kind": "artifact",
     "pin_status": "frozen",
     "pin_reason": "archived-per-round",
     "artifact_sha12": "d75fc5542b8f",
-    "instrument": null,
-    "instrument_sha12": null,
+    "instrument": "eval/rover/r464/settle_r464.py",
+    "instrument_sha12": "aaf3771999ba",
     "binding": "audit-pin",
-    "audited_by_round": "R478"
+    "audited_by_round": "EXP1-Q30"
    },
    "negative_control": "反例: 若 fail-closed 改造误伤降级路径, C8 等式(21/33,311)必破裂; 若门开臂被改动, C8b(8/20,487)必破裂; 若 Skip 轮是「空跳过」而无本地算力, C9 的 eval=1,370/gen=8 必为 0",
    "covers": [
@@ -2700,17 +2700,17 @@
    "id": "r468.gate-rules-port-diff",
    "level": "L2",
    "capability": "门判规则 Python 端口与产品判据的差分一致性: 端口从 src/agent.modelqueue/LocalGenerationPort.cs 正则派生(7 组规则: AckFamilyChars:304 / RepeatFamilyChars:356 / RepeatMarkers:359 / SubstantiveLengthThreshold:458 / 三信号表:461,469,477 + 源 sha256), 期望值取产品自身测试 InlineData(认可族 13 例 / 纯复述族 15 例); 423 行语料(真实轮+网格 p12+InlineData)逐条标签 ≡ 产品 MechanicalPass|IsPureRepeat|MechanicalAck 组合, 不一致 0; 规则改动即把该测试判红 ⇒ 强制重生语料(证据↔器具版本绑定)",
-   "evidence_cmd": "$HOME/.dotnet/dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~GateRulesPortDiffTests",
+   "evidence_cmd": "python3 eval/rover/r468/settle_r468.py   # difftest_r468.log 写入者 (日志由本脚本第 58 行落盘)",
    "evidence_path": "eval/rover/r468/difftest_r468.log",
    "evidence_generated_with": {
     "evidence_kind": "artifact",
     "pin_status": "live",
     "pin_reason": "worktree-only",
     "artifact_sha12": null,
-    "instrument": null,
-    "instrument_sha12": null,
+    "instrument": "eval/rover/r468/settle_r468.py",
+    "instrument_sha12": "fbab609f5ba5",
     "binding": "audit-pin",
-    "audited_by_round": "R478"
+    "audited_by_round": "EXP1-Q30"
    },
    "negative_control": "① 端口禁手抄: gate_rules.py --selftest 的期望值取自产品 InlineData(28 例), rc!=0 即失败; ② 语料四族覆盖断言 Corpus_Covers_Archive_And_Repeat_And_Pass_Families(防单族恒真); ③ 差分测试三例均为等值断言, 非同义恒真式",
    "covers": [
@@ -3136,11 +3136,11 @@
     "evidence_kind": "artifact",
     "pin_status": "frozen",
     "pin_reason": "archived-per-round",
-    "artifact_sha12": "5127b5c0592b",
+    "artifact_sha12": "8613fc2468c6",
     "instrument": "eval/capability/bind_evidence.py",
-    "instrument_sha12": "5127b5c0592b",
+    "instrument_sha12": "8613fc2468c6",
     "binding": "audit-pin",
-    "audited_by_round": "EXP1-Q29"
+    "audited_by_round": "EXP1-Q30"
    },
    "negative_control": "C8 四检: --help 必须列出 --round ∧ default=AUDITED_BY_ROUND 逐字保留 ∧ main 内 global 声明必须在首次使用之前(本轮曾因此报 SyntaxError ⇒ --help 非 0 ⇒ 判红被抓)",
    "covers": [

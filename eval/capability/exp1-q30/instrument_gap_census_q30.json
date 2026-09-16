@@ -1,0 +1,49 @@
+{
+ "round": "EXP1-Q30",
+ "rows_covered": 110,
+ "derived_instrument": 105,
+ "no_instrument": 5,
+ "by_reason_class": {
+  "doc_evidence": 2,
+  "directory_evidence": 1,
+  "tmp_instrument": 1,
+  "manual_read": 1
+ },
+ "gaps": [
+  {
+   "id": "engine.retired.no_local_gguf",
+   "reason_class": "doc_evidence",
+   "evidence_path": "eval/rover/r408/r408-evidence.md",
+   "level": "L1",
+   "cmd_head": "test ! -d src/agent.embedcpu && test ! -d src/agent.rover/gguf && test ! -d src/agent.rover/infer && test ! -f"
+  },
+  {
+   "id": "llamacpp.prompt.template_gate",
+   "reason_class": "directory_evidence",
+   "evidence_path": "eval/rover/r409/",
+   "level": "L4",
+   "cmd_head": "dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~LlamaCppPromptG"
+  },
+  {
+   "id": "r420.recall-command-wiring",
+   "reason_class": "doc_evidence",
+   "evidence_path": "eval/capability/r420/README-evidence.md",
+   "level": "L4",
+   "cmd_head": "cd /home/agentuser/AgentFramework && env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR dotnet tes"
+  },
+  {
+   "id": "r462.weight-probe",
+   "reason_class": "tmp_instrument",
+   "evidence_path": "eval/rover/r462/verdict-r462-w.json",
+   "level": "L2",
+   "cmd_head": "python3 /tmp/r462_w_bench.py --corpus /tmp/r462_corpus.json --model <gguf> --port <p> --ctx 1024 --out /tmp/r4"
+  },
+  {
+   "id": "r463.model-cleanup",
+   "reason_class": "manual_read",
+   "evidence_path": "eval/rover/r463/deletion-ledger.json",
+   "level": "L1",
+   "cmd_head": "python3 -c \"import json,io;print(json.load(io.open('eval/rover/r463/deletion-ledger.json')))\"; ls -l ~/.agentf"
+  }
+ ]
+}

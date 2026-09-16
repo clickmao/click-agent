@@ -628,9 +628,9 @@
    "expect_substr": "L2 器具验收面",
    "nc_cmd": "python3 eval/capability/instruments_check.py --only exp1q17.archive-field-provenance --fingerprint-drift-inject",
    "nc_expect": "nonzero",
-   "version": "content-sha12:0370be98b442",
+   "version": "content-sha12:13f8872cb070",
    "version_source": "content-sha12",
-   "instrument_sha12": "0370be98b442",
+   "instrument_sha12": "13f8872cb070",
    "input_fingerprint": [
     {
      "path": "eval/capability/exp1-q10/attribution_q10.json",
@@ -711,6 +711,81 @@
      "sha12": "7c8edae571d5"
     }
    ]
+  },
+  {
+   "id": "bind_evidence.check",
+   "kind": "registry-checker",
+   "cmd": "python3 eval/capability/bind_evidence.py --check",
+   "expect_rc": 0,
+   "expect_substr": "R2E_R2F_EXIT=0",
+   "nc_cmd": "bash eval/capability/exp1-q30/_nc_bind_evidence_pin.sh",
+   "nc_expect": "detect:NC_DETECTED",
+   "version": "content-sha12:8613fc2468c6",
+   "version_source": "content-sha12",
+   "instrument_sha12": "8613fc2468c6",
+   "input_fingerprint": [],
+   "kpi_quad": {
+    "单位": "登记行",
+    "分母": "产品面证据行 (level∈L1..L4 ∧ evidence_path∈eval/|docs/reports/)",
+    "真值源": "磁盘文件重算 sha256[:12] + 工作区 git 状态",
+    "口径档": "现盘档 (声明 pin vs 工作区字节)"
+   },
+   "owner_round": "EXP1-Q30",
+   "evidence_path": "eval/capability/bind_evidence.py",
+   "input_surface": "dynamic_corpus",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "登记表为追加式动态语料 (行数随轮增长, 其 pin 目标也在轮内变化) ⇒ 不做字节指纹, 记行数",
+   "corpus_dynamic_count": 157
+  },
+  {
+   "id": "bind_evidence.committed-state",
+   "kind": "registry-checker",
+   "cmd": "python3 eval/capability/exp1-q30/check_committed_state_q30.py",
+   "expect_rc": 0,
+   "expect_substr": "COMMITTED_STATE_CHECK=OK",
+   "nc_cmd": "python3 eval/capability/exp1-q30/check_committed_state_q30.py --inject-defect unpinned-drift",
+   "nc_expect": "detect:NC_DETECTED",
+   "version": "content-sha12:695273f48a39",
+   "version_source": "content-sha12",
+   "instrument_sha12": "695273f48a39",
+   "input_fingerprint": [],
+   "kpi_quad": {
+    "单位": "主张(frozen×artifact)",
+    "分母": "HEAD 登记表 frozen/artifact 主张数",
+    "真值源": "git cat-file --batch 取 HEAD blob 字节重算 sha256[:12]",
+    "口径档": "冻结/提交档 (HEAD 内部自洽)"
+   },
+   "owner_round": "EXP1-Q30",
+   "evidence_path": "eval/capability/exp1-q30/check_committed_state_q30.py",
+   "input_surface": "dynamic_corpus",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "核验对象 = HEAD 版登记表 (随轮增长); 主张集由 HEAD 内容派生 ⇒ 不做字节指纹",
+   "corpus_dynamic_count": 157
+  },
+  {
+   "id": "exp1q28.whitelist-coverage",
+   "kind": "analyzer",
+   "cmd": "python3 eval/capability/exp1-q28/verify_whitelist_q28.py --out eval/capability/exp1-q30/scratch/whitelist_coverage_face.json",
+   "expect_rc": 0,
+   "expect_substr": "\"ok\": true",
+   "nc_cmd": "python3 eval/capability/exp1-q30/_nc_wl_identity_q30.py",
+   "nc_expect": "detect:NC_DETECTED",
+   "version": "content-sha12:65169b135d44",
+   "version_source": "content-sha12",
+   "instrument_sha12": "65169b135d44",
+   "input_fingerprint": [],
+   "kpi_quad": {
+    "单位": "归一后残留处数",
+    "分母": "三阶段原始 stdout 全文",
+    "真值源": "真实原始文本 (非已归一文本) 重算",
+    "口径档": "白名单覆盖面 + 恒等归一反空心对照"
+   },
+   "owner_round": "EXP1-Q30",
+   "evidence_path": "eval/capability/exp1-q28/verify_whitelist_q28.py",
+   "input_surface": "dynamic_corpus",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "输入 = 三阶段命令的实时 stdout (每次运行重放, 非仓库内固定语料)",
+   "corpus_dynamic_count": 3
   }
  ]
 }

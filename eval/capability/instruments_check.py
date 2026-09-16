@@ -25,7 +25,10 @@ EXP1-Q22 扩展 (归因式副作用闸; schema instruments-check/3 → /4):
     `side_effects` 语义收窄为「本面命令自己写的路径」(旧值是集合差, 两者不可比)。
   * 跟踪通道不可用 / 被物理上限截断 / 存在不可解析相对名 ⇒ **rc=3 (弃权)**: 既不判绿也不判红。
 
-用法: python3 eval/capability/instruments_check.py [--only id1,id2] [--fingerprint-drift-inject]
+用法: python3 eval/capability/instruments_check.py [--only id1,id2] [--out <path>] [--fingerprint-drift-inject]
+
+面别分区 (EXP1-Q30): face=full ⇒ instruments-check.json; face=scoped (给了 --only) ⇒
+instruments-check-scoped.json; face=negative-control (注入模式) 各自命名空间; `--out` 显式覆盖。
 """
 import hashlib
 import json
@@ -44,6 +47,10 @@ OUT_DRIFT = ROOT / 'eval/capability/instruments-check-drift.json'   # 负控模�
 OUT_SURF_CLAIM = ROOT / 'eval/capability/instruments-check-surface-claim.json'
 OUT_SURF_UNKNOWN = ROOT / 'eval/capability/instruments-check-surface-unknown.json'
 OUT_NC_NOTAPPLIED = ROOT / 'eval/capability/instruments-check-nc-notapplied.json'
+# EXP1-Q30 (候选⑤) 面别分区 —— `--only` 定向运行**不得**覆盖全量面记录
+#   (Q25 实测: 一次定向跑把 18 行全量面记录改写成 1 行, 历史读数被静默降级)。
+#   三面各自固定落盘名: full / scoped / negative-control; `--out` 可显式覆盖。
+OUT_SCOPED = ROOT / 'eval/capability/instruments-check-scoped.json'
 L2_QUAD_KEYS = ('单位', '分母', '真值源', '口径档')
 # EXP1-Q21: 输入面语义 (契约 §L2 扩展) —— 空指纹不再默认放行。
 SURFACES = ('external_files', 'self_contained', 'dynamic_corpus', 'env_only')
@@ -69,7 +76,8 @@ def run(cmd):
 
 # 器具自身合法写点 (白名单): 全量面**不得**弄脏既有轮次产物 —— 实测事故: q17 的 `--selftest`
 # 默认 `--out` 指向轮次证据 `verdict_q17.json`, 跑一次就把 C12 确定性块抹掉 (证据降级)。
-FACE_OUTPUTS = {'eval/capability/instruments-check.json', 'eval/capability/instruments-check-drift.json',
+FACE_OUTPUTS = {'eval/capability/instruments-check.json', 'eval/capability/instruments-check-scoped.json',
+                'eval/capability/instruments-check-drift.json',
                 'eval/capability/instruments-check-surface-claim.json',
                 'eval/capability/instruments-check-surface-unknown.json',
                 'eval/capability/instruments-check-nc-notapplied.json'}
@@ -80,7 +88,9 @@ FACE_OUTPUTS = {'eval/capability/instruments-check.json', 'eval/capability/instr
 FACE_OUTPUTS |= {'eval/rover/r444/precheck-prefilter.json',
                  'eval/rover/r444/runs/precheck-prefilter.neg.json'}
 SCRATCH_PREFIXES = ('eval/capability/exp1-q19/l2runs/', 'eval/capability/exp1-q20/l2runs/',
-                    'eval/capability/exp1-q21/', 'eval/capability/exp1-q21-selfcheck/')
+                    'eval/capability/exp1-q21/', 'eval/capability/exp1-q21-selfcheck/',
+                    # EXP1-Q30: 新增器具 (bind_evidence 负控 / 提交态核验 / 白名单覆盖面) 的 scratch 面
+                    'eval/capability/exp1-q30/scratch/')
 
 # EXP1-Q22: 全量面窗口的归因式副作用闸 (None = 未启用, 兼容库调用面)。
 GATE = None
@@ -214,6 +224,14 @@ def main():
     for flag, (mode, path) in INJECTS.items():
         if flag in sys.argv:
             inj_mode, target = mode, path
+    # EXP1-Q30: 面别解析 —— 注入模式自带命名空间; 定向模式落 scoped 面; 只有全量面写 OUT。
+    face = 'negative-control' if inj_mode else ('scoped' if only else 'full')
+    if inj_mode is None:
+        target = OUT_SCOPED if only else OUT
+    if '--out' in sys.argv:
+        target = pathlib.Path(sys.argv[sys.argv.index('--out') + 1])
+        if not target.is_absolute():
+            target = ROOT / target
     drift_inject = inj_mode is not None
     if os.environ.get(seg.GATE_MARKER):
         print('SIDE-EFFECT-GATE: 外层闸标记在场 (嵌套调用) ⇒ 本层不重复挂闸 '
@@ -281,14 +299,22 @@ def main():
         print('OLD-GATE-FALSE-RED (Q21 事故类): %s' % gate_rep['old_gate_false_reds'])
     for c in gate_rep['census_in_repo_cwd']:
         print('  census(仓内 cwd, 信息项): pid=%s cwd=%s cmd=%s' % (c['pid'], c['cwd'], c['cmd'][:70]))
-    doc = {'schema': 'instruments-check/4', 'manifest': 'eval/capability/instruments.json',
+    try:
+        man_sha12 = hashlib.sha256(MAN.read_bytes()).hexdigest()[:12]
+        self_sha12 = hashlib.sha256(pathlib.Path(__file__).read_bytes()).hexdigest()[:12]
+    except Exception:
+        man_sha12 = self_sha12 = None
+    doc = {'schema': 'instruments-check/5', 'manifest': 'eval/capability/instruments.json',
+           'manifest_sha12': man_sha12, 'instrument_sha12': self_sha12,
+           'face': face, 'only': sorted(only) if only else None,
+           'out': (str(target.relative_to(ROOT)) if str(target).startswith(str(ROOT)) else str(target)),
            'l2_field_checks': True, 'input_surface_checks': True,
            'drift_injected': bool(inj_mode and injected), 'inject_mode': inj_mode, 'inject_note': inj_note,
            'side_effects': self_dirt,
            'side_effect_attribution': gate_rep,
            'passed': len(res) - bad, 'total': len(res), 'results': res}
     target.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
-    print(f"\nL2 器具验收面: {len(res) - bad}/{len(res)} 通过; 落盘 {target.relative_to(ROOT)}")
+    print(f"\nL2 器具验收面[{face}]: {len(res) - bad}/{len(res)} 通过; 落盘 {target.relative_to(ROOT)}")
     if inj_mode and not injected:
         print('INJECT-NOT-APPLIED (%s): 无可施加行 ⇒ 负控未施加 (判红)' % inj_mode)
         return 1

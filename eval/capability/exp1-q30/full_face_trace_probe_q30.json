@@ -1,0 +1,51 @@
+{
+ "round": "EXP1-Q30",
+ "why": "全量面在归因式副作用闸下自 Q22 引入后从未跑过; 首次 scoped 试跑 log_bytes 17.9MB > 旧 8MiB 上限 ⇒ capped ⇒ 弃权(rc=3), 故先测体量再定阈值 (数据先行)。",
+ "measured": {
+  "scoped_3instruments_6commands_log_bytes": 17943199,
+  "full_face_probe_47commands_log_bytes": 29715862,
+  "full_face_probe_capped": false,
+  "full_face_final_47commands_log_bytes": 29715723,
+  "full_face_final_capped": false,
+  "top_single_command_log_bytes": [
+   8476012,
+   8475370,
+   7847820
+  ],
+  "trace_dir_disk_usage_MB": 29
+ },
+ "threshold_decision": {
+  "old": {
+   "LOG_SOFT_CAP": 8388608,
+   "LOG_HARD_CAP": 67108864
+  },
+  "new": {
+   "LOG_SOFT_CAP": 67108864,
+   "LOG_HARD_CAP": 268435456
+  },
+  "rule": "soft = 全量面实测 × ~2.2 余量 (为后续新增器具留空间); hard 作磁盘物理界, 越界语义不变 (capped ⇒ 弃权 rc=3)",
+  "disk_context": "/tmp 余量 14GiB (df -h /tmp); 实测 trace 目录 29MB"
+ },
+ "face_final": {
+  "rc": 0,
+  "passed": 21,
+  "total": 21,
+  "schema": "instruments-check/5",
+  "face": "full",
+  "self_effects": [],
+  "manifest_sha12": "c38f4c1c5ba8",
+  "instrument_sha12": "13f8872cb070",
+  "conservation": {
+   "classified": 82,
+   "expected": 82,
+   "in_scope_after": 82,
+   "ok": true
+  }
+ },
+ "face_prev_committed": {
+  "passed": 17,
+  "total": 18,
+  "schema": "instruments-check/3",
+  "note": "Q21 口径 (pre-gate, 无归因闸; P8 因集合差副作用判红: docs/improvements.md 等 4 路径)"
+ }
+}

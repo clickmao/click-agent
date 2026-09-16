@@ -1,0 +1,9 @@
+exact_match                expect_ok=True  got=True  extra=[] missing=[]  OK
+foreign_extra_staged       expect_ok=False got=False extra=['sibling/half-done.py'] missing=[]  OK
+declared_but_not_staged    expect_ok=False got=False extra=[] missing=['c/d.json']  OK
+both_empty                 expect_ok=True  got=True  extra=[] missing=[]  OK
+order_and_dup_insensitive  expect_ok=True  got=True  extra=[] missing=[]  OK
+comments_and_blanks        expect_ok=True  got=True  extra=[] missing=[]  OK
+same_count_wrong_content   expect_ok=False got=False extra=['sibling/x.py'] missing=['a/b.py']  OK
+NC_len_only_comparison_would_miss=True (期望 True: 条数相同、内容不同 ⇒ 条数口径漏检)
+SELFTEST PASS (7/7)

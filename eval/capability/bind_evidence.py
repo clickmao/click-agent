@@ -276,17 +276,39 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--apply", action="store_true")
     ap.add_argument("--check", action="store_true")
-    ap.add_argument("--round", default=AUDITED_BY_ROUND,
+    ap.add_argument("--round", default=None,
                     help="写入/复核 audited_by_round 的轮号 (默认 %s ⇒ 历史行为逐字不变)" % AUDITED_BY_ROUND)
+    ap.add_argument("--only", default=None,
+                    help="定向范围: 逗号分隔的登记行 id; 与 --apply 同用时必须同时显式给 --round, "
+                         "未知 id 或缺少轮号 ⇒ rc=3 且零字节写入")
+    ap.add_argument("--registry", default=REG,
+                    help="登记表路径 (默认 %s; 供 scratch 副本核验 —— 真登记表不被触碰)" % REG)
     a = ap.parse_args()
-    AUDITED_BY_ROUND = a.round   # 默认 = 历史常量 ⇒ 无参调用行为逐字不变
+    explicit_round = a.round is not None
+    AUDITED_BY_ROUND = a.round if explicit_round else AUDITED_BY_ROUND   # 默认 = 历史常量 ⇒ 无参调用行为逐字不变
     print("AUDITED_BY_ROUND=%s" % AUDITED_BY_ROUND)
     root = repo_root()
-    reg_abs = os.path.join(root, REG)
+    reg_rel = a.registry
+    reg_abs = reg_rel if os.path.isabs(reg_rel) else os.path.join(root, reg_rel)
     with open(reg_abs, encoding="utf-8", newline="") as fh:
         raw = fh.read()
     doc = json.loads(raw)
     rows = doc["rows"]
+
+    ids = None
+    if a.only:
+        ids = [s.strip() for s in a.only.split(",") if s.strip()]
+    if ids is not None:
+        # 定向范围的前置核验 (fail-closed): 未知 id / --apply 缺显式轮号 一律 rc=3 零写入。
+        known = {r.get("id") for r in rows}
+        unknown = [i for i in ids if i not in known]
+        if unknown:
+            print("ONLY_SCOPE=UNKNOWN_IDS %s (fail-closed, 零字节写入)" % sorted(unknown))
+            return 3
+        if a.apply and not explicit_round:
+            print("ONLY_SCOPE=REQUIRES_EXPLICIT_ROUND (定向重审缺显式 --round ⇒ rc=3, 零字节写入)")
+            return 3
+        print("ONLY_SCOPE=n=%d %s" % (len(ids), ",".join(ids)))
 
     if a.apply:
         # EXP1-Q29: 尾换行约定 = **有(LF)** —— 已由主线在 R481 按器具自身契约修复并登记
@@ -304,31 +326,32 @@ def main():
         print("SER_ASSERT=OK (indent=1, ensure_ascii=False, tail=%s)"
               % ("LF" if tail else "NONE->LF 补 1 B 承 R481 契约 语义零变化"))
         tracked, dirty = git_state(root)
-        n_before = sum(1 for r in rows if "evidence_generated_with" in r)
+        # EXP1-Q30: 粒度收窄 —— needs_field ∧ (无 --only ∨ id ∈ --only)。无 --only 时 scope == 全表 ⇒ 历史行为不变。
+        scope_rows = [r for r in rows if needs_field(r) and (ids is None or r.get("id") in ids)]
+        n_before = sum(1 for r in scope_rows if "evidence_generated_with" in r)
         unchanged = 0
-        for row in rows:
-            if needs_field(row):
-                f = derive(root, row, tracked, dirty)
-                if row.get("evidence_generated_with") == f:
-                    # EXP1-Q27 最小 diff 纪律: 派生内容逐字段相同 ⇒ 一个字节都不动。
-                    #   (此前每次 --apply 会重刷全部行的 audited_by_round ⇒ 92 行 churn 淹没真实改动;
-                    #    且会把并发写者上一轮的审计戳改成自己的轮号 = 归属篡改。)
-                    unchanged += 1
-                    continue
-                if "evidence_generated_with" in row:
-                    row["evidence_generated_with"] = f
-                else:
-                    # 保序插入: 置于 evidence_path 之后 (与它绑定的字段相邻)
-                    keys = list(row.keys())
-                    pos = keys.index("evidence_path") + 1 if "evidence_path" in keys else len(keys)
-                    items = list(row.items())
-                    row.clear()
-                    for i, (k, v) in enumerate(items):
-                        if i == pos:
-                            row["evidence_generated_with"] = f
-                        row[k] = v
-                    if "evidence_generated_with" not in row:
+        for row in scope_rows:
+            f = derive(root, row, tracked, dirty)
+            if row.get("evidence_generated_with") == f:
+                # EXP1-Q27 最小 diff 纪律: 派生内容逐字段相同 ⇒ 一个字节都不动。
+                #   (此前每次 --apply 会重刷全部行的 audited_by_round ⇒ 92 行 churn 淹没真实改动;
+                #    且会把并发写者上一轮的审计戳改成自己的轮号 = 归属篡改。)
+                unchanged += 1
+                continue
+            if "evidence_generated_with" in row:
+                row["evidence_generated_with"] = f
+            else:
+                # 保序插入: 置于 evidence_path 之后 (与它绑定的字段相邻)
+                keys = list(row.keys())
+                pos = keys.index("evidence_path") + 1 if "evidence_path" in keys else len(keys)
+                items = list(row.items())
+                row.clear()
+                for i, (k, v) in enumerate(items):
+                    if i == pos:
                         row["evidence_generated_with"] = f
+                    row[k] = v
+                if "evidence_generated_with" not in row:
+                    row["evidence_generated_with"] = f
         out = json.dumps(doc, indent=1, ensure_ascii=False) + "\n"
         if out == raw:
             print("IDEMPOTENT=OK (字节不变, 无需写盘)")
@@ -338,13 +361,24 @@ def main():
             with open(reg_abs, encoding="utf-8", newline="") as fh:
                 back = fh.read()
             print("WRITE_READBACK=%s" % ("OK" if back == out else "MISMATCH"))
-        n_after = sum(1 for r in rows if "evidence_generated_with" in r)
-        print("COVERED %d -> %d" % (n_before, n_after))
-        print("UNCHANGED=%d / TOUCHED=%d" % (unchanged, n_after - unchanged))
-        print(subprocess.run(["git", "diff", "--numstat", REG], cwd=root, capture_output=True, text=True).stdout.strip())
+        n_after = sum(1 for r in scope_rows if "evidence_generated_with" in r)
+        n_total = sum(1 for r in rows if "evidence_generated_with" in r)
+        print("SCOPE=%s" % ("full" if ids is None else "only(n=%d)" % len(ids)))
+        print("COVERED %d -> %d (scope); 全表 COVERED=%d" % (n_before, n_after, n_total))
+        print("UNCHANGED=%d / TOUCHED=%d (scope)" % (unchanged, n_after - unchanged))
+        if os.path.isabs(reg_rel):
+            print("NUMSTAT=skip (scratch 副本, 非仓内路径)")
+        else:
+            print(subprocess.run(["git", "diff", "--numstat", reg_rel], cwd=root,
+                                 capture_output=True, text=True).stdout.strip())
 
-    v, dist, cert = check(root, json.loads(open(reg_abs, encoding="utf-8").read())["rows"])
+    crows = json.loads(open(reg_abs, encoding="utf-8").read())["rows"]
+    if ids is not None:
+        crows = [r for r in crows if r.get("id") in ids]
+    v, dist, cert = check(root, crows)
     print("CHECKED_WITH_FIELD=%d" % cert)
+    if ids is not None:
+        print("DIST_SCOPE=only(n=%d) —— 与全表口径分布不可比" % len(crows))
     for k in sorted(dist, key=lambda t: (str(t[0]), str(t[1]), str(t[2]))):
         print("  dist %-12s %-6s %-22s x%d" % (k[0], k[1], k[2], dist[k]))
     for s in v[:20]:

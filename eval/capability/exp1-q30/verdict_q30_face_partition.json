@@ -1,0 +1,49 @@
+{
+ "round": "EXP1-Q30",
+ "checks": {
+  "P2_旧器具复现覆盖事故": true,
+  "P3_还原到原字节": true,
+  "P1_全量面记录不受影响": true,
+  "P1b_scoped面独立落盘": true,
+  "P4_产物自带面别与器具版本": true
+ },
+ "readings": {
+  "full_sha12_before": "f956daa6eda1",
+  "full_total_before": 18,
+  "nc_old": {
+   "rc": 0,
+   "total_after": 1,
+   "face_field": null,
+   "sha12_after": "fc8e2c81a010"
+  },
+  "scoped": {
+   "rc": 3,
+   "face": "scoped",
+   "only": [
+    "bind_evidence.check",
+    "bind_evidence.committed-state",
+    "exp1q28.whitelist-coverage"
+   ],
+   "passed": 2,
+   "total": 3,
+   "manifest_sha12": "7d5784551aef",
+   "instrument_sha12": "13f8872cb070",
+   "schema": "instruments-check/5",
+   "out": "eval/capability/instruments-check-scoped.json"
+  },
+  "new_scoped_stdout_tail": [
+   "  census(仓内 cwd, 信息项): pid=1552762 cwd=. cmd=node /home/agentuser/.hermes/lsp/bin/bash-language-server start",
+   "  census(仓内 cwd, 信息项): pid=1553930 cwd=. cmd=/usr/bin/bash -c source /home/agentuser/.hermes/cache/terminal/hermes-",
+   "  census(仓内 cwd, 信息项): pid=1553932 cwd=. cmd=timeout 900 python3 eval/capability/exp1-q30/verify_q30_face_partition",
+   "  census(仓内 cwd, 信息项): pid=1553933 cwd=. cmd=python3 eval/capability/exp1-q30/verify_q30_face_partition.py",
+   "",
+   "L2 器具验收面[scoped]: 2/3 通过; 落盘 eval/capability/instruments-check-scoped.json"
+  ],
+  "old_nc_stdout_tail": [
+   "  census(仓内 cwd, 信息项): pid=1553933 cwd=. cmd=python3 eval/capability/exp1-q30/verify_q30_face_partition.py",
+   "",
+   "L2 器具验收面: 1/1 通过; 落盘 eval/capability/instruments-check.json"
+  ]
+ },
+ "verdict": "PASS"
+}

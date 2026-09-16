@@ -43,8 +43,14 @@ TRACE_LINE = re.compile(r'^(\d+)\s+([A-Za-z_][A-Za-z_0-9]*)\((.*)\)\s+=\s+(.*)$'
 RET_PATH = re.compile(r'^\d+<(.*)>$')
 ARG_FD_PATH = re.compile(r'\d+<(.*)>')
 QUOTED = re.compile(r'"((?:[^"\\]|\\.)*)"')
-LOG_SOFT_CAP = 8 * 1024 * 1024
-LOG_HARD_CAP = 64 * 1024 * 1024
+LOG_SOFT_CAP = 64 * 1024 * 1024
+LOG_HARD_CAP = 256 * 1024 * 1024
+# EXP1-Q30 阈值重定 (数据先行; 原值 8MiB / 64MiB 是 **scoped 档**标定的):
+#   · scoped 3 器具 / 6 命令实测 log_bytes = 17,943,199 (17.1MiB) ⇒ 旧 8MiB 上限**必然** capped ⇒ 弃权 (rc=3);
+#   · 全量面 21 器具 / 47 命令实测 log_bytes = 29,715,862 (28.3MiB), 单条最大 8,476,012 (8.1MiB),
+#     其余 44 条合计 <15MiB (体量由少数「多进程 + 大量文件打开」的命令主导)。
+#   ⇒ 新阈值 = 全量面实测 × ~2.2 余量 (64MiB), 硬上限 256MiB 保留为**磁盘物理界**
+#     (实测 /tmp 余量 14GiB; 越界仍判 `trace-capped` ⇒ 弃权 rc=3, 语义不变)。
 # 重入标记: 已在外层闸窗口内的进程树不重复挂 strace —— 实测嵌套 strace 被内核拒绝
 # (`PTRACE_TRACEME: Operation not permitted`), 会把内层命令整条判红 (假红)。
 GATE_MARKER = 'Q22_SIDE_EFFECT_GATE'
