@@ -1,0 +1,8 @@
+J1_pre_fix_full_face             PASS     rc=1 可判据 23/25 红=['exp1q31.only-equivalence', 'l2.instruments-check'] 仅声明漂移=True 信息项 2/2 side_effects=[]
+J2_mixed_inject_full_list_red    PASS     rc=1 可判据红=1 信息项红=1 分母=27 expect_rc=1 注入=['class-mixed:informational', 'class-mixed:passable']
+J3_info_only_full_list_green     PASS     rc=0 可判据红=0 信息项红=1 分母=27 expect_rc=0 注入=['class-info-only:informational']
+J4_post_fix_full_face            PASS     rc=0 可判据 25/25 信息项 2/2 side_effects=[] face=full
+J5_fix_localization              PASS     pass 翻转行=['exp1q31.only-equivalence', 'l2.instruments-check'] 字段差={'exp1q31.only-equivalence': ['instrument_sha12', 'version'], 'l2.instruments-check': ['instrument_sha12', 'version']}
+J6_dir_node_archive_form         PASS     分母=29 处置={'copy_truncated': 5, 'copy_complete': 24} 等价面=29(非零 17) diff=0 清单不足违规=0 摘文件负控=True
+J7_tail_contract_field           PASS     自检 checks=PASS 真实运行 flags=[True, False, False] reasons=['tail_lf_missing', None, None]
+VERDICT=PASS counts={'pass': 7, 'fail': 0, 'blocked': 0} out=assert_face_q38.json

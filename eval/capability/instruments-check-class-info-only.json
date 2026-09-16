@@ -1,8 +1,8 @@
 {
  "schema": "instruments-check/6",
  "manifest": "eval/capability/instruments.json",
- "manifest_sha12": "e43769a37d2d",
- "instrument_sha12": "cb0dad4f5c40",
+ "manifest_sha12": "f75bec64fad4",
+ "instrument_sha12": "8653a42f149a",
  "face": "negative-control",
  "only": null,
  "out": "eval/capability/instruments-check-class-info-only.json",
@@ -11,6 +11,7 @@
  "drift_injected": true,
  "inject_mode": "class-info-only",
  "inject_note": "class-info-only 注入: 信息项成员 bind_evidence.check 记红 (期望单列可见)",
+ "inject_expect_rc": 0,
  "side_effects": [],
  "side_effect_attribution": {
   "schema": "side-effect-attribution/1",
@@ -35,12 +36,12 @@
     "/home/agentuser/AgentFramework/.git/index.lock",
     "/home/agentuser/AgentFramework/.git/objects/0a",
     "/home/agentuser/AgentFramework/.git/objects/0a/4dc54ab1d00d601cccdcfe958827a59373bd4a",
-    "/home/agentuser/AgentFramework/.git/objects/0a/tmp_obj_ct6pIO",
-    "/home/agentuser/AgentFramework/.git/objects/0a/tmp_obj_lQWRo5",
+    "/home/agentuser/AgentFramework/.git/objects/0a/tmp_obj_P34cmL",
+    "/home/agentuser/AgentFramework/.git/objects/0a/tmp_obj_tG6vbU",
     "/home/agentuser/AgentFramework/.git/objects/ba",
     "/home/agentuser/AgentFramework/.git/objects/ba/fc5d9a1a836cea09dadcec13e66fe498cd997a",
-    "/home/agentuser/AgentFramework/.git/objects/ba/tmp_obj_83QRos",
-    "/home/agentuser/AgentFramework/.git/objects/ba/tmp_obj_Z72IMp",
+    "/home/agentuser/AgentFramework/.git/objects/ba/tmp_obj_KXnOzF",
+    "/home/agentuser/AgentFramework/.git/objects/ba/tmp_obj_skssRB",
     "/home/agentuser/AgentFramework/0a",
     "/home/agentuser/AgentFramework/4dc54ab1d00d601cccdcfe958827a59373bd4a",
     "/home/agentuser/AgentFramework/ApiKeyResolver.cs",
@@ -214,42 +215,33 @@
     "/home/agentuser/AgentFramework/update.sample",
     "/home/agentuser/AgentFramework/verdict_q31_hook_gate.json",
     "/home/agentuser/AgentFramework/x.py",
-    "/tmp/2snv6gu2",
-    "/tmp/3gpzdsq4",
-    "/tmp/5f7501wd",
-    "/tmp/8hqknc9l",
-    "/tmp/c_7bbprv",
-    "/tmp/dgjfnfdt",
-    "/tmp/docref-selftest-8gscks5f",
-    "/tmp/docref-selftest-8gscks5f/src",
-    "/tmp/docref-selftest-8gscks5f/src/agent",
-    "/tmp/docref-selftest-8gscks5f/src/agent/x",
-    "/tmp/docref-selftest-8gscks5f/src/agent/x/Alpha.cs",
-    "/tmp/docref-selftest-8gscks5f/src/agent/x/Beta.cs",
-    "/tmp/dsmtmbu8",
-    "/tmp/e1gm_rjg",
-    "/tmp/exp1q1-44pvtoho"
+    "/tmp/1q9y2c6p",
+    "/tmp/2q9vq3zu",
+    "/tmp/5_ob5a3x",
+    "/tmp/77212ou2",
+    "/tmp/7nsfartk",
+    "/tmp/84cjo5rg",
+    "/tmp/8ggp7nof",
+    "/tmp/9b2kkfs0",
+    "/tmp/9p6n05lb",
+    "/tmp/b8x62k36",
+    "/tmp/baf61i66",
+    "/tmp/bwrcltpi",
+    "/tmp/djg_hi08",
+    "/tmp/docref-selftest-l076x4ps",
+    "/tmp/docref-selftest-l076x4ps/src"
    ],
-   "log_bytes": 34192837,
+   "log_bytes": 34513364,
    "capped": false,
    "unresolved_relative": 0,
    "channel": "strace+audithook"
   },
   "self_writes": [],
   "touched_and_gone": [],
-  "foreign_writes": [
-   {
-    "path": "eval/rover/r496/server-B.txt",
-    "sha_before": "24945c9168a8",
-    "sha_after": "0692115f2043",
-    "note": "changed-in-window",
-    "live_fd": []
-   }
-  ],
+  "foreign_writes": [],
   "pre_existing": [
    "docs/verification-registry.json",
    "eval/bge/r404/csharp-fusion-replay.json",
-   "eval/capability/bind_evidence.py",
    "eval/capability/exp1-q22-controls/fixtures/c1.txt",
    "eval/capability/exp1-q22-controls/fixtures/c2.txt",
    "eval/capability/exp1-q22-controls/fixtures/c2b.txt",
@@ -270,17 +262,23 @@
    "eval/capability/exp1-q29/scratch/reg_nolf.json",
    "eval/capability/exp1-q29/scratch/reg_reorder.json",
    "eval/capability/exp1-q37/face_q37_t10.runtime.json",
-   "eval/capability/exp1-q38/archive_dir_nodes_q38.py",
-   "eval/capability/exp1-q38/bind_evidence_run_record_q38.json",
-   "eval/capability/exp1-q38/bind_evidence_run_record_q38_b.json",
-   "eval/capability/exp1-q38/occupancy_pre.txt",
-   "eval/capability/exp1-q38/precheck_occupancy.sh",
+   "eval/capability/exp1-q38/assert_face_q38.after_trio.txt",
+   "eval/capability/exp1-q38/assert_face_q38.json",
+   "eval/capability/exp1-q38/bind_evidence_run_record_q38_d.json",
+   "eval/capability/exp1-q38/chain_wait_and_run3_q38.sh",
+   "eval/capability/exp1-q38/face_q38_t14.json",
+   "eval/capability/exp1-q38/launch_chain3_q38.sh",
+   "eval/capability/exp1-q38/logs/face_t14_face.txt",
+   "eval/capability/exp1-q38/logs/nc_t12b_face.txt",
+   "eval/capability/exp1-q38/logs/nc_t12b_runner.txt",
+   "eval/capability/exp1-q38/logs/nc_t13b_face.txt",
+   "eval/capability/exp1-q38/logs/nc_t13b_runner.txt",
+   "eval/capability/exp1-q38/occupancy_rerun.txt",
+   "eval/capability/exp1-q38/occupancy_wait2_1.txt",
+   "eval/capability/exp1-q38/occupancy_wait3.txt",
+   "eval/capability/exp1-q38/occupancy_wait3_1.txt",
    "eval/capability/exp1-q38/refresh_manifest_decls_q38.py",
-   "eval/capability/exp1-q38/run_face_nc_q38.sh",
-   "eval/capability/exp1-q38/run_face_q38.sh",
-   "eval/capability/exp1-q38/selftest_bind_evidence_tail_q38.py",
    "eval/capability/instruments.json",
-   "eval/capability/instruments_check.py",
    "eval/recall/check_r480.py",
    "eval/recall/focus_c.json",
    "eval/recall/focus_probe_c.py",
@@ -310,132 +308,56 @@
    "eval/rover/r479/refresh_master_index_r479.py",
    "eval/rover/r491/preflight-gatecheck.json",
    "eval/rover/r493/baseline-kpi.json",
-   "eval/rover/r496/analyze_r496.py",
-   "eval/rover/r496/assert_face_r496.py",
-   "eval/rover/r496/build_r496_harness.py",
-   "eval/rover/r496/calls-B.jsonl",
-   "eval/rover/r496/flags-B.json",
-   "eval/rover/r496/grid/task-p15-code.json",
-   "eval/rover/r496/judge_adv_r496.py",
-   "eval/rover/r496/judge_code_r496.py",
-   "eval/rover/r496/leak_check_r496.py",
-   "eval/rover/r496/nonrecompute_check_r496.py",
-   "eval/rover/r496/pin_r496.py",
-   "eval/rover/r496/preflight-B.json",
-   "eval/rover/r496/prereg_r496.json",
-   "eval/rover/r496/prov-B.json",
-   "eval/rover/r496/register_r496.py",
-   "eval/rover/r496/run_arm_real_r496.sh",
-   "eval/rover/r496/selftest_assert_r496.py",
-   "eval/rover/r496/teardown_assert.py",
-   "eval/rover/r496/turns-B.jsonl",
-   "eval/rover/r496/usage-B.jsonl",
-   "eval/rover/r496/write_docs_r496.py",
    "eval/tools/master_plan_round_index.py"
   ],
   "old_gate_delta": [],
   "old_gate_false_reds": [],
   "old_gate_missed_self_writes": [],
   "live_fd_scan": {
-   "scanned": 277,
-   "errors": 107
+   "scanned": 200,
+   "errors": 106
   },
   "census_in_repo_cwd": [
    {
-    "pid": 1925112,
+    "pid": 2052449,
     "cwd": ".",
-    "cmd": "/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/hermes_kernel_jaerpjys/hermes_kernel_runner.py"
+    "cmd": "/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/hermes_kernel_rzq0ga5j/hermes_kernel_runner.py"
    },
    {
-    "pid": 1935762,
-    "cwd": "eval/rover/r494",
-    "cmd": "/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/hermes_kernel_odopkuwp/hermes_kernel_runner.py"
-   },
-   {
-    "pid": 2022290,
+    "pid": 2072907,
     "cwd": ".",
     "cmd": "node /home/agentuser/.hermes/lsp/bin/bash-language-server start"
    },
    {
-    "pid": 2022380,
+    "pid": 2073124,
     "cwd": ".",
-    "cmd": "bash -c bash eval/capability/exp1-q38/run_face_nc_q38.sh --class-mixed-inject t12 > /tmp/q38_t12.stdout 2>&1; bash eval/capability/exp1-q38/run_face_nc_q38.sh -"
+    "cmd": "bash eval/capability/exp1-q38/chain_wait_and_run3_q38.sh"
    },
    {
-    "pid": 2032045,
+    "pid": 2073183,
     "cwd": ".",
-    "cmd": "/bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT=\"$HOME/.dotnet\" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496."
+    "cmd": "bash eval/capability/exp1-q38/run_face_nc_q38.sh --class-info-only-inject t13b"
    },
    {
-    "pid": 2032058,
-    "cwd": "eval/rover/r496/run-B",
-    "cmd": "bash eval/rover/r496/run_arm_real_r496.sh B"
-   },
-   {
-    "pid": 2032248,
+    "pid": 2073186,
     "cwd": ".",
-    "cmd": "python3 -u /home/agentuser/AgentFramework/eval/rover/r475/relay_real_r475.py 49610 40 0.15 /home/agentuser/AgentFramework/eval/rover/r496 B"
+    "cmd": "/usr/bin/time -f TIME_t13b wall=%es maxrss=%MkB python3 -u eval/capability/instruments_check.py --class-info-only-inject"
    },
    {
-    "pid": 2032271,
-    "cwd": ".",
-    "cmd": "bash eval/rover/r496/run_arm_real_r496.sh B"
-   },
-   {
-    "pid": 2032273,
-    "cwd": "eval/rover/r496/run-B",
-    "cmd": "/tmp/pub_r496/agenthost --frontend-api 49612 --role /home/agentuser/AgentFramework/eval/rover/r431/fixture/skeptic-growth.rbin"
-   },
-   {
-    "pid": 2032315,
-    "cwd": "eval/rover/r496/run-B",
-    "cmd": "/tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 4547"
-   },
-   {
-    "pid": 2032545,
-    "cwd": "eval/rover/r496/run-B",
-    "cmd": "/tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127"
-   },
-   {
-    "pid": 2032594,
+    "pid": 2073340,
     "cwd": ".",
     "cmd": "/usr/bin/bash -c source /home/agentuser/.hermes/cache/terminal/hermes-snap-19562718e6a9.sh >/dev/null 2>&1 || true\nexport AI_AGENT=\"${AI_AGENT:-hermes-agent}\" H"
    },
    {
-    "pid": 2033711,
-    "cwd": ".",
-    "cmd": "bash eval/capability/exp1-q38/run_face_nc_q38.sh --class-info-only-inject t13"
-   },
-   {
-    "pid": 2033714,
-    "cwd": ".",
-    "cmd": "/usr/bin/time -f TIME_t13 wall=%es maxrss=%MkB python3 -u eval/capability/instruments_check.py --class-info-only-inject"
-   },
-   {
-    "pid": 2035430,
-    "cwd": ".",
-    "cmd": "/usr/bin/bash -c source /home/agentuser/.hermes/cache/terminal/hermes-snap-19562718e6a9.sh >/dev/null 2>&1 || true\nexport AI_AGENT=\"${AI_AGENT:-hermes-agent}\" H"
-   },
-   {
-    "pid": 2035433,
-    "cwd": ".",
-    "cmd": "sleep 240"
-   },
-   {
-    "pid": 2037292,
+    "pid": 2075743,
     "cwd": ".",
     "cmd": "sleep 15"
-   },
-   {
-    "pid": 2037641,
-    "cwd": "eval/rover/r496/run-B",
-    "cmd": "sleep 5"
    }
   ],
   "conservation": {
-   "classified": 86,
-   "expected": 86,
-   "in_scope_after": 86,
+   "classified": 69,
+   "expected": 69,
+   "in_scope_after": 69,
    "ok": true
   }
  },
@@ -1058,7 +980,7 @@
    "expect_rc": 0,
    "substr_ok": true,
    "pass": true,
-   "sha12": "cb0dad4f5c40",
+   "sha12": "8653a42f149a",
    "owner_round": "EXP1-Q31",
    "kpi_quad": {
     "单位": "器具行",
@@ -1144,14 +1066,14 @@
     "口径档": "现盘档 (声明 pin vs 工作区字节)"
    },
    "l2_fields": {
-    "version": "DRIFT",
-    "instrument_sha12": "DRIFT(want=6d9a0fc9d3fc got=9d629b75dd61)",
+    "version": "ok",
+    "instrument_sha12": "ok",
     "input_surface": "ok:dynamic_corpus",
     "input_fingerprint": "ok(n=0)",
     "kpi_quad": "ok",
     "INJECTED": "class-info-only"
    },
-   "l2_ok": false,
+   "l2_ok": true,
    "negative_controls": [
     {
      "cmd": "bash eval/capability/exp1-q30/_nc_bind_evidence_pin.sh",

@@ -1,0 +1,10 @@
+=== RUN t13b (--class-info-only-inject) START 2026-09-16T22:38:26+08:00 TREE=5bdf394 ===
+RC_t13b=0
+MEMBER-CLASS: informational=['bind_evidence.check', 'bind_evidence.committed-state'] (why={'bind_evidence.check': 'self-referential-tree-state', 'bind_evidence.committed-state': 'self-referential-tree-state'}) 通过 1/2; 可判据面 25/25 通过
+CANON-SPLIT: instruments-check-class-info-only.json sha12=a37ad7b22262 bytes=47864; 运行期字段 → instruments-check-class-info-only.runtime.json
+
+L2 器具验收面[negative-control]: 可判据 25/25 通过 · 信息项 1/2 (信息项=自指成员, 真值由面外独立轮核验) · 落盘 eval/capability/instruments-check-class-info-only.json
+INJECT-APPLIED (class-info-only): class-info-only 注入: 信息项成员 bind_evidence.check 记红 (期望单列可见)
+  ⇒ 机检结果: 仍全绿 + 信息项红单列 ⇒ 负控成立 (信息项降级生效)
+TIME_t13b wall=205.37s maxrss=42692kB
+=== RUN t13b END 2026-09-16T22:41:51+08:00 ===

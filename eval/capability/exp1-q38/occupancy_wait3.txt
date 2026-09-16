@@ -31,3 +31,163 @@ mem_kb=2745500
 mem_mb=2681
 round3 n1=1 n2=1 mem_mb=2681
 WAIT: 仍 BUSY (n1=1 n2=1 mem_mb=2681) ⇒ 15s 后重采样
+--- 采样(a4) 2026-09-16T22:25:52+08:00 ---
+2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
+n_a4=1
+--- 采样(b4) 2026-09-16T22:25:57+08:00 ---
+2051723 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && for i in 1 2 3; do echo "=== T1 attempt $i $(date +%H:%M:%S) ==="; bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1 && { echo "T1 OK"; break; }; echo "attempt $i rc=$?"; tail -2 /tmp/arm_T1_r496.out; $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sleep 60; done; echo DONE_T1
+n_b4=1
+mem_kb=2742220
+mem_mb=2677
+round4 n1=1 n2=1 mem_mb=2677
+WAIT: 仍 BUSY (n1=1 n2=1 mem_mb=2677) ⇒ 15s 后重采样
+--- 采样(a5) 2026-09-16T22:26:12+08:00 ---
+n_a5=0
+--- 采样(b5) 2026-09-16T22:26:17+08:00 ---
+2058842 /usr/bin/time -f TIME_t12b wall=%es maxrss=%MkB python3 -u eval/capability/instruments_check.py --class-mixed-inject
+2058843 python3 -u eval/capability/instruments_check.py --class-mixed-inject
+n_b5=2
+mem_kb=2704788
+mem_mb=2641
+round5 n1=0 n2=2 mem_mb=2641
+WAIT: 仍 BUSY (n1=0 n2=2 mem_mb=2641) ⇒ 15s 后重采样
+--- 采样(a6) 2026-09-16T22:26:32+08:00 ---
+2058842 /usr/bin/time -f TIME_t12b wall=%es maxrss=%MkB python3 -u eval/capability/instruments_check.py --class-mixed-inject
+2058843 python3 -u eval/capability/instruments_check.py --class-mixed-inject
+n_a6=2
+--- 采样(b6) 2026-09-16T22:26:37+08:00 ---
+2058842 /usr/bin/time -f TIME_t12b wall=%es maxrss=%MkB python3 -u eval/capability/instruments_check.py --class-mixed-inject
+2058843 python3 -u eval/capability/instruments_check.py --class-mixed-inject
+n_b6=2
+mem_kb=2727536
+mem_mb=2663
+round6 n1=2 n2=2 mem_mb=2663
+WAIT: 仍 BUSY (n1=2 n2=2 mem_mb=2663) ⇒ 15s 后重采样
+--- 采样(a7) 2026-09-16T22:26:52+08:00 ---
+2058842 /usr/bin/time -f TIME_t12b wall=%es maxrss=%MkB python3 -u eval/capability/instruments_check.py --class-mixed-inject
+2058843 python3 -u eval/capability/instruments_check.py --class-mixed-inject
+n_a7=2
+--- 采样(b7) 2026-09-16T22:26:57+08:00 ---
+2058842 /usr/bin/time -f TIME_t12b wall=%es maxrss=%MkB python3 -u eval/capability/instruments_check.py --class-mixed-inject
+2058843 python3 -u eval/capability/instruments_check.py --class-mixed-inject
+n_b7=2
+mem_kb=2731276
+mem_mb=2667
+round7 n1=2 n2=2 mem_mb=2667
+WAIT: 仍 BUSY (n1=2 n2=2 mem_mb=2667) ⇒ 15s 后重采样
+--- 采样(a8) 2026-09-16T22:27:12+08:00 ---
+2058842 /usr/bin/time -f TIME_t12b wall=%es maxrss=%MkB python3 -u eval/capability/instruments_check.py --class-mixed-inject
+2058843 python3 -u eval/capability/instruments_check.py --class-mixed-inject
+n_a8=2
+--- 采样(b8) 2026-09-16T22:27:17+08:00 ---
+2058842 /usr/bin/time -f TIME_t12b wall=%es maxrss=%MkB python3 -u eval/capability/instruments_check.py --class-mixed-inject
+2058843 python3 -u eval/capability/instruments_check.py --class-mixed-inject
+n_b8=2
+mem_kb=2717760
+mem_mb=2654
+round8 n1=2 n2=2 mem_mb=2654
+WAIT: 仍 BUSY (n1=2 n2=2 mem_mb=2654) ⇒ 15s 后重采样
+--- 采样(a9) 2026-09-16T22:27:32+08:00 ---
+2058842 /usr/bin/time -f TIME_t12b wall=%es maxrss=%MkB python3 -u eval/capability/instruments_check.py --class-mixed-inject
+2058843 python3 -u eval/capability/instruments_check.py --class-mixed-inject
+n_a9=2
+--- 采样(b9) 2026-09-16T22:27:37+08:00 ---
+2058842 /usr/bin/time -f TIME_t12b wall=%es maxrss=%MkB python3 -u eval/capability/instruments_check.py --class-mixed-inject
+2058843 python3 -u eval/capability/instruments_check.py --class-mixed-inject
+n_b9=2
+mem_kb=2711796
+mem_mb=2648
+round9 n1=2 n2=2 mem_mb=2648
+WAIT: 仍 BUSY (n1=2 n2=2 mem_mb=2648) ⇒ 15s 后重采样
+--- 采样(a10) 2026-09-16T22:27:53+08:00 ---
+2058842 /usr/bin/time -f TIME_t12b wall=%es maxrss=%MkB python3 -u eval/capability/instruments_check.py --class-mixed-inject
+2058843 python3 -u eval/capability/instruments_check.py --class-mixed-inject
+n_a10=2
+--- 采样(b10) 2026-09-16T22:27:58+08:00 ---
+2058842 /usr/bin/time -f TIME_t12b wall=%es maxrss=%MkB python3 -u eval/capability/instruments_check.py --class-mixed-inject
+2058843 python3 -u eval/capability/instruments_check.py --class-mixed-inject
+n_b10=2
+mem_kb=2674732
+mem_mb=2612
+round10 n1=2 n2=2 mem_mb=2612
+WAIT: 仍 BUSY (n1=2 n2=2 mem_mb=2612) ⇒ 15s 后重采样
+--- 采样(a11) 2026-09-16T22:28:13+08:00 ---
+2058842 /usr/bin/time -f TIME_t12b wall=%es maxrss=%MkB python3 -u eval/capability/instruments_check.py --class-mixed-inject
+2058843 python3 -u eval/capability/instruments_check.py --class-mixed-inject
+n_a11=2
+--- 采样(b11) 2026-09-16T22:28:18+08:00 ---
+2058842 /usr/bin/time -f TIME_t12b wall=%es maxrss=%MkB python3 -u eval/capability/instruments_check.py --class-mixed-inject
+2058843 python3 -u eval/capability/instruments_check.py --class-mixed-inject
+n_b11=2
+mem_kb=2684488
+mem_mb=2621
+round11 n1=2 n2=2 mem_mb=2621
+WAIT: 仍 BUSY (n1=2 n2=2 mem_mb=2621) ⇒ 15s 后重采样
+--- 采样(a12) 2026-09-16T22:28:33+08:00 ---
+2058842 /usr/bin/time -f TIME_t12b wall=%es maxrss=%MkB python3 -u eval/capability/instruments_check.py --class-mixed-inject
+2058843 python3 -u eval/capability/instruments_check.py --class-mixed-inject
+n_a12=2
+--- 采样(b12) 2026-09-16T22:28:38+08:00 ---
+2058842 /usr/bin/time -f TIME_t12b wall=%es maxrss=%MkB python3 -u eval/capability/instruments_check.py --class-mixed-inject
+2058843 python3 -u eval/capability/instruments_check.py --class-mixed-inject
+2061090 /usr/bin/bash -c source /home/agentuser/.hermes/cache/terminal/hermes-snap-19562718e6a9.sh >/dev/null 2>&1 || true export AI_AGENT="${AI_AGENT:-hermes-agent}" HERMES_AGENT="${HERMES_AGENT:-true}" export GIT_PAGER="${GIT_PAGER:-cat}" PAGER="${PAGER:-cat}" builtin cd -- /home/agentuser/AgentFramework || exit 126 eval 'cd /home/agentuser/AgentFramework && grep -c "\[Fact\]\|\[Theory\]" src/agent.tests/R496NonRecomputableTests.cs; grep -c "InlineData" src/agent.tests/R496NonRecomputableTests.cs; echo "=== 全量单测重跑 ==="; export DOTNET_ROOT="$HOME/.dotnet"; env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR $HOME/.dotnet/dotnet test src/agent.tests/agentframework.tests.csproj -c Release --no-build --nologo 2>&1 | tail -5' __hermes_ec=$? umask 077 __hermes_snap_tmp=$(mktemp /home/agentuser/.hermes/cache/terminal/hermes-snap-19562718e6a9.sh.tmp.XXXXXXXXXX) && { { ( unset ${!HERMES_SESSION_*} ${!HERMES_CRON_AUTO_DELIVER_*} ${!HERMES_BROWSER_CONTROL_*} AI_AGENT HERMES_AGENT HERMES_UI_SESSION_ID 2>/dev/null; export -p; ) || true; } > "$__hermes_snap_tmp" && mv -f "$__hermes_snap_tmp" /home/agentuser/.hermes/cache/terminal/hermes-snap-19562718e6a9.sh; } 2>/dev/null || rm -f "$__hermes_snap_tmp" 2>/dev/null || true printf '\n__HERMES_CWD_19562718e6a9__%s__HERMES_CWD_19562718e6a9__\n' "$(pwd -P)" exit $__hermes_ec
+2061096 /home/agentuser/.dotnet/dotnet test src/agent.tests/agentframework.tests.csproj -c Release --no-build --nologo
+2061137 /home/agentuser/.dotnet/dotnet exec /home/agentuser/.dotnet/sdk/10.0.400/vstest.console.dll --testAdapterPath:/home/agentuser/.nuget/packages/coverlet.collector/6.0.4/build/netstandard2.0/ --framework:.NETCoreApp,Version=v10.0 /home/agentuser/AgentFramework/src/agent.tests/bin/Release/net10.0/agentframework.tests.dll --logger:Console;Verbosity=minimal --nologo --artifactsProcessingMode-collect --testSessionCorrelationId:2061096_9acc4c5a-d67e-43bf-9d4c-f028adc85d5e
+2061159 /home/agentuser/.dotnet/dotnet exec --runtimeconfig /home/agentuser/AgentFramework/src/agent.tests/bin/Release/net10.0/agentframework.tests.runtimeconfig.json --depsfile /home/agentuser/AgentFramework/src/agent.tests/bin/Release/net10.0/agentframework.tests.deps.json /home/agentuser/AgentFramework/src/agent.tests/bin/Release/net10.0/testhost.dll --port 35155 --endpoint 127.0.0.1:035155 --role client --parentprocessid 2061137 --telemetryoptedin false
+n_b12=6
+mem_kb=2567912
+mem_mb=2507
+round12 n1=2 n2=6 mem_mb=2507
+WAIT: 仍 BUSY (n1=2 n2=6 mem_mb=2507) ⇒ 15s 后重采样
+--- 采样(a13) 2026-09-16T22:28:53+08:00 ---
+2058842 /usr/bin/time -f TIME_t12b wall=%es maxrss=%MkB python3 -u eval/capability/instruments_check.py --class-mixed-inject
+2058843 python3 -u eval/capability/instruments_check.py --class-mixed-inject
+2061090 /usr/bin/bash -c source /home/agentuser/.hermes/cache/terminal/hermes-snap-19562718e6a9.sh >/dev/null 2>&1 || true export AI_AGENT="${AI_AGENT:-hermes-agent}" HERMES_AGENT="${HERMES_AGENT:-true}" export GIT_PAGER="${GIT_PAGER:-cat}" PAGER="${PAGER:-cat}" builtin cd -- /home/agentuser/AgentFramework || exit 126 eval 'cd /home/agentuser/AgentFramework && grep -c "\[Fact\]\|\[Theory\]" src/agent.tests/R496NonRecomputableTests.cs; grep -c "InlineData" src/agent.tests/R496NonRecomputableTests.cs; echo "=== 全量单测重跑 ==="; export DOTNET_ROOT="$HOME/.dotnet"; env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR $HOME/.dotnet/dotnet test src/agent.tests/agentframework.tests.csproj -c Release --no-build --nologo 2>&1 | tail -5' __hermes_ec=$? umask 077 __hermes_snap_tmp=$(mktemp /home/agentuser/.hermes/cache/terminal/hermes-snap-19562718e6a9.sh.tmp.XXXXXXXXXX) && { { ( unset ${!HERMES_SESSION_*} ${!HERMES_CRON_AUTO_DELIVER_*} ${!HERMES_BROWSER_CONTROL_*} AI_AGENT HERMES_AGENT HERMES_UI_SESSION_ID 2>/dev/null; export -p; ) || true; } > "$__hermes_snap_tmp" && mv -f "$__hermes_snap_tmp" /home/agentuser/.hermes/cache/terminal/hermes-snap-19562718e6a9.sh; } 2>/dev/null || rm -f "$__hermes_snap_tmp" 2>/dev/null || true printf '\n__HERMES_CWD_19562718e6a9__%s__HERMES_CWD_19562718e6a9__\n' "$(pwd -P)" exit $__hermes_ec
+2061096 /home/agentuser/.dotnet/dotnet test src/agent.tests/agentframework.tests.csproj -c Release --no-build --nologo
+2061137 /home/agentuser/.dotnet/dotnet exec /home/agentuser/.dotnet/sdk/10.0.400/vstest.console.dll --testAdapterPath:/home/agentuser/.nuget/packages/coverlet.collector/6.0.4/build/netstandard2.0/ --framework:.NETCoreApp,Version=v10.0 /home/agentuser/AgentFramework/src/agent.tests/bin/Release/net10.0/agentframework.tests.dll --logger:Console;Verbosity=minimal --nologo --artifactsProcessingMode-collect --testSessionCorrelationId:2061096_9acc4c5a-d67e-43bf-9d4c-f028adc85d5e
+2061159 /home/agentuser/.dotnet/dotnet exec --runtimeconfig /home/agentuser/AgentFramework/src/agent.tests/bin/Release/net10.0/agentframework.tests.runtimeconfig.json --depsfile /home/agentuser/AgentFramework/src/agent.tests/bin/Release/net10.0/agentframework.tests.deps.json /home/agentuser/AgentFramework/src/agent.tests/bin/Release/net10.0/testhost.dll --port 35155 --endpoint 127.0.0.1:035155 --role client --parentprocessid 2061137 --telemetryoptedin false
+n_a13=6
+--- 采样(b13) 2026-09-16T22:28:58+08:00 ---
+2058842 /usr/bin/time -f TIME_t12b wall=%es maxrss=%MkB python3 -u eval/capability/instruments_check.py --class-mixed-inject
+2058843 python3 -u eval/capability/instruments_check.py --class-mixed-inject
+2061090 /usr/bin/bash -c source /home/agentuser/.hermes/cache/terminal/hermes-snap-19562718e6a9.sh >/dev/null 2>&1 || true export AI_AGENT="${AI_AGENT:-hermes-agent}" HERMES_AGENT="${HERMES_AGENT:-true}" export GIT_PAGER="${GIT_PAGER:-cat}" PAGER="${PAGER:-cat}" builtin cd -- /home/agentuser/AgentFramework || exit 126 eval 'cd /home/agentuser/AgentFramework && grep -c "\[Fact\]\|\[Theory\]" src/agent.tests/R496NonRecomputableTests.cs; grep -c "InlineData" src/agent.tests/R496NonRecomputableTests.cs; echo "=== 全量单测重跑 ==="; export DOTNET_ROOT="$HOME/.dotnet"; env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR $HOME/.dotnet/dotnet test src/agent.tests/agentframework.tests.csproj -c Release --no-build --nologo 2>&1 | tail -5' __hermes_ec=$? umask 077 __hermes_snap_tmp=$(mktemp /home/agentuser/.hermes/cache/terminal/hermes-snap-19562718e6a9.sh.tmp.XXXXXXXXXX) && { { ( unset ${!HERMES_SESSION_*} ${!HERMES_CRON_AUTO_DELIVER_*} ${!HERMES_BROWSER_CONTROL_*} AI_AGENT HERMES_AGENT HERMES_UI_SESSION_ID 2>/dev/null; export -p; ) || true; } > "$__hermes_snap_tmp" && mv -f "$__hermes_snap_tmp" /home/agentuser/.hermes/cache/terminal/hermes-snap-19562718e6a9.sh; } 2>/dev/null || rm -f "$__hermes_snap_tmp" 2>/dev/null || true printf '\n__HERMES_CWD_19562718e6a9__%s__HERMES_CWD_19562718e6a9__\n' "$(pwd -P)" exit $__hermes_ec
+2061096 /home/agentuser/.dotnet/dotnet test src/agent.tests/agentframework.tests.csproj -c Release --no-build --nologo
+2061137 /home/agentuser/.dotnet/dotnet exec /home/agentuser/.dotnet/sdk/10.0.400/vstest.console.dll --testAdapterPath:/home/agentuser/.nuget/packages/coverlet.collector/6.0.4/build/netstandard2.0/ --framework:.NETCoreApp,Version=v10.0 /home/agentuser/AgentFramework/src/agent.tests/bin/Release/net10.0/agentframework.tests.dll --logger:Console;Verbosity=minimal --nologo --artifactsProcessingMode-collect --testSessionCorrelationId:2061096_9acc4c5a-d67e-43bf-9d4c-f028adc85d5e
+2061159 /home/agentuser/.dotnet/dotnet exec --runtimeconfig /home/agentuser/AgentFramework/src/agent.tests/bin/Release/net10.0/agentframework.tests.runtimeconfig.json --depsfile /home/agentuser/AgentFramework/src/agent.tests/bin/Release/net10.0/agentframework.tests.deps.json /home/agentuser/AgentFramework/src/agent.tests/bin/Release/net10.0/testhost.dll --port 35155 --endpoint 127.0.0.1:035155 --role client --parentprocessid 2061137 --telemetryoptedin false
+n_b13=6
+mem_kb=2475364
+mem_mb=2417
+round13 n1=6 n2=6 mem_mb=2417
+WAIT: 仍 BUSY (n1=6 n2=6 mem_mb=2417) ⇒ 15s 后重采样
+--- 采样(a14) 2026-09-16T22:29:13+08:00 ---
+2058842 /usr/bin/time -f TIME_t12b wall=%es maxrss=%MkB python3 -u eval/capability/instruments_check.py --class-mixed-inject
+2058843 python3 -u eval/capability/instruments_check.py --class-mixed-inject
+2061090 /usr/bin/bash -c source /home/agentuser/.hermes/cache/terminal/hermes-snap-19562718e6a9.sh >/dev/null 2>&1 || true export AI_AGENT="${AI_AGENT:-hermes-agent}" HERMES_AGENT="${HERMES_AGENT:-true}" export GIT_PAGER="${GIT_PAGER:-cat}" PAGER="${PAGER:-cat}" builtin cd -- /home/agentuser/AgentFramework || exit 126 eval 'cd /home/agentuser/AgentFramework && grep -c "\[Fact\]\|\[Theory\]" src/agent.tests/R496NonRecomputableTests.cs; grep -c "InlineData" src/agent.tests/R496NonRecomputableTests.cs; echo "=== 全量单测重跑 ==="; export DOTNET_ROOT="$HOME/.dotnet"; env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR $HOME/.dotnet/dotnet test src/agent.tests/agentframework.tests.csproj -c Release --no-build --nologo 2>&1 | tail -5' __hermes_ec=$? umask 077 __hermes_snap_tmp=$(mktemp /home/agentuser/.hermes/cache/terminal/hermes-snap-19562718e6a9.sh.tmp.XXXXXXXXXX) && { { ( unset ${!HERMES_SESSION_*} ${!HERMES_CRON_AUTO_DELIVER_*} ${!HERMES_BROWSER_CONTROL_*} AI_AGENT HERMES_AGENT HERMES_UI_SESSION_ID 2>/dev/null; export -p; ) || true; } > "$__hermes_snap_tmp" && mv -f "$__hermes_snap_tmp" /home/agentuser/.hermes/cache/terminal/hermes-snap-19562718e6a9.sh; } 2>/dev/null || rm -f "$__hermes_snap_tmp" 2>/dev/null || true printf '\n__HERMES_CWD_19562718e6a9__%s__HERMES_CWD_19562718e6a9__\n' "$(pwd -P)" exit $__hermes_ec
+2061096 /home/agentuser/.dotnet/dotnet test src/agent.tests/agentframework.tests.csproj -c Release --no-build --nologo
+2061137 /home/agentuser/.dotnet/dotnet exec /home/agentuser/.dotnet/sdk/10.0.400/vstest.console.dll --testAdapterPath:/home/agentuser/.nuget/packages/coverlet.collector/6.0.4/build/netstandard2.0/ --framework:.NETCoreApp,Version=v10.0 /home/agentuser/AgentFramework/src/agent.tests/bin/Release/net10.0/agentframework.tests.dll --logger:Console;Verbosity=minimal --nologo --artifactsProcessingMode-collect --testSessionCorrelationId:2061096_9acc4c5a-d67e-43bf-9d4c-f028adc85d5e
+2061159 /home/agentuser/.dotnet/dotnet exec --runtimeconfig /home/agentuser/AgentFramework/src/agent.tests/bin/Release/net10.0/agentframework.tests.runtimeconfig.json --depsfile /home/agentuser/AgentFramework/src/agent.tests/bin/Release/net10.0/agentframework.tests.deps.json /home/agentuser/AgentFramework/src/agent.tests/bin/Release/net10.0/testhost.dll --port 35155 --endpoint 127.0.0.1:035155 --role client --parentprocessid 2061137 --telemetryoptedin false
+n_a14=6
+--- 采样(b14) 2026-09-16T22:29:18+08:00 ---
+2058842 /usr/bin/time -f TIME_t12b wall=%es maxrss=%MkB python3 -u eval/capability/instruments_check.py --class-mixed-inject
+2058843 python3 -u eval/capability/instruments_check.py --class-mixed-inject
+2062168 /usr/bin/bash -c source /home/agentuser/.hermes/cache/terminal/hermes-snap-19562718e6a9.sh >/dev/null 2>&1 || true export AI_AGENT="${AI_AGENT:-hermes-agent}" HERMES_AGENT="${HERMES_AGENT:-true}" export GIT_PAGER="${GIT_PAGER:-cat}" PAGER="${PAGER:-cat}" builtin cd -- /home/agentuser/AgentFramework || exit 126 eval 'cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR $HOME/.dotnet/dotnet test src/agent.tests/agentframework.tests.csproj -c Release --no-build --nologo --filter "FullyQualifiedName~R496NonRecomputable" 2>&1 | tail -3' __hermes_ec=$? umask 077 __hermes_snap_tmp=$(mktemp /home/agentuser/.hermes/cache/terminal/hermes-snap-19562718e6a9.sh.tmp.XXXXXXXXXX) && { { ( unset ${!HERMES_SESSION_*} ${!HERMES_CRON_AUTO_DELIVER_*} ${!HERMES_BROWSER_CONTROL_*} AI_AGENT HERMES_AGENT HERMES_UI_SESSION_ID 2>/dev/null; export -p; ) || true; } > "$__hermes_snap_tmp" && mv -f "$__hermes_snap_tmp" /home/agentuser/.hermes/cache/terminal/hermes-snap-19562718e6a9.sh; } 2>/dev/null || rm -f "$__hermes_snap_tmp" 2>/dev/null || true printf '\n__HERMES_CWD_19562718e6a9__%s__HERMES_CWD_19562718e6a9__\n' "$(pwd -P)" exit $__hermes_ec
+2062170 /home/agentuser/.dotnet/dotnet test src/agent.tests/agentframework.tests.csproj -c Release --no-build --nologo --filter FullyQualifiedName~R496NonRecomputable
+2062214 /home/agentuser/.dotnet/dotnet exec /home/agentuser/.dotnet/sdk/10.0.400/vstest.console.dll --testAdapterPath:/home/agentuser/.nuget/packages/coverlet.collector/6.0.4/build/netstandard2.0/ --framework:.NETCoreApp,Version=v10.0 --testCaseFilter:FullyQualifiedName~R496NonRecomputable /home/agentuser/AgentFramework/src/agent.tests/bin/Release/net10.0/agentframework.tests.dll --logger:Console;Verbosity=minimal --nologo --artifactsProcessingMode-collect --testSessionCorrelationId:2062170_2e8c7eda-f4fb-47da-81c3-1e86009cf2c5
+2062230 /home/agentuser/.dotnet/dotnet exec --runtimeconfig /home/agentuser/AgentFramework/src/agent.tests/bin/Release/net10.0/agentframework.tests.runtimeconfig.json --depsfile /home/agentuser/AgentFramework/src/agent.tests/bin/Release/net10.0/agentframework.tests.deps.json /home/agentuser/AgentFramework/src/agent.tests/bin/Release/net10.0/testhost.dll --port 42515 --endpoint 127.0.0.1:042515 --role client --parentprocessid 2062214 --telemetryoptedin false
+n_b14=6
+mem_kb=2621716
+mem_mb=2560
+round14 n1=6 n2=6 mem_mb=2560
+WAIT: 仍 BUSY (n1=6 n2=6 mem_mb=2560) ⇒ 15s 后重采样
+--- 采样(a15) 2026-09-16T22:29:33+08:00 ---
+2058842 /usr/bin/time -f TIME_t12b wall=%es maxrss=%MkB python3 -u eval/capability/instruments_check.py --class-mixed-inject
+2058843 python3 -u eval/capability/instruments_check.py --class-mixed-inject
+n_a15=2
+--- 采样(b15) 2026-09-16T22:29:38+08:00 ---
+2058842 /usr/bin/time -f TIME_t12b wall=%es maxrss=%MkB python3 -u eval/capability/instruments_check.py --class-mixed-inject
+2058843 python3 -u eval/capability/instruments_check.py --class-mixed-inject
+n_b15=2
+mem_kb=2691800
+mem_mb=2628
+round15 n1=2 n2=2 mem_mb=2628
+PRE_GATE_VERDICT=BUSY
