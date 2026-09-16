@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R481",
+ "updated_round": "R485",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -3475,6 +3475,152 @@
     "instrument_sha12": "0bb541818dc5",
     "binding": "audit-pin",
     "audited_by_round": "R481"
+   }
+  },
+  {
+   "id": "r482.dual-arm-token-cut",
+   "level": "L3",
+   "owner_round": "R482",
+   "capability": "双臂真机差分 (R478 空正文修复 + 常量兜底/回放守卫) 首达 R413 验收②: calls 21/14、total 72,634/49,237、降幅 32.2122% (H1 PASS ≥30%)；H2 PASS Δ7；H3 FAIL (`A.calls`=21 未 <21 ⇒ 按 prereg 记「修复在真链上无可测效果」单列, 不重跑凑数)；H5 恒等式逐行 21/21+14/14；H6 逐字回放 `t6←t1`(434B)/`t9←t8`(606B)。诚实边界 (post-hoc): 实质答复轮 R 6 < A 12 (t2–t5 为同一条 21B 模板 ⇒ 降幅含模板兜底成分), 单夹具单次无置信区间, 上游实测漂移。〔追溯登记: 本行为 R485 侧补登 (证据为 R482 冻结归档物, 未重跑)〕",
+   "evidence_cmd": "python3 eval/rover/r482/check_r482.py",
+   "evidence_path": "eval/rover/r482/verdict-r482.json",
+   "negative_control": "判据器常量全源码派生 (取不到 ⇒ MISS/弃权, 不冒充读数)；恒等式逐行 21+14 全落区零丢失；起手闸假归因修正留痕 `verdict-r482.json.drift_notes` (真因 = 本方 VBCSCompiler RSS 206MB 而非 llama-server)。〔追溯登记 R485〕",
+   "covers": [
+    "eval/rover/r482/check_r482.py",
+    "eval/rover/r482/run_both_r482.sh",
+    "eval/rover/r482/run_arm_R_only_r482.sh",
+    "eval/rover/r482/prereg_r482.json",
+    "eval/rover/r482/verdict-r482.json"
+   ],
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "e70895fc5ee9",
+    "instrument": "eval/rover/r482/check_r482.py",
+    "instrument_sha12": "a2ca206fa371",
+    "binding": "audit-pin",
+    "audited_by_round": "R485"
+   }
+  },
+  {
+   "id": "r482q.quality-face-recompute",
+   "level": "L2",
+   "owner_round": "R482Q",
+   "capability": "常量兜底归属与质量面量化 (只读既有产物, 不重跑真链/不改判据): 独立复算 calls 21/14、total 72,634/49,237、降幅 32.2122% 与 R482 **逐值相同**; 节省 23,397 tok 中 14,839 (63.4%) 来自 t2–t5 常量兜底轮 (`LocalSkipFallback`, 0 次远端调用); 去常量口径 `R'=64,076` ⇒ 降幅 11.78% ⇒ R413 验收② 在该代理口径**不成立**; 答复级: R 12 轮 7 distinct vs Arole 12/12 distinct; 溯源 `src/agent.modelqueue/ModelQueueRouter.cs:413-425` 载 2026-09-14 臂B 真机反证 (r1 生成确认语退化)。〔追溯登记 R485〕",
+   "evidence_cmd": "python3 eval/rover/r482/quality_face_probe.py",
+   "evidence_path": "eval/rover/r482/prereg_quality_face.json",
+   "negative_control": "器具自证: `--force-miss` ⇒ rc=3 弃权、`--swap` ⇒ 降幅符号翻转 (−47.52%)、两次独立运行输出 sha16 `6b8e7c33edb92ed6` **逐字节相同**；常量正则由产品源码派生 (取不到 ⇒ rc=3)。读数落于 `docs/improvements.md` R482-Q 段 (器具 stdout, 无独立 JSON 产物)。〔追溯登记 R485〕",
+   "covers": [
+    "eval/rover/r482/quality_face_probe.py",
+    "eval/rover/r482/prereg_quality_face.json",
+    "docs/improvements.md"
+   ],
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "b48f5588a338",
+    "instrument": "eval/rover/r482/quality_face_probe.py",
+    "instrument_sha12": "4496ad3abe16",
+    "binding": "audit-pin",
+    "audited_by_round": "R485"
+   }
+  },
+  {
+   "id": "r483.recall-band-readings",
+   "level": "L2",
+   "owner_round": "R483",
+   "capability": "精度分档读数 (复用 R481-F 端口, 规则 pin 两侧一致 `9e9104ca601f8849`): markdown **0.8125** (目标 ≥0.90 ✘) / root_rel **0.1608** (✘) / explicit_rel **0.0923** (目标 ≥0.85 ✘); slash_token 7,508 全越根; url 1,541 unreported; 守恒 80+67,269+639+7,508+1,541 = 77,037 ✔; 判定: 分档后三档全不达标 ⇒ 误差主因是真链接语境悬空, 维持「不再投相对引用改写」。〔追溯登记 R485〕",
+   "evidence_cmd": "python3 eval/recall/r483/bands_probe.py",
+   "evidence_path": "eval/recall/r483/bands.json",
+   "negative_control": "`--nc-conservation` rc=2 ✔ (守恒式机检)；语料钉对 R481-F = **DRIFT (不可比) 单列**；探针自身产物自排除 (排除后 pin 稳定 6,710)；档分母与端口 `measure()` 一致过滤 external (否则读数被伪污染 0.6771→0.8125)。〔追溯登记 R485〕",
+   "covers": [
+    "eval/recall/r483/bands_probe.py",
+    "eval/recall/r483/bands.json"
+   ],
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "ac441c7c91f6",
+    "instrument": "eval/recall/r483/bands_probe.py",
+    "instrument_sha12": "39fd72ea33c0",
+    "binding": "audit-pin",
+    "audited_by_round": "R485"
+   }
+  },
+  {
+   "id": "r483b.preflight-gate-instrument",
+   "level": "L2",
+   "owner_round": "R483B",
+   "capability": "真机测量**起手闸器具化** (修 R482 假归因): `build-server shutdown` → 沉降轮询 → 三态判定 (rc=0 PASS / rc=2 GATE_BLOCKED / rc=3 MISS)；实跑 rc=0 (2758 MB / shutdown_done=true)；占用源含本方编译服务器 (VBCSCompiler) 而非仅 llama-server ⇒ 真机测量起手前**必跑**。〔追溯登记 R485〕",
+   "evidence_cmd": "python3 eval/rover/r483/preflight_gate.py",
+   "evidence_path": "eval/rover/r483/preflight.json",
+   "negative_control": "负控 `--nc-block` ⇒ rc=2 ✔；自匹配假阳性 (bash wrapper cmd 含 `llama-server` 字面量) 由 R484 修复 = 排除自身+**全祖先链**+shell argv0，差分负控 `--nc-selfmatch` 修前 rc=2 → 修后 rc=0；`blocker_cause` 标签不精确单列为器具候选。〔追溯登记 R485〕",
+   "covers": [
+    "eval/rover/r483/preflight_gate.py",
+    "eval/rover/r483/preflight.json"
+   ],
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "c1a5b658bc8a",
+    "instrument": "eval/rover/r483/preflight_gate.py",
+    "instrument_sha12": "1a64ceb6bd14",
+    "binding": "audit-pin",
+    "audited_by_round": "R485"
+   }
+  },
+  {
+   "id": "r484.micro-local-probe",
+   "level": "L3",
+   "owner_round": "R484",
+   "capability": "微步骤隔离问询 → 本地 r1 替换可行性 = **判否**: 预注册 H1 非空 5/5 · H2 机械 5/5 (post-hoc 严格 4/5) · H3 长度带 3/4 · H4 算术纠错 local 0/1 vs remote 1/1 · H5 本地延迟 max 4.09s；语义面 2/5 空洞 (远端反而正确指出「隔离执行未携带前文」) ⇒ 残留候选 = **微问询形态分流** (R485 承接实现)。附外部真值: 远端自身 1 次空正文 (`finish_reason=length` / 512 reasoning / content 0, **直连未经 relay**)。〔追溯登记 R485〕",
+   "evidence_cmd": "python3 eval/rover/r484/micro_local_probe.py",
+   "evidence_path": "eval/rover/r484/micro_local_probe.json",
+   "negative_control": "双臂**同题同判据** (local = 产品同参 llama-server `-c 4608 -np 1 --cache-type-k/v f32 --flash-attn off --jinja`, 模型 sha `626b4a66…` vs remote = 真供应商 pin `89f53b56…`)；判据缺陷两条 **post-hoc 单列不覆盖预注册** (`not_echo` 整条比对 ⇒ 复读首行仍判过; H4 过严 ⇒ local 1/1 但 n=1)；llama-server 已回收 (`alive_after=0`)。〔追溯登记 R485〕",
+   "covers": [
+    "eval/rover/r484/micro_local_probe.py",
+    "eval/rover/r484/micro_local_probe.json",
+    "eval/rover/r484/prereg_r484.json"
+   ],
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "05df78962cf6",
+    "instrument": "eval/rover/r484/micro_local_probe.py",
+    "instrument_sha12": "dee9eb7f71f4",
+    "binding": "audit-pin",
+    "audited_by_round": "R485"
+   }
+  },
+  {
+   "id": "r485.micro-step-isolation-gate",
+   "level": "L2",
+   "owner_round": "R485",
+   "capability": "微问询形态分流**预发送闸**: 隔离微通道 = system(隔离声明)+user(微问题原文), **无前文** ⇒ 回指在通道内不可解 (原理性, 非启发式) ⇒ 命中登记回指标记即**不发** (省一次必然无效的远端调用)。机检 (真 C# 闸 × 已录制真机流量 `eval/rover/r482/calls-Arole.jsonl`): 微组 **7/7 判 skip** ∧ 主组 **14/14 判 send** (误伤 0)，语料形状 pin 21/7/14 不符即判红。离线投影 (只读 usage, 分列不混算): Arole 调用 7/21=33.3% / token 6,032/72,634=8.30%；R 臂 4/14=28.6% / 3,089/49,237=6.27%。接线: `IndustrialAgentV2.RunMicroStepsAsync` 落 `micro_step_skipped` 打点 + `micro_session` 增 `skipped` 计数。AOT: rc=0 / IL 警告 0 / 15363728 B / sha256 `03c77d56e8c485af…`。**未含**: 真机臂 H2/H3 (调用数与 ≥30% 降幅) 本轮未跑 ⇒ **无 L3 面**。；全量回归 **1510/1510** (首跑 1 例端口竞争 flake: `FrontendHandshakeTests` `Address already in use` ⇒ 隔离重跑 4/4 + 二跑 1510/1510 ⇒ 判**既有** flake, 非本轮回归, 无 ss 持有者)",
+   "evidence_cmd": "python3 eval/rover/r485/gate_probe.py",
+   "evidence_path": "eval/rover/r485/h1_gate_readings.json",
+   "negative_control": "**nc-selfcontained** rc=0 (4 条合成自足问句 + 录制主组 14 条被拦 0 ⇒ 无误伤)；**nc-empty-markers** ⇒ 拦截数 0 且 **rc=3 弃权** (空表 = 闸失效, fail-closed 不冒充读数)；标记表**源码派生** (取不到/表空/缺「上一条」⇒ rc=3)；单测 24/24 (含 2 条真语料机检 + 过泛词「继续/接着」刻意排除的回归锁)；token 缺失记 unreported 禁冒充 0。",
+   "covers": [
+    "src/agent.exploration/MicroStepIsolationGate.cs",
+    "src/agent/IndustrialAgentV2.cs",
+    "src/agent.tests/MicroStepGateTrafficTests.cs",
+    "src/agent.tests/MicroStepIsolationGateTests.cs",
+    "eval/rover/r485/gate_probe.py"
+   ],
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "dc1347869e20",
+    "instrument": "eval/rover/r485/gate_probe.py",
+    "instrument_sha12": "ac88366ac99a",
+    "binding": "audit-pin",
+    "audited_by_round": "R485"
    }
   }
  ],

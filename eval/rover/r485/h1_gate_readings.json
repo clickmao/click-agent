@@ -1,0 +1,86 @@
+{
+  "arms": {
+    "Arole": {
+      "blocked_seqs": [
+        10,
+        12,
+        13,
+        14,
+        16,
+        18,
+        20
+      ],
+      "calls": 21,
+      "main": 14,
+      "main_blocked": 0,
+      "markers_hit": {
+        "上一条": 3,
+        "从头": 3,
+        "换个说法": 1
+      },
+      "micro": 7,
+      "micro_blocked": 7,
+      "tok_blocked": 6032,
+      "tok_total": 72634,
+      "tok_unreported_seqs": [],
+      "usage_rows": 21
+    },
+    "R": {
+      "blocked_seqs": [
+        8,
+        9,
+        11,
+        13
+      ],
+      "calls": 14,
+      "main": 10,
+      "main_blocked": 0,
+      "markers_hit": {
+        "上一条": 3,
+        "从头": 1
+      },
+      "micro": 4,
+      "micro_blocked": 4,
+      "tok_blocked": 3089,
+      "tok_total": 49237,
+      "tok_unreported_seqs": [],
+      "usage_rows": 14
+    }
+  },
+  "corpus": "eval/rover/r482/{calls,usage}-{Arole,R}.jsonl (已提交产物)",
+  "gate_src": "src/agent.exploration/MicroStepIsolationGate.cs",
+  "h1": {
+    "calls": 21,
+    "skip_main": 0,
+    "skip_micro": 7,
+    "skip_micro_expected": 7
+  },
+  "h1_verdict": "PASS",
+  "markers": [
+    "上一条",
+    "上一句",
+    "上句",
+    "刚才",
+    "前面说",
+    "之前说",
+    "此前说",
+    "换个说法",
+    "换一种说法",
+    "从头",
+    "再说",
+    "重新说",
+    "重新确认",
+    "不对，你"
+  ],
+  "projection_offline": {
+    "Arole": {
+      "call_cut": "7/21",
+      "call_cut_pct": 33.33,
+      "tok_cut": 6032,
+      "tok_cut_pct": 8.3,
+      "tok_total": 72634
+    },
+    "note": "离线投影 (只读已录制 usage) ≠ 真机重跑; 两条臂口径分列, 不混算"
+  },
+  "sha16": "596e350b0516abae"
+}

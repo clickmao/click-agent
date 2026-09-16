@@ -294,14 +294,26 @@ public class IndustrialAgentV2 : AgentBase
     {
         var session = new agent.exploration.MicroStepSession();
         var sb = new System.Text.StringBuilder();
+        var skipped = 0;
         foreach (var st in subTasks)
         {
             var mq = new agent.exploration.MicroQuestion
             {
-                Question = st.Text,
+                Question = st.Text ?? string.Empty,
                 ForwardRefs = new List<string>(),
                 InjectedContext = string.Empty,
             };
+            // R485 微问询形态分流: 隔离通道无前文 ⇒ 回指不可解, 命中即**预发送**拦截 (省一次必然无效的远端调用)。
+            // 拦截不打 answer/正文, 只落 (reason, marker, len) 供审计; 被拦截者不产生回注摘要。
+            var isoGate = agent.exploration.MicroStepIsolationGate.Decide(st.Text);
+            if (!isoGate.Send)
+            {
+                skipped++;
+                agent.config.AgentTelemetry.Emit("micro_step_skipped", "IndustrialAgentV2",
+                    ("id", mq.Id), ("reason", isoGate.Reason), ("marker", isoGate.Marker),
+                    ("len", (st.Text ?? string.Empty).Length));
+                continue;
+            }
             var sw = System.Diagnostics.Stopwatch.StartNew();
             string answer;
             try
@@ -337,7 +349,7 @@ public class IndustrialAgentV2 : AgentBase
             if (summary.Length > 0) sb.AppendLine(summary);
         }
         agent.config.AgentTelemetry.Emit("micro_session", "IndustrialAgentV2",
-            ("count", subTasks.Count), ("failures", session.ConsecutiveFailures));
+            ("count", subTasks.Count), ("failures", session.ConsecutiveFailures), ("skipped", skipped));
         return sb.ToString();
     }
 

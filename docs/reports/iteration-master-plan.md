@@ -530,3 +530,119 @@ python3 eval/run_round.py <新轮号> "revert-verify <原commit>" --quick   # �
 - 起手闸：`preflight_gate.py` 自匹配假阳性修复（排除自身+祖先+shell argv0）；差分负控 `--nc-selfmatch` rc=2 / 修后 rc=0；sha `1a64ceb6…`。**真机测量起手前必跑**。
 - 注：本段为手写追加；**轮次索引表未刷新**（待 R484 入 registry 后由 `eval/tools/master_plan_round_index.py` 生成，禁手改该表）。
 - 下轮候选（本段产出）：① **微问询形态分流**（含 `上一条/从头/刚才` 等指代词的隔离微问询 ⇒ 直接不发，省 1 次远端调用/条，零信息损失；无指代轻问询才谈本地化）；② 空正文基数可测化（确定性 stub 造 `finish_reason=tool_calls`+0 tool_calls，对 修前 `/tmp/pub_r476/agenthost` vs 修后 `/tmp/pub_r479v2/agenthost` 做调用数差分）；③ `blocker_cause` 标签精确化；④ R479 遗留（路由器接线 / 入链 prompt 正文槽位化）；⑤ R481-G 遗留（by_subband 分档 / 语料钉四元组）。
+
+## R485（2026-09-16）微问询形态分流预发送闸 — 实现 + H1 机检（**未跑真机臂**）
+
+预注册 `eval/rover/r485/prereg_r485.json`（写在任何新测量之前；标记集合由**已录制流量**归纳 ⇒ 文中标注 post-hoc）。
+
+| 判据 | 内容 | 本轮读数 |
+|---|---|---|
+| H1 | 已录制真机流量上逐条自足判定: 微组 7/7 skip ∧ 主组 0/14 误伤 | **PASS**（真 C# 闸 × `calls-Arole.jsonl`；`MicroStepGateTrafficTests` 机检） |
+| H2 | 真机臂: 闸开臂 `micro_step_skipped>0` 且远端调用数 < 同夹具基线 | **未跑**（无真机读数） |
+| H3 | 双臂差分总 token 降幅 ≥30% | **未跑**（离线投影仅 8.30% token / 33.3% 调用，且投影≠真机） |
+| H4 | 负控: 自足问句不误伤 + 空标记表 fail-closed | **PASS**（`--nc-selfcontained` rc=0；`--nc-empty-markers` ⇒ 0 拦截 + rc=3 弃权） |
+| H5 | 改链代码后 AOT 重发布成功且 IL 警告 0 | **PASS**（rc=0 / IL 0 / 15,363,728 B / `03c77d56e8c485af…`） |
+
+- 单测 24/24（`--filter MicroStep`，含 2 条真语料机检）。器具 H1 读数 sha16 `596e350b0516abae`。
+- 关键读数：Arole 拦 7/21 调用（33.3%）、6,032/72,634 token（8.30%）；R 臂 4/14（28.6%）、3,089/49,237（6.27%）——**均为离线投影**，非真机重跑。
+- 判定：闸在**离线真语料面**成立（零误伤、失败面 fail-closed）；**R413 验收②（≥30%）本轮未取得真机证据**，H3 记「未跑」而非「未达」，不得据此宣称降幅。
+
+### R485 · 轮次索引增量（机取自 `docs/verification-registry.json`，禁手改）
+| R441 | `r441.gain-window-floor-and-position-curve` | L3 | **收益窗口下界 + 位置曲线**（同网格实测 A 分母, 8 臂, 被测二进制 sha 与 R439/R440 同）: 单跳 1/8 → **+13.77%**（A 17260→BRJ 14884）、单跳 1/20 末轮 → **+3.2 … |
+| R442 | `r442.accounting-and-asymmetry` | L2 | **口径钉死 + 两臂内联块不对称定量 + D7 分母断言**（纯离线复算 R441 档案）: 三档口径 ①D_remote W8 13.77/W20 3.20/M20 46.19（逐位复现 R441）②D_content-sym 13.7 … |
+| R443 | `r443.local-token-truth-and-replay-ablation` | L2 | **本地 r1 成本 tokenizer 真值化 + 「被跳轮不回放」同网格单变量消融**: 产品侧新增真值遥测 (tokens_evaluated/prompt_n/gen, llama-server 上报) + 反事实诊断开关 AGEN … |
+| R444 | `r444.instrument-acceptance` | L4 | L2 器具验收面(正控+负控成对) … |
+| R444 | `r444.prefilter-cost` | L3 | 前置门本地 r1 成本下降(真值口径) … |
+| R444 | `r444.prefilter-equivalence` | L3 | **廉价必要条件前置 (¬Ack ⇒ Pass) — 可证等价 + 含本地真值口径首次转正**: 把既有的后置否决 `Skip ∧ ¬MechanicalAck ⇒ Pass` 反解为不变量 `Skip ⇒ Ack`, 其逆否 `¬Ack  … |
+| R444 | `r444.separability-precheck` | L4 | R423 可分性预检(Skip⇒Ack 必要性) … |
+| R444 | `r444.short-tier-truth` | L3 | 短档/单跳档本地真值补列 … |
+| R444 | `r444.status-single-audit` | L4 | L3 单一审计面(registry 派生) … |
+| R444 | `r444.writer-arbitration` | L4 | L4 写者仲裁(心跳+pre-commit) … |
+| R445 | `r445.judge-prefilter-controls` | L4 | 器具三控(正控/负控/fail-closed) … |
+| R445 | `r445.judge-prefilter-separability` | L1 | 判官侧机械前置的可分性(消息面) … |
+| R445 | `r445.prev-reply-face-indicative` | L1 | 上一轮来源面的指示性上界(不作判据) … |
+| R446 | `r446.channel-marks-multivariant` | L3 | 器具: 判官 prompt 多形态派生(公共前缀标记) + 零回归 … |
+| R446 | `r446.judge-determinism` | L1 | 判官路径确定性(真机产品路径) … |
+| R446 | `r446.judge-prompt-compact` | L1 | 判官 prompt 瘦身消融(开关默认关) … |
+| R446 | `r446.zero-token-settlement-precheck` | L1 | 判官 0-token 结算可行性(消息面) —— 负结论 … |
+| R447 | `r447.judge-decode-constraint-grammar` | L1 | 判官解码侧约束(单字母 GBNF)等价性真机消融 —— 负结论: 生成可降 98.9% 但判决不等价(18/18 恒 A), 不得启用 … |
+| R448 | `r448.judge-think-length-cap` | L3 | 判官 prompt 侧「限长思考」（保留思考、只压缩长度）真机消融 —— 负结论: 生成仅降 33.0%（178.6→119.7）且预算 128 下 61.1% 思考被截断、与产品基线判决一致率 0.1667 ⇒ 不得启用 … |
+| R449 | `r449.real-traffic-external-validity` | L3 | 真实流量外部效度裁决 (机械面, 与判官无关): 可跳轮 = Ack ∧ ¬MechanicalPass ⇒ state.db 1542 轮中 ack 0/1542、gate_eligible 0/1542 ⇒ 远端降幅实现额 0 ⇒ 通道 … |
+| R449 | `r449.think-memory-switch` | L2 | think-memory 四档开关 (on 默认/off/recall0/write0) + 反空心召回计数 + HitCount 与 refs 采纳次数分离 (修「命中恒 0」根因); ★收尾轮补: 开关**在遥测面可机检** (boot … |
+| R449 | `r449.turn-gate-parse-crosslang-fixture` | L2 | 门判解析器 (TurnGateJudge.Parse) 跨语言同位夹具: 13 用例在 C# 与 py 两侧逐条同判, 解析索引口径 = UTF-16 码元 (emoji 代理对不移位) … |
+| R450 | `r450.gate-prompt-anchor` | L2 | 门判**实发 prompt** 落盘锚 (env AGENTFRAMEWORK_GATE_PROMPT_DUMP, 默认关/零产品变更) + 零反射 JSON 转义 + UTF8 no-BOM + 源码派生重建器的版本锚 fail-clos … |
+| R451 | `r451.real-traffic-reprobe` | L2 | 真实流量外部效度探针重跑: 文本层锚(tpl_len=280/seed_sha16 与 R443 逐位相同)与行为层(I1 正控)分离判据; 残余失锚定位=调用/解码面; 判决 VOID ⇒ 真实读数一律 n/a … |
+| R452 | `r452.product-native-real-traffic` | L2 | 产品原生跑真实语料(零重建): 生产行为门 r1=0/Skip=0; 判官强制面 14 票 S 全被机械认可族守卫否决(13 票落『继续下一轮』驱动类); 门判 prompt 无 prev 段 ⇒ 门判=f(msg); 吞并轮 7/51 远 … |
+| R453 | `r453.absorb-channel-audit` | L2 | 真实分布 token 通道台账 + 吞并轮通道审计: 7/51=13.7% 轮 0 远端调用(上界省 54,852 tok=14.0%); 前置门省 14 次本地 r1=7,204 tok; 可跳面=0(判官 S 票 14/14 被守卫否决 … |
+| R454 | `r454.codex-external-contrast` | L2 | 外部对照: codex-cli 0.154.0 真实请求面(捕获字节) vs click-agent —— 静态面 34,542B/9工具 vs 4,300B/0工具; codex 仅支持 responses wire_api; 带 pro … |
+| R455 | `r455.module-coverage-ab` | L2 | 同环境/同输入/同模型(deepseek-flash)/零重试的模块覆盖对照: 我方 0/4 产物 + 1 次问询 vs codex 4/4 产物 + 0 问询; M1 缓存 86.6% vs 96.6%; 远端调用 7 vs 13; M2 … |
+| R456 | `r456.action-loop` | L2 | 动作环(声明/解析/回灌/执行)链机制修复: 同套件(同夹具/同6轮/同模型)产物 0/4 -> 2/4(count.txt=4, merged.txt=ALPHA/BETA/GAMMA 逐字节同 codex), 磁盘伪造执行记录消失, 审 … |
+| R457 | `r457.effect-closure` | L3 | 动作环效果收口(真机 E2E): 同夹具产物 2/4 -> 4/4 (stats.txt=chars=14, first.txt=R455 fixture note), 磁盘伪造 0; 三缺口机制修复: 台账回灌(命中 8 个实发请求) / … |
+| R458 | `r458.humanized-continuation` | L2 | 承接轮人性化(真机 E2E, 同夹具/同 6 轮/同模型): T5「继续」→ 逐项承接 4 个真实产物 + 「继续什么」反问 + 3 个具体可选项 (固定示例菜单 `(如: 搜索/写文档…)` 消失); T6 内部术语 3 行 → 0 行  … |
+| R460 | `r460.brevity-menu-cache` | L2 | 承接轮精炼 + 菜单单源 + 命中率/token 归因 (真机 E2E, 同夹具/同 6 轮/同模型, 唯一差异=二进制): T5 回复 241→160 字 (-33.6%), 承接注入块 288→163 字 (-43.6%, MaxArt … |
+| R461 | `r461.contract-not-front-and-hit-budget` | L2 | 契约声明不上前台 + 零字节产物可见 + 每轮注入预算收口 (真机 E2E, 同夹具/同 6 轮/同模型, 唯一差异=二进制; 夹具两侧 md5 fe1f5530446bd4ceb8be1b944c8ec005): 前台契约声明行 3 处  … |
+| R462 | `r462.language-agnostic-recall` | L2 | 语言无关召回探针 (承 R447 用户令「管道内一律标通用代码逻辑」): 删 ContextAssembler 工作区召回的**硬编码后缀白名单** (源码逐字列语言后缀), 改结构+内容探针 WorkspaceTextProbe (空文件 … |
+| R462 | `r462.recall-reality-gate` | L2 | 召回-现实一致性闸 (机制, 非提示词补丁): 召回块/记忆块/工具回灌面里引用的**路径样事实**由当前工作区文件系统裁决, 不一致即显式标 [核验✗ …] (一致时才标 [核验✓ 现存 N B]; 召回片段走 failOnly ⇒ 一致 … |
+| R462 | `r462.weight-probe` | L2 | 本地判别权重档位探针 (回答用户「现役 r1 权重够不够」, 承用户令改用 3B): 28 条**产品实发**门判 prompt (14 条 msg='继续下一轮' 标签=产品现行判决 pass(real:rule) / 14 条 msg= … |
+| R463 | `r463.local-gate-model-switch` | L2 | 本地判别通道权重档位切换 (用户令「改用3b 并且 删除多余模型 3b q4」): 现役 r1-distill-1.5B-Q4 → Qwen2.5-3B-Instruct-Q4_K_M。同网格 (R438 task-p12) / 同桩 /  … |
+| R463 | `r463.model-cleanup` | L1 | 冗余权重清理 (用户令): 先算 (bytes, sha256) 落台账再删。删除 1.5B-Q4 (1,117,320,800 B) / 1.5B-Q8 (1,894,532,192 B) / QwenPaw-2B-Q4 (1,560,4 … |
+| R464 | `r464.local-channel-config-fail-closed` | L2 | 本地判别通道「配置错配」fail-closed：消灭 `lc.IsReady ? lc.ModelPath : baseOpts.ModelPath` 静默回退默认权重（R463 BP 负控 VOID 根因）⇒ 三态来源判定（配置未声明 / … |
+| R464 | `r464.settle-sentinel-and-cross-round-determinism` | L1 | 结算器具修正 + 跨版本确定性等式: ① 非本地调用哨兵 '-1' 不再当读数求和（旧版把 12 条哨兵累成 -8/-12 假读数）; ② 预注册 C6 口径写错 ⇒ 保留 FAIL 不改写, 正确形态单列 checks_posthoc;  … |
+| R465 | `r465.embedder-channel-three-state` | L1 | 嵌入(bge)通道同形三态接线: ServiceCollectionExtensions 的 embedder 注册改用 LocalChannelWiring.ResolveEmbedder(declared, envPath, Defau … |
+| R465 | `r465.filelock-release-no-unlink` | L2 | FileLock 释放路径不得 unlink 锁文件（锁身份 = inode，存在性 ≠ 是否被持有）: Release 只关 fd；TryBreakStaleLock ⇒ 只读 IsHolderDead；Describe 优先 /proc … |
+| R465 | `r465.local-channel-warmup` | L1 | 本地生成通道预热（AGENTFRAMEWORK_LOCAL_WARMUP=1）: 宿主启动即调 ILocalGenerationPort.WarmupAsync（接口默认实现 ⇒ 测试桩零改动）⇒ 权重装载移出用户可见的门控轮路径；遥测 l … |
+| R465 | `r465.pure-repeat-skip` | L2 | 纯复述族直 Skip（真诉求轮可跳面）: TurnGateJudge.IsPureRepeat 三道全过（① 完整复述标记 ② 去标点后 ≤14 字且字符全属复述白名单 ③ 无问号）⇒ 在 MechanicalPass 之后直接 Skip： … |
+| R466 | `r466.repeat-replay-priority` | L2 | 本地已确定性结算的轮次（纯复述 ⇒ 回放上一条答复原文）优先级高于 R458 承接反问收口：收口面读同一结算类后不再覆盖回放，用户可见答复 = 上一条答复逐字。判据单源 = ContinuationBrief.SettleRepeatVer … |
+| R466 | `r466.settle-kind-single-source` | L4 | 口径单源机检（形式门）：① 主链只准引用常量 ContinuationBrief.SettleRepeatVerbatim，字面值只准出现在 ContinuationBrief（G37 强化）；② 结算类在 skip 支写入单一变量 _lo … |
+| R467 | `r467.arm-flag-comparability-gate` | L4 | 臂可比性闸(fail-closed)：同名臂跨轮 arm_flags 必须逐键同，不同 ⇒ 该臂读数 VOID_NOT_COMPARABLE(不可作分母/不可同题对比)；异名异类 ⇒ NA 拒绝背书；含 G1 分解恒等式 / G2 桩-遥测 … |
+| R467 | `r467.call-decomposition-ledger` | L2 | 远端调用分解台账：桩侧 calls-<ARM>.jsonl 逐条分类(main/judge/micro/other) + 宿主 correction_judge 路由(source·prompt_len·ms) + llm_call 内部计 … |
+| R468 | `r468.gate-rules-port-diff` | L2 | 门判规则 Python 端口与产品判据的差分一致性: 端口从 src/agent.modelqueue/LocalGenerationPort.cs 正则派生(7 组规则: AckFamilyChars:304 / RepeatFamily … |
+| R468 | `r468.real-traffic-composition-external-validity` | L2 | 降幅外部效度机检：用产品判据（源码派生端口 + 产品差分校验）在【真实用户轮语料】(state.db 只读; 1,179 真实轮, 剔除 1,406 系统注入) 上复算机械可跳面, 与网格 p12 组成并列。读数: 网格 ack4+repe … |
+| R469 | `r469.hit-ceiling-bands` | L2 | 命中率理论上限分档: 把用户轮长度从命中率分母剥离, 机检真实轮(400)在四档下的命中上限与达97%所需前缀; 显式声明长档(>93 tok)结构性不可达(86.8~96.2%), 97%单值红线不得对长中档报出 … |
+| R469 | `r469.main-call-prefix-stability` | L2 | 主调用 prompt 前缀逐字节稳定性(离线, 无 llama-server): 从桩侧落盘全量 messages 复算逐对公共前缀/新增字符数; 门控臂 R 主调用 5/5 对 tail_only ∧ share=1.0, 新增由用户轮主 … |
+| R470 | `r470.cache-channel-attribution` | L2 | 真实流量命中归因通道(跨会话共享前缀)打点: 无同会话前驱的调用命中归因 shared_prefix(否则 -1, 禁双计), 只在既有 -1 之上补通道不回收口径; 三处 data-carrying llm_call 打点全铺 cache … |
+| R470 | `r470.real-feed-cache-actuals` | L2 | 真实远端调用(非桩)缓存实测: host.jsonl llm_call 43 条 ⇒ 命中占比 45.44%(hit 59518/prompt 130974), 命中量饱和 2048~2304(64 对齐, 例外 2 条 hit=127), … |
+| R471 | `r471.channel-aggregation-emitted` | L2 | 分通道命中聚合器读**产品实发字段**: scripts/kpi_cache_hit.py 只读 kv.cache_channel/shared_prefix_hit_tokens/shared_prefix_hit_rate; 缺 cac … |
+| R471 | `r471.derived-vs-emitted-separation` | L2 | 派生 vs 实发分离(诚实面): 真实流 43 条 llm_call 中**含 cache_channel 字段者 0 条(0/43)** ⇒ R470 的「shared_prefix 43/43」是证据脚本**派生值**, 非产品实发;  … |
+| R472 | `r472.criteria-posthoc-and-mechanism-law` | L2 | 事后判据处置 + 机制定律: (a) 预注册 C7(判定函数自检)判 FAIL 的原判保留不覆盖, 根因定位为 v1 CAP 分支阈值与前缀臂尺寸不自洽(P_MID 需 >= 3150 才可达, 合成 case cap=2048/P_MID … |
+| R472 | `r472.prefix-cache-no-provider-cap` | L3 | 真机受控实验裁决「远端命中饱和成因」: 8 次真实调用(deepseek-flash, 与 config/base/models.yaml:9,16 同模型同端点), 共享前缀阶梯 910/3789/5811 tok, warm 命中 76 … |
+| R474 | `r474.provider-truth-denominator-arms` | L3 | KPI 分母升级: 供应商 usage 真值双臂(门关 Arole 20 调用/76094 token vs 门开 R 9 调用/32769 token) ⇒ 总 token -56.94%/远端调用 -55.0%; 桩口径(字符/2)低估 … |
+| R474 | `r474.quality-regression-evidence` | L2 | 真端点暴露的回复质量面: R 臂 12 轮中 6 轮模板应答 + 3 轮用户可见「模型未产出正文」横幅(t1/t7/t8), 而同轮 Arole 为 371-644 字实质回答; recover 双态 Arole 4/4 recovered … |
+| R474 | `r474.relay-instrument-and-budget-guard` | L4 | 真转发中继器具: 双证据(请求体落盘 + 供应商 usage 落盘) + 预算闸 fail-closed(cap 0 -> HTTP 402 且零外发); 负控/正控成对(G1 402, G2 无转发行, G3 进程存活, G4 正控透传) … |
+| R475 | `r475.recover-channel-accounting-fields` | L2 | llm_call_recover 行补齐 prompt_tokens/cache_hit_tokens/cache_miss_tokens/cache_hit_rate(与 llm_call 同源, 未上报 -1) ⇒ 产品自记账不再漏账( … |
+| R475 | `r475.repeat-replay-substantive-guard` | L2 | 纯复述轮的回放守卫: 只有存在**可回放的实质答复**才允许本地消化; 上一条为空/模板/空正文徽标 ⇒ 撤销 Skip 降级远端(禁以模板冒充答复)。判据单源: 用户轮 IsPureRepeat + Assistant 侧 ModelQu … |
+| R475 | `r475.usage-truth-twin-column` | L2 | 双列并账(供应商 usage 真值列 vs 产品自记列): 硬分离禁混算; recover 缺字段 ⇒ unreconciled(禁按 0); 唯一跨列运算 gap.* 显式列名; 并账闭合判据 truth.prompt == produc … |
+| R476 | `r476.band-aware-redline-verdict` | L2 | 红线判定**分档化**(只增不改): 单值 0.97 不变, 但判据目标改为 min(红线, 该轮结构上限 prefix/(prefix+用户轮+21)) ⇒ 5 态判决 not_applicable/unreported/at_targe … |
+| R476 | `r476.band-kpi-instrument` | L2 | 分档聚合器具(达成轮占比 + 分通道) + **常数与产品源码 fail-closed 机检**: py 侧红线/承接开销/缓存单元/档界 与 PromptCacheRedline.cs+PromptCacheKpi.cs 逐值比对, 差异 … |
+| R476 | `r476.evidence-binding-round-param` | L2 | 证据绑定器具轮号参数化: bind_evidence.py 加 --round(默认 = 历史常量 AUDITED_BY_ROUND ⇒ 无参调用逐字不变), 消除「audited_by_round 写死旧轮号」的收口缺陷 … |
+| R476 | `r476.pricing-fail-closed` | L2 | 计价面 fail-closed: 无显式价格表 ⇒ pricing.status=unreported 且 cost_cny=None/hit_discount_known=False(禁按 0 冒充); 仅当 --price <json> … |
+| R477 | `r477.band-fields-live` | L3 | R476 分档 7 字段**实发存在**: 真机每主调用遥测行均带 cache_band/band_source/band_growth/ceiling/target/margin/verdict(Arole 13/13, R 7/7 行) … |
+| R477 | `r477.empty-body-root-cause` | L3 | 用户可见「⚠ 模型未产出正文」徽标定因: 真机 20/20 空正文调用的 `finish_reason == tool_calls`(请求携带 4 个 tools), `max_tokens == None`(**非**输出预算截断), ` … |
+| R477 | `r477.kpi-drop-real-endpoint-arms` | L3 | 真端点双臂 KPI 复测(同网格 task-p12/同二进制 agenthost db187e0eae7f26ea/仅门控不同): 供应商 usage 真值(A) 73649 token/21 调用 → (R) 37744 token/10 … |
+| R477 | `r477.replay-guard-real-e2e` | L3 | R475 复述回放守卫**首次真机复演**: 复述轮(t6「再讲一遍。」/t9「从头再说。」)用户可见回复 = 前序**实质**答案逐字回放(298 字符, 非模板/非空正文徽标), 且该轮供应商侧 0 调用; 回放事件按输入指纹对齐(`l … |
+| R478 | `r478.empty-body-cause-protocol-only` | L2 | 空正文定因机制化(承 R477 真机 20/20 `finish_reason == tool_calls` 事实): ① 定因判据**只取上游协议字段**(finish_reason/tool_calls/reasoning 长度) —— … |
+| R478 | `r478.hit-rate-cold-steady-split` | L3 | R477 真机 usage(**供应商真值**, 恒等式 `hit+miss==prompt` 21/21 + 10/10 逐行成立)命中率按 **R456b** 分列: 稳态(rate≥0.5) Arole 19 调用 **0.91901 … |
+| R478 | `r478.request-turn-causal-binding` | L2 | 请求-轮次**因果绑定**(替代时间窗归属): `QueueResponse.RequestId` 单调签发(`entry.Id#seq`, `Interlocked`, AOT 安全) → `llm_call` 遥测带 `request_ … |
+| R479 | `r479.local-decision-calibration` | L2 | **精准语义 = 校准 LLM 返回后本地该做什么的单一出口**(`src/agent.modelqueue/LocalDecisionMap.cs`): `FromResponses(result, actionLoopEnabled)  … |
+| R479 | `r479.responses-io-wire` | L2 | 真实 I/O 数据格式按 **Responses 协议** 落成 typed 面(`src/agent.modelqueue/ResponsesWire.cs`): ① **字段分离** —— `instructions`(本地指示/权限类 … |
+| R479 | `r479.tool-decl-single-source` | L3 | 工具声明面**单一事实源**(`src/agent.modelqueue/ActionToolSpec.cs`): 一份规格派生两种线格式 —— chat 嵌套形态与现有 `ActionToolDecl.ToolsJson` **逐字节相等 … |
+| R481 | `r481.recall-d9-alternating-verify` | L2 | **目录 mtime 剪枝盲区**修复 = 交替核验: 指纹头 stamp 改 `(stampTicks << 1) \| 上轮是否剪枝`(低位), 读侧 `(ticks >> 1)` + `(ticks & 1UL) != 0UL`; 剪 … |
+| R481 | `r481f.recall-link-port-derivation` | L1 | **链接面规则端口(源码派生)** —— 把产品 `RecallLinkExtractor` 的接受规则与显式相对引用解析基准移植成可批量跑的端口: 7 组规则常量由 `src/agent.recall/RecallLinks.cs` 正则 … |
+| R482 | `r482.dual-arm-token-cut` | L3 | 双臂真机差分 (R478 空正文修复 + 常量兜底/回放守卫) 首达 R413 验收②: calls 21/14、total 72,634/49,237、降幅 32.2122% (H1 PASS ≥30%)；H2 PASS Δ7；H3 FA … |
+| R482Q | `r482q.quality-face-recompute` | L2 | 常量兜底归属与质量面量化 (只读既有产物, 不重跑真链/不改判据): 独立复算 calls 21/14、total 72,634/49,237、降幅 32.2122% 与 R482 **逐值相同**; 节省 23,397 tok 中 14, … |
+| R483 | `r483.recall-band-readings` | L2 | 精度分档读数 (复用 R481-F 端口, 规则 pin 两侧一致 `9e9104ca601f8849`): markdown **0.8125** (目标 ≥0.90 ✘) / root_rel **0.1608** (✘) / expl … |
+| R483B | `r483b.preflight-gate-instrument` | L2 | 真机测量**起手闸器具化** (修 R482 假归因): `build-server shutdown` → 沉降轮询 → 三态判定 (rc=0 PASS / rc=2 GATE_BLOCKED / rc=3 MISS)；实跑 rc=0 ( … |
+| R484 | `r484.micro-local-probe` | L3 | 微步骤隔离问询 → 本地 r1 替换可行性 = **判否**: 预注册 H1 非空 5/5 · H2 机械 5/5 (post-hoc 严格 4/5) · H3 长度带 3/4 · H4 算术纠错 local 0/1 vs remote 1 … |
+| R485 | `r485.micro-step-isolation-gate` | L2 | 微问询形态分流**预发送闸**: 隔离微通道 = system(隔离声明)+user(微问题原文), **无前文** ⇒ 回指在通道内不可解 (原理性, 非启发式) ⇒ 命中登记回指标记即**不发** (省一次必然无效的远端调用)。机检 ( … |
+
+覆盖自检: 轮号 ['R441', 'R442', 'R443', 'R444', 'R445', 'R446', 'R447', 'R448', 'R449', 'R450', 'R451', 'R452', 'R453', 'R454', 'R455', 'R456', 'R457', 'R458', 'R460', 'R461', 'R462', 'R463', 'R464', 'R465', 'R466', 'R467', 'R468', 'R469', 'R470', 'R471', 'R472', 'R474', 'R475', 'R476', 'R477', 'R478', 'R479', 'R481', 'R482', 'R483', 'R484', 'R485']；registry rows=157，updated_round=R485。
+**缺登记行轮号: 459, 473, 480**
+
+### R485 · 下轮候选（并入同轮）
+1. 真机双臂 H2/H3（闸开 vs 同夹具基线；起手闸 `preflight_gate.py` + 沉降等待必跑）
+2. 端到端质量面（闸开/闸关答复级）
+3. 空正文基数可测化（确定性桩：`finish_reason=tool_calls` + 0 tool_calls，对 `/tmp/pub_r476/agenthost` vs `/tmp/pub_r479v2/agenthost` 做调用数差分）
+4. `blocker_cause` 标签精确化（mem 与 proc 同时成立时不许二选一）
+5. R479 遗留（路由器接线 / 入链 prompt 正文槽位化）
+6. R481-G 遗留（`by_subband` 分档读数 / 语料钉四元组）
+7. 起手闸 + 沉降等待并入 `run_both_*`（禁手抄）

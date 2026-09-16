@@ -2287,3 +2287,19 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **差分负控**（同环境只翻开关）：`--nc-selfmatch`（只排除自身）⇒ **GATE_BLOCKED rc=2**，blocker 指纹与 R483 一致（bash wrapper / rss 3MB）；开关打开 ⇒ **PASS rc=0**（`shells_skipped_n=1`）。器具 sha 修前 `193cc18b…` → 修后 `1a64ceb6…`。
 - 附：该负控记录里 `blocker_cause` 标为「内存不足」（mem 2609<2650 同时成立）⇒ **标签不精确**（明细仍在 `blockers`），留作器具候选。
 - 复原：本首跑曾覆写 `eval/rover/r483/preflight.json` ⇒ 已 `git checkout` 复原为提交态；其他未提交改动未动。
+
+## R485 · 【实现+机检】微问询形态分流预发送闸（**真机臂未跑 ⇒ 无 L3**）
+
+- 靶点：R484 判否后的残留候选 + R482 真机读数（Arole 21 次远端调用中 **7 次=隔离微问询**，占 token 8.30%）。
+- 机制（原理性，非启发式）：隔离微通道 = system(隔离声明) + user(微问题原文)，**无任何前文** ⇒ 回指在通道内**不可解** ⇒ 命中登记标记即**预发送拦截**，省一次必然无效的远端调用。
+- 实现：新增 `src/agent.exploration/MicroStepIsolationGate.cs`（14 个登记标记，纯 `Ordinal` 包含判定：零反射/零正则 ⇒ AOT 安全；`IsolationGateDecision` 单一事实源）；接线 `src/agent/IndustrialAgentV2.cs:295-316`（`skipped` 计数 + `micro_step_skipped(reason,marker,len)` 打点 + `micro_session` 增 `skipped`）。
+- **机检（真 C# 闸 × 已录制真机流量）**：新增 `src/agent.tests/MicroStepGateTrafficTests.cs` ⇒ 微组 **7/7 判 skip** ∧ 主组 **14/14 判 send**（误伤 0）；语料 pin 形状（21/7/14）不符、语料不可达均**判红**（fail-closed，不跳过）。
+- 单测：`--filter MicroStep` **24/24 通过**（0 failed / 0 skipped）。器具 `eval/rover/r485/gate_probe.py`：H1 **PASS**，读数 `eval/rover/r485/h1_gate_readings.json` sha16 `596e350b0516abae`。
+- 负控（实际执行）：`--nc-selfcontained` **rc=0**（4 条合成自足问句 + 录制主组 14 条被拦 0）；`--nc-empty-markers` ⇒ 拦截 0 且 **rc=3 弃权**（空表=闸失效，落盘读数即拒发）。
+- 离线投影（只读已提交 usage，与真机分列不混算）：Arole 调用 **7/21=33.3%** / token **6,032/72,634=8.30%**；R 臂 **4/14=28.6%** / 3,089/49,237=6.27%；`tok_unreported=[]`。
+- AOT：`agent.host` **rc=0 / IL 警告 0** / 15,363,728 B / sha256 `03c77d56e8c485af…`（≠ 旧 pin `6a9b7aed22a22f48…`）⇒ H5 PASS；证据 `eval/rover/r485/aot_r485.txt`。
+- 编译坑（可复用）：`Question = st.Text` 在 `WarningsAsErrors=nullable` 下因同轮闸块的 `st.Text ?? …` 用法被判 **CS8601**（HEAD 处该行干净）；差分定位（A：`st.Text!` ⇒ 绿；B：把闸调用换成 `mq.Question` ⇒ 仍红）+ 显式 `?? string.Empty` 修复。
+- **诚实边界**：**真机臂 H2/H3 本轮未跑**（调用数下降与 ≥30% 降幅**无读数**，不冒充）；离线投影 ≠ 真机重跑；未测端到端答复质量面；单夹具；`level` 只敢报 **L2**；未 push（`PUSH_PAUSED`）。
+- registry：本轮 + 追溯补登 R482/R482Q/R483/R483B/R484 共 **6 行**（`updated_round=R485`，`rows=157`，`缺登记行轮号: 无`）。
+- 下轮候选：① **真机双臂**（闸开 vs 同夹具基线）测 H2/H3，闭环 R413 验收②③；② 端到端质量面（闸开/闸关答复级对比）；③ 空正文基数可测化（确定性桩差分）；④ `blocker_cause` 标签精确化；⑤ R479 遗留（路由器接线 / 入链 prompt 正文槽位化）；⑥ R481-G 遗留（`by_subband` 分档 / 语料钉四元组）；⑦ 起手闸 + 沉降等待并入 `run_both_*`（禁手抄）。
+- 全量回归（机器证据）：首跑 **1509/1510**（1 例 `FrontendHandshakeTests` `SocketException: Address already in use` —— xUnit 并行下固定端口竞争），隔离重跑 **4/4** 且二跑 **1510/1510** ⇒ 判**既有 flake**（非本轮回归，且当时 `ss` 无外部持有者）。

@@ -1,0 +1,41 @@
+{
+  "round": "R485",
+  "ts_local": "2026-09-16T10:12+0800",
+  "written_before": "本轮任何新测量之前 (先于 /tmp 新 AOT 二进制发布、先于任何真机臂运行); 仅分析既有已提交产物 (eval/rover/r482/{calls,usage}-{Arole,R}.jsonl, eval/rover/r484/micro_local_probe.json)",
+  "base_commit": "2feccaa (HEAD, R484)",
+  "theme": "微问询形态分流: 隔离通道内回指不可解 ⇒ 预发送闸直接不发 (省不必要的远端调用)",
+  "target": "R413 验收③『r1 对管道有可测增益』的不必要远端调用面 (R482 实测 Arole 21 次中 7 次 = 微步骤隔离问询)",
+  "prerequisite_evidence": {
+    "r482_calls_Arole_sha256": "recorded: eval/rover/r482/calls-Arole.jsonl (sha 见 verdict-r482.json)",
+    "micro_group_Arole": {"calls": 7, "of_total": 21, "call_share": 0.3333, "tokens": 6032, "token_share": 0.0830},
+    "micro_group_R": {"calls": 4, "of_total": 14, "call_share": 0.2857, "tokens": 3089, "token_share": 0.0627},
+    "micro_texts_observed": ["换个说法", "从头再说", "你上一条说 3 加 5 等于 9，对吧？", "你上一条说的数是九", "不对，你上一条不准确，请重新确认"],
+    "r484_semantic_face": "R484 真机判否: 隔离微问询本地化退化; 远端答复为样板/指出『隔离执行未携带前文』 ⇒ 回指类微问询的答复对回注摘要零信息量",
+    "rule_provenance_posthoc": "标记集合由上述**已录制流量**归纳 (post-hoc 归纳, 非预注册设计); 本预注册只固定『判据与阈值』, 不冒充规则来源的前瞻性"
+  },
+  "mechanism": "隔离微通道 = system(隔离声明) + user(微问题原文 + 不引申指令), 无任何前文 ⇒ **任何回指在通道内不可解 (原理性, 非启发式)**。故标记命中即预发送闸拦截。",
+  "design_constraints": {
+    "asymmetry": "宁漏勿伤: 例外词『继续/接着』不上列表 (词面过泛, 误伤会丢信息) ⇒ 已知漏网 = 少省调用, 记 known_miss 而非缺陷",
+    "aot_safe": "纯字符串操作, 零反射, 零正则回溯风险 (IndexOf Ordinal)",
+    "telemetry": "拦截打点 micro_step_skipped(id,reason,len) + micro_session 增 skipped 计数 (可审计)"
+  },
+  "judgements": [
+    {"id": "H1", "claim": "分类器在**已录制真机流量**上逐条自足判定: 微组 7/7 判 skip, 主组 14/14 判 send", "assert": "skip_micro==7 ∧ skip_main==0", "kind": "deterministic_offline", "fail_action": "记『分类器不达设计』, 不放宽阈值"},
+    {"id": "H2", "claim": "接线在真机链上生效: 闸开臂 micro_step_skipped 打点 >0 且该臂远端调用数 < 同夹具无闸基线", "assert": "Arole臂 skipped>=5 ∧ calls_Arole_new < 21 ; R臂 skipped>=3 ∧ calls_R_new < 14", "kind": "real_chain", "fail_action": "记『接线未生效/无可测效果』并单列, 不重跑凑数"},
+    {"id": "H3", "claim": "双臂差分 (同一新二进制, 唯一变量 = r1 门控, 闸开两臂) 总 token 降幅 >=30%", "assert": "(tok_Arole_new - tok_R_new)/tok_Arole_new >= 0.30", "kind": "real_chain", "fail_action": "若 <30%: 按口径二分报告 (总体/去常量兜底/去微问询) + 构成拆解, 不收窄不改判据"},
+    {"id": "H4", "claim": "负控: 自足微问询 (含『把构建命令写成一行。』『计算 3 加 5』类) 不被拦截; 标记表空 ⇒ 0 拦截 (fail-closed 器具)", "assert": "unit tests 全绿 ∧ 器具 --nc-selfcontained 拦截数不降 ∧ 器具 --nc-empty-markers 拦截数==0 且 rc!=0", "kind": "unit+probe", "fail_action": "记『负控失效』, 器具弃权 (rc=3)"},
+    {"id": "H5", "claim": "改链代码后 AOT 重发布成功且 IL 警告 0", "assert": "publish rc==0 ∧ IL warning 行数==0 ∧ 新二进制 sha256 与旧 (6a9b7aed22a22f48…) 不同", "kind": "build", "fail_action": "阻断本轮真机证据 (测试证据仍有效但单列)"}
+  ],
+  "kpi_definitions": {
+    "total_tokens": "远端供应商 usage.total_tokens 之和 (与 R482 同口径, 逐调用落盘)",
+    "call_cut": "远端调用次数减少 (用户钦定主因 = 不必要的 llm api 请求变少)",
+    "differential": "(Arole_total - R_total)/Arole_total"
+  },
+  "honest_boundaries_declared_upfront": [
+    "离线投影 (基于 R482 录制流量) ≠ 真机重跑; 二者分列, 不混算",
+    "远端供应商可漂移 (R482 已实测漂移) ⇒ 跨运行比较单列漂移界; 双臂顺序跑, 同夹具同网格",
+    "本轮**不测**端到端答案质量面 (微问询答复零信息量是 R484 已录读数的引用, 非本轮新测); 若判据要求, 列下轮候选",
+    "分流只对『回指类』生效, 自足微问询仍走远端 ⇒ 不构成『微问询整体本地化』(R484 已判否)"
+  ],
+  "next_if_pass": ["端到端质量面 (闸开 vs 闸关同夹具答复级对比)", "空正文基数可测化 (确定性桩差分)", "blocker_cause 标签精确化"]
+}
