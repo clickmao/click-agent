@@ -22,7 +22,8 @@
   - 器具 sha 是闸: 器具一改, 引用它的证据就必须重审 (Q24 缺陷族 = 证据静默易主);
   - 源码/测试文件作为证据的行不纳入 (pin 源码 sha 会让每次代码改动判红) —— 覆盖面按产品面切.
 
-写盘纪律 (承 R409/R473): 写前断言序列化器逐字节复现原文件; 幂等; 写后读回复核; 打印 git numstat.
+写盘纪律 (承 R409/R473, EXP1-Q29): 写前断言序列化器逐字节复现原文件; 尾形态二态容忍而回写规范化到 LF
+(缺 LF 时补 1 B 并显式报告 —— 不再让尾字节风格差异静默禁用整条通路); 幂等; 写后读回复核; 打印 git numstat.
 """
 import argparse, hashlib, json, os, re, subprocess, sys
 
@@ -288,10 +289,20 @@ def main():
     rows = doc["rows"]
 
     if a.apply:
+        # EXP1-Q29: 尾换行约定 = **有(LF)** —— 已由主线在 R481 按器具自身契约修复并登记
+        #   (docs/reports/r480-recall-test-ledger.md「尾部换行 1 B 修复」: 缺 LF ⇒ 本断言 fail-closed 拒写).
+        #   但断言**不得因形态差异静默禁用整条通路** (EXP1-Q28 实证: 缺 LF ⇒ rc=3 ⇒ 所有程序化改写退化为
+        #   文本插入, 而通路失效本身无人看见). 故判据 = 规范串 + 尾形态二态容忍, 回写规范化到 LF 并把
+        #   「补 1 B」显式打进 stdout; 缩进漂移/键序重排照旧 rc=3 (非空心).
         ser = json.dumps(doc, indent=1, ensure_ascii=False)
-        if ser + "\n" != raw:
-            print("SER_ASSERT=FAIL 序列化器未能逐字节复现原文件 (禁改写)"); return 3
-        print("SER_ASSERT=OK (indent=1, ensure_ascii=False, 尾换行)")
+        tail = "\n" if raw.endswith("\n") else ""
+        if ser + tail != raw:
+            print("SER_ASSERT=FAIL 序列化器未能逐字节复现原文件 (禁改写)")
+            print("  TAIL=%s RAWLEN=%d SERLEN=%d (差异不止尾换行 ⇒ 格式漂移)"
+                  % ("LF" if tail else "NONE", len(raw), len(ser)))
+            return 3
+        print("SER_ASSERT=OK (indent=1, ensure_ascii=False, tail=%s)"
+              % ("LF" if tail else "NONE->LF 补 1 B 承 R481 契约 语义零变化"))
         tracked, dirty = git_state(root)
         n_before = sum(1 for r in rows if "evidence_generated_with" in r)
         unchanged = 0

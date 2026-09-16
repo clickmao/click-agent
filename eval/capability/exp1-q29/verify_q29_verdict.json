@@ -1,0 +1,86 @@
+{
+ "round": "EXP1-Q29",
+ "cases": [
+  {
+   "case": "asis__new",
+   "rc": 0,
+   "expect_rc": 0,
+   "ser_assert": "SER_ASSERT=OK (indent=1, ensure_ascii=False, tail=LF)",
+   "readback": "WRITE_READBACK=OK",
+   "write_path": [
+    "UNCHANGED=0 / TOUCHED=104"
+   ],
+   "lf_after_write": true,
+   "ok": true,
+   "ok_nowrite_on_fail": true,
+   "ok_substring": true
+  },
+  {
+   "case": "nolf__pre_NC1",
+   "rc": 3,
+   "expect_rc": 3,
+   "ser_assert": "SER_ASSERT=FAIL 序列化器未能逐字节复现原文件 (禁改写)",
+   "readback": null,
+   "write_path": [],
+   "lf_after_write": false,
+   "ok": true,
+   "ok_nowrite_on_fail": true,
+   "ok_substring": true
+  },
+  {
+   "case": "nolf__new",
+   "rc": 0,
+   "expect_rc": 0,
+   "ser_assert": "SER_ASSERT=OK (indent=1, ensure_ascii=False, tail=NONE->LF 补 1 B 承 R481 契约 语义零变化)",
+   "readback": "WRITE_READBACK=OK",
+   "write_path": [
+    "UNCHANGED=0 / TOUCHED=104"
+   ],
+   "lf_after_write": true,
+   "ok": true,
+   "ok_nowrite_on_fail": true,
+   "ok_substring": true
+  },
+  {
+   "case": "indent2__new_NC2",
+   "rc": 3,
+   "expect_rc": 3,
+   "ser_assert": "SER_ASSERT=FAIL 序列化器未能逐字节复现原文件 (禁改写)",
+   "readback": null,
+   "write_path": [],
+   "lf_after_write": true,
+   "ok": true,
+   "ok_nowrite_on_fail": true,
+   "ok_substring": true
+  },
+  {
+   "case": "reorder__new_NC3",
+   "rc": 0,
+   "expect_rc": 3,
+   "ser_assert": "SER_ASSERT=OK (indent=1, ensure_ascii=False, tail=LF)",
+   "readback": "WRITE_READBACK=OK",
+   "write_path": [
+    "UNCHANGED=0 / TOUCHED=104"
+   ],
+   "lf_after_write": true,
+   "ok": false,
+   "ok_nowrite_on_fail": false,
+   "ok_substring": true
+  }
+ ],
+ "churn": null,
+ "notes": [
+  "real_registry_sha256_preserved=True",
+  "real_sha12=dcd65b6caeb4"
+ ],
+ "fails": [
+  {
+   "key": "CASE/reorder__new_NC3",
+   "detail": "rc=0(exp 3) marker=SER_ASSERT=OK (indent=1, ensure_ascii=False, tail=LF) lf_ok=True nowrite=False sub_ok=True"
+  },
+  {
+   "key": "P4/churn_purity",
+   "detail": "存在非 audited_by_round 的差异: ['non-round change: r476.evidence-binding-round-param']"
+  }
+ ]
+}

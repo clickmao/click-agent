@@ -1,0 +1,50 @@
+{
+ "round": "EXP1-Q29",
+ "kind": "checks_posthoc",
+ "cases": {
+  "NC3b_crlf": {
+   "rc": 3,
+   "marker": "SER_ASSERT=FAIL 序列化器未能逐字节复现原文件 (禁改写)",
+   "unchanged_on_fail": true,
+   "ok": true,
+   "why": "行尾/转义属格式漂移面 ⇒ 断言必须拒 (首跑 reorder 控制不可判别, 此为替代)"
+  },
+  "NC3c_ascii_escape": {
+   "rc": 3,
+   "marker": "SER_ASSERT=FAIL 序列化器未能逐字节复现原文件 (禁改写)",
+   "unchanged_on_fail": true,
+   "ok": true,
+   "why": "行尾/转义属格式漂移面 ⇒ 断言必须拒 (首跑 reorder 控制不可判别, 此为替代)"
+  },
+  "P4p_churn_pre_tool": {
+   "rc": 0,
+   "touched": 104,
+   "pure_round": 103,
+   "other": [
+    "r476.evidence-binding-round-param"
+   ],
+   "purity": 0.9903846153846154,
+   "ok": false
+  },
+  "P4_churn_new_tool": {
+   "rc": 0,
+   "touched": 104,
+   "pure_round": 103,
+   "other": [
+    "r476.evidence-binding-round-param"
+   ],
+   "attribution": "差异行 = 自引用行 r476.evidence-binding-round-param 的artifact_sha12/instrument_sha12 重审 (器具 sha 变 ⇒ 设计要求)",
+   "ok": true
+  },
+  "NC4_real_untouched": {
+   "sha12": "dcd65b6caeb4",
+   "preserved": true
+  }
+ },
+ "fails": [
+  {
+   "key": "P4p/churn_purity_pre",
+   "detail": "仍有非轮号差异: ['r476.evidence-binding-round-param']"
+  }
+ ]
+}

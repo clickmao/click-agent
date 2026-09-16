@@ -1,0 +1,31 @@
+{
+ "round": "EXP1-Q29",
+ "kind": "checks_posthoc2",
+ "run1_wrong_expectation": "ok_shape 只期待 3 键(artifact+instrument+round), 实测 5 键 ⇒ run1 判红保留",
+ "changed_key_set_histogram": {
+  "artifact_sha12+audited_by_round+instrument_sha12+pin_reason+pin_status": 1,
+  "audited_by_round": 103
+ },
+ "touched_total": 104,
+ "pure_attribution_rows": 103,
+ "pure_attribution_ratio_excl_designed_repin": 0.9903846153846154,
+ "designed_repin_rows": {
+  "r476.evidence-binding-round-param": [
+   "artifact_sha12",
+   "audited_by_round",
+   "instrument_sha12",
+   "pin_reason",
+   "pin_status"
+  ]
+ },
+ "dirty_instrument_semantics": true,
+ "dirty_instrument_note": "derive() 把「已改未提交」的器具判 live/worktree-only ⇒ 冻结 pin 只能在**提交后**成立; 重审脚本因此按**文件字节**算 pin(提交后该字节即冻结态), 并把该时序写进附录",
+ "granularity_finding": "--apply 的粒度 = **全表 needs_field 行重审** (TOUCHED=104), 故单行重审仍必须走文本插入; 通路恢复解决的是「可写」, 未解决「可定向」",
+ "ok_shape": true,
+ "ok_purity": true,
+ "dirty_semantics_expected_keys": [
+  "audited_by_round",
+  "pin_reason",
+  "pin_status"
+ ]
+}

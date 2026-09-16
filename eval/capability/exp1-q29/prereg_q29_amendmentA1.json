@@ -1,0 +1,15 @@
+{
+  "round": "EXP1-Q29",
+  "amendment": "A1",
+  "why": "预注册写完后、改器具前, 读到主线自己的台账, 它以**文档事实**回答了本题的仲裁问题 —— 属「预注册被证伪/被上游先解」, 按纪律如实修正并保留原文, 不覆盖 prereg_q29.json",
+  "evidence": {
+    "doc": "docs/reports/r480-recall-test-ledger.md",
+    "line_refs": [95, 97],
+    "quote_97": "尾部换行 1 B 修复：原文件缺尾换行 ⇒ bind_evidence 的序列化器自检 SER_ASSERT 会 fail-closed 拒写（本轮实测 rc=3）；按其自身契约补 1 B，语义零变化",
+    "implication": "约定已由主线仲裁 = **registry 必须带尾换行(LF)**, 且被 R481 按器具自身契约修复; 因此「保留观测形态(不补 LF)」这一写法与本仓库既有裁决相反"
+  },
+  "prereg_original_P2": "修后 OK(tail=NONE) 且回写后字节仍无 LF (不擅自补 LF)",
+  "amended_P2": "断言对尾形态**二态容忍**(ser 或 ser+LF 皆可 ⇒ 通路不再因形态差异被静默禁用), 但回写**规范化到 LF** 并把「补 1 B」显式打进 stdout (承 R481 契约; 白盒可见, 不再是静默 1 B 漂移)",
+  "unchanged": ["P1", "P3(两侧负控非空心)", "P4(churn 面)", "P5(零副作用)", "P6(连带重审)"],
+  "non_vacuity_note": "放宽仅限**尾字节**; ser 仍是 indent=1/ensure_ascii=False 规范串 ⇒ 缩进漂移/键序重排照旧 rc=3 (NC2/NC3 实测)"
+}

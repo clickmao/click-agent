@@ -1,0 +1,48 @@
+{
+  "round": "EXP1-Q29",
+  "lane": "60m 能力自检作业 (自己的命名段, 不占主线轮号; 承 unattended-job-reliability 命名空间铁律)",
+  "parent": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md 附录 AC.6 候选①",
+  "goal": "仲裁 registry 尾换行约定, 恢复 bind_evidence 的整文件序列化通路 (程序化改写不再只能走文本插入), 并给该断言配非空心负控",
+  "premise_check": {
+    "q28_claim": "registry 尾换行在 058bc77(R479) 被移除 ⇒ ser+'\\n' != raw ⇒ SER_ASSERT=FAIL ⇒ --apply 通路禁用 ⇒ Q28 走文本插入 fallback",
+    "method": "逐个提交取 blob 尾 4 字节 (git show <c>:docs/verification-registry.json | tail -c 4 | xxd -p)",
+    "tail4_by_commit": {
+      "5576e72": "220a7d0a",
+      "058bc77_R479": "29220a7d",
+      "dcaff6f_EXP1Q28": "29220a7d",
+      "e3f7a44_R481": "220a7d0a",
+      "c4055ba_R481F": "220a7d0a",
+      "HEAD": "220a7d0a"
+    },
+    "verdict": "Q28 记录当时为真(有直接字节证据), 但 R481/e3f7a44(07:49) 的「96 行纯归属漂移回退」整份重写登记表时把 LF 带回 ⇒ **现盘前提为假**(前提有时效性)",
+    "measured_on_live_tree": {
+      "old_pred__ser_plus_LF_eq_raw": true,
+      "new_pred__ser_eq_raw_or_ser_plus_LF_eq_raw": true,
+      "lf_present": true,
+      "raw_len_chars": 209936,
+      "worktree_equals_HEAD": true
+    }
+  },
+  "predictions": {
+    "P1": "通路在线: 现盘 SER_ASSERT=OK(tail=LF) ⇒ 即使零代码改动 --apply 也已可达",
+    "P2": "韧性(本题): 「无尾换行」变体在**修前**器具上 rc=3 (复现 Q28 阻塞, NC1); 在**修后**器具上 OK(tail=NONE) 且回写后字节仍无 LF (不擅自补 LF ⇒ 不替另一写者仲裁风格)",
+    "P3": "非空心(两侧): indent=2 变体 ⇒ rc=3; 键序重排变体 ⇒ rc=3 (禁重排/禁缩进漂移意图保留; 断言不是恒真门)",
+    "P4": "churn 面定位: 真实副本上 --apply 的 TOUCHED = 全部 needs_field 行 且逐行差异**仅在 audited_by_round**(纯归属漂移) ⇒ 单行程序化改写仍宜文本插入; --only <id> 定向模式列下轮",
+    "P5": "零副作用: 真 registry sha256 前后逐位相同 ∧ git diff --numstat 空 (本器具只写 scratch 副本)",
+    "P6": "连带重审(设计要求): 器具 sha 变 ⇒ 自引用行 r476.evidence-binding-round-param 的 artifact_sha12/instrument_sha12 必须重审, 重审后 --check 回 R2E_R2F_EXIT=0 且形式门禁 14/14"
+  },
+  "controls": {
+    "NC1": "修前器具 × 无尾换行变体 ⇒ 必 rc=3 且文件字节不变 (复现历史缺陷)",
+    "NC2": "indent=2 变体 × 修后器具 ⇒ 必 rc=3 (防放宽成恒真)",
+    "NC3": "键序重排变体 × 修后器具 ⇒ 必 rc=3 (禁重排)",
+    "NC4": "真 registry sha 前后相等 (器具零副作用)"
+  },
+  "exit_codes": "0=全过 / 2=断言失败 / 3=测量或环境失败 (三态不得同码)",
+  "out_of_scope": [
+    "候选② worktree-only 6 条陈旧声明清理",
+    "候选③ 9 行未派生器具",
+    "候选④ L2 全量面复跑 (需 dotnet 窗口)",
+    "候选⑤⑥ 检查器输出按面分区 / 新器具进 L2",
+    "--only <id> 定向改写模式 (本轮新识别, 理由见 P4)"
+  ]
+}
