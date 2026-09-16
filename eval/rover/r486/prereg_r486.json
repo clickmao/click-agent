@@ -1,0 +1,93 @@
+{
+ "round": "R486",
+ "ts_local": "2026-09-16T10:05+0800",
+ "written_before": "先于任何新测量 (本轮仅落器具; 真跑因起手闸红 + 对侧会话在跑 dotnet 而**延后**, 见 execution_blocked)",
+ "user_directive": "2026-09-16 用户令: 所有候选并入一轮解决 (禁单步); 本令已同步落 cron prompt 两处 + memory",
+ "title": "空正文(带 tool_calls)浪费重试的可测化差分 — in-vitro 确定性",
+ "why": "R482 真机 H3/H4 FAIL 的成因是上游空正文基数漂移(15→4), 使『可省调用』在真链上不可测 ⇒ 把该面搬到可控桩上, 直接测『修复是否消除每次空正文事件的 1 次浪费远端调用』",
+ "kind": "in-vitro 确定性差分 (无真供应商 / 无凭据 / 无 llama-server)",
+ "arms": [
+  {
+   "tag": "pre",
+   "bin": "/tmp/pub_r476/agenthost",
+   "claim": "不含 R478 空正文定因/不浪费重试"
+  },
+  {
+   "tag": "post",
+   "bin": "/tmp/pub_r479v2/agenthost",
+   "claim": "含 R478 修复 + R479 协议面"
+  }
+ ],
+ "modes": {
+  "empty_toolcall": "上游固定回 content=\"\" + tool_calls[list_dir] + finish_reason=tool_calls",
+  "plain": "上游固定回正文且无 tool_calls (负控: 无空正文事件)"
+ },
+ "fixed": [
+  "同夹具 task-r486.json (1 轮)",
+  "同 config 骨架 (仅 request_address 改写为桩)",
+  "AGENTFRAMEWORK_ACTION_LOOP=off",
+  "turn_gate=false / relation_judge=false ⇒ 本地通道不参与",
+  "每臂独立桩实例, 端口无重叠"
+ ],
+ "H": [
+  {
+   "id": "H1",
+   "stmt": "pre_empty - post_empty == 1 (浪费重试恰 1 次)",
+   "primary": true
+  },
+  {
+   "id": "H2",
+   "stmt": "post_empty 上游请求数 == 1"
+  },
+  {
+   "id": "H3",
+   "stmt": "pre_empty 上游请求数 == 2"
+  },
+  {
+   "id": "H4",
+   "stmt": "post 遥测出现 retry_skipped=true 且 pre 遥测出现 retry_skipped=false"
+  },
+  {
+   "id": "NC1",
+   "stmt": "plain 模式 pre_plain == post_plain (证明差分非二进制其它差异所致)"
+  }
+ ],
+ "fail_action": "任一判据不成立 ⇒ 该项记 FAIL 原样入档; 禁改断言/禁改桩凑绿; 判据与桩 sha 一并落盘",
+ "execution_blocked": [
+  "起手闸: MemAvailable < 2650MB (本轮实测 2134MB) 且对侧会话 (cron:9a97763d5fcd, R485) 正在 dotnet build ⇒ 依『对侧活跃则本侧不跑测量』纪律让行",
+  "让行期间只落预注册与器具; 真跑必须在对侧收口且闸绿之后"
+ ],
+ "boundary": [
+  "in-vitro: 不测真供应商行为/延迟",
+  "1 轮夹具, 单次运行",
+  "不测本地通道",
+  "桩不模拟流式; 不模拟 tools 参数差异"
+ ],
+ "judge_selftest": {
+  "script": "check_r486.py",
+  "cases": [
+   {
+    "case": "pre=2/post=1/plain=1-1/flags pre=false post=true",
+    "expect": "PASS",
+    "rc": 0
+   },
+   {
+    "case": "pre=2/post=2",
+    "expect": "FAIL(H1,H2)",
+    "rc": 1
+   },
+   {
+    "case": "plain pre=1/post=2",
+    "expect": "FAIL(NC1)",
+    "rc": 1
+   },
+   {
+    "case": "pre 侧 flags=true",
+    "expect": "FAIL(H4)",
+    "rc": 1
+   }
+  ],
+  "bug_found_and_fixed": "首版 H4 把 pre/post 遥测写反 (判成 pre.true ∧ post.false); 自检立刻翻红 ⇒ 改为 post.true ∧ pre.false, 与预注册陈述一致 (改代码不改断言)",
+  "note": "自检在 /tmp/r486_selftest 影子目录跑, 未在产物目录留任何伪数据"
+ }
+}

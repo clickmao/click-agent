@@ -1,0 +1,48 @@
+{
+ "round": "R488",
+ "ts_local": "2026-09-16T12:18+08:00",
+ "written_before": "先于任何本轮测量落盘 (本轮真机臂未启动前写入)",
+ "user_directive": "2026-09-16 用户令: 全候选 + 未闭合遗留并入同一轮解决 (禁单步/禁挑选); 主线 R413 验收 ①链跑通 ②一轮 token ↓≥30% ③r1 对管道有可测增益",
+ "title": "2x2 析因消融: turn_gate × repeat_skip 的单独/交互效应 (同一二进制, 只动开关) + 真值列命名空间收口",
+ "why": "R487 真机三臂显示: A0→Arole485 = 调用 −31.8% / token −20.6% (微闸单独效应为正但 <30%), 而生产形态 A0→R485 = +1.83% (不降反升)。R487 的 R485 臂同时翻了 turn_gate 与 repeat_skip 两个开关, 且每次调用 prompt 由 4070 → 5540 (+36%) ⇒ **无法判定是哪个开关吃掉了收益**。本轮把该混淆拆开: 同一二进制 (/tmp/pub_r485/agenthost), 只翻开关, 2x2 全因子。",
+ "binary_note": "本消融**不改二进制** (改二进制 = 换被测对象, 无法与 R487 的 Arole485 基线比)。故候选③(skip 答复显式声明)/⑤(R479 遗留) 的代码改动 + AOT 重发布**不在本轮臂内** (见 candidate_ledger)。",
+ "arms": [
+  {"tag": "b", "arm": "Arole", "arm_key": "Arole488b", "switches": "turn_gate=false, repeat_skip=off", "role_in_design": "同刻分母基线 B"},
+  {"tag": "g", "arm": "G", "arm_key": "G488g", "switches": "turn_gate=true, repeat_skip=off", "role_in_design": "turn_gate 单独效应 (G)"},
+  {"tag": "s", "arm": "S", "arm_key": "S488s", "switches": "turn_gate=false, repeat_skip=on", "role_in_design": "repeat_skip 单独效应 (S)"},
+  {"tag": "r", "arm": "R", "arm_key": "R488r", "switches": "turn_gate=true, repeat_skip=on", "role_in_design": "生产形态 (R); 与 R487 R485 臂等价 (跨轮可比性用 H0 判)"}
+ ],
+ "fixed": [
+  "同网格 p12 (eval/rover/r438/grid/task-p12.json, sha256 d5075102fe5c9a5b7e4dd27f18b67009753a353a1b152c5dd6a192ace196dadf)",
+  "同 role 夹具 eval/rover/r431/fixture/skeptic-growth.rbin (sha256 ecb75f53c5fd712b…)",
+  "同二进制 /tmp/pub_r485/agenthost (sha256 03c77d56e8c485af…)",
+  "同本地模型 qwen2.5-3b-instruct-q4km.gguf / context_size=4608 / parallel=1 / gpu_layers=0 / max_tokens=512 / max_prompt_tokens=4096",
+  "同远端路径: 本地中继 relay_real_r475.py(v2) → 真供应商端点; 宿主侧 key=dummy; key 只在驱动脚本 env 内一次注入",
+  "四臂全部 relation_judge=on (与 R487 Arole485/R485 同)",
+  "顺序执行 (非并行), 每臂起手闸 eval/rover/r483/preflight_gate.py 单一源"
+ ],
+ "H": [
+  {"id": "H0", "stmt": "跨轮锚可比性: B 臂 (Arole488b, 与 R487 Arole485 臂参逐字同 + 同二进制) 总 token 与 R487 Arole485 读数 (63,825) 相对偏差 ≤ 10% ⇒ 允许跨轮引用; 否则本轮只做同刻差分并在报告中标注不可比", "primary": false},
+  {"id": "H1", "stmt": "主 KPI: B → R 总 token 降幅 ≥ 30% (供应商 usage 真值列 prompt+completion)", "primary": true},
+  {"id": "H2", "stmt": "方向性预测: turn_gate 单独效应 tok(G) > tok(B) (即门开而 repeat_skip 关时, 远端上下文变长 ⇒ 反而更贵)", "primary": true},
+  {"id": "H3", "stmt": "方向性预测: repeat_skip 单独效应 calls(S) < calls(B) (回放守卫吃掉重复轮 ⇒ 远端调用数下降)", "primary": true},
+  {"id": "H4", "stmt": "可加性: |Δtok(R) − (Δtok(G) + Δtok(S))| ≤ 5% × tok(B) (无强交互)", "primary": false},
+  {"id": "H5", "stmt": "质量面: R 臂实质答复轮数 ≥ 10/12 (沿用 R487 H4 阈值, 不放宽); 且 G/S 两臂各自实质轮数 ≥ B 臂", "primary": true},
+  {"id": "H6", "stmt": "器具面 (候选④ 收口): usage-<ARM><TAG>.jsonl 四臂**全部非空**, 且 relay 落盘行数 == 各臂同名 usage 行数 (TAG 已并入 relay 命名); tel-<ARM><TAG>/ 四目录均存在", "primary": true}
+ ],
+ "decision_rule": "H1 成立 ⇒ R413 验收② 在本轮形态下达线, 主 KPI 需在报告头部给降幅; H1 不成立而 H2 成立 ⇒ 定因 = turn_gate 的本地承接把远端上下文顶长 (R487 归因被证实), 下一步靶点 = 上下文剪裁/前缀复用 (R487 候选②); H2 亦不成立 ⇒ 定因在 repeat_skip 侧。",
+ "fail_action": "任一判据不成立 ⇒ 该项记 FAIL 原样入档; 禁改断言/禁改判据/禁二次挑选读数面 (真值列固定为 relay usage jsonl); 判据与器具 sha 一并落盘。",
+ "boundary": [
+  "单夹具 p12 (12 轮) 单次运行, 无置信区间 (与 R487 同)",
+  "上游供应商存在跨时刻容量/路由漂移, H0 是本轮唯一跨轮可比性证据; 任何跨轮相减必须显式标注",
+  "本轮不测延迟面 (ms 只作参考), 不测成本折价, 不测本地模型质量变化",
+  "未改任何 src/ 代码 ⇒ 无 AOT 重发布; 候选③/⑤ 未做 (记 candidate_ledger)"
+ ],
+ "candidate_ledger_expected": [
+  "① 消融 turn_gate/repeat_skip ⇒ 本轮真机 4 臂 (做)",
+  "④ relay/prov 命名并入 TAG ⇒ 本轮器具修改 + H6 机检 (做)",
+  "⑥ 空正文基数可测化 (确定性桩) ⇒ 本轮臂后 in-vitro 差分 (做, 无凭据)",
+  "⑦ H0 锚漂移纪律 ⇒ 本轮 H0 判据 + 报告标注 (做)",
+  "③ skip 答复显式声明 / ⑤ R479 遗留 ⇒ 未做 (需改 src/ + AOT 重发布; 与真机臂内存/构建期互斥, 窗口不足) (未做, 原因入档)"
+ ]
+}

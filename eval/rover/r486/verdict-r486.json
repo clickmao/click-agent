@@ -1,0 +1,85 @@
+{
+ "round": "R486",
+ "counts": {
+  "pre-empty": 1,
+  "pre-plain": 1,
+  "post-empty": 1,
+  "post-plain": 1
+ },
+ "retry_flags": {
+  "pre-empty": {
+   "true": 0,
+   "false": 0
+  },
+  "pre-plain": {
+   "true": 0,
+   "false": 0
+  },
+  "post-empty": {
+   "true": 1,
+   "false": 0
+  },
+  "post-plain": {
+   "true": 0,
+   "false": 0
+  }
+ },
+ "judges": [
+  {
+   "id": "H1",
+   "stmt": "pre_empty - post_empty == 1",
+   "ok": false,
+   "evidence": {
+    "pre_empty": 1,
+    "post_empty": 1,
+    "delta": 0
+   }
+  },
+  {
+   "id": "H2",
+   "stmt": "post_empty == 1",
+   "ok": true,
+   "evidence": {
+    "post_empty": 1
+   }
+  },
+  {
+   "id": "H3",
+   "stmt": "pre_empty == 2",
+   "ok": false,
+   "evidence": {
+    "pre_empty": 1
+   }
+  },
+  {
+   "id": "H4",
+   "stmt": "post 遥测 retry_skipped=true 且 pre 遥测 retry_skipped=false",
+   "ok": false,
+   "evidence": {
+    "pre_empt_flags": {
+     "true": 0,
+     "false": 0
+    },
+    "post_empt_flags": {
+     "true": 1,
+     "false": 0
+    }
+   }
+  },
+  {
+   "id": "NC1",
+   "stmt": "plain 模式 pre == post",
+   "ok": true,
+   "evidence": {
+    "pre_plain": 1,
+    "post_plain": 1
+   }
+  }
+ ],
+ "pass": false,
+ "failed": [
+  "H1",
+  "H3",
+  "H4"
+ ]
+}

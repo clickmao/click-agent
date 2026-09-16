@@ -1,0 +1,283 @@
+{
+ "src_arm": "eval/rover/r487/run_arm_real_r487.sh",
+ "src_both": "eval/rover/r487/run_both_r487.sh",
+ "src_arm_sha256": "f10aebc84fbdd93180e0e84f5b9abeaf517f390328573f73cf86649065a332a8",
+ "src_both_sha256": "7fb92a096c558ffbed90999ece85635843bddc4158939f4ab49b9491d8516a1e",
+ "out_arm_sha256": "ab6facfaed82852a81e7da3e6dbf8f8e3d78ff9601b75a18bf43ebadb038dddf",
+ "out_both_sha256": "8eba02e1e20b5ad6f69a215949a6164529b105136ab2b70787bb4fd1c3dac076",
+ "rules_arm": 16,
+ "rules_both": 7,
+ "assertions": [
+  {
+   "label": "arm",
+   "rule": 0,
+   "old_head": "# R487 臂执行器 —— 由 R482 版**机派生** (eval/rover/r487/derive_r487.py: 替换表逐条计数断言, 差异见 derive_r487",
+   "expected": 1,
+   "found": 1,
+   "ok": true
+  },
+  {
+   "label": "arm",
+   "rule": 1,
+   "old_head": "#   相对 R482 的差异逐条:",
+   "expected": 1,
+   "found": 1,
+   "ok": true
+  },
+  {
+   "label": "arm",
+   "rule": 2,
+   "old_head": "#   A0    = 门关 + rj 开 + repeat_skip off + pub_r479v2 二进制 ← 生产等价分母锚",
+   "expected": 1,
+   "found": 1,
+   "ok": true
+  },
+  {
+   "label": "arm",
+   "rule": 3,
+   "old_head": "# 用法: bash run_arm_real_r487.sh <A0|Arole|R> [tag] [relay_port] [api_port]",
+   "expected": 1,
+   "found": 1,
+   "ok": true
+  },
+  {
+   "label": "arm",
+   "rule": 4,
+   "old_head": "ARM=${1:?用法: run_arm_real_r487.sh <A0|Arole|R> [tag] [relay_port] [api_port]}",
+   "expected": 1,
+   "found": 1,
+   "ok": true
+  },
+  {
+   "label": "arm",
+   "rule": 5,
+   "old_head": "DIR=$ROOT/eval/rover/r487",
+   "expected": 1,
+   "found": 1,
+   "ok": true
+  },
+  {
+   "label": "arm",
+   "rule": 6,
+   "old_head": "R487_UPSTREAM_KEY",
+   "expected": 3,
+   "found": 3,
+   "ok": true
+  },
+  {
+   "label": "arm",
+   "rule": 7,
+   "old_head": "--round R487",
+   "expected": 1,
+   "found": 1,
+   "ok": true
+  },
+  {
+   "label": "arm",
+   "rule": 8,
+   "old_head": "  A0|Arole) CWD_NAME=run-$ARM$TAG ;;",
+   "expected": 1,
+   "found": 1,
+   "ok": true
+  },
+  {
+   "label": "arm",
+   "rule": 9,
+   "old_head": "  A0|Arole) MP=$M3B; GATE=false; RJ=true;  ROLE=\"$ROLE_GROWTH\"; RS=off ;;",
+   "expected": 1,
+   "found": 1,
+   "ok": true
+  },
+  {
+   "label": "arm",
+   "rule": 10,
+   "old_head": "40 0.15 \"$DIR\" \"$ARM\" > \"$RELAYLOG\"",
+   "expected": 1,
+   "found": 1,
+   "ok": true
+  },
+  {
+   "label": "arm",
+   "rule": 11,
+   "old_head": "mkdir -p \"$DIR/tel-$ARM\"",
+   "expected": 1,
+   "found": 1,
+   "ok": true
+  },
+  {
+   "label": "arm",
+   "rule": 12,
+   "old_head": "cp \"$RUNDIR/data/telemetry/host.jsonl\" \"$DIR/tel-$ARM/host.jsonl\"",
+   "expected": 1,
+   "found": 1,
+   "ok": true
+  },
+  {
+   "label": "arm",
+   "rule": 13,
+   "old_head": "> \"$DIR/telcount-$ARM.txt\"",
+   "expected": 1,
+   "found": 1,
+   "ok": true
+  },
+  {
+   "label": "arm",
+   "rule": 14,
+   "old_head": "# R487 候选⑦: 起手闸/沉降**单一源**",
+   "expected": 1,
+   "found": 1,
+   "ok": true
+  },
+  {
+   "label": "arm",
+   "rule": 15,
+   "old_head": "# R487 臂 (端点 = 本地中继 v2 → 真供应商",
+   "expected": 1,
+   "found": 1,
+   "ok": true
+  },
+  {
+   "label": "both",
+   "rule": 0,
+   "old_head": "# R487 三臂顺序执行 (A0 → Arole485 → R485); key 只从 .env.local 取一次, 不回显。机派生自 run_both_r477.sh。",
+   "expected": 1,
+   "found": 1,
+   "ok": true
+  },
+  {
+   "label": "both",
+   "rule": 1,
+   "old_head": "# R487 候选⑦: 起手闸前置 (fail-closed; 单一源器具, 本脚本不自带 mem 判定)。",
+   "expected": 1,
+   "found": 1,
+   "ok": true
+  },
+  {
+   "label": "both",
+   "rule": 2,
+   "old_head": "R487_UPSTREAM_KEY",
+   "expected": 3,
+   "found": 3,
+   "ok": true
+  },
+  {
+   "label": "both",
+   "rule": 3,
+   "old_head": "[both-r487]",
+   "expected": 10,
+   "found": 10,
+   "ok": true
+  },
+  {
+   "label": "both",
+   "rule": 4,
+   "old_head": "--round R487",
+   "expected": 1,
+   "found": 1,
+   "ok": true
+  },
+  {
+   "label": "both",
+   "rule": 5,
+   "old_head": "eval/rover/r487/preflight-both.json",
+   "expected": 1,
+   "found": 1,
+   "ok": true
+  },
+  {
+   "label": "both",
+   "rule": 6,
+   "old_head": "AGENTFRAMEWORK_HOST_BIN=/tmp/pub_r479v2/agenthost bash eval/rover/r487/run_arm_real_r487.s",
+   "expected": 1,
+   "found": 1,
+   "ok": true
+  },
+  {
+   "label": "arm",
+   "pattern": "eval/rover/r487",
+   "expected": 0,
+   "found": 0,
+   "ok": true
+  },
+  {
+   "label": "arm",
+   "pattern": "R487_",
+   "expected": 0,
+   "found": 0,
+   "ok": true
+  },
+  {
+   "label": "arm",
+   "pattern": "--round R487",
+   "expected": 0,
+   "found": 0,
+   "ok": true
+  },
+  {
+   "label": "arm",
+   "pattern": "[both-r487]",
+   "expected": 0,
+   "found": 0,
+   "ok": true
+  },
+  {
+   "label": "arm",
+   "pattern": "# R487 ",
+   "expected": 0,
+   "found": 0,
+   "ok": true
+  },
+  {
+   "label": "arm",
+   "pattern": "2650",
+   "expected": 0,
+   "found": 0,
+   "ok": true
+  },
+  {
+   "label": "both",
+   "pattern": "eval/rover/r487",
+   "expected": 0,
+   "found": 0,
+   "ok": true
+  },
+  {
+   "label": "both",
+   "pattern": "R487_",
+   "expected": 0,
+   "found": 0,
+   "ok": true
+  },
+  {
+   "label": "both",
+   "pattern": "--round R487",
+   "expected": 0,
+   "found": 0,
+   "ok": true
+  },
+  {
+   "label": "both",
+   "pattern": "[both-r487]",
+   "expected": 0,
+   "found": 0,
+   "ok": true
+  },
+  {
+   "label": "both",
+   "pattern": "# R487 ",
+   "expected": 0,
+   "found": 0,
+   "ok": true
+  },
+  {
+   "label": "both",
+   "pattern": "2650",
+   "expected": 0,
+   "found": 0,
+   "ok": true
+  }
+ ],
+ "assertions_n": 35,
+ "failed": 0,
+ "gen_ts_local": "2026-09-16T12:08:28+0800"
+}

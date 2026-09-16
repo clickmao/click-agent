@@ -1,0 +1,320 @@
+{
+ "round": "R488",
+ "arms": {
+  "B": {
+   "tag": "b",
+   "turn_gate": false,
+   "repeat_skip": false,
+   "usage_file": "usage-Aroleb.jsonl",
+   "usage_rows": 15,
+   "m": {
+    "calls": 15,
+    "prompt_tokens": 65882,
+    "completion_tokens": 5062,
+    "cache_hit_tokens": 56320,
+    "cache_miss_tokens": 9562,
+    "total_tokens": 70944,
+    "cost_cny_upper": 0.02335634,
+    "empty_body": 3,
+    "http_err": 0,
+    "identity_ok": true,
+    "ms_p50": 1915,
+    "prompt_per_call": 4392.1,
+    "total_per_call": 4729.6
+   },
+   "turns": {
+    "turns": 12,
+    "ok": 12,
+    "asks": 2,
+    "errors": [],
+    "distinct_replies": 12,
+    "dup_replies": 0,
+    "top_dups": [],
+    "mean_reply_len": 284.1,
+    "empty_replies": 0
+   },
+   "telcount": "4"
+  },
+  "G": {
+   "tag": "g",
+   "turn_gate": true,
+   "repeat_skip": false,
+   "usage_file": "usage-Gg.jsonl",
+   "usage_rows": 12,
+   "m": {
+    "calls": 12,
+    "prompt_tokens": 52742,
+    "completion_tokens": 5388,
+    "cache_hit_tokens": 43648,
+    "cache_miss_tokens": 9094,
+    "total_tokens": 58130,
+    "cost_cny_upper": 0.02016714,
+    "empty_body": 4,
+    "http_err": 0,
+    "identity_ok": true,
+    "ms_p50": 2356,
+    "prompt_per_call": 4395.2,
+    "total_per_call": 4844.2
+   },
+   "turns": {
+    "turns": 12,
+    "ok": 12,
+    "asks": 2,
+    "errors": [],
+    "distinct_replies": 9,
+    "dup_replies": 3,
+    "top_dups": [
+     {
+      "text": "收到，继续按当前方向推进，本轮不重新规划。",
+      "n": 4
+     }
+    ],
+    "mean_reply_len": 285.7,
+    "empty_replies": 0
+   },
+   "telcount": "12"
+  },
+  "S": {
+   "tag": "s",
+   "turn_gate": false,
+   "repeat_skip": true,
+   "usage_file": "usage-Ss.jsonl",
+   "usage_rows": 14,
+   "m": {
+    "calls": 14,
+    "prompt_tokens": 62699,
+    "completion_tokens": 3697,
+    "cache_hit_tokens": 52992,
+    "cache_miss_tokens": 9707,
+    "total_tokens": 66396,
+    "cost_cny_upper": 0.02099543,
+    "empty_body": 2,
+    "http_err": 0,
+    "identity_ok": true,
+    "ms_p50": 1940,
+    "prompt_per_call": 4478.5,
+    "total_per_call": 4742.6
+   },
+   "turns": {
+    "turns": 12,
+    "ok": 12,
+    "asks": 2,
+    "errors": [],
+    "distinct_replies": 12,
+    "dup_replies": 0,
+    "top_dups": [],
+    "mean_reply_len": 300.4,
+    "empty_replies": 0
+   },
+   "telcount": "4"
+  },
+  "R": {
+   "tag": "r",
+   "turn_gate": true,
+   "repeat_skip": true,
+   "usage_file": "usage-Rr.jsonl",
+   "usage_rows": 11,
+   "m": {
+    "calls": 11,
+    "prompt_tokens": 44216,
+    "completion_tokens": 3117,
+    "cache_hit_tokens": 35968,
+    "cache_miss_tokens": 8248,
+    "total_tokens": 47333,
+    "cost_cny_upper": 0.01536702,
+    "empty_body": 5,
+    "http_err": 0,
+    "identity_ok": true,
+    "ms_p50": 1881,
+    "prompt_per_call": 4019.6,
+    "total_per_call": 4303.0
+   },
+   "turns": {
+    "turns": 12,
+    "ok": 12,
+    "asks": 2,
+    "errors": [],
+    "distinct_replies": 7,
+    "dup_replies": 5,
+    "top_dups": [
+     {
+      "text": "收到，继续按当前方向推进，本轮不重新规划。",
+      "n": 4
+     },
+     {
+      "text": "先确认一个前提：**当前工作区里没有可构建的工程**——`/home/agent",
+      "n": 2
+     },
+     {
+      "text": "换个说法，就三点（本轮刚重新取数，rc=0）：\n\n- **这里放的是\"运行留下的",
+      "n": 2
+     }
+    ],
+    "mean_reply_len": 280.2,
+    "empty_replies": 0
+   },
+   "telcount": "12"
+  }
+ },
+ "anchors": {
+  "R487_Arole485(门关/rj开/rs关)": {
+   "file": "r487/usage-Arole.jsonl",
+   "rows": 15,
+   "expected_calls": 15,
+   "m": {
+    "calls": 15,
+    "prompt_tokens": 61063,
+    "completion_tokens": 2762,
+    "cache_hit_tokens": 52352,
+    "cache_miss_tokens": 8711,
+    "total_tokens": 63825,
+    "cost_cny_upper": 0.01952521,
+    "empty_body": 3,
+    "http_err": 0,
+    "identity_ok": true,
+    "ms_p50": 1754,
+    "prompt_per_call": 4070.9,
+    "total_per_call": 4255.0
+   }
+  },
+  "R487_R485(门开/rj开/rs开)": {
+   "file": "r487/usage-R.jsonl",
+   "rows": 14,
+   "expected_calls": 14,
+   "m": {
+    "calls": 14,
+    "prompt_tokens": 77566,
+    "completion_tokens": 4204,
+    "cache_hit_tokens": 63872,
+    "cache_miss_tokens": 13694,
+    "total_tokens": 81770,
+    "cost_cny_upper": 0.02556722,
+    "empty_body": 8,
+    "http_err": 0,
+    "identity_ok": true,
+    "ms_p50": 1682,
+    "prompt_per_call": 5540.4,
+    "total_per_call": 5840.7
+   }
+  }
+ },
+ "assertions": [
+  {
+   "id": "H0",
+   "desc": "跨轮锚: B(R488) vs R487_Arole485 总token 漂移 ≤10% ⇒ 可跨轮引用",
+   "ok": false,
+   "detail": "B=70944 R487=63825 漂移=11.15%"
+  },
+  {
+   "id": "H1",
+   "desc": "主判据: B→R 总token 降幅 ≥30%",
+   "ok": true,
+   "detail": "B=70944 R=47333 降幅=33.28%"
+  },
+  {
+   "id": "H2",
+   "desc": "turn_gate 单独效应方向: Δtok(G vs B) > 0 (远端上下文变长)",
+   "ok": false,
+   "detail": "Δ=-12814 prompt/call 4392.1→4395.2"
+  },
+  {
+   "id": "H3",
+   "desc": "repeat_skip 单独效应方向: Δtok(S vs B) < 0 (调用数下降)",
+   "ok": true,
+   "detail": "Δ=-4548 调用 15→14"
+  },
+  {
+   "id": "H4",
+   "desc": "可加性: |残差| ≤ 5%·B",
+   "ok": false,
+   "detail": "残差=-6249 (-8.81% of B)"
+  },
+  {
+   "id": "H5-B",
+   "desc": "B 臂链跑通 (ok==turns) 且答复质量: 实质轮 ≥10/12",
+   "ok": true,
+   "detail": "ok=12/12 distinct=12 empty=0 asks=2"
+  },
+  {
+   "id": "H5-G",
+   "desc": "G 臂链跑通 (ok==turns) 且答复质量: 实质轮 ≥10/12",
+   "ok": false,
+   "detail": "ok=12/12 distinct=9 empty=0 asks=2"
+  },
+  {
+   "id": "H5-S",
+   "desc": "S 臂链跑通 (ok==turns) 且答复质量: 实质轮 ≥10/12",
+   "ok": true,
+   "detail": "ok=12/12 distinct=12 empty=0 asks=2"
+  },
+  {
+   "id": "H5-R",
+   "desc": "R 臂链跑通 (ok==turns) 且答复质量: 实质轮 ≥10/12",
+   "ok": false,
+   "detail": "ok=12/12 distinct=7 empty=0 asks=2"
+  },
+  {
+   "id": "H6-B",
+   "desc": "TAG 命名修复: usage-Aroleb.jsonl 非空 (候选④)",
+   "ok": true,
+   "detail": "rows=15 (=中继真值列 15)"
+  },
+  {
+   "id": "H6-G",
+   "desc": "TAG 命名修复: usage-Gg.jsonl 非空 (候选④)",
+   "ok": true,
+   "detail": "rows=12 (=中继真值列 12)"
+  },
+  {
+   "id": "H6-S",
+   "desc": "TAG 命名修复: usage-Ss.jsonl 非空 (候选④)",
+   "ok": true,
+   "detail": "rows=14 (=中继真值列 14)"
+  },
+  {
+   "id": "H6-R",
+   "desc": "TAG 命名修复: usage-Rr.jsonl 非空 (候选④)",
+   "ok": true,
+   "detail": "rows=11 (=中继真值列 11)"
+  }
+ ],
+ "deltas_vs_B": {
+  "G": {
+   "calls": -3,
+   "total_tokens": -12814,
+   "prompt_tokens": -13140,
+   "completion_tokens": 326,
+   "降幅_总token_pct": 18.06,
+   "降幅_调用数_pct": 20.0,
+   "降幅_prompt_pct": 19.94,
+   "prompt_per_call_delta": 3.1
+  },
+  "S": {
+   "calls": -1,
+   "total_tokens": -4548,
+   "prompt_tokens": -3183,
+   "completion_tokens": -1365,
+   "降幅_总token_pct": 6.41,
+   "降幅_调用数_pct": 6.67,
+   "降幅_prompt_pct": 4.83,
+   "prompt_per_call_delta": 86.4
+  },
+  "R": {
+   "calls": -4,
+   "total_tokens": -23611,
+   "prompt_tokens": -21666,
+   "completion_tokens": -1945,
+   "降幅_总token_pct": 33.28,
+   "降幅_调用数_pct": 26.67,
+   "降幅_prompt_pct": 32.89,
+   "prompt_per_call_delta": -372.5
+  }
+ },
+ "additivity": {
+  "dG": -12814,
+  "dS": -4548,
+  "dR": -23611,
+  "residual": -6249,
+  "residual_pct_of_B": -8.81
+ }
+}
