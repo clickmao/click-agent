@@ -1,8 +1,8 @@
 {
- "schema": "instruments-check/5",
+ "schema": "instruments-check/6",
  "manifest": "eval/capability/instruments.json",
- "manifest_sha12": "0813ac989cd6",
- "instrument_sha12": "8d1eb60b7ca4",
+ "manifest_sha12": "4c345f0a2bc1",
+ "instrument_sha12": "eb9d30eb1de0",
  "face": "scoped",
  "only": [
   "exp1q17.archive-field-provenance"
@@ -23,9 +23,9 @@
    "outer-gate-active"
   ],
   "window": {
-   "t0": null,
-   "t1": null,
-   "trace_dir": null
+   "t0": "<runtime>",
+   "t1": "<runtime>",
+   "trace_dir": "<runtime>"
   },
   "trace": {
    "commands": 0,
@@ -57,6 +57,20 @@
    "ok": true
   }
  },
+ "member_class": {
+  "total": 1,
+  "passable_total": 1,
+  "passable_passed": 1,
+  "passable_failed": 0,
+  "informational_total": 0,
+  "informational_passed": 0,
+  "informational_failed": 0,
+  "informational_ids": [],
+  "informational_why": {},
+  "errors": []
+ },
+ "passable_passed": 1,
+ "passable_total": 1,
  "passed": 1,
  "total": 1,
  "results": [
@@ -68,7 +82,7 @@
    "expect_rc": 0,
    "substr_ok": true,
    "pass": true,
-   "sha12": "cac4530579fd",
+   "sha12": "72d5ea82ffd5",
    "owner_round": "EXP1-Q19",
    "kpi_quad": {
     "单位": "字段(生产者/落盘/归档)",
@@ -99,7 +113,17 @@
      "pass": true,
      "head": "MEASUREMENT_FAILURE: 输入缺失 probe=True archive=False"
     }
-   ]
+   ],
+   "member_class": "passable"
   }
- ]
+ ],
+ "canon": {
+  "nonsemantic_fields": [
+   "side_effect_attribution/window/t0",
+   "side_effect_attribution/window/t1",
+   "side_effect_attribution/window/trace_dir"
+  ],
+  "runtime_sidecar": "eval/capability/instruments-check-scoped.runtime.json",
+  "note": "记录字节 = 语义面; 运行期字段 (t0/t1/trace_dir) 见侧车 (Q33 确定化)"
+ }
 }

@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R494",
+ "updated_round": "R495",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -1835,9 +1835,9 @@
     "pin_kind": "semantic-projection",
     "artifact_sha12": "3d67a383412b",
     "instrument": "eval/capability/instruments_check.py",
-    "instrument_sha12": "b4c5c34cb775",
+    "instrument_sha12": "3ea90e4feea5",
     "binding": "audit-pin",
-    "audited_by_round": "EXP1-Q36"
+    "audited_by_round": "EXP1-Q37"
    },
    "negative_control": "每条器具必带 nc_cmd 且必须非零; 缺负控的器具不许进面",
    "covers": [
@@ -4550,18 +4550,19 @@
    "id": "r494.capability-face-readonly-audit",
    "level": "L1",
    "owner_round": "R494",
-   "capability": "能力自检面**只读**复核 (产品不双写): A1 正控面每条 instrument 必须 pass / A2 各负控面必须全红 / A3 面文件内声明的 `manifest_sha12` 必须等于 instruments.json 当前字节指纹。现况 34 断言 / 5 红 (1 项指纹漂移 + 4 项正控 rc=2)。",
+   "capability": "能力自检面**只读**复核 (产品不双写): A1 正控面每条 instrument 必须 pass / A2 各负控面必须全红 / A3 面文件内声明的 `manifest_sha12` 必须等于 instruments.json 当前字节指纹。现况 34 断言 / 5 红 (1 项指纹漂移 + 4 项正控 rc=2)。R495 复核: 4 项正控红之中 2 项为**计数时点早于提交**(committed-state 现 rc=0), 1 项 bind_evidence --check rc=2 系本行产物被重跑改写所致(已修), 余 1 项 only-equivalence P1 仍红(未闭合)。",
    "evidence_cmd": "python3 eval/rover/r494/audit_capability_face_r494.py",
    "evidence_path": "eval/rover/r494/audit-capability-face.json",
    "evidence_generated_with": {
     "evidence_kind": "artifact",
     "pin_status": "frozen",
     "pin_reason": "archived-per-round",
-    "artifact_sha12": "769d63023a49",
+    "artifact_sha12": "63161c7ec8a4",
     "instrument": "eval/rover/r494/audit_capability_face_r494.py",
-    "instrument_sha12": "1623768f4ac4",
+    "instrument_sha12": "23aff697896a",
     "binding": "audit-pin",
-    "audited_by_round": "R495"
+    "audited_by_round": "R495",
+    "pin_note": "R495 复审: 该产物为**易变自检产物**(原写侧每次重跑刷新 audited_at_epoch) ⇒ 冻结 pin 每跑必红; R495 已把写侧改为**幂等落盘**(语义未变⇒不重写, 保留旧时间戳) 并重新钉定到幂等后的字节 ⇒ 冻结 pin 语义恢复成立。"
    },
    "covers": [
     "eval/capability/instruments.json",
@@ -4571,7 +4572,7 @@
     "eval/rover/r494/audit_capability_face_r494.py",
     "eval/rover/r494/audit-capability-face.json"
    ],
-   "negative_control": "4 项正控在面文件里记 rc=2, 但**外写** (--out /tmp) 复跑 rc=0 (15/15 检查) ⇒ 差异归因**未闭合**; 该面属对侧会话线, 本轮只记读数不代跑 (写入即双写)。"
+   "negative_control": "4 项正控在面文件里记 rc=2, 但**外写** (--out /tmp) 复跑 rc=0 (15/15 检查) ⇒ 差异归因**未闭合**; 该面属对侧会话线, 本轮只记读数不代跑 (写入即双写)。 R495: 只读重跑一次即触发冻结 pin 红 ⇒ 形式门禁对\"产物被改写\"确有实效力(本条=现场负控); 重钉后复查须绿。"
   }
  ],
  "aot_check_policy": "release_tag_only",

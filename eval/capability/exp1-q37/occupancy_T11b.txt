@@ -1,0 +1,99 @@
+ts=2026-09-16T20:33:46+08:00
+root=/home/agentuser/AgentFramework
+MEM_MIN_MB=2600 WAIT_S=150
+--- 采样(a1) 2026-09-16T20:33:46+08:00 ---
+1969004 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 46725 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+1969523 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 36479 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a1=2
+--- 采样(b1) 2026-09-16T20:33:51+08:00 ---
+1969004 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 46725 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+1969523 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 36479 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b1=2
+mem_kb=1259484
+mem_mb=1229
+round1 n1=2 n2=2 mem_mb=1229
+WAIT: 仍 BUSY (n1=2 n2=2 mem_mb=1229) ⇒ 15s 后重采样
+--- 采样(a2) 2026-09-16T20:34:06+08:00 ---
+1969004 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 46725 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+1969523 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 36479 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a2=2
+--- 采样(b2) 2026-09-16T20:34:11+08:00 ---
+1969004 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 46725 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+1969523 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 36479 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b2=2
+mem_kb=1313280
+mem_mb=1282
+round2 n1=2 n2=2 mem_mb=1282
+WAIT: 仍 BUSY (n1=2 n2=2 mem_mb=1282) ⇒ 15s 后重采样
+--- 采样(a3) 2026-09-16T20:34:26+08:00 ---
+1969004 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 46725 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+1969523 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 36479 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a3=2
+--- 采样(b3) 2026-09-16T20:34:31+08:00 ---
+1969004 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 46725 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+1969523 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 36479 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b3=2
+mem_kb=1413008
+mem_mb=1379
+round3 n1=2 n2=2 mem_mb=1379
+WAIT: 仍 BUSY (n1=2 n2=2 mem_mb=1379) ⇒ 15s 后重采样
+--- 采样(a4) 2026-09-16T20:34:46+08:00 ---
+1969004 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 46725 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+1969523 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 36479 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a4=2
+--- 采样(b4) 2026-09-16T20:34:51+08:00 ---
+1969004 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 46725 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+1969523 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 36479 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b4=2
+mem_kb=1448800
+mem_mb=1414
+round4 n1=2 n2=2 mem_mb=1414
+WAIT: 仍 BUSY (n1=2 n2=2 mem_mb=1414) ⇒ 15s 后重采样
+--- 采样(a5) 2026-09-16T20:35:06+08:00 ---
+1969004 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 46725 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+1969523 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 36479 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a5=2
+--- 采样(b5) 2026-09-16T20:35:11+08:00 ---
+1969004 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 46725 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+1969523 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 36479 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b5=2
+mem_kb=1350180
+mem_mb=1318
+round5 n1=2 n2=2 mem_mb=1318
+WAIT: 仍 BUSY (n1=2 n2=2 mem_mb=1318) ⇒ 15s 后重采样
+--- 采样(a6) 2026-09-16T20:35:26+08:00 ---
+1969004 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 46725 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+1969523 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 36479 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a6=2
+--- 采样(b6) 2026-09-16T20:35:31+08:00 ---
+1969004 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 46725 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+1969523 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 36479 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b6=2
+mem_kb=1476092
+mem_mb=1441
+round6 n1=2 n2=2 mem_mb=1441
+WAIT: 仍 BUSY (n1=2 n2=2 mem_mb=1441) ⇒ 15s 后重采样
+--- 采样(a7) 2026-09-16T20:35:46+08:00 ---
+1969004 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 46725 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+1969523 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 36479 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a7=2
+--- 采样(b7) 2026-09-16T20:35:51+08:00 ---
+1969004 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 46725 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+1969523 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 36479 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b7=2
+mem_kb=1276040
+mem_mb=1246
+round7 n1=2 n2=2 mem_mb=1246
+WAIT: 仍 BUSY (n1=2 n2=2 mem_mb=1246) ⇒ 15s 后重采样
+--- 采样(a8) 2026-09-16T20:36:06+08:00 ---
+1969004 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 46725 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+1969523 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 36479 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a8=2
+--- 采样(b8) 2026-09-16T20:36:11+08:00 ---
+1969004 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 46725 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+1969523 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 36479 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b8=2
+mem_kb=1382916
+mem_mb=1350
+round8 n1=2 n2=2 mem_mb=1350
+PRE_GATE_VERDICT=BUSY

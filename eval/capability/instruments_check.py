@@ -14,6 +14,13 @@ EXP1-Q19 扩展 (L2 全字段机检, 契约 §L2):
   自检: `--fingerprint-drift-inject` 在内存中篡改首条被选行的指纹期望值 ⇒ 机检必须判红 (rc!=0)。
         这是**机检规范自身**的注入缺陷负控 —— 不配负控的机检是空心的。
 
+EXP1-Q37 扩展 (成员类分区; schema instruments-check/5 → /6):
+  * 清单行可声明 `class: informational` + `why_informational` (闭集理由) —— 用于**自指成员**
+    (`bind_evidence.{check,committed-state}`): 其真值随树态/提交时点翻转, 不能作面的冻结判据。
+  * 信息项照跑照记 (rc/pass 留在 results), 但不进**可判据分母**; 判决仍按可判据红线
+    (`passable_failed > 0` ⇒ 判红, 判据不放宽); 计数与判决的单一事实源 = face_class_count.py (含自检)。
+  * 注入负控**不得**落在信息项成员上 (否则负控被降级吞掉 ⇒ 空心绿)。
+
 EXP1-Q22 扩展 (归因式副作用闸; schema instruments-check/3 → /4):
   * 取代旧判据「`git status` 前后**集合差**」: 每条本面命令经 `strace -f -y` 跟踪写类系统调用,
     窗内脏路径按**写者**归因 —— self_write(判红; 证据=命令序号/pid/系统调用) /
@@ -43,6 +50,7 @@ sys.path.insert(0, str(ROOT / 'eval/capability/exp1-q22'))
 import side_effect_gate as seg  # noqa: E402   (EXP1-Q22 归因式副作用闸)
 sys.path.insert(0, str(ROOT / 'eval/capability'))
 import face_record_canon as frc  # noqa: E402   (EXP1-Q33 面记录确定化: 运行期字段移出被 pin 的字节面)
+import face_class_count as fcc   # noqa: E402   (EXP1-Q37 候选③: 成员类分区 —— 信息项不进可判据分母)
 MAN = ROOT / 'eval/capability/instruments.json'
 OUT = ROOT / 'eval/capability/instruments-check.json'
 OUT_DRIFT = ROOT / 'eval/capability/instruments-check-drift.json'   # 负控模式独立命名空间 (不得覆盖正控证据)
@@ -89,6 +97,11 @@ FACE_OUTPUTS = {'eval/capability/instruments-check.json', 'eval/capability/instr
 #   的 D1/D2/D3/D7 判据另行钉住 (白名单释放的是"写事件"判定, 不是内容一致性判定)。
 FACE_OUTPUTS |= {'eval/rover/r444/precheck-prefilter.json',
                  'eval/rover/r444/runs/precheck-prefilter.neg.json'}
+# EXP1-Q37 补充: 面记录确定化 (Q33) 把运行期字段拆到 `<记录>.runtime.json` 侧车 ⇒ 侧车**按设计逐跑变化**
+#   (t0/t1/trace_dir)。它不是「本面弄脏既有产物」, 而是本面自身产物的运行期半边 ⇒ 与记录同列白名单。
+#   实测依据 (EXP1-Q36/T8/T9 与 Q37/T10 三次): 唯一的 self_writes 恒为这两个侧车, 位置与内容都随运行期变;
+#   白名单释放的只是「写事件 → 自身产物」的判定, **不是**内容一致性判定 (记录字节面由 face_record_canon 钉住)。
+FACE_OUTPUTS |= {p[:-len('.json')] + '.runtime.json' for p in list(FACE_OUTPUTS) if p.endswith('.json')}
 SCRATCH_PREFIXES = ('eval/capability/exp1-q19/l2runs/', 'eval/capability/exp1-q20/l2runs/',
                     'eval/capability/exp1-q21/', 'eval/capability/exp1-q21-selfcheck/',
                     # EXP1-Q30: 新增器具 (bind_evidence 负控 / 提交态核验 / 白名单覆盖面) 的 scratch 面
@@ -244,13 +257,18 @@ def main():
         GATE = seg.SideEffectGate(ROOT, face_outputs=FACE_OUTPUTS, scratch=SCRATCH_PREFIXES)
         GATE.begin()
     res, bad, injected, inj_note = [], 0, False, ''
+    info_ids, info_why = [], {}
     for e in man['instruments']:
         if only and e['id'] not in only:
             continue
+        if e.get('class') == 'informational':
+            info_ids.append(e['id'])
+            info_why[e['id']] = e.get('why_informational')
         rc, out = run(e['cmd'])
         ok = (rc == e.get('expect_rc', 0)) and (e.get('expect_substr', '') in out)
         l2_ok, l2 = check_l2_fields(e)
-        if inj_mode and not injected:
+        # EXP1-Q37 候选③: 注入负控不得落在信息项成员上 (否则负控会被降级吞掉 ⇒ 空心绿)
+        if inj_mode and not injected and e.get('class') != 'informational':
             applied, note = apply_inject(e, inj_mode)   # 逐行尝试, 首个可施加者生效 (确定性顺序)
             if applied:
                 l2_ok, l2 = check_l2_fields(e)
@@ -275,11 +293,14 @@ def main():
             ncs.append({'cmd': e[key], 'rc': nrc, 'expect': str(e.get(exp)), 'pass': bool(nok),
                         'head': nout.strip().splitlines()[-1][:160] if nout.strip() else ''})
         rec['negative_controls'] = ncs
+        rec['member_class'] = e.get('class', 'passable')
         rec['pass'] = bool(rec['pass'] and l2_ok and all(n['pass'] for n in ncs))
-        if not rec['pass']:
+        if not rec['pass'] and rec['member_class'] != 'informational':
             bad += 1
         res.append(rec)
-        line = (f"{'PASS' if rec['pass'] else 'FAIL'} {e['id']:28s} rc={rc} substr={rec['substr_ok']} "
+        label = ('PASS' if rec['pass'] else
+                 ('INFO' if rec['member_class'] == 'informational' else 'FAIL'))
+        line = (f"{label} {e['id']:28s} rc={rc} substr={rec['substr_ok']} "
                 f"nc={[n['rc'] for n in ncs]} l2={l2}")
         print(line)
         if not rec['pass']:
@@ -308,7 +329,18 @@ def main():
         self_sha12 = hashlib.sha256(pathlib.Path(__file__).read_bytes()).hexdigest()[:12]
     except Exception:
         man_sha12 = self_sha12 = None
-    doc = {'schema': 'instruments-check/5', 'manifest': 'eval/capability/instruments.json',
+    # EXP1-Q37 候选③: 成员类分区 (信息项不进可判据分母; 判决仍按可判据红线)
+    counts = fcc.partition(res, info_ids, info_why)
+    if self_dirt:
+        counts['dirt_penalty'] = 1
+    if counts['informational_total']:
+        print('MEMBER-CLASS: informational=%s (why=%s) 通过 %d/%d; 可判据面 %d/%d 通过'
+              % (counts['informational_ids'], counts['informational_why'],
+                 counts['informational_passed'], counts['informational_total'],
+                 counts['passable_passed'], counts['passable_total']))
+    for e in counts['errors']:
+        print('MEMBER-CLASS-ERROR (fail-closed): %s' % e)
+    doc = {'schema': 'instruments-check/6', 'manifest': 'eval/capability/instruments.json',
            'manifest_sha12': man_sha12, 'instrument_sha12': self_sha12,
            'face': face, 'only': sorted(only) if only else None,
            'out': (str(target.relative_to(ROOT)) if str(target).startswith(str(ROOT)) else str(target)),
@@ -316,6 +348,9 @@ def main():
            'drift_injected': bool(inj_mode and injected), 'inject_mode': inj_mode, 'inject_note': inj_note,
            'side_effects': self_dirt,
            'side_effect_attribution': gate_rep,
+           'member_class': counts,
+           'passable_passed': counts['passable_passed'],
+           'passable_total': counts['passable_total'],
            'passed': len(res) - bad, 'total': len(res), 'results': res}
     # EXP1-Q33 (C3): 面记录确定化 —— 运行期非语义字段 (墙钟/随机 trace 目录) 移入侧车,
     # 记录字节只随语义内容变化 ⇒ 冻结 pin 可跨会话逐位复算 (Q32 的「提交时点快照」语义消解)。
@@ -335,7 +370,9 @@ def main():
         print('CANON-FAIL (%s) ⇒ 记录以**原始**字节落盘; 冻结 pin 不可跨会话复算 (可见告警)' % canon_fail)
     _tp = str(target)
     _tpd = str(pathlib.Path(_tp).relative_to(ROOT)) if _tp.startswith(str(ROOT)) else _tp
-    print(f"\nL2 器具验收面[{face}]: {len(res) - bad}/{len(res)} 通过; 落盘 {_tpd}")
+    print(f"\nL2 器具验收面[{face}]: 可判据 {counts['passable_passed']}/{counts['passable_total']} 通过"
+          f" · 信息项 {counts['informational_passed']}/{counts['informational_total']}"
+          f" (信息项=自指成员, 真值由面外独立轮核验) · 落盘 {_tpd}")
     if canon_fail:
         print('CANON_NOT_DETERMINISTIC: 确定化层失败 ⇒ 本面读数不得用作 pin 证据 (判红)')
         return 1
@@ -345,9 +382,10 @@ def main():
     if inj_mode:
         print('INJECT-APPLIED (%s): %s' % (inj_mode, inj_note))
         print('  ⇒ 机检结果: %s' % ('判红 (负控成立)' if bad else '仍全绿 (负控失败!)'))
-    elif not gate_rep['measurement_ok']:
-        return 3
-    return 1 if bad else 0
+    return fcc.verdict_rc(counts, canon_fail=canon_fail,
+                          inj_not_applied=bool(inj_mode and not injected),
+                          abstain=bool(inj_mode is None and not gate_rep['measurement_ok']),
+                          dirt_penalty=counts.get('dirt_penalty', 0))
 
 
 if __name__ == '__main__':

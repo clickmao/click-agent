@@ -528,9 +528,9 @@
    "cmd": "python3 eval/capability/exp1-q17/archive_field_provenance.py --selftest --out eval/capability/exp1-q20/l2runs/verdict_q17.json --fixtures-out eval/capability/exp1-q20/l2runs/selftest_q17.json",
    "expect_rc": 0,
    "expect_substr": "checks 15/15",
-   "version": "content-sha12:cac4530579fd",
+   "version": "content-sha12:72d5ea82ffd5",
    "version_source": "content-sha12",
-   "instrument_sha12": "cac4530579fd",
+   "instrument_sha12": "72d5ea82ffd5",
    "input_fingerprint": [
     {
      "path": "eval/capability/exp1-q10/attribution_q10.json",
@@ -628,9 +628,9 @@
    "expect_substr": "L2 器具验收面",
    "nc_cmd": "python3 eval/capability/instruments_check.py --only exp1q17.archive-field-provenance --fingerprint-drift-inject",
    "nc_expect": "nonzero",
-   "version": "content-sha12:b4c5c34cb775",
+   "version": "content-sha12:eb9d30eb1de0",
    "version_source": "content-sha12",
-   "instrument_sha12": "b4c5c34cb775",
+   "instrument_sha12": "eb9d30eb1de0",
    "input_fingerprint": [
     {
      "path": "eval/capability/exp1-q10/attribution_q10.json",
@@ -646,7 +646,7 @@
     },
     {
      "path": "eval/capability/exp1-q17/archive_field_provenance.py",
-     "sha12": "cac4530579fd"
+     "sha12": "72d5ea82ffd5"
     }
    ],
    "kpi_quad": {
@@ -735,7 +735,9 @@
    "input_surface": "dynamic_corpus",
    "input_surface_source": "audit_hook",
    "input_surface_reason": "登记表为追加式动态语料 (行数随轮增长, 其 pin 目标也在轮内变化) ⇒ 不做字节指纹, 记行数",
-   "corpus_dynamic_count": 157
+   "corpus_dynamic_count": 157,
+   "class": "informational",
+   "why_informational": "self-referential-tree-state"
   },
   {
    "id": "bind_evidence.committed-state",
@@ -762,7 +764,9 @@
    "input_surface": "dynamic_corpus",
    "input_surface_source": "audit_hook",
    "input_surface_reason": "核验对象 = HEAD 版登记表 (随轮增长); 主张集由 HEAD 内容派生 ⇒ 不做字节指纹",
-   "corpus_dynamic_count": 157
+   "corpus_dynamic_count": 157,
+   "class": "informational",
+   "why_informational": "self-referential-tree-state"
   },
   {
    "id": "exp1q28.whitelist-coverage",
@@ -943,6 +947,6 @@
    "corpus_dynamic_count": 8
   }
  ],
- "round": "EXP1-Q36",
- "owner_round": "EXP1-Q36"
+ "round": "EXP1-Q37",
+ "owner_round": "EXP1-Q37"
 }

@@ -1,0 +1,25 @@
+{
+ "side": "agent",
+ "request": {
+  "n_messages": 2,
+  "tools_n": 0,
+  "upstream_request": {
+   "model": "deepseek-chat",
+   "n_messages": 2
+  }
+ },
+ "response": {
+  "text": "搜索上下文与任务无关，忽略。\n\n需要确认一点：**“当前目录”指哪个？**\n\n默认方案：按仓库约定，统计 `/tmp/agentwork`（会话根目录）下的 `.py` 文件数，写入 `/tmp/agentwork/count.txt`。\n\n请回复目标目录，或说“就用默认”，我立刻执行并把真实命令输出与计数贴给你。",
+  "usage": {
+   "prompt_tokens": 2452,
+   "completion_tokens": 82,
+   "total_tokens": 2534,
+   "prompt_tokens_details": {
+    "cached_tokens": 640
+   },
+   "prompt_cache_hit_tokens": 640,
+   "prompt_cache_miss_tokens": 1812
+  }
+ },
+ "extra": {}
+}

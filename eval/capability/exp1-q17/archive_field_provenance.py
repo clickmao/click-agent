@@ -431,9 +431,25 @@ def evaluate(core: dict, det: dict | None = None) -> list:
     return chk
 
 
+def _writer_class(rel: str) -> str:
+    """EXP1-Q37 候选①: 窗口内写入的**归属分类** —— 判据不放宽, 只让红自己说清是谁写的。
+
+    `src/**/*.cs` 这个 glob 同时覆盖**手写源码**与**构建产物** (obj/.../AssemblyInfo.cs,
+    GlobalUsings.g.cs); 后者由任何一次 `dotnet build/publish` 生成 ⇒ 兄弟写者在飞时该判据如实报红。
+    分类只进 detail, 不参与 passed (放行噪声 = 掏空判据)。
+    """
+    p = rel.replace('\\', '/')
+    return 'build_artifact' if ('/obj/' in p or '/bin/' in p) else 'handwritten'
+
+
 def zero_regression(round_start: float, probe_path: Path, archive_path: Path,
                     probe_sha: str, archive_sha: str) -> dict:
-    """C14: 本轮零产品/零依赖改动 —— 源与归档在其后逐字节未变, 且 src/ 与 skills/ 无新写入。"""
+    """C14: 本轮零产品/零依赖改动 —— 源与归档在其后逐字节未变, 且 src/ 与 skills/ 无新写入。
+
+    判据面 (与 claim 逐字对应, 机取而非注释): `src/**/*.cs` + `skills/**/*.md` 中
+    mtime > 进程起点的文件数必须为 0。因 glob 含构建产物 .cs, 该判据等价于
+    「窗口内无 dotnet 构建」。明细带 owner_class 供分诊 (手写 vs 构建产物)。
+    """
     now_probe = hashlib.sha256(probe_path.read_bytes()).hexdigest()
     now_arch = hashlib.sha256(archive_path.read_bytes()).hexdigest()
     root = probe_path.resolve().parent
@@ -443,12 +459,19 @@ def zero_regression(round_start: float, probe_path: Path, archive_path: Path,
     for pat in ("src/**/*.cs", "skills/**/*.md"):
         for p in root.glob(pat):
             try:
-                if p.stat().st_mtime > round_start:
-                    touched.append(str(p))
+                m = p.stat().st_mtime
             except OSError:
-                pass
+                continue
+            if m > round_start:
+                rel = str(p.relative_to(root))
+                touched.append({"path": rel, "owner_class": _writer_class(rel),
+                                "mtime": round(m, 3)})
+    by_class = {}
+    for t in touched:
+        by_class[t["owner_class"]] = by_class.get(t["owner_class"], 0) + 1
     return {"probe_unchanged": now_probe == probe_sha, "archive_unchanged": now_arch == archive_sha,
             "src_or_skills_written_after_start": touched, "n_touched": len(touched),
+            "n_touched_by_class": by_class,
             "passed": now_probe == probe_sha and now_arch == archive_sha and not touched}
 
 
@@ -578,6 +601,32 @@ def selftest(core_real: dict, probe_path: Path) -> list:
     w_on, w_off = face_dep_width(True), face_dep_width(False)
     add("FX15", "负控: 去枢纽规则 ⇒ 依赖面变宽（规则承重）", len(w_on) < len(w_off) and len(w_off) >= 5,
         f"with_hub_rule={len(w_on)} without={len(w_off)}")
+
+    # ---- EXP1-Q37 候选①: C14「窗口内写入」判据的**确定性机理重演** (不依赖同机负载)
+    tree = tmp / "c14_tree"
+    (tree / "src").mkdir(parents=True, exist_ok=True)
+    z_probe = _write(tree / "probe.py", "x = 1\n")
+    z_arch = _write(tree / "a.jsonl", "{}\n")
+    zps = hashlib.sha256(z_probe.read_bytes()).hexdigest()
+    zas = hashlib.sha256(z_arch.read_bytes()).hexdigest()
+    t_start = time.time()
+    time.sleep(0.02)
+    fx_hand = _write(tree / "src" / "touched.cs", "// t\n")            # 手写源
+    r_hand = zero_regression(t_start, z_probe, z_arch, zps, zas)
+    fx_hand.unlink()
+    fx_bld = _write(tree / "src" / "obj" / "Release" / "x.AssemblyInfo.cs", "//\n")  # 构建产物
+    r_bld = zero_regression(t_start, z_probe, z_arch, zps, zas)
+    fx_bld.unlink()
+    r_clean = zero_regression(t_start, z_probe, z_arch, zps, zas)      # 空窗
+    add("FX16", "C14 正控: 窗口内写 src/**/*.cs ⇒ 判红 ∧ owner_class=handwritten",
+        (not r_hand["passed"]) and r_hand["n_touched_by_class"] == {"handwritten": 1},
+        f"passed={r_hand['passed']} by_class={r_hand['n_touched_by_class']}")
+    add("FX17", "C14 负控: 窗口内只写构建产物 obj/*.cs ⇒ 同判红 ∧ owner_class=build_artifact",
+        (not r_bld["passed"]) and r_bld["n_touched_by_class"] == {"build_artifact": 1},
+        f"passed={r_bld['passed']} by_class={r_bld['n_touched_by_class']}")
+    add("FX18", "C14 空窗正控: 无窗口内写入 ⇒ 判绿 (判据非恒红)",
+        bool(r_clean["passed"]) and r_clean["n_touched"] == 0,
+        f"passed={r_clean['passed']} n={r_clean['n_touched']}")
     return fx
 
 
@@ -631,7 +680,8 @@ def main(argv=None) -> int:
                    "passed": bool(fixtures) and all(f["passed"] for f in fixtures),
                    "detail": f"{sum(1 for f in fixtures if f['passed'])}/{len(fixtures)}", "posthoc": False})
     zr = zero_regression(t0, probe_path, archive_path, core_sha[0], core_sha[1])
-    checks.append({"id": "C14", "claim": "零回归: probe/归档逐字节未变 ∧ src/ 与 skills/ 无新写入 ∧ 零 dotnet",
+    checks.append({"id": "C14", "claim": "零回归: probe/归档逐字节未变 ∧ src/ 与 skills/ 无新写入 "
+                                        "(mtime 判据, glob 含构建产物 .cs ⇒ 等价于窗口内无 dotnet 构建)",
                    "passed": zr["passed"], "detail": json.dumps(zr, ensure_ascii=False)[:400], "posthoc": False})
 
     failed = [c for c in checks if not c["passed"]]

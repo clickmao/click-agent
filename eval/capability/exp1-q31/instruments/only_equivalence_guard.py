@@ -159,6 +159,21 @@ def main():
         wr(fixture, broken)
         readings['fixture_anchor'] = {'row': target, 'pin': pin, 'fixture_sha12': sha12(fixture)}
 
+        # EXP1-Q37: P1 的**前提**必须机检并出声 —— 「两写路径逐字节等价」只在输入为**规范形**时成立
+        #   (器具序列化器 = indent=1 + 尾 LF, 见 bind_evidence --apply 的 SER_ASSERT 与 R481 尾换行契约);
+        #   输入缺尾 LF 时序列化通路会把「补 1 B」写进产物, 而文本外科通路径直保持缺 LF
+        #   ⇒ 两路径必然不等, 此时 P1 的红由**输入形态**解释, 不是通路分歧 (归属比单值重要)。
+        #   实测 (EXP1-Q37): 登记表被并发写者外科式改写后丢尾 LF ⇒ P1 恒红 (Q36/T8 曾绿, 因当时表被 --apply 规范化过)。
+        import json as _json
+        _doc = _json.loads(raw)
+        _ser = _json.dumps(_doc, indent=1, ensure_ascii=False)
+        _tail_lf = raw.endswith('\n')
+        canonical = (_ser + ('\n' if _tail_lf else '')) == raw
+        checks['P0_输入规范形'] = bool(canonical and _tail_lf)
+        readings['premise'] = {'tail_lf': _tail_lf, 'roundtrip_ok': bool(canonical),
+                               'note': ('前提 = 输入已是规范形 (indent=1 + 尾 LF) ∧ 序列化器逐字节复现; '
+                                        '不成立时 P1 的红归因到**输入形态**, 修法是恢复规范形, 不是放宽 P1')}
+
         sys.path.insert(0, os.path.join(ROOT, 'eval/capability'))
         import bind_evidence as be
         be.AUDITED_BY_ROUND = ROUND

@@ -1,0 +1,106 @@
+{
+ "round": "EXP1-Q37",
+ "schema": "triage/1",
+ "subject": "l2.instruments-check",
+ "prereg": {
+  "P1": [
+   "REGRESSION",
+   "CONTENTION_FALSE_RED",
+   "ABSTAIN"
+  ],
+  "P2": [
+   "s1 T9 面行",
+   "s2 内层记录",
+   "s3 隔离复跑",
+   "s4 并发写者",
+   "s5 唯一负载耦合判据"
+  ],
+  "P4": "L2=机理+既有记录; L3=叠加隔离复跑转绿",
+  "P5": "缺文件/缺字段 ⇒ missing + ABSTAIN"
+ },
+ "evidence": {
+  "s1": {
+   "source": "eval/capability/exp1-q37/evidence/face_t9_record.json",
+   "rc": 1,
+   "expect_rc": 0,
+   "pass": false,
+   "substr_ok": true,
+   "l2_ok": true,
+   "foreign_writes_n": 5,
+   "census_n": 12,
+   "census_cmds": [
+    "/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/hermes_kernel_jaerpjys",
+    "/bin/bash -lic set +m; cd /home/agentuser/AgentFramework && bash eval/capability",
+    "bash eval/capability/exp1-q36/run_face_q36.sh t9",
+    "/usr/bin/time -f TIME_t9 wall=%es maxrss=%MkB python3 -u eval/capability/instrum",
+    "/bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT=\"",
+    "/home/agentuser/.dotnet/dotnet publish src/agent.host/agent.host.csproj -c Relea",
+    "tail -40",
+    "/home/agentuser/.dotnet/dotnet /home/agentuser/.dotnet/sdk/10.0.400/MSBuild.dll ",
+    "/home/agentuser/.dotnet/sdk/10.0.400/MSBuild /nologo /nodemode:2 /nodereuse:Fals",
+    "/usr/bin/sh -c . /tmp/MSBuildTempbwFjr7/tmp8723176d370041e1a16be3c4d3127ce9.exec",
+    "/home/agentuser/.nuget/packages/runtime.linux-x64.microsoft.dotnet.ilcompiler/10",
+    "node /home/agentuser/.hermes/lsp/bin/bash-language-server start"
+   ]
+  },
+  "s2": {
+   "source": "eval/capability/exp1-q37/evidence/scoped_record_19-13-02.json",
+   "inner_rc": 2,
+   "inner_pass": false,
+   "inner_substr_ok": false,
+   "face_passed": 0,
+   "face_total": 1,
+   "gate_measurement_ok": true,
+   "gate_self_writes": [],
+   "assertion_red": true,
+   "mtime": 1789557182.0582056
+  },
+  "s3": {
+   "source": "eval/capability/exp1-q20/l2runs/verdict_q17.json",
+   "generated": "2026-09-16T20:17:10",
+   "exit_code": 0,
+   "checks_red": [],
+   "fixtures_passed": "15/15",
+   "c14_detail": "{\"probe_unchanged\": true, \"archive_unchanged\": true, \"src_or_skills_written_after_start\": [], \"n_touched\": 0, \"passed\": true}"
+  },
+  "s4": {
+   "window_local": [
+    "2026-09-16T19:11:00",
+    "2026-09-16T19:15:40"
+   ],
+   "src_cs_touched_n": 2,
+   "src_cs_touched": [
+    {
+     "path": "src/agent/subagent/IsolatedTaskRunner.cs",
+     "mtime": 1789557092.460668
+    },
+    {
+     "path": "src/agent.tests/R494IsolatedChannelToolDeclTests.cs",
+     "mtime": 1789557256.7208202
+    }
+   ],
+   "builders_in_census": [
+    "/home/agentuser/.dotnet/dotnet publish src/agent.host/agent.host.csproj -c Relea",
+    "/home/agentuser/.dotnet/dotnet /home/agentuser/.dotnet/sdk/10.0.400/MSBuild.dll ",
+    "/home/agentuser/.dotnet/sdk/10.0.400/MSBuild /nologo /nodemode:2 /nodereuse:Fals",
+    "/usr/bin/sh -c . /tmp/MSBuildTempbwFjr7/tmp8723176d370041e1a16be3c4d3127ce9.exec",
+    "/home/agentuser/.nuget/packages/runtime.linux-x64.microsoft.dotnet.ilcompiler/10"
+   ],
+   "note": "窗口内 src/**/*.cs 被写 ⇒ C14 的 mtime 判据在**原理上**必命中; 构建产出的 obj/*.cs (AssemblyInfo/GlobalUsings) 属同一 glob, 且会被后续构建覆盖 ⇒ 逐条回溯已不可得 (见 not_recoverable)"
+  },
+  "s5": {
+   "glob_patterns": [
+    "src/**/*.cs",
+    "skills/**/*.md"
+   ],
+   "threshold_var": "round_start",
+   "note": "C14 判据 = 扫描根下 glob 内文件 mtime > 进程起点 ⇒ passed=False (判据不可放宽)"
+  }
+ },
+ "verdict": "CONTENTION_FALSE_RED",
+ "not_recoverable": [
+  "T9 内层失败的**具体检查项**不可取回: 内层记录只留 rc/substr, 逐检查明细写在器具 --out 文件里, 该文件在 20:17 被同一命令的后续运行覆盖 (mtime=20:17:10), 旧内容无副本",
+  "T9 的 strace 原始轨迹目录已不可寻 (sidecar 的 trace_dir 记 <runtime>, /tmp 下已回收)"
+ ],
+ "grade": "L3"
+}

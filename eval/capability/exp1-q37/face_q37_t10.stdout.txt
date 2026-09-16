@@ -1,0 +1,60 @@
+PASS probe.grade                  rc=0 substr=True nc=[2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_surface': 'ok:self_contained', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS probe.run_probe              rc=0 substr=True nc=[2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_surface': 'ok:self_contained', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS exp1q1.scope-selftest        rc=0 substr=True nc=[2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_surface': 'ok:self_contained', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS exp1q2.docref-selftest       rc=0 substr=True nc=[2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_surface': 'ok:self_contained', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS exp1q4.docref-probe          rc=0 substr=True nc=[2] l2={'version': 'declared:2.4.1', 'instrument_sha12': 'ok', 'input_surface': 'ok:self_contained', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS audit.status_gen             rc=0 substr=True nc=[1] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_surface': 'ok:dynamic_corpus', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS r444.prefilter-precheck      rc=0 substr=True nc=[2, 3] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_surface': 'ok:external_files', 'input_fingerprint': 'ok(n=16)', 'kpi_quad': 'ok'}
+PASS r444.analyze                 rc=0 substr=True nc=[0] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_surface': 'ok:external_files', 'input_fingerprint': 'ok(n=16)', 'kpi_quad': 'ok'}
+PASS hooks.pre-commit             rc=0 substr=True nc=[1] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_surface': 'ok:dynamic_corpus', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS r446.judge-precheck          rc=0 substr=True nc=[0, 2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_surface': 'ok:dynamic_corpus', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS r446.judge-det-analyzer      rc=0 substr=True nc=[1] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_surface': 'ok:self_contained', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS exp1q11.other-bucket-decompose rc=0 substr=True nc=[3] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_surface': 'ok:self_contained', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS exp1q15.unit-axis-guard      rc=0 substr=True nc=[2, 2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_surface': 'ok:self_contained', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS exp1q15.unit-axis-guard-q16  rc=0 substr=True nc=[2] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_surface': 'ok:self_contained', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS exp1q17.archive-field-provenance rc=0 substr=True nc=[2, 3] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_surface': 'ok:external_files', 'input_fingerprint': 'ok(n=4)', 'kpi_quad': 'ok'}
+PASS exp1q18.rebuild-constructor  rc=0 substr=True nc=[0] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_surface': 'ok:external_files', 'input_fingerprint': 'ok(n=2)', 'kpi_quad': 'ok'}
+PASS l2.instruments-check         rc=0 substr=True nc=[1] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_surface': 'ok:external_files', 'input_fingerprint': 'ok(n=4)', 'kpi_quad': 'ok'}
+PASS exp1q13.index-scope-out-classifier rc=0 substr=True nc=[2, 3] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_surface': 'ok:external_files', 'input_fingerprint': 'ok(n=1)', 'kpi_quad': 'ok'}
+INFO bind_evidence.check          rc=2 substr=False nc=[0] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_surface': 'ok:dynamic_corpus', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+    ['  dist self-derived live   self-derived           x1', 'VIOLATION r444.instrument-acceptance: 器具绑定与现盘不符 (声明 b4c5c34cb775 / 实际 eb9d30eb1de0) (R2e —— 器具已改, 引用它的证据须重审)', 'R2E_R2F_EXIT=2']
+PASS bind_evidence.committed-state rc=0 substr=True nc=[0, 0] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_surface': 'ok:dynamic_corpus', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS exp1q28.whitelist-coverage   rc=0 substr=True nc=[0] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_surface': 'ok:dynamic_corpus', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS exp1q31.retired-interop      rc=0 substr=True nc=[0] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_surface': 'ok:dynamic_corpus', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS exp1q31.cleanup-ledger       rc=0 substr=True nc=[3] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_surface': 'ok:external_files', 'input_fingerprint': 'ok(n=1)', 'kpi_quad': 'ok'}
+PASS exp1q31.dotnet-gate-classifier rc=0 substr=True nc=[3] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_surface': 'ok:self_contained', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+PASS exp1q31.cap-headroom         rc=0 substr=True nc=[0] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_surface': 'ok:dynamic_corpus', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+FAIL exp1q31.only-equivalence     rc=2 substr=False nc=[0] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_surface': 'ok:dynamic_corpus', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+    ['P6_反证_去作用域不同字节               OK', 'P7_真登记表零副作用                  OK', 'verdict=FAIL (7/8) target=bge.recall.frozen_bench']
+PASS exp1q31.stage-guard-hook     rc=0 substr=True nc=[0] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_surface': 'ok:dynamic_corpus', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+SIDE-EFFECT: 本面命令弄脏既有产物 (归因证据完备) ⇒ ['eval/capability/instruments-check-drift.runtime.json', 'eval/capability/instruments-check-scoped.runtime.json']
+SIDE-EFFECT(foreign ≈ 并发写者, 不判红): eval/rover/r495/calls-Br495.jsonl live_fd=[]
+SIDE-EFFECT(foreign ≈ 并发写者, 不判红): eval/rover/r495/flags-Br495.json live_fd=[]
+SIDE-EFFECT(foreign ≈ 并发写者, 不判红): eval/rover/r495/preflight-Br495.json live_fd=[]
+SIDE-EFFECT(foreign ≈ 并发写者, 不判红): eval/rover/r495/prov-Br495.json live_fd=[]
+SIDE-EFFECT(foreign ≈ 并发写者, 不判红): eval/rover/r495/server-Br495.txt live_fd=[]
+SIDE-EFFECT(foreign ≈ 并发写者, 不判红): eval/rover/r495/turns-Br495.jsonl live_fd=[]
+SIDE-EFFECT(foreign ≈ 并发写者, 不判红): eval/rover/r495/usage-Br495.jsonl live_fd=[]
+SIDE-EFFECT(pre-existing, 不判红): 118 条窗内内容未变
+OLD-GATE-FALSE-RED (Q21 事故类): ['eval/rover/r495/calls-Br495.jsonl', 'eval/rover/r495/flags-Br495.json', 'eval/rover/r495/prov-Br495.json', 'eval/rover/r495/server-Br495.txt', 'eval/rover/r495/turns-Br495.jsonl', 'eval/rover/r495/usage-Br495.jsonl']
+  census(仓内 cwd, 信息项): pid=1925112 cwd=. cmd=/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/hermes_kerne
+  census(仓内 cwd, 信息项): pid=1935762 cwd=eval/rover/r494 cmd=/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/hermes_kerne
+  census(仓内 cwd, 信息项): pid=1961553 cwd=. cmd=node /home/agentuser/.hermes/lsp/bin/bash-language-server start
+  census(仓内 cwd, 信息项): pid=1967968 cwd=. cmd=/bin/bash -lic set +m; cd /home/agentuser/AgentFramework && sleep 45 &
+  census(仓内 cwd, 信息项): pid=1968286 cwd=. cmd=/bin/bash -lic set +m; cd /home/agentuser/AgentFramework && bash eval/
+  census(仓内 cwd, 信息项): pid=1968306 cwd=. cmd=bash eval/capability/exp1-q37/run_face_q37.sh t10
+  census(仓内 cwd, 信息项): pid=1968309 cwd=. cmd=/usr/bin/time -f TIME_t10 wall=%es maxrss=%MkB python3 -u eval/capabil
+  census(仓内 cwd, 信息项): pid=1968642 cwd=eval/rover/r495/run-Br495 cmd=bash eval/rover/r495/run_arm_real_r495.sh B r495 49510 49512
+  census(仓内 cwd, 信息项): pid=1968936 cwd=. cmd=python3 -u /home/agentuser/AgentFramework/eval/rover/r475/relay_real_r
+  census(仓内 cwd, 信息项): pid=1968959 cwd=. cmd=bash eval/rover/r495/run_arm_real_r495.sh B r495 49510 49512
+  census(仓内 cwd, 信息项): pid=1968961 cwd=eval/rover/r495/run-Br495 cmd=/tmp/pub_r495/agenthost --frontend-api 49512 --role /home/agentuser/Ag
+  census(仓内 cwd, 信息项): pid=1969004 cwd=eval/rover/r495/run-Br495 cmd=/tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama
+  census(仓内 cwd, 信息项): pid=1969523 cwd=eval/rover/r495/run-Br495 cmd=/tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama
+  census(仓内 cwd, 信息项): pid=1971908 cwd=eval/rover/r495/run-Br495 cmd=sleep 5
+  census(仓内 cwd, 信息项): pid=1972034 cwd=. cmd=sleep 2
+MEMBER-CLASS: informational=['bind_evidence.check', 'bind_evidence.committed-state'] (why={'bind_evidence.check': 'self-referential-tree-state', 'bind_evidence.committed-state': 'self-referential-tree-state'}) 通过 1/2; 可判据面 24/25 通过
+CANON-SPLIT: q37_face_t10.json sha12=bc0fdef3cfcb bytes=55900; 运行期字段 → q37_face_t10.runtime.json
+
+L2 器具验收面[full]: 可判据 24/25 通过 · 信息项 1/2 (信息项=自指成员, 真值由面外独立轮核验) · 落盘 /tmp/q37_face_t10.json
+Command exited with non-zero status 1
+TIME_t10 wall=205.82s maxrss=42748kB

@@ -1,0 +1,84 @@
+{
+ "round": "EXP1-Q37",
+ "schema": "pin-projections-history/1",
+ "truth_sources": {
+  "vector": "eval/capability/face_record_canon.py :: TEST_VECTOR_SHA12",
+  "round_and_break": "eval/capability/projection_rules.json (round / comparability_break)",
+  "method": "git show 逐修订 (旧→新), 不抄字面量"
+ },
+ "revisions": [
+  {
+   "commit": "1efc060",
+   "date": "2026-09-16",
+   "subject": "EXP1-Q33: 口径判据结构化(词面→字段) + 归档依赖逐条裁定(10入库/11外部/1截断) + 面记录确定化(窗口摘除; 记录字节",
+   "vector_sha12": null,
+   "rules_round": null,
+   "comparability_break_declared": false,
+   "break_head": null,
+   "pre_vector_era": true,
+   "comparable_with_prev": false
+  },
+  {
+   "commit": "f542575",
+   "date": "2026-09-16",
+   "subject": "EXP1-Q34: pin 语义迁移(冻结 pin → 语义投影摘要, 跨语言同口径) + C5 登记表落盘(20 行/24 资产) + C",
+   "vector_sha12": "bbd6b93aa9f0",
+   "rules_round": "EXP1-Q34",
+   "comparability_break_declared": false,
+   "break_head": null,
+   "pre_vector_era": false,
+   "comparable_with_prev": false
+  },
+  {
+   "commit": "3d64c9c",
+   "date": "2026-09-16",
+   "subject": "EXP1-Q35: 逐跑变化语义叶定位(三跑差分) + 遮蔽族扩容(投影口径断点) + 提交态核验器 pin 语义对齐(含成对控制) + 8",
+   "vector_sha12": "b989a219bcf4",
+   "rules_round": "EXP1-Q35",
+   "comparability_break_declared": true,
+   "break_head": "EXP1-Q35 起遮蔽族扩容 ⇒ 投影摘要口径变更, 与 EXP1-Q34 及以前的投影摘要**不可直接比** (旧值仅作历史读数); 受影响: r444.instrument-acceptance 的 pin 值 (本轮由器具派生重取)。",
+   "pre_vector_era": false,
+   "comparable_with_prev": false
+  },
+  {
+   "commit": "7e20495",
+   "date": "2026-09-16",
+   "subject": "EXP1-Q36 (1/2): 投影规则新增 drop/drop_by_id 两模式 (Python+C# 同口径) + trace 扫描派",
+   "vector_sha12": "07ffb38d2500",
+   "rules_round": "EXP1-Q36",
+   "comparability_break_declared": true,
+   "break_head": "EXP1-Q36 起 (a) pre_existing 由 array_count 改 drop (含基数) (b) 新增 old_gate_delta / old_gate_false_reds 两条计数规则 (c) 新增 results[*] 成员级 drop_by_id ⇒ 投影摘要口径再次变更, 与 EXP1-",
+   "pre_vector_era": false,
+   "comparable_with_prev": false
+  }
+ ],
+ "breaks": [
+  {
+   "commit": "3d64c9c",
+   "round": "EXP1-Q35",
+   "vec_before": "bbd6b93aa9f0",
+   "vec_after": "b989a219bcf4",
+   "declared": true,
+   "note": "EXP1-Q35 起遮蔽族扩容 ⇒ 投影摘要口径变更, 与 EXP1-Q34 及以前的投影摘要**不可直接比** (旧值仅作历史读数); 受影响: r444.instrument-acceptance 的 pin 值 (本轮由器具派生重取)。"
+  },
+  {
+   "commit": "7e20495",
+   "round": "EXP1-Q36",
+   "vec_before": "b989a219bcf4",
+   "vec_after": "07ffb38d2500",
+   "declared": true,
+   "note": "EXP1-Q36 起 (a) pre_existing 由 array_count 改 drop (含基数) (b) 新增 old_gate_delta / old_gate_false_reds 两条计数规则 (c) 新增 results[*] 成员级 drop_by_id ⇒ 投影摘要口径再次变更, 与 EXP1-"
+  }
+ ],
+ "current": {
+  "head_vector": "07ffb38d2500",
+  "worktree_vector": "07ffb38d2500",
+  "rules_file_changed_vs_head": false,
+  "comparable_with_previous_round": true
+ },
+ "reading": "Q37 未改投影规则 ⇒ 本轮 pin 与 EXP1-Q36 的 pin **可比**; 与 EXP1-Q35 及以前**不可比** (断点见 breaks)。",
+ "n_revisions_with_vector": 3,
+ "pre_vector_era_revisions": [
+  "1efc060"
+ ]
+}
