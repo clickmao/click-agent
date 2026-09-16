@@ -1,0 +1,65 @@
+AgentFramework CLI
+  /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit  [log → /tmp/gameprobe/d4b_run3.md]
+── 执行中 (turn 1) ──────────────────────────────
+  [01] 意图分析: code_generation
+  [02] 子任务: 用 Python 写一个贪吃蛇游戏(终端文本渲染)。要求: (1) 单文...
+  [03] 管线执行 (上下文装配 → LLM → 后处理)…
+[2026-09-13T05:51:23.2033924Z] info thinking IndustrialAgentV2: prompt 构建完成: ~1371 tokens, 意图=code_generation
+@chatbox:{"Type":"thinking_page_switch","Seq":1,"SummaryLength":0}
+@chatbox:{"Type":"thinking_end","Seq":0,"SummaryLength":1209}
+
+── 回复 ────────────────────────────────────────────
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""终端贪吃蛇（文本渲染）。
+
+设计要点
+--------
+* 核心逻辑 :class:`SnakeGame` 完全不碰终端（无 print / 无 input），可无头测试。
+* 渲染     :class:`TerminalRenderer` 只读取状态、产出字符串，无副作用。
+* 输入     :class:`Input` 负责跨平台非阻塞单键读取。
+
+用法::
+
+    python3 game.py                 # 开始游戏（WASD / 方向键移动，q 退出）
+    python3 game.py --speed 12      # 调整速度（每秒步数）
+    python3 game.py --width 30 --height 20
+    python3 game.py --selftest      # 无头自测，打印 PASS 或 FAIL
+"""
+
+from __future__ import annotations
+
+import argparse
+import os
+import random
+import sys
+import time
+from collections import deque
+from typing import Deque, Dict, List, Optional, Sequence, Tuple
+
+Point = Tuple[int, int]
+
+UP: Point = (0, -1)
+DOWN: Point = (0, 1)
+LEFT: Point = (-1, 0)
+RIGHT: Point = (1, 0)
+
+# --------------------------------------------------------------------------- #
+# 核心逻辑（与渲染 / IO 完全解耦）
+# --------------------------------------------------------------------------- #
+
+
+class SnakeGame:
+    """纯逻辑贪吃蛇：不读键盘、不写终端，方便无头自测。
+
+    坐标约定：x 向右递增，y 向下递增；蛇头位于 ``self.snake[0]``。
+    """
+
+    def __init__(
+        self,
+        width: int = 20,
+        height: int = 15,
+        rng: Optional[random.Random] = None,
+        start_len: int =
+  · intent=code_generation  promptTokens=1371  contextSnippets=7  llmModel=deepseek-flash  forecastTendency=提出新的编码任务或对本次代码的审查  forecastAgentUid=main
+  (41451ms, intent=code_generation)

@@ -1,0 +1,506 @@
+AgentFramework CLI
+  /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit  [log → /tmp/gameprobe/r374_A_run1.md]
+── 执行中 (turn 1) ──────────────────────────────
+  [01] 意图分析: code_generation
+  [02] 子任务: 用 Python 写一个贪吃蛇游戏(终端文本渲染)。要求: (1) 单文...
+  [03] 管线执行 (上下文装配 → LLM → 后处理)…
+[2026-09-13T06:44:51.6205873Z] info thinking IndustrialAgentV2: prompt 构建完成: ~2847 tokens, 意图=code_generation
+@chatbox:{"Type":"thinking_page_switch","Seq":1,"SummaryLength":0}
+@chatbox:{"Type":"thinking_end","Seq":0,"SummaryLength":14644}
+  [04] 返回区段标记 python
+  [05] PY 落盘 + py_compile 1/1 通过
+    · ./data/artifacts/py_4821645bc22c2231.py (15904B) ✓ py_compile · run exit=0 (35ms)
+
+── 回复 ────────────────────────────────────────────
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""终端文本贪吃蛇（单文件）。
+
+分层设计：
+    SnakeGame        —— 纯逻辑，无 I/O、不依赖终端
+    TextRenderer     —— 只把状态快照渲染成字符串
+    run_interactive  —— 输入循环，把逻辑层与渲染层接在一起
+
+用法：
+    python3 game.py --selftest                              # 无头自测，打印 PASS / FAIL
+    python3 game.py                                         # 开始游戏
+    python3 game.py --width 40 --height 18 --tick 0.08      # 自定义棋盘与速度
+"""
+
+from __future__ import annotations
+
+import argparse
+import os
+import random
+import sys
+import time
+from collections import deque
+
+# --------------------------------------------------------------------------
+# 方向常量（dx, dy）
+# --------------------------------------------------------------------------
+UP = (0, -1)
+DOWN = (0, 1)
+LEFT = (-1, 0)
+RIGHT = (1, 0)
+DIRECTIONS = (UP, DOWN, LEFT, RIGHT)
+
+
+# --------------------------------------------------------------------------
+# 逻辑层：不 import 任何终端相关模块，可被无头调用
+# --------------------------------------------------------------------------
+class SnakeGame:
+    """贪吃蛇核心逻辑。所有状态变更只通过 set_direction() / step() 发生。"""
+
+    def __init__(self, width: int = 30, height: int = 16, seed=None):
+        if width < 3:
+            raise ValueError("宽度至少为 3")
+        if height < 1:
+            raise ValueError("高度至少为 1")
+        self.width = width
+        self.height = height
+        self.rng = random.Random(seed)
+        self.reset()
+
+    # ----- 初始化 -----
+    def reset(self):
+        """回到初始状态（蛇长 3，朝右，居中偏左）。"""
+        cx = max(2, self.width // 2)
+        cy = self.height // 2
+        # deque 头部即蛇头
+        self.snake = deque([(cx, cy), (cx - 1, cy), (cx - 2, cy)])
+        self.direction = RIGHT
+        self._pending = deque()      # 待生效的转向（最多缓冲 2 个）
+        self.score = 0
+        self.game_over = False
+        self.won = False
+        self.food = None
+        self._spawn_food()
+
+    # ----- 输入 -----
+    def set_direction(self, direction) -> bool:
+        """请求转向。非法方向 / 180 度掉头 / 缓冲已满时返回 False。"""
+        if direction not in DIRECTIONS:
+            return False
+        last = self._pending[-1] if self._pending else self.direction
+        # 反向 = 与当前行进方向相加为零向量
+        if (direction[0] + last[0], direction[1] + last[1]) == (0, 0):
+            return False
+        if direction == last:
+            return False
+        if len(self._pending) >= 2:
+            return False
+        self._pending.append(direction)
+        return True
+
+    # ----- 推进 -----
+    def step(self):
+        """推进一帧；游戏已结束时为空操作。"""
+        if self.game_over:
+            return
+        if self._pending:
+            self.direction = self._pending.popleft()
+
+        hx, hy = self.snake[0]
+        dx, dy = self.direction
+        nx, ny = hx + dx, hy + dy
+
+        # 撞墙
+        if not (0 <= nx < self.width and 0 <= ny < self.height):
+            self.game_over = True
+            return
+
+        eating = self.food is not None and (nx, ny) == self.food
+        occupied = set(self.snake)
+        if not eating:
+            occupied.discard(self.snake[-1])   # 不吃食物时尾巴会让位，可以踩
+        if (nx, ny) in occupied:
+            self.game_over = True
+            return
+
+        self.snake.appendleft((nx, ny))
+        if eating:
+            self.score += 1
+            self._spawn_food()
+        else:
+            self.snake.pop()
+
+    # ----- 内部 -----
+    def _spawn_food(self):
+        occupied = set(self.snake)
+        free = [(x, y)
+                for y in range(self.height)
+                for x in range(self.width)
+                if (x, y) not in occupied]
+        if not free:                 # 棋盘被填满 —— 通关
+            self.food = None
+            self.won = True
+            self.game_over = True
+            return
+        self.food = self.rng.choice(free)
+
+    # ----- 输出 -----
+    def snapshot(self) -> dict:
+        """渲染层唯一的数据入口，渲染层不接触本类内部结构。"""
+        return {
+            "width": self.width,
+            "height": self.height,
+            "snake": tuple(self.snake),
+            "length": len(self.snake),
+            "food": self.food,
+            "score": self.score,
+            "game_over": self.game_over,
+            "won": self.won,
+        }
+
+
+# --------------------------------------------------------------------------
+# 渲染层：纯函数式，输入快照、输出字符串
+# --------------------------------------------------------------------------
+class TextRenderer:
+    SYM_HEAD = "@"
+    SYM_BODY = "o"
+    SYM_FOOD = "*"
+    SYM_EMPTY = "."
+
+    @classmethod
+    def render(cls, snap: dict) -> str:
+        w, h = snap["width"], snap["height"]
+        body = set(snap["snake"])
+        head = snap["snake"][0] if snap["snake"] else None
+        food = snap["food"]
+
+        border = "+" + "-" * w + "+"
+        out = [
+            "score={score}  len={length}  board={w}x{h}".format(
+                score=snap["score"], length=snap["length"], w=w, h=h),
+            border,
+        ]
+        for y in range(h):
+            cells = []
+            for x in range(w):
+                p = (x, y)
+                if p == head:
+                    cells.append(cls.SYM_HEAD)
+                elif food is not None and p == food:
+                    cells.append(cls.SYM_FOOD)
+                elif p in body:
+                    cells.append(cls.SYM_BODY)
+                else:
+                    cells.append(cls.SYM_EMPTY)
+            out.append("|" + "".join(cells) + "|")
+        out.append(border)
+
+        if snap["game_over"]:
+            out.append("YOU WIN!" if snap["won"] else "GAME OVER")
+        return "\n".join(out)
+
+
+# --------------------------------------------------------------------------
+# 终端交互层
+# --------------------------------------------------------------------------
+class RawTerminal:
+    """POSIX 下进入 cbreak 模式；非 tty / Windows 下退化为无操作。"""
+
+    def __init__(self, stream=None):
+        self.stream = stream or sys.stdin
+        self._fd = None
+        self._saved = None
+        self._termios = None
+
+    def __enter__(self):
+        if os.name == "posix" and self.stream.isatty():
+            import termios
+            import tty
+            self._fd = self.stream.fileno()
+            self._saved = termios.tcgetattr(self._fd)
+            tty.setcbreak(self._fd)
+            self._termios = termios
+        return self
+
+    def __exit__(self, *exc):
+        if self._fd is not None and self._termios is not None:
+            self._termios.tcsetattr(
+                self._fd, self._termios.TCSADRAIN, self._saved)
+        return False
+
+
+def _read_char(timeout):
+    """读一个字符，超时返回 None（非阻塞轮询）。"""
+    if os.name == "nt":
+        import msvcrt
+        deadline = time.monotonic() + timeout
+        while True:
+            if msvcrt.kbhit():
+                return msvcrt.getwch()
+            if time.monotonic() >= deadline:
+                return None
+            time.sleep(0.005)
+
+    import select
+    try:
+        ready, _, _ = select.select([sys.stdin], [], [], timeout)
+    except (OSError, ValueError):
+        return None
+    if not ready:
+        return None
+    return sys.stdin.read(1) or None
+
+
+_ARROW_KEYS = {"A": "UP", "B": "DOWN", "C": "RIGHT", "D": "LEFT"}
+_KEYMAP = {
+    "w": "UP", "W": "UP", "k": "UP",
+    "s": "DOWN", "S": "DOWN", "j": "DOWN",
+    "a": "LEFT", "A": "LEFT", "h": "LEFT",
+    "d": "RIGHT", "D": "RIGHT", "l": "RIGHT",
+    "p": "PAUSE", "P": "PAUSE", " ": "PAUSE",
+    "q": "QUIT", "Q": "QUIT", "\x03": "QUIT", "\x04": "QUIT",
+}
+
+
+def read_action(timeout):
+    """归一化按键为 UP/DOWN/LEFT/RIGHT/PAUSE/QUIT 或 None。"""
+    ch = _read_char(timeout)
+    if ch is None:
+        return None
+    if ch == "\x1b":                       # ESC 或方向键序列
+        seq = ""
+        for _ in range(2):
+            nxt = _read_char(0.005)
+            if nxt is None:
+                break
+            seq += nxt
+        if seq == "":
+            return "QUIT"                  # 单独按 ESC = 退出
+        return _ARROW_KEYS.get(seq[-1])
+    return _KEYMAP.get(ch)
+
+
+def _clear_screen():
+    sys.stdout.write("\033[H\033[2J")
+    sys.stdout.flush()
+
+
+def run_interactive(game: SnakeGame, tick: float = 0.12) -> int:
+    """把逻辑层与渲染层接起来的主循环。"""
+    paused = False
+    with RawTerminal():
+        while True:
+            _clear_screen()
+            print(TextRenderer.render(game.snapshot()))
+            print("[w/a/s/d 或方向键] 转向   [p/空格] 暂停   [q/ESC] 退出"
+                  + ("   << 已暂停 >>" if paused else ""))
+            sys.stdout.flush()
+
+            if game.game_over:
+                break
+
+            action = read_action(tick)
+
+            if action == "QUIT":
+                print("\n已退出。")
+                return 0
+            if action == "PAUSE":
+                paused = not paused
+                continue
+            if action in DIRECTIONS:
+                game.set_direction(action)
+
+            if not paused:
+                game.step()
+
+    print("\n最终得分: {}   终局长度: {}".format(game.score, len(game.snake)))
+    if game.won:
+        print("恭喜，填满棋盘！")
+    return 0
+
+
+# --------------------------------------------------------------------------
+# 无头自测：只驱动逻辑层与渲染层，不碰终端
+# --------------------------------------------------------------------------
+def _selftest_checks():
+    checks = []
+
+    def check(name, cond):
+        checks.append((name, bool(cond)))
+
+    # 1. 初始状态
+    g = SnakeGame(20, 15, seed=1)
+    check("初始长度=3", len(g.snake) == 3)
+    check("初始方向向右", g.direction == RIGHT)
+    check("初始未结束", not g.game_over and not g.won)
+    check("初始食物不在蛇身", g.food not in set(g.snake))
+
+    # 2. 转向与禁止掉头
+    g = SnakeGame(20, 15, seed=1)
+    check("拒绝 180 度掉头", g.set_direction(LEFT) is False)
+    check("接受合法转向", g.set_direction(UP) is True)
+    g.step()
+    check("转向在下一 tick 生效", g.direction == UP)
+    check("头部按新方向前进", g.snake[0] == (10, 6))
+    check("未进食长度不变", len(g.snake) == 3)
+
+    # 3. 进食与成长
+    g = SnakeGame(20, 15, seed=1)
+    g.food = (11, 7)
+    g.step()
+    check("吃到食物长度+1", len(g.snake) == 4)
+    check("吃到食物得分+1", g.score == 1)
+    check("食物重新生成且不在蛇身",
+          g.food is not None and g.food not in set(g.snake))
+
+    # 4. 撞墙
+    g = SnakeGame(5, 5, seed=1)
+    g.food = (0, 0)
+    for _ in range(3):
+        g.step()
+    check("撞墙后结束", g.game_over and not g.won)
+
+    # 5. 撞自身（踩尾巴合法，踩身体非法）
+    g = SnakeGame(6, 6, seed=1)
+    g.food = (0, 5)
+    g.snake = deque([(2, 2), (2, 1), (3, 1), (3, 2), (4, 2)])
+    g.direction = DOWN
+    check("撞自身前允许转向", g.set_direction(RIGHT) is True)
+    g.step()
+    check("撞到自身结束", g.game_over and not g.won)
+
+    # 6. 通关（填满棋盘）
+    g = SnakeGame(4, 1, seed=1)
+    check("4x1 初始长度=3", len(g.snake) == 3)
+    g.food = (3, 0)
+    g.step()
+    check("填满棋盘判定通关", g.won and g.game_over)
+    check("通关后食物为 None", g.food is None)
+
+    # 7. 随机长跑：食物永不与蛇身重叠（且确实发生过推进/死亡，非空转）
+    rng = random.Random(20240607)
+    g = SnakeGame(8, 8, seed=42)
+    overlap = False
+    deaths = 0
+    eaten = 0
+    for _ in range(2000):
+        if g.game_over:
+            g.reset()
+            deaths += 1
+        before = g.score
+        g.set_direction(rng.choice(DIRECTIONS))
+        g.step()
+        if g.score > before:
+            eaten += 1
+        if not g.game_over and g.food is not None and g.food in set(g.snake):
+            overlap = True
+            break
+    check("随机长跑中食物从不与蛇身重叠", not overlap)
+    check("随机长跑确实吃掉过食物（非空转）", eaten > 0)
+    check("随机长跑确实触发过结束（非空转）", deaths > 0)
+
+    # 8. 渲染层（只吃快照）
+    g = SnakeGame(6, 4, seed=3)
+    g.food = (0, 0)
+    lines = TextRenderer.render(g.snapshot()).split("\n")
+    check("渲染行数=高度+3", len(lines) == 4 + 3)
+    check("边框宽度=宽度+2",
+          all(len(lines[i]) == 6 + 2 for i in range(1, 6)))
+    hx, hy = g.snake[0]
+    check("蛇头位置正确渲染",
+          lines[2 + hy][1 + hx] == TextRenderer.SYM_HEAD)
+    check("蛇身位置正确渲染",
+          lines[2 + 2][1 + 2] == TextRenderer.SYM_BODY)
+    check("食物位置正确渲染",
+          lines[2 + 0][1 + 0] == TextRenderer.SYM_FOOD)
+
+    g.game_over = True
+    check("结束横幅渲染", "GAME OVER" in TextRenderer.render(g.snapshot()))
+
+    # 9. 结束后的 step 无副作用
+    g = SnakeGame(6, 6, seed=1)
+    g.game_over = True
+    frozen = list(g.snake)
+    g.step()
+    check("结束后 step 无副作用", list(g.snake) == frozen)
+
+    # 10. 负向控制：故意写错断言，必须被判为失败
+    probe = []
+
+    def probe_check(name, cond):
+        probe.append((name, bool(cond)))
+
+    probe_check("负向控制", len(SnakeGame(6, 6, seed=1).snake) == 999)
+    check("负向控制生效（坏断言被捕获）", probe[0][1] is False)
+
+    return checks
+
+
+def run_selftest() -> bool:
+    try:
+        checks = _selftest_checks()
+    except Exception as exc:                      # 自测自身崩溃也必须如实报 FAIL
+        print("FAIL")
+        print("  自测执行异常: {}: {}".format(type(exc).__name__, exc))
+        return False
+
+    failed = [name for name, ok in checks if not ok]
+    total = len(checks)
+    if failed:
+        print("FAIL")
+        for name in failed:
+            print("  - " + name)
+        print("{}/{} 项通过".format(total - len(failed), total))
+        return False
+
+    print("PASS  {}/{} 项检查全部通过".format(total, total))
+    return True
+
+
+# --------------------------------------------------------------------------
+# 入口
+# --------------------------------------------------------------------------
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser(
+        description="终端文本贪吃蛇（核心逻辑与渲染分离）")
+    parser.add_argument("--selftest", action="store_true",
+                        help="无头自测并打印 PASS / FAIL")
+    parser.add_argument("--width", type=int, default=30, help="棋盘宽度")
+    parser.add_argument("--height", type=int, default=16, help="棋盘高度")
+    parser.add_argument("--tick", type=float, default=0.12,
+                        help="每步间隔秒数（越小越快）")
+    parser.add_argument("--seed", type=int, default=None, help="随机种子")
+    args = parser.parse_args(argv)
+
+    if args.selftest:
+        return 0 if run_selftest() else 1
+
+    try:
+        game = SnakeGame(args.width, args.height, seed=args.seed)
+    except ValueError as exc:
+        print("参数错误: {}".format(exc), file=sys.stderr)
+        return 2
+
+    if not sys.stdin.isatty():
+        print("当前不是交互式终端；请用 `python3 game.py --selftest` 做无头验证。",
+              file=sys.stderr)
+        return 2
+
+    try:
+        return run_interactive(game, tick=max(0.02, args.tick))
+    except KeyboardInterrupt:
+        print("\n已中断。")
+        return 130
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+
+运行说明
+
+| 场景 | 命令 |
+| 无头自测 | python3 game.py --selftest → 打印 PASS 24/24 ...（失败则打印 FAIL 并列出失败项，退出码 1） |
+| 开始游戏 | python3 game.py |
+| 自定义 | python3 game.py --width 40 --height 18 --tick 0.08 --seed 7 |
+
+操作：w/a/s/d 或方向键转向，p/空格暂停，q/ESC 退出（也可 Ctrl-C）。需要 Python 3.7+，无第三方依赖；POSIX 下用 termios 进 cbreak 模式，Windows 下走 msvcrt。
+
+结构上 SnakeGame 不 import 任何终端模块，TextRenderer.render(snapshot) 只吃字典、吐字符串，run_interactive 负责接线，因此 --selftest 可以完全无头地覆盖逻辑与渲染两条链路。
+  · intent=code_generation  promptTokens=2847  contextSnippets=7  llmModel=deepseek-flash  forecastTendency=提出新的编码任务或对本次代码的审查  forecastAgentUid=main
+  (80584ms, intent=code_generation)

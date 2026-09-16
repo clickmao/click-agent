@@ -32,6 +32,7 @@
 (缺 LF 时补 1 B 并显式报告 —— 不再让尾字节风格差异静默禁用整条通路); 幂等; 写后读回复核; 打印 git numstat.
 """
 import argparse, hashlib, json, os, re, subprocess, sys
+from datetime import datetime, timezone
 
 REG = "docs/verification-registry.json"
 AUDITED_BY_ROUND = "R473"
@@ -46,11 +47,39 @@ BINDINGS = ("self-attested", "audit-pin")
 PIN_KINDS = ("semantic-projection",)
 FIELD_KEYS = ("evidence_kind", "pin_status", "pin_reason", "artifact_sha12", "instrument",
               "instrument_sha12", "binding", "audited_by_round")
+# EXP1-Q38 候选③: 尾换行契约 (R481) 违反的**可见化**。契约违反此前只打一行 stdout ——
+#   机器读不到, 该轮产物因此无法按「输入规范形 / 非规范形」归属。现落**一等字段**:
+#   stdout 恒打 `NONCANONICAL_INPUT=<0|1> reason=<...>` (字段不因模式而消失), 并可由
+#   `--run-record <path>` 落一份机器可读运行记录 (供该轮产物归属 + 后续追溯)。
+TAIL_CONTRACT = "R481-tail-lf"
+RUN_RECORD_SCHEMA = "evidence-binding-run/v1"
+NONCANON_REASON = "tail_lf_missing"
 
 
 class ProjectionPinUnavailable(RuntimeError):
     """申明 pin_kind=semantic-projection 的行在当前盘面**无法复算投影摘要** ——
     apply 时跳过该行 (fail-visible), 绝不写入 artifact_sha12=null 的假冻结行。"""
+
+
+def emit_run_record(rec, path):
+    """EXP1-Q38 候选③: 落一份**机器可读**运行记录 (供该轮产物归属)。
+
+    写盘纪律同登记表: 写后读回比对; 不一致 ⇒ 出声并把 rc 置 3 (fail-visible, 不静默)。
+    返回落盘路径 (未给 path ⇒ None)。
+    """
+    if not path:
+        return None
+    p = path if os.path.isabs(path) else os.path.join(repo_root(), path)
+    out = json.dumps(rec, ensure_ascii=False, indent=1) + "\n"
+    with open(p, "w", encoding="utf-8", newline="") as fh:
+        fh.write(out)
+    with open(p, encoding="utf-8", newline="") as fh:
+        back = fh.read()
+    ok = (back == out)
+    print("RUN_RECORD=%s (%s)" % (p, "OK" if ok else "MISMATCH"))
+    if not ok:
+        rec["rc"] = 3
+    return p
 
 
 def projection_digest(root, rel):
@@ -358,6 +387,9 @@ def main():
                          "未知 id 或缺少轮号 ⇒ rc=3 且零字节写入")
     ap.add_argument("--registry", default=REG,
                     help="登记表路径 (默认 %s; 供 scratch 副本核验 —— 真登记表不被触碰)" % REG)
+    # EXP1-Q38 候选③: 机器可读运行记录 (含 noncanonical_input 一等字段)
+    ap.add_argument("--run-record", default=None,
+                    help="把本次运行的机器可读记录落到该路径 (仓库相对或绝对; 供该轮产物归属)")
     a = ap.parse_args()
     explicit_round = a.round is not None
     AUDITED_BY_ROUND = a.round if explicit_round else AUDITED_BY_ROUND   # 默认 = 历史常量 ⇒ 无参调用行为逐字不变
@@ -370,6 +402,34 @@ def main():
     doc = json.loads(raw)
     rows = doc["rows"]
 
+    # EXP1-Q38 候选③: 尾契约违反 → 一等可见字段。两种模式都报 (字段不因模式而消失);
+    #   「补 1 B」不再是 stdout 里的一句人话, 而是可被该轮产物归属消费的结构化事实。
+    ser = json.dumps(doc, indent=1, ensure_ascii=False)
+    tail = "\n" if raw.endswith("\n") else ""
+    noncanonical = (tail == "")
+    print("TAIL_CONTRACT=%s registry_tail=%s" % (TAIL_CONTRACT, "LF" if tail else "NONE"))
+    print("NONCANONICAL_INPUT=%d reason=%s (input=%s; 契约=%s = 登记表 JSON 尾须为 LF; "
+          "缺 LF ⇒ 本次写盘补 1 B, 语义零变化)"
+          % (1 if noncanonical else 0, NONCANON_REASON if noncanonical else "none", reg_rel, TAIL_CONTRACT))
+    runrec = {
+        "schema": RUN_RECORD_SCHEMA, "round": AUDITED_BY_ROUND, "round_explicit": explicit_round,
+        "mode": "apply" if a.apply else ("check" if a.check else "noop"),
+        "registry": reg_rel, "registry_is_scratch": os.path.isabs(reg_rel),
+        "ts_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),   # 信息项 (非语义)
+        "tail_contract": TAIL_CONTRACT, "registry_tail_input": "LF" if tail else "NONE",
+        "noncanonical_input": bool(noncanonical),
+        "noncanonical_reason": NONCANON_REASON if noncanonical else None,
+        "ser_assert": None, "scope": None, "covered_before": None, "covered_after": None,
+        "covered_total": None, "unchanged": None, "touched": None, "idempotent": None,
+        "write_readback": None, "proj_pin_skipped": [], "numstat": None,
+        "violations": [], "violations_total": None, "rc": None,
+    }
+
+    def finish(rc):
+        runrec["rc"] = rc
+        emit_run_record(runrec, a.run_record)
+        return rc
+
     ids = None
     if a.only:
         ids = [s.strip() for s in a.only.split(",") if s.strip()]
@@ -379,10 +439,10 @@ def main():
         unknown = [i for i in ids if i not in known]
         if unknown:
             print("ONLY_SCOPE=UNKNOWN_IDS %s (fail-closed, 零字节写入)" % sorted(unknown))
-            return 3
+            return finish(3)
         if a.apply and not explicit_round:
             print("ONLY_SCOPE=REQUIRES_EXPLICIT_ROUND (定向重审缺显式 --round ⇒ rc=3, 零字节写入)")
-            return 3
+            return finish(3)
         print("ONLY_SCOPE=n=%d %s" % (len(ids), ",".join(ids)))
 
     if a.apply:
@@ -394,10 +454,12 @@ def main():
         ser = json.dumps(doc, indent=1, ensure_ascii=False)
         tail = "\n" if raw.endswith("\n") else ""
         if ser + tail != raw:
+            runrec["ser_assert"] = "FAIL"
             print("SER_ASSERT=FAIL 序列化器未能逐字节复现原文件 (禁改写)")
             print("  TAIL=%s RAWLEN=%d SERLEN=%d (差异不止尾换行 ⇒ 格式漂移)"
                   % ("LF" if tail else "NONE", len(raw), len(ser)))
-            return 3
+            return finish(3)
+        runrec["ser_assert"] = "OK"
         print("SER_ASSERT=OK (indent=1, ensure_ascii=False, tail=%s)"
               % ("LF" if tail else "NONE->LF 补 1 B 承 R481 契约 语义零变化"))
         tracked, dirty = git_state(root)
@@ -436,14 +498,22 @@ def main():
         out = json.dumps(doc, indent=1, ensure_ascii=False) + "\n"
         if out == raw:
             print("IDEMPOTENT=OK (字节不变, 无需写盘)")
+            runrec["idempotent"] = True
+            runrec["write_readback"] = "NOT_WRITTEN"
         else:
             with open(reg_abs, "w", encoding="utf-8", newline="") as fh:
                 fh.write(out)
             with open(reg_abs, encoding="utf-8", newline="") as fh:
                 back = fh.read()
             print("WRITE_READBACK=%s" % ("OK" if back == out else "MISMATCH"))
+            runrec["idempotent"] = False
+            runrec["write_readback"] = "OK" if back == out else "MISMATCH"
         n_after = sum(1 for r in scope_rows if "evidence_generated_with" in r)
         n_total = sum(1 for r in rows if "evidence_generated_with" in r)
+        runrec.update({"scope": "full" if ids is None else "only(n=%d)" % len(ids),
+                       "covered_before": n_before, "covered_after": n_after, "covered_total": n_total,
+                       "unchanged": unchanged, "touched": n_after - unchanged,
+                       "proj_pin_skipped": list(proj_skipped)})
         print("SCOPE=%s" % ("full" if ids is None else "only(n=%d)" % len(ids)))
         print("COVERED %d -> %d (scope); 全表 COVERED=%d" % (n_before, n_after, n_total))
         print("UNCHANGED=%d / TOUCHED=%d (scope)" % (unchanged, n_after - unchanged))
@@ -453,9 +523,12 @@ def main():
                 print("  PROJ_PIN_SKIP %s" % s)
         if os.path.isabs(reg_rel):
             print("NUMSTAT=skip (scratch 副本, 非仓内路径)")
+            runrec["numstat"] = "skip (scratch 副本)"
         else:
-            print(subprocess.run(["git", "diff", "--numstat", reg_rel], cwd=root,
-                                 capture_output=True, text=True).stdout.strip())
+            ns = subprocess.run(["git", "diff", "--numstat", reg_rel], cwd=root,
+                                capture_output=True, text=True).stdout.strip()
+            print(ns)
+            runrec["numstat"] = ns
 
     crows = json.loads(open(reg_abs, encoding="utf-8").read())["rows"]
     if ids is not None:
@@ -472,7 +545,9 @@ def main():
     for s in v[:20]:
         print("VIOLATION", s)
     print("R2E_R2F_EXIT=%d" % (0 if not v else 2))
-    return 0 if not v else 2
+    runrec["violations"] = v[:20]
+    runrec["violations_total"] = len(v)
+    return finish(0 if not v else 2)
 
 
 if __name__ == "__main__":

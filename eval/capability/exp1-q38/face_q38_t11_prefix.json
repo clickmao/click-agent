@@ -1,0 +1,1383 @@
+{
+ "schema": "instruments-check/6",
+ "manifest": "eval/capability/instruments.json",
+ "manifest_sha12": "4c345f0a2bc1",
+ "instrument_sha12": "3ea90e4feea5",
+ "face": "full",
+ "only": null,
+ "out": "/tmp/q38_face_t11.json",
+ "l2_field_checks": true,
+ "input_surface_checks": true,
+ "drift_injected": false,
+ "inject_mode": null,
+ "inject_note": "",
+ "side_effects": [],
+ "side_effect_attribution": {
+  "schema": "side-effect-attribution/1",
+  "verdict": "clean",
+  "red": false,
+  "measurement_ok": true,
+  "reasons": [],
+  "window": {
+   "t0": "<runtime>",
+   "t1": "<runtime>",
+   "trace_dir": "<runtime>"
+  },
+  "trace": {
+   "commands": 60,
+   "events": 19,
+   "raw_events": 6189,
+   "raw_paths_n": 3129,
+   "raw_paths_sample": [
+    "/dev/null",
+    "/home/agentuser/AgentFramework/.git",
+    "/home/agentuser/AgentFramework/.git/index",
+    "/home/agentuser/AgentFramework/.git/index.lock",
+    "/home/agentuser/AgentFramework/.git/objects/0a",
+    "/home/agentuser/AgentFramework/.git/objects/0a/4dc54ab1d00d601cccdcfe958827a59373bd4a",
+    "/home/agentuser/AgentFramework/.git/objects/0a/tmp_obj_LCc0Zn",
+    "/home/agentuser/AgentFramework/.git/objects/0a/tmp_obj_zuyTRf",
+    "/home/agentuser/AgentFramework/.git/objects/ba",
+    "/home/agentuser/AgentFramework/.git/objects/ba/fc5d9a1a836cea09dadcec13e66fe498cd997a",
+    "/home/agentuser/AgentFramework/.git/objects/ba/tmp_obj_2MHPzA",
+    "/home/agentuser/AgentFramework/.git/objects/ba/tmp_obj_gTM8M7",
+    "/home/agentuser/AgentFramework/0a",
+    "/home/agentuser/AgentFramework/4dc54ab1d00d601cccdcfe958827a59373bd4a",
+    "/home/agentuser/AgentFramework/ApiKeyResolver.cs",
+    "/home/agentuser/AgentFramework/Dup.cs",
+    "/home/agentuser/AgentFramework/Foo.cs",
+    "/home/agentuser/AgentFramework/HEAD",
+    "/home/agentuser/AgentFramework/Legacy.cs",
+    "/home/agentuser/AgentFramework/Moved.cs",
+    "/home/agentuser/AgentFramework/Symbols.cs",
+    "/home/agentuser/AgentFramework/a",
+    "/home/agentuser/AgentFramework/a.cs",
+    "/home/agentuser/AgentFramework/agent.embedcpu",
+    "/home/agentuser/AgentFramework/applypatch-msg.sample",
+    "/home/agentuser/AgentFramework/b.cs",
+    "/home/agentuser/AgentFramework/b.py",
+    "/home/agentuser/AgentFramework/ba",
+    "/home/agentuser/AgentFramework/bad.json",
+    "/home/agentuser/AgentFramework/bare_ambig.md",
+    "/home/agentuser/AgentFramework/bare_missing.md",
+    "/home/agentuser/AgentFramework/bare_unique.md",
+    "/home/agentuser/AgentFramework/branches",
+    "/home/agentuser/AgentFramework/build_q18_probe.py",
+    "/home/agentuser/AgentFramework/capability",
+    "/home/agentuser/AgentFramework/citations.jsonl",
+    "/home/agentuser/AgentFramework/cli_result.json",
+    "/home/agentuser/AgentFramework/commit-msg.sample",
+    "/home/agentuser/AgentFramework/config",
+    "/home/agentuser/AgentFramework/credentials.json",
+    "/home/agentuser/AgentFramework/d.md",
+    "/home/agentuser/AgentFramework/data",
+    "/home/agentuser/AgentFramework/data/probe/replies/command_cats0-p001.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/file__nonexistent-dir-xyzs0-p001.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_delayfixs0-p001-t1.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_delayfixs0-p001-t2.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_delayfixs0-p002-t1.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_delayfixs0-p002-t2.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_delayfixs0-p003-t1.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_delayfixs0-p003-t2.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_extras0-p001.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_extras0-p002.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_extras0-p003.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_hardcodes0-p001.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_hardcodes0-p002.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_hardcodes0-p003.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_loops0-p001.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_loops0-p002.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_loops0-p003.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_nocodes0-p001.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_nocodes0-p002.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_nocodes0-p003.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_nofinals0-m001.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_nofinals0-m002.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_nofixs0-p001-t1.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_nofixs0-p001-t2.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_nofixs0-p002-t1.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_nofixs0-p002-t2.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_nofixs0-p003-t1.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_nofixs0-p003-t2.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_syntaxs0-p001.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_syntaxs0-p002.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_syntaxs0-p003.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_wrongfinals0-m001.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/mutation_wrongfinals0-m002.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/oracles0-m001.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/oracles0-m002.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/oracles0-p001-t1.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/oracles0-p001-t2.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/oracles0-p001.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/oracles0-p002-t1.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/oracles0-p002-t2.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/oracles0-p002.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/oracles0-p003-t1.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/oracles0-p003-t2.txt",
+    "/home/agentuser/AgentFramework/data/probe/replies/oracles0-p003.txt",
+    "/home/agentuser/AgentFramework/description",
+    "/home/agentuser/AgentFramework/docs",
+    "/home/agentuser/AgentFramework/eval",
+    "/home/agentuser/AgentFramework/eval/capability/exp1-q13/_selftest_target.py",
+    "/home/agentuser/AgentFramework/eval/capability/exp1-q15/selftest_q15.json",
+    "/home/agentuser/AgentFramework/eval/capability/exp1-q16/selftest_q16.json",
+    "/home/agentuser/AgentFramework/eval/capability/exp1-q18/build_q18.json",
+    "/home/agentuser/AgentFramework/eval/capability/exp1-q18/probe_v270.py",
+    "/home/agentuser/AgentFramework/eval/capability/exp1-q19/l2runs/selftest_q1.json",
+    "/home/agentuser/AgentFramework/eval/capability/exp1-q2/selftest_result.json",
+    "/home/agentuser/AgentFramework/eval/capability/exp1-q20/l2runs/_q15_nc.json",
+    "/home/agentuser/AgentFramework/eval/capability/exp1-q20/l2runs/_q15_nc2.json",
+    "/home/agentuser/AgentFramework/eval/capability/exp1-q20/l2runs/_q16_nc.json",
+    "/home/agentuser/AgentFramework/eval/capability/exp1-q20/l2runs/_q17_nc.json",
+    "/home/agentuser/AgentFramework/eval/capability/exp1-q20/l2runs/selftest_q17.json",
+    "/home/agentuser/AgentFramework/eval/capability/exp1-q20/l2runs/verdict_q17.json",
+    "/home/agentuser/AgentFramework/eval/capability/exp1-q30/scratch/_nc_wl_identity.json",
+    "/home/agentuser/AgentFramework/eval/capability/exp1-q30/scratch/nc_bind.log",
+    "/home/agentuser/AgentFramework/eval/capability/exp1-q30/scratch/nc_reg.json",
+    "/home/agentuser/AgentFramework/eval/capability/exp1-q30/scratch/whitelist_coverage_face.json",
+    "/home/agentuser/AgentFramework/eval/capability/exp1-q31/scratch/verdict_q31_hook_gate.json",
+    "/home/agentuser/AgentFramework/eval/capability/instruments-check-drift.json",
+    "/home/agentuser/AgentFramework/eval/capability/instruments-check-drift.runtime.json",
+    "/home/agentuser/AgentFramework/eval/capability/instruments-check-scoped.json",
+    "/home/agentuser/AgentFramework/eval/capability/instruments-check-scoped.runtime.json",
+    "/home/agentuser/AgentFramework/eval/rover/r444/precheck-prefilter.json",
+    "/home/agentuser/AgentFramework/eval/rover/r444/runs/precheck-prefilter.neg.json",
+    "/home/agentuser/AgentFramework/eval/rover/r444/verdict-r444-analysis.json",
+    "/home/agentuser/AgentFramework/exclude",
+    "/home/agentuser/AgentFramework/exp1-q10",
+    "/home/agentuser/AgentFramework/exp1-q18",
+    "/home/agentuser/AgentFramework/exp1-q30",
+    "/home/agentuser/AgentFramework/exp1-q31",
+    "/home/agentuser/AgentFramework/fc5d9a1a836cea09dadcec13e66fe498cd997a",
+    "/home/agentuser/AgentFramework/fenced.md",
+    "/home/agentuser/AgentFramework/fixA",
+    "/home/agentuser/AgentFramework/fixB",
+    "/home/agentuser/AgentFramework/fixture.json",
+    "/home/agentuser/AgentFramework/fsmonitor-watchman.sample",
+    "/home/agentuser/AgentFramework/good.md",
+    "/home/agentuser/AgentFramework/half-done.py",
+    "/home/agentuser/AgentFramework/heads",
+    "/home/agentuser/AgentFramework/hooks",
+    "/home/agentuser/AgentFramework/index",
+    "/home/agentuser/AgentFramework/info",
+    "/home/agentuser/AgentFramework/legacy_a.md",
+    "/home/agentuser/AgentFramework/legacy_b.md",
+    "/home/agentuser/AgentFramework/lib",
+    "/home/agentuser/AgentFramework/log.txt",
+    "/home/agentuser/AgentFramework/manifest.txt",
+    "/home/agentuser/AgentFramework/manifest_wrong.txt",
+    "/home/agentuser/AgentFramework/master.key",
+    "/home/agentuser/AgentFramework/objects",
+    "/home/agentuser/AgentFramework/other",
+    "/home/agentuser/AgentFramework/out_block.json",
+    "/home/agentuser/AgentFramework/out_full.json",
+    "/home/agentuser/AgentFramework/out_noround.json",
+    "/home/agentuser/AgentFramework/out_of_scope.md",
+    "/home/agentuser/AgentFramework/out_only.json",
+    "/home/agentuser/AgentFramework/out_unknown.json",
+    "/home/agentuser/AgentFramework/pack",
+    "/home/agentuser/AgentFramework/post-update.sample",
+    "/home/agentuser/AgentFramework/pre-applypatch.sample",
+    "/home/agentuser/AgentFramework/pre-commit",
+    "/home/agentuser/AgentFramework/pre-commit.sample",
+    "/home/agentuser/AgentFramework/pre-merge-commit.sample",
+    "/home/agentuser/AgentFramework/pre-push.sample",
+    "/home/agentuser/AgentFramework/pre-rebase.sample",
+    "/home/agentuser/AgentFramework/pre-receive.sample",
+    "/home/agentuser/AgentFramework/prepare-commit-msg.sample",
+    "/home/agentuser/AgentFramework/probe_v260.py",
+    "/home/agentuser/AgentFramework/push-to-checkout.sample",
+    "/home/agentuser/AgentFramework/q31nc-retired",
+    "/home/agentuser/AgentFramework/refs",
+    "/home/agentuser/AgentFramework/relocated.md",
+    "/home/agentuser/AgentFramework/relocated_multi.md",
+    "/home/agentuser/AgentFramework/resultA.json",
+    "/home/agentuser/AgentFramework/resultA2.json",
+    "/home/agentuser/AgentFramework/resultB.json",
+    "/home/agentuser/AgentFramework/resultM.json",
+    "/home/agentuser/AgentFramework/scratch",
+    "/home/agentuser/AgentFramework/selftest_summary.json",
+    "/home/agentuser/AgentFramework/sendemail-validate.sample",
+    "/home/agentuser/AgentFramework/sibling",
+    "/home/agentuser/AgentFramework/skills",
+    "/home/agentuser/AgentFramework/sol.py",
+    "/home/agentuser/AgentFramework/src",
+    "/home/agentuser/AgentFramework/stage_guard_q30.py",
+    "/home/agentuser/AgentFramework/stale_lines.md",
+    "/home/agentuser/AgentFramework/stale_path.md",
+    "/home/agentuser/AgentFramework/store.bin",
+    "/home/agentuser/AgentFramework/sym_absent.md",
+    "/home/agentuser/AgentFramework/tags",
+    "/home/agentuser/AgentFramework/testing",
+    "/home/agentuser/AgentFramework/tools",
+    "/home/agentuser/AgentFramework/trace.jsonl",
+    "/home/agentuser/AgentFramework/update.sample",
+    "/home/agentuser/AgentFramework/verdict_q31_hook_gate.json",
+    "/home/agentuser/AgentFramework/x.py",
+    "/tmp/1dil0nx1",
+    "/tmp/2635kk4u",
+    "/tmp/4u93oef2",
+    "/tmp/5xy0mcsi",
+    "/tmp/7mi2pj8u",
+    "/tmp/82cstk20",
+    "/tmp/9nqxq6je",
+    "/tmp/_ke2lnhp",
+    "/tmp/_xnqsvv7",
+    "/tmp/cxsln6ik",
+    "/tmp/d9kpy4l2",
+    "/tmp/docref-selftest-px3dgq1m",
+    "/tmp/docref-selftest-px3dgq1m/src",
+    "/tmp/docref-selftest-px3dgq1m/src/agent",
+    "/tmp/docref-selftest-px3dgq1m/src/agent/x"
+   ],
+   "log_bytes": 34179729,
+   "capped": false,
+   "unresolved_relative": 0,
+   "channel": "strace+audithook"
+  },
+  "self_writes": [],
+  "touched_and_gone": [],
+  "foreign_writes": [],
+  "pre_existing": [
+   "eval/bge/r404/csharp-fusion-replay.json",
+   "eval/capability/exp1-q22-controls/fixtures/c1.txt",
+   "eval/capability/exp1-q22-controls/fixtures/c2.txt",
+   "eval/capability/exp1-q22-controls/fixtures/c2b.txt",
+   "eval/capability/exp1-q22-controls/fixtures/c3.txt",
+   "eval/capability/exp1-q22-controls/fixtures/c3b.txt",
+   "eval/capability/exp1-q22-controls/fixtures/c4.txt",
+   "eval/capability/exp1-q22-controls/fixtures/c7.txt",
+   "eval/capability/exp1-q22-controls/probe.txt",
+   "eval/capability/exp1-q24/runs/fresh-a.json",
+   "eval/capability/exp1-q24/runs/fresh-b.json",
+   "eval/capability/exp1-q24/runs/fresh-neg.json",
+   "eval/capability/exp1-q24/runs/head-committed-negcontrol.json",
+   "eval/capability/exp1-q29/scratch/reg_ascii_escape.json",
+   "eval/capability/exp1-q29/scratch/reg_asis.json",
+   "eval/capability/exp1-q29/scratch/reg_asis_ph.json",
+   "eval/capability/exp1-q29/scratch/reg_crlf.json",
+   "eval/capability/exp1-q29/scratch/reg_indent2.json",
+   "eval/capability/exp1-q29/scratch/reg_nolf.json",
+   "eval/capability/exp1-q29/scratch/reg_reorder.json",
+   "eval/capability/exp1-q37/face_q37_t10.runtime.json",
+   "eval/capability/exp1-q38/occupancy_pre.txt",
+   "eval/capability/exp1-q38/precheck_occupancy.sh",
+   "eval/capability/exp1-q38/run_face_q38.sh",
+   "eval/recall/check_r480.py",
+   "eval/recall/focus_c.json",
+   "eval/recall/focus_probe_c.py",
+   "eval/recall/period_policy_probe.py",
+   "eval/recall/prereg_r480.json",
+   "eval/recall/prereg_r480c.json",
+   "eval/rover/r443/extract_growth_from_calls.py",
+   "eval/rover/r443/perm_search.py",
+   "eval/rover/r443/pin_msg_search.py",
+   "eval/rover/r443/r1_gate_samples.json",
+   "eval/rover/r443/recon_prompt_origin.sh",
+   "eval/rover/r443/reconstruct_from_calls.py",
+   "eval/rover/r443/search_growth_block.py",
+   "eval/rover/r443/search_growth_v2.py",
+   "eval/rover/r443/search_growth_v3.py",
+   "eval/rover/r443/solve_prompts.py",
+   "eval/rover/r446/probe-judge-det-s1.json",
+   "eval/rover/r446/probe-judge-det-s2.json",
+   "eval/rover/r446/probe-judge-det-s3.json",
+   "eval/rover/r446/probe-judge-det-st.json",
+   "eval/rover/r446/probe-judge-detJDET-s1.json",
+   "eval/rover/r446/probe-judge-detJDET24-s1.json",
+   "eval/rover/r449/real-corpus.jsonl",
+   "eval/rover/r470/asserts.json",
+   "eval/rover/r470/real-calls.json",
+   "eval/rover/r479/finish_r479.sh",
+   "eval/rover/r479/refresh_master_index_r479.py",
+   "eval/rover/r491/preflight-gatecheck.json",
+   "eval/rover/r493/baseline-kpi.json",
+   "eval/tools/master_plan_round_index.py"
+  ],
+  "old_gate_delta": [],
+  "old_gate_false_reds": [],
+  "old_gate_missed_self_writes": [],
+  "live_fd_scan": {
+   "scanned": 778,
+   "errors": 104
+  },
+  "census_in_repo_cwd": [
+   {
+    "pid": 1925112,
+    "cwd": ".",
+    "cmd": "/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/hermes_kernel_jaerpjys/hermes_kernel_runner.py"
+   },
+   {
+    "pid": 1935762,
+    "cwd": "eval/rover/r494",
+    "cmd": "/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/hermes_kernel_odopkuwp/hermes_kernel_runner.py"
+   },
+   {
+    "pid": 2011179,
+    "cwd": ".",
+    "cmd": "bash -c bash eval/capability/exp1-q38/run_face_q38.sh t11 > /tmp/q38_face_t11.stdout.txt 2>&1; echo \"FACE_T11_EXIT=$?\" >> /tmp/q38_face_t11.stdout.txt"
+   },
+   {
+    "pid": 2011181,
+    "cwd": ".",
+    "cmd": "bash eval/capability/exp1-q38/run_face_q38.sh t11"
+   },
+   {
+    "pid": 2011184,
+    "cwd": ".",
+    "cmd": "/usr/bin/time -f TIME_t11 wall=%es maxrss=%MkB python3 -u eval/capability/instruments_check.py --out /tmp/q38_face_t11.json"
+   },
+   {
+    "pid": 2016707,
+    "cwd": ".",
+    "cmd": "/usr/bin/bash -c source /home/agentuser/.hermes/cache/terminal/hermes-snap-19562718e6a9.sh >/dev/null 2>&1 || true\nexport AI_AGENT=\"${AI_AGENT:-hermes-agent}\" H"
+   },
+   {
+    "pid": 2017739,
+    "cwd": ".",
+    "cmd": "sleep 10"
+   },
+   {
+    "pid": 2017864,
+    "cwd": ".",
+    "cmd": "/bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT=\"$HOME/.dotnet\" && env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR"
+   },
+   {
+    "pid": 2017888,
+    "cwd": ".",
+    "cmd": "/home/agentuser/.dotnet/dotnet test src/agent.tests/agentframework.tests.csproj -c Release --no-build --nologo"
+   },
+   {
+    "pid": 2017889,
+    "cwd": ".",
+    "cmd": "tail -40"
+   }
+  ],
+  "conservation": {
+   "classified": 54,
+   "expected": 54,
+   "in_scope_after": 54,
+   "ok": true
+  }
+ },
+ "member_class": {
+  "total": 27,
+  "passable_total": 25,
+  "passable_passed": 23,
+  "passable_failed": 2,
+  "informational_total": 2,
+  "informational_passed": 2,
+  "informational_failed": 0,
+  "informational_ids": [
+   "bind_evidence.check",
+   "bind_evidence.committed-state"
+  ],
+  "informational_why": {
+   "bind_evidence.check": "self-referential-tree-state",
+   "bind_evidence.committed-state": "self-referential-tree-state"
+  },
+  "errors": []
+ },
+ "passable_passed": 23,
+ "passable_total": 25,
+ "passed": 25,
+ "total": 27,
+ "results": [
+  {
+   "id": "probe.grade",
+   "kind": "grader",
+   "cmd": "python3 eval/probe/grade.py --selftest",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "ef0a81d495ee",
+   "owner_round": "R444",
+   "kpi_quad": {
+    "单位": "轮",
+    "分母": "题集",
+    "真值源": "桩侧落盘",
+    "口径档": "n/a"
+   },
+   "l2_fields": {
+    "version": "ok",
+    "instrument_sha12": "ok",
+    "input_surface": "ok:self_contained",
+    "input_fingerprint": "ok(n=0)",
+    "kpi_quad": "ok"
+   },
+   "l2_ok": true,
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/probe/grade.py --selftest --bogus-flag-that-must-not-silently-pass",
+     "rc": 2,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "grade.py: error: unrecognized arguments: --bogus-flag-that-must-not-silently-pass"
+    }
+   ],
+   "member_class": "passable"
+  },
+  {
+   "id": "probe.run_probe",
+   "kind": "pipeline",
+   "cmd": "python3 eval/probe/run_probe.py --selftest",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "9de4511eb8a4",
+   "owner_round": "R444",
+   "kpi_quad": {
+    "单位": "轮",
+    "分母": "题集",
+    "真值源": "桩侧落盘",
+    "口径档": "n/a"
+   },
+   "l2_fields": {
+    "version": "ok",
+    "instrument_sha12": "ok",
+    "input_surface": "ok:self_contained",
+    "input_fingerprint": "ok(n=0)",
+    "kpi_quad": "ok"
+   },
+   "l2_ok": true,
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/probe/run_probe.py --selftest --bogus-flag-that-must-not-silently-pass",
+     "rc": 2,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "run_probe.py: error: unrecognized arguments: --bogus-flag-that-must-not-silently-pass"
+    }
+   ],
+   "member_class": "passable"
+  },
+  {
+   "id": "exp1q1.scope-selftest",
+   "kind": "static-probe",
+   "cmd": "python3 eval/capability/exp1-q1/selftest_scope.py --out eval/capability/exp1-q19/l2runs/selftest_q1.json",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "0d5d243ac686",
+   "owner_round": "R444",
+   "kpi_quad": {
+    "单位": "引用",
+    "分母": "全库引用",
+    "真值源": "git 树",
+    "口径档": "静态"
+   },
+   "l2_fields": {
+    "version": "ok",
+    "instrument_sha12": "ok",
+    "input_surface": "ok:self_contained",
+    "input_fingerprint": "ok(n=0)",
+    "kpi_quad": "ok"
+   },
+   "l2_ok": true,
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/capability/exp1-q1/selftest_scope.py --out eval/capability/exp1-q19/l2runs/selftest_q1_nc.json --bogus",
+     "rc": 2,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "用法错误: 未知参数 ['--bogus']"
+    }
+   ],
+   "member_class": "passable"
+  },
+  {
+   "id": "exp1q2.docref-selftest",
+   "kind": "static-probe",
+   "cmd": "python3 eval/capability/exp1-q2/selftest_doc_ref_integrity.py",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "1650e550247b",
+   "owner_round": "R444",
+   "kpi_quad": {
+    "单位": "引用",
+    "分母": "全库引用",
+    "真值源": "git 树",
+    "口径档": "静态"
+   },
+   "l2_fields": {
+    "version": "ok",
+    "instrument_sha12": "ok",
+    "input_surface": "ok:self_contained",
+    "input_fingerprint": "ok(n=0)",
+    "kpi_quad": "ok"
+   },
+   "l2_ok": true,
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/capability/exp1-q2/selftest_doc_ref_integrity.py --bogus",
+     "rc": 2,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "用法错误: 未知参数 ['--bogus']"
+    }
+   ],
+   "member_class": "passable"
+  },
+  {
+   "id": "exp1q4.docref-probe",
+   "kind": "static-probe",
+   "cmd": "python3 eval/capability/exp1-q4/probe_doc_ref_integrity.py --selftest",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "8e26787db1b5",
+   "owner_round": "R444",
+   "kpi_quad": {
+    "单位": "引用",
+    "分母": "全库引用",
+    "真值源": "git 树",
+    "口径档": "静态"
+   },
+   "l2_fields": {
+    "version": "declared:2.4.1",
+    "instrument_sha12": "ok",
+    "input_surface": "ok:self_contained",
+    "input_fingerprint": "ok(n=0)",
+    "kpi_quad": "ok"
+   },
+   "l2_ok": true,
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/capability/exp1-q4/probe_doc_ref_integrity.py --selftest --bogus-flag",
+     "rc": 2,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "probe_doc_ref_integrity.py: error: unrecognized arguments: --bogus-flag"
+    }
+   ],
+   "member_class": "passable"
+  },
+  {
+   "id": "audit.status_gen",
+   "kind": "audit-surface",
+   "cmd": "python3 eval/capability/status_gen.py --check",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "607d3680253b",
+   "owner_round": "R444",
+   "kpi_quad": {
+    "单位": "行",
+    "分母": "registry 总行",
+    "真值源": "docs/verification-registry.json",
+    "口径档": "派生"
+   },
+   "l2_fields": {
+    "version": "ok",
+    "instrument_sha12": "ok",
+    "input_surface": "ok:dynamic_corpus",
+    "input_fingerprint": "ok(n=0)",
+    "kpi_quad": "ok"
+   },
+   "l2_ok": true,
+   "negative_controls": [
+    {
+     "cmd": "bash eval/capability/_nc_status_gen.sh",
+     "rc": 1,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "[nc status_gen] rc=1 (期望非零 = 注入坏行被拒)"
+    }
+   ],
+   "member_class": "passable"
+  },
+  {
+   "id": "r444.prefilter-precheck",
+   "kind": "separability-precheck",
+   "cmd": "python3 eval/rover/r444/precheck_prefilter.py --out eval/rover/r444/precheck-prefilter.json",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "b4ecd4c1bf3c",
+   "owner_round": "R444",
+   "kpi_quad": {
+    "单位": "轮",
+    "分母": "门 r1 调用行",
+    "真值源": "llama-server 遥测 + 驱动日志",
+    "口径档": "本地真值"
+   },
+   "l2_fields": {
+    "version": "ok",
+    "instrument_sha12": "ok",
+    "input_surface": "ok:external_files",
+    "input_fingerprint": "ok(n=16)",
+    "kpi_quad": "ok"
+   },
+   "l2_ok": true,
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/rover/r444/precheck_prefilter.py --neg-control --out eval/rover/r444/runs/precheck-prefilter.neg.json",
+     "rc": 2,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "负控注入: 期望检出 >=1 反例 ⇒ OK(检出)"
+    },
+    {
+     "cmd": "python3 eval/rover/r444/precheck_prefilter.py --grid-dir /nonexistent-grid-dir",
+     "rc": 3,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "[fail-closed] 网格缺失: /nonexistent-grid-dir/task-V2b.json ⇒ 空样本不得静默通过"
+    }
+   ],
+   "member_class": "passable"
+  },
+  {
+   "id": "r444.analyze",
+   "kind": "analyzer",
+   "cmd": "python3 eval/rover/r444/analyze_r444.py",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "37e379c212b8",
+   "owner_round": "R444",
+   "kpi_quad": {
+    "单位": "轮",
+    "分母": "同网格同 NS 分母臂实测",
+    "真值源": "桩侧 calls jsonl + llama-server 遥测",
+    "口径档": "三档并列(远端/含本地真值/减本地)"
+   },
+   "l2_fields": {
+    "version": "ok",
+    "instrument_sha12": "ok",
+    "input_surface": "ok:external_files",
+    "input_fingerprint": "ok(n=16)",
+    "kpi_quad": "ok"
+   },
+   "l2_ok": true,
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/rover/r444/analyze_r444.py --neg-control",
+     "rc": 0,
+     "expect": "detect:负控注入",
+     "pass": true,
+     "head": "负控注入: 期望检出 >=1 差异 ⇒ OK(检出); 检出 1 条"
+    }
+   ],
+   "member_class": "passable"
+  },
+  {
+   "id": "hooks.pre-commit",
+   "kind": "arbitration",
+   "cmd": "bash tools/hooks/pre-commit",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "555abbf4c33f",
+   "owner_round": "EXP1-Q31",
+   "kpi_quad": {
+    "单位": "提交",
+    "分母": "提交尝试",
+    "真值源": "git-dir/ROUND_CLAIM",
+    "口径档": "n/a"
+   },
+   "l2_fields": {
+    "version": "ok",
+    "instrument_sha12": "ok",
+    "input_surface": "ok:dynamic_corpus",
+    "input_fingerprint": "ok(n=0)",
+    "kpi_quad": "ok"
+   },
+   "l2_ok": true,
+   "negative_controls": [
+    {
+     "cmd": "bash eval/capability/_nc_hook_claim.sh",
+     "rc": 1,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "  若确认对侧已停: bash tools/round_claim.sh release"
+    }
+   ],
+   "member_class": "passable"
+  },
+  {
+   "id": "r446.judge-precheck",
+   "kind": "separability-precheck",
+   "cmd": "python3 eval/rover/r445/judge_prefilter_precheck.py --run-glob 'r4[0-4]*' --out /tmp/r446_instr_jp.json",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "9157725483d0",
+   "owner_round": "R446",
+   "kpi_quad": {
+    "单位": "调用",
+    "分母": "判官本地真答行(244, 冻结集)",
+    "真值源": "归档 telemetry + 源码字面量派生",
+    "口径档": "判官侧可分性"
+   },
+   "l2_fields": {
+    "version": "ok",
+    "instrument_sha12": "ok",
+    "input_surface": "ok:dynamic_corpus",
+    "input_fingerprint": "ok(n=0)",
+    "kpi_quad": "ok"
+   },
+   "l2_ok": true,
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/rover/r445/judge_prefilter_precheck.py --neg-control --run-glob 'r4[0-4]*' --out /tmp/r446_instr_jp_nc.json",
+     "rc": 0,
+     "expect": "detect:[neg-control] OK",
+     "pass": true,
+     "head": "[neg-control] OK (检出反例 ⇒ 器具非空转)"
+    },
+    {
+     "cmd": "python3 eval/rover/r445/judge_prefilter_precheck.py --grid-dir /nonexistent-grid-dir --out /tmp/r446_instr_jp_fc.json",
+     "rc": 2,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "FAIL-CLOSED: --grid-dir 不存在: /nonexistent-grid-dir"
+    }
+   ],
+   "member_class": "passable"
+  },
+  {
+   "id": "r446.judge-det-analyzer",
+   "kind": "determinism-probe",
+   "cmd": "python3 eval/rover/r446/analyze_judge_det.py --selftest /tmp",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "5ca7dc39735b",
+   "owner_round": "R446",
+   "kpi_quad": {
+    "单位": "调用",
+    "分母": "同输入判官行组",
+    "真值源": "真机遥测 letter 列",
+    "口径档": "判官确定性"
+   },
+   "l2_fields": {
+    "version": "ok",
+    "instrument_sha12": "ok",
+    "input_surface": "ok:self_contained",
+    "input_fingerprint": "ok(n=0)",
+    "kpi_quad": "ok"
+   },
+   "l2_ok": true,
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/rover/r446/analyze_judge_det.py /tmp/nonexistent-r446.jsonl /tmp -x deadbeef",
+     "rc": 1,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "FAIL-CLOSED: 遥测不可读: /tmp/nonexistent-r446.jsonl"
+    }
+   ],
+   "member_class": "passable"
+  },
+  {
+   "id": "exp1q11.other-bucket-decompose",
+   "kind": "analyzer",
+   "cmd": "python3 eval/capability/exp1-q11/other_bucket_decompose.py --selftest",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "a5e952141582",
+   "owner_round": "EXP1-Q19",
+   "kpi_quad": {
+    "单位": "边",
+    "分母": "v2.6.0 边级 kind 轴 other 桶",
+    "真值源": "归档 citations.jsonl (exp1-q10)",
+    "口径档": "边级/单标签"
+   },
+   "l2_fields": {
+    "version": "ok",
+    "instrument_sha12": "ok",
+    "input_surface": "ok:self_contained",
+    "input_fingerprint": "ok(n=0)",
+    "kpi_quad": "ok"
+   },
+   "l2_ok": true,
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/capability/exp1-q11/other_bucket_decompose.py --citations eval/capability/exp1-q19/_absent_corpus.jsonl --out eval/capability/exp1-q20/l2runs/_q11_nc.json",
+     "rc": 3,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "MEASUREMENT_FAILURE: [Errno 2] No such file or directory: 'eval/capability/exp1-q19/_absent_corpus.jsonl'"
+    }
+   ],
+   "member_class": "passable"
+  },
+  {
+   "id": "exp1q15.unit-axis-guard",
+   "kind": "guard",
+   "cmd": "python3 eval/capability/exp1-q15/unit_axis_guard.py --selftest",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "002c73121e33",
+   "owner_round": "EXP1-Q19",
+   "kpi_quad": {
+    "单位": "轴(单位×分母)",
+    "分母": "登记面 cited_edges 总数",
+    "真值源": "归档 citations.jsonl + 器具源码 AST",
+    "口径档": "10 fixture"
+   },
+   "l2_fields": {
+    "version": "ok",
+    "instrument_sha12": "ok",
+    "input_surface": "ok:self_contained",
+    "input_fingerprint": "ok(n=0)",
+    "kpi_quad": "ok"
+   },
+   "l2_ok": true,
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/capability/exp1-q15/unit_axis_guard.py --run --cites eval/capability/exp1-q19/_absent_corpus.jsonl --json eval/capability/exp1-q20/l2runs/_q15_nc.json",
+     "rc": 2,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "TOTAL verdict=INVARIANT_VIOLATED exit=2 artifacts=1 ground_truth weak_edge_symbol_slots=90 two_paths_agree=True"
+    },
+    {
+     "cmd": "python3 eval/capability/exp1-q15/unit_axis_guard.py --run --cites eval/capability/exp1-q18/arm_v270_VOID_self_include/citations.jsonl --json eval/capability/exp1-q20/l2runs/_q15_nc2.json",
+     "rc": 2,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "TOTAL verdict=INVARIANT_VIOLATED exit=2 artifacts=1 ground_truth weak_edge_symbol_slots=90 two_paths_agree=True"
+    }
+   ],
+   "member_class": "passable"
+  },
+  {
+   "id": "exp1q15.unit-axis-guard-q16",
+   "kind": "guard",
+   "cmd": "python3 eval/capability/exp1-q16/unit_axis_guard.py --selftest",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "8d22d7d76002",
+   "owner_round": "EXP1-Q19",
+   "kpi_quad": {
+    "单位": "轴(单位×分母)",
+    "分母": "登记面 cited_edges 总数",
+    "真值源": "归档 citations.jsonl + 器具源码 AST",
+    "口径档": "14 fixture"
+   },
+   "l2_fields": {
+    "version": "ok",
+    "instrument_sha12": "ok",
+    "input_surface": "ok:self_contained",
+    "input_fingerprint": "ok(n=0)",
+    "kpi_quad": "ok"
+   },
+   "l2_ok": true,
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/capability/exp1-q16/unit_axis_guard.py --run --cites eval/capability/exp1-q19/_absent_corpus.jsonl --json eval/capability/exp1-q20/l2runs/_q16_nc.json",
+     "rc": 2,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "TOTAL verdict=INVARIANT_VIOLATED exit=2 artifacts=1 ground_truth weak_edge_symbol_slots=90 two_paths_agree=True"
+    }
+   ],
+   "member_class": "passable"
+  },
+  {
+   "id": "exp1q17.archive-field-provenance",
+   "kind": "analyzer",
+   "cmd": "python3 eval/capability/exp1-q17/archive_field_provenance.py --selftest --out eval/capability/exp1-q20/l2runs/verdict_q17.json --fixtures-out eval/capability/exp1-q20/l2runs/selftest_q17.json",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "72d5ea82ffd5",
+   "owner_round": "EXP1-Q19",
+   "kpi_quad": {
+    "单位": "字段(生产者/落盘/归档)",
+    "分母": "Σ=35 (P∪D∪A)",
+    "真值源": "probe_v260.py 写点 ∪ citations.jsonl ∪ attribution_q10.json",
+    "口径档": "五类归因桶"
+   },
+   "l2_fields": {
+    "version": "ok",
+    "instrument_sha12": "ok",
+    "input_surface": "ok:external_files",
+    "input_fingerprint": "ok(n=4)",
+    "kpi_quad": "ok"
+   },
+   "l2_ok": true,
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/capability/exp1-q17/archive_field_provenance.py --archive eval/capability/exp1-q18/arm_v270_VOID_self_include/citations.jsonl --out eval/capability/exp1-q20/l2runs/_q17_nc.json --fixtures-out eval/capability/exp1-q20/l2runs/_q17_nc_fx.json",
+     "rc": 2,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "  RED C13: 夹具全绿（含 4 负控 + 1 正控 + 3 fail-closed + 组合） | 0/0"
+    },
+    {
+     "cmd": "python3 eval/capability/exp1-q17/archive_field_provenance.py --archive eval/capability/exp1-q19/_absent_corpus.jsonl --out eval/capability/exp1-q20/l2runs/_q17_nc2.json --fixtures-out eval/capability/exp1-q20/l2runs/_q17_nc2_fx.json",
+     "rc": 3,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "MEASUREMENT_FAILURE: 输入缺失 probe=True archive=False"
+    }
+   ],
+   "member_class": "passable"
+  },
+  {
+   "id": "exp1q18.rebuild-constructor",
+   "kind": "builder",
+   "cmd": "python3 eval/capability/exp1-q18/build_q18_probe.py",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "500033412cc0",
+   "owner_round": "EXP1-Q19",
+   "kpi_quad": {
+    "单位": "行(变更行)",
+    "分母": "源文件总行数",
+    "真值源": "probe_v260.py 字节 sha256",
+    "口径档": "单变量: 2 行"
+   },
+   "l2_fields": {
+    "version": "ok",
+    "instrument_sha12": "ok",
+    "input_surface": "ok:external_files",
+    "input_fingerprint": "ok(n=2)",
+    "kpi_quad": "ok"
+   },
+   "l2_ok": true,
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/capability/exp1-q19/nc_rebuild_mutated.py",
+     "rc": 0,
+     "expect": "detect:NC_OK",
+     "pass": true,
+     "head": "NC_OK: mutated source rejected rc=3 dst_written=False | FATAL: unexpected source version 9.9.9"
+    }
+   ],
+   "member_class": "passable"
+  },
+  {
+   "id": "l2.instruments-check",
+   "kind": "checker",
+   "cmd": "python3 eval/capability/instruments_check.py --only exp1q17.archive-field-provenance",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": false,
+   "sha12": "3ea90e4feea5",
+   "owner_round": "EXP1-Q31",
+   "kpi_quad": {
+    "单位": "器具行",
+    "分母": "instruments.json 行数",
+    "真值源": "磁盘文件重算 sha256",
+    "口径档": "L2 全字段 + 正/负控"
+   },
+   "l2_fields": {
+    "version": "DRIFT",
+    "instrument_sha12": "DRIFT(want=eb9d30eb1de0 got=3ea90e4feea5)",
+    "input_surface": "ok:external_files",
+    "input_fingerprint": "ok(n=4)",
+    "kpi_quad": "ok"
+   },
+   "l2_ok": false,
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/capability/instruments_check.py --only exp1q17.archive-field-provenance --fingerprint-drift-inject",
+     "rc": 1,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "  ⇒ 机检结果: 判红 (负控成立)"
+    }
+   ],
+   "member_class": "passable"
+  },
+  {
+   "id": "exp1q13.index-scope-out-classifier",
+   "kind": "classifier",
+   "cmd": "python3 eval/capability/exp1-q13/index_scope_out_classify.py --selftest --no-write",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "690560e01e7e",
+   "owner_round": "EXP1-Q20",
+   "kpi_quad": {
+    "单位": "弱边(边级)",
+    "分母": "归因轴 weak 桶 (63, 双栏 63|57)",
+    "真值源": "归档 citations.jsonl + attribution_q10.json + decomposition_q11.json",
+    "口径档": "边级/单标签 + 分母双栏 (delta_applied=false)"
+   },
+   "l2_fields": {
+    "version": "ok",
+    "instrument_sha12": "ok",
+    "input_surface": "ok:external_files",
+    "input_fingerprint": "ok(n=1)",
+    "kpi_quad": "ok"
+   },
+   "l2_ok": true,
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/capability/exp1-q13/index_scope_out_classify.py --inject-defect=caliber-delta-applied",
+     "rc": 2,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "INJECT_APPLIED kind=caliber-delta-applied primary_red=C3_ruling_A_landed observed_red=['C3_ruling_A_landed'] expect_rc=2 observed_rc=2"
+    },
+    {
+     "cmd": "python3 eval/capability/exp1-q13/index_scope_out_classify.py --inject-defect=phantom-ineffective",
+     "rc": 3,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "INJECT_NOT_RED kind=phantom-ineffective primary_red=C1_conservation observed_red=[] expect_rc=3 observed_rc=0"
+    }
+   ],
+   "member_class": "passable"
+  },
+  {
+   "id": "bind_evidence.check",
+   "kind": "registry-checker",
+   "cmd": "python3 eval/capability/bind_evidence.py --check",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "6d9a0fc9d3fc",
+   "owner_round": "EXP1-Q30",
+   "kpi_quad": {
+    "单位": "登记行",
+    "分母": "产品面证据行 (level∈L1..L4 ∧ evidence_path∈eval/|docs/reports/)",
+    "真值源": "磁盘文件重算 sha256[:12] + 工作区 git 状态",
+    "口径档": "现盘档 (声明 pin vs 工作区字节)"
+   },
+   "l2_fields": {
+    "version": "ok",
+    "instrument_sha12": "ok",
+    "input_surface": "ok:dynamic_corpus",
+    "input_fingerprint": "ok(n=0)",
+    "kpi_quad": "ok"
+   },
+   "l2_ok": true,
+   "negative_controls": [
+    {
+     "cmd": "bash eval/capability/exp1-q30/_nc_bind_evidence_pin.sh",
+     "rc": 0,
+     "expect": "detect:NC_DETECTED",
+     "pass": true,
+     "head": "NC_DETECTED (rc=2 + VIOLATION 命中; 明细: eval/capability/exp1-q30/scratch/nc_bind.log)"
+    }
+   ],
+   "member_class": "informational"
+  },
+  {
+   "id": "bind_evidence.committed-state",
+   "kind": "registry-checker",
+   "cmd": "python3 eval/capability/exp1-q30/check_committed_state_q30.py",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "d0af7f2f6c76",
+   "owner_round": "EXP1-Q30",
+   "kpi_quad": {
+    "单位": "主张(frozen×artifact)",
+    "分母": "HEAD 登记表 frozen/artifact 主张数",
+    "真值源": "git cat-file --batch 取 HEAD blob, 按该行**声明的 pin 语义**重算 (字节 pin ⇒ sha256[:12]; 语义投影 pin ⇒ 语义投影摘要, 规则表单一事实源 projection_rules.json)",
+    "口径档": "冻结/提交档 (HEAD 内部自洽)"
+   },
+   "l2_fields": {
+    "version": "ok",
+    "instrument_sha12": "ok",
+    "input_surface": "ok:dynamic_corpus",
+    "input_fingerprint": "ok(n=0)",
+    "kpi_quad": "ok"
+   },
+   "l2_ok": true,
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/capability/exp1-q30/check_committed_state_q30.py --inject-defect unpinned-drift",
+     "rc": 0,
+     "expect": "detect:NC_DETECTED",
+     "pass": true,
+     "head": "NC_DETECTED (注入 unpinned-drift ⇒ 1 条违反: ('bge.recall.frozen_bench', 'artifact', 'eval/bge/fixtures/corpus.jsonl', 'deadbeef0000', 'fa7c448c505d'))"
+    },
+    {
+     "cmd": "python3 eval/capability/exp1-q30/check_committed_state_q30.py --selftest",
+     "rc": 0,
+     "expect": "detect:SELFTEST",
+     "pass": true,
+     "head": "SELFTEST {'projection_differs_from_byte': True, 'runtime_only_change_keeps_digest': True, 'semantic_change_flips_digest': True, 'membership_change_flips_digest'"
+    }
+   ],
+   "member_class": "informational"
+  },
+  {
+   "id": "exp1q28.whitelist-coverage",
+   "kind": "analyzer",
+   "cmd": "python3 eval/capability/exp1-q28/verify_whitelist_q28.py --out eval/capability/exp1-q30/scratch/whitelist_coverage_face.json",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "65169b135d44",
+   "owner_round": "EXP1-Q30",
+   "kpi_quad": {
+    "单位": "归一后残留处数",
+    "分母": "三阶段原始 stdout 全文",
+    "真值源": "真实原始文本 (非已归一文本) 重算",
+    "口径档": "白名单覆盖面 + 恒等归一反空心对照"
+   },
+   "l2_fields": {
+    "version": "ok",
+    "instrument_sha12": "ok",
+    "input_surface": "ok:dynamic_corpus",
+    "input_fingerprint": "ok(n=0)",
+    "kpi_quad": "ok"
+   },
+   "l2_ok": true,
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/capability/exp1-q30/_nc_wl_identity_q30.py",
+     "rc": 0,
+     "expect": "detect:NC_DETECTED",
+     "pass": true,
+     "head": "NC_DETECTED (恒等归一 ⇒ ok=false, fails=1)"
+    }
+   ],
+   "member_class": "passable"
+  },
+  {
+   "id": "exp1q31.retired-interop",
+   "kind": "assertion-instrument",
+   "cmd": "python3 eval/capability/exp1-q31/instruments/retired_interop_absent.py",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "36ff9cd395dc",
+   "owner_round": "EXP1-Q31",
+   "kpi_quad": {
+    "单位": "registry 行",
+    "分母": "登记表覆盖行 (113)",
+    "真值源": "登记表 evidence_cmd + 源码树扫描",
+    "口径档": "L1 断言"
+   },
+   "l2_fields": {
+    "version": "ok",
+    "instrument_sha12": "ok",
+    "input_surface": "ok:dynamic_corpus",
+    "input_fingerprint": "ok(n=0)",
+    "kpi_quad": "ok"
+   },
+   "l2_ok": true,
+   "negative_controls": [
+    {
+     "cmd": "bash eval/capability/exp1-q31/_nc_retired_q31.sh",
+     "rc": 0,
+     "expect": "detect:NC_DETECTED",
+     "pass": true,
+     "head": "NC_DETECTED (重建退役路径 ⇒ 器具判红 rc=2)"
+    }
+   ],
+   "member_class": "passable"
+  },
+  {
+   "id": "exp1q31.cleanup-ledger",
+   "kind": "assertion-instrument",
+   "cmd": "python3 eval/capability/exp1-q31/instruments/cleanup_ledger_check.py",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "786c734be2b4",
+   "owner_round": "EXP1-Q31",
+   "kpi_quad": {
+    "单位": "台账条目",
+    "分母": "台账条数 (4)",
+    "真值源": "eval/rover/r463/deletion-ledger.json",
+    "口径档": "L1 断言"
+   },
+   "l2_fields": {
+    "version": "ok",
+    "instrument_sha12": "ok",
+    "input_surface": "ok:external_files",
+    "input_fingerprint": "ok(n=1)",
+    "kpi_quad": "ok"
+   },
+   "l2_ok": true,
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/capability/exp1-q31/instruments/cleanup_ledger_check.py --ledger /tmp/q31_absent_ledger.json",
+     "rc": 3,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "ENV_FAIL: 台账不存在 /tmp/q31_absent_ledger.json"
+    }
+   ],
+   "member_class": "passable"
+  },
+  {
+   "id": "exp1q31.dotnet-gate-classifier",
+   "kind": "classifier-fixture",
+   "cmd": "python3 eval/capability/exp1-q31/instruments/dotnet_test_gate.py --selftest",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "3fdc1febb02f",
+   "owner_round": "EXP1-Q31",
+   "kpi_quad": {
+    "单位": "分类分支",
+    "分母": "夹具数 (6)",
+    "真值源": "合成日志夹具",
+    "口径档": "三态 (0/2/3)"
+   },
+   "l2_fields": {
+    "version": "ok",
+    "instrument_sha12": "ok",
+    "input_surface": "ok:self_contained",
+    "input_fingerprint": "ok(n=0)",
+    "kpi_quad": "ok"
+   },
+   "l2_ok": true,
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/capability/exp1-q31/instruments/dotnet_test_gate.py",
+     "rc": 3,
+     "expect": "nonzero",
+     "pass": true,
+     "head": "ENV_FAIL: 缺 --filter"
+    }
+   ],
+   "member_class": "passable"
+  },
+  {
+   "id": "exp1q31.cap-headroom",
+   "kind": "threshold-ledger",
+   "cmd": "python3 eval/capability/exp1-q31/instruments/face_cap_headroom.py --check",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "a04b3a56676e",
+   "owner_round": "EXP1-Q31",
+   "kpi_quad": {
+    "单位": "面",
+    "分母": "器具面规模 (器具数/命令数)",
+    "真值源": "eval/capability/instruments-check.json trace 段",
+    "口径档": "log_bytes/命令数"
+   },
+   "l2_fields": {
+    "version": "ok",
+    "instrument_sha12": "ok",
+    "input_surface": "ok:dynamic_corpus",
+    "input_fingerprint": "ok(n=0)",
+    "kpi_quad": "ok"
+   },
+   "l2_ok": true,
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/capability/exp1-q31/_nc_cap_capped_q31.py",
+     "rc": 0,
+     "expect": "detect:NC_DETECTED",
+     "pass": true,
+     "head": "NC_DETECTED (capped=True ⇒ 判红 rc=2)"
+    }
+   ],
+   "member_class": "passable"
+  },
+  {
+   "id": "exp1q31.only-equivalence",
+   "kind": "equivalence-guard",
+   "cmd": "python3 eval/capability/exp1-q31/instruments/only_equivalence_guard.py",
+   "rc": 2,
+   "expect_rc": 0,
+   "substr_ok": false,
+   "pass": false,
+   "sha12": "76fef026ffd9",
+   "owner_round": "EXP1-Q31",
+   "kpi_quad": {
+    "单位": "写路径对",
+    "分母": "等价判据检查项 (8)",
+    "真值源": "两条独立写路径产物 sha",
+    "口径档": "逐字节等价"
+   },
+   "l2_fields": {
+    "version": "DRIFT",
+    "instrument_sha12": "DRIFT(want=f477c8ba8bb4 got=76fef026ffd9)",
+    "input_surface": "ok:dynamic_corpus",
+    "input_fingerprint": "ok(n=0)",
+    "kpi_quad": "ok"
+   },
+   "l2_ok": false,
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/capability/exp1-q31/_nc_only_equivalence_q31.py",
+     "rc": 0,
+     "expect": "detect:NC_DETECTED",
+     "pass": true,
+     "head": "INJECT_MODE_OK: 注入轮号不一致 ⇒ 等价判据判红 (判别力非空心)"
+    }
+   ],
+   "member_class": "passable"
+  },
+  {
+   "id": "exp1q31.stage-guard-hook",
+   "kind": "arbitration",
+   "cmd": "python3 eval/capability/exp1-q31/verify_stage_guard_hook_q31.py",
+   "rc": 0,
+   "expect_rc": 0,
+   "substr_ok": true,
+   "pass": true,
+   "sha12": "a226beb1f947",
+   "owner_round": "EXP1-Q31",
+   "kpi_quad": {
+    "单位": "提交",
+    "分母": "夹具场景 (8)",
+    "真值源": "git 夹具仓 rc + BLOCKED 文案",
+    "口径档": "n/a"
+   },
+   "l2_fields": {
+    "version": "ok",
+    "instrument_sha12": "ok",
+    "input_surface": "ok:dynamic_corpus",
+    "input_fingerprint": "ok(n=0)",
+    "kpi_quad": "ok"
+   },
+   "l2_ok": true,
+   "negative_controls": [
+    {
+     "cmd": "python3 eval/capability/exp1-q31/_nc_stage_guard_hollow_q31.py",
+     "rc": 0,
+     "expect": "detect:NC_DETECTED",
+     "pass": true,
+     "head": "NC_DETECTED (空心钩子 ⇒ 验证器判红 rc=2)"
+    }
+   ],
+   "member_class": "passable"
+  }
+ ],
+ "canon": {
+  "nonsemantic_fields": [
+   "side_effect_attribution/window/t0",
+   "side_effect_attribution/window/t1",
+   "side_effect_attribution/window/trace_dir"
+  ],
+  "runtime_sidecar": "/tmp/q38_face_t11.runtime.json",
+  "note": "记录字节 = 语义面; 运行期字段 (t0/t1/trace_dir) 见侧车 (Q33 确定化)"
+ }
+}

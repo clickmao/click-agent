@@ -1,0 +1,14 @@
+{"type":"thread.started","thread_id":"01a0a409-4bdd-7f01-9dd6-1b27167ef647"}
+{"type":"item.completed","item":{"id":"item_0","type":"error","message":"Model metadata for `deepseek-flash` not found. Defaulting to fallback metadata; this can degrade performance and cause issues."}}
+{"type":"turn.started"}
+{"type":"item.started","item":{"id":"item_1","type":"command_execution","command":"/bin/bash -lc 'ls -a'","aggregated_output":"","exit_code":null,"status":"in_progress"}}
+{"type":"item.completed","item":{"id":"item_1","type":"command_execution","command":"/bin/bash -lc 'ls -a'","aggregated_output":".\n..\na.py\nb.py\nc.py\nd.py\nx.txt\ny.txt\nz.txt\n","exit_code":0,"status":"completed"}}
+{"type":"item.started","item":{"id":"item_2","type":"command_execution","command":"/bin/bash -lc \"find . -maxdepth 1 -name '*.py' -type f | wc -l\"","aggregated_output":"","exit_code":null,"status":"in_progress"}}
+{"type":"item.completed","item":{"id":"item_2","type":"command_execution","command":"/bin/bash -lc \"find . -maxdepth 1 -name '*.py' -type f | wc -l\"","aggregated_output":"4\n","exit_code":0,"status":"completed"}}
+{"type":"error","message":"Reconnecting... 1/5 (stream disconnected before completion: error sending request for url (http://127.0.0.1:48611/v1/responses))"}
+{"type":"error","message":"Reconnecting... 2/5 (stream disconnected before completion: error sending request for url (http://127.0.0.1:48611/v1/responses))"}
+{"type":"error","message":"Reconnecting... 3/5 (stream disconnected before completion: error sending request for url (http://127.0.0.1:48611/v1/responses))"}
+{"type":"error","message":"Reconnecting... 4/5 (stream disconnected before completion: error sending request for url (http://127.0.0.1:48611/v1/responses))"}
+{"type":"error","message":"Reconnecting... 5/5 (stream disconnected before completion: error sending request for url (http://127.0.0.1:48611/v1/responses))"}
+{"type":"error","message":"stream disconnected before completion: error sending request for url (http://127.0.0.1:48611/v1/responses)"}
+{"type":"turn.failed","error":{"message":"stream disconnected before completion: error sending request for url (http://127.0.0.1:48611/v1/responses)"}}

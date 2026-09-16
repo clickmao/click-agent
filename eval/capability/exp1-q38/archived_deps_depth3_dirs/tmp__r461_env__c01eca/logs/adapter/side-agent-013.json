@@ -1,0 +1,63 @@
+{
+ "side": "agent",
+ "request": {
+  "n_messages": 4,
+  "tools_n": 4,
+  "upstream_request": {
+   "model": "deepseek-chat",
+   "n_messages": 4,
+   "prompt_sha8": "7ae31550",
+   "tail_messages": [
+    {
+     "role": "system",
+     "len": 39,
+     "head": "你是隔离执行的微步骤助手: 只回答给出的微问题本身, 不引用任何外部会话历史。",
+     "tool_calls": 0,
+     "tool_call_id": null
+    },
+    {
+     "role": "user",
+     "len": 61,
+     "head": "[微步骤隔离问询] 把 notes.md 的第一行内容写入 first.txt（只要那一行）\n(只回答本微问题, 不引申)",
+     "tool_calls": 0,
+     "tool_call_id": null
+    },
+    {
+     "role": "assistant",
+     "len": 0,
+     "head": "",
+     "tool_calls": 1,
+     "tool_call_id": null
+    },
+    {
+     "role": "tool",
+     "len": 118,
+     "head": "[ok rc=0 ms=0]\nR455 fixture note\nline two\nline three\n\n[本轮已执行] 1 次: read_file(rc=0); 其中 write_file 0 次, run_command 0 次",
+     "tool_calls": 0,
+     "tool_call_id": "call_00_x970SK6mTjLGZBAbreet2716"
+    }
+   ]
+  }
+ },
+ "response": {
+  "text": "",
+  "usage": {
+   "prompt_tokens": 706,
+   "completion_tokens": 58,
+   "total_tokens": 764,
+   "prompt_tokens_details": {
+    "cached_tokens": 512
+   },
+   "prompt_cache_hit_tokens": 512,
+   "prompt_cache_miss_tokens": 194
+  },
+  "tool_calls": [
+   {
+    "name": "write_file",
+    "args": "{\"path\": \"first.txt\", \"content\": \"R455 fixture note\\n\"}"
+   }
+  ],
+  "finish_reason": "tool_calls"
+ },
+ "extra": {}
+}

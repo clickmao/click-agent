@@ -1,0 +1,144 @@
+AgentFramework CLI
+  /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit  [log → /tmp/gameprobe/reply_outside.md]
+── 执行中 (turn 1) ──────────────────────────────
+  [01] 意图分析: code_generation
+  [02] 子任务: 用 Python 写一个贪吃蛇游戏(终端文本渲染)。要求: (1) 单文...
+  [03] 管线执行 (上下文装配 → LLM → 后处理)…
+[2026-09-13T05:15:38.7458062Z] info thinking IndustrialAgentV2: prompt 构建完成: ~678 tokens, 意图=code_generation
+@chatbox:{"Type":"thinking_page_switch","Seq":1,"SummaryLength":0}
+@chatbox:{"Type":"thinking_end","Seq":0,"SummaryLength":3438}
+
+── 回复 ────────────────────────────────────────────
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""终端贪吃蛇(单文件版)。
+
+设计原则 —— 逻辑与渲染彻底分离:
+  * Game      : 纯状态机, 不含任何 I/O, 可用 --selftest 无头验证。
+  * Renderer  : 只把 Game 状态画成文本。
+  * read_key  : 输入层, 把终端按键翻译成 "up/down/left/right/q"。
+
+用法:
+  python3 game.py                 # 开始游戏
+  python3 game.py --selftest      # 无头自测, 打印 PASS / FAIL
+"""
+
+import argparse
+import contextlib
+import os
+import random
+import sys
+import time
+
+if os.name != 'nt':          # POSIX 下的非阻塞键盘读取
+    import select
+    import termios
+    import tty
+
+# ----------------------------- 核心逻辑层 -----------------------------
+
+#: 方向 -> 坐标增量(屏幕坐标系, y 向下)
+DIRS = {'up': (0, -1), 'down': (0, 1), 'left': (-1, 0), 'right': (1, 0)}
+OPPOSITE = {'up': 'down', 'down': 'up', 'left': 'right', 'right': 'left'}
+
+
+class Game:
+    """贪吃蛇状态机: 只处理规则, 不关心怎么显示。"""
+
+    def __init__(self, width=20, height=15, rng=None):
+        self.width = width
+        self.height = height
+        self.rng = rng or random.Random()
+        self.reset()
+
+    # ---------- 生命周期 ----------
+
+    def reset(self):
+        """回到初始状态: 蛇在中线, 朝右, 长度 3。"""
+        cx, cy = self.width // 2, self.height // 2
+        # 头在索引 0, 尾巴在末尾
+        self.snake = [(cx, cy), (cx - 1, cy), (cx - 2, cy)]
+        self.direction = 'right'
+        self.pending = None       # 两次 tick 之间只保留最后一次有效转向
+        self.score = 0
+        self.alive = True
+        self.won = False
+        self.food = None
+        self._place_food()
+
+    # ---------- 内部工具 ----------
+
+    def _place_food(self):
+        """在空格子里随机放食物; 无处可放即通关。"""
+        occupied = set(self.snake)
+        free = [(x, y) for x in range(self.width) for y in range(self.height)
+                if (x, y) not in occupied]
+        if not free:
+            self.food = None
+            self.won = True
+            return
+        self.food = self.rng.choice(free)
+
+    # ---------- 输入 ----------
+
+    def set_direction(self, direction):
+        """接受一个方向请求; 反向输入被忽略(吞蛇不允许 180 度掉头)。"""
+        if direction not in DIRS:
+            return False
+        if direction == OPPOSITE[self.direction]:
+            return False
+        self.pending = direction
+        return True
+
+    # ---------- 推进一步 ----------
+
+    def step(self):
+        """前进一格, 处理吃食物 / 撞墙 / 撞自身。"""
+        if not self.alive or self.won:
+            return
+
+        if self.pending is not None:
+            self.direction = self.pending
+            self.pending = None
+
+        dx, dy = DIRS[self.direction]
+        hx, hy = self.snake[0]
+        new_head = (hx + dx, hy + dy)
+
+        # 撞墙
+        if not (0 <= new_head[0] < self.width and 0 <= new_head[1] < self.height):
+            self.alive = False
+            return
+
+        will_grow = (new_head == self.food)
+        # 不增长时尾巴会腾出来, 因此可以安全进入当前尾格
+        body = self.snake if will_grow else self.snake[:-1]
+        if new_head in body:
+            self.alive = False
+            return
+
+        self.snake.insert(0, new_head)
+        if will_grow:
+            self.score += 1
+            self._place_food()
+        else:
+            self.snake.pop()
+
+
+# ----------------------------- 渲染层 -----------------------------
+
+class Renderer:
+    """把 Game 状态渲染为终端文本(ANSI 光标复位 + 整屏重绘)。"""
+
+    def __init__(self, game, stream=None):
+        self.game = game
+        self.stream = stream or sys.stdout
+        self._first = True
+
+    def _cells(self):
+        g = self.game
+        grid = [[' '] * g.width for _ in range(g.height)]
+        if g.food is not None:
+
+  · intent=code_generation  promptTokens=678  contextSnippets=4  llmModel=deepseek-flash  forecastTendency=提出新的编码任务或对本次代码的审查  forecastAgentUid=main
+  (40143ms, intent=code_generation)

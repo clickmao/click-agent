@@ -1,0 +1,58 @@
+{
+ "side": "agent",
+ "request": {
+  "n_messages": 6,
+  "tools_n": 4,
+  "upstream_request": {
+   "model": "deepseek-chat",
+   "n_messages": 6,
+   "prompt_sha8": "12cbff9d",
+   "tail_messages": [
+    {
+     "role": "assistant",
+     "len": 0,
+     "head": "",
+     "tool_calls": 1,
+     "tool_call_id": null
+    },
+    {
+     "role": "tool",
+     "len": 118,
+     "head": "[ok rc=0 ms=0]\nR455 fixture note\nline two\nline three\n\n[本轮已执行] 1 次: read_file(rc=0); 其中 write_file 0 次, run_command 0 次",
+     "tool_calls": 0,
+     "tool_call_id": "call_00_x970SK6mTjLGZBAbreet2716"
+    },
+    {
+     "role": "assistant",
+     "len": 0,
+     "head": "",
+     "tool_calls": 1,
+     "tool_call_id": null
+    },
+    {
+     "role": "tool",
+     "len": 122,
+     "head": "[ok rc=0 ms=0]\n已写入 first.txt (18 bytes)\n[本轮已执行] 2 次: read_file(rc=0), write_file(rc=0); 其中 write_file 1 次, run_command 0 次",
+     "tool_calls": 0,
+     "tool_call_id": "call_00_fPvt5qUN7TRvgH6ep5OB4771"
+    }
+   ]
+  }
+ },
+ "response": {
+  "text": "已完成：notes.md 第一行为 `R455 fixture note`，已写入 first.txt。",
+  "usage": {
+   "prompt_tokens": 831,
+   "completion_tokens": 19,
+   "total_tokens": 850,
+   "prompt_tokens_details": {
+    "cached_tokens": 640
+   },
+   "prompt_cache_hit_tokens": 640,
+   "prompt_cache_miss_tokens": 191
+  },
+  "tool_calls": [],
+  "finish_reason": "stop"
+ },
+ "extra": {}
+}

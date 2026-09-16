@@ -1,0 +1,282 @@
+AgentFramework CLI
+  /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit  [log → /tmp/gameprobe/run_default.md]
+── 执行中 (turn 1) ──────────────────────────────
+  [01] 意图分析: code_generation
+  [02] 子任务: 用 Python 写一个贪吃蛇游戏(终端文本渲染)。要求: (1) 单文...
+  [03] 管线执行 (上下文装配 → LLM → 后处理)…
+[2026-09-13T05:05:36.0696146Z] info thinking IndustrialAgentV2: prompt 构建完成: ~1300 tokens, 意图=code_generation
+@chatbox:{"Type":"thinking_page_switch","Seq":1,"SummaryLength":0}
+@chatbox:{"Type":"thinking_end","Seq":0,"SummaryLength":9174}
+
+── 回复 ────────────────────────────────────────────
+已确认需求，直接给出单文件实现（逻辑 / 渲染 / 终端 IO 三层解耦，--selftest 无头自测）。
+
+已确认需求，直接给出单文件实现（逻辑 / 渲染 / 终端 IO 三层解耦，--selftest 无头自测）。
+
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""贪吃蛇 —— 单文件终端文本版。
+
+分层（SOLID：逻辑对渲染/终端 IO 无依赖）：
+    SnakeLogic     纯逻辑（零 IO）：状态推进、碰撞判定、计分
+    FrameRenderer  纯渲染：把蛇/食物/尺寸转成定宽文本帧（可单测）
+    KeyboardInput  终端输入：非阻塞按键（Unix cbreak / Windows msvcrt）
+    Game           组合层：主循环 + ANSI 刷屏
+
+运行：
+    python3 game.py                  # 开始游戏（w/a/s/d 或方向键，q 退出）
+    python3 game.py --selftest       # 无头自测，打印 PASS / FAIL
+    python3 game.py --speed 0.08     # 每帧秒数（默认 0.12）
+"""
+
+from __future__ import annotations
+
+import argparse
+import os
+import random
+import sys
+import time
+from collections import deque
+
+# ---------------------------------------------------------------- 方向常量
+UP, DOWN, LEFT, RIGHT = (0, -1), (0, 1), (-1, 0), (1, 0)
+
+
+# ================================================================ 纯逻辑层
+class SnakeLogic:
+    """贪吃蛇核心逻辑，不含任何渲染/终端代码，可无头驱动。"""
+
+    def __init__(self, width: int = 20, height: int = 15, rng: random.Random | None = None):
+        if width < 5 or height < 5:
+            raise ValueError("网格至少 5x5")
+        self.width = width
+        self.height = height
+        self.rng = rng or random.Random()
+        self.reset()
+
+    # ------------------------------------------------------------ 生命周期
+    def reset(self) -> None:
+        """回到初始状态：3 节蛇居中、朝右、重生食物。"""
+        cx, cy = self.width // 2, self.height // 2
+        self.snake: deque[tuple[int, int]] = deque([(cx, cy), (cx - 1, cy), (cx - 2, cy)])
+        self.direction: tuple[int, int] = RIGHT
+        self.pending: tuple[int, int] | None = None  # 本帧待生效的转向
+        self.score = 0
+        self.alive = True
+        self._spawn_food()
+
+    def _spawn_food(self) -> None:
+        """在空格中随机放食物；无空格则置 None（通关）。"""
+        occupied = set(self.snake)
+        free = [(x, y) for y in range(self.height) for x in range(self.width)
+                if (x, y) not in occupied]
+        self.food: tuple[int, int] | None = self.rng.choice(free) if free else None
+
+    # ------------------------------------------------------------ 输入接口
+    def turn(self, direction: tuple[int, int]) -> bool:
+        """请求转向。同向或 180° 反向会被忽略，返回是否被接受。"""
+        base = self.direction if self.pending is None else self.pending
+        if direction == base or (direction[0] == -base[0] and direction[1] == -base[1]):
+            return False
+        self.pending = direction
+        return True
+
+    # ------------------------------------------------------------ 状态推进
+    def step(self) -> str:
+        """推进一帧，返回事件：'ok' | 'eat' | 'dead' | 'win'。"""
+        if not self.alive:
+            return "dead"
+        if self.pending is not None:
+            self.direction, self.pending = self.pending, None
+
+        hx, hy = self.snake[0]
+        dx, dy = self.direction
+        head = (hx + dx, hy + dy)
+
+        # 撞墙
+        if not (0 <= head[0] < self.width and 0 <= head[1] < self.height):
+            self.alive = False
+            return "dead"
+
+        eating = head == self.food
+        if not eating:
+            self.snake.pop()          # 未进食：尾巴先移走（允许跟上尾格）
+        if head in self.snake:        # 撞自身
+            self.alive = False
+            return "dead"
+
+        self.snake.appendleft(head)
+        if eating:
+            self.score += 1
+            self._spawn_food()
+            return "win" if self.food is None else "eat"
+        return "ok"
+
+
+# ================================================================ 纯渲染层
+class FrameRenderer:
+    """把状态渲染成文本帧；只接收数据，不引用 SnakeLogic。"""
+
+    def __init__(self, head: str = "@", body: str = "o", food: str = "*", empty: str = " "):
+        self.head, self.body, self.food, self.empty = head, body, food, empty
+
+    def render(self, snake, food, width: int, height: int) -> str:
+        """snake: 头在前的坐标序列；food: 坐标或 None。返回带边框的多行字符串。"""
+        cells = [[self.empty] * width for _ in range(height)]
+        for x, y in list(snake)[1:]:
+            cells[y][x] = self.body
+        hx, hy = snake[0]
+        if 0 <= hx < width and 0 <= hy < height:
+            cells[hy][hx] = self.head
+        if food is not None:
+            fx, fy = food
+            cells[fy][fx] = self.food
+
+        border = "+" + "-" * width + "+"
+        rows = [border] + ["|" + "".join(r) + "|" for r in cells] + [border]
+        return "\n".join(rows)
+
+
+# ================================================================ 终端 IO 层
+_KEYMAP = {"w": UP, "a": LEFT, "s": DOWN, "d": RIGHT,
+           "k": UP, "h": LEFT, "j": DOWN, "l": RIGHT}
+_ARROWS = {"A": UP, "B": DOWN, "C": RIGHT, "D": LEFT}
+
+
+class KeyboardInput:
+    """非阻塞键盘读取（上下文管理器，退出时恢复终端设置）。"""
+
+    def __init__(self) -> None:
+        self._is_win = sys.platform.startswith("win")
+        self._fd = None
+        self._saved = None
+
+    def __enter__(self) -> "KeyboardInput":
+        if not self._is_win and sys.stdin.isatty():
+            import termios
+            import tty
+            self._fd = sys.stdin.fileno()
+            self._saved = termios.tcgetattr(self._fd)
+            tty.setcbreak(self._fd)
+        return self
+
+    def __exit__(self, *exc) -> bool:
+        if self._saved is not None:
+            import termios
+            termios.tcsetattr(self._fd, termios.TCSADRAIN, self._saved)
+        return False
+
+    def _read_char(self, timeout: float = 0.0) -> str | None:
+        """读一个字符；timeout 内无输入返回 None。"""
+        if self._is_win:
+            import msvcrt
+            end = time.monotonic() + timeout
+            while True:
+                if msvcrt.kbhit():
+                    return msvcrt.getch().decode("utf-8", "ignore")
+                if time.monotonic() >= end:
+                    return None
+                time.sleep(0.005)
+        import select
+        if self._fd is None:
+            return None
+        ready, _, _ = select.select([sys.stdin], [], [], timeout)
+        return sys.stdin.read(1) if ready else None
+
+    def poll(self):
+        """返回方向元组 | 'quit' | None（无输入）。"""
+        ch = self._read_char(0.0)
+        if ch is None:
+            return None
+        if ch == "\x1b":                       # ESC：方向键序列或退出
+            if self._read_char(0.02) == "[":
+                return _ARROWS.get(self._read_char(0.02))
+            return "quit"
+        if ch in ("q", "Q", "\x03"):           # q / Ctrl-C
+            return "quit"
+        return _KEYMAP.get(ch.lower())
+
+
+# ================================================================ 组合层
+class Game:
+    """把逻辑、渲染、输入组装成可运行的游戏循环。"""
+
+    def __init__(self, logic: SnakeLogic, renderer: FrameRenderer, speed: float = 0.12):
+        self.logic = logic
+        self.renderer = renderer
+        self.speed = max(0.02, speed)
+
+    def _draw(self) -> None:
+        lg = self.logic
+        frame = self.renderer.render(lg.snake, lg.food, lg.width, lg.height)
+        bar = f"得分: {lg.score}    操作: w/a/s/d 或方向键, q 退出"
+        sys.stdout.write("\x1b[2J\x1b[H" + frame + "\n" + bar + "\n")
+        sys.stdout.flush()
+
+    def run(self) -> int:
+        if sys.platform.startswith("win"):
+            os.system("")  # 触发 Win10+ 控制台 ANSI/VT 解析
+        try:
+            with KeyboardInput() as kb:
+                while self.logic.alive:
+                    self._draw()
+                    deadline = time.monotonic() + self.speed
+                    while self.logic.alive and time.monotonic() < deadline:
+                        key = kb.poll()
+                        if key == "quit":
+                            print("\n已退出。")
+                            return 0
+                        if key:
+                            self.logic.turn(key)
+                        time.sleep(0.005)
+                    self.logic.step()
+        except KeyboardInterrupt:
+            print("\n已退出。")
+            return 0
+        self._draw()
+        print(f"\n游戏结束 —— 得分: {self.logic.score}")
+        return 0
+
+
+# ================================================================ 无头自测
+def run_selftest() -> int:
+    """不依赖终端：直接驱动逻辑与渲染，打印 PASS / FAIL。"""
+    results: list[tuple[str, bool]] = []
+
+    def check(name: str, cond) -> None:
+        results.append((name, bool(cond)))
+
+    # 1) 初始状态
+    lg = SnakeLogic(width=10, height=8, rng=random.Random(1))
+    check("初始长度=3 且存活", len(lg.snake) == 3 and lg.alive)
+    check("食物不落在蛇身", lg.food not in set(lg.snake))
+
+    # 2) 普通前进：头移动、长度不变
+    hx, hy = lg.snake[0]
+    check("前进返回 ok", lg.step() == "ok")
+    check("头位置正确", lg.snake[0] == (hx + 1, hy))
+    check("前进后长度不变", len(lg.snake) == 3)
+
+    # 3) 吃食物：长度 +1、计分 +1
+    lg2 = SnakeLogic(width=10, height=8, rng=random.Random(2))
+    hx, hy = lg2.snake[0]
+    lg2.food = (hx + 1, hy)
+    check("吃到食物返回 eat", lg2.step() == "eat")
+    check("进食后长度+1", len(lg2.snake) == 4)
+    check("进食后分数=1", lg2.score == 1)
+
+    # 4) 撞墙死亡
+    lg3 = SnakeLogic(width=6, height=6, rng=random.Random(3))
+    lg3.food = (0, 0)
+    events = [lg3.step() for _ in range(10)]
+    check("撞墙判定死亡", "dead" in events and not lg3.alive)
+
+    # 5) 转向规则：反向忽略、垂直接受
+    lg4 = SnakeLogic(width=10, height=8, rng=random.Random(4))
+    check("反向被拒绝", lg4.turn(LEFT) is False and lg4.direction == RIGHT)
+    check("垂直转向被接受", lg4.turn(UP) is True and lg4.step() == "ok")
+    check("转向后方向已生效", lg4.direction == UP)
+
+    # 6) 撞自身死亡（头进入
+  · intent=code_generation  promptTokens=1300  contextSnippets=9  llmModel=deepseek-flash  forecastTendency=提出新的编码任务或对本次代码的审查  forecastAgentUid=main
+  (73255ms, intent=code_generation)

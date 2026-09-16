@@ -1,0 +1,25 @@
+=== R376 真机 E2E: 同一连接内 ask 闭环 (auth+首请求合并写入)
+  host token 就绪: 是 (TS0=2026-09-13T07:37:37)
+  已单次写入: auth + chat.send(req=c1)
+  提示词=帮我看下这个 (配方: 指代不明+通用意图 → 0.55 < 0.60)
+  <<< ask 事件 ask_id=ask-bcfd0200 timeout_s=300 service=EvidenceGate/general questions=1
+      q.key=子任务1_指代对象 data_type=text default=None options=0 []
+  >>> ask.reply key=子任务1_指代对象 value=读文件
+  <<< resp(a1) ok=True payload={"ask_id": "ask-bcfd0200", "outcome": "answered"}
+  <<< ask_closed reason=answered
+  <<< resp(c1) ok=True payload={"reply": "你想让我看哪个文件？请给文件名或路径。\n\n默认我先读 `src/agent.tests/FrontendAskSameConnTests.cs`（想看计划内容则改读 `docs/improvements.md`）——确认一声我立刻给结论。", "success": true}
+      run_summary={"total_ms": 2170, "success": false, "reply_chars": 0, "asked": false, "executive": false}
+      run_summary={"total_ms": 3492, "success": true, "reply_chars": 129, "asked": true, "executive": false}
+      run_summary={"total_ms": 5114, "success": true, "reply_chars": 126, "asked": true, "executive": false}
+      run_summary={"total_ms": 4054, "success": true, "reply_chars": 119, "asked": true, "executive": false}
+  telemetry: evidence_gate=4 llm_call=4
+      gate={"subtasks": 1, "suspects": 1, "to_ask": 1, "confidences": "0.55"}
+      gate={"subtasks": 1, "suspects": 1, "to_ask": 1, "confidences": "0.55"}
+      gate={"subtasks": 1, "suspects": 1, "to_ask": 1, "confidences": "0.55"}
+      gate={"subtasks": 1, "suspects": 1, "to_ask": 1, "confidences": "0.55"}
+      llm_call tokens=None ms=0 origin=None
+      llm_call tokens=None ms=741 origin=None
+      llm_call tokens=None ms=2333 origin=None
+      llm_call tokens=None ms=1350 origin=None
+VERDICT: P2' ask_event=True reply=True continue=True gate_to_ask=True
+  P2 结论: 菜单式问询在真机上完成闭环 (ask→reply→续跑)

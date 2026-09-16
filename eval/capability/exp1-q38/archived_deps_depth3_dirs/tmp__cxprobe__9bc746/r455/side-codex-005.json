@@ -1,0 +1,42 @@
+{
+ "side": "codex",
+ "request": {
+  "instructions_chars": 16979,
+  "tools_n": 9,
+  "passed_tools_n": 7,
+  "input_items": 11,
+  "upstream_request": {
+   "model": "deepseek-chat",
+   "n_messages": 12,
+   "tools": [
+    "exec_command",
+    "write_stdin",
+    "request_user_input",
+    "view_image",
+    "get_goal",
+    "create_goal",
+    "update_goal"
+   ]
+  }
+ },
+ "response": {
+  "tool_calls": [
+   {
+    "name": "exec_command",
+    "args": "{\"cmd\": \"echo hi\", \"login\": false, \"sandbox_permissions\": \"require_escalated\"}"
+   }
+  ],
+  "text": "",
+  "usage": {
+   "prompt_tokens": 6960,
+   "completion_tokens": 77,
+   "total_tokens": 7037,
+   "prompt_tokens_details": {
+    "cached_tokens": 6784
+   },
+   "prompt_cache_hit_tokens": 6784,
+   "prompt_cache_miss_tokens": 176
+  }
+ },
+ "extra": {}
+}

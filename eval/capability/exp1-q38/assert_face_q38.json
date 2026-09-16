@@ -1,0 +1,55 @@
+{
+ "round": "EXP1-Q38",
+ "schema": "q38-assertions/1",
+ "artifacts_present": {
+  "t11": true,
+  "t12": true,
+  "t13": true,
+  "t14": false,
+  "dirs": true,
+  "tail": true,
+  "rr_a": true,
+  "rr_b": true,
+  "rr_c": true,
+  "rc11": true,
+  "rc12": false,
+  "rc13": false,
+  "rc14": false
+ },
+ "judgments": {
+  "J1_pre_fix_full_face": {
+   "status": "PASS",
+   "detail": "rc=1 可判据 23/25 红=['exp1q31.only-equivalence', 'l2.instruments-check'] 仅声明漂移=True 信息项 2/2 side_effects=[]"
+  },
+  "J2_mixed_inject_full_list_red": {
+   "status": "BLOCKED",
+   "detail": "t12 记录/rc 缺席 (对侧在飞 ⇒ 本面未跑)"
+  },
+  "J3_info_only_full_list_green": {
+   "status": "BLOCKED",
+   "detail": "t13 记录/rc 缺席 (对侧在飞 ⇒ 本面未跑)"
+  },
+  "J4_post_fix_full_face": {
+   "status": "BLOCKED",
+   "detail": "T14 记录/rc 缺席 (对侧在飞 ⇒ 修复后全量面未跑)"
+  },
+  "J5_fix_localization": {
+   "status": "BLOCKED",
+   "detail": "T11 或 T14 缺席"
+  },
+  "J6_dir_node_archive_form": {
+   "status": "PASS",
+   "detail": "分母=29 处置={'copy_truncated': 5, 'copy_complete': 24} 等价面=29(非零 17) diff=0 清单不足违规=0 摘文件负控=True"
+  },
+  "J7_tail_contract_field": {
+   "status": "PASS",
+   "detail": "自检 checks=PASS 真实运行 flags=[True, False, False] reasons=['tail_lf_missing', None, None]"
+  }
+ },
+ "verdict": "EXECUTION_BLOCKED",
+ "counts": {
+  "pass": 3,
+  "fail": 0,
+  "blocked": 4
+ }
+}

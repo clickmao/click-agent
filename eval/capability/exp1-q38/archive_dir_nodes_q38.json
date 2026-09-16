@@ -1,0 +1,643 @@
+{
+ "round": "EXP1-Q38",
+ "schema": "archive-dir-nodes/1",
+ "source": "eval/capability/exp1-q37/archive_selfsufficiency_q37.json",
+ "archive_root": "eval/capability/exp1-q38/archived_deps_depth3_dirs",
+ "prereg": {
+  "P1": "分母 = Q37 directory_node 结点 (29)",
+  "P2": "F-list / F-copy 两态",
+  "P3": [
+   "c1 守恒 29",
+   "c2 完整结点重跑逐结点等价",
+   "c3 非平凡 Σn_refs>0",
+   "c4 清单不足(负控)",
+   "c5 截断安全(文本贡献=0)"
+  ],
+  "P4": "0 全绿 / 2 判据红 / 3 弃权",
+  "P7": "摘文件 ⇒ n_refs 必降"
+ },
+ "denominator": 29,
+ "by_disposition": {
+  "copy_truncated": 5,
+  "copy_complete": 24
+ },
+ "face_definition": "抽取可得 ∧ 被跳过件(含密钥件)引用贡献 == 0 (修订版; 首跑面定义 = copy_complete)",
+ "secret_like_skipped": 5,
+ "archive_bytes_total": 3071154,
+ "plan_bytes": 3071154,
+ "equivalence_face_n": 29,
+ "equivalence_face_nonzero_n": 17,
+ "rerun_equivalence_diff": [],
+ "listonly_violations": [],
+ "truncated_risk": [],
+ "skipped_ref_contribution": {
+  "/tmp/agentwork": {
+   "refs": 0,
+   "detail": []
+  },
+  "/tmp/agentwork2": {
+   "refs": 0,
+   "detail": []
+  },
+  "/tmp/agentwork2/data": {
+   "refs": 0,
+   "detail": []
+  },
+  "/tmp/cxprobe": {
+   "refs": 0,
+   "detail": []
+  },
+  "/tmp/cxprobe/cx2": {
+   "refs": 0,
+   "detail": []
+  },
+  "/tmp/cxprobe/demo": {
+   "refs": 0,
+   "detail": []
+  },
+  "/tmp/cxprobe/r455": {
+   "refs": 0,
+   "detail": []
+  },
+  "/tmp/cxprobe/r455b": {
+   "refs": 0,
+   "detail": []
+  },
+  "/tmp/cxwork": {
+   "refs": 0,
+   "detail": []
+  },
+  "/tmp/demo_run": {
+   "refs": 0,
+   "detail": []
+  },
+  "/tmp/fp376": {
+   "refs": 0,
+   "detail": []
+  },
+  "/tmp/gameprobe": {
+   "refs": 0,
+   "detail": []
+  },
+  "/tmp/gameprobe/": {
+   "refs": 0,
+   "detail": []
+  },
+  "/tmp/gameprobe/work": {
+   "refs": 0,
+   "detail": []
+  },
+  "/tmp/pub_aot_r373": {
+   "refs": 0,
+   "detail": []
+  },
+  "/tmp/pub_aot_r373/config/base": {
+   "refs": 0,
+   "detail": []
+  },
+  "/tmp/pub_r373b": {
+   "refs": 0,
+   "detail": []
+  },
+  "/tmp/pub_r373b/config/base/": {
+   "refs": 0,
+   "detail": []
+  },
+  "/tmp/pub_r374": {
+   "refs": 0,
+   "detail": []
+  },
+  "/tmp/pub_r374/": {
+   "refs": 0,
+   "detail": []
+  },
+  "/tmp/pub_r374d": {
+   "refs": 0,
+   "detail": []
+  },
+  "/tmp/r455_env/logs/adapter": {
+   "refs": 0,
+   "detail": []
+  },
+  "/tmp/r457_env/agent/work": {
+   "refs": 0,
+   "detail": []
+  },
+  "/tmp/r457_env/logs/adapter": {
+   "refs": 0,
+   "detail": []
+  },
+  "/tmp/r461_env": {
+   "refs": 0,
+   "detail": []
+  },
+  "/tmp/r461_env/agent/work": {
+   "refs": 0,
+   "detail": []
+  },
+  "/tmp/r461_env/agent/work/": {
+   "refs": 0,
+   "detail": []
+  },
+  "/tmp/r461_env/logs/adapter": {
+   "refs": 0,
+   "detail": []
+  },
+  "/tmp/r462_env/agent/work": {
+   "refs": 0,
+   "detail": []
+  }
+ },
+ "negative_control_remove_file": {
+  "node": "/tmp/agentwork",
+  "removed": "turns.jsonl",
+  "n_refs": 0,
+  "baseline": 2,
+  "detects": true
+ },
+ "per_node": {
+  "/tmp/agentwork": {
+   "n_refs": 2,
+   "q37_n_refs": 2,
+   "n_refs_listonly": 0,
+   "disposition": "copy_truncated",
+   "skipped_textish": 1,
+   "copied_bytes": 14578
+  },
+  "/tmp/agentwork2": {
+   "n_refs": 2,
+   "q37_n_refs": 2,
+   "n_refs_listonly": 0,
+   "disposition": "copy_truncated",
+   "skipped_textish": 1,
+   "copied_bytes": 14426
+  },
+  "/tmp/agentwork2/data": {
+   "n_refs": 2,
+   "q37_n_refs": 2,
+   "n_refs_listonly": 0,
+   "disposition": "copy_truncated",
+   "skipped_textish": 1,
+   "copied_bytes": 11927
+  },
+  "/tmp/cxprobe": {
+   "n_refs": 41,
+   "q37_n_refs": 41,
+   "n_refs_listonly": 0,
+   "disposition": "copy_complete",
+   "skipped_textish": 0,
+   "copied_bytes": 346161
+  },
+  "/tmp/cxprobe/cx2": {
+   "n_refs": 1,
+   "q37_n_refs": 1,
+   "n_refs_listonly": 0,
+   "disposition": "copy_complete",
+   "skipped_textish": 0,
+   "copied_bytes": 45100
+  },
+  "/tmp/cxprobe/demo": {
+   "n_refs": 2,
+   "q37_n_refs": 2,
+   "n_refs_listonly": 0,
+   "disposition": "copy_complete",
+   "skipped_textish": 0,
+   "copied_bytes": 147448
+  },
+  "/tmp/cxprobe/r455": {
+   "n_refs": 3,
+   "q37_n_refs": 3,
+   "n_refs_listonly": 0,
+   "disposition": "copy_complete",
+   "skipped_textish": 0,
+   "copied_bytes": 6040
+  },
+  "/tmp/cxprobe/r455b": {
+   "n_refs": 1,
+   "q37_n_refs": 1,
+   "n_refs_listonly": 0,
+   "disposition": "copy_complete",
+   "skipped_textish": 0,
+   "copied_bytes": 909
+  },
+  "/tmp/cxwork": {
+   "n_refs": 0,
+   "q37_n_refs": 0,
+   "n_refs_listonly": 0,
+   "disposition": "copy_complete",
+   "skipped_textish": 0,
+   "copied_bytes": 80
+  },
+  "/tmp/demo_run": {
+   "n_refs": 0,
+   "q37_n_refs": 0,
+   "n_refs_listonly": 0,
+   "disposition": "copy_truncated",
+   "skipped_textish": 1,
+   "copied_bytes": 11687
+  },
+  "/tmp/fp376": {
+   "n_refs": 4,
+   "q37_n_refs": 4,
+   "n_refs_listonly": 0,
+   "disposition": "copy_complete",
+   "skipped_textish": 0,
+   "copied_bytes": 18577
+  },
+  "/tmp/gameprobe": {
+   "n_refs": 61,
+   "q37_n_refs": 61,
+   "n_refs_listonly": 0,
+   "disposition": "copy_complete",
+   "skipped_textish": 0,
+   "copied_bytes": 751733
+  },
+  "/tmp/gameprobe/": {
+   "n_refs": 61,
+   "q37_n_refs": 61,
+   "n_refs_listonly": 0,
+   "disposition": "copy_complete",
+   "skipped_textish": 0,
+   "copied_bytes": 751733
+  },
+  "/tmp/gameprobe/work": {
+   "n_refs": 0,
+   "q37_n_refs": 0,
+   "n_refs_listonly": 0,
+   "disposition": "copy_complete",
+   "skipped_textish": 0,
+   "copied_bytes": 40206
+  },
+  "/tmp/pub_aot_r373": {
+   "n_refs": 0,
+   "q37_n_refs": 0,
+   "n_refs_listonly": 0,
+   "disposition": "copy_complete",
+   "skipped_textish": 0,
+   "copied_bytes": 7358
+  },
+  "/tmp/pub_aot_r373/config/base": {
+   "n_refs": 0,
+   "q37_n_refs": 0,
+   "n_refs_listonly": 0,
+   "disposition": "copy_complete",
+   "skipped_textish": 0,
+   "copied_bytes": 6728
+  },
+  "/tmp/pub_r373b": {
+   "n_refs": 0,
+   "q37_n_refs": 0,
+   "n_refs_listonly": 0,
+   "disposition": "copy_complete",
+   "skipped_textish": 0,
+   "copied_bytes": 7358
+  },
+  "/tmp/pub_r373b/config/base/": {
+   "n_refs": 0,
+   "q37_n_refs": 0,
+   "n_refs_listonly": 0,
+   "disposition": "copy_complete",
+   "skipped_textish": 0,
+   "copied_bytes": 6728
+  },
+  "/tmp/pub_r374": {
+   "n_refs": 0,
+   "q37_n_refs": 0,
+   "n_refs_listonly": 0,
+   "disposition": "copy_complete",
+   "skipped_textish": 0,
+   "copied_bytes": 7358
+  },
+  "/tmp/pub_r374/": {
+   "n_refs": 0,
+   "q37_n_refs": 0,
+   "n_refs_listonly": 0,
+   "disposition": "copy_complete",
+   "skipped_textish": 0,
+   "copied_bytes": 7358
+  },
+  "/tmp/pub_r374d": {
+   "n_refs": 0,
+   "q37_n_refs": 0,
+   "n_refs_listonly": 0,
+   "disposition": "copy_complete",
+   "skipped_textish": 0,
+   "copied_bytes": 7358
+  },
+  "/tmp/r455_env/logs/adapter": {
+   "n_refs": 4,
+   "q37_n_refs": 4,
+   "n_refs_listonly": 0,
+   "disposition": "copy_complete",
+   "skipped_textish": 0,
+   "copied_bytes": 19831
+  },
+  "/tmp/r457_env/agent/work": {
+   "n_refs": 0,
+   "q37_n_refs": 0,
+   "n_refs_listonly": 0,
+   "disposition": "copy_truncated",
+   "skipped_textish": 1,
+   "copied_bytes": 176818
+  },
+  "/tmp/r457_env/logs/adapter": {
+   "n_refs": 23,
+   "q37_n_refs": 23,
+   "n_refs_listonly": 0,
+   "disposition": "copy_complete",
+   "skipped_textish": 0,
+   "copied_bytes": 30497
+  },
+  "/tmp/r461_env": {
+   "n_refs": 41,
+   "q37_n_refs": 41,
+   "n_refs_listonly": 0,
+   "disposition": "copy_complete",
+   "skipped_textish": 0,
+   "copied_bytes": 261464
+  },
+  "/tmp/r461_env/agent/work": {
+   "n_refs": 5,
+   "q37_n_refs": 5,
+   "n_refs_listonly": 0,
+   "disposition": "copy_complete",
+   "skipped_textish": 0,
+   "copied_bytes": 62069
+  },
+  "/tmp/r461_env/agent/work/": {
+   "n_refs": 5,
+   "q37_n_refs": 5,
+   "n_refs_listonly": 0,
+   "disposition": "copy_complete",
+   "skipped_textish": 0,
+   "copied_bytes": 62069
+  },
+  "/tmp/r461_env/logs/adapter": {
+   "n_refs": 41,
+   "q37_n_refs": 41,
+   "n_refs_listonly": 0,
+   "disposition": "copy_complete",
+   "skipped_textish": 0,
+   "copied_bytes": 175559
+  },
+  "/tmp/r462_env/agent/work": {
+   "n_refs": 0,
+   "q37_n_refs": 0,
+   "n_refs_listonly": 0,
+   "disposition": "copy_complete",
+   "skipped_textish": 0,
+   "copied_bytes": 71996
+  }
+ },
+ "disposition": [
+  {
+   "node": "/tmp/agentwork",
+   "slug": "tmp__agentwork__8d959c",
+   "copied_bytes": 14578,
+   "skipped": [
+    {
+     "rel": "data/master.key",
+     "reason": "secret_like",
+     "bytes": 32,
+     "textish": true
+    }
+   ],
+   "disposition": "copy_truncated"
+  },
+  {
+   "node": "/tmp/agentwork2",
+   "slug": "tmp__agentwork2__2d15dc",
+   "copied_bytes": 14426,
+   "skipped": [
+    {
+     "rel": "data/master.key",
+     "reason": "secret_like",
+     "bytes": 32,
+     "textish": true
+    }
+   ],
+   "disposition": "copy_truncated"
+  },
+  {
+   "node": "/tmp/agentwork2/data",
+   "slug": "tmp__agentwork2__data__071275",
+   "copied_bytes": 11927,
+   "skipped": [
+    {
+     "rel": "master.key",
+     "reason": "secret_like",
+     "bytes": 32,
+     "textish": true
+    }
+   ],
+   "disposition": "copy_truncated"
+  },
+  {
+   "node": "/tmp/cxprobe",
+   "slug": "tmp__cxprobe__9bc746",
+   "copied_bytes": 346161,
+   "skipped": [],
+   "disposition": "copy_complete"
+  },
+  {
+   "node": "/tmp/cxprobe/cx2",
+   "slug": "tmp__cxprobe__cx2__225342",
+   "copied_bytes": 45100,
+   "skipped": [],
+   "disposition": "copy_complete"
+  },
+  {
+   "node": "/tmp/cxprobe/demo",
+   "slug": "tmp__cxprobe__demo__607c5a",
+   "copied_bytes": 147448,
+   "skipped": [],
+   "disposition": "copy_complete"
+  },
+  {
+   "node": "/tmp/cxprobe/r455",
+   "slug": "tmp__cxprobe__r455__d173ad",
+   "copied_bytes": 6040,
+   "skipped": [],
+   "disposition": "copy_complete"
+  },
+  {
+   "node": "/tmp/cxprobe/r455b",
+   "slug": "tmp__cxprobe__r455b__3ba949",
+   "copied_bytes": 909,
+   "skipped": [],
+   "disposition": "copy_complete"
+  },
+  {
+   "node": "/tmp/cxwork",
+   "slug": "tmp__cxwork__24861d",
+   "copied_bytes": 80,
+   "skipped": [],
+   "disposition": "copy_complete"
+  },
+  {
+   "node": "/tmp/demo_run",
+   "slug": "tmp__demo_run__b6d313",
+   "copied_bytes": 11687,
+   "skipped": [
+    {
+     "rel": "data/master.key",
+     "reason": "secret_like",
+     "bytes": 32,
+     "textish": true
+    }
+   ],
+   "disposition": "copy_truncated"
+  },
+  {
+   "node": "/tmp/fp376",
+   "slug": "tmp__fp376__77192f",
+   "copied_bytes": 18577,
+   "skipped": [],
+   "disposition": "copy_complete"
+  },
+  {
+   "node": "/tmp/gameprobe",
+   "slug": "tmp__gameprobe__f178af",
+   "copied_bytes": 751733,
+   "skipped": [],
+   "disposition": "copy_complete"
+  },
+  {
+   "node": "/tmp/gameprobe/",
+   "slug": "tmp__gameprobe__ea8455",
+   "copied_bytes": 751733,
+   "skipped": [],
+   "disposition": "copy_complete"
+  },
+  {
+   "node": "/tmp/gameprobe/work",
+   "slug": "tmp__gameprobe__work__8ae6f5",
+   "copied_bytes": 40206,
+   "skipped": [],
+   "disposition": "copy_complete"
+  },
+  {
+   "node": "/tmp/pub_aot_r373",
+   "slug": "tmp__pub_aot_r373__68702d",
+   "copied_bytes": 7358,
+   "skipped": [],
+   "disposition": "copy_complete"
+  },
+  {
+   "node": "/tmp/pub_aot_r373/config/base",
+   "slug": "tmp__pub_aot_r373__config__base__b57a29",
+   "copied_bytes": 6728,
+   "skipped": [],
+   "disposition": "copy_complete"
+  },
+  {
+   "node": "/tmp/pub_r373b",
+   "slug": "tmp__pub_r373b__0aaf0f",
+   "copied_bytes": 7358,
+   "skipped": [],
+   "disposition": "copy_complete"
+  },
+  {
+   "node": "/tmp/pub_r373b/config/base/",
+   "slug": "tmp__pub_r373b__config__base__238f03",
+   "copied_bytes": 6728,
+   "skipped": [],
+   "disposition": "copy_complete"
+  },
+  {
+   "node": "/tmp/pub_r374",
+   "slug": "tmp__pub_r374__31450c",
+   "copied_bytes": 7358,
+   "skipped": [],
+   "disposition": "copy_complete"
+  },
+  {
+   "node": "/tmp/pub_r374/",
+   "slug": "tmp__pub_r374__cf8281",
+   "copied_bytes": 7358,
+   "skipped": [],
+   "disposition": "copy_complete"
+  },
+  {
+   "node": "/tmp/pub_r374d",
+   "slug": "tmp__pub_r374d__f3de71",
+   "copied_bytes": 7358,
+   "skipped": [],
+   "disposition": "copy_complete"
+  },
+  {
+   "node": "/tmp/r455_env/logs/adapter",
+   "slug": "tmp__r455_env__logs__adapter__03ee4b",
+   "copied_bytes": 19831,
+   "skipped": [],
+   "disposition": "copy_complete"
+  },
+  {
+   "node": "/tmp/r457_env/agent/work",
+   "slug": "tmp__r457_env__agent__work__c3abc4",
+   "copied_bytes": 176818,
+   "skipped": [
+    {
+     "rel": "data/master.key",
+     "reason": "secret_like",
+     "bytes": 32,
+     "textish": true
+    }
+   ],
+   "disposition": "copy_truncated"
+  },
+  {
+   "node": "/tmp/r457_env/logs/adapter",
+   "slug": "tmp__r457_env__logs__adapter__b8bad4",
+   "copied_bytes": 30497,
+   "skipped": [],
+   "disposition": "copy_complete"
+  },
+  {
+   "node": "/tmp/r461_env",
+   "slug": "tmp__r461_env__c01eca",
+   "copied_bytes": 261464,
+   "skipped": [],
+   "disposition": "copy_complete"
+  },
+  {
+   "node": "/tmp/r461_env/agent/work",
+   "slug": "tmp__r461_env__agent__work__817dfc",
+   "copied_bytes": 62069,
+   "skipped": [],
+   "disposition": "copy_complete"
+  },
+  {
+   "node": "/tmp/r461_env/agent/work/",
+   "slug": "tmp__r461_env__agent__work__829024",
+   "copied_bytes": 62069,
+   "skipped": [],
+   "disposition": "copy_complete"
+  },
+  {
+   "node": "/tmp/r461_env/logs/adapter",
+   "slug": "tmp__r461_env__logs__adapter__62d762",
+   "copied_bytes": 175559,
+   "skipped": [],
+   "disposition": "copy_complete"
+  },
+  {
+   "node": "/tmp/r462_env/agent/work",
+   "slug": "tmp__r462_env__agent__work__156068",
+   "copied_bytes": 71996,
+   "skipped": [],
+   "disposition": "copy_complete"
+  }
+ ],
+ "conservation": {
+  "c0_rows_eq_denominator": true,
+  "c1_dispositions_sum": true,
+  "c1b_dispositions_in_closed_set": true,
+  "c2_rerun_equivalent_on_complete": true,
+  "c3_nontrivial_face": true,
+  "c4_listonly_insufficient": true,
+  "c5_truncation_safe": true,
+  "p7_negative_control": true
+ },
+ "note": "目录结点此前只以「不可归档」结案; 本面证明**受限内容副本**可复算 (逐结点等价), 而**只落清单**在原理上不够 (c4)。被跳过的非文本文件在抽取器口径外 (贡献恒 0), 文本性跳过件必须贡献为 0 才允许该结点留在等价面 (c5)。"
+}

@@ -33,6 +33,9 @@ EXP1-Q22 扩展 (归因式副作用闸; schema instruments-check/3 → /4):
   * 跟踪通道不可用 / 被物理上限截断 / 存在不可解析相对名 ⇒ **rc=3 (弃权)**: 既不判绿也不判红。
 
 用法: python3 eval/capability/instruments_check.py [--only id1,id2] [--out <path>] [--fingerprint-drift-inject]
+        成员类混合注入 (EXP1-Q38 候选④, **全量**清单):
+        python3 eval/capability/instruments_check.py --class-mixed-inject       # 信息项红+可判据红 ⇒ 期望 rc!=0
+        python3 eval/capability/instruments_check.py --class-info-only-inject   # 只信息项红     ⇒ 期望 rc==0
 
 面别分区 (EXP1-Q30): face=full ⇒ instruments-check.json; face=scoped (给了 --only) ⇒
 instruments-check-scoped.json; face=negative-control (注入模式) 各自命名空间; `--out` 显式覆盖。
@@ -57,6 +60,12 @@ OUT_DRIFT = ROOT / 'eval/capability/instruments-check-drift.json'   # 负控模�
 OUT_SURF_CLAIM = ROOT / 'eval/capability/instruments-check-surface-claim.json'
 OUT_SURF_UNKNOWN = ROOT / 'eval/capability/instruments-check-surface-unknown.json'
 OUT_NC_NOTAPPLIED = ROOT / 'eval/capability/instruments-check-nc-notapplied.json'
+# EXP1-Q38 候选④: 成员类**混合注入**面 —— 反向控制必须跑**全量成员清单** (旧 4 个注入模式都是
+#   `--only <1 行>` 定向跑, 根本看不见信息项成员 ⇒ 「信息项在场时真红仍判红」这一命题从未被真机验证过)。
+#   两种模式成对: class-mixed (信息项红 + 可判据红 ⇒ 面必须判红) /
+#                class-info-only (只信息项红 ⇒ 面必须保持绿, 降级在真机上可见)。
+OUT_CLASS_MIXED = ROOT / 'eval/capability/instruments-check-class-mixed.json'
+OUT_CLASS_INFO_ONLY = ROOT / 'eval/capability/instruments-check-class-info-only.json'
 # EXP1-Q30 (候选⑤) 面别分区 —— `--only` 定向运行**不得**覆盖全量面记录
 #   (Q25 实测: 一次定向跑把 18 行全量面记录改写成 1 行, 历史读数被静默降级)。
 #   三面各自固定落盘名: full / scoped / negative-control; `--out` 可显式覆盖。
@@ -90,7 +99,9 @@ FACE_OUTPUTS = {'eval/capability/instruments-check.json', 'eval/capability/instr
                 'eval/capability/instruments-check-drift.json',
                 'eval/capability/instruments-check-surface-claim.json',
                 'eval/capability/instruments-check-surface-unknown.json',
-                'eval/capability/instruments-check-nc-notapplied.json'}
+                'eval/capability/instruments-check-nc-notapplied.json',
+                'eval/capability/instruments-check-class-mixed.json',
+                'eval/capability/instruments-check-class-info-only.json'}
 # EXP1-Q25 增补: r444 可分性预检的**自身产物**是器具的合法写点 (与 q17 事故同族 ——
 #   仪器默认 --out 指向轮次证据, 跑一次就改写它)。该器具已按臂分区 (--out 参数化 + 产物带
 #   provenance.arm/mode/instrument_sha12), 其内容稳定性由 eval/capability/exp1-q25/harden_check_q25.py
@@ -205,7 +216,36 @@ INJECTS = {
     '--surface-claim-inject': ('surface-claim', OUT_SURF_CLAIM),
     '--surface-unknown-inject': ('surface-unknown', OUT_SURF_UNKNOWN),
     '--surface-missing-inject': ('surface-missing', OUT_NC_NOTAPPLIED),
+    # EXP1-Q38 候选④: 成员类混合注入 (跑**全量**清单, 不接 --only)
+    '--class-mixed-inject': ('class-mixed', OUT_CLASS_MIXED),
+    '--class-info-only-inject': ('class-info-only', OUT_CLASS_INFO_ONLY),
 }
+# 记录态注入模式 (不走 apply_inject 的 L2 字段改写 —— 见主循环注释)
+CLASS_INJECT_MODES = ('class-mixed', 'class-info-only')
+
+
+def inject_class(rec, mode, state):
+    """EXP1-Q38 候选④: 直接改**记录态**的成员类混合注入 (返回注入说明或 None)。
+
+    语义: 注入落在**成员类**这一层, 而不是 L2 字段层 —— 命题是「信息项降级不会吞掉真红」,
+    故必须让同一批里同时出现「信息项红」与「可判据红」:
+      class-mixed     : 首个信息项成员记红 ∧ 首个可判据成员记红  ⇒ 期望 rc!=0 (真红仍被计入分母)
+      class-info-only : 只首个信息项成员记红                    ⇒ 期望 rc==0 (降级生效且可见)
+    注入逐类只做一次 (确定性: 清单顺序), 记录里落 `injected_red` 供归属。
+    """
+    cls = rec['member_class']
+    if mode == 'class-info-only' or mode == 'class-mixed':
+        if cls == 'informational' and state.get('info') is None:
+            state['info'] = rec['id']
+            rec['pass'] = False
+            rec['injected_red'] = '%s:informational' % mode
+            return '%s 注入: 信息项成员 %s 记红 (期望单列可见)' % (mode, rec['id'])
+        if mode == 'class-mixed' and cls != 'informational' and state.get('passable') is None:
+            state['passable'] = rec['id']
+            rec['pass'] = False
+            rec['injected_red'] = '%s:passable' % mode
+            return '%s 注入: 可判据成员 %s 记红 (期望面判红)' % (mode, rec['id'])
+    return None
 
 
 def apply_inject(e, mode):
@@ -258,6 +298,7 @@ def main():
         GATE.begin()
     res, bad, injected, inj_note = [], 0, False, ''
     info_ids, info_why = [], {}
+    cls_state = {}     # EXP1-Q38 候选④: 混合注入的逐类一次性状态
     for e in man['instruments']:
         if only and e['id'] not in only:
             continue
@@ -295,6 +336,15 @@ def main():
         rec['negative_controls'] = ncs
         rec['member_class'] = e.get('class', 'passable')
         rec['pass'] = bool(rec['pass'] and l2_ok and all(n['pass'] for n in ncs))
+        # EXP1-Q38 候选④: 记录态混合注入 —— 位置在 `pass` 定稿**之后**、`bad` 计数**之前**:
+        #   注入必须走过与真红完全相同的那条分母路径, 否则「信息项降级不吞真红」根本没被检验。
+        if inj_mode in CLASS_INJECT_MODES:
+            note = inject_class(rec, inj_mode, cls_state)
+            if note:
+                injected = True
+                inj_note = (inj_note + '; ' + note) if inj_note else note
+                l2['INJECTED'] = inj_mode
+                print('   CLASS-INJECT: %s' % note)
         if not rec['pass'] and rec['member_class'] != 'informational':
             bad += 1
         res.append(rec)
@@ -346,6 +396,8 @@ def main():
            'out': (str(target.relative_to(ROOT)) if str(target).startswith(str(ROOT)) else str(target)),
            'l2_field_checks': True, 'input_surface_checks': True,
            'drift_injected': bool(inj_mode and injected), 'inject_mode': inj_mode, 'inject_note': inj_note,
+           # EXP1-Q38 候选④: 注入的**期望判决**写成机读字段 (判词不再只活在散文里)
+           'inject_expect_rc': (None if not inj_mode else (0 if inj_mode == 'class-info-only' else 1)),
            'side_effects': self_dirt,
            'side_effect_attribution': gate_rep,
            'member_class': counts,
@@ -381,7 +433,13 @@ def main():
         return 1
     if inj_mode:
         print('INJECT-APPLIED (%s): %s' % (inj_mode, inj_note))
-        print('  ⇒ 机检结果: %s' % ('判红 (负控成立)' if bad else '仍全绿 (负控失败!)'))
+        # EXP1-Q38 候选④: 判词必须与**注入形态**一致 —— 「只信息项红」模式下**保持绿**才是成功形态。
+        #   旧文案对两种形态共用一句「仍全绿 (负控失败!)」⇒ 把成功的降级读数报成失败 (判词/断言形态错配)。
+        if inj_mode == 'class-info-only':
+            print('  ⇒ 机检结果: %s' % ('仍全绿 + 信息项红单列 ⇒ 负控成立 (信息项降级生效)' if not bad
+                                       else '判红 (负控失败!)'))
+        else:
+            print('  ⇒ 机检结果: %s' % ('判红 (负控成立)' if bad else '仍全绿 (负控失败!)'))
     return fcc.verdict_rc(counts, canon_fail=canon_fail,
                           inj_not_applied=bool(inj_mode and not injected),
                           abstain=bool(inj_mode is None and not gate_rep['measurement_ok']),

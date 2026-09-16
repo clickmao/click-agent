@@ -1,0 +1,64 @@
+# ==============================================
+# 模型目录 (L1 base, models.yaml) — v0.20.5 精简版 (R351, 用户钦定)
+# 变更: 移除本地加载 LLM 推理与官方直连通道;
+#       预留模型配置全部移除, 仅保留三通道: 首选 deepseek-4.1-flash / 次选 glm-5.3-flash / 默认配置 gpt-6。
+# 凭据铁律: api_key 只存环境变量名, key 本体永不落配置。
+# ==============================================
+modules:
+  # ── 首选: DeepSeek 4.1 Flash (性价比主力) ──
+  - name: deepseek-flash
+    description: DeepSeek Flash — 首选 (通用对话/代码/视觉, 性价比主力; API 正名 deepseek-flash, 4.1-flash 系产品线名); 推理模型, 返回 reasoning_content (v0.21.1 起由模型队列捕获)
+    # R379 真机实证 (2026-09-13): v1/chat/completions + image_url(data URL) → HTTP 200 且内容判读正确
+    #   (探针图: 红块 + "SCORE 7/GAME OVER" → 模型答"红色 / SCORE 7 / GAME OVER") ⇒ image_input 由 false 纠正为 true
+    #   此前 false 导致带图请求被重路由到 gpt-6 (真缺陷 64 的旧假设), 与用户口径「截图 ds4.1flash 有 api」矛盾。
+    provider: deepseek
+    priority: 1
+    request_address: http://127.0.0.1:48615/v1/chat/completions
+    api_key: AGENTFRAMEWORK_KEYS_DEEPSEEK
+    context_window: 131072
+    price_in_per_m: 0.27
+    price_out_per_m: 1.10
+    reasoning_score: 8
+    coding_score: 8
+    capabilities: {text: true, image_input: true, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
+
+  # ── 次选: GLM 5.3 Flash (兜底) ──
+  - name: glm-5.3-flash
+    description: GLM 5.3 Flash — 次选 (bigmodel coding 端点, 快速通用)
+    provider: zhipu
+    priority: 2
+    request_address: http://127.0.0.1:48615/v1/chat/completions
+    api_key: AGENTFRAMEWORK_KEYS_BIGMODEL
+    context_window: 131072
+    price_in_per_m: 0.0
+    price_out_per_m: 0.0
+    reasoning_score: 8
+    coding_score: 8
+    capabilities: {text: true, image_input: false, video_input: false, audio_input: false, file_pdf: false, file_xlsx: false, image_output: false}
+
+  # ── 默认配置保留: GPT-6 (预留; 端点当前部署网络不可达, 公网/代理环境可用) ──
+  - name: gpt-6
+    description: GPT-6 — 默认配置保留 (OpenAI; 当前网络不可达, 凭据/env 齐备即可用)
+    provider: openai
+    request_address: http://127.0.0.1:48615/v1/chat/completions
+    api_key: AGENT_OPENAI_KEY
+    context_window: 262144
+    price_in_per_m: 10.00
+    price_out_per_m: 50.00
+    reasoning_score: 9
+    coding_score: 9
+    capabilities: {text: true, image_input: true, video_input: false, audio_input: true, file_pdf: true, file_xlsx: false, image_output: false}
+
+proxy:
+  url: ""            # 例: http://127.0.0.1:7890
+  bypass_local: true # 本地/内网地址不走代理
+
+# ── 余额查询方案 ──
+# 智谱 GLM (bigmodel.cn / z.ai): 无公开 REST 余额接口 (2026-09-10 实测 11 端点全 404) — 余额仅控制台可见
+# DeepSeek 余额实测 (v0.21.1 内部探针 probes/deepseek-probe, 真实 key):
+#   GET https://api.deepseek.com/user/balance → { is_available, balance_infos:[{ currency, total_balance, ... }] }
+#   币种为 CNY (非下方旧注的 USD); 余额判定请读本结构而非假设币种。
+balance_schemes:
+  deepseek:
+    request_address: http://127.0.0.1:48615/v1/chat/completions
+    note: GET + Bearer; 返回 balance_infos[].currency(CNY)/total_balance (实测, 非 USD)

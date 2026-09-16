@@ -1,0 +1,247 @@
+AgentFramework CLI
+  /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit  [log → /tmp/gameprobe/reply_default.md]
+── 执行中 (turn 1) ──────────────────────────────
+  [01] 意图分析: code_generation
+  [02] 子任务: 用 Python 写一个贪吃蛇游戏(终端文本渲染)。要求: (1) 单文...
+  [03] 管线执行 (上下文装配 → LLM → 后处理)…
+[2026-09-13T05:13:05.7956123Z] info thinking IndustrialAgentV2: prompt 构建完成: ~1410 tokens, 意图=code_generation
+@chatbox:{"Type":"thinking_page_switch","Seq":1,"SummaryLength":0}
+@chatbox:{"Type":"thinking_end","Seq":0,"SummaryLength":7088}
+
+── 回复 ────────────────────────────────────────────
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""终端贪吃蛇（纯文本渲染）。
+
+分层设计：
+  GameCore  —— 只管规则与状态，零 I/O，可无头测试
+  Renderer  —— 只把状态转成字符画
+  KeyReader —— 只负责非阻塞读键
+
+用法：
+    python3 game.py                      # 开始游戏
+    python3 game.py --selftest           # 无头自测，打印 PASS / FAIL
+    python3 game.py --width 30 --height 15 --speed 0.08
+"""
+from __future__ import annotations
+
+import argparse
+import random
+import select
+import sys
+import time
+
+# ---------------------------------------------------------------- 逻辑层
+
+#: 键位 -> 方向向量（x 向右，y 向下）
+DIRS = {
+    "w": (0, -1), "s": (0, 1), "a": (-1, 0), "d": (1, 0),
+    "k": (0, -1), "j": (0, 1), "h": (-1, 0), "l": (1, 0),
+}
+
+
+class GameCore:
+    """贪吃蛇核心规则，不涉及任何输入输出。"""
+
+    def __init__(self, width: int = 20, height: int = 12, seed: int | None = None):
+        if width < 5 or height < 5:
+            raise ValueError("网格至少 5x5")
+        self.width = width
+        self.height = height
+        self.rng = random.Random(seed)
+        self.reset()
+
+    # -- 生命周期 --------------------------------------------------------
+    def reset(self) -> None:
+        cx, cy = self.width // 2, self.height // 2
+        self.snake: list[tuple[int, int]] = [(cx, cy), (cx - 1, cy), (cx - 2, cy)]
+        self.direction: tuple[int, int] = (1, 0)
+        self._pending: tuple[int, int] | None = None
+        self.score = 0
+        self.dead = False
+        self.win = False
+        self.food = self._spawn_food()
+
+    def _spawn_food(self) -> tuple[int, int] | None:
+        """在空格中随机放置食物；无空格时返回 None（通关）。"""
+        occupied = set(self.snake)
+        free = [(x, y) for y in range(self.height) for x in range(self.width)
+                if (x, y) not in occupied]
+        return self.rng.choice(free) if free else None
+
+    # -- 输入 ------------------------------------------------------------
+    def turn(self, key: str) -> bool:
+        """接受一个转向键；反向键 / 无效键被忽略，返回是否生效。"""
+        d = DIRS.get(key)
+        if d is None:
+            return False
+        ref = self._pending or self.direction
+        if d == ref or (d[0] == -ref[0] and d[1] == -ref[1]):
+            return False
+        self._pending = d
+        return True
+
+    # -- 推进 ------------------------------------------------------------
+    def step(self) -> str:
+        """推进一个 tick，返回 'move' | 'eat' | 'win' | 'dead' | 'noop'。"""
+        if self.dead or self.win:
+            return "noop"
+        if self._pending:
+            self.direction = self._pending
+            self._pending = None
+
+        hx, hy = self.snake[0]
+        dx, dy = self.direction
+        nx, ny = hx + dx, hy + dy
+
+        # 撞墙
+        if not (0 <= nx < self.width and 0 <= ny < self.height):
+            self.dead = True
+            return "dead"
+
+        eating = (nx, ny) == self.food
+        # 不吃食物时尾巴会移走，所以尾巴格不算碰撞
+        body = set(self.snake if eating else self.snake[:-1])
+        if (nx, ny) in body:
+            self.dead = True
+            return "dead"
+
+        self.snake.insert(0, (nx, ny))
+        if eating:
+            self.score += 1
+            self.food = self._spawn_food()
+            if self.food is None:
+                self.win = True
+                return "win"
+            return "eat"
+        self.snake.pop()
+        return "move"
+
+
+# ---------------------------------------------------------------- 渲染层
+
+class Renderer:
+    """把 GameCore 的状态渲染成等宽字符画。"""
+
+    HEAD, BODY, FOOD, EMPTY = "O", "o", "*", " "
+
+    def __init__(self, core: GameCore):
+        self.core = core
+
+    def frame(self) -> str:
+        c = self.core
+        head = c.snake[0]
+        body = set(c.snake[1:])
+        border = "+" + "-" * c.width + "+"
+
+        lines = [border]
+        for y in range(c.height):
+            cells = []
+            for x in range(c.width):
+                p = (x, y)
+                if p == head:
+                    cells.append(self.HEAD)
+                elif p in body:
+                    cells.append(self.BODY)
+                elif p == c.food:
+                    cells.append(self.FOOD)
+                else:
+                    cells.append(self.EMPTY)
+            lines.append("|" + "".join(cells) + "|")
+        lines.append(border)
+        lines.append(f"Score: {c.score}")
+        lines.append("WASD / 方向键移动    q 退出")
+        return "\n".join(lines)
+
+
+# ---------------------------------------------------------------- 输入层
+
+class KeyReader:
+    """非阻塞单键读取；非 TTY（管道/无终端）时静默返回 None。"""
+
+    def __init__(self):
+        self.is_tty = sys.stdin.isatty()
+        self._termios = None
+        self._saved = None
+
+    def __enter__(self):
+        if self.is_tty:
+            try:
+                import termios
+                import tty
+                self._termios = termios
+                self._saved = termios.tcgetattr(sys.stdin.fileno())
+                tty.setcbreak(sys.stdin.fileno())
+            except Exception:
+                self.is_tty = False
+        return self
+
+    def __exit__(self, *exc):
+        if self._saved is not None:
+            self._termios.tcsetattr(sys.stdin.fileno(),
+                                    self._termios.TCSADRAIN, self._saved)
+        return False
+
+    def read(self) -> str | None:
+        if not self.is_tty:
+            return None
+        if not select.select([sys.stdin], [], [], 0)[0]:
+            return None
+        ch = sys.stdin.read(1)
+        if ch == "\x1b":  # 方向键是 ESC [ A/B/C/D
+            seq = sys.stdin.read(2) if select.select([sys.stdin], [], [], 0.01)[0] else ""
+            return {"[A": "w", "[B": "s", "[C": "d", "[D": "a"}.get(seq)
+        return ch
+
+
+# ---------------------------------------------------------------- 游戏循环
+
+def play(core: GameCore, tick: float) -> None:
+    out = sys.stdout
+    renderer = Renderer(core)
+    with KeyReader() as keys:
+        while not (core.dead or core.win):
+            out.write("\x1b[2J\x1b[H" + renderer.frame() + "\n")
+            out.flush()
+            deadline = time.monotonic() + tick
+            while time.monotonic() < deadline:
+                key = keys.read()
+                if key:
+                    if key.lower() == "q":
+                        return
+                    core.turn(key.lower())
+                time.sleep(0.005)
+            core.step()
+
+        out.write("\x1b[2J\x1b[H" + renderer.frame() + "\n")
+        out.write("恭喜通关！\n" if core.win else "游戏结束（撞墙或撞到自己）\n")
+        out.write(f"最终得分: {core.score}\n")
+        out.flush()
+
+
+# ---------------------------------------------------------------- 无头自测
+
+def selftest() -> bool:
+    results: list[tuple[str, bool]] = []
+
+    def check(name, fn):
+        try:
+            ok = bool(fn())
+        except Exception as exc:  # noqa: BLE001 - 自测需捕获一切异常
+            ok = False
+            name = f"{name} [{exc.__class__.__name__}: {exc}]"
+        results.append((name, ok))
+
+    def t_move():
+        g = GameCore(10, 6, seed=1)
+        g.food = (0, 0)
+        hx, hy = g.snake[0]
+        ev = g.step()
+        return ev == "move" and g.snake[0] == (hx + 1, hy) and len(g.snake) == 3
+
+    def t_eat():
+        g = GameCore(10, 6, seed=1)
+        hx, hy = g.snake[0]
+        g.food
+  · intent=code_generation  promptTokens=1410  contextSnippets=7  llmModel=deepseek-flash  forecastTendency=提出新的编码任务或对本次代码的审查  forecastAgentUid=main
+  (49586ms, intent=code_generation)

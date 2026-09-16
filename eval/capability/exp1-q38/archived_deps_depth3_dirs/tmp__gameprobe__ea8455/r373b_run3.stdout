@@ -1,0 +1,376 @@
+AgentFramework CLI
+  /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit  [log → /tmp/gameprobe/r373b_run3.md]
+── 执行中 (turn 1) ──────────────────────────────
+  [01] 意图分析: code_generation
+  [02] 子任务: 用 Python 写一个贪吃蛇游戏(终端文本渲染)。要求: (1) 单文...
+  [03] 管线执行 (上下文装配 → LLM → 后处理)…
+[2026-09-13T06:25:10.4313144Z] info thinking IndustrialAgentV2: prompt 构建完成: ~1371 tokens, 意图=code_generation
+@chatbox:{"Type":"thinking_page_switch","Seq":1,"SummaryLength":0}
+@chatbox:{"Type":"thinking_end","Seq":0,"SummaryLength":11460}
+  [04] 返回区段标记 python
+  [05] PY 落盘 + py_compile 1/1 通过
+    · ./data/artifacts/py_c1c03b20e133846f.py (12328B) ✓ py_compile · run exit=0 (64ms)
+
+── 回复 ────────────────────────────────────────────
+#!/usr/bin/env python3
+"""终端贪吃蛇（单文件）。
+
+分层：
+  - GameModel        纯逻辑状态机，不触碰 stdin/stdout，随机源可注入 → 可无头自测
+  - TerminalRenderer 渲染层：模型 -> 文本帧
+  - RawTerminal/play 输入与主循环（唯一的 I/O 层）
+
+用法:
+    python3 game.py                  # 开始游戏（WASD / HJKL / 方向键，q 退出）
+    python3 game.py --selftest       # 无头自测，打印 PASS 或 FAIL
+    python3 game.py --width 30 --height 15 --fps 14 --seed 42
+"""
+from __future__ import annotations
+
+import argparse
+import os
+import random
+import sys
+import time
+from collections import deque
+from typing import Deque, Dict, Optional, Tuple
+
+Point = Tuple[int, int]
+
+UP: Point = (0, -1)
+DOWN: Point = (0, 1)
+LEFT: Point = (-1, 0)
+RIGHT: Point = (1, 0)
+OPPOSITE: Dict[Point, Point] = {UP: DOWN, DOWN: UP, LEFT: RIGHT, RIGHT: LEFT}
+
+#: 按键 -> 方向（WASD、HJKL、方向键转义序列）
+KEYS: Dict[str, Point] = {
+    "w": UP, "W": UP, "k": UP, "\x1b[A": UP,
+    "s": DOWN, "S": DOWN, "j": DOWN, "\x1b[B": DOWN,
+    "a": LEFT, "A": LEFT, "h": LEFT, "\x1b[D": LEFT,
+    "d": RIGHT, "D": RIGHT, "l": RIGHT, "\x1b[C": RIGHT,
+}
+
+
+class GameModel:
+    """贪吃蛇核心逻辑：无 I/O、无终端依赖。"""
+
+    def __init__(self, width: int = 20, height: int = 12,
+                 rng: Optional[random.Random] = None) -> None:
+        if width < 4 or height < 1:
+            raise ValueError("棋盘太小：width >= 4 且 height >= 1")
+        self.width = width
+        self.height = height
+        self.rng = rng if rng is not None else random.Random()
+        self.reset()
+
+    # ---------- 状态 ----------
+    def reset(self) -> None:
+        cx, cy = self.width // 2, self.height // 2
+        self.snake: Deque[Point] = deque([(cx, cy), (cx - 1, cy), (cx - 2, cy)])
+        self.direction: Point = RIGHT
+        self.pending: Point = RIGHT
+        self.score = 0
+        self.over = False
+        self.won = False
+        self.food: Optional[Point] = self._spawn_food()
+
+    def occupied(self) -> set:
+        return set(self.snake)
+
+    def _spawn_food(self) -> Optional[Point]:
+        free = [(x, y) for y in range(self.height) for x in range(self.width)
+                if (x, y) not in self.snake]
+        return self.rng.choice(free) if free else None
+
+    # ---------- 输入 ----------
+    def turn(self, direction: Point) -> None:
+        """记录转向意图；相对「已排队方向」的反向被忽略，同帧内最后一次合法转向生效。"""
+        if direction == OPPOSITE.get(self.pending):
+            return
+        self.pending = direction
+
+    # ---------- 推进 ----------
+    def step(self) -> bool:
+        """推进一帧；返回是否仍在进行中（撞墙/自撞 -> False）。"""
+        if self.over:
+            return False
+        self.direction = self.pending
+        hx, hy = self.snake[0]
+        dx, dy = self.direction
+        head = (hx + dx, hy + dy)
+
+        # 撞墙
+        if not (0 <= head[0] < self.width and 0 <= head[1] < self.height):
+            self.over = True
+            return False
+
+        grow = (head == self.food)
+        body = set(self.snake)
+        if not grow:
+            body.discard(self.snake[-1])  # 尾部本帧会移走，不算障碍
+        if head in body:
+            self.over = True
+            return False
+
+        self.snake.appendleft(head)
+        if grow:
+            self.score += 1
+            self.food = self._spawn_food()
+            if self.food is None:         # 铺满棋盘 -> 通关
+                self.won = True
+                self.over = True
+        else:
+            self.snake.pop()
+        return True
+
+
+class TerminalRenderer:
+    """渲染层：GameModel -> 可打印文本帧（纯函数，无副作用）。"""
+
+    WALL = "#"
+    HEAD = "@"
+    BODY = "o"
+    FOOD = "*"
+
+    def render(self, model: GameModel, hud: bool = True) -> str:
+        grid = [[" "] * model.width for _ in range(model.height)]
+        if model.food is not None:
+            fx, fy = model.food
+            grid[fy][fx] = self.FOOD
+        for i, (x, y) in enumerate(model.snake):
+            grid[y][x] = self.HEAD if i == 0 else self.BODY
+
+        border = "+" + "-" * model.width + "+"
+        lines = [border]
+        lines += ["|" + "".join(row) + "|" for row in grid]
+        lines.append(border)
+        if hud:
+            lines.append(f"  Score: {model.score}    WASD/方向键 移动 · q 退出")
+        return "\n".join(lines)
+
+
+class RawTerminal:
+    """非阻塞按键读取上下文管理器（POSIX 用 termios，Windows 用 msvcrt）。"""
+
+    def __init__(self) -> None:
+        self._saved = None
+        self._fd = None
+        self._termios = None
+        self._msvcrt = None
+
+    def __enter__(self) -> "RawTerminal":
+        if os.name == "nt":
+            import msvcrt
+            self._msvcrt = msvcrt
+            return self
+        try:
+            import termios
+            import tty
+            self._termios = termios
+            self._fd = sys.stdin.fileno()
+            self._saved = termios.tcgetattr(self._fd)
+            tty.setcbreak(self._fd)
+        except Exception:
+            self._fd = None  # 非 TTY（管道/重定向）时退化为「只渲染不响应」
+        return self
+
+    def __exit__(self, *exc) -> bool:
+        if self._saved is not None and self._termios is not None:
+            self._termios.tcsetattr(self._fd, self._termios.TCSADRAIN, self._saved)
+        return False
+
+    def read_key(self) -> Optional[str]:
+        """尽快返回一个按键字符串；当前无输入返回 None。"""
+        if self._msvcrt is not None:
+            if not self._msvcrt.kbhit():
+                return None
+            ch = self._msvcrt.getwch()
+            if ch in ("\x00", "\xe0"):
+                return {"H": "\x1b[A", "P": "\x1b[B", "K": "\x1b[D", "M": "\x1b[C"}.get(
+                    self._msvcrt.getwch())
+            return ch
+        if self._fd is None:
+            return None
+        import select
+        if not select.select([sys.stdin], [], [], 0)[0]:
+            return None
+        ch = sys.stdin.read(1)
+        if ch != "\x1b":
+            return ch
+        seq = ch
+        while select.select([sys.stdin], [], [], 0.001)[0]:
+            seq += sys.stdin.read(1)
+        return seq
+
+
+def play(model: GameModel, renderer: TerminalRenderer, fps: float = 10.0) -> int:
+    """主循环：输入 -> 逻辑 -> 渲染。返回进程退出码。"""
+    frame = 1.0 / max(fps, 1.0)
+    out = sys.stdout
+    out.write("\x1b[?25l")  # 隐藏光标
+    try:
+        with RawTerminal() as term:
+            while True:
+                out.write("\x1b[H" + renderer.render(model) + "\x1b[J\n")
+                out.flush()
+                if model.over:
+                    break
+
+                deadline = time.monotonic() + frame
+                while time.monotonic() < deadline:
+                    key = term.read_key()
+                    if key == "q":
+                        model.over = True
+                        break
+                    direction = KEYS.get(key)
+                    if direction is not None:
+                        model.turn(direction)
+                    time.sleep(0.005)
+
+                if not model.over:
+                    model.step()
+
+        out.write("\x1b[H" + renderer.render(model) + "\x1b[J\n")
+        out.write("🎉 通关！\n" if model.won else f"游戏结束 · 得分 {model.score}\n")
+        out.flush()
+    finally:
+        out.write("\x1b[?25h")  # 恢复光标
+        out.flush()
+    return 0
+
+
+def selftest(verbose: bool = False) -> bool:
+    """无头自测：不读写终端，全部用例通过返回 True。"""
+    results = []
+
+    def check(name, fn):
+        try:
+            fn()
+            results.append((name, True, ""))
+        except AssertionError as exc:
+            results.append((name, False, str(exc) or "断言失败"))
+        except Exception as exc:  # noqa: BLE001
+            results.append((name, False, f"{type(exc).__name__}: {exc}"))
+
+    def fresh(w: int = 9, h: int = 9, seed: int = 0) -> GameModel:
+        return GameModel(w, h, random.Random(seed))
+
+    def t_initial():
+        m = fresh()
+        assert len(m.snake) == 3, "初始长度应为 3"
+        assert m.direction == RIGHT and m.score == 0 and not m.over
+        assert m.food is not None and m.food not in m.snake, "食物不应落在蛇身上"
+
+    def t_move():
+        m = fresh()
+        m.food = (0, 0)
+        assert m.step() is True
+        assert m.snake[0] == (5, 4), f"头部应为 (5,4)，实际 {m.snake[0]}"
+        assert len(m.snake) == 3, "未进食长度不变"
+        assert m.snake[-1] == (3, 4), "尾巴应前移"
+
+    def t_eat():
+        m = fresh()
+        m.food = (5, 4)
+        m.step()
+        assert m.score == 1, "得分应 +1"
+        assert len(m.snake) == 4, "进食后应增长"
+        assert m.food not in m.snake, "新食物不应与蛇重叠"
+
+    def t_wall():
+        m = fresh(5, 5)
+        m.snake = deque([(4, 2), (3, 2), (2, 2)])
+        m.direction = m.pending = RIGHT
+        m.food = (0, 0)
+        assert m.step() is False and m.over, "撞墙应结束"
+
+    def t_self():
+        m = fresh(5, 5)
+        m.snake = deque([(1, 1), (2, 1), (2, 2), (1, 2), (0, 2)])
+        m.direction = m.pending = DOWN
+        m.food = (4, 4)
+        assert m.step() is False and m.over, "自撞应结束"
+
+    def t_tail_follow():
+        # 头部进入「本帧即将移走的尾格」不算碰撞
+        m = fresh(5, 5)
+        m.snake = deque([(1, 1), (2, 1), (2, 2), (1, 2)])
+        m.direction = m.pending = DOWN
+        m.food = (4, 4)
+        assert m.step() is True, "追尾不算碰撞"
+
+    def t_turn():
+        m = fresh()
+        m.turn(LEFT)
+        assert m.pending == RIGHT, "反向应被忽略"
+        m.turn(UP)
+        m.step()
+        assert m.snake[0] == (4, 3), f"转向后头部应为 (4,3)，实际 {m.snake[0]}"
+
+    def t_render():
+        m = fresh(5, 5)
+        lines = TerminalRenderer().render(m).splitlines()
+        assert len(lines) == 5 + 2 + 1, f"行数异常: {len(lines)}"
+        assert lines[0] == "+-----+" == lines[6], "上下边框应对称"
+        rows = lines[1:6]
+        assert all(len(r) == 7 for r in rows), "每行宽度 = 棋盘宽 + 2"
+        joined = "".join(rows)
+        assert joined.count("@") == 1 and joined.count("o") == 2, "蛇头 1 格、蛇身 2 格"
+        assert joined.count("*") == 1, "食物 1 格"
+
+    def t_deterministic():
+        a = GameModel(9, 9, random.Random(7)).food
+        b = GameModel(9, 9, random.Random(7)).food
+        assert a == b, "同种子应产生同一食物位置"
+
+    check("初始状态", t_initial)
+    check("移动一格", t_move)
+    check("吃食物增长", t_eat)
+    check("撞墙结束", t_wall)
+    check("自撞结束", t_self)
+    check("追尾不算碰撞", t_tail_follow)
+    check("转向与反向过滤", t_turn)
+    check("文本渲染", t_render)
+    check("随机源确定性", t_deterministic)
+
+    if verbose:
+        for name, ok, msg in results:
+            print(f"[{'ok' if ok else 'x'}] {name}" + (f"  -> {msg}" if msg else ""))
+    return all(ok for _, ok, _ in results)
+
+
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser(
+        description="终端贪吃蛇（核心逻辑与渲染分离，可 --selftest 无头自测）")
+    parser.add_argument("--selftest", action="store_true", help="运行无头自测并打印 PASS/FAIL")
+    parser.add_argument("-v", "--verbose", action="store_true", help="自测时逐条打印用例")
+    parser.add_argument("--width", type=int, default=20, help="棋盘宽（默认 20）")
+    parser.add_argument("--height", type=int, default=12, help="棋盘高（默认 12）")
+    parser.add_argument("--fps", type=float, default=10.0, help="每秒帧数（默认 10）")
+    parser.add_argument("--seed", type=int, default=None, help="随机种子，便于复现")
+    args = parser.parse_args(argv)
+
+    if args.selftest:
+        ok = selftest(args.verbose)
+        print("PASS" if ok else "FAIL")
+        return 0 if ok else 1
+
+    model = GameModel(args.width, args.height, random.Random(args.seed))
+    return play(model, TerminalRenderer(), args.fps)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+
+运行说明
+
+| 命令 | 作用 |
+| python3 game.py | 开始游戏；WASD/HJKL/方向键转向，q 退出 |
+| python3 game.py --selftest | 无头自测，输出 PASS（全过）或 FAIL，退出码 0/1 |
+| python3 game.py --selftest -v | 逐条打印用例结果与失败原因 |
+| python3 game.py --width 30 --height 15 --fps 14 --seed 42 | 调棋盘、速度、随机种子 |
+
+依赖标准库，Python 3.8+；非 TTY（如重定向）时自动退化为只渲染不响应按键。
+  · intent=code_generation  promptTokens=1371  contextSnippets=7  llmModel=deepseek-flash  forecastTendency=提出新的编码任务或对本次代码的审查  forecastAgentUid=main
+  (77403ms, intent=code_generation)

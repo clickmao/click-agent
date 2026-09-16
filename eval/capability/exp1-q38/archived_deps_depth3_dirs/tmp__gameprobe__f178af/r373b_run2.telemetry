@@ -1,0 +1,36 @@
+{"ts":"2026-09-13T06:23:47.7570020Z","seq":1,"session":"host","point":"boot","module":"Program","kv":{"probe":true}}
+{"ts":"2026-09-13T06:23:47.7983593Z","seq":2,"session":"host","point":"skill_load","module":"SkillRegistry","kv":{"root":"/home/agentuser/AgentFramework/skills","cwd":"/home/agentuser/AgentFramework","count":6,"ids":"unit-convert,wordcount,code-review-checklist,git-commit-helper,critic-rules,image-gen"}}
+{"ts":"2026-09-13T06:23:48.0333976Z","seq":3,"session":"host","point":"think_memory_boot","module":"IndustrialAgentV2","kv":{"embedder_injected":true,"available":true,"instance":"014c537b"}}
+{"ts":"2026-09-13T06:23:48.0374723Z","seq":4,"session":"host","point":"skill_scan","module":"SkillDispatcher","kv":{"input_len":125,"registry_count":7}}
+{"ts":"2026-09-13T06:23:50.2663356Z","seq":5,"session":"host","point":"skill_match","module":"SkillDispatcher","kv":{"top1":"image-gen","level":2,"precision":0.6,"runner_up_gap":0.1314,"candidates":7}}
+{"ts":"2026-09-13T06:23:50.2663938Z","seq":6,"session":"host","point":"skill","module":"SkillDispatcher","kv":{"matched":"image-gen","level":2,"precision":0.6}}
+{"ts":"2026-09-13T06:23:50.2664057Z","seq":7,"session":"host","point":"skill_trigger","module":"SkillDispatcher","kv":{"decision":"knowledge_hint","skill":"image-gen","level":2}}
+{"ts":"2026-09-13T06:23:50.2664221Z","seq":8,"session":"host","point":"skill_knowledge","module":"IndustrialAgentV2","kv":{"skill":"image-gen","chars":461}}
+{"ts":"2026-09-13T06:23:50.2666422Z","seq":9,"session":"host","point":"intent","module":"IndustrialAgentV2","kv":{"primary":"code_generation","subtask_count":1,"input_chars":125,"sensitive":false,"ms":0}}
+{"ts":"2026-09-13T06:23:50.2679531Z","seq":10,"session":"host","point":"tendency_bias","module":"TendencyAnalyzer","kv":{"user":"cli-user","scores":"Testing=0.20;Python=0.29;Web API=0.51","conf":0.512,"sample":100}}
+{"ts":"2026-09-13T06:23:50.2679954Z","seq":11,"session":"host","point":"topic_relevance","module":"IndustrialAgentV2","kv":{"stage":"isolation-point","core":"Web API","goal_entities":0,"subtasks":1}}
+{"ts":"2026-09-13T06:23:50.2702259Z","seq":12,"session":"host","point":"evidence_gate","module":"IndustrialAgentV2","kv":{"subtasks":1,"suspects":0,"to_ask":0,"confidences":"1"}}
+{"ts":"2026-09-13T06:23:50.6748617Z","seq":13,"session":"host","point":"phase_timing","module":"ContextAssembler","kv":{"phase":"recall_memory","ms":404}}
+{"ts":"2026-09-13T06:23:50.6760712Z","seq":14,"session":"host","point":"tendency_bias","module":"TendencyAnalyzer","kv":{"user":"cli-user","scores":"Testing=0.20;Python=0.29;Web API=0.51","conf":0.512,"sample":100}}
+{"ts":"2026-09-13T06:23:50.6761019Z","seq":15,"session":"host","point":"phase_timing","module":"ContextAssembler","kv":{"phase":"recall_tendency","ms":1,"user":"cli-user","signals":3,"confidence":0.5121900665566897,"snippets":1}}
+{"ts":"2026-09-13T06:23:50.7104572Z","seq":16,"session":"host","point":"phase_timing","module":"ContextAssembler","kv":{"phase":"recall_workspace","ms":34}}
+{"ts":"2026-09-13T06:23:50.7106262Z","seq":17,"session":"host","point":"compression","module":"ContextGradientCompressor","kv":{"level":0,"drift_ok":true,"semantic":-1,"chars":"503->503"}}
+{"ts":"2026-09-13T06:23:50.7106723Z","seq":18,"session":"host","point":"compression","module":"ContextGradientCompressor","kv":{"level":0,"drift_ok":true,"semantic":-1,"chars":"503->503"}}
+{"ts":"2026-09-13T06:23:50.7106760Z","seq":19,"session":"host","point":"phase_timing","module":"ContextAssembler","kv":{"phase":"compress","ms":0,"n":7}}
+{"ts":"2026-09-13T06:23:50.7108820Z","seq":20,"session":"host","point":"assembly","module":"ContextAssembler","kv":{"success":true,"error":null,"sources":"Memory:2snip/186tok/r0.8rel,Session:0snip/0tok/r0rel,WebSearch:0snip/0tok/r0rel,UserTendency:1snip/14tok/r0.51rel,WorkspaceFiles:3snip/28tok/r0.83rel,ToolOutput:0snip/0tok/r0rel,SessionMemory:0snip/0tok/r0rel,AgentContext:1snip/22tok/r0.9rel,FixMemory:0snip/0tok/r0rel,GuardrailMemory:0snip/0tok/r0rel","snippets":7,"total_tokens":171,"budget_usage":0.021,"assembly_ms":440,"from_cache":false}}
+{"ts":"2026-09-13T06:23:50.7113477Z","seq":21,"session":"host","point":"prompt_build","module":"IndustrialAgentV2","kv":{"total_tokens":1371,"history_msgs":0,"history_tokens":0,"context_tokens":384}}
+{"ts":"2026-09-13T06:23:50.7113646Z","seq":22,"session":"host","point":"context_gate","module":"IndustrialAgentV2","kv":{"est_tokens":1883,"warn":6000,"hard":9000,"mode":"Normal"}}
+{"ts":"2026-09-13T06:23:50.7114802Z","seq":23,"session":"host","point":"micro_decision","module":"IndustrialAgentV2","kv":{"mode":"Normal","subtasks":1}}
+{"ts":"2026-09-13T06:23:50.7114898Z","seq":24,"session":"host","point":"topic_relevance","module":"IndustrialAgentV2","kv":{"score":0,"verdict":"SteerHint","core":"Web API","signals":"画像词面偏离 (未达隔离阈值)"}}
+{"ts":"2026-09-13T06:23:50.7115074Z","seq":25,"session":"host","point":"think_memory_recall_gate","module":"IndustrialAgentV2","kv":{"count":1258,"embedder":true,"instance":"7ac09c9d"}}
+{"ts":"2026-09-13T06:23:51.1103514Z","seq":26,"session":"host","point":"think_memory","module":"IndustrialAgentV2","kv":{"hits":2,"top_sim":1}}
+{"ts":"2026-09-13T06:23:51.5019912Z","seq":27,"session":"host","point":"think_memory","module":"IndustrialAgentV2","kv":{"written":true,"count":1259,"instance":"7ac09c9d"}}
+{"ts":"2026-09-13T06:23:51.8823252Z","seq":28,"session":"host","point":"balance_sync","module":"TokenUsageService","kv":{"provider":"deepseek","ok":true,"model":"deepseek-flash","remaining":286.87}}
+{"ts":"2026-09-13T06:24:35.4119757Z","seq":29,"session":"host","point":"llm_call","module":"ModelQueueRouter","kv":{"model":"deepseek-flash","provider":"deepseek","prompt_tokens":1683,"completion_tokens":12544,"total_tokens":14227,"success":true,"empty_reply":false,"error_kind":"","content_len":13793,"reasoning_len":24266,"truncated":false,"first_budget":32768,"intent":"code_generation","ms":43529}}
+{"ts":"2026-09-13T06:24:35.4120248Z","seq":30,"session":"host","point":"phase_timing","module":"IndustrialAgentV2","kv":{"phase":"llm","ms":43795,"intent":"code_generation"}}
+{"ts":"2026-09-13T06:25:07.3505841Z","seq":31,"session":"host","point":"memory","module":"IndustrialAgentV2","kv":{"op":"store","rag":true,"len":13925}}
+{"ts":"2026-09-13T06:25:07.5027041Z","seq":32,"session":"host","point":"script_run","module":"python-artifact","kv":{"path":"./data/artifacts/py_8d48f9fcb7add454.py","ran":true,"exit":1,"ms":81,"timed_out":false,"truncated":false}}
+{"ts":"2026-09-13T06:25:07.5027426Z","seq":33,"session":"host","point":"script_artifact","module":"python-artifact","kv":{"path":"./data/artifacts/py_8d48f9fcb7add454.py","bytes":14675,"sha8":"8d48f9fc","compile_valid":true,"exit":0,"origin":"fenced"}}
+{"ts":"2026-09-13T06:25:07.5033159Z","seq":34,"session":"host","point":"tendency","module":"TendencyAnalyzer","kv":{"op":"persist","ok":true,"user":"cli_user","count":100}}
+{"ts":"2026-09-13T06:25:07.5033240Z","seq":35,"session":"host","point":"tendency","module":"IndustrialAgentV2","kv":{"op":"update","ok":true,"signals":6}}
+{"ts":"2026-09-13T06:25:07.5033357Z","seq":36,"session":"host","point":"loop_turn","module":"IndustrialAgentV2","kv":{"total_ms":79468,"success":true,"reply_chars":13793,"asked":true,"executive":false}}

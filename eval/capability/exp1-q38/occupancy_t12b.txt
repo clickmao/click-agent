@@ -1,0 +1,295 @@
+ts=2026-09-16T21:57:27+08:00
+root=/home/agentuser/AgentFramework
+MEM_MIN_MB=2600 WAIT_S=420
+--- 采样(a1) 2026-09-16T21:57:27+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2032315 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 45479 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2032545 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 42039 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a1=3
+--- 采样(b1) 2026-09-16T21:57:32+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2032315 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 45479 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2032545 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 42039 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b1=3
+mem_kb=1477680
+mem_mb=1443
+round1 n1=3 n2=3 mem_mb=1443
+WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1443) ⇒ 15s 后重采样
+--- 采样(a2) 2026-09-16T21:57:47+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2032315 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 45479 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2032545 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 42039 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a2=3
+--- 采样(b2) 2026-09-16T21:57:52+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2032315 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 45479 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2032545 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 42039 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b2=3
+mem_kb=1307640
+mem_mb=1276
+round2 n1=3 n2=3 mem_mb=1276
+WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1276) ⇒ 15s 后重采样
+--- 采样(a3) 2026-09-16T21:58:07+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2032315 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 45479 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2032545 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 42039 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a3=3
+--- 采样(b3) 2026-09-16T21:58:12+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2032315 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 45479 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2032545 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 42039 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b3=3
+mem_kb=1506580
+mem_mb=1471
+round3 n1=3 n2=3 mem_mb=1471
+WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1471) ⇒ 15s 后重采样
+--- 采样(a4) 2026-09-16T21:58:27+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2032315 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 45479 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2032545 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 42039 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a4=3
+--- 采样(b4) 2026-09-16T21:58:32+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2032315 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 45479 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2032545 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 42039 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b4=3
+mem_kb=1393972
+mem_mb=1361
+round4 n1=3 n2=3 mem_mb=1361
+WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1361) ⇒ 15s 后重采样
+--- 采样(a5) 2026-09-16T21:58:47+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2032315 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 45479 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2032545 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 42039 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a5=3
+--- 采样(b5) 2026-09-16T21:58:52+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2032315 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 45479 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2032545 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 42039 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b5=3
+mem_kb=1505336
+mem_mb=1470
+round5 n1=3 n2=3 mem_mb=1470
+WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1470) ⇒ 15s 后重采样
+--- 采样(a6) 2026-09-16T21:59:07+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2032315 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 45479 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2032545 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 42039 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a6=3
+--- 采样(b6) 2026-09-16T21:59:12+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2032315 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 45479 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2032545 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 42039 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b6=3
+mem_kb=1388620
+mem_mb=1356
+round6 n1=3 n2=3 mem_mb=1356
+WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1356) ⇒ 15s 后重采样
+--- 采样(a7) 2026-09-16T21:59:27+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2032315 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 45479 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2032545 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 42039 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a7=3
+--- 采样(b7) 2026-09-16T21:59:32+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2032315 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 45479 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2032545 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 42039 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b7=3
+mem_kb=1310416
+mem_mb=1279
+round7 n1=3 n2=3 mem_mb=1279
+WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1279) ⇒ 15s 后重采样
+--- 采样(a8) 2026-09-16T21:59:47+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2032315 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 45479 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2032545 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 42039 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a8=3
+--- 采样(b8) 2026-09-16T21:59:52+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2032315 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 45479 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2032545 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 42039 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b8=3
+mem_kb=1463096
+mem_mb=1428
+round8 n1=3 n2=3 mem_mb=1428
+WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1428) ⇒ 15s 后重采样
+--- 采样(a9) 2026-09-16T22:00:07+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2032315 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 45479 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2032545 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 42039 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a9=3
+--- 采样(b9) 2026-09-16T22:00:12+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2032315 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 45479 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2032545 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 42039 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b9=3
+mem_kb=1408396
+mem_mb=1375
+round9 n1=3 n2=3 mem_mb=1375
+WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1375) ⇒ 15s 后重采样
+--- 采样(a10) 2026-09-16T22:00:27+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2032315 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 45479 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2032545 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 42039 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a10=3
+--- 采样(b10) 2026-09-16T22:00:32+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2032315 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 45479 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2032545 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 42039 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b10=3
+mem_kb=1507184
+mem_mb=1471
+round10 n1=3 n2=3 mem_mb=1471
+WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1471) ⇒ 15s 后重采样
+--- 采样(a11) 2026-09-16T22:00:47+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2032315 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 45479 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2032545 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 42039 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a11=3
+--- 采样(b11) 2026-09-16T22:00:52+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2032315 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 45479 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2032545 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 42039 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b11=3
+mem_kb=1513156
+mem_mb=1477
+round11 n1=3 n2=3 mem_mb=1477
+WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1477) ⇒ 15s 后重采样
+--- 采样(a12) 2026-09-16T22:01:07+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2032315 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 45479 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2032545 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 42039 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a12=3
+--- 采样(b12) 2026-09-16T22:01:12+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2032315 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 45479 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2032545 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 42039 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b12=3
+mem_kb=1519264
+mem_mb=1483
+round12 n1=3 n2=3 mem_mb=1483
+WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1483) ⇒ 15s 后重采样
+--- 采样(a13) 2026-09-16T22:01:27+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2032315 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 45479 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2032545 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 42039 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a13=3
+--- 采样(b13) 2026-09-16T22:01:32+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2032315 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 45479 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2032545 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 42039 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b13=3
+mem_kb=1524272
+mem_mb=1488
+round13 n1=3 n2=3 mem_mb=1488
+WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1488) ⇒ 15s 后重采样
+--- 采样(a14) 2026-09-16T22:01:47+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2041577 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 33851 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+n_a14=2
+--- 采样(b14) 2026-09-16T22:01:52+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2041577 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 33851 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+n_b14=2
+mem_kb=2745136
+mem_mb=2680
+round14 n1=2 n2=2 mem_mb=2680
+WAIT: 仍 BUSY (n1=2 n2=2 mem_mb=2680) ⇒ 15s 后重采样
+--- 采样(a15) 2026-09-16T22:02:07+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2041577 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 33851 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2041754 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 45637 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a15=3
+--- 采样(b15) 2026-09-16T22:02:12+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2041577 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 33851 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2041754 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 45637 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b15=3
+mem_kb=1635512
+mem_mb=1597
+round15 n1=3 n2=3 mem_mb=1597
+WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1597) ⇒ 15s 后重采样
+--- 采样(a16) 2026-09-16T22:02:27+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2041577 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 33851 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2041754 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 45637 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a16=3
+--- 采样(b16) 2026-09-16T22:02:32+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2041577 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 33851 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2041754 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 45637 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b16=3
+mem_kb=1438768
+mem_mb=1405
+round16 n1=3 n2=3 mem_mb=1405
+WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1405) ⇒ 15s 后重采样
+--- 采样(a17) 2026-09-16T22:02:48+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2041577 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 33851 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2041754 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 45637 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a17=3
+--- 采样(b17) 2026-09-16T22:02:53+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2041577 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 33851 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2041754 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 45637 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b17=3
+mem_kb=1254436
+mem_mb=1225
+round17 n1=3 n2=3 mem_mb=1225
+WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1225) ⇒ 15s 后重采样
+--- 采样(a18) 2026-09-16T22:03:08+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2041577 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 33851 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2041754 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 45637 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a18=3
+--- 采样(b18) 2026-09-16T22:03:13+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2041577 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 33851 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2041754 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 45637 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b18=3
+mem_kb=1424716
+mem_mb=1391
+round18 n1=3 n2=3 mem_mb=1391
+WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1391) ⇒ 15s 后重采样
+--- 采样(a19) 2026-09-16T22:03:28+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2041577 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 33851 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2041754 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 45637 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a19=3
+--- 采样(b19) 2026-09-16T22:03:33+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2041577 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 33851 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2041754 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 45637 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b19=3
+mem_kb=1221720
+mem_mb=1193
+round19 n1=3 n2=3 mem_mb=1193
+WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1193) ⇒ 15s 后重采样
+--- 采样(a20) 2026-09-16T22:03:48+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2041577 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 33851 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2041754 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 45637 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a20=3
+--- 采样(b20) 2026-09-16T22:03:53+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2041577 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 33851 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2041754 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 45637 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b20=3
+mem_kb=1579432
+mem_mb=1542
+round20 n1=3 n2=3 mem_mb=1542
+WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1542) ⇒ 15s 后重采样
+--- 采样(a21) 2026-09-16T22:04:08+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2041577 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 33851 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2041754 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 45637 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a21=3
+--- 采样(b21) 2026-09-16T22:04:13+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2041577 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 33851 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2041754 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 45637 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b21=3
+mem_kb=1425564
+mem_mb=1392
+round21 n1=3 n2=3 mem_mb=1392
+PRE_GATE_VERDICT=BUSY

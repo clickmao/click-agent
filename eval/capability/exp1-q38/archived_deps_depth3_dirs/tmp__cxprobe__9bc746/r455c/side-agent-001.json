@@ -1,0 +1,25 @@
+{
+ "side": "agent",
+ "request": {
+  "n_messages": 2,
+  "tools_n": 0,
+  "upstream_request": {
+   "model": "deepseek-chat",
+   "n_messages": 2
+  }
+ },
+ "response": {
+  "text": "我来先确认这几个文件是否存在以及内容。\n\nno_formal: 文件 I/O 拼接任务，无整数算术断言需求。\n\n先查文件实际位置和内容。\n\n<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"Bash\">\n<｜｜DSML｜｜ parameter name=\"command\" string=\"true\">ls -la /tmp/agentwork2; echo \"---data---\"; ls -la /tmp/agentwork2/data 2>/dev/null | head -50</｜｜DSML｜｜ parameter>\n<｜｜DSML｜｜ parameter name=\"description\" string=\"true\">列出工作区根目录与 data 目录</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+  "usage": {
+   "prompt_tokens": 2623,
+   "completion_tokens": 129,
+   "total_tokens": 2752,
+   "prompt_tokens_details": {
+    "cached_tokens": 640
+   },
+   "prompt_cache_hit_tokens": 640,
+   "prompt_cache_miss_tokens": 1983
+  }
+ },
+ "extra": {}
+}

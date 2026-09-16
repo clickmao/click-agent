@@ -1,0 +1,14 @@
+# Skill 调度模块配置 (plan_skill_dispatch.md S.3 — 全部阈值零硬编码)
+skill:
+  matching:
+    similarity_threshold: 0.85        # 疑似命中阈值 (@dynamic next-turn)
+    enable_suspected_trigger: true    # 领域词疑似命中开关
+  lifecycle:
+    session_cache_max: 32             # 会话级缓存上限 (Active 状态 Skill 数)
+    idle_timeout_seconds: 1800        # 闲置超时回收
+    off_topic_rounds_to_unload: 2     # 连续 N 轮脱域自动卸载 (话题切换检测)
+  executor:
+    timeout_seconds: 15               # 执行超时
+    max_retries: 1                    # 幂等重试上限 (仅幂等 Skill)
+    breaker_failure_threshold: 3      # 熔断: 连续失败阈值
+    breaker_open_seconds: 120         # 熔断开启时长 (半开探测间隔)

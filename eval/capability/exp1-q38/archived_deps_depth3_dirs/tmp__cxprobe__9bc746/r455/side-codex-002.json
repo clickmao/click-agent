@@ -1,0 +1,42 @@
+{
+ "side": "codex",
+ "request": {
+  "instructions_chars": 16979,
+  "tools_n": 9,
+  "passed_tools_n": 7,
+  "input_items": 5,
+  "upstream_request": {
+   "model": "deepseek-chat",
+   "n_messages": 6,
+   "tools": [
+    "exec_command",
+    "write_stdin",
+    "request_user_input",
+    "view_image",
+    "get_goal",
+    "create_goal",
+    "update_goal"
+   ]
+  }
+ },
+ "response": {
+  "tool_calls": [
+   {
+    "name": "exec_command",
+    "args": "{\"cmd\": \"ls -la /tmp/cxwork && echo \\\"---\\\" && find /tmp/cxwork -name '*.py' -type f | wc -l\", \"workdir\": \"/tmp/cxwork\", \"login\": false}"
+   }
+  ],
+  "text": "",
+  "usage": {
+   "prompt_tokens": 6529,
+   "completion_tokens": 117,
+   "total_tokens": 6646,
+   "prompt_tokens_details": {
+    "cached_tokens": 6272
+   },
+   "prompt_cache_hit_tokens": 6272,
+   "prompt_cache_miss_tokens": 257
+  }
+ },
+ "extra": {}
+}

@@ -1,0 +1,37 @@
+{
+ "side": "codex",
+ "request": {
+  "instructions_chars": 16979,
+  "tools_n": 9,
+  "passed_tools_n": 7,
+  "input_items": 5,
+  "upstream_request": {
+   "model": "deepseek-chat",
+   "n_messages": 6,
+   "tools": [
+    "exec_command",
+    "write_stdin",
+    "request_user_input",
+    "view_image",
+    "get_goal",
+    "create_goal",
+    "update_goal"
+   ]
+  }
+ },
+ "response": {
+  "tool_calls": [],
+  "text": "当前目录下有 4 个 `.py` 文件（含子目录）。",
+  "usage": {
+   "prompt_tokens": 6341,
+   "completion_tokens": 17,
+   "total_tokens": 6358,
+   "prompt_tokens_details": {
+    "cached_tokens": 6144
+   },
+   "prompt_cache_hit_tokens": 6144,
+   "prompt_cache_miss_tokens": 197
+  }
+ },
+ "extra": {}
+}

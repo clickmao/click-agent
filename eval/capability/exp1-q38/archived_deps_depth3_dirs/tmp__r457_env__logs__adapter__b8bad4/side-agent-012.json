@@ -1,0 +1,49 @@
+{
+ "side": "agent",
+ "request": {
+  "n_messages": 2,
+  "tools_n": 4,
+  "upstream_request": {
+   "model": "deepseek-chat",
+   "n_messages": 2,
+   "prompt_sha8": "fa47f46c",
+   "tail_messages": [
+    {
+     "role": "system",
+     "len": 39,
+     "head": "你是隔离执行的微步骤助手: 只回答给出的微问题本身, 不引用任何外部会话历史。",
+     "tool_calls": 0,
+     "tool_call_id": null
+    },
+    {
+     "role": "user",
+     "len": 61,
+     "head": "[微步骤隔离问询] 把 notes.md 的第一行内容写入 first.txt（只要那一行）\n(只回答本微问题, 不引申)",
+     "tool_calls": 0,
+     "tool_call_id": null
+    }
+   ]
+  }
+ },
+ "response": {
+  "text": "I'll read the first line of notes.md and write it to first.txt.",
+  "usage": {
+   "prompt_tokens": 588,
+   "completion_tokens": 53,
+   "total_tokens": 641,
+   "prompt_tokens_details": {
+    "cached_tokens": 384
+   },
+   "prompt_cache_hit_tokens": 384,
+   "prompt_cache_miss_tokens": 204
+  },
+  "tool_calls": [
+   {
+    "name": "read_file",
+    "args": "{\"path\": \"notes.md\"}"
+   }
+  ],
+  "finish_reason": "tool_calls"
+ },
+ "extra": {}
+}

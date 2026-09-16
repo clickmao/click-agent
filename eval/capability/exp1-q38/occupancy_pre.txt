@@ -1,0 +1,17 @@
+ts=2026-09-16T21:57:12+08:00
+root=/home/agentuser/AgentFramework
+MEM_MIN_MB=2600 WAIT_S=0
+--- 采样(a1) 2026-09-16T21:57:12+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2032315 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 45479 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2032545 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 42039 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a1=3
+--- 采样(b1) 2026-09-16T21:57:17+08:00 ---
+2032045 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && bash eval/rover/r496/run_arm_real_r496.sh B > /tmp/arm_B_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T0 > /tmp/arm_T0_r496.out 2>&1 && bash eval/rover/r496/run_arm_real_r496.sh T1 > /tmp/arm_T1_r496.out 2>&1; echo "CHAIN_RC=$?"
+2032315 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 45479 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+2032545 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 42039 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b1=3
+mem_kb=1310252
+mem_mb=1279
+round1 n1=3 n2=3 mem_mb=1279
+PRE_GATE_VERDICT=BUSY
