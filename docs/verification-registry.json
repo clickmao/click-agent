@@ -1517,9 +1517,9 @@
         "instrument": "eval/probe/grade.py",
         "instrument_sha12": "1bdefe12da4d",
         "binding": "audit-pin",
-        "audited_by_round": "R504"
+        "audited_by_round": "R506"
       },
-      "evidence_cmd": "python3 eval/probe/grade.py --selftest && python3 eval/probe/run_probe.py --selftest && python3 scripts/kpi_probe.py --glob 'data/probe/probe-*r433*.json' --report eval/capability/r433/kpi-report.md"
+      "evidence_cmd": "python3 eval/probe/grade.py --selftest && python3 eval/probe/run_probe.py --selftest && python3 scripts/kpi_probe.py --run data/probe/probe-m6-agent.json --glob 'data/probe/probe-*r433*.json' --compare probe-m6-agent.json probe-agent-seed0-r433m6fix2.json --report eval/capability/r433/kpi-report.md"
     },
     {
       "id": "r434.turn-gate-double-condition",
@@ -5373,6 +5373,31 @@
         "eval/capability/bind_evidence.py"
       ],
       "owner_round": "EXP1-Q41"
+    },
+    {
+      "id": "registry.evidence-cmd-replayable",
+      "capability": "登记行的 evidence_cmd **可完整重放**其冻结证据面: 命令**从行自身派生**(不硬编码), 重放报告与冻结台账**逐字节等价**(白名单只含 `生成时间` 墙钟行, 其余零差异), §二 对比段在册; 缺操作数 ⇒ 缺行判红, 多通配符 ⇒ 越界行(extra)同样判红",
+      "level": "L2",
+      "evidence_cmd": "python3 eval/rover/r506/replay_row2_closure.py",
+      "evidence_path": "eval/rover/r506/evidence/replay-row2-closure.json",
+      "evidence_generated_with": {
+        "evidence_kind": "artifact",
+        "pin_status": "live",
+        "pin_reason": "worktree-only",
+        "artifact_sha12": null,
+        "instrument": "eval/rover/r506/replay_row2_closure.py",
+        "instrument_sha12": "57a80dabc3fa",
+        "binding": "audit-pin",
+        "audited_by_round": "R506"
+      },
+      "negative_control": "前态臂: 逐字执行前态命令夹具 (缺 `--run <基线>` 那一版) ⇒ 必须**复现缺口**(恰好缺 `probe-m6-agent.json` 一行: 8 行 vs 9 行) ⇒ 证明闭合非空心。另两条结构断言: 结构变换 == 前态夹具(前态锚不漂移, 禁钉会前进的引用) ∧ 命令段数 != 3 ⇒ VOID 弃权(器具读契约不成立, 判弃权而非判红)",
+      "covers": [
+        "eval/rover/r506/replay_row2_closure.py",
+        "eval/rover/r506/close_row2_replay_gap.py",
+        "eval/rover/r506/prestate-kpi-stage.txt",
+        "scripts/kpi_probe.py"
+      ],
+      "owner_round": "R506"
     }
   ],
   "aot_check_policy": "release_tag_only",

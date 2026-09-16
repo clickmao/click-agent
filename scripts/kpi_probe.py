@@ -32,9 +32,35 @@ REQUIRED_RUN_FIELDS = ("ts", "solver", "rate", "passed", "total", "n_tasks",
 KNOWN_MODES = ("ok", "no_code", "syntax_error", "runtime_error", "timeout",
                "wrong_output", "partial", "no_final", "wrong_final", "wrong_witness")
 
+DEFAULT_GLOB = "data/probe/probe-*.json"
+
 
 class InputError(Exception):
     pass
+
+
+def resolve_paths(run_list, glob_list, default_glob=DEFAULT_GLOB):
+    """把 `--run` 显式路径与 `--glob` (**可重复**) 解析成一条**保序去重**的路径表。
+
+    旧语义 = `a.run or sorted(glob(a.glob))` ⇒ **显式路径与通配符互斥**: 只要给了
+    `--run`, `--glob` 整条被丢弃 ⇒ 无法表达「固定基线 ∪ 一轮通配产物」这类集合
+    (实测: `--run <基线> --glob '<轮产物>' --compare <基线> <产物>` ⇒ rc=2
+    「匹配不到 run」, 即证据面命令**写不出来**)。
+
+    新语义 = **并集**: 显式项在前 (决定报告 `#` 列顺序, 使冻结台账的既有序号可复现),
+    通配符命中项按路径排序在后。`--glob` 显式给出时**不带**缺省模式 (防 argparse
+    `default=[缺省]` + `action="append"` 的静默并集 ⇒ 越界吸run)。
+    """
+    pats = list(glob_list) if glob_list else [default_glob]
+    hits = []
+    for g in pats:
+        hits.extend(_glob.glob(g))
+    out, seen = [], set()
+    for p in list(run_list or []) + sorted(hits):
+        if p not in seen:
+            seen.add(p)
+            out.append(p)
+    return out
 
 
 def _parse_ts(s):
@@ -414,6 +440,19 @@ def selftest() -> int:
         chk("报告含未知模式键", "odd" in rp and "未知模式键" in rp)
         chk("报告含台账表头", "| # | run | solver |" in rp)
 
+    # 8. 路径解析: `--run` 与 `--glob` 取**并集** (旧「或」语义写不出「固定基线 ∪ 轮产物」)
+    with tempfile.TemporaryDirectory() as td2:
+        for n in ("a.json", "b.json", "c.json"):
+            io.open(os.path.join(td2, n), "w", encoding="utf-8").write("{}")
+        g = os.path.join(td2, "*.json")
+        a_p, c_p = os.path.join(td2, "a.json"), os.path.join(td2, "c.json")
+        got = resolve_paths([a_p], [g])
+        chk("并集: --run 与 --glob 共存得全量(含去重)", len(got) == 3 and len(set(got)) == 3, str(got))
+        chk("并集: 显式项在前(决定报告 # 列序)", resolve_paths([c_p], [g])[0] == c_p)
+        chk("负控: 显式 --glob 时不并入缺省模式(防越界吸run)",
+            resolve_paths([], [g]) == sorted(os.path.join(td2, n) for n in ("a.json", "b.json", "c.json")))
+        chk("负控: 未给 --glob 才用缺省模式", resolve_paths([], None) == sorted(_glob.glob(DEFAULT_GLOB)))
+
     print("selftest %d/%d" % (ok, ok + len(fails)))
     return 0 if not fails else 1
 
@@ -422,7 +461,8 @@ def selftest() -> int:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--glob", default="data/probe/probe-*.json")
+    ap.add_argument("--glob", action="append", default=None,
+                    help="run 摘要 glob, **可重复**; 与 --run 取并集 (缺省 %s)" % DEFAULT_GLOB)
     ap.add_argument("--run", action="append", default=[])
     ap.add_argument("--tel", default="data/telemetry/host.jsonl")
     ap.add_argument("--ledger", default="data/probe/kpi.jsonl")
@@ -436,7 +476,7 @@ def main(argv=None) -> int:
     if a.selftest:
         return selftest()
     try:
-        paths = a.run or sorted(_glob.glob(a.glob))
+        paths = resolve_paths(a.run, a.glob)
         runs = load_runs(paths)
         tel = load_telemetry(a.tel)
         ms = [metrics(r, tel) for r in runs]

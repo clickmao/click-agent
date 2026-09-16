@@ -1,0 +1,76 @@
+{
+ "round": "R506",
+ "row": "r433.probe-code-source-artifact-channel",
+ "round_upgrade_of": "eval/rover/r504/replay_r433_face.py",
+ "cmd_from_row": "python3 eval/probe/grade.py --selftest && python3 eval/probe/run_probe.py --selftest && python3 scripts/kpi_probe.py --run data/probe/probe-m6-agent.json --glob 'data/probe/probe-*r433*.json' --compare probe-m6-agent.json probe-agent-seed0-r433m6fix2.json --report eval/capability/r433/kpi-report.md",
+ "cmd_stages": [
+  "python3 eval/probe/grade.py --selftest",
+  "python3 eval/probe/run_probe.py --selftest",
+  "python3 scripts/kpi_probe.py --run data/probe/probe-m6-agent.json --glob 'data/probe/probe-*r433*.json' --compare probe-m6-agent.json probe-agent-seed0-r433m6fix2.json --report eval/capability/r433/kpi-report.md"
+ ],
+ "stages": {
+  "grade_selftest": {
+   "rc": 0,
+   "counts": [
+    [
+     "48",
+     "48"
+    ]
+   ]
+  },
+  "runprobe_selftest": {
+   "rc": 0,
+   "counts": [
+    [
+     "37",
+     "37"
+    ]
+   ]
+  }
+ },
+ "arm_positive": {
+  "cmd": "python3 scripts/kpi_probe.py --run data/probe/probe-m6-agent.json --glob 'data/probe/probe-*r433*.json' --compare probe-m6-agent.json probe-agent-seed0-r433m6fix2.json --report /tmp/r506_replay/kpi-report-poscontrol.md --no-ledger",
+  "rc": 0,
+  "report": "/tmp/r506_replay/kpi-report-poscontrol.md"
+ },
+ "prestate_agrees": true,
+ "arm_negative": {
+  "cmd": "python3 scripts/kpi_probe.py --glob 'data/probe/probe-*r433*.json' --report /tmp/r506_replay/kpi-report-negcontrol.md --no-ledger",
+  "rc": 0,
+  "report": "/tmp/r506_replay/kpi-report-negcontrol.md"
+ },
+ "frozen": {
+  "path": "eval/capability/r433/kpi-report.md",
+  "rows": 9,
+  "norm_sha12": "7dc3ddfaf1ad",
+  "raw_bytes": 4409,
+  "nonsemantic_whitelist": [
+   "^生成时间: .*$"
+  ]
+ },
+ "positive": {
+  "rows": 9,
+  "missing": [],
+  "extra": [],
+  "compare_section": true,
+  "norm_equal": true
+ },
+ "negative": {
+  "rows": 8,
+  "missing": [
+   "probe-m6-agent.json"
+  ]
+ },
+ "checks": {
+  "正控: 重放行数 == 冻结行数": true,
+  "正控: 无缺行": true,
+  "正控: 无越界行 (extra)": true,
+  "正控: 含 §二 对比段 (命令操作数完整)": true,
+  "正控: 逐字节等价 (白名单外零差异)": true,
+  "负控: 前态命令复现缺口 (恰好缺 baseline 行)": true,
+  "负控: 前态行数 == 冻结行数 - 1": true,
+  "前态锚: 结构变换 == 夹具 (逐字)": true
+ },
+ "fails": [],
+ "verdict": "PASS_CLOSED"
+}
