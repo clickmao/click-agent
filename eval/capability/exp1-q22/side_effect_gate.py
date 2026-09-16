@@ -43,7 +43,7 @@ TRACE_LINE = re.compile(r'^(\d+)\s+([A-Za-z_][A-Za-z_0-9]*)\((.*)\)\s+=\s+(.*)$'
 RET_PATH = re.compile(r'^\d+<(.*)>$')
 ARG_FD_PATH = re.compile(r'\d+<(.*)>')
 QUOTED = re.compile(r'"((?:[^"\\]|\\.)*)"')
-LOG_SOFT_CAP = 64 * 1024 * 1024
+LOG_SOFT_CAP = 96 * 1024 * 1024   # EXP1-Q34: 面规模 21→27 器具 / 47→59 命令后实测 33.6 MB ⇒ 64 MiB 余量 1.995 < K_MIN=2.0 (P2 红); 抬至 96 MiB (余量 ~3.0), K_MIN 判据不变
 LOG_HARD_CAP = 256 * 1024 * 1024
 # EXP1-Q30 阈值重定 (数据先行; 原值 8MiB / 64MiB 是 **scoped 档**标定的):
 #   · scoped 3 器具 / 6 命令实测 log_bytes = 17,943,199 (17.1MiB) ⇒ 旧 8MiB 上限**必然** capped ⇒ 弃权 (rc=3);

@@ -135,6 +135,16 @@ def selftest():
         rows['rows'][0].pop('external_assets', None)
         cov = coverage(rows['rows'], pay2)
         cases['coverage_flags_missing_field'] = (cov['n_missing_field'] == 1)
+        # EXP1-Q34: 判据必须读**写回后**的盘面 —— 首版读 apply 前快照 ⇒ 首次运行恒报 GAP=20 (空心红)。
+        reg2 = os.path.join(tmp, 'reg2.json')
+        rows2 = {'rows': [dict(r) for r in rows['rows']]}
+        open(reg2, 'w', encoding='utf-8').write(json.dumps(rows2, ensure_ascii=False, indent=1) + '\n')
+        pay3 = build(root=tmp, rows_path=reg2)
+        rc3, _ = apply_to_registry(pay3, rows_path=reg2)
+        now = json.load(open(reg2, encoding='utf-8'))['rows']
+        cases['coverage_zero_after_apply'] = (rc3 == 0 and coverage(now, pay3)['n_missing_field'] == 0)
+        rc4, _ = apply_to_registry(pay3, rows_path=reg2)
+        cases['apply_is_idempotent'] = (rc4 == 0 and json.load(open(reg2, encoding='utf-8'))['rows'] == now)
         for k, v in cases.items():
             print('  %-38s %s' % (k, 'OK' if v else 'FAIL'))
             bad += 0 if v else 1
@@ -192,7 +202,20 @@ def main():
     if '--selftest' in sys.argv:
         return selftest()
     payload = build()
-    cov = coverage(json.load(open(os.path.join(ROOT, REG), encoding='utf-8'))['rows'], payload)
+    cov_pre = coverage(json.load(open(os.path.join(ROOT, REG), encoding='utf-8'))['rows'], payload)
+    payload['coverage_pre_apply'] = cov_pre
+    if '--apply' in sys.argv:
+        rc, rep = apply_to_registry(payload)
+        payload['apply'] = rep
+        if rc:
+            print('APPLY_ABORT: %s' % json.dumps(rep, ensure_ascii=False))
+            return rc
+    # EXP1-Q34 判据修正 (自我否证): 覆盖闸必须在**写回之后**的盘面上复算。首版用 apply 前的内存快照判定
+    #   ⇒ 首次运行**恒**报 GAP=20, 且列出的正是本次要补的那 20 行 —— 判据与动作互相矛盾 (空心红:
+    #   读数与器具行为相反, 谁也修不绿)。修正后: pre_apply 覆盖保留作「本次补了哪些行」的信息项,
+    #   判决只读 post-apply。禁止为了让脚本变绿而放宽阈值 —— 这里改的是**读哪一面**, 不是阈值。
+    rows_now = json.load(open(os.path.join(ROOT, REG), encoding='utf-8'))['rows']
+    cov = coverage(rows_now, payload)
     payload['coverage'] = cov
     payload['staged_application'] = {'field': 'external_assets',
                                      'target': REG,

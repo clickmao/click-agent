@@ -1,0 +1,20 @@
+{
+ "schema": "semantic-projection-rules/1",
+ "round": "EXP1-Q34",
+ "owner_round": "EXP1-Q34",
+ "note": "语义投影的**非语义字段族**单一事实源 (跨语言共用): Python 侧 face_record_canon.py 与本仓测试侧同一口径复算同一摘要 ⇒ 登记表冻结 pin 可绑投影摘要 (pin_kind=semantic-projection), 面重跑不再打红。规则由 EXP1-Q33 的两次真跑差分实测派生 (74 条差异叶子全部落在下表族内), 顺序即投影应用顺序。",
+ "declared_vs_derived": "scalar=该叶整条剔除 (不参与摘要); array_count=该路径下所有叶剔除, 以一条 #n=<基数> 占位 (保留基数, 去掉邻居/随机内容)。",
+ "rules": [
+  {"path": "side_effect_attribution/window/t0", "mode": "scalar"},
+  {"path": "side_effect_attribution/window/t1", "mode": "scalar"},
+  {"path": "side_effect_attribution/window/trace_dir", "mode": "scalar"},
+  {"path": "side_effect_attribution/census_in_repo_cwd", "mode": "array_count"},
+  {"path": "side_effect_attribution/foreign_writes[*]/sha_before", "mode": "scalar"},
+  {"path": "side_effect_attribution/foreign_writes[*]/sha_after", "mode": "scalar"},
+  {"path": "side_effect_attribution/live_fd_scan/scanned", "mode": "scalar"},
+  {"path": "side_effect_attribution/trace/log_bytes", "mode": "scalar"},
+  {"path": "side_effect_attribution/trace/raw_paths_sample", "mode": "array_count"},
+  {"path": "out", "mode": "scalar"},
+  {"path": "canon/runtime_sidecar", "mode": "scalar"}
+ ]
+}

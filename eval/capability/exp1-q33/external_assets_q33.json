@@ -2,7 +2,7 @@
  "round": "EXP1-Q33",
  "schema": "external-assets/1",
  "registry": "docs/verification-registry.json",
- "n_rows_total": 169,
+ "n_rows_total": 171,
  "n_rows_with_assets": 20,
  "n_assets": 24,
  "n_present": 19,
@@ -361,29 +361,17 @@
  "rule": "外部资产按**字段**登记 (path/kind/present/sha12/bytes/source_field); present 为现盘实测; 散文碎片 (如 \"/tmp、\") 记 not_an_asset 不冒充资产",
  "coverage": {
   "n_rows_with_asset_text": 20,
-  "n_missing_field": 20,
-  "missing": [
-   "dcr.harness",
-   "aot.publish.zero_il",
-   "plan.resume.checkpoint",
-   "llamacpp.process.boundary",
-   "llamacpp.embedding.port",
-   "agent.formal.loop_mount",
-   "llamacpp.prompt.template_gate",
-   "llamacpp.session.prefix_reuse",
-   "r416.release-selfcontained-config",
-   "r420.recall-command-wiring",
-   "r421.recall-negation-polarity",
-   "r422.recall-length-norm",
-   "r423.recall-tf-saturation",
-   "r429.decision-cache-pin",
-   "r430.local-server-parallel-serialization",
-   "r431.gate-role-growth-mount",
-   "r432.turn-gate-discrimination-pair",
-   "r449.think-memory-switch",
-   "r450.gate-prompt-anchor",
-   "r462.recall-reality-gate"
-  ]
+  "n_missing_field": 0,
+  "missing": []
+ },
+ "coverage_pre_apply": {
+  "n_rows_with_asset_text": 20,
+  "n_missing_field": 0,
+  "missing": []
+ },
+ "apply": {
+  "touched": 0,
+  "note": "IDEMPOTENT_NO_CHANGE"
  },
  "staged_application": {
   "field": "external_assets",

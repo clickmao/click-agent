@@ -1,0 +1,17 @@
+{
+ "round": "EXP1-Q34",
+ "gate": "dotnet test src/agent.tests/agentframework.tests.csproj --filter FullyQualifiedName~VerificationForm|FullyQualifiedName~SkillGeneralization|FullyQualifiedName~DevPlanDocRef",
+ "failed": 0,
+ "passed": 14,
+ "skipped": 0,
+ "total": 14,
+ "duration_ms": 971,
+ "exit_code": 0,
+ "covered": [
+  "R2e/R2f 登记表机检 (含新增 pin_kind 闸: 正控 x + 三条注入缺陷 y/z/aa)",
+  "C# ProjDigest 对现盘面记录独立复算 == Python 侧写入的投影摘要 (跨语言同口径证据)",
+  "SkillGeneralization 10 项 (语言无关纪律)",
+  "DevPlanDocRef 引用契约"
+ ],
+ "note": "门禁在本轮 registry/instruments 改写**之后**执行; 前序两次面跑期间的红 (器具 sha 漂移/清单声明陈旧/r490 缺字段/余量不足) 已逐条闭合"
+}

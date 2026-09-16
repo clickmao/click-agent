@@ -14,6 +14,12 @@
   instrument_sha12  器具字节 sha256[:12] (闸) 或 null
   binding           self-attested (产物自己声明了来源, 我方逐字段核对) | audit-pin (审计时绑定)
   audited_by_round  本字段被写入/复核的轮号
+  pin_kind          **可选** —— 缺省 (None) = pin 绑**文件字节** (历史行为);
+                    'semantic-projection' = pin 绑**语义投影摘要** (EXP1-Q34): 面记录里由设计决定的
+                    非语义字段族 (墙钟/随机目录/邻居面/采样) 先按 `eval/capability/projection_rules.json`
+                    剔除, 再对剩余叶流取 sha256[:12] ⇒ 面**重跑不再打红冻结 pin**。
+                    该值必须由与本仓测试侧**同一规则文件**的独立实现复算得到 (跨语言同口径);
+                    锚规则 (运行期窗口族) 缺席 ⇒ 弃权 (非本类面记录不得判绿); 值形态未定义 (浮点) ⇒ 弃权。
 
 为什么这样切 (数据先行):
   - 74/77 artifact 是已入库且工作区未改的归档产物 -> 冻结可 pin (本字段真正的闸);
@@ -36,8 +42,38 @@ PIN_STATUSES = ("frozen", "live")
 PIN_REASONS = ("archived-per-round", "append-only-ledger", "worktree-only", "directory-aggregate",
                "self-derived", "evidence-overtaken")
 BINDINGS = ("self-attested", "audit-pin")
+# EXP1-Q34: pin_kind 可选值 —— 缺省 (键缺席) = 文件字节; 'semantic-projection' = 语义投影摘要。
+PIN_KINDS = ("semantic-projection",)
 FIELD_KEYS = ("evidence_kind", "pin_status", "pin_reason", "artifact_sha12", "instrument",
               "instrument_sha12", "binding", "audited_by_round")
+
+
+class ProjectionPinUnavailable(RuntimeError):
+    """申明 pin_kind=semantic-projection 的行在当前盘面**无法复算投影摘要** ——
+    apply 时跳过该行 (fail-visible), 绝不写入 artifact_sha12=null 的假冻结行。"""
+
+
+def projection_digest(root, rel):
+    """pin_kind=semantic-projection 的 pin 值 = 语义投影摘要 (与本仓测试侧同一规则文件同口径)。
+
+    返回 (digest|None, reason)。**所有** None 都由 check 判红 (fail-closed): 冻结 pin 不可复算 =
+    没有任何一侧能验证该声明, 与「证据不可读」同族 (弃权只留给环境不可判类, 这里不是)。
+    """
+    if not rel or not os.path.isfile(os.path.join(root, rel)):
+        return None, "record_missing"
+    try:
+        import face_record_canon as frc
+    except ImportError as exc:                      # 规则层不可用 = 判据不可用 ⇒ 判红, 不静默降绿
+        return None, "rules_module_unavailable:%s" % exc
+    try:
+        d, _meta = frc.proj_digest_file(os.path.join(root, rel), strict=False)
+        return d, None
+    except frc.ProjectionRulesError as exc:
+        return None, "rules_unavailable:%s" % exc
+    except KeyError as exc:
+        return None, "projection_abstain:%s" % exc
+    except ValueError as exc:
+        return None, "record_unreadable:%s" % exc
 # 追加式台账: 每轮都会追加行, 字节可变 -> 不上闸 (原因词表里显式登记)
 LIVE_LEDGERS = {"eval/capability/kpi.jsonl": "append-only-ledger"}
 SELF_DERIVED = {"docs/reports/status.json": "self-derived"}
@@ -181,9 +217,29 @@ def derive(root, row, tracked, dirty):
         inst = instrument_from_cmd(root, row.get("evidence_cmd", ""))
         isha = sha12_file(root, inst) if inst else None
         binding = "audit-pin"
-    return {"evidence_kind": kind, "pin_status": status, "pin_reason": reason,
-            "artifact_sha12": pin, "instrument": inst, "instrument_sha12": isha,
-            "binding": binding, "audited_by_round": AUDITED_BY_ROUND}
+    out = {"evidence_kind": kind, "pin_status": status, "pin_reason": reason}
+    # EXP1-Q34: pin_kind 是**行上已声明**的语义属性, derive 只尊重不发明 ——
+    #   声明了语义投影且该行确实是 frozen/artifact ⇒ pin 值改为投影摘要 (跨语言同口径);
+    #   复算不可得 ⇒ 抛 ProjectionPinUnavailable (调用方跳过该行, fail-visible, 不写 null 假冻结)。
+    if existing_pin_kind(row) == "semantic-projection":
+        if status != "frozen" or kind != "artifact":
+            raise ProjectionPinUnavailable(
+                "%s: pin_kind=semantic-projection 只适用于 frozen/artifact (实=%s/%s)"
+                % (row.get("id"), status, kind))
+        dg, why = projection_digest(root, ep)
+        if dg is None:
+            raise ProjectionPinUnavailable("%s: %s" % (row.get("id"), why))
+        out["pin_kind"] = "semantic-projection"
+        pin = dg
+    out.update({"artifact_sha12": pin, "instrument": inst, "instrument_sha12": isha,
+                "binding": binding, "audited_by_round": AUDITED_BY_ROUND})
+    return out
+
+
+def existing_pin_kind(row):
+    """行上已声明的 pin_kind (缺省 None = 文件字节)。derive 只尊重不发明。"""
+    f = row.get("evidence_generated_with")
+    return f.get("pin_kind") if isinstance(f, dict) else None
 
 
 def needs_field(row):
@@ -192,7 +248,7 @@ def needs_field(row):
 
 
 def check(root, rows):
-    """与 C# R2e/R2f 同口径的机检: 返回违规列表。"""
+    """与 C# R2e/R2f 同口径的机检: 返回 (违规列表, 分布, 带字段行数)。"""
     v, dist = [], {}
     cert = 0
     for row in rows:
@@ -223,7 +279,24 @@ def check(root, rows):
 
         ep = row.get("evidence_path", "")
         a = f.get("artifact_sha12")
-        if status == "frozen":
+        pk = f.get("pin_kind")
+        if pk is not None and pk not in PIN_KINDS:
+            v.append("%s: pin_kind 非法 '%s' (R2e —— 未知 pin 语义不可验证 ⇒ fail-closed)" % (rid, pk))
+        if status == "frozen" and pk == "semantic-projection":
+            # EXP1-Q34: pin 绑**语义投影摘要** (非文件字节) —— 面重跑不再打红。
+            if kind != "artifact":
+                v.append("%s: pin_kind=semantic-projection 只允许 artifact (实=%s) (R2e)" % (rid, kind))
+            else:
+                cur, why = projection_digest(root, ep)
+                if cur is None:
+                    # 值形态未定义 / 锚族缺席 / 规则层不可用 —— 一律**判红**: 冻结 pin 不可复算 =
+                    # 该声明没有任何一侧能验证它 (与「证据不可读」同族)。弃权只留给「环境不可判」类,
+                    # 这里不是; 且本仓测试侧 Validate 无弃权通道 ⇒ 两侧判据必须同形 (EXP1-Q34)。
+                    v.append("%s: 语义投影 pin 不可复算 (%s) (R2e —— fail-closed)" % (rid, why))
+                elif not isinstance(a, str) or not HEX12.match(a) or a != cur:
+                    v.append("%s: 语义投影 pin 与现盘不符 (声明 %s / 实际 %s) (R2e —— 语义内容已变或未重审)"
+                             % (rid, a, cur))
+        elif status == "frozen":
             if kind not in ("artifact", "directory"):
                 v.append("%s: frozen 只允许 artifact/directory (实=%s) (R2e)" % (rid, kind))
             if kind == "directory":
@@ -243,6 +316,8 @@ def check(root, rows):
         else:
             if a is not None:
                 v.append("%s: live 行不得带 artifact_sha12 (R2e)" % rid)
+            if pk is not None:
+                v.append("%s: live 行不得带 pin_kind (R2e —— 投影 pin 只对 frozen 有意义)" % rid)
 
         inst, isha = f.get("instrument"), f.get("instrument_sha12")
         if (inst is None) != (isha is None):
@@ -330,8 +405,14 @@ def main():
         scope_rows = [r for r in rows if needs_field(r) and (ids is None or r.get("id") in ids)]
         n_before = sum(1 for r in scope_rows if "evidence_generated_with" in r)
         unchanged = 0
+        proj_skipped = []
         for row in scope_rows:
-            f = derive(root, row, tracked, dirty)
+            try:
+                f = derive(root, row, tracked, dirty)
+            except ProjectionPinUnavailable as exc:
+                # 声明了投影 pin 但当前盘面复算不可得 ⇒ 跳过该行并**出声** (不写 null 假冻结行)
+                proj_skipped.append(str(exc))
+                continue
             if row.get("evidence_generated_with") == f:
                 # EXP1-Q27 最小 diff 纪律: 派生内容逐字段相同 ⇒ 一个字节都不动。
                 #   (此前每次 --apply 会重刷全部行的 audited_by_round ⇒ 92 行 churn 淹没真实改动;
@@ -366,6 +447,10 @@ def main():
         print("SCOPE=%s" % ("full" if ids is None else "only(n=%d)" % len(ids)))
         print("COVERED %d -> %d (scope); 全表 COVERED=%d" % (n_before, n_after, n_total))
         print("UNCHANGED=%d / TOUCHED=%d (scope)" % (unchanged, n_after - unchanged))
+        if proj_skipped:
+            print("PROJ_PIN_SKIPPED=%d" % len(proj_skipped))
+            for s in proj_skipped[:10]:
+                print("  PROJ_PIN_SKIP %s" % s)
         if os.path.isabs(reg_rel):
             print("NUMSTAT=skip (scratch 副本, 非仓内路径)")
         else:
@@ -376,6 +461,9 @@ def main():
     if ids is not None:
         crows = [r for r in crows if r.get("id") in ids]
     v, dist, cert = check(root, crows)
+    n_proj = sum(1 for r in crows if isinstance(r.get("evidence_generated_with"), dict)
+                 and r["evidence_generated_with"].get("pin_kind") == "semantic-projection")
+    print("PIN_KIND_SEMANTIC_PROJECTION=%d" % n_proj)
     print("CHECKED_WITH_FIELD=%d" % cert)
     if ids is not None:
         print("DIST_SCOPE=only(n=%d) —— 与全表口径分布不可比" % len(crows))

@@ -147,7 +147,12 @@ def audit(ledger_path=LEDGER, strict_live=False, root=None):
                        'n_new': len(new_keys), 'n_gone': len(gone_keys),
                        'new_sample': new_keys[:8], 'gone_sample': gone_keys[:8],
                        'files_changed': files_changed},
-        'refresh_needed': bool(new_keys or gone_keys or files_changed),
+        # EXP1-Q34 判据收窄: 「需重审」= **候选对集合**发生变化 (新增/消失/未裁定) —— 只有它才会产生
+        #   覆盖率缺口。面文件字节变化 (docs/plans 每轮被追加) 与覆盖面无关: 把它算进 refresh_needed
+        #   会让该标志**恒真** (记录本轮审计的附录本身就是一次文件写入) ⇒ 真信号被噪声淹没。
+        #   字节变化降级为信息项 face_files_changed (可追溯), 配对仍逐条由 ADJUDICATION 覆盖。
+        'refresh_needed': bool(new_keys or gone_keys),
+        'snapshot_sha_stale': bool(files_changed),
         'conservation': {'declared + drift + oor == entries': len(declared) + len(drift) + len(oor) == len(entries),
                          'declared': len(declared), 'drift': len(drift), 'oor': len(oor),
                          'entries': len(entries)},
@@ -158,8 +163,8 @@ def audit(ledger_path=LEDGER, strict_live=False, root=None):
 
 
 def selftest():
-    """判别力自证 (5 例): 条目齐 ⇒ 绿; 快照对无条目 ⇒ RED; anchor 失配 ⇒ DRIFT 非红;
-    文件缺失 ⇒ 弃权非红; 条目缺字段 ⇒ fail-closed rc=3。"""
+    """判别力自证 (6 例): 条目齐 ⇒ 绿; 快照对无条目 ⇒ RED; anchor 失配 ⇒ DRIFT 非红;
+    文件缺失 ⇒ 弃权非红; 条目缺字段 ⇒ fail-closed rc=3; 面字节变化但候选对不变 ⇒ 非重审信号。"""
     import shutil
     import tempfile
     tmp = tempfile.mkdtemp(prefix='q33-caliber-')
@@ -205,6 +210,16 @@ def selftest():
             mal.pop('class')
             rc, pay, _ = audit(mk('malformed', [mal, other_entry]), root=tmp)
             cases['malformed_entry_fail_closed'] = (rc == 3 and pay.get('error') == 'LEDGER_MALFORMED')
+            # EXP1-Q34: 面文件**字节**变了但候选对集合不变 ⇒ 不是「需重审」。
+            #   恒真陷阱: 记录本轮审计的附录本身就是一次面文件写入 ⇒ 旧判据 (bytes 变化即 refresh)
+            #   会让 REFRESH_NEEDED 永远为真, 真信号(新增候选对)被噪声淹没。字节变化降为信息项。
+            rc, pay, _ = audit(
+                mk('bytes_only', [base_entry, other_entry],
+                   extra_doc=(doc, '# f\n' + line_ok + '\n' + line_other + '\n' + '本轮新增附录 (审计自身产物)\n')),
+                root=tmp)
+            cases['bytes_churn_alone_is_not_refresh_needed'] = (
+                rc == 0 and pay['refresh_needed'] is False and pay['snapshot_sha_stale'] is True
+                and pay['n_declared'] == 2 and pay['n_red'] == 0)
         for k, v in cases.items():
             print('  %-40s %s' % (k, 'OK' if v else 'FAIL'))
             bad += 0 if v else 1

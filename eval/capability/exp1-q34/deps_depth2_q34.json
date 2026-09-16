@@ -1,0 +1,3750 @@
+{
+ "round": "EXP1-Q34",
+ "schema": "deps-depth2/1",
+ "source": {
+  "depth1": "eval/capability/exp1-q33/deps_adjudication_q33.json",
+  "depth2_dir": "eval/capability/exp1-q34/archived_deps_depth2"
+ },
+ "n_depth1": 22,
+ "n_depth1_with_disposition": 22,
+ "n_depth2": 176,
+ "by_class": {
+  "external_asset": 76,
+  "runtime_product": 8,
+  "archived": 90,
+  "extractor_truncation": 2
+ },
+ "depth2": [
+  {
+   "dep": "/tmp/agentwork",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "directory",
+    "n_files": 18,
+    "bytes": 14610,
+    "reason": "目录 (运行时环境 / 发布物) ⇒ 不入库, 记在场读数"
+   }
+  },
+  {
+   "dep": "/tmp/agentwork/count.txt",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "runtime_product",
+   "payload": {
+    "reason": "不在场; 未登记为复现前提 ⇒ 接受缺席 (可升级为 external_asset)"
+   }
+  },
+  {
+   "dep": "/tmp/agentwork2",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "directory",
+    "n_files": 19,
+    "bytes": 14458,
+    "reason": "目录 (运行时环境 / 发布物) ⇒ 不入库, 记在场读数"
+   }
+  },
+  {
+   "dep": "/tmp/agentwork2/data",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "directory",
+    "n_files": 8,
+    "bytes": 11959,
+    "reason": "目录 (运行时环境 / 发布物) ⇒ 不入库, 记在场读数"
+   }
+  },
+  {
+   "dep": "/tmp/cxprobe",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "directory",
+    "n_files": 69,
+    "bytes": 346161,
+    "reason": "目录 (运行时环境 / 发布物) ⇒ 不入库, 记在场读数"
+   }
+  },
+  {
+   "dep": "/tmp/cxprobe/adapter.pid",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 8,
+    "sha256": "3091c45a8eaf8df8a2b54b0d7d51de1083d42dfae88f2b7cf01cccd8f5d01232"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "3091c45a8eaf8df8a2b54b0d7d51de1083d42dfae88f2b7cf01cccd8f5d01232",
+    "bytes": 8,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/adapter.pid"
+   }
+  },
+  {
+   "dep": "/tmp/cxprobe/adapter455c.log",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 756,
+    "sha256": "ec07ab35871024ca8dca6027a9f19a972b2f5fb2f913b1a3b8e40d049a522a7b"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "ec07ab35871024ca8dca6027a9f19a972b2f5fb2f913b1a3b8e40d049a522a7b",
+    "bytes": 756,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/adapter455c.log"
+   }
+  },
+  {
+   "dep": "/tmp/cxprobe/cx2",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "directory",
+    "n_files": 1,
+    "bytes": 45100,
+    "reason": "目录 (运行时环境 / 发布物) ⇒ 不入库, 记在场读数"
+   }
+  },
+  {
+   "dep": "/tmp/cxprobe/cx2/req-001.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 45100,
+    "sha256": "eb1555a94d9f6d36c89c53a90cca5e4325b80994ee6ff36a7974a0452bd4541b"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "eb1555a94d9f6d36c89c53a90cca5e4325b80994ee6ff36a7974a0452bd4541b",
+    "bytes": 45100,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/req-001.json"
+   }
+  },
+  {
+   "dep": "/tmp/cxprobe/demo",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "directory",
+    "n_files": 8,
+    "bytes": 147448,
+    "reason": "目录 (运行时环境 / 发布物) ⇒ 不入库, 记在场读数"
+   }
+  },
+  {
+   "dep": "/tmp/cxprobe/demo/side-agent-001.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 585,
+    "sha256": "caec6567ac500c16b420f39db4ec938040079cfeb0878264fb199e0217245199"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "caec6567ac500c16b420f39db4ec938040079cfeb0878264fb199e0217245199",
+    "bytes": 585,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-agent-001.json"
+   }
+  },
+  {
+   "dep": "/tmp/cxprobe/demo/side-agent-002.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 9010,
+    "sha256": "9a93f28814cb7b3635a2edf2dba890696fcef11f2896e0d5973c9f4ad522f02f"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "9a93f28814cb7b3635a2edf2dba890696fcef11f2896e0d5973c9f4ad522f02f",
+    "bytes": 9010,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-agent-002.json"
+   }
+  },
+  {
+   "dep": "/tmp/cxprobe/demo/side-codex-001.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 21822,
+    "sha256": "81f91234fb6b4be862f349b74fe176f125593a89a2cd9b5bb47aba02a0f3c966"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "81f91234fb6b4be862f349b74fe176f125593a89a2cd9b5bb47aba02a0f3c966",
+    "bytes": 21822,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-codex-001.json"
+   }
+  },
+  {
+   "dep": "/tmp/cxprobe/demo/side-codex-002.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 22221,
+    "sha256": "6b116070dccbda69acb7be998be69250d2197f407ed19cee182af487a096b0bc"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "6b116070dccbda69acb7be998be69250d2197f407ed19cee182af487a096b0bc",
+    "bytes": 22221,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-codex-002.json"
+   }
+  },
+  {
+   "dep": "/tmp/cxprobe/demo/side-codex-003.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 22792,
+    "sha256": "974bb0fc151d00f9ac4abf9888910f12735971adabf70c89a2531a0a70a43178"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "974bb0fc151d00f9ac4abf9888910f12735971adabf70c89a2531a0a70a43178",
+    "bytes": 22792,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-codex-003.json"
+   }
+  },
+  {
+   "dep": "/tmp/cxprobe/demo/side-codex-004.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 23125,
+    "sha256": "99fefc00af5e5e500a0673934c0bf20c8a8047775adbc2b538e4924f07a48551"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "99fefc00af5e5e500a0673934c0bf20c8a8047775adbc2b538e4924f07a48551",
+    "bytes": 23125,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-codex-004.json"
+   }
+  },
+  {
+   "dep": "/tmp/cxprobe/demo/side-codex-005.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 23536,
+    "sha256": "78afe9b9ef0545852f0b5c80e2677207b014fe6a968dfa2a8bb42385ddb14405"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "78afe9b9ef0545852f0b5c80e2677207b014fe6a968dfa2a8bb42385ddb14405",
+    "bytes": 23536,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-codex-005.json"
+   }
+  },
+  {
+   "dep": "/tmp/cxprobe/demo/side-codex-006.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 24357,
+    "sha256": "ecaca6ec509c587bcb43291072dd3bd56343e487ced147351eab668876f6efc8"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "ecaca6ec509c587bcb43291072dd3bd56343e487ced147351eab668876f6efc8",
+    "bytes": 24357,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-codex-006.json"
+   }
+  },
+  {
+   "dep": "/tmp/cxprobe/r455",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "directory",
+    "n_files": 7,
+    "bytes": 6040,
+    "reason": "目录 (运行时环境 / 发布物) ⇒ 不入库, 记在场读数"
+   }
+  },
+  {
+   "dep": "/tmp/cxprobe/r455/side-agent-001.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/cxprobe/r455/side-codex-001.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/cxprobe/r455/side-codex-002.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/cxprobe/r455/side-codex-003.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/cxprobe/r455/side-codex-004.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/cxprobe/r455/side-codex-005.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/cxprobe/r455/side-codex-006.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/cxprobe/r455b",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "directory",
+    "n_files": 1,
+    "bytes": 909,
+    "reason": "目录 (运行时环境 / 发布物) ⇒ 不入库, 记在场读数"
+   }
+  },
+  {
+   "dep": "/tmp/cxprobe/r455b/side-codex-001.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/cxwork",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "directory",
+    "n_files": 9,
+    "bytes": 80,
+    "reason": "目录 (运行时环境 / 发布物) ⇒ 不入库, 记在场读数"
+   }
+  },
+  {
+   "dep": "/tmp/demo_run",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "directory",
+    "n_files": 11,
+    "bytes": 11719,
+    "reason": "目录 (运行时环境 / 发布物) ⇒ 不入库, 记在场读数"
+   }
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "directory",
+    "n_files": 28,
+    "bytes": 19831,
+    "reason": "目录 (运行时环境 / 发布物) ⇒ 不入库, 记在场读数"
+   }
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-001.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-002.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-003.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 612,
+    "sha256": "8fbb711ab4543a3a4650db2fbd15eda79de86e9b7f4891c8f525af8fd7ecc1ae"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "8fbb711ab4543a3a4650db2fbd15eda79de86e9b7f4891c8f525af8fd7ecc1ae",
+    "bytes": 612,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-agent-003.json"
+   }
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-004.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 425,
+    "sha256": "e3c4038e12c8fa687fac96e64d68a821e4baa06a9417cccc8eb51f4e9cd94b96"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "e3c4038e12c8fa687fac96e64d68a821e4baa06a9417cccc8eb51f4e9cd94b96",
+    "bytes": 425,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-agent-004.json"
+   }
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-005.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 425,
+    "sha256": "05ebd8e00a315a7f55dd1a447afee583c229b8ad07bd52818f52d4d481cc9fa4"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "05ebd8e00a315a7f55dd1a447afee583c229b8ad07bd52818f52d4d481cc9fa4",
+    "bytes": 425,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-agent-005.json"
+   }
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-006.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 481,
+    "sha256": "8dfc55612dc4353096d1fe3fd4ec167e6f0929826b4610cabed602af19408f80"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "8dfc55612dc4353096d1fe3fd4ec167e6f0929826b4610cabed602af19408f80",
+    "bytes": 481,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-agent-006.json"
+   }
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-007.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 426,
+    "sha256": "05df6d64265cf9c12a182f272825fa88845beea0ca8a809da03a65f97dc467ae"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "05df6d64265cf9c12a182f272825fa88845beea0ca8a809da03a65f97dc467ae",
+    "bytes": 426,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-agent-007.json"
+   }
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-008.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 653,
+    "sha256": "6d253e971c3d47ce0b65cc9943554ba4fce805b6520c6df9639ee9a172c19596"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "6d253e971c3d47ce0b65cc9943554ba4fce805b6520c6df9639ee9a172c19596",
+    "bytes": 653,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-agent-008.json"
+   }
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-009.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 818,
+    "sha256": "b1910088284163d11fd6df554e0636a66166d028c1173eb539b526babe18d6cd"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "b1910088284163d11fd6df554e0636a66166d028c1173eb539b526babe18d6cd",
+    "bytes": 818,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-agent-009.json"
+   }
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-010.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 635,
+    "sha256": "1f4cb61dee1f9cd886727681c2dd60b80474def4141aa6a4cfcdcd67b4b98703"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "1f4cb61dee1f9cd886727681c2dd60b80474def4141aa6a4cfcdcd67b4b98703",
+    "bytes": 635,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-agent-010.json"
+   }
+  },
+  {
+   "dep": "/tmp/fp376",
+   "via": "/tmp/fp376",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "directory",
+    "n_files": 3,
+    "bytes": 18577,
+    "reason": "目录 (运行时环境 / 发布物) ⇒ 不入库, 记在场读数"
+   }
+  },
+  {
+   "dep": "/tmp/fp376/report.txt",
+   "via": "/tmp/fp376",
+   "via_class": "external_asset",
+   "class": "runtime_product",
+   "payload": {
+    "reason": "不在场; 未登记为复现前提 ⇒ 接受缺席 (可升级为 external_asset)"
+   }
+  },
+  {
+   "dep": "/tmp/fp376/report2.txt",
+   "via": "/tmp/fp376",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 1995,
+    "sha256": "cb17fe710f8f1d213b24a1e3f1a70c69414040abd51a2a8a530f5f28cdd64102"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "cb17fe710f8f1d213b24a1e3f1a70c69414040abd51a2a8a530f5f28cdd64102",
+    "bytes": 1995,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/report2.txt"
+   }
+  },
+  {
+   "dep": "/tmp/pub_r376/agenthost",
+   "via": "/tmp/fp376",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "large_file",
+    "bytes": 13959712,
+    "sha256": "3d0739b092067c8b3517033c8d2da9987a0e4d9b49d248604e0b5cfbdc3f30d7",
+    "reason": "大文件/二进制 (发布物、构建产物) ⇒ 不入库, 记 sha256 供复现核验"
+   }
+  },
+  {
+   "dep": "/tmp/aot_r373.log",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 4427,
+    "sha256": "1783fdf8b4e6ffcd59544e8cfce69cfa05659905784863b6e4ca58ba6b10446b"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "1783fdf8b4e6ffcd59544e8cfce69cfa05659905784863b6e4ca58ba6b10446b",
+    "bytes": 4427,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/aot_r373.log"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "directory",
+    "n_files": 122,
+    "bytes": 751733,
+    "reason": "目录 (运行时环境 / 发布物) ⇒ 不入库, 记在场读数"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "directory",
+    "n_files": 122,
+    "bytes": 751733,
+    "reason": "目录 (运行时环境 / 发布物) ⇒ 不入库, 记在场读数"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/D_run1.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 1068,
+    "sha256": "30d12078bfa74dc428b0e34e932717c922c9184f742102ab7f8bec0abf99158f"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "30d12078bfa74dc428b0e34e932717c922c9184f742102ab7f8bec0abf99158f",
+    "bytes": 1068,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/D_run1.md"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/D_run2.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 981,
+    "sha256": "d234ff10ff47c0df7827b0ff3524b1aef2c6e5e01a3bd7815b4d4d4613949a9f"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "d234ff10ff47c0df7827b0ff3524b1aef2c6e5e01a3bd7815b4d4d4613949a9f",
+    "bytes": 981,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/D_run2.md"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/D_run3.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 975,
+    "sha256": "141af34e0c8d0623db04b43d3ef0e45ce04de0706996d2377e0743b8784b2ca2"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "141af34e0c8d0623db04b43d3ef0e45ce04de0706996d2377e0743b8784b2ca2",
+    "bytes": 975,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/D_run3.md"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/d4b_run1.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 978,
+    "sha256": "86f08c0a482438d95020f8c321980fe55f91057ab6a75b2323514933538e767e"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "86f08c0a482438d95020f8c321980fe55f91057ab6a75b2323514933538e767e",
+    "bytes": 978,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/d4b_run1.md"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/d4b_run2.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 976,
+    "sha256": "d4e49bec0dfb6b00a776532d7dcd40fdda3c63ecc66fb36c64ae7e16b315099a"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "d4e49bec0dfb6b00a776532d7dcd40fdda3c63ecc66fb36c64ae7e16b315099a",
+    "bytes": 976,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/d4b_run2.md"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/d4b_run3.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 815,
+    "sha256": "98fa526e6d9d4b2dccb61ae23fdfc6f74940e67b370babc5b87b378350538028"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "98fa526e6d9d4b2dccb61ae23fdfc6f74940e67b370babc5b87b378350538028",
+    "bytes": 815,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/d4b_run3.md"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/probe_chain.log",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 2671,
+    "sha256": "6d9eca2fa1252ae3a9c4e0de40f3bae3cd96aab2990776e995d6e482a8d73323"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "6d9eca2fa1252ae3a9c4e0de40f3bae3cd96aab2990776e995d6e482a8d73323",
+    "bytes": 2671,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/probe_chain.log"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/probe_r373b.sh",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 1369,
+    "sha256": "f16305440c8dd9e1304696fcabd09acaae6e4965b21f4a86057cbef6745e5333"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "f16305440c8dd9e1304696fcabd09acaae6e4965b21f4a86057cbef6745e5333",
+    "bytes": 1369,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/probe_r373b.sh"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/r373_run1.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 1078,
+    "sha256": "2483924f3d0f77c14bc0629a8cea156a8ca84d1427105af06fe7791eccb78ad7"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "2483924f3d0f77c14bc0629a8cea156a8ca84d1427105af06fe7791eccb78ad7",
+    "bytes": 1078,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r373_run1.md"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/r373_run2.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 984,
+    "sha256": "da1f0d597922ff1388f0866adfefa961e43f9e566f1e61a93cdaa9cbabc810f5"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "da1f0d597922ff1388f0866adfefa961e43f9e566f1e61a93cdaa9cbabc810f5",
+    "bytes": 984,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r373_run2.md"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/r373_run3.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 1088,
+    "sha256": "0e16a1103637ddc610be2d1b6f313f05215c391929fc03334c2e1ec3ea81c8f0"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "0e16a1103637ddc610be2d1b6f313f05215c391929fc03334c2e1ec3ea81c8f0",
+    "bytes": 1088,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r373_run3.md"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/r373b_run1.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 985,
+    "sha256": "4f1d49796477a0796e4d96fc3fa57b041b5a36747bc5c185baf24ec75f286fe7"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "4f1d49796477a0796e4d96fc3fa57b041b5a36747bc5c185baf24ec75f286fe7",
+    "bytes": 985,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r373b_run1.md"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/r373b_run2.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 979,
+    "sha256": "e8974baac664e0df94f9163f380acf440ea4b6bc42453d7bcdd44623547861c9"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "e8974baac664e0df94f9163f380acf440ea4b6bc42453d7bcdd44623547861c9",
+    "bytes": 979,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r373b_run2.md"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/r373b_run3.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 979,
+    "sha256": "5598d7f2ce3fb088fba2e8db6b1caa44d2de198ec010f0cd47bcf7154b77b0ea"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "5598d7f2ce3fb088fba2e8db6b1caa44d2de198ec010f0cd47bcf7154b77b0ea",
+    "bytes": 979,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r373b_run3.md"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/r373b_skill.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 981,
+    "sha256": "192df8845f5ff61bcc1b4a96127453c26e81df7bad0a42ed7ac82212d685d48b"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "192df8845f5ff61bcc1b4a96127453c26e81df7bad0a42ed7ac82212d685d48b",
+    "bytes": 981,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r373b_skill.md"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "extractor_truncation",
+   "payload": {
+    "reason": "basename 是截断片段 (抽取器截断), 不可解析为独立路径",
+    "basename": "r374_"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_A_run1.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 980,
+    "sha256": "7b00deb721063ea8fadbe2f0ab6fd64275bb1f1ea8d62f1c8257f2a89e39131b"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "7b00deb721063ea8fadbe2f0ab6fd64275bb1f1ea8d62f1c8257f2a89e39131b",
+    "bytes": 980,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r374_A_run1.md"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_A_run2.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 980,
+    "sha256": "a483fe27e02e4dbe5c70f87eaef0be4831cf6e0eec74299f93897e40679d5fc2"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "a483fe27e02e4dbe5c70f87eaef0be4831cf6e0eec74299f93897e40679d5fc2",
+    "bytes": 980,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r374_A_run2.md"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_A_run3.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 980,
+    "sha256": "fcb725aa0476bded3b88919d8937d3d920daad4ca944c073a1137faa1a82931d"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "fcb725aa0476bded3b88919d8937d3d920daad4ca944c073a1137faa1a82931d",
+    "bytes": 980,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r374_A_run3.md"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_B_run1.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 1073,
+    "sha256": "b6e1d9a27e2f5bec27af4f731f3280bd5b405686b7087f2f792778ec14b5ae20"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "b6e1d9a27e2f5bec27af4f731f3280bd5b405686b7087f2f792778ec14b5ae20",
+    "bytes": 1073,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r374_B_run1.md"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_B_run1.telemetry",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 8530,
+    "sha256": "3924d5797f8718e5e4a62f2b8b67efc7e7de7bd47c0676e5c9f40d4e0c8405a1"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "3924d5797f8718e5e4a62f2b8b67efc7e7de7bd47c0676e5c9f40d4e0c8405a1",
+    "bytes": 8530,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r374_B_run1.telemetry"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_B_run2.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 1073,
+    "sha256": "d9b9b988ee4fdf012eb78d082a5e26d801a55d66a1c3f738f2c03e060545fafd"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "d9b9b988ee4fdf012eb78d082a5e26d801a55d66a1c3f738f2c03e060545fafd",
+    "bytes": 1073,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r374_B_run2.md"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_B_run3.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 980,
+    "sha256": "1a4e76a241fdea4249f9bd1129fc77f883f92de1d542ff7346ba4ba7f5d8b156"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "1a4e76a241fdea4249f9bd1129fc77f883f92de1d542ff7346ba4ba7f5d8b156",
+    "bytes": 980,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r374_B_run3.md"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_agg2.json",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 2824,
+    "sha256": "f54f50694cc272b094be2116d3c41580211e2f2ebae1b8b8e4cb4d65482017bb"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "f54f50694cc272b094be2116d3c41580211e2f2ebae1b8b8e4cb4d65482017bb",
+    "bytes": 2824,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r374_agg2.json"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/r375_run1.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 978,
+    "sha256": "e470fb53b55b83986db4a56773d41dc227dd3f9777c7f71ef7771fcd0db247b3"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "e470fb53b55b83986db4a56773d41dc227dd3f9777c7f71ef7771fcd0db247b3",
+    "bytes": 978,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r375_run1.md"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/r376_run1.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 978,
+    "sha256": "24b046d2d364cb4c3d0fb27f566cdfeb65967b4a7c73e64254af9e8cbc77cfe2"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "24b046d2d364cb4c3d0fb27f566cdfeb65967b4a7c73e64254af9e8cbc77cfe2",
+    "bytes": 978,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r376_run1.md"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/r377_kpi.telemetry",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 17474,
+    "sha256": "9630e46761dc1044bf997ae9279249859abaeddef3f7db0c1842c9f96e4ef96a"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "9630e46761dc1044bf997ae9279249859abaeddef3f7db0c1842c9f96e4ef96a",
+    "bytes": 17474,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r377_kpi.telemetry"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/r377_run1.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 1071,
+    "sha256": "2265389d1eb02cc6a41e5d3b4f874d99726193a20746e0bad165a44bb23fe817"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "2265389d1eb02cc6a41e5d3b4f874d99726193a20746e0bad165a44bb23fe817",
+    "bytes": 1071,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r377_run1.md"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/r377_run2.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 1071,
+    "sha256": "b8bcc3d547313202109d5e42a7db69d7d2aa4b48d94ea2fa9a11a85af960922e"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "b8bcc3d547313202109d5e42a7db69d7d2aa4b48d94ea2fa9a11a85af960922e",
+    "bytes": 1071,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r377_run2.md"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/reply_",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "extractor_truncation",
+   "payload": {
+    "reason": "basename 是截断片段 (抽取器截断), 不可解析为独立路径",
+    "basename": "reply_"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/reply_default.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 820,
+    "sha256": "881b099a984f8985e56573c42ec0d75b8d9c8ff73305d65bb6340d26c29cd733"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "881b099a984f8985e56573c42ec0d75b8d9c8ff73305d65bb6340d26c29cd733",
+    "bytes": 820,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/reply_default.md"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/reply_outside.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 819,
+    "sha256": "8f92f594235410fc4014412373dc1e7beda909ec7793a31081829829d5d557be"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "8f92f594235410fc4014412373dc1e7beda909ec7793a31081829829d5d557be",
+    "bytes": 819,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/reply_outside.md"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/reply_run.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 979,
+    "sha256": "152f1d007b2f4d6b0dbb859f684f20d7301754be31d00aab952a0cde6b8a0d4b"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "152f1d007b2f4d6b0dbb859f684f20d7301754be31d00aab952a0cde6b8a0d4b",
+    "bytes": 979,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/reply_run.md"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/run_default.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 818,
+    "sha256": "94e456d849f78d22967665e51b45eab2d7222f83ff4b53dbbc0ad2bfc0fb3c29"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "94e456d849f78d22967665e51b45eab2d7222f83ff4b53dbbc0ad2bfc0fb3c29",
+    "bytes": 818,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/run_default.md"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/run_root.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 815,
+    "sha256": "d91bd9e9fb2d293eed220ee20c8802b242fcaf17a81e4e22ed0547b9be4a1c6f"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "d91bd9e9fb2d293eed220ee20c8802b242fcaf17a81e4e22ed0547b9be4a1c6f",
+    "bytes": 815,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/run_root.md"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/run_run.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 814,
+    "sha256": "961c60295f498a0f8f57b3cbcdeecadb3875e733151b39bfe277cd441e0c662e"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "961c60295f498a0f8f57b3cbcdeecadb3875e733151b39bfe277cd441e0c662e",
+    "bytes": 814,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/run_run.md"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/work",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "directory",
+    "n_files": 8,
+    "bytes": 40206,
+    "reason": "目录 (运行时环境 / 发布物) ⇒ 不入库, 记在场读数"
+   }
+  },
+  {
+   "dep": "/tmp/gameprobe/work/data/artifacts/",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "runtime_product",
+   "payload": {
+    "reason": "不在场; 未登记为复现前提 ⇒ 接受缺席 (可升级为 external_asset)"
+   }
+  },
+  {
+   "dep": "/tmp/pub_aot_r370/agenthost",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "large_file",
+    "bytes": 13792560,
+    "sha256": "3cbf45260e0a643546dc4ac4cbaa4d662f0f5702c673f65892bc415cfa38fe41",
+    "reason": "大文件/二进制 (发布物、构建产物) ⇒ 不入库, 记 sha256 供复现核验"
+   }
+  },
+  {
+   "dep": "/tmp/pub_aot_r371/agenthost",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "large_file",
+    "bytes": 13800832,
+    "sha256": "a304012e50b99e6f47c8ed0a403960c4cee5339896b23cd5bea5665f9ecb98cd",
+    "reason": "大文件/二进制 (发布物、构建产物) ⇒ 不入库, 记 sha256 供复现核验"
+   }
+  },
+  {
+   "dep": "/tmp/pub_aot_r373",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "directory",
+    "n_files": 25,
+    "bytes": 45624258,
+    "reason": "目录 (运行时环境 / 发布物) ⇒ 不入库, 记在场读数"
+   }
+  },
+  {
+   "dep": "/tmp/pub_aot_r373/agenthost",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "large_file",
+    "bytes": 13800832,
+    "sha256": "a35463af1d75f2c655fd4a32fa75b4bbd3add9b9dfe3c6120e8de8b68ad657be",
+    "reason": "大文件/二进制 (发布物、构建产物) ⇒ 不入库, 记 sha256 供复现核验"
+   }
+  },
+  {
+   "dep": "/tmp/pub_aot_r373/config/base",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "directory",
+    "n_files": 3,
+    "bytes": 6728,
+    "reason": "目录 (运行时环境 / 发布物) ⇒ 不入库, 记在场读数"
+   }
+  },
+  {
+   "dep": "/tmp/pub_r372/agenthost",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "large_file",
+    "bytes": 13809184,
+    "sha256": "40b8cfc50433e43506fe9f00716c442c756769dda782dc03793fa8d1ee66e6df",
+    "reason": "大文件/二进制 (发布物、构建产物) ⇒ 不入库, 记 sha256 供复现核验"
+   }
+  },
+  {
+   "dep": "/tmp/pub_r373/agenthost",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "large_file",
+    "bytes": 13817472,
+    "sha256": "bc216eeaa23b5aa3fd41d01480787a18429c87aca7b9b8c6919760b39e1c52af",
+    "reason": "大文件/二进制 (发布物、构建产物) ⇒ 不入库, 记 sha256 供复现核验"
+   }
+  },
+  {
+   "dep": "/tmp/pub_r373b",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "directory",
+    "n_files": 25,
+    "bytes": 45669386,
+    "reason": "目录 (运行时环境 / 发布物) ⇒ 不入库, 记在场读数"
+   }
+  },
+  {
+   "dep": "/tmp/pub_r373b.log",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 4428,
+    "sha256": "e122d7e9b50a40790c2734c688d417009ad5f6bafcc5d6b021666f6748a91290"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "e122d7e9b50a40790c2734c688d417009ad5f6bafcc5d6b021666f6748a91290",
+    "bytes": 4428,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/pub_r373b.log"
+   }
+  },
+  {
+   "dep": "/tmp/pub_r373b/agenthost",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "large_file",
+    "bytes": 13817472,
+    "sha256": "49ac2bd7cb73718495f21db194ffa10e910c02b9e1cdd5f414bcdfafc1a05c4f",
+    "reason": "大文件/二进制 (发布物、构建产物) ⇒ 不入库, 记 sha256 供复现核验"
+   }
+  },
+  {
+   "dep": "/tmp/pub_r373b/config/base/",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "directory",
+    "n_files": 3,
+    "bytes": 6728,
+    "reason": "目录 (运行时环境 / 发布物) ⇒ 不入库, 记在场读数"
+   }
+  },
+  {
+   "dep": "/tmp/pub_r374",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "directory",
+    "n_files": 25,
+    "bytes": 45755778,
+    "reason": "目录 (运行时环境 / 发布物) ⇒ 不入库, 记在场读数"
+   }
+  },
+  {
+   "dep": "/tmp/pub_r374.log",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 4417,
+    "sha256": "1c58742eed1be5824f69c631f85f9944ca95b1cdaf11606f0aae1e1b5faf8f5a"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "1c58742eed1be5824f69c631f85f9944ca95b1cdaf11606f0aae1e1b5faf8f5a",
+    "bytes": 4417,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/pub_r374.log"
+   }
+  },
+  {
+   "dep": "/tmp/pub_r374/agenthost",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "large_file",
+    "bytes": 13842384,
+    "sha256": "0cfb96c6428ef6198e564b52996457d27d6f89563c9d8669fffcf89d9a3877b2",
+    "reason": "大文件/二进制 (发布物、构建产物) ⇒ 不入库, 记 sha256 供复现核验"
+   }
+  },
+  {
+   "dep": "/tmp/pub_r374d",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "directory",
+    "n_files": 25,
+    "bytes": 45756998,
+    "reason": "目录 (运行时环境 / 发布物) ⇒ 不入库, 记在场读数"
+   }
+  },
+  {
+   "dep": "/tmp/pub_r374d.log",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 4417,
+    "sha256": "cf019e3dcfa7ccbdccd3f5ad7ea1f39611b7318b64bb725ac4a010715e9cf696"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "cf019e3dcfa7ccbdccd3f5ad7ea1f39611b7318b64bb725ac4a010715e9cf696",
+    "bytes": 4417,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/pub_r374d.log"
+   }
+  },
+  {
+   "dep": "/tmp/pub_r374d/agenthost",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "large_file",
+    "bytes": 13842384,
+    "sha256": "66a36b5b1aae6e39546c871f6a6a50d00b12939852c980a50b69fd0f6a779441",
+    "reason": "大文件/二进制 (发布物、构建产物) ⇒ 不入库, 记 sha256 供复现核验"
+   }
+  },
+  {
+   "dep": "/tmp/pub_r375/agenthost",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "large_file",
+    "bytes": 13947200,
+    "sha256": "ea6d01e1d9e9eacc7186bf88966d45cc8e4f739c81bbbd87e844d10c660024d8",
+    "reason": "大文件/二进制 (发布物、构建产物) ⇒ 不入库, 记 sha256 供复现核验"
+   }
+  },
+  {
+   "dep": "/tmp/pub_r377/agenthost",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "large_file",
+    "bytes": 13959760,
+    "sha256": "1a79d2a983c75f02343b54ea4b07bc85cc7233bec71006f06e647eca74152b3a",
+    "reason": "大文件/二进制 (发布物、构建产物) ⇒ 不入库, 记 sha256 供复现核验"
+   }
+  },
+  {
+   "dep": "/tmp/pub_r374/",
+   "via": "/tmp/pub_r374.log",
+   "via_class": "archived",
+   "class": "external_asset",
+   "payload": {
+    "kind": "directory",
+    "n_files": 25,
+    "bytes": 45755778,
+    "reason": "目录 (运行时环境 / 发布物) ⇒ 不入库, 记在场读数"
+   }
+  },
+  {
+   "dep": "/tmp/r45",
+   "via": "/tmp/r457_env",
+   "via_class": "external_asset",
+   "class": "runtime_product",
+   "payload": {
+    "reason": "不在场; 未登记为复现前提 ⇒ 接受缺席 (可升级为 external_asset)"
+   }
+  },
+  {
+   "dep": "/tmp/r457",
+   "via": "/tmp/r457_env",
+   "via_class": "external_asset",
+   "class": "runtime_product",
+   "payload": {
+    "reason": "不在场; 未登记为复现前提 ⇒ 接受缺席 (可升级为 external_asset)"
+   }
+  },
+  {
+   "dep": "/tmp/r457_e",
+   "via": "/tmp/r457_env",
+   "via_class": "external_asset",
+   "class": "runtime_product",
+   "payload": {
+    "reason": "不在场; 未登记为复现前提 ⇒ 接受缺席 (可升级为 external_asset)"
+   }
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work",
+   "via": "/tmp/r457_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "directory",
+    "n_files": 23,
+    "bytes": 176850,
+    "reason": "目录 (运行时环境 / 发布物) ⇒ 不入库, 记在场读数"
+   }
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work/count.txt",
+   "via": "/tmp/r457_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 1,
+    "sha256": "4b227777d4dd1fc61c6f884f48641d02b4d121d3fd328cb08b5531fcacdabf8a"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "4b227777d4dd1fc61c6f884f48641d02b4d121d3fd328cb08b5531fcacdabf8a",
+    "bytes": 1,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/count.txt"
+   }
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work/first.txt",
+   "via": "/tmp/r457_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 18,
+    "sha256": "47caaeb6627d0b06fb06d922b3609e696ef6b9e09569775f25d71c8e340eece4"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "47caaeb6627d0b06fb06d922b3609e696ef6b9e09569775f25d71c8e340eece4",
+    "bytes": 18,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/first.txt"
+   }
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work/merged.txt",
+   "via": "/tmp/r457_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 17,
+    "sha256": "b4b1a7d3857b4ff81d5c42b52628560bdb5bd37aee65c98bfe06906fb71a14fa"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "b4b1a7d3857b4ff81d5c42b52628560bdb5bd37aee65c98bfe06906fb71a14fa",
+    "bytes": 17,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/merged.txt"
+   }
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work/stats.txt",
+   "via": "/tmp/r457_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 9,
+    "sha256": "96c81842f4351ee17b886fff2edee379a7e9669339b40c94c2f215af7dace0be"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "96c81842f4351ee17b886fff2edee379a7e9669339b40c94c2f215af7dace0be",
+    "bytes": 9,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/stats.txt"
+   }
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work/x.txt",
+   "via": "/tmp/r457_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 6,
+    "sha256": "1921b918b15842c7fdb115078e610263fac85f159c1d8e0ecec3d89a0faa4005"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "1921b918b15842c7fdb115078e610263fac85f159c1d8e0ecec3d89a0faa4005",
+    "bytes": 6,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/x.txt"
+   }
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work/y.txt",
+   "via": "/tmp/r457_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 5,
+    "sha256": "a0d89cbe67e84a23d7de399463e2e9a6fb702a6c8acaab0dcdf36b32c2656d82"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "a0d89cbe67e84a23d7de399463e2e9a6fb702a6c8acaab0dcdf36b32c2656d82",
+    "bytes": 5,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/y.txt"
+   }
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work/z.txt",
+   "via": "/tmp/r457_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 6,
+    "sha256": "b7f1365025be0d3aead7c6a0dbaaac6fbba6226612671bb20b296c4822ec973b"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "b7f1365025be0d3aead7c6a0dbaaac6fbba6226612671bb20b296c4822ec973b",
+    "bytes": 6,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/z.txt"
+   }
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter",
+   "via": "/tmp/r457_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "directory",
+    "n_files": 16,
+    "bytes": 30497,
+    "reason": "目录 (运行时环境 / 发布物) ⇒ 不入库, 记在场读数"
+   }
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-001.json",
+   "via": "/tmp/r457_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-002.json",
+   "via": "/tmp/r457_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-003.json",
+   "via": "/tmp/r457_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-004.json",
+   "via": "/tmp/r457_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-005.json",
+   "via": "/tmp/r457_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-006.json",
+   "via": "/tmp/r457_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-007.json",
+   "via": "/tmp/r457_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-008.json",
+   "via": "/tmp/r457_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-009.json",
+   "via": "/tmp/r457_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-010.json",
+   "via": "/tmp/r457_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-011.json",
+   "via": "/tmp/r457_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 2583,
+    "sha256": "25a7b76712d6845630cd01b63a68d4623019f5bbed91e82f46ec44d1894c2886"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "25a7b76712d6845630cd01b63a68d4623019f5bbed91e82f46ec44d1894c2886",
+    "bytes": 2583,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-agent-011.json"
+   }
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-012.json",
+   "via": "/tmp/r457_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 1140,
+    "sha256": "79b3a8e2f6103346f9e7d32fc94d0e4f5d5f4b6c4d1cb8c561d86085a491b7c4"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "79b3a8e2f6103346f9e7d32fc94d0e4f5d5f4b6c4d1cb8c561d86085a491b7c4",
+    "bytes": 1140,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-agent-012.json"
+   }
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-013.json",
+   "via": "/tmp/r457_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 1526,
+    "sha256": "740310a194992fbe8c609484654e576df1181fae69923fcc586dbe72e11d6281"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "740310a194992fbe8c609484654e576df1181fae69923fcc586dbe72e11d6281",
+    "bytes": 1526,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-agent-013.json"
+   }
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-014.json",
+   "via": "/tmp/r457_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 1421,
+    "sha256": "30041f823c4e6a0c761c40c1adf75d23b0036ab47f3bee871804156f53a8e043"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "30041f823c4e6a0c761c40c1adf75d23b0036ab47f3bee871804156f53a8e043",
+    "bytes": 1421,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-agent-014.json"
+   }
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-015.json",
+   "via": "/tmp/r457_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 2505,
+    "sha256": "fd28cad8aefd842154b761d0193bd0dd02d0e2e134285acc6550e3b22a7af7a5"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "fd28cad8aefd842154b761d0193bd0dd02d0e2e134285acc6550e3b22a7af7a5",
+    "bytes": 2505,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-agent-015.json"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "directory",
+    "n_files": 19,
+    "bytes": 62069,
+    "reason": "目录 (运行时环境 / 发布物) ⇒ 不入库, 记在场读数"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "directory",
+    "n_files": 19,
+    "bytes": 62069,
+    "reason": "目录 (运行时环境 / 发布物) ⇒ 不入库, 记在场读数"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/count.",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "runtime_product",
+   "payload": {
+    "reason": "不在场; 未登记为复现前提 ⇒ 接受缺席 (可升级为 external_asset)"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/count.txt",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/first.txt",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 18,
+    "sha256": "47caaeb6627d0b06fb06d922b3609e696ef6b9e09569775f25d71c8e340eece4"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "47caaeb6627d0b06fb06d922b3609e696ef6b9e09569775f25d71c8e340eece4",
+    "bytes": 18,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/first.txt"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/merged.txt",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 17,
+    "sha256": "b4b1a7d3857b4ff81d5c42b52628560bdb5bd37aee65c98bfe06906fb71a14fa"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "b4b1a7d3857b4ff81d5c42b52628560bdb5bd37aee65c98bfe06906fb71a14fa",
+    "bytes": 17,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/merged.txt"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/stats.txt",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "runtime_product",
+   "payload": {
+    "reason": "不在场; 未登记为复现前提 ⇒ 接受缺席 (可升级为 external_asset)"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/x.txt",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 6,
+    "sha256": "1921b918b15842c7fdb115078e610263fac85f159c1d8e0ecec3d89a0faa4005"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "1921b918b15842c7fdb115078e610263fac85f159c1d8e0ecec3d89a0faa4005",
+    "bytes": 6,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/x.txt"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/y.txt",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 5,
+    "sha256": "a0d89cbe67e84a23d7de399463e2e9a6fb702a6c8acaab0dcdf36b32c2656d82"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "a0d89cbe67e84a23d7de399463e2e9a6fb702a6c8acaab0dcdf36b32c2656d82",
+    "bytes": 5,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/y.txt"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/z.txt",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 6,
+    "sha256": "b7f1365025be0d3aead7c6a0dbaaac6fbba6226612671bb20b296c4822ec973b"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "b7f1365025be0d3aead7c6a0dbaaac6fbba6226612671bb20b296c4822ec973b",
+    "bytes": 6,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/z.txt"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "directory",
+    "n_files": 31,
+    "bytes": 175559,
+    "reason": "目录 (运行时环境 / 发布物) ⇒ 不入库, 记在场读数"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-001.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 9088,
+    "sha256": "9754e3292578db7e7e97b5a1c3ce0d58a5e2b3fb4fbbd568b47f73fc129c385d"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "9754e3292578db7e7e97b5a1c3ce0d58a5e2b3fb4fbbd568b47f73fc129c385d",
+    "bytes": 9088,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/full-agent-001.json"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-002.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 9495,
+    "sha256": "78d45b7ea4d9ee8cf2e9513356f324bc823fb943b98889625ed1dd6840ba95e5"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "78d45b7ea4d9ee8cf2e9513356f324bc823fb943b98889625ed1dd6840ba95e5",
+    "bytes": 9495,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/full-agent-002.json"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-003.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 10115,
+    "sha256": "0c749ed40ae77730c202aba8188b8efeb42914fc6950e5d6bdede4b813897d1f"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "0c749ed40ae77730c202aba8188b8efeb42914fc6950e5d6bdede4b813897d1f",
+    "bytes": 10115,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/full-agent-003.json"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-004.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 10401,
+    "sha256": "d71e926585a7d8368d1f8be5a7abe75f9f5839e390ce5585d87ac80590abe9ee"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "d71e926585a7d8368d1f8be5a7abe75f9f5839e390ce5585d87ac80590abe9ee",
+    "bytes": 10401,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/full-agent-004.json"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-005.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 10731,
+    "sha256": "b9437a4058556db8d6dae2275f9cba7d2c29a51274be291768edcf62a327f869"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "b9437a4058556db8d6dae2275f9cba7d2c29a51274be291768edcf62a327f869",
+    "bytes": 10731,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/full-agent-005.json"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-006.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 11054,
+    "sha256": "1d8ac72dc24257b57ca75cce5b7a3dac16bdb2e79d5f58e9da53d2225a54e6e0"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "1d8ac72dc24257b57ca75cce5b7a3dac16bdb2e79d5f58e9da53d2225a54e6e0",
+    "bytes": 11054,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/full-agent-006.json"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-007.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 11387,
+    "sha256": "70a9b2ce0071be907641ed0974619c778acdcb0d01e655dd8a2b394fa6efd307"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "70a9b2ce0071be907641ed0974619c778acdcb0d01e655dd8a2b394fa6efd307",
+    "bytes": 11387,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/full-agent-007.json"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-008.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 11910,
+    "sha256": "f64cc34bcb8432234b092a87f3f334dc2ce57d74f5e9daf54d6d4fcf744f50be"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "f64cc34bcb8432234b092a87f3f334dc2ce57d74f5e9daf54d6d4fcf744f50be",
+    "bytes": 11910,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/full-agent-008.json"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-009.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 12240,
+    "sha256": "803792525a8e242e5782a28d9b61c45035602c46e6af775dedd981c629b8607d"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "803792525a8e242e5782a28d9b61c45035602c46e6af775dedd981c629b8607d",
+    "bytes": 12240,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/full-agent-009.json"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-010.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 13073,
+    "sha256": "4d2a9b13321ed9df32fe952a8adefdc4884d60234da39636d6d9900d39be4a44"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "4d2a9b13321ed9df32fe952a8adefdc4884d60234da39636d6d9900d39be4a44",
+    "bytes": 13073,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/full-agent-010.json"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-011.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 15140,
+    "sha256": "a2c120a7f6424b7b7ebbc7a6a2286357d8b25166ab88ceafae71e22ecb2c156c"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "a2c120a7f6424b7b7ebbc7a6a2286357d8b25166ab88ceafae71e22ecb2c156c",
+    "bytes": 15140,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/full-agent-011.json"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-012.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 383,
+    "sha256": "936c031e12cc1229090119975c90df44badddad83ed78b64053d0e824260a12e"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "936c031e12cc1229090119975c90df44badddad83ed78b64053d0e824260a12e",
+    "bytes": 383,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/full-agent-012.json"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-013.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 705,
+    "sha256": "89042063f23c1b3a26f4e6c825cc48e904fd897f19645b73b8f939e2bde2c58e"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "89042063f23c1b3a26f4e6c825cc48e904fd897f19645b73b8f939e2bde2c58e",
+    "bytes": 705,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/full-agent-013.json"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-014.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 1034,
+    "sha256": "1e8d3fd0ae21cfe30278d55d3b84b4dc212c2af781b68a56a3707df6e37472d2"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "1e8d3fd0ae21cfe30278d55d3b84b4dc212c2af781b68a56a3707df6e37472d2",
+    "bytes": 1034,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/full-agent-014.json"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-015.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "archived",
+   "payload": {
+    "bytes": 17048,
+    "sha256": "9a646a04056dc24bbc3629b5768774d66c0cf232f57627441671a0ed1ac1dae8"
+   },
+   "archived_verified": true,
+   "archive": {
+    "sha256": "9a646a04056dc24bbc3629b5768774d66c0cf232f57627441671a0ed1ac1dae8",
+    "bytes": 17048,
+    "dst": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/full-agent-015.json"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-001.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-002.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-003.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-004.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-005.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-006.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-007.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-008.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-009.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-010.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-011.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-012.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-013.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-014.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-015.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "class": "external_asset",
+   "payload": {
+    "kind": "unarchivable",
+    "reason": "name_collision_different_bytes"
+   },
+   "archived_verified": false,
+   "archive": {
+    "reason": "name_collision_different_bytes"
+   }
+  },
+  {
+   "dep": "/tmp/r461_env",
+   "via": "/tmp/r462_negctl.json",
+   "via_class": "archived",
+   "class": "external_asset",
+   "payload": {
+    "kind": "directory",
+    "n_files": 67,
+    "bytes": 261464,
+    "reason": "目录 (运行时环境 / 发布物) ⇒ 不入库, 记在场读数"
+   }
+  },
+  {
+   "dep": "/tmp/r462_env/agent/work",
+   "via": "/tmp/r462_run.log",
+   "via_class": "archived",
+   "class": "external_asset",
+   "payload": {
+    "kind": "directory",
+    "n_files": 22,
+    "bytes": 72024,
+    "reason": "目录 (运行时环境 / 发布物) ⇒ 不入库, 记在场读数"
+   }
+  }
+ ],
+ "n_external_disposed": 87,
+ "external_dispositions": [
+  {
+   "level": 1,
+   "dep": "/tmp/cxprobe",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 346161,
+    "n_files": 69
+   }
+  },
+  {
+   "level": 1,
+   "dep": "/tmp/fp376",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 18577,
+    "n_files": 3
+   }
+  },
+  {
+   "level": 1,
+   "dep": "/tmp/gameprobe",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 751733,
+    "n_files": 122
+   }
+  },
+  {
+   "level": 1,
+   "dep": "/tmp/pub_r374",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 45755778,
+    "n_files": 25
+   }
+  },
+  {
+   "level": 1,
+   "dep": "/tmp/pub_r374/agenthost",
+   "disposition": {
+    "kind": "large_file",
+    "archivable": false,
+    "why_not_archivable": "large_file_not_archivable",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 13842384,
+    "n_files": null,
+    "sha256": "0cfb96c6428ef6198e564b52996457d27d6f89563c9d8669fffcf89d9a3877b2"
+   }
+  },
+  {
+   "level": 1,
+   "dep": "/tmp/pub_r376/agenthost",
+   "disposition": {
+    "kind": "large_file",
+    "archivable": false,
+    "why_not_archivable": "large_file_not_archivable",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 13959712,
+    "n_files": null,
+    "sha256": "3d0739b092067c8b3517033c8d2da9987a0e4d9b49d248604e0b5cfbdc3f30d7"
+   }
+  },
+  {
+   "level": 1,
+   "dep": "/tmp/pub_r457",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 51407220,
+    "n_files": 25
+   }
+  },
+  {
+   "level": 1,
+   "dep": "/tmp/pub_r457/agenthost",
+   "disposition": {
+    "kind": "large_file",
+    "archivable": false,
+    "why_not_archivable": "large_file_not_archivable",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 15289344,
+    "n_files": null,
+    "sha256": "ad6bab046f0629f656e19b110ff49530b03ce9a368d851f8fe6d9a92af2f4677"
+   }
+  },
+  {
+   "level": 1,
+   "dep": "/tmp/r457_env",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 295015,
+    "n_files": 92
+   }
+  },
+  {
+   "level": 1,
+   "dep": "/tmp/r457_nokey",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 16419,
+    "n_files": 13
+   }
+  },
+  {
+   "level": 1,
+   "dep": "/tmp/r461_env",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 261464,
+    "n_files": 67
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/agentwork",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 14610,
+    "n_files": 18
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/agentwork2",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 14458,
+    "n_files": 19
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/agentwork2/data",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 11959,
+    "n_files": 8
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/cxprobe",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 346161,
+    "n_files": 69
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/cxprobe/cx2",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 45100,
+    "n_files": 1
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/cxprobe/demo",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 147448,
+    "n_files": 8
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/cxprobe/r455",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 6040,
+    "n_files": 7
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/cxprobe/r455/side-agent-001.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "98b9441624590abed83f0b8cad30f39f10b025063e8247c6d836c198186295cf"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/cxprobe/r455/side-codex-001.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "e26171d6a64c3d9a73045bbb595a89c5e5bbb3bbffb817bac5aa67f8276d5f7f"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/cxprobe/r455/side-codex-002.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "d447e66c3aa83a1a6fa1a778624fa0833b91cd9dd3cd56a0729a969d4007bbd3"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/cxprobe/r455/side-codex-003.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "24ad767ddf3d9ee7852287b582e8763971fec65c95e3a5dafd56fd3afd34e178"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/cxprobe/r455/side-codex-004.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "9e5ddd622ac49e5ab8068dd8005357a951155164b2ab7e48d340e9db7e1ae062"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/cxprobe/r455/side-codex-005.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "834ba04bf61affccacbe985d6f7b0f7c93bb402d8530f4159b171d6c6afa466e"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/cxprobe/r455/side-codex-006.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "bf992278158e05ad6edbcd44778c488b87304a0671ce3e69080d15db37b28e95"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/cxprobe/r455b",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 909,
+    "n_files": 1
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/cxprobe/r455b/side-codex-001.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "7150c43e4a84dd7be4d6333d8a08a712f91bfdddbd69180af47fe81e02abbf38"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/cxwork",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 80,
+    "n_files": 9
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/demo_run",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 11719,
+    "n_files": 11
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r455_env/logs/adapter",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 19831,
+    "n_files": 28
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-001.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "45a69efb82eb0a891684e0e2a1c06d3b3e8e44e3926fde7bd37ef532acf0a7bd"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-002.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "c221cf62ed43b79bc405e720dab1e7c05c2aaf3264ef7428d9a82b375567d0e6"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/fp376",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 18577,
+    "n_files": 3
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/pub_r376/agenthost",
+   "disposition": {
+    "kind": "large_file",
+    "archivable": false,
+    "why_not_archivable": "large_file_not_archivable",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 13959712,
+    "n_files": null,
+    "sha256": "3d0739b092067c8b3517033c8d2da9987a0e4d9b49d248604e0b5cfbdc3f30d7"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/gameprobe",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 751733,
+    "n_files": 122
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/gameprobe/",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 751733,
+    "n_files": 122
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/gameprobe/work",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 40206,
+    "n_files": 8
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/pub_aot_r370/agenthost",
+   "disposition": {
+    "kind": "large_file",
+    "archivable": false,
+    "why_not_archivable": "large_file_not_archivable",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 13792560,
+    "n_files": null,
+    "sha256": "3cbf45260e0a643546dc4ac4cbaa4d662f0f5702c673f65892bc415cfa38fe41"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/pub_aot_r371/agenthost",
+   "disposition": {
+    "kind": "large_file",
+    "archivable": false,
+    "why_not_archivable": "large_file_not_archivable",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 13800832,
+    "n_files": null,
+    "sha256": "a304012e50b99e6f47c8ed0a403960c4cee5339896b23cd5bea5665f9ecb98cd"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/pub_aot_r373",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 45624258,
+    "n_files": 25
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/pub_aot_r373/agenthost",
+   "disposition": {
+    "kind": "large_file",
+    "archivable": false,
+    "why_not_archivable": "large_file_not_archivable",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 13800832,
+    "n_files": null,
+    "sha256": "a35463af1d75f2c655fd4a32fa75b4bbd3add9b9dfe3c6120e8de8b68ad657be"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/pub_aot_r373/config/base",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 6728,
+    "n_files": 3
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/pub_r372/agenthost",
+   "disposition": {
+    "kind": "large_file",
+    "archivable": false,
+    "why_not_archivable": "large_file_not_archivable",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 13809184,
+    "n_files": null,
+    "sha256": "40b8cfc50433e43506fe9f00716c442c756769dda782dc03793fa8d1ee66e6df"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/pub_r373/agenthost",
+   "disposition": {
+    "kind": "large_file",
+    "archivable": false,
+    "why_not_archivable": "large_file_not_archivable",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 13817472,
+    "n_files": null,
+    "sha256": "bc216eeaa23b5aa3fd41d01480787a18429c87aca7b9b8c6919760b39e1c52af"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/pub_r373b",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 45669386,
+    "n_files": 25
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/pub_r373b/agenthost",
+   "disposition": {
+    "kind": "large_file",
+    "archivable": false,
+    "why_not_archivable": "large_file_not_archivable",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 13817472,
+    "n_files": null,
+    "sha256": "49ac2bd7cb73718495f21db194ffa10e910c02b9e1cdd5f414bcdfafc1a05c4f"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/pub_r373b/config/base/",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 6728,
+    "n_files": 3
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/pub_r374",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 45755778,
+    "n_files": 25
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/pub_r374/agenthost",
+   "disposition": {
+    "kind": "large_file",
+    "archivable": false,
+    "why_not_archivable": "large_file_not_archivable",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 13842384,
+    "n_files": null,
+    "sha256": "0cfb96c6428ef6198e564b52996457d27d6f89563c9d8669fffcf89d9a3877b2"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/pub_r374d",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 45756998,
+    "n_files": 25
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/pub_r374d/agenthost",
+   "disposition": {
+    "kind": "large_file",
+    "archivable": false,
+    "why_not_archivable": "large_file_not_archivable",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 13842384,
+    "n_files": null,
+    "sha256": "66a36b5b1aae6e39546c871f6a6a50d00b12939852c980a50b69fd0f6a779441"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/pub_r375/agenthost",
+   "disposition": {
+    "kind": "large_file",
+    "archivable": false,
+    "why_not_archivable": "large_file_not_archivable",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 13947200,
+    "n_files": null,
+    "sha256": "ea6d01e1d9e9eacc7186bf88966d45cc8e4f739c81bbbd87e844d10c660024d8"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/pub_r377/agenthost",
+   "disposition": {
+    "kind": "large_file",
+    "archivable": false,
+    "why_not_archivable": "large_file_not_archivable",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 13959760,
+    "n_files": null,
+    "sha256": "1a79d2a983c75f02343b54ea4b07bc85cc7233bec71006f06e647eca74152b3a"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/pub_r374/",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 45755778,
+    "n_files": 25
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r457_env/agent/work",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 176850,
+    "n_files": 23
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r457_env/logs/adapter",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 30497,
+    "n_files": 16
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-001.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "b383340c8bca36f7c82d24b8ecd9afaf266db5c5169e8b7c0e2ef869bc28137c"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-002.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "e7265bdf76b019fe480f09730d8fce68003ac7c3fdf762e99a9c57daed1b07de"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-003.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "44813000c0455414c31afd1651e5908526cc0501339e8837dc920edd6c2a31cb"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-004.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "87aa7956c059a3bcfc5237ed5ffef97e52cf2976e546c68b283712c9a091e408"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-005.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "439af7ef1be9a2f59e500b195e986e39d7dfe51b83b606296f174d82a4c353be"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-006.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "e7ed5470564fa51fa83ff1e188ca5ca1e563f3bbcb04ecbbf61a949bca1b6e4f"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-007.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "1b5e3c1df637ebe85a0f0c9b9e95af2c977e302b18ecc6d324ce8ec035844965"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-008.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "f33e31e957a7c84c5ebb7bd65c384d1b8c033796a72353a9639be684915827e8"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-009.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "210081e75c4086df6206e22d8bcd274f5ec95f5900e070737c00d4d1db645f82"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-010.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "a2a026f39794100633eb3f98217581b20fd77c7ebc3d425957c8d6bd13e6bf58"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r461_env/agent/work",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 62069,
+    "n_files": 19
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r461_env/agent/work/",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 62069,
+    "n_files": 19
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r461_env/agent/work/count.txt",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "7de1555df0c2700329e815b93b32c571c3ea54dc967b89e81ab73b9972b72d1d"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r461_env/logs/adapter",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 175559,
+    "n_files": 31
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-001.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "fcc78c8469785f764460792c7ff4eae4f3cb7bcf9b5018ddd8bb08b3b2600b25"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-002.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "18bcf1f9616ee3938481498ac43a9ccaaf39e6687d8a849c731ceb4d4f9c5a91"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-003.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "cc14f86f957875a3d2a6544dfe380a98412a364472a09862d5dba02fc78feede"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-004.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "ff885fa69a78df893d10e9dfd98d4e3fb23b38721d3c5efde23c5951ac4bbb3f"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-005.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "a4d853e041965e2141fc071a030e34033efc90e55803a2d3218fd1f3d223dd9d"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-006.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "4ce44e8780b5ebb8b1ee9231b59915942b5c400696fe127481d4536735add63f"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-007.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "4fb157fd5529ff704d2b4e6b87f4effaa57b9ae139fde7e83d08c592422457c4"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-008.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "96a5bb06fbb2544d0a951ab6a875d1fa2cceb59f8ce781285415f4215011417a"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-009.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "942490234b7a244bcf6cd1db2592715ace066cbcff9261db447958dcef72b4a2"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-010.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "690a596a15d10a8e1a4c0de620a970452d5b1530e03652542f06d48121d98bfe"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-011.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "ab73409324ee152b87fd353c6888a63c897233ec001129796541c498a2e38b58"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-012.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "fc1e1a9f01cc54d13233ede956e61c457e89a763e13c346c095b03f330ee0809"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-013.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "51c0539fb3d886439e530fbdf2a93e14002153cdd35a247a5f25d4d1c5c076e5"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-014.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "625bbb7f704e7c3c1aa549dd92f7b6f319d84a9972f9ed21efa25d73cd4597d1"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-015.json",
+   "disposition": {
+    "kind": "unarchivable",
+    "archivable": false,
+    "why_not_archivable": "unreadable_at_audit_time",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": null,
+    "n_files": null,
+    "sha256": "e817b1ce492990144708f96d81190d1a75d138dd73b85b6f7523ac29363725cd"
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r461_env",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 261464,
+    "n_files": 67
+   }
+  },
+  {
+   "level": 2,
+   "dep": "/tmp/r462_env/agent/work",
+   "disposition": {
+    "kind": "directory",
+    "archivable": false,
+    "why_not_archivable": "runtime_env_dir",
+    "license": "unasserted",
+    "license_note": "外部运行环境/发布物, 未随仓分发 ⇒ 本库不主张其许可, 也不入库 (不可再分发风险)",
+    "bytes": 72024,
+    "n_files": 22
+   }
+  }
+ ],
+ "abstain": [
+  {
+   "depth1": "/tmp/r457_env/logs/adapter/side-agent-",
+   "reason": "gone_at_audit_time"
+  }
+ ],
+ "depth3": {
+  "n_refs": 96,
+  "n_distinct": 61,
+  "note": "声明的递归边界: depth-3 只计数不追 (再追需独立预注册轮)",
+  "sample": [
+   "/tmp/cxprobe",
+   "/tmp/demo_run",
+   "/tmp/gameprobe",
+   "/tmp/gameprobe/D_run1.md",
+   "/tmp/gameprobe/D_run2.md",
+   "/tmp/gameprobe/D_run3.md",
+   "/tmp/gameprobe/d4b_run1.md",
+   "/tmp/gameprobe/d4b_run2.md",
+   "/tmp/gameprobe/d4b_run3.md",
+   "/tmp/gameprobe/r373_run1.md"
+  ]
+ },
+ "conservation": {
+  "sum_by_class_eq_n_depth2": true,
+  "n_depth1_all_disposed": true,
+  "classes_subset_of_closed_set": true,
+  "every_external_has_why": true,
+  "every_external_license_in_closed_set": true
+ },
+ "rule": "depth-2 分类复用 Q33 分类器 (importlib 单源); 可入库者逐字节入库 + 读回复核; 不可入库者落 (kind/bytes/sha256/license/archivable/why_not_archivable) 机检字段 ⇒ 「不入库」从人读理由升级为可审计裁定。"
+}

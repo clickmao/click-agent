@@ -1,0 +1,25 @@
+{
+ "side": "agent",
+ "request": {
+  "n_messages": 8,
+  "tools_n": 4,
+  "upstream_request": {
+   "model": "deepseek-chat",
+   "n_messages": 8
+  }
+ },
+ "response": {
+  "text": "已写入 merged.txt，内容为三行（x→y→z 顺序，无文件名）：\n\n```\nALPHA\nBETA\nGAMMA\n```\n\nno_formal: 这是文件拼接操作，正确性由实际读取/写出结果核验，非整数算术断言场景。",
+  "usage": {
+   "prompt_tokens": 3641,
+   "completion_tokens": 61,
+   "total_tokens": 3702,
+   "prompt_tokens_details": {
+    "cached_tokens": 3456
+   },
+   "prompt_cache_hit_tokens": 3456,
+   "prompt_cache_miss_tokens": 185
+  }
+ },
+ "extra": {}
+}

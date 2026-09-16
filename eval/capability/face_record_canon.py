@@ -42,23 +42,38 @@ def sha12(blob):
 # 证据: `/tmp/q33_A.json` vs `/tmp/q33_B.json` (同面 `--only probe.grade`, 同树, 相隔 2 s),
 # 74 条差异叶子全部落在下表路径族内; 其余 (results/manifest_sha12/conservation/trace 计数…) 逐位相同。
 # 模式: scalar = 值换哨兵; array_count = 整族换 {_nonsemantic, n} (保留基数, 去掉邻居/随机内容)。
-PROJECTION_RULES = (
-    # 运行期墙钟 + 随机目录 (Q32 AG.6.2 的直接动因)
-    {'path': 'side_effect_attribution/window/t0', 'mode': 'scalar'},
-    {'path': 'side_effect_attribution/window/t1', 'mode': 'scalar'},
-    {'path': 'side_effect_attribution/window/trace_dir', 'mode': 'scalar'},
-    # 邻居面 (同树其它写者/其它进程在场 ⇒ 快照天生不定)
-    {'path': 'side_effect_attribution/census_in_repo_cwd', 'mode': 'array_count'},
-    {'path': 'side_effect_attribution/foreign_writes[*]/sha_before', 'mode': 'scalar'},
-    {'path': 'side_effect_attribution/foreign_writes[*]/sha_after', 'mode': 'scalar'},
-    # 活体/采样类读数
-    {'path': 'side_effect_attribution/live_fd_scan/scanned', 'mode': 'scalar'},
-    {'path': 'side_effect_attribution/trace/log_bytes', 'mode': 'scalar'},
-    {'path': 'side_effect_attribution/trace/raw_paths_sample', 'mode': 'array_count'},
-    # 信息项: 记录落在哪 / 侧车落在哪 (同一面在不同路径跑不应改变面身份)
-    {'path': 'out', 'mode': 'scalar'},
-    {'path': 'canon/runtime_sidecar', 'mode': 'scalar'},
-)
+#
+# **单一事实源 (EXP1-Q34)**: 规则表移入数据文件 `projection_rules.json` —— 本模块与仓库测试侧
+# (登记表 R2e 的 pin_kind=semantic-projection 判据) **读同一文件**复算同一摘要, 跨语言口径靠构造一致,
+# 而非靠两份手抄保持一致 (手抄会静默漂移)。文件缺失/不可解析 ⇒ 抛错 (fail-closed, 空规则表=空心投影)。
+RULES_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'projection_rules.json')
+
+
+class ProjectionRulesError(RuntimeError):
+    """规则表不可用 (缺失/非法) —— 投影判据 fail-closed, 绝不退化为空规则表。"""
+
+
+def _load_projection_rules(path=RULES_PATH):
+    try:
+        with open(path, encoding='utf-8') as fh:
+            doc = json.load(fh)
+    except (OSError, ValueError) as exc:
+        raise ProjectionRulesError('RULES_UNREADABLE: %s (%s)' % (path, exc))
+    rules = doc.get('rules')
+    if not isinstance(rules, list) or not rules:
+        raise ProjectionRulesError('RULES_EMPTY: %s' % path)
+    out = []
+    for r in rules:
+        if not isinstance(r, dict) or not r.get('path') or r.get('mode') not in ('scalar', 'array_count'):
+            raise ProjectionRulesError('RULE_MALFORMED: %r' % (r,))
+        out.append({'path': r['path'], 'mode': r['mode']})
+    return tuple(out)
+
+
+PROJECTION_RULES = _load_projection_rules()
+# 锚规则 (整组 fail-closed 的判据): 记录必须含**运行期窗口族**, 否则它不是「这一类面记录」⇒ 弃权。
+WINDOW_RULES = ('side_effect_attribution/window/t0', 'side_effect_attribution/window/t1',
+                'side_effect_attribution/window/trace_dir')
 NONSEMANTIC_SENTINEL = '<nonsemantic>'
 
 
@@ -125,6 +140,169 @@ def canonical_bytes(doc):
     return (json.dumps(doc, ensure_ascii=False, indent=1) + '\n').encode('utf-8')
 
 
+# ── 跨语言语义投影摘要 (EXP1-Q34): `pin_kind=semantic-projection` 的判据本体 ──────────
+# 为什么不复用 project_sha12: 后者依赖 Python 的 json 序列化字节 (indent=1 / 键序 / 转义 / 数字形态),
+# 要求另一语言逐位复现是**脆弱**的 —— 浮点、转义、代理对任一环节分叉都是**静默**的。
+# 本摘要改为**长度前缀叶流**: 每叶 emit "<len(path)>:<path><len(val)>:<val>" (UTF-8 字节),
+# 只依赖 (a) 叶路径按**字节序**排序 (b) 值渲染规则; 两处都可被另一语言逐条实现并交叉复算。
+# fail-closed 面 (未定义即拒算, 绝不猜): 浮点/其它非标量值 (渲染规则未定义)。
+# 排序序: 按**路径的 UTF-8 字节序** (等价于码点序; 两端都按此实现 ⇒ 非 ASCII 键亦安全,
+# 但**不得**改用另一语言的默认字符串序 —— 旁 culture/编码差异会静默分叉)。
+def _leaf_walk(doc, prefix=''):
+    """叶集 = [(路径, 值)]; 数组元素路径用序号 (/0 /1 …), 与另一语言实现逐位同形。"""
+    out = []
+    if isinstance(doc, dict):
+        for k, v in doc.items():
+            out.extend(_leaf_walk(v, '%s/%s' % (prefix, k)))
+    elif isinstance(doc, list):
+        for i, v in enumerate(doc):
+            out.extend(_leaf_walk(v, '%s/%d' % (prefix, i)))
+    else:
+        out.append((prefix.lstrip('/'), doc))
+    return out
+
+
+def _render_scalar(v, path):
+    if isinstance(v, bool):
+        return 'true' if v else 'false'
+    if isinstance(v, int):
+        return str(v)
+    if isinstance(v, str):
+        return v
+    if v is None:
+        return 'null'
+    raise KeyError('UNRENDERABLE_VALUE (float/其它): %s = %r' % (path, v))
+
+
+def _rule_matches(rule_path, leaf_path):
+    """规则路径 vs 叶路径。`[*]` 消费**恰好一个**数组序号段 (纯数字) —— 与另一语言实现逐步骤同形
+    (朴素「按 / 切分后逐段比较」会把 [*] 当成字面段 ⇒ 规则永不命中, 实测首跑即被空心规则闸拦下)。"""
+    rp, lp = rule_path.split('/'), leaf_path.split('/')
+    i = j = 0
+    while i < len(rp) and j < len(lp):
+        seg = rp[i]
+        if seg == '[*]':                        # 独立段形态: 消费任意一段
+            i += 1
+            j += 1
+            continue
+        if seg.endswith('[*]'):                 # 附着形态 `名字[*]`: 本段名字 + 紧随的数组序号段
+            if seg[:-3] != lp[j]:
+                return False
+            j += 1
+            if j >= len(lp) or not lp[j].isdigit():
+                return False
+            i += 1
+            j += 1
+            continue
+        if seg != lp[j]:
+            return False
+        i += 1
+        j += 1
+    return i == len(rp) and j == len(lp)
+
+
+def _path_value(doc, path):
+    cur = doc
+    for seg in path.split('/'):
+        if isinstance(cur, dict):
+            if seg not in cur:
+                return False, None
+        elif isinstance(cur, list):
+            if not seg.isdigit() or int(seg) >= len(cur):
+                return False, None
+            cur = cur[int(seg)]
+            continue
+        else:
+            return False, None
+        cur = cur[seg] if isinstance(cur, dict) else cur
+    return True, cur
+
+
+def proj_leaf_stream(doc, rules=None, strict=True, require=None):
+    """产语义投影叶流 (bytes) —— 与仓库测试侧同口径。
+
+    `strict=True`  : 每条规则都必须命中 (Q33 差分派生时的**证明**模式; 规则空心即抛错)。
+    `strict=False` : 逐规则**容忍空心**, 但整组仍 fail-closed —— `require` 里的**锚规则**
+                     (默认 window 三件套) 任一未命中 ⇒ 抛错 (记录不是这一类面 ⇒ 弃权)。
+    为什么两态都要: 真面记录里 `foreign_writes` 可以是**空数组**、`canon` 可以是 **null**
+    (规则按设计只在有内容时生效), 若按 strict 逐条要求命中, 判据会把正常记录判成弃权 (实测首跑)。
+    """
+    rules = PROJECTION_RULES if rules is None else rules
+    anchor = WINDOW_RULES if require is None else require
+    leaves = _leaf_walk(doc)
+    extra, applied, hollow = [], {}, []
+    for rule in rules:
+        rp, mode = rule['path'], rule['mode']
+        if mode == 'scalar':
+            hit = [p for p, _v in leaves if _rule_matches(rp, p)]
+            if not hit and strict:
+                raise KeyError('PROJECTION_RULE_UNMATCHED: %s (规则空心 ⇒ 判弃权)' % rp)
+            drop = set(hit)
+        else:                                   # array_count: 整族剔除 + 基数占位
+            found, val = _path_value(doc, rp)
+            if not found:
+                if strict:
+                    raise KeyError('PROJECTION_RULE_UNMATCHED: %s (规则空心 ⇒ 判弃权)' % rp)
+                drop = set()
+            else:
+                n = len(val) if isinstance(val, (list, dict)) else 1
+                extra.append((rp, '#n=%d' % n))
+                drop = {p for p, _v in leaves if p == rp or p.startswith(rp + '/')}
+                if not drop and strict:
+                    raise KeyError('PROJECTION_RULE_UNMATCHED: %s (规则空心 ⇒ 判弃权)' % rp)
+        applied[rp] = len(drop)
+        if not drop:
+            hollow.append(rp)
+        leaves = [lv for lv in leaves if lv[0] not in drop]
+    missing = [r for r in anchor if not applied.get(r)]
+    if missing:
+        raise KeyError('PROJECTION_ANCHOR_RULES_ABSENT: %s (非该类面记录 ⇒ 弃权, 不当绿)' % missing)
+    entries = [(p, _render_scalar(v, p)) for p, v in leaves] + extra
+    entries.sort(key=lambda t: t[0].encode('utf-8'))
+    parts = []
+    for p, v in entries:
+        pb, vb = p.encode('utf-8'), v.encode('utf-8')
+        parts.append(b'%d:' % len(pb) + pb + b'%d:' % len(vb) + vb)
+    return b''.join(parts), {'rules_applied': applied, 'hollow_rules': hollow}
+
+
+def proj_digest(doc, rules=None, strict=True, require=None):
+    """语义投影摘要 = sha256[:12] over 叶流 (跨语言同口径; 另一语言按同一规则文件复算)。"""
+    stream, meta = proj_leaf_stream(doc, rules=rules, strict=strict, require=require)
+    meta['leaf_stream_bytes'] = len(stream)
+    return sha12(stream), meta
+
+
+def proj_digest_file(path, rules=None, strict=True, require=None):
+    """对**记录文件**算投影摘要 (登记表 pin 用); 不可解析 ⇒ 抛 ValueError (调用方判弃权)。"""
+    try:
+        with open(path, encoding='utf-8-sig') as fh:
+            doc = json.load(fh)
+    except (OSError, ValueError) as exc:
+        raise ValueError('RECORD_UNREADABLE: %s (%s)' % (path, exc))
+    return proj_digest(doc, rules=rules, strict=strict, require=require)
+
+
+# 跨语言测试向量: 两端**各自独立实现**必须复算出同一 sha12 才算口径一致 (任一侧漂移 ⇒ 该断言红)。
+# 形状与真面记录同族 (含被遮蔽的运行期族 + 邻居面族 + 普通语义字段 + 布尔/空值/数组)。
+TEST_VECTOR_DOC = {
+    'schema': 'semantic-projection-vector/1',
+    'out': 'eval/capability/vector.json',
+    'canon': {'runtime_sidecar': 'eval/capability/vector.runtime.json'},
+    'side_effect_attribution': {
+        'window': {'t0': 1789535818.11, 't1': 1789536018.22, 'trace_dir': '/tmp/vector-abcdef'},
+        'trace': {'commands': 7, 'events': 3, 'log_bytes': 4096,
+                  'raw_paths_sample': ['/tmp/a.py', '/tmp/b.py']},
+        'census_in_repo_cwd': [{'pid': 11, 'cmd': 'sleep'}, {'pid': 12, 'cmd': 'sleep'}],
+        'foreign_writes': [{'path': 'docs/x.md', 'sha_before': 'aaaa', 'sha_after': 'bbbb'}],
+        'live_fd_scan': {'scanned': 5, 'errors': 0},
+    },
+    'results': [{'id': 'i0', 'rc': 0, 'pass': True}, {'id': 'i1', 'rc': 3, 'pass': False}],
+    'nested': {'n': None, 'flag': False},
+}
+TEST_VECTOR_SHA12 = 'bbd6b93aa9f0'
+
+
 def _get(doc, path):
     cur = doc
     for k in path:
@@ -185,6 +363,19 @@ def main():
     args = sys.argv[1:]
     if '--selftest' in args:
         return selftest()
+    if '--digest' in args:
+        target = args[args.index('--digest') + 1] if args.index('--digest') + 1 < len(args) else None
+        if not target or not os.path.exists(target):
+            print('ENV_FAIL: --digest 目标缺失 %r ⇒ 弃权' % target)
+            return 3
+        try:
+            d, meta = proj_digest_file(target)
+        except (ValueError, KeyError) as exc:
+            print('PROJECTION_ABSTAIN (%s)' % exc)
+            return 3
+        print('PROJ_DIGEST=%s rules_applied=%d leaf_stream_bytes=%d target=%s'
+              % (d, len(meta['rules_applied']), meta['leaf_stream_bytes'], target))
+        return 0
     inp = args[args.index('--in') + 1] if '--in' in args else None
     out = args[args.index('--out') + 1] if '--out' in args else None
     rout = args[args.index('--runtime-out') + 1] if '--runtime-out' in args else None
@@ -257,6 +448,32 @@ def selftest():
             cases['hollow_projection_rule_rejected'] = False
         except KeyError:
             cases['hollow_projection_rule_rejected'] = True
+        # 跨语言语义投影摘要 (EXP1-Q34): 运行期/邻居面置换 ⇒ 同摘要; 语义扰动 ⇒ 必变;
+        # 规则单一事实源来自数据文件; 未定义值形态 (浮点) ⇒ fail-closed 抛错
+        da, _ = proj_digest(ca)
+        db, _ = proj_digest(cb)
+        dc, _ = proj_digest(cc)
+        cases['proj_digest_ignores_runtime_and_neighbourhood'] = (da == db)
+        cases['proj_digest_changes_on_semantic_perturbation'] = (da != dc)
+        cases['proj_rules_loaded_from_data_file'] = (len(PROJECTION_RULES) == 11 and os.path.exists(RULES_PATH))
+        cases['proj_digest_cross_language_vector'] = (proj_digest(TEST_VECTOR_DOC)[0] == TEST_VECTOR_SHA12)
+        try:
+            proj_digest({'results': [{'rc': 1.5}]})
+            cases['proj_digest_unrenderable_fail_closed'] = False
+        except KeyError:
+            cases['proj_digest_unrenderable_fail_closed'] = True
+        # 锚规则缺席 ⇒ 弃权 (非该类面记录); 非锚规则空心 ⇒ 容忍且可见 (真面记录 foreign_writes 可空)
+        try:
+            proj_digest({'results': []})
+            cases['proj_digest_anchor_rules_absent_rejected'] = False
+        except KeyError:
+            cases['proj_digest_anchor_rules_absent_rejected'] = True
+        try:
+            dty, mty = proj_digest(TEST_VECTOR_DOC)
+            cases['proj_digest_hollow_non_anchor_tolerated_and_visible'] = (
+                len(mty['hollow_rules']) == 0 and len(mty['rules_applied']) == 11)
+        except KeyError:
+            cases['proj_digest_hollow_non_anchor_tolerated_and_visible'] = False
         # 回读: 侧车 + 记录都能解析, 且记录里不含墙钟值
         p = os.path.join(tmp, 'rec.json')
         rp = os.path.join(tmp, 'rec.runtime.json')
