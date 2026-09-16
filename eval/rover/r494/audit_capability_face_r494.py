@@ -76,8 +76,23 @@ def main():
     reds = [a for a in A if a.get("red")]
     rep["red_count"] = len(reds)
     rep["verdict"] = "PASS" if not reds else "FAIL"
-    json.dump(rep, open(OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    print("[audit] 面=%d 断言=%d 红=%d ⇒ %s (→ %s)" % (len(rep["faces"]), len(A), len(reds), rep["verdict"], OUT))
+    # R495 硬化: **幂等落盘** —— 语义未变则不重写文件 (保留旧 audited_at_epoch)。
+    # 原缺陷: 每次重跑都刷新时间戳 ⇒ 产物字节不稳 ⇒ 冻结 pin "每跑必红"(R495 形式门禁当场抓到)。
+    state = "rewritten"
+    if os.path.exists(OUT):
+        try:
+            old = json.load(open(OUT, encoding="utf-8"))
+        except Exception:
+            old = None
+        if isinstance(old, dict):
+            a_, b_ = dict(rep), dict(old)
+            a_.pop("audited_at_epoch", None)
+            b_.pop("audited_at_epoch", None)
+            if a_ == b_:
+                state = "unchanged"
+    if state == "rewritten":
+        json.dump(rep, open(OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    print("[audit] 面=%d 断言=%d 红=%d ⇒ %s (→ %s, 落盘=%s)" % (len(rep["faces"]), len(A), len(reds), rep["verdict"], OUT, state))
     for a in reds:
         print("[audit][红] %s: %s" % (a["id"], a["detail"]))
     return 0 if not reds else 1
