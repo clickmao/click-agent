@@ -1,0 +1,779 @@
+{
+ "schema": "caliber-declarations/1",
+ "owner_round": "EXP1-Q33",
+ "rule": "面内 (行含口径标记 ∧ 含数值对) 每个数值对必须在本台账有条目, 且 anchor_sha12 与快照行逐位一致; 行被改写 ⇒ ANCHOR_DRIFT (弃权单列), 不判绿。class 只允许闭集; 新对须重跑本脚本 (未裁定即拒写)。面为**活文档**, 快照 + 漂移单列 (见 caliber_void_audit_q33.py)。",
+ "face_snapshot": {
+  "n_files": 18,
+  "n_pairs": 46,
+  "files": {
+   "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md": {
+    "file_sha12": "bf38c2b67ab4",
+    "pairs": [
+     "1103:63→57",
+     "1110:63→57",
+     "1546:4→4",
+     "1614:4→2",
+     "1626:4→2",
+     "2771:927→39"
+    ]
+   },
+   "docs/plans/v0.22.0-exp6-embedding-model-selection.md": {
+    "file_sha12": "614c0b8fd395",
+    "pairs": [
+     "169:0.723→0.737"
+    ]
+   },
+   "docs/plans/v0.22.0-longterm-backlog.md": {
+    "file_sha12": "637e158be1aa",
+    "pairs": [
+     "16:0.059→0.1408",
+     "16:3→1",
+     "22:0→21",
+     "22:13→0",
+     "22:21→8",
+     "22:2701→1976",
+     "22:365→371",
+     "22:4→0",
+     "22:63→57",
+     "22:71→89",
+     "22:8→21",
+     "82:4→4",
+     "82:7→18"
+    ]
+   },
+   "docs/plans/v0.48.0-r427-duplicate-tie-precheck.md": {
+    "file_sha12": "c52672903276",
+    "pairs": [
+     "74:3→2"
+    ]
+   },
+   "docs/plans/v0.65.0-r445-judge-side-prefilter-precheck.md": {
+    "file_sha12": "8f3cde88eb7e",
+    "pairs": [
+     "10:17→7"
+    ]
+   },
+   "docs/plans/v0.66.0-r446-judge-determinism-and-zero-token-settlement.md": {
+    "file_sha12": "329613fb9eb9",
+    "pairs": [
+     "9:17→7"
+    ]
+   },
+   "docs/plans/v0.91.0-r475-replay-and-cache-accounting.md": {
+    "file_sha12": "7e561d34395a",
+    "pairs": [
+     "15:900→1.0152"
+    ]
+   },
+   "docs/reports/dev-return-digest.md": {
+    "file_sha12": "43763c9be46e",
+    "pairs": [
+     "107:396→400"
+    ]
+   },
+   "docs/reports/dynamic-telemetry-eval-rollback-strategy.md": {
+    "file_sha12": "161293540cf4",
+    "pairs": [
+     "198:928→860",
+     "198:941→939",
+     "209:1100→1250",
+     "261:812→176"
+    ]
+   },
+   "docs/reports/endpoint-and-audit-contract.md": {
+    "file_sha12": "272dfc25fb80",
+    "pairs": [
+     "11:7919.5→12775"
+    ]
+   },
+   "docs/reports/iteration-master-plan.md": {
+    "file_sha12": "660911108bfb",
+    "pairs": [
+     "443:146→149",
+     "512:149→150",
+     "52:64→97"
+    ]
+   },
+   "docs/reports/kpi2-token-report-R324.md": {
+    "file_sha12": "4ac61f2b9722",
+    "pairs": [
+     "52:11→12"
+    ]
+   },
+   "docs/reports/loop-detection-probe-hardening.md": {
+    "file_sha12": "9cb7cc638c8d",
+    "pairs": [
+     "45:1→5"
+    ]
+   },
+   "docs/reports/market-agent-capabilities-R338.md": {
+    "file_sha12": "c9d24598e26d",
+    "pairs": [
+     "289:200→500"
+    ]
+   },
+   "docs/reports/r472-cache-cap-experiment.md": {
+    "file_sha12": "7ddba80fd1fd",
+    "pairs": [
+     "25:584→5",
+     "25:768→3",
+     "25:789→5",
+     "25:910→3"
+    ]
+   },
+   "docs/reports/r474-real-provider-arms.md": {
+    "file_sha12": "0345c02ae693",
+    "pairs": [
+     "25:32097→14529",
+     "25:76094→32769"
+    ]
+   },
+   "docs/reports/r480-recall-test-ledger.md": {
+    "file_sha12": "7e00f577b89f",
+    "pairs": [
+     "170:348→20",
+     "170:687→6"
+    ]
+   },
+   "docs/reports/r489-arm-stability-and-quality-verdict.md": {
+    "file_sha12": "9f12df1c32f5",
+    "pairs": [
+     "74:6→13"
+    ]
+   }
+  }
+ },
+ "n_entries": 46,
+ "entries": [
+  {
+   "id": "cd-001",
+   "file": "docs/reports/dev-return-digest.md",
+   "line": 107,
+   "pair": "396→400",
+   "anchor_sha12": "629b8b75c0c8",
+   "class": "migrated_lexicon_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "Q32 词表命中: 非口径",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-003",
+   "file": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md",
+   "line": 198,
+   "pair": "928→860",
+   "anchor_sha12": "259f8e36d962",
+   "class": "same_caliber_trend",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": false,
+   "note": "同上一对: 同口径趋势序列 (括号内口径注解在同窗内)",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-004",
+   "file": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md",
+   "line": 209,
+   "pair": "1100→1250",
+   "anchor_sha12": "02f403c7b38c",
+   "class": "caliber_change_inline",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "行内逐字写「健康带 quick tok 上界 1100→1250 (C07 双轮成本口径登记)」⇒ 声明在行内",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-005",
+   "file": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md",
+   "line": 261,
+   "pair": "812→176",
+   "anchor_sha12": "a507d4a8a857",
+   "class": "contrast_arm_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": false,
+   "note": "行内写「行为差分口径确立 / 全隔离臂对照」⇒ 两侧是**对照组**读数, 非同一序列前后值",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-006",
+   "file": "docs/reports/endpoint-and-audit-contract.md",
+   "line": 11,
+   "pair": "7919.5→12775",
+   "anchor_sha12": "34add6ac6c70",
+   "class": "migrated_lexicon_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "Q32 词表命中: 并列,真值口径",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-007",
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 52,
+   "pair": "64→97",
+   "anchor_sha12": "318a17e98a5c",
+   "class": "detector_false_positive",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": false,
+   "note": "抽取器把算式 `(floor(前缀/64)−1)×64 ⇒ 97%` 跨符号误当并列对 (非两栏读数并列); 该行另有「口径修订/旧口径仅作参考」声明",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-008",
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 443,
+   "pair": "146→149",
+   "anchor_sha12": "49aaa9c57401",
+   "class": "migrated_lexicon_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "Q32 词表命中: 取代,历史读数,不再作为当前",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-009",
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 512,
+   "pair": "149→150",
+   "anchor_sha12": "a71eaf06ae52",
+   "class": "migrated_lexicon_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "Q32 词表命中: 取代,历史读数,不再作为当前",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-010",
+   "file": "docs/reports/kpi2-token-report-R324.md",
+   "line": 52,
+   "pair": "11→12",
+   "anchor_sha12": "a72cddf0646b",
+   "class": "migrated_lexicon_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "Q32 词表命中: 口径变更,可比性,可比性断点",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-011",
+   "file": "docs/reports/loop-detection-probe-hardening.md",
+   "line": 45,
+   "pair": "1→5",
+   "anchor_sha12": "f7af04dfcd84",
+   "class": "judgment_revision_inline",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": false,
+   "note": "行内逐字写「open_count 由 1→5 是**判定修正**, 不是计划项变多」",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-012",
+   "file": "docs/reports/market-agent-capabilities-R338.md",
+   "line": 289,
+   "pair": "200→500",
+   "anchor_sha12": "69a9b14d060e",
+   "class": "external_thirdparty",
+   "scope": "external_nonmetric",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": false,
+   "note": "外部第三方相互矛盾数字 (免费额度 200 vs 500), 非本仓读数面 ⇒ 不适用本仓口径声明纪律",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-013",
+   "file": "docs/reports/r472-cache-cap-experiment.md",
+   "line": 25,
+   "pair": "910→3",
+   "anchor_sha12": "55a954a8b1f1",
+   "class": "migrated_lexicon_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "Q32 词表命中: 并列",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-014",
+   "file": "docs/reports/r472-cache-cap-experiment.md",
+   "line": 25,
+   "pair": "789→5",
+   "anchor_sha12": "55a954a8b1f1",
+   "class": "migrated_lexicon_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "Q32 词表命中: 并列",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-015",
+   "file": "docs/reports/r472-cache-cap-experiment.md",
+   "line": 25,
+   "pair": "768→3",
+   "anchor_sha12": "55a954a8b1f1",
+   "class": "migrated_lexicon_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "Q32 词表命中: 并列",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-016",
+   "file": "docs/reports/r472-cache-cap-experiment.md",
+   "line": 25,
+   "pair": "584→5",
+   "anchor_sha12": "55a954a8b1f1",
+   "class": "migrated_lexicon_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "Q32 词表命中: 并列",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-017",
+   "file": "docs/reports/r474-real-provider-arms.md",
+   "line": 25,
+   "pair": "32097→14529",
+   "anchor_sha12": "59b89b975a4d",
+   "class": "migrated_lexicon_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "Q32 词表命中: 桩口径,供应商真值",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-018",
+   "file": "docs/reports/r474-real-provider-arms.md",
+   "line": 25,
+   "pair": "76094→32769",
+   "anchor_sha12": "59b89b975a4d",
+   "class": "migrated_lexicon_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "Q32 词表命中: 桩口径,供应商真值",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-019",
+   "file": "docs/reports/r480-recall-test-ledger.md",
+   "line": 170,
+   "pair": "687→6",
+   "anchor_sha12": "7fdfb781c174",
+   "class": "migrated_lexicon_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "Q32 词表命中: 不可比,可比性",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-020",
+   "file": "docs/reports/r480-recall-test-ledger.md",
+   "line": 170,
+   "pair": "348→20",
+   "anchor_sha12": "7fdfb781c174",
+   "class": "migrated_lexicon_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "Q32 词表命中: 不可比,可比性",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-021",
+   "file": "docs/reports/r489-arm-stability-and-quality-verdict.md",
+   "line": 74,
+   "pair": "6→13",
+   "anchor_sha12": "d5136734d40c",
+   "class": "contrast_arm_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": false,
+   "note": "对照组并列: 「调用数三跑完全相同 = 6 vs 13 = −53.85%」两侧是**不同臂**(本地通道臂 vs 分母臂) 的调用数, 非同一序列前后值",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-022",
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1103,
+   "pair": "63→57",
+   "anchor_sha12": "4c35a0b094f8",
+   "class": "candidate_delta_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": false,
+   "note": "表格「C10 口径」列 + 行内「剔除 6 条 index-scope-out」+ `delta_applied=false` (候选态)",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-023",
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1110,
+   "pair": "63→57",
+   "anchor_sha12": "08f942c9e011",
+   "class": "migrated_lexicon_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "Q32 词表命中: 可比性",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-024",
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1546,
+   "pair": "4→4",
+   "anchor_sha12": "abe9162e26f3",
+   "class": "same_value_no_change",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": false,
+   "note": "「P3 计数面不成立 (4→4)」= 两侧同值, 非口径位移",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-025",
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1614,
+   "pair": "4→2",
+   "anchor_sha12": "3904cfbd06ad",
+   "class": "projected_delta_annotated",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": false,
+   "note": "带出处标注的计划量 (Q16 非重放 4 → 2) + 可复算判据",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-026",
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1626,
+   "pair": "4→2",
+   "anchor_sha12": "46843c547da9",
+   "class": "projected_delta_annotated",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": false,
+   "note": "行内写「附录 Q 口径: 不可重放 4 → 2」⇒ 口径出处已在行内",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-027",
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2771,
+   "pair": "927→39",
+   "anchor_sha12": "7eb53a9f0eab",
+   "class": "self_referential_example",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": false,
+   "note": "自指实例: 本行是「记录 Q32 误红」的文本, `927→39 tokens 达标` 是被引用的**自明读数样例**本身 ⇒ 机检不得把「记录缺陷的文本」当活并列; 同族坑 (引用示例须入围栏/标注)",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-028",
+   "file": "docs/plans/v0.22.0-exp6-embedding-model-selection.md",
+   "line": 169,
+   "pair": "0.723→0.737",
+   "anchor_sha12": "376ed30a2d68",
+   "class": "migrated_lexicon_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "Q32 词表命中: 作废",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-029",
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 16,
+   "pair": "3→1",
+   "anchor_sha12": "21219c36f67f",
+   "class": "migrated_lexicon_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "Q32 词表命中: 并列",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-030",
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 16,
+   "pair": "0.059→0.1408",
+   "anchor_sha12": "21219c36f67f",
+   "class": "migrated_lexicon_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "Q32 词表命中: 并列",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-031",
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 22,
+   "pair": "0→21",
+   "anchor_sha12": "5020fab20c0d",
+   "class": "migrated_lexicon_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "Q32 词表命中: 双栏,作废,可比性,可比性断点",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-032",
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 22,
+   "pair": "13→0",
+   "anchor_sha12": "5020fab20c0d",
+   "class": "migrated_lexicon_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "Q32 词表命中: 双栏,作废,可比性,可比性断点",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-033",
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 22,
+   "pair": "21→8",
+   "anchor_sha12": "5020fab20c0d",
+   "class": "migrated_lexicon_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "Q32 词表命中: 双栏,作废,可比性,可比性断点",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-034",
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 22,
+   "pair": "8→21",
+   "anchor_sha12": "5020fab20c0d",
+   "class": "migrated_lexicon_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "Q32 词表命中: 双栏,作废,可比性,可比性断点",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-035",
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 22,
+   "pair": "71→89",
+   "anchor_sha12": "5020fab20c0d",
+   "class": "migrated_lexicon_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "Q32 词表命中: 双栏,作废,可比性,可比性断点",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-036",
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 22,
+   "pair": "63→57",
+   "anchor_sha12": "5020fab20c0d",
+   "class": "migrated_lexicon_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "Q32 词表命中: 双栏,作废,可比性,可比性断点",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-037",
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 22,
+   "pair": "2701→1976",
+   "anchor_sha12": "5020fab20c0d",
+   "class": "migrated_lexicon_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "Q32 词表命中: 双栏,作废,可比性,可比性断点",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-038",
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 22,
+   "pair": "63→57",
+   "anchor_sha12": "5020fab20c0d",
+   "class": "migrated_lexicon_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "Q32 词表命中: 双栏,作废,可比性,可比性断点",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-039",
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 22,
+   "pair": "365→371",
+   "anchor_sha12": "5020fab20c0d",
+   "class": "migrated_lexicon_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "Q32 词表命中: 双栏,作废,可比性,可比性断点",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-040",
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 22,
+   "pair": "4→0",
+   "anchor_sha12": "5020fab20c0d",
+   "class": "migrated_lexicon_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "Q32 词表命中: 双栏,作废,可比性,可比性断点",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-041",
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 82,
+   "pair": "4→4",
+   "anchor_sha12": "70adf54d218a",
+   "class": "same_value_no_change",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": false,
+   "note": "探针读数 ±tools 前后同值 (4→4 token, 静默丢弃) ⇒ 非口径位移",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-042",
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 82,
+   "pair": "7→18",
+   "anchor_sha12": "70adf54d218a",
+   "class": "projected_delta_annotated",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": false,
+   "note": "负控合成模板读数 7→18(+11) 且同句给出 md5 判别力说明",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-043",
+   "file": "docs/plans/v0.48.0-r427-duplicate-tie-precheck.md",
+   "line": 74,
+   "pair": "3→2",
+   "anchor_sha12": "91ac11ec5b63",
+   "class": "migrated_lexicon_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "Q32 词表命中: 并列",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-044",
+   "file": "docs/plans/v0.65.0-r445-judge-side-prefilter-precheck.md",
+   "line": 10,
+   "pair": "17→7",
+   "anchor_sha12": "f8c7083c97d9",
+   "class": "migrated_lexicon_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "Q32 词表命中: 真值口径",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-045",
+   "file": "docs/plans/v0.66.0-r446-judge-determinism-and-zero-token-settlement.md",
+   "line": 9,
+   "pair": "17→7",
+   "anchor_sha12": "c28d36bbe9de",
+   "class": "migrated_lexicon_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "Q32 词表命中: 真值口径",
+   "owner_round": "EXP1-Q33"
+  },
+  {
+   "id": "cd-046",
+   "file": "docs/plans/v0.91.0-r475-replay-and-cache-accounting.md",
+   "line": 15,
+   "pair": "900→1.0152",
+   "anchor_sha12": "64d379121ec9",
+   "class": "inapplicable_declared",
+   "scope": "internal_caliber",
+   "caliber_from": null,
+   "caliber_to": null,
+   "supersedes": true,
+   "note": "行首「口径:」+ 行内「K2b 对该轮不适用」⇒ 已声明该轮超出口径适用面",
+   "owner_round": "EXP1-Q33"
+  }
+ ]
+}

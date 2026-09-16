@@ -1,0 +1,48 @@
+{
+ "round": "EXP1-Q33",
+ "schema": "caliber-void-audit/2",
+ "caliber": "structured_fields",
+ "ledger": "docs/reports/caliber-declarations.json",
+ "ledger_sha12": "a8b924950d20",
+ "n_entries": 46,
+ "n_declared": 46,
+ "n_anchor_drift": 0,
+ "n_out_of_range": 0,
+ "n_uncovered": 0,
+ "n_red": 0,
+ "reds": [],
+ "drift": [],
+ "out_of_range": [],
+ "by_class": {
+  "migrated_lexicon_declared": 30,
+  "same_caliber_trend": 2,
+  "caliber_change_inline": 1,
+  "contrast_arm_declared": 2,
+  "detector_false_positive": 1,
+  "judgment_revision_inline": 1,
+  "external_thirdparty": 1,
+  "candidate_delta_declared": 1,
+  "same_value_no_change": 2,
+  "projected_delta_annotated": 3,
+  "self_referential_example": 1,
+  "inapplicable_declared": 1
+ },
+ "live_drift": {
+  "n_live_pairs": 46,
+  "n_snapshot_pairs": 45,
+  "n_new": 0,
+  "n_gone": 0,
+  "new_sample": [],
+  "gone_sample": [],
+  "files_changed": []
+ },
+ "refresh_needed": false,
+ "conservation": {
+  "declared + drift + oor == entries": true,
+  "declared": 46,
+  "drift": 0,
+  "oor": 0,
+  "entries": 46
+ },
+ "caliber_note": "判据绑**字段** (台账 class/scope/supersedes + anchor_sha12); 词面只用于面定义(行含口径标记) 与 Q32 迁移证据。漂移/越界 = 弃权单列, 不判绿。"
+}

@@ -1,0 +1,59 @@
+{
+ "round": "EXP1-Q33",
+ "schema": "prereg/1",
+ "date": "2026-09-16",
+ "branch": "A (计划项 exp1 最前未完成项; mode=tasks open_count=8)",
+ "trigger": "AG.7 五候选 + 用户令 2026-09-16「所有候选放一轮解决」(禁单步推进)",
+ "scope_rule": "本轮 = 全部五候选并轮; 未闭合遗留一并处理; 每条候选须有真机读数或如实记 execution_blocked (禁占位 verdict)",
+ "machine_gate": {
+  "observed_before_start": {
+   "mem_available_kb": 1383000,
+   "sibling_round": "R490 (前台/兄弟会话在飞: /tmp/pub_r490 + bash eval/rover/r490/run_rest_r490.sh + agenthost 49012)",
+   "agenthost_procs": 6,
+   "llama_server_procs": 2,
+   "stale_orphans_observed": ["/tmp/pub_r476/agenthost:48960", "/tmp/pub_r476/agenthost:48961", "/tmp/pub_r479v2/agenthost:48962", "/tmp/pub_r479v2/agenthost:48963"],
+   "consequence": "dotnet 构建/测试与全量面在测量窗口内不并发执行 (共享机纯净闸 + 批测/单测/build 互斥); 本侧只做不吃核的重活, 重活有界等待后结转"
+  }
+ },
+ "criteria": {
+  "C1": {
+   "claim": "「两栏并列 ⇒ 需作废/不可比声明」判据由**词面窗口启发式**改为**结构化字段**: 声明源 = 台账 `docs/reports/caliber-declarations.json` 条目 (caliber/supersedes/class/scope) + 行内结构标记; 判据绑字段不绑词面",
+   "pass": "结构化审计 RED==0 ∧ 面内每个候选对都有台账条目 (覆盖守恒: 面内 caliber 行对数 == 台账命中数 + 停用注记数) ∧ 14 项 Q32 候选逐条有裁定 (class+reason+anchor)",
+   "evidence": "eval/capability/exp1-q33/caliber_void_audit_q33.json + adjudication_q33.json",
+   "negative_control": ["无条目对 ⇒ 必 RED (判别力)", "条目 anchor_sha12 与现盘不符 ⇒ ANCHOR_DRIFT 弃权单列 (不判绿)", "台账条目缺必填字段 ⇒ fail-closed rc=3", "代码跨行公式对 (反引号内) ⇒ NOTE_code_span 不判红 (降噪且非词面)"],
+   "honest_boundary": "分类由人复核后写入结构化字段; 判据绑字段但不证明分类本身正确 —— 故须留 class 分布 + 逐条 reason + anchor 可复算"
+  },
+  "C2": {
+   "claim": "归档 ripple 收口: `manifest.entries[].deps_tmp_refs` 22 条 distinct 依赖逐条裁定 ∈ {archived(逐字节入库), external_asset(在场, 记 sha/bytes, 不入库), runtime_product(运行时产物, 接受可能缺席), missing_declared}",
+   "pass": "22/22 有裁定 ∧ 纳入库者 sha256 与源逐位相同 ∧ 归档件再跑幂等 (no-op) ∧ 裁定表守恒 (Σ类 == 22)",
+   "evidence": "eval/capability/exp1-q33/deps_adjudication_q33.json + archived_deps/manifest_deps.json",
+   "negative_control": ["归档目标已存在但字节不同 ⇒ REFUSE rc=2", "源缺失且未登记为 external/runtime ⇒ rc=3 弃权 (不当红不当绿)"]
+  },
+  "C3": {
+   "claim": "面记录确定化: `side_effect_attribution.window{t0,t1,trace_dir}` 与内嵌随机 trace 路径移出被 pin 的字节面 ⇒ 面记录可跨会话逐位复算, 摆脱「提交时点快照」",
+   "pass": "runtime 变体注入 (不同 t0/t1/trace_dir) 两次 ⇒ canonical sha12 相同 ∧ 语义变体注入 (某器具 rc/verdict 变) ⇒ canonical sha12 必不同 (非平凡) ∧ canonical 摘要在现盘真记录上复算稳定 ∧ 侧车文件含被移出的 runtime 字段",
+   "evidence": "eval/capability/exp1-q33/canon_face_evidence_q33.json",
+   "negative_control": ["语义字段扰动必变 (非恒绿)", "侧车缺失/不可解析 ⇒ rc=3 弃权, 不判绿"],
+   "note": "现有冻结记录**不就地改写** (避免 pin 破裂): 迁移发生在下一次真跑面时, 届时 repin (registry 变更 ⇒ 同轮形式门禁)"
+  },
+  "C4": {
+   "claim": "面扩容重开条件按字面执行: `face_cap_recheck_q32.json.reopen_condition` 一字不改; 本轮**不扩 L2 面** (新器具登记为证据面 / 面别分区)",
+   "pass": "机检 soft_cap==67108864 ∧ k_min==2.0 ∧ 面内 L2 器具数==27 ∧ 新器具不出现在 instruments.json 的 L2 清单 ∧ 磁盘余量 > 磁盘闸 ∧ N_MAX 仍为 0",
+   "evidence": "eval/capability/exp1-q33/reopen_condition_check_q33.json",
+   "negative_control": ["夹具 L2 数 +1 ⇒ 必判红 (证明该闸非恒真)"]
+  },
+  "C5": {
+   "claim": "外部资产显式字段: 复现前提依赖的外部资产 (模型权重/发布物/venv) 由 evidence_cmd 文本散落 → registry 行显式字段 `external_assets[]` (path/kind/present/sha12/bytes), 判据可机检「复现前提是否在场」",
+   "pass": "派生器覆盖全部引用外部资产的 registry 行 (凡 evidence_cmd/evidence_path 含外部路径者必有显式字段) ∧ present 字段由现盘实测填充 ∧ 缺失者 present=false 且 kind 标注",
+   "evidence": "eval/capability/exp1-q33/external_assets_q33.json",
+   "negative_control": ["注入一条含 /tmp 路径但无字段的行 ⇒ 覆盖闸必报缺口", "在场资产被删除 ⇒ present 必翻 false (非恒 true)"],
+   "gate_dependency": "registry 变更 ⇒ 同轮形式门禁 (VerificationForm); 门禁不可跑时按 deferred_policy 结转, 禁伪造绿"
+  }
+ },
+ "deferred_policy": {
+  "bounded_wait": "重活 (dotnet 形式门禁 / 全量面) 起手前连续采样占用 + MemAvailable; 在飞则有界等待; 仍占用 ⇒ 本轮只落盘不提交该部分, 记 execution_blocked + 等待时长 + 终态占用读数",
+  "forbidden": ["伪造门禁绿", "为自用拆共享编译服务", "占用未清即跑批测/单测"],
+  "carry_over_format": "{item, status: execution_blocked|carried, reason, next_round}"
+ },
+ "dedup_rule": "本轮读数只落 eval/capability/exp1-q33/; kpi.jsonl 只追加一行 (幂等, 键集与既有行一致); 单轮探针不写 kpi.jsonl"
+}

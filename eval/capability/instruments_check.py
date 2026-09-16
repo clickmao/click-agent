@@ -41,6 +41,8 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'eval/capability/exp1-q22'))
 import side_effect_gate as seg  # noqa: E402   (EXP1-Q22 归因式副作用闸)
+sys.path.insert(0, str(ROOT / 'eval/capability'))
+import face_record_canon as frc  # noqa: E402   (EXP1-Q33 面记录确定化: 运行期字段移出被 pin 的字节面)
 MAN = ROOT / 'eval/capability/instruments.json'
 OUT = ROOT / 'eval/capability/instruments-check.json'
 OUT_DRIFT = ROOT / 'eval/capability/instruments-check-drift.json'   # 负控模式独立命名空间 (不得覆盖正控证据)
@@ -315,8 +317,28 @@ def main():
            'side_effects': self_dirt,
            'side_effect_attribution': gate_rep,
            'passed': len(res) - bad, 'total': len(res), 'results': res}
-    target.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
-    print(f"\nL2 器具验收面[{face}]: {len(res) - bad}/{len(res)} 通过; 落盘 {target.relative_to(ROOT)}")
+    # EXP1-Q33 (C3): 面记录确定化 —— 运行期非语义字段 (墙钟/随机 trace 目录) 移入侧车,
+    # 记录字节只随语义内容变化 ⇒ 冻结 pin 可跨会话逐位复算 (Q32 的「提交时点快照」语义消解)。
+    runtime_target = target.with_name(target.stem + '.runtime.json')
+    doc['canon'] = {'nonsemantic_fields': ['/'.join(f) for f in frc.RUNTIME_FIELDS],
+                    'runtime_sidecar': (str(runtime_target.relative_to(ROOT))
+                                        if str(runtime_target).startswith(str(ROOT)) else str(runtime_target)),
+                    'note': '记录字节 = 语义面; 运行期字段 (t0/t1/trace_dir) 见侧车 (Q33 确定化)'}
+    canon_fail = None
+    try:
+        rep = frc.write_record(doc, target, runtime_target)
+        print('CANON-SPLIT: %s sha12=%s bytes=%d; 运行期字段 → %s'
+              % (target.name, rep['canon_sha12'], rep['canon_bytes'], runtime_target.name))
+    except Exception as exc:                      # fail-visible: 不静默写不可复算的记录
+        canon_fail = str(exc)
+        target.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
+        print('CANON-FAIL (%s) ⇒ 记录以**原始**字节落盘; 冻结 pin 不可跨会话复算 (可见告警)' % canon_fail)
+    _tp = str(target)
+    _tpd = str(pathlib.Path(_tp).relative_to(ROOT)) if _tp.startswith(str(ROOT)) else _tp
+    print(f"\nL2 器具验收面[{face}]: {len(res) - bad}/{len(res)} 通过; 落盘 {_tpd}")
+    if canon_fail:
+        print('CANON_NOT_DETERMINISTIC: 确定化层失败 ⇒ 本面读数不得用作 pin 证据 (判红)')
+        return 1
     if inj_mode and not injected:
         print('INJECT-NOT-APPLIED (%s): 无可施加行 ⇒ 负控未施加 (判红)' % inj_mode)
         return 1

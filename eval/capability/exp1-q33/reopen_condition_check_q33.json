@@ -1,0 +1,42 @@
+{
+ "round": "EXP1-Q33",
+ "schema": "face-cap-reopen-check/1",
+ "source_of_truth": {
+  "soft_cap": 67108864,
+  "hard_cap": 268435456,
+  "k_min": 2.0,
+  "derived_from": [
+   "eval/capability/exp1-q22/side_effect_gate.py",
+   "eval/capability/exp1-q31/instruments/face_cap_headroom.py"
+  ]
+ },
+ "reopen_condition_literal": {
+  "trigger": "需要新增 L2 面器具 (面别分区不适用) 时",
+  "needed_soft_cap_for_plus3": 75497472,
+  "formula": "ceil8MiB(k_min × (log_bytes + 3 × m_hist))",
+  "disk_gate_bytes_free_now": 13734285312,
+  "hard_cap_now": 268435456
+ },
+ "live": {
+  "n_instruments": 27,
+  "q33_entries_in_l2_face": [],
+  "face_log_bytes_from_record": 33388397,
+  "m_hist_bytes_per_instrument": 588422.8,
+  "allowance_bytes": 166035.0,
+  "n_max_recomputed": 0,
+  "disk_free_bytes_now": 13588643840
+ },
+ "verdicts": {
+  "soft_cap_unchanged": true,
+  "k_min_unchanged": true,
+  "hard_cap_unchanged": true,
+  "reopen_needed_soft_cap_literal": true,
+  "face_size_is_27": true,
+  "no_q33_entry_in_l2_face": true,
+  "n_max_recomputed_is_0": true,
+  "disk_free_above_reopen_gate": true
+ },
+ "n_red": 0,
+ "reds": [],
+ "decision": "no-expand: 本轮 4 件新器具全部留在 `eval/**` 证据面, L2 面维持 27; 重开条件按字面执行 (soft_cap 72 MiB + 磁盘闸 + 重审 + 台账新行) —— 未触发, 故不扩"
+}

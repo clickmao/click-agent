@@ -1,0 +1,21 @@
+=== 起手闸 (MemAvailable MB, 需 >= 2650) ===
+  1990
+=== 前置: 杀 llama-server (RAM 让位) ===
+=== 密钥 ===
+  keys: SET
+=== 适配器 (ADAPTER_DUMP_FULL=1 ⇒ 实发全文落盘) ===
+  adapter pid=1040576
+=== 我方 host (R462: 召回-现实一致性闸 + 语言无关召回探针) ===
+[agent] rc=0
+/home/agentuser/AgentFramework/eval/rover/r462/r462_run.sh: line 42: 1040592 Killed                  AGENTFRAMEWORK_FRONTEND_TOKEN=r462-token AGENTFRAMEWORK_CONFIG=$E/agent/cfg AGENTFRAMEWORK_WORKSPACE=$E/agent/work AGENTFRAMEWORK_ACTION_LOOP=on AGENTFRAMEWORK_PLAN_RESUME_FALLTHROUGH=on AGENTFRAMEWORK_ACTION_AUDIT="$OUT/audit" setsid nohup $BIN --frontend-api 48617 > "$OUT/host-agent.log" 2>&1  (wd: /tmp/r462_env/agent/work)
+=== 产物 ===
+  count.txt   = 4|
+  merged.txt  = ALPHA|BETA|GAMMA|
+  stats.txt   = chars=14|
+  first.txt   = R455 fixture note|
+=== 实发全文落盘数 ===
+17
+=== 判分 ===
+{"P1_recall_reality_gate_visible": true, "P2_language_agnostic_recall": true, "P3_fail_only_zero_token": true, "P4_no_regress": true}
+PASS -> /home/agentuser/AgentFramework/eval/rover/r462/verdict-r462.json
+=== done ===

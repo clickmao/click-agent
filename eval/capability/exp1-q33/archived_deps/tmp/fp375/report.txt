@@ -1,0 +1,19 @@
+host dll = ['/home/agentuser/AgentFramework/src/agent.host/bin/Release/net10.0/agenthost.dll']
+[host] [frontend-api] frontendapi: 监听 :48637 (契约 v1)
+[host] frontend-api: READY :48637 (chat.send 直通 V2 管线; Ctrl+C 退出)
+[host] frontend-api: AUTH token = 2E8F089BD8276D2059003CFD12E471E3FCBEFB29FBEF084C550E8A98C86D2B24 (客户端首行 {"type":"auth","token":"..."}; env AGENTFRAMEWORK_FRONTEND_TOKEN 可注入)
+token acquired, ready
+--- P1 确定性: 真机接线证据 ---
+[client<-] {"v":1,"type":"resp","req_id":"p1","ok":true,"payload":{"pong":true}}
+P1.1 meta.ping ok=True
+[client<-] {"v":1,"type":"resp","req_id":"p2","ok":true,"payload":{"ok":false,"ask_id":"ask-forged0","reason":"unknown_ask"}}
+P1.2 伪造 ask_id 回复 -> {"ok": false, "ask_id": "ask-forged0", "reason": "unknown_ask"}
+[client<-] {"v":1,"type":"resp","req_id":"p3","ok":true,"payload":{"ok":false,"ask_id":"ask-forged1","reason":"unknown_ask"}}
+P1.3 伪造 ask_id 取消 -> {"ok": false, "ask_id": "ask-forged1", "reason": "unknown_ask"}
+[client<-] {"v":1,"type":"resp","req_id":"p4","ok":false,"payload":{},"error":{"code":"bad_payload","msg":"ask.reply \u9700\u8981\u975E\u7A7A ask_id (payload: {\u0022ask_id\u0022:\u0022ask-xxxxxxxx\u0022})"}}
+P1.4 空 envelope -> error={"code": "bad_payload", "msg": "ask.reply 需要非空 ask_id (payload: {\"ask_id\":\"ask-xxxxxxxx\"})"}
+[client<-] {"v":1,"type":"resp","req_id":"p5","ok":true,"payload":{"session_id":"frontend-main","model":{"id":"deepseek-flash","provider":"deepseek","selection":"init","mode":"auto","switches":0},"uptime_ms":939,"ready":true}}
+P1.5 state.snapshot ok=True
+--- P2 真机: chat.send 抢真实 ask 事件 (最多 150s) ---
+[client<-] {"v":1,"type":"resp","req_id":"c1","ok":true,"payload":{"reply":"[\u9694\u79BB\u4EFB\u52A1] \u6211\u53EF\u4EE5\u5E2E\u4F60\u5B8C\u6210\u63A8\u9001\uFF0C\u4F46\u9700\u8981\u5148\u786E\u8BA4\u51E0\u4EF6\u4E8B\uFF08\u6211\u8FD9\u91CC\u770B\u4E0D\u5230\u4F60\u7684\u672C\u5730\u76EE\u5F55\u72B6\u6001\uFF0C\u4E5F\u4E0D\u8BE5\u731C\uFF09\u3002\n\n**\u8BF7\u5148\u544A\u8BC9\u6211\uFF1A**\n\n1. **\u9879\u7
+P2 ask 事件数 = 0 ; chat.send 响应已收 = True

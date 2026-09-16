@@ -1,0 +1,166 @@
+{
+ "round": "EXP1-Q33",
+ "schema": "caliber-adjudication/1",
+ "face": {
+  "n_files": 18,
+  "n_pairs": 46,
+  "q32_baseline_pairs": 44,
+  "delta_vs_q32": 2
+ },
+ "face_delta_note": "面为活文档: Q32 审计 (13:21) 之后其它写者新增 2 对 ⇒ 快照 46; 增量已逐条裁定 (见 manual_rows 中 self_referential_example / contrast_arm_declared)",
+ "ledger": "docs/reports/caliber-declarations.json",
+ "ledger_sha12": "a8b924950d20",
+ "n_entries": 46,
+ "by_class": {
+  "migrated_lexicon_declared": 30,
+  "same_caliber_trend": 2,
+  "caliber_change_inline": 1,
+  "contrast_arm_declared": 2,
+  "detector_false_positive": 1,
+  "judgment_revision_inline": 1,
+  "external_thirdparty": 1,
+  "candidate_delta_declared": 1,
+  "same_value_no_change": 2,
+  "projected_delta_annotated": 3,
+  "self_referential_example": 1,
+  "inapplicable_declared": 1
+ },
+ "n_manual_reviewed": 16,
+ "n_migrated_from_lexicon": 30,
+ "manual_rows": [
+  {
+   "key": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md:1103:63→57",
+   "pair": "63→57",
+   "class": "candidate_delta_declared",
+   "supersedes": false,
+   "note": "表格「C10 口径」列 + 行内「剔除 6 条 index-scope-out」+ `delta_applied=false` (候选态)",
+   "anchor_sha12": "4c35a0b094f8"
+  },
+  {
+   "key": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md:1546:4→4",
+   "pair": "4→4",
+   "class": "same_value_no_change",
+   "supersedes": false,
+   "note": "「P3 计数面不成立 (4→4)」= 两侧同值, 非口径位移",
+   "anchor_sha12": "abe9162e26f3"
+  },
+  {
+   "key": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md:1614:4→2",
+   "pair": "4→2",
+   "class": "projected_delta_annotated",
+   "supersedes": false,
+   "note": "带出处标注的计划量 (Q16 非重放 4 → 2) + 可复算判据",
+   "anchor_sha12": "3904cfbd06ad"
+  },
+  {
+   "key": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md:1626:4→2",
+   "pair": "4→2",
+   "class": "projected_delta_annotated",
+   "supersedes": false,
+   "note": "行内写「附录 Q 口径: 不可重放 4 → 2」⇒ 口径出处已在行内",
+   "anchor_sha12": "46843c547da9"
+  },
+  {
+   "key": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md:2771:927→39",
+   "pair": "927→39",
+   "class": "self_referential_example",
+   "supersedes": false,
+   "note": "自指实例: 本行是「记录 Q32 误红」的文本, `927→39 tokens 达标` 是被引用的**自明读数样例**本身 ⇒ 机检不得把「记录缺陷的文本」当活并列; 同族坑 (引用示例须入围栏/标注)",
+   "anchor_sha12": "7eb53a9f0eab"
+  },
+  {
+   "key": "docs/plans/v0.22.0-longterm-backlog.md:82:4→4",
+   "pair": "4→4",
+   "class": "same_value_no_change",
+   "supersedes": false,
+   "note": "探针读数 ±tools 前后同值 (4→4 token, 静默丢弃) ⇒ 非口径位移",
+   "anchor_sha12": "70adf54d218a"
+  },
+  {
+   "key": "docs/plans/v0.22.0-longterm-backlog.md:82:7→18",
+   "pair": "7→18",
+   "class": "projected_delta_annotated",
+   "supersedes": false,
+   "note": "负控合成模板读数 7→18(+11) 且同句给出 md5 判别力说明",
+   "anchor_sha12": "70adf54d218a"
+  },
+  {
+   "key": "docs/plans/v0.91.0-r475-replay-and-cache-accounting.md:15:900→1.0152",
+   "pair": "900→1.0152",
+   "class": "inapplicable_declared",
+   "supersedes": true,
+   "note": "行首「口径:」+ 行内「K2b 对该轮不适用」⇒ 已声明该轮超出口径适用面",
+   "anchor_sha12": "64d379121ec9"
+  },
+  {
+   "key": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md:198:928→860",
+   "pair": "928→860",
+   "class": "same_caliber_trend",
+   "supersedes": false,
+   "note": "同上一对: 同口径趋势序列 (括号内口径注解在同窗内)",
+   "anchor_sha12": "259f8e36d962"
+  },
+  {
+   "key": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md:198:941→939",
+   "pair": "941→939",
+   "class": "same_caliber_trend",
+   "supersedes": false,
+   "note": "quick-11 同一口径内的五批递降序列; 括号内已标注全量批 1165 属**不同口径**",
+   "anchor_sha12": "259f8e36d962"
+  },
+  {
+   "key": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md:209:1100→1250",
+   "pair": "1100→1250",
+   "class": "caliber_change_inline",
+   "supersedes": true,
+   "note": "行内逐字写「健康带 quick tok 上界 1100→1250 (C07 双轮成本口径登记)」⇒ 声明在行内",
+   "anchor_sha12": "02f403c7b38c"
+  },
+  {
+   "key": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md:261:812→176",
+   "pair": "812→176",
+   "class": "contrast_arm_declared",
+   "supersedes": false,
+   "note": "行内写「行为差分口径确立 / 全隔离臂对照」⇒ 两侧是**对照组**读数, 非同一序列前后值",
+   "anchor_sha12": "a507d4a8a857"
+  },
+  {
+   "key": "docs/reports/iteration-master-plan.md:52:64→97",
+   "pair": "64→97",
+   "class": "detector_false_positive",
+   "supersedes": false,
+   "note": "抽取器把算式 `(floor(前缀/64)−1)×64 ⇒ 97%` 跨符号误当并列对 (非两栏读数并列); 该行另有「口径修订/旧口径仅作参考」声明",
+   "anchor_sha12": "318a17e98a5c"
+  },
+  {
+   "key": "docs/reports/loop-detection-probe-hardening.md:45:1→5",
+   "pair": "1→5",
+   "class": "judgment_revision_inline",
+   "supersedes": false,
+   "note": "行内逐字写「open_count 由 1→5 是**判定修正**, 不是计划项变多」",
+   "anchor_sha12": "f7af04dfcd84"
+  },
+  {
+   "key": "docs/reports/market-agent-capabilities-R338.md:289:200→500",
+   "pair": "200→500",
+   "class": "external_thirdparty",
+   "supersedes": false,
+   "note": "外部第三方相互矛盾数字 (免费额度 200 vs 500), 非本仓读数面 ⇒ 不适用本仓口径声明纪律",
+   "anchor_sha12": "69a9b14d060e"
+  },
+  {
+   "key": "docs/reports/r489-arm-stability-and-quality-verdict.md:74:6→13",
+   "pair": "6→13",
+   "class": "contrast_arm_declared",
+   "supersedes": false,
+   "note": "对照组并列: 「调用数三跑完全相同 = 6 vs 13 = −53.85%」两侧是**不同臂**(本地通道臂 vs 分母臂) 的调用数, 非同一序列前后值",
+   "anchor_sha12": "d5136734d40c"
+  }
+ ],
+ "conservation": {
+  "entries": 46,
+  "face_pairs": 46,
+  "ok": true,
+  "unresolved": []
+ }
+}

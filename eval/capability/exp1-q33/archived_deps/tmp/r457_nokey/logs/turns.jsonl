@@ -1,0 +1,71 @@
+{
+  "stats": {
+    "turns": 1,
+    "ok": 1,
+    "events": 5,
+    "asks": 4,
+    "errors": []
+  },
+  "turns": [
+    {
+      "turn": 1,
+      "text": "当前目录下一共有几个 .py 文件？",
+      "reply": "⚠ 未配置模型凭据 — 环境变量 AGENTFRAMEWORK_KEYS_DEEPSEEK 未设置, 无法调用 deepseek-flash。请设置该环境变量后重试。",
+      "ok": true,
+      "events": [
+        {
+          "event": "plan.created",
+          "keys": [
+            "hybrid",
+            "local",
+            "nodes",
+            "nodes_total",
+            "plan_id",
+            "remote"
+          ]
+        },
+        {
+          "event": "ask",
+          "keys": [
+            "ask_id",
+            "group_size",
+            "purpose",
+            "questions",
+            "service",
+            "timeout_s"
+          ]
+        },
+        {
+          "event": "ask_closed",
+          "keys": [
+            "ask_id",
+            "reason"
+          ]
+        },
+        {
+          "event": "ask",
+          "keys": [
+            "ask_id",
+            "group_size",
+            "purpose",
+            "questions",
+            "service",
+            "timeout_s"
+          ]
+        },
+        {
+          "event": "ask_closed",
+          "keys": [
+            "ask_id",
+            "reason"
+          ]
+        }
+      ],
+      "secs": 0.44,
+      "t_start": 1789462816.9114,
+      "success": false,
+      "error": null,
+      "t_end": 1789462817.3467
+    }
+  ]
+}

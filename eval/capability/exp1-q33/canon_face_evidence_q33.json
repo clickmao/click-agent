@@ -1,0 +1,126 @@
+{
+ "round": "EXP1-Q33",
+ "schema": "canon-face-evidence/1",
+ "run_pair": {
+  "A": "/tmp/q33_A.json",
+  "B": "/tmp/q33_B.json",
+  "cmd": "python3 eval/capability/instruments_check.py --only probe.grade --out /tmp/q33_{A,B}.json",
+  "same_tree": true,
+  "interval_s": 6
+ },
+ "record_level": {
+  "canon_sha12_A": "4413d75c8ec1",
+  "canon_sha12_B": "94c00fcd328b",
+  "identical": false,
+  "n_differing_leaves": 74,
+  "families": [
+   [
+    "/side_effect_attribution/trace/raw_paths_sample[*]",
+    59
+   ],
+   [
+    "/side_effect_attribution/census_in_repo_cwd[*]/pid",
+    4
+   ],
+   [
+    "/side_effect_attribution/census_in_repo_cwd[*]/cmd",
+    3
+   ],
+   [
+    "/side_effect_attribution/census_in_repo_cwd[*]/cwd",
+    2
+   ],
+   [
+    "/canon/runtime_sidecar",
+    1
+   ],
+   [
+    "/out",
+    1
+   ],
+   [
+    "/side_effect_attribution/foreign_writes[*]/sha_after",
+    1
+   ],
+   [
+    "/side_effect_attribution/foreign_writes[*]/sha_before",
+    1
+   ],
+   [
+    "/side_effect_attribution/live_fd_scan/scanned",
+    1
+   ],
+   [
+    "/side_effect_attribution/trace/log_bytes",
+    1
+   ]
+  ],
+  "verdict": "窗口摘除**不足以**确定化 (邻居面在场) —— 口径收窄"
+ },
+ "projection": {
+  "proj_sha12_A": "e32ff854355f",
+  "proj_sha12_B": "e32ff854355f",
+  "identical": true,
+  "rules": [
+   {
+    "path": "side_effect_attribution/window/t0",
+    "mode": "scalar",
+    "hits": 1
+   },
+   {
+    "path": "side_effect_attribution/window/t1",
+    "mode": "scalar",
+    "hits": 1
+   },
+   {
+    "path": "side_effect_attribution/window/trace_dir",
+    "mode": "scalar",
+    "hits": 1
+   },
+   {
+    "path": "side_effect_attribution/census_in_repo_cwd",
+    "mode": "array_count",
+    "hits": 1
+   },
+   {
+    "path": "side_effect_attribution/foreign_writes[*]/sha_before",
+    "mode": "scalar",
+    "hits": 1
+   },
+   {
+    "path": "side_effect_attribution/foreign_writes[*]/sha_after",
+    "mode": "scalar",
+    "hits": 1
+   },
+   {
+    "path": "side_effect_attribution/live_fd_scan/scanned",
+    "mode": "scalar",
+    "hits": 1
+   },
+   {
+    "path": "side_effect_attribution/trace/log_bytes",
+    "mode": "scalar",
+    "hits": 1
+   },
+   {
+    "path": "side_effect_attribution/trace/raw_paths_sample",
+    "mode": "array_count",
+    "hits": 1
+   },
+   {
+    "path": "out",
+    "mode": "scalar",
+    "hits": 1
+   },
+   {
+    "path": "canon/runtime_sidecar",
+    "mode": "scalar",
+    "hits": 1
+   }
+  ],
+  "n_applied": 11,
+  "residual_diff_after_projection": [],
+  "semantic_perturbation_different": true
+ },
+ "verdict": "window-detached ∧ semantic-projection-reproducible (真跑两跑同一 proj_sha12) ∧ 记录字节级确定化 = FALSE (邻居面/活体面); 冻结 pin 迁移到投影摘要列入下轮 (需 C# R2e + 门禁窗口)"
+}
