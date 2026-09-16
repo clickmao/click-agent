@@ -204,3 +204,9 @@
   refs_total 77,037、url unreported 1,541；pin `5ef643596c8b2690` / 6,710 文件 / NC3 两次逐字节相同。
 - 语料钉对照 R481-F：**DRIFT rc=1** ⇒ 不可比（语料漂移，规则未漂移）。
 - 归档：`bands-firstpass.json`（首跑含 external 污染 + 自身产物入语料，**不覆盖**）。
+
+## R483 附 · 起手闸器具 `preflight_gate.py`
+- 修复对象：R482 红闸误归因（真因 = `dotnet test` 遗留 `VBCSCompiler` RSS 206 MB，而非环境内存不足）。
+- 实跑：`main` rc=0 PASS（`mem_available_mb=2758` / `shutdown_done=true`）；负控 `--nc-block` rc=2 GATE_BLOCKED（`blocker_cause=内存不足`）✔；
+  `--no-shutdown` rc=0 PASS。三态 rc=0/2/3（PASS / GATE_BLOCKED / MISS）。
+- 纪律：真机测量起手前必须先跑本器具；`recent_src_writes_120s` 仅信息项，不参与闸判。

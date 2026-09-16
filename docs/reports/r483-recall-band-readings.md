@@ -42,3 +42,23 @@ R481-G 已把【探索】精度判据从「全局单值」收窄为**分档**（
 - 档定义按**形态**读法实现（root_rel = 非显式相对 且 归一键落仓根内，越根者归 slash_token 并单列）；
   按「解析结果」读法会使 root_rel 退化为同义反复，读法选择已显式记录于此，可复算。
 - 本条为**读数**，未改任何产品代码 ⇒ 无 AOT 重发布面。
+
+## R483 附 · 真机起手前闸（器具化，R482 红闸误归因的直接修复）
+R482 R 臂首跑 `MemAvailable=2590 < 2650` 被闸、沉降后仍红，真因却是本方 `dotnet test` 遗留的
+`VBCSCompiler`（RSS ~206 MB）⇒ 闸会给出「环境内存不足」的**假归因**。本轮把起手闸落成器具：
+`eval/rover/r483/preflight_gate.py`（语言无关；只做进程/内存/工作树事实判定）。
+
+| 步骤 | 行为 |
+|---|---|
+| 1 | `dotnet build-server shutdown`（消除 `VBCSCompiler`/`MSBuild` 残留），可 `--no-shutdown` 跳过 |
+| 2 | 沉降轮询（默认上限 40 s，每 2 s）：直到 `MemAvailable ≥ 门槛` 且 无 `llama-server`/`VBCSCompiler`/`MSBuild` 阻塞物 |
+| 3 | 出 JSON：`verdict` / `mem_available_mb` / `blockers[{pid,watch,rss_mb,cmd}]` / `blocker_cause` / `settle_s` |
+
+三态：**rc=0 PASS** / **rc=2 GATE_BLOCKED（附阻塞物清单与归因）** / **rc=3 MISS（缺 dotnet 可执行）**。
+
+实跑（本机）：`main` ⇒ rc=0 / PASS / `mem_available_mb=2758` / `shutdown_done=true` / `settle_s=0.0`；
+负控 `--nc-block`（门槛抬到不可达）⇒ **rc=2** / `GATE_BLOCKED` / `blocker_cause=内存不足` ✔ fail-closed；
+`--no-shutdown` 对照 ⇒ rc=0 / PASS（沉降已达标时不误闸）。
+
+诚实边界：`recent_src_writes_120s`（本轮实测 347 个）只作**信息项**、**不参与闸判**——它会把本侧自己的写入
+计进去，用于硬闸必然假红；「对侧写者」归属仍须 `ps -p <pid>` 逐个核实（R481-G 纠偏结论不变）。

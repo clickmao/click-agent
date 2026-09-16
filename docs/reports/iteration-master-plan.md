@@ -518,3 +518,7 @@ python3 eval/run_round.py <新轮号> "revert-verify <原commit>" --quick   # �
 - 守恒 80+67,269+639+7,508+1,541 = 77,037 ✔；负控 `--nc-conservation` rc=2 ✔；语料钉对 R481-F = **DRIFT（不可比）**。
 - 修正：external 未过滤（伪 0.6771→真 0.8125）+ 自身产物入语料（pin 漂移 6,711→6,713 ⇒ 排除后稳定 6,710）。
 - 判定：分档后**三档全不达标** ⇒ 误差主因是**真链接语境的悬空**，非「slash token 混杂」；维持「不再投相对引用改写」。
+
+### R483 附 · 真机起手闸器具化（修 R482 假归因）
+- 新增 `eval/rover/r483/preflight_gate.py`：`build-server shutdown` → 沉降轮询 → 三态判定（rc=0 PASS / rc=2 GATE_BLOCKED / rc=3 MISS）。
+- 实跑 rc=0（2758 MB / shutdown_done=true）；负控 `--nc-block` rc=2 ✔。**真机测量起手前必跑**。
