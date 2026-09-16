@@ -726,7 +726,7 @@ python3 eval/run_round.py <新轮号> "revert-verify <原commit>" --quick   # �
 - 器具：teardown **先按命名空间收口再断言** —— 首跑即捕获真泄漏（B 臂 `llama-server` RSS **1,781.8 MB**，cwd `rundata-Aroleb`，**非 host 直接子进程** ⇒ 既有 `pkill -P` 漏杀，与 R488 收尾泄漏同族）；修后 R1..R3 teardown 全 clean，`--selftest` 三例全过。
 - 候选④：R486 差分夹具在 **`ACTION_LOOP=on`** 下重跑 ⇒ 桩请求 pre-empty **7** = post-empty **7**（差 0）⇒ 预注册 H1 **被证伪**；plain 阴性对照 1=1 ⇒ 该差分 **off/on 两形态均不复现**，宣称收窄。
 - 诚实边界：n=3 跑 / 单夹具 / 无置信区间；**H5 为预注册缺陷**（B 臂 gate=off ⇒ 模板 0 是应然）保留 FAIL 不回改；跨轮不可比（H0 FAIL）；去空正文为 **post-hoc 单列**；候选⑤（R479 遗留）/⑥（上下文剪裁）**未做**（改链 ⇒ 换被测二进制，与稳定性窗口互斥）。
-- registry：本轮 +5 行（`updated_round=R489`）。
+- registry：本轮 +5 行（`updated_round=R489`）；提交 `1ebaae8`（79 paths，仅本地；`PUSH_PAUSED` 在位，未 push）。
 
 ### R489 · 轮次索引增量（机取自 `docs/verification-registry.json`，禁手改）
 | R489 | `r489.action-loop-empty-body-diff` | L2 | **R486 差分夹具在 `ACTION_LOOP=on` 下重跑** (R488 只测了 off 形态): 桩请求数 pre-empty **7** vs post-empty  … |

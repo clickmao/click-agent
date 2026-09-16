@@ -1,6 +1,6 @@
 # R489 · 主臂稳定性三跑 + 同窗基线 + 本地确认语文案裁决（并轮）
 
-状态行 : 完成（真机三跑 + 基线；预注册 H1/H2/H4/H5 FAIL 照原样保留，post-hoc 归因单列）
+状态行 : 完成（真机三跑 + 基线；预注册 H1/H2/H4/H5 FAIL 照原样保留，post-hoc 归因单列）；提交 `1ebaae8`（79 paths，仅本地，未 push）
 DocRef : eval/rover/r489/prereg_r489.json
 用户令 : 2026-09-16「所有候选并入一轮解决」（并轮令）+「需裁定的按统计学最优默认执行」
 被测二进制 : `/tmp/pub_r489/agenthost`（15,363,728 B；sha256 `e9b86fc9…`；AOT IL 警告 0 / errors 0 / `--version` rc=0）
