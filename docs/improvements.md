@@ -10,6 +10,31 @@
 > 数据时效 (测试数/批号/评测口径)、版本引用一致性、死链检查; **禁止只改局部不做整体校验**。
 > 空间位置相邻但语义不同段的错挂 (如旧版本标题下挂新数据) 视同违例。
 
+## EXP1-Q42 · 2026-09-17 · 状态: **完成（登记通路复活 + 转正期望时效收口）** · 主题: 尾 LF 闸转正的副作用收口 + exp1q41.* 能力登记
+
+**起因**: EXP1-Q41 把提交面尾 LF 闸由 opt-in **转正为默认开**, 而既有控制件 `selftest_q40_taillf` 的 E5 期望
+(「默认档放行坏清单」) 随转正**过期** —— EXP1-Q42 首跑实测 **E5 FAIL / 9-10** (改前真机留档, 非事后追认)。
+
+| 项 | 读数 | 判据 |
+|---|---|---|
+| 期望时效收口 | E5 → 「默认档拦下」+ 新增 E5b「显式关闸放行」⇒ **11/11 PASS**; 前态负控 **5/5** | PASS |
+| 能力登记 | 登记表 **214→217** 行 (`exp1q41.*` ×3, 各带成对控制); `bind_evidence --check` rc=**0** | PASS |
+| 形式门禁 | `dotnet test` (VerificationForm\|SkillGeneralization\|DevPlanDocRef): Failed **0** / Passed **14** | PASS |
+| 真提交面 (4e50ba8) | `TAIL_LF_GUARD contract=R481-tail-lf targets=2 violations=0 unresolved=0` ∧ `TAIL_LF_GUARD=OK` ⇒ 拦截 **0** | PASS |
+| 漂移通知件现场 | 真仓干净态 **0 行**; >0 现场事件**不可达** | 未达 (结转) |
+
+**根因修复 (本轮最承重)**: `bind_evidence.py` 序列化器**硬编码 `indent=1`**, 而登记表自 **R500** 起现盘为 `indent=2`
+(r500 写侧 + R502 rebind 沿用) ⇒ `--apply` 恒 `SER_ASSERT=FAIL` / rc=3 ⇒ **能力登记通路死亡** (AN.9 #1 的真实成因)。
+修法 = 形态的**唯一权威 = 现盘文件**: `detect_json_form()` 逐字节反解 (indent∈{1,2,4,None} × ensure_ascii∈{False,True}),
+命中按现盘形态写回, 反解失败仍 fail-closed。登记表改动量 numstat **80/5** (旧硬编码路径会是 5305 行整份重排)。
+
+**证据件纪律 (自捕)**: `replay_q41_scopeA_classified.json` 含 HEAD 字段 (`head_ct` / `post_contract_window.*`)
+⇒ 重跑字节必变 (sha `c6dbd4d1`→`48f65d03`) ⇒ **不得作冻结 pin**; 证据改取**输入不变**归档 + 确定性校验器
+(`eval/capability/exp1-q42/verify_replay_archive_q42.py`, V6 = 同输入重算两遍字节相同)。
+
+**诚实边界**: ① H6 的 >0 现场事件真仓不可达 (夹具读数不顶替现场读数 ⇒ 候选结转); ② 形态分叉仍在仓内
+(60+ 历史脚本硬编码 `indent=1`, 本轮只修活通路) ⇒ 形态统一须独立预注册轮; ③ 转正后真实复核窗口 n=1; ④ 未 push。
+
 ## v0.98.3 · R502 · 2026-09-17 · 状态: **真机首跑完成（对照面 rc=0 全绿）** · 主题: 主线对照读数 —— 随机游戏 × 数学难题 × 程序题 × codex 外部真值
 
 **跑法**: 同窗 / 同冻结题集（probe 口径 sha `18e7c8dddb54e220`, 6 题）/ 同透传 adapter / **同模型**（两侧落盘 `request.upstream_request.model` 均 `deepseek-chat`, 24/24 行一致）/ 同机械判分（`eval/probe/grade.py` 隐藏用例 + 外裁判子进程）。
