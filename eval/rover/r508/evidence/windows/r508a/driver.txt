@@ -1,0 +1,24 @@
+NC verdict=SELFTEST=OK             OK
+verdict=PREREG_OK taskset_sha8=04b56f7f477d
+[06:42:48] 起手闸 1: PASS
+[06:42:52] 起手闸 2: PASS
+[06:42:52] adapter up pid=2416382 port=48660
+[06:42:57] == 臂 A (agent) ==
+{"tid": "p1", "side": "agent", "arm": "A", "rc": 0, "elapsed_s": 25.3, "ledger_calls": 3, "ledger_steps": 3, "reply_chars": 1491, "adapter_range": [1, 4]}
+{"tid": "p2", "side": "agent", "arm": "A", "rc": 0, "elapsed_s": 23.44, "ledger_calls": 8, "ledger_steps": 6, "reply_chars": 904, "adapter_range": [5, 11]}
+[06:43:46] == 臂 B (agent) ==
+{"tid": "p1", "side": "agent", "arm": "B", "rc": 0, "elapsed_s": 28.08, "ledger_calls": 5, "ledger_steps": 4, "reply_chars": 2062, "adapter_range": [12, 16]}
+{"tid": "p2", "side": "agent", "arm": "B", "rc": 0, "elapsed_s": 29.18, "ledger_calls": 12, "ledger_steps": 11, "reply_chars": 1834, "adapter_range": [17, 28]}
+[06:44:43] == 臂 C (codex) ==
+{"tid": "p1", "side": "codex", "arm": "C", "rc": 0, "elapsed_s": 24.73, "ledger_calls": 0, "ledger_steps": 0, "reply_chars": 769, "adapter_range": [1, 6]}
+{"tid": "p2", "side": "codex", "arm": "C", "rc": 0, "elapsed_s": 27.23, "ledger_calls": 0, "ledger_steps": 0, "reply_chars": 792, "adapter_range": [7, 15]}
+arm tid 全对 用例 调用 tok_prompt tok_total s  产物 失败用例
+A  p1  Y    10/10 4    38365    46494     25.3  1   
+A  p2  Y    10/10 7    84294    91082     23.44 2   
+B  p1  Y    10/10 5    59411    68347     28.08 1   
+B  p2  Y    10/10 12   138323   145700    29.18 5   
+C  p1  Y    10/10 6    50856    54605     24.73 1   
+C  p2  Y    10/10 9    81383    84754     27.23 1   
+MODELS=['deepseek-chat']
+[06:45:41] 端口已释放
+[06:45:41] DONE RUN_DIR=/tmp/r508/run-r508a

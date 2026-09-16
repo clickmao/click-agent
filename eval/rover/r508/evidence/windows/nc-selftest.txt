@@ -1,0 +1,13 @@
+POSITIVE {"p1": {"all_pass": true, "pass": 10, "of": 10}, "p2": {"all_pass": true, "pass": 10, "of": 10}, "p3": {"all_pass": true, "pass": 12, "of": 12}}
+MUTANT p1_no_delete_route         detected=True failed=['delete_and_404'] missed=[]
+MUTANT p1_sqlite_id_reuse         detected=True failed=['restart_persistence_no_id_reuse'] missed=[]
+MUTANT p1_blank_text_accepted     detected=True failed=['bad_request_400', 'restart_persistence_no_id_reuse'] missed=[]
+MUTANT p2_tie_break_reversed      detected=True failed=['basic_counts_and_p95', 'top_n_limit', 'top_tie_break_ip_asc'] missed=[]
+MUTANT p2_p95_off_by_one          detected=True failed=['p95_nearest_rank_20'] missed=[]
+MUTANT p2_utf8_sig_bom            detected=True failed=['basic_counts_and_p95', 'top_n_limit', 'top_tie_break_ip_asc', 'status_keys_sorted', 'all_bad_lines', 'empty_file', 'utf8_no_bom', 'dash_size_is_zero', 'p95_nearest_rank_20', 'exit_code_zero'] missed=[]
+MUTANT p2_blank_line_not_skipped  detected=True failed=['all_bad_lines'] missed=[]
+MUTANT p3_incr_nonatomic          detected=True failed=['incr_concurrent_atomic'] missed=[]
+MUTANT p3_ttl_never_expires       detected=True failed=['ttl_expire_and_count', 'stats_live_count'] missed=[]
+MUTANT p3_no_wal_replay           detected=True failed=['restart_recovery', 'restart_drops_expired'] missed=[]
+VERDICT SELFTEST=OK
+NC_RC=0

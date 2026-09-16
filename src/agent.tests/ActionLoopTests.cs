@@ -172,11 +172,84 @@ public sealed class ActionLoopTests
                     ToolCalls = new List<ActionToolCall> { new() { Id = "c" + calls, Name = "list_dir", ArgumentsJson = "{}" } },
                 });
             }
-            var (_, outcome) = await ActionLoopRunner.RunAsync(new QueuePrompt { UserMessage = "u" }, Call, port, 3, CancellationToken.None);
+            // R508 语义刷新: 默认改为「有进展则续期」; 本测试锁定「显式硬上限」语义 (adaptive=false)。
+            var (_, outcome) = await ActionLoopRunner.RunAsync(new QueuePrompt { UserMessage = "u" }, Call, port, 3, CancellationToken.None, null, adaptiveBudget: false);
             Assert.Equal(3, outcome.Steps);
             Assert.True(outcome.MaxStepsHit);
             Assert.False(outcome.Converged);
+            Assert.Equal(0, outcome.BudgetExtensions);
             Assert.Equal(4, calls); // 1 首调 + 3 步
+        }
+        finally { Directory.Delete(root, true); }
+    }
+
+    [Fact]
+    public async Task Budget_Adaptive_ExtendsWhileProgressing_ThenConverges()
+    {
+        // R508: 项目级任务(多文件+自测)超出初始步数预算时, 只要每轮都有成功工具调用 ⇒ 按 StepExtendBy 续期 (硬顶 32)。
+        var root = NewTempDir();
+        try
+        {
+            var port = new WorkspaceActionPort(root);
+            var calls = 0;
+            Task<QueueResponse> Call(QueuePrompt p, CancellationToken ct)
+            {
+                calls++;
+                if (calls <= 5)
+                {
+                    return Task.FromResult(new QueueResponse
+                    {
+                        Success = true,
+                        Content = string.Empty,
+                        FinishReason = "tool_calls",
+                        ToolCalls = new List<ActionToolCall>
+                        {
+                            new() { Id = "c" + calls, Name = "write_file",
+                                ArgumentsJson = "{\"path\":\"f" + calls + ".txt\",\"content\":\"x\"}" },
+                        },
+                    });
+                }
+                return Task.FromResult(new QueueResponse { Success = true, Content = "完成" });
+            }
+            var (resp, outcome) = await ActionLoopRunner.RunAsync(new QueuePrompt { UserMessage = "u" }, Call, port, 2, CancellationToken.None, null, adaptiveBudget: true);
+            Assert.Equal(5, outcome.Steps);
+            Assert.True(outcome.BudgetExtensions >= 1, "应有续期, 实际 " + outcome.BudgetExtensions);
+            Assert.True(outcome.Converged);
+            Assert.False(outcome.MaxStepsHit);
+            Assert.Equal("完成", resp.Content);
+            Assert.True(File.Exists(Path.Combine(root, "f5.txt")));
+        }
+        finally { Directory.Delete(root, true); }
+    }
+
+    [Fact]
+    public async Task Budget_Adaptive_StopsWhenNoProgress()
+    {
+        // R508: 续期只看**成功**工具调用 —— 连续失败 ⇒ 不续期, 在初始预算处停 (不做死循环式烧钱)。
+        var root = NewTempDir();
+        try
+        {
+            var port = new WorkspaceActionPort(root);
+            var calls = 0;
+            Task<QueueResponse> Call(QueuePrompt p, CancellationToken ct)
+            {
+                calls++;
+                return Task.FromResult(new QueueResponse
+                {
+                    Success = true,
+                    Content = string.Empty,
+                    FinishReason = "tool_calls",
+                    ToolCalls = new List<ActionToolCall>
+                    {
+                        new() { Id = "c" + calls, Name = "run_command", ArgumentsJson = "{\"command\":\"exit 3\"}" },
+                    },
+                });
+            }
+            var (_, outcome) = await ActionLoopRunner.RunAsync(new QueuePrompt { UserMessage = "u" }, Call, port, 2, CancellationToken.None, null, adaptiveBudget: true);
+            Assert.Equal(2, outcome.Steps);
+            Assert.Equal(0, outcome.BudgetExtensions);
+            Assert.True(outcome.MaxStepsHit);
+            Assert.Equal(3, calls); // 1 首调 + 2 步
         }
         finally { Directory.Delete(root, true); }
     }
@@ -201,7 +274,7 @@ public sealed class ActionLoopTests
                     ToolCalls = new List<ActionToolCall> { new() { Id = "c" + calls, Name = "list_dir", ArgumentsJson = "{}" } },
                 });
             }
-            var (resp, outcome) = await ActionLoopRunner.RunAsync(new QueuePrompt { UserMessage = "u" }, Call, port, 2, CancellationToken.None);
+            var (resp, outcome) = await ActionLoopRunner.RunAsync(new QueuePrompt { UserMessage = "u" }, Call, port, 2, CancellationToken.None, null, adaptiveBudget: false);
             Assert.True(outcome.MaxStepsHit);
             Assert.True(resp.ContentIsUserFacing);
             Assert.StartsWith(ModelQueueRouter.EmptyBodyBannerPrefix, resp.Content);

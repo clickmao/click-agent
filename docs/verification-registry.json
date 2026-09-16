@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R507",
+  "updated_round": "R508",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -5449,6 +5449,35 @@
         "eval/rover/r507pre/README.md"
       ],
       "owner_round": "R507"
+    },
+    {
+      "id": "external.contrast-project-scale",
+      "level": "L3",
+      "capability": "项目级(多文件/多步/需自测)开发题对照 codex-cli 外部真值: 3 题(p1 HTTP 待办服务 10 用例 / p2 日志分析 CLI 10 用例 / p3 线程安全 KV+TTL+WAL 包 12 用例), 同环境同输入同模型(deepseek-chat), 逐条隐藏用例机械判对, 铁律11 可执行前置(独立物化 + python3 -I -B 实跑)。R508 有效读数: 三题两侧均整题全对; 本侧默认臂 total tokens = codex 的 −14.9%(p1) / +7.5%(p2) / −90.4%(p3), 调用 −84.1%(p3), 墙钟 −72.7%(p3)。",
+      "covers": [
+        "eval/rover/r508/taskset-r508.json",
+        "eval/rover/r508/proj_run_side.py",
+        "eval/rover/r508/proj_grade.py",
+        "eval/rover/r508/nc_r508.py",
+        "eval/rover/r508/usage_from_dumps.py",
+        "eval/rover/r508/cases/p3_cases.py",
+        "eval/rover/r508/run_project_contrast.sh",
+        "docs/reports/r508-project-scale-contrast.md"
+      ],
+      "evidence_cmd": "bash eval/rover/r508/run_project_contrast.sh  (R508_TASKS=p3) ; python3 eval/rover/r508/aggregate_r508.py --run-dir DIR",
+      "evidence_path": "eval/rover/r508/evidence/windows/r508c/report.json",
+      "evidence_generated_with": {
+        "evidence_kind": "artifact",
+        "pin_status": "live",
+        "pin_reason": "archived-per-round",
+        "artifact_sha12": null,
+        "instrument": "eval/rover/r508/proj_grade.py",
+        "instrument_sha12": "d230d78dd5b2",
+        "binding": "audit-pin",
+        "audited_by_round": "R508"
+      },
+      "negative_control": "成对: ① 正控 —— 每题参考解必须全过(p1 10/10、p2 10/10、p3 12/12), 否则 `NC_HOLLOW` 弃权; ② 注入缺陷必被抓(`nc_r508.py`, 10 例: 删除路由/主键复用/空白文本/排序反向/p95 取整/BOM/空行不计数/非原子 incr/TTL 不失效/不重放 WAL) ⇒ 预期用例必须真失败且整题转红; 补丁未打上即 fail-closed; ③ 真读数区分度: 契约 v1(codex 臂基准因 adapter tool_calls 翻译缺陷归零)与契约 v2 对照, 以及 预算机制单变量(32 步 ⇒ 11/12 vs 3 步 ⇒ 12/12)证明对真实数据有区分度。",
+      "owner_round": "R508"
     }
   ],
   "aot_check_policy": "release_tag_only",

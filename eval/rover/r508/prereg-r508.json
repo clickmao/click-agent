@@ -1,0 +1,165 @@
+{
+ "round": "R508",
+ "ts": "2026-09-17T06:59:08",
+ "kind": "项目级对照(规模更大): 多步/多文件/需自测",
+ "taskset": "eval/rover/r508/taskset-r508.json",
+ "taskset_sha8": "42bc50e6040a",
+ "arms": [
+  {
+   "tag": "A",
+   "side": "agent",
+   "desc": "本侧默认 (ActionLoop 默认 6 步)"
+  },
+  {
+   "tag": "B",
+   "side": "agent",
+   "desc": "本侧单变量: AGENTFRAMEWORK_ACTION_MAX_STEPS=24"
+  },
+  {
+   "tag": "C",
+   "side": "codex",
+   "desc": "codex-cli 外部真值 (codex exec --json)"
+  }
+ ],
+ "tasks": [
+  {
+   "tid": "p1",
+   "family": "http-service",
+   "entry": "app.py",
+   "hidden_cases": [
+    "c_bad_request",
+    "c_create_first",
+    "c_create_second",
+    "c_delete",
+    "c_done_unknown",
+    "c_get_one",
+    "c_list_order",
+    "c_mark_done",
+    "c_restart",
+    "c_unknown_path"
+   ],
+   "n_hidden": 10,
+   "prompt_sha8": "48c5ec9afcea"
+  },
+  {
+   "tid": "p2",
+   "family": "log-cli",
+   "entry": "logpipe.py",
+   "hidden_cases": [
+    "c_allbad",
+    "c_basic",
+    "c_bom",
+    "c_dash",
+    "c_empty",
+    "c_p95_20",
+    "c_rc",
+    "c_status",
+    "c_tie",
+    "c_top"
+   ],
+   "n_hidden": 10,
+   "prompt_sha8": "830fdaf9510d"
+  },
+  {
+   "tid": "p3",
+   "family": "threaded-kv-service",
+   "entry": "kvsvc/server.py",
+   "hidden_cases": [
+    "c_delete_flow",
+    "c_entry_present",
+    "c_incr_concurrent_atomic",
+    "c_incr_semantics",
+    "c_missing_404",
+    "c_put_get",
+    "c_restart_drops_expired",
+    "c_restart_recovery",
+    "c_stats_count",
+    "c_ttl_expire",
+    "c_unknown_path_404",
+    "c_wal_lines"
+   ],
+   "n_hidden": 12,
+   "prompt_sha8": "efa48cb2ccef"
+  }
+ ],
+ "model": "deepseek-flash (adapter MAP_MODEL → deepseek-chat, 两侧同上游)",
+ "criteria": {
+  "H0_可验收前置": "两侧产物独立物化 + python3 -I -B 实跑 + 逐条隐藏用例机械判对; 全题全对才算可验收",
+  "H1_仪器判别力": "参考解 oracle 全过(正控) + 7 个指名缺陷全被抓(负控)",
+  "H2_外部真值": "codex exec --json (自带循环/沙箱), 非模型裁判",
+  "H3_同输入": "两侧逐字同 prompt (taskset sha8=42bc50e6040a)",
+  "H4_同模型": "adapter 落盘 request.upstream_request.model 两侧取值集合须唯一",
+  "H5_对照分列": "token/调用/墙钟 只按题分列, 禁按总量断言优劣",
+  "主读数": "整题全对(题) / 逐题用例通过数 / prompt+total tokens / 调用数 / 墙钟 / 产物件数"
+ },
+ "budget": {
+  "per_arm_total_tokens_cap": 600000,
+  "per_task_wall_s": 900,
+  "run_wall_s_cap": 3600
+ },
+ "excluded": [
+  "n=2 题, 小样本, 不作统计显著性宣称",
+  "两侧静态面不同源(本侧 AOT host vs codex 自带循环)",
+  "本侧 data/ 会话态与 codex 沙箱内存态不可比",
+  "单轮读数, 跨轮禁相减"
+ ],
+ "checks_selfvalidation": [
+  [
+   "用例脚本存在:p1",
+   true
+  ],
+  [
+   "隐藏用例数>0:p1",
+   true
+  ],
+  [
+   "声明题量==反解题量:p1",
+   true
+  ],
+  [
+   "参考解 oracle 全过:p1",
+   true
+  ],
+  [
+   "用例脚本存在:p2",
+   true
+  ],
+  [
+   "隐藏用例数>0:p2",
+   true
+  ],
+  [
+   "声明题量==反解题量:p2",
+   true
+  ],
+  [
+   "参考解 oracle 全过:p2",
+   true
+  ],
+  [
+   "用例脚本存在:p3",
+   true
+  ],
+  [
+   "隐藏用例数>0:p3",
+   true
+  ],
+  [
+   "声明题量==反解题量:p3",
+   true
+  ],
+  [
+   "参考解 oracle 全过:p3",
+   true
+  ],
+  [
+   "NC 自检证据在位(判别力)",
+   true
+  ],
+  [
+   "NC verdict=SELFTEST=OK",
+   true
+  ]
+ ],
+ "verdict": "PREREG_OK"
+}

@@ -64,24 +64,68 @@ def to_chat_tools(tools):
 
 
 def items_to_messages(instructions, items):
-    msgs = []
+    """codex(/v1/responses) 的 input items -> chat messages。
+
+    修复 (R508): codex 会在一条 assistant 消息里并行发多个 function_call,
+    旧版把它们各造一条 assistant 消息 ⇒ 上游报 400
+    "An assistant message with 'tool_calls' must be followed by tool messages ...".
+    现: 连续 function_call 合并进同一条 assistant 的 tool_calls, 并按 call_id 把
+    function_call_output 归一化地紧跟在对应 tool_calls 之后 (缺输出补占位)。
+    """
+    raw = []
     if instructions:
-        msgs.append({"role": "system", "content": instructions})
+        raw.append({"role": "system", "content": instructions})
+    pending = []
+    calls = []
+
+    def flush_calls():
+        if pending:
+            raw.append({"role": "assistant", "content": "", "tool_calls": list(pending)})
+            calls.append(list(pending))
+            pending.clear()
+
     for it in items or []:
         t = it.get("type")
+        if t == "function_call":
+            cid = it.get("call_id") or it.get("id")
+            pending.append({"id": cid, "type": "function",
+                            "function": {"name": it.get("name"), "arguments": it.get("arguments") or "{}"}})
+            continue
+        flush_calls()
         if t == "message":
             c = it.get("content")
             txt = "\n".join(p.get("text", "") for p in c if isinstance(p, dict)) if isinstance(c, list) else str(c)
             role = it.get("role") or "user"
-            msgs.append({"role": "assistant" if role == "assistant" else ("system" if role == "developer" else "user"),
-                         "content": txt})
-        elif t == "function_call":
-            msgs.append({"role": "assistant", "content": "",
-                         "tool_calls": [{"id": it.get("call_id") or it.get("id"), "type": "function",
-                                         "function": {"name": it.get("name"), "arguments": it.get("arguments") or "{}"}}]})
+            raw.append({"role": "assistant" if role == "assistant" else ("system" if role == "developer" else "user"),
+                        "content": txt})
         elif t == "function_call_output":
-            msgs.append({"role": "tool", "tool_call_id": it.get("call_id"), "content": str(it.get("output"))[:6000]})
-    return msgs
+            raw.append({"role": "tool", "tool_call_id": it.get("call_id"), "content": str(it.get("output"))[:6000]})
+    flush_calls()
+
+    # 归一化: 收集全部 tool 输出 (按 call_id), 再重建 —— 保证每个 tool_calls 后紧跟其 tool 消息
+    outputs = {}
+    for m in raw:
+        if m.get("role") == "tool" and m.get("tool_call_id") is not None:
+            outputs.setdefault(m["tool_call_id"], m.get("content") or "")
+    out, repaired = [], 0
+    for m in raw:
+        if m.get("role") == "tool":
+            continue
+        out.append(m)
+        if m.get("role") == "assistant" and m.get("tool_calls"):
+            for tc in m["tool_calls"]:
+                cid = tc.get("id")
+                if cid in outputs:
+                    out.append({"role": "tool", "tool_call_id": cid, "content": outputs[cid]})
+                else:
+                    out.append({"role": "tool", "tool_call_id": cid, "content": "(no output)"})
+                    repaired += 1
+    _call_ids = [tc.get("id") for c in calls for tc in c]
+    if len(_call_ids) != len(set(_call_ids)):
+        print("[adapter][fix] duplicate tool_call ids: %d calls" % len(_call_ids), flush=True)
+    if repaired:
+        print("[adapter][fix] orphan tool_calls repaired: %d placeholder tool messages" % repaired, flush=True)
+    return out
 
 
 def sse(ev, obj):

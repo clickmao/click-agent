@@ -1,0 +1,14 @@
+== 臂 A2 (新 AOT, 默认自适应预算) ==
+{"tid": "p3", "side": "agent", "arm": "A2", "rc": 0, "elapsed_s": 85.1, "ledger_calls": 35, "ledger_steps": 32, "reply_chars": 1572, "adapter_range": [1, 33]}
+== 臂 D (新 AOT, env 步数=3 显式硬上限) ==
+{"tid": "p3", "side": "agent", "arm": "D", "rc": 0, "elapsed_s": 20.13, "ledger_calls": 5, "ledger_steps": 3, "reply_chars": 1569, "adapter_range": [34, 37]}
+ARM agentA2 all_pass False 11/12 steps 32 calls 35 fails ['restart_drops_expired']
+   run rc 0 elapsed 85.1 adapter_range [1, 33] reply_head AgentFramework CLI
+  /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit
+── 执行中 (tu
+ARM agentD all_pass True 12/12 steps 3 calls 5 fails []
+   run rc 0 elapsed 20.13 adapter_range [34, 37] reply_head AgentFramework CLI
+  /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit
+── 执行中 (tu
+RUN_DIR=/tmp/r508/run-r508e
+ARMS_RC=0

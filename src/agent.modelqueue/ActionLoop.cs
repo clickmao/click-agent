@@ -95,6 +95,9 @@ public sealed class ActionLoopOutcome
     public int Executed { get; set; }
     public bool Converged { get; set; }
     public bool MaxStepsHit { get; set; }
+
+    /// <summary>R508: 步数预算被自动续期的次数 (0 = 未续期)。</summary>
+    public int BudgetExtensions { get; set; }
     public string LastError { get; set; } = string.Empty;
     public List<ActionCallRecord> Records { get; } = new();
 }
@@ -136,6 +139,33 @@ public static class ActionToolDecl
 public static class ActionLoopRunner
 {
     public const int DefaultMaxSteps = 6;
+
+    /// <summary>R508: 项目级任务 (多文件 + 自测闭环) 常超过固定步数上限 ⇒ 有实质进展时按此续期。</summary>
+    public const int StepExtendBy = 6;
+
+    /// <summary>R508: 续期硬顶 (与 env 上限同值域)。</summary>
+    public const int StepCeiling = 32;
+
+    /// <summary>env 显式给定步数 ⇒ 视为用户硬上限: 不自动续期 (既有语义/证据可复现)。</summary>
+    public static bool StepsOverriddenFromEnv()
+    {
+        var v = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_ACTION_MAX_STEPS");
+        return int.TryParse(v, out var n) && n > 0 && n <= 32;
+    }
+
+    /// <summary>
+    /// R508 结论: 「长预算增益」在项目级题上**被证伪**（默认自适应臂 32 步用满 ⇒ 11/12 且 token ×5;
+    /// 显式短预算臂 3 步 ⇒ 12/12）⇒ 自适应预算**默认关闭**, 仅显式 env=1/on/true 时启用。
+    /// </summary>
+    public static bool AdaptiveBudgetEnabled()
+    {
+        var v = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_ACTION_ADAPTIVE_BUDGET");
+        if (string.IsNullOrWhiteSpace(v)) return false;
+        v = v.Trim();
+        return !(v.Equals("off", StringComparison.OrdinalIgnoreCase)
+                 || v.Equals("0", StringComparison.Ordinal)
+                 || v.Equals("false", StringComparison.OrdinalIgnoreCase));
+    }
 
     /// <summary>开关 (env AGENTFRAMEWORK_ACTION_LOOP): off/0/false = 关; 其余(含未设) = 开。</summary>
     public static bool IsEnabled()
@@ -198,13 +228,30 @@ public static class ActionLoopRunner
         IActionPort port,
         int maxSteps,
         CancellationToken ct,
-        Action<int, ActionToolCall, ActionExecutionResult>? onCall = null)
+        Action<int, ActionToolCall, ActionExecutionResult>? onCall = null,
+        bool? adaptiveBudget = null)
     {
         var outcome = new ActionLoopOutcome();
         var postUser = new List<QueuePostUserMessage>();
         var resp = await call(Clone(prompt, postUser), ct);
-        while (resp.Success && resp.ToolCalls is { Count: > 0 } && outcome.Steps < maxSteps)
+        // R508 步数预算自适应: 项目级任务(多文件+自测)常超固定上限。仅当「自上次续期以来确有成功工具调用」
+        // 时按 StepExtendBy 续期, 硬顶 StepCeiling; 无进展即停 (不做死循环式烧钱)。env 显式给步数 = 用户硬上限, 不续期。
+        var adaptive = adaptiveBudget ?? AdaptiveBudgetEnabled();
+        var budget = maxSteps;
+        var okAtLastExtend = 0;
+        while (resp.Success && resp.ToolCalls is { Count: > 0 })
         {
+            if (outcome.Steps >= budget)
+            {
+                var okNow = outcome.Records.Count(r => r.Ok);
+                if (adaptive && okNow > okAtLastExtend && budget < StepCeiling)
+                {
+                    okAtLastExtend = okNow;
+                    budget = Math.Min(budget + StepExtendBy, StepCeiling);
+                    outcome.BudgetExtensions++;
+                }
+                else break;
+            }
             outcome.Steps++;
             var calls = resp.ToolCalls!;
             outcome.ToolCalls += calls.Count;

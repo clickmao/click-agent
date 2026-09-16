@@ -1,0 +1,20 @@
+NC verdict=SELFTEST=OK             OK
+verdict=PREREG_OK taskset_sha8=42bc50e6040a
+[06:59:11] 起手闸 1: PASS
+[06:59:14] 起手闸 2: PASS
+[06:59:15] adapter up pid=2427162 port=48660
+[06:59:20] == 臂 A (agent) ==
+{"tid": "p3", "side": "agent", "arm": "A", "rc": 0, "elapsed_s": 28.67, "ledger_calls": 8, "ledger_steps": 6, "reply_chars": 2922, "adapter_range": [1, 7]}
+[06:59:49] == 臂 B (agent) ==
+{"tid": "p3", "side": "agent", "arm": "B", "rc": 0, "elapsed_s": 59.96, "ledger_calls": 26, "ledger_steps": 24, "reply_chars": 1569, "adapter_range": [8, 32]}
+[07:00:49] == 臂 C (codex) ==
+[R504 fail-closed] rc=0 errs=[] (stdout 置空 ⇒ 判分侧记 no_code)
+{"tid": "p3", "side": "codex", "arm": "C", "rc": 0, "elapsed_s": 105.26, "ledger_calls": 0, "ledger_steps": 0, "reply_chars": 0, "adapter_range": [1, 44]}
+arm tid 全对 用例 调用 tok_prompt tok_total s  产物 失败用例
+A  p3  Y    12/12 7    77454    84926     28.67 3   
+B  p3  Y    12/12 25   477132   488200    59.96 10  
+C  p3  Y    12/12 44   871790   885813    105.26 3   
+MODELS=['deepseek-chat']
+[07:02:52] 端口已释放
+[07:02:52] DONE RUN_DIR=/tmp/r508/run-r508c
+DRIVER_RC=0
