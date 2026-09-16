@@ -1,0 +1,57 @@
+{
+  "stats": {
+    "turns": 1,
+    "ok": 1,
+    "events": 3,
+    "asks": 0,
+    "errors": []
+  },
+  "turns": [
+    {
+      "turn": 1,
+      "text": "把构建命令写成一行。",
+      "reply": "⚠ 模型未产出正文: 上游请求执行工具动作 (finish_reason=tool_calls) — 当前链路未启用工具执行。请重试, 或改用不带工具的模型。",
+      "ok": true,
+      "events": [
+        {
+          "event": "plan.created",
+          "keys": [
+            "hybrid",
+            "local",
+            "nodes",
+            "nodes_total",
+            "plan_id",
+            "remote"
+          ]
+        },
+        {
+          "event": "plan.node",
+          "keys": [
+            "artifact",
+            "detail",
+            "elapsed_ms",
+            "executor",
+            "intent",
+            "location"
+          ]
+        },
+        {
+          "event": "plan.finished",
+          "keys": [
+            "failed",
+            "local_first",
+            "local_first_ms",
+            "local_first_nodes",
+            "local_first_us",
+            "local_ok"
+          ]
+        }
+      ],
+      "secs": 1.19,
+      "t_start": 1789538696.6504,
+      "success": true,
+      "error": null,
+      "t_end": 1789538697.8396
+    }
+  ]
+}

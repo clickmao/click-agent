@@ -1,0 +1,53 @@
+{
+ "round": "R489",
+ "candidate": "④ R486 差分夹具打开 ACTION_LOOP 重跑",
+ "prereg_source": "eval/rover/r486/prereg_r486.json (H1: pre 比 post 多 1 次桩请求)",
+ "action_loop": "on",
+ "stub_requests": {
+  "pre-empty": 7,
+  "post-empty": 7,
+  "pre-plain": 1,
+  "post-plain": 1
+ },
+ "telemetry": {
+  "pre-empty": {
+   "rows": 37,
+   "empty_body_events": 0,
+   "retry_skipped_true": 0,
+   "action_loop_events": 0
+  },
+  "post-empty": {
+   "rows": 45,
+   "empty_body_events": 7,
+   "retry_skipped_true": 7,
+   "action_loop_events": 0
+  },
+  "pre-plain": {
+   "rows": 32,
+   "empty_body_events": 0,
+   "retry_skipped_true": 0,
+   "action_loop_events": 0
+  },
+  "post-plain": {
+   "rows": 32,
+   "empty_body_events": 0,
+   "retry_skipped_true": 0,
+   "action_loop_events": 0
+  }
+ },
+ "checks": [
+  {
+   "id": "H1-on",
+   "desc": "空正文(带 tool_calls) 模式: pre 比 post 多 1 次桩请求 (prereg_r486 H1)",
+   "ok": false,
+   "detail": "pre=7 post=7 差=0"
+  },
+  {
+   "id": "NC-plain",
+   "desc": "plain 模式两二进制应同值 (阴性对照; 差异说明夹具噪声)",
+   "ok": true,
+   "detail": "pre=1 post=1"
+  }
+ ],
+ "verdict": "预注册 H1 被证伪 (宣称收窄)"
+}

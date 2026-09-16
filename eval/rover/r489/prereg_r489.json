@@ -1,0 +1,73 @@
+{
+ "round": "R489",
+ "title": "主臂稳定性三跑 + 同窗基线 (本地确认语文案裁决后二进制) — 否定单次读数",
+ "kind": "真机同窗重复测量 (同一 AOT 产物 / 同一夹具 / 同一 role / 同一窗口)",
+ "ts_local": "2026-09-16T13:33:33+0800",
+ "written_before": "先于任何本轮新测量 (本轮首次真机跑之前落盘)",
+ "user_directive": "2026-09-16 用户令: 所有候选并入一轮解决; 需裁定的按统计学最优默认执行",
+ "prereg_immutable": "本文件落盘后不得事后修改; 与实测不符的条目一律按 checks_posthoc 单列, 不回改",
+ "binary_under_test": {
+  "path": "/tmp/pub_r489/agenthost",
+  "derivation": "R485 AOT pin 03c77d56… 之后**唯一**源码改动 = ModelQueueRouter.LocalSkipFallback 文案裁决 (动作声明 → 纯确认语)",
+  "arms_same_binary": true
+ },
+ "arms": {
+  "B": {
+   "gate": false,
+   "repeat_skip": "off",
+   "runs": 1,
+   "role": "skeptic-growth.rbin",
+   "note": "同刻分母"
+  },
+  "R1": {
+   "gate": true,
+   "repeat_skip": "on",
+   "runs": 1
+  },
+  "R2": {
+   "gate": true,
+   "repeat_skip": "on",
+   "runs": 1
+  },
+  "R3": {
+   "gate": true,
+   "repeat_skip": "on",
+   "runs": 1
+  }
+ },
+ "grid": "p12 (12 轮 = 5 sub + 4 ack + 3 rep)",
+ "denominator": "同窗口同刻 B 臂 (禁与 R488 跨轮相减; R488 H0 已判锚漂移)",
+ "hypotheses": {
+  "H1": {
+   "claim": "主 KPI 稳健: min_i(1 − R_i.total / B.total) ≥ 0.30 (i=1..3)",
+   "primary": true
+  },
+  "H2": {
+   "claim": "主臂稳定性: (max−min)/median(R_i.total) ≤ 0.15 ⇒ R488→R489 间的 −42% 摆动**不是**臂内噪声"
+  },
+  "H3": {
+   "claim": "质量面(类别感知): 每臂 telemetry local_gate_skip_reply.kind=template 的轮 ⊆ 确认类轮; 非法(实质/复述轮走 template) = 0/12"
+  },
+  "H4": {
+   "claim": "调用面一致: 每 R_i.calls ≤ B.calls 且 max−min(R_i.calls) ≤ 2"
+  },
+  "H5": {
+   "claim": "文案裁决可机检: 本地确认语为常量单源; template 轮数 == 确认类轮数 (4)"
+  },
+  "H0": {
+   "claim": "锚: |B.total / 70944 − 1| ≤ 0.10 (R488 B 同夹具); 超 ⇒ 本轮只报同窗差分且标不可比",
+   "note": "锚 FAIL 不否定 H1 (H1 只用同窗 B)"
+  }
+ },
+ "negative_controls": {
+  "NC1": "teardown_assert.py --nc-listener / --nc-proc 两例必红",
+  "NC2": "判据器注入 (--force-* 等) 必翻红",
+  "NC3": "sealed: 未改预注册"
+ },
+ "fail_action": "任一 FAIL ⇒ 收窄宣称并单列 checks_posthoc; 不重跑凑绿; 不改本文件",
+ "honest_limits_expected": [
+  "单夹具 (n=12 轮/跑), 无置信区间",
+  "上游供应商漂移跨轮不可控 ⇒ 只做同窗对照",
+  "本地消化轮的答复质量面只用类别感知判据, 不做人工语义评分"
+ ]
+}

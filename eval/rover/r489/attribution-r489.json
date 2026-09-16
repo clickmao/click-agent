@@ -1,0 +1,182 @@
+{
+ "round": "R489",
+ "kind": "post-hoc 方差归因",
+ "arms": {
+  "B": {
+   "usage_rows": 17,
+   "usage_by_finish_reason": {
+    "tool_calls": 5,
+    "stop": 12
+   },
+   "usage_by_route": {
+    "None": 17
+   },
+   "usage_empty_body": 4,
+   "usage_empty_mode": {
+    "empty/tool_calls": 4,
+    "nonempty/stop": 12,
+    "nonempty/tool_calls": 1
+   },
+   "usage_tokens_empty": 19388,
+   "telemetry_gate_rows": 0,
+   "telemetry_gate_verdicts": {},
+   "telemetry_gate_skip_basis": {},
+   "telemetry_empty_body_events": 4,
+   "telemetry_empty_body_cause": {
+    "tool_call": 4
+   },
+   "telemetry_empty_retry_skipped": {
+    "True": 4
+   },
+   "telemetry_micro_sessions": 4,
+   "telemetry_micro_skipped": 4,
+   "telemetry_micro_counts": 4,
+   "remote_turns_expected": 0,
+   "calls_vs_remote_turns": 17,
+   "tokens_nonempty_only": 65640,
+   "calls_nonempty_only": 13
+  },
+  "R1": {
+   "usage_rows": 10,
+   "usage_by_finish_reason": {
+    "tool_calls": 4,
+    "stop": 6
+   },
+   "usage_by_route": {
+    "None": 10
+   },
+   "usage_empty_body": 4,
+   "usage_empty_mode": {
+    "empty/tool_calls": 4,
+    "nonempty/stop": 6
+   },
+   "usage_tokens_empty": 14630,
+   "telemetry_gate_rows": 12,
+   "telemetry_gate_verdicts": {
+    "Pass": 6,
+    "Skip": 6
+   },
+   "telemetry_gate_skip_basis": {
+    "gate:skip→local": 4,
+    "mechanical:repeat→local": 2
+   },
+   "telemetry_empty_body_events": 4,
+   "telemetry_empty_body_cause": {
+    "tool_call": 4
+   },
+   "telemetry_empty_retry_skipped": {
+    "True": 4
+   },
+   "telemetry_micro_sessions": 4,
+   "telemetry_micro_skipped": 4,
+   "telemetry_micro_counts": 4,
+   "remote_turns_expected": 6,
+   "calls_vs_remote_turns": 4,
+   "tokens_nonempty_only": 35145,
+   "calls_nonempty_only": 6
+  },
+  "R2": {
+   "usage_rows": 16,
+   "usage_by_finish_reason": {
+    "tool_calls": 10,
+    "stop": 6
+   },
+   "usage_by_route": {
+    "None": 16
+   },
+   "usage_empty_body": 10,
+   "usage_empty_mode": {
+    "empty/tool_calls": 10,
+    "nonempty/stop": 6
+   },
+   "usage_tokens_empty": 50407,
+   "telemetry_gate_rows": 12,
+   "telemetry_gate_verdicts": {
+    "Pass": 6,
+    "Skip": 6
+   },
+   "telemetry_gate_skip_basis": {
+    "gate:skip→local": 4,
+    "mechanical:repeat→local": 2
+   },
+   "telemetry_empty_body_events": 10,
+   "telemetry_empty_body_cause": {
+    "tool_call": 10
+   },
+   "telemetry_empty_retry_skipped": {
+    "True": 10
+   },
+   "telemetry_micro_sessions": 2,
+   "telemetry_micro_skipped": 2,
+   "telemetry_micro_counts": 2,
+   "remote_turns_expected": 6,
+   "calls_vs_remote_turns": 10,
+   "tokens_nonempty_only": 35311,
+   "calls_nonempty_only": 6
+  },
+  "R3": {
+   "usage_rows": 8,
+   "usage_by_finish_reason": {
+    "tool_calls": 2,
+    "stop": 6
+   },
+   "usage_by_route": {
+    "None": 8
+   },
+   "usage_empty_body": 2,
+   "usage_empty_mode": {
+    "empty/tool_calls": 2,
+    "nonempty/stop": 6
+   },
+   "usage_tokens_empty": 6535,
+   "telemetry_gate_rows": 12,
+   "telemetry_gate_verdicts": {
+    "Pass": 6,
+    "Skip": 6
+   },
+   "telemetry_gate_skip_basis": {
+    "gate:skip→local": 4,
+    "mechanical:repeat→local": 2
+   },
+   "telemetry_empty_body_events": 2,
+   "telemetry_empty_body_cause": {
+    "tool_call": 2
+   },
+   "telemetry_empty_retry_skipped": {
+    "True": 2
+   },
+   "telemetry_micro_sessions": 2,
+   "telemetry_micro_skipped": 2,
+   "telemetry_micro_counts": 2,
+   "remote_turns_expected": 6,
+   "calls_vs_remote_turns": 2,
+   "tokens_nonempty_only": 28191,
+   "calls_nonempty_only": 6
+  }
+ },
+ "excl_empty_body": {
+  "note": "剔除空正文(带 tool_calls)调用后的同窗降幅 —— 上游行为面, 非臂内噪声",
+  "B_tokens": 65640,
+  "B_calls": 13,
+  "deltas": {
+   "R1": {
+    "tokens": 35145,
+    "calls": 6,
+    "降幅_pct": 46.46,
+    "调用降幅_pct": 53.85
+   },
+   "R2": {
+    "tokens": 35311,
+    "calls": 6,
+    "降幅_pct": 46.21,
+    "调用降幅_pct": 53.85
+   },
+   "R3": {
+    "tokens": 28191,
+    "calls": 6,
+    "降幅_pct": 57.05,
+    "调用降幅_pct": 53.85
+   }
+  }
+ }
+}

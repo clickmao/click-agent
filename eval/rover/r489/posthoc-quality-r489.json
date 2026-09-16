@@ -1,0 +1,97 @@
+{
+ "round": "R489",
+ "kind": "post-hoc (telemetry-driven + source-bound)",
+ "preregistered_h5": "见 prereg_r489.json H3/H5 (类别感知; 逐字去重口径已废)",
+ "source_derived": {
+  "LocalSkipFallback": "收到。",
+  "template_chars": 3,
+  "AckFamilyChars": "好嗯行明白了知道谢收到多辛苦可以先就的"
+ },
+ "template_source_checks": [
+  {
+   "id": "SRC1",
+   "desc": "模板每个非标点字符 ⊂ 认可族字符集 (R434 AckFamilyChars)",
+   "ok": true,
+   "detail": "越界字符=[]"
+  },
+  {
+   "id": "SRC2",
+   "desc": "模板不含动作/承诺词 (R489 文案裁决)",
+   "ok": true,
+   "detail": "命中=[]"
+  }
+ ],
+ "arms": {
+  "B": {
+   "gate_rows": 0,
+   "skip_rows": 0,
+   "pass_rows": 0,
+   "skip_replies": 0,
+   "template_replies": 0,
+   "repeat_verbatim_replies": 0,
+   "template_chars_ok": true,
+   "template_chars_seen": [],
+   "skip_basis_hist": {},
+   "illegal_template_pairing": [],
+   "illegal_skip_basis": [],
+   "verdict": "PASS"
+  },
+  "R1": {
+   "gate_rows": 12,
+   "skip_rows": 6,
+   "pass_rows": 6,
+   "skip_replies": 6,
+   "template_replies": 4,
+   "repeat_verbatim_replies": 2,
+   "template_chars_ok": true,
+   "template_chars_seen": [
+    3
+   ],
+   "skip_basis_hist": {
+    "gate:skip→local": 4,
+    "mechanical:repeat→local": 2
+   },
+   "illegal_template_pairing": [],
+   "illegal_skip_basis": [],
+   "verdict": "PASS"
+  },
+  "R2": {
+   "gate_rows": 12,
+   "skip_rows": 6,
+   "pass_rows": 6,
+   "skip_replies": 6,
+   "template_replies": 4,
+   "repeat_verbatim_replies": 2,
+   "template_chars_ok": true,
+   "template_chars_seen": [
+    3
+   ],
+   "skip_basis_hist": {
+    "gate:skip→local": 4,
+    "mechanical:repeat→local": 2
+   },
+   "illegal_template_pairing": [],
+   "illegal_skip_basis": [],
+   "verdict": "PASS"
+  },
+  "R3": {
+   "gate_rows": 12,
+   "skip_rows": 6,
+   "pass_rows": 6,
+   "skip_replies": 6,
+   "template_replies": 4,
+   "repeat_verbatim_replies": 2,
+   "template_chars_ok": true,
+   "template_chars_seen": [
+    3
+   ],
+   "skip_basis_hist": {
+    "gate:skip→local": 4,
+    "mechanical:repeat→local": 2
+   },
+   "illegal_template_pairing": [],
+   "illegal_skip_basis": [],
+   "verdict": "PASS"
+  }
+ }
+}

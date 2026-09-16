@@ -1,0 +1,30 @@
+{
+ "arm": "SELFTEST",
+ "ts_local": "2026-09-16T14:05:03+0800",
+ "checks": {
+  "nc_listener": {
+   "rc": 0,
+   "verdict": "residual",
+   "expect_rc": 0,
+   "ok": true
+  },
+  "nc_proc": {
+   "rc": 0,
+   "verdict": "residual",
+   "expect_rc": 0,
+   "ok": true
+  },
+  "reap_e2e": {
+   "rc": 0,
+   "verdict": "clean",
+   "reaped_pids": [
+    1690340
+   ],
+   "residual_after": 0,
+   "sleeper_alive": false,
+   "ok": true
+  }
+ },
+ "verdict": "PASS",
+ "note": "端口负控/命名空间负控 = 检测器必红; reap_e2e = 收口器真能把残留收干净"
+}

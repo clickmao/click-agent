@@ -1,0 +1,59 @@
+--- r486/run_diff_r486.sh
++++ r489/run_diff_loop_r489.sh
+@@ -1,17 +1,19 @@
+ #!/usr/bin/env bash
+-# R486 差分器: 「空正文(带 tool_calls)⇒ 浪费重试」是否已被修复消除 —— in-vitro 确定性, 不依赖真供应商/凭据。
++# R489 差分器 (机派生自 R486 版; ACTION_LOOP=on): 「空正文(带 tool_calls)⇒ 浪费重试」是否已被修复消除 —— in-vitro 确定性, 不依赖真供应商/凭据。
+ # 臂 = 二进制 (pre=/tmp/pub_r476/agenthost, post=/tmp/pub_r479v2/agenthost) × 模式 (empty_toolcall / plain)
+ # 起手闸: 内存 <2650MB 或对侧会话在建/在测 ⇒ 直接拒跑 (exit 10)
+ set -u
+ ROOT=/home/agentuser/AgentFramework
+-DIR=$ROOT/eval/rover/r486
+-TASK=$DIR/task-r486.json
++DIR=$ROOT/eval/rover/r489
++TASK=$ROOT/eval/rover/r486/task-r486.json
+ ROLE=$(ls $ROOT/eval/rover/r43*/fixture/*.rbin 2>/dev/null | head -1)
+ export AGENTFRAMEWORK_FRONTEND_TOKEN=r486-harness-fixed-token
+ export AGENTFRAMEWORK_KEYS_DEEPSEEK=dummy-key
+ export AGENTFRAMEWORK_KEYS_BIGMODEL=dummy-key
+-export AGENTFRAMEWORK_ACTION_LOOP=off
++export AGENTFRAMEWORK_ACTION_LOOP=on   # R489 候选④: 打开动作环 (原夹具 ACTION_LOOP=off ⇒ 结论不覆盖该形态)
+ export AGENTFRAMEWORK_LLAMA_BIN=/bin/false
++export AGENTFRAMEWORK_WORKSPACE="$ROOT/eval/rover/r489/ws-loop"
++mkdir -p "$ROOT/eval/rover/r489/ws-loop"
+ 
+ MEM=$(awk '/MemAvailable/{printf "%d",$2/1024}' /proc/meminfo)
+ HOT=$(pgrep -af 'dotnet (build|publish|test)|MSBuild.dll' | grep -v pgrep | wc -l)
+@@ -26,7 +28,7 @@
+   [ -x "$BIN" ] || { echo "[拒跑] 二进制缺失 $BIN"; exit 3; }
+   for MODE in empty_toolcall plain; do
+     TAG=$ARM-$(echo "$MODE" | cut -c1-5)
+-    SPORT=$((48600 + idx)); APORT=$((48620 + idx)); idx=$((idx + 1))
++    SPORT=$((48940 + idx)); APORT=$((48960 + idx)); idx=$((idx + 1))
+     RD=$DIR/run-$TAG; CFG=$DIR/config-$TAG
+     rm -rf "$RD" "$CFG"; mkdir -p "$RD/data" "$CFG/base"
+     cp "$ROOT"/config/base/*.yaml "$CFG/base/" 2>/dev/null || true
+@@ -42,7 +44,7 @@
+     return m.group(1) + "http://127.0.0.1:%s/v1/chat/completions" % port
+ src = re.sub(r"(request_address:\s*)(\S+)", rw, src)
+ src += """
+-# R486 臂: 远端端点 = 本地确定性桩; 本地通道关闭(只测远端空正文路径)
++# R489 臂: 远端端点 = 本地确定性桩; 本地通道关闭(只测远端空正文路径)
+ local:
+   model_path: /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf
+   context_size: 4608
+@@ -57,7 +59,7 @@
+ """
+ open(p, "w", encoding="utf-8").write(src)
+ PY
+-    python3 -u "$DIR/stub_upstream_r486.py" "$SPORT" "$MODE" "$DIR" "$TAG" >"$DIR/stub-$TAG.log" 2>&1 &
++    python3 -u "$ROOT/eval/rover/r486/stub_upstream_r486.py" "$SPORT" "$MODE" "$DIR" "$TAG" >"$DIR/stub-$TAG.log" 2>&1 &
+     SPID=$!
+     sleep 0.8
+     kill -0 "$SPID" 2>/dev/null || { echo "[拒跑] 桩未起 $TAG"; exit 4; }
+@@ -83,4 +85,4 @@
+     echo "[arm] $TAG bin=$(basename "$BIN") stub_requests=$REQN quiesce=${waited}s"
+   done
+ done
+-echo "[done] r486"
++echo "[done] r489-loop"

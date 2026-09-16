@@ -425,8 +425,18 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         return Task.FromResult(LocalSkipFallback);
     }
 
-    /// <summary>被跳过轮的回复模板 (非 LLM; 保证"有回复"不变式, 且不新增任何内容)。</summary>
-    public const string LocalSkipFallback = "收到，继续按当前方向推进，本轮不重新规划。";
+    /// <summary>
+    /// 被跳过轮的回复模板 (非 LLM; 保证"有回复"不变式, 且不新增任何内容)。
+    ///
+    /// R489 文案裁决 (用户授权"需裁定的按统计学最优默认执行"): 原文案
+    /// "收到，继续按当前方向推进，本轮不重新规划。" 含**动作声明** ("继续推进"/"不重新规划"),
+    /// 而本地消化轮**没有做任何工作** ⇒ 该声明不被任何事实背书 (R488 质量细读把这条记为
+    /// "未声明是本地 skip")。改为**纯确认语**: 只确认收到, 不承诺、不宣称已完成任何事
+    /// ⇒ 语义上不可能与实质答复混淆 (冒充面归零), 且更短 (写入下一轮前缀的字节更少)。
+    /// 机检面: 摘要轮次 telemetry `local_gate_skip_reply.kind == "template"` 仅在
+    /// **确认类轮** (门判 mechanical:ack 族) 出现 ⇒ "本地替换只发生在确认轮"可被机检断言。
+    /// </summary>
+    public const string LocalSkipFallback = "收到。";
 
     /// <summary>
     /// R475: 空正文降级徽标的**公共前缀** (单源) —— 两处徽标文案均由本常量拼出,

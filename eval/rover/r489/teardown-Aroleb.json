@@ -1,0 +1,39 @@
+{
+ "arm": "Aroleb",
+ "ts_local": "2026-09-16T13:38:47+0800",
+ "ports": {
+  "api": 48912,
+  "relay": 48910
+ },
+ "checks": {
+  "no_arm_process": false,
+  "no_arm_port_listener": true
+ },
+ "residual_procs": [
+  {
+   "pid": 1676110,
+   "matched_by": "cwd_namespace",
+   "argv0": "llama-server",
+   "rss_mb": 1781.8,
+   "cwd": "/home/agentuser/AgentFramework/eval/rover/r489/rundata-Aroleb",
+   "cmd": "/tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127"
+  }
+ ],
+ "listeners": [],
+ "verdict": "residual",
+ "self_exclusion": {
+  "self_pid": 1677135,
+  "excluded_pids": [
+   1140,
+   97891,
+   1675853,
+   1675864,
+   1675900,
+   1677135
+  ]
+ },
+ "negative_controls": {
+  "nc_listener": false,
+  "nc_proc": false
+ }
+}
