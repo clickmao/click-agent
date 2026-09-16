@@ -303,6 +303,11 @@ def verify_witness(meta: dict, got: str):
         if not (0 <= x < p):
             return False, "out_of_range"
         return ((x * x) % p == a), "x^2 mod p != a"
+    if kind == "mod_inverse":
+        p, a = int(m["p"]), int(m["a"])
+        if not (0 <= x < p):
+            return False, "out_of_range"
+        return ((a * x) % p == 1), "(a*x) mod p != 1"
     if kind == "min_counterexample":
         name = str(m["claim"])
         pred = _grade_pred(name)
@@ -444,6 +449,14 @@ def selftest() -> int:
     chk("负控: sqrt_mod 错见证被拒", grade_math(ws, "FINAL: 3")["mode"] == "wrong_witness")
     chk("负控: sqrt_mod 越界被拒", grade_math(ws, "FINAL: 101")["mode"] == "wrong_witness")
     chk("负控: 见证非整数被拒", grade_math(ws, "FINAL: abc")["mode"] == "wrong_witness")
+
+    wi = {"kind": "math", "family": "witness_mod_inverse", "answer": "",
+          "meta": {"witness": {"kind": "mod_inverse", "p": 101, "a": 3}}}
+    chk("正控: mod_inverse 正确见证通过", grade_math(wi, "FINAL: 34")["mode"] == "ok")
+    chk("负控: mod_inverse 错见证被拒(33)", grade_math(wi, "FINAL: 33")["mode"] == "wrong_witness")
+    chk("负控: mod_inverse 越界被拒(101)", grade_math(wi, "FINAL: 101")["mode"] == "wrong_witness")
+    chk("负控: mod_inverse 非整数被拒", grade_math(wi, "FINAL: x")["mode"] == "wrong_witness")
+    chk("负控: mod_inverse 无 FINAL 判 no_final", grade_math(wi, "逆元是 34")["mode"] == "no_final")
 
     wc = {"kind": "math", "family": "witness_min_counterexample", "answer": "",
           "meta": {"witness": {"kind": "min_counterexample", "claim": "mersenne_prime", "n": 4}}}

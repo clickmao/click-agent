@@ -136,6 +136,30 @@ public sealed class R498LocalParaphraseTests
     }
 
     [Fact]
+    public void 守卫_归因必须穷举_破几条报几条()
+    {
+        // R503 回归 (R501 t8 实证形状): 原文 612 字, 本地输出 5 字且为反问 ⇒ 同时破 ②(问号) 与 ⑦(长度带),
+        // 且 ④(标识符守恒) 必然同破。旧版先破先报只留 `question_mark`, 把「引擎根本没改写」误读成
+        // 「守卫禁止问号过于严格」⇒ 归因不全 = 归因错。
+        var sb = new System.Text.StringBuilder();
+        while (sb.Length < 612) sb.Append("本地通道 r1 已接入链管道, agent.host.csproj 未改动。");
+        var v = LocalParaphraseChannel.Guard(sb.ToString(), "要继续吗？");
+        Assert.False(v.Ok);
+        Assert.Contains("question_mark", v.Reason, StringComparison.Ordinal);
+        Assert.Contains("identifier_lost:", v.Reason, StringComparison.Ordinal);
+        Assert.Contains("length_band:", v.Reason, StringComparison.Ordinal);
+
+        // 反方向负控: **单条违规必须仍单条报** (不得无脑拼接成「谁都在破」)
+        var one = LocalParaphraseChannel.Guard(Src, "链管道这边接的是本地通道 r1, 命中率按「1 减 新比前缀」算, agent.host.csproj 这个配置文件没有动？");
+        Assert.False(one.Ok);
+        Assert.Equal("question_mark", one.Reason);
+
+        // 明细有界: 词元多于 2 个时列前 2 个 + `+N`, 数目不丢 (遥测行不得被撑爆)
+        Assert.Equal("a,b+3", LocalParaphraseChannel.JoinBounded(new[] { "a", "b", "c", "d", "e" }));
+        Assert.Equal("a", LocalParaphraseChannel.JoinBounded(new[] { "a" }));
+    }
+
+    [Fact]
     public void 守卫_空输出与空原文必拒()
     {
         Assert.Equal("source_empty", LocalParaphraseChannel.Guard("", "x").Reason);

@@ -1017,6 +1017,55 @@ def _in_life_k(rnd):
     return _nl(["%d %d %d" % (h, w, k)] + rows)
 
 
+# ---- sub_game (游戏族之二: 减法博弈; R503 扩面, 与 life_k 并列) ----
+def _sub_game_parse(s):
+    lines = s.strip().splitlines()
+    n, k = (int(x) for x in lines[0].split())
+    ss = [int(x) for x in lines[1].split()]
+    assert k == len(ss) and len(set(ss)) == k and all(1 <= x <= 12 for x in ss), "题面解析失败: %r" % s
+    assert 1 in ss and 1 <= n <= 80, "题面不合法(须含取 1): %r" % s
+    return n, sorted(ss)
+
+
+def _p_sub_game_ref(s):
+    """正推 DP: win[i] = 存在允许的取 t 使得对手在 i-t 是败态。"""
+    n, ss = _sub_game_parse(s)
+    win = [False] * (n + 1)
+    for i in range(1, n + 1):
+        win[i] = any(not win[i - t] for t in ss if t <= i)
+    if not win[n]:
+        return None
+    return min(t for t in ss if t <= n and not win[n - t])
+
+
+def _p_sub_game_check(s):
+    """独立实现: 记忆化递归极小极大 (自顶向下), 并对返回手做合法性与语义复核。"""
+    n, ss = _sub_game_parse(s)
+    memo = {}
+
+    def f(i):
+        if i == 0:
+            return False          # 轮到走者无子可取 ⇒ 败 (含 1 的集合下不会发生, 保留为语义锚)
+        if i not in memo:
+            memo[i] = any(not f(i - t) for t in ss if t <= i)
+        return memo[i]
+
+    if not f(n):
+        return None
+    cand = [t for t in ss if t <= n and not f(n - t)]
+    assert cand, "check: 必胜态必须存在必胜手"
+    m = min(cand)
+    assert m in ss and 1 <= m <= n, "check: 手非法"
+    assert not f(n - m), "check: 该手未把对手置于败态"
+    return m
+
+
+def _in_sub_game(rnd):
+    k = rnd.randint(1, 4)
+    ss = sorted([1] + rnd.sample([x for x in range(2, 13)], k - 1)) if k > 1 else [1]
+    return _nl(["%d %d" % (rnd.randint(1, 80), k), " ".join(str(x) for x in ss)])
+
+
 PROGRAM_FAMILIES = {
     "max_subarray": {
         "spec": "读入: 第一行整数 n; 第二行 n 个整数(空格分隔)。输出: 连续子数组的最大和(至少取一个元素)。",
@@ -1106,6 +1155,16 @@ PROGRAM_FAMILIES = {
         "check": _p_life_k_check,
         "gen_input": _in_life_k,
         "fmt": lambda r: r,
+    },
+    "sub_game": {
+        "spec": ("读入: 第一行两个整数 n k (1<=n<=80 为石子数, 1<=k<=12 为可选步数个数); "
+                 "第二行 k 个互不相同的整数 s1..sk (1<=si<=12, 且保证其中含 1), 表示一步可取走的石子数。"
+                 "玩法: 两人轮流取, 每次取走恰好某个允许的数目, 取走最后一颗者胜。"
+                 "输出: 先手有必胜策略时输出一行 `WIN m` (m 为**数值最小**的必胜首取数); 先手必败时输出一行 `LOSE`。"),
+        "ref": _p_sub_game_ref,
+        "check": _p_sub_game_check,
+        "gen_input": _in_sub_game,
+        "fmt": lambda r: "LOSE" if r is None else "WIN %d" % r,
     },
 }
 
@@ -1292,6 +1351,12 @@ HARD_INPUTS = {
                   "[" + '"' + BS + "u0007x" + '"]' + NL,
                   _nl(["[1.5]"]),
                   _nl(["NaN"])],
+    "sub_game": [_nl(["1 1", "1"]),
+                 _nl(["2 2", "1 3"]),
+                 _nl(["3 2", "1 3"]),
+                 _nl(["4 1", "1"]),
+                 _nl(["7 3", "1 2 5"]),
+                 _nl(["6 2", "1 5"])],
     "life_k": [_nl(["1 1 0", "."]),
                _nl(["3 3 1", "...", "###", "..."]),
                _nl(["1 3 1", "###"]),
@@ -1323,6 +1388,25 @@ def _w_sqrt_mod_check(m):
         if r == a:
             hits.append(x)
     return hits
+
+
+def _w_mod_inverse_gen(rnd):
+    p = rnd.choice([101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167])
+    return {"kind": "mod_inverse", "p": p, "a": rnd.randint(1, p - 1)}
+
+
+def _w_mod_inverse_ref(m):
+    """穷举扫描 (朴素)。"""
+    p, a = m["p"], m["a"]
+    return min(x for x in range(p) if (a * x) % p == 1)
+
+
+def _w_mod_inverse_check(m):
+    """独立实现: 内置模逆 (扩展欧几里得), 与穷举互证。"""
+    p, a = m["p"], m["a"]
+    v = pow(a, -1, p)
+    assert 0 <= v < p and (a * v) % p == 1, "check: pow 逆元不合规"
+    return v
 
 
 def _claim_mersenne(n):
@@ -1400,6 +1484,12 @@ WITNESS_FAMILIES = {
             "求整数 x (0 <= x < %d) 满足 x^2 ≡ %d (mod %d)。答案不唯一, 任何满足条件的 x 都算正确。"
             % (m["p"], m["a"], m["p"])),
         "answer": lambda m: str(min(_dual(_w_sqrt_mod_ref, _w_sqrt_mod_check, m))),
+    },
+    "witness_mod_inverse": {
+        "gen": _w_mod_inverse_gen, "spec": lambda m: (
+            "求整数 x (0 <= x < %d) 满足 (%d * x) mod %d == 1。答案唯一, 给出该 x 即可。"
+            % (m["p"], m["a"], m["p"])),
+        "answer": lambda m: str(_dual(_w_mod_inverse_ref, _w_mod_inverse_check, m)),
     },
     "witness_min_counterexample": {
         "gen": _w_counterexample_gen, "spec": lambda m: (
@@ -1613,9 +1703,14 @@ def selftest() -> int:
         tt = gen_math_task(10, [fam], random.Random(3000 + len(fam)))
         m = tt.meta.get("witness", {})
         av = int(tt.answer) if tt.answer.strip() else None
-        if m.get("kind") == "sqrt_mod":
+        kind = m.get("kind")
+        if kind == "sqrt_mod":
             chk("见证型 answer 是合法见证(oracle 正控可用)",
                 av is not None and 0 <= av < m["p"] and (av * av) % m["p"] == m["a"],
+                "answer=%r p=%d a=%d" % (tt.answer, m["p"], m["a"]))
+        elif kind == "mod_inverse":
+            chk("见证型 answer 是合法见证(oracle 正控可用)",
+                av is not None and 0 <= av < m["p"] and (av * m["a"]) % m["p"] == 1,
                 "answer=%r p=%d a=%d" % (tt.answer, m["p"], m["a"]))
         else:
             chk("见证型 answer 是最小反例", av == m.get("n"), "answer=%r n=%r" % (tt.answer, m.get("n")))
@@ -1627,6 +1722,15 @@ def selftest() -> int:
             n0 = (m["a"] + 1) % m["p"]
             chk("见证型 sqrt_mod 错见证必须被拒", not ((m["a"] == 0) or ((n0 * n0) % m["p"] == m["a"])),
                 "反例 x=%d" % n0)
+        elif kind == "mod_inverse":
+            sols = [x for x in range(m["p"]) if (m["a"] * x) % m["p"] == 1]
+            chk("见证型 mod_inverse 逆元存在且唯一",
+                len(sols) == 1 and sols[0] == av
+                and m["p"] in (101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167)
+                and 1 <= m["a"] < m["p"],
+                "p=%d a=%d 解数=%d" % (m["p"], m["a"], len(sols)))
+            w = (av + 1) % m["p"]
+            chk("见证型 mod_inverse 错见证必须被拒", (m["a"] * w) % m["p"] != 1, "反例 x=%d" % w)
         else:
             C = CLAIMS[m["claim"]]
             n = m["n"]

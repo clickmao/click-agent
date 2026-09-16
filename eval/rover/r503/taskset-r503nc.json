@@ -1,0 +1,96 @@
+[
+ {
+  "tid": "p001",
+  "kind": "program",
+  "family": "json_mini",
+  "prompt": "用 Python 3 写一个单文件程序解决下面的任务。程序从标准输入读数据, 把结果写到标准输出; 不要打印任何多余文字、提示或调试信息。\n\n【任务】\n读入: STDIN 整体为一个 JSON 值 (可含前后空白与换行)。支持 null / true / false / 十进制整数(可选负号; 不允许前导零, 允许 -0 ⇒ 输出为 0) / 字符串 / 数组 / 对象(键为字符串)。字符串内仅允许标准反斜杠转义 (引号 反斜杠 斜杠 n t uXXXX 六种); uXXXX 解码为对应字符, 且解码出的码点必须 >= 0x20。对象允许重复键, 重复时后者覆盖前者。输出: 规范化文本, **不含任何空白**: 字符串输出时把 引号/反斜杠/换行/制表符 重新转义, 其余字符原样; 对象的键按 Unicode 码点升序; 例: {\"a\":1,\"b\":[2,3]}。若输入非法 (语法错误 / 结尾有多余内容 / 非法转义 / 非法数字 / 空输入), 只输出一行 ERR。\n\n【公开用例】(仅供参考; 判定使用另一批隐藏用例)\n输入:\n-33\n期望输出:\n-33\n\n输入:\n[\"\\\\9\\u4e2d/\",  null\n]\n期望输出:\n[\"\\\\9中/\",null]\n\n请把完整程序放在一个 ```python 围栏代码块内。",
+  "public": [
+   {
+    "stdin": "-33\n",
+    "expected_stdout": "-33"
+   },
+   {
+    "stdin": "[\"\\\\9\\u4e2d/\",  null\n]\n",
+    "expected_stdout": "[\"\\\\9中/\",null]"
+   }
+  ],
+  "hidden": [
+   {
+    "stdin": "{ \":\" : -43, \"\\u4e2d\"  :\n[{  \"\" :  \"\\\"ab\",\n\"\\n/a\\\"\"\n :\n null,\n\"\\\"\"\n : null }], \"\"\n:\n{\n\"\\n \\t\\n\"  :[  20\n ],\n\"\\n\\u0020\\t\\n\":\"\\t\\\"\"}, \":\":\n false\n",
+    "expected_stdout": "ERR"
+   },
+   {
+    "stdin": "true\n",
+    "expected_stdout": "true"
+   },
+   {
+    "stdin": "tru\n",
+    "expected_stdout": "ERR"
+   },
+   {
+    "stdin": "[ [[\n\"\"  ], \"\"\n]]\n",
+    "expected_stdout": "[[[\"\"],\"\"]]"
+   },
+   {
+    "stdin": "[-0.25]\n",
+    "expected_stdout": "ERR"
+   },
+   {
+    "stdin": "[\"a\tb\"]",
+    "expected_stdout": "ERR"
+   },
+   {
+    "stdin": "{\"a\":1,\"b\":[true,null]}\n",
+    "expected_stdout": "{\"a\":1,\"b\":[true,null]}"
+   },
+   {
+    "stdin": "{\"a\": 1\n",
+    "expected_stdout": "ERR"
+   },
+   {
+    "stdin": "[\"a\\xb\"]\n",
+    "expected_stdout": "ERR"
+   },
+   {
+    "stdin": "[\"\\u0041\"]\n",
+    "expected_stdout": "[\"A\"]"
+   },
+   {
+    "stdin": "{\"b\":1,\"a\":2,\"b\":3}\n",
+    "expected_stdout": "{\"a\":2,\"b\":3}"
+   },
+   {
+    "stdin": "[01]\n",
+    "expected_stdout": "ERR"
+   },
+   {
+    "stdin": "[] x\n",
+    "expected_stdout": "ERR"
+   },
+   {
+    "stdin": "-0\n",
+    "expected_stdout": "0"
+   },
+   {
+    "stdin": "{\"z\":{\"b\":1,\"a\":2},\"a\":[]}\n",
+    "expected_stdout": "{\"a\":[],\"z\":{\"a\":2,\"b\":1}}"
+   },
+   {
+    "stdin": "[\"\\u0007x\"]\n",
+    "expected_stdout": "ERR"
+   },
+   {
+    "stdin": "[1.5]\n",
+    "expected_stdout": "ERR"
+   },
+   {
+    "stdin": "NaN\n",
+    "expected_stdout": "ERR"
+   }
+  ],
+  "answer": "",
+  "meta": {
+   "hard": 12
+  }
+ }
+]

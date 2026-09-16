@@ -1,0 +1,142 @@
+[
+ {
+  "tid": "p001",
+  "kind": "program",
+  "family": "sub_game",
+  "prompt": "用 Python 3 写一个单文件程序解决下面的任务。程序从标准输入读数据, 把结果写到标准输出; 不要打印任何多余文字、提示或调试信息。\n\n【任务】\n读入: 第一行两个整数 n k (1<=n<=80 为石子数, 1<=k<=12 为可选步数个数); 第二行 k 个互不相同的整数 s1..sk (1<=si<=12, 且保证其中含 1), 表示一步可取走的石子数。玩法: 两人轮流取, 每次取走恰好某个允许的数目, 取走最后一颗者胜。输出: 先手有必胜策略时输出一行 `WIN m` (m 为**数值最小**的必胜首取数); 先手必败时输出一行 `LOSE`。\n\n【公开用例】(仅供参考; 判定使用另一批隐藏用例)\n输入:\n31 3\n1 6 10\n期望输出:\nWIN 6\n\n输入:\n19 1\n1\n期望输出:\nWIN 1\n\n请把完整程序放在一个 ```python 围栏代码块内。",
+  "public": [
+   {
+    "stdin": "31 3\n1 6 10\n",
+    "expected_stdout": "WIN 6"
+   },
+   {
+    "stdin": "19 1\n1\n",
+    "expected_stdout": "WIN 1"
+   }
+  ],
+  "hidden": [
+   {
+    "stdin": "70 3\n1 7 10\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "28 2\n1 12\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "48 4\n1 2 8 12\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "20 1\n1\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "38 1\n1\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "64 1\n1\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "1 1\n1\n",
+    "expected_stdout": "WIN 1"
+   },
+   {
+    "stdin": "2 2\n1 3\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "3 2\n1 3\n",
+    "expected_stdout": "WIN 1"
+   },
+   {
+    "stdin": "4 1\n1\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "7 3\n1 2 5\n",
+    "expected_stdout": "WIN 1"
+   },
+   {
+    "stdin": "6 2\n1 5\n",
+    "expected_stdout": "LOSE"
+   }
+  ],
+  "answer": "",
+  "meta": {
+   "hard": 6
+  }
+ },
+ {
+  "tid": "p002",
+  "kind": "program",
+  "family": "sub_game",
+  "prompt": "用 Python 3 写一个单文件程序解决下面的任务。程序从标准输入读数据, 把结果写到标准输出; 不要打印任何多余文字、提示或调试信息。\n\n【任务】\n读入: 第一行两个整数 n k (1<=n<=80 为石子数, 1<=k<=12 为可选步数个数); 第二行 k 个互不相同的整数 s1..sk (1<=si<=12, 且保证其中含 1), 表示一步可取走的石子数。玩法: 两人轮流取, 每次取走恰好某个允许的数目, 取走最后一颗者胜。输出: 先手有必胜策略时输出一行 `WIN m` (m 为**数值最小**的必胜首取数); 先手必败时输出一行 `LOSE`。\n\n【公开用例】(仅供参考; 判定使用另一批隐藏用例)\n输入:\n79 4\n1 4 10 11\n期望输出:\nWIN 4\n\n输入:\n26 3\n1 5 6\n期望输出:\nLOSE\n\n请把完整程序放在一个 ```python 围栏代码块内。",
+  "public": [
+   {
+    "stdin": "79 4\n1 4 10 11\n",
+    "expected_stdout": "WIN 4"
+   },
+   {
+    "stdin": "26 3\n1 5 6\n",
+    "expected_stdout": "LOSE"
+   }
+  ],
+  "hidden": [
+   {
+    "stdin": "50 4\n1 2 5 9\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "41 2\n1 5\n",
+    "expected_stdout": "WIN 1"
+   },
+   {
+    "stdin": "64 3\n1 3 11\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "14 1\n1\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "36 1\n1\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "71 1\n1\n",
+    "expected_stdout": "WIN 1"
+   },
+   {
+    "stdin": "1 1\n1\n",
+    "expected_stdout": "WIN 1"
+   },
+   {
+    "stdin": "2 2\n1 3\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "3 2\n1 3\n",
+    "expected_stdout": "WIN 1"
+   },
+   {
+    "stdin": "4 1\n1\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "7 3\n1 2 5\n",
+    "expected_stdout": "WIN 1"
+   },
+   {
+    "stdin": "6 2\n1 5\n",
+    "expected_stdout": "LOSE"
+   }
+  ],
+  "answer": "",
+  "meta": {
+   "hard": 6
+  }
+ }
+]

@@ -1,0 +1,354 @@
+{
+ "round": "R503",
+ "rc": 0,
+ "criteria": [
+  {
+   "id": "H3",
+   "name": "同输入机检",
+   "pass": true,
+   "measured": {
+    "codex": "929a88e1b02cdccf",
+    "agent": "929a88e1b02cdccf",
+    "prereg": "929a88e1b02cdccf",
+    "n_tasks_codex": 8,
+    "n_tasks_agent": 8
+   }
+  },
+  {
+   "id": "H2",
+   "name": "外部真值可用性",
+   "pass": true,
+   "status": "pass",
+   "measured": {
+    "codex_ok": 8,
+    "codex_n": 8,
+    "agent_ok": 7,
+    "agent_n": 8
+   }
+  },
+  {
+   "id": "H4",
+   "name": "同模型机检",
+   "pass": true,
+   "status": "pass",
+   "measured": {
+    "codex": {
+     "calls": 15,
+     "in_tokens": 100375,
+     "out_tokens": 6780,
+     "total_tokens": 107155,
+     "models": [],
+     "model_counts": {
+      "deepseek-chat": 15
+     }
+    },
+    "agent": {
+     "calls": 15,
+     "in_tokens": 64485,
+     "out_tokens": 6748,
+     "total_tokens": 71233,
+     "models": [],
+     "model_counts": {
+      "deepseek-chat": 15
+     }
+    },
+    "prereg_label": "deepseek-flash",
+    "note": "prereg 记的是本仓侧标签; adapter 落盘是供应商侧名(deepseek-chat) —— 判据只要求两侧同一模型"
+   }
+  },
+  {
+   "id": "H5",
+   "name": "对照读数分列（禁总量断言）",
+   "pass": true,
+   "measured": {
+    "rows": 8
+   }
+  },
+  {
+   "id": "H1",
+   "name": "仪器判别力（首跑前负控）",
+   "pass": true,
+   "status": "pass",
+   "measured": {
+    "pass": true,
+    "oracle_whole_ok": 1,
+    "oracle_n": 1,
+    "mutation_json_loose_whole_ok": 0,
+    "mutation_n": 1,
+    "taskset": "eval/rover/r503/taskset-r503nc.json",
+    "reading": "仪器两端: oracle 1.0 且 mutation 0.0"
+   }
+  }
+ ],
+ "table": [
+  {
+   "tid": "m001",
+   "kind": "math",
+   "family": "witness_sqrt_mod",
+   "codex_mode": "ok",
+   "agent_mode": "ok",
+   "codex_passed": 1,
+   "codex_total": 1,
+   "agent_passed": 1,
+   "agent_total": 1
+  },
+  {
+   "tid": "m002",
+   "kind": "math",
+   "family": "witness_min_counterexample",
+   "codex_mode": "ok",
+   "agent_mode": "ok",
+   "codex_passed": 1,
+   "codex_total": 1,
+   "agent_passed": 1,
+   "agent_total": 1
+  },
+  {
+   "tid": "m003",
+   "kind": "math",
+   "family": "witness_mod_inverse",
+   "codex_mode": "ok",
+   "agent_mode": "ok",
+   "codex_passed": 1,
+   "codex_total": 1,
+   "agent_passed": 1,
+   "agent_total": 1
+  },
+  {
+   "tid": "p001",
+   "kind": "program",
+   "family": "life_k",
+   "codex_mode": "ok",
+   "agent_mode": "ok",
+   "codex_passed": 12,
+   "codex_total": 12,
+   "agent_passed": 12,
+   "agent_total": 12
+  },
+  {
+   "tid": "p002",
+   "kind": "program",
+   "family": "sub_game",
+   "codex_mode": "ok",
+   "agent_mode": "ok",
+   "codex_passed": 12,
+   "codex_total": 12,
+   "agent_passed": 12,
+   "agent_total": 12
+  },
+  {
+   "tid": "p003",
+   "kind": "program",
+   "family": "topo_min",
+   "codex_mode": "ok",
+   "agent_mode": "ok",
+   "codex_passed": 13,
+   "codex_total": 13,
+   "agent_passed": 13,
+   "agent_total": 13
+  },
+  {
+   "tid": "p004",
+   "kind": "program",
+   "family": "vm_run",
+   "codex_mode": "ok",
+   "agent_mode": "partial",
+   "codex_passed": 12,
+   "codex_total": 12,
+   "agent_passed": 8,
+   "agent_total": 12
+  },
+  {
+   "tid": "p005",
+   "kind": "program",
+   "family": "json_mini",
+   "codex_mode": "ok",
+   "agent_mode": "ok",
+   "codex_passed": 18,
+   "codex_total": 18,
+   "agent_passed": 18,
+   "agent_total": 18
+  }
+ ],
+ "totals": {
+  "codex": {
+   "whole_ok": 8,
+   "n": 8,
+   "elapsed_s": 111.5,
+   "usage": {
+    "calls": 15,
+    "in_tokens": 100375,
+    "out_tokens": 6780,
+    "total_tokens": 107155,
+    "models": [],
+    "model_counts": {
+     "deepseek-chat": 15
+    }
+   },
+   "per_family": {
+    "life_k": {
+     "n": 1,
+     "passed": 12,
+     "total": 12,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "sub_game": {
+     "n": 1,
+     "passed": 12,
+     "total": 12,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "topo_min": {
+     "n": 1,
+     "passed": 13,
+     "total": 13,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "vm_run": {
+     "n": 1,
+     "passed": 12,
+     "total": 12,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "json_mini": {
+     "n": 1,
+     "passed": 18,
+     "total": 18,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "witness_sqrt_mod": {
+     "n": 1,
+     "passed": 1,
+     "total": 1,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "witness_min_counterexample": {
+     "n": 1,
+     "passed": 1,
+     "total": 1,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "witness_mod_inverse": {
+     "n": 1,
+     "passed": 1,
+     "total": 1,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    }
+   }
+  },
+  "agent": {
+   "whole_ok": 7,
+   "n": 8,
+   "elapsed_s": 32.45,
+   "usage": {
+    "calls": 15,
+    "in_tokens": 64485,
+    "out_tokens": 6748,
+    "total_tokens": 71233,
+    "models": [],
+    "model_counts": {
+     "deepseek-chat": 15
+    }
+   },
+   "per_family": {
+    "life_k": {
+     "n": 1,
+     "passed": 12,
+     "total": 12,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "sub_game": {
+     "n": 1,
+     "passed": 12,
+     "total": 12,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "topo_min": {
+     "n": 1,
+     "passed": 13,
+     "total": 13,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "vm_run": {
+     "n": 1,
+     "passed": 8,
+     "total": 12,
+     "modes": {
+      "partial": 1
+     },
+     "rate": 0.6667
+    },
+    "json_mini": {
+     "n": 1,
+     "passed": 18,
+     "total": 18,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "witness_sqrt_mod": {
+     "n": 1,
+     "passed": 1,
+     "total": 1,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "witness_min_counterexample": {
+     "n": 1,
+     "passed": 1,
+     "total": 1,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "witness_mod_inverse": {
+     "n": 1,
+     "passed": 1,
+     "total": 1,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    }
+   }
+  }
+ },
+ "note": "两侧读数分列; 静态面不同源 ⇒ 禁据 token 总量断言优劣 (H5)"
+}

@@ -161,7 +161,7 @@ public static class LocalParaphraseChannel
     };
 
     /// <summary>
-    /// R498 改写守卫 (纯函数, 可机检)。逐条 (先破先报):
+    /// R498 改写守卫 (纯函数, 可机检)。逐条穷举 (R503 修归因: **破几条报几条**, 语义不变 —— 任一条破即拒):
     ///   ① 原文非空 ∧ 输出非空 (空输出 ⇒ 拒, 不得当成功 — R411 口径);
     ///   ② 输出无问号 —— 本地轮不得反问 (R488 实测退化: r1 把「测试命令是什么？」当改写输出);
     ///   ③ 输出无思考链/代码围栏泄漏 —— r1 会把推理写进 content (R413 实测, 直接回显 = 泄漏推理);
@@ -175,35 +175,56 @@ public static class LocalParaphraseChannel
     public static ParaphraseVerdict Guard(string? sourceReply, string? output)
     {
         var src = (sourceReply ?? string.Empty).Trim();
-        if (src.Length == 0) return Reject("source_empty");                          // ①
+        if (src.Length == 0) return Reject("source_empty");                          // ① 前置: 原文空 ⇒ 余下各条均不可判
         var text = (output ?? string.Empty).Trim();
-        if (text.Length == 0) return Reject("empty_output");                         // ①
-        if (text.IndexOf('?') >= 0 || text.IndexOf('？') >= 0) return Reject("question_mark"); // ②
+        if (text.Length == 0) return Reject("empty_output");                         // ① 前置: 输出空 ⇒ 标识符/长度检查只会产生噪声
+
+        // R503 归因完整性: ②..⑦ **逐条穷举**, 破几条报几条 (拒绝语义与逐条短路版逐位等价 —— 任一条破即拒)。
+        // 动机 (R501 t8 实证): 旧版先破先报, 遥测只留 `question_mark`; 而该轮本地输出 msg_len=5 / src_len=612
+        // (比值 0.008), 同时破了 ⑦ 长度带 —— 单条归因会把「引擎根本没改写」误读成「守卫禁止问号过于严格」,
+        // 进而诱导**削弱一条正确判据**。归因不全 = 归因错。
+        var faults = new List<string>(3);
+        if (text.IndexOf('?') >= 0 || text.IndexOf('？') >= 0) faults.Add("question_mark");  // ②
         if (text.Contains("```", StringComparison.Ordinal)                            // ③
             || text.Contains(TurnGateJudge.ThinkOpen, StringComparison.Ordinal)
             || text.Contains(TurnGateJudge.ThinkClose, StringComparison.Ordinal)
             || text.Contains("思考", StringComparison.Ordinal)
             || text.Contains("推理过程", StringComparison.Ordinal))
-            return Reject("think_leak");
+            faults.Add("think_leak");
 
         var srcIds = new HashSet<string>(Identifiers(src), StringComparer.OrdinalIgnoreCase);
-        foreach (var tok in srcIds)                                                  // ④ 守恒
+        var lost = new List<string>();                                               // ④ 守恒
+        foreach (var tok in srcIds)
             if (text.IndexOf(tok, StringComparison.OrdinalIgnoreCase) < 0)
-                return Reject("identifier_lost:" + tok);
-        foreach (var tok in Identifiers(text))                                       // ⑤ 禁增
-            if (!srcIds.Contains(tok))
-                return Reject("identifier_added:" + tok);
+                lost.Add(tok);
+        if (lost.Count > 0) faults.Add("identifier_lost:" + JoinBounded(lost));
 
-        foreach (var claim in ClaimWords)                                            // ⑥ 动作声明禁增
+        var added = new List<string>();                                              // ⑤ 禁增
+        foreach (var tok in Identifiers(text))
+            if (!srcIds.Contains(tok))
+                added.Add(tok);
+        if (added.Count > 0) faults.Add("identifier_added:" + JoinBounded(added));
+
+        var claims = new List<string>();                                             // ⑥ 动作声明禁增
+        foreach (var claim in ClaimWords)
             if (text.Contains(claim, StringComparison.Ordinal) && !src.Contains(claim, StringComparison.Ordinal))
-                return Reject("claim_added:" + claim);
+                claims.Add(claim);
+        if (claims.Count > 0) faults.Add("claim_added:" + JoinBounded(claims));
 
         var ratio = (double)text.Length / src.Length;                                // ⑦ 长度带
         if (ratio < MinLengthRatio || ratio > MaxLengthRatio)
-            return Reject("length_band:" + ratio.ToString("F2", CultureInfo.InvariantCulture));
+            faults.Add("length_band:" + ratio.ToString("F2", CultureInfo.InvariantCulture));
 
-        return Pass;
+        return faults.Count == 0 ? Pass : Reject(string.Join("+", faults));
     }
+
+    /// <summary>
+    /// 归因明细的**有界连接**: 最多列 2 个词元, 余者以 `+N` 摘要 (遥测行不得被单条判据撑爆;
+    /// 名字面上仍守恒 —— 数目不丢, 明细有界)。空列表不发生 (调用方只在 Count&gt;0 时调用)。
+    /// </summary>
+    internal static string JoinBounded(IReadOnlyList<string> items)
+        => items.Count <= 2 ? string.Join(",", items)
+                            : items[0] + "," + items[1] + "+" + (items.Count - 2).ToString(CultureInfo.InvariantCulture);
 
     /// <summary>
     /// 标识符抽取 (语言无关: 只按字符类判定, 无后缀/关键词表 — 承 R447 语言无关令)。

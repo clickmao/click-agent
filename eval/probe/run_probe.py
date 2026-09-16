@@ -402,13 +402,38 @@ print(chr(10).join("".join(r) for r in g))
 """
 
 REF_SRC["json_mini"] = _REF_JSON.strip()
+_REF_SUB_GAME = r"""
+import sys
+d = sys.stdin.read().split()
+n, k = int(d[0]), int(d[1])
+ss = sorted(int(x) for x in d[2:2 + k])
+win = [False] * (n + 1)
+for i in range(1, n + 1):
+    win[i] = any(not win[i - t] for t in ss if t <= i)
+if not win[n]:
+    print("LOSE")
+else:
+    print("WIN %d" % min(t for t in ss if t <= n and not win[n - t]))
+"""
+
+_MUT_SUB_GREEDY = r"""
+import sys
+d = sys.stdin.read().split()
+n, k = int(d[0]), int(d[1])
+ss = sorted(int(x) for x in d[2:2 + k])
+t = max(x for x in ss if x <= n)
+print("WIN %d" % t)
+"""
+
 REF_SRC["life_k"] = _REF_LIFE.strip()
+REF_SRC["sub_game"] = _REF_SUB_GAME.strip()
 
 FAMILY_MUTATIONS = {
     ("topo_min", "topo_dfs"): _MUT_TOPO_DFS.strip(),
     ("vm_run", "vm_noerr"): _MUT_VM_NOERR.strip(),
     ("json_mini", "json_loose"): _MUT_JSON_LOOSE.strip(),
     ("life_k", "life_wrap"): _MUT_LIFE_WRAP.strip(),
+    ("sub_game", "sub_greedy"): _MUT_SUB_GREEDY.strip(),
 }
 
 
@@ -992,6 +1017,17 @@ def selftest() -> int:
         all(w["meta"].get("witness") and (w["answer"] or "").strip() for w in wit))
     rw = run(wit, "oracle", 5.0)
     chk("正控: 见证型题 oracle 满分", rw["rate"] == 1.0, "rate=%.4f tax=%s" % (rw["rate"], rw["taxonomy"]))
+    sg = [json.loads(taskgen.gen_program_task(i, ["sub_game"], rnd).to_json()) for i in (1, 2, 3, 4)]
+    rsg = run(sg, "oracle", 5.0)
+    chk("正控: sub_game(新游戏族) oracle 满分", rsg["rate"] == 1.0,
+        "rate=%.4f tax=%s" % (rsg["rate"], rsg["taxonomy"]))
+    rmg = run(sg, "mutation:sub_greedy", 5.0)
+    # 口径与 R502 NC 一致: 判红看**整题** (final_whole_ok). 用例级 rate 只是参考读数 ——
+    # 「恒取最大」在多数局面上与最优手同值, 用例级必然 > 0; 若把它当判据就会误判「判据失效」。
+    chk("负控: sub_game 恒取最大(贪心) 整题零通过 (用例级读数仅参考)",
+        rmg["final_whole_ok"] == 0 and rmg["rate"] < rsg["rate"] and "wrong_output" in rmg["taxonomy"],
+        "whole_ok=%s rate=%.4f/%s tax=%s" % (rmg["final_whole_ok"], rmg["rate"], rsg["rate"], rmg["taxonomy"]))
+
     rw2 = run(wit, "mutation:wrongfinal", 5.0)
     chk("负控: 见证型题错见证被判红", rw2["rate"] < 1.0 and bool(rw2["taxonomy"].get("wrong_witness")),
         "rate=%.4f tax=%s" % (rw2["rate"], rw2["taxonomy"]))
