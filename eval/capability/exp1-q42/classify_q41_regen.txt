@@ -1,0 +1,11 @@
+CLASSIFY contract_intro=e9445d47ed7e (ct=1789568258)  HEAD_ct=1789586953
+CLASSIFY violations=37  commits_blocked_if_default_on=37
+CLASSIFY by_phase={'pre_contract': 36, 'post_contract': 1}  why={'tail_lf_missing': 37}
+CLASSIFY paths={'docs/verification-registry.json': 37}
+CLASSIFY prev_tail_lf={True: 10, False: 27, None: 0} next_tail_lf={True: 10, False: 27, None: 0}
+CLASSIFY post_contract_window={'commits_total': 24, 'commits_touch_targets': 17, 'violations': 1}
+   058bc778dda8 pre_contract docs/verification-registry.json why=tail_lf_missing prev=True next=False | R479: Responses 真实 I/O 数据格式(instructions/input 字段分离) + 精准语义单
+   dcaff6f78966 pre_contract docs/verification-registry.json why=tail_lf_missing prev=False next=True | EXP1-Q28: probe 行证据面产物化上闸 (evidence-overtaken 族清零) + 跨写者整文件序
+   f834137ab689 pre_contract docs/verification-registry.json why=tail_lf_missing prev=True next=True | R494: 声明面通道轴 —— 隔离通道恒不下发工作区工具 (R493 泄漏归因→结构收口)
+   783423f5862e pre_contract docs/verification-registry.json why=tail_lf_missing prev=True next=True | R495: 本地决策台账落盘+尾部挂载 —— 三源一致 PASS; 判别力宣称被证伪并收窄
+   5bdf394ea378 post_contract docs/verification-registry.json why=tail_lf_missing prev=True next=True | R496: 真值非复算(HMAC+进程密钥) + 工具面越界收口 + 台账面并入 llm_call

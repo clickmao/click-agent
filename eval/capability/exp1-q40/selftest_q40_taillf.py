@@ -1,14 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""EXP1-Q40 · 候选④ 成对控制: 「尾 LF 契约纳入提交面自检, 默认关 (opt-in)」。
+"""EXP1-Q40 · 候选④ 成对控制: 「尾 LF 契约纳入提交面自检」。
 
-判据 (预注册见 eval/capability/exp1-q40/prereg_q40.json H8)：
+**EXP1-Q42 期望刷新 (转正的时效性义务)**: 闸自 EXP1-Q41 起**默认开** ⇒ 本件的 E5 原期望
+「默认档放行坏清单」已**过期** (EXP1-Q42 首跑实测 E5 FAIL / 9-10, 见
+eval/capability/exp1-q42/taillf_q40_selftest_after_promotion_q42.txt)。判据改为**默认档 = 拦下** +
+新增**显式关闸臂** (E5b) 承担原「关闸真不跑」的机制断言 —— 期望值随默认值刷新, 判据不放宽。
+
+判据 (预注册见 eval/capability/exp1-q40/prereg_q40.json H8; E5/E5b 刷新见 exp1-q42/prereg_q42.json)：
   E1 合规件 ⇒ rc=0 (且源字段为 index/head/worktree 之一 —— 提交面取值方式可解释)。
   E2 违规件 ⇒ rc=2 且**逐件点名** ∧ 三型原因码各自出现 (tail 缺 LF / CRLF / BOM)。
   E3 不可解析的件 ⇒ rc=2 ∧ UNRESOLVED 计数 (不可判 = 拦, 不判绿)。
   E4 清单文件缺失 ⇒ rc=3 (环境不可判)。
-  E5 提交面钩子 **默认关**: 同坏清单 ⇒ 放行 (rc=0, 零回归)。
-  E6 打开 ⇒ 同态拦下 (rc=1 ∧ 报文含闸名)。
+  E5 提交面钩子 **默认档 (自 EXP1-Q41 转正 = 开)**: 同坏清单 ⇒ **拦下** (rc=1 ∧ 报文含闸名)。
+  E5b 显式关闸 (AGENTFRAMEWORK_TAIL_LF_GUARD=0): 同坏清单 ⇒ **放行** (rc=0 ∧ 无闸报文)。
+  E6 显式开闸 ⇒ 同态拦下 (rc=1 ∧ 报文含闸名)。
   E7 打开 + 合规清单 ⇒ rc=0。
   E8 真仓默认作用面 ⇒ rc=0 (零回归)。
   E9 代价实测: 闸单次耗时 (ms) + 钩子「开 − 关」增量 (ms)。
@@ -96,13 +102,22 @@ def main():
     detail['E4'] = {'rc': rc4}
     checks['E4_missing_list_abstains'] = (rc4 == 3)
 
-    # E5 / E6 / E7 提交面钩子 (只读闸; 其余闸关掉以免混入无关因)
+    # E5 / E5b / E6 / E7 提交面钩子 (只读闸; 其余闸关掉以免混入无关因)
+    # 空串 ⇒ 走 `${VAR:-1}` 默认档 (EXP1-Q41 转正后 = 开), 显式给空串可屏蔽环境串染。
     base = {'AGENTFRAMEWORK_DECL_SWEEP': '0', 'AGENTFRAMEWORK_EVIDENCE_CHECK': '0'}
-    rc5, o5, ms5 = sh({**base, 'AGENTFRAMEWORK_TAIL_LF_TARGETS': str(list_bad)},
+    rc5, o5, ms5 = sh({**base, 'AGENTFRAMEWORK_TAIL_LF_GUARD': '',
+                       'AGENTFRAMEWORK_TAIL_LF_TARGETS': str(list_bad)},
                       argv=['bash', HOOK])
-    detail['E5'] = {'rc': rc5, 'tail': o5.strip().splitlines()[-2:], 'ms': round(ms5, 1)}
-    checks['E5_hook_default_off_passes_bad_list'] = (rc5 == 0
-                                                     and 'BLOCKED(EXP1-Q40' not in o5)
+    detail['E5'] = {'rc': rc5, 'guard_env': '"" (默认档)', 'tail': o5.strip().splitlines()[-2:],
+                    'ms': round(ms5, 1)}
+    checks['E5_hook_default_blocks_bad_list'] = (rc5 == 1
+                                                 and 'BLOCKED(EXP1-Q40' in o5)
+    rc5b, o5b, ms5b = sh({**base, 'AGENTFRAMEWORK_TAIL_LF_GUARD': '0',
+                          'AGENTFRAMEWORK_TAIL_LF_TARGETS': str(list_bad)},
+                         argv=['bash', HOOK])
+    detail['E5b'] = {'rc': rc5b, 'blocked': 'BLOCKED(EXP1-Q40' in o5b, 'ms': round(ms5b, 1)}
+    checks['E5b_hook_explicit_off_passes_bad_list'] = (rc5b == 0
+                                                       and 'BLOCKED(EXP1-Q40' not in o5b)
     rc6, o6, ms6 = sh({**base, 'AGENTFRAMEWORK_TAIL_LF_GUARD': '1',
                        'AGENTFRAMEWORK_TAIL_LF_TARGETS': str(list_bad)}, argv=['bash', HOOK])
     detail['E6'] = {'rc': rc6, 'blocked': 'BLOCKED(EXP1-Q40 尾 LF 契约闸)' in o6, 'ms': round(ms6, 1)}
@@ -122,15 +137,20 @@ def main():
     # E9 代价: 闸本身 (3 次中位) 与钩子增量
     samples = sorted(guard(None)[2] for _ in range(3))
     detail['E9'] = {'guard_ms_median': round(samples[1], 1), 'guard_ms_samples': [round(x, 1) for x in samples],
-                    'hook_off_ms': round(ms5, 1), 'hook_on_ms': round(ms6, 1),
-                    'hook_delta_ms': round(ms6 - ms5, 1),
+                    'hook_off_ms': round(ms5b, 1), 'hook_on_ms': round(ms5, 1),
+                    'hook_delta_ms': round(ms5 - ms5b, 1),
                     'note': ('「提交时修」的成本 = 0 (闸只读); 「拦下」的代价 = 一次重提交。'
-                             '闸本身耗时见 guard_ms_median')}
-    checks['E9_cost_measured'] = (samples[1] < 5000 and ms6 - ms5 < 8000)
+                             '闸本身耗时见 guard_ms_median。开 = 默认档/显式 1, 关 = 显式 0。')}
+    checks['E9_cost_measured'] = (samples[1] < 5000 and ms5 - ms5b < 8000)
 
     ok = all(checks.values())
-    payload = {'round': 'EXP1-Q40', 'schema': 'selftest-q40-taillf/1',
+    payload = {'round': 'EXP1-Q40',
+               'schema': 'selftest-q40-taillf/1',
                'prereg': 'eval/capability/exp1-q40/prereg_q40.json',
+               'expectations_refreshed_by': 'EXP1-Q42',
+               'refresh_reason': ('闸自 EXP1-Q41 转正为默认开 ⇒ 原 E5「默认档放行坏清单」过期; '
+                                  '改为「默认档拦下」+ 新增 E5b「显式关闸放行」, 判据不放宽。'
+                                  '过期实测: eval/capability/exp1-q42/taillf_q40_selftest_after_promotion_q42.txt'),
                'fixtures': [rel(good), rel(bad_lf), rel(bad_crlf), rel(bad_bom), rel(missing)],
                'checks': checks, 'detail': detail, 'verdict': 'PASS' if ok else 'FAIL'}
     out = HERE / 'selftest_q40_taillf.json'

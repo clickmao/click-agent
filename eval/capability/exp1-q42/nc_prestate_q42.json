@@ -1,0 +1,37 @@
+{
+ "round": "EXP1-Q42",
+ "schema": "nc-prestate-q42/1",
+ "checks": {
+  "N1_pre_sha_is_ancestor_and_differs": true,
+  "N2_prestate_has_only_old_expectation": true,
+  "N3_disk_has_new_default_and_explicit_off_arm": true,
+  "N4_archive_is_before_refresh": true,
+  "N5_arms_expect_opposite_rc": true
+ },
+ "detail": {
+  "N1": {
+   "pre_sha": "ecd363d",
+   "ancestor_rc": 0,
+   "pre_len": 6699,
+   "disk_len": 8044
+  },
+  "N2": {
+   "old_name_in_prestate": true,
+   "new_name_in_prestate": false
+  },
+  "N3": {
+   "new_name_in_disk": true,
+   "off_arm_in_disk": true
+  },
+  "N4": {
+   "archive_mtime": 1789587546.7807872,
+   "script_mtime": 1789587574.5326438,
+   "archive_says_fail": true
+  },
+  "N5": {
+   "default_arm_expr": "checks['E5_hook_default_blocks_bad_list'] = (rc5 == 1",
+   "off_arm_expr": "checks['E5b_hook_explicit_off_passes_bad_list'] = (rc5b == 0"
+  }
+ },
+ "verdict": "PASS"
+}

@@ -1,0 +1,72 @@
+{
+ "checks": {
+  "V1_scopeA_single_reason_no_false_positive": true,
+  "V2_scopeA_population_not_shrunk": true,
+  "V3_scopeB_broaden_rejected": true,
+  "V4_judge_has_discrimination": true,
+  "V5_pin_kind_census_recorded": true,
+  "V6_output_deterministic": true
+ },
+ "detail": {
+  "V1": {
+   "paths_in_targets": true,
+   "reason_codes": [
+    "tail_lf_missing"
+   ],
+   "rows": 37,
+   "violations": 37
+  },
+  "V2": {
+   "blobs_judged": 232,
+   "commits_touching": 146,
+   "missing_path_in_commit": 60
+  },
+  "V3": {
+   "commit_hit_rate": 0.595,
+   "commits_scanned": 200,
+   "commits_with_violation": 119,
+   "scope": "B-broaden-all-text",
+   "text_blobs_judged": 4529,
+   "violations": 1405
+  },
+  "V4": {
+   "bom": [
+    false,
+    "bom_present"
+   ],
+   "canonical": [
+    true,
+    null
+   ],
+   "crlf": [
+    false,
+    "crlf_present"
+   ],
+   "empty": [
+    false,
+    "empty_or_unresolved"
+   ],
+   "tail_missing": [
+    false,
+    "tail_lf_missing"
+   ]
+  },
+  "V5": {
+   "census": {
+    "<no-egw>": 50,
+    "null": 163,
+    "semantic-projection": 1
+   },
+   "measurable_objects": 1,
+   "rows": 214
+  }
+ },
+ "inputs": {
+  "eval/capability/exp1-q41/replay_q41.json": "00a2c742fc641ba0",
+  "eval/capability/exp1-q41/replay_q41_scopeA.json": "284bcf8b0b129f4e"
+ },
+ "inputs_note": "只读冻结归档字节; 不读 HEAD, 不含时间戳 ⇒ 输出可逐字节复现",
+ "round": "EXP1-Q42",
+ "schema": "replay-archive-verify-q42/1",
+ "verdict": "PASS"
+}

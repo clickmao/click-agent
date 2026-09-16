@@ -1,0 +1,62 @@
+{
+ "round": "EXP1-Q42",
+ "written_before_any_measurement": true,
+ "scope": "AN.9 候选 1/2/4/5/6 并轮 (候选 3 = 对侧 r494, 不属本侧)",
+ "ordering_note": "本轮首步的 (a) 内存/占位闸读数 (occupancy_q42_pre/post.txt) 与 (b) 过期探测首跑 (taillf_q40_selftest_after_promotion_q42.txt) 发生在本预注册之前 —— 二者是**触发探测/环境读数**, 不是本轮判据; 判据 M1-M6 全部在本文件落盘之后才取证。",
+ "hypotheses": [
+  {
+   "id": "M1",
+   "claim": "转正后的既有控制期望刷新后全绿",
+   "cmd": "python3 eval/capability/exp1-q40/selftest_q40_taillf.py",
+   "predict": "verdict=PASS; 11/11: E1-E4 + E5(默认档=拦下) + E5b(显式关=放行) + E6 + E7 + E8(真仓 rc=0) + E9(代价)",
+   "negative_control": "前态器具 (EXP1-Q41 提交里的 selftest 字节) 同态 ⇒ E5 判 FAIL (过期复现, 首跑实测 9/10 PASS)",
+   "falsified_by": "刷新后仍有任一 check FAIL, 或 E5b 无法区分「显式关」与「默认档」(两臂同 rc ⇒ 关闸臂空心)"
+  },
+  {
+   "id": "M2",
+   "claim": "exp1q41.* 三条能力登记 + 定向重审 + 声明刷新, 且不产生归属篡改",
+   "cmd": "python3 eval/capability/exp1-q42/append_rows_q42.py && python3 eval/capability/bind_evidence.py --apply --only <3 新行,exp1q40.commit-face-tail-lf-gate> --round EXP1-Q42 && python3 eval/capability/decl_sweep.py --apply",
+   "predict": "ADDED=3; 重审行 audited_by_round=EXP1-Q42; decl_sweep RE_AUDITED ≤ 3 且 numstat 改写行数 ≤ 8 (定向, 非全表)",
+   "negative_control": "序列化器逐字节复现断言 (indent=1/尾 LF) ⇒ 不成立即拒绝写入; 幂等: 重跑 0 行新增; 全表刷 = 归属篡改 (历史量化 145 行)",
+   "falsified_by": "numstat 行数 > 8 或 RE_AUDITED 覆盖非本轮行 ⇒ 判归属篡改并 git checkout 回退后定向重跑"
+  },
+  {
+   "id": "M3",
+   "claim": "形式门禁 (登记表/证据改动后当轮) 全绿",
+   "cmd": "env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR dotnet test src/agent.tests/agentframework.tests.csproj --filter \"FullyQualifiedName~VerificationForm|FullyQualifiedName~SkillGeneralization|FullyQualifiedName~DevPlanDocRef\" --nologo -v q",
+   "predict": "rc=0 (Failed 0)",
+   "negative_control": "登记表注入缺陷类负控由 VerificationFormTests 自带 (填高等级/删证据/指向不存在用例)",
+   "falsified_by": "rc≠0 ⇒ 如实记 NOT_GREEN 并保留读数, 不放宽判据"
+  },
+  {
+   "id": "M4",
+   "claim": "转正后的真实观测窗口 (下一次真提交) 拦截次数 = 0",
+   "cmd": "bash tools/hooks/pre-commit (经 git commit 触发) ⇒ /tmp/tail_lf_precommit.log",
+   "predict": "rc=0 ∧ 日志含 TAIL_LF_GUARD contract=R481-tail-lf violations=0 unresolved=0 ∧ TAIL_LF_GUARD=OK",
+   "negative_control": "作用面内注入坏件 (scratch 清单) ⇒ rc=1 (M1 的 E5/E6 同源判别力)",
+   "falsified_by": "真提交被拦 ⇒ 记 BLOCKED 并修该件规范形, 不关闸绕过"
+  },
+  {
+   "id": "M5",
+   "claim": "H6 漂移通知件在真实提交面上的现场读数",
+   "cmd": "试跑 commit_face_notice_q41.py --log <bind_evidence --check 日志> (真实提交面)",
+   "predict": "真仓干净态 ⇒ 漂移 0 ⇒ 通知件**零行输出** (零噪声); 现场**不产生** >0 漂移事件",
+   "negative_control": "夹具注入 (HEAD≠现盘) ⇒ 2 行可见 + FROZEN_EVIDENCE_DRIFT=1 (Q41 selftest_q41_drift 4/4)",
+   "falsified_by": "现场输出出现漂移行而实际无漂移 ⇒ 判假红并查通知件; 现场读出 0 行**不得**当作「>0 现场事件已观测」"
+  },
+  {
+   "id": "M6",
+   "claim": "扩面决议维持: 作用面 = 声明常量 DEFAULT_TARGETS, 不扩至产物件写入路径",
+   "cmd": "引用 Q41 回放读数 (1405/4529 = 0.5950 > 0.02 阈) + 写侧静态派生 (5 处 + \"\\n\")",
+   "predict": "维持不扩; 重开条件 = 产物写入器统一补尾 LF 后重新评估",
+   "negative_control": "关闸/坏件两态 ⇒ 闸仍有拦截力 (M1/M4)",
+   "falsified_by": "若出现「合法件被误杀」样本 ⇒ 需重评作用面 (Q41 回放 37/37 全为单一原因码 ⇒ 误报 0)"
+  }
+ ],
+ "honest_boundaries_predeclared": [
+  "M5 的现场 >0 事件在本轮**不可达** (真仓干净态) ⇒ 该候选按 AN.9 继续结转, 不用夹具读数顶替现场读数",
+  "M1 刷新的是**期望时效**问题 (控制随默认值演进而过期), 不改变被测量的闸行为",
+  "转正后真实复核窗口小 (Q41: 契约后仅 1 次复发, n=1)"
+ ],
+ "push_freeze": "在效 (仅本地 commit)"
+}

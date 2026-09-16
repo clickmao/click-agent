@@ -500,6 +500,26 @@ def check(root, rows, drift=None):
     return v, dist, cert
 
 
+def detect_json_form(raw, doc):
+    """从现盘字节**反解**登记表的序列化形态 (indent / ensure_ascii / 尾换行)。
+
+    为什么必须反解 (EXP1-Q42 实证): 形态漂移会让**写侧通路静默分叉** —— 本工具原硬编码 `indent=1`,
+    而登记表现盘自 R500 起为 `indent=2` ⇒ `--apply` 恒 `SER_ASSERT=FAIL` ⇒ rc=3 (通路死亡:
+    任何能力登记都做不了)。反过来若为迁就形态而**放宽**断言, 就会静默重排整份文件
+    (5305 行 diff 淹没真实改动)。正解 = 形态的**唯一权威 = 现盘文件**: 反解成功即按现盘形态写回
+    (改一行就是一行); 反解失败仍 fail-closed (rc=3, 零字节写入)。
+    """
+    tail = "\n" if raw.endswith("\n") else ""
+    for indent in (1, 2, 4, None):
+        for asc in (False, True):
+            try:
+                if json.dumps(doc, indent=indent, ensure_ascii=asc) + tail == raw:
+                    return {"indent": indent, "ensure_ascii": asc, "tail": "LF" if tail else "NONE"}
+            except (TypeError, ValueError):
+                continue
+    return None
+
+
 def main():
     global AUDITED_BY_ROUND
     ap = argparse.ArgumentParser()
@@ -577,17 +597,18 @@ def main():
         #   但断言**不得因形态差异静默禁用整条通路** (EXP1-Q28 实证: 缺 LF ⇒ rc=3 ⇒ 所有程序化改写退化为
         #   文本插入, 而通路失效本身无人看见). 故判据 = 规范串 + 尾形态二态容忍, 回写规范化到 LF 并把
         #   「补 1 B」显式打进 stdout; 缩进漂移/键序重排照旧 rc=3 (非空心).
-        ser = json.dumps(doc, indent=1, ensure_ascii=False)
+        ser_form = detect_json_form(raw, doc)
         tail = "\n" if raw.endswith("\n") else ""
-        if ser + tail != raw:
+        if ser_form is None:
             runrec["ser_assert"] = "FAIL"
             print("SER_ASSERT=FAIL 序列化器未能逐字节复现原文件 (禁改写)")
-            print("  TAIL=%s RAWLEN=%d SERLEN=%d (差异不止尾换行 ⇒ 格式漂移)"
-                  % ("LF" if tail else "NONE", len(raw), len(ser)))
+            print("  TAIL=%s RAWLEN=%d (已试 indent∈{1,2,4,None} × ensure_ascii∈{False,True} ⇒ 形态反解失败)"
+                  % ("LF" if tail else "NONE", len(raw)))
             return finish(3)
         runrec["ser_assert"] = "OK"
-        print("SER_ASSERT=OK (indent=1, ensure_ascii=False, tail=%s)"
-              % ("LF" if tail else "NONE->LF 补 1 B 承 R481 契约 语义零变化"))
+        print("SER_ASSERT=OK (indent=%s, ensure_ascii=%s, tail=%s — 形态由现盘反解)"
+              % (ser_form["indent"], ser_form["ensure_ascii"],
+                 "LF" if tail else "NONE->LF 补 1 B 承 R481 契约 语义零变化"))
         tracked, dirty = git_state(root)
         # EXP1-Q30: 粒度收窄 —— needs_field ∧ (无 --only ∨ id ∈ --only)。无 --only 时 scope == 全表 ⇒ 历史行为不变。
         scope_rows = [r for r in rows if needs_field(r) and (ids is None or r.get("id") in ids)]
@@ -627,7 +648,7 @@ def main():
                     row[k] = v
                 if "evidence_generated_with" not in row:
                     row["evidence_generated_with"] = f
-        out = json.dumps(doc, indent=1, ensure_ascii=False) + "\n"
+        out = json.dumps(doc, indent=ser_form["indent"], ensure_ascii=ser_form["ensure_ascii"]) + "\n"
         if out == raw:
             print("IDEMPOTENT=OK (字节不变, 无需写盘)")
             runrec["idempotent"] = True

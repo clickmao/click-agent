@@ -2,6 +2,8 @@
  "round": "EXP1-Q40",
  "schema": "selftest-q40-taillf/1",
  "prereg": "eval/capability/exp1-q40/prereg_q40.json",
+ "expectations_refreshed_by": "EXP1-Q42",
+ "refresh_reason": "闸自 EXP1-Q41 转正为默认开 ⇒ 原 E5「默认档放行坏清单」过期; 改为「默认档拦下」+ 新增 E5b「显式关闸放行」, 判据不放宽。过期实测: eval/capability/exp1-q42/taillf_q40_selftest_after_promotion_q42.txt",
  "fixtures": [
   "eval/capability/exp1-q40/fixtures/tail_ok.txt",
   "eval/capability/exp1-q40/fixtures/tail_missing.txt",
@@ -15,7 +17,8 @@
   "E2_canonical_file_not_named": true,
   "E3_unresolved_is_blocked_not_green": true,
   "E4_missing_list_abstains": true,
-  "E5_hook_default_off_passes_bad_list": true,
+  "E5_hook_default_blocks_bad_list": true,
+  "E5b_hook_explicit_off_passes_bad_list": true,
   "E6_hook_opt_in_blocks_bad_list": true,
   "E7_hook_opt_in_passes_canonical": true,
   "E8_real_repo_default_scope_green": true,
@@ -27,7 +30,7 @@
    "line": [
     "TAIL_LF_GUARD contract=R481-tail-lf targets=1 violations=0 unresolved=0"
    ],
-   "ms": 34.5
+   "ms": 35.3
   },
   "E2": {
    "rc": 2,
@@ -47,37 +50,46 @@
    "rc": 3
   },
   "E5": {
+   "rc": 1,
+   "guard_env": "\"\" (默认档)",
+   "tail": [
+    "  VIOLATION eval/capability/exp1-q40/fixtures/tail_bom.txt source=index why=bom_present bytes=12",
+    "TAIL_LF_GUARD_VIOLATIONS=3 ⇒ 终态要求: 末字节 LF ∧ 无 CRLF ∧ 无 BOM"
+   ],
+   "ms": 93.4
+  },
+  "E5b": {
    "rc": 0,
-   "tail": [],
-   "ms": 47.6
+   "blocked": false,
+   "ms": 47.9
   },
   "E6": {
    "rc": 1,
    "blocked": true,
-   "ms": 88.4
+   "ms": 91.2
   },
   "E7": {
    "rc": 0,
-   "ms": 82.8
+   "ms": 87.0
   },
   "E8": {
    "rc": 0,
    "line": [
     "TAIL_LF_GUARD contract=R481-tail-lf targets=2 violations=0 unresolved=0"
    ],
-   "ms": 43.2
+   "ms": 40.8
   },
   "E9": {
-   "guard_ms_median": 39.0,
+   "guard_ms_median": 41.8,
    "guard_ms_samples": [
-    38.8,
-    39.0,
-    39.1
+    40.8,
+    41.8,
+    42.7
    ],
-   "hook_off_ms": 47.6,
-   "hook_on_ms": 88.4,
-   "hook_delta_ms": 40.8,
-   "note": "「提交时修」的成本 = 0 (闸只读); 「拦下」的代价 = 一次重提交。闸本身耗时见 guard_ms_median"
+   "hook_off_ms": 47.9,
+   "hook_on_ms": 93.4,
+   "hook_delta_ms": 45.5,
+   "note": "「提交时修」的成本 = 0 (闸只读); 「拦下」的代价 = 一次重提交。闸本身耗时见 guard_ms_median。开 = 默认档/显式 1, 关 = 显式 0。"
   }
  },
  "verdict": "PASS"
