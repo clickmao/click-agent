@@ -1833,7 +1833,7 @@
     "pin_status": "frozen",
     "pin_reason": "archived-per-round",
     "pin_kind": "semantic-projection",
-    "artifact_sha12": "35811a35f750",
+    "artifact_sha12": "60f8eb4deccb",
     "instrument": "eval/capability/instruments_check.py",
     "instrument_sha12": "b4c5c34cb775",
     "binding": "audit-pin",
@@ -3368,7 +3368,7 @@
     "instrument": "eval/capability/bind_evidence.py",
     "instrument_sha12": "6d9a0fc9d3fc",
     "binding": "audit-pin",
-    "audited_by_round": "R491"
+    "audited_by_round": "EXP1-Q34"
    },
    "negative_control": "C8 四检: --help 必须列出 --round ∧ default=AUDITED_BY_ROUND 逐字保留 ∧ main 内 global 声明必须在首次使用之前(本轮曾因此报 SyntaxError ⇒ --help 非 0 ⇒ 判红被抓)",
    "covers": [
@@ -3798,7 +3798,7 @@
     "instrument": "eval/rover/r483/preflight_gate.py",
     "instrument_sha12": "04e207751c50",
     "binding": "audit-pin",
-    "audited_by_round": "R491"
+    "audited_by_round": "EXP1-Q34"
    }
   },
   {
@@ -4184,7 +4184,7 @@
     "instrument": "eval/rover/r490/analyze_r490.py",
     "instrument_sha12": "8c05760e02ac",
     "binding": "audit-pin",
-    "audited_by_round": "EXP1-Q34"
+    "audited_by_round": "R491"
    },
    "negative_control": "门关臂(R/B) 的 `tool_decl_gate` 打点全为 gate=0/reason=gate_off/declared=True ⇒ 门关时请求体与 R456..R489 逐字节同形(零回归, 单测 `SuppressedRequest_CarriesNoToolsKey`/`DeclaredRequest_CarriesToolsJsonVerbatim` 锁字节面); `ToolIntents` 与 `IntentRecognizer.KnownIntents` 的关系由单测锁死(防两套常量漂移); 跨轮只作参考**禁相减**(R489 旧产物另记)。**两处红**: (a) I5 剪裁打点红(Clone 未透传计数器, 已修+单测锁, 新 sha 8b4efbb7… 的真机复测待下轮); (b) T2 复现臂未跑(起手闸红 MemAvailable 2,615MB < 2,650MB, 按纪律让行)。",
    "covers": [
@@ -4213,7 +4213,7 @@
     "instrument": "eval/rover/r490/analyze_r490.py",
     "instrument_sha12": "8c05760e02ac",
     "binding": "audit-pin",
-    "audited_by_round": "EXP1-Q34"
+    "audited_by_round": "R491"
    },
    "negative_control": "非空判据 = user→user 相邻对(R489 同臂为 0、R490 >0 ⇒ 确曾存在模板串且被剪); 只剪**等于** `LocalSkipFallback` 的 assistant 文本 ⇒ 实质答复/复述回放原文不剪(单测 `LocalTemplateReply_IsTrimmedFromRemoteReplay` / `RepeatReplaySubstantiveReply_IsKept`); 计数器经 `ActionLoopRunner.Clone` 透传由单测 `ActionLoopClone_PropagatesGateFacts` 锁死。",
    "covers": [
@@ -4233,9 +4233,9 @@
    "evidence_path": "eval/rover/r491/verdict-r491.json",
    "evidence_generated_with": {
     "evidence_kind": "artifact",
-    "pin_status": "live",
-    "pin_reason": "worktree-only",
-    "artifact_sha12": null,
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "4074727485ab",
     "instrument": "eval/rover/r491/analyze_r491.py",
     "instrument_sha12": "0d725a73794a",
     "binding": "audit-pin",
@@ -4263,9 +4263,9 @@
    "evidence_path": "eval/rover/r491/verdict-r491.json",
    "evidence_generated_with": {
     "evidence_kind": "artifact",
-    "pin_status": "live",
-    "pin_reason": "worktree-only",
-    "artifact_sha12": null,
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "4074727485ab",
     "instrument": "eval/rover/r491/analyze_r491.py",
     "instrument_sha12": "0d725a73794a",
     "binding": "audit-pin",
@@ -4291,9 +4291,9 @@
    "evidence_path": "eval/rover/r491/gate-nc-ablation.json",
    "evidence_generated_with": {
     "evidence_kind": "artifact",
-    "pin_status": "live",
-    "pin_reason": "worktree-only",
-    "artifact_sha12": null,
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "545ed4e204d4",
     "instrument": "eval/rover/r483/preflight_gate.py",
     "instrument_sha12": "04e207751c50",
     "binding": "audit-pin",
@@ -4318,9 +4318,9 @@
    "evidence_path": "eval/rover/r491/verdict-r491.json",
    "evidence_generated_with": {
     "evidence_kind": "artifact",
-    "pin_status": "live",
-    "pin_reason": "worktree-only",
-    "artifact_sha12": null,
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "4074727485ab",
     "instrument": "eval/rover/r491/analyze_r491.py",
     "instrument_sha12": "0d725a73794a",
     "binding": "audit-pin",
