@@ -1,0 +1,135 @@
+{
+ "round": "EXP1-Q30",
+ "readings": {
+  "fixture_sha12": "1b359c15b623",
+  "derived_field": {
+   "evidence_kind": "artifact",
+   "pin_status": "frozen",
+   "pin_reason": "archived-per-round",
+   "artifact_sha12": "3bf281ff7d7b",
+   "instrument": "eval/rover/r479/check_r479.py",
+   "instrument_sha12": "8ed3b5efce11",
+   "binding": "audit-pin",
+   "audited_by_round": "EXP1-Q30"
+  },
+  "declared_before_fixture": {
+   "evidence_kind": "artifact",
+   "pin_status": "frozen",
+   "pin_reason": "archived-per-round",
+   "artifact_sha12": "deadbeef0001",
+   "instrument": "eval/rover/r479/check_r479.py",
+   "instrument_sha12": "8ed3b5efce11",
+   "binding": "audit-pin",
+   "audited_by_round": "R481"
+  },
+  "A_stdout_head": [
+   "AUDITED_BY_ROUND=EXP1-Q30",
+   "ONLY_SCOPE=n=1 r479.responses-io-wire",
+   "SER_ASSERT=OK (indent=1, ensure_ascii=False, tail=LF)",
+   "WRITE_READBACK=OK",
+   "SCOPE=only(n=1)",
+   "COVERED 1 -> 1 (scope); 全表 COVERED=110"
+  ],
+  "block_changed_keys": [
+   "artifact_sha12",
+   "audited_by_round"
+  ],
+  "A_sha12": "82a0339e12ad",
+  "B_sha12": "82a0339e12ad",
+  "changed_rows": [
+   "r479.responses-io-wire"
+  ],
+  "A2_idempotent_line": [
+   "IDEMPOTENT=OK (字节不变, 无需写盘)"
+  ],
+  "P4_line": [
+   "AUDITED_BY_ROUND=EXP1-Q30",
+   "ONLY_SCOPE=UNKNOWN_IDS ['bogus.id.does-not-exist'] (fail-closed, 零字节写入)"
+  ],
+  "P5_line": [
+   "AUDITED_BY_ROUND=R473",
+   "ONLY_SCOPE=REQUIRES_EXPLICIT_ROUND (定向重审缺显式 --round ⇒ rc=3, 零字节写入)"
+  ],
+  "C_stdout_touched": [
+   "UNCHANGED=5 / TOUCHED=108"
+  ],
+  "reg_real_sha12": "3ead4b6eb5cd",
+  "check_exit": {
+   "new": 2,
+   "old": 2
+  },
+  "check_tail": [
+   "VIOLATION r487.band-subband-and-corpus-list: 产品面证据行缺 evidence_generated_with (R2f)",
+   "R2E_R2F_EXIT=2"
+  ],
+  "zeroregress_apply": {
+   "old_rc": 0,
+   "new_rc": 0,
+   "old_sha12": "a218506ba3b8",
+   "new_sha12": "a218506ba3b8",
+   "old_touched": [
+    "UNCHANGED=5 / TOUCHED=108"
+   ],
+   "new_touched": [
+    "UNCHANGED=5 / TOUCHED=108 (scope)"
+   ]
+  },
+  "stale_worktree_only_ids": []
+ },
+ "checks": {
+  "A_rc": true,
+  "P1_逐字节等价": true,
+  "P1b_非空转": true,
+  "N3_夹具有效": true,
+  "P2_作用域": true,
+  "P3_幂等": true,
+  "P4_未知id": true,
+  "P5_缺轮号": true,
+  "N1_零写入": true,
+  "P6_负控_去作用域": true,
+  "P7_真登记表零副作用": true,
+  "P8_无参零回归_check": true,
+  "P8b_无参零回归_apply": true,
+  "P9_候选②前提为假(已闭合)": true
+ },
+ "verdict": "PASS",
+ "failed": [],
+ "n_checks": "14/14",
+ "rerun_by": "EXP1-Q31",
+ "cross_round_note": "跨轮复跑 (Q31 会话): 14/14 checks 与 Q30 逐项相同; 差异仅在输入派生读数 (registry 已变)",
+ "nonsemantic_fields_whitelist": [
+  "A_sha12",
+  "B_sha12",
+  "fixture_sha12",
+  "reg_real_sha12",
+  "zeroregress_apply",
+  "C_stdout_touched",
+  "check_tail"
+ ],
+ "q30_head_readings": {
+  "A_sha12": "e4187bfc39c5",
+  "B_sha12": "e4187bfc39c5",
+  "fixture_sha12": "6bc648198998",
+  "reg_real_sha12": "92f40d92af6a",
+  "zeroregress_apply": {
+   "old_rc": 0,
+   "new_rc": 0,
+   "old_sha12": "3b8fcc070947",
+   "new_sha12": "3b8fcc070947",
+   "old_touched": [
+    "UNCHANGED=0 / TOUCHED=110"
+   ],
+   "new_touched": [
+    "UNCHANGED=0 / TOUCHED=110 (scope)"
+   ]
+  },
+  "C_stdout_touched": [
+   "UNCHANGED=0 / TOUCHED=110"
+  ],
+  "check_tail": [
+   "VIOLATION r476.evidence-binding-round-param: 器具绑定与现盘不符 (声明 5127b5c0592b / 实际 8613fc2468c6) (R2e —— 器具已改, 引用它的证据须重审)",
+   "R2E_R2F_EXIT=2"
+  ]
+ },
+ "checks_identical_to_q30": true
+}

@@ -1,8 +1,8 @@
 {
  "schema": "instruments-check/5",
  "manifest": "eval/capability/instruments.json",
- "manifest_sha12": "78305b417e39",
- "instrument_sha12": "13f8872cb070",
+ "manifest_sha12": "836545689500",
+ "instrument_sha12": "8d1eb60b7ca4",
  "face": "full",
  "only": null,
  "out": "eval/capability/instruments-check.json",
@@ -11,25 +11,23 @@
  "drift_injected": false,
  "inject_mode": null,
  "inject_note": "",
- "side_effects": [
-  "eval/capability/exp1-q31/verdict_q31_hook_gate.json"
- ],
+ "side_effects": [],
  "side_effect_attribution": {
   "schema": "side-effect-attribution/1",
-  "verdict": "self-side-effect",
-  "red": true,
+  "verdict": "clean",
+  "red": false,
   "measurement_ok": true,
   "reasons": [],
   "window": {
-   "t0": 1789530772.8627903,
-   "t1": 1789530973.8457205,
-   "trace_dir": "/tmp/q22gate-8q3z933j"
+   "t0": 1789531063.0922194,
+   "t1": 1789531263.92778,
+   "trace_dir": "/tmp/q22gate-mk38pvf_"
   },
   "trace": {
    "commands": 59,
-   "events": 20,
-   "raw_events": 6155,
-   "raw_paths_n": 3101,
+   "events": 23,
+   "raw_events": 6161,
+   "raw_paths_n": 3106,
    "raw_paths_sample": [
     "/dev/null",
     "/home/agentuser/AgentFramework/.git",
@@ -37,12 +35,12 @@
     "/home/agentuser/AgentFramework/.git/index.lock",
     "/home/agentuser/AgentFramework/.git/objects/0a",
     "/home/agentuser/AgentFramework/.git/objects/0a/4dc54ab1d00d601cccdcfe958827a59373bd4a",
-    "/home/agentuser/AgentFramework/.git/objects/0a/tmp_obj_BQ9gs3",
-    "/home/agentuser/AgentFramework/.git/objects/0a/tmp_obj_HCPh1H",
+    "/home/agentuser/AgentFramework/.git/objects/0a/tmp_obj_iY2OJC",
+    "/home/agentuser/AgentFramework/.git/objects/0a/tmp_obj_rVYS47",
     "/home/agentuser/AgentFramework/.git/objects/ba",
     "/home/agentuser/AgentFramework/.git/objects/ba/fc5d9a1a836cea09dadcec13e66fe498cd997a",
-    "/home/agentuser/AgentFramework/.git/objects/ba/tmp_obj_T3SWBy",
-    "/home/agentuser/AgentFramework/.git/objects/ba/tmp_obj_yDMT8n",
+    "/home/agentuser/AgentFramework/.git/objects/ba/tmp_obj_7m8pRC",
+    "/home/agentuser/AgentFramework/.git/objects/ba/tmp_obj_nGHTSA",
     "/home/agentuser/AgentFramework/0a",
     "/home/agentuser/AgentFramework/4dc54ab1d00d601cccdcfe958827a59373bd4a",
     "/home/agentuser/AgentFramework/ApiKeyResolver.cs",
@@ -137,7 +135,10 @@
     "/home/agentuser/AgentFramework/eval/capability/exp1-q30/scratch/nc_bind.log",
     "/home/agentuser/AgentFramework/eval/capability/exp1-q30/scratch/nc_reg.json",
     "/home/agentuser/AgentFramework/eval/capability/exp1-q30/scratch/whitelist_coverage_face.json",
-    "/home/agentuser/AgentFramework/eval/capability/exp1-q31/verdict_q31_hook_gate.json",
+    "/home/agentuser/AgentFramework/eval/capability/exp1-q31/__pycache__/verify_stage_guard_hook_q31.cpython-311.pyc",
+    "/home/agentuser/AgentFramework/eval/capability/exp1-q31/__pycache__/verify_stage_guard_hook_q31.cpython-311.pyc.139257835692848",
+    "/home/agentuser/AgentFramework/eval/capability/exp1-q31/scratch",
+    "/home/agentuser/AgentFramework/eval/capability/exp1-q31/scratch/verdict_q31_hook_gate.json",
     "/home/agentuser/AgentFramework/eval/capability/instruments-check-drift.json",
     "/home/agentuser/AgentFramework/eval/capability/instruments-check-scoped.json",
     "/home/agentuser/AgentFramework/eval/rover/r444/precheck-prefilter.json",
@@ -195,6 +196,7 @@
     "/home/agentuser/AgentFramework/resultA2.json",
     "/home/agentuser/AgentFramework/resultB.json",
     "/home/agentuser/AgentFramework/resultM.json",
+    "/home/agentuser/AgentFramework/scratch",
     "/home/agentuser/AgentFramework/selftest_summary.json",
     "/home/agentuser/AgentFramework/sendemail-validate.sample",
     "/home/agentuser/AgentFramework/sibling",
@@ -213,50 +215,32 @@
     "/home/agentuser/AgentFramework/update.sample",
     "/home/agentuser/AgentFramework/verdict_q31_hook_gate.json",
     "/home/agentuser/AgentFramework/x.py",
-    "/tmp/0qh3h1hn",
-    "/tmp/2fjx0h14",
-    "/tmp/3kas0jh1",
-    "/tmp/7yvawbhn",
-    "/tmp/d6mmbw6u",
-    "/tmp/docref-selftest-5j0sngyz",
-    "/tmp/docref-selftest-5j0sngyz/src",
-    "/tmp/docref-selftest-5j0sngyz/src/agent",
-    "/tmp/docref-selftest-5j0sngyz/src/agent/x",
-    "/tmp/docref-selftest-5j0sngyz/src/agent/x/Alpha.cs",
-    "/tmp/docref-selftest-5j0sngyz/src/agent/x/Beta.cs",
-    "/tmp/exp1q1-02j_hbw5",
-    "/tmp/exp1q1-02j_hbw5/cli_result.json",
-    "/tmp/exp1q1-02j_hbw5/data",
-    "/tmp/exp1q1-02j_hbw5/data/credentials.json",
-    "/tmp/exp1q1-02j_hbw5/data/master.key",
-    "/tmp/exp1q1-02j_hbw5/data/store.bin",
-    "/tmp/exp1q1-02j_hbw5/data/trace.jsonl"
+    "/tmp/0fjp8vji",
+    "/tmp/3hlljv0n",
+    "/tmp/4pu6eytb",
+    "/tmp/5ghav4ri",
+    "/tmp/_e4p5joz",
+    "/tmp/b4nsmqyq",
+    "/tmp/c7fm4p56",
+    "/tmp/dd8gh9za",
+    "/tmp/docref-selftest-_m68jkl7",
+    "/tmp/docref-selftest-_m68jkl7/src",
+    "/tmp/docref-selftest-_m68jkl7/src/agent",
+    "/tmp/docref-selftest-_m68jkl7/src/agent/x",
+    "/tmp/docref-selftest-_m68jkl7/src/agent/x/Alpha.cs",
+    "/tmp/docref-selftest-_m68jkl7/src/agent/x/Beta.cs"
    ],
-   "log_bytes": 33213317,
+   "log_bytes": 33246260,
    "capped": false,
    "unresolved_relative": 0,
    "channel": "strace+audithook"
   },
-  "self_writes": [
-   {
-    "path": "eval/capability/exp1-q31/verdict_q31_hook_gate.json",
-    "evidence": {
-     "cmd": 58,
-     "pid": "1599677",
-     "syscall": "openat",
-     "path": "eval/capability/exp1-q31/verdict_q31_hook_gate.json",
-     "failed_ret": false
-    },
-    "sha_before": "1657d6dc61bc",
-    "sha_after": "353b59683a93"
-   }
-  ],
+  "self_writes": [],
   "touched_and_gone": [],
   "foreign_writes": [],
   "pre_existing": [
    "docs/reports/r486-write-side-address-and-candidate-ledger.md",
    "docs/reports/round-collision-log.jsonl",
-   "docs/verification-registry.json",
    "eval/bge/r404/csharp-fusion-replay.json",
    "eval/capability/exp1-q22-controls/fixtures/c1.txt",
    "eval/capability/exp1-q22-controls/fixtures/c2.txt",
@@ -278,28 +262,6 @@
    "eval/capability/exp1-q29/scratch/reg_nolf.json",
    "eval/capability/exp1-q29/scratch/reg_reorder.json",
    "eval/capability/exp1-q30/verdict_q30_only.json",
-   "eval/capability/exp1-q31/_nc_cap_capped_q31.py",
-   "eval/capability/exp1-q31/_nc_only_equivalence_q31.py",
-   "eval/capability/exp1-q31/_nc_retired_q31.sh",
-   "eval/capability/exp1-q31/_nc_stage_guard_hollow_q31.py",
-   "eval/capability/exp1-q31/derive_and_run_census_q31.py",
-   "eval/capability/exp1-q31/edit_manifest_q31.py",
-   "eval/capability/exp1-q31/instrument_gap_census_q31.json",
-   "eval/capability/exp1-q31/instrument_gap_census_q31.py",
-   "eval/capability/exp1-q31/instruments/cleanup_ledger_check.py",
-   "eval/capability/exp1-q31/instruments/dotnet_test_gate.py",
-   "eval/capability/exp1-q31/instruments/face_cap_headroom.py",
-   "eval/capability/exp1-q31/instruments/only_equivalence_guard.py",
-   "eval/capability/exp1-q31/instruments/r462_w_probe_wrapper.py",
-   "eval/capability/exp1-q31/instruments/retired_interop_absent.py",
-   "eval/capability/exp1-q31/prereg_q31.json",
-   "eval/capability/exp1-q31/residual_disposition_q31.json",
-   "eval/capability/exp1-q31/residual_disposition_q31.py",
-   "eval/capability/exp1-q31/rewrite_evidence_cmd_q31.py",
-   "eval/capability/exp1-q31/tmp_archive_identity_q31.json",
-   "eval/capability/exp1-q31/verify_stage_guard_hook_q31.py",
-   "eval/capability/face-scale-ledger.jsonl",
-   "eval/capability/instruments.json",
    "eval/recall/check_r480.py",
    "eval/recall/focus_c.json",
    "eval/recall/focus_probe_c.py",
@@ -338,12 +300,10 @@
   ],
   "old_gate_delta": [],
   "old_gate_false_reds": [],
-  "old_gate_missed_self_writes": [
-   "eval/capability/exp1-q31/verdict_q31_hook_gate.json"
-  ],
+  "old_gate_missed_self_writes": [],
   "live_fd_scan": {
-   "scanned": 309,
-   "errors": 104
+   "scanned": 203,
+   "errors": 107
   },
   "census_in_repo_cwd": [
    {
@@ -352,24 +312,24 @@
     "cmd": "node /home/agentuser/.hermes/lsp/bin/bash-language-server start"
    },
    {
-    "pid": 1597001,
+    "pid": 1600761,
     "cwd": ".",
     "cmd": "/bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT=\"$HOME/.dotnet\"; export PATH=\"$DOTNET_ROOT:$PATH\"; python3 -u eval/capability/ins"
    },
    {
-    "pid": 1597014,
+    "pid": 1600774,
     "cwd": ".",
-    "cmd": "tee /tmp/q31_face_full.log"
+    "cmd": "tee /tmp/q31_face_full2.log"
    }
   ],
   "conservation": {
-   "classified": 82,
-   "expected": 82,
-   "in_scope_after": 82,
+   "classified": 58,
+   "expected": 58,
+   "in_scope_after": 58,
    "ok": true
   }
  },
- "passed": 20,
+ "passed": 27,
  "total": 27,
  "results": [
   {
@@ -952,8 +912,8 @@
    "expect_rc": 0,
    "substr_ok": true,
    "pass": true,
-   "sha12": "13f8872cb070",
-   "owner_round": "EXP1-Q19",
+   "sha12": "8d1eb60b7ca4",
+   "owner_round": "EXP1-Q31",
    "kpi_quad": {
     "单位": "器具行",
     "分母": "instruments.json 行数",
@@ -1023,10 +983,10 @@
    "id": "bind_evidence.check",
    "kind": "registry-checker",
    "cmd": "python3 eval/capability/bind_evidence.py --check",
-   "rc": 2,
+   "rc": 0,
    "expect_rc": 0,
-   "substr_ok": false,
-   "pass": false,
+   "substr_ok": true,
+   "pass": true,
    "sha12": "8613fc2468c6",
    "owner_round": "EXP1-Q30",
    "kpi_quad": {
@@ -1057,10 +1017,10 @@
    "id": "bind_evidence.committed-state",
    "kind": "registry-checker",
    "cmd": "python3 eval/capability/exp1-q30/check_committed_state_q30.py",
-   "rc": 2,
+   "rc": 0,
    "expect_rc": 0,
-   "substr_ok": false,
-   "pass": false,
+   "substr_ok": true,
+   "pass": true,
    "sha12": "695273f48a39",
    "owner_round": "EXP1-Q30",
    "kpi_quad": {
@@ -1083,7 +1043,7 @@
      "rc": 0,
      "expect": "detect:NC_DETECTED",
      "pass": true,
-     "head": "NC_DETECTED (注入 unpinned-drift ⇒ 2 条违反: ('bge.recall.frozen_bench', 'artifact', 'eval/bge/fixtures/corpus.jsonl', 'deadbeef0000', 'fa7c448c505d'))"
+     "head": "NC_DETECTED (注入 unpinned-drift ⇒ 1 条违反: ('bge.recall.frozen_bench', 'artifact', 'eval/bge/fixtures/corpus.jsonl', 'deadbeef0000', 'fa7c448c505d'))"
     }
    ]
   },
@@ -1128,7 +1088,7 @@
    "rc": 0,
    "expect_rc": 0,
    "substr_ok": true,
-   "pass": false,
+   "pass": true,
    "sha12": "36ff9cd395dc",
    "owner_round": "EXP1-Q31",
    "kpi_quad": {
@@ -1141,10 +1101,10 @@
     "version": "ok",
     "instrument_sha12": "ok",
     "input_surface": "ok:dynamic_corpus",
-    "input_fingerprint": "BAD_DYNAMIC_COUNT:None",
+    "input_fingerprint": "ok(n=0)",
     "kpi_quad": "ok"
    },
-   "l2_ok": false,
+   "l2_ok": true,
    "negative_controls": [
     {
      "cmd": "bash eval/capability/exp1-q31/_nc_retired_q31.sh",
@@ -1230,7 +1190,7 @@
    "rc": 0,
    "expect_rc": 0,
    "substr_ok": true,
-   "pass": false,
+   "pass": true,
    "sha12": "dac3f65fd6b8",
    "owner_round": "EXP1-Q31",
    "kpi_quad": {
@@ -1243,10 +1203,10 @@
     "version": "ok",
     "instrument_sha12": "ok",
     "input_surface": "ok:dynamic_corpus",
-    "input_fingerprint": "BAD_DYNAMIC_COUNT:None",
+    "input_fingerprint": "ok(n=0)",
     "kpi_quad": "ok"
    },
-   "l2_ok": false,
+   "l2_ok": true,
    "negative_controls": [
     {
      "cmd": "python3 eval/capability/exp1-q31/_nc_cap_capped_q31.py",
@@ -1264,7 +1224,7 @@
    "rc": 0,
    "expect_rc": 0,
    "substr_ok": true,
-   "pass": false,
+   "pass": true,
    "sha12": "56b918c29a72",
    "owner_round": "EXP1-Q31",
    "kpi_quad": {
@@ -1277,10 +1237,10 @@
     "version": "ok",
     "instrument_sha12": "ok",
     "input_surface": "ok:dynamic_corpus",
-    "input_fingerprint": "BAD_DYNAMIC_COUNT:None",
+    "input_fingerprint": "ok(n=0)",
     "kpi_quad": "ok"
    },
-   "l2_ok": false,
+   "l2_ok": true,
    "negative_controls": [
     {
      "cmd": "python3 eval/capability/exp1-q31/_nc_only_equivalence_q31.py",
@@ -1298,8 +1258,8 @@
    "rc": 0,
    "expect_rc": 0,
    "substr_ok": true,
-   "pass": false,
-   "sha12": "dae6a124adec",
+   "pass": true,
+   "sha12": "a226beb1f947",
    "owner_round": "EXP1-Q31",
    "kpi_quad": {
     "单位": "提交",
@@ -1311,10 +1271,10 @@
     "version": "ok",
     "instrument_sha12": "ok",
     "input_surface": "ok:dynamic_corpus",
-    "input_fingerprint": "BAD_DYNAMIC_COUNT:None",
+    "input_fingerprint": "ok(n=0)",
     "kpi_quad": "ok"
    },
-   "l2_ok": false,
+   "l2_ok": true,
    "negative_controls": [
     {
      "cmd": "python3 eval/capability/exp1-q31/_nc_stage_guard_hollow_q31.py",

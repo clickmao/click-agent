@@ -1155,7 +1155,7 @@ trace-conditioned 100.0% 论文自陈为 *labeled diagnostic*, 须与 zero-shot 
      **算法教训（语言无关）**：*启发式边界的终止条件必须锚定"最后一个确证项"；弱证据（空行/注释）只能附着于确证项，不得凭相邻性把无关内容并入* —— 首版把"尾部空行"当延长依据，导致其后散文被吞进代码段（机检当场抓到）。
 - **L5 运行级验证 (t8–t12)** 收口：默认关、零 shell、超时杀树、输出上限排空、结构化结果、插件接线；族内 20/20（含 300k 排空 / 路径含空格引号 / 闸门关不执行 / 相对路径回归）。
 - **exp5 教训表（role 模块）核心**：`LessonGeneralization`（通用化机检）/`LessonTable`（FNV-1a 指纹 + 去重归并 + 版本游标 + STJ 源生成 + 原子写）/`RoleLessons`（无 role 不落盘且显式回报）；11/11 机检（A8 负断言：`py_compile`/`C#`/`.cs` 一律拒收）。
-- **exp8 立项**（用户本轮新钦定）：[已验证产物 → skill 蒸馏 + skill 生命周期 + KPI A/B](docs/plans/v0.22.0-exp8-artifact-to-skill-and-kpi-ab.md)（设计文档，含 tokens/轮数/asked 率/质量 对照口径与 A1–A6 机检草案）。
+- **exp8 立项**（用户本轮新钦定）：[已验证产物 → skill 蒸馏 + skill 生命周期 + KPI A/B](./plans/v0.22.0-exp8-artifact-to-skill-and-kpi-ab.md)（设计文档，含 tokens/轮数/asked 率/质量 对照口径与 A1–A6 机检草案）。
 - **静默后台**：bge 闲时训练 cron 改为 `deliver=local`（只落盘不打扰）；探针全记录 `docs/plans/v0.22.0-r371-capability-probe-python-game.md`。
 - **真机 A/B（R372, 3 连跑）**: 产物命中 **1/3 → 2/3 → 3/3**；**有效产物 2/3**（RUN2 截断致 `compile_valid=false`）。
   **归因反转（诚实点）**: 3/3 全为 `origin=fenced` → 本轮命中率提升来自模型给围栏（D4 提示词纪律），**非** D4-b 启发式；若无 `origin` 字段会把功劳误记给启发式。
@@ -1174,8 +1174,8 @@ trace-conditioned 100.0% 论文自陈为 *labeled diagnostic*, 须与 zero-shot 
   1. "继续下轮，注意别忘验证形式，要加入规范内，【通过查看自己的上下文来对比当前项目agent能力差异】并修复完善"
   2. "收集未来可用于bge-small-zh-v1.5基座的数据，并加入闲时训练计划，本机若无任务再执行就自动执行数据收集，训练bge版本，统计KPI不断择优，请你以确定性的召回率为目标不断优化bge-small-zh-v1.5 并生成每个版本小报"
   3. (后续) "注意别忘验证形式…和 之前的5个开发计划的实施" + "你需要实测它们用于召回的能力后再最终确定用哪个嵌入模型"
-- **L1 验证形式入规范 (用户长期焦点, 本轮交付)**: 新增 [docs/验证形式规范.md](docs/验证形式规范.md) (证据阶梯 L0 未验证 → L1 静态 → L2 单测/组件行为 → L3 真机运行 → L4 对抗负向控制; 六条规则: 无登记=未验证 / 静态最高只能报 L1 / L≥2 必须负向控制 / 证据必须落盘可复查 / 表述纪律 / 登记表机检) + [docs/verification-registry.json](docs/verification-registry.json) (机读登记表, 含 `covers[]` 覆盖插件实现) + `src/agent.tests/VerificationFormTests.cs` **6/6 通过** —— 含**自检负向控制**: 注入 5 类缺陷 (缺负向控制/静态冒充运行/证据路径不存在/插件漏登记/等级越级) 全部被抓出。已挂 README + 总纲 §0-0 第 9 条。
-- **L2 自上下文能力差异 + 首批修复**: 新增 [docs/plans/v0.22.0-l2-capability-diff.md](docs/plans/v0.22.0-l2-capability-diff.md) (16 项逐条对位, 判定只用 `file:line` 实证; 缺口清单 G1–G9 入长期看板)。
+- **L1 验证形式入规范 (用户长期焦点, 本轮交付)**: 新增 [docs/验证形式规范.md](./验证形式规范.md) (证据阶梯 L0 未验证 → L1 静态 → L2 单测/组件行为 → L3 真机运行 → L4 对抗负向控制; 六条规则: 无登记=未验证 / 静态最高只能报 L1 / L≥2 必须负向控制 / 证据必须落盘可复查 / 表述纪律 / 登记表机检) + [docs/verification-registry.json](./verification-registry.json) (机读登记表, 含 `covers[]` 覆盖插件实现) + `src/agent.tests/VerificationFormTests.cs` **6/6 通过** —— 含**自检负向控制**: 注入 5 类缺陷 (缺负向控制/静态冒充运行/证据路径不存在/插件漏登记/等级越级) 全部被抓出。已挂 README + 总纲 §0-0 第 9 条。
+- **L2 自上下文能力差异 + 首批修复**: 新增 [docs/plans/v0.22.0-l2-capability-diff.md](./plans/v0.22.0-l2-capability-diff.md) (16 项逐条对位, 判定只用 `file:line` 实证; 缺口清单 G1–G9 入长期看板)。
   - **F1 跨会话检索** `src/agent/session/SessionHistorySearch.cs`: 会话记忆已落盘却**无检索入口** (对位宿主侧 session_search) → 纯 stdlib/零 LLM/确定性打分 (CJK 二元组 + ASCII 词 + IDF + 子串加成), 命中词居中开窗截断; `SessionHistorySearchTests` **10/10** (含负向控制: 无关查询空结果 / IDF 判别力 / **只读保证**: 检索前后 mtime 不变 / 缺文件不抛)。
   - **F2 宣称纠偏**: `skills/critic-rules/SKILL.md` 写的"输出后机器侧静态扫描仍会复核 (双保险)"与代码事实矛盾 (**生产 0 消费**) → 改为真实状态 + 登记"接线"为待办 (诚实优先于好看)。
 - **L5 运行级验证 (t8–t12, 用户 5 项计划之一)**: `src/agent.skills/PythonRunVerifier.cs` + `PythonArtifactPlugin` 接线 —— 默认**关** (`AGENTFRAMEWORK_PY_RUN`), 开启后语法通过即真跑并回写 `Ran/RunExitCode/RunElapsedMs/RunTimedOut`; 零 shell (`ArgumentList`), 超时**杀进程树**, 输出上限**排空管道**(否则 300k 输出会假超时), 结构化结果不抛异常。`PythonRunVerifierTests` + 插件接线 **15/15** (含 300k 排空 / 路径含空格与引号 / 闸门关不执行 / 脚本不存在)。
@@ -1198,7 +1198,7 @@ trace-conditioned 100.0% 论文自陈为 *labeled diagnostic*, 须与 zero-shot 
 - **用户指令 (逐字, 两条)**:
   1. "同步github后继续下轮 并且 新增计划 1.grep本地关键词建索引建立缓存于加载校验能力（需惰性加载）…代码引用索引建立（插件增强服务，需要明确的API规范，要求怎样的数据），全部都建立再一个本质上不主动探索全量（文件索引机制建立插件 返回graph 或 由bge自动建立效果如何？） 2.LLM得到多方案不明确时向用户提出问题menu菜单选择后继续任务… 3. 逻辑校验，修改当前步 看下上一步修改规则对齐当前… 4. agent自动提出需要的工具与工具需求，输入与输出对接参数… 5. 上下文中同类教训/问题记录->应进入教训表…**新增任务全部先列为探索项查找相关数据设计最佳方案后再考虑开发**"
   2. "我需要你对比自身的上下文，并再运行项目agent内 尝试对话 看看再哪个环节 KPI不行，长任务断链，机器验证失败（如PY执行，**你需要自己先内置个PY和先加个PY执行插件**）导致用户某项任务不达预期…着重看看那步应该交给脚本完成agent却又扔给了llm处理"
-- **探索产出 (5 路并行只读侦察 + 真机实验 + 本机基准, 未改业务代码)**: [docs/plans/v0.22.0-exploration-index.md](docs/plans/v0.22.0-exploration-index.md) + exp1…exp5 五份独立文档 (含现状事实带行号 / 候选方案对比 / 推荐 / 关键约束 / 验收标准 / 排除项 / 待确认)。
+- **探索产出 (5 路并行只读侦察 + 真机实验 + 本机基准, 未改业务代码)**: [docs/plans/v0.22.0-exploration-index.md](./plans/v0.22.0-exploration-index.md) + exp1…exp5 五份独立文档 (含现状事实带行号 / 候选方案对比 / 推荐 / 关键约束 / 验收标准 / 排除项 / 待确认)。
 - **关键发现 (5 条, 皆有代码证据)**:
   1. **头号断链: 框架内不存在"生成脚本"能力** — 两条脚本执行链 (skills `scripts/main.py` / `ScriptPluginRunner`) 都要求脚本**已存在于磁盘**; 任何"帮我写个 X"任务只能一段式由 LLM 在回复里吐代码, 不落盘/不执行/不校验/不可迭代。
   2. **"宣称≠实现"再添 3 例** (R365 同类): `OutputCritic`/`CriticPipeline`/`FormatRepairLoop` 已实现但生产 0 调用, 而 `skills/critic-rules/SKILL.md:82` 声称"机器侧静态扫描双保险"; `TaskCharter.AcceptanceCriteria` 0 消费方; CLI `(已路由插件)` 文案无对应校验动作 (**本轮删除该空话**)。
