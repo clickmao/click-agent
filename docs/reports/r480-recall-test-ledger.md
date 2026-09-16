@@ -196,3 +196,11 @@
 - 分档读数**尚未取得**（器具需加 `by_subband` 输出）⇒ 本文件不宣称任何档达标，也不改 R481-A/B/F 读数。
 - 全程 Python 代理面，不测产品面（`agent.recall`）延迟/实现；跨 URL 一律 `unreported` 不冒充 0。
 - `src/agent.recall*` 仍 untracked；未 push（`PUSH_PAUSED`）。
+
+## R483 · 分档读数器具（复用端口 + 双重自污染修正）
+- 新增 `eval/recall/r483/bands_probe.py`：导入 `eval/recall/links_port_r482.py` 复用源码派生规则（rule pin `9e9104ca601f8849` 两侧一致）。
+- 三态：rc=0 读数完成 / rc=2 内不变量失败（守恒）/ rc=3 缺输入或端口派生失败；负控 `--nc-conservation` ⇒ rc=2 ✔。
+- 读数：markdown **0.8125**（✘≥0.90）/ root_rel **0.1608**（✘）/ explicit_rel **0.0923**（✘≥0.85）/ slash_token 7,508 全越根（无门槛）；
+  refs_total 77,037、url unreported 1,541；pin `5ef643596c8b2690` / 6,710 文件 / NC3 两次逐字节相同。
+- 语料钉对照 R481-F：**DRIFT rc=1** ⇒ 不可比（语料漂移，规则未漂移）。
+- 归档：`bands-firstpass.json`（首跑含 external 污染 + 自身产物入语料，**不覆盖**）。
