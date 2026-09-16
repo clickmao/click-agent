@@ -82,6 +82,25 @@ ROWS = [
                    "eval/rover/r486/diff_r486.log"],
         "owner_round": "R488",
     },
+    {
+        "id": "r488.posthoc-classaware-quality",
+        "level": "L2",
+        "capability": ("**post-hoc 类别感知质量面读数** (预注册 H5 的朴素代理「逐字去重 ≥10」保留 FAIL, 单列不覆盖): 夹具 12 轮 = **5 sub + 4 ack + 3 rep**。"
+                       "R 臂: ack 4/4 由确定性模板消化 (`ModelQueueRouter.LocalSkipFallback`, 且 `RecordTemplateAck()` 打点), rep **2/3** 走「上一条正文逐字回放」"
+                       "(`IsReplayableReply` 守卫, 零 token) ⇒ **6/12 轮零远端调用**; **非确认类轮被模板冒充 = 0/12** (B/G/S/R 四臂皆 0) ⇒ 类别口径下**质量面 PASS**。"
+                       "对照: B/S 臂 ack 4 轮 + rep 3 轮**仍各走远端** (B 15 调用 / S 14) ⇒ R 臂 11 调用 / −33.28% 的降幅正是「不必需要的远端调用被本地确定性通道吃掉」, "
+                       "与用户口径「主要是不必要的 llm api 请求少了」一致。结论收窄: 验收②成立; ③「质量不降」在**类别口径**下成立, 但该口径为事后单列 (预注册口径 FAIL 保留), 且 n=12 单夹具。"),
+        "evidence_cmd": "python3 eval/rover/r488/posthoc_quality_r488.py",
+        "evidence_path": "eval/rover/r488/posthoc-quality-r488.json",
+        "instrument_path": "eval/rover/r488/posthoc_quality_r488.py",
+        "negative_control": ("红判据 = 「非确认类轮落模板/横幅」计数 > 0 (冒充实质答即判红); B/S 臂**无本地通道** ⇒ ack/rep 轮全走远端、模板计数 0, 可作「不产模板轮」的阴性对照, "
+                             "而 G/R 臂模板恰好 4 轮 = 夹具 ack 轮数 ⇒ 模板只落在确认类, 不落在 sub/rep 类; 复述回放以「与该轮之前某轮答复逐字相同」机取 (R 2/3), "
+                             "不用人工打分; 输入缺任一臂 turns 即 fail-closed。"),
+        "covers": ["eval/rover/r488/posthoc_quality_r488.py", "eval/rover/r488/posthoc-quality-r488.json",
+                   "eval/rover/r488/turns-Aroleb.jsonl", "eval/rover/r488/turns-Gg.jsonl",
+                   "eval/rover/r488/turns-Ss.jsonl", "eval/rover/r488/turns-Rr.jsonl"],
+        "owner_round": "R488",
+    },
 ]
 
 
