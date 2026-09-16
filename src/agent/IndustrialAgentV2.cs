@@ -1725,7 +1725,12 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     ("kind", decisionKind),
                     ("decided", gateOutcome.Decided ? "true" : "false"),
                     ("n", agent.modelqueue.LocalDecisionLedger.Count(ledgerSession)),
-                    ("code", ledgerCode),
+                    // R497 候选① (真值收口): 打点面**只留指纹** —— 旧写法把 raw 码 (LCM-<12hex>) 写进
+                    // host.jsonl ⇒ 臂可读工作区 (data/telemetry/) 里就有真值, 台账「真值不落盘」被遥测面
+                    // 反向破口 (R496 nonrecompute Q4 实测命中)。改为 code8 (码的 sha8) + key_id (进程密钥指纹):
+                    // 二者都不足以反推码 ⇒ 掉一条信息都不影响判真伪, 却把打点面从真值面移出。
+                    ("code8", agent.modelqueue.LocalDecisionLedger.Code8(ledgerCode)),
+                    ("key_id", agent.modelqueue.LocalDecisionLedger.KeyId()),
                     ("session8", agent.modelqueue.LocalDecisionLedger.Sha8(ledgerSession ?? string.Empty)),
                     ("mount_axis", agent.modelqueue.LocalDecisionLedger.IsEnabled() ? "1" : "0"),
                     ("recorded", agent.modelqueue.LocalDecisionLedger.Recorded),

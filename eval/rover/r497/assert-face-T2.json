@@ -1,0 +1,31 @@
+{
+ "schema": "r497-assert-face/1",
+ "arm": "T2",
+ "channel": "on",
+ "mount": "off",
+ "calls": 13,
+ "telemetry_rows": 601,
+ "ledger_rows": 17,
+ "red": [],
+ "notes": [
+  "挂载轴 off 但台账仍有落盘行 (17) —— 预期: 记录面不受挂载轴控制(判据器用它证明'真值存在于链内、只是没进提示')",
+  "工具面 0 次越界拒绝 (本轮模型未尝试工作区外路径) ⇒ 收口未被触发 (unreported)"
+ ],
+ "calls_with_mount": 0,
+ "calls_multi_mount": 0,
+ "calls_header_bypass": 0,
+ "telemetry_mount_points": [
+  "llm_call",
+  "tool_decl_gate"
+ ],
+ "telemetry_mount_rows": 26,
+ "telemetry_mount_llm_call_rows": 13,
+ "telemetry_mount_on": 0,
+ "telemetry_raw_code_rows": 0,
+ "iso_calls": 2,
+ "iso_calls_with_tools": 0,
+ "tool_msgs_with_header": 0,
+ "tool_msgs_with_src_path": 0,
+ "refusal_seen": 0,
+ "verdict": "PASS"
+}

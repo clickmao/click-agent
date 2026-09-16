@@ -1,0 +1,195 @@
+{
+ "round": "R497",
+ "instrument": "gate_port_parity_r497.py",
+ "cases": 21,
+ "rows": [
+  {
+   "method": "IsPureRepeat",
+   "msg": "把上一条说一遍。",
+   "expect": true,
+   "port": true,
+   "port_classify": "pass",
+   "ok": true
+  },
+  {
+   "method": "IsPureRepeat",
+   "msg": "从头讲一遍",
+   "expect": true,
+   "port": true,
+   "port_classify": "repeat",
+   "ok": true
+  },
+  {
+   "method": "IsPureRepeat",
+   "msg": "念一遍",
+   "expect": true,
+   "port": true,
+   "port_classify": "repeat",
+   "ok": true
+  },
+  {
+   "method": "IsPureRepeat",
+   "msg": "复述一次吧",
+   "expect": true,
+   "port": true,
+   "port_classify": "repeat",
+   "ok": true
+  },
+  {
+   "method": "IsPureRepeat",
+   "msg": "把上面那句说一遍",
+   "expect": true,
+   "port": true,
+   "port_classify": "pass",
+   "ok": true
+  },
+  {
+   "method": "IsPureRepeat",
+   "msg": "重念一遍。",
+   "expect": true,
+   "port": true,
+   "port_classify": "repeat",
+   "ok": true
+  },
+  {
+   "method": "IsPureRepeat",
+   "msg": "重说一遍",
+   "expect": true,
+   "port": true,
+   "port_classify": "repeat",
+   "ok": true
+  },
+  {
+   "method": "IsPureRepeat",
+   "msg": "讲细一点。",
+   "expect": false,
+   "port": false,
+   "port_classify": "other",
+   "ok": true
+  },
+  {
+   "method": "IsPureRepeat",
+   "msg": "换个说法。",
+   "expect": false,
+   "port": false,
+   "port_classify": "other",
+   "ok": true
+  },
+  {
+   "method": "IsPureRepeat",
+   "msg": "重来一遍。",
+   "expect": false,
+   "port": false,
+   "port_classify": "other",
+   "ok": true
+  },
+  {
+   "method": "IsPureRepeat",
+   "msg": "重做一遍。",
+   "expect": false,
+   "port": false,
+   "port_classify": "other",
+   "ok": true
+  },
+  {
+   "method": "IsPureRepeat",
+   "msg": "再来一次。",
+   "expect": false,
+   "port": false,
+   "port_classify": "other",
+   "ok": true
+  },
+  {
+   "method": "IsPureRepeat",
+   "msg": "把上一条说一遍，顺便改下代码",
+   "expect": false,
+   "port": false,
+   "port_classify": "pass",
+   "ok": true
+  },
+  {
+   "method": "IsPureRepeat",
+   "msg": "继续下一轮",
+   "expect": false,
+   "port": false,
+   "port_classify": "other",
+   "ok": true
+  },
+  {
+   "method": "AbsorbedFace",
+   "msg": "从头念一遍。",
+   "expect": true,
+   "port": true,
+   "port_classify": "repeat",
+   "ok": true
+  },
+  {
+   "method": "AbsorbedFace",
+   "msg": "念一遍。",
+   "expect": true,
+   "port": true,
+   "port_classify": "repeat",
+   "ok": true
+  },
+  {
+   "method": "AbsorbedFace",
+   "msg": "复述一次。",
+   "expect": true,
+   "port": true,
+   "port_classify": "repeat",
+   "ok": true
+  },
+  {
+   "method": "AbsorbedFace",
+   "msg": "重复一遍。",
+   "expect": true,
+   "port": true,
+   "port_classify": "repeat",
+   "ok": true
+  },
+  {
+   "method": "AbsorbedFace",
+   "msg": "把上一条说一遍。",
+   "expect": false,
+   "port": false,
+   "port_classify": "pass",
+   "ok": true
+  },
+  {
+   "method": "AbsorbedFace",
+   "msg": "把上一句讲一遍",
+   "expect": false,
+   "port": false,
+   "port_classify": "pass",
+   "ok": true
+  },
+  {
+   "method": "AbsorbedFace",
+   "msg": "从头再说一遍，顺便看下第 2 点",
+   "expect": false,
+   "port": false,
+   "port_classify": "pass",
+   "ok": true
+  }
+ ],
+ "new_markers": [
+  "复述一次",
+  "说一遍",
+  "讲一遍",
+  "念一遍"
+ ],
+ "port_markers_n": 20,
+ "port_meta": {
+  "gate_source": "src/agent.modelqueue/LocalGenerationPort.cs",
+  "gate_source_sha256": "f07109c007f4c4b2a316eebb291ea332323e709693b5844e56632405dda9697d",
+  "test_source": "src/agent.tests/LocalTurnGateTests.cs",
+  "test_source_sha256": "aa9b571a51647bc57e49298513d90d85fe063736c38ac5dda8e6adedd33e7b7f",
+  "repeat_markers_n": 20,
+  "question_signals_n": 24,
+  "request_signals_n": 31,
+  "correction_signals_n": 17,
+  "substantive_len": 24
+ },
+ "red": [],
+ "verdict": "GREEN"
+}

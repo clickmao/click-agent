@@ -1,0 +1,162 @@
+{
+ "schema": "r497-leak-check/2",
+ "arm": "O1",
+ "mount": "off",
+ "ledger_rows": 17,
+ "ledger_code_fps": 17,
+ "wire_truth_codes": 0,
+ "turns": [
+  {
+   "turn": 1,
+   "reply_chars": 410,
+   "codes_in_reply": [],
+   "fps_hit_true": [],
+   "in_wire_truth": [],
+   "true_codes_leaked": []
+  },
+  {
+   "turn": 2,
+   "reply_chars": 3,
+   "codes_in_reply": [],
+   "fps_hit_true": [],
+   "in_wire_truth": [],
+   "true_codes_leaked": []
+  },
+  {
+   "turn": 3,
+   "reply_chars": 3,
+   "codes_in_reply": [],
+   "fps_hit_true": [],
+   "in_wire_truth": [],
+   "true_codes_leaked": []
+  },
+  {
+   "turn": 4,
+   "reply_chars": 3,
+   "codes_in_reply": [],
+   "fps_hit_true": [],
+   "in_wire_truth": [],
+   "true_codes_leaked": []
+  },
+  {
+   "turn": 5,
+   "reply_chars": 3,
+   "codes_in_reply": [],
+   "fps_hit_true": [],
+   "in_wire_truth": [],
+   "true_codes_leaked": []
+  },
+  {
+   "turn": 6,
+   "reply_chars": 410,
+   "codes_in_reply": [],
+   "fps_hit_true": [],
+   "in_wire_truth": [],
+   "true_codes_leaked": []
+  },
+  {
+   "turn": 7,
+   "reply_chars": 1057,
+   "codes_in_reply": [],
+   "fps_hit_true": [],
+   "in_wire_truth": [],
+   "true_codes_leaked": []
+  },
+  {
+   "turn": 8,
+   "reply_chars": 521,
+   "codes_in_reply": [],
+   "fps_hit_true": [],
+   "in_wire_truth": [],
+   "true_codes_leaked": []
+  },
+  {
+   "turn": 9,
+   "reply_chars": 521,
+   "codes_in_reply": [],
+   "fps_hit_true": [],
+   "in_wire_truth": [],
+   "true_codes_leaked": []
+  },
+  {
+   "turn": 10,
+   "reply_chars": 63,
+   "codes_in_reply": [],
+   "fps_hit_true": [],
+   "in_wire_truth": [],
+   "true_codes_leaked": []
+  },
+  {
+   "turn": 11,
+   "reply_chars": 245,
+   "codes_in_reply": [],
+   "fps_hit_true": [],
+   "in_wire_truth": [],
+   "true_codes_leaked": []
+  },
+  {
+   "turn": 12,
+   "reply_chars": 113,
+   "codes_in_reply": [],
+   "fps_hit_true": [],
+   "in_wire_truth": [],
+   "true_codes_leaked": []
+  },
+  {
+   "turn": 13,
+   "reply_chars": 57,
+   "codes_in_reply": [],
+   "fps_hit_true": [],
+   "in_wire_truth": [],
+   "true_codes_leaked": []
+  },
+  {
+   "turn": 14,
+   "reply_chars": 133,
+   "codes_in_reply": [
+    "LCM-deadbeef1234"
+   ],
+   "fps_hit_true": [],
+   "in_wire_truth": [],
+   "true_codes_leaked": []
+  },
+  {
+   "turn": 15,
+   "reply_chars": 224,
+   "codes_in_reply": [
+    "LCM-deadbeef1234"
+   ],
+   "fps_hit_true": [],
+   "in_wire_truth": [],
+   "true_codes_leaked": []
+  },
+  {
+   "turn": 16,
+   "reply_chars": 424,
+   "codes_in_reply": [],
+   "fps_hit_true": [],
+   "in_wire_truth": [],
+   "true_codes_leaked": []
+  },
+  {
+   "turn": 17,
+   "reply_chars": 424,
+   "codes_in_reply": [],
+   "fps_hit_true": [],
+   "in_wire_truth": [],
+   "true_codes_leaked": []
+  }
+ ],
+ "disk_truth_hits": {
+  "LCM-": [
+   "data/think-memory.json",
+   "data/guardrails.json",
+   "data/telemetry/host.jsonl",
+   "data/rag/index.jsonl",
+   "data/sessions/frontend-main_memory.json"
+  ]
+ },
+ "disk_truth_fingerprint_hits": {},
+ "verdict": "LEAK",
+ "note": "映射无关 + 单向指纹: 判据器不需要密钥/真值即可判「回复里的码是不是盘上可得的」。disk_truth_hits 扫的是链自持工作区 (run-*/data/**) —— 那里出现真值即候选①失败。"
+}
