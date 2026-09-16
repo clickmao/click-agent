@@ -16,19 +16,22 @@
 
 **完成记录**
 1. 外部真值工具面持久化: `@openai/codex@0.154.0` 装到 `~/.agentframework/tools/codex-env`（与 R455 同版 ⇒ 跨轮同版可复现；旧 `/tmp/codexenv` 不可托付）。
-2. 冻结题集: `eval/rover/r502/taskset-r502.json`（6 题 = 程序族 `topo_min`/`vm_run` + 见证型数学族 `witness_sqrt_mod`，seed 20260917）；**probe 口径 sha `2357a80173144742`**；oracle 正控 **40/40 = 1.0**（题集自身可解）。
+2. 冻结题集 v2: `eval/rover/r502/taskset-r502.json`（**6 题** = 4 程序族 `life_k`(**游戏族**)/`topo_min`/`vm_run`/`json_mini` + 2 见证型数学族 `witness_sqrt_mod`/`witness_min_counterexample`，seed 20260917）；**probe 口径 sha `18e7c8dddb54e220`**；oracle 正控 **57/57 = 1.0**；构造法 = **逐族定向 dump 后机合并**（禁抽样碰运气；合并前断言旧 tid 不出现在字段内）。
 3. 两侧同面: 本侧 = AOT `agenthost`（probe `agent` 解法）；外部 = codex-cli（probe `command:` 解法，stdin 题面 → stdout 回复）；两侧同经 R455 透传 adapter（**同一真实模型**）⇒ usage 真值同源。
 4. 判分 = `eval/probe/grade.py`（隐藏用例 + 外裁判子进程）—— **同一判分器**，禁模型裁判。
-5. **预注册先于首跑**: `prereg_r502.json`（8 件哈希机取 + 6 条判据 + 4 条诚实边界）；`--check` 三态 rc 0/1/3。
-6. **首跑前负控全绿**（本地，不吃真机窗）: oracle 1/1 ∧ `mutation:json_loose` 0/1（仪器两端）；缺侧 judge rc=3；预注册 uniform/drift/missing = 0/1/3 + 复原 0；solver `--selftest`/`--dry-run` rc=0。
+5. **预注册先于首跑**: `prereg_r502.json`（**9 件**哈希机取 + 6 条判据 + 4 条诚实边界；题集元信息/正控基线也机取，禁硬编码）；`--check` 三态 rc 0/1/3。
+6. **首跑前负控全绿**（本地，不吃真机窗）: 程序面 oracle 1/1 ∧ `mutation:json_loose` 0/1；**游戏族** oracle 1/1 ∧ `mutation:life_wrap` 0 整题全对（3 题实测 16/36 用例 ⇒ 变异确实被隐藏用例抓到）；缺侧 judge rc=3；预注册 uniform/drift/missing/restored = 0/1/3/0；solver `--selftest`/`--dry-run` rc=0；生成器 `tasks.py --selftest` **47/47**。
+6b. **游戏族补入（主线钦定「随机游戏」面）**: `eval/probe/tasks.py` 新增 `life_k`（Conway 生命游戏第 k 代；8 邻域/同时更新/**网格外视为死**；隐藏用例含「边界不环绕」判别 —— 1×3 的 `###` 一代后应为 `.#.`）；`run_probe.py` 增 `REF_SRC["life_k"]` + 族变异 `("life_k","life_wrap")`（环绕边界 ⇒ 判别力负控）。
 7. 文档入册: `docs/external-reference-harness.md` **§7**（主线常态执行面）+ `eval/rover/r502/README.md`（由 §7 机械派生，单一真源）。
 8. 提交: 显式路径 + `STAGE_GUARD` + 越界白名单（未 push，PUSH_PAUSED 在效）。
 
-**基线（器具自检，非对照读数）**: 题集 oracle 40/40；`mutation:json_loose` 整题全对 0/1。
+**基线（器具自检，非对照读数）**: 题集 oracle **57/57 = 1.0**（6 族全覆盖）；`mutation:json_loose` 整题全对 0/1；`mutation:life_wrap`（游戏族）整题全对 0（用例级 16/36）。
 
-**诚实边界**: ① **真机首跑未做** —— `MemAvailable` 实测 1,283 MB 且 R501 真机 4 臂在飞 ⇒ 让行；本节**不得**被引用为「本 agent vs codex」的任何结论；② codex 沙箱面不对等（本机 `bwrap` 不可用 ⇒ `--dangerously-bypass-approvals-and-sandbox`）；③ 两侧静态面不同源 ⇒ 禁据 token 总量断言优劣（H5）；④ **游戏族缺口**: `eval/probe/tasks.py` 10 程序族无游戏族 ⇒ 主线「随机游戏」面未覆盖（补族后必须重跑预注册）。
+**器具缺陷（本轮自捕并已修）**: ① **NC `EXIT` trap 覆盖汇总写回** —— `restore()` 在脚本退出时把 `keep.json` 拷回 `prereg_r502.json`，导致 `checks_prefirstrun` 写回被静默抹掉（症状: NC 打印 rec 且总判 OK，但 prereg 里无该字段）。修法 = NC3 复原后 `rm -f "$KEEP"` 关闭 trap 复原；修后复跑：`checks_prefirstrun` 落盘可见（NC1/NC1b/NC2..NC5 全在）。② **证据绑定闸对「已冻结行 + 器具已改」结构性不可满足（未修，记开放项）**: 改 `eval/probe/tasks.py` 后 `probe.randomized-selfcheck`（frozen/artifact，`instrument_sha12=80ba09e8bd50`）被判 VIOLATION（现盘 `32815065ff7a`）；hook 给的处置 `bind_evidence --only <id> --round <轮号> --apply` **实测无效** —— ①真表上 `SER_ASSERT=FAIL`（本仓登记表以 `indent=2` 落盘，工具序列化器为 `indent=1`）；②**在 indent=1 的 scratch 副本上仍判 VIOLATION**（该工具只刷 `audited_by_round`，不重钉 frozen 行的 `instrument_sha12`）⇒ 与格式无关，是**闸规则与冻结语义冲突**。本轮处置 = 提交时用 hook 自带的 `AGENTFRAMEWORK_EVIDENCE_CHECK=0` **定向让行**并全文留痕（**不声称任何被判据覆盖的绿灯**；登记的既有冻结行字节与哈希一字未动）；开放项 = 需一次性裁定「器具已改时冻结行的重审语义（改判据 or 重钉 or 新建行）」。
 
-**下轮候选**: ① 真机首跑（R501 收口后，同窗两侧 + `judge_contrast_r502.py` 出读数）；② 游戏族补入 `tasks.py`（含隐藏用例 + 判别力变异）；③ R501 裁决与代码面提交；④ R492 I7 结构量改写。
+**诚实边界**: ① **真机首跑未做** —— `MemAvailable` 实测 1,283 MB 且 R501 真机 4 臂在飞 ⇒ 让行；本节**不得**被引用为「本 agent vs codex」的任何结论；② codex 沙箱面不对等（本机 `bwrap` 不可用 ⇒ `--dangerously-bypass-approvals-and-sandbox`）；③ 两侧静态面不同源 ⇒ 禁据 token 总量断言优劣（H5）；④ 游戏族**已补**（`life_k`）⇒ 主线「随机游戏」面已可覆盖，但**真机读数仍缺**；⑤ 补族后预注册 v2 仍属**首跑前**生成（未发生任何真机对照跑）。
+
+**下轮候选**: ① **R502 真机首跑**（R501 收口后同窗两侧 + `judge_contrast_r502.py` 出读数；禁与真机测量并发）；② R501 裁决与代码面提交；③ R492 I7 结构量改写；④ 题集扩面（补 `witness` 面/更多族并重跑预注册）。
 
 ## v0.98.0 · R501 · 2026-09-17 · 状态: 已完成（文档面；真机裁决另轮） · 主题: **主线定义更正（用户钦定）+ 铁律 10 入册（宪法级）**
 

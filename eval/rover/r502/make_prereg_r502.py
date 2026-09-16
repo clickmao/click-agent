@@ -14,6 +14,7 @@
 from __future__ import annotations
 
 import argparse
+import glob
 import hashlib
 import json
 import os
@@ -34,11 +35,12 @@ WATCH = {
     "codex_solver_py": "eval/rover/r502/codex_solver_r502.py",
     "judge_py": "eval/rover/r502/judge_contrast_r502.py",
     "runner_sh": "eval/rover/r502/run_contrast_r502.sh",
+    "nc_sh": "eval/rover/r502/nc_r502.sh",
     "adapter_py": "eval/rover/r455/adapter_tools.py",
 }
 
 CRITERIA = [
-    "H1 仪器判别力（首跑前本地负控）: 同一 json_mini 题集上 mutation:json_loose 整题全对 == 0，且 oracle 正控 == 1.0（两端都要，只给一端不算自证）",
+    "H1 仪器判别力（首跑前本地负控, 两端都要）: 程序面 json_mini×mutation:json_loose 整题全对 == 0 ∧ oracle == 1.0; 游戏族 life_k×mutation:life_wrap 整题全对 == 0 ∧ oracle == 1.0（只给一端不算自证）",
     "H2 外部真值可用性: codex 侧 ok 题数 >= 1；若 == 0 ⇒ 记 unreported（禁当 0 分能力、禁静默）",
     "H3 同输入机检: 两侧 probe 摘要 taskset_sha 相等且 == 预注册值（E2）",
     "H4 同模型机检: adapter 落盘 upstream_request.model 两侧均为 deepseek-flash（E3）",
@@ -49,7 +51,7 @@ CRITERIA = [
 BOUNDARIES = [
     "codex 侧本机 bwrap 不可用 ⇒ 用 --dangerously-bypass-approvals-and-sandbox（审批/沙箱面不对等）",
     "两侧静态面不同源（instructions/工具面差异）⇒ 只比「同输入下的行为差异」与同侧趋势",
-    "n=4（2 程序 + 2 数学）为低成本首跑，不构成总体能力估计",
+    "n=6（4 程序族含游戏族 life_k + 2 见证型数学族）为低成本首跑，不构成总体能力估计",
     "单窗单跑 ⇒ 跨轮禁相减",
 ]
 
@@ -84,13 +86,32 @@ def probe_taskset_sha():
 
 
 def taskset_oracle():
-    """冻结题集的正控基线 (oracle 解法, 本地无模型) —— 题集本身必须可解。"""
-    p = os.path.join(REPO, "data/probe/probe-oracle-seed20260917-r502freeze.json")
-    if not os.path.exists(p):
-        return None
-    d = json.load(open(p, encoding="utf-8"))
-    return {"rate": d.get("rate"), "passed": d.get("passed"), "total": d.get("total"),
-            "n_tasks": d.get("n_tasks"), "taskset_sha": d.get("taskset_sha"), "solver": d.get("solver")}
+    """冻结题集的正控基线 —— 从 data/probe/ 里挑 **taskset_sha 与本预注册一致** 的 oracle 摘要（禁跨题集引用）。"""
+    want = probe_taskset_sha()
+    best = None
+    hit = None
+    for p in sorted(glob.glob(os.path.join(REPO, "data/probe/probe-oracle-*.json"))):
+        try:
+            d = json.load(open(p, encoding="utf-8"))
+        except Exception:
+            continue
+        if d.get("taskset_sha") == want:
+            best, hit = d, p
+    if best is None or hit is None:
+        return {"rate": None, "reading": "unreported: 无与本 taskset_sha 匹配的 oracle 摘要"}
+    return {"rate": best.get("rate"), "passed": best.get("passed"), "total": best.get("total"),
+            "n_tasks": len(best.get("per_task") or []), "taskset_sha": best.get("taskset_sha"),
+            "solver": best.get("solver"), "src": os.path.relpath(hit, REPO)}
+
+
+def taskset_meta():
+    """题集元信息机取（禁硬编码轮内数字）。"""
+    raw = json.load(open(os.path.join(REPO, "eval/rover/r502/taskset-r502.json"), encoding="utf-8"))
+    fams = sorted({t["family"] for t in raw})
+    return {"path": "eval/rover/r502/taskset-r502.json", "n_tasks": len(raw),
+            "families": ",".join(fams), "game_family": "life_k",
+            "kind_arg": "per-family-merge(以族定向 dump 后合并)",
+            "seed": 20260917, "oracle_baseline": taskset_oracle()}
 
 
 def build() -> dict:
@@ -109,12 +130,7 @@ def build() -> dict:
         },
         "files_sha256": {k: sha256(v) for k, v in WATCH.items()},
         "probe_taskset_sha": probe_taskset_sha(),
-        "taskset": {
-            "path": "eval/rover/r502/taskset-r502.json",
-            "n_tasks": 6, "n_per_kind": 3, "kind_arg": "both", "seed": 20260917,
-            "families": "topo_min,vm_run,json_mini,witness_min_counterexample,witness_sqrt_mod",
-            "oracle_baseline": taskset_oracle(),
-        },
+        "taskset": taskset_meta(),
         "criteria": CRITERIA,
         "honest_boundaries": BOUNDARIES,
     }

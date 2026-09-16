@@ -360,12 +360,55 @@ try:
 except Exception:
     print("ERR")"""
 
+_REF_LIFE = r"""
+import sys
+def nbr(g, i, j):
+    h, w = len(g), len(g[0])
+    n = 0
+    for di in (-1, 0, 1):
+        for dj in (-1, 0, 1):
+            if di == 0 and dj == 0:
+                continue
+            x, y = i + di, j + dj
+            if 0 <= x < h and 0 <= y < w and g[x][y] == "#":
+                n += 1
+    return n
+data = sys.stdin.read().strip().splitlines()
+h, w, k = map(int, data[0].split())
+g = [list(r) for r in data[1:1 + h]]
+for _ in range(k):
+    g = [["#" if (nbr(g, i, j) == 3 or (g[i][j] == "#" and nbr(g, i, j) == 2)) else "." for j in range(w)] for i in range(h)]
+print(chr(10).join("".join(r) for r in g))
+"""
+
+_MUT_LIFE_WRAP = r"""
+import sys
+def nbr(g, i, j):
+    h, w = len(g), len(g[0])
+    n = 0
+    for di in (-1, 0, 1):
+        for dj in (-1, 0, 1):
+            if di == 0 and dj == 0:
+                continue
+            if g[(i + di) % h][(j + dj) % w] == "#":
+                n += 1
+    return n
+data = sys.stdin.read().strip().splitlines()
+h, w, k = map(int, data[0].split())
+g = [list(r) for r in data[1:1 + h]]
+for _ in range(k):
+    g = [["#" if (nbr(g, i, j) == 3 or (g[i][j] == "#" and nbr(g, i, j) == 2)) else "." for j in range(w)] for i in range(h)]
+print(chr(10).join("".join(r) for r in g))
+"""
+
 REF_SRC["json_mini"] = _REF_JSON.strip()
+REF_SRC["life_k"] = _REF_LIFE.strip()
 
 FAMILY_MUTATIONS = {
     ("topo_min", "topo_dfs"): _MUT_TOPO_DFS.strip(),
     ("vm_run", "vm_noerr"): _MUT_VM_NOERR.strip(),
     ("json_mini", "json_loose"): _MUT_JSON_LOOSE.strip(),
+    ("life_k", "life_wrap"): _MUT_LIFE_WRAP.strip(),
 }
 
 

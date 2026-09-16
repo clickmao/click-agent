@@ -952,6 +952,71 @@ def _p_vm_run_check(s):
     return None
 
 
+# life_k: 生命游戏 (Conway) 第 k 代 —— **游戏族** (主线「随机游戏」面)。
+# 高密度规格: 8 邻域 / 同时更新 / 网格外一律视为死 (与 life_wrap 变异互为判别面)。
+def _life_parse(s):
+    lines = [ln for ln in s.strip(chr(10)).splitlines() if ln != ""]
+    h, w, k = map(int, lines[0].split())
+    grid = [list(ln) for ln in lines[1:1 + h]]
+    assert len(grid) == h and all(len(r) == w for r in grid), "题面解析失败: %r" % s
+    return grid, k
+
+
+def _life_nbr(grid, i, j):
+    h, w = len(grid), len(grid[0])
+    n = 0
+    for di in (-1, 0, 1):
+        for dj in (-1, 0, 1):
+            if di == 0 and dj == 0:
+                continue
+            x, y = i + di, j + dj
+            if 0 <= x < h and 0 <= y < w and grid[x][y] == "#":
+                n += 1
+    return n
+
+
+def _p_life_k_ref(s):
+    grid, k = _life_parse(s)
+    for _ in range(k):
+        grid = [["#" if (_life_nbr(grid, i, j) == 3 or (grid[i][j] == "#" and _life_nbr(grid, i, j) == 2)) else "."
+                 for j in range(len(grid[0]))] for i in range(len(grid))]
+    return NL.join("".join(r) for r in grid)
+
+
+def _p_life_k_check(s):
+    """独立实现 (显式 padding 边界 + 单次邻域计数) ⇒ 与 ref 双路径互证。"""
+    grid, k = _life_parse(s)
+    for _ in range(k):
+        h, w = len(grid), len(grid[0])
+        pad = [list("." * (w + 2))]
+        for r in grid:
+            pad.append(["."] + list(r) + ["."])
+        pad.append(list("." * (w + 2)))
+        nxt = []
+        for i in range(h):
+            row = []
+            for j in range(w):
+                c = 0
+                for di in (-1, 0, 1):
+                    for dj in (-1, 0, 1):
+                        if (di != 0 or dj != 0) and pad[i + 1 + di][j + 1 + dj] == "#":
+                            c += 1
+                alive = pad[i + 1][j + 1] == "#"
+                row.append("#" if (c == 3 or (alive and c == 2)) else ".")
+            nxt.append(row)
+        grid = nxt
+    return NL.join("".join(r) for r in grid)
+
+
+def _in_life_k(rnd):
+    h = rnd.randint(1, 12)
+    w = rnd.randint(1, 12)
+    k = rnd.randint(0, 8)
+    dens = rnd.choice([0.15, 0.3, 0.45, 0.6])
+    rows = ["".join("#" if rnd.random() < dens else "." for _ in range(w)) for _ in range(h)]
+    return _nl(["%d %d %d" % (h, w, k)] + rows)
+
+
 PROGRAM_FAMILIES = {
     "max_subarray": {
         "spec": "读入: 第一行整数 n; 第二行 n 个整数(空格分隔)。输出: 连续子数组的最大和(至少取一个元素)。",
@@ -1031,6 +1096,16 @@ PROGRAM_FAMILIES = {
         "gen_input": _in_json_mini,
         "tight_gen": _jtight,
         "fmt": lambda r: "ERR" if r is _ERR else _jnorm(r),
+    },
+    "life_k": {
+        "spec": ("读入: 第一行三个整数 H W k (H,W 属于 1..20, k 属于 0..20); 随后 H 行, 每行 W 个字符, "
+                 "只含 '.'(死) 与 '#'(活)。规则: 每代**同时**按 8 邻域更新, 网格外一律视为死格; "
+                 "活细胞邻居数为 2 或 3 时存活, 否则死亡; 死细胞邻居数恰为 3 时复活。"
+                 "输出: 第 k 代之后 (k=0 即初始) 的网格, H 行, 每行 W 个字符, 只含 '.' 与 '#'。"),
+        "ref": _p_life_k_ref,
+        "check": _p_life_k_check,
+        "gen_input": _in_life_k,
+        "fmt": lambda r: r,
     },
 }
 
@@ -1217,6 +1292,12 @@ HARD_INPUTS = {
                   "[" + '"' + BS + "u0007x" + '"]' + NL,
                   _nl(["[1.5]"]),
                   _nl(["NaN"])],
+    "life_k": [_nl(["1 1 0", "."]),
+               _nl(["3 3 1", "...", "###", "..."]),
+               _nl(["1 3 1", "###"]),
+               _nl(["4 4 4", "....", ".##.", ".##.", "...."]),
+               _nl(["3 3 1", ".#.", "..#", "###"]),
+               _nl(["2 2 3", "##", "##"])],
 }
 
 
