@@ -38,6 +38,14 @@ public sealed class QueuePrompt
     public bool IsolatedChannel { get; set; }
 
     /// <summary>
+    /// R495: 本地决策台账挂载块 (r1 侧真值的可引用面)。关 (默认) ⇒ <see cref="LedgerMount.Off"/> ⇒
+    /// 消息列表与本字段存在之前逐字节同形; 开 ⇒ 在 user 之后**尾部追加**一条 system 消息
+    /// (前缀 system/context/history/user 逐字节不变 ⇒ provider 缓存前缀单调增长不破)。
+    /// 只在**远端**调用前渲染 (本地 r1 通道不消费) ⇒ 闸的判据输入面在开关两态下逐字节相同。
+    /// </summary>
+    public LedgerMount Mount { get; set; } = LedgerMount.Off;
+
+    /// <summary>
     /// R490 回放剪裁: 被剔出远端回放的**本地模板答复**条数。
     /// 剪裁依据 = 该答复从未发往任何 provider (零远端调用的 Skip 轮产物) ⇒ 不是任何缓存前缀的一部分。
     /// </summary>
@@ -1429,6 +1437,13 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                 ("replay_trimmed", prompt.ReplayTrimmedLocalTemplates),
                 ("replay_user_trimmed", prompt.ReplayTrimmedLocalUserTurns),
                 ("replay_pair_gate", ReplayPairTrim.Stamp()),
+                // R495 台账挂载面: 与 BuildMessages 同一 prompt 对象 ⇒ 打点与实发面同源
+                // (判据器另有独立通道: 中继归档的请求体字节 —— 两路必须一致, 不一致即打点脱钩)。
+                ("ledger_mount", prompt.Mount.On ? "1" : "0"),
+                ("ledger_n", prompt.Mount.N),
+                ("ledger_code", prompt.Mount.Code),
+                ("ledger_chars", prompt.Mount.Text.Length),
+                ("ledger_session8", prompt.Mount.Session8),
                 ("turn", prompt.TurnIndex));
         }
         if (maxTokensOverride is int mt && mt > 0) request.MaxTokens = mt;
@@ -1521,6 +1536,9 @@ public sealed class ModelQueueRouter : IModelQueueCaller
 
         // v0.12.0 A3 (真缺陷 64): coding 端点不收图像 (HTTP 400 1210 真机实证) —
         // 带图请求改写标准 v4 chat 端点 (glm-5.3-flash 视觉走 v4, data URL 真机已验 1445tok)。
+        // R495 本地决策台账挂载: 只在**尾部**追加 (user 之后) ⇒ 前缀面逐字节不变; 关 ⇒ 零字节。
+        if (prompt.Mount.On)
+            messages.Add(new QueueChatMessage { Role = "system", Content = prompt.Mount.Text });
         if (!string.IsNullOrWhiteSpace(extraSystemSuffix))
             messages.Add(new QueueChatMessage { Role = "system", Content = extraSystemSuffix });
         // R456 回灌面: 动作环追加消息 (assistant(tool_calls)/tool(...)) 一律在**最尾部** ——

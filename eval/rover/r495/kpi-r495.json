@@ -1,0 +1,157 @@
+{
+ "schema": "r495-kpi/1",
+ "arms": {
+  "B": {
+   "arm": "B",
+   "calls": 34,
+   "usage_rows": 34,
+   "total_tokens": 309175,
+   "prompt_tokens": 296398,
+   "completion_tokens": 12777,
+   "cached_tokens": 261760,
+   "blocked_rows": 0,
+   "tok_per_call": 9093.4,
+   "new_tokens_per_call": 1018.8,
+   "iso_calls": 0,
+   "iso_calls_with_tools": 0,
+   "iso_tok": null,
+   "calls_with_tools": 34,
+   "iso_seqs": [],
+   "tools_seqs": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ],
+   "flags": {}
+  },
+  "T0": {
+   "arm": "T0",
+   "calls": 10,
+   "usage_rows": 10,
+   "total_tokens": 49949,
+   "prompt_tokens": 45380,
+   "completion_tokens": 4569,
+   "cached_tokens": 36352,
+   "blocked_rows": 0,
+   "tok_per_call": 4994.9,
+   "new_tokens_per_call": 902.8,
+   "iso_calls": 1,
+   "iso_calls_with_tools": 1,
+   "iso_tok": null,
+   "calls_with_tools": 1,
+   "iso_seqs": [
+    5
+   ],
+   "tools_seqs": [
+    5
+   ],
+   "flags": {}
+  },
+  "T1": {
+   "arm": "T1",
+   "calls": 10,
+   "usage_rows": 10,
+   "total_tokens": 54559,
+   "prompt_tokens": 47417,
+   "completion_tokens": 7142,
+   "cached_tokens": 36352,
+   "blocked_rows": 0,
+   "tok_per_call": 5455.9,
+   "new_tokens_per_call": 1106.5,
+   "iso_calls": 1,
+   "iso_calls_with_tools": 0,
+   "iso_tok": null,
+   "calls_with_tools": 0,
+   "iso_seqs": [
+    5
+   ],
+   "tools_seqs": [],
+   "flags": {}
+  }
+ },
+ "ladder": [
+  {
+   "pair": "B→T0",
+   "calls": [
+    34,
+    10
+   ],
+   "calls_drop_pct": 70.59,
+   "total_tokens": [
+    309175,
+    49949
+   ],
+   "total_tokens_drop_pct": 83.84,
+   "iso_calls": [
+    0,
+    1
+   ],
+   "iso_calls_with_tools": [
+    0,
+    1
+   ]
+  },
+  {
+   "pair": "T0→T1",
+   "calls": [
+    10,
+    10
+   ],
+   "calls_drop_pct": 0.0,
+   "total_tokens": [
+    49949,
+    54559
+   ],
+   "total_tokens_drop_pct": -9.23,
+   "iso_calls": [
+    1,
+    1
+   ],
+   "iso_calls_with_tools": [
+    1,
+    0
+   ]
+  },
+  {
+   "pair": "B→T1",
+   "calls": [
+    34,
+    10
+   ],
+   "calls_drop_pct": 70.59,
+   "total_tokens": [
+    309175,
+    54559
+   ],
+   "total_tokens_drop_pct": 82.35,
+   "iso_calls": [
+    0,
+    1
+   ],
+   "iso_calls_with_tools": [
+    0,
+    0
+   ]
+  }
+ ],
+ "baseline_r493": null,
+ "acceptance": {
+  "same_window_denominator": "B (本轮同窗同网格/同上游/同产物)",
+  "calls_before": 34,
+  "calls_after": 10,
+  "tokens_before": 309175,
+  "tokens_after": 54559,
+  "tokens_drop_pct": 82.35,
+  "target_pct": 30.0,
+  "met": true
+ }
+}

@@ -173,6 +173,9 @@ public static class ActionLoopRunner
             ReasoningEffort = src.ReasoningEffort,
             ToolsJson = src.ToolsJson,
             Intent = src.Intent,
+            // R495: 台账挂载块必须随 Clone 透传 —— 否则动作环内第二次及以后的远端调用会把挂载丢掉
+            // (打点说挂了、实发面没挂 = R490/R494 同一类脱钩缺陷)。
+            Mount = src.Mount,
             // R494: 隔离通道标记必须随 Clone 透传 —— 否则环内第二次及以后的调用会丢掉通道轴判据
             // (与 R490 的 replay_trimmed 同一类缺陷: 打点/判据与实发面脱钩)。
             IsolatedChannel = src.IsolatedChannel,

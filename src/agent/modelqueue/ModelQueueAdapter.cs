@@ -33,10 +33,24 @@ public sealed class ModelQueueAdapter : ILLMCaller, agent.subagent.ILLMCallerFor
     /// 不是缓存前缀的一部分 ⇒ 剔除 (见 <see cref="IsLocalTemplateReply"/>)。
     /// </summary>
     public static QueuePrompt ToQueuePrompt(Prompt prompt)
-        => ToQueuePrompt(prompt, ReplayPairTrim.IsEnabled());
+        => ToQueuePrompt(prompt, ReplayPairTrim.IsEnabled(), LocalDecisionLedger.IsEnabled());
 
     /// <summary>R491: 判据表可直接吃两态 (门开/门关), 无需改环境变量即可机检。</summary>
     public static QueuePrompt ToQueuePrompt(Prompt prompt, bool pairTrim)
+        => ToQueuePrompt(prompt, pairTrim, LocalDecisionLedger.IsEnabled());
+
+    /// <summary>
+    /// R495: 台账挂载两态一并外提 (判据表可直接机检「挂载开/关」的消息列表差异, 无需改环境变量)。
+    /// 挂载关 / 无会话 ⇒ <see cref="LedgerMount.Off"/> ⇒ 与 R490..R494 逐字节同形。
+    /// </summary>
+    public static QueuePrompt ToQueuePrompt(Prompt prompt, bool pairTrim, bool ledgerMount)
+    {
+        var qp = ToQueuePromptCore(prompt, pairTrim);
+        qp.Mount = ledgerMount ? LocalDecisionLedger.RenderMount(prompt.SessionId) : LedgerMount.Off;
+        return qp;
+    }
+
+    private static QueuePrompt ToQueuePromptCore(Prompt prompt, bool pairTrim)
     {
         var qp = new QueuePrompt
         {

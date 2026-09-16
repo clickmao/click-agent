@@ -1,0 +1,60 @@
+{
+ "schema": "r495-prereg/1",
+ "round": "R495",
+ "written_before_arms": true,
+ "main_line": "R413 主线: r1(常驻 llama.cpp) 接进链管道做真假信息判别 —— 本轮新增面 = 本地决策台账落盘 + 尾部挂载 (第二类本地真值, 与 role 额外数据面并列)",
+ "window": {
+  "grid": "eval/rover/r495/grid/task-p15-code.json",
+  "grid_parent": "eval/rover/r494/grid/task-p12-adv.json (前 12 轮逐字节继承)",
+  "arms": {
+   "B": "全关 (无闸/无 skip/无声明门/无 pair_trim/无通道/无挂载) = 同窗分母",
+   "T0": "R494 的 T1 逐位复现 (gate/skip/声明门/pair_trim/通道 全开) + 挂载轴 off",
+   "T1": "T0 + 挂载轴 on (AGENTFRAMEWORK_LOCAL_DECISION_MOUNT=1) ← 本轮唯一新增变量"
+  },
+  "single_variable": "T0↔T1 仅挂载轴不同 (同一 AOT 产物, host_sha256 三臂须一致)"
+ },
+ "prereg_judgements": [
+  {
+   "id": "H1",
+   "claim": "必错族·治疗向: 挂载轴 on 的臂能逐字引回链自持真值",
+   "check": "judge_code_r495.py: J2(t13 含该轮实发挂载块的核对码) ∧ J3(t15 含 code=<码> 与 n=<块内 n>) ∧ J4(t14 否掉假码 LCM-deadbeef1234, 且不无条件认可)",
+   "pass_cond": "三项全 True; 任一 False ⇒ 本轮判别力宣称收窄 (不得改判据迁就读数)"
+  },
+  {
+   "id": "H2",
+   "claim": "必错族·必错向: 挂载轴 off 的臂结构上不可知真值",
+   "check": "judge_code_r495.py: J5 == 对照臂 t13 回复不出现任何真实台账码",
+   "pass_cond": "计数 0; 出现即 ⇒ 真值另有来源, 必错族不成立, 主宣称作废",
+   "note": "t14 对照臂是否认可假码 (endorse) 只记读数, 不作通过条件 (该行为属质量面)"
+  },
+  {
+   "id": "H3",
+   "claim": "挂载面三源一致 (实发/落盘/打点)",
+   "check": "assert_face_r495.py: HARD-1 (on ⇒ 每调用恰 1 块 / off ⇒ 0) ∧ HARD-2 (实发 (n,code) 均在 ledger 落盘且 n 单调不减, code 可用 canon 复算) ∧ HARD-3 (遥测 llm_call 的 ledger_mount 字段与实发面一致)",
+   "pass_cond": "全绿; 任一面缺 ⇒ 该面记 unreported 并红"
+  },
+  {
+   "id": "H4",
+   "claim": "验收口径: 用户一轮任务总 token 使用量下降 ≥30% (同窗)",
+   "check": "analyze_r495.py: B vs T1 同窗 usage 真值合计 (tokens_evaluated 总长口径) 降幅 = 1 - T1/B",
+   "pass_cond": "≥30%; 另 T0↔T1 差值单列为**挂载开销** (预期 |Δ| ≤ 3%, 只报不设门)"
+  },
+  {
+   "id": "H5",
+   "claim": "回复质量不降 (12 轮继承面)",
+   "check": "judge_adv_r495.py (逐字节继承 R494 判据器): pc_pass == total ∧ old_fail == 0",
+   "pass_cond": "两读数均达; 另 t13 治疗臂 reply 不得同时含真码与假码认可 (结构矛盾 ⇒ 记红)"
+  },
+  {
+   "id": "H6",
+   "claim": "回退条件 (铁律)",
+   "check": "若 T1 的质量读数或 token 读数劣于 T0/B ⇒ 本轮改动回退",
+   "pass_cond": "T1 质量不劣于 T0 ⇒ 保留"
+  }
+ ],
+ "honesty_rules": [
+  "所有读数为机检值; 缺测的面写 unreported, 禁填 0 冒充",
+  "跨轮禁相减 (R494 与 R495 网格不同窗口, 只作参照不作差分)",
+  "本轮不改链上任何反污染分面 (R492/R493/R494 的反污染分面不重计)"
+ ]
+}

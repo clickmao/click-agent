@@ -1709,6 +1709,29 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     ("role", ActiveRole.Id));
             }
 
+            // R495 本地决策台账: 每轮闸判定**单点**落盘 (pass/skip 都记) —— 台账是 r1 侧真值的落盘面,
+            // 挂载块 (远端调用前渲染) 引用它 ⇒ 「链自己做过什么决策」成为下游可核的本地真值。
+            // 幂等 (同 turn/kind/chars 重复只记一条); 无会话 (一次性请求) 不记。
+            {
+                // 只读一次会话 id (可空流分析: 不在此处触碰成员的 not-null 状态)
+                var ledgerSession = message.SessionId;
+                var decisionKind = gateOutcome.Decided
+                    ? (gateOutcome.Verdict == agent.modelqueue.TurnGateVerdict.Skip ? "skip" : "pass")
+                    : "undecided";
+                var ledgerCode = agent.modelqueue.LocalDecisionLedger.Record(
+                    ledgerSession, prompt.TurnIndex, decisionKind, gateOutcome.Raw);
+                agent.config.AgentTelemetry.Emit("local_decision_ledger", "IndustrialAgentV2",
+                    ("turn", prompt.TurnIndex),
+                    ("kind", decisionKind),
+                    ("decided", gateOutcome.Decided ? "true" : "false"),
+                    ("n", agent.modelqueue.LocalDecisionLedger.Count(ledgerSession)),
+                    ("code", ledgerCode),
+                    ("session8", agent.modelqueue.LocalDecisionLedger.Sha8(ledgerSession ?? string.Empty)),
+                    ("mount_axis", agent.modelqueue.LocalDecisionLedger.IsEnabled() ? "1" : "0"),
+                    ("recorded", agent.modelqueue.LocalDecisionLedger.Recorded),
+                    ("file_errors", agent.modelqueue.LocalDecisionLedger.FileErrors));
+            }
+
             if (gateOutcome.Decided && gateOutcome.Verdict == agent.modelqueue.TurnGateVerdict.Skip)
             {
                 // v0.58.0 R438 (本地消化 × R379 回放不变量的交互缺陷修复):

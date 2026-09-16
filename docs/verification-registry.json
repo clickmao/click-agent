@@ -4573,6 +4573,96 @@
     "eval/rover/r494/audit-capability-face.json"
    ],
    "negative_control": "4 项正控在面文件里记 rc=2, 但**外写** (--out /tmp) 复跑 rc=0 (15/15 检查) ⇒ 差异归因**未闭合**; 该面属对侧会话线, 本轮只记读数不代跑 (写入即双写)。 R495: 只读重跑一次即触发冻结 pin 红 ⇒ 形式门禁对\"产物被改写\"确有实效力(本条=现场负控); 重钉后复查须绿。"
+  },
+  {
+   "id": "r495.local-decision-ledger-mount",
+   "level": "L2",
+   "owner_round": "R495",
+   "capability": "**本地决策台账落盘 + 尾部挂载 (第二类本地真值)**: 每轮闸判定单点落盘 (`turn|kind|chars|n|code|canon` JSONL) + 远端调用前把「链自持核对码」以**尾部** system 块挂载 (前缀面 system/context/history/user 逐字节不变)。三源一致机检: 实发面 (中继归档请求体) / 落盘面 (JSONL) / 打点面 (`tool_decl_gate.kv.ledger_*`) —— 核对码可用 `canon` 独立复算。**判别力宣称已收窄**: 预注册 H2「关轴臂结构上不可知真值」被 t14/t15 实证证伪 (关轴 B 臂读盘 + 公开配方复算, 命中台账 n=14/15)。",
+   "evidence_cmd": "python3 eval/rover/r495/assert_face_r495.py --arm T1r495 --dir eval/rover/r495 --channel on --mount on; python3 eval/rover/r495/judge_code_r495.py --arm T1r495 --mount on --turns eval/rover/r495/turns-T1r495.jsonl --calls eval/rover/r495/calls-T1r495.jsonl --tel eval/rover/r495/tel-T1r495/host.jsonl --ledger eval/rover/r495/ledger-T1r495.jsonl --grid eval/rover/r495/grid/task-p15-code.json",
+   "evidence_path": "eval/rover/r495/assert-face-T1r495.json",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "73ed9e2c48ac",
+    "instrument": "eval/rover/r495/assert_face_r495.py",
+    "instrument_sha12": "d3ec5af30049",
+    "binding": "audit-pin",
+    "audited_by_round": "R496"
+   },
+   "covers": [
+    "eval/rover/r495/prereg_r495.json",
+    "eval/rover/r495/grid/task-p15-code.json",
+    "eval/rover/r495/run_arm_real_r495.sh",
+    "src/agent.modelqueue/LocalDecisionLedger.cs",
+    "src/agent.modelqueue/ModelQueueRouter.cs",
+    "src/agent/IndustrialAgentV2.cs",
+    "eval/rover/r495/judge_code_r495.py",
+    "eval/rover/r495/leak-check-Br495.json",
+    "src/agent.tests/R495LocalDecisionMountTests.cs"
+   ],
+   "negative_control": "① 必错族**证伪** (不是「通过」): 关轴 B 臂 t14/t15 回复给出真实台账码 LCM-0d4ba991f6c1 / LCM-bef1f3223b07 (见 `leak-check-Br495.json`, 与台账 n=14/15 逐字命中) ⇒ 真值另有可达通道 (盘上台账 + 源码公开配方), 判别力不能建立在「不可知」上。② 判据器两处修订 (挂载块须 system 角色 + 结构行; 打点字段落在 `tool_decl_gate` 而非 `llm_call`), 均带正/负控 (selftest 3/3 与 6/6) 证「未放松真挂载检出」。③ 旁路观察: 夹具「命题核验」工具把**越界被拒**的源文件行原样回显进 tool 消息 (B 臂 5 条请求) —— 不含真值, 但属独立泄漏通道。"
+  },
+  {
+   "id": "r495.same-window-ladder-mount-axis",
+   "level": "L2",
+   "owner_round": "R495",
+   "capability": "**同窗三臂真机阶梯 (挂载轴单变量)**: 网格 = R494 12 轮逐字节继承 + 3 轮链自持台账必错族 (p15code); B 全关 / T0 = R494-T1 逐位复现 / T1 = T0 + 挂载轴。读数见 `kpi-r495.json`: [{\"pair\": \"B→T0\", \"calls\": [34, 10], \"calls_drop_pct\": 70.59, \"total_tokens\": [309175, 49949], \"total_tokens_drop_pct\": 83.84, \"iso_calls\": [0, 1], \"iso_calls_with_tools\": [0, 1]}, {\"pair\": \"T0→T1\", \"calls\": [10, 10], \"calls_drop_pct\": 0.0, \"total_tokens\": [49949, 54559], \"total_tokens_drop_pct\": -9.23, \"iso_calls\": [1, 1], \"iso_calls_with_tools\": [1, 0]}, {\"pair\": \"B→T1\", \"calls\": [34, 10], \"call",
+   "evidence_cmd": "python3 eval/rover/r495/analyze_r495.py; python3 eval/rover/r495/judge_code_r495.py --arm T1r495 --mount on ...",
+   "evidence_path": "eval/rover/r495/kpi-r495.json",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "40058e2dbc77",
+    "instrument": "eval/rover/r495/analyze_r495.py",
+    "instrument_sha12": "b5925962f773",
+    "binding": "audit-pin",
+    "audited_by_round": "R496"
+   },
+   "covers": [
+    "eval/rover/r495/prereg_r495.json",
+    "eval/rover/r495/grid/task-p15-code.json",
+    "eval/rover/r495/run_arm_real_r495.sh",
+    "eval/rover/r495/calls-Br495.jsonl",
+    "eval/rover/r495/calls-T0r495.jsonl",
+    "eval/rover/r495/calls-T1r495.jsonl",
+    "eval/rover/r495/usage-Br495.jsonl",
+    "eval/rover/r495/usage-T0r495.jsonl",
+    "eval/rover/r495/usage-T1r495.jsonl",
+    "eval/rover/r495/assert-face-Br495.json",
+    "eval/rover/r495/assert-face-T0r495.json",
+    "eval/rover/r495/pin-r495.json",
+    "eval/rover/r495/adv-code-Br495.json",
+    "eval/rover/r495/adv-code-T0r495.json"
+   ],
+   "negative_control": "① 与 R494 非同窗 (网格多 3 轮) ⇒ **禁跨窗相减**, 只作参照。② 起手闸内存门 (2650MB) 首跑即红 (MemAvailable 2473) ⇒ 按纪律让行 (preflight-Br495.json 为证), 收口 build-server + drop_caches 后重跑通过。③ quiesce 环以 `correction_judge` 计数稳定为准, 该计数**缓滴增长** (11→15 行/2 min) ⇒ 每臂 固定等待 ~510 s (夹具自身行为, 非本轮改动)。④ 通道轴 (R494 的 T0↔T1) 本轮未复测; 定长腿只用 t13/t15 (固定格式短答) 作长度受控观测。"
+  },
+  {
+   "id": "r495.capability-face-reaudit-pin-idempotence",
+   "level": "L2",
+   "owner_round": "R495",
+   "capability": "**能力自检面只读复核 + 冻结 pin 幂等化**: 5 红复核结论 —— (a) `bind_evidence --check` rc=2 系本轮**重跑只读复核器**改写了 `audit-capability-face.json` (原写侧每次刷新 `audited_at_epoch` ⇒ 冻结 pin 每跑必红); 已把写侧改为**幂等落盘** (语义未变不重写) 并重钉 (连跑两次字节恒定 `63161c7ec8a4`)。(b) `committed-state` 与 `only-equivalence` 现跑 rc=0 (9/9) ⇒ 面文件里的 rc=2 是**旧读数**; A3 `manifest_sha12` 声明 `ad97f379503a` vs 现盘 `976b9d0d059c` ⇒ 该面处于**并发会话线改写中**。(c) `exp1q17.archive-field-provenance` scoped 面 rc=2 vs declared cmd rc=0 ⇒ **口径差未闭合** (两条不同调用面)。",
+   "evidence_cmd": "python3 eval/rover/r494/audit_capability_face_r494.py; python3 eval/capability/exp1-q31/instruments/only_equivalence_guard.py; python3 eval/capability/exp1-q17/archive_field_provenance.py --selftest --out /tmp/v.json --fixtures-out /tmp/s.json",
+   "evidence_path": "eval/rover/r494/audit-capability-face.json",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "63161c7ec8a4",
+    "instrument": "eval/rover/r494/audit_capability_face_r494.py",
+    "instrument_sha12": "23aff697896a",
+    "binding": "audit-pin",
+    "audited_by_round": "R496"
+   },
+   "covers": [
+    "eval/capability/instruments.json",
+    "eval/rover/r494/audit-capability-face.json",
+    "eval/capability/exp1-q31/instruments/only_equivalence_guard.py",
+    "eval/capability/exp1-q17/archive_field_provenance.py"
+   ],
+   "negative_control": "重钉后形式门禁 (`VerificationFormTests`) 7/7 绿; 只读重跑审计器不改字节 (幂等自证); 未闭合项 (exp1q17 口径差 + 面文件并发改写) 显式留在 R496 候选, 不以遮蔽换绿。"
   }
  ],
  "aot_check_policy": "release_tag_only",
