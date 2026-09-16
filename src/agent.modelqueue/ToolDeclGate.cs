@@ -20,10 +20,22 @@ public static class ToolDeclGate
 {
     public const string EnvName = "AGENTFRAMEWORK_TOOL_DECL_GATE";
 
+    /// <summary>
+    /// R494: **通道轴**开关 —— 隔离通道 (微步骤隔离问询 / 一次性隔离子任务) 恒不下发工作区工具。
+    /// 与 <see cref="EnvName"/> **分轴**: 意图轴管"这一轮要不要动手", 通道轴管"这条通道有没有工作区"。
+    /// 默认**关** ⇒ 未开时与 R490..R493 逐字节相同 (同二进制单变量消融的前提)。
+    /// </summary>
+    public const string ChannelEnvName = "AGENTFRAMEWORK_TOOL_DECL_CHANNEL";
+
     /// <summary>开关: off/0/false = 关; 其余 = 开; **未设 = 关** (生产行为不变)。</summary>
-    public static bool IsEnabled()
+    public static bool IsEnabled() => IsOn(EnvName);
+
+    /// <summary>R494 通道轴开关 (未设 = 关)。</summary>
+    public static bool IsChannelGateEnabled() => IsOn(ChannelEnvName);
+
+    private static bool IsOn(string name)
     {
-        var v = Environment.GetEnvironmentVariable(EnvName);
+        var v = Environment.GetEnvironmentVariable(name);
         if (string.IsNullOrWhiteSpace(v)) return false;
         v = v.Trim();
         return !(v.Equals("off", StringComparison.OrdinalIgnoreCase)
@@ -59,11 +71,28 @@ public static class ToolDeclGate
     /// 门开: 只对工作区动作类意图下发; **空/未知意图 ⇒ 下发** (未命中判据不得变成能力丢失)。
     /// </summary>
     public static bool ShouldDeclare(string? intent, bool gateEnabled)
-        => !gateEnabled || string.IsNullOrWhiteSpace(intent) || IsToolIntent(intent);
+        => ShouldDeclare(intent, gateEnabled, isolatedChannel: false, channelGateEnabled: false);
+
+    /// <summary>
+    /// R494: 是否下发工具声明 (**通道轴 + 意图轴**)。
+    /// 通道轴开 ∧ 隔离通道 ⇒ 恒不下发 (隔离通道**结构上**没有工作区: 上下文为空、system 明示"不引用外部会话"
+    /// ⇒ 声明工具只会招来对不存在路径的读写)。
+    /// 通道轴关 或 非隔离通道 ⇒ 退回 R490 的意图轴判据 (逐字节不变)。
+    /// </summary>
+    public static bool ShouldDeclare(string? intent, bool gateEnabled, bool isolatedChannel, bool channelGateEnabled)
+    {
+        if (channelGateEnabled && isolatedChannel) return false;
+        return !gateEnabled || string.IsNullOrWhiteSpace(intent) || IsToolIntent(intent);
+    }
 
     /// <summary>打点用稳定短名 (禁本地化, 禁自由文本)。</summary>
     public static string DecideReason(string? intent, bool gateEnabled)
+        => DecideReason(intent, gateEnabled, isolatedChannel: false, channelGateEnabled: false);
+
+    /// <summary>R494: 带通道轴的稳定短名 (通道轴判据优先于意图轴 —— 两者同时命中时归因到更结构化的那一轴)。</summary>
+    public static string DecideReason(string? intent, bool gateEnabled, bool isolatedChannel, bool channelGateEnabled)
     {
+        if (channelGateEnabled && isolatedChannel) return "isolated_channel_drop";
         if (!gateEnabled) return "gate_off";
         if (string.IsNullOrWhiteSpace(intent)) return "unknown_intent_keep";
         return IsToolIntent(intent) ? "tool_intent_keep" : "non_tool_intent_drop";

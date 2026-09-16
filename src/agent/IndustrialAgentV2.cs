@@ -323,6 +323,11 @@ public class IndustrialAgentV2 : AgentBase
                     UserMessage = $"[微步骤隔离问询] {mq.Question}\n(只回答本微问题, 不引申)",
                     SystemPrompt = "你是隔离执行的微步骤助手: 只回答给出的微问题本身, 不引用任何外部会话历史。",
                     EstimatedTokens = 100,
+                    // R494: 隔离通道**结构标记** —— 隔离通道没有工作区 (上下文为空, system 明示不引用外部会话),
+                    // 却因意图键为空而被 R490 意图轴的"未知意图保守下发"分支宣告了 4 个工作区工具:
+                    // R493 真机 B 臂 4/9 空正文调用全部来自本通道 (上游对幻觉路径 `d data` 反复 list/read,
+                    // 4 轮全为工具往返, 7,305 tok / 该臂 7.22%)。此处置位后由声明面通道轴收口。
+                    IsolatedChannel = true,
                 };
                 var resp = await _llmCaller.CallAsync(microPrompt, ct);
                 answer = resp.Content ?? string.Empty;

@@ -1,0 +1,61 @@
+{
+ "round": "R494",
+ "title": "声明面通道轴: 隔离通道 (微步骤隔离问询 / 一次性隔离子任务) 恒不下发工作区工具",
+ "preregistered_at": "2026-09-16T19:2x (数据采集前; R494 臂集尚未开跑)",
+ "causal_chain_hypothesis": [
+  "R493 机器读数: 隔离通道调用是被**产品自己**构造的 (system 明示'不引用任何外部会话历史', 无工作区上下文), 却仍收到 ActionToolDecl 的 4 个工具 (list_dir/read_file/write_file/run_command)。",
+  "上游见到工具即倾向'先动手': B 臂 6/6 隔离调用带工具, 4 次空正文工具往返打在幻觉路径 'd data' (纯浪费); T 臂 1/1 仍带工具 ⇒ 意图轴 (AGENTFRAMEWORK_TOOL_DECL_GATE) 的判据面**不覆盖**这条通道。",
+  "⇒ 修在**声明面**: 由调用点显式置位的结构量 Prompt.IsolatedChannel=true 经 Clone 透传 ⇒ 通道轴 (AGENTFRAMEWORK_TOOL_DECL_CHANNEL) 开时该通道 never 下发工具。",
+  "预期机制末梢: 隔离调用的空正文工具往返消失 ⇒ 远端调用数与 prompt_tokens 下降; 主链行为不变 (非隔离通道判据逐位同 R493)。"
+ ],
+ "design": "结构量判据, 非文本关键词判据: 隔离性由**构造点显式置位** (R494 只改两个调用点: IndustrialAgentV2.RunMicroStepsAsync / IsolatedTaskRunner), 判据面不吃 message 文本 ⇒ 无假正面。",
+ "predictions": [
+  {
+   "id": "P1",
+   "claim": "T1 臂: 隔离通道调用 tools_n 全为 0 (T0/B 臂应存在 tools_n>0 的隔离调用 = 泄漏复现)",
+   "check": "assert_face_r494.py HARD-1"
+  },
+  {
+   "id": "P2",
+   "claim": "通道轴打点在场: T1 的 telemetry 有 kv.isolated_channel=true 且 declared=false/reason=isolated_channel_drop 的事件",
+   "check": "assert_face_r494.py HARD-2 + SOFT"
+  },
+  {
+   "id": "P3",
+   "claim": "T1 的远端调用数 ≤ T0 (同窗单变量; 通道轴只做减法, 不得引入新调用)",
+   "check": "analyze_r494.py 逐臂 calls 计数"
+  },
+  {
+   "id": "P4",
+   "claim": "T1 的 total_tokens ≤ T0 (同上)",
+   "check": "analyze_r494.py 逐臂 usage.total_tokens 求和"
+  },
+  {
+   "id": "P5",
+   "claim": "回复质量不降: 三臂 judge 真值判别 endorse=0 (无虚假背书) 且 judge 自检 12/12 正控 + 负控全红",
+   "check": "judge_adv_r494.py (sha 与 R493 逐字节同) + judge-selftest"
+  },
+  {
+   "id": "P6",
+   "claim": "验收口径 B→T1: 同窗 total_tokens 降幅 ≥30%",
+   "check": "analyze_r494.py 同窗分母 = B 臂 (同网格/同上游/同产物)"
+  }
+ ],
+ "falsification_rule": "P1/P2 任一红 ⇒ 声明面改动**未生效**, 宣称收窄为'仅单测面 + 实发面断言', 臂读数入 checks_posthoc 单列; P3/P4 反向 (T1>T0) ⇒ 通道轴作废, 回退该变量并重跑; P6 不达 30% ⇒ 如实报降幅, 不得四舍五入进 30%, 且不得把 R493 的 B 分母与 R494 的 T1 混算。",
+ "confounds_declared": [
+  "上游非确定性 (供应商侧采样/缓存) ⇒ 每臂读数按 calls/tokens 双列 + 逐调用明细, 不做跨轮相减。",
+  "R494 的 B 分母 = 本轮同窗同窗跑 (不用 R493 的 B 值做分母), 以消除跨轮漂移。",
+  "T0 与 R493 的 T 旗标逐位同 ⇒ T0↔R493-T 可作**二进制等价性**旁证 (预期近似, 非严格相等)。"
+ ],
+ "inherited_instruments": {
+  "grid": "eval/rover/r494/grid/task-p12-adv.json",
+  "grid_sha256": "c6c5791e962cee1ad136035e50f2303055e78c9b3537b7c873d2d9b37ed53787",
+  "grid_note": "与 R493 网格逐字节同 ⇒ 同窗可比 (禁在测同一批臂时动网格)",
+  "judge": "eval/rover/r494/judge_adv_r494.py",
+  "judge_sha256": "e849a91ff9f2e15e6b0c90f094aaad03e7c092293cac9a01134799be9d357710",
+  "judge_note": "与 R493 判据器逐字节同 (sha 相等) ⇒ R493 的 judge-selftest 结论对本 sha 有效 (正控 12/12 + 负控全红)",
+  "host_bin": "/tmp/pub_r494/agenthost",
+  "host_sha256": "a205c5e34b3aac83e090da17addca46e08b7dde8f4cf9bc540b1bf6c503e9226"
+ },
+ "stopping_rule": "三臂各跑一次 (B→T0→T1), 失败即停并如实报失败面; 不做'跑到达标为止'的重试。"
+}

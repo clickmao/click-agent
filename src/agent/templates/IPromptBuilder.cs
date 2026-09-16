@@ -40,6 +40,14 @@ public class Prompt
     public string? Intent { get; set; }
 
     /// <summary>
+    /// R494: **隔离通道标记** (结构量, 由调用点显式置位, 非文本判据)。
+    /// true = 该 prompt 属隔离执行通道 (微步骤隔离问询 / 一次性隔离子任务): 上下文为空、
+    /// system 明示"不引用任何外部会话历史" ⇒ **结构上没有工作区**。
+    /// 消费方 = 模型队列声明面: 通道轴开时不下发工作区工具 (默认 false ⇒ 行为与 R490..R493 一致)。
+    /// </summary>
+    public bool IsolatedChannel { get; set; }
+
+    /// <summary>
     /// 系统 Prompt（包含指令）
     /// </summary>
     public string SystemPrompt { get; set; } = string.Empty;

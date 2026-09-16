@@ -34,6 +34,9 @@ public sealed class QueuePrompt
     /// <summary>R490: 意图键透传 (仅用于声明面打点/判据归属; 选模仍走 CallAsync 的 intent 形参)。</summary>
     public string? Intent { get; set; }
 
+    /// <summary>R494: 隔离通道标记透传 (结构量; 声明面通道轴判据的输入)。</summary>
+    public bool IsolatedChannel { get; set; }
+
     /// <summary>
     /// R490 回放剪裁: 被剔出远端回放的**本地模板答复**条数。
     /// 剪裁依据 = 该答复从未发往任何 provider (零远端调用的 Skip 轮产物) ⇒ 不是任何缓存前缀的一部分。
@@ -1413,12 +1416,16 @@ public sealed class ModelQueueRouter : IModelQueueCaller
         // R490 声明面按需 + 回放剪裁: 逐调用打点 (可机检「非工具意图调用不带 tools」)
         {
             var gateOn = ToolDeclGate.IsEnabled();
+            var chGateOn = ToolDeclGate.IsChannelGateEnabled();
             var declared = !string.IsNullOrEmpty(prompt.ToolsJson);
             agent.config.AgentTelemetry.Emit("tool_decl_gate", "ModelQueueRouter",
                 ("declared", declared),
                 ("gate", gateOn ? "1" : "0"),
+                // R494 通道轴: 隔离通道标记 + 通道轴开关 + 轴上判据 (打点与实发面同寿命)
+                ("channel_gate", chGateOn ? "1" : "0"),
+                ("isolated_channel", prompt.IsolatedChannel),
                 ("intent", prompt.Intent ?? "(null)"),
-                ("reason", ToolDeclGate.DecideReason(prompt.Intent, gateOn)),
+                ("reason", ToolDeclGate.DecideReason(prompt.Intent, gateOn, prompt.IsolatedChannel, chGateOn)),
                 ("replay_trimmed", prompt.ReplayTrimmedLocalTemplates),
                 ("replay_user_trimmed", prompt.ReplayTrimmedLocalUserTurns),
                 ("replay_pair_gate", ReplayPairTrim.Stamp()),

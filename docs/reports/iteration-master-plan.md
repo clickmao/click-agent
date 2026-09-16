@@ -757,3 +757,14 @@ python3 eval/run_round.py <新轮号> "revert-verify <原commit>" --quick   # �
 - 读数: B→T -73.36% / B→R -52.01% (付费 total, 同窗); 对抗族 B=3/3 R=3/3 T=3/3。
 - 报告: `docs/reports/r493-adv-family-hardening-judge-supersede.md`; 判据器: `eval/rover/r493/judge_adv_r493.py`。
 - 门: `bash eval/rover/r493/gates_r493.sh` (判据自检 + 三臂判据 + 不变量)。
+
+---
+
+## R494 —— 声明面**通道轴**: 隔离通道恒不下发工作区工具 (+ R493 遗留候选并轮)
+
+- 主题: 由 R493 真实 calls 记录做事件级归因 (零字面重发) ⇒ 定位到**产品自己**构造的隔离通道 (微步骤隔离问询 / 一次性隔离子任务) 在意图轴之外拿到 4 个工作区工具 (含 `write_file`) ⇒ 被上游扩张成动作环 (R493 B 臂: 1 个微步骤 5 轮 602→1,872 tok, 泄漏 ≈5,666 tok = 该臂 5.60%)。靶点从"重试"改到**声明面通道归属**。
+- 变更: `Prompt.IsolatedChannel` / `QueuePrompt.IsolatedChannel` / `ActionLoop.Clone` 透传 / `ToolDeclGate` 通道轴 (`AGENTFRAMEWORK_TOOL_DECL_CHANNEL`, 默认关) / 两处隔离调用点置位 / 打点新增 `isolated_channel`+`channel_gate`。
+- 读数 (同窗三臂 B/T0/T1, 网格与 R493 逐字节同, 三臂 host_sha12=a205c5e34b3a): **B→T1 远端调用 18→7、total_tokens 86,474→29,273 = −66.15% (验收达标 ≥30%)**; 隔离通道带工具 1→0; 空正文调用 5/18 → 0/7。
+- 证伪单列: T0→T1 (通道轴单变量) token 24,728→29,273 = **+18.4% 上升** ⇒ 本轮不宣称通道轴 token 增益 (宣称收窄: 结构面闭合 + 未引入新红)。
+- 报告: `docs/reports/r494-isolated-channel-tool-decl.md`; 门: `bash eval/rover/r494/gates_r494.sh`; 判据自检 12/12 + 9/9; 全量单测 1549/0; AOT 0 IL 警告。
+- 遗留 (R495): r1 决策落盘+挂载 (必错族判别臂) / skip 集语义扩面 / MCP 链级 E2E / pin 升级 (src 树哈希 + 产物 sha 双 pin)。

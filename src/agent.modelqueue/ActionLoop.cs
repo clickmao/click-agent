@@ -173,6 +173,9 @@ public static class ActionLoopRunner
             ReasoningEffort = src.ReasoningEffort,
             ToolsJson = src.ToolsJson,
             Intent = src.Intent,
+            // R494: 隔离通道标记必须随 Clone 透传 —— 否则环内第二次及以后的调用会丢掉通道轴判据
+            // (与 R490 的 replay_trimmed 同一类缺陷: 打点/判据与实发面脱钩)。
+            IsolatedChannel = src.IsolatedChannel,
             // R490: 计数器必须随 Clone 透传 —— 否则经动作环的每一次远端调用都会把
             // 「剪裁了 N 条本地模板答复」打点成 0 (R490 T 臂首跑实测踩中: 请求体内模板串确已
             // 消失, 但 tool_decl_gate.replay_trimmed 恒 0) ⇒ 打点与实发面脱钩。

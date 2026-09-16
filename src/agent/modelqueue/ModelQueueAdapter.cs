@@ -51,6 +51,8 @@ public sealed class ModelQueueAdapter : ILLMCaller, agent.subagent.ILLMCallerFor
             // v0.12.0 A2: 图像附件透传 (Router 带图强制云端 + parts[] — 本地 qwen 无视觉, 缺陷 62)
             ImageUrls = prompt.ImageUrls,
             Intent = prompt.Intent,
+            // R494: 隔离通道标记透传 (声明面通道轴的唯一输入; 由隔离调用点显式置位)
+            IsolatedChannel = prompt.IsolatedChannel,
         };
         var trimmedLocalTemplates = 0;
         var trimmedLocalUserTurns = 0;
@@ -105,7 +107,10 @@ public sealed class ModelQueueAdapter : ILLMCaller, agent.subagent.ILLMCallerFor
             // R456 声明面: 仅在动作环开启时注入 tools —— 关闭时请求体与旧版逐字节相同 (零回归)
             // R490 声明面按需: 门开 (AGENTFRAMEWORK_TOOL_DECL_GATE) 时只对**工作区动作类意图**下发。
             // 门关 (未设) ⇒ 恒下发 ⇒ 与 R456..R489 逐字节相同。
-            if (ToolDeclGate.ShouldDeclare(prompt.Intent, ToolDeclGate.IsEnabled()))
+            // R494 通道轴: 隔离通道 (微步骤隔离问询 / 一次性隔离子任务) 结构上没有工作区 ⇒
+            // 通道轴开时恒不下发 (轴上判据只吃调用点显式置位的结构量, 非文本)。
+            if (ToolDeclGate.ShouldDeclare(prompt.Intent, ToolDeclGate.IsEnabled(),
+                    qp.IsolatedChannel, ToolDeclGate.IsChannelGateEnabled()))
                 qp.ToolsJson = ActionToolDecl.ToolsJson;
             var (resp, outcome) = await ActionLoopRunner.RunAsync(
                 qp,

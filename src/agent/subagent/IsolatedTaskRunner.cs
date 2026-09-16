@@ -79,6 +79,8 @@ public sealed class IsolatedTaskRunner
                     SystemPrompt = "你是一个一次性隔离子任务执行器。只回答给定的新任务本身, 不引用任何先前的对话上下文。",
                     ContextPrompt = string.Empty,
                     UserMessage = taskText,
+                    // R494: 同微步骤通道 —— 隔离执行通道没有工作区, 不得因意图键为空而吃到保守下发的工作区工具
+                    IsolatedChannel = true,
                 };
                 var resp = await _llm.CallAsync(prompt, ct);
                 sw.Stop();
