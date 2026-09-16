@@ -31,6 +31,15 @@ import grade  # noqa: E402
 PY = sys.executable
 
 
+def rel(p):
+    """落盘一律用仓内相对路径（可移植，禁绝对路径入证据件）。"""
+    try:
+        r = os.path.relpath(p, REPO)
+        return r if not r.startswith("..") else p
+    except Exception:
+        return p
+
+
 def load(p):
     return json.load(io.open(p, encoding="utf-8-sig"))
 
@@ -103,15 +112,44 @@ def check_side(side, summary, tasks, work, timeout=10.0):
     return rows
 
 
+def _discover(round_id):
+    """按轮号自动发现题集与两侧落盘摘要（机检，不猜）。"""
+    import glob as _g
+    rid = round_id if round_id.startswith("r") else "r" + round_id
+    ts = sorted(_g.glob(os.path.join(REPO, "eval/rover", rid, "taskset-%s.json" % rid)))
+    if not ts:
+        return None, None, None
+    cand = [p for p in sorted(_g.glob(os.path.join(REPO, "data/probe", "probe-*%s.json" % rid)), key=os.path.getmtime)
+            if "-seed0-" in os.path.basename(p) and "vmrun" not in os.path.basename(p)]
+    cx = [p for p in cand if "codex" in os.path.basename(p)]
+    ag = [p for p in cand if "agent" in os.path.basename(p) and "codex" not in os.path.basename(p)]
+    return ts[-1], (cx[-1] if cx else None), (ag[-1] if ag else None)
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--taskset", required=True)
-    ap.add_argument("--codex", required=True)
-    ap.add_argument("--agent", required=True)
-    ap.add_argument("--out", required=True)
+    ap.add_argument("--taskset")
+    ap.add_argument("--codex")
+    ap.add_argument("--agent")
+    ap.add_argument("--out")
     ap.add_argument("--label", default="")
+    ap.add_argument("--round", help="按轮号自动发现（eval/rover/<r>/taskset-<r>.json + data/probe/probe-*-<r>.json）")
     ap.add_argument("--timeout", type=float, default=10.0)
     a = ap.parse_args()
+    if a.round:
+        ts, cx, ag = _discover(a.round)
+        if not ts or not cx or not ag:
+            print("[致命] DISCOVER_FAIL round=%s taskset=%s codex=%s agent=%s ⇒ rc=3" % (a.round, ts, cx, ag))
+            return 3
+        a.taskset, a.codex, a.agent = ts, cx, ag
+        a.label = a.label or a.round.upper()
+        a.out = a.out or os.path.join(REPO, "eval/rover/r507pre", "precondition-%s.json" % a.round)
+        for k, v in (("taskset", ts), ("codex", cx), ("agent", ag)):
+            print("DISCOVER %-7s %s" % (k, os.path.relpath(v, REPO)))
+    for k in ("taskset", "codex", "agent", "out"):
+        if not getattr(a, k):
+            print("[致命] MISSING_ARG --%s ⇒ rc=3" % k)
+            return 3
     for p in (a.taskset, a.codex, a.agent):
         if not os.path.isfile(p):
             print("[致命] 输入缺失: %s ⇒ fail-closed rc=3" % p)
@@ -120,13 +158,13 @@ def main():
     tasks = {t["tid"]: t for t in ts}
     work = "/tmp/r507pre"
     os.makedirs(work, exist_ok=True)
-    out = {"label": a.label, "taskset": a.taskset, "tasks_n": len(tasks),
+    out = {"label": a.label, "taskset": rel(a.taskset), "tasks_n": len(tasks),
            "rule": "对比数据可验收前置: 两侧产出物须可实际执行且正确 (用户 2026-09-17 令)", "sides": {}}
     for side, path in (("codex", a.codex), ("agent", a.agent)):
         rows = check_side(side, load(path), tasks, work, a.timeout)
         prog = [r for r in rows if r.get("kind") == "program"]
         out["sides"][side] = {
-            "summary": path,
+            "summary": rel(path),
             "program_tasks": len(prog),
             "exec_ok": sum(1 for r in prog if r.get("exec") == "ok"),
             "correct_n": sum(1 for r in prog if r.get("correct")),

@@ -127,3 +127,5 @@ R504 判分后被后续候选作业**静默覆盖** 9 个 adapter 文件（同�
 ⇒ **操作口径**：只有「两侧全跑通 ∧ 全对」的轮次才发**可验收对比读数**；本侧有错题的轮次，其 token/调用降幅一律标「参考（未可验收）」，直到该题产出物修正并**同窗复跑**。
 
 **器具 L2 自检**：`python3 eval/rover/r507pre/selfcheck_r507.py` ⇒ 正控（两侧好码 ⇒ 绿、两次跑逐字节同）+ 负控（错值 / 语法错 / 运行即崩 / 死循环 / 缺输入 / 产物缺失：注入缺陷**必红且点名**）**9/9 通过**；证据件 `eval/rover/r507pre/evidence/precondition-selftest.json`。
+
+**一次调用（任意轮收口用）**：`python3 eval/rover/r507pre/exec_precondition.py --round r504` —— 自动发现 `eval/rover/<r>/taskset-<r>.json` + `data/probe/probe-*-<r>.json` 两侧落盘摘要（`DISCOVER` 行打印实际取用件），rc `0 = 可验收 / 1 = 未可验收(逐条点名 `side/tid`) / 3 = 输入缺失 fail-closed`；读数落 `eval/rover/r507pre/precondition-<r>.json`（**仓内相对路径**，可移植）。已复核 R502/R503/R504：`--round` 与显式传参两路读数**逐字节一致**（`True / False(vm_run 8/12) / False(wythoff 10/13)`）。

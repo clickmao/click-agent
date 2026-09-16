@@ -55,3 +55,12 @@ python3 eval/rover/r507pre/selfcheck_r507.py       # 复算真读数 + 写证据
 - registry 行: `external.contrast-exec-precondition`（**L4**，判据 = 成对正控/负控、注入缺陷必失败**必点名**）
 - 器具对: cmd = `python3 eval/rover/r507pre/selfcheck_r507.py`（`PRECOND_SELFTEST=OK`）; nc = `python3 eval/rover/r507pre/nc_oneshot_r507.py`（`detect:NC_DETECTED`，含**正控必须先绿**否则报 `NC_HOLLOW` 弃权）
 - 读数: `bind_evidence --check` rc=0 / `R2E_R2F_EXIT=0` · `decl_sweep --check` drifted=0 · 形式门禁 `VerificationForm` 7/7（Failed 0）
+
+## 一次调用（任意轮收口）
+
+```bash
+python3 eval/rover/r507pre/exec_precondition.py --round r504   # 自动发现题集 + 两侧落盘摘要
+# DISCOVER taskset/codex/agent 行打印实际取用件; rc 0=可验收 / 1=未可验收(点名) / 3=输入缺失
+```
+
+已复核：`--round` 与显式传参两路读数**逐字节一致**（R502 `True` / R503 `False(vm_run 8/12)` / R504 `False(wythoff 10/13)`）。
