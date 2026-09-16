@@ -90,7 +90,9 @@ FACE_OUTPUTS |= {'eval/rover/r444/precheck-prefilter.json',
 SCRATCH_PREFIXES = ('eval/capability/exp1-q19/l2runs/', 'eval/capability/exp1-q20/l2runs/',
                     'eval/capability/exp1-q21/', 'eval/capability/exp1-q21-selfcheck/',
                     # EXP1-Q30: 新增器具 (bind_evidence 负控 / 提交态核验 / 白名单覆盖面) 的 scratch 面
-                    'eval/capability/exp1-q30/scratch/')
+                    'eval/capability/exp1-q30/scratch/',
+                    # EXP1-Q31: 钩子闸验证器的默认写点 (轮次证据由 --out 显式指定)
+                    'eval/capability/exp1-q31/scratch/')
 
 # EXP1-Q22: 全量面窗口的归因式副作用闸 (None = 未启用, 兼容库调用面)。
 GATE = None

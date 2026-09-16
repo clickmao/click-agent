@@ -1,0 +1,58 @@
+{
+ "round": "EXP1-Q31",
+ "ts_utc": "2026-09-16T03:46:30Z",
+ "scope": "分支 A · 计划项 exp1 (v0.22.0-longterm-backlog 最前未完成项) · AE.7 全部候选并轮 (用户令 2026-09-16: 全部候选放一轮解决)",
+ "candidates": {
+  "C1": "残留 5 行未派生器具的处置裁定 (分布先行) + 改证据面形态",
+  "C2": "全量面跨会话稳定性复跑 + r444.instrument-acceptance 下一轮重审",
+  "C3": "stage_guard 进提交前钩子面 + 机检「拒绝对侧在飞文件」",
+  "C4": "器具面规模 × 归因闸阈值台账 (LOG_SOFT_CAP 随面规模复测)",
+  "C5": "verify_q30_only 等价判据 (及新器具) 并入 L2 器具面",
+  "C6": "R486 §5 残留 8: docs/improvements.md 5 条根相对断链修复 (写侧)"
+ },
+ "preregistered_criteria": {
+  "C1": {
+   "dist_first": "先出分布 (110 行 × evidence_kind/器具派生/命令形态), 再逐行裁定; 禁按单行直觉改",
+   "P1": "5 行 evidence_cmd 全部指向仓库内已存在源文件 (instrument != null)",
+   "P2": "裁定表逐行给「接受为永久口径」或「改证据面形态」+ 理由 (机检产出, 非人写)",
+   "P3": "原声明在现盘为假的行使判据重写, 且必须配合法含标记的正控与误用负控",
+   "N1": "/tmp 器具归档: 归档副本与原 /tmp 原件 sha256 逐位相同",
+   "N2": "归档器具未真跑 ⇒ 必须显式标 execution_blocked (禁造占位读数/不宣称已验证)"
+  },
+  "C2": {
+   "P1": "全量面 (同一器具面) 跨会话复跑 passed == total",
+   "P2": "逐器具 instrument_sha12 与上一轮记录逐位相同 (面未变)",
+   "P3": "非语义字段白名单 = {t0,t1,duration,log_bytes,窗口/路径类字段}: 只作信息项, 不参与红绿",
+   "P4": "r444.instrument-acceptance 因证据 (全量面记录) 刷新而重审 ⇒ 声明 pin 必须与现盘一致"
+  },
+  "C3": {
+   "P1": "钩子默认关: 无 AGENTFRAMEWORK_STAGE_MANIFEST 时行为与旧钩子逐位相同 (零回归)",
+   "P2": "声明清单 == staged ⇒ 放行 (rc=0)",
+   "P3": "staged 多出对侧在飞文件 ⇒ 拒绝 (rc!=0 且含 BLOCKED 文案)",
+   "P4": "清单文件缺失 (声明了路径却没有) ⇒ fail-closed 拒绝",
+   "N1": "条数相同内容不同 (same_count_wrong_content) 必须被拒 ⇒ 条数口径漏检被证明"
+  },
+  "C4": {
+   "P1": "阈值单一权威: 复测脚本从器具源码读常量, 不复制数字",
+   "P2": "余量判据 soft_cap >= K_MIN × 实测 log_bytes (K_MIN=2.0, 由 Q30 实测 2.26× 反推下限)",
+   "P3": "台账追加幂等 (同 face manifest_sha12 + 规模键去重)",
+   "N1": "capped=True 的读数 ⇒ 必须判红 (rc=2)",
+   "N2": "缺 log_bytes / 记录缺失 ⇒ 弃权 (rc=3), 不判红不判绿"
+  },
+  "C5": {
+   "P1": "新器具行必须成对 (正控 expect_rc + 负控 nc_cmd/nc_expect)",
+   "P2": "面扩容后全量面 passed == total 且 side_effect_attribution 守恒式仍成立",
+   "N1": "新行各注入一次负控, 必须全部被检出"
+  },
+  "C6": {
+   "P1": "5 条根相对引用改为相对本文件 (docs/… → ./…), 只做增量不改语义",
+   "P2": "写侧探针复跑: 根相对误写 5 → 0, 且总数守恒 (87 = 解析 + 误写 + 从未写出 + 越根)"
+  }
+ },
+ "honest_boundaries_registered": [
+  "C1: 两条 dotnet 面包装器会引入编译面 ⇒ 不进 L2 快速面 (面别分区), 只作证据面器具",
+  "C1: r462 归档器具需 gguf 模型 + llama-server ⇒ 本轮不真跑 (execution_blocked)",
+  "C2: 复跑是同一窗口内的第二次运行, 与 Q30 首次运行相隔一个会话 (跨会话), 但非同机多负载对照",
+  "C4: K_MIN=2.0 由单点实测反推, 非统计确定 (n=2 次全量面读数)"
+ ]
+}

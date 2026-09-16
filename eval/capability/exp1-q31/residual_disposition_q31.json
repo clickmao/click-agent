@@ -1,0 +1,115 @@
+{
+ "round": "EXP1-Q31",
+ "rows_covered": 113,
+ "distribution": {
+  "by_evidence_kind": {
+   "artifact": 105,
+   "directory": 7,
+   "self-derived": 1
+  },
+  "by_instrument": {
+   "instrument": 113
+  },
+  "by_cmd_shape": {
+   "script_call": 79,
+   "wrapper_call": 4,
+   "shell_assertion": 20,
+   "tmp_path": 9,
+   "python_c_inline": 1
+  }
+ },
+ "q30_reading": {
+  "rows_covered": 110,
+  "derived": 105,
+  "no_instrument": 5,
+  "by_class": {
+   "doc_evidence": 2,
+   "directory_evidence": 1,
+   "tmp_instrument": 1,
+   "manual_read": 1
+  }
+ },
+ "q31_reading": {
+  "rows_covered": 113,
+  "derived": 113,
+  "no_instrument": 0,
+  "by_class": {}
+ },
+ "dispositions": [
+  {
+   "rule": "R1+R3",
+   "action": "判据重写为子系统作用域 + 互操作库允许清单 (原词面判据现盘为假)",
+   "artifact_untouched": true,
+   "evidence": "现盘复现 rc=1 (合法 kernel32 声明被词面判据误杀) ⇒ 新判据正控 rc=0 + 三负控",
+   "id": "engine.retired.no_local_gguf",
+   "level": "L1",
+   "evidence_path": "eval/rover/r408/r408-evidence.md",
+   "instrument": "eval/capability/exp1-q31/instruments/retired_interop_absent.py",
+   "pin_status": "frozen",
+   "pin_reason": "archived-per-round",
+   "cmd_shape_now": "wrapper_call"
+  },
+  {
+   "rule": "R1+R3",
+   "action": "dotnet test 命令行 → 外部测试面包装器 (退出码三分类)",
+   "artifact_untouched": true,
+   "evidence": "wrapper --selftest 6/6 + 真跑 (r420 面) rc=0/47 passed",
+   "id": "llamacpp.prompt.template_gate",
+   "level": "L4",
+   "evidence_path": "eval/rover/r409/",
+   "instrument": "eval/capability/exp1-q31/instruments/dotnet_test_gate.py",
+   "pin_status": "frozen",
+   "pin_reason": "archived-per-round",
+   "cmd_shape_now": "wrapper_call"
+  },
+  {
+   "rule": "R1+R3",
+   "action": "dotnet test 命令行 → 同一包装器 (指定 filter/label)",
+   "artifact_untouched": true,
+   "evidence": "真跑 r420-recall-wiring 47/47 绿 (40.9s, log 26,181 B) 分类 pass",
+   "id": "r420.recall-command-wiring",
+   "level": "L4",
+   "evidence_path": "eval/capability/r420/README-evidence.md",
+   "instrument": "eval/capability/exp1-q31/instruments/dotnet_test_gate.py",
+   "pin_status": "frozen",
+   "pin_reason": "archived-per-round",
+   "cmd_shape_now": "wrapper_call"
+  },
+  {
+   "rule": "R2+R4",
+   "action": "改指自足入口 wrapper (归档三件与 /tmp 原件逐位相同); 真跑标受阻",
+   "artifact_untouched": true,
+   "evidence": "sha256 3/3 逐位相同; 归档件硬编码 /tmp 语料 ⇒ 标 hardness; execution_blocked",
+   "id": "r462.weight-probe",
+   "level": "L2",
+   "evidence_path": "eval/rover/r462/verdict-r462-w.json",
+   "instrument": "eval/capability/exp1-q31/instruments/r462_w_probe_wrapper.py",
+   "pin_status": "frozen",
+   "pin_reason": "archived-per-round",
+   "cmd_shape_now": "wrapper_call"
+  },
+  {
+   "rule": "R1+R3",
+   "action": "python3 -c 一次性读取 → 带控制器具 (字段完整性 + 现盘不存在 + 保留面无交集)",
+   "artifact_untouched": true,
+   "evidence": "真跑 CLEANUP_LEDGER_CHECK=OK (4 条) + selftest 4/4 (含 3 负控)",
+   "id": "r463.model-cleanup",
+   "level": "L1",
+   "evidence_path": "eval/rover/r463/deletion-ledger.json",
+   "instrument": "eval/capability/exp1-q31/instruments/cleanup_ledger_check.py",
+   "pin_status": "frozen",
+   "pin_reason": "archived-per-round",
+   "cmd_shape_now": "python_c_inline"
+  }
+ ],
+ "checks": {
+  "P1_五行全部派生器具": true,
+  "P2_零残留缺口": true,
+  "P3_缺口数下降": true,
+  "P4_裁定表五行齐备": true,
+  "P5_证据本体未改路径": true,
+  "P6_分布可机检": true
+ },
+ "verdict": "PASS",
+ "n_checks": "6/6"
+}

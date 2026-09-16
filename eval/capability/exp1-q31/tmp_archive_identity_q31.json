@@ -1,0 +1,42 @@
+{
+ "round": "EXP1-Q31",
+ "schema": "tmp-archive-identity/1",
+ "rows": [
+  {
+   "repo": "eval/rover/r462/bench_r462_w.py",
+   "origin": "/tmp/r462_w_bench.py",
+   "sha256": "8a8b895d27ddb1b5f392136120b2db9687429eec40905a163194aafc084d0c04",
+   "same": true,
+   "bytes": 9233,
+   "verdict": "identical"
+  },
+  {
+   "repo": "eval/rover/r462/corpus-r462-w.json",
+   "origin": "/tmp/r462_corpus.json",
+   "sha256": "cd075177be5bea134b5d57132f40e540f66a7996086e39c5545eee1ef5223946",
+   "same": true,
+   "bytes": 35446,
+   "verdict": "identical"
+  },
+  {
+   "repo": "eval/rover/r462/report_r462_w.py",
+   "origin": "/tmp/r462_w_report.py",
+   "sha256": "ba80a75c41213cb4ee3f2423a6aaf09bddd57ab077013f9a7c0112d387ac201b",
+   "same": true,
+   "bytes": 4031,
+   "verdict": "identical"
+  }
+ ],
+ "n_identical": 3,
+ "n_pairs": 3,
+ "hardcoded_inputs": [
+  {
+   "file": "eval/rover/r462/bench_r462_w.py",
+   "literal": "CORPUS = \"/tmp/r462_corpus.json\"",
+   "present": true
+  }
+ ],
+ "execution_state": "execution_blocked",
+ "execution_blocker": "needs gguf model + llama-server (--run); 本轮只做同一性校验与受阻标记",
+ "rerun_recipe": "python3 eval/capability/exp1-q31/instruments/r462_w_probe_wrapper.py --run --gguf <model.gguf> --tag <tag>"
+}

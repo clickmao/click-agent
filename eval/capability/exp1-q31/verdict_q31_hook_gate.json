@@ -1,0 +1,60 @@
+{
+ "round": "EXP1-Q31",
+ "checks": {
+  "P0_夹具器具逐字节同日": true,
+  "P1_默认关零回归": true,
+  "P2_清单等于staged放行": true,
+  "P3_拒绝对侧在飞": true,
+  "N1_条数相同内容不同被拒": true,
+  "P4_清单缺失fail_closed": true,
+  "N2_反证_旧钩子漏检": true,
+  "P5_真仓默认关放行": true
+ },
+ "readings": {
+  "guard_sha12_in_fixture": "466380a21439",
+  "guard_sha12_in_repo": "466380a21439",
+  "P1": {
+   "rc": 0,
+   "out_tail": []
+  },
+  "P2": {
+   "rc": 0,
+   "out_tail": [
+    "STAGE_GUARD=OK"
+   ]
+  },
+  "P3": {
+   "rc": 1,
+   "out": [
+    "STAGE_GUARD declared=1 staged=2",
+    "  EXTRA_STAGED (对侧在飞/未声明 ⇒ 禁提交): sibling/half-done.py",
+    "STAGE_GUARD=REFUSE",
+    "BLOCKED(L4 跨写者提交闸): staged != 本轮声明清单 ⇒ 拒提交 (防对侧在飞文件混入)。"
+   ]
+  },
+  "N1": {
+   "rc": 1,
+   "out": [
+    "  MISSING (已声明未 staged): sibling/x.py",
+    "STAGE_GUARD=REFUSE",
+    "BLOCKED(L4 跨写者提交闸): staged != 本轮声明清单 ⇒ 拒提交 (防对侧在飞文件混入)。"
+   ]
+  },
+  "P4": {
+   "rc": 1,
+   "out": [
+    "BLOCKED(L4 跨写者提交闸): 声明清单不存在 /tmp/q31-hook-pinc6npo/no_such_manifest.txt ⇒ 拒提交 (fail-closed)。"
+   ]
+  },
+  "N2_old_hook": {
+   "rc": 0,
+   "has_blocked": false
+  },
+  "P5": {
+   "rc": 0,
+   "out_tail": []
+  }
+ },
+ "n_checks": "8/8",
+ "verdict": "PASS"
+}

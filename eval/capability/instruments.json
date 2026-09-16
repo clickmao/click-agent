@@ -350,11 +350,11 @@
     "真值源": "git-dir/ROUND_CLAIM",
     "口径档": "n/a"
    },
-   "owner_round": "R444",
+   "owner_round": "EXP1-Q31",
    "evidence_path": "tools/hooks/pre-commit",
-   "version": "content-sha12:022e1b7bdee1",
+   "version": "content-sha12:8ad57dc4c643",
    "version_source": "content-sha12",
-   "instrument_sha12": "022e1b7bdee1",
+   "instrument_sha12": "8ad57dc4c643",
    "input_surface": "dynamic_corpus",
    "input_surface_source": "audit_hook",
    "input_surface_reason": "仓库内输入面 98 > 上限 24 ⇒ 不冻结",
@@ -628,9 +628,9 @@
    "expect_substr": "L2 器具验收面",
    "nc_cmd": "python3 eval/capability/instruments_check.py --only exp1q17.archive-field-provenance --fingerprint-drift-inject",
    "nc_expect": "nonzero",
-   "version": "content-sha12:13f8872cb070",
+   "version": "content-sha12:8d1eb60b7ca4",
    "version_source": "content-sha12",
-   "instrument_sha12": "13f8872cb070",
+   "instrument_sha12": "8d1eb60b7ca4",
    "input_fingerprint": [
     {
      "path": "eval/capability/exp1-q10/attribution_q10.json",
@@ -655,7 +655,7 @@
     "真值源": "磁盘文件重算 sha256",
     "口径档": "L2 全字段 + 正/负控"
    },
-   "owner_round": "EXP1-Q19",
+   "owner_round": "EXP1-Q31",
    "evidence_path": "eval/capability/instruments_check.py",
    "input_surface": "external_files",
    "input_surface_source": "audit_hook",
@@ -786,6 +786,159 @@
    "input_surface_source": "audit_hook",
    "input_surface_reason": "输入 = 三阶段命令的实时 stdout (每次运行重放, 非仓库内固定语料)",
    "corpus_dynamic_count": 3
+  },
+  {
+   "id": "exp1q31.retired-interop",
+   "kind": "assertion-instrument",
+   "cmd": "python3 eval/capability/exp1-q31/instruments/retired_interop_absent.py",
+   "expect_rc": 0,
+   "expect_substr": "RETIRE_OK",
+   "nc_cmd": "bash eval/capability/exp1-q31/_nc_retired_q31.sh",
+   "nc_expect": "detect:NC_DETECTED",
+   "kpi_quad": {
+    "单位": "registry 行",
+    "分母": "登记表覆盖行 (113)",
+    "真值源": "登记表 evidence_cmd + 源码树扫描",
+    "口径档": "L1 断言"
+   },
+   "owner_round": "EXP1-Q31",
+   "evidence_path": "eval/capability/exp1-q31/instruments/retired_interop_absent.py",
+   "version": "content-sha12:36ff9cd395dc",
+   "version_source": "content-sha12",
+   "instrument_sha12": "36ff9cd395dc",
+   "input_fingerprint": [],
+   "input_surface": "dynamic_corpus",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "输入 = 仓库源码树 .cs 互操作声明扫描结果 (随轮增删) ⇒ 不做字节指纹, 记扫描口径",
+   "corpus_dynamic_count": 442
+  },
+  {
+   "id": "exp1q31.cleanup-ledger",
+   "kind": "assertion-instrument",
+   "cmd": "python3 eval/capability/exp1-q31/instruments/cleanup_ledger_check.py",
+   "expect_rc": 0,
+   "expect_substr": "CLEANUP_LEDGER_CHECK=OK",
+   "nc_cmd": "python3 eval/capability/exp1-q31/instruments/cleanup_ledger_check.py --ledger /tmp/q31_absent_ledger.json",
+   "nc_expect": "nonzero",
+   "kpi_quad": {
+    "单位": "台账条目",
+    "分母": "台账条数 (4)",
+    "真值源": "eval/rover/r463/deletion-ledger.json",
+    "口径档": "L1 断言"
+   },
+   "owner_round": "EXP1-Q31",
+   "evidence_path": "eval/capability/exp1-q31/instruments/cleanup_ledger_check.py",
+   "version": "content-sha12:786c734be2b4",
+   "version_source": "content-sha12",
+   "instrument_sha12": "786c734be2b4",
+   "input_fingerprint": [
+    {
+     "path": "eval/rover/r463/deletion-ledger.json",
+     "sha12": "ef2b7e8a1f45"
+    }
+   ],
+   "input_surface": "external_files",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "输入 = 单份删除台账 (可冻结字节指纹)"
+  },
+  {
+   "id": "exp1q31.dotnet-gate-classifier",
+   "kind": "classifier-fixture",
+   "cmd": "python3 eval/capability/exp1-q31/instruments/dotnet_test_gate.py --selftest",
+   "expect_rc": 0,
+   "expect_substr": "SELFTEST PASS",
+   "nc_cmd": "python3 eval/capability/exp1-q31/instruments/dotnet_test_gate.py",
+   "nc_expect": "nonzero",
+   "kpi_quad": {
+    "单位": "分类分支",
+    "分母": "夹具数 (6)",
+    "真值源": "合成日志夹具",
+    "口径档": "三态 (0/2/3)"
+   },
+   "owner_round": "EXP1-Q31",
+   "evidence_path": "eval/capability/exp1-q31/instruments/dotnet_test_gate.py",
+   "version": "content-sha12:3fdc1febb02f",
+   "version_source": "content-sha12",
+   "instrument_sha12": "3fdc1febb02f",
+   "input_fingerprint": [],
+   "input_surface": "self_contained",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "输入 = 内建 6 例合成日志夹具 (三分类), 无仓库内输入文件"
+  },
+  {
+   "id": "exp1q31.cap-headroom",
+   "kind": "threshold-ledger",
+   "cmd": "python3 eval/capability/exp1-q31/instruments/face_cap_headroom.py --check",
+   "expect_rc": 0,
+   "expect_substr": "CAP_HEADROOM=OK",
+   "nc_cmd": "python3 eval/capability/exp1-q31/_nc_cap_capped_q31.py",
+   "nc_expect": "detect:NC_DETECTED",
+   "kpi_quad": {
+    "单位": "面",
+    "分母": "器具面规模 (器具数/命令数)",
+    "真值源": "eval/capability/instruments-check.json trace 段",
+    "口径档": "log_bytes/命令数"
+   },
+   "owner_round": "EXP1-Q31",
+   "evidence_path": "eval/capability/exp1-q31/instruments/face_cap_headroom.py",
+   "version": "content-sha12:dac3f65fd6b8",
+   "version_source": "content-sha12",
+   "instrument_sha12": "dac3f65fd6b8",
+   "input_fingerprint": [],
+   "input_surface": "dynamic_corpus",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "输入 = 全量面记录 (每轮重写) + 器具源码阈值常量 ⇒ 不冻结字节, 记余量比",
+   "corpus_dynamic_count": 27
+  },
+  {
+   "id": "exp1q31.only-equivalence",
+   "kind": "equivalence-guard",
+   "cmd": "python3 eval/capability/exp1-q31/instruments/only_equivalence_guard.py",
+   "expect_rc": 0,
+   "expect_substr": "verdict=PASS",
+   "nc_cmd": "python3 eval/capability/exp1-q31/_nc_only_equivalence_q31.py",
+   "nc_expect": "detect:NC_DETECTED",
+   "kpi_quad": {
+    "单位": "写路径对",
+    "分母": "等价判据检查项 (8)",
+    "真值源": "两条独立写路径产物 sha",
+    "口径档": "逐字节等价"
+   },
+   "owner_round": "EXP1-Q31",
+   "evidence_path": "eval/capability/exp1-q31/instruments/only_equivalence_guard.py",
+   "version": "content-sha12:56b918c29a72",
+   "version_source": "content-sha12",
+   "instrument_sha12": "56b918c29a72",
+   "input_fingerprint": [],
+   "input_surface": "dynamic_corpus",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "输入 = 真登记表 (每轮重写) + 现场派生夹具锚 (防旧轮 pin 字面量过期)",
+   "corpus_dynamic_count": 160
+  },
+  {
+   "id": "exp1q31.stage-guard-hook",
+   "kind": "arbitration",
+   "cmd": "python3 eval/capability/exp1-q31/verify_stage_guard_hook_q31.py",
+   "expect_rc": 0,
+   "expect_substr": "verdict=PASS",
+   "nc_cmd": "python3 eval/capability/exp1-q31/_nc_stage_guard_hollow_q31.py",
+   "nc_expect": "detect:NC_DETECTED",
+   "kpi_quad": {
+    "单位": "提交",
+    "分母": "夹具场景 (8)",
+    "真值源": "git 夹具仓 rc + BLOCKED 文案",
+    "口径档": "n/a"
+   },
+   "owner_round": "EXP1-Q31",
+   "evidence_path": "eval/capability/exp1-q31/verify_stage_guard_hook_q31.py",
+   "version": "content-sha12:a226beb1f947",
+   "version_source": "content-sha12",
+   "instrument_sha12": "a226beb1f947",
+   "input_fingerprint": [],
+   "input_surface": "dynamic_corpus",
+   "input_surface_source": "audit_hook",
+   "input_surface_reason": "输入 = 真仓钩子 + 一次性 git 夹具仓 (不接触真索引) ⇒ 不冻结字节",
+   "corpus_dynamic_count": 8
   }
  ]
 }

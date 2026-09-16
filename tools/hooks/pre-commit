@@ -42,4 +42,16 @@ if command -v python3 >/dev/null 2>&1 && [ -f eval/capability/status_gen.py ]; t
     exit 1
   fi
 fi
+
+# EXP1-Q31: 跨写者提交闸 —— staged 必须等于本轮声明清单 (默认关: 无 AGENTFRAMEWORK_STAGE_MANIFEST 则不生效)
+if [ -n "${AGENTFRAMEWORK_STAGE_MANIFEST:-}" ]; then
+  if [ ! -f "$AGENTFRAMEWORK_STAGE_MANIFEST" ]; then
+    echo "BLOCKED(L4 跨写者提交闸): 声明清单不存在 $AGENTFRAMEWORK_STAGE_MANIFEST ⇒ 拒提交 (fail-closed)。" >&2
+    exit 1
+  fi
+  if ! python3 eval/capability/exp1-q30/stage_guard_q30.py --list "$AGENTFRAMEWORK_STAGE_MANIFEST"; then
+    echo "BLOCKED(L4 跨写者提交闸): staged != 本轮声明清单 ⇒ 拒提交 (防对侧在飞文件混入)。" >&2
+    exit 1
+  fi
+fi
 exit 0
