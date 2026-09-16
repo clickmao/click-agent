@@ -5,7 +5,9 @@
 判据全部机械可复核 (不靠感觉):
   ① 计划看板 `docs/plans/v0.22.0-longterm-backlog.md` 中**状态列**含「进行中/未开始/待定/部分/欠」的行
      (轮次行 `R\d+` 与**计划项行** `exp\d+` 同等入账) ⇒ 未完成计划项; 每项附**其余格原文**供读者判沉积;
-  ② 主报告 §7 最新状态块中的「下轮候选 / 待确认 / 进行中」条目 ⇒ 未完成事项;
+  ② 主报告 §7 **最新状态块**（`## 7.` 后第一段 `>` 引用块, 遇第二个块内标题即止）的全部 `**字段**` 原文
+     ⇒ 逐条机械 hint（复用 OPEN_MARKERS + 缺口/未回填/未同步/待补/待裁决）+ **全字段原文入账由读者判**
+     （与来源① other_cells 同口径; v4/D7 换口径: 旧版四条固定词面对当前版式零命中 ⇒ 主线最新状态不可见）;
   ③ 若 ① ② 皆空 ⇒ 输出 mode=selfcheck (运行「py 随机程序 + 随机数学难题」能力自检循环)。
 
 输出: 单行 JSON (cron 注入用), 字段: mode / open_count / open_items / open_items_detail / sources / last_probe
@@ -37,6 +39,24 @@ D5 **(结构性漏读) 计划项行不可见**: 行键硬编码 `^R\d+` ⇒ L3 �
 D6 **「核心已交付 + 自陈欠项」被判 closed**: exp5 行状态列 =「**核心已交付(R370)**：…；欠 域登记/前端通路」
    ⇒ 完成标记命中即 closed, 真实欠项被吞。修法: `欠` 入 `OPEN_MARKERS`, 并配**反面对照**用例
    (「已交付且无欠项」的计划行必须仍判 closed ⇒ 防「计划项一律 open」的空心判据)。
+
+═══ v4 修复记录 (EXP1-Q43 · R508 活跃会话窗口内的零冲突推进, 2026-09-17) ═══
+窗口: 同工作树内 R508 会话正跑全量 `dotnet test`(07:12 起, VBCSCompiler + MSBuild 节点在飞) ⇒ 本 tick
+      不碰产品源码 / 不跑 dotnet / 不占主线轮号(R508)。
+D7 **(来源②输入面覆盖 = 0: 主线最新状态对循环不可见)**: v3 的 MASTER_PAT 是四条**固定词面**(下轮候选/待确认/
+   本轮待办/进行中), 而主报告 §7 的最新块早已换成另一种版式(`> ### ⏱ 最新状态` + `**主线**` / `**状态回填缺口**` /
+   `**诚实边界**` 字段列表) ⇒ 真机 `sources.master = {hits:0, format_matched:false}` —— **来源②一个字符都没进输出**
+   ⇒ mode 完全由来源①(v0.22.0 沉积行 R370/R371 + exp1..exp8) 决定, 与宪法级主线定义(铁律 10)方向错位。
+   修法换**口径**而非再加词面: ① 块级定位(不依赖任何专有词面: `## 7.` 后第一段 `>` 引用块, 遇第二个块内标题即止);
+   ② 块内**全部 `**字段**` 原文**入 `block_field_texts`, 由读者判(与来源① other_cells 同口径);
+   ③ 机械 hint = 复用 OPEN_MARKERS + 缺口/未回填/未同步/待补/待裁决, 并加**否定围栏**(命中处前 20 字符含
+   无/没有/不存在/未设/禁止/非 ⇒ 记 `neg_fenced` 不判 open —— 与 R299/R308b 同族, 防「凡含词面即 open」);
+   ④ `block_found` / `block_fields` / `neg_fenced` / `legacy_form_hits` 入 diag ⇒ 「空」与「缺失」双向可区分。
+   保留: `hits` / `format_matched` 字段语义不变(≥1 机械命中); 旧四条词面降为 `MASTER_PAT_LEGACY`, 仅用于负控 A/B。
+   **预注册 P5 初版被实测否证**: 「legacy 在 T12 夹具上命中数 == 0」不成立 —— v3 实测形态是「漏真项(缺口)
+   ∧ 错命中历史段(R900)」(假阴性 + 假阳性并存, 比零命中更坏)。处置 = N5 改判为**更强的成对陈述**
+   (两条同时成立才算有判别力), 预注册原陈述与实测值单列 `checks_posthoc`(eval/capability/exp1-q43/
+   verdict_q43.json); **未放宽任何既有断言**(T1–T11 / N1–N4 逐条原样)。
 """
 from __future__ import annotations
 
@@ -63,6 +83,55 @@ SEP_CELL = re.compile(r":?-{2,}:?")
 MASTER_PAT = re.compile(
     r"^\s*>?\s*[-*]?\s*\*\*(下轮候选|待确认|本轮待办|进行中)\*\*[:：]?\s*(.{0,120})", re.M
 )
+# v4/D7: 旧四条固定词面降为**负控专用**(证明新用例有判别力), 不再单独驱动来源②
+MASTER_PAT_LEGACY = MASTER_PAT
+# v4/D7: 机械 hint 词表 = 既有 OPEN_MARKERS + 状态块里实际使用的「欠项」类措辞
+HINT_MARKERS = OPEN_MARKERS + ("缺口", "未回填", "未同步", "待补", "待裁决")
+# v4/D7: 否定围栏 (R299/R308b 同族) —— 命中处前窗含否定标记 ⇒ 记 fenced, 不判 open
+NEG_MARKERS = ("无任何", "不存在", "没有", "未设", "禁止", "无", "非")
+NEG_WINDOW = 20
+BLOCK_FIELD_MAX = 12
+
+
+def _status_block(txt: str):
+    """§7 内**最新状态块** = `## 7.` 之后第一段 `>` 引用块; 遇**第二个**块内标题即止(其后是历史快照)。
+
+    块定位**不依赖任何专有词面** ⇒ 报告版式演进时不会静默失配(v4/D7 根因正是「靠固定词面找条目」)。
+    """
+    if "## 7." not in txt:
+        return [], {"block_found": False, "block_why": "文档内无 `## 7.` 节"}
+    lines = txt.split("## 7.", 1)[1].splitlines()
+    start = None
+    for i, ln in enumerate(lines):
+        if ln.strip().startswith(">"):
+            start = i
+            break
+    if start is None:
+        return [], {"block_found": False, "block_why": "§7 内无 `>` 引用块"}
+    block, headings = [], 0
+    for ln in lines[start:]:
+        s = ln.strip()
+        if not s:
+            if block:
+                break
+            continue
+        if not s.startswith(">"):
+            break
+        body = s.lstrip(">").strip()
+        if body.startswith("#"):
+            headings += 1
+            if headings > 1:      # 第二个块内标题 ⇒ 历史快照段开始, 不含
+                break
+            block.append(body)
+            continue
+        block.append(body)
+    fields = [b for b in block if "**" in b]
+    return fields, {"block_found": bool(block), "block_lines": len(block), "block_fields": len(fields),
+                    "block_why": ""}
+
+
+def _negated(text: str, pos: int) -> bool:
+    return any(m in text[max(0, pos - NEG_WINDOW):pos] for m in NEG_MARKERS)
 
 
 def read_text(path: str) -> str:
@@ -165,10 +234,57 @@ def master_opens(path: str, legacy: bool = False):
     if not os.path.exists(path):
         return None, None
     txt = read_text(path)
-    head = txt.split("## 7.")[-1][:4000]
-    hits = [f"{m.group(1)}: {m.group(2).strip()}" for m in MASTER_PAT.finditer(head)]
-    diag = {"hits": len(hits), "format_matched": bool(hits),
-            "note": "" if hits else "该来源对当前报告版式零命中 ⇒ 视作「缺失」而非「无未完成事项」(v2 显式化)"}
+    if legacy:
+        # v3 逻辑**原样保留**: 仅用于负控 A/B (证明新增用例有判别力, 不是「怎么改都绿」)
+        head = txt.split("## 7.")[-1][:4000]
+        hits = [f"{m.group(1)}: {m.group(2).strip()}" for m in MASTER_PAT_LEGACY.finditer(head)]
+        diag = {"hits": len(hits), "format_matched": bool(hits),
+                "note": "" if hits else "该来源对当前报告版式零命中 ⇒ 视作「缺失」而非「无未完成事项」(v2 显式化)"}
+        return hits[:8], diag
+
+    fields, bdiag = _status_block(txt)
+    hits, fenced = [], 0
+    for f in fields:
+        for marker in HINT_MARKERS:
+            pos = f.find(marker)
+            if pos < 0:
+                continue
+            if _negated(f, pos):          # 「说到但否定」⇒ 记 fenced, 不判 open (防凡含词面即 open)
+                fenced += 1
+                break
+            hits.append(f[:160])
+            break
+    # 后向兼容: **最新块内**若仍用历史版式(`**下轮候选**:` 类)则入账; 同样过否定围栏。
+    # 作用域=最新块(非 §7 全文) ⇒ 历史快照段的条目永不冒充「本轮未完成项」(与来源②块级口径一致)。
+    block_text = "\n".join(fields)
+    legacy_hits = []
+    for m in MASTER_PAT_LEGACY.finditer(block_text):
+        if _negated(block_text, m.start()):
+            fenced += 1
+            continue
+        legacy_hits.append(f"{m.group(1)}: {m.group(2).strip()}")
+    for h in legacy_hits:
+        if h not in hits:
+            hits.append(h)
+
+    if hits:
+        note = ""
+    elif bdiag.get("block_found"):
+        note = ("状态块已定位(block_fields=%d) 但机械词表零命中 ⇒ 「空」≠「缺失」可区分: 字段原文随 "
+                "block_field_texts 入账, 由读者判 (与来源① other_cells 同口径)" % len(fields))
+    else:
+        note = "§7 内未定位到状态块 ⇒ 视作「缺失」而非「无未完成事项」(v2 显式化; v4 换口径)"
+
+    diag = dict(bdiag)
+    diag.update({
+        "hits": len(hits),
+        "open_matched": len(hits),
+        "neg_fenced": fenced,
+        "legacy_form_hits": len(legacy_hits),
+        "block_field_texts": [f[:200] for f in fields[:BLOCK_FIELD_MAX]],
+        "format_matched": bool(hits),     # 字段语义不变 (v2/D3: ≥1 机械命中)
+        "note": note,
+    })
     return hits[:8], diag
 
 
@@ -246,9 +362,58 @@ FIXTURE_MASTER = """# fixture · 主报告
 > 本轮无任何 `**下轮候选**` 形式条目 (来源②应显式报 format_matched=false)。
 """
 
+# ── v4/D7 夹具: 新形态状态块 (`> ### ⏱ 最新状态` + `**字段**` 列表) = 真机版式 ──
+FIXTURE_MASTER_NEW_OPEN = """# fixture · 主报告
+
+## 7. 迭代状态快照
+
+> ### ⏱ 最新状态（先读这里）
+>
+> - **主线**: 外部真值对照自检（宪法级）。
+> - **状态回填缺口（如实标注）**: R401–R412 逐轮条目未回填；补齐属文档轮任务。
+> - **机检**: 全绿。
+>
+> ### 🗂 历史快照（保留以追溯）
+>
+> - **下轮候选**: R900 旧形态候选（属历史快照段, 不得混入最新块）
+"""
+
+FIXTURE_MASTER_NEW_CLOSED = """# fixture · 主报告
+
+## 7. 迭代状态快照
+
+> ### ⏱ 最新状态
+>
+> - **版本**: v9.9.9 · 全部已交付。
+> - **机检**: 全绿, 零残留。
+"""
+
+FIXTURE_MASTER_NEW_NEG = """# fixture · 主报告
+
+## 7. 迭代状态快照
+
+> ### ⏱ 最新状态
+>
+> - **本轮无任何**「进行中」条目, 也不存在「待定」项。
+"""
+
+FIXTURE_MASTER_NO_BLOCK = """# fixture · 主报告
+
+## 7. 迭代状态快照
+
+最新状态：纯文本形态（本 fixture 无 `>` 引用块）。
+"""
+
+FIXTURE_MASTER_LEGACY_FORM = """# fixture · 主报告
+
+## 7. 迭代状态快照
+
+> - **下轮候选**: R901 历史版式仍须入账（后向兼容用例）。
+"""
+
 
 def selftest() -> int:
-    """11 例判定 + 4 例负控 (旧逻辑必须判错, 否则用例无判别力)。"""
+    """17 例判定 + 7 例负控 (旧逻辑必须判错, 否则用例无判别力; v4/D7 增 T12–T17 + N5–N7)。"""
     tmp = tempfile.mkdtemp(prefix="ccstatus-selftest-")
     bl = os.path.join(tmp, "backlog.md")
     ms = os.path.join(tmp, "master.md")
@@ -300,6 +465,55 @@ def selftest() -> int:
         not any(i.startswith("exp1") for i in old["open_items"]), old["open_items"])
     chk("N4 负控: 旧分类把 exp3 判 closed (证明 T9 有判别力)",
         not any(i.startswith("exp3") for i in old["open_items"]), old["open_items"])
+
+    # ── v4/D7 用例: 新形态状态块 (旧四条词面对当前版式零命中 = 真机 D7 复现; R508 窗口内零冲突) ──
+    def _w(name, text):
+        p = os.path.join(tmp, name)
+        with open(p, "w", encoding="utf-8") as fh:
+            fh.write(text)
+        return p
+
+    bl2 = _w("bl2.md", FIXTURE_BACKLOG)
+    mp_new = _w("m_new_open.md", FIXTURE_MASTER_NEW_OPEN)
+    o_new, _ = build_report(bl2, mp_new)
+    o_new_legacy, _ = build_report(bl2, mp_new, legacy=True)
+    o_closed, _ = build_report(bl2, _w("m_new_closed.md", FIXTURE_MASTER_NEW_CLOSED))
+    o_neg, _ = build_report(bl2, _w("m_new_neg.md", FIXTURE_MASTER_NEW_NEG))
+    o_noblock, _ = build_report(bl2, _w("m_noblock.md", FIXTURE_MASTER_NO_BLOCK))
+    o_legacyform, _ = build_report(bl2, _w("m_legacy_form.md", FIXTURE_MASTER_LEGACY_FORM))
+
+    def m_items(r):
+        return [i for i in r["open_items"] if not re.match(r"^(?:R\d+|exp\d+)", i)]
+
+    chk("T12 新形态状态块内的开放项被机械捕获 (D7 修)",
+        any("缺口" in i for i in m_items(o_new)), m_items(o_new))
+    chk("T13 「块在 + 全闭合」⇒ 0 开放项 ∧ block_found=true (「空」≠「缺失」)",
+        (not m_items(o_closed)) and o_closed["sources"]["master"]["block_found"] is True,
+        o_closed["sources"]["master"])
+    chk("T14 「§7 内无 `>` 块」⇒ block_found=false ∧ format_matched=false (缺失)",
+        o_noblock["sources"]["master"]["block_found"] is False
+        and o_noblock["sources"]["master"]["format_matched"] is False,
+        o_noblock["sources"]["master"])
+    chk("T15 块边界: 历史快照段条目不得混入最新块",
+        not any("R900" in t for t in o_new["sources"]["master"]["block_field_texts"]),
+        o_new["sources"]["master"]["block_field_texts"])
+    chk("T16 历史版式(`**下轮候选**:`)后向兼容仍入账 (作用域=最新块)",
+        any("R901" in i for i in m_items(o_legacyform)), m_items(o_legacyform))
+    chk("T17 全字段原文入账 (读数可见, 不靠词面) ≥3 条",
+        len(o_new["sources"]["master"]["block_field_texts"]) >= 3,
+        o_new["sources"]["master"]["block_field_texts"])
+    # ── v4 负控 (旧逻辑必须判错; 反空心必须不误判)
+    # 预注册 P5 初版陈述「legacy 在 T12 夹具上命中数 == 0」被**实测否证**: v3 的真实形态是
+    # 「漏真项(缺口) ∧ 错命中历史段(R900)」——比「零命中」更坏(既是假阴性又是假阳性)。
+    # 修正为**更强**的成对陈述(不是放宽断言); 预注册原陈述作 checks_posthoc 单列见 verdict_q43.json。
+    chk("N5 负控: v3 在 T12 夹具上既漏真项(缺口)又错命中历史段(R900) ⇒ 证明 T12 有判别力",
+        (not any("缺口" in i for i in m_items(o_new_legacy)))
+        and any("R900" in i for i in m_items(o_new_legacy)),
+        m_items(o_new_legacy))
+    chk("N6 负控: 「说到但否定」不得判 open (防块内一律 open 的空心判据)",
+        not m_items(o_neg), (m_items(o_neg), o_neg["sources"]["master"]["neg_fenced"]))
+    chk("N7 否定围栏计数可见 (fenced>=1, 非静默丢弃)",
+        o_neg["sources"]["master"]["neg_fenced"] >= 1, o_neg["sources"]["master"]["neg_fenced"])
 
     for name, ok, got in checks:
         print(f"{'PASS' if ok else 'FAIL'}  {name}  got={json.dumps(got, ensure_ascii=False)[:160]}")

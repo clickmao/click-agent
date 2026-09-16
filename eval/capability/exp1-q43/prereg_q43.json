@@ -1,0 +1,30 @@
+{
+  "round": "EXP1-Q43",
+  "ts": "2026-09-17T07:1x+0800",
+  "job": "cron b15eb2f40a69 (60m 能力自检循环) · 第0步主线提醒 + 零冲突器具轮",
+  "topic": "路由器器具 D7: 来源②(主报告 §7) 输入面覆盖 = 0 ⇒ 块级定位 + 全字段原文入账 + 否定围栏",
+  "why_this_round": {
+    "branch_A_literal_target_not_taken": "检测器报 mode=tasks/open_count=8, 但 8 项全部来自来源①(v0.22.0 计划看板)的沉积行(R370/R371 进行中 + exp1..exp8); 来源②(主报告 §7 = 宪法级主线状态的权威落点) 对当前版式零命中 ⇒ 主线最新状态对循环**完全不可见**",
+    "first_hypothesis_is_instrument": "判据器/器具读法错优先于被测(技能硬规则④): 先证明「来源②读法错」而不是去推进沉积计划项",
+    "window_occupied": "同工作树内 R508 会话正在跑全量 `dotnet test src/agent.tests`(启动于 07:12:5x, 带 VBCSCompiler+MSBuild 节点) ⇒ 本轮禁 dotnet/禁 build/禁占主线轮号(真缺陷71 + 起手闸纪律)"
+  },
+  "preregistered_criteria": {
+    "P1_block_located": "真机 after: sources.master.block_found == true ∧ sources.master.block_fields >= 5",
+    "P2_single_variable": "真机 after: 来源① 读数逐字段不变 (backlog_open == 8 ∧ open_items 中来源① 项集合与 before 逐项相同)",
+    "P3_real_open_item_visible": "真机 after: 至少 1 条来自来源② 的开放项入账, 且其原文含「缺口」或「未回填」(format_matched == true)",
+    "P4_selftest_green": "python3 scripts/capability_cycle_status.py --selftest rc == 0 (T1..T16 ∧ N1..N6 全绿, 新增用例与负控同批)",
+    "P5_negative_control_discriminant": "legacy(v3) 逻辑在 T12 夹具上命中数 == 0 (证明新用例有判别力); 新逻辑在「说到但否定」夹具上开放项 == 0 (防「凡含词面即 open」空心判据)",
+    "P6_hollow_guard_both_ways": "「块在 + 全闭合」夹具: block_found == true ∧ format_matched == false ∧ 字段原文非空 (「空」≠「缺失」双向可区分); 「无块」夹具: block_found == false"
+  },
+  "negative_controls": [
+    "N5: legacy(v3) 对 T12 夹具(新形态开放项) 必须 0 命中 ⇒ 旧读法确实漏",
+    "N6: 新逻辑对「块内一律闭合」夹具必须 0 开放项 ⇒ 防块内一律 open 的空心判据",
+    "N7: 新逻辑对「说到但否定」夹具必须 0 开放项(fenced>=1 可见) ⇒ 否定围栏生效"
+  ],
+  "known_boundaries": [
+    "来源②仍**不接管 mode**: 本轮只修输入面覆盖与可见性; 是否让 mode 由「最新块有无开放项」优先决定 = 下一轮候选(需独立预注册, 会改路由可比性)",
+    "词表 hint 仍可能漏判非词面表述的开放项 ⇒ 故全字段原文入账由读者判(与来源① other_cells 同口径), 机械命中仅作 hint",
+    "否定回看窗 20 字符 + 单字「无」偏保守(宁可漏判为「非开放」, 不误判为开放); 字段原文始终可见可纠"
+  ],
+  "no_dotnet_declaration": "本轮不改登记表/证据映射 ⇒ 形式门闸(dotnet test VerificationForm|SkillGeneralization|DevPlanDocRef)机械上不触发; 且窗口被 R508 全量测试占用, 禁并行 build"
+}

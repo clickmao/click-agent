@@ -1,0 +1,62 @@
+{
+ "rc": 0,
+ "round": "EXP1-Q43",
+ "owner": "self",
+ "checks": {
+  "P1_block_located": true,
+  "P2_src1_backlog_open_unchanged": true,
+  "P2_src1_items_unchanged": true,
+  "P2_src1_backlog_diag_unchanged": true,
+  "P3_src2_item_visible": true,
+  "P3_src2_item_names_gap": true,
+  "P3_format_matched_true": true,
+  "P3_before_was_zero": true,
+  "P4_selftest_no_fail": true,
+  "P4_new_cases_present": true,
+  "P5_N5_legacy_misses_new_form": true,
+  "P5_N7_negation_fence": true,
+  "P6_T13_block_found_but_closed": true,
+  "P6_T14_no_block_is_missing": true,
+  "X_only_new_items_from_src2": true,
+  "X_src2_fields_exposed": true,
+  "X_neg_fenced_visible": true
+ },
+ "checks_posthoc": {
+  "P5_orig_prereg_legacy_zero_hits": {
+   "registered": "legacy(v3) 在 T12 夹具上命中数 == 0",
+   "measured": "legacy 命中 1 条 = 历史快照段 R900; 真开放项(状态回填缺口) 0 命中",
+   "status": "FALSIFIED",
+   "handling": "N5 改判为更强的成对陈述(漏真项 ∧ 错命中历史段, 两条同时成立); 原陈述不翻案"
+  }
+ },
+ "failed": [],
+ "before": {
+  "mode": "tasks",
+  "open_count": 8,
+  "master": {
+   "hits": 0,
+   "format_matched": false,
+   "note": "该来源对当前报告版式零命中 ⇒ 视作「缺失」而非「无未完成事项」(v2 显式化)"
+  }
+ },
+ "after": {
+  "mode": "tasks",
+  "open_count": 9,
+  "master_diag": {
+   "block_found": true,
+   "block_lines": 15,
+   "block_fields": 12,
+   "block_why": "",
+   "hits": 1,
+   "open_matched": 1,
+   "neg_fenced": 0,
+   "legacy_form_hits": 0,
+   "format_matched": true,
+   "note": ""
+  },
+  "block_fields_n": 12
+ },
+ "new_items_from_src2": [
+  "- **状态回填缺口（如实标注）**: 本快照自 R400 直接跳到 R413 —— **R401–R412 逐轮条目未回填**（读数分散在 `docs/improvements.md` 顶部各节 / `docs/plans/v0.3x.0-*.md` / `eval/rover/r4xx/`）；补齐属文档轮任务，不假"
+ ]
+}
