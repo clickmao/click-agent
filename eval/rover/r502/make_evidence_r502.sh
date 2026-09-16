@@ -17,6 +17,22 @@ cp1 "$D/logs/nc4-solver-selftest.txt" nc4-solver-selftest.txt
 cp1 "$D/logs/nc5-solver-dryrun.json"  nc5-solver-dryrun.txt
 cp1 "$D/logs/nc3-drift.txt"         nc3-drift.txt
 cp1 "$D/logs/nc3-missing.txt"       nc3-missing.txt
+# 负控读数兜底: runner 的 `rm -rf $D` 会抹掉 /tmp 侧 nc-r502.json ⇒ 从**单一真源** prereg 回填
+# （prereg.checks_prefirstrun 是本轮首跑前实测并已入库的读数; 只补归档, 不改判据）
+if [ ! -f "$D/nc-r502.json" ]; then
+  python3 - "$EV/nc-r502.json" <<'PY'
+import io, json, sys
+pre = json.load(io.open("eval/rover/r502/prereg_r502.json", encoding="utf-8"))
+rec = pre.get("checks_prefirstrun")
+if not rec:
+    print("[R502-evidence] 缺 prereg.checks_prefirstrun ⇒ 不补（fail-closed, 不伪造）")
+    sys.exit(0)
+rec = {"source": "prereg_r502.json:checks_prefirstrun (首跑前实测; /tmp 侧原文件被 runner 清理)",
+       "round": pre.get("round"), **rec}
+io.open(sys.argv[1], "w", encoding="utf-8", newline="\n").write(json.dumps(rec, ensure_ascii=False, indent=1) + "\n")
+print("[R502-evidence] nc-r502.json 由 prereg 回填（真源: prereg.checks_prefirstrun）")
+PY
+fi
 # adapter 侧 usage 落盘 (side-*.json) 汇总成一行一调用的 txt
 if [ -d "$D/adapter" ]; then
   python3 - "$D/adapter" > "$EV/adapter-usage.txt" <<'PY'
@@ -31,7 +47,7 @@ for p in sorted(glob.glob(os.path.join(sys.argv[1], 'side-*.json'))):
         os.path.basename(p), d.get('side'),
         u.get('prompt_tokens') or u.get('input_tokens'),
         u.get('completion_tokens') or u.get('output_tokens'),
-        (d.get('request') or {}).get('model')))
+        (d.get('request') or {}).get('model') or ((d.get('request') or {}).get('upstream_request') or {}).get('model')))
 PY
 fi
 ls -l "$EV" | tail -n +2 | awk '{print $5, $9}'
