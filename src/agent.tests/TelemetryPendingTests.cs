@@ -7,12 +7,14 @@ namespace agentframework.tests;
 /// v0.11.0 R121 (真缺陷 51 防御): Configure 前的 Emit 不再静默丢失 — 缓存 ring + Configure flush。
 /// 注意: AgentTelemetry 是静态类 — 测试间共享状态, 用唯一 session 文件隔离。
 /// </summary>
+[Collection(AgentTelemetryStaticCollection.Name)]
 public class TelemetryPendingTests
 {
     [Fact]
     public void Emit_Before_Configure_Is_Flushed_On_Configure()
     {
         var dir = Path.Combine(Path.GetTempPath(), "tel-pending-" + Guid.NewGuid().ToString("N"));
+        AgentTelemetry.ResetForTests();   // R498 候选②: 从**已知初态**起跑 (否则上一成员类留下的 writer/_configured 会吃掉探针)
         try
         {
             // 1. Configure 前发射 (writer 未建立 → 进 pending ring)
@@ -35,6 +37,7 @@ public class TelemetryPendingTests
         finally
         {
             Environment.SetEnvironmentVariable("AGENTFRAMEWORK_TELEMETRY", null);
+            AgentTelemetry.ResetForTests();
             if (Directory.Exists(dir)) Directory.Delete(dir, recursive: true);
         }
     }

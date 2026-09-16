@@ -7,6 +7,7 @@ namespace agentframework.tests;
 /// v0.11.0 R133 (K1 断链修复): UserTendency 画像被空信号记录稀释 → 恒 0 召回。
 /// 修复: ①空信号不入库 ②画像聚合只基于有信号记录 ③召回链路闭合后可观测。
 /// </summary>
+[Collection(AgentTelemetryStaticCollection.Name)]
 public class TendencySignalFilterTests
 {
     private static string TempDir(string tag) =>

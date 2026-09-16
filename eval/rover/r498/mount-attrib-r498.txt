@@ -1,0 +1,65 @@
+{
+ "data": {
+  "T2": {
+   "calls": 13,
+   "real_prompt_tokens": 57627,
+   "real_completion_tokens": 4909,
+   "real_total_tokens": 62536,
+   "est_prompt_tokens_sum": 48098,
+   "real_over_est_prompt": 1.198116,
+   "cache_hit_tokens": 43008,
+   "cache_miss_tokens": 14619
+  },
+  "T1": {
+   "calls": 12,
+   "real_prompt_tokens": 61875,
+   "real_completion_tokens": 9636,
+   "real_total_tokens": 71511,
+   "est_prompt_tokens_sum": 51142,
+   "real_over_est_prompt": 1.209867,
+   "cache_hit_tokens": 44544,
+   "cache_miss_tokens": 17331
+  }
+ },
+ "checks": {
+  "est_recompute_parity": "PASS (逐调用 est 复算 == 落盘值, n=12)"
+ },
+ "attribution": {
+  "est_caliber": {
+   "est_T2_sum": 48098,
+   "est_T1_sum": 51142,
+   "est_delta": 3044,
+   "fixed_leg_est": 928,
+   "behavior_leg_est": 2116,
+   "fixed_share": 0.304862
+  },
+  "real_caliber": {
+   "real_T2_total": 62536,
+   "real_T1_total": 71511,
+   "real_delta": 8975,
+   "prompt_vs_est_scale_T1": 1.209867,
+   "fixed_leg_real_upper": 1123,
+   "behavior_leg_real_lower": 7852,
+   "fixed_share_upper": 0.125125,
+   "call_count_delta": -1,
+   "T2_real_tokens_per_call": 4810.46,
+   "note": "fixed_leg_real_upper 用**逐调用实测比例**折算 (非拍常数); behavior 腿按定义取残差"
+  },
+  "prompt_completion_split": {
+   "T2_prompt": 57627,
+   "T2_completion": 4909,
+   "T1_prompt": 61875,
+   "T1_completion": 9636,
+   "prompt_delta": 4248,
+   "completion_delta": 4727
+  },
+  "cache_split": {
+   "T2_hit": 43008,
+   "T2_miss": 14619,
+   "T1_hit": 44544,
+   "T1_miss": 17331
+  }
+ }
+}
+[mount-block] chars/call=168.5 est/call=84.36
+[out] /home/agentuser/AgentFramework/eval/rover/r498/mount-attrib-r498.json

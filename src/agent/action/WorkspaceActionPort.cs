@@ -75,11 +75,21 @@ public sealed class WorkspaceActionPort : IActionPort
         var p = string.IsNullOrWhiteSpace(rel) ? "." : rel!.Trim();
         if (p.IndexOf('\0') >= 0) { error = "非法路径"; return null; }
         var full = Path.GetFullPath(Path.Combine(_root, p));
-        var prefix = _root.EndsWith(Path.DirectorySeparatorChar) ? _root : _root + Path.DirectorySeparatorChar;
-        if (!full.StartsWith(prefix, StringComparison.Ordinal) && !string.Equals(full, _root, StringComparison.Ordinal))
+        // R498 候选④ (P1 边界的**结构正控**): 旧实现里这条拒绝路径**没有消融臂** ⇒
+        //   「越界必拒」只能被断言成恒真 (无正控的断言 = 无判别力: 把 Resolve 整段删掉,
+        //   原来的负样本测试仍会因「文件不存在」而失败 ⇒ 红因与被测行为无因果绑定)。
+        // 现改为复用命令面**同一个**闸常量 (AGENTFRAMEWORK_ACTION_BOUNDARY, 默认开):
+        //   BoundaryEnforced()==false ⇒ 允许越界 (缺陷注入臂) ⇒ 越界读必须**成功**,
+        //   于是「越界被拒」这条断言在注入臂上可被证伪 = 真正的正控。
+        // 默认行为逐位不变 (未设/非 "0" ⇒ 仍拒绝)。
+        if (BoundaryEnforced())
         {
-            error = "路径越界 (必须在工作区内): " + p;
-            return null;
+            var prefix = _root.EndsWith(Path.DirectorySeparatorChar) ? _root : _root + Path.DirectorySeparatorChar;
+            if (!full.StartsWith(prefix, StringComparison.Ordinal) && !string.Equals(full, _root, StringComparison.Ordinal))
+            {
+                error = "路径越界 (必须在工作区内): " + p;
+                return null;
+            }
         }
         return full;
     }

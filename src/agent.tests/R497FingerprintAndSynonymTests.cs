@@ -13,6 +13,7 @@ namespace agentframework.tests;
 ///      —— R496 实测: raw 码写进 data/telemetry/host.jsonl ⇒ 臂可读工作区里就有真值 (nonrecompute Q4 命中)。
 ///   ④ 复述同义族扩面: 只加**语义等价**标记, 不动白名单字符集 (加字符会连带吸收「重来一遍/重做一遍」= 重做真诉求)。
 /// </summary>
+[Collection(AgentTelemetryStaticCollection.Name)]
 public sealed class R497FingerprintAndSynonymTests
 {
     private static string RepoRoot()

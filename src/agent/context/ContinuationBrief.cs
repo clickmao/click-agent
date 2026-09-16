@@ -263,6 +263,15 @@ public static class ContinuationBrief
     public const string SettleRepeatVerbatim = "repeat_verbatim";
 
     /// <summary>
+    /// R498 候选③ (R413 主线): 本地**改写**结算类 —— 答复对象是「上一条助手实质答复的改写」。
+    ///
+    /// 与 <see cref="SettleRepeatVerbatim"/> 同因同理: 对象真实存在 (链自己刚取到那一条实质答复)、
+    /// 内容承载 (不是模板/确认语) ⇒ 「本轮无可确定的答复对象」这一前提同样不成立 ⇒ 承接反问不得覆盖。
+    /// 若不给本类开这个口, 改写轮的成果会在下游被兜底横幅整条顶掉 —— 表现与 R465 的 t6 失守同形。
+    /// </summary>
+    public const string SettleLocalParaphrase = "local_paraphrase";
+
+    /// <summary>
     /// R466 优先级判定 (纯函数, 单源): 承接反问**不得**覆盖已经确定性落地的本地答复。
     ///
     /// 因果链 (不是文风评判): 承接反问的**前提**是「本轮无可确定的答复对象」——
@@ -273,10 +282,22 @@ public static class ContinuationBrief
     /// 实测依据 (R465 p12 网格 / role=skeptic / 同 AOT 二进制): t6「再讲一遍。」本应回放
     /// 上一条答复 (21 字符), 却被承接反问覆盖成 46 字符 ⇒ 预注册判据 C3 FAIL ("回复质量不降" 硬线失守)。
     /// 开关消融: 关掉优先级 (settleKind 视作 null) 必须复现该覆盖 —— 否则判据没绑到机制上 (负控)。
+    ///
+    /// R498 候选③: 判定面由「一个本地结算类」扩为「本地结算类集合」——
+    /// <see cref="SettleRepeatVerbatim"/> (回放) 与 <see cref="SettleLocalParaphrase"/> (改写)
+    /// 同属「答复对象已被链自己确定」, 共用同一条「前提不成立」的论证 ⇒ 单源收敛到此判定。
     /// </summary>
     public static bool ShouldApplyFallback(string? settleKind, string? reply, IReadOnlyList<ArtifactFact>? artifacts)
-        => !string.Equals(settleKind, SettleRepeatVerbatim, StringComparison.Ordinal)
+        => !IsLocalSettled(settleKind)
            && NeedsFallback(reply, artifacts);
+
+    /// <summary>
+    /// R498 候选③: 本地结算类 (答复对象已由链自己确定) 的**单源**判定。
+    /// 新增本地结算类只在此处登记一次 —— 否则优先级规则会在新通道上静默失效。
+    /// </summary>
+    public static bool IsLocalSettled(string? settleKind)
+        => string.Equals(settleKind, SettleRepeatVerbatim, StringComparison.Ordinal)
+           || string.Equals(settleKind, SettleLocalParaphrase, StringComparison.Ordinal);
 
     /// <summary>确定性兜底反问 —— R460 起与门问句**同源** (<see cref="BuildAsk"/>): 事实为空时绝不提任何文件名。</summary>
     public static string ComposeFallback(string? userText, IReadOnlyList<ArtifactFact>? artifacts, int total = -1)

@@ -1565,6 +1565,11 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             // 供块外的 Skip 执行支复用 (两处各自取历史会漂移, R466 单源教训)。
             var repeatTurnFlag = false;
             string? repeatPrevReply = null;
+            // R498 候选③ (R413 主线): 同义改写族 —— 与复述族**互斥** (IsPureParaphrase 内含 ¬IsPureRepeat),
+            // 故两者不会同时为真, 历史只取一次。本地消化 = 用 r1 改写上一条实质答复, 过守卫否则降级远端。
+            var paraphraseTurnFlag = false;
+            // 改写成功 ⇒ 结算类选 SettleLocalParaphrase; 答复正文**复用** repeatPrevReply 单一载体 (A4 门禁)。
+            var localRewriteIsParaphrase = false;
             if (_modelRouter is { TurnGateEnabled: true } && ActiveRole is not null)
             {
                 // R413 实测铁律: 判别提示必须**规格化** — role 全文/成长全文灌进去会挤爆生成预算,
@@ -1593,6 +1598,18 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     _modelRouter.TurnGate.RecordMechanicalRepeat();
                     gateOutcome = agent.modelqueue.TurnGateOutcome.Decide(
                         agent.modelqueue.TurnGateVerdict.Skip, "mechanical:repeat");
+                }
+                // R498 候选③ (R413 主线补口): 同义改写族 (「换个说法」「用别的方式说一遍」) ⇒ 前置门 Skip,
+                // 本地消化 = 用 r1 **改写**上一条实质答复 (内容承载的本地生成, 非回放非模板)。
+                // 位置纪律: 必须在复述族**之后** (互斥, 复述优先)、在 ¬Ack 前置**之前** —— 与 R465 同序,
+                // 否则改写族会被 else-if 链吞掉 ⇒ 静默不生效 (「接线了但没生效」是本仓反复踩过的坑)。
+                // 闸默认关 (LocalParaphraseChannel.IsEnabled() == false) ⇒ 全链逐位不变。
+                else if (GatePrefilterOn && agent.modelqueue.LocalParaphraseChannel.ShouldAbsorb(
+                             message.Content, agent.modelqueue.LocalParaphraseChannel.IsEnabled()))
+                {
+                    _modelRouter.TurnGate.RecordMechanicalParaphrase();
+                    gateOutcome = agent.modelqueue.TurnGateOutcome.Decide(
+                        agent.modelqueue.TurnGateVerdict.Skip, "mechanical:paraphrase");
                 }
                 else if (GatePrefilterOn && !agent.modelqueue.TurnGateJudge.MechanicalAck(message.Content))
                 {
@@ -1646,7 +1663,14 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 repeatTurnFlag = gateOutcome.Decided
                     && gateOutcome.Verdict == agent.modelqueue.TurnGateVerdict.Skip
                     && agent.modelqueue.TurnGateJudge.IsPureRepeat(message.Content);
-                if (repeatTurnFlag)
+                // R498 候选③: 同义改写族 = **本地生成** (需源 + 需过守卫) ⇒ 与复述族同形地在此定终局。
+                // 两族互斥 (IsPureParaphrase 内含 ¬IsPureRepeat) ⇒ **历史只取一次** (R466/R475 单源纪律;
+                // A4 门禁: 本文件里带消息会话的那次历史读取至多两处)。
+                paraphraseTurnFlag = gateOutcome.Decided
+                    && gateOutcome.Verdict == agent.modelqueue.TurnGateVerdict.Skip
+                    && agent.modelqueue.LocalParaphraseChannel.ShouldAbsorb(
+                        message.Content, agent.modelqueue.LocalParaphraseChannel.IsEnabled());
+                if (repeatTurnFlag || paraphraseTurnFlag)
                 {
                     var hist0 = await GetConversationHistoryAsync(message.SessionId, ct).ConfigureAwait(false);
                     for (var hi = hist0.Count - 1; hi >= 0; hi--)
@@ -1659,13 +1683,49 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     }
                     if (repeatPrevReply is null)
                     {
-                        _modelRouter!.TurnGate.RecordRepeatDegrade();
-                        agent.config.AgentTelemetry.Emit("repeat_degrade_remote", "IndustrialAgentV2",
-                            ("msg_sha16", agent.modelqueue.LocalInputFingerprint.Sha16(message.Content)),
-                            ("msg_len", message.Content.Length.ToString()),
-                            ("reason", "no_replayable_prev"));
-                        gateOutcome = agent.modelqueue.TurnGateOutcome.Decide(
-                            agent.modelqueue.TurnGateVerdict.Pass, "gate:repeat_no_replayable_prev");
+                        if (repeatTurnFlag)
+                        {
+                            _modelRouter!.TurnGate.RecordRepeatDegrade();
+                            agent.config.AgentTelemetry.Emit("repeat_degrade_remote", "IndustrialAgentV2",
+                                ("msg_sha16", agent.modelqueue.LocalInputFingerprint.Sha16(message.Content)),
+                                ("msg_len", message.Content.Length.ToString()),
+                                ("reason", "no_replayable_prev"));
+                            gateOutcome = agent.modelqueue.TurnGateOutcome.Decide(
+                                agent.modelqueue.TurnGateVerdict.Pass, "gate:repeat_no_replayable_prev");
+                        }
+                        else
+                        {
+                            _modelRouter!.TurnGate.RecordParaphraseDegrade();
+                            agent.config.AgentTelemetry.Emit("paraphrase_degrade_remote", "IndustrialAgentV2",
+                                ("msg_sha16", agent.modelqueue.LocalInputFingerprint.Sha16(message.Content)),
+                                ("msg_len", message.Content.Length.ToString()),
+                                ("reason", "no_replayable_prev"));
+                            gateOutcome = agent.modelqueue.TurnGateOutcome.Decide(
+                                agent.modelqueue.TurnGateVerdict.Pass, "gate:paraphrase_no_replayable_prev");
+                        }
+                    }
+                    else if (paraphraseTurnFlag)
+                    {
+                        // 改写 = 用 r1 把上一条实质答复**换一种说法**生成, 过守卫才成立; 守卫破一条即拒。
+                        var rewritten = await _modelRouter!.TryComposeLocalParaphraseAsync(repeatPrevReply, ct).ConfigureAwait(false);
+                        if (rewritten is null)
+                        {
+                            // 守卫拒收原因必须落遥测 —— 否则「接了改写通道」与「通道恒被拒」在读数上不可分。
+                            _modelRouter.TurnGate.RecordParaphraseDegrade();
+                            agent.config.AgentTelemetry.Emit("paraphrase_degrade_remote", "IndustrialAgentV2",
+                                ("msg_sha16", agent.modelqueue.LocalInputFingerprint.Sha16(message.Content)),
+                                ("msg_len", message.Content.Length.ToString()),
+                                ("reason", _modelRouter.LocalParaphrase.LastRejectReason ?? "engine_degrade"),
+                                ("src_len", repeatPrevReply.Length.ToString()));
+                            gateOutcome = agent.modelqueue.TurnGateOutcome.Decide(
+                                agent.modelqueue.TurnGateVerdict.Pass, "gate:paraphrase_guard_rejected");
+                            repeatPrevReply = null;
+                        }
+                        else
+                        {
+                            localRewriteIsParaphrase = true;   // 结算类选择 (SettleLocalParaphrase)
+                            repeatPrevReply = rewritten;        // **单源载体**: 执行支只读这一个变量 (A4 门禁)
+                        }
                     }
                 }
                 // R444: 本轮是否真的走过本地 r1 (机械判定轮 = 未走) —— 决定真值字段是 -1 还是实测值。
@@ -1705,6 +1765,9 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     ("prefilter_nonack", _modelRouter.TurnGate.MechanicalNonAcks.ToString()),
                     ("prefilter_repeat", _modelRouter.TurnGate.MechanicalRepeats.ToString()),
                     ("prefilter_repeat_degrade", _modelRouter.TurnGate.RepeatDegrades.ToString()),
+                    // R498 候选③: 改写族吸收/降级必须可与复述族分列读数 (合算 ⇒ 归属不可辨)
+                    ("prefilter_paraphrase", _modelRouter.TurnGate.MechanicalParaphrases.ToString()),
+                    ("prefilter_paraphrase_degrade", _modelRouter.TurnGate.ParaphraseDegrades.ToString()),
                     ("prefilter_violations", _modelRouter.TurnGate.PrefilterViolations.ToString()),
                     ("role", ActiveRole.Id));
             }
@@ -1763,8 +1826,9 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 //       取不到 (非复述轮) ⇒ 退回既有兜底串 (仍零远端调用, 与 Ack 轮同形)。
                 var localReply = repeatPrevReply ?? await _modelRouter!.ComposeLocalSkipReplyAsync(prompt.UserMessage, ct).ConfigureAwait(false);
                 // R466: 结算类**单源** —— 打点与收口面优先级读同一个变量 (两处各写一份字符串必漂移)
-                var replyKind = repeatPrevReply is null ? (repeatTurnFlag ? "repeat_no_prev" : "template")
-                                                  : agent.context.ContinuationBrief.SettleRepeatVerbatim;
+                var replyKind = localRewriteIsParaphrase ? agent.context.ContinuationBrief.SettleLocalParaphrase
+                    : repeatPrevReply is not null ? agent.context.ContinuationBrief.SettleRepeatVerbatim
+                    : (repeatTurnFlag ? "repeat_no_prev" : "template");
                 _localSettleKind = replyKind;
                 agent.config.AgentTelemetry.Emit("local_gate_skip_reply", "IndustrialAgentV2",
                     ("kind", replyKind),

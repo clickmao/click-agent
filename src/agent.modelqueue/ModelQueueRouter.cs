@@ -363,6 +363,12 @@ public sealed class ModelQueueRouter : IModelQueueCaller
     public RelationJudgeCounters RelationJudge { get; } = new();
 
     /// <summary>
+    /// R498 候选③: 本地**改写**通道计数 (内容承载的本地生成; 闸 = <see cref="LocalParaphraseChannel.EnvName"/>, 默认关)。
+    /// 实例级 (与 TurnGate/RelationJudge 同形) —— 不用静态计数器。
+    /// </summary>
+    public LocalParaphraseCounters LocalParaphrase { get; } = new();
+
+    /// <summary>
     /// R426: 本地关系判官 (r1)。<c>null</c> ⇒ 本地不可用/失败/记账违规/未解析出字母 ⇒
     /// 调用方**必须远端兜底** (绝不静默给结论)。
     ///
@@ -463,6 +469,77 @@ public sealed class ModelQueueRouter : IModelQueueCaller
     /// **确认类轮** (门判 mechanical:ack 族) 出现 ⇒ "本地替换只发生在确认轮"可被机检断言。
     /// </summary>
     public const string LocalSkipFallback = "收到。";
+
+    /// <summary>
+    /// R498 候选③ (R413 主线: 内容承载的本地生成通道): 用 r1 把**上一条实质答复**换一种说法改写。
+    ///
+    /// 与已有两条本地通道的分工 (R497 遗留的缺口正是第三条):
+    ///   · 回放 (R465/R475): 原样重来 —— 「再讲一遍」;
+    ///   · 模板 (R489):      纯确认语   —— 「嗯。」;
+    ///   · **本方法**:        改写既有内容 —— 「换个说法」(用户要的是重述, 回放=答非所问, 模板=冒充)。
+    ///
+    /// 纪律 (逐条与既有本地面同源):
+    ///   · 闸默认关 (<see cref="LocalParaphraseChannel.EnvName"/> != "1" ⇒ 直接 null, **零副作用**) ⇒ 生产逐位不变;
+    ///   · 取消**必须上抛** (绝不把取消当降级);
+    ///   · 空回/失败 ⇒ null (不得当成功, R411 口径);
+    ///   · 记账恒等 (tokens_evaluated == prompt_n + cache_n) 不成立 ⇒ 结果**不采信**;
+    ///   · 输出先去思考链 (<see cref="TurnGateJudge.StripThinking"/>) 再过 <see cref="LocalParaphraseChannel.Guard"/>
+    ///     ⇒ 事实不守恒 / 反问 / 动作宣称新增一律**拒收** (拒绝即降级远端 = 最坏等于现状)。
+    /// </summary>
+    /// <returns>可用的改写正文; null ⇒ 调用方必须降级远端。</returns>
+    public async Task<string?> TryComposeLocalParaphraseAsync(string sourceReply, CancellationToken ct = default)
+    {
+        if (!LocalParaphraseChannel.IsEnabled()) return null;
+        LocalParaphrase.RecordAttempt();
+        var port = _localPort;
+        if (port is null)
+        {
+            LocalParaphrase.RecordNoPort();
+            return null;
+        }
+        try
+        {
+            var maxTokens = Math.Max(_catalog.LocalChannel.MaxTokens, 512);
+            var turns = new List<LocalChatTurn> { new("user", LocalParaphraseChannel.BuildPrompt(sourceReply)) };
+            var outcome = await port.GenerateAsync(new LocalGenerationRequest
+            {
+                SessionKey = "r498:local-paraphrase",
+                TurnIndex = 1,
+                Turns = turns,
+                MaxTokens = maxTokens,
+                // 注 (R498): **不**在此钉死缓存态 —— C6 不变量 (DecisionCachePinTests) 钉住的是
+                // 「全仓只有**决策**路径把 CacheReuse 置 false, 且恰为 2 处」。改写是**生成**路径,
+                // 与主生成路径同语义 ⇒ 用端口默认 (CacheReuse=true)。若真机窗口证明缓存复用会污染
+                // 改写质量, 下轮再钉死并**连带修订 C6** (须附正/负控读数, 不得单方面放宽判据)。
+            }, ct).ConfigureAwait(false);
+
+            if (!outcome.Success || string.IsNullOrWhiteSpace(outcome.Content))
+            {
+                LocalParaphrase.RecordEngineDegrade("failed_or_empty");
+                return null;
+            }
+            if (!outcome.AccountingConsistent)
+            {
+                LocalParaphrase.RecordAccountingViolation("tokens_evaluated != prompt_n + cache_n");
+                return null;
+            }
+            var stripped = TurnGateJudge.StripThinking(outcome.Content).Trim();
+            var verdict = LocalParaphraseChannel.Guard(sourceReply, stripped);
+            if (!verdict.Ok)
+            {
+                LocalParaphrase.RecordGuardReject(verdict.Reason);
+                return null;
+            }
+            LocalParaphrase.RecordSuccess();
+            return stripped;
+        }
+        catch (OperationCanceledException) { throw; }
+        catch (Exception ex)
+        {
+            LocalParaphrase.RecordEngineDegrade("exception:" + ex.GetType().Name);
+            return null;
+        }
+    }
 
     /// <summary>
     /// R475: 空正文降级徽标的**公共前缀** (单源) —— 两处徽标文案均由本常量拼出,

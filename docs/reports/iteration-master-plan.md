@@ -857,3 +857,36 @@ python3 eval/run_round.py <新轮号> "revert-verify <原commit>" --quick   # �
 - 自抓 (预注册后修正, 全部留痕): (a) ④ 初版 t17 用「把上一条说一遍。」——「把」是 REQUEST_SIGNAL ⇒ 前置链 **MechanicalPass 抢先**, 该句永远走远端 ⇒ 改「从头念一遍。」并加优先级单测; (b) 网格 turns 初版写成对象 ⇒ drive_task 抛类型异常, t16/t17 0 秒失败 (作废读数已归档 `void-r497-B-objturns/`), 改为「turns 字符串数组 + 元数据进 expected[]」; (c) 全仓扫描初版正则过宽误伤 `FrontendApiContract.cs` 的 HTTP `errCode`, 收窄为「第二参名含 ledger/LCM」; (d) 「R496 T1 tool=0 ⇒ 通道轴关掉工具面」被本轮证伪 —— t16 强制要求调工具后, 通道 on 的 T2/T1 同样出现 tool 消息 ⇒ 上一轮把「网格没要求」误读成「通道轴关闭」。
 - 存量偶发红 (诚实记录): 全量套件 {"failed": 1, "passed": 1595, "total": 1596} 中 1 例为 `TelemetryPendingTests` (共享静态 `AgentTelemetry` + 并发 Configure 的**计时竞态**), 三次全量跑分别红在不同用例 (另一次 `FrontendAskSameConnTests` socket); 剔除 R497 新类后 {"failed": 0, "passed": 1568, "total": 1568} 两连绿, 单选类 3/3 绿 ⇒ 判为**存量并发竞态**, 非本轮功能回归; 下轮候选。
 - 下轮候选 (R497): ① ⑤质量面 n≥3 (同臂三跑, 带置信区间) ② 存量并发竞态修 (静态 `AgentTelemetry` 注入隔离 / 测试集合串行化) ③ ④b 同义改写族需先做**内容承载的本地生成通道** (回放/模板以外) ④ 文件面越界拒绝的**结构正控** (P1 边界注入缺陷必红) ⑤ 挂载成本的定长腿归因 (T2→T1 的 −14.3% 里 tail 增量 vs 行为改变各占多少) ⑥ MCP 链级 E2E。
+
+---
+
+## R498 —— ③内容承载的本地生成通道 (R413 主线补口) + ②存量并发竞态收口 + ④文件面越界结构正控 + ⑤挂载成本定长腿归因
+
+- 靶点承接: R497 下轮候选 ①②③④⑤⑥**全部并入同一轮** (用户令 2026-09-16「全部候选并轮」); 本轮**不开真机窗口** ⇒ 全部为离线机检 + 注入臂 + 归因读数, 真机项如实记 `NOT_RUN`。
+- 代码改动 (5 文件 + 1 新文件, 均默认零行为变化):
+  - ③新 `src/agent.modelqueue/LocalParaphraseChannel.cs`: 族判据 `IsPureParaphrase` (归一化≤16 字 ∧ 无问号 ∧ 全字符属表达方式白名单 ∧ 含**完整**改写标记表内项 ∧ ¬`IsPureRepeat`) + 生成提示 `BuildPrompt` + 守卫 `Guard` + 闸 `ShouldAbsorb(x, enabled)`/`IsEnabledValue` + `LocalParaphraseCounters`。
+  - ③`src/agent.modelqueue/ModelQueueRouter.cs`: 新 `TryComposeLocalParaphraseAsync` (r1 改写 → `TurnGateJudge.StripThinking` → `Guard` → 不通过即返回 null 降级; 记账恒等违规不采信; 取消**上抛**) + 实例级 `LocalParaphrase` 计数器。
+  - ③`src/agent/IndustrialAgentV2.cs`: 前置门新增改写族分支 (复述族**之后**) + 门控块内与复述族**合用一次历史读取**并定终局 (无源/守卫拒收 ⇒ 撤销 Skip 降级远端) + 答复正文**单源载体** `repeatPrevReply`。
+  - ③`src/agent/context/ContinuationBrief.cs`: `SettleLocalParaphrase` + `IsLocalSettled` 单源判定 ⇒ 本地改写正文不被兜底横幅覆盖。
+  - ②`src/agent.config/AgentTelemetry.cs`: 满环 **FIFO 淘汰最旧** (旧策略丢最新 = 真缺陷 88) + `PendingEvictions`/`PendingBuffered` + `internal ResetForTests`; `agent.config.csproj` 加 `InternalsVisibleTo`; 新 `AgentTelemetryStaticCollection` (`DisableParallelization = true`) 收纳 5 个触碰静态遥测的测试类。
+  - ④`src/agent/action/WorkspaceActionPort.cs`: `Resolve` 的越界检查接命令面同一闸常量 `AGENTFRAMEWORK_ACTION_BOUNDARY` (默认开) ⇒ 首次具备缺陷注入臂。
+- ⑤ 挂载成本定长腿归因 (离线, 读 R497 同窗产物 `calls-T1/T2.jsonl` + `usage-T1/T2.jsonl`; 脚本 `eval/rover/r498/mount_attrib_r498.py`):
+
+| 项 | T2 (挂载 off) | T1 (挂载 on) | Δ |
+|---|---|---|---|
+| 远端调用 | 13 | 12 | −1 (−7.69%) |
+| real total tok | 62,536 | 71,511 | **+8,975 (+14.35%)** |
+| real prompt tok | 57,627 | 61,875 | +4,248 |
+| real completion tok | 4,909 | 9,636 | +4,727 |
+
+  - 定长腿 (挂载块自身): 逐调用 168.5 字符 / est 84.36 tok; **实际带挂载的 11 条**调用合计 est 928 (est 增量 3,044 的 30.5%); 按逐调用实测比例折算 real 上界 **1,123 = real 增量的 12.5%**。
+  - 行为腿 (残差) = **7,852 real tok = 87.5%** ⇒ **挂载轴的 token 增量主要来自模型行为改变 (输出变长), 不是挂载块的长度**; 仅缩挂载块无法治这个 +14.35%。
+  - 口径检查: est 逐调用复算 == 落盘值 (n=12) PASS; 挂载覆盖 11/12 (1 条隔离通道调用不带挂载, 不外推)。
+- ② 存量并发竞态 (真缺陷 88) **注入臂取证**: 环策略注回旧形态 ⇒ `R498TelemetryRingTests.满环后紧前探针仍必须可_flush` **红** (Failed 1/2, 探针缺席于 flush 落盘文件); 恢复 FIFO 淘汰 ⇒ **绿**。留痕 `eval/rover/r498/telemetry-ring-before-after.txt`。机制根因: 环是**进程级静态**资源, 并行测试类的打点与 `TelemetryPendingTests` 的探针争同一批 256 槽位, 且旧策略丢的恰是**最新**一条 (= 探针)。
+- ④ 文件面结构正控: 闸=1 越界读**拒绝且不回显** canary / 闸=0 同一调用**必成功且回显** (证明拒绝断言非恒真) / 闸=1 区内读与区内写照常 (防一刀切) —— 3/3 绿。
+- ③ 机检面: 37 例绿 —— 族正控 8 / 族负控 8 (含内容字·数字·ASCII·问号·超长) / 两族互斥 / 闸口径 6 + 闸关零吸收 5 / 守卫六向 (标识符丢失·标识符新增·动作宣称新增·长度带双向·问号·思考链泄漏) + 正控 1 / 提示词确定性 / 结算类同权 / 计数器分列。
+- ⑥ MCP: 全仓 `src/**/*.cs` 检索 `mcp|Mcp|MCP` 命中 **0** (对照面命中 4) ⇒ 无被测对象, 记**排除项** (与用户「MCP 不做」立场一致), 不记未做项。
+- 测试/AOT: 全量 **1633/1633 绿** (R498 新类 37/37); AOT `/tmp/pub_r498/agenthost` = **15,409,088 B** / **IL 警告 0** / sha256 `d0af0b55862c175d28748a84803b4c4327afe96ca12a74dc342452ace43c66f1`; 烟测 `--help`/`--version` rc=0。
+- 自抓 (6 处, 全部留痕): 白名单漏字 (单测抓) / 门控块内二次取历史触发 R475 A4 门禁 / 注释字面量再次触发 A4 (改措辞不放宽判据) / 环用例 kv 形态断言假红 / 计数器恒等式在逐项单测下不成立 (删断言不写恒真式) / C6 不变量拦下改写路径缓存钉死 (改用生成路径默认值, 判据未动)。
+- 诚实边界: ① 改写通道**零真机取证** (端到端/耗时/守卫真实通过率 unknown) ② 守卫只证**结构不变量**不证语义等价 ③ 遥测只收口 Configure 前缓冲路径 ④ 全量 1633/1633 为**单次**读数 (无 n≥10) ⑤ 质量面 n≥3 未做 ⑥ 本轮**不新增** R413 验收②的真机读数 (R497 的 −73.03% 属跨轮引用, 不作本轮结论)。
+- 下轮候选 (R499): ① 真机同窗跑改写通道 (守卫真实通过率 + 远端调用/token 前后对比 + 人工质量细读) ② 质量面 n≥3 (同臂三跑 + 置信区间) ③ 遥测 `Emit` 直写路径并发用例 ④ 全量 n≥10 重复跑取证 ⑤ 挂载轴**行为腿治因** (输出变长来源: 台账文案诱因 or 上下文长度) ⑥ 复述/改写两族的**合并判据**归一 (现为两条独立判据 + 前置门顺序依赖)。

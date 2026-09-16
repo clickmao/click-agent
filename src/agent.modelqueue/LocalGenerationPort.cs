@@ -526,6 +526,11 @@ public sealed class TurnGateCounters
     // R475: 纯复述族**无可回放实质答复** ⇒ 撤销 Skip 降级远端的次数 (质量优先, 必须可见)。
     private long _repeatDegrades;
 
+    // R498 候选③: 同义改写族吸收计数 (前置门 Skip, 零 r1) 与「本地改写未完成 ⇒ 降级远端」计数。
+    // 二者必须可见 —— 否则「接进了改写通道」与「改写通道恒降级」在读数上不可区分。
+    private long _mechanicalParaphrases;
+    private long _paraphraseDegrades;
+
     private long _cachePinned;
     private int _lastCachedTokens;
     private int _lastEvalTokens = -1;
@@ -539,6 +544,22 @@ public sealed class TurnGateCounters
     public long Passed => Interlocked.Read(ref _passed);
     public long Degraded => Interlocked.Read(ref _degraded);
     public long AccountingViolations => Interlocked.Read(ref _accountingViolations);
+
+    /// <summary>R498: 同义改写族被前置门直接吸收的次数 (零 r1、零远端)。</summary>
+    public long MechanicalParaphrases => Interlocked.Read(ref _mechanicalParaphrases);
+
+    /// <summary>R498: 改写族**未能本地完成** (无源/守卫拒收/引擎降级) ⇒ 撤销 Skip 降级远端的次数。</summary>
+    public long ParaphraseDegrades => Interlocked.Read(ref _paraphraseDegrades);
+
+    /// <summary>R498: 记录一次改写族吸收 (前置门 Skip)。</summary>
+    public void RecordMechanicalParaphrase()
+    {
+        Interlocked.Increment(ref _mechanicalParaphrases);
+        LastBasis = "mechanical:paraphrase→local";
+    }
+
+    /// <summary>R498: 记录一次改写族降级远端 (具体原因由调用方落遥测)。</summary>
+    public void RecordParaphraseDegrade() => Interlocked.Increment(ref _paraphraseDegrades);
 
     /// <summary>R429: 门判显式关前缀缓存的次数 (端口纪律: 被使用计数必须可观测)。</summary>
     public long CachePinned => Interlocked.Read(ref _cachePinned);

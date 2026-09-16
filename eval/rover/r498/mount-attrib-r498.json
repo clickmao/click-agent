@@ -1,0 +1,187 @@
+{
+ "round": "R498",
+ "candidate": "⑤挂载成本定长腿归因",
+ "source_round": "R497",
+ "source_arms": [
+  "T2",
+  "T1"
+ ],
+ "data": {
+  "T2": {
+   "calls": 13,
+   "real_prompt_tokens": 57627,
+   "real_completion_tokens": 4909,
+   "real_total_tokens": 62536,
+   "est_prompt_tokens_sum": 48098,
+   "real_over_est_prompt": 1.198116,
+   "cache_hit_tokens": 43008,
+   "cache_miss_tokens": 14619
+  },
+  "T1": {
+   "calls": 12,
+   "real_prompt_tokens": 61875,
+   "real_completion_tokens": 9636,
+   "real_total_tokens": 71511,
+   "est_prompt_tokens_sum": 51142,
+   "real_over_est_prompt": 1.209867,
+   "cache_hit_tokens": 44544,
+   "cache_miss_tokens": 17331
+  }
+ },
+ "checks": {
+  "est_recompute_parity": "PASS (逐调用 est 复算 == 落盘值, n=12)"
+ },
+ "mount_block": {
+  "n_calls_total": 12,
+  "n_calls_with_mount": 11,
+  "n_calls_without_mount": 1,
+  "chars_total": 1853,
+  "chars_per_call": 168.45454545454547,
+  "est_delta_total": 928,
+  "est_delta_per_call": 84.36363636363636,
+  "per_call": [
+   {
+    "seq": 1,
+    "n_messages": 3,
+    "est_full_recompute": 2121,
+    "est_without_mount": 2037,
+    "mount_delta_est": 84,
+    "mount_chars": 167,
+    "mount": true
+   },
+   {
+    "seq": 2,
+    "n_messages": 7,
+    "est_full_recompute": 2659,
+    "est_without_mount": 2575,
+    "mount_delta_est": 84,
+    "mount_chars": 167,
+    "mount": true
+   },
+   {
+    "seq": 3,
+    "n_messages": 9,
+    "est_full_recompute": 3249,
+    "est_without_mount": 3165,
+    "mount_delta_est": 84,
+    "mount_chars": 167,
+    "mount": true
+   },
+   {
+    "seq": 4,
+    "n_messages": 13,
+    "est_full_recompute": 3805,
+    "est_without_mount": 3720,
+    "mount_delta_est": 85,
+    "mount_chars": 169,
+    "mount": true
+   },
+   {
+    "seq": 5,
+    "n_messages": 2,
+    "est": 49,
+    "mount": false,
+    "note": "无台账挂载 (非主任务面调用, 结构上不挂)"
+   },
+   {
+    "seq": 6,
+    "n_messages": 15,
+    "est_full_recompute": 4243,
+    "est_without_mount": 4159,
+    "mount_delta_est": 84,
+    "mount_chars": 169,
+    "mount": true
+   },
+   {
+    "seq": 7,
+    "n_messages": 17,
+    "est_full_recompute": 4666,
+    "est_without_mount": 4582,
+    "mount_delta_est": 84,
+    "mount_chars": 169,
+    "mount": true
+   },
+   {
+    "seq": 8,
+    "n_messages": 19,
+    "est_full_recompute": 5097,
+    "est_without_mount": 5012,
+    "mount_delta_est": 85,
+    "mount_chars": 169,
+    "mount": true
+   },
+   {
+    "seq": 9,
+    "n_messages": 21,
+    "est_full_recompute": 5627,
+    "est_without_mount": 5543,
+    "mount_delta_est": 84,
+    "mount_chars": 169,
+    "mount": true
+   },
+   {
+    "seq": 10,
+    "n_messages": 23,
+    "est_full_recompute": 6003,
+    "est_without_mount": 5918,
+    "mount_delta_est": 85,
+    "mount_chars": 169,
+    "mount": true
+   },
+   {
+    "seq": 11,
+    "n_messages": 25,
+    "est_full_recompute": 6734,
+    "est_without_mount": 6650,
+    "mount_delta_est": 84,
+    "mount_chars": 169,
+    "mount": true
+   },
+   {
+    "seq": 12,
+    "n_messages": 28,
+    "est_full_recompute": 6889,
+    "est_without_mount": 6804,
+    "mount_delta_est": 85,
+    "mount_chars": 169,
+    "mount": true
+   }
+  ]
+ },
+ "attribution": {
+  "est_caliber": {
+   "est_T2_sum": 48098,
+   "est_T1_sum": 51142,
+   "est_delta": 3044,
+   "fixed_leg_est": 928,
+   "behavior_leg_est": 2116,
+   "fixed_share": 0.304862
+  },
+  "real_caliber": {
+   "real_T2_total": 62536,
+   "real_T1_total": 71511,
+   "real_delta": 8975,
+   "prompt_vs_est_scale_T1": 1.209867,
+   "fixed_leg_real_upper": 1123,
+   "behavior_leg_real_lower": 7852,
+   "fixed_share_upper": 0.125125,
+   "call_count_delta": -1,
+   "T2_real_tokens_per_call": 4810.46,
+   "note": "fixed_leg_real_upper 用**逐调用实测比例**折算 (非拍常数); behavior 腿按定义取残差"
+  },
+  "prompt_completion_split": {
+   "T2_prompt": 57627,
+   "T2_completion": 4909,
+   "T1_prompt": 61875,
+   "T1_completion": 9636,
+   "prompt_delta": 4248,
+   "completion_delta": 4727
+  },
+  "cache_split": {
+   "T2_hit": 43008,
+   "T2_miss": 14619,
+   "T1_hit": 44544,
+   "T1_miss": 17331
+  }
+ }
+}

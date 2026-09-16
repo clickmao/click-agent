@@ -16,6 +16,7 @@ namespace agentframework.tests;
 ///   C. **recover 记账补齐**: `llm_call_recover` 行必须与 `llm_call` 同源落 prompt/缓存字段
 ///      (R474: recover 行缺字段 ⇒ 产品自记账漏 15,458 prompt tokens = Arole 的 21.8%)。
 /// </summary>
+[Collection(AgentTelemetryStaticCollection.Name)]
 public class R475AccountingTests
 {
     private static string RepoRoot()
