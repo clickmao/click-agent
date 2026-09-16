@@ -1,0 +1,66 @@
+{
+ "round": "EXP1-Q32",
+ "plan_item": "exp1 本地索引/代码引用图 (docs/plans/v0.22.0-longterm-backlog.md 最前未完成项)",
+ "branch": "A (mode=tasks, open_count=8)",
+ "trigger": "AF.7 五候选 (承 EXP1-Q31 §AF.7) + 用户令 2026-09-16「全部候选并入一轮解决」",
+ "round_namespace": "EXP1-Qxx (60m 自检作业轮号段, 不占主线轮号)",
+ "declared_before_measurement": true,
+ "scope": [
+  "C1 · 9 行 /tmp 路径逐行核查 (含 r462 wrapper 语料注入路径) + 归档自足化裁定与实现",
+  "C2 · 面扩容前阈值复测与 K_MIN 重定 (数据先行: 先量体量再动面)",
+  "C3 · 「器具改而登记表未重审」提交前机检 (r483b 类漏检提前到提交面)",
+  "C4 · 分母两栏并列的旧口径作废声明覆盖面审计 (AE.6 遗留)",
+  "C5 · L4 复核: 本轮器具的独立视角复算 + r444 重审后的规范化登记"
+ ],
+ "criteria": {
+  "C1": {
+   "classification": "每条 /tmp 出现按 字段(evidence_cmd/evidence_path/negative_control/covers) × 形态(read_dep/write_out/ref_text) 分类",
+   "positive_control": "抽取器必须同时给出 证据命令含 'eval/' 的行数 (>0), 否则整个普查读数作废 (防空表假绿)",
+   "r1_read_dep": "read_dep 且**无仓库内等价物** ⇒ 判红 (单副本易失依赖); 有等价物 ⇒ 改指仓库内路径 (写侧修复)",
+   "r2_write_out": "纯输出/中间产物路径 ⇒ 接受为永久口径, 但须登记 reason=intermediate-regenerable, 且不得与 evidence_path 混用",
+   "r3_archive_self_sufficiency": "D-ARCH: 历史证据归档件**禁止改字节** (sha pin 即证据); 自足化只在**入口层**做「逐位还原 (materialize)」+ 冲突 fail-closed (存在但不一致 ⇒ rc=2 拒绝覆盖)",
+   "r4_archive_fidelity": "新增归档文件必须与 /tmp 原件逐位相同 (sha256 相等有读数), 并把 sha 登记进本轮产物",
+   "exit": "0 全过 / 2 断言失败 / 3 环境失败 (原件缺失 ⇒ 同一性弃权)"
+  },
+  "C2": {
+   "authority": "soft_cap 与 K_MIN 的单一权威 = 器具源码 (side_effect_gate.py / face_cap_headroom.py) 读值, 文档不作权威",
+   "invariant": "soft_cap >= K_MIN × 实测 log_bytes",
+   "m_hist": "每器具边际字节 = (Q31 bytes − Q30 bytes) / (27 − 21) (两点实测, 同机同面口径)",
+   "decision": "N_max = floor((soft_cap/K_MIN − bytes) / m_hist); N_max < 1 ⇒ **本轮不扩 L2 面**, 新守卫登记为证据面器具 (面别分区), 台账记下沿 + 重开条件",
+   "remeasure": "本轮跑一次全量面取实测 log_bytes; 若 |Δ| > 1% vs Q31 记录 ⇒ 只标指示性, 判据按实测值",
+   "ledger": "台账追加必须幂等 + 读回校验 + 追加前断言「序列化器逐字节复现原文件」",
+   "reopen_condition": "需扩面时: cap 重锚算式 (bytes_target × K_MIN 上取整到 8 MiB 边界) 必须与磁盘闸 (df) 复核一起单独立项"
+  },
+  "C3": {
+   "checks": "每行 instrument 非空 ⇒ 现盘 sha12 == 登记 instrument_sha12; artifact_sha12 非空 ⇒ 现盘 sha12 == 登记 artifact_sha12",
+   "classes": ["stale_pin", "instrument_missing", "artifact_drift", "artifact_missing"],
+   "abstain": "无 evidence_generated_with 的行 ⇒ 弃权单列 (unpinned), 不判红",
+   "selftest": "影子自检三态: 注入 stale_pin ⇒ rc=2 / 注入 missing ⇒ rc=2 / clean 夹具 ⇒ rc=0 (先于真机跑)",
+   "hook_wiring": "入 tools/hooks/pre-commit, env 门控 AGENTFRAMEWORK_REAUDIT_GUARD=1, **默认关**; 默认关必须逐字节零回归 (同 staged 集 stdout+rc 与接线前一致)",
+   "real_reading": "真仓违例数如实报; 由全量面刷新引起的 artifact 漂移 ⇒ 交 C5 定向重审收口 (不隐藏)"
+  },
+  "C4": {
+   "criterion": "每处「两栏并列」(旧读数 vs 新读数) 必须在窗口内含显式作废/并列声明 (作废|旧口径|不可比|口径变更|并列), 缺 ⇒ 判红",
+   "discrimination": "判别力自证: has-decl 与 missing-decl 两侧样例必须被判成相反态",
+   "heuristic_note": "模式识别为启发式 (窗口匹配), 弃权桶单列: 窗口内既无并列亦无声明 ⇒ 不属于该面 (不判红不判绿)"
+  },
+  "C5": {
+   "independent_view": "独立复算器 (第二实现, 与主器具零共享代码) 复算 面记录 manifest sha12 / headroom / 行普查, 与主器具读数必须逐位相等",
+   "r444_reaudit": "全量面刷新后 r444.instrument-acceptance 必须定向重审 (artifact_sha12 更新 + audited_by_round=EXP1-Q32), 用 bind_evidence --only (禁 --apply 全表刷 churn)",
+   "readback": "提交后读回 (HEAD blob sha == worktree sha) + 残留漂移机检"
+  }
+ },
+ "neg_controls": [
+  "C1: /tmp 原件缺失夹具 ⇒ rc=3 弃权 (不当红); 归档件被改字节夹具 ⇒ 判红",
+  "C2: 反证 = 若把 6 个 Q31 器具当新增再跑一次, headroom 必须落到 < 2.0 (证明下沿真实)",
+  "C3: 注入 stale_pin 行 ⇒ 守卫 rc=2; 默认关钩子 ⇒ 与接线前逐字节相同",
+  "C4: missing-decl 样例 ⇒ 判红; has-decl 样例 ⇒ 判绿",
+  "C5: 人为扰动 (改一个字节) ⇒ 独立复算必须与主器具一起翻红 (证明复算非恒绿)"
+ ],
+ "discipline": {
+  "evidence_class": "真机读数优先 (真跑输出 > 编译/测试 > 静态机检); 只写文档不算证据",
+  "honesty": "失败照原样入档 (首跑红/自伤不翻案); 未测到 ≠ 通过; 缺字段记 n/a 不记 0",
+  "push": "推送暂停令在效: 仅本地提交, 禁 push / gh api 写 / 镜像上传",
+  "formal_gate": "改登记表/证据后立即跑 env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR dotnet test src/agent.tests/agentframework.tests.csproj --filter \"FullyQualifiedName~VerificationForm|FullyQualifiedName~SkillGeneralization|FullyQualifiedName~DevPlanDocRef\" --nologo -v q"
+ }
+}

@@ -54,4 +54,16 @@ if [ -n "${AGENTFRAMEWORK_STAGE_MANIFEST:-}" ]; then
     exit 1
   fi
 fi
+# EXP1-Q32: 器具/记录 pin 重审闸 —— 「器具改了而登记表未重审」在提交面拦下 (默认关)
+if [ "${AGENTFRAMEWORK_REAUDIT_GUARD:-0}" = "1" ] && [ -f eval/capability/exp1-q32/instruments/reaudit_guard.py ]; then
+  RG_ARGS=""
+  [ -n "${AGENTFRAMEWORK_REAUDIT_REGISTRY:-}" ] && RG_ARGS="--registry $AGENTFRAMEWORK_REAUDIT_REGISTRY"
+  if ! python3 eval/capability/exp1-q32/instruments/reaudit_guard.py --quiet $RG_ARGS; then
+    echo "BLOCKED(EXP1-Q32 重审闸): 器具 pin / 记录 pin 与现盘不一致 ⇒ 拒提交。" >&2
+    echo "  处置: 跑 python3 eval/capability/bind_evidence.py --only <行> --round <轮> 定向重审后重提交。" >&2
+    python3 eval/capability/exp1-q32/instruments/reaudit_guard.py $RG_ARGS 2>&1 | tail -8 >&2
+    exit 1
+  fi
+fi
+
 exit 0

@@ -1,12 +1,62 @@
 {
- "schema": "instruments-check/3",
+ "schema": "instruments-check/5",
  "manifest": "eval/capability/instruments.json",
+ "manifest_sha12": "0813ac989cd6",
+ "instrument_sha12": "8d1eb60b7ca4",
+ "face": "negative-control",
+ "only": [
+  "exp1q17.archive-field-provenance"
+ ],
+ "out": "eval/capability/instruments-check-drift.json",
  "l2_field_checks": true,
  "input_surface_checks": true,
  "drift_injected": true,
  "inject_mode": "drift",
  "inject_note": "fingerprint sha12 → deadbeef0000 (期望 DRIFT)",
  "side_effects": [],
+ "side_effect_attribution": {
+  "schema": "side-effect-attribution/1",
+  "verdict": "inherited-outer-gate",
+  "red": false,
+  "measurement_ok": true,
+  "reasons": [
+   "outer-gate-active"
+  ],
+  "window": {
+   "t0": null,
+   "t1": null,
+   "trace_dir": null
+  },
+  "trace": {
+   "commands": 0,
+   "events": 0,
+   "raw_events": 0,
+   "raw_paths_n": 0,
+   "raw_paths_sample": [],
+   "log_bytes": 0,
+   "capped": false,
+   "unresolved_relative": 0,
+   "channel": "inherited"
+  },
+  "self_writes": [],
+  "touched_and_gone": [],
+  "foreign_writes": [],
+  "pre_existing": [],
+  "old_gate_delta": [],
+  "old_gate_false_reds": [],
+  "old_gate_missed_self_writes": [],
+  "live_fd_scan": {
+   "scanned": 0,
+   "errors": 0
+  },
+  "census_in_repo_cwd": [],
+  "conservation": {
+   "classified": 0,
+   "expected": 0,
+   "in_scope_after": 0,
+   "ok": true
+  }
+ },
  "passed": 0,
  "total": 1,
  "results": [
@@ -30,7 +80,7 @@
     "version": "ok",
     "instrument_sha12": "ok",
     "input_surface": "ok:external_files",
-    "input_fingerprint": "DRIFT:eval/capability/exp1-q10/citations.jsonl(want=deadbeef0000 got=08c99bd67a41)",
+    "input_fingerprint": "DRIFT:eval/capability/exp1-q10/attribution_q10.json(want=deadbeef0000 got=7c4e1144921a)",
     "kpi_quad": "ok",
     "INJECTED": "drift: expect-FAIL"
    },

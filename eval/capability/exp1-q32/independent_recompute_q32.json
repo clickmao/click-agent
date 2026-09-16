@@ -1,0 +1,79 @@
+{
+ "round": "EXP1-Q32",
+ "schema": "independent-recompute/1",
+ "checks": [
+  {
+   "check": "R1.manifest_sha12",
+   "recomputed": "0813ac989cd6",
+   "recorded": "0813ac989cd6",
+   "ok": true,
+   "note": ""
+  },
+  {
+   "check": "R2.rows_total",
+   "recomputed": 164,
+   "recorded": 164,
+   "ok": true,
+   "note": ""
+  },
+  {
+   "check": "R2.rows_unpinned",
+   "recomputed": 47,
+   "recorded": 47,
+   "ok": true,
+   "note": ""
+  },
+  {
+   "check": "R3.log_bytes_matches_ledger",
+   "recomputed": 33388397,
+   "recorded": 33388397,
+   "ok": true,
+   "note": "台账末行 = EXP1-Q32"
+  },
+  {
+   "check": "R3.soft_cap",
+   "recomputed": 67108864,
+   "recorded": 67108864,
+   "ok": true,
+   "note": ""
+  },
+  {
+   "check": "R3.k_min",
+   "recomputed": 2.0,
+   "recorded": 2.0,
+   "ok": true,
+   "note": ""
+  },
+  {
+   "check": "R3.headroom_vs_ledger",
+   "recomputed": 2.01,
+   "recorded": 2.01,
+   "ok": true,
+   "note": ""
+  },
+  {
+   "check": "R4.census_findings",
+   "recomputed": 22,
+   "recorded": 22,
+   "ok": true,
+   "note": ""
+  },
+  {
+   "check": "R4.census_classes_sum",
+   "recomputed": 22,
+   "recorded": 22,
+   "ok": true,
+   "note": ""
+  },
+  {
+   "check": "NC.byte_perturbation_detected",
+   "recomputed": "e3d644923a5b",
+   "recorded": "0813ac989cd6",
+   "ok": true,
+   "note": "扰动一个字节 ⇒ 复算摘要必须与记录不同 (证明非恒绿)"
+  }
+ ],
+ "n_checks": 10,
+ "n_failed": 0,
+ "independence_note": "第二实现: 摘要/普查/阈值全部自查盘与源码 (正则派生), 不读主器具中间变量"
+}

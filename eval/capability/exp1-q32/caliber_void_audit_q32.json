@@ -1,0 +1,3751 @@
+{
+ "round": "EXP1-Q32",
+ "schema": "caliber-void-audit/1",
+ "face_files": 158,
+ "n_pairs": 323,
+ "n_declared": 45,
+ "n_note_nonmetric": 195,
+ "n_red": 83,
+ "reds": [
+  {
+   "file": "docs/reports/brevity-menu-cache-r460.md",
+   "line": 11,
+   "pair": "927→39",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| 「命中率和 tokens 都不达标」 | tokens:**达标**（prompt ∑ 54,927→39,863 = **−27.4%**，调用 17→13 = codex 同数）；命中率:**未达标**（90.4%→85.1%）—— 原因见 §3 |"
+  },
+  {
+   "file": "docs/reports/brevity-menu-cache-r460.md",
+   "line": 11,
+   "pair": "17→13",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| 「命中率和 tokens 都不达标」 | tokens:**达标**（prompt ∑ 54,927→39,863 = **−27.4%**，调用 17→13 = codex 同数）；命中率:**未达标**（90.4%→85.1%）—— 原因见 §3 |"
+  },
+  {
+   "file": "docs/reports/dev-return-digest.md",
+   "line": 107,
+   "pair": "396→400",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| `e7d99e4` | exp1-Q3b 附录B: 补 396->400 文件口径机检说明（对侧 R430/R431 新增 4 个 src/**.cs，非口径变化） |"
+  },
+  {
+   "file": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md",
+   "line": 63,
+   "pair": "251→252",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- **D2 KPI 健康带**：每用例 tokens/wall/rel 有平滑基准带（历史 5 轮均值），越界即 `KPI_BREACH` 标记。**breach 只标记不判 FAIL**——先复跑确认，防把 LLM 单轮波动当回归（mass_251→252 实证）。*状态：✅ R128 上线。*"
+  },
+  {
+   "file": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md",
+   "line": 129,
+   "pair": "746→586",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "**体验优化已落地**：规则8 输出纪律（解释类 -49% tokens）、C11 prompt 治理（746→586）、缺陷54（assembly -98% 直接砍用户等待）、D2 防误回退。"
+  },
+  {
+   "file": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md",
+   "line": 198,
+   "pair": "941→939",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- **最近五批审计（批76-80）**：63/63 全绿（quick-11 子集 44/44）；tok/case 941→939→928→860 递降带内（全量批 1165 口径不同）；drift 全 1.0；suspects 0；D4 rel 修复前 n=0（缺陷 57）/修复后 n=11 avg 0.631。"
+  },
+  {
+   "file": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md",
+   "line": 198,
+   "pair": "928→860",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- **最近五批审计（批76-80）**：63/63 全绿（quick-11 子集 44/44）；tok/case 941→939→928→860 递降带内（全量批 1165 口径不同）；drift 全 1.0；suspects 0；D4 rel 修复前 n=0（缺陷 57）/修复后 n=11 avg 0.631。"
+  },
+  {
+   "file": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md",
+   "line": 209,
+   "pair": "1100→1250",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- **R180-R182 (C07 记忆链三连修)**: 真缺陷 60 (must_contain 硬判定误用 req() → NameError 崩批, 改 x[pass]=False); C07 记忆源破案 (跨进程 forecast.json 单槽被中间用例竞态覆盖 → 批340 丢失实证链: forecast"
+  },
+  {
+   "file": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md",
+   "line": 217,
+   "pair": "542→2355",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- **R238-R245 (底座能力专项 — 用户三连质询驱动)**: KPI-2 token 全史报告 (542→2355 C07 归因, 无注入膨胀); 压缩 audit 体系 (ground-truth 104 篇多样态 × 4 档 × 3 级别; 首轮实证 SummarySentences 丢因果/指令 → "
+  },
+  {
+   "file": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md",
+   "line": 261,
+   "pair": "812→176",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- 行为差分口径确立: 画像独有事实锚 (非宽词), 全隔离臂对照 (context 812→176tok)"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 50,
+   "pair": "10→100",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| K1 | **被提问概率**（用户话题倾向） | agent 主动澄清/追问的触发是否踩中用户真实意图；话题画像驱动上下文偏置 | UserTendency 画像（data/tendency/*.json）+ clarification 链路 + tendency_bias 探针 | ✓ 链路已通（R133 缺陷5"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 50,
+   "pair": "0.296→0.8",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| K1 | **被提问概率**（用户话题倾向） | agent 主动澄清/追问的触发是否踩中用户真实意图；话题画像驱动上下文偏置 | UserTendency 画像（data/tendency/*.json）+ clarification 链路 + tendency_bias 探针 | ✓ 链路已通（R133 缺陷5"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 50,
+   "pair": "0→1",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| K1 | **被提问概率**（用户话题倾向） | agent 主动澄清/追问的触发是否踩中用户真实意图；话题画像驱动上下文偏置 | UserTendency 画像（data/tendency/*.json）+ clarification 链路 + tendency_bias 探针 | ✓ 链路已通（R133 缺陷5"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 51,
+   "pair": "943→479",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| K2 | **token 使用量** | 单轮/单任务 token 消耗（含 prompt 膨胀与 completion 冗余） | 轮 JSON prompt/completion tokens + D2 KPI 健康带 + D5 per-case delta + 规则8 输出纪律 | ✓ 治理中：C08 943"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 52,
+   "pair": "64→97",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| K2b | **prompt 缓存命中率**（K2 成本侧子指标, R377 用户钦定; **R380 口径修订为首要 KPI**） | **有效命中率 = `cache_hit_tokens / min(本轮 prompt_tokens, 上一轮同会话 prompt_tokens)`**（只算『需要命中的部分』,"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 384,
+   "pair": "241→160",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| R460 | `r460.brevity-menu-cache` | L2 | 承接轮精炼 + 菜单单源 + 命中率/token 归因 (真机 E2E, 同夹具/同 6 轮/同模型, 唯一差异=二进制): T5 回复 241→160 字 (-33.6%),… |"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 443,
+   "pair": "146→149",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "> 取代关系: 本增量取代下方「R441–R478 轮次索引」段的 `registry rows=146 / updated_round=R478`（row 数 146 → 149，最新轮号 R478 → R479）。旧段正文保留为历史读数，不再作为当前口径。"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 512,
+   "pair": "149→150",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "> 取代关系: 本增量取代上方各段「轮次索引」的 row 数口径（149 → 150 → **151**，最新轮号 R479 → R481）。旧段正文保留为历史读数，不再作为当前口径。"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 569,
+   "pair": "178.6→119.7",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| R448 | `r448.judge-think-length-cap` | L3 | 判官 prompt 侧「限长思考」（保留思考、只压缩长度）真机消融 —— 负结论: 生成仅降 33.0%（178.6→119.7）且预算 128 下 61.1% 思考被截断、与产品基线判决一致率 0.1667 ⇒ 不得启用 … "
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 580,
+   "pair": "4→4",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| R457 | `r457.effect-closure` | L3 | 动作环效果收口(真机 E2E): 同夹具产物 2/4 -> 4/4 (stats.txt=chars=14, first.txt=R455 fixture note), 磁盘伪造 0; 三缺口机制修复: 台账回灌(命中 8 个实发请求) / …"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 582,
+   "pair": "241→160",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| R460 | `r460.brevity-menu-cache` | L2 | 承接轮精炼 + 菜单单源 + 命中率/token 归因 (真机 E2E, 同夹具/同 6 轮/同模型, 唯一差异=二进制): T5 回复 241→160 字 (-33.6%), 承接注入块 288→163 字 (-43.6%, MaxA"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 582,
+   "pair": "288→163",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| R460 | `r460.brevity-menu-cache` | L2 | 承接轮精炼 + 菜单单源 + 命中率/token 归因 (真机 E2E, 同夹具/同 6 轮/同模型, 唯一差异=二进制): T5 回复 241→160 字 (-33.6%), 承接注入块 288→163 字 (-43.6%, MaxA"
+  },
+  {
+   "file": "docs/reports/loop-detection-probe-hardening.md",
+   "line": 45,
+   "pair": "1→5",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "3. `open_count` 由 1→5 是**判定修正**，不是计划项变多；历史轮（R371/R370「进行中」）入账属判定口径扩张，未做历史轮归档判断。"
+  },
+  {
+   "file": "docs/reports/market-agent-capabilities-R338.md",
+   "line": 289,
+   "pair": "200→500",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "3. **Windsurf/Devin Desktop**：官方文档已切至 docs.devin.ai（证明品牌合并属实），但 Cascade EOL 日期（2026-07-01）、Devin Local（Rust）能力、SWE-1.6 细节、定价结构全部为第三方描述，且多来源数字冲突（免费额度 200 vs 500、"
+  },
+  {
+   "file": "docs/reports/r464-config-fail-closed.md",
+   "line": 41,
+   "pair": "21→8",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- **主判据 C5 PASS**：B3B 对 Arole 降幅 **38.52%**（≥30% 达标），远端调用 21 → 8。"
+  },
+  {
+   "file": "docs/reports/r466-repeat-priority.md",
+   "line": 23,
+   "pair": "6→13",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- C1 降幅 ≥30%: **54.73%** (14,529 vs Arole 32,097; 调用 6 vs 13) ✓"
+  },
+  {
+   "file": "docs/reports/r468-real-traffic-composition.md",
+   "line": 61,
+   "pair": "019→3",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "① **前缀按需注入 / prompt 瘦身**（真实面 90.2% 轮必走远端；主调用 prompt 逐轮 2,019→3,461 tok 为最大单项成本；判据 = 真实面单轮新内容 tok ≤ 93.5 以达 97% 命中红线）"
+  },
+  {
+   "file": "docs/reports/r474-real-provider-arms.md",
+   "line": 25,
+   "pair": "32097→14529",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "桩口径 R467: 32097 -> 14529 = **-54.74%** ; 供应商真值 R474: 76094 -> 32769 = **-56.94%** (差 2.2pp)。"
+  },
+  {
+   "file": "docs/reports/r474-real-provider-arms.md",
+   "line": 25,
+   "pair": "76094→32769",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "桩口径 R467: 32097 -> 14529 = **-54.74%** ; 供应商真值 R474: 76094 -> 32769 = **-56.94%** (差 2.2pp)。"
+  },
+  {
+   "file": "docs/reports/r477-real-e2e-replay-and-band-live.md",
+   "line": 28,
+   "pair": "68329→35600",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| prompt token | — | 68329 → 35600 | **−47.9%** |"
+  },
+  {
+   "file": "docs/reports/r477-real-e2e-replay-and-band-live.md",
+   "line": 29,
+   "pair": "5320→2144",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| completion token | — | 5320 → 2144 | **−59.7%** |"
+  },
+  {
+   "file": "docs/reports/r477-real-e2e-replay-and-band-live.md",
+   "line": 30,
+   "pair": "76094→32769",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| **总 token** | 76094 → 32769（**−56.94%**） | 73649 → 37744（**−48.75%**） | 均 ≥30% 达标 |"
+  },
+  {
+   "file": "docs/reports/r477-real-e2e-replay-and-band-live.md",
+   "line": 30,
+   "pair": "73649→37744",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| **总 token** | 76094 → 32769（**−56.94%**） | 73649 → 37744（**−48.75%**） | 均 ≥30% 达标 |"
+  },
+  {
+   "file": "docs/reports/r477-real-e2e-replay-and-band-live.md",
+   "line": 32,
+   "pair": "58624→28160",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| 缓存命中 token | — | 58624 → 28160 | 命中率 0.858→0.791 |"
+  },
+  {
+   "file": "docs/reports/r477-real-e2e-replay-and-band-live.md",
+   "line": 32,
+   "pair": "0.858→0.791",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| 缓存命中 token | — | 58624 → 28160 | 命中率 0.858→0.791 |"
+  },
+  {
+   "file": "docs/reports/r479-responses-wire-and-typed-semantics.md",
+   "line": 48,
+   "pair": "4394→4224",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- 远端 `cached=0` 两次：与本轮请求体规模（78 token 前缀）有关，**未**断言远端缓存命中能力（大前缀另测见 R479 前序探针 4394→4224 = 96.1%）。"
+  },
+  {
+   "file": "docs/reports/r480-recall-test-ledger.md",
+   "line": 80,
+   "pair": "3.4675→4.0058",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| F7 | `RecallFormat.DocLength` | lens 表头 12 B (magic8+count4), 读侧按 4 B 偏移 ⇒ **整体错位 2 项** | BM25 分数漂移 3.4675 vs 4.0058 → 修后逐位一致 |"
+  },
+  {
+   "file": "docs/reports/r487-three-arm-realand-gate-isolation.md",
+   "line": 34,
+   "pair": "302→81",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| H2 **主 KPI** 降幅 ≥30% | **FAIL** | A0→R485 = **+1.83%**（80,302 → 81,770） |"
+  },
+  {
+   "file": "docs/reports/r487-three-arm-realand-gate-isolation.md",
+   "line": 42,
+   "pair": "22→15",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "`A0 → Arole485`（**臂参逐字同，只换二进制**）= 调用 **22→15（−31.8%）** / **token 80,302→63,825（−20.6%）** /"
+  },
+  {
+   "file": "docs/reports/r487-three-arm-realand-gate-isolation.md",
+   "line": 42,
+   "pair": "302→63",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "`A0 → Arole485`（**臂参逐字同，只换二进制**）= 调用 **22→15（−31.8%）** / **token 80,302→63,825（−20.6%）** /"
+  },
+  {
+   "file": "docs/reports/r487-three-arm-realand-gate-isolation.md",
+   "line": 53,
+   "pair": "15→14",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "而调用数只少 1（15→14）⇒ 总 token 上升。**闸没有引入额外调用，是「剩余调用带的上下文更长」**。"
+  },
+  {
+   "file": "docs/reports/r488-two-by-two-ablation-and-tag-fix.md",
+   "line": 38,
+   "pair": "15→14",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| H3 `repeat_skip` 单独为负效应 | PASS | 调用 15→14，token −6.41% |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1103,
+   "pair": "63→57",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| C10 口径 | ✅ | 登记 `weak 63 → 57`（剔除 6 条 index-scope-out）**候选**，`delta_applied=false` |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1546,
+   "pair": "4→4",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- **否证并收窄宣称**：**P2**（「两键重放值与登记逐位相同」）**不成立** —— 两键只被 C1 **达到**，随即落口径边界 ⇒ **不得宣称「覆盖增益 = 逐位对账」**；**P3** 计数面不成立（4→4）、语义面成立（笼统 → 类型化 + 零无类型跳过）。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1614,
+   "pair": "4→2",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "① **落地修法**：把 `symbol_faces` / `relocated_symbol_faces`（可选：其余 7 枚）加进 `citations.jsonl` 落盘白名单 → 重跑探针 → 断言 `n_symbol_faces` / `symbol_face_rungs` 可由归档**独立复算**（Q16 "
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1626,
+   "pair": "4→2",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "落地附录 R §R.3 归因①的修法：把 `symbol_faces` / `relocated_symbol_faces` 补进探针落盘白名单，并**证明**两枚字段进入归档后，`n_symbol_faces` / `symbol_face_rungs` 两个登记读数可由归档**独立复算**（附录 Q 口径：不可重放"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1656,
+   "pair": "24→25",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| C3 归档键面 | 达标 | 24→25，新增恰 `symbol_faces`（结构性命中） |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1659,
+   "pair": "928→997",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| C5b 登记数值面 | **越线（证伪）** | 登记 575 桶值 vs 冻结语料 622；行数 928→997 |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2447,
+   "pair": "149→149",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| P10 零回归 | `git diff` = **7 insertions / 7 deletions**（限该行：1 行 `evidence_path` + 6 行字段块）；行数 149→149；快照比对**仅该行**字段变 |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2522,
+   "pair": "151→151",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "**重审明细**: `artifact_sha12`/`instrument_sha12` `262cdd978d1c` → `5127b5c0592b`, `audited_by_round` `R478` → `EXP1-Q29`; 块级替换, `git diff --numstat = 3/3`, 行数 151→"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2634,
+   "pair": "21→27",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "### AF. EXP1-Q31 收口: 残留器具行裁定并轮 + 判据绑误用重写 + 提交前跨写者闸入钩子 + 器具面 21→27 + 阈值余量台账"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2662,
+   "pair": "47→29715723",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "5. **阈值余量台账** (`face-scale-ledger.jsonl`, 幂等追加): 阈值从器具源码读 (单一权威), 判据 `soft_cap ≥ 2.0 × 实测 log_bytes`; 读数 27 器具/59 命令 ⇒ 33246260 B, 余量 **2.019** (上一行 21/47 ⇒ 297"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2663,
+   "pair": "21→27",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "6. **器具面 21 → 27**: 新增 6 行 (退役面断言 / 清理台账 / 测试面分类器 / 阈值余量 / 等价闸 / 钩子闸), 每行成对正控+负控; `verify_q30_only` 的等价判据**自足化**为长驻闸 `only_equivalence_guard.py` (夹具锚从当前登记表现场派生,"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp9-subtask-plan-routing-and-local-first.md",
+   "line": 356,
+   "pair": "4→3",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "> 诚实说明：token 一项只能算指示性；**确定性证据 = 节点数 4→3、远程 2→1、出站 117→100、答复数字来源由模型改为框架**。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp9-subtask-plan-routing-and-local-first.md",
+   "line": 356,
+   "pair": "2→1",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "> 诚实说明：token 一项只能算指示性；**确定性证据 = 节点数 4→3、远程 2→1、出站 117→100、答复数字来源由模型改为框架**。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp9-subtask-plan-routing-and-local-first.md",
+   "line": 356,
+   "pair": "117→100",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "> 诚实说明：token 一项只能算指示性；**确定性证据 = 节点数 4→3、远程 2→1、出站 117→100、答复数字来源由模型改为框架**。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 82,
+   "pair": "4→4",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| R403 | chat template 全量（Jinja 子集扩展 + 工具调用模板） | **关闭（2026-09-14 R403-scope 裁定；见 `docs/reports/r403/chat-template-tool-scope.md`）** | R408 §3-Q5 已把「分词与聊天模板」交给 l"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 82,
+   "pair": "7→18",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| R403 | chat template 全量（Jinja 子集扩展 + 工具调用模板） | **关闭（2026-09-14 R403-scope 裁定；见 `docs/reports/r403/chat-template-tool-scope.md`）** | R408 §3-Q5 已把「分词与聊天模板」交给 l"
+  },
+  {
+   "file": "docs/plans/v0.22.0-r371-capability-probe-python-game.md",
+   "line": 33,
+   "pair": "2000→8192",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "v0.11.0 R19 的旧修只是把 `max_tokens` 2000→8192（抬高天花板，推理照样能吃满）。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-r371-capability-probe-python-game.md",
+   "line": 179,
+   "pair": "6→7",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- 真机命中: `skill_load count 6→7`(含 delivery-selfcheck) · `skill_scan registry_count=8` ·"
+  },
+  {
+   "file": "docs/plans/v0.23.0-exp10-agent.rover-local-prover-engine.md",
+   "line": 212,
+   "pair": "2800→3391",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- [x] **agent 挂载 agent.rover 插件（C7/C8 闭环接线）** — **R391 已交付**（真机：生产组合根装配 `plugins=[…|agent.rover.formal|…]`；前缀 2800→3391 且不在场逐字不变；节点路由 `location=Local exec=forma"
+  },
+  {
+   "file": "docs/plans/v0.23.0-exp11-formal-verification-agent-augmentation.md",
+   "line": 20,
+   "pair": "1496→1050",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "同族系统实测：加入编译反馈后能力从 19.75–36.00% 提升到 58.75–62.00%（**+32.3 pts**），检索增强再平均 **+6.8 pts**（无反馈时 +12.4，有反馈时仅 +1.2 —— 说明反馈是主因，检索是补充），且**搜索使 REPL 反馈调用下降 29.8%（1496→1050）*"
+  },
+  {
+   "file": "docs/plans/v0.31.0-r409-local-prompt-template-gate.md",
+   "line": 55,
+   "pair": "17→18",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "⇒ 双 BOS 的实际代价：① 每次本地调用**多 1 个 prompt token**（17→18，+5.9%，K2）；② 两条通路**可复用前缀不是同一"
+  },
+  {
+   "file": "docs/plans/v0.33.0-r411-long-lived-generation-port.md",
+   "line": 36,
+   "pair": "497→530",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "产品侧 E2E（`--session-json`，497 token 前缀，3 轮）: 总长 497 → 530 → 563；命中 0 → 512 → 545 ⇒ 首轮不判、非首轮真复用。"
+  },
+  {
+   "file": "docs/plans/v0.33.0-r411-long-lived-generation-port.md",
+   "line": 36,
+   "pair": "0→512",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "产品侧 E2E（`--session-json`，497 token 前缀，3 轮）: 总长 497 → 530 → 563；命中 0 → 512 → 545 ⇒ 首轮不判、非首轮真复用。"
+  },
+  {
+   "file": "docs/plans/v0.40.0-r419-probe-multiturn.md",
+   "line": 66,
+   "pair": "0.6667→0.0",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "> **§5 判据已按 §6 实测反向否证**：观察到 `首次通过率 > 两轮整题全对率`（0.6667 → 0.0）"
+  },
+  {
+   "file": "docs/plans/v0.47.0-r426-relation-judge-localization.md",
+   "line": 94,
+   "pair": "14081→4561",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- C5（用户轮 token 降幅≥30%）: k6 −67.6%（14081→4561）、k8 −81.0%（13576→2586）**PASS**。"
+  },
+  {
+   "file": "docs/plans/v0.47.0-r426-relation-judge-localization.md",
+   "line": 94,
+   "pair": "13576→2586",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- C5（用户轮 token 降幅≥30%）: k6 −67.6%（14081→4561）、k8 −81.0%（13576→2586）**PASS**。"
+  },
+  {
+   "file": "docs/plans/v0.47.0-r426-relation-judge-localization.md",
+   "line": 97,
+   "pair": "2586→166",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "新增 1 次主链远端调用（≈2524 tok），远超判官省下的量级 ⇒ 该格 token 反高于 R425 臂B（2586 vs 166）。"
+  },
+  {
+   "file": "docs/plans/v0.49.0-r428-duplicate-collapse.md",
+   "line": 17,
+   "pair": "3→2",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| C2 | **折叠生效（T）**: 语料 A ⇒ 命中行数 3→2；保留者 = `probe-0914125816-p004`（全序首者 = Ordinal 较小 id）；该行含 `同文副本+1`；`probe-0914125831-p005` 不再出现 | **PASS** —— T 臂: `cli-6bf6dc"
+  },
+  {
+   "file": "docs/plans/v0.49.0-r428-duplicate-collapse.md",
+   "line": 17,
+   "pair": "3→2",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| C2 | **折叠生效（T）**: 语料 A ⇒ 命中行数 3→2；保留者 = `probe-0914125816-p004`（全序首者 = Ordinal 较小 id）；该行含 `同文副本+1`；`probe-0914125831-p005` 不再出现 | **PASS** —— T 臂: `cli-6bf6dc"
+  },
+  {
+   "file": "docs/plans/v0.51.0-r430-input-fingerprint.md",
+   "line": 70,
+   "pair": "2→1",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| P5 判定/KPI 不退化 | 判定仍 `Skip×4`、cache_n 恒 0、pinned 1..4；远端 2→1、token 2053→1996；全量 1242/1242、AOT IL 0 | PASS |"
+  },
+  {
+   "file": "docs/plans/v0.51.0-r430-input-fingerprint.md",
+   "line": 70,
+   "pair": "2053→1996",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| P5 判定/KPI 不退化 | 判定仍 `Skip×4`、cache_n 恒 0、pinned 1..4；远端 2→1、token 2053→1996；全量 1242/1242、AOT IL 0 | PASS |"
+  },
+  {
+   "file": "docs/plans/v0.56.0-r435-relation-judge-localization.md",
+   "line": 100,
+   "pair": "88→284",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "事后判据（单列，不作预注册）: `checks_posthoc` = 「v2 的 prompt 长度 ×3.4（72–88 → 284–298 字符）」⇒ 每条**远端回退**会多付 ~60 prompt token；本地侧只多付 prefill 延迟。"
+  },
+  {
+   "file": "docs/plans/v0.58.0-r438-localskip-no-replay.md",
+   "line": 52,
+   "pair": "19557→17319",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| C3 | **承重**：臂 BRJ（门开+J 本地）p12 降幅 vs A | ≥30% | **37.37%**（19557→17319，−2238） |"
+  },
+  {
+   "file": "docs/plans/v0.65.0-r445-judge-side-prefilter-precheck.md",
+   "line": 10,
+   "pair": "17→7",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "R444 把门侧固定成本压掉一半（门 r1 调用 17→7，含本地真值口径 25.32% ⇒ **33.32%**）。"
+  },
+  {
+   "file": "docs/plans/v0.66.0-r446-judge-determinism-and-zero-token-settlement.md",
+   "line": 9,
+   "pair": "17→7",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "R444 已把**门侧**固定成本压半（门 r1 17→7），含本地真值口径 33.32% ≥ 30%。"
+  },
+  {
+   "file": "docs/plans/v0.69.0-r449-think-memory-switch-and-external-truth-channel.md",
+   "line": 88,
+   "pair": "178.6→2.0",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "纪律：`内部一致率` 从此只许作**内部一致性**证据，不得再当\"正确性\"（R447 教训：`gen 178.6→2.0` 但 `agree 0.4444`）。"
+  },
+  {
+   "file": "docs/plans/v0.72.0-r452-product-native-real-traffic.md",
+   "line": 84,
+   "pair": "364→32",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- **`RC-c1` 的 token 膨胀**：我的「轮感知匹配器」在网格臂上按**前 64 字符前缀**匹配真实语料轮 ⇒ 「继续…」类短轮**跨语料命中**，桩返回 160 字符真实回复（而非 15 字符常量）⇒ 远端 prompt 逐轮变长（39,364 vs 32,968）。"
+  },
+  {
+   "file": "docs/plans/v0.80.0-r461-contract-and-hitrate.md",
+   "line": 12,
+   "pair": "241→160",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "R460 已答：精炼（T5 241→160 字）、菜单（门 ask + Choices + 正文 3 项，单源）、token（∑ 54,927→39,863，−27.4%）。"
+  },
+  {
+   "file": "docs/plans/v0.80.0-r461-contract-and-hitrate.md",
+   "line": 12,
+   "pair": "927→39",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "R460 已答：精炼（T5 241→160 字）、菜单（门 ask + Choices + 正文 3 项，单源）、token（∑ 54,927→39,863，−27.4%）。"
+  },
+  {
+   "file": "docs/plans/v0.90.0-r474-kpi-denominator-provider-truth.md",
+   "line": 11,
+   "pair": "097→14",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| R465–R467 的 `total_tokens = 32,097 → 14,529` 是**桩侧** `字符数//2` 估算 | `eval/rover/r467/arm-R.json:stub_est` | 与用户 KPI「总 token 使用量」**不同源**，不能作为对外结论 |"
+  },
+  {
+   "file": "docs/plans/v0.91.0-r475-replay-and-cache-accounting.md",
+   "line": 15,
+   "pair": "900→1.0152",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "3. **口径**：3 例 `effective_hit_rate > 1`（实测 `hit=2,944 > cacheable=2,900 ⇒ 1.0152`）—— 命中量超过同会话可缓存上界，说明命中来自**比上一轮更长的共享前缀**，K2b 对该轮不适用，>1 会污染红线统计。"
+  }
+ ],
+ "by_file": {
+  "docs/reports/brevity-menu-cache-r460.md": 8,
+  "docs/reports/codex-contrast-r454.md": 4,
+  "docs/reports/contract-and-hitrate-r461.md": 2,
+  "docs/reports/dev-return-digest.md": 3,
+  "docs/reports/dynamic-telemetry-eval-rollback-strategy.md": 9,
+  "docs/reports/effect-closure-r457.md": 1,
+  "docs/reports/endpoint-and-audit-contract.md": 5,
+  "docs/reports/function-map-R326.md": 1,
+  "docs/reports/iteration-master-plan.md": 23,
+  "docs/reports/kpi2-token-report-R324.md": 1,
+  "docs/reports/loop-detection-probe-hardening.md": 3,
+  "docs/reports/market-agent-capabilities-R338.md": 2,
+  "docs/reports/r462-weight-probe.md": 1,
+  "docs/reports/r464-config-fail-closed.md": 2,
+  "docs/reports/r465-repeat-skip.md": 3,
+  "docs/reports/r466-repeat-priority.md": 1,
+  "docs/reports/r467-denominator-pinned.md": 4,
+  "docs/reports/r468-real-traffic-composition.md": 2,
+  "docs/reports/r472-cache-cap-experiment.md": 4,
+  "docs/reports/r474-real-provider-arms.md": 6,
+  "docs/reports/r475-replay-and-cache-accounting.md": 4,
+  "docs/reports/r476-band-aware-kpi.md": 3,
+  "docs/reports/r477-real-e2e-replay-and-band-live.md": 10,
+  "docs/reports/r478-empty-body-cause-and-request-binding.md": 1,
+  "docs/reports/r479-responses-wire-and-typed-semantics.md": 3,
+  "docs/reports/r480-recall-test-ledger.md": 9,
+  "docs/reports/r480c-summary-vs-classification.md": 1,
+  "docs/reports/r482-real-e2e-r478-fix-and-quality-cost.md": 1,
+  "docs/reports/r483-recall-band-readings.md": 1,
+  "docs/reports/r486-write-side-address-and-candidate-ledger.md": 1,
+  "docs/reports/r487-three-arm-realand-gate-isolation.md": 9,
+  "docs/reports/r488-two-by-two-ablation-and-tag-fix.md": 3,
+  "docs/plans/v0.15.3-perf-memory-plan.md": 1,
+  "docs/plans/v0.16.1-hash-unify-plan.md": 1,
+  "docs/plans/v0.16.3-rag-prune-amortize-plan.md": 1,
+  "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md": 74,
+  "docs/plans/v0.22.0-exp2-multi-option-ask-menu-protocol.md": 1,
+  "docs/plans/v0.22.0-exp3-step-alignment-validation.md": 1,
+  "docs/plans/v0.22.0-exp5-lesson-table.md": 2,
+  "docs/plans/v0.22.0-exp6-embedding-model-selection.md": 4,
+  "docs/plans/v0.22.0-exp7-bge-idle-training-loop.md": 1,
+  "docs/plans/v0.22.0-exp9-subtask-plan-routing-and-local-first.md": 3,
+  "docs/plans/v0.22.0-longterm-backlog.md": 15,
+  "docs/plans/v0.22.0-r371-capability-probe-python-game.md": 6,
+  "docs/plans/v0.23.0-exp10-agent.rover-local-prover-engine.md": 2,
+  "docs/plans/v0.23.0-exp11-formal-verification-agent-augmentation.md": 2,
+  "docs/plans/v0.23.0-exp12-agent-chain-dcr-90p5-feasibility.md": 2,
+  "docs/plans/v0.26.0-r400-rover-generation-chain.md": 2,
+  "docs/plans/v0.31.0-r409-local-prompt-template-gate.md": 1,
+  "docs/plans/v0.33.0-r411-long-lived-generation-port.md": 3,
+  "docs/plans/v0.36.0-r414-failure-visibility.md": 1,
+  "docs/plans/v0.38.0-r417-probe-anti-saturation.md": 1,
+  "docs/plans/v0.40.0-r419-probe-multiturn.md": 1,
+  "docs/plans/v0.44.0-r423-tf-saturation.md": 1,
+  "docs/plans/v0.45.0-r424-aot-mainline-replication.md": 1,
+  "docs/plans/v0.46.0-r425-ratio-sensitivity-grid.md": 10,
+  "docs/plans/v0.47.0-r426-relation-judge-localization.md": 5,
+  "docs/plans/v0.48.0-r427-duplicate-tie-precheck.md": 1,
+  "docs/plans/v0.49.0-r428-duplicate-collapse.md": 2,
+  "docs/plans/v0.51.0-r430-input-fingerprint.md": 2,
+  "docs/plans/v0.54.0-r433-doc-driven-probe-rerun.md": 2,
+  "docs/plans/v0.55.0-r434-falseinfo-discrimination-grid.md": 2,
+  "docs/plans/v0.56.0-r435-relation-judge-localization.md": 4,
+  "docs/plans/v0.57.0-r436-e2e-brj-token-kpi.md": 3,
+  "docs/plans/v0.58.0-r438-localskip-no-replay.md": 2,
+  "docs/plans/v0.60.0-r440-length-ladder-measurement.md": 1,
+  "docs/plans/v0.62.0-r442-accounting-and-asymmetry.md": 1,
+  "docs/plans/v0.63.0-r443-local-token-truth-and-replay-ablation.md": 1,
+  "docs/plans/v0.64.0-r444-cheap-necessary-condition-prefilter.md": 3,
+  "docs/plans/v0.65.0-r445-judge-side-prefilter-precheck.md": 3,
+  "docs/plans/v0.66.0-r446-judge-determinism-and-zero-token-settlement.md": 3,
+  "docs/plans/v0.67.0-r447-judge-decode-constraint.md": 3,
+  "docs/plans/v0.69.0-r449-think-memory-switch-and-external-truth-channel.md": 1,
+  "docs/plans/v0.71.0-r451-real-traffic-reprobe.md": 1,
+  "docs/plans/v0.72.0-r452-product-native-real-traffic.md": 2,
+  "docs/plans/v0.78.0-r458-humanized-continuation.md": 2,
+  "docs/plans/v0.80.0-r461-contract-and-hitrate.md": 6,
+  "docs/plans/v0.90.0-r474-kpi-denominator-provider-truth.md": 1,
+  "docs/plans/v0.91.0-r475-replay-and-cache-accounting.md": 1,
+  "docs/plans/v0.93.0-r477-real-e2e-replay-and-band-live.md": 1,
+  "docs/plans/v0.97.0-r481-consolidation.md": 2
+ },
+ "hits": [
+  {
+   "file": "docs/reports/brevity-menu-cache-r460.md",
+   "line": 10,
+   "pair": "241→160",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 「r458 回复要精炼」 | T5 **241→160** 字（−33.6%）✓；承接注入块 **288→163** 字（−43.6%）✓；T6 146→123，剥离合同标记后 **87** 字（估算） |"
+  },
+  {
+   "file": "docs/reports/brevity-menu-cache-r460.md",
+   "line": 10,
+   "pair": "288→163",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 「r458 回复要精炼」 | T5 **241→160** 字（−33.6%）✓；承接注入块 **288→163** 字（−43.6%）✓；T6 146→123，剥离合同标记后 **87** 字（估算） |"
+  },
+  {
+   "file": "docs/reports/brevity-menu-cache-r460.md",
+   "line": 10,
+   "pair": "146→123",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 「r458 回复要精炼」 | T5 **241→160** 字（−33.6%）✓；承接注入块 **288→163** 字（−43.6%）✓；T6 146→123，剥离合同标记后 **87** 字（估算） |"
+  },
+  {
+   "file": "docs/reports/brevity-menu-cache-r460.md",
+   "line": 11,
+   "pair": "927→39",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| 「命中率和 tokens 都不达标」 | tokens:**达标**（prompt ∑ 54,927→39,863 = **−27.4%**，调用 17→13 = codex 同数）；命中率:**未达标**（90.4%→85.1%）—— 原因见 §3 |"
+  },
+  {
+   "file": "docs/reports/brevity-menu-cache-r460.md",
+   "line": 11,
+   "pair": "17→13",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| 「命中率和 tokens 都不达标」 | tokens:**达标**（prompt ∑ 54,927→39,863 = **−27.4%**，调用 17→13 = codex 同数）；命中率:**未达标**（90.4%→85.1%）—— 原因见 §3 |"
+  },
+  {
+   "file": "docs/reports/brevity-menu-cache-r460.md",
+   "line": 18,
+   "pair": "33→85",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| `[下轮预估·上轮任务]` | 33 → 85 | 随轮次增长 |"
+  },
+  {
+   "file": "docs/reports/brevity-menu-cache-r460.md",
+   "line": 19,
+   "pair": "308→417",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| `[SessionMemory …]` | **308 → 417 → 613 → 836** | **miss 主质量（逐轮膨胀）** |"
+  },
+  {
+   "file": "docs/reports/brevity-menu-cache-r460.md",
+   "line": 19,
+   "pair": "613→836",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| `[SessionMemory …]` | **308 → 417 → 613 → 836** | **miss 主质量（逐轮膨胀）** |"
+  },
+  {
+   "file": "docs/reports/codex-contrast-r454.md",
+   "line": 74,
+   "pair": "4→9",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| codex | **6** | 4→9（自增历史） | instructions 16,979 字符 + tools 9 项 | 4,356→4,794（∑27,474） | **4,224→4,608 /次（≈95%）** | 86→176（∑599） | 未收敛（rc=1） |"
+  },
+  {
+   "file": "docs/reports/codex-contrast-r454.md",
+   "line": 74,
+   "pair": "356→4",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| codex | **6** | 4→9（自增历史） | instructions 16,979 字符 + tools 9 项 | 4,356→4,794（∑27,474） | **4,224→4,608 /次（≈95%）** | 86→176（∑599） | 未收敛（rc=1） |"
+  },
+  {
+   "file": "docs/reports/codex-contrast-r454.md",
+   "line": 74,
+   "pair": "224→4",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| codex | **6** | 4→9（自增历史） | instructions 16,979 字符 + tools 9 项 | 4,356→4,794（∑27,474） | **4,224→4,608 /次（≈95%）** | 86→176（∑599） | 未收敛（rc=1） |"
+  },
+  {
+   "file": "docs/reports/codex-contrast-r454.md",
+   "line": 74,
+   "pair": "86→176",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| codex | **6** | 4→9（自增历史） | instructions 16,979 字符 + tools 9 项 | 4,356→4,794（∑27,474） | **4,224→4,608 /次（≈95%）** | 86→176（∑599） | 未收敛（rc=1） |"
+  },
+  {
+   "file": "docs/reports/contract-and-hitrate-r461.md",
+   "line": 24,
+   "pair": "241→152",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "1. **精炼：达标**。T5 241→152 字、T6 146→118 字，承接块 288→**164 字**。"
+  },
+  {
+   "file": "docs/reports/contract-and-hitrate-r461.md",
+   "line": 24,
+   "pair": "146→118",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "1. **精炼：达标**。T5 241→152 字、T6 146→118 字，承接块 288→**164 字**。"
+  },
+  {
+   "file": "docs/reports/dev-return-digest.md",
+   "line": 107,
+   "pair": "396→400",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| `e7d99e4` | exp1-Q3b 附录B: 补 396->400 文件口径机检说明（对侧 R430/R431 新增 4 个 src/**.cs，非口径变化） |"
+  },
+  {
+   "file": "docs/reports/dev-return-digest.md",
+   "line": 115,
+   "pair": "2→8",
+   "declared": true,
+   "metric_line": false,
+   "verdict": "HAS_DECL",
+   "text": "| `e0b9058` | R428-hold: 循环入口探针 v3 — 计划项行 (expN) 入账 + 自陈欠项判 open; 自检 15/15 (11 判定 + 4 负控); open 2→8, mode 恒 tasks; 零产品源码改动/零 dotnet/不占轮号 (R428 由 30m 节拍作业占用中) |"
+  },
+  {
+   "file": "docs/reports/dev-return-digest.md",
+   "line": 116,
+   "pair": "4→1",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "| `974cac7` | R426: 关系判官(CorrectionDetector L2)本地化 — 跳过轮残留远端微调用 4→1; A→C token k6 -67.6%/k8 -81.0%; 判据 PASS12/PARTIAL2/FAIL2/UNDECIDABLE1; k8 门判翻转反例登记; AOT IL 警"
+  },
+  {
+   "file": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md",
+   "line": 63,
+   "pair": "251→252",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- **D2 KPI 健康带**：每用例 tokens/wall/rel 有平滑基准带（历史 5 轮均值），越界即 `KPI_BREACH` 标记。**breach 只标记不判 FAIL**——先复跑确认，防把 LLM 单轮波动当回归（mass_251→252 实证）。*状态：✅ R128 上线。*"
+  },
+  {
+   "file": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md",
+   "line": 129,
+   "pair": "746→586",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "**体验优化已落地**：规则8 输出纪律（解释类 -49% tokens）、C11 prompt 治理（746→586）、缺陷54（assembly -98% 直接砍用户等待）、D2 防误回退。"
+  },
+  {
+   "file": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md",
+   "line": 198,
+   "pair": "941→939",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- **最近五批审计（批76-80）**：63/63 全绿（quick-11 子集 44/44）；tok/case 941→939→928→860 递降带内（全量批 1165 口径不同）；drift 全 1.0；suspects 0；D4 rel 修复前 n=0（缺陷 57）/修复后 n=11 avg 0.631。"
+  },
+  {
+   "file": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md",
+   "line": 198,
+   "pair": "928→860",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- **最近五批审计（批76-80）**：63/63 全绿（quick-11 子集 44/44）；tok/case 941→939→928→860 递降带内（全量批 1165 口径不同）；drift 全 1.0；suspects 0；D4 rel 修复前 n=0（缺陷 57）/修复后 n=11 avg 0.631。"
+  },
+  {
+   "file": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md",
+   "line": 209,
+   "pair": "1100→1250",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- **R180-R182 (C07 记忆链三连修)**: 真缺陷 60 (must_contain 硬判定误用 req() → NameError 崩批, 改 x[pass]=False); C07 记忆源破案 (跨进程 forecast.json 单槽被中间用例竞态覆盖 → 批340 丢失实证链: forecast"
+  },
+  {
+   "file": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md",
+   "line": 217,
+   "pair": "542→2355",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- **R238-R245 (底座能力专项 — 用户三连质询驱动)**: KPI-2 token 全史报告 (542→2355 C07 归因, 无注入膨胀); 压缩 audit 体系 (ground-truth 104 篇多样态 × 4 档 × 3 级别; 首轮实证 SummarySentences 丢因果/指令 → "
+  },
+  {
+   "file": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md",
+   "line": 218,
+   "pair": "0.85→0.9615",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- **in-flight**：R246 → ① 句切分器修复 **DONE (R257, 2026-09-09: 多样态 instr 0.85→0.9615, 12 审计行全过 0.95 健康线, A3b/A3c/A3d 三修 AOT+473 单测+批 224 零回退闭环)** ② audit 每批抽查自动化 (下一"
+  },
+  {
+   "file": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md",
+   "line": 261,
+   "pair": "812→176",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- 行为差分口径确立: 画像独有事实锚 (非宽词), 全隔离臂对照 (context 812→176tok)"
+  },
+  {
+   "file": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md",
+   "line": 262,
+   "pair": "3→10",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 待做: 问题族扩容 (3→10) 显著性复测; L2 topic_drift 打点"
+  },
+  {
+   "file": "docs/reports/effect-closure-r457.md",
+   "line": 49,
+   "pair": "9→15",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- **调用数上升（9→15）**：动作环真执行工具后每步都要回灌，属「真干活」的成本；判据是产物与 KPI，不是调用数下降。"
+  },
+  {
+   "file": "docs/reports/endpoint-and-audit-contract.md",
+   "line": 11,
+   "pair": "7919.5→12775",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "| P2 | **本地成本口径会翻转结论方向**: 字符/2 折算 → tokenizer 真值 | R443 实测（同 M20 档案）: 本地合计 **7919.5 → 12775 = 1.613×**（门 prompt 1.398×、门生成 1.267×、判官 prompt 1.496×）⇒ 含本地口径的降幅 **"
+  },
+  {
+   "file": "docs/reports/endpoint-and-audit-contract.md",
+   "line": 13,
+   "pair": "61230→61256",
+   "declared": true,
+   "metric_line": false,
+   "verdict": "HAS_DECL",
+   "text": "| P4 | **测量面存在未登记混淆**: 工作区目录名进 system prompt | R443 A 臂对（同二进制语义、仅目录名不同）: 61230 → 61256 tok / 25 调用 = **+1.04 tok/调用**；BRJ 臂 +18/13 调用 = +1.4 ⇒ 任何跨轮逐位比较都会被它污染 |"
+  },
+  {
+   "file": "docs/reports/endpoint-and-audit-contract.md",
+   "line": 44,
+   "pair": "7919.5→12775",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "逐分量折算误差: 门 prompt **1.398×**、门生成 1.267×、判官 prompt **1.496×**、本地合计 **1.613×**（7919.5 → 12775）。"
+  },
+  {
+   "file": "docs/reports/endpoint-and-audit-contract.md",
+   "line": 59,
+   "pair": "0→1",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 开关可机检 | `replay_skipped` 0→1、`dropped_sum` 2024→0 |"
+  },
+  {
+   "file": "docs/reports/endpoint-and-audit-contract.md",
+   "line": 59,
+   "pair": "2024→0",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 开关可机检 | `replay_skipped` 0→1、`dropped_sum` 2024→0 |"
+  },
+  {
+   "file": "docs/reports/function-map-R326.md",
+   "line": 148,
+   "pair": "10→500",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| Memory 源召回 | ContextAssembler.RecallFromMemoryAsync (RAGRecall) | TopK10 → 500tok 预算/低相关收缩 | ● |"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 50,
+   "pair": "10→100",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| K1 | **被提问概率**（用户话题倾向） | agent 主动澄清/追问的触发是否踩中用户真实意图；话题画像驱动上下文偏置 | UserTendency 画像（data/tendency/*.json）+ clarification 链路 + tendency_bias 探针 | ✓ 链路已通（R133 缺陷5"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 50,
+   "pair": "0.296→0.8",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| K1 | **被提问概率**（用户话题倾向） | agent 主动澄清/追问的触发是否踩中用户真实意图；话题画像驱动上下文偏置 | UserTendency 画像（data/tendency/*.json）+ clarification 链路 + tendency_bias 探针 | ✓ 链路已通（R133 缺陷5"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 50,
+   "pair": "0→1",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| K1 | **被提问概率**（用户话题倾向） | agent 主动澄清/追问的触发是否踩中用户真实意图；话题画像驱动上下文偏置 | UserTendency 画像（data/tendency/*.json）+ clarification 链路 + tendency_bias 探针 | ✓ 链路已通（R133 缺陷5"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 51,
+   "pair": "943→479",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| K2 | **token 使用量** | 单轮/单任务 token 消耗（含 prompt 膨胀与 completion 冗余） | 轮 JSON prompt/completion tokens + D2 KPI 健康带 + D5 per-case delta + 规则8 输出纪律 | ✓ 治理中：C08 943"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 52,
+   "pair": "64→97",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| K2b | **prompt 缓存命中率**（K2 成本侧子指标, R377 用户钦定; **R380 口径修订为首要 KPI**） | **有效命中率 = `cache_hit_tokens / min(本轮 prompt_tokens, 上一轮同会话 prompt_tokens)`**（只算『需要命中的部分』,"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 370,
+   "pair": "178.6→119.7",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| R448 | `r448.judge-think-length-cap` | L3 | 判官 prompt 侧「限长思考」（保留思考、只压缩长度）真机消融 —— 负结论: 生成仅降 33.0%（178.6→119.7）且预算 128 下 61.1% 思考被截断、与产品… |"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 380,
+   "pair": "4→2",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| R456 | `r456.action-loop` | L2 | 动作环(声明/解析/回灌/执行)链机制修复: 同套件(同夹具/同6轮/同模型)产物 0/4 -> 2/4(count.txt=4, merged.txt=ALPHA/BETA/GA… |"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 381,
+   "pair": "4→4",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| R457 | `r457.effect-closure` | L3 | 动作环效果收口(真机 E2E): 同夹具产物 2/4 -> 4/4 (stats.txt=chars=14, first.txt=R455 fixture note), 磁盘伪造 … |"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 384,
+   "pair": "241→160",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| R460 | `r460.brevity-menu-cache` | L2 | 承接轮精炼 + 菜单单源 + 命中率/token 归因 (真机 E2E, 同夹具/同 6 轮/同模型, 唯一差异=二进制): T5 回复 241→160 字 (-33.6%),… |"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 443,
+   "pair": "146→149",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "> 取代关系: 本增量取代下方「R441–R478 轮次索引」段的 `registry rows=146 / updated_round=R478`（row 数 146 → 149，最新轮号 R478 → R479）。旧段正文保留为历史读数，不再作为当前口径。"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 449,
+   "pair": "13→12",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 本机实跑读数（2026-09-16）: 测试 **2/13 → 12/13 → 14/14**；`OutOfMemoryException` **16 → 0**；用例耗时 **2m12s → 391 ms → 949 ms**（多 1 用例）；`agent.recall` 库 **rc=0 / 0 warning"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 449,
+   "pair": "13→14",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 本机实跑读数（2026-09-16）: 测试 **2/13 → 12/13 → 14/14**；`OutOfMemoryException` **16 → 0**；用例耗时 **2m12s → 391 ms → 949 ms**（多 1 用例）；`agent.recall` 库 **rc=0 / 0 warning"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 449,
+   "pair": "16→0",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 本机实跑读数（2026-09-16）: 测试 **2/13 → 12/13 → 14/14**；`OutOfMemoryException` **16 → 0**；用例耗时 **2m12s → 391 ms → 949 ms**（多 1 用例）；`agent.recall` 库 **rc=0 / 0 warning"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 512,
+   "pair": "149→150",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "> 取代关系: 本增量取代上方各段「轮次索引」的 row 数口径（149 → 150 → **151**，最新轮号 R479 → R481）。旧段正文保留为历史读数，不再作为当前口径。"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 519,
+   "pair": "711→6",
+   "declared": true,
+   "metric_line": false,
+   "verdict": "HAS_DECL",
+   "text": "- 修正：external 未过滤（伪 0.6771→真 0.8125）+ 自身产物入语料（pin 漂移 6,711→6,713 ⇒ 排除后稳定 6,710）。"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 569,
+   "pair": "178.6→119.7",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| R448 | `r448.judge-think-length-cap` | L3 | 判官 prompt 侧「限长思考」（保留思考、只压缩长度）真机消融 —— 负结论: 生成仅降 33.0%（178.6→119.7）且预算 128 下 61.1% 思考被截断、与产品基线判决一致率 0.1667 ⇒ 不得启用 … "
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 578,
+   "pair": "7→13",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| R455 | `r455.module-coverage-ab` | L2 | 同环境/同输入/同模型(deepseek-flash)/零重试的模块覆盖对照: 我方 0/4 产物 + 1 次问询 vs codex 4/4 产物 + 0 问询; M1 缓存 86.6% vs 96.6%; 远端调用 7 vs 13; "
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 579,
+   "pair": "4→2",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| R456 | `r456.action-loop` | L2 | 动作环(声明/解析/回灌/执行)链机制修复: 同套件(同夹具/同6轮/同模型)产物 0/4 -> 2/4(count.txt=4, merged.txt=ALPHA/BETA/GAMMA 逐字节同 codex), 磁盘伪造执行记录消失, 审 … |"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 580,
+   "pair": "4→4",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| R457 | `r457.effect-closure` | L3 | 动作环效果收口(真机 E2E): 同夹具产物 2/4 -> 4/4 (stats.txt=chars=14, first.txt=R455 fixture note), 磁盘伪造 0; 三缺口机制修复: 台账回灌(命中 8 个实发请求) / …"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 582,
+   "pair": "241→160",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| R460 | `r460.brevity-menu-cache` | L2 | 承接轮精炼 + 菜单单源 + 命中率/token 归因 (真机 E2E, 同夹具/同 6 轮/同模型, 唯一差异=二进制): T5 回复 241→160 字 (-33.6%), 承接注入块 288→163 字 (-43.6%, MaxA"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 582,
+   "pair": "288→163",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| R460 | `r460.brevity-menu-cache` | L2 | 承接轮精炼 + 菜单单源 + 命中率/token 归因 (真机 E2E, 同夹具/同 6 轮/同模型, 唯一差异=二进制): T5 回复 241→160 字 (-33.6%), 承接注入块 288→163 字 (-43.6%, MaxA"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 667,
+   "pair": "1.0→0.0",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "explicit_rel **0.0913**（0.85）/ root_rel **1.0**（PASS）/ slash_token 58,155；守恒式 True；负控 `--nc-blind` 1.0→0.0；"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 690,
+   "pair": "392.1→4",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 判据：**H1 主 KPI PASS**（B→R −33.28% ⇒ **首次 ≥30%**）· **H2 FAIL（方向被证伪）**（gate 单独 prompt/调用 4,392.1→4,395.2 = **+3.1** ⇒ R487 归因不成立）"
+  },
+  {
+   "file": "docs/reports/kpi2-token-report-R324.md",
+   "line": 52,
+   "pair": "11→12",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "- **口径变更登记制度**: quick 扩容 (11→12→13) / 新口径 (XL/route-3) 必须在当轮报告登记"
+  },
+  {
+   "file": "docs/reports/loop-detection-probe-hardening.md",
+   "line": 18,
+   "pair": "2→3",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| D2 | 状态列硬编码 `cells[2]` ⇒ 「轮次看板」状态列在第 4 格的行永不入账 | 由**表头**定位状态列（`状态|进度`），无表头退回 `cells[2]` 并在 `sources.state_col` 标注 | 负控 N2: v1 逻辑漏 R910；真机 `state_col` R371/R37"
+  },
+  {
+   "file": "docs/reports/loop-detection-probe-hardening.md",
+   "line": 45,
+   "pair": "1→5",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "3. `open_count` 由 1→5 是**判定修正**，不是计划项变多；历史轮（R371/R370「进行中」）入账属判定口径扩张，未做历史轮归档判断。"
+  },
+  {
+   "file": "docs/reports/loop-detection-probe-hardening.md",
+   "line": 81,
+   "pair": "2→8",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- `open_count` **2 → 8**（新增 6 条计划项），`mode` 恒为 `tasks`，open 集合 pre ⊂ post（只增不漏）。"
+  },
+  {
+   "file": "docs/reports/market-agent-capabilities-R338.md",
+   "line": 228,
+   "pair": "500→200",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- **成本**【第三方】：免费档/Pro $15–20/月/Teams/企业；ACU（Agent Compute Units）计量；免费额度 2026 初收紧（500→200 actions/月）；定价细节多变。"
+  },
+  {
+   "file": "docs/reports/market-agent-capabilities-R338.md",
+   "line": 289,
+   "pair": "200→500",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "3. **Windsurf/Devin Desktop**：官方文档已切至 docs.devin.ai（证明品牌合并属实），但 Cascade EOL 日期（2026-07-01）、Devin Local（Rust）能力、SWE-1.6 细节、定价结构全部为第三方描述，且多来源数字冲突（免费额度 200 vs 500、"
+  },
+  {
+   "file": "docs/reports/r462-weight-probe.md",
+   "line": 44,
+   "pair": "14→1",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- **NC2 调用面**：不渲染 ⇒ 模型退化为复读机（`P\\nP\\nP…`），同臂两次跑不可复现（13/14 vs 1/14）⇒ v2 读数亦 VOID。"
+  },
+  {
+   "file": "docs/reports/r464-config-fail-closed.md",
+   "line": 41,
+   "pair": "21→8",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- **主判据 C5 PASS**：B3B 对 Arole 降幅 **38.52%**（≥30% 达标），远端调用 21 → 8。"
+  },
+  {
+   "file": "docs/reports/r464-config-fail-closed.md",
+   "line": 43,
+   "pair": "306→20",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- **C3/C4 PASS**：错配臂留下 2 条告警，且读数**不再与 B3B 相同**（33,306 vs 20,487）。"
+  },
+  {
+   "file": "docs/reports/r465-repeat-skip.md",
+   "line": 45,
+   "pair": "49.9→22.2",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 预热实测 `local_channel_warmup{ok=true, warm_ms=26036}` ⇒ 首个门控轮 **49.9 → 22.2 s（−55.5%）**，稳态不变（19.4 s）。"
+  },
+  {
+   "file": "docs/reports/r465-repeat-skip.md",
+   "line": 62,
+   "pair": "46→21",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| C3 | 复述轮答复 == 上一条（逐字，t6/t9） | **FAIL** | t9 成立；t6 被承接反问覆盖（46 vs 21 字符） |"
+  },
+  {
+   "file": "docs/reports/r465-repeat-skip.md",
+   "line": 67,
+   "pair": "49.9→22.2",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| C7 | 预热：pid 数不增 ∧ warmup ok ∧ 首轮改善 | **PASS** | pids 2=2；ok=true；49.9→22.2 s |"
+  },
+  {
+   "file": "docs/reports/r466-repeat-priority.md",
+   "line": 23,
+   "pair": "6→13",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- C1 降幅 ≥30%: **54.73%** (14,529 vs Arole 32,097; 调用 6 vs 13) ✓"
+  },
+  {
+   "file": "docs/reports/r467-denominator-pinned.md",
+   "line": 6,
+   "pair": "323→13",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 一句话: R465→R466 的分母漂移（21/33,323 → 13/32,097）**真因是臂脚本的 `relation_judge` 标志**，"
+  },
+  {
+   "file": "docs/reports/r467-denominator-pinned.md",
+   "line": 37,
+   "pair": "6→12",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "且远端调用次数 `6 vs 12`（主调用）/`6 vs 21`（含判官）—— 省下的最大单项就是 8 次判官远端调用。"
+  },
+  {
+   "file": "docs/reports/r467-denominator-pinned.md",
+   "line": 37,
+   "pair": "6→21",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "且远端调用次数 `6 vs 12`（主调用）/`6 vs 21`（含判官）—— 省下的最大单项就是 8 次判官远端调用。"
+  },
+  {
+   "file": "docs/reports/r467-denominator-pinned.md",
+   "line": 105,
+   "pair": "019→3",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "3. **前缀按需注入**（97% 缓存红线相关）：主调用 prompt 逐轮单调增（2,019→3,461 tok）是当前最大单项成本；"
+  },
+  {
+   "file": "docs/reports/r468-real-traffic-composition.md",
+   "line": 61,
+   "pair": "019→3",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "① **前缀按需注入 / prompt 瘦身**（真实面 90.2% 轮必走远端；主调用 prompt 逐轮 2,019→3,461 tok 为最大单项成本；判据 = 真实面单轮新内容 tok ≤ 93.5 以达 97% 命中红线）"
+  },
+  {
+   "file": "docs/reports/r468-real-traffic-composition.md",
+   "line": 62,
+   "pair": "40.0→126.6",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "② 判官延迟面（R467 遗留：判官本地化 40.0→126.6 s）"
+  },
+  {
+   "file": "docs/reports/r472-cache-cap-experiment.md",
+   "line": 25,
+   "pair": "910→3",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "2. **命中随共享前缀线性增长**: 前缀 910→3,789→5,811 tok 时命中 768→3,584→5,632, 比值 0.844/0.946/0.969 单调升(趋 1) — 若存在 2k 上限, 后两臂应并列在 2,048 附近。"
+  },
+  {
+   "file": "docs/reports/r472-cache-cap-experiment.md",
+   "line": 25,
+   "pair": "789→5",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "2. **命中随共享前缀线性增长**: 前缀 910→3,789→5,811 tok 时命中 768→3,584→5,632, 比值 0.844/0.946/0.969 单调升(趋 1) — 若存在 2k 上限, 后两臂应并列在 2,048 附近。"
+  },
+  {
+   "file": "docs/reports/r472-cache-cap-experiment.md",
+   "line": 25,
+   "pair": "768→3",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "2. **命中随共享前缀线性增长**: 前缀 910→3,789→5,811 tok 时命中 768→3,584→5,632, 比值 0.844/0.946/0.969 单调升(趋 1) — 若存在 2k 上限, 后两臂应并列在 2,048 附近。"
+  },
+  {
+   "file": "docs/reports/r472-cache-cap-experiment.md",
+   "line": 25,
+   "pair": "584→5",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "2. **命中随共享前缀线性增长**: 前缀 910→3,789→5,811 tok 时命中 768→3,584→5,632, 比值 0.844/0.946/0.969 单调升(趋 1) — 若存在 2k 上限, 后两臂应并列在 2,048 附近。"
+  },
+  {
+   "file": "docs/reports/r474-real-provider-arms.md",
+   "line": 25,
+   "pair": "32097→14529",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "桩口径 R467: 32097 -> 14529 = **-54.74%** ; 供应商真值 R474: 76094 -> 32769 = **-56.94%** (差 2.2pp)。"
+  },
+  {
+   "file": "docs/reports/r474-real-provider-arms.md",
+   "line": 25,
+   "pair": "76094→32769",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "桩口径 R467: 32097 -> 14529 = **-54.74%** ; 供应商真值 R474: 76094 -> 32769 = **-56.94%** (差 2.2pp)。"
+  },
+  {
+   "file": "docs/reports/r474-real-provider-arms.md",
+   "line": 39,
+   "pair": "20→16",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| C2 内外一致 (relay==host llm_call) | **FAIL(字面)** | Arole 20 vs 16 ; R 9 vs 6 |"
+  },
+  {
+   "file": "docs/reports/r474-real-provider-arms.md",
+   "line": 39,
+   "pair": "9→6",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| C2 内外一致 (relay==host llm_call) | **FAIL(字面)** | Arole 20 vs 16 ; R 9 vs 6 |"
+  },
+  {
+   "file": "docs/reports/r474-real-provider-arms.md",
+   "line": 46,
+   "pair": "0→402",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| C9 闸器负控 | PASS | cap=0 -> 402 且零外发 ; 正控 -> 透传 |"
+  },
+  {
+   "file": "docs/reports/r474-real-provider-arms.md",
+   "line": 75,
+   "pair": "0→402",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- `eval/rover/r474/selfcheck_guard.py` — 闸器自检(负控 cap=0 -> 402 零外发 / 正控 -> 透传)"
+  },
+  {
+   "file": "docs/reports/r475-replay-and-cache-accounting.md",
+   "line": 43,
+   "pair": "132→135",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 台账 | registry **132 → 135 行**（L2×3，`updated_round=R475`）；taskplan **43 → 44 节点**；kpi.jsonl **73 → 74 行**；improvements +R475 段（388,649 → 391,509 B）；轮次索引 +3 行（扩"
+  },
+  {
+   "file": "docs/reports/r475-replay-and-cache-accounting.md",
+   "line": 43,
+   "pair": "43→44",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 台账 | registry **132 → 135 行**（L2×3，`updated_round=R475`）；taskplan **43 → 44 节点**；kpi.jsonl **73 → 74 行**；improvements +R475 段（388,649 → 391,509 B）；轮次索引 +3 行（扩"
+  },
+  {
+   "file": "docs/reports/r475-replay-and-cache-accounting.md",
+   "line": 43,
+   "pair": "73→74",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 台账 | registry **132 → 135 行**（L2×3，`updated_round=R475`）；taskplan **43 → 44 节点**；kpi.jsonl **73 → 74 行**；improvements +R475 段（388,649 → 391,509 B）；轮次索引 +3 行（扩"
+  },
+  {
+   "file": "docs/reports/r475-replay-and-cache-accounting.md",
+   "line": 43,
+   "pair": "649→391",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 台账 | registry **132 → 135 行**（L2×3，`updated_round=R475`）；taskplan **43 → 44 节点**；kpi.jsonl **73 → 74 行**；improvements +R475 段（388,649 → 391,509 B）；轮次索引 +3 行（扩"
+  },
+  {
+   "file": "docs/reports/r476-band-aware-kpi.md",
+   "line": 48,
+   "pair": "135→139",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 台账：registry **135 → 139** 行（4 行 R476，均 L2 + negative_control + 纯路径 covers）、taskplan **44 → 45** 节点、`kpi.jsonl` **74 → 75** 行。"
+  },
+  {
+   "file": "docs/reports/r476-band-aware-kpi.md",
+   "line": 48,
+   "pair": "44→45",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 台账：registry **135 → 139** 行（4 行 R476，均 L2 + negative_control + 纯路径 covers）、taskplan **44 → 45** 节点、`kpi.jsonl` **74 → 75** 行。"
+  },
+  {
+   "file": "docs/reports/r476-band-aware-kpi.md",
+   "line": 48,
+   "pair": "74→75",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 台账：registry **135 → 139** 行（4 行 R476，均 L2 + negative_control + 纯路径 covers）、taskplan **44 → 45** 节点、`kpi.jsonl` **74 → 75** 行。"
+  },
+  {
+   "file": "docs/reports/r477-real-e2e-replay-and-band-live.md",
+   "line": 27,
+   "pair": "20→9",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 中继调用次数 | 20 → 9（−55.0%） | **21 → 10（−52.4%）** | 同量级 |"
+  },
+  {
+   "file": "docs/reports/r477-real-e2e-replay-and-band-live.md",
+   "line": 27,
+   "pair": "21→10",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 中继调用次数 | 20 → 9（−55.0%） | **21 → 10（−52.4%）** | 同量级 |"
+  },
+  {
+   "file": "docs/reports/r477-real-e2e-replay-and-band-live.md",
+   "line": 28,
+   "pair": "68329→35600",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| prompt token | — | 68329 → 35600 | **−47.9%** |"
+  },
+  {
+   "file": "docs/reports/r477-real-e2e-replay-and-band-live.md",
+   "line": 29,
+   "pair": "5320→2144",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| completion token | — | 5320 → 2144 | **−59.7%** |"
+  },
+  {
+   "file": "docs/reports/r477-real-e2e-replay-and-band-live.md",
+   "line": 30,
+   "pair": "76094→32769",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| **总 token** | 76094 → 32769（**−56.94%**） | 73649 → 37744（**−48.75%**） | 均 ≥30% 达标 |"
+  },
+  {
+   "file": "docs/reports/r477-real-e2e-replay-and-band-live.md",
+   "line": 30,
+   "pair": "73649→37744",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| **总 token** | 76094 → 32769（**−56.94%**） | 73649 → 37744（**−48.75%**） | 均 ≥30% 达标 |"
+  },
+  {
+   "file": "docs/reports/r477-real-e2e-replay-and-band-live.md",
+   "line": 31,
+   "pair": "0.024301→0.011970",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 成本上界 CNY | — | 0.024301 → 0.011970（闸 0.15 未触） | — |"
+  },
+  {
+   "file": "docs/reports/r477-real-e2e-replay-and-band-live.md",
+   "line": 32,
+   "pair": "58624→28160",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| 缓存命中 token | — | 58624 → 28160 | 命中率 0.858→0.791 |"
+  },
+  {
+   "file": "docs/reports/r477-real-e2e-replay-and-band-live.md",
+   "line": 32,
+   "pair": "0.858→0.791",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| 缓存命中 token | — | 58624 → 28160 | 命中率 0.858→0.791 |"
+  },
+  {
+   "file": "docs/reports/r477-real-e2e-replay-and-band-live.md",
+   "line": 57,
+   "pair": "2634→2792",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "1. **起手闸假阴性**：臂收口只 `pkill -P $HOST_PID`，本地 r1（`llama-server`，RSS 1.83GB）在 R 臂起手时尚未释放 ⇒ `MemAvailable=1318MB < 2650MB` 闸下（`rc=10`），而 **12s 后同一内存自行回落**。修：`run_arm"
+  },
+  {
+   "file": "docs/reports/r478-empty-body-cause-and-request-binding.md",
+   "line": 25,
+   "pair": "30→43",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 单测 | `src/agent.tests/EmptyBodyDiagnosisTests.cs`（新增）+ `ActionLoopTests`/`UserFacingFailureTests`/`R475AccountingTests` | 焦点 **30/30 → 43/43**；全量 **1469/1469 "
+  },
+  {
+   "file": "docs/reports/r479-responses-wire-and-typed-semantics.md",
+   "line": 42,
+   "pair": "146→149",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 台账 `apply_ledger_r479.py` | `--check` 前置判红（fail-closed 生效）→ `--apply` rc=0（registry 146→149、taskplan 46→47）→ 幂等复跑逐字节相同（`registry_idempotent=yes` / `taskplan_i"
+  },
+  {
+   "file": "docs/reports/r479-responses-wire-and-typed-semantics.md",
+   "line": 42,
+   "pair": "46→47",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 台账 `apply_ledger_r479.py` | `--check` 前置判红（fail-closed 生效）→ `--apply` rc=0（registry 146→149、taskplan 46→47）→ 幂等复跑逐字节相同（`registry_idempotent=yes` / `taskplan_i"
+  },
+  {
+   "file": "docs/reports/r479-responses-wire-and-typed-semantics.md",
+   "line": 48,
+   "pair": "4394→4224",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- 远端 `cached=0` 两次：与本轮请求体规模（78 token 前缀）有关，**未**断言远端缓存命中能力（大前缀另测见 R479 前序探针 4394→4224 = 96.1%）。"
+  },
+  {
+   "file": "docs/reports/r480-recall-test-ledger.md",
+   "line": 41,
+   "pair": "13→14",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "## R481-D: D9 交替核验（测试面 12/13 → 14/14，2026-09-16）"
+  },
+  {
+   "file": "docs/reports/r480-recall-test-ledger.md",
+   "line": 69,
+   "pair": "13→12",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "## R481-C: 测试面工程收口 (2/13 → 12/13, 2026-09-16)"
+  },
+  {
+   "file": "docs/reports/r480-recall-test-ledger.md",
+   "line": 74,
+   "pair": "16→0",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| F1 | `RecallFormat.RecallIndexMeta.Read` | 写 varint 读定长 i64 ⇒ 游标错位 ⇒ `rangeCount` 垃圾 ⇒ `ranges.Add` 无界 | OOM 16 → 0; 2m12s → 0.4s |"
+  },
+  {
+   "file": "docs/reports/r480-recall-test-ledger.md",
+   "line": 80,
+   "pair": "3.4675→4.0058",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| F7 | `RecallFormat.DocLength` | lens 表头 12 B (magic8+count4), 读侧按 4 B 偏移 ⇒ **整体错位 2 项** | BM25 分数漂移 3.4675 vs 4.0058 → 修后逐位一致 |"
+  },
+  {
+   "file": "docs/reports/r480-recall-test-ledger.md",
+   "line": 129,
+   "pair": "3→2",
+   "declared": true,
+   "metric_line": false,
+   "verdict": "HAS_DECL",
+   "text": "- **判别力自证**：6 条规则变异（禁改写 / 越根不 fail-closed / 最短长度 3→2 / 去掉 `/` 要求 / 不裁尾标点 / 不去重）**6/6 各被探针抓到**。"
+  },
+  {
+   "file": "docs/reports/r480-recall-test-ledger.md",
+   "line": 151,
+   "pair": "0.1450→0.1538",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "**天花板算式**：相对引用改写的可达面 = **660 / 74,880 = 0.88%**；即使该档 100% 落地，解析率也只 **+0.88 pt**（0.1450 → 0.1538），距 ≥0.90 的 **75.5 pt** 缺口不是这个机制的杠杆（`可省 ≤ 该类占比 × 该类可消除比例`）。"
+  },
+  {
+   "file": "docs/reports/r480-recall-test-ledger.md",
+   "line": 170,
+   "pair": "687→6",
+   "declared": true,
+   "metric_line": false,
+   "verdict": "HAS_DECL",
+   "text": "- `old_arm.vs_registered_r481a.match = false`（files 6,687 vs 6,647；refs 20,348 vs 20,155）⇒ 器具已自标**不可比（语料漂移）**，与报告一致 ✔。"
+  },
+  {
+   "file": "docs/reports/r480-recall-test-ledger.md",
+   "line": 170,
+   "pair": "348→20",
+   "declared": true,
+   "metric_line": false,
+   "verdict": "HAS_DECL",
+   "text": "- `old_arm.vs_registered_r481a.match = false`（files 6,687 vs 6,647；refs 20,348 vs 20,155）⇒ 器具已自标**不可比（语料漂移）**，与报告一致 ✔。"
+  },
+  {
+   "file": "docs/reports/r480-recall-test-ledger.md",
+   "line": 184,
+   "pair": "659→6",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 结论：R481-F 的「两次独立运行核心字段逐字节相同」**只在同一语料成立**；其首跑与第二跑之间语料已 6,659 → 6,658（即已漂移）。**漂移不报警**是机制缺口 ⇒ 本侧补 `check_corpus_pin.py`。"
+  },
+  {
+   "file": "docs/reports/r480c-summary-vs-classification.md",
+   "line": 33,
+   "pair": "92→90",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| C3b(posthoc) | 分类重排改善中位秩 | 92 → 90（r@10 36.67% → 36.50%，**top-10 上为零/负增益**） |"
+  },
+  {
+   "file": "docs/reports/r482-real-e2e-r478-fix-and-quality-cost.md",
+   "line": 17,
+   "pair": "21→14",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "调用次数 −7（21→14，≥5 ⇒ 验收③ 可测增益成立）。"
+  },
+  {
+   "file": "docs/reports/r483-recall-band-readings.md",
+   "line": 30,
+   "pair": "711→6",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "② **自身产物入语料**：探针产物目录被自己扫进语料 ⇒ 每跑一次 pin 就漂移（6,711 → 6,713）；"
+  },
+  {
+   "file": "docs/reports/r486-write-side-address-and-candidate-ledger.md",
+   "line": 44,
+   "pair": "15→4",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 目的: R482 真机 H3/H4 FAIL 的成因是上游空正文基数漂移（15→4），使「可省调用」不可测；本器具把该面搬到确定性桩上，直测「修复是否消除每次空正文事件的 1 次浪费远端调用」。"
+  },
+  {
+   "file": "docs/reports/r487-three-arm-realand-gate-isolation.md",
+   "line": 34,
+   "pair": "302→81",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| H2 **主 KPI** 降幅 ≥30% | **FAIL** | A0→R485 = **+1.83%**（80,302 → 81,770） |"
+  },
+  {
+   "file": "docs/reports/r487-three-arm-realand-gate-isolation.md",
+   "line": 35,
+   "pair": "825→81",
+   "declared": true,
+   "metric_line": false,
+   "verdict": "HAS_DECL",
+   "text": "| H3 配对方向（R485 优于 Arole485） | **FAIL** | 63,825 → 81,770 = **+28.1%**，调用 15→14 |"
+  },
+  {
+   "file": "docs/reports/r487-three-arm-realand-gate-isolation.md",
+   "line": 35,
+   "pair": "15→14",
+   "declared": true,
+   "metric_line": false,
+   "verdict": "HAS_DECL",
+   "text": "| H3 配对方向（R485 优于 Arole485） | **FAIL** | 63,825 → 81,770 = **+28.1%**，调用 15→14 |"
+  },
+  {
+   "file": "docs/reports/r487-three-arm-realand-gate-isolation.md",
+   "line": 42,
+   "pair": "22→15",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "`A0 → Arole485`（**臂参逐字同，只换二进制**）= 调用 **22→15（−31.8%）** / **token 80,302→63,825（−20.6%）** /"
+  },
+  {
+   "file": "docs/reports/r487-three-arm-realand-gate-isolation.md",
+   "line": 42,
+   "pair": "302→63",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "`A0 → Arole485`（**臂参逐字同，只换二进制**）= 调用 **22→15（−31.8%）** / **token 80,302→63,825（−20.6%）** /"
+  },
+  {
+   "file": "docs/reports/r487-three-arm-realand-gate-isolation.md",
+   "line": 43,
+   "pair": "12→12",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "实质轮 **12/12 → 12/12（质量未降）**。⇒ **微问询预发送闸确实带来可测增益**（首次真机读数），但**低于 30% 目标**。"
+  },
+  {
+   "file": "docs/reports/r487-three-arm-realand-gate-isolation.md",
+   "line": 53,
+   "pair": "15→14",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "而调用数只少 1（15→14）⇒ 总 token 上升。**闸没有引入额外调用，是「剩余调用带的上下文更长」**。"
+  },
+  {
+   "file": "docs/reports/r487-three-arm-realand-gate-isolation.md",
+   "line": 81,
+   "pair": "1.0→0.0",
+   "declared": true,
+   "metric_line": false,
+   "verdict": "HAS_DECL",
+   "text": "负控 `--nc-blind`（同码路强判不可解析）⇒ root_rel **1.0 → 0.0**、markdown **0.8125 → 0.0** ⇒ 器具承载判定。"
+  },
+  {
+   "file": "docs/reports/r487-three-arm-realand-gate-isolation.md",
+   "line": 81,
+   "pair": "0.8125→0.0",
+   "declared": true,
+   "metric_line": false,
+   "verdict": "HAS_DECL",
+   "text": "负控 `--nc-blind`（同码路强判不可解析）⇒ root_rel **1.0 → 0.0**、markdown **0.8125 → 0.0** ⇒ 器具承载判定。"
+  },
+  {
+   "file": "docs/reports/r488-two-by-two-ablation-and-tag-fix.md",
+   "line": 36,
+   "pair": "944→47",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| H1 主 KPI B→R ≥30% | **PASS** | 70,944 → 47,333 = **−33.28%** |"
+  },
+  {
+   "file": "docs/reports/r488-two-by-two-ablation-and-tag-fix.md",
+   "line": 37,
+   "pair": "392.1→4",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| H2 `turn_gate` 单独使 prompt/调用变长 | **FAIL（方向被证伪）** | 4,392.1 → 4,395.2（**+3.1**）⇒ R487 的「剩余调用上下文变长」归因在本夹具**不成立** |"
+  },
+  {
+   "file": "docs/reports/r488-two-by-two-ablation-and-tag-fix.md",
+   "line": 38,
+   "pair": "15→14",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| H3 `repeat_skip` 单独为负效应 | PASS | 调用 15→14，token −6.41% |"
+  },
+  {
+   "file": "docs/plans/v0.15.3-perf-memory-plan.md",
+   "line": 35,
+   "pair": "384→256",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 另: HashEmbeddingProvider 双实现 (dim 384 vs 256, 各走各的向量空间)。"
+  },
+  {
+   "file": "docs/plans/v0.16.1-hash-unify-plan.md",
+   "line": 29,
+   "pair": "256→384",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 维度 256→384: R81 每批清空 data/rag/index.jsonl, 无跨形态持久化向量; 批测 bge 在场 (512) 不受影响。"
+  },
+  {
+   "file": "docs/plans/v0.16.3-rag-prune-amortize-plan.md",
+   "line": 24,
+   "pair": "1→512",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 增长期 (1→512) 每 append O(n) 读 → 前 512 条消息累计 O(n²) 读。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 82,
+   "pair": "500→250",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 文件缓存 + TTL + 上限淘汰 | `SearchFailoverService._cache` [src/agent/search/SearchFailoverService.cs:41-42]，500→250 淘汰 [:653-659]，`ClearCacheAsync` [:225] | |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 258,
+   "pair": "6→332",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- **负控**：不存在符号（`CapabilityIndexer` / `ZzNoSuchSymbol`）边数 = **0**（fail-closed ✓）；词面重叠量化：`Index` 词边界 34 行 vs 子串 246 行（×7.2）、`Cache` 6 vs 332（×55.3）⇒ **实现必须词边界匹配，禁"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 295,
+   "pair": "325→308",
+   "declared": true,
+   "metric_line": false,
+   "verdict": "HAS_DECL",
+   "text": "- **对 Q3(a) 的可用结论（掩码规范定稿提案）**：**V3**——掩注释 + 掩纯字符串/字符字面量、**插值孔洞按代码处理**；相对 V2 多保留 17 条真边（+0.6%），相对 V1 噪声由 325 → 308。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 342,
+   "pair": "43→2",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- **只看 VCS 会把 C 判成「几乎零变更」**（`data/` 不入 git：C 190 vs B 159 事件，差异极小）；**只看运行时会把构建产物当源码变更**（对侧 `dotnet` 构建：src 60 min 计数 43 vs 2）。两个来源给出的结论方向一致（A ≈ B ≪ C < D），但量级只有"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 456,
+   "pair": "905→906",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "### E.2 读数（同输入 A/B；语料 905 → 906 条，多出的 1 条 = §1.3 改写新增的引用）"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 467,
+   "pair": "14→9",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 本档：`retired=5`；`relocated` 14→9；`stale_path` 8→3；`symbol_absent` 18→2。`reloc_fact` 全仓 `ok` 12→25（修前 15 条「搬家且符号缺」多为跨引用污染）。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 467,
+   "pair": "8→3",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 本档：`retired=5`；`relocated` 14→9；`stale_path` 8→3；`symbol_absent` 18→2。`reloc_fact` 全仓 `ok` 12→25（修前 15 条「搬家且符号缺」多为跨引用污染）。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 467,
+   "pair": "18→2",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 本档：`retired=5`；`relocated` 14→9；`stale_path` 8→3；`symbol_absent` 18→2。`reloc_fact` 全仓 `ok` 12→25（修前 15 条「搬家且符号缺」多为跨引用污染）。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 467,
+   "pair": "12→25",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 本档：`retired=5`；`relocated` 14→9；`stale_path` 8→3；`symbol_absent` 18→2。`reloc_fact` 全仓 `ok` 12→25（修前 15 条「搬家且符号缺」多为跨引用污染）。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 493,
+   "pair": "1409→1410",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 3 | 本档 **11 行**改动：**3 处真删**加留痕（L78/L169/L151）、**9 处写法漂移**改真实路径（§1.4 四条 + §1.5 两条 + §4.2 + §3.3）、**1 处续引改显式路径**（L68）、**2 处行号事实漂移**（`docs/api.md` 1409→1410）、**1"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 500,
+   "pair": "6→6",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 续引 `retired`（含继承） | 6 | 6 | 6 → 6 |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 501,
+   "pair": "7→1",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 续引 `stale_path` / `stale_lines` / `relocated` | 1 / 1 / 4 | **0 / 0 / 0** | 1 / 1 / 7 → 1 / 0 / 3 |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 504,
+   "pair": "65→65",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 完整引用 `symbol_absent`（启发式候选） | 2 | 2（均已在 E.3 裁定为**主语型假阳性**） | 65 → 65 |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 603,
+   "pair": "13→0",
+   "declared": true,
+   "metric_line": false,
+   "verdict": "HAS_DECL",
+   "text": "| P1 | `relocated` **13 → 0** (10 定点改写 + 3 省略形态改全路径) | 若某条改写后迁移至软桶 `symbol_absent` 且其 `relocated_fact_verdict` 在**修复前**即为 `symbol_absent` ⇒ 按桶归因, 不计入 P1 失败 (软桶非"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 604,
+   "pair": "21→8",
+   "declared": true,
+   "metric_line": false,
+   "verdict": "HAS_DECL",
+   "text": "| P2 | `stale_path` **21 → 8**, 其中 `retired_after_write` **13 → 0**, `retired` 桶 **8 → 21** | 无标记的死引用必须**仍判** `stale_path` (仪器自检负控); 路径**存在**时标记不生效 |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 604,
+   "pair": "13→0",
+   "declared": true,
+   "metric_line": false,
+   "verdict": "HAS_DECL",
+   "text": "| P2 | `stale_path` **21 → 8**, 其中 `retired_after_write` **13 → 0**, `retired` 桶 **8 → 21** | 无标记的死引用必须**仍判** `stale_path` (仪器自检负控); 路径**存在**时标记不生效 |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 604,
+   "pair": "8→21",
+   "declared": true,
+   "metric_line": false,
+   "verdict": "HAS_DECL",
+   "text": "| P2 | `stale_path` **21 → 8**, 其中 `retired_after_write` **13 → 0**, `retired` 桶 **8 → 21** | 无标记的死引用必须**仍判** `stale_path` (仪器自检负控); 路径**存在**时标记不生效 |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 636,
+   "pair": "13→0",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "⇒ **13 条引用从语料中消失**。最危险的形态是: **目标桶全部\"达标\"** (`relocated` 13→0 ✓ / `stale_path` 21→8 ✓ / `exit 0` / 两跑逐位相同 ✓),"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 636,
+   "pair": "21→8",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "⇒ **13 条引用从语料中消失**。最危险的形态是: **目标桶全部\"达标\"** (`relocated` 13→0 ✓ / `stale_path` 21→8 ✓ / `exit 0` / 两跑逐位相同 ✓),"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 862,
+   "pair": "0→22",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "`declared_elsewhere` 分布 A: 0 → 22 条, 1 → 3 条。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 862,
+   "pair": "1→3",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "`declared_elsewhere` 分布 A: 0 → 22 条, 1 → 3 条。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1103,
+   "pair": "63→57",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| C10 口径 | ✅ | 登记 `weak 63 → 57`（剔除 6 条 index-scope-out）**候选**，`delta_applied=false` |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1110,
+   "pair": "63→57",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "3. **口径候选只登记不施加**（C10）：用户面弱边分母 `63 → 57` 记入 `checks_posthoc`，待 L.7 #1 一并裁定。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1216,
+   "pair": "2701→1976",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "2. 预注册 **P3 被实测证伪**：P3 预测\"本类测量峰值占用 < 500MB\"，实测采样 20 点 `2701 → 1976MB`"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1250,
+   "pair": "2701→1976",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 峰值内存（信息字段） | `2701→1976`（**725MB**，**含首次编译**） | `2657→2480`（**177MB**，**增量构建**） |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1250,
+   "pair": "2657→2480",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 峰值内存（信息字段） | `2701→1976`（**725MB**，**含首次编译**） | `2657→2480`（**177MB**，**增量构建**） |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1307,
+   "pair": "63→57",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "weak   63 -> 57   (剔除 6)"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1308,
+   "pair": "365→371",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "strong 365 -> 371  (+6)"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1490,
+   "pair": "24→24",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "FX5 跨域易混总数（24 vs 24）⇒C6；FX6 质词跨域重载⇒C7；FX7 比值无声明⇒C8。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1500,
+   "pair": "574→575",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "3. **预注册 P5 未成立**：C6 要求**跨 (轴, 域)**；574 vs 575 同轴 `symbol`、同派生域 `all` ⇒ 按预注册定义**不触发**。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1531,
+   "pair": "10→14",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "4. 夹具 10 → 14 格：FX11（嵌套累加正控：C1 必覆盖包装键且相等）、FX12（同夹具但登记值 +1 ⇒ 硬红）、FX14（归档缺字段 ⇒ 边界豁免）、FX13（非累加型不可解析 ⇒ fail-closed exit 3）。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1545,
+   "pair": "10→12",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- **成立**：P1（C1 达到面 10→12）、P5（C2–C10 findings / axes / domains / ground_truth 与 Q15 逐位相同）、P6（夹具全绿）、P7（确定性）。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1546,
+   "pair": "4→4",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- **否证并收窄宣称**：**P2**（「两键重放值与登记逐位相同」）**不成立** —— 两键只被 C1 **达到**，随即落口径边界 ⇒ **不得宣称「覆盖增益 = 逐位对账」**；**P3** 计数面不成立（4→4）、语义面成立（笼统 → 类型化 + 零无类型跳过）。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1591,
+   "pair": "4→2",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 修法天花板 | 依赖 face 字段的登记键 = `{n_symbol_faces, symbol_face_candidates, symbol_face_rungs}`；∩ Q16 非重放 4 键 ⇒ 解除 **2 枚**（`symbol_face_rungs`, `n_symbol_faces`）= **4 "
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1599,
+   "pair": "4→2",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- **C9 天花板**：预注册「4 → 2」经 Q16 台账 `not_replayable_typed` 交叉核对成立（解除面 `{symbol_face_rungs, n_symbol_faces}`，二者 Q16 原因均为 `ARCHIVE_FACE_FIELD_ABSENT`）。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1607,
+   "pair": "28→6",
+   "declared": true,
+   "metric_line": false,
+   "verdict": "HAS_DECL",
+   "text": "4. **本器自曝 4 处缺陷（全部由自检/真跑首轮抓出，非事后自查）**：① 分类器首版 `universe = P∪D` ⇒ **归档外来键被静默丢弃**（FX07 读到 `class=None` 才暴露）；② `flow_deps` 首版经循环变量 `c` 作枢纽传播 ⇒ **15 键伪依赖**（PH2/FX15"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1614,
+   "pair": "4→2",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "① **落地修法**：把 `symbol_faces` / `relocated_symbol_faces`（可选：其余 7 枚）加进 `citations.jsonl` 落盘白名单 → 重跑探针 → 断言 `n_symbol_faces` / `symbol_face_rungs` 可由归档**独立复算**（Q16 "
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1626,
+   "pair": "4→2",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "落地附录 R §R.3 归因①的修法：把 `symbol_faces` / `relocated_symbol_faces` 补进探针落盘白名单，并**证明**两枚字段进入归档后，`n_symbol_faces` / `symbol_face_rungs` 两个登记读数可由归档**独立复算**（附录 Q 口径：不可重放"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1656,
+   "pair": "24→25",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| C3 归档键面 | 达标 | 24→25，新增恰 `symbol_faces`（结构性命中） |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1658,
+   "pair": "4→2",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| C5 可重放性（结构性） | 达标 | 4→2 且 typed 集合与预注册逐字相同 |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1659,
+   "pair": "928→997",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| C5b 登记数值面 | **越线（证伪）** | 登记 575 桶值 vs 冻结语料 622；行数 928→997 |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1660,
+   "pair": "9→8",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| C6 分类位移（预注册） | **越线（证伪）** | 预注册 omission 9→8，实测 9→**7** |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1683,
+   "pair": "11→17",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "> **EXP1-Q19 已推进 ① 的登记面**（`instruments.json` 11→17 行，版本/输入指纹/器具 sha 字段落地并**被机检读**，"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1734,
+   "pair": "17→18",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "（后续：EXP1-Q20 已补外部注入入口并转 ✅ ⇒ 双证 **6/6**，`instruments.json` 17 → 18 行，全量面 18/18；"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1800,
+   "pair": "7.0→2.8",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "器具 **2.7.0 → 2.8.0（纯加性）**：判据表达式零改动；新增面仅两处——"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1840,
+   "pair": "17→18",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "⇒ `eval/capability/instruments.json` **17 → 18 行**；q13 行：`version=content-sha12:690560e01e7e`、"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2007,
+   "pair": "528→27",
+   "declared": true,
+   "metric_line": false,
+   "verdict": "HAS_DECL",
+   "text": "`l2.instruments-check` 行 `instrument_sha12` **4dba181cd528 → 27ae9c5a53ce**、`version=content-sha12:27ae9c5a53ce`；"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2068,
+   "pair": "4→0",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "`ec57f5664141` —— 语义差异 25 键，含**判据方向翻转**（`P1 反例 4→0`、`P1 pass False→True`、`P3 可省 71→67`）"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2068,
+   "pair": "71→67",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "`ec57f5664141` —— 语义差异 25 键，含**判据方向翻转**（`P1 反例 4→0`、`P1 pass False→True`、`P3 可省 71→67`）"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2122,
+   "pair": "2→0",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- **机制（代码事实，`precheck_prefilter.py:main`）**：`--neg-control` 只改注入内容与退出码（rc 2 vs 0），"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2134,
+   "pair": "18→20",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- **A8 预言被证伪**：预注册「`len(rows) == n_turns`」实测不成立（M20：18 vs 20）——`rows` 只装**驱动日志里带门行的轮**。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2277,
+   "pair": "55→43",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 登记表 | sha12 `fca87a039e55 → 43ad37a33af6`；`git diff --numstat` **852/2**（仅增行 + `selfcheck` 行 2 行文本改写） |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2363,
+   "pair": "7→4",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 登记表分布（前 → 后） | directory live 8 → **frozen 7 + live 1**；artifact worktree-only 7 → 4（并发写者提交使其证据转 clean） |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2429,
+   "pair": "89→90",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- **分布位移（同码同索引，HEAD 行 vs 现盘行）**：`artifact frozen 89→90 (+1)`、`evidence-overtaken 1→0 (−1)`，"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2429,
+   "pair": "1→0",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- **分布位移（同码同索引，HEAD 行 vs 现盘行）**：`artifact frozen 89→90 (+1)`、`evidence-overtaken 1→0 (−1)`，"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2430,
+   "pair": "102→102",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "其余 5 桶 **0 变动**，总数 102→102 ⇒ **`evidence-overtaken` 族已空**（候选② 的目标达成）。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2444,
+   "pair": "29→28",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| N4-a 语义差异 | `29/29→28/29` 规范化后**仍不同**（白名单不掩盖语义） |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2447,
+   "pair": "149→149",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| P10 零回归 | `git diff` = **7 insertions / 7 deletions**（限该行：1 行 `evidence_path` + 6 行字段块）；行数 149→149；快照比对**仅该行**字段变 |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2522,
+   "pair": "151→151",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "**重审明细**: `artifact_sha12`/`instrument_sha12` `262cdd978d1c` → `5127b5c0592b`, `audited_by_round` `R478` → `EXP1-Q29`; 块级替换, `git diff --numstat = 3/3`, 行数 151→"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2537,
+   "pair": "18→21",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "## 附录 AE — EXP1-Q30: `--only` 定向重审粒度 + 检查器面别分区 + 器具面扩容 (18→21) + 未派生器具普查 + 跨写者提交闸 (60m 自检作业, 不占主线轮号)"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2554,
+   "pair": "18→21",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "3. **候选⑥ 器具面扩容 18 → 21**: `bind_evidence.check` (现盘档, NC=注入 pin 破坏必判 rc=2)、"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2578,
+   "pair": "96→105",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| ③ 未派生器具 | 9 行 | **5 行** (衍生 96 → 105) | `instrument_gap_census_q30.json` |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2585,
+   "pair": "442→13",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "`r444.instrument-acceptance` instrument 0370be98b442 → 13f8872cb070,"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2586,
+   "pair": "1→099682",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "artifact (全量面记录) f956daa6eda1 → 099682f1c227。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2599,
+   "pair": "18→1",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| N8 面别分区反证 | 旧器具 scoped 跑 **复现覆盖事故** (total 18→1); 还原后 sha 逐位复现 |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2622,
+   "pair": "47→46",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "6. **`exp1q28.whitelist-coverage` 的输出非逐字节确定** (实测 `(instant)` 计数 47 vs 46) ⇒ 该器具**不得**被登记为冻结 pin 的证据 (本轮登记为 `dynamic_corpus`)。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2634,
+   "pair": "21→27",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "### AF. EXP1-Q31 收口: 残留器具行裁定并轮 + 判据绑误用重写 + 提交前跨写者闸入钩子 + 器具面 21→27 + 阈值余量台账"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2650,
+   "pair": "110→113",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "机检: P1=OK / P2=OK / P3=OK / P4=OK / P5=OK / P6=OK (核查 6/6)。读数: 覆盖 110→113 / 有器具 105→113 / 未派生 5→0。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2650,
+   "pair": "105→113",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "机检: P1=OK / P2=OK / P3=OK / P4=OK / P5=OK / P6=OK (核查 6/6)。读数: 覆盖 110→113 / 有器具 105→113 / 未派生 5→0。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2650,
+   "pair": "5→0",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "机检: P1=OK / P2=OK / P3=OK / P4=OK / P5=OK / P6=OK (核查 6/6)。读数: 覆盖 110→113 / 有器具 105→113 / 未派生 5→0。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2662,
+   "pair": "47→29715723",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "5. **阈值余量台账** (`face-scale-ledger.jsonl`, 幂等追加): 阈值从器具源码读 (单一权威), 判据 `soft_cap ≥ 2.0 × 实测 log_bytes`; 读数 27 器具/59 命令 ⇒ 33246260 B, 余量 **2.019** (上一行 21/47 ⇒ 297"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2663,
+   "pair": "21→27",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "6. **器具面 21 → 27**: 新增 6 行 (退役面断言 / 清理台账 / 测试面分类器 / 阈值余量 / 等价闸 / 钩子闸), 每行成对正控+负控; `verify_q30_only` 的等价判据**自足化**为长驻闸 `only_equivalence_guard.py` (夹具锚从当前登记表现场派生,"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2664,
+   "pair": "5→0",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "7. **R486 §5 残留 8**: `docs/improvements.md` 5 条根相对链接修 `./`; 反引号提及 23 处未动 (守恒); 写侧探针复跑: moved 5→0, resolved 79→84。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 2664,
+   "pair": "79→84",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "7. **R486 §5 残留 8**: `docs/improvements.md` 5 条根相对链接修 `./`; 反引号提及 23 处未动 (守恒); 写侧探针复跑: moved 5→0, resolved 79→84。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp2-multi-option-ask-menu-protocol.md",
+   "line": 193,
+   "pair": "1→3",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "### 10.1 P2 从 0/1 → 3/3（真机同连接闭环）"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp3-step-alignment-validation.md",
+   "line": 163,
+   "pair": "7→8",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| A1 | 给定用户例子（间隔 16、共 10 个），构造第 8 项违约的产物 → `Evaluate` 返回 `Fail` 且 `Evidence` 含违例下标 7→8 |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp5-lesson-table.md",
+   "line": 397,
+   "pair": "0.0083→0.1750",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| Instances | 检索适配器训练: 拟合用未缩放向量 + 消费乘 λ 缩放向量; 且列定向解被当行定向用 → r@1 0.0083→0.1750, median_rank 999→23 |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp5-lesson-table.md",
+   "line": 397,
+   "pair": "999→23",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| Instances | 检索适配器训练: 拟合用未缩放向量 + 消费乘 λ 缩放向量; 且列定向解被当行定向用 → r@1 0.0083→0.1750, median_rank 999→23 |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp6-embedding-model-selection.md",
+   "line": 51,
+   "pair": "0.932→0.956",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- **判别力为零**：无关句与相关句余弦几乎无差（0.932 vs 0.956），检索 top1 退化到随机水平。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp6-embedding-model-selection.md",
+   "line": 100,
+   "pair": "0.60→0.60",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 榜单说 base 比 small 高 5.3 分，但**本机硬集上 base 并未胜出**（0.60 vs 0.60，MRR 反低）→ 榜单分不等于本场景可用性（榜单是长文检索/句对任务，本场景是**同域近似干扰下的短片段重排**）。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp6-embedding-model-selection.md",
+   "line": 122,
+   "pair": "0.2→1.0",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| **R1** | **必做：修运行时实现缺陷**（与选型无关，且收益最大） | 同模型 margin **−0.017 → +0.117**、检索 top1 **0.2 → 1.0**（数量级）；换模型无法带来此收益（§2） |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp6-embedding-model-selection.md",
+   "line": 169,
+   "pair": "0.723→0.737",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "1. **10 条硬集结论作废**：小样本(10 条)上\"bge-base 未赢 bge-small(MRR 0.723 vs 0.737)\"是**样本噪声**；在 120 查询/1299 块的判决口径下，**bge-base 全面领先 bge-small**(r@1 +13.3pt / MRR +12.7pt / r"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp7-bge-idle-training-loop.md",
+   "line": 52,
+   "pair": "12→4",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| T3 | 全参微调（12→4 层 24M 参数） | ❌ 本机无 torch/GPU，不做 | — | 仅文档记录 |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp9-subtask-plan-routing-and-local-first.md",
+   "line": 356,
+   "pair": "4→3",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "> 诚实说明：token 一项只能算指示性；**确定性证据 = 节点数 4→3、远程 2→1、出站 117→100、答复数字来源由模型改为框架**。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp9-subtask-plan-routing-and-local-first.md",
+   "line": 356,
+   "pair": "2→1",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "> 诚实说明：token 一项只能算指示性；**确定性证据 = 节点数 4→3、远程 2→1、出站 117→100、答复数字来源由模型改为框架**。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp9-subtask-plan-routing-and-local-first.md",
+   "line": 356,
+   "pair": "117→100",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "> 诚实说明：token 一项只能算指示性；**确定性证据 = 节点数 4→3、远程 2→1、出站 117→100、答复数字来源由模型改为框架**。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 16,
+   "pair": "3→1",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "- 待办(转 L3)：① SessionHistorySearch 接线（intent/CLI 出口）→ **✅ 已接线(R420)**：本地指令 `/recall <查询词> [topK]`（四表接线 + 通道级打点 `recall_query`；治疗臂 recall_query=3/llm_call=0，接线前产物"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 16,
+   "pair": "0.059→0.1408",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "- 待办(转 L3)：① SessionHistorySearch 接线（intent/CLI 出口）→ **✅ 已接线(R420)**：本地指令 `/recall <查询词> [topK]`（四表接线 + 通道级打点 `recall_query`；治疗臂 recall_query=3/llm_call=0，接线前产物"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 22,
+   "pair": "0→21",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "| exp1 本地索引/代码引用图 | `v0.22.0-exp1-local-index-and-code-graph.md` | 按 agent 关注范围建索引（非全量）；trigram/倒排；KPI 已判定 | **进行中（探索，零产品代码）**：Q1/Q3/Q3b/Q2 已由数据题实测（附录 A–D）；**Q2"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 22,
+   "pair": "13→0",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "| exp1 本地索引/代码引用图 | `v0.22.0-exp1-local-index-and-code-graph.md` | 按 agent 关注范围建索引（非全量）；trigram/倒排；KPI 已判定 | **进行中（探索，零产品代码）**：Q1/Q3/Q3b/Q2 已由数据题实测（附录 A–D）；**Q2"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 22,
+   "pair": "21→8",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "| exp1 本地索引/代码引用图 | `v0.22.0-exp1-local-index-and-code-graph.md` | 按 agent 关注范围建索引（非全量）；trigram/倒排；KPI 已判定 | **进行中（探索，零产品代码）**：Q1/Q3/Q3b/Q2 已由数据题实测（附录 A–D）；**Q2"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 22,
+   "pair": "8→21",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "| exp1 本地索引/代码引用图 | `v0.22.0-exp1-local-index-and-code-graph.md` | 按 agent 关注范围建索引（非全量）；trigram/倒排；KPI 已判定 | **进行中（探索，零产品代码）**：Q1/Q3/Q3b/Q2 已由数据题实测（附录 A–D）；**Q2"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 22,
+   "pair": "71→89",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "| exp1 本地索引/代码引用图 | `v0.22.0-exp1-local-index-and-code-graph.md` | 按 agent 关注范围建索引（非全量）；trigram/倒排；KPI 已判定 | **进行中（探索，零产品代码）**：Q1/Q3/Q3b/Q2 已由数据题实测（附录 A–D）；**Q2"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 22,
+   "pair": "63→57",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "| exp1 本地索引/代码引用图 | `v0.22.0-exp1-local-index-and-code-graph.md` | 按 agent 关注范围建索引（非全量）；trigram/倒排；KPI 已判定 | **进行中（探索，零产品代码）**：Q1/Q3/Q3b/Q2 已由数据题实测（附录 A–D）；**Q2"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 22,
+   "pair": "2701→1976",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "| exp1 本地索引/代码引用图 | `v0.22.0-exp1-local-index-and-code-graph.md` | 按 agent 关注范围建索引（非全量）；trigram/倒排；KPI 已判定 | **进行中（探索，零产品代码）**：Q1/Q3/Q3b/Q2 已由数据题实测（附录 A–D）；**Q2"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 22,
+   "pair": "63→57",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "| exp1 本地索引/代码引用图 | `v0.22.0-exp1-local-index-and-code-graph.md` | 按 agent 关注范围建索引（非全量）；trigram/倒排；KPI 已判定 | **进行中（探索，零产品代码）**：Q1/Q3/Q3b/Q2 已由数据题实测（附录 A–D）；**Q2"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 22,
+   "pair": "365→371",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "| exp1 本地索引/代码引用图 | `v0.22.0-exp1-local-index-and-code-graph.md` | 按 agent 关注范围建索引（非全量）；trigram/倒排；KPI 已判定 | **进行中（探索，零产品代码）**：Q1/Q3/Q3b/Q2 已由数据题实测（附录 A–D）；**Q2"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 22,
+   "pair": "4→0",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "| exp1 本地索引/代码引用图 | `v0.22.0-exp1-local-index-and-code-graph.md` | 按 agent 关注范围建索引（非全量）；trigram/倒排；KPI 已判定 | **进行中（探索，零产品代码）**：Q1/Q3/Q3b/Q2 已由数据题实测（附录 A–D）；**Q2"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 81,
+   "pair": "17.891→0.2017",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| R402 | 本机不可交互瓶颈治理（批 prefill/KV 复用/线程与 mmap 策略） | **已收口(R411-V)** | 步1 归因交付（证据：`docs/reports/r402/io-attribution.md`(含 §8 收口) + `eval/rover/r402/io-attribution"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 82,
+   "pair": "4→4",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| R403 | chat template 全量（Jinja 子集扩展 + 工具调用模板） | **关闭（2026-09-14 R403-scope 裁定；见 `docs/reports/r403/chat-template-tool-scope.md`）** | R408 §3-Q5 已把「分词与聊天模板」交给 l"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 82,
+   "pair": "7→18",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| R403 | chat template 全量（Jinja 子集扩展 + 工具调用模板） | **关闭（2026-09-14 R403-scope 裁定；见 `docs/reports/r403/chat-template-tool-scope.md`）** | R408 §3-Q5 已把「分词与聊天模板」交给 l"
+  },
+  {
+   "file": "docs/plans/v0.22.0-r371-capability-probe-python-game.md",
+   "line": 33,
+   "pair": "2000→8192",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "v0.11.0 R19 的旧修只是把 `max_tokens` 2000→8192（抬高天花板，推理照样能吃满）。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-r371-capability-probe-python-game.md",
+   "line": 35,
+   "pair": "8192→32768",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "1. 成功路径检测 `content 空 ∧ reasoning 非空` → **有界恢复**：升级预算（8192→32768）+ 追加 system 抑制提示"
+  },
+  {
+   "file": "docs/plans/v0.22.0-r371-capability-probe-python-game.md",
+   "line": 96,
+   "pair": "7→3",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 机检：`PythonRunVerifierTests` 新增 2 项（用**退出码 7 vs 3** 证明参数真的传了/没传），族内 **20/20 通过**。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-r371-capability-probe-python-game.md",
+   "line": 102,
+   "pair": "8192→32768",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| D1 | 空正文被判成功（推理吃满输出预算） | `ModelQueueRouter`：检测 → 升级预算(8192→32768)+抑制推理重试一次 → 仍空则可见降级+`Success=false` | `EmptyContentRecoveryTests` **3/3**；真机复跑 `content_len=9"
+  },
+  {
+   "file": "docs/plans/v0.22.0-r371-capability-probe-python-game.md",
+   "line": 179,
+   "pair": "6→7",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- 真机命中: `skill_load count 6→7`(含 delivery-selfcheck) · `skill_scan registry_count=8` ·"
+  },
+  {
+   "file": "docs/plans/v0.22.0-r371-capability-probe-python-game.md",
+   "line": 224,
+   "pair": "3→3",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "① n=3/臂 → 跨臂「2/3 vs 3/3」是**抽样**，不能当统计结论；可断言的是**机制**（触发/回流/复检/归因）与"
+  },
+  {
+   "file": "docs/plans/v0.23.0-exp10-agent.rover-local-prover-engine.md",
+   "line": 212,
+   "pair": "2800→3391",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- [x] **agent 挂载 agent.rover 插件（C7/C8 闭环接线）** — **R391 已交付**（真机：生产组合根装配 `plugins=[…|agent.rover.formal|…]`；前缀 2800→3391 且不在场逐字不变；节点路由 `location=Local exec=forma"
+  },
+  {
+   "file": "docs/plans/v0.23.0-exp10-agent.rover-local-prover-engine.md",
+   "line": 216,
+   "pair": "16→17",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "1. **项目名**：~~用户原话 `agent.rover`（疑为 `click-prover` 笔误）~~ → **已由 R392 落地**：目录 `src/agent.rover` + 程序集 `agent.rover` + 命名空间 root `agent.rover` + 内部文件夹全小写（`cli/form"
+  },
+  {
+   "file": "docs/plans/v0.23.0-exp11-formal-verification-agent-augmentation.md",
+   "line": 20,
+   "pair": "1496→1050",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "同族系统实测：加入编译反馈后能力从 19.75–36.00% 提升到 58.75–62.00%（**+32.3 pts**），检索增强再平均 **+6.8 pts**（无反馈时 +12.4，有反馈时仅 +1.2 —— 说明反馈是主因，检索是补充），且**搜索使 REPL 反馈调用下降 29.8%（1496→1050）*"
+  },
+  {
+   "file": "docs/plans/v0.23.0-exp11-formal-verification-agent-augmentation.md",
+   "line": 89,
+   "pair": "120→95.0",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 证据锚定型验证器（120/120 vs 95.0% 同工具 / 89.2% 仅表格；反事实压力 100% 源忠实）"
+  },
+  {
+   "file": "docs/plans/v0.23.0-exp12-agent-chain-dcr-90p5-feasibility.md",
+   "line": 168,
+   "pair": "13→14",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "$ agent.rover check --selftest                                  → {\"ran\":14,\"pass\":14}   ← R388 后(13→14)"
+  },
+  {
+   "file": "docs/plans/v0.23.0-exp12-agent-chain-dcr-90p5-feasibility.md",
+   "line": 276,
+   "pair": "2800→3391",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 执行链落点: 条件契约注入(C8) | ✅ | `FormalPromptContract`(70 行) + `SessionBaseline` **双槽缓存**; 真机前缀 2800→3391, **不在场逐字不变** |"
+  },
+  {
+   "file": "docs/plans/v0.26.0-r400-rover-generation-chain.md",
+   "line": 112,
+   "pair": "3→15",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 空切分集 | — | 特殊符号文本必被打散（3→15 id） | 必红 |"
+  },
+  {
+   "file": "docs/plans/v0.26.0-r400-rover-generation-chain.md",
+   "line": 272,
+   "pair": "1→2",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- **下轮（R402 步 2）**: ①计算直测微基准（权重常驻内存的反量化+点积吞吐，1 vs 2 线程）"
+  },
+  {
+   "file": "docs/plans/v0.31.0-r409-local-prompt-template-gate.md",
+   "line": 55,
+   "pair": "17→18",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "⇒ 双 BOS 的实际代价：① 每次本地调用**多 1 个 prompt token**（17→18，+5.9%，K2）；② 两条通路**可复用前缀不是同一"
+  },
+  {
+   "file": "docs/plans/v0.33.0-r411-long-lived-generation-port.md",
+   "line": 34,
+   "pair": "496→513",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "`eval/rover/r411/render_replay_probe.py`（渲染串逐轮线性增长）: 496 → 513 → 530（Δ=17/轮），前缀标记出现次数恒为 20 ⇒ **渲染无重复、无结构性膨胀**。"
+  },
+  {
+   "file": "docs/plans/v0.33.0-r411-long-lived-generation-port.md",
+   "line": 36,
+   "pair": "497→530",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "产品侧 E2E（`--session-json`，497 token 前缀，3 轮）: 总长 497 → 530 → 563；命中 0 → 512 → 545 ⇒ 首轮不判、非首轮真复用。"
+  },
+  {
+   "file": "docs/plans/v0.33.0-r411-long-lived-generation-port.md",
+   "line": 36,
+   "pair": "0→512",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "产品侧 E2E（`--session-json`，497 token 前缀，3 轮）: 总长 497 → 530 → 563；命中 0 → 512 → 545 ⇒ 首轮不判、非首轮真复用。"
+  },
+  {
+   "file": "docs/plans/v0.36.0-r414-failure-visibility.md",
+   "line": 81,
+   "pair": "0→66",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 修复后 4 臂重跑：`empty`/`truncate`/`ok` 读数与修复前逐位一致（零回归），仅 `empty_always` 轮 1 `reply_len 0→66`。"
+  },
+  {
+   "file": "docs/plans/v0.38.0-r417-probe-anti-saturation.md",
+   "line": 20,
+   "pair": "25→29",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| `eval/probe/grade.py` | **仪器修复（R417 真机暴露）**：`extract_code()` 分两轮（先整体可编译者，再 ≥`MIN_PREFIX_CHARS`=64 的可编译前缀）；`grade_program()` 分类改为 stdout 优先（`exit_nonzero_ok`）⇒"
+  },
+  {
+   "file": "docs/plans/v0.40.0-r419-probe-multiturn.md",
+   "line": 66,
+   "pair": "0.6667→0.0",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "> **§5 判据已按 §6 实测反向否证**：观察到 `首次通过率 > 两轮整题全对率`（0.6667 → 0.0）"
+  },
+  {
+   "file": "docs/plans/v0.44.0-r423-tf-saturation.md",
+   "line": 48,
+   "pair": "3→1",
+   "declared": true,
+   "metric_line": false,
+   "verdict": "HAS_DECL",
+   "text": "| 臂 | 二进制 | 语料 B（等长 2 词元，tf 3 vs 1） | 语料 A（R422 冻结，tf=1 / tf=4） |"
+  },
+  {
+   "file": "docs/plans/v0.45.0-r424-aot-mainline-replication.md",
+   "line": 33,
+   "pair": "888→8",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "R413 的 12/16,888 vs 8/7,007 **只是 JIT 中间证据**，其 `agenthost_bytes=15138848` 是**事后另做的 AOT 构建**，"
+  },
+  {
+   "file": "docs/plans/v0.46.0-r425-ratio-sensitivity-grid.md",
+   "line": 58,
+   "pair": "10→9",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 1/8 = 12.5% | 10→9 | 14567→12494 | **14.23%** | 10.00% |"
+  },
+  {
+   "file": "docs/plans/v0.46.0-r425-ratio-sensitivity-grid.md",
+   "line": 58,
+   "pair": "14567→12494",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 1/8 = 12.5% | 10→9 | 14567→12494 | **14.23%** | 10.00% |"
+  },
+  {
+   "file": "docs/plans/v0.46.0-r425-ratio-sensitivity-grid.md",
+   "line": 59,
+   "pair": "10→8",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 2/8 = 25.0% | 10→8 | 14292→9980 | **30.17%** | 20.00% |"
+  },
+  {
+   "file": "docs/plans/v0.46.0-r425-ratio-sensitivity-grid.md",
+   "line": 59,
+   "pair": "14292→9980",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 2/8 = 25.0% | 10→8 | 14292→9980 | **30.17%** | 20.00% |"
+  },
+  {
+   "file": "docs/plans/v0.46.0-r425-ratio-sensitivity-grid.md",
+   "line": 60,
+   "pair": "9→5",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 4/8 = 50.0% | 9→5 | 14119→4523 | **67.97%** | 44.44% |"
+  },
+  {
+   "file": "docs/plans/v0.46.0-r425-ratio-sensitivity-grid.md",
+   "line": 60,
+   "pair": "14119→4523",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 4/8 = 50.0% | 9→5 | 14119→4523 | **67.97%** | 44.44% |"
+  },
+  {
+   "file": "docs/plans/v0.46.0-r425-ratio-sensitivity-grid.md",
+   "line": 61,
+   "pair": "10→6",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 6/8 = 75.0% | 10→6 | 14069→4721 | **66.44%** | 40.00% |"
+  },
+  {
+   "file": "docs/plans/v0.46.0-r425-ratio-sensitivity-grid.md",
+   "line": 61,
+   "pair": "14069→4721",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 6/8 = 75.0% | 10→6 | 14069→4721 | **66.44%** | 40.00% |"
+  },
+  {
+   "file": "docs/plans/v0.46.0-r425-ratio-sensitivity-grid.md",
+   "line": 62,
+   "pair": "9→3",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 8/8 = 100.0% | 9→3 | 13564→166 | **98.78%** | 66.67% |"
+  },
+  {
+   "file": "docs/plans/v0.46.0-r425-ratio-sensitivity-grid.md",
+   "line": 62,
+   "pair": "13564→166",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 8/8 = 100.0% | 9→3 | 13564→166 | **98.78%** | 66.67% |"
+  },
+  {
+   "file": "docs/plans/v0.47.0-r426-relation-judge-localization.md",
+   "line": 94,
+   "pair": "14081→4561",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- C5（用户轮 token 降幅≥30%）: k6 −67.6%（14081→4561）、k8 −81.0%（13576→2586）**PASS**。"
+  },
+  {
+   "file": "docs/plans/v0.47.0-r426-relation-judge-localization.md",
+   "line": 94,
+   "pair": "13576→2586",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- C5（用户轮 token 降幅≥30%）: k6 −67.6%（14081→4561）、k8 −81.0%（13576→2586）**PASS**。"
+  },
+  {
+   "file": "docs/plans/v0.47.0-r426-relation-judge-localization.md",
+   "line": 95,
+   "pair": "4→1",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- C3（判官远端清零）: k6 4→1、k8 3→1 → **PARTIAL**（残余为 `remote_fallback` 的 fail-visible 兜底，非静默）。"
+  },
+  {
+   "file": "docs/plans/v0.47.0-r426-relation-judge-localization.md",
+   "line": 95,
+   "pair": "3→1",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- C3（判官远端清零）: k6 4→1、k8 3→1 → **PARTIAL**（残余为 `remote_fallback` 的 fail-visible 兜底，非静默）。"
+  },
+  {
+   "file": "docs/plans/v0.47.0-r426-relation-judge-localization.md",
+   "line": 97,
+   "pair": "2586→166",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "新增 1 次主链远端调用（≈2524 tok），远超判官省下的量级 ⇒ 该格 token 反高于 R425 臂B（2586 vs 166）。"
+  },
+  {
+   "file": "docs/plans/v0.48.0-r427-duplicate-tie-precheck.md",
+   "line": 74,
+   "pair": "3→2",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "2. **P2b 假红（仪器错）**: 构造样本用「ASCII 词 + 空格」⇒ `Normalize` 剥空白致整段粘成**单个 token**，两侧 `|d.Tokens|` = 3 vs 2，「同词袋」前提根本不成立 ⇒ 判据测的不是目标对象。修 = 改 CJK 二元组族构造等 `distinct` 的对，并加 "
+  },
+  {
+   "file": "docs/plans/v0.49.0-r428-duplicate-collapse.md",
+   "line": 17,
+   "pair": "3→2",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| C2 | **折叠生效（T）**: 语料 A ⇒ 命中行数 3→2；保留者 = `probe-0914125816-p004`（全序首者 = Ordinal 较小 id）；该行含 `同文副本+1`；`probe-0914125831-p005` 不再出现 | **PASS** —— T 臂: `cli-6bf6dc"
+  },
+  {
+   "file": "docs/plans/v0.49.0-r428-duplicate-collapse.md",
+   "line": 17,
+   "pair": "3→2",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| C2 | **折叠生效（T）**: 语料 A ⇒ 命中行数 3→2；保留者 = `probe-0914125816-p004`（全序首者 = Ordinal 较小 id）；该行含 `同文副本+1`；`probe-0914125831-p005` 不再出现 | **PASS** —— T 臂: `cli-6bf6dc"
+  },
+  {
+   "file": "docs/plans/v0.51.0-r430-input-fingerprint.md",
+   "line": 70,
+   "pair": "2→1",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| P5 判定/KPI 不退化 | 判定仍 `Skip×4`、cache_n 恒 0、pinned 1..4；远端 2→1、token 2053→1996；全量 1242/1242、AOT IL 0 | PASS |"
+  },
+  {
+   "file": "docs/plans/v0.51.0-r430-input-fingerprint.md",
+   "line": 70,
+   "pair": "2053→1996",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| P5 判定/KPI 不退化 | 判定仍 `Skip×4`、cache_n 恒 0、pinned 1..4；远端 2→1、token 2053→1996；全量 1242/1242、AOT IL 0 | PASS |"
+  },
+  {
+   "file": "docs/plans/v0.54.0-r433-doc-driven-probe-rerun.md",
+   "line": 78,
+   "pair": "6→14",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "台账: `data/probe/kpi.jsonl` 6 → 14 行; A/B（同批题集）质量 Δ `+0.0000`。成本表见 `eval/capability/r433/process-metrics.md`。"
+  },
+  {
+   "file": "docs/plans/v0.54.0-r433-doc-driven-probe-rerun.md",
+   "line": 98,
+   "pair": "91.97→191.57",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "③ 墙钟方差 91.97→191.57 s ⇒ 不作能力判据。"
+  },
+  {
+   "file": "docs/plans/v0.55.0-r434-falseinfo-discrimination-grid.md",
+   "line": 99,
+   "pair": "0.625→0.875",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 臂 B0: acc **0.625 → 0.875** (假阴性 [3,7]→[9], 假阳性 [2]→[]) ⇒ 示例修在无挂载臂有效、在挂载臂完全无效。"
+  },
+  {
+   "file": "docs/plans/v0.55.0-r434-falseinfo-discrimination-grid.md",
+   "line": 136,
+   "pair": "30→35",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 6 | TaskPlan 回填 R430–R434 | **达成** | `taskplan.json` 30→35 节点；补两处 `状态:` 行 |"
+  },
+  {
+   "file": "docs/plans/v0.56.0-r435-relation-judge-localization.md",
+   "line": 1,
+   "pair": "7→6",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "# v0.56.0 R435 — 关系判官（J 通道）本地化：真机 1/7 → 6/7"
+  },
+  {
+   "file": "docs/plans/v0.56.0-r435-relation-judge-localization.md",
+   "line": 71,
+   "pair": "6→6",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "1. **承重变量 = prompt 形状**：`1/6 → 6/6`（+833%）。关键两处：① 尾行从裸片段改为**明确 cue**「先思考, 思考结束后必须另起一行只写一个字母 (C 或 A 或 N) … 答案:」；② 把 C/A/N 的**定义与同族实例**写进 prompt（实例**不用 grid 原句**，"
+  },
+  {
+   "file": "docs/plans/v0.56.0-r435-relation-judge-localization.md",
+   "line": 72,
+   "pair": "512→1024",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "2. **预算 512→1024 = 证伪**：A1≡A2、A5≡A4 逐例相同；turn5、turn9 在 1024 仍耗尽。⇒ 保持 512（少 35s/例 延迟）。"
+  },
+  {
+   "file": "docs/plans/v0.56.0-r435-relation-judge-localization.md",
+   "line": 100,
+   "pair": "88→284",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "事后判据（单列，不作预注册）: `checks_posthoc` = 「v2 的 prompt 长度 ×3.4（72–88 → 284–298 字符）」⇒ 每条**远端回退**会多付 ~60 prompt token；本地侧只多付 prefill 延迟。"
+  },
+  {
+   "file": "docs/plans/v0.57.0-r436-e2e-brj-token-kpi.md",
+   "line": 16,
+   "pair": "512→1024",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| J 本地预算（**不复用调用方 64/128**） | `src/agent.modelqueue/ModelQueueRouter.cs:286` | `maxTokens = Math.Max(cfg.MaxTokens, 512)`；`:281-285` 注释记录「512→1024 已证伪」 |"
+  },
+  {
+   "file": "docs/plans/v0.57.0-r436-e2e-brj-token-kpi.md",
+   "line": 37,
+   "pair": "6→5",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "R435 单组件读数（探针层，非端到端）：本地可解析 1/6 → 5/6，**远端判官调用 6 → 1（投影，非实测）**。"
+  },
+  {
+   "file": "docs/plans/v0.57.0-r436-e2e-brj-token-kpi.md",
+   "line": 37,
+   "pair": "6→1",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "R435 单组件读数（探针层，非端到端）：本地可解析 1/6 → 5/6，**远端判官调用 6 → 1（投影，非实测）**。"
+  },
+  {
+   "file": "docs/plans/v0.58.0-r438-localskip-no-replay.md",
+   "line": 52,
+   "pair": "19557→17319",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| C3 | **承重**：臂 BRJ（门开+J 本地）p12 降幅 vs A | ≥30% | **37.37%**（19557→17319，−2238） |"
+  },
+  {
+   "file": "docs/plans/v0.58.0-r438-localskip-no-replay.md",
+   "line": 80,
+   "pair": "19557→17319",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| C6b 因果归因 | PASS BRJ 19557 → 17319 = **−2238 tok**，逐调用偏离 0.0 ⇒ 差异全部是被移除的块 |"
+  },
+  {
+   "file": "docs/plans/v0.60.0-r440-length-ladder-measurement.md",
+   "line": 88,
+   "pair": "77→5",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- **H2 重锚模型**: 同网格 A 臂实测分母 + δ=77 ⇒ 5/5 网格偏差 **≤0.47 pt**（V1/V2/V2b/V5 = 0.00，V4 = +0.47）。"
+  },
+  {
+   "file": "docs/plans/v0.62.0-r442-accounting-and-asymmetry.md",
+   "line": 47,
+   "pair": "46.19→45.01",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "3. **不对称**: M20 Σasym = −5551.5（−4830.5 被跳轮不回放 = 真实效应; −721 块内容差）⇒ **R441「实测偏保守」方向断言被证伪**（M20 反号, 去块内容差后 46.19→45.01）。"
+  },
+  {
+   "file": "docs/plans/v0.63.0-r443-local-token-truth-and-replay-ablation.md",
+   "line": 52,
+   "pair": "61230→61256",
+   "declared": true,
+   "metric_line": false,
+   "verdict": "HAS_DECL",
+   "text": "| D2b 路径混淆量（事后判据） | A 臂对 61230→61256 = **+1.04 tok/调用** | 单列 |"
+  },
+  {
+   "file": "docs/plans/v0.64.0-r444-cheap-necessary-condition-prefilter.md",
+   "line": 84,
+   "pair": "7→17",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 门 r1 调用 **7 vs 17**（−59%）；本地真值 **7880 vs 12775**（省 4895 tok / 10 次 = 489.5/次）；判官侧不受影响（两臂同 4738）。"
+  },
+  {
+   "file": "docs/plans/v0.64.0-r444-cheap-necessary-condition-prefilter.md",
+   "line": 84,
+   "pair": "7880→12775",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 门 r1 调用 **7 vs 17**（−59%）；本地真值 **7880 vs 12775**（省 4895 tok / 10 次 = 489.5/次）；判官侧不受影响（两臂同 4738）。"
+  },
+  {
+   "file": "docs/plans/v0.64.0-r444-cheap-necessary-condition-prefilter.md",
+   "line": 88,
+   "pair": "6→0",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- **负向发现**: R443 真值遥测粘滞继承 ⇒ M20 BRJ 6 行虚增 2382 tok（会把 33.32% 压成 29.43%）。修复版 `c28e86d3` 单变量复跑（`-s5`）: 粘滞 **6 → 0**、逐轮 **0 差异**、远端 **32968 == 32968** ⇒ D1b `pass="
+  },
+  {
+   "file": "docs/plans/v0.65.0-r445-judge-side-prefilter-precheck.md",
+   "line": 10,
+   "pair": "17→7",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "R444 把门侧固定成本压掉一半（门 r1 调用 17→7，含本地真值口径 25.32% ⇒ **33.32%**）。"
+  },
+  {
+   "file": "docs/plans/v0.65.0-r445-judge-side-prefilter-precheck.md",
+   "line": 77,
+   "pair": "37→31",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "(`stub_ack` 143→非 Neutral 71 / `gate_digest` 37→31 / `other` 55→17)；同一消息跨 run 出现多 verdict（7 条，"
+  },
+  {
+   "file": "docs/plans/v0.65.0-r445-judge-side-prefilter-precheck.md",
+   "line": 77,
+   "pair": "55→17",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "(`stub_ack` 143→非 Neutral 71 / `gate_digest` 37→31 / `other` 55→17)；同一消息跨 run 出现多 verdict（7 条，"
+  },
+  {
+   "file": "docs/plans/v0.66.0-r446-judge-determinism-and-zero-token-settlement.md",
+   "line": 9,
+   "pair": "17→7",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "R444 已把**门侧**固定成本压半（门 r1 17→7），含本地真值口径 33.32% ≥ 30%。"
+  },
+  {
+   "file": "docs/plans/v0.66.0-r446-judge-determinism-and-zero-token-settlement.md",
+   "line": 48,
+   "pair": "512→128",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- `BRJ-JD`：判官降级 = prompt 指令段压到 1 行 + `maxTokens` 512→128 + **保留** `:143` 空内容翻倍重试（保质量，先砍预算与提示）。"
+  },
+  {
+   "file": "docs/plans/v0.66.0-r446-judge-determinism-and-zero-token-settlement.md",
+   "line": 59,
+   "pair": "9→12",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 判据：`instruments_check.py` 全绿数 ≥ 12（9 → 12），且新增三条各自**实际被触发**（正控通过 + 负控真红）。"
+  },
+  {
+   "file": "docs/plans/v0.67.0-r447-judge-decode-constraint.md",
+   "line": 82,
+   "pair": "178.6→2.0",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 关键读数：C2 **PASS**（`gen` 均值 178.6 → 2.0，比值 0.0112）；**C3 FAIL**（`agree(J1,J0)=0.4444`，J1 **18/18 恒 `A`**）；C4a **FAIL**（判定项设计缺陷：prev 候选仅 2 常量，8 条仅 2 条真错配）；C4b/C4c"
+  },
+  {
+   "file": "docs/plans/v0.67.0-r447-judge-decode-constraint.md",
+   "line": 84,
+   "pair": "1.0→0.50",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 事后判据：CH1（真错配 prev：1.0 → 0.50，器具非空心）；CH2（语法臂 vs 产品真值 0.50，独立复现 C3 红）；CH3（登记型发现：J0 1/18 触 512 上限）。"
+  },
+  {
+   "file": "docs/plans/v0.67.0-r447-judge-decode-constraint.md",
+   "line": 85,
+   "pair": "1974→26",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 反事实收益上限（不计入 KPI）：判官本地生成 1974 → 26（省 1948 tok = 7841 的 24.8%）。"
+  },
+  {
+   "file": "docs/plans/v0.69.0-r449-think-memory-switch-and-external-truth-channel.md",
+   "line": 88,
+   "pair": "178.6→2.0",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "纪律：`内部一致率` 从此只许作**内部一致性**证据，不得再当\"正确性\"（R447 教训：`gen 178.6→2.0` 但 `agree 0.4444`）。"
+  },
+  {
+   "file": "docs/plans/v0.71.0-r451-real-traffic-reprobe.md",
+   "line": 24,
+   "pair": "4608→3584",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 处置：**下修 llama-server `-c 4608 → 3584`**（env `R449_SRV_CTX`，本轮新增）以过闸。理由：探针 prompt < 600 tok、`gen ≤ 512`，3584 上下文**足够且不改变逐调用语义**（KV 尺寸不影响 logits）。"
+  },
+  {
+   "file": "docs/plans/v0.72.0-r452-product-native-real-traffic.md",
+   "line": 34,
+   "pair": "9→51",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- 本轮窗口：b183e6e4 取尾 33（种子 + 32 测量）、cbfa2160 取头 9、6ce72e21 取头 9 ⇒ 51 轮，48 测量；规则标签 new_task 23 / adopt 15 / correct 10；`user_len` p50=24、max=6137；`prev_chain_ok` 4"
+  },
+  {
+   "file": "docs/plans/v0.72.0-r452-product-native-real-traffic.md",
+   "line": 84,
+   "pair": "364→32",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- **`RC-c1` 的 token 膨胀**：我的「轮感知匹配器」在网格臂上按**前 64 字符前缀**匹配真实语料轮 ⇒ 「继续…」类短轮**跨语料命中**，桩返回 160 字符真实回复（而非 15 字符常量）⇒ 远端 prompt 逐轮变长（39,364 vs 32,968）。"
+  },
+  {
+   "file": "docs/plans/v0.78.0-r458-humanized-continuation.md",
+   "line": 84,
+   "pair": "7→9",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- **A7 ❌ 未达**：调用 17 > 15。归因 = 模型自身多用工具（`run_command` 3 次做校验、读回核对），非承接机制成本（承接块 1 次 ≈ 288 字符、只进 T5 一轮）；同输入跨轮调用数波动 7→9→15→17，单轮不作趋势结论。"
+  },
+  {
+   "file": "docs/plans/v0.78.0-r458-humanized-continuation.md",
+   "line": 84,
+   "pair": "15→17",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- **A7 ❌ 未达**：调用 17 > 15。归因 = 模型自身多用工具（`run_command` 3 次做校验、读回核对），非承接机制成本（承接块 1 次 ≈ 288 字符、只进 T5 一轮）；同输入跨轮调用数波动 7→9→15→17，单轮不作趋势结论。"
+  },
+  {
+   "file": "docs/plans/v0.80.0-r461-contract-and-hitrate.md",
+   "line": 12,
+   "pair": "241→160",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "R460 已答：精炼（T5 241→160 字）、菜单（门 ask + Choices + 正文 3 项，单源）、token（∑ 54,927→39,863，−27.4%）。"
+  },
+  {
+   "file": "docs/plans/v0.80.0-r461-contract-and-hitrate.md",
+   "line": 12,
+   "pair": "927→39",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "R460 已答：精炼（T5 241→160 字）、菜单（门 ask + Choices + 正文 3 项，单源）、token（∑ 54,927→39,863，−27.4%）。"
+  },
+  {
+   "file": "docs/plans/v0.80.0-r461-contract-and-hitrate.md",
+   "line": 23,
+   "pair": "24→85",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 每轮注入的「新内容」= miss 唯一来源 | `full-*.json` 逐块量：`[下轮预估]` 24→85 字、`[SessionMemory]` 24→205 字、`[完成]` 25→143 字、`[Memory (RAG)]` 197→359 字 | 见 `eval/rover/r461/` 归因脚本 |"
+  },
+  {
+   "file": "docs/plans/v0.80.0-r461-contract-and-hitrate.md",
+   "line": 23,
+   "pair": "24→205",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 每轮注入的「新内容」= miss 唯一来源 | `full-*.json` 逐块量：`[下轮预估]` 24→85 字、`[SessionMemory]` 24→205 字、`[完成]` 25→143 字、`[Memory (RAG)]` 197→359 字 | 见 `eval/rover/r461/` 归因脚本 |"
+  },
+  {
+   "file": "docs/plans/v0.80.0-r461-contract-and-hitrate.md",
+   "line": 23,
+   "pair": "25→143",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 每轮注入的「新内容」= miss 唯一来源 | `full-*.json` 逐块量：`[下轮预估]` 24→85 字、`[SessionMemory]` 24→205 字、`[完成]` 25→143 字、`[Memory (RAG)]` 197→359 字 | 见 `eval/rover/r461/` 归因脚本 |"
+  },
+  {
+   "file": "docs/plans/v0.80.0-r461-contract-and-hitrate.md",
+   "line": 23,
+   "pair": "197→359",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "| 每轮注入的「新内容」= miss 唯一来源 | `full-*.json` 逐块量：`[下轮预估]` 24→85 字、`[SessionMemory]` 24→205 字、`[完成]` 25→143 字、`[Memory (RAG)]` 197→359 字 | 见 `eval/rover/r461/` 归因脚本 |"
+  },
+  {
+   "file": "docs/plans/v0.90.0-r474-kpi-denominator-provider-truth.md",
+   "line": 11,
+   "pair": "097→14",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| R465–R467 的 `total_tokens = 32,097 → 14,529` 是**桩侧** `字符数//2` 估算 | `eval/rover/r467/arm-R.json:stub_est` | 与用户 KPI「总 token 使用量」**不同源**，不能作为对外结论 |"
+  },
+  {
+   "file": "docs/plans/v0.91.0-r475-replay-and-cache-accounting.md",
+   "line": 15,
+   "pair": "900→1.0152",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "3. **口径**：3 例 `effective_hit_rate > 1`（实测 `hit=2,944 > cacheable=2,900 ⇒ 1.0152`）—— 命中量超过同会话可缓存上界，说明命中来自**比上一轮更长的共享前缀**，K2b 对该轮不适用，>1 会污染红线统计。"
+  },
+  {
+   "file": "docs/plans/v0.93.0-r477-real-e2e-replay-and-band-live.md",
+   "line": 30,
+   "pair": "48212→48214",
+   "declared": false,
+   "metric_line": false,
+   "verdict": "NOTE_missing_decl_nonmetric",
+   "text": "- **双臂固定门控**：`Arole`（无门控，全远端）vs `R`（门控 + 本地 r1）。两臂 config **逐字节同源**，仅端口号不同（48210/48212 vs 48214/48213）。"
+  },
+  {
+   "file": "docs/plans/v0.97.0-r481-consolidation.md",
+   "line": 13,
+   "pair": "13→14",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "| G1 | 测试面收口 | `agent.recall.tests` **15/15**（R481-D 补 D9 用例 13 → 14；R481-E 补相对地址解析用例 14 → 15），且断言执行数 > 0（R454 形式门禁假绿铁律） |"
+  },
+  {
+   "file": "docs/plans/v0.97.0-r481-consolidation.md",
+   "line": 13,
+   "pair": "14→15",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "| G1 | 测试面收口 | `agent.recall.tests` **15/15**（R481-D 补 D9 用例 13 → 14；R481-E 补相对地址解析用例 14 → 15），且断言执行数 > 0（R454 形式门禁假绿铁律） |"
+  }
+ ],
+ "caliber_note": "词面启发式 (±3 行窗口 + 指标词表); 非语义判定 ⇒ 红项须人工复核"
+}

@@ -1,0 +1,37 @@
+{
+ "round": "EXP1-Q32",
+ "schema": "hook-gate-verdict/1",
+ "checks": {
+  "A_default_off_zero_regression": {
+   "rc_before": 0,
+   "rc_after": 0,
+   "stdout_identical": true,
+   "ok": true
+  },
+  "B_enabled_clean_registry": {
+   "rc": 0,
+   "ok": true,
+   "tail": ""
+  },
+  "C_nc_stale_pin_blocked": {
+   "rc": 1,
+   "injected_row": "bge.recall.frozen_bench",
+   "blocked": true,
+   "ok": true
+  },
+  "D_nc_registry_missing_failclosed": {
+   "rc": 1,
+   "ok": true
+  },
+  "E_hollow_hook_counterproof": {
+   "rc": 0,
+   "ok": true,
+   "note": "去掉 Q32 块的钩子在同场景放行 ⇒ 该块承重"
+  }
+ },
+ "n_checks": 5,
+ "n_failed": 0,
+ "registry_sha12": "d46b1cd9ccfa",
+ "hook_sha12": "555abbf4c33f",
+ "staged_n": 0
+}

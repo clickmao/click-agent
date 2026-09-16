@@ -256,7 +256,7 @@
    "id": "artifact.failure.feedback",
    "capability": "产物校验失败 → 失败输出回流模型 → 有界修复 1 轮 → 复检(新产物通过才算修好) (L2 单测 + L3 真机)",
    "level": "L3",
-   "evidence_cmd": "bash /tmp/gameprobe/run_r374.sh  # 真机 A/B: A 臂=AGENTFRAMEWORK_ARTIFACT_REPAIR=0 → 0 条 artifact_feedback; B 臂=默认 → 2/3 触发, 其中 1 次 fixed=true。单测: dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~ArtifactRepairTests",
+   "evidence_cmd": "bash eval/capability/exp1-q32/archived_tmp/gameprobe/run_r374.sh  # 真机 A/B: A 臂=AGENTFRAMEWORK_ARTIFACT_REPAIR=0 → 0 条 artifact_feedback; B 臂=默认 → 2/3 触发, 其中 1 次 fixed=true。单测: dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~ArtifactRepairTests",
    "evidence_path": "src/agent.tests/ArtifactRepairTests.cs",
    "negative_control": "① 闸门关 → 策略永不触发(真机 A 臂 3 连跑 0 条 artifact_feedback); ② 修复轮回吐同一份失败脚本 → 同产物路径不得判定 fixed=true(非确定性场景防 KPI 虚高); ③ IsRepairable 置 false → 4 条用例必红(已实证)",
    "covers": [
@@ -297,7 +297,7 @@
    "id": "ask.frontend.channel",
    "capability": "前端 ask 通道 L2(真 socket)+L3(真机): 问询事件经 EventHub → 所有已鉴权在线连接(单连接发送锁, 行不交错); ask.reply/ask.cancel 回到等待中的调用(超时/取消/被取代/幂等 already_answered)",
    "level": "L3",
-   "evidence_cmd": "python3 /tmp/fp375/probe.py  # 真机: 伪造 ask_id → payload.outcome=unknown_ask(未接线时为 channel_unavailable); 空 envelope → bad_payload | dotnet test ... --filter FullyQualifiedName~FrontendAskFlowTests",
+   "evidence_cmd": "python3 eval/capability/exp1-q32/archived_tmp/fp375/probe.py  # 真机: 伪造 ask_id → payload.outcome=unknown_ask(未接线时为 channel_unavailable); 空 envelope → bad_payload | dotnet test ... --filter FullyQualifiedName~FrontendAskFlowTests",
    "evidence_path": "src/agent.tests/FrontendAskFlowTests.cs",
    "negative_control": "① Complete 去掉 ask_id 校验 → 伪造 id 用例 1 红(已实证, 防误投); ② 未挂接 sink → outcome=channel_unavailable(与 unknown_ask 可区分, 防\"接线了\"被空报); ③ 生产侧命中: 真机 chat.send 1 次 ask 事件 0 → 只登记\"机制已通\", 不登记\"管线会问询\"",
    "covers": [
@@ -312,7 +312,7 @@
    "id": "ask.menu.loop",
    "capability": "真机同一连接内 menu 问询闭环 L3: ask 信封事件(含 questions/options) → 同连接 ask.reply → payload.outcome=answered → ask_closed{answered} → 续跑返回正文; 且生产侧触发命中 ≥1 (evidence_gate.to_ask≥1)",
    "level": "L3",
-   "evidence_cmd": "python3 /tmp/fp376/probe2.py  # RESULT_JSON{ask,reply,continue,gate}=true | dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~FrontendAskSameConnTests",
+   "evidence_cmd": "python3 eval/capability/exp1-q32/archived_tmp/fp376/probe2.py  # RESULT_JSON{ask,reply,continue,gate}=true | dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~FrontendAskSameConnTests",
    "evidence_path": "src/agent.tests/FrontendAskSameConnTests.cs",
    "negative_control": "① 读循环改回同步等待长任务完成(还原⑫类断链) → 同连接 2 用例全红(已实证, 且其它 21 用例不动 → 变异特异); ② 触发器带外构造的旧式单测在该变异下**仍然全绿** = 盲区实证",
    "covers": [
@@ -339,7 +339,7 @@
    "id": "kpi.prompt_cache_hit",
    "capability": "prompt 缓存命中率 KPI (用户钦定, K2b 成本侧): 解析 usage.prompt_cache_hit_tokens/prompt_cache_miss_tokens → 命中率 hit/(hit+miss) 4 位小数; 三处 data-carrying llm_call 打点铺 cache_hit_tokens/cache_miss_tokens/cache_hit_rate; 离线聚合 scripts/kpi_cache_hit.py (按模型分组 + 按轮次/会话聚合 + 未上报计数 + redline 段); 未上报/无分母记 -1 且不并入比率; **R380 口径修订 (用户钦定): 命中率只算『需要命中的部分』—— 本轮新增不计入 (新增必然不命中) ⇒ 有效命中率 = cache_hit_tokens / min(本轮 prompt_tokens, 上一轮同会话 prompt_tokens)**; 原 hit/(hit+miss) 保留为参考口径 (旧口径把新增算进分母, 会把已到结构极限的轮次误判为灾难性失败)",
    "level": "L3",
-   "evidence_cmd": "python3 scripts/kpi_cache_hit.py /tmp/gameprobe/r377_kpi.telemetry  # 真机样本: hit=3328 miss=7610 → 30.43% | dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~PromptCacheKpi",
+   "evidence_cmd": "python3 scripts/kpi_cache_hit.py eval/capability/exp1-q32/archived_tmp/gameprobe/r377_kpi.telemetry  # 真机样本: hit=3328 miss=7610 → 30.43% | dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~PromptCacheKpi",
    "evidence_path": "src/agent.tests/PromptCacheKpiTests.cs",
    "negative_control": "① 命中率分母 +1 → 4 红(已实证); ② HitTokens(hit)=>hit??0 (未上报冒充 0 命中) → 1 红(已实证); ③ 删一处打点铺设 → 1 红(已实证; 首跑曾 0 红 = 断言空心, 改按打点块配对后抓到)",
    "covers": [
@@ -373,7 +373,7 @@
    "id": "plan.route.local_first_frontend_kpi",
    "capability": "计划执行位置路由 D4+D5+D6 (v0.22.0 exp9): ①本地先行 — 无依赖本地节点(输入=本轮原文, 动作词∧对象词双命中判定)在**计划构建时**启动, 与远程生成真并行, 结果复用绝不双跑; 语义修正: 用户要处理自己的原文时生成节点不再吸收该动作(Hybrid→Remote); **µs 计量**真重叠(毫秒会把亚毫秒本地节点舍入成假 0) + overlap_regime 标记; ②前端事件 — plan.created(模型调用前公告子任务细分+每步位置)/plan.node/plan.finished, 核心层只认 IPlanEventSink(载荷手写 JSON 零反射), 宿主 PlanEventEnvelopeSink 包 FrontendApiContract 信封, meta.info 登记 plan 域, 事件通道故障不得打断计划; ③KPI — TaskPlanRun.Kpi 为唯一事实源(遥测/前端事件//plan 端点同源) + scripts/kpi_plan_route.py 汇总与同题对照(LLM 调用数/tokens/端到端 ms/可见节点数)",
    "level": "L3",
-   "evidence_cmd": "python3 scripts/kpi_plan_route.py --selftest  # 7 断言(含无先行则重叠必 0) | dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~PlanLocalFirstTests  # 14/14 | 真机: agenthost --frontend-api 47911 + /tmp/r382/plan_frontend_probe.py → plan.created t+2.4s(模型中), local_first overlap_us=23596/remote_wait_us=166150459, 产物 --selftest 8/8 PASS",
+   "evidence_cmd": "python3 scripts/kpi_plan_route.py --selftest  # 7 断言(含无先行则重叠必 0) | dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~PlanLocalFirstTests  # 14/14 | 真机: agenthost --frontend-api 47911 + eval/capability/exp1-q32/archived_tmp/r382/plan_frontend_probe.py → plan.created t+2.4s(模型中), local_first overlap_us=23596/remote_wait_us=166150459, 产物 --selftest 8/8 PASS",
    "evidence_path": "src/agent.tests/PlanLocalFirstTests.cs",
    "negative_control": "① 计划无无依赖本地节点 → StartLocalFirst 返回 null 且遥测 state=skip(不许假装先行); ② 无先行窗口 → overlap_us 必须 0(KPI selftest 负向控制); ③ 事件出口抛异常 → 计划仍全节点 Completed(ThrowingSink); ④ RemoteText==null 时本地节点即完成 ⇒ 真先行而非事后跑",
    "covers": [
@@ -501,7 +501,7 @@
    "id": "llamacpp.process.boundary",
    "capability": "本地推理/嵌入的唯一执行面 = llama.cpp 官方二进制, 边界只有「进程 + loopback HTTP」(R408 用户钦定: 本地 GGUF 引擎整线退役、完全改用 llama.cpp, 且禁 P/Invoke 以保跨平台)。形态: LlamaServerHost 以 ArgumentList 起 llama-server(零 shell)、空闲端口探测、/health 就绪探测; LlamaCppClient 走 POST /completion(return_tokens 取原始 id、samplers=[temperature]+temp=0 即 greedy、cache_prompt=false 保确定性) 与 POST /v1/embeddings。真机判据: 同 prompt 同参 24 token 的 id 序列与 llama-cli 基线逐位相同; 单线程生成 17.891 t/s、prompt 33.049 t/s(本机 2 vCPU), 对照已退役自研引擎 AOT 0.2017 t/s。",
    "level": "L3",
-   "evidence_cmd": "export AGENTFRAMEWORK_LLAMA_BIN=<llama-server 二进制> && dotnet src/agent.host/bin/Debug/net10.0/agenthost.dll --llamacpp --model /tmp/models/r1-distill-qwen-1.5b-q4km.gguf --prompt-file /tmp/probe-r408/prompt.txt --max-tokens 24 --expect-ids <24 个基线 id> --json eval/rover/r408/aot-generate.json   (判据: IdsMatch=true 且 exit 0; 不一致必须 exit 3)",
+   "evidence_cmd": "export AGENTFRAMEWORK_LLAMA_BIN=<llama-server 二进制> && dotnet src/agent.host/bin/Debug/net10.0/agenthost.dll --llamacpp --model /tmp/models/r1-distill-qwen-1.5b-q4km.gguf --prompt-file eval/rover/r409/prompt.txt (逐位相同副本; 原 /tmp 为易失路径) --max-tokens 24 --expect-ids <24 个基线 id> --json eval/rover/r408/aot-generate.json   (判据: IdsMatch=true 且 exit 0; 不一致必须 exit 3)",
    "evidence_path": "src/agent.llamacpp/LlamaServerHost.cs",
    "negative_control": "① 二进制不可解析(显式路径不存在 / 环境变量未设且 PATH 无) ⇒ 必须 provider_unavailable 显式失败, 无桩实现、无静默兜底; ② --expect-ids 与外部基线不一致 ⇒ exit 3, 不得静默通过; ③ 服务进程提前退出 ⇒ server_start_failed, 绝不假装就绪; ④ 端口被使用计数(requests/tokens/embeddings)必须与响应实际 token 数一致, 缺失不得记 0 冒充已测。 ⑤ R411-V: 归档 JSON 为 **AOT 发布物**臂产物(aot-generate.json, 与 §I 的 17.64 t/s / PromptPerSecond=34.458 一致); §E 的 JIT 复现命令落盘名(e2e-generate.json)**未入库归档** ⇒ 引用一律以 aot-generate.json 为准。",
    "covers": [
@@ -533,7 +533,7 @@
    "id": "agent.formal.loop_mount",
    "capability": "形式化验证闭环**挂到 agent 主链**(v0.23.0 · 焦点③ 执行链核心): ① C8 静态前缀条件注入 — 契约段(clickproof 围栏 + no_formal 逃生口)只在段插件在场时追加, 不在场 ⇒ 前缀与 R380 **逐字一致**(零 token 负担), 双槽缓存防两种前缀串味(前缀随调用顺序漂移会同时毁掉可复现性与缓存命中率); ② C7 计划节点级本地验证 — 节点正文自带机器可读断言 ⇒ 路由判 Local + formal.verify 执行器, **零 LLM 调用**(NodeOutcome.Tokens=0); Proved⇒Completed 放行 / Refuted⇒Failed 且反例随 PlanNodeFormalGate.BlockMessage **同源文案**回注 / Unknown⇒Failed 但 disposition=Abstained(诚实弃权: 不计违规, 一样不放行) / 缺失(NoFormal)⇒放行且**绝不因此追问 LLM**; ③ 段插件消费侧**恒等透传**(返回段与入参逐字相等), 裁决只落账不改正文; ④ 注入侧与消费侧共用同一套围栏标识(ClickProofFence.Language / ClickRoverSegmentPlugin.PluginId), 有同源机检封死'注入了却读不到'的静默断链。",
    "level": "L4",
-   "evidence_cmd": "dotnet run -c Release --project /tmp/r391probe (生产组合根 AddAgentFramework() 装配; 判据: A_prefix_has_clickproof=True ∧ absent_has_clickproof=False ∧ C_route location=Local exec=formal.verify ∧ C_n1_proved=True ∧ n2_blocked=True ∧ total_llm_tokens=0); 机检: env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR dotnet test src/agent.tests/agentframework.tests.csproj -c Release (三新套件 26 例)",
+   "evidence_cmd": "python3 eval/capability/exp1-q32/instruments/tmp_archive_restore.py --restore --group r391probe (归档件逐位还原到该路径; 冲突 fail-closed) && dotnet run -c Release --project /tmp/r391probe (生产组合根 AddAgentFramework() 装配; 判据: A_prefix_has_clickproof=True ∧ absent_has_clickproof=False ∧ C_route location=Local exec=formal.verify ∧ C_n1_proved=True ∧ n2_blocked=True ∧ total_llm_tokens=0); 机检: env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR dotnet test src/agent.tests/agentframework.tests.csproj -c Release (三新套件 26 例)",
    "evidence_path": "src/agent/intent/FormalVerifyExecutor.cs",
    "evidence_report": "docs/reports/r385/r391-mount-evidence.md",
    "negative_control": "① 不在场前缀必须逐字不变(含'不在场前缀不含 clickproof'的负控断言) —— 单槽缓存与'无条件注入'两种实现都会在此红; ② Unknown 案例: 执行器输出必须带**闸门自己的**弃权文案, 只输出 disposition 枚举名会红(本轮真红过一次, 改为复用 PlanNodeFormalGate.BlockMessage 才转绿) ⇒ 证明断言绑定组件真实行为而非空心判定; ③ 路由负控: python 围栏/自然语言散文**不得**被判本地形式化节点(否则任意节点都能借形式化绕过远程生成); ④ 插件恒等透传用 == 逐字判定而非长度/包含; ⑤ 真机执行在**无任何 LLM 提供方**的容器里跑通 ⇒ 若误判远程必然硬失败。",
@@ -1633,13 +1633,13 @@
    "evidence_path": "eval/capability/instruments-check.json",
    "evidence_generated_with": {
     "evidence_kind": "artifact",
-    "pin_status": "frozen",
-    "pin_reason": "archived-per-round",
-    "artifact_sha12": "075c8c52edfc",
+    "pin_status": "live",
+    "pin_reason": "worktree-only",
+    "artifact_sha12": null,
     "instrument": "eval/capability/instruments_check.py",
     "instrument_sha12": "8d1eb60b7ca4",
     "binding": "audit-pin",
-    "audited_by_round": "EXP1-Q31"
+    "audited_by_round": "EXP1-Q32"
    },
    "negative_control": "每条器具必带 nc_cmd 且必须非零; 缺负控的器具不许进面",
    "covers": [
@@ -2147,7 +2147,7 @@
    "id": "r457.effect-closure",
    "level": "L3",
    "capability": "动作环效果收口(真机 E2E): 同夹具产物 2/4 -> 4/4 (stats.txt=chars=14, first.txt=R455 fixture note), 磁盘伪造 0; 三缺口机制修复: 台账回灌(命中 8 个实发请求) / 落不到槽位不吞并(转正常路径) / 缺凭据可见失败(真机负控 len 0->83 + model_unavailable 遥测); 器具对称: 我方 tool_calls 落盘 + 审计 args_head 命令原文 + 适配器 prompt_sha8/tail_messages",
-   "evidence_cmd": "bash /tmp/r457_run_agent_tools.sh && python3 eval/rover/r457/judge_r457.py && bash /tmp/r457_nokey.sh",
+   "evidence_cmd": "bash eval/capability/exp1-q32/archived_tmp/r457/r457_run_agent_tools.sh && python3 eval/rover/r457/judge_r457.py && bash eval/capability/exp1-q32/archived_tmp/r457/r457_nokey.sh",
    "evidence_path": "eval/rover/r457/verdict-r457.json",
    "evidence_generated_with": {
     "evidence_kind": "artifact",
@@ -2179,7 +2179,7 @@
    "id": "r458.humanized-continuation",
    "level": "L2",
    "capability": "承接轮人性化(真机 E2E, 同夹具/同 6 轮/同模型): T5「继续」→ 逐项承接 4 个真实产物 + 「继续什么」反问 + 3 个具体可选项 (固定示例菜单 `(如: 搜索/写文档…)` 消失); T6 内部术语 3 行 → 0 行 (一句人话, 内部理由只进遥测); 承接块仅 T5 触发 1 次 (判定与门同判据: 弱意图 且 置信<0.60), 收口闸 grounded=true; 产物 4/4 不回退, 磁盘伪造 0; 调用 17 (R457 15, codex 冻结 13) —— 增量来自模型自身多用工具, 非承接机制成本",
-   "evidence_cmd": "bash /tmp/r458_setup.sh && bash /tmp/r458_run.sh && python3 eval/rover/r458/judge_r458.py",
+   "evidence_cmd": "bash eval/rover/r458/r458_setup.sh && bash eval/rover/r458/r458_run.sh && python3 eval/rover/r458/judge_r458.py",
    "evidence_path": "eval/rover/r458/verdict-r458.json",
    "evidence_generated_with": {
     "evidence_kind": "artifact",
@@ -2209,7 +2209,7 @@
    "id": "r460.brevity-menu-cache",
    "level": "L2",
    "capability": "承接轮精炼 + 菜单单源 + 命中率/token 归因 (真机 E2E, 同夹具/同 6 轮/同模型, 唯一差异=二进制): T5 回复 241→160 字 (-33.6%), 承接注入块 288→163 字 (-43.6%, MaxArtifacts 8→3 + 紧凑两行 + 截断诚实标注); 门问句与兜底反问同源 (BuildAsk/BuildMenu) ⇒ 空态不再给通用示例菜单 (搜索资料/写文档/…), 有事实时 Choices=3 真实名+「另有新任务」; T5 实发 3 项编号菜单 (①②③) 且首项接地真实产物; prompt ∑ 54,927→39,863 (-27.4%), 调用 17→13 (=codex); 稳态 miss 均价 301.9 tok (R458 310, codex 236), 稳态 hit 90.2% —— 命中率未达标根因 = [SessionMemory] 注入块逐轮膨胀 308→836 字符 (实发全量文本归因, ADAPTER_DUMP_FULL=1)",
-   "evidence_cmd": "bash /tmp/r460_setup.sh && bash /tmp/r460_run.sh && python3 eval/rover/r460/judge_r460.py",
+   "evidence_cmd": "bash eval/rover/r460/r460_setup.sh && bash eval/rover/r460/r460_run.sh && python3 eval/rover/r460/judge_r460.py",
    "evidence_path": "eval/rover/r460/verdict-r460.json",
    "evidence_generated_with": {
     "evidence_kind": "artifact",
@@ -2245,7 +2245,7 @@
    "id": "r461.contract-not-front-and-hit-budget",
    "level": "L2",
    "capability": "契约声明不上前台 + 零字节产物可见 + 每轮注入预算收口 (真机 E2E, 同夹具/同 6 轮/同模型, 唯一差异=二进制; 夹具两侧 md5 fe1f5530446bd4ceb8be1b944c8ec005): 前台契约声明行 3 处 (37/59/33 字符) → 0 (SplitFacing 剥围栏/裸块/no_formal 行, 只进遥测 contract_declaration_hidden; 剥离为空 fail-safe 返回原文); 记忆写入同剥离 (召回块不再带 no_formal:); 0 字节产物标 (空) 不再静默省略; ForecastRecord 上轮任务预览 ≤24 字; 每轮新内容预算 MemorySourceBudgetTokens 500→120 / SessionMemory 默认 1000→400 / 【已完成】4→2 条, 三处机检回归锁。读数: 稳态 hit 90.2%→91.2%, 稳态 miss 均价 301.9→274.9 tok (-9.0%); T5 152 字 (R458 241) 且 3 项菜单 ①②③; T6 118 字无内部术语; 调用 15 / prompt∑ 46,616 (R460 13/39,863) —— tokens KPI 未达标根因 = 调用数方差 (R458 17 / R460 13 / R461 15), 非前缀长度; 命中 97% 红线算术条件机检 = 平均前缀 3,118 tok ⇒ 每轮新内容须 ≤93.5 tok (实测 ≈275)",
-   "evidence_cmd": "bash /tmp/r461_setup.sh && bash /tmp/r461_run.sh && python3 eval/rover/r461/judge_r461.py",
+   "evidence_cmd": "bash eval/rover/r461/r461_setup.sh && bash eval/rover/r461/r461_run.sh && python3 eval/rover/r461/judge_r461.py",
    "evidence_path": "eval/rover/r461/verdict-r461.json",
    "evidence_generated_with": {
     "evidence_kind": "artifact",
@@ -2284,7 +2284,7 @@
    "id": "r462.recall-reality-gate",
    "level": "L2",
    "capability": "召回-现实一致性闸 (机制, 非提示词补丁): 召回块/记忆块/工具回灌面里引用的**路径样事实**由当前工作区文件系统裁决, 不一致即显式标 [核验✗ …] (一致时才标 [核验✓ 现存 N B]; 召回片段走 failOnly ⇒ 一致时零字节注入, 守住 token 预算)。同夹具/同 7 轮/同适配器 E2E, 唯一差异=二进制: P1 11 个实发消息带 ✗ (recall_stale_refs 含 report.md) / P2 [工作区文件 logic.unit] 进面 · [工作区文件 blob.bin] 不进面 / P3 召回片段 0 处 ✓ / P4 7 轮 ok + 四产物正确 + 回复面 0 处契约声明 ⇒ 4/4 PASS",
-   "evidence_cmd": "python3 eval/rover/r462/judge_r462.py   # verdict-r462.json 写入者 (R462_OUT 或默认 eval/rover/r462/); 编排器 = eval/rover/r462/r462_run.sh (原声明 bash /tmp/r462_e2e.sh 已不存在)",
+   "evidence_cmd": "python3 eval/rover/r462/judge_r462.py   # verdict-r462.json 写入者 (R462_OUT 或默认 eval/rover/r462/); 编排器 = eval/rover/r462/r462_run.sh (原声明 bash /tmp/r462_e2e.sh: EXP1-Q32 现盘实测该文件**仍存在**且为单副本 ⇒ 以现盘为准, 已逐字归档 sha256=dff0133d89f8… ⇒ 入口自足化)",
    "evidence_path": "eval/rover/r462/verdict-r462.json",
    "evidence_generated_with": {
     "evidence_kind": "artifact",
@@ -2296,7 +2296,7 @@
     "binding": "audit-pin",
     "audited_by_round": "EXP1-Q30"
    },
-   "negative_control": "NC1 (判别力): 同判据跑 R461 实发面 ⇒ P1/P2 = false (旧二进制无闸 + 后缀白名单), 见 /tmp/r462_negctl.json; NC2 越界: ../etc/hosts 一律判 ✗ 且不探测 (Verify_TraversalToken_RejectedWithoutProbe) + Probe 层 StartsWith(root) 二次校验; NC3 fail-safe: 无 root/不存在/异常 ⇒ 原样返回, 不丢事实不造事实 (Verify_NoRoot_FailSafe_ReturnsOriginal); NC4 幂等: 已带标签的块二次通过不重复追加 (Verify_Idempotent_NoDoubleTagging); NC5 只打假: 一致的召回片段必须逐字节不变 (Verify_FailOnly_ConsistentClaim_ZeroByteInjection) + 回灌面零字节 (Loop_ToolResult_ConsistentPath_ZeroByteInjection); NC6 结构判定负控: 1.5 / 提升3.2倍 / .. / 空 串不得判为路径 (IsPathLike_Structural_NoSuffixWhitelist)",
+   "negative_control": "NC1 (判别力): 同判据跑 R461 实发面 ⇒ P1/P2 = false (旧二进制无闸 + 后缀白名单), 见 eval/capability/exp1-q32/archived_tmp/r462/r462_negctl.json (原 /tmp 单副本已逐字归档, EXP1-Q32); NC2 越界: ../etc/hosts 一律判 ✗ 且不探测 (Verify_TraversalToken_RejectedWithoutProbe) + Probe 层 StartsWith(root) 二次校验; NC3 fail-safe: 无 root/不存在/异常 ⇒ 原样返回, 不丢事实不造事实 (Verify_NoRoot_FailSafe_ReturnsOriginal); NC4 幂等: 已带标签的块二次通过不重复追加 (Verify_Idempotent_NoDoubleTagging); NC5 只打假: 一致的召回片段必须逐字节不变 (Verify_FailOnly_ConsistentClaim_ZeroByteInjection) + 回灌面零字节 (Loop_ToolResult_ConsistentPath_ZeroByteInjection); NC6 结构判定负控: 1.5 / 提升3.2倍 / .. / 空 串不得判为路径 (IsPathLike_Structural_NoSuffixWhitelist)",
    "covers": [
     "src/agent.core/core/RecallRealityGate.cs",
     "src/agent.modelqueue/ActionLoop.cs",
@@ -2321,7 +2321,7 @@
    "id": "r462.language-agnostic-recall",
    "level": "L2",
    "capability": "语言无关召回探针 (承 R447 用户令「管道内一律标通用代码逻辑」): 删 ContextAssembler 工作区召回的**硬编码后缀白名单** (源码逐字列语言后缀), 改结构+内容探针 WorkspaceTextProbe (空文件/NUL/二进制 ⇒ 弃; 后缀集只在 AGENTFRAMEWORK_TEXT_SUFFIX_ALLOWLIST 显式配置时生效); 语言标签集外置为数据文件 config/base/language-tags.txt, 机检只读数据 ⇒ 换语言/新增语言零改码。读数: 非白名单后缀文本 logic.unit 进召回面, 含 NUL 的 blob.bin 不进",
-   "evidence_cmd": "bash /tmp/r462_e2e.sh && python3 eval/rover/r462/judge_r462.py",
+   "evidence_cmd": "bash eval/capability/exp1-q32/archived_tmp/r462/r462_e2e.sh && python3 eval/rover/r462/judge_r462.py",
    "evidence_path": "eval/rover/r462/verdict-r462.json",
    "evidence_generated_with": {
     "evidence_kind": "artifact",

@@ -1,0 +1,186 @@
+{
+ "round": "EXP1-Q32",
+ "schema": "tmp-archive-manifest/1",
+ "archived_dir": "eval/capability/exp1-q32/archived_tmp",
+ "n_entries": 12,
+ "n_archived_ok": 11,
+ "n_repo_resident_identical": 1,
+ "rule": "r3/r4: 逐字归档 + sha256 读数; 归档件禁改字节; 入口层 materialize 自足化",
+ "entries": [
+  {
+   "name": "r462_e2e",
+   "kind": "copy",
+   "origin": "/tmp/r462_e2e.sh",
+   "archive": "eval/capability/exp1-q32/archived_tmp/r462/r462_e2e.sh",
+   "group": null,
+   "sha256": "dff0133d89f84150b0bc7612932ed15cb98e72dc7ac10be90a1dce9fd53a7a90",
+   "bytes": 425,
+   "mode": "0o664",
+   "verdict": "noop_identical",
+   "deps_tmp_refs": [
+    "/tmp/r461_env",
+    "/tmp/r462_negctl.json",
+    "/tmp/r462_run.log",
+    "/tmp/r462_setup.log"
+   ]
+  },
+  {
+   "name": "r462_negctl",
+   "kind": "copy",
+   "origin": "/tmp/r462_negctl.json",
+   "archive": "eval/capability/exp1-q32/archived_tmp/r462/r462_negctl.json",
+   "group": null,
+   "sha256": "ee2d865efb087469c542dac393342692e1f80099ea4707772335432508d061c3",
+   "bytes": 637,
+   "mode": "0o664",
+   "verdict": "noop_identical",
+   "deps_tmp_refs": [
+    "/tmp/r461_env"
+   ]
+  },
+  {
+   "name": "r457_run_agent_tools",
+   "kind": "copy",
+   "origin": "/tmp/r457_run_agent_tools.sh",
+   "archive": "eval/capability/exp1-q32/archived_tmp/r457/r457_run_agent_tools.sh",
+   "group": null,
+   "sha256": "aa32e15927146a4bd5c034cfea9793d038470f7f06ba4da2884b3ecf311a5eb2",
+   "bytes": 2483,
+   "mode": "0o664",
+   "verdict": "noop_identical",
+   "deps_tmp_refs": [
+    "/tmp/cxprobe",
+    "/tmp/cxprobe/adapter.pid",
+    "/tmp/pub_r457",
+    "/tmp/pub_r457/agenthost",
+    "/tmp/r457_env"
+   ]
+  },
+  {
+   "name": "r457_nokey",
+   "kind": "copy",
+   "origin": "/tmp/r457_nokey.sh",
+   "archive": "eval/capability/exp1-q32/archived_tmp/r457/r457_nokey.sh",
+   "group": null,
+   "sha256": "d0d0c45bde6984dc8eeb3113ea4ecb164998d1837c9cbf2f7c74f150e69e7054",
+   "bytes": 1624,
+   "mode": "0o664",
+   "verdict": "noop_identical",
+   "deps_tmp_refs": [
+    "/tmp/pub_r457/agenthost",
+    "/tmp/r457_env/logs/adapter/side-agent-",
+    "/tmp/r457_nokey",
+    "/tmp/r457_nokey/logs/turns.jsonl",
+    "/tmp/r457_nokey/turn1.json"
+   ]
+  },
+  {
+   "name": "run_r374",
+   "kind": "copy",
+   "origin": "/tmp/gameprobe/run_r374.sh",
+   "archive": "eval/capability/exp1-q32/archived_tmp/gameprobe/run_r374.sh",
+   "group": null,
+   "sha256": "e398c0ea7aca1643923884119d500726232982fa67f87f464f4d28d80f9fab7e",
+   "bytes": 2360,
+   "mode": "0o664",
+   "verdict": "noop_identical",
+   "deps_tmp_refs": [
+    "/tmp/gameprobe",
+    "/tmp/pub_r374",
+    "/tmp/pub_r374.log",
+    "/tmp/pub_r374/agenthost"
+   ]
+  },
+  {
+   "name": "r377_kpi_telemetry",
+   "kind": "copy",
+   "origin": "/tmp/gameprobe/r377_kpi.telemetry",
+   "archive": "eval/capability/exp1-q32/archived_tmp/gameprobe/r377_kpi.telemetry",
+   "group": null,
+   "sha256": "9630e46761dc1044bf997ae9279249859abaeddef3f7db0c1842c9f96e4ef96a",
+   "bytes": 17474,
+   "mode": "0o664",
+   "verdict": "noop_identical",
+   "deps_tmp_refs": []
+  },
+  {
+   "name": "fp375_probe",
+   "kind": "copy",
+   "origin": "/tmp/fp375/probe.py",
+   "archive": "eval/capability/exp1-q32/archived_tmp/fp375/probe.py",
+   "group": null,
+   "sha256": "1a8162abab26ac4e99ce7a0ccc5c6c51b5781074b33d72e43ff7a0c23cd449a8",
+   "bytes": 4593,
+   "mode": "0o664",
+   "verdict": "noop_identical",
+   "deps_tmp_refs": [
+    "/tmp/fp375/report.txt"
+   ]
+  },
+  {
+   "name": "fp376_probe2",
+   "kind": "copy",
+   "origin": "/tmp/fp376/probe2.py",
+   "archive": "eval/capability/exp1-q32/archived_tmp/fp376/probe2.py",
+   "group": null,
+   "sha256": "416e2dc23b17c4a4b3d2354485cd2b03e200eb9983993bff9fa7effa4e055993",
+   "bytes": 9082,
+   "mode": "0o664",
+   "verdict": "noop_identical",
+   "deps_tmp_refs": [
+    "/tmp/fp376",
+    "/tmp/fp376/report2.txt",
+    "/tmp/pub_r376/agenthost"
+   ]
+  },
+  {
+   "name": "r382_plan_frontend_probe",
+   "kind": "copy",
+   "origin": "/tmp/r382/plan_frontend_probe.py",
+   "archive": "eval/capability/exp1-q32/archived_tmp/r382/plan_frontend_probe.py",
+   "group": null,
+   "sha256": "98734aba2ad0ecfed1c9b1a7e17e5a686df47335337968665d3474b82cbb162a",
+   "bytes": 3937,
+   "mode": "0o664",
+   "verdict": "noop_identical",
+   "deps_tmp_refs": [
+    "/tmp/r382/plan_events.jsonl"
+   ]
+  },
+  {
+   "name": "r391probe_Program",
+   "kind": "copy",
+   "origin": "/tmp/r391probe/Program.cs",
+   "archive": "eval/capability/exp1-q32/archived_tmp/r391probe/Program.cs",
+   "group": "r391probe",
+   "sha256": "71b0eec3b059de0a3e89bb869b5a73d2a476cd50d26751e3eb5d968b6864c892",
+   "bytes": 3337,
+   "mode": "0o664",
+   "verdict": "noop_identical",
+   "deps_tmp_refs": []
+  },
+  {
+   "name": "r391probe_csproj",
+   "kind": "copy",
+   "origin": "/tmp/r391probe/r391probe.csproj",
+   "archive": "eval/capability/exp1-q32/archived_tmp/r391probe/r391probe.csproj",
+   "group": "r391probe",
+   "sha256": "47766ba570fb27a6adeafe7015fe1ebdfac99067a1eca6bd6e099479698a31e8",
+   "bytes": 502,
+   "mode": "0o664",
+   "verdict": "noop_identical",
+   "deps_tmp_refs": []
+  },
+  {
+   "name": "r462_corpus_repo_resident",
+   "kind": "repo-resident",
+   "origin": "/tmp/r462_corpus.json",
+   "archive": "eval/rover/r462/corpus-r462-w.json",
+   "group": null,
+   "sha256": "cd075177be5bea134b5d57132f40e540f66a7996086e39c5545eee1ef5223946",
+   "bytes": 35446,
+   "same_as_origin": true,
+   "verdict": "identical"
+  }
+ ]
+}

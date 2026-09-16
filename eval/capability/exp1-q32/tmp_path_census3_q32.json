@@ -1,0 +1,198 @@
+{
+ "round": "EXP1-Q32",
+ "schema": "tmp-path-census/3",
+ "positive_control": {
+  "rows": 164,
+  "evidence_cmd_nonempty": 164,
+  "evidence_cmd_has_eval": 130
+ },
+ "classes": {
+  "ACCEPT_write_out_intermediate": 5,
+  "ACCEPT_external_asset_or_build_output": 15,
+  "OK_materialized_from_archive": 1,
+  "NOTE_text_ref_procedure": 1
+ },
+ "n_findings": 22,
+ "reds": [],
+ "repo_path_refs_existing": 327,
+ "repo_path_refs_missing": [],
+ "caliber_note": "v3 = 路径边界 + 剥注释 + materialize 感知; v1 红 11 / v2 红 1 / v3 见 reds",
+ "findings": [
+  {
+   "id": "dcr.harness",
+   "field": "evidence_cmd",
+   "token": "/tmp/aot",
+   "form": "write_out",
+   "exists_today": false,
+   "verdict": "ACCEPT_write_out_intermediate"
+  },
+  {
+   "id": "dcr.harness",
+   "field": "evidence_cmd",
+   "token": "/tmp/aot/agenthost",
+   "form": "unclassified",
+   "exists_today": false,
+   "verdict": "ACCEPT_external_asset_or_build_output"
+  },
+  {
+   "id": "dcr.harness",
+   "field": "evidence_cmd",
+   "token": "/tmp/z3env/bin/python",
+   "form": "unclassified",
+   "exists_today": true,
+   "verdict": "ACCEPT_external_asset_or_build_output"
+  },
+  {
+   "id": "aot.publish.zero_il",
+   "field": "evidence_cmd",
+   "token": "/tmp/pub_release",
+   "form": "write_out",
+   "exists_today": true,
+   "verdict": "ACCEPT_write_out_intermediate"
+  },
+  {
+   "id": "plan.resume.checkpoint",
+   "field": "evidence_cmd",
+   "token": "/tmp/r384/xproc",
+   "form": "write_out",
+   "exists_today": true,
+   "verdict": "ACCEPT_write_out_intermediate"
+  },
+  {
+   "id": "plan.resume.checkpoint",
+   "field": "evidence_cmd",
+   "token": "/tmp/r384/xproc",
+   "form": "write_out",
+   "exists_today": true,
+   "verdict": "ACCEPT_write_out_intermediate"
+  },
+  {
+   "id": "llamacpp.process.boundary",
+   "field": "evidence_cmd",
+   "token": "/tmp/models/r1-distill-qwen-1.5b-q4km.gguf",
+   "form": "read_dep",
+   "exists_today": false,
+   "verdict": "ACCEPT_external_asset_or_build_output"
+  },
+  {
+   "id": "llamacpp.process.boundary",
+   "field": "evidence_cmd",
+   "token": "/tmp",
+   "form": "unclassified",
+   "exists_today": true,
+   "verdict": "ACCEPT_external_asset_or_build_output"
+  },
+  {
+   "id": "llamacpp.embedding.port",
+   "field": "evidence_cmd",
+   "token": "/tmp/models/bge-base-zh-v1.5-q8.gguf",
+   "form": "read_dep",
+   "exists_today": false,
+   "verdict": "ACCEPT_external_asset_or_build_output"
+  },
+  {
+   "id": "agent.formal.loop_mount",
+   "field": "evidence_cmd",
+   "token": "/tmp/r391probe",
+   "form": "read_dep",
+   "exists_today": true,
+   "verdict": "OK_materialized_from_archive"
+  },
+  {
+   "id": "r416.release-selfcontained-config",
+   "field": "negative_control",
+   "token": "/tmp/d2-cwd",
+   "form": "ref_text",
+   "exists_today": true,
+   "verdict": "NOTE_text_ref_procedure"
+  },
+  {
+   "id": "r416.release-selfcontained-config",
+   "field": "negative_control",
+   "token": "/tmp",
+   "form": "ref_text",
+   "exists_today": true,
+   "verdict": "ACCEPT_external_asset_or_build_output"
+  },
+  {
+   "id": "r420.recall-command-wiring",
+   "field": "negative_control",
+   "token": "/tmp/pub_r414/agenthost",
+   "form": "ref_text",
+   "exists_today": true,
+   "verdict": "ACCEPT_external_asset_or_build_output"
+  },
+  {
+   "id": "r421.recall-negation-polarity",
+   "field": "negative_control",
+   "token": "/tmp/pub_r420_pre/agenthost",
+   "form": "ref_text",
+   "exists_today": true,
+   "verdict": "ACCEPT_external_asset_or_build_output"
+  },
+  {
+   "id": "r422.recall-length-norm",
+   "field": "negative_control",
+   "token": "/tmp/pub_r421_pre/agenthost",
+   "form": "ref_text",
+   "exists_today": true,
+   "verdict": "ACCEPT_external_asset_or_build_output"
+  },
+  {
+   "id": "r423.recall-tf-saturation",
+   "field": "evidence_cmd",
+   "token": "/tmp/pub_r423",
+   "form": "write_out",
+   "exists_today": true,
+   "verdict": "ACCEPT_write_out_intermediate"
+  },
+  {
+   "id": "r430.local-server-parallel-serialization",
+   "field": "evidence_cmd",
+   "token": "/tmp/pub_r430b/agenthost",
+   "form": "read_dep",
+   "exists_today": true,
+   "verdict": "ACCEPT_external_asset_or_build_output"
+  },
+  {
+   "id": "r432.turn-gate-discrimination-pair",
+   "field": "evidence_cmd",
+   "token": "/tmp/pub_r430b/agenthost",
+   "form": "read_dep",
+   "exists_today": true,
+   "verdict": "ACCEPT_external_asset_or_build_output"
+  },
+  {
+   "id": "r449.think-memory-switch",
+   "field": "evidence_cmd",
+   "token": "/tmp/pub_r449b/agenthost",
+   "form": "read_dep",
+   "exists_today": true,
+   "verdict": "ACCEPT_external_asset_or_build_output"
+  },
+  {
+   "id": "r450.gate-prompt-anchor",
+   "field": "evidence_cmd",
+   "token": "/tmp/pub_r450/agenthost",
+   "form": "read_dep",
+   "exists_today": true,
+   "verdict": "ACCEPT_external_asset_or_build_output"
+  },
+  {
+   "id": "r462.recall-reality-gate",
+   "field": "negative_control",
+   "token": "/tmp",
+   "form": "ref_text",
+   "exists_today": true,
+   "verdict": "ACCEPT_external_asset_or_build_output"
+  },
+  {
+   "id": "r463.model-cleanup",
+   "field": "negative_control",
+   "token": "/tmp/models",
+   "form": "ref_text",
+   "exists_today": true,
+   "verdict": "ACCEPT_external_asset_or_build_output"
+  }
+ ]
+}

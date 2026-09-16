@@ -1,0 +1,578 @@
+{
+ "round": "EXP1-Q32",
+ "schema": "caliber-void-audit/1",
+ "caliber": "strict",
+ "decl_lexicon": [
+  "并列",
+  "双栏",
+  "两栏",
+  "不可比",
+  "口径变更",
+  "口径断点",
+  "作废",
+  "可比性",
+  "取代",
+  "历史读数",
+  "不再作为当前",
+  "非口径",
+  "不代表当前",
+  "可比性断点",
+  "桩口径",
+  "真值口径",
+  "供应商真值",
+  "旧段正文<br>",
+  "参考档",
+  "不并排"
+ ],
+ "face_files": 158,
+ "n_pairs": 44,
+ "n_declared": 30,
+ "n_note_nonmetric": 0,
+ "n_red": 14,
+ "reds": [
+  {
+   "file": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md",
+   "line": 198,
+   "pair": "941→939",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- **最近五批审计（批76-80）**：63/63 全绿（quick-11 子集 44/44）；tok/case 941→939→928→860 递降带内（全量批 1165 口径不同）；drift 全 1.0；suspects 0；D4 rel 修复前 n=0（缺陷 57）/修复后 n=11 avg 0.631。"
+  },
+  {
+   "file": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md",
+   "line": 198,
+   "pair": "928→860",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- **最近五批审计（批76-80）**：63/63 全绿（quick-11 子集 44/44）；tok/case 941→939→928→860 递降带内（全量批 1165 口径不同）；drift 全 1.0；suspects 0；D4 rel 修复前 n=0（缺陷 57）/修复后 n=11 avg 0.631。"
+  },
+  {
+   "file": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md",
+   "line": 209,
+   "pair": "1100→1250",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- **R180-R182 (C07 记忆链三连修)**: 真缺陷 60 (must_contain 硬判定误用 req() → NameError 崩批, 改 x[pass]=False); C07 记忆源破案 (跨进程 forecast.json 单槽被中间用例竞态覆盖 → 批340 丢失实证链: forecast"
+  },
+  {
+   "file": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md",
+   "line": 261,
+   "pair": "812→176",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- 行为差分口径确立: 画像独有事实锚 (非宽词), 全隔离臂对照 (context 812→176tok)"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 52,
+   "pair": "64→97",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| K2b | **prompt 缓存命中率**（K2 成本侧子指标, R377 用户钦定; **R380 口径修订为首要 KPI**） | **有效命中率 = `cache_hit_tokens / min(本轮 prompt_tokens, 上一轮同会话 prompt_tokens)`**（只算『需要命中的部分』,"
+  },
+  {
+   "file": "docs/reports/loop-detection-probe-hardening.md",
+   "line": 45,
+   "pair": "1→5",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "3. `open_count` 由 1→5 是**判定修正**，不是计划项变多；历史轮（R371/R370「进行中」）入账属判定口径扩张，未做历史轮归档判断。"
+  },
+  {
+   "file": "docs/reports/market-agent-capabilities-R338.md",
+   "line": 289,
+   "pair": "200→500",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "3. **Windsurf/Devin Desktop**：官方文档已切至 docs.devin.ai（证明品牌合并属实），但 Cascade EOL 日期（2026-07-01）、Devin Local（Rust）能力、SWE-1.6 细节、定价结构全部为第三方描述，且多来源数字冲突（免费额度 200 vs 500、"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1103,
+   "pair": "63→57",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| C10 口径 | ✅ | 登记 `weak 63 → 57`（剔除 6 条 index-scope-out）**候选**，`delta_applied=false` |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1546,
+   "pair": "4→4",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- **否证并收窄宣称**：**P2**（「两键重放值与登记逐位相同」）**不成立** —— 两键只被 C1 **达到**，随即落口径边界 ⇒ **不得宣称「覆盖增益 = 逐位对账」**；**P3** 计数面不成立（4→4）、语义面成立（笼统 → 类型化 + 零无类型跳过）。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1614,
+   "pair": "4→2",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "① **落地修法**：把 `symbol_faces` / `relocated_symbol_faces`（可选：其余 7 枚）加进 `citations.jsonl` 落盘白名单 → 重跑探针 → 断言 `n_symbol_faces` / `symbol_face_rungs` 可由归档**独立复算**（Q16 "
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1626,
+   "pair": "4→2",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "落地附录 R §R.3 归因①的修法：把 `symbol_faces` / `relocated_symbol_faces` 补进探针落盘白名单，并**证明**两枚字段进入归档后，`n_symbol_faces` / `symbol_face_rungs` 两个登记读数可由归档**独立复算**（附录 Q 口径：不可重放"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 82,
+   "pair": "4→4",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| R403 | chat template 全量（Jinja 子集扩展 + 工具调用模板） | **关闭（2026-09-14 R403-scope 裁定；见 `docs/reports/r403/chat-template-tool-scope.md`）** | R408 §3-Q5 已把「分词与聊天模板」交给 l"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 82,
+   "pair": "7→18",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| R403 | chat template 全量（Jinja 子集扩展 + 工具调用模板） | **关闭（2026-09-14 R403-scope 裁定；见 `docs/reports/r403/chat-template-tool-scope.md`）** | R408 §3-Q5 已把「分词与聊天模板」交给 l"
+  },
+  {
+   "file": "docs/plans/v0.91.0-r475-replay-and-cache-accounting.md",
+   "line": 15,
+   "pair": "900→1.0152",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "3. **口径**：3 例 `effective_hit_rate > 1`（实测 `hit=2,944 > cacheable=2,900 ⇒ 1.0152`）—— 命中量超过同会话可缓存上界，说明命中来自**比上一轮更长的共享前缀**，K2b 对该轮不适用，>1 会污染红线统计。"
+  }
+ ],
+ "by_file": {
+  "docs/reports/dev-return-digest.md": 1,
+  "docs/reports/dynamic-telemetry-eval-rollback-strategy.md": 4,
+  "docs/reports/endpoint-and-audit-contract.md": 1,
+  "docs/reports/iteration-master-plan.md": 3,
+  "docs/reports/kpi2-token-report-R324.md": 1,
+  "docs/reports/loop-detection-probe-hardening.md": 1,
+  "docs/reports/market-agent-capabilities-R338.md": 1,
+  "docs/reports/r472-cache-cap-experiment.md": 4,
+  "docs/reports/r474-real-provider-arms.md": 2,
+  "docs/reports/r480-recall-test-ledger.md": 2,
+  "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md": 5,
+  "docs/plans/v0.22.0-exp6-embedding-model-selection.md": 1,
+  "docs/plans/v0.22.0-longterm-backlog.md": 14,
+  "docs/plans/v0.48.0-r427-duplicate-tie-precheck.md": 1,
+  "docs/plans/v0.65.0-r445-judge-side-prefilter-precheck.md": 1,
+  "docs/plans/v0.66.0-r446-judge-determinism-and-zero-token-settlement.md": 1,
+  "docs/plans/v0.91.0-r475-replay-and-cache-accounting.md": 1
+ },
+ "hits": [
+  {
+   "file": "docs/reports/dev-return-digest.md",
+   "line": 107,
+   "pair": "396→400",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "| `e7d99e4` | exp1-Q3b 附录B: 补 396->400 文件口径机检说明（对侧 R430/R431 新增 4 个 src/**.cs，非口径变化） |"
+  },
+  {
+   "file": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md",
+   "line": 198,
+   "pair": "941→939",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- **最近五批审计（批76-80）**：63/63 全绿（quick-11 子集 44/44）；tok/case 941→939→928→860 递降带内（全量批 1165 口径不同）；drift 全 1.0；suspects 0；D4 rel 修复前 n=0（缺陷 57）/修复后 n=11 avg 0.631。"
+  },
+  {
+   "file": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md",
+   "line": 198,
+   "pair": "928→860",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- **最近五批审计（批76-80）**：63/63 全绿（quick-11 子集 44/44）；tok/case 941→939→928→860 递降带内（全量批 1165 口径不同）；drift 全 1.0；suspects 0；D4 rel 修复前 n=0（缺陷 57）/修复后 n=11 avg 0.631。"
+  },
+  {
+   "file": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md",
+   "line": 209,
+   "pair": "1100→1250",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- **R180-R182 (C07 记忆链三连修)**: 真缺陷 60 (must_contain 硬判定误用 req() → NameError 崩批, 改 x[pass]=False); C07 记忆源破案 (跨进程 forecast.json 单槽被中间用例竞态覆盖 → 批340 丢失实证链: forecast"
+  },
+  {
+   "file": "docs/reports/dynamic-telemetry-eval-rollback-strategy.md",
+   "line": 261,
+   "pair": "812→176",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- 行为差分口径确立: 画像独有事实锚 (非宽词), 全隔离臂对照 (context 812→176tok)"
+  },
+  {
+   "file": "docs/reports/endpoint-and-audit-contract.md",
+   "line": 11,
+   "pair": "7919.5→12775",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "| P2 | **本地成本口径会翻转结论方向**: 字符/2 折算 → tokenizer 真值 | R443 实测（同 M20 档案）: 本地合计 **7919.5 → 12775 = 1.613×**（门 prompt 1.398×、门生成 1.267×、判官 prompt 1.496×）⇒ 含本地口径的降幅 **"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 52,
+   "pair": "64→97",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| K2b | **prompt 缓存命中率**（K2 成本侧子指标, R377 用户钦定; **R380 口径修订为首要 KPI**） | **有效命中率 = `cache_hit_tokens / min(本轮 prompt_tokens, 上一轮同会话 prompt_tokens)`**（只算『需要命中的部分』,"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 443,
+   "pair": "146→149",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "> 取代关系: 本增量取代下方「R441–R478 轮次索引」段的 `registry rows=146 / updated_round=R478`（row 数 146 → 149，最新轮号 R478 → R479）。旧段正文保留为历史读数，不再作为当前口径。"
+  },
+  {
+   "file": "docs/reports/iteration-master-plan.md",
+   "line": 512,
+   "pair": "149→150",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "> 取代关系: 本增量取代上方各段「轮次索引」的 row 数口径（149 → 150 → **151**，最新轮号 R479 → R481）。旧段正文保留为历史读数，不再作为当前口径。"
+  },
+  {
+   "file": "docs/reports/kpi2-token-report-R324.md",
+   "line": 52,
+   "pair": "11→12",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "- **口径变更登记制度**: quick 扩容 (11→12→13) / 新口径 (XL/route-3) 必须在当轮报告登记"
+  },
+  {
+   "file": "docs/reports/loop-detection-probe-hardening.md",
+   "line": 45,
+   "pair": "1→5",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "3. `open_count` 由 1→5 是**判定修正**，不是计划项变多；历史轮（R371/R370「进行中」）入账属判定口径扩张，未做历史轮归档判断。"
+  },
+  {
+   "file": "docs/reports/market-agent-capabilities-R338.md",
+   "line": 289,
+   "pair": "200→500",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "3. **Windsurf/Devin Desktop**：官方文档已切至 docs.devin.ai（证明品牌合并属实），但 Cascade EOL 日期（2026-07-01）、Devin Local（Rust）能力、SWE-1.6 细节、定价结构全部为第三方描述，且多来源数字冲突（免费额度 200 vs 500、"
+  },
+  {
+   "file": "docs/reports/r472-cache-cap-experiment.md",
+   "line": 25,
+   "pair": "910→3",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "2. **命中随共享前缀线性增长**: 前缀 910→3,789→5,811 tok 时命中 768→3,584→5,632, 比值 0.844/0.946/0.969 单调升(趋 1) — 若存在 2k 上限, 后两臂应并列在 2,048 附近。"
+  },
+  {
+   "file": "docs/reports/r472-cache-cap-experiment.md",
+   "line": 25,
+   "pair": "789→5",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "2. **命中随共享前缀线性增长**: 前缀 910→3,789→5,811 tok 时命中 768→3,584→5,632, 比值 0.844/0.946/0.969 单调升(趋 1) — 若存在 2k 上限, 后两臂应并列在 2,048 附近。"
+  },
+  {
+   "file": "docs/reports/r472-cache-cap-experiment.md",
+   "line": 25,
+   "pair": "768→3",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "2. **命中随共享前缀线性增长**: 前缀 910→3,789→5,811 tok 时命中 768→3,584→5,632, 比值 0.844/0.946/0.969 单调升(趋 1) — 若存在 2k 上限, 后两臂应并列在 2,048 附近。"
+  },
+  {
+   "file": "docs/reports/r472-cache-cap-experiment.md",
+   "line": 25,
+   "pair": "584→5",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "2. **命中随共享前缀线性增长**: 前缀 910→3,789→5,811 tok 时命中 768→3,584→5,632, 比值 0.844/0.946/0.969 单调升(趋 1) — 若存在 2k 上限, 后两臂应并列在 2,048 附近。"
+  },
+  {
+   "file": "docs/reports/r474-real-provider-arms.md",
+   "line": 25,
+   "pair": "32097→14529",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "桩口径 R467: 32097 -> 14529 = **-54.74%** ; 供应商真值 R474: 76094 -> 32769 = **-56.94%** (差 2.2pp)。"
+  },
+  {
+   "file": "docs/reports/r474-real-provider-arms.md",
+   "line": 25,
+   "pair": "76094→32769",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "桩口径 R467: 32097 -> 14529 = **-54.74%** ; 供应商真值 R474: 76094 -> 32769 = **-56.94%** (差 2.2pp)。"
+  },
+  {
+   "file": "docs/reports/r480-recall-test-ledger.md",
+   "line": 170,
+   "pair": "687→6",
+   "declared": true,
+   "metric_line": false,
+   "verdict": "HAS_DECL",
+   "text": "- `old_arm.vs_registered_r481a.match = false`（files 6,687 vs 6,647；refs 20,348 vs 20,155）⇒ 器具已自标**不可比（语料漂移）**，与报告一致 ✔。"
+  },
+  {
+   "file": "docs/reports/r480-recall-test-ledger.md",
+   "line": 170,
+   "pair": "348→20",
+   "declared": true,
+   "metric_line": false,
+   "verdict": "HAS_DECL",
+   "text": "- `old_arm.vs_registered_r481a.match = false`（files 6,687 vs 6,647；refs 20,348 vs 20,155）⇒ 器具已自标**不可比（语料漂移）**，与报告一致 ✔。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1103,
+   "pair": "63→57",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| C10 口径 | ✅ | 登记 `weak 63 → 57`（剔除 6 条 index-scope-out）**候选**，`delta_applied=false` |"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1110,
+   "pair": "63→57",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "3. **口径候选只登记不施加**（C10）：用户面弱边分母 `63 → 57` 记入 `checks_posthoc`，待 L.7 #1 一并裁定。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1546,
+   "pair": "4→4",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "- **否证并收窄宣称**：**P2**（「两键重放值与登记逐位相同」）**不成立** —— 两键只被 C1 **达到**，随即落口径边界 ⇒ **不得宣称「覆盖增益 = 逐位对账」**；**P3** 计数面不成立（4→4）、语义面成立（笼统 → 类型化 + 零无类型跳过）。"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1614,
+   "pair": "4→2",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "① **落地修法**：把 `symbol_faces` / `relocated_symbol_faces`（可选：其余 7 枚）加进 `citations.jsonl` 落盘白名单 → 重跑探针 → 断言 `n_symbol_faces` / `symbol_face_rungs` 可由归档**独立复算**（Q16 "
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md",
+   "line": 1626,
+   "pair": "4→2",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "落地附录 R §R.3 归因①的修法：把 `symbol_faces` / `relocated_symbol_faces` 补进探针落盘白名单，并**证明**两枚字段进入归档后，`n_symbol_faces` / `symbol_face_rungs` 两个登记读数可由归档**独立复算**（附录 Q 口径：不可重放"
+  },
+  {
+   "file": "docs/plans/v0.22.0-exp6-embedding-model-selection.md",
+   "line": 169,
+   "pair": "0.723→0.737",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "1. **10 条硬集结论作废**：小样本(10 条)上\"bge-base 未赢 bge-small(MRR 0.723 vs 0.737)\"是**样本噪声**；在 120 查询/1299 块的判决口径下，**bge-base 全面领先 bge-small**(r@1 +13.3pt / MRR +12.7pt / r"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 16,
+   "pair": "3→1",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "- 待办(转 L3)：① SessionHistorySearch 接线（intent/CLI 出口）→ **✅ 已接线(R420)**：本地指令 `/recall <查询词> [topK]`（四表接线 + 通道级打点 `recall_query`；治疗臂 recall_query=3/llm_call=0，接线前产物"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 16,
+   "pair": "0.059→0.1408",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "- 待办(转 L3)：① SessionHistorySearch 接线（intent/CLI 出口）→ **✅ 已接线(R420)**：本地指令 `/recall <查询词> [topK]`（四表接线 + 通道级打点 `recall_query`；治疗臂 recall_query=3/llm_call=0，接线前产物"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 22,
+   "pair": "0→21",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "| exp1 本地索引/代码引用图 | `v0.22.0-exp1-local-index-and-code-graph.md` | 按 agent 关注范围建索引（非全量）；trigram/倒排；KPI 已判定 | **进行中（探索，零产品代码）**：Q1/Q3/Q3b/Q2 已由数据题实测（附录 A–D）；**Q2"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 22,
+   "pair": "13→0",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "| exp1 本地索引/代码引用图 | `v0.22.0-exp1-local-index-and-code-graph.md` | 按 agent 关注范围建索引（非全量）；trigram/倒排；KPI 已判定 | **进行中（探索，零产品代码）**：Q1/Q3/Q3b/Q2 已由数据题实测（附录 A–D）；**Q2"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 22,
+   "pair": "21→8",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "| exp1 本地索引/代码引用图 | `v0.22.0-exp1-local-index-and-code-graph.md` | 按 agent 关注范围建索引（非全量）；trigram/倒排；KPI 已判定 | **进行中（探索，零产品代码）**：Q1/Q3/Q3b/Q2 已由数据题实测（附录 A–D）；**Q2"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 22,
+   "pair": "8→21",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "| exp1 本地索引/代码引用图 | `v0.22.0-exp1-local-index-and-code-graph.md` | 按 agent 关注范围建索引（非全量）；trigram/倒排；KPI 已判定 | **进行中（探索，零产品代码）**：Q1/Q3/Q3b/Q2 已由数据题实测（附录 A–D）；**Q2"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 22,
+   "pair": "71→89",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "| exp1 本地索引/代码引用图 | `v0.22.0-exp1-local-index-and-code-graph.md` | 按 agent 关注范围建索引（非全量）；trigram/倒排；KPI 已判定 | **进行中（探索，零产品代码）**：Q1/Q3/Q3b/Q2 已由数据题实测（附录 A–D）；**Q2"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 22,
+   "pair": "63→57",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "| exp1 本地索引/代码引用图 | `v0.22.0-exp1-local-index-and-code-graph.md` | 按 agent 关注范围建索引（非全量）；trigram/倒排；KPI 已判定 | **进行中（探索，零产品代码）**：Q1/Q3/Q3b/Q2 已由数据题实测（附录 A–D）；**Q2"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 22,
+   "pair": "2701→1976",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "| exp1 本地索引/代码引用图 | `v0.22.0-exp1-local-index-and-code-graph.md` | 按 agent 关注范围建索引（非全量）；trigram/倒排；KPI 已判定 | **进行中（探索，零产品代码）**：Q1/Q3/Q3b/Q2 已由数据题实测（附录 A–D）；**Q2"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 22,
+   "pair": "63→57",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "| exp1 本地索引/代码引用图 | `v0.22.0-exp1-local-index-and-code-graph.md` | 按 agent 关注范围建索引（非全量）；trigram/倒排；KPI 已判定 | **进行中（探索，零产品代码）**：Q1/Q3/Q3b/Q2 已由数据题实测（附录 A–D）；**Q2"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 22,
+   "pair": "365→371",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "| exp1 本地索引/代码引用图 | `v0.22.0-exp1-local-index-and-code-graph.md` | 按 agent 关注范围建索引（非全量）；trigram/倒排；KPI 已判定 | **进行中（探索，零产品代码）**：Q1/Q3/Q3b/Q2 已由数据题实测（附录 A–D）；**Q2"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 22,
+   "pair": "4→0",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "| exp1 本地索引/代码引用图 | `v0.22.0-exp1-local-index-and-code-graph.md` | 按 agent 关注范围建索引（非全量）；trigram/倒排；KPI 已判定 | **进行中（探索，零产品代码）**：Q1/Q3/Q3b/Q2 已由数据题实测（附录 A–D）；**Q2"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 82,
+   "pair": "4→4",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| R403 | chat template 全量（Jinja 子集扩展 + 工具调用模板） | **关闭（2026-09-14 R403-scope 裁定；见 `docs/reports/r403/chat-template-tool-scope.md`）** | R408 §3-Q5 已把「分词与聊天模板」交给 l"
+  },
+  {
+   "file": "docs/plans/v0.22.0-longterm-backlog.md",
+   "line": 82,
+   "pair": "7→18",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "| R403 | chat template 全量（Jinja 子集扩展 + 工具调用模板） | **关闭（2026-09-14 R403-scope 裁定；见 `docs/reports/r403/chat-template-tool-scope.md`）** | R408 §3-Q5 已把「分词与聊天模板」交给 l"
+  },
+  {
+   "file": "docs/plans/v0.48.0-r427-duplicate-tie-precheck.md",
+   "line": 74,
+   "pair": "3→2",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "2. **P2b 假红（仪器错）**: 构造样本用「ASCII 词 + 空格」⇒ `Normalize` 剥空白致整段粘成**单个 token**，两侧 `|d.Tokens|` = 3 vs 2，「同词袋」前提根本不成立 ⇒ 判据测的不是目标对象。修 = 改 CJK 二元组族构造等 `distinct` 的对，并加 "
+  },
+  {
+   "file": "docs/plans/v0.65.0-r445-judge-side-prefilter-precheck.md",
+   "line": 10,
+   "pair": "17→7",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "R444 把门侧固定成本压掉一半（门 r1 调用 17→7，含本地真值口径 25.32% ⇒ **33.32%**）。"
+  },
+  {
+   "file": "docs/plans/v0.66.0-r446-judge-determinism-and-zero-token-settlement.md",
+   "line": 9,
+   "pair": "17→7",
+   "declared": true,
+   "metric_line": true,
+   "verdict": "HAS_DECL",
+   "text": "R444 已把**门侧**固定成本压半（门 r1 17→7），含本地真值口径 33.32% ≥ 30%。"
+  },
+  {
+   "file": "docs/plans/v0.91.0-r475-replay-and-cache-accounting.md",
+   "line": 15,
+   "pair": "900→1.0152",
+   "declared": false,
+   "metric_line": true,
+   "verdict": "MISSING_DECL_metric",
+   "text": "3. **口径**：3 例 `effective_hit_rate > 1`（实测 `hit=2,944 > cacheable=2,900 ⇒ 1.0152`）—— 命中量超过同会话可缓存上界，说明命中来自**比上一轮更长的共享前缀**，K2b 对该轮不适用，>1 会污染红线统计。"
+  }
+ ],
+ "caliber_note": "词面启发式 (±3 行窗口 + 指标词表); strict = 只认行内自认口径对; 非语义判定 ⇒ 红项须人工复核"
+}

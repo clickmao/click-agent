@@ -1,0 +1,611 @@
+{
+ "round": "EXP1-Q32",
+ "schema": "tmp-path-census/1",
+ "positive_control": {
+  "rows": 164,
+  "evidence_cmd_nonempty": 164,
+  "evidence_cmd_has_eval": 124
+ },
+ "by_form": {
+  "read_dep": 4,
+  "write_out": 3,
+  "unclassified": 24,
+  "ref_text": 7
+ },
+ "n_findings": 38,
+ "rows_with_tmp_evidence_cmd": [
+  "agent.formal.loop_mount",
+  "aot.publish.zero_il",
+  "artifact.failure.feedback",
+  "ask.frontend.channel",
+  "ask.menu.loop",
+  "dcr.harness",
+  "kpi.prompt_cache_hit",
+  "llamacpp.embedding.port",
+  "llamacpp.process.boundary",
+  "plan.resume.checkpoint",
+  "plan.route.local_first_frontend_kpi",
+  "r423.recall-tf-saturation",
+  "r430.local-server-parallel-serialization",
+  "r432.turn-gate-discrimination-pair",
+  "r449.think-memory-switch",
+  "r450.gate-prompt-anchor",
+  "r457.effect-closure",
+  "r458.humanized-continuation",
+  "r460.brevity-menu-cache",
+  "r461.contract-not-front-and-hit-budget",
+  "r462.language-agnostic-recall",
+  "r462.recall-reality-gate",
+  "r462.weight-probe"
+ ],
+ "rows_with_tmp_any": [
+  "agent.formal.loop_mount",
+  "aot.publish.zero_il",
+  "artifact.failure.feedback",
+  "ask.frontend.channel",
+  "ask.menu.loop",
+  "dcr.harness",
+  "kpi.prompt_cache_hit",
+  "llamacpp.embedding.port",
+  "llamacpp.process.boundary",
+  "plan.resume.checkpoint",
+  "plan.route.local_first_frontend_kpi",
+  "r416.release-selfcontained-config",
+  "r420.recall-command-wiring",
+  "r421.recall-negation-polarity",
+  "r422.recall-length-norm",
+  "r423.recall-tf-saturation",
+  "r430.local-server-parallel-serialization",
+  "r432.turn-gate-discrimination-pair",
+  "r449.think-memory-switch",
+  "r450.gate-prompt-anchor",
+  "r457.effect-closure",
+  "r458.humanized-continuation",
+  "r460.brevity-menu-cache",
+  "r461.contract-not-front-and-hit-budget",
+  "r462.language-agnostic-recall",
+  "r462.recall-reality-gate",
+  "r462.weight-probe",
+  "r463.model-cleanup"
+ ],
+ "reds": [
+  "llamacpp.process.boundary:/tmp/models/r1-distill-qwen-1.5b-q4km.gguf",
+  "llamacpp.process.boundary:/tmp/probe-r408/prompt.txt",
+  "agent.formal.loop_mount:/tmp/r391probe",
+  "r416.release-selfcontained-config:/tmp",
+  "r416.release-selfcontained-config:/tmp/d2-cwd",
+  "r420.recall-command-wiring:/tmp/pub_r414/agenthost",
+  "r421.recall-negation-polarity:/tmp/pub_r420_pre/agenthost",
+  "r422.recall-length-norm:/tmp/pub_r421_pre/agenthost",
+  "r449.think-memory-switch:/tmp/pub_r449b/agenthost",
+  "r462.recall-reality-gate:/tmp/r462_negctl.json",
+  "r463.model-cleanup:/tmp/models"
+ ],
+ "findings": [
+  {
+   "id": "dcr.harness",
+   "field": "evidence_cmd",
+   "token": "/tmp/aot",
+   "form": "write_out",
+   "exists_today": false,
+   "equivalent": {
+    "verdict": "no_repo_candidate",
+    "candidates": []
+   },
+   "context": ".host.csproj -c Release -r linux-x64 -o /tmp/aot && /tmp/aot/agenthost --formal-eval eva",
+   "verdict": "ACCEPT_intermediate_regenerable"
+  },
+  {
+   "id": "dcr.harness",
+   "field": "evidence_cmd",
+   "token": "/tmp/aot/agenthost",
+   "form": "unclassified",
+   "exists_today": false,
+   "equivalent": {
+    "verdict": "no_repo_candidate",
+    "candidates": []
+   },
+   "context": " -c Release -r linux-x64 -o /tmp/aot && /tmp/aot/agenthost --formal-eval eval/dcr/dcr_cases.jsonl ",
+   "verdict": "ABSTAIN_unclassified_form"
+  },
+  {
+   "id": "dcr.harness",
+   "field": "evidence_cmd",
+   "token": "/tmp/z3env/bin/python",
+   "form": "unclassified",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "no_repo_candidate",
+    "candidates": []
+   },
+   "context": "l --kernel eval/dcr/kernel_out.jsonl && /tmp/z3env/bin/python eval/dcr/audit_decisions.py --decisions",
+   "verdict": "ABSTAIN_unclassified_form"
+  },
+  {
+   "id": "aot.publish.zero_il",
+   "field": "evidence_cmd",
+   "token": "/tmp/pub_release",
+   "form": "write_out",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "no_repo_candidate",
+    "candidates": []
+   },
+   "context": ".host.csproj -c Release -r linux-x64 -o /tmp/pub_release  # 不带 -p:PublishAot(会污染 agent.io 报 NETS",
+   "verdict": "ACCEPT_intermediate_regenerable"
+  },
+  {
+   "id": "artifact.failure.feedback",
+   "field": "evidence_cmd",
+   "token": "/tmp/gameprobe/run_r374.sh",
+   "form": "unclassified",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "no_repo_candidate",
+    "candidates": []
+   },
+   "context": "bash /tmp/gameprobe/run_r374.sh  # 真机 A/B: A 臂=AGENTFRAMEWORK_ARTIFACT_",
+   "verdict": "ABSTAIN_unclassified_form"
+  },
+  {
+   "id": "ask.frontend.channel",
+   "field": "evidence_cmd",
+   "token": "/tmp/fp375/probe.py",
+   "form": "unclassified",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "no_repo_candidate",
+    "candidates": []
+   },
+   "context": "python3 /tmp/fp375/probe.py  # 真机: 伪造 ask_id → payload.outcome=unkn",
+   "verdict": "ABSTAIN_unclassified_form"
+  },
+  {
+   "id": "ask.menu.loop",
+   "field": "evidence_cmd",
+   "token": "/tmp/fp376/probe2.py",
+   "form": "unclassified",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "no_repo_candidate",
+    "candidates": []
+   },
+   "context": "python3 /tmp/fp376/probe2.py  # RESULT_JSON{ask,reply,continue,gate}",
+   "verdict": "ABSTAIN_unclassified_form"
+  },
+  {
+   "id": "kpi.prompt_cache_hit",
+   "field": "evidence_cmd",
+   "token": "/tmp/gameprobe/r377_kpi.telemetry",
+   "form": "unclassified",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "no_repo_candidate",
+    "candidates": []
+   },
+   "context": "python3 scripts/kpi_cache_hit.py /tmp/gameprobe/r377_kpi.telemetry  # 真机样本: hit=3328 miss=7610 → 30.43% | ",
+   "verdict": "ABSTAIN_unclassified_form"
+  },
+  {
+   "id": "plan.route.local_first_frontend_kpi",
+   "field": "evidence_cmd",
+   "token": "/tmp/r382/plan_frontend_probe.py",
+   "form": "unclassified",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "no_repo_candidate",
+    "candidates": []
+   },
+   "context": " | 真机: agenthost --frontend-api 47911 + /tmp/r382/plan_frontend_probe.py → plan.created t+2.4s(模型中), local_first",
+   "verdict": "ABSTAIN_unclassified_form"
+  },
+  {
+   "id": "plan.resume.checkpoint",
+   "field": "evidence_cmd",
+   "token": "/tmp/r384/xproc",
+   "form": "unclassified",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "no_repo_candidate",
+    "candidates": []
+   },
+   "context": "PLAN_RESUME_XPROC=write PLAN_RESUME_DIR=/tmp/r384/xproc dotnet test src/agent.tests/agentframew",
+   "verdict": "ABSTAIN_unclassified_form"
+  },
+  {
+   "id": "plan.resume.checkpoint",
+   "field": "evidence_cmd",
+   "token": "/tmp/r384/xproc",
+   "form": "unclassified",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "no_repo_candidate",
+    "candidates": []
+   },
+   "context": "LAN_RESUME_XPROC=resume PLAN_RESUME_DIR=/tmp/r384/xproc dotnet test src/agent.tests/agentframew",
+   "verdict": "ABSTAIN_unclassified_form"
+  },
+  {
+   "id": "llamacpp.process.boundary",
+   "field": "evidence_cmd",
+   "token": "/tmp/models/r1-distill-qwen-1.5b-q4km.gguf",
+   "form": "read_dep",
+   "exists_today": false,
+   "equivalent": {
+    "verdict": "no_repo_candidate",
+    "candidates": []
+   },
+   "context": "et10.0/agenthost.dll --llamacpp --model /tmp/models/r1-distill-qwen-1.5b-q4km.gguf --prompt-file /tmp/probe-r408/prompt.tx",
+   "verdict": "RED_volatile_single_copy"
+  },
+  {
+   "id": "llamacpp.process.boundary",
+   "field": "evidence_cmd",
+   "token": "/tmp/probe-r408/prompt.txt",
+   "form": "read_dep",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "repo_identical",
+    "candidates": [
+     "eval/rover/r409/prompt.txt"
+    ],
+    "origin_sha256": "d1e94bf720adbab7b376d0014bfeb01a8c03864cae7c4a1110ab9be5750fa947"
+   },
+   "context": "still-qwen-1.5b-q4km.gguf --prompt-file /tmp/probe-r408/prompt.txt --max-tokens 24 --expect-ids <24 个基线 id",
+   "verdict": "FIX_rewrite_to_repo"
+  },
+  {
+   "id": "llamacpp.embedding.port",
+   "field": "evidence_cmd",
+   "token": "/tmp/models/bge-base-zh-v1.5-q8.gguf",
+   "form": "unclassified",
+   "exists_today": false,
+   "equivalent": {
+    "verdict": "no_repo_candidate",
+    "candidates": []
+   },
+   "context": "export AGENTFRAMEWORK_BGE_MODEL=/tmp/models/bge-base-zh-v1.5-q8.gguf && dotnet src/agent.host/bin/Debug/net1",
+   "verdict": "ABSTAIN_unclassified_form"
+  },
+  {
+   "id": "agent.formal.loop_mount",
+   "field": "evidence_cmd",
+   "token": "/tmp/r391probe",
+   "form": "read_dep",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "no_repo_candidate",
+    "candidates": []
+   },
+   "context": "dotnet run -c Release --project /tmp/r391probe (生产组合根 AddAgentFramework() 装配; 判据: A_pr",
+   "verdict": "RED_volatile_single_copy"
+  },
+  {
+   "id": "r416.release-selfcontained-config",
+   "field": "negative_control",
+   "token": "/tmp",
+   "form": "ref_text",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "origin_absent",
+    "candidates": [
+     "eval/tmp-link-audit.json",
+     "eval/capability/exp1-q31/tmp_archive_identity_q31.json",
+     "eval/capability/exp1-q32/instruments/tmp_path_census.py"
+    ],
+    "origin_sha256": null
+   },
+   "context": "在 config/（否则「自包含」可能是误从祖先读到）——裁决前静态校验，实测 /tmp/d2-cwd、/tmp、/ 三级均无；④ **越过错位点的正证**（防「没报错",
+   "verdict": "RED_text_ref_volatile"
+  },
+  {
+   "id": "r416.release-selfcontained-config",
+   "field": "negative_control",
+   "token": "/tmp/d2-cwd",
+   "form": "ref_text",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "no_repo_candidate",
+    "candidates": []
+   },
+   "context": "在 config/（否则「自包含」可能是误从祖先读到）——裁决前静态校验，实测 /tmp/d2-cwd、/tmp、/ 三级均无；④ **越过错位点的正证**（防「没报错=没跑到」）:",
+   "verdict": "RED_text_ref_volatile"
+  },
+  {
+   "id": "r420.recall-command-wiring",
+   "field": "negative_control",
+   "token": "/tmp/pub_r414/agenthost",
+   "form": "ref_text",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "no_repo_candidate",
+    "candidates": []
+   },
+   "context": "\"① 撤销接线负控（产物级，真机同输入）: /tmp/pub_r414/agenthost（12:19，接线前 AOT）对 `/recall 存在` 产出 `recall",
+   "verdict": "RED_text_ref_volatile"
+  },
+  {
+   "id": "r421.recall-negation-polarity",
+   "field": "negative_control",
+   "token": "/tmp/pub_r420_pre/agenthost",
+   "form": "ref_text",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "no_repo_candidate",
+    "candidates": []
+   },
+   "context": "\"① 撤销修复负控臂 = **修复前二进制快照** /tmp/pub_r420_pre/agenthost(R420 产物, 接线在/极性不在) 跑**同一 harness、逐字节相同语",
+   "verdict": "RED_text_ref_volatile"
+  },
+  {
+   "id": "r422.recall-length-norm",
+   "field": "negative_control",
+   "token": "/tmp/pub_r421_pre/agenthost",
+   "form": "ref_text",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "no_repo_candidate",
+    "candidates": []
+   },
+   "context": "\"① 撤销修复负控臂 = **修复前二进制快照** /tmp/pub_r421_pre/agenthost（R421 产物：极性在、长度归一不在）跑**同一 harness、逐字节相同语",
+   "verdict": "RED_text_ref_volatile"
+  },
+  {
+   "id": "r423.recall-tf-saturation",
+   "field": "evidence_cmd",
+   "token": "/tmp/pub_r423",
+   "form": "write_out",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "no_repo_candidate",
+    "candidates": []
+   },
+   "context": ".host.csproj -c Release -r linux-x64 -o /tmp/pub_r423 && python3 eval/capability/r423/run_r42",
+   "verdict": "ACCEPT_intermediate_regenerable"
+  },
+  {
+   "id": "r430.local-server-parallel-serialization",
+   "field": "evidence_cmd",
+   "token": "/tmp/pub_r430b/agenthost",
+   "form": "unclassified",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "no_repo_candidate",
+    "candidates": []
+   },
+   "context": "AGENTFRAMEWORK_HOST_BIN=/tmp/pub_r430b/agenthost R430_NS=-r430fix1 bash eval/rover/r430/",
+   "verdict": "ABSTAIN_unclassified_form"
+  },
+  {
+   "id": "r432.turn-gate-discrimination-pair",
+   "field": "evidence_cmd",
+   "token": "/tmp/pub_r430b/agenthost",
+   "form": "unclassified",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "no_repo_candidate",
+    "candidates": []
+   },
+   "context": "AGENTFRAMEWORK_HOST_BIN=/tmp/pub_r430b/agenthost R432_NS=-r432dp2 bash eval/rover/r432/r",
+   "verdict": "ABSTAIN_unclassified_form"
+  },
+  {
+   "id": "r449.think-memory-switch",
+   "field": "evidence_cmd",
+   "token": "/tmp/pub_r449b/agenthost",
+   "form": "read_dep",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "no_repo_candidate",
+    "candidates": []
+   },
+   "context": "ver/r449/verify_boot_telemetry.py --bin /tmp/pub_r449b/agenthost --json eval/rover/r449/verdict-boot-tel",
+   "verdict": "RED_volatile_single_copy"
+  },
+  {
+   "id": "r450.gate-prompt-anchor",
+   "field": "evidence_cmd",
+   "token": "/tmp/pub_r450/agenthost",
+   "form": "unclassified",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "no_repo_candidate",
+    "candidates": []
+   },
+   "context": "M20 R450_NS=-s2 AGENTFRAMEWORK_HOST_BIN=/tmp/pub_r450/agenthost bash eval/rover/r450/run_arm_r450.sh BR",
+   "verdict": "ABSTAIN_unclassified_form"
+  },
+  {
+   "id": "r457.effect-closure",
+   "field": "evidence_cmd",
+   "token": "/tmp/r457_run_agent_tools.sh",
+   "form": "unclassified",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "no_repo_candidate",
+    "candidates": []
+   },
+   "context": "bash /tmp/r457_run_agent_tools.sh && python3 eval/rover/r457/judge_r457.p",
+   "verdict": "ABSTAIN_unclassified_form"
+  },
+  {
+   "id": "r457.effect-closure",
+   "field": "evidence_cmd",
+   "token": "/tmp/r457_nokey.sh",
+   "form": "unclassified",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "no_repo_candidate",
+    "candidates": []
+   },
+   "context": "3 eval/rover/r457/judge_r457.py && bash /tmp/r457_nokey.sh",
+   "verdict": "ABSTAIN_unclassified_form"
+  },
+  {
+   "id": "r458.humanized-continuation",
+   "field": "evidence_cmd",
+   "token": "/tmp/r458_setup.sh",
+   "form": "unclassified",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "repo_identical",
+    "candidates": [
+     "eval/rover/r458/r458_setup.sh"
+    ],
+    "origin_sha256": "da2ad6fe058d3e7f703c1aa8c3ea960ce0f0edd5ce34d4e41958209a21e1551f"
+   },
+   "context": "bash /tmp/r458_setup.sh && bash /tmp/r458_run.sh && python3 eva",
+   "verdict": "ABSTAIN_unclassified_form"
+  },
+  {
+   "id": "r458.humanized-continuation",
+   "field": "evidence_cmd",
+   "token": "/tmp/r458_run.sh",
+   "form": "unclassified",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "repo_identical",
+    "candidates": [
+     "eval/rover/r458/r458_run.sh"
+    ],
+    "origin_sha256": "1419634afd21d82999f503372ee530709c86a43660ad9271d9cd3abc5ad11195"
+   },
+   "context": "bash /tmp/r458_setup.sh && bash /tmp/r458_run.sh && python3 eval/rover/r458/judge_r458.p",
+   "verdict": "ABSTAIN_unclassified_form"
+  },
+  {
+   "id": "r460.brevity-menu-cache",
+   "field": "evidence_cmd",
+   "token": "/tmp/r460_setup.sh",
+   "form": "unclassified",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "repo_identical",
+    "candidates": [
+     "eval/rover/r460/r460_setup.sh"
+    ],
+    "origin_sha256": "cb2ebfdf051fdd3a253b0da74090b46df8db6070998aa47a8c0f0e50ac52d892"
+   },
+   "context": "bash /tmp/r460_setup.sh && bash /tmp/r460_run.sh && python3 eva",
+   "verdict": "ABSTAIN_unclassified_form"
+  },
+  {
+   "id": "r460.brevity-menu-cache",
+   "field": "evidence_cmd",
+   "token": "/tmp/r460_run.sh",
+   "form": "unclassified",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "repo_identical",
+    "candidates": [
+     "eval/rover/r460/r460_run.sh"
+    ],
+    "origin_sha256": "94dde9fccf202086f8194856f64a30669f93bc402ea9253d2e6cb8ab316f5910"
+   },
+   "context": "bash /tmp/r460_setup.sh && bash /tmp/r460_run.sh && python3 eval/rover/r460/judge_r460.p",
+   "verdict": "ABSTAIN_unclassified_form"
+  },
+  {
+   "id": "r461.contract-not-front-and-hit-budget",
+   "field": "evidence_cmd",
+   "token": "/tmp/r461_setup.sh",
+   "form": "unclassified",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "repo_identical",
+    "candidates": [
+     "eval/rover/r461/r461_setup.sh"
+    ],
+    "origin_sha256": "b516a842288ab940977f3134b72a035c176d4fbd7d219c77e40aa25348f6aadc"
+   },
+   "context": "bash /tmp/r461_setup.sh && bash /tmp/r461_run.sh && python3 eva",
+   "verdict": "ABSTAIN_unclassified_form"
+  },
+  {
+   "id": "r461.contract-not-front-and-hit-budget",
+   "field": "evidence_cmd",
+   "token": "/tmp/r461_run.sh",
+   "form": "unclassified",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "repo_identical",
+    "candidates": [
+     "eval/rover/r461/r461_run.sh"
+    ],
+    "origin_sha256": "7ed58e42d872ccf09af258757f3ccd775f6b4613f9b4a5afeb286d3fc11847e2"
+   },
+   "context": "bash /tmp/r461_setup.sh && bash /tmp/r461_run.sh && python3 eval/rover/r461/judge_r461.p",
+   "verdict": "ABSTAIN_unclassified_form"
+  },
+  {
+   "id": "r462.recall-reality-gate",
+   "field": "evidence_cmd",
+   "token": "/tmp/r462_e2e.sh",
+   "form": "unclassified",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "no_repo_candidate",
+    "candidates": []
+   },
+   "context": "= eval/rover/r462/r462_run.sh (原声明 bash /tmp/r462_e2e.sh 已不存在)",
+   "verdict": "ABSTAIN_unclassified_form"
+  },
+  {
+   "id": "r462.recall-reality-gate",
+   "field": "negative_control",
+   "token": "/tmp/r462_negctl.json",
+   "form": "ref_text",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "no_repo_candidate",
+    "candidates": []
+   },
+   "context": "实发面 ⇒ P1/P2 = false (旧二进制无闸 + 后缀白名单), 见 /tmp/r462_negctl.json; NC2 越界: ../etc/hosts 一律判 ✗ 且不探测 (Verif",
+   "verdict": "RED_text_ref_volatile"
+  },
+  {
+   "id": "r462.language-agnostic-recall",
+   "field": "evidence_cmd",
+   "token": "/tmp/r462_e2e.sh",
+   "form": "unclassified",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "no_repo_candidate",
+    "candidates": []
+   },
+   "context": "bash /tmp/r462_e2e.sh && python3 eval/rover/r462/judge_r462.p",
+   "verdict": "ABSTAIN_unclassified_form"
+  },
+  {
+   "id": "r462.weight-probe",
+   "field": "evidence_cmd",
+   "token": "/tmp",
+   "form": "unclassified",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "origin_absent",
+    "candidates": [
+     "eval/tmp-link-audit.json",
+     "eval/capability/exp1-q31/tmp_archive_identity_q31.json",
+     "eval/capability/exp1-q32/instruments/tmp_path_census.py"
+    ],
+    "origin_sha256": null
+   },
+   "context": "obe_wrapper.py --check   # 归档入口: 器具/语料与 /tmp 原件逐位相同 (sha256); 真跑配方 = --run --gguf <g",
+   "verdict": "ABSTAIN_unclassified_form"
+  },
+  {
+   "id": "r463.model-cleanup",
+   "field": "negative_control",
+   "token": "/tmp/models",
+   "form": "ref_text",
+   "exists_today": true,
+   "equivalent": {
+    "verdict": "no_repo_candidate",
+    "candidates": []
+   },
+   "context": "56 并留档 (台账含 path/bytes/sha256); 删除后 `ls /tmp/models` 空、保留档仍在且大小一致; 未删任何被 config/env 引用的路径 (",
+   "verdict": "RED_text_ref_volatile"
+  }
+ ]
+}

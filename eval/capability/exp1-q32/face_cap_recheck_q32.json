@@ -1,0 +1,42 @@
+{
+ "round": "EXP1-Q32",
+ "schema": "face-cap-recheck/1",
+ "source_of_truth": {
+  "soft_cap": 67108864,
+  "hard_cap": 268435456,
+  "k_min": 2.0,
+  "derived_from": [
+   "eval/capability/exp1-q22/side_effect_gate.py",
+   "eval/capability/exp1-q31/instruments/face_cap_headroom.py"
+  ]
+ },
+ "face": {
+  "n_instruments": 27,
+  "n_commands": 59,
+  "log_bytes": 33388397,
+  "capped": false,
+  "headroom": 2.01,
+  "manifest_sha12": "0813ac989cd6"
+ },
+ "stability_two_readings": [
+  33388259,
+  33388397
+ ],
+ "m_hist_bytes_per_instrument": 588422.8,
+ "allowance_bytes_at_kmin": 166035,
+ "n_max_expandable_instruments": 0,
+ "decision": "no-expand: L2 面不扩容; 本轮新守卫登记为**证据面器具** (面别分区), 并记下沿与重开条件",
+ "reopen_condition": {
+  "trigger": "需要新增 L2 面器具 (面别分区不适用) 时",
+  "needed_soft_cap_for_plus3": 75497472,
+  "formula": "ceil8MiB(k_min × (log_bytes + 3 × m_hist))",
+  "disk_gate_bytes_free_now": 13734285312,
+  "hard_cap_now": 268435456
+ },
+ "kpi_quad": {
+  "单位": "面",
+  "分母": "器具面规模",
+  "真值源": "全量面记录 side_effect_attribution.trace",
+  "口径档": "log_bytes(字节)/命令数"
+ }
+}
