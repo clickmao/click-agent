@@ -60,7 +60,9 @@ R491 把四件事并轮做完，主线 KPI（用户一轮任务总 token ≥30% 
 1. **候选③门开态的真机增益本轮未测到**：本轮冻结的被测二进制里该闸默认关（只跑了单测两态判据表 + 基线计数）。下轮才有真机臂读数。
 2. **真假判别面本轮不区分 B/T**：四臂 `false_premise` 全 True（R490 的 B=False 未复现）⇒ 增益只按远端调用数/token 数计，**不**宣称「r1 判别力」带来的质量增益。R1 在链上的角色是本地生成/判别通道，其质量面需要更强的对抗族（下轮候选）。
 3. **R 臂（只本地闸、声明门关）本轮未跑**：夹具计划里 R491 只排了 Aroleb + T×3；跨轮禁相减 ⇒ 不作任何 R 读数。`cross_round_ref` 里保留 R489 旧产物仅供参照。
-4. **注册表仍有 1 条红（不是本轮引入）**：`r444.instrument-acceptance` 的语义投影 pin 与现盘不符（声明 `8a3ca7204599` / 实际 `35811a35f750`）；其证据 `eval/capability/instruments-check.json` 是**工作树未提交版本**，且该文件自身的器具面已是 `passed 26 → 24`（两条 `instrument_sha12` DRIFT：`face_record_canon.py`、`bind_evidence.py`）⇒ 属能力自检作业（EXP1-Q3x）的重审窗口，**本轮不做静默 repin**（静默 repin = 把红刷绿）。另 3 条同类滞后 pin 已重审（`r476` → live/worktree-only；`r483b` 因本轮改闸而重 pin 到 `04e207751c50`）。
+4. **注册表的一处红 → 绿不是本轮的审计**：`r444.instrument-acceptance`（语义投影 pin）在 R491 窗口内被**并发会话**改写 —— `eval/rover/r444/verdict-r444-analysis.json`(16:04)、`eval/capability/instruments-check.json`(16:02) 均为对侧在写，其 pin 值在我两次提交之间从 `35811a35f750` 变到 `60f8eb4deccb`（我 `--only` 作用域未含 r444 ⇒ **不是我改的**；对侧亦可能跑了全表 bind）。该面（`instruments-check.json`）在本窗口内先后读到 `passed 26→24` 与 `23/27` 两种工作树形态 ⇒ **处于并发改写中**，故本轮不做该面的登记判定。R490 两行的 `evidence_generated_with`（R2f）由官方器具补齐（COVERED 122 → 124），`r476` 因证据在工作树未提交而降级为 live/worktree-only（合法形态），`r483b` 因本轮改闸重 pin 到 `04e207751c50`。
+   - 共享件并发写风险（与 R485/R486 同一族）：`docs/verification-registry.json` 是读-改-写单据，本轮两次提交都把它整文件带出 ⇒ 若对侧按下标旧快照回写，本轮 4 行会丢失。恢复式：`git show a118dc2:docs/verification-registry.json`。
+   - 套件终值：**1540/1540 通过**（对侧重审后 r444 亦绿）；本轮的 4 行登记 + 19 例新测试为自有产物。
 5. **起手闸收口是「器具自证」级证据**：三态消融用的诱饵是人工构造的 `argv0=MSBuild.dll sleep`（非真 MSBuild），只证明**判据链**（年龄/静默/无监听/无驱动器祖先）可复现，不证明覆盖所有真实残留形态。
 6. **R490 的两行登记缺 `evidence_generated_with`（R2f）已补**：用官方器具 `bind_evidence.py --apply --only … --round`（COVERED 122 → 124，读回 OK），不是手写字段。
 7. **AOT**：`publish_and_il_check.sh` 出 `IL_warnings=0`（全体 warning=2，非 IL）、体积 15,367,840 B（sha12 `2f348d11c6c7`）；**被测臂二进制另有冻结副本**，sha12 `8b4efbb734781b80`（`/tmp/pub_r491_armfrozen/agenthost`）。
