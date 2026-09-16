@@ -85,6 +85,14 @@ def selftest():
 def main():
     if '--selftest' in sys.argv:
         return selftest()
+    # EXP1-Q36: 轮号**参数化** —— 旧版把 payload['round'] 硬编码为 'EXP1-Q31' ⇒ 跨轮追加会把本轮
+    #   读数记到 Q31 名下 (归属错标)。--append 时缺 --round ⇒ fail-closed 拒跑 (不用默认值静默记账)。
+    rnd = sys.argv[sys.argv.index('--round') + 1] if '--round' in sys.argv else None
+    if '--append' in sys.argv and not rnd:
+        print('ENV_FAIL (fail-closed): --append 必须显式带 --round <轮号> '
+              '(行内 round 不得硬编码, 也不得用默认值)')
+        return 3
+    rnd = rnd or 'UNSPECIFIED'
     rec_path = sys.argv[sys.argv.index('--record') + 1] if '--record' in sys.argv else FACE
     rec_abs = os.path.join(ROOT, rec_path)
     if not os.path.isfile(rec_abs):
@@ -96,7 +104,7 @@ def main():
     print('CAP_SOURCE %s LOG_SOFT_CAP=%d LOG_HARD_CAP=%d' % (GATE, soft, hard))
     v, r, rc = verdict(rec, soft, hard)
     payload = {
-        'round': 'EXP1-Q31', 'face_record': rec_path,
+        'round': rnd, 'face_record': rec_path,
         'face_manifest_sha12': rec.get('manifest_sha12'), 'instrument_sha12': rec.get('instrument_sha12'),
         'n_instruments': rec.get('total'), 'n_commands': r.get('commands'),
         'log_bytes': r.get('log_bytes'), 'capped': r.get('capped'),
@@ -110,7 +118,8 @@ def main():
         print('  VIOLATION %s' % x)
     if '--append' in sys.argv and rc in (0, 2):
         led = os.path.join(ROOT, LEDGER)
-        key = (payload['face_manifest_sha12'], payload['n_instruments'], payload['n_commands'], payload['log_bytes'])
+        key = (payload['round'], payload['face_manifest_sha12'], payload['n_instruments'],
+               payload['n_commands'], payload['log_bytes'])
         seen = set()
         rows = []
         if os.path.isfile(led):
@@ -120,7 +129,8 @@ def main():
                     continue
                 j = json.loads(line)
                 rows.append(j)
-                seen.add((j.get('face_manifest_sha12'), j.get('n_instruments'), j.get('n_commands'), j.get('log_bytes')))
+                seen.add((j.get('round'), j.get('face_manifest_sha12'), j.get('n_instruments'),
+                          j.get('n_commands'), j.get('log_bytes')))
         if key in seen:
             print('LEDGER_IDEMPOTENT=OK (同键已存在, 不追加)')
         else:

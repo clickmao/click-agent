@@ -1,11 +1,11 @@
 {
  "schema": "semantic-projection-rules/1",
- "round": "EXP1-Q35",
- "owner_round": "EXP1-Q35",
- "note": "语义投影的**非语义字段族**单一事实源 (跨语言共用): Python 侧 face_record_canon.py 与本仓测试侧同一口径复算同一摘要 ⇒ 登记表冻结 pin 可绑投影摘要 (pin_kind=semantic-projection), 面重跑不再打红。Q33 的规则由两次真跑差分派生 (74 条差异叶子); EXP1-Q35 用**同树态连续三跑** (T1/T2/T3, 各 25/27) 重测, 差异叶 47/46 条全部落在下表新增族内, 判定依据见 eval/capability/exp1-q35/face_delta_q35.json。顺序即投影应用顺序。",
+ "round": "EXP1-Q36",
+ "owner_round": "EXP1-Q36",
+ "note": "语义投影的**非语义字段族**单一事实源 (跨语言共用): Python 侧 face_record_canon.py 与本仓测试侧同一口径复算同一摘要 ⇒ 登记表冻结 pin 可绑投影摘要 (pin_kind=semantic-projection), 面重跑不再打红。Q33 的规则由两次真跑差分派生 (74 条差异叶子); EXP1-Q35 用**同树态连续三跑** (T1/T2/T3, 各 25/27) 重测, 差异叶 47/46 条全部落在下表新增族内, 判定依据见 eval/capability/exp1-q35/face_delta_q35.json。顺序即投影应用顺序。 EXP1-Q36: 新增 drop / drop_by_id 两模式 (整子树含基数剔除 / 成员级按身份选择性遮蔽) 并补齐 trace 扫描派生量族; 不动点宣称的**前置条件**见 clean_window_condition。",
  "declared_vs_derived": "scalar=该叶整条剔除 (不参与摘要); array_count=该路径下所有叶剔除, 以一条 #n=<基数> 占位 (保留基数, 去掉邻居/随机内容)。",
- "comparability_break": "EXP1-Q35 起遮蔽族扩容 ⇒ 投影摘要口径变更, 与 EXP1-Q34 及以前的投影摘要**不可直接比** (旧值仅作历史读数); 受影响: r444.instrument-acceptance 的 pin 值 (本轮由器具派生重取)。",
- "masking_policy": "只遮蔽**运行期/环境/身份**读数 (墙钟、随机目录、进程 pid、窗口内他人写入与既有文件成员、由其派生的计数), 绝不遮蔽**器具行为面**: results[*] (逐条裁决/rc/证据 sha/负控)、side_effects (自身脏路径)、side_effect_attribution.{verdict,red,measurement_ok,reasons}、conservation.ok。",
+ "comparability_break": "EXP1-Q36 起 (a) pre_existing 由 array_count 改 drop (含基数) (b) 新增 old_gate_delta / old_gate_false_reds 两条计数规则 (c) 新增 results[*] 成员级 drop_by_id ⇒ 投影摘要口径再次变更, 与 EXP1-Q35 及以前的投影摘要**不可直接比**; 受影响: r444.instrument-acceptance 的 pin (本轮由器具派生重取, audited_by_round=EXP1-Q36)。",
+ "masking_policy": "只遮蔽**运行期/环境/身份**读数 (墙钟、随机目录、进程 pid、窗口内他人写入与既有文件成员、由其派生的计数), 绝不遮蔽**器具行为面**: results[*] (逐条裁决/rc/证据 sha/负控)、side_effects (自身脏路径)、side_effect_attribution.{verdict,red,measurement_ok,reasons}、conservation.ok。EXP1-Q36 唯一例外 (成员级、按身份枚举): results[*] 中 id ∈ {bind_evidence.check, bind_evidence.committed-state} 两个**自指成员**整成员剔除 —— 其真值随树态 (记录 vs HEAD) 翻转, 冻结它等于冻结一个非器物量; 该两成员由提交态核验器独立判, 且枚举写死在规则文件里 (不是模式匹配)。",
  "rules": [
   {
    "path": "side_effect_attribution/window/t0",
@@ -30,8 +30,8 @@
   },
   {
    "path": "side_effect_attribution/pre_existing",
-   "mode": "array_count",
-   "basis": "EXP1-Q35 实测 (T1 vs T2 / T2 vs T3 各 34 条差异叶): 成员 = 窗口前已存在且窗内未变的**在册脏路径**, 随装置自身历次产物累积与并发写者变化 ⇒ 自指字段; 该字段在闸内本就被显式声明为「不判红」的信息项。取 array_count: 成员被遮蔽 (34 条同族差异叶归零), 基数保留 (同名重跑下基数为常量; **归档式新名重跑**会让基数 +2/次 ⇒ 该情形下 pin 需重取 —— 已登记为口径条件)。"
+   "mode": "drop",
+   "basis": "EXP1-Q36 实测推翻 Q35 的声明: 该族**基数本身**逐跑增长 (T1..T7 实测 51/54/57/66/67/71/72), 因每跑都会把本轮新产物留成下一跑的「窗口前已存在」文件 ⇒ 保留 #n= 计数等于保留一个恒不稳的量。故由 array_count 改 drop (整子树**含基数**剔除)。成员真值仍完整保留在**原始面记录**里; 环境脏红的判读不依赖本族 (side_effect_attribution.red 与 old_gate_* 仍在投影内)。"
   },
   {
    "path": "side_effect_attribution/self_writes",
@@ -75,6 +75,49 @@
   {
    "path": "canon/runtime_sidecar",
    "mode": "scalar"
+  },
+  {
+   "path": "side_effect_attribution/old_gate_delta",
+   "mode": "array_count",
+   "basis": "EXP1-Q36 实测 (T6 vs T7 投影后仍有差异的唯一非自指叶之一): 成员 = 窗口内**旧闸新报**的脏路径名 (由窗口内他人/本侧写入派生), 与 foreign_writes 同源。取 array_count: 成员遮蔽, 基数保留 ⇒ 干净窗口下计数恒 0 (pin 稳定), 有外来写入时计数 ≠ 0 (pin 需重取, 已入口径声明)。"
+  },
+  {
+   "path": "side_effect_attribution/old_gate_false_reds",
+   "mode": "array_count",
+   "basis": "EXP1-Q36 实测: 同上 (成员名逐跑变, 计数即可判信号)。"
+  },
+  {
+   "path": "results[*]",
+   "mode": "drop_by_id",
+   "selector": {
+    "path": "results[*]/id",
+    "values": [
+     "bind_evidence.check",
+     "bind_evidence.committed-state"
+    ]
+   },
+   "basis": "EXP1-Q36 实测 (自指成员): 这两个成员的真值随**树态**翻转 —— 提交前 rc=2 / 提交后 rc=0 (T1..T3 与 T4..T7 实测), 且其 l2_fields 会随器具 sha 变化。它们判的是「记录所在树态与 HEAD 是否自洽」, 不是器具行为 ⇒ 不可冻结。修法 = 成员级**按身份**选择性遮蔽 (整成员剔除): 其余 25 个成员 (含 results[*]/rc,pass,sha12,negative_controls) 全部留在投影内, 行为面照旧可判。该两成员的状态由提交态核验器 (check_committed_state_q30.py --selftest) 独立轮次判定, 不以 pin 形式宣称。"
+  },
+  {
+   "path": "side_effect_attribution/trace/commands",
+   "mode": "scalar",
+   "basis": "EXP1-Q36 实测 (T3 vs T4 59→60): 扫描子进程数, 随窗口内容变化。"
+  },
+  {
+   "path": "side_effect_attribution/trace/events",
+   "mode": "scalar",
+   "basis": "EXP1-Q36: 同上 (events 是 commands 的派生量)。"
+  },
+  {
+   "path": "side_effect_attribution/trace/raw_events",
+   "mode": "scalar",
+   "basis": "EXP1-Q36 实测 (T4 vs T5 6158→6159, 同树态): 原始事件条数随窗口内 .git/临时文件变化。"
+  },
+  {
+   "path": "side_effect_attribution/trace/raw_paths_n",
+   "mode": "scalar",
+   "basis": "EXP1-Q36 实测 (T4 vs T5 3104→3105, 同树态): 原始路径去重条数, 同上。"
   }
- ]
+ ],
+ "clean_window_condition": "本投影的不动点宣称**带条件**: 「同一树态 ∧ 窗口内零外来写入 ∧ 窗口内无本侧自写」下, 重跑投影摘要相等。判据: 面记录里 foreign_writes / old_gate_delta / old_gate_false_reds 任一非空 ⇒ 该 pin **需重取** (不是缺陷, 是窗口不纯的可见痕迹)。"
 }

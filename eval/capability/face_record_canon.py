@@ -64,10 +64,41 @@ def _load_projection_rules(path=RULES_PATH):
         raise ProjectionRulesError('RULES_EMPTY: %s' % path)
     out = []
     for r in rules:
-        if not isinstance(r, dict) or not r.get('path') or r.get('mode') not in ('scalar', 'array_count'):
+        if not isinstance(r, dict) or not r.get('path') or r.get('mode') not in MODES:
             raise ProjectionRulesError('RULE_MALFORMED: %r' % (r,))
-        out.append({'path': r['path'], 'mode': r['mode']})
+        item = {'path': r['path'], 'mode': r['mode']}
+        if r['mode'] == 'drop_by_id':
+            # 成员级选择性遮蔽 (EXP1-Q36): selector 用**同形**的数组路径取成员身份字段。
+            sel = r.get('selector')
+            if not isinstance(sel, dict) or not isinstance(sel.get('path'), str) \
+                    or not isinstance(sel.get('values'), list) or not sel['values'] \
+                    or not all(isinstance(v, str) and v for v in sel['values']):
+                raise ProjectionRulesError('RULE_SELECTOR_MALFORMED: %r' % (r,))
+            rparts, rpos = _rule_shape(item['path'])
+            sparts, spos = _rule_shape(sel['path'])
+            if (rpos != spos or rparts[:rpos] != sparts[:spos]
+                    or rparts[rpos][:-3] != sparts[spos][:-3] or spos == len(sparts) - 1):
+                raise ProjectionRulesError('RULE_SELECTOR_SHAPE_MISMATCH: %r' % (r,))
+            item['selector'] = {'path': sel['path'], 'values': list(sel['values'])}
+            item['selector_tail'] = sparts[spos + 1:]
+        out.append(item)
     return tuple(out)
+
+
+MODES = ('scalar', 'array_count', 'drop', 'drop_by_id')
+
+
+def _rule_shape(rule_path):
+    """`<前缀>/<名>[*]` 单通配形态 ⇒ (段表, 通配段下标); 其它形态抛错 (fail-closed)。
+
+    为什么限制到这一形态: 成员级选择器必须能把「通配处命中的数组序号」映射到**同一个成员**的
+    身份字段上 —— 多通配/独立段形态下该映射不唯一, 猜一个就是静默错锚。形态不符即拒载规则表。
+    """
+    parts = rule_path.split('/')
+    pos = [i for i, s in enumerate(parts) if s == '[*]' or s.endswith('[*]')]
+    if len(pos) != 1 or parts[pos[0]] == '[*]' or not parts[pos[0]].endswith('[*]'):
+        raise ProjectionRulesError('RULE_SHAPE: %s (仅支持 <前缀>/<名>[*] 单通配形态)' % rule_path)
+    return parts, pos[0]
 
 
 PROJECTION_RULES = _load_projection_rules()
@@ -105,12 +136,44 @@ def _walk_paths(doc, spec):
     return out
 
 
+def _drop_by_id_in_doc(doc, rule):
+    """在**可变副本**里做成员级选择性剔除 (与叶流实现同口径); 返回被剔除成员数。"""
+    parts, pos = _rule_shape(rule['path'])
+    key = parts[pos][:-3]
+    parent = doc
+    if pos:
+        ok, parent = _path_value(doc, '/'.join(parts[:pos]))
+        if not ok:
+            return 0
+    if not isinstance(parent, dict) or not isinstance(parent.get(key), list):
+        return 0
+    tail = rule.get('selector_tail') or []
+    vals = set(rule['selector']['values'])
+    base = '/'.join(parts[:pos] + [key])
+    keep, n = [], 0
+    for i, item in enumerate(parent[key]):
+        ok, v = _path_value(doc, '%s/%d' % (base, i) + ('/' + '/'.join(tail) if tail else ''))
+        if ok and isinstance(v, str) and v in vals:
+            n += 1
+            continue
+        keep.append(item)
+    parent[key] = keep
+    return n
+
+
 def project(doc, strict=True):
     """返回 (proj_doc, report)。strict: 每条规则都必须命中至少一处, 否则抛 KeyError
     (防「声明了不存在的字段」的空心投影 —— 同 RUNTIME_FIELDS 纪律)。"""
     proj = json.loads(json.dumps(doc, ensure_ascii=False))
     report = {'rules': [], 'n_applied': 0}
     for rule in PROJECTION_RULES:
+        if rule['mode'] == 'drop_by_id':
+            n = _drop_by_id_in_doc(proj, rule)
+            if not n and strict:
+                raise KeyError('PROJECTION_RULE_UNMATCHED: %s (规则空心 ⇒ 判弃权)' % rule['path'])
+            report['rules'].append({'path': rule['path'], 'mode': rule['mode'], 'hits': n})
+            report['n_applied'] += n
+            continue
         hits = _walk_paths(proj, rule['path'])
         if not hits:
             if strict:
@@ -121,6 +184,9 @@ def project(doc, strict=True):
             if rule['mode'] == 'scalar':
                 container, key = h
                 container[key] = NONSEMANTIC_SENTINEL
+            elif rule['mode'] == 'drop':
+                container, key = h                  # 整子树含基数: 键直接删, 不留占位
+                del container[key]
             else:                                    # array_count
                 container, key = h
                 val = container[key]
@@ -218,6 +284,38 @@ def _path_value(doc, path):
     return True, cur
 
 
+def _members_of(doc, rule_path):
+    """`<前缀>/<名>[*]` ⇒ (数组基路径, [成员路径…]); 数组缺席 ⇒ 空表 (规则空心可容忍)。"""
+    parts, pos = _rule_shape(rule_path)
+    base = '/'.join(parts[:pos] + [parts[pos][:-3]])
+    found, val = _path_value(doc, base)
+    if not found or not isinstance(val, list):
+        return base, []
+    return base, ['%s/%d' % (base, i) for i in range(len(val))]
+
+
+def _drop_selected_members(doc, leaves, rule):
+    """成员级选择性遮蔽: 身份的取值 ∈ selector.values 的成员 ⇒ 整成员剔除。返回 (叶集, 命中成员数)。
+
+    身份取值由 selector.path 的**同通配位置**解析到该成员自己的身份字段 (不是按位置猜邻居)。
+    """
+    sel = rule['selector']
+    tail = rule.get('selector_tail') or []
+    _base, members = _members_of(doc, rule['path'])
+    vals = set(sel['values'])
+    hit, selected = [], []
+    for mp in members:
+        sp = mp + ('/' + '/'.join(tail) if tail else '')
+        found, v = _path_value(doc, sp)
+        if found and isinstance(v, str) and v in vals:
+            selected.append(mp)
+    if selected:
+        hit = [p for p, _v in leaves
+               if any(p == m or p.startswith(m + '/') for m in selected)]
+    # 未选中的同族成员**保持在场** —— 选择性由调用方按「未选中成员仍在叶流里」反向断言。
+    return set(hit), len(selected)
+
+
 def proj_leaf_stream(doc, rules=None, strict=True, require=None):
     """产语义投影叶流 (bytes) —— 与仓库测试侧同口径。
 
@@ -238,6 +336,17 @@ def proj_leaf_stream(doc, rules=None, strict=True, require=None):
             if not hit and strict:
                 raise KeyError('PROJECTION_RULE_UNMATCHED: %s (规则空心 ⇒ 判弃权)' % rp)
             drop = set(hit)
+        elif mode == 'drop':
+            # 整子树剔除, **含基数** —— 用于基数自身逐跑增长的环境族 (保留计数=恒不稳)。
+            base = rp.rstrip('/')
+            drop = {p for p, _v in leaves if p == base or p.startswith(base + '/')}
+            if not drop and strict:
+                raise KeyError('PROJECTION_RULE_UNMATCHED: %s (规则空心 ⇒ 判弃权)' % rp)
+        elif mode == 'drop_by_id':
+            # 成员级**按身份选择性**遮蔽: 仅当成员的身份字段取声明值时才整成员剔除。
+            drop, n_sel = _drop_selected_members(doc, leaves, rule)
+            if not n_sel and strict:
+                raise KeyError('PROJECTION_RULE_UNMATCHED: %s (规则空心 ⇒ 判弃权)' % rp)
         else:                                   # array_count: 整族剔除 + 基数占位
             found, val = _path_value(doc, rp)
             if not found:
@@ -291,9 +400,11 @@ TEST_VECTOR_DOC = {
     'canon': {'runtime_sidecar': 'eval/capability/vector.runtime.json'},
     'side_effect_attribution': {
         'window': {'t0': 1789535818.11, 't1': 1789536018.22, 'trace_dir': '/tmp/vector-abcdef'},
-        'trace': {'commands': 7, 'events': 3, 'log_bytes': 4096,
+        'trace': {'commands': 7, 'events': 3, 'raw_events': 11, 'raw_paths_n': 4, 'log_bytes': 4096,
                   'raw_paths_sample': ['/tmp/a.py', '/tmp/b.py']},
         'census_in_repo_cwd': [{'pid': 11, 'cmd': 'sleep'}, {'pid': 12, 'cmd': 'sleep'}],
+        'old_gate_delta': ['docs/x.md'],
+        'old_gate_false_reds': ['docs/x.md'],
         'foreign_writes': [{'path': 'docs/x.md', 'sha_before': 'aaaa', 'sha_after': 'bbbb',
                             'note': 'changed-in-window',
                             'live_fd': [{'pid': 13, 'fd': '1', 'accmode': 1, 'path': 'docs/x.md'}]}],
@@ -304,11 +415,14 @@ TEST_VECTOR_DOC = {
         'conservation': {'classified': 9, 'expected': 9, 'in_scope_after': 9, 'ok': True},
         'verdict': 'clean', 'red': False, 'measurement_ok': True, 'reasons': [],
     },
-    'results': [{'id': 'i0', 'rc': 0, 'pass': True}, {'id': 'i1', 'rc': 3, 'pass': False}],
+    'results': [{'id': 'i0', 'rc': 0, 'pass': True}, {'id': 'i1', 'rc': 3, 'pass': False},
+                {'id': 'bind_evidence.check', 'rc': 0, 'pass': True},
+                {'id': 'bind_evidence.committed-state', 'rc': 0, 'pass': True},
+                {'id': 'bind_evidence.other', 'rc': 0, 'pass': True}],
     'nested': {'n': None, 'flag': False},
 }
-TEST_VECTOR_SHA12 = 'b989a219bcf4'   # EXP1-Q35: 遮蔽族扩容 (pre_existing/self_writes/foreign_writes/conservation 计数/errors)
-                                     #   + 向量补齐同族字段 ⇒ 向量摘要变更 (口径断点: 与 EXP1-Q34 的 bbd6b93aa9f0 不可比)
+TEST_VECTOR_SHA12 = '07ffb38d2500'   # EXP1-Q36: 新增 drop / drop_by_id 两模式 + 向量的自指成员两侧样例
+                                     #   (Q35 = b989a219bcf4, Q34 = bbd6b93aa9f0; 口径断点逐轮登记)
 
 
 def _get(doc, path):
@@ -411,7 +525,8 @@ def selftest():
         return {'schema': 'instruments-check/5', 'passed': 1, 'total': 1, 'out': 'eval/x.json',
                 'side_effect_attribution': {
                     'window': {'t0': t0, 't1': t1, 'trace_dir': td},
-                    'trace': {'commands': 59, 'events': 19, 'log_bytes': 591408,
+                    'trace': {'commands': 59, 'events': 19, 'raw_events': 6158, 'raw_paths_n': 3104,
+                              'log_bytes': 591408,
                               'log_path': td + '/cmd000.log',
                               'raw_paths_sample': ['/tmp/probe_%s/sol.py' % neigh]},
                     'census_in_repo_cwd': [{'pid': 1, 'cmd': 'sleep 10', 'cwd': '.'}],
@@ -421,9 +536,15 @@ def selftest():
                     'self_writes': [{'path': 'eval/x.runtime.json',
                                      'evidence': {'cmd': 3, 'pid': '77', 'syscall': 'openat'}}],
                     'conservation': {'classified': 5, 'expected': 5, 'in_scope_after': 5, 'ok': True},
-                    'live_fd_scan': {'scanned': 277, 'errors': 105}},
+                    'live_fd_scan': {'scanned': 277, 'errors': 105},
+                    # EXP1-Q36: 新增遮蔽族 (old_gate_delta / old_gate_false_reds 计数)
+                    'old_gate_delta': ['docs/x.md'],
+                    'old_gate_false_reds': ['docs/y.md']},
                 'canon': {'runtime_sidecar': 'eval/x.runtime.json'},
-                'results': [{'id': 'i0', 'rc': rc0, 'pass': rc0 == 0, 'cmd': 'python3 x.py --selftest'}]}
+                'results': [{'id': 'i0', 'rc': rc0, 'pass': rc0 == 0, 'cmd': 'python3 x.py --selftest'},
+                            {'id': 'bind_evidence.check', 'rc': 0, 'pass': True},
+                            {'id': 'bind_evidence.committed-state', 'rc': 0, 'pass': True},
+                            {'id': 'bind_evidence.other', 'rc': 0, 'pass': True}]}
     try:
         a = rec(1789535818.11, 1789536018.22, '/tmp/q22gate-aaaaaa')
         b = rec(1789539999.99, 1789540000.01, '/tmp/q22gate-bbbbbb', neigh='p2')
@@ -468,8 +589,47 @@ def selftest():
         dc, _ = proj_digest(cc)
         cases['proj_digest_ignores_runtime_and_neighbourhood'] = (da == db)
         cases['proj_digest_changes_on_semantic_perturbation'] = (da != dc)
-        cases['proj_rules_loaded_from_data_file'] = (len(PROJECTION_RULES) == 16 and os.path.exists(RULES_PATH))
+        cases['proj_rules_loaded_from_data_file'] = (len(PROJECTION_RULES) == 23 and os.path.exists(RULES_PATH))
         cases['proj_digest_cross_language_vector'] = (proj_digest(TEST_VECTOR_DOC)[0] == TEST_VECTOR_SHA12)
+        # EXP1-Q36: 两个新模式 (drop 整子树含基数 / drop_by_id 成员级按身份选择性遮蔽) 的**两侧样例**:
+        #   ① drop: 被剔除族连基数占位一起消失 (Q35 的 array_count 会留 `#n=` 计数, 而该基数逐跑增长)
+        #   ② drop_by_id: 声明身份的两个成员消失, **同族未声明身份**的成员逐叶保留 (防「整数组误伤」)
+        st_a, meta_a = proj_leaf_stream(ca)
+        txt = st_a.decode('utf-8')
+        cases['drop_mode_removes_subtree_and_cardinality'] = ('pre_existing' not in txt)
+        cases['drop_by_id_masks_selected_members_only'] = ('results/1/rc' not in txt and 'results/2/rc' not in txt
+                                                          and 'results/0/rc' in txt and 'results/3/rc' in txt)
+        cases['drop_by_id_keeps_cardinality_signal'] = ('old_gate_delta' in txt and '#n=1' in txt)
+        try:
+            _rule_shape('a[*]/b[*]')
+            cases['rule_shape_multi_wildcard_rejected'] = False
+        except ProjectionRulesError:
+            cases['rule_shape_multi_wildcard_rejected'] = True
+        bad_rules = os.path.join(tmp, 'bad_rules.json')
+        with open(bad_rules, 'w', encoding='utf-8') as fh:
+            fh.write(json.dumps({'rules': [{'path': 'results[*]', 'mode': 'drop_by_id',
+                                            'selector': {'path': 'other[*]/id', 'values': ['x']}}]},
+                                ensure_ascii=False))
+        try:
+            _load_projection_rules(bad_rules)
+            cases['drop_by_id_selector_mismatch_rejected'] = False
+        except ProjectionRulesError:
+            cases['drop_by_id_selector_mismatch_rejected'] = True
+        bad_rules2 = os.path.join(tmp, 'bad_rules2.json')
+        with open(bad_rules2, 'w', encoding='utf-8') as fh:
+            fh.write(json.dumps({'rules': [{'path': 'results[*]', 'mode': 'drop_by_id'}]}, ensure_ascii=False))
+        try:
+            _load_projection_rules(bad_rules2)
+            cases['drop_by_id_missing_selector_rejected'] = False
+        except ProjectionRulesError:
+            cases['drop_by_id_missing_selector_rejected'] = True
+        try:
+            proj_leaf_stream(a, rules=({'path': 'results[*]', 'mode': 'drop_by_id', 'selector_tail': ['id'],
+                                        'selector': {'path': 'results[*]/id', 'values': ['no.such.id']}},),
+                             strict=True, require=WINDOW_RULES)
+            cases['drop_by_id_hollow_strict_rejected'] = False
+        except KeyError:
+            cases['drop_by_id_hollow_strict_rejected'] = True
         # EXP1-Q35: 干净窗口 (foreign_writes/self_writes/pre_existing 皆空) —— 真面在「零他人写入」时
         #   必然出现; strict 模式会因规则空心判弃权 ⇒ 非 strict (锚规则仍 fail-closed) 必须能出摘要。
         clean = json.loads(json.dumps(ca))

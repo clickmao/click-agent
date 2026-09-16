@@ -109,6 +109,8 @@ public class VerificationFormTests
     ///          路径按 **UTF-8 字节序** 排序 (不得改用 culture 序 —— 那是静默分叉源);
     ///   非语义族 (eval/capability/projection_rules.json = 单一事实源) 遮蔽:
     ///          scalar ⇒ 整叶剔除; array_count ⇒ 整子树剔除并改一条 "&lt;rule_path&gt;" = "#n=&lt;基数&gt;";
+    ///          drop ⇒ 整子树剔除且**不留基数占位** (基数自身逐跑增长的环境族);
+    ///          drop_by_id ⇒ **成员级按身份**选择性整成员剔除 (selector.path 取成员身份字段, 声明值才剔);
     ///   锚族 (运行期窗口三字段) 缺席 ⇒ 不是这一类面记录 ⇒ null (弃权, 不判绿);
     ///   未定义值形态 (浮点/非标量) ⇒ null。规则**逐条容忍空心** (某记录里该族为空是正常的),
     ///   但整组**锚规则必须命中** —— 这条防的是「规则全空心 ⇒ 摘要退化成整文件字节」。 </summary>
@@ -125,7 +127,7 @@ public class VerificationFormTests
             //   ⇒ GetProperty 抛 KeyNotFound ⇒ ProjDigest 恒 null ⇒ 正控 `x.proj_frozen_ok`
             //   与**所有** pin_kind=semantic-projection 的冻结行恒红 (闸自身故障被误报成数据缺陷)。
             //   fail-closed: 键缺失/表空/条目非法 ⇒ null (与 Python 侧 ProjectionRulesError 同义, 不静默退化)。
-            var rules = new List<(string Path, string Mode)>();
+            var rules = new List<(string Path, string Mode, string? SelTail, List<string>? SelValues)>();
             using (var rd = JsonDocument.Parse(File.ReadAllText(rulesAbs, System.Text.Encoding.UTF8)))
             {
                 if (!rd.RootElement.TryGetProperty("rules", out var rulesArr) ||
@@ -138,8 +140,31 @@ public class VerificationFormTests
                         !e.TryGetProperty("mode", out var mdEl) || mdEl.ValueKind != JsonValueKind.String)
                         return null;
                     var md = mdEl.GetString()!;
-                    if (md != "scalar" && md != "array_count") return null;
-                    rules.Add((rpEl.GetString()!, md));
+                    // EXP1-Q36: 新增 `drop` (整子树含基数剔除) 与 `drop_by_id` (成员级按身份选择性遮蔽)。
+                    if (md != "scalar" && md != "array_count" && md != "drop" && md != "drop_by_id") return null;
+                    string? selTail = null;
+                    List<string>? selVals = null;
+                    if (md == "drop_by_id")
+                    {
+                        // 与 Python 侧 _load_projection_rules **同形校验**: 选择器必须与规则路径同位置、
+                        // 同名通配 (单通配附着形态), 且选择器须有叶尾 (否则取不到成员身份 ⇒ 静默错锚)。
+                        if (!e.TryGetProperty("selector", out var selEl) || selEl.ValueKind != JsonValueKind.Object ||
+                            !selEl.TryGetProperty("path", out var spEl) || spEl.ValueKind != JsonValueKind.String ||
+                            !selEl.TryGetProperty("values", out var vEl) || vEl.ValueKind != JsonValueKind.Array)
+                            return null;
+                        if (!RuleShape(rpEl.GetString()!, out var rpParts, out var rpos)) return null;
+                        if (!RuleShape(spEl.GetString()!, out var spParts, out var spos)) return null;
+                        if (rpos != spos || rpParts[rpos][..^3] != spParts[spos][..^3] || spos == spParts.Length - 1) return null;
+                        selVals = new List<string>();
+                        foreach (var vv in vEl.EnumerateArray())
+                        {
+                            if (vv.ValueKind != JsonValueKind.String || string.IsNullOrEmpty(vv.GetString())) return null;
+                            selVals.Add(vv.GetString()!);
+                        }
+                        if (selVals.Count == 0) return null;
+                        selTail = string.Join("/", spParts.Skip(spos + 1));
+                    }
+                    rules.Add((rpEl.GetString()!, md, selTail, selVals));
                 }
                 if (rules.Count == 0) return null;
             }
@@ -150,8 +175,32 @@ public class VerificationFormTests
             var kept = new List<(string Path, string Val)>(leaves);
             var entries = new List<(string Path, string Val)>();
             var applied = new Dictionary<string, int>(StringComparer.Ordinal);
-            foreach (var (rp, mode) in rules)
+            foreach (var (rp, mode, selTail, selValues) in rules)
             {
+                if (mode == "drop_by_id")
+                {
+                    // 成员级选择性遮蔽: 身份取声明值的成员 ⇒ 整成员剔除; 同族未声明者**逐叶保留**。
+                    var basePath = RuleBase(rp);
+                    var selected = new List<string>();
+                    if (basePath != null && TryValueAt(doc.RootElement, basePath, out var arrEl) &&
+                        arrEl.ValueKind == JsonValueKind.Array)
+                    {
+                        var cnt = arrEl.GetArrayLength();
+                        for (var i = 0; i < cnt; i++)
+                        {
+                            var mp = basePath + "/" + i.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                            var idPath = mp + (string.IsNullOrEmpty(selTail) ? "" : "/" + selTail);
+                            if (TryValueAt(doc.RootElement, idPath, out var idEl) &&
+                                idEl.ValueKind == JsonValueKind.String && selValues!.Contains(idEl.GetString()!))
+                                selected.Add(mp);
+                        }
+                    }
+                    applied[rp] = selected.Count;              // 空心 (数组缺席) ⇒ 0, 与 Python 侧同义
+                    if (selected.Count > 0)
+                        kept.RemoveAll(l => selected.Any(m => l.Path == m ||
+                                                              l.Path.StartsWith(m + "/", StringComparison.Ordinal)));
+                    continue;
+                }
                 var hit = new HashSet<string>(kept.Where(l => RuleMatches(rp, l.Path)).Select(l => l.Path),
                                              StringComparer.Ordinal);
                 applied[rp] = hit.Count;
@@ -162,6 +211,8 @@ public class VerificationFormTests
                     entries.Add((rp, "#n=" + n));
                     kept.RemoveAll(l => l.Path == rp || l.Path.StartsWith(rp + "/", StringComparison.Ordinal));
                 }
+                else if (mode == "drop")
+                    kept.RemoveAll(l => l.Path == rp || l.Path.StartsWith(rp + "/", StringComparison.Ordinal));
                 else kept.RemoveAll(l => hit.Contains(l.Path));
             }
             foreach (var anchor in new[] { "side_effect_attribution/window/t0",
@@ -239,6 +290,31 @@ public class VerificationFormTests
         }
         return i == rp.Length && j == lp.Length;
     }
+
+    /// <summary>EXP1-Q36: 规则路径的**单通配附着形态**解析 (`&lt;前缀&gt;/&lt;名&gt;[*]`) —— 与 Python 侧
+    ///   `_rule_shape` 逐条同形。多通配/独立段形态下「通配处命中的数组序号 → 同一成员的身份字段」映射不唯一,
+    ///   猜一个就是**静默错锚** ⇒ 形态不符即拒 (调用方返回 null, fail-closed)。</summary>
+    private static bool RuleShape(string rulePath, out string[] parts, out int pos)
+    {
+        parts = rulePath.Split('/');
+        pos = -1;
+        for (var i = 0; i < parts.Length; i++)
+        {
+            if (parts[i] == "[*]") return false;
+            if (parts[i].EndsWith("[*]", StringComparison.Ordinal))
+            {
+                if (pos >= 0) return false;
+                pos = i;
+            }
+        }
+        return pos >= 0;
+    }
+
+    /// <summary>规则路径的数组基路径 (`results[*]` ⇒ `results`); 形态不符 ⇒ null。</summary>
+    private static string? RuleBase(string rulePath)
+        => RuleShape(rulePath, out var parts, out var pos)
+            ? string.Join("/", parts.Take(pos).Append(parts[pos][..^3]))
+            : null;
 
     /// <summary>按路径取子节点 (array_count 规则需要容器基数); 对象键优先, 其次数字序号 —— 与 Python 侧同序。</summary>
     private static bool TryValueAt(JsonElement root, string path, out JsonElement val)

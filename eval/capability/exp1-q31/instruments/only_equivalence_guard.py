@@ -60,6 +60,29 @@ def pick_fixture_anchor(raw):
     return None, None
 
 
+def pick_second_anchor(raw, exclude_id):
+    """P6 反证用的**第二个**待派生锚 (必须是别的行) —— 防「全表刚 repin 完 ⇒ 全表 apply 零变更 ⇒
+    反证恒红且无判别力」(EXP1-Q35 实测的负控饱和)。"""
+    doc = json.loads(raw)
+    for r in doc['rows']:
+        f = r.get('evidence_generated_with')
+        if (r['id'] != exclude_id and isinstance(f, dict) and f.get('pin_status') == 'frozen'
+                and isinstance(f.get('artifact_sha12'), str)):
+            return r['id'], f['artifact_sha12']
+    return None, None
+
+
+def break_pin(raw, row_id, pin, newval):
+    """把某行的 artifact pin 改成 newval (文本外科手术, 行块内唯一命中); 锚不在本行块内 ⇒ None。"""
+    bs = raw.index('"id": "%s"' % row_id)
+    be = raw.index('\n  },', bs)
+    needle = '"artifact_sha12": "%s"' % pin
+    k = raw.index(needle, bs)
+    if k >= be:
+        return None
+    return raw[:k] + '"artifact_sha12": "%s"' % newval + raw[k + len(needle):]
+
+
 def block_insert(raw, row_id, new_field):
     """文本外科手术 (不整份序列化): 只重写目标行的 evidence_generated_with 块。算法移植自 Q30 等价探针。"""
     i = raw.index('"id": "%s"' % row_id)
@@ -183,12 +206,23 @@ def main():
         checks['P5_缺轮号_rc3零写入'] = (rcE == 3 and sha12(e) == se)
         readings['P5_line'] = outE.strip().splitlines()[:1]
         c = os.path.join(tmp, 'out_full.json')
-        wr(c, broken)
+        # EXP1-Q36: 反证去饱和 —— 全表 apply 若在「刚 repin 完」的表上跑, 零行需派生 ⇒ 前提不成立
+        #   (旧版直接要求 n_touched>1 ⇒ 恒红且无判别力)。修法: scratch 副本里**再注入一行待派生**
+        #   (另一行 artifact pin 置假值), 令「全表作用域」必然触及 ≥2 行。
+        second_id, second_pin = pick_second_anchor(broken, target)
+        broken2 = broken
+        if second_id and second_pin != 'deadbeef0002':
+            b2 = break_pin(broken, second_id, second_pin, 'deadbeef0002')
+            if b2:
+                broken2 = b2
+                readings['second_anchor'] = {'row': second_id, 'pin': second_pin}
+        wr(c, broken2)
         rcC, outC = run([TOOL, '--apply', '--round', ROUND, '--registry', c])
         touched = [l for l in outC.splitlines() if 'UNCHANGED=' in l]
         n_touched = int(touched[0].split('/ TOUCHED=')[1].split()[0]) if touched else -1
         readings['C_touched'] = touched[:1]
-        checks['P6_反证_去作用域不同字节'] = (rcC == 0 and n_touched > 1 and sha12(c) != readings['A_sha12'])
+        checks['P6_反证_去作用域不同字节'] = (rcC == 0 and n_touched > 1 and sha12(c) != readings['A_sha12']
+                                            and broken2 != broken)
         checks['P7_真登记表零副作用'] = (sha12(reg_real) == reg_sha_before)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
