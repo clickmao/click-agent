@@ -161,3 +161,38 @@
 
 **下轮候选（一步）**：① **分档口径预注册**（把候选按形态分档：markdown 目标 / 显式相对 / 根相对路径 / 其余 slash token，各档单列目标——数据已在 `by_origin` 与 `readings`，本轮的 81.25% vs 14.43% 是分档依据）② 产品侧器具（`agent.recall` 度量模式）与端口交叉核对 ③ 1e5 规模臂 ④ R479 遗留（路由器接线 / 入链 prompt 正文槽位化）。**不建议**继续投入「相对引用改写」（可达面 0.88%，天花板 ≤ +0.88 pt）。
 
+
+## R481-G（本侧独立复核 + 语料钉 + 分档口径预注册）
+
+### G1 独立复核（不采信对侧自述）
+- `python3 eval/recall/links_port_r482.py --selftest` ⇒ **rc=0**；`N3_mutations_caught=true`（6/6 变异被抓）。
+- `python3 eval/recall/links_port_r482.py --out /tmp/port_g.json` ⇒ **rc=0**；本侧读数与 R481-F 报告**同向同量级**：`G1=0.1449`（报 0.1450）/ `G2=0.8551`（0.8550）/ `G3=0.1086`（0.1091）/ `G4 p50=5` **达标** / `by_origin`：markdown `0.8125`、rel `0.1442`、url `1518 = unreported`。
+- `old_arm.vs_registered_r481a.match = false`（files 6,687 vs 6,647；refs 20,348 vs 20,155）⇒ 器具已自标**不可比（语料漂移）**，与报告一致 ✔。
+- 形式门禁本侧自跑 ⇒ **rc=0 / Failed 0 / Passed 10 / Total 10**（执行数 > 0，非假绿）。
+
+### G2 发现：语料钉缺失 ⇒ 跨读数可比性无机制保障（本轮新）
+`check_corpus_pin.py` 对 4 个 port 读数 ⇒ **rc=1 / PIN_VERDICT=DRIFT**（`distinct_corpus_pins=3`、`distinct_rule_pins=1`）：
+
+| 读数 | files | corpus.files_sha16 |
+|---|---|---|
+| `r481b/port-corpus-firstpass.json`(08:03) | 6,659 | `251b1c166eca7dbe` |
+| `r481b/port-corpus.json`(08:04) | 6,658 | `1000893f7926c08c` |
+| `r481b/port-corpus-pass2.json`(08:04) | 6,658 | `1000893f7926c08c` |
+| 本侧复跑 (08:2x) | 6,683 | `737b2cca752d55bc` |
+
+- 规则侧**恒定**（`rule_sha16=9e9104ca601f8849` 四个读数全同）⇒ 漂移源是**语料**（`head=ccb132b`、`worktree_dirty_files=37`），不是端口。
+- 结论：R481-F 的「两次独立运行核心字段逐字节相同」**只在同一语料成立**；其首跑与第二跑之间语料已 6,659 → 6,658（即已漂移）。**漂移不报警**是机制缺口 ⇒ 本侧补 `check_corpus_pin.py`。
+- 归因缺口（诚实边界）：器具只出 `files_sha16`、不出参与文件清单 ⇒ 漂移**可判不可归因**；清单导出列为下轮候选。
+
+### G3 器具与判别力自证
+- `eval/recall/r481/check_corpus_pin.py`（语言无关，只读固定字段；三态 fail-closed）：**UNIFORM rc=0 / DRIFT rc=1 / MISSING rc=3**。
+- 负控真跑：N1 删 `corpus.files_sha16` ⇒ **rc=3 / PIN_MISSING**；N2 篡改一读数 sha16 ⇒ **rc=1 / DRIFT**；N3 单读数自比 ⇒ **rc=0 / UNIFORM**。
+
+### G4 预注册（先于分档首跑）
+- `eval/recall/prereg_r481g.json`：① 语料钉三元组 + 可比性规则（仅当 `(files_sha16, rule_source_sha16)` 全等才可同批对照）；② 分档口径（markdown / url / rel，rel 待细分为 explicit_rel / root_rel / slash_token）+ 各档目标；③ 判据收窄：全局 `resolved_rate>=0.90` 与 `dangling_rate<=0.10` 在含 slash token 的候选面上**结构不可达**（实测 0.1449 / 0.8551）⇒ 只保留 `markdown` 与 `root_rel` 设门槛、`explicit_rel` 沿用 ≥0.85、`slash_token` 不设门槛；④ 负控 N1–N3。
+- 预注册**晚于**钉观测落盘 ⇒ 该漂移读数按 R453 单列 `posthoc_observation`，只对其后的比较生效。
+
+### G5 诚实边界
+- 分档读数**尚未取得**（器具需加 `by_subband` 输出）⇒ 本文件不宣称任何档达标，也不改 R481-A/B/F 读数。
+- 全程 Python 代理面，不测产品面（`agent.recall`）延迟/实现；跨 URL 一律 `unreported` 不冒充 0。
+- `src/agent.recall*` 仍 untracked；未 push（`PUSH_PAUSED`）。

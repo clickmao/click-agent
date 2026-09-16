@@ -1,0 +1,19 @@
+{
+  "round": "R481-A",
+  "topic": "【探索】跨文件/跨URL 精准度基线（不做摘要、不做分类）",
+  "preregistered_at": "2026-09-16T00:00:00Z",
+  "note": "阈值/定义先于首跑固定; 事后不得改。数字全部由 eval/recall/links_probe.py 在本仓真实语料上执行产生。",
+  "definitions": {
+    "ref": "内容中自带的地址(相对路径/仓根路径/URL) —— 不主动分类、不建索引",
+    "resolved": "引用可解析到仓内真实存在的文件(先按引用方所在目录, 再按仓根)",
+    "dangling": "引用指向不存在的路径(悬空, 不可解析)",
+    "external": "http(s) URL —— 离线不可验证, 单列 unreported, 禁当0"
+  },
+  "targets": {
+    "G1": "resolved_rate >= 0.90 (跨文件地址可精准落地)",
+    "G2": "dangling_rate <= 0.35",
+    "G3": "rel_ok_rate >= 0.85 (相对引用按引用方目录解析成功)",
+    "G4": "per_file_p50_refs >= 1 (产出物真带地址, 否则整条腿不成立)"
+  },
+  "falsified_if": "resolved_rate < 0.70 或 per_file_p50_refs == 0 => 地址自描述路线不成立, 回退词面倒排兜底为唯一腿"
+}

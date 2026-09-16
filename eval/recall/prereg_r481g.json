@@ -1,0 +1,54 @@
+{
+  "round": "R481-G",
+  "kind": "prereg",
+  "note": "阈值/定义/负控先于首跑固定; 事后不得改。本文件只补两项: (a) 跨读数可比性(语料钉), (b)【探索】分档口径与各档目标。不回改 R481-A/R481-B/R481-F 的任何判据与读数。",
+  "posthoc_observation": {
+    "discipline": "R453: 本文件晚于钉观测落盘 => 下述数字单列 posthoc, 不作预注册读数; 本文件只对其后的比较生效",
+    "reading": "eval/recall/r481/check_corpus_pin.py 对 4 个 port 读数 => PIN_VERDICT=DRIFT (rc=1); distinct_corpus_pins=3 / distinct_rule_pins=1 / head=ccb132b / worktree_dirty_files=37",
+    "pins": {
+      "251b1c166eca7dbe": {"files": 6659, "reading": "eval/recall/r481b/port-corpus-firstpass.json"},
+      "1000893f7926c08c": {"files": 6658, "reading": "eval/recall/r481b/port-corpus.json + port-corpus-pass2.json"},
+      "737b2cca752d55bc": {"files": 6683, "reading": "本侧独立复跑 (R481-G)"}
+    },
+    "meaning": "R481-F 报告的『两次独立运行核心字段逐字节相同』仅在**同一语料**成立 (pass/pass2 同钉); 其首跑与第二跑之间语料已由 6659 变 6658 即已漂移。漂移不报警是机制缺口 => 本文件 + 器具补之。"
+  },
+  "corpus_pin": {
+    "required_fields": ["corpus.files", "corpus.files_sha16", "instrument.rule_source_sha16"],
+    "comparability_rule": "仅当 (corpus.files_sha16, instrument.rule_source_sha16) 二元组相等时, 两个读数方可同批对照或互为回归基线; 否则两侧一律标『不可比(语料漂移)』, 禁算 delta、禁判回归。",
+    "diagnostics_required": ["git rev-parse --short HEAD", "worktree_dirty_files (git status --porcelain 行数)"],
+    "enforcement_instrument": "eval/recall/r481/check_corpus_pin.py",
+    "three_states": "UNIFORM(rc=0, 可比) / DRIFT(rc=1, 弃权: 跨读数不可比) / MISSING(rc=3, 弃权: 缺钉字段或不可读)",
+    "known_gap": "器具只输出 files_sha16, 不输出参与语料的文件清单 => 漂移可判不可归因; 补清单导出列为下轮候选。"
+  },
+  "bands": {
+    "rationale": "R481-F 新口径下全局 resolved_rate=0.1449 越线, 分解显示 85.5% 悬空来自含 '/' 的代码/文件名字串 (slash token), 即『文本层无法区分链接语境与代码 token 语境』=> 全局单一阈值是错的口径, 判据必须按候选来源分档。",
+    "by_origin_available_now": ["markdown", "url", "rel"],
+    "pending_subbands_of_rel": ["explicit_rel", "root_rel", "slash_token"],
+    "definitions": {
+      "markdown": "markdown 链接目标 (真链接语境)",
+      "url": "scheme 前缀地址 (离线不可验证)",
+      "explicit_rel": "原始候选以 ./ 或 ../ 开头 (产品唯一会改写的类别)",
+      "root_rel": "非 explicit_rel 且在仓根下可解析 (根相对路径)",
+      "slash_token": "非 explicit_rel 且不可解析 (代码 token / 文件名串; 越根逃逸者另单列)"
+    },
+    "judgment": {
+      "markdown": "resolved_rate >= 0.90 (唯一真链接语境档, 设门槛)",
+      "url": "unreported (禁作 0, 禁入分母)",
+      "rel": "不设全局门槛; 只报 baseline 并分档",
+      "explicit_rel": "rewrite_ok_rate >= 0.85 (沿用 R481-B)",
+      "root_rel": "resolved_rate >= 0.90",
+      "slash_token": "不设门槛; 只作命名噪声计量 (dangling 单列)"
+    },
+    "superseded_judgment": {
+      "G1_global": "resolved_rate >= 0.90 —— 在含 slash token 的候选面上结构不可达 (R481-F 实测 0.1449)",
+      "G2_global": "dangling_rate <= 0.10 —— 同上, 结构不可达 (R481-F 实测 0.8551); 计划 §1 G2 与 prereg_r481a 的 0.10 / 0.35 冲突按此一并收窄",
+      "kept": "R481-A/B/F 的既有读数与文件原样保留, 不回改"
+    }
+  },
+  "negative_controls": [
+    "N1 读数缺 corpus.files_sha16 => check_corpus_pin rc=3 (MISSING, 弃权)",
+    "N2 人为改一个读数的 files_sha16 => rc=1 且 PIN_VERDICT=DRIFT",
+    "N3 单读数自比 => rc=0 且 PIN_VERDICT=UNIFORM"
+  ],
+  "not_claimed": "分档读数尚未取得 (器具需加 by_subband 输出) => 本文件只锁口径与目标, 不宣称任何档达标; Python 代理面不测产品面 (agent.recall) 延迟/实现。"
+}
