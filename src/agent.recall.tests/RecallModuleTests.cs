@@ -480,6 +480,28 @@ public sealed class RecallIncrementalTests
     }
 
     [Fact]
+    public void Relative_References_Resolve_Against_Referrer_Directory()
+    {
+        var options = new RecallLinkOptions();
+        var sink = new List<string>();
+        int n = RecallLinkExtractor.Extract(
+            "见 [B](../reports/b.md) 与 [C](./c.md) 还有 src/x.cs 以及 https://example.com/p".AsSpan(),
+            options,
+            sink,
+            "docs/plans/a.md");
+        Assert.Equal(4, n);
+        Assert.Contains("docs/reports/b.md", sink); // ../ ⇒ 按引用方目录回退一层
+        Assert.Contains("docs/plans/c.md", sink);   // ./ ⇒ 按引用方目录展开
+        Assert.Contains("src/x.cs", sink);          // 根相对 ⇒ 原样保留 (主力通路, 不得改写)
+        Assert.Contains("https://example.com/p", sink);
+
+        // 越根 fail-closed: 原值返回, 不猜目标
+        var escaped = new List<string>();
+        RecallLinkExtractor.Extract("x [E](../../../e.md)".AsSpan(), options, escaped, "a.md");
+        Assert.Contains("../../../e.md", escaped);
+    }
+
+    [Fact]
     public void TaskState_Is_Durable_And_Feeds_Recall()
     {
         string root = TempDir();

@@ -67,7 +67,7 @@ internal sealed class RecallSegmentBuilder
         _postings.AddPosting(RecallKeys.IdKey(doc.Id), docId, 1);
         _postings.AddPosting(RecallKeys.PathKey(doc.Path), docId, 1);
         // 产出物自带地址: 正文里已有的链接/文件地址随文档落盘 (召回不需要分类, 沿地址走)。
-        int linkCount = RecallLinkExtractor.Extract((doc.Text ?? string.Empty).AsSpan(), _options.Links, _linkScratch);
+        int linkCount = RecallLinkExtractor.Extract((doc.Text ?? string.Empty).AsSpan(), _options.Links, _linkScratch, doc.Path);
         _links.Add(new List<string>(_linkScratch.Take(linkCount)));
         _docs.Add((doc, textOffset, textBytes.Length, tokens));
     }
