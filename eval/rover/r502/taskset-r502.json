@@ -1,0 +1,264 @@
+[
+ {
+  "tid": "p001",
+  "kind": "program",
+  "family": "vm_run",
+  "prompt": "用 Python 3 写一个单文件程序解决下面的任务。程序从标准输入读数据, 把结果写到标准输出; 不要打印任何多余文字、提示或调试信息。\n\n【任务】\n读入: 第一行整数 k (1<=k<=64, 指令条数); 随后 k 行, 每行一条指令 (地址从 0 开始)。指令集: PUSH n(压入整数 n) / POP(弹出丢弃) / ADD / SUB / MUL(弹出 a=栈顶, b=次顶, 压入 b-a 等运算) / DUP(复制栈顶) / SWAP(交换栈顶两元素) / PRINT(弹出栈顶并输出一行) / JNZ a(弹出栈顶, 非 0 则跳转到地址 a, 否则继续) / HALT(结束)。输出: 按 PRINT 顺序逐行输出整数。若出现栈空弹栈、操作数不足、跳转地址越界、未在 10000 步内执行 HALT, 或执行流越过最后一条指令, 则只输出一行 ERR。\n\n【公开用例】(仅供参考; 判定使用另一批隐藏用例)\n输入:\n3\nPUSH 1\nJNZ 99\nHALT\n期望输出:\nERR\n\n输入:\n3\nPUSH -3\nADD\nHALT\n期望输出:\nERR\n\n请把完整程序放在一个 ```python 围栏代码块内。",
+  "public": [
+   {
+    "stdin": "3\nPUSH 1\nJNZ 99\nHALT\n",
+    "expected_stdout": "ERR"
+   },
+   {
+    "stdin": "3\nPUSH -3\nADD\nHALT\n",
+    "expected_stdout": "ERR"
+   }
+  ],
+  "hidden": [
+   {
+    "stdin": "9\nPUSH 3\nPUSH 3\nPOP\nPUSH 2\nPOP\nPUSH 3\nMUL\nPRINT\nHALT\n",
+    "expected_stdout": "9"
+   },
+   {
+    "stdin": "9\nPUSH -2\nPOP\nPUSH -5\nPRINT\nPUSH 3\nPOP\nPUSH 0\nPRINT\nHALT\n",
+    "expected_stdout": "-5\n0"
+   },
+   {
+    "stdin": "9\nPUSH 0\nPOP\nPUSH -1\nDUP\nPUSH 1\nPOP\nADD\nPRINT\nHALT\n",
+    "expected_stdout": "-2"
+   },
+   {
+    "stdin": "8\nPUSH 1\nPUSH 2\nSWAP\nSWAP\nPOP\nPOP\nPOP\nHALT\n",
+    "expected_stdout": "ERR"
+   },
+   {
+    "stdin": "7\nPUSH -2\nPUSH -3\nPOP\nDUP\nADD\nPRINT\nHALT\n",
+    "expected_stdout": "-4"
+   },
+   {
+    "stdin": "9\nPUSH 1\nPOP\nPUSH -2\nPUSH -2\nPUSH 2\nPOP\nSUB\nPRINT\nHALT\n",
+    "expected_stdout": "0"
+   },
+   {
+    "stdin": "2\nPOP\nHALT\n",
+    "expected_stdout": "ERR"
+   },
+   {
+    "stdin": "3\nPUSH 1\nJNZ 9\nHALT\n",
+    "expected_stdout": "ERR"
+   },
+   {
+    "stdin": "9\nPUSH 3\nDUP\nPRINT\nPUSH 1\nSUB\nDUP\nJNZ 1\nPOP\nHALT\n",
+    "expected_stdout": "3\n2\n1"
+   },
+   {
+    "stdin": "5\nPUSH 2\nPUSH 3\nMUL\nPRINT\nHALT\n",
+    "expected_stdout": "6"
+   },
+   {
+    "stdin": "5\nPUSH 3\nPUSH 4\nSWAP\nSUB\nHALT\n",
+    "expected_stdout": ""
+   },
+   {
+    "stdin": "3\nPUSH 5\nDUP\nADD\n",
+    "expected_stdout": "ERR"
+   }
+  ],
+  "answer": "",
+  "meta": {
+   "hard": 6
+  }
+ },
+ {
+  "tid": "p002",
+  "kind": "program",
+  "family": "topo_min",
+  "prompt": "用 Python 3 写一个单文件程序解决下面的任务。程序从标准输入读数据, 把结果写到标准输出; 不要打印任何多余文字、提示或调试信息。\n\n【任务】\n读入: 第一行两个整数 n m (1<=n<=64); 随后 m 行, 每行两个整数 u v (0<=u,v<n), 表示有向边 u->v。输出: 若图中存在拓扑序, 输出**字典序最小**的拓扑序 (n 个节点编号, 空格分隔为一行); 若存在环(含自环), 输出 -1。\n\n【公开用例】(仅供参考; 判定使用另一批隐藏用例)\n输入:\n2 1\n0 1\n期望输出:\n0 1\n\n输入:\n4 3\n0 3\n1 3\n2 3\n期望输出:\n0 1 2 3\n\n请把完整程序放在一个 ```python 围栏代码块内。",
+  "public": [
+   {
+    "stdin": "2 1\n0 1\n",
+    "expected_stdout": "0 1"
+   },
+   {
+    "stdin": "4 3\n0 3\n1 3\n2 3\n",
+    "expected_stdout": "0 1 2 3"
+   }
+  ],
+  "hidden": [
+   {
+    "stdin": "3 2\n2 1\n2 0\n",
+    "expected_stdout": "2 0 1"
+   },
+   {
+    "stdin": "2 2\n0 0\n1 0\n",
+    "expected_stdout": "-1"
+   },
+   {
+    "stdin": "5 0\n",
+    "expected_stdout": "0 1 2 3 4"
+   },
+   {
+    "stdin": "2 0\n",
+    "expected_stdout": "0 1"
+   },
+   {
+    "stdin": "3 2\n0 2\n1 2\n",
+    "expected_stdout": "0 1 2"
+   },
+   {
+    "stdin": "2 4\n1 0\n0 1\n1 1\n0 1\n",
+    "expected_stdout": "-1"
+   },
+   {
+    "stdin": "1 0\n",
+    "expected_stdout": "0"
+   },
+   {
+    "stdin": "2 2\n0 1\n1 0\n",
+    "expected_stdout": "-1"
+   },
+   {
+    "stdin": "2 1\n1 1\n",
+    "expected_stdout": "-1"
+   },
+   {
+    "stdin": "3 1\n2 0\n",
+    "expected_stdout": "1 2 0"
+   },
+   {
+    "stdin": "4 3\n3 0\n2 0\n1 0\n",
+    "expected_stdout": "1 2 3 0"
+   },
+   {
+    "stdin": "6 5\n5 0\n4 0\n3 0\n2 0\n1 0\n",
+    "expected_stdout": "1 2 3 4 5 0"
+   }
+  ],
+  "answer": "",
+  "meta": {
+   "hard": 6
+  }
+ },
+ {
+  "tid": "p003",
+  "kind": "program",
+  "family": "topo_min",
+  "prompt": "用 Python 3 写一个单文件程序解决下面的任务。程序从标准输入读数据, 把结果写到标准输出; 不要打印任何多余文字、提示或调试信息。\n\n【任务】\n读入: 第一行两个整数 n m (1<=n<=64); 随后 m 行, 每行两个整数 u v (0<=u,v<n), 表示有向边 u->v。输出: 若图中存在拓扑序, 输出**字典序最小**的拓扑序 (n 个节点编号, 空格分隔为一行); 若存在环(含自环), 输出 -1。\n\n【公开用例】(仅供参考; 判定使用另一批隐藏用例)\n输入:\n3 3\n0 2\n1 2\n1 0\n期望输出:\n1 0 2\n\n输入:\n6 2\n0 2\n5 0\n期望输出:\n1 3 4 5 0 2\n\n请把完整程序放在一个 ```python 围栏代码块内。",
+  "public": [
+   {
+    "stdin": "3 3\n0 2\n1 2\n1 0\n",
+    "expected_stdout": "1 0 2"
+   },
+   {
+    "stdin": "6 2\n0 2\n5 0\n",
+    "expected_stdout": "1 3 4 5 0 2"
+   }
+  ],
+  "hidden": [
+   {
+    "stdin": "7 4\n2 2\n0 0\n4 3\n0 5\n",
+    "expected_stdout": "-1"
+   },
+   {
+    "stdin": "4 4\n1 2\n2 3\n2 1\n3 3\n",
+    "expected_stdout": "-1"
+   },
+   {
+    "stdin": "7 3\n6 4\n4 6\n5 0\n",
+    "expected_stdout": "-1"
+   },
+   {
+    "stdin": "2 1\n0 1\n",
+    "expected_stdout": "0 1"
+   },
+   {
+    "stdin": "5 4\n0 4\n1 4\n2 4\n3 4\n",
+    "expected_stdout": "0 1 2 3 4"
+   },
+   {
+    "stdin": "4 2\n3 1\n3 0\n",
+    "expected_stdout": "2 3 0 1"
+   },
+   {
+    "stdin": "1 0\n",
+    "expected_stdout": "0"
+   },
+   {
+    "stdin": "2 2\n0 1\n1 0\n",
+    "expected_stdout": "-1"
+   },
+   {
+    "stdin": "2 1\n1 1\n",
+    "expected_stdout": "-1"
+   },
+   {
+    "stdin": "5 0\n",
+    "expected_stdout": "0 1 2 3 4"
+   },
+   {
+    "stdin": "3 1\n2 0\n",
+    "expected_stdout": "1 2 0"
+   },
+   {
+    "stdin": "4 3\n3 0\n2 0\n1 0\n",
+    "expected_stdout": "1 2 3 0"
+   },
+   {
+    "stdin": "6 5\n5 0\n4 0\n3 0\n2 0\n1 0\n",
+    "expected_stdout": "1 2 3 4 5 0"
+   }
+  ],
+  "answer": "",
+  "meta": {
+   "hard": 7
+  }
+ },
+ {
+  "tid": "m001",
+  "kind": "math",
+  "family": "witness_sqrt_mod",
+  "prompt": "求整数 x (0 <= x < 139) 满足 x^2 ≡ 116 (mod 139)。答案不唯一, 任何满足条件的 x 都算正确。\n\n请给出最终答案, 最后一行必须是 `FINAL: <答案>` 格式。",
+  "public": [],
+  "hidden": [],
+  "answer": "33",
+  "meta": {
+   "witness": {
+    "kind": "sqrt_mod",
+    "p": 139,
+    "a": 116
+   }
+  }
+ },
+ {
+  "tid": "m002",
+  "kind": "math",
+  "family": "witness_sqrt_mod",
+  "prompt": "求整数 x (0 <= x < 107) 满足 x^2 ≡ 4 (mod 107)。答案不唯一, 任何满足条件的 x 都算正确。\n\n请给出最终答案, 最后一行必须是 `FINAL: <答案>` 格式。",
+  "public": [],
+  "hidden": [],
+  "answer": "2",
+  "meta": {
+   "witness": {
+    "kind": "sqrt_mod",
+    "p": 107,
+    "a": 4
+   }
+  }
+ },
+ {
+  "tid": "m003",
+  "kind": "math",
+  "family": "witness_sqrt_mod",
+  "prompt": "求整数 x (0 <= x < 101) 满足 x^2 ≡ 23 (mod 101)。答案不唯一, 任何满足条件的 x 都算正确。\n\n请给出最终答案, 最后一行必须是 `FINAL: <答案>` 格式。",
+  "public": [],
+  "hidden": [],
+  "answer": "15",
+  "meta": {
+   "witness": {
+    "kind": "sqrt_mod",
+    "p": 101,
+    "a": 23
+   }
+  }
+ }
+]

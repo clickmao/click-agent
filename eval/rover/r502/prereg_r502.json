@@ -1,0 +1,55 @@
+{
+ "round": "R502",
+ "topic": "主线对照（外部真值 codex-cli × 本侧 AOT）× 冻结随机题集 × 机械判分",
+ "prereg_at": "2026-09-17T02:52:16+0800",
+ "first_run": true,
+ "external_reference": {
+  "codex_bin": "/home/agentuser/.agentframework/tools/codex-env/node_modules/.bin/codex",
+  "codex_version": "codex-cli 0.154.0",
+  "npm_package": "@openai/codex@0.154.0",
+  "adapter": "eval/rover/r455/adapter_tools.py",
+  "upstream_model": "deepseek-flash",
+  "route": "codex/agent 两侧 -> http://127.0.0.1:<R502_ADAPTER_PORT>/v1 -> upstream"
+ },
+ "files_sha256": {
+  "taskset": "e31db4a5098e9c3562e889f6cd03a70ce9f167f4e407ce5d09102279c9e037f0",
+  "grade_py": "ef0a81d495eeab5e216dde2b89262c4e914db694a5e24f6cbb7737e7f1ee3e30",
+  "tasks_py": "80ba09e8bd507c9a6d9b594ffacc346abc7d3002d9e30df4453eba5d2297edc7",
+  "run_probe_py": "9de4511eb8a42a40c2ff5c760b4559fea31fa76f633255268e6720f700bbeeed",
+  "codex_solver_py": "a900c1fd7972ad4774a0d744b383a592b59e75debb6f62f35c93cc81f8735885",
+  "judge_py": "2271685f0a49b06f96c836597f54c73b1c538cb7735080795d02bb87e62cb945",
+  "runner_sh": "cdf661acbc9c0346da319bb10d22890d9afceb3b8c1673bdbfa2229c3b1e4d2b",
+  "adapter_py": "f04b60b04767a7a411efecdca15a8f75f551ba4c5f4c2fed9913b51ffeebb1af"
+ },
+ "probe_taskset_sha": "2357a80173144742",
+ "taskset": {
+  "path": "eval/rover/r502/taskset-r502.json",
+  "n_tasks": 6,
+  "n_per_kind": 3,
+  "kind_arg": "both",
+  "seed": 20260917,
+  "families": "topo_min,vm_run,json_mini,witness_min_counterexample,witness_sqrt_mod",
+  "oracle_baseline": {
+   "rate": 1.0,
+   "passed": 40,
+   "total": 40,
+   "n_tasks": 6,
+   "taskset_sha": "2357a80173144742",
+   "solver": "oracle"
+  }
+ },
+ "criteria": [
+  "H1 仪器判别力（首跑前本地负控）: 同一 json_mini 题集上 mutation:json_loose 整题全对 == 0，且 oracle 正控 == 1.0（两端都要，只给一端不算自证）",
+  "H2 外部真值可用性: codex 侧 ok 题数 >= 1；若 == 0 ⇒ 记 unreported（禁当 0 分能力、禁静默）",
+  "H3 同输入机检: 两侧 probe 摘要 taskset_sha 相等且 == 预注册值（E2）",
+  "H4 同模型机检: adapter 落盘 upstream_request.model 两侧均为 deepseek-flash（E3）",
+  "H5 对照读数分列: 逐题 codex mode vs agent mode + 两侧 usage 分列成表；**禁**据 token 总量断言谁更省（静态面不同源）",
+  "H6 fail-closed: 缺任一侧面产物 ⇒ rc=3（不得算绿）；codex 空回 ⇒ 记 no_code 且单列，不折算成 0 能力"
+ ],
+ "honest_boundaries": [
+  "codex 侧本机 bwrap 不可用 ⇒ 用 --dangerously-bypass-approvals-and-sandbox（审批/沙箱面不对等）",
+  "两侧静态面不同源（instructions/工具面差异）⇒ 只比「同输入下的行为差异」与同侧趋势",
+  "n=4（2 程序 + 2 数学）为低成本首跑，不构成总体能力估计",
+  "单窗单跑 ⇒ 跨轮禁相减"
+ ]
+}

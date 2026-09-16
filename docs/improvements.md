@@ -10,6 +10,26 @@
 > 数据时效 (测试数/批号/评测口径)、版本引用一致性、死链检查; **禁止只改局部不做整体校验**。
 > 空间位置相邻但语义不同段的错挂 (如旧版本标题下挂新数据) 视同违例。
 
+## v0.98.1 · R502 · 2026-09-17 · 状态: 铺件完成（预注册先于首跑 + 负控全绿；真机首跑待窗） · 主题: **主线执行面 = 开发任务对照套件（codex-cli 外部真值 × 机械判分）**
+
+**背景（主线口径 · 承 v0.98.0）**: 主线 = 用「随机程序 / 数学难题 / 游戏」真实开发任务与外部真值（codex-cli，同一真实模型）同环境·同输入对照，对本项目做质量自检。本节落的是**可复跑的对照执行面**，不是一次性读数。
+
+**完成记录**
+1. 外部真值工具面持久化: `@openai/codex@0.154.0` 装到 `~/.agentframework/tools/codex-env`（与 R455 同版 ⇒ 跨轮同版可复现；旧 `/tmp/codexenv` 不可托付）。
+2. 冻结题集: `eval/rover/r502/taskset-r502.json`（6 题 = 程序族 `topo_min`/`vm_run` + 见证型数学族 `witness_sqrt_mod`，seed 20260917）；**probe 口径 sha `2357a80173144742`**；oracle 正控 **40/40 = 1.0**（题集自身可解）。
+3. 两侧同面: 本侧 = AOT `agenthost`（probe `agent` 解法）；外部 = codex-cli（probe `command:` 解法，stdin 题面 → stdout 回复）；两侧同经 R455 透传 adapter（**同一真实模型**）⇒ usage 真值同源。
+4. 判分 = `eval/probe/grade.py`（隐藏用例 + 外裁判子进程）—— **同一判分器**，禁模型裁判。
+5. **预注册先于首跑**: `prereg_r502.json`（8 件哈希机取 + 6 条判据 + 4 条诚实边界）；`--check` 三态 rc 0/1/3。
+6. **首跑前负控全绿**（本地，不吃真机窗）: oracle 1/1 ∧ `mutation:json_loose` 0/1（仪器两端）；缺侧 judge rc=3；预注册 uniform/drift/missing = 0/1/3 + 复原 0；solver `--selftest`/`--dry-run` rc=0。
+7. 文档入册: `docs/external-reference-harness.md` **§7**（主线常态执行面）+ `eval/rover/r502/README.md`（由 §7 机械派生，单一真源）。
+8. 提交: 显式路径 + `STAGE_GUARD` + 越界白名单（未 push，PUSH_PAUSED 在效）。
+
+**基线（器具自检，非对照读数）**: 题集 oracle 40/40；`mutation:json_loose` 整题全对 0/1。
+
+**诚实边界**: ① **真机首跑未做** —— `MemAvailable` 实测 1,283 MB 且 R501 真机 4 臂在飞 ⇒ 让行；本节**不得**被引用为「本 agent vs codex」的任何结论；② codex 沙箱面不对等（本机 `bwrap` 不可用 ⇒ `--dangerously-bypass-approvals-and-sandbox`）；③ 两侧静态面不同源 ⇒ 禁据 token 总量断言优劣（H5）；④ **游戏族缺口**: `eval/probe/tasks.py` 10 程序族无游戏族 ⇒ 主线「随机游戏」面未覆盖（补族后必须重跑预注册）。
+
+**下轮候选**: ① 真机首跑（R501 收口后，同窗两侧 + `judge_contrast_r502.py` 出读数）；② 游戏族补入 `tasks.py`（含隐藏用例 + 判别力变异）；③ R501 裁决与代码面提交；④ R492 I7 结构量改写。
+
 ## v0.98.0 · R501 · 2026-09-17 · 状态: 已完成（文档面；真机裁决另轮） · 主题: **主线定义更正（用户钦定）+ 铁律 10 入册（宪法级）**
 
 - 用户逐字（2026-09-17）: 「主线不是让你用【随机游戏或数学难题开发】对比codex开进行本项目质量自检么」+「请更正主线并加入铁律」。
