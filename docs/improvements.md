@@ -20,7 +20,7 @@
 
 **基线**：`PRECOND_SELFTEST=OK`（NC 9/9；正控绿 + 注入缺陷必红且点名）· `eval/rover/r507pre/precondition-{r502,r503,r504}.json` · `evidence/precondition-selftest.json`；未 push（推送暂停令在效）。
 
-**诚实边界**：① 复算 = 对**已落盘摘要**的独立重跑，非新一次真机对照；② 只覆盖程序题，见证型数学题无执行面（记 `not-applicable`，仅核正确性）；③ 「整题全对」= 全部 hidden 用例通过，部分对即判**不正确**；④ 判据器内部判分**不算**该前置；⑤ 本条目为 R507pre（前置器具轮），不占用主线编号。
+**诚实边界**：① 复算 = 对**已落盘摘要**的独立重跑，非新一次真机对照；② 只覆盖程序题，见证型数学题无执行面（记 `not-applicable`，仅核正确性）；③ 「整题全对」= 全部 hidden 用例通过，部分对即判**不正确**；④ 判据器内部判分**不算**该前置；⑤ 轮号 = **R507**（器具目录标 `r507pre`，不另占主线编号）；已登记 `external.contrast-exec-precondition`（registry **L4** = 成对正控/负控、注入缺陷必失败且点名）+ `instruments.json`（成对器具 **30** 件）⇒ `bind_evidence --check` **rc=0 / R2E_R2F_EXIT=0**、`decl_sweep --check` **drifted=0**、形式门禁 `VerificationForm` **7/7（Failed 0）**。
 
 ## R506 · 2026-09-17 · 状态: **完成（候选④ 闭合 + 常驻守卫）** · 主题: 登记行 `evidence_cmd` 可完整重放
 

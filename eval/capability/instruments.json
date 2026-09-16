@@ -995,8 +995,33 @@
    "input_surface_source": "audit_hook",
    "input_surface_reason": "输入 = 被测工具 + 登记表 scratch 副本 (每次运行在 /tmp 重建, 其字节随登记表增长而变) ⇒ 不做字节指纹, 记运行次数",
    "corpus_dynamic_count": 3
+  },
+  {
+   "id": "external.contrast-exec-precondition",
+   "kind": "checker",
+   "cmd": "python3 eval/rover/r507pre/selfcheck_r507.py",
+   "expect_rc": 0,
+   "expect_substr": "PRECOND_SELFTEST=OK",
+   "nc_cmd": "python3 eval/rover/r507pre/nc_oneshot_r507.py",
+   "nc_expect": "detect:NC_DETECTED",
+   "kpi_quad": {
+    "单位": "程序题(侧×题)",
+    "分母": "两侧各轮程序题全量 (R502 4+4 / R503 5+5 / R504 7+7)",
+    "真值源": "题集 hidden 用例的 stdin/expected_stdout (逐字节等值)",
+    "口径档": "整题全对 (部分对=不正确); 非程序题无执行面 ⇒ not-applicable"
+   },
+   "owner_round": "R507",
+   "evidence_path": "eval/rover/r507pre/evidence/precondition-selftest.json",
+   "version": "content-sha12:28770b831e52",
+   "version_source": "content-sha12",
+   "instrument_sha12": "28770b831e52",
+   "input_fingerprint": [],
+   "input_surface": "external_files",
+   "input_surface_source": "自造夹具(正控/负控) + 真读数复算读 data/probe/*.json 与 eval/rover/r5xx/taskset-*.json",
+   "input_surface_reason": "负控必须能注入缺陷(错值/语法错/崩溃/死循环/缺输入/产物缺失) ⇒ 夹具自造; 真读数复算读已落盘摘要",
+   "corpus_dynamic_count": 0
   }
  ],
- "round": "EXP1-Q37",
- "owner_round": "EXP1-Q37"
+ "round": "R507",
+ "owner_round": "R507"
 }

@@ -1,4 +1,4 @@
-# R507pre · 可验收前置（两侧产出物须「可实际执行且正确」）
+# R507（器具目录 `r507pre`）· 可验收前置（两侧产出物须「可实际执行且正确」）
 
 > 用户令（2026-09-17，逐字）：「**对比 codex 时，一定要让产出物可实际执行并正确才算可验收对比数据的前置状态**」
 > 入册：`docs/reports/iteration-master-plan.md` §0-0 **铁律 11**（宪法级）+ 「四条硬条件」④；`docs/external-reference-harness.md` §2 **E7** + **§9**。
@@ -49,3 +49,9 @@ python3 eval/rover/r507pre/selfcheck_r507.py       # 复算真读数 + 写证据
 ## 边界
 
 ① 本器具只**读**已落盘摘要，不重跑被测对象（真机复跑另轮）；② 「整题全对」口径 ⇒ 部分对判**不正确**；③ 判据器自带的内部判分**不算**该前置；④ 本目录为 R507pre 前置器具轮，不占用主线编号。
+
+## 登记（registry L4 / instruments 成对器具）
+
+- registry 行: `external.contrast-exec-precondition`（**L4**，判据 = 成对正控/负控、注入缺陷必失败**必点名**）
+- 器具对: cmd = `python3 eval/rover/r507pre/selfcheck_r507.py`（`PRECOND_SELFTEST=OK`）; nc = `python3 eval/rover/r507pre/nc_oneshot_r507.py`（`detect:NC_DETECTED`，含**正控必须先绿**否则报 `NC_HOLLOW` 弃权）
+- 读数: `bind_evidence --check` rc=0 / `R2E_R2F_EXIT=0` · `decl_sweep --check` drifted=0 · 形式门禁 `VerificationForm` 7/7（Failed 0）

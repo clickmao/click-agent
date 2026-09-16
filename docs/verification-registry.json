@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R500",
+  "updated_round": "R507",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -5398,6 +5398,32 @@
         "scripts/kpi_probe.py"
       ],
       "owner_round": "R506"
+    },
+    {
+      "id": "external.contrast-exec-precondition",
+      "capability": "对比读数**可验收前置**: 两侧产出物(本侧 artifact 文件 / codex 回复正文代码)**物化到磁盘后独立实跑**(`python3 -I -B`), 逐条 hidden 用例机械判对, **整题全对**才算正确; 任一侧不可执行或有错题 ⇒ `EXECUTABLE_AND_CORRECT=False` 且逐条点名 `side/tid` ⇒ 该轮 token/调用降幅记「参考(未可验收)」。非程序题(见证型)无执行面 ⇒ 记 `not-applicable`, 不冒充执行读数",
+      "level": "L4",
+      "evidence_cmd": "python3 eval/rover/r507pre/selfcheck_r507.py",
+      "evidence_path": "eval/rover/r507pre/evidence/precondition-selftest.json",
+      "evidence_generated_with": {
+        "evidence_kind": "artifact",
+        "pin_status": "frozen",
+        "pin_reason": "archived-per-round",
+        "artifact_sha12": "28770b831e52",
+        "instrument": "eval/rover/r507pre/selfcheck_r507.py",
+        "instrument_sha12": "75b0a35bf809",
+        "binding": "audit-pin",
+        "audited_by_round": "R507"
+      },
+      "negative_control": "成对: ① 正控 —— 两侧同为好码 ⇒ 必须**绿**(`EXECUTABLE_AND_CORRECT=True`, 两次跑逐字节同); 若恒红 ⇒ `NC_HOLLOW` 弃权。② 注入缺陷必红且**点名**(9 例): 错值(用例 0/3) / 语法错(抽取层救回前缀⇒按运行结果判红) / 运行即崩(rc≠0) / 死循环(超时 rc=124) / 缺输入(rc=3 fail-closed) / 产物缺失(`no_code`, 不冒充通过) / 非程序题(not-applicable) / 相对路径 reply ⇒ 判 no_code(自捕空心 NC, 已改绝对路径)。③ 真读数复算: R503 `vm_run` 8/12 / R504 `wythoff` 10/13 被点名 ⇒ 判**未可验收**, 证明该器对真数据有判别力",
+      "covers": [
+        "eval/rover/r507pre/exec_precondition.py",
+        "eval/rover/r507pre/selfcheck_r507.py",
+        "eval/rover/r507pre/nc_precond_r507.py",
+        "eval/rover/r507pre/nc_oneshot_r507.py",
+        "eval/rover/r507pre/README.md"
+      ],
+      "owner_round": "R507"
     }
   ],
   "aot_check_policy": "release_tag_only",
