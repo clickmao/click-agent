@@ -1,0 +1,29 @@
+{
+  "round": "R482-Q",
+  "kind": "prereg",
+  "note": "先于 quality_face_probe.py 首跑落盘; 事后不得改。只做『R482 已发生读数』的重新归属与质量面量化, 不重跑真链, 不改 R482 任何判据。",
+  "inputs": {
+    "usage": ["eval/rover/r482/usage-Arole.jsonl", "eval/rover/r482/usage-R.jsonl"],
+    "turns": ["eval/rover/r482/turns-Arole.jsonl", "eval/rover/r482/turns-R.jsonl"],
+    "const_source": "src/agent.modelqueue/ModelQueueRouter.cs"
+  },
+  "definitions": {
+    "常量兜底轮": "该轮用户可见答复与『源码派生常量』字节相等 (常量由 ModelQueueRouter.cs 的 LocalSkipFallback 正则派生; 取不到 ⇒ rc=3 弃权)",
+    "实质性答复轮": "非常量兜底轮 且 答复非空",
+    "逐字重复组": "同一臂内 ≥2 轮答复字节完全相等的等价类",
+    "调用归属": "usage.ts 落在 turns[i].t_start .. t_end 区间内的远端调用记为该轮; 落不进任何区间的调用记 unattributed 并单列",
+    "去常量降幅": "(A_total - R_cf) / A_total, 其中 R_cf = R_total + Σ_{常量轮 t} cost_A(t) (cost_A(t) = A 臂该轮实际 token; 若 A 该轮无调用则取 A 每调用均值)",
+    "去常量降幅的假设": "假设 R 臂在常量兜底轮『若真答』则成本≈A 臂同轮 —— 这是代理假设, 非实测, 必须随读数并列声明"
+  },
+  "expected": {
+    "观测面(描述性)": "调用数 A=21 / R=14, total 与 R482 报告同值 (独立复算)",
+    "判定面(先验)": "去常量降幅 < 32.21% 且 很可能 < 30% ⇒ R413 验收②在『禁常量兜底』口径下不成立",
+    "常量溯源(先验)": "常量兜底轮 ≥4 (t2-t5), 且答复来源为产品常量而非本地 r1 生成"
+  },
+  "negative_controls": [
+    "NC1 交换两臂入参 ⇒ 降幅符号翻转 (方向性自检)",
+    "NC2 常量派生失败 (--force-miss) ⇒ rc=3 弃权, 不入红绿",
+    "NC3 两次独立运行 ⇒ 核心字段逐字节相同"
+  ],
+  "not_claimed": "不重跑真链; 不改 R482 判据 H1-H6; 不宣称 R483 结论; 代理假设下界只作区间估计"
+}

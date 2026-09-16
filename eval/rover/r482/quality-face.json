@@ -1,0 +1,221 @@
+{
+ "R_counterfactual_no_const": 64076.0,
+ "base_delta_pct": 32.2122,
+ "calls": {
+  "Arole": 21,
+  "R": 14
+ },
+ "cf_delta_pct": 11.7824,
+ "const": {
+  "field": "LocalSkipFallback",
+  "sha16": "cd2ddfbd3721a1b1",
+  "source": "src/agent.modelqueue/ModelQueueRouter.cs",
+  "value": "收到，继续按当前方向推进，本轮不重新规划。"
+ },
+ "const_cost_proxy_A": {
+  "2": 3537,
+  "3": 3650,
+  "4": 3738,
+  "5": 3914
+ },
+ "const_fallback_turns_R": [
+  2,
+  3,
+  4,
+  5
+ ],
+ "inputs": {
+  "eval/rover/r482/prereg_quality_face.json": "b48f5588a338e48a",
+  "eval/rover/r482/turns-Arole.jsonl": "362066b3dfe0149c",
+  "eval/rover/r482/turns-R.jsonl": "34f2c1ca01273001",
+  "eval/rover/r482/usage-Arole.jsonl": "175a45b659ed2341",
+  "eval/rover/r482/usage-R.jsonl": "986d1587e3c76582",
+  "src/agent.modelqueue/ModelQueueRouter.cs": "cd2ddfbd3721a1b1"
+ },
+ "per_turn": {
+  "Arole": [
+   {
+    "calls": 2,
+    "reply_bytes": 673,
+    "tok": 6459,
+    "turn": 1
+   },
+   {
+    "calls": 1,
+    "reply_bytes": 239,
+    "tok": 3537,
+    "turn": 2
+   },
+   {
+    "calls": 1,
+    "reply_bytes": 142,
+    "tok": 3650,
+    "turn": 3
+   },
+   {
+    "calls": 1,
+    "reply_bytes": 36,
+    "tok": 3738,
+    "turn": 4
+   },
+   {
+    "calls": 1,
+    "reply_bytes": 33,
+    "tok": 3914,
+    "turn": 5
+   },
+   {
+    "calls": 1,
+    "reply_bytes": 211,
+    "tok": 4223,
+    "turn": 6
+   },
+   {
+    "calls": 2,
+    "reply_bytes": 1230,
+    "tok": 9597,
+    "turn": 7
+   },
+   {
+    "calls": 2,
+    "reply_bytes": 887,
+    "tok": 6139,
+    "turn": 8
+   },
+   {
+    "calls": 4,
+    "reply_bytes": 716,
+    "tok": 8739,
+    "turn": 9
+   },
+   {
+    "calls": 2,
+    "reply_bytes": 260,
+    "tok": 6869,
+    "turn": 10
+   },
+   {
+    "calls": 2,
+    "reply_bytes": 346,
+    "tok": 7407,
+    "turn": 11
+   },
+   {
+    "calls": 2,
+    "reply_bytes": 525,
+    "tok": 8362,
+    "turn": 12
+   }
+  ],
+  "R": [
+   {
+    "calls": 3,
+    "reply_bytes": 698,
+    "tok": 10574,
+    "turn": 1
+   },
+   {
+    "calls": 0,
+    "reply_bytes": 63,
+    "tok": 0,
+    "turn": 2
+   },
+   {
+    "calls": 0,
+    "reply_bytes": 63,
+    "tok": 0,
+    "turn": 3
+   },
+   {
+    "calls": 0,
+    "reply_bytes": 63,
+    "tok": 0,
+    "turn": 4
+   },
+   {
+    "calls": 0,
+    "reply_bytes": 63,
+    "tok": 0,
+    "turn": 5
+   },
+   {
+    "calls": 0,
+    "reply_bytes": 698,
+    "tok": 0,
+    "turn": 6
+   },
+   {
+    "calls": 3,
+    "reply_bytes": 1901,
+    "tok": 12564,
+    "turn": 7
+   },
+   {
+    "calls": 1,
+    "reply_bytes": 1294,
+    "tok": 4595,
+    "turn": 8
+   },
+   {
+    "calls": 1,
+    "reply_bytes": 1294,
+    "tok": 882,
+    "turn": 9
+   },
+   {
+    "calls": 2,
+    "reply_bytes": 352,
+    "tok": 6276,
+    "turn": 10
+   },
+   {
+    "calls": 2,
+    "reply_bytes": 339,
+    "tok": 6418,
+    "turn": 11
+   },
+   {
+    "calls": 2,
+    "reply_bytes": 764,
+    "tok": 7928,
+    "turn": 12
+   }
+  ]
+ },
+ "reply_repetition_Arole": {
+  "distinct": 12,
+  "total_turns": 12
+ },
+ "reply_repetition_R": {
+  "distinct": 7,
+  "identical_groups": {
+   "前提提示：本工作": [
+    1,
+    6
+   ],
+   "换个说法，就是把": [
+    8,
+    9
+   ],
+   "收到，继续按当前": [
+    2,
+    3,
+    4,
+    5
+   ]
+  },
+  "total_turns": 12
+ },
+ "round": "R482-Q",
+ "total_tokens": {
+  "Arole": 72634,
+  "R": 49237
+ },
+ "verdict": {
+  "assumption": "R 臂常量轮若真答 ⇒ 成本≈A 臂同轮 (代理假设, 非实测)",
+  "base_kpi_reproduced": "32.21% (报告 32.21%)",
+  "cf_below_30": true,
+  "cf_kpi_no_const": "11.78%",
+  "const_turns": 4
+ }
+}

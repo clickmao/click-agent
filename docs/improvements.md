@@ -2248,3 +2248,18 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 **起手闸归因修正**：R 臂首跑 `MemAvailable=2590 < 2650` 被闸（同 R477 的 llama-server 未释放）；加沉降等待仍红且 `pgrep llama-server=0` ⇒ 真因 = 本方 `dotnet test` 遗留 `VBCSCompiler`（RSS 206MB）；`$HOME/.dotnet/dotnet build-server shutdown` ⇒ `2730MB` 通过、R 臂 EXIT=0。**占用源不止 llama-server，含本方编译服务器**。
 
 **器具**：`eval/rover/r482/{prereg_r482.json,run_both_r482.sh,run_arm_R_only_r482.sh,check_r482.py,verdict-r482.json}`（判据器常量全源码派生、取不到抛 MISS）；本轮 3 条实现偏离/归因修正已留痕 `verdict-r482.json.drift_notes`。登记行刷新（registry +`r482.*` 行）**未做**，列下轮候选。
+
+## R482-Q（2026-09-16）本侧独立复核 R482 + 常量兜底归属与质量面量化
+
+**立场**：只读既有真机产物（`eval/rover/r482/{usage,turns}-{Arole,R}.jsonl`），**不重跑真链、不改 R482 判据 H1–H6**。预注册 `eval/rover/r482/prereg_quality_face.json`（先于首跑）；器具 `eval/rover/r482/quality_face_probe.py`（常量由 `src/agent.modelqueue/ModelQueueRouter.cs` 正则派生，取不到 ⇒ `rc=3` 弃权）。
+
+- **主 KPI 独立复算**：调用 **21 / 14**、total **72,634 / 49,237**、降幅 **32.2122%** —— 与 R482 报告**逐值相同**（逐轮归属 35/35 全落区、零丢失）。
+- **降幅构成（本侧新增面）**：`23,397` tok 节省中 **14,839 tok = 63.4%** 来自 `t2–t5` 四个**常量兜底轮**（`LocalSkipFallback`，0 次远端调用）；t6 回放（−1 调用）、t9 回放（−3 调用）；t1/t7 R 反而多花 2 次调用。
+- **语义核验**：4/4 常量轮的用户文本均为**纯确认轮**（谢谢，收到。/ 好的，明白。/ 嗯嗯，知道了。/ 明白，多谢。）⇒ 兜底**零信息损失**；t7–t12 六个实质轮 R **全部走远端**（11 次调用）⇒ 实质问句零被吞。
+- **去常量兜底口径**（代理假设，非实测）：`R' = 64,076` ⇒ 降幅 **11.78% < 30%** ⇒ **R413 验收②在该口径下不成立**。
+- **答复级质量面**：R = **12 轮 7 个 distinct 答复**（重复组 `{t1,t6}`/`{t2..t5}`/`{t8,t9}`），Arole = **12/12 distinct**；重复全部来自**回放 + 常量**两类非 LLM 路径。
+- **溯源（决定性）**：`ModelQueueRouter.cs:413-425` 注释载明 2026-09-14 臂B 真机实验 —— 让 r1 生成「确认语」**会退化**（复读前文并反问）⇒ 常量兜底是**产品决策**，配套 R475 回放守卫。
+- **口径修正**：候选「模板兜底换本地 r1 生成」**不应重做**（已有真机反证）；正确下一步 = **KPI 口径二分**（总体 / 实质轮）+ 可跳面合法性机检（器具已给出）。
+- **器具自证**：`--force-miss` ⇒ rc=3 弃权、`--swap` ⇒ 降幅符号翻转（−47.52%）、两次独立运行输出 **sha16 `6b8e7c33edb92ed6` 逐字节相同**。
+- **诚实边界**：去常量降幅为代理假设下界；离线再分析，不测产品延迟/实现；未入 registry；未 push（`PUSH_PAUSED`）。
+
