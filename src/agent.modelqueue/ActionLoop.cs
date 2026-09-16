@@ -177,6 +177,8 @@ public static class ActionLoopRunner
             // 「剪裁了 N 条本地模板答复」打点成 0 (R490 T 臂首跑实测踩中: 请求体内模板串确已
             // 消失, 但 tool_decl_gate.replay_trimmed 恒 0) ⇒ 打点与实发面脱钩。
             ReplayTrimmedLocalTemplates = src.ReplayTrimmedLocalTemplates,
+            // R491: 配对剪裁计数同因 (打点必须与实发面同寿命)
+            ReplayTrimmedLocalUserTurns = src.ReplayTrimmedLocalUserTurns,
         };
         copy.History.AddRange(src.History);
         copy.ImageUrls.AddRange(src.ImageUrls);

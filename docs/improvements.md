@@ -2369,3 +2369,27 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - 诚实边界：① T2 复现臂**未跑** —— 起手闸红（MemAvailable 2,615 MB < 2,650 MB）⇒ 按纪律让行，不作读数；② T 臂 **I5（剪裁打点非零）红** —— `ActionLoopRunner.Clone` 未透传计数器（打点与实发面脱钩；请求体内模板串确已消失，靠请求体取证），已修 + 单测锁 `ActionLoopClone_PropagatesGateFacts`，修复后重发布 sha `8b4efbb7…` 的**真机复测待下轮**；③ 门**默认关** ⇒ 生产行为未变，本轮只作消融；④ T 臂无工具 ⇒ 首轮答复形态改为「问确认 + 给默认方案」，与 B/R 的「扫工作区再答」不同面（质量口径需人判的一面）；⑤ n=12 单夹具 / 单跑 / 无置信区间。
 - 下轮候选：① 门默认打开前的**质量真机复测**（新 sha）+ 未知意图兜底评估 ② T2 复现臂（等内存回落；另查 4 个 R476/R479 遗留 role host 常驻对起手闸的影响）③ 上下文剪裁 / 前缀复用（继续压固定面）④ R479 遗留（路由器接线 / 入链 prompt 正文槽位化）⑤ 门开形态重复 3 跑求下界 ⑥ 起手闸内存阈值与陈旧残留进程的关系专项。
 
+## R491（2026-09-16）声明门真机闭环：**最差臂 token −67.54%**（三跑下界）；配对剪裁 + 起手闸陈旧节点 fail-closed 收口（全候选并轮）
+
+- 因果链：R490 留了四个未闭合面 —— (a) I5 剪裁打点红（`Clone` 未透传计数器）未在真机复测 (b) 起手闸内存红真因不明 (c) R479「入链 prompt 正文槽位化」是否真接线无人取证 (d) 本地模板答复只剪了 assistant 侧、**user 侧仍逐字回放**。R491 并轮全部闭环，并把主 KPI 改成「同 AOT sha + 同夹具 + 同窗 + **三跑取最差臂**」。
+- 真机读数（同 sha `8b4efbb7…`、夹具 p12、单变量）：
+
+| 臂 | 门 | 调用 | total tok | 空正文 | ¥ | vs B |
+|---|---|---|---|---|---|---|
+| B（Aroleb） | 关 | 17 | 81,871 | 3 | 0.026871 | — |
+| T1 | 开 | 6 | 22,584 | 0 | 0.007864 | **−72.42%** |
+| T2 | 开 | 6 | 24,262 | 0 | 0.008754 | −70.37% |
+| T3 | 开 | 6 | 26,576 | 0 | 0.010792 | −67.54% |
+
+  - **下界 −67.54%**（三跑最差）⇒ 验收线 ≥30% 不依赖最好臂；调用 17→6（−64.71%）；空正文 3→0；不变式 **20/20 PASS**。
+  - R490 的 **I5 红转绿**：`replay_trimmed_calls=5 / sum=20`（Clone 修复在真机生效）。
+- 配对剪裁（候选③）：R491 实测基线 = T 臂回放里 assistant 模板串已 0 但 **user→user 相邻对 20 / 同类 user 文本出现 20 次（125 字符）** ⇒ 新增闸 `AGENTFRAMEWORK_REPLAY_PAIR_TRIM`（**默认关**）+ `ToQueuePrompt(prompt, pairTrim)` 配对剔除 + 计数/打点/Clone 透传；单测两态判据表（门关逐字节不变 / 门开成对剔除 / 无紧邻 user 不剪 / 实质与复述轮不剪）。
+- 起手闸收口（候选⑥）：真因 = `dotnet build-server shutdown` 报成功 (`shutdown_done=True`) 后 178 MB `MSBuild.dll /nodeReuse:true`（年龄 2,202 s）仍存活 ⇒ 闸只能红且原因并列「内存不足 + build-server 残留」。新增 fail-closed 收口（O1 是 build 节点 / O2 年龄 ≥60 s / O3 静默采样零 CPU 增量 / O4 无监听套接字 / O5 PPid 链无本轮驱动器；任一不满足**拒收不杀**）。三态消融：`--keep-stale-nodes` **红** → 诱饵 46 s **拒收且存活**（同时收口 224 s 真残留 184 MB）→ 诱饵 122 s **收口放行**；收口后 MemAvailable 2,610 → 2,682 MB。
+- R479 取证（候选④）：`ResponsesWire`/`LocalDecisionMap`/`ActionToolSpec` 生产引用数各 = **1 且全部指向自身定义文件** ⇒ 链上 **0 引用**（R479 从未接线）；接线属改远端正文字节面 ⇒ 独立窗口，本轮只取证。
+- 跨语言口径漂移修复：`VerificationFormTests.ProjDigest` 读的规则键 `non_semantic_families` 在数据文件 `projection_rules.json` 里 **0 命中**（Python 侧读 `rules`）⇒ `ProjDigest` 恒 null ⇒ 正控 `x.proj_frozen_ok` 与所有 `pin_kind=semantic-projection` 冻结行恒红。修法 = 与 Python 同键 + fail-closed 形态校验。
+- 器具修缮（全部留在 rack）：5 位端口字面量不受命名空间改写管辖（显式端口映射 + 断言）；**辅助器具必须同批携带**（R491 首跑因 `teardown_assert.py` 未随派生搬运而中断，新增 `carry_aux` + `check_refs`）；判据器「任意未跑臂 blocking=False」= 静默豁免自欺入口（改为显式白名单，未跑即红）；`register` 序列化器自检必须在改动**之前**做。
+- 测试 / AOT：**1539/1540 通过**（+19 新例）；唯一红 = `r444.instrument-acceptance` 语义投影 pin 与现盘不符（证据是工作树未提交版本，其器具面自身 `passed 26→24`，两条 `instrument_sha12` DRIFT）⇒ 属能力自检作业重审窗口，**不做静默 repin**。AOT：**IL 警告 0**；15,367,840 B（sha12 `2f348d11c6c7`）；被测臂二进制另存冻结副本 sha12 `8b4efbb734781b80`。
+- 登记：`rows_r491.json` + `register_r491.py --bind`（4 行：真机闭环 / 配对剪裁 / 起手闸收口 / R479 死代码定性）；R490 两行缺 `evidence_generated_with`（R2f）用官方器具补绑（COVERED 122 → **124**）。
+- 诚实边界：① 候选③门开态**真机增益本轮未测到**（闸默认关，下轮跑）② 真假判别面**本轮不区分 B/T**（四臂 `false_premise` 全 True，R490 的 B=False 未复现）⇒ 只按调用数/token 声称增益，不宣称判别力增益 ③ R 臂未跑、跨轮禁相减 ④ 起手闸消融的诱饵是人工构造（只证判据链可复现，不等于覆盖所有残留形态）⑤ n=12 单夹具、无置信区间。
+- 下轮候选：① 配对剪裁门开 T×3 真机臂（验收 `leak` 20→0 且 token 不升 + `replay_user_trimmed>0`）② 真假判别对抗族加严（多轮前置真值 + 反事实改写 + 不可能前提）③ R 臂补跑给同轮分母 ④ 能力自检面重审（先重审 DRIFT 器具声明，再决定扩遮蔽族或重 pin；禁用遮蔽真红换绿）⑤ 链级 E2E（含工具/MCP + 长上下文）的总 token 前后对比。
+

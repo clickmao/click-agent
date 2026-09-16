@@ -1,0 +1,57 @@
+{
+ "blocker_cause": "build-server 残留",
+ "blocker_causes": [
+  "build-server 残留"
+ ],
+ "blockers": [
+  {
+   "cmd": "MSBuild.dll 900",
+   "pid": 1812311,
+   "rss_mb": 2,
+   "watch": "MSBuild"
+  }
+ ],
+ "build_node_reap": {
+  "candidates": 2,
+  "min_age_s": 60.0,
+  "reaped": [
+   {
+    "age_s": 224.47316646575928,
+    "cmd": "/home/agentuser/.dotnet/dotnet /home/agentuser/.dotnet/sdk/10.0.400/MSBuild.dll /noautoresponse /nologo /nodemode:1 /nod",
+    "listening": false,
+    "pid": 1808787,
+    "rss_mb": 184
+   }
+  ],
+  "refused": [
+   {
+    "age_s": 46.244572162628174,
+    "cmd": "MSBuild.dll 900",
+    "listening": false,
+    "pid": 1812311,
+    "reasons": [
+     "O2_年龄不足(46s<60s)"
+    ],
+    "rss_mb": 2
+   }
+  ],
+  "sample_s": 3.0
+ },
+ "gate_mb": 2650,
+ "legacy_self_only": false,
+ "mem_available_mb": 2724,
+ "recent_src_writes_120s": 0,
+ "round": "R491-NC-B",
+ "self_ancestors": [
+  1,
+  1140,
+  97891,
+  1812951,
+  1812953
+ ],
+ "settle_s": 40.1,
+ "shell_skip": true,
+ "shells_skipped_n": 0,
+ "shutdown_done": true,
+ "verdict": "GATE_BLOCKED"
+}

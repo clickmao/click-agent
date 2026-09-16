@@ -102,7 +102,173 @@ public class VerificationFormTests
     }
 
 
-    /// <summary>EXP1-Q27: 目录清单摘要 —— 目录聚合证据的字节闸
+    // ── EXP1-Q34: pin_kind=semantic-projection (语义投影 pin) ────────────────────────────────
+    /// <summary>语义投影摘要 —— 与 eval/capability/face_record_canon.py::proj_digest **逐位同口径**
+    ///   (两侧改动必须同步; 口径由跨语言测试向量 + 真表行双向钉住 —— 任一侧漂移即本文件判红)。
+    ///   叶流 = 每个语义叶一帧 "&lt;len(path)&gt;:&lt;path&gt;&lt;len(val)&gt;:&lt;val&gt;" (长度为 **UTF-8 字节数**),
+    ///          路径按 **UTF-8 字节序** 排序 (不得改用 culture 序 —— 那是静默分叉源);
+    ///   非语义族 (eval/capability/projection_rules.json = 单一事实源) 遮蔽:
+    ///          scalar ⇒ 整叶剔除; array_count ⇒ 整子树剔除并改一条 "&lt;rule_path&gt;" = "#n=&lt;基数&gt;";
+    ///   锚族 (运行期窗口三字段) 缺席 ⇒ 不是这一类面记录 ⇒ null (弃权, 不判绿);
+    ///   未定义值形态 (浮点/非标量) ⇒ null。规则**逐条容忍空心** (某记录里该族为空是正常的),
+    ///   但整组**锚规则必须命中** —— 这条防的是「规则全空心 ⇒ 摘要退化成整文件字节」。 </summary>
+    private static string? ProjDigest(string repoRoot, string relPath)
+    {
+        var abs = Path.Combine(repoRoot, relPath.Replace('/', Path.DirectorySeparatorChar));
+        var rulesAbs = Path.Combine(repoRoot, "eval", "capability", "projection_rules.json");
+        if (!File.Exists(abs) || !File.Exists(rulesAbs)) return null;
+        try
+        {
+            // R491 修复 (跨语言口径漂移): 规则表的**单一事实源**是数据文件 `projection_rules.json`, 其键为 `rules`
+            //   (Python 侧 face_record_canon._load_projection_rules 读的正是该键)。
+            //   此前本处读 `non_semantic_families` —— 该键在数据文件中**从不存在** (0 命中, 机检)
+            //   ⇒ GetProperty 抛 KeyNotFound ⇒ ProjDigest 恒 null ⇒ 正控 `x.proj_frozen_ok`
+            //   与**所有** pin_kind=semantic-projection 的冻结行恒红 (闸自身故障被误报成数据缺陷)。
+            //   fail-closed: 键缺失/表空/条目非法 ⇒ null (与 Python 侧 ProjectionRulesError 同义, 不静默退化)。
+            var rules = new List<(string Path, string Mode)>();
+            using (var rd = JsonDocument.Parse(File.ReadAllText(rulesAbs, System.Text.Encoding.UTF8)))
+            {
+                if (!rd.RootElement.TryGetProperty("rules", out var rulesArr) ||
+                    rulesArr.ValueKind != JsonValueKind.Array)
+                    return null;
+                foreach (var e in rulesArr.EnumerateArray())
+                {
+                    if (e.ValueKind != JsonValueKind.Object ||
+                        !e.TryGetProperty("path", out var rpEl) || rpEl.ValueKind != JsonValueKind.String ||
+                        !e.TryGetProperty("mode", out var mdEl) || mdEl.ValueKind != JsonValueKind.String)
+                        return null;
+                    var md = mdEl.GetString()!;
+                    if (md != "scalar" && md != "array_count") return null;
+                    rules.Add((rpEl.GetString()!, md));
+                }
+                if (rules.Count == 0) return null;
+            }
+
+            using var doc = JsonDocument.Parse(File.ReadAllText(abs, System.Text.Encoding.UTF8));
+            var leaves = new List<(string Path, string Val)>();
+            WalkLeaves(doc.RootElement, "", leaves);
+            var kept = new List<(string Path, string Val)>(leaves);
+            var entries = new List<(string Path, string Val)>();
+            var applied = new Dictionary<string, int>(StringComparer.Ordinal);
+            foreach (var (rp, mode) in rules)
+            {
+                var hit = new HashSet<string>(kept.Where(l => RuleMatches(rp, l.Path)).Select(l => l.Path),
+                                             StringComparer.Ordinal);
+                applied[rp] = hit.Count;
+                if (mode == "array_count")
+                {
+                    if (!TryValueAt(doc.RootElement, rp, out var container)) return null;
+                    var n = container.ValueKind == JsonValueKind.Array ? container.GetArrayLength() : 1;
+                    entries.Add((rp, "#n=" + n));
+                    kept.RemoveAll(l => l.Path == rp || l.Path.StartsWith(rp + "/", StringComparison.Ordinal));
+                }
+                else kept.RemoveAll(l => hit.Contains(l.Path));
+            }
+            foreach (var anchor in new[] { "side_effect_attribution/window/t0",
+                                           "side_effect_attribution/window/t1",
+                                           "side_effect_attribution/window/trace_dir" })
+                if (!applied.TryGetValue(anchor, out var c) || c == 0) return null;
+            entries.AddRange(kept);
+            entries.Sort((a, b) => CompareUtf8(a.Path, b.Path));
+            var buf = new List<byte>();
+            foreach (var (p, v) in entries)
+            {
+                var pb = System.Text.Encoding.UTF8.GetBytes(p);
+                var vb = System.Text.Encoding.UTF8.GetBytes(v);
+                buf.AddRange(System.Text.Encoding.ASCII.GetBytes(pb.Length.ToString(System.Globalization.CultureInfo.InvariantCulture) + ":"));
+                buf.AddRange(pb);
+                buf.AddRange(System.Text.Encoding.ASCII.GetBytes(vb.Length.ToString(System.Globalization.CultureInfo.InvariantCulture) + ":"));
+                buf.AddRange(vb);
+            }
+            return Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(buf.ToArray()))[..12].ToLowerInvariant();
+        }
+        catch { return null; }
+    }
+
+    /// <summary>叶收集 + 值渲染 (Python 侧同步骤同序): 对象键 / 数组序号 / 字符串原样 /
+    ///   整数十进制 / true|false / null; 其余 (浮点等) 抛 ⇒ 上层 null (fail-closed)。</summary>
+    private static void WalkLeaves(JsonElement e, string prefix, List<(string Path, string Val)> outp)
+    {
+        switch (e.ValueKind)
+        {
+            case JsonValueKind.Object:
+                foreach (var p in e.EnumerateObject()) WalkLeaves(p.Value, prefix + "/" + p.Name, outp);
+                return;
+            case JsonValueKind.Array:
+                var i = 0;
+                foreach (var x in e.EnumerateArray())
+                {
+                    WalkLeaves(x, prefix + "/" + i.ToString(System.Globalization.CultureInfo.InvariantCulture), outp);
+                    i++;
+                }
+                return;
+            case JsonValueKind.String:
+                outp.Add((prefix.TrimStart('/'), e.GetString()!)); return;
+            case JsonValueKind.Number:
+                if (!e.TryGetInt64(out var l)) throw new FormatException("number-not-integer");
+                outp.Add((prefix.TrimStart('/'), l.ToString(System.Globalization.CultureInfo.InvariantCulture)));
+                return;
+            case JsonValueKind.True: outp.Add((prefix.TrimStart('/'), "true")); return;
+            case JsonValueKind.False: outp.Add((prefix.TrimStart('/'), "false")); return;
+            case JsonValueKind.Null: outp.Add((prefix.TrimStart('/'), "null")); return;
+            default: throw new FormatException("undefined-value-kind");
+        }
+    }
+
+    /// <summary>规则路径 vs 叶路径 (与 Python 侧同步骤同形): `X[*]` 消费「X 段 + 恰好一个 ASCII 数字段」;
+    ///   独立段 `[*]` 消费任意一段。**不得**简化为「按 / 切分后逐段等长比较」——
+    ///   那样 `[*]` 被当字面段 ⇒ 规则永不命中 (Q34 首跑即被空心规则闸拦下的正是这形态)。</summary>
+    private static bool RuleMatches(string rulePath, string leafPath)
+    {
+        var rp = rulePath.Split('/');
+        var lp = leafPath.Split('/');
+        int i = 0, j = 0;
+        while (i < rp.Length && j < lp.Length)
+        {
+            var seg = rp[i];
+            if (seg == "[*]") { i++; j++; continue; }
+            if (seg.EndsWith("[*]", StringComparison.Ordinal))
+            {
+                if (seg[..^3] != lp[j]) return false;
+                j++;
+                if (j >= lp.Length || lp[j].Length == 0 || !lp[j].All(c => c >= '0' && c <= '9')) return false;
+                i++; j++; continue;
+            }
+            if (seg != lp[j]) return false;
+            i++; j++;
+        }
+        return i == rp.Length && j == lp.Length;
+    }
+
+    /// <summary>按路径取子节点 (array_count 规则需要容器基数); 对象键优先, 其次数字序号 —— 与 Python 侧同序。</summary>
+    private static bool TryValueAt(JsonElement root, string path, out JsonElement val)
+    {
+        val = root;
+        foreach (var seg in path.Split('/'))
+        {
+            if (val.ValueKind == JsonValueKind.Object && val.TryGetProperty(seg, out var nxt)) { val = nxt; continue; }
+            if (val.ValueKind == JsonValueKind.Array && seg.Length > 0 && seg.All(c => c >= '0' && c <= '9')
+                && int.TryParse(seg, out var idx) && idx >= 0 && idx < val.GetArrayLength())
+            {
+                val = val[idx];
+                continue;
+            }
+            return false;
+        }
+        return true;
+    }
+
+    /// <summary>UTF-8 字节序比较 (跨语言排序口径的唯一正确形态)。</summary>
+    private static int CompareUtf8(string a, string b)
+    {
+        var ba = System.Text.Encoding.UTF8.GetBytes(a);
+        var bb = System.Text.Encoding.UTF8.GetBytes(b);
+        var n = Math.Min(ba.Length, bb.Length);
+        for (var i = 0; i < n; i++) if (ba[i] != bb[i]) return ba[i] < bb[i] ? -1 : 1;
+        return ba.Length.CompareTo(bb.Length);
+    }
+
+    /// <summary>EXP1-Q27: 目录清单摘要 —— 目录聚合证据的字节闸</summary>
     /// (与 eval/capability/bind_evidence.py::dir_manifest **逐位同口径**, 两侧改动必须同步)。
     /// 文件集 = `git ls-files -- &lt;relDir&gt;` (索引来源: .gitignore 产物与未跟踪 scratch 天然不入闸)
     ///          ∩ 现盘存在, 按 relpath 序号排序;
@@ -299,31 +465,56 @@ public class VerificationFormTests
                     v.Add($"{id}: audited_by_round 非法 '{G("audited_by_round")}' (R2e)");
 
                 var evAbs = Path.Combine(repoRoot, evPath.Replace('/', Path.DirectorySeparatorChar));
+                // EXP1-Q34: pin_kind (可选键) —— 缺省 = 现盘字节闸 (历史行为); "semantic-projection" = 语义投影摘要闸。
+                //   动机: 面记录含**按设计会变**的运行期/邻居面族时, 字节 pin 只能靠反复 repin 维持 (恒红压力),
+                //   于是「冻结 pin」在长跑里退化成噪声源。投影 pin 把闸对准语义面 (遮蔽族由 rules 文件声明)。
+                var pk = G("pin_kind");
+                if (pk.Length > 0 && pk != "semantic-projection")
+                    v.Add($"{id}: pin_kind 非法 '{pk}' (R2e —— 未知 pin 语义不得静默按字节闸放行)");
                 if (status == "frozen")
                 {
-                    if (kind != "artifact" && kind != "directory")
-                        v.Add($"{id}: frozen 只允许 artifact/directory (实={kind}) (R2e)");
-                    if (kind == "directory")
+                    if (pk == "semantic-projection")
                     {
-                        // EXP1-Q27: 目录聚合行的清单式闸 (文件集来自索引, 字节来自工作区)
-                        var man = DirManifestSha12(repoRoot, evPath);
-                        if (man == null)
-                            v.Add($"{id}: frozen 但目录清单不可算 (无已跟踪文件或不可读) '{evPath}' (R2e)");
-                        else if (!Hex12.IsMatch(declared) || declared != man)
-                            v.Add($"{id}: 目录清单 pin 与现盘不符 (声明 {declared} / 实际 {man}) (R2e —— 目录内已跟踪文件被改写/增删, 证据已易主或未重审)");
-                        if (DirRewritten(repoRoot, evPath))
-                            v.Add($"{id}: 冻结但目录沿革含改写/删除 '{evPath}' (R2e —— 按设计会变的目录该留 live/evidence-overtaken, 上闸只会产恒红假警)");
+                        if (kind != "artifact")
+                            v.Add($"{id}: pin_kind=semantic-projection 只允许 evidence_kind=artifact (实={kind}) (R2e)");
+                        else
+                        {
+                            var pd = ProjDigest(repoRoot, evPath);
+                            if (pd == null)
+                                v.Add($"{id}: 语义投影 pin 不可复算 (规则文件/证据不可读, 或锚族缺席/值形态未定义) '{evPath}' (R2e)");
+                            else if (!Hex12.IsMatch(declared) || declared != pd)
+                                v.Add($"{id}: 语义投影 pin 与现盘不符 (声明 {declared} / 实际 {pd}) (R2e —— 语义字段被改或未重审; 遮蔽族见 eval/capability/projection_rules.json)");
+                        }
                     }
                     else
                     {
-                        var cur = Sha12(evAbs);
-                        if (cur == null) v.Add($"{id}: frozen 但证据文件不可读 '{evPath}' (R2e)");
-                        else if (!Hex12.IsMatch(declared) || declared != cur)
-                            v.Add($"{id}: 冻结 pin 与现盘字节不符 (声明 {declared} / 实际 {cur}) (R2e 证据已被改写或未重审)");
+                        if (kind != "artifact" && kind != "directory")
+                            v.Add($"{id}: frozen 只允许 artifact/directory (实={kind}) (R2e)");
+                        if (kind == "directory")
+                        {
+                            // EXP1-Q27: 目录聚合行的清单式闸 (文件集来自索引, 字节来自工作区)
+                            var man = DirManifestSha12(repoRoot, evPath);
+                            if (man == null)
+                                v.Add($"{id}: frozen 但目录清单不可算 (无已跟踪文件或不可读) '{evPath}' (R2e)");
+                            else if (!Hex12.IsMatch(declared) || declared != man)
+                                v.Add($"{id}: 目录清单 pin 与现盘不符 (声明 {declared} / 实际 {man}) (R2e —— 目录内已跟踪文件被改写/增删, 证据已易主或未重审)");
+                            if (DirRewritten(repoRoot, evPath))
+                                v.Add($"{id}: 冻结但目录沿革含改写/删除 '{evPath}' (R2e —— 按设计会变的目录该留 live/evidence-overtaken, 上闸只会产恒红假警)");
+                        }
+                        else
+                        {
+                            var cur = Sha12(evAbs);
+                            if (cur == null) v.Add($"{id}: frozen 但证据文件不可读 '{evPath}' (R2e)");
+                            else if (!Hex12.IsMatch(declared) || declared != cur)
+                                v.Add($"{id}: 冻结 pin 与现盘字节不符 (声明 {declared} / 实际 {cur}) (R2e 证据已被改写或未重审)");
+                        }
                     }
                 }
-                else if (declared.Length > 0)
-                    v.Add($"{id}: live 行不得带 artifact_sha12 (R2e)");
+                else
+                {
+                    if (declared.Length > 0) v.Add($"{id}: live 行不得带 artifact_sha12 (R2e)");
+                    if (pk.Length > 0) v.Add($"{id}: live 行不得带 pin_kind (R2e —— 投影 pin 只对冻结行有意义)");
+                }
 
                 var inst = G("instrument");
                 var isha = G("instrument_sha12");
@@ -495,6 +686,30 @@ public class VerificationFormTests
             "evidence_generated_with": { "evidence_kind": "directory", "pin_status": "live", "pin_reason": "evidence-overtaken",
               "artifact_sha12": null, "instrument": null, "instrument_sha12": null,
               "binding": "audit-pin", "audited_by_round": "EXP1-Q27" } },
+          { "id": "x.proj_frozen_ok", "capability": "c", "level": "L3",
+            "evidence_cmd": "python3 eval/capability/bind_evidence.py --check",
+            "evidence_path": "eval/capability/instruments-check.json", "negative_control": "n", "owner_round": "R1",
+            "evidence_generated_with": { "evidence_kind": "artifact", "pin_status": "frozen", "pin_reason": "archived-per-round",
+              "pin_kind": "semantic-projection", "artifact_sha12": "SHA_PROJ", "instrument": null, "instrument_sha12": null,
+              "binding": "audit-pin", "audited_by_round": "EXP1-Q34" } },
+          { "id": "y.proj_sha_mismatch", "capability": "c", "level": "L3",
+            "evidence_cmd": "python3 eval/capability/bind_evidence.py --check",
+            "evidence_path": "eval/capability/instruments-check.json", "negative_control": "n", "owner_round": "R1",
+            "evidence_generated_with": { "evidence_kind": "artifact", "pin_status": "frozen", "pin_reason": "archived-per-round",
+              "pin_kind": "semantic-projection", "artifact_sha12": "000000000000", "instrument": null, "instrument_sha12": null,
+              "binding": "audit-pin", "audited_by_round": "EXP1-Q34" } },
+          { "id": "z.bad_pin_kind", "capability": "c", "level": "L3",
+            "evidence_cmd": "python3 eval/capability/bind_evidence.py --check",
+            "evidence_path": "eval/capability/instruments-check.json", "negative_control": "n", "owner_round": "R1",
+            "evidence_generated_with": { "evidence_kind": "artifact", "pin_status": "frozen", "pin_reason": "archived-per-round",
+              "pin_kind": "file-bytes", "artifact_sha12": "SHA_CHECK", "instrument": null, "instrument_sha12": null,
+              "binding": "audit-pin", "audited_by_round": "EXP1-Q34" } },
+          { "id": "aa.proj_live_with_kind", "capability": "c", "level": "L3",
+            "evidence_cmd": "python3 eval/capability/bind_evidence.py --check",
+            "evidence_path": "eval/capability/instruments-check.json", "negative_control": "n", "owner_round": "R1",
+            "evidence_generated_with": { "evidence_kind": "artifact", "pin_status": "live", "pin_reason": "append-only-ledger",
+              "pin_kind": "semantic-projection", "artifact_sha12": null, "instrument": null, "instrument_sha12": null,
+              "binding": "audit-pin", "audited_by_round": "EXP1-Q34" } },
           { "id": "p.ok_frozen_pin", "capability": "c", "level": "L3",
             "evidence_cmd": "python3 eval/capability/bind_evidence.py --check",
             "evidence_path": "eval/capability/instruments.json", "negative_control": "n", "owner_round": "R1",
@@ -504,6 +719,8 @@ public class VerificationFormTests
         ] }
         """).Replace("SHA_BIND", shaBind).Replace("SHA_INSTR", shaInstr)
              .Replace("SHA_DIR", DirManifestSha12(RepoRoot, "eval/rover/r415/")!)
+             .Replace("SHA_CHECK", Sha12(Path.Combine(RepoRoot, "eval", "capability", "instruments-check.json"))!)
+             .Replace("SHA_PROJ", ProjDigest(RepoRoot, "eval/capability/instruments-check.json")!)
              .Replace("SHA_PROBE", DirManifestSha12(RepoRoot, "eval/probe/")!);
         var v = Validate(JsonDocument.Parse(bad).RootElement, RepoRoot);
         Assert.Contains(v, s => s.Contains("a.no_negctl") && s.Contains("negative_control"));
@@ -532,7 +749,12 @@ public class VerificationFormTests
         Assert.Contains(v, s => s.Contains("u.bad_round") && s.Contains("audited_by_round"));
         Assert.Contains(v, s => s.Contains("v.dir_frozen_churny") && s.Contains("沿革含改写"));
         Assert.DoesNotContain(v, s => s.Contains("w.ok_live_overtaken"));   // 正控: 沿革会变的目录留 live 不判红
-        Assert.True(v.Count >= 21, "注入缺陷未被完整捕获 (实测基线 21 条: 每条注入缺陷 ≥1, q 行同时命中 2 条): " + string.Join(" | ", v));
+        // EXP1-Q34: pin_kind=semantic-projection —— 一条正控 + 三条注入缺陷 (非法值/摘要不符/活行带 pin_kind)
+        Assert.DoesNotContain(v, s => s.Contains("x.proj_frozen_ok"));       // 正控: 投影 pin 相符不得判红
+        Assert.Contains(v, s => s.Contains("y.proj_sha_mismatch") && s.Contains("语义投影 pin"));
+        Assert.Contains(v, s => s.Contains("z.bad_pin_kind") && s.Contains("pin_kind 非法"));
+        Assert.Contains(v, s => s.Contains("aa.proj_live_with_kind") && s.Contains("live 行不得带 pin_kind"));
+        Assert.True(v.Count >= 24, "注入缺陷未被完整捕获 (实测基线 24 条: 每条注入缺陷 ≥1, q 行同时命中 2 条): " + string.Join(" | ", v));
     }
 
     /// <summary>R473: 产品面证据的绑定覆盖率与分布 (实测读数; 覆盖由 Validate 判红, 本测试把"字段没退化成注释"钉住)。

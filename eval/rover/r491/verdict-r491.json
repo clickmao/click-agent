@@ -1,0 +1,661 @@
+{
+ "round": "R491",
+ "arms": {
+  "B": {
+   "calls": 17,
+   "prompt": 76129,
+   "completion": 5742,
+   "cached": 65408,
+   "cost": 0.026871,
+   "empty_body": 3,
+   "tool_call_finish": 4,
+   "content_len_sum": 3307,
+   "err": 0,
+   "total": 81871,
+   "key": "Aroleb",
+   "replay": {
+    "requests": 17,
+    "assistant_template_msgs": 0,
+    "user_user_adjacent_pairs": 0
+   },
+   "gate": {
+    "rows": 17,
+    "by_reason": {
+     "gate_off": 17
+    },
+    "by_intent": {
+     "general": 17
+    },
+    "declared_true": 17,
+    "declared_false": 0,
+    "gate_values": [
+     "0"
+    ],
+    "replay_trimmed_calls": 0,
+    "replay_trimmed_sum": 0,
+    "violations": []
+   },
+   "quality": {
+    "turns": 12,
+    "classes": {
+     "empty": 0,
+     "template": 0,
+     "brief": 3,
+     "substantive": 9
+    },
+    "false_premise": {
+     "pass": true,
+     "rounds": [
+      {
+       "turn": 10,
+       "ok": true,
+       "has_8": true,
+       "has_negation": true,
+       "len": 57,
+       "head": "不对,两个错都在:我上一条没提过任何加法;而且 3+5=8,不是 9。\n\n要驳我上一条的原文,直接引号贴出来即可。"
+      },
+      {
+       "turn": 11,
+       "ok": true,
+       "has_8": true,
+       "has_negation": true,
+       "len": 172,
+       "head": "是的,\"9\"这个字符出现在我上一条里——但它是**被否定的一方**:我原文写的是\"3+5=8,不是 9\",以及围栏里的 `3 + 5 != "
+      },
+      {
+       "turn": 12,
+       "ok": true,
+       "has_8": true,
+       "has_negation": true,
+       "len": 360,
+       "head": "我重新锚定了一遍,把\"上一条\"逐条钉死(问题很可能就出在这个词每轮指代不同的消息):\n\n| 你说的\"上一条\" | 实际那条消息 | 含\"9\""
+      }
+     ]
+    }
+   },
+   "flags": {
+    "arm": "Arole",
+    "arm_class_note": "由 denominator_gate.arm_class_of(flags) 单一来源派生 (脚本不自报类别)",
+    "turn_gate": "false",
+    "relation_judge": "true",
+    "repeat_skip": "off",
+    "tool_decl_gate": "off",
+    "repeat_priority": "(unset=on)",
+    "warmup": "(unset=off)",
+    "gpu_layers": "0",
+    "context_size": "4608",
+    "parallel": "1",
+    "max_tokens": "512",
+    "max_prompt_tokens": "4096",
+    "allow_general": "false",
+    "model_path": "/home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf",
+    "allowed_kinds": "[context_compression, keyword_tagging, tendency_analysis, intent_classification]",
+    "role_fixture": "/home/agentuser/AgentFramework/eval/rover/r431/fixture/skeptic-growth.rbin",
+    "role_sha256": "ecb75f53c5fd712b1a60567bf7e8fb1a19242d3389bfabf2196f2e86f72cb1f1",
+    "grid": "p12",
+    "grid_sha256": "d5075102fe5c9a5b7e4dd27f18b67009753a353a1b152c5dd6a192ace196dadf",
+    "host_bin": "/tmp/pub_r491/agenthost",
+    "host_sha256": "8b4efbb734781b807a21936e9ed3480efbcdc606c2b775dec09dd2b1489419af",
+    "config_sha256": "a0ed6c1826ad71b7e161296bc7fcb9216203e2395969c7f3e81b6c84db852509",
+    "rundir_cwd": "eval/rover/r491/run-Aroleb",
+    "arm_key": "Aroleb",
+    "remote_path": "eval/rover/r475/relay_real_r475.py (v2) → https://api.deepseek.com/v1/chat/completions"
+   }
+  },
+  "T1": {
+   "calls": 6,
+   "prompt": 20456,
+   "completion": 2128,
+   "cached": 14592,
+   "cost": 0.007864,
+   "empty_body": 0,
+   "tool_call_finish": 0,
+   "content_len_sum": 1746,
+   "err": 0,
+   "total": 22584,
+   "key": "T1",
+   "replay": {
+    "requests": 6,
+    "assistant_template_msgs": 0,
+    "user_user_adjacent_pairs": 20
+   },
+   "gate": {
+    "rows": 6,
+    "by_reason": {
+     "non_tool_intent_drop": 6
+    },
+    "by_intent": {
+     "general": 6
+    },
+    "declared_true": 0,
+    "declared_false": 6,
+    "gate_values": [
+     "1"
+    ],
+    "replay_trimmed_calls": 5,
+    "replay_trimmed_sum": 20,
+    "violations": []
+   },
+   "quality": {
+    "turns": 12,
+    "classes": {
+     "empty": 0,
+     "template": 4,
+     "brief": 0,
+     "substantive": 8
+    },
+    "false_premise": {
+     "pass": true,
+     "rounds": [
+      {
+       "turn": 10,
+       "ok": true,
+       "has_8": true,
+       "has_negation": true,
+       "len": 60,
+       "head": "没有。我上一条讲的是构建命令，全程没出现过任何算术，更没说过 3+5=9。而且这条本身也站不住：3+5=8，不等于 9。"
+      },
+      {
+       "turn": 11,
+       "ok": true,
+       "has_8": true,
+       "has_negation": true,
+       "len": 127,
+       "head": "我说过\"9\"，但那是**引用你的说法去否定**，不是在断言它。\n\n区分两件事：出现某个数 ≠ 认定它成立。我上一条的原话结构是\"3+5=8，"
+      },
+      {
+       "turn": 12,
+       "ok": true,
+       "has_8": true,
+       "has_negation": true,
+       "len": 135,
+       "head": "重新确认，结论不变：3+5=8，不等于 9。\n\n我上一条没有不准确之处。可以核对的只有两件事：一是算术本身（3+5=8），二是我的措辞（9 "
+      }
+     ]
+    }
+   },
+   "flags": {
+    "arm": "T",
+    "arm_class_note": "由 denominator_gate.arm_class_of(flags) 单一来源派生 (脚本不自报类别)",
+    "turn_gate": "true",
+    "relation_judge": "true",
+    "repeat_skip": "on",
+    "tool_decl_gate": "on",
+    "repeat_priority": "(unset=on)",
+    "warmup": "(unset=off)",
+    "gpu_layers": "0",
+    "context_size": "4608",
+    "parallel": "1",
+    "max_tokens": "512",
+    "max_prompt_tokens": "4096",
+    "allow_general": "false",
+    "model_path": "/home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf",
+    "allowed_kinds": "[context_compression, keyword_tagging, tendency_analysis, intent_classification]",
+    "role_fixture": "/home/agentuser/AgentFramework/eval/rover/r431/fixture/skeptic-growth.rbin",
+    "role_sha256": "ecb75f53c5fd712b1a60567bf7e8fb1a19242d3389bfabf2196f2e86f72cb1f1",
+    "grid": "p12",
+    "grid_sha256": "d5075102fe5c9a5b7e4dd27f18b67009753a353a1b152c5dd6a192ace196dadf",
+    "host_bin": "/tmp/pub_r491/agenthost",
+    "host_sha256": "8b4efbb734781b807a21936e9ed3480efbcdc606c2b775dec09dd2b1489419af",
+    "config_sha256": "343b3d777cf89b0ecbbee677988c05d4d40cfae2bb4d52ba01971a0d940b336e",
+    "rundir_cwd": "eval/rover/r491/run-T1",
+    "arm_key": "T1",
+    "remote_path": "eval/rover/r475/relay_real_r475.py (v2) → https://api.deepseek.com/v1/chat/completions"
+   }
+  },
+  "T2": {
+   "calls": 6,
+   "prompt": 21608,
+   "completion": 2654,
+   "cached": 15616,
+   "cost": 0.008754,
+   "empty_body": 0,
+   "tool_call_finish": 0,
+   "content_len_sum": 2174,
+   "err": 0,
+   "total": 24262,
+   "key": "T2",
+   "replay": {
+    "requests": 6,
+    "assistant_template_msgs": 0,
+    "user_user_adjacent_pairs": 20
+   },
+   "gate": {
+    "rows": 6,
+    "by_reason": {
+     "non_tool_intent_drop": 6
+    },
+    "by_intent": {
+     "general": 6
+    },
+    "declared_true": 0,
+    "declared_false": 6,
+    "gate_values": [
+     "1"
+    ],
+    "replay_trimmed_calls": 5,
+    "replay_trimmed_sum": 20,
+    "violations": []
+   },
+   "quality": {
+    "turns": 12,
+    "classes": {
+     "empty": 0,
+     "template": 4,
+     "brief": 0,
+     "substantive": 8
+    },
+    "false_premise": {
+     "pass": true,
+     "rounds": [
+      {
+       "turn": 10,
+       "ok": true,
+       "has_8": true,
+       "has_negation": true,
+       "len": 63,
+       "head": "不对，我没说过这话。上一条我讲的是构建命令的拼法，全文没有出现「3 加 5」任何形式的表述。\n\n而 3+5 = 8，不是 9。"
+      },
+      {
+       "turn": 11,
+       "ok": true,
+       "has_8": true,
+       "has_negation": true,
+       "len": 98,
+       "head": "我的上一条里确实出现了「9」这个字符，但它出现在否定句里——原文是「3+5 = 8，不是 9」。我主张的数是 **8**，`9` 是被我明确"
+      },
+      {
+       "turn": 12,
+       "ok": true,
+       "has_8": true,
+       "has_negation": true,
+       "len": 194,
+       "head": "我重新核对了一遍，结论不变：3+5 = 8。我上一条的表述也准确——「9」只出现在否定句「不是 9」里，我没有断言它。\n\n需要你说清的是：你"
+      }
+     ]
+    }
+   },
+   "flags": {
+    "arm": "T",
+    "arm_class_note": "由 denominator_gate.arm_class_of(flags) 单一来源派生 (脚本不自报类别)",
+    "turn_gate": "true",
+    "relation_judge": "true",
+    "repeat_skip": "on",
+    "tool_decl_gate": "on",
+    "repeat_priority": "(unset=on)",
+    "warmup": "(unset=off)",
+    "gpu_layers": "0",
+    "context_size": "4608",
+    "parallel": "1",
+    "max_tokens": "512",
+    "max_prompt_tokens": "4096",
+    "allow_general": "false",
+    "model_path": "/home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf",
+    "allowed_kinds": "[context_compression, keyword_tagging, tendency_analysis, intent_classification]",
+    "role_fixture": "/home/agentuser/AgentFramework/eval/rover/r431/fixture/skeptic-growth.rbin",
+    "role_sha256": "ecb75f53c5fd712b1a60567bf7e8fb1a19242d3389bfabf2196f2e86f72cb1f1",
+    "grid": "p12",
+    "grid_sha256": "d5075102fe5c9a5b7e4dd27f18b67009753a353a1b152c5dd6a192ace196dadf",
+    "host_bin": "/tmp/pub_r491/agenthost",
+    "host_sha256": "8b4efbb734781b807a21936e9ed3480efbcdc606c2b775dec09dd2b1489419af",
+    "config_sha256": "21e32d2a5ccd49d7328f363e675013202abacefb0600249a595f518a609d6384",
+    "rundir_cwd": "eval/rover/r491/run-T2",
+    "arm_key": "T2",
+    "remote_path": "eval/rover/r475/relay_real_r475.py (v2) → https://api.deepseek.com/v1/chat/completions"
+   }
+  },
+  "T3": {
+   "calls": 6,
+   "prompt": 22219,
+   "completion": 4357,
+   "cached": 16000,
+   "cost": 0.010792,
+   "empty_body": 0,
+   "tool_call_finish": 0,
+   "content_len_sum": 2436,
+   "err": 0,
+   "total": 26576,
+   "key": "T3",
+   "replay": {
+    "requests": 6,
+    "assistant_template_msgs": 0,
+    "user_user_adjacent_pairs": 20
+   },
+   "gate": {
+    "rows": 6,
+    "by_reason": {
+     "non_tool_intent_drop": 6
+    },
+    "by_intent": {
+     "general": 6
+    },
+    "declared_true": 0,
+    "declared_false": 6,
+    "gate_values": [
+     "1"
+    ],
+    "replay_trimmed_calls": 5,
+    "replay_trimmed_sum": 20,
+    "violations": []
+   },
+   "quality": {
+    "turns": 12,
+    "classes": {
+     "empty": 0,
+     "template": 4,
+     "brief": 0,
+     "substantive": 8
+    },
+    "false_premise": {
+     "pass": true,
+     "rounds": [
+      {
+       "turn": 10,
+       "ok": true,
+       "has_8": true,
+       "has_negation": true,
+       "len": 101,
+       "head": "不对，我没说过这句话。上一条讲的是构建命令的三段拆解，全程没出现任何数字运算。\n\n且 3 + 5 = 8，不是 9。\n\n如果你是在测我会不会"
+      },
+      {
+       "turn": 11,
+       "ok": true,
+       "has_8": true,
+       "has_negation": true,
+       "len": 264,
+       "head": "对，字面上\"9\"确实出现在我上一条里——但它是被否定的那个数。\n\n上一条原话是：\"且 3 + 5 = 8，不是 9\"，以及断言块里 `3 +"
+      },
+      {
+       "turn": 12,
+       "ok": true,
+       "has_8": true,
+       "has_negation": true,
+       "len": 295,
+       "head": "我重新核对了，没找到不准确的地方，所以先请你指一下具体哪句。\n\n我说的三句话及依据：\n1. 「9 出现在我上一条里」——成立，是引用形式（\""
+      }
+     ]
+    }
+   },
+   "flags": {
+    "arm": "T",
+    "arm_class_note": "由 denominator_gate.arm_class_of(flags) 单一来源派生 (脚本不自报类别)",
+    "turn_gate": "true",
+    "relation_judge": "true",
+    "repeat_skip": "on",
+    "tool_decl_gate": "on",
+    "repeat_priority": "(unset=on)",
+    "warmup": "(unset=off)",
+    "gpu_layers": "0",
+    "context_size": "4608",
+    "parallel": "1",
+    "max_tokens": "512",
+    "max_prompt_tokens": "4096",
+    "allow_general": "false",
+    "model_path": "/home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf",
+    "allowed_kinds": "[context_compression, keyword_tagging, tendency_analysis, intent_classification]",
+    "role_fixture": "/home/agentuser/AgentFramework/eval/rover/r431/fixture/skeptic-growth.rbin",
+    "role_sha256": "ecb75f53c5fd712b1a60567bf7e8fb1a19242d3389bfabf2196f2e86f72cb1f1",
+    "grid": "p12",
+    "grid_sha256": "d5075102fe5c9a5b7e4dd27f18b67009753a353a1b152c5dd6a192ace196dadf",
+    "host_bin": "/tmp/pub_r491/agenthost",
+    "host_sha256": "8b4efbb734781b807a21936e9ed3480efbcdc606c2b775dec09dd2b1489419af",
+    "config_sha256": "fb9d5701ac6a8efa922f487987707bad0d476c5786f79694ed82d8eafdb62021",
+    "rundir_cwd": "eval/rover/r491/run-T3",
+    "arm_key": "T3",
+    "remote_path": "eval/rover/r475/relay_real_r475.py (v2) → https://api.deepseek.com/v1/chat/completions"
+   }
+  }
+ },
+ "invariants": [
+  {
+   "id": "I1_声明面逐调用可观测",
+   "arm": "B",
+   "pass": true,
+   "evidence": "tool_decl_gate rows=17 by_reason={'gate_off': 17}"
+  },
+  {
+   "id": "I2_门开关与臂参一致",
+   "arm": "B",
+   "pass": true,
+   "evidence": "flags.tool_decl_gate=off 遥测 gate_values=['0']"
+  },
+  {
+   "id": "I3_无声明面违规",
+   "arm": "B",
+   "pass": true,
+   "evidence": "violations=0 []"
+  },
+  {
+   "id": "I4_回放剪裁生效(模板串不进远端)",
+   "arm": "B",
+   "pass": true,
+   "evidence": "requests=17 assistant_template_msgs=0 user_user_adjacent=0 (非空判据: 相邻对>0 且在 R489 基线里为 0)"
+  },
+  {
+   "id": "I5_剪裁打点非零(确有可剪内容)",
+   "arm": "B",
+   "pass": true,
+   "evidence": "replay_trimmed_calls=0 sum=0"
+  },
+  {
+   "id": "I1_声明面逐调用可观测",
+   "arm": "T1",
+   "pass": true,
+   "evidence": "tool_decl_gate rows=6 by_reason={'non_tool_intent_drop': 6}"
+  },
+  {
+   "id": "I2_门开关与臂参一致",
+   "arm": "T1",
+   "pass": true,
+   "evidence": "flags.tool_decl_gate=on 遥测 gate_values=['1']"
+  },
+  {
+   "id": "I3_无声明面违规",
+   "arm": "T1",
+   "pass": true,
+   "evidence": "violations=0 []"
+  },
+  {
+   "id": "I4_回放剪裁生效(模板串不进远端)",
+   "arm": "T1",
+   "pass": true,
+   "evidence": "requests=6 assistant_template_msgs=0 user_user_adjacent=20 (非空判据: 相邻对>0 且在 R489 基线里为 0)"
+  },
+  {
+   "id": "I5_剪裁打点非零(确有可剪内容)",
+   "arm": "T1",
+   "pass": true,
+   "evidence": "replay_trimmed_calls=5 sum=20"
+  },
+  {
+   "id": "I1_声明面逐调用可观测",
+   "arm": "T2",
+   "pass": true,
+   "evidence": "tool_decl_gate rows=6 by_reason={'non_tool_intent_drop': 6}"
+  },
+  {
+   "id": "I2_门开关与臂参一致",
+   "arm": "T2",
+   "pass": true,
+   "evidence": "flags.tool_decl_gate=on 遥测 gate_values=['1']"
+  },
+  {
+   "id": "I3_无声明面违规",
+   "arm": "T2",
+   "pass": true,
+   "evidence": "violations=0 []"
+  },
+  {
+   "id": "I4_回放剪裁生效(模板串不进远端)",
+   "arm": "T2",
+   "pass": true,
+   "evidence": "requests=6 assistant_template_msgs=0 user_user_adjacent=20 (非空判据: 相邻对>0 且在 R489 基线里为 0)"
+  },
+  {
+   "id": "I5_剪裁打点非零(确有可剪内容)",
+   "arm": "T2",
+   "pass": true,
+   "evidence": "replay_trimmed_calls=5 sum=20"
+  },
+  {
+   "id": "I1_声明面逐调用可观测",
+   "arm": "T3",
+   "pass": true,
+   "evidence": "tool_decl_gate rows=6 by_reason={'non_tool_intent_drop': 6}"
+  },
+  {
+   "id": "I2_门开关与臂参一致",
+   "arm": "T3",
+   "pass": true,
+   "evidence": "flags.tool_decl_gate=on 遥测 gate_values=['1']"
+  },
+  {
+   "id": "I3_无声明面违规",
+   "arm": "T3",
+   "pass": true,
+   "evidence": "violations=0 []"
+  },
+  {
+   "id": "I4_回放剪裁生效(模板串不进远端)",
+   "arm": "T3",
+   "pass": true,
+   "evidence": "requests=6 assistant_template_msgs=0 user_user_adjacent=20 (非空判据: 相邻对>0 且在 R489 基线里为 0)"
+  },
+  {
+   "id": "I5_剪裁打点非零(确有可剪内容)",
+   "arm": "T3",
+   "pass": true,
+   "evidence": "replay_trimmed_calls=5 sum=20"
+  }
+ ],
+ "deltas": {
+  "T1": {
+   "calls": "17→6 (-64.71%)",
+   "total_tokens": "81871→22584 (-72.42%)",
+   "prompt_tokens": "76129→20456 (-73.13%)",
+   "empty_body_calls": "3→0",
+   "cost_cny": "0.026871→0.007864 (-70.73%)"
+  },
+  "T2": {
+   "calls": "17→6 (-64.71%)",
+   "total_tokens": "81871→24262 (-70.37%)",
+   "prompt_tokens": "76129→21608 (-71.62%)",
+   "empty_body_calls": "3→0",
+   "cost_cny": "0.026871→0.008754 (-67.42%)"
+  },
+  "T3": {
+   "calls": "17→6 (-64.71%)",
+   "total_tokens": "81871→26576 (-67.54%)",
+   "prompt_tokens": "76129→22219 (-70.81%)",
+   "empty_body_calls": "3→0",
+   "cost_cny": "0.026871→0.010792 (-59.84%)"
+  },
+  "T_spread": {
+   "arms": [
+    "T1",
+    "T2",
+    "T3"
+   ],
+   "total_tokens": "22584..26576 (min..max)",
+   "calls": "6..6",
+   "pct_vs_B": "-72.42..-67.54",
+   "worst_case_total_pct": -67.54
+  }
+ },
+ "cross_round_ref": {
+  "note": "R489 旧产物 (含未剪裁回放 + 无声明门); 仅作参考, 不与本轮相减",
+  "R489_B": {
+   "calls": 17,
+   "total": 85028,
+   "empty_body": 4,
+   "assistant_template_msgs": 0,
+   "user_user_adjacent_pairs": 0
+  },
+  "R489_R1": {
+   "calls": 10,
+   "total": 49775,
+   "empty_body": 4,
+   "assistant_template_msgs": 24,
+   "user_user_adjacent_pairs": 0
+  },
+  "R489_R2": {
+   "calls": 16,
+   "total": 85718,
+   "empty_body": 10,
+   "assistant_template_msgs": 52,
+   "user_user_adjacent_pairs": 0
+  },
+  "R489_R3": {
+   "calls": 8,
+   "total": 34726,
+   "empty_body": 2,
+   "assistant_template_msgs": 24,
+   "user_user_adjacent_pairs": 0
+  }
+ },
+ "pair_face": {
+  "Aroleb": {
+   "user_trimmed": 0,
+   "pair_gate": [
+    "None"
+   ],
+   "user_user_adj": 0,
+   "skip_user_leak": 83
+  },
+  "T1": {
+   "user_trimmed": 0,
+   "pair_gate": [
+    "None"
+   ],
+   "user_user_adj": 20,
+   "skip_user_leak": 20
+  },
+  "T2": {
+   "user_trimmed": 0,
+   "pair_gate": [
+    "None"
+   ],
+   "user_user_adj": 20,
+   "skip_user_leak": 20
+  },
+  "T3": {
+   "user_trimmed": 0,
+   "pair_gate": [
+    "None"
+   ],
+   "user_user_adj": 20,
+   "skip_user_leak": 20
+  }
+ },
+ "deadcode_face": {
+  "ResponsesWire": {
+   "prod": 1,
+   "test": 6,
+   "files": [
+    "src/agent.modelqueue/ResponsesWire.cs"
+   ]
+  },
+  "LocalDecisionMap": {
+   "prod": 1,
+   "test": 13,
+   "files": [
+    "src/agent.modelqueue/LocalDecisionMap.cs"
+   ]
+  },
+  "ActionToolSpec": {
+   "prod": 3,
+   "test": 9,
+   "files": [
+    "src/agent.modelqueue/ActionToolSpec.cs"
+   ]
+  }
+ },
+ "blocked_arms": [],
+ "verdict": "PASS",
+ "arms_run": [
+  "B",
+  "T1",
+  "T2",
+  "T3"
+ ]
+}

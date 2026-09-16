@@ -1,0 +1,72 @@
+[
+ {
+  "id": "r491.tool-decl-gate-by-intent-realmachine",
+  "level": "L2",
+  "capability": "**声明面按需门 (不必要远端调用的主源) — 真机闭环复测 + 三跑下界**。同一 AOT sha 8b4efbb7…、同一 12 轮夹具、同窗单变量: B(=Aroleb, 门关) **17 调用/81,871 tok/¥0.026871/空正文 3** → T1 **6/22,584 (−72.42% tok, −64.71% 调用, ¥0.007864 −70.73%)/空正文 0**, T2 **6/24,262 (−70.37%)**, T3 **6/26,576 (−67.54%)**; 三跑离散度 −72.42..−67.54% ⇒ 宣称取**下界 −67.54%** (禁取最好臂)。20/20 不变式全绿: R490 遗留的 I5 剪裁打点红在本轮复测转绿 (`replay_trimmed_calls=5 / replay_trimmed_sum=20` ⇒ Clone 透传修复在真机生效)。**诚实边界**: 四臂真假判别面 `false_premise` 全 True ⇒ 本轮该面**不区分** B/T (R490 的 B=False 未复现) ⇒ 不据此宣称 r1 判别增益, 增益只按远端调用数/token 数计。",
+  "evidence_cmd": "env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR python3 eval/rover/r491/analyze_r491.py",
+  "evidence_path": "eval/rover/r491/verdict-r491.json",
+  "negative_control": "门关臂打点 `tool_decl_gate=0/declared=True` ⇒ 门关时请求体与 R456..R489 同形(R490 单测锁字节面); 跨轮只作参考**禁相减** (R489 旧产物单列在 cross_round_ref); 三跑取**下界**作宣称; 空正文 3→0 与调用 17→6 均为**远端侧**计数 ⇒ 不依赖本地读数; 未跑臂不静默豁免 (R491 把 R490 的「任意未跑臂 blocking=False」改为按显式 OUT_OF_SCOPE 白名单, 本轮白名单为空)。",
+  "covers": [
+   "src/agent.modelqueue/ToolDeclGate.cs",
+   "src/agent/modelqueue/ModelQueueAdapter.cs",
+   "src/agent.modelqueue/ModelQueueRouter.cs",
+   "src/agent.modelqueue/ActionLoop.cs",
+   "src/agent.tests/R490ToolDeclGateTests.cs",
+   "eval/rover/r491/analyze_r491.py",
+   "eval/rover/r491/derive_analyzer_r491.py",
+   "eval/rover/r491/run_arm_real_r491.sh",
+   "eval/rover/r491/verdict-r491.json"
+  ],
+  "owner_round": "R491"
+ },
+ {
+  "id": "r491.replay-pair-trim",
+  "level": "L2",
+  "capability": "**零远端调用轮的 user 侧与 assistant 侧配对剔除** (闸 `AGENTFRAMEWORK_REPLAY_PAIR_TRIM`, **默认关**)。R491 实测基线: T 臂远端回放里 assistant 模板串已 0 (R490 剪裁生效) 但 **user→user 相邻对 20 / 同类 user 文本在请求体出现 20 次 (125 字符)** 仍在远端前缀里 ⇒ R438 只补了 assistant 侧。实现 = `ModelQueueAdapter.ToQueuePrompt(Prompt, bool pairTrim)` 单点配对剪裁 (仅当紧邻前一条为 user 且该轮答复 == 产品常量 `ModelQueueRouter.LocalSkipFallback`), 计数 `ReplayTrimmedLocalUserTurns` 经 `ActionLoopRunner.Clone` 透传并打点 `replay_user_trimmed`/`replay_pair_gate`; 单测 19 例两态判据表 (门关逐字节不变 / 门开成对剔除 / 无紧邻 user 不剪 / 实质答复与复述轮不剪 / Clone 透传)。**诚实边界**: 门关零回归与判据表已机检; 门开的真机增益**本轮未测到** (闸默认关) ⇒ 不作增益宣称。",
+  "evidence_cmd": "env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR python3 eval/rover/r491/analyze_r491.py",
+  "evidence_path": "eval/rover/r491/verdict-r491.json",
+  "negative_control": "门关态单测断言 user 条保留且计数 0 (实现误剪则红); 只剪「等于产品常量」的 assistant 文本 + 其紧邻 user ⇒ 实质答复轮/复述轮回放原文不剪; **非空判据改写**: 旧判据「user→user 相邻对 >0」在门开后必然为 0 ⇒ 显式换成 pair_face 计数 + 请求体字节缺证 (禁沿用会空转的判据); 新面入判据前先卡 ②④ 两行同批。",
+  "covers": [
+   "src/agent.modelqueue/ReplayPairTrim.cs",
+   "src/agent/modelqueue/ModelQueueAdapter.cs",
+   "src/agent.modelqueue/ModelQueueRouter.cs",
+   "src/agent.modelqueue/ActionLoop.cs",
+   "src/agent.tests/R491ReplayPairTrimTests.cs",
+   "eval/rover/r491/analyze_r491.py",
+   "eval/rover/r491/verdict-r491.json"
+  ],
+  "owner_round": "R491"
+ },
+ {
+  "id": "r491.startgate-stale-build-node-reap",
+  "level": "L2",
+  "capability": "**起手闸陈旧 build 节点 fail-closed 收口** (`eval/rover/r483/preflight_gate.py` 增 `reap_stale_build_nodes`)。真因实测: `dotnet build-server shutdown` 返回成功 (`shutdown_done=True`) 后 pid 1774221 (`MSBuild.dll /nodemode:1 /nodeReuse:true`, RSS 178 MB, 年龄 2,202 s) 仍存活 ⇒ 闸只能红且原因并列「内存不足 + build-server 残留」(MemAvailable 2,610 < 2,650) ⇒ 陈旧残留被报成环境不足。收口判据 (只读 /proc 事实, 任一不满足即**拒收不杀**): O1 本体是 build 节点 / O2 年龄 ≥60 s / O3 静默采样窗零 CPU 增量 / O4 不持监听套接字 / O5 PPid 链无本轮驱动器。三态消融 (同环境同诱饵 argv0=MSBuild.dll): A `--keep-stale-nodes` **GATE_BLOCKED rc=2**(原因并列) → B 年龄 46 s **拒收 O2 且进程存活**, 同时收口 224 s 真残留节点(RSS 184 MB) ⇒ 原因单列 → C 年龄 122 s 收口 ⇒ **PASS rc=0**。收口后 MemAvailable 2,610 → 2,682 MB。",
+  "evidence_cmd": "python3 eval/rover/r483/preflight_gate.py --out /tmp/gateC.json --round R491-NC-C",
+  "evidence_path": "eval/rover/r491/gate-nc-ablation.json",
+  "negative_control": "三态消融: 诱饵年轻态必须红且**未被杀**(B), `--keep-stale-nodes` 复现修前行为(A) ⇒ 放行是收口带来的而非阈值漂移; O5 防「正被本轮构建使用」的节点被误收; 拒收行逐条留 pid/年龄/RSS/reasons 可审计; 诱饵是**人工构造**的『名字像 build 节点』睡眠进程 (非真 MSBuild) ⇒ 判据按可读事实而非进程名一票通过。",
+  "covers": [
+   "eval/rover/r483/preflight_gate.py",
+   "eval/rover/r491/reap_orphans.py",
+   "eval/rover/r491/gate-nc-ablation.json",
+   "eval/rover/r491/gate-nc/A-prefix-behavior.json",
+   "eval/rover/r491/gate-nc/B-young-refused.json",
+   "eval/rover/r491/gate-nc/C-aged-reaped.json"
+  ],
+  "owner_round": "R491"
+ },
+ {
+  "id": "r491.r479-deadcode-face",
+  "level": "L2",
+  "capability": "**R479 三件产物在链上 0 引用的机检定性**: 全仓 `.cs` 源码里 `ResponsesWire` / `LocalDecisionMap` / `ActionToolSpec` 的引用计数各 = 1 且**均指向自身定义文件** ⇒ 无任何生产调用点 (活体声明面是 `ToolDeclGate`/`ActionToolDecl` 另一支)。结论: R479 的「入链 prompt 正文槽位化」从未接线, 属改远端**正文字节面**的独立窗口 ⇒ 本轮只取证不接线 (防「文档声称已接」的空心声明)。",
+  "evidence_cmd": "env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR python3 eval/rover/r491/analyze_r491.py",
+  "evidence_path": "eval/rover/r491/verdict-r491.json",
+  "negative_control": "计数口径可审计: 排除 `bin/obj` 与测试文件, 并同时打印**定义文件自身**的 1 次命中 ⇒ 若真接线则计数必须 ≥2 且含非定义文件 (空判据陷阱的对照); 本行只声明「未接线」, 不声明「无用」。",
+  "covers": [
+   "src/agent.modelqueue/ResponsesWire.cs",
+   "src/agent.modelqueue/ModelQueueRouter.cs",
+   "eval/rover/r491/analyze_r491.py",
+   "eval/rover/r491/verdict-r491.json"
+  ],
+  "owner_round": "R491"
+ }
+]

@@ -1,0 +1,42 @@
+{
+ "blocker_cause": "内存不足+build-server 残留",
+ "blocker_causes": [
+  "内存不足",
+  "build-server 残留"
+ ],
+ "blockers": [
+  {
+   "cmd": "/home/agentuser/.dotnet/dotnet /home/agentuser/.dotnet/sdk/10.0.400/MSBuild.dll /noautoresponse /nologo /nodemode:1 /nod",
+   "pid": 1808787,
+   "rss_mb": 184,
+   "watch": "MSBuild"
+  },
+  {
+   "cmd": "MSBuild.dll 900",
+   "pid": 1812311,
+   "rss_mb": 2,
+   "watch": "MSBuild"
+  }
+ ],
+ "build_node_reap": {
+  "skipped": true,
+  "why": "--keep-stale-nodes (复现修前行为)"
+ },
+ "gate_mb": 2650,
+ "legacy_self_only": false,
+ "mem_available_mb": 2635,
+ "recent_src_writes_120s": 8,
+ "round": "R491-NC-A",
+ "self_ancestors": [
+  1,
+  1140,
+  97891,
+  1812349,
+  1812352
+ ],
+ "settle_s": 40.1,
+ "shell_skip": true,
+ "shells_skipped_n": 0,
+ "shutdown_done": true,
+ "verdict": "GATE_BLOCKED"
+}

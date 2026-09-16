@@ -1,0 +1,184 @@
+{
+ "round": "R491",
+ "generated_at": "2026-09-16 15:26:25+0800",
+ "mode": "apply",
+ "mem_available_mb_before": 2599,
+ "mem_available_mb_after": 2695,
+ "criteria": {
+  "T2": "self+ancestors never killed",
+  "T3": "window=3s ticks delta 0 AND established 0",
+  "T4": "ppid cmdline not a live driver",
+  "T5": "cwd dangling or foreign round",
+  "T6": "age >= 60s"
+ },
+ "false_positives_of_first_pass": [
+  "T2'='ppid not in self chain' 假阳性: 收养者=hermes gateway(1140) 是自身祖先",
+  "T3'='lifetime ticks == 0' 假阳性: R489 在体差分已产生 22..25 tick"
+ ],
+ "before": [
+  {
+   "pid": 945082,
+   "kind": "cxprobe_stub",
+   "cmd": "/bin/bash -lic set +m; mkdir -p /tmp/cxprobe/cx1 && cd /tmp/cxprobe && CX_STUB_DIR=/tmp/cxprobe/cx1 python3 stub.py 48510 > /tmp/cxprobe/stub1.log 2>&1",
+   "ppid": 97891,
+   "ppid_cmd": "/home/agentuser/.hermes/hermes-agent/venv/bin/python -m hermes_cli.main gateway run",
+   "rss_kb": 2044,
+   "ticks_at_t0": 2,
+   "established": 0,
+   "cwd": "/tmp/cxprobe",
+   "age_s": 85700,
+   "ticks_after_window": 2,
+   "established_after_window": 0,
+   "cwd_exempt": false,
+   "cwd_gone": false,
+   "cwd_foreign_round": false,
+   "reasons": [
+    "T5_cwd_live_same_round:/tmp/cxprobe"
+   ],
+   "verdict": "REFUSE"
+  },
+  {
+   "pid": 945094,
+   "kind": "cxprobe_stub",
+   "cmd": "python3 stub.py 48510",
+   "ppid": 945082,
+   "ppid_cmd": "/bin/bash -lic set +m; mkdir -p /tmp/cxprobe/cx1 && cd /tmp/cxprobe && CX_STUB_DIR=/tmp/cxprobe/cx1 python3 stub.py 48510 > /tmp/cxprobe/stub1.log 2>&1",
+   "rss_kb": 4060,
+   "ticks_at_t0": 709,
+   "established": 0,
+   "cwd": "/tmp/cxprobe",
+   "age_s": 85700,
+   "ticks_after_window": 709,
+   "established_after_window": 0,
+   "cwd_exempt": false,
+   "cwd_gone": false,
+   "cwd_foreign_round": false,
+   "reasons": [
+    "T5_cwd_live_same_round:/tmp/cxprobe"
+   ],
+   "verdict": "REFUSE"
+  },
+  {
+   "pid": 945253,
+   "kind": "cxprobe_stub",
+   "cmd": "python3 stub2.py 48522",
+   "ppid": 1140,
+   "ppid_cmd": "/usr/lib/systemd/systemd --user",
+   "rss_kb": 4028,
+   "ticks_at_t0": 708,
+   "established": 0,
+   "cwd": "/tmp/cxprobe",
+   "age_s": 85684,
+   "ticks_after_window": 709,
+   "established_after_window": 0,
+   "cwd_exempt": false,
+   "cwd_gone": false,
+   "cwd_foreign_round": false,
+   "reasons": [
+    "T3_activity_in_window(ticks+1,est=0)",
+    "T5_cwd_live_same_round:/tmp/cxprobe"
+   ],
+   "verdict": "REFUSE"
+  },
+  {
+   "pid": 1774221,
+   "kind": "msbuild_node",
+   "cmd": "/home/agentuser/.dotnet/dotnet /home/agentuser/.dotnet/sdk/10.0.400/MSBuild.dll /noautoresponse /nologo /nodemode:1 /nodeReuse:true /low:false",
+   "ppid": 1140,
+   "ppid_cmd": "/usr/lib/systemd/systemd --user",
+   "rss_kb": 182636,
+   "ticks_at_t0": 1034,
+   "established": 0,
+   "cwd": "/home/agentuser/.dotnet/sdk/10.0.400",
+   "age_s": 2212,
+   "ticks_after_window": 1034,
+   "established_after_window": 0,
+   "cwd_exempt": true,
+   "cwd_gone": false,
+   "cwd_foreign_round": false,
+   "reasons": [],
+   "verdict": "ORPHAN_REAPABLE"
+  },
+  {
+   "pid": 1783280,
+   "kind": "lsp_orphan",
+   "cmd": "node /home/agentuser/.hermes/lsp/bin/pyright-langserver --stdio",
+   "ppid": 97891,
+   "ppid_cmd": "/home/agentuser/.hermes/hermes-agent/venv/bin/python -m hermes_cli.main gateway run",
+   "rss_kb": 180024,
+   "ticks_at_t0": 757,
+   "established": 0,
+   "cwd": "/home/agentuser/.hermes/lsp/node_modules/pyright/dist",
+   "age_s": 133,
+   "ticks_after_window": 757,
+   "established_after_window": 0,
+   "cwd_exempt": false,
+   "cwd_gone": false,
+   "cwd_foreign_round": false,
+   "reasons": [
+    "T5_cwd_live_same_round:/home/agentuser/.hermes/lsp/node_modules/pyright/dist"
+   ],
+   "verdict": "REFUSE"
+  }
+ ],
+ "after": [
+  {
+   "pid": 945082,
+   "kind": "cxprobe_stub",
+   "cmd": "/bin/bash -lic set +m; mkdir -p /tmp/cxprobe/cx1 && cd /tmp/cxprobe && CX_STUB_DIR=/tmp/cxprobe/cx1 python3 stub.py 48510 > /tmp/cxprobe/stub1.log 2>&1",
+   "ppid": 97891,
+   "ppid_cmd": "/home/agentuser/.hermes/hermes-agent/venv/bin/python -m hermes_cli.main gateway run",
+   "rss_kb": 2044,
+   "ticks_at_t0": 2,
+   "established": 0,
+   "cwd": "",
+   "age_s": 85705
+  },
+  {
+   "pid": 945094,
+   "kind": "cxprobe_stub",
+   "cmd": "python3 stub.py 48510",
+   "ppid": 945082,
+   "ppid_cmd": "/bin/bash -lic set +m; mkdir -p /tmp/cxprobe/cx1 && cd /tmp/cxprobe && CX_STUB_DIR=/tmp/cxprobe/cx1 python3 stub.py 48510 > /tmp/cxprobe/stub1.log 2>&1",
+   "rss_kb": 4060,
+   "ticks_at_t0": 709,
+   "established": 0,
+   "cwd": "",
+   "age_s": 85705
+  },
+  {
+   "pid": 945253,
+   "kind": "cxprobe_stub",
+   "cmd": "python3 stub2.py 48522",
+   "ppid": 1140,
+   "ppid_cmd": "/usr/lib/systemd/systemd --user",
+   "rss_kb": 4028,
+   "ticks_at_t0": 709,
+   "established": 0,
+   "cwd": "",
+   "age_s": 85690
+  },
+  {
+   "pid": 1783280,
+   "kind": "lsp_orphan",
+   "cmd": "node /home/agentuser/.hermes/lsp/bin/pyright-langserver --stdio",
+   "ppid": 97891,
+   "ppid_cmd": "/home/agentuser/.hermes/hermes-agent/venv/bin/python -m hermes_cli.main gateway run",
+   "rss_kb": 180024,
+   "ticks_at_t0": 757,
+   "established": 0,
+   "cwd": "",
+   "age_s": 138
+  }
+ ],
+ "killed_pids": [
+  1774221
+ ],
+ "rss_kb_reaped": 182636,
+ "refused_pids": [
+  945082,
+  945094,
+  945253,
+  1783280
+ ]
+}

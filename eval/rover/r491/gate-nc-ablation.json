@@ -1,0 +1,77 @@
+{
+ "round": "R491",
+ "candidate": "⑥ 起手闸内存阈值 × 陈旧残留进程",
+ "instrument": "eval/rover/r483/preflight_gate.py (R491 增加 fail-closed 收口 reap_stale_build_nodes)",
+ "decoy": "argv0=MSBuild.dll sleep 900 (人工构造的『名字像 build 节点』诱饵; 非真 MSBuild)",
+ "states": {
+  "A_prefix": {
+   "file": "A-prefix-behavior.json",
+   "verdict": "GATE_BLOCKED",
+   "rc": 2,
+   "mem_available_mb": 2635,
+   "blocker_causes": [
+    "内存不足",
+    "build-server 残留"
+   ],
+   "reap_skipped": true,
+   "candidates": null,
+   "reaped": [],
+   "refused": []
+  },
+  "B_young": {
+   "file": "B-young-refused.json",
+   "verdict": "GATE_BLOCKED",
+   "rc": 2,
+   "mem_available_mb": 2724,
+   "blocker_causes": [
+    "build-server 残留"
+   ],
+   "reap_skipped": false,
+   "candidates": 2,
+   "reaped": [
+    [
+     1808787,
+     224,
+     184
+    ]
+   ],
+   "refused": [
+    [
+     1812311,
+     46,
+     [
+      "O2_年龄不足(46s<60s)"
+     ]
+    ]
+   ]
+  },
+  "C_aged": {
+   "file": "C-aged-reaped.json",
+   "verdict": "PASS",
+   "rc": 0,
+   "mem_available_mb": 2724,
+   "blocker_causes": [],
+   "reap_skipped": false,
+   "candidates": 1,
+   "reaped": [
+    [
+     1812311,
+     122,
+     2
+    ]
+   ],
+   "refused": []
+  }
+ },
+ "expect": {
+  "A": "修前行为: 有残留 ⇒ GATE_BLOCKED 且原因并列 内存不足+build-server 残留",
+  "B": "修后: 年龄<60s ⇒ 拒收(O2), 不杀; 内存充足时原因单列 build-server 残留",
+  "C": "修后: 年龄>60s 且静默/无监听/无驱动器祖先 ⇒ 收口, 闸 PASS"
+ },
+ "conclusion": "判据链可复现: 同环境同诱饵三态 (A 红 / B 拒收不杀 / C 收口放行); 年龄阈值是 fail-closed 的判据而非装饰",
+ "states_sha12": {
+  "A-prefix-behavior.json": "5f1de3173e2d",
+  "B-young-refused.json": "b81512c27c7f",
+  "C-aged-reaped.json": "77d9bbd3d534"
+ }
+}

@@ -20,6 +20,18 @@ OUT = ROOT / "eval" / "rover" / "r483" / "preflight.json"
 GATE_MB = 2650
 WATCH = ("llama-server", "VBCSCompiler", "MSBuild", "dotnet")
 
+# R491 候选⑥: 起手闸内存阈值 × **陈旧 build 节点残留**。
+# 本机实测 (2026-09-16): `dotnet build-server shutdown` 返回成功且 rec.shutdown_done=True,
+# 但 pid 1774221 (`MSBuild.dll /nodemode:1 /nodeReuse:true`, RSS 178 MB, 年龄 2202 s) 仍存活
+# ⇒ 闸只能红 (MemAvailable 2610 < 2650), 且归因面并列两条 (内存不足 + build-server 残留)。
+# ⇒ 闸的「shutdown」不是收口面: 需按只读 /proc 事实 fail-closed 收口, 否则闸会把
+#   陈旧残留报成「环境不足」(即 R482 那类假归因的第二次现身)。
+REAP_MIN_AGE_S = 60.0        # O2: 节点年龄下限 —— 年轻节点可能正被 live 构建使用 ⇒ 拒收
+REAP_IDLE_SAMPLE_S = 3.0     # O3: 静默采样窗, 累计 CPU 零增量才算闲置
+BUILD_NODE_WATCH = ("VBCSCompiler", "MSBuild")
+DRIVER_WORDS = ("run_arm_real_", "run_rest_", "dotnet test", "dotnet publish",
+                "agentframework.tests.csproj")
+
 
 def mem_available_mb():
     for line in Path("/proc/meminfo").read_text().splitlines():
@@ -88,6 +100,158 @@ def scan_procs(skip_shells=True, legacy_self_only=False):
     return hits
 
 
+def rss_of(pid):
+    try:
+        return int([l for l in Path("/proc/%d/status" % pid).read_text().splitlines()
+                    if l.startswith("VmRSS:")][0].split()[1]) // 1024
+    except (OSError, IndexError):
+        return -1
+
+
+def _stat_after_comm(pid):
+    """`/proc/<pid>/stat` 去掉 comm(可含空格/括号) 后的字段表。"""
+    return Path("/proc/%d/stat" % pid).read_text().rsplit(")", 1)[1].split()
+
+
+def _cpu_ticks(pid):
+    """累计 CPU 刻度 (utime+stime); 读不到返回 None (fail-closed: None ⇒ 拒收)。"""
+    try:
+        f = _stat_after_comm(pid)
+        return int(f[11]) + int(f[12])
+    except (OSError, IndexError, ValueError):
+        return None
+
+
+def _age_s(pid):
+    """进程年龄(秒) = now - (btime + starttime/CLK_TCK)。读不到返回 None。"""
+    try:
+        start = int(_stat_after_comm(pid)[19])
+        bt = int([l for l in Path("/proc/stat").read_text().splitlines()
+                  if l.startswith("btime")][0].split()[1])
+        return max(0.0, time.time() - (bt + start / os.sysconf("SC_CLK_TCK")))
+    except (OSError, IndexError, ValueError, KeyError):
+        return None
+
+
+def _listening_inodes():
+    """全系统 LISTEN 套接字 inode 集 (tcp/tcp6)。"""
+    inos = set()
+    for f in ("/proc/net/tcp", "/proc/net/tcp6"):
+        try:
+            lines = Path(f).read_text().splitlines()[1:]
+        except OSError:
+            continue
+        for l in lines:
+            p = l.split()
+            if len(p) > 9 and p[3] == "0A":
+                inos.add(p[9])
+    return inos
+
+
+def _pid_listening(pid, listen_inodes):
+    try:
+        fds = list(Path("/proc/%d/fd" % pid).iterdir())
+    except OSError:
+        return False
+    for fd in fds:
+        try:
+            t = os.readlink(fd)
+        except OSError:
+            continue
+        if t.startswith("socket:[") and t[8:-1] in listen_inodes:
+            return True
+    return False
+
+
+def _has_live_driver_ancestor(pid, max_hops=8):
+    """O5: PPid 链上存在本轮作业驱动器 ⇒ 该节点可能正被使用, 拒收。"""
+    cur = pid
+    for _ in range(max_hops):
+        try:
+            ppid = int(_stat_after_comm(cur)[1])
+        except (OSError, IndexError, ValueError):
+            return False
+        if ppid <= 1:
+            return False
+        try:
+            cmd = Path("/proc/%d/cmdline" % ppid).read_bytes().decode("utf-8", "replace").replace("\x00", " ")
+        except OSError:
+            return False
+        if any(w in cmd for w in DRIVER_WORDS):
+            return True
+        cur = ppid
+    return False
+
+
+def reap_stale_build_nodes(min_age_s=REAP_MIN_AGE_S, sample_s=REAP_IDLE_SAMPLE_S):
+    """R491 候选⑥: 按**只读 /proc 事实** fail-closed 收口陈旧 build 节点。
+
+    判据 (任一不满足 ⇒ 拒收, 不杀):
+      O1 本体是 build 节点 (argv0 非 shell, cmdline 命中 BUILD_NODE_WATCH);
+      O2 年龄 ≥ min_age_s;
+      O3 静默: 采样窗内累计 CPU 零增量;
+      O4 不持有监听套接字;
+      O5 PPid 链上无本轮作业驱动器。
+    返回 {candidates, reaped[], refused[{...,reasons[]}]} —— 拒收原因必须逐条可审计。
+    """
+    listen = _listening_inodes()
+    me, anc = os.getpid(), self_and_ancestors()
+    cands, t0 = [], {}
+    for pe in Path("/proc").iterdir():
+        if not pe.name.isdigit():
+            continue
+        pid = int(pe.name)
+        if pid == me or pid in anc:
+            continue
+        try:
+            cmd = pe.joinpath("cmdline").read_bytes().decode("utf-8", "replace").replace("\x00", " ").strip()
+        except OSError:
+            continue
+        if not cmd:
+            continue
+        if os.path.basename(cmd.split(" ")[0]) in SHELLS:
+            continue
+        if not any(w in cmd for w in BUILD_NODE_WATCH):
+            continue
+        t0[pid] = _cpu_ticks(pid)
+        cands.append({"pid": pid, "cmd": cmd[:120], "age_s": _age_s(pid), "rss_mb": rss_of(pid),
+                      "listening": _pid_listening(pid, listen)})
+    time.sleep(sample_s)
+    reaped, refused = [], []
+    for c in cands:
+        pid = c["pid"]
+        c1 = _cpu_ticks(pid)
+        c0 = t0.get(pid)
+        reasons = []
+        if c0 is None or c1 is None:
+            reasons.append("O3_CPU读数不可得")
+        elif c1 != c0:
+            reasons.append("O3_CPU活跃(%d→%d)" % (c0, c1))
+        if c["age_s"] is None or c["age_s"] < min_age_s:
+            reasons.append("O2_年龄不足(%.0fs<%.0fs)" % (c["age_s"] or -1.0, min_age_s))
+        if c["listening"]:
+            reasons.append("O4_持有监听套接字")
+        if _has_live_driver_ancestor(pid):
+            reasons.append("O5_本轮驱动器在世")
+        if reasons:
+            refused.append(dict(c, reasons=reasons))
+            continue
+        try:
+            os.kill(pid, 15)
+            time.sleep(1.0)
+            try:
+                os.kill(pid, 0)
+                os.kill(pid, 9)
+                time.sleep(0.5)
+            except OSError:
+                pass
+            reaped.append(c)
+        except OSError as e:
+            refused.append(dict(c, reasons=["O6_信号失败:%s" % e]))
+    return {"min_age_s": min_age_s, "sample_s": sample_s, "candidates": len(cands),
+            "reaped": reaped, "refused": refused}
+
+
 def recent_src_writes(window_s):
     now = time.time()
     n = 0
@@ -133,6 +297,8 @@ def main(argv=None) -> int:
                     help="负控(候选④): 门槛抬到不可达 + 不排除 shell ⇒ mem 因与 proc 因**同时**成立, "
                          "须并列报出 2 条 (禁二选一)")
     ap.add_argument("--round", default="R484", help="记录里的轮号标签")
+    ap.add_argument("--keep-stale-nodes", action="store_true",
+                    help="对照/负控(R491 ⑥): 不收口陈旧 build 节点 ⇒ 复现修前行为, 有残留时须 rc=2")
     a = ap.parse_args(argv)
 
     dotnet = Path(os.environ.get("DOTNET_ROOT", Path.home() / ".dotnet")) / "dotnet"
@@ -154,6 +320,11 @@ def main(argv=None) -> int:
             rec["shutdown_done"] = True
         except subprocess.TimeoutExpired:
             rec["shutdown_done"] = False
+    # R491 ⑥: shutdown 不是收口面 (本机实测残留 178 MB 节点) ⇒ 追加 fail-closed 收口, 再判内存。
+    if not a.keep_stale_nodes:
+        rec["build_node_reap"] = reap_stale_build_nodes()
+    else:
+        rec["build_node_reap"] = {"skipped": True, "why": "--keep-stale-nodes (复现修前行为)"}
 
     t0 = time.time()
     while True:

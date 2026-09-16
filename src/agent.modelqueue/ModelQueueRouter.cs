@@ -40,6 +40,12 @@ public sealed class QueuePrompt
     /// </summary>
     public int ReplayTrimmedLocalTemplates { get; set; }
 
+    /// <summary>
+    /// R491 配对剪裁: 被剔出远端回放的**零远端调用轮的 user 侧**条数 (闸开才可能 &gt; 0)。
+    /// 与 <see cref="ReplayTrimmedLocalTemplates"/> 成对: 一对 = 一轮既没发 user 也没发 assistant。
+    /// </summary>
+    public int ReplayTrimmedLocalUserTurns { get; set; }
+
     /// <summary>R456 回灌面: user 之后的追加消息 (assistant(tool_calls) / tool(...)) —— 前缀不变, 只增长尾部。</summary>
     public List<QueuePostUserMessage> PostUser { get; set; } = new();
 }
@@ -1414,6 +1420,8 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                 ("intent", prompt.Intent ?? "(null)"),
                 ("reason", ToolDeclGate.DecideReason(prompt.Intent, gateOn)),
                 ("replay_trimmed", prompt.ReplayTrimmedLocalTemplates),
+                ("replay_user_trimmed", prompt.ReplayTrimmedLocalUserTurns),
+                ("replay_pair_gate", ReplayPairTrim.Stamp()),
                 ("turn", prompt.TurnIndex));
         }
         if (maxTokensOverride is int mt && mt > 0) request.MaxTokens = mt;

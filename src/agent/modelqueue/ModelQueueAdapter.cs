@@ -33,6 +33,10 @@ public sealed class ModelQueueAdapter : ILLMCaller, agent.subagent.ILLMCallerFor
     /// 不是缓存前缀的一部分 ⇒ 剔除 (见 <see cref="IsLocalTemplateReply"/>)。
     /// </summary>
     public static QueuePrompt ToQueuePrompt(Prompt prompt)
+        => ToQueuePrompt(prompt, ReplayPairTrim.IsEnabled());
+
+    /// <summary>R491: 判据表可直接吃两态 (门开/门关), 无需改环境变量即可机检。</summary>
+    public static QueuePrompt ToQueuePrompt(Prompt prompt, bool pairTrim)
     {
         var qp = new QueuePrompt
         {
@@ -49,8 +53,10 @@ public sealed class ModelQueueAdapter : ILLMCaller, agent.subagent.ILLMCallerFor
             Intent = prompt.Intent,
         };
         var trimmedLocalTemplates = 0;
-        foreach (var msg in prompt.History)
+        var trimmedLocalUserTurns = 0;
+        for (var i = 0; i < prompt.History.Count; i++)
         {
+            var msg = prompt.History[i];
             var role = msg.Role == MessageRole.User ? "user" : "assistant";
             // R490 回放剪裁: 本地模板答复 (「收到。」= 零远端调用 Skip 轮的产物) **不是任何 provider 的产出**,
             // 从未发往任何 provider ⇒ 不是任何缓存前缀的一部分。此前被逐字回放 (R489 实测: 51 次请求体内
@@ -59,6 +65,13 @@ public sealed class ModelQueueAdapter : ILLMCaller, agent.subagent.ILLMCallerFor
             if (role == "assistant" && IsLocalTemplateReply(msg.Content))
             {
                 trimmedLocalTemplates++;
+                // R491 配对剪裁 (闸默认关): 该轮 user 侧同样是零远端调用的输入,
+                // 从未随任何请求发出 ⇒ 留着只会造成 user→user 相邻 + 白付 token。
+                if (pairTrim && qp.History.Count > 0 && qp.History[qp.History.Count - 1].Role == "user")
+                {
+                    qp.History.RemoveAt(qp.History.Count - 1);
+                    trimmedLocalUserTurns++;
+                }
                 continue;
             }
             qp.History.Add(new QueueHistoryMessage
@@ -68,6 +81,7 @@ public sealed class ModelQueueAdapter : ILLMCaller, agent.subagent.ILLMCallerFor
             });
         }
         qp.ReplayTrimmedLocalTemplates = trimmedLocalTemplates;
+        qp.ReplayTrimmedLocalUserTurns = trimmedLocalUserTurns;
         return qp;
     }
 
