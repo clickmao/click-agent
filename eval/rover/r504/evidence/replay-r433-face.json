@@ -1,0 +1,49 @@
+{
+ "round": "R504",
+ "row": "r433.probe-code-source-artifact-channel",
+ "stages": {
+  "grade_selftest": {
+   "rc": 0,
+   "counts": [
+    [
+     "48",
+     "48"
+    ]
+   ]
+  },
+  "runprobe_selftest": {
+   "rc": 0,
+   "counts": [
+    [
+     "37",
+     "37"
+    ]
+   ]
+  },
+  "kpi_selftest": {
+   "rc": 0,
+   "out": "selftest: KPI 打点负控\n  [PASS] 缺 rate 必须 error \n  [PASS] 缺 taskset_sha 必须 error \n  [PASS] 缺 ts 必须 error \n  [PASS] 缺 taxonomy 必须 error \n  [PASS] 除零保护 total \n  [PASS] 除零保护 n_tasks \n  [PASS] passed=0 时 tok/通过用例 = n/a 不崩 \n  [PASS] 窗口 [ts-elapsed, ts] 取到窗内调用 {'prompt': 1000, 'completion': 500, 'calls': 1}\n  [PASS] 锚点写反([ts, ts+elapsed]) ⇒ 读不到窗内调用 None\n  [PASS] metrics 的 token 必须来自 [ts-elapsed, ts] 窗内 {'prompt': 1000, 'completion': 500, 'calls': 1}\n  [PASS] 窗口内无调用 ⇒ None(不是 0) \n  [PASS] 无遥测 ⇒ None(不是 0) \n  [PASS] 未知模式键被单列而非丢弃 {'weird_mode': 2}\n  [PASS] Δ(通过率) 精确 +0.5000\n  [PASS] 整题全对口径: 1/2 ⇒ task_rate=0.5(不放水) tasks_ok=1 task_rate=0.5\n  [PASS] Δ(通过用例数) +3\n  [PASS] 7 位小数遥测时间戳可解析(曾静默丢 ⇒ token 全 None) datetime.datetime(2026, 9, 13, 15, 8, 3, 953186, tzinfo=datetime.timezone.utc)\n  [PASS] 无时区时间戳按本机 +0800 解释 \n  [PASS] 非法时间戳必须抛错(不得静默跳过) 无法解析时间戳 '2026-09-13 23:08:03 ???': Invalid isoformat string: '2026-09-13 23:08:03 ???'\n  [PASS] Δ 遇 None 记 n/a \n  [PASS] 台账同 run 不重复追加 1/0/1\n  [PASS] 异题集时报告显式标注不可比 \n  [PASS] 报告含未知模式键 \n  [PASS] 报告含台账表头 \nselftest 24/24\n"
+  },
+  "kpi_replay_report": {
+   "rc": 0,
+   "path": "/tmp/r504_replay/kpi-report-replay.md"
+  }
+ },
+ "frozen_report": {
+  "path": "/home/agentuser/AgentFramework/eval/capability/r433/kpi-report.md",
+  "md5_12": "fb366d010485"
+ },
+ "replay_report": {
+  "md5_12": "316144b6003e"
+ },
+ "rows_frozen": 9,
+ "rows_replay": 8,
+ "missing_in_replay": [
+  "probe-m6-agent.json"
+ ],
+ "drift": [],
+ "repro_gap_declared": [
+  "probe-m6-agent.json"
+ ],
+ "verdict": "PASS_DECLARED_GAP"
+}

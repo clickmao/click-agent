@@ -317,6 +317,16 @@ def verify_witness(meta: dict, got: str):
             if not pred(k):
                 return False, "not_minimal:%d" % k
         return True, ""
+    if kind == "crt":
+        mods = [int(v) for v in m["mods"]]
+        rems = [int(v) for v in m["rems"]]
+        M = 1
+        for mm in mods:
+            M *= mm
+        if not (0 <= x < M):
+            return False, "out_of_range"
+        bad = [i for i, (r, mm) in enumerate(zip(rems, mods)) if (x - r) % mm != 0]
+        return (not bad), "congruence_fail:%s" % bad
     return False, "unknown_witness_kind"
 
 
@@ -473,6 +483,27 @@ def selftest() -> int:
         globals()["_grade_pred"] = _save_pred                  # 还原
     chk("反向负控: 谓词恒真时 4 必须被判命题为真", bad == "wrong_witness", "mode=%s" % bad)
     chk("还原后判据仍严", grade_math(wc, "FINAL: 5")["mode"] == "wrong_witness")
+
+    # R504 扩面: CRT 见证型 (模数 3/5/7 ⇒ M=105; x ≡ 1 (mod 3), 0 (mod 5), 4 (mod 7)
+    # 唯一解由机器遍历取值 = 25 (非手算)。)
+    wk = {"kind": "math", "family": "witness_crt", "answer": "",
+          "meta": {"witness": {"kind": "crt", "mods": [3, 5, 7], "rems": [1, 0, 4]}}}
+    chk("正控: crt 正确见证通过(25)", grade_math(wk, "FINAL: 25")["mode"] == "ok")
+    chk("负控: crt 错见证被拒(26)", grade_math(wk, "FINAL: 26")["mode"] == "wrong_witness")
+    chk("负控: crt 越界被拒(105)", grade_math(wk, "FINAL: 105")["mode"] == "wrong_witness")
+    chk("负控: crt 非整数被拒", grade_math(wk, "FINAL: 4.0")["mode"] == "wrong_witness")
+    chk("负控: crt 无 FINAL 判 no_final", grade_math(wk, "解是 25")["mode"] == "no_final")
+    # 反向负控: 只满足前两个同余式的数必须被拒 (证明判据不是"只看前几个模数") —— 10 由机器遍历取值
+    chk("反向负控: crt 部分满足被拒(10)", grade_math(wk, "FINAL: 10")["mode"] == "wrong_witness")
+    # 单模退化: 单元素 mods 也必须走独立验算且在范围内
+    wk1 = {"kind": "math", "family": "witness_crt", "answer": "",
+           "meta": {"witness": {"kind": "crt", "mods": [7], "rems": [3]}}}
+    chk("正控: crt 单模通过(3)", grade_math(wk1, "FINAL: 3")["mode"] == "ok")
+    chk("负控: crt 单模错见证被拒(4)", grade_math(wk1, "FINAL: 4")["mode"] == "wrong_witness")
+    # 未知 kind 必须 fail-closed
+    chk("负控: 未知见证 kind fail-closed",
+        grade_math({"kind": "math", "family": "witness_x", "answer": "",
+                    "meta": {"witness": {"kind": "nope"}}}, "FINAL: 1")["mode"] == "wrong_witness")
 
     tm = {"kind": "math", "family": "comb_mod", "answer": "5"}
     chk("正控: math FINAL 解析", grade_math(tm, "推导…\nFINAL: 5")["mode"] == "ok")

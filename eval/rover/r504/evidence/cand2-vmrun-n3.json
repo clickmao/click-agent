@@ -1,0 +1,48 @@
+{
+ "candidate": "R504-② vm_run partial n>=3 归因",
+ "taskset": "eval/rover/r504/taskset-r504-vmrun.json",
+ "taskset_sha256": "74f273660ee7e6bbe386a3f20d6a419fb48ddc359544c8a94d5becee9aa35ec9",
+ "arms": [
+  {
+   "arm": 1,
+   "json": "data/probe/probe-agent-seed0-agent-r504vmrun-a1.json",
+   "n_tasks": 2,
+   "whole_ok": 2,
+   "case_ok(passed)": 23,
+   "case_n(total)": 23,
+   "case_rate": 1.0,
+   "whole_rate": 1.0,
+   "taxonomy": {
+    "ok": 2
+   }
+  },
+  {
+   "arm": 2,
+   "json": "data/probe/probe-agent-seed0-agent-r504vmrun-a2.json",
+   "n_tasks": 2,
+   "whole_ok": 2,
+   "case_ok(passed)": 23,
+   "case_n(total)": 23,
+   "case_rate": 1.0,
+   "whole_rate": 1.0,
+   "taxonomy": {
+    "ok": 2
+   }
+  },
+  {
+   "arm": 3,
+   "json": "data/probe/probe-agent-seed0-agent-r504vmrun-a3.json",
+   "n_tasks": 2,
+   "whole_ok": 2,
+   "case_ok(passed)": 23,
+   "case_n(total)": 23,
+   "case_rate": 1.0,
+   "whole_rate": 1.0,
+   "taxonomy": {
+    "ok": 2
+   }
+  }
+ ],
+ "reading": "同题集重复臂: 若每臂 whole_rate==1.0 且 case_rate==1.0 ⇒ R503 的 partial 不可复现(单次采样波动); 若某臂 partial ⇒ 带失败模式复现",
+ "boundary": "n 臂=同题集重复采样, 非 3 个不同题集; 只覆盖 vm_run 族, 不覆盖其它族"
+}

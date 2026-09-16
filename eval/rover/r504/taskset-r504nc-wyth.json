@@ -1,0 +1,150 @@
+[
+ {
+  "tid": "p001",
+  "kind": "program",
+  "family": "wythoff",
+  "prompt": "用 Python 3 写一个单文件程序解决下面的任务。程序从标准输入读数据, 把结果写到标准输出; 不要打印任何多余文字、提示或调试信息。\n\n【任务】\n读入: 一行两个整数 a b (1<=a<=25, 1<=b<=25), 表示两堆石子的颗数。玩法: 两人轮流进行, 每次可选 (i) 从**任意一堆**中取走任意正数目的石子, 或 (ii) 从**两堆**中同时取走**相同**的正数目的石子; 取走最后一颗石子者胜。输出: 先手必败时输出一行 `LOSE`; 否则输出一行 `WIN i j` —— 表示从第一堆取 i 颗、第二堆取 j 颗, 且要求 (i, j) 在全部必胜着法中按**字典序最小** (先比 i 再比 j; i, j >= 0 且不同时为 0)。\n\n【公开用例】(仅供参考; 判定使用另一批隐藏用例)\n输入:\n21 25\n期望输出:\nWIN 15 15\n\n输入:\n10 9\n期望输出:\nWIN 0 3\n\n请把完整程序放在一个 ```python 围栏代码块内。",
+  "public": [
+   {
+    "stdin": "21 25\n",
+    "expected_stdout": "WIN 15 15"
+   },
+   {
+    "stdin": "10 9\n",
+    "expected_stdout": "WIN 0 3"
+   }
+  ],
+  "hidden": [
+   {
+    "stdin": "18 8\n",
+    "expected_stdout": "WIN 5 0"
+   },
+   {
+    "stdin": "1 5\n",
+    "expected_stdout": "WIN 0 3"
+   },
+   {
+    "stdin": "12 18\n",
+    "expected_stdout": "WIN 1 0"
+   },
+   {
+    "stdin": "11 25\n",
+    "expected_stdout": "WIN 0 7"
+   },
+   {
+    "stdin": "18 17\n",
+    "expected_stdout": "WIN 0 6"
+   },
+   {
+    "stdin": "7 21\n",
+    "expected_stdout": "WIN 0 17"
+   },
+   {
+    "stdin": "1 2\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "3 5\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "4 7\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "6 10\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "1 1\n",
+    "expected_stdout": "WIN 1 1"
+   },
+   {
+    "stdin": "2 25\n",
+    "expected_stdout": "WIN 0 24"
+   },
+   {
+    "stdin": "25 25\n",
+    "expected_stdout": "WIN 25 25"
+   }
+  ],
+  "answer": "",
+  "meta": {
+   "hard": 7
+  }
+ },
+ {
+  "tid": "p002",
+  "kind": "program",
+  "family": "wythoff",
+  "prompt": "用 Python 3 写一个单文件程序解决下面的任务。程序从标准输入读数据, 把结果写到标准输出; 不要打印任何多余文字、提示或调试信息。\n\n【任务】\n读入: 一行两个整数 a b (1<=a<=25, 1<=b<=25), 表示两堆石子的颗数。玩法: 两人轮流进行, 每次可选 (i) 从**任意一堆**中取走任意正数目的石子, 或 (ii) 从**两堆**中同时取走**相同**的正数目的石子; 取走最后一颗石子者胜。输出: 先手必败时输出一行 `LOSE`; 否则输出一行 `WIN i j` —— 表示从第一堆取 i 颗、第二堆取 j 颗, 且要求 (i, j) 在全部必胜着法中按**字典序最小** (先比 i 再比 j; i, j >= 0 且不同时为 0)。\n\n【公开用例】(仅供参考; 判定使用另一批隐藏用例)\n输入:\n16 22\n期望输出:\nWIN 7 7\n\n输入:\n13 1\n期望输出:\nWIN 11 0\n\n请把完整程序放在一个 ```python 围栏代码块内。",
+  "public": [
+   {
+    "stdin": "16 22\n",
+    "expected_stdout": "WIN 7 7"
+   },
+   {
+    "stdin": "13 1\n",
+    "expected_stdout": "WIN 11 0"
+   }
+  ],
+  "hidden": [
+   {
+    "stdin": "12 24\n",
+    "expected_stdout": "WIN 0 4"
+   },
+   {
+    "stdin": "24 2\n",
+    "expected_stdout": "WIN 23 0"
+   },
+   {
+    "stdin": "5 19\n",
+    "expected_stdout": "WIN 0 16"
+   },
+   {
+    "stdin": "25 4\n",
+    "expected_stdout": "WIN 18 0"
+   },
+   {
+    "stdin": "10 1\n",
+    "expected_stdout": "WIN 8 0"
+   },
+   {
+    "stdin": "16 24\n",
+    "expected_stdout": "WIN 4 4"
+   },
+   {
+    "stdin": "1 2\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "3 5\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "4 7\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "6 10\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "1 1\n",
+    "expected_stdout": "WIN 1 1"
+   },
+   {
+    "stdin": "2 25\n",
+    "expected_stdout": "WIN 0 24"
+   },
+   {
+    "stdin": "25 25\n",
+    "expected_stdout": "WIN 25 25"
+   }
+  ],
+  "answer": "",
+  "meta": {
+   "hard": 7
+  }
+ }
+]

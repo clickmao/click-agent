@@ -1,0 +1,134 @@
+{
+ "round": "R504",
+ "topic": "主线对照（外部真值 codex-cli × 本侧 AOT）× 冻结随机题集 × 机械判分",
+ "prereg_at": "2026-09-17T04:47:05+0800",
+ "first_run": true,
+ "external_reference": {
+  "codex_bin": "/home/agentuser/.agentframework/tools/codex-env/node_modules/.bin/codex",
+  "codex_version": "codex-cli 0.154.0",
+  "npm_package": "@openai/codex@0.154.0",
+  "adapter": "eval/rover/r455/adapter_tools.py",
+  "upstream_model": "deepseek-flash",
+  "route": "codex/agent 两侧 -> http://127.0.0.1:<R504_ADAPTER_PORT>/v1 -> upstream"
+ },
+ "files_sha256": {
+  "taskset": "d54c613d5fd6e935cfbf7ea8e513a1d6a5773d59b26937d33f505e9ef70bcc46",
+  "grade_py": "1bdefe12da4d47d2e8ebe2c057e2462befdf70b70302d8aa9ee592aa2b2974ae",
+  "tasks_py": "2dba8418221cedfba67420f6374b9279c0c7555938b7422473e3cb238ada2e2a",
+  "run_probe_py": "f58f957c159d8af50c1e73f68adf3d633439f9580174fc097711c18a3cde8a1d",
+  "codex_solver_py": "0838de8a6400deb4c5aff8e964357544aa7a995b81b75f88da0010d5152ddca2",
+  "judge_py": "9ed83e80104f9c746c52b1aefbb175e8b10ce249cc2e0456635e28fce8d6716a",
+  "runner_sh": "19c3e8b6924a9d45beccb04a80f176f9ca933133274ac8478b31441f72e56b34",
+  "nc_sh": "0aee77fa8939e735db33b128d84637d3c4ace236073265281f1ba731997d47f1",
+  "adapter_py": "f04b60b04767a7a411efecdca15a8f75f551ba4c5f4c2fed9913b51ffeebb1af"
+ },
+ "probe_taskset_sha": "2ce1d8601577b383",
+ "taskset": {
+  "path": "eval/rover/r504/taskset-r504.json",
+  "n_tasks": 11,
+  "families": "json_mini,life_k,nim_multi,sub_game,topo_min,vm_run,witness_crt,witness_min_counterexample,witness_mod_inverse,witness_sqrt_mod,wythoff",
+  "game_family": "life_k,sub_game,nim_multi,wythoff",
+  "kind_arg": "per-family-merge(以族定向 dump 后合并)",
+  "seed": 20260917,
+  "oracle_baseline": {
+   "rate": 1.0,
+   "passed": 97,
+   "total": 97,
+   "n_tasks": 11,
+   "taskset_sha": "2ce1d8601577b383",
+   "solver": "oracle",
+   "src": "data/probe/probe-oracle-seed0-r504-oracle.json"
+  }
+ },
+ "criteria": [
+  "H1 仪器判别力（首跑前本地负控, 两端都要）: 程序面 json_mini×mutation:json_loose 整题全对 == 0 ∧ oracle == 1.0; 游戏族 life_k×mutation:life_wrap 整题全对 == 0 ∧ oracle == 1.0（只给一端不算自证）",
+  "H1b 仪器判别力（R504 扩面新增族, 首跑前本地负控）: 游戏族 sub_game×mutation:sub_greedy 整题全对 == 0 ∧ oracle == 1.0（用例级 rate>0 属正常: 贪心在多数局面与最优手同值 —— 判红口径=整题, 见 nc_r504 注释）",
+  "H1c 仪器判别力（R504 扩面: 游戏族 nim_multi 多堆 Nim）: 首跑前本地负控 nim_multi×mutation:nim_greedy 整题全对 == 0 ∧ oracle == 1.0（贪心恒取最大堆: 用例级可能>0, 判红口径=整题）",
+  "H1d 仪器判别力（R504 扩面: 游戏族 wythoff 双堆同步取）: 首跑前本地负控 wythoff×mutation:wyth_greedy 整题全对 == 0 ∧ oracle == 1.0（只按堆差取 ⇒ 漏双堆同步取这一合法着法）",
+  "H1e 仪器判别力（R504 扩面: 见证型 witness_crt 中国剩余）: 首跑前本地负控 witness_crt×mutation:wrongfinal（错见证）判红 == 1/1 ∧ oracle == 1.0（判定 = 逐同余式机检, 不是比对标签）",
+  "H2 外部真值可用性: codex 侧 ok 题数 >= 1；若 == 0 ⇒ 记 unreported（禁当 0 分能力、禁静默）",
+  "H3 同输入机检: 两侧 probe 摘要 taskset_sha 相等且 == 预注册值（E2）",
+  "H4 同模型机检: adapter 落盘 upstream_request.model 两侧均为 deepseek-flash（E3）",
+  "H5 对照读数分列: 逐题 codex mode vs agent mode + 两侧 usage 分列成表；**禁**据 token 总量断言谁更省（静态面不同源）",
+  "H6 fail-closed: 缺任一侧面产物 ⇒ rc=3（不得算绿）；codex 空回 ⇒ 记 no_code 且单列，不折算成 0 能力"
+ ],
+ "honest_boundaries": [
+  "codex 侧本机 bwrap 不可用 ⇒ 用 --dangerously-bypass-approvals-and-sandbox（审批/沙箱面不对等）",
+  "两侧静态面不同源（instructions/工具面差异）⇒ 只比「同输入下的行为差异」与同侧趋势",
+  "n=11（7 程序族: 含游戏族 life_k + sub_game + nim_multi + wythoff 四族; 4 见证型数学族: sqrt_mod/min_counterexample/mod_inverse/crt）为低成本首跑，不构成总体能力估计",
+  "单窗单跑 ⇒ 跨轮禁相减"
+ ],
+ "checks_prefirstrun": {
+  "nc1_instrument": {
+   "pass": true,
+   "oracle_whole_ok": 1,
+   "oracle_n": 1,
+   "mutation_json_loose_whole_ok": 0,
+   "mutation_n": 1,
+   "taskset": "eval/rover/r504/taskset-r504nc.json",
+   "reading": "仪器两端: oracle 1.0 且 mutation 0.0"
+  },
+  "nc1b_instrument_game": {
+   "pass": true,
+   "oracle_whole_ok": 1,
+   "oracle_n": 1,
+   "mutation_life_wrap_whole_ok": 0,
+   "mutation_n": 1,
+   "taskset": "eval/rover/r504/taskset-r504nc-game.json",
+   "reading": "游戏族仪器两端: oracle 1.0 且 life_wrap 0 整题全对"
+  },
+  "nc1c_instrument_newgame": {
+   "pass": true,
+   "oracle_whole_ok": 2,
+   "oracle_n": 2,
+   "mutation_sub_greedy_whole_ok": 0,
+   "mutation_n": 2,
+   "taskset": "eval/rover/r504/taskset-r504nc-subgame.json",
+   "reading": "sub_game 仪器两端: oracle 2/2 且 sub_greedy 整题 0"
+  },
+  "nc1d_instrument_nim": {
+   "pass": true,
+   "oracle_whole_ok": 2,
+   "oracle_n": 2,
+   "oracle_case_ok": 26,
+   "oracle_case_n": 26,
+   "mutation_nim_greedy_whole_ok": 0,
+   "mutation_n": 2,
+   "mutation_case_ok": 6,
+   "mutation_case_n": 26,
+   "taskset": "eval/rover/r504/taskset-r504nc-nim.json",
+   "reading": "nim_multi 仪器两端: oracle 2/2 且 nim_greedy 整题 0 (用例级读数单列)"
+  },
+  "nc1e_instrument_wythoff": {
+   "pass": true,
+   "oracle_whole_ok": 2,
+   "oracle_n": 2,
+   "oracle_case_ok": 26,
+   "oracle_case_n": 26,
+   "mutation_wyth_greedy_whole_ok": 0,
+   "mutation_n": 2,
+   "mutation_case_ok": 4,
+   "mutation_case_n": 26,
+   "taskset": "eval/rover/r504/taskset-r504nc-wyth.json",
+   "reading": "wythoff 仪器两端: oracle 2/2 且 wyth_greedy 整题 0 (用例级读数单列)"
+  },
+  "nc1f_instrument_crt": {
+   "pass": true,
+   "oracle_whole_ok": 2,
+   "oracle_n": 2,
+   "mutation_wrong_witness_whole_ok": 0,
+   "mutation_n": 2,
+   "taskset": "eval/rover/r504/taskset-r504nc-crt.json",
+   "reading": "witness_crt 判定=逐同余式机检: oracle 2/2 且错见证整题 0"
+  },
+  "nc2_missing_side_rc": 3,
+  "nc4_solver_selftest_rc": 0,
+  "nc5_solver_dryrun_rc": 0,
+  "nc3_prereg_rc": {
+   "uniform": 0,
+   "drift": 1,
+   "missing": 3,
+   "restored": 0
+  }
+ }
+}

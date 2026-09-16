@@ -1,0 +1,75 @@
+{
+ "source": "prereg_r504.json:checks_prefirstrun (首跑前实测; /tmp 侧原文件被 runner 清理)",
+ "round": "R504",
+ "nc1_instrument": {
+  "pass": true,
+  "oracle_whole_ok": 1,
+  "oracle_n": 1,
+  "mutation_json_loose_whole_ok": 0,
+  "mutation_n": 1,
+  "taskset": "eval/rover/r504/taskset-r504nc.json",
+  "reading": "仪器两端: oracle 1.0 且 mutation 0.0"
+ },
+ "nc1b_instrument_game": {
+  "pass": true,
+  "oracle_whole_ok": 1,
+  "oracle_n": 1,
+  "mutation_life_wrap_whole_ok": 0,
+  "mutation_n": 1,
+  "taskset": "eval/rover/r504/taskset-r504nc-game.json",
+  "reading": "游戏族仪器两端: oracle 1.0 且 life_wrap 0 整题全对"
+ },
+ "nc1c_instrument_newgame": {
+  "pass": true,
+  "oracle_whole_ok": 2,
+  "oracle_n": 2,
+  "mutation_sub_greedy_whole_ok": 0,
+  "mutation_n": 2,
+  "taskset": "eval/rover/r504/taskset-r504nc-subgame.json",
+  "reading": "sub_game 仪器两端: oracle 2/2 且 sub_greedy 整题 0"
+ },
+ "nc1d_instrument_nim": {
+  "pass": true,
+  "oracle_whole_ok": 2,
+  "oracle_n": 2,
+  "oracle_case_ok": 26,
+  "oracle_case_n": 26,
+  "mutation_nim_greedy_whole_ok": 0,
+  "mutation_n": 2,
+  "mutation_case_ok": 6,
+  "mutation_case_n": 26,
+  "taskset": "eval/rover/r504/taskset-r504nc-nim.json",
+  "reading": "nim_multi 仪器两端: oracle 2/2 且 nim_greedy 整题 0 (用例级读数单列)"
+ },
+ "nc1e_instrument_wythoff": {
+  "pass": true,
+  "oracle_whole_ok": 2,
+  "oracle_n": 2,
+  "oracle_case_ok": 26,
+  "oracle_case_n": 26,
+  "mutation_wyth_greedy_whole_ok": 0,
+  "mutation_n": 2,
+  "mutation_case_ok": 4,
+  "mutation_case_n": 26,
+  "taskset": "eval/rover/r504/taskset-r504nc-wyth.json",
+  "reading": "wythoff 仪器两端: oracle 2/2 且 wyth_greedy 整题 0 (用例级读数单列)"
+ },
+ "nc1f_instrument_crt": {
+  "pass": true,
+  "oracle_whole_ok": 2,
+  "oracle_n": 2,
+  "mutation_wrong_witness_whole_ok": 0,
+  "mutation_n": 2,
+  "taskset": "eval/rover/r504/taskset-r504nc-crt.json",
+  "reading": "witness_crt 判定=逐同余式机检: oracle 2/2 且错见证整题 0"
+ },
+ "nc2_missing_side_rc": 3,
+ "nc4_solver_selftest_rc": 0,
+ "nc5_solver_dryrun_rc": 0,
+ "nc3_prereg_rc": {
+  "uniform": 0,
+  "drift": 1,
+  "missing": 3,
+  "restored": 0
+ }
+}

@@ -1,0 +1,600 @@
+[
+ {
+  "tid": "p001",
+  "kind": "program",
+  "family": "life_k",
+  "prompt": "用 Python 3 写一个单文件程序解决下面的任务。程序从标准输入读数据, 把结果写到标准输出; 不要打印任何多余文字、提示或调试信息。\n\n【任务】\n读入: 第一行三个整数 H W k (H,W 属于 1..20, k 属于 0..20); 随后 H 行, 每行 W 个字符, 只含 '.'(死) 与 '#'(活)。规则: 每代**同时**按 8 邻域更新, 网格外一律视为死格; 活细胞邻居数为 2 或 3 时存活, 否则死亡; 死细胞邻居数恰为 3 时复活。输出: 第 k 代之后 (k=0 即初始) 的网格, H 行, 每行 W 个字符, 只含 '.' 与 '#'。\n\n【公开用例】(仅供参考; 判定使用另一批隐藏用例)\n输入:\n11 5 4\n#....\n.....\n...#.\n.#.#.\n.....\n.#..#\n.#...\n###.#\n#.#.#\n..#..\n....#\n期望输出:\n.....\n.....\n.....\n.###.\n.....\n.....\n..#..\n.#.#.\n...#.\n..#..\n.....\n\n输入:\n11 2 6\n.#\n##\n..\n##\n.#\n.#\n..\n#.\n##\n##\n.#\n期望输出:\n##\n##\n..\n##\n##\n..\n..\n..\n..\n..\n..\n\n请把完整程序放在一个 ```python 围栏代码块内。",
+  "public": [
+   {
+    "stdin": "11 5 4\n#....\n.....\n...#.\n.#.#.\n.....\n.#..#\n.#...\n###.#\n#.#.#\n..#..\n....#\n",
+    "expected_stdout": ".....\n.....\n.....\n.###.\n.....\n.....\n..#..\n.#.#.\n...#.\n..#..\n....."
+   },
+   {
+    "stdin": "11 2 6\n.#\n##\n..\n##\n.#\n.#\n..\n#.\n##\n##\n.#\n",
+    "expected_stdout": "##\n##\n..\n##\n##\n..\n..\n..\n..\n..\n.."
+   }
+  ],
+  "hidden": [
+   {
+    "stdin": "5 5 1\n.....\n.....\n....#\n.....\n.##..\n",
+    "expected_stdout": ".....\n.....\n.....\n.....\n....."
+   },
+   {
+    "stdin": "2 3 4\n##.\n...\n",
+    "expected_stdout": "...\n..."
+   },
+   {
+    "stdin": "5 3 0\n#..\n###\n#..\n.#.\n.##\n",
+    "expected_stdout": "#..\n###\n#..\n.#.\n.##"
+   },
+   {
+    "stdin": "5 8 1\n#####...\n#...####\n#.##.##.\n#.##.###\n.#######\n",
+    "expected_stdout": "#####.#.\n#......#\n#.#.....\n#.......\n.#.....#"
+   },
+   {
+    "stdin": "7 10 7\n####..#.##\n#.##...###\n.####..#..\n.......#.#\n.....#...#\n...###..#.\n..##.##.##\n",
+    "expected_stdout": "....#.....\n.#.....##.\n..#......#\n#...#....#\n##...#.#..\n.#.##..#..\n....#.#..."
+   },
+   {
+    "stdin": "6 3 0\n..#\n.#.\n.#.\n.#.\n.#.\n...\n",
+    "expected_stdout": "..#\n.#.\n.#.\n.#.\n.#.\n..."
+   },
+   {
+    "stdin": "1 1 0\n.\n",
+    "expected_stdout": "."
+   },
+   {
+    "stdin": "3 3 1\n...\n###\n...\n",
+    "expected_stdout": ".#.\n.#.\n.#."
+   },
+   {
+    "stdin": "1 3 1\n###\n",
+    "expected_stdout": ".#."
+   },
+   {
+    "stdin": "4 4 4\n....\n.##.\n.##.\n....\n",
+    "expected_stdout": "....\n.##.\n.##.\n...."
+   },
+   {
+    "stdin": "3 3 1\n.#.\n..#\n###\n",
+    "expected_stdout": "...\n#.#\n.##"
+   },
+   {
+    "stdin": "2 2 3\n##\n##\n",
+    "expected_stdout": "##\n##"
+   }
+  ],
+  "answer": "",
+  "meta": {
+   "hard": 6
+  }
+ },
+ {
+  "tid": "p002",
+  "kind": "program",
+  "family": "sub_game",
+  "prompt": "用 Python 3 写一个单文件程序解决下面的任务。程序从标准输入读数据, 把结果写到标准输出; 不要打印任何多余文字、提示或调试信息。\n\n【任务】\n读入: 第一行两个整数 n k (1<=n<=80 为石子数, 1<=k<=12 为可选步数个数); 第二行 k 个互不相同的整数 s1..sk (1<=si<=12, 且保证其中含 1), 表示一步可取走的石子数。玩法: 两人轮流取, 每次取走恰好某个允许的数目, 取走最后一颗者胜。输出: 先手有必胜策略时输出一行 `WIN m` (m 为**数值最小**的必胜首取数); 先手必败时输出一行 `LOSE`。\n\n【公开用例】(仅供参考; 判定使用另一批隐藏用例)\n输入:\n31 3\n1 6 10\n期望输出:\nWIN 6\n\n输入:\n19 1\n1\n期望输出:\nWIN 1\n\n请把完整程序放在一个 ```python 围栏代码块内。",
+  "public": [
+   {
+    "stdin": "31 3\n1 6 10\n",
+    "expected_stdout": "WIN 6"
+   },
+   {
+    "stdin": "19 1\n1\n",
+    "expected_stdout": "WIN 1"
+   }
+  ],
+  "hidden": [
+   {
+    "stdin": "70 3\n1 7 10\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "28 2\n1 12\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "48 4\n1 2 8 12\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "20 1\n1\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "38 1\n1\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "64 1\n1\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "1 1\n1\n",
+    "expected_stdout": "WIN 1"
+   },
+   {
+    "stdin": "2 2\n1 3\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "3 2\n1 3\n",
+    "expected_stdout": "WIN 1"
+   },
+   {
+    "stdin": "4 1\n1\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "7 3\n1 2 5\n",
+    "expected_stdout": "WIN 1"
+   },
+   {
+    "stdin": "6 2\n1 5\n",
+    "expected_stdout": "LOSE"
+   }
+  ],
+  "answer": "",
+  "meta": {
+   "hard": 6
+  }
+ },
+ {
+  "tid": "p003",
+  "kind": "program",
+  "family": "nim_multi",
+  "prompt": "用 Python 3 写一个单文件程序解决下面的任务。程序从标准输入读数据, 把结果写到标准输出; 不要打印任何多余文字、提示或调试信息。\n\n【任务】\n读入: 第一行一个整数 m (1<=m<=4, 石子堆数); 第二行 m 个整数 a1..am (1<=ai<=15, 每堆石子数)。玩法: 两人轮流进行, 每次从**某一堆**中取走任意正数目的石子 (不能跨堆取, 也不限定数目, 只要不超该堆现有石子); 取走最后一颗石子者胜。输出: 先手有必胜策略时输出一行 `WIN p r` —— p 为必胜着法中**堆号最小**者 (堆号从 1 开始), r 为从该堆取走的石子数 (每堆至多存在一个必胜着法); 先手必败时输出一行 `LOSE`。\n\n【公开用例】(仅供参考; 判定使用另一批隐藏用例)\n输入:\n3\n5 9 4\n期望输出:\nWIN 2 8\n\n输入:\n1\n3\n期望输出:\nWIN 1 3\n\n请把完整程序放在一个 ```python 围栏代码块内。",
+  "public": [
+   {
+    "stdin": "3\n5 9 4\n",
+    "expected_stdout": "WIN 2 8"
+   },
+   {
+    "stdin": "1\n3\n",
+    "expected_stdout": "WIN 1 3"
+   }
+  ],
+  "hidden": [
+   {
+    "stdin": "3\n9 6 13\n",
+    "expected_stdout": "WIN 2 2"
+   },
+   {
+    "stdin": "2\n11 4\n",
+    "expected_stdout": "WIN 1 7"
+   },
+   {
+    "stdin": "4\n15 11 14 7\n",
+    "expected_stdout": "WIN 1 13"
+   },
+   {
+    "stdin": "1\n6\n",
+    "expected_stdout": "WIN 1 6"
+   },
+   {
+    "stdin": "1\n5\n",
+    "expected_stdout": "WIN 1 5"
+   },
+   {
+    "stdin": "1\n8\n",
+    "expected_stdout": "WIN 1 8"
+   },
+   {
+    "stdin": "1\n1\n",
+    "expected_stdout": "WIN 1 1"
+   },
+   {
+    "stdin": "2\n7 7\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "3\n1 2 3\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "4\n1 1 1 1\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "2\n5 3\n",
+    "expected_stdout": "WIN 1 2"
+   },
+   {
+    "stdin": "4\n15 15 1 1\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "3\n9 5 12\n",
+    "expected_stdout": "LOSE"
+   }
+  ],
+  "answer": "",
+  "meta": {
+   "hard": 7
+  }
+ },
+ {
+  "tid": "p004",
+  "kind": "program",
+  "family": "wythoff",
+  "prompt": "用 Python 3 写一个单文件程序解决下面的任务。程序从标准输入读数据, 把结果写到标准输出; 不要打印任何多余文字、提示或调试信息。\n\n【任务】\n读入: 一行两个整数 a b (1<=a<=25, 1<=b<=25), 表示两堆石子的颗数。玩法: 两人轮流进行, 每次可选 (i) 从**任意一堆**中取走任意正数目的石子, 或 (ii) 从**两堆**中同时取走**相同**的正数目的石子; 取走最后一颗石子者胜。输出: 先手必败时输出一行 `LOSE`; 否则输出一行 `WIN i j` —— 表示从第一堆取 i 颗、第二堆取 j 颗, 且要求 (i, j) 在全部必胜着法中按**字典序最小** (先比 i 再比 j; i, j >= 0 且不同时为 0)。\n\n【公开用例】(仅供参考; 判定使用另一批隐藏用例)\n输入:\n21 25\n期望输出:\nWIN 15 15\n\n输入:\n10 9\n期望输出:\nWIN 0 3\n\n请把完整程序放在一个 ```python 围栏代码块内。",
+  "public": [
+   {
+    "stdin": "21 25\n",
+    "expected_stdout": "WIN 15 15"
+   },
+   {
+    "stdin": "10 9\n",
+    "expected_stdout": "WIN 0 3"
+   }
+  ],
+  "hidden": [
+   {
+    "stdin": "18 8\n",
+    "expected_stdout": "WIN 5 0"
+   },
+   {
+    "stdin": "1 5\n",
+    "expected_stdout": "WIN 0 3"
+   },
+   {
+    "stdin": "12 18\n",
+    "expected_stdout": "WIN 1 0"
+   },
+   {
+    "stdin": "11 25\n",
+    "expected_stdout": "WIN 0 7"
+   },
+   {
+    "stdin": "18 17\n",
+    "expected_stdout": "WIN 0 6"
+   },
+   {
+    "stdin": "7 21\n",
+    "expected_stdout": "WIN 0 17"
+   },
+   {
+    "stdin": "1 2\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "3 5\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "4 7\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "6 10\n",
+    "expected_stdout": "LOSE"
+   },
+   {
+    "stdin": "1 1\n",
+    "expected_stdout": "WIN 1 1"
+   },
+   {
+    "stdin": "2 25\n",
+    "expected_stdout": "WIN 0 24"
+   },
+   {
+    "stdin": "25 25\n",
+    "expected_stdout": "WIN 25 25"
+   }
+  ],
+  "answer": "",
+  "meta": {
+   "hard": 7
+  }
+ },
+ {
+  "tid": "p005",
+  "kind": "program",
+  "family": "topo_min",
+  "prompt": "用 Python 3 写一个单文件程序解决下面的任务。程序从标准输入读数据, 把结果写到标准输出; 不要打印任何多余文字、提示或调试信息。\n\n【任务】\n读入: 第一行两个整数 n m (1<=n<=64); 随后 m 行, 每行两个整数 u v (0<=u,v<n), 表示有向边 u->v。输出: 若图中存在拓扑序, 输出**字典序最小**的拓扑序 (n 个节点编号, 空格分隔为一行); 若存在环(含自环), 输出 -1。\n\n【公开用例】(仅供参考; 判定使用另一批隐藏用例)\n输入:\n7 4\n2 4\n1 0\n1 6\n2 4\n期望输出:\n1 0 2 3 4 5 6\n\n输入:\n4 4\n1 1\n3 3\n0 2\n0 1\n期望输出:\n-1\n\n请把完整程序放在一个 ```python 围栏代码块内。",
+  "public": [
+   {
+    "stdin": "7 4\n2 4\n1 0\n1 6\n2 4\n",
+    "expected_stdout": "1 0 2 3 4 5 6"
+   },
+   {
+    "stdin": "4 4\n1 1\n3 3\n0 2\n0 1\n",
+    "expected_stdout": "-1"
+   }
+  ],
+  "hidden": [
+   {
+    "stdin": "6 1\n2 0\n",
+    "expected_stdout": "1 2 0 3 4 5"
+   },
+   {
+    "stdin": "5 7\n4 4\n1 4\n2 2\n1 1\n3 3\n1 0\n3 4\n",
+    "expected_stdout": "-1"
+   },
+   {
+    "stdin": "3 2\n0 2\n1 2\n",
+    "expected_stdout": "0 1 2"
+   },
+   {
+    "stdin": "6 2\n4 3\n5 0\n",
+    "expected_stdout": "1 2 4 3 5 0"
+   },
+   {
+    "stdin": "2 1\n0 1\n",
+    "expected_stdout": "0 1"
+   },
+   {
+    "stdin": "4 3\n0 3\n1 3\n2 3\n",
+    "expected_stdout": "0 1 2 3"
+   },
+   {
+    "stdin": "1 0\n",
+    "expected_stdout": "0"
+   },
+   {
+    "stdin": "2 2\n0 1\n1 0\n",
+    "expected_stdout": "-1"
+   },
+   {
+    "stdin": "2 1\n1 1\n",
+    "expected_stdout": "-1"
+   },
+   {
+    "stdin": "5 0\n",
+    "expected_stdout": "0 1 2 3 4"
+   },
+   {
+    "stdin": "3 1\n2 0\n",
+    "expected_stdout": "1 2 0"
+   },
+   {
+    "stdin": "4 3\n3 0\n2 0\n1 0\n",
+    "expected_stdout": "1 2 3 0"
+   },
+   {
+    "stdin": "6 5\n5 0\n4 0\n3 0\n2 0\n1 0\n",
+    "expected_stdout": "1 2 3 4 5 0"
+   }
+  ],
+  "answer": "",
+  "meta": {
+   "hard": 7
+  }
+ },
+ {
+  "tid": "p006",
+  "kind": "program",
+  "family": "vm_run",
+  "prompt": "用 Python 3 写一个单文件程序解决下面的任务。程序从标准输入读数据, 把结果写到标准输出; 不要打印任何多余文字、提示或调试信息。\n\n【任务】\n读入: 第一行整数 k (1<=k<=64, 指令条数); 随后 k 行, 每行一条指令 (地址从 0 开始)。指令集: PUSH n(压入整数 n) / POP(弹出丢弃) / ADD / SUB / MUL(弹出 a=栈顶, b=次顶, 压入 b-a 等运算) / DUP(复制栈顶) / SWAP(交换栈顶两元素) / PRINT(弹出栈顶并输出一行) / JNZ a(弹出栈顶, 非 0 则跳转到地址 a, 否则继续) / HALT(结束)。输出: 按 PRINT 顺序逐行输出整数。若出现栈空弹栈、操作数不足、跳转地址越界、未在 10000 步内执行 HALT, 或执行流越过最后一条指令, 则只输出一行 ERR。\n\n【公开用例】(仅供参考; 判定使用另一批隐藏用例)\n输入:\n6\nPUSH -1\nPUSH -1\nSWAP\nSUB\nPRINT\nHALT\n期望输出:\n0\n\n输入:\n3\nPUSH 1\nJNZ 99\nHALT\n期望输出:\nERR\n\n请把完整程序放在一个 ```python 围栏代码块内。",
+  "public": [
+   {
+    "stdin": "6\nPUSH -1\nPUSH -1\nSWAP\nSUB\nPRINT\nHALT\n",
+    "expected_stdout": "0"
+   },
+   {
+    "stdin": "3\nPUSH 1\nJNZ 99\nHALT\n",
+    "expected_stdout": "ERR"
+   }
+  ],
+  "hidden": [
+   {
+    "stdin": "9\nPUSH 3\nPUSH 3\nPOP\nPUSH 2\nPOP\nPUSH 3\nMUL\nPRINT\nHALT\n",
+    "expected_stdout": "9"
+   },
+   {
+    "stdin": "9\nPUSH -2\nPOP\nPUSH -5\nPRINT\nPUSH 3\nPOP\nPUSH 0\nPRINT\nHALT\n",
+    "expected_stdout": "-5\n0"
+   },
+   {
+    "stdin": "9\nPUSH 0\nPOP\nPUSH -1\nDUP\nPUSH 1\nPOP\nADD\nPRINT\nHALT\n",
+    "expected_stdout": "-2"
+   },
+   {
+    "stdin": "8\nPUSH 1\nPUSH 2\nSWAP\nSWAP\nPOP\nPOP\nPOP\nHALT\n",
+    "expected_stdout": "ERR"
+   },
+   {
+    "stdin": "7\nPUSH -2\nPUSH -3\nPOP\nDUP\nADD\nPRINT\nHALT\n",
+    "expected_stdout": "-4"
+   },
+   {
+    "stdin": "9\nPUSH 1\nPOP\nPUSH -2\nPUSH -2\nPUSH 2\nPOP\nSUB\nPRINT\nHALT\n",
+    "expected_stdout": "0"
+   },
+   {
+    "stdin": "2\nPOP\nHALT\n",
+    "expected_stdout": "ERR"
+   },
+   {
+    "stdin": "3\nPUSH 1\nJNZ 9\nHALT\n",
+    "expected_stdout": "ERR"
+   },
+   {
+    "stdin": "9\nPUSH 3\nDUP\nPRINT\nPUSH 1\nSUB\nDUP\nJNZ 1\nPOP\nHALT\n",
+    "expected_stdout": "3\n2\n1"
+   },
+   {
+    "stdin": "5\nPUSH 2\nPUSH 3\nMUL\nPRINT\nHALT\n",
+    "expected_stdout": "6"
+   },
+   {
+    "stdin": "5\nPUSH 3\nPUSH 4\nSWAP\nSUB\nHALT\n",
+    "expected_stdout": ""
+   },
+   {
+    "stdin": "3\nPUSH 5\nDUP\nADD\n",
+    "expected_stdout": "ERR"
+   }
+  ],
+  "answer": "",
+  "meta": {
+   "hard": 6
+  }
+ },
+ {
+  "tid": "p007",
+  "kind": "program",
+  "family": "json_mini",
+  "prompt": "用 Python 3 写一个单文件程序解决下面的任务。程序从标准输入读数据, 把结果写到标准输出; 不要打印任何多余文字、提示或调试信息。\n\n【任务】\n读入: STDIN 整体为一个 JSON 值 (可含前后空白与换行)。支持 null / true / false / 十进制整数(可选负号; 不允许前导零, 允许 -0 ⇒ 输出为 0) / 字符串 / 数组 / 对象(键为字符串)。字符串内仅允许标准反斜杠转义 (引号 反斜杠 斜杠 n t uXXXX 六种); uXXXX 解码为对应字符, 且解码出的码点必须 >= 0x20。对象允许重复键, 重复时后者覆盖前者。输出: 规范化文本, **不含任何空白**: 字符串输出时把 引号/反斜杠/换行/制表符 重新转义, 其余字符原样; 对象的键按 Unicode 码点升序; 例: {\"a\":1,\"b\":[2,3]}。若输入非法 (语法错误 / 结尾有多余内容 / 非法转义 / 非法数字 / 空输入), 只输出一行 ERR。\n\n【公开用例】(仅供参考; 判定使用另一批隐藏用例)\n输入:\n-33\n期望输出:\n-33\n\n输入:\n[\"\\\\9\\u4e2d/\",  null\n]\n期望输出:\n[\"\\\\9中/\",null]\n\n请把完整程序放在一个 ```python 围栏代码块内。",
+  "public": [
+   {
+    "stdin": "-33\n",
+    "expected_stdout": "-33"
+   },
+   {
+    "stdin": "[\"\\\\9\\u4e2d/\",  null\n]\n",
+    "expected_stdout": "[\"\\\\9中/\",null]"
+   }
+  ],
+  "hidden": [
+   {
+    "stdin": "{ \":\" : -43, \"\\u4e2d\"  :\n[{  \"\" :  \"\\\"ab\",\n\"\\n/a\\\"\"\n :\n null,\n\"\\\"\"\n : null }], \"\"\n:\n{\n\"\\n \\t\\n\"  :[  20\n ],\n\"\\n\\u0020\\t\\n\":\"\\t\\\"\"}, \":\":\n false\n",
+    "expected_stdout": "ERR"
+   },
+   {
+    "stdin": "true\n",
+    "expected_stdout": "true"
+   },
+   {
+    "stdin": "tru\n",
+    "expected_stdout": "ERR"
+   },
+   {
+    "stdin": "[ [[\n\"\"  ], \"\"\n]]\n",
+    "expected_stdout": "[[[\"\"],\"\"]]"
+   },
+   {
+    "stdin": "[-0.25]\n",
+    "expected_stdout": "ERR"
+   },
+   {
+    "stdin": "[\"a\tb\"]",
+    "expected_stdout": "ERR"
+   },
+   {
+    "stdin": "{\"a\":1,\"b\":[true,null]}\n",
+    "expected_stdout": "{\"a\":1,\"b\":[true,null]}"
+   },
+   {
+    "stdin": "{\"a\": 1\n",
+    "expected_stdout": "ERR"
+   },
+   {
+    "stdin": "[\"a\\xb\"]\n",
+    "expected_stdout": "ERR"
+   },
+   {
+    "stdin": "[\"\\u0041\"]\n",
+    "expected_stdout": "[\"A\"]"
+   },
+   {
+    "stdin": "{\"b\":1,\"a\":2,\"b\":3}\n",
+    "expected_stdout": "{\"a\":2,\"b\":3}"
+   },
+   {
+    "stdin": "[01]\n",
+    "expected_stdout": "ERR"
+   },
+   {
+    "stdin": "[] x\n",
+    "expected_stdout": "ERR"
+   },
+   {
+    "stdin": "-0\n",
+    "expected_stdout": "0"
+   },
+   {
+    "stdin": "{\"z\":{\"b\":1,\"a\":2},\"a\":[]}\n",
+    "expected_stdout": "{\"a\":[],\"z\":{\"a\":2,\"b\":1}}"
+   },
+   {
+    "stdin": "[\"\\u0007x\"]\n",
+    "expected_stdout": "ERR"
+   },
+   {
+    "stdin": "[1.5]\n",
+    "expected_stdout": "ERR"
+   },
+   {
+    "stdin": "NaN\n",
+    "expected_stdout": "ERR"
+   }
+  ],
+  "answer": "",
+  "meta": {
+   "hard": 12
+  }
+ },
+ {
+  "tid": "m001",
+  "kind": "math",
+  "family": "witness_sqrt_mod",
+  "prompt": "求整数 x (0 <= x < 151) 满足 x^2 ≡ 50 (mod 151)。答案不唯一, 任何满足条件的 x 都算正确。\n\n请给出最终答案, 最后一行必须是 `FINAL: <答案>` 格式。",
+  "public": [],
+  "hidden": [],
+  "answer": "72",
+  "meta": {
+   "witness": {
+    "kind": "sqrt_mod",
+    "p": 151,
+    "a": 50
+   }
+  }
+ },
+ {
+  "tid": "m002",
+  "kind": "math",
+  "family": "witness_min_counterexample",
+  "prompt": "设命题 P(n) 为: n^2 - n + 41 是质数 (n 为整数)。求最小的 n >= 2 使 P(n) 为假。\n\n请给出最终答案, 最后一行必须是 `FINAL: <答案>` 格式。",
+  "public": [],
+  "hidden": [],
+  "answer": "41",
+  "meta": {
+   "witness": {
+    "kind": "min_counterexample",
+    "claim": "poly41_prime",
+    "n": 41
+   }
+  }
+ },
+ {
+  "tid": "m003",
+  "kind": "math",
+  "family": "witness_mod_inverse",
+  "prompt": "求整数 x (0 <= x < 151) 满足 (80 * x) mod 151 == 1。答案唯一, 给出该 x 即可。\n\n请给出最终答案, 最后一行必须是 `FINAL: <答案>` 格式。",
+  "public": [],
+  "hidden": [],
+  "answer": "17",
+  "meta": {
+   "witness": {
+    "kind": "mod_inverse",
+    "p": 151,
+    "a": 80
+   }
+  }
+ },
+ {
+  "tid": "m004",
+  "kind": "math",
+  "family": "witness_crt",
+  "prompt": "求整数 x (0 <= x < 2093) 满足下列同余方程组: x ≡ 1 (mod 7); x ≡ 0 (mod 13); x ≡ 4 (mod 23)。模数两两互素, 故该区间内解唯一。\n\n请给出最终答案, 最后一行必须是 `FINAL: <答案>` 格式。",
+  "public": [],
+  "hidden": [],
+  "answer": "533",
+  "meta": {
+   "witness": {
+    "kind": "crt",
+    "mods": [
+     7,
+     13,
+     23
+    ],
+    "rems": [
+     1,
+     0,
+     4
+    ]
+   }
+  }
+ }
+]

@@ -428,12 +428,85 @@ print("WIN %d" % t)
 REF_SRC["life_k"] = _REF_LIFE.strip()
 REF_SRC["sub_game"] = _REF_SUB_GAME.strip()
 
+# ---------------------------------------------------------------- R504 新游戏族 (nim_multi / wythoff) 参考解
+_REF_NIM_MULTI = r"""
+import sys
+d = sys.stdin.read().split()
+m = int(d[0])
+p = [int(x) for x in d[1:1 + m]]
+x = 0
+for a in p:
+    x ^= a
+if x == 0:
+    print("LOSE")
+else:
+    for i in range(m):
+        v = p[i] ^ x
+        if v < p[i]:
+            print("WIN %d %d" % (i + 1, p[i] - v))
+            break
+"""
+
+_REF_WYTHOFF = r"""
+import sys, math
+a, b = [int(x) for x in sys.stdin.read().split()[:2]]
+lim = max(a, b)
+phi = (1 + math.sqrt(5)) / 2
+ps = set()
+k = 0
+while True:
+    x, y = int(math.floor(k * phi)), int(math.floor(k * phi * phi))
+    if x > lim or y > lim:
+        break
+    ps.add((x, y))
+    ps.add((y, x))
+    k += 1
+if (a, b) in ps:
+    print("LOSE")
+else:
+    best = None
+    for i in range(a + 1):
+        for j in range(b + 1):
+            if i == 0 and j == 0:
+                continue
+            if not (i == 0 or j == 0 or i == j):
+                continue
+            if (a - i, b - j) in ps and (best is None or (i, j) < best):
+                best = (i, j)
+    print("WIN %d %d" % best)
+"""
+
+_MUT_NIM_GREEDY = r"""
+import sys
+d = sys.stdin.read().split()
+m = int(d[0])
+p = [int(x) for x in d[1:1 + m]]
+i = p.index(max(p))
+print("WIN %d %d" % (i + 1, p[i]))
+"""
+
+_MUT_WYTH_GREEDY = r"""
+import sys
+a, b = [int(x) for x in sys.stdin.read().split()[:2]]
+if a == b:
+    print("WIN %d %d" % (a, a))
+elif a > b:
+    print("WIN %d 0" % (a - b))
+else:
+    print("WIN 0 %d" % (b - a))
+"""
+
+REF_SRC["nim_multi"] = _REF_NIM_MULTI.strip()
+REF_SRC["wythoff"] = _REF_WYTHOFF.strip()
+
 FAMILY_MUTATIONS = {
     ("topo_min", "topo_dfs"): _MUT_TOPO_DFS.strip(),
     ("vm_run", "vm_noerr"): _MUT_VM_NOERR.strip(),
     ("json_mini", "json_loose"): _MUT_JSON_LOOSE.strip(),
     ("life_k", "life_wrap"): _MUT_LIFE_WRAP.strip(),
     ("sub_game", "sub_greedy"): _MUT_SUB_GREEDY.strip(),
+    ("nim_multi", "nim_greedy"): _MUT_NIM_GREEDY.strip(),
+    ("wythoff", "wyth_greedy"): _MUT_WYTH_GREEDY.strip(),
 }
 
 
@@ -1031,6 +1104,27 @@ def selftest() -> int:
     rw2 = run(wit, "mutation:wrongfinal", 5.0)
     chk("负控: 见证型题错见证被判红", rw2["rate"] < 1.0 and bool(rw2["taxonomy"].get("wrong_witness")),
         "rate=%.4f tax=%s" % (rw2["rate"], rw2["taxonomy"]))
+
+    # ---- R504 扩面: 新游戏族 (nim_multi / wythoff) + CRT 见证型, 均须「oracle 满分 + 看似实现者整题判红」
+    for fam, mut, label in (("nim_multi", "nim_greedy", "恒取最大堆全取"),
+                            ("wythoff", "wyth_greedy", "只消堆差(漏双堆同步取)")):
+        ttf = [json.loads(taskgen.gen_program_task(i, [fam], rnd).to_json()) for i in (1, 2, 3, 4)]
+        rof = run(ttf, "oracle", 5.0)
+        chk("正控: %s(新游戏族) oracle 满分" % fam, rof["rate"] == 1.0,
+            "rate=%.4f tax=%s" % (rof["rate"], rof["taxonomy"]))
+        rmf = run(ttf, "mutation:%s" % mut, 5.0)
+        chk("负控: %s %s 整题零通过" % (fam, label),
+            rmf["final_whole_ok"] == 0 and rmf["rate"] < rof["rate"]
+            and "wrong_output" in rmf["taxonomy"],
+            "whole_ok=%s rate=%.4f/%s tax=%s" % (rmf["final_whole_ok"], rmf["rate"],
+                                                 rof["rate"], rmf["taxonomy"]))
+    crt = [json.loads(taskgen.gen_math_task(i, ["witness_crt"], rnd).to_json()) for i in (1, 2, 3)]
+    rco = run(crt, "oracle", 5.0)
+    chk("正控: witness_crt oracle 满分(判定=验同余式, 非比对标签)", rco["rate"] == 1.0,
+        "rate=%.4f tax=%s" % (rco["rate"], rco["taxonomy"]))
+    rcm = run(crt, "mutation:wrongfinal", 5.0)
+    chk("负控: witness_crt 错见证(x+1)被判红", rcm["rate"] == 0.0
+        and "wrong_witness" in rcm["taxonomy"], "rate=%.4f tax=%s" % (rcm["rate"], rcm["taxonomy"]))
 
     chk("oracle 参考解覆盖全部程序族(反覆盖缺口)",
         all(f in REF_SRC for f in sorted(taskgen.PROGRAM_FAMILIES)),

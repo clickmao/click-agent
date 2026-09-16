@@ -1066,6 +1066,156 @@ def _in_sub_game(rnd):
     return _nl(["%d %d" % (rnd.randint(1, 80), k), " ".join(str(x) for x in ss)])
 
 
+# ---------------------------------------------------------------- 游戏族: Nim (多堆) 与 Wythoff (R504 扩面)
+# 两族都是**完全信息有限游戏**: 必败/必胜态由独立理论刻画, 判据 = 「是否必胜 + 一个必胜着法」
+# ⇒ 与既有族同构 (字节可判), 且失败模式可按族聚合 (贪心/丢取子数/漏双堆取)。
+
+def _nim_parse(s):
+    lines = [ln for ln in s.strip().splitlines() if ln.strip()]
+    m = int(lines[0].split()[0])
+    piles = [int(x) for x in lines[1].split()]
+    assert 1 <= m <= 4 and len(piles) == m and all(1 <= x <= 15 for x in piles), "题面解析失败: %r" % s
+    return m, piles
+
+
+def _p_nim_multi_ref(s):
+    """位运算 nim-sum: 每堆至多一个必胜着法 (把该堆减到 ai xor X)。"""
+    m, piles = _nim_parse(s)
+    x = 0
+    for a in piles:
+        x ^= a
+    if x == 0:
+        return None
+    for i in range(m):
+        v = piles[i] ^ x
+        if v < piles[i]:
+            return (i + 1, piles[i] - v)
+    raise AssertionError("nim-sum 非 0 时必存在必胜着法")
+
+
+def _p_nim_multi_check(s):
+    """独立实现: 记忆化递归极小极大 (枚举**全部**着法), 取 (堆号, 取子数) 字典序最小的必胜着法。"""
+    m, piles = _nim_parse(s)
+    memo = {}
+
+    def win(t):
+        """t = 降序元组(已去零); True = 轮到走者**必胜**。
+        递归: W(t) = 存在走到 nt 使 W(nt) == False; 基态 W(()) = False (无着法可走者输)。"""
+        if not t:
+            return False
+        if t not in memo:
+            res = False
+            for idx in range(len(t)):
+                for take in range(1, t[idx] + 1):
+                    nt = [v for j, v in enumerate(t) if j != idx] + [t[idx] - take]
+                    if not win(tuple(sorted([v for v in nt if v > 0], reverse=True))):
+                        res = True
+                        break
+                if res:
+                    break
+            memo[t] = res
+        return memo[t]
+
+    if not win(tuple(sorted(piles, reverse=True))):
+        return None
+    wins = []
+    for i in range(m):
+        for take in range(1, piles[i] + 1):
+            nt = list(piles)
+            nt[i] -= take
+            if not win(tuple(sorted([v for v in nt if v > 0], reverse=True))):
+                wins.append((i + 1, take))
+    assert wins, "check: 必胜态必须存在必胜着法"
+    return min(wins)
+
+
+def _in_nim_multi(rnd):
+    m = rnd.randint(1, 4)
+    return _nl(["%d" % m, " ".join(str(rnd.randint(1, 15)) for _ in range(m))])
+
+
+def _wyth_parse(s):
+    a, b = (int(x) for x in s.strip().split())
+    assert 1 <= a <= 25 and 1 <= b <= 25, "题面解析失败: %r" % s
+    return a, b
+
+
+def _wyth_is_p(x, y, ps):
+    return (min(x, y), max(x, y)) in ps
+
+
+def _wyth_p_set_formula(lim):
+    """P 态 (冷态) 由 Beatty 序列给出: (floor(k*phi), floor(k*phi^2))。"""
+    phi = (1 + math.sqrt(5)) / 2
+    out, k = set(), 0
+    while True:
+        x, y = int(math.floor(k * phi)), int(math.floor(k * phi * phi))
+        if x > lim or y > lim:
+            break
+        out.add((x, y))
+        k += 1
+    return out
+
+
+def _wyth_p_set_mex(lim):
+    """独立构造: 逐 k 取尚未用过的最小非负整数 a_k, 令 b_k = a_k + k (标准 mex 构造)。"""
+    used, out, k = set(), set(), 0
+    while True:
+        a = 0
+        while a in used:
+            a += 1
+        b = a + k
+        if a > lim or b > lim:
+            break
+        out.add((a, b))
+        used.add(a)
+        used.add(b)
+        k += 1
+    return out
+
+
+def _wyth_moves(a, b, ps):
+    """全部必胜着法 (i, j): 从第一堆取 i / 第二堆取 j, 合法 (i 或 j 为 0, 或 i == j)。"""
+    out = []
+    for i in range(0, a + 1):
+        for j in range(0, b + 1):
+            if i == 0 and j == 0:
+                continue
+            if not (i == 0 or j == 0 or i == j):
+                continue
+            if _wyth_is_p(a - i, b - j, ps):
+                out.append((i, j))
+    return out
+
+
+def _p_wythoff_ref(s):
+    a, b = _wyth_parse(s)
+    ps = _wyth_p_set_formula(max(a, b))
+    if _wyth_is_p(a, b, ps):
+        return None
+    mv = _wyth_moves(a, b, ps)
+    if not mv:
+        raise AssertionError("非 P 态必存在到 P 态的着法")
+    return min(mv)
+
+
+def _p_wythoff_check(s):
+    a, b = _wyth_parse(s)
+    ps = _wyth_p_set_mex(max(a, b))
+    if _wyth_is_p(a, b, ps):
+        return None
+    mv = _wyth_moves(a, b, ps)
+    assert mv, "check: 非 P 态必存在到 P 态的着法"
+    t = min(mv)
+    assert _wyth_is_p(a - t[0], b - t[1], ps), "check: 该着法未把对手置于 P 态"
+    assert t[0] == 0 or t[1] == 0 or t[0] == t[1], "check: 着法非法"
+    return t
+
+
+def _in_wythoff(rnd):
+    return _nl(["%d %d" % (rnd.randint(1, 25), rnd.randint(1, 25))])
+
+
 PROGRAM_FAMILIES = {
     "max_subarray": {
         "spec": "读入: 第一行整数 n; 第二行 n 个整数(空格分隔)。输出: 连续子数组的最大和(至少取一个元素)。",
@@ -1165,6 +1315,30 @@ PROGRAM_FAMILIES = {
         "check": _p_sub_game_check,
         "gen_input": _in_sub_game,
         "fmt": lambda r: "LOSE" if r is None else "WIN %d" % r,
+    },
+    "nim_multi": {
+        "spec": ("读入: 第一行一个整数 m (1<=m<=4, 石子堆数); "
+                 "第二行 m 个整数 a1..am (1<=ai<=15, 每堆石子数)。"
+                 "玩法: 两人轮流进行, 每次从**某一堆**中取走任意正数目的石子 (不能跨堆取, 也不限定数目, "
+                 "只要不超该堆现有石子); 取走最后一颗石子者胜。"
+                 "输出: 先手有必胜策略时输出一行 `WIN p r` —— p 为必胜着法中**堆号最小**者 (堆号从 1 开始), "
+                 "r 为从该堆取走的石子数 (每堆至多存在一个必胜着法); 先手必败时输出一行 `LOSE`。"),
+        "ref": _p_nim_multi_ref,
+        "check": _p_nim_multi_check,
+        "gen_input": _in_nim_multi,
+        "fmt": lambda r: "LOSE" if r is None else "WIN %d %d" % (r[0], r[1]),
+    },
+    "wythoff": {
+        "spec": ("读入: 一行两个整数 a b (1<=a<=25, 1<=b<=25), 表示两堆石子的颗数。"
+                 "玩法: 两人轮流进行, 每次可选 (i) 从**任意一堆**中取走任意正数目的石子, 或 "
+                 "(ii) 从**两堆**中同时取走**相同**的正数目的石子; 取走最后一颗石子者胜。"
+                 "输出: 先手必败时输出一行 `LOSE`; 否则输出一行 `WIN i j` —— 表示从第一堆取 i 颗、"
+                 "第二堆取 j 颗, 且要求 (i, j) 在全部必胜着法中按**字典序最小** (先比 i 再比 j; "
+                 "i, j >= 0 且不同时为 0)。"),
+        "ref": _p_wythoff_ref,
+        "check": _p_wythoff_check,
+        "gen_input": _in_wythoff,
+        "fmt": lambda r: "LOSE" if r is None else "WIN %d %d" % (r[0], r[1]),
     },
 }
 
@@ -1357,6 +1531,20 @@ HARD_INPUTS = {
                  _nl(["4 1", "1"]),
                  _nl(["7 3", "1 2 5"]),
                  _nl(["6 2", "1 5"])],
+    "nim_multi": [_nl(["1", "1"]),
+                  _nl(["2", "7 7"]),
+                  _nl(["3", "1 2 3"]),
+                  _nl(["4", "1 1 1 1"]),
+                  _nl(["2", "5 3"]),
+                  _nl(["4", "15 15 1 1"]),
+                  _nl(["3", "9 5 12"])],
+    "wythoff": [_nl(["1 2"]),
+                _nl(["3 5"]),
+                _nl(["4 7"]),
+                _nl(["6 10"]),
+                _nl(["1 1"]),
+                _nl(["2 25"]),
+                _nl(["25 25"])],
     "life_k": [_nl(["1 1 0", "."]),
                _nl(["3 3 1", "...", "###", "..."]),
                _nl(["1 3 1", "###"]),
@@ -1476,6 +1664,51 @@ def _w_counterexample_gen(rnd):
     return {"kind": "min_counterexample", "claim": name, "n": n}
 
 
+# ---- CRT 见证型 (R504 扩面): 模数两两互素 ⇒ [0, M) 内解唯一; 判定端按同余式独立验算
+_CRT_MODS = [3, 5, 7, 11, 13, 17, 19, 23]
+
+
+def _w_crt_gen(rnd):
+    ms = _w_crt_mods(rnd)
+    rs = [rnd.randint(0, mm - 1) for mm in ms]
+    return {"kind": "crt", "mods": ms, "rems": rs}
+
+
+def _w_crt_mods(rnd):
+    while True:
+        ms = rnd.sample(_CRT_MODS, 3)
+        if len(set(ms)) == 3:
+            return sorted(ms)
+
+
+def _w_crt_M(m):
+    out = 1
+    for x in m["mods"]:
+        out *= x
+    return out
+
+
+def _w_crt_ref(m):
+    """朴素扫描: [0, M) 内唯一解 (M <= 23*19*17 = 7429, 扫描上限可控)。"""
+    M = _w_crt_M(m)
+    for v in range(M):
+        if all((v - r) % mm == 0 for r, mm in zip(m["rems"], m["mods"])):
+            return v
+    raise AssertionError("CRT 无解 (模数应两两互素)")
+
+
+def _w_crt_check(m):
+    """独立实现: 显式 Garner 构造 (逐模求逆), 再回代全部同余式自检。"""
+    M = _w_crt_M(m)
+    x = 0
+    for r, mm in zip(m["rems"], m["mods"]):
+        Mi = M // mm
+        x = (x + r * Mi * pow(Mi, -1, mm)) % M
+    assert 0 <= x < M and all((x - r) % mm == 0 for r, mm in zip(m["rems"], m["mods"])), \
+        "check: Garner 解不合规"
+    return x
+
+
 WITNESS_FAMILIES = {
     # answer = 生成器已知的**一个**合法见证, 仅供 oracle 正控与可复现性使用;
     # 判定端(grade.py)不比对 answer, 而是独立验证见证语义 ⇒ 多解不算错, 错解必被拒。
@@ -1496,6 +1729,13 @@ WITNESS_FAMILIES = {
             "设命题 P(n) 为: %s (n 为整数)。求最小的 n >= %d 使 P(n) 为假。"
             % (CLAIMS[m["claim"]]["expr"], CLAIMS[m["claim"]]["n_min"])),
         "answer": lambda m: str(m["n"]),
+    },
+    "witness_crt": {
+        "gen": _w_crt_gen, "spec": lambda m: (
+            "求整数 x (0 <= x < %d) 满足下列同余方程组: %s。模数两两互素, 故该区间内解唯一。"
+            % (_w_crt_M(m), "; ".join("x ≡ %d (mod %d)" % (r, mm)
+                                      for r, mm in zip(m["rems"], m["mods"])))),
+        "answer": lambda m: str(_dual(_w_crt_ref, _w_crt_check, m)),
     },
 }
 
@@ -1712,6 +1952,11 @@ def selftest() -> int:
             chk("见证型 answer 是合法见证(oracle 正控可用)",
                 av is not None and 0 <= av < m["p"] and (av * m["a"]) % m["p"] == 1,
                 "answer=%r p=%d a=%d" % (tt.answer, m["p"], m["a"]))
+        elif kind == "crt":
+            chk("见证型 answer 是合法见证(oracle 正控可用)",
+                av is not None and 0 <= av < _w_crt_M(m)
+                and all((av - r) % mm == 0 for r, mm in zip(m["rems"], m["mods"])),
+                "answer=%r mods=%r rems=%r" % (tt.answer, m["mods"], m["rems"]))
         else:
             chk("见证型 answer 是最小反例", av == m.get("n"), "answer=%r n=%r" % (tt.answer, m.get("n")))
         if m.get("kind") == "sqrt_mod":
@@ -1731,6 +1976,16 @@ def selftest() -> int:
                 "p=%d a=%d 解数=%d" % (m["p"], m["a"], len(sols)))
             w = (av + 1) % m["p"]
             chk("见证型 mod_inverse 错见证必须被拒", (m["a"] * w) % m["p"] != 1, "反例 x=%d" % w)
+        elif kind == "crt":
+            M = _w_crt_M(m)
+            sols = [x for x in range(M) if all((x - r) % mm == 0 for r, mm in zip(m["rems"], m["mods"]))]
+            two = all(math.gcd(ms1, ms2) == 1 for i, ms1 in enumerate(m["mods"]) for ms2 in m["mods"][i + 1:])
+            chk("见证型 crt 模数两两互素且解唯一",
+                len(sols) == 1 and sols[0] == av and two and all(mm > 1 for mm in m["mods"]),
+                "mods=%r 解数=%d" % (m["mods"], len(sols)))
+            w = ((av if av is not None else 0) + 1) % M
+            chk("见证型 crt 错见证必须被拒",
+                not all((w - r) % mm == 0 for r, mm in zip(m["rems"], m["mods"])), "反例 x=%d" % w)
         else:
             C = CLAIMS[m["claim"]]
             n = m["n"]
