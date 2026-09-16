@@ -1,0 +1,78 @@
+{
+ "round": "R492",
+ "title": "付费量口径审计: 中继真值 vs 宿主打点 (发现宿主漏记付费调用) + G2 判据 supersede + 明文产物入库 (其余候选按起手闸结转)",
+ "kind": "离线审计 (只用已录真机产物; 本轮**不起**上游/不起 AOT) + 文档/预注册收口",
+ "ts_local": "2026-09-16T16:16:56+0800",
+ "written_before": "先于本轮任何机检/审计执行; 数据源 = R490/R491 已录产物 (calls-/usage-/tel-)",
+ "user_directive": "2026-09-16 用户令: 所有候选并入一轮解决; 需裁定的按统计学最优默认执行; 「继续下轮」",
+ "prereg_immutable": "本文件落盘后不得事后修改; 与实测不符的条目一律按 checks_posthoc 单列, 不回改",
+ "why_this_round": "R491 汇报口径把「付费调用数」与「宿主遥测行数」当同义词 ⇒ 本回合核账发现 R491-Aroleb 中继 17 次付费调用 vs 宿主 llm_call 16 行 (漏 5,215+577 tok) ⇒ 必须先钉口径, 否则全部降幅读数存在系统性虚高",
+ "candidates": {
+  "C1": {
+   "name": "宿主打点漏记审计 (付费量双列口径)",
+   "status": "execute_now",
+   "method": "对每个被测臂机检: |relay_calls| vs |host llm_call rows|; 逐行按 (prompt_tokens,completion_tokens) 配对准确定位漏行; 计算漏记 token 与对降幅的虚高量"
+  },
+  "C2": {
+   "name": "G2 判据 supersede 预注册 (解析率≥0.90 / 悬空≤0.10 / 覆盖度单列 / 词面倒排兜底永久保留)",
+   "status": "execute_now",
+   "constraint": "R481-G 铁律「预注册不得事后改」⇒ 只新增 supersede 文件并记旧文件 sha256, 不回改 prereg_r481a.json"
+  },
+  "C3": {
+   "name": "付费调用明文产物入库 (paid-plaintext 12 件 + 3 个导出器具)",
+   "status": "execute_now"
+  },
+  "C4": {
+   "name": "配对剪裁门开真机 T×3 (验收 leak 20→0 ∧ token 不升 ∧ replay_user_trimmed>0)",
+   "status": "deferred_gate_red",
+   "reason": "起手闸 MemAvailable 2078 MB < 2650 MB ∧ 对侧 dotnet 门禁在跑 (pid 1827142) ⇒ 不抢窗口"
+  },
+  "C5": {
+   "name": "禁常量兜底臂真跑 (把 R482-Q 的 11.78% 代理假设换实测)",
+   "status": "deferred_gate_red",
+   "reason": "同上: 需上游窗口"
+  },
+  "C6": {
+   "name": "R486 门禁 + 提交",
+   "status": "deferred_gate_red",
+   "reason": "同上: 需 dotnet 窗口 (对侧占用中)"
+  },
+  "C7": {
+   "name": "链级 E2E (含工具 + 长上下文) 总 token 前后对比",
+   "status": "deferred_gate_red",
+   "reason": "需上游窗口 + AOT 重发布"
+  },
+  "C8": {
+   "name": "EXP1 面重审 (DRIFT 器具声明)",
+   "status": "deferred_writer_conflict",
+   "reason": "对侧 EXP1-Q34 正在写 verification-registry.json (pid 1827132 -> run_gate_q34.sh) ⇒ 避双写"
+  }
+ },
+ "hypotheses": {
+  "H1": {
+   "claim": "所有被测臂 relay_paid_calls >= host_llm_call_rows (gap >= 0); 且 R491-Aroleb gap == 1 (漏 seq13: 5215+577 tok)",
+   "primary": true
+  },
+  "H2": {
+   "claim": "声明门开的 T 臂 (R491 T1/T2/T3) gap == 0 (无工具轮 ⇒ 无续调用漏记面)"
+  },
+  "H3": {
+   "claim": "gap 只出现在「工具轮之后的续调用」面 (即该臂存在 finish_reason=tool_calls 的调用); 无工具轮臂 gap == 0",
+   "note": "若不符: 只收窄解释, 不改本文件"
+  },
+  "H4": {
+   "claim": "口径铁律可机检: 汇总分母一律取中继真值; 宿主打点只作第二列; 若发现任一报告用宿主行数当付费量 ⇒ 判红并列出受影响读数"
+  }
+ },
+ "negative_controls": {
+  "NC1": "审计器注入: 人为从宿主行集合删一行 ⇒ 必检出 gap+1 (fail-closed 自检)",
+  "NC2": "审计器注入: 人为从宿主行集合加一行 ⇒ 必报 host>relay (反向红)",
+  "NC3": "sealed: 未改预注册"
+ },
+ "fail_action": "任一 FAIL ⇒ 收窄宣称并单列 checks_posthoc; 不重跑凑绿; 不改本文件",
+ "honest_limits_expected": [
+  "只覆盖已录产物 (R490 三臂 + R491 四臂); 未闭合臂 (R491-R) 无数据",
+  "不解释漏记的**代码级**根因 (需 dotnet 窗口读实现/加打点), 本轮只给可机检的事实与影响量",
+  "本审计不重跑任何真机调用 ⇒ 无新 token 读数"
+ ]
+}

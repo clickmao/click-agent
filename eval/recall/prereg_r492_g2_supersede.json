@@ -1,0 +1,29 @@
+{
+ "round": "R492-G2",
+ "kind": "判据 supersede 声明 (不改旧预注册文件)",
+ "ts_local": "2026-09-16T16:16:56+0800",
+ "supersedes": {
+  "path": "eval/recall/prereg_r481a.json",
+  "sha256": "bed52c5bd9d9dcd76b2258c2a21f7ee26bb5fb7056adc1b58ac72ee0bce14f5c",
+  "untouched": true,
+  "why_not_edited": "R481-G 铁律: 预注册不得事后改 ⇒ 只新增本 supersede 文件, 旧文件逐字节保留"
+ },
+ "conflict_resolved": {
+  "old": "G2: dangling_rate <= 0.35",
+  "new_acceptance": "dangling_rate <= 0.10",
+  "old_role_demoted": "<= 0.35 降级为「过程指示线」(只用于分档说明, 不作验收)",
+  "basis": "dev plan 侧口径 (<=0.10) 与旧预注册 (<=0.35) 冲突 ⇒ 取更严者作验收线, 避免同一读数双标"
+ },
+ "locked_caliber": {
+  "G1": "resolved_rate >= 0.90 (验收线)",
+  "G2": "dangling_rate <= 0.10 (验收线)",
+  "G3": "rel_ok_rate >= 0.85 (验收线)",
+  "G4": "per_file_p50_refs >= 1 (成立前提线)",
+  "coverage": "覆盖度单列 (不作验收, 只报数)",
+  "word_inverted_fallback": "永久保留 (词面倒排兜底不清退)",
+  "cross_url": "一律 unreported (离线不可验证), 禁当 0",
+  "falsified_if": "resolved_rate < 0.70 或 per_file_p50_refs == 0 ⇒ 地址自描述路线不成立"
+ },
+ "effective_from": "本文件落盘后, 任何 G1-G4 读数一律按 locked_caliber 判; 与旧文件冲突处以本文件为准",
+ "posthoc_rule": "本文件落盘后不得事后修改; 若实测不符 ⇒ 宣称收窄 + checks_posthoc 单列"
+}
