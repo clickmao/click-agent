@@ -294,13 +294,21 @@ TEST_VECTOR_DOC = {
         'trace': {'commands': 7, 'events': 3, 'log_bytes': 4096,
                   'raw_paths_sample': ['/tmp/a.py', '/tmp/b.py']},
         'census_in_repo_cwd': [{'pid': 11, 'cmd': 'sleep'}, {'pid': 12, 'cmd': 'sleep'}],
-        'foreign_writes': [{'path': 'docs/x.md', 'sha_before': 'aaaa', 'sha_after': 'bbbb'}],
+        'foreign_writes': [{'path': 'docs/x.md', 'sha_before': 'aaaa', 'sha_after': 'bbbb',
+                            'note': 'changed-in-window',
+                            'live_fd': [{'pid': 13, 'fd': '1', 'accmode': 1, 'path': 'docs/x.md'}]}],
+        'pre_existing': ['eval/a.json', 'docs/b.md'],
+        'self_writes': [{'path': 'eval/capability/vector.runtime.json',
+                         'evidence': {'cmd': 12, 'pid': '999', 'syscall': 'openat'}}],
         'live_fd_scan': {'scanned': 5, 'errors': 0},
+        'conservation': {'classified': 9, 'expected': 9, 'in_scope_after': 9, 'ok': True},
+        'verdict': 'clean', 'red': False, 'measurement_ok': True, 'reasons': [],
     },
     'results': [{'id': 'i0', 'rc': 0, 'pass': True}, {'id': 'i1', 'rc': 3, 'pass': False}],
     'nested': {'n': None, 'flag': False},
 }
-TEST_VECTOR_SHA12 = 'bbd6b93aa9f0'
+TEST_VECTOR_SHA12 = 'b989a219bcf4'   # EXP1-Q35: 遮蔽族扩容 (pre_existing/self_writes/foreign_writes/conservation 计数/errors)
+                                     #   + 向量补齐同族字段 ⇒ 向量摘要变更 (口径断点: 与 EXP1-Q34 的 bbd6b93aa9f0 不可比)
 
 
 def _get(doc, path):
@@ -408,6 +416,11 @@ def selftest():
                               'raw_paths_sample': ['/tmp/probe_%s/sol.py' % neigh]},
                     'census_in_repo_cwd': [{'pid': 1, 'cmd': 'sleep 10', 'cwd': '.'}],
                     'foreign_writes': [{'path': 'a', 'sha_before': 'x', 'sha_after': 'y'}],
+                    # EXP1-Q35: 新增遮蔽族 (pre_existing / self_writes / conservation 计数 / errors)
+                    'pre_existing': ['eval/a.json'],
+                    'self_writes': [{'path': 'eval/x.runtime.json',
+                                     'evidence': {'cmd': 3, 'pid': '77', 'syscall': 'openat'}}],
+                    'conservation': {'classified': 5, 'expected': 5, 'in_scope_after': 5, 'ok': True},
                     'live_fd_scan': {'scanned': 277, 'errors': 105}},
                 'canon': {'runtime_sidecar': 'eval/x.runtime.json'},
                 'results': [{'id': 'i0', 'rc': rc0, 'pass': rc0 == 0, 'cmd': 'python3 x.py --selftest'}]}
@@ -455,8 +468,25 @@ def selftest():
         dc, _ = proj_digest(cc)
         cases['proj_digest_ignores_runtime_and_neighbourhood'] = (da == db)
         cases['proj_digest_changes_on_semantic_perturbation'] = (da != dc)
-        cases['proj_rules_loaded_from_data_file'] = (len(PROJECTION_RULES) == 11 and os.path.exists(RULES_PATH))
+        cases['proj_rules_loaded_from_data_file'] = (len(PROJECTION_RULES) == 16 and os.path.exists(RULES_PATH))
         cases['proj_digest_cross_language_vector'] = (proj_digest(TEST_VECTOR_DOC)[0] == TEST_VECTOR_SHA12)
+        # EXP1-Q35: 干净窗口 (foreign_writes/self_writes/pre_existing 皆空) —— 真面在「零他人写入」时
+        #   必然出现; strict 模式会因规则空心判弃权 ⇒ 非 strict (锚规则仍 fail-closed) 必须能出摘要。
+        clean = json.loads(json.dumps(ca))
+        for k in ('foreign_writes', 'self_writes', 'pre_existing', 'census_in_repo_cwd'):
+            clean['side_effect_attribution'][k] = []
+        dc2, mc2 = proj_digest(clean, strict=False)
+        cases['clean_window_projection_computable'] = (dc2 is not None and dc2 != pa)
+        cases['clean_window_hollow_rules_listed'] = (set(mc2['hollow_rules']) >= {
+            'side_effect_attribution/foreign_writes', 'side_effect_attribution/self_writes',
+            'side_effect_attribution/pre_existing'})
+        noanchor = json.loads(json.dumps(clean))
+        del noanchor['side_effect_attribution']['window']['t0']
+        try:
+            proj_digest(noanchor, strict=False)
+            cases['anchor_rule_missing_rejected'] = False
+        except KeyError:
+            cases['anchor_rule_missing_rejected'] = True
         try:
             proj_digest({'results': [{'rc': 1.5}]})
             cases['proj_digest_unrenderable_fail_closed'] = False
@@ -471,7 +501,7 @@ def selftest():
         try:
             dty, mty = proj_digest(TEST_VECTOR_DOC)
             cases['proj_digest_hollow_non_anchor_tolerated_and_visible'] = (
-                len(mty['hollow_rules']) == 0 and len(mty['rules_applied']) == 11)
+                len(mty['hollow_rules']) == 0 and len(mty['rules_applied']) == len(PROJECTION_RULES))
         except KeyError:
             cases['proj_digest_hollow_non_anchor_tolerated_and_visible'] = False
         # 回读: 侧车 + 记录都能解析, 且记录里不含墙钟值

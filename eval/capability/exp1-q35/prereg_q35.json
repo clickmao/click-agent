@@ -1,0 +1,90 @@
+{
+ "schema": "exp1-q35-prereg/1",
+ "round": "EXP1-Q35",
+ "plan_item": "docs/plans/v0.22.0-longterm-backlog.md 表首行 exp1 (本地索引/代码引用图, 进行中) —— 本轮 = 该计划项下轮候选 AI.4 五项全并轮",
+ "prereg_written_at": "before any Q35 measurement (fail-closed: 先注册后测量)",
+ "scope": [
+  "AI.4-1 定位投影里的逐跑变化语义叶",
+  "AI.4-2 r444 投影 pin 走器具派生路径复验 (替代文本定点写入)",
+  "AI.4-3 87 件不可入库裁定的 license 逐件复核",
+  "AI.4-4 depth-3 递归 (独立预注册轮)",
+  "AI.4-5 面记录自指字段是否纳入投影遮蔽族"
+ ],
+ "prereq_gate": {
+  "note": "前提核验门先于实现: 五项候选的前提在现盘逐项实测 (禁「文件里能看到」当前提成立)",
+  "AI.4-1": "keep1 归档在场 (eval/capability/exp1-q34/face_record_q34_keep1.json, 需核字节数) + 面全量跑为 python/bash-only 面 (无 dotnet 真机面 ⇒ 单变量可比) + 投影规则表可解析",
+  "AI.4-2": "Q34 提交 f542575 是否为 HEAD 祖先 (决定 derive 会得 frozen 还是 worktree-only)",
+  "AI.4-3": "87 件 external_asset 现场在盘率 (gone ⇒ 该件只能落 no_evidence, 不得编造许可)",
+  "AI.4-4": "depth-2 读数文件 + 分类器单源 (importlib) 可用",
+  "AI.4-5": "同源于 AI.4-1 的逐叶差分读数"
+ },
+ "preregistered_judgements": [
+  {
+   "id": "D1a",
+   "name": "逐跑变化语义叶 = 可归因 (定位判据)",
+   "statement": "同树态连续两跑 (T1, T2; 间隔 <= 180 s; 本侧在窗口内不对仓内做任何写入) 的全量面记录, 按投影规则遮蔽后仍存在的差异叶集合 D_run 必须**逐条可归因**: 每个叶路径须能指到一个机制 (本面命令自写产物的 sha / 并发写者或环境依赖字段 / 墙钟族), 且归因须由**独立读数**证明 (如该路径出现在 side_effect_attribution 的 self_writes/foreign_writes/pre_existing 名单内)。",
+   "verdict_rule": "D_run 为空 ⇒ 定位=「同树态下无逐跑变化语义叶」(强结论, 需 T3 第三跑复核); D_run 非空且全部可归因 ⇒ 定位成功 (逐条列出归因); 存在无法归因的叶 ⇒ 判 FAIL(未定位), 不得宣称「重跑面不再打红冻结 pin」。"
+  },
+  {
+   "id": "D1b",
+   "name": "D_run 的预注册族 (分支预测)",
+   "statement": "预注册预测 D_run 的叶路径落在两族之一: ① `/results/{id}/sha12` 中**其 evidence_path 被本面命令自身在窗内重写**者 (自写证据重算 sha); ② `/side_effect_attribution/*` 的计数/名单族 (窗内并发写者与残留文件随环境变化)。",
+   "verdict_rule": "实测差异落于该二族之外 ⇒ 记「预注册被证伪」并单列 checks_posthoc (不禁改判据); 落于族内 ⇒ 预测命中。"
+  },
+  {
+   "id": "D1c",
+   "name": "跨树态差异必须归因 (keep1 vs T1)",
+   "statement": "keep1 (16:11:08, Q34 期) 与 T1 的投影差异叶必须逐条归因到**已登记的树态变化** (R491/R492 登记行 / 提交 / 证据文件内容变化)。",
+   "verdict_rule": "全部归因 ⇒ 记「跨树态差异非随机」; 有未归因叶 ⇒ 单列 UNATTRIBUTED_DELTA (不判红, 但禁宣称「差异只有 committed-state 一条」)。"
+  },
+  {
+   "id": "D2",
+   "name": "r444 投影 pin 器具派生可复现 (替代文本定点写入)",
+   "statement": "以现盘为输入调用器具派生 (bind_evidence.derive) 得到的 r444.instrument-acceptance 投影摘要, 必须与行上已存 artifact_sha12 逐字节相等; 且官方入口 `--apply --only <该行> --round EXP1-Q35` 必须报 UNCHANGED (零写入) 与 R2E_R2F_EXIT=0。",
+   "verdict_rule": "相等 + UNCHANGED ⇒ 该 pin 由器具派生路径可复现 (Q34 的文本定点写入不再是唯一路径); 不等 ⇒ 判「行上 pin 陈旧」并如实报两侧值 (不静默改写)。"
+  },
+  {
+   "id": "D2n",
+   "name": "D2 的负控 (声明了投影 pin 但不可复算必须出声跳过)",
+   "statement": "在 scratch 副本登记表上把该行置为非 frozen (pin_status=live) 后调用派生, 必须抛 ProjectionPinUnavailable (rc 非零 / fail-visible), 不得写 null 假冻结。",
+   "verdict_rule": "抛错 ⇒ 负控成立; 静默通过 ⇒ 判 D2 的绿为空心 (改判据)。"
+  },
+  {
+   "id": "D3",
+   "name": "87 件 license 逐件复核三态 + 守恒",
+   "statement": "87 件外部裁定逐件给出许可证据读数, 落闭集三态 {resolved, partial, no_evidence}; 件数守恒 n_resolved + n_partial + n_no_evidence == 87; 解出的许可标识必须来自盘上真实文本 (nuspec/LICENSE/deps.json 引用链), 不得凭包名推断。",
+   "verdict_rule": "守恒成立 且 resolved+partial > 0 (证器具非恒 no_evidence) ⇒ 复核成立; 全 no_evidence ⇒ 先查器具 (不得宣称「外部资产无许可」)。"
+  },
+  {
+   "id": "D3n",
+   "name": "D3 的双向负控",
+   "statement": "① 正控: 对一件已知含许可文本的目录必须解出 >=1 许可标识; ② 负控: 对一件人工清空的临时目录必须落 no_evidence (不得编造), 且两类目录的读数必须不同 (非平凡)。",
+   "verdict_rule": "两侧读数互异 ⇒ 判别力自证; 否则判器具空心。"
+  },
+  {
+   "id": "D4",
+   "name": "depth-3 独立面判据 (计数 + 守恒 + 可比性声明)",
+   "statement": "depth-3 在独立命名空间下只出**计数**读数 (n_refs/n_distinct + 来源归属), 并断言: ① 每条 depth-3 边的 via 结点 ∈ depth-2 结点集合 (集合守恒); ② depth-3 面与 depth-2 面**不可比** (口径已变), 报告显式标注; ③ 若 depth-3 中出现归档类结点 ⇒ 单列 (二级归档物被再次引用)。",
+   "verdict_rule": "守恒成立 ⇒ depth-3 面成立 (只作计数, 不当分类宣称); 守恒破 ⇒ 判器具缺陷并回溯分类器。"
+  },
+  {
+   "id": "D5",
+   "name": "自指字段纳入遮蔽族的四条件门槛",
+   "statement": "AI.4-5 的决策 = 是否把「成员 verdict 引用了登记表/清单状态」的自指叶纳入投影遮蔽族。纳入须同时满足: ① 同树态复跑仍变 (D1 实测); ② 变化源为自写产物或并发/环境 (独立读数); ③ 语义扰动负控下摘要必变 (遮蔽后仍对语义敏感); ④ 声明字段真实存在 (frc 自检项)。",
+   "verdict_rule": "四条件全过 ⇒ 纳入并配负控; 条件①不成立 ⇒ **不纳入** (跨树态差异非逐跑噪声, 遮蔽将掩盖真实证据漂移), 改为登记「投影 pin 需随树态重取」的口径声明 + 写明重取条件。"
+  },
+  {
+   "id": "D6",
+   "name": "通用纪律",
+   "statement": "读数落 eval/capability/exp1-q35/*.json + kpi.jsonl 一行; 每轮记「修改点 + 性能/正确性读数」; 形式门禁 14/14; 禁 push (推送暂停令在效)。",
+   "verdict_rule": "门禁 10/14 之类不齐 ⇒ 不宣称轮次完成。"
+  }
+ ],
+ "comparability": {
+  "faces": "EXP1-Q35 新面独立命名空间 (eval/capability/exp1-q35/); 不覆盖 Q33/Q34 既有读数; 与 Q34 面的口径差异 (遮蔽族若变更) 必须在报告显式标注为可比性断点。"
+ },
+ "honesty": [
+  "本轮不宣称「重跑面不再打红冻结 pin」除非 D1a 给出同树态逐位相同的读数。",
+  "深链递归逐件裁定仍不宣称 (depth-3 只计数)。"
+ ]
+}

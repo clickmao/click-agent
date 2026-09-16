@@ -1,11 +1,11 @@
 {
  "schema": "instruments-check/5",
  "manifest": "eval/capability/instruments.json",
- "manifest_sha12": "ad97f379503a",
+ "manifest_sha12": "ba86425711b5",
  "instrument_sha12": "b4c5c34cb775",
  "face": "full",
  "only": null,
- "out": "eval/capability/instruments-check.json",
+ "out": "eval/capability/exp1-q35/face_q35_t1.json",
  "l2_field_checks": true,
  "input_surface_checks": true,
  "drift_injected": false,
@@ -27,7 +27,7 @@
    "trace_dir": "<runtime>"
   },
   "trace": {
-   "commands": 60,
+   "commands": 59,
    "events": 21,
    "raw_events": 6159,
    "raw_paths_n": 3105,
@@ -38,12 +38,12 @@
     "/home/agentuser/AgentFramework/.git/index.lock",
     "/home/agentuser/AgentFramework/.git/objects/0a",
     "/home/agentuser/AgentFramework/.git/objects/0a/4dc54ab1d00d601cccdcfe958827a59373bd4a",
-    "/home/agentuser/AgentFramework/.git/objects/0a/tmp_obj_MFbnuV",
-    "/home/agentuser/AgentFramework/.git/objects/0a/tmp_obj_poNhmq",
+    "/home/agentuser/AgentFramework/.git/objects/0a/tmp_obj_fsKD41",
+    "/home/agentuser/AgentFramework/.git/objects/0a/tmp_obj_kOND37",
     "/home/agentuser/AgentFramework/.git/objects/ba",
     "/home/agentuser/AgentFramework/.git/objects/ba/fc5d9a1a836cea09dadcec13e66fe498cd997a",
-    "/home/agentuser/AgentFramework/.git/objects/ba/tmp_obj_WwwPly",
-    "/home/agentuser/AgentFramework/.git/objects/ba/tmp_obj_kZiV49",
+    "/home/agentuser/AgentFramework/.git/objects/ba/tmp_obj_kYfrb3",
+    "/home/agentuser/AgentFramework/.git/objects/ba/tmp_obj_sWaimG",
     "/home/agentuser/AgentFramework/0a",
     "/home/agentuser/AgentFramework/4dc54ab1d00d601cccdcfe958827a59373bd4a",
     "/home/agentuser/AgentFramework/ApiKeyResolver.cs",
@@ -217,23 +217,23 @@
     "/home/agentuser/AgentFramework/update.sample",
     "/home/agentuser/AgentFramework/verdict_q31_hook_gate.json",
     "/home/agentuser/AgentFramework/x.py",
-    "/tmp/21b4rdk1",
-    "/tmp/2h6rep2u",
-    "/tmp/4xjzr6xi",
-    "/tmp/7k6ik3id",
-    "/tmp/8r7h3xo7",
-    "/tmp/agyg79ya",
-    "/tmp/at0h5byr",
-    "/tmp/docref-selftest-toi7dusr",
-    "/tmp/docref-selftest-toi7dusr/src",
-    "/tmp/docref-selftest-toi7dusr/src/agent",
-    "/tmp/docref-selftest-toi7dusr/src/agent/x",
-    "/tmp/docref-selftest-toi7dusr/src/agent/x/Alpha.cs",
-    "/tmp/docref-selftest-toi7dusr/src/agent/x/Beta.cs",
-    "/tmp/eds_81ss",
-    "/tmp/exp1q1-pdbd50kz"
+    "/tmp/0jvzj4_4",
+    "/tmp/3six9heo",
+    "/tmp/4p8vo__p",
+    "/tmp/6resrz02",
+    "/tmp/8nn0q9_q",
+    "/tmp/b_shmrbm",
+    "/tmp/bges79d9",
+    "/tmp/clxv5hxk",
+    "/tmp/docref-selftest-lg_nodcv",
+    "/tmp/docref-selftest-lg_nodcv/src",
+    "/tmp/docref-selftest-lg_nodcv/src/agent",
+    "/tmp/docref-selftest-lg_nodcv/src/agent/x",
+    "/tmp/docref-selftest-lg_nodcv/src/agent/x/Alpha.cs",
+    "/tmp/docref-selftest-lg_nodcv/src/agent/x/Beta.cs",
+    "/tmp/exp1q1-enuld1ij"
    ],
-   "log_bytes": 33893031,
+   "log_bytes": 33857712,
    "capped": false,
    "unresolved_relative": 0,
    "channel": "strace+audithook"
@@ -243,29 +243,52 @@
     "path": "eval/capability/instruments-check-drift.runtime.json",
     "evidence": {
      "cmd": 38,
-     "pid": "1887402",
+     "pid": "1864370",
      "syscall": "openat",
      "path": "eval/capability/instruments-check-drift.runtime.json",
      "failed_ret": false
     },
-    "sha_before": "ef3541ce918a",
-    "sha_after": "f8261594319f"
+    "sha_before": "ad3c38d08b5d",
+    "sha_after": "ad3c38d08b5d"
    },
    {
     "path": "eval/capability/instruments-check-scoped.runtime.json",
     "evidence": {
      "cmd": 37,
-     "pid": "1887379",
+     "pid": "1864325",
      "syscall": "openat",
      "path": "eval/capability/instruments-check-scoped.runtime.json",
      "failed_ret": false
     },
-    "sha_before": "208e254963f0",
-    "sha_after": "a68fd5307d2b"
+    "sha_before": "4dbf3d8864c9",
+    "sha_after": "4dbf3d8864c9"
    }
   ],
   "touched_and_gone": [],
-  "foreign_writes": [],
+  "foreign_writes": [
+   {
+    "path": "eval/capability/exp1-q35/face_q35_t1.out",
+    "sha_before": "e3b0c44298fc",
+    "sha_after": "2fb524040d6e",
+    "note": "changed-in-window",
+    "live_fd": [
+     {
+      "pid": 1862945,
+      "fd": "1",
+      "accmode": 1,
+      "path": "/home/agentuser/AgentFramework/eval/capability/exp1-q35/face_q35_t1.out",
+      "cmd": "/usr/bin/time -f TIME_t1 wall=%es maxrss=%MkB python3 -u eval/capability/instruments_check.py --out eval/capability/exp1-q35/face_q35_t1.json"
+     },
+     {
+      "pid": 1862945,
+      "fd": "2",
+      "accmode": 1,
+      "path": "/home/agentuser/AgentFramework/eval/capability/exp1-q35/face_q35_t1.out",
+      "cmd": "/usr/bin/time -f TIME_t1 wall=%es maxrss=%MkB python3 -u eval/capability/instruments_check.py --out eval/capability/exp1-q35/face_q35_t1.json"
+     }
+    ]
+   }
+  ],
   "pre_existing": [
    "eval/bge/r404/csharp-fusion-replay.json",
    "eval/capability/exp1-q22-controls/fixtures/c1.txt",
@@ -287,29 +310,8 @@
    "eval/capability/exp1-q29/scratch/reg_indent2.json",
    "eval/capability/exp1-q29/scratch/reg_nolf.json",
    "eval/capability/exp1-q29/scratch/reg_reorder.json",
-   "eval/capability/exp1-q30/check_committed_state_q30.py",
-   "eval/capability/exp1-q35/append_kpi_q35.py",
-   "eval/capability/exp1-q35/depth3_recursion_q35.json",
-   "eval/capability/exp1-q35/depth3_recursion_q35.py",
-   "eval/capability/exp1-q35/face_delta_q35.json",
-   "eval/capability/exp1-q35/face_delta_q35.py",
-   "eval/capability/exp1-q35/face_q35_t1.json",
-   "eval/capability/exp1-q35/face_q35_t1.out",
-   "eval/capability/exp1-q35/face_q35_t1.runtime.json",
-   "eval/capability/exp1-q35/face_q35_t2.json",
-   "eval/capability/exp1-q35/face_q35_t2.out",
-   "eval/capability/exp1-q35/face_q35_t2.runtime.json",
-   "eval/capability/exp1-q35/face_q35_t3.json",
-   "eval/capability/exp1-q35/face_q35_t3.out",
-   "eval/capability/exp1-q35/face_q35_t3.runtime.json",
-   "eval/capability/exp1-q35/license_audit_q35.json",
-   "eval/capability/exp1-q35/license_audit_q35.py",
    "eval/capability/exp1-q35/prereg_q35.json",
    "eval/capability/exp1-q35/run_face_t123.sh",
-   "eval/capability/face_record_canon.py",
-   "eval/capability/instruments-check.runtime.json",
-   "eval/capability/instruments.json",
-   "eval/capability/projection_rules.json",
    "eval/recall/check_r480.py",
    "eval/recall/focus_c.json",
    "eval/recall/focus_probe_c.py",
@@ -347,7 +349,7 @@
    "eval/capability/instruments-check-scoped.runtime.json"
   ],
   "live_fd_scan": {
-   "scanned": 181,
+   "scanned": 330,
    "errors": 105
   },
   "census_in_repo_cwd": [
@@ -357,29 +359,34 @@
     "cmd": "/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/hermes_kernel_8mdqp69b/hermes_kernel_runner.py"
    },
    {
-    "pid": 1886455,
+    "pid": 1862930,
     "cwd": ".",
-    "cmd": "/bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT=\"$HOME/.dotnet\" && export PATH=\"$DOTNET_ROOT:$PATH\" && unset AGENTFRAMEWORK_PY_RU"
+    "cmd": "/bin/bash -lic set +m; cd /home/agentuser/AgentFramework && bash eval/capability/exp1-q35/run_face_t123.sh 2>&1 | tee eval/capability/exp1-q35/face_runs_driver."
    },
    {
-    "pid": 1886468,
+    "pid": 1862942,
     "cwd": ".",
-    "cmd": "/bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT=\"$HOME/.dotnet\" && export PATH=\"$DOTNET_ROOT:$PATH\" && unset AGENTFRAMEWORK_PY_RU"
+    "cmd": "bash eval/capability/exp1-q35/run_face_t123.sh"
    },
    {
-    "pid": 1886469,
+    "pid": 1862943,
     "cwd": ".",
-    "cmd": "/usr/bin/time -f TIME_t8 wall=%es python3 -u eval/capability/instruments_check.py"
+    "cmd": "tee eval/capability/exp1-q35/face_runs_driver.log"
+   },
+   {
+    "pid": 1862945,
+    "cwd": ".",
+    "cmd": "/usr/bin/time -f TIME_t1 wall=%es maxrss=%MkB python3 -u eval/capability/instruments_check.py --out eval/capability/exp1-q35/face_q35_t1.json"
    }
   ],
   "conservation": {
-   "classified": 74,
-   "expected": 74,
-   "in_scope_after": 74,
+   "classified": 54,
+   "expected": 54,
+   "in_scope_after": 54,
    "ok": true
   }
  },
- "passed": 23,
+ "passed": 25,
  "total": 27,
  "results": [
   {
@@ -1033,10 +1040,10 @@
    "id": "bind_evidence.check",
    "kind": "registry-checker",
    "cmd": "python3 eval/capability/bind_evidence.py --check",
-   "rc": 2,
+   "rc": 0,
    "expect_rc": 0,
-   "substr_ok": false,
-   "pass": false,
+   "substr_ok": true,
+   "pass": true,
    "sha12": "6d9a0fc9d3fc",
    "owner_round": "EXP1-Q30",
    "kpi_quad": {
@@ -1071,12 +1078,12 @@
    "expect_rc": 0,
    "substr_ok": false,
    "pass": false,
-   "sha12": "d0af7f2f6c76",
+   "sha12": "695273f48a39",
    "owner_round": "EXP1-Q30",
    "kpi_quad": {
     "单位": "主张(frozen×artifact)",
     "分母": "HEAD 登记表 frozen/artifact 主张数",
-    "真值源": "git cat-file --batch 取 HEAD blob, 按该行**声明的 pin 语义**重算 (字节 pin ⇒ sha256[:12]; 语义投影 pin ⇒ 语义投影摘要, 规则表单一事实源 projection_rules.json)",
+    "真值源": "git cat-file --batch 取 HEAD blob 字节重算 sha256[:12]",
     "口径档": "冻结/提交档 (HEAD 内部自洽)"
    },
    "l2_fields": {
@@ -1094,13 +1101,6 @@
      "expect": "detect:NC_DETECTED",
      "pass": true,
      "head": "NC_DETECTED (注入 unpinned-drift ⇒ 2 条违反: ('bge.recall.frozen_bench', 'artifact', 'eval/bge/fixtures/corpus.jsonl', 'deadbeef0000', 'fa7c448c505d'))"
-    },
-    {
-     "cmd": "python3 eval/capability/exp1-q30/check_committed_state_q30.py --selftest",
-     "rc": 0,
-     "expect": "detect:SELFTEST",
-     "pass": true,
-     "head": "SELFTEST {'projection_differs_from_byte': True, 'runtime_only_change_keeps_digest': True, 'semantic_change_flips_digest': True, 'membership_change_flips_digest'"
     }
    ]
   },
@@ -1278,10 +1278,10 @@
    "id": "exp1q31.only-equivalence",
    "kind": "equivalence-guard",
    "cmd": "python3 eval/capability/exp1-q31/instruments/only_equivalence_guard.py",
-   "rc": 2,
+   "rc": 0,
    "expect_rc": 0,
-   "substr_ok": false,
-   "pass": false,
+   "substr_ok": true,
+   "pass": true,
    "sha12": "56b918c29a72",
    "owner_round": "EXP1-Q31",
    "kpi_quad": {
@@ -1349,7 +1349,7 @@
    "side_effect_attribution/window/t1",
    "side_effect_attribution/window/trace_dir"
   ],
-  "runtime_sidecar": "eval/capability/instruments-check.runtime.json",
+  "runtime_sidecar": "eval/capability/exp1-q35/face_q35_t1.runtime.json",
   "note": "记录字节 = 语义面; 运行期字段 (t0/t1/trace_dir) 见侧车 (Q33 确定化)"
  }
 }

@@ -1,20 +1,80 @@
 {
  "schema": "semantic-projection-rules/1",
- "round": "EXP1-Q34",
- "owner_round": "EXP1-Q34",
- "note": "语义投影的**非语义字段族**单一事实源 (跨语言共用): Python 侧 face_record_canon.py 与本仓测试侧同一口径复算同一摘要 ⇒ 登记表冻结 pin 可绑投影摘要 (pin_kind=semantic-projection), 面重跑不再打红。规则由 EXP1-Q33 的两次真跑差分实测派生 (74 条差异叶子全部落在下表族内), 顺序即投影应用顺序。",
+ "round": "EXP1-Q35",
+ "owner_round": "EXP1-Q35",
+ "note": "语义投影的**非语义字段族**单一事实源 (跨语言共用): Python 侧 face_record_canon.py 与本仓测试侧同一口径复算同一摘要 ⇒ 登记表冻结 pin 可绑投影摘要 (pin_kind=semantic-projection), 面重跑不再打红。Q33 的规则由两次真跑差分派生 (74 条差异叶子); EXP1-Q35 用**同树态连续三跑** (T1/T2/T3, 各 25/27) 重测, 差异叶 47/46 条全部落在下表新增族内, 判定依据见 eval/capability/exp1-q35/face_delta_q35.json。顺序即投影应用顺序。",
  "declared_vs_derived": "scalar=该叶整条剔除 (不参与摘要); array_count=该路径下所有叶剔除, 以一条 #n=<基数> 占位 (保留基数, 去掉邻居/随机内容)。",
+ "comparability_break": "EXP1-Q35 起遮蔽族扩容 ⇒ 投影摘要口径变更, 与 EXP1-Q34 及以前的投影摘要**不可直接比** (旧值仅作历史读数); 受影响: r444.instrument-acceptance 的 pin 值 (本轮由器具派生重取)。",
+ "masking_policy": "只遮蔽**运行期/环境/身份**读数 (墙钟、随机目录、进程 pid、窗口内他人写入与既有文件成员、由其派生的计数), 绝不遮蔽**器具行为面**: results[*] (逐条裁决/rc/证据 sha/负控)、side_effects (自身脏路径)、side_effect_attribution.{verdict,red,measurement_ok,reasons}、conservation.ok。",
  "rules": [
-  {"path": "side_effect_attribution/window/t0", "mode": "scalar"},
-  {"path": "side_effect_attribution/window/t1", "mode": "scalar"},
-  {"path": "side_effect_attribution/window/trace_dir", "mode": "scalar"},
-  {"path": "side_effect_attribution/census_in_repo_cwd", "mode": "array_count"},
-  {"path": "side_effect_attribution/foreign_writes[*]/sha_before", "mode": "scalar"},
-  {"path": "side_effect_attribution/foreign_writes[*]/sha_after", "mode": "scalar"},
-  {"path": "side_effect_attribution/live_fd_scan/scanned", "mode": "scalar"},
-  {"path": "side_effect_attribution/trace/log_bytes", "mode": "scalar"},
-  {"path": "side_effect_attribution/trace/raw_paths_sample", "mode": "array_count"},
-  {"path": "out", "mode": "scalar"},
-  {"path": "canon/runtime_sidecar", "mode": "scalar"}
+  {
+   "path": "side_effect_attribution/window/t0",
+   "mode": "scalar"
+  },
+  {
+   "path": "side_effect_attribution/window/t1",
+   "mode": "scalar"
+  },
+  {
+   "path": "side_effect_attribution/window/trace_dir",
+   "mode": "scalar"
+  },
+  {
+   "path": "side_effect_attribution/census_in_repo_cwd",
+   "mode": "array_count"
+  },
+  {
+   "path": "side_effect_attribution/foreign_writes",
+   "mode": "array_count",
+   "basis": "EXP1-Q35 实测: foreign_writes 的成员/身份 (path, live_fd.{pid,cmd,path}) 逐跑随环境变化; 取代 Q33/Q34 的 foreign_writes[*]/sha_before|sha_after 两条**元素级**规则 —— 元素级规则在「干净窗口 (零他人写入)」下无叶可命中 ⇒ 规则空心 (Python 侧判弃权 / C# 侧容忍空心 ⇒ 跨语言弃权面不同形)。整数组级规则恒命中, 且保留基数。"
+  },
+  {
+   "path": "side_effect_attribution/pre_existing",
+   "mode": "array_count",
+   "basis": "EXP1-Q35 实测 (T1 vs T2 / T2 vs T3 各 34 条差异叶): 成员 = 窗口前已存在且窗内未变的**在册脏路径**, 随装置自身历次产物累积与并发写者变化 ⇒ 自指字段; 该字段在闸内本就被显式声明为「不判红」的信息项。取 array_count: 成员被遮蔽 (34 条同族差异叶归零), 基数保留 (同名重跑下基数为常量; **归档式新名重跑**会让基数 +2/次 ⇒ 该情形下 pin 需重取 —— 已登记为口径条件)。"
+  },
+  {
+   "path": "side_effect_attribution/self_writes",
+   "mode": "array_count",
+   "basis": "EXP1-Q35 实测: self_writes[*]/evidence/pid = 装置自身进程 pid (逐跑必变)。整数组遮蔽只丢取证细节, **自身脏路径另有顶层 `side_effects` 承载 (未遮蔽)**; 取整数组级而非元素级 ⇒ 避免「零自身写入时规则空心」。"
+  },
+  {
+   "path": "side_effect_attribution/conservation/classified",
+   "mode": "scalar",
+   "basis": "EXP1-Q35 实测 (T1 vs T2 / T2 vs T3 各 1 条差异叶): 窗口内事件计数, 是上述环境/身份族的派生量。conservation.ok (守恒式布尔) **保留** 在投影内。"
+  },
+  {
+   "path": "side_effect_attribution/conservation/expected",
+   "mode": "scalar"
+  },
+  {
+   "path": "side_effect_attribution/conservation/in_scope_after",
+   "mode": "scalar"
+  },
+  {
+   "path": "side_effect_attribution/live_fd_scan/errors",
+   "mode": "scalar",
+   "basis": "EXP1-Q35 实测 (T1 vs T2 1 条差异叶): 扫描瞬时 fd 时的竞态计数 (环境)。"
+  },
+  {
+   "path": "side_effect_attribution/live_fd_scan/scanned",
+   "mode": "scalar"
+  },
+  {
+   "path": "side_effect_attribution/trace/log_bytes",
+   "mode": "scalar"
+  },
+  {
+   "path": "side_effect_attribution/trace/raw_paths_sample",
+   "mode": "array_count"
+  },
+  {
+   "path": "out",
+   "mode": "scalar"
+  },
+  {
+   "path": "canon/runtime_sidecar",
+   "mode": "scalar"
+  }
  ]
 }

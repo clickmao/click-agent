@@ -1,0 +1,3587 @@
+{
+ "round": "EXP1-Q35",
+ "schema": "deps-depth3/1",
+ "source": "eval/capability/exp1-q34/deps_depth2_q34.json",
+ "prereg": {
+  "P1": "depth-3 = depth-2 结点全体 (归档优先, 现场兜底) 再抽一次引用; 与 Q34 窄面不可混算",
+  "P2": "只计数不分类; 归档同名结点单列 re_enters_archive",
+  "P3": [
+   "c1 via ∈ depth-2 集合",
+   "c2 Σ每结点 == 总边数",
+   "c3 被扫 + 弃权 == depth-2 结点数",
+   "c4 弃权带 reason"
+  ],
+  "P4": "0 全绿 / 2 守恒红 / 3 弃权"
+ },
+ "n_depth2_nodes": 176,
+ "n_depth2_rows": 176,
+ "n_scanned_nodes": 155,
+ "abstain": [
+  {
+   "node": "/tmp/agentwork/count.txt",
+   "reason": "gone_at_audit_time"
+  },
+  {
+   "node": "/tmp/fp376/report.txt",
+   "reason": "gone_at_audit_time"
+  },
+  {
+   "node": "/tmp/gameprobe/r374_",
+   "reason": "gone_at_audit_time"
+  },
+  {
+   "node": "/tmp/gameprobe/reply_",
+   "reason": "gone_at_audit_time"
+  },
+  {
+   "node": "/tmp/gameprobe/work/data/artifacts/",
+   "reason": "gone_at_audit_time"
+  },
+  {
+   "node": "/tmp/pub_aot_r370/agenthost",
+   "reason": "unreadable_at_audit_time"
+  },
+  {
+   "node": "/tmp/pub_aot_r371/agenthost",
+   "reason": "unreadable_at_audit_time"
+  },
+  {
+   "node": "/tmp/pub_aot_r373/agenthost",
+   "reason": "unreadable_at_audit_time"
+  },
+  {
+   "node": "/tmp/pub_r372/agenthost",
+   "reason": "unreadable_at_audit_time"
+  },
+  {
+   "node": "/tmp/pub_r373/agenthost",
+   "reason": "unreadable_at_audit_time"
+  },
+  {
+   "node": "/tmp/pub_r373b/agenthost",
+   "reason": "unreadable_at_audit_time"
+  },
+  {
+   "node": "/tmp/pub_r374/agenthost",
+   "reason": "unreadable_at_audit_time"
+  },
+  {
+   "node": "/tmp/pub_r374d/agenthost",
+   "reason": "unreadable_at_audit_time"
+  },
+  {
+   "node": "/tmp/pub_r375/agenthost",
+   "reason": "unreadable_at_audit_time"
+  },
+  {
+   "node": "/tmp/pub_r376/agenthost",
+   "reason": "unreadable_at_audit_time"
+  },
+  {
+   "node": "/tmp/pub_r377/agenthost",
+   "reason": "unreadable_at_audit_time"
+  },
+  {
+   "node": "/tmp/r45",
+   "reason": "gone_at_audit_time"
+  },
+  {
+   "node": "/tmp/r457",
+   "reason": "gone_at_audit_time"
+  },
+  {
+   "node": "/tmp/r457_e",
+   "reason": "gone_at_audit_time"
+  },
+  {
+   "node": "/tmp/r461_env/agent/work/count.",
+   "reason": "gone_at_audit_time"
+  },
+  {
+   "node": "/tmp/r461_env/agent/work/stats.txt",
+   "reason": "gone_at_audit_time"
+  }
+ ],
+ "n_edges": 445,
+ "n_distinct": 177,
+ "two_faces": {
+  "narrow_Q34_refs": 96,
+  "narrow_Q34_distinct": 61,
+  "wide_Q35_refs": 445,
+  "wide_Q35_distinct": 177,
+  "q34_recorded_n_refs": 96,
+  "q34_recorded_n_distinct": 61,
+  "caliber_note": "Q34 窄面 = 仅扫已入库 depth-2 副本; Q35 宽面 = 扫全部 depth-2 结点 (归档优先/现场兜底) ⇒ 两栏并列, 口径变更登记, 不混算。"
+ },
+ "re_enters_archive": {
+  "n": 128,
+  "sample": [
+   "/tmp/agentwork/count.txt",
+   "/tmp/aot_r373.log",
+   "/tmp/cxprobe/adapter.pid",
+   "/tmp/cxprobe/adapter455c.log",
+   "/tmp/cxprobe/cx2/req-001.json",
+   "/tmp/cxprobe/demo/side-agent-001.json",
+   "/tmp/cxprobe/demo/side-agent-002.json",
+   "/tmp/cxprobe/demo/side-codex-001.json",
+   "/tmp/cxprobe/demo/side-codex-002.json",
+   "/tmp/cxprobe/demo/side-codex-003.json"
+  ]
+ },
+ "per_node": {
+  "/tmp/agentwork": {
+   "scan_source": "live",
+   "scan_path": "/tmp/agentwork",
+   "n_refs": 2
+  },
+  "/tmp/agentwork2": {
+   "scan_source": "live",
+   "scan_path": "/tmp/agentwork2",
+   "n_refs": 2
+  },
+  "/tmp/agentwork2/data": {
+   "scan_source": "live",
+   "scan_path": "/tmp/agentwork2/data",
+   "n_refs": 2
+  },
+  "/tmp/aot_r373.log": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/aot_r373.log",
+   "n_refs": 1
+  },
+  "/tmp/cxprobe": {
+   "scan_source": "live",
+   "scan_path": "/tmp/cxprobe",
+   "n_refs": 41
+  },
+  "/tmp/cxprobe/adapter.pid": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/adapter.pid",
+   "n_refs": 0
+  },
+  "/tmp/cxprobe/adapter455c.log": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/adapter455c.log",
+   "n_refs": 11
+  },
+  "/tmp/cxprobe/cx2": {
+   "scan_source": "live",
+   "scan_path": "/tmp/cxprobe/cx2",
+   "n_refs": 1
+  },
+  "/tmp/cxprobe/cx2/req-001.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/req-001.json",
+   "n_refs": 1
+  },
+  "/tmp/cxprobe/demo": {
+   "scan_source": "live",
+   "scan_path": "/tmp/cxprobe/demo",
+   "n_refs": 2
+  },
+  "/tmp/cxprobe/demo/side-agent-001.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-agent-001.json",
+   "n_refs": 0
+  },
+  "/tmp/cxprobe/demo/side-agent-002.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-agent-002.json",
+   "n_refs": 1
+  },
+  "/tmp/cxprobe/demo/side-codex-001.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-codex-001.json",
+   "n_refs": 1
+  },
+  "/tmp/cxprobe/demo/side-codex-002.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-codex-002.json",
+   "n_refs": 1
+  },
+  "/tmp/cxprobe/demo/side-codex-003.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-codex-003.json",
+   "n_refs": 1
+  },
+  "/tmp/cxprobe/demo/side-codex-004.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-codex-004.json",
+   "n_refs": 1
+  },
+  "/tmp/cxprobe/demo/side-codex-005.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-codex-005.json",
+   "n_refs": 1
+  },
+  "/tmp/cxprobe/demo/side-codex-006.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-codex-006.json",
+   "n_refs": 1
+  },
+  "/tmp/cxprobe/r455": {
+   "scan_source": "live",
+   "scan_path": "/tmp/cxprobe/r455",
+   "n_refs": 3
+  },
+  "/tmp/cxprobe/r455/side-agent-001.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/cxprobe/r455/side-agent-001.json",
+   "n_refs": 2
+  },
+  "/tmp/cxprobe/r455/side-codex-001.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/cxprobe/r455/side-codex-001.json",
+   "n_refs": 1
+  },
+  "/tmp/cxprobe/r455/side-codex-002.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/cxprobe/r455/side-codex-002.json",
+   "n_refs": 1
+  },
+  "/tmp/cxprobe/r455/side-codex-003.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/cxprobe/r455/side-codex-003.json",
+   "n_refs": 0
+  },
+  "/tmp/cxprobe/r455/side-codex-004.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/cxprobe/r455/side-codex-004.json",
+   "n_refs": 0
+  },
+  "/tmp/cxprobe/r455/side-codex-005.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/cxprobe/r455/side-codex-005.json",
+   "n_refs": 0
+  },
+  "/tmp/cxprobe/r455/side-codex-006.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/cxprobe/r455/side-codex-006.json",
+   "n_refs": 0
+  },
+  "/tmp/cxprobe/r455b": {
+   "scan_source": "live",
+   "scan_path": "/tmp/cxprobe/r455b",
+   "n_refs": 1
+  },
+  "/tmp/cxprobe/r455b/side-codex-001.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/cxprobe/r455b/side-codex-001.json",
+   "n_refs": 1
+  },
+  "/tmp/cxwork": {
+   "scan_source": "live",
+   "scan_path": "/tmp/cxwork",
+   "n_refs": 0
+  },
+  "/tmp/demo_run": {
+   "scan_source": "live",
+   "scan_path": "/tmp/demo_run",
+   "n_refs": 0
+  },
+  "/tmp/fp376": {
+   "scan_source": "live",
+   "scan_path": "/tmp/fp376",
+   "n_refs": 4
+  },
+  "/tmp/fp376/report2.txt": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/report2.txt",
+   "n_refs": 0
+  },
+  "/tmp/gameprobe": {
+   "scan_source": "live",
+   "scan_path": "/tmp/gameprobe",
+   "n_refs": 61
+  },
+  "/tmp/gameprobe/": {
+   "scan_source": "live",
+   "scan_path": "/tmp/gameprobe/",
+   "n_refs": 61
+  },
+  "/tmp/gameprobe/D_run1.md": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/D_run1.md",
+   "n_refs": 1
+  },
+  "/tmp/gameprobe/D_run2.md": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/D_run2.md",
+   "n_refs": 1
+  },
+  "/tmp/gameprobe/D_run3.md": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/D_run3.md",
+   "n_refs": 1
+  },
+  "/tmp/gameprobe/d4b_run1.md": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/d4b_run1.md",
+   "n_refs": 1
+  },
+  "/tmp/gameprobe/d4b_run2.md": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/d4b_run2.md",
+   "n_refs": 1
+  },
+  "/tmp/gameprobe/d4b_run3.md": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/d4b_run3.md",
+   "n_refs": 1
+  },
+  "/tmp/gameprobe/probe_chain.log": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/probe_chain.log",
+   "n_refs": 2
+  },
+  "/tmp/gameprobe/probe_r373b.sh": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/probe_r373b.sh",
+   "n_refs": 2
+  },
+  "/tmp/gameprobe/r373_run1.md": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r373_run1.md",
+   "n_refs": 1
+  },
+  "/tmp/gameprobe/r373_run2.md": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r373_run2.md",
+   "n_refs": 1
+  },
+  "/tmp/gameprobe/r373_run3.md": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r373_run3.md",
+   "n_refs": 1
+  },
+  "/tmp/gameprobe/r373b_run1.md": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r373b_run1.md",
+   "n_refs": 1
+  },
+  "/tmp/gameprobe/r373b_run2.md": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r373b_run2.md",
+   "n_refs": 1
+  },
+  "/tmp/gameprobe/r373b_run3.md": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r373b_run3.md",
+   "n_refs": 1
+  },
+  "/tmp/gameprobe/r373b_skill.md": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r373b_skill.md",
+   "n_refs": 1
+  },
+  "/tmp/gameprobe/r374_A_run1.md": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r374_A_run1.md",
+   "n_refs": 1
+  },
+  "/tmp/gameprobe/r374_A_run2.md": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r374_A_run2.md",
+   "n_refs": 1
+  },
+  "/tmp/gameprobe/r374_A_run3.md": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r374_A_run3.md",
+   "n_refs": 1
+  },
+  "/tmp/gameprobe/r374_B_run1.md": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r374_B_run1.md",
+   "n_refs": 1
+  },
+  "/tmp/gameprobe/r374_B_run1.telemetry": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r374_B_run1.telemetry",
+   "n_refs": 0
+  },
+  "/tmp/gameprobe/r374_B_run2.md": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r374_B_run2.md",
+   "n_refs": 1
+  },
+  "/tmp/gameprobe/r374_B_run3.md": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r374_B_run3.md",
+   "n_refs": 1
+  },
+  "/tmp/gameprobe/r374_agg2.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r374_agg2.json",
+   "n_refs": 0
+  },
+  "/tmp/gameprobe/r375_run1.md": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r375_run1.md",
+   "n_refs": 1
+  },
+  "/tmp/gameprobe/r376_run1.md": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r376_run1.md",
+   "n_refs": 1
+  },
+  "/tmp/gameprobe/r377_kpi.telemetry": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r377_kpi.telemetry",
+   "n_refs": 0
+  },
+  "/tmp/gameprobe/r377_run1.md": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r377_run1.md",
+   "n_refs": 1
+  },
+  "/tmp/gameprobe/r377_run2.md": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/r377_run2.md",
+   "n_refs": 1
+  },
+  "/tmp/gameprobe/reply_default.md": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/reply_default.md",
+   "n_refs": 1
+  },
+  "/tmp/gameprobe/reply_outside.md": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/reply_outside.md",
+   "n_refs": 1
+  },
+  "/tmp/gameprobe/reply_run.md": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/reply_run.md",
+   "n_refs": 1
+  },
+  "/tmp/gameprobe/run_default.md": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/run_default.md",
+   "n_refs": 1
+  },
+  "/tmp/gameprobe/run_root.md": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/run_root.md",
+   "n_refs": 1
+  },
+  "/tmp/gameprobe/run_run.md": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/run_run.md",
+   "n_refs": 1
+  },
+  "/tmp/gameprobe/work": {
+   "scan_source": "live",
+   "scan_path": "/tmp/gameprobe/work",
+   "n_refs": 0
+  },
+  "/tmp/pub_aot_r373": {
+   "scan_source": "live",
+   "scan_path": "/tmp/pub_aot_r373",
+   "n_refs": 0
+  },
+  "/tmp/pub_aot_r373/config/base": {
+   "scan_source": "live",
+   "scan_path": "/tmp/pub_aot_r373/config/base",
+   "n_refs": 0
+  },
+  "/tmp/pub_r373b": {
+   "scan_source": "live",
+   "scan_path": "/tmp/pub_r373b",
+   "n_refs": 0
+  },
+  "/tmp/pub_r373b.log": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/pub_r373b.log",
+   "n_refs": 1
+  },
+  "/tmp/pub_r373b/config/base/": {
+   "scan_source": "live",
+   "scan_path": "/tmp/pub_r373b/config/base/",
+   "n_refs": 0
+  },
+  "/tmp/pub_r374": {
+   "scan_source": "live",
+   "scan_path": "/tmp/pub_r374",
+   "n_refs": 0
+  },
+  "/tmp/pub_r374.log": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/pub_r374.log",
+   "n_refs": 1
+  },
+  "/tmp/pub_r374/": {
+   "scan_source": "live",
+   "scan_path": "/tmp/pub_r374/",
+   "n_refs": 0
+  },
+  "/tmp/pub_r374d": {
+   "scan_source": "live",
+   "scan_path": "/tmp/pub_r374d",
+   "n_refs": 0
+  },
+  "/tmp/pub_r374d.log": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/pub_r374d.log",
+   "n_refs": 1
+  },
+  "/tmp/r455_env/logs/adapter": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r455_env/logs/adapter",
+   "n_refs": 4
+  },
+  "/tmp/r455_env/logs/adapter/side-agent-001.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r455_env/logs/adapter/side-agent-001.json",
+   "n_refs": 0
+  },
+  "/tmp/r455_env/logs/adapter/side-agent-002.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r455_env/logs/adapter/side-agent-002.json",
+   "n_refs": 0
+  },
+  "/tmp/r455_env/logs/adapter/side-agent-003.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-agent-003.json",
+   "n_refs": 1
+  },
+  "/tmp/r455_env/logs/adapter/side-agent-004.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-agent-004.json",
+   "n_refs": 0
+  },
+  "/tmp/r455_env/logs/adapter/side-agent-005.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-agent-005.json",
+   "n_refs": 0
+  },
+  "/tmp/r455_env/logs/adapter/side-agent-006.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-agent-006.json",
+   "n_refs": 0
+  },
+  "/tmp/r455_env/logs/adapter/side-agent-007.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-agent-007.json",
+   "n_refs": 0
+  },
+  "/tmp/r455_env/logs/adapter/side-agent-008.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-agent-008.json",
+   "n_refs": 0
+  },
+  "/tmp/r455_env/logs/adapter/side-agent-009.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-agent-009.json",
+   "n_refs": 0
+  },
+  "/tmp/r455_env/logs/adapter/side-agent-010.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-agent-010.json",
+   "n_refs": 0
+  },
+  "/tmp/r457_env/agent/work": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r457_env/agent/work",
+   "n_refs": 0
+  },
+  "/tmp/r457_env/agent/work/count.txt": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/count.txt",
+   "n_refs": 0
+  },
+  "/tmp/r457_env/agent/work/first.txt": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/first.txt",
+   "n_refs": 0
+  },
+  "/tmp/r457_env/agent/work/merged.txt": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/merged.txt",
+   "n_refs": 0
+  },
+  "/tmp/r457_env/agent/work/stats.txt": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/stats.txt",
+   "n_refs": 0
+  },
+  "/tmp/r457_env/agent/work/x.txt": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/x.txt",
+   "n_refs": 0
+  },
+  "/tmp/r457_env/agent/work/y.txt": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/y.txt",
+   "n_refs": 0
+  },
+  "/tmp/r457_env/agent/work/z.txt": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/z.txt",
+   "n_refs": 0
+  },
+  "/tmp/r457_env/logs/adapter": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r457_env/logs/adapter",
+   "n_refs": 23
+  },
+  "/tmp/r457_env/logs/adapter/side-agent-001.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r457_env/logs/adapter/side-agent-001.json",
+   "n_refs": 2
+  },
+  "/tmp/r457_env/logs/adapter/side-agent-002.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r457_env/logs/adapter/side-agent-002.json",
+   "n_refs": 2
+  },
+  "/tmp/r457_env/logs/adapter/side-agent-003.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r457_env/logs/adapter/side-agent-003.json",
+   "n_refs": 3
+  },
+  "/tmp/r457_env/logs/adapter/side-agent-004.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r457_env/logs/adapter/side-agent-004.json",
+   "n_refs": 2
+  },
+  "/tmp/r457_env/logs/adapter/side-agent-005.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r457_env/logs/adapter/side-agent-005.json",
+   "n_refs": 1
+  },
+  "/tmp/r457_env/logs/adapter/side-agent-006.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r457_env/logs/adapter/side-agent-006.json",
+   "n_refs": 5
+  },
+  "/tmp/r457_env/logs/adapter/side-agent-007.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r457_env/logs/adapter/side-agent-007.json",
+   "n_refs": 1
+  },
+  "/tmp/r457_env/logs/adapter/side-agent-008.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r457_env/logs/adapter/side-agent-008.json",
+   "n_refs": 1
+  },
+  "/tmp/r457_env/logs/adapter/side-agent-009.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r457_env/logs/adapter/side-agent-009.json",
+   "n_refs": 1
+  },
+  "/tmp/r457_env/logs/adapter/side-agent-010.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r457_env/logs/adapter/side-agent-010.json",
+   "n_refs": 2
+  },
+  "/tmp/r457_env/logs/adapter/side-agent-011.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-agent-011.json",
+   "n_refs": 1
+  },
+  "/tmp/r457_env/logs/adapter/side-agent-012.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-agent-012.json",
+   "n_refs": 0
+  },
+  "/tmp/r457_env/logs/adapter/side-agent-013.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-agent-013.json",
+   "n_refs": 0
+  },
+  "/tmp/r457_env/logs/adapter/side-agent-014.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-agent-014.json",
+   "n_refs": 0
+  },
+  "/tmp/r457_env/logs/adapter/side-agent-015.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/side-agent-015.json",
+   "n_refs": 0
+  },
+  "/tmp/r461_env": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r461_env",
+   "n_refs": 41
+  },
+  "/tmp/r461_env/agent/work": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r461_env/agent/work",
+   "n_refs": 5
+  },
+  "/tmp/r461_env/agent/work/": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r461_env/agent/work/",
+   "n_refs": 5
+  },
+  "/tmp/r461_env/agent/work/count.txt": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r461_env/agent/work/count.txt",
+   "n_refs": 0
+  },
+  "/tmp/r461_env/agent/work/first.txt": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/first.txt",
+   "n_refs": 0
+  },
+  "/tmp/r461_env/agent/work/merged.txt": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/merged.txt",
+   "n_refs": 0
+  },
+  "/tmp/r461_env/agent/work/x.txt": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/x.txt",
+   "n_refs": 0
+  },
+  "/tmp/r461_env/agent/work/y.txt": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/y.txt",
+   "n_refs": 0
+  },
+  "/tmp/r461_env/agent/work/z.txt": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/z.txt",
+   "n_refs": 0
+  },
+  "/tmp/r461_env/logs/adapter": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r461_env/logs/adapter",
+   "n_refs": 41
+  },
+  "/tmp/r461_env/logs/adapter/full-agent-001.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/full-agent-001.json",
+   "n_refs": 1
+  },
+  "/tmp/r461_env/logs/adapter/full-agent-002.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/full-agent-002.json",
+   "n_refs": 1
+  },
+  "/tmp/r461_env/logs/adapter/full-agent-003.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/full-agent-003.json",
+   "n_refs": 1
+  },
+  "/tmp/r461_env/logs/adapter/full-agent-004.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/full-agent-004.json",
+   "n_refs": 1
+  },
+  "/tmp/r461_env/logs/adapter/full-agent-005.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/full-agent-005.json",
+   "n_refs": 1
+  },
+  "/tmp/r461_env/logs/adapter/full-agent-006.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/full-agent-006.json",
+   "n_refs": 1
+  },
+  "/tmp/r461_env/logs/adapter/full-agent-007.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/full-agent-007.json",
+   "n_refs": 3
+  },
+  "/tmp/r461_env/logs/adapter/full-agent-008.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/full-agent-008.json",
+   "n_refs": 6
+  },
+  "/tmp/r461_env/logs/adapter/full-agent-009.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/full-agent-009.json",
+   "n_refs": 6
+  },
+  "/tmp/r461_env/logs/adapter/full-agent-010.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/full-agent-010.json",
+   "n_refs": 5
+  },
+  "/tmp/r461_env/logs/adapter/full-agent-011.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/full-agent-011.json",
+   "n_refs": 6
+  },
+  "/tmp/r461_env/logs/adapter/full-agent-012.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/full-agent-012.json",
+   "n_refs": 0
+  },
+  "/tmp/r461_env/logs/adapter/full-agent-013.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/full-agent-013.json",
+   "n_refs": 0
+  },
+  "/tmp/r461_env/logs/adapter/full-agent-014.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/full-agent-014.json",
+   "n_refs": 0
+  },
+  "/tmp/r461_env/logs/adapter/full-agent-015.json": {
+   "scan_source": "archive",
+   "scan_path": "/home/agentuser/AgentFramework/eval/capability/exp1-q34/archived_deps_depth2/full-agent-015.json",
+   "n_refs": 6
+  },
+  "/tmp/r461_env/logs/adapter/side-agent-001.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r461_env/logs/adapter/side-agent-001.json",
+   "n_refs": 1
+  },
+  "/tmp/r461_env/logs/adapter/side-agent-002.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r461_env/logs/adapter/side-agent-002.json",
+   "n_refs": 1
+  },
+  "/tmp/r461_env/logs/adapter/side-agent-003.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r461_env/logs/adapter/side-agent-003.json",
+   "n_refs": 1
+  },
+  "/tmp/r461_env/logs/adapter/side-agent-004.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r461_env/logs/adapter/side-agent-004.json",
+   "n_refs": 1
+  },
+  "/tmp/r461_env/logs/adapter/side-agent-005.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r461_env/logs/adapter/side-agent-005.json",
+   "n_refs": 1
+  },
+  "/tmp/r461_env/logs/adapter/side-agent-006.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r461_env/logs/adapter/side-agent-006.json",
+   "n_refs": 1
+  },
+  "/tmp/r461_env/logs/adapter/side-agent-007.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r461_env/logs/adapter/side-agent-007.json",
+   "n_refs": 5
+  },
+  "/tmp/r461_env/logs/adapter/side-agent-008.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r461_env/logs/adapter/side-agent-008.json",
+   "n_refs": 4
+  },
+  "/tmp/r461_env/logs/adapter/side-agent-009.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r461_env/logs/adapter/side-agent-009.json",
+   "n_refs": 3
+  },
+  "/tmp/r461_env/logs/adapter/side-agent-010.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r461_env/logs/adapter/side-agent-010.json",
+   "n_refs": 3
+  },
+  "/tmp/r461_env/logs/adapter/side-agent-011.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r461_env/logs/adapter/side-agent-011.json",
+   "n_refs": 2
+  },
+  "/tmp/r461_env/logs/adapter/side-agent-012.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r461_env/logs/adapter/side-agent-012.json",
+   "n_refs": 0
+  },
+  "/tmp/r461_env/logs/adapter/side-agent-013.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r461_env/logs/adapter/side-agent-013.json",
+   "n_refs": 0
+  },
+  "/tmp/r461_env/logs/adapter/side-agent-014.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r461_env/logs/adapter/side-agent-014.json",
+   "n_refs": 0
+  },
+  "/tmp/r461_env/logs/adapter/side-agent-015.json": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r461_env/logs/adapter/side-agent-015.json",
+   "n_refs": 2
+  },
+  "/tmp/r462_env/agent/work": {
+   "scan_source": "live",
+   "scan_path": "/tmp/r462_env/agent/work",
+   "n_refs": 0
+  }
+ },
+ "edges": [
+  {
+   "dep": "/tmp/agentwork",
+   "via": "/tmp/agentwork",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/agentwork/count.txt",
+   "via": "/tmp/agentwork",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/agentwork2",
+   "via": "/tmp/agentwork2",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/agentwork2/data",
+   "via": "/tmp/agentwork2",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/agentwork2",
+   "via": "/tmp/agentwork2/data",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/agentwork2/data",
+   "via": "/tmp/agentwork2/data",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_aot_r373/",
+   "via": "/tmp/aot_r373.log",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/agentwork",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/agentwork/count.txt",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/agentwork2",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/agentwork2/data",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxprobe",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxprobe/adapter.pid",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxprobe/adapter455c.log",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxprobe/cx2",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxprobe/cx2/req-001.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxprobe/demo",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxprobe/demo/side-agent-001.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxprobe/demo/side-agent-002.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxprobe/demo/side-codex-001.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxprobe/demo/side-codex-002.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxprobe/demo/side-codex-003.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxprobe/demo/side-codex-004.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxprobe/demo/side-codex-005.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxprobe/demo/side-codex-006.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxprobe/r455",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxprobe/r455/side-agent-001.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxprobe/r455/side-codex-001.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxprobe/r455/side-codex-002.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxprobe/r455/side-codex-003.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxprobe/r455/side-codex-004.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxprobe/r455/side-codex-005.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxprobe/r455/side-codex-006.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxprobe/r455b",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxprobe/r455b/side-codex-001.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxwork",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/demo_run",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-001.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-002.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-003.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-004.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-005.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-006.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-007.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-008.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-009.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-010.json",
+   "via": "/tmp/cxprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter",
+   "via": "/tmp/cxprobe/adapter455c.log",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-001.json",
+   "via": "/tmp/cxprobe/adapter455c.log",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-002.json",
+   "via": "/tmp/cxprobe/adapter455c.log",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-003.json",
+   "via": "/tmp/cxprobe/adapter455c.log",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-004.json",
+   "via": "/tmp/cxprobe/adapter455c.log",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-005.json",
+   "via": "/tmp/cxprobe/adapter455c.log",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-006.json",
+   "via": "/tmp/cxprobe/adapter455c.log",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-007.json",
+   "via": "/tmp/cxprobe/adapter455c.log",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-008.json",
+   "via": "/tmp/cxprobe/adapter455c.log",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-009.json",
+   "via": "/tmp/cxprobe/adapter455c.log",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r455_env/logs/adapter/side-agent-010.json",
+   "via": "/tmp/cxprobe/adapter455c.log",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/cxprobe",
+   "via": "/tmp/cxprobe/cx2",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxprobe",
+   "via": "/tmp/cxprobe/cx2/req-001.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/cxprobe",
+   "via": "/tmp/cxprobe/demo",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/demo_run",
+   "via": "/tmp/cxprobe/demo",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/demo_run",
+   "via": "/tmp/cxprobe/demo/side-agent-002.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/cxprobe",
+   "via": "/tmp/cxprobe/demo/side-codex-001.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/cxprobe",
+   "via": "/tmp/cxprobe/demo/side-codex-002.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/cxprobe",
+   "via": "/tmp/cxprobe/demo/side-codex-003.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/cxprobe",
+   "via": "/tmp/cxprobe/demo/side-codex-004.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/cxprobe",
+   "via": "/tmp/cxprobe/demo/side-codex-005.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/cxprobe",
+   "via": "/tmp/cxprobe/demo/side-codex-006.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/agentwork",
+   "via": "/tmp/cxprobe/r455",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/agentwork/count.txt",
+   "via": "/tmp/cxprobe/r455",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxwork",
+   "via": "/tmp/cxprobe/r455",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/agentwork",
+   "via": "/tmp/cxprobe/r455/side-agent-001.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/agentwork/count.txt",
+   "via": "/tmp/cxprobe/r455/side-agent-001.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxwork",
+   "via": "/tmp/cxprobe/r455/side-codex-001.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxwork",
+   "via": "/tmp/cxprobe/r455/side-codex-002.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxwork",
+   "via": "/tmp/cxprobe/r455b",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/cxwork",
+   "via": "/tmp/cxprobe/r455b/side-codex-001.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/fp376",
+   "via": "/tmp/fp376",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/fp376/report.txt",
+   "via": "/tmp/fp376",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/fp376/report2.txt",
+   "via": "/tmp/fp376",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r376/agenthost",
+   "via": "/tmp/fp376",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/aot_r373.log",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/D_run1.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/D_run2.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/D_run3.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/d4b_run1.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/d4b_run2.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/d4b_run3.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/probe_chain.log",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/probe_r373b.sh",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r373_run1.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r373_run2.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r373_run3.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r373b_run1.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r373b_run2.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r373b_run3.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r373b_skill.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_A_run1.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_A_run2.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_A_run3.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_B_run1.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_B_run1.telemetry",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_B_run2.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_B_run3.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_agg2.json",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r375_run1.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r376_run1.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r377_kpi.telemetry",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r377_run1.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r377_run2.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/reply_",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/reply_default.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/reply_outside.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/reply_run.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/run_default.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/run_root.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/run_run.md",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/work",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/work/data/artifacts/",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_aot_r370/agenthost",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_aot_r371/agenthost",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_aot_r373",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_aot_r373/agenthost",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_aot_r373/config/base",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r372/agenthost",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r373/agenthost",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r373b",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r373b.log",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r373b/agenthost",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r373b/config/base/",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r374",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r374.log",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r374/agenthost",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r374d",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r374d.log",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r374d/agenthost",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r375/agenthost",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r376/agenthost",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r377/agenthost",
+   "via": "/tmp/gameprobe",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/aot_r373.log",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/D_run1.md",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/D_run2.md",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/D_run3.md",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/d4b_run1.md",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/d4b_run2.md",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/d4b_run3.md",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/probe_chain.log",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/probe_r373b.sh",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r373_run1.md",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r373_run2.md",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r373_run3.md",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r373b_run1.md",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r373b_run2.md",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r373b_run3.md",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r373b_skill.md",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_A_run1.md",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_A_run2.md",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_A_run3.md",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_B_run1.md",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_B_run1.telemetry",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_B_run2.md",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_B_run3.md",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_agg2.json",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r375_run1.md",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r376_run1.md",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r377_kpi.telemetry",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r377_run1.md",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/r377_run2.md",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/reply_",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/reply_default.md",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/reply_outside.md",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/reply_run.md",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/run_default.md",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/run_root.md",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/run_run.md",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/work",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/work/data/artifacts/",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_aot_r370/agenthost",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_aot_r371/agenthost",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_aot_r373",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_aot_r373/agenthost",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_aot_r373/config/base",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r372/agenthost",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r373/agenthost",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r373b",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r373b.log",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r373b/agenthost",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r373b/config/base/",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r374",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r374.log",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r374/agenthost",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r374d",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r374d.log",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r374d/agenthost",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r375/agenthost",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r376/agenthost",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/pub_r377/agenthost",
+   "via": "/tmp/gameprobe/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/gameprobe/D_run1.md",
+   "via": "/tmp/gameprobe/D_run1.md",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/gameprobe/D_run2.md",
+   "via": "/tmp/gameprobe/D_run2.md",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/gameprobe/D_run3.md",
+   "via": "/tmp/gameprobe/D_run3.md",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/gameprobe/d4b_run1.md",
+   "via": "/tmp/gameprobe/d4b_run1.md",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/gameprobe/d4b_run2.md",
+   "via": "/tmp/gameprobe/d4b_run2.md",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/gameprobe/d4b_run3.md",
+   "via": "/tmp/gameprobe/d4b_run3.md",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/gameprobe/work",
+   "via": "/tmp/gameprobe/probe_chain.log",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/pub_aot_r373/config/base",
+   "via": "/tmp/gameprobe/probe_chain.log",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/gameprobe",
+   "via": "/tmp/gameprobe/probe_r373b.sh",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/pub_r373b/agenthost",
+   "via": "/tmp/gameprobe/probe_r373b.sh",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/gameprobe/r373_run1.md",
+   "via": "/tmp/gameprobe/r373_run1.md",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/gameprobe/r373_run2.md",
+   "via": "/tmp/gameprobe/r373_run2.md",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/gameprobe/r373_run3.md",
+   "via": "/tmp/gameprobe/r373_run3.md",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/gameprobe/r373b_run1.md",
+   "via": "/tmp/gameprobe/r373b_run1.md",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/gameprobe/r373b_run2.md",
+   "via": "/tmp/gameprobe/r373b_run2.md",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/gameprobe/r373b_run3.md",
+   "via": "/tmp/gameprobe/r373b_run3.md",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/gameprobe/r373b_skill.md",
+   "via": "/tmp/gameprobe/r373b_skill.md",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_A_run1.md",
+   "via": "/tmp/gameprobe/r374_A_run1.md",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_A_run2.md",
+   "via": "/tmp/gameprobe/r374_A_run2.md",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_A_run3.md",
+   "via": "/tmp/gameprobe/r374_A_run3.md",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_B_run1.md",
+   "via": "/tmp/gameprobe/r374_B_run1.md",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_B_run2.md",
+   "via": "/tmp/gameprobe/r374_B_run2.md",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/gameprobe/r374_B_run3.md",
+   "via": "/tmp/gameprobe/r374_B_run3.md",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/gameprobe/r375_run1.md",
+   "via": "/tmp/gameprobe/r375_run1.md",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/gameprobe/r376_run1.md",
+   "via": "/tmp/gameprobe/r376_run1.md",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/gameprobe/r377_run1.md",
+   "via": "/tmp/gameprobe/r377_run1.md",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/gameprobe/r377_run2.md",
+   "via": "/tmp/gameprobe/r377_run2.md",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/gameprobe/reply_default.md",
+   "via": "/tmp/gameprobe/reply_default.md",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/gameprobe/reply_outside.md",
+   "via": "/tmp/gameprobe/reply_outside.md",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/gameprobe/reply_run.md",
+   "via": "/tmp/gameprobe/reply_run.md",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/gameprobe/run_default.md",
+   "via": "/tmp/gameprobe/run_default.md",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/gameprobe/run_root.md",
+   "via": "/tmp/gameprobe/run_root.md",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/gameprobe/run_run.md",
+   "via": "/tmp/gameprobe/run_run.md",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/pub_r373b/",
+   "via": "/tmp/pub_r373b.log",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/pub_r374/",
+   "via": "/tmp/pub_r374.log",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/pub_r374d/",
+   "via": "/tmp/pub_r374d.log",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r455_env/agent/work",
+   "via": "/tmp/r455_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r455_env/agent/work/merged.txt",
+   "via": "/tmp/r455_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r455_env/agent/work/stats.txt",
+   "via": "/tmp/r455_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r456_env/agent/work",
+   "via": "/tmp/r455_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r456_env/agent/work",
+   "via": "/tmp/r455_env/logs/adapter/side-agent-003.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r45",
+   "via": "/tmp/r457_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work",
+   "via": "/tmp/r457_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work/count.txt",
+   "via": "/tmp/r457_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work/merged.txt",
+   "via": "/tmp/r457_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work/x.txt",
+   "via": "/tmp/r457_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work/y.txt",
+   "via": "/tmp/r457_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work/z.txt",
+   "via": "/tmp/r457_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter",
+   "via": "/tmp/r457_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-001.json",
+   "via": "/tmp/r457_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-002.json",
+   "via": "/tmp/r457_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-003.json",
+   "via": "/tmp/r457_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-004.json",
+   "via": "/tmp/r457_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-005.json",
+   "via": "/tmp/r457_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-006.json",
+   "via": "/tmp/r457_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-007.json",
+   "via": "/tmp/r457_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-008.json",
+   "via": "/tmp/r457_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-009.json",
+   "via": "/tmp/r457_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-010.json",
+   "via": "/tmp/r457_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-011.json",
+   "via": "/tmp/r457_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-012.json",
+   "via": "/tmp/r457_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-013.json",
+   "via": "/tmp/r457_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-014.json",
+   "via": "/tmp/r457_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/logs/adapter/side-agent-015.json",
+   "via": "/tmp/r457_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r45",
+   "via": "/tmp/r457_env/logs/adapter/side-agent-001.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work",
+   "via": "/tmp/r457_env/logs/adapter/side-agent-001.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r45",
+   "via": "/tmp/r457_env/logs/adapter/side-agent-002.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work",
+   "via": "/tmp/r457_env/logs/adapter/side-agent-002.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r45",
+   "via": "/tmp/r457_env/logs/adapter/side-agent-003.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work",
+   "via": "/tmp/r457_env/logs/adapter/side-agent-003.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work/count.txt",
+   "via": "/tmp/r457_env/logs/adapter/side-agent-003.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work",
+   "via": "/tmp/r457_env/logs/adapter/side-agent-004.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work/count.txt",
+   "via": "/tmp/r457_env/logs/adapter/side-agent-004.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work/count.txt",
+   "via": "/tmp/r457_env/logs/adapter/side-agent-005.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work",
+   "via": "/tmp/r457_env/logs/adapter/side-agent-006.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work/count.txt",
+   "via": "/tmp/r457_env/logs/adapter/side-agent-006.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work/x.txt",
+   "via": "/tmp/r457_env/logs/adapter/side-agent-006.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work/y.txt",
+   "via": "/tmp/r457_env/logs/adapter/side-agent-006.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work/z.txt",
+   "via": "/tmp/r457_env/logs/adapter/side-agent-006.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work/count.txt",
+   "via": "/tmp/r457_env/logs/adapter/side-agent-007.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work/merged.txt",
+   "via": "/tmp/r457_env/logs/adapter/side-agent-008.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work/merged.txt",
+   "via": "/tmp/r457_env/logs/adapter/side-agent-009.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work/count.txt",
+   "via": "/tmp/r457_env/logs/adapter/side-agent-010.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work/merged.txt",
+   "via": "/tmp/r457_env/logs/adapter/side-agent-010.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r457_env/agent/work/merged.txt",
+   "via": "/tmp/r457_env/logs/adapter/side-agent-011.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/count.",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/count.txt",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/first.txt",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/merged.txt",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/stats.txt",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/x.txt",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/y.txt",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/z.txt",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-001.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-002.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-003.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-004.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-005.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-006.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-007.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-008.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-009.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-010.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-011.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-012.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-013.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-014.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-015.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-001.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-002.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-003.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-004.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-005.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-006.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-007.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-008.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-009.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-010.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-011.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-012.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-013.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-014.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-015.json",
+   "via": "/tmp/r461_env",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work",
+   "via": "/tmp/r461_env/agent/work",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/count.txt",
+   "via": "/tmp/r461_env/agent/work",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/first.txt",
+   "via": "/tmp/r461_env/agent/work",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/merged.txt",
+   "via": "/tmp/r461_env/agent/work",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/stats.txt",
+   "via": "/tmp/r461_env/agent/work",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work",
+   "via": "/tmp/r461_env/agent/work/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/count.txt",
+   "via": "/tmp/r461_env/agent/work/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/first.txt",
+   "via": "/tmp/r461_env/agent/work/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/merged.txt",
+   "via": "/tmp/r461_env/agent/work/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/stats.txt",
+   "via": "/tmp/r461_env/agent/work/",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/count.",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/count.txt",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/first.txt",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/merged.txt",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/stats.txt",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/x.txt",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/y.txt",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/z.txt",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-001.json",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-002.json",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-003.json",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-004.json",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-005.json",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-006.json",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-007.json",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-008.json",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-009.json",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-010.json",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-011.json",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-012.json",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-013.json",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-014.json",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/full-agent-015.json",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-001.json",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-002.json",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-003.json",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-004.json",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-005.json",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-006.json",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-007.json",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-008.json",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-009.json",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-010.json",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-011.json",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-012.json",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-013.json",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-014.json",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/logs/adapter/side-agent-015.json",
+   "via": "/tmp/r461_env/logs/adapter",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-001.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-002.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-003.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-004.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-005.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-006.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-007.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/count.",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-007.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/count.txt",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-007.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-008.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/count.",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-008.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/count.txt",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-008.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/x.txt",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-008.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/y.txt",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-008.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/z.txt",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-008.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-009.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/count.",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-009.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/count.txt",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-009.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/x.txt",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-009.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/y.txt",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-009.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/z.txt",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-009.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-010.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-010.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/count.",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-010.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/count.txt",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-010.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/merged.txt",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-010.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-011.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-011.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/count.",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-011.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/count.txt",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-011.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/merged.txt",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-011.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/stats.txt",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-011.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-015.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-015.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/count.",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-015.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/count.txt",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-015.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/merged.txt",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-015.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/stats.txt",
+   "via": "/tmp/r461_env/logs/adapter/full-agent-015.json",
+   "via_class": "archived",
+   "scan_source": "archive"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work",
+   "via": "/tmp/r461_env/logs/adapter/side-agent-001.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work",
+   "via": "/tmp/r461_env/logs/adapter/side-agent-002.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work",
+   "via": "/tmp/r461_env/logs/adapter/side-agent-003.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work",
+   "via": "/tmp/r461_env/logs/adapter/side-agent-004.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/count.txt",
+   "via": "/tmp/r461_env/logs/adapter/side-agent-005.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/count.txt",
+   "via": "/tmp/r461_env/logs/adapter/side-agent-006.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work",
+   "via": "/tmp/r461_env/logs/adapter/side-agent-007.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/count.txt",
+   "via": "/tmp/r461_env/logs/adapter/side-agent-007.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/x.txt",
+   "via": "/tmp/r461_env/logs/adapter/side-agent-007.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/y.txt",
+   "via": "/tmp/r461_env/logs/adapter/side-agent-007.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/z.txt",
+   "via": "/tmp/r461_env/logs/adapter/side-agent-007.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work",
+   "via": "/tmp/r461_env/logs/adapter/side-agent-008.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/count.txt",
+   "via": "/tmp/r461_env/logs/adapter/side-agent-008.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/x.txt",
+   "via": "/tmp/r461_env/logs/adapter/side-agent-008.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/y.txt",
+   "via": "/tmp/r461_env/logs/adapter/side-agent-008.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/merged.txt",
+   "via": "/tmp/r461_env/logs/adapter/side-agent-009.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/x.txt",
+   "via": "/tmp/r461_env/logs/adapter/side-agent-009.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/y.txt",
+   "via": "/tmp/r461_env/logs/adapter/side-agent-009.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/count.txt",
+   "via": "/tmp/r461_env/logs/adapter/side-agent-010.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/merged.txt",
+   "via": "/tmp/r461_env/logs/adapter/side-agent-010.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/stats.txt",
+   "via": "/tmp/r461_env/logs/adapter/side-agent-010.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/merged.txt",
+   "via": "/tmp/r461_env/logs/adapter/side-agent-011.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/stats.txt",
+   "via": "/tmp/r461_env/logs/adapter/side-agent-011.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/first.txt",
+   "via": "/tmp/r461_env/logs/adapter/side-agent-015.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  },
+  {
+   "dep": "/tmp/r461_env/agent/work/stats.txt",
+   "via": "/tmp/r461_env/logs/adapter/side-agent-015.json",
+   "via_class": "external_asset",
+   "scan_source": "live"
+  }
+ ],
+ "conservation": {
+  "c1_via_in_depth2_set": true,
+  "c2_sum_per_node_eq_total": true,
+  "c3_scanned_plus_abstain_eq_nodes": true,
+  "c4_abstain_has_reason": true
+ },
+ "note": "depth-3 只计数 (分类需独立轮); 全量边表随本文件落盘 (可复算, 非抽样)。"
+}

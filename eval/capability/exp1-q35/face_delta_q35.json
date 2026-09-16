@@ -1,0 +1,175 @@
+{
+ "schema": "face-delta/1",
+ "round": "EXP1-Q35",
+ "rules": "capability/projection_rules.json",
+ "records": [
+  {
+   "path": "capability/exp1-q35/face_q35_t1.json",
+   "proj_digest": "8d36f1158b1f",
+   "passed": 25,
+   "total": 27,
+   "rules_applied": {
+    "side_effect_attribution/window/t0": 1,
+    "side_effect_attribution/window/t1": 1,
+    "side_effect_attribution/window/trace_dir": 1,
+    "side_effect_attribution/census_in_repo_cwd": 15,
+    "side_effect_attribution/foreign_writes": 14,
+    "side_effect_attribution/pre_existing": 51,
+    "side_effect_attribution/self_writes": 16,
+    "side_effect_attribution/conservation/classified": 1,
+    "side_effect_attribution/conservation/expected": 1,
+    "side_effect_attribution/conservation/in_scope_after": 1,
+    "side_effect_attribution/live_fd_scan/errors": 1,
+    "side_effect_attribution/live_fd_scan/scanned": 1,
+    "side_effect_attribution/trace/log_bytes": 1,
+    "side_effect_attribution/trace/raw_paths_sample": 200,
+    "out": 1,
+    "canon/runtime_sidecar": 1
+   },
+   "hollow_rules": []
+  },
+  {
+   "path": "capability/exp1-q35/face_q35_t2.json",
+   "proj_digest": "ea9237754a85",
+   "passed": 25,
+   "total": 27,
+   "rules_applied": {
+    "side_effect_attribution/window/t0": 1,
+    "side_effect_attribution/window/t1": 1,
+    "side_effect_attribution/window/trace_dir": 1,
+    "side_effect_attribution/census_in_repo_cwd": 15,
+    "side_effect_attribution/foreign_writes": 14,
+    "side_effect_attribution/pre_existing": 54,
+    "side_effect_attribution/self_writes": 16,
+    "side_effect_attribution/conservation/classified": 1,
+    "side_effect_attribution/conservation/expected": 1,
+    "side_effect_attribution/conservation/in_scope_after": 1,
+    "side_effect_attribution/live_fd_scan/errors": 1,
+    "side_effect_attribution/live_fd_scan/scanned": 1,
+    "side_effect_attribution/trace/log_bytes": 1,
+    "side_effect_attribution/trace/raw_paths_sample": 200,
+    "out": 1,
+    "canon/runtime_sidecar": 1
+   },
+   "hollow_rules": []
+  },
+  {
+   "path": "capability/exp1-q35/face_q35_t3.json",
+   "proj_digest": "fc43fca22608",
+   "passed": 25,
+   "total": 27,
+   "rules_applied": {
+    "side_effect_attribution/window/t0": 1,
+    "side_effect_attribution/window/t1": 1,
+    "side_effect_attribution/window/trace_dir": 1,
+    "side_effect_attribution/census_in_repo_cwd": 15,
+    "side_effect_attribution/foreign_writes": 14,
+    "side_effect_attribution/pre_existing": 57,
+    "side_effect_attribution/self_writes": 16,
+    "side_effect_attribution/conservation/classified": 1,
+    "side_effect_attribution/conservation/expected": 1,
+    "side_effect_attribution/conservation/in_scope_after": 1,
+    "side_effect_attribution/live_fd_scan/errors": 1,
+    "side_effect_attribution/live_fd_scan/scanned": 1,
+    "side_effect_attribution/trace/log_bytes": 1,
+    "side_effect_attribution/trace/raw_paths_sample": 200,
+    "out": 1,
+    "canon/runtime_sidecar": 1
+   },
+   "hollow_rules": []
+  },
+  {
+   "path": "capability/exp1-q34/face_record_q34_keep1.json",
+   "proj_digest": "8091a59c147a",
+   "passed": 25,
+   "total": 27,
+   "baseline": true
+  }
+ ],
+ "pairs": [
+  {
+   "pair": [
+    "face_q35_t1.json",
+    "face_q35_t2.json"
+   ],
+   "same_tree_state": true,
+   "n_differing_leaves": 1,
+   "families": {
+    "/side_effect_attribution/pre_existing/n": {
+     "n": 1,
+     "env_family": true,
+     "sample_a": "51",
+     "sample_b": "54"
+    }
+   },
+   "digest_a": "8d36f1158b1f",
+   "digest_b": "ea9237754a85",
+   "unattributed": [],
+   "n_unattributed": 0
+  },
+  {
+   "pair": [
+    "face_q35_t2.json",
+    "face_q35_t3.json"
+   ],
+   "same_tree_state": true,
+   "n_differing_leaves": 1,
+   "families": {
+    "/side_effect_attribution/pre_existing/n": {
+     "n": 1,
+     "env_family": true,
+     "sample_a": "54",
+     "sample_b": "57"
+    }
+   },
+   "digest_a": "ea9237754a85",
+   "digest_b": "fc43fca22608",
+   "unattributed": [],
+   "n_unattributed": 0
+  },
+  {
+   "pair": [
+    "face_record_q34_keep1.json(envelope)",
+    "face_q35_t3.json"
+   ],
+   "same_tree_state": false,
+   "n_differing_leaves": 23,
+   "families": {
+    "/side_effect_attribution/census_in_repo_cwd/n": {
+     "n": 1,
+     "env_family": true,
+     "sample_a": "4",
+     "sample_b": "5"
+    },
+    "/side_effect_attribution/foreign_writes/n": {
+     "n": 1,
+     "env_family": true,
+     "sample_a": "10",
+     "sample_b": "1"
+    },
+    "/side_effect_attribution/old_gate_delta[*]": {
+     "n": 10,
+     "env_family": true,
+     "sample_a": "'eval/rover/r491/paid-plaintext/Aroleb__paid-calls.md'",
+     "sample_b": "None"
+    },
+    "/side_effect_attribution/old_gate_false_reds[*]": {
+     "n": 10,
+     "env_family": true,
+     "sample_a": "'eval/rover/r491/paid-plaintext/Aroleb__paid-calls.md'",
+     "sample_b": "None"
+    },
+    "/side_effect_attribution/pre_existing/n": {
+     "n": 1,
+     "env_family": true,
+     "sample_a": "152",
+     "sample_b": "57"
+    }
+   },
+   "n_unattributed": 0,
+   "unattributed": []
+  }
+ ],
+ "behaviour_stable_same_state": true,
+ "verdict": "ATTRIBUTED"
+}
