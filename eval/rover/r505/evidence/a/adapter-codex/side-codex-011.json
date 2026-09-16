@@ -1,0 +1,37 @@
+{
+ "side": "codex",
+ "request": {
+  "instructions_chars": 16979,
+  "tools_n": 9,
+  "passed_tools_n": 7,
+  "input_items": 3,
+  "upstream_request": {
+   "model": "deepseek-chat",
+   "n_messages": 4,
+   "tools": [
+    "exec_command",
+    "write_stdin",
+    "request_user_input",
+    "view_image",
+    "get_goal",
+    "create_goal",
+    "update_goal"
+   ]
+  }
+ },
+ "response": {
+  "tool_calls": [],
+  "text": "```python\nimport sys\nimport heapq\n\n\ndef main():\n    data = sys.stdin.buffer.read().split()\n    if not data:\n        return\n    idx = 0\n    n = int(data[idx]); idx += 1\n    m = int(data[idx]); idx += 1\n\n    adj = [[] for _ in range(n)]\n    indeg = [0] * n\n    for _ in range(m):\n        u = int(data[idx]); idx += 1\n        v = int(data[idx]); idx += 1\n        adj[u].append(v)\n        indeg[v] += 1\n\n    heap = [i for i in range(n) if indeg[i] == 0]\n    heapq.heapify(heap)\n\n    result = []\n    while heap:\n        u = heapq.heappop(heap)\n        result.append(u)\n        for v in adj[u]:\n            indeg[v] -= 1\n            if indeg[v] == 0:\n                heapq.heappush(heap, v)\n\n    if len(result) < n:\n        sys.stdout.write(\"-1\\n\")\n    else:\n        sys.stdout.write(\" \".join(map(str, result)) + \"\\n\")\n\n\nmain()\n```",
+  "usage": {
+   "prompt_tokens": 6462,
+   "completion_tokens": 253,
+   "total_tokens": 6715,
+   "prompt_tokens_details": {
+    "cached_tokens": 6144
+   },
+   "prompt_cache_hit_tokens": 6144,
+   "prompt_cache_miss_tokens": 318
+  }
+ },
+ "extra": {}
+}

@@ -1,0 +1,634 @@
+{
+  "solver": "agent",
+  "tag": "agent-r505a",
+  "oracle": false,
+  "solver_id": "agent",
+  "reply_ns": "agent-r505a",
+  "ts": "2026-09-17T05:50:17+0800",
+  "elapsed_s": 48.32,
+  "n_tasks": 11,
+  "passed": 85,
+  "total": 97,
+  "rate": 0.8763,
+  "arm_unavailable": 0,
+  "validity": "ok",
+  "taxonomy": {
+    "ok": 85,
+    "syntax_error": 1
+  },
+  "by_kind": {
+    "program": {
+      "n": 7,
+      "passed": 81,
+      "total": 93,
+      "modes": {
+        "ok": 6,
+        "syntax_error": 1
+      },
+      "rate": 0.871
+    },
+    "math": {
+      "n": 4,
+      "passed": 4,
+      "total": 4,
+      "modes": {
+        "ok": 4
+      },
+      "rate": 1.0
+    }
+  },
+  "by_family": {
+    "life_k": {
+      "n": 1,
+      "passed": 12,
+      "total": 12,
+      "modes": {
+        "ok": 1
+      },
+      "rate": 1.0
+    },
+    "sub_game": {
+      "n": 1,
+      "passed": 0,
+      "total": 12,
+      "modes": {
+        "syntax_error": 1
+      },
+      "rate": 0.0
+    },
+    "nim_multi": {
+      "n": 1,
+      "passed": 13,
+      "total": 13,
+      "modes": {
+        "ok": 1
+      },
+      "rate": 1.0
+    },
+    "wythoff": {
+      "n": 1,
+      "passed": 13,
+      "total": 13,
+      "modes": {
+        "ok": 1
+      },
+      "rate": 1.0
+    },
+    "topo_min": {
+      "n": 1,
+      "passed": 13,
+      "total": 13,
+      "modes": {
+        "ok": 1
+      },
+      "rate": 1.0
+    },
+    "vm_run": {
+      "n": 1,
+      "passed": 12,
+      "total": 12,
+      "modes": {
+        "ok": 1
+      },
+      "rate": 1.0
+    },
+    "json_mini": {
+      "n": 1,
+      "passed": 18,
+      "total": 18,
+      "modes": {
+        "ok": 1
+      },
+      "rate": 1.0
+    },
+    "witness_sqrt_mod": {
+      "n": 1,
+      "passed": 1,
+      "total": 1,
+      "modes": {
+        "ok": 1
+      },
+      "rate": 1.0
+    },
+    "witness_min_counterexample": {
+      "n": 1,
+      "passed": 1,
+      "total": 1,
+      "modes": {
+        "ok": 1
+      },
+      "rate": 1.0
+    },
+    "witness_mod_inverse": {
+      "n": 1,
+      "passed": 1,
+      "total": 1,
+      "modes": {
+        "ok": 1
+      },
+      "rate": 1.0
+    },
+    "witness_crt": {
+      "n": 1,
+      "passed": 1,
+      "total": 1,
+      "modes": {
+        "ok": 1
+      },
+      "rate": 1.0
+    }
+  },
+  "turns_arg": 1,
+  "correction_mode": "onfail",
+  "rounds_observed": 11,
+  "rounds_expected": 11,
+  "rounds_missing": 0,
+  "first_try_whole_ok": 10,
+  "first_try_rate_whole": 0.9091,
+  "fix_ok": 0,
+  "fix_rate": 0.0,
+  "regressed": 0,
+  "final_whole_ok": 10,
+  "final_rate_whole": 0.9091,
+  "saturated": false,
+  "per_task": [
+    {
+      "tid": "p001",
+      "kind": "program",
+      "family": "life_k",
+      "mode": "ok",
+      "passed": 12,
+      "total": 12,
+      "taxonomy": {
+        "ok": 12
+      },
+      "reply_chars": 2593,
+      "reply_head": "AgentFramework CLI   /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit ── 执行中 (turn 1) ──────────────────────────────   [01] 意图分析: ",
+      "turns": 1,
+      "reply_paths": [
+        "data/probe/replies/agentagent-r505a-p001.txt"
+      ],
+      "code_source": "artifact",
+      "artifacts": [
+        "/home/agentuser/AgentFramework/data/artifacts/py_188d387697d73fbd.py",
+        "/home/agentuser/AgentFramework/data/artifacts/py_6afe732adc05a300.py"
+      ],
+      "t1": {
+        "mode": "ok",
+        "passed": 12,
+        "total": 12,
+        "reply_chars": 2593,
+        "code_source": "artifact"
+      },
+      "t2": null,
+      "solve": {
+        "exit": 0,
+        "elapsed_s": 5.47,
+        "session": "probe-0917054929-agent-r505a-p001",
+        "stderr_tail": "",
+        "artifacts": [
+          {
+            "path": "/home/agentuser/AgentFramework/data/artifacts/py_188d387697d73fbd.py",
+            "bytes": 1496,
+            "compile_valid": true,
+            "origin": "fenced"
+          },
+          {
+            "path": "/home/agentuser/AgentFramework/data/artifacts/py_6afe732adc05a300.py",
+            "bytes": 2582,
+            "compile_valid": true,
+            "origin": "fenced"
+          }
+        ],
+        "reply_path": "data/probe/replies/agentagent-r505a-p001.txt",
+        "reply_chars": 2593,
+        "reply_head": "AgentFramework CLI   /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit ── 执行中 (turn 1) ──────────────────────────────   [01] 意图分析: "
+      }
+    },
+    {
+      "tid": "p002",
+      "kind": "program",
+      "family": "sub_game",
+      "mode": "syntax_error",
+      "passed": 0,
+      "total": 12,
+      "taxonomy": {
+        "syntax_error": 1
+      },
+      "reply_chars": 1017,
+      "reply_head": "AgentFramework CLI   /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit ── 执行中 (turn 1) ──────────────────────────────   [01] 意图分析: ",
+      "turns": 1,
+      "reply_paths": [
+        "data/probe/replies/agentagent-r505a-p002.txt"
+      ],
+      "code_source": "transcript",
+      "artifacts": [],
+      "t1": {
+        "mode": "syntax_error",
+        "passed": 0,
+        "total": 12,
+        "reply_chars": 1017,
+        "code_source": "transcript"
+      },
+      "t2": null,
+      "solve": {
+        "exit": 0,
+        "elapsed_s": 14.73,
+        "session": "probe-0917054934-agent-r505a-p002",
+        "stderr_tail": "",
+        "artifacts": [],
+        "reply_path": "data/probe/replies/agentagent-r505a-p002.txt",
+        "reply_chars": 1017,
+        "reply_head": "AgentFramework CLI   /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit ── 执行中 (turn 1) ──────────────────────────────   [01] 意图分析: "
+      }
+    },
+    {
+      "tid": "p003",
+      "kind": "program",
+      "family": "nim_multi",
+      "mode": "ok",
+      "passed": 13,
+      "total": 13,
+      "taxonomy": {
+        "ok": 13
+      },
+      "reply_chars": 1890,
+      "reply_head": "AgentFramework CLI   /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit ── 执行中 (turn 1) ──────────────────────────────   [01] 意图分析: ",
+      "turns": 1,
+      "reply_paths": [
+        "data/probe/replies/agentagent-r505a-p003.txt"
+      ],
+      "code_source": "artifact",
+      "artifacts": [
+        "/home/agentuser/AgentFramework/data/artifacts/py_4e1e697f3281d288.py"
+      ],
+      "t1": {
+        "mode": "ok",
+        "passed": 13,
+        "total": 13,
+        "reply_chars": 1890,
+        "code_source": "artifact"
+      },
+      "t2": null,
+      "solve": {
+        "exit": 0,
+        "elapsed_s": 2.47,
+        "session": "probe-0917054949-agent-r505a-p003",
+        "stderr_tail": "",
+        "artifacts": [
+          {
+            "path": "/home/agentuser/AgentFramework/data/artifacts/py_4e1e697f3281d288.py",
+            "bytes": 546,
+            "compile_valid": true,
+            "origin": "fenced"
+          }
+        ],
+        "reply_path": "data/probe/replies/agentagent-r505a-p003.txt",
+        "reply_chars": 1890,
+        "reply_head": "AgentFramework CLI   /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit ── 执行中 (turn 1) ──────────────────────────────   [01] 意图分析: "
+      }
+    },
+    {
+      "tid": "p004",
+      "kind": "program",
+      "family": "wythoff",
+      "mode": "ok",
+      "passed": 13,
+      "total": 13,
+      "taxonomy": {
+        "ok": 13
+      },
+      "reply_chars": 2926,
+      "reply_head": "AgentFramework CLI   /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit ── 执行中 (turn 1) ──────────────────────────────   [01] 意图分析: ",
+      "turns": 1,
+      "reply_paths": [
+        "data/probe/replies/agentagent-r505a-p004.txt"
+      ],
+      "code_source": "artifact",
+      "artifacts": [
+        "/home/agentuser/AgentFramework/data/artifacts/py_28397f4e148eb2b5.py",
+        "/home/agentuser/AgentFramework/data/artifacts/py_92c90efa87a8542e.py"
+      ],
+      "t1": {
+        "mode": "ok",
+        "passed": 13,
+        "total": 13,
+        "reply_chars": 2926,
+        "code_source": "artifact"
+      },
+      "t2": null,
+      "solve": {
+        "exit": 0,
+        "elapsed_s": 5.68,
+        "session": "probe-0917054952-agent-r505a-p004",
+        "stderr_tail": "",
+        "artifacts": [
+          {
+            "path": "/home/agentuser/AgentFramework/data/artifacts/py_28397f4e148eb2b5.py",
+            "bytes": 1455,
+            "compile_valid": true,
+            "origin": "fenced"
+          },
+          {
+            "path": "/home/agentuser/AgentFramework/data/artifacts/py_92c90efa87a8542e.py",
+            "bytes": 2522,
+            "compile_valid": true,
+            "origin": "fenced"
+          }
+        ],
+        "reply_path": "data/probe/replies/agentagent-r505a-p004.txt",
+        "reply_chars": 2926,
+        "reply_head": "AgentFramework CLI   /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit ── 执行中 (turn 1) ──────────────────────────────   [01] 意图分析: "
+      }
+    },
+    {
+      "tid": "p005",
+      "kind": "program",
+      "family": "topo_min",
+      "mode": "ok",
+      "passed": 13,
+      "total": 13,
+      "taxonomy": {
+        "ok": 13
+      },
+      "reply_chars": 1800,
+      "reply_head": "AgentFramework CLI   /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit ── 执行中 (turn 1) ──────────────────────────────   [01] 意图分析: ",
+      "turns": 1,
+      "reply_paths": [
+        "data/probe/replies/agentagent-r505a-p005.txt"
+      ],
+      "code_source": "artifact",
+      "artifacts": [
+        "/home/agentuser/AgentFramework/data/artifacts/py_0bd711d5fa61e3ef.py"
+      ],
+      "t1": {
+        "mode": "ok",
+        "passed": 13,
+        "total": 13,
+        "reply_chars": 1800,
+        "code_source": "artifact"
+      },
+      "t2": null,
+      "solve": {
+        "exit": 0,
+        "elapsed_s": 2.41,
+        "session": "probe-0917054958-agent-r505a-p005",
+        "stderr_tail": "",
+        "artifacts": [
+          {
+            "path": "/home/agentuser/AgentFramework/data/artifacts/py_0bd711d5fa61e3ef.py",
+            "bytes": 876,
+            "compile_valid": true,
+            "origin": "fenced"
+          }
+        ],
+        "reply_path": "data/probe/replies/agentagent-r505a-p005.txt",
+        "reply_chars": 1800,
+        "reply_head": "AgentFramework CLI   /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit ── 执行中 (turn 1) ──────────────────────────────   [01] 意图分析: "
+      }
+    },
+    {
+      "tid": "p006",
+      "kind": "program",
+      "family": "vm_run",
+      "mode": "ok",
+      "passed": 12,
+      "total": 12,
+      "taxonomy": {
+        "ok": 12
+      },
+      "reply_chars": 4335,
+      "reply_head": "AgentFramework CLI   /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit ── 执行中 (turn 1) ──────────────────────────────   [01] 意图分析: ",
+      "turns": 1,
+      "reply_paths": [
+        "data/probe/replies/agentagent-r505a-p006.txt"
+      ],
+      "code_source": "artifact",
+      "artifacts": [
+        "/home/agentuser/AgentFramework/data/artifacts/py_7ef64b8a2097347f.py"
+      ],
+      "t1": {
+        "mode": "ok",
+        "passed": 12,
+        "total": 12,
+        "reply_chars": 4335,
+        "code_source": "artifact"
+      },
+      "t2": null,
+      "solve": {
+        "exit": 0,
+        "elapsed_s": 3.09,
+        "session": "probe-0917055001-agent-r505a-p006",
+        "stderr_tail": "",
+        "artifacts": [
+          {
+            "path": "/home/agentuser/AgentFramework/data/artifacts/py_7ef64b8a2097347f.py",
+            "bytes": 3263,
+            "compile_valid": true,
+            "origin": "fenced"
+          }
+        ],
+        "reply_path": "data/probe/replies/agentagent-r505a-p006.txt",
+        "reply_chars": 4335,
+        "reply_head": "AgentFramework CLI   /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit ── 执行中 (turn 1) ──────────────────────────────   [01] 意图分析: "
+      }
+    },
+    {
+      "tid": "p007",
+      "kind": "program",
+      "family": "json_mini",
+      "mode": "ok",
+      "passed": 18,
+      "total": 18,
+      "taxonomy": {
+        "ok": 18
+      },
+      "reply_chars": 8365,
+      "reply_head": "AgentFramework CLI   /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit ── 执行中 (turn 1) ──────────────────────────────   [01] 意图分析: ",
+      "turns": 1,
+      "reply_paths": [
+        "data/probe/replies/agentagent-r505a-p007.txt"
+      ],
+      "code_source": "artifact",
+      "artifacts": [
+        "/home/agentuser/AgentFramework/data/artifacts/py_bc1b1b4781592418.py"
+      ],
+      "t1": {
+        "mode": "ok",
+        "passed": 18,
+        "total": 18,
+        "reply_chars": 8365,
+        "code_source": "artifact"
+      },
+      "t2": null,
+      "solve": {
+        "exit": 0,
+        "elapsed_s": 6.9,
+        "session": "probe-0917055004-agent-r505a-p007",
+        "stderr_tail": "",
+        "artifacts": [
+          {
+            "path": "/home/agentuser/AgentFramework/data/artifacts/py_bc1b1b4781592418.py",
+            "bytes": 7294,
+            "compile_valid": true,
+            "origin": "fenced"
+          }
+        ],
+        "reply_path": "data/probe/replies/agentagent-r505a-p007.txt",
+        "reply_chars": 8365,
+        "reply_head": "AgentFramework CLI   /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit ── 执行中 (turn 1) ──────────────────────────────   [01] 意图分析: "
+      }
+    },
+    {
+      "tid": "m001",
+      "kind": "math",
+      "family": "witness_sqrt_mod",
+      "mode": "ok",
+      "passed": 1,
+      "total": 1,
+      "taxonomy": {
+        "ok": 1
+      },
+      "reply_chars": 874,
+      "reply_head": "AgentFramework CLI   /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit ── 执行中 (turn 1) ──────────────────────────────   [01] 意图分析: ",
+      "turns": 1,
+      "reply_paths": [
+        "data/probe/replies/agentagent-r505a-m001.txt"
+      ],
+      "code_source": null,
+      "artifacts": [],
+      "t1": {
+        "mode": "ok",
+        "passed": 1,
+        "total": 1,
+        "reply_chars": 874,
+        "code_source": null
+      },
+      "t2": null,
+      "solve": {
+        "exit": 0,
+        "elapsed_s": 1.95,
+        "session": "probe-0917055011-agent-r505a-m001",
+        "stderr_tail": "",
+        "artifacts": [],
+        "reply_path": "data/probe/replies/agentagent-r505a-m001.txt",
+        "reply_chars": 874,
+        "reply_head": "AgentFramework CLI   /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit ── 执行中 (turn 1) ──────────────────────────────   [01] 意图分析: "
+      }
+    },
+    {
+      "tid": "m002",
+      "kind": "math",
+      "family": "witness_min_counterexample",
+      "mode": "ok",
+      "passed": 1,
+      "total": 1,
+      "taxonomy": {
+        "ok": 1
+      },
+      "reply_chars": 942,
+      "reply_head": "AgentFramework CLI   /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit ── 执行中 (turn 1) ──────────────────────────────   [01] 意图分析: ",
+      "turns": 1,
+      "reply_paths": [
+        "data/probe/replies/agentagent-r505a-m002.txt"
+      ],
+      "code_source": null,
+      "artifacts": [],
+      "t1": {
+        "mode": "ok",
+        "passed": 1,
+        "total": 1,
+        "reply_chars": 942,
+        "code_source": null
+      },
+      "t2": null,
+      "solve": {
+        "exit": 0,
+        "elapsed_s": 1.06,
+        "session": "probe-0917055013-agent-r505a-m002",
+        "stderr_tail": "",
+        "artifacts": [],
+        "reply_path": "data/probe/replies/agentagent-r505a-m002.txt",
+        "reply_chars": 942,
+        "reply_head": "AgentFramework CLI   /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit ── 执行中 (turn 1) ──────────────────────────────   [01] 意图分析: "
+      }
+    },
+    {
+      "tid": "m003",
+      "kind": "math",
+      "family": "witness_mod_inverse",
+      "mode": "ok",
+      "passed": 1,
+      "total": 1,
+      "taxonomy": {
+        "ok": 1
+      },
+      "reply_chars": 762,
+      "reply_head": "AgentFramework CLI   /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit ── 执行中 (turn 1) ──────────────────────────────   [01] 意图分析: ",
+      "turns": 1,
+      "reply_paths": [
+        "data/probe/replies/agentagent-r505a-m003.txt"
+      ],
+      "code_source": null,
+      "artifacts": [],
+      "t1": {
+        "mode": "ok",
+        "passed": 1,
+        "total": 1,
+        "reply_chars": 762,
+        "code_source": null
+      },
+      "t2": null,
+      "solve": {
+        "exit": 0,
+        "elapsed_s": 0.81,
+        "session": "probe-0917055014-agent-r505a-m003",
+        "stderr_tail": "",
+        "artifacts": [],
+        "reply_path": "data/probe/replies/agentagent-r505a-m003.txt",
+        "reply_chars": 762,
+        "reply_head": "AgentFramework CLI   /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit ── 执行中 (turn 1) ──────────────────────────────   [01] 意图分析: "
+      }
+    },
+    {
+      "tid": "m004",
+      "kind": "math",
+      "family": "witness_crt",
+      "mode": "ok",
+      "passed": 1,
+      "total": 1,
+      "taxonomy": {
+        "ok": 1
+      },
+      "reply_chars": 1171,
+      "reply_head": "AgentFramework CLI   /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit ── 执行中 (turn 1) ──────────────────────────────   [01] 意图分析: ",
+      "turns": 1,
+      "reply_paths": [
+        "data/probe/replies/agentagent-r505a-m004.txt"
+      ],
+      "code_source": null,
+      "artifacts": [],
+      "t1": {
+        "mode": "ok",
+        "passed": 1,
+        "total": 1,
+        "reply_chars": 1171,
+        "code_source": null
+      },
+      "t2": null,
+      "solve": {
+        "exit": 0,
+        "elapsed_s": 1.88,
+        "session": "probe-0917055015-agent-r505a-m004",
+        "stderr_tail": "",
+        "artifacts": [],
+        "reply_path": "data/probe/replies/agentagent-r505a-m004.txt",
+        "reply_chars": 1171,
+        "reply_head": "AgentFramework CLI   /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit ── 执行中 (turn 1) ──────────────────────────────   [01] 意图分析: "
+      }
+    }
+  ],
+  "taskset_sha": "2ce1d8601577b383",
+  "kind_arg": "both",
+  "seed": 0
+}

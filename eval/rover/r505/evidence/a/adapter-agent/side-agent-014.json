@@ -1,0 +1,44 @@
+{
+ "side": "agent",
+ "request": {
+  "n_messages": 2,
+  "tools_n": 4,
+  "upstream_request": {
+   "model": "deepseek-chat",
+   "n_messages": 2,
+   "prompt_sha8": "bc976f4c",
+   "tail_messages": [
+    {
+     "role": "system",
+     "len": 4889,
+     "head": "你是一个代码生成专家。请根据用户需求和相关上下文生成高质量代码。\n\n要求：\n1. 参考上下文中提供的代码风格和模式\n2. 保持与现有代码的一致性\n3. 添加必要的注释和文档\n4. 确保代码可编译/可运行\n5. 遵循 SOLID 原则\n5. 输出纪律：直接回答问题本身，不重复用户问题；无需要时不主动展开背景、对比表或延伸建议；默认简洁，用户追问再展开。\n6. 问询纪律（R42）：需要用户澄清时，先给",
+     "tool_calls": 0,
+     "tool_call_id": null
+    },
+    {
+     "role": "user",
+     "len": 5031,
+     "head": "用 Python 3 写一个单文件程序解决下面的任务。程序从标准输入读数据, 把结果写到标准输出; 不要打印任何多余文字、提示或调试信息。\n\n【任务】\n读入: 第一行两个整数 n m (1<=n<=64); 随后 m 行, 每行两个整数 u v (0<=u,v<n), 表示有向边 u->v。输出: 若图中存在拓扑序, 输出**字典序最小**的拓扑序 (n 个节点编号, 空格分隔为一行); 若存在环",
+     "tool_calls": 0,
+     "tool_call_id": null
+    }
+   ]
+  }
+ },
+ "response": {
+  "text": "```python\nimport sys\nimport heapq\n\n\ndef main():\n    data = sys.stdin.buffer.read().split()\n    if not data:\n        return\n    it = iter(data)\n    n = int(next(it))\n    m = int(next(it))\n\n    # 邻接表 + 入度\n    adj = [[] for _ in range(n)]\n    indeg = [0] * n\n    for _ in range(m):\n        u = int(next(it))\n        v = int(next(it))\n        adj[u].append(v)\n        indeg[v] += 1\n\n    # 小根堆实现字典序最小的可行解 (Kahn)\n    heap = [i for i in range(n) if indeg[i] == 0]\n    heapq.heapify(heap)\n\n    order = []\n    while heap:\n        u = heapq.heappop(heap)\n        order.append(u)\n        for v in adj[u]:\n            indeg[v] -= 1\n            if indeg[v] == 0:\n                heapq.heappush(heap, v)\n\n    if len(order) != n:\n        sys.stdout.write(\"-1\")\n    else:\n        sys.stdout.write(\" \".join(map(str, order)))\n\n\nif __name__ == \"__main__\":\n    main()\n```\n\n说明: 使用 Kahn 算法, 每步从入度为 0 的节点中取编号最小者 (小根堆), 即得字典序最小拓扑序; 自环与普通环都会使入度无法归零, 数量不足 n 时输出 `-1`。",
+  "usage": {
+   "prompt_tokens": 6271,
+   "completion_tokens": 329,
+   "total_tokens": 6600,
+   "prompt_tokens_details": {
+    "cached_tokens": 2048
+   },
+   "prompt_cache_hit_tokens": 2048,
+   "prompt_cache_miss_tokens": 4223
+  },
+  "tool_calls": [],
+  "finish_reason": "stop"
+ },
+ "extra": {}
+}

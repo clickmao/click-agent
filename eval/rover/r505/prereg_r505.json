@@ -1,0 +1,284 @@
+{
+ "round": "R505",
+ "topic": "主线对照器具修复（证据快照/不可变/可重放）× n≥3 同窗质量面 × 判据② 逐题调用构成",
+ "prereg_at": "2026-09-17T05:46:45+0800",
+ "first_run": true,
+ "external_reference": {
+  "codex_bin": "/home/agentuser/.agentframework/tools/codex-env/node_modules/.bin/codex",
+  "codex_version": "codex-cli 0.154.0",
+  "npm_package": "@openai/codex@0.154.0",
+  "adapter": "eval/rover/r455/adapter_tools.py",
+  "config_model_label": "deepseek-flash",
+  "route": "codex/agent 两侧 -> http://127.0.0.1:<R505_ADAPTER_PORT>/v1 -> upstream",
+  "n_calls": "unreported（本地对照跑不耗远端额度时仍按调用数列账; 两侧分列）"
+ },
+ "files_sha256": {
+  "taskset": "d54c613d5fd6e935cfbf7ea8e513a1d6a5773d59b26937d33f505e9ef70bcc46",
+  "grade_py": "1bdefe12da4d47d2e8ebe2c057e2462befdf70b70302d8aa9ee592aa2b2974ae",
+  "tasks_py": "2dba8418221cedfba67420f6374b9279c0c7555938b7422473e3cb238ada2e2a",
+  "run_probe_py": "f58f957c159d8af50c1e73f68adf3d633439f9580174fc097711c18a3cde8a1d",
+  "codex_solver_py": "0838de8a6400deb4c5aff8e964357544aa7a995b81b75f88da0010d5152ddca2",
+  "judge_py": "309b42c89132df3974f614d3cda0d8ba6c259cfc141e680032d5976ec2ab7fa6",
+  "runner_sh": "25e14cc4c3622fe006cca465dc424096d16ee6772e60c6024f7b4536568d06e5",
+  "nc_sh": "c6d46018c17fc0b251b973c3552238c20cc0053b72d64d04e17fc8418465758f",
+  "adapter_py": "f04b60b04767a7a411efecdca15a8f75f551ba4c5f4c2fed9913b51ffeebb1af",
+  "attr_py": "dc7239acdb90eae3ca539ae58171815da0e44be63d0abe38898605854f2cb0ad",
+  "manifest_py": "b64b0e9319cacf3f9a682a13bc763ac5fc3b81ff4a907e07b1a9d24f084c8f36",
+  "replay_py": "5509e93e11a27acbe62ca656bda0697537b72e9aec2f7cc0362eade47c8352cd",
+  "agg_py": "ad1d1713f3838e9b1922cea726b02880561c8b60d6fd2f41db8dd0604f45f50e",
+  "nc_instrument_sh": "0aee77fa8939e735db33b128d84637d3c4ace236073265281f1ba731997d47f1",
+  "host_bin": "dcb747e873645084adc5c560cab24382a54836a49ef9312c42ada4ccfcdbb57c"
+ },
+ "probe_taskset_sha": "2ce1d8601577b383",
+ "taskset": {
+  "path": "eval/rover/r505/taskset-r505.json",
+  "n_tasks": 11,
+  "families": "json_mini,life_k,nim_multi,sub_game,topo_min,vm_run,witness_crt,witness_min_counterexample,witness_mod_inverse,witness_sqrt_mod,wythoff",
+  "game_family": "life_k,sub_game,nim_multi,wythoff",
+  "kind_arg": "per-family-merge(以族定向 dump 后合并)",
+  "seed": 20260917,
+  "r504_sha256": "d54c613d5fd6e935cfbf7ea8e513a1d6a5773d59b26937d33f505e9ef70bcc46",
+  "byte_identical_to_r504": true,
+  "oracle_baseline": {
+   "rate": 1.0,
+   "passed": 97,
+   "total": 97,
+   "n_tasks": 11,
+   "taskset_sha": "2ce1d8601577b383",
+   "solver": "oracle",
+   "src": "data/probe/probe-oracle-seed0-r504-oracle.json"
+  }
+ },
+ "criteria": [
+  "H1 仪器判别力（首跑前本地负控, 逐族两端）: 见 checks_prefirstrun.nc1*（oracle 满 ∧ 变体整题 0）—— 沿用 R504 判据器, R505 重跑取证",
+  "H1g 器具判别力（R505 新增, 针对本轮修复的失败模式）: ① 命名空间守卫: 目标目录已被占用 ⇒ runner rc=4 且不启动任何作业; ② 污染检出器: 对「判分后被覆盖」的目录, 冻结清单复核必须 rc=2 并**点名**受影响文件; 干净副本必须 rc=0（两端都给, 只给一端不算自证）",
+  "H1h 器具判别力（归因器）: 归因器对**已知构成**的历史调用（R504 幸存 8 条: p005/p006/p007/m001×2/m002/m003/m004）必须 8/8 归位且 0 未归因; 对无 tail_messages 的调用（codex 侧）必须记 unmatched（禁硬凑）",
+  "H2 外部真值可用性: codex 侧 ok 题数 >= 1; 若 == 0 ⇒ 记 unreported（禁当 0 分能力、禁静默）",
+  "H3 同输入机检: 两侧 probe 摘要 taskset_sha 相等且 == 预注册值; 且题集字节级等于 R504 v4 题集（跨轮同输入）",
+  "H4 同模型机检: adapter 落盘 upstream_request.model 两侧一致; 单一模型名; 记本仓侧标签为对照标签",
+  "H5 对照读数分列: 逐题 codex mode vs agent mode + 两侧 usage 分列; **禁**据 token 总量断言谁更省（静态面不同源）",
+  "H6 fail-closed: 缺任一侧面产物/缺仓内快照 ⇒ rc=3（不得算绿）; codex 空回 ⇒ 记 no_code 单列",
+  "H7 质量面 n≥3: 3 批同窗对照, 逐题 mode 一致率与整题全对数（每批 + 汇总）; 任一批质量面低于 R504 同题读数 ⇒ 回退触发器",
+  "H8 逐题调用构成（判据② 取证）: 本侧每条调用必须归到 tid 或显式 fix 轮（unmatched==0 ∧ ambiguous==0）; codex 侧 raw 逐题 usage 必须与 adapter 观测总量逐位一致（不一致 ⇒ unreported, 禁猜）",
+  "H9 证据可重放: 判分输入 = 仓内不可变快照; 同快照双读逐位相同; 运行内 + 日终两次 check_usage_replay 均须 rc=0",
+  "H10 证据不可变: 快照逐文件 sha256 == 冻结清单; 任一不符 ⇒ 红并点名",
+  "H11 反向控制（缺陷可检出）: 把 R504 的冻结 usage 清单喂给 R504 活目录 ⇒ check_usage_replay 必须 rc=2 且点名 9 个文件（证明修复针对的失败模式确实被机检捕获, 不是纸面声明）"
+ ],
+ "honest_boundaries": [
+  "codex 侧本机 bwrap 不可用 ⇒ 用 --dangerously-bypass-approvals-and-sandbox（审批/沙箱面不对等）",
+  "两侧静态面不同源（instructions/工具面差异）⇒ 只比「同输入下的行为差异」与同侧趋势",
+  "n=11 × 3 批（同一冻结题集）⇒ 质量面给同窗重跑一致性, 不构成总体能力估计",
+  "跨轮禁相减（R504 与 R505 各自单窗读数; 只在同批内比较）",
+  "R504 的 9 条本侧程序调用证据已被后续作业覆盖（本轮机检坐实）⇒ R504 的 17 调用构成**不可复原**, 只能作为「读一次」的历史读数"
+ ],
+ "lineage": {
+  "r504_evidence_sha256": {
+   "verdict_txt": "eval/rover/r504/evidence/verdict-r504.txt",
+   "adapter_usage_txt": "eval/rover/r504/evidence/adapter-usage.txt"
+  },
+  "defect": "adapter_tools.py 文件名计数是进程内计数器, DEMO_OUT 复用 ⇒ 同目录二次运行从 001 覆盖已判分证据 (R504: cand2_vmrun_n3.sh 覆盖 side-agent-001..009)",
+  "fix": "① 命名空间守卫 (D/EV 空 + 端口不占) ② 阶段快照落仓内 ③ 逐文件 sha256 冻结清单 ④ 判分只读快照 ⑤ 冻结清单复核器 (check_usage_replay)"
+ },
+ "checks_prefirstrun": {
+  "nc1_instrument": {
+   "pass": true,
+   "oracle_whole_ok": 1,
+   "oracle_n": 1,
+   "mutation_json_loose_whole_ok": 0,
+   "mutation_n": 1,
+   "taskset": "eval/rover/r505/taskset-r505nc.json",
+   "reading": "仪器两端: oracle 1.0 且 mutation 0.0"
+  },
+  "nc1b_instrument_game": {
+   "pass": true,
+   "oracle_whole_ok": 1,
+   "oracle_n": 1,
+   "mutation_life_wrap_whole_ok": 0,
+   "mutation_n": 1,
+   "taskset": "eval/rover/r505/taskset-r505nc-game.json",
+   "reading": "游戏族仪器两端: oracle 1.0 且 life_wrap 0 整题全对"
+  },
+  "nc1c_instrument_newgame": {
+   "pass": true,
+   "oracle_whole_ok": 2,
+   "oracle_n": 2,
+   "mutation_sub_greedy_whole_ok": 0,
+   "mutation_n": 2,
+   "taskset": "eval/rover/r505/taskset-r505nc-subgame.json",
+   "reading": "sub_game 仪器两端: oracle 2/2 且 sub_greedy 整题 0"
+  },
+  "nc1d_instrument_nim": {
+   "pass": true,
+   "oracle_whole_ok": 2,
+   "oracle_n": 2,
+   "oracle_case_ok": 26,
+   "oracle_case_n": 26,
+   "mutation_nim_greedy_whole_ok": 0,
+   "mutation_n": 2,
+   "mutation_case_ok": 6,
+   "mutation_case_n": 26,
+   "taskset": "eval/rover/r505/taskset-r505nc-nim.json",
+   "reading": "nim_multi 仪器两端: oracle 2/2 且 nim_greedy 整题 0 (用例级读数单列)"
+  },
+  "nc1e_instrument_wythoff": {
+   "pass": true,
+   "oracle_whole_ok": 2,
+   "oracle_n": 2,
+   "oracle_case_ok": 26,
+   "oracle_case_n": 26,
+   "mutation_wyth_greedy_whole_ok": 0,
+   "mutation_n": 2,
+   "mutation_case_ok": 4,
+   "mutation_case_n": 26,
+   "taskset": "eval/rover/r505/taskset-r505nc-wyth.json",
+   "reading": "wythoff 仪器两端: oracle 2/2 且 wyth_greedy 整题 0 (用例级读数单列)"
+  },
+  "nc1f_instrument_crt": {
+   "pass": true,
+   "oracle_whole_ok": 2,
+   "oracle_n": 2,
+   "mutation_wrong_witness_whole_ok": 0,
+   "mutation_n": 2,
+   "taskset": "eval/rover/r505/taskset-r505nc-crt.json",
+   "reading": "witness_crt 判定=逐同余式机检: oracle 2/2 且错见证整题 0"
+  },
+  "nc2_missing_side_rc": 3,
+  "nc4_solver_selftest_rc": 0,
+  "nc5_solver_dryrun_rc": 0,
+  "nc3_prereg_rc": {
+   "uniform": 0,
+   "drift": 1,
+   "missing": 3,
+   "restored": 0
+  },
+  "nc1g_namespace_guard": {
+   "pass": true,
+   "rc_dir_occupied": 4,
+   "rc_evidence_occupied": 4,
+   "files_in_occupied_dir": 1,
+   "entries_in_fresh_dir": 0,
+   "reading": "守卫两端都 rc=4 且未创建/未启动任何作业（占用目录只剩 foreign.txt）"
+  },
+  "nc1h_attribution_discrimination": {
+   "pass": true,
+   "rc_agent8": 0,
+   "agent8_calls": 8,
+   "agent8_unmatched": [],
+   "rc_codex3": 2,
+   "codex3_calls": 3,
+   "codex3_unmatched_n": 3,
+   "reading": "已知构成的 8 条本侧调用 8/8 归位; 无 tail_messages 的 codex 调用 3/3 记未归因（禁硬凑）"
+  },
+  "nc11_contamination_detector": {
+   "pass": true,
+   "rc_r504_positive": 2,
+   "r504_mismatch_n": 9,
+   "r504_mismatch_files": [
+    "side-agent-001.json",
+    "side-agent-002.json",
+    "side-agent-003.json",
+    "side-agent-004.json",
+    "side-agent-005.json",
+    "side-agent-006.json",
+    "side-agent-007.json",
+    "side-agent-008.json",
+    "side-agent-009.json"
+   ],
+   "rc_clean_copy": 0,
+   "rc_injected_copy": 2,
+   "injected_mismatch_n": 1,
+   "reading": "R504 实况被判红且点名 9 文件（=后续作业覆盖数）; 干净副本 rc=0; 注入 1 处污染即点名 1 文件"
+  }
+ },
+ "amendments": [
+  {
+   "round": "R505",
+   "kind": "instrument_revision",
+   "ts_utc": "2026-09-16T21:51:48+00:00",
+   "scope": "判分器 v1→v2: 新增「同轮对话延续」归因阶段（H8 覆盖）",
+   "files": {
+    "judge_py": {
+     "old": "9b55c53d1e47e0a503f62df7a2991edcb76510257eb7c75ebd12337c62554687",
+     "new": "309b42c89132df3974f614d3cda0d8ba6c259cfc141e680032d5976ec2ab7fa6"
+    },
+    "attr_py": {
+     "old": "2ec70bc2d6085faac83a11be169cd012e78a52a8e8c75cf9e1e11a82b7e84aae",
+     "new": "a19c62d528071a9ddaf79f2b56356ec00cb308f1af87f32c24240cf76d5e5111"
+    }
+   },
+   "impact_check": "eval/rover/r505/evidence/a/judge-amendment-impact.json",
+   "impact_reading": "判分器改版只影响 H8（归因覆盖）; 用量/质量/同输入/同模型/幂等/不可变/反向控制诸项逐位不变",
+   "evidence_reuse": "批 A 复用（判分=快照纯函数; 两侧 LLM 流量未变, 见 impact_check 的 totals/table 逐位相同）"
+  },
+  {
+   "round": "R505",
+   "kind": "instrument_revision",
+   "ts_utc": "2026-09-16T21:59:27+00:00",
+   "scope": "判分/归因器 v3（新增: 标记剥离 [微步骤隔离问询] + 题面片段命中）",
+   "files": {
+    "judge_py": {
+     "old": "309b42c89132df3974f614d3cda0d8ba6c259cfc141e680032d5976ec2ab7fa6",
+     "new": "309b42c89132df3974f614d3cda0d8ba6c259cfc141e680032d5976ec2ab7fa6"
+    },
+    "attr_py": {
+     "old": "a19c62d528071a9ddaf79f2b56356ec00cb308f1af87f32c24240cf76d5e5111",
+     "new": "7f860032c4335b5acb232b49478f37dc9b8129dae6b9e3b7f2b82b371cb519cc"
+    }
+   },
+   "impact_checks": {
+    "a": "eval/rover/r505/evidence/a/judge-amendment-v2-to-v3-impact.json",
+    "b": "eval/rover/r505/evidence/b/judge-amendment-v2-to-v3-impact.json",
+    "c": "eval/rover/r505/evidence/c/judge-amendment-v2-to-v3-impact.json"
+   },
+   "evidence_reuse": "三批复用同一快照重判（LLM 流量未变; 影响面机检: 冻结判据/用量/质量表逐位不变）",
+   "invalidated": true,
+   "why": "判分未真正执行: 驱动脚本猜错探针产物名 ⇒ judge rc=3 fail-closed, 当时比较的是旧 verdict（自有缺陷, 已修: glob 解析 + verdict 必须改写）"
+  },
+  {
+   "round": "R505",
+   "kind": "instrument_revision",
+   "ts_utc": "2026-09-16T21:59:46+00:00",
+   "scope": "判分/归因器 v3b（新增: 标记剥离 [微步骤隔离问询] + 题面片段命中）",
+   "files": {
+    "judge_py": {
+     "old": "309b42c89132df3974f614d3cda0d8ba6c259cfc141e680032d5976ec2ab7fa6",
+     "new": "309b42c89132df3974f614d3cda0d8ba6c259cfc141e680032d5976ec2ab7fa6"
+    },
+    "attr_py": {
+     "old": "7f860032c4335b5acb232b49478f37dc9b8129dae6b9e3b7f2b82b371cb519cc",
+     "new": "dc7239acdb90eae3ca539ae58171815da0e44be63d0abe38898605854f2cb0ad"
+    }
+   },
+   "impact_checks": {
+    "a": "eval/rover/r505/evidence/a/judge-amendment-v2-to-v3b-impact.json",
+    "b": "eval/rover/r505/evidence/b/judge-amendment-v2-to-v3b-impact.json",
+    "c": "eval/rover/r505/evidence/c/judge-amendment-v2-to-v3b-impact.json"
+   },
+   "evidence_reuse": "三批复用同一快照重判（LLM 流量未变; 影响面机检: 冻结判据/用量/质量表逐位不变）",
+   "invalidated": true,
+   "why": "判分未真正执行: 驱动脚本猜错探针产物名 ⇒ judge rc=3 fail-closed, 当时比较的是旧 verdict（自有缺陷, 已修: glob 解析 + verdict 必须改写）"
+  },
+  {
+   "round": "R505",
+   "kind": "instrument_revision",
+   "ts_utc": "2026-09-16T22:00:30+00:00",
+   "scope": "判分/归因器 v3c（新增: 标记剥离 [微步骤隔离问询] + 题面片段命中）",
+   "files": {
+    "judge_py": {
+     "old": "309b42c89132df3974f614d3cda0d8ba6c259cfc141e680032d5976ec2ab7fa6",
+     "new": "309b42c89132df3974f614d3cda0d8ba6c259cfc141e680032d5976ec2ab7fa6"
+    },
+    "attr_py": {
+     "old": "dc7239acdb90eae3ca539ae58171815da0e44be63d0abe38898605854f2cb0ad",
+     "new": "dc7239acdb90eae3ca539ae58171815da0e44be63d0abe38898605854f2cb0ad"
+    }
+   },
+   "impact_checks": {
+    "a": "eval/rover/r505/evidence/a/judge-amendment-v2-to-v3c-impact.json",
+    "b": "eval/rover/r505/evidence/b/judge-amendment-v2-to-v3c-impact.json",
+    "c": "eval/rover/r505/evidence/c/judge-amendment-v2-to-v3c-impact.json"
+   },
+   "evidence_reuse": "三批复用同一快照重判（LLM 流量未变; 影响面机检: 冻结判据/用量/质量表逐位不变）"
+  }
+ ]
+}

@@ -1,0 +1,54 @@
+{
+ "src": "eval/rover/r504/nc_r504.sh",
+ "dst": "eval/rover/r505/nc_r505.sh",
+ "src_sha256": "0aee77fa8939e735db33b128d84637d3c4ace236073265281f1ba731997d47f1",
+ "dst_sha256": "c6d46018c17fc0b251b973c3552238c20cc0053b72d64d04e17fc8418465758f",
+ "swaps": [
+  {
+   "from": "# R504 负控 (全部本地, 不吃真机窗)",
+   "to": "# R505 负控 (机械派生自 r504/nc_r504.sh; 全部本地, 不吃真机窗)",
+   "n": 1
+  },
+  {
+   "from": "D=${R504_ENV:-/tmp/r504_env}",
+   "to": "D=${R505_ENV:-/tmp/r505_nc}",
+   "n": 1
+  },
+  {
+   "from": "PRE=eval/rover/r504/prereg_r504.json",
+   "to": "PRE=eval/rover/r505/prereg_r505.json",
+   "n": 1
+  },
+  {
+   "from": "[R504-NC]",
+   "to": "[R505-NC]",
+   "n": 1
+  },
+  {
+   "from": "eval/rover/r504/make_prereg_r504.py",
+   "to": "eval/rover/r505/make_prereg_r505.py",
+   "n": 5
+  },
+  {
+   "from": "eval/rover/r504/judge_contrast_r504.py",
+   "to": "eval/rover/r505/judge_contrast_r505.py",
+   "n": 1
+  },
+  {
+   "from": "eval/rover/r504/taskset-r504nc",
+   "to": "eval/rover/r505/taskset-r505nc",
+   "n": 18
+  },
+  {
+   "from": "r504nc-",
+   "to": "r505nc-",
+   "n": 24
+  },
+  {
+   "from": "nc-r504.json",
+   "to": "nc-r505.json",
+   "n": 3
+  }
+ ],
+ "invariant": "判据器/负控内容不变; 仅命名空间+判分器+预注册+产物名替换"
+}

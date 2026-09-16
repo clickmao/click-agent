@@ -1,0 +1,870 @@
+{
+ "round": "R505",
+ "batch": "a",
+ "rc": 0,
+ "criteria": [
+  {
+   "id": "H10",
+   "name": "证据快照不可变（逐文件 sha256 vs 冻结清单）",
+   "pass": true,
+   "measured": {
+    "codex_files": 25,
+    "agent_files": 21,
+    "codex_bad": [],
+    "agent_bad": []
+   }
+  },
+  {
+   "id": "H9",
+   "name": "取数幂等（快照双读逐位相同; 跨时间复核见 replay-*.json）",
+   "pass": true,
+   "measured": {
+    "equal": true,
+    "codex_calls": 25,
+    "agent_calls": 21
+   }
+  },
+  {
+   "id": "H3",
+   "name": "同输入机检（两侧 == 预注册; 且 == R504 v4 题集）",
+   "pass": true,
+   "measured": {
+    "codex": "2ce1d8601577b383",
+    "agent": "2ce1d8601577b383",
+    "prereg": "2ce1d8601577b383",
+    "r504_taskset_sha": "d54c613d5fd6e935cfbf7ea8e513a1d6a5773d59b26937d33f505e9ef70bcc46",
+    "n_tasks_codex": 11,
+    "n_tasks_agent": 11
+   }
+  },
+  {
+   "id": "H6",
+   "name": "fail-closed（两侧题数齐备且 == 预注册; 缺侧 ⇒ rc=3）",
+   "pass": true,
+   "measured": {
+    "n_codex": 11,
+    "n_agent": 11,
+    "prereg": 11,
+    "codex_rows": 11,
+    "agent_rows": 11
+   }
+  },
+  {
+   "id": "H2",
+   "name": "外部真值可用性",
+   "pass": true,
+   "status": "pass",
+   "measured": {
+    "codex_ok": 10,
+    "codex_n": 11,
+    "agent_ok": 10,
+    "agent_n": 11
+   }
+  },
+  {
+   "id": "H4",
+   "name": "同模型机检",
+   "pass": true,
+   "status": "pass",
+   "measured": {
+    "codex": {
+     "calls": 25,
+     "in_tokens": 169349,
+     "out_tokens": 7823,
+     "total_tokens": 177172,
+     "cached_tokens": 159872,
+     "model_counts": {
+      "deepseek-chat": 25
+     }
+    },
+    "agent": {
+     "calls": 21,
+     "in_tokens": 117648,
+     "out_tokens": 9975,
+     "total_tokens": 127623,
+     "cached_tokens": 74112,
+     "model_counts": {
+      "deepseek-chat": 21
+     }
+    },
+    "prereg_label": null,
+    "note": "prereg 记本仓侧标签; adapter 落盘是供应商侧名"
+   }
+  },
+  {
+   "id": "H5",
+   "name": "对照读数分列（禁总量断言）",
+   "pass": true,
+   "measured": {
+    "rows": 11
+   }
+  },
+  {
+   "id": "H1",
+   "name": "仪器判别力（首跑前负控, 全覆盖）",
+   "pass": true,
+   "status": "pass",
+   "measured": {
+    "blocks": [
+     "nc11_contamination_detector",
+     "nc1_instrument",
+     "nc1b_instrument_game",
+     "nc1c_instrument_newgame",
+     "nc1d_instrument_nim",
+     "nc1e_instrument_wythoff",
+     "nc1f_instrument_crt",
+     "nc1g_namespace_guard",
+     "nc1h_attribution_discrimination"
+    ],
+    "n_blocks": 9,
+    "all_pass": true,
+    "detail": {
+     "nc1_instrument": {
+      "pass": true,
+      "oracle_whole_ok": 1,
+      "oracle_n": 1,
+      "mutation_json_loose_whole_ok": 0,
+      "mutation_n": 1,
+      "taskset": "eval/rover/r505/taskset-r505nc.json",
+      "reading": "仪器两端: oracle 1.0 且 mutation 0.0"
+     },
+     "nc1b_instrument_game": {
+      "pass": true,
+      "oracle_whole_ok": 1,
+      "oracle_n": 1,
+      "mutation_life_wrap_whole_ok": 0,
+      "mutation_n": 1,
+      "taskset": "eval/rover/r505/taskset-r505nc-game.json",
+      "reading": "游戏族仪器两端: oracle 1.0 且 life_wrap 0 整题全对"
+     },
+     "nc1c_instrument_newgame": {
+      "pass": true,
+      "oracle_whole_ok": 2,
+      "oracle_n": 2,
+      "mutation_sub_greedy_whole_ok": 0,
+      "mutation_n": 2,
+      "taskset": "eval/rover/r505/taskset-r505nc-subgame.json",
+      "reading": "sub_game 仪器两端: oracle 2/2 且 sub_greedy 整题 0"
+     },
+     "nc1d_instrument_nim": {
+      "pass": true,
+      "oracle_whole_ok": 2,
+      "oracle_n": 2,
+      "oracle_case_ok": 26,
+      "oracle_case_n": 26,
+      "mutation_nim_greedy_whole_ok": 0,
+      "mutation_n": 2,
+      "mutation_case_ok": 6,
+      "mutation_case_n": 26,
+      "taskset": "eval/rover/r505/taskset-r505nc-nim.json",
+      "reading": "nim_multi 仪器两端: oracle 2/2 且 nim_greedy 整题 0 (用例级读数单列)"
+     },
+     "nc1e_instrument_wythoff": {
+      "pass": true,
+      "oracle_whole_ok": 2,
+      "oracle_n": 2,
+      "oracle_case_ok": 26,
+      "oracle_case_n": 26,
+      "mutation_wyth_greedy_whole_ok": 0,
+      "mutation_n": 2,
+      "mutation_case_ok": 4,
+      "mutation_case_n": 26,
+      "taskset": "eval/rover/r505/taskset-r505nc-wyth.json",
+      "reading": "wythoff 仪器两端: oracle 2/2 且 wyth_greedy 整题 0 (用例级读数单列)"
+     },
+     "nc1f_instrument_crt": {
+      "pass": true,
+      "oracle_whole_ok": 2,
+      "oracle_n": 2,
+      "mutation_wrong_witness_whole_ok": 0,
+      "mutation_n": 2,
+      "taskset": "eval/rover/r505/taskset-r505nc-crt.json",
+      "reading": "witness_crt 判定=逐同余式机检: oracle 2/2 且错见证整题 0"
+     },
+     "nc1g_namespace_guard": {
+      "pass": true,
+      "rc_dir_occupied": 4,
+      "rc_evidence_occupied": 4,
+      "files_in_occupied_dir": 1,
+      "entries_in_fresh_dir": 0,
+      "reading": "守卫两端都 rc=4 且未创建/未启动任何作业（占用目录只剩 foreign.txt）"
+     },
+     "nc1h_attribution_discrimination": {
+      "pass": true,
+      "rc_agent8": 0,
+      "agent8_calls": 8,
+      "agent8_unmatched": [],
+      "rc_codex3": 2,
+      "codex3_calls": 3,
+      "codex3_unmatched_n": 3,
+      "reading": "已知构成的 8 条本侧调用 8/8 归位; 无 tail_messages 的 codex 调用 3/3 记未归因（禁硬凑）"
+     },
+     "nc11_contamination_detector": {
+      "pass": true,
+      "rc_r504_positive": 2,
+      "r504_mismatch_n": 9,
+      "r504_mismatch_files": [
+       "side-agent-001.json",
+       "side-agent-002.json",
+       "side-agent-003.json",
+       "side-agent-004.json",
+       "side-agent-005.json",
+       "side-agent-006.json",
+       "side-agent-007.json",
+       "side-agent-008.json",
+       "side-agent-009.json"
+      ],
+      "rc_clean_copy": 0,
+      "rc_injected_copy": 2,
+      "injected_mismatch_n": 1,
+      "reading": "R504 实况被判红且点名 9 文件（=后续作业覆盖数）; 干净副本 rc=0; 注入 1 处污染即点名 1 文件"
+     }
+    }
+   }
+  },
+  {
+   "id": "H8",
+   "name": "逐题调用构成（本侧归因全覆盖; codex 侧 raw↔adapter 一致）",
+   "pass": true,
+   "status": "pass",
+   "measured": {
+    "agent_calls": 21,
+    "agent_calls_in_usage": 21,
+    "unmatched": [],
+    "ambiguous": [],
+    "codex_status": "ok"
+   }
+  },
+  {
+   "id": "H11",
+   "name": "反向控制（R504「判分后覆盖」缺陷可被机检检出）",
+   "pass": true,
+   "status": "pass",
+   "measured": {
+    "r504_mismatch_n": 9,
+    "r504_mismatch_files": [
+     "side-agent-001.json",
+     "side-agent-002.json",
+     "side-agent-003.json",
+     "side-agent-004.json",
+     "side-agent-005.json",
+     "side-agent-006.json",
+     "side-agent-007.json",
+     "side-agent-008.json",
+     "side-agent-009.json"
+    ]
+   }
+  }
+ ],
+ "table": [
+  {
+   "tid": "m001",
+   "kind": "math",
+   "family": "witness_sqrt_mod",
+   "codex_mode": "ok",
+   "agent_mode": "ok",
+   "codex_passed": 1,
+   "codex_total": 1,
+   "agent_passed": 1,
+   "agent_total": 1
+  },
+  {
+   "tid": "m002",
+   "kind": "math",
+   "family": "witness_min_counterexample",
+   "codex_mode": "ok",
+   "agent_mode": "ok",
+   "codex_passed": 1,
+   "codex_total": 1,
+   "agent_passed": 1,
+   "agent_total": 1
+  },
+  {
+   "tid": "m003",
+   "kind": "math",
+   "family": "witness_mod_inverse",
+   "codex_mode": "ok",
+   "agent_mode": "ok",
+   "codex_passed": 1,
+   "codex_total": 1,
+   "agent_passed": 1,
+   "agent_total": 1
+  },
+  {
+   "tid": "m004",
+   "kind": "math",
+   "family": "witness_crt",
+   "codex_mode": "ok",
+   "agent_mode": "ok",
+   "codex_passed": 1,
+   "codex_total": 1,
+   "agent_passed": 1,
+   "agent_total": 1
+  },
+  {
+   "tid": "p001",
+   "kind": "program",
+   "family": "life_k",
+   "codex_mode": "ok",
+   "agent_mode": "ok",
+   "codex_passed": 12,
+   "codex_total": 12,
+   "agent_passed": 12,
+   "agent_total": 12
+  },
+  {
+   "tid": "p002",
+   "kind": "program",
+   "family": "sub_game",
+   "codex_mode": "ok",
+   "agent_mode": "syntax_error",
+   "codex_passed": 12,
+   "codex_total": 12,
+   "agent_passed": 0,
+   "agent_total": 12
+  },
+  {
+   "tid": "p003",
+   "kind": "program",
+   "family": "nim_multi",
+   "codex_mode": "ok",
+   "agent_mode": "ok",
+   "codex_passed": 13,
+   "codex_total": 13,
+   "agent_passed": 13,
+   "agent_total": 13
+  },
+  {
+   "tid": "p004",
+   "kind": "program",
+   "family": "wythoff",
+   "codex_mode": "no_code",
+   "agent_mode": "ok",
+   "codex_passed": 0,
+   "codex_total": 13,
+   "agent_passed": 13,
+   "agent_total": 13
+  },
+  {
+   "tid": "p005",
+   "kind": "program",
+   "family": "topo_min",
+   "codex_mode": "ok",
+   "agent_mode": "ok",
+   "codex_passed": 13,
+   "codex_total": 13,
+   "agent_passed": 13,
+   "agent_total": 13
+  },
+  {
+   "tid": "p006",
+   "kind": "program",
+   "family": "vm_run",
+   "codex_mode": "ok",
+   "agent_mode": "ok",
+   "codex_passed": 12,
+   "codex_total": 12,
+   "agent_passed": 12,
+   "agent_total": 12
+  },
+  {
+   "tid": "p007",
+   "kind": "program",
+   "family": "json_mini",
+   "codex_mode": "ok",
+   "agent_mode": "ok",
+   "codex_passed": 18,
+   "codex_total": 18,
+   "agent_passed": 18,
+   "agent_total": 18
+  }
+ ],
+ "totals": {
+  "codex": {
+   "whole_ok": 10,
+   "n": 11,
+   "elapsed_s": 150.99,
+   "usage": {
+    "calls": 25,
+    "in_tokens": 169349,
+    "out_tokens": 7823,
+    "total_tokens": 177172,
+    "cached_tokens": 159872,
+    "model_counts": {
+     "deepseek-chat": 25
+    }
+   },
+   "per_family": {
+    "life_k": {
+     "n": 1,
+     "passed": 12,
+     "total": 12,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "sub_game": {
+     "n": 1,
+     "passed": 12,
+     "total": 12,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "nim_multi": {
+     "n": 1,
+     "passed": 13,
+     "total": 13,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "wythoff": {
+     "n": 1,
+     "passed": 0,
+     "total": 13,
+     "modes": {
+      "no_code": 1
+     },
+     "rate": 0.0
+    },
+    "topo_min": {
+     "n": 1,
+     "passed": 13,
+     "total": 13,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "vm_run": {
+     "n": 1,
+     "passed": 12,
+     "total": 12,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "json_mini": {
+     "n": 1,
+     "passed": 18,
+     "total": 18,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "witness_sqrt_mod": {
+     "n": 1,
+     "passed": 1,
+     "total": 1,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "witness_min_counterexample": {
+     "n": 1,
+     "passed": 1,
+     "total": 1,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "witness_mod_inverse": {
+     "n": 1,
+     "passed": 1,
+     "total": 1,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "witness_crt": {
+     "n": 1,
+     "passed": 1,
+     "total": 1,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    }
+   }
+  },
+  "agent": {
+   "whole_ok": 10,
+   "n": 11,
+   "elapsed_s": 48.32,
+   "usage": {
+    "calls": 21,
+    "in_tokens": 117648,
+    "out_tokens": 9975,
+    "total_tokens": 127623,
+    "cached_tokens": 74112,
+    "model_counts": {
+     "deepseek-chat": 21
+    }
+   },
+   "per_family": {
+    "life_k": {
+     "n": 1,
+     "passed": 12,
+     "total": 12,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "sub_game": {
+     "n": 1,
+     "passed": 0,
+     "total": 12,
+     "modes": {
+      "syntax_error": 1
+     },
+     "rate": 0.0
+    },
+    "nim_multi": {
+     "n": 1,
+     "passed": 13,
+     "total": 13,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "wythoff": {
+     "n": 1,
+     "passed": 13,
+     "total": 13,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "topo_min": {
+     "n": 1,
+     "passed": 13,
+     "total": 13,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "vm_run": {
+     "n": 1,
+     "passed": 12,
+     "total": 12,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "json_mini": {
+     "n": 1,
+     "passed": 18,
+     "total": 18,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "witness_sqrt_mod": {
+     "n": 1,
+     "passed": 1,
+     "total": 1,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "witness_min_counterexample": {
+     "n": 1,
+     "passed": 1,
+     "total": 1,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "witness_mod_inverse": {
+     "n": 1,
+     "passed": 1,
+     "total": 1,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    },
+    "witness_crt": {
+     "n": 1,
+     "passed": 1,
+     "total": 1,
+     "modes": {
+      "ok": 1
+     },
+     "rate": 1.0
+    }
+   }
+  }
+ },
+ "attribution": {
+  "agent": {
+   "calls": 21,
+   "by_task": [
+    {
+     "tid": "p002",
+     "family": "sub_game",
+     "calls": 8,
+     "first_calls": 3,
+     "fix_calls": 0,
+     "cont_calls": 5,
+     "reply_confirmed": 0,
+     "reply_checked": 5,
+     "in_tokens": 58943,
+     "out_tokens": 2964,
+     "cached_tokens": 52736
+    },
+    {
+     "tid": "m001",
+     "family": "witness_sqrt_mod",
+     "calls": 2,
+     "first_calls": 2,
+     "fix_calls": 0,
+     "cont_calls": 0,
+     "reply_confirmed": 0,
+     "reply_checked": 0,
+     "in_tokens": 6976,
+     "out_tokens": 187,
+     "cached_tokens": 3968
+    },
+    {
+     "tid": "p001",
+     "family": "life_k",
+     "calls": 2,
+     "first_calls": 1,
+     "fix_calls": 0,
+     "cont_calls": 1,
+     "reply_confirmed": 0,
+     "reply_checked": 1,
+     "in_tokens": 8200,
+     "out_tokens": 1270,
+     "cached_tokens": 2816
+    },
+    {
+     "tid": "p004",
+     "family": "wythoff",
+     "calls": 2,
+     "first_calls": 1,
+     "fix_calls": 0,
+     "cont_calls": 1,
+     "reply_confirmed": 0,
+     "reply_checked": 1,
+     "in_tokens": 8175,
+     "out_tokens": 1454,
+     "cached_tokens": 2816
+    },
+    {
+     "tid": "m002",
+     "family": "witness_min_counterexample",
+     "calls": 1,
+     "first_calls": 1,
+     "fix_calls": 0,
+     "cont_calls": 0,
+     "reply_confirmed": 0,
+     "reply_checked": 0,
+     "in_tokens": 3365,
+     "out_tokens": 112,
+     "cached_tokens": 2048
+    },
+    {
+     "tid": "m003",
+     "family": "witness_mod_inverse",
+     "calls": 1,
+     "first_calls": 1,
+     "fix_calls": 0,
+     "cont_calls": 0,
+     "reply_confirmed": 0,
+     "reply_checked": 0,
+     "in_tokens": 3393,
+     "out_tokens": 5,
+     "cached_tokens": 2048
+    },
+    {
+     "tid": "m004",
+     "family": "witness_crt",
+     "calls": 1,
+     "first_calls": 1,
+     "fix_calls": 0,
+     "cont_calls": 0,
+     "reply_confirmed": 0,
+     "reply_checked": 0,
+     "in_tokens": 3464,
+     "out_tokens": 271,
+     "cached_tokens": 2048
+    },
+    {
+     "tid": "p003",
+     "family": "nim_multi",
+     "calls": 1,
+     "first_calls": 1,
+     "fix_calls": 0,
+     "cont_calls": 0,
+     "reply_confirmed": 0,
+     "reply_checked": 0,
+     "in_tokens": 6301,
+     "out_tokens": 410,
+     "cached_tokens": 640
+    },
+    {
+     "tid": "p005",
+     "family": "topo_min",
+     "calls": 1,
+     "first_calls": 1,
+     "fix_calls": 0,
+     "cont_calls": 0,
+     "reply_confirmed": 0,
+     "reply_checked": 0,
+     "in_tokens": 6271,
+     "out_tokens": 329,
+     "cached_tokens": 2048
+    },
+    {
+     "tid": "p006",
+     "family": "vm_run",
+     "calls": 1,
+     "first_calls": 1,
+     "fix_calls": 0,
+     "cont_calls": 0,
+     "reply_confirmed": 0,
+     "reply_checked": 0,
+     "in_tokens": 6073,
+     "out_tokens": 878,
+     "cached_tokens": 640
+    },
+    {
+     "tid": "p007",
+     "family": "json_mini",
+     "calls": 1,
+     "first_calls": 1,
+     "fix_calls": 0,
+     "cont_calls": 0,
+     "reply_confirmed": 0,
+     "reply_checked": 0,
+     "in_tokens": 6487,
+     "out_tokens": 2095,
+     "cached_tokens": 2304
+    }
+   ]
+  },
+  "codex": {
+   "status": "ok",
+   "rows": [
+    {
+     "file": "codex-001.jsonl",
+     "turns": 1,
+     "in_tokens": 20724,
+     "out_tokens": 747,
+     "tid": "p001"
+    },
+    {
+     "file": "codex-002.jsonl",
+     "turns": 1,
+     "in_tokens": 6475,
+     "out_tokens": 174,
+     "tid": "p002"
+    },
+    {
+     "file": "codex-003.jsonl",
+     "turns": 1,
+     "in_tokens": 13307,
+     "out_tokens": 387,
+     "tid": "p003"
+    },
+    {
+     "file": "codex-004.jsonl",
+     "turns": 1,
+     "in_tokens": 28005,
+     "out_tokens": 1071,
+     "tid": "p004"
+    },
+    {
+     "file": "codex-005.jsonl",
+     "turns": 1,
+     "in_tokens": 6462,
+     "out_tokens": 253,
+     "tid": "p005"
+    },
+    {
+     "file": "codex-006.jsonl",
+     "turns": 1,
+     "in_tokens": 13987,
+     "out_tokens": 1513,
+     "tid": "p006"
+    },
+    {
+     "file": "codex-007.jsonl",
+     "turns": 1,
+     "in_tokens": 22814,
+     "out_tokens": 3011,
+     "tid": "p007"
+    },
+    {
+     "file": "codex-008.jsonl",
+     "turns": 1,
+     "in_tokens": 12693,
+     "out_tokens": 115,
+     "tid": "m001"
+    },
+    {
+     "file": "codex-009.jsonl",
+     "turns": 1,
+     "in_tokens": 12755,
+     "out_tokens": 191,
+     "tid": "m002"
+    },
+    {
+     "file": "codex-010.jsonl",
+     "turns": 1,
+     "in_tokens": 12672,
+     "out_tokens": 98,
+     "tid": "m003"
+    },
+    {
+     "file": "codex-011.jsonl",
+     "turns": 1,
+     "in_tokens": 19455,
+     "out_tokens": 263,
+     "tid": "m004"
+    }
+   ],
+   "totals": {
+    "turns": 11,
+    "in_tokens": 169349,
+    "out_tokens": 7823,
+    "total_tokens": 177172
+   },
+   "audit_rows": null,
+   "consistency": {
+    "adapter_in": 169349,
+    "raw_in": 169349,
+    "adapter_out": 7823,
+    "raw_out": 7823,
+    "in_match": true,
+    "out_match": true
+   }
+  }
+ },
+ "evidence": {
+  "adapter_codex_dir": "eval/rover/r505/evidence/a/adapter-codex",
+  "adapter_agent_dir": "eval/rover/r505/evidence/a/adapter-agent",
+  "manifest_codex_n": 25,
+  "manifest_agent_n": 21
+ },
+ "note": "两侧读数分列; 静态面不同源 ⇒ 禁据 token 总量断言优劣 (H5); 判分输入=仓内快照"
+}
