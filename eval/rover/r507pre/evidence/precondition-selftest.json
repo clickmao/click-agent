@@ -1,0 +1,84 @@
+{
+ "round": "R507pre",
+ "rule": "对比数据可验收前置: 两侧产出物须可实际执行且正确 (用户 2026-09-17 令)",
+ "nc_suite": {
+  "cmd": "/home/agentuser/.hermes/hermes-agent/venv/bin/python3 eval/rover/r507pre/nc_precond_r507.py",
+  "rc": 0,
+  "stdout_tail": [
+   "NC4 死循环⇒超时红                  PASS  rc=1",
+   "NC5 非程序题⇒无执行面                PASS  rc=0 napp=True",
+   "NC6 缺输入⇒rc=3                 PASS  rc=3",
+   "NC7 产物缺失⇒no_code 红           PASS  rc=1",
+   "NC_CASES=9/9",
+   "NC_TOTAL=OK"
+  ],
+  "stdout_full_len": 404
+ },
+ "real_readings": [
+  {
+   "tag": "R502",
+   "rc": 0,
+   "executable_and_correct": true,
+   "expected": true,
+   "blocked": [],
+   "out": "eval/rover/r507pre/precondition-r502.json",
+   "sides": {
+    "codex": {
+     "program": 4,
+     "exec_ok": 4,
+     "correct": 4
+    },
+    "agent": {
+     "program": 4,
+     "exec_ok": 4,
+     "correct": 4
+    }
+   }
+  },
+  {
+   "tag": "R503",
+   "rc": 1,
+   "executable_and_correct": false,
+   "expected": false,
+   "blocked": [
+    "agent/p004 exec=ok correct=False cases=8/12"
+   ],
+   "out": "eval/rover/r507pre/precondition-r503.json",
+   "sides": {
+    "codex": {
+     "program": 5,
+     "exec_ok": 5,
+     "correct": 5
+    },
+    "agent": {
+     "program": 5,
+     "exec_ok": 5,
+     "correct": 4
+    }
+   }
+  },
+  {
+   "tag": "R504",
+   "rc": 1,
+   "executable_and_correct": false,
+   "expected": false,
+   "blocked": [
+    "agent/p004 exec=ok correct=False cases=10/13"
+   ],
+   "out": "eval/rover/r507pre/precondition-r504.json",
+   "sides": {
+    "codex": {
+     "program": 7,
+     "exec_ok": 7,
+     "correct": 7
+    },
+    "agent": {
+     "program": 7,
+     "exec_ok": 7,
+     "correct": 6
+    }
+   }
+  }
+ ],
+ "verdict": "OK"
+}
