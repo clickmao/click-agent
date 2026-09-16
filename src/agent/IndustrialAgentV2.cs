@@ -1633,9 +1633,16 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                 // 被跳成空话 (质量硬线失守)。非认可族 ⇒ 降级 Pass ⇒ 照常走远端 (宁可多走一次远端)。
                 // 位置纪律: 必须在下面 local_turn_gate 打点**之前** —— 否则遥测 basis 会写 r1 的原始
                 // 判决 (skip→local), 与被测行为的真实走向相反 (R433 同类: 读数不得自报假形态)。
+                // R501: 改写族豁免 —— 与 r1 的误判 Skip **同形但不同源**: 改写族是**前置门自己**在 1607 支作的
+                // Skip 决策 (basis=mechanical:paraphrase)。R500 真机 3/3 实证: 不豁免 ⇒ 吸收后立即被本支改写成
+                // Pass("gate:skip_rejected_nonack") ⇒ 通道成死代码 (遥测特征 r1_raw_len == len("mechanical:paraphrase") == 21,
+                // 且同时落 gate_prefilter_invariant_violation)。豁免条件用**同一判据**(ShouldAbsorb ∧ IsEnabled),
+                // 闸关时 IsEnabled()==false ⇒ 逐位不变 (R466 单变量纪律)。
                 if (gateOutcome.Decided && gateOutcome.Verdict == agent.modelqueue.TurnGateVerdict.Skip
                     && !agent.modelqueue.TurnGateJudge.MechanicalAck(message.Content)
-                    && !agent.modelqueue.TurnGateJudge.IsPureRepeat(message.Content))
+                    && !agent.modelqueue.TurnGateJudge.IsPureRepeat(message.Content)
+                    && !agent.modelqueue.LocalParaphraseChannel.ShouldAbsorb(
+                           message.Content, agent.modelqueue.LocalParaphraseChannel.IsEnabled()))
                 {
                     // R444: 前置门开启时本支**不可达** (¬Ack 已在调用前 Pass) ⇒ 命中 = 不变量被破坏。
                     // 必须 fail-closed 落盘 (静默降级 = 读数与真实走向相反, R433 教训)。

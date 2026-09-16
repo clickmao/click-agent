@@ -1,0 +1,106 @@
+{
+ "round": "R501",
+ "verdict_device": "verdict_r501.py v2",
+ "t8_text": "换个说法。",
+ "t8_sha16": "eb52df19f61ca2b8",
+ "arms": {
+  "C": {
+   "paraphrase_flag": "off",
+   "gate_rows": 17,
+   "t8_basis": "mechanical:nonack→remote",
+   "t8_raw": "mechanical:nonack",
+   "t8_h1p": false,
+   "t8_mode": "unreported",
+   "t8_remote_calls": null,
+   "t8_reply_len": 442,
+   "t8_duplicate_of_prev": false,
+   "reject_n": 0,
+   "violation_n": 0,
+   "degrade_n": 0,
+   "degrade_t8_n": 0,
+   "degrade_reasons": [],
+   "degrade_t8_reasons": [],
+   "h4_reply_ok": true
+  },
+  "P1": {
+   "paraphrase_flag": "on",
+   "gate_rows": 17,
+   "t8_basis": "mechanical:paraphrase→local",
+   "t8_raw": "gate:paraphrase_guard_rejected",
+   "t8_h1p": true,
+   "t8_mode": "degrade→remote",
+   "t8_remote_calls": 1,
+   "t8_reply_len": 466,
+   "t8_duplicate_of_prev": false,
+   "reject_n": 0,
+   "violation_n": 0,
+   "degrade_n": 1,
+   "degrade_t8_n": 1,
+   "degrade_reasons": [
+    "question_mark"
+   ],
+   "degrade_t8_reasons": [
+    "question_mark"
+   ],
+   "h4_reply_ok": true
+  },
+  "P2": {
+   "paraphrase_flag": "on",
+   "gate_rows": 17,
+   "t8_basis": "mechanical:paraphrase→local",
+   "t8_raw": "gate:paraphrase_guard_rejected",
+   "t8_h1p": true,
+   "t8_mode": "degrade→remote",
+   "t8_remote_calls": 1,
+   "t8_reply_len": 517,
+   "t8_duplicate_of_prev": false,
+   "reject_n": 0,
+   "violation_n": 0,
+   "degrade_n": 1,
+   "degrade_t8_n": 1,
+   "degrade_reasons": [
+    "question_mark"
+   ],
+   "degrade_t8_reasons": [
+    "question_mark"
+   ],
+   "h4_reply_ok": true
+  },
+  "P3": {
+   "paraphrase_flag": "on",
+   "gate_rows": 17,
+   "t8_basis": "mechanical:paraphrase→local",
+   "t8_raw": "gate:paraphrase_guard_rejected",
+   "t8_h1p": true,
+   "t8_mode": "degrade→remote",
+   "t8_remote_calls": 1,
+   "t8_reply_len": 376,
+   "t8_duplicate_of_prev": false,
+   "reject_n": 0,
+   "violation_n": 0,
+   "degrade_n": 1,
+   "degrade_t8_n": 1,
+   "degrade_reasons": [
+    "identifier_lost:clickproof"
+   ],
+   "degrade_t8_reasons": [
+    "identifier_lost:clickproof"
+   ],
+   "h4_reply_ok": true
+  }
+ },
+ "verdicts": {
+  "H1p_reached": "3/3",
+  "H1p_pass": true,
+  "H1n_veto_removed": "3/3",
+  "H1n_pass": true,
+  "H2_control_pass": true,
+  "H3_local_generated_arms": 0,
+  "H3_degrade_arms": 3,
+  "H3_claim": "**degrade 支 ⇒ 每臂 t8 仍 1 次远端调用 ⇒ 禁宣称改写收益**",
+  "H4_reply_and_reasons_ok": true
+ },
+ "reasons": [],
+ "overall": "GREEN",
+ "overall_note": "结构面 PASS（后置否决已除、通道到达）∧ 效果面 **不得** 宣称改写收益（degrade 支）"
+}

@@ -1,0 +1,51 @@
+{
+ "round": "R501",
+ "title": "改写族豁免 (R444 后置否决不再吞改写吸收) —— 同形四臂复测",
+ "prereg_time_local": "2026-09-17 02:29:40 +0800",
+ "source_of_candidate": "R500 真机根因 (eval/rover/r500/rootcause_check_r500.py, K1-K5 全过): 吸收支生效 (r1_raw_len==21==len('mechanical:paraphrase')) 后被 1636 支否决",
+ "src_change": {
+  "added_lines": 8,
+  "removed_lines": 1,
+  "diff_sha12": "70862cff4120",
+  "added_text_sha12": "855b87f1b1bf"
+ },
+ "inherited_from_r499": {
+  "arms": "C(改写关,1 跑) + P1,P2,P3(改写开,n=3)",
+  "grid_sha16": "3c93e8d48b3ceec4",
+  "runner_sha16": "f95e8ea81240f513",
+  "judge_sha16": "494de2a0f7f22c14",
+  "note": "判据器逐字节继承 r499 名与字节 ⇒ 跨轮读数不被判据改版污染"
+ },
+ "binary": {
+  "path": "/tmp/pub_r501/agenthost",
+  "sha16": "62e076eb49e72f62",
+  "il_warn": 0
+ },
+ "gate_policy": {
+  "min_mem_available_mb": 2650,
+  "consecutive_pass": 2,
+  "rationale": "R499 实测单采样不可信 (2208↔2654 穿越, 6 采 1 过)"
+ },
+ "hypotheses": {
+  "H1p": "P 臂 t8 basis **含 paraphrase** (∈ mechanical:paraphrase / gate:paraphrase_no_replayable_prev / gate:paraphrase_guard_rejected) 且**不再是** gate:skip_rejected_nonack —— 期望 3/3",
+  "H1n": "P 臂 local_turn_gate_reject == 0 且 gate_prefilter_invariant_violation == 0 —— 期望 3/3",
+  "H2": "C 臂 t8 basis == mechanical:nonack→remote 且 reject/violation == 0 (闸关时逐位不变的正控)",
+  "H3": "t8 的远端调用: basis==mechanical:paraphrase ⇒ 0 次 (本地生成); degrade 支 ⇒ 1 次且必带 reason。**只有前者可宣称本地生成**",
+  "H4": "P 臂 t8 答复非空 ∧ 非上一条逐字复读 (J2b); 每个 paraphrase_degrade_remote 必带 reason"
+ },
+ "falsified_if": "H1p 3/3 均不成立 ⇒ 本轮回滚判定, 记 NOT_RUN, **不得宣称任何改写收益**",
+ "honest_bounds": [
+  "n=3 为重复跑, 非独立样本; 跨轮禁相减 (R500 的 C 仅作方向对照)",
+  "节省口径不变 (中继 usage 真值); 本轮回读数**不**用于宣称 ≥30% 主线达标",
+  "改写通道只覆盖「同义改写族」单轮, 覆盖率贡献须单列"
+ ],
+ "artifacts": [
+  "run_arm_real_r501.sh",
+  "grid/task-p17-code.json",
+  "prereg_r501.json",
+  "run_matrix_r501.sh",
+  "publish_and_il_check_r501.sh",
+  "build_r501_harness.py",
+  "test_all_r501.sh"
+ ]
+}

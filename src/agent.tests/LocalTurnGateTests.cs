@@ -632,10 +632,17 @@ public sealed class LocalTurnGateTests
         Assert.True(iPass > 0 && iRep > 0 && iR1 > 0, "分支缺失");
         Assert.True(iPass < iRep, "MechanicalPass 必须优先于复述族 (否则疑问/新诉求会被复述规则吸走)");
         Assert.True(iRep < iR1, "复述前置必须早于 r1 调用 (否则省不掉 r1)");
-        // ② 后置否决条件必须已含复述族 (否则复述 Skip 会被当不变量破坏而翻 Pass ⇒ 功能静默失效)
-        Assert.Contains("GatePrefilterOn && GateRepeatSkipOn && agent.modelqueue.TurnGateJudge.IsPureRepeat", flat);
-        Assert.Contains("&& !agent.modelqueue.TurnGateJudge.IsPureRepeat(message.Content))", flat);
-        // ③ 计数可见
+        // ② 后置否决条件必须已含**每个**前置门 Skip 族 (复述 + 改写), 否则该族 Skip 会被当不变量破坏
+        //    而翻 Pass ⇒ 功能静默失效。
+        //    R500 真机实证 (3/3 P 臂): 改写族缺豁免 ⇒ 吸收支生效后立即被否决,
+        //    t8 basis=gate:skip_rejected_nonack 且同轮落 gate_prefilter_invariant_violation ⇒ 通道成死代码。
+        Assert.Contains("&& !agent.modelqueue.TurnGateJudge.IsPureRepeat(message.Content)", flat);
+        Assert.Contains("&& !agent.modelqueue.LocalParaphraseChannel.ShouldAbsorb(", flat);
+        // ③ 改写支必须早于 ¬Ack 前置支 (否则改写族被 else-if 链吞掉 ⇒ 静默不生效; R498 位置纪律)
+        var iPara = flat.IndexOf("LocalParaphraseChannel.ShouldAbsorb(", StringComparison.Ordinal);
+        var iNonAck = flat.IndexOf("mechanical:nonack", StringComparison.Ordinal);
+        Assert.True(iPara > 0 && iNonAck > 0 && iPara < iNonAck, "改写支必须早于 ¬Ack 前置支");
+        // ④ 计数可见
         Assert.Contains("RecordMechanicalRepeat", flat);
         Assert.Contains("prefilter_repeat", flat);
     }
