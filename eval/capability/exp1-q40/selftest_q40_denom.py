@@ -29,6 +29,9 @@ Q37_REC = ROOT / 'eval/capability/exp1-q37/archive_selfsufficiency_q37.json'
 REG_OUT = ROOT / 'eval/capability/exp1-q38/archive_dir_nodes_q38.json'
 HERE = pathlib.Path(__file__).resolve().parent
 SCRATCH = pathlib.Path('/tmp/q40_denom')
+# 前态器具的**提交 sha** (修复前最后一次提交)。禁写 HEAD: 修复一旦提交, HEAD 即是修复态,
+# 该锚会让「缺陷复现」臂静默失效 (EXP1-Q40 实测: 提交后成对控制 rc=2)。
+PRE_STATE = '2718f9fc85a38b509feb781185fc494e14f586c8'
 META_KEYS = {'denominator_expected_registered', 'denominator_actual', 'denominator_registry_source',
              'denominator_registered_keys_n', 'new_nodes', 'missing_nodes', 'source_record'}
 
@@ -81,8 +84,13 @@ def main():
 
     pre = SCRATCH / 'tree/eval/capability/exp1-q38/archiver_prefix.py'
     pre.parent.mkdir(parents=True, exist_ok=True)
-    blob = subprocess.run(['git', 'show', 'HEAD:%s' % ARCHIVER], cwd=str(ROOT), capture_output=True)
-    assert blob.returncode == 0, 'HEAD 无该件'
+    blob = subprocess.run(['git', 'show', '%s:%s' % (PRE_STATE, ARCHIVER)], cwd=str(ROOT),
+                          capture_output=True)
+    assert blob.returncode == 0, '前态器具取不到'
+    assert subprocess.run(['git', 'merge-base', '--is-ancestor', PRE_STATE, 'HEAD'],
+                          cwd=str(ROOT)).returncode == 0, '前态 sha 不是 HEAD 祖先'
+    assert hashlib.sha256(blob.stdout).hexdigest() != \
+        hashlib.sha256((ROOT / ARCHIVER).read_bytes()).hexdigest(), '前态与现盘同字节 ⇒ 复现臂失效'
     pre.write_bytes(blob.stdout)
     # 前态件必须放在**同构深度**的目录里: 它在 import 期就执行 `ROOT = HERE.parents[2]`
     #   (无 argv 解析) ⇒ 直接放 /tmp 根会 IndexError ⇒ 那是夹具缺陷, 不是被测行为。

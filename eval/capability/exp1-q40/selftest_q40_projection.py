@@ -34,6 +34,9 @@ HERE = pathlib.Path(__file__).resolve().parent
 SCRATCH = pathlib.Path('/tmp/q40_proj_scratch')
 NC_ID = 'nc.q40.projection-dirty'
 ROUND = 'EXP1-Q40'
+# 前态器具的**提交 sha** (修复前最后一次提交)。禁写 HEAD: 修复一旦提交, HEAD 即是修复态,
+# 该锚会让「缺陷复现」臂静默失效 (EXP1-Q40 实测: 提交后成对控制 rc=2)。
+PRE_STATE = '2718f9fc85a38b509feb781185fc494e14f586c8'
 REGISTERED_PIN = None                                    # 运行期从登记表读, 不手打
 
 
@@ -86,8 +89,12 @@ def main():
                                                              rec_before_sha[:12]))
 
     pre = SCRATCH / 'bind_evidence_prefix.py'
-    blob = subprocess.run(['git', 'show', 'HEAD:%s' % TOOL], cwd=ROOT, capture_output=True)
-    assert blob.returncode == 0, 'HEAD 无该件'
+    blob = subprocess.run(['git', 'show', '%s:%s' % (PRE_STATE, TOOL)], cwd=ROOT, capture_output=True)
+    assert blob.returncode == 0, '前态器具取不到'
+    assert subprocess.run(['git', 'merge-base', '--is-ancestor', PRE_STATE, 'HEAD'],
+                          cwd=ROOT).returncode == 0, '前态 sha 不是 HEAD 祖先'
+    assert sha(blob.stdout) != sha(pathlib.Path(os.path.join(ROOT, TOOL)).read_bytes()), \
+        '前态与现盘同字节 ⇒ 复现臂失效'
     pre.write_bytes(blob.stdout)
     print('TOOL_PRE_SHA12=%s TOOL_NOW_SHA12=%s (must differ)'
           % (sh12(blob.stdout), sh12(pathlib.Path(os.path.join(ROOT, TOOL)).read_bytes())))
