@@ -1020,6 +1020,31 @@
    "input_surface_source": "自造夹具(正控/负控) + 真读数复算读 data/probe/*.json 与 eval/rover/r5xx/taskset-*.json",
    "input_surface_reason": "负控必须能注入缺陷(错值/语法错/崩溃/死循环/缺输入/产物缺失) ⇒ 夹具自造; 真读数复算读已落盘摘要",
    "corpus_dynamic_count": 0
+  },
+  {
+   "id": "external.contrast-interaction-kpi",
+   "kind": "checker",
+   "cmd": "python3 eval/rover/r507pre/kpi_interaction_r507.py --selftest --evidence eval/rover/r507pre/evidence/interaction-kpi-selftest.json",
+   "expect_rc": 0,
+   "expect_substr": "SELFTEST=OK",
+   "nc_cmd": "python3 eval/rover/r507pre/nc_interaction_kpi_r507.py",
+   "nc_expect": "detect:NC_DETECTED",
+   "kpi_quad": {
+    "单位": "侧×(轮×题) 与 侧×调用",
+    "分母": "各轮两侧全量题 (R502 6+6 / R503 8+8 / R504 11+11 / R505a-c 各 11+11) 与 r505 冻结快照 58 调用",
+    "真值源": "已落盘回复件 data/probe/replies/*.txt + 冻结适配器快照 eval/rover/r505/evidence/*/adapter-*/side-*.json",
+    "口径档": "只读重算(不重跑被测对象); 问号/menu 只在剥离代码围栏与面板行后的 prose 上计; 缺件记 unreported"
+   },
+   "owner_round": "R507",
+   "evidence_path": "eval/rover/r507pre/evidence/interaction-kpi-selftest.json",
+   "version": "content-sha12:b77c92d34ce0",
+   "version_source": "content-sha12",
+   "instrument_sha12": "b77c92d34ce0",
+   "input_fingerprint": [],
+   "input_surface": "external_files",
+   "input_surface_source": "已落盘回复件 + 冻结适配器快照（非重跑）; 自检用例为自造夹具",
+   "input_surface_reason": "KPI 对照必须吃与判据器同一批已落盘件才可比; 负控需要能注入缺陷(取消围栏排除/取消面板剥离) ⇒ 夹具 + 变异体",
+   "corpus_dynamic_count": 0
   }
  ],
  "round": "R507",

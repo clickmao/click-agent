@@ -1,0 +1,90 @@
+{
+  "instrument": "eval/rover/r507pre/kpi_interaction_r507.py",
+  "cases": [
+    {
+      "case": "正控: 反问+menu+无代码",
+      "expected": [
+        1,
+        1,
+        2,
+        0,
+        0
+      ],
+      "measured": [
+        1,
+        1,
+        2,
+        0,
+        0
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "case": "负控: ? 在代码围栏内 ⇒ 不计问号",
+      "expected": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "measured": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "case": "负控: 纯代码 ⇒ prose 为空",
+      "expected": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "measured": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "case": "正控: 本侧面板 ⇒ chrome>0 且不计 prose/问号",
+      "expected": [
+        0,
+        0,
+        0,
+        1,
+        1
+      ],
+      "measured": [
+        0,
+        0,
+        0,
+        1,
+        1
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "case": "控制: codex 侧 chrome/协议帧必须为 0",
+      "expected": [
+        0,
+        0
+      ],
+      "measured": [
+        0,
+        0
+      ],
+      "verdict": "PASS"
+    }
+  ],
+  "verdict": "OK"
+}

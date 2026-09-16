@@ -5424,6 +5424,31 @@
         "eval/rover/r507pre/README.md"
       ],
       "owner_round": "R507"
+    },
+    {
+      "id": "external.contrast-interaction-kpi",
+      "capability": "对比读数**交互/人性化面**: 从两侧**已落盘回复件**机械抽取「对用户提问数/问号数/menu 式选项数」(只在剥离代码围栏与面板行后的 prose 上计) + 「人话字/题、面板行/题、@chatbox 协议帧、产物路径泄漏、交付代码字(归一)」; 另从**冻结适配器快照**抽「内部问询(`[微步骤隔离问询]`)调用占比与 prompt token 占比」。两侧同式 ⇒ 可对照项直接对照; codex 结构不可对照项(轮数/首通率/内部问询) 记 `n/a`/`unreported`, **禁按 0 冒充**",
+      "level": "L3",
+      "evidence_cmd": "python3 eval/rover/r507pre/kpi_interaction_r507.py --selftest --evidence eval/rover/r507pre/evidence/interaction-kpi-selftest.json",
+      "evidence_path": "eval/rover/r507pre/evidence/interaction-kpi-selftest.json",
+      "evidence_generated_with": {
+        "evidence_kind": "artifact",
+        "pin_status": "frozen",
+        "pin_reason": "archived-per-round",
+        "artifact_sha12": "b77c92d34ce0",
+        "instrument": "eval/rover/r507pre/kpi_interaction_r507.py",
+        "instrument_sha12": "d9b5f2655043",
+        "binding": "audit-pin",
+        "audited_by_round": "R507"
+      },
+      "negative_control": "成对: ① 正控 —— 未改动器件 `SELFTEST=OK`(含 codex 侧 chrome/协议帧必须 =0 的真实数据控制); 正控就红 ⇒ `NC_HOLLOW` 弃权。② 注入缺陷**必被抓**(`nc_interaction_kpi_r507.py`): A 取消「代码围栏内不计问号」⇒ 「? 在围栏内」用例转 FAIL; B 取消面板行剥离 ⇒ 「本侧面板」用例转 FAIL; 未命中变异锚 ⇒ 报 `NC_HOLLOW`(器件改版即弃权)。③ 真读数: 本侧面板行/题 14.0–15.6 vs codex 0.0, menu 0% vs 9.1–25% ⇒ 证明对真实数据有区分度。升级 L4 条件 = 在真数据上抓到一处**缺陷**(如新面板形态逃逸被复现)",
+      "covers": [
+        "eval/rover/r507pre/kpi_interaction_r507.py",
+        "eval/rover/r507pre/nc_interaction_kpi_r507.py",
+        "eval/rover/r507pre/kpi-interaction.json",
+        "eval/rover/r507pre/README.md"
+      ],
+      "owner_round": "R507"
     }
   ],
   "aot_check_policy": "release_tag_only",
