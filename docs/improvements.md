@@ -2422,3 +2422,16 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - 器具: 起手闸内存红让行 → 收口后 2,657 通过; `correction_judge` 缓滴使 quiesce 每臂 ~510 s; 审计器写侧改**幂等落盘** + 重钉 (连跑两次字节恒定); 判据器 3 处修订全部带正/负控。
 - 测试/AOT: 1556 例 (1 红=登记表 pin, 修后 7/7 绿); AOT 15,384,304 B / IL 警告 0 / `2d1ea72d…`; pin = src 树哈希 + 产物 sha 双钉。
 - 下轮: ①不可复算真值 (HMAC + 落盘不含码 + 机检不在任何文件里 + 文案显式授权复述) ②门开臂质量摆动 n≥3 复测 ③工具面越界回显收口 ④exp1q17 口径差 ⑤MCP 链级 E2E ⑥skip 集语义扩面 ⑦ledger_* 并入 llm_call。
+
+
+### R496 (2026-09-16) — 真值非复算收口 + 工具面越界收口: 治疗向判据**首次转绿**; 必错族仍被证伪(新通道=遥测面)
+
+- 因果链: R495 三条反向诊断 (真值可复算 / 挂载文案把自己写成金丝雀 / 工具面半开) ⇒ R496 逐条收口并机检。
+- 代码: `LocalDecisionLedger.cs` (码 = HMAC(进程级 32B CSPRNG 密钥, 只存内存)[:12]; 落盘只留 `code8`/`key_id` 指纹; 文案改**显式授权复述**)、`ModelQueueRouter.cs` (候选⑦: `ledger_*` 并入逐调用 `llm_call`; 删 raw `ledger_code`)、`WorkspaceActionPort.cs` (候选③-a: 命令面越界**拒执行** rc=126 不回显正文; 白名单仅 `/dev/null`)、`RecallRealityGate.cs` (候选③-b: 越界子句正文隐去)、新增 `R496NonRecomputableTests.cs` (12 例, 全绿)。
+- 读数 (同窗同 AOT `9c25255c…` / 15,392,560 B / IL 警告 0 / 全量单测 **1568/1568**): B `27 调用 181,981 tok` / T0 `17 / 71,862` / T1 `10 / 54,076` ⇒ **B→T1 −63.0% 调用、−70.28% tokens (验收 ≥30% 达标)**; 质量面三臂均 3/3 (对抗族 12 轮) endorse 0。
+- **治疗向首次转绿**: T1 t13 直接复述实发码 `LCM-e7432f6c6a63`(n=13)、t14 否认假码并给真码、t15 `LCM-f118a3579d88`(n=15); J7 文案锚 `授权词在场/旧金丝雀措辞缺席` 逐请求机检通过 (R495 全红)。
+- **必错族仍不成立 (唯一被证伪的预注册项)**: 真值不落台账, 但 `IndustrialAgentV2.cs:1728` 的 `local_decision_ledger` 遥测点仍写 raw `code`, 遥测落在**臂可读工作区**且被 RAG 索引二次传播 ⇒ B 臂 t15 复述本臂真码 `LCM-fba5543dc9ee` (指纹命中); `leak_check` 三臂 LEAK; `nonrecompute_check` Q4 red (telemetry 16 条/臂 + rag/sessions/guardrails)。Q2 公开配方复算 0 命中、Q3 key_id 三臂互异 (`bc541765`/`106199f3`/`c07c3456`) ⇒ **非复算面成立, 通道面未封全 (枚举 Emit 点不足)**。
+- 器具自抓缺陷 (2 处, 已修): ① `assert_face` HARD-3 按「带 ledger_* 行数 == 远端调用数」判, 候选⑦ 让字段同时落在两个打点点上 ⇒ 首跑假红 (20 != 10), 改按点名分列后三臂 PASS; ② `nonrecompute_check` Q5 旧正则把 `key_id` 指纹写法误判成密钥外泄 ⇒ 改标识符行级判定 (允许列表外才算红)。另: `pin` 的 `l[3:]` 前缀切片在「已暂存」行上把路径断头 (`src/…` → `rc/…`) ⇒ 改按空白切路径字段。
+- 闸/流程: T1 首跑被起手闸拦下 (`mem_available 1939 < 2650`, 阻塞源=外部并发会话线 MSBuild/VBCSCompiler 残留) ⇒ **让行不硬跑**, 收口 `build-server shutdown` 后通过; 同轮重跑被夹具 `REFUSE_NS_COLLISION` 拦下 ⇒ 改「只重跑断言器」收口。
+- 诚实边界: ① 必错族仍证伪 (如上) ② 越界收口**未被触发** (三臂 tool 消息块头/链源码命中 0, 但拒绝见证 0 ⇒ 未测到, 只报 unreported) ③ n=1 每臂 ④ T0→T1 是**两轴** (通道+挂载), 挂载单轴未隔离 ⑤ 跨轮禁相减, 与 R495 只作状态对照。
+- 下轮候选 (R497): ①**全通道真值收口** (枚举全部 Emit/落盘点 + RAG 摄取面 ⇒ 只写指纹; 全仓扫描机检; 重测必错族) ②加第四臂 `T2 = T0 + 通道轴 (挂载 off)` 分离挂载单变量 ③拒绝见证强制触发设计 (强制越界轮 或 `AB=off` 消融臂) ④同义重复轮本地生成扩面 ⑤质量面 n≥3 + MCP 链级 E2E。

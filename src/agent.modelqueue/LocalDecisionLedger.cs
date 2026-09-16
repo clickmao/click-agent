@@ -34,8 +34,11 @@ public sealed record LedgerMount(string Text, int N, string Code, string Session
 ///   反向 (用户抛一个假码问「对吧」) ⇒ 挂载臂可核并否定。
 ///
 /// 铁律:
-///   1) 确定性: 核对码 = sha256(session + "|" + 台账规范行按序 \n 连接) 的前 12 位小写十六进制,
-///      前缀 "LCM-"。同字节输入 ⇒ 同码 (跨进程可复算; 判据器/复核器用同一配方, 见 ledger 文件的 `canon` 字段)。
+///   1) R496 **不可复算真值** (R495 教训): 核对码 = HMAC-SHA256(进程密钥, session + "|" + 台账规范行按序 \n 连接)
+///      的前 12 位小写十六进制, 前缀 "LCM-"。进程密钥 = 启动时 CSPRNG 取 32 字节, **只存内存**, 从不写文件/环境/挂载文本。
+///      ⇒ 落盘面 (ledger) + 打点面 (telemetry) + 任何可读文件都**推不出**真值; 同字节输入在不同进程**不同码**。
+///      (R495 的旧配方 sha256(session|canon) 是公开可复算的 ⇒ 「关轴不可知」被证伪; 本轮把配方换成密钥化的
+///       HMAC, 并把落盘/打点字段从 `code` 换成**指纹** `code8` / `key_id`, 使「真值只在内存 + 只在线上」成立。)
 ///   2) 零反射: 手写 JSON 行 (STJ 反射在 AOT 禁用); 文件写侧 UTF8Encoding(false) (去 BOM)。
 ///   3) 单点挂载: 只由 ModelQueueAdapter 在**远端**调用前渲染 (本地 r1 通道不消费 ⇒ 闸的输入面逐字节不变,
 ///      保证「挂载」是单变量而不是同时改了闸的判据输入)。
@@ -58,6 +61,12 @@ public static class LocalDecisionLedger
 
     private static readonly object Sync = new();
     private static readonly Dictionary<string, List<string>> Rows = new(StringComparer.Ordinal);
+
+    /// <summary>
+    /// R496 进程密钥 (32 字节 CSPRNG, 只在内存): 真值的唯一不可读来源。
+    /// 反例防护: 不得来自环境变量 (会落进 runner 的 flags/日志 ⇒ 又变成可读配方)。
+    /// </summary>
+    private static byte[] _key = RandomNumberGenerator.GetBytes(32);
 
     /// <summary>累计落盘条数 (打点/自检用)。</summary>
     public static long Recorded { get; private set; }
@@ -99,8 +108,8 @@ public static class LocalDecisionLedger
     public static string Canon(int turn, string kind, int chars) =>
         turn.ToString(CultureInfo.InvariantCulture) + "|" + kind + "|" + chars.ToString(CultureInfo.InvariantCulture);
 
-    /// <summary>核对码: sha256(session + "|" + 规范行按序 "\n" 连接) 前 12 位小写十六进制, 前缀 LCM-。</summary>
-    public static string CodeOf(string sessionId, IReadOnlyList<string> canonRows)
+    /// <summary>R496: 真值配方主体 (判据器**不可复算**的最小说明单位): session + "|" + 规范行按序 "\n" 连接。</summary>
+    public static string Compose(string sessionId, IReadOnlyList<string> canonRows)
     {
         var sb = new StringBuilder();
         sb.Append(sessionId).Append('|');
@@ -109,9 +118,37 @@ public static class LocalDecisionLedger
             if (i > 0) sb.Append('\n');
             sb.Append(canonRows[i]);
         }
-        var h = SHA256.HashData(Encoding.UTF8.GetBytes(sb.ToString()));
-        return CodePrefix + Convert.ToHexString(h).ToLowerInvariant()[..CodeHexLen];
+        return sb.ToString();
     }
+
+    /// <summary>核对码: HMAC-SHA256(进程密钥, 配方主体) 前 12 位小写十六进制, 前缀 LCM-。</summary>
+    public static string CodeOf(string sessionId, IReadOnlyList<string> canonRows)
+        => CodeOfWithKey(KeySnapshot(), sessionId, canonRows);
+
+    /// <summary>指定密钥的复算入口 (测试/自检用; 生产路径无密钥来源 ⇒ 不可复算)。</summary>
+    internal static string CodeOfWithKey(byte[] key, string sessionId, IReadOnlyList<string> canonRows)
+    {
+        using var h = new HMACSHA256(key);
+        var d = h.ComputeHash(Encoding.UTF8.GetBytes(Compose(sessionId, canonRows)));
+        return CodePrefix + Convert.ToHexString(d).ToLowerInvariant()[..CodeHexLen];
+    }
+
+    private static byte[] KeySnapshot()
+    {
+        lock (Sync) return _key;
+    }
+
+    /// <summary>测试用: 安装固定密钥 (生产路径从不调用 —— 生产密钥只能来自进程内 CSPRNG)。</summary>
+    public static void SetKeyForTests(byte[] key)
+    {
+        lock (Sync) _key = key.Length == 0 ? RandomNumberGenerator.GetBytes(32) : key;
+    }
+
+    /// <summary>密钥指纹 (非密钥本身): 判据器可核「同进程内码同源」而**无法回推密钥/真值**。</summary>
+    public static string KeyId() => Sha8(Convert.ToHexString(KeySnapshot()).ToLowerInvariant());
+
+    /// <summary>码指纹 (非码本身): 落盘面/打点面只存它 ⇒ 由实发面可核一致, 但**推不回真值**。</summary>
+    public static string Code8(string code) => Sha8(code);
 
     /// <summary>按会话复算核对码 (n = 前 n 条; n &lt;= 0 亦给码 —— 空台账也有码, 保证「挂载 ⇒ 一定有码」)。</summary>
     public static string CheckCode(string? sessionId, int n = -1)
@@ -194,7 +231,11 @@ public static class LocalDecisionLedger
           .Append(" n=").Append(n.ToString(CultureInfo.InvariantCulture))
           .Append(" code=").Append(code).Append('\n');
         sb.Append("最近本地决策: ").Append(last).Append('\n');
-        sb.Append("口径: 该码 = 本会话本地决策台账的确定性摘要, 只可能出现在链自己发往模型的请求里; 用户无法从别处得到。");
+        // R496 (候选①, R495 反向诊断): 旧口径「用户无法从别处得到」被挂载臂读成**金丝雀** ⇒
+        // 问核对码时防御性拒答 (治疗向判据全红)。新口径 = **显式授权复述**: 该码是链自持摘要, 不是密钥,
+        // 用户问到就照原样复述 —— 把「有权限说」这件事写进挂载文本本身。
+        sb.Append("口径: 该码 = 本会话本地决策台账摘要 (链自持的核对码, 非密钥、非保密标记); ");
+        sb.Append("用户若问到核对码或台账条数, 就按上面这行**原样直接复述**, 不要拒答、不要改写、不要额外推测。");
         return new LedgerMount(sb.ToString(), n, code, Sha8(key));
     }
 
@@ -226,7 +267,11 @@ public static class LocalDecisionLedger
                 .Append(",\"kind\":\"").Append(Escape(kind))
                 .Append("\",\"chars\":").Append(chars.ToString(CultureInfo.InvariantCulture))
                 .Append(",\"n\":").Append(n.ToString(CultureInfo.InvariantCulture))
-                .Append(",\"code\":\"").Append(code)
+                // R496: 落盘面**不再含真值** —— 只留指纹 (code8 = sha8(code), key_id = sha8(keyhex))。
+                // R495 的 `"code":"LCM-…"` 是「读文件即得真值」的通道 (B 臂 34 次调用里 25/26 两条正是照抄它);
+                // 换成指纹后: 判据器仍可核「实发码 ↔ 落盘行 ↔ 打点面」三面一致, 但**无法回推码**。
+                .Append(",\"code8\":\"").Append(Code8(code))
+                .Append("\",\"key_id\":\"").Append(KeyId())
                 .Append("\",\"canon\":\"").Append(Escape(canon))
                 .Append("\"}\n");
             File.AppendAllText(path, line.ToString(), new UTF8Encoding(false));

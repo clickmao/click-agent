@@ -100,10 +100,10 @@ public sealed class R495LocalDecisionMountTests
         Assert.Contains("code=" + onQp.Mount.Code, mountMsg.Content, StringComparison.Ordinal);
     }
 
-    // ── ③ 核对码确定性 + 可复算 + 幂等 ────────────────────────────────────────
+    // ── ③ 核对码: 进程内确定 + 幂等 (R496: 可复算性已**移除**, 见 R496NonRecomputableTests) ─────
 
     [Fact]
-    public void CheckCode_Deterministic_Recomputable_Idempotent()
+    public void CheckCode_DeterministicInProcess_Idempotent()
     {
         using var scope = new EnvScope(true, null);
         _ = scope;
@@ -156,11 +156,14 @@ public sealed class R495LocalDecisionMountTests
                 Assert.Equal("s2", o.GetProperty("session").GetString());
                 Assert.Equal(i + 1, o.GetProperty("turn").GetInt32());
                 rows.Add(o.GetProperty("canon").GetString()!);
-                // 逐行复算: 该行声明的码 == 前 i+1 条规范行的复算码 (判据器同一配方)
-                Assert.Equal(LocalDecisionLedger.CodeOf("s2", rows), o.GetProperty("code").GetString());
+                // R496: 落盘面只留**指纹** (code8/key_id) —— 逐行核「声明的指纹 == 前 i+1 条规范行复算码的指纹」
+                Assert.Equal(LocalDecisionLedger.Code8(LocalDecisionLedger.CodeOf("s2", rows)), o.GetProperty("code8").GetString());
+                Assert.False(o.TryGetProperty("code", out _));                     // 真值字段已不再落盘
+                Assert.DoesNotContain(LocalDecisionLedger.CodePrefix, lines[i], StringComparison.Ordinal);
+                Assert.Equal(8, o.GetProperty("key_id").GetString()!.Length);
             }
-            Assert.Equal(LocalDecisionLedger.CheckCode("s2"),
-                JsonDocument.Parse(lines[^1]).RootElement.GetProperty("code").GetString());
+            Assert.Equal(LocalDecisionLedger.Code8(LocalDecisionLedger.CheckCode("s2")),
+                JsonDocument.Parse(lines[^1]).RootElement.GetProperty("code8").GetString());
             Assert.Equal(mount.Code, LocalDecisionLedger.CheckCode("s2"));
             Assert.Equal(2, LocalDecisionLedger.FileWrites);
             Assert.Equal(0, LocalDecisionLedger.FileErrors);

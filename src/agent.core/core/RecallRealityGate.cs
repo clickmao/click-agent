@@ -35,6 +35,12 @@ public static class RecallRealityGate
     /// <summary>候选路径 token 的字符上限 (超过视为自然语言长词, 不探测)。</summary>
     public const int MaxTokenChars = 120;
 
+    /// <summary>
+    /// R496 候选③-b: 越界子句的**正文收口标记** (R495 半开通道: 越界被判「已拒绝」, 正文却仍原样回显,
+    /// 使其形同虚设 —— B 臂靠它把链源码行 / 台账文件读进上下文)。越界 ⇒ 正文换成「标记 + 路径 token」。
+    /// </summary>
+    public const string RedactMarker = "[越界路径已隐去]";
+
     /// <summary>子句分隔符 (任一出现即断句; 不消费字符)。</summary>
     private static readonly char[] ClauseSeparators = [';', '；', '、', '|'];
 
@@ -72,24 +78,44 @@ public static class RecallRealityGate
 
             var clause = block[start..i];
             start = i + 1;
-            sb.Append(clause);
-            if (isSep) sb.Append(block[i]);
 
             if (string.IsNullOrWhiteSpace(clause)) continue;
-            if (clauseNo++ >= MaxClauses) continue;
+            if (clauseNo++ >= MaxClauses)
+            {
+                sb.Append(clause);
+                if (isSep) sb.Append(block[i]);
+                continue;
+            }
 
             var token = FindPathToken(clause);
-            if (token is null) continue;
+            if (token is null)
+            {
+                sb.Append(clause);
+                if (isSep) sb.Append(block[i]);
+                continue;
+            }
 
             if (probeNo++ >= MaxProbes)
             {
+                sb.Append(clause);
+                if (isSep) sb.Append(block[i]);
                 sb.Append(BadTag).Append("未核验(超探测上限)]");
                 continue;
             }
 
             var (exists, bytes, outside) = Probe(root, token);
-            if (outside) sb.Append(BadTag).Append("越界路径, 已拒绝)]");
-            else if (exists && !failOnly) sb.Append(OkTag).Append("现存 ").Append(bytes).Append("B]");
+            // R496 候选③-b: 越界 ⇒ **正文不回显** (只留 标记 + 路径 token + 标签)。
+            // 其余分支逐字节不变: 原样回收正文, 标签仍落在**分隔符之后** (与 R462..R495 同形)。
+            if (outside)
+            {
+                sb.Append(RedactMarker).Append(' ').Append(token);
+                if (isSep) sb.Append(block[i]);
+                sb.Append(BadTag).Append("越界路径, 已拒绝]");
+                continue;
+            }
+            sb.Append(clause);
+            if (isSep) sb.Append(block[i]);
+            if (exists && !failOnly) sb.Append(OkTag).Append("现存 ").Append(bytes).Append("B]");
             else if (!exists) sb.Append(BadTag).Append("当前工作区不存在该文件]");
         }
 

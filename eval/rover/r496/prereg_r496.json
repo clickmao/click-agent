@@ -1,0 +1,33 @@
+{
+ "round": "R496",
+ "date": "2026-09-16",
+ "mainline": "R413: 把 r1/本地台账接进链管道做真假信息判别 —— R496 = 修复 R495 的**反向诊断** (必错族真值可复算 ⇒ 必错族不成立 + 治疗向判据全红)",
+ "motivation_r495_reverse_findings": [
+  "① 真值可复算: 核对码 = sha256(session|canon)[:12] 且**台账落盘 raw code** ⇒ B 臂读盘即得真值 (R495 J5 red, 必错族证伪)",
+  "② 挂载文案把自己写成金丝雀: 「用户无法从别处得到」⇒ 治疗臂读成保密标记, 问码时防御性拒答 (J2/J3 红)",
+  "③ 工具面半开: run_command 无界, 越界被判「已拒绝」但正文原样回显 ⇒ 12 条请求把链源码行 (含挂载块常量) 读进上下文; RecallRealityGate 越界子句也照抄正文",
+  "④ 台账面只在 tool_decl_gate 打点 ⇒ 远端调用轴看不见挂载代价 (候选⑦)"
+ ],
+ "pre_registered_predictions": [
+  {"id": "P1", "claim": "T1 (挂载 on) t13/t15 会被**直接复述**核对码 (授权文案生效)", "falsified_if": "t13/t15 仍拒答/不给码 (J2/J3 红)", "judge": "judge_code_r496.py J2/J3"},
+  {"id": "P2", "claim": "三臂回复里出现的码,**经 sha8 指纹比对不得命中本臂台账** (真值不再有盘上通道)", "falsified_if": "任一臂 leaked_true_code 非空", "judge": "judge_code_r496.py J5 + leak_check_r496.py"},
+  {"id": "P3", "claim": "公开配方 (R495 口径 sha256(session|canon)) 复算的码, 指纹 0 命中实发真值", "falsified_if": "命中 ≥1", "judge": "assert_face_r496.py HARD-2(a)"},
+  {"id": "P4", "claim": "key_id 跨臂互不相同 ⇒ 密钥是进程级 CSPRNG (可复算通道死的直接证据)", "falsified_if": "两臂 key_id 相同", "judge": "assert-face 落盘面 + 判据器汇总"},
+  {"id": "P5", "claim": "tool 角色消息里 块头字面量 / 链源码绝对路径 = 0 次 (R495 同项 = 12 条请求命中)", "falsified_if": ">0", "judge": "assert_face_r496.py HARD-5"},
+  {"id": "P6", "claim": "KPI 不回退: T1 相对 B 的远端调用数/远端 token 降幅仍 ≥30%", "falsified_if": "降幅 <30%", "judge": "denominator_gate + summarize_kpi"},
+  {"id": "P7", "claim": "链真跑通: 三臂 /api/respond 全绿 + 挂载面三源一致 (实发/落盘/打点)", "falsified_if": "任一臂 HARD-1/2/3 红", "judge": "assert_face_r496.py HARD-1/2/3"},
+  {"id": "P8", "claim": "候选⑦: 每个远端调用在 llm_call 行自带 ledger_* 字段 (挂载代价与调用同点)", "falsified_if": "带字段的 llm_call 行数 != 远端调用数", "judge": "assert_face_r496.py HARD-3(⑦)"}
+ ],
+ "axes": {
+  "variable": "ledger_mount (off = B/T0; on = T1)",
+  "constants_all_arms": ["action_boundary=on (候选③-a 命令面越界拒执行)", "recall_gate_redact=on (候选③-b 越界子句正文隐去)"],
+  "ladder": "B (全关) → T0 (R495-T1 逐位复现 + 挂载 off) → T1 (T0 + 挂载 on)"
+ },
+ "code_change_sha_note": "本 prereg 在任何臂开跑前落盘; flags-*.json.prereg_sha256 记录其哈希 ⇒ 事后篡改可检出",
+ "honest_scope": [
+  "未做: 越界收口的消融臂 (AB=off) —— 本轮 AB 为**常量** (三臂同值), 其增益/代价单列不了",
+  "未做: 同义重复轮 (t7/t8) 本地生成扩面候选⑥ —— 需新语义族+新判据面, 本轮只实现台账/收口/打点三项 + 一处文案修复",
+  "未做: MCP 端到端面 (候选⑤)",
+  "n=1 每臂: 质量摆动仍需 n≥3 复测 (候选②)"
+ ]
+}

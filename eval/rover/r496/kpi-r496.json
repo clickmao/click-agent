@@ -1,0 +1,290 @@
+{
+ "schema": "r496-kpi/1",
+ "arms": {
+  "B": {
+   "arm": "B",
+   "calls": 27,
+   "usage_rows": 27,
+   "total_tokens": 181981,
+   "prompt_tokens": 174511,
+   "completion_tokens": 7470,
+   "cached_tokens": 155648,
+   "blocked_rows": 0,
+   "tok_per_call": 6740.0,
+   "new_tokens_per_call": 698.6,
+   "iso_calls": 4,
+   "iso_calls_with_tools": 4,
+   "iso_tok": null,
+   "calls_with_tools": 27,
+   "iso_seqs": [
+    8,
+    9,
+    10,
+    16
+   ],
+   "tools_seqs": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ],
+   "flags": {
+    "arm": "B",
+    "arm_class_note": "由 denominator_gate.arm_class_of(flags) 单一来源派生 (脚本不自报类别)",
+    "turn_gate": "false",
+    "relation_judge": "true",
+    "repeat_skip": "off",
+    "ledger_mount": "off",
+    "ledger_path_env": "/home/agentuser/AgentFramework/eval/rover/r496/run-B/data/ledger/local-decisions.jsonl",
+    "ledger_code_mode": "hmac-sha256(process-csprng-key32) [:12] —— 真值不落盘/不进打点 (只留 code8/key_id 指纹)",
+    "mount_authorize_restate": "on (显式授权复述: 旧「用户无法从别处得到」金丝雀措辞已删)",
+    "action_boundary": "on",
+    "recall_gate_redact": "on (候选③-b: 越界子句正文隐去, 与 action_boundary 同批上)",
+    "tool_decl_gate": "off",
+    "tool_decl_channel": "off",
+    "replay_pair_trim": "off",
+    "repeat_priority": "(unset=on)",
+    "warmup": "(unset=off)",
+    "gpu_layers": "0",
+    "context_size": "4608",
+    "parallel": "1",
+    "max_tokens": "512",
+    "max_prompt_tokens": "4096",
+    "allow_general": "false",
+    "model_path": "/home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf",
+    "allowed_kinds": "[context_compression, keyword_tagging, tendency_analysis, intent_classification]",
+    "role_fixture": "/home/agentuser/AgentFramework/eval/rover/r431/fixture/skeptic-growth.rbin",
+    "role_sha256": "ecb75f53c5fd712b1a60567bf7e8fb1a19242d3389bfabf2196f2e86f72cb1f1",
+    "grid": "p15code",
+    "grid_sha256": "0a244c99b1d440d111b536e083104305f7f1daaaf5119ca1198a8366ad90ed1d",
+    "host_bin": "/tmp/pub_r496/agenthost",
+    "host_sha256": "9c25255c3967ee3da98926fe71fc5afab4c258dfd00014be543ac0be95034af2",
+    "config_sha256": "bdd06e0fd56fd8a1f11d7904e5c33bb908434590a48ae3e73a1869c3de00bebd",
+    "rundir_cwd": "eval/rover/r496/run-B",
+    "arm_key": "B",
+    "remote_path": "eval/rover/r475/relay_real_r475.py (v2) → https://api.deepseek.com/v1/chat/completions",
+    "judge_adv_sha256": "e849a91ff9f2e15e6b0c90f094aaad03e7c092293cac9a01134799be9d357710",
+    "prereg_sha256": "e5103047e5ee79fa4aaac6ebe0b2f6ff0c604e022ef81889b19e596b90fb00dc",
+    "grid_note": "R496: 前 12 轮与判据器逐字节继承 R494/R493 (前段同窗可比); 臂阶梯 B→T0→T1 单变量 = 台账挂载轴; t13-15 = 必错族 (真值只在挂载块内)"
+   }
+  },
+  "T0": {
+   "arm": "T0",
+   "calls": 17,
+   "usage_rows": 17,
+   "total_tokens": 71862,
+   "prompt_tokens": 64681,
+   "completion_tokens": 7181,
+   "cached_tokens": 49536,
+   "blocked_rows": 0,
+   "tok_per_call": 4227.2,
+   "new_tokens_per_call": 890.9,
+   "iso_calls": 8,
+   "iso_calls_with_tools": 8,
+   "iso_tok": null,
+   "calls_with_tools": 8,
+   "iso_seqs": [
+    5,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14
+   ],
+   "tools_seqs": [
+    5,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14
+   ],
+   "flags": {
+    "arm": "T0",
+    "arm_class_note": "由 denominator_gate.arm_class_of(flags) 单一来源派生 (脚本不自报类别)",
+    "turn_gate": "true",
+    "relation_judge": "true",
+    "repeat_skip": "on",
+    "ledger_mount": "off",
+    "ledger_path_env": "/home/agentuser/AgentFramework/eval/rover/r496/run-T0/data/ledger/local-decisions.jsonl",
+    "ledger_code_mode": "hmac-sha256(process-csprng-key32) [:12] —— 真值不落盘/不进打点 (只留 code8/key_id 指纹)",
+    "mount_authorize_restate": "on (显式授权复述: 旧「用户无法从别处得到」金丝雀措辞已删)",
+    "action_boundary": "on",
+    "recall_gate_redact": "on (候选③-b: 越界子句正文隐去, 与 action_boundary 同批上)",
+    "tool_decl_gate": "on",
+    "tool_decl_channel": "off",
+    "replay_pair_trim": "on",
+    "repeat_priority": "(unset=on)",
+    "warmup": "(unset=off)",
+    "gpu_layers": "0",
+    "context_size": "4608",
+    "parallel": "1",
+    "max_tokens": "512",
+    "max_prompt_tokens": "4096",
+    "allow_general": "false",
+    "model_path": "/home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf",
+    "allowed_kinds": "[context_compression, keyword_tagging, tendency_analysis, intent_classification]",
+    "role_fixture": "/home/agentuser/AgentFramework/eval/rover/r431/fixture/skeptic-growth.rbin",
+    "role_sha256": "ecb75f53c5fd712b1a60567bf7e8fb1a19242d3389bfabf2196f2e86f72cb1f1",
+    "grid": "p15code",
+    "grid_sha256": "0a244c99b1d440d111b536e083104305f7f1daaaf5119ca1198a8366ad90ed1d",
+    "host_bin": "/tmp/pub_r496/agenthost",
+    "host_sha256": "9c25255c3967ee3da98926fe71fc5afab4c258dfd00014be543ac0be95034af2",
+    "config_sha256": "9e6207d040d260a68896d9fa514ac9ba6cf190238b0728a0608bd8e6897d8987",
+    "rundir_cwd": "eval/rover/r496/run-T0",
+    "arm_key": "T0",
+    "remote_path": "eval/rover/r475/relay_real_r475.py (v2) → https://api.deepseek.com/v1/chat/completions",
+    "judge_adv_sha256": "e849a91ff9f2e15e6b0c90f094aaad03e7c092293cac9a01134799be9d357710",
+    "prereg_sha256": "e5103047e5ee79fa4aaac6ebe0b2f6ff0c604e022ef81889b19e596b90fb00dc",
+    "grid_note": "R496: 前 12 轮与判据器逐字节继承 R494/R493 (前段同窗可比); 臂阶梯 B→T0→T1 单变量 = 台账挂载轴; t13-15 = 必错族 (真值只在挂载块内)"
+   }
+  },
+  "T1": {
+   "arm": "T1",
+   "calls": 10,
+   "usage_rows": 10,
+   "total_tokens": 54076,
+   "prompt_tokens": 46450,
+   "completion_tokens": 7626,
+   "cached_tokens": 35584,
+   "blocked_rows": 0,
+   "tok_per_call": 5407.6,
+   "new_tokens_per_call": 1086.6,
+   "iso_calls": 1,
+   "iso_calls_with_tools": 0,
+   "iso_tok": null,
+   "calls_with_tools": 0,
+   "iso_seqs": [
+    5
+   ],
+   "tools_seqs": [],
+   "flags": {
+    "arm": "T1",
+    "arm_class_note": "由 denominator_gate.arm_class_of(flags) 单一来源派生 (脚本不自报类别)",
+    "turn_gate": "true",
+    "relation_judge": "true",
+    "repeat_skip": "on",
+    "ledger_mount": "on",
+    "ledger_path_env": "/home/agentuser/AgentFramework/eval/rover/r496/run-T1/data/ledger/local-decisions.jsonl",
+    "ledger_code_mode": "hmac-sha256(process-csprng-key32) [:12] —— 真值不落盘/不进打点 (只留 code8/key_id 指纹)",
+    "mount_authorize_restate": "on (显式授权复述: 旧「用户无法从别处得到」金丝雀措辞已删)",
+    "action_boundary": "on",
+    "recall_gate_redact": "on (候选③-b: 越界子句正文隐去, 与 action_boundary 同批上)",
+    "tool_decl_gate": "on",
+    "tool_decl_channel": "on",
+    "replay_pair_trim": "on",
+    "repeat_priority": "(unset=on)",
+    "warmup": "(unset=off)",
+    "gpu_layers": "0",
+    "context_size": "4608",
+    "parallel": "1",
+    "max_tokens": "512",
+    "max_prompt_tokens": "4096",
+    "allow_general": "false",
+    "model_path": "/home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf",
+    "allowed_kinds": "[context_compression, keyword_tagging, tendency_analysis, intent_classification]",
+    "role_fixture": "/home/agentuser/AgentFramework/eval/rover/r431/fixture/skeptic-growth.rbin",
+    "role_sha256": "ecb75f53c5fd712b1a60567bf7e8fb1a19242d3389bfabf2196f2e86f72cb1f1",
+    "grid": "p15code",
+    "grid_sha256": "0a244c99b1d440d111b536e083104305f7f1daaaf5119ca1198a8366ad90ed1d",
+    "host_bin": "/tmp/pub_r496/agenthost",
+    "host_sha256": "9c25255c3967ee3da98926fe71fc5afab4c258dfd00014be543ac0be95034af2",
+    "config_sha256": "9e6207d040d260a68896d9fa514ac9ba6cf190238b0728a0608bd8e6897d8987",
+    "rundir_cwd": "eval/rover/r496/run-T1",
+    "arm_key": "T1",
+    "remote_path": "eval/rover/r475/relay_real_r475.py (v2) → https://api.deepseek.com/v1/chat/completions",
+    "judge_adv_sha256": "e849a91ff9f2e15e6b0c90f094aaad03e7c092293cac9a01134799be9d357710",
+    "prereg_sha256": "e5103047e5ee79fa4aaac6ebe0b2f6ff0c604e022ef81889b19e596b90fb00dc",
+    "grid_note": "R496: 前 12 轮与判据器逐字节继承 R494/R493 (前段同窗可比); 臂阶梯 B→T0→T1 单变量 = 台账挂载轴; t13-15 = 必错族 (真值只在挂载块内)"
+   }
+  }
+ },
+ "ladder": [
+  {
+   "pair": "B→T0",
+   "calls": [
+    27,
+    17
+   ],
+   "calls_drop_pct": 37.04,
+   "total_tokens": [
+    181981,
+    71862
+   ],
+   "total_tokens_drop_pct": 60.51,
+   "iso_calls": [
+    4,
+    8
+   ],
+   "iso_calls_with_tools": [
+    4,
+    8
+   ]
+  },
+  {
+   "pair": "T0→T1",
+   "calls": [
+    17,
+    10
+   ],
+   "calls_drop_pct": 41.18,
+   "total_tokens": [
+    71862,
+    54076
+   ],
+   "total_tokens_drop_pct": 24.75,
+   "iso_calls": [
+    8,
+    1
+   ],
+   "iso_calls_with_tools": [
+    8,
+    0
+   ]
+  },
+  {
+   "pair": "B→T1",
+   "calls": [
+    27,
+    10
+   ],
+   "calls_drop_pct": 62.96,
+   "total_tokens": [
+    181981,
+    54076
+   ],
+   "total_tokens_drop_pct": 70.28,
+   "iso_calls": [
+    4,
+    1
+   ],
+   "iso_calls_with_tools": [
+    4,
+    0
+   ]
+  }
+ ],
+ "baseline_r493": null,
+ "acceptance": {
+  "same_window_denominator": "B (本轮同窗同网格/同上游/同产物)",
+  "calls_before": 27,
+  "calls_after": 10,
+  "tokens_before": 181981,
+  "tokens_after": 54076,
+  "tokens_drop_pct": 70.28,
+  "target_pct": 30.0,
+  "met": true
+ }
+}

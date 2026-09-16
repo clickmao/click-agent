@@ -833,6 +833,13 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                 ("first_budget", firstBudget), ("intent", intent ?? ""),
                 // v0.11.0 R129 (D3): LLM 真耗时 ms
                 ("ms", llmSw.ElapsedMilliseconds),
+                // R496 候选⑦: 台账挂载面并入**逐调用**行 (R495 只在 tool_decl_gate 上 ⇒ 远程调用轴看不见挂载代价)。
+                // 挂载关 ⇒ 0/空串 (与 R490..R495 逐字节同形); 真值只以指纹出现 (候选①)。
+                ("ledger_mount", prompt.Mount.On ? "1" : "0"),
+                ("ledger_n", prompt.Mount.N),
+                ("ledger_chars", prompt.Mount.Text.Length),
+                ("ledger_code8", prompt.Mount.On ? LocalDecisionLedger.Code8(prompt.Mount.Code) : ""),
+                ("ledger_key_id", prompt.Mount.On ? LocalDecisionLedger.KeyId() : ""),
                 cacheKv[0], cacheKv[1], cacheKv[2], effKv[0], effKv[1], chanKv[0], chanKv[1], chanKv[2],
                 bandKv[0], bandKv[1], bandKv[2], bandKv[3], bandKv[4], bandKv[5], bandKv[6]);
             // R380 (+R379 逐轮归属) 红线闸门 —— 用户逐字: "一旦越过红线必然检查问题为什么发生并修复"。
@@ -1439,10 +1446,15 @@ public sealed class ModelQueueRouter : IModelQueueCaller
                 ("replay_pair_gate", ReplayPairTrim.Stamp()),
                 // R495 台账挂载面: 与 BuildMessages 同一 prompt 对象 ⇒ 打点与实发面同源
                 // (判据器另有独立通道: 中继归档的请求体字节 —— 两路必须一致, 不一致即打点脱钩)。
+                // R496 候选⑦ (R495 审计发现: 台账面只在 tool_decl_gate 点上 ⇒ 同一行看不到远程调用轴):
+                // 逐调用面 (llm_call) 同步补上同样五个字段; R496 候选①: 打点面**不再含真值** ——
+                // `ledger_code` (LCM-…) 换成 `ledger_code8` (sha8(码)) + `ledger_key_id` (sha8(密钥)),
+                // 二者都推不回码/密钥, 但判据器可核「实发面 ↔ 打点面 ↔ 落盘面」指纹一致。
                 ("ledger_mount", prompt.Mount.On ? "1" : "0"),
                 ("ledger_n", prompt.Mount.N),
-                ("ledger_code", prompt.Mount.Code),
                 ("ledger_chars", prompt.Mount.Text.Length),
+                ("ledger_code8", prompt.Mount.On ? LocalDecisionLedger.Code8(prompt.Mount.Code) : ""),
+                ("ledger_key_id", prompt.Mount.On ? LocalDecisionLedger.KeyId() : ""),
                 ("ledger_session8", prompt.Mount.Session8),
                 ("turn", prompt.TurnIndex));
         }

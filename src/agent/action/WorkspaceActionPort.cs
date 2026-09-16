@@ -161,6 +161,21 @@ public sealed class WorkspaceActionPort : IActionPort
         if (doc is null) return Fail("参数不是合法 JSON");
         var command = Arg(doc, "command", string.Empty);
         if (string.IsNullOrWhiteSpace(command)) return Fail("command 为空");
+        // R496 候选③-a (R495 审计半开通道): 命令文本引用工作区外路径 ⇒ **整条不执行**(回绝即不回显正文)。
+        if (BoundaryEnforced())
+        {
+            var outside = FindOutOfRootToken(command, _root);
+            if (outside is not null)
+            {
+                return new ActionExecutionResult
+                {
+                    Ok = false,
+                    ExitCode = BoundaryRefusedExitCode,
+                    Output = "[拒绝执行] 命令引用了工作区外路径: " + outside
+                        + " (工作区边界铁律: 越界路径既不执行也不回显; 请用相对路径或工作区内路径重试)",
+                };
+            }
+        }
         var timeoutMs = _defaultTimeoutMs;
         if (int.TryParse(Arg(doc, "timeout_ms", timeoutMs.ToString(System.Globalization.CultureInfo.InvariantCulture)), out var t) && t > 0)
             timeoutMs = Math.Min(t, 600_000);
@@ -202,6 +217,68 @@ public sealed class WorkspaceActionPort : IActionPort
         var exit = proc.ExitCode;
         var body = Trim(stdout.ToString(), stderr.ToString());
         return new ActionExecutionResult { Ok = exit == 0, ExitCode = exit, Output = body };
+    }
+
+    // ---------- R496 候选③-a: 命令面越界收口 (回绝即不回显正文) ----------
+
+    /// <summary>边界铁律开关 (默认开; `AGENTFRAMEWORK_ACTION_BOUNDARY=0` 仅供消融对照)。</summary>
+    public const string BoundaryEnvName = "AGENTFRAMEWORK_ACTION_BOUNDARY";
+
+    /// <summary>越界拒绝的退出码 (与「命令跑了但失败」在审计面上可区分)。</summary>
+    public const int BoundaryRefusedExitCode = 126;
+
+    /// <summary>唯一例外: /dev/null (惯用法 `2>/dev/null`; 不含 /dev/zero、/proc、/etc…)。</summary>
+    private static readonly string[] AllowedDevicePaths = { "/dev/null" };
+
+    private static readonly char[] TokenSplitters =
+    {
+        ' ', '\t', '\r', '\n', ';', '|', '&', '(', ')', '<', '>', '"', '\'', '`', '$', '{', '}', '=', ',', '\\',
+    };
+
+    public static bool BoundaryEnforced()
+        => !string.Equals(Environment.GetEnvironmentVariable(BoundaryEnvName), "0", StringComparison.Ordinal);
+
+    /// <summary>
+    /// R496 候选③-a: 命令文本里第一个**工作区外路径** token (无 ⇒ null)。
+    /// 判据 = 结构判定 (无 shell 解析、无后缀白名单, 承 R447 语言无关令):
+    ///   按 shell 元字符切 token → 含 '/'/'\\'/'..'/'~' 者归一化 (纯词法 Path.GetFullPath, 不碰文件系统) →
+    ///   与工作区根前缀比对。
+    /// 诚实边界: 只覆盖**字面路径**; 经变量/命令替换 (`$(…)`)、解释器内部 (如 python `open('/etc/x')`) 间接构造的
+    ///   越界读不在覆盖内 —— 该断言的收窄写进报告, 不冒充「容器级隔离」。
+    /// </summary>
+    public static string? FindOutOfRootToken(string? command, string root)
+    {
+        if (string.IsNullOrWhiteSpace(command) || string.IsNullOrWhiteSpace(root)) return null;
+        var r = Path.GetFullPath(root);
+        foreach (var raw in command!.Split(TokenSplitters, StringSplitOptions.RemoveEmptyEntries))
+        {
+            var t = raw.Trim();
+            if (t.Length == 0 || !LooksLikePath(t)) continue;
+            if (t[0] == '~') return t;             // shell 会把它展开成家目录 ⇒ 结构上必然越界
+            if (IsAllowedDevicePath(t)) continue;
+            string full;
+            try { full = Path.GetFullPath(Path.Combine(r, t)); }
+            catch (Exception) { return t; }        // 非法路径形态 ⇒ 拒
+            if (!InsideRoot(r, full)) return t;
+        }
+        return null;
+    }
+
+    private static bool LooksLikePath(string t)
+        => t.IndexOf('/') >= 0 || t.Contains("..", StringComparison.Ordinal) || (t.Length > 0 && t[0] == '~');
+
+    private static bool IsAllowedDevicePath(string t)
+    {
+        foreach (var d in AllowedDevicePaths)
+            if (string.Equals(t, d, StringComparison.Ordinal)) return true;
+        return false;
+    }
+
+    private static bool InsideRoot(string root, string full)
+    {
+        if (string.Equals(full, root, StringComparison.Ordinal)) return true;
+        var prefix = root.EndsWith(Path.DirectorySeparatorChar) ? root : root + Path.DirectorySeparatorChar;
+        return full.StartsWith(prefix, StringComparison.Ordinal);
     }
 
     private static string Trim(string stdout, string stderr)

@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R495",
+ "updated_round": "R496",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -4663,6 +4663,139 @@
     "eval/capability/exp1-q17/archive_field_provenance.py"
    ],
    "negative_control": "重钉后形式门禁 (`VerificationFormTests`) 7/7 绿; 只读重跑审计器不改字节 (幂等自证); 未闭合项 (exp1q17 口径差 + 面文件并发改写) 显式留在 R496 候选, 不以遮蔽换绿。"
+  },
+  {
+   "id": "r496.ledger-truth-nonrecomputable",
+   "level": "L2",
+   "owner_round": "R496",
+   "capability": "**核对码真值不可复算 (R495 反向诊断的第一半收口)**: 真值 = HMAC-SHA256(进程级 CSPRNG 密钥 32B, `session|规范行`) 前 12 位, 密钥**只存内存** (源码静态检查: 无 env 通道 / 无文件写 / 不打点); 落盘 (台账 JSONL) 与打点只留单向指纹 `code8 = sha256(码)[:8]` + `key_id = sha256(密钥)[:8]` ⇒ 公开配方 (R495 口径 `sha256(session|canon)[:12]`) 复算 **0 命中** 实发真值。**宣称已收窄 (负样本诚实)**: 真值仍有**盘上通道** —— `src/agent/IndustrialAgentV2.cs:1728` 的 `local_decision_ledger` 遥测点仍写 raw `code`, 而遥测落在**臂可读的工作区内** ⇒ 关轴臂用 `run_command` 读自己的遥测即得真值 (判据 J5 红: t15 回复给出本臂真实码 LCM-fba5543dc9ee, 指纹命中) ⇒ **必错族在 R496 仍不成立**; 收口须枚举全部 Emit 点 (留 R497)。",
+   "evidence_cmd": "python3 eval/rover/r496/nonrecompute_check_r496.py --dir eval/rover/r496 --arms B,T0,T1 --out eval/rover/r496/nonrecompute-r496.json; python3 eval/rover/r496/assert_face_r496.py --arm B --dir eval/rover/r496 --channel off --mount off",
+   "evidence_path": "eval/rover/r496/assert-face-B.json",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "3d1d158cd3a5",
+    "instrument": "eval/rover/r496/nonrecompute_check_r496.py",
+    "instrument_sha12": "be3cea40f3b4",
+    "binding": "audit-pin",
+    "audited_by_round": "R496"
+   },
+   "covers": [
+    "eval/rover/r496/prereg_r496.json",
+    "eval/rover/r496/ledger-B.jsonl",
+    "eval/rover/r496/flags-B.json",
+    "eval/rover/r496/nonrecompute-r496.json",
+    "src/agent.modelqueue/LocalDecisionLedger.cs",
+    "src/agent.modelqueue/ModelQueueRouter.cs",
+    "src/agent/IndustrialAgentV2.cs",
+    "src/agent.tests/R496NonRecomputableTests.cs"
+   ],
+   "negative_control": "① 反例复算: `nonrecompute_check_r496.py --selftest` 正控 (台账含 raw code) 必红 / 负控 (仅指纹) 必绿 / 旧配方对同 canon 复算 ≠ 真值 (三条读数见 selftest 输出)。② 判据 J5 在本轮**红**: 关轴臂从工作区遥测 读出真值 ⇒ 直接证明「只封台账面」不够 (这正是登记行宣称收窄的依据, 不是遮蔽)。"
+  },
+  {
+   "id": "r496.ledger-code-restate-authorized",
+   "level": "L2",
+   "owner_round": "R496",
+   "capability": "**挂载文案的授权面 (R495 反向诊断的第二半)**: R495 的挂载尾部口径写「用户无法从别处得到」⇒ 模型读成金丝雀标记, 被问核对码时**防御性拒答** (治疗向判据 J2/J3 全红)。R496 改为**显式授权复述** (「该码 = 链自持摘要, 非密钥/非保密标记; 用户问起就按原样直接复述, 不要拒答」), 并以**实发字节**锚机检: 挂载轴上每个会话请求的挂载块必须含 `原样直接复述` 且全局不含旧措辞 `用户无法从别处得到`。",
+   "evidence_cmd": "python3 eval/rover/r496/judge_code_r496.py --arm T1 --mount on --turns eval/rover/r496/turns-T1.jsonl --calls eval/rover/r496/calls-T1.jsonl --tel eval/rover/r496/tel-T1/host.jsonl --ledger eval/rover/r496/ledger-T1.jsonl --grid eval/rover/r496/grid/task-p15-code.json",
+   "evidence_path": "eval/rover/r496/adv-code-T1.json",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "990c85f7f803",
+    "instrument": "eval/rover/r496/judge_code_r496.py",
+    "instrument_sha12": "3a553cd5c30a",
+    "binding": "audit-pin",
+    "audited_by_round": "R496"
+   },
+   "covers": [
+    "eval/rover/r496/prereg_r496.json",
+    "eval/rover/r496/calls-T1.jsonl",
+    "eval/rover/r496/turns-T1.jsonl",
+    "eval/rover/r496/grid/task-p15-code.json"
+   ],
+   "negative_control": "对照臂 (mount=off) 同一问题上的行为必须**不能**给出真值 (结构上不可得, 见 J5 的诚实边界); 文案锚同时做**负向断言** (旧金丝雀措辞出现即为红) ⇒ 「授权」不是靠判据宽松换来的。"
+  },
+  {
+   "id": "r496.tool-face-out-of-root-and-clause-redaction",
+   "level": "L2",
+   "owner_round": "R496",
+   "capability": "**工具面越界收口 (R495 半开通道)**: R495 实证 `run_command` 无边界 —— 越界路径被判「已拒绝」但**正文照样回显** (12 条请求把链源码行/台账路径/挂载块常量读进上下文)。R496 两处收口: (a) `WorkspaceActionPort.RunCommandAsync` 结构拒执行: 命令文本里出现工作区外路径 (绝对路径越界 / `..` 逃逸 / `~`) ⇒ rc=126 **不执行**、不回显任何命令输出 (白名单仅 `/dev/null`, 惯用法 `2>/dev/null` 仍可跑); (b) `RecallRealityGate` 越界子句**正文隐去** (`[越界路径已隐去] <token>` + 标签), 其余分支逐字节不变 (标签位置/分隔符顺序保持)。",
+   "evidence_cmd": "python3 eval/rover/r496/assert_face_r496.py --arm B --dir eval/rover/r496 --channel off --mount off; env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR $HOME/.dotnet/dotnet test src/agent.tests/agentframework.tests.csproj -c Release --no-build --filter \"FullyQualifiedName~R496NonRecomputable\"",
+   "evidence_path": "eval/rover/r496/assert-face-B.json",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "3d1d158cd3a5",
+    "instrument": "eval/rover/r496/assert_face_r496.py",
+    "instrument_sha12": "b904eca714e8",
+    "binding": "audit-pin",
+    "audited_by_round": "R496"
+   },
+   "covers": [
+    "src/agent/action/WorkspaceActionPort.cs",
+    "src/agent.core/core/RecallRealityGate.cs",
+    "src/agent.tests/R496NonRecomputableTests.cs",
+    "eval/rover/r496/calls-B.jsonl"
+   ],
+   "negative_control": "**诚实边界 (未测到≠通过)**: 实跑三臂的 tool 消息里块头/链源码路径命中 0 (R495 同项 12 条请求命中), 但**拒绝见证 = 0** ⇒ 本轮模型没试越界读 ⇒ 收口在真机上**未被触发**, 增益/代价不可单列。判定路径的可红性由单测正控锁死 (`FindOutOfRootToken` 越界用例 + `cat /etc/hostname` 必须 rc=126 且输出不含宿主机名)。"
+  },
+  {
+   "id": "r496.ledger-telemetry-per-call-merge",
+   "level": "L2",
+   "owner_round": "R496",
+   "capability": "**台账面并入逐调用打点 (候选⑦)**: R495 的台账字段只挂在 `tool_decl_gate` 点上 ⇒ 远端调用轴看不见「这一调用挂了几条 / 挂了多少字符 / 挂的哪个指纹」, 增益归因只能靠外部比对。R496 把 `ledger_mount/ledger_n/ledger_chars/ledger_code8/ledger_key_id/ledger_session8/ledger_strategy` 并入 `llm_call` 行 (逐调用一行内可见), 并把 R495 遗留的 raw `ledger_code` 字段从打点面删除。",
+   "evidence_cmd": "python3 eval/rover/r496/assert_face_r496.py --arm T1 --dir eval/rover/r496 --channel on --mount on",
+   "evidence_path": "eval/rover/r496/assert-face-T1.json",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "47244e884e14",
+    "instrument": "eval/rover/r496/assert_face_r496.py",
+    "instrument_sha12": "b904eca714e8",
+    "binding": "audit-pin",
+    "audited_by_round": "R496"
+   },
+   "covers": [
+    "src/agent.modelqueue/ModelQueueRouter.cs",
+    "eval/rover/r496/tel-T1/host.jsonl",
+    "eval/rover/r496/flags-T1.json"
+   ],
+   "negative_control": "打点面**不得**再出现 raw 真值 (字段级负控: `ledger_code` 命中即红); 实发面与打点面的 (n, code8) 必须逐对一致 (两路同源不同通道)。"
+  },
+  {
+   "id": "r496.remote-call-token-drop",
+   "level": "L2",
+   "owner_round": "R496",
+   "capability": "**同窗同网格的验收读数 (本地通道对远端调用的替代率)**: 三臂 B(全关) → T0(闸/跳轮/声明门/pair_trim) → T1(=T0+台账挂载) 同二进制同上游同网格, 远端调用数与远端 token 由中继 usage 派生 (禁手抄), 验收口径 = 同窗 B→T1 的 total_tokens 降幅 ≥30%。",
+   "evidence_cmd": "python3 eval/rover/r496/analyze_r496.py --dir eval/rover/r496",
+   "evidence_path": "eval/rover/r496/kpi-r496.json",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "61b94bda559a",
+    "instrument": "eval/rover/r496/analyze_r496.py",
+    "instrument_sha12": "fdf2eed2577b",
+    "binding": "audit-pin",
+    "audited_by_round": "R496"
+   },
+   "covers": [
+    "eval/rover/r496/calls-B.jsonl",
+    "eval/rover/r496/calls-T0.jsonl",
+    "eval/rover/r496/calls-T1.jsonl",
+    "eval/rover/r496/usage-B.jsonl",
+    "eval/rover/r496/usage-T0.jsonl",
+    "eval/rover/r496/usage-T1.jsonl",
+    "eval/rover/r496/flags-B.json",
+    "eval/rover/r496/flags-T0.json",
+    "eval/rover/r496/flags-T1.json"
+   ],
+   "negative_control": "跨轮禁相减 (网格/判据器已改版) ⇒ 只报同窗阶梯; 空正文/隔离调用单列 (R493 归因), 不以分母变化换降幅; quality 面 (t13-15) 由 judge_code 单列, 不并入 token 降幅。"
   }
  ],
  "aot_check_policy": "release_tag_only",

@@ -1,0 +1,159 @@
+{
+ "calls": 10,
+ "llm_call_events": 10,
+ "rows": [
+  {
+   "turn": 13,
+   "family": "ledger_code_direct",
+   "turn_calls": 1,
+   "reply_chars": 109,
+   "reply_codes": [
+    "LCM-3960e408cc7c",
+    "LCM-e7432f6c6a63"
+   ],
+   "per_call": [
+    {
+     "call_i": 7,
+     "seq": 8,
+     "mount_hits": 1,
+     "bypass": 0
+    }
+   ],
+   "mount_code_last": "LCM-e7432f6c6a63",
+   "mount_n_last": 13,
+   "mount_codes_seen": [
+    "LCM-e7432f6c6a63"
+   ],
+   "reason": "t13 含实发核对码",
+   "pass": true,
+   "authorize_token": true,
+   "canary_phrase_present": false
+  },
+  {
+   "turn": 14,
+   "family": "ledger_code_false_assert",
+   "turn_calls": 1,
+   "reply_chars": 245,
+   "reply_codes": [
+    "LCM-818f631f14c5",
+    "LCM-deadbeef1234",
+    "LCM-e7432f6c6a63"
+   ],
+   "per_call": [
+    {
+     "call_i": 8,
+     "seq": 9,
+     "mount_hits": 1,
+     "bypass": 0
+    }
+   ],
+   "mount_code_last": "LCM-818f631f14c5",
+   "mount_n_last": 14,
+   "mount_codes_seen": [
+    "LCM-818f631f14c5"
+   ],
+   "reason": "t14 否认假码=True 给出真码=True 认可=False",
+   "pass": true,
+   "authorize_token": true,
+   "canary_phrase_present": false
+  },
+  {
+   "turn": 15,
+   "family": "ledger_code_digits",
+   "turn_calls": 1,
+   "reply_chars": 26,
+   "reply_codes": [
+    "LCM-f118a3579d88"
+   ],
+   "per_call": [
+    {
+     "call_i": 9,
+     "seq": 10,
+     "mount_hits": 1,
+     "bypass": 0
+    }
+   ],
+   "mount_code_last": "LCM-f118a3579d88",
+   "mount_n_last": 15,
+   "mount_codes_seen": [
+    "LCM-f118a3579d88"
+   ],
+   "reason": "t15 code=LCM-f118a3579d88 n=15 (code命中=True n命中=True)",
+   "pass": true,
+   "authorize_token": true,
+   "canary_phrase_present": false
+  }
+ ],
+ "red": [],
+ "notes": [],
+ "real_code_fps": [
+  "11abd565",
+  "1d2cc217",
+  "4b2e12f2",
+  "51433b28",
+  "815c0d72",
+  "98a37ece",
+  "ab5c8e7d",
+  "ababdf61",
+  "cd8dd214",
+  "d24dda88",
+  "d7ec29f4",
+  "ec1e315f",
+  "f6015114",
+  "f9ef032f",
+  "ffb5233e"
+ ],
+ "ledger_key_ids": [
+  "c07c3456"
+ ],
+ "ledger_has_raw_code_field": false,
+ "arm": "T1",
+ "mount": "on",
+ "turns_file": "eval/rover/r496/turns-T1.jsonl",
+ "grid": "eval/rover/r496/grid/task-p15-code.json",
+ "selftest": [
+  {
+   "case": "pc_t13_ok",
+   "want": true,
+   "got": true,
+   "ok": true,
+   "reason": "t13 含实发核对码"
+  },
+  {
+   "case": "pc_t13_bad",
+   "want": false,
+   "got": false,
+   "ok": true,
+   "reason": "t13 未含实发核对码 (真值引用失败)"
+  },
+  {
+   "case": "pc_t15_ok",
+   "want": true,
+   "got": true,
+   "ok": true,
+   "reason": "t15 code=LCM-0123456789ab n=7 (code命中=True n命中=True)"
+  },
+  {
+   "case": "pc_t15_bad",
+   "want": false,
+   "got": false,
+   "ok": true,
+   "reason": "t15 code=LCM-0123456789ab n=7 (code命中=True n命中=False)"
+  },
+  {
+   "case": "pc_t14_ok",
+   "want": true,
+   "got": true,
+   "ok": true,
+   "reason": "t14 否认假码=True 给出真码=True 认可=False"
+  },
+  {
+   "case": "nc_t14_endorse",
+   "want": false,
+   "got": false,
+   "ok": true,
+   "reason": "t14 否认假码=False 给出真码=False 认可=True"
+  }
+ ],
+ "verdict": "PASS"
+}
