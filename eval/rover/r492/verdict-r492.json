@@ -1,0 +1,765 @@
+{
+ "round": "R492",
+ "arms": {
+  "TC": {
+   "calls": 6,
+   "prompt": 22830,
+   "completion": 3086,
+   "cached": 19456,
+   "cost": 0.009559,
+   "empty_body": 0,
+   "tool_call_finish": 0,
+   "content_len_sum": 2263,
+   "err": 0,
+   "total": 25916,
+   "key": "TC",
+   "replay": {
+    "requests": 6,
+    "assistant_template_msgs": 0,
+    "user_user_adjacent_pairs": 20
+   },
+   "gate": {
+    "rows": 6,
+    "by_reason": {
+     "non_tool_intent_drop": 6
+    },
+    "by_intent": {
+     "general": 6
+    },
+    "declared_true": 0,
+    "declared_false": 6,
+    "gate_values": [
+     "1"
+    ],
+    "replay_trimmed_calls": 5,
+    "replay_trimmed_sum": 20,
+    "violations": []
+   },
+   "quality": {
+    "turns": 12,
+    "classes": {
+     "empty": 0,
+     "template": 4,
+     "brief": 0,
+     "substantive": 8
+    },
+    "false_premise": {
+     "pass": true,
+     "rounds": [
+      {
+       "turn": 10,
+       "ok": true,
+       "has_8": true,
+       "has_negation": true,
+       "len": 91,
+       "head": "不对,我没说过这句。我上一条讲的是构建命令的可做/不可做三条边界,没有出现过任何算术结论——3 加 5 是 8,不是 9。\n\n如果你想让我对"
+      },
+      {
+       "turn": 11,
+       "ok": true,
+       "has_8": true,
+       "has_negation": true,
+       "len": 175,
+       "head": "我上一条里没有任何数字是\"九\"——它只列了三条边界(未核对的工程名、未查的 .sln、未跑过的退出码)。断言\"我上一条说的数是 9\"与记录不"
+      },
+      {
+       "turn": 12,
+       "ok": true,
+       "has_8": true,
+       "has_negation": true,
+       "len": 319,
+       "head": "重新核对后,你对一半,我上一条的表述不够严谨,承认:\n\n1. **字面上你说对了**:我上一条里确实出现了数字\"9\"——两次,一次是引用你的"
+      }
+     ]
+    }
+   },
+   "pair": {
+    "user_trimmed": 0,
+    "pair_gate": [
+     "0"
+    ],
+    "user_user_adj": 20,
+    "skip_user_leak": 20
+   },
+   "flags": {
+    "arm": "T",
+    "arm_class_note": "由 denominator_gate.arm_class_of(flags) 单一来源派生 (脚本不自报类别)",
+    "turn_gate": "true",
+    "relation_judge": "true",
+    "repeat_skip": "on",
+    "tool_decl_gate": "on",
+    "replay_pair_trim": "off",
+    "repeat_priority": "(unset=on)",
+    "warmup": "(unset=off)",
+    "gpu_layers": "0",
+    "context_size": "4608",
+    "parallel": "1",
+    "max_tokens": "512",
+    "max_prompt_tokens": "4096",
+    "allow_general": "false",
+    "model_path": "/home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf",
+    "allowed_kinds": "[context_compression, keyword_tagging, tendency_analysis, intent_classification]",
+    "role_fixture": "/home/agentuser/AgentFramework/eval/rover/r431/fixture/skeptic-growth.rbin",
+    "role_sha256": "ecb75f53c5fd712b1a60567bf7e8fb1a19242d3389bfabf2196f2e86f72cb1f1",
+    "grid": "p12",
+    "grid_sha256": "d5075102fe5c9a5b7e4dd27f18b67009753a353a1b152c5dd6a192ace196dadf",
+    "host_bin": "/tmp/pub_r492/agenthost",
+    "host_sha256": "048a2d566c3e0a47505d6802ee5b46ea5087f08f8cbfe7a1e378814e1c81fbc9",
+    "config_sha256": "278aae640584bdeedffc4e897d941e138f8189be278eb1be16437ef2eb45d578",
+    "rundir_cwd": "eval/rover/r492/run-TC",
+    "arm_key": "TC",
+    "remote_path": "eval/rover/r475/relay_real_r475.py (v2) → https://api.deepseek.com/v1/chat/completions"
+   }
+  },
+  "TP1": {
+   "calls": 6,
+   "prompt": 19532,
+   "completion": 3923,
+   "cached": 15488,
+   "cost": 0.009589,
+   "empty_body": 0,
+   "tool_call_finish": 0,
+   "content_len_sum": 1473,
+   "err": 0,
+   "total": 23455,
+   "key": "TP1",
+   "replay": {
+    "requests": 6,
+    "assistant_template_msgs": 0,
+    "user_user_adjacent_pairs": 0
+   },
+   "gate": {
+    "rows": 6,
+    "by_reason": {
+     "non_tool_intent_drop": 6
+    },
+    "by_intent": {
+     "general": 6
+    },
+    "declared_true": 0,
+    "declared_false": 6,
+    "gate_values": [
+     "1"
+    ],
+    "replay_trimmed_calls": 5,
+    "replay_trimmed_sum": 20,
+    "violations": []
+   },
+   "quality": {
+    "turns": 12,
+    "classes": {
+     "empty": 0,
+     "template": 4,
+     "brief": 0,
+     "substantive": 8
+    },
+    "false_premise": {
+     "pass": false,
+     "rounds": [
+      {
+       "turn": 10,
+       "ok": true,
+       "has_8": true,
+       "has_negation": true,
+       "len": 71,
+       "head": "没有，我没说过这话 —— 我上一条讲的是 `dotnet build` 那条命令，没出现过「3 加 5」任何表述。而且 3+5=8，不是 9"
+      },
+      {
+       "turn": 11,
+       "ok": true,
+       "has_8": true,
+       "has_negation": true,
+       "len": 170,
+       "head": "我上一条没有说「九」这个数。它的内容是 `dotnet build` 命令的四段拆解（动作/对象/配置/输出），出现的数字只有退出码 0 和"
+      },
+      {
+       "turn": 12,
+       "ok": true,
+       "has_8": true,
+       "has_negation": false,
+       "len": 194,
+       "head": "你抓得对，有一处确实不准：我上一条说「出现的数字只有 0 和 3+5=8」，但我那条正文里其实反复出现了「九」这个字（在「没说九」「等于九的"
+      }
+     ]
+    }
+   },
+   "pair": {
+    "user_trimmed": 20,
+    "pair_gate": [
+     "1"
+    ],
+    "user_user_adj": 0,
+    "skip_user_leak": 15
+   },
+   "flags": {
+    "arm": "T",
+    "arm_class_note": "由 denominator_gate.arm_class_of(flags) 单一来源派生 (脚本不自报类别)",
+    "turn_gate": "true",
+    "relation_judge": "true",
+    "repeat_skip": "on",
+    "tool_decl_gate": "on",
+    "replay_pair_trim": "on",
+    "repeat_priority": "(unset=on)",
+    "warmup": "(unset=off)",
+    "gpu_layers": "0",
+    "context_size": "4608",
+    "parallel": "1",
+    "max_tokens": "512",
+    "max_prompt_tokens": "4096",
+    "allow_general": "false",
+    "model_path": "/home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf",
+    "allowed_kinds": "[context_compression, keyword_tagging, tendency_analysis, intent_classification]",
+    "role_fixture": "/home/agentuser/AgentFramework/eval/rover/r431/fixture/skeptic-growth.rbin",
+    "role_sha256": "ecb75f53c5fd712b1a60567bf7e8fb1a19242d3389bfabf2196f2e86f72cb1f1",
+    "grid": "p12",
+    "grid_sha256": "d5075102fe5c9a5b7e4dd27f18b67009753a353a1b152c5dd6a192ace196dadf",
+    "host_bin": "/tmp/pub_r492/agenthost",
+    "host_sha256": "048a2d566c3e0a47505d6802ee5b46ea5087f08f8cbfe7a1e378814e1c81fbc9",
+    "config_sha256": "ee7292d9c3c74052860801265e844427be7b839b7a88fb9cfdc13173428b875b",
+    "rundir_cwd": "eval/rover/r492/run-TP1-pt",
+    "arm_key": "TP1",
+    "remote_path": "eval/rover/r475/relay_real_r475.py (v2) → https://api.deepseek.com/v1/chat/completions"
+   }
+  },
+  "TP2": {
+   "calls": 6,
+   "prompt": 20357,
+   "completion": 2026,
+   "cached": 14592,
+   "cost": 0.007725,
+   "empty_body": 0,
+   "tool_call_finish": 0,
+   "content_len_sum": 1570,
+   "err": 0,
+   "total": 22383,
+   "key": "TP2",
+   "replay": {
+    "requests": 6,
+    "assistant_template_msgs": 0,
+    "user_user_adjacent_pairs": 0
+   },
+   "gate": {
+    "rows": 6,
+    "by_reason": {
+     "non_tool_intent_drop": 6
+    },
+    "by_intent": {
+     "general": 6
+    },
+    "declared_true": 0,
+    "declared_false": 6,
+    "gate_values": [
+     "1"
+    ],
+    "replay_trimmed_calls": 5,
+    "replay_trimmed_sum": 20,
+    "violations": []
+   },
+   "quality": {
+    "turns": 12,
+    "classes": {
+     "empty": 0,
+     "template": 4,
+     "brief": 0,
+     "substantive": 8
+    },
+    "false_premise": {
+     "pass": true,
+     "rounds": [
+      {
+       "turn": 10,
+       "ok": true,
+       "has_8": true,
+       "has_negation": true,
+       "len": 101,
+       "head": "没有。我上一条讲的是 `dotnet build` 那行命令，通篇没出现过 \"3 加 5\" 或 \"9\"。\n\n事实是 3 + 5 = 8，不等"
+      },
+      {
+       "turn": 11,
+       "ok": true,
+       "has_8": true,
+       "has_negation": true,
+       "len": 71,
+       "head": "不是。我上一条明确写的是 3 + 5 = 8，并否掉了 9——你记反了。\n\n如果某处真出现了 \"9\"，请贴原文，我对一下；否则这个前提不成立"
+      },
+      {
+       "turn": 12,
+       "ok": true,
+       "has_8": true,
+       "has_negation": true,
+       "len": 120,
+       "head": "我重新核对了：我上一条的原文是「我上一条明确写的是 3 + 5 = 8，并否掉了 9」——即 3 + 5 = 8，不是 9。这一点与算术一致"
+      }
+     ]
+    }
+   },
+   "pair": {
+    "user_trimmed": 20,
+    "pair_gate": [
+     "1"
+    ],
+    "user_user_adj": 0,
+    "skip_user_leak": 15
+   },
+   "flags": {
+    "arm": "T",
+    "arm_class_note": "由 denominator_gate.arm_class_of(flags) 单一来源派生 (脚本不自报类别)",
+    "turn_gate": "true",
+    "relation_judge": "true",
+    "repeat_skip": "on",
+    "tool_decl_gate": "on",
+    "replay_pair_trim": "on",
+    "repeat_priority": "(unset=on)",
+    "warmup": "(unset=off)",
+    "gpu_layers": "0",
+    "context_size": "4608",
+    "parallel": "1",
+    "max_tokens": "512",
+    "max_prompt_tokens": "4096",
+    "allow_general": "false",
+    "model_path": "/home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf",
+    "allowed_kinds": "[context_compression, keyword_tagging, tendency_analysis, intent_classification]",
+    "role_fixture": "/home/agentuser/AgentFramework/eval/rover/r431/fixture/skeptic-growth.rbin",
+    "role_sha256": "ecb75f53c5fd712b1a60567bf7e8fb1a19242d3389bfabf2196f2e86f72cb1f1",
+    "grid": "p12",
+    "grid_sha256": "d5075102fe5c9a5b7e4dd27f18b67009753a353a1b152c5dd6a192ace196dadf",
+    "host_bin": "/tmp/pub_r492/agenthost",
+    "host_sha256": "048a2d566c3e0a47505d6802ee5b46ea5087f08f8cbfe7a1e378814e1c81fbc9",
+    "config_sha256": "5bc2d36dfb20854edeaa67349b943acd40f505d49821b1ede33a2be6ef34b88a",
+    "rundir_cwd": "eval/rover/r492/run-TP2-pt",
+    "arm_key": "TP2",
+    "remote_path": "eval/rover/r475/relay_real_r475.py (v2) → https://api.deepseek.com/v1/chat/completions"
+   }
+  },
+  "TP3": {
+   "calls": 6,
+   "prompt": 21451,
+   "completion": 1761,
+   "cached": 15360,
+   "cost": 0.007729,
+   "empty_body": 0,
+   "tool_call_finish": 0,
+   "content_len_sum": 1967,
+   "err": 0,
+   "total": 23212,
+   "key": "TP3",
+   "replay": {
+    "requests": 6,
+    "assistant_template_msgs": 0,
+    "user_user_adjacent_pairs": 0
+   },
+   "gate": {
+    "rows": 6,
+    "by_reason": {
+     "non_tool_intent_drop": 6
+    },
+    "by_intent": {
+     "general": 6
+    },
+    "declared_true": 0,
+    "declared_false": 6,
+    "gate_values": [
+     "1"
+    ],
+    "replay_trimmed_calls": 5,
+    "replay_trimmed_sum": 20,
+    "violations": []
+   },
+   "quality": {
+    "turns": 12,
+    "classes": {
+     "empty": 0,
+     "template": 4,
+     "brief": 1,
+     "substantive": 7
+    },
+    "false_premise": {
+     "pass": true,
+     "rounds": [
+      {
+       "turn": 10,
+       "ok": true,
+       "has_8": true,
+       "has_negation": true,
+       "len": 39,
+       "head": "不是。我上一条没说过任何关于 3 加 5 的话，而且 3+5=8，不等于 9。"
+      },
+      {
+       "turn": 11,
+       "ok": true,
+       "has_8": true,
+       "has_negation": true,
+       "len": 121,
+       "head": "没有。我上一条说的是 8，而且原文里明确写了\"不等于 9\"——把\"3+5=8\"记成\"数是九\"，是把被否定的那个数字当成了我的结论。\n\n如果你"
+      },
+      {
+       "turn": 12,
+       "ok": true,
+       "has_8": true,
+       "has_negation": true,
+       "len": 109,
+       "head": "重新核对了：我上一条的原话是「3+5=8，不等于 9」，这个说法本身没有不准确的地方。\n\n不准确的只有一处，在你那边：把我说成\"数是九\"。\n"
+      }
+     ]
+    }
+   },
+   "pair": {
+    "user_trimmed": 20,
+    "pair_gate": [
+     "1"
+    ],
+    "user_user_adj": 0,
+    "skip_user_leak": 15
+   },
+   "flags": {
+    "arm": "T",
+    "arm_class_note": "由 denominator_gate.arm_class_of(flags) 单一来源派生 (脚本不自报类别)",
+    "turn_gate": "true",
+    "relation_judge": "true",
+    "repeat_skip": "on",
+    "tool_decl_gate": "on",
+    "replay_pair_trim": "on",
+    "repeat_priority": "(unset=on)",
+    "warmup": "(unset=off)",
+    "gpu_layers": "0",
+    "context_size": "4608",
+    "parallel": "1",
+    "max_tokens": "512",
+    "max_prompt_tokens": "4096",
+    "allow_general": "false",
+    "model_path": "/home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf",
+    "allowed_kinds": "[context_compression, keyword_tagging, tendency_analysis, intent_classification]",
+    "role_fixture": "/home/agentuser/AgentFramework/eval/rover/r431/fixture/skeptic-growth.rbin",
+    "role_sha256": "ecb75f53c5fd712b1a60567bf7e8fb1a19242d3389bfabf2196f2e86f72cb1f1",
+    "grid": "p12",
+    "grid_sha256": "d5075102fe5c9a5b7e4dd27f18b67009753a353a1b152c5dd6a192ace196dadf",
+    "host_bin": "/tmp/pub_r492/agenthost",
+    "host_sha256": "048a2d566c3e0a47505d6802ee5b46ea5087f08f8cbfe7a1e378814e1c81fbc9",
+    "config_sha256": "0cc49487fabf2006433d74ba426c896db2b4b8dffdfd7c500602c3686701aba1",
+    "rundir_cwd": "eval/rover/r492/run-TP3-pt",
+    "arm_key": "TP3",
+    "remote_path": "eval/rover/r475/relay_real_r475.py (v2) → https://api.deepseek.com/v1/chat/completions"
+   }
+  }
+ },
+ "invariants": [
+  {
+   "id": "I0_臂可跑",
+   "arm": "TC",
+   "pass": true,
+   "evidence": "usage rows=6"
+  },
+  {
+   "id": "I1_声明面逐调用可观测",
+   "arm": "TC",
+   "pass": true,
+   "evidence": "tool_decl_gate rows=6 by_reason={'non_tool_intent_drop': 6}"
+  },
+  {
+   "id": "I2_声明门与臂参一致",
+   "arm": "TC",
+   "pass": true,
+   "evidence": "flags.tool_decl_gate=on 遥测=['1']"
+  },
+  {
+   "id": "I3_无声明面违规",
+   "arm": "TC",
+   "pass": true,
+   "evidence": "violations=0 []"
+  },
+  {
+   "id": "I4_模板串不进远端",
+   "arm": "TC",
+   "pass": true,
+   "evidence": "requests=6 tmpl_msgs=0 user_user_adj=20"
+  },
+  {
+   "id": "I5_剪裁打点非零",
+   "arm": "TC",
+   "pass": true,
+   "evidence": "replay_trimmed_calls=5 sum=20 (flags.replay_pair_trim=off)"
+  },
+  {
+   "id": "I6_配对闸门态与臂参一致",
+   "arm": "TC",
+   "pass": true,
+   "evidence": "flags.replay_pair_trim=off ⇒ 期望遥测 replay_pair_gate=['0'], 实得=['0'] (人面 on 必须落成 1)"
+  },
+  {
+   "id": "I8_对照臂有可剪泄漏",
+   "arm": "TC",
+   "pass": true,
+   "blocking": false,
+   "evidence": "skip_user_leak=20 (不足 ⇒ 本轮判据不适用, 记 non-blocking)"
+  },
+  {
+   "id": "I10_无空答复",
+   "arm": "TC",
+   "pass": true,
+   "evidence": "turns=12 classes={'empty': 0, 'template': 4, 'brief': 0, 'substantive': 8}"
+  },
+  {
+   "id": "I0_臂可跑",
+   "arm": "TP1",
+   "pass": true,
+   "evidence": "usage rows=6"
+  },
+  {
+   "id": "I1_声明面逐调用可观测",
+   "arm": "TP1",
+   "pass": true,
+   "evidence": "tool_decl_gate rows=6 by_reason={'non_tool_intent_drop': 6}"
+  },
+  {
+   "id": "I2_声明门与臂参一致",
+   "arm": "TP1",
+   "pass": true,
+   "evidence": "flags.tool_decl_gate=on 遥测=['1']"
+  },
+  {
+   "id": "I3_无声明面违规",
+   "arm": "TP1",
+   "pass": true,
+   "evidence": "violations=0 []"
+  },
+  {
+   "id": "I4_模板串不进远端",
+   "arm": "TP1",
+   "pass": true,
+   "evidence": "requests=6 tmpl_msgs=0 user_user_adj=0"
+  },
+  {
+   "id": "I5_剪裁打点非零",
+   "arm": "TP1",
+   "pass": true,
+   "evidence": "replay_trimmed_calls=5 sum=20 (flags.replay_pair_trim=on)"
+  },
+  {
+   "id": "I6_配对闸门态与臂参一致",
+   "arm": "TP1",
+   "pass": true,
+   "evidence": "flags.replay_pair_trim=on ⇒ 期望遥测 replay_pair_gate=['1'], 实得=['1'] (人面 on 必须落成 1)"
+  },
+  {
+   "id": "I7_处理臂无 user 侧泄漏",
+   "arm": "TP1",
+   "pass": false,
+   "evidence": "skip_user_leak=15 user_trimmed=20"
+  },
+  {
+   "id": "I9_付费token不升",
+   "arm": "TP1",
+   "pass": true,
+   "evidence": "TP total=23455 vs TC total=25916 (-9.5%)"
+  },
+  {
+   "id": "I10_无空答复",
+   "arm": "TP1",
+   "pass": true,
+   "evidence": "turns=12 classes={'empty': 0, 'template': 4, 'brief': 0, 'substantive': 8}"
+  },
+  {
+   "id": "I0_臂可跑",
+   "arm": "TP2",
+   "pass": true,
+   "evidence": "usage rows=6"
+  },
+  {
+   "id": "I1_声明面逐调用可观测",
+   "arm": "TP2",
+   "pass": true,
+   "evidence": "tool_decl_gate rows=6 by_reason={'non_tool_intent_drop': 6}"
+  },
+  {
+   "id": "I2_声明门与臂参一致",
+   "arm": "TP2",
+   "pass": true,
+   "evidence": "flags.tool_decl_gate=on 遥测=['1']"
+  },
+  {
+   "id": "I3_无声明面违规",
+   "arm": "TP2",
+   "pass": true,
+   "evidence": "violations=0 []"
+  },
+  {
+   "id": "I4_模板串不进远端",
+   "arm": "TP2",
+   "pass": true,
+   "evidence": "requests=6 tmpl_msgs=0 user_user_adj=0"
+  },
+  {
+   "id": "I5_剪裁打点非零",
+   "arm": "TP2",
+   "pass": true,
+   "evidence": "replay_trimmed_calls=5 sum=20 (flags.replay_pair_trim=on)"
+  },
+  {
+   "id": "I6_配对闸门态与臂参一致",
+   "arm": "TP2",
+   "pass": true,
+   "evidence": "flags.replay_pair_trim=on ⇒ 期望遥测 replay_pair_gate=['1'], 实得=['1'] (人面 on 必须落成 1)"
+  },
+  {
+   "id": "I7_处理臂无 user 侧泄漏",
+   "arm": "TP2",
+   "pass": false,
+   "evidence": "skip_user_leak=15 user_trimmed=20"
+  },
+  {
+   "id": "I9_付费token不升",
+   "arm": "TP2",
+   "pass": true,
+   "evidence": "TP total=22383 vs TC total=25916 (-13.63%)"
+  },
+  {
+   "id": "I10_无空答复",
+   "arm": "TP2",
+   "pass": true,
+   "evidence": "turns=12 classes={'empty': 0, 'template': 4, 'brief': 0, 'substantive': 8}"
+  },
+  {
+   "id": "I0_臂可跑",
+   "arm": "TP3",
+   "pass": true,
+   "evidence": "usage rows=6"
+  },
+  {
+   "id": "I1_声明面逐调用可观测",
+   "arm": "TP3",
+   "pass": true,
+   "evidence": "tool_decl_gate rows=6 by_reason={'non_tool_intent_drop': 6}"
+  },
+  {
+   "id": "I2_声明门与臂参一致",
+   "arm": "TP3",
+   "pass": true,
+   "evidence": "flags.tool_decl_gate=on 遥测=['1']"
+  },
+  {
+   "id": "I3_无声明面违规",
+   "arm": "TP3",
+   "pass": true,
+   "evidence": "violations=0 []"
+  },
+  {
+   "id": "I4_模板串不进远端",
+   "arm": "TP3",
+   "pass": true,
+   "evidence": "requests=6 tmpl_msgs=0 user_user_adj=0"
+  },
+  {
+   "id": "I5_剪裁打点非零",
+   "arm": "TP3",
+   "pass": true,
+   "evidence": "replay_trimmed_calls=5 sum=20 (flags.replay_pair_trim=on)"
+  },
+  {
+   "id": "I6_配对闸门态与臂参一致",
+   "arm": "TP3",
+   "pass": true,
+   "evidence": "flags.replay_pair_trim=on ⇒ 期望遥测 replay_pair_gate=['1'], 实得=['1'] (人面 on 必须落成 1)"
+  },
+  {
+   "id": "I7_处理臂无 user 侧泄漏",
+   "arm": "TP3",
+   "pass": false,
+   "evidence": "skip_user_leak=15 user_trimmed=20"
+  },
+  {
+   "id": "I9_付费token不升",
+   "arm": "TP3",
+   "pass": true,
+   "evidence": "TP total=23212 vs TC total=25916 (-10.43%)"
+  },
+  {
+   "id": "I10_无空答复",
+   "arm": "TP3",
+   "pass": true,
+   "evidence": "turns=12 classes={'empty': 0, 'template': 4, 'brief': 1, 'substantive': 7}"
+  }
+ ],
+ "deltas": {
+  "TP1": {
+   "calls": "6→6 (0.0%)",
+   "total_tokens": "25916→23455 (-9.5%)",
+   "prompt_tokens": "22830→19532 (-14.45%)",
+   "cost_cny": "0.009559→0.009589 (0.31%)",
+   "skip_user_leak": "20→15"
+  },
+  "TP2": {
+   "calls": "6→6 (0.0%)",
+   "total_tokens": "25916→22383 (-13.63%)",
+   "prompt_tokens": "22830→20357 (-10.83%)",
+   "cost_cny": "0.009559→0.007725 (-19.19%)",
+   "skip_user_leak": "20→15"
+  },
+  "TP3": {
+   "calls": "6→6 (0.0%)",
+   "total_tokens": "25916→23212 (-10.43%)",
+   "prompt_tokens": "22830→21451 (-6.04%)",
+   "cost_cny": "0.009559→0.007729 (-19.14%)",
+   "skip_user_leak": "20→15"
+  },
+  "T_spread": {
+   "arms": [
+    "TP1",
+    "TP2",
+    "TP3"
+   ],
+   "total_tokens": "22383..23455 (min..max)",
+   "worst_case_vs_ctrl_pct": -9.5,
+   "best_case_vs_ctrl_pct": -13.63
+  }
+ },
+ "verdict": "FAIL",
+ "arms_run": [
+  "TC",
+  "TP1",
+  "TP2",
+  "TP3"
+ ],
+ "checks_posthoc": {
+  "note": "I7 的 skip_user_leak 是**子串代理**而非结构量: 每请求最后一个 user(活轮)内嵌上轮模板属正常输入, 不可能剪掉 ⇒ 该判据结构性不可达 0。",
+  "leak_split": {
+   "TC": {
+    "leak_stale": 15,
+    "leak_live": 5
+   },
+   "TP1": {
+    "leak_stale": 10,
+    "leak_live": 5
+   },
+   "TP2": {
+    "leak_stale": 10,
+    "leak_live": 5
+   },
+   "TP3": {
+    "leak_stale": 10,
+    "leak_live": 5
+   }
+  },
+  "struct_face": {
+   "TC": {
+    "user_user_adj": 20,
+    "user_trimmed": 0,
+    "trim_stamps": 20
+   },
+   "TP1": {
+    "user_user_adj": 0,
+    "user_trimmed": 20,
+    "trim_stamps": 20
+   },
+   "TP2": {
+    "user_user_adj": 0,
+    "user_trimmed": 20,
+    "trim_stamps": 20
+   },
+   "TP3": {
+    "user_user_adj": 0,
+    "user_trimmed": 20,
+    "trim_stamps": 20
+   }
+  }
+ }
+}

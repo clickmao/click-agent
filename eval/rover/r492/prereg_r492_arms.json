@@ -1,0 +1,30 @@
+{
+ "round": "R492-arms",
+ "title": "回放配对剪裁 (ReplayPairTrim) 门开 T×3 真机验收: 同一二进制两态单变量",
+ "kind": "真机臂 (真供应商上游, 同夹具同窗)",
+ "ts_local": "2026-09-16T16:26:00+0800",
+ "binary": "/tmp/pub_r492/agenthost (由 HEAD 重发布; sha256 记于各臂 flags-T*.json 的 host_sha256)",
+ "fixture": "eval/rover/r438/grid/task-p12.json (12 轮)",
+ "arm_matrix": [
+  {"id": "TC",  "class": "T", "pair_trim": "off", "ports": [49210, 49212], "role": "对照臂: 与 R491 三跑逐字节同开关组合"},
+  {"id": "TP1", "class": "T", "pair_trim": "on",  "ports": [49214, 49216], "role": "处理臂 #1"},
+  {"id": "TP2", "class": "T", "pair_trim": "on",  "ports": [49218, 49220], "role": "处理臂 #2"},
+  {"id": "TP3", "class": "T", "pair_trim": "on",  "ports": [49222, 49224], "role": "处理臂 #3"}
+ ],
+ "single_variable": "四臂同二进制 / 同夹具 / 同窗 / 同 role 挂载; 唯一差异 = 位置参数 5 (pair_trim) ⇒ 产品 env AGENTFRAMEWORK_REPLAY_PAIR_TRIM ∈ {0,1}。人面 on|off 由执行器显式映射为 1|0 (产品 Decide 只认 1/true; 直传 \"on\" 会被静默当关 = 已知假阴性陷阱)。",
+ "hypotheses": [
+  {"id": "H0", "claim": "门态正控: TP1..TP3 遥测 replay_pair_gate 全 == \"1\"; TC == \"0\"", "falsified_if": "任一臂不符 ⇒ 仪器面失效, 本轮 KPI 不得下结论 (整轮作废, 重跑)", "kind": "instrument"},
+  {"id": "H1", "claim": "对照臂 TC 存在零远端调用轮的 user 侧回放 (pair_face.skip_user_leak >= 10)", "falsified_if": "TC leak == 0 ⇒ 对照面无漏可剪, 判据不适用 (不得改判据)"},
+  {"id": "H2", "claim": "TP1..TP3 pair_face.skip_user_leak 全 == 0", "falsified_if": "任一 > 0 ⇒ 剪裁未覆盖, 判否"},
+  {"id": "H3", "claim": "TP1..TP3 遥测 replay_user_trimmed > 0 (剪裁确有触发)", "falsified_if": "全为 0 ⇒ 闸未生效/无剪裁点, 判否"},
+  {"id": "H4", "claim": "max(TP 付费 token) <= TC 付费 token (同窗单变量, 不升)", "falsified_if": "任一大过 TC ⇒ token 上升, 判否", "measure": "中继侧供应商 usage 真值 (prompt+completion)"},
+  {"id": "H5", "claim": "质量不退化: 四臂 12 轮答复均非空 (空答复 0)", "falsified_if": "出现空答复 ⇒ 退化"},
+  {"id": "H6", "claim": "四臂 teardown 全 clean (0 残留进程 / 0 监听端口)", "falsified_if": "任一臂残留 ⇒ 器具面不合格"}
+ ],
+ "judgement": "PASS = H0 ∧ H1 ∧ H2 ∧ H3 ∧ H4 ∧ H5 ∧ H6; 任一 FAIL ⇒ 按判据收窄宣称, 禁改判据凑绿。",
+ "honest_bounds": [
+  "跨轮禁相减 (R489 铁律): 分母只取本窗 TC; R491 三跑仅作史实参照。",
+  "本轮只测「剪裁」开关的链内效果, 不声称上游模型行为面 (空正文率) 的因果。",
+  "预注册先于首跑; 若首跑晚于本文件落盘时间, 描述性数字一律单列 checks_posthoc。"
+ ]
+}

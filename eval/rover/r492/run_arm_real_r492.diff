@@ -1,0 +1,134 @@
+--- /home/agentuser/AgentFramework/eval/rover/r491/run_arm_real_r491.sh	2026-09-16 15:34:40.708731557 +0800
++++ /home/agentuser/AgentFramework/eval/rover/r492/run_arm_real_r492.sh	2026-09-16 16:42:42.795704430 +0800
+@@ -1,28 +1,33 @@
+ #!/usr/bin/env bash
+-# R491 臂执行器 —— 由 R489 版机派生 (diff 见 eval/rover/r491/run_arm_real_r491.diff)。相对 R489 的差异逐条:
+-#   1) 命名空间 r489 → r491 (DIR / round / key 变量名 / 默认端口 / 默认二进制)
++# R492 臂执行器 —— 由 R491 版机派生 (diff 见 eval/rover/r492/run_arm_real_r492.diff)。相对 R491 的差异逐条 (R491 自身差异见其 diff):
++#   1) 命名空间 r489 → r492 (DIR / round / key 变量名 / 默认端口 / 默认二进制)
+ #   2) 臂矩阵新增 **T 臂** (门开 + repeat_skip on + **工具声明门开** = AGENTFRAMEWORK_TOOL_DECL_GATE=on)
+ #      ⇒ Arole(基线) / R(生产形态, 声明门关) / T(+声明门) 三者**同一二进制、同一夹具、同一窗**,
+ #        唯一差异 = 开关组合 ⇒ 单变量消融链: 本地闸 ⇒ 本地闸+声明闸
+ #   3) 所有臂**显式**导出 AGENTFRAMEWORK_TOOL_DECL_GATE (off/on) 并写入 flags-*.json, 禁"未设=默认"含糊
+-#   4) 二进制 = R491 AOT 重新发布物 (/tmp/pub_r491/agenthost): 含 R491 两处链改动
++#   4) 二进制 = R492 AOT 重新发布物 (/tmp/pub_r492/agenthost): 含 R492 两处链改动
+ #      (声明面按需 ToolDeclGate + 回放剪裁 ReplayTrimmedLocalTemplates), 四臂**同一产物**
++#   4b) R492 新增: 第 5 位置参数 pair_trim (off|on) ⇒ **显式**导出
++#      AGENTFRAMEWORK_REPLAY_PAIR_TRIM 并写入 flags-*.json; 同一二进制内两态可比
++#      (闸关 = 对照臂 TC; 闸开 = TP1..TP3), 差异只在开关 ⇒ 单变量
+ #   5) prov 报告 / preflight 报告按 arm+tag 命名 (R489 下多臂共用一个文件名 ⇒ 互相覆盖)
+ # 远端: 本地中继 relay_real_r475.py(v2) → 真供应商端点; 宿主侧 key 仍为 dummy
+ #   (key 只在中继进程的 env 里, 不落任何文件/日志)。
+-# 用法: bash run_arm_real_r491.sh <Arole|R|T> [tag] [relay_port] [api_port]
++# 用法: bash run_arm_real_r492.sh <Arole|R|T> [tag] [relay_port] [api_port]
+ set -u
+-ARM=${1:?用法: run_arm_real_r491.sh <Arole|R|T> [tag] [relay_port] [api_port]}
++ARM=${1:?用法: run_arm_real_r492.sh <Arole|R|T> [tag] [relay_port] [api_port] [pair_trim:off|on]}
+ TAG=${2:-}
+-RELAY_PORT=${3:-49110}
+-API_PORT=${4:-49112}
++RELAY_PORT=${3:-49210}
++API_PORT=${4:-49212}
++PAIR_TRIM=${5:-off}
+ ROOT=/home/agentuser/AgentFramework
+-DIR=$ROOT/eval/rover/r491
++DIR=$ROOT/eval/rover/r492
++for f in teardown_assert.py; do [ -f "$DIR/$f" ] || { echo "[致命] aux 缺失: $f ⇒ 拒跑 (防 teardown 空跑泄漏)"; exit 12; }; done
+ RELAY=$ROOT/eval/rover/r475/relay_real_r475.py
+ TOOLS=$ROOT/eval/rover/r430
+ GRID=p12
+ TASK=$ROOT/eval/rover/r438/grid/task-$GRID.json
+-HOST=${AGENTFRAMEWORK_HOST_BIN:-/tmp/pub_r491/agenthost}
++HOST=${AGENTFRAMEWORK_HOST_BIN:-/tmp/pub_r492/agenthost}
+ M3B=/home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf
+ ROLE_GROWTH=$ROOT/eval/rover/r431/fixture/skeptic-growth.rbin
+ CFG=$DIR/config-$ARM$TAG
+@@ -33,7 +38,7 @@
+ RELAYLOG=$DIR/relay-$ARM$TAG.log
+ SERVLOG=$DIR/server-$ARM$TAG.txt
+ case "$ARM" in
+-  Arole|R|T) CWD_NAME=run-$ARM$TAG ;;
++  Arole|R|T) CWD_NAME=run-$ARM$TAG$([ "$PAIR_TRIM" = on ] && echo -pt) ;;
+   *) echo "[致命] 未知臂: $ARM"; exit 2 ;;
+ esac
+ RUNDIR=$DIR/$CWD_NAME
+@@ -46,15 +51,15 @@
+ [ -x "$HOST" ] || { echo "[致命] 被测二进制不存在: $HOST"; exit 5; }
+ # 起手闸/沉降**单一源** (禁手抄) —— 阈值/build-server shutdown/沉降轮询全在
+ #   eval/rover/r483/preflight_gate.py 内; 本文件不含任何阈值字面量 (机检 grep 计数 0)。
+-python3 "$ROOT/eval/rover/r483/preflight_gate.py" --out "$DIR/preflight-$ARM$TAG.json" --round R491 \
++python3 "$ROOT/eval/rover/r483/preflight_gate.py" --out "$DIR/preflight-$ARM$TAG.json" --round R492 \
+   || { echo "[致命] 起手闸未通过 (rc=$?)"; exit 10; }
+-[ -n "${R491_UPSTREAM_KEY:-}" ] || { echo "[致命] R491_UPSTREAM_KEY 未传入"; exit 9; }
+-export R475_UPSTREAM_KEY="$R491_UPSTREAM_KEY"   # v2 中继只读此名; 不落文件/日志
++[ -n "${R492_UPSTREAM_KEY:-}" ] || { echo "[致命] R492_UPSTREAM_KEY 未传入"; exit 9; }
++export R475_UPSTREAM_KEY="$R492_UPSTREAM_KEY"   # v2 中继只读此名; 不落文件/日志
+ 
+ export AGENTFRAMEWORK_LLAMA_BIN=/tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server
+ export AGENTFRAMEWORK_KEYS_DEEPSEEK=dummy-key
+ export AGENTFRAMEWORK_KEYS_BIGMODEL=dummy-key
+-export AGENTFRAMEWORK_FRONTEND_TOKEN=r491-harness-fixed-token
++export AGENTFRAMEWORK_FRONTEND_TOKEN=r492-harness-fixed-token
+ echo "[preflight] arm=$ARM cwd=$CWD_NAME bin=$HOST grid=$GRID $(df -h / | tail -1)"
+ python3 "$TOOLS/prov_check.py" --json "$DIR/prov-$ARM$TAG.json" "$HOST" || { echo "[致命] V0 形态闸红"; exit 6; }
+ BIN_SHA=$(sha256sum "$HOST" | cut -d' ' -f1)
+@@ -67,11 +72,16 @@
+   T)     MP=$M3B; GATE=true;  RJ=true;  ROLE="$ROLE_GROWTH"; RS=on ; TD=on  ;;
+ esac
+ export AGENTFRAMEWORK_GATE_REPEAT_SKIP=$RS
+-# R491 声明面按需: **显式**导出 (禁"未设=默认"含糊; 门默认关 ⇒ 生产行为不变)
++# R492 声明面按需: **显式**导出 (禁"未设=默认"含糊; 门默认关 ⇒ 生产行为不变)
+ export AGENTFRAMEWORK_TOOL_DECL_GATE=$TD
++# R492 回放配对剪裁: **显式**导出 (默认关 ⇒ 与 R491 逐字节同行为; on = 剔除零远端调用轮的 user 侧回放)
++case "$PAIR_TRIM" in off|on) : ;; *) echo "[致命] pair_trim 只接受 off|on (got=$PAIR_TRIM)"; exit 12 ;; esac
++# 产品取值只认 1/true (ReplayPairTrim.Decide) ⇒ 人面 on|off 必须**显式映射**,
++# 否则 "on" 会被静默当关 (假阴性: 臂自称门开、产品实则门关)。
++if [ "$PAIR_TRIM" = on ]; then export AGENTFRAMEWORK_REPLAY_PAIR_TRIM=1; else export AGENTFRAMEWORK_REPLAY_PAIR_TRIM=0; fi
+ unset AGENTFRAMEWORK_CONTINUATION_REPEAT_PRIORITY
+ unset AGENTFRAMEWORK_LOCAL_WARMUP
+-echo "[arm] $ARM model_path=$MP gate=$GATE rj=$RJ repeat_skip=$RS tool_decl_gate=$TD"
++echo "[arm] $ARM model_path=$MP gate=$GATE rj=$RJ repeat_skip=$RS tool_decl_gate=$TD pair_trim=$PAIR_TRIM"
+ python3 - "$CFG/base/models.yaml" "$RELAY_PORT" "$MP" "$GATE" "$RJ" <<'PY'
+ import re, sys
+ path, port, model, gate, rj = sys.argv[1:6]
+@@ -86,7 +96,7 @@
+ src = re.sub(r"(request_address:\s*)(\S+)", _rw, src)
+ src = re.sub(r"(?m)^(  (model_path|context_size|parallel|gpu_layers|max_tokens|max_prompt_tokens|allowed_kinds|allow_general|turn_gate|relation_judge):.*)$", "", src)
+ src += f"""
+-# R491 臂 (端点 = 本地中继 v2 → 真供应商; 其余与生产 config/base/models.yaml 逐字同)
++# R492 臂 (端点 = 本地中继 v2 → 真供应商; 其余与生产 config/base/models.yaml 逐字同)
+ local:
+   model_path: {model}
+   context_size: 4608
+@@ -102,9 +112,9 @@
+ open(path, "w", encoding="utf-8").write(src)
+ print(f"[config] 端点改写 {n} 处 → 中继 :{port}; gate={gate} rj={rj} model={model}")
+ PY
+-python3 - "$DIR" "$ARM" "$CFG/base/models.yaml" "$HOST" "$ROLE_GROWTH" "$GRID" "$RS" "$BIN_SHA" "$TASK" "$CWD_NAME" "$TAG" "$TD" <<'PY'
++python3 - "$DIR" "$ARM" "$CFG/base/models.yaml" "$HOST" "$ROLE_GROWTH" "$GRID" "$RS" "$BIN_SHA" "$TASK" "$CWD_NAME" "$TAG" "$TD" "$PAIR_TRIM" <<'PY'
+ import hashlib, json, os, re, sys
+-d, arm, cfg, host, role, grid, rs, bsha, task, cwdname, tag, td = sys.argv[1:13]
++d, arm, cfg, host, role, grid, rs, bsha, task, cwdname, tag, td, pt = sys.argv[1:14]
+ t = open(cfg, encoding="utf-8").read()
+ loc = re.search(r"(?ms)^local:\n(.*?)(?=^\S|\Z)", t).group(1)
+ def fld(k):
+@@ -114,7 +124,8 @@
+ flags = {
+     "arm": arm, "arm_class_note": "由 denominator_gate.arm_class_of(flags) 单一来源派生 (脚本不自报类别)",
+     "turn_gate": fld("turn_gate"), "relation_judge": fld("relation_judge"), "repeat_skip": rs,
+-    "tool_decl_gate": td,   # R491: 声明面按需开关 (off=门关 ⇒ 与 R456..R489 逐字节同; on=按意图丢声明)
++    "tool_decl_gate": td,   # R492: 声明面按需开关 (off=门关 ⇒ 与 R456..R489 逐字节同; on=按意图丢声明)
++    "replay_pair_trim": pt,  # R492: 回放配对剪裁开关 (off=与 R491 同; on=剔除零远端调用轮的 user 侧)
+     "repeat_priority": os.environ.get("AGENTFRAMEWORK_CONTINUATION_REPEAT_PRIORITY", "(unset=on)"),
+     "warmup": os.environ.get("AGENTFRAMEWORK_LOCAL_WARMUP", "(unset=off)"),
+     "gpu_layers": fld("gpu_layers"), "context_size": fld("context_size"), "parallel": fld("parallel"),
+@@ -128,7 +139,8 @@
+     "remote_path": "eval/rover/r475/relay_real_r475.py (v2) → https://api.deepseek.com/v1/chat/completions",
+ }
+ open(os.path.join(d, "flags-%s%s.json" % (arm, tag)), "w", encoding="utf-8").write(json.dumps(flags, ensure_ascii=False, indent=1))
+-print("[flags] " + json.dumps({k: flags[k] for k in ("arm_class_note", "turn_gate", "relation_judge", "repeat_skip", "tool_decl_gate", "rundir_cwd")}, ensure_ascii=False))
++print("[flags] " + json.dumps({k: flags[k] for k in ("arm_class_note", "turn_gate", "relation_judge", "repeat_skip", "tool_decl_gate",
++                            "replay_pair_trim", "rundir_cwd")}, ensure_ascii=False))
+ PY
+ python3 -u "$RELAY" "$RELAY_PORT" 40 0.15 "$DIR" "$ARM$TAG" > "$RELAYLOG" 2>&1 &
+ RELAY_PID=$!
