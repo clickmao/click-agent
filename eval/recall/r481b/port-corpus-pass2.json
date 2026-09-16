@@ -1,0 +1,152 @@
+{
+  "corpus": {
+    "files": 6658,
+    "files_sha16": "1000893f7926c08c",
+    "files_with_0_refs_rate": 0.3043,
+    "per_file_mean": 11.48,
+    "per_file_p50_refs": 5.0,
+    "self_out_excluded": [
+      "eval/recall/r481b"
+    ],
+    "self_src_excluded": [
+      "eval/recall/links_port_r482.py"
+    ],
+    "skip": [
+      ".git",
+      ".vs",
+      "__pycache__",
+      "artifacts",
+      "bin",
+      "dist",
+      "node_modules",
+      "obj"
+    ]
+  },
+  "instrument": {
+    "path": "eval/recall/links_port_r482.py",
+    "port": "r482",
+    "rule_source": "src/agent.recall/RecallLinks.cs",
+    "rule_source_clean": false,
+    "rule_source_sha16": "9e9104ca601f8849",
+    "rule_source_sha256": "9e9104ca601f8849ce10db00db065bc90238c7c176a100cd34b18ef229fe6cdc"
+  },
+  "judgment": {
+    "G1": {
+      "rule": "resolved_rate >= 0.90",
+      "value": 0.145,
+      "verdict": "越线"
+    },
+    "G2": {
+      "rule": "dangling_rate <= 0.10",
+      "value": 0.855,
+      "verdict": "越线"
+    },
+    "G3": {
+      "rule": "rewrite_ok_rate >= 0.85",
+      "value": 0.1091,
+      "verdict": "越线"
+    },
+    "G4": {
+      "rule": "per_file_p50_refs >= 1",
+      "value": 5.0,
+      "verdict": "达标"
+    }
+  },
+  "old_arm": {
+    "reading": {
+      "dangling_rate": 0.1496,
+      "files": 6661,
+      "refs": 20280,
+      "rel_ok_rate": 0.2658,
+      "resolved_rate": 0.8504,
+      "root_fallback_ok": 17064
+    },
+    "status": "ok",
+    "vs_registered_r481a": {
+      "deltas": {
+        "dangling_rate": {
+          "measured": 0.1496,
+          "registered": 0.1492
+        },
+        "files": {
+          "measured": 6661,
+          "registered": 6647
+        },
+        "refs": {
+          "measured": 20280,
+          "registered": 20155
+        },
+        "rel_ok_rate": {
+          "measured": 0.2658,
+          "registered": 0.2718
+        },
+        "resolved_rate": {
+          "measured": 0.8504,
+          "registered": 0.8508
+        }
+      },
+      "match": false
+    }
+  },
+  "port_boundaries": [
+    "字母数字面用 python str.isalnum 近似 char.IsLetterOrDigit (Unicode 类覆盖不完全一致)",
+    "空白判定用 str.isspace 近似 char.IsWhiteSpace",
+    "scheme 前缀比较用 lower() 近似 OrdinalIgnoreCase",
+    "CJK 属字母 => 无空格中文串会作为地址串参与相对档 (产品同此行为, 非端口偏差)"
+  ],
+  "readings": {
+    "absolute_path_like": 7462,
+    "base_dir_fallback_ok": 53,
+    "dangling": 64019,
+    "dangling_rate": 0.855,
+    "escape_kept_raw": 3,
+    "escaped_root": 7465,
+    "explicit_rel": 660,
+    "external_urls_unreported": 1524,
+    "local": 74880,
+    "refs": 76404,
+    "resolved": 10861,
+    "resolved_rate": 0.145,
+    "rewrite_failclosed_raw": 2,
+    "rewrite_ok": 72,
+    "rewrite_ok_rate": 0.1091
+  },
+  "samples": {
+    "base_dir_fallback": [
+      "data/probe/capability/cycle-20260914-s20260914.json -> specs/ttl_cache.md",
+      "eval/capability/cycle-20260914-s20260914.json -> specs/ttl_cache.md",
+      "eval/capability/exp1-q12/append_kpi_q12.py -> trx/form_check_q12.trx",
+      "eval/capability/exp1-q12/apply_doc_edits_q12.py -> trx/form_check_q12.trx",
+      "eval/rover/r413/README-evidence.md -> run-B/data/telemetry/host.jsonl"
+    ],
+    "dangling": [
+      ".env.local -> AGENTFRAMEWORK_BGE_MODEL=/home/agentuser/.agentframework/models/bge-q8.gguf",
+      ".gitignore -> bin/",
+      ".gitignore -> obj/",
+      ".gitignore -> publish/",
+      ".gitignore -> 本地状态/凭据/日志"
+    ]
+  },
+  "selftest": {
+    "derivation_ok": true,
+    "fixture_differential_ok": true,
+    "mutations_caught": 6,
+    "mutations_total": 6,
+    "probe_samples": {
+      "bare_name_rejected": [],
+      "escape_failclosed": [
+        "../../../e.md"
+      ],
+      "rewritten": [
+        "docs/plans/c.md"
+      ],
+      "root_kept": [
+        "src/x.cs"
+      ],
+      "short_run_rejected": [],
+      "trailing_punct_trimmed": [
+        "docs/x.md"
+      ]
+    }
+  }
+}

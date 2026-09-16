@@ -3450,6 +3450,32 @@
     "eval/recall/r481/check_r481d9.py"
    ],
    "owner_round": "R481"
+  },
+  {
+   "id": "r481f.recall-link-port-derivation",
+   "level": "L1",
+   "capability": "**链接面规则端口(源码派生)** —— 把产品 `RecallLinkExtractor` 的接受规则与显式相对引用解析基准移植成可批量跑的端口: 7 组规则常量由 `src/agent.recall/RecallLinks.cs` 正则派生(开关 / MaxLinkChars=512 / MaxLinksPerDoc=64 / schemes / IsAddressChar 字面量集 / 尾部标点集 / 最短长度 3 / 相对前缀 / 越根 fail-closed 分支), 任一派生失败 => rc=3 弃权(不入红绿); 派生后带形状机检(字面量必须单字符、必含 '/' 与 '.'、相对前缀恰为 './'+'../')。差分绑定 = 期望值取自产品自身断言用例 `RecallModuleTests::Relative_References_Resolve_Against_Referrer_Directory`(2/2 逐条一致)。真读数(语料 6,658 文件 / files_sha16 1000893f7926c08c, 两次独立运行核心字段逐字节相同): 候选 76,404 / 解析率 **0.1450** / 悬空 **0.8550** / 显式相对引用 **660 -> 落地 72 = 0.1091** / 地址覆盖 **p50=5** / 越根 fail-closed **2** / 绝对路径形态 **7,462** 单列; 通路分解 markdown **81.25%** · 相对地址串 **14.43%**(悬空 64,004 = 99.98%)。**代理面**(Python), 不测产品面延迟/实现。",
+   "evidence_cmd": "python3 eval/recall/links_port_r482.py --selftest",
+   "evidence_path": "eval/recall/r481b/port-corpus.json",
+   "negative_control": "变异测试 **6/6**: NC1 禁改写(解析短路) => 差分 fixture 红 + 探针 rewritten 红; NC2 越根不 fail-closed(clamp) => fixture 红 + 探针 escape_failclosed 红; NC3 最短长度 3->2 => 探针 short_run_rejected 红; NC4 去掉 '/' 要求(run 侧 + accept 侧) => 探针 bare_name_rejected 红; NC5 不裁尾标点 => 探针 trailing_punct_trimmed 红; NC6 不去重 => fixture 计数红。另: 派生失败负控(源码形状缺失 => rc=3 弃权, 不判红绿); 仪器形状自检由本轮实测逼出(首版抓错 span 得空字面量集 => 端口静默少报 2/4 条, 差分抓到)。**不含**: 产品侧真机度量(agent.recall 度量模式)未做; 文本层无法区分「链接语境」与「代码 token 语境」; Unicode 近似(str.isalnum/isspace/lower)。",
+   "covers": [
+    "eval/recall/links_port_r482.py",
+    "eval/recall/prereg_r481b.json",
+    "eval/recall/r481b/port-corpus.json",
+    "eval/recall/links_probe.py",
+    "src/agent.recall/RecallLinks.cs"
+   ],
+   "owner_round": "R481",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "c414cfc62258",
+    "instrument": "eval/recall/links_port_r482.py",
+    "instrument_sha12": "0bb541818dc5",
+    "binding": "audit-pin",
+    "audited_by_round": "R481"
+   }
   }
  ],
  "aot_check_policy": "release_tag_only",

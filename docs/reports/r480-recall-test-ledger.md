@@ -95,3 +95,65 @@
    处置：`eval/recall/r481/repair_registry_attribution.py` 逐行回退这 96 行到 HEAD 值（写前 `SER_ASSERT` 逐字节复现 + 写后逐行核 scope 一致 + 读回；幂等，二次运行 `IDEMPOTENT=OK`）。**保留 6 行真重派生**（R478×3 / R479×3：`live/worktree-only` → `frozen/archived-per-round` + 真 pin，因其证据已入库且工作区未改）。churn 由 147+/122- 收敛到 **51+/26-**（= 新增行 + 6 行重派生 + `updated_round` + 尾换行）。
    未修：工具本身「换轮号必刷全部行」的判据缺陷 ⇒ 下轮候选。
 3) **registry**：149 → **150 行**（新增 `r481.recall-d9-alternating-verify`；`updated_round` R479 → R481）。尾部**换行 1 B 修复**：原文件缺尾换行 ⇒ `bind_evidence` 的序列化器自检 `SER_ASSERT` 会 fail-closed 拒写（本轮实测 rc=3）；按其自身契约补 1 B，语义零变化。
+
+## R481-E（本侧独立复核 + G2 相对地址解析，2026-09-16）
+
+**角色切分**：D9（交替核验）由 cron 兄弟会话 `cron:9a97763d5fcd`（07:42–07:45）实施；本侧 `R481-E` 不采信其对侧自述，逐项自跑复核后，再实施 G2（相对地址解析）。
+
+### E1 独立复核（全为本侧自跑读数）
+| 项 | 命令 | 读数 |
+|---|---|---|
+| 测试面 | `dotnet test src/agent.recall.tests/agent.recall.tests.csproj -c Release` | rc=0 / **Failed 0 / Passed 14 / Total 14** / 576 ms |
+| 库编译 | `dotnet build src/agent.recall/agent.recall.csproj -c Release` | rc=0 / 0 warning / 0 error |
+| D9 器具 | `python3 eval/recall/r481/check_r481d9.py` | rc=0 / verdict=PASS（NC1–NC3 突变体全部被抓） |
+| 断言未放宽 | `RecallModuleTests.cs:379` `Assert.Equal(1, second.Modified)` | **原文保留**，未改断言凑绿 |
+
+### E2 G2 实施：显式相对引用按「引用方目录」解析（产品面）
+- 面：`src/agent.recall/RecallLinks.cs` — 新增 `ResolveReferrerRelative(candidate, referrerPath)`（纯字符串代数，不触磁盘）与 `Extract(..., string? referrerPath = null)`；**只改 `./` 与 `../` 开头的显式相对引用**。
+- 接线：`src/agent.recall/RecallIndexWriter.cs:70` 传入 `doc.Path`（文档自己的根相对路径）。
+- **不改写面（防回归）**：根相对（`src/agent.recall/RecallIndex.cs`）与绝对 URL **保持原样** —— 根相对是 R481-A 实测的主力成功通路（root-fallback 16,965/20,155），改写即回归。
+- **fail-closed**：`../` 层数多于引用方目录深度（越根）⇒ **原值返回**，不猜目标。
+- 测试：新增 `Relative_References_Resolve_Against_Referrer_Directory`（含越根负例）⇒ `agent.recall.tests` **15/15 / rc=0 / 455 ms**（14 项旧用例零回归）。
+
+### E3 诚实边界
+- **G3 的 0.2718 属语料侧读数**（Python 代理面），产品面这一改动**尚未**在语料上重测 ⇒ **不得**宣称 G3/G1 已达标；下轮须以产品侧器具（`agent.recall.bench` 增度量模式）或同语义双实现交叉核对后再上报。
+- 未提交、未 push（`PUSH_PAUSED`）；`src/agent.recall*` 仍为 untracked。
+
+## R481-F: 语料侧重测 —— 源码派生的规则端口（2026-09-16，承计划 §7「G3 口径须重跑取得」）
+
+**起因**：R481-E 实施了显式相对引用的解析基准改写（`ResolveReferrerRelative`），而 R481-A 的旧端口 `eval/recall/links_probe.py` 是**手写规则**：① 候选受**后缀白名单**约束（语言相关）；② 把**无 `/` 的裸名计入相对档**；③ 根兜底用 `lstrip("./")`（`../x` 会被剥成 `x`）。产品规则与之已**静默漂移** ⇒ 旧读数不能拿来给新基准下的 G3 定值。
+
+**器具**：`eval/recall/links_port_r482.py`
+- **规则源码派生**：7 组常量由 `src/agent.recall/RecallLinks.cs` 正则派生（开关 / `MaxLinkChars=512` / `MaxLinksPerDoc=64` / schemes / `IsAddressChar` 字面量集 / 尾部标点集 / 最短长度 3 / 相对前缀 / 越根 fail-closed 分支），任一派生失败 ⇒ **rc=3 弃权**（不入红绿）；并带**形状机检**（字面量必须单字符、必须含 `/` 与 `.`、相对前缀必须恰为 `./`+`../`）——本条由本轮实测逼出：首版抓错 span 得到**空字面量集**，端口把 `src/x.cs` 拆成无 `/` 的碎片，静默少报 2/4 条。
+- **期望值取产品自身断言**：从 `RecallModuleTests.cs::Relative_References_Resolve_Against_Referrer_Directory` 派生（输入 / 引用方 / 期望计数 / 期望值），端口必须逐条一致（2/2）。
+- **判别力自证**：6 条规则变异（禁改写 / 越根不 fail-closed / 最短长度 3→2 / 去掉 `/` 要求 / 不裁尾标点 / 不去重）**6/6 各被探针抓到**。
+- **唯一变量**：语料收集口径沿用 R481-A（同 SKIP / 1 MB 上限 / 文本探测）⇒ 与旧端口的差只来自**抽取规则**。
+
+**预注册**：`eval/recall/prereg_r481b.json` 先于首跑落盘；`supersedes` **只覆盖** G3 口径与 refs 定义，`prereg_r481a.json` 的判据与读数**不翻案**（旧口径同批并列作对照臂）。
+
+**真读数**（`eval/recall/r481b/port-corpus.json`；语料 6,658 文件 / `files_sha16 1000893f7926c08c`；同时段旧端口读数见末行）：
+
+| 项 | 新口径（产品派生规则） | 旧口径（R481-A 端口） |
+|---|---|---|
+| 候选地址 | **76,404**（跨 URL 1,524 = `unreported`） | 20,280 |
+| 解析率 G1（≥0.90） | **0.1450 ❌** | 0.8504 |
+| 悬空率 G2（≤0.10） | **0.8550 ❌** | 0.1496 |
+| 显式相对引用 `./`·`../` | **660**（旧档把裸名也算进 = 1,163） | — |
+| 相对引用落地 G3（≥0.85） | **0.1091 ❌**（72/660） | 0.2650 |
+| 地址覆盖 G4（p50≥1） | **p50 = 5 ✅**（零地址文件 30.43%） | p50 = 0 / 76.11% |
+| 越根 fail-closed 原值保留 | **2** 条（单列） | 未单列 |
+| 绝对路径形态（仓根外） | 7,462 条（单列，不混入「越根」） | 混入 dangling |
+| 按引用方目录兜底可解析（诊断） | 53 条 | 未测 |
+
+**按来源通路分解**（新口径，本轮新增字段）：markdown 目标 **96**（落地 65/80 = **81.25%**）／裸 URL **1,508**（全 `unreported`）／相对地址串 **74,800**（落地 10,796 = **14.43%**，悬空 64,004）⇒ **悬空的 99.98% 来自「相对地址串」通路**。
+
+**结论（口径层，非产品缺陷）**：产品的接受规则是**结构性宽判据**（`含 '/' ∧ 无空白 ∧ 3–512 字符`），代码/配置/模板里的 slash token（`bin/`、`obj/`、`.gitignore` 条目）与绝对路径全部进候选 ⇒ G1/G2 在「全候选档」上**结构不可达**；「内容自带链接」的真读数在 markdown 档（81.25%）。
+**天花板算式**：相对引用改写的可达面 = **660 / 74,880 = 0.88%**；即使该档 100% 落地，解析率也只 **+0.88 pt**（0.1450 → 0.1538），距 ≥0.90 的 **75.5 pt** 缺口不是这个机制的杠杆（`可省 ≤ 该类占比 × 该类可消除比例`）。
+
+**诚实边界**：
+1. 旧端口**未逐位复现** R481-A 登记值（6,662 文件 / 20,293 候选 / 0.8502 vs 登记 6,647 / 20,155 / 0.8508）⇒ 语料已增文件（+14），且旧端口无排除规则会把器具产出目录一并计入 ⇒ 跨轮对比标 **`不可比（语料漂移）`**，不当回归。
+2. 端口自检（派生 + 差分 + 变异）是**自我认证**，只作必要条件；产品侧真机度量（`agent.recall` 度量模式）仍未做。
+3. Unicode 近似：`str.isalnum`/`str.isspace`/`lower()` 分别近似 `char.IsLetterOrDigit`/`char.IsWhiteSpace`/`OrdinalIgnoreCase`。
+4. 候选面**无法从文本层区分「链接语境」与「代码 token 语境」** ⇒ 本读数测的是**接受规则的精度**，不是「内容自带链接的召回」。
+5. 误差面：首跑（`port-corpus-firstpass.json`）未排除器具自身源码、且把绝对路径与越根混算 ⇒ 已修并重跑，首跑归档保留（不覆盖）。
+

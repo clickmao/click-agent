@@ -451,7 +451,10 @@ python3 eval/run_round.py <新轮号> "revert-verify <原commit>" --quick   # �
 - 证据器具: `python3 eval/recall/r481/check_r481d9.py` ⇒ `verdict=PASS`（C1 源码派生 / C2 真跑 trx 14 行 / C3 语义锁存 / 变异负控 3/3 翻红）；`eval/recall/r481/verdict-r481d9.json`
 - 【探索】判据基线（R481-A，Python 代理面）: 解析率 **0.8508**（目标 ≥0.90 ❌）/ 悬空 **0.1492**（✅ ≤0.35）/ 相对引用落地 **0.2718 = 309 条**（❌）/ 地址覆盖 **p50=0、76.11% 零地址**（❌）/ 跨 URL **2,720 = unreported**
 - 诚实边界: `agent.recall` 尚未并入 `agent.host`（本面无 AOT 重发布验证）；recall **未入链** ⇒ 对 R413 主线「tokens −30%」**本轮无贡献**（不冒充）；旧格式 store 兼容**只推理未实测**；内容级哈希兜底**未实现**（D9 只保证最多滞后 1 轮）；全程未 push（`PUSH_PAUSED`）
-- 下轮候选: ① `VerifyMode.Hash` / 周期全量核验兜底 ② 相对地址按引用方目录解析 ⇒ G3↑ ③ G2 四条判据锁进 `prereg_r481a.json` ④ 1e5 规模臂 ⑤ R479 遗留（路由器接线 / 入链 prompt 正文槽位化）
+- 本侧独立复核（**R481-E**，2026-09-16）: 全不采信对侧自述、逐项自跑 —— ① `dotnet test src/agent.recall.tests/agent.recall.tests.csproj -c Release` ⇒ **rc=0 / Failed 0 / Passed 14 / Total 14 / 576 ms**（新用例 `:404-456` 等字节改写 `钾`→`铷`，`:379` 原断言未放宽）；② `dotnet build src/agent.recall/agent.recall.csproj -c Release` ⇒ **rc=0 / 0 warning / 0 error**；③ `python3 eval/recall/r481/check_r481d9.py` ⇒ **rc=0 / `verdict=PASS`**（变异负控 3/3 翻红）。**归属**: D9 实施由 cron 兄弟会话（`cron:9a97763d5fcd`）在 07:42–07:45 完成，本侧角色 = 独立复核 + 文档对账（非重复实施）。
+- 下轮候选: ① `VerifyMode.Hash` / 周期全量核验兜底 ② ~~相对地址按引用方目录解析~~ **已实施（R481-E，见下）** ③ G2 四条判据锁进 `prereg_r481a.json` ④ 1e5 规模臂 ⑤ R479 遗留（路由器接线 / 入链 prompt 正文槽位化）
+- **R481-E G2 增量（本侧实施，2026-09-16）**: `src/agent.recall/RecallLinks.cs` 新增 `ResolveReferrerRelative`（纯字符串代数，不触磁盘）+ `Extract(..., string? referrerPath = null)`；接线 `src/agent.recall/RecallIndexWriter.cs:70` 传 `doc.Path`。**只改 `./`、`../` 显式相对引用**；根相对与绝对 URL **不改写**（root-fallback 16,965/20,155 是主力通路，改写即回归）；**越根 fail-closed 原值返回**。新增用例 `Relative_References_Resolve_Against_Referrer_Directory` ⇒ `agent.recall.tests` **rc=0 / Failed 0 / Passed 15 / Total 15 / 455 ms**（14 项零回归）。**诚实边界**: G3 0.2718 属语料侧 Python 代理面读数，本产品面改动**尚未在语料上重测** ⇒ 不宣称 G3/G1 达标。
+- **R481-F 语料侧重测（本侧实施，2026-09-16）**: 旧端口手写规则与产品漂移（后缀白名单 / 裸名计入相对档 / `lstrip` 兜底）⇒ 重建**源码派生端口**（`eval/recall/links_port_r482.py`：规则正则派生 + 期望值取产品自身断言 + 6/6 变异被抓）。**新口径读数**（6,658 文件）: 候选 **76,404** / 解析率 **0.1450 ❌** / 悬空 **0.8550 ❌** / 显式相对引用 **660 → 落地 72 = 0.1091 ❌** / 地址覆盖 **p50=5 ✅** / 越根 fail-closed **2** / 绝对路径形态 **7,462** 单列。**通路分解**: markdown **81.25%**（65/80）· 裸 URL 全 unreported · 相对地址串 **14.43%**（悬空 64,004 = 99.98%）⇒ **G1/G2 在全候选档上结构不可达**（接受规则只要求「含 `/` 且无空白」），相对引用改写可达面 **0.88%**（天花板 ≤ +0.88 pt）。旧口径同批对照 0.8504/0.1496/0.2650 ⇒ **口径变更，跨轮不可比**。证据: `eval/recall/r481b/port-corpus.json` + `eval/recall/prereg_r481b.json`（先于首跑落盘）；台账 R481-F 段。
 
 ## R481 轮次索引增量（2026-09-16 机取自 `docs/verification-registry.json`，勿手改）
 
@@ -459,8 +462,10 @@ python3 eval/run_round.py <新轮号> "revert-verify <原commit>" --quick   # �
 
 | 轮号 | id | level | 能力摘要 |
 |---|---|---|---|
+| R481 | `r481.recall-d9-alternating-verify` | L2 | **目录 mtime 剪枝盲区**修复 = 交替核验: 指纹头 stamp 改 `(stampTicks << 1) \| 上轮是否剪枝`(低位), 读侧 `(ticks >> 1)` + `(ticks & 1UL) != 0UL`; `pruneEnabled = PruneUnchangedDirs && store is not null && !prevScanPruned` ⇒ 上轮剪过的目录本轮**强制 readdir+stat 全量核验**(不读内容)，idle 轮仍剪枝；核验轮 `DirsPruned == 0` ∧ `VerifiedAllDirs == true` **单列**（不冒充「无变化」）… |
 
-覆盖自检: 轮号 []；registry rows=149，updated_round=R479。
+覆盖自检: 轮号 ['R481']；registry rows=**150**，updated_round=**R481**。
 **缺登记行轮号: 无**
 
-> 取代关系: 本增量取代上方各段「轮次索引」的 row 数口径（149 → 150，最新轮号 R479 → R481）。旧段正文保留为历史读数。
+> 取代关系: 本增量取代上方各段「轮次索引」的 row 数口径（149 → 150，最新轮号 R479 → R481）。旧段正文保留为历史读数，不再作为当前口径。
+> 机取复现: 本表由 `eval/tools/master_plan_round_index.py R481` 直接产出（2026-09-16 实跑 rc=0 / 336 B）；**禁手改**。
