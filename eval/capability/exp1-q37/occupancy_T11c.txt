@@ -1,0 +1,68 @@
+ts=2026-09-16T20:39:04+08:00
+root=/home/agentuser/AgentFramework
+MEM_MIN_MB=2600 WAIT_S=90
+--- 采样(a1) 2026-09-16T20:39:04+08:00 ---
+1981831 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sudo -n sh -c 'sync; echo 3 > /proc/sys/vm/drop_caches' 2>/dev/null; free -m | head -2; bash eval/rover/r495/run_arm_real_r495.sh T0 r495 49510 49512 > /tmp/r495_logs/arm_T0.log 2>&1; echo "rc=$?" >> /tmp/r495_logs/arm_T0.log
+n_a1=1
+--- 采样(b1) 2026-09-16T20:39:09+08:00 ---
+1981831 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sudo -n sh -c 'sync; echo 3 > /proc/sys/vm/drop_caches' 2>/dev/null; free -m | head -2; bash eval/rover/r495/run_arm_real_r495.sh T0 r495 49510 49512 > /tmp/r495_logs/arm_T0.log 2>&1; echo "rc=$?" >> /tmp/r495_logs/arm_T0.log
+n_b1=1
+mem_kb=2667132
+mem_mb=2604
+round1 n1=1 n2=1 mem_mb=2604
+WAIT: 仍 BUSY (n1=1 n2=1 mem_mb=2604) ⇒ 15s 后重采样
+--- 采样(a2) 2026-09-16T20:39:24+08:00 ---
+1981831 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sudo -n sh -c 'sync; echo 3 > /proc/sys/vm/drop_caches' 2>/dev/null; free -m | head -2; bash eval/rover/r495/run_arm_real_r495.sh T0 r495 49510 49512 > /tmp/r495_logs/arm_T0.log 2>&1; echo "rc=$?" >> /tmp/r495_logs/arm_T0.log
+1984152 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 36625 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+n_a2=2
+--- 采样(b2) 2026-09-16T20:39:29+08:00 ---
+1981831 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sudo -n sh -c 'sync; echo 3 > /proc/sys/vm/drop_caches' 2>/dev/null; free -m | head -2; bash eval/rover/r495/run_arm_real_r495.sh T0 r495 49510 49512 > /tmp/r495_logs/arm_T0.log 2>&1; echo "rc=$?" >> /tmp/r495_logs/arm_T0.log
+1984152 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 36625 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+1984221 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 45355 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b2=3
+mem_kb=2619220
+mem_mb=2557
+round2 n1=2 n2=3 mem_mb=2557
+WAIT: 仍 BUSY (n1=2 n2=3 mem_mb=2557) ⇒ 15s 后重采样
+--- 采样(a3) 2026-09-16T20:39:44+08:00 ---
+1981831 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sudo -n sh -c 'sync; echo 3 > /proc/sys/vm/drop_caches' 2>/dev/null; free -m | head -2; bash eval/rover/r495/run_arm_real_r495.sh T0 r495 49510 49512 > /tmp/r495_logs/arm_T0.log 2>&1; echo "rc=$?" >> /tmp/r495_logs/arm_T0.log
+1984152 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 36625 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+1984221 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 45355 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a3=3
+--- 采样(b3) 2026-09-16T20:39:49+08:00 ---
+1981831 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sudo -n sh -c 'sync; echo 3 > /proc/sys/vm/drop_caches' 2>/dev/null; free -m | head -2; bash eval/rover/r495/run_arm_real_r495.sh T0 r495 49510 49512 > /tmp/r495_logs/arm_T0.log 2>&1; echo "rc=$?" >> /tmp/r495_logs/arm_T0.log
+1984152 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 36625 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+1984221 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 45355 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b3=3
+mem_kb=1180552
+mem_mb=1152
+round3 n1=3 n2=3 mem_mb=1152
+WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1152) ⇒ 15s 后重采样
+--- 采样(a4) 2026-09-16T20:40:04+08:00 ---
+1981831 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sudo -n sh -c 'sync; echo 3 > /proc/sys/vm/drop_caches' 2>/dev/null; free -m | head -2; bash eval/rover/r495/run_arm_real_r495.sh T0 r495 49510 49512 > /tmp/r495_logs/arm_T0.log 2>&1; echo "rc=$?" >> /tmp/r495_logs/arm_T0.log
+1984152 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 36625 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+1984221 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 45355 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a4=3
+--- 采样(b4) 2026-09-16T20:40:09+08:00 ---
+1981831 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sudo -n sh -c 'sync; echo 3 > /proc/sys/vm/drop_caches' 2>/dev/null; free -m | head -2; bash eval/rover/r495/run_arm_real_r495.sh T0 r495 49510 49512 > /tmp/r495_logs/arm_T0.log 2>&1; echo "rc=$?" >> /tmp/r495_logs/arm_T0.log
+1984152 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 36625 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+1984221 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 45355 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b4=3
+mem_kb=1211816
+mem_mb=1183
+round4 n1=3 n2=3 mem_mb=1183
+WAIT: 仍 BUSY (n1=3 n2=3 mem_mb=1183) ⇒ 15s 后重采样
+--- 采样(a5) 2026-09-16T20:40:24+08:00 ---
+1981831 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sudo -n sh -c 'sync; echo 3 > /proc/sys/vm/drop_caches' 2>/dev/null; free -m | head -2; bash eval/rover/r495/run_arm_real_r495.sh T0 r495 49510 49512 > /tmp/r495_logs/arm_T0.log 2>&1; echo "rc=$?" >> /tmp/r495_logs/arm_T0.log
+1984152 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 36625 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+1984221 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 45355 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_a5=3
+--- 采样(b5) 2026-09-16T20:40:29+08:00 ---
+1981831 /bin/bash -lic set +m; cd /home/agentuser/AgentFramework && export DOTNET_ROOT="$HOME/.dotnet" && $HOME/.dotnet/dotnet build-server shutdown >/dev/null 2>&1; sudo -n sh -c 'sync; echo 3 > /proc/sys/vm/drop_caches' 2>/dev/null; free -m | head -2; bash eval/rover/r495/run_arm_real_r495.sh T0 r495 49510 49512 > /tmp/r495_logs/arm_T0.log 2>&1; echo "rc=$?" >> /tmp/r495_logs/arm_T0.log
+1984152 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/bge-q8.gguf --host 127.0.0.1 --port 36625 -c 512 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --embeddings --jinja
+1984221 /tmp/pipprobe/llama_cpp_python-0.3.35/vendor/llama.cpp/build/bin/llama-server -m /home/agentuser/.agentframework/models/qwen2.5-3b-instruct-q4km.gguf --host 127.0.0.1 --port 45355 -c 4608 -t 1 -np 1 --cache-type-k f32 --cache-type-v f32 --flash-attn off --jinja
+n_b5=3
+mem_kb=1412032
+mem_mb=1378
+round5 n1=3 n2=3 mem_mb=1378
+PRE_GATE_VERDICT=BUSY
