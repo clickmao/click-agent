@@ -75,6 +75,8 @@ public sealed class R522ContextDisciplineTests
         Assert.Contains("探针不落盘", t);    // 临时检查内联, 不留临时文件
         Assert.Contains("收尾从简", t);      // 最后一条消息只给结论 + 证据
         Assert.Contains("run_command", t);   // 指向真实工具名 (非话术)
+        Assert.Contains("产物落位与自验", t); // R528: 工作根 + 题面相对路径
+        Assert.Contains("工作根", t);         // R528: 自验必须在工作根执行 (禁 cd 到子目录)
     }
 
     [Fact]

@@ -14,13 +14,17 @@ namespace agent.modelqueue;
 ///   C1 只在动作环开时注入 (环关 ⇒ 请求体与旧版逐字节相同, 零回归);
 ///   C2 注入点在 SystemPrompt **尾部** ⇒ 环内各步前缀单调不变 (缓存命中不受影响);
 ///   C3 单变量可消融: env <see cref="EnvName"/>=off/0/false ⇒ 完全等价旧行为 ⇒ 可跑同窗消融臂。
+/// R528 追加第 6 条 (依据 = R525 w3 逐调用取证 `eval/rover/r525/run-0917-r525-w3/A1-on/g1/audit/action_loop.jsonl`):
+///   该臂 8 次调用 / 3 步把 `games/` 包写到 `<工作根>/sols/games_pkg/games/`, 随后 `cd sols/games_pkg && python3 -m games life` 自验通过 ⇒ 自认完成;
+///   而题面验收形态是**工作根**下 `python3 -m games <id>` ⇒ 前置器 0/58 全败 (代码本身 58/58, 见 `eval/rover/r528/layout-census.json`)。
+///   ⇒ 失败源不是代码质量, 是**产物落位 + 自验位置** ⇒ 第 6 条把「工作根 + 题面相对路径 + 工作根自验」写成硬纪律。
 /// </summary>
 public static class ActionLoopDiscipline
 {
     /// <summary>消融开关 (缺省开; off/0/false = 关 ⇒ 等价 R521 旧行为)。</summary>
     public const string EnvName = "AGENTFRAMEWORK_ACTION_DISCIPLINE";
 
-    /// <summary>五条纪律文本 (锚: 验证合并 / 探针不落盘 / 收尾从简 / 零过渡叙述 / 回执按需取全文)。</summary>
+    /// <summary>六条纪律文本 (锚: 验证合并 / 探针不落盘 / 收尾从简 / 零过渡叙述 / 回执按需取全文 / 产物落位与自验)。</summary>
     public const string Text =
         "[上下文纪律 · 必守]\n" +
         "1. 验证合并: 把全部自测用例合并进**一次** run_command 执行 (用例多时先 write_file 一个用例脚本, 再一条命令跑完); " +
@@ -29,7 +33,10 @@ public static class ActionLoopDiscipline
         "3. 收尾从简: 最后一条消息只给结论 + 证据 (命令与结果), 不复述代码、不写长篇说明。\n" +
         "4. 零过渡叙述: 除最后一条结论消息外, 每步 assistant 正文一律留空, 直接发工具调用; 禁止\"接下来我将…/现在让我…\"类过渡语。\n" +
         "5. 回执按需取全文: 工具回执默认被截断为摘要 (退出码 + 头部若干行); 若确需完整输出, 用工具显式再取一次, " +
-        "禁止为了预防而整篇回读。";
+        "禁止为了预防而整篇回读。\n" +
+        "6. 产物落位与自验: 产出物一律落在**工作根**下、按题面给出的**相对路径**命名 (题面写 `x/`, 就写 `<工作根>/x/`, " +
+        "不得另加 `sols/` 之类中间层); 收尾前的自验**必须在工作根**执行题面给出的验收命令 (禁 `cd` 到子目录后再验, " +
+        "否则验的不是验收形态); 自验退出码非 0 不得收尾。";
 
     /// <summary>缺省开; 仅 off/0/false 关 (词形同既有开关约定)。</summary>
     public static bool IsEnabled()

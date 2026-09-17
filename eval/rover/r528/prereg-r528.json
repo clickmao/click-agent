@@ -1,0 +1,57 @@
+{
+ "round": "R528",
+ "revision": "v1 (先落盘后读数; R527 结构收口后回主线 —— R527 轮志明示『R528 起回到主线 (外部真值同窗对照 + R413 判据读数)』)",
+ "mainline": "主线 = 用真实开发任务 (games-longtask-v1, 58 隐藏用例) 与外部真值 codex-cli 在**同环境·同输入·同模型**下对照, 对本项目做质量自检; 铁律 11 要求两侧产出物**可实际执行且正确**才构成可验收对比数据。R413 的 token ↓≥30% 是判据之一, 不是主线本身。",
+ "family": "games-longtask-v1",
+ "made_before_run": true,
+ "定因 (why this round)": {
+  "observed_failure": "R525 w3 两侧 agent 臂 (A0-off / A1-on) 判 0/58, 而同窗 codex 58/58 ⇒ 按旧口径会被读成『本侧能力不足 / 产物不可运行』",
+  "evidence": [
+   "逐调用: eval/rover/r525/run-0917-r525-w3/A1-on/g1/audit/action_loop.jsonl —— 8 调用 / 3 步; step1 `mkdir -p <仓根>/sols/games_pkg` (rc=126, 未处理); step2 六个 write_file 全写 `sols/games_pkg/games/*` (相对工作根, 多出 `sols/games_pkg` 中间层); step3 `cd sols/games_pkg && python3 -m games life` 自验 rc=0 ⇒ 自认完成",
+   "而题面验收形态 = **工作根**下 `python3 -m games <game_id>` (隐藏用例脚本 run_cases_r521.py 以 cwd=物化树根 启动, env PYTHONPATH=wd)",
+   "实跑复验 (R528, /tmp 副本): 同一棵 w3/A1-on 树, 以 cwd=<树>/sols/games_pkg 跑同一隐藏用例脚本 ⇒ 58/58 PASS ⇒ **代码本身正确**, 0/58 全部来自产物落位与自验位置"
+  ],
+  "conclusion": "失败源 = 产物落位 (题面相对路径被加了中间层) + 自验不在验收位置执行 ⇒ 归因从『能力/代码质量』纠正为『产物落位与自验纪律缺失』; 该纪律本来就是铁律 11 的『产出物可实际执行』的行为面。"
+ },
+ "question": "把『产出物必须落在工作根、按题面给定相对路径; 完成前必须在**工作根**按题面验收形态自验, 自验 rc 非 0 不得收尾』写成动作环纪律第 6 条, 能否使: ① 布局漂移率归零 (J2) ② 三窗质量恒 58/58 (J3) ③ 铁律 11 前置器 rc=0 (J4) ④ 调用/新算/completion 三列不劣化 (J5, 记录列)?",
+ "treatment": "src/agent.modelqueue/ActionLoopDiscipline.cs: Text 追加第 6 条『产物落位与自验』(锚: 『产物落位与自验』∧『工作根』); 单测锚同步 (src/agent.tests/R522ContextDisciplineTests.cs +2 断言); 无其他产品改动。",
+ "single_variable": {
+  "arms": {
+   "A0-off": "同二进制 + AGENTFRAMEWORK_ACTION_DISCIPLINE=off (消融控制臂: 无任何纪律文本)",
+   "A1-on": "同二进制 + 缺省 (处理面: 含第 6 条)",
+   "C-codex": "外部真值 codex-cli (同一真实模型, 参照列)"
+  },
+  "binary": "/tmp/pub_r528/agenthost (AOT; 两臂同一二进制, sha256 随 run 收口记录)",
+  "note": "跨臂只差 env 一个自由度; 第 6 条是**本轮唯一的产品改动**。"
+ },
+ "input_pins": {
+  "taskset_source": "eval/rover/r528/taskset-r528.json (= r522/r524/r525 逐字节副本, sha256 一致, 题面禁漂移)",
+  "prompt_sha256": "516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3",
+  "cases_total": 58,
+  "grader": "eval/rover/r523/cases/run_cases_r521.py (与 R519–R525 同一判据器)",
+  "model": "deepseek-chat",
+  "windows_declared": 5,
+  "windows_note": "w1..wN **连续**执行, 时间上限内跑多少记多少; 缺窗记为『未跑』(不作通过), 禁挑选窗口后补报。"
+ },
+ "criteria": {
+  "J1_mount": "挂载取证 (实发 system 正文): A1-on 的 system 含『产物落位与自验』∧『工作根』; A0-off 不含; 且 A1-on system == A0-off system + '\\n\\n' + 常量块 (块 sha 跨调用/跨窗恒定) —— 『有代码行』不等于生效。",
+  "J2_layout": "A1-on 各窗产物树**根**必须含 `games/__main__.py` (题面相对路径成立) ⇒ 布局漂移树数 = 0 (机检 eval/rover/r528/layout_census.py)",
+  "J3_quality": "A1-on 各窗隐藏用例 = 58/58 (整题全对, 判据器机械判分)",
+  "J4_precond": "python3 eval/rover/r507pre/exec_precondition.py --round r528 ⇒ rc=0 (验收面两侧全部可执行且正确); rc=1/3 ⇒ 本轮全部 token/调用读数标『参考 (未可验收)』",
+  "J5_cost_recordonly": "调用数 / 新算 prompt / completion 三列分列落档 (禁名义总量); 与 codex 同窗中位比一并记录。**本轮不设降幅宣称阈值** (R413 的 ↓≥30% 记为目标参照, 未达则如实写未达); 若 J4 rc≠0 ⇒ 三列仅作诊断用。",
+  "falsifier": "若 J2 仍有布局漂移窗 ⇒ 第 6 条未生效或模型不遵 (回到挂载面定位, 不以『模型随机』结案); 若 J3 出现 58↓ 而 codex 同窗 58/58 ⇒ 纪律与质量冲突, 收窄宣称并给对照读数; 若 A0-off 亦全对 ⇒ 第 6 条非必要, 如实收窄为『无增益』。"
+ },
+ "evidence_scope": {
+  "require": ["w1/agentA1", "w2/agentA1", "w3/agentA1", "w4/agentA1", "w5/agentA1", "w1/codex", "w2/codex", "w3/codex", "w4/codex", "w5/codex"],
+  "nonrequired": [
+   {
+    "pattern": "*/agentA0",
+    "reason": "消融控制臂 (同二进制 + 纪律全关): 非交付面。R523 候选④ 已裁定『控制臂噪声根治: 轮模板固定写 evidence_scope.nonrequired』; 依据 = 该臂行为双峰 (R524 v2 0/58·0/58·46/58; R525 w3 ledger_calls=0 空产出) ⇒ 不构成有效对照臂, 其读数单列, 不作验收面, 也不作『纪律必要』的论证依据。"
+   }
+  ]
+ },
+ "evidence_scope_v2_note": "更正 (w1 起臂后、前置器首跑**前**): v1 误用运行器臂标 (A0-off/A1-on), 而前置器的臂键 = **快照目录名** (agentA0/agentA1/codex) ⇒ v1 下 A1-on/codex 全落 UNDECLARED, rc 恒 1 (w1 首跑 rc=1 即此因, 见 eval/rover/r507pre/precondition-r528.json 的 undeclared_arms)。v2 只做**形态对齐** (不改阈值、不改验收面宽窄: 仍是交付面 2 臂 × 各窗全对), 并使声明意图 (排除控制臂) 首次真正生效。",
+ "scope_narrowing_disclosure": "相对 v1 (等效 require=全部臂), v2 把控制臂 A0-off 移出验收面 —— 该收窄是预注册 v1 文本已写明的**意图**, v2 只是让形态对得上; 收窄事实单列于此, 并由 J2/J3 在 A1-on 臂上独立取证 (布局漂移 + 质量), 不靠 rc 单独背书。",
+ "recorded_refs": "docs/reports/r523-n3-same-window-contrast.md (reps≥3 与窗口方差 4.25×) · docs/reports/r525-prompt-partition-prefix.md (w3 0/58 原始读数) · eval/rover/r528/layout-census.json (归档普查)",
+ "honest_note": "本轮只改**一条纪律文本** (无链结构改动), 因此不得把结果读成『能力提升』; 若 J2/J3/J4 转绿, 宣称限为『产物落位与自验纪律生效: 布局漂移窗归零 + 铁律 11 前置器 rc=0』。"
+}
