@@ -41,6 +41,8 @@
 
 ## 5. 诚实边界
 
+0. **激进口径已被实测证伪**：不护「活面点名的目录」时候选 1,905 文件 ⇒ 全量 **3 红**（`SessionHistorySearchTests.R423_FrozenCorpus_FeatureVector_IsMachinePinned_NotHandCounted` 等读 `eval/capability/r422/fixture-sessions`）⇒ 采保守口径 **791**（失败读数即判据，非事后补 `require` 收窄）。
+
 1. **归档 ≠ 删行**：文件在仓内迁移（`git mv`），全仓行数不变；只有**活跃面**缩小（`eval` 3,846→1,941 文件）。
 2. 本轮的「经典」是**机检判据**下的定义（白名单 ∪ 闭包），不等于「人类认为重要的全部用例」。凡被 KPI 表/registry/起手闸/契约机检器引用者一律保留。
 3. 前序兄弟会话留有未提交的 `eval/rover` 封存草案（`eval/rover/ARCHIVE.md` + `/home/agentuser/af-archive/rover-archive-20260918.tar.gz`，含 64 轮方案）；**该方案未被提交、其 64 轮并未从索引移除**（HEAD 仍有 102 个轮目录）⇒ 本轮按本装置规则统一判定，不与其冲突，亦不代其声明。
