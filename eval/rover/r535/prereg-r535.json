@@ -1,0 +1,29 @@
+{
+ "round": "R535",
+ "made_before_run": true,
+ "revision": "v1 (R532 接线 + R533 三轴精炼之后, 首次把 R1 管道真跑进『同窗同题对照』; 铁律 11 收口器同轮照跑)",
+ "mainline": "主线 = 用随机游戏/数学难题/程序题的真实开发任务, 与外部真值同环境·同输入·同模型对照, 对本项目做质量自检; 本轮判据 = R413 的『一轮任务总 token ↓≥30%（主要是不必要的远端 LLM API 请求少了）』且回复质量不降 (t1 上 R1 vs A1-on)",
+ "question": "R533 精炼后的 R1 结构化契约管道②（结构量：tools_n=0 且无纪律尾块 ⇒ 线上 system 逐字节 == 恒定前缀 pin）③（台账 completion 透传）④（执行实测不符 ⇒ 真证据回灌重发起, exec_repairs 记账）—— 在**同窗同题**（t1 = F2 toolkit, 30 隐藏用例）上与旧动作环臂 A1-on 对照: 远端调用数与 token 是否 ↓≥30%、回复质量（隐藏用例通过数）是否不降、链是否真跑通（产物落盘且 python3 -m toolkit 可执行）? 另: 首次挂载 role 额外数据（R1RoleMount，user 尾块）是否既生效又不破前缀 pin?",
+ "treatment": "无链代码改动（本轮只跑，不改）: 器具 = eval/rover/r535/{taskset-r535.json, run_r535.sh, analyze_r535.py, role-r535.txt}；role 额外数据由 data/agent_profiles.json 的 cli-user 画像**机械生成**（326 字符 ≤ 1200 上限），禁手写。",
+ "arms": {
+  "R1r-t1": "R1 主管道臂（挂 role）—— 判据主对照位",
+  "R1nr-t1": "role 挂载 A/B 控制臂（同题同 adapter，不挂 role）",
+  "A1-on-t1": "旧动作环臂（本侧 agent 路径, 同窗同题）—— 判据基线",
+  "R1r-m1": "跨族读数（数学选择题族 mathkit, 30 用例）—— 泛化面，不进本轮验收面",
+  "R1r-g1": "跨族读数（随机游戏族 games, 58 用例）—— 泛化面，不进本轮验收面"
+ },
+ "evidence_scope": {
+  "require": ["w1/agentR1r-t1", "w1/agentA1-on-t1"],
+  "nonrequired": [
+   {"pattern": "w1/agentR1nr-t1", "reason": "role 挂载 A/B 控制臂: 其读数是对照量（role 是否生效/是否破 pin），不是本轮交付面。此声明在起臂前落盘。"},
+   {"pattern": "w1/agentR1r-m1", "reason": "跨族泛化读数（数学族 mathkit）: 本轮 R1 与 A1-on 的对照位只有 t1（A1-on 未在此题上跑，无同窗基线）⇒ 单列读数，不进验收面。此声明在起臂前落盘。"},
+   {"pattern": "w1/agentR1r-g1", "reason": "跨族泛化读数（游戏族 games, 58 用例单轮规模超限）: 同 m1 理由 ⇒ 单列读数，不进验收面。此声明在起臂前落盘。"}
+  ]
+ },
+ "notes": [
+  "判分 = 题集 task['cases'] 指向的隐藏用例脚本真跑（python3 -I -B，cwd=产物树独立物化副本），rc=0 且逐条 CASE PASS 且条数 == hidden_cases ⇒ correct；自报 all_pass 只作对照不吃。",
+  "③ 执行证据回灌预算 = AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR=1（上限 3），契约修复预算 = AGENTFRAMEWORK_R1_MAX_REPAIR=1。",
+  "口径: 成本读数取 adapter 落盘的中继 usage（calls 按落盘索引去重 / tokens 取上游 usage 之和）；transcript 自报只作对照项。",
+  "禁改题面（prompt_sha256 硬门），禁改判分脚本（r531 冻结拷贝）。"
+ ]
+}

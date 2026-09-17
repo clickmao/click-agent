@@ -18,11 +18,11 @@ public static class StructuredContract
 - schema_version (string == 'r1.0'): 
 - intent (string ∈ code_task|question|ops_task|refusal): code_task=要写/改可执行代码并跑验证; question=只要信息; ops_task=对已有环境做操作; refusal=应拒绝
 - confidence (number): 0-1; <0.5 应改用 missing_slots/ambiguities 而不是猜
-- entities (array；子字段必填: kind, value): 
+- entities (array；子字段必填: kind, value；子字段取值: kind ∈ path|symbol|command|value|language): 
 - constraints (array): 
 - missing_slots (array): 推进管道**必需**但请求未给出的信息（不要臆造；没有就空数组）
 - ambiguities (array；子字段必填: span, issue, options): 指代不明/多种合理解读的片段。span=原文片段; options=可选项; 非空 ⇒ 管道必须停下要澄清
-- plan (array；子字段必填: id, tool, args, depends_on): 可执行步骤; tool 仅 write_file|run; args: write_file={path,content} run={cmd,expect_stdout?}; depends_on 引用先前的 id
+- plan (array；子字段必填: id, tool, args, depends_on；子字段取值: tool ∈ write_file|run|none): 可执行步骤; tool 仅 write_file|run; args: write_file={path,content} run={cmd,expect_stdout?}; depends_on 引用先前的 id
 - done_when (array): 机械可判的完成条件（供外部校验，不是给你的自述）
 - refusal (object|null；子字段必填: reason, category): 
 
@@ -153,7 +153,7 @@ public static class StructuredContract
                         {
                             if (!e.TryGetProperty("kind", out var kind) || kind.ValueKind != JsonValueKind.String || !InEnum(kind.GetString(), EntityKindEnum))
                             {
-                                errs.Add("entities[" + i + "].kind 非法/缺失");
+                                errs.Add("entities[" + i + "].kind 非法/缺失 (合法: " + string.Join("|", EntityKindEnum) + ")");
                             }
                             if (!e.TryGetProperty("value", out var val) || val.ValueKind != JsonValueKind.String || string.IsNullOrEmpty(val.GetString()))
                             {

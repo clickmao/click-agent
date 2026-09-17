@@ -1,0 +1,12 @@
+R535 分析 (window=w1)
+  臂 R1nr-t1  range=[2, 4]    calls=3   tok=16022    cases=30/30 rc=0 exec_rep=1 R1rc=5
+  臂 R1r-t1   range=[5, 6]    calls=2   tok=5827     cases=0/30 rc=1 exec_rep=0 R1rc=4
+  臂 R1r-m1   range=[7, 8]    calls=2   tok=9597     cases=30/30 rc=0 exec_rep=0 R1rc=0
+  臂 R1r-g1   range=[9, 9]    calls=1   tok=5237     cases=58/58 rc=0 exec_rep=0 R1rc=0
+  臂 A1-on-t1 range=[10, 19]  calls=10  tok=128933   cases=30/30 rc=0 exec_rep=None R1rc=None
+  同题 t1 判据: calls 10 → 2 (0.200×) ; tokens 128933 → 5827 (0.045×) ⇒ 降幅 95.5%
+  挂载证明: dump#5 线上system=3972字符 sha=c40809b30053475f == pin(3972字符 c40809b30053475f)=True | 纪律尾块在场=False | tools_n=0 | msgs=2 model=deepseek-chat
+  恒定前缀机检: wired_clean_prefix_ok=True
+  role 挂载: {"R1r-t1": {"transcript_role_note_chars": 326, "user_has_role_block": true, "user_chars": 1702, "system_sha256": "c40809b30053475fc6abb355f125848f5d1487df4c79a9454672f078d5136132"}, "R1nr-t1": {"transcript_role_note_chars": 0, "user_has_role_block": false, "user_chars": 1343, "system_sha256": "c40809b30053475fc6abb355f125848f5d1487df4c79a9454672f078d5136132"}, "role_in_user_tail_only_ok": true}
+  台账透传: transcript calls=2 prompt=5227 completion=600 | adapter calls=10 total=128933
+  落盘: /home/agentuser/AgentFramework/eval/rover/r535/run-w1/logs/analysis-w1.json

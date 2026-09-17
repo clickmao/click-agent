@@ -70,6 +70,31 @@ public sealed class StructuredContractTests
     }
 
     [Fact]
+    public void Contract_Renders_Every_Enum_Declared_In_Schema()
+    {
+        // R535 缺陷回归闸（动因⑥的**渲染方向**）：schema 声明的每个 enum（含嵌套 entities[].kind 与 plan[].tool）
+        // 必须逐字渲染进契约段与前缀 —— 否则模型只能自造取值（R535 实测抓到 kind="expected_stdout"），
+        // 而校验器按 enum 杀 ⇒ 契约与校验器不同源、管道 fail-closed 空转。
+        // 下面是**机械生成**的枚举片段表（gen_csharp.py 从 SCHEMA 递归抽, 禁手工维护）。
+        var frags = new[] { " ∈ code_task|question|ops_task|refusal", " ∈ path|symbol|command|value|language", " ∈ write_file|run|none" };
+        foreach (var frag in frags)
+        {
+            Assert.Contains(frag, StructuredContract.SchemaText, StringComparison.Ordinal);
+            Assert.Contains(frag, StructuredPrompt.Prefix, StringComparison.Ordinal);
+        }
+
+        // 负控：把「实体 kind」那条枚举清单抹掉 ⇒ 上面那条断言必红（证明断言不是空转）。
+        var target = frags[0];
+        for (var i = 0; i < frags.Length; i++)
+        {
+            if (frags[i].Contains("path|symbol", StringComparison.Ordinal)) { target = frags[i]; }
+        }
+        var mutated = StructuredContract.SchemaText.Replace(target, string.Empty, StringComparison.Ordinal);
+        Assert.NotEqual(StructuredContract.SchemaText, mutated);
+        Assert.DoesNotContain(target, mutated, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void Validate_Accepts_Real_Kadane_Shape()
     {
         Assert.Empty(StructuredContract.Validate(Kadane));

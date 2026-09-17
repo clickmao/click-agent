@@ -1,0 +1,946 @@
+{
+  "window": "w1",
+  "run_dir": "/home/agentuser/AgentFramework/eval/rover/r535/run-w1",
+  "arms": {
+    "R1nr-t1": {
+      "adapter_range": [
+        2,
+        4
+      ],
+      "usage_rc": 0,
+      "usage": {
+        "side": "agent",
+        "dir": "/home/agentuser/AgentFramework/eval/rover/r535/run-w1/adapter",
+        "range": [
+          2,
+          4
+        ],
+        "calls": 3,
+        "prompt_tokens": 7761,
+        "cached_tokens": 6400,
+        "completion_tokens": 8261,
+        "total_tokens": 16022,
+        "models": [
+          "deepseek-chat"
+        ],
+        "unreported_usage": 0,
+        "files": [
+          {
+            "file": "side-agent-002.json",
+            "pt": 2465,
+            "ct": 579,
+            "model": "deepseek-chat"
+          },
+          {
+            "file": "side-agent-003.json",
+            "pt": 2514,
+            "ct": 4419,
+            "model": "deepseek-chat"
+          },
+          {
+            "file": "side-agent-004.json",
+            "pt": 2782,
+            "ct": 3263,
+            "model": "deepseek-chat"
+          }
+        ]
+      },
+      "cases": {
+        "pass": 30,
+        "fail": 0,
+        "total": 30,
+        "rc": 0
+      },
+      "artifacts": [
+        {
+          "path": "toolkit/__init__.py",
+          "bytes": 0
+        },
+        {
+          "path": "toolkit/__main__.py",
+          "bytes": 372
+        },
+        {
+          "path": "toolkit/jsonmini.py",
+          "bytes": 6322
+        },
+        {
+          "path": "toolkit/vm.py",
+          "bytes": 2556
+        }
+      ],
+      "transcript": {
+        "schema": "r1-run/1",
+        "tag": "R535-w1-R1nr",
+        "sandbox": "/home/agentuser/AgentFramework/eval/rover/r535/run-w1/R1nr/t1/work",
+        "task_sha256": "39c5ae703aefe38136ece2a2a364d8e7a618faad495086535f043082d42de4bd",
+        "task_chars": 1328,
+        "prefix_chars": 3972,
+        "prefix_sha256": "c40809b30053475fc6abb355f125848f5d1487df4c79a9454672f078d5136132",
+        "prefix_pinned": true,
+        "role_note_chars": 0,
+        "max_repair": 1,
+        "max_exec_repair": 1,
+        "step_timeout_s": 120,
+        "rc": 5,
+        "stage": "expect_stdout_exhausted",
+        "reason": "step s5 stdout 与 expect_stdout 不符 (rc=0, 期望=`'5'`, 实测=`'ERR'`)",
+        "calls": 3,
+        "prompt_tokens": 7761,
+        "completion_tokens": 8261,
+        "cache_hit_tokens": 2432,
+        "cache_miss_tokens": 350,
+        "repair_rounds": 1,
+        "exec_repairs": 1,
+        "semantics": {
+          "intent": "code_task",
+          "confidence": 0.9,
+          "missing_slots": [],
+          "ambiguities": 0,
+          "refusal": null,
+          "done_when": [
+            "s6 的 stdout == {\"a\":1,\"b\":[2,3]}",
+            "s5 的 stdout == '5'",
+            "s7 的 stdout == 2",
+            "python3 -m toolkit 可正常导入 toolkit/jsonmini.py 与 toolkit/vm.py，无 SyntaxError"
+          ]
+        },
+        "steps": [
+          {
+            "id": "s1",
+            "tool": "write_file",
+            "rc": 0,
+            "path": "toolkit/__init__.py",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0,
+            "elapsed_ms": 0,
+            "stdout_tail": "",
+            "stderr_tail": ""
+          },
+          {
+            "id": "s2",
+            "tool": "write_file",
+            "rc": 0,
+            "path": "toolkit/vm.py",
+            "sha256": "ff02a670a2433ed16c1ce9dca8472aaff9017d82b2ecefd195d74e5053b44962",
+            "bytes": 2556,
+            "elapsed_ms": 0,
+            "stdout_tail": "",
+            "stderr_tail": ""
+          },
+          {
+            "id": "s3",
+            "tool": "write_file",
+            "rc": 0,
+            "path": "toolkit/jsonmini.py",
+            "sha256": "abaecea3f66adf8f9c70863a7355e0723fc56486f117d837b36f27873614e57e",
+            "bytes": 6322,
+            "elapsed_ms": 0,
+            "stdout_tail": "",
+            "stderr_tail": ""
+          },
+          {
+            "id": "s4",
+            "tool": "write_file",
+            "rc": 0,
+            "path": "toolkit/__main__.py",
+            "sha256": "f625f56e2a5ab63126f97c6c90753af47755d2dd03b9de6b9e1cab806a834a09",
+            "bytes": 372,
+            "elapsed_ms": 0,
+            "stdout_tail": "",
+            "stderr_tail": ""
+          },
+          {
+            "id": "s5",
+            "tool": "run",
+            "rc": 0,
+            "path": "",
+            "sha256": "",
+            "bytes": 0,
+            "elapsed_ms": 34,
+            "stdout_tail": "'ERR'\n",
+            "stderr_tail": ""
+          }
+        ],
+        "artifacts": [
+          {
+            "path": "toolkit/__init__.py",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          },
+          {
+            "path": "toolkit/vm.py",
+            "sha256": "ff02a670a2433ed16c1ce9dca8472aaff9017d82b2ecefd195d74e5053b44962",
+            "bytes": 2556
+          },
+          {
+            "path": "toolkit/jsonmini.py",
+            "sha256": "abaecea3f66adf8f9c70863a7355e0723fc56486f117d837b36f27873614e57e",
+            "bytes": 6322
+          },
+          {
+            "path": "toolkit/__main__.py",
+            "sha256": "f625f56e2a5ab63126f97c6c90753af47755d2dd03b9de6b9e1cab806a834a09",
+            "bytes": 372
+          }
+        ]
+      }
+    },
+    "R1r-t1": {
+      "adapter_range": [
+        5,
+        6
+      ],
+      "usage_rc": 0,
+      "usage": {
+        "side": "agent",
+        "dir": "/home/agentuser/AgentFramework/eval/rover/r535/run-w1/adapter",
+        "range": [
+          5,
+          6
+        ],
+        "calls": 2,
+        "prompt_tokens": 5227,
+        "cached_tokens": 4864,
+        "completion_tokens": 600,
+        "total_tokens": 5827,
+        "models": [
+          "deepseek-chat"
+        ],
+        "unreported_usage": 0,
+        "files": [
+          {
+            "file": "side-agent-005.json",
+            "pt": 2589,
+            "ct": 310,
+            "model": "deepseek-chat"
+          },
+          {
+            "file": "side-agent-006.json",
+            "pt": 2638,
+            "ct": 290,
+            "model": "deepseek-chat"
+          }
+        ]
+      },
+      "cases": {
+        "pass": 0,
+        "fail": 30,
+        "total": 30,
+        "rc": 1
+      },
+      "artifacts": [],
+      "transcript": {
+        "schema": "r1-run/1",
+        "tag": "R535-w1-R1r",
+        "sandbox": "/home/agentuser/AgentFramework/eval/rover/r535/run-w1/R1r/t1/work",
+        "task_sha256": "39c5ae703aefe38136ece2a2a364d8e7a618faad495086535f043082d42de4bd",
+        "task_chars": 1328,
+        "prefix_chars": 3972,
+        "prefix_sha256": "c40809b30053475fc6abb355f125848f5d1487df4c79a9454672f078d5136132",
+        "prefix_pinned": true,
+        "role_note_chars": 326,
+        "max_repair": 1,
+        "max_exec_repair": 1,
+        "step_timeout_s": 120,
+        "rc": 4,
+        "stage": "contract",
+        "reason": "契约未过 (errors=1): intent=code_task 但 plan 为空",
+        "calls": 2,
+        "prompt_tokens": 5227,
+        "completion_tokens": 600,
+        "cache_hit_tokens": 2432,
+        "cache_miss_tokens": 206,
+        "repair_rounds": 1,
+        "exec_repairs": 0,
+        "semantics": null,
+        "steps": [],
+        "artifacts": []
+      }
+    },
+    "R1r-m1": {
+      "adapter_range": [
+        7,
+        8
+      ],
+      "usage_rc": 0,
+      "usage": {
+        "side": "agent",
+        "dir": "/home/agentuser/AgentFramework/eval/rover/r535/run-w1/adapter",
+        "range": [
+          7,
+          8
+        ],
+        "calls": 2,
+        "prompt_tokens": 5908,
+        "cached_tokens": 4224,
+        "completion_tokens": 3689,
+        "total_tokens": 9597,
+        "models": [
+          "deepseek-chat"
+        ],
+        "unreported_usage": 0,
+        "files": [
+          {
+            "file": "side-agent-007.json",
+            "pt": 2917,
+            "ct": 1713,
+            "model": "deepseek-chat"
+          },
+          {
+            "file": "side-agent-008.json",
+            "pt": 2991,
+            "ct": 1976,
+            "model": "deepseek-chat"
+          }
+        ]
+      },
+      "cases": {
+        "pass": 30,
+        "fail": 0,
+        "total": 30,
+        "rc": 0
+      },
+      "artifacts": [
+        {
+          "path": "mathkit/__init__.py",
+          "bytes": 56
+        },
+        {
+          "path": "mathkit/__main__.py",
+          "bytes": 534
+        },
+        {
+          "path": "mathkit/graphs.py",
+          "bytes": 605
+        },
+        {
+          "path": "mathkit/linear.py",
+          "bytes": 971
+        },
+        {
+          "path": "mathkit/modular.py",
+          "bytes": 509
+        },
+        {
+          "path": "mathkit/prob.py",
+          "bytes": 282
+        }
+      ],
+      "transcript": {
+        "schema": "r1-run/1",
+        "tag": "R535-w1-R1r",
+        "sandbox": "/home/agentuser/AgentFramework/eval/rover/r535/run-w1/R1r/m1/work",
+        "task_sha256": "3d674d33ff69a7eaabeeff91eeb30656626c9a29be170426a766a47df4072e34",
+        "task_chars": 2021,
+        "prefix_chars": 3972,
+        "prefix_sha256": "c40809b30053475fc6abb355f125848f5d1487df4c79a9454672f078d5136132",
+        "prefix_pinned": true,
+        "role_note_chars": 326,
+        "max_repair": 1,
+        "max_exec_repair": 1,
+        "step_timeout_s": 120,
+        "rc": 0,
+        "stage": "done",
+        "reason": "全部步骤执行完毕 (11 步)",
+        "calls": 2,
+        "prompt_tokens": 5908,
+        "completion_tokens": 3689,
+        "cache_hit_tokens": 2560,
+        "cache_miss_tokens": 431,
+        "repair_rounds": 1,
+        "exec_repairs": 0,
+        "semantics": {
+          "intent": "code_task",
+          "confidence": 0.9,
+          "missing_slots": [],
+          "ambiguities": 0,
+          "refusal": null,
+          "done_when": [
+            "s7 stdout == 0",
+            "s8 stdout == 8",
+            "s9 stdout == 12",
+            "s10 stdout == 5",
+            "s11 stdout == 3/4",
+            "五个公开用例的 stdout 均无前后缀、无空格、无多余行"
+          ]
+        },
+        "steps": [
+          {
+            "id": "s1",
+            "tool": "write_file",
+            "rc": 0,
+            "path": "mathkit/__init__.py",
+            "sha256": "6e9bc8e51b11b6e1c7474e6aa87e08c78709925354910fe9a0763d214ed51313",
+            "bytes": 56,
+            "elapsed_ms": 0,
+            "stdout_tail": "",
+            "stderr_tail": ""
+          },
+          {
+            "id": "s2",
+            "tool": "write_file",
+            "rc": 0,
+            "path": "mathkit/modular.py",
+            "sha256": "b70a4cc052bf981243a02a32bb56335c51aa956ae00448e109dee651f72d138f",
+            "bytes": 509,
+            "elapsed_ms": 0,
+            "stdout_tail": "",
+            "stderr_tail": ""
+          },
+          {
+            "id": "s3",
+            "tool": "write_file",
+            "rc": 0,
+            "path": "mathkit/linear.py",
+            "sha256": "9cefbb17d3b40083b568e1744950433402798e9bc5571a40fe0bc0d09109eecf",
+            "bytes": 971,
+            "elapsed_ms": 0,
+            "stdout_tail": "",
+            "stderr_tail": ""
+          },
+          {
+            "id": "s4",
+            "tool": "write_file",
+            "rc": 0,
+            "path": "mathkit/graphs.py",
+            "sha256": "34a21ecb8be8f79ac4c34e1486ff8944e11c41351f94cef7345f28be1c8c2524",
+            "bytes": 605,
+            "elapsed_ms": 0,
+            "stdout_tail": "",
+            "stderr_tail": ""
+          },
+          {
+            "id": "s5",
+            "tool": "write_file",
+            "rc": 0,
+            "path": "mathkit/prob.py",
+            "sha256": "6a501ae55725459ea357efb9673e0d8317e7a8910fa1a45c93c13a15e7fef52d",
+            "bytes": 282,
+            "elapsed_ms": 0,
+            "stdout_tail": "",
+            "stderr_tail": ""
+          },
+          {
+            "id": "s6",
+            "tool": "write_file",
+            "rc": 0,
+            "path": "mathkit/__main__.py",
+            "sha256": "e650ecda361505e898d4bcd2bc62ea4a60b3cb30ee6a10a29c3570fd80c26206",
+            "bytes": 534,
+            "elapsed_ms": 0,
+            "stdout_tail": "",
+            "stderr_tail": ""
+          },
+          {
+            "id": "s7",
+            "tool": "run",
+            "rc": 0,
+            "path": "",
+            "sha256": "",
+            "bytes": 0,
+            "elapsed_ms": 39,
+            "stdout_tail": "0\n",
+            "stderr_tail": ""
+          },
+          {
+            "id": "s8",
+            "tool": "run",
+            "rc": 0,
+            "path": "",
+            "sha256": "",
+            "bytes": 0,
+            "elapsed_ms": 34,
+            "stdout_tail": "8\n",
+            "stderr_tail": ""
+          },
+          {
+            "id": "s9",
+            "tool": "run",
+            "rc": 0,
+            "path": "",
+            "sha256": "",
+            "bytes": 0,
+            "elapsed_ms": 37,
+            "stdout_tail": "12\n",
+            "stderr_tail": ""
+          },
+          {
+            "id": "s10",
+            "tool": "run",
+            "rc": 0,
+            "path": "",
+            "sha256": "",
+            "bytes": 0,
+            "elapsed_ms": 37,
+            "stdout_tail": "5\n",
+            "stderr_tail": ""
+          },
+          {
+            "id": "s11",
+            "tool": "run",
+            "rc": 0,
+            "path": "",
+            "sha256": "",
+            "bytes": 0,
+            "elapsed_ms": 34,
+            "stdout_tail": "3/4\n",
+            "stderr_tail": ""
+          }
+        ],
+        "artifacts": [
+          {
+            "path": "mathkit/__init__.py",
+            "sha256": "6e9bc8e51b11b6e1c7474e6aa87e08c78709925354910fe9a0763d214ed51313",
+            "bytes": 56
+          },
+          {
+            "path": "mathkit/modular.py",
+            "sha256": "b70a4cc052bf981243a02a32bb56335c51aa956ae00448e109dee651f72d138f",
+            "bytes": 509
+          },
+          {
+            "path": "mathkit/linear.py",
+            "sha256": "9cefbb17d3b40083b568e1744950433402798e9bc5571a40fe0bc0d09109eecf",
+            "bytes": 971
+          },
+          {
+            "path": "mathkit/graphs.py",
+            "sha256": "34a21ecb8be8f79ac4c34e1486ff8944e11c41351f94cef7345f28be1c8c2524",
+            "bytes": 605
+          },
+          {
+            "path": "mathkit/prob.py",
+            "sha256": "6a501ae55725459ea357efb9673e0d8317e7a8910fa1a45c93c13a15e7fef52d",
+            "bytes": 282
+          },
+          {
+            "path": "mathkit/__main__.py",
+            "sha256": "e650ecda361505e898d4bcd2bc62ea4a60b3cb30ee6a10a29c3570fd80c26206",
+            "bytes": 534
+          }
+        ]
+      }
+    },
+    "R1r-g1": {
+      "adapter_range": [
+        9,
+        9
+      ],
+      "usage_rc": 0,
+      "usage": {
+        "side": "agent",
+        "dir": "/home/agentuser/AgentFramework/eval/rover/r535/run-w1/adapter",
+        "range": [
+          9,
+          9
+        ],
+        "calls": 1,
+        "prompt_tokens": 3097,
+        "cached_tokens": 1664,
+        "completion_tokens": 2140,
+        "total_tokens": 5237,
+        "models": [
+          "deepseek-chat"
+        ],
+        "unreported_usage": 0,
+        "files": [
+          {
+            "file": "side-agent-009.json",
+            "pt": 3097,
+            "ct": 2140,
+            "model": "deepseek-chat"
+          }
+        ]
+      },
+      "cases": {
+        "pass": 58,
+        "fail": 0,
+        "total": 58,
+        "rc": 0
+      },
+      "artifacts": [
+        {
+          "path": "games/__init__.py",
+          "bytes": 44
+        },
+        {
+          "path": "games/__main__.py",
+          "bytes": 300
+        },
+        {
+          "path": "games/life.py",
+          "bytes": 989
+        },
+        {
+          "path": "games/nim.py",
+          "bytes": 415
+        },
+        {
+          "path": "games/sub.py",
+          "bytes": 540
+        },
+        {
+          "path": "games/wythoff.py",
+          "bytes": 725
+        }
+      ],
+      "transcript": {
+        "schema": "r1-run/1",
+        "tag": "R535-w1-R1r",
+        "sandbox": "/home/agentuser/AgentFramework/eval/rover/r535/run-w1/R1r/g1/work",
+        "task_sha256": "6fc12602d01e53996e0dcaca70d8cb613c5ca8ffae6dfebbc03d9f2b4d497cec",
+        "task_chars": 2181,
+        "prefix_chars": 3972,
+        "prefix_sha256": "c40809b30053475fc6abb355f125848f5d1487df4c79a9454672f078d5136132",
+        "prefix_pinned": true,
+        "role_note_chars": 326,
+        "max_repair": 1,
+        "max_exec_repair": 1,
+        "step_timeout_s": 120,
+        "rc": 0,
+        "stage": "done",
+        "reason": "全部步骤执行完毕 (12 步)",
+        "calls": 1,
+        "prompt_tokens": 3097,
+        "completion_tokens": 2140,
+        "cache_hit_tokens": 1664,
+        "cache_miss_tokens": 1433,
+        "repair_rounds": 0,
+        "exec_repairs": 0,
+        "semantics": {
+          "intent": "code_task",
+          "confidence": 0.95,
+          "missing_slots": [],
+          "ambiguities": 0,
+          "refusal": null,
+          "done_when": [
+            "s7 的 stdout 与期望一致（11 行 H=11 网格）",
+            "s8 的 stdout == 'WIN 6'",
+            "s9 的 stdout == 'WIN 2 8'",
+            "s10 的 stdout == 'WIN 15 15'",
+            "s11 的 stdout == 'WIN 0 3'",
+            "s12 的 stdout 与期望一致",
+            "games/__init__.py, games/life.py, games/sub.py, games/nim.py, games/wythoff.py, games/__main__.py 六个文件均存在",
+            "所有 run 步骤 stderr 为空"
+          ]
+        },
+        "steps": [
+          {
+            "id": "s1",
+            "tool": "write_file",
+            "rc": 0,
+            "path": "games/__init__.py",
+            "sha256": "b31a7c8cfdd81e2f947b5589c95dbfeb397fe9863379c362e0a4d7c536adecfe",
+            "bytes": 44,
+            "elapsed_ms": 0,
+            "stdout_tail": "",
+            "stderr_tail": ""
+          },
+          {
+            "id": "s2",
+            "tool": "write_file",
+            "rc": 0,
+            "path": "games/life.py",
+            "sha256": "9aed82bd3a458594e0726bf78a7ca8caf17b0ebb4d506cc4b930f8e7328a3293",
+            "bytes": 989,
+            "elapsed_ms": 0,
+            "stdout_tail": "",
+            "stderr_tail": ""
+          },
+          {
+            "id": "s3",
+            "tool": "write_file",
+            "rc": 0,
+            "path": "games/sub.py",
+            "sha256": "d08ce2013812a0b32b4956086b5d09e3514f621c54e6a67356cb0af714849d09",
+            "bytes": 540,
+            "elapsed_ms": 0,
+            "stdout_tail": "",
+            "stderr_tail": ""
+          },
+          {
+            "id": "s4",
+            "tool": "write_file",
+            "rc": 0,
+            "path": "games/nim.py",
+            "sha256": "078c7d836b180dbc206f6cb7e27d398d1a76af8284a0699f3dbec61aea267b12",
+            "bytes": 415,
+            "elapsed_ms": 0,
+            "stdout_tail": "",
+            "stderr_tail": ""
+          },
+          {
+            "id": "s5",
+            "tool": "write_file",
+            "rc": 0,
+            "path": "games/wythoff.py",
+            "sha256": "3c94ae9bf4dac26e61ea36e26bef9ce00cf9f26195b61e2d56be597070061de5",
+            "bytes": 725,
+            "elapsed_ms": 0,
+            "stdout_tail": "",
+            "stderr_tail": ""
+          },
+          {
+            "id": "s6",
+            "tool": "write_file",
+            "rc": 0,
+            "path": "games/__main__.py",
+            "sha256": "3d35580c1e1ab1ed87d38941579eb41fb46a8a993627357071e6b24dbbb8220e",
+            "bytes": 300,
+            "elapsed_ms": 0,
+            "stdout_tail": "",
+            "stderr_tail": ""
+          },
+          {
+            "id": "s7",
+            "tool": "run",
+            "rc": 0,
+            "path": "",
+            "sha256": "",
+            "bytes": 0,
+            "elapsed_ms": 34,
+            "stdout_tail": ".....\n.....\n.....\n.###.\n.....\n.....\n..#..\n.#.#.\n...#.\n..#..\n.....\n",
+            "stderr_tail": ""
+          },
+          {
+            "id": "s8",
+            "tool": "run",
+            "rc": 0,
+            "path": "",
+            "sha256": "",
+            "bytes": 0,
+            "elapsed_ms": 31,
+            "stdout_tail": "WIN 6\n",
+            "stderr_tail": ""
+          },
+          {
+            "id": "s9",
+            "tool": "run",
+            "rc": 0,
+            "path": "",
+            "sha256": "",
+            "bytes": 0,
+            "elapsed_ms": 31,
+            "stdout_tail": "WIN 2 8\n",
+            "stderr_tail": ""
+          },
+          {
+            "id": "s10",
+            "tool": "run",
+            "rc": 0,
+            "path": "",
+            "sha256": "",
+            "bytes": 0,
+            "elapsed_ms": 31,
+            "stdout_tail": "WIN 15 15\n",
+            "stderr_tail": ""
+          },
+          {
+            "id": "s11",
+            "tool": "run",
+            "rc": 0,
+            "path": "",
+            "sha256": "",
+            "bytes": 0,
+            "elapsed_ms": 31,
+            "stdout_tail": "WIN 0 3\n",
+            "stderr_tail": ""
+          },
+          {
+            "id": "s12",
+            "tool": "run",
+            "rc": 0,
+            "path": "",
+            "sha256": "",
+            "bytes": 0,
+            "elapsed_ms": 30,
+            "stdout_tail": "##\n##\n..\n##\n##\n..\n..\n..\n..\n..\n..\n",
+            "stderr_tail": ""
+          }
+        ],
+        "artifacts": [
+          {
+            "path": "games/__init__.py",
+            "sha256": "b31a7c8cfdd81e2f947b5589c95dbfeb397fe9863379c362e0a4d7c536adecfe",
+            "bytes": 44
+          },
+          {
+            "path": "games/life.py",
+            "sha256": "9aed82bd3a458594e0726bf78a7ca8caf17b0ebb4d506cc4b930f8e7328a3293",
+            "bytes": 989
+          },
+          {
+            "path": "games/sub.py",
+            "sha256": "d08ce2013812a0b32b4956086b5d09e3514f621c54e6a67356cb0af714849d09",
+            "bytes": 540
+          },
+          {
+            "path": "games/nim.py",
+            "sha256": "078c7d836b180dbc206f6cb7e27d398d1a76af8284a0699f3dbec61aea267b12",
+            "bytes": 415
+          },
+          {
+            "path": "games/wythoff.py",
+            "sha256": "3c94ae9bf4dac26e61ea36e26bef9ce00cf9f26195b61e2d56be597070061de5",
+            "bytes": 725
+          },
+          {
+            "path": "games/__main__.py",
+            "sha256": "3d35580c1e1ab1ed87d38941579eb41fb46a8a993627357071e6b24dbbb8220e",
+            "bytes": 300
+          }
+        ]
+      }
+    },
+    "A1-on-t1": {
+      "adapter_range": [
+        10,
+        19
+      ],
+      "usage_rc": 0,
+      "usage": {
+        "side": "agent",
+        "dir": "/home/agentuser/AgentFramework/eval/rover/r535/run-w1/adapter",
+        "range": [
+          10,
+          19
+        ],
+        "calls": 10,
+        "prompt_tokens": 121877,
+        "cached_tokens": 112768,
+        "completion_tokens": 7056,
+        "total_tokens": 128933,
+        "models": [
+          "deepseek-chat"
+        ],
+        "unreported_usage": 0,
+        "files": [
+          {
+            "file": "side-agent-010.json",
+            "pt": 7612,
+            "ct": 80,
+            "model": "deepseek-chat"
+          },
+          {
+            "file": "side-agent-011.json",
+            "pt": 7813,
+            "ct": 1131,
+            "model": "deepseek-chat"
+          },
+          {
+            "file": "side-agent-012.json",
+            "pt": 9102,
+            "ct": 1080,
+            "model": "deepseek-chat"
+          },
+          {
+            "file": "side-agent-013.json",
+            "pt": 10357,
+            "ct": 1671,
+            "model": "deepseek-chat"
+          },
+          {
+            "file": "side-agent-014.json",
+            "pt": 12133,
+            "ct": 1606,
+            "model": "deepseek-chat"
+          },
+          {
+            "file": "side-agent-015.json",
+            "pt": 13851,
+            "ct": 889,
+            "model": "deepseek-chat"
+          },
+          {
+            "file": "side-agent-016.json",
+            "pt": 14860,
+            "ct": 49,
+            "model": "deepseek-chat"
+          },
+          {
+            "file": "side-agent-017.json",
+            "pt": 15071,
+            "ct": 192,
+            "model": "deepseek-chat"
+          },
+          {
+            "file": "side-agent-018.json",
+            "pt": 15411,
+            "ct": 94,
+            "model": "deepseek-chat"
+          },
+          {
+            "file": "side-agent-019.json",
+            "pt": 15667,
+            "ct": 264,
+            "model": "deepseek-chat"
+          }
+        ]
+      },
+      "cases": {
+        "pass": 30,
+        "fail": 0,
+        "total": 30,
+        "rc": 0
+      },
+      "artifacts": [
+        {
+          "path": "toolkit/__init__.py",
+          "bytes": 0
+        },
+        {
+          "path": "toolkit/__main__.py",
+          "bytes": 614
+        },
+        {
+          "path": "toolkit/jsonmini.py",
+          "bytes": 6032
+        },
+        {
+          "path": "toolkit/vm.py",
+          "bytes": 3231
+        }
+      ]
+    }
+  },
+  "mount": {
+    "dump_index": 5,
+    "dump_kind": "full",
+    "sent_system_chars": 3972,
+    "sent_system_sha256": "c40809b30053475fc6abb355f125848f5d1487df4c79a9454672f078d5136132",
+    "recorded_prefix_chars": 3972,
+    "recorded_prefix_sha256": "c40809b30053475fc6abb355f125848f5d1487df4c79a9454672f078d5136132",
+    "system_equals_pin": true,
+    "discipline_block_present": false,
+    "tools_n": 0,
+    "n_messages": 2,
+    "model": "deepseek-chat",
+    "system_chars_from_side": 3972,
+    "roles": [
+      "system",
+      "user"
+    ],
+    "wired_clean_prefix_ok": true
+  },
+  "role_mount": {
+    "R1r-t1": {
+      "transcript_role_note_chars": 326,
+      "user_has_role_block": true,
+      "user_chars": 1702,
+      "system_sha256": "c40809b30053475fc6abb355f125848f5d1487df4c79a9454672f078d5136132"
+    },
+    "R1nr-t1": {
+      "transcript_role_note_chars": 0,
+      "user_has_role_block": false,
+      "user_chars": 1343,
+      "system_sha256": "c40809b30053475fc6abb355f125848f5d1487df4c79a9454672f078d5136132"
+    },
+    "role_in_user_tail_only_ok": true
+  },
+  "boundaries": [],
+  "pin": {
+    "prefix_chars": 3972,
+    "prefix_sha256": "c40809b30053475fc6abb355f125848f5d1487df4c79a9454672f078d5136132"
+  }
+}
