@@ -1408,6 +1408,8 @@ agent.frontendapi|F:agent.frontendapi.FrontendTaskRegistry+TaskState.Api:System.
 agent.frontendapi|F:agent.frontendapi.FrontendTaskRegistry+TaskState.Completed:System.Boolean
 agent.frontendapi|F:agent.frontendapi.FrontendTaskRegistry+TaskState.CurrentAction:System.String
 agent.frontendapi|F:agent.frontendapi.FrontendTaskRegistry+TaskState.EndedAtMs:System.Int64
+agent.frontendapi|F:agent.frontendapi.FrontendTaskRegistry+TaskState.LastItemKind:System.String
+agent.frontendapi|F:agent.frontendapi.FrontendTaskRegistry+TaskState.LastItemTitle:System.String
 agent.frontendapi|F:agent.frontendapi.FrontendTaskRegistry+TaskState.ReplyChars:System.Int32
 agent.frontendapi|F:agent.frontendapi.FrontendTaskRegistry+TaskState.SessionId:System.String
 agent.frontendapi|F:agent.frontendapi.FrontendTaskRegistry+TaskState.StartedAtMs:System.Int64
@@ -1444,7 +1446,8 @@ agent.frontendapi|M:agent.frontendapi.FrontendPromptService.RequestOperationAppr
 agent.frontendapi|M:agent.frontendapi.FrontendTaskRegistry.Complete(System.String,System.Boolean,System.Int32,System.Nullable<System.Int64>):System.Boolean
 agent.frontendapi|M:agent.frontendapi.FrontendTaskRegistry.CompletedJson(System.String):System.String
 agent.frontendapi|M:agent.frontendapi.FrontendTaskRegistry.Get(System.String):agent.frontendapi.FrontendTaskRegistry+TaskState
-agent.frontendapi|M:agent.frontendapi.FrontendTaskRegistry.Progress(System.String,System.Int32,System.String,System.Boolean,System.Int64,System.String):System.Boolean
+agent.frontendapi|M:agent.frontendapi.FrontendTaskRegistry.ItemJson(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Int32,System.Boolean,System.Int32,System.Int64):System.String
+agent.frontendapi|M:agent.frontendapi.FrontendTaskRegistry.Progress(System.String,System.Int32,System.String,System.Boolean,System.Int64,System.String,System.String,System.String):System.Boolean
 agent.frontendapi|M:agent.frontendapi.FrontendTaskRegistry.ProgressJson(System.String,System.String,System.Boolean,System.Int64,System.String):System.String
 agent.frontendapi|M:agent.frontendapi.FrontendTaskRegistry.SnapshotJson():System.String
 agent.frontendapi|M:agent.frontendapi.FrontendTaskRegistry.Start(System.String,System.String,System.Nullable<System.Int64>):System.String
@@ -1918,6 +1921,9 @@ agent.logging|T:agent.logging.LogFlags
 agent.logging|T:agent.logging.LogJsonContext
 agent.logging|T:agent.logging.LogRouter
 agent.logging|T:agent.logging.MemoryLogBuffer
+agent.modelqueue|F:agent.modelqueue.ActionItemText.DetailCharCap:System.Int32
+agent.modelqueue|F:agent.modelqueue.ActionItemText.OutputTailCharCap:System.Int32
+agent.modelqueue|F:agent.modelqueue.ActionItemText.TitleCharCap:System.Int32
 agent.modelqueue|F:agent.modelqueue.ActionLoopDiscipline.EnvName:System.String
 agent.modelqueue|F:agent.modelqueue.ActionLoopDiscipline.MergeEnvName:System.String
 agent.modelqueue|F:agent.modelqueue.ActionLoopDiscipline.MergeText:System.String
@@ -2030,6 +2036,10 @@ agent.modelqueue|F:agent.modelqueue.TurnGateVerdict.Pass:agent.modelqueue.TurnGa
 agent.modelqueue|F:agent.modelqueue.TurnGateVerdict.Skip:agent.modelqueue.TurnGateVerdict
 agent.modelqueue|F:agent.modelqueue.TurnGateVerdict.value__:System.Int32
 agent.modelqueue|M:agent.modelqueue.ActionExecutionResult.Render(System.Int32):System.String
+agent.modelqueue|M:agent.modelqueue.ActionItemText.Describe(System.String,System.String):System.ValueTuple<System.String,System.String,System.String>
+agent.modelqueue|M:agent.modelqueue.ActionItemText.ItemIdOf(System.String,System.Int32):System.String
+agent.modelqueue|M:agent.modelqueue.ActionItemText.KindOf(System.String):System.String
+agent.modelqueue|M:agent.modelqueue.ActionItemText.Tail(System.String):System.ValueTuple<System.String,System.Int32,System.Boolean>
 agent.modelqueue|M:agent.modelqueue.ActionLoopDiscipline.Apply(System.String):System.String
 agent.modelqueue|M:agent.modelqueue.ActionLoopDiscipline.CurrentText():System.String
 agent.modelqueue|M:agent.modelqueue.ActionLoopDiscipline.IsEnabled():System.Boolean
@@ -2044,6 +2054,7 @@ agent.modelqueue|M:agent.modelqueue.ActionLoopRunner.ToolResultCharCap():System.
 agent.modelqueue|M:agent.modelqueue.ActionProgressObserver.Bind(System.Func<agent.modelqueue.ActionStepProgress,System.Threading.Tasks.Task>):System.IDisposable
 agent.modelqueue|M:agent.modelqueue.ActionProgressObserver.ReportAsync(agent.modelqueue.ActionStepProgress):System.Threading.Tasks.Task
 agent.modelqueue|M:agent.modelqueue.ActionToolDecl.IsDeclared(System.String):System.Boolean
+agent.modelqueue|M:agent.modelqueue.ActionToolSpec.PrimaryArgKey(System.String):System.String
 agent.modelqueue|M:agent.modelqueue.BalanceQueryService.QueryAsync(System.String,System.Threading.CancellationToken):System.Threading.Tasks.Task<agent.modelqueue.BalanceResult>
 agent.modelqueue|M:agent.modelqueue.ChannelScheduler.AcquireChannel():System.Nullable<agent.modelqueue.ModelChannel>
 agent.modelqueue|M:agent.modelqueue.ChannelScheduler.RankCandidates(System.Collections.Generic.IReadOnlyList<agent.modelqueue.ModelCatalogEntry>,agent.modelqueue.TaskKindHint,System.Int32):System.Collections.Generic.IReadOnlyList<agent.modelqueue.ScoredCandidate>
@@ -2235,6 +2246,15 @@ agent.modelqueue|P:agent.modelqueue.ActionExecutionResult.ElapsedMs:System.Int64
 agent.modelqueue|P:agent.modelqueue.ActionExecutionResult.ExitCode:System.Int32
 agent.modelqueue|P:agent.modelqueue.ActionExecutionResult.Ok:System.Boolean
 agent.modelqueue|P:agent.modelqueue.ActionExecutionResult.Output:System.String
+agent.modelqueue|P:agent.modelqueue.ActionItemProgress.Detail:System.String
+agent.modelqueue|P:agent.modelqueue.ActionItemProgress.ExitCode:System.Int32
+agent.modelqueue|P:agent.modelqueue.ActionItemProgress.ItemId:System.String
+agent.modelqueue|P:agent.modelqueue.ActionItemProgress.Kind:System.String
+agent.modelqueue|P:agent.modelqueue.ActionItemProgress.LinesTotal:System.Int32
+agent.modelqueue|P:agent.modelqueue.ActionItemProgress.OutputTail:System.String
+agent.modelqueue|P:agent.modelqueue.ActionItemProgress.Phase:System.String
+agent.modelqueue|P:agent.modelqueue.ActionItemProgress.Title:System.String
+agent.modelqueue|P:agent.modelqueue.ActionItemProgress.Truncated:System.Boolean
 agent.modelqueue|P:agent.modelqueue.ActionLoopOutcome.BudgetExtensions:System.Int32
 agent.modelqueue|P:agent.modelqueue.ActionLoopOutcome.Converged:System.Boolean
 agent.modelqueue|P:agent.modelqueue.ActionLoopOutcome.Executed:System.Int32
@@ -2248,6 +2268,7 @@ agent.modelqueue|P:agent.modelqueue.ActionProgressObserver.Failed:System.Int32
 agent.modelqueue|P:agent.modelqueue.ActionProgressObserver.LastError:System.String
 agent.modelqueue|P:agent.modelqueue.ActionProgressObserver.Reported:System.Int32
 agent.modelqueue|P:agent.modelqueue.ActionStepProgress.ElapsedMs:System.Int64
+agent.modelqueue|P:agent.modelqueue.ActionStepProgress.Item:System.Nullable<agent.modelqueue.ActionItemProgress>
 agent.modelqueue|P:agent.modelqueue.ActionStepProgress.Ok:System.Boolean
 agent.modelqueue|P:agent.modelqueue.ActionStepProgress.StepIndex:System.Int32
 agent.modelqueue|P:agent.modelqueue.ActionStepProgress.Tool:System.String
@@ -2649,6 +2670,8 @@ agent.modelqueue|P:agent.modelqueue.UsageStatsSnapshot.TokensByProvider:System.C
 agent.modelqueue|P:agent.modelqueue.UsageStatsSnapshot.TotalTokens:System.Int64
 agent.modelqueue|T:agent.modelqueue.ActionCallRecord
 agent.modelqueue|T:agent.modelqueue.ActionExecutionResult
+agent.modelqueue|T:agent.modelqueue.ActionItemProgress
+agent.modelqueue|T:agent.modelqueue.ActionItemText
 agent.modelqueue|T:agent.modelqueue.ActionLoopDiscipline
 agent.modelqueue|T:agent.modelqueue.ActionLoopOutcome
 agent.modelqueue|T:agent.modelqueue.ActionLoopRunner

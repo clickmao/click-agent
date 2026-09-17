@@ -25,6 +25,9 @@ public sealed class FrontendTaskRegistry
         public int StepIndex;
         public int Steps;
         public string CurrentAction = "";
+        /// <summary>R538: 最近一次条目面的标题/种类 (断线重连时前端可直接重建「最新一条」行, 对标 codex 快照)。</summary>
+        public string LastItemTitle = "";
+        public string LastItemKind = "";
         public int ReplyChars;
         public bool Success;
         public bool Completed;
@@ -55,8 +58,10 @@ public sealed class FrontendTaskRegistry
         return id;
     }
 
-    /// <summary>记一步 (工具调用/阶段推进)。返回 false = task_id 未知 (不静默接受)。</summary>
-    public bool Progress(string taskId, int stepIndex, string tool, bool ok, long elapsedMs, string currentAction = "")
+    /// <summary>记一步 (工具调用/阶段推进)。返回 false = task_id 未知 (不静默接受)。
+    /// R538: 可选带上条目面 (kind/title) ⇒ 快照 last_item 可重建; 空标题不覆盖既有值 (started 阶段不冲掉 completed 事实)。</summary>
+    public bool Progress(string taskId, int stepIndex, string tool, bool ok, long elapsedMs, string currentAction = "",
+        string itemKind = "", string itemTitle = "")
     {
         lock (_gate)
         {
@@ -65,6 +70,11 @@ public sealed class FrontendTaskRegistry
             t.StepIndex = stepIndex;
             t.Steps = Math.Max(t.Steps, stepIndex);
             t.CurrentAction = currentAction ?? "";
+            if (!string.IsNullOrEmpty(itemTitle))
+            {
+                t.LastItemTitle = itemTitle;
+                t.LastItemKind = itemKind ?? "";
+            }
             return true;
         }
     }
@@ -135,6 +145,33 @@ public sealed class FrontendTaskRegistry
         return Encoding.UTF8.GetString(ms.ToArray());
     }
 
+    /// <summary>
+    /// R538: 条目面载荷 (item.started / item.completed 共用一形; 与 R508 分析稿 §4.3 字段一致)。
+    /// 手写 JSON (AOT 零反射); 字段名与 <see cref="FrontendTaskRegistry"/> 其它载荷同风格。
+    /// </summary>
+    public string ItemJson(string taskId, string itemId, string phase, string kind, string title, string detail,
+        string outputTail, int linesTotal, bool truncated, int exitCode, long elapsedMs)
+    {
+        using var ms = new MemoryStream();
+        using (var w = new Utf8JsonWriter(ms))
+        {
+            w.WriteStartObject();
+            w.WriteString("task_id", taskId ?? "");
+            w.WriteString("item_id", itemId ?? "");
+            w.WriteString("phase", phase ?? "");
+            w.WriteString("kind", kind ?? "");
+            w.WriteString("title", title ?? "");
+            w.WriteString("detail", detail ?? "");
+            w.WriteString("output_tail", outputTail ?? "");
+            w.WriteNumber("lines_total", linesTotal);
+            w.WriteBoolean("truncated", truncated);
+            w.WriteNumber("exit_code", exitCode);
+            w.WriteNumber("elapsed_ms", elapsedMs);
+            w.WriteEndObject();
+        }
+        return Encoding.UTF8.GetString(ms.ToArray());
+    }
+
     public string CompletedJson(string taskId)
     {
         TaskState? t;
@@ -175,6 +212,15 @@ public sealed class FrontendTaskRegistry
                 else w.WriteNull("ended_at_ms");
                 w.WriteNumber("step_index", t.StepIndex);
                 w.WriteString("current_action", t.CurrentAction);
+                // R538: last_item —— 断线重连后前端重建「最新一条」行; 无条目则为 null (不伪造空对象)。
+                if (t.LastItemTitle.Length > 0)
+                {
+                    w.WriteStartObject("last_item");
+                    w.WriteString("kind", t.LastItemKind);
+                    w.WriteString("title", t.LastItemTitle);
+                    w.WriteEndObject();
+                }
+                else w.WriteNull("last_item");
                 w.WriteNumber("reply_chars", t.ReplyChars);
                 if (t.Completed) w.WriteBoolean("success", t.Success);
                 else w.WriteNull("success");

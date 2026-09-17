@@ -154,19 +154,41 @@ public sealed class FrontendApiChatRouter
 
     /// <summary>
     /// R510: 把本任务的步进出站面绑进当前异步流。task_id 未知 (未接线) ⇒ NoopScope (调用方零分支)。
+    /// R538: 同一次上报若携带条目面 (p.Item) ⇒ 额外出 item.started / item.completed (步内条目的标题/正文/输出尾);
+    ///        task.progress 的形状与顺序**逐字节不变** (旧前端不受影响)。
     /// </summary>
     private IDisposable BindProgress(string? taskId)
     {
         if (taskId is null || _tasks is null || _hub is null) return NoopScope;
         var tasks = _tasks;
         var hub = _hub;
+        var tid = taskId;
         return ActionProgressObserver.Bind(async p =>
         {
+            // R538: 条目面 started —— 执行前发 item.started, **不**推进步进 (该步尚未完成)。
+            if (p.Item is { Phase: "started" } started)
+            {
+                if (tasks.Get(tid) is null) return;
+                await hub.EmitAsync(FrontendApiContract.FormatEvent(
+                    "item.started", tasks.ItemJson(tid, started.ItemId, started.Phase, started.Kind, started.Title,
+                        started.Detail, string.Empty, 0, false, 0, p.ElapsedMs)))
+                    .ConfigureAwait(false);
+                return;
+            }
+
             // 登记失败 (任务已收口/未知) ⇒ 不发事件: 不产出指向不存在任务的 progress。
-            if (!tasks.Progress(taskId, p.StepIndex, p.Tool, p.Ok, p.ElapsedMs, p.Tool)) return;
+            if (!tasks.Progress(tid, p.StepIndex, p.Tool, p.Ok, p.ElapsedMs, p.Tool,
+                    p.Item?.Kind ?? string.Empty, p.Item?.Title ?? string.Empty)) return;
             await hub.EmitAsync(FrontendApiContract.FormatEvent(
-                "task.progress", tasks.ProgressJson(taskId, p.Tool, p.Ok, p.ElapsedMs, p.Tool)))
+                "task.progress", tasks.ProgressJson(tid, p.Tool, p.Ok, p.ElapsedMs, p.Tool)))
                 .ConfigureAwait(false);
+
+            // R538: 条目面 completed —— 与刚发出的 task.progress 同源同刻 (输出尾/行数/截断/退出码)。
+            if (p.Item is { } done)
+                await hub.EmitAsync(FrontendApiContract.FormatEvent(
+                    "item.completed", tasks.ItemJson(tid, done.ItemId, done.Phase, done.Kind, done.Title,
+                        done.Detail, done.OutputTail, done.LinesTotal, done.Truncated, done.ExitCode, p.ElapsedMs)))
+                    .ConfigureAwait(false);
         });
     }
 

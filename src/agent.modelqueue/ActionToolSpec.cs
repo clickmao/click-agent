@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 
 namespace agent.modelqueue;
 
@@ -53,6 +54,32 @@ public sealed class ActionToolSpec
 
     /// <summary>Responses 线格式 (平铺; tools[i] 直接带 name/description/parameters)。</summary>
     public static readonly string ResponsesToolsJson = Compose(flatten: true);
+
+    /// <summary>
+    /// R538: 前端条目标题的「主参数键」= 该工具 schema 的 required[0] (声明面本身即事实源 ⇒ 不另维护映射表;
+    /// 缺 required 时退到 properties 的第一个键, 仍无 ⇒ 空串 = 标题只留工具名, 不伪造)。
+    /// </summary>
+    public static string PrimaryArgKey(string? tool)
+    {
+        foreach (var s in All)
+            if (s.Name == tool) return s.PrimaryArgKeyOf();
+        return string.Empty;
+    }
+
+    private string PrimaryArgKeyOf()
+    {
+        try
+        {
+            using var d = JsonDocument.Parse(ParametersJson);
+            if (d.RootElement.TryGetProperty("required", out var req)
+                && req.ValueKind == JsonValueKind.Array && req.GetArrayLength() > 0)
+                return req[0].GetString() ?? string.Empty;
+            if (d.RootElement.TryGetProperty("properties", out var props) && props.ValueKind == JsonValueKind.Object)
+                foreach (var p in props.EnumerateObject()) return p.Name;
+        }
+        catch (JsonException) { }
+        return string.Empty;
+    }
 
     private static string Compose(bool flatten)
     {

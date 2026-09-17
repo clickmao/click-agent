@@ -148,6 +148,16 @@ public static class ActionLoopRunner
             foreach (var tc in calls)
             {
                 ActionExecutionResult res;
+                // R538: 条目面 started —— **执行前**发出 (前端可立刻显示 "正在运行 X", 对标 codex `• Working (Ns)`)。
+                // 与步进共用一个通道/一个数据源 (同一 tc、同一步号); 未绑定观察者 ⇒ 零开销, 行为逐字节不变。
+                var itemId = ActionItemText.ItemIdOf(tc.Id, outcome.Steps);
+                var (itemKind, itemTitle, itemDetail) = ActionItemText.Describe(tc.Name, tc.ArgumentsJson);
+                await ActionProgressObserver.ReportAsync(
+                    new ActionStepProgress(outcome.Steps, tc.Name ?? string.Empty, false, 0)
+                    {
+                        Item = new ActionItemProgress(itemId, "started", itemKind, itemTitle, itemDetail,
+                            string.Empty, 0, false, 0),
+                    }).ConfigureAwait(false);
                 try
                 {
                     res = ActionToolDecl.IsDeclared(tc.Name)
@@ -174,8 +184,14 @@ public static class ActionLoopRunner
                 onCall?.Invoke(outcome.Steps, tc, res);
                 // R510: 步进事件真发 —— 前端 task.progress 的**唯一**数据源 (未绑定观察者 ⇒ 零开销, 行为不变)。
                 // 只报事实 (步号/工具/成败/耗时), 文案面不出现在这里 (避免第二处实现)。
+                // R538: 同一次上报携带条目面 completed (输出尾/行数/截断/退出码) ⇒ item.completed 与 task.progress 同源同刻。
+                var (outTail, outLines, outTruncated) = ActionItemText.Tail(res.Output);
                 await ActionProgressObserver.ReportAsync(
-                    new ActionStepProgress(outcome.Steps, tc.Name ?? string.Empty, res.Ok, res.ElapsedMs))
+                    new ActionStepProgress(outcome.Steps, tc.Name ?? string.Empty, res.Ok, res.ElapsedMs)
+                    {
+                        Item = new ActionItemProgress(itemId, "completed", itemKind, itemTitle, itemDetail,
+                            outTail, outLines, outTruncated, res.ExitCode),
+                    })
                     .ConfigureAwait(false);
                 var rendered = res.Render(ToolResultCharCap());
                 // R462 召回-现实一致性闸 (工具回灌面): 结果里引用的路径若当前工作区不存在 ⇒ 显式标 ✗,

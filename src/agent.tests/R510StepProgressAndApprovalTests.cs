@@ -143,16 +143,21 @@ public class R510StepProgressAndApprovalTests
         Assert.Equal(1, port.Executions);      // 真执行了工具 (不是空转)
         Assert.NotNull(payload);
         string[] names;
-        string progressPayload;
+        string progressPayload, itemStartedJson, itemCompletedJson;
         lock (lines)
         {
             names = new string[lines.Count];
             for (var i = 0; i < lines.Count; i++) names[i] = Split(lines[i]).Event;
-            Assert.Equal(3, lines.Count);      // started → progress → completed 单调
+            // R538: 每步额外插 item.started / item.completed 两条 (步内条目面); task.* 三个锚点与顺序事实不变。
+            Assert.Equal(5, lines.Count);
             Assert.Equal("task.started", names[0]);
-            Assert.Equal("task.progress", names[1]);
-            Assert.Equal("task.completed", names[2]);
-            progressPayload = Split(lines[1]).Payload;
+            Assert.Equal("item.started", names[1]);
+            Assert.Equal("task.progress", names[2]);
+            Assert.Equal("item.completed", names[3]);
+            Assert.Equal("task.completed", names[4]);
+            progressPayload = Split(lines[2]).Payload;
+            itemStartedJson = Split(lines[1]).Payload;
+            itemCompletedJson = Split(lines[3]).Payload;
         }
         using (var d = JsonDocument.Parse(progressPayload))
         {
@@ -162,11 +167,39 @@ public class R510StepProgressAndApprovalTests
             Assert.True(r.GetProperty("ok").GetBoolean());
             Assert.Equal(7, r.GetProperty("elapsed_ms").GetInt64());        // 执行面耗时原样透传
         }
-        // 快照面同步: 步号/动作已登记 (断线重连可读)
+        // R538 条目面: started (执行前, 无输出) ↔ completed (执行后, 带输出尾/退出码) 按 item_id 配对
+        using (var d = JsonDocument.Parse(itemStartedJson))
+        {
+            var r = d.RootElement;
+            Assert.Equal("c1", r.GetProperty("item_id").GetString());
+            Assert.Equal("started", r.GetProperty("phase").GetString());
+            Assert.Equal("write_file a.txt", r.GetProperty("title").GetString());  // 主参数 = path
+            Assert.Equal("file_write", r.GetProperty("kind").GetString());
+            Assert.Equal("", r.GetProperty("output_tail").GetString());            // 尚未执行 ⇒ 无输出 (不伪造)
+        }
+        using (var d = JsonDocument.Parse(itemCompletedJson))
+        {
+            var r = d.RootElement;
+            Assert.Equal("c1", r.GetProperty("item_id").GetString());
+            Assert.Equal("completed", r.GetProperty("phase").GetString());
+            Assert.Equal("file_write", r.GetProperty("kind").GetString());
+            Assert.Equal("write_file a.txt", r.GetProperty("title").GetString());
+            Assert.Contains("a.txt", r.GetProperty("detail").GetString());
+            Assert.Equal("ok", r.GetProperty("output_tail").GetString());          // 输出事实原样透传
+            Assert.Equal(1, r.GetProperty("lines_total").GetInt32());
+            Assert.False(r.GetProperty("truncated").GetBoolean());
+            Assert.Equal(0, r.GetProperty("exit_code").GetInt32());
+            Assert.Equal(7, r.GetProperty("elapsed_ms").GetInt64());
+        }
+        // 快照面同步: 步号/动作/最新条目已登记 (断线重连可重建)
         using (var snap = JsonDocument.Parse(reg.SnapshotJson()))
         {
             Assert.Equal(1, snap.RootElement[0].GetProperty("step_index").GetInt32());
             Assert.Equal("write_file", snap.RootElement[0].GetProperty("current_action").GetString());
+            Assert.Equal("write_file a.txt",
+                snap.RootElement[0].GetProperty("last_item").GetProperty("title").GetString());
+            Assert.Equal("file_write",
+                snap.RootElement[0].GetProperty("last_item").GetProperty("kind").GetString());
         }
     }
 
