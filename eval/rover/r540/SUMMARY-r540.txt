@@ -1,0 +1,39 @@
+R540 读数总表 (生成 2026-09-18T05:09:59)
+题集: t1=F2 toolkit-multimodule (30 隐藏用例) / g1=F1 games 长任务 (58 用例)  [题面 sha 与 r539/r531/r536 逐字节同]
+
+== w1 ==
+臂               calls     prompt     cached      total     新算    cases rc/前缀sha前8
+R1r-t1              2      15301      14848      21874   7026    30/30  rc=8/ed13dd23
+R1r-g1              2      16476      14464      21194   6730    43/58  rc=5/ed13dd23
+R1nr-t1             2      15053      14720      19655   4935    30/30  rc=5/ed13dd23
+A1-on-t1           33     553019     541440     560548  19108    12/30  rc=-/-
+C-codex-t1        369   30697516   30604544   30784875 180331    30/30  rc=-/-
+  Δ R1r-t1_vs_A1-on-t1: calls 2→33 (-93.9%) tokens 21874→560548 (-96.1%) cases 30/30 (base 12)
+  Δ R1nr-t1_vs_A1-on-t1: calls 2→33 (-93.9%) tokens 19655→560548 (-96.5%) cases 30/30 (base 12)
+  role[R1r-t1] shape=full partial=False mark_in_user=True mark_in_prefix=False mark_in_system=False user轮含标记=2/2 verdict=True
+  role[R1nr-t1] shape=full partial=False mark_in_user=False mark_in_prefix=False mark_in_system=False user轮含标记=0/2 verdict=False
+
+== w2 ==
+臂               calls     prompt     cached      total     新算    cases rc/前缀sha前8
+R1r-t1              1       7575       7424      10948   3524    30/30  rc=0/ed13dd23
+R1r-g1              2      16471      15872      20370   4498    44/58  rc=5/ed13dd23
+R1nr-t1             1       7451       7296      11641   4345    30/30  rc=0/ed13dd23
+A1-on-t1           34     562140     543488     569847  26359    30/30  rc=-/-
+C-codex-t1         88    4743218    4713216    4764782  51566    26/30  rc=-/-
+  Δ R1r-t1_vs_A1-on-t1: calls 1→34 (-97.1%) tokens 10948→569847 (-98.1%) cases 30/30 (base 30)
+  Δ R1nr-t1_vs_A1-on-t1: calls 1→34 (-97.1%) tokens 11641→569847 (-98.0%) cases 30/30 (base 30)
+  role[R1r-t1] shape=full partial=False mark_in_user=True mark_in_prefix=False mark_in_system=False user轮含标记=1/1 verdict=True
+  role[R1nr-t1] shape=full partial=False mark_in_user=False mark_in_prefix=False mark_in_system=False user轮含标记=0/1 verdict=False
+
+== 输入钉 (input-pin) ==
+tid=t1 family=toolkit-multimodule-v1 prompt_sha256=9fbfaeb3a17bea23 declared_same=True xref=True bytes=2585 cases=cases/run_cases_r529.py ok=True
+tid=g1 family=games-longtask-v1 prompt_sha256=516f3208963c6e66 declared_same=True xref=True bytes=4070 cases=cases/run_cases_r521.py ok=True
+
+== 执行前置 (exec_precondition) ==
+预注册读数 rc=1: ACCEPTABLE_SCOPED=False | VERDICT_BLOCKED ⇒ rc=1 (验收面 [require ∪ 未声明] 存在未执行/不正确臂 ⇒ 不得 rc=0 假绿)
+事后(键拼写修正)读数 rc=1: ACCEPTABLE_SCOPED=False | VERDICT_POSTHOC_ONLY ⇒ rc=1 (事后声明不构成验收面)
+
+== 归因 ==
+jsonmini 4 例(#14/#18/#22/#26)= 判据无缺陷: 题面逐字要求「对象的键按 Unicode 码点升序, 不含任何空白」;
+  A1-on(w1 产物快照) 4/4 例返回 ERR(合法输入被判非法) ⇒ 臂缺陷; codex 两窗 30/30 与 26/30 (w2 亦同 4 例); R1 两窗 30/30。
+g1 失败族: w1 wythoff#43-#57(15 例) 策略非最优(给出走子而非 LOSE); w2 life#00-#13(14 例) ⇒ 单发一调用在长任务上不稳, 需自测/修复回路。

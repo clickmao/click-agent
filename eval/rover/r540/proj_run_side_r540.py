@@ -32,12 +32,15 @@ def load_env_local(path=None):
 
 
 def load_codex_engine():
-    # R540 横切修复: 原硬编码 eval/rover/r504/codex_solver_r504.py 已被 R534 减法批删除 ⇒ 该臂静默不可执行。
-    # 改走稳定加载器 (候选列表 + fail-closed), 见 eval/rover/lib/codex_engine.py。
-    import sys as _sys
-    _sys.path.insert(0, os.path.join(REPO, "eval/rover/lib"))
-    import codex_engine as _ce
-    return _ce.load()
+    # R540 横切修复: 引擎提稳定位置 (候选列表 + fail-closed), 不再硬编码单一历史轮路径。
+    import importlib.util as _iu
+    _p = os.path.join(REPO, "eval/rover/lib/codex_engine.py")
+    _s = _iu.spec_from_file_location("codex_engine_r540", _p)
+    if _s is None or _s.loader is None:
+        raise RuntimeError("codex_engine 加载器缺失: %s" % _p)
+    _m = _iu.module_from_spec(_s)
+    _s.loader.exec_module(_m)
+    return _m.load()
 
 
 def dump_index(d, side):
@@ -76,7 +79,7 @@ def run_agent(task, out_dir, args, env_local):
     if args.max_steps:
         env["AGENTFRAMEWORK_ACTION_MAX_STEPS"] = str(args.max_steps)
     argv = [args.agent_bin, "-q", task["prompt"], "--output-mode", "text",
-            "--session-id", "r508-%s-%s" % (args.arm, task["tid"])]
+            "--session-id", "r540-%s-%s" % (args.arm, task["tid"])]
     t0 = time.time()
     rc, out, err = None, "", ""
     try:
@@ -125,11 +128,11 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--side", choices=["agent", "codex"], required=True)
     ap.add_argument("--arm", required=True)
-    ap.add_argument("--taskset", default=os.path.join(HERE, "taskset-r508.json"))
+    ap.add_argument("--taskset", default=os.path.join(HERE, "taskset-r540.json"))
     ap.add_argument("--out", required=True)
     ap.add_argument("--adapter-dir", required=True)
-    ap.add_argument("--adapter-port", default=os.environ.get("R508_ADAPTER_PORT", "48660"))
-    ap.add_argument("--agent-bin", default=os.environ.get("R508_AGENT_BIN", "/tmp/pub_r504/agenthost/agenthost"))
+    ap.add_argument("--adapter-port", default=os.environ.get("R511_ADAPTER_PORT", "48660"))
+    ap.add_argument("--agent-bin", default=os.environ.get("R511_AGENT_BIN", "/tmp/pub_r504/agenthost/agenthost"))
     ap.add_argument("--codex-bin", default=os.path.expanduser("~/.agentframework/tools/codex-env/node_modules/.bin/codex"))
     ap.add_argument("--model", default="deepseek-flash")
     ap.add_argument("--max-steps", type=int, default=0)

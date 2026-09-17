@@ -32,11 +32,12 @@ def load_env_local(path=None):
 
 
 def load_codex_engine():
-    p = os.path.join(REPO, "eval/rover/r504/codex_solver_r504.py")
-    spec = importlib.util.spec_from_file_location("codex_solver_r504", p)
-    m = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(m)
-    return m
+    # R540 横切修复: 原硬编码 eval/rover/r504/codex_solver_r504.py 已被 R534 减法批删除 ⇒ 该臂静默不可执行。
+    # 改走稳定加载器 (候选列表 + fail-closed), 见 eval/rover/lib/codex_engine.py。
+    import sys as _sys
+    _sys.path.insert(0, os.path.join(REPO, "eval/rover/lib"))
+    import codex_engine as _ce
+    return _ce.load()
 
 
 def dump_index(d, side):

@@ -1,0 +1,242 @@
+[
+ {
+  "mod": "vm",
+  "family": "vm_run",
+  "vis": "hidden",
+  "stdin": "9\nPUSH 4\nPUSH -1\nPOP\nPUSH 2\nPUSH 1\nPOP\nMUL\nPRINT\nHALT\n",
+  "expected_stdout": "8",
+  "src_tid": "p003"
+ },
+ {
+  "mod": "vm",
+  "family": "vm_run",
+  "vis": "hidden",
+  "stdin": "6\nPUSH 2\nPUSH 5\nSWAP\nSUB\nPRINT\nHALT\n",
+  "expected_stdout": "3",
+  "src_tid": "p003"
+ },
+ {
+  "mod": "vm",
+  "family": "vm_run",
+  "vis": "hidden",
+  "stdin": "5\nPUSH -5\nPRINT\nPUSH 2\nPRINT\nHALT\n",
+  "expected_stdout": "-5\n2",
+  "src_tid": "p003"
+ },
+ {
+  "mod": "vm",
+  "family": "vm_run",
+  "vis": "hidden",
+  "stdin": "5\nPUSH 3\nDUP\nADD\nPRINT\nHALT\n",
+  "expected_stdout": "6",
+  "src_tid": "p003"
+ },
+ {
+  "mod": "vm",
+  "family": "vm_run",
+  "vis": "hidden",
+  "stdin": "6\nPUSH 0\nPUSH -5\nSWAP\nSUB\nPRINT\nHALT\n",
+  "expected_stdout": "-5",
+  "src_tid": "p003"
+ },
+ {
+  "mod": "vm",
+  "family": "vm_run",
+  "vis": "hidden",
+  "stdin": "8\nPUSH 1\nPUSH 2\nSWAP\nSWAP\nPOP\nPOP\nPOP\nHALT\n",
+  "expected_stdout": "ERR",
+  "src_tid": "p003"
+ },
+ {
+  "mod": "vm",
+  "family": "vm_run",
+  "vis": "hidden",
+  "stdin": "2\nPOP\nHALT\n",
+  "expected_stdout": "ERR",
+  "src_tid": "p003"
+ },
+ {
+  "mod": "vm",
+  "family": "vm_run",
+  "vis": "hidden",
+  "stdin": "3\nPUSH 1\nJNZ 9\nHALT\n",
+  "expected_stdout": "ERR",
+  "src_tid": "p003"
+ },
+ {
+  "mod": "vm",
+  "family": "vm_run",
+  "vis": "hidden",
+  "stdin": "9\nPUSH 3\nDUP\nPRINT\nPUSH 1\nSUB\nDUP\nJNZ 1\nPOP\nHALT\n",
+  "expected_stdout": "3\n2\n1",
+  "src_tid": "p003"
+ },
+ {
+  "mod": "vm",
+  "family": "vm_run",
+  "vis": "hidden",
+  "stdin": "5\nPUSH 2\nPUSH 3\nMUL\nPRINT\nHALT\n",
+  "expected_stdout": "6",
+  "src_tid": "p003"
+ },
+ {
+  "mod": "vm",
+  "family": "vm_run",
+  "vis": "hidden",
+  "stdin": "5\nPUSH 3\nPUSH 4\nSWAP\nSUB\nHALT\n",
+  "expected_stdout": "",
+  "src_tid": "p003"
+ },
+ {
+  "mod": "vm",
+  "family": "vm_run",
+  "vis": "hidden",
+  "stdin": "3\nPUSH 5\nDUP\nADD\n",
+  "expected_stdout": "ERR",
+  "src_tid": "p003"
+ },
+ {
+  "mod": "jsonmini",
+  "family": "json_mini",
+  "vis": "hidden",
+  "stdin": "35\n",
+  "expected_stdout": "35",
+  "src_tid": "p014"
+ },
+ {
+  "mod": "jsonmini",
+  "family": "json_mini",
+  "vis": "hidden",
+  "stdin": "[{\"\\t\\té\"  :[true ], \"0\\n\\u0059\\\"\":[ \"Y0 \\\\\",  5]\n}\n \n",
+  "expected_stdout": "ERR",
+  "src_tid": "p014"
+ },
+ {
+  "mod": "jsonmini",
+  "family": "json_mini",
+  "vis": "hidden",
+  "stdin": "[  [\n null ],{\n \"9\\tY\\u0061\" :82,\"z \\\\\\u0058\"\n: \"\",\"\\/\\né\"\n:{\n \" \\\"\"\n:84,  \" \\\"\":-71},\"9\\tYa\"\n:\"\\u0031z \"\n},[\n [\"\\t\\/Y/\",\n -57\n]  ]\n ]\n",
+  "expected_stdout": "[[null],{\"/\\né\":{\" \\\"\":-71},\"9\\tYa\":\"1z \",\"z \\\\X\":\"\"},[[\"\\t/Y/\",-57]]]",
+  "src_tid": "p014"
+ },
+ {
+  "mod": "jsonmini",
+  "family": "json_mini",
+  "vis": "hidden",
+  "stdin": "null\n",
+  "expected_stdout": "null",
+  "src_tid": "p014"
+ },
+ {
+  "mod": "jsonmini",
+  "family": "json_mini",
+  "vis": "hidden",
+  "stdin": "\"\\\\\\u0062\\/\"\n",
+  "expected_stdout": "\"\\\\b/\"",
+  "src_tid": "p014"
+ },
+ {
+  "mod": "jsonmini",
+  "family": "json_mini",
+  "vis": "hidden",
+  "stdin": "[1.5]",
+  "expected_stdout": "ERR",
+  "src_tid": "p014"
+ },
+ {
+  "mod": "jsonmini",
+  "family": "json_mini",
+  "vis": "hidden",
+  "stdin": "{\"a\":1,\"b\":[true,null]}\n",
+  "expected_stdout": "{\"a\":1,\"b\":[true,null]}",
+  "src_tid": "p014"
+ },
+ {
+  "mod": "jsonmini",
+  "family": "json_mini",
+  "vis": "hidden",
+  "stdin": "{\"a\": 1\n",
+  "expected_stdout": "ERR",
+  "src_tid": "p014"
+ },
+ {
+  "mod": "jsonmini",
+  "family": "json_mini",
+  "vis": "hidden",
+  "stdin": "[\"a\\xb\"]\n",
+  "expected_stdout": "ERR",
+  "src_tid": "p014"
+ },
+ {
+  "mod": "jsonmini",
+  "family": "json_mini",
+  "vis": "hidden",
+  "stdin": "[\"\\u0041\"]\n",
+  "expected_stdout": "[\"A\"]",
+  "src_tid": "p014"
+ },
+ {
+  "mod": "jsonmini",
+  "family": "json_mini",
+  "vis": "hidden",
+  "stdin": "{\"b\":1,\"a\":2,\"b\":3}\n",
+  "expected_stdout": "{\"a\":2,\"b\":3}",
+  "src_tid": "p014"
+ },
+ {
+  "mod": "jsonmini",
+  "family": "json_mini",
+  "vis": "hidden",
+  "stdin": "[01]\n",
+  "expected_stdout": "ERR",
+  "src_tid": "p014"
+ },
+ {
+  "mod": "jsonmini",
+  "family": "json_mini",
+  "vis": "hidden",
+  "stdin": "[] x\n",
+  "expected_stdout": "ERR",
+  "src_tid": "p014"
+ },
+ {
+  "mod": "jsonmini",
+  "family": "json_mini",
+  "vis": "hidden",
+  "stdin": "-0\n",
+  "expected_stdout": "0",
+  "src_tid": "p014"
+ },
+ {
+  "mod": "jsonmini",
+  "family": "json_mini",
+  "vis": "hidden",
+  "stdin": "{\"z\":{\"b\":1,\"a\":2},\"a\":[]}\n",
+  "expected_stdout": "{\"a\":[],\"z\":{\"a\":2,\"b\":1}}",
+  "src_tid": "p014"
+ },
+ {
+  "mod": "jsonmini",
+  "family": "json_mini",
+  "vis": "hidden",
+  "stdin": "[\"\\u0007x\"]\n",
+  "expected_stdout": "ERR",
+  "src_tid": "p014"
+ },
+ {
+  "mod": "jsonmini",
+  "family": "json_mini",
+  "vis": "hidden",
+  "stdin": "[1.5]\n",
+  "expected_stdout": "ERR",
+  "src_tid": "p014"
+ },
+ {
+  "mod": "jsonmini",
+  "family": "json_mini",
+  "vis": "hidden",
+  "stdin": "NaN\n",
+  "expected_stdout": "ERR",
+  "src_tid": "p014"
+ }
+]

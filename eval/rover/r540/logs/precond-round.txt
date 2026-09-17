@@ -1,0 +1,26 @@
+DISCOVER layout=project taskset=eval/rover/r540/taskset-r540.json windows=2 snapshot_root=eval/rover/r540/snapshots
+w1      arms=5 correct=3
+   agentA1-on-t1/t1 side=agent  cases=12/30  rc=1    correct=False claimed=False jsonmini#12-hidden,jsonmini#13-hidden,jsonmini#14-hidden,jsonmini#15-hidden,jsonmini#16-hidden,jsonmini#17-hidden,jsonmini#18-hidden,jsonmini#19-hidden,jsonmini#20-hidden,jsonmini#21-hidden,jsonmini#22-hidden,jsonmini#23-hidden,jsonmini#24-hidden,jsonmini#25-hidden,jsonmini#26-hidden,jsonmini#27-hidden,jsonmini#28-hidden,jsonmini#29-hidden
+   agentR1nr-t1/t1  side=agent  cases=30/30  rc=0    correct=True  claimed=True  
+   agentR1r-g1/g1   side=agent  cases=43/58  rc=1    correct=False claimed=False wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#46-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#51-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#55-hidden,wythoff#56-hidden,wythoff#57-hidden
+   agentR1r-t1/t1   side=agent  cases=30/30  rc=0    correct=True  claimed=True  
+   codexC-codex-t1/t1 side=agent  cases=30/30  rc=0    correct=True  claimed=None  
+w2      arms=5 correct=3
+   agentA1-on-t1/t1 side=agent  cases=30/30  rc=0    correct=True  claimed=True  
+   agentR1nr-t1/t1  side=agent  cases=30/30  rc=0    correct=True  claimed=True  
+   agentR1r-g1/g1   side=agent  cases=44/58  rc=1    correct=False claimed=False life#00-public,life#01-public,life#02-hidden,life#03-hidden,life#04-hidden,life#05-hidden,life#06-hidden,life#07-hidden,life#08-hidden,life#09-hidden,life#10-hidden,life#11-hidden,life#12-hidden,life#13-hidden
+   agentR1r-t1/t1   side=agent  cases=30/30  rc=0    correct=True  claimed=True  
+   codexC-codex-t1/t1 side=agent  cases=26/30  rc=1    correct=False claimed=None  jsonmini#14-hidden,jsonmini#18-hidden,jsonmini#22-hidden,jsonmini#26-hidden
+DECLARED_ABSENT=-
+POLICY_ACTIVE=False reason=no_policy_key ts=None checks={}
+SELF_REPORT_AGREES=True
+EXECUTABLE_AND_CORRECT=False (全局, 任一臂-题不许错)
+SCOPE_SOURCE=eval/rover/r540/prereg-r540.json PREREG=True
+ACCEPTABLE_SCOPED=False
+NONREQUIRED w1/agentA1-on-t1 correct=False :: w1/agentA1-on-t1/t1 rc=1 cases=12/30(expect 30) failed=jsonmini#12-hidden,jsonmini#13-hidden,jsonmini#14-hidden,jsonmini#15-hidden,jsonmini#16-hidden,jsonmini#17-hidden,jsonmini#18-hidden,jsonmini#19-hidden,jsonmini#20-hidden,jsonmini#21-hidden,jsonmini#22-hidden,jsonmini#23-hidden,jsonmini#24-hidden,jsonmini#25-hidden,jsonmini#26-hidden,jsonmini#27-hidden,jsonmini#28-hidden,jsonmini#29-hidden
+NONREQUIRED w2/agentA1-on-t1 correct=True :: w2/agentA1-on-t1/t1 rc=0 cases=30/30(expect 30) failed=-
+UNDECLARED: w1/codexC-codex-t1 | w2/codexC-codex-t1
+BLOCKED: w1/agentA1-on-t1/t1 rc=1 cases=12/30(expect 30) failed=jsonmini#12-hidden,jsonmini#13-hidden,jsonmini#14-hidden,jsonmini#15-hidden,jsonmini#16-hidden,jsonmini#17-hidden,jsonmini#18-hidden,jsonmini#19-hidden,jsonmini#20-hidden,jsonmini#21-hidden,jsonmini#22-hidden,jsonmini#23-hidden,jsonmini#24-hidden,jsonmini#25-hidden,jsonmini#26-hidden,jsonmini#27-hidden,jsonmini#28-hidden,jsonmini#29-hidden | w1/agentR1r-g1/g1 rc=1 cases=43/58(expect 58) failed=wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#46-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#51-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#55-hidden,wythoff#56-hidden,wythoff#57-hidden | w2/agentR1r-g1/g1 rc=1 cases=44/58(expect 58) failed=life#00-public,life#01-public,life#02-hidden,life#03-hidden,life#04-hidden,life#05-hidden,life#06-hidden,life#07-hidden,life#08-hidden,life#09-hidden,life#10-hidden,life#11-hidden,life#12-hidden,life#13-hidden | w2/codexC-codex-t1/t1 rc=1 cases=26/30(expect 30) failed=jsonmini#14-hidden,jsonmini#18-hidden,jsonmini#22-hidden,jsonmini#26-hidden
+OUT=eval/rover/r540/logs/precond-round.json
+VERDICT_BLOCKED ⇒ rc=1 (验收面 [require ∪ 未声明] 存在未执行/不正确臂 ⇒ 不得 rc=0 假绿)
+  (全局 blocked 4 项 > 验收面 blocked_scoped 5 项: 差额为非验收面读数, 已单列 NONREQUIRED)

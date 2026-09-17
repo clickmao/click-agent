@@ -1,0 +1,474 @@
+{
+ "round": "r540",
+ "window": "w1",
+ "run_dir": "/home/agentuser/AgentFramework/eval/rover/r540/run-w1",
+ "arms": {
+  "R1r-t1": {
+   "cost": {
+    "side": "agent",
+    "range": [
+     4,
+     5
+    ],
+    "calls": 2,
+    "prompt_tokens": 15301,
+    "cached_tokens": 14848,
+    "completion_tokens": 6573,
+    "total_tokens": 21874,
+    "models": [
+     "deepseek-chat"
+    ],
+    "unreported_usage": 0
+   },
+   "cases": {
+    "pass": 30,
+    "total": 30,
+    "rc": 0
+   },
+   "rc": {
+    "rc": 8,
+    "role_note_chars": 326,
+    "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+    "correctness_asserted": 0,
+    "steps": [
+     {
+      "id": "s1",
+      "tool": "write_file",
+      "rc": 0,
+      "path": "toolkit/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "elapsed_ms": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s2",
+      "tool": "write_file",
+      "rc": 0,
+      "path": "toolkit/vm.py",
+      "sha256": "d6035c8b8fd2ee6881032f9169171af89d19a7ec39c99765d0d8002b8a1ab00a",
+      "bytes": 2557,
+      "elapsed_ms": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s3",
+      "tool": "write_file",
+      "rc": 0,
+      "path": "toolkit/jsonmini.py",
+      "sha256": "306d6d361c3528e1ed85052e490718ca31dfb5a2f1568181b83f29919429a982",
+      "bytes": 5616,
+      "elapsed_ms": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s4",
+      "tool": "write_file",
+      "rc": 0,
+      "path": "toolkit/__main__.py",
+      "sha256": "fa0c0a6cd1503354ad266eabd1258b28a3c1b082e43fb0afb3c9a69369191c40",
+      "bytes": 386,
+      "elapsed_ms": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s5",
+      "tool": "run",
+      "rc": 0,
+      "path": "",
+      "sha256": "",
+      "bytes": 0,
+      "elapsed_ms": 34,
+      "stdout_tail": "ERR\n",
+      "stderr_tail": ""
+     }
+    ]
+   }
+  },
+  "R1r-g1": {
+   "cost": {
+    "side": "agent",
+    "range": [
+     6,
+     7
+    ],
+    "calls": 2,
+    "prompt_tokens": 16476,
+    "cached_tokens": 14464,
+    "completion_tokens": 4718,
+    "total_tokens": 21194,
+    "models": [
+     "deepseek-chat"
+    ],
+    "unreported_usage": 0
+   },
+   "cases": {
+    "pass": 43,
+    "total": 58,
+    "rc": 1
+   },
+   "rc": {
+    "rc": 5,
+    "role_note_chars": 326,
+    "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+    "correctness_asserted": 0,
+    "steps": [
+     {
+      "id": "s1",
+      "tool": "write_file",
+      "rc": 0,
+      "path": "games/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "elapsed_ms": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s2",
+      "tool": "write_file",
+      "rc": 0,
+      "path": "games/life.py",
+      "sha256": "a2718de821ce3c97ad3f1a91dabfa3f946359ea1f4b39560ddd96bdc126ba20c",
+      "bytes": 1132,
+      "elapsed_ms": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s3",
+      "tool": "write_file",
+      "rc": 0,
+      "path": "games/sub.py",
+      "sha256": "9fbd5f88283195d0e7d02e20201a5eda7bc1ba65c00cf0084ee0aa288c6c5bc4",
+      "bytes": 525,
+      "elapsed_ms": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s4",
+      "tool": "write_file",
+      "rc": 0,
+      "path": "games/nim.py",
+      "sha256": "6c09bc870cb168347ff200df4d829692926bcd081d3b9d366b17530e3978ba2b",
+      "bytes": 384,
+      "elapsed_ms": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s5",
+      "tool": "write_file",
+      "rc": 0,
+      "path": "games/wythoff.py",
+      "sha256": "ccc9db767a153f076379bcb2599b6ece49429ae9da765ad2e534630b20202fef",
+      "bytes": 979,
+      "elapsed_ms": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s6",
+      "tool": "write_file",
+      "rc": 0,
+      "path": "games/__main__.py",
+      "sha256": "f56e7581c011a7a83e5655ccef2d3aea4e1579a1abbe54574547bca260d196c3",
+      "bytes": 464,
+      "elapsed_ms": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s7",
+      "tool": "run",
+      "rc": 0,
+      "path": "",
+      "sha256": "",
+      "bytes": 0,
+      "elapsed_ms": 32,
+      "stdout_tail": ".....\n.....\n.....\n.###.\n.....\n.....\n..#..\n.#.#.\n...#.\n..#..\n.....\n",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s8",
+      "tool": "run",
+      "rc": 0,
+      "path": "",
+      "sha256": "",
+      "bytes": 0,
+      "elapsed_ms": 31,
+      "stdout_tail": "WIN 6\n",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s9",
+      "tool": "run",
+      "rc": 0,
+      "path": "",
+      "sha256": "",
+      "bytes": 0,
+      "elapsed_ms": 32,
+      "stdout_tail": "WIN 2 8\n",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s10",
+      "tool": "run",
+      "rc": 0,
+      "path": "",
+      "sha256": "",
+      "bytes": 0,
+      "elapsed_ms": 31,
+      "stdout_tail": "WIN 6 0\n",
+      "stderr_tail": ""
+     }
+    ]
+   }
+  },
+  "R1nr-t1": {
+   "cost": {
+    "side": "agent",
+    "range": [
+     2,
+     3
+    ],
+    "calls": 2,
+    "prompt_tokens": 15053,
+    "cached_tokens": 14720,
+    "completion_tokens": 4602,
+    "total_tokens": 19655,
+    "models": [
+     "deepseek-chat"
+    ],
+    "unreported_usage": 0
+   },
+   "cases": {
+    "pass": 30,
+    "total": 30,
+    "rc": 0
+   },
+   "rc": {
+    "rc": 5,
+    "role_note_chars": 0,
+    "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+    "correctness_asserted": 0,
+    "steps": [
+     {
+      "id": "s1",
+      "tool": "write_file",
+      "rc": 0,
+      "path": "toolkit/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "elapsed_ms": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s2",
+      "tool": "write_file",
+      "rc": 0,
+      "path": "toolkit/vm.py",
+      "sha256": "b50f59f73c33c921f55d8be5631992dfef23add6fbe1a5f84c0176b544fde5ac",
+      "bytes": 2099,
+      "elapsed_ms": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s3",
+      "tool": "write_file",
+      "rc": 0,
+      "path": "toolkit/jsonmini.py",
+      "sha256": "254295c78faa7f9a1fa0245b0938ddbfa19fae4ad501bfc581422cedd1034f4c",
+      "bytes": 4935,
+      "elapsed_ms": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s4",
+      "tool": "write_file",
+      "rc": 0,
+      "path": "toolkit/__main__.py",
+      "sha256": "7ae119cd58762650c00b06da74a84ed5eb63ed2c8c626c3394cf9c7d649a40f6",
+      "bytes": 369,
+      "elapsed_ms": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s5",
+      "tool": "run",
+      "rc": 0,
+      "path": "",
+      "sha256": "",
+      "bytes": 0,
+      "elapsed_ms": 32,
+      "stdout_tail": "ERR\n",
+      "stderr_tail": ""
+     }
+    ]
+   }
+  },
+  "A1-on-t1": {
+   "cost": {
+    "side": "agent",
+    "range": [
+     8,
+     40
+    ],
+    "calls": 33,
+    "prompt_tokens": 553019,
+    "cached_tokens": 541440,
+    "completion_tokens": 7529,
+    "total_tokens": 560548,
+    "models": [
+     "deepseek-chat"
+    ],
+    "unreported_usage": 0
+   },
+   "cases": {
+    "pass": 12,
+    "total": 30,
+    "rc": 1
+   },
+   "rc": {}
+  },
+  "C-codex-t1": {
+   "cost": {
+    "side": "codex",
+    "range": [
+     41,
+     409
+    ],
+    "calls": 369,
+    "prompt_tokens": 30697516,
+    "cached_tokens": 30604544,
+    "completion_tokens": 87359,
+    "total_tokens": 30784875,
+    "models": [
+     "deepseek-chat"
+    ],
+    "unreported_usage": 0
+   },
+   "cases": {
+    "pass": 30,
+    "total": 30,
+    "rc": 0
+   },
+   "rc": {}
+  }
+ },
+ "role_axis": {
+  "R1r-t1": {
+   "side": "agent",
+   "range": [
+    4,
+    5
+   ],
+   "dumps_scanned": 2,
+   "shape": "full",
+   "marker_in_user": true,
+   "marker_in_prefix": false,
+   "marker_in_system": false,
+   "user_turns_with_marker": 2,
+   "user_turns_total": 2,
+   "partial_seen": false,
+   "detail": [
+    {
+     "file": "full-agent-004.json",
+     "n_msgs": 2,
+     "partial": false,
+     "marker_idx": [
+      1
+     ],
+     "roles": [
+      "system",
+      "user"
+     ]
+    },
+    {
+     "file": "full-agent-005.json",
+     "n_msgs": 2,
+     "partial": false,
+     "marker_idx": [
+      1
+     ],
+     "roles": [
+      "system",
+      "user"
+     ]
+    }
+   ],
+   "verdict": true
+  },
+  "R1nr-t1": {
+   "side": "agent",
+   "range": [
+    2,
+    3
+   ],
+   "dumps_scanned": 2,
+   "shape": "full",
+   "marker_in_user": false,
+   "marker_in_prefix": false,
+   "marker_in_system": false,
+   "user_turns_with_marker": 0,
+   "user_turns_total": 2,
+   "partial_seen": false,
+   "detail": [
+    {
+     "file": "full-agent-002.json",
+     "n_msgs": 2,
+     "partial": false,
+     "marker_idx": [],
+     "roles": [
+      "system",
+      "user"
+     ]
+    },
+    {
+     "file": "full-agent-003.json",
+     "n_msgs": 2,
+     "partial": false,
+     "marker_idx": [],
+     "roles": [
+      "system",
+      "user"
+     ]
+    }
+   ],
+   "verdict": false
+  }
+ },
+ "deltas": {
+  "R1r-t1_vs_A1-on-t1": {
+   "calls": 2,
+   "calls_base": 33,
+   "calls_pct": -93.9,
+   "total_tokens": 21874,
+   "total_tokens_base": 560548,
+   "total_tokens_pct": -96.1,
+   "cases_pass": 30,
+   "cases_total": 30,
+   "cases_pass_base": 12
+  },
+  "R1nr-t1_vs_A1-on-t1": {
+   "calls": 2,
+   "calls_base": 33,
+   "calls_pct": -93.9,
+   "total_tokens": 19655,
+   "total_tokens_base": 560548,
+   "total_tokens_pct": -96.5,
+   "cases_pass": 30,
+   "cases_total": 30,
+   "cases_pass_base": 12
+  }
+ }
+}

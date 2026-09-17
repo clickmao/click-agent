@@ -1,0 +1,13 @@
+{
+  "evidence_scope": {
+    "require": ["w1/agentR1r-t1", "w2/agentR1r-t1", "w1/agentR1nr-t1", "w2/agentR1nr-t1", "w1/agentR1r-g1", "w2/agentR1r-g1"],
+    "nonrequired": [
+      {"pattern": "w1/agentA1-on-t1", "reason": "对照基线臂(旧路径)"},
+      {"pattern": "w2/agentA1-on-t1", "reason": "对照基线臂(旧路径)"},
+      {"pattern": "w1/codexC-codex-t1", "reason": "外部真值臂(信息列)"},
+      {"pattern": "w2/codexC-codex-t1", "reason": "外部真值臂(信息列)"}
+    ],
+    "post_hoc": true,
+    "post_hoc_reason": "R540 事后(跑完后)用 --scope 单列的**键拼写修正**读数: 预注册里写的是前缀 'w1/codex'/'w2/codex', 而器具的键格式是 '<win>/<side><arm>-<tid>' ⇒ 精确匹配不上, codex 臂被计成 UNDECLARED 并入验收面。本条**只改键拼写**, 范围与理由逐字同预注册; 且**不可能改变结论**(require 面的 agentR1r-g1 两窗 43/58 与 44/58 已阻塞, rc 仍为 1) ⇒ 事后读数与预注册读数**同判**, 不构成事后放宽。"
+  }
+}

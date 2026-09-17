@@ -1,0 +1,452 @@
+{
+ "round": "r540",
+ "window": "w2",
+ "run_dir": "/home/agentuser/AgentFramework/eval/rover/r540/run-w2",
+ "arms": {
+  "R1r-t1": {
+   "cost": {
+    "side": "agent",
+    "range": [
+     3,
+     3
+    ],
+    "calls": 1,
+    "prompt_tokens": 7575,
+    "cached_tokens": 7424,
+    "completion_tokens": 3373,
+    "total_tokens": 10948,
+    "models": [
+     "deepseek-chat"
+    ],
+    "unreported_usage": 0
+   },
+   "cases": {
+    "pass": 30,
+    "total": 30,
+    "rc": 0
+   },
+   "rc": {
+    "rc": 0,
+    "role_note_chars": 326,
+    "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+    "correctness_asserted": 1,
+    "steps": [
+     {
+      "id": "s1",
+      "tool": "write_file",
+      "rc": 0,
+      "path": "toolkit/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "elapsed_ms": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s2",
+      "tool": "write_file",
+      "rc": 0,
+      "path": "toolkit/vm.py",
+      "sha256": "9cef419f4704d7cb9aca90484da0c32cc83c745661d0bde3de24fb410f09032c",
+      "bytes": 2741,
+      "elapsed_ms": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s3",
+      "tool": "write_file",
+      "rc": 0,
+      "path": "toolkit/jsonmini.py",
+      "sha256": "0c55f588c0a8584ed03986b17e8ee01c391fdfc07b32ad22e51d585c68d2164e",
+      "bytes": 5980,
+      "elapsed_ms": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s4",
+      "tool": "write_file",
+      "rc": 0,
+      "path": "toolkit/__main__.py",
+      "sha256": "3abc676ce21a1d0ad3d4e64dc3936b58172d77a20b3f2cbfdff36aa862653ea7",
+      "bytes": 319,
+      "elapsed_ms": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s5",
+      "tool": "run",
+      "rc": 0,
+      "path": "",
+      "sha256": "",
+      "bytes": 0,
+      "elapsed_ms": 38,
+      "stdout_tail": "ERR\n",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s6",
+      "tool": "run",
+      "rc": 0,
+      "path": "",
+      "sha256": "",
+      "bytes": 0,
+      "elapsed_ms": 30,
+      "stdout_tail": "ERR\n",
+      "stderr_tail": ""
+     }
+    ]
+   }
+  },
+  "R1r-g1": {
+   "cost": {
+    "side": "agent",
+    "range": [
+     4,
+     5
+    ],
+    "calls": 2,
+    "prompt_tokens": 16471,
+    "cached_tokens": 15872,
+    "completion_tokens": 3899,
+    "total_tokens": 20370,
+    "models": [
+     "deepseek-chat"
+    ],
+    "unreported_usage": 0
+   },
+   "cases": {
+    "pass": 44,
+    "total": 58,
+    "rc": 1
+   },
+   "rc": {
+    "rc": 5,
+    "role_note_chars": 326,
+    "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+    "correctness_asserted": 0,
+    "steps": [
+     {
+      "id": "s1",
+      "tool": "write_file",
+      "rc": 0,
+      "path": "games/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "elapsed_ms": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s2",
+      "tool": "write_file",
+      "rc": 0,
+      "path": "games/life.py",
+      "sha256": "3ee7ce4e63adcf31c4081fafb1279d4e4b5e997bf59946f6b99b9e98361e7350",
+      "bytes": 888,
+      "elapsed_ms": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s3",
+      "tool": "write_file",
+      "rc": 0,
+      "path": "games/sub.py",
+      "sha256": "ff4dbfb965f92d80756b0672e3a2c3a6e58cbda4684bca02791cec1fcb423225",
+      "bytes": 453,
+      "elapsed_ms": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s4",
+      "tool": "write_file",
+      "rc": 0,
+      "path": "games/nim.py",
+      "sha256": "89ed1adbe5925425eeabf88bfc55b3b10e3a5364189f4e196658020e20af9a71",
+      "bytes": 315,
+      "elapsed_ms": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s5",
+      "tool": "write_file",
+      "rc": 0,
+      "path": "games/wythoff.py",
+      "sha256": "cca8fe10a20d7ebfbc6e059a0c4827edb276ff6d62cb4b98306228d2b2f10d72",
+      "bytes": 563,
+      "elapsed_ms": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s6",
+      "tool": "write_file",
+      "rc": 0,
+      "path": "games/__main__.py",
+      "sha256": "6978e1e1f6eed7fd5e61b5ff40354bb0450b664b915fc8ec4f93568af36e737b",
+      "bytes": 324,
+      "elapsed_ms": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s7",
+      "tool": "run",
+      "rc": 1,
+      "path": "",
+      "sha256": "",
+      "bytes": 0,
+      "elapsed_ms": 38,
+      "stdout_tail": "",
+      "stderr_tail": "…(311 ch dropped)…over/r540/run-w2/R1r/g1/work/games/__main__.py\", line 12, in main\n    sys.stdout.write(MODULES[argv[1]].solve(sys.stdin.read()))\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/agentuser/AgentFramework/eval/rover/r540/run-w2/R1r/g1/work/games/life.py\", line 5, in solve\n    lines = text.split(b'\\n')\n            ^^^^^^^^^^^^^^^^^\nTypeError: must be str or None, not bytes\n"
+     }
+    ]
+   }
+  },
+  "R1nr-t1": {
+   "cost": {
+    "side": "agent",
+    "range": [
+     2,
+     2
+    ],
+    "calls": 1,
+    "prompt_tokens": 7451,
+    "cached_tokens": 7296,
+    "completion_tokens": 4190,
+    "total_tokens": 11641,
+    "models": [
+     "deepseek-chat"
+    ],
+    "unreported_usage": 0
+   },
+   "cases": {
+    "pass": 30,
+    "total": 30,
+    "rc": 0
+   },
+   "rc": {
+    "rc": 0,
+    "role_note_chars": 0,
+    "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+    "correctness_asserted": 1,
+    "steps": [
+     {
+      "id": "s1",
+      "tool": "write_file",
+      "rc": 0,
+      "path": "toolkit/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "elapsed_ms": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s2",
+      "tool": "write_file",
+      "rc": 0,
+      "path": "toolkit/vm.py",
+      "sha256": "89004b1c4d11721030329a61f5e05610194272f9b294e2bbefb83b1f77572804",
+      "bytes": 3179,
+      "elapsed_ms": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s3",
+      "tool": "write_file",
+      "rc": 0,
+      "path": "toolkit/jsonmini.py",
+      "sha256": "7777be208c3a51111e4b6c58a00b28b5b79f26666b5c9f05c8d8faec2275ac43",
+      "bytes": 6325,
+      "elapsed_ms": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s4",
+      "tool": "write_file",
+      "rc": 0,
+      "path": "toolkit/__main__.py",
+      "sha256": "906883104b484e1aa1ec465cf6b677e341467f9fe4851abed578c3b80767aa28",
+      "bytes": 370,
+      "elapsed_ms": 0,
+      "stdout_tail": "",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s5",
+      "tool": "run",
+      "rc": 0,
+      "path": "",
+      "sha256": "",
+      "bytes": 0,
+      "elapsed_ms": 65,
+      "stdout_tail": "'5'|''\n",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s6",
+      "tool": "run",
+      "rc": 0,
+      "path": "",
+      "sha256": "",
+      "bytes": 0,
+      "elapsed_ms": 64,
+      "stdout_tail": "'{\"a\":1,\"b\":[2,3]}'|''\n",
+      "stderr_tail": ""
+     },
+     {
+      "id": "s7",
+      "tool": "run",
+      "rc": 0,
+      "path": "",
+      "sha256": "",
+      "bytes": 0,
+      "elapsed_ms": 62,
+      "stdout_tail": "'ERR'|''\n",
+      "stderr_tail": ""
+     }
+    ]
+   }
+  },
+  "A1-on-t1": {
+   "cost": {
+    "side": "agent",
+    "range": [
+     6,
+     39
+    ],
+    "calls": 34,
+    "prompt_tokens": 562140,
+    "cached_tokens": 543488,
+    "completion_tokens": 7707,
+    "total_tokens": 569847,
+    "models": [
+     "deepseek-chat"
+    ],
+    "unreported_usage": 0
+   },
+   "cases": {
+    "pass": 30,
+    "total": 30,
+    "rc": 0
+   },
+   "rc": {}
+  },
+  "C-codex-t1": {
+   "cost": {
+    "side": "codex",
+    "range": [
+     40,
+     127
+    ],
+    "calls": 88,
+    "prompt_tokens": 4743218,
+    "cached_tokens": 4713216,
+    "completion_tokens": 21564,
+    "total_tokens": 4764782,
+    "models": [
+     "deepseek-chat"
+    ],
+    "unreported_usage": 0
+   },
+   "cases": {
+    "pass": 26,
+    "total": 30,
+    "rc": 1
+   },
+   "rc": {}
+  }
+ },
+ "role_axis": {
+  "R1r-t1": {
+   "side": "agent",
+   "range": [
+    3,
+    3
+   ],
+   "dumps_scanned": 1,
+   "shape": "full",
+   "marker_in_user": true,
+   "marker_in_prefix": false,
+   "marker_in_system": false,
+   "user_turns_with_marker": 1,
+   "user_turns_total": 1,
+   "partial_seen": false,
+   "detail": [
+    {
+     "file": "full-agent-003.json",
+     "n_msgs": 2,
+     "partial": false,
+     "marker_idx": [
+      1
+     ],
+     "roles": [
+      "system",
+      "user"
+     ]
+    }
+   ],
+   "verdict": true
+  },
+  "R1nr-t1": {
+   "side": "agent",
+   "range": [
+    2,
+    2
+   ],
+   "dumps_scanned": 1,
+   "shape": "full",
+   "marker_in_user": false,
+   "marker_in_prefix": false,
+   "marker_in_system": false,
+   "user_turns_with_marker": 0,
+   "user_turns_total": 1,
+   "partial_seen": false,
+   "detail": [
+    {
+     "file": "full-agent-002.json",
+     "n_msgs": 2,
+     "partial": false,
+     "marker_idx": [],
+     "roles": [
+      "system",
+      "user"
+     ]
+    }
+   ],
+   "verdict": false
+  }
+ },
+ "deltas": {
+  "R1r-t1_vs_A1-on-t1": {
+   "calls": 1,
+   "calls_base": 34,
+   "calls_pct": -97.1,
+   "total_tokens": 10948,
+   "total_tokens_base": 569847,
+   "total_tokens_pct": -98.1,
+   "cases_pass": 30,
+   "cases_total": 30,
+   "cases_pass_base": 30
+  },
+  "R1nr-t1_vs_A1-on-t1": {
+   "calls": 1,
+   "calls_base": 34,
+   "calls_pct": -97.1,
+   "total_tokens": 11641,
+   "total_tokens_base": 569847,
+   "total_tokens_pct": -98.0,
+   "cases_pass": 30,
+   "cases_total": 30,
+   "cases_pass_base": 30
+  }
+ }
+}

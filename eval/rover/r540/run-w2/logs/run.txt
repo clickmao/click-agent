@@ -1,0 +1,20 @@
+[04:49:00] 同输入硬门 PASS (t1/g1 题面 sha256 自洽 + 与 r539/r531/r536 对拍一致; 物化 /home/agentuser/AgentFramework/eval/rover/r540/run-w2/task-*-prompt.txt)
+[04:49:03] 起手闸 1: PASS (mem=2806MB)
+[04:49:07] 起手闸 2: PASS (mem=2798MB)
+[04:49:10] adapter 就绪 (pid=3369019, dump=/home/agentuser/AgentFramework/eval/rover/r540/run-w2/adapter, FULL=1)
+[04:49:11] 冒烟: cli_rc=0 "rc": 0 "role_note_chars": 0 hello=yes
+[04:49:23] 臂 R1nr/t1 rc=0 role=0 adapter_range=[2,2]
+[04:49:32] 臂 R1r/t1 rc=0 role=1 adapter_range=[3,3]
+[04:49:43] 臂 R1r/g1 rc=5 role=1 adapter_range=[4,5]
+[04:50:32] 臂 A1-on/t1 rc=0 adapter_range=[6,39]
+[05:05:13] 臂 C-codex/t1 rc=143 adapter_range=[40,127] ()
+[05:05:14] 判分 R1nr/t1: PASS=30/30 rc=0
+[05:05:15] 判分 R1r/t1: PASS=30/30 rc=0
+[05:05:17] 判分 R1r/g1: PASS=44/58 rc=1
+[05:05:18] 判分 A1-on/t1: PASS=30/30 rc=0
+[05:05:18] 判分 C-codex/t1: PASS=26/30 rc=1
+快照+自报表: R1nr-t1=True(30/30), R1r-t1=True(30/30), R1r-g1=False(44/58), A1-on-t1=True(30/30), C-codex-t1=False(26/30)
+[05:05:19] 分析 rc=0
+[05:05:29] PRECOND_RC=1 (0=可验收 / 1=未可验收 / 3=输入缺失)
+[05:05:30] 端口已释放
+[05:05:30] 完成: /home/agentuser/AgentFramework/eval/rover/r540/run-w2

@@ -150,4 +150,20 @@ if [ "${AGENTFRAMEWORK_NEW_FILE_GATE:-1}" != "0" ] && [ -f "$_NFG_ROOT/tools/ref
   fi
 fi
 
+# >>> R540 delete-ref-gate >>>  (减法批的**删除**若仍被代码/器具硬编码引用 ⇒ 拦截;
+#   动因: R534 删除 eval/rover/r504/codex_solver_r504.py, 而 r508/r509/r511 的 proj_run_side*.py
+#   仍硬编码该路径 ⇒ 外侧臂静默不可执行, 直到 R540 才被发现。只算可执行引用点(AST 字符串字面量;
+#   注释/docstring 提及不算)。自证: python3 tools/refactor/delete_ref_gate.py --selfcheck
+#   关闸 (诊断/夹具): AGENTFRAMEWORK_DELREF_CHECK=0
+_DRG_ROOT="$(git rev-parse --show-toplevel)"
+if [ "${AGENTFRAMEWORK_DELREF_CHECK:-1}" != "0" ] && [ -f "$_DRG_ROOT/tools/refactor/delete_ref_gate.py" ]; then
+  if ! python3 "$_DRG_ROOT/tools/refactor/delete_ref_gate.py" --staged >/tmp/delete_ref_precommit.log 2>&1; then
+    echo "BLOCKED(R540 删除引用闸): 被删除的文件仍被仓内代码/器具引用 (跨轮调用点会静默断链)。" >&2
+    echo "  处置: 保留该文件, 或把引用点改成稳定位置/候选加载器(fail-closed)后重提交;" >&2
+    echo "        关闸 (诊断): AGENTFRAMEWORK_DELREF_CHECK=0" >&2
+    tail -8 /tmp/delete_ref_precommit.log >&2
+    exit 1
+  fi
+fi
+
 exit 0
