@@ -1,0 +1,30 @@
+{
+  "schema": "r1-run/1",
+  "tag": "R532-smoke",
+  "sandbox": "/tmp/r532_mini/smoke/work",
+  "task_sha256": "e46461bf40164fadfc21cc63df638e0e7d7cf876bbfdd25c25d16890207d80ec",
+  "task_chars": 69,
+  "prefix_chars": 3889,
+  "prefix_sha256": "58e2df67afe1923b421736d7ee905653dc4d57ee512e88866933547140243d15",
+  "prefix_pinned": true,
+  "role_note_chars": 0,
+  "max_repair": 1,
+  "step_timeout_s": 60,
+  "rc": 0,
+  "stage": "done",
+  "reason": "全部步骤执行完毕 (2 步)",
+  "calls": 1,
+  "prompt_tokens": 2642,
+  "completion_tokens": 0,
+  "cache_hit_tokens": 1408,
+  "cache_miss_tokens": 1234,
+  "repair_rounds": 0,
+  "semantics": {"intent": "code_task", "confidence": 0.95, "missing_slots": [], "ambiguities": 0, "refusal": null, "done_when": ["sols/hello.py 存在于工作根下", "s2 的 stdout == 42"]},
+  "steps": [
+    {"id": "s1", "tool": "write_file", "rc": 0, "path": "sols/hello.py", "sha256": "3e225f6106861ea243bded8ea35b4c628f7dfd5b20586b613b6b1f7140120c3e", "bytes": 11, "elapsed_ms": 0, "stdout_tail": "", "stderr_tail": ""},
+    {"id": "s2", "tool": "run", "rc": 0, "path": "", "sha256": "", "bytes": 0, "elapsed_ms": 30, "stdout_tail": "42\n", "stderr_tail": ""}
+  ],
+  "artifacts": [
+    {"path": "sols/hello.py", "sha256": "3e225f6106861ea243bded8ea35b4c628f7dfd5b20586b613b6b1f7140120c3e", "bytes": 11}
+  ]
+}

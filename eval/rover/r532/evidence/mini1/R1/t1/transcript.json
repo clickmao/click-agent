@@ -1,0 +1,36 @@
+{
+  "schema": "r1-run/1",
+  "tag": "R532-mini1-R1",
+  "sandbox": "/tmp/r532_mini/R1/t1/work",
+  "task_sha256": "39c5ae703aefe38136ece2a2a364d8e7a618faad495086535f043082d42de4bd",
+  "task_chars": 1328,
+  "prefix_chars": 3889,
+  "prefix_sha256": "58e2df67afe1923b421736d7ee905653dc4d57ee512e88866933547140243d15",
+  "prefix_pinned": true,
+  "role_note_chars": 0,
+  "max_repair": 1,
+  "step_timeout_s": 120,
+  "rc": 5,
+  "stage": "expect_stdout",
+  "reason": "step s5 stdout 与 expect_stdout 不符 (rc=0)",
+  "calls": 1,
+  "prompt_tokens": 3383,
+  "completion_tokens": 0,
+  "cache_hit_tokens": 2560,
+  "cache_miss_tokens": 823,
+  "repair_rounds": 0,
+  "semantics": {"intent": "code_task", "confidence": 0.9, "missing_slots": [], "ambiguities": 0, "refusal": null, "done_when": ["python3 -m toolkit vm 对给定输入 stdout == '2\\n'", "python3 -m toolkit jsonmini 对 {\"b\":[2,3],\"a\":1} stdout == '{\"a\":1,\"b\":[2,3]}'"]},
+  "steps": [
+    {"id": "s1", "tool": "write_file", "rc": 0, "path": "toolkit/__init__.py", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "bytes": 0, "elapsed_ms": 0, "stdout_tail": "", "stderr_tail": ""},
+    {"id": "s2", "tool": "write_file", "rc": 0, "path": "toolkit/vm.py", "sha256": "995beeb1c76d41a65c9be77bd1bba234fa4b16d18ce6d3209d914dc926a8345f", "bytes": 2691, "elapsed_ms": 0, "stdout_tail": "", "stderr_tail": ""},
+    {"id": "s3", "tool": "write_file", "rc": 0, "path": "toolkit/jsonmini.py", "sha256": "19d47ff1064860d86e2425938bff03e0360f719121957bed15fdaa1e4f4e7da3", "bytes": 5883, "elapsed_ms": 0, "stdout_tail": "", "stderr_tail": ""},
+    {"id": "s4", "tool": "write_file", "rc": 0, "path": "toolkit/__main__.py", "sha256": "9dcd51868514a1531fa833b4e908807f24997ec41d39a1de184caf40f7373b3c", "bytes": 439, "elapsed_ms": 0, "stdout_tail": "", "stderr_tail": ""},
+    {"id": "s5", "tool": "run", "rc": 0, "path": "", "sha256": "", "bytes": 0, "elapsed_ms": 33, "stdout_tail": "ERRrc=0\n", "stderr_tail": ""}
+  ],
+  "artifacts": [
+    {"path": "toolkit/__init__.py", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "bytes": 0},
+    {"path": "toolkit/vm.py", "sha256": "995beeb1c76d41a65c9be77bd1bba234fa4b16d18ce6d3209d914dc926a8345f", "bytes": 2691},
+    {"path": "toolkit/jsonmini.py", "sha256": "19d47ff1064860d86e2425938bff03e0360f719121957bed15fdaa1e4f4e7da3", "bytes": 5883},
+    {"path": "toolkit/__main__.py", "sha256": "9dcd51868514a1531fa833b4e908807f24997ec41d39a1de184caf40f7373b3c", "bytes": 439}
+  ]
+}

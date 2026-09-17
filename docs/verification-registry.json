@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R531",
+ "updated_round": "R532",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -6647,7 +6647,7 @@
     "eval/rover/r529/grade_f2_r529.py",
     "eval/rover/r529/taskset-r529.json",
     "eval/rover/r529/evidence/nc-fixture-r529.json"
-    ],
+   ],
    "evidence_cmd": "python3 eval/rover/r529/build_fixture_r529.py && python3 eval/rover/r529/j1b_grader_nc_r529.py",
    "evidence_path": "eval/rover/r529/evidence/nc-fixture-r529.json",
    "evidence_generated_with": {
@@ -6767,6 +6767,60 @@
    },
    "negative_control": "**无专用 `--neg-control` 开关 (诚实登记, 不冒充)**: 反恒真由三条结构性保证 —— ① 无窗 ⇒ `AGG_RC=3` fail-closed (不输出任何比值) ② 某臂在该窗缺席 ⇒ 该臂标缺、比值置 `null` 且**不参与极差** (禁以 0 冒充) ③ 只读冻结 `report.json`, 不重算、不回写。窗数 <3 时 verdict 强制 `provisional`, 防单窗冒充结论。",
    "owner_round": "R531"
+  },
+  {
+   "id": "internal.r1-contract-wiring-r532",
+   "level": "L4",
+   "capability": "**R1 结构化契约管道接线 (R532, 用户 2026-09-17 方向令)**: 把 R-N1 的 `src/agent/contract/*` 从「有代码行」接到产品单条路径 —— env `AGENTFRAMEWORK_R1_CONTRACT=1` 时 `-q` 路径转 `agent.r1.R1Pipeline`（pin 自检 → 1 次结构化调用 → 契约校验 → 语义闸 → 白名单执行 → 台账），缺省关 ⇒ 行为不变。**实发 prompt 机检 (非法自证)**: 实发 system head = 3,889 字符 sha `58e2df67afe1923b…` **逐字节 == 产品侧台账 pin**; 剩余 532 字符 = 宿主 R522 纪律块, sha `16efa2f069698edd` **与同窗对侧臂逐字节相同** ⇒ 线上恒定前缀 4,423 字符随调用不变 (`wired_constant_prefix_ok=True`)。同窗读数 (mini1, 题面 t1 sha `9fbfaeb3…`): R1 臂 **1 调用 / 6,731 token / 26-30 用例**, A1-on 臂 19 调用 / 277,529 token / 30-30 ⇒ 调用 0.053× · token 0.024×。**读数标「参考(未可验收)」**(铁律 11 rc=3)。",
+   "covers": [
+    "src/agent/r1",
+    "src/agent.host/R1CliEntry.cs",
+    "src/agent.host/Program.cs",
+    "eval/rover/r532/analyze_r532.py",
+    "eval/rover/r532/run_r532_mini.sh",
+    "eval/rover/r532/evidence/mini1",
+    "agent/r1",
+    "agent/host/R1CliEntry.cs"
+   ],
+   "evidence_cmd": "bash eval/rover/r532/run_r532_mini.sh  (rc=0, 同窗 mini1: 起手闸 2/2 PASS + 冒烟 rc=0 + 两臂 + 判分); python3 eval/rover/r532/analyze_r532.py --run-dir /tmp/r532_mini --window mini1",
+   "evidence_path": "eval/rover/r532/evidence/mini1/logs/analysis-mini1.json",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "ac1a2bf507fb",
+    "instrument": "eval/rover/r532/run_r532_mini.sh",
+    "instrument_sha12": "7dac83eff551",
+    "binding": "audit-pin",
+    "audited_by_round": "R532"
+   },
+   "negative_control": "① 同器具对 A1-on 臂判 M1 **假** (其 system 9,937 字符 ≠ R1 pin) ⇒ 判据对「未走 R1 路径」的臂会响, 非恒真; ② 不设 env 时宿主走动作环 (A1-on 臂即证: 19 调用/工具面 5 个), R1 分支不介入。",
+   "owner_round": "R532"
+  },
+  {
+   "id": "internal.r1-pipeline-unit-r532",
+   "level": "L3",
+   "capability": "**R1 管道闸与执行器单测 (R532)**: 11 例 —— 契约非法/修复轮 (`calls=2`) · `refusal`→rc 3 · 缺槽→rc 2 · 路径逃逸 (`../`+绝对路径) →rc 4 **且沙箱外不落盘** · `expect_stdout` 不符→rc 5 · 台账 JSON 可机解且 `rc=0`/`prefix_sha256` 齐 · `R1_STATS` 标记单行 · role 尾块只进 user 轮 (`head` 不变) · 写侧 UTF8 无 BOM (`bytes` 与去 BOM 后长度一致)。读数: **11/11 绿** (958 ms)。",
+   "covers": [
+    "src/agent.tests/R1PipelineTests.cs",
+    "src/agent/r1",
+    "agent/tests/R1PipelineTests.cs",
+    "agent/r1"
+   ],
+   "evidence_cmd": "env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR $HOME/.dotnet/dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~R1PipelineTests",
+   "evidence_path": "eval/rover/r532/evidence/unit-r1-tests.txt",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "2d957266c604",
+    "instrument": null,
+    "instrument_sha12": null,
+    "binding": "audit-pin",
+    "audited_by_round": "R532"
+   },
+   "negative_control": "路径逃逸例断言沙箱外文件**不存在** (逃逸侧红); `expect_stdout` 例用错期望值必红; 台账解析例对空文件必红 (禁恒真断言)。",
+   "owner_round": "R532"
   }
  ],
  "aot_check_policy": "release_tag_only",

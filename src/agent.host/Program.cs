@@ -593,6 +593,19 @@ if (args.Length >= 2 && args[0] == "--frontend-api")
                 session.RecordStep($"LLM 处理 ({intent})");
                 sink.Step(step, "管线执行 (上下文装配 → LLM → 后处理)…");
 
+                // R1 接线 (R532): 单条路径可切结构化契约管道 —— env AGENTFRAMEWORK_R1_CONTRACT=1 生效;
+                // 缺省关 ⇒ 宿主行为与既往一致 (可回退)。rc 直接透出 (0/2/3/4/5/6)。
+                if (global::agent.r1.R1ContractMode.IsEnabled)
+                {
+                    step++;
+                    session.RecordStep("R1 结构化管道");
+                    sink.Step(step, "R1 结构化管道 (恒定前缀 → 契约校验 → 语义闸 → 管道执行)…");
+                    var rcR1 = await global::agent.host.R1CliEntry.RunAsync(provider, sink, input, CancellationToken.None);
+                    session.RecordStep("R1 rc=" + rcR1);
+                    if (oneShot != null) return rcR1;
+                    continue;
+                }
+
                 var pyLedger = provider.GetService<agent.registry.PythonArtifactLedger>();
                 var pyVersion0 = pyLedger?.Version ?? 0;
                 var reply = await agent.ProcessAsync(msg, CancellationToken.None);

@@ -1,0 +1,140 @@
+using System.IO;
+using System.Text;
+
+namespace agent.r1;
+
+/// <summary>
+/// R1 管道 · 落盘台账（机读 JSON；写侧 UTF8 无 BOM）。
+/// 与 R1Json 同源手写 ⇒ AOT 下无反射序列化依赖。
+/// stdout 另打一行 R1_STATS 标记：不依赖文件即可取读数（文件路径可用则同时落盘）。
+/// </summary>
+public static class R1Transcript
+{
+    public const string Schema = "r1-run/1";
+
+    public static string Marker(R1RunResult r)
+    {
+        var sb = new StringBuilder("R1_STATS {");
+        sb.Append("\"schema\":").Append(R1Json.Quote(Schema));
+        sb.Append(",\"rc\":").Append(R1Json.Num(r.Rc));
+        sb.Append(",\"stage\":").Append(R1Json.Quote(r.Stage));
+        sb.Append(",\"calls\":").Append(R1Json.Num(r.Stats.Calls));
+        sb.Append(",\"prompt_tokens\":").Append(R1Json.Num(r.Stats.PromptTokens));
+        sb.Append(",\"completion_tokens\":").Append(R1Json.Num(r.Stats.CompletionTokens));
+        sb.Append(",\"cache_hit_tokens\":").Append(R1Json.NumOrNull(r.Stats.CacheHitTokens));
+        sb.Append(",\"cache_miss_tokens\":").Append(R1Json.NumOrNull(r.Stats.CacheMissTokens));
+        sb.Append(",\"repair_rounds\":").Append(R1Json.Num(r.Stats.RepairRounds));
+        sb.Append(",\"prefix_chars\":").Append(R1Json.Num(r.PrefixChars));
+        sb.Append(",\"prefix_sha256\":").Append(R1Json.Quote(r.PrefixSha256));
+        sb.Append(",\"task_sha256\":").Append(R1Json.Quote(r.TaskSha256));
+        sb.Append(",\"steps\":").Append(R1Json.Num(r.Steps.Count));
+        sb.Append(",\"role_note_chars\":").Append(R1Json.Num(r.RoleNoteChars));
+        sb.Append("}");
+        return sb.ToString();
+    }
+
+    public static string Render(R1RunResult r, R1Options opt, string taskText)
+    {
+        var sb = new StringBuilder(2048);
+        sb.Append("{\n");
+        sb.Append("  \"schema\": ").Append(R1Json.Quote(Schema)).Append(",\n");
+        sb.Append("  \"tag\": ").Append(R1Json.Quote(opt.Tag)).Append(",\n");
+        sb.Append("  \"sandbox\": ").Append(R1Json.Quote(opt.SandboxRoot)).Append(",\n");
+        sb.Append("  \"task_sha256\": ").Append(R1Json.Quote(r.TaskSha256)).Append(",\n");
+        sb.Append("  \"task_chars\": ").Append(R1Json.Num((taskText ?? string.Empty).Length)).Append(",\n");
+        sb.Append("  \"prefix_chars\": ").Append(R1Json.Num(r.PrefixChars)).Append(",\n");
+        sb.Append("  \"prefix_sha256\": ").Append(R1Json.Quote(r.PrefixSha256)).Append(",\n");
+        sb.Append("  \"prefix_pinned\": ").Append(r.PrefixSha256 == agent.contract.StructuredPrompt.PrefixSha256Pinned ? "true" : "false").Append(",\n");
+        sb.Append("  \"role_note_chars\": ").Append(R1Json.Num(r.RoleNoteChars)).Append(",\n");
+        sb.Append("  \"max_repair\": ").Append(R1Json.Num(opt.MaxRepair)).Append(",\n");
+        sb.Append("  \"step_timeout_s\": ").Append(R1Json.Num(opt.StepTimeoutSeconds)).Append(",\n");
+        sb.Append("  \"rc\": ").Append(R1Json.Num(r.Rc)).Append(",\n");
+        sb.Append("  \"stage\": ").Append(R1Json.Quote(r.Stage)).Append(",\n");
+        sb.Append("  \"reason\": ").Append(R1Json.Quote(r.Reason)).Append(",\n");
+        sb.Append("  \"calls\": ").Append(R1Json.Num(r.Stats.Calls)).Append(",\n");
+        sb.Append("  \"prompt_tokens\": ").Append(R1Json.Num(r.Stats.PromptTokens)).Append(",\n");
+        sb.Append("  \"completion_tokens\": ").Append(R1Json.Num(r.Stats.CompletionTokens)).Append(",\n");
+        sb.Append("  \"cache_hit_tokens\": ").Append(R1Json.NumOrNull(r.Stats.CacheHitTokens)).Append(",\n");
+        sb.Append("  \"cache_miss_tokens\": ").Append(R1Json.NumOrNull(r.Stats.CacheMissTokens)).Append(",\n");
+        sb.Append("  \"repair_rounds\": ").Append(R1Json.Num(r.Stats.RepairRounds)).Append(",\n");
+
+        var sem = r.Semantics;
+        sb.Append("  \"semantics\": ");
+        if (sem is null)
+        {
+            sb.Append("null,\n");
+        }
+        else
+        {
+            sb.Append("{\"intent\": ").Append(R1Json.Quote(sem.Intent));
+            sb.Append(", \"confidence\": ").Append(R1Json.Num(sem.Confidence));
+            sb.Append(", \"missing_slots\": ").Append(StrArray(sem.MissingSlots));
+            sb.Append(", \"ambiguities\": ").Append(R1Json.Num(sem.Ambiguities.Count));
+            sb.Append(", \"refusal\": ").Append(sem.Refusal is null ? "null" : R1Json.Quote(sem.Refusal.Category + ": " + sem.Refusal.Reason));
+            sb.Append(", \"done_when\": ").Append(StrArray(sem.DoneWhen));
+            sb.Append("},\n");
+        }
+
+        sb.Append("  \"steps\": [");
+        for (var i = 0; i < r.Steps.Count; i++)
+        {
+            var s = r.Steps[i];
+            sb.Append(i == 0 ? "\n" : ",\n");
+            sb.Append("    {\"id\": ").Append(R1Json.Quote(s.Id));
+            sb.Append(", \"tool\": ").Append(R1Json.Quote(s.Tool));
+            sb.Append(", \"rc\": ").Append(R1Json.Num(s.Rc));
+            sb.Append(", \"path\": ").Append(R1Json.Quote(s.Path));
+            sb.Append(", \"sha256\": ").Append(R1Json.Quote(s.Sha256));
+            sb.Append(", \"bytes\": ").Append(R1Json.Num(s.Bytes));
+            sb.Append(", \"elapsed_ms\": ").Append(R1Json.Num(s.ElapsedMs));
+            sb.Append(", \"stdout_tail\": ").Append(R1Json.Quote(s.StdoutTail));
+            sb.Append(", \"stderr_tail\": ").Append(R1Json.Quote(s.StderrTail));
+            sb.Append("}");
+        }
+        sb.Append(r.Steps.Count == 0 ? "],\n" : "\n  ],\n");
+
+        sb.Append("  \"artifacts\": [");
+        var first = true;
+        foreach (var s in r.Steps)
+        {
+            if (s.Tool != "write_file")
+            {
+                continue;
+            }
+            sb.Append(first ? "\n" : ",\n");
+            first = false;
+            sb.Append("    {\"path\": ").Append(R1Json.Quote(s.Path));
+            sb.Append(", \"sha256\": ").Append(R1Json.Quote(s.Sha256));
+            sb.Append(", \"bytes\": ").Append(R1Json.Num(s.Bytes));
+            sb.Append("}");
+        }
+        sb.Append(first ? "]\n" : "\n  ]\n");
+        sb.Append("}\n");
+        return sb.ToString();
+    }
+
+    public static void Write(R1RunResult r, R1Options opt, string taskText)
+    {
+        if (string.IsNullOrWhiteSpace(opt.TranscriptPath))
+        {
+            return;
+        }
+        var path = Path.GetFullPath(opt.TranscriptPath);
+        var dir = Path.GetDirectoryName(path);
+        if (!string.IsNullOrEmpty(dir))
+        {
+            Directory.CreateDirectory(dir);
+        }
+        File.WriteAllBytes(path, new UTF8Encoding(false).GetBytes(Render(r, opt, taskText)));
+    }
+
+    private static string StrArray(System.Collections.Generic.IReadOnlyList<string> items)
+    {
+        var sb = new StringBuilder("[");
+        for (var i = 0; i < items.Count; i++)
+        {
+            sb.Append(i == 0 ? string.Empty : ", ").Append(R1Json.Quote(items[i]));
+        }
+        return sb.Append(']').ToString();
+    }
+}
