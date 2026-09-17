@@ -33,6 +33,9 @@ public static class R1Transcript
         sb.Append(",\"steps_executed\":").Append(R1Json.Num(r.Steps.Count));
         // R536: 自测期望未达成 ⇒ 独立可机读字段（不靠 rc 数字猜）；管道在首个不符处停机 ⇒ ≤1。
         sb.Append(",\"self_test_unmet\":").Append(R1Json.Num(SelfTestUnmet(r)));
+        // R539: 成对报的机检锚 —— **只有 rc=0 才断言产物正确**；rc=8「自测未达成」与产物可疑成对出现，
+        //   禁止把 rc=8 当正确性证据（判分器只吃这个字段与外部用例，不吃 rc 等值）。
+        sb.Append(",\"correctness_asserted\":").Append(R1Json.Num(CorrectnessAsserted(r)));
         sb.Append(",\"role_note_chars\":").Append(R1Json.Num(r.RoleNoteChars));
         sb.Append("}");
         return sb.ToString();
@@ -67,6 +70,7 @@ public static class R1Transcript
         sb.Append("  \"plan_steps_total\": ").Append(R1Json.Num(r.Semantics is null ? 0 : r.Semantics.Plan.Count)).Append(",\n");
         sb.Append("  \"steps_executed\": ").Append(R1Json.Num(r.Steps.Count)).Append(",\n");
         sb.Append("  \"self_test_unmet\": ").Append(R1Json.Num(SelfTestUnmet(r))).Append(",\n");
+        sb.Append("  \"correctness_asserted\": ").Append(R1Json.Num(CorrectnessAsserted(r))).Append(",\n");
 
         var sem = r.Semantics;
         sb.Append("  \"semantics\": ");
@@ -166,5 +170,15 @@ public static class R1Transcript
     private static int SelfTestUnmet(R1RunResult r)
     {
         return r.Rc == 8 || r.Stage.StartsWith("expect_stdout", System.StringComparison.Ordinal) ? 1 : 0;
+    }
+
+    /// <summary>
+    /// R539: 「本次运行是否断言了产物正确」。**只有 rc=0（链路达成）才为 1**；
+    /// rc=8「自测未达成」与产物可疑成对出现 ⇒ correctness_asserted=0（判分器只吃本字段与外部用例，
+    /// 禁把 rc 数字本身当正确性证据 —— 机检器 eval/rover/r539/rc8_evidence_guard.py）。
+    /// </summary>
+    public static int CorrectnessAsserted(R1RunResult r)
+    {
+        return r.Rc == 0 ? 1 : 0;
     }
 }

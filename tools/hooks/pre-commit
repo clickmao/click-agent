@@ -43,6 +43,21 @@ if command -v python3 >/dev/null 2>&1 && [ -f eval/capability/status_gen.py ]; t
   fi
 fi
 
+# R539 ④: R1 生成物漂移闸 —— `tools/r1gen/gen_csharp.py --check` (生成器 ⇄ 生成物 同源闸) 挂到提交面。
+#   动机: 手改生成物而没回写生成器 (实测 c7453d3 手改 StructuredPrompt.cs 未回写 ⇒ R1GEN_DRIFT=2)
+#   会在下一轮以「前缀 pin 漂移 ⇒ rc=6」的面目出现, 定位成本高; 这里在提交时 fail-closed 拦下。
+#   默认**开**; 越权关闸 (诊断/夹具): AGENTFRAMEWORK_R1GEN_CHECK=0。
+#   代价实测 0.034s (零噪声: 干净态只打一行 GEN_PREFIX)。
+if [ "${AGENTFRAMEWORK_R1GEN_CHECK:-1}" != "0" ] && [ -f tools/r1gen/gen_csharp.py ]; then
+  if ! python3 tools/r1gen/gen_csharp.py --check >/tmp/r1gen_precommit.log 2>&1; then
+    echo "BLOCKED(R539 生成物漂移闸): R1 生成物与生成器不同源 (手改生成物未回写?)。" >&2
+    echo "  处置: python3 tools/r1gen/gen_csharp.py --write   # 由生成器回写生成物, 再重提交" >&2
+    echo "  跳过本闸 (夹具/诊断): AGENTFRAMEWORK_R1GEN_CHECK=0" >&2
+    grep -m 5 '^DRIFT' /tmp/r1gen_precommit.log >&2 || tail -5 /tmp/r1gen_precommit.log >&2
+    exit 1
+  fi
+fi
+
 # EXP1-Q31: 跨写者提交闸 —— staged 必须等于本轮声明清单 (默认关: 无 AGENTFRAMEWORK_STAGE_MANIFEST 则不生效)
 if [ -n "${AGENTFRAMEWORK_STAGE_MANIFEST:-}" ]; then
   if [ ! -f "$AGENTFRAMEWORK_STAGE_MANIFEST" ]; then

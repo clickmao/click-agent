@@ -164,9 +164,11 @@ public static class R1Pipeline
                 {
                     var unmet = new R1RunResult(8, "self_test_unmet",
                         exec.Reason + "（计划已跑完 " + exec.Steps.Count + "/" + sem.Plan.Count
-                        + " 步, 产物在盘 ⇒ 记自测期望未达成, 不判链失败: 期望是模型自述, 判分以执行器实测/外部用例为准）",
+                        + " 步, 产物在盘 ⇒ 成对报「自测未达成 ∧ 产物可疑」: 期望是模型自述, 判分以执行器实测/外部用例为准;"
+                        + " rc=8 不作正确性证据 (correctness_asserted=0), 产物对错只能由外部门禁/隐藏用例判）",
                         raw + "\nR1_SELF_TEST_UNMET {\"steps_executed\":" + exec.Steps.Count
-                        + ",\"plan_steps_total\":" + sem.Plan.Count + ",\"detail\":\"expect_stdout 不符\"}",
+                        + ",\"plan_steps_total\":" + sem.Plan.Count + ",\"detail\":\"expect_stdout 不符\""
+                        + ",\"artifact\":\"suspect\",\"correctness_asserted\":0}",
                         statsAll, prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps);
                     R1Transcript.Write(unmet, opt, taskText ?? string.Empty);
                     return unmet;

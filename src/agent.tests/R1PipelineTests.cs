@@ -408,4 +408,36 @@ public sealed class R1PipelineTests
         Assert.DoesNotContain("role_profile", StructuredPrompt.Prefix, StringComparison.Ordinal);
         Assert.Equal(StructuredPrompt.PrefixSha256Pinned, StructuredPrompt.PrefixSha256());
     }
+
+    /// <summary>
+    /// R539 · rc=8 成对报「自测未达成 ∧ 产物可疑」且**不作正确性证据**：
+    /// 机读字段 correctness_asserted 仅在 rc=0 为 1（负控在正向里同测），禁把 rc 数字当判分依据。
+    /// </summary>
+    [Fact]
+    public async Task Rc8_Is_Paired_And_Never_Correctness_Evidence()
+    {
+        var sb = NewSandbox();
+        try
+        {
+            var bad = await R1Pipeline.RunAsync(new ScriptedCaller(MismatchJson, MismatchJson), "跑个命令",
+                Opt(sb, maxExecRepair: 1), CancellationToken.None);
+            Assert.Equal(8, bad.Rc);
+            Assert.Contains("自测未达成", bad.Reason, StringComparison.Ordinal);          // 成对报: 前件
+            Assert.Contains("产物可疑", bad.Reason, StringComparison.Ordinal);            // 成对报: 后件
+            Assert.Contains("rc=8 不作正确性证据", bad.Reason, StringComparison.Ordinal);  // 判据收窄的措辞锚
+            Assert.Contains("\"correctness_asserted\":0", R1Transcript.Marker(bad), StringComparison.Ordinal);
+            Assert.Contains("\"correctness_asserted\":0", bad.ReplyText, StringComparison.Ordinal);
+            Assert.Contains("\"self_test_unmet\":1", R1Transcript.Marker(bad), StringComparison.Ordinal);
+
+            // 正向对照: 同题在实测不符被真证据回灌修正后成链 ⇒ rc=0 才断言正确性
+            var ok = await R1Pipeline.RunAsync(new ScriptedCaller(MismatchJson, GoodJson), "跑个命令",
+                Opt(sb, maxExecRepair: 1), CancellationToken.None);
+            Assert.Equal(0, ok.Rc);
+            Assert.Contains("\"correctness_asserted\":1", R1Transcript.Marker(ok), StringComparison.Ordinal);
+        }
+        finally
+        {
+            Directory.Delete(sb, true);
+        }
+    }
 }

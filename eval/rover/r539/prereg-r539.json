@@ -1,0 +1,53 @@
+{
+ "round": "r539",
+ "revision": 1,
+ "made_before_run": true,
+ "mainline": "用真实开发任务(t1 多文件工具包 / m1 数学工具包 / ms1 缺信息题)与外部真值(codex-cli, 同模型 deepseek-flash)在『同环境·同输入·同模型』下对照, 对本项目做质量自检; 判据之一 = 一轮任务总 token/远端调用数下降(r1 挂 role 额外数据 vs A1-on 旧路径)",
+ "question": "① role 轴能否在 n≥3 独立窗上给出可复核读数(前缀钉 + role 只进 user 轮 + 实发 prompt 机检)? ② 外部真值(codex)外侧对照臂能否真跑通(候选①的补臂; R534 减法批把 r504 codex_solver 删掉后该臂断链, 本轮修复)? ③ rc=8『自测未达成』是否成对报『产物可疑』且机检『不作正确性证据』? ④ 缺信息题面是否走停链 rc=2 且零副作用?",
+ "single_variable": "role 额外数据挂载(r1 管道): R1r=挂 role / R1nr=不挂(A/B, 同二进制同题面同窗); 主对照 = R1r vs A1-on(旧路径), 外部参照 = C-codex",
+ "treatment": "R1r(role 挂载, R1 结构化契约管道) / R1nr(role 关, 同二进制) / R1ms(缺信息停链探针) / A1-on(旧路径 agent, 同窗同题) / C-codex(外部真值, 同模型同题)",
+ "arms": {
+  "R1r": "AGENTFRAMEWORK_R1_CONTRACT=1 + AGENTFRAMEWORK_R1_ROLE_FILE=role-r539.txt",
+  "R1nr": "AGENTFRAMEWORK_R1_CONTRACT=1, 不设 ROLE_FILE (unset)",
+  "R1ms": "同 R1r, 题面 = ms1(缺信息)",
+  "A1-on": "eval/rover/r539/proj_run_side_r539.py --side agent (旧路径, 无 R1 契约)",
+  "C-codex": "eval/rover/r539/proj_run_side_r539.py --side codex (codex exec --json, 同模型 deepseek-flash)"
+ },
+ "input_pins": {
+  "t1_m1_prompt_byte_identical_to": "eval/rover/r536/taskset-r536.json",
+  "cases_scripts_byte_identical_to": "eval/rover/r536/cases/*",
+  "role_file_md5_equal_to": "eval/rover/r536/role-r536.txt",
+  "check": "run_r539.sh 起臂前逐题核 prompt sha256 自洽 + 与 R536 对拍 md5; 不一致 ⇒ fail-closed rc=3 不起臂"
+ },
+ "evidence_scope": {
+  "require": [
+   "w1/agentR1nr-t1", "w2/agentR1nr-t1", "w3/agentR1nr-t1",
+   "w1/agentR1r-t1", "w2/agentR1r-t1", "w3/agentR1r-t1",
+   "w1/agentR1r-m1", "w2/agentR1r-m1", "w3/agentR1r-m1",
+   "w1/agentA1-on-t1", "w2/agentA1-on-t1", "w3/agentA1-on-t1",
+   "w1/codex", "w2/codex", "w3/codex"
+  ],
+  "nonrequired": [
+   {
+    "pattern": "w1/agentR1ms-ms1",
+    "reason": "候选③ 缺信息停链探针臂: 其判据是『rc=2 ∧ 零副作用』(停链题面本就不该产出产物), 不属于主对照的『产物可执行且正确』验收面; 未兑现时按三态记账单列, 不作验收依据。此声明在起臂前落盘。"
+   }
+  ]
+ },
+ "judgments": {
+  "J1_role_轴": "R1r 与 R1nr 的 prefix_sha256 相同(前缀未被 role 污染) ∧ R1r.role_note_chars>0 ∧ R1nr.role_note_chars==0; 实发 prompt 机检 = adapter dump 的 upstream 消息里 role 段出现在 user 轮。三窗逐窗报, 不给合并均值。",
+  "J2_主KPI": "同窗同题 t1: Σ(R1r+calls/tokens) vs Σ(A1-on) ⇒ 降幅; 三窗逐窗 + 极差; 单窗按噪声处理。rc=8/产物错的窗按『产物未对』标参考, 不作增益依据。",
+  "J3_ms1停链": "三态: (rc=2 ∧ 零副作用) ⇒ 兑现; rc∈{0,8} 或产物非空 ⇒ 未兑现(负结果, 记候选③未闭合); 输入缺失 ⇒ fail-closed 记未测。",
+  "J4_rc8非证据": "eval/rover/r539/rc8_evidence_guard.py --dir <run> 必须 rc=0; rc=8 的 transcript 须含『自测未达成』∧『产物可疑』∧ correctness_asserted=0; 任何把 rc=8 当正确性证据的记账 ⇒ 红。",
+  "J5_外部真值": "codex 臂须真跑通(产出可执行且用例全过)才构成外侧对照; 未跑通/未全对 ⇒ 该窗对照列标 unreliable, 不得当外部验证。"
+ },
+ "instrument_negative_control": [
+  "eval/rover/r539/rc8_evidence_guard.py --self-test: NC-A(rc=8 且 correctness_asserted=1) / NC-B(rc=8 且 cases_pass=0 却记 correct=true) 必红, PC 必绿",
+  "tools/prereg_amend.py --self-test: NC1 非法 JSON / NC2 重复 id / NC3 类型错 / NC4 非 UTF-8 皆须拒写且原文件字节不变",
+  "tools/hooks/pre-commit 生成器漂移前门: 在隔离 worktree 里扰动生成物 ⇒ 钩子须 rc≠0 拒收; AGENTFRAMEWORK_R1GEN_CHECK=0 ⇒ 旁路(负控与旁路都跑)"
+ ],
+ "external_validity_floor": "codex 侧为外部真值(同一真实模型, 同题同环境); 本侧读数一律以仓外/独立执行路径复核(exec_precondition 独立物化 + 隐藏用例实跑)。只读本仓内部读数/自报 = 封闭系统自证 ⇒ 记未自检。",
+ "acceptance": "python3 eval/rover/r507pre/exec_precondition.py --round r539 ⇒ rc=0 才可验收; rc≠0 ⇒ 本轮 token/调用降幅一律标『参考(未可验收)』",
+ "honest_note": "g1(游戏族长任务, 58 用例)本轮**不跑**: 单臂 32 步上限 × 18 分钟级 + 3 窗会超本轮预算 ⇒ 跨族面只覆盖 m1; R536 亦未跑 g1。",
+ "notes": "反例: 若 R1r 与 A1-on 的 token 降幅在三窗上符号相反或极差 > 中位, 本轮不得宣称增益; 若 codex 臂未跑通, 本轮无外部对照 ⇒ 主线段判『未自检』。"
+}

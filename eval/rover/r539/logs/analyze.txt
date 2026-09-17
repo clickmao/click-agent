@@ -1,0 +1,31 @@
+== R539 分析 (/home/agentuser/AgentFramework/eval/rover/r539/analyze-r539.json) ==
+-- w1  role轴: prefix_sha_equal=True role_note_chars(A/B)=[0, 326] role_in_user=False in_prefix=False in_system=False 反控命中=0
+   臂 A1-on-t1    calls=33  tok=519925  cases=26/30 rc=1 models=deepseek-chat unreported=0
+   臂 C-codex-t1  calls=0   tok=0       cases=29/30 rc=1 models= unreported=0
+   臂 R1ms-ms1    calls=1   tok=6996    cases=0/3 rc=0 models=deepseek-chat unreported=0
+   臂 R1nr-t1     calls=2   tok=21837   cases=30/30 rc=0 models=deepseek-chat unreported=0
+   臂 R1r-m1      calls=2   tok=20160   cases=30/30 rc=0 models=deepseek-chat unreported=0
+   臂 R1r-t1      calls=2   tok=22109   cases=30/30 rc=0 models=deepseek-chat unreported=0
+   主KPI w1: calls {'A1-on': 33, 'R1r': 2, 'delta_pct': 93.9} | tokens {'A1-on': 519925, 'R1r': 22109, 'delta_pct': 95.7} | 正确性 {'A1-on': '26/30', 'R1r': '30/30'}
+   外部列 codex: {"calls": 0, "total_tokens": 0, "cases": "29/30", "ok": false}
+-- w2  role轴: prefix_sha_equal=True role_note_chars(A/B)=[0, 326] role_in_user=False in_prefix=False in_system=False 反控命中=0
+   臂 A1-on-t1    calls=33  tok=658847  cases=30/30 rc=0 models=deepseek-chat unreported=0
+   臂 C-codex-t1  calls=0   tok=0       cases=30/30 rc=0 models= unreported=0
+   臂 R1nr-t1     calls=1   tok=10722   cases=30/30 rc=0 models=deepseek-chat unreported=0
+   臂 R1r-m1      calls=2   tok=20264   cases=30/30 rc=0 models=deepseek-chat unreported=0
+   臂 R1r-t1      calls=1   tok=12398   cases=30/30 rc=0 models=deepseek-chat unreported=0
+   主KPI w2: calls {'A1-on': 33, 'R1r': 1, 'delta_pct': 97.0} | tokens {'A1-on': 658847, 'R1r': 12398, 'delta_pct': 98.1} | 正确性 {'A1-on': '30/30', 'R1r': '30/30'}
+   外部列 codex: {"calls": 0, "total_tokens": 0, "cases": "30/30", "ok": true}
+-- w3  role轴: prefix_sha_equal=True role_note_chars(A/B)=[0, 326] role_in_user=False in_prefix=False in_system=False 反控命中=0
+   臂 A1-on-t1    calls=33  tok=559074  cases=30/30 rc=0 models=deepseek-chat unreported=0
+   臂 C-codex-t1  calls=0   tok=0       cases=30/30 rc=0 models= unreported=0
+   臂 R1nr-t1     calls=3   tok=32488   cases=28/30 rc=1 models=deepseek-chat unreported=0
+   臂 R1r-m1      calls=2   tok=19557   cases=30/30 rc=0 models=deepseek-chat unreported=0
+   臂 R1r-t1      calls=1   tok=11017   cases=30/30 rc=0 models=deepseek-chat unreported=0
+   主KPI w3: calls {'A1-on': 33, 'R1r': 1, 'delta_pct': 97.0} | tokens {'A1-on': 559074, 'R1r': 11017, 'delta_pct': 98.0} | 正确性 {'A1-on': '30/30', 'R1r': '30/30'}
+   外部列 codex: {"calls": 0, "total_tokens": 0, "cases": "30/30", "ok": true}
+降幅极差(逐窗 token Δ%) = [95.7, 98.1]
+m1 跨族面 = {"w1": {"cases": "30/30", "rc": 5}, "w2": {"cases": "30/30", "rc": 5}, "w3": {"cases": "30/30", "rc": 0}}
+ms1 探针 = {"window": "w1", "cases": "0/3", "cases_rc": 0, "verdict_text": "判据兑现(停链+零副作用)", "rc": 2, "steps_executed": 0, "plan_steps_total": 0, "reason_head": "缺信息 ⇒ 停下澄清", "兑现": false}
+rc=8 计数 = 2 [('R1nr-t1', 'w1', 8), ('R1r-t1', 'w1', 8)]
+ANALYZE_RC=0

@@ -1,0 +1,31 @@
+DISCOVER layout=project taskset=eval/rover/r539/taskset-r539.json windows=3 snapshot_root=eval/rover/r539/snapshots
+w1      arms=6 correct=4
+   agentA1-on-t1/t1 side=agent  cases=26/30  rc=1    correct=False claimed=False jsonmini#14-hidden,jsonmini#18-hidden,jsonmini#22-hidden,jsonmini#26-hidden
+   agentR1ms-ms1/ms1 side=agent  cases=3/3    rc=0    correct=True  claimed=False 
+   agentR1nr-t1/t1  side=agent  cases=30/30  rc=0    correct=True  claimed=True  
+   agentR1r-m1/m1   side=agent  cases=30/30  rc=0    correct=True  claimed=True  
+   agentR1r-t1/t1   side=agent  cases=30/30  rc=0    correct=True  claimed=True  
+   codex/t1         side=codex  cases=29/30  rc=1    correct=False claimed=False jsonmini#14-hidden
+w2      arms=5 correct=5
+   agentA1-on-t1/t1 side=agent  cases=30/30  rc=0    correct=True  claimed=True  
+   agentR1nr-t1/t1  side=agent  cases=30/30  rc=0    correct=True  claimed=True  
+   agentR1r-m1/m1   side=agent  cases=30/30  rc=0    correct=True  claimed=True  
+   agentR1r-t1/t1   side=agent  cases=30/30  rc=0    correct=True  claimed=True  
+   codex/t1         side=codex  cases=30/30  rc=0    correct=True  claimed=True  
+w3      arms=5 correct=4
+   agentA1-on-t1/t1 side=agent  cases=30/30  rc=0    correct=True  claimed=True  
+   agentR1nr-t1/t1  side=agent  cases=28/30  rc=1    correct=False claimed=False jsonmini#14-hidden,jsonmini#26-hidden
+   agentR1r-m1/m1   side=agent  cases=30/30  rc=0    correct=True  claimed=True  
+   agentR1r-t1/t1   side=agent  cases=30/30  rc=0    correct=True  claimed=True  
+   codex/t1         side=codex  cases=30/30  rc=0    correct=True  claimed=True  
+DECLARED_ABSENT=-
+POLICY_ACTIVE=False reason=no_policy_key ts=None checks={}
+SELF_REPORT_AGREES=False
+EXECUTABLE_AND_CORRECT=False (全局, 任一臂-题不许错)
+SCOPE_SOURCE=eval/rover/r539/prereg-r539.json PREREG=True
+ACCEPTABLE_SCOPED=False
+NONREQUIRED w1/agentR1ms-ms1 correct=True :: w1/agentR1ms-ms1/ms1 rc=0 cases=3/3(expect 3) failed=-
+BLOCKED: w1/agentA1-on-t1/t1 rc=1 cases=26/30(expect 30) failed=jsonmini#14-hidden,jsonmini#18-hidden,jsonmini#22-hidden,jsonmini#26-hidden | w1/codex/t1 rc=1 cases=29/30(expect 30) failed=jsonmini#14-hidden | w3/agentR1nr-t1/t1 rc=1 cases=28/30(expect 30) failed=jsonmini#14-hidden,jsonmini#26-hidden
+OUT=/home/agentuser/AgentFramework/eval/rover/r507pre/precondition-r539.json
+VERDICT_BLOCKED ⇒ rc=1 (验收面 [require ∪ 未声明] 存在未执行/不正确臂 ⇒ 不得 rc=0 假绿)
+PRECOND_RC=1
