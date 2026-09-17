@@ -38,11 +38,15 @@ public static class R1Transcript
         sb.Append(",\"correctness_asserted\":").Append(R1Json.Num(CorrectnessAsserted(r)));
         sb.Append(",\"role_note_chars\":").Append(R1Json.Num(r.RoleNoteChars));
         // R544: 产物侧公开用例回放（关闭/抽不出时不出现这两个字段 ⇒ 与旧台账逐字节同）。
+        // R545: 加 reason 与 trigger_rc —— reason 让「没跑」的**原因**可机检（no_artifacts_on_disk 等），
+        //   trigger_rc 让「触发面已覆盖 rc≠0 的产物在盘出口」可机检（ran=1 ∧ trigger_rc=5）。
         if (r.Probe is not null)
         {
             sb.Append(",\"public_probe_ran\":").Append(R1Json.Num(r.Probe.Ran ? 1 : 0));
+            sb.Append(",\"public_probe_reason\":").Append(R1Json.Quote(r.Probe.Reason));
             sb.Append(",\"public_probe_total\":").Append(R1Json.Num(r.Probe.Total));
             sb.Append(",\"public_probe_failed\":").Append(R1Json.Num(r.Probe.Failed));
+            sb.Append(",\"public_probe_trigger_rc\":").Append(R1Json.Num(r.Probe.TriggerRc));
         }
         sb.Append("}");
         return sb.ToString();
@@ -79,8 +83,10 @@ public static class R1Transcript
         sb.Append("  \"self_test_unmet\": ").Append(R1Json.Num(SelfTestUnmet(r))).Append(",\n");
         sb.Append("  \"correctness_asserted\": ").Append(R1Json.Num(CorrectnessAsserted(r))).Append(",\n");
         sb.Append("  \"public_probe_ran\": ").Append(r.Probe is null ? "null" : R1Json.Num(r.Probe.Ran ? 1 : 0)).Append(",\n");
+        sb.Append("  \"public_probe_reason\": ").Append(r.Probe is null ? "null" : R1Json.Quote(r.Probe.Reason)).Append(",\n");
         sb.Append("  \"public_probe_total\": ").Append(r.Probe is null ? "null" : R1Json.Num(r.Probe.Total)).Append(",\n");
         sb.Append("  \"public_probe_failed\": ").Append(r.Probe is null ? "null" : R1Json.Num(r.Probe.Failed)).Append(",\n");
+        sb.Append("  \"public_probe_trigger_rc\": ").Append(r.Probe is null ? "null" : R1Json.Num(r.Probe.TriggerRc)).Append(",\n");
 
         var sem = r.Semantics;
         sb.Append("  \"semantics\": ");

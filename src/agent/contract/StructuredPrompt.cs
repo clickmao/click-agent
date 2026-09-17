@@ -380,4 +380,14 @@ N10 兄弟步骤互相 depends_on（a 依赖 b 且 b 依赖 a）⇒ 错在 DAG�
         }
         return sb.ToString();
     }
+
+    /// <summary>
+    /// 公开用例**已过**但链仍未达成的证据优先回灌 (R545): 回放全过 ⇒ 公开面（**必要非充分**）已满足,
+    /// 剩余缺口在执行器实测那一面。此条明说「必要非充分」, 禁据公开面收尾。
+    /// </summary>
+    public static string PublicProbePassedNote(int total)
+    {
+        return "[public_probe_passed] 题面公开用例回放 " + total + "/" + total + " 已全过 —— 该面是**必要非充分**判据: "
+            + "它只证明公开输入/输出契约被满足, **不能**据以收尾或宣称完成; 剩余缺口以下列**执行器实测**证据为准。";
+    }
 }

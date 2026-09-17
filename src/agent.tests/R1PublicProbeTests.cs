@@ -331,4 +331,203 @@ public class R1PublicProbeTests
             Directory.Delete(sb, true);
         }
     }
+
+    // ---------- ③b R545 · 触发面 = 全部「产物在盘」出口（R544 预注册 J1 被证伪后的修法） ----------
+
+    private static string RunStep(string id, string cmd, string expect = "") =>
+        "{\"id\":\"" + id + "\",\"tool\":\"run\",\"args\":{\"cmd\":\"" + Esc(cmd) + "\""
+        + (expect.Length > 0 ? ",\"expect_stdout\":\"" + Esc(expect) + "\"" : string.Empty)
+        + "},\"depends_on\":[]}";
+
+    /// <summary>写 games/ 包 + 一个 run 步骤 ⇒ 把链推到 **rc≠0** 出口（旧触发面到不了的地方）。</summary>
+    private static string PlanJsonWithRun(string aPy, string cmd, string expect = "") =>
+        "{\"schema_version\":\"r1.0\",\"intent\":\"code_task\",\"confidence\":0.9,\"entities\":[],\"constraints\":[],"
+        + "\"missing_slots\":[],\"ambiguities\":[],\"done_when\":[],\"refusal\":null,\"plan\":["
+        + Step("s1", "games/__init__.py", "")
+        + "," + Step("s2", "games/__main__.py", MainPy)
+        + "," + Step("s3", "games/a.py", aPy)
+        + "," + RunStep("s4", cmd, expect)
+        + "]}";
+
+    /// <summary>零写盘计划（只有 run 步骤）：无产物可回放。</summary>
+    private static string RunOnlyPlan(string cmd, string expect = "") =>
+        "{\"schema_version\":\"r1.0\",\"intent\":\"code_task\",\"confidence\":0.9,\"entities\":[],\"constraints\":[],"
+        + "\"missing_slots\":[],\"ambiguities\":[],\"done_when\":[],\"refusal\":null,\"plan\":["
+        + RunStep("s1", cmd, expect) + "]}";
+
+    /// <summary>
+    /// J1 修法的成对判据（R544 预注册 J1 在同窗被证伪：3 个 on 臂里 2 个根本没到回放点）。
+    /// ① 正向：链在 **rc=5 run_rc** 出口 ⇒ 产物已在盘 ⇒ 探针必须跑（ran=1 / trigger_rc=5），
+    ///    且**保留链的分类**（rc=5, stage=run_rc）—— 探针只降级「自述成功」，不覆盖既有失败分类；
+    /// ② 负控（零回归）：同产物同计划关掉开关 ⇒ rc/stage/调用数与旧行为逐位同，且台账无探针字段。
+    /// </summary>
+    [Fact]
+    public async Task Probe_Runs_On_Rc5_RunRc_Exit_And_Keeps_Chain_Classification()
+    {
+        var offSb = NewSandbox();
+        var onSb = NewSandbox();
+        try
+        {
+            var plan = PlanJsonWithRun(BadAPy, "python3 -c \"import sys; sys.exit(3)\"");
+
+            var offCaller = new ScriptedCaller(plan);
+            var off = await R1Pipeline.RunAsync(offCaller, SyntheticTask, Opt(offSb, probe: false), CancellationToken.None);
+            Assert.Equal(5, off.Rc);
+            Assert.Equal("run_rc", off.Stage);
+            Assert.Equal(1, offCaller.Calls);
+            Assert.Null(off.Probe);
+            Assert.DoesNotContain("public_probe", R1Transcript.Marker(off), StringComparison.Ordinal);
+
+            var onCaller = new ScriptedCaller(plan);
+            var on = await R1Pipeline.RunAsync(onCaller, SyntheticTask, Opt(onSb, probe: true), CancellationToken.None);
+            Assert.Equal(5, on.Rc);                       // 链分类不被探针覆盖
+            Assert.Equal("run_rc", on.Stage);
+            Assert.Equal(1, onCaller.Calls);              // 探针是本地回放，不吃远端调用
+            Assert.NotNull(on.Probe);
+            Assert.True(on.Probe!.Ran);                   // ← 旧触发面下这里恒为 false
+            Assert.Equal(5, on.Probe.TriggerRc);
+            Assert.Equal(1, on.Probe.Failed);             // 产物错（BadAPy）⇒ 回放未过
+            Assert.Contains("\"public_probe_ran\":1", R1Transcript.Marker(on), StringComparison.Ordinal);
+            Assert.Contains("\"public_probe_trigger_rc\":5", R1Transcript.Marker(on), StringComparison.Ordinal);
+            Assert.Contains("\"correctness_asserted\":0", R1Transcript.Marker(on), StringComparison.Ordinal);
+            Assert.Contains("R1_PUBLIC_PROBE", on.ReplyText, StringComparison.Ordinal);
+        }
+        finally
+        {
+            Directory.Delete(offSb, true);
+            Directory.Delete(onSb, true);
+        }
+    }
+
+    /// <summary>
+    /// rc=8「自测未达成」出口也在新触发面内（旧触发面只到 rc=0）：expect_stdout 不符 + 计划跑完
+    /// ⇒ 链判 rc=8；同一次运行里探针独立回放**全过**（产物其实对）⇒ 两面都可见、互不冒充：
+    /// rc 仍是 8（不作正确性证据），public_probe_* 如实报 1/1。
+    /// </summary>
+    [Fact]
+    public async Task Probe_Runs_On_SelfTestUnmet_Exit_And_Pairs_Both_Faces()
+    {
+        var sb = NewSandbox();
+        try
+        {
+            var plan = PlanJsonWithRun(GoodAPy, "python3 -c \"print(21)\"", "14");
+            var caller = new ScriptedCaller(plan);
+            var res = await R1Pipeline.RunAsync(caller, SyntheticTask, Opt(sb, probe: true), CancellationToken.None);
+
+            Assert.Equal(8, res.Rc);
+            Assert.Equal("self_test_unmet", res.Stage);
+            Assert.NotNull(res.Probe);
+            Assert.True(res.Probe!.Ran);
+            // 触发口径 = **执行器出口 rc**（此处 5 = expect_stdout）；链的最终 rc 8 是它之后才升级的。
+            Assert.Equal(5, res.Probe.TriggerRc);
+            Assert.Equal(0, res.Probe.Failed);
+            Assert.Contains("题面公开用例回放 1/1 过（同一面, 不改变本分类）", res.Reason, StringComparison.Ordinal);
+            Assert.Contains("\"self_test_unmet\":1", R1Transcript.Marker(res), StringComparison.Ordinal);
+            Assert.Contains("\"public_probe_failed\":0", R1Transcript.Marker(res), StringComparison.Ordinal);
+        }
+        finally
+        {
+            Directory.Delete(sb, true);
+        }
+    }
+
+    /// <summary>
+    /// 零写盘 ⇒ 无产物可回放 ⇒ 显式弃权（ran=0, reason=no_artifacts_on_disk），且 rc/stage 与关闭态逐位同。
+    /// 这条是把「触发面扩大」限制在**机械可判**边界内的证据：缺项不得冒充通过。
+    /// </summary>
+    [Fact]
+    public async Task Probe_Declines_Explicitly_When_No_Artifact_On_Disk()
+    {
+        var offSb = NewSandbox();
+        var onSb = NewSandbox();
+        try
+        {
+            var plan = RunOnlyPlan("python3 -c \"import sys; sys.exit(3)\"");
+
+            var off = await R1Pipeline.RunAsync(new ScriptedCaller(plan), SyntheticTask,
+                Opt(offSb, probe: false), CancellationToken.None);
+            Assert.Equal(5, off.Rc);
+            Assert.Equal("run_rc", off.Stage);
+            Assert.Null(off.Probe);
+
+            var on = await R1Pipeline.RunAsync(new ScriptedCaller(plan), SyntheticTask,
+                Opt(onSb, probe: true), CancellationToken.None);
+            Assert.Equal(5, on.Rc);
+            Assert.Equal("run_rc", on.Stage);
+            Assert.NotNull(on.Probe);
+            Assert.False(on.Probe!.Ran);
+            Assert.Equal("no_artifacts_on_disk", on.Probe.Reason);
+            Assert.Equal(5, on.Probe.TriggerRc);
+            Assert.Contains("\"public_probe_ran\":0", R1Transcript.Marker(on), StringComparison.Ordinal);
+            Assert.Contains("\"public_probe_reason\":\"no_artifacts_on_disk\"", R1Transcript.Marker(on), StringComparison.Ordinal);
+        }
+        finally
+        {
+            Directory.Delete(offSb, true);
+            Directory.Delete(onSb, true);
+        }
+    }
+
+    /// <summary>
+    /// 证据优先级（R545）：探针失败 ⇒ 回灌用 <c>[public_probe]</c>（管道自产）而**不是** <c>[exec_repair]</c>
+    /// （其期望可能是模型自述）；预算耗尽后仍**保留链分类**（rc=5 stage=run_rc_exhausted）。
+    /// </summary>
+    [Fact]
+    public async Task Probe_Failure_Evidence_Takes_Priority_Over_Exec_Evidence()
+    {
+        var sb = NewSandbox();
+        try
+        {
+            var plan = PlanJsonWithRun(BadAPy, "python3 -c \"import sys; sys.exit(3)\"");
+            var caller = new ScriptedCaller(plan, plan);
+            var res = await R1Pipeline.RunAsync(caller, SyntheticTask, Opt(sb, probe: true, maxExecRepair: 1),
+                CancellationToken.None);
+
+            Assert.Equal(5, res.Rc);
+            Assert.Equal("run_rc_exhausted", res.Stage);
+            Assert.Equal(2, caller.Calls);
+            Assert.Equal(1, res.Stats.ExecRepairs);
+            Assert.Contains("[public_probe]", caller.LastUserMessage, StringComparison.Ordinal);
+            Assert.DoesNotContain("[exec_repair]", caller.LastUserMessage, StringComparison.Ordinal);
+            Assert.Contains("非你的自述", caller.LastUserMessage, StringComparison.Ordinal);
+            Assert.Contains("R1_PUBLIC_PROBE", res.ReplyText, StringComparison.Ordinal);
+            Assert.Contains("\"public_probe_failed\":1", R1Transcript.Marker(res), StringComparison.Ordinal);
+        }
+        finally
+        {
+            Directory.Delete(sb, true);
+        }
+    }
+
+    /// <summary>
+    /// 反向证据优先级（R545）：探针**全过**但链未达成 ⇒ 回灌明说「必要非充分」，**不得**被读成收尾信号；
+    /// 主证据仍是执行器实测（两条并存，可机检）。
+    /// </summary>
+    [Fact]
+    public async Task Probe_Passed_Yet_Chain_Unmet_Says_Necessary_Not_Sufficient()
+    {
+        var sb = NewSandbox();
+        try
+        {
+            var plan = PlanJsonWithRun(GoodAPy, "python3 -c \"import sys; sys.exit(3)\"");
+            var caller = new ScriptedCaller(plan, plan);
+            var res = await R1Pipeline.RunAsync(caller, SyntheticTask, Opt(sb, probe: true, maxExecRepair: 1),
+                CancellationToken.None);
+
+            Assert.Equal(5, res.Rc);
+            Assert.Equal("run_rc_exhausted", res.Stage);
+            Assert.NotNull(res.Probe);
+            Assert.True(res.Probe!.Ran);
+            Assert.Equal(0, res.Probe.Failed);
+            Assert.Contains("[public_probe_passed]", caller.LastUserMessage, StringComparison.Ordinal);
+            Assert.Contains("必要非充分", caller.LastUserMessage, StringComparison.Ordinal);
+            Assert.Contains("[exec_repair]", caller.LastUserMessage, StringComparison.Ordinal);
+            Assert.Contains("实测 rc=3", caller.LastUserMessage, StringComparison.Ordinal);
+            Assert.Contains("\"correctness_asserted\":0", R1Transcript.Marker(res), StringComparison.Ordinal);
+        }
+        finally
+        {
+            Directory.Delete(sb, true);
+        }
+    }
 }

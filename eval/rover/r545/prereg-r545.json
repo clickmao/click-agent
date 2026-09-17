@@ -1,0 +1,110 @@
+{
+ "round": "r545",
+ "title": "g1 产物侧公开用例独立回放 · 触发面修正轮 (R544 预注册 J1 被同窗实测证伪后的修订)",
+ "revision": 2,
+ "supersedes": "eval/rover/r544/prereg-r544.json (J1 触发面 v1 = 仅 `exec.Rc==0`)",
+ "made_before_run": true,
+ "made_at": "2026-09-18T07:1x+08:00 (起臂前; 见 run-w1 起手闸两次 PASS 之前落盘)",
+ "single_variable": "AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK ∈ {unset(off), 1(on)} —— 5 次独立 session; 其余(题面/用例/role/二进制/预算/判分器)全同",
+ "mainline": "宪法 §0-0 铁律 10: 用真实开发任务(g1 随机游戏, 58 隐藏用例)与外部真值同环境·同输入·同模型对照, 做质量自检; R413 token↓≥30% 是本组件的**判据之一**, 非主线本身",
+ "why_revision": {
+  "v1_j1_verdict": "FALSIFIED (R544 同窗实测): 触发面 = `exec.Rc==0` ⇒ 3 个 on 臂中只有 1 个走到回放点 (mechanism_on_arms_ran=False); 另 2 臂在计划执行阶段 rc=5, 公开用例面**结构性不可达**",
+  "mechanism": "「挂上了」(接线 + role 到位) ≠ 「生效了」(在真实出口上被触发) —— 这正是 R544 不能算证据的原因; v2 是把触发面从「链路自述跑通(rc=0)」扩到**全部「产物已在盘」的出口**",
+  "v2_trigger_rule": "机械判据(在链内, 非事后补记): 执行器 Steps 里出现过 write_file(唯一落盘工具) ⇒ 产物在盘 ⇒ 回放; 零写盘 ⇒ 弃权并在台账记 reason (如 no_artifacts_on_disk)",
+  "no_post_hoc": "触发规则与证据键在**起臂前**已入链代码并落此文件; 起臂后不改判据"
+ },
+ "disclosure": {
+  "v1_run": "eval/rover/r544/run-w1",
+  "v1_binary": {"path": "/tmp/pub_r544/agenthost", "sha256": "f516234a0acbd18e613c56a60fd8bfb0f29e5dbcdcb1317120b199b5eb2333ea", "bytes": 15812000},
+  "v2_binary": {"path": "/tmp/pub_r545/agenthost", "sha256": "aecdc80de82699c1c34d8a3a46b415c1f93facabef54557a65e190ae9a450563", "bytes": 15812016, "il_warnings": 0},
+  "note": "两侧夹具逐字节同(r544↔r545: prompt sha256 516f3208…/cases 脚本 ebf34268…/题集 129ee844…/role 0b7186b4… 全同, 见 input-pins-r545.json); 差异只有链代码(触发面 v2 + 证据优先回灌) ⇒ 与 v1 读数**不可相减**(跨轮禁减), 只能与 v1 的**结论**对照"
+ },
+ "window_plan": {
+  "window": "w1",
+  "windows": ["w1"],
+  "reps_per_side": 5,
+  "arms": [
+   {"snapdir": "agentP0a-g1", "side": "agent", "switch": "off", "rep": "a"},
+   {"snapdir": "agentP0b-g1", "side": "agent", "switch": "off", "rep": "b"},
+   {"snapdir": "agentP0c-g1", "side": "agent", "switch": "off", "rep": "c"},
+   {"snapdir": "agentP0d-g1", "side": "agent", "switch": "off", "rep": "d"},
+   {"snapdir": "agentP0e-g1", "side": "agent", "switch": "off", "rep": "e"},
+   {"snapdir": "agentP1a-g1", "side": "agent", "switch": "on", "rep": "a"},
+   {"snapdir": "agentP1b-g1", "side": "agent", "switch": "on", "rep": "b"},
+   {"snapdir": "agentP1c-g1", "side": "agent", "switch": "on", "rep": "c"},
+   {"snapdir": "agentP1d-g1", "side": "agent", "switch": "on", "rep": "d"},
+   {"snapdir": "agentP1e-g1", "side": "agent", "switch": "on", "rep": "e"},
+   {"snapdir": "agentA1on-g1", "side": "agent", "switch": "legacy-path", "rep": "1"},
+   {"snapdir": "agentA1onb-g1", "side": "agent", "switch": "legacy-path", "rep": "2"},
+   {"snapdir": "agentA1onc-g1", "side": "agent", "switch": "legacy-path", "rep": "3"}
+  ],
+  "reason_of_extra_arms": "候选③(旧路径列可用性定因): R542=4 调用/39k vs R544=34 调用/714k (8.5× 摆动, 单样本不可判) ⇒ 本窗同题同窗取 3 样本, 给逐样本 + 极差"
+ },
+ "evidence_scope": {
+  "require": ["w1/agentP0a-g1", "w1/agentP0b-g1", "w1/agentP0c-g1", "w1/agentP0d-g1", "w1/agentP0e-g1",
+              "w1/agentP1a-g1", "w1/agentP1b-g1", "w1/agentP1c-g1", "w1/agentP1d-g1", "w1/agentP1e-g1",
+              "w1/agentA1on-g1", "w1/agentA1onb-g1", "w1/agentA1onc-g1"],
+  "nonrequired": [],
+  "grader": "eval/rover/r545/cases/run_cases_r521.py (58 隐藏用例, 独立进程真跑, 机械判分; 禁模型裁判)",
+  "scorer": "eval/rover/r545/snapshots/w1/*/g1/work (真实产物树快照)",
+  "silent_failure_checks": ["rc==0 ∧ 用例未全过 = 假成功(计入 J2)", "产物树为空 ⇒ 警告 + 不得当绿", "off 臂出现标注记 = 阴性对照被污染(fail)"]
+ },
+ "judgments": {
+  "J1v2_reachability": {
+   "claim": "触发面修正后, 「产物在盘」的 on 臂上机制真被触发 (修法生效)",
+   "assert": "∀ on 臂: artifact_files>0 ⇒ public_probe_ran=1; 且 off 臂: 全部无标注记",
+   "prior_v1": "J1 (3/3 on 臂 ran=1) — FALSIFIED (1/3); 本项为修订后的**同题**判据, 阈值不变但作用域收窄到「可触达臂(写盘臂)」",
+   "evidence_key": "transcript public_probe_ran / plan_steps_total(写盘步) / 产物树文件数"
+  },
+  "J2_false_success_dissipation": {
+   "claim": "公开面回放能消费掉一部分「rc=0 但产物不对」",
+   "assert": "on 列 (rc==0 ∧ 未全绿) 计数 < off 列; 并逐臂点名",
+   "evidence_key": "transcript rc + cases_pass/cases_total"
+  },
+  "J3_quality": {
+   "claim": "高质量要求下不劣",
+   "assert": "on 列 全绿臂数 与 用例通过数中位 ≥ off 列 (非劣); 若反向 ⇒ 证伪并披露",
+   "evidence_key": "all_pass / cases_pass"
+  },
+  "J4_cost": {
+   "claim": "代价与不开时同量级(回放本身产生额外远端调用 ⇒ 阈值放宽到 ≤1.05)",
+   "assert": "三列(adapter 调用数 / 新算 prompt / completion) on/off 中位比 ≤1.05",
+   "evidence_key": "adapter dump (重复臂独立 session 区间, 禁跨臂相减)"
+  },
+  "J5_legacy_path_column": {
+   "claim": "旧路径(A1)列在 g1 上是否可用于对照",
+   "assert": "报 3 样本逐样本读数 + 极差/中位; 若同列极差/中位 > 0.5 ⇒ 判定「该列本窗不可用于单样本比较」(定因: 外部真值自身方差)",
+   "premise": "rt_quality ≥ r1_quality (缺此前提则降为不可比)"
+  },
+  "J6_probe_nontriviality": {
+   "claim": "板子非平凡(不是恒过/恒不过)",
+   "assert": "on 臂 public_probe_failed 取值集合须含非零项"
+  },
+  "J8_trigger_face_coverage": {
+   "claim": "触发面 v2 真覆盖了 v1 覆盖不到的出口",
+   "assert": "on 臂 public_probe_trigger_rc 取值集合须含 ≠0 的值, 且存在 trigger_rc≠0 ∧ ran=1 的臂",
+   "evidence_key": "transcript trigger_rc (R545 新增键)"
+  },
+  "J9_sampling_variance": {
+   "claim": "单样本不足以判列(R544 教训: 96% vs 54% 摆动)",
+   "assert": "两侧各 5 样本; 逐窗读数全报; 若某列 极差/中位 > 0.5 ⇒ 标「该列本窗不可用于单样本比较」"
+  },
+  "J7_rc_semantics": {
+   "claim": "rc 与正确性双向脱钩(观察项, 非验收闸)",
+   "assert": "报 rc × 全绿 交叉表"
+  }
+ },
+ "instrument_negative_control": {
+  "name": "off 臂(未设 AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK)",
+  "assert": "transcript 中标注记(public_probe_*)必须**字节级缺席**; 若出现 ⇒ 开关失效(阴性对照被污染) ⇒ 本窗读数作废",
+  "why": "证明 on 臂的标记来自开关而非环境/默认值"
+ },
+ "acceptance": {
+  "component_level": ["J1v2 成立", "J2 方向成立", "J3 非劣", "J4 ≤1.05", "J6 板子非平凡", "J8 覆盖成立"],
+  "round_level": "对照收口前跑 `python3 eval/rover/r507pre/exec_precondition.py --round r545`; rc=0 ⇒ 可验收 / rc≠0 ⇒ 本轮 token/调用降幅一律标「参考(未可验收)」",
+  "external_validity_floor": "本窗只有 g1 一题一族 5 样本 ⇒ **不外推**; 与 R544 不可相减(二进制/代码已变), 只与 R544 的结论对照",
+  "honest_note": "本臂集合里 A1on×3 是**旧路径**(非本组件开关), 只作 J5 列可用性定因; 其读数不得计入本组件的增益分母"
+ },
+ "forbidden": ["模型裁判", "事后补记", "跨臂相减/跨轮相减", "以公开用例通过冒充链达成(证据优先回灌只许在**链未达成**时才注入, 且明说必要非充分)"],
+ "device_spec": "eval/rover/r545/{prereg-r545.json, taskset-r545.json, input-pins-r545.json, role-r545.txt, cases/, run_r545.sh, analyze_r545.py, setup_r545.py}"
+}

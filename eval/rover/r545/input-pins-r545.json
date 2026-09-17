@@ -1,0 +1,34 @@
+{
+ "round": "r545",
+ "recomputed_at_make_time": true,
+ "g1": {
+  "prompt_sha256": "516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3",
+  "hidden_cases": 58,
+  "cases_script_md5": "ebf342682e307b6eec7d472b7bd296d5",
+  "cases_json_md5": "129ee844a09cf56db303c966786faddc",
+  "role_file_md5": "0b7186b4f7ef481b73624f60b111d3a6",
+  "xref": [
+   {
+    "what": "cases/run_cases_r521.py",
+    "same": true,
+    "r544_md5": "ebf342682e307b6eec7d472b7bd296d5"
+   },
+   {
+    "what": "cases/cases-r521.json",
+    "same": true,
+    "r544_md5": "129ee844a09cf56db303c966786faddc"
+   },
+   {
+    "what": "role-r545.txt",
+    "same": true,
+    "r544_md5": "0b7186b4f7ef481b73624f60b111d3a6"
+   },
+   {
+    "what": "g1 prompt",
+    "same": true,
+    "r544_sha256": "516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3"
+   }
+  ],
+  "check": "run_r545.sh 起臂前逐项机检 sha256/md5 与上表一致, 不一致 ⇒ fail-closed rc=3 不起臂"
+ }
+}

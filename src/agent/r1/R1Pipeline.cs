@@ -153,23 +153,35 @@ public static class R1Pipeline
             var exec = await PlanExecutor.RunAsync(sem.Plan, opt, ct).ConfigureAwait(false);
 
             // R544 · 产物侧独立自检（用户审计口径的机件化）: **rc=0 只是链路自述跑通, 不是产物正确**
-            //   （R542 实测: rc=0 的 4 个 r1 臂产物仅 43–55/58）。故只在「声称完成」(exec.Rc==0) 时触发:
-            //   题面公开用例由管道**机械抽取**（输入/期望取自题面, 非模型自述）、**独立回放**（与隐藏用例
-            //   判分器同语义: rc=0 ∧ stdout 尾换行归一逐字节等）; 不过 ⇒ 用**管道自产**的证据回灌修复轮,
-            //   预算用尽 ⇒ rc=8 public_probe_unmet（成对报, rc 不作正确性证据）。
-            if (exec.Rc == 0 && probeSet is not null)
-            {
-                var probe = await PublicExampleProbe.RunAsync(probeSet, opt.SandboxRoot, opt.StepTimeoutSeconds, ct)
-                    .ConfigureAwait(false);
-                if (probe.Failed > 0)
-                {
-                    if (execRepairs < opt.MaxExecRepair)
-                    {
-                        execRepairs++;
-                        repairNote = StructuredPrompt.PublicProbeRepairMessage(probe.Failures);
-                        continue;
-                    }
+            //   （R542 实测: rc=0 的 4 个 r1 臂产物仅 43–55/58）。
+            // R545 · 触发面修正（R544 预注册 J1 被同窗实测**证伪** ⇒ 宣称收窄 + 修法，见 reports/r545）:
+            //   旧触发面 `exec.Rc==0` **结构性不可达** —— R544 的 3 个 on 臂里 2 个在**计划执行阶段**就
+            //   rc=5/8（模型自撰 expect_stdout 不符），根本没走到回放点 ⇒ 机制等于没挂到多数臂上。
+            //   新触发面 = **全部「产物已在盘」的出口**（rc 0/5/8 皆可）：「产物在盘」的判据是**机械的** ——
+            //   执行器 Steps 里出现过 write_file（唯一落盘工具）即成立，与链自报 rc 无关。
+            //   零写盘（契约 rc=4 / 闸拒答 rc=2,3 / 空计划 / 首步 run 即失败）⇒ 探针**不跑**，显式记
+            //   reason=no_artifacts_on_disk（缺项不得冒充零失败；该分支 rc 与关闭态逐位相同）。
+            //   证据优先级（R545）：探针跑过且**失败** ⇒ 它比「模型自撰的期望」更硬 ⇒ 以它回灌
+            //   （[public_probe] 优先于 [exec_repair]）；探针跑过且**全过**但链仍未达成 ⇒ 回报里明说
+            //   「必要非充分」，禁据公开面收尾，主证据仍取执行器实测。
+            var probe = opt.PublicSelfCheck && probeSet is not null
+                ? (ArtifactsOnDisk(exec)
+                    ? await PublicExampleProbe.RunAsync(probeSet, opt.SandboxRoot, opt.StepTimeoutSeconds, ct, exec.Rc)
+                        .ConfigureAwait(false)
+                    : PublicProbeResult.Skipped("no_artifacts_on_disk", exec.Rc))
+                : null;
 
+            if (probe is not null && probe.Ran && probe.Failed > 0)
+            {
+                if (execRepairs < opt.MaxExecRepair)
+                {
+                    execRepairs++;
+                    repairNote = StructuredPrompt.PublicProbeRepairMessage(probe.Failures);
+                    continue;
+                }
+
+                if (exec.Rc == 0)
+                {
                     var probeUnmet = new R1RunResult(8, "public_probe_unmet",
                         "题面公开用例回放未过 " + probe.Failed + "/" + probe.Total
                         + " 例（期望取自题面、与隐藏用例判分器同语义），执行回灌修复预算 " + opt.MaxExecRepair
@@ -180,19 +192,19 @@ public static class R1Pipeline
                     R1Transcript.Write(probeUnmet, opt, taskText ?? string.Empty);
                     return probeUnmet;
                 }
-
-                var probed = new R1RunResult(0, "done",
-                    exec.Reason + " + 题面公开用例回放 " + probe.Total + "/" + probe.Total + " 过（管道自产证据）",
-                    raw + "\nR1_PUBLIC_PROBE " + probe.MarkerJson(), statsAll,
-                    prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe);
-                R1Transcript.Write(probed, opt, taskText ?? string.Empty);
-                return probed;
+                // exec.Rc != 0: 链自己已经报了未达成 ⇒ **保留链的分类**（rc/stage），探针只作为
+                // 「必要非充分」的补充面随行（ran/total/failed 落台账）；探针**只降级自述成功**，
+                // 不覆盖既有的失败分类 —— 否则 rc 语义会在两列间错位。
             }
 
             if (exec.Rc == 0)
             {
-                var done = new R1RunResult(0, "done", exec.Reason, raw, statsAll,
-                    prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps);
+                var reason = probe is not null && probe.Ran
+                    ? exec.Reason + " + 题面公开用例回放 " + probe.Total + "/" + probe.Total + " 过（管道自产证据）"
+                    : exec.Reason;
+                var done = new R1RunResult(0, "done", reason,
+                    raw + (probe is not null ? "\nR1_PUBLIC_PROBE " + probe.MarkerJson() : string.Empty), statsAll,
+                    prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe);
                 R1Transcript.Write(done, opt, taskText ?? string.Empty);
                 return done;
             }
@@ -207,29 +219,54 @@ public static class R1Pipeline
                 //   既不算链成功、也不算链失败, 两个数都可见（reply 带标记 + 台账 steps_executed/plan_steps_total）。
                 //   其余情形（执行 rc≠0、或计划没跑完 ⇒ 产物不齐）⇒ 保留 rc=5「链未达成」。
                 var planComplete = exec.Steps.Count >= sem.Plan.Count;
+                var probeMarker = probe is not null ? "\nR1_PUBLIC_PROBE " + probe.MarkerJson() : string.Empty;
                 if (exec.Stage == "expect_stdout" && planComplete)
                 {
                     var unmet = new R1RunResult(8, "self_test_unmet",
                         exec.Reason + "（计划已跑完 " + exec.Steps.Count + "/" + sem.Plan.Count
                         + " 步, 产物在盘 ⇒ 成对报「自测未达成 ∧ 产物可疑」: 期望是模型自述, 判分以执行器实测/外部用例为准;"
-                        + " rc=8 不作正确性证据 (correctness_asserted=0), 产物对错只能由外部门禁/隐藏用例判）",
+                        + " rc=8 不作正确性证据 (correctness_asserted=0), 产物对错只能由外部门禁/隐藏用例判）"
+                        + (probe is not null && probe.Ran ? "; 题面公开用例回放 " + (probe.Total - probe.Failed) + "/" + probe.Total + " 过（同一面, 不改变本分类）" : string.Empty),
                         raw + "\nR1_SELF_TEST_UNMET {\"steps_executed\":" + exec.Steps.Count
                         + ",\"plan_steps_total\":" + sem.Plan.Count + ",\"detail\":\"expect_stdout 不符\""
-                        + ",\"artifact\":\"suspect\",\"correctness_asserted\":0}",
-                        statsAll, prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps);
+                        + ",\"artifact\":\"suspect\",\"correctness_asserted\":0}" + probeMarker,
+                        statsAll, prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe);
                     R1Transcript.Write(unmet, opt, taskText ?? string.Empty);
                     return unmet;
                 }
                 var stage = execRepairs > 0 ? exec.Stage + "_exhausted" : exec.Stage;
-                var stuck = new R1RunResult(exec.Rc, stage, exec.Reason, raw, statsAll,
-                    prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps);
+                var stuck = new R1RunResult(exec.Rc, stage, exec.Reason, raw + probeMarker, statsAll,
+                    prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe);
                 R1Transcript.Write(stuck, opt, taskText ?? string.Empty);
                 return stuck;
             }
 
             execRepairs++;
-            repairNote = StructuredPrompt.ExecRepairMessage(ExecEvidence(exec));
+            var evidence = ExecEvidence(exec);
+            if (probe is not null && probe.Ran && probe.Failed == 0)
+            {
+                var withProbe = new List<string> { StructuredPrompt.PublicProbePassedNote(probe.Total) };
+                withProbe.AddRange(evidence);
+                evidence = withProbe;
+            }
+            repairNote = StructuredPrompt.ExecRepairMessage(evidence);
         }
+    }
+
+    /// <summary>
+    /// 「产物已在盘」的**机械**判据（R545）：执行器 Steps 里出现过 write_file（唯一落盘工具）即成立。
+    /// 与链自报 rc 无关 —— 计划一步没写盘（契约/闸拒答/空计划/首步 run 即失败）⇒ 无产物可回放。
+    /// </summary>
+    private static bool ArtifactsOnDisk(PlanExecutorResult exec)
+    {
+        foreach (var s in exec.Steps)
+        {
+            if (s.Tool == "write_file")
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     /// <summary>

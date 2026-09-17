@@ -24,15 +24,19 @@ public static class PublicExampleProbe
     public const int MaxFailureLines = 8;
     public const int EvidenceChars = 160;
 
-    public static async Task<PublicProbeResult> RunAsync(PublicExampleSet set, string sandboxRoot, int timeoutSec, CancellationToken ct)
+    /// <param name="triggerRc">
+    /// R545: 触发本次回放的**链出口 rc**（-1 = 未由管道提供）。落进台账与标记，供机检「触发面已覆盖 rc≠0」。
+    /// </param>
+    public static async Task<PublicProbeResult> RunAsync(PublicExampleSet set, string sandboxRoot, int timeoutSec,
+        CancellationToken ct, int triggerRc = -1)
     {
         if (set.Examples.Count == 0)
         {
-            return PublicProbeResult.Skipped("no_examples");
+            return PublicProbeResult.Skipped("no_examples", triggerRc);
         }
         if (string.IsNullOrEmpty(sandboxRoot) || !Directory.Exists(sandboxRoot))
         {
-            return PublicProbeResult.Skipped("sandbox_missing");
+            return PublicProbeResult.Skipped("sandbox_missing", triggerRc);
         }
 
         var total = Math.Min(set.Examples.Count, PublicExampleExtractor.MaxExamples);
@@ -76,7 +80,7 @@ public static class PublicExampleProbe
         }
 
         return new PublicProbeResult(true, failed == 0 ? "public_examples_pass" : "public_examples_failed",
-            total, failed, failures);
+            total, failed, failures, triggerRc);
     }
 
     private static string One(string s)

@@ -1,0 +1,22 @@
+== R545 读数 (w1) ==
+arm    col     stage            cases     rc  er   files trig_rc   pran   pfail    calls     prompt    compl     total    failed
+P0a    off     self_test_unmet  56/58     8   1    6     None      None   None     2         16479     3741      20220    wythoff#43-public,wythoff#57-hidden
+P0b    off     non_exec         0/58      0   0    0     None      None   None     1         8083      215       8298     life#00-public,life#01-public,life#02-hidden
+P0c    off     self_test_unmet  58/58     8   1    8     None      None   None     2         16428     4400      20828    -
+P0d    off     expect_stdout_ex 52/58     5   1    6     None      None   None     2         16477     3507      19984    wythoff#43-public,wythoff#46-hidden,wythoff#
+P0e    off     self_test_unmet  53/58     8   1    6     None      None   None     2         16458     4333      20791    wythoff#43-public,wythoff#50-hidden,wythoff#
+P1a    on      expect_stdout_ex 47/58     5   1    6     5         1      2        2         16546     3942      20488    wythoff#43-public,wythoff#44-public,wythoff#
+P1b    on      expect_stdout_ex 58/58     5   1    6     5         1      0        2         16352     3540      19892    -
+P1c    on      expect_stdout_ex 33/58     5   1    6     5         1      4        2         16352     4355      20707    sub#14-public,sub#15-public,sub#16-hidden,su
+P1d    on      self_test_unmet  43/58     8   1    6     5         1      2        2         16542     3776      20318    wythoff#43-public,wythoff#44-public,wythoff#
+P1e    on      done             58/58     0   0    6     0         1      0        1         8083      2057      10140    -
+A1on   legacy  -                58/58     None None 6     None      None   None     4         31641     4120      35761    -
+A1onb  legacy  -                58/58     None None 6     None      None   None     4         31799     2858      34657    -
+A1onc  legacy  -                56/58     None None 7     None      None   None     5         47497     6188      53685    wythoff#45-hidden,wythoff#47-hidden
+
+单变量自洽: prefix_identical=True role_mounted_all=True cases58=True | 机制: on_ran(可触达)=True off_absent=True off_no_marker=True
+J1v2 PASS (可触达 on 臂 ['P1a', 'P1b', 'P1c', 'P1d', 'P1e']) | J8 出口覆盖 True (trigger_rc 集 [0, 5])
+J2 支持 | J3 收窄(如实): 全绿臂 2 vs 1 ≥ / 用例中位 47 vs 53 <
+J4 代价(on/off 中位倍率): calls 1.0 / prompt 0.994 / completion 1.009 / total 1.005
+J5 vs A1on(3 样本): calls 中位 2 vs 4 (极差 {'min': 4, 'max': 5, 'span': 1}), tokens 中位 20318 vs 35761 (极差 {'min': 34657, 'max': 53685, 'span': 19028}), 我方全绿 2/5
+readings -> eval/rover/r545/readings-w1.json
