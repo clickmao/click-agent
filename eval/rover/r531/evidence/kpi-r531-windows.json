@@ -3,10 +3,11 @@
  "instrument": "eval/rover/r531/aggregate_r531.py",
  "windows": [
   "w1",
-  "w2"
+  "w2",
+  "w3"
  ],
- "window_count": 2,
- "verdict": "provisional(窗数 2 < 3)",
+ "window_count": 3,
+ "verdict": "reps>=3",
  "per_window": {
   "w1": {
    "rows": {
@@ -125,37 +126,99 @@
     "merge_vs_on_newprompt": 1.474,
     "merge_vs_off_newprompt": 3.061
    }
+  },
+  "w3": {
+   "rows": {
+    "A0-off": {
+     "tasks": 3,
+     "calls": 58,
+     "prompt_tokens": 941961,
+     "cached_tokens": 908416,
+     "new_prompt": 33545,
+     "completion_tokens": 25058,
+     "total_tokens": 967019,
+     "hit_rate": 0.9644,
+     "cases_pass": 118,
+     "cases_total": 118
+    },
+    "A1-on": {
+     "tasks": 3,
+     "calls": 43,
+     "prompt_tokens": 749714,
+     "cached_tokens": 730112,
+     "new_prompt": 19602,
+     "completion_tokens": 19941,
+     "total_tokens": 769655,
+     "hit_rate": 0.9739,
+     "cases_pass": 118,
+     "cases_total": 118
+    },
+    "A2-merge": {
+     "tasks": 3,
+     "calls": 21,
+     "prompt_tokens": 235559,
+     "cached_tokens": 221312,
+     "new_prompt": 14247,
+     "completion_tokens": 14463,
+     "total_tokens": 250022,
+     "hit_rate": 0.9395,
+     "cases_pass": 118,
+     "cases_total": 118
+    },
+    "C-codex": {
+     "tasks": 3,
+     "calls": 34,
+     "prompt_tokens": 378186,
+     "cached_tokens": 363136,
+     "new_prompt": 15050,
+     "completion_tokens": 16329,
+     "total_tokens": 394515,
+     "hit_rate": 0.9602,
+     "cases_pass": 116,
+     "cases_total": 118
+    }
+   },
+   "ratios": {
+    "merge_vs_on_calls": 0.488,
+    "merge_vs_off_calls": 0.362,
+    "on_vs_off_calls": 0.741,
+    "merge_vs_on_newprompt": 0.727,
+    "merge_vs_off_newprompt": 0.425
+   }
   }
  },
  "spread": {
   "merge_vs_on_calls": {
-   "n": 2,
-   "min": 0.881,
+   "n": 3,
+   "min": 0.488,
    "max": 1.429,
-   "median": 1.429,
+   "median": 0.881,
    "values": [
     0.881,
-    1.429
+    1.429,
+    0.488
    ]
   },
   "merge_vs_off_calls": {
-   "n": 2,
-   "min": 0.65,
+   "n": 3,
+   "min": 0.362,
    "max": 3.158,
-   "median": 3.158,
+   "median": 0.65,
    "values": [
     0.65,
-    3.158
+    3.158,
+    0.362
    ]
   },
   "on_vs_off_calls": {
-   "n": 2,
+   "n": 3,
    "min": 0.738,
    "max": 2.211,
-   "median": 2.211,
+   "median": 0.741,
    "values": [
     0.738,
-    2.211
+    2.211,
+    0.741
    ]
   }
  },

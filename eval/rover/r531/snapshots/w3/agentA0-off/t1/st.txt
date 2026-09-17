@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/home/agentuser/AgentFramework/eval/rover/r531/run-0917-224728-w3/A0-off/t1/work/selftest.py", line 106, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/home/agentuser/AgentFramework/eval/rover/r531/run-0917-224728-w3/A0-off/t1/work/selftest.py", line 95, in main
+    got = run("jsonmini", data)
+          ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/agentuser/AgentFramework/eval/rover/r531/run-0917-224728-w3/A0-off/t1/work/selftest.py", line 79, in run
+    raise AssertionError("stderr not silent for %r: %r" % (data, p.stderr))
+AssertionError: stderr not silent for '"\\uD83D"': b'Traceback (most recent call last):\n  File "<frozen runpy>", line 198, in _run_module_as_main\n  File "<frozen runpy>", line 88, in _run_code\n  File "/home/agentuser/AgentFramework/eval/rover/r531/run-0917-224728-w3/A0-off/t1/work/toolkit/__main__.py", line 23, in <module>\n    sys.exit(main(sys.argv))\n             ^^^^^^^^^^^^^^\n  File "/home/agentuser/AgentFramework/eval/rover/r531/run-0917-224728-w3/A0-off/t1/work/toolkit/__main__.py", line 18, in main\n    sys.stdout.write(mod.solve(data))\nUnicodeEncodeError: \'utf-8\' codec can\'t encode character \'\\ud83d\' in position 1: surrogates not allowed\n'

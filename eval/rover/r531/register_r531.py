@@ -45,6 +45,21 @@ ROWS = [
         "negative_control": "`--neg-control` rc=0 且两针皆响: ① NC1 把 A1/A2 角色对调 (以合批臂为基线) ⇒ M1/M2 判红; ② NC2 同臂自比 (差量为空) ⇒ M2 判红。另: M2 不信正则, 用逐字符扫描抽 `MergeText` (文本含 `;`/转义时正则截断, 本次实测截断值 66 ≠ 132 ⇒ 已修为扫描器)。",
         "owner_round": "R531",
     },
+    {
+        "id": "internal.r531-cross-window-aggregate",
+        "level": "L3",
+        "capability": "**R531 跨窗聚合器**: 把 `evidence/windows/<win>/report.json` 聚成「每臂每窗 calls / 新算 prompt / completion / 命中率 / 质量」+ 轴比值 (合批 vs 纪律开 / vs 关 · 纪律开 vs 关) + **跨窗极差**, 窗数 <3 ⇒ verdict 自动标 provisional。读数 (3 窗, 同轮同二进制 `d5848776…`): merge/on calls = **0.881 (w1) / 1.429 (w2) / 0.488 (w3)**, median 0.881, **极差 2.93×**; merge/off 0.65 / 3.158 / 0.362; 三窗质量合计 A1-on **352/354** > codex 350/354 > A2-merge **349/354** > A0-off 339/354 ⇒ 「合批轴降调用」**未证稳定增益** (2/3 窗同向, 1/3 反向)。本器只做窗间对比, **禁跨轮相减**。",
+        "covers": ["eval/rover/r531/aggregate_r531.py", "eval/rover/r531/evidence/kpi-r531-windows.json",
+                   "eval/rover/r531/evidence/windows/", "eval/rover/r531/prereg-r531.json"],
+        "evidence_cmd": "python3 eval/rover/r531/aggregate_r531.py --json eval/rover/r531/evidence/kpi-r531-windows.json  (rc=0; 3 窗)",
+        "evidence_path": "eval/rover/r531/evidence/kpi-r531-windows.json",
+        "evidence_generated_with": {"evidence_kind": "artifact", "pin_status": "frozen",
+                                  "pin_reason": "archived-per-round", "artifact_sha12": "946f9747921e",
+                                  "instrument": "eval/rover/r531/aggregate_r531.py", "instrument_sha12": "6a4126f4da84",
+                                  "binding": "audit-pin", "audited_by_round": "R531"},
+        "negative_control": "**无专用 `--neg-control` 开关 (诚实登记, 不冒充)**: 反恒真由三条结构性保证 —— ① 无窗 ⇒ `AGG_RC=3` fail-closed (不输出任何比值) ② 某臂在该窗缺席 ⇒ 该臂标缺、比值置 `null` 且**不参与极差** (禁以 0 冒充) ③ 只读冻结 `report.json`, 不重算、不回写。窗数 <3 时 verdict 强制 `provisional`, 防单窗冒充结论。",
+        "owner_round": "R531",
+    },
 ]
 
 

@@ -1,6 +1,6 @@
 {
- "window": "w2",
- "run_dir": "/home/agentuser/AgentFramework/eval/rover/r531/run-0917-222519-w2",
+ "window": "w3",
+ "run_dir": "/home/agentuser/AgentFramework/eval/rover/r531/run-0917-224728-w3",
  "round": "R531",
  "arms": {
   "agentA0-off/g1": {
@@ -9,51 +9,202 @@
    "snapdir": "agentA0-off",
    "tid": "g1",
    "family": "games-longtask-v1",
-   "files_n": 6,
+   "files_n": 7,
    "files": [
     {
      "path": "games/__init__.py",
-     "bytes": 213,
-     "sha256": "750e8c7c14f6869be69607a1f62558e6a18b23793ce2bfad0816a9fd67fdd5bf"
+     "bytes": 254,
+     "sha256": "97fd13b45af1015730f8fb42e7db2bf4d8eaaaaa1569c5670e6c1bc61a6d9781"
     },
     {
      "path": "games/__main__.py",
-     "bytes": 657,
-     "sha256": "eeb9a472655efd59c5699d6492ced32253d82a5983b6664f73b814e8f8357a6c"
+     "bytes": 587,
+     "sha256": "68bcce150b5065e1d54ba9a4f253d8bfcbae1e983957afd664e41af0372d5088"
     },
     {
      "path": "games/life.py",
-     "bytes": 1306,
-     "sha256": "4e440e87ef3a978b228d15b078013ac6a8d0d9cb11ce86d5d0ebcdee4762dbed"
+     "bytes": 1502,
+     "sha256": "72271da420d2d6bedccaccbf777ad8c3ee66d56029004fd9d6d63efd2c8beaaf"
     },
     {
      "path": "games/nim.py",
-     "bytes": 893,
-     "sha256": "80fbdb346c8d807f1839ddde24eef1a16207cf2fc17ef61a9e7c0b09a0185be8"
+     "bytes": 678,
+     "sha256": "95a0ffb7c4c69b2367df3d5537f1649781f39a9b913dfd1eaa73458240a7debd"
     },
     {
      "path": "games/sub.py",
-     "bytes": 1006,
-     "sha256": "4a36e6a9074fcab0d4ad84989afb3d858313f2c2e9741f7f4909f8762f7f0365"
+     "bytes": 896,
+     "sha256": "bf9d3849a01a79d822d98dbf541605cb8e920cda060d597f1ac66ec89a210477"
     },
     {
      "path": "games/wythoff.py",
-     "bytes": 1922,
-     "sha256": "aa2912ed4c0c25e2b87761ba43a4c7ec8b6c3729bdd14d7050952fb8749b0bc9"
+     "bytes": 2121,
+     "sha256": "87ed7099bd186866614735bb968c288f42e5ed37b009d68fb627129d1371ce08"
+    },
+    {
+     "path": "scripts/selftest_games.py",
+     "bytes": 1827,
+     "sha256": "cfd515074dbe7dec5a20e0e12d4a05ab71db119174ddc8ceb57d52fa12b33bb8"
     }
    ],
-   "grade": "eval/rover/r531/evidence/windows/w2/grade-A0-off-g1.json",
+   "grade": "eval/rover/r531/evidence/windows/w3/grade-A0-off-g1.json",
    "usage_range": [
     1,
-    8
+    19
    ],
-   "calls": 8,
-   "total_tokens": 105782
+   "calls": 19,
+   "total_tokens": 286813
   },
   "agentA0-off/t1": {
    "run": "A0-off",
    "side": "agent",
    "snapdir": "agentA0-off",
+   "tid": "t1",
+   "family": "toolkit-multimodule-v1",
+   "files_n": 6,
+   "files": [
+    {
+     "path": "selftest.py",
+     "bytes": 2896,
+     "sha256": "009722bbcb4cd71b83a4abbf46c7f7f9785877bc0badca6cbfcf6240b3711687"
+    },
+    {
+     "path": "st.txt",
+     "bytes": 1249,
+     "sha256": "cb95efbad34978ec81e5952eb710c97343853815798779c79c4837f5b993ffc1"
+    },
+    {
+     "path": "toolkit/__init__.py",
+     "bytes": 0,
+     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+     "path": "toolkit/__main__.py",
+     "bytes": 802,
+     "sha256": "cd04943a276138169cce251bd048051f4f484c440f7447d9de68cefbae35578a"
+    },
+    {
+     "path": "toolkit/jsonmini.py",
+     "bytes": 6271,
+     "sha256": "df0fadb886fd17c2646c4969f21cf10a6c1c82471f84430e1a90a980ec32f675"
+    },
+    {
+     "path": "toolkit/vm.py",
+     "bytes": 2900,
+     "sha256": "e5af13aa5e9e4eb2be759d294ed0cca8082c3309c9fe226144a0893d0af19633"
+    }
+   ],
+   "grade": "eval/rover/r531/evidence/windows/w3/grade-A0-off-t1.json",
+   "usage_range": [
+    20,
+    53
+   ],
+   "calls": 34,
+   "total_tokens": 627206
+  },
+  "agentA0-off/m1": {
+   "run": "A0-off",
+   "side": "agent",
+   "snapdir": "agentA0-off",
+   "tid": "m1",
+   "family": "mathkit-multimodule-v1",
+   "files_n": 7,
+   "files": [
+    {
+     "path": "mathkit/__init__.py",
+     "bytes": 61,
+     "sha256": "c2ed00bbac61d5dd665c7b14f542bdb0be5b7558cb1403dae32f4363efc9701c"
+    },
+    {
+     "path": "mathkit/__main__.py",
+     "bytes": 889,
+     "sha256": "d1d026517b892377020db2add08552e17c01abf9027515c1a0175c55c9de25e7"
+    },
+    {
+     "path": "mathkit/__selftest__.py",
+     "bytes": 3946,
+     "sha256": "a33f2341c6050e959b5ba776f0b03bd3a12e7b9fbfe9ce313657fcb92592ed1c"
+    },
+    {
+     "path": "mathkit/graphs.py",
+     "bytes": 1019,
+     "sha256": "1f6ee1dba8de89738734a177cc18da65853eb83e096f684b2b5a9b3611c47d6c"
+    },
+    {
+     "path": "mathkit/linear.py",
+     "bytes": 1144,
+     "sha256": "a756126d318148ec49ff7fbcc707c78a1cc147bd83b85d383d7728e4fcc5b129"
+    },
+    {
+     "path": "mathkit/modular.py",
+     "bytes": 1049,
+     "sha256": "7fa17a89cbf3d352fc0d808ba2efd261082416b75089bd31479e8c8b3f7bf333"
+    },
+    {
+     "path": "mathkit/prob.py",
+     "bytes": 515,
+     "sha256": "98fc5c6decf0d948a9b3a25ea2719e70183f994238accc649b0691d6066050ee"
+    }
+   ],
+   "grade": "eval/rover/r531/evidence/windows/w3/grade-A0-off-m1.json",
+   "usage_range": [
+    54,
+    58
+   ],
+   "calls": 5,
+   "total_tokens": 53000
+  },
+  "agentA1-on/g1": {
+   "run": "A1-on",
+   "side": "agent",
+   "snapdir": "agentA1-on",
+   "tid": "g1",
+   "family": "games-longtask-v1",
+   "files_n": 6,
+   "files": [
+    {
+     "path": "games/__init__.py",
+     "bytes": 64,
+     "sha256": "54fa47c408163e9e5338d42ca8366e9f2d43cf405e2c200b58e2d59204ded617"
+    },
+    {
+     "path": "games/__main__.py",
+     "bytes": 843,
+     "sha256": "4aa6d5d5a7722a2ea2c689b733c50142b93706013adf8da70b803ffa93a3a6ea"
+    },
+    {
+     "path": "games/life.py",
+     "bytes": 1498,
+     "sha256": "5bd1a02ec77f891c15e3d4f80de807cbe63217f19addb0c24d06f6ec1893113d"
+    },
+    {
+     "path": "games/nim.py",
+     "bytes": 810,
+     "sha256": "b254e3fda65682dc7e0b2a27c5bf84052dfe3515797232c2f2ed25efa581587b"
+    },
+    {
+     "path": "games/sub.py",
+     "bytes": 935,
+     "sha256": "4a56300b50a368e8cfd948903ac9d6cf5ddadd086f5846064bbcc2af1d2a2096"
+    },
+    {
+     "path": "games/wythoff.py",
+     "bytes": 1782,
+     "sha256": "7c349094450a5da7b541d93c0f11afd9592bcef1ade808296cbd5ebcc0ec4781"
+    }
+   ],
+   "grade": "eval/rover/r531/evidence/windows/w3/grade-A1-on-g1.json",
+   "usage_range": [
+    59,
+    63
+   ],
+   "calls": 5,
+   "total_tokens": 55985
+  },
+  "agentA1-on/t1": {
+   "run": "A1-on",
+   "side": "agent",
+   "snapdir": "agentA1-on",
    "tid": "t1",
    "family": "toolkit-multimodule-v1",
    "files_n": 5,
@@ -65,168 +216,32 @@
     },
     {
      "path": "toolkit/__main__.py",
-     "bytes": 641,
-     "sha256": "f7cd2411c75bc8a6fb2a975d4efaa98e38833286069869a0a81303e018bcd795"
-    },
-    {
-     "path": "toolkit/_selftest.py",
-     "bytes": 3111,
-     "sha256": "d56f3560041e2ab13d1baa2b65a59e647d4615d350df34a9bcde67ebb05aa265"
+     "bytes": 556,
+     "sha256": "cb8e11be45a3e5b3b4625ad98b051e9128b696926897bb7dab130c94b142500a"
     },
     {
      "path": "toolkit/jsonmini.py",
-     "bytes": 6706,
-     "sha256": "0a536c2ac5e49d1f9d998b195a9b8f8b92519a745d437e7f0ed2d0a10128bf92"
+     "bytes": 5878,
+     "sha256": "6b56c53d92b713f9e0d088cfffa7facd9d7d66ea4ce8ca709c570e11f23a9195"
     },
     {
      "path": "toolkit/vm.py",
-     "bytes": 4468,
-     "sha256": "e9fbb603eef0902ebd4d262ab2857a354d930658baf25ced5deadc063bcf3f6a"
+     "bytes": 2878,
+     "sha256": "52cf0c717d8b6ac24acb2b4686a32365485760cb10dbf0780d428f9eff1c1e92"
+    },
+    {
+     "path": "toolkit_selftest.py",
+     "bytes": 2501,
+     "sha256": "b75fa880719b32edfc817c9a14de6ca651fbd6534de7fa65d47c06d3dd8c30b2"
     }
    ],
-   "grade": "eval/rover/r531/evidence/windows/w2/grade-A0-off-t1.json",
+   "grade": "eval/rover/r531/evidence/windows/w3/grade-A1-on-t1.json",
    "usage_range": [
-    9,
-    15
+    64,
+    96
    ],
-   "calls": 7,
-   "total_tokens": 81629
-  },
-  "agentA0-off/m1": {
-   "run": "A0-off",
-   "side": "agent",
-   "snapdir": "agentA0-off",
-   "tid": "m1",
-   "family": "mathkit-multimodule-v1",
-   "files_n": 6,
-   "files": [
-    {
-     "path": "mathkit/__init__.py",
-     "bytes": 61,
-     "sha256": "8523c40838fa3fce64a51a308726625511e79c5718e6efd432417b09b7fdcdba"
-    },
-    {
-     "path": "mathkit/__main__.py",
-     "bytes": 678,
-     "sha256": "706a56b69bd7f328a08c43f12bfb63edf6678df1c582b24b46f001fb3db80127"
-    },
-    {
-     "path": "mathkit/graphs.py",
-     "bytes": 916,
-     "sha256": "253310bd818db9d566ef6aa009a5b62ab9bbed8909a7dc1b3f5a70fdb25e137b"
-    },
-    {
-     "path": "mathkit/linear.py",
-     "bytes": 1102,
-     "sha256": "4fff755d1d11e2d6d242ac7007c0a2cb4ba52e66362a68ec2fee33eb18939d3b"
-    },
-    {
-     "path": "mathkit/modular.py",
-     "bytes": 762,
-     "sha256": "9c1f51fd31250209d998abf5c17341ba80464f5dd8e546e6d43167976879ac9f"
-    },
-    {
-     "path": "mathkit/prob.py",
-     "bytes": 550,
-     "sha256": "04b1451a3f04b7be3863578c0b5867c3df807e6eab1d6fa4b2b37859b8d5d808"
-    }
-   ],
-   "grade": "eval/rover/r531/evidence/windows/w2/grade-A0-off-m1.json",
-   "usage_range": [
-    16,
-    19
-   ],
-   "calls": 4,
-   "total_tokens": 37846
-  },
-  "agentA1-on/g1": {
-   "run": "A1-on",
-   "side": "agent",
-   "snapdir": "agentA1-on",
-   "tid": "g1",
-   "family": "games-longtask-v1",
-   "files_n": 7,
-   "files": [
-    {
-     "path": "games/__init__.py",
-     "bytes": 105,
-     "sha256": "00bcaf4aaa3ad28403a8e6fb82a32b2283b9a1d016a76a70c415c8bbcbc0679e"
-    },
-    {
-     "path": "games/__main__.py",
-     "bytes": 497,
-     "sha256": "7b20798fe8dae997d0c28f0a1a7c19263c225a022b693b517ed7fe26fbf5c103"
-    },
-    {
-     "path": "games/_selftest.py",
-     "bytes": 3705,
-     "sha256": "f7bd9126433212aca59b272164892d7c99e5faf447b050dcc57d221dde84f273"
-    },
-    {
-     "path": "games/life.py",
-     "bytes": 1203,
-     "sha256": "a8e407d6d2ce4165c88180863bd8bc80bc5759c3d2bb4302dc811cc580ab5122"
-    },
-    {
-     "path": "games/nim.py",
-     "bytes": 445,
-     "sha256": "958b0d123684b433657dc0899f1d3046d4e184ed1c6d5fc23e0368dac16b6422"
-    },
-    {
-     "path": "games/sub.py",
-     "bytes": 684,
-     "sha256": "63cc5a22fe2cfc7bf5b1d419c1478931646e940c6812ea1eff16ab4074e3ff6b"
-    },
-    {
-     "path": "games/wythoff.py",
-     "bytes": 1530,
-     "sha256": "b8786881b6706524e772a875eb15cbd4180e843ad9f7e5130f230c4043faae12"
-    }
-   ],
-   "grade": "eval/rover/r531/evidence/windows/w2/grade-A1-on-g1.json",
-   "usage_range": [
-    20,
-    37
-   ],
-   "calls": 18,
-   "total_tokens": 244017
-  },
-  "agentA1-on/t1": {
-   "run": "A1-on",
-   "side": "agent",
-   "snapdir": "agentA1-on",
-   "tid": "t1",
-   "family": "toolkit-multimodule-v1",
-   "files_n": 4,
-   "files": [
-    {
-     "path": "toolkit/__init__.py",
-     "bytes": 0,
-     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-    },
-    {
-     "path": "toolkit/__main__.py",
-     "bytes": 532,
-     "sha256": "909d556eb6ca9f121b1447eddd27c70702dc321875d75035c9c34d5e363453c0"
-    },
-    {
-     "path": "toolkit/jsonmini.py",
-     "bytes": 5713,
-     "sha256": "f218f481319d2fdb690c8b60d5c5c9887461c4cd72b4944e7cc74fa56d57398a"
-    },
-    {
-     "path": "toolkit/vm.py",
-     "bytes": 3154,
-     "sha256": "45d5ae72b711dbc29e03b8c949a59a4f8224874f6768a90bcd704e782ea33b63"
-    }
-   ],
-   "grade": "eval/rover/r531/evidence/windows/w2/grade-A1-on-t1.json",
-   "usage_range": [
-    38,
-    49
-   ],
-   "calls": 12,
-   "total_tokens": 166015
+   "calls": 33,
+   "total_tokens": 653969
   },
   "agentA1-on/m1": {
    "run": "A1-on",
@@ -237,48 +252,48 @@
    "files_n": 7,
    "files": [
     {
-     "path": "_selftest.py",
-     "bytes": 1599,
-     "sha256": "9d6627ede901883d9a95d00e85e9abaa70fda3c2cd8da16d5e47d100be2c60ce"
-    },
-    {
      "path": "mathkit/__init__.py",
-     "bytes": 60,
-     "sha256": "59d75a187039744484329a1f24506bdbb9d42a9af4d4b9ccc7afd6f1cc1dc0e1"
+     "bytes": 274,
+     "sha256": "9df1f50c973c931e19b76bb57e048322e2ec2f02f511182622e0d36af3bcbb09"
     },
     {
      "path": "mathkit/__main__.py",
-     "bytes": 889,
-     "sha256": "d6b046fd03e90365afa68620dff4ef9c5e63310c211dd1cb55975ec73cdeffef"
+     "bytes": 1007,
+     "sha256": "704ad8b0a00b2fbe3b2ee5e446ec9affb931ee3f9606dc9575f077eed884ea8b"
     },
     {
      "path": "mathkit/graphs.py",
-     "bytes": 1003,
-     "sha256": "c69376dd021b02ecdcce39439ae01ef0bdc9222aca9043cd4a7cb68ad4176f93"
+     "bytes": 1123,
+     "sha256": "adbd0e24a4f2f4fda30dbb2e44b8396c4a036b94c369db6d222a12557a2ae8ad"
     },
     {
      "path": "mathkit/linear.py",
-     "bytes": 1177,
-     "sha256": "f26a05bc8dfe9424b0e78cc1bd4740e87c727ce70a4e3dd5363842f9c4457fb0"
+     "bytes": 2408,
+     "sha256": "9369d5e8610e76723ad36640a1da03e0449a094d5a9ceac00d6509f2ad1c9a99"
     },
     {
      "path": "mathkit/modular.py",
-     "bytes": 1930,
-     "sha256": "9e6a0f5baea9fc453bbb0fc4e7b7a0169ea7a4f866571aee222821d0de9a5e32"
+     "bytes": 1968,
+     "sha256": "cc4ab3bce949da8594617aa0ab264e549aa114d27bbfde67fc06465cf396fb5d"
     },
     {
      "path": "mathkit/prob.py",
-     "bytes": 548,
-     "sha256": "3804b7b485a3384baa96a89222afe4c476bfe260c65e03f77daeeb81ae13f03b"
+     "bytes": 788,
+     "sha256": "2d868d21f2f370014f147256f41fc0d6e05fc26fdb07aa4c682e9b8f2c07edbf"
+    },
+    {
+     "path": "selftest_mathkit.py",
+     "bytes": 5919,
+     "sha256": "32e65eb65261144cf0e94ecdbab37a6a9349fd03f120c0f0388a10abd8b18e7b"
     }
    ],
-   "grade": "eval/rover/r531/evidence/windows/w2/grade-A1-on-m1.json",
+   "grade": "eval/rover/r531/evidence/windows/w3/grade-A1-on-m1.json",
    "usage_range": [
-    50,
-    61
+    97,
+    101
    ],
-   "calls": 12,
-   "total_tokens": 156953
+   "calls": 5,
+   "total_tokens": 59701
   },
   "agentA2-merge/g1": {
    "run": "A2-merge",
@@ -286,56 +301,51 @@
    "snapdir": "agentA2-merge",
    "tid": "g1",
    "family": "games-longtask-v1",
-   "files_n": 8,
+   "files_n": 7,
    "files": [
     {
+     "path": "_t_games.py",
+     "bytes": 980,
+     "sha256": "3fb5335dd7d83357344cd3e5a1543073dbd109c0f81b5325b51b8d01876cf7c9"
+    },
+    {
      "path": "games/__init__.py",
-     "bytes": 71,
-     "sha256": "6c7e60334f170a89ecfb79875d4070e7d08d32d0bd134bce3eea4622c6d99455"
+     "bytes": 252,
+     "sha256": "ef125e3bd7a73acc0d334327fadcbaa55d48f101129febb627b64812f0179982"
     },
     {
      "path": "games/__main__.py",
-     "bytes": 1033,
-     "sha256": "bb0ce79a2ca8bf8c54ac087753fa66452aa1fd93aff567abc4523fb4cd82976a"
-    },
-    {
-     "path": "games/_selftest.py",
-     "bytes": 2380,
-     "sha256": "9d9276593bae370f59d6d18d5121877789363fdfbf4f9dec878858c4a4727cfb"
+     "bytes": 544,
+     "sha256": "4bbb9fdc093430fa776d19efd9d72af68f9ef75f4fcf3328cebbb311c3da4f93"
     },
     {
      "path": "games/life.py",
-     "bytes": 1501,
-     "sha256": "241bd210142cfaa8b105183fb6033dedb68c23d3c9a69a86c2fe1a7e79fe34ea"
+     "bytes": 1317,
+     "sha256": "9ff8134f06b8062613a2b6a5cd6ac8a74dea8e07f3034a4f9d1bb772c00059d0"
     },
     {
      "path": "games/nim.py",
-     "bytes": 959,
-     "sha256": "7d6244e82339c09b4a221b21635a067eb73261cf76ae63ac5440c3f0ac15be4d"
-    },
-    {
-     "path": "games/selftest.py",
-     "bytes": 1936,
-     "sha256": "5050471bf65303c6c8d11c45b8d18a6203ab18d34087169e106102858f693f1e"
+     "bytes": 560,
+     "sha256": "5bfd3fb4226518c6f92202aadc613c56f6498e776c8357b24465723b1e87bcd1"
     },
     {
      "path": "games/sub.py",
-     "bytes": 1090,
-     "sha256": "3df44539b0462e250737e3ea79997cd83d145522864dcf7ef9eefb31884e5b1a"
+     "bytes": 777,
+     "sha256": "c63219a0377264eff1f6bbd7614f79f1f83865bb423de9d3755497ebc2fc4733"
     },
     {
      "path": "games/wythoff.py",
-     "bytes": 1401,
-     "sha256": "1ca3bceef8be1fd8192d52e6c5507fd248db09f98f5cbd6c5374a5bb3e88c5b2"
+     "bytes": 2244,
+     "sha256": "7641a3b0c50a4ce60868d029b4d7632a85cd4e6874558cc737d0be97e3d846dc"
     }
    ],
-   "grade": "eval/rover/r531/evidence/windows/w2/grade-A2-merge-g1.json",
+   "grade": "eval/rover/r531/evidence/windows/w3/grade-A2-merge-g1.json",
    "usage_range": [
-    62,
-    106
+    102,
+    109
    ],
-   "calls": 45,
-   "total_tokens": 630672
+   "calls": 8,
+   "total_tokens": 90925
   },
   "agentA2-merge/t1": {
    "run": "A2-merge",
@@ -352,27 +362,27 @@
     },
     {
      "path": "toolkit/__main__.py",
-     "bytes": 468,
-     "sha256": "140f9eeecbb6bb0b9c7aef0dfdc4e0d4383cad0e3efc0693fd61cb24c5aba7e8"
+     "bytes": 380,
+     "sha256": "269759c29c2b9922196119e326830e41214ed9a6c45bb1e98112c4b982de42dd"
     },
     {
      "path": "toolkit/jsonmini.py",
-     "bytes": 6346,
-     "sha256": "dd9d95607d1e0c07b13b8e2f4f8f4b95e2a3185842bd96682e611720415bf448"
+     "bytes": 6557,
+     "sha256": "9b9eb685a29617bf3f3bece7fbefd2418415aa6c33b8b795204c74973b7f2bd5"
     },
     {
      "path": "toolkit/vm.py",
-     "bytes": 3774,
-     "sha256": "de4b36c872228270742c99fbed1e3413d553873e8371a3ddc1965b3938b86fda"
+     "bytes": 3674,
+     "sha256": "b9bdda7bb4c28c61ae61b3129b92bee90605acfbe273bf782e7f642f97872550"
     }
    ],
-   "grade": "eval/rover/r531/evidence/windows/w2/grade-A2-merge-t1.json",
+   "grade": "eval/rover/r531/evidence/windows/w3/grade-A2-merge-t1.json",
    "usage_range": [
-    107,
-    118
+    110,
+    116
    ],
-   "calls": 12,
-   "total_tokens": 160789
+   "calls": 7,
+   "total_tokens": 85762
   },
   "agentA2-merge/m1": {
    "run": "A2-merge",
@@ -384,42 +394,42 @@
    "files": [
     {
      "path": "mathkit/__init__.py",
-     "bytes": 0,
-     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+     "bytes": 208,
+     "sha256": "3670e5ffd706c0da0cd71677b23fd20468b91462eac74245f7c25b4662d9e3aa"
     },
     {
      "path": "mathkit/__main__.py",
-     "bytes": 892,
-     "sha256": "c537c993a9170349417478b940aa300880e47d91c589280935cc595b47255edd"
+     "bytes": 917,
+     "sha256": "182d15b6b2e274e832acf3c056bda58160ecb6eed4e9f38b71ea88a9a0d56ec6"
     },
     {
      "path": "mathkit/graphs.py",
-     "bytes": 1062,
-     "sha256": "f493d635a46098f3a1cd83ef2e338bfb7d77ceb100a89c0e37b1144690234f3d"
+     "bytes": 1216,
+     "sha256": "d5ee37b36327a47e3a46b9863492d2c3e72ae283277934af153523d25b93c5c5"
     },
     {
      "path": "mathkit/linear.py",
-     "bytes": 1519,
-     "sha256": "6b87697e792d152baf3b1b2717d0bda60f742335864859b8145fb67a536acd27"
+     "bytes": 2727,
+     "sha256": "de002b592229c99fffab19dd5ddf88e8c684a09691cd302d8b2ca91029cc79b1"
     },
     {
      "path": "mathkit/modular.py",
-     "bytes": 793,
-     "sha256": "3c53c73c2b0c44f6e01cf36ea9c1cbbaa065349031ba14949898ca503961a955"
+     "bytes": 1182,
+     "sha256": "6ae47e86a250bb2a96882ea98f91a1740b12b3656639a75bfc5fafb214c88f5c"
     },
     {
      "path": "mathkit/prob.py",
-     "bytes": 552,
-     "sha256": "65850ff781391febea8aaefe7b06e3ea41cfebd7944af526c874448bc2de0def"
+     "bytes": 1228,
+     "sha256": "f87a217ab67c0343d6c04ebf31e95a734a1a05515ede68217eeff586b6c6834a"
     }
    ],
-   "grade": "eval/rover/r531/evidence/windows/w2/grade-A2-merge-m1.json",
+   "grade": "eval/rover/r531/evidence/windows/w3/grade-A2-merge-m1.json",
    "usage_range": [
-    119,
-    121
+    117,
+    122
    ],
-   "calls": 3,
-   "total_tokens": 31971
+   "calls": 6,
+   "total_tokens": 73335
   },
   "codex/g1": {
    "run": "C-codex",
@@ -436,37 +446,37 @@
     },
     {
      "path": "games/__main__.py",
-     "bytes": 378,
-     "sha256": "24c9e8a8ebeb4d4cbc8826d35f58853c972cc33763dc55c684a95e373a3c3d59"
+     "bytes": 401,
+     "sha256": "558f3c30c4b76b440f849ed1f916ff486f4374d7052511a04016f62bdd3081d4"
     },
     {
      "path": "games/life.py",
-     "bytes": 883,
-     "sha256": "baa310670b9aa37804ba7859ae6ef433a4c5b642f7bb4273a9621062395384f4"
+     "bytes": 879,
+     "sha256": "c69834759203facaef55064dc1a594cd9421f8bf611ff5a4b8cbbd0ca0eab1a7"
     },
     {
      "path": "games/nim.py",
-     "bytes": 351,
-     "sha256": "25e1aa7bb87f8820364132affc63cd6ed48f62b4453b1e2b0c8a08e209bd7c4a"
+     "bytes": 391,
+     "sha256": "5296dfc1a70ccc78157ca6679268bb6f779409792f7b8e80b42d8910c86715f1"
     },
     {
      "path": "games/sub.py",
-     "bytes": 386,
-     "sha256": "79ea54c8c0ee8567cf75927b79d7528f2b0873dfbefd55041911df5ac82f416f"
+     "bytes": 490,
+     "sha256": "2cc7f7382318b4d1243954ac543be8ccf8fab6961910a4e3c834122890e8ad8f"
     },
     {
      "path": "games/wythoff.py",
-     "bytes": 1168,
-     "sha256": "01de96b5aad6efa9f5d3bf65cf30017da690db84ef3bc074d71a1afb12a84628"
+     "bytes": 1037,
+     "sha256": "a770aabea2f7d4d6746bfec4168015aa3fc38efc2a7151e03ff91842a6e5fa04"
     }
    ],
-   "grade": "eval/rover/r531/evidence/windows/w2/grade-C-codex-g1.json",
+   "grade": "eval/rover/r531/evidence/windows/w3/grade-C-codex-g1.json",
    "usage_range": [
     1,
-    15
+    13
    ],
-   "calls": 15,
-   "total_tokens": 185385
+   "calls": 13,
+   "total_tokens": 140321
   },
   "codex/t1": {
    "run": "C-codex",
@@ -483,27 +493,27 @@
     },
     {
      "path": "toolkit/__main__.py",
-     "bytes": 295,
-     "sha256": "896208391456e37dc6849295776870624b4a85bb8e004bc7b5eee2b6ca5735ae"
+     "bytes": 349,
+     "sha256": "aa7973ae95c774c464378ec508f8c8bd98a407f58ea70036c042f9271aa7c193"
     },
     {
      "path": "toolkit/jsonmini.py",
-     "bytes": 5431,
-     "sha256": "a9adf602c4f41bd27047606f23fa46830287f897c865c7f7baccd2c913c7bade"
+     "bytes": 6869,
+     "sha256": "960f8aa7dc785717dd8d017664a94afb022ef110fd72aa6b6d6d670ba41d798d"
     },
     {
      "path": "toolkit/vm.py",
-     "bytes": 2710,
-     "sha256": "dac2bbaeca9076655c1d0e0f45b47caa81b00471e7e89947d9a84cc03b68949f"
+     "bytes": 3598,
+     "sha256": "b9481ba1c3d8112c6256356e1c5ed40a80f400a406cb1854643129fabd81b3d6"
     }
    ],
-   "grade": "eval/rover/r531/evidence/windows/w2/grade-C-codex-t1.json",
+   "grade": "eval/rover/r531/evidence/windows/w3/grade-C-codex-t1.json",
    "usage_range": [
-    16,
-    29
+    14,
+    28
    ],
-   "calls": 14,
-   "total_tokens": 163228
+   "calls": 15,
+   "total_tokens": 201343
   },
   "codex/m1": {
    "run": "C-codex",
@@ -520,37 +530,37 @@
     },
     {
      "path": "mathkit/__main__.py",
-     "bytes": 496,
-     "sha256": "b279db4127f09102cbcac6f2f30ceab84b6cc7b4da7890edee111ac4b9c8e082"
+     "bytes": 482,
+     "sha256": "978fbfb6172c248258bcfbff68c86fcd5e2c62b6f6cb55dbdbfb9e45df5e6d7b"
     },
     {
      "path": "mathkit/graphs.py",
-     "bytes": 708,
-     "sha256": "31aeb2f894664ccdcc9d9cb26e57979392d06b13fe4301b9b1cb05da20220b36"
+     "bytes": 861,
+     "sha256": "f0168527c2ae3141916acf9d0cae09b1f61a9c62a6e921d97555cf2218f776fc"
     },
     {
      "path": "mathkit/linear.py",
-     "bytes": 910,
-     "sha256": "120debf8f1ff6f5dd4eeb827506c8ce6e4f43f1941115166b0b3a7802d990707"
+     "bytes": 978,
+     "sha256": "a3c109dcbbec4de8d6f0326234d1dcd9494e762b7d824142ffb59b2bc3a276c5"
     },
     {
      "path": "mathkit/modular.py",
-     "bytes": 544,
-     "sha256": "fc0d311a71742a1925630680252159b7d52c84b4786d88f8fc3f0a2480ec607f"
+     "bytes": 507,
+     "sha256": "78e3d6266971ab46950869a82fde7bebe01f3c13a2872328bf021fac465112eb"
     },
     {
      "path": "mathkit/prob.py",
-     "bytes": 513,
-     "sha256": "3859c617fa7557c3071a2d9694f85ff0fe4ecb3b00c18de2d677be6e891fe2db"
+     "bytes": 370,
+     "sha256": "9b5ff355892a53ef57ce3a804d61485bc47456ac24d3a33d6d37f931dfc8c7c3"
     }
    ],
-   "grade": "eval/rover/r531/evidence/windows/w2/grade-C-codex-m1.json",
+   "grade": "eval/rover/r531/evidence/windows/w3/grade-C-codex-m1.json",
    "usage_range": [
-    30,
+    29,
     34
    ],
-   "calls": 5,
-   "total_tokens": 42845
+   "calls": 6,
+   "total_tokens": 52851
   }
  },
  "graders": {
