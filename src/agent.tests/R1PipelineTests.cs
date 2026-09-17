@@ -222,7 +222,8 @@ public sealed class R1PipelineTests
         }
     }
 
-    /// <summary>R533-C 负控: 无执行证据回灌预算 (MaxExecRepair=0) ⇒ 旧行为逐字不变 (一次调用即停机, 阶段名不带 _exhausted)。</summary>
+    /// <summary>R536: 零执行回灌预算 + 单步计划跑完 + 自测期望不符 ⇒ rc=8 self_test_unmet（不判链失败）；
+    /// 一次调用即停机（零预算 ⇒ 不重发起），阶段名不带 _exhausted。</summary>
     [Fact]
     public async Task Executor_Fails_On_Expect_Stdout_Mismatch()
     {
@@ -231,8 +232,8 @@ public sealed class R1PipelineTests
         {
             var caller = new ScriptedCaller(MismatchJson);
             var res = await R1Pipeline.RunAsync(caller, "跑个命令", Opt(sb, maxExecRepair: 0), CancellationToken.None);
-            Assert.Equal(5, res.Rc);
-            Assert.Equal("expect_stdout", res.Stage);
+            Assert.Equal(8, res.Rc);
+            Assert.Equal("self_test_unmet", res.Stage);
             Assert.Single(res.Steps);
             Assert.Equal(1, caller.Calls);          // 零预算 ⇒ 不重发起
             Assert.Equal(0, res.Stats.ExecRepairs);
@@ -273,9 +274,10 @@ public sealed class R1PipelineTests
         }
     }
 
-    /// <summary>R533-C 边界: 预算耗尽 ⇒ rc=5 但**产物与 steps 原样带上** (不吞证据、不谎报), 阶段名可机检 _exhausted。</summary>
+    /// <summary>R536: 「计划自测期望」是**模型自述**、不是判据 —— 计划**已跑完**(产物齐)时与执行器实测冲突
+    /// ⇒ rc=8 self_test_unmet（链路跑通、产物在盘），既不判成功也不判失败；两个数都在回复与台账里可见。</summary>
     [Fact]
-    public async Task Exec_Repair_Exhausted_Keeps_Artifacts_And_Marks_Stage()
+    public async Task Self_Test_Unmet_With_Complete_Plan_Is_Rc8()
     {
         var sb = NewSandbox();
         try
@@ -283,11 +285,41 @@ public sealed class R1PipelineTests
             var caller = new ScriptedCaller(MismatchJson, MismatchJson);
             var res = await R1Pipeline.RunAsync(caller, "跑个命令", Opt(sb, maxExecRepair: 1), CancellationToken.None);
 
-            Assert.Equal(5, res.Rc);
-            Assert.Equal("expect_stdout_exhausted", res.Stage);
+            Assert.Equal(8, res.Rc);
+            Assert.Equal("self_test_unmet", res.Stage);
             Assert.Equal(2, caller.Calls);
             Assert.Equal(1, res.Stats.ExecRepairs);
-            Assert.NotEmpty(res.Steps);          // 证据保留 (不吞)
+            Assert.NotEmpty(res.Steps);                                            // 证据保留 (不吞)
+            Assert.Contains("R1_SELF_TEST_UNMET", res.ReplyText, StringComparison.Ordinal);
+            Assert.Equal(1, res.Steps.Count);                                      // 计划 1 步: 跑完
+        }
+        finally
+        {
+            Directory.Delete(sb, true);
+        }
+    }
+
+    /// <summary>R536 负控（成对）: 计划**没跑完**(剩余写文件步骤未执行 ⇒ 产物不齐)时不得报 rc=8 ⇒ 仍 rc=5
+    /// 「链未达成」+ 阶段名 _exhausted —— 证明 rc=8 不是「凡 expect_stdout 不符就放行」的恒绿门。</summary>
+    [Fact]
+    public async Task Self_Test_Unmet_With_Incomplete_Plan_Stays_Rc5()
+    {
+        var sb = NewSandbox();
+        try
+        {
+            // s1 = 会不符的 run 步骤; s2 = 其后**尚未执行**的 write_file ⇒ 产物不齐
+            const string twoStep = "{\"schema_version\":\"r1.0\",\"intent\":\"code_task\",\"confidence\":0.9,"
+                + "\"entities\":[],\"constraints\":[],\"missing_slots\":[],\"ambiguities\":[],\"done_when\":[],\"refusal\":null,"
+                + "\"plan\":[{\"id\":\"s1\",\"tool\":\"run\",\"args\":{\"cmd\":\"echo 5\",\"expect_stdout\":\"6\"},\"depends_on\":[]},"
+                + "{\"id\":\"s2\",\"tool\":\"write_file\",\"args\":{\"path\":\"late.py\",\"content\":\"x=1\"},\"depends_on\":[\"s1\"]}]}";
+            var caller = new ScriptedCaller(twoStep, twoStep);
+            var res = await R1Pipeline.RunAsync(caller, "跑个命令", Opt(sb, maxExecRepair: 1), CancellationToken.None);
+
+            Assert.Equal(5, res.Rc);
+            Assert.Equal("expect_stdout_exhausted", res.Stage);
+            Assert.Equal(1, res.Steps.Count);                       // 只跑了 s1 ⇒ 计划未跑完
+            Assert.False(File.Exists(Path.Combine(sb, "late.py")));  // 产物不齐 (未落盘)
+            Assert.DoesNotContain("R1_SELF_TEST_UNMET", res.ReplyText, StringComparison.Ordinal);
         }
         finally
         {

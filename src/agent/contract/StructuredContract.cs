@@ -21,12 +21,12 @@ public static class StructuredContract
 - entities (array；子字段必填: kind, value；子字段取值: kind ∈ path|symbol|command|value|language): 
 - constraints (array): 
 - missing_slots (array): 推进管道**必需**但请求未给出的信息（不要臆造；没有就空数组）
-- ambiguities (array；子字段必填: span, issue, options): 指代不明/多种合理解读的片段。span=原文片段; options=可选项; 非空 ⇒ 管道必须停下要澄清
+- ambiguities (array；子字段必填: span, issue, options, chosen): 指代不明/多种合理解读的片段。span=原文片段; options=2-4 个互斥选项; chosen=采用的解读（必填，取 options 之一）—— **不停链**：按 chosen 解读继续
 - plan (array；子字段必填: id, tool, args, depends_on；子字段取值: tool ∈ write_file|run|none): 可执行步骤; tool 仅 write_file|run; args: write_file={path,content} run={cmd,expect_stdout?}; depends_on 引用先前的 id
 - done_when (array): 机械可判的完成条件（供外部校验，不是给你的自述）
 - refusal (object|null；子字段必填: reason, category): 
 
-互斥规则（违反即无效）: refusal≠null ⇒ plan 必空; 有 missing_slots 或 ambiguities ⇒ plan 必空; intent=code_task ⇒ plan 非空; depends_on 只能引用先前步骤的 id。";
+互斥与优先级（违反即无效）: refusal≠null ⇒ plan 必空; missing_slots 非空 ⇒ plan 必空（管道停在澄清）; ambiguities **不阻塞** ⇒ 每条必须给 chosen（取 options 之一）并按 chosen 继续; intent=code_task|ops_task 且 missing_slots 空 且 refusal=null ⇒ plan 必非空; depends_on 只能引用先前步骤的 id。";
 
     private static readonly string[] TopRequired =
     {
@@ -64,6 +64,23 @@ public static class StructuredContract
             }
         }
         return true;
+    }
+
+    /// <summary>数组里是否含该字符串（R536: ambiguities[].chosen 必须取自本条的 options）。</summary>
+    private static bool ArrayHasString(JsonElement el, string? value)
+    {
+        if (el.ValueKind != JsonValueKind.Array || value is null)
+        {
+            return false;
+        }
+        foreach (var it in el.EnumerateArray())
+        {
+            if (it.ValueKind == JsonValueKind.String && it.GetString() == value)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static void CheckTextArray(List<string> errs, JsonElement root, string key)
@@ -151,13 +168,18 @@ public static class StructuredContract
                         }
                         else
                         {
-                            if (!e.TryGetProperty("kind", out var kind) || kind.ValueKind != JsonValueKind.String || !InEnum(kind.GetString(), EntityKindEnum))
+                            if (!e.TryGetProperty("kind", out var kind) || kind.ValueKind != JsonValueKind.String)
                             {
-                                errs.Add("entities[" + i + "].kind 非法/缺失 (合法: " + string.Join("|", EntityKindEnum) + ")");
+                                // R536: 「缺」与「取值非法」分开报（Python 规则侧同措辞 ⇒ 差分语料可跨侧比对）
+                                errs.Add("entities[" + i + "] 缺子字段 kind");
+                            }
+                            else if (!InEnum(kind.GetString(), EntityKindEnum))
+                            {
+                                errs.Add("entities[" + i + "].kind 非法 (合法: " + string.Join("|", EntityKindEnum) + ")");
                             }
                             if (!e.TryGetProperty("value", out var val) || val.ValueKind != JsonValueKind.String || string.IsNullOrEmpty(val.GetString()))
                             {
-                                errs.Add("entities[" + i + "].value 非法/缺失");
+                                errs.Add("entities[" + i + "] 缺子字段 value");
                             }
                         }
                         i++;
@@ -193,6 +215,16 @@ public static class StructuredContract
                             if (!a.TryGetProperty("options", out var op) || !IsStringArray(op))
                             {
                                 errs.Add("ambiguities[" + i + "] 缺子字段 options");
+                            }
+                            else if (!a.TryGetProperty("chosen", out var ch) || ch.ValueKind != JsonValueKind.String)
+                            {
+                                // R536: chosen 是**子字段必填**（嵌套 required 由 SCHEMA 派生渲染进 prompt）
+                                errs.Add("ambiguities[" + i + "] 缺子字段 chosen");
+                            }
+                            else if (!ArrayHasString(op, ch.GetString()))
+                            {
+                                // R536: chosen 必须取自本条的 options（禁自造解读）
+                                errs.Add("ambiguities[" + i + "].chosen 不在 options: " + (ch.GetString() ?? string.Empty));
                             }
                         }
                         i++;
@@ -292,17 +324,20 @@ public static class StructuredContract
             }
 
             var intent = root.TryGetProperty("intent", out var it2) && it2.ValueKind == JsonValueKind.String ? it2.GetString() : null;
-            if (intent == "code_task" && !hasPlan)
+            // R536 修（死路分支）：旧规则「有 missing_slots 或 ambiguities ⇒ plan 必空」与「intent=code_task ⇒ plan 非空」
+            // 同时成立 ⇒ `code_task ∧ 任一歧义` **原理上不可满足**（实测 R535 挂 role 臂两次补全皆 plan=[] ⇒ rc=4）。
+            // 新规则按「缺信息 vs 多义」二分（与契约渲染段逐条对应）：
+            var hasMissing = root.TryGetProperty("missing_slots", out var ms) && ms.ValueKind == JsonValueKind.Array && ms.GetArrayLength() > 0;
+            var hasRefusalObj = root.TryGetProperty("refusal", out var rfPin) && rfPin.ValueKind == JsonValueKind.Object;
+            if (hasMissing && hasPlan)
             {
-                errs.Add("intent=code_task 但 plan 为空");
+                errs.Add("missing_slots 非空又给 plan ⇒ 语义冲突（缺信息不得猜）");
             }
-            var hasGap = (root.TryGetProperty("missing_slots", out var ms) && ms.ValueKind == JsonValueKind.Array && ms.GetArrayLength() > 0)
-                         || (root.TryGetProperty("ambiguities", out var am) && am.ValueKind == JsonValueKind.Array && am.GetArrayLength() > 0);
-            if (hasGap && (intent == "code_task" || intent == "ops_task") && hasPlan)
+            if ((intent == "code_task" || intent == "ops_task") && !hasPlan && !hasMissing && !hasRefusalObj)
             {
-                errs.Add("既有缺失/歧义又给 plan ⇒ 语义冲突（禁猜）");
+                errs.Add("intent=code_task 但 plan 为空（无 missing_slots/refusal ⇒ 不得靠歧义清空 plan）");
             }
-            if (root.TryGetProperty("refusal", out var rfPin) && rfPin.ValueKind == JsonValueKind.Object && hasPlan)
+            if (hasRefusalObj && hasPlan)
             {
                 errs.Add("refusal≠null 与 plan 非空互斥");
             }
@@ -334,7 +369,7 @@ public static class StructuredContract
             {
                 opts.Add(o.GetString() ?? string.Empty);
             }
-            ambiguities.Add(new Ambiguity(a.GetProperty("span").GetString() ?? string.Empty, a.GetProperty("issue").GetString() ?? string.Empty, opts));
+            ambiguities.Add(new Ambiguity(a.GetProperty("span").GetString() ?? string.Empty, a.GetProperty("issue").GetString() ?? string.Empty, opts, a.GetProperty("chosen").GetString() ?? string.Empty));
         }
         var plan = new List<PlanStep>();
         foreach (var s in root.GetProperty("plan").EnumerateArray())

@@ -1,0 +1,701 @@
+{
+ "schema": "r1-contract-cases/1",
+ "generated_by": "tools/r1gen/gen_csharp.py",
+ "source": "contract.fixture_cases()",
+ "cases": [
+  {
+   "name": "kadane_prefix_example",
+   "object": {
+    "schema_version": "r1.0",
+    "intent": "code_task",
+    "confidence": 0.9,
+    "entities": [
+     {
+      "kind": "path",
+      "value": "sols/kadane.py"
+     },
+     {
+      "kind": "language",
+      "value": "python"
+     }
+    ],
+    "constraints": [
+     "只用标准库",
+     "从 stdin 读一行整数"
+    ],
+    "missing_slots": [],
+    "ambiguities": [],
+    "plan": [
+     {
+      "id": "s1",
+      "tool": "write_file",
+      "args": {
+       "path": "sols/kadane.py",
+       "content": "<源码>"
+      },
+      "depends_on": []
+     },
+     {
+      "id": "s2",
+      "tool": "run",
+      "args": {
+       "cmd": "echo '-2 1 -3 4 -1 2 1 -5 4' | python3 sols/kadane.py",
+       "expect_stdout": "6"
+      },
+      "depends_on": [
+       "s1"
+      ]
+     }
+    ],
+    "done_when": [
+     "s2 的 stdout == 6"
+    ],
+    "refusal": null
+   },
+   "expect_valid": true,
+   "expect_substrings": [],
+   "source": "prefix <examples> #1"
+  },
+  {
+   "name": "ask_with_slots_and_chosen",
+   "object": {
+    "schema_version": "r1.0",
+    "intent": "question",
+    "confidence": 0.85,
+    "entities": [],
+    "constraints": [],
+    "missing_slots": [
+     "缺「它」的指代对象（哪个文件/任务）",
+     "缺验收标准"
+    ],
+    "ambiguities": [
+     {
+      "span": "把它改好",
+      "issue": "指代不明",
+      "options": [
+       "上一轮的某产物",
+       "仓库内某文件",
+       "外部粘贴的代码"
+      ],
+      "chosen": "上一轮的某产物"
+     }
+    ],
+    "plan": [],
+    "done_when": [],
+    "refusal": null
+   },
+   "expect_valid": true,
+   "expect_substrings": [],
+   "source": "prefix <examples> #2 + chosen"
+  },
+  {
+   "name": "r535_role_arm_raw_deadend",
+   "object": {
+    "schema_version": "r1.0",
+    "intent": "code_task",
+    "confidence": 0.9,
+    "entities": [
+     {
+      "kind": "path",
+      "value": "toolkit/__init__.py"
+     },
+     {
+      "kind": "path",
+      "value": "toolkit/vm.py"
+     },
+     {
+      "kind": "path",
+      "value": "toolkit/jsonmini.py"
+     },
+     {
+      "kind": "path",
+      "value": "toolkit/__main__.py"
+     },
+     {
+      "kind": "language",
+      "value": "python3"
+     }
+    ],
+    "constraints": [
+     "只允许标准库",
+     "不得打印任何多余文字、提示或调试信息（stderr 亦须静默）",
+     "产物必须落在工作根下（toolkit/ 直接位于工作根）",
+     "python3 -m toolkit <vm|jsonmini>",
+     "每个子命令模块导出 solve(text: str) -> str，末尾不带换行",
+     "收尾前的自验必须在工作根执行同一验收形态"
+    ],
+    "missing_slots": [],
+    "ambiguities": [
+     {
+      "span": "python3 -m toolkit <vm|jsonmini>",
+      "issue": "CLI 子命令名与模块名不一致（模块为 vm.py/jsonmini.py，而规格中家族名为 vm_run/json_mini），入口接受的参数拼写有二义",
+      "options": [
+       "按结构要求用 vm / jsonmini",
+       "按子命令规格用 vm_run / json_mini",
+       "同时接受两组别名"
+      ]
+     }
+    ],
+    "plan": [],
+    "done_when": [],
+    "refusal": null
+   },
+   "expect_valid": false,
+   "expect_substrings": [
+    "缺子字段 chosen",
+    "plan 为空"
+   ],
+   "source": "R535 真机 raw: eval/rover/r535/run-w1/R1r/t1/reply.txt"
+  },
+  {
+   "name": "r535_shape_after_chosen_and_plan",
+   "object": {
+    "schema_version": "r1.0",
+    "intent": "code_task",
+    "confidence": 0.9,
+    "entities": [
+     {
+      "kind": "path",
+      "value": "toolkit/__init__.py"
+     },
+     {
+      "kind": "path",
+      "value": "toolkit/vm.py"
+     },
+     {
+      "kind": "path",
+      "value": "toolkit/jsonmini.py"
+     },
+     {
+      "kind": "path",
+      "value": "toolkit/__main__.py"
+     },
+     {
+      "kind": "language",
+      "value": "python3"
+     }
+    ],
+    "constraints": [
+     "只允许标准库",
+     "不得打印任何多余文字、提示或调试信息（stderr 亦须静默）",
+     "产物必须落在工作根下（toolkit/ 直接位于工作根）",
+     "python3 -m toolkit <vm|jsonmini>",
+     "每个子命令模块导出 solve(text: str) -> str，末尾不带换行",
+     "收尾前的自验必须在工作根执行同一验收形态"
+    ],
+    "missing_slots": [],
+    "ambiguities": [
+     {
+      "span": "python3 -m toolkit <vm|jsonmini>",
+      "issue": "CLI 子命令名与模块名不一致（模块为 vm.py/jsonmini.py，而规格中家族名为 vm_run/json_mini），入口接受的参数拼写有二义",
+      "options": [
+       "按结构要求用 vm / jsonmini",
+       "按子命令规格用 vm_run / json_mini",
+       "同时接受两组别名"
+      ],
+      "chosen": "按结构要求用 vm / jsonmini"
+     }
+    ],
+    "plan": [
+     {
+      "id": "s1",
+      "tool": "write_file",
+      "args": {
+       "path": "toolkit/vm.py",
+       "content": "# ...\n"
+      },
+      "depends_on": []
+     }
+    ],
+    "done_when": [],
+    "refusal": null
+   },
+   "expect_valid": true,
+   "expect_substrings": [],
+   "source": "同一带歧义请求: 给 chosen + plan ⇒ 可推进（死路已修的反事实控制）"
+  },
+  {
+   "name": "ambiguity_chosen_not_in_options",
+   "object": {
+    "schema_version": "r1.0",
+    "intent": "code_task",
+    "confidence": 0.9,
+    "entities": [
+     {
+      "kind": "path",
+      "value": "toolkit/__init__.py"
+     },
+     {
+      "kind": "path",
+      "value": "toolkit/vm.py"
+     },
+     {
+      "kind": "path",
+      "value": "toolkit/jsonmini.py"
+     },
+     {
+      "kind": "path",
+      "value": "toolkit/__main__.py"
+     },
+     {
+      "kind": "language",
+      "value": "python3"
+     }
+    ],
+    "constraints": [
+     "只允许标准库",
+     "不得打印任何多余文字、提示或调试信息（stderr 亦须静默）",
+     "产物必须落在工作根下（toolkit/ 直接位于工作根）",
+     "python3 -m toolkit <vm|jsonmini>",
+     "每个子命令模块导出 solve(text: str) -> str，末尾不带换行",
+     "收尾前的自验必须在工作根执行同一验收形态"
+    ],
+    "missing_slots": [],
+    "ambiguities": [
+     {
+      "span": "python3 -m toolkit <vm|jsonmini>",
+      "issue": "CLI 子命令名与模块名不一致（模块为 vm.py/jsonmini.py，而规格中家族名为 vm_run/json_mini），入口接受的参数拼写有二义",
+      "options": [
+       "按结构要求用 vm / jsonmini",
+       "按子命令规格用 vm_run / json_mini",
+       "同时接受两组别名"
+      ],
+      "chosen": "不存在的选项"
+     }
+    ],
+    "plan": [
+     {
+      "id": "s1",
+      "tool": "write_file",
+      "args": {
+       "path": "toolkit/vm.py",
+       "content": "# ...\n"
+      },
+      "depends_on": []
+     }
+    ],
+    "done_when": [],
+    "refusal": null
+   },
+   "expect_valid": false,
+   "expect_substrings": [
+    "chosen 不在 options"
+   ],
+   "source": "chosen 必须取自 options"
+  },
+  {
+   "name": "missing_slots_with_plan",
+   "object": {
+    "schema_version": "r1.0",
+    "intent": "code_task",
+    "confidence": 0.9,
+    "entities": [
+     {
+      "kind": "path",
+      "value": "sols/kadane.py"
+     },
+     {
+      "kind": "language",
+      "value": "python"
+     }
+    ],
+    "constraints": [
+     "只用标准库",
+     "从 stdin 读一行整数"
+    ],
+    "missing_slots": [
+     "缺验收标准"
+    ],
+    "ambiguities": [],
+    "plan": [
+     {
+      "id": "s1",
+      "tool": "write_file",
+      "args": {
+       "path": "sols/kadane.py",
+       "content": "<源码>"
+      },
+      "depends_on": []
+     },
+     {
+      "id": "s2",
+      "tool": "run",
+      "args": {
+       "cmd": "echo '-2 1 -3 4 -1 2 1 -5 4' | python3 sols/kadane.py",
+       "expect_stdout": "6"
+      },
+      "depends_on": [
+       "s1"
+      ]
+     }
+    ],
+    "done_when": [
+     "s2 的 stdout == 6"
+    ],
+    "refusal": null
+   },
+   "expect_valid": false,
+   "expect_substrings": [
+    "missing_slots 非空又给 plan"
+   ],
+   "source": "缺信息不得猜"
+  },
+  {
+   "name": "code_task_empty_plan_no_slots",
+   "object": {
+    "schema_version": "r1.0",
+    "intent": "code_task",
+    "confidence": 0.9,
+    "entities": [
+     {
+      "kind": "path",
+      "value": "sols/kadane.py"
+     },
+     {
+      "kind": "language",
+      "value": "python"
+     }
+    ],
+    "constraints": [
+     "只用标准库",
+     "从 stdin 读一行整数"
+    ],
+    "missing_slots": [],
+    "ambiguities": [],
+    "plan": [],
+    "done_when": [
+     "s2 的 stdout == 6"
+    ],
+    "refusal": null
+   },
+   "expect_valid": false,
+   "expect_substrings": [
+    "plan 为空"
+   ],
+   "source": "无缺信息/拒答时不得清空 plan"
+  },
+  {
+   "name": "missing_slots_empty_plan_is_valid",
+   "object": {
+    "schema_version": "r1.0",
+    "intent": "code_task",
+    "confidence": 0.85,
+    "entities": [],
+    "constraints": [],
+    "missing_slots": [
+     "缺「它」的指代对象（哪个文件/任务）",
+     "缺验收标准"
+    ],
+    "ambiguities": [
+     {
+      "span": "把它改好",
+      "issue": "指代不明",
+      "options": [
+       "上一轮的某产物",
+       "仓库内某文件",
+       "外部粘贴的代码"
+      ],
+      "chosen": "上一轮的某产物"
+     }
+    ],
+    "plan": [],
+    "done_when": [],
+    "refusal": null
+   },
+   "expect_valid": true,
+   "expect_substrings": [],
+   "source": "缺信息 ⇒ 合法空 plan（管道停在澄清, 非契约错）"
+  },
+  {
+   "name": "refusal_with_plan",
+   "object": {
+    "schema_version": "r1.0",
+    "intent": "code_task",
+    "confidence": 0.9,
+    "entities": [
+     {
+      "kind": "path",
+      "value": "sols/kadane.py"
+     },
+     {
+      "kind": "language",
+      "value": "python"
+     }
+    ],
+    "constraints": [
+     "只用标准库",
+     "从 stdin 读一行整数"
+    ],
+    "missing_slots": [],
+    "ambiguities": [],
+    "plan": [
+     {
+      "id": "s1",
+      "tool": "write_file",
+      "args": {
+       "path": "sols/kadane.py",
+       "content": "<源码>"
+      },
+      "depends_on": []
+     },
+     {
+      "id": "s2",
+      "tool": "run",
+      "args": {
+       "cmd": "echo '-2 1 -3 4 -1 2 1 -5 4' | python3 sols/kadane.py",
+       "expect_stdout": "6"
+      },
+      "depends_on": [
+       "s1"
+      ]
+     }
+    ],
+    "done_when": [
+     "s2 的 stdout == 6"
+    ],
+    "refusal": {
+     "reason": "越权",
+     "category": "policy"
+    }
+   },
+   "expect_valid": false,
+   "expect_substrings": [
+    "互斥"
+   ],
+   "source": "refusal 与 plan 互斥"
+  },
+  {
+   "name": "refusal_ok",
+   "object": {
+    "schema_version": "r1.0",
+    "intent": "code_task",
+    "confidence": 0.9,
+    "entities": [
+     {
+      "kind": "path",
+      "value": "sols/kadane.py"
+     },
+     {
+      "kind": "language",
+      "value": "python"
+     }
+    ],
+    "constraints": [
+     "只用标准库",
+     "从 stdin 读一行整数"
+    ],
+    "missing_slots": [],
+    "ambiguities": [],
+    "plan": [],
+    "done_when": [
+     "s2 的 stdout == 6"
+    ],
+    "refusal": {
+     "reason": "越权",
+     "category": "policy"
+    }
+   },
+   "expect_valid": true,
+   "expect_substrings": [],
+   "source": "拒答合法形态"
+  },
+  {
+   "name": "confidence_out_of_range",
+   "object": {
+    "schema_version": "r1.0",
+    "intent": "code_task",
+    "confidence": 1.2,
+    "entities": [
+     {
+      "kind": "path",
+      "value": "sols/kadane.py"
+     },
+     {
+      "kind": "language",
+      "value": "python"
+     }
+    ],
+    "constraints": [
+     "只用标准库",
+     "从 stdin 读一行整数"
+    ],
+    "missing_slots": [],
+    "ambiguities": [],
+    "plan": [
+     {
+      "id": "s1",
+      "tool": "write_file",
+      "args": {
+       "path": "sols/kadane.py",
+       "content": "<源码>"
+      },
+      "depends_on": []
+     },
+     {
+      "id": "s2",
+      "tool": "run",
+      "args": {
+       "cmd": "echo '-2 1 -3 4 -1 2 1 -5 4' | python3 sols/kadane.py",
+       "expect_stdout": "6"
+      },
+      "depends_on": [
+       "s1"
+      ]
+     }
+    ],
+    "done_when": [
+     "s2 的 stdout == 6"
+    ],
+    "refusal": null
+   },
+   "expect_valid": false,
+   "expect_substrings": [
+    "confidence 越界"
+   ],
+   "source": ""
+  },
+  {
+   "name": "entity_missing_kind",
+   "object": {
+    "schema_version": "r1.0",
+    "intent": "code_task",
+    "confidence": 0.9,
+    "entities": [
+     {
+      "value": "sols/kadane.py"
+     }
+    ],
+    "constraints": [
+     "只用标准库",
+     "从 stdin 读一行整数"
+    ],
+    "missing_slots": [],
+    "ambiguities": [],
+    "plan": [
+     {
+      "id": "s1",
+      "tool": "write_file",
+      "args": {
+       "path": "sols/kadane.py",
+       "content": "<源码>"
+      },
+      "depends_on": []
+     },
+     {
+      "id": "s2",
+      "tool": "run",
+      "args": {
+       "cmd": "echo '-2 1 -3 4 -1 2 1 -5 4' | python3 sols/kadane.py",
+       "expect_stdout": "6"
+      },
+      "depends_on": [
+       "s1"
+      ]
+     }
+    ],
+    "done_when": [
+     "s2 的 stdout == 6"
+    ],
+    "refusal": null
+   },
+   "expect_valid": false,
+   "expect_substrings": [
+    "缺子字段 kind"
+   ],
+   "source": ""
+  },
+  {
+   "name": "plan_tool_illegal",
+   "object": {
+    "schema_version": "r1.0",
+    "intent": "code_task",
+    "confidence": 0.9,
+    "entities": [
+     {
+      "kind": "path",
+      "value": "sols/kadane.py"
+     },
+     {
+      "kind": "language",
+      "value": "python"
+     }
+    ],
+    "constraints": [
+     "只用标准库",
+     "从 stdin 读一行整数"
+    ],
+    "missing_slots": [],
+    "ambiguities": [],
+    "plan": [
+     {
+      "id": "s1",
+      "tool": "shell",
+      "args": {},
+      "depends_on": []
+     }
+    ],
+    "done_when": [
+     "s2 的 stdout == 6"
+    ],
+    "refusal": null
+   },
+   "expect_valid": false,
+   "expect_substrings": [
+    "tool 非法"
+   ],
+   "source": ""
+  },
+  {
+   "name": "missing_required_field",
+   "object": {
+    "schema_version": "r1.0",
+    "intent": "code_task",
+    "confidence": 0.9,
+    "entities": [
+     {
+      "kind": "path",
+      "value": "sols/kadane.py"
+     },
+     {
+      "kind": "language",
+      "value": "python"
+     }
+    ],
+    "constraints": [
+     "只用标准库",
+     "从 stdin 读一行整数"
+    ],
+    "missing_slots": [],
+    "ambiguities": [],
+    "plan": [
+     {
+      "id": "s1",
+      "tool": "write_file",
+      "args": {
+       "path": "sols/kadane.py",
+       "content": "<源码>"
+      },
+      "depends_on": []
+     },
+     {
+      "id": "s2",
+      "tool": "run",
+      "args": {
+       "cmd": "echo '-2 1 -3 4 -1 2 1 -5 4' | python3 sols/kadane.py",
+       "expect_stdout": "6"
+      },
+      "depends_on": [
+       "s1"
+      ]
+     }
+    ],
+    "refusal": null
+   },
+   "expect_valid": false,
+   "expect_substrings": [
+    "缺必填字段: done_when"
+   ],
+   "source": ""
+  }
+ ]
+}

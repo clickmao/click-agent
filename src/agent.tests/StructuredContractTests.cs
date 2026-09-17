@@ -20,7 +20,7 @@ public sealed class StructuredContractTests
         + "{\"id\":\"s2\",\"tool\":\"run\",\"args\":{\"cmd\":\"echo 6 | python3 sols/kadane.py\",\"expect_stdout\":\"6\"},\"depends_on\":[\"s1\"]}]}";
 
     private const string Ambiguous = "{\"schema_version\":\"r1.0\",\"intent\":\"question\",\"confidence\":0.85,\"entities\":[],"
-        + "\"constraints\":[],\"missing_slots\":[\"缺指代对象\"],\"ambiguities\":[{\"span\":\"把它改好\",\"issue\":\"指代不明\",\"options\":[\"上一个产物\",\"仓内文件\"]}],"
+        + "\"constraints\":[],\"missing_slots\":[\"缺指代对象\"],\"ambiguities\":[{\"span\":\"把它改好\",\"issue\":\"指代不明\",\"options\":[\"上一个产物\",\"仓内文件\"],\"chosen\":\"上一个产物\"}],"
         + "\"plan\":[],\"done_when\":[],\"refusal\":null}";
 
     private static Semantics Parse(string json)
@@ -37,6 +37,15 @@ public sealed class StructuredContractTests
         Assert.Equal(StructuredPrompt.PrefixChars, StructuredPrompt.Prefix.Length);
         Assert.Equal(StructuredPrompt.PrefixSha256Pinned, StructuredPrompt.PrefixSha256());
         Assert.Equal(StructuredContract.SchemaVersion, StructuredPrompt.Version);
+    }
+
+    [Fact]
+    public void Prefix_Meets_Cache97_Thickness_Floor()
+    {
+        Assert.True(StructuredPrompt.PrefixMinTokensForCache97 >= 6700,
+            "97% 命中所需 token 下限被下调：命中率 = 1 − L/P, L≈150–225 token 与厚度无关");
+        Assert.True(StructuredPrompt.PrefixChars >= StructuredPrompt.PrefixMinCharsForCache97,
+            "恒定前缀被精简到 97% 命中下限以下（只允许加厚，且增量只追加在 </prefix> 前）");
     }
 
     [Fact]
@@ -143,6 +152,8 @@ public sealed class StructuredContractTests
             new List<Ambiguity>(), new List<PlanStep>(), new List<string>(), new RefusalInfo("凭据外传", "credential_exfiltration"));
         Assert.Equal(3, SemanticsPipeline.Gate(refusal, sandbox).Rc);
 
+        // R536: Ambiguous 走的是**缺信息**路径（missing_slots 非空）⇒ rc=2 停链澄清。
+        // 「多义」不再停链（chosen 给成交互解读 ⇒ 继续），见 R1ContractSemanticsTests。
         Assert.Equal(2, SemanticsPipeline.Gate(Parse(Ambiguous), sandbox).Rc);
 
         var info = new Semantics("r1.0", "question", 0.9, new List<Entity>(), new List<string>(), new List<string>(),

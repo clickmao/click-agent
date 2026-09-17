@@ -29,6 +29,10 @@ public static class R1Transcript
         sb.Append(",\"prefix_sha256\":").Append(R1Json.Quote(r.PrefixSha256));
         sb.Append(",\"task_sha256\":").Append(R1Json.Quote(r.TaskSha256));
         sb.Append(",\"steps\":").Append(R1Json.Num(r.Steps.Count));
+        sb.Append(",\"plan_steps_total\":").Append(R1Json.Num(r.Semantics is null ? 0 : r.Semantics.Plan.Count));
+        sb.Append(",\"steps_executed\":").Append(R1Json.Num(r.Steps.Count));
+        // R536: 自测期望未达成 ⇒ 独立可机读字段（不靠 rc 数字猜）；管道在首个不符处停机 ⇒ ≤1。
+        sb.Append(",\"self_test_unmet\":").Append(R1Json.Num(SelfTestUnmet(r)));
         sb.Append(",\"role_note_chars\":").Append(R1Json.Num(r.RoleNoteChars));
         sb.Append("}");
         return sb.ToString();
@@ -60,6 +64,9 @@ public static class R1Transcript
         sb.Append("  \"cache_miss_tokens\": ").Append(R1Json.NumOrNull(r.Stats.CacheMissTokens)).Append(",\n");
         sb.Append("  \"repair_rounds\": ").Append(R1Json.Num(r.Stats.RepairRounds)).Append(",\n");
         sb.Append("  \"exec_repairs\": ").Append(R1Json.Num(r.Stats.ExecRepairs)).Append(",\n");
+        sb.Append("  \"plan_steps_total\": ").Append(R1Json.Num(r.Semantics is null ? 0 : r.Semantics.Plan.Count)).Append(",\n");
+        sb.Append("  \"steps_executed\": ").Append(R1Json.Num(r.Steps.Count)).Append(",\n");
+        sb.Append("  \"self_test_unmet\": ").Append(R1Json.Num(SelfTestUnmet(r))).Append(",\n");
 
         var sem = r.Semantics;
         sb.Append("  \"semantics\": ");
@@ -73,6 +80,8 @@ public static class R1Transcript
             sb.Append(", \"confidence\": ").Append(R1Json.Num(sem.Confidence));
             sb.Append(", \"missing_slots\": ").Append(StrArray(sem.MissingSlots));
             sb.Append(", \"ambiguities\": ").Append(R1Json.Num(sem.Ambiguities.Count));
+            // R536: 多义不再停链 ⇒ 采用的解读（chosen）是**证据**：逐条落盘（span => chosen），可机检可追溯。
+            sb.Append(", \"ambiguities_chosen\": ").Append(ChosenPairs(sem.Ambiguities));
             sb.Append(", \"refusal\": ").Append(sem.Refusal is null ? "null" : R1Json.Quote(sem.Refusal.Category + ": " + sem.Refusal.Reason));
             sb.Append(", \"done_when\": ").Append(StrArray(sem.DoneWhen));
             sb.Append("},\n");
@@ -139,5 +148,23 @@ public static class R1Transcript
             sb.Append(i == 0 ? string.Empty : ", ").Append(R1Json.Quote(items[i]));
         }
         return sb.Append(']').ToString();
+    }
+
+    /// <summary>R536: 多义项的「片段 ⇒ 采用解读」逐条落盘（管道按 chosen 继续 ⇒ 该决策必须有痕）。</summary>
+    private static string ChosenPairs(System.Collections.Generic.IReadOnlyList<agent.contract.Ambiguity> items)
+    {
+        var sb = new StringBuilder("[");
+        for (var i = 0; i < items.Count; i++)
+        {
+            sb.Append(i == 0 ? string.Empty : ", ")
+              .Append(R1Json.Quote(items[i].Span + " => " + items[i].Chosen));
+        }
+        return sb.Append(']').ToString();
+    }
+
+    /// <summary>R536: 「计划自测期望未达成」的步骤数（模型自述期望 vs 执行器实测冲突；≤1，首个不符即停机）。</summary>
+    private static int SelfTestUnmet(R1RunResult r)
+    {
+        return r.Rc == 8 || r.Stage.StartsWith("expect_stdout", System.StringComparison.Ordinal) ? 1 : 0;
     }
 }

@@ -1,0 +1,77 @@
+{
+ "round": "R536",
+ "made_before_run": true,
+ "revision": "v1 (R535 两处未闭合项的产品侧修复后首跑; 铁律 11 收口器同轮照跑; 夹具逐字节沿用 r535 冻结件)",
+ "mainline": "主线 = 用真实开发任务与外部真值在「同环境·同输入·同模型」下对照自检; 本轮判据 = R1 管道在同窗同题 t1 上 (a) 挂 role 臂契约可推进且质量不降 (b) 不挂 role 臂「链 rc」与「产物正确」同步 (c) 成本读数照旧单列 (单窗 n=1 ⇒ 不作稳定增益结论)",
+ "question": "R535 抓到两处**产品缺陷**(非 role 缺陷): ①契约**死路分支**—— `ambiguities 非空 ⇒ plan 必空` 与 `intent=code_task ⇒ plan 非空` 同时成立 ⇒ 「code_task ∧ 任一歧义」原理上不可满足 (实测挂 role 臂两次补全皆 plan=[] ⇒ rc=4 / 0-30); ②「计划自测期望(模型自述)」与「执行器实测证据」冲突时被一律判 rc=5 ⇒ 产物 30/30 而链报未达成。本轮问: 修后 (a) 挂 role 臂是否恢复可推进与正确 (b) 两种情况是否被 rc 域区分开 (1=链未达成 / 8=自测未达成) 且两者都可见 (c) 生成器/工件同源闸是否有牙。",
+ "treatment": "两处产品改动 (单轮, 同一 AOT 二进制) + 一处仪器固化: ①契约语义按「缺信息 vs 多义」二分 (missing_slots ⇒ 停链澄清; ambiguities ⇒ 每条必给 chosen ∈ options, 按它继续, plan 必非空) —— 渲染段/校验器/准入闸三处同源改, 由 tools/r1gen (生成器, R536 从 /tmp 搬进仓) 机械重生成; ②rc 域新增 8=self_test_unmet (计划已跑完 ∧ 仅 expect_stdout 不符) 与 5=链未达成 (执行 rc≠0 或计划没跑完) 分离, 台账加 plan_steps_total/steps_executed/self_test_unmet/ambiguities_chosen; ③新机检器 tools/r1gen/gen_csharp.py --check (生成器 vs 现盘字节同源闸) + 生成期 fail-closed (前缀示例必须自过契约) + 差分语料 src/agent.tests/fixtures/r1-contract-cases.json (由 contract.py 单一真源生成, C# 侧逐条比对)。",
+ "instrument_negative_control": "新机检器首次上线先跑修前态并判红 (披露式): `python3 tools/r1gen/gen_csharp.py --check` 对**修前工作区** ⇒ R1GEN_EXIT=1 / DRIFT_FILES=2 (StructuredPrompt.cs 前缀段序与钉值 3970/03215758 vs 生成器 3972/c40809b3; StructuredContractTests.cs 块序表) ⇒ 闸有牙; 重同步后 rc=0 (见 evidence/ 记录)。",
+ "arms": {
+  "R1r-t1": "R1 主管道臂 (挂 role 额外数据) —— 判据主对照位 (R535 该臂 0/30 ⇒ 本轮唯一阻塞项)",
+  "R1nr-t1": "role 挂载 A/B 控制臂 (同题同 adapter, 不挂 role) —— 其「链 rc」是本轮 rc 域修复的观测位",
+  "A1-on-t1": "旧动作环臂 (本侧 agent 路径, 同窗同题) —— 判据基线"
+ },
+ "evidence_scope": {
+  "require": [
+   "w1/agentR1r-t1",
+   "w1/agentA1-on-t1"
+  ],
+  "nonrequired": [
+   {
+    "pattern": "w1/agentR1nr-t1",
+    "reason": "role 挂载 A/B 控制臂: 其读数是 role 轴与 rc 域的对照量, 不是本轮交付面。此声明在起臂前落盘。"
+   }
+  ]
+ },
+ "judgments": [
+  {
+   "id": "J1",
+   "text": "挂 role 臂 (R1r-t1) 契约可推进 (plan 非空) 且 t1 隐藏用例 30/30",
+   "falsified_if": "plan 仍为空 / rc=4, 或质量 < 30/30"
+  },
+  {
+   "id": "J2",
+   "text": "两臂 system 轮逐字节 == 产品 pin (5140 字符 / sha 见跑后回填) 且 R1r/R1nr system sha 相同 (role 只进 user 尾块)",
+   "falsified_if": "任一臂 system != pin 或两臂 system sha 不同"
+  },
+  {
+   "id": "J3",
+   "text": "不挂 role 臂 (R1nr-t1) rc==8 self_test_unmet ∧ 隐藏用例 30/30 (「链 rc」与「产物正确」同步化)",
+   "falsified_if": "rc 仍为 5, 或台账无 self_test_unmet 字段, 或质量 < 30/30"
+  },
+  {
+   "id": "J4",
+   "text": "(负控/收窄条件) 若 J1 证伪 ⇒ 本轮只写「修复无效, 宣称收窄」, 不得宣称任何恢复",
+   "falsified_if": "—"
+  },
+  {
+   "id": "J5",
+   "text": "成本: 同题 t1 上 R1 臂 vs A1-on 的调用数/新算 prompt/completion 分列; 每臂 n=1 单窗 ⇒ 只作**参考读数**, 不作稳定增益结论; 若铁律 11 前置器 rc≠0 ⇒ 一律标「参考(未可验收)」",
+   "falsified_if": "—"
+  },
+  {
+   "id": "J6",
+   "text": "生成器同源闸: --check rc=0 (修后) 且修前态 rc=1 (已在跑臂前记录)",
+   "falsified_if": "修后 rc≠0"
+  }
+ ],
+ "notes": [
+  "判分 = 题集 task['cases'] 指向的隐藏用例脚本真跑 (python3 -I -B, cwd=产物树), rc=0 且逐条 CASE PASS 且条数 == hidden_cases ⇒ correct; 自报 all_pass 只作对照不吃。",
+  "口径: 成本读数取 adapter 落盘的中继 usage (calls 按落盘索引去重 / tokens 取上游 usage 之和); transcript 自报只作对照项。",
+  "禁改题面 (prompt_sha256 硬门), 禁改判分脚本 (r535 冻结拷贝, md5 逐件相等已在起臂前核过)。",
+  "每臂 n=1 单窗 (R523「单窗=噪声」) ⇒ 不作稳定增益结论; 本轮的交付面是**缺陷闭合的机械证据**(单测/差分语料/前置器读数) 与同窗复跑读数。",
+  "codex 外侧对照臂本窗未跑 ⇒ 主线四硬条件的「外侧对照」仍缺, 如实登记为诚实边界 (R537 候选)。"
+ ],
+ "amendments": [
+  {
+   "id": "A1",
+   "made_before": "**在追加臂起臂之前**落盘 (主跑 w1 已完成, 复跑未开始)",
+   "at": "2026-09-18T02:27:28+08:00",
+   "what": "追加 2 轮同臂复跑 (reps): r2/r3 × {R1nr(不挂role), R1r(挂role)} 于同题 t1, 同题面 sha / 同判分脚本 / 同 AOT 二进制",
+   "where": "eval/rover/r536/run-reps/<r2|r3>/ —— **不写 evidence/windows/** ⇒ 不进验收面, evidence_scope 不变 (无新窗口声明需要), 前置器读数不受影响",
+   "why": "w1 单窗读数里挂 role 臂 0/30 而不挂 role 臂 30/30 —— n=1 无法区分「role 轴效应」与「本窗模型输出质量摆动」(R523)。复跑只为报逐窗 + 极差",
+   "judgment": "预注册: 只报逐窗读数与极差(禁单点 Δ 结论); 若 3 窗里 role 臂与 no-role 臂的读数出现跨类摆动 ⇒ 归「窗口摆动」; 若 3 窗同向稳定 ⇒ 记「role 轴候选效应」但**仍不作承诺**(n=3 且无外部真值)",
+   "not_changed": "判据/阈值/题面/cases/判分脚本一律不动"
+  }
+ ]
+}

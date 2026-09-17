@@ -22,9 +22,11 @@ public static class SemanticsPipeline
         {
             return new PipelineOutcome(3, "hard_gate", "模型判定应拒答: " + sem.Refusal.Reason, true);
         }
-        if (sem.MissingSlots.Count > 0 || sem.Ambiguities.Count > 0)
+        if (sem.MissingSlots.Count > 0)
         {
-            return new PipelineOutcome(2, "semantics_incomplete", "缺信息/有歧义 ⇒ 停下澄清", true);
+            // R536: 只有**缺信息**才停链澄清；歧义（有 options+chosen）不阻塞 —— 管道按 chosen 解读继续。
+            // 旧行为「有歧义 ⇒ rc=2 停下」把唯一可推进的多义分支判死（与契约的 code_task ⇒ plan 非空 互斥）。
+            return new PipelineOutcome(2, "semantics_incomplete", "缺信息 ⇒ 停下澄清", true);
         }
         if (sem.Intent != "code_task" && sem.Intent != "ops_task")
         {

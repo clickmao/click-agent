@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R532",
+ "updated_round": "R536",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -6817,6 +6817,33 @@
    },
    "negative_control": "路径逃逸例断言沙箱外文件**不存在** (逃逸侧红); `expect_stdout` 例用错期望值必红; 台账解析例对空文件必红 (禁恒真断言)。",
    "owner_round": "R532"
+  },
+  {
+   "id": "internal.r536-r1-contract-deadend-and-rc-split",
+   "level": "L3",
+   "capability": "**R1 契约死路分支闭合 + rc 域「自测期望 vs 执行器实测」分离 (R536)**: 契约语义按「缺信息(missing_slots ⇒ 停链澄清) vs 多义(ambiguities ⇒ 每条必给 chosen ∈ options 并按它继续, plan 必非空)」二分 —— 旧规则 `有 missing_slots 或 ambiguities ⇒ plan 必空` ∧ `intent=code_task ⇒ plan 非空` 使 `code_task ∧ 任一歧义` **原理上不可满足** (R535 实测: 挂 role 臂两次补全皆 plan=[] ⇒ rc=4 / 0-30); 准入闸只对 missing_slots 停链; rc 域新增 8=`self_test_unmet` (计划**已跑完** ∧ 仅模型自述 expect_stdout 不符 ⇒ 产物在盘, 不得读成「链成功」也不得读成「链失败」), 执行 rc≠0 或计划没跑完仍 rc=5; 台账加 plan_steps_total/steps_executed/self_test_unmet/ambiguities_chosen[]. 真机读数 (同窗同题 t1, 30 隐藏用例, 题面 sha 9fbfaeb3a17b): w1 `R1nr` 1 调用/6,521 tok/**30/30** rc=0 · w1 `R1r`(挂 role) 2 调用 rc=8/0-30 · reps r2/r3 两臂 **30/30 ×4 跑次**, 其中 r3/`R1nr` **rc=8 ∧ 30/30**(rc 域分离在真机出现) ⇒ 死路已闭 (可推进), role 臂跨 3 窗 0/30→30/30→30/30 = **摆动主导** (不作增益宣称)。",
+   "covers": [
+    "src/agent/contract/StructuredContract.cs",
+    "src/agent/contract/SemanticsPipeline.cs",
+    "src/agent/r1/R1Pipeline.cs",
+    "src/agent/r1/R1Transcript.cs",
+    "tools/r1gen/contract.py",
+    "src/agent.tests/R1ContractSemanticsTests.cs"
+   ],
+   "evidence_cmd": "bash eval/rover/r536/run_r536.sh && bash eval/rover/r536/run_r536_reps.sh && python3 eval/rover/r507pre/exec_precondition.py --round r536 ; env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR $HOME/.dotnet/dotnet test src/agent.tests/agentframework.tests.csproj --filter \"FullyQualifiedName~R1ContractSemantics|FullyQualifiedName~R1Pipeline|FullyQualifiedName~StructuredContract\" --nologo -v q",
+   "evidence_path": "eval/rover/r536/run-w1/logs/analysis-w1.json",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "cb669566ef74",
+    "instrument": null,
+    "instrument_sha12": null,
+    "binding": "audit-pin",
+    "audited_by_round": "R536"
+   },
+   "negative_control": "① 差分语料反事实控制: **R535 真机 raw** (挂 role 臂 `plan:[]` ∧ ambiguities 无 chosen) 在旧规则下「合法」而新规则下**判红**(`ambiguities[0] 缺子字段 chosen` + `plan 为空`), 同形态补 chosen+plan ⇒ valid; ② rc=8 成对负控: 计划**没跑完**(剩余 write_file 未执行 ⇒ 产物不齐) 必回落 **rc=5**(`Self_Test_Unmet_With_Incomplete_Plan_Stays_Rc5`), 证明 rc=8 不是「凡 expect_stdout 不符即放行」的恒绿门; ③ 生成器同源闸负控: 修前态 `gen_csharp.py --check` **rc=1 / DRIFT=2**, 重同步后 rc=0; ④ 契约/示例自证负控: 改坏一条 `<good_response>` 的 schema_version ⇒ Validate 必红。",
+   "owner_round": "R536"
   }
  ],
  "aot_check_policy": "release_tag_only",

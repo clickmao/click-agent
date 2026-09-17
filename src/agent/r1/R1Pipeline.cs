@@ -17,7 +17,8 @@ namespace agent.r1;
 /// 模型侧无工具面、无动作环、无纪律尾块 ⇒ 实发 system 逐字节 = 恒定前缀 pin。
 ///
 /// fail-closed：前缀漂移不起调用（rc=6）；契约不过不执行（rc=4）；闸 halt 不执行（rc=2/3）；
-/// 实测不过先回灌修复，仍不过才 rc=5 —— **产物已落盘且 steps 原样带上**（不吞证据、不谎报成功）。
+/// 实测不过先回灌修复；仍不过时按「产物是否齐」二分（R536）：计划跑完 ⇒ rc=8 self_test_unmet
+/// （自测期望是模型自述，产物在盘），计划没跑完 ⇒ rc=5 —— **产物已落盘且 steps 原样带上**（不吞证据、不谎报成功）。
 /// 与 CLAUDE-Fable-5.1 动因③「状态外置：模型只产契约，执行在管道」对齐：模型无工具面，工具面只在本类下游。
 /// </summary>
 public static class R1Pipeline
@@ -151,8 +152,25 @@ public static class R1Pipeline
 
             if (execRepairs >= opt.MaxExecRepair)
             {
-                // R533: 不再「产物已落盘却直接停机」—— 先回灌真证据重发起; 预算耗尽才落 rc=5,
+                // R533: 不再「产物已落盘却直接停机」—— 先回灌真证据重发起; 预算耗尽才停机,
                 // steps 原样带上 (产物在盘上, 判分器可继续核), 阶段名标 _exhausted 可机检。
+                //
+                // R536: 停机还要分**两类**——「计划自测期望」是**模型自述**（预测），「执行器实测」才是证据；
+                //   两者冲突且**计划已跑完**（无剩余步骤 ⇒ 产物齐）⇒ rc=8 self_test_unmet:
+                //   既不算链成功、也不算链失败, 两个数都可见（reply 带标记 + 台账 steps_executed/plan_steps_total）。
+                //   其余情形（执行 rc≠0、或计划没跑完 ⇒ 产物不齐）⇒ 保留 rc=5「链未达成」。
+                var planComplete = exec.Steps.Count >= sem.Plan.Count;
+                if (exec.Stage == "expect_stdout" && planComplete)
+                {
+                    var unmet = new R1RunResult(8, "self_test_unmet",
+                        exec.Reason + "（计划已跑完 " + exec.Steps.Count + "/" + sem.Plan.Count
+                        + " 步, 产物在盘 ⇒ 记自测期望未达成, 不判链失败: 期望是模型自述, 判分以执行器实测/外部用例为准）",
+                        raw + "\nR1_SELF_TEST_UNMET {\"steps_executed\":" + exec.Steps.Count
+                        + ",\"plan_steps_total\":" + sem.Plan.Count + ",\"detail\":\"expect_stdout 不符\"}",
+                        statsAll, prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps);
+                    R1Transcript.Write(unmet, opt, taskText ?? string.Empty);
+                    return unmet;
+                }
                 var stage = execRepairs > 0 ? exec.Stage + "_exhausted" : exec.Stage;
                 var stuck = new R1RunResult(exec.Rc, stage, exec.Reason, raw, statsAll,
                     prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps);
