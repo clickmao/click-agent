@@ -1,0 +1,38 @@
+{
+ "round": "R516",
+ "verdict": "PASS",
+ "run_dir": "/tmp/r516/run-1",
+ "adapter_calls_total": 24,
+ "checks": [
+  {
+   "arm": "RED",
+   "ok": true,
+   "detail": "旧AOT rc=0 state=Completed files=['A answer.txt'] scope_keys=False (期望: 无范围机制)"
+  },
+  {
+   "arm": "A5-pre-state-anchor",
+   "ok": true,
+   "detail": "R515 归档 report-orch-v2-12step.json: Completed∧0产物 节点 = ['n4', 'n3'] (前态锚, 冻结)"
+  },
+  {
+   "arm": "G1",
+   "ok": true,
+   "detail": "rc=1 state=Failed violations=['no_artifact'] error=节点无产物 (假绿防护): 声明了写范围但未产出任何范围内文件"
+  },
+  {
+   "arm": "G2",
+   "ok": true,
+   "detail": "rc=0 state=Completed files=['A out/hello.py'] violations=[]"
+  },
+  {
+   "arm": "G3",
+   "ok": true,
+   "detail": "rc=1 state=Failed violations=['out_of_scope'] paths=['outside/rogue.py']"
+  },
+  {
+   "arm": "N",
+   "ok": true,
+   "detail": "rc=2 report_absent=True adapter_calls 24->24 stderr_has_overlap=True"
+  }
+ ]
+}

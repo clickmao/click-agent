@@ -1,7 +1,7 @@
 {
   "round": "EXP1-Q17",
-  "generated": "2026-09-16T13:18:10",
-  "elapsed_s": 0.318,
+  "generated": "2026-09-17T11:37:52",
+  "elapsed_s": 0.317,
   "inputs": {
     "probe": "eval/capability/exp1-q10/probe_v260.py",
     "archive": "eval/capability/exp1-q18/arm_v270_VOID_self_include/citations.jsonl",
@@ -283,9 +283,9 @@
     },
     {
       "id": "C14",
-      "claim": "零回归: probe/归档逐字节未变 ∧ src/ 与 skills/ 无新写入 ∧ 零 dotnet",
+      "claim": "零回归: probe/归档逐字节未变 ∧ src/ 与 skills/ 无新写入 (mtime 判据, glob 含构建产物 .cs ⇒ 等价于窗口内无 dotnet 构建)",
       "passed": true,
-      "detail": "{\"probe_unchanged\": true, \"archive_unchanged\": true, \"src_or_skills_written_after_start\": [], \"n_touched\": 0, \"passed\": true}",
+      "detail": "{\"probe_unchanged\": true, \"archive_unchanged\": true, \"src_or_skills_written_after_start\": [], \"n_touched\": 0, \"n_touched_by_class\": {}, \"passed\": true}",
       "posthoc": false
     }
   ],

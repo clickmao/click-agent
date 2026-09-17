@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R515",
+ "updated_round": "R516",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -1788,11 +1788,11 @@
     "evidence_kind": "artifact",
     "pin_status": "frozen",
     "pin_reason": "archived-per-round",
-    "artifact_sha12": "d380c0706ec1",
+    "artifact_sha12": "569e9a0af06b",
     "instrument": "eval/rover/r444/precheck_prefilter.py",
     "instrument_sha12": "b4ecd4c1bf3c",
     "binding": "self-attested",
-    "audited_by_round": "EXP1-Q34"
+    "audited_by_round": "R516"
    },
    "negative_control": "--neg-control 注入非 ack 的 Skip 轮必须检出 ≥1 反例 (落独立产物 eval/rover/r444/runs/precheck-prefilter.neg.json, 真值臂产物 sha/mtime 必须逐位不变); --grid-dir /nonexistent 必须 fail-closed 非零; --legacy-single-out 单槽缺陷态: 两臂共用产物 ⇒ 真值臂身份必须丢失 (缺陷可复现); 8 判据读数见 eval/capability/exp1-q25/harden_check_q25.json",
    "covers": [
@@ -1833,11 +1833,11 @@
     "pin_status": "frozen",
     "pin_reason": "archived-per-round",
     "pin_kind": "semantic-projection",
-    "artifact_sha12": "8b1c01380a33",
+    "artifact_sha12": "dda66b65ded0",
     "instrument": "eval/capability/instruments_check.py",
     "instrument_sha12": "37c09c2e7fa9",
     "binding": "audit-pin",
-    "audited_by_round": "EXP1-Q39"
+    "audited_by_round": "R516"
    },
    "negative_control": "每条器具必带 nc_cmd 且必须非零; 缺负控的器具不许进面",
    "covers": [
@@ -5807,6 +5807,42 @@
    },
    "negative_control": "成对 (本轮实测): ① 判分只判副本 (R512 教训) + 每臂独立 session (R509 铁律); ② 起手闸首跑 GATE_BLOCKED (mem_available_mb=2610 < 2650) ⇒ 不起臂, 已作废; 后续连续 2 次 PASS (2929/2782) 才起臂; ③ 同臂同输入跨跑次 12/12↔4/12 ⇒ 单跑次禁作判据; ④ 与 R511/R512/R513 窗口题面版本不同 ⇒ 禁相减; ⑤ 规模臂未跑 ⇒ 不作读数 (禁未跑充数)。",
    "owner_round": "R515"
+  },
+  {
+   "id": "agent.node-artifact-scope-contract",
+   "level": "L3",
+   "capability": "节点产物契约 (R516): ① 节点成功**必须绑磁盘证据** —— 声明了写范围的节点若本次运行在工作区内无任何范围内增改文件 ⇒ 判 Failed「假绿防护」; ② 节点写范围契约为**机检**: 范围文件 DSL `nodeId | 路径[,路径]` (尾部 / = 目录前缀, * = 字面前缀通配, 段边界判定 ⇒ `out` 不匹配 `out2/x`), 越界写 ⇒ 判 Failed 并逐条点名路径; ③ **同层 (会并发) 写范围重叠 ⇒ 宿主在建立 agent 之前 rc=2 拒收** (零 LLM 调用); ④ 产物归属由编排器快照差负责 (单一权威源, 宿主侧实现删除)。真机 E2E (AOT + adapter 真值 + 真模型 deepseek-chat): 5 臂 6 判据全绿 (RED 旧AOT 同计划无范围机制 / A5 前态锚 n3,n4 Completed∧0产物 / G1 零产物 ⇒ Failed+no_artifact / G2 真干活 ⇒ Completed+A out/hello.py / G3 越界 ⇒ Failed+out_of_scope / N 同层重叠 ⇒ rc=2 且 adapter 调用 24→24 零新增); 单测 22/22 (新) · 全量 1706/1706 rc=0 · AOT IL_warnings=0 (15592688 B, sha12 b31af1d94da1)。",
+   "covers": [
+    "src/agent/intent/NodeScopeFile.cs",
+    "src/agent/intent/TaskOrchestrator.cs",
+    "src/agent.host/OrchestrateCommand.cs",
+    "src/agent.tests/TaskOrchestratorScopeTests.cs",
+    "eval/rover/r516/plan-red.txt",
+    "eval/rover/r516/plan-write.txt",
+    "eval/rover/r516/plan-outside.txt",
+    "eval/rover/r516/plan-overlap.txt",
+    "eval/rover/r516/scope-red.txt",
+    "eval/rover/r516/scope-write.txt",
+    "eval/rover/r516/scope-overlap.txt",
+    "eval/rover/r516/run_scope_e2e.sh",
+    "eval/rover/r516/check_r516.py",
+    "docs/plans/v1.00.0-r516-node-scope-contract.md",
+    "docs/reports/r516-node-artifact-scope-contract.md"
+   ],
+   "evidence_cmd": "bash eval/rover/r516/run_scope_e2e.sh (R516_RUN_DIR=<DIR>) ; python3 eval/rover/r516/check_r516.py --run-dir <DIR> --json <DIR>/verdict.json",
+   "evidence_path": "eval/rover/r516/evidence/verdict.json",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "live",
+    "pin_reason": "worktree-only",
+    "artifact_sha12": null,
+    "instrument": "eval/rover/r516/run_scope_e2e.sh",
+    "instrument_sha12": "186f1ff67869",
+    "binding": "audit-pin",
+    "audited_by_round": "R516"
+   },
+   "negative_control": "成对 (本轮真机实测, 同计划文件逐字节 md5 一致): ① RED 旧 AOT (R515 二进制) 对同一计划 rc=0 · 节点 Completed · 报告**无 scope 字段** ⇒ 前态确实无机制; ② 前态锚 (冻结归档) `eval/rover/r515/evidence/report-orch-v2-12step.json` 中 n3 (5 ms) / n4 (178 ms) 均 Completed 且 0 产物 = 本轮要闭合的假绿现场; ③ G2 正控: 真干活节点未被误杀 (Completed + A out/hello.py); ④ N 负控: 同层重叠 ⇒ rc=2 · 报告未生成 · adapter 调用 24→24 (零 LLM); ⑤ 判定器只读落盘产物 + 退出码, 无模型裁判。",
+   "owner_round": "R516"
   }
  ],
  "aot_check_policy": "release_tag_only",

@@ -950,3 +950,17 @@ python3 eval/run_round.py <新轮号> "revert-verify <原commit>" --quick   # �
 - **候选①**: `check_criteria_r514.py` 主判据切为**不必要的远端调用数下降** (规则式, 且要求 min<1 防「不更差」冒充「更好」); token 降为**中位数 + n≥5**, 否则**弃权单列**; 噪声源预声明 (缺 ⇒ rc=2)。影子自检 **9/9** (含 A/C 互换必须翻转判决)。**归档回放**: R512 旧读数在新口径下 `C2 = ABSTAIN_N_BELOW_MIN (n=4<5)` ⇒ 旧轮 token 判据**由 PASS 降为弃权** (口径变更, 非读数变化)。
 - **诚实边界**: ① checker→归档 比对属**器具校准 (事后锚定)**, 不作预测命中宣称; ② D4 在 HTTP 类题族 (p3) 分辨力有限 (用例不逐条断言键面); ③ 候选③④ 未做 (真机臂预算 + 内存闸 2,362MB<2,650MB; 第二外部参照仅探到未验证的 `qwen`); ④ `improvements.md` R404–R407 轮节仍缺 (结转, 未静默丢失)。
 - **下轮候选 (R515)**: ① 对照轮**强制前门**: 冻结题集进臂前必须先跑 checker (rc=1 ⇒ 该轮读数标「参考(未可验收)」) ② 候选③ 预算曲线 6/9/12/16 × n≥3 (须先过内存闸/让行) ③ 候选④ 第二外部参照 (`qwen` 接入预注册) ④ `improvements.md` R404–R407 回填 + R403 排序违例修 ⑤ D4 判据在 HTTP 题族的可达面扩展 (先落分布再谈扩面)。
+
+---
+
+## R516 (2026-09-17) — 节点成功必须绑产物证据 + 节点写范围契约 (fail-closed 机检) (轮志: `docs/reports/r516-node-artifact-scope-contract.md` · 计划: `docs/plans/v1.00.0-r516-node-scope-contract.md`)
+
+- **命名空间**: 起手闸 `pgrep -af 'llama-server|dotnet test|dotnet publish|probe'` 空输出; mtime 取证判定兄弟 R515 已闭合 (报告 11:04 收口, `/proc/2588066` CPU 计数 4 s 冻结) ⇒ 轮号取 max+1 = **R516** (`eval/rover/r516/`、`/tmp/r516/` 均不存在)。
+- **前态锚 (R515 归档, 冻结)**: `eval/rover/r515/evidence/report-orch-v2-12step.json` 中 `n3` (5 ms) / `n4` (178 ms) 均 **Completed ∧ files=[]** ⇒ 「节点成功」与「真实交付」之间无机械绑定 (R515 v2 只把范围写进提示词 = 软约束)。
+- **候选①②(本轮全部候选 + 未闭合遗留同轮解决)**: ① `src/agent/intent/NodeScopeFile.cs` (新) = 范围文件 DSL `nodeId | 路径[,路径]` (尾部 `/` = 目录前缀, `*` = 字面前缀通配, **段边界**判定 ⇒ `out` 不匹配 `out2/x`) + fail-closed 解析 (字段数/空 id/重复声明/空范围/越界路径全拒); ② `TaskOrchestrator` 接管**逐节点快照差**(单一权威源) ⇒ 「节点成功必须绑磁盘证据」(声明了范围却零范围内增改 ⇒ Failed 假绿防护) + 「越界写 ⇒ Failed 且**逐条点名路径**」 + 「**同层**(会并发)写范围重叠 ⇒ 建立 agent **之前** rc=2 拒收 (零 LLM 调用)」; 宿主 `OrchestrateCommand` 侧的同名实现**删除**并新增 `--scope` (校验在 agent 之前)。
+- **真机 5 臂 6 判据全绿** (`eval/rover/r516/evidence/verdict.json`, VERDICT PASS): RED (旧 AOT, 同计划) rc=0 Completed 且报告**无 scope 字段** = 前态确无机制 / A5 前态锚 n3,n4 / G1 零产物 ⇒ Failed+`no_artifact` / G2 真干活 ⇒ Completed+`A out/hello.py` (**不误杀**) / G3 越界 ⇒ Failed+`out_of_scope` 点名 `outside/rogue.py` / N 同层重叠 ⇒ rc=2 · 报告未生成 · **adapter 调用 24→24 (零 LLM)**。判定器只读落盘 + 退出码 (无模型裁判)。
+- **读数**: 单测 **22/22** (新) · 全量 **1706/1706** rc=0 (R515 基线 1684 ⇒ +22) · AOT rc=0 **IL 警告 0** · 15,592,688 B (R515 15,555,120 B ⇒ +0.24%, sha12 `b31af1d94da1`) · 本窗用 24 次调用 / 54,584 prompt + 1,344 completion (**标「参考 (未可验收)」**)。
+- **登记/门禁**: 新登记行 `agent.node-artifact-scope-contract` (L3) ⇒ 登记表 **231 → 232**; `bind_evidence --only … --round R516 --apply` `TOUCHED=1 · SER_ASSERT=OK · WRITE_READBACK=OK · R2E_R2F_EXIT=0`; `decl_sweep drifted=0`; registry 形式自检 `bad=[]`。
+- **诚实边界**: 铁律 11 `exec_precondition --round R516` **rc=3 DISCOVER_FAIL** (无对照题集) ⇒ 本轮**不宣称** token 降幅; 快照差在同层并发窗内**不作归属唯一性宣称**; 多层并发未真机跑过; R515 规模臂 (双包 24 用例) 仍未跑 (内存闸 2650 MB)。`instruments_check` 面本轮 29 项判据/2 红 (均 R507 外部对照行的**自身 L2 字段声明缺口**: `input_surface_source=BAD/MISSING`, 其 `cmd` 实测 rc=0 / 负控 pass) ⇒ 记为**前置缺口**, 不计入 R516 回归; HEAD 独立树复跑**未做** (归档树非 git 仓, 该路径废弃)。
+- **并发事件**: 兄弟 R515 只落 `docs/reports/r515-*.md` + registry + eval,**未**落 master plan / improvements 轮节 ⇒ 本侧**不代写**对侧轮节 (缺口记 E5)。
+- **下轮候选 (R517)**: ① (主线) 规模臂: R515 双包 24 用例 + `--scope` 争 token/调用降幅判据 (先过内存闸) ② 对 R515 `plan-p4-v2.txt` 声明范围后重跑, 机检 n3/n4 是否被新机制判 Failed (本轮只做前态锚) ③ 写范围**运行时互斥** (目录级独占锁, 超出「起臂前拒收」) ④ `improvements.md` R404–R407 回填 (结转) ⑤ D4 判据在 HTTP 题族可达面扩展 (结转)。

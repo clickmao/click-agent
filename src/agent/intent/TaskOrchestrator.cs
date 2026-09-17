@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -38,6 +39,18 @@ public sealed class TaskOrchestrator
 
         /// <summary>本地节点上下文工厂 (宿主注入: 产物路径 / python 路径 / 运行闸); null = 默认上下文。</summary>
         public Func<PlanNode, LocalNodeContext>? LocalContextFactory { get; init; }
+
+        /// <summary>
+        /// 工作区根 (R516 节点产物契约): 非空 = 编排器**自己**持有逐节点快照差 (本地/远端节点统一),
+        /// 并据此做范围机检与「声明了范围却零产物」的假绿防护。null = 关闭 (向后兼容, 旧行为)。
+        /// </summary>
+        public string? WorkspaceRoot { get; init; }
+
+        /// <summary>节点写范围契约 (nodeId → 路径声明); null/空 = 未声明 ⇒ 不做越界机检。</summary>
+        public IReadOnlyDictionary<string, IReadOnlyList<string>>? NodeScopes { get; init; }
+
+        /// <summary>声明了写范围的节点必须产出 ≥1 个范围内文件 (否则节点 Failed) —— 修 R515 的 5 ms 假绿。</summary>
+        public bool RequireScopedArtifacts { get; init; } = true;
     }
 
     /// <summary>节点墙钟遥测 (微秒单调钟; 本地/远端重叠窗口由此计算)。</summary>
@@ -57,7 +70,16 @@ public sealed class TaskOrchestrator
 
         /// <summary>是否本地执行 (零 token 通道)。</summary>
         public bool IsLocal => Location is "local" or "hybrid";
+
+        /// <summary>本节点落盘产物 (快照差; 空 = 未观察到写盘 ⇒ 声明了范围的节点会被判 Failed)。</summary>
+        public IReadOnlyList<string> Artifacts { get; init; } = Array.Empty<string>();
+
+        /// <summary>本节点的写范围声明 (空 = 未声明; 报告须如实标注「未声明」, 不得默认合规)。</summary>
+        public IReadOnlyList<string> Scope { get; init; } = Array.Empty<string>();
     }
+
+    /// <summary>范围机检违规记录 (越界写 / 声明范围却零产物)。</summary>
+    public sealed record ScopeViolation(string NodeId, string Path, string Kind);
 
     /// <summary>远端节点执行体 (宿主注入): 一次真实 agent 轮次, 预算 = nodeMaxSteps。</summary>
     /// <param name="node">当前节点 (Text/Id/Level/依赖)。</param>
@@ -75,6 +97,8 @@ public sealed class TaskOrchestrator
     private readonly agent.recovery.CheckpointStore? _store;
     private readonly string _sessionId;
     private readonly List<NodeTelemetry> _telemetry = new();
+    private readonly Dictionary<string, IReadOnlyList<string>> _artifacts = new(StringComparer.Ordinal);
+    private readonly List<ScopeViolation> _violations = new();
     private string _planId = string.Empty;
 
     public TaskOrchestrator(
@@ -97,6 +121,12 @@ public sealed class TaskOrchestrator
 
     /// <summary>本次运行的全部节点遥测 (按完成先后)。</summary>
     public IReadOnlyList<NodeTelemetry> Telemetry => _telemetry;
+
+    /// <summary>逐节点落盘产物 (相对工作区路径, 前缀 `A `/`M `/`D ` = 增/改/删; WorkspaceRoot 为空时恒为空)。</summary>
+    public IReadOnlyDictionary<string, IReadOnlyList<string>> NodeArtifacts => _artifacts;
+
+    /// <summary>范围机检违规 (越界写 / 声明范围却零产物); 非空 ⇒ 相关节点已判 Failed。</summary>
+    public IReadOnlyList<ScopeViolation> ScopeViolations => _violations;
 
     /// <summary>本地节点与远端节点的墙钟重叠 (ms): 逐对求交后取并集上界 (可测的「同步进行」证据)。</summary>
     public long OverlapMs
@@ -143,6 +173,8 @@ public sealed class TaskOrchestrator
 
         _planId = plan.PlanId;
         _telemetry.Clear();
+        _artifacts.Clear();
+        _violations.Clear();
 
         if (Opt.ConcurrentLocalFirst) plan.MaxParallelism = Math.Max(2, plan.MaxParallelism);
 
@@ -166,6 +198,9 @@ public sealed class TaskOrchestrator
     {
         var started = Monotonic.NowUs();
         var isLocal = node.RunsLocally;
+        var scope = ScopeOf(node.Id);
+        var root = Opt.WorkspaceRoot;
+        var before = root is null ? null : Snapshot(root);
         await EmitAsync("plan.node", node, "Running", 0, 0, "", ct).ConfigureAwait(false);
 
         NodeExecutionResult result;
@@ -210,6 +245,16 @@ public sealed class TaskOrchestrator
 
         var ended = Monotonic.NowUs();
         var output = result.Output ?? string.Empty;
+
+        // ── R516 节点产物契约: 快照差 → 逐节点归属 → 范围机检 (fail-closed) ──
+        IReadOnlyList<string> changed = Array.Empty<string>();
+        if (root is not null)
+        {
+            changed = Diff(before!, Snapshot(root));
+            lock (gate) _artifacts[node.Id] = changed;
+            result = EnforceScope(node, result, scope, changed);
+        }
+
         lock (gate)
         {
             if (result.FinalState == PlanNodeState.Completed && output.Length > 0) upstream[node.Id] = output;
@@ -224,12 +269,102 @@ public sealed class TaskOrchestrator
             started,
             ended,
             output.Length,
-            result.Error ?? string.Empty));
+            result.Error ?? string.Empty)
+        {
+            Artifacts = changed,
+            Scope = scope ?? Array.Empty<string>(),
+        });
 
         await EmitAsync("plan.node", node, result.FinalState.ToString(),
             isLocal ? 0 : Opt.NodeMaxSteps, (ended - started) / 1000, result.Error ?? "", ct).ConfigureAwait(false);
 
         return result;
+    }
+
+    /// <summary>
+    /// R516 范围机检 (起臂前, 零 LLM 成本): 未知节点 + **同层写范围重叠** ⇒ 拒收。
+    /// 静态门面, 与 <see cref="NodeScopeFile.Validate"/> 同源 (单一权威实现)。
+    /// </summary>
+    public static List<string> ValidateScopes(TaskPlan plan, IReadOnlyDictionary<string, IReadOnlyList<string>>? scopes)
+        => NodeScopeFile.Validate(plan, scopes);
+
+    private IReadOnlyList<string>? ScopeOf(string nodeId)
+        => Opt.NodeScopes is not null && Opt.NodeScopes.TryGetValue(nodeId, out var s) && s.Count > 0 ? s : null;
+
+    /// <summary>
+    /// 节点成功判据**绑产物证据** (R516):
+    ///   ① 越界写 (不在声明范围内) ⇒ 节点 Failed + 记录违规 (不静默、不回落成「Completed」);
+    ///   ② 声明了范围却**零产物** ⇒ 节点 Failed (假绿防护; R515 真机 n3 5 ms/0 产物仍记 Completed 就是这个洞)。
+    /// 未声明范围的节点不受 ② 约束 (向后兼容), 但其产物仍记账 (报告如实标注「未声明」)。
+    /// </summary>
+    private NodeExecutionResult EnforceScope(PlanNode node, NodeExecutionResult result, IReadOnlyList<string>? scope, IReadOnlyList<string> changed)
+    {
+        if (scope is null || result.FinalState != PlanNodeState.Completed) return result;
+
+        var outside = new List<string>();
+        foreach (var entry in changed)
+        {
+            if (entry.Length <= 2) continue;
+            var rel = entry[2..];
+            if (!NodeScopeFile.InScope(scope, rel)) outside.Add(rel);
+        }
+        if (outside.Count > 0)
+        {
+            foreach (var rel in outside) _violations.Add(new ScopeViolation(node.Id, rel, "out_of_scope"));
+            return Fail(node.Id, "越界写入 (fail-closed): " + string.Join(", ", outside) + $" (声明范围: {string.Join(",", scope)})");
+        }
+
+        if (Opt.RequireScopedArtifacts)
+        {
+            var inScopeArtifact = changed.Any(e => e.Length > 2 && (e[0] == 'A' || e[0] == 'M') && NodeScopeFile.InScope(scope, e[2..]));
+            if (!inScopeArtifact)
+            {
+                _violations.Add(new ScopeViolation(node.Id, "", "no_artifact"));
+                return Fail(node.Id, "节点无产物 (假绿防护): 声明了写范围但未产出任何范围内文件");
+            }
+        }
+        return result;
+    }
+
+    private sealed record FileStamp(long Length, long Ticks);
+
+    /// <summary>工作区快照 (跳过编排器自身的产物目录 `.orchestrator`)。</summary>
+    private static Dictionary<string, FileStamp> Snapshot(string root)
+    {
+        var map = new Dictionary<string, FileStamp>(StringComparer.Ordinal);
+        try
+        {
+            foreach (var path in Directory.EnumerateFiles(root, "*", SearchOption.AllDirectories))
+            {
+                var rel = Path.GetRelativePath(root, path);
+                if (rel.StartsWith(".orchestrator", StringComparison.Ordinal)) continue;
+                try
+                {
+                    var fi = new FileInfo(path);
+                    map[rel.Replace('\\', '/')] = new FileStamp(fi.Length, fi.LastWriteTimeUtc.Ticks);
+                }
+                catch (IOException) { }
+            }
+        }
+        catch (IOException)
+        {
+            // 快照失败 ⇒ 返回已收集部分 (不掩盖节点结论); 记为半快照而非静默成功
+        }
+        return map;
+    }
+
+    private static List<string> Diff(Dictionary<string, FileStamp> before, Dictionary<string, FileStamp> after)
+    {
+        var changed = new List<string>();
+        foreach (var pair in after)
+        {
+            if (!before.TryGetValue(pair.Key, out var old)) changed.Add("A " + pair.Key);
+            else if (old.Length != pair.Value.Length || old.Ticks != pair.Value.Ticks) changed.Add("M " + pair.Key);
+        }
+        foreach (var pair in before)
+            if (!after.ContainsKey(pair.Key)) changed.Add("D " + pair.Key);
+        changed.Sort(StringComparer.Ordinal);
+        return changed;
     }
 
     private ILocalNodeExecutor? FindLocalExecutor(string? id)

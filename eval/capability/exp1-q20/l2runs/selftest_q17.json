@@ -57,7 +57,7 @@
     "id": "FX10",
     "claim": "fail-closed: 归档缺失 ⇒ 异常(映射为弃权 3)",
     "passed": true,
-    "detail": "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/q17_selftest_yqehhlhf/nonexistent.jsonl'"
+    "detail": "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/q17_selftest_hpum7sxo/nonexistent.jsonl'"
   },
   {
     "id": "FX11",
@@ -88,5 +88,23 @@
     "claim": "负控: 去枢纽规则 ⇒ 依赖面变宽（规则承重）",
     "passed": true,
     "detail": "with_hub_rule=6 without=28"
+  },
+  {
+    "id": "FX16",
+    "claim": "C14 正控: 窗口内写 src/**/*.cs ⇒ 判红 ∧ owner_class=handwritten",
+    "passed": true,
+    "detail": "passed=False by_class={'handwritten': 1}"
+  },
+  {
+    "id": "FX17",
+    "claim": "C14 负控: 窗口内只写构建产物 obj/*.cs ⇒ 同判红 ∧ owner_class=build_artifact",
+    "passed": true,
+    "detail": "passed=False by_class={'build_artifact': 1}"
+  },
+  {
+    "id": "FX18",
+    "claim": "C14 空窗正控: 无窗口内写入 ⇒ 判绿 (判据非恒红)",
+    "passed": true,
+    "detail": "passed=True n=0"
   }
 ]

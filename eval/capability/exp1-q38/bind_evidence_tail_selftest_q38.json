@@ -3,16 +3,16 @@
  "schema": "bind-evidence-tail-selftest/1",
  "subject": "eval/capability/bind_evidence.py --run-record / noncanonical_input",
  "scratch_root": "/tmp/q38_bind_scratch",
- "real_registry_sha12_before": "3fca750c6e5c",
- "real_registry_sha12_after": "3fca750c6e5c",
+ "real_registry_sha12_before": "8c7e1de5b56a",
+ "real_registry_sha12_after": "8c7e1de5b56a",
  "cases": {
   "canonical": {
    "rc": 0,
    "stdout_tail": [
-    "PIN_KIND_SEMANTIC_PROJECTION=0",
     "CHECKED_WITH_FIELD=1",
     "DIST_SCOPE=only(n=1) —— 与全表口径分布不可比",
     "  dist self-derived live   self-derived           x1",
+    "FROZEN_EVIDENCE_DRIFT=0 (归档自洽 ∧ 工作区漂移; 可见项, 不判红)",
     "R2E_R2F_EXIT=0",
     "RUN_RECORD=/tmp/q38_bind_scratch/record_canonical.json (OK)"
    ],
@@ -23,7 +23,7 @@
     "mode": "apply",
     "registry": "/tmp/q38_bind_scratch/canonical.json",
     "registry_is_scratch": true,
-    "ts_utc": "2026-09-16T16:03:51+00:00",
+    "ts_utc": "2026-09-17T03:41:02+00:00",
     "tail_contract": "R481-tail-lf",
     "registry_tail_input": "LF",
     "noncanonical_input": false,
@@ -32,27 +32,29 @@
     "scope": "only(n=1)",
     "covered_before": 1,
     "covered_after": 1,
-    "covered_total": 145,
+    "covered_total": 182,
     "unchanged": 0,
     "touched": 1,
     "idempotent": false,
     "write_readback": "OK",
     "proj_pin_skipped": [],
+    "frozen_evidence_dirty_skipped": [],
+    "frozen_evidence_drift": [],
     "numstat": "skip (scratch 副本)",
     "violations": [],
     "violations_total": 0,
     "rc": 0
    },
    "file_tail_lf": true,
-   "file_sha12": "4759ed4888c1"
+   "file_sha12": "7127828d9cae"
   },
   "noncanonical": {
    "rc": 0,
    "stdout_tail": [
-    "PIN_KIND_SEMANTIC_PROJECTION=0",
     "CHECKED_WITH_FIELD=1",
     "DIST_SCOPE=only(n=1) —— 与全表口径分布不可比",
     "  dist self-derived live   self-derived           x1",
+    "FROZEN_EVIDENCE_DRIFT=0 (归档自洽 ∧ 工作区漂移; 可见项, 不判红)",
     "R2E_R2F_EXIT=0",
     "RUN_RECORD=/tmp/q38_bind_scratch/record_noncanonical.json (OK)"
    ],
@@ -63,7 +65,7 @@
     "mode": "apply",
     "registry": "/tmp/q38_bind_scratch/noncanonical.json",
     "registry_is_scratch": true,
-    "ts_utc": "2026-09-16T16:03:51+00:00",
+    "ts_utc": "2026-09-17T03:41:02+00:00",
     "tail_contract": "R481-tail-lf",
     "registry_tail_input": "NONE",
     "noncanonical_input": true,
@@ -72,27 +74,29 @@
     "scope": "only(n=1)",
     "covered_before": 1,
     "covered_after": 1,
-    "covered_total": 145,
+    "covered_total": 182,
     "unchanged": 0,
     "touched": 1,
     "idempotent": false,
     "write_readback": "OK",
     "proj_pin_skipped": [],
+    "frozen_evidence_dirty_skipped": [],
+    "frozen_evidence_drift": [],
     "numstat": "skip (scratch 副本)",
     "violations": [],
     "violations_total": 0,
     "rc": 0
    },
    "file_tail_lf": true,
-   "file_sha12": "4759ed4888c1"
+   "file_sha12": "7127828d9cae"
   },
   "canonical_rerun": {
    "rc": 0,
    "stdout_tail": [
-    "PIN_KIND_SEMANTIC_PROJECTION=0",
     "CHECKED_WITH_FIELD=1",
     "DIST_SCOPE=only(n=1) —— 与全表口径分布不可比",
     "  dist self-derived live   self-derived           x1",
+    "FROZEN_EVIDENCE_DRIFT=0 (归档自洽 ∧ 工作区漂移; 可见项, 不判红)",
     "R2E_R2F_EXIT=0",
     "RUN_RECORD=/tmp/q38_bind_scratch/record_canonical_rerun.json (OK)"
    ],
@@ -103,7 +107,7 @@
     "mode": "apply",
     "registry": "/tmp/q38_bind_scratch/canonical.json",
     "registry_is_scratch": true,
-    "ts_utc": "2026-09-16T16:03:51+00:00",
+    "ts_utc": "2026-09-17T03:41:03+00:00",
     "tail_contract": "R481-tail-lf",
     "registry_tail_input": "LF",
     "noncanonical_input": false,
@@ -112,19 +116,21 @@
     "scope": "only(n=1)",
     "covered_before": 1,
     "covered_after": 1,
-    "covered_total": 145,
+    "covered_total": 182,
     "unchanged": 1,
     "touched": 0,
     "idempotent": true,
     "write_readback": "NOT_WRITTEN",
     "proj_pin_skipped": [],
+    "frozen_evidence_dirty_skipped": [],
+    "frozen_evidence_drift": [],
     "numstat": "skip (scratch 副本)",
     "violations": [],
     "violations_total": 0,
     "rc": 0
    },
    "file_tail_lf": true,
-   "file_sha12": "4759ed4888c1"
+   "file_sha12": "7127828d9cae"
   }
  },
  "checks": {

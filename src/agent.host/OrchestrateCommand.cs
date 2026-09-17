@@ -36,11 +36,16 @@ public static class OrchestrateCommand
         var maxNodes = 24;
         var reportPath = "";
         var upstreamChars = UpstreamCharsDefault;
+        var scopePath = "";
 
         for (var i = 0; i < args.Length; i++)
         {
             switch (args[i])
             {
+                case "--scope":
+                    if (i + 1 >= args.Length) { errp.WriteLine("orchestrate: --scope 缺参"); return 2; }
+                    scopePath = args[++i];
+                    break;
                 case "--node-steps":
                     if (i + 1 >= args.Length || !int.TryParse(args[++i], NumberStyles.Integer, CultureInfo.InvariantCulture, out nodeSteps))
                     { errp.WriteLine("orchestrate: --node-steps 需整数"); return 2; }
@@ -72,7 +77,7 @@ public static class OrchestrateCommand
             }
         }
 
-        if (planPath.Length == 0) { errp.WriteLine("用法: --orchestrate <计划文件> [--workspace DIR] [--node-steps N] [--max-nodes N]"); return 2; }
+        if (planPath.Length == 0) { errp.WriteLine("用法: --orchestrate <计划文件> [--scope <范围文件>] [--workspace DIR] [--node-steps N] [--max-nodes N]"); return 2; }
         if (nodeSteps < 1 || nodeSteps > MaxNodeSteps) { errp.WriteLine($"orchestrate: --node-steps 越界 1..{MaxNodeSteps}"); return 2; }
 
         var (plan, problems) = TaskPlanFile.Load(planPath);
@@ -88,6 +93,28 @@ public static class OrchestrateCommand
             errp.WriteLine("orchestrate: 计划校验失败:");
             foreach (var p in problems) errp.WriteLine("  · " + p);
             return 2;
+        }
+
+        // ── R516 范围契约 (起臂前, 零 LLM 成本): 未知节点 / 同层写范围重叠 ⇒ 拒收 rc=2 ──
+        Dictionary<string, IReadOnlyList<string>>? scopes = null;
+        if (scopePath.Length > 0)
+        {
+            var (parsed, scopeProblems) = NodeScopeFile.Load(scopePath);
+            if (parsed is null)
+            {
+                errp.WriteLine($"orchestrate: 范围文件非法 (fail-closed): {scopePath}");
+                foreach (var p in scopeProblems) errp.WriteLine("  · " + p);
+                return 2;
+            }
+            var scopePlanProblems = TaskOrchestrator.ValidateScopes(plan, parsed);
+            if (scopePlanProblems.Count > 0)
+            {
+                errp.WriteLine("orchestrate: 范围契约校验失败 (未发起任何 LLM 调用):");
+                foreach (var p in scopePlanProblems) errp.WriteLine("  · " + p);
+                return 2;
+            }
+            scopes = parsed;
+            outp.WriteLine($"范围契约: {Path.GetFileName(scopePath)} 已声明 {scopes.Count}/{plan.Nodes.Count} 节点");
         }
 
         if (workspace.Length == 0) { errp.WriteLine("orchestrate: 缺工作区 (--workspace 或 AGENTFRAMEWORK_WORKSPACE)"); return 2; }
@@ -111,10 +138,6 @@ public static class OrchestrateCommand
             new TextProcessExecutor(),
         };
 
-        var nodeArtifacts = new Dictionary<string, List<string>>(StringComparer.Ordinal);
-        var nodeOutputs = new Dictionary<string, string>(StringComparer.Ordinal);
-        var gate = new object();
-
         var orchestrator = new TaskOrchestrator(
             localExecutors,
             events: null,
@@ -125,6 +148,8 @@ public static class OrchestrateCommand
                 NodeMaxSteps = nodeSteps,
                 MaxNodes = maxNodes,
                 ConcurrentLocalFirst = true,
+                WorkspaceRoot = workspace,
+                NodeScopes = scopes,
                 LocalContextFactory = node =>
                 {
                     var artifact = node.LocalHint ?? node.Text;
@@ -143,7 +168,6 @@ public static class OrchestrateCommand
 
         Task<NodeExecutionResult> Remote(PlanNode node, IReadOnlyDictionary<string, string> upstream, int steps, CancellationToken ct)
         {
-            var before = Snapshot(workspace);
             Environment.SetEnvironmentVariable("AGENTFRAMEWORK_ACTION_MAX_STEPS", steps.ToString(CultureInfo.InvariantCulture));
             var prompt = BuildNodePrompt(plan, node, upstream, upstreamChars, workspace, steps);
             var msg = new Message
@@ -153,7 +177,7 @@ public static class OrchestrateCommand
                 SessionId = session,
                 SenderId = "orchestrator",
             };
-            return RunRemoteAsync(agent, msg, node, workspace, before, steps, nodeArtifacts, nodeOutputs, gate, nodeDir, ct);
+            return RunRemoteAsync(agent, msg, node, nodeDir, ct);
         }
 
         TaskPlanRun run;
@@ -170,11 +194,29 @@ public static class OrchestrateCommand
         var failed = run.NodeStates.Count(kv => kv.Value == PlanNodeState.Failed);
         var completed = run.NodeStates.Count(kv => kv.Value == PlanNodeState.Completed);
 
+        // R516: 逐节点产物清单由编排器 (单一权威快照持有者) 落盘, 不再由宿主节点执行体各自快照。
+        foreach (var pair in orchestrator.NodeArtifacts)
+        {
+            try
+            {
+                File.WriteAllText(Path.Combine(nodeDir, pair.Key + ".files.txt"), string.Join('\n', pair.Value), new UTF8Encoding(false));
+            }
+            catch (IOException)
+            {
+                Console.Error.WriteLine($"orchestrate: 节点产物清单落盘失败 {pair.Key}");
+            }
+        }
+
         outp.WriteLine("── 节点表 ──");
         outp.Write(TaskPlanFile.Summary(plan, orchestrator.Telemetry));
         outp.WriteLine($"汇总: 完成 {completed}/{plan.Nodes.Count} · 失败 {failed} · 墙钟重叠 {orchestrator.OverlapMs} ms · 预算上界 {orchestrator.BudgetCeiling} 步");
+        if (orchestrator.ScopeViolations.Count > 0)
+        {
+            outp.WriteLine($"范围机检: {orchestrator.ScopeViolations.Count} 条违规 (节点已判 Failed)");
+            foreach (var v in orchestrator.ScopeViolations) outp.WriteLine($"  · {v.NodeId} [{v.Kind}] {(v.Path.Length == 0 ? "(零产物)" : v.Path)}");
+        }
 
-        WriteReport(reportPath, plan, orchestrator, run, nodeArtifacts, nodeOutputs, workspace, nodeSteps);
+        WriteReport(reportPath, plan, orchestrator, run, scopes, scopePath, workspace, nodeSteps);
         outp.WriteLine($"报告: {reportPath}");
 
         return failed == 0 && completed == plan.Nodes.Count ? 0 : 1;
@@ -184,12 +226,6 @@ public static class OrchestrateCommand
         IAgent agent,
         Message msg,
         PlanNode node,
-        string workspace,
-        Dictionary<string, FileStamp> before,
-        int steps,
-        Dictionary<string, List<string>> nodeArtifacts,
-        Dictionary<string, string> nodeOutputs,
-        object gate,
         string nodeDir,
         CancellationToken ct)
     {
@@ -209,24 +245,16 @@ public static class OrchestrateCommand
             };
         }
 
-        var after = Snapshot(workspace);
-        var changed = Diff(before, after);
+        // R516: 产物清单不在此处快照 (快照权威 = 编排器, 修 R515 的「同层写者互相覆盖」归属错乱)。
         var content = reply.Content ?? string.Empty;
         try
         {
             File.WriteAllText(Path.Combine(nodeDir, node.Id + ".md"), content, new UTF8Encoding(false));
-            File.WriteAllText(Path.Combine(nodeDir, node.Id + ".files.txt"), string.Join('\n', changed), new UTF8Encoding(false));
         }
         catch (IOException)
         {
             // IO 异常留告警, 不掩盖节点结论
             Console.Error.WriteLine($"orchestrate: 节点产物落盘失败 {node.Id}");
-        }
-
-        lock (gate)
-        {
-            nodeArtifacts[node.Id] = changed;
-            nodeOutputs[node.Id] = content;
         }
 
         return new NodeExecutionResult
@@ -274,46 +302,13 @@ public static class OrchestrateCommand
         return sb.ToString();
     }
 
-    private sealed record FileStamp(long Length, long Ticks);
-
-    private static Dictionary<string, FileStamp> Snapshot(string root)
-    {
-        var map = new Dictionary<string, FileStamp>(StringComparer.Ordinal);
-        foreach (var path in Directory.EnumerateFiles(root, "*", SearchOption.AllDirectories))
-        {
-            var rel = Path.GetRelativePath(root, path);
-            if (rel.StartsWith(".orchestrator", StringComparison.Ordinal)) continue;
-            try
-            {
-                var fi = new FileInfo(path);
-                map[rel.Replace('\\', '/')] = new FileStamp(fi.Length, fi.LastWriteTimeUtc.Ticks);
-            }
-            catch (IOException) { }
-        }
-        return map;
-    }
-
-    private static List<string> Diff(Dictionary<string, FileStamp> before, Dictionary<string, FileStamp> after)
-    {
-        var changed = new List<string>();
-        foreach (var pair in after)
-        {
-            if (!before.TryGetValue(pair.Key, out var old)) changed.Add("A " + pair.Key);
-            else if (old.Length != pair.Value.Length || old.Ticks != pair.Value.Ticks) changed.Add("M " + pair.Key);
-        }
-        foreach (var pair in before)
-            if (!after.ContainsKey(pair.Key)) changed.Add("D " + pair.Key);
-        changed.Sort(StringComparer.Ordinal);
-        return changed;
-    }
-
     private static void WriteReport(
         string reportPath,
         TaskPlan plan,
         TaskOrchestrator orchestrator,
         TaskPlanRun run,
-        Dictionary<string, List<string>> nodeArtifacts,
-        Dictionary<string, string> nodeOutputs,
+        IReadOnlyDictionary<string, IReadOnlyList<string>>? scopes,
+        string scopePath,
         string workspace,
         int nodeSteps)
     {
@@ -325,6 +320,15 @@ public static class OrchestrateCommand
         sb.Append("  \"node_steps\": ").Append(nodeSteps.ToString(CultureInfo.InvariantCulture)).Append(",\n");
         sb.Append("  \"budget_ceiling\": ").Append(orchestrator.BudgetCeiling.ToString(CultureInfo.InvariantCulture)).Append(",\n");
         sb.Append("  \"overlap_ms\": ").Append(orchestrator.OverlapMs.ToString(CultureInfo.InvariantCulture)).Append(",\n");
+        sb.Append("  \"scope_file\": \"").Append(Escape(scopePath)).Append("\",\n");
+        sb.Append("  \"scope_declared\": ").Append((scopes?.Count ?? 0).ToString(CultureInfo.InvariantCulture)).Append(",\n");
+        sb.Append("  \"scope_undeclared\": [")
+          .Append(string.Join(", ", plan.Nodes.Where(n => scopes is null || !scopes.ContainsKey(n.Id)).Select(n => "\"" + Escape(n.Id) + "\"")))
+          .Append("],\n");
+        sb.Append("  \"requires_scoped_artifact\": true,\n");
+        sb.Append("  \"scope_violations\": [")
+          .Append(string.Join(", ", orchestrator.ScopeViolations.Select(v => "{\"node_id\": \"" + Escape(v.NodeId) + "\", \"path\": \"" + Escape(v.Path) + "\", \"kind\": \"" + v.Kind + "\"}")))
+          .Append("],\n");
         sb.Append("  \"nodes\": [\n");
         var telemetry = orchestrator.Telemetry;
         for (var i = 0; i < telemetry.Count; i++)
@@ -339,7 +343,8 @@ public static class OrchestrateCommand
               .Append("\", \"elapsed_ms\": ").Append(t.ElapsedMs.ToString(CultureInfo.InvariantCulture))
               .Append(", \"output_chars\": ").Append(t.OutputChars.ToString(CultureInfo.InvariantCulture))
               .Append(", \"deps\": [").Append(string.Join(", ", node.DependsOn.Select(d => "\"" + Escape(d) + "\""))).Append(']')
-              .Append(", \"files\": [").Append(string.Join(", ", Files(nodeArtifacts, t.NodeId).Select(f => "\"" + Escape(f) + "\""))).Append(']')
+              .Append(", \"scope\": [").Append(string.Join(", ", t.Scope.Select(s => "\"" + Escape(s) + "\""))).Append(']')
+              .Append(", \"files\": [").Append(string.Join(", ", Files(orchestrator.NodeArtifacts, t.NodeId).Select(f => "\"" + Escape(f) + "\""))).Append(']')
               .Append(", \"error\": \"").Append(Escape(t.Error)).Append("\"}");
             sb.Append(i + 1 < telemetry.Count ? ",\n" : "\n");
         }
@@ -354,8 +359,8 @@ public static class OrchestrateCommand
         catch (IOException) { }
     }
 
-    private static List<string> Files(Dictionary<string, List<string>> map, string nodeId)
-        => map.TryGetValue(nodeId, out var list) ? list : new List<string>();
+    private static IReadOnlyList<string> Files(IReadOnlyDictionary<string, IReadOnlyList<string>> map, string nodeId)
+        => map.TryGetValue(nodeId, out var list) ? list : Array.Empty<string>();
 
     private static string Escape(string? s)
     {

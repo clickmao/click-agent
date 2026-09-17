@@ -1,7 +1,7 @@
 {
   "round": "EXP1-Q17",
-  "generated": "2026-09-16T13:18:10",
-  "elapsed_s": 1.029,
+  "generated": "2026-09-17T11:37:52",
+  "elapsed_s": 1.113,
   "inputs": {
     "probe": "eval/capability/exp1-q10/probe_v260.py",
     "archive": "eval/capability/exp1-q10/citations.jsonl",
@@ -287,14 +287,14 @@
       "id": "C13",
       "claim": "夹具全绿（含 4 负控 + 1 正控 + 3 fail-closed + 组合）",
       "passed": true,
-      "detail": "15/15",
+      "detail": "18/18",
       "posthoc": false
     },
     {
       "id": "C14",
-      "claim": "零回归: probe/归档逐字节未变 ∧ src/ 与 skills/ 无新写入 ∧ 零 dotnet",
+      "claim": "零回归: probe/归档逐字节未变 ∧ src/ 与 skills/ 无新写入 (mtime 判据, glob 含构建产物 .cs ⇒ 等价于窗口内无 dotnet 构建)",
       "passed": true,
-      "detail": "{\"probe_unchanged\": true, \"archive_unchanged\": true, \"src_or_skills_written_after_start\": [], \"n_touched\": 0, \"passed\": true}",
+      "detail": "{\"probe_unchanged\": true, \"archive_unchanged\": true, \"src_or_skills_written_after_start\": [], \"n_touched\": 0, \"n_touched_by_class\": {}, \"passed\": true}",
       "posthoc": false
     }
   ],
@@ -357,7 +357,7 @@
       "id": "FX10",
       "claim": "fail-closed: 归档缺失 ⇒ 异常(映射为弃权 3)",
       "passed": true,
-      "detail": "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/q17_selftest_yqehhlhf/nonexistent.jsonl'"
+      "detail": "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/q17_selftest_hpum7sxo/nonexistent.jsonl'"
     },
     {
       "id": "FX11",
@@ -388,6 +388,24 @@
       "claim": "负控: 去枢纽规则 ⇒ 依赖面变宽（规则承重）",
       "passed": true,
       "detail": "with_hub_rule=6 without=28"
+    },
+    {
+      "id": "FX16",
+      "claim": "C14 正控: 窗口内写 src/**/*.cs ⇒ 判红 ∧ owner_class=handwritten",
+      "passed": true,
+      "detail": "passed=False by_class={'handwritten': 1}"
+    },
+    {
+      "id": "FX17",
+      "claim": "C14 负控: 窗口内只写构建产物 obj/*.cs ⇒ 同判红 ∧ owner_class=build_artifact",
+      "passed": true,
+      "detail": "passed=False by_class={'build_artifact': 1}"
+    },
+    {
+      "id": "FX18",
+      "claim": "C14 空窗正控: 无窗口内写入 ⇒ 判绿 (判据非恒红)",
+      "passed": true,
+      "detail": "passed=True n=0"
     }
   ],
   "determinism": null,
