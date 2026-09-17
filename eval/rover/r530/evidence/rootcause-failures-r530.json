@@ -1,0 +1,180 @@
+{
+ "round": "R530",
+ "kind": "failure-rootcause",
+ "source_round": "R529",
+ "rule": "期望值取自冻结语料; 两侧同败 ⇒ 先疑夹具(skill 判别手法); 本器只读快照",
+ "jobs": [
+  {
+   "id": "w2_agentA0-off_g1_wythoff",
+   "window": "w2",
+   "cases": [
+    {
+     "idx": 44,
+     "mod": "wythoff",
+     "vis": "public",
+     "stdin": "10 9\n",
+     "expected": "WIN 0 3",
+     "arms": {
+      "agentA0-off": {
+       "rc": 0,
+       "stdout": "WIN 3 0",
+       "stderr_tail": "",
+       "expected": "WIN 0 3",
+       "match": false
+      },
+      "agentA1-on": {
+       "rc": 0,
+       "stdout": "WIN 0 3",
+       "stderr_tail": "",
+       "expected": "WIN 0 3",
+       "match": true
+      },
+      "codex": {
+       "rc": 0,
+       "stdout": "WIN 0 3",
+       "stderr_tail": "",
+       "expected": "WIN 0 3",
+       "match": true
+      }
+     },
+     "fail_side": [
+      "agentA0-off"
+     ],
+     "exclusive_fail_side": "agentA0-off",
+     "both_sides_fail": false
+    },
+    {
+     "idx": 45,
+     "mod": "wythoff",
+     "vis": "hidden",
+     "stdin": "18 8\n",
+     "expected": "WIN 5 0",
+     "arms": {
+      "agentA0-off": {
+       "rc": 0,
+       "stdout": "WIN 0 5",
+       "stderr_tail": "",
+       "expected": "WIN 5 0",
+       "match": false
+      },
+      "agentA1-on": {
+       "rc": 0,
+       "stdout": "WIN 5 0",
+       "stderr_tail": "",
+       "expected": "WIN 5 0",
+       "match": true
+      },
+      "codex": {
+       "rc": 0,
+       "stdout": "WIN 5 0",
+       "stderr_tail": "",
+       "expected": "WIN 5 0",
+       "match": true
+      }
+     },
+     "fail_side": [
+      "agentA0-off"
+     ],
+     "exclusive_fail_side": "agentA0-off",
+     "both_sides_fail": false
+    },
+    {
+     "idx": 49,
+     "mod": "wythoff",
+     "vis": "hidden",
+     "stdin": "18 17\n",
+     "expected": "WIN 0 6",
+     "arms": {
+      "agentA0-off": {
+       "rc": 0,
+       "stdout": "WIN 6 0",
+       "stderr_tail": "",
+       "expected": "WIN 0 6",
+       "match": false
+      },
+      "agentA1-on": {
+       "rc": 0,
+       "stdout": "WIN 0 6",
+       "stderr_tail": "",
+       "expected": "WIN 0 6",
+       "match": true
+      },
+      "codex": {
+       "rc": 0,
+       "stdout": "WIN 0 6",
+       "stderr_tail": "",
+       "expected": "WIN 0 6",
+       "match": true
+      }
+     },
+     "fail_side": [
+      "agentA0-off"
+     ],
+     "exclusive_fail_side": "agentA0-off",
+     "both_sides_fail": false
+    }
+   ],
+   "verdict": {
+    "n_cases": 3,
+    "all_expected_backed_by_prompt_spec": true,
+    "exclusive_fail_sides": [
+     "agentA0-off"
+    ],
+    "both_sides_fail_any": false,
+    "matches_reported_side": true,
+    "fixture_defect_suspected": false
+   }
+  },
+  {
+   "id": "w3_codex_t1_jsonmini",
+   "window": "w3",
+   "cases": [
+    {
+     "idx": 27,
+     "mod": "jsonmini",
+     "vis": "hidden",
+     "stdin": "[\"\\u0007x\"]\n",
+     "expected": "ERR",
+     "arms": {
+      "agentA0-off": {
+       "rc": 0,
+       "stdout": "ERR\n",
+       "stderr_tail": "",
+       "expected": "ERR",
+       "match": true
+      },
+      "agentA1-on": {
+       "rc": 0,
+       "stdout": "ERR",
+       "stderr_tail": "",
+       "expected": "ERR",
+       "match": true
+      },
+      "codex": {
+       "rc": 0,
+       "stdout": "[\"\u0007x\"]",
+       "stderr_tail": "",
+       "expected": "ERR",
+       "match": false
+      }
+     },
+     "fail_side": [
+      "codex"
+     ],
+     "exclusive_fail_side": "codex",
+     "both_sides_fail": false
+    }
+   ],
+   "verdict": {
+    "n_cases": 1,
+    "all_expected_backed_by_prompt_spec": true,
+    "exclusive_fail_sides": [
+     "codex"
+    ],
+    "both_sides_fail_any": false,
+    "matches_reported_side": true,
+    "fixture_defect_suspected": false
+   }
+  }
+ ]
+}
