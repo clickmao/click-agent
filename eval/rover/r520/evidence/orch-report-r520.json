@@ -1,0 +1,25 @@
+{
+  "plan_id": "plan-games-longtask",
+  "run_id": "1e3d82eeb058",
+  "state": "Finished",
+  "workspace": "/home/agentuser/AgentFramework/eval/rover/r520/run-0917-145837/orch/ws",
+  "node_steps": 8,
+  "budget_ceiling": 40,
+  "budget_ceiling_effective": 40,
+  "node_escalations_max": 1,
+  "escalations_total": 0,
+  "overlap_ms": 0,
+  "scope_file": "/home/agentuser/AgentFramework/eval/rover/r520/scope-games-longtask.txt",
+  "scope_declared": 5,
+  "scope_undeclared": [],
+  "requires_scoped_artifact": true,
+  "scope_violations": [],
+  "nodes": [
+    {"node_id": "n1", "level": 0, "location": "remote", "executor": "agent-turn", "state": "Completed", "elapsed_ms": 59134, "output_chars": 1087, "deps": [], "scope": ["games/life.py"], "files": ["A games/life.py"], "budget_steps": 8, "escalations": 0, "attempts": ["8:Completed"], "error": ""},
+    {"node_id": "n2", "level": 1, "location": "remote", "executor": "agent-turn", "state": "Completed", "elapsed_ms": 106717, "output_chars": 46, "deps": ["n1"], "scope": ["games/sub.py"], "files": ["A games/sub.py"], "budget_steps": 8, "escalations": 0, "attempts": ["8:Completed"], "error": ""},
+    {"node_id": "n3", "level": 2, "location": "remote", "executor": "agent-turn", "state": "Completed", "elapsed_ms": 56082, "output_chars": 79, "deps": ["n2"], "scope": ["games/nim.py"], "files": ["A games/nim.py"], "budget_steps": 8, "escalations": 0, "attempts": ["8:Completed"], "error": ""},
+    {"node_id": "n4", "level": 3, "location": "remote", "executor": "agent-turn", "state": "Completed", "elapsed_ms": 84212, "output_chars": 79, "deps": ["n3"], "scope": ["games/wythoff.py"], "files": ["A games/wythoff.py"], "budget_steps": 8, "escalations": 0, "attempts": ["8:Completed"], "error": ""},
+    {"node_id": "n5", "level": 4, "location": "remote", "executor": "agent-turn", "state": "Completed", "elapsed_ms": 52710, "output_chars": 1282, "deps": ["n4"], "scope": ["games/__init__.py", "games/__main__.py"], "files": ["A games/__init__.py", "A games/__main__.py"], "budget_steps": 8, "escalations": 0, "attempts": ["8:Completed"], "error": ""}
+  ],
+  "node_states": {"n1": "Completed", "n2": "Completed", "n3": "Completed", "n4": "Completed", "n5": "Completed"}
+}

@@ -1,0 +1,46 @@
+{
+  "round": "R520",
+  "kind": "defect-fix + single-arm re-run",
+  "supersedes": null,
+  "mainline": "铁律 10 外部真值对照 (同环境·同输入·同模型) —— 本轮先修掉「编排臂无法产出读数」的阻断缺陷",
+  "defect": {
+    "id": "shadow-path-write",
+    "evidence_real": "eval/rover/r519/run-0917-144416/",
+    "observed": {
+      "request_path": "eval/rover/r519/run-0917-144416/orch/ws/games/life.py",
+      "landed_at": "<ws>/eval/rover/r519/run-0917-144416/orch/ws/games/life.py",
+      "tool_result": "write_file ok=true, 已写入 <请求串> (6726 bytes) —— 回显请求串而非落点",
+      "node_self_report": "n1.md 原文: 「write_file 两次返回 ok (6726/6731 bytes), 但 wc -c games/life.py 恒为 3508 … 磁盘上是环境预置的另一版实现, 我的内容未持久化」",
+      "consequence": "范围闸判 out_of_scope ⇒ n1 Failed, n2–n5 (未执行) ⇒ 编排臂 0/58 (整轮唯一读数)"
+    },
+    "cause": "端口把「相对路径」按工作区根解析, 而节点把工作区自身的绝对路径裁成仓根相对串当工具 path 用 ⇒ 工作区内重建自身的影子副本; 工具回执只回显请求串, 落点不可见",
+    "independent_check": "eval/rover/r520/shadow_check_r520.py (磁盘级, 与端口内闸不共享代码): 对 R519 真机 ws = RED 1 条 (form-b 前 6 段重复根尾); 对空目录 = GREEN"
+  },
+  "fix": {
+    "product": "src/agent/action/WorkspaceActionPort.cs — Resolve 内新增影子路径闸 (与 P1 同闸: AGENTFRAMEWORK_ACTION_BOUNDARY=0 ⇒ 同关, 故拒绝可被消融臂证伪); 判据=相对路径 (a) 以根完整路径 (去前导分隔符) 开头 或 (b) 前 k 段 (k>=2) == 根路径后 k 段; 单段同名目录不判 (防过宽); 报文给出落点与建议改写",
+    "prompt": "src/agent.host/OrchestrateCommand.cs — BuildNodePrompt 第 5 条纪律: path 一律写工作区相对路径, 禁把绝对路径裁成仓根相对"
+  },
+  "prereg": {
+    "written_before_arm": true,
+    "where": "eval/rover/r520/run_r520.sh 头部注释 (判据形态 a/b/c), 落盘 mtime 早于臂起手 14:58:37",
+    "criteria": {
+      "a": "5 节点全部 Completed (R519: 1 Failed + 4 未执行)",
+      "b": "工作区落盘无影子树 (shadow_check GREEN)",
+      "c": "58 用例整题全对率 (同判据器 md5 同源)"
+    },
+    "not_claimed": [
+      "本轮不宣称任何 token/调用降幅 (无两侧同窗对照 ⇒ 铁律 11 前置不适用)",
+      "9/58 为异窗同题读数, 与 R519 单轮臂 58/58 不可直接相减"
+    ]
+  },
+  "readings": {
+    "R519_orch_arm": {"nodes_completed": "1/5", "scope_violations": 1, "shadow_files": 1, "cases_passed": "0/58"},
+    "R520_orch_arm": {"nodes_completed": "5/5", "scope_violations": 0, "shadow_files": 0, "cases_passed": "9/58", "escalations": 0, "budget_effective": 40}
+  },
+  "controls": {
+    "unit_positive": "R520ShadowPathTests: 形态 a/b 必拒 ∧ 不产生影子文件 ∧ 报文含落点; 消融臂 (闸=0) ⇒ 同一影子写**成功** (证明拒绝非恒真)",
+    "unit_negative": "区内正常 / 深层嵌套 / 单段同名目录 / 越界语义不变 —— 4 条均照常",
+    "run": "dotnet test --filter FullyQualifiedName~R520ShadowPath|~R498Boundary|~R511Delete|~ActionLoop ⇒ 40/40"
+  },
+  "grade_reproducibility": "grade_r520.py 与 grade_r519.py md5 相同 (9c8a00043ef2b235e4929a024ea16dea); 对 R519 同一 ws 复跑得 rc=1/total=58/passed=0 —— 与 R519 当时落盘读数逐位相同"
+}

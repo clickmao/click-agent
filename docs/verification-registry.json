@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R518",
+  "updated_round": "R520",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -5982,6 +5982,54 @@
       },
       "negative_control": "前置器 (铁律 11) `exec_precondition --round R518` **rc=1 ⇒ 本轮对比读数标「参考(未可验收)」** (要求面 w2/agentA 12/12+12/12 ✓ 但 w2/codex p3 仅 9/12 ✗, 而同一 p3 在 w1 跑次为 12/12 ⇒ 外部真值跨跑次方差); 作废窗 w1 留痕不删 (臂 A 未 export AGENTFRAMEWORK_CONFIG ⇒ 绕过计量 adapter = 无读数; 编排臂 cwd 落在节点工作区内 ⇒ 宿主自写 data/** 被判 out_of_scope ⇒ 链 fail-closed) ⇒ 全窗标 NONREQUIRED。两条自抓器具缺陷当轮修: 范围模式语法 (`w2/agentA/*` → `w2/agentA`, 匹配键不含题号) 与 cwd 纪律。",
       "owner_round": "R518"
+    },
+    {
+      "id": "agent.shadow-path-gate",
+      "level": "L3",
+      "capability": "工作区**影子路径闸** (R520, 真机自抓缺陷修复): 相对路径重复工作区自身位置时 (实证请求 `eval/rover/r519/run-0917-144416/orch/ws/games/life.py`) 会在工作区内重建影子副本, 而写入仍回 ok + 回显请求串 ⇒ 节点读到另一份文件并自述「环境预置的另一版实现」, 随后被范围闸判 out_of_scope ⇒ 整条编排 fail-closed (R519 编排臂 0/58 的唯一读数)。判据: (a) 相对路径以根完整路径 (去前导分隔符) 开头, 或 (b) 前 k 段 (k>=2) == 根路径后 k 段 ⇒ 拒绝并给出落点与建议改写; 单段同名目录不判 (防过宽); 与 P1 边界同闸常量 (AGENTFRAMEWORK_ACTION_BOUNDARY=0 ⇒ 同关)。",
+      "covers": [
+        "src/agent/action/WorkspaceActionPort.cs",
+        "src/agent.host/OrchestrateCommand.cs",
+        "src/agent.tests/R520ShadowPathTests.cs"
+      ],
+      "evidence_cmd": "dotnet test src/agent.tests/agentframework.tests.csproj --filter \"FullyQualifiedName~R520ShadowPath|FullyQualifiedName~R498Boundary|FullyQualifiedName~R511Delete|FullyQualifiedName~ActionLoop\" --nologo -v q",
+      "evidence_path": "eval/rover/r520/REPORT-r520.md",
+      "evidence_generated_with": {
+        "evidence_kind": "artifact",
+        "pin_status": "live",
+        "pin_reason": "archived-per-round",
+        "artifact_sha12": null,
+        "instrument": "eval/rover/r520/shadow_check_r520.py",
+        "instrument_sha12": "20d16e5bb05f",
+        "binding": "audit-pin",
+        "audited_by_round": "R520"
+      },
+      "negative_control": "① 消融臂: AGENTFRAMEWORK_ACTION_BOUNDARY=0 ⇒ 同一影子写**成功**且影子文件确实出现 (证明拒绝非恒真, R520ShadowPathTests); ② 前态真机症状: R519 真机 ws 上独立机检 RED 1 条 (form-b 前 6 段重复根尾) + 该轮 n1 Failed/n2-n5 未执行; ③ 过宽负控: 区内正常/深层嵌套/单段同名目录/越界语义不变 4 条均照常通过",
+      "owner_round": "R520"
+    },
+    {
+      "id": "external.contrast-orch-arm-r520",
+      "level": "L3",
+      "capability": "主线对照**编排臂**读数 (R520, 修复后首次可测): 同题面 (plan/scope 与 R519 md5 同源 1c84c4be… / dc9793be…) 5 节点 × 8 步 + --scope, AOT 真机 ⇒ 完成 **5/5** · 范围违规 **0** · 预算上界 40 步 · 升预算重试 0 次; 落盘 games/{__init__,life,sub,nim,wythoff,__main__}.py; 58 用例**用例级 9/58** (整题全对率 0) ⇒ 产物可执行但未正确, 按铁律 11 属未过可验收前置。",
+      "covers": [
+        "eval/rover/r520/run_r520.sh",
+        "eval/rover/r520/prereg-r520.json",
+        "eval/rover/r520/run-0917-145837/orch/report.json"
+      ],
+      "evidence_cmd": "bash eval/rover/r520/run_r520.sh",
+      "evidence_path": "eval/rover/r520/evidence/orch-report-r520.json",
+      "evidence_generated_with": {
+        "evidence_kind": "artifact",
+        "pin_status": "live",
+        "pin_reason": "archived-per-round",
+        "artifact_sha12": null,
+        "instrument": "eval/rover/r520/grade_r520.py",
+        "instrument_sha12": "f54889d7ee84",
+        "binding": "audit-pin",
+        "audited_by_round": "R520"
+      },
+      "negative_control": "前态 (R519 同题面同判据器): 1/5 节点完成 · 范围违规 1 · 影子文件 1 · 0/58 —— 与修复后逐项对照",
+      "owner_round": "R520"
     }
   ],
   "aot_check_policy": "release_tag_only",

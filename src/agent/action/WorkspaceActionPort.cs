@@ -24,6 +24,12 @@ public sealed class WorkspaceActionPort : IActionPort
 {
     private readonly string _root;
 
+    /// <summary>R520 根路径分段 (影子路径判据 (b): 相对路径重复根尾). </summary>
+    private readonly string[] _rootTail;
+
+    /// <summary>R520 根路径去前导分隔符 (影子路径判据 (a): 相对路径以根完整路径开头). </summary>
+    private readonly string _rootSansSep;
+
     /// <summary>R462: 回灌面「召回-现实一致性」机检需要的工作区根。</summary>
     public string? WorkspaceRoot => _root;
     private readonly string? _auditDir;
@@ -44,6 +50,8 @@ public sealed class WorkspaceActionPort : IActionPort
                                Func<string, bool, CancellationToken, Task<bool>>? approveDelete = null)
     {
         _root = Path.GetFullPath(root);
+        _rootTail = _root.Replace('\\', '/').Split('/', StringSplitOptions.RemoveEmptyEntries);
+        _rootSansSep = string.Join('/', _rootTail);
         _auditDir = string.IsNullOrWhiteSpace(auditDir) ? null : auditDir;
         _defaultTimeoutMs = defaultTimeoutMs <= 0 ? 120_000 : defaultTimeoutMs;
         _approveDelete = approveDelete;
@@ -101,8 +109,75 @@ public sealed class WorkspaceActionPort : IActionPort
                 error = "路径越界 (必须在工作区内): " + p;
                 return null;
             }
+
+            // R520 影子路径闸 (R519 真机实证): 相对路径里**重复了工作区自身的位置** ⇒ 会在工作区内重建
+            //  一份影子树 (实证: 请求 `eval/rover/r519/run-.../orch/ws/games/life.py` 落到
+            //  `<ws>/eval/rover/r519/run-.../orch/ws/games/life.py`), 而 write_file 仍回 `ok` + 回显**请求串**
+            //  ⇒ 节点随后读 `games/life.py` 得到另一份文件, 自述「环境预置的另一版实现, 我的内容未持久化」,
+            //  再被范围闸判 `out_of_scope` ⇒ 整条编排 fail-closed (R519 编排臂 0/58 的真因)。
+            // 判据绑**误用**不绑词面: 只有 (a) 相对路径以根的完整路径 (去前导分隔符) 开头, 或
+            //  (b) 相对路径前 k 段 (k≥2) == 根路径后 k 段 才算影子; **单段同名目录不判** (防过宽)。
+            // 与 P1 同闸: AGENTFRAMEWORK_ACTION_BOUNDARY=0 (缺陷注入臂) ⇒ 本闸同时关闭 (拒绝才是活的)。
+            if (BoundaryEnforced())
+            {
+                var suggest = ShadowPath(p);
+                if (suggest is not null)
+                {
+                    error = "[拒绝] 路径重复了工作区自身的位置 (影子路径): " + p
+                        + " ⇒ 会落到 " + Path.GetFullPath(Path.Combine(_root, p))
+                        + " (工作区内的影子副本, 不是你要写的目标); 请改写成**工作区相对**路径: " + suggest;
+                    return null;
+                }
+            }
         }
         return full;
+    }
+
+    /// <summary>
+    /// R520 影子路径判据: 命中则返回建议改写的工作区相对路径, 否则 null。
+    /// 见 <see cref="Resolve"/> 内的完整取证与两侧样例 (正控/负控/消融臂见 R520ShadowPathTests)。
+    /// </summary>
+    private string? ShadowPath(string p)
+    {
+        if (Path.IsPathRooted(p)) return null;            // 绝对路径不属此族 (越界由 P1 判)
+        if (_rootTail.Length == 0) return null;
+        var rel = p.Replace('\\', '/').TrimStart('/');
+        if (rel.Length == 0) return null;
+        var segs = rel.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        if (segs.Length < 2) return null;                 // 单段 ⇒ 不判 (避免一刀切)
+
+        // (a) 以根的完整路径 (去前导分隔符) 开头 ⇒ 建议部分 = 其后各段
+        if (_rootSansSep.Length > 0 && rel.StartsWith(_rootSansSep + "/", StringComparison.Ordinal))
+            return Join(segs, _rootTail.Length);
+
+        // (b) 前 k 段 == 根的后 k 段 (k≥2, 从长到短; 至少留 1 段做目标)
+        var max = segs.Length - 1 < _rootTail.Length ? segs.Length - 1 : _rootTail.Length;
+        for (var k = max; k >= 2; k--)
+        {
+            var hit = true;
+            for (var i = 0; i < k; i++)
+            {
+                if (!string.Equals(segs[i], _rootTail[_rootTail.Length - k + i], StringComparison.Ordinal))
+                { hit = false; break; }
+            }
+            if (hit)
+            {
+                var rest = Join(segs, k);
+                return rest.Length > 0 ? rest : ".";
+            }
+        }
+        return null;
+    }
+
+    private static string Join(string[] segs, int skip)
+    {
+        var sb = new StringBuilder();
+        for (var i = skip; i < segs.Length; i++)
+        {
+            if (sb.Length > 0) sb.Append('/');
+            sb.Append(segs[i]);
+        }
+        return sb.ToString();
     }
 
     private static string Arg(JsonDocument doc, string name, string fallback)

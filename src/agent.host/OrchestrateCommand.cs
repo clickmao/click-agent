@@ -304,7 +304,9 @@ public static class OrchestrateCommand
           .Append("1) 用工具**真实落盘**文件到工作区 ").Append(workspace).Append(" (写在回复正文里的代码不算完成)。\n")
           .Append("2) 只做本节点这一段; 不要替后序节点做, 也不要重复上游已完成的工作。\n")
           .Append("3) 本节点动作步数预算 = ").Append(steps.ToString(CultureInfo.InvariantCulture)).Append(" 步, 先落盘再补充说明。\n")
-          .Append("4) 结束前用工具核对文件确实存在。\n");
+          .Append("4) 结束前用工具核对文件确实存在。\n")
+          .Append("5) 工具 path 一律写**工作区相对**路径 (如 games/life.py); **禁止**把工作区绝对路径裁成仓根相对路径")
+          .Append(" —— 那会在工作区内生成影子副本 (被边界闸拒绝), 且你读回的会是另一份文件。\n");
         return sb.ToString();
     }
 
