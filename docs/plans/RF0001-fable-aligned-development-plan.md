@@ -48,6 +48,7 @@
 | 3 块序固定 | 契约渲染器与校验器机械同源；前缀 sha 钉子 + `--check` 漂移闸 | ✅ R536/R537（`R1GEN_DRIFT_FILES=0`） |
 | 4 声明面单源 | 工具 schema 单源派生 + 字母序；展示文案主参数键 = schema `required[0]` | ✅ R536 / R538（真跑抓出 `command`≠`cmd` 偏差并修） |
 | 5 尾部易变 | user 轮只带任务体；`json_object` 契约 | ✅ R537–R540 |
+| 5 运行期易变项载体（参照 OpenClaw） | 运行期事实（工作区态/步骤/条目进度）只走尾部载体块，快照式取代、空则显式 `none` | ⏳ RF0001.5 候选 C3 |
 | 6 结构优先 | R1 契约强类型字段（intent/entities/constraints/missing_slots/ambiguities/plan/done_when/refusal）；缺信息停链（rc=2） | ✅ R539（`ms1` 3/3·steps=0·零副作用） |
 | 7 判据机检 | rc 域 0/2/3/4/5/6/8 + 契约校验器 + 前置器（铁律 11） | ✅ R536/R539/R540 |
 | ← 减法三件套 | 扔器具 / 砍模块 / 可合并则合并 | ✅ R534（−3,030 文件 / ≈47.6 万行）、R541（−216 文档 / 21,282 行） |
@@ -79,6 +80,7 @@
 3. completion 侧压缩（reasoning 上限策略、步数杠杆）。
 4. 前端 api 利用（条目面事件、快照重连）。
 5. 文档/证据结构（本文件 §6）。
+6. 会话级**上下文编排**（参照面 `docs/external-reference/OPENCLAW-CONTEXT-ORCHESTRATION.md`）：缓存对齐压缩、运行期载体块、上下文记账面、缓存保温、子任务上下文白名单。
 
 **排除（整体顺延 RF0002）**：LFM2.5-VL-3B 视觉侧路、屏幕识别、视频学习、区域特征库快路径。
 理由：CPU-only 2 vCPU ⇒ 图像 prefill 5.6 tok/s（351 s/帧）；且 v1 判据未包含识别面。
@@ -92,7 +94,8 @@
 | RF0001.1 | 前缀/命中 hold + 文档证据结构（本文件生效） | 全量绿 ∧ 归档悬空引用 0 ∧ 命中 ≥97% |
 | RF0001.2 | codex 同窗 reps≥3 + `g1` 归因（非同源 oracle） | `exec_precondition --round` rc=0 或逐条点名阻塞项 |
 | RF0001.3 | completion 压缩（步数/上限策略），同窗对照 | 新算 prompt/completion 双列不劣化 ∧ 质量不降 |
-| RF0001.4 | 收口：仅当 RF0001.1–.3 全绿才收；否则如实标未闭合 | KPI 表全绿 ∧ API 面/结构闸绿 ∧ AOT 0 IL |
+| RF0001.5 | 上下文编排（参照 OpenClaw）：记账面 → 运行期载体 → 缓存对齐压缩 → 保温 | 记账面与 `PromptCacheKpi` 同源 ∧ 压缩条目写入即冻结（sha 断言）∧ 冷启动调用单列 ∧ 命中率 hold ≥97% |
+| RF0001.4 | 收口：仅当 RF0001.1–.5 全绿才收；否则如实标未闭合 | KPI 表全绿 ∧ API 面/结构闸绿 ∧ AOT 0 IL |
 
 ---
 
@@ -101,6 +104,7 @@
 ```
 docs/
   plans/RF0001-…md          # 活计划（唯一权威计划面）
+  external-reference/       # 外部参照面（fable corpus + OPENCLAW-CONTEXT-ORCHESTRATION.md）
   evidence/                 # 证据文档面（人读）；规范=README.md，索引=INDEX.md
     RF0001/{KPI.md, EVIDENCE.md}   # 逐版 KPI 目标/实测/口径/边界 + 逐条证据指针(命令+sha+level)
   archive/                  # 归档面（只读）：ARCHIVE-INDEX.md + archive-registry.json + {plans,reports,changelogs}/
@@ -119,3 +123,4 @@ docs/
 3. role 挂载**只证「挂上去」，未证增益**（两臂同分）。
 4. `iteration-master-plan.md` §7 止于 R532、`improvements.md` 止于 R528 ⇒ 旧文档滞后项已随归档转入历史桶，**交接面为本文件**。
 5. 逐链 fable 映射表目前只交 R1 子集（`R1-EXTRACT.md`），其余链条待 RF0001.2 内逐条补。
+6. **上下文编排缺口**（2026-09-18 对照 OpenClaw 采编，见 `docs/external-reference/OPENCLAW-CONTEXT-ORCHESTRATION.md`）：无压缩触发策略（`ContextGradientCompressor` 286 行**未进主链**，只被 `Program.cs:190` audit 与测试消费）、无上下文记账面、无缓存保温（首调用 **89.0%** 冷起损失）、无工具回执上限。**核心张力**：压缩要重写历史中段，与「恒定前缀 ≥97% 命中」算术互斥 ⇒ 压缩必须**缓存对齐**（条写入即冻结 + 冷启动单列，不计入 97% 稳态口径）。

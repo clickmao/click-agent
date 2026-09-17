@@ -17,6 +17,7 @@
 | RF0001-E10 | 验收前置器（铁律 11） | L3 | `python3 eval/rover/r507pre/exec_precondition.py --round r540` | **rc=1**（阻塞 = `g1` 43/58·44/58）⇒ 降幅标「参考（未可验收）」 | R540 |
 | RF0001-E11 | 归档面无悬空引用、台账 100% 覆盖 | L1 | `python3 tools/archive/archive_docs.py --verify` | `docs/archive/ARCHIVE-INDEX.md` + `archive-registry.json` | R541 |
 | RF0001-E12 | `g1` 两窗失败族**定因 = 产物缺陷**（w1 `wythoff` 冷点集构造错 / w2 `life` `bytes`↔`str` 契约违反）；夹具自洽正控 58/58、最小修复后两族 15/15·14/14 转绿、null 重写负控仍全败 | L1 | `python3 eval/capability/exp1-q51/g1_rootcause_q51.py` | `eval/capability/exp1-q51/verdict_q51.json`（`Q51_RC=0`）；只读输入 `eval/rover/r540/snapshots/{w1,w2}/agentR1r-g1/**` | EXP1-Q51（本作业，只读） |
+| RF0001-E13 | **上下文编排外部对照已采编**：OpenClaw 文档站 10 条机制 × 本仓 9 维逐条对照 + 5 条采纳候选（C1 缓存对齐压缩 / C2 记账面 / C3 运行期载体 / C4 保温 / C5 子任务白名单）；判定「压缩与 ≥97% 命中算术互斥 ⇒ 必须缓存对齐」 | L0 | `web_extract https://docs.openclaw.ai/{concepts/context,concepts/system-prompt,compaction,concepts/session,concepts/memory,reference/token-use}`（采集日 2026-09-18） | `docs/external-reference/OPENCLAW-CONTEXT-ORCHESTRATION.md`（sha256 `4b92ceca82c95056046642cf5ee1cbdfb33a0097602b414fc2d6eadf542e6871`，12,686 B） | R541 文档轮（零代码改动 ⇒ **无新 KPI 读数**） |
 
 > **未闭合（不得当作通过）**：E05/E10 的降幅因 rc=1 仅为参考；`g1` 族未闭合；codex 外部列单窗不可比；
 > role 挂载未证增益；`A1-on` 在 `g1` 上无基线。
