@@ -1,0 +1,116 @@
+{
+ "label": "EXP1-Q48b",
+ "v1_falsified_universal_claims": {
+  "C2_every_arm_explained_by_one_semantics": false,
+  "C2_fail_set_matches_prediction": false,
+  "C3_failing_arms_have_illegal_moves": false,
+  "C4_public_example_in_prompt_verbatim": false,
+  "v1_rc": 2,
+  "status": "原样保留, 不翻案 (v1 判 rc=2)"
+ },
+ "narrowed_readings": {
+  "two_case_signature_arms": [
+   "w1/A0-off",
+   "w2/C-codex",
+   "w3/C-codex"
+  ],
+  "noleg_semantics_arms": [
+   "w1/A0-off",
+   "w2/C-codex",
+   "w3/C-codex"
+  ],
+  "other_failure_family": {
+   "w1/A1-on": [
+    12,
+    14
+   ],
+   "w2/A0-off": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    12,
+    13,
+    14
+   ]
+  },
+  "clean_arms_15_15": [
+   "w1/A2-merge",
+   "w1/C-codex",
+   "w2/A1-on",
+   "w2/A2-merge",
+   "w3/A0-off",
+   "w3/A1-on",
+   "w3/A2-merge"
+  ],
+  "fixture_self_consistency": "15/15 (C1 正控) => 夹具缺陷分支不成立",
+  "illegal_move_examples": {
+   "w1/A0-off": [
+    {
+     "case": 0,
+     "stdin": "21 25",
+     "got": "WIN 1 13",
+     "exp": "WIN 15 15",
+     "legality": "ILLEGAL(unstated move)"
+    },
+    {
+     "case": 14,
+     "stdin": "25 25",
+     "got": "WIN 2 11",
+     "exp": "WIN 25 25",
+     "legality": "ILLEGAL(unstated move)"
+    }
+   ],
+   "w2/C-codex": [
+    {
+     "case": 0,
+     "stdin": "21 25",
+     "got": "WIN 1 13",
+     "exp": "WIN 15 15",
+     "legality": "ILLEGAL(unstated move)"
+    },
+    {
+     "case": 14,
+     "stdin": "25 25",
+     "got": "WIN 2 11",
+     "exp": "WIN 25 25",
+     "legality": "ILLEGAL(unstated move)"
+    }
+   ],
+   "w3/C-codex": [
+    {
+     "case": 0,
+     "stdin": "21 25",
+     "got": "WIN 1 13",
+     "exp": "WIN 15 15",
+     "legality": "ILLEGAL(unstated move)"
+    },
+    {
+     "case": 14,
+     "stdin": "25 25",
+     "got": "WIN 2 11",
+     "exp": "WIN 25 25",
+     "legality": "ILLEGAL(unstated move)"
+    }
+   ]
+  }
+ },
+ "checks_posthoc": [
+  "two_case_arms=['w1/A0-off', 'w2/C-codex', 'w3/C-codex'] noleg_arms=['w1/A0-off', 'w2/C-codex', 'w3/C-codex']",
+  "w1/A1-on: fails=[12, 14] semantics=mixed/other illegal=0",
+  "w2/A0-off: fails=[0, 1, 2, 3, 4, 5, 6, 7, 12, 13, 14] semantics=mixed/other illegal=0"
+ ],
+ "checks": {
+  "B1_two_case_signature_is_noleg_with_illegal_cases_equal_to_fails": true,
+  "B2_noleg_fail_set_recomputed_not_fitted": true,
+  "B3_other_failure_family_has_zero_illegal_moves": true,
+  "NC_pass_arms_are_not_noleg_and_have_zero_illegal": true,
+  "B4_public_example_covers_only_one_of_two": true,
+  "PC_fixture_self_consistent_15_15": true
+ },
+ "rc": 0
+}

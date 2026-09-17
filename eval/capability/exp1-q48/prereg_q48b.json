@@ -1,0 +1,41 @@
+{
+ "label": "EXP1-Q48b",
+ "ts": "2026-09-17T23:0x+0800",
+ "relation_to_v1": "v1 (prereg_q48.json) 的两条\"普适\"判据被实测**否证**: C2_every_arm_explained_by_one_semantics=false / C3_failing_arms_have_illegal_moves=false / C4=false(其三条件之一)。v1 判决 rc=2 **原样保留、不翻案、不改写**。本文件是把被否证的普适主张**收窄**为逐臂可判的机理主张后的重注册(事后性, 只作 checks_posthoc 之外的独立轮, 不与 v1 混算)。",
+ "disclosure": "收窄方向由 v1 实测的逐臂分类驱动 ⇒ 属**事后收窄**, 不得表述为事前预言。v1 的否证读数在报告中保留。",
+ "narrowed_judgments": [
+  {
+   "id": "B1",
+   "claim": "凡\"两例签名\"臂 (observed fail == {case0=21 25, case14=25 25}) 必属 noleg 语义 ∧ 其非法着法例集合恰等于其 fail 集合 (逐臂逐例)",
+   "expected": "3/3 臂成立 (w1/A0-off, w2/C-codex, w3/C-codex)"
+  },
+  {
+   "id": "B2",
+   "claim": "noleg 臂的 fail 集合逐例 == \"枚举全部 (i,j) 不加合法性过滤\" 的预测失败集 (机理可复算, 非拟合)",
+   "expected": "noleg 臂 100% 逐例命中"
+  },
+  {
+   "id": "B3",
+   "claim": "其余失败臂 (w1/A1-on: {1 1, 25 25}; w2/A0-off: 11 例) 的非法着法数 == 0 ⇒ 与 noleg 缺陷**不同源**, 不得合并归因",
+   "expected": "非 noleg 失败臂 illegal == 0"
+  },
+  {
+   "id": "B4",
+   "claim": "题面 prompt 逐字含失败例 case0 (21 25 -> WIN 15 15) 而不含 case14 (25 25) ⇒ 该缺陷有一半可由题面公开用例零成本自检捕获, 另一半只能由隐藏用例捕获",
+   "expected": "has_21_25=True ∧ has_25_25=False"
+  },
+  {
+   "id": "B5 (留痕, 非判据)",
+   "claim": "存在全过臂其 tie-break 与题面字面不一致 (自陈 i+j 最小), 且当前 15 例对该差异不可分 ⇒ 潜在过拟合风险登记, 不据此改判任何臂",
+   "expected": ">=1 条登记"
+  }
+ ],
+ "negative_controls": [
+  "B1 的负控: 全过臂必须同时满足 noleg 语义=false ∧ 非法着法=0 (否则\"两例签名\"判据可被任意臂满足)",
+  "B3 的负控: 若把 w2/A0-off 解错臂也算成 noleg 族, 则 B3 必判红 (证明族分离是有牙的)"
+ ],
+ "non_goals": [
+  "不改产品源码 / 不跑 dotnet / 不写主线目录 (docs/**, eval/rover/r531/**)",
+  "不宣称任何 token 降幅: R531 prefix_rc=1 ∧ precond_rc=1 ⇒ 一律参考(未可验收)"
+ ]
+}

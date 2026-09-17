@@ -1,0 +1,49 @@
+{
+ "label": "EXP1-Q48",
+ "ts": "2026-09-17T23:0x+0800",
+ "owner": "cron 60m 能力自检循环作业 (eval/capability 命名空间; 与主线轮号无关)",
+ "subject": "R531 (窗口 w1/w2/w3, 族 games-longtask-v1 = g1, 58 例) 中两例 wxthoff stdout 不匹配的机理定因",
+ "disclosure": "本 tick 先做了只读发现(读判决 JSON + 跑快照), 机理判据(C1..C5)在系统性预测测试之前落盘; 观察与判据的先后如实记录, 不做\"事前预言\"表述。",
+ "preregistered_judgments": [
+  {
+   "id": "C1",
+   "claim": "题面字面规则(只动一堆 / 两堆同取) + 字典序最小(先 i 后 j) 解出的期望, 逐例复现 cases-r521.json 的全部 15 条 wythoff 期望值",
+   "meaning_if_true": "夹具与题面自洽 ⇒ \"夹具缺陷伪装能力缺陷\" 分支不成立",
+   "meaning_if_false": "夹具/参考解隐含了题面未写的约定 ⇒ 转而按 R512 手法只补题面",
+   "expected": "15/15"
+  },
+  {
+   "id": "C2",
+   "claim": "每条快照臂的 15 例输出, 被且仅被两类语义之一解释: legal(题面字面) 或 noleg(枚举全部 (i,j) 不加合法性过滤); 且该臂的 predicted_fail(其语义) == observed_fail(grade JSON)",
+   "meaning_if_true": "失败机理 = 语义选择(是否施加着法合法性约束), 非随机抖动、非夹具",
+   "expected": "12/12 臂被单一语义解释 ∧ fail_set 预测逐例命中"
+  },
+  {
+   "id": "C3",
+   "claim": "失败臂无一例外的非法着法计数 >= 1; 全过臂非法着法计数 == 0",
+   "meaning_if_true": "合法性检查器有牙(负控成立), 非法着法计数可作判据",
+   "expected": "失败臂 >=1 ∧ 全过臂 ==0"
+  },
+  {
+   "id": "C4",
+   "claim": "题面 prompt 逐字含失败例的输入与期望 (21 25 -> WIN 15 15)",
+   "meaning_if_true": "被测方回放题面公开用例即可自检出该缺陷(零成本自检), 归因 = 未自验, 而非信息不足",
+   "expected": true
+  },
+  {
+   "id": "C5",
+   "claim": "存在全过臂其 tie-break 与题面不一致(自陈 i+j 最小), 但当前 15 例对该差异不可分",
+   "meaning_if_true": "登记为 latent 过拟合风险, 不作失败判据(不得据此改判该臂)",
+   "expected": ">=0 条, 单列留痕"
+  }
+ ],
+ "negative_controls": [
+  "C1 的两侧样例: 若把字面规则的\"两堆同取\"约束换成\"任意取\", 期望值必须改变(否则该约束不承重)",
+  "C3: 全过臂必须 0 非法着法 (检查器不能对任何输出都判非法)"
+ ],
+ "non_goals": [
+  "不改产品源码 / 不跑 dotnet / 不改主线任何目录(含 docs/ 与 eval/rover/r531/**)",
+  "本 tick 属复核与定因: 不宣称任何 token 降幅 (R531 prefix_rc=1 ∧ precond_rc=1 ⇒ 一律参考(未可验收))"
+ ],
+ "fallback": "C1 为假 ⇒ 判 rc=0 但写 fixture-branch 结论; 输入缺失(快照/cases/grade 缺) ⇒ rc=3 fail-closed"
+}

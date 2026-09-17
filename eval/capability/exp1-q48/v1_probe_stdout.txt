@@ -1,0 +1,38 @@
+{
+ "label": "EXP1-Q48",
+ "subject": "R531 g1 wythoff 两例稳定 stdout 不匹配的机理定因 (只读快照几何)",
+ "root_cause": "被测侧在必胜着法枚举中未施加题面写明的着法合法性约束 (只动一堆 / 两堆同取), 从而吐出非法着法 (21 25 -> WIN 1 13 取两堆不等量; 25 25 -> WIN 2 11); 题面公开用例已逐字给出 21 25 -> WIN 15 15 ⇒ 非夹具缺陷",
+ "fixture_verdict": "题面/夹具自洽 (C1 15/15) ⇒ 夹具缺陷不成立",
+ "observed_fail_set": [
+  [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   12,
+   13,
+   14
+  ],
+  [
+   0,
+   14
+  ],
+  [
+   12,
+   14
+  ]
+ ],
+ "checks": {
+  "C1_oracle_reproduces_fixture_15_15": true,
+  "C2_every_arm_explained_by_one_semantics": false,
+  "C2_fail_set_matches_prediction": false,
+  "C3_failing_arms_have_illegal_moves": false,
+  "C3_negative_control_passing_arms_zero_illegal": true,
+  "C4_public_example_in_prompt_verbatim": false
+ },
+ "rc": 2
+}

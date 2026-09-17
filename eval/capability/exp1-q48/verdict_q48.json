@@ -1,0 +1,377 @@
+{
+ "verdict": {
+  "label": "EXP1-Q48",
+  "subject": "R531 g1 wythoff 两例稳定 stdout 不匹配的机理定因 (只读快照几何)",
+  "root_cause": "被测侧在必胜着法枚举中未施加题面写明的着法合法性约束 (只动一堆 / 两堆同取), 从而吐出非法着法 (21 25 -> WIN 1 13 取两堆不等量; 25 25 -> WIN 2 11); 题面公开用例已逐字给出 21 25 -> WIN 15 15 ⇒ 非夹具缺陷",
+  "fixture_verdict": "题面/夹具自洽 (C1 15/15) ⇒ 夹具缺陷不成立",
+  "observed_fail_set": [
+   [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    12,
+    13,
+    14
+   ],
+   [
+    0,
+    14
+   ],
+   [
+    12,
+    14
+   ]
+  ],
+  "checks": {
+   "C1_oracle_reproduces_fixture_15_15": true,
+   "C2_every_arm_explained_by_one_semantics": false,
+   "C2_fail_set_matches_prediction": false,
+   "C3_failing_arms_have_illegal_moves": false,
+   "C3_negative_control_passing_arms_zero_illegal": true,
+   "C4_public_example_in_prompt_verbatim": false
+  },
+  "rc": 2
+ },
+ "detail": {
+  "C1": [
+   {
+    "case": 0,
+    "stdin": "21 25",
+    "expected": "WIN 15 15",
+    "oracle": "WIN 15 15",
+    "ok": true
+   },
+   {
+    "case": 1,
+    "stdin": "10 9",
+    "expected": "WIN 0 3",
+    "oracle": "WIN 0 3",
+    "ok": true
+   },
+   {
+    "case": 2,
+    "stdin": "18 8",
+    "expected": "WIN 5 0",
+    "oracle": "WIN 5 0",
+    "ok": true
+   },
+   {
+    "case": 3,
+    "stdin": "1 5",
+    "expected": "WIN 0 3",
+    "oracle": "WIN 0 3",
+    "ok": true
+   },
+   {
+    "case": 4,
+    "stdin": "12 18",
+    "expected": "WIN 1 0",
+    "oracle": "WIN 1 0",
+    "ok": true
+   },
+   {
+    "case": 5,
+    "stdin": "11 25",
+    "expected": "WIN 0 7",
+    "oracle": "WIN 0 7",
+    "ok": true
+   },
+   {
+    "case": 6,
+    "stdin": "18 17",
+    "expected": "WIN 0 6",
+    "oracle": "WIN 0 6",
+    "ok": true
+   },
+   {
+    "case": 7,
+    "stdin": "7 21",
+    "expected": "WIN 0 17",
+    "oracle": "WIN 0 17",
+    "ok": true
+   },
+   {
+    "case": 8,
+    "stdin": "1 2",
+    "expected": "LOSE",
+    "oracle": "LOSE",
+    "ok": true
+   },
+   {
+    "case": 9,
+    "stdin": "3 5",
+    "expected": "LOSE",
+    "oracle": "LOSE",
+    "ok": true
+   },
+   {
+    "case": 10,
+    "stdin": "4 7",
+    "expected": "LOSE",
+    "oracle": "LOSE",
+    "ok": true
+   },
+   {
+    "case": 11,
+    "stdin": "6 10",
+    "expected": "LOSE",
+    "oracle": "LOSE",
+    "ok": true
+   },
+   {
+    "case": 12,
+    "stdin": "1 1",
+    "expected": "WIN 1 1",
+    "oracle": "WIN 1 1",
+    "ok": true
+   },
+   {
+    "case": 13,
+    "stdin": "2 25",
+    "expected": "WIN 0 24",
+    "oracle": "WIN 0 24",
+    "ok": true
+   },
+   {
+    "case": 14,
+    "stdin": "25 25",
+    "expected": "WIN 25 25",
+    "oracle": "WIN 25 25",
+    "ok": true
+   }
+  ],
+  "arms": {
+   "w1/A0-off": {
+    "n_illegal_moves": 2,
+    "semantics": "noleg",
+    "observed_fail_cases": [
+     0,
+     14
+    ],
+    "predicted_fail_if_noleg": [
+     0,
+     14
+    ],
+    "fail_matches_prediction": true,
+    "rows": [
+     {
+      "case": 0,
+      "stdin": "21 25",
+      "got": "WIN 1 13",
+      "exp": "WIN 15 15",
+      "legality": "ILLEGAL(unstated move)"
+     },
+     {
+      "case": 14,
+      "stdin": "25 25",
+      "got": "WIN 2 11",
+      "exp": "WIN 25 25",
+      "legality": "ILLEGAL(unstated move)"
+     }
+    ]
+   },
+   "w1/A1-on": {
+    "n_illegal_moves": 0,
+    "semantics": "mixed/other",
+    "observed_fail_cases": [
+     12,
+     14
+    ],
+    "predicted_fail_if_noleg": [
+     0,
+     14
+    ],
+    "fail_matches_prediction": false,
+    "rows": [
+     {
+      "case": 12,
+      "stdin": "1 1",
+      "got": "LOSE",
+      "exp": "WIN 1 1"
+     }
+    ]
+   },
+   "w1/A2-merge": {
+    "n_illegal_moves": 0,
+    "semantics": "legal",
+    "observed_fail_cases": [],
+    "predicted_fail_if_noleg": [
+     0,
+     14
+    ],
+    "fail_matches_prediction": false,
+    "rows": []
+   },
+   "w1/C-codex": {
+    "n_illegal_moves": 0,
+    "semantics": "legal",
+    "observed_fail_cases": [],
+    "predicted_fail_if_noleg": [
+     0,
+     14
+    ],
+    "fail_matches_prediction": false,
+    "rows": []
+   },
+   "w2/A0-off": {
+    "n_illegal_moves": 0,
+    "semantics": "mixed/other",
+    "observed_fail_cases": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     12,
+     13,
+     14
+    ],
+    "predicted_fail_if_noleg": [
+     0,
+     14
+    ],
+    "fail_matches_prediction": false,
+    "rows": [
+     {
+      "case": 0,
+      "stdin": "21 25",
+      "got": "WIN 0 1",
+      "exp": "WIN 15 15"
+     }
+    ]
+   },
+   "w2/A1-on": {
+    "n_illegal_moves": 0,
+    "semantics": "legal",
+    "observed_fail_cases": [],
+    "predicted_fail_if_noleg": [
+     0,
+     14
+    ],
+    "fail_matches_prediction": false,
+    "rows": []
+   },
+   "w2/A2-merge": {
+    "n_illegal_moves": 0,
+    "semantics": "legal",
+    "observed_fail_cases": [],
+    "predicted_fail_if_noleg": [
+     0,
+     14
+    ],
+    "fail_matches_prediction": false,
+    "rows": []
+   },
+   "w2/C-codex": {
+    "n_illegal_moves": 2,
+    "semantics": "noleg",
+    "observed_fail_cases": [
+     0,
+     14
+    ],
+    "predicted_fail_if_noleg": [
+     0,
+     14
+    ],
+    "fail_matches_prediction": true,
+    "rows": [
+     {
+      "case": 0,
+      "stdin": "21 25",
+      "got": "WIN 1 13",
+      "exp": "WIN 15 15",
+      "legality": "ILLEGAL(unstated move)"
+     },
+     {
+      "case": 14,
+      "stdin": "25 25",
+      "got": "WIN 2 11",
+      "exp": "WIN 25 25",
+      "legality": "ILLEGAL(unstated move)"
+     }
+    ]
+   },
+   "w3/A0-off": {
+    "n_illegal_moves": 0,
+    "semantics": "legal",
+    "observed_fail_cases": [],
+    "predicted_fail_if_noleg": [
+     0,
+     14
+    ],
+    "fail_matches_prediction": false,
+    "rows": []
+   },
+   "w3/A1-on": {
+    "n_illegal_moves": 0,
+    "semantics": "legal",
+    "observed_fail_cases": [],
+    "predicted_fail_if_noleg": [
+     0,
+     14
+    ],
+    "fail_matches_prediction": false,
+    "rows": []
+   },
+   "w3/A2-merge": {
+    "n_illegal_moves": 0,
+    "semantics": "legal",
+    "observed_fail_cases": [],
+    "predicted_fail_if_noleg": [
+     0,
+     14
+    ],
+    "fail_matches_prediction": false,
+    "rows": []
+   },
+   "w3/C-codex": {
+    "n_illegal_moves": 2,
+    "semantics": "noleg",
+    "observed_fail_cases": [
+     0,
+     14
+    ],
+    "predicted_fail_if_noleg": [
+     0,
+     14
+    ],
+    "fail_matches_prediction": true,
+    "rows": [
+     {
+      "case": 0,
+      "stdin": "21 25",
+      "got": "WIN 1 13",
+      "exp": "WIN 15 15",
+      "legality": "ILLEGAL(unstated move)"
+     },
+     {
+      "case": 14,
+      "stdin": "25 25",
+      "got": "WIN 2 11",
+      "exp": "WIN 25 25",
+      "legality": "ILLEGAL(unstated move)"
+     }
+    ]
+   }
+  },
+  "C4": {
+   "has_21_25_WIN_15_15": true,
+   "has_25_25": false,
+   "prompt_sha256": "516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3"
+  },
+  "C5_latent": [
+   {
+    "arm": "w3/A0-off",
+    "note": "tie-break 自陈 i+j 最小 != 题面 字典序(先 i 后 j); 15 例不可分 ⇒ 潜在过拟合"
+   }
+  ]
+ }
+}
