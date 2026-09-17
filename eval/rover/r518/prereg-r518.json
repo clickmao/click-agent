@@ -1,0 +1,59 @@
+{
+ "round": "R518",
+ "created_before_run": true,
+ "revision_note": "2026-09-17 13:1x: w1 首次执行因**器具两处缺陷**作废 (① 臂 A 未 export AGENTFRAMEWORK_CONFIG ⇒ 请求绕过计量 adapter, 无读数 ② 编排臂 cwd 落在节点工作区内 ⇒ 宿主自写 data/** 被节点 diff 判 out_of_scope ⇒ 链 fail-closed)。修正后在 w2 重跑; 本文件在 w2 起臂**之前**更新, w2 无任何测量发生。w1 全窗声明作废, 不入验收面。 | 13:2x: 范围模式语法修正 (匹配键 = `<窗口>/<臂目录>` 不含题号): `w2/agentA/*` → `w2/agentA`, `w2/codex/*` → `w2/codex`, `w2/agentO/*` → `w2/agentO`; require/nonrequire 的**臂集合与判据不变**, 只修正 glob 语法 (首跑 precond 报 UNDECLARED 即此因)。",
+ "purpose": "双包规模面 (p3 kvsvc 12 用例 + p4 v2 tasksvc 12 用例, 同环境·同输入·同模型) 三臂对照; 主线判据 = token/远端调用数降幅 + 回复质量不降 (R413 判据), 规模面另判「单轮硬顶是否成为瓶颈」",
+ "arms": [
+  {
+   "arm": "A-r1",
+   "run": "A-r1",
+   "side": "agent",
+   "snapshot_dir": "agentA",
+   "window": "w2",
+   "how": "proj_run_side.py --side agent --tasks p3,p4 (链路默认步数, 与 R513 同口径; AGENTFRAMEWORK_CONFIG 指向计量 adapter)"
+  },
+  {
+   "arm": "C-r1",
+   "run": "C-r1",
+   "side": "codex",
+   "snapshot_dir": "codex",
+   "window": "w2",
+   "how": "proj_run_side.py --side codex --tasks p3,p4 (外部真值, 同模型同题面)"
+  },
+  {
+   "arm": "O-r1",
+   "run": "O-r1",
+   "side": "agent",
+   "snapshot_dir": "agentO",
+   "window": "w2",
+   "how": "AOT agenthost --orchestrate plan-p3p4-r518.txt --scope scope-p3p4-r518.txt --node-steps 6 --node-escalations 1 (7 节点: 5 远端 + 2 本地自测; cwd=仓库根, 工作区=AGENTFRAMEWORK_WORKSPACE)"
+  }
+ ],
+ "evidence_scope": {
+  "require": [
+   "w2/agentA",
+   "w2/codex"
+  ],
+  "nonrequired": [
+   {
+    "pattern": "w2/agentO",
+    "reason": "规模面探索臂: 其判据是「7 节点链能否覆盖双包 24 用例 (单轮硬顶 32 步之外)」, 不是 token 对比; 该臂正确性逐题单独报数, 不入对比读数验收面"
+   },
+   {
+    "pattern": "w1/*",
+    "reason": "作废窗 (器具缺陷, 见 revision_note): 臂 A 无计量读数 + 臂 O fail-closed; 全窗只作废, 不删以留痕"
+   }
+  ]
+ },
+ "criteria": {
+  "tokencall": "两侧 (agentA vs codex) 远端调用数 / prompt_tokens / cached_tokens / completion_tokens, 取自 adapter 逐次 dump (按臂 idx 区间归属, request_id 去重)",
+  "quality": "隐藏用例逐题: 每侧 12+12=24; 质量不降 = agent 侧总通过数 ≥ codex 侧",
+  "scale": "O 臂节点级: 完成节点数 / 产物文件数 / 升预算重试次数 (escalations) / 预算上界 (budget_ceiling_effective)",
+  "acceptance": "exec_precondition.py --round R518 rc==0 ⇒ 该轮对比读数可验收; rc!=0 ⇒ 一律标「参考(未可验收)」"
+ },
+ "honest_bounds": [
+  "reps=1 (内存硬约束: 禁并发), 单窗 w2 ⇒ 样本量 1 包/侧; 不做重测分布推断",
+  "编排器臂的 token 对比不作结论: 其节点是「按段切分的同一题面」, 与单轮臂的输入粒度不同 (禁混算)",
+  "w1 作废窗的臂 A 产生了未计量真实调用 (成本已发生), 读数不可用 ⇒ 只作留痕"
+ ]
+}

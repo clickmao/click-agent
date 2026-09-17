@@ -1,0 +1,174 @@
+{
+ "window": "w2",
+ "rows": [
+  {
+   "arm": "A",
+   "run": "A-r1",
+   "side": "agent",
+   "tid": "p3",
+   "all_pass": true,
+   "cases_pass": 12,
+   "cases_total": 12,
+   "failed": [],
+   "rc": 0,
+   "elapsed_s": 25.41,
+   "adapter_range": [
+    1,
+    6
+   ],
+   "calls": 6,
+   "prompt_tokens": 62189,
+   "cached_tokens": 55936,
+   "completion_tokens": 6042,
+   "total_tokens": 68231,
+   "models": [
+    "deepseek-chat"
+   ],
+   "unreported_usage": 0,
+   "artifacts": 3,
+   "reply_chars": 2478,
+   "ledger_steps": 5,
+   "ledger_calls": 7
+  },
+  {
+   "arm": "A",
+   "run": "A-r1",
+   "side": "agent",
+   "tid": "p4",
+   "all_pass": true,
+   "cases_pass": 12,
+   "cases_total": 12,
+   "failed": [],
+   "rc": 0,
+   "elapsed_s": 26.53,
+   "adapter_range": [
+    7,
+    13
+   ],
+   "calls": 7,
+   "prompt_tokens": 67996,
+   "cached_tokens": 61184,
+   "completion_tokens": 6979,
+   "total_tokens": 74975,
+   "models": [
+    "deepseek-chat"
+   ],
+   "unreported_usage": 0,
+   "artifacts": 4,
+   "reply_chars": 1567,
+   "ledger_steps": 6,
+   "ledger_calls": 8
+  },
+  {
+   "arm": "C",
+   "run": "C-r1",
+   "side": "codex",
+   "tid": "p3",
+   "all_pass": false,
+   "cases_pass": 9,
+   "cases_total": 12,
+   "failed": [
+    "incr_semantics_and_409",
+    "incr_concurrent_atomic",
+    "restart_drops_expired"
+   ],
+   "rc": 0,
+   "elapsed_s": 65.22,
+   "adapter_range": [
+    1,
+    19
+   ],
+   "calls": 19,
+   "prompt_tokens": 259144,
+   "cached_tokens": 247296,
+   "completion_tokens": 6961,
+   "total_tokens": 266105,
+   "models": [
+    "deepseek-chat"
+   ],
+   "unreported_usage": 0,
+   "artifacts": 3,
+   "reply_chars": 1020,
+   "ledger_steps": 0,
+   "ledger_calls": 0
+  },
+  {
+   "arm": "C",
+   "run": "C-r1",
+   "side": "codex",
+   "tid": "p4",
+   "all_pass": true,
+   "cases_pass": 12,
+   "cases_total": 12,
+   "failed": [],
+   "rc": 0,
+   "elapsed_s": 63.51,
+   "adapter_range": [
+    20,
+    36
+   ],
+   "calls": 17,
+   "prompt_tokens": 227174,
+   "cached_tokens": 216448,
+   "completion_tokens": 7928,
+   "total_tokens": 235102,
+   "models": [
+    "deepseek-chat"
+   ],
+   "unreported_usage": 0,
+   "artifacts": 2,
+   "reply_chars": 1322,
+   "ledger_steps": 0,
+   "ledger_calls": 0
+  },
+  {
+   "arm": "O",
+   "run": "O-r1",
+   "side": "agent",
+   "tid": "p3",
+   "all_pass": false,
+   "cases_pass": 0,
+   "cases_total": 12,
+   "failed": [
+    "entry_present",
+    "put_get_json_api",
+    "missing_404",
+    "unknown_path_404",
+    "ttl_expire_and_count",
+    "incr_semantics_and_409",
+    "incr_concurrent_atomic",
+    "delete_flow",
+    "stats_live_count",
+    "wal_lines_jsonl",
+    "restart_recovery",
+    "restart_drops_expired"
+   ],
+   "calls": 27,
+   "prompt_tokens": 1072111,
+   "cached_tokens": 993152,
+   "completion_tokens": 18869,
+   "adapter_range": [
+    1,
+    27
+   ]
+  },
+  {
+   "arm": "O",
+   "run": "O-r1",
+   "side": "agent",
+   "tid": "p4",
+   "all_pass": true,
+   "cases_pass": 12,
+   "cases_total": 12,
+   "failed": [],
+   "calls": 27,
+   "prompt_tokens": 1072111,
+   "cached_tokens": 993152,
+   "completion_tokens": 18869,
+   "adapter_range": [
+    1,
+    27
+   ]
+  }
+ ]
+}

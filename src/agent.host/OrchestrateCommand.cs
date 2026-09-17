@@ -37,11 +37,16 @@ public static class OrchestrateCommand
         var reportPath = "";
         var upstreamChars = UpstreamCharsDefault;
         var scopePath = "";
+        var nodeEscalations = 1;   // R518: 零产物 ⇒ 升预算重试次数上限 (默认开 1; 0 = 关)
 
         for (var i = 0; i < args.Length; i++)
         {
             switch (args[i])
             {
+                case "--node-escalations":
+                    if (i + 1 >= args.Length || !int.TryParse(args[++i], NumberStyles.Integer, CultureInfo.InvariantCulture, out nodeEscalations))
+                    { errp.WriteLine("orchestrate: --node-escalations 需整数 (0..3)"); return 2; }
+                    break;
                 case "--scope":
                     if (i + 1 >= args.Length) { errp.WriteLine("orchestrate: --scope 缺参"); return 2; }
                     scopePath = args[++i];
@@ -147,6 +152,7 @@ public static class OrchestrateCommand
             {
                 NodeMaxSteps = nodeSteps,
                 MaxNodes = maxNodes,
+                MaxBudgetEscalations = nodeEscalations,
                 ConcurrentLocalFirst = true,
                 WorkspaceRoot = workspace,
                 NodeScopes = scopes,
@@ -319,6 +325,9 @@ public static class OrchestrateCommand
         sb.Append("  \"workspace\": \"").Append(Escape(workspace)).Append("\",\n");
         sb.Append("  \"node_steps\": ").Append(nodeSteps.ToString(CultureInfo.InvariantCulture)).Append(",\n");
         sb.Append("  \"budget_ceiling\": ").Append(orchestrator.BudgetCeiling.ToString(CultureInfo.InvariantCulture)).Append(",\n");
+        sb.Append("  \"budget_ceiling_effective\": ").Append(orchestrator.BudgetCeilingEffective.ToString(CultureInfo.InvariantCulture)).Append(",\n");
+        sb.Append("  \"node_escalations_max\": ").Append(orchestrator.Opt.MaxBudgetEscalations.ToString(CultureInfo.InvariantCulture)).Append(",\n");
+        sb.Append("  \"escalations_total\": ").Append(orchestrator.EscalationCount.ToString(CultureInfo.InvariantCulture)).Append(",\n");
         sb.Append("  \"overlap_ms\": ").Append(orchestrator.OverlapMs.ToString(CultureInfo.InvariantCulture)).Append(",\n");
         sb.Append("  \"scope_file\": \"").Append(Escape(scopePath)).Append("\",\n");
         sb.Append("  \"scope_declared\": ").Append((scopes?.Count ?? 0).ToString(CultureInfo.InvariantCulture)).Append(",\n");
@@ -345,6 +354,9 @@ public static class OrchestrateCommand
               .Append(", \"deps\": [").Append(string.Join(", ", node.DependsOn.Select(d => "\"" + Escape(d) + "\""))).Append(']')
               .Append(", \"scope\": [").Append(string.Join(", ", t.Scope.Select(s => "\"" + Escape(s) + "\""))).Append(']')
               .Append(", \"files\": [").Append(string.Join(", ", Files(orchestrator.NodeArtifacts, t.NodeId).Select(f => "\"" + Escape(f) + "\""))).Append(']')
+              .Append(", \"budget_steps\": ").Append(t.BudgetSteps.ToString(CultureInfo.InvariantCulture))
+              .Append(", \"escalations\": ").Append(t.Escalations.ToString(CultureInfo.InvariantCulture))
+              .Append(", \"attempts\": [").Append(string.Join(", ", t.Attempts.Select(a => "\"" + Escape(a) + "\""))).Append(']')
               .Append(", \"error\": \"").Append(Escape(t.Error)).Append("\"}");
             sb.Append(i + 1 < telemetry.Count ? ",\n" : "\n");
         }

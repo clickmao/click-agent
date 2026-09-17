@@ -1,0 +1,177 @@
+{
+ "plan": "eval/rover/r518/plan-p3p4-r518.txt",
+ "scope": "eval/rover/r518/scope-p3p4-r518.txt",
+ "mirror": {
+  "nodes_n": 7,
+  "scoped_n": 5,
+  "levels": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "problems": [],
+  "clean": true
+ },
+ "nc": [
+  {
+   "mutation": "S2 范围重复声明",
+   "target": "scope",
+   "mirror_problems": [
+    "S2 第 7 行: 节点 n1 范围重复声明"
+   ],
+   "mirror_red": true,
+   "authority_rc": 2,
+   "authority_validation_error": true,
+   "authority_workspace_error": false,
+   "authority_stderr_head": "  · 第 7 行: 节点 n1 范围重复声明",
+   "passed": true
+  },
+  {
+   "mutation": "S6 范围指向未知节点",
+   "target": "scope",
+   "mirror_problems": [
+    "S6 范围声明指向未知节点 nZZ"
+   ],
+   "mirror_red": true,
+   "authority_rc": 2,
+   "authority_validation_error": true,
+   "authority_workspace_error": false,
+   "authority_stderr_head": "  · 范围声明指向未知节点 nZZ",
+   "passed": true
+  },
+  {
+   "mutation": "S5 路径越界",
+   "target": "scope",
+   "mirror_problems": [
+    "S2 第 7 行: 节点 n1 范围重复声明"
+   ],
+   "mirror_red": true,
+   "authority_rc": 2,
+   "authority_validation_error": true,
+   "authority_workspace_error": false,
+   "authority_stderr_head": "  · 第 7 行: 节点 n1 范围重复声明",
+   "passed": true
+  },
+  {
+   "mutation": "S5b 路径上跳",
+   "target": "scope",
+   "mirror_problems": [
+    "S2 第 7 行: 节点 n1 范围重复声明"
+   ],
+   "mirror_red": true,
+   "authority_rc": 2,
+   "authority_validation_error": true,
+   "authority_workspace_error": false,
+   "authority_stderr_head": "  · 第 7 行: 节点 n1 范围重复声明",
+   "passed": true
+  },
+  {
+   "mutation": "S1 范围字段缺失",
+   "target": "scope",
+   "mirror_problems": [
+    "S1 第 7 行: 字段数 < 2"
+   ],
+   "mirror_red": true,
+   "authority_rc": 2,
+   "authority_validation_error": true,
+   "authority_workspace_error": false,
+   "authority_stderr_head": "  · 第 7 行: 字段数 1 < 2 (需 `nodeId | 路径[,路径]`)",
+   "passed": true
+  },
+  {
+   "mutation": "S4 范围为空",
+   "target": "scope",
+   "mirror_problems": [
+    "S2 第 7 行: 节点 n1 范围重复声明"
+   ],
+   "mirror_red": true,
+   "authority_rc": 2,
+   "authority_validation_error": true,
+   "authority_workspace_error": false,
+   "authority_stderr_head": "  · 第 7 行: 节点 n1 范围重复声明",
+   "passed": true
+  },
+  {
+   "mutation": "S8 范围文件空",
+   "target": "scope",
+   "mirror_problems": [
+    "S8 范围文件无任何有效声明"
+   ],
+   "mirror_red": true,
+   "authority_rc": 2,
+   "authority_validation_error": true,
+   "authority_workspace_error": false,
+   "authority_stderr_head": "  · 范围文件无任何有效声明",
+   "passed": true
+  },
+  {
+   "mutation": "P2 计划节点重复",
+   "target": "plan",
+   "mirror_problems": [
+    "P2 第 9 行: 节点 id 重复 n1"
+   ],
+   "mirror_red": true,
+   "authority_rc": 2,
+   "authority_validation_error": true,
+   "authority_workspace_error": false,
+   "authority_stderr_head": "  · 第 9 行: 节点 id 重复 n1",
+   "passed": true
+  },
+  {
+   "mutation": "P7 依赖未知节点",
+   "target": "plan",
+   "mirror_problems": [
+    "P7 节点 nZZ 依赖未知节点 nNOPE"
+   ],
+   "mirror_red": true,
+   "authority_rc": 2,
+   "authority_validation_error": true,
+   "authority_workspace_error": false,
+   "authority_stderr_head": "  · 节点 nZZ 依赖未知节点 nNOPE",
+   "passed": true
+  },
+  {
+   "mutation": "P4 未知位置",
+   "target": "plan",
+   "mirror_problems": [
+    "P4 第 9 行: 未知位置 nowhere"
+   ],
+   "mirror_red": true,
+   "authority_rc": 2,
+   "authority_validation_error": true,
+   "authority_workspace_error": false,
+   "authority_stderr_head": "  · 第 9 行: 未知位置 nowhere",
+   "passed": true
+  },
+  {
+   "mutation": "P3 节点文本为空",
+   "target": "plan",
+   "mirror_problems": [
+    "P3 第 9 行: 节点 nZZ 文本为空"
+   ],
+   "mirror_red": true,
+   "authority_rc": 2,
+   "authority_validation_error": true,
+   "authority_workspace_error": false,
+   "authority_stderr_head": "  · 第 9 行: 节点 nZZ 文本为空",
+   "passed": true
+  },
+  {
+   "mutation": "P9 依赖环",
+   "target": "plan",
+   "mirror_problems": [
+    "P9 依赖环: 节点 nCY1 参与环",
+    "P9 依赖环: 节点 nCY2 参与环"
+   ],
+   "mirror_red": true,
+   "authority_rc": 2,
+   "authority_validation_error": true,
+   "authority_workspace_error": false,
+   "authority_stderr_head": "  · 依赖成环: nCY1",
+   "passed": true
+  }
+ ],
+ "nc_all_passed": true
+}

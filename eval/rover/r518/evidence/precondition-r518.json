@@ -1,0 +1,377 @@
+{
+ "label": "R518",
+ "layout": "project",
+ "taskset": "eval/rover/r518/taskset-r518.json",
+ "snapshot_root": "eval/rover/r518/snapshots",
+ "tasks_n": 2,
+ "windows_n": 2,
+ "rule": "可验收前置(project 布局): 仓内不可变快照 ⇒ 独立物化到全新临时目录 ⇒ python3 -I -B 实跑隐藏用例脚本 ⇒ 逐条机械判对; 自报 all_pass 只作对照不吃",
+ "scope_source": "eval/rover/r518/prereg-r518.json",
+ "scope_prereg": true,
+ "scope_require": [
+  "w2/agentA",
+  "w2/codex"
+ ],
+ "scope_nonrequired": [
+  {
+   "pattern": "w2/agentO",
+   "reason": "规模面探索臂: 其判据是「7 节点链能否覆盖双包 24 用例 (单轮硬顶 32 步之外)」, 不是 token 对比; 该臂正确性逐题单独报数, 不入对比读数验收面"
+  },
+  {
+   "pattern": "w1/*",
+   "reason": "作废窗 (器具缺陷, 见 revision_note): 臂 A 无计量读数 + 臂 O fail-closed; 全窗只作废, 不删以留痕"
+  }
+ ],
+ "windows": {
+  "w1": {
+   "dir": "eval/rover/r518/evidence/windows/w1",
+   "arms": {
+    "agentA/p3": {
+     "arm": "agentA",
+     "tag": "A",
+     "tid": "p3",
+     "side": "agent",
+     "kind": "project",
+     "family": "threaded-kv-service",
+     "cases_n": 12,
+     "cases_expected": 12,
+     "cases_pass": 12,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r518/evidence/windows/w1/report.json",
+     "stderr_tail": "",
+     "scope": "nonrequired",
+     "blocking": false
+    },
+    "agentA/p4": {
+     "arm": "agentA",
+     "tag": "A",
+     "tid": "p4",
+     "side": "agent",
+     "kind": "project",
+     "family": "task-queue-cli",
+     "cases_n": 12,
+     "cases_expected": 12,
+     "cases_pass": 12,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r518/evidence/windows/w1/report.json",
+     "stderr_tail": "",
+     "scope": "nonrequired",
+     "blocking": false
+    },
+    "agentO/p3": {
+     "arm": "agentO",
+     "tag": "O",
+     "tid": "p3",
+     "side": "agent",
+     "kind": "project",
+     "family": "threaded-kv-service",
+     "cases_n": 12,
+     "cases_expected": 12,
+     "cases_pass": 0,
+     "rc": 1,
+     "correct": false,
+     "work_dir": null,
+     "failed_cases": [
+      "entry_present",
+      "put_get_json_api",
+      "missing_404",
+      "unknown_path_404",
+      "ttl_expire_and_count",
+      "incr_semantics_and_409",
+      "incr_concurrent_atomic",
+      "delete_flow",
+      "stats_live_count",
+      "wal_lines_jsonl",
+      "restart_recovery",
+      "restart_drops_expired"
+     ],
+     "claimed_all_pass": false,
+     "claimed_src": "eval/rover/r518/evidence/windows/w1/report.json",
+     "stderr_tail": "",
+     "scope": "nonrequired",
+     "blocking": false
+    },
+    "agentO/p4": {
+     "arm": "agentO",
+     "tag": "O",
+     "tid": "p4",
+     "side": "agent",
+     "kind": "project",
+     "family": "task-queue-cli",
+     "cases_n": 12,
+     "cases_expected": 12,
+     "cases_pass": 0,
+     "rc": 1,
+     "correct": false,
+     "work_dir": null,
+     "failed_cases": [
+      "add_creates_and_lists",
+      "id_monotonic_no_reuse",
+      "unicode_roundtrip",
+      "done_idempotent",
+      "done_unknown_id",
+      "bad_request_exit2",
+      "ttl_expiry_uses_injected_clock",
+      "stats_counts_three_states",
+      "expire_removes_expired_tasks",
+      "persistence_across_processes",
+      "no_temp_residue",
+      "list_filter_and_order"
+     ],
+     "claimed_all_pass": false,
+     "claimed_src": "eval/rover/r518/evidence/windows/w1/report.json",
+     "stderr_tail": "",
+     "scope": "nonrequired",
+     "blocking": false
+    },
+    "codex/p3": {
+     "arm": "codex",
+     "tag": "C",
+     "tid": "p3",
+     "side": "codex",
+     "kind": "project",
+     "family": "threaded-kv-service",
+     "cases_n": 12,
+     "cases_expected": 12,
+     "cases_pass": 12,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r518/evidence/windows/w1/report.json",
+     "stderr_tail": "",
+     "scope": "nonrequired",
+     "blocking": false
+    },
+    "codex/p4": {
+     "arm": "codex",
+     "tag": "C",
+     "tid": "p4",
+     "side": "codex",
+     "kind": "project",
+     "family": "task-queue-cli",
+     "cases_n": 12,
+     "cases_expected": 12,
+     "cases_pass": 12,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r518/evidence/windows/w1/report.json",
+     "stderr_tail": "",
+     "scope": "nonrequired",
+     "blocking": false
+    }
+   }
+  },
+  "w2": {
+   "dir": "eval/rover/r518/evidence/windows/w2",
+   "arms": {
+    "agentA/p3": {
+     "arm": "agentA",
+     "tag": "A",
+     "tid": "p3",
+     "side": "agent",
+     "kind": "project",
+     "family": "threaded-kv-service",
+     "cases_n": 12,
+     "cases_expected": 12,
+     "cases_pass": 12,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r518/evidence/windows/w2/report.json",
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    },
+    "agentA/p4": {
+     "arm": "agentA",
+     "tag": "A",
+     "tid": "p4",
+     "side": "agent",
+     "kind": "project",
+     "family": "task-queue-cli",
+     "cases_n": 12,
+     "cases_expected": 12,
+     "cases_pass": 12,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r518/evidence/windows/w2/report.json",
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    },
+    "agentO/p3": {
+     "arm": "agentO",
+     "tag": "O",
+     "tid": "p3",
+     "side": "agent",
+     "kind": "project",
+     "family": "threaded-kv-service",
+     "cases_n": 12,
+     "cases_expected": 12,
+     "cases_pass": 0,
+     "rc": 1,
+     "correct": false,
+     "work_dir": null,
+     "failed_cases": [
+      "entry_present",
+      "put_get_json_api",
+      "missing_404",
+      "unknown_path_404",
+      "ttl_expire_and_count",
+      "incr_semantics_and_409",
+      "incr_concurrent_atomic",
+      "delete_flow",
+      "stats_live_count",
+      "wal_lines_jsonl",
+      "restart_recovery",
+      "restart_drops_expired"
+     ],
+     "claimed_all_pass": false,
+     "claimed_src": "eval/rover/r518/evidence/windows/w2/report.json",
+     "stderr_tail": "",
+     "scope": "nonrequired",
+     "blocking": false
+    },
+    "agentO/p4": {
+     "arm": "agentO",
+     "tag": "O",
+     "tid": "p4",
+     "side": "agent",
+     "kind": "project",
+     "family": "task-queue-cli",
+     "cases_n": 12,
+     "cases_expected": 12,
+     "cases_pass": 12,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r518/evidence/windows/w2/report.json",
+     "stderr_tail": "",
+     "scope": "nonrequired",
+     "blocking": false
+    },
+    "codex/p3": {
+     "arm": "codex",
+     "tag": "C",
+     "tid": "p3",
+     "side": "codex",
+     "kind": "project",
+     "family": "threaded-kv-service",
+     "cases_n": 12,
+     "cases_expected": 12,
+     "cases_pass": 9,
+     "rc": 1,
+     "correct": false,
+     "work_dir": null,
+     "failed_cases": [
+      "incr_semantics_and_409",
+      "incr_concurrent_atomic",
+      "restart_drops_expired"
+     ],
+     "claimed_all_pass": false,
+     "claimed_src": "eval/rover/r518/evidence/windows/w2/report.json",
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    },
+    "codex/p4": {
+     "arm": "codex",
+     "tag": "C",
+     "tid": "p4",
+     "side": "codex",
+     "kind": "project",
+     "family": "task-queue-cli",
+     "cases_n": 12,
+     "cases_expected": 12,
+     "cases_pass": 12,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r518/evidence/windows/w2/report.json",
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    }
+   }
+  }
+ },
+ "self_report_mismatch": [],
+ "claim_unmapped": [],
+ "blocked": [
+  "w1/agentO/p3 rc=1 cases=0/12(expect 12) failed=entry_present,put_get_json_api,missing_404,unknown_path_404,ttl_expire_and_count,incr_semantics_and_409,incr_concurrent_atomic,delete_flow,stats_live_count,wal_lines_jsonl,restart_recovery,restart_drops_expired",
+  "w1/agentO/p4 rc=1 cases=0/12(expect 12) failed=add_creates_and_lists,id_monotonic_no_reuse,unicode_roundtrip,done_idempotent,done_unknown_id,bad_request_exit2,ttl_expiry_uses_injected_clock,stats_counts_three_states,expire_removes_expired_tasks,persistence_across_processes,no_temp_residue,list_filter_and_order",
+  "w2/agentO/p3 rc=1 cases=0/12(expect 12) failed=entry_present,put_get_json_api,missing_404,unknown_path_404,ttl_expire_and_count,incr_semantics_and_409,incr_concurrent_atomic,delete_flow,stats_live_count,wal_lines_jsonl,restart_recovery,restart_drops_expired",
+  "w2/codex/p3 rc=1 cases=9/12(expect 12) failed=incr_semantics_and_409,incr_concurrent_atomic,restart_drops_expired"
+ ],
+ "blocked_scoped": [
+  "w2/codex/p3 rc=1 cases=9/12(expect 12) failed=incr_semantics_and_409,incr_concurrent_atomic,restart_drops_expired"
+ ],
+ "nonrequired_arms": [
+  {
+   "arm": "w1/agentA",
+   "correct": true,
+   "detail": "w1/agentA/p3 rc=0 cases=12/12(expect 12) failed=-"
+  },
+  {
+   "arm": "w1/agentA",
+   "correct": true,
+   "detail": "w1/agentA/p4 rc=0 cases=12/12(expect 12) failed=-"
+  },
+  {
+   "arm": "w1/agentO",
+   "correct": false,
+   "detail": "w1/agentO/p3 rc=1 cases=0/12(expect 12) failed=entry_present,put_get_json_api,missing_404,unknown_path_404,ttl_expire_and_count,incr_semantics_and_409,incr_concurrent_atomic,delete_flow,stats_live_count,wal_lines_jsonl,restart_recovery,restart_drops_expired"
+  },
+  {
+   "arm": "w1/agentO",
+   "correct": false,
+   "detail": "w1/agentO/p4 rc=1 cases=0/12(expect 12) failed=add_creates_and_lists,id_monotonic_no_reuse,unicode_roundtrip,done_idempotent,done_unknown_id,bad_request_exit2,ttl_expiry_uses_injected_clock,stats_counts_three_states,expire_removes_expired_tasks,persistence_across_processes,no_temp_residue,list_filter_and_order"
+  },
+  {
+   "arm": "w1/codex",
+   "correct": true,
+   "detail": "w1/codex/p3 rc=0 cases=12/12(expect 12) failed=-"
+  },
+  {
+   "arm": "w1/codex",
+   "correct": true,
+   "detail": "w1/codex/p4 rc=0 cases=12/12(expect 12) failed=-"
+  },
+  {
+   "arm": "w2/agentO",
+   "correct": false,
+   "detail": "w2/agentO/p3 rc=1 cases=0/12(expect 12) failed=entry_present,put_get_json_api,missing_404,unknown_path_404,ttl_expire_and_count,incr_semantics_and_409,incr_concurrent_atomic,delete_flow,stats_live_count,wal_lines_jsonl,restart_recovery,restart_drops_expired"
+  },
+  {
+   "arm": "w2/agentO",
+   "correct": true,
+   "detail": "w2/agentO/p4 rc=0 cases=12/12(expect 12) failed=-"
+  }
+ ],
+ "undeclared_arms": [],
+ "self_report_agrees": true,
+ "executable_and_correct": false,
+ "acceptable_scoped": false
+}

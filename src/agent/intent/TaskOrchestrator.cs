@@ -51,6 +51,13 @@ public sealed class TaskOrchestrator
 
         /// <summary>声明了写范围的节点必须产出 ≥1 个范围内文件 (否则节点 Failed) —— 修 R515 的 5 ms 假绿。</summary>
         public bool RequireScopedArtifacts { get; init; } = true;
+
+        /// <summary>
+        /// R518 节点预算自适应: 远端节点因「零产物」(假绿防护) 被判 Failed 时, 同节点**升预算重试**的次数上限。
+        /// 0 = 关闭 (旧行为, 向后兼容); 1 = 允许一次 2 倍升预算 (单节点预算上界仍为 32 = 动作环硬顶)。
+        /// 只对「零产物」这一种失败升预算 —— 越界写 / 异常 / 本地节点一律不重试 (不掩盖真失败)。
+        /// </summary>
+        public int MaxBudgetEscalations { get; init; }
     }
 
     /// <summary>节点墙钟遥测 (微秒单调钟; 本地/远端重叠窗口由此计算)。</summary>
@@ -76,6 +83,15 @@ public sealed class TaskOrchestrator
 
         /// <summary>本节点的写范围声明 (空 = 未声明; 报告须如实标注「未声明」, 不得默认合规)。</summary>
         public IReadOnlyList<string> Scope { get; init; } = Array.Empty<string>();
+
+        /// <summary>R518 本节点**实际**用的动作步数预算 (含升预算重试后的值; 未重试 = 编排选项的 NodeMaxSteps)。</summary>
+        public int BudgetSteps { get; init; }
+
+        /// <summary>R518 本节点升预算重试次数 (0 = 一次过)。</summary>
+        public int Escalations { get; init; }
+
+        /// <summary>R518 逐次尝试留痕 (`步数:终态`, 如 `6:Failed 12:Completed`) —— 重试不许静默。</summary>
+        public IReadOnlyList<string> Attempts { get; init; } = Array.Empty<string>();
     }
 
     /// <summary>范围机检违规记录 (越界写 / 声明范围却零产物)。</summary>
@@ -114,8 +130,13 @@ public sealed class TaskOrchestrator
         _sessionId = sessionId;
         Opt = options ?? new Options();
         if (Opt.NodeMaxSteps < 1) throw new ArgumentOutOfRangeException(nameof(options), "NodeMaxSteps 必须 ≥ 1");
-        if (Opt.NodeMaxSteps > 32) throw new ArgumentOutOfRangeException(nameof(options), "NodeMaxSteps 上限 32 (与动作环硬顶一致)");
+        if (Opt.NodeMaxSteps > MaxNodeBudget) throw new ArgumentOutOfRangeException(nameof(options), $"NodeMaxSteps 上限 {MaxNodeBudget} (与动作环硬顶一致)");
+        if (Opt.MaxBudgetEscalations < 0 || Opt.MaxBudgetEscalations > 3)
+            throw new ArgumentOutOfRangeException(nameof(options), "MaxBudgetEscalations 越界 0..3 (升预算重试不许无界)");
     }
+
+    /// <summary>单节点动作步数硬顶 (与动作环一致; 升预算重试也不许越过)。</summary>
+    public const int MaxNodeBudget = 32;
 
     public Options Opt { get; }
 
@@ -151,8 +172,14 @@ public sealed class TaskOrchestrator
         }
     }
 
-    /// <summary>本次运行的模型外调用总步数上界 (节点数 × 单节点预算)。</summary>
+    /// <summary>本次运行的模型外调用总步数上界 (节点数 × 单节点预算; 未含升预算重试)。</summary>
     public int BudgetCeiling => _telemetry.Count(t => !t.IsLocal) * Opt.NodeMaxSteps;
+
+    /// <summary>R518 含升预算重试的**实际**预算上界 (Σ 逐节点本次实际预算; 与 BudgetCeiling 分列, 禁混算)。</summary>
+    public int BudgetCeilingEffective => _telemetry.Where(t => !t.IsLocal).Sum(t => t.BudgetSteps > 0 ? t.BudgetSteps : Opt.NodeMaxSteps);
+
+    /// <summary>R518 升预算重试总次数 (0 = 本运行无重试)。</summary>
+    public int EscalationCount => _telemetry.Sum(t => t.Escalations);
 
     /// <summary>
     /// 驱动整个计划: 逐节点真执行, 依赖序 + 同层并发, 每节点独立预算, 逐节点落检查点与事件。
@@ -203,57 +230,89 @@ public sealed class TaskOrchestrator
         var before = root is null ? null : Snapshot(root);
         await EmitAsync("plan.node", node, "Running", 0, 0, "", ct).ConfigureAwait(false);
 
-        NodeExecutionResult result;
         var executorId = node.LocalExecutorId ?? "";
-        try
+        var budget = Opt.NodeMaxSteps;
+        var escalations = 0;
+        var attempts = new List<string>();
+        IReadOnlyList<string> changed = Array.Empty<string>();
+        NodeExecutionResult result;
+
+        // ── 一次真实执行尝试 (步数 = 本次预算) ──
+        async Task<NodeExecutionResult> AttemptAsync(int steps)
         {
-            if (isLocal)
+            NodeExecutionResult r;
+            var execId = node.LocalExecutorId ?? "";
+            try
             {
-                var exec = FindLocalExecutor(node.LocalExecutorId);
-                if (exec is null)
+                if (isLocal)
                 {
-                    result = Fail(node.Id, $"本地执行器缺失: {node.LocalExecutorId ?? "(null)"}");
+                    var exec = FindLocalExecutor(node.LocalExecutorId);
+                    if (exec is null)
+                    {
+                        r = Fail(node.Id, $"本地执行器缺失: {node.LocalExecutorId ?? "(null)"}");
+                    }
+                    else
+                    {
+                        var ctx = Opt.LocalContextFactory?.Invoke(node) ?? new LocalNodeContext { SessionId = _sessionId };
+                        foreach (var pair in upstream) ctx.NodeOutputs[pair.Key] = pair.Value;
+                        r = await exec.RunAsync(node, ctx, ct).ConfigureAwait(false);
+                        execId = exec.Id;
+                    }
                 }
                 else
                 {
-                    var ctx = Opt.LocalContextFactory?.Invoke(node) ?? new LocalNodeContext { SessionId = _sessionId };
-                    foreach (var pair in upstream) ctx.NodeOutputs[pair.Key] = pair.Value;
-                    result = await exec.RunAsync(node, ctx, ct).ConfigureAwait(false);
-                    executorId = exec.Id;
+                    Dictionary<string, string> deps;
+                    lock (gate)
+                    {
+                        deps = new Dictionary<string, string>(StringComparer.Ordinal);
+                        foreach (var dep in node.DependsOn)
+                            if (upstream.TryGetValue(dep, out var text)) deps[dep] = text;
+                    }
+                    r = await remote(node, deps, steps, ct).ConfigureAwait(false);
                 }
             }
-            else
+            catch (OperationCanceledException) when (ct.IsCancellationRequested)
             {
-                Dictionary<string, string> deps;
-                lock (gate)
-                {
-                    deps = new Dictionary<string, string>(StringComparer.Ordinal);
-                    foreach (var dep in node.DependsOn)
-                        if (upstream.TryGetValue(dep, out var text)) deps[dep] = text;
-                }
-                result = await remote(node, deps, Opt.NodeMaxSteps, ct).ConfigureAwait(false);
+                throw;
             }
+            catch (Exception ex)
+            {
+                r = Fail(node.Id, $"节点执行抛异常: {ex.GetType().Name}");
+            }
+            if (execId.Length > 0) executorId = execId;
+            return r;
         }
-        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+
+        // ── R518 节点预算自适应: 「声明了范围却零产物」的节点 ⇒ 升预算重试 (上界 32; 其余失败不重试) ──
+        while (true)
         {
-            throw;
-        }
-        catch (Exception ex)
-        {
-            result = Fail(node.Id, $"节点执行抛异常: {ex.GetType().Name}");
+            result = await AttemptAsync(budget).ConfigureAwait(false);
+
+            changed = Array.Empty<string>();
+            if (root is not null)
+            {
+                changed = Diff(before!, Snapshot(root));
+                lock (gate) _artifacts[node.Id] = changed;
+                result = EnforceScope(node, result, scope, changed);
+            }
+            attempts.Add($"{budget}:{result.FinalState}");
+
+            if (isLocal || result.FinalState != PlanNodeState.Failed) break;
+            if (escalations >= Opt.MaxBudgetEscalations || budget >= MaxNodeBudget) break;
+            if (!_violations.Any(v => v.NodeId == node.Id && v.Kind == "no_artifact")) break;
+
+            // 重试前撤销本次「零产物」记账 (重试会重新记账, 避免同因重复计数)
+            _violations.RemoveAll(v => v.NodeId == node.Id && v.Kind == "no_artifact");
+            var prevBudget = budget;
+            escalations++;
+            budget = Math.Min(MaxNodeBudget, budget * 2);
+            await EmitAsync("plan.node", node, "Retry", budget, (Monotonic.NowUs() - started) / 1000,
+                $"零产物 (假绿防护) ⇒ 升预算重试: 步数 {prevBudget}→{budget}", ct)
+                .ConfigureAwait(false);
         }
 
         var ended = Monotonic.NowUs();
         var output = result.Output ?? string.Empty;
-
-        // ── R516 节点产物契约: 快照差 → 逐节点归属 → 范围机检 (fail-closed) ──
-        IReadOnlyList<string> changed = Array.Empty<string>();
-        if (root is not null)
-        {
-            changed = Diff(before!, Snapshot(root));
-            lock (gate) _artifacts[node.Id] = changed;
-            result = EnforceScope(node, result, scope, changed);
-        }
 
         lock (gate)
         {
@@ -273,10 +332,13 @@ public sealed class TaskOrchestrator
         {
             Artifacts = changed,
             Scope = scope ?? Array.Empty<string>(),
+            BudgetSteps = budget,
+            Escalations = escalations,
+            Attempts = attempts,
         });
 
         await EmitAsync("plan.node", node, result.FinalState.ToString(),
-            isLocal ? 0 : Opt.NodeMaxSteps, (ended - started) / 1000, result.Error ?? "", ct).ConfigureAwait(false);
+            isLocal ? 0 : budget, (ended - started) / 1000, result.Error ?? "", ct).ConfigureAwait(false);
 
         return result;
     }
@@ -328,7 +390,23 @@ public sealed class TaskOrchestrator
 
     private sealed record FileStamp(long Length, long Ticks);
 
-    /// <summary>工作区快照 (跳过编排器自身的产物目录 `.orchestrator`)。</summary>
+    /// <summary>
+    /// R518 节点产物判定: 语言运行时的**编译缓存**不是节点产物 (Python `__pycache__/*.pyc` 等)。
+    /// 起因 (R518 真机自抓): 节点按题面「写自测并运行」⇒ 解释器自动落 `__pycache__/*.pyc`,
+    /// 被 diff 判为越界写入 ⇒ 整链 fail-closed, 节点真实产物 cli.py 都还没写就被判死。
+    /// 口径: 只排除运行期自动生成的字节码缓存; 源码/数据文件一律照旧纳入范围契约 (负控见单测)。
+    /// </summary>
+    private static bool IsRuntimeCache(string rel)
+    {
+        var parts = rel.Split('/');
+        for (var i = 0; i < parts.Length; i++)
+            if (parts[i] is "__pycache__" or ".pytest_cache" or ".mypy_cache" or ".ruff_cache") return true;
+        var name = parts[parts.Length - 1];
+        return name.EndsWith(".pyc", StringComparison.OrdinalIgnoreCase)
+            || name.EndsWith(".pyo", StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>工作区快照 (跳过编排器自身的产物目录 `.orchestrator` 与运行期缓存)。</summary>
     private static Dictionary<string, FileStamp> Snapshot(string root)
     {
         var map = new Dictionary<string, FileStamp>(StringComparer.Ordinal);
@@ -338,10 +416,12 @@ public sealed class TaskOrchestrator
             {
                 var rel = Path.GetRelativePath(root, path);
                 if (rel.StartsWith(".orchestrator", StringComparison.Ordinal)) continue;
+                var norm = rel.Replace('\\', '/');
+                if (IsRuntimeCache(norm)) continue;
                 try
                 {
                     var fi = new FileInfo(path);
-                    map[rel.Replace('\\', '/')] = new FileStamp(fi.Length, fi.LastWriteTimeUtc.Ticks);
+                    map[norm] = new FileStamp(fi.Length, fi.LastWriteTimeUtc.Ticks);
                 }
                 catch (IOException) { }
             }

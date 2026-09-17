@@ -1,0 +1,49 @@
+{
+ "round": "R518",
+ "kind": "project",
+ "provenance": [
+  {
+   "tid": "p3",
+   "prompt_sha256": "efa48cb2ccef6b4760211910b8ae277f9a5ff41eae5a8d0fd0b4df029faa23eb",
+   "cases_md5": "8d13fd53018250fd25f47d196092ad7c"
+  },
+  {
+   "tid": "p4",
+   "prompt_sha256": "384fa7212378b5d734e9a98bbf134bc734142cef5a6049566c532bd611c622bd",
+   "cases_md5": "e53de61328346c45a746e59625c930fe"
+  }
+ ],
+ "tasks": [
+  {
+   "tid": "p3",
+   "family": "threaded-kv-service",
+   "entry": "kvsvc/server.py",
+   "cases": "cases/p3_cases.py",
+   "ref": "ref/p3",
+   "hidden_cases": 12,
+   "prompt": "用 Python 3 标准库实现一个带过期时间的键值存储服务，工作区根目录下建成包结构（至少 3 个文件: kvsvc/__init__.py、kvsvc/store.py、kvsvc/server.py），入口命令必须是 python3 -m kvsvc.server。\n评测会按下列契约机械校验，必须严格遵守：\n1) 启动: python3 -m kvsvc.server --port {int} --wal {path}；就绪后 stdout 打印一行 READY 并 flush。\n2) 所有响应 Content-Type 必须是 application/json; charset=utf-8，body 为 UTF-8 JSON；服务必须能同时处理并发请求（threaded）。\n3) 路由:\n   PUT  /kv/{key}      体 {\"value\":任意JSON,\"ttl\":数字可选(秒)} -> 200 {\"key\":str,\"value\":任意,\"expires_in\":剩余秒数(数字,允许小数;无 ttl 时为 null)}\n   GET  /kv/{key}      -> 200 {\"key\":str,\"value\":任意}；键不存在或已过期 -> 404 {\"error\":\"not_found\"}\n   DELETE /kv/{key}    -> 200 {\"deleted\":true}；键不存在或已过期 -> 404 {\"error\":\"not_found\"}\n   POST /kv/{key}/incr 体 {\"by\":整数, 默认 1} -> 200 {\"key\":str,\"value\":整数}；键不存在按 0 起算；原值不是整数 -> 409 {\"error\":\"not_int\"}\n   GET  /stats         -> 200 {\"count\":int,\"expired\":int,\"uptime_ms\":int}（count=当前未过期键数，expired=累计因过期被清除的键数，uptime_ms=进程已运行毫秒）\n   其它任何路径/方法 -> 404 {\"error\":\"not_found\"}\n4) TTL: 设了 ttl 的键在 ttl 秒后必须不可见（允许惰性清除），并计入 expired。\n5) 并发正确性: 8 个并发客户端各做 20 次 incr 后，计数值必须恰好等于总增量（不得丢更新）。\n6) 持久化: 每次写操作（put/delete/incr）都要往 --wal 指定的文件追加一行 JSON 对象，该行至少含 \"op\" 字段（取值必须是 put、delete、incr 三者之一）与 \"key\" 字段；服务重启后必须从 WAL 重放恢复未过期的键值（含 incr 的累计值），已过期的键不得复活。\n7) 只允许标准库，不得联网。\n完成后用中文简要说明实现与自测结果。",
+   "fixture_src": {
+    "taskset": "eval/rover/r508/taskset-r508.json",
+    "cases": "eval/rover/r508/cases/p3_cases.py",
+    "ref": "eval/rover/r508/ref/p3"
+   },
+   "prompt_sha256": "efa48cb2ccef6b4760211910b8ae277f9a5ff41eae5a8d0fd0b4df029faa23eb"
+  },
+  {
+   "tid": "p4",
+   "family": "task-queue-cli",
+   "entry": "tasksvc/cli.py",
+   "cases": "cases/p4_cases.py",
+   "ref": "ref/p4",
+   "hidden_cases": 12,
+   "kind": "project",
+   "prompt": "用 Python 3 标准库实现一个任务队列 CLI 服务。在工作区根目录下创建包 tasksvc/，入口必须是 tasksvc/cli.py，必须能用 `python3 -B -m tasksvc.cli …` 运行。评测按下列契约机械校验，必须严格遵守。\n\n1) 存储：全局选项 `--db <path>`（JSON 文件）。文件形态自定，但必须是合法 JSON 对象，且包含整数 `next_id`（持久化、只增不减）。\n2) 时钟：全局选项 `--now <epoch 秒>` 注入当前时间（浮点或整数）。所有时间判定只准用该时钟，禁止 sleep。**未提供 `--now` 时必须回落到系统时钟（time.time()），不得报错、不得要求该选项必填。**\n3) 全局选项 `--db`/`--now` 写在子命令**之前**。每条命令结束必须向 stdout 打印恰好一个 JSON 对象（ensure_ascii=False，可带一个尾换行），不得打印其它内容：\n   add <text> [--ttl <秒>]   -> {\"task\": {\"id\":int,\"text\":str,\"done\":bool,\"created_at\":float,\"expires_at\":float|null}}\n   list [--status open|done|expired|all]  -> {\"tasks\":[<task>, …]}   缺省 open\n   done <id>                 -> {\"task\": <task>}   幂等：已 done 再 done 仍必须成功\n   stats                     -> {\"total\":int,\"open\":int,\"done\":int,\"expired\":int}\n   expire                    -> {\"expired\":[<id>, …]}   并把已过期任务**真删除**\n4) 视图：open = 未 done 且未过期；done = 已 done；expired = 已过期；all = 全部。过期优先于 done（互斥）。列表一律按 id 升序。\n5) 过期：`--ttl N` 创建时 expires_at = now + N；**now >= expires_at 即为已过期**。\n6) id 单调、永不复用：已删除 / 已过期的 id 不得再次分配。\n7) text 必须逐字节保留（中文、emoji、首尾空格都要原样往返）；去首尾空白后为空 = 参数错。\n8) 退出码：成功 0；参数/用法错（空白 text、非整数 id、--ttl <= 0、未知子命令）→ 2 且输出 {\"error\":\"bad_request\"}；未知 id → 3 且输出 {\"error\":\"not_found\"}；存储文件损坏（非 JSON 或 schema 不符）→ 4 且输出 {\"error\":\"bad_store\"}。\n9) 写入必须**原子**：写临时文件 + 同目录原子重命名，不得留下临时文件残留；任何时刻读到的文件都必须是完整 JSON。\n10) 只允许标准库（禁第三方包、禁联网）。文件必须 UTF-8 无 BOM。\n完成后用中文简要说明实现与自测结果。",
+   "prompt_sha256": "384fa7212378b5d734e9a98bbf134bc734142cef5a6049566c532bd611c622bd",
+   "fixture_src": {
+    "taskset": "eval/rover/r513/taskset-r513.json",
+    "cases": "eval/rover/r511/cases/p4_cases.py",
+    "ref": "eval/rover/r513/ref/p4"
+   }
+  }
+ ]
+}
