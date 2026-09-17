@@ -45,6 +45,9 @@ R540 报 `g1` 两窗 rc=5（`stage=expect_stdout_exhausted`）+ 43/58·44/58，�
 3. **预先声明面**: `require` = 剂量 3 的三臂（跑前落盘，声明面闸 `prereg_scope_gate.py` rc=0）；剂量 1/2 与 `A1-on` 为 `nonrequired` 对照列（其失败 = 本轮假设的读数）—— 事后**未**改任何判据/范围。
 4. **并发与轮号（过程缺陷，留痕）**: ① 起臂中检出**兄弟写者**：`77efa02` 于 05:55:45（我臂在飞时）提交，已核 `git show --name-only 77efa02` **未扫入**本轮任何文件；三个 hermes 会话内核在飞（05:39/05:47/05:53），但起手 `pgrep 'llama-server|dotnet test|dotnet publish|probe'` 为空、无 `ROUND_CLAIM` ⇒ 未停手（本条按「起手必查 sibling」自查自报）。② **轮号碰撞**：`R541` 已被 05:37 的**文档轮**（`dba59d7`，`EVIDENCE.md` E11/E13）占用，其提交标题不含轮号 ⇒ 起手 `git log` 未检出；本轮按 `max+1` 重编为 **R542**，run 内历史标签保留 `R541` 不改写（见 `ROUND-RENUMBER.md`）。
 5. **未测**: codex 在 `g1` 的外侧臂、修复预算轴跨窗、`sub`/`life` 族缺陷的独立 oracle 定因（本轮只见 1 臂栽 `sub`、1 臂栽 `life`）。
+6. **提交面过程缺陷（自查自报，已后验）**: 首次提交（`a2cda80`）**忘了 export `AGENTFRAMEWORK_STAGE_MANIFEST`** ⇒ EXP1-Q31 跨写者提交闸**默认关**、静默不生效（设计如此：无该 env 即不启用）⇒ 该提交未过「staged == 声明清单」守卫。
+   后验机检：`git show --name-only a2cda80` 与声明清单逐条比 ⇒ **多余 0 条**（提交集 = 声明集 ∩ 非 ignore 面；缺 113 条全部落在 `eval/rover/.gitignore:3 run-*/` 的**设计豁免面**内，即 `run-w1/**` 原始产物）；`grep -v '^eval/rover/r542/|^docs/'` 空 ⇒ **无对侧混入**。
+   对策：R543 起把 `AGENTFRAMEWORK_STAGE_MANIFEST` 写进提交脚本（本条即第二次提交的实测：manifest = 1 件 ⇒ `STAGE_GUARD OK`）。
 
 ## 5. 下轮候选 (R543)
 
