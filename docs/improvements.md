@@ -656,6 +656,37 @@
 
 ---
 
+## R419 — 探针多轮化：把「轮数 / 首次通过率」从恒等判据变成可分化判据（回填）
+
+**版本**: R419 · **日期**: 2026-09-14 · **状态**: 已收口（仪器侧达成；真机读数为**负结论**，如实登记）· **回填标注**: 本节由 `docs/plans/v0.40.0-r419-probe-multiturn.md` + 提交 `695d6ba`/`77a49bc`/`98339a8`/`05b8c94` 重建，**读数未改**。
+
+- **因果链**: R418 已把「过程/成本」维度落成仪器（`eval/probe/process_metrics.py`），但探针只有单轮 ⇒ 「轮数恒为 1」「首次通过率 ≡ 整题全对率」两个维度结构性不可分化。
+- **交付**: 探针多轮化仪器（成对正负控 + 7 态自证）；三个**仪器缺陷**闸：① 被测程序打印坏字节 ⇒ 判定器 `UnicodeDecodeError` 崩掉整臂（改字节捕获 + `errors="replace"` + `bad_encoding` 计数，`grade selftest` 29→31）；② **同命名空间重跑静默覆盖**既有读数 ⇒ `REFUSE_NS_COLLISION` 闸；③ 首轮失败在日志不可见 + `reply_chars` 恒 0（归档 11.9 KB 而摘要写 0）⇒ 首轮行原样打印 + 集中回填（`run_probe` 25→26）。
+- **真机读数（诚实结论）**: 4 次 `onfail` 跑 **3 次饱和 / 1 次分化** ⇒ 真机侧**未稳定复现分化**，本轮不作能力结论；决定性微实验 PASS（同 sid 跨进程 4271 命中）。
+- **口径坑入档**: `turn N` 是**进程内**轮次标记 ⇒ 轮数须取**归档文件数**（外部真值）。
+- **证据**: `docs/plans/v0.40.0-r419-probe-multiturn.md`、提交 `05b8c94`（收口）/`98339a8`（§4-§5 落地）/`77a49bc`（微实验）/`695d6ba`（起步存档）。
+
+## R418 — 探针「过程/成本」维度 KPI：归属铁律 + 真机成本读数 + 成对负控（回填）
+
+**版本**: R418 · **日期**: 2026-09-14 · **状态**: 已收口（仪器 + 真机读数 + 登记齐；本地提交未推）· **回填标注**: 本节由 `docs/plans/v0.39.0-r418-process-kpi.md` + 提交 `737a45d`/`1f44c8b` 重建，**读数未改**。
+
+- **因果链**: R417 处理掉题集天花板（饱和）后，仍有分辨力的维度是**过程/成本**（每题 tokens / 轮数 / 首次通过率）⇒ 需独立仪器与归属规则。
+- **交付**: `eval/probe/process_metrics.py`（过程/成本维度 KPI 仪器）+ **归属三级降级**（精确名 → 时间窗 `[ts-elapsed-5s, ts+60s]` 内唯一候选 → `n/a` + 记因；**绝不任取第一个候选**）。
+- **成对负控**: 歧义/缺失样本必须落 `n/a`，且 **`n/a` 从均值分母剔除并单列计数**（`n/a ≠ 0`）——把缺读数按 0 摊会让「每题成本」假降。
+- **诚实边界**: 该轮成本读数取自单轮题集 ⇒ 「轮数」维度此时仍退化为恒等判据（由 R419 处理）。
+- **证据**: `docs/plans/v0.39.0-r418-process-kpi.md`（§3 实现结果 / §4 复验命令）、`eval/probe/process_metrics.py`、提交 `1f44c8b`。
+
+## R417 — 探针反饱和：3 个高判别力族 + 族级缺陷注入负控（回填）
+
+**版本**: R417 · **日期**: 2026-09-14 · **状态**: 已收口（判别力自证 PASS；**首个非饱和真机读数**）· **回填标注**: 本节由 `docs/plans/v0.38.0-r417-probe-anti-saturation.md` + `eval/rover/r417/README-evidence.md` + 提交 `0488017` 重建，**读数未改**。
+
+- **因果链**: 原 7 族题集对当前链**已饱和**（agent 与 oracle 同为整题全对 1.0；同题复跑 seed 20260913 = 35/35）⇒ 天花板效应，「质量」无法从它读出 ⇒ 靶点是**判别力**，不是题量。
+- **交付**: 新增 3 个高判别力族 `topo_min`/`vm_run`/`json_mini` + `tight_gen` **每题强制「规格紧」隐藏用例** + **族级缺陷注入负控**（作弊/缺陷解必须整题全对 0，oracle 正控满分）。
+- **真机读数**: 整题全对 **1/3**、用例级 **47/54**（诚实登记：真机**仍饱和**，只有 JSON 族打成非饱和）。
+- **两处判定器真缺陷（测量层，已修 + 已配负控）**: ① 长回复里「报告式」候选片段顶掉完整可编译程序 ⇒ 候选提取分两轮 + 前缀长度下限；② `exit≠0` 顶掉正确 stdout ⇒ 分类改 **stdout 优先**（期望为空时崩溃仍判失败）。
+- **机检/登记**: `eval/probe/grade.py --selftest` **29/29**；全量 **1164/0/0**；形式校验 6/6；登记 `docs/verification-registry.json` → `r417.probe-anti-saturation`（L4）。
+- **证据**: `eval/rover/r417/README-evidence.md`、`docs/plans/v0.38.0-r417-probe-anti-saturation.md`、提交 `0488017`。
+
 ## R416 — R371-D2 收口：发布产物自包含 config 的**仓库外 cwd 真机验收**（能力自检循环）
 
 **版本**: R416 · **日期**: 2026-09-14 · **状态**: 已实施（本地 commit，**未推**）
@@ -733,26 +764,6 @@
 
 ---
 
-## R403 — chat template 裁定：自研 Jinja 子集随 R408 退役 + 工具调用模板「无对象可验」（负控证明探针有判别力）
-
-**版本**: R403 · **日期**: 2026-09-14 · **状态**: 关闭（裁定 + 待触发能力登记；**无代码改动**）
-**主题**: backlog R403 的唯一待判项「工具调用模板是否改口径为验证 llama.cpp tool 模板行为」。
-
-- **读数（两臂 + 判别力负控，一条命令 `python3 eval/rover/r403/probe_tool_template.py`）**:
-  default 臂（GGUF 自带模板，`--jinja`）= `caps.supports_tools=false` / `caps.supports_tool_calls=false` /
-  模板源 `tools` 变量 **0** 个 / `/apply-template` ±tools **逐字节相同**（md5 `b89299b3…`，24 B）/ completions ±tools
-  `prompt_tokens` **4 → 4（Δ=0）**，HTTP 200 无报错；
-  control 臂（合成 258 B 全 ASCII 模板，`--chat-template-file`）= `supports_tools=true` / ±tools **md5 不同**（29 B vs 62 B）/
-  `prompt_tokens` **7 → 18（+11）** ⇒ **负控过关 = 探针有判别力**，default 的「相同」是真读数而非探针盲区。
-- **排除替代解释**: `/apply-template` 在 control 臂读到 tools 并改变产物 ⇒ 端点确实转发 tools；default 臂的相同输出来自**模板**（无工具定义位），不是端点不支持 tools。
-- **产品侧消费方**: `grep -rn -E 'tool_choice|ToolCall|tool_calls|"tools"' src/ --include=*.cs` ⇒ **0 命中**（零消费方）。
-- **裁定**: **R403 关闭**。① 自研 Jinja 子集扩展的对象随 R408 退役（R409 已证渲染归引擎、调用方无法手拼）；② 工具调用模板**无对象可验**（引擎自报不支持 ∧ 模板零工具位 ∧ 产品零消费方，三方一致）。
-  「工具调用」转**待触发能力**，准入判据三条**全绿**才开工：(a) `caps.supports_tools == true`；(b) 同 messages ±tools 的 `prompt_tokens` 有差（**不得只看 HTTP 200**）；(c) 产品侧存在发出 tools 的调用点。
-- **诚实边界**: 仅现役模型 `r1-distill-qwen-1.5b-q4km` + 本机 build `b1-4df29be` 的单次读数；负控模板是**合成**的，只证探针判别力，不证任何真实模型支持工具调用；工具调用**出参解析**（`tool_calls` → OpenAI 格式）**未测**，属 (a) 之后的独立课题。
-- **证据**: `eval/rover/r403/tool-template-behavior.json`、`eval/rover/r403/probe_tool_template.py`、`docs/reports/r403/chat-template-tool-scope.md`。
-- **运行纪律入档（两次同族事故）**: ① 测量前清掉 6 个 R412/R413 遗留长驻 server（pid 230833/230849/232136/232152/233614/233632，RSS 合计 ≈3.5 GB，本机共 3.66 GB）⇒ `MemAvailable` 1.14 GB → 2.99 GB；
-  ② `pgrep -f "[4]1999"` **仍自杀**（同一命令行的 `curl …:41999` 含裸端口号）——括号技巧只保护**模式字面量**，不保护同一命令行**别处**出现的目标串（同族：`ps | grep "[l]lama-server"` 被自己的 `echo "no llama-server running"` 命中）⇒ 正解 = 被测进程自落 pid，或同进程内 Popen + `killpg` 收尾。
-
 ## R412 — 多会话 slot 争用：单 slot 不踢缓存（三臂逐位相同）+ 会话级账本（分母不互相污染）
 
 **版本**: R412 · **日期**: 2026-09-14 · **状态**: 已落地（代码/文档/登记见本次提交）
@@ -825,7 +836,7 @@
 **自错披露（3 处）**：① 首轮把 `2081`（字符）与 `2237`（UTF-8 字节）当成两个模板的长度，误报「差 156 B」（单位错）；② 闸门初版 EOS 规则会误拦合法多轮输入；③ R409 探针脚本内建裁决行问错对象（比较了 `96B/add_special=true`）故打印 False —— 正确等价对由 `--verify-template` 独立确认。
 
 **基线**：R408 全量 1063/0 ⇒ R409 全量 **1072/0/0**；本地生成 17.9 t/s（llama.cpp，与 R408 持平）。
-**台账缺口（遗留）**：R402–R407 未回填本台账，其证据在 `eval/rover/r40x/` 与 `docs/plans/v0.2x-r40x-*.md`。
+**台账缺口（遗留）**：R402–R407 未回填本台账，其证据在 `eval/rover/r40x/` 与 `docs/plans/v0.2x-r40x-*.md`。 **R518 机检更正（2026-09-17）**：机检实测缺口为 R402 / R404 / R405 / R406 / R407（R403 有节但**错位**、R408–R416 在位）⇒ 已逐节回填 + 修正 R403 排序；机检器 `eval/capability/r518/scan_round_sections.py`（C1 覆盖 + C2 分区序，rc 0/1/2）。**本行前半段口径（R409 时登记）自本行更正起作废**。
 
 ## R408 — 本地 GGUF 引擎整线退役，产品线全面切 llama.cpp（进程 + HTTP，零 P/Invoke）
 
@@ -842,6 +853,71 @@
 - 口径修正（R409 追认）：R408 所用「96 B 权威 prompt」字面含 BOS，在默认 tokenization 下会双 BOS（18 token）；规范形式为渲染串 + 自动 BOS（17 token）。生成结果 24/24 不受影响。
 
 **基线**：退役前 1130/2/1132 ⇒ 退役后 **1063/0/0**。
+
+## R407 — qwen2 前向对账：attn bias 层归属缺陷（定位 + 修复 + 逐位验证）（回填）
+
+**版本**: R407 · **日期**: 2026-09-14 · **状态**: 已完成（V1–V6 全部真实读数；AOT 发布与全量回归已跑）· **回填标注**: 本节由 `docs/plans/v0.29.0-r407-qwen2-attn-bias-and-forward-parity.md` + 提交 `cd8feeb` 重建，**读数未改**。
+
+- **因果链**: R406 把 chat template 升为「读 GGUF 模板 + Jinja 子集解释器」并 32/32 逐字节对齐 ⇒ 乱码**归因移出模板侧**；本轮把「引擎缺陷」推进到**具体张量与具体层**。
+- **缺陷**: `ForwardPass` 把 **`blk.0` 的 attn bias 喂给全部 28 层**（qwen2 每层 bias 逐字节不同）⇒ 静默数值错误（不报错、只降质量）。
+- **修法/验证**: 按层取 bias + 独立实现逐位对账（V1–V6）。
+- **证据**: `docs/plans/v0.29.0-r407-qwen2-attn-bias-and-forward-parity.md`、`eval/rover/r407/`、提交 `cd8feeb`（**R403–R407 工作区一并提交** ⇒ 该提交同时承载 R405/R406 产物）。
+
+## R406 — 模板驱动 chat template（Jinja 子集）与 R1 链归因（回填）
+
+**版本**: R406 · **日期**: 2026-09-14 · **状态**: 已完成（P0-2a 解释器 / P0-2b 生成路径接线）；P0-1（llama.cpp oracle 收尾）进行中 · **回填标注**: 本节由 `docs/plans/v0.28.0-r406-jinja-template-and-r1-chain.md` + 提交 `cd8feeb` 重建，**读数未改**；**无独立证据目录**（如实标注）。
+
+- **因果链**: chat template 原为「只为 DeepSeek 手写的专用渲染器」⇒ 换模型即失真。
+- **交付**: 从 GGUF 读 `tokenizer.chat_template` 原文 + **Jinja 子集解释器**；以 jinja2 3.1.6 渲染的三套金标夹具（32 例）做**逐字节**对账；生成路径切到模型自带模板。
+- **用途**: 用「prompt 已证明正确」这一事实，把 R1-Distill-1.5B 的乱码输出**归因从模板侧移出**（⇒ 交 R407 定位到引擎 attn bias 层归属）。
+- **证据**: `docs/plans/v0.28.0-r406-jinja-template-and-r1-chain.md`、提交 `cd8feeb`（与 R403/R405/R407 同批提交）。
+
+## R405 — 本机增强 R1-Distill-1.5B 计划（四条线，不改权重）（回填）
+
+**版本**: R405 · **日期**: 2026-09-14 · **状态**: 计划已登记；P0/P1 待执行（P0-1 对账在后台）· **回填标注**: 本节由 `docs/plans/v0.27.0-r405-r1-local-enhancement.md` + 提交 `cd8feeb` 重建，**读数未改**；**未见该轮收口节**（状态按计划文档原文登记，不补写读数）。
+
+- **用户令（逐字）**: 「请给我适合本机增强R1-Distill-1.5B的可落地方案」。
+- **上游**: R400 生成链（`9d2191a`）+ R403（RoPE 配对修复）+ R404（bge 融合对账）。
+- **形态**: §0 先列**本机硬约束**（实测值 + 出处，方案不许绕过它们）⇒ 四条线均不改权重。
+- **证据**: `docs/plans/v0.27.0-r405-r1-local-enhancement.md`、`eval/rover/r405/`。
+
+## R404 — bge 融合对账 + 产品口径订正（回填）
+
+**版本**: R404 · **日期**: 2026-09-14 · **状态**: 已完成（对账产物落盘 + 口径订正）· **回填标注**: 本节由 `eval/bge/r404/` 产物 + 提交 `4d1bf90`/`8094faf` 重建，**读数未改**；**无独立轮志文档**（如实标注，证据目录为 `eval/bge/r404/`）。
+
+- **对账产物**: `eval/bge/r404/parity-probe.json`、`eval/bge/r404/csharp-fusion-replay.json`（C# 侧融合重放；`4d1bf90` 刷新产物时**指标全同、仅时间戳变化**）。
+- **口径订正（`8094faf`）**: 产品 `lex+small` 融合值为 **0.7833**（**非** 0.8500）+ 110 MB base 删除登记 + 默认模型路径指向链上真身。
+- **归属备注**: 该产物目录此后被 `cddcabe`（R516）触碰 ⇒ 归属以提交为准。
+- **证据**: `eval/bge/r404/parity-probe.json`、`eval/bge/r404/csharp-fusion-replay.json`、提交 `4d1bf90`/`8094faf`。
+
+## R403 — chat template 裁定：自研 Jinja 子集随 R408 退役 + 工具调用模板「无对象可验」（负控证明探针有判别力）
+
+**版本**: R403 · **日期**: 2026-09-14 · **状态**: 关闭（裁定 + 待触发能力登记；**无代码改动**）
+**主题**: backlog R403 的唯一待判项「工具调用模板是否改口径为验证 llama.cpp tool 模板行为」。
+
+- **读数（两臂 + 判别力负控，一条命令 `python3 eval/rover/r403/probe_tool_template.py`）**:
+  default 臂（GGUF 自带模板，`--jinja`）= `caps.supports_tools=false` / `caps.supports_tool_calls=false` /
+  模板源 `tools` 变量 **0** 个 / `/apply-template` ±tools **逐字节相同**（md5 `b89299b3…`，24 B）/ completions ±tools
+  `prompt_tokens` **4 → 4（Δ=0）**，HTTP 200 无报错；
+  control 臂（合成 258 B 全 ASCII 模板，`--chat-template-file`）= `supports_tools=true` / ±tools **md5 不同**（29 B vs 62 B）/
+  `prompt_tokens` **7 → 18（+11）** ⇒ **负控过关 = 探针有判别力**，default 的「相同」是真读数而非探针盲区。
+- **排除替代解释**: `/apply-template` 在 control 臂读到 tools 并改变产物 ⇒ 端点确实转发 tools；default 臂的相同输出来自**模板**（无工具定义位），不是端点不支持 tools。
+- **产品侧消费方**: `grep -rn -E 'tool_choice|ToolCall|tool_calls|"tools"' src/ --include=*.cs` ⇒ **0 命中**（零消费方）。
+- **裁定**: **R403 关闭**。① 自研 Jinja 子集扩展的对象随 R408 退役（R409 已证渲染归引擎、调用方无法手拼）；② 工具调用模板**无对象可验**（引擎自报不支持 ∧ 模板零工具位 ∧ 产品零消费方，三方一致）。
+  「工具调用」转**待触发能力**，准入判据三条**全绿**才开工：(a) `caps.supports_tools == true`；(b) 同 messages ±tools 的 `prompt_tokens` 有差（**不得只看 HTTP 200**）；(c) 产品侧存在发出 tools 的调用点。
+- **诚实边界**: 仅现役模型 `r1-distill-qwen-1.5b-q4km` + 本机 build `b1-4df29be` 的单次读数；负控模板是**合成**的，只证探针判别力，不证任何真实模型支持工具调用；工具调用**出参解析**（`tool_calls` → OpenAI 格式）**未测**，属 (a) 之后的独立课题。
+- **证据**: `eval/rover/r403/tool-template-behavior.json`、`eval/rover/r403/probe_tool_template.py`、`docs/reports/r403/chat-template-tool-scope.md`。
+- **运行纪律入档（两次同族事故）**: ① 测量前清掉 6 个 R412/R413 遗留长驻 server（pid 230833/230849/232136/232152/233614/233632，RSS 合计 ≈3.5 GB，本机共 3.66 GB）⇒ `MemAvailable` 1.14 GB → 2.99 GB；
+  ② `pgrep -f "[4]1999"` **仍自杀**（同一命令行的 `curl …:41999` 含裸端口号）——括号技巧只保护**模式字面量**，不保护同一命令行**别处**出现的目标串（同族：`ps | grep "[l]lama-server"` 被自己的 `echo "no llama-server running"` 命中）⇒ 正解 = 被测进程自落 pid，或同进程内 Popen + `killpg` 收尾。
+
+## R402 — rover 生成链性能归因：盘读 vs 计算（三通道取证）+ 读数补登记（回填）
+
+**版本**: R402 · **日期**: 2026-09-14 · **状态**: 已收口（步1 归因 + 步2 读数补登记）· **回填标注**: 本节由 `docs/reports/r402/io-attribution.md` + `eval/rover/r402/` + 提交 `33baddd`/`6483721` 重建，**读数未改**。
+
+- **因果链**: R400 生成链的耗时主体是「盘读」还是「计算」未分离 ⇒ 优化靶点无法选择。
+- **交付**: `scripts/r402_io_attribution.py` 三通道取证（进程 IO 记账 `ProcIo.cs` / `ReadBenchCli.cs` 读基准 / 前向通道）+ `docs/reports/r402/io-attribution.md`；登记表 +22 行。
+- **步2 结论**: **加线程不升级**（读数补登记于 `6483721`）⇒ 该方向不再投入。
+- **证据**: `docs/reports/r402/io-attribution.md`、`eval/rover/r402/{README.md,io-attribution-run3.json,io-attribution-run2-doublecounted-device.json,run1-console-capture.txt}`、`scripts/r402_io_attribution.py`、`src/agent.rover/runtime/ProcIo.cs`、`src/agent.tests/RoverProcIoTests.cs`。
 
 ## R401 — 能力自检循环常驻化（用户令：R400 后一直执行 + 60 分钟检测机制）
 
@@ -1828,7 +1904,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **证据卫生缺陷（本轮暴露，下轮修）**: `data/probe/replies/` 无臂命名空间 ⇒ 后一臂覆盖前一臂（topo/vm 臂 p001–p003 已被覆盖）。
 - **诚实结论**: 「加难族」这条路本轮**未打破天花板**（链在程序题上比预期强）；质量从「计数」变成「连续分数」仍需**换维度**（每题 tokens / 轮数 / 首次通过率——对饱和题集仍有区分度，且直接对齐用户 KPI 口径）。
 - **计划**: `docs/plans/v0.38.0-r417-probe-anti-saturation.md`；证据 `eval/rover/r417/`；登记 `docs/verification-registry.json` `r417.probe-anti-saturation`（L4）。
-- **文档缺口（如实登记）**: `docs/improvements.md` 的 **R404–R416 轮节未回填**；`docs/plans/v715_dev_plan.taskplan.json` 只登记到 R412（R413–R417 未登记）。
+- **文档缺口（如实登记）**: `docs/improvements.md` 的 **R404–R416 轮节未回填**；`docs/plans/v715_dev_plan.taskplan.json` 只登记到 R412（R413–R417 未登记）。 **R518 机检更正（2026-09-17）**：该登记**过宽** —— R408–R416 轮节实际在位；实测缺口 = R402 / R404 / R405 / R406 / R407 / R417 / R418 / R419（另 R403 排序违例），已于 R518 逐节回填。**旧口径作废**（原文保留留痕，不撤）。
 
 ### R418 (2026-09-14) — 探针「过程/成本」维度 KPI：成本读数的根因是**归属缺失**，不是缺字段
 

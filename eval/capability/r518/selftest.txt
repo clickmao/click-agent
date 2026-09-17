@@ -1,0 +1,10 @@
+  selftest baseline_pass: missing=0 want=0 zone_vio=0 want=0 -> OK
+  selftest missing_detected: missing=1 want=1 zone_vio=0 want=0 -> OK
+  selftest zone_order_detected: missing=0 want=0 zone_vio=1 want=1 -> OK
+ROUNDS_IN_GIT=2  SECTIONS=2  ZONE[401-421]=2
+C1 MISSING n=0: 
+C2 ZONE_ORDER_VIOLATIONS n=0
+C3 INFO global_violations=0 duplicates={}
+SCAN_EXIT=0
+  selftest report_path: rc=0 -> OK
+SELFTEST_EXIT=0 n=4 fails=0
