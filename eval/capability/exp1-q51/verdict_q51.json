@@ -1,0 +1,287 @@
+{
+ "round": "EXP1-Q51",
+ "checks": {
+  "P2_fixture_selfconsistent": {
+   "pass": true,
+   "oracle_mismatch_n": 0,
+   "mismatch": [],
+   "note": "由题面逐字独立实现; 全对 => H1 夹具缺陷不成立"
+  },
+  "P6_negative_control": {
+   "pass": true,
+   "case": "wythoff#43 (21 25)",
+   "broken_oracle_out": "WIN 6 0",
+   "expected": "WIN 15 15"
+  },
+  "P1_offline_reproduces_recorded": {
+   "pass": true,
+   "per_window_diff": {
+    "w1": 0,
+    "w2": 0
+   }
+  },
+  "P4_window_drift_is_module_level": {
+   "pass": true,
+   "matrix": {
+    "w1": {
+     "life": "14/14",
+     "nim": "15/15",
+     "sub": "14/14",
+     "wythoff": "0/15"
+    },
+    "w2": {
+     "life": "0/14",
+     "nim": "15/15",
+     "sub": "14/14",
+     "wythoff": "15/15"
+    }
+   },
+   "note": "每窗失败族整族全败、两窗失败族不同 => 漂移在模块级(单模块缺陷零化整族)"
+  },
+  "P5_minimal_repair_turns_green": {
+   "pass": true,
+   "repairs": {
+    "w1": {
+     "target_family": [
+      "wythoff"
+     ],
+     "family_after": {
+      "life": "14/14",
+      "nim": "15/15",
+      "sub": "14/14",
+      "wythoff": "15/15"
+     },
+     "target_all_pass": true,
+     "other_families_unchanged": true,
+     "null_control_still_fails": 15,
+     "null_control_before": 15
+    },
+    "w2": {
+     "target_family": [
+      "life"
+     ],
+     "family_after": {
+      "life": "14/14",
+      "nim": "15/15",
+      "sub": "14/14",
+      "wythoff": "15/15"
+     },
+     "target_all_pass": true,
+     "other_families_unchanged": true,
+     "null_control_still_fails": 14,
+     "null_control_before": 14
+    }
+   }
+  }
+ },
+ "named_blockers": [
+  "R540-w1/R1r-g1: 族 `wythoff` 整族全败 15 例 (原因=stdout_mismatch)",
+  "R540-w2/R1r-g1: 族 `life` 整族全败 14 例 (原因=rc=1; 首行异常=TypeError: must be str or None, not bytes)"
+ ],
+ "warnings": [],
+ "windows": {
+  "w1": {
+   "snapshot": "eval/rover/r540/snapshots/w1/agentR1r-g1/g1",
+   "tree": "/tmp/q51-6r_utm21",
+   "recorded_vs_mine_diff_n": 0,
+   "diff_names": [],
+   "family_matrix": {
+    "life": "14/14",
+    "nim": "15/15",
+    "sub": "14/14",
+    "wythoff": "0/15"
+   },
+   "failed": [
+    {
+     "name": "wythoff#43-public",
+     "why": "stdout_mismatch",
+     "stderr": "",
+     "got": "WIN 6 0"
+    },
+    {
+     "name": "wythoff#44-public",
+     "why": "stdout_mismatch",
+     "stderr": "",
+     "got": "WIN 5 0"
+    },
+    {
+     "name": "wythoff#45-hidden",
+     "why": "stdout_mismatch",
+     "stderr": "",
+     "got": "WIN 4 0"
+    },
+    {
+     "name": "wythoff#46-hidden",
+     "why": "stdout_mismatch",
+     "stderr": "",
+     "got": "WIN 0 5"
+    },
+    {
+     "name": "wythoff#47-hidden",
+     "why": "stdout_mismatch",
+     "stderr": "",
+     "got": "WIN 0 11"
+    },
+    {
+     "name": "wythoff#48-hidden",
+     "why": "stdout_mismatch",
+     "stderr": "",
+     "got": "WIN 0 6"
+    },
+    {
+     "name": "wythoff#49-hidden",
+     "why": "stdout_mismatch",
+     "stderr": "",
+     "got": "WIN 8 0"
+    },
+    {
+     "name": "wythoff#50-hidden",
+     "why": "stdout_mismatch",
+     "stderr": "",
+     "got": "WIN 0 9"
+    },
+    {
+     "name": "wythoff#51-hidden",
+     "why": "stdout_mismatch",
+     "stderr": "",
+     "got": "WIN 0 2"
+    },
+    {
+     "name": "wythoff#52-hidden",
+     "why": "stdout_mismatch",
+     "stderr": "",
+     "got": "WIN 1 1"
+    },
+    {
+     "name": "wythoff#53-hidden",
+     "why": "stdout_mismatch",
+     "stderr": "",
+     "got": "WIN 0 5"
+    },
+    {
+     "name": "wythoff#54-hidden",
+     "why": "stdout_mismatch",
+     "stderr": "",
+     "got": "WIN 0 7"
+    },
+    {
+     "name": "wythoff#55-hidden",
+     "why": "stdout_mismatch",
+     "stderr": "",
+     "got": "WIN 0 1"
+    },
+    {
+     "name": "wythoff#56-hidden",
+     "why": "stdout_mismatch",
+     "stderr": "",
+     "got": "WIN 0 21"
+    },
+    {
+     "name": "wythoff#57-hidden",
+     "why": "stdout_mismatch",
+     "stderr": "",
+     "got": "WIN 0 10"
+    }
+   ]
+  },
+  "w2": {
+   "snapshot": "eval/rover/r540/snapshots/w2/agentR1r-g1/g1",
+   "tree": "/tmp/q51-oxb7u0ek",
+   "recorded_vs_mine_diff_n": 0,
+   "diff_names": [],
+   "family_matrix": {
+    "life": "0/14",
+    "nim": "15/15",
+    "sub": "14/14",
+    "wythoff": "15/15"
+   },
+   "failed": [
+    {
+     "name": "life#00-public",
+     "why": "rc=1",
+     "stderr": "TypeError: must be str or None, not bytes",
+     "got": ""
+    },
+    {
+     "name": "life#01-public",
+     "why": "rc=1",
+     "stderr": "TypeError: must be str or None, not bytes",
+     "got": ""
+    },
+    {
+     "name": "life#02-hidden",
+     "why": "rc=1",
+     "stderr": "TypeError: must be str or None, not bytes",
+     "got": ""
+    },
+    {
+     "name": "life#03-hidden",
+     "why": "rc=1",
+     "stderr": "TypeError: must be str or None, not bytes",
+     "got": ""
+    },
+    {
+     "name": "life#04-hidden",
+     "why": "rc=1",
+     "stderr": "TypeError: must be str or None, not bytes",
+     "got": ""
+    },
+    {
+     "name": "life#05-hidden",
+     "why": "rc=1",
+     "stderr": "TypeError: must be str or None, not bytes",
+     "got": ""
+    },
+    {
+     "name": "life#06-hidden",
+     "why": "rc=1",
+     "stderr": "TypeError: must be str or None, not bytes",
+     "got": ""
+    },
+    {
+     "name": "life#07-hidden",
+     "why": "rc=1",
+     "stderr": "TypeError: must be str or None, not bytes",
+     "got": ""
+    },
+    {
+     "name": "life#08-hidden",
+     "why": "rc=1",
+     "stderr": "TypeError: must be str or None, not bytes",
+     "got": ""
+    },
+    {
+     "name": "life#09-hidden",
+     "why": "rc=1",
+     "stderr": "TypeError: must be str or None, not bytes",
+     "got": ""
+    },
+    {
+     "name": "life#10-hidden",
+     "why": "rc=1",
+     "stderr": "TypeError: must be str or None, not bytes",
+     "got": ""
+    },
+    {
+     "name": "life#11-hidden",
+     "why": "rc=1",
+     "stderr": "TypeError: must be str or None, not bytes",
+     "got": ""
+    },
+    {
+     "name": "life#12-hidden",
+     "why": "rc=1",
+     "stderr": "TypeError: must be str or None, not bytes",
+     "got": ""
+    },
+    {
+     "name": "life#13-hidden",
+     "why": "rc=1",
+     "stderr": "TypeError: must be str or None, not bytes",
+     "got": ""
+    }
+   ]
+  }
+ },
+ "rc": 0
+}

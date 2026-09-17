@@ -1,0 +1,35 @@
+{
+  "round": "EXP1-Q51",
+  "ts_local": "2026-09-18T05:5x+0800",
+  "kind": "本作业 tick: 只读定因 (R540 g1 跨族失败归因) —— 主线的 RF0001.2 出口闸允许的第二种收口方式:『逐条点名阻塞项』。零产品改动 / 零主线目录写 / 零 build / 零 LLM 调用。",
+  "owner": "本作业 (60m 能力自检循环); 主线轮号 R540 的读数归属 = foreign (对侧实施), 本 tick 只做只读复核与定因",
+  "scope": {
+    "read_only_inputs": [
+      "eval/rover/r540/snapshots/{w1,w2}/agentR1r-g1/g1/**  (产物快照, 不可变)",
+      "eval/rover/r540/cases/cases-r521.json  (58 条冻结隐藏用例)",
+      "eval/rover/r540/run-{w1,w2}/R1r/g1/cases.txt  (对侧落盘判决)",
+      "eval/rover/r540/run-{w1,w2}/task-g1-prompt.txt (题面逐字)"
+    ],
+    "writes": "eval/capability/exp1-q51/**  + eval/capability/kpi.jsonl 一行 + 一处本地 commit; 不写主线目录"
+  },
+  "hypotheses_to_decide": [
+    "H1 夹具缺陷 (用例期望与题面不符)  => 由 P2 正控排除/证实",
+    "H2 被测产物缺陷 (生成代码错)      => 由 P1 + P3 + P4 判定",
+    "H3 管道/契约缺陷 (判分器或题面 API 契约出错) => 由 P5 最小修复实验区分 (修产物即转绿 => 非管道)"
+  ],
+  "predicates": {
+    "P1_offline_reproduces_recorded": "本器离线独立复跑 (自产物快照物化 + 自 runner) 的逐例判决必须与对侧落盘 cases.txt 逐例逐字相同 (每窗 58/58)。不符 => rc=3 (输入/归属歧义, 不定因)。",
+    "P2_fixture_selfconsistent": "由题面逐字独立实现的 oracle (四款游戏各自独立算法) 必须复现 cases-r521.json 全部 58 条 expected_stdout (58/58)。全对 => 夹具缺陷分支 (H1) 不成立; 任一条不符 => 夹具缺陷成立并逐条点名。",
+    "P3_failure_families_named": "每个失败族必须给出 (a) 失败例数/该族总数 (b) 失败原因分类 (rc!=0 vs stdout_mismatch) (c) 若 rc!=0 必须捕获 stderr 首行异常类型 (d) 缺陷定位到代码行级。",
+    "P4_window_drift_is_module_level": "把两窗 × 四族 (life/sub/nim/wythoff) 的通过矩阵落盘: 若失败族逐窗不同而每窗内失败族为『整族全败』 => 漂移在**模块级**(单模块缺陷零化整族), 不是用例级抖动。",
+    "P5_minimal_repair_turns_green": "对产物**副本**施加最小修复 (仅改被测缺陷行) 后, 该失败族必须转绿 (w1/wythoff 15/15, w2/life 14/14), 且**其它族读数逐例不变**。转绿 => 缺陷归因于该行 (H3 排除: 非管道/契约面); 不转绿 => 归因不闭合, rc=1。",
+    "P6_negative_control": "把 oracle 的 wythoff 冷点构造替换为产物同款错误构造 => oracle 必须在 21 25 上给出与 expected 不同之值 (即 oracle 不是恒真门); 且未修复副本上该族必须继续全败 (修复实验不是『凡改即绿』)。"
+  },
+  "rc_semantics": {"0": "归因闭合 (P1..P6 全过)", "1": "归因未闭合 (逐条点名未判定的项)", "2": "器具缺陷 (本器自身读法/异常)", "3": "输入缺失/不可归属 (fail-closed)"},
+  "honest_boundary_preregistered": [
+    "本 tick 不跑 R1r/A1-on/codex 任一真机臂, 因此**不产生** g1 的臂间对照读数; P2/P5 只证『夹具自洽 ∧ 产物缺陷可修』, 不证『R1r 相对基线更差』。",
+    "g1 的臂间归因 (计划 §3『g1 进 A1-on 对照后归因』) 仍**未闭合**, 归主线轮; 本 tick 的产出是阻塞项点名 + 该对照的必需件 (夹具正控 + 每窗缺陷清单)。",
+    "单窗/双窗读数不得作能力结论 (跨窗摆动常大于臂间效应)。",
+    "R531 已登记的 wythoff 机理 (『未施加着法合法性约束』) 与 R540-w1 实测机理**未必同源** —— 本器按现盘产物独立定因, 不沿用旧结论; 若两者不同, 如实分列。"
+  ]
+}
