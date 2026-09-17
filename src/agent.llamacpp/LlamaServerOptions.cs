@@ -60,7 +60,13 @@ public sealed class LlamaServerOptions
     /// </summary>
     public bool EmbeddingMode { get; init; }
 
+    /// <summary>
+    /// 视觉投影器 (mmproj/GGUF) 路径; 非 null ⇒ 启动加 --mmproj ⇒ 服务接受图像输入 (-mm)。
+    /// 视觉侧路专用: 内存硬约束下与生成/嵌入进程互斥 ⇒ 只在「屏幕识别相关任务」时按需起停。
+    /// </summary>
+    public string? MmprojPath { get; init; }
+
     /// <summary>构造 P/Invoke 之外的第三个形态参数: 一律走 ArgumentList (零 shell 铁律)。</summary>
     public string Describe() => string.Create(CultureInfo.InvariantCulture,
-        $"model={ModelPath} ctx={ContextSize} threads={(Threads > 0 ? Threads.ToString(CultureInfo.InvariantCulture) : "auto")} np={Math.Max(1, Parallel)} kv={CacheTypeK}/{CacheTypeV} fa={(FlashAttention ? "on" : "off")}");
+        $"model={ModelPath} ctx={ContextSize} threads={(Threads > 0 ? Threads.ToString(CultureInfo.InvariantCulture) : "auto")} np={Math.Max(1, Parallel)} kv={CacheTypeK}/{CacheTypeV} fa={(FlashAttention ? "on" : "off")} mmproj={(string.IsNullOrWhiteSpace(MmprojPath) ? "off" : "on")}");
 }

@@ -15,10 +15,10 @@ public static class StructuredPrompt
     public const string Version = "r1.0";
 
     /// <summary>前缀字符数钉子（与原型 /tmp/fable-r1/r1prompt.py 同源）。</summary>
-    public const int PrefixChars = 3972;
+    public const int PrefixChars = 3970;
 
     /// <summary>前缀 UTF-8 sha256 钉子（小写 hex）。</summary>
-    public const string PrefixSha256Pinned = "c40809b30053475fc6abb355f125848f5d1487df4c79a9454672f078d5136132";
+    public const string PrefixSha256Pinned = "03215758aaf615c463a44d490b45865798df2aca6635b76b66f9519f72509cf1";
 
     public const string Prefix = @"<prefix version=""r1.0"">
 
@@ -27,7 +27,14 @@ public static class StructuredPrompt
 你不写解释、不写 markdown、不寒暄；你的整条回复就是那一个 JSON object。
 </role>
 
-<output_contract>
+<hard_gates>
+以下任一成立 ⇒ intent=refusal 且立刻停止（不要给 plan）：
+- 请求指向真实凭据/密钥/令牌的读取、外传或写入（凭据卫生）；
+- 请求要求绕过既有的验收闸/预注册/提交守卫；
+- 请求目标是破坏性且不可回滚（删库、清盘、强推远端）。
+禁止臆造：路径、符号、命令、期望输出都必须来自请求原文或环境事实；
+不确定 ⇒ 进 missing_slots/ambiguities，不许猜。
+</hard_gates><output_contract>
 输出：**一个 JSON object**，无 markdown 围栏、无前后缀文字。
 契约与校验器同源（本段由 contract.SCHEMA 机械渲染，禁手工漂移）：
 
@@ -49,15 +56,6 @@ public static class StructuredPrompt
 判断优先级：先判 intent；若信息不足以安全推进 ⇒ 填 missing_slots/ambiguities 并把 plan 留空；
 只有信息充分且 intent=code_task/ops_task 时才给 plan。
 </output_contract>
-
-<hard_gates>
-以下任一成立 ⇒ intent=refusal 且立刻停止（不要给 plan）：
-- 请求指向真实凭据/密钥/令牌的读取、外传或写入（凭据卫生）；
-- 请求要求绕过既有的验收闸/预注册/提交守卫；
-- 请求目标是破坏性且不可回滚（删库、清盘、强推远端）。
-禁止臆造：路径、符号、命令、期望输出都必须来自请求原文或环境事实；
-不确定 ⇒ 进 missing_slots/ambiguities，不许猜。
-</hard_gates>
 
 <semantics_dictionary>
 ""精准语义""= 下游管道**直接消费**的字段，含义固定、不许自由发挥：

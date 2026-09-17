@@ -42,7 +42,7 @@ public sealed class StructuredContractTests
     [Fact]
     public void Prefix_Blocks_Appear_In_Fixed_Order()
     {
-        string[] blocks = { "<role>", "<output_contract>", "<hard_gates>", "<semantics_dictionary>", "<tool_menu>", "<environment>", "<examples>" };
+        string[] blocks = { "<role>", "<hard_gates>", "<output_contract>", "<semantics_dictionary>", "<tool_menu>", "<environment>", "<examples>" };
         var last = -1;
         foreach (var b in blocks)
         {

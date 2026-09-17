@@ -123,6 +123,12 @@ public sealed class LlamaServerHost : IAsyncDisposable
             a.Add("--embeddings");
         }
         a.Add("--jinja");
+        if (!string.IsNullOrWhiteSpace(o.MmprojPath))
+        {
+            // 多模态投影器: 只有视觉侧路才带此项; 与 --embeddings 互斥场景由调用面保证串行 (内存硬约束)
+            a.Add("--mmproj");
+            a.Add(o.MmprojPath!);
+        }
         a.AddRange(o.ExtraArgs);
         return a;
     }
@@ -131,6 +137,8 @@ public sealed class LlamaServerHost : IAsyncDisposable
     {
         if (!File.Exists(_o.ModelPath))
             throw new LlamaCppException(LlamaCppException.ProviderUnavailable, $"模型文件不存在: {_o.ModelPath}");
+        if (!string.IsNullOrWhiteSpace(_o.MmprojPath) && !File.Exists(_o.MmprojPath))
+            throw new LlamaCppException(LlamaCppException.ProviderUnavailable, $"视觉投影器文件不存在: {_o.MmprojPath}");
 
         var bin = ResolveBinary(_o) ?? throw new LlamaCppException(LlamaCppException.ProviderUnavailable,
             $"未找到 llama-server: 设置 {_o.BinaryEnvVar} 环境变量或 LlamaServerOptions.BinaryPath " +

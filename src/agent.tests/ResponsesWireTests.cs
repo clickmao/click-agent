@@ -17,7 +17,11 @@ public class ResponsesWireTests
 
     [Fact]
     public void A1_Chat形态与既有常量逐字节相等()
-        => Assert.Equal(ActionToolDecl.ToolsJson, ActionToolSpec.ChatToolsJson);
+    {
+        Assert.Equal(ActionToolDecl.ToolsJson, ActionToolSpec.ChatToolsJson);
+        // 单源 + 顺序: 声明面顺序与名称白名单逐项一致 (字母序, 可 diff)
+        Assert.Equal(ActionToolDecl.Names, System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select(ActionToolSpec.All, t => t.Name)));
+    }
 
     [Fact]
     public void A2_Responses形态为平铺且含全部工具()
