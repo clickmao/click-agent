@@ -24,6 +24,13 @@ public static class ActionLoopDiscipline
     /// <summary>消融开关 (缺省开; off/0/false = 关 ⇒ 等价 R521 旧行为)。</summary>
     public const string EnvName = "AGENTFRAMEWORK_ACTION_DISCIPLINE";
 
+    /// <summary>
+    /// R531 合批轴 (缺省**关**; 只有 on/1/true/yes 才开)。依据 = R521/R525 逐调用取证里
+    /// 「一条命令一轮 LLM」的往返项 (R525 w3 A1-on: 8 次调用里 3 步写完整个包, 单步承载多动作时
+    /// 步数与调用数同步下降); 缺省关是保形要求: 未开时注入文本与 R528 逐字节相同 ⇒ 可作单变量臂。
+    /// </summary>
+    public const string MergeEnvName = "AGENTFRAMEWORK_ACTION_MERGE";
+
     /// <summary>六条纪律文本 (锚: 验证合并 / 探针不落盘 / 收尾从简 / 零过渡叙述 / 回执按需取全文 / 产物落位与自验)。</summary>
     public const string Text =
         "[上下文纪律 · 必守]\n" +
@@ -38,6 +45,16 @@ public static class ActionLoopDiscipline
         "不得另加 `sols/` 之类中间层); 收尾前的自验**必须在工作根**执行题面给出的验收命令 (禁 `cd` 到子目录后再验, " +
         "否则验的不是验收形态); 自验退出码非 0 不得收尾。";
 
+    /// <summary>
+    /// R531 第 7 条 (合批 / 一次成型) —— 只在 <see cref="MergeEnvName"/> 开时追加。
+    /// 追加式设计: 第 1–6 条逐字节不变 ⇒ 与「合批关」臂的差异是本条全文, 单变量可归因。
+    /// 依据: 动作环宿主逐调用 `foreach (var tc in calls)` ⇒ 单步承载多动作在器具上可行 (不是话术)。
+    /// </summary>
+    public const string MergeText =
+        "\n7. 一次成型 (合批): 互不依赖的动作必须在**同一步**内一次发出 —— 多个 write_file、多条互不依赖的命令, " +
+        "一律并进同一轮工具调用; 禁止「写一个文件一轮、跑一条命令一轮」的串行推进; " +
+        "同一信息在一轮内不得分次索取 (同一步内一次取全)。\n";
+
     /// <summary>缺省开; 仅 off/0/false 关 (词形同既有开关约定)。</summary>
     public static bool IsEnabled()
     {
@@ -49,7 +66,25 @@ public static class ActionLoopDiscipline
                  || v.Equals("false", StringComparison.OrdinalIgnoreCase));
     }
 
+    /// <summary>缺省**关**; 仅 on/1/true/yes 开 (保形轴: 未开 ⇒ 逐字节等于 R528 文本)。</summary>
+    public static bool IsMergeEnabled()
+    {
+        var v = Environment.GetEnvironmentVariable(MergeEnvName);
+        if (string.IsNullOrWhiteSpace(v)) return false;
+        v = v.Trim();
+        return v.Equals("on", StringComparison.OrdinalIgnoreCase)
+               || v.Equals("1", StringComparison.Ordinal)
+               || v.Equals("true", StringComparison.OrdinalIgnoreCase)
+               || v.Equals("yes", StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>当前生效文本 (合批轴开 ⇒ 6 条 + 第 7 条)。</summary>
+    public static string CurrentText() => IsMergeEnabled() ? Text + MergeText : Text;
+
     /// <summary>尾部追加 (前缀逐字节不变); 空系统提示 ⇒ 退化为纪律块本身。</summary>
     public static string Apply(string systemPrompt)
-        => string.IsNullOrEmpty(systemPrompt) ? Text : systemPrompt + "\n\n" + Text;
+    {
+        var t = CurrentText();
+        return string.IsNullOrEmpty(systemPrompt) ? t : systemPrompt + "\n\n" + t;
+    }
 }

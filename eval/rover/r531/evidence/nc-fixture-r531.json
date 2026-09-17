@@ -1,0 +1,79 @@
+{
+ "round": "R531",
+ "builder": "eval/rover/r531/build_fixture_r531.py",
+ "seed": 531,
+ "f1_prompt_sha256": "516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3",
+ "f2_prompt_sha256": "9fbfaeb3a17bea23ef87ce684561a01e7ae319ccc6005d37e812c7b910cac444",
+ "f3_prompt_sha256": "c1b03fadb06a849ea15281370f643ea64528b3d0514950eb76e2e128b1ed941f",
+ "f3_cases_sha256": "00dcac17d7a076cc9de4630115b7b6d03949fa29a796ece1e95fa26c2a8fbd05",
+ "dual_path": {
+  "dual_pairs_ok": 35,
+  "dual_pairs_total": 35
+ },
+ "controls": {
+  "oracle": {
+   "rc": 0,
+   "pass": 30,
+   "fail": 0,
+   "pairs": [
+    "R531_ORACLE_PAIRS 30/30"
+   ],
+   "tail": [
+    "R531_CASES 30/30"
+   ]
+  },
+  "nc_qr_offby1": {
+   "rc": 1,
+   "pass": 24,
+   "fail": 6,
+   "pairs": [
+    "R531_ORACLE_PAIRS 30/30"
+   ],
+   "tail": [
+    "R531_CASES 24/30"
+   ]
+  },
+  "nc_choose_nomod": {
+   "rc": 1,
+   "pass": 24,
+   "fail": 6,
+   "pairs": [
+    "R531_ORACLE_PAIRS 30/30"
+   ],
+   "tail": [
+    "R531_CASES 24/30"
+   ]
+  },
+  "nc_extra_text": {
+   "rc": 1,
+   "pass": 0,
+   "fail": 30,
+   "pairs": [
+    "R531_ORACLE_PAIRS 30/30"
+   ],
+   "tail": [
+    "R531_CASES 0/30"
+   ]
+  },
+  "nc_empty": {
+   "rc": 1,
+   "pass": 0,
+   "fail": 30,
+   "pairs": [
+    "R531_ORACLE_PAIRS 30/30"
+   ],
+   "tail": [
+    "R531_CASES 0/30"
+   ]
+  }
+ },
+ "verdict": {
+  "J1_positive_control_30of30": true,
+  "J1_negative_controls_all_red": true,
+  "J1_reused_prompts_byte_identical": true,
+  "J1_dual_path_oracle_consistent": true,
+  "cases_total": 30,
+  "public_total": 5
+ },
+ "j1_pass": true
+}

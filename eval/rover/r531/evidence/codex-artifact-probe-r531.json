@@ -1,0 +1,132 @@
+{
+ "round": "R531",
+ "probe": "codex_cleanup_retry_artifact",
+ "threshold_repeat": 5,
+ "denial_keywords": [
+  "denied",
+  "not permitted",
+  "operation not permitted",
+  "permission denied",
+  "approval required",
+  "approval_policy"
+ ],
+ "rows": [
+  {
+   "adapter_dir": "eval/rover/r529/run-0917-2012-w1/adapter",
+   "arm": "codex",
+   "dumps": 23,
+   "tool_calls": 21,
+   "distinct_cmds": 20,
+   "max_cmd_repeat": 1,
+   "top_cmds": [
+    {
+     "cmd": "ls -la; find . -name AGENTS.md 2>/dev/null",
+     "n": 1
+    },
+    {
+     "cmd": "mkdir -p games && touch games/__init__.py && ls games",
+     "n": 1
+    },
+    {
+     "cmd": "cat > games/life.py <<'EOF' def solve(text: str) -> str: lines = text.split('\\n') H, W, k = map(int, lines[0].split()) g",
+     "n": 1
+    }
+   ],
+   "denial_keyword_hits": {
+    "denied": 0,
+    "not permitted": 0,
+    "operation not permitted": 0,
+    "permission denied": 0,
+    "approval required": 0,
+    "approval_policy": 0
+   },
+   "generic_word_hits": {
+    "reject": 0,
+    "sandbox": 0,
+    "approval": 0,
+    "allowlist": 0,
+    "blocked": 0
+   },
+   "verdict": "NO_LOOP_EVIDENCE"
+  },
+  {
+   "adapter_dir": "eval/rover/r529/run-0917-2012-w2/adapter",
+   "arm": "codex",
+   "dumps": 518,
+   "tool_calls": 520,
+   "distinct_cmds": 517,
+   "max_cmd_repeat": 2,
+   "top_cmds": [
+    {
+     "cmd": "python3 --version",
+     "n": 2
+    },
+    {
+     "cmd": "cd /tmp/ref && python3 - <<'EOF' def f(lines, k): return len(lines) - 1 != k lines = ['6','PUSH 1','PRINT','PUSH 2','PRI",
+     "n": 2
+    },
+    {
+     "cmd": "pwd && ls -la && find . -maxdepth 3 -not -path '*/.git/*' | head -50",
+     "n": 1
+    }
+   ],
+   "denial_keyword_hits": {
+    "denied": 0,
+    "not permitted": 0,
+    "operation not permitted": 0,
+    "permission denied": 0,
+    "approval required": 0,
+    "approval_policy": 0
+   },
+   "generic_word_hits": {
+    "reject": 0,
+    "sandbox": 0,
+    "approval": 0,
+    "allowlist": 0,
+    "blocked": 0
+   },
+   "verdict": "NO_LOOP_EVIDENCE"
+  },
+  {
+   "adapter_dir": "eval/rover/r529/run-0917-2012-w3/adapter",
+   "arm": "codex",
+   "dumps": 86,
+   "tool_calls": 87,
+   "distinct_cmds": 83,
+   "max_cmd_repeat": 2,
+   "top_cmds": [
+    {
+     "cmd": "pwd && ls -la",
+     "n": 2
+    },
+    {
+     "cmd": "mkdir -p games && touch games/__init__.py && ls games",
+     "n": 1
+    },
+    {
+     "cmd": "cat > games/life.py <<'EOF' def solve(text: str) -> str: lines = text.split(\"\\n\") h, w, k = (int(x) for x in lines[0].sp",
+     "n": 1
+    }
+   ],
+   "denial_keyword_hits": {
+    "denied": 0,
+    "not permitted": 0,
+    "operation not permitted": 0,
+    "permission denied": 0,
+    "approval required": 0,
+    "approval_policy": 0
+   },
+   "generic_word_hits": {
+    "reject": 1,
+    "sandbox": 0,
+    "approval": 0,
+    "allowlist": 0,
+    "blocked": 0
+   },
+   "verdict": "NO_LOOP_EVIDENCE"
+  }
+ ],
+ "hypothesis": "codex 臂调用数被 rm -f/审批拒绝重试伪影抬高",
+ "falsified": true,
+ "verdict": "FALSIFIED(证据不存在)"
+}

@@ -1,0 +1,115 @@
+{
+ "round": "R531",
+ "family": "mathkit-multimodule-v1",
+ "rows": [
+  {
+   "name": "oracle",
+   "mutant": null,
+   "cases_rc": 0,
+   "cases_pass": 30,
+   "cases_total": 30,
+   "grader_rc": 0,
+   "grader_pass": 30,
+   "aligned": true,
+   "drift": [],
+   "cases_fail_sample": [],
+   "grader_fail_sample": []
+  },
+  {
+   "name": "qr_offby1",
+   "mutant": "qr_offby1",
+   "cases_rc": 1,
+   "cases_pass": 24,
+   "cases_total": 30,
+   "grader_rc": 1,
+   "grader_pass": 24,
+   "aligned": true,
+   "drift": [],
+   "cases_fail_sample": [
+    "qr_count#0",
+    "qr_count#1",
+    "qr_count#2",
+    "qr_count#3"
+   ],
+   "grader_fail_sample": [
+    "qr_count#0",
+    "qr_count#1",
+    "qr_count#2",
+    "qr_count#3"
+   ]
+  },
+  {
+   "name": "choose_nomod",
+   "mutant": "choose_nomod",
+   "cases_rc": 1,
+   "cases_pass": 24,
+   "cases_total": 30,
+   "grader_rc": 1,
+   "grader_pass": 24,
+   "aligned": true,
+   "drift": [],
+   "cases_fail_sample": [
+    "choose#10",
+    "choose#11",
+    "choose#6",
+    "choose#7"
+   ],
+   "grader_fail_sample": [
+    "choose#10",
+    "choose#11",
+    "choose#6",
+    "choose#7"
+   ]
+  },
+  {
+   "name": "extra_text",
+   "mutant": "extra_text",
+   "cases_rc": 1,
+   "cases_pass": 0,
+   "cases_total": 30,
+   "grader_rc": 1,
+   "grader_pass": 0,
+   "aligned": true,
+   "drift": [],
+   "cases_fail_sample": [
+    "choose#10",
+    "choose#11",
+    "choose#6",
+    "choose#7"
+   ],
+   "grader_fail_sample": [
+    "choose#10",
+    "choose#11",
+    "choose#6",
+    "choose#7"
+   ]
+  },
+  {
+   "name": "empty",
+   "mutant": "__empty__",
+   "cases_rc": 1,
+   "cases_pass": 0,
+   "cases_total": 30,
+   "grader_rc": 1,
+   "grader_pass": 0,
+   "aligned": true,
+   "drift": [],
+   "cases_fail_sample": [
+    "choose#10",
+    "choose#11",
+    "choose#6",
+    "choose#7"
+   ],
+   "grader_fail_sample": [
+    "choose#10",
+    "choose#11",
+    "choose#6",
+    "choose#7"
+   ]
+  }
+ ],
+ "positive_control_ok": true,
+ "negative_controls_ok": true,
+ "aligned": true,
+ "verdict": "PASS"
+}

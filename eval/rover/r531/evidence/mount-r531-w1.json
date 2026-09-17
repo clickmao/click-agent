@@ -1,0 +1,42 @@
+{
+ "round": "R531",
+ "instrument": "eval/rover/r531/mount_check_r531.py (v2)",
+ "run_dir": "eval/rover/r531/run-0917-213234",
+ "window": "w1",
+ "sys_request_idx": {
+  "A0-off": 1,
+  "A1-on": 81,
+  "A2-merge": 140
+ },
+ "source_of_truth": "src/agent.modelqueue/ActionLoopDiscipline.cs :: MergeText (源码抽取)",
+ "var": "AGENTFRAMEWORK_ACTION_MERGE",
+ "sys_chars": {
+  "A0-off": 9434,
+  "A1-on": 9968,
+  "A2-merge": 10100
+ },
+ "delta_chars": 132,
+ "merge_text_chars": 132,
+ "delta_sha12": "9be41f32e862",
+ "merge_text_sha12": "9be41f32e862",
+ "delta_repr": "\n7. 一次成型 (合批): 互不依赖的动作必须在**同一步**内一次发出 —— 多个 write_file、多条互不依赖的命令, 一律并进同一轮工具调用; 禁止「写一个文件一轮、跑一条命令一轮」的串行推进; 同一信息在一轮内不得分次索取 …",
+ "checks": {
+  "M1_prefix_relation": true,
+  "M2_delta_byte_equal_merge_text": true,
+  "M3_A0_off_has_no_discipline_block": true,
+  "M4_prefix_anchor_present_both": true
+ },
+ "MOUNT_OK": true,
+ "neg_control": {
+  "NC1_roles_swapped_expect_red": {
+   "M1": false,
+   "M2": false
+  },
+  "NC2_self_vs_self_expect_red": {
+   "M2": false
+  },
+  "NC1_fired": true,
+  "NC2_fired": true,
+  "NEG_CONTROL_OK": true
+ }
+}

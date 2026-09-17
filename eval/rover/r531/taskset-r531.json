@@ -1,0 +1,75 @@
+{
+ "round": "R531",
+ "family": "F1+F2+F3",
+ "source": "F1/F2 = eval/rover/r529/taskset-r529.json 逐字节复用 (同输入硬门); F3 = eval/probe/tasks.py MATH_FAMILIES 双路径 (seed 531)",
+ "tasks": [
+  {
+   "tid": "g1",
+   "kind": "project",
+   "family": "games-longtask-v1",
+   "prompt": "用 Python 3 实现一个**多文件游戏包** `games/`（本任务规模超出单轮步数上限, 必须分模块完成）。\n\n【结构要求】\n- `games/__init__.py`：包初始化（可空, 但必须存在）\n- `games/life.py`、`games/sub.py`、`games/nim.py`、`games/wythoff.py`：每款游戏一个模块, 各自导出 `solve(text: str) -> str`（纯函数: 入参=该游戏的完整 stdin 文本, 返回=应当写出的 stdout 文本, 末尾不带换行）\n- `games/__main__.py`：CLI 入口, 使 `python3 -m games <game_id>` 可用（`<game_id>` 取 life/sub/nim/wythoff）；从标准输入读取全部文本、调用对应模块的 `solve`、把返回值写到标准输出\n- 只允许标准库；不得打印任何多余文字、提示或调试信息（stderr 亦须静默）\n\n【评分】对四款游戏分别用 `python3 -m games <game_id>` 跑隐藏用例, 逐字节比对 stdout。\n\n【各游戏规格（逐字）】\n### 游戏 `life`（康威生命游戏 H 代演化）\n读入: 第一行三个整数 H W k (H,W 属于 1..20, k 属于 0..20); 随后 H 行, 每行 W 个字符, 只含 '.'(死) 与 '#'(活)。规则: 每代**同时**按 8 邻域更新, 网格外一律视为死格; 活细胞邻居数为 2 或 3 时存活, 否则死亡; 死细胞邻居数恰为 3 时复活。输出: 第 k 代之后 (k=0 即初始) 的网格, H 行, 每行 W 个字符, 只含 '.' 与 '#'。\n\n【公开用例】(仅供参考; 判定使用另一批隐藏用例)\n输入:\n11 5 4\n#....\n.....\n...#.\n.#.#.\n.....\n.#..#\n.#...\n###.#\n#.#.#\n..#..\n....#\n期望输出:\n.....\n.....\n.....\n.###.\n.....\n.....\n..#..\n.#.#.\n...#.\n..#..\n.....\n\n输入:\n11 2 6\n.#\n##\n..\n##\n.#\n.#\n..\n#.\n##\n##\n.#\n期望输出:\n##\n##\n..\n##\n##\n..\n..\n..\n..\n..\n..\n\n请把完整程序放在一个 ```python 围栏代码块内。\n\n### 游戏 `sub`（取石子子游戏必败/必胜判定）\n读入: 第一行两个整数 n k (1<=n<=80 为石子数, 1<=k<=12 为可选步数个数); 第二行 k 个互不相同的整数 s1..sk (1<=si<=12, 且保证其中含 1), 表示一步可取走的石子数。玩法: 两人轮流取, 每次取走恰好某个允许的数目, 取走最后一颗者胜。输出: 先手有必胜策略时输出一行 `WIN m` (m 为**数值最小**的必胜首取数); 先手必败时输出一行 `LOSE`。\n\n【公开用例】(仅供参考; 判定使用另一批隐藏用例)\n输入:\n31 3\n1 6 10\n期望输出:\nWIN 6\n\n输入:\n19 1\n1\n期望输出:\nWIN 1\n\n请把完整程序放在一个 ```python 围栏代码块内。\n\n### 游戏 `nim`（多堆 Nim 必胜手）\n读入: 第一行一个整数 m (1<=m<=4, 石子堆数); 第二行 m 个整数 a1..am (1<=ai<=15, 每堆石子数)。玩法: 两人轮流进行, 每次从**某一堆**中取走任意正数目的石子 (不能跨堆取, 也不限定数目, 只要不超该堆现有石子); 取走最后一颗石子者胜。输出: 先手有必胜策略时输出一行 `WIN p r` —— p 为必胜着法中**堆号最小**者 (堆号从 1 开始), r 为从该堆取走的石子数 (每堆至多存在一个必胜着法); 先手必败时输出一行 `LOSE`。\n\n【公开用例】(仅供参考; 判定使用另一批隐藏用例)\n输入:\n3\n5 9 4\n期望输出:\nWIN 2 8\n\n输入:\n1\n3\n期望输出:\nWIN 1 3\n\n请把完整程序放在一个 ```python 围栏代码块内。\n\n### 游戏 `wythoff`（Wythoff 博弈必败点判定）\n读入: 一行两个整数 a b (1<=a<=25, 1<=b<=25), 表示两堆石子的颗数。玩法: 两人轮流进行, 每次可选 (i) 从**任意一堆**中取走任意正数目的石子, 或 (ii) 从**两堆**中同时取走**相同**的正数目的石子; 取走最后一颗石子者胜。输出: 先手必败时输出一行 `LOSE`; 否则输出一行 `WIN i j` —— 表示从第一堆取 i 颗、第二堆取 j 颗, 且要求 (i, j) 在全部必胜着法中按**字典序最小** (先比 i 再比 j; i, j >= 0 且不同时为 0)。\n\n【公开用例】(仅供参考; 判定使用另一批隐藏用例)\n输入:\n21 25\n期望输出:\nWIN 15 15\n\n输入:\n10 9\n期望输出:\nWIN 0 3\n\n请把完整程序放在一个 ```python 围栏代码块内。\n",
+   "prompt_sha256": "516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3",
+   "cases": "cases/run_cases_r521.py",
+   "hidden_cases": 58,
+   "meta": {
+    "n_games": 4,
+    "n_cases": 58,
+    "public": 8,
+    "hidden": 50
+   },
+   "fixture_src": {
+    "taskset": "eval/rover/r519/taskset-r519.json",
+    "plan": "eval/rover/r519/plan-games-longtask.txt",
+    "scope": "eval/rover/r519/scope-games-longtask.txt"
+   }
+  },
+  {
+   "tid": "t1",
+   "kind": "project",
+   "family": "toolkit-multimodule-v1",
+   "prompt": "用 Python 3 实现一个**多文件工具包** `toolkit/`（本任务规模超出单轮步数上限, 必须分模块完成）。\n\n【结构要求】\n- `toolkit/__init__.py`：包初始化（可空, 但必须存在）\n- `toolkit/vm.py`、`toolkit/jsonmini.py`：每个子命令一个模块, 各自导出 `solve(text: str) -> str`（纯函数: 入参=该子命令的完整 stdin 文本, 返回=应当写出的 stdout 文本, 末尾不带换行）\n- `toolkit/__main__.py`：CLI 入口, 使 `python3 -m toolkit <vm|jsonmini>` 可用；从标准输入读取全部文本、调用对应模块的 `solve`、把返回值写到标准输出\n- 只允许标准库；不得打印任何多余文字、提示或调试信息（stderr 亦须静默）\n\n【评分】对两个子命令分别用 `python3 -m toolkit <vm|jsonmini>` 跑隐藏用例, 逐字节比对 stdout。\n产物必须落在**工作根**下（即 `toolkit/` 直接位于工作根, 不得另加中间目录）; 收尾前的自验必须在**工作根**执行同一验收形态。\n\n【各子命令规格（逐字）】\n### 子命令 `vm_run`（规格逐字取自题集生成器, 家族 `vm_run`）\n读入: 第一行整数 k (1<=k<=64, 指令条数); 随后 k 行, 每行一条指令 (地址从 0 开始)。指令集: PUSH n(压入整数 n) / POP(弹出丢弃) / ADD / SUB / MUL(弹出 a=栈顶, b=次顶, 压入 b-a 等运算) / DUP(复制栈顶) / SWAP(交换栈顶两元素) / PRINT(弹出栈顶并输出一行) / JNZ a(弹出栈顶, 非 0 则跳转到地址 a, 否则继续) / HALT(结束)。输出: 按 PRINT 顺序逐行输出整数。若出现栈空弹栈、操作数不足、跳转地址越界、未在 10000 步内执行 HALT, 或执行流越过最后一条指令, 则只输出一行 ERR。\n\n### 子命令 `json_mini`（规格逐字取自题集生成器, 家族 `json_mini`）\n读入: STDIN 整体为一个 JSON 值 (可含前后空白与换行)。支持 null / true / false / 十进制整数(可选负号; 不允许前导零, 允许 -0 ⇒ 输出为 0) / 字符串 / 数组 / 对象(键为字符串)。字符串内仅允许标准反斜杠转义 (引号 反斜杠 斜杠 n t uXXXX 六种); uXXXX 解码为对应字符, 且解码出的码点必须 >= 0x20。对象允许重复键, 重复时后者覆盖前者。输出: 规范化文本, **不含任何空白**: 字符串输出时把 引号/反斜杠/换行/制表符 重新转义, 其余字符原样; 对象的键按 Unicode 码点升序; 例: {\"a\":1,\"b\":[2,3]}。若输入非法 (语法错误 / 结尾有多余内容 / 非法转义 / 非法数字 / 空输入), 只输出一行 ERR。\n",
+   "prompt_sha256": "9fbfaeb3a17bea23ef87ce684561a01e7ae319ccc6005d37e812c7b910cac444",
+   "cases": "cases/run_cases_r529.py",
+   "hidden_cases": "30",
+   "meta": {
+    "n_mods": 2,
+    "n_cases": 30,
+    "public": 4,
+    "generator": "eval/probe/tasks.py",
+    "seed": 20260917,
+    "src_tids": {
+     "vm_run": "p003",
+     "json_mini": "p014"
+    }
+   },
+   "fixture_src": {
+    "generator": "eval/probe/tasks.py --kind program --n 40 --seed 20260917",
+    "builder": "eval/rover/r529/build_fixture_r529.py"
+   }
+  },
+  {
+   "tid": "m1",
+   "kind": "project",
+   "family": "mathkit-multimodule-v1",
+   "prompt": "用 Python 3 实现一个**多文件数学工具包** `mathkit/`（本任务规模超出单轮步数上限, 必须分模块完成）。\n\n【结构要求】\n- `mathkit/__init__.py`：包初始化（可空, 但必须存在）\n- `mathkit/modular.py`、`mathkit/linear.py`、`mathkit/graphs.py`、`mathkit/prob.py`：每个模块导出一组**纯函数**, 每个 op 一个函数, 签名 `op(args: dict) -> str`（返回应当写出的 stdout 文本, 末尾不带换行）; 各模块归属见下【各 op 规格】\n- `mathkit/__main__.py`：CLI 入口, 使 `python3 -m mathkit <op>` 可用；**从标准输入读取一个 JSON 对象**作为参数、调用对应模块的对应函数、把返回值写到标准输出\n- 只允许标准库；不得打印任何多余文字、提示或调试信息（stderr 亦须静默）\n- 输出**恰好一行**, 只含答案本身（整数 / `-1` / 最简分数 `p/q`），无前缀、无空格、无单位\n\n【评分】对每个 op 分别用 `python3 -m mathkit <op>` 跑隐藏用例（参数以 JSON 从 stdin 传入），逐字节比对 stdout。\n产物必须落在**工作根**下（即 `mathkit/` 直接位于工作根, 不得另加中间目录）; 收尾前的自验必须在**工作根**执行同一验收形态。\n\n【各 op 规格（逐字取自本夹具契约表）】\n### op `qr_count`（模块 `modular`, 家族 `quadratic_residue_count`）\n同余方程 x^2 ≡ a (mod m) 在 0 <= x < m 内的整数解个数。\n入参字段: `a`(整数, 0..12), `m`(整数, 8..16)\n公开用例:\n  输入(JSON): {\"a\": 11, \"m\": 16}\n  期望输出: `0`\n\n### op `choose`（模块 `modular`, 家族 `comb_mod`）\n组合数 C(n, k) mod `mod` 的非负余数 (0 <= 结果 < mod)。\n入参字段: `n`(整数, 0..40), `k`(整数, 0..n), `mod`(素数 97/101/1000003)\n公开用例:\n  输入(JSON): {\"n\": 18, \"k\": 7, \"mod\": 97}\n  期望输出: `8`\n\n### op `det`（模块 `linear`, 家族 `det_mod`）\n整数矩阵行列式 mod `mod` 的非负余数 (0 <= 结果 < mod)。\n入参字段: `matrix`(n×n 整数二维数组, 2<=n<=4), `mod`(素数 97/101)\n公开用例:\n  输入(JSON): {\"matrix\": [[-2, 0], [-1, -6]], \"mod\": 101}\n  期望输出: `12`\n\n### op `shortest`（模块 `graphs`, 家族 `shortest_path`）\n带权无向图邻接矩阵 (0 = 无边, 对称) 上 `src` 到 `dst` 的最短路径长度; 不可达输出 -1。\n入参字段: `matrix`(n×n 整数二维数组, 4<=n<=7), `src`(整数), `dst`(整数)\n公开用例:\n  输入(JSON): {\"matrix\": [[0, 0, 5, 1, 0], [0, 0, 1, 9, 6], [5, 1, 0, 0, 0], [1, 9, 0, 0, 4], [0, 6, 0, 4, 0]], \"src\": 0, \"dst\": 4}\n  期望输出: `5`\n\n### op `expect`（模块 `prob`, 家族 `expectation_urn`）\n袋中有 `red` 个红球与 `blue` 个蓝球, 不放回抽出 `draw` 个; 抽出红球个数的数学期望, 以最简分数 p/q 给出 (整数也写成 `k/1`)。\n入参字段: `red`(整数, 1..6), `blue`(整数, 1..6), `draw`(整数, 1..red+blue)\n公开用例:\n  输入(JSON): {\"red\": 1, \"blue\": 3, \"draw\": 3}\n  期望输出: `3/4`\n\n【模块归属一览】\n- `mathkit/modular.py`：`qr_count`, `choose`\n- `mathkit/linear.py`：`det`\n- `mathkit/graphs.py`：`shortest`\n- `mathkit/prob.py`：`expect`\n",
+   "prompt_sha256": "c1b03fadb06a849ea15281370f643ea64528b3d0514950eb76e2e128b1ed941f",
+   "cases": "cases/run_cases_r531_math.py",
+   "hidden_cases": "30",
+   "meta": {
+    "n_mods": 4,
+    "n_ops": 5,
+    "n_cases": 30,
+    "public": 5,
+    "generator": "eval/probe/tasks.py",
+    "seed": 531,
+    "oracle": "MATH_FAMILIES[*].ref (落盘) ⊕ [*].check (判分时刻重算)",
+    "dual_pairs": 35
+   },
+   "fixture_src": {
+    "generator": "eval/probe/tasks.py MATH_FAMILIES (seed 531)",
+    "builder": "eval/rover/r531/build_fixture_r531.py",
+    "contract": "eval/rover/r531/op_contract_r531.py"
+   }
+  }
+ ]
+}

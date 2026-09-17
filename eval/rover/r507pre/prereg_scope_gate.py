@@ -33,10 +33,31 @@ import sys
 REPO = "/home/agentuser/AgentFramework"
 
 
+def resolve_windows(prereg_path, windows_arg):
+    """窗列表来源优先级: 显式 `--windows` (调用方知道真实窗) > 预注册 `window_plan.windows[]` (机读计划)。
+    两者皆无 ⇒ fail-closed (`NO_MACHINE_READABLE_WINDOWS`, rc=3) —— 这正是 R529 事故的根因:
+    计划里只写了单数 `window` ⇒ 闸无从知道还计划了 w2/w3 ⇒ 必须由预注册给出机读窗列表。"""
+    wins = [w.strip() for w in (windows_arg or []) if w and w.strip()]
+    if wins:
+        return wins, "cli"
+    if not prereg_path or not os.path.isfile(prereg_path):
+        return [], "missing_prereg"
+    try:
+        pr = json.load(io.open(prereg_path, encoding="utf-8"))
+    except Exception:  # noqa: BLE001
+        return [], "unparsable"
+    wp = pr.get("window_plan") or {}
+    decl = wp.get("windows")
+    if isinstance(decl, list) and [w for w in decl if str(w).strip()]:
+        return [str(w).strip() for w in decl if str(w).strip()], "prereg.window_plan.windows"
+    return [], "NO_MACHINE_READABLE_WINDOWS"
+
+
 def gate(prereg_path, windows, out_path=None):
     if not prereg_path or not os.path.isfile(prereg_path):
         return {"ok": False, "rc": 3, "reason": "prereg_missing:%s" % prereg_path,
-                "planned": [], "missing": [], "declared_not_planned": []}
+                "planned": [], "missing": [], "declared_not_planned": [],
+                "windows": [], "windows_source": "missing_prereg"}
     try:
         pr = json.load(io.open(prereg_path, encoding="utf-8"))
     except Exception as e:  # noqa: BLE001
@@ -48,6 +69,11 @@ def gate(prereg_path, windows, out_path=None):
         return {"ok": False, "rc": 3, "reason": "window_plan.arms 无可读 snapdir",
                 "planned": [], "missing": [], "declared_not_planned": []}
     wins = [w.strip() for w in windows if w.strip()]
+    if not wins:
+        return {"ok": False, "rc": 3, "reason": "NO_MACHINE_READABLE_WINDOWS",
+                "prereg": os.path.relpath(prereg_path, REPO), "windows": [], "snapdirs": snapdirs,
+                "planned": [], "require": list((pr.get("evidence_scope") or {}).get("require") or []),
+                "missing": [], "declared_not_planned": []}
     planned = sorted({"%s/%s" % (w, s) for w in wins for s in snapdirs})
     require = list((pr.get("evidence_scope") or {}).get("require") or [])
     missing = [k for k in planned if k not in set(require)]
@@ -71,11 +97,14 @@ def selftest():
     arms = [{"snapdir": "agentA0-off", "side": "agent"}, {"snapdir": "codex", "side": "codex"}]
     base = {"round": "T", "window_plan": {"window": "w1", "arms": arms}}
 
-    def mk(name, require, missing_file=False):
+    def mk(name, require, missing_file=False, extra_plan=None):
         p = os.path.join(d, "prereg-%s.json" % name)
         if missing_file:
             return p
-        pr = dict(base, evidence_scope={"require": require})
+        plan = dict(base["window_plan"])
+        if extra_plan:
+            plan.update(extra_plan)
+        pr = dict(base, window_plan=plan, evidence_scope={"require": require})
         io.open(p, "w", encoding="utf-8").write(json.dumps(pr, ensure_ascii=False))
         return p
 
@@ -95,6 +124,31 @@ def selftest():
         rows.append({"nc": name, "rc": r["rc"], "expect_rc": exp, "missing": r["missing"],
                      "reason": r["reason"], "ok": ok})
         print("%-24s rc=%d(exp %d) missing=%s -> %s" % (name, r["rc"], exp, r["missing"], "PASS" if ok else "FAIL"))
+
+    # --- v2 (R531): 窗列表来源机读 + fail-closed ---------------------------------
+    # ① 预注册自带 window_plan.windows[] ⇒ 无需调用方传参即可判定 (R529 事故的可机读版本)
+    wp = mk("nc4", ["w1/agentA0-off", "w1/codex", "w2/agentA0-off", "w2/codex", "w3/agentA0-off", "w3/codex"],
+            extra_plan={"windows": ["w1", "w2", "w3"]})
+    w4, s4 = resolve_windows(wp, [])
+    r4 = gate(wp, w4)
+    ok4 = (s4 == "prereg.window_plan.windows" and r4["rc"] == 0)
+    # ② 预注册只有单数 window (R529 真实形态) 且调用方不传参 ⇒ 必须 rc=3 拒判 (不得猜)
+    wp2 = mk("nc5", ["w1/agentA0-off", "w1/codex"])
+    w5, s5 = resolve_windows(wp2, [])
+    r5 = gate(wp2, w5)
+    ok5 = (s5 == "NO_MACHINE_READABLE_WINDOWS" and r5["rc"] == 3)
+    # ③ 调用方显式窗超出预注册计划 ⇒ rc=1 且逐项点名 (R530 真实数据的机读替代形态)
+    wp3 = mk("nc6", ["w1/agentA0-off", "w1/codex"], extra_plan={"windows": ["w1"]})
+    w6, s6 = resolve_windows(wp3, ["w1", "w2"])
+    r6 = gate(wp3, w6)
+    ok6 = (s6 == "cli" and r6["rc"] == 1 and r6["missing"] == ["w2/agentA0-off", "w2/codex"])
+    for nm, ok, r, s in (("NC4_windows_from_prereg_ok", ok4, r4, s4),
+                         ("NC5_no_machine_readable_windows", ok5, r5, s5),
+                         ("NC6_cli_window_superset", ok6, r6, s6)):
+        allok = allok and ok
+        rows.append({"nc": nm, "rc": r["rc"], "reason": r["reason"], "missing": r["missing"],
+                     "windows_source": s, "ok": ok})
+        print("%-32s rc=%d src=%s missing=%s -> %s" % (nm, r["rc"], s, r["missing"], "PASS" if ok else "FAIL"))
     print("SCOPE_GATE_SELFTEST_ALL_OK=%s" % allok)
     return 0 if allok else 1
 
@@ -102,14 +156,21 @@ def selftest():
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--prereg", default=os.path.join(REPO, "eval/rover/r520/prereg-r520.json"))
-    ap.add_argument("--windows", default="w1")
+    ap.add_argument("--windows", default="",
+                    help="显式窗列表 (逗号分隔); 省略 ⇒ 读预注册 window_plan.windows[]; 两者皆无 ⇒ rc=3 fail-closed")
     ap.add_argument("--out", default=None)
     ap.add_argument("--selftest", action="store_true")
     a = ap.parse_args()
     if a.selftest:
         return selftest()
-    r = gate(a.prereg, a.windows.split(","), a.out)
+    wins, src = resolve_windows(a.prereg, a.windows.split(",") if a.windows else [])
+    r = gate(a.prereg, wins, a.out)
+    r["windows_source"] = src
+    if a.out:
+        io.open(a.out, "w", encoding="utf-8", newline="\n").write(
+            json.dumps(r, ensure_ascii=False, indent=1) + "\n")
     print(json.dumps(r, ensure_ascii=False, indent=1))
+    print("WINDOWS_SOURCE=%s WINDOWS=%s" % (src, ",".join(wins) or "-"))
     print("SCOPE_GATE_RC=%d" % r["rc"])
     return r["rc"]
 

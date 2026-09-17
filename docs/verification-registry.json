@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R529",
+ "updated_round": "R531",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -6646,9 +6646,8 @@
     "eval/rover/r529/cases/cases-r529-f2.json",
     "eval/rover/r529/grade_f2_r529.py",
     "eval/rover/r529/taskset-r529.json",
-    "eval/rover/r529/evidence/nc-fixture-r529.json",
-    "eval/rover/r529/evidence/nc-fixture-grader-r529.json"
-   ],
+    "eval/rover/r529/evidence/nc-fixture-r529.json"
+    ],
    "evidence_cmd": "python3 eval/rover/r529/build_fixture_r529.py && python3 eval/rover/r529/j1b_grader_nc_r529.py",
    "evidence_path": "eval/rover/r529/evidence/nc-fixture-r529.json",
    "evidence_generated_with": {
@@ -6692,6 +6691,57 @@
    },
    "negative_control": "① 基线臂 A0-off 在 w2/F1 实跑 55/58 ⇒ 前置器 rc=1 如实阻塞(不假绿); ② 外部真值臂 w3/F2 实跑 29/30 ⇒ `policy_demoted`, 但仍在全局 blocked 单列(不隐藏); ③ 起手闸 w1 两次采样不足(内存 2597<2650MB)被拒 ⇒ 该次运行作废、清 LSP 后重跑(不作读数)。",
    "owner_round": "R529"
+  },
+  {
+   "id": "internal.wythoff-independent-oracle-r531",
+   "level": "L4",
+   "capability": "**F1 非同源判据器 (R531)**: 手写「必败点 DP + 暴力枚举合法着法」独立 oracle, 对 wythoff 族 15 条冻结用例重算期望并与夹具 `expected_stdout` 逐字节比对, 再对四臂产出逐例分类 (`canonical` / `illegal_move` / `wrong_lose` / `wrong_win` / `not_winning`) 。读数: 独立 oracle 与冻结期望 **15/15 完全一致** ⇒ **夹具无缺陷**; A0-off 13/15 (`#43 (21,25)` 出 `WIN 1 13`、`#57 (25,25)` 出 `WIN 2 11`, 皆 `illegal_move` = 取两堆不等量, 题面只允许单堆取或等量双取) · A1-on 13/15 (`#55 (1,1)`、`#57 (25,25)` 皆 `LOSE` = `wrong_lose`, 漏 `(t,t)` 双取分支) · A2-merge 15/15 · codex 15/15 ⇒ R531 的 `exec_precondition` rc=1 属**能力缺陷**, 非夹具缺陷。",
+   "covers": [
+    "eval/rover/r531/oracle_wythoff_r531.py",
+    "eval/rover/r531/evidence/oracle-wythoff-r531.json",
+    "eval/rover/r531/cases/cases-r521.json",
+    "eval/rover/r531/snapshots/w1/",
+    "eval/rover/r507pre/precondition-r531.json"
+   ],
+   "evidence_cmd": "python3 eval/rover/r531/oracle_wythoff_r531.py --json eval/rover/r531/evidence/oracle-wythoff-r531.json  (rc=0)",
+   "evidence_path": "eval/rover/r531/evidence/oracle-wythoff-r531.json",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "7f8af3db9a81",
+    "instrument": "eval/rover/r531/oracle_wythoff_r531.py",
+    "instrument_sha12": "648cfe9b44e4",
+    "binding": "audit-pin",
+    "audited_by_round": "R531"
+   },
+   "negative_control": "`--neg-control` rc=0 且两针皆响: ① NC1 把首条 wythoff 用例期望篡改为错值 ⇒ `fixture_agrees=False` (不一致被检出, disagreements=1); ② NC2 令 oracle 分类非法着法 `WIN 1 2` @(21,25) ⇒ 必须为 `illegal_move` (实测 True) ⇒ 判据器非恒真、非恒假。",
+   "owner_round": "R531"
+  },
+  {
+   "id": "internal.merge-axis-mount-r531",
+   "level": "L4",
+   "capability": "**合批轴挂载证明器 v2 (R531)**: 只读**实发** system prompt 归档, 证明单变量 env `AGENTFRAMEWORK_ACTION_MERGE` 真接上 —— M1 前缀关系 (`A1-on` 的 system 是 `A2-merge` 的前缀) · M2 差量**逐字节等于**从源码抽取的 `ActionLoopDiscipline.MergeText` 全文 (132 字, 两侧 sha12 同为 `9be41f32e862`) · M3 `A0-off` 无纪律块 · M4 三臂共有前缀锚。读数: 9,434 / 9,968 / 10,100 字, `MOUNT_OK=true` ⇒ 合批臂的读数可归因到第 7 条, 而非「未接上的空轴」。",
+   "covers": [
+    "eval/rover/r531/mount_check_r531.py",
+    "eval/rover/r531/evidence/mount-r531-w1.json",
+    "src/agent.modelqueue/ActionLoopDiscipline.cs",
+    "eval/rover/r531/run-0917-213234/adapter/"
+   ],
+   "evidence_cmd": "python3 eval/rover/r531/mount_check_r531.py --run-dir eval/rover/r531/run-0917-213234  (rc=0)",
+   "evidence_path": "eval/rover/r531/evidence/mount-r531-w1.json",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "9377d2c67190",
+    "instrument": "eval/rover/r531/mount_check_r531.py",
+    "instrument_sha12": "60830eb89354",
+    "binding": "audit-pin",
+    "audited_by_round": "R531"
+   },
+   "negative_control": "`--neg-control` rc=0 且两针皆响: ① NC1 把 A1/A2 角色对调 (以合批臂为基线) ⇒ M1/M2 判红; ② NC2 同臂自比 (差量为空) ⇒ M2 判红。另: M2 不信正则, 用逐字符扫描抽 `MergeText` (文本含 `;`/转义时正则截断, 本次实测截断值 66 ≠ 132 ⇒ 已修为扫描器)。",
+   "owner_round": "R531"
   }
  ],
  "aot_check_policy": "release_tag_only",
