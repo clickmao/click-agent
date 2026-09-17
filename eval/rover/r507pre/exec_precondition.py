@@ -368,6 +368,9 @@ def run_project(label, taskset_path, win_root, snap_root, wins, out_path, timeou
     if out["scope_source"] and not out["scope_prereg"]:
         print("VERDICT_POSTHOC_ONLY ⇒ rc=1 (事后声明不构成验收面)")
         return 1
+    if out["blocked"]:
+        print("VERDICT_BLOCKED ⇒ rc=1 (存在未执行/不正确臂 ⇒ 不得 rc=0 假绿; R522 修: rc 前置要求 blocked 空)")
+        return 1
     return 0 if out["acceptable_scoped"] else 1
 
 

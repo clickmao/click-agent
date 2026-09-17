@@ -1,0 +1,56 @@
+{
+ "round": "R522",
+ "mainline": "主线 = 随机真实开发任务 × codex 外部对照自检；本轮的『针对性问题』= 用户 2026-09-17 逐字质疑「新算token你仅是上下文用的没codex好，召回等系统全是问题」",
+ "family": "games-longtask-v1",
+ "made_before_run": true,
+ "question": "动作环上下文纪律（验证合并 / 探针不落盘 / 收尾从简）能否在不降质量的前提下压低**调用数**与**有效 token**（新算 prompt + completion）？",
+ "treatment": "env AGENTFRAMEWORK_ACTION_DISCIPLINE 缺省开 ⇒ ActionLoopDiscipline.Text 追加到动作环 SystemPrompt 尾部（src/agent.modelqueue/ActionLoopDiscipline.cs；注入点 ModelQueueAdapter 动作环分支内）",
+ "single_variable": {
+  "arms": {
+   "A0-off": "同二进制 + AGENTFRAMEWORK_ACTION_DISCIPLINE=off（等价 R521 旧行为）",
+   "A1-on": "同二进制 + 缺省（纪律生效）",
+   "C": "外部真值 codex-cli，同一真实模型（参照列，非消融面）"
+  },
+  "binary": "/tmp/pub_r522/agenthost（两臂同一二进制 ⇒ 变量只有 env）",
+  "note": "臂序 A0 → A1 → C：基线在前，避免把开窗冷启偏差记到处理臂头上"
+ },
+ "input_pins": {
+  "taskset_source": "eval/rover/r522/taskset-r522.json（= r521/taskset-r521.json 的逐字节副本, 仅为命中前置器 --round r522 的发现路径; sha256 同上, 题面禁漂移）",
+  "taskset_sha256": "d9b373d87e7e046a95060e38db0fd32e95ae3baaaf39e7ed4408121f889a47aa",
+  "prompt_sha256": "516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3",
+  "cases_total": 58,
+  "grader": "eval/rover/r519/grade_r519.py（md5 9c8a00043ef2b235e4929a024ea16dea，与 R519/R520/R521 同判据器）",
+  "model": "deepseek-chat"
+ },
+ "criteria": {
+  "C1_same_input": "题面 sha256 == 516f3208…（机检，漂移即停手）；adapter 落盘 models 集合两臂同为 {deepseek-chat}",
+  "C2_quality_no_regression": "A1-on 用例通过数 == 58 且 >= A0-off（整题全对为 require 面）",
+  "C3_calls": "A1-on 调用数 <= 0.70 × A0-off（主判据；对应『每步重发全上下文』的往返数）",
+  "C4_new_prompt": "A1-on 新算 prompt <= 0.70 × A0-off",
+  "C5_completion": "A1-on completion <= 0.60 × A0-off（收尾从简的直接作用面）",
+  "C6_honest": "命中率/cached 只作分列读数，不作降幅宣称；单窗单跑禁作能力结论（需 reps>=3）；铁律 11 未绿一律标『参考(未可验收)』"
+ },
+ "predictions": {
+  "calls_drop_pct_min": 30,
+  "new_prompt_drop_pct_min": 30,
+  "completion_drop_pct_min": 40
+ },
+ "falsified_if": "任一预测未达 ⇒ 该维度宣称收窄为『无增益』并按剩余维度作答；若 A1-on 用例 < A0-off ⇒ 判定纪律有害，回退缺省为关（AGENTFRAMEWORK_ACTION_DISCIPLINE 缺省 off）",
+ "non_claims": [
+  "不宣称优于 codex：codex 5 次调用/新算 3,757 是外部实现下界，本侧不必然可达",
+  "跨窗禁相减：R521 w2 的 19 调用/18,432/14,169 只作历史参考列，不得与 R522 相减当降幅",
+  "无缓存折扣宣称：cached_tokens 约 1:50 价差只影响折算，不影响本轮分列读数"
+ ],
+ "evidence_scope": {
+  "require": [
+   "w1/agentA1",
+   "w1/agentA0"
+  ],
+  "nonrequired": [
+   {
+    "pattern": "w1/codex",
+    "reason": "外部真值臂是参照列（H2/H3/H4 同环境同输入同模型），不是本轮消融面；其读数照报，但不进 C3/C4/C5 的验收面。此声明在起臂前落盘。"
+   }
+  ]
+ }
+}

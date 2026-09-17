@@ -126,6 +126,9 @@ public sealed class ModelQueueAdapter : ILLMCaller, agent.subagent.ILLMCallerFor
             if (ToolDeclGate.ShouldDeclare(prompt.Intent, ToolDeclGate.IsEnabled(),
                     qp.IsolatedChannel, ToolDeclGate.IsChannelGateEnabled()))
                 qp.ToolsJson = ActionToolDecl.ToolsJson;
+            // R522: 动作环专属上下文纪律 (验证合并 / 探针不落盘 / 收尾从简)。环关或纪律关 ⇒ 请求体逐字节同旧版。
+            if (ActionLoopDiscipline.IsEnabled())
+                qp.SystemPrompt = ActionLoopDiscipline.Apply(qp.SystemPrompt);
             var (resp, outcome) = await ActionLoopRunner.RunAsync(
                 qp,
                 (p, c) => _router.CallAsync(p, TaskKindHint.General, intent, c),

@@ -1,0 +1,19 @@
+R522 事后修订记录 (post-fix, 2026-09-17) —— 原始 SUMMARY-r522-w1.txt 保留为原始记录, 本文件登记同轮修复后的器具读数
+run=eval/rover/r522/run-0917-161029
+agent_bin=/tmp/pub_r522/agenthost  sha256=cc611646e76a5810604f5a8ce44bf85dd4456f3fd436c93fa2331c9bd28580e7  bytes=15609168  IL_warnings=0
+
+[首跑器具读数 → 修复后读数]
+mount_rc=1 (假阴性: mount_check_r522.py 把 M4 写在「system 长度唯一」分支内, 处理臂存在第二条管线 733/5456 ⇒ 键缺失)
+  → mount_rc=0 MOUNT_OK=True  {"M1_on_anchor_all": true, "M2_off_anchor_none": true, "M3_ok": true, "M4_sha8_disjoint": true, "M5_max_len_delta_pos": true}
+  → 实发 system 长度: A0-off=5234 / A1-on=5456 (+222 = 纪律块), anchor 只在 A1
+kpi_rc=1 (判据未达标, 非器具缺陷): C2=true C3=false C4=false C5=false ⇒ KPI_ALL_PASS=False
+precond_rc=0 (假绿: acceptable_scoped 可绕过 blocked 非空; 且 r522/cases 缺 cases-r521.json ⇒ missing_case_script)
+  → precond_rc=1 (fail-closed 已修: rc 前置要求 blocked 为空; 用例语料补齐 sha256=270128eb85c7afc07244…)
+  → 前置器独立重放快照: agentA0 56/58 rc=1 (wythoff#43-public, wythoff#57-hidden) · agentA1 58/58 rc=0 correct=True · codex 58/58 rc=0
+  → EXECUTABLE_AND_CORRECT=False (全局) / ACCEPTABLE_SCOPED=False ⇒ 本轮读数一律「参考(未可验收)」
+
+[消融表 (adapter 原样 usage 加总, 口径=调用数/新算 prompt/completion 分列)]
+A0-off   56/58  calls=4  new_prompt=9075   cached=29824  hit=76.7%  completion=3850
+A1-on    58/58  calls=4  new_prompt=10128  cached=20736  hit=67.2%  completion=4973
+C-codex  58/58  calls=5  new_prompt=3775   cached=37376  hit=90.8%  completion=2659
+ratios(A1/A0): calls 1.000 · new_prompt 1.116 · completion 1.292

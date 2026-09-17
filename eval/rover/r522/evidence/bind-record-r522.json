@@ -1,0 +1,37 @@
+{
+ "schema": "evidence-binding-run/v1",
+ "round": "R522",
+ "round_explicit": true,
+ "mode": "apply",
+ "registry": "docs/verification-registry.json",
+ "registry_is_scratch": false,
+ "ts_utc": "2026-09-17T08:15:51+00:00",
+ "tail_contract": "R481-tail-lf",
+ "registry_tail_input": "NONE",
+ "noncanonical_input": true,
+ "noncanonical_reason": "tail_lf_missing",
+ "ser_assert": "OK",
+ "scope": "only(n=2)",
+ "covered_before": 2,
+ "covered_after": 2,
+ "covered_total": 193,
+ "unchanged": 0,
+ "touched": 2,
+ "idempotent": false,
+ "write_readback": "OK",
+ "proj_pin_skipped": [],
+ "frozen_evidence_dirty_skipped": [
+  "internal.ablation-action-loop-context-discipline-r522: 证据在工作区脏 (现盘 af5784e89178 / 归档 不在归档树) ⇒ 保持 frozen 原声明不变; 处置: --only internal.ablation-action-loop-context-discipline-r522 --round <轮号> --apply (记录 → 重审)",
+  "eval.precondition-blocked-failclosed-r522: 证据在工作区脏 (现盘 308d9ba985ce / 归档 不在归档树) ⇒ 保持 frozen 原声明不变; 处置: --only eval.precondition-blocked-failclosed-r522 --round <轮号> --apply (记录 → 重审)"
+ ],
+ "frozen_evidence_drift": [],
+ "numstat": "56\t1\tdocs/verification-registry.json",
+ "violations": [
+  "internal.ablation-action-loop-context-discipline-r522: 冻结 pin 与现盘字节不符 (声明 a7e08af7e126 / 实际 af5784e89178) (R2e —— 证据已被改写或未重审)",
+  "internal.ablation-action-loop-context-discipline-r522: 器具绑定与现盘不符 (声明 cd2e864a87de / 实际 fc47c2ce50ab) (R2e —— 器具已改, 引用它的证据须重审)",
+  "eval.precondition-blocked-failclosed-r522: 冻结 pin 与现盘字节不符 (声明 a7e08af7e126 / 实际 308d9ba985ce) (R2e —— 证据已被改写或未重审)",
+  "eval.precondition-blocked-failclosed-r522: 器具绑定与现盘不符 (声明 cd2e864a87de / 实际 fc47c2ce50ab) (R2e —— 器具已改, 引用它的证据须重审)"
+ ],
+ "violations_total": 4,
+ "rc": 2
+}
