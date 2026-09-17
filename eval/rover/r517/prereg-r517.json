@@ -1,0 +1,27 @@
+{
+  "round": "R517",
+  "title": "主线回归: 编排器 × codex 外部真值 (同题面·同窗·同模型)",
+  "baseline": "cddcabe (R516)",
+  "declared": "2026-09-17T11:5x, 于起臂同一分钟、任何臂结果产生之前",
+  "why": "R514/R515/R516 连续三轮为机制轮(0 处 codex 引用) ⇒ 偏离主线『随机开发任务 × codex 外部真值对照』; 本轮把编排器接回外部对照。",
+  "fixture": {
+    "task": "p4 tasksvc (12 隐藏用例)",
+    "prompt_sha256_12": "678624f5d420",
+    "prompt_同源断言": "r511 taskset p4 == r512 taskset p4 (逐字节), 否则 fail-closed 停手",
+    "plan": "eval/rover/r517/plan-p4-v3.txt (3 节点串行, sha12 71f09e94b62e)",
+    "scope": "eval/rover/r517/scope-p4.txt (R516 NodeScopeFile DSL)"
+  },
+  "arms": ["S: 本侧单轮一次成型 6 步", "O: 本侧编排器 3 节点 × 6 步 + --scope", "C: codex-cli (外部真值, 同模型 deepseek-chat)"],
+  "criteria": {
+    "C1": "三臂判分机检读数齐备(各 12 用例, 无 unreported)",
+    "C2": "铁律 11 前置: 至少一臂 rc=0 且用例全过 ⇒ 该臂数据才可作可验收对比",
+    "C3": "编排器臂节点数/预算上界 = 3×6 = 18 步 > 单轮 6 步(机制生效证据)",
+    "C4": "写范围: scope 违规 = 0 (越界拦阻未误伤)",
+    "C5": "同窗: 三臂同时刻窗口 + 同题面 sha + 同 adapter/adapter usage 真值"
+  },
+  "non_claims": [
+    "n=1/臂 ⇒ 不宣称稳定优越, 只作同窗读数",
+    "跨轮禁相减; 与 R513 (p4 v2) 不同窗口禁相减",
+    "codex 静态面自带 agentic 循环, 非同源实现对照"
+  ]
+}
