@@ -1,0 +1,22 @@
+R512 逐臂逐题 (tokens/调用 取 adapter 落盘 usage 真值; 质量取隐藏用例机判)
+run    tid cases all_pass    calls    tokens  elapsed
+A-r1   p3  12/12 True            7    119530     48.6
+A-r1   p4  2/12  False           7     76109     28.2
+A-r2   p3  12/12 True            7     94607     35.9
+A-r2   p4  4/12  False           7     85302     31.7
+B-r1   p3  12/12 True            4     60449     28.4
+B-r1   p4  4/12  False           9    126086     40.7
+B-r2   p3  12/12 True           14    263437     61.0
+B-r2   p4  4/12  False           8     87164     24.3
+C-r1   p3  12/12 True           46   1266833    174.7
+C-r1   p4  4/12  False          16    204505     50.3
+C-r2   p3  12/12 True           43    849925     87.6
+C-r2   p4  4/12  False          14    192019     67.3
+
+arm    side   tasks    full_ok      calls tok(k)  elapsed
+A      agent      2          1         14    196     77.0
+A      agent      2          1         14    180     68.0
+A      agent      2          1         13    187     69.0
+A      agent      2          1         22    351     85.0
+C      codex      2          1         62   1471    225.0
+C      codex      2          1         57   1042    155.0

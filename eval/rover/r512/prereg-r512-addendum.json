@@ -1,0 +1,87 @@
+{
+ "round": "R512",
+ "kind": "prereg_addendum",
+ "written_at": "2026-09-17T10:04:50+0800",
+ "super": "prereg-r512.json",
+ "super_criteria": [
+  "C1_same_env_same_input_same_model",
+  "C2_quality_not_lower",
+  "C3_token_down",
+  "C4_remote_calls_down",
+  "C5_executable_and_correct"
+ ],
+ "new_arms": [
+  {
+   "run": "B-r1",
+   "side": "agent",
+   "max_steps": 12,
+   "window": "w1",
+   "pairs_with": "C-r1"
+  },
+  {
+   "run": "B-r2",
+   "side": "agent",
+   "max_steps": 12,
+   "window": "w2",
+   "pairs_with": "C-r2"
+  }
+ ],
+ "state_at_write": {
+  "A-r1": "done",
+  "A-r2": "done",
+  "C-r1": "in_flight",
+  "C-r2": "not_started",
+  "B-r1": "中止尝试已弃用(见 aborted_prior_attempts); 保留跑次尚未开跑",
+  "B-r2": "中止尝试已弃用(见 aborted_prior_attempts); 保留跑次尚未开跑"
+ },
+ "aborted_prior_attempts": {
+  "note": "本文件写入时刻 = 10:03:44; 其前已有 B 臂**中止尝试**(10:02:35 起), 因两臂并发交叠导致 adapter 落盘索引交织(读数不可归因) ⇒ 全部弃用并从读数排除; 保留下来的 B-r1/B-r2 = 本文件写入之后串行重跑",
+  "b_r1_0": "10:02:35 起, ~10:02:50 被误杀 (rc=143), 弃用",
+  "b_r2_1": "10:02:50 起, 10:04:11 完成但与 b_r1_2 交叠, 弃用",
+  "b_r1_2": "10:03:45 起, 10:04:15 主动中止 (rc=143), 弃用",
+  "excluded_agent_dump_indices": "29..57 (不属于任何保留跑次的 adapter_range)",
+  "log": "run_dir/logs/aborted-b-attempts.json"
+ },
+ "motivation": "主验收面 A=出厂默认预算 6; 质量不达则 token 降幅只能标参考 ⇒ 增补预算维度的平价对照点(单变量: 仅步数预算)",
+ "criteria": {
+  "C2_quality_not_lower": {
+   "rule": "每窗口 本侧 agentA 整题全对 2/2 且用例全过; 用例通过率 >= codex 侧",
+   "machine_check": "argv.cases_pass_ratio"
+  },
+  "C3_token_down": {
+   "rule": "每窗口 本侧 total_tokens <= 0.70 * codex total_tokens (上游 usage 真值; unreported 单列)",
+   "machine_check": "argv.total_tokens_ratio"
+  },
+  "C4_remote_calls_down": {
+   "rule": "每窗口 本侧 calls <= codex calls (adapter 去重请求数)",
+   "machine_check": "argv.calls_ratio"
+  }
+ },
+ "scope_note": "B 臂在主 prereg 的 evidence_scope 之外(不受 require 约束); 报告须单列, 禁以 B 替换 A 宣称验收",
+ "instruments": {
+  "agent_side_runner": {
+   "path": "eval/rover/r511/proj_run_side.py",
+   "sha256": "40e6c75d457a031886a664a3baa040b2bb6a33d619c960c0b36d21c58d38082d"
+  },
+  "aggregate": {
+   "path": "eval/rover/r512/aggregate_r512.py",
+   "sha256": "fa838afd8d94fa7dd7565972e0b4c529826edeea266ad07ccb20d13ec4abc52b"
+  },
+  "freeze": {
+   "path": "eval/rover/r512/freeze_snapshot_r512.py",
+   "sha256": "f68a08aa81591d3e0d11b7c24617978a59df97b1920eaf5391d66ed69a1865ed"
+  },
+  "criteria_checker": {
+   "path": "eval/rover/r512/check_criteria_r512.py",
+   "sha256": "55835df5e917a1e366e5c82f5ccd95dc153bc3729117837e016f238265ffbf99"
+  },
+  "taskset": {
+   "path": "eval/rover/r512/taskset-r512.json",
+   "sha256": "3154e19595e00ff984dd1f483eb8153c928549f9bf98693548e82f7dd51d9b84"
+  },
+  "main_prereg": {
+   "path": "eval/rover/r512/prereg-r512.json",
+   "sha256": "cc2547779b95a7815cf46174ef85102e2d3a608a3891bfacefbc43c4eb4420d8"
+  }
+ }
+}

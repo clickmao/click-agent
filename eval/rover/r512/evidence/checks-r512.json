@@ -1,0 +1,182 @@
+{
+ "run_dir": "/tmp/r512/run-0917-095853",
+ "prereg": "/home/agentuser/AgentFramework/eval/rover/r512/prereg-r512.json",
+ "checks": [
+  {
+   "id": "C1_same_env_same_input_same_model",
+   "pass": true,
+   "detail": {
+    "all_models": {
+     "A": [
+      "deepseek-chat"
+     ],
+     "C": [
+      "deepseek-chat"
+     ]
+    },
+    "nonempty": true,
+    "equal": true,
+    "prompt_sha": {
+     "p3": "efa48cb2ccef6b4760211910b8ae277f9a5ff41eae5a8d0fd0b4df029faa23eb",
+     "p4": "678624f5d420205e71d1c2e667a7ba3e0094a955eafa46265129b90cb44d16dd"
+    },
+    "taskset_sha256": "3154e19595e00ff984dd1f483eb8153c928549f9bf98693548e82f7dd51d9b84"
+   }
+  },
+  {
+   "id": "C2_quality_not_lower",
+   "pass": true,
+   "detail": {
+    "pairs": 4,
+    "quality_not_lower_all": true,
+    "detail": {
+     "w1/p3": {
+      "agent_cases": "12/12",
+      "codex_cases": "12/12"
+     },
+     "w1/p4": {
+      "agent_cases": "4/12",
+      "codex_cases": "4/12"
+     },
+     "w2/p3": {
+      "agent_cases": "12/12",
+      "codex_cases": "12/12"
+     },
+     "w2/p4": {
+      "agent_cases": "4/12",
+      "codex_cases": "4/12"
+     }
+    }
+   }
+  },
+  {
+   "id": "C3_token_down",
+   "pass": true,
+   "detail": {
+    "ratios": [
+     0.0477,
+     0.6165,
+     0.31,
+     0.4539
+    ],
+    "max": 0.6165,
+    "threshold": 0.7,
+    "threshold_source": "预注册规则里的常数"
+   }
+  },
+  {
+   "id": "C4_remote_calls_down",
+   "pass": true,
+   "detail": {
+    "ratios": [
+     0.087,
+     0.5625,
+     0.3256,
+     0.5714
+    ],
+    "max": 0.5714,
+    "threshold": 1.0,
+    "threshold_source": "规则为比较式(无常数) ⇒ 比值上界由规则式推导"
+   }
+  },
+  {
+   "id": "C5_executable_and_correct",
+   "pass": false,
+   "detail": {
+    "acceptable_scoped": false,
+    "executable_and_correct": false,
+    "self_report_mismatch": [],
+    "blocked_scoped": [
+     "w1/agentA/p4 rc=1 cases=2/12(expect 12) failed=add_creates_and_lists,id_monotonic_no_reuse,unicode_roundtrip,done_idempotent,done_unknown_id,ttl_expiry_uses_injected_clock,expire_removes_expired_tasks,persistence_across_processes,no_temp_residue,list_filter_and_order",
+     "UNDECLARED_SCOPE w1/agentB",
+     "UNDECLARED_SCOPE w1/agentB",
+     "w1/agentB/p4 rc=1 cases=4/12(expect 12) failed=add_creates_and_lists,id_monotonic_no_reuse,unicode_roundtrip,done_idempotent,done_unknown_id,persistence_across_processes,no_temp_residue,list_filter_and_order",
+     "w1/codex/p4 rc=1 cases=4/12(expect 12) failed=add_creates_and_lists,id_monotonic_no_reuse,unicode_roundtrip,done_idempotent,done_unknown_id,persistence_across_processes,no_temp_residue,list_filter_and_order",
+     "w2/agentA/p4 rc=1 cases=4/12(expect 12) failed=add_creates_and_lists,id_monotonic_no_reuse,unicode_roundtrip,done_idempotent,done_unknown_id,persistence_across_processes,no_temp_residue,list_filter_and_order",
+     "UNDECLARED_SCOPE w2/agentB",
+     "UNDECLARED_SCOPE w2/agentB",
+     "w2/agentB/p4 rc=1 cases=4/12(expect 12) failed=add_creates_and_lists,id_monotonic_no_reuse,unicode_roundtrip,done_idempotent,done_unknown_id,persistence_across_processes,no_temp_residue,list_filter_and_order",
+     "w2/codex/p4 rc=1 cases=4/12(expect 12) failed=add_creates_and_lists,id_monotonic_no_reuse,unicode_roundtrip,done_idempotent,done_unknown_id,persistence_across_processes,no_temp_residue,list_filter_and_order"
+    ]
+   }
+  }
+ ],
+ "tables": {
+  "w1/p3": {
+   "window": "w1",
+   "tid": "p3",
+   "codex": {
+    "cases": "12/12",
+    "calls": 46,
+    "tok": 1266833,
+    "elapsed_s": 174.65
+   },
+   "A": {
+    "cases": "12/12",
+    "calls": 4,
+    "tok": 60449,
+    "tok_ratio": 0.0477,
+    "calls_ratio": 0.087,
+    "quality_ge_codex": true
+   }
+  },
+  "w1/p4": {
+   "window": "w1",
+   "tid": "p4",
+   "codex": {
+    "cases": "4/12",
+    "calls": 16,
+    "tok": 204505,
+    "elapsed_s": 50.27
+   },
+   "A": {
+    "cases": "4/12",
+    "calls": 9,
+    "tok": 126086,
+    "tok_ratio": 0.6165,
+    "calls_ratio": 0.5625,
+    "quality_ge_codex": true
+   }
+  },
+  "w2/p3": {
+   "window": "w2",
+   "tid": "p3",
+   "codex": {
+    "cases": "12/12",
+    "calls": 43,
+    "tok": 849925,
+    "elapsed_s": 87.62
+   },
+   "A": {
+    "cases": "12/12",
+    "calls": 14,
+    "tok": 263437,
+    "tok_ratio": 0.31,
+    "calls_ratio": 0.3256,
+    "quality_ge_codex": true
+   }
+  },
+  "w2/p4": {
+   "window": "w2",
+   "tid": "p4",
+   "codex": {
+    "cases": "4/12",
+    "calls": 14,
+    "tok": 192019,
+    "elapsed_s": 67.34
+   },
+   "A": {
+    "cases": "4/12",
+    "calls": 8,
+    "tok": 87164,
+    "tok_ratio": 0.4539,
+    "calls_ratio": 0.5714,
+    "quality_ge_codex": true
+   }
+  }
+ },
+ "prereg_prompt_sha": {
+  "p3": "efa48cb2ccef6b4760211910b8ae277f9a5ff41eae5a8d0fd0b4df029faa23eb",
+  "p4": "678624f5d420205e71d1c2e667a7ba3e0094a955eafa46265129b90cb44d16dd"
+ }
+}

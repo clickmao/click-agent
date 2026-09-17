@@ -1,0 +1,117 @@
+{
+ "label": "R513",
+ "layout": "project",
+ "taskset": "eval/rover/r513/taskset-r513.json",
+ "snapshot_root": "eval/rover/r513/snapshots",
+ "tasks_n": 1,
+ "windows_n": 2,
+ "rule": "可验收前置(project 布局): 仓内不可变快照 ⇒ 独立物化到全新临时目录 ⇒ python3 -I -B 实跑隐藏用例脚本 ⇒ 逐条机械判对; 自报 all_pass 只作对照不吃",
+ "scope_source": "eval/rover/r513/prereg-r513.json",
+ "scope_prereg": true,
+ "scope_require": [
+  "*/agentA",
+  "*/codex"
+ ],
+ "scope_nonrequired": [],
+ "windows": {
+  "w1": {
+   "dir": "eval/rover/r513/evidence/windows/w1",
+   "arms": {
+    "agentA/p4": {
+     "arm": "agentA",
+     "tag": "A",
+     "tid": "p4",
+     "side": "agent",
+     "kind": "project",
+     "family": "task-queue-cli",
+     "cases_n": 12,
+     "cases_expected": 12,
+     "cases_pass": 12,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r513/evidence/windows/w1/report.json",
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    },
+    "codex/p4": {
+     "arm": "codex",
+     "tag": "C",
+     "tid": "p4",
+     "side": "codex",
+     "kind": "project",
+     "family": "task-queue-cli",
+     "cases_n": 12,
+     "cases_expected": 12,
+     "cases_pass": 12,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r513/evidence/windows/w1/report.json",
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    }
+   }
+  },
+  "w2": {
+   "dir": "eval/rover/r513/evidence/windows/w2",
+   "arms": {
+    "agentA/p4": {
+     "arm": "agentA",
+     "tag": "A",
+     "tid": "p4",
+     "side": "agent",
+     "kind": "project",
+     "family": "task-queue-cli",
+     "cases_n": 12,
+     "cases_expected": 12,
+     "cases_pass": 12,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r513/evidence/windows/w2/report.json",
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    },
+    "codex/p4": {
+     "arm": "codex",
+     "tag": "C",
+     "tid": "p4",
+     "side": "codex",
+     "kind": "project",
+     "family": "task-queue-cli",
+     "cases_n": 12,
+     "cases_expected": 12,
+     "cases_pass": 12,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r513/evidence/windows/w2/report.json",
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    }
+   }
+  }
+ },
+ "self_report_mismatch": [],
+ "claim_unmapped": [],
+ "blocked": [],
+ "blocked_scoped": [],
+ "nonrequired_arms": [],
+ "undeclared_arms": [],
+ "self_report_agrees": true,
+ "executable_and_correct": true,
+ "acceptable_scoped": true
+}

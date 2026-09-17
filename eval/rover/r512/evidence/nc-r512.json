@@ -1,0 +1,108 @@
+{
+ "round": "R512",
+ "grader": "eval/rover/r511/grade_r511.py",
+ "hollow": false,
+ "positive": {
+  "p3": {
+   "all_pass": true,
+   "pass": 12,
+   "of": 12,
+   "rc": 0
+  },
+  "p4": {
+   "all_pass": true,
+   "pass": 12,
+   "of": 12,
+   "rc": 0
+  }
+ },
+ "mutants": [
+  {
+   "id": "p3_incr_nonatomic",
+   "task": "p3",
+   "expect_fail": [
+    "incr_concurrent_atomic"
+   ],
+   "failed_cases": [
+    "incr_concurrent_atomic"
+   ],
+   "missed": [],
+   "all_pass_after_mutation": false,
+   "detected": true
+  },
+  {
+   "id": "p3_ttl_never_expires",
+   "task": "p3",
+   "expect_fail": [
+    "ttl_expire_and_count"
+   ],
+   "failed_cases": [
+    "ttl_expire_and_count",
+    "stats_live_count"
+   ],
+   "missed": [],
+   "all_pass_after_mutation": false,
+   "detected": true
+  },
+  {
+   "id": "p3_no_wal_replay",
+   "task": "p3",
+   "expect_fail": [
+    "restart_recovery"
+   ],
+   "failed_cases": [
+    "restart_recovery",
+    "restart_drops_expired"
+   ],
+   "missed": [],
+   "all_pass_after_mutation": false,
+   "detected": true
+  },
+  {
+   "id": "p4_inplace_write",
+   "task": "p4",
+   "expect_fail": [
+    "no_temp_residue"
+   ],
+   "failed_cases": [
+    "no_temp_residue"
+   ],
+   "missed": [],
+   "all_pass_after_mutation": false,
+   "detected": true
+  },
+  {
+   "id": "p4_id_reuse",
+   "task": "p4",
+   "expect_fail": [
+    "id_monotonic_no_reuse"
+   ],
+   "failed_cases": [
+    "id_monotonic_no_reuse",
+    "stats_counts_three_states",
+    "expire_removes_expired_tasks",
+    "persistence_across_processes",
+    "list_filter_and_order"
+   ],
+   "missed": [],
+   "all_pass_after_mutation": false,
+   "detected": true
+  },
+  {
+   "id": "p4_ttl_never_expires",
+   "task": "p4",
+   "expect_fail": [
+    "expire_removes_expired_tasks"
+   ],
+   "failed_cases": [
+    "ttl_expiry_uses_injected_clock",
+    "stats_counts_three_states",
+    "expire_removes_expired_tasks"
+   ],
+   "missed": [],
+   "all_pass_after_mutation": false,
+   "detected": true
+  }
+ ],
+ "verdict": "SELFTEST=OK"
+}

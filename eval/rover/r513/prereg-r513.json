@@ -1,0 +1,118 @@
+{
+ "round": "R513",
+ "written_by": "eval/rover/r513/make_prereg_r513.py",
+ "head_sha": "4173a0ade8c9c8c4d6ae105b46d2ce33b871b515",
+ "instruments": {
+  "taskset": {
+   "path": "eval/rover/r513/taskset-r513.json",
+   "sha256": "46fdfcac8a656f71715faa30383df84332970e4871179e0f14048001b4920040",
+   "exists": true
+  },
+  "cases_p3": {
+   "path": "eval/rover/r508/cases/p3_cases.py",
+   "sha256": "2c4061dc6754d0b45ba7aa0bf1fbb16f0c1897c758bc3b44d34be04f0155f503",
+   "exists": true
+  },
+  "cases_p4": {
+   "path": "eval/rover/r511/cases/p4_cases.py",
+   "sha256": "9105a116fffa05051a2d3009f9f99484eca1372784ea293f3e5837c4259f2628",
+   "exists": true
+  },
+  "runner_side": {
+   "path": "eval/rover/r511/proj_run_side.py",
+   "sha256": "40e6c75d457a031886a664a3baa040b2bb6a33d619c960c0b36d21c58d38082d",
+   "exists": true
+  },
+  "grade": {
+   "path": "eval/rover/r511/grade_r511.py",
+   "sha256": "56155798cbdafc8307ccfc4e5447ed7874440cf1334f5f815e5961b3fa8ef297",
+   "exists": true
+  },
+  "usage": {
+   "path": "eval/rover/r511/usage_from_dumps.py",
+   "sha256": "5ec7b277580b9585ce3d65a8bb72a5dd3ad5ff515268d117d2da59d813d07fa2",
+   "exists": true
+  },
+  "aggregate": {
+   "path": "eval/rover/r513/aggregate_r513.py",
+   "sha256": "53a85516cfddce252077b940726e8ef702c77e996863dc77afdc8841588f3bf1",
+   "exists": true
+  },
+  "freeze": {
+   "path": "eval/rover/r513/freeze_snapshot_r513.py",
+   "sha256": "8e5ba0aa518164a91a85530a9b1575d29d54272023948cee96c9f9d7e865ac40",
+   "exists": true
+  },
+  "taskset_builder": {
+   "path": "eval/rover/r513/build_taskset_r513.py",
+   "sha256": "bab81ce999220fb584ca74b05d5c844fdce5a3bb3db734aebf96440c5f93b4f1",
+   "exists": true
+  },
+  "precondition": {
+   "path": "eval/rover/r507pre/exec_precondition.py",
+   "sha256": "cd2e864a87dec98ac0bcde6d385c36d4c1dce8bf2a06c5d28d4b3a49f06861bf",
+   "exists": true
+  },
+  "codex_engine": {
+   "path": "eval/rover/r504/codex_solver_r504.py",
+   "sha256": "0838de8a6400deb4c5aff8e964357544aa7a995b81b75f88da0010d5152ddca2",
+   "exists": true
+  },
+  "preflight_gate": {
+   "path": "eval/rover/r483/preflight_gate.py",
+   "sha256": "04e207751c5051ac18bcc5cb5e9f4d9118e6c2ee7b1898e5f0c1c39ecad27a00",
+   "exists": true
+  },
+  "runner_contrast": {
+   "path": "eval/rover/r513/run_contrast_r513.sh",
+   "sha256": "d960f018a20f972fa509232d41ca6819b316f8f6ef37fb8294370982f2f7baa6",
+   "exists": true
+  },
+  "ref_p3": {
+   "path": "eval/rover/r508/ref/p3",
+   "sha256": "165c8dae1ea3885a4ba254b80a192fc3275eb7fceba69073cd76cd59e9f45e4e",
+   "files": 3
+  },
+  "ref_p4": {
+   "path": "eval/rover/r511/ref/p4",
+   "sha256": "9c5e9bef6d0739c7210facd3f6b0b63a173e923b153b3ff2177316cad4e9ce7c",
+   "files": 4
+  }
+ },
+ "criteria": {
+  "C1_same_env_same_input_same_model": {
+   "rule": "两侧读同一 taskset-r513.json (题面 sha 逐题相等); adapter 落盘 models 集合两侧相等且非空",
+   "machine_check": "argv.model_agreement_and_prompt_sha"
+  },
+  "C2_quality_not_lower": {
+   "rule": "每窗口 本侧 agentA 整题全对 2/2 且用例全过; 用例通过率 >= codex 侧",
+   "machine_check": "argv.cases_pass_ratio"
+  },
+  "C3_token_down": {
+   "rule": "每窗口 本侧 total_tokens <= 0.70 * codex total_tokens (上游 usage 真值; unreported 单列)",
+   "machine_check": "argv.total_tokens_ratio"
+  },
+  "C4_remote_calls_down": {
+   "rule": "每窗口 本侧 calls <= codex calls (adapter 去重请求数)",
+   "machine_check": "argv.calls_ratio"
+  },
+  "C5_executable_and_correct": {
+   "rule": "铁律11: exec_precondition --round R513 rc=0 (仓内快照独立物化跑隐藏用例, 自报只作对照)",
+   "machine_check": "exec_precondition_rc"
+  }
+ },
+ "evidence_scope": {
+  "require": [
+   "*/agentA",
+   "*/codex"
+  ],
+  "nonrequired": [],
+  "note": "两侧皆为验收面; 任一臂-题不可执行/不通过 ⇒ 本轮 token 降幅标『参考(未可验收)』"
+ },
+ "exploratory_not_preregistered": [
+  "『口述不落盘』(调用数=0 且回复含代码块) 的机制定位与样本率 —— 事后探索, 不得当验收依据"
+ ],
+ "prompt_sha256": {
+  "p4": "384fa7212378b5d734e9a98bbf134bc734142cef5a6049566c532bd611c622bd"
+ }
+}

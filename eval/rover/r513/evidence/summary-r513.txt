@@ -1,0 +1,10 @@
+R513 逐臂逐题 (题面 v2; tokens/调用 = adapter 落盘真值; 质量 = 隐藏用例机判)
+run    tid cases  all_pass  calls    tokens  elapsed
+A-r1   p4  12/12  True          7     87814     25.3
+A-r2   p4  12/12  True          7     89660     31.9
+C-r1   p4  12/12  True         14    153556     43.1
+C-r2   p4  12/12  True          8     78814     28.6
+w1 token比 A/C=0.5719  调用比 7/14=0.5000  用时比 0.59
+w2 token比 A/C=1.1376  调用比 7/8=0.8750  用时比 1.12
+unreported_usage: [('A-r1', 'p4', 0), ('A-r2', 'p4', 0), ('C-r1', 'p4', 0), ('C-r2', 'p4', 0)]
+models: ['deepseek-chat']

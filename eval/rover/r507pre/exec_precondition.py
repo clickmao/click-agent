@@ -15,16 +15,35 @@
       --codex data/probe/probe-cmd:....json --agent data/probe/probe-agent-...json \
       --out eval/rover/r507pre/precondition-r504.json
 退出码: 0 = 可验收（两侧全跑通且全对）; 1 = 不可验收（点名）; 3 = 输入缺失 fail-closed
+
+**验收面（R509 新增）**: 预注册 —— 题集同目录 `prereg-<名>.json` 内 `evidence_scope`
+  `{"require":["<win>/<arm>",...], "nonrequired":[{"pattern":..., "reason":...}]}`。**先写再跑**才生效;
+  臂未声明 ⇒ `UNDECLARED` fail-closed（不变相放水）; 事后 `--scope` 只出信息性读数, rc 恒 1。
+
+**两种布局（R509 扩面）**:
+  · `stdin/stdout` 布局（R502–R504 类）: 单文件程序, `python3 -I -B <file>` + stdin 逐条 hidden 用例。
+  · `project` 布局（R508 类）: 多文件/起服务/多步, 任务自带**隐藏用例脚本**（`task["cases"]`,
+    输出 `CASE <name> PASS|FAIL`）。本器**独立物化**仓内不可变快照
+    （`eval/rover/<r>/snapshots/<window>/<arm>/<tid>/**`）到全新临时目录后 `python3 -I -B` 实跑用例脚本,
+    逐条机械判对; **不吃** `report.json` 的自报 `all_pass`, 只把它记下来做**自报一致性**对照
+    （不一致 ⇒ 点名 `self_report_mismatch`）。用例条数须等于 `task["hidden_cases"]`, 不等 ⇒ fail-closed。
+    自动发现: `<r>/evidence/windows/*/report.json` + `<r>/snapshots/` 同时在位即走本布局。
 """
 import argparse
+import fnmatch
+import glob
 import io
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 
 REPO = "/home/agentuser/AgentFramework"
+CASE_RE = re.compile(r"^CASE (\S+) (PASS|FAIL)(?: (.*))?$")
+MIN_ENV = {"PATH": "/usr/local/bin:/usr/bin:/bin", "LANG": "C.UTF-8"}
 sys.path.insert(0, os.path.join(REPO, "eval/probe"))
 import grade  # noqa: E402
 
@@ -115,7 +134,8 @@ def check_side(side, summary, tasks, work, timeout=10.0):
 def _discover(round_id):
     """按轮号自动发现题集与两侧落盘摘要（机检，不猜）。"""
     import glob as _g
-    rid = round_id if round_id.startswith("r") else "r" + round_id
+    rid = round_id.lower()
+    rid = rid if rid.startswith("r") else "r" + rid
     ts = sorted(_g.glob(os.path.join(REPO, "eval/rover", rid, "taskset-%s.json" % rid)))
     if not ts:
         return None, None, None
@@ -124,6 +144,231 @@ def _discover(round_id):
     cx = [p for p in cand if "codex" in os.path.basename(p)]
     ag = [p for p in cand if "agent" in os.path.basename(p) and "codex" not in os.path.basename(p)]
     return ts[-1], (cx[-1] if cx else None), (ag[-1] if ag else None)
+
+
+# --- project 布局（R508 类: 多文件/起服务/多步，任务自带隐藏用例脚本） -------
+
+def _discover_project(round_id):
+    """project 布局自动发现: 题集 + windows(含 artifacts.json 的窗口) + 仓内快照根。不适用 ⇒ None。"""
+    rid = round_id.lower()
+    rid = rid if rid.startswith("r") else "r" + rid
+    ts = sorted(glob.glob(os.path.join(REPO, "eval/rover", rid, "taskset-%s.json" % rid)))
+    win_root = os.path.join(REPO, "eval/rover", rid, "evidence/windows")
+    snap_root = os.path.join(REPO, "eval/rover", rid, "snapshots")
+    if not ts or not os.path.isdir(win_root) or not os.path.isdir(snap_root):
+        return None
+    wins = sorted(d for d in os.listdir(win_root)
+                  if os.path.isfile(os.path.join(win_root, d, "artifacts.json")))
+    if not wins:
+        return None
+    return ts[-1], win_root, snap_root, wins
+
+
+def _claimed_rows(win_dir):
+    """自报读数（仅作对照，**不吃**）: report.json rows ∪ `grade-<tag>-<tid>.json`。
+    返回 {(arm_tag, tid): {"all_pass":bool, "side":str|None, "src":path}}。"""
+    out = {}
+    rp = os.path.join(win_dir, "report.json")
+    if os.path.isfile(rp):
+        rep = load(rp)
+        for row in (rep.get("rows") or []):
+            if row.get("arm") and row.get("tid"):
+                out[(row["arm"], row["tid"])] = {"all_pass": bool(row.get("all_pass")),
+                                                 "side": row.get("side"), "src": rel(rp)}
+    for gp in sorted(glob.glob(os.path.join(win_dir, "grade-*.json"))):
+        m = re.match(r"^grade-(.+)-([a-z0-9]+)\.json$", os.path.basename(gp))
+        if not m:
+            continue
+        key = (m.group(1), m.group(2))
+        d = load(gp)
+        out.setdefault(key, {"all_pass": bool(d.get("all_pass")), "side": None, "src": rel(gp)})
+    return out
+
+
+def _dir_to_tag(d, codex_tags):
+    """快照目录名 → 自报臂标签: `agentB`→`B` / `codex`→唯一 codex 标签。无对应 ⇒ None。"""
+    if d.startswith("agent"):
+        return d[len("agent"):]
+    if d == "codex":
+        return codex_tags[0] if len(codex_tags) == 1 else None
+    return None
+
+
+def _copy_tree(src, dst):
+    for root, dirs, files in os.walk(src):
+        rel_ = os.path.relpath(root, src)
+        tgt = dst if rel_ == "." else os.path.join(dst, rel_)
+        os.makedirs(tgt, exist_ok=True)
+        for f in files:
+            shutil.copy2(os.path.join(root, f), os.path.join(tgt, f))
+
+
+def run_case_script(script, workdir, timeout=420):
+    """`python3 -I -B <用例脚本>`，cwd=独立物化目录；只解析 `CASE <name> PASS|FAIL`。"""
+    env = dict(MIN_ENV)
+    env["HOME"] = workdir
+    try:
+        p = subprocess.run([PY, "-I", "-B", script], cwd=workdir, capture_output=True, text=True,
+                           timeout=timeout, env=env)
+    except subprocess.TimeoutExpired:
+        return {"rc": 124, "cases": [], "stderr_tail": "TIMEOUT"}
+    except Exception as e:  # pragma: no cover
+        return {"rc": 125, "cases": [], "stderr_tail": str(e)[:200]}
+    cases = []
+    for ln in p.stdout.splitlines():
+        m = CASE_RE.match(ln.strip())
+        if m:
+            cases.append({"name": m.group(1), "status": m.group(2), "detail": (m.group(3) or "")[:200]})
+    return {"rc": p.returncode, "cases": cases, "stderr_tail": p.stderr[-200:]}
+
+
+def _scope_of(skey, scope):
+    """臂级验收归属: require（本窗即验收面）/ nonrequired（已声明非验收面, 须给理由）/ undeclared（fail-closed）。"""
+    if scope is None:
+        return "require"
+    for p in (scope.get("require") or []):
+        if fnmatch.fnmatch(skey, p):
+            return "require"
+    for ent in (scope.get("nonrequired") or []):
+        if fnmatch.fnmatch(skey, ent.get("pattern") or ""):
+            return "nonrequired"
+    return "undeclared"
+
+
+def _resolve_scope(scope_arg, ts_path, rounds_dir=None):
+    """验收面来源: 显式 `--scope`（事后）> 题集同目录 `prereg-<名>.json` 内的 `evidence_scope`（预注册）。
+    返回 (scope_dict|None, source_path|None, is_prereg:bool)。**缺 = 全臂皆验收面**（不放水）。"""
+    if scope_arg and os.path.isfile(scope_arg):
+        return (load(scope_arg) or {}).get("evidence_scope"), scope_arg, False
+    base = os.path.basename(ts_path).replace("taskset-", "prereg-")
+    cand = os.path.join(os.path.dirname(os.path.abspath(ts_path)), base)
+    if os.path.isfile(cand):
+        sc = (load(cand) or {}).get("evidence_scope")
+        if sc:
+            return sc, cand, True
+    return None, None, False
+
+
+def run_project(label, taskset_path, win_root, snap_root, wins, out_path, timeout=420, keep=False,
+                scope=None, scope_src=None, scope_prereg=False):
+    rdir = os.path.dirname(os.path.abspath(taskset_path))
+    ts = load(taskset_path)
+    tasks = {}
+    for t in ((ts.get("tasks") or []) if isinstance(ts, dict) else ts):
+        tasks[t["tid"]] = t
+    out = {"label": label, "layout": "project", "taskset": rel(taskset_path),
+           "snapshot_root": rel(snap_root), "tasks_n": len(tasks), "windows_n": len(wins),
+           "rule": "可验收前置(project 布局): 仓内不可变快照 ⇒ 独立物化到全新临时目录 ⇒ python3 -I -B 实跑隐藏用例脚本 ⇒ 逐条机械判对; 自报 all_pass 只作对照不吃",
+           "scope_source": (rel(scope_src) if scope_src else None),
+           "scope_prereg": bool(scope_prereg),
+           "scope_require": (scope or {}).get("require"),
+           "scope_nonrequired": (scope or {}).get("nonrequired"),
+           "windows": {}, "self_report_mismatch": [], "claim_unmapped": [],
+           "blocked": [], "blocked_scoped": [], "nonrequired_arms": [], "undeclared_arms": []}
+    for win in wins:
+        wdir = os.path.join(win_root, win)
+        claimed = _claimed_rows(wdir)
+        codex_tags = sorted({t for (t, _), v in claimed.items() if v.get("side") == "codex"})
+        wrec = {"dir": rel(wdir), "arms": {}}
+        snapwin = os.path.join(snap_root, win)
+        if not os.path.isdir(snapwin):
+            out["blocked"].append("%s 快照目录缺失 %s" % (win, rel(snapwin)))
+            out["windows"][win] = wrec
+            continue
+        for arm in sorted(os.listdir(snapwin)):
+            for tid in sorted(os.listdir(os.path.join(snapwin, arm))):
+                src = os.path.join(snapwin, arm, tid)
+                if not os.path.isdir(src):
+                    continue
+                key = "%s/%s" % (arm, tid)
+                tag = _dir_to_tag(arm, codex_tags)
+                task = tasks.get(tid)
+                rec = {"arm": arm, "tag": tag, "tid": tid,
+                       "side": ((claimed.get((tag, tid)) or {}).get("side")
+                                or ("codex" if arm == "codex" else "agent")),
+                       "kind": (task or {}).get("kind") or "project",
+                       "family": (task or {}).get("family")}
+                if task is None:
+                    rec.update({"status": "task_not_in_taskset", "correct": False})
+                    wrec["arms"][key] = rec
+                    out["blocked"].append("%s/%s task_not_in_taskset" % (win, key))
+                    continue
+                script = os.path.join(rdir, task.get("cases") or "")
+                if not os.path.isfile(script):
+                    rec.update({"status": "missing_case_script", "correct": False})
+                    wrec["arms"][key] = rec
+                    out["blocked"].append("%s/%s missing_case_script %s" % (win, key, task.get("cases")))
+                    continue
+                tmp = tempfile.mkdtemp(prefix="precond-%s-%s-" % (win, arm.replace("/", "_")))
+                _copy_tree(src, tmp)
+                r = run_case_script(script, tmp, timeout)
+                exp_n = int(task.get("hidden_cases") or 0)
+                npass = sum(1 for c in r["cases"] if c["status"] == "PASS")
+                count_ok = (exp_n == 0) or (len(r["cases"]) == exp_n)
+                correct = bool(r["rc"] == 0 and r["cases"] and npass == len(r["cases"]) and count_ok)
+                crow = claimed.get((tag, tid)) if tag else None
+                rec.update({"cases_n": len(r["cases"]), "cases_expected": exp_n, "cases_pass": npass,
+                            "rc": r["rc"], "correct": correct, "work_dir": tmp if keep else None,
+                            "failed_cases": [c["name"] for c in r["cases"] if c["status"] != "PASS"],
+                            "claimed_all_pass": (None if crow is None else bool(crow.get("all_pass"))),
+                            "claimed_src": (None if crow is None else crow.get("src")),
+                            "stderr_tail": r["stderr_tail"]})
+                if crow is None:
+                    out["claim_unmapped"].append("%s/%s tag=%s 无自报行(对照不可用, 不影响实测判定)" % (win, key, tag))
+                elif bool(crow.get("all_pass")) != correct:
+                    out["self_report_mismatch"].append("%s/%s 自报 all_pass=%s 实测 correct=%s" % (win, key, crow.get("all_pass"), correct))
+                skey = "%s/%s" % (win, arm)
+                rec["scope"] = _scope_of(skey, scope)
+                msg = "%s/%s rc=%s cases=%s/%s(expect %s) failed=%s" % (
+                    win, key, r["rc"], npass, len(r["cases"]), exp_n, ",".join(rec["failed_cases"]) or "-")
+                if rec["scope"] == "nonrequired":
+                    out["nonrequired_arms"].append({"arm": skey, "correct": correct, "detail": msg})
+                    rec["blocking"] = False
+                elif rec["scope"] == "undeclared":
+                    out["undeclared_arms"].append(skey)
+                    out["blocked_scoped"].append("UNDECLARED_SCOPE " + skey)
+                    rec["blocking"] = True
+                else:
+                    rec["blocking"] = True
+                if not correct:
+                    out["blocked"].append(msg)
+                    if rec["blocking"]:
+                        out["blocked_scoped"].append(msg)
+                wrec["arms"][key] = rec
+        out["windows"][win] = wrec
+    out["self_report_agrees"] = not out["self_report_mismatch"]
+    out["executable_and_correct"] = (not out["blocked"]) and out["self_report_agrees"]
+    out["acceptable_scoped"] = ((not out["blocked_scoped"]) and out["self_report_agrees"]
+                                and (scope is not None))
+    if scope is None:
+        out["acceptable_scoped"] = out["executable_and_correct"]
+    os.makedirs(os.path.dirname(os.path.abspath(out_path)) or ".", exist_ok=True)
+    io.open(out_path, "w", encoding="utf-8", newline="\n").write(json.dumps(out, ensure_ascii=False, indent=1) + "\n")
+    for win, wrec in out["windows"].items():
+        tot = len(wrec["arms"])
+        good = sum(1 for v in wrec["arms"].values() if v.get("correct"))
+        print("%-7s arms=%d correct=%d" % (win, tot, good))
+        for key, v in sorted(wrec["arms"].items()):
+            print("   %-16s side=%-6s cases=%-6s rc=%-4s correct=%-5s claimed=%-5s %s" %
+                  (key, v.get("side"), "%s/%s" % (v.get("cases_pass"), v.get("cases_n")), v.get("rc"),
+                   v.get("correct"), v.get("claimed_all_pass"), ",".join(v.get("failed_cases") or [])))
+    print("SELF_REPORT_AGREES=%s" % out["self_report_agrees"])
+    print("EXECUTABLE_AND_CORRECT=%s (全局, 任一臂-题不许错)" % out["executable_and_correct"])
+    print("SCOPE_SOURCE=%s PREREG=%s" % (out["scope_source"], out["scope_prereg"]))
+    if out["scope_source"] and not out["scope_prereg"]:
+        print("SCOPE_POSTHOC=1 (事后声明, 非预注册 ⇒ 只可作参考, 不得当验收依据)")
+    print("ACCEPTABLE_SCOPED=%s" % out["acceptable_scoped"])
+    for v in out["nonrequired_arms"]:
+        print("NONREQUIRED %s correct=%s :: %s" % (v["arm"], v["correct"], v["detail"]))
+    if out["undeclared_arms"]:
+        print("UNDECLARED: " + " | ".join(out["undeclared_arms"]))
+    if out["blocked"]:
+        print("BLOCKED: " + " | ".join(out["blocked"]))
+    print("OUT=" + out_path)
+    if out["scope_source"] and not out["scope_prereg"]:
+        print("VERDICT_POSTHOC_ONLY ⇒ rc=1 (事后声明不构成验收面)")
+        return 1
+    return 0 if out["acceptable_scoped"] else 1
 
 
 def main():
@@ -135,7 +380,39 @@ def main():
     ap.add_argument("--label", default="")
     ap.add_argument("--round", help="按轮号自动发现（eval/rover/<r>/taskset-<r>.json + data/probe/probe-*-<r>.json）")
     ap.add_argument("--timeout", type=float, default=10.0)
+    ap.add_argument("--proj-timeout", type=float, default=420.0, help="project 布局: 单题全部用例的总超时(s)")
+    ap.add_argument("--layout", choices=["auto", "stdin", "project"], default="auto")
+    ap.add_argument("--scope", help="臂级验收面声明(JSON, 键 evidence_scope); 缺省读题集同目录 prereg-<名>.json")
     a = ap.parse_args()
+    if a.layout == "project" and a.taskset:
+        # 显式 project 面板（供 NC/沙盒: 目录自定, 不依赖 --round 命名约定）
+        rdir = os.path.dirname(os.path.abspath(a.taskset))
+        win_root = os.path.join(rdir, "evidence/windows")
+        snap_root = os.path.join(rdir, "snapshots")
+        wins = sorted(d for d in os.listdir(win_root)
+                      if os.path.isfile(os.path.join(win_root, d, "artifacts.json"))) \
+            if os.path.isdir(win_root) else []
+        if not wins:
+            print("[致命] PROJECT_NO_WINDOWS taskset=%s ⇒ rc=3" % a.taskset)
+            return 3
+        scope, ssrc, spre = _resolve_scope(a.scope, a.taskset)
+        return run_project(a.label or "EXPLICIT", a.taskset, win_root, snap_root, wins,
+                           a.out or "/tmp/precond-explicit.json", a.proj_timeout,
+                           scope=scope, scope_src=ssrc, scope_prereg=spre)
+    if a.round and a.layout in ("auto", "project"):
+        proj = _discover_project(a.round)
+        if proj:
+            ts, win_root, snap_root, wins = proj
+            a.label = a.label or a.round.upper()
+            a.out = a.out or os.path.join(REPO, "eval/rover/r507pre", "precondition-%s.json" % a.round.lower())
+            print("DISCOVER layout=project taskset=%s windows=%d snapshot_root=%s" %
+                  (os.path.relpath(ts, REPO), len(wins), os.path.relpath(snap_root, REPO)))
+            scope, ssrc, spre = _resolve_scope(a.scope, ts)
+            return run_project(a.label, ts, win_root, snap_root, wins, a.out, a.proj_timeout,
+                               scope=scope, scope_src=ssrc, scope_prereg=spre)
+        if a.layout == "project":
+            print("[致命] PROJECT_NOT_APPLICABLE round=%s ⇒ rc=3" % a.round)
+            return 3
     if a.round:
         ts, cx, ag = _discover(a.round)
         if not ts or not cx or not ag:
