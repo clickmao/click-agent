@@ -1,0 +1,16 @@
+CHK referenced_paths n=4 ['eval/capability/r518/scan_round_sections.py', 'scan-pre.txt', 'scan-post.txt', 'improvements.md']
+CHK path_exists:eval/capability/r518/scan_round_sections.py=PASS 
+CHK path_exists:scan-pre.txt=FAIL 
+CHK path_exists:scan-post.txt=FAIL 
+CHK path_exists:improvements.md=FAIL 
+CHK referenced_shas n=3 ['1ef590a', '0b88277', '29f75c3']
+CHK sha_exists:1ef590a=PASS EXP1-Q45: improvements.md 轮节机检化 + 8 缺节回填(R402/R404-R407/R417-R419) + R403 排序违例修
+CHK sha_exists:0b88277=PASS R509: 同题重复臂(会话隔离)+前端任务事件域(task.started/completed/failed + snapshot.tasks)
+CHK sha_exists:29f75c3=PASS R518: 编排节点预算自适应(②: n3 6→12 步重试救回 tasksvc 12/12) + 运行期缓存排除(②' pyc 不判越界) + 计划/范围契约
+CHK improvements_has_R404_section=PASS 
+CHK improvements_has_q45_correction=PASS 
+CHK round_paths n=2
+CHK scope_touch[VerificationForm(登记表)]=0 []
+CHK scope_touch[SkillGeneralization(skills/)]=0 []
+CHK scope_touch[DevPlanDocRef(docs/plans/)]=0 []
+SUBST_EXIT=2

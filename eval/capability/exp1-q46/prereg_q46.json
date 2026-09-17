@@ -1,0 +1,53 @@
+{
+  "round": "EXP1-Q46",
+  "ts_local": "2026-09-17T13:5x+0800",
+  "namespace": "eval/capability/exp1-q46/",
+  "route_first_at_round_start": "- **另一本台账（未在本轮动）**: `improvements.md` 自身的 **R404–R416 轮节**尚未回填（该缺口已在改进日志内登记，属 `improvements.md` 的重排任务）。",
+  "kind": "记录面假开放项闭合 + 时效字段登记 (不改产品源码 / 不占主线轮号)",
+  "preregistered": {
+    "P1_pre_state_reproduce": {
+      "claim": "起手读数: mode=tasks ∧ master_open==1 ∧ route.primary=='master-block' ∧ route.first 含「另一本台账」",
+      "measured_at": "eval/capability/exp1-q46/status_pre.json",
+      "result": "TRUE (mode=tasks, open_count=9, backlog_open=8, master_open=1, primary=master-block, hits=1/close_fenced=3/quoted_fenced=1/block_fields=29)",
+      "status": "PASS"
+    },
+    "P2_disk_face_refutes_declaration": {
+      "claim": "该「未完成项」在盘面已为假: `eval/capability/r518/scan_round_sections.py` 现盘 rc==0 ∧ C1 MISSING n==0 ∧ ZONE==21; 回填提交 = 1ef590a (EXP1-Q45); `docs/improvements.md` 自身已带更正行(旧口径作废留痕)",
+      "measured_at": "eval/capability/exp1-q46/scan_now.txt + git log",
+      "status": "PASS"
+    },
+    "P3_post_state_prediction": {
+      "claim": "改写后: master_open==0 ∧ route.primary=='backlog' ∧ route.first startswith 'exp1' ∧ open_count==8",
+      "status": "PREDICTED_BEFORE_EDIT"
+    },
+    "P4_invariant": {
+      "claim": "backlog 面逐字不变: backlog_open==8 ∧ 8 条 backlog open_items 与 pre 逐字相同",
+      "status": "PREDICTED_BEFORE_EDIT"
+    },
+    "P5_minimal_diff": {
+      "claim": "`git diff --numstat` 对本文件的读数 == `1\\t1`（仅一行替换），且该行之外无明显变更（行级比对: 其余行逐字节相同、总行数不变）",
+      "status": "PREDICTED_BEFORE_EDIT"
+    },
+    "P6_idempotent": {
+      "claim": "编辑器二次运行 ⇒ IDEMPOTENT_SKIP ∧ 文件 sha256 不变",
+      "status": "PREDICTED_BEFORE_EDIT"
+    },
+    "P7_paired_negative_controls": {
+      "claim": "成对: (a) 合成夹具 pre 行 ⇒ 探针 master hits==1, post 行 ⇒ hits==0 (证明 `_closed_after`/`_quoted` 围栏对该行真有判别力, 不是「怎么改都绿」); (b) 前态锚臂 = 把 doc 钉到**不可变提交** 32125b7 的 blob (断言: 是 HEAD 祖先 ∧ blob 字节 != 现盘字节) ⇒ 探针 master_open==1 ∧ first 含「另一本台账」(复现假开放项)",
+      "status": "PREDICTED_BEFORE_EDIT"
+    },
+    "P8_instrument_selftest": {
+      "claim": "`scripts/capability_cycle_status.py --selftest` 改写后仍 34/34",
+      "status": "PREDICTED_BEFORE_EDIT"
+    },
+    "P9_form_gate": {
+      "claim": "dotnet 形式门禁 (VerificationForm|SkillGeneralization|DevPlanDocRef) 14/14；本轮改动不触登记表/证据映射，门禁为**覆盖性复核**；若窗口被对侧重进程占用 ⇒ 如实标 SKIPPED 并记因（真缺陷 71: 禁批测中途并行 build）",
+      "status": "PREDICTED_BEFORE_EDIT"
+    }
+  },
+  "honest_scope_notes": [
+    "本轮只改一处记录面陈述（1 行）+ 落盘机检证据；不碰产品源码、不跑真机臂、不占主线轮号。",
+    "块内「最近一轮(R509)/HEAD 0b88277」字段同样滞后于现盘 HEAD 29f75c3（R518）: 本 tick 只登记不代写 —— 该字段的刷新归主线轮收口，代写会与对侧写者撞车(共用工作树)。",
+    "既有的 3 条 close_fenced / 1 条 quoted_fenced 是 D9 围栏的正确命中，本轮不动。"
+  ]
+}
