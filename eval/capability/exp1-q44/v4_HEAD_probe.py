@@ -57,22 +57,6 @@ D7 **(来源②输入面覆盖 = 0: 主线最新状态对循环不可见)**: v3 
    ∧ 错命中历史段(R900)」(假阴性 + 假阳性并存, 比零命中更坏)。处置 = N5 改判为**更强的成对陈述**
    (两条同时成立才算有判别力), 预注册原陈述与实测值单列 `checks_posthoc`(eval/capability/exp1-q43/
    verdict_q43.json); **未放宽任何既有断言**(T1–T11 / N1–N4 逐条原样)。
-
-═══ v5 修复记录 (EXP1-Q44 · 主线 R509 提交后空闲窗口, 2026-09-17) ═══
-窗口: 30m 节拍作业 (9a97763d5fcd) 于 08:09:10 提交 R509 后**空闲** ⇒ 本 tick 起手核过
-      (无 .git/*.lock / 无 dotnet|run_*.sh 活体 / /tmp 最新非本侧产物 08:09) 后才跑真机全量测试。
-D8 **(路由口径与权威源错位: 推进对象取自「看板沉积面」而非「最新状态块」)**: v4/D7 已让 §7 最新块的
-   开放项**可见**(`open_items` 尾部), 但 `open_items[0]`(循环实际推进的第一项) 仍恒为看板行 ——
-   实测: 看板首项 = `exp1`(计划项, 表内状态列写法早已沉积), 而权威恢复入口(主报告 §7「恢复迭代从
-   这里开始」)在 v4 输出里**排在最后** ⇒ 「最前的未完成项」≠「当前主线的未完成项」, 循环每 tick 都
-   先去推**沉积行**, 与宪法级主线定义(铁律 10)方向错位。
-   修法(**纯增量, 不动既有字段**): 新增 `route = {primary, first, priority, rule, comparable_from}`
-   —— `priority` = 权威源优先序 (`master:` 项在前, `backlog:` 项在后), `primary ∈ {master-block,
-   backlog, selfcheck}`, 并写明该判决的**规则原文**。`mode`/`open_count`/`open_items` **逐字不变**
-   (真机 A/B 机检, 见 eval/capability/exp1-q44/verdict_q44.json)。
-   负控: `--legacy-route` 复现 v4 优先序(看板优先) ⇒ 同夹具上 primary 必为 `backlog`, 证明新优先序
-   **有判别力**(不是「怎么改都绿」)。**可比性断点**: v5 起 `route.primary` 语义变更, 与 v4 及以前
-   轮次的「推进对象」读数**不可直接相减**(`route.comparable_from` 字段显式登记)。
 """
 from __future__ import annotations
 
@@ -304,35 +288,6 @@ def master_opens(path: str, legacy: bool = False):
     return hits[:8], diag
 
 
-ROUTE_RULE = {
-    "master-block": "推进主报告 §7 **最新块**的点名未完成项 (权威恢复入口; v5/D8 起优先)",
-    "backlog": "推进计划看板最前未完成计划项 (块内无开放项时的回退)",
-    "selfcheck": "两侧皆空 ⇒ 跑「py 随机程序 + 随机数学题」能力自检循环",
-}
-ROUTE_EPOCH = "v5/D8 (2026-09-17, EXP1-Q44)"
-
-
-def decide_route(backlog_items: list[str], master_items: list[str], legacy_route: bool = False) -> dict:
-    """v5/D8: 推进对象的优先序 = **权威源优先**。
-
-    权威源 = 主报告 §7 最新状态块(其自述为「恢复迭代从这里开始」)= 「当前主线在做什么」;
-    计划看板行是**沉积面**(状态列写法可长期不改)。v4 及以前按「看板在前」拼 items ⇒ 每 tick
-    先去推沉积行, 与主线定义错位。`legacy_route=True` 复现 v4 优先序, 仅用于负控 A/B。
-    """
-    pairs = ([("master", i) for i in master_items] + [("backlog", i) for i in backlog_items]
-             if not legacy_route else
-             [("backlog", i) for i in backlog_items] + [("master", i) for i in master_items])
-    primary = pairs[0][0] if pairs else "selfcheck"
-    return {
-        "primary": {"master": "master-block", "backlog": "backlog"}.get(primary, "selfcheck"),
-        "first": pairs[0][1] if pairs else None,
-        "priority": [f"{k}: {v}" for k, v in pairs],
-        "rule": ROUTE_RULE[{"master": "master-block", "backlog": "backlog"}.get(primary, "selfcheck")],
-        "legacy_route": legacy_route,
-        "comparable_from": ROUTE_EPOCH,
-    }
-
-
 def last_probe(kpi_path: str):
     info = {"kpi_lines": 0, "last": None}
     if os.path.exists(kpi_path):
@@ -352,27 +307,23 @@ def skills_count(path: str = SKILLS) -> int:
     return sum(1 for d in os.listdir(path) if os.path.exists(os.path.join(path, d, "SKILL.md")))
 
 
-def build_report(backlog_path: str, master_path: str, legacy: bool = False,
-                 legacy_route: bool = False) -> tuple[dict, int]:
+def build_report(backlog_path: str, master_path: str, legacy: bool = False) -> tuple[dict, int]:
     b, bdetail, bdiag = backlog_scan(backlog_path, legacy=legacy)
     m, mdiag = master_opens(master_path, legacy=legacy)
     if b is None or m is None:
         return {"error": "docs 缺失", "backlog": backlog_path, "master": master_path}, 2
     items = b + m
-    route = decide_route(b, m, legacy_route=legacy_route)
     out = {
         "mode": "tasks" if items else "selfcheck",
         "open_count": len(items),
         "open_items": items,
         "open_items_detail": bdetail,
-        "route": route,
         "backlog_open": len(b),
         "master_open": len(m),
         "sources": {"backlog": bdiag, "master": mdiag, "legacy_logic": legacy},
         "kpi_lines": 0,
         "skills_count": 0,
         "rule": "mode=tasks ⇒ 推进计划项一步; mode=selfcheck ⇒ 跑 py 随机程序+随机数学题能力自检并沉淀通用性 skill",
-        "rule_v5": "推进对象以 route.first 为准 (权威源优先: §7 最新块 > 计划看板); open_items 保留旧口径供对比",
     }
     return out, 0
 
@@ -402,18 +353,6 @@ FIXTURE_BACKLOG = """# fixture · 计划看板
 | exp1 夹具计划项 (未开始) | `x.md` | 待实施 | 未开始 |
 | exp2 夹具计划项 (已交付, 无欠项) | `y.md` | 收尾 | **已交付(R1)** |
 | exp3 夹具计划项 (核心已交付 + 自陈欠项) | `z.md` | 核心齐；欠 前端通路 | **核心已交付(R1)**：核心齐；欠 前端通路 |
-"""
-
-# ── v5/D8 夹具: 看板全闭合 (用于「块闭合 ⇒ route 回退」的成对判据) ──
-FIXTURE_BACKLOG_CLOSED = """# fixture · 计划看板 (全闭合)
-
-| 阶段 | 内容 | 状态 | 证据指针 |
-|---|---|---|---|
-| R900 | 已完成项 | **已交付(R900)** | docs/x.md |
-
-| 计划 | 文档 | 实施要点 | 状态 |
-|---|---|---|---|
-| exp2 夹具计划项 (已交付, 无欠项) | `y.md` | 收尾 | **已交付(R1)** |
 """
 
 FIXTURE_MASTER = """# fixture · 主报告
@@ -474,10 +413,7 @@ FIXTURE_MASTER_LEGACY_FORM = """# fixture · 主报告
 
 
 def selftest() -> int:
-    """判定器自检 (夹具 + 负控; 旧逻辑必须判错, 否则用例无判别力)。
-
-    v1–v4: T1–T11 + N1–N4; v4/D7: T12–T17 + N5–N7; v5/D8: T18–T22 + N8 —— 共 30 条断言。
-    """
+    """17 例判定 + 7 例负控 (旧逻辑必须判错, 否则用例无判别力; v4/D7 增 T12–T17 + N5–N7)。"""
     tmp = tempfile.mkdtemp(prefix="ccstatus-selftest-")
     bl = os.path.join(tmp, "backlog.md")
     ms = os.path.join(tmp, "master.md")
@@ -579,35 +515,6 @@ def selftest() -> int:
     chk("N7 否定围栏计数可见 (fenced>=1, 非静默丢弃)",
         o_neg["sources"]["master"]["neg_fenced"] >= 1, o_neg["sources"]["master"]["neg_fenced"])
 
-    # ── v5/D8 用例: 推进对象优先序 = 权威源优先 (纯增量; 负控 N8 成对) ──
-    bl_closed = _w("bl_closed.md", FIXTURE_BACKLOG_CLOSED)
-    mp_closed = _w("m_new_closed2.md", FIXTURE_MASTER_NEW_CLOSED)
-    o_new_lr, _ = build_report(bl2, mp_new, legacy_route=True)
-    o_closed_bl, _ = build_report(bl2, mp_closed)          # 看板开放 + 块闭合 ⇒ 应回退 backlog
-    o_all_closed, _ = build_report(bl_closed, mp_closed)   # 两侧皆闭合 ⇒ selfcheck
-    o_all_lr, _ = build_report(bl_closed, mp_closed, legacy_route=True)
-
-    chk("T18 权威源优先: 块有开放项 ⇒ route.primary=master-block ∧ priority[0] 为 master:",
-        o_new["route"]["primary"] == "master-block"
-        and o_new["route"]["priority"][0].startswith("master:"),
-        o_new["route"])
-    chk("T19 纯增量: route 变更不动 open_items/mode/open_count (逐字相同)",
-        o_new["open_items"] == o_new_lr["open_items"] and o_new["mode"] == o_new_lr["mode"]
-        and o_new["open_count"] == o_new_lr["open_count"],
-        (o_new["open_items"], o_new_lr["open_items"]))
-    chk("T20 回退正确: 块全闭合 + 看板有开放项 ⇒ primary=backlog (不是 master 恒赢)",
-        o_closed_bl["route"]["primary"] == "backlog", o_closed_bl["route"])
-    chk("T21 两侧皆空 ⇒ primary=selfcheck (且 mode=selfcheck 一致)",
-        o_all_closed["route"]["primary"] == "selfcheck" and o_all_closed["mode"] == "selfcheck",
-        (o_all_closed["route"]["primary"], o_all_closed["mode"]))
-    chk("T22 route 判决附带 rule 原文与可比性断点 (读者可判, 不靠猜)",
-        bool(o_new["route"]["rule"]) and bool(o_new["route"]["comparable_from"]),
-        {k: o_new["route"][k] for k in ("rule", "comparable_from")})
-    chk("N8 负控: --legacy-route 复现 v4 优先序 ⇒ 同夹具 primary=backlog (证明 T18 有判别力)",
-        o_new_lr["route"]["primary"] == "backlog"
-        and o_all_lr["route"]["primary"] == "selfcheck",
-        (o_new_lr["route"]["primary"], o_all_lr["route"]["primary"]))
-
     for name, ok, got in checks:
         print(f"{'PASS' if ok else 'FAIL'}  {name}  got={json.dumps(got, ensure_ascii=False)[:160]}")
     print(f"selftest: {len(checks) - fails}/{len(checks)} passed "
@@ -619,8 +526,6 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="能力自检循环 · 状态探针")
     ap.add_argument("--selftest", action="store_true", help="判定器自检 (夹具 + 负控)")
     ap.add_argument("--legacy", action="store_true", help="复现 v1 逻辑 (仅用于 A/B 与负控)")
-    ap.add_argument("--legacy-route", action="store_true",
-                    help="v5/D8 负控: 复现 v4 推进优先序 (看板优先), 仅用于 A/B")
     ap.add_argument("--backlog", default=BACKLOG)
     ap.add_argument("--master", default=MASTER)
     ap.add_argument("--kpi", default=KPI)
@@ -629,7 +534,7 @@ def main(argv=None) -> int:
     if a.selftest:
         return selftest()
 
-    out, code = build_report(a.backlog, a.master, legacy=a.legacy, legacy_route=a.legacy_route)
+    out, code = build_report(a.backlog, a.master, legacy=a.legacy)
     if code:
         print(json.dumps(out, ensure_ascii=False))
         return code

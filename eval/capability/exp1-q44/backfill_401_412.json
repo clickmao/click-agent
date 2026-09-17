@@ -1,0 +1,219 @@
+{
+  "source_root": ".",
+  "rounds": [
+    {
+      "round": "R401",
+      "evidence_dirs": [
+        {
+          "path": "eval/rover/r401",
+          "files": 3
+        },
+        {
+          "path": "docs/reports/r401",
+          "files": 1
+        }
+      ],
+      "plan_docs": [],
+      "improvements_lines": [
+        "## R401 — 能力自检循环常驻化（用户令：R400 后一直执行 + 60 分钟检测机制）",
+        "**版本**: R401 · **日期**: 2026-09-14 · **状态**: 已落地（常驻）"
+      ],
+      "kpi_mentions": 7,
+      "has_evidence": true
+    },
+    {
+      "round": "R402",
+      "evidence_dirs": [
+        {
+          "path": "eval/rover/r402",
+          "files": 27
+        },
+        {
+          "path": "docs/reports/r402",
+          "files": 1
+        }
+      ],
+      "plan_docs": [],
+      "improvements_lines": [
+        "- **下轮候选（R413）**: ① **接产品链路**：本地生成（r1/llama.cpp 长驻端口）作为**链管道精炼计划节点**接入 `ModelQueueRouter` 通道选择（可替换执行面端口 + 数值对账 + 被使用计数 + 无设备负控）—— **与 R351 无关**（R351 只",
+        "**下轮候选（R411）**：① 产品侧长驻 provider 接线（嵌入侧已是 `AddSingleton`，生成侧待接）；② 多会话并发 slot 争用下的复用率；③ 前缀中段变化的截断点分布；④ 微内核 A/B（15× 悬案）；⑤ R402–R407 台账回填。"
+      ],
+      "kpi_mentions": 7,
+      "has_evidence": true
+    },
+    {
+      "round": "R403",
+      "evidence_dirs": [
+        {
+          "path": "eval/rover/r403",
+          "files": 22
+        },
+        {
+          "path": "docs/reports/r403",
+          "files": 2
+        }
+      ],
+      "plan_docs": [],
+      "improvements_lines": [
+        "③ 构造能进 r1 门的新诉求网格（补 R429 判别力负控缺口）；④ `docs/improvements.md` 更早区段（R416/R412/R403 等）仍在乱序位，待重排。",
+        "## R403 — chat template 裁定：自研 Jinja 子集随 R408 退役 + 工具调用模板「无对象可验」（负控证明探针有判别力）",
+        "### R403 (2026-09-14) — RoPE 配对约定按 arch 选择：prover7b 长期带病运行的根因（静默错误）"
+      ],
+      "kpi_mentions": 15,
+      "has_evidence": true
+    },
+    {
+      "round": "R404",
+      "evidence_dirs": [],
+      "plan_docs": [],
+      "improvements_lines": [
+        "- **文档缺口（如实登记）**: `docs/improvements.md` 的 **R404–R416 轮节未回填**；`docs/plans/v715_dev_plan.taskplan.json` 只登记到 R412（R413–R417 未登记）。"
+      ],
+      "kpi_mentions": 0,
+      "has_evidence": false
+    },
+    {
+      "round": "R405",
+      "evidence_dirs": [
+        {
+          "path": "eval/rover/r405",
+          "files": 8
+        }
+      ],
+      "plan_docs": [
+        "docs/plans/v0.27.0-r405-r1-local-enhancement.md"
+      ],
+      "improvements_lines": [],
+      "kpi_mentions": 0,
+      "has_evidence": true
+    },
+    {
+      "round": "R406",
+      "evidence_dirs": [],
+      "plan_docs": [
+        "docs/plans/v0.28.0-r406-jinja-template-and-r1-chain.md"
+      ],
+      "improvements_lines": [],
+      "kpi_mentions": 0,
+      "has_evidence": true
+    },
+    {
+      "round": "R407",
+      "evidence_dirs": [
+        {
+          "path": "eval/rover/r407",
+          "files": 14
+        }
+      ],
+      "plan_docs": [
+        "docs/plans/v0.29.0-r407-qwen2-attn-bias-and-forward-parity.md"
+      ],
+      "improvements_lines": [
+        "- **下轮候选（R413）**: ① **接产品链路**：本地生成（r1/llama.cpp 长驻端口）作为**链管道精炼计划节点**接入 `ModelQueueRouter` 通道选择（可替换执行面端口 + 数值对账 + 被使用计数 + 无设备负控）—— **与 R351 无关**（R351 只",
+        "**下轮候选（R411）**：① 产品侧长驻 provider 接线（嵌入侧已是 `AddSingleton`，生成侧待接）；② 多会话并发 slot 争用下的复用率；③ 前缀中段变化的截断点分布；④ 微内核 A/B（15× 悬案）；⑤ R402–R407 台账回填。"
+      ],
+      "kpi_mentions": 0,
+      "has_evidence": true
+    },
+    {
+      "round": "R408",
+      "evidence_dirs": [
+        {
+          "path": "eval/rover/r408",
+          "files": 3
+        }
+      ],
+      "plan_docs": [
+        "docs/plans/v0.30.0-r408-llamacpp-process-pivot.md"
+      ],
+      "improvements_lines": [
+        "**根因**：exp1 §1.2/§1.3 是按 `docs/reports/r385/capability-inventory.md` 抄写的 r385 盘点，**早于** R386/R387（契约删除）与 **b00917c**（2026-09-14, R408「本地 GGUF 引擎整线退役」，",
+        "## R403 — chat template 裁定：自研 Jinja 子集随 R408 退役 + 工具调用模板「无对象可验」（负控证明探针有判别力）",
+        "## R408 — 本地 GGUF 引擎整线退役，产品线全面切 llama.cpp（进程 + HTTP，零 P/Invoke）"
+      ],
+      "kpi_mentions": 5,
+      "has_evidence": true
+    },
+    {
+      "round": "R409",
+      "evidence_dirs": [
+        {
+          "path": "eval/rover/r409",
+          "files": 19
+        }
+      ],
+      "plan_docs": [
+        "docs/plans/v0.31.0-r409-local-prompt-template-gate.md"
+      ],
+      "improvements_lines": [
+        "- **裁定**: **R403 关闭**。① 自研 Jinja 子集扩展的对象随 R408 退役（R409 已证渲染归引擎、调用方无法手拼）；② 工具调用模板**无对象可验**（引擎自报不支持 ∧ 模板零工具位 ∧ 产品零消费方，三方一致）。",
+        "- **测试**：新增 `CompletionReuseTests` **4/4**；全量 **1076 / 0 / 0**（R409 基线 1072 + 4）。",
+        "## R409 — 本地 prompt 模板闸门（结构性阻断手拼）+「权威 prompt」BOS 口径修正"
+      ],
+      "kpi_mentions": 2,
+      "has_evidence": true
+    },
+    {
+      "round": "R410",
+      "evidence_dirs": [
+        {
+          "path": "eval/rover/r410",
+          "files": 8
+        }
+      ],
+      "plan_docs": [
+        "docs/plans/v0.32.0-r410-session-prefix-reuse.md"
+      ],
+      "improvements_lines": [
+        "**主题**: R410 下轮候选 ②「多会话并发 slot 争用下的复用率」；R411 计划 §7 明确留 R412 的同一 regime。",
+        "- **诚实边界**: ① 仅 n=2 会话（同机单 server）；② `-np 1 -c 4608` 实测 server RSS **2.39 GB**（本机 3.66 GB）⇒ 更大 n 或更长前缀受内存约束，**未测**；③ 前缀中段截断点分布（R410 候选 ③）仍未测；④ 墙钟不作判据（",
+        "## R410 — 会话长前缀复用（K2b 落点）：「比值不是 KPI」+ 宿主生命周期缺口 + 生成口径分离"
+      ],
+      "kpi_mentions": 0,
+      "has_evidence": true
+    },
+    {
+      "round": "R411",
+      "evidence_dirs": [
+        {
+          "path": "eval/rover/r411",
+          "files": 20
+        }
+      ],
+      "plan_docs": [
+        "docs/plans/v0.33.0-r411-long-lived-generation-port.md"
+      ],
+      "improvements_lines": [
+        "**主题**: R410 下轮候选 ②「多会话并发 slot 争用下的复用率」；R411 计划 §7 明确留 R412 的同一 regime。",
+        "## R411 — 长驻生成端口 + 本地 K2b 台账：「口径必须靠独立实现对账钉死」+ 双条件判据"
+      ],
+      "kpi_mentions": 5,
+      "has_evidence": true
+    },
+    {
+      "round": "R412",
+      "evidence_dirs": [
+        {
+          "path": "eval/rover/r412",
+          "files": 18
+        }
+      ],
+      "plan_docs": [
+        "docs/plans/v0.34.0-r412-multi-session-slot-contention.md"
+      ],
+      "improvements_lines": [
+        "③ 构造能进 r1 门的新诉求网格（补 R429 判别力负控缺口）；④ `docs/improvements.md` 更早区段（R416/R412/R403 等）仍在乱序位，待重排。",
+        "- **AOT（发布形态验收）**: `dotnet publish src/agent.host/agent.host.csproj -c Release -r linux-x64 -o /tmp/pub_r413` ⇒ `PUBLISH_EXIT=0`、**IL 警告 0**、`agenthos",
+        "## R412 — 多会话 slot 争用：单 slot 不踢缓存（三臂逐位相同）+ 会话级账本（分母不互相污染）"
+      ],
+      "kpi_mentions": 3,
+      "has_evidence": true
+    }
+  ],
+  "summary": {
+    "with_evidence": 11,
+    "missing": [
+      "R404"
+    ]
+  }
+}

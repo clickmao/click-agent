@@ -1,0 +1,27 @@
+{
+  "round": "EXP1-Q44",
+  "ts_utc8": "2026-09-17 (见 prereg_written_at 字段, 机取)",
+  "owner": "cron b15eb2f40a69 (60m 能力自检循环)",
+  "window": "主线 30m 作业 (9a97763d5fcd) R509 提交后空闲窗口 (HEAD 0b88277 @08:09:10); 起手核对: 无 .git/*.lock / 无 dotnet|run_*.sh 活体 / /tmp 最新非本侧产物 08:09",
+  "candidates": {
+    "C1_route_priority": "状态探针 v5/D8: mode 与推进对象由「主报告 §7 最新块开放项」优先决定 (新增 route.open_items_priority 字段; open_items 逐字不变 = 纯增量)",
+    "C2_harness_false_green": "对侧 harness rc 假绿: /tmp/r508_fulltest.log 实测 Failed:1 / TEST_RC=0 ⇒ 机械定性 + fail-closed 判据 + 本侧真机复跑取真值 rc",
+    "C3_block_refresh": "主报告 §7 最新块刷新到 R509 (增量改, 不动历史快照段)",
+    "C4_backfill_401_412": "补 R401–R412 逐轮条目 (缺口行点名项; 机械 census 取来源, 取不到的如实标注)"
+  },
+  "predictions": {
+    "P1": "真仓: v5 输出含 route.primary == 'master-block' 且 open_items_priority[0] 以 'master:' 开头 (来源② 命中 ≥1)",
+    "P2": "零回归: v5 的 open_items / mode / open_count 与 v4 (git show HEAD 版) 在真仓上逐字相同 (纯增量改动)",
+    "P3": "负控 (判别力): 同夹具下 --legacy-route (v4 规则) route.primary == 'backlog' ⇒ 与 P1 成对, 证明新优先序有判别力",
+    "P4": "回退路径: 块全闭合 ⇒ route.primary == 'backlog'; 块闭合且看板空 ⇒ 'selfcheck'",
+    "P5": "自检: v5 --selftest 全绿, 用例数 ≥ 22 (v4 为 24 例 T1-T17/N1-N7 计 24 条断言), 无既有断言放宽",
+    "P6": "真机全量测试真值 rc 由显式标记 (FULLTEST_EXIT=) 取; 若仍见 Failed:1 ⇒ 记录为当前树存量红 (或 flake, 用隔离复跑分诊)"
+  },
+  "thresholds": {
+    "regression": "open_items 逐字相同 (0 差异)",
+    "route_priority": "route.primary 由来源② (主报告块) 优先",
+    "rc_fail_closed": "rc 必须来自显式标记; 管道末段 (tail/head/grep) 取 rc 判为器具缺陷 rc=2"
+  },
+  "rc_semantics": {"0": "过", "1": "被测不满足", "2": "器具缺陷", "3": "缺侧/输入缺失"},
+  "notes": "改器具 (状态探针) ⇒ 下轮起 route 语义变更登记为可比性断点 (Q43 候选①原文: '会改路由可比性')"
+}

@@ -1,0 +1,81 @@
+{
+  "round": "EXP1-Q44",
+  "artifact": "scripts/capability_cycle_status.py v5/D8",
+  "rc": 0,
+  "checks": [
+    {
+      "check": "P2 零回归: 共享字段逐字相同 (纯增量改动)",
+      "ok": true,
+      "got": {}
+    },
+    {
+      "check": "P2b 字段集只增不减",
+      "ok": true,
+      "got": {
+        "added": [
+          "route",
+          "rule_v5"
+        ],
+        "removed": []
+      }
+    },
+    {
+      "check": "P1 真仓权威源优先: primary=master-block ∧ priority[0]=master:",
+      "ok": true,
+      "got": {
+        "primary": "master-block",
+        "first": "- **状态回填缺口（如实标注）**: 本快照自 R400 直接跳到 R413 —— **R401–R412 逐轮条目未回填**（读数分散在 `docs/improvements.md` 顶部各节 / `docs/plans/v0.3x.0-*.md` / `eval/rover/r4xx/`）；补齐属文档轮任务，不假",
+        "priority_len": 9
+      }
+    },
+    {
+      "check": "P3 负控(--legacy-route): 同仓 primary=backlog (成对 ⇒ 判别力)",
+      "ok": true,
+      "got": {
+        "primary_legacy_route": "backlog"
+      }
+    },
+    {
+      "check": "P4 priority 项数 == 两侧项数之和 (无静默丢弃)",
+      "ok": true,
+      "got": {
+        "priority_len": 9,
+        "backlog_open": 8,
+        "master_open": 1
+      }
+    },
+    {
+      "check": "P4b 可比性断点已登记 (route.comparable_from 非空)",
+      "ok": true,
+      "got": {
+        "comparable_from": "v5/D8 (2026-09-17, EXP1-Q44)"
+      }
+    }
+  ],
+  "real_repo": {
+    "v4_open_items": [
+      "exp1 本地索引/代码引用图: **进行中（探索，零产品代码）**：Q1/Q3/Q3b/Q2 已由数据题实测（附录 A–D）；**Q2 前提被机检证伪*",
+      "exp2 menu 问询协议: 未开始",
+      "exp3 步骤对齐校验: 未开始",
+      "exp4 工具需求 + 本地脚本: 未开始",
+      "exp8 产物→skill 蒸馏 + skill 生命周期 + KPI A/B: 未开始（设计已立档）",
+      "exp5 教训表（role 模块）: **核心已交付(R370)**：`LessonGeneralization`/`LessonTable`/`RoleLe",
+      "R371: 进行中",
+      "R370: 进行中",
+      "- **状态回填缺口（如实标注）**: 本快照自 R400 直接跳到 R413 —— **R401–R412 逐轮条目未回填**（读数分散在 `docs/improvements.md` 顶部各节 / `docs/plans/v0.3x.0-*.md` / `eval/rover/r4xx/`）；补齐属文档轮任务，不假"
+    ],
+    "v5_priority": [
+      "master: - **状态回填缺口（如实标注）**: 本快照自 R400 直接跳到 R413 —— **R401–R412 逐轮条目未回填**（读数分散在 `docs/improvements.md` 顶部各节 / `docs/plans/v0.3x.0-*.md` / `eval/rover/r4xx/`）；补齐属文档轮任务，不假",
+      "backlog: exp1 本地索引/代码引用图: **进行中（探索，零产品代码）**：Q1/Q3/Q3b/Q2 已由数据题实测（附录 A–D）；**Q2 前提被机检证伪*",
+      "backlog: exp2 menu 问询协议: 未开始",
+      "backlog: exp3 步骤对齐校验: 未开始",
+      "backlog: exp4 工具需求 + 本地脚本: 未开始",
+      "backlog: exp8 产物→skill 蒸馏 + skill 生命周期 + KPI A/B: 未开始（设计已立档）",
+      "backlog: exp5 教训表（role 模块）: **核心已交付(R370)**：`LessonGeneralization`/`LessonTable`/`RoleLe",
+      "backlog: R371: 进行中",
+      "backlog: R370: 进行中"
+    ],
+    "master_open": 1,
+    "backlog_open": 8
+  }
+}
