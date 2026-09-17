@@ -1,0 +1,17 @@
+arm      win    cases      calls new_prompt     cached     hit%  completion
+---------------------------------------------------------------------------
+A0-off   w1     58/58          4       6655      23936     78.2        6641
+A1-on    w1     58/58         17      20004     127872     86.5        9440
+C-codex  w1     58/58          7       3824      60672     94.1        4125
+A0-off   w2     58/58          8      11069      66304     85.7        6572
+A1-on    w2     58/58          4      10068      34304     77.3        4217
+C-codex  w2     46/58          9       6133      83328     93.1        5067
+A0-off   w3     58/58         12      14054     145408     91.2        6302
+A1-on    w3     58/58         12      13548     136704     91.0       10712
+C-codex  w3     58/58          5       3506      38016     91.6        2370
+median_ratios A1/codex: {"calls": 1.714, "new_prompt": 3.543, "completion": 2.288, "effective_tokens": 3.052, "nominal_tokens": 2.293}
+median_ratios A1/A0   : {"calls": 1.5, "new_prompt": 1.224, "completion": 1.436, "effective_tokens": 1.375, "nominal_tokens": 1.874}
+per-window calls ratio A1/codex: [2.429, 0.444, 2.4]
+per-window calls ratio A1/A0   : [4.25, 0.5, 1.0]
+verdict: {"C1_models_uniform": true, "C2_quality_no_regression": false, "C3_calls_primary": false, "C4_effective_tokens": false, "C5_nominal_tokens": false, "C6_ablation_any_dim_leq_thr": false}
+KPI_MAIN_PASS=False

@@ -1,0 +1,372 @@
+{
+ "round": "R523",
+ "windows": [
+  "w1",
+  "w2",
+  "w3"
+ ],
+ "thresholds": {
+  "calls_ratio_max": 0.7,
+  "token_ratio_max": 0.7,
+  "prereg": {
+   "calls_drop_pct_min": 30,
+   "token_drop_pct_min": 30,
+   "expected_direction": "R522 单窗: A1 4 调用/新算 10128/completion 4973 vs codex 5/3775/2659 ⇒ 调用接近 (比值 ~0.8), 有效 token 明显更差 (~2.3x)。预判 C3/C4/C5 大概率不达标; 本轮价值 = 给出 n=3 的稳定读数与极差, 把「是否达 30%」从单窗猜测变成区间事实。"
+  }
+ },
+ "per_window": {
+  "w1": {
+   "A0-off": {
+    "window": "w1",
+    "arm": "A0-off",
+    "runs": 1,
+    "cases_pass": 58,
+    "cases_total": 58,
+    "all_pass": true,
+    "calls": 4,
+    "new_prompt": 6655,
+    "cached_prompt": 23936,
+    "prompt_tokens": 30591,
+    "hit_pct": 78.2,
+    "completion": 6641,
+    "effective_tokens": 13296,
+    "nominal_tokens": 37232,
+    "upstream_total_tokens": 37232,
+    "unreported_usage": 0,
+    "snapshot_empty": 0,
+    "models": [
+     "deepseek-chat"
+    ]
+   },
+   "A1-on": {
+    "window": "w1",
+    "arm": "A1-on",
+    "runs": 1,
+    "cases_pass": 58,
+    "cases_total": 58,
+    "all_pass": true,
+    "calls": 17,
+    "new_prompt": 20004,
+    "cached_prompt": 127872,
+    "prompt_tokens": 147876,
+    "hit_pct": 86.5,
+    "completion": 9440,
+    "effective_tokens": 29444,
+    "nominal_tokens": 157316,
+    "upstream_total_tokens": 157316,
+    "unreported_usage": 0,
+    "snapshot_empty": 0,
+    "models": [
+     "deepseek-chat"
+    ]
+   },
+   "C-codex": {
+    "window": "w1",
+    "arm": "C-codex",
+    "runs": 1,
+    "cases_pass": 58,
+    "cases_total": 58,
+    "all_pass": true,
+    "calls": 7,
+    "new_prompt": 3824,
+    "cached_prompt": 60672,
+    "prompt_tokens": 64496,
+    "hit_pct": 94.1,
+    "completion": 4125,
+    "effective_tokens": 7949,
+    "nominal_tokens": 68621,
+    "upstream_total_tokens": 68621,
+    "unreported_usage": 0,
+    "snapshot_empty": 0,
+    "models": [
+     "deepseek-chat"
+    ]
+   }
+  },
+  "w2": {
+   "A0-off": {
+    "window": "w2",
+    "arm": "A0-off",
+    "runs": 1,
+    "cases_pass": 58,
+    "cases_total": 58,
+    "all_pass": true,
+    "calls": 8,
+    "new_prompt": 11069,
+    "cached_prompt": 66304,
+    "prompt_tokens": 77373,
+    "hit_pct": 85.7,
+    "completion": 6572,
+    "effective_tokens": 17641,
+    "nominal_tokens": 83945,
+    "upstream_total_tokens": 83945,
+    "unreported_usage": 0,
+    "snapshot_empty": 0,
+    "models": [
+     "deepseek-chat"
+    ]
+   },
+   "A1-on": {
+    "window": "w2",
+    "arm": "A1-on",
+    "runs": 1,
+    "cases_pass": 58,
+    "cases_total": 58,
+    "all_pass": true,
+    "calls": 4,
+    "new_prompt": 10068,
+    "cached_prompt": 34304,
+    "prompt_tokens": 44372,
+    "hit_pct": 77.3,
+    "completion": 4217,
+    "effective_tokens": 14285,
+    "nominal_tokens": 48589,
+    "upstream_total_tokens": 48589,
+    "unreported_usage": 0,
+    "snapshot_empty": 0,
+    "models": [
+     "deepseek-chat"
+    ]
+   },
+   "C-codex": {
+    "window": "w2",
+    "arm": "C-codex",
+    "runs": 1,
+    "cases_pass": 46,
+    "cases_total": 58,
+    "all_pass": false,
+    "calls": 9,
+    "new_prompt": 6133,
+    "cached_prompt": 83328,
+    "prompt_tokens": 89461,
+    "hit_pct": 93.1,
+    "completion": 5067,
+    "effective_tokens": 11200,
+    "nominal_tokens": 94528,
+    "upstream_total_tokens": 94528,
+    "unreported_usage": 0,
+    "snapshot_empty": 0,
+    "models": [
+     "deepseek-chat"
+    ]
+   }
+  },
+  "w3": {
+   "A0-off": {
+    "window": "w3",
+    "arm": "A0-off",
+    "runs": 1,
+    "cases_pass": 58,
+    "cases_total": 58,
+    "all_pass": true,
+    "calls": 12,
+    "new_prompt": 14054,
+    "cached_prompt": 145408,
+    "prompt_tokens": 159462,
+    "hit_pct": 91.2,
+    "completion": 6302,
+    "effective_tokens": 20356,
+    "nominal_tokens": 165764,
+    "upstream_total_tokens": 165764,
+    "unreported_usage": 0,
+    "snapshot_empty": 0,
+    "models": [
+     "deepseek-chat"
+    ]
+   },
+   "A1-on": {
+    "window": "w3",
+    "arm": "A1-on",
+    "runs": 1,
+    "cases_pass": 58,
+    "cases_total": 58,
+    "all_pass": true,
+    "calls": 12,
+    "new_prompt": 13548,
+    "cached_prompt": 136704,
+    "prompt_tokens": 150252,
+    "hit_pct": 91.0,
+    "completion": 10712,
+    "effective_tokens": 24260,
+    "nominal_tokens": 160964,
+    "upstream_total_tokens": 160964,
+    "unreported_usage": 0,
+    "snapshot_empty": 0,
+    "models": [
+     "deepseek-chat"
+    ]
+   },
+   "C-codex": {
+    "window": "w3",
+    "arm": "C-codex",
+    "runs": 1,
+    "cases_pass": 58,
+    "cases_total": 58,
+    "all_pass": true,
+    "calls": 5,
+    "new_prompt": 3506,
+    "cached_prompt": 38016,
+    "prompt_tokens": 41522,
+    "hit_pct": 91.6,
+    "completion": 2370,
+    "effective_tokens": 5876,
+    "nominal_tokens": 43892,
+    "upstream_total_tokens": 43892,
+    "unreported_usage": 0,
+    "snapshot_empty": 0,
+    "models": [
+     "deepseek-chat"
+    ]
+   }
+  }
+ },
+ "ratios_per_window": {
+  "w1": {
+   "A1_over_codex": {
+    "calls": 2.429,
+    "new_prompt": 5.231,
+    "completion": 2.288,
+    "effective_tokens": 3.704,
+    "nominal_tokens": 2.293
+   },
+   "A1_over_A0": {
+    "calls": 4.25,
+    "new_prompt": 3.006,
+    "completion": 1.421,
+    "effective_tokens": 2.215
+   }
+  },
+  "w2": {
+   "A1_over_codex": {
+    "calls": 0.444,
+    "new_prompt": 1.642,
+    "completion": 0.832,
+    "effective_tokens": 1.275,
+    "nominal_tokens": 0.514
+   },
+   "A1_over_A0": {
+    "calls": 0.5,
+    "new_prompt": 0.91,
+    "completion": 0.642,
+    "effective_tokens": 0.81
+   }
+  },
+  "w3": {
+   "A1_over_codex": {
+    "calls": 2.4,
+    "new_prompt": 3.864,
+    "completion": 4.52,
+    "effective_tokens": 4.129,
+    "nominal_tokens": 3.667
+   },
+   "A1_over_A0": {
+    "calls": 1.0,
+    "new_prompt": 0.964,
+    "completion": 1.7,
+    "effective_tokens": 1.192
+   }
+  }
+ },
+ "medians": {
+  "calls": {
+   "A0-off": 8,
+   "A1-on": 12,
+   "C-codex": 7
+  },
+  "new_prompt": {
+   "A0-off": 11069,
+   "A1-on": 13548,
+   "C-codex": 3824
+  },
+  "completion": {
+   "A0-off": 6572,
+   "A1-on": 9440,
+   "C-codex": 4125
+  },
+  "effective_tokens": {
+   "A0-off": 17641,
+   "A1-on": 24260,
+   "C-codex": 7949
+  },
+  "nominal_tokens": {
+   "A0-off": 83945,
+   "A1-on": 157316,
+   "C-codex": 68621
+  }
+ },
+ "median_ratios": {
+  "A1_over_codex": {
+   "calls": 1.714,
+   "new_prompt": 3.543,
+   "completion": 2.288,
+   "effective_tokens": 3.052,
+   "nominal_tokens": 2.293
+  },
+  "A1_over_A0": {
+   "calls": 1.5,
+   "new_prompt": 1.224,
+   "completion": 1.436,
+   "effective_tokens": 1.375,
+   "nominal_tokens": 1.874
+  }
+ },
+ "per_window_ratio_extremes": {
+  "calls": {
+   "A1_over_codex": [
+    2.429,
+    0.444,
+    2.4
+   ],
+   "A1_over_A0": [
+    4.25,
+    0.5,
+    1.0
+   ]
+  },
+  "effective_tokens": {
+   "A1_over_codex": [
+    3.704,
+    1.275,
+    4.129
+   ],
+   "A1_over_A0": [
+    2.215,
+    0.81,
+    1.192
+   ]
+  },
+  "nominal_tokens": {
+   "A1_over_codex": [
+    2.293,
+    0.514,
+    3.667
+   ],
+   "A1_over_A0": [
+    null,
+    null,
+    null
+   ]
+  }
+ },
+ "models": [
+  "deepseek-chat"
+ ],
+ "verdict": {
+  "C1_models_uniform": true,
+  "C2_quality_no_regression": false,
+  "C3_calls_primary": false,
+  "C4_effective_tokens": false,
+  "C5_nominal_tokens": false,
+  "C6_ablation_any_dim_leq_thr": false
+ },
+ "criteria": {
+  "C1_same_input": "题面 sha256 == pin (机检, 漂移即停手); adapter 落盘 models 集合三臂同为 {deepseek-chat}; 三窗同一二进制 sha256",
+  "C2_quality_no_regression": "每窗 A1-on 用例 58/58 且 >= A0-off 且 codex 58/58 (整题全对为 require 面)",
+  "C3_calls_primary": "median(A1 调用数)/median(codex 调用数) <= 0.70 (主判据: 不必要的远端请求变少)",
+  "C4_effective_tokens": "median(A1 新算 prompt + completion)/median(codex 同量) <= 0.70",
+  "C5_nominal_tokens": "median(A1 prompt+completion)/median(codex 同量) <= 0.70 (R413 逐字口径, 分列报告)",
+  "C6_ablation": "A1-on vs A0-off 的 (调用数 / 新算 prompt / completion) 三窗比值全列; 若任一维 <=0.70 才可宣称该维增益 (R522 三条全否 ⇒ 本轮检验是否复现)",
+  "C7_honest": "cached/hit% 只作分列读数; n=3 报三窗逐窗读数与极差 (禁只报中位数); 跨轮禁相减; 铁律 11 前置器 rc!=0 ⇒ 全部读数标『参考(未可验收)』"
+ },
+ "main_judge": "C3 (远端调用数下降) ; C2 为质量门"
+}

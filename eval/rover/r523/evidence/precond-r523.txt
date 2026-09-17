@@ -1,0 +1,24 @@
+DISCOVER layout=project taskset=eval/rover/r523/taskset-r523.json windows=3 snapshot_root=eval/rover/r523/snapshots
+w1      arms=3 correct=3
+   agentA0-off/g1   side=agent  cases=58/58  rc=0    correct=True  claimed=True  
+   agentA1-on/g1    side=agent  cases=58/58  rc=0    correct=True  claimed=True  
+   codex/g1         side=codex  cases=58/58  rc=0    correct=True  claimed=True  
+w2      arms=3 correct=2
+   agentA0-off/g1   side=agent  cases=58/58  rc=0    correct=True  claimed=True  
+   agentA1-on/g1    side=agent  cases=58/58  rc=0    correct=True  claimed=True  
+   codex/g1         side=codex  cases=46/58  rc=1    correct=False claimed=False wythoff#43-public,wythoff#45-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#50-hidden,wythoff#51-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#55-hidden,wythoff#56-hidden,wythoff#57-hidden
+w3      arms=3 correct=3
+   agentA0-off/g1   side=agent  cases=58/58  rc=0    correct=True  claimed=True  
+   agentA1-on/g1    side=agent  cases=58/58  rc=0    correct=True  claimed=True  
+   codex/g1         side=codex  cases=58/58  rc=0    correct=True  claimed=True  
+SELF_REPORT_AGREES=True
+EXECUTABLE_AND_CORRECT=False (全局, 任一臂-题不许错)
+SCOPE_SOURCE=eval/rover/r523/prereg-r523.json PREREG=True
+ACCEPTABLE_SCOPED=False
+NONREQUIRED w1/agentA0-off correct=True :: w1/agentA0-off/g1 rc=0 cases=58/58(expect 58) failed=-
+NONREQUIRED w2/agentA0-off correct=True :: w2/agentA0-off/g1 rc=0 cases=58/58(expect 58) failed=-
+NONREQUIRED w3/agentA0-off correct=True :: w3/agentA0-off/g1 rc=0 cases=58/58(expect 58) failed=-
+BLOCKED: w2/codex/g1 rc=1 cases=46/58(expect 58) failed=wythoff#43-public,wythoff#45-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#50-hidden,wythoff#51-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#55-hidden,wythoff#56-hidden,wythoff#57-hidden
+OUT=/home/agentuser/AgentFramework/eval/rover/r507pre/precondition-r523.json
+VERDICT_BLOCKED ⇒ rc=1 (存在未执行/不正确臂 ⇒ 不得 rc=0 假绿; R522 修: rc 前置要求 blocked 空)
+PRECOND_RC=1

@@ -235,6 +235,27 @@ def _scope_of(skey, scope):
     return "undeclared"
 
 
+def _early_scope(win, arm, key, what, scope, out):
+    """早退分支 (task_not_in_taskset / missing_case_script) 的验收面归属。
+
+    R523 修: 原先这些分支只进全局 `blocked` ⇒ 已声明**非验收面**的臂缺脚本也能把 rc 顶成 1
+    (R522「blocked 非空即 rc=1」补丁把这条修过头)。修后: 与正常路径同规则 ——
+    require ⇒ 进 blocked_scoped; undeclared ⇒ 进 blocked_scoped(UNDECLARED_SCORE 语义);
+    nonrequired ⇒ 只进全局 blocked 并单列读数。全局 blocked 始终非空 (如实记账, 不放水)。
+    """
+    skey = "%s/%s" % (win, arm)
+    sc = _scope_of(skey, scope)
+    msg = "%s/%s %s" % (win, key, what)
+    out["blocked"].append(msg)
+    if sc == "undeclared":
+        out["undeclared_arms"].append(skey)
+    if sc != "nonrequired":
+        out["blocked_scoped"].append(msg)
+        return {"scope": sc, "blocking": True}
+    out["nonrequired_arms"].append({"arm": skey, "correct": False, "detail": msg})
+    return {"scope": sc, "blocking": False}
+
+
 def _resolve_scope(scope_arg, ts_path, rounds_dir=None):
     """验收面来源: 显式 `--scope`（事后）> 题集同目录 `prereg-<名>.json` 内的 `evidence_scope`（预注册）。
     返回 (scope_dict|None, source_path|None, is_prereg:bool)。**缺 = 全臂皆验收面**（不放水）。"""
@@ -272,7 +293,9 @@ def run_project(label, taskset_path, win_root, snap_root, wins, out_path, timeou
         wrec = {"dir": rel(wdir), "arms": {}}
         snapwin = os.path.join(snap_root, win)
         if not os.path.isdir(snapwin):
-            out["blocked"].append("%s 快照目录缺失 %s" % (win, rel(snapwin)))
+            msg = "%s 快照目录缺失 %s" % (win, rel(snapwin))
+            out["blocked"].append(msg)
+            out["blocked_scoped"].append(msg)   # 整窗不可核验 ⇒ 必进验收面 (fail-closed)
             out["windows"][win] = wrec
             continue
         for arm in sorted(os.listdir(snapwin)):
@@ -290,14 +313,15 @@ def run_project(label, taskset_path, win_root, snap_root, wins, out_path, timeou
                        "family": (task or {}).get("family")}
                 if task is None:
                     rec.update({"status": "task_not_in_taskset", "correct": False})
+                    rec.update(_early_scope(win, arm, key, "task_not_in_taskset", scope, out))
                     wrec["arms"][key] = rec
-                    out["blocked"].append("%s/%s task_not_in_taskset" % (win, key))
                     continue
                 script = os.path.join(rdir, task.get("cases") or "")
                 if not os.path.isfile(script):
                     rec.update({"status": "missing_case_script", "correct": False})
+                    rec.update(_early_scope(win, arm, key, "missing_case_script %s" % (task.get("cases")),
+                                            scope, out))
                     wrec["arms"][key] = rec
-                    out["blocked"].append("%s/%s missing_case_script %s" % (win, key, task.get("cases")))
                     continue
                 tmp = tempfile.mkdtemp(prefix="precond-%s-%s-" % (win, arm.replace("/", "_")))
                 _copy_tree(src, tmp)
@@ -368,9 +392,14 @@ def run_project(label, taskset_path, win_root, snap_root, wins, out_path, timeou
     if out["scope_source"] and not out["scope_prereg"]:
         print("VERDICT_POSTHOC_ONLY ⇒ rc=1 (事后声明不构成验收面)")
         return 1
-    if out["blocked"]:
-        print("VERDICT_BLOCKED ⇒ rc=1 (存在未执行/不正确臂 ⇒ 不得 rc=0 假绿; R522 修: rc 前置要求 blocked 空)")
+    if out["blocked_scoped"]:
+        print("VERDICT_BLOCKED ⇒ rc=1 (验收面 [require ∪ 未声明] 存在未执行/不正确臂 ⇒ 不得 rc=0 假绿)")
+        if out["blocked"] and len(out["blocked"]) != len(out["blocked_scoped"]):
+            print("  (全局 blocked %d 项 > 验收面 blocked_scoped %d 项: 差额为非验收面读数, 已单列 NONREQUIRED)"
+                  % (len(out["blocked"]), len(out["blocked_scoped"])))
         return 1
+    if out["blocked"]:
+        print("VERDICT_OK_SCOPED ⇒ rc 由验收面判定; 非验收面存在失败读数 (见 NONREQUIRED, 如实记账不阻断)")
     return 0 if out["acceptable_scoped"] else 1
 
 

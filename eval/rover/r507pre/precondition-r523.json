@@ -1,0 +1,264 @@
+{
+ "label": "R523",
+ "layout": "project",
+ "taskset": "eval/rover/r523/taskset-r523.json",
+ "snapshot_root": "eval/rover/r523/snapshots",
+ "tasks_n": 1,
+ "windows_n": 3,
+ "rule": "可验收前置(project 布局): 仓内不可变快照 ⇒ 独立物化到全新临时目录 ⇒ python3 -I -B 实跑隐藏用例脚本 ⇒ 逐条机械判对; 自报 all_pass 只作对照不吃",
+ "scope_source": "eval/rover/r523/prereg-r523.json",
+ "scope_prereg": true,
+ "scope_require": [
+  "w1/agentA1-on",
+  "w2/agentA1-on",
+  "w3/agentA1-on",
+  "w1/codex",
+  "w2/codex",
+  "w3/codex"
+ ],
+ "scope_nonrequired": [
+  {
+   "pattern": "w*/agentA0-off",
+   "reason": "单变量消融控制臂 (纪律关 = R521 旧行为): 其正确性/用量本身是因果读数之一, 不是本侧交付面 ⇒ 不进验收面。此声明在起臂前落盘 (R522 曾把控制臂列入 require ⇒ 控制臂 56/58 直接把整轮判为未可验收)。"
+  }
+ ],
+ "windows": {
+  "w1": {
+   "dir": "eval/rover/r523/evidence/windows/w1",
+   "arms": {
+    "agentA0-off/g1": {
+     "arm": "agentA0-off",
+     "tag": "A0-off",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 58,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r523/evidence/windows/w1/report.json",
+     "stderr_tail": "",
+     "scope": "nonrequired",
+     "blocking": false
+    },
+    "agentA1-on/g1": {
+     "arm": "agentA1-on",
+     "tag": "A1-on",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 58,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r523/evidence/windows/w1/report.json",
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    },
+    "codex/g1": {
+     "arm": "codex",
+     "tag": "C-codex",
+     "tid": "g1",
+     "side": "codex",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 58,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r523/evidence/windows/w1/report.json",
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    }
+   }
+  },
+  "w2": {
+   "dir": "eval/rover/r523/evidence/windows/w2",
+   "arms": {
+    "agentA0-off/g1": {
+     "arm": "agentA0-off",
+     "tag": "A0-off",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 58,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r523/evidence/windows/w2/report.json",
+     "stderr_tail": "",
+     "scope": "nonrequired",
+     "blocking": false
+    },
+    "agentA1-on/g1": {
+     "arm": "agentA1-on",
+     "tag": "A1-on",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 58,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r523/evidence/windows/w2/report.json",
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    },
+    "codex/g1": {
+     "arm": "codex",
+     "tag": "C-codex",
+     "tid": "g1",
+     "side": "codex",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 46,
+     "rc": 1,
+     "correct": false,
+     "work_dir": null,
+     "failed_cases": [
+      "wythoff#43-public",
+      "wythoff#45-hidden",
+      "wythoff#47-hidden",
+      "wythoff#48-hidden",
+      "wythoff#50-hidden",
+      "wythoff#51-hidden",
+      "wythoff#52-hidden",
+      "wythoff#53-hidden",
+      "wythoff#54-hidden",
+      "wythoff#55-hidden",
+      "wythoff#56-hidden",
+      "wythoff#57-hidden"
+     ],
+     "claimed_all_pass": false,
+     "claimed_src": "eval/rover/r523/evidence/windows/w2/report.json",
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    }
+   }
+  },
+  "w3": {
+   "dir": "eval/rover/r523/evidence/windows/w3",
+   "arms": {
+    "agentA0-off/g1": {
+     "arm": "agentA0-off",
+     "tag": "A0-off",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 58,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r523/evidence/windows/w3/report.json",
+     "stderr_tail": "",
+     "scope": "nonrequired",
+     "blocking": false
+    },
+    "agentA1-on/g1": {
+     "arm": "agentA1-on",
+     "tag": "A1-on",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 58,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r523/evidence/windows/w3/report.json",
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    },
+    "codex/g1": {
+     "arm": "codex",
+     "tag": "C-codex",
+     "tid": "g1",
+     "side": "codex",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 58,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r523/evidence/windows/w3/report.json",
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    }
+   }
+  }
+ },
+ "self_report_mismatch": [],
+ "claim_unmapped": [],
+ "blocked": [
+  "w2/codex/g1 rc=1 cases=46/58(expect 58) failed=wythoff#43-public,wythoff#45-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#50-hidden,wythoff#51-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#55-hidden,wythoff#56-hidden,wythoff#57-hidden"
+ ],
+ "blocked_scoped": [
+  "w2/codex/g1 rc=1 cases=46/58(expect 58) failed=wythoff#43-public,wythoff#45-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#50-hidden,wythoff#51-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#55-hidden,wythoff#56-hidden,wythoff#57-hidden"
+ ],
+ "nonrequired_arms": [
+  {
+   "arm": "w1/agentA0-off",
+   "correct": true,
+   "detail": "w1/agentA0-off/g1 rc=0 cases=58/58(expect 58) failed=-"
+  },
+  {
+   "arm": "w2/agentA0-off",
+   "correct": true,
+   "detail": "w2/agentA0-off/g1 rc=0 cases=58/58(expect 58) failed=-"
+  },
+  {
+   "arm": "w3/agentA0-off",
+   "correct": true,
+   "detail": "w3/agentA0-off/g1 rc=0 cases=58/58(expect 58) failed=-"
+  }
+ ],
+ "undeclared_arms": [],
+ "self_report_agrees": true,
+ "executable_and_correct": false,
+ "acceptable_scoped": false
+}

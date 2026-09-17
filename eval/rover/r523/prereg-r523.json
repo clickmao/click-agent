@@ -1,0 +1,68 @@
+{
+ "round": "R523",
+ "mainline": "主线 = 随机真实开发任务 × 外部真值 (codex-cli, 同一真实模型) 同环境·同输入·同模型对照自检。R413 判据 (一轮任务总 token ↓>=30%, 主因是不必要的远端 LLM 请求变少) 是本主线的判据之一。",
+ "made_before_run": true,
+ "carried_from": "R522 §7 候选① (reps>=3 消融, 判定 19→4 调用的方差归属) + 候选③ (调用数作为主判据纳入所有轮) + 主线 R413 可验收读数 (R521/R522 两轮均因验收面 rc=1 ⇒ 只出「参考」读数)。",
+ "question": "① (主线/R413) 在 n=3 同窗对照下, 本侧 (纪律缺省开) 相对外部真值 codex 的 (调用数 / 新算 prompt / completion / 质量) 比值是多少, 是否有任一量达到 <=0.70? ② (消融) 纪律开/关两臂在 n=3 下是否稳定复现 R522 的「两臂同步降到 4 调用」, 即 19→4 属窗口方差还是纪律作用?",
+ "family": "games-longtask-v1",
+ "taskset": "eval/rover/r523/taskset-r523.json (= r522/taskset-r522.json 逐字节副本, 仅改 cases 目录随附; 题面禁漂移)",
+ "arms": {
+  "A1-on": "本侧 AOT agenthost, AGENTFRAMEWORK_ACTION_DISCIPLINE 缺省 (纪律生效) —— 处理臂/交付面",
+  "A0-off": "同二进制 + AGENTFRAMEWORK_ACTION_DISCIPLINE=off (= R521 旧行为) —— 单变量消融控制臂/基线",
+  "C-codex": "外部真值 codex-cli, 经同一计量 adapter, 同一真实模型 —— 参照列"
+ },
+ "single_variable": {
+  "binary": "/tmp/pub_r522/agenthost sha256 cc611646e76a5810604f5a8ce44bf85dd4456f3fd436c93fa2331c9bd28580e7 (15609168 B, IL 警告 0) —— 三臂同一二进制; 本轮零产品源码改动 (只改 eval/ 器具)",
+  "env_axis": "AGENTFRAMEWORK_ACTION_DISCIPLINE (A1=缺省 / A0=off)",
+  "arm_order": "A0-off → A1-on → C-codex (基线在前, 避免开窗冷启记到处理臂)",
+  "windows": "w1/w2/w3 三窗, 每窗独立 adapter 端口 (48700/48701/48702) + 独立 run 目录 + 每跑次独立 session ⇒ reps=3"
+ },
+ "input_pins": {
+  "taskset_sha256": "d9b373d87e7e046a95060e38db0fd32e95ae3baaaf39e7ed4408121f889a47aa",
+  "prompt_sha256": "516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3",
+  "cases_total": 58,
+  "cases_script": "cases/run_cases_r521.py sha256 a67215a792845cb4a3adec4553c8d06211fa3a7a1dc1ec258ed9dbf3f6e59109 (机检取值)",
+  "cases_corpus": "cases/cases-r521.json sha256 270128eb85c7afc07244c10c8845a22a541a7a60587a870125089e93422fccd7 (与 R522 逐字节同)",
+  "grader": "eval/rover/r519/grade_r519.py (与 R519/R520/R521/R522 同判据器)",
+  "model": "两侧同一上游模型 deepseek-chat",
+  "reused_instruments": {
+   "mount_check": "eval/rover/r522/mount_check_r522.py md5 91f993c183466cdda6a358757aed1de8 (纪律真进实发 prompt; 同轴复用, 未改)",
+   "grader_md5": "9c8a00043ef2b235e4929a024ea16dea",
+   "freeze_kpi": "eval/rover/r523/freeze_r523.py + kpi_r523.py (本轮新写, 判据阈值与 R522 同源)"
+  }
+ },
+ "criteria": {
+  "C1_same_input": "题面 sha256 == pin (机检, 漂移即停手); adapter 落盘 models 集合三臂同为 {deepseek-chat}; 三窗同一二进制 sha256",
+  "C2_quality_no_regression": "每窗 A1-on 用例 58/58 且 >= A0-off 且 codex 58/58 (整题全对为 require 面)",
+  "C3_calls_primary": "median(A1 调用数)/median(codex 调用数) <= 0.70 (主判据: 不必要的远端请求变少)",
+  "C4_effective_tokens": "median(A1 新算 prompt + completion)/median(codex 同量) <= 0.70",
+  "C5_nominal_tokens": "median(A1 prompt+completion)/median(codex 同量) <= 0.70 (R413 逐字口径, 分列报告)",
+  "C6_ablation": "A1-on vs A0-off 的 (调用数 / 新算 prompt / completion) 三窗比值全列; 若任一维 <=0.70 才可宣称该维增益 (R522 三条全否 ⇒ 本轮检验是否复现)",
+  "C7_honest": "cached/hit% 只作分列读数; n=3 报三窗逐窗读数与极差 (禁只报中位数); 跨轮禁相减; 铁律 11 前置器 rc!=0 ⇒ 全部读数标『参考(未可验收)』"
+ },
+ "predictions": {
+  "calls_drop_pct_min": 30,
+  "token_drop_pct_min": 30,
+  "expected_direction": "R522 单窗: A1 4 调用/新算 10128/completion 4973 vs codex 5/3775/2659 ⇒ 调用接近 (比值 ~0.8), 有效 token 明显更差 (~2.3x)。预判 C3/C4/C5 大概率不达标; 本轮价值 = 给出 n=3 的稳定读数与极差, 把「是否达 30%」从单窗猜测变成区间事实。"
+ },
+ "falsified_if": "若三窗中 A1-on 出现 <58/58 或 < A0-off ⇒ 判定纪律有害, 回退 AGENTFRAMEWORK_ACTION_DISCIPLINE 缺省为 off; 若 C3/C4/C5 全不达标 ⇒ 宣称收窄为「本侧不优于外部真值」, 并按 C6 决定是否保留纪律。",
+ "non_claims": [
+  "不宣称优于 codex: 先验预判方向相反 (有效 token 本侧更差)",
+  "跨窗/跨轮禁相减: R521 w2 (19 调用/302809 名义) 与 R522 w1 只作历史参考列",
+  "cached_tokens 价差 (~1:50) 只影响折算, 不构成本轮降幅宣称",
+  "本体 (codex-cli) 侧调用数/用量跨跑次摆动大 (R518 w1 12/12 → w2 9/12), 视作噪声源并报极差"
+ ],
+ "evidence_scope": {
+  "require": [
+   "w1/agentA1-on", "w2/agentA1-on", "w3/agentA1-on",
+   "w1/codex", "w2/codex", "w3/codex"
+  ],
+  "nonrequired": [
+   {
+    "pattern": "w*/agentA0-off",
+    "reason": "单变量消融控制臂 (纪律关 = R521 旧行为): 其正确性/用量本身是因果读数之一, 不是本侧交付面 ⇒ 不进验收面。此声明在起臂前落盘 (R522 曾把控制臂列入 require ⇒ 控制臂 56/58 直接把整轮判为未可验收)。"
+   }
+  ],
+  "gate_semantics_changed_r523": "同轮修复 `exec_precondition.py` 的验收面语义: 早退分支 (missing_case_script / task_not_in_taskset) 原先只进全局 blocked 而不进 blocked_scoped ⇒ 已声明非验收面的臂也能把 rc 顶成 1 (R522 的『blocked 非空即 rc=1』补丁把这条修过头: 非验收面臂的失败也阻断 rc)。修后: rc 由**验收面** (require ∪ 未声明) 判定, 非验收面读数单列全量打印; 配 7 项负控 (含 R522 那类缺用例脚本洞) 证明未放水。旧轮 rc 不重算, 只做「判决不变」核验。"
+ }
+}
