@@ -205,3 +205,19 @@ R504 判分后被后续候选作业**静默覆盖** 9 个 adapter 文件（同�
 - **厂商协议侧旁证**：修改 system/工具定义会作废此前思考块；`prefix_mismatch_behavior: drop_block`；缓存读价 0.025× 输入 ⇒「常量在前、只追加」是**协议级约束**，不是风格偏好。
 - **映射表（R525 落地，`SessionBaseline` §1..§11）**：身份/产品 → §1 身份与目标 ｜ 安全底线 → §2 安全与诚实底线 ｜ 记忆系统/never_store → §3 记忆与召回规则（新）｜ 行为守则 → §4 行为与输出纪律 ｜ — → §5 工程与执行纪律 ｜ 工具协议 → §6 工具协议（原生工具声明 = 逐调用恒定）｜ skills 目录 → §7 技能菜单与按需加载（新）｜ network/filesystem → §8 环境与工作区 ｜ — → §9 失败模式 / §10 汇报格式 / §11 模块地图。
 - **诚实边界（未取用）**：46 个工具的语义细节、UI 卡片工具族、以及「270 段是否分级按需加载」均无证据 ⇒ 不作宣称；本样本是**消费端会话** system（claude.ai），与我方 agent 的运行时形状不可直接等价，只作**结构**对照。
+
+## 参照面固化（2026-09-18）
+
+此前语料与设计抽取件只存在于 `/tmp`（易失）⇒ 已入仓，路径与 sha256 钉子如下（用于复现与防篡改）：
+
+| 文件 | 字节 | sha256 |
+|---|---|---|
+| `docs/external-reference/claude-fable-5.1-corpus.md` | 275,723 | `c57de521ca050e24…` |
+| `docs/external-reference/DESIGN-RATIONALE.md`（七条设计动因） | 4,966 | `24390e5e31a7cc25…` |
+| `docs/external-reference/R1-EXTRACT.md`（抽出的 R1 子集） | 3,528 | `27189e1ac964fb52…` |
+| `docs/external-reference/proto-{contract,r1prompt,pipeline,demo}.py`（远程真调原型） | 8,581 / 7,062 / 4,733 / 6,925 | `f78eae67` / `858646be` / `e0af4c13` / `0303548b`（前 8 位） |
+| `src/agent/contract/StructuredPrompt.cs`（落地侧: `PrefixChars`/`PrefixSha256Pinned`） | — | 钉子随代码 |
+
+对照臂侧（外部真值）：`codex-cli 0.154.0` 持久路径 `~/.agentframework/tools/codex-env/node_modules/.bin/codex`；
+四臂脚本 `eval/rover/r531/run_r531.sh`（A0-off / A1-on / A2-merge / **C-codex**），侧驱动 `eval/rover/r511/proj_run_side.py --side codex`。
+**验收前置铁律（11）**：`python3 eval/rover/r507pre/exec_precondition.py --round <r>`；`r532` 实测 **rc=3（DISCOVER_FAIL: taskset/codex/agent 三侧皆 None）** ⇒ 该轮单侧读数一律「参考（未可验收）」。
