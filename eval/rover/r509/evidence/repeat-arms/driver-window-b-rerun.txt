@@ -1,0 +1,44 @@
+[07:51:36] == 起手闸 ==
+[07:51:40]   闸1: PASS
+[07:51:43]   闸2: PASS
+[07:51:44] adapter2 up pid=2466486 port=48672
+[07:51:49]   臂 agentA rep1 max-steps=默认
+{"tid": "p3", "side": "agent", "arm": "agentA", "rc": 0, "elapsed_s": 17.06, "ledger_calls": 0, "ledger_steps": 0, "reply_chars": 13403, "adapter_range": [1, 2]}
+[07:52:06]   臂 agentA rep2 max-steps=默认
+{"tid": "p3", "side": "agent", "arm": "agentA", "rc": 0, "elapsed_s": 35.1, "ledger_calls": 7, "ledger_steps": 6, "reply_chars": 1569, "adapter_range": [3, 9]}
+[07:52:41]   臂 agentA rep3 max-steps=默认
+{"tid": "p3", "side": "agent", "arm": "agentA", "rc": 0, "elapsed_s": 31.69, "ledger_calls": 8, "ledger_steps": 6, "reply_chars": 2417, "adapter_range": [10, 16]}
+[07:53:13]   臂 agentD rep1 max-steps=3
+{"tid": "p3", "side": "agent", "arm": "agentD", "rc": 0, "elapsed_s": 21.45, "ledger_calls": 0, "ledger_steps": 0, "reply_chars": 11680, "adapter_range": [17, 18]}
+[07:53:34]   臂 agentD rep2 max-steps=3
+{"tid": "p3", "side": "agent", "arm": "agentD", "rc": 0, "elapsed_s": 23.23, "ledger_calls": 6, "ledger_steps": 3, "reply_chars": 1569, "adapter_range": [19, 22]}
+[07:53:57]   臂 agentD rep3 max-steps=3
+{"tid": "p3", "side": "agent", "arm": "agentD", "rc": 0, "elapsed_s": 18.95, "ledger_calls": 4, "ledger_steps": 3, "reply_chars": 1537, "adapter_range": [23, 26]}
+[07:54:17] == 聚合 ==
+   agentA|p3|entry_present ['FAIL', 'PASS', 'PASS']
+   agentA|p3|put_get_json_api ['FAIL', 'PASS', 'PASS']
+   agentA|p3|missing_404 ['FAIL', 'PASS', 'PASS']
+   agentA|p3|unknown_path_404 ['FAIL', 'PASS', 'PASS']
+   agentA|p3|ttl_expire_and_count ['FAIL', 'PASS', 'PASS']
+   agentA|p3|incr_semantics_and_409 ['FAIL', 'PASS', 'PASS']
+   agentA|p3|incr_concurrent_atomic ['FAIL', 'PASS', 'PASS']
+   agentA|p3|delete_flow ['FAIL', 'PASS', 'PASS']
+   agentA|p3|stats_live_count ['FAIL', 'PASS', 'PASS']
+   agentA|p3|wal_lines_jsonl ['FAIL', 'PASS', 'PASS']
+   agentA|p3|restart_recovery ['FAIL', 'PASS', 'PASS']
+   agentA|p3|restart_drops_expired ['FAIL', 'FAIL', 'PASS']
+   agentD|p3|entry_present ['FAIL', 'PASS', 'PASS']
+   agentD|p3|put_get_json_api ['FAIL', 'PASS', 'PASS']
+   agentD|p3|missing_404 ['FAIL', 'PASS', 'PASS']
+   agentD|p3|unknown_path_404 ['FAIL', 'PASS', 'PASS']
+   agentD|p3|ttl_expire_and_count ['FAIL', 'PASS', 'PASS']
+   agentD|p3|incr_semantics_and_409 ['FAIL', 'PASS', 'PASS']
+   agentD|p3|incr_concurrent_atomic ['FAIL', 'PASS', 'PASS']
+   agentD|p3|delete_flow ['FAIL', 'PASS', 'PASS']
+   agentD|p3|stats_live_count ['FAIL', 'PASS', 'PASS']
+   agentD|p3|wal_lines_jsonl ['FAIL', 'PASS', 'PASS']
+   agentD|p3|restart_recovery ['FAIL', 'PASS', 'PASS']
+   agentD|p3|restart_drops_expired ['FAIL', 'FAIL', 'PASS']
+SUMMARY_JSON=/tmp/r509/run-r509b/report.json
+[07:54:53] DONE RERUN
+RERUN_RC=0

@@ -325,7 +325,13 @@ if (args.Length >= 2 && args[0] == "--frontend-api")
         return 4;
     }
     RedirectDaemonLogIfConfigured();
-    var frontendCtx = new AgentContext(provider) { SessionId = "frontend-main", UserId = "frontend-user" };
+    var frontendCtx = new AgentContext(provider)
+    {
+        // R509: 会话 id 可注入 (默认 frontend-main 保持兼容) — 真机探针/多客户端需要独立会话,
+        // 否则共享会话会把上一轮的续跑/待答复状态带进本次任务 (实测: 事件面全绿但回复是陈旧续跑)。
+        SessionId = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_FRONTEND_SESSION") ?? "frontend-main",
+        UserId = "frontend-user",
+    };
     await entryAgent.InitializeAsync(frontendCtx);
 
     // R465: 本地通道预热 (env 开关, 默认关 ⇒ 现有行为逐位不变)。
@@ -354,8 +360,10 @@ if (args.Length >= 2 && args[0] == "--frontend-api")
     var eventHub = provider.GetRequiredService<agent.frontendapi.FrontendEventHub>();
     if (provider.GetRequiredService<agent.userinteraction.IUserPromptService>() is agent.frontendapi.IAskReplySink askSink)
         eventHub.AttachAsk(askSink);
+    // R509: 任务生命周期登记 (chat.send → task.started/completed 事件 + state.snapshot.tasks)
+    var taskRegistry = new agent.frontendapi.FrontendTaskRegistry();
     var chatRouter = new agent.frontendapi.FrontendApiChatRouter(entryAgent,
-        askSink: eventHub.AskSink);
+        askSink: eventHub.AskSink, tasks: taskRegistry, hub: eventHub);
     var v2 = entryAgent as IndustrialAgentV2;
     var server = new agent.frontendapi.FrontendApiServer(async (api, payloadJson) =>
     {
@@ -382,6 +390,9 @@ if (args.Length >= 2 && args[0] == "--frontend-api")
                 w.WriteEndObject();
                 w.WriteNumber("uptime_ms", snap.UptimeMs);
                 w.WriteBoolean("ready", true);
+                // R509: 任务面 (断线重连可读在飞/最近任务; 空数组 = 无任务, 非缺字段)
+                w.WritePropertyName("tasks");
+                w.WriteRawValue(taskRegistry.SnapshotJson(), skipInputValidation: true);
                 w.WriteEndObject();
             }
             return Encoding.UTF8.GetString(ms.ToArray());

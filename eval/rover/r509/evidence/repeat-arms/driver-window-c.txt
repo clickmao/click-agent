@@ -1,0 +1,36 @@
+[07:57:16] 闸1: PASS
+[07:57:20] 闸2: PASS
+[07:57:21] adapter up port=48674
+[07:57:29]   臂 agentA rep1 (ms=默认)
+{"tid": "p3", "side": "agent", "arm": "agentA-r1", "rc": 0, "elapsed_s": 26.33, "ledger_calls": 7, "ledger_steps": 6, "reply_chars": 1569, "adapter_range": [1, 7]}
+[07:57:55]   臂 agentA rep2 (ms=默认)
+{"tid": "p3", "side": "agent", "arm": "agentA-r2", "rc": 0, "elapsed_s": 27.69, "ledger_calls": 8, "ledger_steps": 6, "reply_chars": 1569, "adapter_range": [8, 14]}
+[07:58:23]   臂 agentA rep3 (ms=默认)
+{"tid": "p3", "side": "agent", "arm": "agentA-r3", "rc": 0, "elapsed_s": 23.55, "ledger_calls": 7, "ledger_steps": 6, "reply_chars": 1569, "adapter_range": [15, 21]}
+[07:58:46]   臂 agentD rep1 (ms=3)
+{"tid": "p3", "side": "agent", "arm": "agentD-r1", "rc": 0, "elapsed_s": 21.02, "ledger_calls": 5, "ledger_steps": 3, "reply_chars": 1569, "adapter_range": [22, 25]}
+[07:59:07]   臂 agentD rep2 (ms=3)
+{"tid": "p3", "side": "agent", "arm": "agentD-r2", "rc": 0, "elapsed_s": 19.31, "ledger_calls": 5, "ledger_steps": 3, "reply_chars": 1569, "adapter_range": [26, 29]}
+[07:59:27]   臂 agentD rep3 (ms=3)
+{"tid": "p3", "side": "agent", "arm": "agentD-r3", "rc": 0, "elapsed_s": 21.87, "ledger_calls": 5, "ledger_steps": 3, "reply_chars": 1569, "adapter_range": [30, 33]}
+[07:59:50] == 聚合 ==
+arm tid  全对轮次  用例合计    tok min/mean/max        calls  墙钟s        steps
+agentA p3   2/3      35/36     72831/80995.0/90167  7.0  25.9  6.0
+agentD p3   0/3      22/36     36207/39918.3/41941  4.0  20.7  3.0
+不稳定用例 (跨轮次状态不一致):
+   agentA|p3|restart_drops_expired ['PASS', 'FAIL', 'PASS']
+   agentD|p3|entry_present ['FAIL', 'PASS', 'PASS']
+   agentD|p3|put_get_json_api ['FAIL', 'PASS', 'PASS']
+   agentD|p3|missing_404 ['FAIL', 'PASS', 'PASS']
+   agentD|p3|unknown_path_404 ['FAIL', 'PASS', 'PASS']
+   agentD|p3|ttl_expire_and_count ['FAIL', 'PASS', 'PASS']
+   agentD|p3|incr_semantics_and_409 ['FAIL', 'PASS', 'PASS']
+   agentD|p3|incr_concurrent_atomic ['FAIL', 'PASS', 'PASS']
+   agentD|p3|delete_flow ['FAIL', 'PASS', 'PASS']
+   agentD|p3|stats_live_count ['FAIL', 'PASS', 'PASS']
+   agentD|p3|wal_lines_jsonl ['FAIL', 'PASS', 'PASS']
+   agentD|p3|restart_recovery ['FAIL', 'PASS', 'FAIL']
+   agentD|p3|restart_drops_expired ['FAIL', 'FAIL', 'PASS']
+SUMMARY_JSON=/tmp/r509/run-r509c/report.json
+[08:00:19] DONE
+DRIVER_RC=0

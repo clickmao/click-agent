@@ -1,0 +1,245 @@
+{
+ "run_dir": "/tmp/r509/run-r509c",
+ "rows": [
+  {
+   "arm": "agentA",
+   "rep": 1,
+   "tid": "p3",
+   "all_pass": true,
+   "pass": 12,
+   "total": 12,
+   "fails": [],
+   "calls": 7,
+   "total_tokens": 79987,
+   "prompt_tokens": 74093,
+   "elapsed_s": 26.33,
+   "steps": 6,
+   "ledger_calls": 7
+  },
+  {
+   "arm": "agentA",
+   "rep": 2,
+   "tid": "p3",
+   "all_pass": false,
+   "pass": 11,
+   "total": 12,
+   "fails": [
+    "restart_drops_expired"
+   ],
+   "calls": 7,
+   "total_tokens": 90167,
+   "prompt_tokens": 83477,
+   "elapsed_s": 27.69,
+   "steps": 6,
+   "ledger_calls": 8
+  },
+  {
+   "arm": "agentA",
+   "rep": 3,
+   "tid": "p3",
+   "all_pass": true,
+   "pass": 12,
+   "total": 12,
+   "fails": [],
+   "calls": 7,
+   "total_tokens": 72831,
+   "prompt_tokens": 66721,
+   "elapsed_s": 23.55,
+   "steps": 6,
+   "ledger_calls": 7
+  },
+  {
+   "arm": "agentD",
+   "rep": 1,
+   "tid": "p3",
+   "all_pass": false,
+   "pass": 0,
+   "total": 12,
+   "fails": [
+    "entry_present",
+    "put_get_json_api",
+    "missing_404",
+    "unknown_path_404",
+    "ttl_expire_and_count",
+    "incr_semantics_and_409",
+    "incr_concurrent_atomic",
+    "delete_flow",
+    "stats_live_count",
+    "wal_lines_jsonl",
+    "restart_recovery",
+    "restart_drops_expired"
+   ],
+   "calls": 4,
+   "total_tokens": 36207,
+   "prompt_tokens": 30507,
+   "elapsed_s": 21.02,
+   "steps": 3,
+   "ledger_calls": 5
+  },
+  {
+   "arm": "agentD",
+   "rep": 2,
+   "tid": "p3",
+   "all_pass": false,
+   "pass": 11,
+   "total": 12,
+   "fails": [
+    "restart_drops_expired"
+   ],
+   "calls": 4,
+   "total_tokens": 41941,
+   "prompt_tokens": 36456,
+   "elapsed_s": 19.31,
+   "steps": 3,
+   "ledger_calls": 5
+  },
+  {
+   "arm": "agentD",
+   "rep": 3,
+   "tid": "p3",
+   "all_pass": false,
+   "pass": 11,
+   "total": 12,
+   "fails": [
+    "restart_recovery"
+   ],
+   "calls": 4,
+   "total_tokens": 41607,
+   "prompt_tokens": 35690,
+   "elapsed_s": 21.87,
+   "steps": 3,
+   "ledger_calls": 5
+  }
+ ],
+ "summary": {
+  "agentA": {
+   "p3": {
+    "reps": 3,
+    "all_pass_reps": 2,
+    "pass_rates": "35/36",
+    "total_tokens": {
+     "n": 3,
+     "min": 72831,
+     "max": 90167,
+     "mean": 80995.0
+    },
+    "calls": {
+     "n": 3,
+     "min": 7,
+     "max": 7,
+     "mean": 7.0
+    },
+    "elapsed_s": {
+     "n": 3,
+     "min": 23.55,
+     "max": 27.69,
+     "mean": 25.9
+    },
+    "steps": {
+     "n": 3,
+     "min": 6,
+     "max": 6,
+     "mean": 6.0
+    }
+   }
+  },
+  "agentD": {
+   "p3": {
+    "reps": 3,
+    "all_pass_reps": 0,
+    "pass_rates": "22/36",
+    "total_tokens": {
+     "n": 3,
+     "min": 36207,
+     "max": 41941,
+     "mean": 39918.3
+    },
+    "calls": {
+     "n": 3,
+     "min": 4,
+     "max": 4,
+     "mean": 4.0
+    },
+    "elapsed_s": {
+     "n": 3,
+     "min": 19.31,
+     "max": 21.87,
+     "mean": 20.7
+    },
+    "steps": {
+     "n": 3,
+     "min": 3,
+     "max": 3,
+     "mean": 3.0
+    }
+   }
+  }
+ },
+ "unstable_cases": {
+  "agentA|p3|restart_drops_expired": [
+   "PASS",
+   "FAIL",
+   "PASS"
+  ],
+  "agentD|p3|entry_present": [
+   "FAIL",
+   "PASS",
+   "PASS"
+  ],
+  "agentD|p3|put_get_json_api": [
+   "FAIL",
+   "PASS",
+   "PASS"
+  ],
+  "agentD|p3|missing_404": [
+   "FAIL",
+   "PASS",
+   "PASS"
+  ],
+  "agentD|p3|unknown_path_404": [
+   "FAIL",
+   "PASS",
+   "PASS"
+  ],
+  "agentD|p3|ttl_expire_and_count": [
+   "FAIL",
+   "PASS",
+   "PASS"
+  ],
+  "agentD|p3|incr_semantics_and_409": [
+   "FAIL",
+   "PASS",
+   "PASS"
+  ],
+  "agentD|p3|incr_concurrent_atomic": [
+   "FAIL",
+   "PASS",
+   "PASS"
+  ],
+  "agentD|p3|delete_flow": [
+   "FAIL",
+   "PASS",
+   "PASS"
+  ],
+  "agentD|p3|stats_live_count": [
+   "FAIL",
+   "PASS",
+   "PASS"
+  ],
+  "agentD|p3|wal_lines_jsonl": [
+   "FAIL",
+   "PASS",
+   "PASS"
+  ],
+  "agentD|p3|restart_recovery": [
+   "FAIL",
+   "PASS",
+   "FAIL"
+  ],
+  "agentD|p3|restart_drops_expired": [
+   "FAIL",
+   "FAIL",
+   "PASS"
+  ]
+ }
+}
