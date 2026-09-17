@@ -1,0 +1,63 @@
+{
+ "task": "p4",
+ "dir": "/tmp/r515/run-0917-105238/grade-orch",
+ "rc": 1,
+ "cases": [],
+ "failed": [
+  {
+   "name": "add_creates_and_lists",
+   "reason": "AssertionError: add rc=1 stderr=/home/agentuser/.hermes/hermes-agent/venv/bin/python3: No module named tasksvc.cli"
+  },
+  {
+   "name": "id_monotonic_no_reuse",
+   "reason": "AssertionError: add a 失败"
+  },
+  {
+   "name": "unicode_roundtrip",
+   "reason": "AssertionError: add unicode 失败"
+  },
+  {
+   "name": "done_idempotent",
+   "reason": "AssertionError: add 失败"
+  },
+  {
+   "name": "done_unknown_id",
+   "reason": "AssertionError: add 失败"
+  },
+  {
+   "name": "bad_request_exit2",
+   "reason": "AssertionError: 空白 text 必须 rc=2, 实得 1"
+  },
+  {
+   "name": "ttl_expiry_uses_injected_clock",
+   "reason": "AssertionError: add --ttl rc=1"
+  },
+  {
+   "name": "stats_counts_three_states",
+   "reason": "AssertionError: done 2 失败"
+  },
+  {
+   "name": "expire_removes_expired_tasks",
+   "reason": "AssertionError: expire rc=1"
+  },
+  {
+   "name": "persistence_across_processes",
+   "reason": "AssertionError: add 失败"
+  },
+  {
+   "name": "no_temp_residue",
+   "reason": "AssertionError: 前置命令 rc=1 out= err=/home/agentuser/.hermes/hermes-agent/venv/bin/python3: No module named tasksvc.c"
+  },
+  {
+   "name": "list_filter_and_order",
+   "reason": "AssertionError: 前置命令 rc=1 out= err=/home/agentuser/.hermes/hermes-agent/venv/bin/python3: No module named tasksvc.c"
+  }
+ ],
+ "summary": "12/12 FAIL",
+ "cases_passed": 0,
+ "cases_total": 12,
+ "ok": false,
+ "stdout_tail": " AssertionError: expire rc=1\nCASE persistence_across_processes FAIL AssertionError: add 失败\nCASE no_temp_residue FAIL AssertionError: 前置命令 rc=1 out= err=/home/agentuser/.hermes/hermes-agent/venv/bin/python3: No module named tasksvc.c\nCASE list_filter_and_order FAIL AssertionError: 前置命令 rc=1 out= err=/home/agentuser/.hermes/hermes-agent/venv/bin/python3: No module named tasksvc.c\nSUMMARY 12/12 FAIL\n",
+ "stderr_tail": "",
+ "oracle": false
+}

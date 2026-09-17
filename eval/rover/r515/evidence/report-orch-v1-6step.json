@@ -1,0 +1,16 @@
+{
+  "plan_id": "plan-p4",
+  "run_id": "ff77f2ef6fc1",
+  "state": "Finished",
+  "workspace": "/tmp/r515/run-0917-104315/orch/ws",
+  "node_steps": 6,
+  "budget_ceiling": 18,
+  "overlap_ms": 127,
+  "nodes": [
+    {"node_id": "n1", "level": 0, "location": "remote", "executor": "agent-turn", "state": "Completed", "elapsed_ms": 33313, "output_chars": 1483, "deps": [], "files": ["A tasksvc/__init__.py", "A tasksvc/model.py", "A tasksvc/store.py"], "error": ""},
+    {"node_id": "n2", "level": 0, "location": "remote", "executor": "agent-turn", "state": "Completed", "elapsed_ms": 89774, "output_chars": 786, "deps": [], "files": ["A tasksvc/__init__.py", "A tasksvc/cli.py", "A tasksvc/model.py", "A tasksvc/store.py"], "error": ""},
+    {"node_id": "n4", "level": 1, "location": "local", "executor": "python.selftest", "state": "Completed", "elapsed_ms": 127, "output_chars": 29, "deps": ["n1"], "files": [], "error": ""},
+    {"node_id": "n3", "level": 1, "location": "remote", "executor": "agent-turn", "state": "Completed", "elapsed_ms": 16884, "output_chars": 757, "deps": ["n1", "n2"], "files": ["A tasksvc/__pycache__/__init__.cpython-311.pyc", "A tasksvc/__pycache__/model.cpython-311.pyc", "A tasksvc/__pycache__/store.cpython-311.pyc"], "error": ""}
+  ],
+  "node_states": {"n1": "Completed", "n2": "Completed", "n3": "Completed", "n4": "Completed"}
+}

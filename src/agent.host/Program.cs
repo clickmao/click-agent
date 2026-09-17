@@ -317,6 +317,11 @@ if (args.Length >= 2 && args[0] == "--compression-audit")
             Environment.SetEnvironmentVariable("AGENTFRAMEWORK_ROLE_FILE", Path.GetFullPath(roleId));
         var entryAgent = provider.GetRequiredService<IAgent>();
 
+// R515: --orchestrate <计划文件> — 长任务编排器 (逐节点真实执行, 每节点独立步数预算)。
+// 与 --frontend-api / REPL 并列的第四种形态: 无人值守的**多节点长任务**驱动。
+if (args.Length >= 2 && args[0] == "--orchestrate")
+    return await OrchestrateCommand.RunAsync(provider, entryAgent, args[1..], Console.Out, Console.Error);
+
 if (args.Length >= 2 && args[0] == "--frontend-api")
 {
     if (!int.TryParse(args[1], out var apiPort) || apiPort is < 1 or > 65535)

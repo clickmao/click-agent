@@ -1,0 +1,59 @@
+{
+ "round": "r515",
+ "written_before_arms": true,
+ "written_at": "2026-09-17",
+ "subject": "长任务编排器 V1 (TaskOrchestrator): 节点 = 一次真实执行单元, 每节点独立步数预算, 同层本地/远端并发",
+ "motivation": "R511 读数: 长任务失败的第一主因 = 单次动作环步数封顶 (默认 6 / 硬顶 32), 4/4 跑次整题全对 0; 用户裁定『任务细分未产生多次真实执行』。",
+ "arms": [
+  {
+   "id": "single",
+   "desc": "一次成型: 全题面 (p4 v2 契约) 一条消息, AGENTFRAMEWORK_ACTION_MAX_STEPS=6",
+   "role": "同窗基线",
+   "session": "独立 session (r515-single-<ts>)"
+  },
+  {
+   "id": "orch",
+   "desc": "编排器: p4 拆 4 节点 — n1(store.py)/n2(model.py) 同层并发, n3(cli.py) 依赖 n1,n2, n4(本地 python.selftest on store.py) 依赖 n1 ⇒ 与 n2 墙钟重叠; 每节点 6 步",
+   "role": "被测臂",
+   "session": "独立 session (r515-orch-<ts>)"
+  }
+ ],
+ "criteria": [
+  {"id": "C1", "kind": "机械", "desc": "编排器 run.state=Finished 且无 Failed 节点 (report.json)", "pass_when": "state=='Finished' and all(n.state in {Completed, Skipped} for n in nodes)"},
+  {"id": "C2", "kind": "机械", "desc": "可验收前置 (铁律 11): 编排器臂产物 12/12 隐藏用例 且 rc=0", "pass_when": "grade-orch.json: cases_passed==12 and rc==0"},
+  {"id": "C3", "kind": "机械", "desc": "同窗对照: 编排器臂用例数 > 单轮臂用例数 (禁跨窗相减)", "pass_when": "orch.cases_passed > single.cases_passed"},
+  {"id": "C4", "kind": "机械", "desc": "子任务同步: 墙钟重叠 > 0 (本地节点与远端节点并发窗口) 或同层并发证据", "pass_when": "report.overlap_ms > 0"},
+  {"id": "C5", "kind": "机械", "desc": "预算上界: budget_ceiling = 节点数 × 单节点预算, 且 > 单次动作环默认 6 步", "pass_when": "report.budget_ceiling >= 4*6"},
+  {"id": "C6", "kind": "机械", "desc": "逐节点产物归属可机读: ≥2 个节点 files[] 非空", "pass_when": "count(n.files non-empty) >= 2"}
+ ],
+ "honest_boundaries_pre": [
+  "n=1 跑次/臂 (单窗口单次) ⇒ C3 只在该窗内成立, 不外推为稳定优越性",
+  "同层远端节点是否真并发受模型队列/资源约束影响; 若被串行化, overlap 证据以本地(n4)×远端(n2)重叠为准",
+  "token 真值取 adapter (r455/adapter_tools.py) 落盘 side-agent-NNN.json, 按臂索引区间归属; 区间无 usage ⇒ unreported (禁冒充 0)",
+  "R515 与 R511/R512/R513 窗口题面版本不同 ⇒ 禁相减; R511 的 p3/p4 数字只作历史参照",
+  "本轮只改链代码新增编排器 (TaskOrchestrator / TaskPlanFile / --orchestrate), 不改既有动作环与预算语义 ⇒ 既有控制期望不需刷新"
+ ],
+ "artifacts_expected": [
+  "src/agent/intent/TaskOrchestrator.cs",
+  "src/agent/intent/TaskPlanFile.cs",
+  "src/agent.host/OrchestrateCommand.cs",
+  "src/agent.tests/TaskOrchestratorTests.cs",
+  "eval/rover/r515/plan-p4.txt",
+  "eval/rover/r515/run_orchestrator_e2e.sh",
+  "eval/rover/r515/summarize_r515.py",
+  "eval/rover/r515/evidence/report.json"
+ ],
+ "addendum": {
+  "declared_at": "2026-09-17",
+  "reason": "主臂题面 (p4 v2) 同窗单轮 6 步即 12/12 ⇒ C3 (编排器臂 > 单轮臂) 在 4 节点计划上不可判别; 为测「总步数 = 节点数 × 单节点预算」的规模解锁, 事后增补规模臂。",
+  "arms": [
+   {"id": "single2", "desc": "双包题面 (p3 kvsvc + p4 tasksvc, 6 文件/24 隐藏用例) 一次成型, 6 步"},
+   {"id": "orch2", "desc": "同一题面, 编排器 7 节点链 (每层 ≤1 远端 + 本地自测), 每节点 6 步 ⇒ 预算上界 42 步"}
+  ],
+  "criteria_addendum": [
+   {"id": "C3'", "kind": "机械", "desc": "增补臂同窗对照: 编排器两包合计用例数 > 单轮两包合计用例数"},
+   {"id": "C5'", "kind": "机械", "desc": "增补臂预算上界 (7 × 6 = 42 步) > 单轮 6 步的 6 倍"}
+  ],
+  "honest_note": "增补臂为事后增补, 不作主验收依据 (R512 先例); 若单轮臂同样 24/24 ⇒ 记「题面规模仍不足以区分」并转下轮扩规模"
+ }
+}

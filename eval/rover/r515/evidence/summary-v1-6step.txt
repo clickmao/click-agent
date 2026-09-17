@@ -1,0 +1,9 @@
+== R515 读数 (同窗·同题面·同模型) ==
+臂 single 用例 12/12 ok=True rc=0 调用=6 tokens=69070
+臂 orch   用例 3/12 ok=False rc=1 调用=57 tokens=280083
+   失败用例(9): add_creates_and_lists,id_monotonic_no_reuse,unicode_roundtrip,done_idempotent,ttl_expiry_uses_injected_clock,stats_counts_three_states,expire_removes_expired_tasks,persistence_across_processes,list_filter_and_order
+编排器: state=Finished 节点预算上限=18 墙钟重叠=127ms
+   n1   L0  remote   Completed   33313ms out=1483B files=A tasksvc/__init__.py,A tasksvc/model.py,A tasksvc/store.py 
+   n2   L0  remote   Completed   89774ms out=786B files=A tasksvc/__init__.py,A tasksvc/cli.py,A tasksvc/model.py,A tasksvc/store.py 
+   n4   L1  local    Completed     127ms out=29B files=- 
+   n3   L1  remote   Completed   16884ms out=757B files=A tasksvc/__pycache__/__init__.cpython-311.pyc,A tasksvc/__pycache__/model.cpython-311.pyc,A tasksvc/__pycache__/store.cpython-311.pyc 

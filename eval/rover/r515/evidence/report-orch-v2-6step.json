@@ -1,0 +1,16 @@
+{
+  "plan_id": "plan-p4-v2",
+  "run_id": "6844186bf6dc",
+  "state": "Finished",
+  "workspace": "/tmp/r515/run-0917-104753/orch/ws",
+  "node_steps": 6,
+  "budget_ceiling": 18,
+  "overlap_ms": 85,
+  "nodes": [
+    {"node_id": "n1", "level": 0, "location": "remote", "executor": "agent-turn", "state": "Completed", "elapsed_ms": 19026, "output_chars": 1052, "deps": [], "files": ["A tasksvc/__init__.py", "A tasksvc/store.py"], "error": ""},
+    {"node_id": "n4", "level": 1, "location": "local", "executor": "python.selftest", "state": "Completed", "elapsed_ms": 85, "output_chars": 57, "deps": ["n1"], "files": [], "error": ""},
+    {"node_id": "n2", "level": 1, "location": "remote", "executor": "agent-turn", "state": "Completed", "elapsed_ms": 22771, "output_chars": 1577, "deps": ["n1"], "files": ["A tasksvc/model.py"], "error": ""},
+    {"node_id": "n3", "level": 2, "location": "remote", "executor": "agent-turn", "state": "Completed", "elapsed_ms": 29337, "output_chars": 112, "deps": ["n2"], "files": ["A tasksvc/cli.py"], "error": ""}
+  ],
+  "node_states": {"n1": "Completed", "n2": "Completed", "n3": "Completed", "n4": "Completed"}
+}

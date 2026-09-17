@@ -1,0 +1,64 @@
+{
+ "task": "p4",
+ "dir": "/tmp/r515/run-0917-104753/grade-orch",
+ "rc": 1,
+ "cases": [
+  {
+   "name": "add_creates_and_lists",
+   "pass": true
+  },
+  {
+   "name": "id_monotonic_no_reuse",
+   "pass": true
+  },
+  {
+   "name": "unicode_roundtrip",
+   "pass": true
+  },
+  {
+   "name": "done_idempotent",
+   "pass": true
+  },
+  {
+   "name": "ttl_expiry_uses_injected_clock",
+   "pass": true
+  },
+  {
+   "name": "stats_counts_three_states",
+   "pass": true
+  },
+  {
+   "name": "expire_removes_expired_tasks",
+   "pass": true
+  },
+  {
+   "name": "persistence_across_processes",
+   "pass": true
+  },
+  {
+   "name": "list_filter_and_order",
+   "pass": true
+  }
+ ],
+ "failed": [
+  {
+   "name": "done_unknown_id",
+   "reason": "AssertionError: 未知 id 必须 rc=3, 实得 2"
+  },
+  {
+   "name": "bad_request_exit2",
+   "reason": "AssertionError: stdout 为空 (rc=2)"
+  },
+  {
+   "name": "no_temp_residue",
+   "reason": "AssertionError: 更新后 inode 未变 ⇒ 非原子重写 (必须 temp+rename)"
+  }
+ ],
+ "summary": "3/12 FAIL",
+ "cases_passed": 9,
+ "cases_total": 12,
+ "ok": false,
+ "stdout_tail": "e_unknown_id FAIL AssertionError: 未知 id 必须 rc=3, 实得 2\nCASE bad_request_exit2 FAIL AssertionError: stdout 为空 (rc=2)\nCASE ttl_expiry_uses_injected_clock PASS\nCASE stats_counts_three_states PASS\nCASE expire_removes_expired_tasks PASS\nCASE persistence_across_processes PASS\nCASE no_temp_residue FAIL AssertionError: 更新后 inode 未变 ⇒ 非原子重写 (必须 temp+rename)\nCASE list_filter_and_order PASS\nSUMMARY 3/12 FAIL\n",
+ "stderr_tail": "",
+ "oracle": false
+}
