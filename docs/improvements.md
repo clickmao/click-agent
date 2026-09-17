@@ -2815,3 +2815,14 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **诚实边界**: ① reps=1 且**外部真值跨跑次方差显著** (同一 p3: w1 12/12 → w2 9/12) ⇒ 对比不作验收依据; ② **w1 整窗作废** (留痕不删): 臂 A 未 `export AGENTFRAMEWORK_CONFIG` ⇒ 绕过计量 adapter (未计量真实调用已发生) + 编排臂 `cwd` 落在节点工作区内 ⇒ 宿主自写 `data/**` 被判越界; 两条器具缺陷当轮修 (含范围模式语法 `w2/agentA/*`→`w2/agentA`); ③ 编排臂 token 禁与单轮臂混算 (输入粒度不同); ④ 单测 1722/1722 · AOT 0 IL 警告 (15,605,072 B, sha12 `6ac91728e1b4`)。
 - **结转 (未静默丢失)**: `improvements.md` **R517 轮节仍缺** (前一轮遗留, 不代写); R404-R407 回填仍缺。
 - **下轮候选 (R519)**: ① 对比读数稳健化 (主判据取「远端调用数下降」+ reps≥3, 预声明 codex 侧波动为噪声源) ② q1 零产物定因 (分段切分/提示词 vs 预算; 试 `--node-escalations 2`) ③ 契约机检接入所有轮脚本 (硬前门) ④ R517/R404-R407 轮节回填 ⑤ 编排并行窗归属唯一性真机验证。
+
+## R521 (2026-09-17) — 游戏类长任务三臂同窗 (w2) + 器具两缺陷自查修复 (轮志: `eval/rover/r521/REPORT-r521.md`)
+
+- **主线三臂同窗读数** (`games-longtask-v1` 58 用例 · 同 adapter 窗口 w2 · 双侧 `deepseek-chat`): **A 本侧单轮 58/58** (19 上游调用 / 302,809 tok / 66.1 s) · **C codex 外部真值 58/58** (5 调用 / 46,372 tok) · O 编排 5 节点×8 步 **31/58** (30 调用 / 429,908 tok)。⇒ 质量面 A=C **打平**; 效率面本侧 = codex 的 **6.53×** tok ⇒ **不比外部真值省**; R413 的 token ↓≥30% 本轮**无同窗关闸臂 ⇒ 未测, 不宣称降幅**。
+- **器具缺陷 1 (起臂面)**: 臂 A 走 `proj_run_side --side agent` **未传 `--max-steps`** ⇒ 工具面关闭 ⇒ CLI 退回纯对话: 1 调用 / 5.4 s / **零产物** ⇒ 该窗 (w1) 整窗作废, 证据归档 `eval/rover/r521/nc/w1-armA-no-steps/` (含 C 58/58 · O 9/58 仍有效读数); 修: `--max-steps 32` + 起臂后产物非空断言。
+- **器具缺陷 2 (冻结面, 假绿)**: 空产物树被**静默跳过** ⇒ `snapshots/<win>/agentA` 不落盘 ⇒ 前置器只遍历已存在目录 ⇒ **rc=0 假绿** (w1 实测)。修: `emit()` 先 `makedirs` ⇒ 空臂也落盘 (`snapshot_empty: true`); **负控面板** `eval/rover/r521nc/` (空树 + 自报 `all_pass=true`) ⇒ **rc=1** · `BLOCKED w1/agentA/g1 0/58` · `SELF_REPORT_AGREES=False`。
+- **候选② 编排臂 9→31/58 逐用例定因**: 5 模块**都在盘上** ⇒ 失败面是**接口契约**非算法: life 输出字母表 `0/1` (应 `./#`) 0/14 · sub 首行未跳过 ⇒ IndexError 0/14 · nim 取法非规范最小解 5/15 · wythoff `WIN` 后丢两整数 4/15 (`eval/rover/r521/diag-orch-r521.md`)。**摆动**: 同器具同题面 O 在 w1=9/58、w2=31/58 ⇒ 单次读数禁作能力结论。
+- **候选④ 闭合 (机检)**: `eval/capability/r518/scan_round_sections.py` ⇒ `C1 MISSING n=0 · C2 ZONE_ORDER n=0 · SCAN_EXIT=0` (R404–R407 缺口已由 R518 器具闭合) · R517 轮志在位 · R521 轮节本轮补入。
+- **铁律 11 前置器**: `exec_precondition.py --round r521` ⇒ **rc=1** (`ACCEPTABLE_SCOPED=False` · `SELF_REPORT_AGREES=True`): 预注册 `evidence_scope` 写 `w1/*`, 该窗被缺陷 1 作废 ⇒ 验收窗 `w2/agentO` 未声明 ⇒ fail-closed; 事后重钉件 `scope-posthoc-r521.json` 明标 `SCOPE_POSTHOC=1` ⇒ 仍 rc=1、不得当验收依据 ⇒ **本轮未达可验收, 全部读数标「参考 (未可验收)」**。
+- **诚实边界**: ① R413 判据无读数; ② 6.53× 为跨实现方向读数 (非同源消融); ③ 编排 31/58 单次; ④ 本轮**零产品源码改动** ⇒ 未重发布 AOT / 未跑单测; ⑤ w1 作废系**器具**缺陷非产品缺陷 (产品面在 w2 按预期工作)。
+- **下轮候选 (R522)**: ① (主线/R413) **同窗关闸单变量消融臂** ② 编排节点内置逐模块 I/O 契约自测 (承候选②定因) ③ 编排摆动 n≥3 量化出区间 ④ `evidence_scope` 支持窗口无关模式 (`*/agentO`) ⑤ 回执回显落点 (待 token 数据裁定)。

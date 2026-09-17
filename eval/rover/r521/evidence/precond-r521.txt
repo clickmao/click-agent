@@ -1,0 +1,12 @@
+DISCOVER layout=project taskset=eval/rover/r521/taskset-r521.json windows=1 snapshot_root=eval/rover/r521/snapshots
+w2      arms=3 correct=2
+   agentA/g1        side=agent  cases=58/58  rc=0    correct=True  claimed=True  
+   agentO/g1        side=agent  cases=31/58  rc=1    correct=False claimed=False sub#14-public,sub#15-public,sub#22-hidden,sub#24-hidden,sub#26-hidden,sub#27-hidden,nim#28-public,nim#29-public,nim#30-hidden,nim#31-hidden,nim#32-hidden,nim#33-hidden,nim#34-hidden,nim#35-hidden,nim#36-hidden,nim#40-hidden,wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#46-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#55-hidden,wythoff#56-hidden,wythoff#57-hidden
+   codex/g1         side=codex  cases=58/58  rc=0    correct=True  claimed=True  
+SELF_REPORT_AGREES=True
+EXECUTABLE_AND_CORRECT=False (全局, 任一臂-题不许错)
+SCOPE_SOURCE=eval/rover/r521/prereg-r521.json PREREG=True
+ACCEPTABLE_SCOPED=False
+UNDECLARED: w2/agentA | w2/agentO | w2/codex
+BLOCKED: w2/agentO/g1 rc=1 cases=31/58(expect 58) failed=sub#14-public,sub#15-public,sub#22-hidden,sub#24-hidden,sub#26-hidden,sub#27-hidden,nim#28-public,nim#29-public,nim#30-hidden,nim#31-hidden,nim#32-hidden,nim#33-hidden,nim#34-hidden,nim#35-hidden,nim#36-hidden,nim#40-hidden,wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#46-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#55-hidden,wythoff#56-hidden,wythoff#57-hidden
+OUT=/home/agentuser/AgentFramework/eval/rover/r507pre/precondition-r521.json

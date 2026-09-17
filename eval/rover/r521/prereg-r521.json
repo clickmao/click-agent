@@ -1,0 +1,52 @@
+{
+  "round": "R521",
+  "family": "games-longtask-v1",
+  "made_before_run": true,
+  "input_pins": {
+    "prompt_sha256": "516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3",
+    "taskset_source": "eval/rover/r519/taskset-r519.json (题面逐字节复用)",
+    "plan_md5": "1c84c4be48f866a874ac893c395a017f",
+    "scope_md5": "dc9793be160346e9640c1e3dfc42ee7d",
+    "cases_sha256": "270128eb85c7afc07244c10c8845a22a541a7a60587a870125089e93422fccd7",
+    "cases_n": 58
+  },
+  "window": "w1",
+  "arms": {
+    "A-r1": "本侧单轮 (AOT agenthost, 链路默认预算) — 快照 agentA",
+    "C-r1": "外部真值 codex-cli 同一真实模型 — 快照 codex",
+    "O-r1": "本侧编排器 5 节点 × 8 步 + --scope — 快照 agentO"
+  },
+  "evidence_scope": {
+    "require": ["w1/agentA", "w1/codex"],
+    "nonrequired": [
+      {
+        "pattern": "w1/agentO",
+        "reason": "编排臂本轮是候选②的定因面 (R520 9/58 逐用例归因), 其质量未达整题全对; R519/R520 已连续两轮记录该臂为阻断/未达标面。故不作为 token/调用判据的验收面, 只报读数与失败构成。此声明在起臂前落盘。"
+      }
+    ]
+  },
+  "criteria": {
+    "C1": "同环境/同输入/同模型: 题面 sha256 两侧同, adapter 落盘 models 集合两侧一致 (机检)",
+    "C2": "质量不降: require 面两侧整题全对; 用例级通过数不低于外部真值",
+    "C3": "token: 本侧/外部真值 total_tokens 比 <= 0.70 (R413 判据①, 单窗读数, 噪声源见下)",
+    "C4": "远端调用数: 本侧/外部真值 calls 比 <= 1.0 (R413 判据②, 主判据)",
+    "C5": "铁律 11: exec_precondition --round r521 rc=0 (两侧产出物可执行且正确)"
+  },
+  "noise_sources_declared": [
+    "codex-cli 侧用量跨跑次 2 倍级摆动 (R513 已实测)",
+    "本窗 n=1 (单跑次), 不作跨轮相减, 不作方差结论",
+    "adapter usage 缺失的调用单列 unreported_usage (禁按 0 冒充)"
+  ],
+  "tool_hashes": {
+    "taskset_builder": "eval/rover/r521/build_taskset_r521.py",
+    "case_script": "eval/rover/r521/cases/run_cases_r521.py",
+    "freezer": "eval/rover/r521/freeze_r521.py",
+    "judge_reused": "eval/rover/r519/grade_r519.py (md5 与 R520 判据器同源)",
+    "agent_bin": "/tmp/pub_r520/agenthost (R520 AOT: 影子上闸已入)",
+    "contract_gate": "eval/rover/r518/check_plan_contract.py (镜像机检, --check 硬前门)"
+  },
+  "excluded": [
+    "MCP 链级 E2E (用户立场未改)",
+    "本地 3B 引擎长原文退化率 (需 llama-server + 起手闸, 与本窗争内存)"
+  ]
+}
