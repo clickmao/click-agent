@@ -1264,8 +1264,15 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                         _workspace is { RootPath: { Length: > 0 } wr } ? wr : Environment.CurrentDirectory,
                         // R391(C8): 本地形式化验证段插件**在场** ⇒ 注入 clickproof 输出契约 (不在场 ⇒ 前缀逐字不变)
                         System.Linq.Enumerable.Contains(_segmentRouter.PluginNames, agent.registry.ClickRoverSegmentPlugin.PluginId));
+                    // R524 (用户 2026-09-17 定向「常量/可缓存内容作稳定前缀前置」+「user 轮只留题面」):
+                    //   技能知识参考 = 同任务族的**逐字节常量** (真机实测 4,171 字符, 跨窗口/跨臂不变) ⇒ 焊进常量前缀,
+                    //   此后每轮命中缓存; 不再内联进 user 轮 (原 R326-f 假设它"每轮变化" —— 实测不成立)。
+                    var skillConst = _pendingSkillKnowledge.Length > 0
+                        ? "\n[技能知识参考]\n" + _pendingSkillKnowledge : string.Empty;
                     var initial = systemPrompt + "\n\n" + baseline
-                                  + (staticText.Length > 0 ? "\n[会话静态上下文]\n" + staticText : string.Empty);
+                                  + (staticText.Length > 0 ? "\n[会话静态上下文]\n" + staticText : string.Empty)
+                                  + skillConst;
+                    if (skillConst.Length > 0) _pendingSkillKnowledge = string.Empty;
                     staticHoistedChars = initial.Length - systemPrompt.Length;
                     baselineChars = baseline.Length;
                     frozen = (initial, intent);

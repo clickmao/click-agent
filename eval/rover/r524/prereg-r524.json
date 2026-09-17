@@ -1,0 +1,76 @@
+{
+ "round": "R524",
+ "revision": "v2 (披露式重注册: v1 起臂后被自身机检证伪 ⇒ 修病灶后重跑; M1–M5 阈值**未动**, 只新增 M6)",
+ "revision_v1_record": {
+  "run": "eval/rover/r524/run-0917-r524-w1-v1wsrecall (保留, 不删)",
+  "binary_sha256_16": "7344062b4d92ce7a",
+  "readings": "A1-on 58/58 · 10 调用 · 新算 8,809 · cached 106,368 (92.4%) · completion 4,658；A0-off fail-closed (0/58, 无工具调用)；codex 58/58 · 7 调用",
+  "machine": "M1 true (system_sha8 唯一) · M2 false · M3 false · M4 true (步间中位 473 / 新算中位 267.5) · M5 true (回执中位 195 / p90 358, 正文空)",
+  "M2_root_cause": "工作区关键词召回把宿主自身运行产物当上下文: [工作区文件 eval/rover/r524/run-.../A0-off/side-run.json] 与 [工作区文件 eval/rover/r524/logs-driver-*.txt] —— 我的路径闸只挡了 jsonl//activity//telemetry",
+  "M3_root_cause": "首调用 fresh 5,631 = 常量材料 [技能知识参考] 4,171 字符仍在 **user 轮** (题面 2,182 + 材料 4,171 + 小尾 ≈ 7,768 字符)",
+  "fix_in_v2": "① 工作区自动召回**缺省关** (AGENTFRAMEWORK_WORKSPACE_RECALL=on 才开); ② [技能知识参考] 归入常量前缀 (会话首轮焊进 system) ⇒ user 轮只留题面+小追加"
+ },
+ "mainline": "主线 = 随机真实开发任务 × codex 外部对照自检；本轮『针对性问题』= 用户 2026-09-17 逐字定向「你往中间塞东西了？」+「上下文几乎不涨才是对的」+「那你赶紧改对吧，然后再测试一次」",
+ "family": "games-longtask-v1",
+ "made_before_run": true,
+ "question": "把**按运行变化**的材料从提示中段彻底移出（system 段跨运行逐字节常量、常量材料前置、易变内容只追加到 user 尾、自指遥测不再被召回、单工具回灌压到摘要量级、禁过渡叙述）—— 能否让「上下文每步几乎不涨」并把缓存命中前沿修到 system 全长？",
+ "treatment": "链代码六处（非机制轮）: ① SessionInjectionPlanner.cs 静态白名单移除 Workspace Files/工作区文件；② ContextAssembler.cs 新增 IsSelfTelemetryPath 路径闸；③ ContextAssembler.cs 工作区召回**缺省关**（IsWorkspaceRecallEnabled, env AGENTFRAMEWORK_WORKSPACE_RECALL=on 才开）；④ SessionInjectionPlanner.cs 静态白名单新增『技能知识参考』（常量材料前置）；⑤ ActionLoop.cs 回灌缺省上限 600 字符（硬顶 8192, env AGENTFRAMEWORK_ACTION_RESULT_CHARS）；⑥ ActionLoopDiscipline.Text 增『零过渡叙述』『回执按需取全文』。",
+ "single_variable": {
+  "arms": {
+   "A0-off": "同二进制 + AGENTFRAMEWORK_ACTION_DISCIPLINE=off（关纪律文本，仍含 ①②③④⑤ 结构修）",
+   "A1-on": "同二进制 + 缺省（处理面：结构修 + 纪律开）",
+   "C": "外部真值 codex-cli，同一真实模型（参照列，非消融面）"
+  },
+  "binary": "/tmp/pub_r524/agenthost（两臂同一二进制, sha256 前缀 7c5b59ef991f11abb0e1e8fd）",
+  "note": "结构修 (①②③④⑤) 不对臂开关；臂开关只有纪律文本 (⑥)。A0/A1 消融只回答『纪律文本还有没有用』；本轮**主判据**是前缀机检 M1..M6 与 R522/R523 历史列的对照（跨窗禁相减，只作方向参照）。"
+ },
+ "input_pins": {
+  "taskset_source": "eval/rover/r524/taskset-r524.json（= r522/taskset-r522.json 逐字节副本, 题面禁漂移）",
+  "prompt_sha256": "516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3",
+  "cases_total": 58,
+  "grader": "eval/rover/r519/grade_r519.py（与 R519–R523 同判据器）",
+  "model": "deepseek-chat",
+  "windows": 3
+ },
+ "criteria": {
+  "M1_system_constant": "处理臂 (A1-on) 在全部 3 窗口的 system 段**逐字节相同**（sha256 唯一）—— 用户定向的正面判据（前缀前沿 = 全 system）",
+  "M2_no_telemetry_in_prompt": "任何 system/user 段都不得出现 data/activity · prompt_audit · 工作区文件 · Workspace Files 标记（R522 实测该块在第 4,477 字符处分叉、命中 2,304 tok 与前沿吻合）",
+  "M3_first_call_cache": "每次运行首调用 cached_tokens >= 0.45 × system 字符数 且 新算 <= 2000 tok 且 cached > 2304（R522 基线 2,304）。注: 缓存需热身 ⇒ w1 冷态单列, 判据以 w2/w3 为准（此口径在 v1 起臂前已写进判据器, 未因 v1 读数改动）",
+  "M4_step_growth": "逐调用 prompt_tokens 步间增量中位 <= 700 tok 且 新算 prompt 中位 <= 600 tok（R522 同题基线：步间中位 547、新算中位 2,242）",
+  "M5_receipts_and_narration": "工具回执字符中位 <= 400 且 p90 <= 1500；assistant 非空正文中位 == 0（零过渡叙述）",
+  "M6_user_turn_task_only": "处理臂 user 段 <= 3200 字符（题面 2,182 + 小追加），且常量材料 [技能知识参考] 不得出现在 user 段（须在常量前缀）—— v2 新增",
+  "Q1_quality_no_regression": "A1-on 用例通过数 == 58（>= A0-off）",
+  "口径": "(调用数, 新算 prompt, completion) 分列照报；主判据 = calls 与 新算 prompt；命中率/cached 只作读数，不作降幅宣称"
+ },
+ "predictions": {
+  "system_sha8_distinct": 1,
+  "first_call_cached_min": 2400,
+  "first_call_fresh_max": 2000,
+  "step_growth_median_max": 400,
+  "fresh_median_max": 600,
+  "receipt_chars_median_max": 400,
+  "user_chars_max": 3200
+ },
+ "negative_control": {
+  "what": "本机检器对 R522 旧窗口（未修）必须判红 —— 已跑: eval/rover/r524/prefix_check_r524.py --adapter-dir eval/rover/r522/run-0917-161029/adapter --range A0-off=1,4 --range A1-on=5,8",
+  "observed": "rc=1; M1 false（system 段 2 个 sha8）· M2 false（含遥测标记）· M3 false（cached 2,304 < 0.45×5,456）· M4 false（新算中位 2,242）· M5 true（回执中位 163/p90 205）",
+  "meaning": "该机检具备判别力（不是恒绿）；R522/R523 数字只作历史参照列，**禁与 R524 相减**当降幅。"
+ },
+ "checks_posthoc_on_v1": {
+  "note": "按判据纪律: v1 的 M2/M3 失败是**预注册判据被证伪后新发现**, 故 v2 的新增项 (M6 + 召回开关结构锁) 全部标 posthoc, 不进 v1 结论; v2 结论只按 v2 重跑的 M1..M6。",
+  "new_checks": ["M6_user_turn_task_only", "结构锁: ContextAssembler 召回受 IsWorkspaceRecallEnabled 约束"]
+ },
+ "falsified_if": "任一 M 未过 或 Q1 用例 < 58 ⇒ 该维度宣称收窄为『无增益』，如实报失败面，不得宣称降幅；若 A1-on 质量低于 A0-off ⇒ 判定结构修有害，回退对应改动（①②③④⑤ 逐项可回退）。",
+ "non_claims": [
+  "不宣称优于 codex：codex 首调用 system 14,849 字符、调用数少、新算低 是外部实现下界，本侧不必然可达",
+  "跨窗禁相减：R522/R523 读数只作方向参照",
+  "无缓存折扣宣称：cached 约 1:50 价差只影响折算，不影响分列读数",
+  "单窗禁结论：n=3 窗口，逐窗读数 + 极差一并照报"
+ ],
+ "evidence_scope": {
+  "require": ["w1/agentA1", "w2/agentA1", "w3/agentA1", "w1/agentA0"],
+  "nonrequired": [
+   {"pattern": "w*/codex", "reason": "外部真值臂是参照列（同环境同输入同模型），不是本轮消融面；读数照报但不进 M1..M6 判定。此声明在起臂前落盘。"}
+  ]
+ }
+}

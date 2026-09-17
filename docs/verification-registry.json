@@ -1,6 +1,6 @@
 {
   "schema": "verification-registry/v1",
-  "updated_round": "R523",
+  "updated_round": "R525",
   "spec": "docs/验证形式规范.md",
   "levels": {
     "L0": "未验证(仅存在)",
@@ -6194,6 +6194,109 @@
       },
       "negative_control": "过宽负控 (防放水): NC3 require 臂失败 ⇒ rc=1 且 BLOCKED 点名; NC4 未声明臂存在 ⇒ rc=1 UNDECLARED; NC5 验收面臂缺判据件 ⇒ rc=1; NC7 无预注册 ⇒ 全臂皆验收面 ⇒ rc=1。过窄负控 (防误伤): NC1 全对 ⇒ rc=0; NC2/NC6 非验收面失败 ⇒ rc=0 但读数列打印。同器重跑旧轮 (r521/r522) 判决不变, 证明只影响被声明为非验收面的臂。",
       "owner_round": "R523"
+    },
+    {
+      "id": "internal.prefix-constant-first-r524",
+      "level": "L3",
+      "capability": "**提示词前缀纪律: 常量前置 / 易变后置 / 自指遥测闸 (R524)** —— 用户令逐字「肯定要命中常亮前沿在后面加的, 你往中间塞东西了?」「上下文几乎不涨才是对的」。逐字节定因: 四份实发 system 前 4,477 字符相同, 分叉点 = `[工作区文件 data/activity/<pid>.json]` (pid 2803414/2810387/2811641/2813373), 后 757 字符每轮重算 ⇒ 前缀缓存自该点起整段失效。改动: 静态段白名单移出「工作区文件」并加入「技能知识参考」(src/agent/context/SessionInjectionPlanner.cs); 工作区自动召回**缺省关** + 自指遥测路径闸(data/**、prompt_audit.jsonl、activity/*)(src/agent/contextassembler/ContextAssembler.cs); 工具回执缺省压顶(ToolResultCharCap, src/agent.modelqueue/ActionLoop.cs); 动作环纪律 3→5 条(零过渡叙述/回执按需取全文, ActionLoopDiscipline.cs)。真机读数(三窗 v2, 处理臂 A1-on, 同 AOT sha 7c5b59ef…): M1 常量 system ✅×3 · M2 前缀无遥测 ✅×3 · M3 首调用新算 5,372→343/349 ✅ · M4 步间涨幅中位 473–504(codex 同档 411–444) ✅ · M5 回执中位 413/341/— (2/3 窗) · M6 ❌×3。质量 A1-on 51/58·58/58·58/58; A0-off(纪律关) 0/58·0/58·46/58 双峰。**诚实边界**: M6 未过 ⇒ v2 不宣称达标, 缺口 = 材料块硬编码进 user 轮(IndustrialAgentV2.cs:1308) 绕过白名单 ⇒ 交 R525; 铁律 11 前置器 rc=1 ⇒ 读数标『参考(未可验收)』。",
+      "covers": [
+        "docs/reports/r524-prefix-discipline.md",
+        "eval/rover/r524/prereg-r524.json",
+        "eval/rover/r524/run_all_r524.sh",
+        "eval/rover/r524/run_r524.sh",
+        "eval/rover/r524/prefix_check_r524.py",
+        "src/agent/context/SessionInjectionPlanner.cs",
+        "src/agent/contextassembler/ContextAssembler.cs",
+        "src/agent.modelqueue/ActionLoop.cs",
+        "src/agent.modelqueue/ActionLoopDiscipline.cs",
+        "src/agent.tests/R524PrefixStabilityTests.cs",
+        "eval/rover/r524/evidence/prefix-check-w1.json",
+        "eval/rover/r524/evidence/prefix-check-w2.json",
+        "eval/rover/r524/evidence/prefix-check-w3.json",
+        "eval/rover/r507pre/precondition-r524.json"
+      ],
+      "evidence_cmd": "bash eval/rover/r524/run_all_r524.sh 0917-r524v2 (三窗串行; 起手闸 + 同窗三臂 + 冻结判分 + 前缀机检 M1..M6 + KPI + 前置器)",
+      "evidence_path": "eval/rover/r524/evidence/prefix-check-w1.json",
+      "evidence_generated_with": {
+        "evidence_kind": "artifact",
+        "pin_status": "live",
+        "pin_reason": "worktree-only",
+        "artifact_sha12": null,
+        "instrument": "eval/rover/r524/run_all_r524.sh",
+        "instrument_sha12": "1694c6cdd100",
+        "binding": "audit-pin",
+        "audited_by_round": "R525"
+      },
+      "negative_control": "A0-off(纪律关) 三窗 0/58·0/58·46/58 = 天然负控: 纪律文本缺失时工具面不对齐 ⇒ M 读数非恒绿; M3 在 w1(换前缀后首窗冷缓存) 判否 vs w2/w3 暖启判过 ⇒ 首调用读数对缓存状态敏感, 非阈值放水。",
+      "owner_round": "R524"
+    },
+    {
+      "id": "internal.partition-constant-prefix-r525",
+      "level": "L3",
+      "capability": "**提示词分区常量前缀重构 (外部真值 Fable 5.1 结构对齐; 铁律 12 入宪)** —— 用户令「根据它的提示词重构我们当前 agent 系统, 并记入铁律」。外部真值自测(CL4R1T4S/ANTHROPIC/Claude-Fable-5.1.md): 275,723 B / 274,608 字符 / 2,196 行 / 顶级段 270 / 46 个 <function> 工具 schema(占 161,245→252,856 字符 = 33%) —— 形状 = **一个逐字节恒定前缀, 每轮只做尾部追加**; 厂商侧同协议(改 system/工具定义作废 thinking; prefix_mismatch_behavior=drop_block; 缓存读价 0.025×)。落地: src/agent/context/SessionBaseline.cs 重写为 §1..§11 命名常量分区(新增 §3 记忆与召回规则 / §7 技能菜单与按需加载; 修原编号跳七); `[技能知识参考]` 4,171 字符由 user 轮内联改为焊进首轮冻结常量前缀(IndustrialAgentV2.cs skillConst) ⇒ 修 R524 M6 缺口; R525PartitionStructureTests.cs 结构锁 7 例; eval/rover/r525/structure_check_r525.py 机检 M1–M6 + S1–S5。三窗读数(AOT 1e25edd6910e597d6f22e114, 15,617,360 B, 处理臂 A1-on): 实发 system **9,803 字符 / 11 段 / 跨三窗同 sha 6910b5eb 逐字节恒定**; M1 ✅×3 · M2 ✅×3 · M5 ✅×3 · M6 ✅×3 · M3 ✅w2/w3(暖启新算 354/359; w1 冷启 2,582 判否) · M4 ✅w1/w3(w2 709.5 vs 700 判否) · S1–S5 ✅×3。质量: w1/w2 三臂全 58/58; w3 双侧 agent 臂 0/58 而 codex 58/58(PRECOND_RC=1)。**裁决: 结构对齐达成且机检通过; 能力增益未证** ⇒ 只宣称结构与 token 形状对齐。",
+      "covers": [
+        "docs/reports/r525-prompt-partition-prefix.md",
+        "docs/external-reference-harness.md",
+        "docs/reports/iteration-master-plan.md",
+        "eval/rover/r525/prereg-r525.json",
+        "eval/rover/r525/run_all_r525.sh",
+        "eval/rover/r525/run_r525.sh",
+        "eval/rover/r525/structure_check_r525.py",
+        "eval/rover/r525/kpi_r525.py",
+        "eval/rover/r525/taskset-r525.json",
+        "src/agent/context/SessionBaseline.cs",
+        "src/agent/IndustrialAgentV2.cs",
+        "src/agent.tests/R525PartitionStructureTests.cs",
+        "eval/rover/r525/evidence/windows/w1/report.json",
+        "eval/rover/r525/evidence/windows/w2/report.json",
+        "eval/rover/r525/evidence/windows/w3/report.json",
+        "eval/rover/r525/evidence/structure-check-w1.json",
+        "eval/rover/r525/evidence/structure-check-w2.json",
+        "eval/rover/r525/evidence/structure-check-w3.json",
+        "eval/rover/r525/evidence/kpi-w1.json",
+        "eval/rover/r525/evidence/kpi-w2.json",
+        "eval/rover/r525/evidence/kpi-w3.json",
+        "eval/rover/r507pre/precondition-r525.json"
+      ],
+      "evidence_cmd": "bash eval/rover/r525/run_all_r525.sh 0917-r525 (三窗串行) + python3 eval/rover/r525/structure_check_r525.py --adapter-dir <win>/adapter --range A0-off=.. --range A1-on=.. --treatment A1-on --out <win>/logs/structure-check-v2.json",
+      "evidence_path": "eval/rover/r525/evidence/windows/w3/report.json",
+      "evidence_generated_with": {
+        "evidence_kind": "artifact",
+        "pin_status": "live",
+        "pin_reason": "worktree-only",
+        "artifact_sha12": null,
+        "instrument": "eval/rover/r525/run_all_r525.sh",
+        "instrument_sha12": "a6a4062ad54e",
+        "binding": "audit-pin",
+        "audited_by_round": "R525"
+      },
+      "negative_control": "同窗外部真值 codex 58/58 而本侧 0/58(w3) ⇒ 结构绿不放行质量绿; A0-off 双峰(R524 v2 0/58·0/58·46/58; R525 w3 ledger_calls=0) ⇒ 对照臂失效被如实标出, 不作有效对照。",
+      "owner_round": "R525"
+    },
+    {
+      "id": "eval.structure-lock-section-order-r525",
+      "level": "L4",
+      "capability": "**结构锁机检器(段序/段集合/体量/尾部纪律) + 宿主修复回路调用剔除** —— 新增 S1 段序 == §1..§11 升序各一次 · S2 段集合跨臂跨窗恒一 · S3 段体量 40–12,000 字符 · S4 常量前缀声明锚句在位 · S5 user 轮不得出现段头/常量材料; 另把「宿主修复回路调用」(system 无 `## §` 段头, 511/880 字符) 从 M1/S*/步间聚合中剔除(R522 已立口径: 末次修复调用增量不可归因), 原始判定保留在 logs/prefix-check.json/.txt, 修正版 logs/structure-check-v2.json。S3 上界 12,000 依据 = 外部真值最大段 preferences_guardrails 10,784 字符(非按本侧读数调阈值; 后验已单列 prereg posthoc_notes)。",
+      "covers": [
+        "eval/rover/r525/structure_check_r525.py",
+        "eval/rover/r525/nc_structure_r525.py",
+        "eval/rover/r525/evidence/nc-panel-r525.json",
+        "eval/rover/r525/prereg-r525.json"
+      ],
+      "evidence_cmd": "python3 eval/rover/r525/nc_structure_r525.py (期望 NC_PANEL_PASS)",
+      "evidence_path": "eval/rover/r525/evidence/nc-panel-r525.json",
+      "evidence_generated_with": {
+        "evidence_kind": "artifact",
+        "pin_status": "live",
+        "pin_reason": "worktree-only",
+        "artifact_sha12": null,
+        "instrument": "eval/rover/r525/nc_structure_r525.py",
+        "instrument_sha12": "283d4eb0415c",
+        "binding": "audit-pin",
+        "audited_by_round": "R525"
+      },
+      "negative_control": "NC1 段序错乱 ⇒ S1 红; NC2 前缀塞遥测(data/prompt_audit) ⇒ M2 红; NC3 常量材料回灌 user 轮 ⇒ M6/S5 红; NC4 删 §7 段 ⇒ S1/S2 红; 4/4 翻红(rc 恒 1), 正控 = w3 原始转储 rc=0 ⇒ 机检非恒绿/非恒红。",
+      "owner_round": "R525"
     }
   ],
   "aot_check_policy": "release_tag_only",

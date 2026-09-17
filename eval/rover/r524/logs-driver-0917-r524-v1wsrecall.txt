@@ -1,0 +1,54 @@
+taskset=/home/agentuser/AgentFramework/eval/rover/r524/taskset-r524.json
+prompt_sha256=516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3 pin=516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3 same=True
+cases_total=58
+[17:06:44] 同输入硬门 PASS
+[17:06:48] 起手闸 1: PASS
+[17:06:51] 起手闸 2: PASS
+[17:06:55] adapter 就绪 (pid=2832676, dump=/home/agentuser/AgentFramework/eval/rover/r524/run-0917-r524-w1/adapter, FULL=1)
+[17:07:04] 臂 A0-off rc=0 adapter_range=[1,2] ({"tid": "g1", "side": "agent", "arm": "A0-off", "rc": 0, "elapsed_s": 9.19, "ledger_calls": 0, "ledger_steps": 0, "reply_chars": 6994, "adapter_range": [1, 2]})
+[17:07:04] [致命] 臂 A0-off 产物树为空 (工具面/落盘失效) ⇒ 该臂按 fail-closed 记账, 不得当绿
+[17:07:27] 臂 A1-on rc=0 adapter_range=[3,12] ({"tid": "g1", "side": "agent", "arm": "A1-on", "rc": 0, "elapsed_s": 22.73, "ledger_calls": 14, "ledger_steps": 9, "reply_chars": 2254, "adapter_range": [3, 12]})
+[17:07:57] 臂 C-codex rc=0 ({"tid": "g1", "side": "codex", "arm": "C-codex", "rc": 0, "elapsed_s": 30.65, "ledger_calls": 0, "ledger_steps": 0, "reply_chars": 4170, "adapter_range": [1, 7]})
+处理臂=A1-on 调用=10 system 字符=4827 不同 system 段=1 (5210898b)
+首调用: [{"run": "adapter", "system_chars": 4827, "cached": 2176, "fresh": 5631, "prompt": 7807}]
+步间涨幅中位=473 p90=2097 新算中位=267.5 回执中位=195.0 p90=358.0 正文中位=None
+codex 参照: {"codex_calls": 7, "codex_first": {"system_chars": 14849, "cached": 5888, "fresh": 1667, "prompt": 7555}, "codex_step_growth_median": 444.5, "codex_receipt_chars_median": 160, "codex_body_median": null}
+verdict: {"M1_system_constant": true, "M2_no_telemetry_in_prompt": false, "M3_first_call_cache": false, "M4_step_growth": true, "M5_receipts_and_narration": true}
+[17:07:57] 前缀机检 rc=1 (0=M1..M5 全过; 非 0 ⇒ 本轮不得宣称任何降幅) [range A0=1,2 A1=3,12 also=]
+冻结 agentA0/g1     side=agent  cases=0/58 calls=2 tok=10775
+冻结 agentA1/g1     side=agent  cases=58/58 calls=10 tok=119835
+冻结 codex/g1       side=codex  cases=58/58 calls=7 tok=67071
+[17:08:03] 冻结/汇总 rc=0
+arm      cases          calls new_prompt     cached     hit% completion
+-----------------------------------------------------------------------
+A0-off   0/58               2       5796       3072     34.6       1907
+A1-on    58/58             10       8809     106368     92.4       4658
+C-codex  58/58              7       5071      57728     91.9       4272
+ratios(A1/A0): {"calls_ratio_A1_over_A0": 5.0, "new_prompt_ratio": 1.52, "completion_ratio": 2.443}
+verdict: {"C2_quality_no_regression": true, "C3_calls": false, "C4_new_prompt": false, "C5_completion": false}
+KPI_ALL_PASS=False
+[17:08:03] KPI 分列判据 rc=1
+   agentA0/g1       side=agent  cases=0/58   rc=1    correct=False claimed=None  life#00-public,life#01-public,life#02-hidden,life#03-hidden,life#04-hidden,life#05-hidden,life#06-hidden,life#07-hidden,life#08-hidden,life#09-hidden,life#10-hidden,life#11-hidden,life#12-hidden,life#13-hidden,sub#14-public,sub#15-public,sub#16-hidden,sub#17-hidden,sub#18-hidden,sub#19-hidden,sub#20-hidden,sub#21-hidden,sub#22-hidden,sub#23-hidden,sub#24-hidden,sub#25-hidden,sub#26-hidden,sub#27-hidden,nim#28-public,nim#29-public,nim#30-hidden,nim#31-hidden,nim#32-hidden,nim#33-hidden,nim#34-hidden,nim#35-hidden,nim#36-hidden,nim#37-hidden,nim#38-hidden,nim#39-hidden,nim#40-hidden,nim#41-hidden,nim#42-hidden,wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#46-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#51-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#55-hidden,wythoff#56-hidden,wythoff#57-hidden
+   agentA1/g1       side=agent  cases=58/58  rc=0    correct=True  claimed=None  
+   codex/g1         side=codex  cases=58/58  rc=0    correct=True  claimed=True  
+SELF_REPORT_AGREES=True
+EXECUTABLE_AND_CORRECT=False (全局, 任一臂-题不许错)
+SCOPE_SOURCE=eval/rover/r524/prereg-r524.json PREREG=True
+ACCEPTABLE_SCOPED=False
+NONREQUIRED w1/codex correct=True :: w1/codex/g1 rc=0 cases=58/58(expect 58) failed=-
+BLOCKED: w1/agentA0/g1 rc=1 cases=0/58(expect 58) failed=life#00-public,life#01-public,life#02-hidden,life#03-hidden,life#04-hidden,life#05-hidden,life#06-hidden,life#07-hidden,life#08-hidden,life#09-hidden,life#10-hidden,life#11-hidden,life#12-hidden,life#13-hidden,sub#14-public,sub#15-public,sub#16-hidden,sub#17-hidden,sub#18-hidden,sub#19-hidden,sub#20-hidden,sub#21-hidden,sub#22-hidden,sub#23-hidden,sub#24-hidden,sub#25-hidden,sub#26-hidden,sub#27-hidden,nim#28-public,nim#29-public,nim#30-hidden,nim#31-hidden,nim#32-hidden,nim#33-hidden,nim#34-hidden,nim#35-hidden,nim#36-hidden,nim#37-hidden,nim#38-hidden,nim#39-hidden,nim#40-hidden,nim#41-hidden,nim#42-hidden,wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#46-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#51-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#55-hidden,wythoff#56-hidden,wythoff#57-hidden
+OUT=/home/agentuser/AgentFramework/eval/rover/r507pre/precondition-r524.json
+VERDICT_BLOCKED ⇒ rc=1 (验收面 [require ∪ 未声明] 存在未执行/不正确臂 ⇒ 不得 rc=0 假绿)
+PRECOND_RC=1
+[17:08:08] PRECOND_RC=1 (0=可验收 / 1=未可验收 / 3=输入缺失)
+[17:08:09] 端口已释放
+[17:08:09] 完成: /home/agentuser/AgentFramework/eval/rover/r524/run-0917-r524-w1
+[driver] window=w1 rc=0 run=/home/agentuser/AgentFramework/eval/rover/r524/run-0917-r524-w1
+taskset=/home/agentuser/AgentFramework/eval/rover/r524/taskset-r524.json
+prompt_sha256=516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3 pin=516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3 same=True
+cases_total=58
+[17:08:09] 同输入硬门 PASS
+[17:08:13] 起手闸 1: PASS
+[17:08:16] 起手闸 2: PASS
+[17:08:20] adapter 就绪 (pid=2834038, dump=/home/agentuser/AgentFramework/eval/rover/r524/run-0917-r524-w2/adapter, FULL=1)
+[17:08:41] 臂 A0-off rc=0 adapter_range=[1,6] ({"tid": "g1", "side": "agent", "arm": "A0-off", "rc": 0, "elapsed_s": 21.2, "ledger_calls": 18, "ledger_steps": 4, "reply_chars": 7085, "adapter_range": [1, 6]})

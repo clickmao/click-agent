@@ -20,13 +20,16 @@ public static class ActionLoopDiscipline
     /// <summary>消融开关 (缺省开; off/0/false = 关 ⇒ 等价 R521 旧行为)。</summary>
     public const string EnvName = "AGENTFRAMEWORK_ACTION_DISCIPLINE";
 
-    /// <summary>三条纪律文本 (锚: 验证合并 / 探针不落盘 / 收尾从简)。</summary>
+    /// <summary>五条纪律文本 (锚: 验证合并 / 探针不落盘 / 收尾从简 / 零过渡叙述 / 回执按需取全文)。</summary>
     public const string Text =
         "[上下文纪律 · 必守]\n" +
         "1. 验证合并: 把全部自测用例合并进**一次** run_command 执行 (用例多时先 write_file 一个用例脚本, 再一条命令跑完); " +
         "禁止为单条命令单独占用一步。\n" +
         "2. 探针不落盘: 临时检查用 python3 -c \"...\" 内联完成; 必须落盘时, 写入与删除在同一步内完成, 不留临时文件。\n" +
-        "3. 收尾从简: 最后一条消息只给结论 + 证据 (命令与结果), 不复述代码、不写长篇说明。";
+        "3. 收尾从简: 最后一条消息只给结论 + 证据 (命令与结果), 不复述代码、不写长篇说明。\n" +
+        "4. 零过渡叙述: 除最后一条结论消息外, 每步 assistant 正文一律留空, 直接发工具调用; 禁止\"接下来我将…/现在让我…\"类过渡语。\n" +
+        "5. 回执按需取全文: 工具回执默认被截断为摘要 (退出码 + 头部若干行); 若确需完整输出, 用工具显式再取一次, " +
+        "禁止为了预防而整篇回读。";
 
     /// <summary>缺省开; 仅 off/0/false 关 (词形同既有开关约定)。</summary>
     public static bool IsEnabled()

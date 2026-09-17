@@ -17,9 +17,21 @@ namespace agent.context;
 public static class SessionInjectionPlanner
 {
     /// <summary>会话静态块标题前缀白名单 (命中即视为会话内近静态)。</summary>
+    /// <remarks>
+    /// R524 (真机证据, 用户 2026-09-17 定向): 原白名单含 <c>"Workspace Files"/"工作区文件"</c> ⇒ 该块在会话首轮被焊进
+    /// system 提示并冻结; 但其内容**按运行变化** (`data/activity/&lt;pid&gt;.json` 的 pid 逐轮不同, 且其 TaskSummary 就是
+    /// 题面原文; 另有 data/prompt_audit.jsonl 陈旧审计行)。实测 (R522 窗口 + R523 三窗口实发 system 逐字节比对):
+    /// 四份 system 只在第 **4,477** 字符处分叉 —— 正好是该块起点; 首调用缓存命中 2,304 tok 与该 frontier 吻合
+    /// (4,477 × 0.515 ≈ 2,306), 其后 757 字符每轮从头重算 ⇒ 命中前沿被按运行内容砍断。
+    /// 故该块改判**动态**: 跨轮去重后追加到本轮 user 尾部 (追加区), system 提示保持逐字节常量。
+    /// </remarks>
     private static readonly string[] StaticTitlePrefixes =
     {
-        "AgentContext", "Agent 画像", "可用能力", "User Preference", "Workspace Files", "工作区文件",
+        "AgentContext", "Agent 画像", "可用能力", "User Preference",
+        // R524: 技能知识参考 = 同任务族的**逐字节常量**材料 (实测 4,171 字符) ⇒ 归入常量前缀 (会话首轮焊进 system)。
+        //   反例 (不得入静态): [Memory (RAG)] / [GuardrailMemory] / [本轮参考上下文] —— 按轮检索或携上轮结论 ⇒ 随运行变化,
+        //   只能进本轮 user 尾部的追加区。
+        "技能知识参考",
     };
 
     /// <summary>

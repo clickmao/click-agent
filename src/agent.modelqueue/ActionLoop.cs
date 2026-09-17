@@ -182,8 +182,23 @@ public static class ActionLoopRunner
                  || v.Equals("false", StringComparison.OrdinalIgnoreCase));
     }
 
-    /// <summary>回灌文本上限 (单工具结果)。</summary>
+    /// <summary>回灌文本上限 (单工具结果, 硬顶)。</summary>
     public const int MaxToolResultBytes = 8192;
+
+    /// <summary>
+    /// R524: 单工具结果回灌**缺省**上限 (字符)。实测对照 (R522 五调用 dump): codex 每步回执仅 105–253 字符
+    /// ("Process exited with code 0" 级), 5 轮上下文只涨 1,757 tok; 我方回执 204/290/1,289 字符 ⇒ 上下文几乎不涨
+    /// 的形状要求把回执压到摘要量级。需要全文时由 agent 显式再取 (显式 ≠ 默认灌)。
+    /// </summary>
+    public const int DefaultToolResultChars = 600;
+
+    /// <summary>缺省回灌上限 (env AGENTFRAMEWORK_ACTION_RESULT_CHARS 可调, 上不超硬顶)。</summary>
+    public static int ToolResultCharCap()
+    {
+        var v = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_ACTION_RESULT_CHARS");
+        if (int.TryParse(v, out var n) && n > 0) return Math.Min(n, MaxToolResultBytes);
+        return DefaultToolResultChars;
+    }
 
     /// <summary>步骤上限 (env AGENTFRAMEWORK_ACTION_MAX_STEPS; 非法/≤0 → 默认)。</summary>
     public static int MaxSteps()
@@ -292,7 +307,7 @@ public static class ActionLoopRunner
                 await ActionProgressObserver.ReportAsync(
                     new ActionStepProgress(outcome.Steps, tc.Name ?? string.Empty, res.Ok, res.ElapsedMs))
                     .ConfigureAwait(false);
-                var rendered = res.Render(MaxToolResultBytes);
+                var rendered = res.Render(ToolResultCharCap());
                 // R462 召回-现实一致性闸 (工具回灌面): 结果里引用的路径若当前工作区不存在 ⇒ 显式标 ✗,
                 // 使「读了 A 文件, 里面说 B 文件已完成」这类陈旧引用在下游可见 (只打假 ⇒ 一致时零字节)。
                 rendered = agent.core.RecallRealityGate.Verify(rendered, port.WorkspaceRoot, failOnly: true);

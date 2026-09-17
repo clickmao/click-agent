@@ -1,0 +1,8 @@
+arm      cases          calls new_prompt     cached     hit% completion
+-----------------------------------------------------------------------
+A0-off   0/58               2        786       8320     91.4       2063
+A1-on    0/58               5       1953      37376     95.0       3647
+C-codex  58/58             22       7676     272640     97.3      10747
+ratios(A1/A0): {"calls_ratio_A1_over_A0": 2.5, "new_prompt_ratio": 2.485, "completion_ratio": 1.768}
+verdict: {"C2_quality_no_regression": false, "C3_calls": false, "C4_new_prompt": false, "C5_completion": false}
+KPI_ALL_PASS=False

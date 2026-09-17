@@ -138,7 +138,11 @@ Interlocked.Increment(ref _cacheMisses);
             }
 
             // v0.11.0 R11: 工作区文件召回 — 之前只有配额定义无实现, 源恒空
-            if (request.EnabledSources.Contains(DataSourceType.WorkspaceFiles) &&
+            // R524: **缺省关** (用户 2026-09-17 定向「你往中间塞东西了？」+ 真机证据: 关键词召回把宿主自身运行产物
+            //   (A0-off/side-run.json、logs-driver-*.txt、data/activity/<pid>.json) 当上下文塞进提示, 既烧 token
+            //   又逐轮漂移; 需要时 AGENTFRAMEWORK_WORKSPACE_RECALL=on 显式开)。
+            if (IsWorkspaceRecallEnabled() &&
+                request.EnabledSources.Contains(DataSourceType.WorkspaceFiles) &&
                 !string.IsNullOrEmpty(request.WorkspaceRoot) && Directory.Exists(request.WorkspaceRoot))
             {
                 recallTasks.Add(RecallFromWorkspaceAsync(request, ct));
@@ -459,6 +463,37 @@ Interlocked.Increment(ref _cacheMisses);
     /// 从 Memory 召回
     /// </summary>
     /// <summary>
+    /// R524: 工作区文件自动召回开关 —— **缺省关**。真机证据: 该召回无索引、纯关键词匹配, 会把宿主自身运行产物
+    /// (arm 的 side-run.json、驱动日志、data/activity/&lt;pid&gt;.json) 当"相关文件"塞进提示 ⇒ 白烧 token 且
+    /// 逐轮漂移 (system 前缀被砍断在 4,477 字符处)。需要时 <c>AGENTFRAMEWORK_WORKSPACE_RECALL=on</c> 显式开。
+    /// </summary>
+    public static bool IsWorkspaceRecallEnabled()
+    {
+        var v = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_WORKSPACE_RECALL");
+        if (string.IsNullOrWhiteSpace(v)) return false;
+        return v.Trim().ToLowerInvariant() is "on" or "1" or "true" or "yes" or "enable" or "enabled";
+    }
+
+    /// <summary>
+    /// R524: 自指遥测路径闸 —— 工作区召回**不得**把运行期状态当上下文召回。
+    /// 判据 (结构, 与语言/后缀无关): ① 追加式日志 <c>*.jsonl</c>; ② 路径段 <c>/activity/</c> 或 <c>/telemetry/</c>
+    /// (每进程一条、pid 命名、内容含题面原文); ③ 运行库 <c>state.db</c>。
+    /// 依据: R522/R523 实发 system 比对 —— 该块把钩子文件召回进 system 后, 第 4,477 字符处即分叉 (缓存前沿被砍断)。
+    /// 需要这些文件内容时, agent 仍可用自己的文件工具显式读取 (显式 ≠ 自动注入)。
+    /// </summary>
+    public static bool IsSelfTelemetryPath(string path)
+    {
+        if (string.IsNullOrEmpty(path)) return false;
+        var p = path.Replace('\\', '/');
+        if (p.EndsWith(".jsonl", StringComparison.OrdinalIgnoreCase)) return true;
+        if (p.EndsWith("/state.db", StringComparison.OrdinalIgnoreCase)) return true;
+        foreach (var seg in SelfTelemetrySegments)
+            if (p.Contains(seg, StringComparison.OrdinalIgnoreCase)) return true;
+        return false;
+    }
+
+    private static readonly string[] SelfTelemetrySegments = { "/activity/", "/telemetry/" };
+
     /// v0.11.0 R11: 工作区文件召回 — 轻量关键词匹配 (无索引), 查询词命中文件行 → 携上下文成片段。
     /// 上限 3 文件 / 每文件 1 片段, 防淹没 prompt。
     /// </summary>
@@ -480,6 +515,9 @@ Interlocked.Increment(ref _cacheMisses);
                 .Where(f => !f.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}") &&
                             !f.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}") &&
                             !f.Contains($"{Path.DirectorySeparatorChar}node_modules{Path.DirectorySeparatorChar}"))
+                // R524: 自指遥测闸 —— 运行期状态文件 (活动文件/审计 jsonl/telemetry) 不是"相关上下文",
+                // 却是按运行变化的字节 (含 pid 与题面原文) ⇒ 一旦被召回注入即砍断 provider 命中前沿。
+                .Where(f => !IsSelfTelemetryPath(f))
                 // v0.11.0 R30: 大仓库防慢上限保留, 但按修改时间降序 — 最近工作优先,
                 // 避免目录序恰好漏掉最新文件 (数据边界: 扫描上限内的召回质量)
                 .OrderByDescending(f => { try { return File.GetLastWriteTimeUtc(f); } catch { return DateTime.MinValue; } })

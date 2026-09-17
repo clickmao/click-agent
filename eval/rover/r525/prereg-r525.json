@@ -1,0 +1,54 @@
+{
+ "round": "R525",
+ "revision": "v1 (R524 v2 收口后立即立项: 用户 2026-09-17 令「根据它的提示词重构我们当前agent系统, 并记入铁律」—— 外部真值 = Fable 5.1 泄露 system 实测 274,608 字符 / 2,196 行 / 270 个顶级段 / 一个逐字节恒定前缀)",
+ "mainline": "主线 = 随机真实开发任务 (games-longtask-v1, 58 隐藏用例) × codex-cli 外部真值同环境对照自检; 本轮『针对性问题』= 用户定向: 按外部真值结构重构我方提示词前缀, 并把该纪律记入铁律 12",
+ "family": "games-longtask-v1",
+ "made_before_run": true,
+ "question": "把会话基线由『九个中文数字段(且 七 缺失、序号乱序)』重构为**固定顺序的命名常量分区 §1..§11**, 并让按运行变化的材料只出现在尾部 —— 能否同时满足: 段序恒定(S1/S2) + 前缀逐字节恒定(M1) + 首调用命中前沿覆盖全 system(M3) + 每步几乎不涨(M4) + user 轮只留题面(M6/S5) + 质量不降(Q1=58/58)?",
+ "treatment": "链代码三处 (非机制轮, 全部有单测锁): ① SessionBaseline.cs 重写 Compose: §1 身份与目标 · §2 安全与诚实底线 · §3 记忆与召回规则(新) · §4 行为与输出纪律 · §5 工程与执行纪律 · §6 工具协议(+工具面恒定条款) · §7 技能菜单与按需加载(新) · §8 环境与工作区 · §9 常见失败模式与自检 · §10 汇报格式 · §11 关键模块地图; 旧内容逐条保留(信息零丢失), 修掉『七』缺号与序号乱序; 段头格式 `## §N 名称` 供机检枚举。② IndustrialAgentV2.cs: [技能知识参考] 由 user 轮内联改为**焊进常量前缀**(首轮一次性, 之后逐字节不变) —— 修 R524 v2 唯一未过判据 M6。③ 新增机检 structure_check_r525.py 的 S1..S5 结构锁。",
+ "single_variable": {
+  "arms": {
+   "A0-off": "同二进制 + AGENTFRAMEWORK_ACTION_DISCIPLINE=off",
+   "A1-on": "同二进制 + 缺省 (处理面)",
+   "C": "外部真值 codex-cli, 同一真实模型 deepseek-chat (参照列)"
+  },
+  "binary": "/tmp/pub_r525/agenthost (AOT, 两臂同一二进制; sha256 前缀随 run 收口记录)",
+  "note": "本轮**主判据**= 前缀结构机检 M1..M6 + S1..S5 (窗口内判定, 跨窗只作方向参照, 禁相减); 质量列为 Q1。A0/A1 消融回答『纪律文本在分区结构下是否仍然承重』(R524 v2 实测: 纪律关时工具面对齐不稳定 ⇒ 预期 A0 仍摆动, 单列不参与 Q1 宣称)。"
+ },
+ "input_pins": {
+  "taskset_source": "eval/rover/r525/taskset-r525.json (= r522/r524 逐字节副本, 题面禁漂移)",
+  "cases_total": 58,
+  "grader": "eval/rover/r519/grade_r519.py (与 R519–R524 同判据器)",
+  "model": "deepseek-chat",
+  "windows": 3
+ },
+ "criteria": {
+  "M1_system_constant": "处理臂 (A1-on) 在本次运行的 system 段逐字节相同 (sha256 唯一)",
+  "M2_no_telemetry_in_prompt": "任何 system/user 段不得出现 data/activity · prompt_audit · 工作区文件 · Workspace Files 标记",
+  "M3_first_call_cache": "首调用 cached_tokens >= 0.45 × system 字符数 且 新算 <= 2000 tok 且 cached > 2304 (w1 冷态单列, 判据以 w2/w3 为准; 口径 v1 起臂前已定)",
+  "M4_step_growth": "步间 prompt 增量中位 <= 700 tok 且 新算 prompt 中位 <= 600 tok",
+  "M5_receipts_and_narration": "工具回执字符中位 <= 400 且 p90 <= 1500; assistant 非空正文中位 == 0",
+  "M6_user_turn_task_only": "处理臂 user 段 <= 3200 字符 且 [技能知识参考] 不在 user 段 (R524 v2 三窗全否 ⇒ 本轮修 ② 后应转真)",
+  "S1_section_order": "常量前缀段头序列 == §1..§11 升序各一次 (顺序漂移即前缀漂移)",
+  "S2_sections_constant": "段头集合跨臂/跨窗口恒一 (含 A0-off: 结构修不对臂开关)",
+  "S3_section_size_bound": "每段体量 40..4000 字符 (保持碎片化, 对齐外部真值 270 段的粒度)",
+  "S4_prefix_declaration": "常量前缀声明锚句在位 (『常量前缀』+『追加在尾部』)",
+  "S5_tail_only_in_user": "user 段不得出现 `## §` 段头或常量材料 (只许尾部追加)"
+ },
+ "reference_r524_v2": {
+  "run": "eval/rover/r524/run-0917-r524v2-w1..w3 (保留, 不删)",
+  "readings": "A1-on 质量 51/58 · 58/58 · 58/58; 调用 33 · 28 · 4; 首调用新算 349 · 343 · 1,520 tok; codex 58/58 (136 调用那窗亦 58/58)",
+  "machine": "M1 ✓ ×3 · M2 ✓ ×3 · M3 ✓ ×3 · M4 ✓ ×3 · M5 2/3 (w1 回执中位 413 > 400) · M6 ✗ ×3 (材料仍在 user 轮) ⇒ 结构修的**正面效果已成立**, 残留 = M6 与 M5 边界",
+  "honest_note": "A0-off (纪律关) 三窗 0/58 · 0/58 · 46/58 ⇒ 工具面对齐不稳定 (双峰), 单列不作能力宣称; codex 同题亦出现 136 调用摆动 ⇒ 单窗读数=噪声 (R523 已立此纪律)"
+ },
+ "falsifier": "若 S1/S2 或 M1 失败 ⇒ 分区重构未真正恒定 (前缀仍在漂移), 本轮不得宣称; 若 M6 仍否 ⇒ ② 的焊接点未生效 (须回到注入点逐字节定位); 若 Q1 < 58/58 且 codex 同窗 58/58 ⇒ 结构与质量冲突, 收窄宣称并给对照读数。",
+ "recorded_law": "docs/reports/iteration-master-plan.md §0-0 铁律 12 (提示词常量前缀铁律) + src/agent.tests/R525PartitionStructureTests.cs (7 条结构锁)",
+ "posthoc_notes": {
+  "1_checker_aux_exclusion": "机检器把「宿主修复回路调用」(system 无 '## §' 段头, 511/880 字符) 从 M1/S*/步间聚合中剔除 —— R522 已立口径「末次修复调用增量不可归因」; 原始判定保留在 logs/prefix-check.json/.txt, 修正版 logs/structure-check-v2.json。",
+  "2_s3_upper_bound": "S3 段体量上界 4,000 → 12,000 字符; 依据 = 外部真值最大段 preferences_guardrails 10,784 字符 (上取整+余量), 非按本侧读数调阈值。",
+  "3_m3_cold_start": "M3 在 w1 判否 = 换前缀后冷缓存 (首调用新算 2,582 > 2,000; cached 5,376 ≥ 0.45×system); w2/w3 暖启 fresh 354/359 判过。阈值不动。",
+  "4_m4_marginal": "M4 在 w2 判否 (步间涨幅中位 709.5 vs 阈值 700), 边缘波动, 阈值不动。",
+  "5_arm_a0_bimodal": "A0-off(纪律关) 行为双峰 (R524 v2: 0/58·0/58·46/58; R525 w3: ledger_calls=0) ⇒ 该臂不构成有效对照臂; 本轮对比只取 A1-on × codex。",
+  "6_claim_scope": "结构对齐 (M1/M2/M5/M6 + S1..S5) 机检通过; 能力增益未证 (w3 双侧 agent 臂 0/58 而 codex 58/58, PRECOND_RC=1)。"
+ }
+}

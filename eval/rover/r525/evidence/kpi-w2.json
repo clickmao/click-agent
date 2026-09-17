@@ -1,0 +1,90 @@
+{
+ "round": "R525",
+ "arms": {
+  "A0-off": {
+   "arm": "A0-off",
+   "runs": 1,
+   "cases_pass": 58,
+   "cases_total": 58,
+   "all_pass": true,
+   "calls": 6,
+   "new_prompt": 3617,
+   "cached_prompt": 48128,
+   "prompt_tokens": 51745,
+   "hit_pct": 93.0,
+   "completion": 6006,
+   "nominal_prompt_plus_completion": 57751,
+   "upstream_total_tokens": 57751,
+   "unreported_usage": 0,
+   "snapshot_empty": 0,
+   "models": [
+    "deepseek-chat"
+   ]
+  },
+  "A1-on": {
+   "arm": "A1-on",
+   "runs": 1,
+   "cases_pass": 58,
+   "cases_total": 58,
+   "all_pass": true,
+   "calls": 32,
+   "new_prompt": 20310,
+   "cached_prompt": 671744,
+   "prompt_tokens": 692054,
+   "hit_pct": 97.1,
+   "completion": 22692,
+   "nominal_prompt_plus_completion": 714746,
+   "upstream_total_tokens": 714746,
+   "unreported_usage": 0,
+   "snapshot_empty": 0,
+   "models": [
+    "deepseek-chat"
+   ]
+  },
+  "C-codex": {
+   "arm": "C-codex",
+   "runs": 1,
+   "cases_pass": 58,
+   "cases_total": 58,
+   "all_pass": true,
+   "calls": 19,
+   "new_prompt": 7264,
+   "cached_prompt": 195456,
+   "prompt_tokens": 202720,
+   "hit_pct": 96.4,
+   "completion": 5685,
+   "nominal_prompt_plus_completion": 208405,
+   "upstream_total_tokens": 208405,
+   "unreported_usage": 0,
+   "snapshot_empty": 0,
+   "models": [
+    "deepseek-chat"
+   ]
+  }
+ },
+ "ratios": {
+  "calls_ratio_A1_over_A0": 5.333,
+  "new_prompt_ratio": 5.615,
+  "completion_ratio": 3.778
+ },
+ "verdict": {
+  "C2_quality_no_regression": true,
+  "C3_calls": false,
+  "C4_new_prompt": false,
+  "C5_completion": false
+ },
+ "thresholds": {},
+ "criteria": {
+  "M1_system_constant": "处理臂 (A1-on) 在本次运行的 system 段逐字节相同 (sha256 唯一)",
+  "M2_no_telemetry_in_prompt": "任何 system/user 段不得出现 data/activity · prompt_audit · 工作区文件 · Workspace Files 标记",
+  "M3_first_call_cache": "首调用 cached_tokens >= 0.45 × system 字符数 且 新算 <= 2000 tok 且 cached > 2304 (w1 冷态单列, 判据以 w2/w3 为准; 口径 v1 起臂前已定)",
+  "M4_step_growth": "步间 prompt 增量中位 <= 700 tok 且 新算 prompt 中位 <= 600 tok",
+  "M5_receipts_and_narration": "工具回执字符中位 <= 400 且 p90 <= 1500; assistant 非空正文中位 == 0",
+  "M6_user_turn_task_only": "处理臂 user 段 <= 3200 字符 且 [技能知识参考] 不在 user 段 (R524 v2 三窗全否 ⇒ 本轮修 ② 后应转真)",
+  "S1_section_order": "常量前缀段头序列 == §1..§11 升序各一次 (顺序漂移即前缀漂移)",
+  "S2_sections_constant": "段头集合跨臂/跨窗口恒一 (含 A0-off: 结构修不对臂开关)",
+  "S3_section_size_bound": "每段体量 40..4000 字符 (保持碎片化, 对齐外部真值 270 段的粒度)",
+  "S4_prefix_declaration": "常量前缀声明锚句在位 (『常量前缀』+『追加在尾部』)",
+  "S5_tail_only_in_user": "user 段不得出现 `## §` 段头或常量材料 (只许尾部追加)"
+ }
+}

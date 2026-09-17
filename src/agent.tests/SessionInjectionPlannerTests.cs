@@ -22,7 +22,7 @@ public class SessionInjectionPlannerTests
                                   "[Memory (RAG)]\nQ: 二分查找的前提?\nA: 有序 + 可随机访问\n\n" +
                                   "[Web Search]\n- 二分查找 复杂度 O(log n)";
 
-    /// <summary>P1: 会话静态块 (画像/偏好/工作区) 必须被识别; 动态块 (RAG/Web) 不得误判为静态。</summary>
+    /// <summary>P1: 会话静态块 (画像/偏好) 必须被识别; 动态块 (RAG/Web/工作区文件) 不得误判为静态。</summary>
     [Fact]
     public void P1_静态块识别_正确切开静态与动态()
     {
@@ -30,13 +30,14 @@ public class SessionInjectionPlannerTests
         Assert.Equal(5, blocks.Count);
         Assert.True(SessionInjectionPlanner.IsSessionStatic("AgentContext"));
         Assert.True(SessionInjectionPlanner.IsSessionStatic("User Preference"));
-        Assert.True(SessionInjectionPlanner.IsSessionStatic("Workspace Files"));
-        Assert.True(SessionInjectionPlanner.IsSessionStatic("工作区文件 data/activity/1.json"));
+        // R524: 工作区文件块含 data/activity/<pid>.json (按运行变化) ⇒ 实测砍断命中前沿, 改判动态 (不再焊进 system)
+        Assert.False(SessionInjectionPlanner.IsSessionStatic("Workspace Files"));
+        Assert.False(SessionInjectionPlanner.IsSessionStatic("工作区文件 data/activity/1.json"));
         Assert.False(SessionInjectionPlanner.IsSessionStatic("Memory (RAG)"));
         Assert.False(SessionInjectionPlanner.IsSessionStatic("Web Search"));
 
         var statics = blocks.Where(b => SessionInjectionPlanner.IsSessionStatic(b.Title)).ToList();
-        Assert.Equal(3, statics.Count);
+        Assert.Equal(2, statics.Count);
         var staticText = SessionInjectionPlanner.Join(statics);
         Assert.Contains("可用能力", staticText, StringComparison.Ordinal);
         Assert.DoesNotContain("二分查找的前提", staticText, StringComparison.Ordinal);

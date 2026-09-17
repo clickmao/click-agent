@@ -1,0 +1,107 @@
+{
+ "round": "R525",
+ "treatment": "A1-on",
+ "ranges": {
+  "A0-off": [
+   1,
+   6
+  ],
+  "A1-on": [
+   7,
+   38
+  ]
+ },
+ "calls_total": 57,
+ "calls_treatment": 32,
+ "calls_treatment_main": 31,
+ "aux_calls": 1,
+ "system_chars": 9803,
+ "system_sha8_distinct": [
+  "6910b5eb"
+ ],
+ "first_rows": [
+  {
+   "run": "adapter",
+   "system_chars": 9803,
+   "cached": 7680,
+   "fresh": 354,
+   "prompt": 8034
+  }
+ ],
+ "user_chars_max": 2849,
+ "user_has_constant_material": false,
+ "step_growth_median": 709.5,
+ "step_growth_p90": 1571.1,
+ "fresh_median": 494,
+ "receipt_chars_median": 368.0,
+ "receipt_chars_p90": 1094.0,
+ "assistant_body_median": null,
+ "assistant_body_p90": null,
+ "structure": {
+  "section_order": [
+   "§1 身份与目标",
+   "§2 安全与诚实底线 (违反即返工)",
+   "§3 记忆与召回规则 (常量规则; 材料一律只追加尾部)",
+   "§4 行为与输出纪律",
+   "§5 工程与执行纪律 (违反即返工)",
+   "§6 工具协议",
+   "§7 技能菜单与按需加载",
+   "§8 环境与工作区 (会话首轮快照)",
+   "§9 常见失败模式与自检 (历史实证, 逐条自查)",
+   "§10 汇报格式 (约定)",
+   "§11 关键模块地图 (本仓库实况, 便于定位改动点)"
+  ],
+  "sections_found": [
+   "§1 身份与目标",
+   "§2 安全与诚实底线 (违反即返工)",
+   "§3 记忆与召回规则 (常量规则; 材料一律只追加尾部)",
+   "§4 行为与输出纪律",
+   "§5 工程与执行纪律 (违反即返工)",
+   "§6 工具协议",
+   "§7 技能菜单与按需加载",
+   "§8 环境与工作区 (会话首轮快照)",
+   "§9 常见失败模式与自检 (历史实证, 逐条自查)",
+   "§10 汇报格式 (约定)",
+   "§11 关键模块地图 (本仓库实况, 便于定位改动点)"
+  ],
+  "section_sizes": [
+   186,
+   208,
+   226,
+   145,
+   684,
+   280,
+   134,
+   336,
+   326,
+   154,
+   6485
+  ]
+ },
+ "reference_codex": {
+  "codex_calls": 19,
+  "codex_first": {
+   "system_chars": 14849,
+   "cached": 6016,
+   "fresh": 1539,
+   "prompt": 7555
+  },
+  "codex_step_growth_median": 358.0,
+  "codex_receipt_chars_median": 119,
+  "codex_body_median": null
+ },
+ "verdict": {
+  "M1_system_constant": true,
+  "M2_no_telemetry_in_prompt": true,
+  "M3_first_call_cache": true,
+  "M4_step_growth": false,
+  "M5_receipts_and_narration": true,
+  "M6_user_turn_task_only": true,
+  "S1_section_order": true,
+  "S2_sections_constant": true,
+  "S3_section_size_bound": true,
+  "S4_prefix_declaration": true,
+  "S5_tail_only_in_user": true
+ },
+ "pass": false
+}

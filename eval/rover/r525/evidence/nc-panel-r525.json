@@ -1,0 +1,30 @@
+{
+ "round": "R525",
+ "instrument": "eval/rover/r525/structure_check_r525.py",
+ "source_dump": "eval/rover/r525/run-0917-r525-w3/adapter/full-agent-003.json",
+ "cases": [
+  {
+   "case": "NC1_段序错乱",
+   "rc": "rc=1",
+   "detail": "期望键翻红=('S1_section_order',) OK"
+  },
+  {
+   "case": "NC2_前缀遥测",
+   "rc": "rc=1",
+   "detail": "期望键翻红=('M2_no_telemetry_in_prompt',) OK"
+  },
+  {
+   "case": "NC3_材料回灌user",
+   "rc": "rc=1",
+   "detail": "期望键翻红=('M6_user_turn_task_only', 'S5_tail_only_in_user') OK"
+  },
+  {
+   "case": "NC4_删段",
+   "rc": "rc=1",
+   "detail": "期望键翻红=('S1_section_order', 'S2_sections_constant') OK"
+  }
+ ],
+ "panel_pass": true,
+ "rc": 0,
+ "raw_tail": "NC_PANEL_PASS"
+}
