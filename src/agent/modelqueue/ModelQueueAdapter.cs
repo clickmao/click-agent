@@ -109,6 +109,34 @@ public sealed class ModelQueueAdapter : ILLMCaller, agent.subagent.ILLMCallerFor
     public static bool IsLocalTemplateReply(string? content)
         => content is not null && content.Trim() == ModelQueueRouter.LocalSkipFallback;
 
+    /// <summary>
+    /// R533 结构面装配 (请求字节面的唯一装配点): 工具面 + 动作环纪律尾块。
+    /// 输入全是**结构量** (Prompt.StructuredSurface / qp.IsolatedChannel), 非文本判据。
+    /// <para>R456 声明面: 仅在动作环开启时注入 tools —— 关闭时请求体与旧版逐字节相同 (零回归)。</para>
+    /// <para>R490 声明面按需: 门开 (AGENTFRAMEWORK_TOOL_DECL_GATE) 时只对**工作区动作类意图**下发;
+    /// 门关 (未设) ⇒ 恒下发 ⇒ 与 R456..R489 逐字节相同。</para>
+    /// <para>R494 通道轴: 隔离通道 (微步骤隔离问询 / 一次性隔离子任务) 结构上没有工作区 ⇒
+    /// 通道轴开时恒不下发 (轴上判据只吃调用点显式置位的结构量, 非文本)。</para>
+    /// <para>R522: 动作环专属上下文纪律 (验证合并 / 探针不落盘 / 收尾从简); 环关或纪律关 ⇒ 逐字节同旧版。</para>
+    /// <para>R533: 结构化前端 (StructuredSurface) 在此**永不进入** ⇒ 模型无工具面 + 无纪律尾块。</para>
+    /// </summary>
+    public static void ApplyRequestSurface(Prompt prompt, QueuePrompt qp)
+    {
+        if (prompt.StructuredSurface)
+        {
+            return;
+        }
+        if (ToolDeclGate.ShouldDeclare(prompt.Intent, ToolDeclGate.IsEnabled(),
+                qp.IsolatedChannel, ToolDeclGate.IsChannelGateEnabled()))
+        {
+            qp.ToolsJson = ActionToolDecl.ToolsJson;
+        }
+        if (ActionLoopDiscipline.IsEnabled())
+        {
+            qp.SystemPrompt = ActionLoopDiscipline.Apply(qp.SystemPrompt);
+        }
+    }
+
     public async Task<LLMResponse> CallAsync(Prompt prompt, CancellationToken ct = default)
     {
         var qp = ToQueuePrompt(prompt);
@@ -116,19 +144,16 @@ public sealed class ModelQueueAdapter : ILLMCaller, agent.subagent.ILLMCallerFor
         // 代码任务首轮 completion_tokens=8192 被推理吃满 → content 空/半截, 每题 2 次调用)。
         var intent = string.IsNullOrWhiteSpace(prompt.Intent) ? "general" : prompt.Intent!;
         QueueResponse r;
-        if (_actionPort is not null && ActionLoopRunner.IsEnabled())
+        if (prompt.StructuredSurface)
         {
-            // R456 声明面: 仅在动作环开启时注入 tools —— 关闭时请求体与旧版逐字节相同 (零回归)
-            // R490 声明面按需: 门开 (AGENTFRAMEWORK_TOOL_DECL_GATE) 时只对**工作区动作类意图**下发。
-            // 门关 (未设) ⇒ 恒下发 ⇒ 与 R456..R489 逐字节相同。
-            // R494 通道轴: 隔离通道 (微步骤隔离问询 / 一次性隔离子任务) 结构上没有工作区 ⇒
-            // 通道轴开时恒不下发 (轴上判据只吃调用点显式置位的结构量, 非文本)。
-            if (ToolDeclGate.ShouldDeclare(prompt.Intent, ToolDeclGate.IsEnabled(),
-                    qp.IsolatedChannel, ToolDeclGate.IsChannelGateEnabled()))
-                qp.ToolsJson = ActionToolDecl.ToolsJson;
-            // R522: 动作环专属上下文纪律 (验证合并 / 探针不落盘 / 收尾从简)。环关或纪律关 ⇒ 请求体逐字节同旧版。
-            if (ActionLoopDiscipline.IsEnabled())
-                qp.SystemPrompt = ActionLoopDiscipline.Apply(qp.SystemPrompt);
+            // R533 结构量轴: 结构化前端 (R1) ⇒ 模型无工具面、无动作环、无纪律尾块:
+            // 单发调用, 实发 system 逐字节 = 恒定前缀 pin; 执行/验收全部在管道下游 (状态外置)。
+            r = await _router.CallAsync(qp, TaskKindHint.General, intent, ct);
+            LastActionOutcome = null;
+        }
+        else if (_actionPort is not null && ActionLoopRunner.IsEnabled())
+        {
+            ApplyRequestSurface(prompt, qp);
             var (resp, outcome) = await ActionLoopRunner.RunAsync(
                 qp,
                 (p, c) => _router.CallAsync(p, TaskKindHint.General, intent, c),
@@ -151,6 +176,9 @@ public sealed class ModelQueueAdapter : ILLMCaller, agent.subagent.ILLMCallerFor
             Error = r.Error,
             Model = r.Model,
             PromptTokens = r.PromptTokens,
+            // R533: completion 曾整条链漏回填 (QueueResponse 有实报值, 适配器构造时未取) ⇒
+            // R1 台账 completion_tokens 恒 0, 与中继实报 (3,348) 不符。此处按 provider 实报透传。
+            CompletionTokens = r.CompletionTokens,
             TokensUsed = r.TokensUsed,
             CacheHitTokens = r.CacheHitTokens,
             CacheMissTokens = r.CacheMissTokens,

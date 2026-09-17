@@ -6778,9 +6778,7 @@
     "src/agent.host/Program.cs",
     "eval/rover/r532/analyze_r532.py",
     "eval/rover/r532/run_r532_mini.sh",
-    "eval/rover/r532/evidence/mini1",
-    "agent/r1",
-    "agent/host/R1CliEntry.cs"
+    "eval/rover/r532/evidence/mini1"
    ],
    "evidence_cmd": "bash eval/rover/r532/run_r532_mini.sh  (rc=0, 同窗 mini1: 起手闸 2/2 PASS + 冒烟 rc=0 + 两臂 + 判分); python3 eval/rover/r532/analyze_r532.py --run-dir /tmp/r532_mini --window mini1",
    "evidence_path": "eval/rover/r532/evidence/mini1/logs/analysis-mini1.json",
@@ -6803,9 +6801,7 @@
    "capability": "**R1 管道闸与执行器单测 (R532)**: 11 例 —— 契约非法/修复轮 (`calls=2`) · `refusal`→rc 3 · 缺槽→rc 2 · 路径逃逸 (`../`+绝对路径) →rc 4 **且沙箱外不落盘** · `expect_stdout` 不符→rc 5 · 台账 JSON 可机解且 `rc=0`/`prefix_sha256` 齐 · `R1_STATS` 标记单行 · role 尾块只进 user 轮 (`head` 不变) · 写侧 UTF8 无 BOM (`bytes` 与去 BOM 后长度一致)。读数: **11/11 绿** (958 ms)。",
    "covers": [
     "src/agent.tests/R1PipelineTests.cs",
-    "src/agent/r1",
-    "agent/tests/R1PipelineTests.cs",
-    "agent/r1"
+    "src/agent/r1"
    ],
    "evidence_cmd": "env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR $HOME/.dotnet/dotnet test src/agent.tests/agentframework.tests.csproj -c Release --filter FullyQualifiedName~R1PipelineTests",
    "evidence_path": "eval/rover/r532/evidence/unit-r1-tests.txt",

@@ -146,4 +146,22 @@ public static class StructuredPrompt
         }
         return sb.ToString();
     }
+
+    /// <summary>
+    /// 执行证据回灌 (R533): 计划步骤**已真实执行**但实测与期望不符时的修复指令。
+    /// 与 <see cref="RepairMessage"/> 的区别: 那里是**契约**不过 (结构错), 这里是**真跑证据**不过 (行为错) ——
+    /// 证据一律取自执行器实测 (rc/stdout/stderr), 禁模型自述; 并明令不得改写期望值来迁就现状。
+    /// </summary>
+    public static string ExecRepairMessage(System.Collections.Generic.IReadOnlyList<string> evidence)
+    {
+        var sb = new StringBuilder();
+        sb.Append("[exec_repair] 上一次计划的步骤已真实执行，实测结果与期望不符。依据下列**实测证据**修正，"
+            + "只输出修正后的 JSON（不要解释、不要 markdown 围栏）：不得删除验收步骤，"
+            + "不得改写期望值来迁就现状，不得用自然语言宣称完成。");
+        foreach (var e in evidence)
+        {
+            sb.Append("\n- ").Append(e);
+        }
+        return sb.ToString();
+    }
 }

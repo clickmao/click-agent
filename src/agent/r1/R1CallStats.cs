@@ -10,9 +10,10 @@ public sealed record R1CallStats(
     int CompletionTokens,
     int? CacheHitTokens,
     int? CacheMissTokens,
-    int RepairRounds)
+    int RepairRounds,
+    int ExecRepairs = 0)
 {
-    public static R1CallStats Empty => new(0, 0, 0, null, null, 0);
+    public static R1CallStats Empty => new(0, 0, 0, null, null, 0, 0);
 
     public int Total => PromptTokens + CompletionTokens;
 }

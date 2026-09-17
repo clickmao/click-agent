@@ -71,8 +71,10 @@ public static class PlanExecutor
                 var expect = st.ExpectStdout ?? string.Empty;
                 if (!string.IsNullOrEmpty(expect) && r.Stdout.TrimEnd() != expect.TrimEnd())
                 {
+                    // R533: 证据义务 —— 期望/实测两侧都进 Reason, 使回灌修复轮拿到可判别的差量 (禁只说「不符」)。
                     return new PlanExecutorResult(5, "expect_stdout",
-                        "step " + st.Id + " stdout 与 expect_stdout 不符 (rc=" + r.Rc + ")", steps);
+                        "step " + st.Id + " stdout 与 expect_stdout 不符 (rc=" + r.Rc
+                        + ", 期望=`" + R1Text.Tail(expect, 120) + "`, 实测=`" + R1Text.Tail(r.Stdout.TrimEnd(), 120) + "`)", steps);
                 }
                 if (r.Rc != 0)
                 {

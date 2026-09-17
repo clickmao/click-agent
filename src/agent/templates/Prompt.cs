@@ -26,6 +26,15 @@ public class Prompt
     public bool IsolatedChannel { get; set; }
 
     /// <summary>
+    /// R533: **结构化前端标记** (结构量, 由调用点显式置位, 非文本判据)。
+    /// true = 该 prompt 走「结构化 prompt ⇄ 远程 LLM ⇄ 结构化结果 ⇒ 精准语义 ⇒ 管道」前端 (R1):
+    /// 模型侧**无工具面** (请求体不下发 tools)、**无动作环** (单发调用, 执行在管道下游)、
+    /// **不加动作环纪律尾块** ⇒ 实发 system 逐字节 = 恒定前缀 pin。
+    /// 默认 false ⇒ 与 R456..R532 各路径逐字节同形 (零回归)。
+    /// </summary>
+    public bool StructuredSurface { get; set; }
+
+    /// <summary>
     /// 系统 Prompt（包含指令）
     /// </summary>
     public string SystemPrompt { get; set; } = string.Empty;

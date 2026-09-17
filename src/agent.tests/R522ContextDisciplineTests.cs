@@ -86,16 +86,28 @@ public sealed class R522ContextDisciplineTests
         var adapter = Path.Combine(srcDir, "agent", "modelqueue", "ModelQueueAdapter.cs");
         Assert.True(File.Exists(adapter), $"适配器源不在场: {adapter}");
         var lines = File.ReadAllLines(adapter);
-        var idx = Array.FindIndex(lines, l => l.Contains("ActionLoopDiscipline.IsEnabled()"));
-        Assert.True(idx >= 0, "注入点缺失 ⇒ 纪律不生效 (挂载类缺陷: 有代码行 ≠ 生效)");
+
+        // R533 结构量轴: 装配点定义体内, 结构化前端早退必须在工具面/纪律闸**之前**
+        // (结构化前端 R1 ⇒ 无工具面 + 无纪律尾块; 判据只吃调用点显式置位的结构量)。
+        var def = Array.FindIndex(lines, l => l.Contains("public static void ApplyRequestSurface("));
+        Assert.True(def >= 0, "结构面装配点缺失");
+        var early = Array.FindIndex(lines, def, l => l.Contains("if (prompt.StructuredSurface)"));
+        var gate = Array.FindIndex(lines, def, l => l.Contains("ActionLoopDiscipline.IsEnabled()"));
+        Assert.True(early > def && gate > early, $"结构化前端早退必须在纪律闸之前 (def={def}, early={early}, gate={gate})");
+        Assert.Contains(".Apply(qp.SystemPrompt)", string.Join("\n", lines.Skip(gate).Take(3)));
+
+        // 唯一注入点: 装配点只在**动作环分支内**被调用 (分支外 ⇒ 非环调用也会带纪律尾块)。
         var br = Array.FindIndex(lines, l => l.Contains("_actionPort is not null && ActionLoopRunner.IsEnabled()"));
-        Assert.True(br >= 0 && br < idx, "注入点必须在动作环分支头之后");
-        Assert.True(idx - br <= 24, $"注入点距分支头 {idx - br} 行 ⇒ 疑似落在分支外");
-        Assert.DoesNotContain("}", lines.Skip(br + 1).Take(idx - br - 1).Select(l => l.Trim()));
-        Assert.Contains("ActionLoopDiscipline.Apply(qp.SystemPrompt)", lines[idx + 1]);
+        Assert.True(br >= 0, "动作环分支头缺失");
+        var call = Array.FindIndex(lines, l => l.Contains("ApplyRequestSurface(prompt, qp)"));
+        Assert.True(call > br, $"装配点必须在动作环分支头之后 (br={br}, call={call})");
+        Assert.True(call - br <= 6, $"装配点距分支头 {call - br} 行 ⇒ 疑似落在分支外");
+        var bodyEnd = Array.FindIndex(lines, br + 1, l => l.Trim() == "}");
+        Assert.True(bodyEnd > call, "装配点越出动作环分支");
+        Assert.DoesNotContain("}", lines.Skip(br + 1).Take(call - br - 1).Select(l => l.Trim()));
 
         // 反向锁: 全仓产品源恰 1 处调用 (既不漏接也不多处接)
-        var calls = ProductSources(srcDir).Sum(f => File.ReadAllLines(f).Count(l => l.Contains("ActionLoopDiscipline.Apply(")));
+        var calls = ProductSources(srcDir).Sum(f => File.ReadAllLines(f).Count(l => l.Contains("ApplyRequestSurface(prompt, qp)")));
         Assert.Equal(1, calls);
     }
 }

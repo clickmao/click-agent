@@ -48,6 +48,7 @@ public sealed class R1PipelineTests
         public int Calls;
         public string LastSystemPrompt = string.Empty;
         public string LastUserMessage = string.Empty;
+        public bool LastStructuredSurface;
 
         public ScriptedCaller(params string[] replies)
         {
@@ -59,6 +60,7 @@ public sealed class R1PipelineTests
             Calls++;
             LastSystemPrompt = prompt.SystemPrompt;
             LastUserMessage = prompt.UserMessage;
+            LastStructuredSurface = prompt.StructuredSurface;
             var content = _replies.Count > 0 ? _replies.Dequeue() : string.Empty;
             return Task.FromResult(new agent.LLMResponse
             {
@@ -79,8 +81,8 @@ public sealed class R1PipelineTests
         return dir;
     }
 
-    private static R1Options Opt(string sandbox, int maxRepair = 1, string? transcript = null) =>
-        new(sandbox, maxRepair, 60, transcript, null, "test");
+    private static R1Options Opt(string sandbox, int maxRepair = 1, string? transcript = null, int maxExecRepair = 0) =>
+        new(sandbox, maxRepair, 60, transcript, null, "test", maxExecRepair);
 
     [Fact]
     public async Task Pipeline_Calls_Once_Then_Executes_And_Writes_NoBom()
@@ -220,16 +222,93 @@ public sealed class R1PipelineTests
         }
     }
 
+    /// <summary>R533-C 负控: 无执行证据回灌预算 (MaxExecRepair=0) ⇒ 旧行为逐字不变 (一次调用即停机, 阶段名不带 _exhausted)。</summary>
     [Fact]
     public async Task Executor_Fails_On_Expect_Stdout_Mismatch()
     {
         var sb = NewSandbox();
         try
         {
-            var res = await R1Pipeline.RunAsync(new ScriptedCaller(MismatchJson), "跑个命令", Opt(sb), CancellationToken.None);
+            var caller = new ScriptedCaller(MismatchJson);
+            var res = await R1Pipeline.RunAsync(caller, "跑个命令", Opt(sb, maxExecRepair: 0), CancellationToken.None);
             Assert.Equal(5, res.Rc);
             Assert.Equal("expect_stdout", res.Stage);
             Assert.Single(res.Steps);
+            Assert.Equal(1, caller.Calls);          // 零预算 ⇒ 不重发起
+            Assert.Equal(0, res.Stats.ExecRepairs);
+        }
+        finally
+        {
+            Directory.Delete(sb, true);
+        }
+    }
+
+    /// <summary>R533-C 正向: 实测不符 ⇒ 真证据回灌重发起 ⇒ 修正后成链 (steps 是修正后的产物, 非首次失败产物)。</summary>
+    [Fact]
+    public async Task Exec_Repair_Reinjects_Real_Evidence_Then_Recovers()
+    {
+        var sb = NewSandbox();
+        try
+        {
+            var caller = new ScriptedCaller(MismatchJson, GoodJson);
+            var res = await R1Pipeline.RunAsync(caller, "跑个命令", Opt(sb, maxExecRepair: 1), CancellationToken.None);
+
+            Assert.Equal(0, res.Rc);
+            Assert.Equal("done", res.Stage);
+            Assert.Equal(2, caller.Calls);
+            Assert.Equal(1, res.Stats.ExecRepairs);
+            Assert.Equal(2, res.Steps.Count);                       // s1 写 + s2 跑 (修正后)
+            Assert.True(File.Exists(Path.Combine(sb, "sols", "sum.py")), "修正轮产物未落盘");
+
+            // 回灌的是**实测证据**(执行器 rc/stdout 尾), 不是模型自述, 也不是空提示
+            Assert.Contains("exec_repair", caller.LastUserMessage, StringComparison.Ordinal);
+            Assert.Contains("实测", caller.LastUserMessage, StringComparison.Ordinal);
+            Assert.Contains("跑个命令", caller.LastUserMessage, StringComparison.Ordinal);          // 原题面仍在
+            Assert.Equal(StructuredPrompt.Prefix, caller.LastSystemPrompt);                          // 前缀仍逐字节 = pin
+            Assert.True(caller.LastStructuredSurface);                                               // 结构量轴在修复轮同样置位
+        }
+        finally
+        {
+            Directory.Delete(sb, true);
+        }
+    }
+
+    /// <summary>R533-C 边界: 预算耗尽 ⇒ rc=5 但**产物与 steps 原样带上** (不吞证据、不谎报), 阶段名可机检 _exhausted。</summary>
+    [Fact]
+    public async Task Exec_Repair_Exhausted_Keeps_Artifacts_And_Marks_Stage()
+    {
+        var sb = NewSandbox();
+        try
+        {
+            var caller = new ScriptedCaller(MismatchJson, MismatchJson);
+            var res = await R1Pipeline.RunAsync(caller, "跑个命令", Opt(sb, maxExecRepair: 1), CancellationToken.None);
+
+            Assert.Equal(5, res.Rc);
+            Assert.Equal("expect_stdout_exhausted", res.Stage);
+            Assert.Equal(2, caller.Calls);
+            Assert.Equal(1, res.Stats.ExecRepairs);
+            Assert.NotEmpty(res.Steps);          // 证据保留 (不吞)
+        }
+        finally
+        {
+            Directory.Delete(sb, true);
+        }
+    }
+
+    /// <summary>R533-A 管道侧: 每次调用都带结构量标记 (⇒ 适配器不下发工具面/不追加纪律尾块)。</summary>
+    [Fact]
+    public async Task Pipeline_Marks_Structured_Surface_On_Every_Call()
+    {
+        var sb = NewSandbox();
+        try
+        {
+            var caller = new ScriptedCaller("{\"intent\":\"code_task\"}", GoodJson);
+            var res = await R1Pipeline.RunAsync(caller, "写 sols/sum.py 求和", Opt(sb), CancellationToken.None);
+
+            Assert.Equal(0, res.Rc);
+            Assert.Equal(2, caller.Calls);           // 1 契约修复轮 + 1 成功
+            Assert.True(caller.LastStructuredSurface);
+            Assert.Equal(StructuredPrompt.Prefix, caller.LastSystemPrompt);
         }
         finally
         {

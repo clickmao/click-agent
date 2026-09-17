@@ -7,6 +7,7 @@ namespace agent.r1;
 /// R1 一次性结构化管道的运行参数。全部来自环境（无散落魔法值）：
 ///   AGENTFRAMEWORK_WORKSPACE     沙箱根（缺省 = 传入的 fallback）
 ///   AGENTFRAMEWORK_R1_MAX_REPAIR 契约不过时的最大修复轮数（0..3，默认 1）
+///   AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR 执行实测与期望不符时的最大回灌修复轮数（0..3，默认 1）
 ///   AGENTFRAMEWORK_R1_STEP_TIMEOUT 单步 run 超时秒（5..1800，默认 120）
 ///   AGENTFRAMEWORK_R1_TRANSCRIPT 落盘路径（缺省 = 不落盘，只打 stdout 标记）
 ///   AGENTFRAMEWORK_R1_ROLE_FILE  role 额外数据（明文 profile 文件；见 R1RoleMount）
@@ -18,7 +19,8 @@ public sealed record R1Options(
     int StepTimeoutSeconds,
     string? TranscriptPath,
     string? RoleNote,
-    string Tag)
+    string Tag,
+    int MaxExecRepair = 1)
 {
     public static R1Options FromEnvironment(string fallbackRoot)
     {
@@ -40,6 +42,14 @@ public sealed record R1Options(
             timeout = to;
         }
 
+        // R533: 执行证据回灌修复轮 (0..3, 默认 1)。>0 ⇒ 执行实测与期望不符时把真证据回灌重发起,
+        // 而不是「产物已落盘却直接停机」。
+        var maxExecRepair = 1;
+        if (int.TryParse(Environment.GetEnvironmentVariable("AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR"), out var xr) && xr >= 0 && xr <= 3)
+        {
+            maxExecRepair = xr;
+        }
+
         var transcript = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_R1_TRANSCRIPT");
         var tag = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_R1_TAG");
 
@@ -49,6 +59,7 @@ public sealed record R1Options(
             timeout,
             string.IsNullOrWhiteSpace(transcript) ? null : transcript,
             R1RoleMount.ReadNote(),
-            string.IsNullOrWhiteSpace(tag) ? "(untagged)" : tag);
+            string.IsNullOrWhiteSpace(tag) ? "(untagged)" : tag,
+            maxExecRepair);
     }
 }

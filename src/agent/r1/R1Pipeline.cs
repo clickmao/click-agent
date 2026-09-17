@@ -10,10 +10,15 @@ namespace agent.r1;
 /// <summary>
 /// R1 管道总装（用户令 2026-09-17：结构化 prompt ⇄ 远程 LLM ⇄ 结构化结果 ⇒ 精准语义 ⇒ 管道）：
 ///
-///   前缀恒定自检 → 单次结构化调用 → 契约校验 → (至多 N 轮修复) → 语义闸 → 计划执行 → 台账
+///   前缀恒定自检 → 结构化调用 → 契约校验 → (至多 N 轮**契约**修复) → 语义闸 → 计划执行
+///   → (实测不过 ⇒ 至多 M 轮**执行证据回灌**修复) → 台账
 ///
-/// fail-closed 三条：前缀漂移不起调用（rc=6）；契约不过不执行（rc=4）；闸有 halt 不执行（rc=2/3/4）。
-/// 与 CLAUDE-Fable-5.1 动因③「状态外置：模型只产契约，执行在管道」对齐 —— 模型无工具面，工具面只在本类下游。
+/// **结构量（R533）**：本管道发出的 prompt 一律置 <see cref="Prompt.StructuredSurface"/> ⇒
+/// 模型侧无工具面、无动作环、无纪律尾块 ⇒ 实发 system 逐字节 = 恒定前缀 pin。
+///
+/// fail-closed：前缀漂移不起调用（rc=6）；契约不过不执行（rc=4）；闸 halt 不执行（rc=2/3）；
+/// 实测不过先回灌修复，仍不过才 rc=5 —— **产物已落盘且 steps 原样带上**（不吞证据、不谎报成功）。
+/// 与 CLAUDE-Fable-5.1 动因③「状态外置：模型只产契约，执行在管道」对齐：模型无工具面，工具面只在本类下游。
 /// </summary>
 public static class R1Pipeline
 {
@@ -39,99 +44,142 @@ public static class R1Pipeline
         var completionTokens = 0;
         int? cacheHit = null;
         int? cacheMiss = null;
-        var repairs = 0;
+        var repairs = 0;      // 契约修复轮
+        var execRepairs = 0;  // 执行证据回灌修复轮
         string? repairNote = null;
-        Semantics? sem = null;
-        IReadOnlyList<string> errors = new List<string>();
         var raw = string.Empty;
 
-        for (var round = 0; round <= opt.MaxRepair; round++)
+        while (true)
         {
-            var prompt = new Prompt
-            {
-                SystemPrompt = StructuredPrompt.Prefix,
-                UserMessage = R1RoleMount.AppendTo(StructuredPrompt.BuildUserMessage(taskText ?? string.Empty, repairNote), opt.RoleNote),
-                SessionId = SessionTag,
-                TurnIndex = 1,
-                Intent = "code_task",
-            };
+            Semantics? sem = null;
+            IReadOnlyList<string> errors = new List<string>();
 
-            var resp = await caller.CallAsync(prompt, ct).ConfigureAwait(false);
-            calls++;
-            promptTokens += resp.PromptTokens;
-            completionTokens += resp.CompletionTokens;
-            if (resp.CacheHitTokens.HasValue)
+            while (true)
             {
-                cacheHit = resp.CacheHitTokens;
-            }
-            if (resp.CacheMissTokens.HasValue)
-            {
-                cacheMiss = resp.CacheMissTokens;
-            }
-            raw = resp.Content ?? string.Empty;
+                var prompt = new Prompt
+                {
+                    SystemPrompt = StructuredPrompt.Prefix,
+                    UserMessage = R1RoleMount.AppendTo(
+                        StructuredPrompt.BuildUserMessage(taskText ?? string.Empty, repairNote), opt.RoleNote),
+                    SessionId = SessionTag,
+                    TurnIndex = 1,
+                    Intent = "code_task",
+                    // R533: 结构量 —— 结构化前端 ⇒ 模型无工具面 / 无动作环 / 无纪律尾块。
+                    StructuredSurface = true,
+                };
 
-            if (!resp.Success)
-            {
-                var stats = new R1CallStats(calls, promptTokens, completionTokens, cacheHit, cacheMiss, repairs);
-                var fail = new R1RunResult(6, "llm_transport",
-                    "调用失败: " + (resp.Error ?? "(no error)") + " ⇒ fail-closed 不执行",
-                    raw, stats, prefixChars, prefixSha, taskSha, null, roleChars, null, new List<StepOutcome>());
-                R1Transcript.Write(fail, opt, taskText ?? string.Empty);
-                return fail;
+                var resp = await caller.CallAsync(prompt, ct).ConfigureAwait(false);
+                calls++;
+                promptTokens += resp.PromptTokens;
+                completionTokens += resp.CompletionTokens;
+                if (resp.CacheHitTokens.HasValue)
+                {
+                    cacheHit = resp.CacheHitTokens;
+                }
+                if (resp.CacheMissTokens.HasValue)
+                {
+                    cacheMiss = resp.CacheMissTokens;
+                }
+                raw = resp.Content ?? string.Empty;
+
+                if (!resp.Success)
+                {
+                    var statsT = new R1CallStats(calls, promptTokens, completionTokens, cacheHit, cacheMiss, repairs, execRepairs);
+                    var fail = new R1RunResult(6, "llm_transport",
+                        "调用失败: " + (resp.Error ?? "(no error)") + " ⇒ fail-closed 不执行",
+                        raw, statsT, prefixChars, prefixSha, taskSha, null, roleChars, null, new List<StepOutcome>());
+                    R1Transcript.Write(fail, opt, taskText ?? string.Empty);
+                    return fail;
+                }
+
+                errors = StructuredContract.Validate(raw);
+                if (errors.Count == 0)
+                {
+                    sem = StructuredContract.TryParse(raw, out var parseErrors);
+                    errors = parseErrors;
+                }
+                if (sem is not null && errors.Count == 0)
+                {
+                    break;
+                }
+
+                sem = null;
+                if (repairs >= opt.MaxRepair)
+                {
+                    break;
+                }
+                repairs++;
+                repairNote = StructuredPrompt.RepairMessage(errors);
             }
 
-            errors = StructuredContract.Validate(raw);
-            if (errors.Count == 0)
+            var statsAll = new R1CallStats(calls, promptTokens, completionTokens, cacheHit, cacheMiss, repairs, execRepairs);
+
+            if (sem is null)
             {
-                sem = StructuredContract.TryParse(raw, out var parseErrors);
-                errors = parseErrors;
-            }
-            if (sem is not null && errors.Count == 0)
-            {
-                break;
+                var bad = new R1RunResult(4, "contract",
+                    "契约未过 (errors=" + errors.Count + "): " + (errors.Count > 0 ? errors[0] : "(空)"),
+                    raw, statsAll, prefixChars, prefixSha, taskSha, null, roleChars, null, new List<StepOutcome>());
+                R1Transcript.Write(bad, opt, taskText ?? string.Empty);
+                return bad;
             }
 
-            sem = null;
-            if (round >= opt.MaxRepair)
+            var gate = SemanticsPipeline.Gate(sem, opt.SandboxRoot);
+            if (gate.Halted)
             {
-                break;
+                var halted = new R1RunResult(gate.Rc, gate.Stage, gate.Reason, raw, statsAll,
+                    prefixChars, prefixSha, taskSha, sem, roleChars, null, new List<StepOutcome>());
+                R1Transcript.Write(halted, opt, taskText ?? string.Empty);
+                return halted;
             }
-            repairs++;
-            repairNote = StructuredPrompt.RepairMessage(errors);
+
+            if (sem.Plan.Count == 0)
+            {
+                var noExec = new R1RunResult(0, gate.Stage, gate.Reason + " (plan 空 ⇒ 不执行)", raw, statsAll,
+                    prefixChars, prefixSha, taskSha, sem, roleChars, null, new List<StepOutcome>());
+                R1Transcript.Write(noExec, opt, taskText ?? string.Empty);
+                return noExec;
+            }
+
+            var exec = await PlanExecutor.RunAsync(sem.Plan, opt, ct).ConfigureAwait(false);
+            if (exec.Rc == 0)
+            {
+                var done = new R1RunResult(0, "done", exec.Reason, raw, statsAll,
+                    prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps);
+                R1Transcript.Write(done, opt, taskText ?? string.Empty);
+                return done;
+            }
+
+            if (execRepairs >= opt.MaxExecRepair)
+            {
+                // R533: 不再「产物已落盘却直接停机」—— 先回灌真证据重发起; 预算耗尽才落 rc=5,
+                // steps 原样带上 (产物在盘上, 判分器可继续核), 阶段名标 _exhausted 可机检。
+                var stage = execRepairs > 0 ? exec.Stage + "_exhausted" : exec.Stage;
+                var stuck = new R1RunResult(exec.Rc, stage, exec.Reason, raw, statsAll,
+                    prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps);
+                R1Transcript.Write(stuck, opt, taskText ?? string.Empty);
+                return stuck;
+            }
+
+            execRepairs++;
+            repairNote = StructuredPrompt.ExecRepairMessage(ExecEvidence(exec));
         }
+    }
 
-        var statsAll = new R1CallStats(calls, promptTokens, completionTokens, cacheHit, cacheMiss, repairs);
-
-        if (sem is null)
+    /// <summary>
+    /// 执行证据（R533）：只取**执行器实测**产物（rc / stdout 尾 / stderr 尾），不取模型自述。
+    /// </summary>
+    private static IReadOnlyList<string> ExecEvidence(PlanExecutorResult exec)
+    {
+        var lines = new List<string> { exec.Reason };
+        foreach (var s in exec.Steps)
         {
-            var bad = new R1RunResult(4, "contract",
-                "契约未过 (errors=" + errors.Count + "): " + (errors.Count > 0 ? errors[0] : "(空)"),
-                raw, statsAll, prefixChars, prefixSha, taskSha, null, roleChars, null, new List<StepOutcome>());
-            R1Transcript.Write(bad, opt, taskText ?? string.Empty);
-            return bad;
+            if (s.Tool == "run")
+            {
+                lines.Add("步骤 " + s.Id + " (" + s.Tool + ") 实测 rc=" + s.Rc
+                    + " stdout尾=`" + s.StdoutTail + "` stderr尾=`" + s.StderrTail + "`");
+            }
         }
-
-        var gate = SemanticsPipeline.Gate(sem, opt.SandboxRoot);
-        if (gate.Halted)
-        {
-            var halted = new R1RunResult(gate.Rc, gate.Stage, gate.Reason, raw, statsAll,
-                prefixChars, prefixSha, taskSha, sem, roleChars, null, new List<StepOutcome>());
-            R1Transcript.Write(halted, opt, taskText ?? string.Empty);
-            return halted;
-        }
-
-        if (sem.Plan.Count == 0)
-        {
-            var noExec = new R1RunResult(0, gate.Stage, gate.Reason + " (plan 空 ⇒ 不执行)", raw, statsAll,
-                prefixChars, prefixSha, taskSha, sem, roleChars, null, new List<StepOutcome>());
-            R1Transcript.Write(noExec, opt, taskText ?? string.Empty);
-            return noExec;
-        }
-
-        var exec = await PlanExecutor.RunAsync(sem.Plan, opt, ct).ConfigureAwait(false);
-        var done = new R1RunResult(exec.Rc, exec.Rc == 0 ? "done" : exec.Stage, exec.Reason, raw, statsAll,
-            prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps);
-        R1Transcript.Write(done, opt, taskText ?? string.Empty);
-        return done;
+        lines.Add("要求: 修正产生该实测结果的那一步（通常是 run 步骤的实现或参数），期望值不动。");
+        return lines;
     }
 }

@@ -24,6 +24,7 @@ public static class R1Transcript
         sb.Append(",\"cache_hit_tokens\":").Append(R1Json.NumOrNull(r.Stats.CacheHitTokens));
         sb.Append(",\"cache_miss_tokens\":").Append(R1Json.NumOrNull(r.Stats.CacheMissTokens));
         sb.Append(",\"repair_rounds\":").Append(R1Json.Num(r.Stats.RepairRounds));
+        sb.Append(",\"exec_repairs\":").Append(R1Json.Num(r.Stats.ExecRepairs));
         sb.Append(",\"prefix_chars\":").Append(R1Json.Num(r.PrefixChars));
         sb.Append(",\"prefix_sha256\":").Append(R1Json.Quote(r.PrefixSha256));
         sb.Append(",\"task_sha256\":").Append(R1Json.Quote(r.TaskSha256));
@@ -47,6 +48,7 @@ public static class R1Transcript
         sb.Append("  \"prefix_pinned\": ").Append(r.PrefixSha256 == agent.contract.StructuredPrompt.PrefixSha256Pinned ? "true" : "false").Append(",\n");
         sb.Append("  \"role_note_chars\": ").Append(R1Json.Num(r.RoleNoteChars)).Append(",\n");
         sb.Append("  \"max_repair\": ").Append(R1Json.Num(opt.MaxRepair)).Append(",\n");
+        sb.Append("  \"max_exec_repair\": ").Append(R1Json.Num(opt.MaxExecRepair)).Append(",\n");
         sb.Append("  \"step_timeout_s\": ").Append(R1Json.Num(opt.StepTimeoutSeconds)).Append(",\n");
         sb.Append("  \"rc\": ").Append(R1Json.Num(r.Rc)).Append(",\n");
         sb.Append("  \"stage\": ").Append(R1Json.Quote(r.Stage)).Append(",\n");
@@ -57,6 +59,7 @@ public static class R1Transcript
         sb.Append("  \"cache_hit_tokens\": ").Append(R1Json.NumOrNull(r.Stats.CacheHitTokens)).Append(",\n");
         sb.Append("  \"cache_miss_tokens\": ").Append(R1Json.NumOrNull(r.Stats.CacheMissTokens)).Append(",\n");
         sb.Append("  \"repair_rounds\": ").Append(R1Json.Num(r.Stats.RepairRounds)).Append(",\n");
+        sb.Append("  \"exec_repairs\": ").Append(R1Json.Num(r.Stats.ExecRepairs)).Append(",\n");
 
         var sem = r.Semantics;
         sb.Append("  \"semantics\": ");
