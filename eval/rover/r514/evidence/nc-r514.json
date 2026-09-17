@@ -1,0 +1,127 @@
+{
+ "anchor": "eval/rover/r514/fixtures/r512-p4-observed-failing.json",
+ "anchor_source": "/tmp/r512/run-0917-095853/report.json",
+ "anchor_source_sha256": "fa46ba6621fb689d67f8b828d431e6b8580451a233e5cbae21bc40266e48de98",
+ "observed_failing_set": [
+  "add_creates_and_lists",
+  "done_idempotent",
+  "done_unknown_id",
+  "id_monotonic_no_reuse",
+  "list_filter_and_order",
+  "no_temp_residue",
+  "persistence_across_processes",
+  "unicode_roundtrip"
+ ],
+ "arms": [
+  {
+   "tag": "PC1_r513_v2_no_defect",
+   "inject_expect_rc": 0,
+   "rc": 0,
+   "ok": true,
+   "note": "",
+   "stdout_head": "task p4   form=transform+registry cases=12/14 violations=0 binding=0 masked=0 spawn=0 info=3 kinds=-\n   info   case_without_direct_call           {\"case\": \"\"}\n   info   case_without_direct_call           {\"case\": \"h\"}\n   info   statement_error_token_unexercised  {\"token\": \"bad_store\"}\n"
+  },
+  {
+   "tag": "PC2_r512_p3_no_defect",
+   "inject_expect_rc": 0,
+   "rc": 0,
+   "ok": true,
+   "note": "定向 --tid p3",
+   "stdout_head": "task p3   form=table     cases=0/12 violations=0 binding=0 masked=0 spawn=0 info=12 kinds=-\n   info   case_without_direct_call           {\"case\": \"entry_present\"}\n   info   case_without_direct_call           {\"case\": \"put_get_json_api\"}\n   info   case_without_direct_call           {\"case\": \"missing_"
+  },
+  {
+   "tag": "NC1_r512_p4_v1_defect_vs_anchor",
+   "inject_expect_rc": 1,
+   "rc": 1,
+   "ok": true,
+   "note": "binding 集合 == 归档实测失败集合(众数)",
+   "stdout_head": "task p3   form=table     cases=0/12 violations=0 binding=0 masked=0 spawn=0 info=12 kinds=-\n   info   case_without_direct_call           {\"case\": \"entry_present\"}\n   info   case_without_direct_call           {\"case\": \"put_get_json_api\"}\n   info   case_without_direct_call           {\"case\": \"missing_",
+   "kinds": [
+    "reliance_on_unstated_default"
+   ],
+   "kinds_ok": true,
+   "predicted_binding": [
+    "add_creates_and_lists",
+    "done_idempotent",
+    "done_unknown_id",
+    "id_monotonic_no_reuse",
+    "list_filter_and_order",
+    "no_temp_residue",
+    "persistence_across_processes",
+    "unicode_roundtrip"
+   ],
+   "binding_eq_observed": true,
+   "binding_expect": [
+    "add_creates_and_lists",
+    "done_idempotent",
+    "done_unknown_id",
+    "id_monotonic_no_reuse",
+    "list_filter_and_order",
+    "no_temp_residue",
+    "persistence_across_processes",
+    "unicode_roundtrip"
+   ]
+  },
+  {
+   "tag": "NC2_v2_minus_added_clause",
+   "inject_expect_rc": 1,
+   "rc": 1,
+   "ok": true,
+   "note": "",
+   "stdout_head": "task p4   form=transform+registry cases=12/14 violations=28 binding=8 masked=1 spawn=0 info=3 kinds=reliance_on_unstated_default\n   DEFECT reliance_on_unstated_default       {\"case\": \"add_creates_and_lists\", \"option\": \"--now\", \"argv\": [\"--db\", \"<expr>\", \"add\", \"买菜\"], \"subclass\": \"binding\"}\n   DEFECT",
+   "kinds": [
+    "reliance_on_unstated_default"
+   ],
+   "kinds_ok": true
+  },
+  {
+   "tag": "NC3_case_uses_undeclared_option",
+   "inject_expect_rc": 1,
+   "rc": 1,
+   "ok": true,
+   "note": "",
+   "stdout_head": "task p4   form=transform+registry cases=12/14 violations=1 binding=0 masked=0 spawn=0 info=3 kinds=case_uses_option_not_in_statement\n   DEFECT case_uses_option_not_in_statement  {\"case\": \"add_creates_and_lists\", \"option\": \"--verbose\", \"argv\": [\"--db\", \"<expr>\", \"--verbose\", \"add\", \"买菜\"]}\n   info   c",
+   "kinds": [
+    "case_uses_option_not_in_statement"
+   ],
+   "kinds_ok": true
+  },
+  {
+   "tag": "NC4_exit_code_clause_removed",
+   "inject_expect_rc": 1,
+   "rc": 1,
+   "ok": true,
+   "note": "",
+   "stdout_head": "task p4   form=transform+registry cases=12/14 violations=2 binding=0 masked=0 spawn=0 info=2 kinds=undeclared_error_token\n   DEFECT undeclared_error_token             {\"token\": \"bad_request\"}\n   DEFECT undeclared_error_token             {\"token\": \"not_found\"}\n   info   case_without_direct_call      ",
+   "kinds": [
+    "undeclared_error_token"
+   ],
+   "kinds_ok": true
+  },
+  {
+   "tag": "NC5_optional_bracket_suppresses_flag",
+   "inject_expect_rc": 0,
+   "rc": 0,
+   "ok": true,
+   "note": "只判 rc + 无 D2; 该臂证明判据非恒开火",
+   "stdout_head": "task p3   form=table     cases=0/12 violations=0 binding=0 masked=0 spawn=0 info=12 kinds=-\n   info   case_without_direct_call           {\"case\": \"entry_present\"}\n   info   case_without_direct_call           {\"case\": \"put_get_json_api\"}\n   info   case_without_direct_call           {\"case\": \"missing_"
+  },
+  {
+   "tag": "NC6_missing_cases_field_fail_closed",
+   "inject_expect_rc": 2,
+   "rc": 2,
+   "ok": true,
+   "note": "",
+   "stdout_head": "[器具缺陷 rc=2] task p4: task 'p4' 缺 cases 字段 ⇒ 器具缺陷\n"
+  }
+ ],
+ "frozen_fixtures_unchanged": true,
+ "frozen_shas": {
+  "/home/agentuser/AgentFramework/eval/rover/r514/../r512/taskset-r512.json": "3154e19595e00ff984dd1f483eb8153c928549f9bf98693548e82f7dd51d9b84",
+  "/home/agentuser/AgentFramework/eval/rover/r514/../r513/taskset-r513.json": "46fdfcac8a656f71715faa30383df84332970e4871179e0f14048001b4920040",
+  "/home/agentuser/AgentFramework/eval/rover/r514/../r512/cases/p4_cases.py": "9105a116fffa05051a2d3009f9f99484eca1372784ea293f3e5837c4259f2628",
+  "/home/agentuser/AgentFramework/eval/rover/r514/../r513/cases/p4_cases.py": "9105a116fffa05051a2d3009f9f99484eca1372784ea293f3e5837c4259f2628"
+ },
+ "verdict": "OK",
+ "failed_arms": []
+}

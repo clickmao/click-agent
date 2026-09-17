@@ -1,0 +1,80 @@
+{
+ "arms": [
+  {
+   "tag": "S1_normal_pass",
+   "inject_expect_rc": 0,
+   "rc": 0,
+   "expect_substr": "verdict=PASS",
+   "ok": true,
+   "stdout_head": "C1_remote_calls_no_worse     {\"pass\": true, \"max_ratio\": 0.5, \"min_ratio\": 0.5, \"rule\": \"逐(窗口,题) agent_calls/codex_calls <= 1.0 且 min < 1.0 (规则式, 无常数)\"}\nC2_token_median_n_ge_min     {\"state\": \"PASS\", \"median_token_ratio\": 0.175, \"threshold\""
+  },
+  {
+   "tag": "S2_token_median_breach",
+   "inject_expect_rc": 1,
+   "rc": 1,
+   "expect_substr": "verdict=BREACH",
+   "ok": true,
+   "stdout_head": "C1_remote_calls_no_worse     {\"pass\": true, \"max_ratio\": 0.5, \"min_ratio\": 0.5, \"rule\": \"逐(窗口,题) agent_calls/codex_calls <= 1.0 且 min < 1.0 (规则式, 无常数)\"}\nC2_token_median_n_ge_min     {\"state\": \"BREACH\", \"median_token_ratio\": 0.95, \"threshold"
+  },
+  {
+   "tag": "S3_calls_worse",
+   "inject_expect_rc": 1,
+   "rc": 1,
+   "expect_substr": "verdict=BREACH",
+   "ok": true,
+   "stdout_head": "C1_remote_calls_no_worse     {\"pass\": false, \"max_ratio\": 1.0714285714285714, \"min_ratio\": 1.0714285714285714, \"rule\": \"逐(窗口,题) agent_calls/codex_calls <= 1.0 且 min < 1.0 (规则式, 无常数)\"}\nC2_token_median_n_ge_min     {\"state\": \"PASS\", \"median_t"
+  },
+  {
+   "tag": "S4_calls_equal_no_gain",
+   "inject_expect_rc": 1,
+   "rc": 1,
+   "expect_substr": "verdict=BREACH",
+   "ok": true,
+   "stdout_head": "C1_remote_calls_no_worse     {\"pass\": false, \"max_ratio\": 1.0, \"min_ratio\": 1.0, \"rule\": \"逐(窗口,题) agent_calls/codex_calls <= 1.0 且 min < 1.0 (规则式, 无常数)\"}\nC2_token_median_n_ge_min     {\"state\": \"PASS\", \"median_token_ratio\": 0.175, \"threshold"
+  },
+  {
+   "tag": "S5_n_below_min_abstain",
+   "inject_expect_rc": 0,
+   "rc": 0,
+   "expect_substr": "ABSTAIN_N_BELOW_MIN",
+   "ok": true,
+   "stdout_head": "C1_remote_calls_no_worse     {\"pass\": true, \"max_ratio\": 0.5, \"min_ratio\": 0.5, \"rule\": \"逐(窗口,题) agent_calls/codex_calls <= 1.0 且 min < 1.0 (规则式, 无常数)\"}\nC2_token_median_n_ge_min     {\"state\": \"ABSTAIN_N_BELOW_MIN\", \"n_runs\": 3, \"n_min\": 5}\n"
+  },
+  {
+   "tag": "S6_unreported_usage_abstain",
+   "inject_expect_rc": 0,
+   "rc": 0,
+   "expect_substr": "ABSTAIN_UNREPORTED_USAGE",
+   "ok": true,
+   "stdout_head": "C1_remote_calls_no_worse     {\"pass\": true, \"max_ratio\": 0.5, \"min_ratio\": 0.5, \"rule\": \"逐(窗口,题) agent_calls/codex_calls <= 1.0 且 min < 1.0 (规则式, 无常数)\"}\nC2_token_median_n_ge_min     {\"state\": \"ABSTAIN_UNREPORTED_USAGE\", \"unreported_usage\": "
+  },
+  {
+   "tag": "S7_ac_swapped_flips_verdict",
+   "inject_expect_rc": 1,
+   "rc": 1,
+   "expect_substr": "verdict=BREACH",
+   "ok": true,
+   "stdout_head": "C1_remote_calls_no_worse     {\"pass\": false, \"max_ratio\": 2.0, \"min_ratio\": 2.0, \"rule\": \"逐(窗口,题) agent_calls/codex_calls <= 1.0 且 min < 1.0 (规则式, 无常数)\"}\nC2_token_median_n_ge_min     {\"state\": \"BREACH\", \"median_token_ratio\": 5.7142857142857"
+  },
+  {
+   "tag": "S8_missing_codex_side",
+   "inject_expect_rc": 3,
+   "rc": 3,
+   "expect_substr": "MISSING_SIDE",
+   "ok": true,
+   "stdout_head": "[缺侧 rc=3] {\"verdict\": \"MISSING_SIDE\", \"sides\": [\"A\"]}\n"
+  },
+  {
+   "tag": "S9_prereg_no_noise_declared",
+   "inject_expect_rc": 2,
+   "rc": 2,
+   "expect_substr": "器具缺陷",
+   "ok": true,
+   "stdout_head": "[器具缺陷 rc=2] 预注册缺 declared_noise_sources ⇒ 器具缺陷 (噪声源必须预声明)\n"
+  }
+ ],
+ "verdict": "OK",
+ "failed_arms": [],
+ "checker_sha256": "bf098679e8581c0048450f0ada7e328164e02396be602ff6e3d59954d15a07ce",
+ "prereg_sha256": "01968851060b157c5bf0c001e0a30eab4ec433d012bad14c090b4edb728459da"
+}

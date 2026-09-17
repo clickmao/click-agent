@@ -1,0 +1,85 @@
+{
+ "verdict": "PASS",
+ "checks": {
+  "C1_remote_calls_no_worse": {
+   "pass": true,
+   "max_ratio": 0.5714285714285714,
+   "min_ratio": 0.08695652173913043,
+   "rule": "主判据 = 逐(窗口,题) 不必要的远端调用数下降: agent_calls/codex_calls <= 1.0 且 min < 1.0 (规则式, 无常数)"
+  },
+  "C2_token_median_n_ge_min": {
+   "state": "ABSTAIN_N_BELOW_MIN",
+   "n_runs": 4,
+   "n_min": 5
+  },
+  "C2_context": "次判据 = token 比值中位数 <= 0.80 * 1 且跑次 n >= 5; n<5 或缺 usage 一律弃权单列",
+  "C3_quality_not_lower": {
+   "pass": true
+  },
+  "C4_exec_precondition": {}
+ },
+ "pairs": [
+  {
+   "window": "w1",
+   "tid": "p3",
+   "agent_calls": 4,
+   "codex_calls": 46,
+   "calls_ratio": 0.08695652173913043,
+   "agent_tokens": 60449,
+   "codex_tokens": 1266833,
+   "token_ratio": 0.04771662879006151,
+   "agent_cases": 12,
+   "codex_cases": 12,
+   "agent_unreported_usage": 0,
+   "codex_unreported_usage": 0
+  },
+  {
+   "window": "w1",
+   "tid": "p4",
+   "agent_calls": 9,
+   "codex_calls": 16,
+   "calls_ratio": 0.5625,
+   "agent_tokens": 126086,
+   "codex_tokens": 204505,
+   "token_ratio": 0.6165423828268257,
+   "agent_cases": 4,
+   "codex_cases": 4,
+   "agent_unreported_usage": 0,
+   "codex_unreported_usage": 0
+  },
+  {
+   "window": "w2",
+   "tid": "p3",
+   "agent_calls": 14,
+   "codex_calls": 43,
+   "calls_ratio": 0.32558139534883723,
+   "agent_tokens": 263437,
+   "codex_tokens": 849925,
+   "token_ratio": 0.30995323116745593,
+   "agent_cases": 12,
+   "codex_cases": 12,
+   "agent_unreported_usage": 0,
+   "codex_unreported_usage": 0
+  },
+  {
+   "window": "w2",
+   "tid": "p4",
+   "agent_calls": 8,
+   "codex_calls": 14,
+   "calls_ratio": 0.5714285714285714,
+   "agent_tokens": 87164,
+   "codex_tokens": 192019,
+   "token_ratio": 0.45393424609023064,
+   "agent_cases": 4,
+   "codex_cases": 4,
+   "agent_unreported_usage": 0,
+   "codex_unreported_usage": 0
+  }
+ ],
+ "declared_noise_sources": [
+  "codex 侧跨跑次用量 2 倍级摆动 (R513 实测 849,925-1,266,833) ⇒ 不取单跑",
+  "上游空正文/续调用: 按 report.unreported_usage 单列, >0 即弃权 (不判红不判绿)",
+  "同机争用对墙钟的影响 ⇒ 墙钟只作信息字段, 不作判据",
+  "跨轮禁相减: 只在本窗口内算比值"
+ ]
+}
