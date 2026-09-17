@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R536",
+ "updated_round": "R542",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -6844,6 +6844,33 @@
    },
    "negative_control": "① 差分语料反事实控制: **R535 真机 raw** (挂 role 臂 `plan:[]` ∧ ambiguities 无 chosen) 在旧规则下「合法」而新规则下**判红**(`ambiguities[0] 缺子字段 chosen` + `plan 为空`), 同形态补 chosen+plan ⇒ valid; ② rc=8 成对负控: 计划**没跑完**(剩余 write_file 未执行 ⇒ 产物不齐) 必回落 **rc=5**(`Self_Test_Unmet_With_Incomplete_Plan_Stays_Rc5`), 证明 rc=8 不是「凡 expect_stdout 不符即放行」的恒绿门; ③ 生成器同源闸负控: 修前态 `gen_csharp.py --check` **rc=1 / DRIFT=2**, 重同步后 rc=0; ④ 契约/示例自证负控: 改坏一条 `<good_response>` 的 schema_version ⇒ Validate 必红。",
    "owner_round": "R536"
+  },
+  {
+   "id": "internal.r542-g1-repair-budget-ablation-rc-decoupling",
+   "level": "L3",
+   "capability": "`g1`（58 隐藏用例长任务）同窗 10 臂：执行回灌修复预算 1/2/3 × 3 rep + `A1-on` 旧路径基线。① 剂量全绿率 1/3·0/3·0/3 ⇒ 「修复轮不足」证伪（边际成本 调用中位 2→3→4、tok 20,635→31,233→39,024 而质量不涨）；② 主判据同窗不成立：调用 Δ0.0%、token Δ+0.1%、质量 9 臂 0/9 全绿 vs 基线 58/58；③ `rc`↔产物正确性解耦：rc=0 四臂 43–55/58，唯一 58/58 臂 rc=5；④ `EXP1-Q51` 缺失的 `g1` 的 `A1-on` 基线补齐 = 4 调用/38,990 tok/58/58；⑤ 单变量自洽机检 prefix_identical/role_mounted_all/marker_in_user_all 全 True、marker_in_prefix_any False。",
+   "covers": [
+    "eval/rover/r542/prereg-r542.json",
+    "eval/rover/r542/taskset-r542.json",
+    "eval/rover/r542/run_r542.sh",
+    "eval/rover/r542/analyze_r542.py",
+    "eval/rover/r542/readings-w1.json",
+    "src/agent/r1/R1Pipeline.cs"
+   ],
+   "evidence_cmd": "bash eval/rover/r542/run_r542.sh && python3 eval/rover/r542/analyze_r542.py --run-dir eval/rover/r542/run-w1 --window w1 && python3 eval/rover/r507pre/exec_precondition.py --round r542",
+   "evidence_path": "eval/rover/r542/readings-w1.json",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "live",
+    "pin_reason": "worktree-only",
+    "artifact_sha12": null,
+    "instrument": "eval/rover/r542/run_r542.sh",
+    "instrument_sha12": "7b38be988cea",
+    "binding": "audit-pin",
+    "audited_by_round": "R542"
+   },
+   "negative_control": "① 声明面闸自检 `prereg_scope_gate.py --selftest` 3/3（含「计划臂未声明 ⇒ rc=1」负控）；② 真数据负控：把未计划臂 `agentR1x9z-g1` 写进 `require` ⇒ `declared_not_planned` 非空（检出）；③ 正控：`A1-on` 臂同题同窗 58/58 ⇒ 题面/判分链自身可满足（非夹具缺陷）；④ 反单调正控：剂量 1 出现 58/58 而剂量 3 三臂 43–55/58 ⇒ 「剂量越高越好」被真读数否定；⑤ 前置器 fail-closed：rc=1（剂量 3 三臂未全绿）⇒ 成本读数不得作验收依据。",
+   "owner_round": "R542"
   }
  ],
  "aot_check_policy": "release_tag_only",

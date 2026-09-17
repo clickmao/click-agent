@@ -19,5 +19,8 @@
 | RF0001-E12 | `g1` 两窗失败族**定因 = 产物缺陷**（w1 `wythoff` 冷点集构造错 / w2 `life` `bytes`↔`str` 契约违反）；夹具自洽正控 58/58、最小修复后两族 15/15·14/14 转绿、null 重写负控仍全败 | L1 | `python3 eval/capability/exp1-q51/g1_rootcause_q51.py` | `eval/capability/exp1-q51/verdict_q51.json`（`Q51_RC=0`）；只读输入 `eval/rover/r540/snapshots/{w1,w2}/agentR1r-g1/**` | EXP1-Q51（本作业，只读） |
 | RF0001-E13 | **上下文编排外部对照已采编**：OpenClaw 文档站 10 条机制 × 本仓 9 维逐条对照 + 5 条采纳候选（C1 缓存对齐压缩 / C2 记账面 / C3 运行期载体 / C4 保温 / C5 子任务白名单）；判定「压缩与 ≥97% 命中算术互斥 ⇒ 必须缓存对齐」 | L0 | `web_extract https://docs.openclaw.ai/{concepts/context,concepts/system-prompt,compaction,concepts/session,concepts/memory,reference/token-use}`（采集日 2026-09-18） | `docs/external-reference/OPENCLAW-CONTEXT-ORCHESTRATION.md`（sha256 `4b92ceca82c95056046642cf5ee1cbdfb33a0097602b414fc2d6eadf542e6871`，12,686 B） | R541 文档轮（零代码改动 ⇒ **无新 KPI 读数**） |
 
-> **未闭合（不得当作通过）**：E05/E10 的降幅因 rc=1 仅为参考；`g1` 族未闭合；codex 外部列单窗不可比；
-> role 挂载未证增益；`A1-on` 在 `g1` 上无基线。
+| RF0001-E14 | `g1` **修复预算轴证伪** + `rc` 与产物正确性**解耦**（rc=0 的 4 臂 43–55/58；唯一 58/58 的 r1 臂是 rc=5）；`g1` 的 `A1-on` 基线**已补** = 4 调用 / 38,990 tok / **58/58** ⇒ 同窗 r1 中位 **4 调用 / 39,024 tok（Δ0.0% / +0.1%）**、9 臂无一全绿 ⇒ **主线判据在本窗不成立**；role 段实发机检 9/9 落在 user 轮 | L3 | `bash eval/rover/r542/run_r542.sh` ∧ `python3 eval/rover/r542/analyze_r542.py --run-dir eval/rover/r542/run-w1 --window w1` | `eval/rover/r542/readings-w1.json`；`eval/rover/r507pre/precondition-r542.json`（**rc=1**） | R542 |
+
+> **未闭合（不得当作通过）**：E05/E10/E14 的降幅因 rc=1 仅为参考；`g1` 族未闭合 —— R542 已把阻塞项从「缺 `A1-on` 基线」
+> 换为「r1 臂质量未闭合（9 臂 0/9 全绿）且 g1 上无成本增益（Δ0.0%/+0.1%）」；codex 外部列单窗不可比；
+> role 挂载未证增益（R542 只证 9/9 落在实发 user 轮）。

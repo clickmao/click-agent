@@ -1,0 +1,20 @@
+== R542 读数 (w1) ==
+arm     xr  rc   stage  cases     c   sr   calls   prompt   compl    total      failed
+R1x1a   1   0    done   47/58     2   1    2       16478    3679     20157      wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythof
+R1x1b   1   5    expect_stdout_ 58/58     2   1    2       16481    4154     20635      -
+R1x1c   1   0    done   14/58     2   0    3       24393    3632     28025      sub#14-public,sub#15-public,sub#16-hidden,sub#17-hidden,sub#
+R1x2a   2   3    hard_gate 0/58      1   0    1       8083     398      8481       life#00-public,life#01-public,life#02-hidden,life#03-hidden,
+R1x2b   2   5    expect_stdout_ 53/58     3   2    3       24769    6464     31233      wythoff#43-public,wythoff#50-hidden,wythoff#55-hidden,wythof
+R1x2c   2   4    contract 53/58     4   2    5       41256    7520     48776      wythoff#44-public,wythoff#45-hidden,wythoff#49-hidden,wythof
+R1x3a   3   0    done   55/58     3   1    4       33098    5926     39024      wythoff#46-hidden,wythoff#50-hidden,wythoff#56-hidden
+R1x3b   3   0    done   43/58     1   0    1       8083     1390     9473       wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythof
+R1x3c   3   8    self_test_unme 44/58     4   3    4       33276    8337     41613      wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythof
+A1on    None None -      58/58     None None 4       33646    5344     38990      -
+
+单变量自洽: prefix_identical=True role_mounted_all=True marker_in_user_all=True marker_in_prefix_any=False cases58=True
+剂量 1: rc=[0, 5, 0] cases=[47, 58, 14] all_green=[False, True, False] calls=[2, 2, 3] tokens=[20157, 20635, 28025](中位 20635)
+剂量 2: rc=[3, 5, 4] cases=[0, 53, 53] all_green=[False, False, False] calls=[1, 3, 5] tokens=[8481, 31233, 48776](中位 31233)
+剂量 3: rc=[0, 0, 8] cases=[55, 43, 44] all_green=[False, False, False] calls=[4, 1, 4] tokens=[39024, 9473, 41613](中位 39024)
+J1 机制候选未成立: 剂量3 亦未全绿 ⇒ 修复预算非充分条件
+J3 vs A1on: calls 4 vs 4 (0.0%), tokens 39024 vs 38990 (0.1%) cases 58/58
+readings -> eval/rover/r542/readings-w1.json

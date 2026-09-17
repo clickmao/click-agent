@@ -1,0 +1,1187 @@
+{
+ "round": "r542",
+ "window": "w1",
+ "run_dir": "eval/rover/r542/run-w1",
+ "single_variable": "AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR",
+ "arms": {
+  "R1x1a": {
+   "dose": 1,
+   "range": [
+    2,
+    3
+   ],
+   "rc": 0,
+   "stage": "done",
+   "reason_head": "全部步骤执行完毕 (7 步)",
+   "calls_dump": 2,
+   "calls_self": 2,
+   "prompt_tokens": 16478,
+   "cached_tokens": 15872,
+   "completion_tokens": 3679,
+   "total_tokens": 20157,
+   "unreported_usage": 0,
+   "plan_steps_total": 7,
+   "steps_executed": 7,
+   "exec_repairs": 1,
+   "repair_rounds": 0,
+   "self_test_unmet": 0,
+   "correctness_asserted": 1,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 47,
+   "cases_total": 58,
+   "cases_rc": 1,
+   "failed_cases": [
+    "wythoff#43-public",
+    "wythoff#44-public",
+    "wythoff#45-hidden",
+    "wythoff#47-hidden",
+    "wythoff#48-hidden",
+    "wythoff#49-hidden",
+    "wythoff#50-hidden",
+    "wythoff#52-hidden",
+    "wythoff#53-hidden",
+    "wythoff#54-hidden",
+    "wythoff#56-hidden"
+   ],
+   "public_failed": [
+    "wythoff#43-public",
+    "wythoff#44-public"
+   ]
+  },
+  "R1x1b": {
+   "dose": 1,
+   "range": [
+    9,
+    10
+   ],
+   "rc": 5,
+   "stage": "expect_stdout_exhausted",
+   "reason_head": "step s7 stdout 与 expect_stdout 不符 (rc=1, 期望=`.....\n.....\n.....\n.###.\n.....\n.....\n..#..\n.#.#.\n...#.\n..#..\n.....`, 实测=``)",
+   "calls_dump": 2,
+   "calls_self": 2,
+   "prompt_tokens": 16481,
+   "cached_tokens": 15872,
+   "completion_tokens": 4154,
+   "total_tokens": 20635,
+   "unreported_usage": 0,
+   "plan_steps_total": 10,
+   "steps_executed": 7,
+   "exec_repairs": 1,
+   "repair_rounds": 0,
+   "self_test_unmet": 1,
+   "correctness_asserted": 0,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 58,
+   "cases_total": 58,
+   "cases_rc": 0,
+   "failed_cases": [],
+   "public_failed": []
+  },
+  "R1x1c": {
+   "dose": 1,
+   "range": [
+    15,
+    17
+   ],
+   "rc": 0,
+   "stage": "done",
+   "reason_head": "全部步骤执行完毕 (4 步)",
+   "calls_dump": 3,
+   "calls_self": 2,
+   "prompt_tokens": 24393,
+   "cached_tokens": 23680,
+   "completion_tokens": 3632,
+   "total_tokens": 28025,
+   "unreported_usage": 0,
+   "plan_steps_total": 4,
+   "steps_executed": 4,
+   "exec_repairs": 0,
+   "repair_rounds": 1,
+   "self_test_unmet": 0,
+   "correctness_asserted": 1,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 14,
+   "cases_total": 58,
+   "cases_rc": 1,
+   "failed_cases": [
+    "sub#14-public",
+    "sub#15-public",
+    "sub#16-hidden",
+    "sub#17-hidden",
+    "sub#18-hidden",
+    "sub#19-hidden",
+    "sub#20-hidden",
+    "sub#21-hidden",
+    "sub#22-hidden",
+    "sub#23-hidden",
+    "sub#24-hidden",
+    "sub#25-hidden",
+    "sub#26-hidden",
+    "sub#27-hidden",
+    "nim#28-public",
+    "nim#29-public",
+    "nim#30-hidden",
+    "nim#31-hidden",
+    "nim#32-hidden",
+    "nim#33-hidden",
+    "nim#34-hidden",
+    "nim#35-hidden",
+    "nim#36-hidden",
+    "nim#37-hidden",
+    "nim#38-hidden",
+    "nim#39-hidden",
+    "nim#40-hidden",
+    "nim#41-hidden",
+    "nim#42-hidden",
+    "wythoff#43-public",
+    "wythoff#44-public",
+    "wythoff#45-hidden",
+    "wythoff#46-hidden",
+    "wythoff#47-hidden",
+    "wythoff#48-hidden",
+    "wythoff#49-hidden",
+    "wythoff#50-hidden",
+    "wythoff#51-hidden",
+    "wythoff#52-hidden",
+    "wythoff#53-hidden",
+    "wythoff#54-hidden",
+    "wythoff#55-hidden",
+    "wythoff#56-hidden",
+    "wythoff#57-hidden"
+   ],
+   "public_failed": [
+    "sub#14-public",
+    "sub#15-public",
+    "nim#28-public",
+    "nim#29-public",
+    "wythoff#43-public",
+    "wythoff#44-public"
+   ]
+  },
+  "R1x2a": {
+   "dose": 2,
+   "range": [
+    4,
+    4
+   ],
+   "rc": 3,
+   "stage": "hard_gate",
+   "reason_head": "模型判定应拒答: 请求明示「本任务规模超出单轮步数上限, 必须分模块完成」, 且要求把四个游戏的完整程序全部放在代码块内；本契约的 plan 只能表达单轮可执行步骤, 无法表达需要跨多轮/分模块交付的任务, 照做会产出被截断或占位符化的代码, 违反「禁臆造/占位符」的硬约束。可替代的合规做法: 将任务拆成 5 个独立子",
+   "calls_dump": 1,
+   "calls_self": 1,
+   "prompt_tokens": 8083,
+   "cached_tokens": 7936,
+   "completion_tokens": 398,
+   "total_tokens": 8481,
+   "unreported_usage": 0,
+   "plan_steps_total": 0,
+   "steps_executed": 0,
+   "exec_repairs": 0,
+   "repair_rounds": 0,
+   "self_test_unmet": 0,
+   "correctness_asserted": 0,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 0,
+   "cases_total": 58,
+   "cases_rc": 1,
+   "failed_cases": [
+    "life#00-public",
+    "life#01-public",
+    "life#02-hidden",
+    "life#03-hidden",
+    "life#04-hidden",
+    "life#05-hidden",
+    "life#06-hidden",
+    "life#07-hidden",
+    "life#08-hidden",
+    "life#09-hidden",
+    "life#10-hidden",
+    "life#11-hidden",
+    "life#12-hidden",
+    "life#13-hidden",
+    "sub#14-public",
+    "sub#15-public",
+    "sub#16-hidden",
+    "sub#17-hidden",
+    "sub#18-hidden",
+    "sub#19-hidden",
+    "sub#20-hidden",
+    "sub#21-hidden",
+    "sub#22-hidden",
+    "sub#23-hidden",
+    "sub#24-hidden",
+    "sub#25-hidden",
+    "sub#26-hidden",
+    "sub#27-hidden",
+    "nim#28-public",
+    "nim#29-public",
+    "nim#30-hidden",
+    "nim#31-hidden",
+    "nim#32-hidden",
+    "nim#33-hidden",
+    "nim#34-hidden",
+    "nim#35-hidden",
+    "nim#36-hidden",
+    "nim#37-hidden",
+    "nim#38-hidden",
+    "nim#39-hidden",
+    "nim#40-hidden",
+    "nim#41-hidden",
+    "nim#42-hidden",
+    "wythoff#43-public",
+    "wythoff#44-public",
+    "wythoff#45-hidden",
+    "wythoff#46-hidden",
+    "wythoff#47-hidden",
+    "wythoff#48-hidden",
+    "wythoff#49-hidden",
+    "wythoff#50-hidden",
+    "wythoff#51-hidden",
+    "wythoff#52-hidden",
+    "wythoff#53-hidden",
+    "wythoff#54-hidden",
+    "wythoff#55-hidden",
+    "wythoff#56-hidden",
+    "wythoff#57-hidden"
+   ],
+   "public_failed": [
+    "life#00-public",
+    "life#01-public",
+    "sub#14-public",
+    "sub#15-public",
+    "nim#28-public",
+    "nim#29-public",
+    "wythoff#43-public",
+    "wythoff#44-public"
+   ]
+  },
+  "R1x2b": {
+   "dose": 2,
+   "range": [
+    11,
+    13
+   ],
+   "rc": 5,
+   "stage": "expect_stdout_exhausted",
+   "reason_head": "step s7 stdout 与 expect_stdout 不符 (rc=1, 期望=`.....\n.....\n.....\n.###.\n.....\n.....\n..#..\n.#.#.\n...#.\n..#..\n.....`, 实测=``)",
+   "calls_dump": 3,
+   "calls_self": 3,
+   "prompt_tokens": 24769,
+   "cached_tokens": 23552,
+   "completion_tokens": 6464,
+   "total_tokens": 31233,
+   "unreported_usage": 0,
+   "plan_steps_total": 28,
+   "steps_executed": 7,
+   "exec_repairs": 2,
+   "repair_rounds": 0,
+   "self_test_unmet": 1,
+   "correctness_asserted": 0,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 53,
+   "cases_total": 58,
+   "cases_rc": 1,
+   "failed_cases": [
+    "wythoff#43-public",
+    "wythoff#50-hidden",
+    "wythoff#55-hidden",
+    "wythoff#56-hidden",
+    "wythoff#57-hidden"
+   ],
+   "public_failed": [
+    "wythoff#43-public"
+   ]
+  },
+  "R1x2c": {
+   "dose": 2,
+   "range": [
+    18,
+    22
+   ],
+   "rc": 4,
+   "stage": "contract",
+   "reason_head": "契约未过 (errors=1): JSON 解析失败: '}' is invalid after a property name. Expected a ':'. LineNumber: 0 | BytePositionInLine: 384.",
+   "calls_dump": 5,
+   "calls_self": 4,
+   "prompt_tokens": 41256,
+   "cached_tokens": 39424,
+   "completion_tokens": 7520,
+   "total_tokens": 48776,
+   "unreported_usage": 0,
+   "plan_steps_total": 0,
+   "steps_executed": 0,
+   "exec_repairs": 2,
+   "repair_rounds": 1,
+   "self_test_unmet": 0,
+   "correctness_asserted": 0,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 53,
+   "cases_total": 58,
+   "cases_rc": 1,
+   "failed_cases": [
+    "wythoff#44-public",
+    "wythoff#45-hidden",
+    "wythoff#49-hidden",
+    "wythoff#50-hidden",
+    "wythoff#56-hidden"
+   ],
+   "public_failed": [
+    "wythoff#44-public"
+   ]
+  },
+  "R1x3a": {
+   "dose": 3,
+   "range": [
+    5,
+    8
+   ],
+   "rc": 0,
+   "stage": "done",
+   "reason_head": "全部步骤执行完毕 (10 步)",
+   "calls_dump": 4,
+   "calls_self": 3,
+   "prompt_tokens": 33098,
+   "cached_tokens": 32000,
+   "completion_tokens": 5926,
+   "total_tokens": 39024,
+   "unreported_usage": 0,
+   "plan_steps_total": 10,
+   "steps_executed": 10,
+   "exec_repairs": 1,
+   "repair_rounds": 1,
+   "self_test_unmet": 0,
+   "correctness_asserted": 1,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 55,
+   "cases_total": 58,
+   "cases_rc": 1,
+   "failed_cases": [
+    "wythoff#46-hidden",
+    "wythoff#50-hidden",
+    "wythoff#56-hidden"
+   ],
+   "public_failed": []
+  },
+  "R1x3b": {
+   "dose": 3,
+   "range": [
+    14,
+    14
+   ],
+   "rc": 0,
+   "stage": "done",
+   "reason_head": "全部步骤执行完毕 (6 步)",
+   "calls_dump": 1,
+   "calls_self": 1,
+   "prompt_tokens": 8083,
+   "cached_tokens": 7936,
+   "completion_tokens": 1390,
+   "total_tokens": 9473,
+   "unreported_usage": 0,
+   "plan_steps_total": 6,
+   "steps_executed": 6,
+   "exec_repairs": 0,
+   "repair_rounds": 0,
+   "self_test_unmet": 0,
+   "correctness_asserted": 1,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 43,
+   "cases_total": 58,
+   "cases_rc": 1,
+   "failed_cases": [
+    "wythoff#43-public",
+    "wythoff#44-public",
+    "wythoff#45-hidden",
+    "wythoff#46-hidden",
+    "wythoff#47-hidden",
+    "wythoff#48-hidden",
+    "wythoff#49-hidden",
+    "wythoff#50-hidden",
+    "wythoff#51-hidden",
+    "wythoff#52-hidden",
+    "wythoff#53-hidden",
+    "wythoff#54-hidden",
+    "wythoff#55-hidden",
+    "wythoff#56-hidden",
+    "wythoff#57-hidden"
+   ],
+   "public_failed": [
+    "wythoff#43-public",
+    "wythoff#44-public"
+   ]
+  },
+  "R1x3c": {
+   "dose": 3,
+   "range": [
+    23,
+    26
+   ],
+   "rc": 8,
+   "stage": "self_test_unmet",
+   "reason_head": "step s7 stdout 与 expect_stdout 不符 (rc=1, 期望=`.....\n.....\n.....\n.###.\n.....\n.....\n..#..\n.#.#.\n...#.\n..#..\n.....`, 实测=``)（计划已跑完 7/7 步, 产物在盘 ⇒ 成对报「自测未达成 ∧ 产物可疑」: 期",
+   "calls_dump": 4,
+   "calls_self": 4,
+   "prompt_tokens": 33276,
+   "cached_tokens": 31744,
+   "completion_tokens": 8337,
+   "total_tokens": 41613,
+   "unreported_usage": 0,
+   "plan_steps_total": 7,
+   "steps_executed": 7,
+   "exec_repairs": 3,
+   "repair_rounds": 0,
+   "self_test_unmet": 1,
+   "correctness_asserted": 0,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 44,
+   "cases_total": 58,
+   "cases_rc": 1,
+   "failed_cases": [
+    "wythoff#43-public",
+    "wythoff#44-public",
+    "wythoff#45-hidden",
+    "wythoff#46-hidden",
+    "wythoff#47-hidden",
+    "wythoff#48-hidden",
+    "wythoff#49-hidden",
+    "wythoff#50-hidden",
+    "wythoff#52-hidden",
+    "wythoff#53-hidden",
+    "wythoff#54-hidden",
+    "wythoff#55-hidden",
+    "wythoff#56-hidden",
+    "wythoff#57-hidden"
+   ],
+   "public_failed": [
+    "wythoff#43-public",
+    "wythoff#44-public"
+   ]
+  },
+  "A1on": {
+   "dose": null,
+   "range": [
+    27,
+    30
+   ],
+   "rc": null,
+   "stage": null,
+   "reason_head": "",
+   "calls_dump": 4,
+   "calls_self": null,
+   "prompt_tokens": 33646,
+   "cached_tokens": 21632,
+   "completion_tokens": 5344,
+   "total_tokens": 38990,
+   "unreported_usage": 0,
+   "plan_steps_total": null,
+   "steps_executed": null,
+   "exec_repairs": null,
+   "repair_rounds": null,
+   "self_test_unmet": null,
+   "correctness_asserted": null,
+   "role_note_chars": null,
+   "prefix_sha256": null,
+   "cases_pass": 58,
+   "cases_total": 58,
+   "cases_rc": 0,
+   "failed_cases": [],
+   "public_failed": []
+  }
+ },
+ "dose": {
+  "1": {
+   "reps": 3,
+   "rc": [
+    0,
+    5,
+    0
+   ],
+   "cases_pass": [
+    47,
+    58,
+    14
+   ],
+   "all_green": [
+    false,
+    true,
+    false
+   ],
+   "calls": [
+    2,
+    2,
+    3
+   ],
+   "total_tokens": [
+    20157,
+    20635,
+    28025
+   ],
+   "calls_median": 2,
+   "tokens_median": 20635,
+   "exec_repairs_max": 1
+  },
+  "2": {
+   "reps": 3,
+   "rc": [
+    3,
+    5,
+    4
+   ],
+   "cases_pass": [
+    0,
+    53,
+    53
+   ],
+   "all_green": [
+    false,
+    false,
+    false
+   ],
+   "calls": [
+    1,
+    3,
+    5
+   ],
+   "total_tokens": [
+    8481,
+    31233,
+    48776
+   ],
+   "calls_median": 3,
+   "tokens_median": 31233,
+   "exec_repairs_max": 2
+  },
+  "3": {
+   "reps": 3,
+   "rc": [
+    0,
+    0,
+    8
+   ],
+   "cases_pass": [
+    55,
+    43,
+    44
+   ],
+   "all_green": [
+    false,
+    false,
+    false
+   ],
+   "calls": [
+    4,
+    1,
+    4
+   ],
+   "total_tokens": [
+    39024,
+    9473,
+    41613
+   ],
+   "calls_median": 4,
+   "tokens_median": 39024,
+   "exec_repairs_max": 3
+  }
+ },
+ "role_axis": {
+  "R1x1a": {
+   "side": "agent",
+   "range": [
+    2,
+    3
+   ],
+   "dumps_scanned": 2,
+   "shape": "full",
+   "marker_in_user": true,
+   "marker_in_prefix": false,
+   "marker_in_system": false,
+   "user_turns_with_marker": 2,
+   "user_turns_total": 2,
+   "partial_seen": false,
+   "detail": [
+    {
+     "file": "full-agent-002.json",
+     "n_msgs": 2,
+     "partial": false,
+     "marker_idx": [
+      1
+     ],
+     "roles": [
+      "system",
+      "user"
+     ]
+    },
+    {
+     "file": "full-agent-003.json",
+     "n_msgs": 2,
+     "partial": false,
+     "marker_idx": [
+      1
+     ],
+     "roles": [
+      "system",
+      "user"
+     ]
+    }
+   ],
+   "verdict": true
+  },
+  "R1x1b": {
+   "side": "agent",
+   "range": [
+    9,
+    10
+   ],
+   "dumps_scanned": 2,
+   "shape": "full",
+   "marker_in_user": true,
+   "marker_in_prefix": false,
+   "marker_in_system": false,
+   "user_turns_with_marker": 2,
+   "user_turns_total": 2,
+   "partial_seen": false,
+   "detail": [
+    {
+     "file": "full-agent-009.json",
+     "n_msgs": 2,
+     "partial": false,
+     "marker_idx": [
+      1
+     ],
+     "roles": [
+      "system",
+      "user"
+     ]
+    },
+    {
+     "file": "full-agent-010.json",
+     "n_msgs": 2,
+     "partial": false,
+     "marker_idx": [
+      1
+     ],
+     "roles": [
+      "system",
+      "user"
+     ]
+    }
+   ],
+   "verdict": true
+  },
+  "R1x1c": {
+   "side": "agent",
+   "range": [
+    15,
+    17
+   ],
+   "dumps_scanned": 3,
+   "shape": "full",
+   "marker_in_user": true,
+   "marker_in_prefix": false,
+   "marker_in_system": false,
+   "user_turns_with_marker": 3,
+   "user_turns_total": 3,
+   "partial_seen": false,
+   "detail": [
+    {
+     "file": "full-agent-015.json",
+     "n_msgs": 2,
+     "partial": false,
+     "marker_idx": [
+      1
+     ],
+     "roles": [
+      "system",
+      "user"
+     ]
+    },
+    {
+     "file": "full-agent-016.json",
+     "n_msgs": 3,
+     "partial": false,
+     "marker_idx": [
+      1
+     ],
+     "roles": [
+      "system",
+      "user",
+      "system"
+     ]
+    },
+    {
+     "file": "full-agent-017.json",
+     "n_msgs": 2,
+     "partial": false,
+     "marker_idx": [
+      1
+     ],
+     "roles": [
+      "system",
+      "user"
+     ]
+    }
+   ],
+   "verdict": true
+  },
+  "R1x2a": {
+   "side": "agent",
+   "range": [
+    4,
+    4
+   ],
+   "dumps_scanned": 1,
+   "shape": "full",
+   "marker_in_user": true,
+   "marker_in_prefix": false,
+   "marker_in_system": false,
+   "user_turns_with_marker": 1,
+   "user_turns_total": 1,
+   "partial_seen": false,
+   "detail": [
+    {
+     "file": "full-agent-004.json",
+     "n_msgs": 2,
+     "partial": false,
+     "marker_idx": [
+      1
+     ],
+     "roles": [
+      "system",
+      "user"
+     ]
+    }
+   ],
+   "verdict": true
+  },
+  "R1x2b": {
+   "side": "agent",
+   "range": [
+    11,
+    13
+   ],
+   "dumps_scanned": 3,
+   "shape": "full",
+   "marker_in_user": true,
+   "marker_in_prefix": false,
+   "marker_in_system": false,
+   "user_turns_with_marker": 3,
+   "user_turns_total": 3,
+   "partial_seen": false,
+   "detail": [
+    {
+     "file": "full-agent-011.json",
+     "n_msgs": 2,
+     "partial": false,
+     "marker_idx": [
+      1
+     ],
+     "roles": [
+      "system",
+      "user"
+     ]
+    },
+    {
+     "file": "full-agent-012.json",
+     "n_msgs": 2,
+     "partial": false,
+     "marker_idx": [
+      1
+     ],
+     "roles": [
+      "system",
+      "user"
+     ]
+    },
+    {
+     "file": "full-agent-013.json",
+     "n_msgs": 2,
+     "partial": false,
+     "marker_idx": [
+      1
+     ],
+     "roles": [
+      "system",
+      "user"
+     ]
+    }
+   ],
+   "verdict": true
+  },
+  "R1x2c": {
+   "side": "agent",
+   "range": [
+    18,
+    22
+   ],
+   "dumps_scanned": 5,
+   "shape": "full",
+   "marker_in_user": true,
+   "marker_in_prefix": false,
+   "marker_in_system": false,
+   "user_turns_with_marker": 5,
+   "user_turns_total": 5,
+   "partial_seen": false,
+   "detail": [
+    {
+     "file": "full-agent-018.json",
+     "n_msgs": 2,
+     "partial": false,
+     "marker_idx": [
+      1
+     ],
+     "roles": [
+      "system",
+      "user"
+     ]
+    },
+    {
+     "file": "full-agent-019.json",
+     "n_msgs": 3,
+     "partial": false,
+     "marker_idx": [
+      1
+     ],
+     "roles": [
+      "system",
+      "user",
+      "system"
+     ]
+    },
+    {
+     "file": "full-agent-020.json",
+     "n_msgs": 2,
+     "partial": false,
+     "marker_idx": [
+      1
+     ],
+     "roles": [
+      "system",
+      "user"
+     ]
+    },
+    {
+     "file": "full-agent-021.json",
+     "n_msgs": 2,
+     "partial": false,
+     "marker_idx": [
+      1
+     ],
+     "roles": [
+      "system",
+      "user"
+     ]
+    },
+    {
+     "file": "full-agent-022.json",
+     "n_msgs": 2,
+     "partial": false,
+     "marker_idx": [
+      1
+     ],
+     "roles": [
+      "system",
+      "user"
+     ]
+    }
+   ],
+   "verdict": true
+  },
+  "R1x3a": {
+   "side": "agent",
+   "range": [
+    5,
+    8
+   ],
+   "dumps_scanned": 4,
+   "shape": "full",
+   "marker_in_user": true,
+   "marker_in_prefix": false,
+   "marker_in_system": false,
+   "user_turns_with_marker": 4,
+   "user_turns_total": 4,
+   "partial_seen": false,
+   "detail": [
+    {
+     "file": "full-agent-005.json",
+     "n_msgs": 2,
+     "partial": false,
+     "marker_idx": [
+      1
+     ],
+     "roles": [
+      "system",
+      "user"
+     ]
+    },
+    {
+     "file": "full-agent-006.json",
+     "n_msgs": 2,
+     "partial": false,
+     "marker_idx": [
+      1
+     ],
+     "roles": [
+      "system",
+      "user"
+     ]
+    },
+    {
+     "file": "full-agent-007.json",
+     "n_msgs": 3,
+     "partial": false,
+     "marker_idx": [
+      1
+     ],
+     "roles": [
+      "system",
+      "user",
+      "system"
+     ]
+    },
+    {
+     "file": "full-agent-008.json",
+     "n_msgs": 2,
+     "partial": false,
+     "marker_idx": [
+      1
+     ],
+     "roles": [
+      "system",
+      "user"
+     ]
+    }
+   ],
+   "verdict": true
+  },
+  "R1x3b": {
+   "side": "agent",
+   "range": [
+    14,
+    14
+   ],
+   "dumps_scanned": 1,
+   "shape": "full",
+   "marker_in_user": true,
+   "marker_in_prefix": false,
+   "marker_in_system": false,
+   "user_turns_with_marker": 1,
+   "user_turns_total": 1,
+   "partial_seen": false,
+   "detail": [
+    {
+     "file": "full-agent-014.json",
+     "n_msgs": 2,
+     "partial": false,
+     "marker_idx": [
+      1
+     ],
+     "roles": [
+      "system",
+      "user"
+     ]
+    }
+   ],
+   "verdict": true
+  },
+  "R1x3c": {
+   "side": "agent",
+   "range": [
+    23,
+    26
+   ],
+   "dumps_scanned": 4,
+   "shape": "full",
+   "marker_in_user": true,
+   "marker_in_prefix": false,
+   "marker_in_system": false,
+   "user_turns_with_marker": 4,
+   "user_turns_total": 4,
+   "partial_seen": false,
+   "detail": [
+    {
+     "file": "full-agent-023.json",
+     "n_msgs": 2,
+     "partial": false,
+     "marker_idx": [
+      1
+     ],
+     "roles": [
+      "system",
+      "user"
+     ]
+    },
+    {
+     "file": "full-agent-024.json",
+     "n_msgs": 2,
+     "partial": false,
+     "marker_idx": [
+      1
+     ],
+     "roles": [
+      "system",
+      "user"
+     ]
+    },
+    {
+     "file": "full-agent-025.json",
+     "n_msgs": 2,
+     "partial": false,
+     "marker_idx": [
+      1
+     ],
+     "roles": [
+      "system",
+      "user"
+     ]
+    },
+    {
+     "file": "full-agent-026.json",
+     "n_msgs": 2,
+     "partial": false,
+     "marker_idx": [
+      1
+     ],
+     "roles": [
+      "system",
+      "user"
+     ]
+    }
+   ],
+   "verdict": true
+  }
+ },
+ "judgments": {
+  "J1_剂量主问": {
+   "dose3_all_green": false,
+   "dose1_all_green": false,
+   "dose2_all_green": false,
+   "verdict": "机制候选未成立: 剂量3 亦未全绿 ⇒ 修复预算非充分条件"
+  },
+  "J2_代价曲线": {
+   "1": {
+    "calls_median": 2,
+    "tokens_median": 20635
+   },
+   "2": {
+    "calls_median": 3,
+    "tokens_median": 31233
+   },
+   "3": {
+    "calls_median": 4,
+    "tokens_median": 39024
+   }
+  },
+  "J3_同窗旧路径对照": {
+   "A1on_calls": 4,
+   "A1on_total_tokens": 38990,
+   "A1on_cases": "58/58",
+   "R1x3_tokens_median": 39024,
+   "token_delta_pct": 0.1,
+   "call_delta_pct": 0.0,
+   "quality_premise_ok": false
+  },
+  "J4_自测面同向性": {
+   "R1x1a": {
+    "stage": "done",
+    "cases_pass": 47,
+    "public_failed": [
+     "wythoff#43-public",
+     "wythoff#44-public"
+    ]
+   },
+   "R1x1b": {
+    "stage": "expect_stdout_exhausted",
+    "cases_pass": 58,
+    "public_failed": []
+   },
+   "R1x1c": {
+    "stage": "done",
+    "cases_pass": 14,
+    "public_failed": [
+     "sub#14-public",
+     "sub#15-public",
+     "nim#28-public",
+     "nim#29-public",
+     "wythoff#43-public",
+     "wythoff#44-public"
+    ]
+   },
+   "R1x2a": {
+    "stage": "hard_gate",
+    "cases_pass": 0,
+    "public_failed": [
+     "life#00-public",
+     "life#01-public",
+     "sub#14-public",
+     "sub#15-public",
+     "nim#28-public",
+     "nim#29-public",
+     "wythoff#43-public",
+     "wythoff#44-public"
+    ]
+   },
+   "R1x2b": {
+    "stage": "expect_stdout_exhausted",
+    "cases_pass": 53,
+    "public_failed": [
+     "wythoff#43-public"
+    ]
+   },
+   "R1x2c": {
+    "stage": "contract",
+    "cases_pass": 53,
+    "public_failed": [
+     "wythoff#44-public"
+    ]
+   },
+   "R1x3a": {
+    "stage": "done",
+    "cases_pass": 55,
+    "public_failed": []
+   },
+   "R1x3b": {
+    "stage": "done",
+    "cases_pass": 43,
+    "public_failed": [
+     "wythoff#43-public",
+     "wythoff#44-public"
+    ]
+   },
+   "R1x3c": {
+    "stage": "self_test_unmet",
+    "cases_pass": 44,
+    "public_failed": [
+     "wythoff#43-public",
+     "wythoff#44-public"
+    ]
+   },
+   "self_gate_vs_product_mismatch": [
+    "R1x1b"
+   ]
+  },
+  "J5_rc语义": "rc=8=计划跑完但自测未达成(成对报产物可疑); rc=5=自测未达成且修复耗尽; 8/5 均非正确性证据; 唯一正确性证据 = 隐藏用例实跑"
+ },
+ "notes": [],
+ "invariants": {
+  "prefix_sha256_set": [
+   "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637"
+  ],
+  "prefix_identical": true,
+  "role_note_chars_set": [
+   326
+  ],
+  "role_mounted_all": true,
+  "role_marker_in_user_all": true,
+  "role_marker_in_prefix_any": false,
+  "cases_total_58_all": true
+ }
+}
