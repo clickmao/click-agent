@@ -6,8 +6,6 @@ using System.Text;
 
 namespace agent.rover.formal;
 
-public enum Verdict { Proved, Refuted, Vacuous, Unknown, Malformed }
-
 /// <summary>形式化验证内核: 对「前提 ⇒ 目标」在可判定片段内做**本地零 token 裁决**。
 /// 输入是 agent 返回的符号附图 (premise/goal 行), 输出是机器可判的裁决 + 证据。
 /// 诚实边界: 只覆盖线性整数算术 + 命题逻辑; 片段外一律 Unknown (绝不放行成"已证明")。</summary>

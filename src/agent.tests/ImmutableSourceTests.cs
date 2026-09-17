@@ -1,7 +1,6 @@
 using agent.rag;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.13.3 D5 — 原文恢复源声明 (工业模式 M2): 压缩产物只在 prompt 组装层,

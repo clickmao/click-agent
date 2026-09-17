@@ -1,5 +1,7 @@
 using Xunit;
 
+namespace agent.tests;
+
 public class PivotMarkerTests
 {
     [Theory]

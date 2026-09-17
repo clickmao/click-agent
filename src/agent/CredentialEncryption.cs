@@ -2,8 +2,9 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using agent.userinteraction;   // R526: PromptJsonContext (agent.core/userinteraction)
 
-namespace agent.userinteraction;
+namespace agent;
 
 /// <summary>
 /// R358 (工业级补齐 #1): 凭据静态加密 — 跨平台统一方案 (用户钦定: 不用 DPAPI/libsecret 分叉)。

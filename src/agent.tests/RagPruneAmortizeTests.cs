@@ -7,6 +7,8 @@ using Microsoft.Extensions.Logging.Abstractions;
 /// (过上限后每消息 O(库大小) 文件 IO); 改为内存计数每 64 次追加整读一次。
 /// 锁定契约: 文件行数有界 (512+63), 裁剪保留最新, 读侧 (重启恢复) 兼容, 小库不裁剪。
 /// </summary>
+namespace agent.tests;
+
 public class RagPruneAmortizeTests
 {
     private static (RAGRecall Recall, string Path) Create()

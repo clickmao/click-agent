@@ -3,8 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Xunit;
 using agent.llamacpp;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R409: 本地 prompt 模板闸门的负控测试（判据预注册，纯逻辑，不需要 llama-server）。

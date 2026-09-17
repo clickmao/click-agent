@@ -12,8 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using agent.intent;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 public class PlanAblationTests
 {

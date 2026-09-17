@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 using Xunit;
 using agent.llamalocal;
 using agent.llmservice;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>v0.20.0 P1/P2 (R342): LLM service daemon — 协议往返 / 探测 / 多客户端并发 / 断线重建 /
 /// 用户三问: 双 CLI 并发拉起只 spawn 一次 / 崩溃自动恢复 / 反复崩溃熔断 / daemon 双启保护。</summary>

@@ -3,9 +3,6 @@ using System.Text.Json;
 
 namespace agent.frontendapi;
 
-/// <summary>approval.respond 的解析结果 (approved=true 批准, false 拒绝; Cancel 仅用于语义封口)。</summary>
-public sealed record ApprovalReply(string ApprovalId, bool Approved, string? Reason, bool Cancel);
-
 /// <summary>
 /// R510: 审批域信封 (与 AskEnvelope 同构: v/type/event/payload; 手写 Utf8JsonWriter, 零反射 AOT 铁律)。
 ///   {"v":1,"type":"event","event":"approval.requested","payload":{approval_id,kind,summary,details,initiator,timeout_s}}

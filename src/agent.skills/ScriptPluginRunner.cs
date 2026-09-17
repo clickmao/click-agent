@@ -12,59 +12,6 @@ using System.Threading.Tasks;
 namespace agent.skills;
 
 /// <summary>
-/// v0.17.2-b: 插件脚本任务载荷 (runner 序列化为 --task-json &lt;file&gt; 交给脚本;
-/// 结构化任务描述 + 上下文路径 + 输出目录; ParamsJson 为可选透传 JSON 文本)。
-/// </summary>
-public sealed class ScriptTaskPayload
-{
-    [JsonPropertyName("id")] public string Id { get; set; } = string.Empty;
-    [JsonPropertyName("goal")] public string Goal { get; set; } = string.Empty;
-    [JsonPropertyName("contextPaths")] public List<string> ContextPaths { get; set; } = new();
-    [JsonPropertyName("outputDir")] public string OutputDir { get; set; } = string.Empty;
-    [JsonPropertyName("paramsJson")] public string ParamsJson { get; set; } = string.Empty;
-}
-
-/// <summary>v0.17.2-b: 脚本插件执行结果状态。</summary>
-public enum ScriptPluginRunStatus
-{
-    Completed,        // done 事件收到 (权威终态)
-    Failed,           // error 事件 / 超时 / 协议违例 (无 done/error)
-    RejectedInvalid,  // py_compile 验证拒绝 (未执行)
-}
-
-/// <summary>v0.17.2-b: 脚本插件执行结果 (done 回填 summary/outputs; 事件计数; 挂起观测)。</summary>
-public sealed class ScriptPluginRunResult
-{
-    public ScriptPluginRunStatus Status { get; set; }
-    public string ScriptPath { get; set; } = string.Empty;
-    public int ProcessExitCode { get; set; }
-    public long DurationMs { get; set; }
-    public string Summary { get; set; } = string.Empty;
-    public string? Error { get; set; }
-    public List<string> Outputs { get; } = new();
-    public int EventCount { get; set; }
-    public int HeartbeatCount { get; set; }
-    public int ProgressCount { get; set; }
-    public int NoiseLines { get; set; }
-    public bool HangObserved { get; set; }
-    public string? ValidationDetail { get; set; }
-
-    public string Render()
-    {
-        var name = Path.GetFileName(ScriptPath);
-        return Status switch
-        {
-            ScriptPluginRunStatus.Completed =>
-                $"✅ [{name}] 完成 ({DurationMs}ms, 事件 {EventCount}, 心跳 {HeartbeatCount}): {Summary}"
-                + (Outputs.Count > 0 ? $"\n  产物: {string.Join(", ", Outputs)}" : string.Empty),
-            ScriptPluginRunStatus.RejectedInvalid =>
-                $"⛔ [{name}] py_compile 验证拒绝, 未执行: {ValidationDetail}",
-            _ => $"❌ [{name}] 失败 ({DurationMs}ms): {Error}",
-        };
-    }
-}
-
-/// <summary>
 /// v0.17.2-b (用户钦定): 脚本插件服务执行器 — CLI 验证 (py_compile) 通过后交给本服务执行。
 /// 子进程 python3 script --task-json &lt;file&gt; --heartbeat-secs N (PYTHONUNBUFFERED 强制流式);
 /// stdout 按 JSON Lines 事件流消费 (done/error 权威终态, 退出码兜底); 活性监控: &gt;2×heartbeat
@@ -287,7 +234,3 @@ public sealed class ScriptPluginRunner
 
     private static string Truncate(string s, int max) => s.Length <= max ? s : s[..max] + "…";
 }
-
-/// <summary>STJ source-gen context (AOT: 无反射序列化)。</summary>
-[JsonSerializable(typeof(ScriptTaskPayload))]
-internal partial class ScriptPluginJsonCtx : JsonSerializerContext;

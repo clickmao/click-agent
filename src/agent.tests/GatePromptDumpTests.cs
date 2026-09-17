@@ -5,8 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R450 — 门判实发 prompt 落盘闸。

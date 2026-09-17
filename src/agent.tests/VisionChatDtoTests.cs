@@ -1,8 +1,7 @@
 using System.Text.Json;
 using agent;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.12.0 R201 — 多模态 content 双形态 DTO (计划 R2 §1) 对抗测试:

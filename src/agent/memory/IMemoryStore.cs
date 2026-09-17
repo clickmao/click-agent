@@ -52,13 +52,3 @@ public interface IMemoryStore
     /// </summary>
     Task<MemoryStatistics> GetStatisticsAsync(CancellationToken cancellationToken = default);
 }
-
-/// <summary>
-/// 记忆统计
-/// </summary>
-public record MemoryStatistics(
-    int TotalEntries,
-    int ShortTermCount,
-    int LongTermCount,
-    int ThisSessionCount,
-    long TotalTokens);

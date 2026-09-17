@@ -7,6 +7,8 @@ using agent.rag;
 /// 查询词 ("Rust") 命中文档却因总分 0.291 < 0.3 被砍。
 /// 修复: Tokenize 中英边界切分 + 内容命中相关性下限 0.45。
 /// </summary>
+namespace agent.tests;
+
 public class RagRecallBoundaryTests
 {
     [Fact]

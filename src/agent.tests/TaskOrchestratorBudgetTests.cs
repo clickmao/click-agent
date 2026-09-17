@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 using agent.intent;
 using agent.registry;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R518 节点预算自适应判据 (候选②; 修 R517 真机「零产物 ⇒ 节点 Failed ⇒ 整链无产物」):

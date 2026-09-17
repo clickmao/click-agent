@@ -1,7 +1,6 @@
 using agent.critique;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.14.0 T2c CriticPipeline 单测: 双源确认/单源观察/修法库升级/渲染契约。

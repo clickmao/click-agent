@@ -1,7 +1,6 @@
 using agent.critique;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.15.2 GuardrailMemory 单测: 三元组/域隔离(跨域不泛扰)/来源秩/habituation/损坏容忍。

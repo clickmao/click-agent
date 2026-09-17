@@ -19,9 +19,3 @@ public class RAGPersistDoc
     [JsonPropertyName("content")]
     public string Content { get; set; } = "";
 }
-
-/// <summary>STJ source-gen context (零反射, AOT 兼容)</summary>
-[JsonSerializable(typeof(RAGPersistDoc))]
-internal partial class RAGPersistJsonContext : JsonSerializerContext
-{
-}

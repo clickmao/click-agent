@@ -1,8 +1,7 @@
 using System;
 using Xunit;
 using agent.llamacpp;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R410: 生成口径 → 请求参数的映射负控（纯逻辑，不需要 llama-server）。

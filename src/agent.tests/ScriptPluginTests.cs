@@ -6,8 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using agent.skills;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.17.2-b/c (R337): 脚本插件协议 — JSON Lines 事件流解析 / py_compile 验证门 /

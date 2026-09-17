@@ -1,21 +1,5 @@
 namespace agent.modelqueue;
 
-/// <summary>调用通道 (R351: 本地/官方通道移除 — 仅远端 API)</summary>
-public enum ModelChannel
-{
-    Remote,
-}
-
-/// <summary>通道运行时状态 (并发计数 + 可用性)</summary>
-public sealed class ChannelState
-{
-    public ModelChannel Channel { get; init; }
-    public int Running { get; set; }
-
-    /// <summary>通道可用 (远端 = 目录非空)</summary>
-    public bool Available { get; set; }
-}
-
 /// <summary>
 /// 通道调度器 (R351 简化: 单远端通道并发托管; 子任务按 并发余量×推理能力×推理速度×价格 综合打分选模)。
 /// </summary>
@@ -143,14 +127,4 @@ public sealed class ChannelScheduler
         }
         return ranked.OrderByDescending(r => r.TotalScore).ToList();
     }
-}
-
-/// <summary>选模打分结果 (审计/调试 — LastSelectionBasis 落此)</summary>
-public sealed class ScoredCandidate
-{
-    public ModelCatalogEntry Model { get; init; } = null!;
-    public double TotalScore { get; init; }
-    public double PriceScore { get; init; }
-    public double SpeedScore { get; init; }
-    public double ReasoningScore { get; init; }
 }

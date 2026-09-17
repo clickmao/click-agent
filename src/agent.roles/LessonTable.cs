@@ -7,38 +7,6 @@ using System.Text.Json.Serialization;
 namespace agent.roles;
 
 /// <summary>
-/// 教训实例 (唯一允许出现语言/工具专名的地方; exp5 §3.2 R369 口径)。
-/// </summary>
-public sealed record LessonInstance(string Lang, string Tool, string Evidence, long SeenAtUnix);
-
-/// <summary>
-/// 统一教训记录 (exp5 §3.2)。
-/// `Id` = FNV-1a 32(通用化后的 Kind + '\u0001' + Pattern) —— 语言/工具名不得进入指纹输入。
-/// `Rev` = 该记录最后一次变更时的表版本号 (增量游标, A3)。
-/// </summary>
-public sealed record LessonRecord(
-    string Id,
-    string Kind,
-    string Pattern,
-    string? Precondition,
-    string? Mechanism,
-    string? Verify,
-    int Count,
-    long FirstSeenUnix,
-    long LastSeenUnix,
-    string? Solution,
-    string Source,
-    string Scope,
-    int Rev,
-    List<LessonInstance> Instances);
-
-/// <summary>落盘封装 (STJ 源生成; AOT 安全)。</summary>
-public sealed record LessonSnapshot(string Schema, long Version, List<LessonRecord> Lessons);
-
-/// <summary>提交结果: 明确区分"已入库/被拒绝/无 role 未记录", 不静默。</summary>
-public sealed record LessonSubmitResult(bool Accepted, bool Recorded, string Id, int Count, long Version, string? Rejected);
-
-/// <summary>
 /// role 模块的教训表 (exp5 L1/L4; R369 用户钦定归属 role 模块)。
 ///
 /// 语义: 去重 (按通用 Id 归并计数) / 版本号单调 (增量拉取游标) / 原子落盘 /
@@ -254,8 +222,3 @@ public sealed class LessonTable
         return table;
     }
 }
-
-[JsonSerializable(typeof(LessonSnapshot))]
-[JsonSerializable(typeof(LessonRecord))]
-[JsonSerializable(typeof(List<LessonRecord>))]
-internal sealed partial class LessonJsonContext : JsonSerializerContext;

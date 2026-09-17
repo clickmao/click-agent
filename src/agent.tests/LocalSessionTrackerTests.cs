@@ -1,7 +1,6 @@
 using agent.llamacpp;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R412 J1: 本地生成的**会话级账本**（<see cref="LocalSessionTracker"/>）—— 纯逻辑，不需要 llama-server。

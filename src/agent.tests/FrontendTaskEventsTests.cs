@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 using Xunit;
 using agent.core;
 using agent.frontendapi;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R509 (对标 codex 展示面, 路线 A): 任务生命周期事件域 — task.started / task.completed

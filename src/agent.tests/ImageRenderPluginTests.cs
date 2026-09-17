@@ -1,7 +1,6 @@
 using agent.modelqueue;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.12.0 B2 — 渲染插件真机测试 (R351: SkiaSharp 插件移除, 仅 SVG 文本插件)。

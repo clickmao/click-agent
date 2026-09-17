@@ -1,7 +1,6 @@
 using agent.modelqueue;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.12.0 R210 — LocalSvgRenderer (纯 SVG 文本 local renderer, 用户钦定方向) 对抗测试。

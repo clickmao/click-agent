@@ -2,9 +2,6 @@ using System.Collections.Generic;
 
 namespace agent.rover.gpu.spirv;
 
-/// <summary>SPIR-V 结构校验问题 (机器可读码 + 字索引 + 说明)。</summary>
-public sealed record SpirvIssue(string Code, int WordIndex, string Detail);
-
 /// <summary>
 /// 极简 SPIR-V 结构校验器 (零依赖 / 零反射, 可随 agent 测试工程同源编译)。
 /// 存在的理由: 把内核交给驱动前, 必须先用**独立于汇编器**的不变量检查抓结构性错误

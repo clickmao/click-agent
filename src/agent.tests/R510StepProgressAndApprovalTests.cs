@@ -8,8 +8,7 @@ using agent.core;
 using agent.userinteraction;
 using agent.frontendapi;
 using agent.modelqueue;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R510: (1) 动作环步进上报面 (task.progress 的**真数据源**) —— 断言穿过**真** ActionLoopRunner,

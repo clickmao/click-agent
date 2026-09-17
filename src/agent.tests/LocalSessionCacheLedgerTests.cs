@@ -1,8 +1,7 @@
 using agent.llamacpp;
 using agent.modelqueue;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R411 J4: 本地 K2b 口径（<see cref="LocalSessionCacheLedger"/>）—— 纯逻辑判定，不需要 llama-server。

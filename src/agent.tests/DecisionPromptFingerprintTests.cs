@@ -191,7 +191,7 @@ public sealed class DecisionPromptFingerprintTests
             "src/agent.llamacpp/LlamaCppClient.cs",
             "src/agent.llamacpp/LlamaCppTextGenerator.cs",
             "src/agent.llamacpp/LlamaCppLocalGenerationPort.cs",
-            "src/agent.modelqueue/LocalGenerationPort.cs",
+            "src/agent.modelqueue/LocalGenerationOutcome.cs",   // R526: 原 LocalGenerationPort.cs 多类型已单文件化
             "src/agent.modelqueue/ModelQueueRouter.cs",
             "src/agent/IndustrialAgentV2.cs",
         };

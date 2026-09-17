@@ -8,8 +8,7 @@ using System.Threading.Tasks;
 using agent.intent;
 using agent.registry;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R515 长任务编排器判据 (铁律: 每条断言绑定组件**真实行为**, 不是形状检查):

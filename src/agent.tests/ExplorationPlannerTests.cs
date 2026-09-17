@@ -1,7 +1,6 @@
 using agent.exploration;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.13.0 M1 — 渐进式探索规划器单测。

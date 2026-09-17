@@ -4,8 +4,7 @@ using System.Text;
 using agent.context;
 using agent.core;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R462 召回-现实一致性闸 + 语言无关文本探针 —— 单测。

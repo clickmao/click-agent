@@ -1,35 +1,5 @@
 namespace agent.exploration;
 
-/// <summary>思考链单步决策 (LLM 产出 — 宿主解析后注入; 本库不调 LLM)。</summary>
-public sealed class ThinkStep
-{
-    /// <summary>本步假设/论断</summary>
-    public string Hypothesis { get; set; } = string.Empty;
-    /// <summary>决定探索的源 (空 = 准备收敛)</summary>
-    public ExploreNode? NextExplore { get; set; }
-    /// <summary>本步采纳的依据 (ThinkMemory 引用提升触发)</summary>
-    public List<(string RecordId, string Ref)> Citations { get; set; } = new();
-}
-
-/// <summary>思考链收敛原因 (打点 think_converge.reason)。</summary>
-public enum ConvergeReason
-{
-    MultiSourceAgreement,   // 多源一致
-    BudgetExhausted,        // 预算/时限耗尽
-    NoNewDiscoveries,       // 连续无新发现
-    LlmSelfAssessed,        // LLM 自评依据充分
-}
-
-public sealed class ThinkChainResult
-{
-    public ConvergeReason Reason { get; set; }
-    public int Steps { get; set; }
-    public int SourcesUsed { get; set; }
-    public double AvgConfidence { get; set; }
-    public int WallMs { get; set; }
-    public List<ExploreStepResult> Trail { get; set; } = new();
-}
-
 /// <summary>
 /// v0.13.0 T3 M-C — 思考链会话 (渐进探索 + 依据评估 + 收敛判定 + 记忆读写)。
 /// 宿主侧每轮: DecideStep (LLM) → ExecuteStep (探索执行器) → Evaluate → 收敛判据。
@@ -81,16 +51,4 @@ public sealed class ThinkChainSession
             WallMs = wallMs,
         };
     }
-}
-
-/// <summary>探索执行器抽象 (URL/文件/目录 — 宿主侧实现 IO; 本库禁直接 IO 依赖)。</summary>
-public interface IExploreExecutor
-{
-    Task<ExploreStepResult> ExecuteAsync(ExploreNode node, CancellationToken ct = default);
-}
-
-internal static class ThinkNodeExtensions
-{
-    public static IReadOnlyList<(string RecordId, string Ref)> CitationsSafe(this ExploreNode node)
-        => Array.Empty<(string, string)>(); // 引用由 ThinkStep.Citations 传入宿主后直接调 ThinkMemory — 节点不携带
 }

@@ -1,6 +1,5 @@
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.11.0 R39b/R39c: 隔离判定修复 — ascii 连写 4-gram 交叉匹配 + 实现询问一票否决。

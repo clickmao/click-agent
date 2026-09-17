@@ -11,6 +11,8 @@ using Microsoft.Extensions.Logging.Abstractions;
 /// 为什么判据不能只是"重跑变绿": 概率性失败 + 进程随机化 ⇒ 重跑不可判定。本测试把**失败等价类**
 /// (溢出窗口内的 hash) 变成**确定性**断言, 并配负控 (旧公式在同一输入上确实产负下标)。
 /// </summary>
+namespace agent.tests;
+
 public class RagWordBagEmbeddingStabilityTests
 {
     /// <summary>旧实现等价式 (仅作负控, 不参与产品路径)。</summary>

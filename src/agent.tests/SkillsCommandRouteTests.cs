@@ -1,8 +1,7 @@
 
 using agent.registry;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 public class SkillsCommandRouteTests
 {

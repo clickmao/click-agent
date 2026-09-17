@@ -1,8 +1,7 @@
 using System.Linq;
 using agent.contextgradient;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.13.3 思考轮 (用户钦定): 探索文档内链接 — 上下文压缩是否丢失关键链接入口?

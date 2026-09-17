@@ -9,8 +9,7 @@ using Xunit;
 using agent.core;
 using agent.userinteraction;
 using agent.frontendapi;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R376 (⑫类断链·同连接回程饿死) — **真机形状**回归锁:

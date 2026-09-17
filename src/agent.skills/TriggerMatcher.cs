@@ -2,18 +2,6 @@ using System.Text.RegularExpressions;
 
 namespace agent.skills;
 
-/// <summary>匹配结果 (裁决排序用)</summary>
-public sealed class SkillMatch
-{
-    public SkillDefinition Skill { get; set; } = null!;
-
-    /// <summary>0=未命中 1=疑似(仅领域词) 2=关键词 3=正则精匹配</summary>
-    public int Level { get; set; }
-
-    /// <summary>精确度 (正则>关键词>领域词)</summary>
-    public double Precision { get; set; }
-}
-
 /// <summary>
 /// 三级触发匹配 (原文 §5): 一级关键词 → 二级正则精匹配 → 领域词疑似。
 /// v0.10.0 P3 语义层: 关键词/正则/领域词全未命中时, 注入 ITextEmbedder (bge) 用

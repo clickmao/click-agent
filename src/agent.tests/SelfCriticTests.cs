@@ -1,7 +1,6 @@
 using agent.critique;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.14.0 T2a SelfCritic 单测: 契约 + 逐字子串防幻觉锚 (R149 真断言标准)。

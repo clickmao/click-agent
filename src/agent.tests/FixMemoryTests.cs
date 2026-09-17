@@ -1,7 +1,6 @@
 using agent.critique;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.14.0 T2b FixMemory 单测: 写入合并/来源秩/检索/持久化往返。

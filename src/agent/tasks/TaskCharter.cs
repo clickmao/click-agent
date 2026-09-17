@@ -97,6 +97,3 @@ public sealed class TaskCharter
     /// <summary>路由结果 (v0.15.1 三态)。</summary>
     public enum InputRoute { Supplement, Isolate, Pivot }
 }
-
-[JsonSerializable(typeof(TaskCharter))]
-internal partial class TaskCharterJsonCtx : JsonSerializerContext;

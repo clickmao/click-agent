@@ -1,7 +1,6 @@
 using agent.exploration;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.13.0 T3 M-A/M-B — 复杂度门 + 依据置信 + 思考记忆 (RAG 联想) 单测。

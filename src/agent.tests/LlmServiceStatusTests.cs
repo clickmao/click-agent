@@ -6,8 +6,7 @@ using Xunit;
 using agent.llamalocal;
 using agent.llmservice;
 using agent.registry;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>v0.20.2 (R345): /llm-service 可观测性 — 指令路由双门 (Known+switch, 历史缺陷防护) + 状态查询。</summary>
 public class LlmServiceStatusTests

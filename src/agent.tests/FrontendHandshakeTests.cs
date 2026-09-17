@@ -5,8 +5,7 @@ using System.Text;
 using System.Threading;
 using Xunit;
 using agent.frontendapi;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R376 (⑪类断链·握手残包): **真 TCP** 证明 —— auth 行与首个请求**同一次写入** (同一 TCP 段到达) 时,

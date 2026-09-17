@@ -4,8 +4,7 @@ using System.Threading.Tasks;
 using Xunit;
 using agent.llamalocal;
 using agent.llmservice;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>v0.20.1 P4-a/P4-c (R344): 嵌入后端 opt-in 模式解析 (默认 local 行为不变) + 跨平台内存探测。</summary>
 public class EmbedderModeTests

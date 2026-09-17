@@ -2,8 +2,7 @@ using System;
 using System.IO;
 using agent.modelqueue;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R478 判据面 (承 R477 真机 20/20 空正文调用 `finish_reason=tool_calls`):
@@ -104,6 +103,18 @@ public class EmptyBodyDiagnosisTests
         return dir?.FullName ?? ".";
     }
 
+    /// <summary>目录级扫描 (R526: 单类型单文件后, 逻辑层不再等于单一文件)。</summary>
+    private static string FlatDir(params string[] relative)
+    {
+        var dir = Path.Combine(new[] { RepoRoot() }.Concat(relative).ToArray());
+        var files = Directory.EnumerateFiles(dir, "*.cs", SearchOption.AllDirectories)
+            .Where(f => !f.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}")
+                     && !f.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}"))
+            .OrderBy(f => f, StringComparer.Ordinal);
+        return string.Join(' ', files.SelectMany(f =>
+            File.ReadAllText(f).Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries)));
+    }
+
     private static string Flat(params string[] relative)
         => string.Join(' ', File.ReadAllText(Path.Combine(new[] { RepoRoot() }.Concat(relative).ToArray()))
             .Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
@@ -123,9 +134,9 @@ public class EmptyBodyDiagnosisTests
     public void C2_因果id三层透传()
     {
         Assert.Contains("public string RequestId { get; set; }",
-            Flat("src", "agent.modelqueue", "ModelQueueRouter.cs"));
+            FlatDir("src", "agent.modelqueue"));
         Assert.Contains("(\"request_id\", resp.RequestId)",
-            Flat("src", "agent.modelqueue", "ModelQueueRouter.cs"));
+            FlatDir("src", "agent.modelqueue"));
         Assert.Contains("ResponseId = r.RequestId,",
             Flat("src", "agent", "modelqueue", "ModelQueueAdapter.cs"));
         var chain = Flat("src", "agent", "IndustrialAgentV2.cs");

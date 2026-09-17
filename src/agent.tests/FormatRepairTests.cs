@@ -1,8 +1,7 @@
 using agent.exploration;
 using Xunit;
 using Xunit.Abstractions;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.13.2 G1 — 格式修复收敛环单测。

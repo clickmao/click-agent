@@ -12,40 +12,6 @@ using agent.skills;
 namespace agent.registry;
 
 /// <summary>
-/// Python 产物报告 (审计/前端/教训复用; 单行可序列化)。
-/// </summary>
-public sealed record PythonArtifactReport(
-    string Path,
-    string Language,
-    int Bytes,
-    string Sha256Short,
-    bool CompileValid,
-    int ExitCode,
-    string Detail,
-    long AtUnixMs,
-    bool Ran = false,          // L5: 是否真的执行过 (运行级验证)
-    int RunExitCode = -1,
-    long RunElapsedMs = 0,
-    bool RunTimedOut = false,
-    // R374: 校验/运行输出摘要 (尾部保留) — 让"失败原因"成为可观测事实, 而非只有一个 exit 码。
-    string OutputExcerpt = "");
-
-/// <summary>
-/// Python 产物台账 (R368): 线程安全, 记录本进程内所有落盘+校验结果。
-/// 宿主/CLI/前端快照可读 — 让"机器校验"成为可观测事实, 而不是隐式行为。
-/// </summary>
-public sealed class PythonArtifactLedger
-{
-    private readonly List<PythonArtifactReport> _items = new();
-    private long _version;
-
-    /// <summary>单调递增版本号 (变化 = 有新报告; 前端轮询增量用)。</summary>
-    public long Version => Interlocked.Read(ref _version);
-    public void Add(PythonArtifactReport r) { lock (_items) _items.Add(r); Interlocked.Increment(ref _version); }
-    public IReadOnlyList<PythonArtifactReport> Snapshot() { lock (_items) return _items.ToArray(); }
-}
-
-/// <summary>
 /// Python 落盘 + 机器校验区段插件 (R368, 用户钦定: "内置个 PY 和 PY 执行插件")。
 ///
 /// 语义: LLM 回复里的 ```python 段不再是"只存在于聊天里的文本", 而是

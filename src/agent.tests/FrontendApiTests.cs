@@ -5,8 +5,7 @@ using System.Text;
 using System.Threading;
 using Xunit;
 using agent.frontendapi;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>v0.19.0 P1 (R350): FrontendApi 契约 + Server — 信封解析/响应配对/未知 api 错误/真 TCP 往返。</summary>
 public class FrontendApiTests : IDisposable

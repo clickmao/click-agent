@@ -5,8 +5,7 @@ using System.Threading.Tasks;
 using Xunit;
 using agent.action;
 using agent.modelqueue;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R511: delete_file 工具 + 人工审批门 (真机审批通道闭环的单测面)。

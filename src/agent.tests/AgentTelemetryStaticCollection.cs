@@ -1,6 +1,5 @@
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R498 候选② (存量并发竞态收口): <c>agent.config.AgentTelemetry</c> 是**进程级静态**面 ——

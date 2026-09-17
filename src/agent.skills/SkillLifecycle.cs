@@ -2,29 +2,6 @@ using agent.config;
 
 namespace agent.skills;
 
-/// <summary>Skill 生命周期状态 (原文 §3.4: Unloaded→Loaded→Active→Suspended→Unloaded)</summary>
-public enum SkillState
-{
-    Unloaded,
-    Loaded,
-    Active,
-    Suspended,
-}
-
-/// <summary>会话内单个 Skill 的运行时状态</summary>
-public sealed class SkillRuntime
-{
-    public SkillDefinition Skill { get; init; } = null!;
-    public SkillState State { get; set; } = SkillState.Unloaded;
-    public DateTimeOffset ActivatedAt { get; set; }
-    public DateTimeOffset LastUsedAt { get; set; }
-    public int OffTopicRounds { get; set; }
-
-    /// <summary>熔断: 连续失败计数 / 熔断开启截止时刻</summary>
-    public int ConsecutiveFailures { get; set; }
-    public DateTimeOffset BreakerOpenUntil { get; set; }
-}
-
 /// <summary>
 /// Skill 生命周期状态机 (P2, plan_skill_dispatch.md S.2 SkillLifecycle):
 /// 会话级缓存 (上限配置) + 话题切换检测 (连续 N 轮脱域自动卸载) + 挂起/恢复 + 闲置超时回收 +

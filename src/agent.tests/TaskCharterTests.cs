@@ -1,7 +1,6 @@
 using agent.tasks;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.15.1-a TaskCharter 单测: 状态机/持久化往返/归档/损坏容忍。

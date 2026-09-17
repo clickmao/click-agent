@@ -1,6 +1,5 @@
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.11.0 R118 (真缺陷 50): WorkspaceFiles 相关分不再硬编码 0.7 — 按命中关键词数比例化。

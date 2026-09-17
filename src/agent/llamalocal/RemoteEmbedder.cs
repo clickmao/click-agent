@@ -342,18 +342,3 @@ public sealed class RemoteEmbedder : agent.contextgradient.ITextEmbedder, IDispo
 
     public void Dispose() => Teardown();
 }
-
-/// <summary>v0.20.1 P4-a (R344): 嵌入后端模式 — opt-in, 默认 local (用户铁律: 默认行为不变)。
-/// env AGENTFRAMEWORK_BGE_MODE: "remote" → 本机 llm-service (manager/worker, 免进程内加载 bge);
-/// 其他/未设 → local (进程内 BgeEmbedder, 原路径)。</summary>
-public enum EmbedderModeKind { Local, Remote }
-
-public static class EmbedderMode
-{
-    public const string EnvName = "AGENTFRAMEWORK_BGE_MODE";
-
-    public static EmbedderModeKind Resolve(string? envValue)
-        => string.Equals(envValue?.Trim(), "remote", StringComparison.OrdinalIgnoreCase)
-            ? EmbedderModeKind.Remote
-            : EmbedderModeKind.Local;
-}

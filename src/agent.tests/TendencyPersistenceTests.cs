@@ -1,6 +1,5 @@
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.11.0 R34 (真 bug 24): TendencyAnalyzer 内存字典跨进程丢失 → 落盘持久化。

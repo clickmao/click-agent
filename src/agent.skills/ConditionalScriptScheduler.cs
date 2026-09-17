@@ -4,41 +4,6 @@ using System.Threading.Tasks;
 
 namespace agent.skills;
 
-/// <summary>v0.17.2-c: 条件定时判定结果类型。</summary>
-public enum ConditionalRunVerdictType
-{
-    Executed,       // 到期且空闲 → 脚本已执行 (Completed)
-    Failed,         // 到期且空闲 → 脚本执行失败 (error 事件/超时/协议违例)
-    RefusedBusy,    // 到期后仍有其他 agent 忙, give-up
-    RejectedInvalid,// py_compile 拒绝 (未执行)
-    Cancelled,
-}
-
-/// <summary>v0.17.2-c: 条件定时结果 (宿主/上层直接 Render 渲染)。</summary>
-public sealed class ConditionalRunVerdict
-{
-    public ConditionalRunVerdictType Verdict { get; set; }
-    public ScriptPluginRunResult? Run { get; set; }
-    public string? Reason { get; set; }
-
-    public string Render()
-    {
-        switch (Verdict)
-        {
-            case ConditionalRunVerdictType.Executed:
-                return Run?.Render() ?? "✅ 已执行。";
-            case ConditionalRunVerdictType.Failed:
-                return Run?.Render() ?? $"❌ 执行失败: {Reason}";
-            case ConditionalRunVerdictType.RefusedBusy:
-                return $"⏸ 到期时仍有其他 agent 忙, 未执行 (条件: 无其他任务): {Reason}";
-            case ConditionalRunVerdictType.RejectedInvalid:
-                return $"⛔ 脚本验证拒绝, 未执行: {Reason}";
-            default:
-                return "已取消。";
-        }
-    }
-}
-
 /// <summary>
 /// v0.17.2-c (用户钦定: "如果当前没有其他任务存在则 XX (分钟/小时/天) 执行"): 条件定时调度原语 —
 /// 延时到期后轮询"其他 agent 是否忙"(接线方注入, 默认由 ActivityService.IsOtherAgentBusy 提供,

@@ -1,25 +1,5 @@
 namespace agent.frontendapi;
 
-/// <summary>ask.reply / ask.cancel 的消费面 (由 FrontendPromptService 实现; 路由层只依赖该接口)。</summary>
-public interface IAskReplySink
-{
-    AskReplyOutcome Complete(string askId, Dictionary<string, string>? answers);
-}
-
-/// <summary>approval.respond 的结果 (Applied=已投递到等待中的审批; 未知/重复 = 显式拒绝, 不静默)。</summary>
-public enum ApprovalReplyOutcome
-{
-    Applied,
-    UnknownApproval,
-    AlreadyAnswered,
-}
-
-/// <summary>approval.respond 的消费面 (R510; 由 FrontendPromptService 实现)。</summary>
-public interface IApprovalReplySink
-{
-    ApprovalReplyOutcome CompleteApproval(string approvalId, bool approved, string? reason);
-}
-
 /// <summary>
 /// R375 (exp2 P0-1): 前端事件出站枢纽 —— 进程内**唯一**出站口。
 /// PromptService 用 EmitAsync 发信封; FrontendApiServer 挂接实际 TCP 连接推送 (AttachServer)。
@@ -75,16 +55,4 @@ public sealed class FrontendEventHub
             LastError = ex.Message;
         }
     }
-}
-
-public enum AskReplyOutcome
-{
-    /// <summary>答案已交给等待方 (含 cancel → null)。</summary>
-    Answered,
-
-    /// <summary>ask_id 未知 (过期/伪造/已被清理) —— 不静默接受。</summary>
-    UnknownAsk,
-
-    /// <summary>该 ask_id 已答过 (幂等重放) —— 不重复投递答案。</summary>
-    AlreadyAnswered,
 }

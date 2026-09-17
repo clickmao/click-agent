@@ -1,8 +1,7 @@
 using agent.rag;
 using Xunit;
 using System.Text.Json;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.13.3 B 期 — 召回率真机跑测 (长期观察任务): ground-truth 20 篇注入 → 必召回查询 → Recall@5/MRR。

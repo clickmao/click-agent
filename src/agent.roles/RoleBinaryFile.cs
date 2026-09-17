@@ -182,7 +182,3 @@ public static class RoleBinaryFile
         return outMs.ToArray();
     }
 }
-
-/// <summary>AOT source-gen (payload 是扁平 string→string 字典)。</summary>
-[JsonSerializable(typeof(Dictionary<string, string>))]
-internal sealed partial class PayloadJsonContext : JsonSerializerContext;

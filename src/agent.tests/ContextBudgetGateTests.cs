@@ -1,7 +1,6 @@
 using agent.exploration;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.13.3 M2 — 上下文预算门单测 (用户钦定 Baseline 换血前置)。

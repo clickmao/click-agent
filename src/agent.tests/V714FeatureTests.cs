@@ -1,8 +1,7 @@
 using agent.registry;
 using agent.session;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v7.14 特性测试: 编排问询驱动 / 会话长期记忆 / Agent 画像 / 能力探嗅 / 面板 JSON。

@@ -1,7 +1,6 @@
 using agent.config;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R306b — ConfigModelBinder 强类型绑定单测 (用户需求: "要 Model 实例, 不要手写 yaml")。

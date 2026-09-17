@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 using agent.intent;
 using agent.registry;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R518 运行期缓存排除 (真机自抓缺陷): 节点按题面「写自测并运行」时解释器自动落

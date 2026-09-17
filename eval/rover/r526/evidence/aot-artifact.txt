@@ -1,0 +1,11 @@
+artifact=/tmp/pub_r526/agenthost
+-rwxrwxr-x 1 agentuser agentuser 15617360 Sep 17 18:34 /tmp/pub_r526/agenthost
+6b565aa044b722cc54ede898281594d20d0c3f56cf31ff4025334c8662fd89a2  /tmp/pub_r526/agenthost
+/tmp/pub_r526/agenthost: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=583c62ecda53b6a84f0f4cff179ff42b59a46602, for GNU/Linux 3.2.0, stripped
+publish_cmd: dotnet publish src/agent.host/agent.host.csproj -c Release -r linux-x64 -o /tmp/pub_r526 (禁 /p:PublishAot=true)
+publish_log_tail:
+  agent -> /home/agentuser/AgentFramework/src/agent/bin/Release/net10.0/agent.dll
+  agent.frontendapi -> /home/agentuser/AgentFramework/src/agent.frontendapi/bin/Release/net10.0/agent.frontendapi.dll
+  agent.host -> /home/agentuser/AgentFramework/src/agent.host/bin/Release/net10.0/linux-x64/agenthost.dll
+  Generating native code
+  agent.host -> /tmp/pub_r526/

@@ -4,8 +4,7 @@ using System.IO;
 using System.Text.Json;
 using agent.exploration;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R485 H1 机检: 分类器在**已录制真机流量**上逐条自足判定。

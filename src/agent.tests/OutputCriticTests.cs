@@ -1,8 +1,7 @@
 using agent.critique;
 using Finding = agent.critique.OutputCritic.Finding;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.14.0 T1 OutputCritic 单测: 每规则 阳性 + 阴性 (R149 真断言标准 — 检测器自身可证伪)。

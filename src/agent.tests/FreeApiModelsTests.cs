@@ -5,8 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using agent.modelqueue;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>v0.20.5 R351 (用户钦定): 模型目录精简 — 仅 deepseek-flash(首)/glm-5.3-flash(次)/gpt-6(默认配置);
 /// 本地 LLM/官方通道/免费池预留配置全部移除。选模: 无 key 沉底机制保留。</summary>

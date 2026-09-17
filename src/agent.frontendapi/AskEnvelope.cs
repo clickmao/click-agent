@@ -3,26 +3,6 @@ using System.Text.Json;
 
 namespace agent.frontendapi;
 
-/// <summary>menu 问询选项 (前端可直接渲染为菜单项)。</summary>
-public sealed record AskOption(string Value, string Label, bool Recommended);
-
-/// <summary>
-/// menu 问询单题 (R375 · exp2 P0-3): 选项/数据类型/多选/默认值必须**进通道**,
-/// 不得只拼进 Display 文本 (旧实现把菜单拼进 DisplayName, 前端无法渲染)。
-/// </summary>
-public sealed record AskQuestion(
-    string Key,
-    string Display,
-    bool Required,
-    bool Sensitive,
-    string DataType,
-    bool MultiSelect,
-    IReadOnlyList<AskOption> Options,
-    string? DefaultValue);
-
-/// <summary>ask.reply / ask.cancel 的解析结果 (answers=null 且 Cancel=true 表示取消)。</summary>
-public sealed record AskReply(string AskId, Dictionary<string, string>? Answers, bool Cancel);
-
 /// <summary>
 /// R375 (exp2 P0-2/P0-3): ask 域信封 — 与 FrontendApiContract 同构 (v/type/event/payload):
 ///   {"v":1,"type":"event","event":"ask","payload":{ask_id,service,purpose,timeout_s,group_size,questions:[...]}}

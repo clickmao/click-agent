@@ -1,7 +1,6 @@
 using agent.exploration;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.13.3 R276 — 关键文档激活链 (LinkRegistry) 单测。

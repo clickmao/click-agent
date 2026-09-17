@@ -8,18 +8,6 @@ using System.Threading.Tasks;
 
 namespace agent.skills;
 
-/// <summary>运行级验证结果 (结构化, 可序列化/可台账化)。</summary>
-public sealed record PythonRunResult(
-    bool Ran,
-    int ExitCode,
-    string StdOut,
-    string StdErr,
-    long ElapsedMs,
-    bool TimedOut,
-    bool OutputTruncated,
-    string Detail,
-    string Interpreter = "");
-
 /// <summary>
 /// L5 (t8–t12) 运行级验证: 语法校验 (py_compile) ≠ 能跑。本类把产物**真跑一遍**,
 /// 给出进程级证据 (退出码/stderr/耗时), 让"已验证"三个字有物理含义。

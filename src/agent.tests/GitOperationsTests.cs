@@ -2,8 +2,7 @@ using System;
 using System.IO;
 using Xunit;
 using agent.gitops;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>v0.18.0 G1 (R338): git 操作封装 — 临时仓内真 git 往返 (status/commit/diff/push once 卫生)。
 /// 需要环境有 git (host 已具备)。测试自建临时仓库, 不触碰 AgentFramework 真实仓。</summary>

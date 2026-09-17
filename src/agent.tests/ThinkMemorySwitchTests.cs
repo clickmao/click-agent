@@ -1,7 +1,6 @@
 using agent.exploration;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R449 — think-memory 开关 (四档) + 计数器非空心 + HitCount 语义修复 + 维度不一致可见化。

@@ -6,8 +6,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using agent.modelqueue;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R470: 真实流量的**命中归因通道**验证。

@@ -3,8 +3,7 @@ using System.IO;
 using System.Linq;
 using Xunit;
 using agent.activity;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>v0.17.2-a (R336): 活动任务注册表 — 心跳注册 / 查询 / 过期 / 自身排除 / 条件原语 / 渲染。</summary>
 public class ActivityServiceTests

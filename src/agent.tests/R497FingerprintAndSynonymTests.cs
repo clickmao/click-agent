@@ -4,8 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using agent.modelqueue;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R497 判据表 (两条产品面改动各一组正/负控, 全部只吃**结构量**)：
@@ -109,7 +108,7 @@ public sealed class R497FingerprintAndSynonymTests
 
     private static string[] RepeatMarkersOfProduct()
     {
-        var src = ReadSrc("src", "agent.modelqueue", "LocalGenerationPort.cs");
+        var src = ReadSrc("src", "agent.modelqueue", "TurnGateJudge.cs");
         var m = Regex.Match(src, @"string\[\]\s+RepeatMarkers\s*=\s*\{(.*?)\};", RegexOptions.Singleline);
         Assert.True(m.Success, "RepeatMarkers 未找到");
         return Regex.Matches(m.Groups[1].Value, "\"((?:[^\"\\\\]|\\\\.)*)\"").Select(x => x.Groups[1].Value).ToArray();
@@ -118,7 +117,7 @@ public sealed class R497FingerprintAndSynonymTests
     [Fact]
     public void R497D_WhitelistChars_Unchanged()
     {
-        var src = ReadSrc("src", "agent.modelqueue", "LocalGenerationPort.cs");
+        var src = ReadSrc("src", "agent.modelqueue", "TurnGateJudge.cs");
         var m = Regex.Match(src, @"RepeatFamilyChars\s*=\s*""([^""]*)"";");
         Assert.True(m.Success, "RepeatFamilyChars 未找到");
         Assert.Equal(R465FamilyChars, m.Groups[1].Value);   // R465 逐字节不变 ⇒ 吸收面只增标记

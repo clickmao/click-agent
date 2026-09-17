@@ -1,7 +1,6 @@
 using agent.modelqueue;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.13.1 F1 — 兜底配置单测: 开关/校验/错误模板/序 (纯逻辑; Router 链由集成批测覆盖)。

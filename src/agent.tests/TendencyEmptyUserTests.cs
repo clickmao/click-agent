@@ -1,7 +1,6 @@
 using agent.tendency;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.11.0 R123 (真缺陷 52): 空 userId 不入库不落盘 (原持久化到 ".json" 空文件名, 召回链永不读取)。

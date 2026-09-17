@@ -1,40 +1,6 @@
 namespace agent.exploration;
 
 /// <summary>
-/// v0.13.0 — 待探索源 (探索图节点)。
-/// </summary>
-public sealed class ExploreNode
-{
-    public ExploreSourceKind Kind { get; set; }
-    /// <summary>引用: URL / 目录路径 / 文件路径 / 文本片段头 128ch</summary>
-    public string Ref { get; set; } = string.Empty;
-    /// <summary>发现来源 (null = 用户直接给出/种子)</summary>
-    public string? DiscoveredFrom { get; set; }
-    /// <summary>是否来自上下文 (用户例: 上下文内 URL > 上下文外目录)</summary>
-    public bool FromContext { get; set; }
-    public int Priority { get; set; }
-    /// <summary>该节点已用步数 (渐进深入计数)</summary>
-    public int StepsUsed { get; set; }
-}
-
-/// <summary>单步探索结果 (打点+回填思考链)。</summary>
-public sealed class ExploreStepResult
-{
-    public bool Ok { get; set; }
-    public ExploreSourceKind Kind { get; set; }
-    public string Ref { get; set; } = string.Empty;
-    public int StepN { get; set; }
-    public int BudgetLeft { get; set; }
-    public int Ms { get; set; }
-    public long Bytes { get; set; }
-    /// <summary>探索中发现的新源 (上下文含 URL / 网页含路径 / 目录含子项)</summary>
-    public List<ExploreNode> Discovered { get; set; } = new();
-    public string? Error { get; set; }
-    /// <summary>内容摘要 (回填思考链, ≤400ch)</summary>
-    public string Digest { get; set; } = string.Empty;
-}
-
-/// <summary>
 /// v0.13.0 — 渐进式探索规划器: 优先级队列 + 每源预算 + 全局预算。
 /// 纯逻辑 (无 IO), 单测覆盖: 优先级序 (上下文内 URL &gt; 上下文外目录 — 用户钦定例)、
 /// 预算耗尽、去重、发现链。

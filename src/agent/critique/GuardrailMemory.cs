@@ -177,6 +177,3 @@ public sealed class GuardrailMemory
         return m;
     }
 }
-
-[JsonSerializable(typeof(List<GuardrailMemory.GuardrailEntry>))]
-internal partial class GuardrailJsonCtx : JsonSerializerContext;

@@ -1,7 +1,6 @@
 using agent.modelqueue;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R449 — 门判解析器 (TurnGateJudge.Parse) 跨语言同位夹具.

@@ -1,45 +1,6 @@
 namespace agent.exploration;
 
 /// <summary>
-/// v0.13.1 F2 (用户钦定) — 问题级粘性路由记录 (RAG route-memory 语义层)。
-/// 成功/失败请求均记录: 相似问题首用成功模型; 已知失败模型避免。
-/// </summary>
-public sealed class RouteRecord
-{
-    public string Id { get; set; } = Guid.NewGuid().ToString("N")[..16];
-    public float[]? QuestionEmbedding { get; set; }
-    public string QuestionHead { get; set; } = string.Empty;
-    /// <summary>意图指纹 (双门护栏: 相似度+意图一致才粘)</summary>
-    public string Intent { get; set; } = string.Empty;
-    /// <summary>实体指纹 (URL/路径等强区分物 — 形近意远防线)</summary>
-    public string EntityFingerprint { get; set; } = string.Empty;
-    public string ModelId { get; set; } = string.Empty;
-    /// <summary>success / fail</summary>
-    public string Outcome { get; set; } = "success";
-    public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
-    public int HitCount { get; set; }
-}
-
-public sealed class StickyRouteDecision
-{
-    public bool Sticky { get; set; }
-    public bool Avoid { get; set; }
-    public string ModelId { get; set; } = string.Empty;
-    public double Similarity { get; set; }
-    public string Reason { get; set; } = string.Empty;
-}
-
-public sealed class StickyRouteConfig
-{
-    /// <summary>bge 余弦阈值 (v0.13.1 保守起步; F2 阈值实测校准 20+20 对后定值)</summary>
-    public double SimilarityThreshold { get; set; } = 0.80;
-    /// <summary>粘性 TTL (小时)</summary>
-    public int StickyTtlHours { get; set; } = 72;
-    /// <summary>启用开关 (用户钦定 config 可设)</summary>
-    public bool Enabled { get; set; } = true;
-}
-
-/// <summary>
 /// 粘性路由记忆: 双门判定 = embedding 相似 ≥ 阈值 **且** 意图一致 **且** 实体指纹一致。
 /// 实体指纹 (URL/路径) 是"形近意远"防线 — "总结 https://a.com" 与 "总结 https://b.com"
 /// 意图相同但指纹不同 = 不同任务, 不得粘 (跑测反向样本 T-R02)。

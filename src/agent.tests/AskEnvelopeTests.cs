@@ -1,8 +1,7 @@
 using System.Text.Json;
 using Xunit;
 using agent.frontendapi;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R375 (exp2 P0-2/P0-3): ask 域信封 — 结构化选项/数据类型必须进通道 (不得只拼进文本),

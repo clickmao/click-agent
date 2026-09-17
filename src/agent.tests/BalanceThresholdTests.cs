@@ -1,7 +1,6 @@
 using agent.modelqueue;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.11.0 R115: 余额阈值切模链修复回归 (真缺陷 44/44b/45/46)。

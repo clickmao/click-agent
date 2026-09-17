@@ -1,7 +1,6 @@
 using agent.intent;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.11.0 R116 (真缺陷 47): 创作类文本 ("写一首诗") 不得归为 code_generation。

@@ -8,6 +8,8 @@ using agent.rag;
 /// (实测 C11 Memory 126→465tok, 2snip rel 同 0.45)。
 /// 修复: IndexAsync 归一化内容指纹 (小写/压空白, FNV-1a 64bit 零反射) 命中 → 复用既有 Id。
 /// </summary>
+namespace agent.tests;
+
 public class RagDedupTests
 {
     private static RAGRecall Create()

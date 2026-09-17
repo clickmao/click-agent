@@ -1,8 +1,7 @@
 using agent.llamacpp;
 using agent.modelqueue;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R411 J5: llama.cpp 的 prompt 计数字段语义（**独立实现钉死**，见 eval/rover/r411/semantics.json）。

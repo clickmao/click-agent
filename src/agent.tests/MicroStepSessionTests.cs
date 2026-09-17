@@ -1,7 +1,6 @@
 using agent.exploration;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.13.3 B2 — 微步骤会话单测 (回注预算/失败升级联动/结果轨迹)。

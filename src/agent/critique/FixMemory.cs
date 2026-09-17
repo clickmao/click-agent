@@ -102,6 +102,3 @@ public sealed class FixMemory
         return m;
     }
 }
-
-[JsonSerializable(typeof(List<FixMemory.FixEntry>))]
-internal partial class FixJsonCtx : JsonSerializerContext;

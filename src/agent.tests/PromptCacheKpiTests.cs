@@ -4,8 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using agent.modelqueue;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R377 (用户钦定): **prompt 缓存命中率纳入优化 KPI**。

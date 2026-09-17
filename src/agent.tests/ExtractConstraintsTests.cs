@@ -1,6 +1,8 @@
 using Xunit;
 using agent;
 
+namespace agent.tests;
+
 public class ExtractConstraintsTests
 {
     [Fact]

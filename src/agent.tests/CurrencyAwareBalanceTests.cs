@@ -1,6 +1,5 @@
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.11.0 R15: 余额币种换算 + 排序降权 (真 bug: CNY 余额被当 USD 比价, 差 7.2 倍)

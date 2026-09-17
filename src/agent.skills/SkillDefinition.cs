@@ -1,14 +1,5 @@
 namespace agent.skills;
 
-/// <summary>Skill 类型: normative=口径型 (模板+禁语) / executive=执行型 (entry 委托)</summary>
-public enum SkillType
-{
-    Normative,
-    Executive,
-    /// <summary>知识提示型 (v0.15.2 R326-f): 命中 → SKILL.md body 作生成参考注入, 回复仍走 LLM 主链 (不直出/不吞提问)</summary>
-    KnowledgeHint,
-}
-
 /// <summary>
 /// Skill 元数据 (原文 §3.2/§7.1) — 技能定义文件 (skills/*.yaml) 解析产物。
 /// 触发: 关键词 (一级) + 正则 (二级) + 领域词 (疑似命中)。
@@ -62,24 +53,4 @@ public sealed class SkillDefinition
 
     /// <summary>开放规范包: assets/ 目录存在 (模板/静态资源)</summary>
     public bool HasAssets { get; set; }
-}
-
-/// <summary>标准化输出 (原文 §4.6)</summary>
-public sealed class SkillResult
-{
-    public string SkillId { get; set; } = string.Empty;
-    public bool Success { get; set; }
-    public string Content { get; set; } = string.Empty;
-
-    /// <summary>强制口径 (true = 内容直接承载回复口径, 模型只做合规润色)</summary>
-    public bool ForceUse { get; set; }
-
-    /// <summary>R326-f: 知识提示命中 (true = Content 是知识参考, 调用方注入系统侧, 回复仍走主链)</summary>
-    public bool IsKnowledgeHint { get; set; }
-
-    /// <summary>禁语命中 (校验拦截时 false)</summary>
-    public string? ForbiddenHit { get; set; }
-
-    /// <summary>执行耗时 ms</summary>
-    public long ElapsedMs { get; set; }
 }

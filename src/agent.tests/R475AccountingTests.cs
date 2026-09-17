@@ -3,8 +3,7 @@ using System.IO;
 using System.Linq;
 using agent.modelqueue;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R475 (本侧): R474 真端点暴露的两处缺陷的判据。

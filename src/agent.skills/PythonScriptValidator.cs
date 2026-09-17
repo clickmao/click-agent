@@ -6,9 +6,6 @@ using System.Threading.Tasks;
 
 namespace agent.skills;
 
-/// <summary>v0.17.2-b: py_compile 验证结果。</summary>
-public sealed record PythonValidationResult(bool Valid, string Detail, int ExitCode);
-
 /// <summary>
 /// v0.17.2-b (用户钦定: "CLI 验证 PY 正确后交给插件服务"): py 脚本验证门 —
 /// 真实 `python3 -m py_compile` 语法校验 (进程级, AOT 安全, 不内嵌 Python)。

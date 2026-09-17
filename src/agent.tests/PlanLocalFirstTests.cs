@@ -16,8 +16,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using agent.intent;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 public class PlanLocalFirstTests
 {

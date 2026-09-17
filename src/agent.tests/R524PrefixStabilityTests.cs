@@ -95,7 +95,7 @@ public sealed class R524PrefixStabilityTests
     [Fact]
     public void 结构锁_回灌走可调上限而非硬顶()
     {
-        var text = Source(Path.Combine("src", "agent.modelqueue", "ActionLoop.cs"));
+        var text = Source(Path.Combine("src", "agent.modelqueue", "ActionLoopRunner.cs"));
         Assert.Contains("res.Render(ToolResultCharCap())", text, StringComparison.Ordinal);
         Assert.DoesNotContain("res.Render(MaxToolResultBytes)", text, StringComparison.Ordinal);
     }

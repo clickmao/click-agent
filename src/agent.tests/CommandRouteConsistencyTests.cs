@@ -2,8 +2,7 @@ using System;
 using System.Linq;
 using Xunit;
 using agent.registry;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.18.0 T1 (R339, 用户钦定防 LLM 幻觉假执行): 本地指令路由一致性审计 — Known 每指令必须 ∈

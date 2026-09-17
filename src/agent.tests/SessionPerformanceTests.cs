@@ -99,19 +99,3 @@ public class SessionPerformanceTests
         Assert.Equal(expected.Select(m => m.Content), actual.Select(m => m.Content));
     }
 }
-
-public static class StopwatchExtensions
-{
-    public static long ElapsedMicroseconds(this System.Diagnostics.Stopwatch sw) =>
-        sw.ElapsedTicks * 1_000_000 / System.Diagnostics.Stopwatch.Frequency;
-}
-
-/// <summary>测试宿主: 提供 SessionManager 实例</summary>
-public static class TestHost
-{
-    public static SessionManager CreateSessionManager()
-    {
-        var factory = Microsoft.Extensions.Logging.LoggerFactory.Create(b => { });
-        return new SessionManager(factory.CreateLogger<SessionManager>());
-    }
-}

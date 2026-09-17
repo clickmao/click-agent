@@ -1,7 +1,6 @@
 using agent.contextgradient;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.13.3 D4 — 熔断器单测 (标准工业模式 M4): 阈值触发/冷却/open 拒绝/半开放行/成功复位。

@@ -1,8 +1,6 @@
 using agent.intent;
-using agent.intent;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R308 — 合并判定 API 单测 (TopicRelevanceEvaluator):

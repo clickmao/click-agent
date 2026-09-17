@@ -9,8 +9,7 @@ using Xunit;
 using agent.core;
 using agent.userinteraction;
 using agent.frontendapi;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R375 (exp2 P0-1): ask 闭环 — **真 TCP + 真信封** (非 mock):

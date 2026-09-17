@@ -100,7 +100,7 @@
       "negative_control": "插件改写原文 → Router_RoutesToRegisteredPlugin_AndPreservesFences 断言原文还原必红；html 段传给代码审查 → Router_CodeReviewPlugin_ReceivesNonUiCode 断言 Null 必红",
       "covers": [
         "src/agent/registry/UiCapturePlugin.cs",
-        "src/agent/registry/UiCapturePlugin.cs(CodeReviewPlugin)"
+        "src/agent/registry/CodeReviewPlugin.cs"
       ],
       "owner_round": "R368"
     },
@@ -287,7 +287,7 @@
       "evidence_path": "src/agent.tests/ArtifactRepairTests.cs",
       "negative_control": "① 闸门关 → 策略永不触发(真机 A 臂 3 连跑 0 条 artifact_feedback); ② 修复轮回吐同一份失败脚本 → 同产物路径不得判定 fixed=true(非确定性场景防 KPI 虚高); ③ IsRepairable 置 false → 4 条用例必红(已实证)",
       "covers": [
-        "src/agent/registry/ArtifactRepair.cs",
+        "src/agent/registry/ArtifactRepairLoop.cs",
         "src/agent/registry/PythonArtifactPlugin.cs",
         "src/agent/registry/SegmentKind.cs",
         "src/agent/IndustrialAgentV2.cs"
@@ -302,7 +302,7 @@
       "evidence_path": "src/agent.tests/ArtifactRepairTests.cs",
       "negative_control": "断言绑定真实事实而非是否调用了模型: 提示词必须含 python3 -I(闸门调用方式)、--selftest(闸门选参)、真实未通过用例原文、最小改动约束; 摘要只摘原文行且上限 12 条, 不得臆造",
       "covers": [
-        "src/agent/registry/ArtifactRepair.cs"
+        "src/agent/registry/ArtifactRepairLoop.cs"
       ],
       "owner_round": "R374"
     },
@@ -371,7 +371,7 @@
       "negative_control": "① 命中率分母 +1 → 4 红(已实证); ② HitTokens(hit)=>hit??0 (未上报冒充 0 命中) → 1 红(已实证); ③ 删一处打点铺设 → 1 红(已实证; 首跑曾 0 红 = 断言空心, 改按打点块配对后抓到)",
       "covers": [
         "src/agent.modelqueue/PromptCacheKpi.cs",
-        "src/agent.modelqueue/OpenAIChatResponseDtos.cs",
+        "src/agent.modelqueue/OpenAIChatUsage.cs",
         "src/agent.modelqueue/ModelQueueRouter.cs",
         "src/agent/modelqueue/ModelQueueAdapter.cs",
         "scripts/kpi_cache_hit.py"
@@ -544,7 +544,7 @@
       "covers": [
         "src/agent.llamacpp/LlamaServerHost.cs",
         "src/agent.llamacpp/LlamaCppClient.cs",
-        "src/agent.llamacpp/LlamaCppJson.cs",
+        "src/agent.llamacpp/CompletionRequest.cs",
         "src/agent.llamacpp/LlamaCppProvider.cs",
         "src/agent.host/LlamaCppCommand.cs",
         "eval/rover/r408/r408-evidence.md",
@@ -764,10 +764,10 @@
       },
       "negative_control": "① 96B 字面权串(含 BOS 文本)当渲染产物注入 ⇒ prompt_literal_special_token 判红; ② 来源标 Literal(手拼) ⇒ prompt_not_templated 判红; ③ 以 EOS 文本结尾 ⇒ 判红; ④ 空产物 ⇒ prompt_empty; ⑤ 反向防误拦: 多轮渲染含 EOS 轮分隔符、元数据 bos/eos 为 null 时必须判绿",
       "covers": [
-        "src/agent.llamacpp/LocalPrompt.cs",
+        "src/agent.llamacpp/LocalPromptGate.cs",
         "src/agent.llamacpp/LlamaCppProvider.cs",
         "src/agent.llamacpp/LlamaCppClient.cs",
-        "src/agent.llamacpp/LlamaCppJson.cs",
+        "src/agent.llamacpp/CompletionRequest.cs",
         "src/agent.llamacpp/LlamaServerOptions.cs",
         "src/agent.host/LlamaCppCommand.cs",
         "src/agent.tests/LlamaCppPromptGateTests.cs"
@@ -804,7 +804,7 @@
         "src/agent.llamacpp/CompletionProfiles.cs",
         "src/agent.llamacpp/LlamaCppProvider.cs",
         "src/agent.llamacpp/LlamaCppClient.cs",
-        "src/agent.llamacpp/LlamaCppJson.cs",
+        "src/agent.llamacpp/CompletionRequest.cs",
         "src/agent.host/LlamaCppCommand.cs",
         "src/agent.tests/CompletionReuseTests.cs",
         "eval/rover/r410/prefix-reuse.json"
@@ -945,7 +945,7 @@
       "covers": [
         "src/agent/IndustrialAgentV2.cs",
         "src/agent.modelqueue/ModelQueueRouter.cs",
-        "src/agent.modelqueue/LocalGenerationPort.cs",
+        "src/agent.modelqueue/TurnGateJudge.cs",
         "src/agent.llamacpp/LlamaCppLocalGenerationPort.cs",
         "src/agent.skills/TriggerMatcher.cs",
         "eval/rover/r415/",
@@ -1335,7 +1335,7 @@
       },
       "negative_control": "① 无端口负控: 无本地端口 ⇒ JudgeTurnAsync 返回 no_local_port 且 CachePinned 保持 0（计数绑定真实请求, 不空心）; ② 全仓不变量: 只有 ModelQueueRouter 两处决策路径置 CacheReuse=false（非决策路径零回归）; ③ 传输级负控: 换用户消息 ⇒ token 序列必不同（仪器有判别力）; ④ PRE（改动前二进制）同网格判定不恒定 ⇒ 判据对「未修」态有判别力; ⑤ V0 形态闸: env -i 自启 + IL apphost 负控必拒",
       "covers": [
-        "src/agent.modelqueue/LocalGenerationPort.cs",
+        "src/agent.modelqueue/TurnGateJudge.cs",
         "src/agent.modelqueue/ModelQueueRouter.cs",
         "src/agent.llamacpp/CompletionProfiles.cs",
         "src/agent.llamacpp/LlamaCppLocalGenerationPort.cs",
@@ -1378,7 +1378,7 @@
         "src/agent.llamacpp/LlamaCppTextEmbedder.cs",
         "src/agent.llamacpp/LlamaCppClient.cs",
         "src/agent.modelqueue/LocalInputFingerprint.cs",
-        "src/agent.modelqueue/LocalGenerationPort.cs",
+        "src/agent.modelqueue/TurnGateJudge.cs",
         "src/agent.modelqueue/ModelCatalog.cs",
         "src/agent.modelqueue/ModelQueueRouter.cs",
         "src/agent.llamacpp/LlamaCppLocalGenerationPort.cs",
@@ -1426,7 +1426,7 @@
       "covers": [
         "src/agent/IndustrialAgentV2.cs",
         "src/agent.modelqueue/ModelQueueRouter.cs",
-        "src/agent.modelqueue/LocalGenerationPort.cs",
+        "src/agent.modelqueue/TurnGateJudge.cs",
         "src/agent.roles/RoleGrowthLedger.cs",
         "src/agent.tests/TurnGateGrowthMountTests.cs"
       ],
@@ -1471,7 +1471,7 @@
         "eval/rover/r432/settle_r432.py",
         "eval/rover/r432/run_arm.sh",
         "eval/rover/r432/grid/task-r432dp2.json",
-        "src/agent.modelqueue/LocalGenerationPort.cs",
+        "src/agent.modelqueue/TurnGateJudge.cs",
         "src/agent/IndustrialAgentV2.cs"
       ],
       "external_assets": [
@@ -1540,7 +1540,7 @@
       },
       "negative_control": "① 无设备负控 (臂 BP, 模型路径缺失): 门判恒降级 ⇒ 跳过 0 次, 总 token 19465 ≥ 分母 18493 ⇒ 省调用不可能来自「门没起作用」; ② 成对判据: 假阴性(真诉求被跳)与假阳性(认可被花掉)同时计数 —— 修前 3/0, 修后 0/0; ③ 认可族白名单负控 (测试 G31): 「再讲一遍。」族必须 false, 「好，按这个来。」亦 false (保守方向); ④ 带内机检: 8 个测量轮全部 MechanicalPass=false (否则根本到不了 r1); ⑤ 复现负控: 同题同臂重跑逐轮 actual ∧ 主答调用逐位相同 (B -b1 vs -b2)。 ⑥ 判官通道负控(单变量 BRJ): local×1 / remote_fallback×6 ⇒ 「本地优先」不得被计成收益。",
       "covers": [
-        "src/agent.modelqueue/LocalGenerationPort.cs",
+        "src/agent.modelqueue/TurnGateJudge.cs",
         "src/agent/IndustrialAgentV2.cs",
         "src/agent.tests/LocalTurnGateTests.cs",
         "src/agent.tests/TurnGateGrowthMountTests.cs"
@@ -1752,7 +1752,7 @@
       "negative_control": "BRJL 臂(AGENTFRAMEWORK_GATE_PREFILTER=0)必须观测到 gate:skip_rejected_nonack ≥3(否则'不变量不可达'空心); BRJ 臂必须 0 条且 prefilter_violations=0",
       "covers": [
         "src/agent/IndustrialAgentV2.cs",
-        "src/agent.modelqueue/LocalGenerationPort.cs"
+        "src/agent.modelqueue/TurnGateJudge.cs"
       ]
     },
     {
@@ -2094,7 +2094,7 @@
         "eval/rover/r448/r448_probe.py",
         "eval/rover/r448/r448_analyze.py",
         "src/agent.roles/CorrectionDetector.cs",
-        "src/agent.modelqueue/LocalGenerationPort.cs"
+        "src/agent.modelqueue/TurnGateJudge.cs"
       ]
     },
     {
@@ -2352,7 +2352,7 @@
         "eval/rover/r456/run_agent_tools.sh",
         "eval/rover/r456/judge_r456.py",
         "eval/rover/r456/verdict-r456.json",
-        "src/agent.modelqueue/ActionLoop.cs",
+        "src/agent.modelqueue/ActionLoopRunner.cs",
         "src/agent/action/WorkspaceActionPort.cs",
         "src/agent.tests/ActionLoopTests.cs",
         "docs/plans/v0.76.0-r456-action-loop.md",
@@ -2383,7 +2383,7 @@
         "eval/rover/r457/verdict-r457.json",
         "eval/rover/r457/side_by_side_calls.py",
         "eval/rover/r455/adapter_tools.py",
-        "src/agent.modelqueue/ActionLoop.cs",
+        "src/agent.modelqueue/ActionLoopRunner.cs",
         "src/agent/action/WorkspaceActionPort.cs",
         "src/agent/IndustrialAgentV2.cs",
         "src/agent.modelqueue/ModelQueueRouter.cs",
@@ -2517,7 +2517,7 @@
       "negative_control": "NC1 (判别力): 同判据跑 R461 实发面 ⇒ P1/P2 = false (旧二进制无闸 + 后缀白名单), 见 eval/capability/exp1-q32/archived_tmp/r462/r462_negctl.json (原 /tmp 单副本已逐字归档, EXP1-Q32); NC2 越界: ../etc/hosts 一律判 ✗ 且不探测 (Verify_TraversalToken_RejectedWithoutProbe) + Probe 层 StartsWith(root) 二次校验; NC3 fail-safe: 无 root/不存在/异常 ⇒ 原样返回, 不丢事实不造事实 (Verify_NoRoot_FailSafe_ReturnsOriginal); NC4 幂等: 已带标签的块二次通过不重复追加 (Verify_Idempotent_NoDoubleTagging); NC5 只打假: 一致的召回片段必须逐字节不变 (Verify_FailOnly_ConsistentClaim_ZeroByteInjection) + 回灌面零字节 (Loop_ToolResult_ConsistentPath_ZeroByteInjection); NC6 结构判定负控: 1.5 / 提升3.2倍 / .. / 空 串不得判为路径 (IsPathLike_Structural_NoSuffixWhitelist)",
       "covers": [
         "src/agent.core/core/RecallRealityGate.cs",
-        "src/agent.modelqueue/ActionLoop.cs",
+        "src/agent.modelqueue/ActionLoopRunner.cs",
         "src/agent/action/WorkspaceActionPort.cs",
         "src/agent/contextassembler/ContextAssembler.cs",
         "src/agent/IndustrialAgentV2.cs",
@@ -2735,7 +2735,7 @@
       },
       "negative_control": "同网格 p12/同桩/同 role/同二进制 5 臂: Arole(门关) 21 调用/33,323 tok; B3B(复述关) 8/20,487 ⇒ 逐位复现 R464/R463(零回归); R(复述开) 6/14,529 = −56.40%, repeat 命中 2 (t6/t9) 且复述两轮 eval/gen=-1, 本地 r1 只 4 次(Ack 轮); R 与 B3B 判决面除第 6/9 位逐位相同(posthoc C4b2)。反例守卫: 白名单外内容字/疑问句/长句一律 false(G35 15 例), 吸收面越界 ⇒ C5(面窄=2) 必破",
       "covers": [
-        "src/agent.modelqueue/LocalGenerationPort.cs",
+        "src/agent.modelqueue/TurnGateJudge.cs",
         "src/agent/IndustrialAgentV2.cs",
         "src/agent.tests/LocalTurnGateTests.cs",
         "eval/rover/r465/verdict-r465.json",
@@ -2761,7 +2761,7 @@
       },
       "negative_control": "确定性机理复现: 删锁文件 ⇒ b_holds=true ∧ c_holds=true（both_inside=true）; 不删 ⇒ c_holds=false（互斥成立）。跨进程真值 G43: python 子进程持 flock 时我方拒锁, 子进程退出 ⇒ 内核自动放锁、我方接管且锁文件全程保留; G44 剥注释后断言源码不得出现 File.Delete(LockPath/lockPath)（旧形态即回归）",
       "covers": [
-        "src/agent/execution/FileLocking.cs",
+        "src/agent/execution/OccupantDetector.cs",
         "src/agent.tests/ExecutorHardeningTests.cs",
         "eval/rover/r465/mech_unlink_race.py",
         "eval/rover/r465/mech_unlink_race.json"
@@ -2786,7 +2786,7 @@
       },
       "negative_control": "同二进制单变量: 首个门控轮 49.93s(R) → 22.19s(W1)，warm_ms=26036 ok=true；稳态 19.4s 不变(预热不改变 prefill 成本)；llama-server pid 数 2=2（常驻性未被预热改变）；token 面 14,529 vs 14,531 零回归",
       "covers": [
-        "src/agent.modelqueue/LocalGenerationPort.cs",
+        "src/agent.modelqueue/TurnGateJudge.cs",
         "src/agent.llamacpp/LlamaCppLocalGenerationPort.cs",
         "src/agent.host/Program.cs",
         "eval/rover/r465/arm-W1.json"
@@ -3528,7 +3528,7 @@
       "covers": [
         "src/agent.modelqueue/EmptyBodyDiagnosis.cs",
         "src/agent.modelqueue/ModelQueueRouter.cs",
-        "src/agent.modelqueue/ActionLoop.cs",
+        "src/agent.modelqueue/ActionLoopRunner.cs",
         "src/agent.tests/EmptyBodyDiagnosisTests.cs",
         "src/agent.tests/UserFacingFailureTests.cs",
         "src/agent.tests/ActionLoopTests.cs"
@@ -3649,7 +3649,7 @@
       "negative_control": "C4 机检: 必须存在 chat 形态与既有常量逐字节相等的断言, 否则判红(禁双份手写常量); B 组单测断言 responses 形态为平铺(含 `\"function\"` 嵌套即红); 真机工具臂若未出现 `function_call` ⇒ 只主张「协议接受声明面」, 不主张「模型必然调用」。",
       "covers": [
         "src/agent.modelqueue/ActionToolSpec.cs",
-        "src/agent.modelqueue/ActionLoop.cs",
+        "src/agent.modelqueue/ActionLoopRunner.cs",
         "src/agent.tests/ResponsesWireTests.cs"
       ],
       "owner_round": "R479"
@@ -3672,9 +3672,9 @@
       },
       "negative_control": "变异测试(判据必须对注入缺陷翻红, 否则判据恒绿): **NC1** 剪枝门 `!prevScanPruned` 反转 ⇒ C1 红; **NC2** 删 stamp 左移编码 ⇒ C1 红; **NC3** 删读侧标志位解码 ⇒ C1 红(3/3 实测全部翻红); 正向面 C1 源码派生(读/写两侧成对, 缺一即红) + C2 真跑读数(trx 结果行数 > 0, 0 行 ⇒ 假绿判红) + C3 核验轮语义锁存(`Assert.Equal(0, DirsPruned)` / `VerifiedAllDirs`) —— **不含**: 旧格式 store 的实读行为(仅推理: ticks 量级 LEB128 恒 9 B ⇒ 左移前后字节数不变 ⇒ 旧值被读成更早 stamp ⇒ 只多核验不误剪; 未实测), 亦不含内容级哈希兜底 (`VerifyMode.Hash` / 周期全量核验, 当前未实现)。",
       "covers": [
-        "src/agent.recall/RecallFingerprint.cs",
-        "src/agent.recall/RecallUpdater.cs",
-        "src/agent.recall.tests/RecallModuleTests.cs",
+        "src/agent.recall/RecallDirtyScan.cs",
+        "src/agent.recall/RecallIndexUpdater.cs",
+        "src/agent.recall.tests/RecallIncrementalTests.cs",
         "eval/recall/r481/check_r481d9.py"
       ],
       "owner_round": "R481"
@@ -3691,7 +3691,7 @@
         "eval/recall/prereg_r481b.json",
         "eval/recall/r481b/port-corpus.json",
         "eval/recall/links_probe.py",
-        "src/agent.recall/RecallLinks.cs"
+        "src/agent.recall/RecallLinksFile.cs"
       ],
       "owner_round": "R481",
       "evidence_generated_with": {
@@ -4191,7 +4191,7 @@
         "src/agent.modelqueue/ToolDeclGate.cs",
         "src/agent/modelqueue/ModelQueueAdapter.cs",
         "src/agent.modelqueue/ModelQueueRouter.cs",
-        "src/agent.modelqueue/ActionLoop.cs",
+        "src/agent.modelqueue/ActionLoopRunner.cs",
         "src/agent.tests/R490ToolDeclGateTests.cs",
         "eval/rover/r490/analyze_r490.py",
         "eval/rover/r490/run_arm_real_r490.sh",
@@ -4218,7 +4218,7 @@
       "negative_control": "非空判据 = user→user 相邻对(R489 同臂为 0、R490 >0 ⇒ 确曾存在模板串且被剪); 只剪**等于** `LocalSkipFallback` 的 assistant 文本 ⇒ 实质答复/复述回放原文不剪(单测 `LocalTemplateReply_IsTrimmedFromRemoteReplay` / `RepeatReplaySubstantiveReply_IsKept`); 计数器经 `ActionLoopRunner.Clone` 透传由单测 `ActionLoopClone_PropagatesGateFacts` 锁死。",
       "covers": [
         "src/agent/modelqueue/ModelQueueAdapter.cs",
-        "src/agent.modelqueue/ActionLoop.cs",
+        "src/agent.modelqueue/ActionLoopRunner.cs",
         "src/agent.tests/R490ToolDeclGateTests.cs",
         "eval/rover/r490/analyze_r490.py",
         "eval/rover/r490/verdict-r490.json"
@@ -4246,7 +4246,7 @@
         "src/agent.modelqueue/ToolDeclGate.cs",
         "src/agent/modelqueue/ModelQueueAdapter.cs",
         "src/agent.modelqueue/ModelQueueRouter.cs",
-        "src/agent.modelqueue/ActionLoop.cs",
+        "src/agent.modelqueue/ActionLoopRunner.cs",
         "src/agent.tests/R490ToolDeclGateTests.cs",
         "eval/rover/r491/analyze_r491.py",
         "eval/rover/r491/derive_analyzer_r491.py",
@@ -4276,7 +4276,7 @@
         "src/agent.modelqueue/ReplayPairTrim.cs",
         "src/agent/modelqueue/ModelQueueAdapter.cs",
         "src/agent.modelqueue/ModelQueueRouter.cs",
-        "src/agent.modelqueue/ActionLoop.cs",
+        "src/agent.modelqueue/ActionLoopRunner.cs",
         "src/agent.tests/R491ReplayPairTrimTests.cs",
         "eval/rover/r491/analyze_r491.py",
         "eval/rover/r491/verdict-r491.json"
@@ -4508,7 +4508,7 @@
         "src/agent.modelqueue/ToolDeclGate.cs",
         "src/agent/modelqueue/ModelQueueAdapter.cs",
         "src/agent.modelqueue/ModelQueueRouter.cs",
-        "src/agent.modelqueue/ActionLoop.cs",
+        "src/agent.modelqueue/ActionLoopRunner.cs",
         "src/agent/templates/IPromptBuilder.cs",
         "src/agent/IndustrialAgentV2.cs",
         "src/agent/subagent/IsolatedTaskRunner.cs",
@@ -4875,7 +4875,7 @@
         "eval/rover/r497/face-ext-T1n.json",
         "eval/rover/r497/ledger-T1.jsonl",
         "eval/rover/r497/ledger-T1n.jsonl",
-        "src/agent.modelqueue/LocalGenerationPort.cs",
+        "src/agent.modelqueue/TurnGateJudge.cs",
         "src/agent.tests/R497FingerprintAndSynonymTests.cs",
         "eval/rover/r468/gate_rules.py"
       ],
@@ -4955,7 +4955,7 @@
         "src/agent.modelqueue/ModelQueueRouter.cs",
         "src/agent/IndustrialAgentV2.cs",
         "src/agent/context/ContinuationBrief.cs",
-        "src/agent.modelqueue/LocalGenerationPort.cs"
+        "src/agent.modelqueue/TurnGateJudge.cs"
       ],
       "negative_control": "闸关负控: ShouldAbsorb(x, enabled:false)==false (默认行为不变); 族互斥负控: 「换个说法说下部署进度」等含内容字/数字/ASCII/问号/超长 8 例逐项必须 false; 与复述族两两不相交。"
     },
@@ -5172,7 +5172,7 @@
         "eval/rover/r499/analyze_r499.py",
         "src/agent/IndustrialAgentV2.cs",
         "src/agent.modelqueue/LocalParaphraseChannel.cs",
-        "src/agent.modelqueue/LocalGenerationPort.cs"
+        "src/agent.modelqueue/TurnGateJudge.cs"
       ],
       "negative_control": "三态负控 (注入扰动到 scratch 副本, 期望判红): `nc_c_absorb` (把 C 臂 turn8 basis 改成 mechanical:paraphrase) **已实测 rc=1 且 red=1**; `nc_drop_gate_row` (删 P 臂第 8 条门行 ⇒ 行数≠turns ⇒ rc=2) 与 `nc_template_reply` (把 P 臂 turn8 答复换成上一条逐字复读 ⇒ J2b 红) **待真机 P 臂落盘后补跑** —— 未跑前不得据负控宣称判据完备。干跑实证: 对 R497/T1 判据器 VERDICT=GREEN red=0 (无假红)。"
     },
@@ -5511,7 +5511,7 @@
       "level": "L2",
       "capability": "前端任务事件域 (路线 A 实施, 对标 codex 展示面): task.started / task.completed / task.failed + state.snapshot.tasks[] + chat.send 响应增量 task_id; 会话 id 可注入 (AGENTFRAMEWORK_FRONTEND_SESSION, 默认 frontend-main 不破)。异常路径显式 task.failed 且快照 state=failed (不会永远 running)。单测 7/7; 全量套件 1643/1643; AOT IL_warnings=0 (15,425,840 B, sha12 4087c90c4786); 真机 E2E 断言 A1–A8 全绿 (回复=真答)。",
       "covers": [
-        "src/agent.frontendapi/FrontendTaskEvents.cs",
+        "src/agent.frontendapi/FrontendTaskRegistry.cs",
         "src/agent.frontendapi/FrontendApiChatRouter.cs",
         "src/agent.host/Program.cs",
         "src/agent.tests/FrontendTaskEventsTests.cs",
@@ -5541,7 +5541,7 @@
       "capability": "前端任务事件域第二段 (R510): task.progress 由**动作环真实步进**驱动 (ActionProgressObserver: AsyncLocal 绑定出站面, 未绑定零开销零副作用), 事件事实 = step_index/tool/ok/elapsed_ms, 文案面不在事件处二次实现; state.snapshot.tasks[] 同步 step_index/current_action; 审批通道由占位改**真实现** (approval.requested → 等 approval.respond → approval.responded 收口; 超时/拒绝/取消/被新审批覆盖一律不批准 = fail-closed); 路由 approval.respond 未知 id 显式 unknown_approval, 未挂接应答面回 channel_unavailable。本组件单测 10/10; AOT IL_warnings=0 (15,438,368 B, sha12 993d0fa548e9); 真机 E2E (AOT + frontend-api + 动作环开 + 真模型) 断言 A1–A6 全绿。",
       "covers": [
         "src/agent.modelqueue/ActionProgressObserver.cs",
-        "src/agent.modelqueue/ActionLoop.cs",
+        "src/agent.modelqueue/ActionLoopRunner.cs",
         "src/agent.frontendapi/FrontendApiChatRouter.cs",
         "src/agent.frontendapi/FrontendPromptService.cs",
         "src/agent.frontendapi/ApprovalEnvelope.cs",
@@ -5638,7 +5638,7 @@
       "capability": "第 5 个工具 delete_file + 人工审批 fail-closed 真机闭环 (R511): 声明面与 Names 同源 (ActionToolDecl.DeleteFile; ToolsJson/ActionToolSpec 双侧同步), 执行面 WorkspaceActionPort.DeleteFileAsync = 边界解析 → 审批门 → 真删; 审批门未注入 ⇒ 一律拒绝 (ApprovalUnavailableExitCode=125), 审批拒绝/超时/取消/异常 ⇒ 未执行 (ApprovalDeniedExitCode=124); 宿主 DI 把 IUserPromptService 接到审批门。单测 10/10; 全量 1663/1663; AOT IL_warnings=0 (15,467,520 B, sha12 139ac3bc986b1b03); 真机 E2E (AOT + frontend-api + 真链真模型) E2E_APPROVAL_VERDICT=PASS 10/10: approve 臂磁盘证据 victim 文件真被删 (exists=False), deny 臂文件原封不动 (exists=True), approval.requested{kind=DeleteFile} → approval.responded{approved,answered_by=RealUser|Denied} 同 id 往返。",
       "covers": [
         "src/agent/action/WorkspaceActionPort.cs",
-        "src/agent.modelqueue/ActionLoop.cs",
+        "src/agent.modelqueue/ActionLoopRunner.cs",
         "src/agent.modelqueue/ActionToolSpec.cs",
         "src/agent/extensions/ServiceCollectionExtensions.cs",
         "src/agent.tests/R511DeleteToolApprovalTests.cs",
@@ -5911,16 +5911,16 @@
         "docs/reports/r518-mainline-scale-arm-and-node-budget-escalation.md"
       ],
       "evidence_cmd": "env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR $HOME/.dotnet/dotnet test src/agent.tests/agentframework.tests.csproj -c Debug --filter FullyQualifiedName~TaskOrchestratorCacheFilterTests",
-      "evidence_path": "eval/rover/r518/evidence/tests-full-r518.txt",
+      "evidence_path": "eval/rover/r526/evidence/tests-cache-filter-r526.txt",
       "evidence_generated_with": {
         "evidence_kind": "artifact",
         "pin_status": "live",
-        "pin_reason": "archived-per-round",
+        "pin_reason": "worktree-only",
         "artifact_sha12": null,
-        "instrument": "src/agent.tests/TaskOrchestratorCacheFilterTests.cs",
-        "instrument_sha12": "bc9fc0744d4d",
+        "instrument": null,
+        "instrument_sha12": null,
         "binding": "audit-pin",
-        "audited_by_round": "R518"
+        "audited_by_round": "R526"
       },
       "negative_control": "4 例成对, 其中**负控 3 条**: ① 真实越界写 (kvsvc/server.py 落在 tasksvc 范围外) **仍**判 Failed 且点名路径, 同一场景下的 pyc 不出现在违规清单 (排除不得变成整类豁免); ② **只有缓存写入**的节点仍算「零产物」⇒ Failed + no_artifact + 升预算重试 (缓存不得当产物顶包); ③ 裸 `.pyc` 后缀排除而普通文件 (`tasksvc/notes.md` 在文件级范围外) **仍**判越界。正控: 缓存 + 范围内真实产物 ⇒ Completed 且 NodeArtifacts 只含真实产物。",
       "owner_round": "R518"
@@ -6207,7 +6207,7 @@
         "eval/rover/r524/prefix_check_r524.py",
         "src/agent/context/SessionInjectionPlanner.cs",
         "src/agent/contextassembler/ContextAssembler.cs",
-        "src/agent.modelqueue/ActionLoop.cs",
+        "src/agent.modelqueue/ActionLoopRunner.cs",
         "src/agent.modelqueue/ActionLoopDiscipline.cs",
         "src/agent.tests/R524PrefixStabilityTests.cs",
         "eval/rover/r524/evidence/prefix-check-w1.json",
@@ -6297,6 +6297,111 @@
       },
       "negative_control": "NC1 段序错乱 ⇒ S1 红; NC2 前缀塞遥测(data/prompt_audit) ⇒ M2 红; NC3 常量材料回灌 user 轮 ⇒ M6/S5 红; NC4 删 §7 段 ⇒ S1/S2 红; 4/4 翻红(rc 恒 1), 正控 = w3 原始转储 rc=0 ⇒ 机检非恒绿/非恒红。",
       "owner_round": "R525"
+    },
+    {
+      "id": "internal.single-type-per-file-r526",
+      "level": "L2",
+      "capability": "**单类型单文件 (R526 完全重构 I1)**: 重构前 `src` 下 176 个 `.cs` 含多个顶层类型 (共 575 个次要类型)。用 Roslyn 语法树器具 (`tools/refactor/reftool extract`) 将次要顶层类型逐个外移为独立文件 (带 usings/命名空间; 块式命名空间按原文包裹; `file` 作用域类型按语义跳过 —— 外移会让其可见性失效)。终态: 1054 个 `.cs`, I1 违规 = 0。外移为**原文搬移**, 不改任何成员代码 ⇒ 判据是「外部行为不变」(全量测试) ∧ 「结构不变式成立」(机检)。",
+      "covers": [
+        "src/agent.tests/RefactorStructureTests.cs",
+        "tools/refactor/reftool/Program.cs",
+        "tools/refactor/reftool/reftool.csproj",
+        "tools/refactor/invariant_check.py",
+        "tools/refactor/pipeline/01_extract_types.py",
+        "tools/refactor/README.md",
+        "eval/rover/r526/evidence/type-extraction.log",
+        "eval/rover/r526/evidence/invariant-check.txt"
+      ],
+      "evidence_cmd": "env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR $HOME/.dotnet/dotnet test src/agent.tests/agentframework.tests.csproj -c Debug --filter FullyQualifiedName~RefactorStructureTests",
+      "evidence_path": "eval/rover/r526/evidence/tests-full-r526.txt",
+      "evidence_generated_with": {
+        "evidence_kind": "artifact",
+        "pin_status": "live",
+        "pin_reason": "worktree-only",
+        "artifact_sha12": null,
+        "instrument": null,
+        "instrument_sha12": null,
+        "binding": "audit-pin",
+        "audited_by_round": "R526"
+      },
+      "negative_control": "`NC_结构自检器非恒绿` 面板注入 4 类缺陷 (一文件两类型 / 文件名≠类型名 / 缺命名空间 / 同目录混命名空间) ⇒ 同一机检器必红; 干净样本 (`a/Valid.cs`) 必不报。**若判据被改成恒绿, 负控立即失败。**",
+      "owner_round": "R526"
+    },
+    {
+      "id": "internal.namespace-dir-consistency-r526",
+      "level": "L2",
+      "capability": "**命名空间齐备 ∧ 目录内唯一 (R526 I3)**: 修掉 4 类真实不一致 —— ① `agent.Recall*` 与全仓小写约定相反 (61 文件小写化); ② 测试项目两套命名空间并存 (`agentframework.tests` 88 文件 → `agent.tests`, 与既有 101 文件统一) + 6 个文件无命名空间补齐; ③ 20 个文件 (agent.io 17 / agent.vectormemory 2 / agent.skills 1) 缺失命名空间 ⇒ 掉在全局命名空间; ④ `src/agent/CredentialEncryption.cs` 声明 `agent.userinteraction` 却住在 `src/agent/` ⇒ 归位 `agent`, 调用点同步。`agent.io` (netstandard2.1 / LangVersion 8.0 兼容库) 保持块式命名空间: file-scoped 是 C# 10 特性, 该项目禁用。遗留豁免 (逐条登记, 新违规不豁免): `agent.core/userinteraction`→`agent.userinteraction`, `agent.core/subagent`→`agent.subagent` (同一命名空间横跨两个程序集; 收敛需跨程序集引用重写, 列 R527 候选)。",
+      "covers": [
+        "src/agent.tests/RefactorStructureTests.cs",
+        "tools/refactor/pipeline/02_namespace_normalize.py",
+        "tools/refactor/invariant_check.py",
+        "eval/rover/r526/evidence/invariant-check.txt"
+      ],
+      "evidence_cmd": "env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR $HOME/.dotnet/dotnet test src/agent.tests/agentframework.tests.csproj -c Debug --filter FullyQualifiedName~RefactorStructureTests",
+      "evidence_path": "eval/rover/r526/evidence/tests-full-r526.txt",
+      "evidence_generated_with": {
+        "evidence_kind": "artifact",
+        "pin_status": "live",
+        "pin_reason": "worktree-only",
+        "artifact_sha12": null,
+        "instrument": null,
+        "instrument_sha12": null,
+        "binding": "audit-pin",
+        "audited_by_round": "R526"
+      },
+      "negative_control": "同上 NC 面板的「缺命名空间」与「同目录混命名空间」两类注入必红; `EXEMPT` 表只按目录+命名空间精确匹配, 新出现的违规目录不会被豁免 (豁免是逐条的, 不是通配的)。",
+      "owner_round": "R526"
+    },
+    {
+      "id": "internal.giant-class-partial-split-r526",
+      "level": "L2",
+      "capability": "**巨类按职责 partial 拆分 (R526)**: `src/agent/IndustrialAgentV2.cs` 3204 行 / 123 成员 → 主文件 2263 行 + `IndustrialAgentV2.Commands.cs` 441 (指令与 JSON 出口) + `.Plan.cs` 215 (计划真执行/续跑) + `.Context.cs` 372 (上下文装配/记忆/意图)。切分由 Roslyn 成员边界驱动: **字段/事件字段/嵌套类型强制留在主文件** (跨 partial 的静态字段初始化顺序由编译器决定 ⇒ 不可移动), 并做 OpenBraceToken/CloseBraceToken 平衡闸; `partial` 关键字由器具同时写入主文件与各片段 (漏主文件即 CS0260)。跨文件失效的 `#region/#endregion` 对同步摘除 (2 行)。",
+      "covers": [
+        "src/agent/IndustrialAgentV2.cs",
+        "src/agent/IndustrialAgentV2.Commands.cs",
+        "src/agent/IndustrialAgentV2.Plan.cs",
+        "src/agent/IndustrialAgentV2.Context.cs",
+        "tools/refactor/reftool/Program.cs",
+        "tools/refactor/pipeline/03_split_giant_class.py"
+      ],
+      "evidence_cmd": "env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR $HOME/.dotnet/dotnet test src/agent.tests/agentframework.tests.csproj -c Debug --filter FullyQualifiedName~PlanRoutingExecutionTests",
+      "evidence_path": "eval/rover/r526/evidence/tests-full-r526.txt",
+      "evidence_generated_with": {
+        "evidence_kind": "artifact",
+        "pin_status": "live",
+        "pin_reason": "worktree-only",
+        "artifact_sha12": null,
+        "instrument": null,
+        "instrument_sha12": null,
+        "binding": "audit-pin",
+        "audited_by_round": "R526"
+      },
+      "negative_control": "拆分前的 `D3_Reverse_Assertion_Dummy_Runner_Is_Gone_From_Main_Chain` 按单文件读源码 ⇒ 拆 partial 后必须改为片段集扫描, 否则断言会假绿/假红; 该测试现读 `IndustrialAgentV2*.cs` 全集 (断言强度不降)。**未做**: `OnProcessAsync` (1662 行单方法) 未拆 —— 方法内逻辑抽取属语义变换, 不在机械重构范围。",
+      "owner_round": "R526"
+    },
+    {
+      "id": "internal.build-config-centralization-r526",
+      "level": "L2",
+      "capability": "**构建配置集中化 (R526)**: 新增 `src/Directory.Build.props` 提供 4 个默认属性 (TargetFramework=net10.0 / Nullable=enable / ImplicitUsings=enable / LangVersion=latest), 25 个 csproj 中重复的同值声明全部删除; 例外项目在自身 csproj 覆盖: `agent.io` (netstandard2.1 + LangVersion 8.0 + ImplicitUsings disable, 兼容 Unity/Xamarin 宿主)。前: 25 文件各自重复 4 属性 (TargetFramework 24×, Nullable 25×, ImplicitUsings 24×, LangVersion 6×); 后: 集中 1 处 + 例外 1 处。",
+      "covers": [
+        "src/Directory.Build.props",
+        "src/agent.io/agent.io.csproj",
+        "tools/refactor/pipeline/04_build_props_centralize.py"
+      ],
+      "evidence_cmd": "env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR $HOME/.dotnet/dotnet build agent.sln -c Debug -v q --nologo",
+      "evidence_path": "eval/rover/r526/evidence/build-log.txt",
+      "evidence_generated_with": {
+        "evidence_kind": "artifact",
+        "pin_status": "live",
+        "pin_reason": "worktree-only",
+        "artifact_sha12": null,
+        "instrument": null,
+        "instrument_sha12": null,
+        "binding": "audit-pin",
+        "audited_by_round": "R526"
+      },
+      "negative_control": "例外项目自持覆盖 ⇒ props 的默认值不会污染 netstandard2.1 / LangVersion 8.0 目标; 若 props 强制 file-scoped 命名空间相关语言级别 或覆盖 TargetFramework, `agent.io` 立即 CS8400/CS0246 (R526 实测过该失败形态并已回退为块式命名空间)。",
+      "owner_round": "R526"
     }
   ],
   "aot_check_policy": "release_tag_only",

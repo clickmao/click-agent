@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 using Xunit;
 using agent.llamalocal;
 using agent.llmservice;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>v0.20.0 P3 (R343, 用户钦定策略): llm-manager — 轻量编排进程 (0 模型)。
 /// 覆盖: 转发 / lazy spawn / 崩溃重拉 / 卸载判定 (纯函数矩阵) / 卸载=kill worker 真进程 / 双启保护。</summary>

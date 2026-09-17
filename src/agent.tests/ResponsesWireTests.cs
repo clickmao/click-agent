@@ -1,8 +1,7 @@
 using System.Text.Json;
 using agent.modelqueue;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R479 判据面 (承 R478 定因机制 + R474–R477 真值口径):

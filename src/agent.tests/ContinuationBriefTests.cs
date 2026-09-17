@@ -8,8 +8,7 @@ using agent.intent;
 using agent.registry;
 using Xunit;
 using SubTask = agent.intent.IntentDecomposer.SubTask;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R458 承接轮人性化 —— 单测。

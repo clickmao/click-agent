@@ -315,7 +315,10 @@ public class PlanRoutingExecutionTests
     [Fact]
     public void D3_Reverse_Assertion_Dummy_Runner_Is_Gone_From_Main_Chain()
     {
-        var src = File.ReadAllText(Path.Combine(RepoRoot, "src", "agent", "IndustrialAgentV2.cs"));
+        // R526: 该类已按职责拆为多 partial 文件 (IndustrialAgentV2*.cs) — 断言覆盖全部片段
+        var src = string.Join("\n", Directory.EnumerateFiles(Path.Combine(RepoRoot, "src", "agent"), "IndustrialAgentV2*.cs")
+            .OrderBy(f => f, StringComparer.Ordinal)
+            .Select(File.ReadAllText));
 
         Assert.DoesNotContain("影子不产真输出", src);      // 哑体注释已删除
         Assert.DoesNotContain("RunShadowPlanAsync", src);  // 哑体入口已删除

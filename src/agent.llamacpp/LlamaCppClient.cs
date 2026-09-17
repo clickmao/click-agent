@@ -4,51 +4,6 @@ using agent.modelqueue;   // R430: LocalInputFingerprint (共享层; 不引入�
 
 namespace agent.llamacpp;
 
-/// <summary>单次生成请求参数。默认口径 = R407 对账口径: 仅 temperature 采样器 + temp 0 (greedy)、关 cache_prompt。</summary>
-public sealed record CompletionOptions
-{
-    public required string Prompt { get; init; }
-    public int MaxTokens { get; init; } = 64;
-    public string[] Samplers { get; init; } = ["temperature"];
-    public float Temperature { get; init; }
-    public int TopK { get; init; }
-    public float TopP { get; init; } = 1f;
-    public float MinP { get; init; }
-    public float RepeatPenalty { get; init; } = 1f;
-    public int Seed { get; init; }
-
-    /// <summary>
-    /// 是否启用服务端前缀缓存 (llama-server cache_prompt)。
-    /// 对账口径必须关: 文档明示启用后不同 batch 的 logits 不保证逐位一致 ⇒ 对账不可复现；
-    /// 生产口径必须开: 可复用长前缀是 K2b 的唯一来源。两者混用会把精度差误判成引擎缺陷。
-    /// </summary>
-    public bool CachePrompt { get; init; }
-
-    public bool ReturnTokens { get; init; } = true;
-}
-
-/// <summary>生成口径。Reconciliation=关前缀缓存(可复现优先, 对账用); Session=开前缀缓存(K2b 优先, 生产用)。</summary>
-public enum CompletionReuse
-{
-    Reconciliation,
-    Session,
-}
-
-/// <summary>生成结果 (含原始 token id —— 数值对账的锚点)。</summary>
-public sealed record CompletionResult(
-    string Content,
-    int[] Tokens,
-    int PromptTokens,
-    int PredictedTokens,
-    double PredictedPerSecond,
-    double PromptPerSecond,
-    int CachedTokens,
-    string RawJson,
-    // R430: 判定输入指纹 (只观测, 不影响生成) — 逐轮读数不同时先机械区分「输入不同」与「引擎不确定」。
-    string PromptSha16 = "",
-    string RequestSha16 = "",
-    string RequestFields = "");
-
 /// <summary>
 /// llama-server HTTP 客户端: 托管实现, 零 P/Invoke, 跨平台 (HttpClient 与进程二进制解耦)。
 /// 端点契约: POST /completion (return_tokens ⇒ 原始 token id) / POST /v1/embeddings / GET /health。

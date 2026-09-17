@@ -2862,3 +2862,13 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **器具**: ① 机检器新增 aux 调用剔除 (宿主修复回路, 原判定保留) ② S3 段体量上界取外部真值 (10,784→12,000) ③ 两处后验已在 prereg `posthoc_notes` 单列。
 - **诚实边界**: w3 `PRECOND_RC=1` ⇒ 标「参考 (未可验收)」; A0-off 双峰不构成有效对照臂; 调用数摆动 5–32 (本侧) / 6–22 (codex) 仍是主不确定源。
 - **下轮候选 (R526)**: ① 把「调用数/步数」做成一等问题 (批量执行 + 计划一次成型) ② 冷启窗 (换前缀后首窗) 单列 KPI 口径 ③ 技能菜单从常量前缀动态枚举 (skills/ 目录 → 菜单段) ④ 复现 w3 型「产物不可运行」定因 (life rc=1 逐用例) ⑤ 第二外部真值参照。
+
+## R526 (2026-09-17) — 项目级完全重构 (单类型单文件 · 命名空间归一 · 巨类拆分 · 构建配置集中化) (轮志: `docs/reports/r526-project-refactor.md`)
+
+- **靶点**: 用户令「完全重构当前项目，如果不懂怎么重构，重构是什么的意思入网上搜」。先定义后执行：重构 = **不改外部可见行为、只改内部结构**；判据 = 行为不变（1755 测试 + 构建）∧ 结构不变式成立（机检 + 负控）。
+- **产品改动 (机械变换, 每步后构建+测试)**: ① 类型单一化 —— 176 个多类型文件 / 575 个次要类型经 Roslyn 语法树外移为单文件（`tools/refactor/reftool extract`）；② 命名空间归一 —— `agent.Recall*` 61 文件小写化、测试命名空间统一 195 文件、20 个无命名空间文件补齐、`CredentialEncryption.cs` 归位 `agent`（`agent.io` 因 netstandard2.1/LangVersion 8.0 保持块式）；③ 巨类拆分 —— `IndustrialAgentV2` 3204 行 → 主 2263 + Commands 441 + Plan 215 + Context 372（字段/嵌套类型留主文件）；④ 构建配置集中化 —— `src/Directory.Build.props` + 25 csproj 去重；⑤ 容器文件改名 32 个 `<类型名>.cs`。
+- **读数**: `src` 文件 475 → **1054**，行 93,828 → 97,045；含 >1 顶层类型文件 **176 → 0**；文件名≠类型名 **33 → 0**；无命名空间文件 **20 → 0**；目录内混命名空间 **4 → 0**；构建 0 错误（每阶段全量 rebuild）；测试 **1755/1755 绿**（+5 结构守卫）；AOT `/tmp/pub_r526/agenthost` 15,617,360 B / sha `6b565aa0…` 可执行冒烟 rc=0（凭据未配置 ⇒ 诚实失败，未伪造）。
+- **裁决**: **结构层一次完整闭合** —— 四条不变式全部成立且**可执行**（`RefactorStructureTests` I1/I2/I3a/I3b）；负控面板 4 类注入缺陷全红（判据非恒绿）；铁律 13 入宪（`iteration-master-plan.md §0-0`）。
+- **器具**: `tools/refactor/`（Roslyn reftool 四模式 + 不变式机检 + 七步流水线 + README 教训）；登记表 +4 行 / `covers` 修正 36 行；4 处源码路径钉死测试改目录级/片段级扫描（强度不降）。
+- **诚实边界**: `agent.core/{userinteraction,subagent}` 20 文件命名空间横跨两程序集**未收敛**（需跨程序集引用重写，逐条豁免锁住 ⇒ R527 候选）；`OnProcessAsync` 1662 行单方法**未拆**（语义变换，非机械重构）；`ModelQueueRouter`/`ContextAssembler`（1530/1513 行）未拆 partial；行数 +3.4% 是单类型单文件的文件头成本，非性能回归；期间 1 次 `FrontendAskSameConnTests` 偶发失败（隔离复跑 2 次 + 全量复跑均过，无因果）。
+- **下轮候选 (R527)**: ① `agent.core` 命名空间收敛（Roslyn 语义层改名 + 引用重写）② `OnProcessAsync` 方法级抽取（需等价性夹具）③ `ModelQueueRouter`/`ContextAssembler` partial 拆分 ④ `Directory.Packages.props` 中央包版本 ⑤ 不变式接入「新增文件」前置闸。

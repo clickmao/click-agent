@@ -4,21 +4,6 @@ using System.Linq;
 namespace agent.intent;
 
 /// <summary>
-/// 出站文本扣减结果 (v0.22.0 exp9 D4b)。
-/// Failure 分支一律**返回原文**: 宁可多发一点给模型, 绝不改坏用户原话。
-/// </summary>
-public sealed record AblationResult(
-    bool Applied,
-    string Text,
-    int RemovedChars,
-    IReadOnlyList<string> RemovedClauses,
-    string? AbortReason)
-{
-    public static AblationResult NotApplied(string text, string reason, IReadOnlyList<string>? clauses = null) =>
-        new(false, text, 0, clauses ?? [], reason);
-}
-
-/// <summary>
 /// 出站文本扣减 (v0.22.0 exp9 D4b)。
 ///
 /// 为什么必须有这一步 —— "位置路由"的语义闭环:
@@ -174,45 +159,4 @@ public static class RequestAblation
     private static bool IsBoundary(char c) => Array.IndexOf(IntentDecomposer.ClauseBoundaryChars, c) >= 0;
 
     private static string Head(string s) => s.Length <= 40 ? s : s[..40] + "…";
-}
-
-/// <summary>一条本地子请求的结论 (请求原文片段 + 本地执行结论 + 是否成功)</summary>
-public sealed record LocalAnswerItem(string Request, string? Note, bool Ok);
-
-/// <summary>
-/// 本地子请求结论渲染 (v0.22.0 exp9 D4b)。
-///
-/// 谁的用户可见结论被扣减了, 谁就必须出现在回复里 —— 否则等于"框架把用户的问题删了还不回答"。
-/// 渲染是**确定性字符串拼接** (零反射, AOT 安全): 成功给结论, 失败给真实原因 (不静默)。
-/// </summary>
-public static class PlanLocalAnswer
-{
-    internal const int MaxRequestChars = 60;
-    internal const int MaxNoteChars = 200;
-
-    public static string Render(IReadOnlyList<LocalAnswerItem> items)
-    {
-        if (items is null || items.Count == 0)
-            return string.Empty;
-
-        var sb = new StringBuilder();
-        foreach (var it in items)
-        {
-            if (string.IsNullOrWhiteSpace(it.Request))
-                continue;
-            if (sb.Length == 0)
-                sb.Append("\n\n[框架本地执行 (零 token)]");
-            sb.Append("\n- ").Append(Clip(it.Request, MaxRequestChars)).Append(" ⇒ ");
-            if (it.Ok && !string.IsNullOrWhiteSpace(it.Note))
-                sb.Append(Clip(it.Note!.Replace('\n', ' ').Trim(), MaxNoteChars));
-            else if (!it.Ok)
-                sb.Append("本地执行未成功: ").Append(Clip((it.Note ?? "无错误信息").Replace('\n', ' ').Trim(), MaxNoteChars));
-            else
-                sb.Append("(本地执行完成, 无结论文本)");
-        }
-
-        return sb.ToString();
-    }
-
-    private static string Clip(string s, int n) => s.Length <= n ? s : s[..n] + "…";
 }

@@ -3,8 +3,7 @@ using System.IO;
 using System.Threading;
 using Xunit;
 using agent.execution;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>v0.17.3 (R340): 时序撞车检测 — 写者持续改写时 IsSettling=true; 停写后 stable;
 /// WaitUntilStable 超时拒绝; 不存在文件不误判。</summary>

@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 using agent.intent;
 using agent.registry;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R516 节点产物契约判据 (修 R515 两个真机缺陷):

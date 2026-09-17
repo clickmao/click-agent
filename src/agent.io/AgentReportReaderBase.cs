@@ -5,63 +5,23 @@ using System.Text;
 
 namespace agent.io
 {
-
-/// <summary>
-/// Agent 输出事件类型 (读侧分类)。
-/// </summary>
-public enum ReportEventKind
-{
-    /// <summary>普通文本行 (agent 回复/CLI 提示)</summary>
-    Text,
-
-    /// <summary>chatbox 前端指令行 (@chatbox:{json} — thinking_page_switch/分片/thinking_end/output_append)</summary>
-    ChatboxDirective,
-
-    /// <summary>流式块开始 (@stream begin …)</summary>
-    StreamBegin,
-
-    /// <summary>流式块数据行 (块内多行原文 — 逐行原样透传)</summary>
-    StreamChunk,
-
-    /// <summary>流式块结束 (@stream end)</summary>
-    StreamEnd,
-
-    /// <summary>JSON 结构化结果行 (以 { 开头且解析成功的单行 — /status /balance /plan 等)</summary>
-    Json,
-
-    /// <summary>统一命令行 (@cmd name key=value … — v0.11.0 统一命令协议)</summary>
-    Command,
-
-    /// <summary>输入流结束 (stdin EOF / agent 退出)</summary>
-    Eof,
-}
-
-/// <summary>读出的事件 (kind + 原文载荷)</summary>
-public sealed class ReportEvent
-{
-    public ReportEventKind Kind { get; set; }
-
-    /// <summary>载荷: Text=整行 / ChatboxDirective=去前缀后的 json / StreamChunk=块内一行 / Json=整行</summary>
-    public string Payload { get; set; } = string.Empty;
-}
-
-/// <summary>
-/// Agent 输出读取基类 (需求2): 前端每次 Console.ReadLine() 拿 agent 一行输出,
-/// 本基类把"一行"聚合为语义事件 — 单行协议 (指令/JSON) 与多行流式块 (定界符包裹)。
-///
-/// 行协议 (与 agent.logging.ConsoleChatboxSink 及 host 输出契约一致):
-///   @chatbox:{json}          → ChatboxDirective (单行)
-///   @stream begin            → StreamBegin (其后进入块模式)
-///   块内任意行               → StreamChunk (逐行原样)
-///   @stream end              → StreamEnd
-///   { 开头且单行合法 JSON    → Json (快速解析: 仅查首字符 + 尾字符配对, 不引 JSON 库)
-///   其他                     → Text
-///
-/// 实现子类只需覆盖数据来源 (TextReader / 内存行列表 / 网络流), 解析逻辑全部在本基类
-/// (ReadEvent 状态机) — 满足"多写一个完善的 AgentReportReaderBase 基类并实现不同内容读取"。
-/// </summary>
-public abstract class AgentReportReaderBase
-{
+    /// <summary>
+    /// Agent 输出读取基类 (需求2): 前端每次 Console.ReadLine() 拿 agent 一行输出,
+    /// 本基类把"一行"聚合为语义事件 — 单行协议 (指令/JSON) 与多行流式块 (定界符包裹)。
+    ///
+    /// 行协议 (与 agent.logging.ConsoleChatboxSink 及 host 输出契约一致):
+    ///   @chatbox:{json}          → ChatboxDirective (单行)
+    ///   @stream begin            → StreamBegin (其后进入块模式)
+    ///   块内任意行               → StreamChunk (逐行原样)
+    ///   @stream end              → StreamEnd
+    ///   { 开头且单行合法 JSON    → Json (快速解析: 仅查首字符 + 尾字符配对, 不引 JSON 库)
+    ///   其他                     → Text
+    ///
+    /// 实现子类只需覆盖数据来源 (TextReader / 内存行列表 / 网络流), 解析逻辑全部在本基类
+    /// (ReadEvent 状态机) — 满足"多写一个完善的 AgentReportReaderBase 基类并实现不同内容读取"。
+    /// </summary>
+    public abstract class AgentReportReaderBase
+    {
     /// <summary>chatbox 指令行前缀 (与 ConsoleChatboxSink 写侧一致)</summary>
     public const string ChatboxPrefix = "@chatbox:";
 
@@ -162,15 +122,5 @@ public abstract class AgentReportReaderBase
         var trimmed = line.Trim();
         return trimmed.Length >= 2 && trimmed[0] == '{' && trimmed[trimmed.Length - 1] == '}';
     }
-}
-
-/// <summary>TextReader 数据源实现 (stdin / 文件 / StringReader 均可)。</summary>
-public sealed class TextReportReader : AgentReportReaderBase
-{
-    private readonly TextReader _reader;
-
-    public TextReportReader(TextReader reader) => _reader = reader;
-
-    protected override string? ReadLineCore() => _reader.ReadLine();
-}
+    }
 }

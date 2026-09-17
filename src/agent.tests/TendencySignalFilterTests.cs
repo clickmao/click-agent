@@ -1,7 +1,6 @@
 using agent.tendency;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.11.0 R133 (K1 断链修复): UserTendency 画像被空信号记录稀释 → 恒 0 召回。

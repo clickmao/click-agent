@@ -3,8 +3,7 @@ using System.IO;
 using System.Threading;
 using Xunit;
 using agent.execution;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>v0.17.0 T1/T2/T3 (R334): 跨进程文件锁 / 原子写 / 占用者检测 / 加锁写策略 / 教训记忆。</summary>
 public class ExecutorHardeningTests
@@ -255,7 +254,7 @@ public class ExecutorHardeningTests
     public void G44_锁实现不得删除锁文件()
     {
         var root = FindRepoRoot();
-        var src = File.ReadAllText(Path.Combine(root, "src", "agent", "execution", "FileLocking.cs"));
+        var src = File.ReadAllText(Path.Combine(root, "src", "agent", "execution", "OccupantDetector.cs"));
         var kept = new System.Collections.Generic.List<string>();
         foreach (var l in src.Split('\n'))
         {

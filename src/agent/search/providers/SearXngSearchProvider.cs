@@ -83,38 +83,3 @@ public sealed class SearXngSearchProvider : ISearchProvider
         return results;
     }
 }
-
-// ── SearXNG JSON 协议模型 ──
-
-public class SearXngResponse
-{
-    [JsonPropertyName("query")]
-    public string? Query { get; set; }
-
-    [JsonPropertyName("results")]
-    public List<SearXngResult>? Results { get; set; }
-
-    [JsonPropertyName("number_of_results")]
-    public long NumberOfResults { get; set; }
-}
-
-public class SearXngResult
-{
-    [JsonPropertyName("url")]
-    public string? Url { get; set; }
-
-    [JsonPropertyName("title")]
-    public string? Title { get; set; }
-
-    [JsonPropertyName("content")]
-    public string? Content { get; set; }
-
-    [JsonPropertyName("score")]
-    public double Score { get; set; }
-
-    [JsonPropertyName("engine")]
-    public string? Engine { get; set; }
-
-    [JsonPropertyName("engines")]
-    public List<string>? Engines { get; set; }
-}

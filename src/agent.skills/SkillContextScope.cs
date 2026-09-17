@@ -1,12 +1,5 @@
 namespace agent.skills;
 
-/// <summary>Skill 沙箱内写入 (暂存, 提交时校验)</summary>
-public sealed class SkillWrite
-{
-    public string Field { get; init; } = string.Empty;
-    public string Value { get; init; } = string.Empty;
-}
-
 /// <summary>
 /// 上下文隔离沙箱 (P2, plan_skill_dispatch.md S.2 SkillContextScope; 原文 §5.3/§9.2):
 /// - 白名单读: Skill 只能读 definition.Permissions 允许的全局字段, 越权返回 null (记录)

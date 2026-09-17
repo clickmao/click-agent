@@ -3,8 +3,7 @@ using System.IO;
 using System.Linq;
 using Xunit;
 using agent.staging;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>v0.17.1 (R335): 离线变更 staging + 用户审批 — 批次落盘不占真实地址 / 恢复 / 过期 /
 /// apply 基线比对 (VS Code 编辑场景防覆盖) / 多批合并 / reject / JSON 输出。</summary>

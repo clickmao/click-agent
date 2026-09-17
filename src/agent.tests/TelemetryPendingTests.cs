@@ -1,7 +1,6 @@
 using agent.config;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.11.0 R121 (真缺陷 51 防御): Configure 前的 Emit 不再静默丢失 — 缓存 ring + Configure flush。

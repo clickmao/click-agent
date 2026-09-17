@@ -9,8 +9,7 @@ using agent.action;
 using agent.core;
 using agent.modelqueue;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R456 动作环 (Action Loop) 单测 —— 声明面/解析面/执行面/回灌面 四段各有断言。

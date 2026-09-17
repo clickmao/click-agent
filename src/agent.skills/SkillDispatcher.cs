@@ -221,9 +221,3 @@ public sealed class SkillDispatcher
         }
     }
 }
-
-[JsonSerializable(typeof(SkillResult))]
-[JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
-public partial class SkillJsonContext : JsonSerializerContext
-{
-}

@@ -9,8 +9,7 @@ using agent.action;
 using agent.core;
 using agent.modelqueue;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R496 判据表 (四个候选各一面 + 一个收口面), 全部只吃**结构量**:

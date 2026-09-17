@@ -4,8 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>R333/R338 (P10): ExtractAnchorWords long-key 零分配重写的语义等价性 — 反射调用 private
 /// 新实现 vs 内联旧算法 (Substring 全滑窗 + string 字典), 随机 CJK/ASCII/标点/emoji 混合文本 × 40 断言全等。

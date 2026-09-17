@@ -1,8 +1,7 @@
 using agent.vectormemory;
 using Xunit;
 using Xunit.Abstractions;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// v0.16.1 R329 (T-B4): HashEmbeddingProvider 双实现统一 — vectormemory 升级为唯一实现

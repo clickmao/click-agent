@@ -3,14 +3,6 @@ using System.Globalization;
 
 namespace agent.modelqueue;
 
-/// <summary>单次调用用量记录</summary>
-public sealed record UsageRecord(string ModelId, string Provider, int PromptTokens, int CompletionTokens, DateTime At);
-
-/// <summary>模型余额快照 (真实 API 查询结果或本地推算)</summary>
-public sealed record BalanceSnapshot(
-    string Provider, double? TotalRemaining, DateTime At, bool FromApi,
-    string Currency = "USD"); // v0.11.0 R15: 原始币种 (默认 USD 兼容旧调用)
-
 /// <summary>
 /// v0.10.0 Token 使用统计服务 — 用户钦定契约:
 ///   ① 初始化: 每个有余额 API 的 provider 真实同步一次 (BalanceQueryService 真实 HTTP)
@@ -211,11 +203,3 @@ public sealed class TokenUsageService
         get { lock (_sync) return _balances.Keys.ToList(); }
     }
 }
-
-/// <summary>用量统计快照</summary>
-public sealed record UsageStatsSnapshot(
-    long TotalTokens,
-    Dictionary<string, long> TokensByModel,
-    Dictionary<string, long> TokensByProvider,
-    Dictionary<string, BalanceSnapshot> Balances,
-    double EstimatedCostUsd);

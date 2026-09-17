@@ -4,8 +4,7 @@ using System.Threading.Tasks;
 using agent.action;
 using agent.modelqueue;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R520 影子路径闸的两侧样例 (R519 真机实证的缺陷族)。

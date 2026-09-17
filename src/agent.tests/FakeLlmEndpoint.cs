@@ -8,12 +8,6 @@ using System.Threading.Tasks;
 
 namespace agent.tests;
 
-/// <summary>测试用 HTTP 客户端工厂 (不共享连接, 保证每次调用都是一次真实 HTTP 往返)。</summary>
-internal sealed class StubHttpClientFactory : IHttpClientFactory
-{
-    public HttpClient CreateClient(string name) => new();
-}
-
 /// <summary>本地假 LLM 端点: 按序返回预置响应体, 记录每次请求体 (零外部依赖, 真 HTTP 通路)。</summary>
 internal sealed class FakeLlmEndpoint : IDisposable
 {

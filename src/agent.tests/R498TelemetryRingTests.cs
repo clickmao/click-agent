@@ -4,8 +4,7 @@ using System.IO;
 using System.Linq;
 using agent.config;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R498 候选②: 遥测 pending 环的**满环语义**回归 (真缺陷 88)。

@@ -3,8 +3,7 @@ using System.Linq;
 using agent.context;
 using agent.modelqueue;
 using Xunit;
-
-namespace agentframework.tests;
+namespace agent.tests;
 
 /// <summary>
 /// R498 候选③ (R413 主线补口): **内容承载的本地生成通道** —— 判据 / 守卫 / 闸 / 结算类的机检。

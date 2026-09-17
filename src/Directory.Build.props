@@ -1,0 +1,12 @@
+<Project>
+
+  <!-- R526 完全重构: 构建配置集中化 (原 25 个 csproj 各自重复 TargetFramework/Nullable/ImplicitUsings/LangVersion)。
+       props 只提供默认值; 例外项目在自身 csproj 内覆盖 (netstandard2.1 / LangVersion 8.0 / ImplicitUsings disable)。 -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+</Project>
