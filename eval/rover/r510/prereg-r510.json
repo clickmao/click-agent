@@ -1,0 +1,29 @@
+{
+  "round": "R510",
+  "created_at": "2026-09-17 09:1x CST (起臂前写入; 无事后补记)",
+  "theme": "单点攻坚: 「自检契约泛化」是否能让隐藏用例 restart_drops_expired 从不稳定/失败转通过",
+  "change": "SessionBaseline 二.3 增加非功能语义必测条款 (进程重启后状态/持久化重放/并发原子性/过期清理); 语言无关, 不含题面关键词",
+  "taskset": "eval/rover/r510/taskset-r510.json (只含 p3; 项目布局)",
+  "fixture": {
+    "cases": "eval/rover/r510/cases/p3_cases.py",
+    "cases_md5": "8d13fd53018250fd25f47d196092ad7c",
+    "cases_md5_matches_r508_r509": true,
+    "ref": "eval/rover/r510/ref/p3"
+  },
+  "arms": {
+    "agentBefore": "旧 AOT /tmp/pub_r509/agenthost (R509 发布物)",
+    "agentAfter": "新 AOT /tmp/pub_r510/agenthost (含本轮自检条款 + 前端事件域改动)"
+  },
+  "reps": 3,
+  "fresh_session_per_rep": true,
+  "same_window": "两臂在同一窗口、同一 adapter/模型、同一夹具下串行跑; 起臂前闸连续 2 PASS",
+  "primary_endpoint": "隐藏用例 restart_drops_expired 的 PASS 次数 (after vs before, 各 3 次)",
+  "secondary_endpoint": ["全对轮次 all_pass_reps (各 3 次)", "任务级 pass_rates", "远端调用数/总 token (对照读数, 非本轮验收依据)"],
+  "prediction": "after 的 restart_drops_expired 通过数 >= before。若 after 仍 0/3 ⇒ 该条款不足以覆盖此缺陷: 记负结果, 不做任何事后加码宣称, 下轮转机制二 (git 恢复/重启路径的代码级自测道具)。",
+  "also_in_round": [
+    "前端事件域: task.progress 真发 (动作环步进观察者) + approval.requested/responded 最小闭环",
+    "器具: 全量单测回归 + AOT 重发布 (IL 警告须 0) + 真机 E2E (A1-A6 机械判分)"
+  ],
+  "verdict_rule": "主指标以 R510 快照面板 (python3 eval/rover/r507pre/exec_precondition.py --round R510) 的逐用例实测为准; 自报 all_pass 只作对照不吃。rc≠0 ⇒ 本轮 token/调用降幅一律标「参考(未可验收)」。",
+  "checks_posthoc": []
+}

@@ -10,7 +10,7 @@ namespace agent.frontendapi;
 /// 入站: 路由 ask.reply / ask.cancel → Complete(askId, answers)。
 /// 语义铁律: 拒绝/超时/取消一律返回 null (调用方走降级, 绝不伪造答案); 关闭必有 ask_closed 事件与原因。
 /// </summary>
-public sealed class FrontendPromptService : IUserPromptService, IAskReplySink
+public sealed class FrontendPromptService : IUserPromptService, IAskReplySink, IApprovalReplySink
 {
     private readonly Func<string, Task> _emitEnvelope;   // 事件出站 (已序列化信封行)
     private readonly int _timeoutSeconds;
@@ -23,13 +23,27 @@ public sealed class FrontendPromptService : IUserPromptService, IAskReplySink
         public bool Superseded;
     }
 
+    /// <summary>等待中的审批 (R510)。与 asks 分开登记: 审批与凭据问询是两条独立通道, 不互相覆盖。</summary>
+    private sealed class PendingApproval
+    {
+        public TaskCompletionSource<(bool Approved, string? Reason)> Tcs =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public required string ApprovalId;
+        public bool Superseded;
+    }
+
     private Pending? _pending;
+    private PendingApproval? _pendingApproval;
     private readonly object _lock = new();
 
     /// <summary>已答 ask_id 缓存 (幂等重放: 同 id 重复提交不二次投递, 也不误判 unknown)。</summary>
     private readonly HashSet<string> _answered = new(StringComparer.Ordinal);
     private readonly Queue<string> _answeredOrder = new();
     private const int AnsweredCacheLimit = 32;
+
+    /// <summary>已答 approval_id 缓存 (同口径幂等)。</summary>
+    private readonly HashSet<string> _answeredApprovals = new(StringComparer.Ordinal);
+    private readonly Queue<string> _answeredApprovalOrder = new();
 
     public FrontendPromptService(Func<string, Task> emitEnvelope, int timeoutSeconds = 300)
     {
@@ -90,16 +104,98 @@ public sealed class FrontendPromptService : IUserPromptService, IAskReplySink
         }
     }
 
-    public Task<OperationApprovalResult> RequestOperationApprovalAsync(
+    /// <summary>
+    /// R510: 审批通道真实现 (R357 起为保守拒绝占位 —— 「P2」欠账)。
+    /// 语义: 发 approval.requested 事件 → 等 approval.respond → 每个请求必发 approval.responded 收口。
+    /// 拒绝/超时/取消/被新审批覆盖 **一律不批准** (fail-closed); 超时按 _timeoutSeconds (默认 300s)。
+    /// </summary>
+    public async Task<OperationApprovalResult> RequestOperationApprovalAsync(
         SensitiveOperationRequest request, CancellationToken ct = default)
     {
-        // ask 域 P1 范围: 审批类仍走既有通道 (前端协议化待 P2); 保守拒绝 (不伪造批准)
-        return Task.FromResult(new OperationApprovalResult
+        var approvalId = "apr-" + Guid.NewGuid().ToString("N")[..8];
+        var pending = new PendingApproval { ApprovalId = approvalId };
+        string? supersededId = null;
+        lock (_lock)
         {
-            Approved = false,
-            AnsweredBy = PromptAnswerSource.Denied,
-            Reason = "frontend ask 域未实现审批路由 (P2)",
-        });
+            if (_pendingApproval is not null)
+            {
+                _pendingApproval.Superseded = true;
+                supersededId = _pendingApproval.ApprovalId;
+                _pendingApproval.Tcs.TrySetResult((false, "superseded_by_new_approval")); // 覆盖 ⇒ 放弃 (诚实语义)
+            }
+            _pendingApproval = pending;
+        }
+        if (supersededId is not null)
+            await _emitEnvelope(ApprovalEnvelope.BuildResponded(
+                supersededId, approved: false, nameof(PromptAnswerSource.Denied), "superseded_by_new_approval"))
+                .ConfigureAwait(false);
+
+        var timeoutSeconds = _timeoutSeconds > 0 ? _timeoutSeconds : 300;
+        await _emitEnvelope(ApprovalEnvelope.BuildRequested(
+            approvalId,
+            request.Kind.ToString(),
+            request.Summary ?? string.Empty,
+            request.Details ?? string.Empty,
+            request.Initiator ?? string.Empty,
+            timeoutSeconds)).ConfigureAwait(false);
+
+        try
+        {
+            var (approved, reason) = await pending.Tcs.Task
+                .WaitAsync(TimeSpan.FromSeconds(timeoutSeconds), ct).ConfigureAwait(false);
+            await _emitEnvelope(ApprovalEnvelope.BuildResponded(
+                approvalId, approved,
+                approved ? nameof(PromptAnswerSource.RealUser) : nameof(PromptAnswerSource.Denied),
+                reason ?? string.Empty)).ConfigureAwait(false);
+            return new OperationApprovalResult
+            {
+                Approved = approved,
+                AnsweredBy = approved ? PromptAnswerSource.RealUser : PromptAnswerSource.Denied,
+                Reason = reason,
+            };
+        }
+        catch (TimeoutException)
+        {
+            await _emitEnvelope(ApprovalEnvelope.BuildResponded(
+                approvalId, approved: false, nameof(PromptAnswerSource.Timeout), "timeout")).ConfigureAwait(false);
+            return new OperationApprovalResult
+            {
+                Approved = false,
+                AnsweredBy = PromptAnswerSource.Timeout,
+                Reason = "timeout",
+            };
+        }
+        catch (OperationCanceledException)
+        {
+            await _emitEnvelope(ApprovalEnvelope.BuildResponded(
+                approvalId, approved: false, nameof(PromptAnswerSource.Denied), "cancelled")).ConfigureAwait(false);
+            return new OperationApprovalResult
+            {
+                Approved = false,
+                AnsweredBy = PromptAnswerSource.Denied,
+                Reason = "cancelled",
+            };
+        }
+        finally
+        {
+            lock (_lock) { if (ReferenceEquals(_pendingApproval, pending)) _pendingApproval = null; }
+        }
+    }
+
+    /// <summary>approval.respond 消费点 (幂等: 同 approval_id 重复提交不二次投递, 也不误判 unknown)。</summary>
+    public ApprovalReplyOutcome CompleteApproval(string approvalId, bool approved, string? reason)
+    {
+        PendingApproval? p;
+        lock (_lock)
+        {
+            p = _pendingApproval;
+            if (p is null || p.ApprovalId != approvalId)
+                return _answeredApprovals.Contains(approvalId)
+                    ? ApprovalReplyOutcome.AlreadyAnswered
+                    : ApprovalReplyOutcome.UnknownApproval;
+            RememberApproval(approvalId);
+        }
+        return p.Tcs.TrySetResult((approved, reason)) ? ApprovalReplyOutcome.Applied : ApprovalReplyOutcome.AlreadyAnswered;
     }
 
     /// <summary>ask.reply / ask.cancel 消费点 (P1-6 幂等: 同 ask_id 重复提交不二次投递)。</summary>
@@ -121,6 +217,13 @@ public sealed class FrontendPromptService : IUserPromptService, IAskReplySink
         if (_answered.Add(askId)) _answeredOrder.Enqueue(askId);
         while (_answeredOrder.Count > AnsweredCacheLimit)
             _answered.Remove(_answeredOrder.Dequeue());
+    }
+
+    private void RememberApproval(string approvalId)
+    {
+        if (_answeredApprovals.Add(approvalId)) _answeredApprovalOrder.Enqueue(approvalId);
+        while (_answeredApprovalOrder.Count > AnsweredCacheLimit)
+            _answeredApprovals.Remove(_answeredApprovalOrder.Dequeue());
     }
 
     /// <summary>条目 → 通道题面: 选项/类型必须结构化下发 (前端渲染菜单), 不再只拼文本。</summary>

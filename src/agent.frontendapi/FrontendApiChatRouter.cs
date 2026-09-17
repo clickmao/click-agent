@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using agent.core;
+using agent.modelqueue;
 
 namespace agent.frontendapi;
 
@@ -14,17 +15,20 @@ public sealed class FrontendApiChatRouter
     private readonly IAgent _agent;
     private readonly string _sessionId;
     private readonly IAskReplySink? _askSink;
+    private readonly IApprovalReplySink? _approvalSink;
     private readonly FrontendTaskRegistry? _tasks;
     private readonly FrontendEventHub? _hub;
 
     public FrontendApiChatRouter(IAgent agent, string? sessionId = null, IAskReplySink? askSink = null,
-                                 FrontendTaskRegistry? tasks = null, FrontendEventHub? hub = null)
+                                 FrontendTaskRegistry? tasks = null, FrontendEventHub? hub = null,
+                                 IApprovalReplySink? approvalSink = null)
     {
         _agent = agent;
         _sessionId = sessionId ?? "frontend-main";
         _askSink = askSink;
         _tasks = tasks;
         _hub = hub;
+        _approvalSink = approvalSink;
     }
 
     /// <summary>api → payloadJson; 未知 api → null。</summary>
@@ -43,6 +47,9 @@ public sealed class FrontendApiChatRouter
                     await _hub.EmitAsync(FrontendApiContract.FormatEvent("task.started", _tasks.StartedJson(taskId))).ConfigureAwait(false);
                 var ok = false;
                 var chars = 0;
+                // R510: 步进观察者绑定作用域 = 本次 ProcessAsync 的异步流 ⇒ 动作环内每步真实上报 task.progress
+                // (未接线 registry/hub ⇒ NoopScope, 老行为逐字节不变)。
+                using var progressScope = BindProgress(taskId);
                 try
                 {
                     var resp = await _agent.ProcessAsync(new Message
@@ -110,12 +117,65 @@ public sealed class FrontendApiChatRouter
                 }
                 return Encoding.UTF8.GetString(ms.ToArray());
             }
+            // R510: 审批域回程 — 前端批准/拒绝必须能落到等待中的审批 (否则审批永远超时 = 声称支持却打不通)。
+            // 与 ask 域同口径: 外层 ok = 请求已处理, 结果语义只在 payload.outcome 表达 (单一语义)。
+            case "approval.respond":
+            {
+                if (!ApprovalEnvelope.TryParseResponse(payloadJson, out var arep) || arep is null)
+                    throw new BadPayloadException(
+                        "approval.respond 需要 approval_id 与布尔 approved (payload: {\"approval_id\":\"apr-xxxxxxxx\",\"approved\":true})");
+                var outcomeText = "channel_unavailable";
+                if (_approvalSink is not null)
+                {
+                    var outcome = _approvalSink.CompleteApproval(arep.ApprovalId, arep.Approved, arep.Reason);
+                    outcomeText = outcome switch
+                    {
+                        ApprovalReplyOutcome.Applied => arep.Approved ? "approved" : "rejected",
+                        ApprovalReplyOutcome.UnknownApproval => "unknown_approval",
+                        _ => "already_answered",
+                    };
+                }
+                using var ms = new MemoryStream();
+                using (var w = new Utf8JsonWriter(ms))
+                {
+                    w.WriteStartObject();
+                    w.WriteString("approval_id", arep.ApprovalId);
+                    w.WriteString("outcome", outcomeText);
+                    w.WriteEndObject();
+                }
+                return Encoding.UTF8.GetString(ms.ToArray());
+            }
             case "meta.ping":
                 return "{\"pong\":true}";
             default:
                 return null;
         }
     }
+
+    /// <summary>
+    /// R510: 把本任务的步进出站面绑进当前异步流。task_id 未知 (未接线) ⇒ NoopScope (调用方零分支)。
+    /// </summary>
+    private IDisposable BindProgress(string? taskId)
+    {
+        if (taskId is null || _tasks is null || _hub is null) return NoopScope;
+        var tasks = _tasks;
+        var hub = _hub;
+        return ActionProgressObserver.Bind(async p =>
+        {
+            // 登记失败 (任务已收口/未知) ⇒ 不发事件: 不产出指向不存在任务的 progress。
+            if (!tasks.Progress(taskId, p.StepIndex, p.Tool, p.Ok, p.ElapsedMs, p.Tool)) return;
+            await hub.EmitAsync(FrontendApiContract.FormatEvent(
+                "task.progress", tasks.ProgressJson(taskId, p.Tool, p.Ok, p.ElapsedMs, p.Tool)))
+                .ConfigureAwait(false);
+        });
+    }
+
+    private sealed class NoopDisposable : IDisposable
+    {
+        public void Dispose() { }
+    }
+
+    private static readonly IDisposable NoopScope = new NoopDisposable();
 
     public sealed class BadPayloadException(string msg) : Exception(msg);
 }

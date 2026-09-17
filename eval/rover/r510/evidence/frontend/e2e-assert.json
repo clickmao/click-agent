@@ -1,0 +1,48 @@
+{
+  "round": "R510",
+  "checks": [
+    {
+      "id": "A1",
+      "ok": true,
+      "detail": "事件序 ['task.started', 'plan.created', 'task.progress', 'task.progress', 'task.progress', 'plan.node', 'plan.finished', 'task.completed'] (started=0 first_progress=2 completed=7)"
+    },
+    {
+      "id": "A2",
+      "ok": true,
+      "detail": "3 条 progress; 首条={'task_id': 'task-1789605403427-1', 'step_index': 1, 'tool': 'write_file', 'ok': True, 'elapsed_ms': 0, 'current_action': 'write_file'}; 非法=[]"
+    },
+    {
+      "id": "A3",
+      "ok": true,
+      "detail": "resp.ok=True reply_len=173"
+    },
+    {
+      "id": "A4",
+      "ok": true,
+      "detail": "snapshot.ok=True tasks=[{\"task_id\": \"task-1789605403427-1\", \"state\": \"done\", \"session_id\": \"frontend-main\", \"api\": \"chat.send\", \"started_at_ms\": 1789605403427, \"ended_at_ms\": 1789605407899, \"step_index\": 3, \"current_action\": \"run_command\", \"reply_chars\": 173, \"success\": true}]"
+    },
+    {
+      "id": "A5",
+      "ok": true,
+      "detail": "approval_ctrl={\"ok\": true, \"payload\": {\"approval_id\": \"apr-doesnotexist\", \"outcome\": \"unknown_approval\"}, \"error\": null}"
+    },
+    {
+      "id": "A6",
+      "ok": true,
+      "detail": "ws_files=['r510_progress.txt']"
+    }
+  ],
+  "fails": [],
+  "rc": 0,
+  "progress_n": 3,
+  "events": [
+    "task.started",
+    "plan.created",
+    "task.progress",
+    "task.progress",
+    "task.progress",
+    "plan.node",
+    "plan.finished",
+    "task.completed"
+  ]
+}

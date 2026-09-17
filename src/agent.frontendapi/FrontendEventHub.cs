@@ -6,6 +6,20 @@ public interface IAskReplySink
     AskReplyOutcome Complete(string askId, Dictionary<string, string>? answers);
 }
 
+/// <summary>approval.respond 的结果 (Applied=已投递到等待中的审批; 未知/重复 = 显式拒绝, 不静默)。</summary>
+public enum ApprovalReplyOutcome
+{
+    Applied,
+    UnknownApproval,
+    AlreadyAnswered,
+}
+
+/// <summary>approval.respond 的消费面 (R510; 由 FrontendPromptService 实现)。</summary>
+public interface IApprovalReplySink
+{
+    ApprovalReplyOutcome CompleteApproval(string approvalId, bool approved, string? reason);
+}
+
 /// <summary>
 /// R375 (exp2 P0-1): 前端事件出站枢纽 —— 进程内**唯一**出站口。
 /// PromptService 用 EmitAsync 发信封; FrontendApiServer 挂接实际 TCP 连接推送 (AttachServer)。
@@ -15,6 +29,7 @@ public sealed class FrontendEventHub
 {
     private Func<string, Task>? _sender;
     private volatile IAskReplySink? _askSink;
+    private volatile IApprovalReplySink? _approvalSink;
     private int _emitted;
     private int _dropped;
 
@@ -31,9 +46,14 @@ public sealed class FrontendEventHub
 
     public IAskReplySink? AskSink => _askSink;
 
+    /// <summary>R510: 审批应答面 (未挂接 ⇒ 路由层回 channel_unavailable, 不伪造批准)。</summary>
+    public IApprovalReplySink? ApprovalSink => _approvalSink;
+
     public void AttachServer(Func<string, Task> sender) => _sender = sender;
 
     public void AttachAsk(IAskReplySink sink) => _askSink = sink;
+
+    public void AttachApproval(IApprovalReplySink sink) => _approvalSink = sink;
 
     public async Task EmitAsync(string envelopeLine)
     {

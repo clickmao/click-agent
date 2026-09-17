@@ -360,10 +360,13 @@ if (args.Length >= 2 && args[0] == "--frontend-api")
     var eventHub = provider.GetRequiredService<agent.frontendapi.FrontendEventHub>();
     if (provider.GetRequiredService<agent.userinteraction.IUserPromptService>() is agent.frontendapi.IAskReplySink askSink)
         eventHub.AttachAsk(askSink);
+    // R510: 审批应答面同源挂接 (同一 PromptService; 未挂接 ⇒ approval.respond 回 channel_unavailable, 不伪造批准)
+    if (provider.GetRequiredService<agent.userinteraction.IUserPromptService>() is agent.frontendapi.IApprovalReplySink approvalSink)
+        eventHub.AttachApproval(approvalSink);
     // R509: 任务生命周期登记 (chat.send → task.started/completed 事件 + state.snapshot.tasks)
     var taskRegistry = new agent.frontendapi.FrontendTaskRegistry();
     var chatRouter = new agent.frontendapi.FrontendApiChatRouter(entryAgent,
-        askSink: eventHub.AskSink, tasks: taskRegistry, hub: eventHub);
+        askSink: eventHub.AskSink, tasks: taskRegistry, hub: eventHub, approvalSink: eventHub.ApprovalSink);
     var v2 = entryAgent as IndustrialAgentV2;
     var server = new agent.frontendapi.FrontendApiServer(async (api, payloadJson) =>
     {

@@ -1,0 +1,179 @@
+{
+ "label": "R510",
+ "layout": "project",
+ "taskset": "eval/rover/r510/taskset-r510.json",
+ "snapshot_root": "eval/rover/r510/snapshots",
+ "tasks_n": 1,
+ "windows_n": 3,
+ "rule": "可验收前置(project 布局): 仓内不可变快照 ⇒ 独立物化到全新临时目录 ⇒ python3 -I -B 实跑隐藏用例脚本 ⇒ 逐条机械判对; 自报 all_pass 只作对照不吃",
+ "scope_source": null,
+ "scope_prereg": false,
+ "scope_require": null,
+ "scope_nonrequired": null,
+ "windows": {
+  "r510ab1": {
+   "dir": "eval/rover/r510/evidence/windows/r510ab1",
+   "arms": {
+    "agentAfter/p3": {
+     "arm": "agentAfter",
+     "tag": "After",
+     "tid": "p3",
+     "side": "agent",
+     "kind": "project",
+     "family": "threaded-kv-service",
+     "cases_n": 12,
+     "cases_expected": 12,
+     "cases_pass": 12,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r510/evidence/windows/r510ab1/grade-After-p3.json",
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    },
+    "agentBefore/p3": {
+     "arm": "agentBefore",
+     "tag": "Before",
+     "tid": "p3",
+     "side": "agent",
+     "kind": "project",
+     "family": "threaded-kv-service",
+     "cases_n": 12,
+     "cases_expected": 12,
+     "cases_pass": 11,
+     "rc": 1,
+     "correct": false,
+     "work_dir": null,
+     "failed_cases": [
+      "restart_drops_expired"
+     ],
+     "claimed_all_pass": false,
+     "claimed_src": "eval/rover/r510/evidence/windows/r510ab1/grade-Before-p3.json",
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    }
+   }
+  },
+  "r510ab2": {
+   "dir": "eval/rover/r510/evidence/windows/r510ab2",
+   "arms": {
+    "agentAfter/p3": {
+     "arm": "agentAfter",
+     "tag": "After",
+     "tid": "p3",
+     "side": "agent",
+     "kind": "project",
+     "family": "threaded-kv-service",
+     "cases_n": 12,
+     "cases_expected": 12,
+     "cases_pass": 12,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r510/evidence/windows/r510ab2/grade-After-p3.json",
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    },
+    "agentBefore/p3": {
+     "arm": "agentBefore",
+     "tag": "Before",
+     "tid": "p3",
+     "side": "agent",
+     "kind": "project",
+     "family": "threaded-kv-service",
+     "cases_n": 12,
+     "cases_expected": 12,
+     "cases_pass": 1,
+     "rc": 1,
+     "correct": false,
+     "work_dir": null,
+     "failed_cases": [
+      "put_get_json_api",
+      "missing_404",
+      "unknown_path_404",
+      "ttl_expire_and_count",
+      "incr_semantics_and_409",
+      "incr_concurrent_atomic",
+      "delete_flow",
+      "stats_live_count",
+      "wal_lines_jsonl",
+      "restart_recovery",
+      "restart_drops_expired"
+     ],
+     "claimed_all_pass": false,
+     "claimed_src": "eval/rover/r510/evidence/windows/r510ab2/grade-Before-p3.json",
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    }
+   }
+  },
+  "r510ab3": {
+   "dir": "eval/rover/r510/evidence/windows/r510ab3",
+   "arms": {
+    "agentAfter/p3": {
+     "arm": "agentAfter",
+     "tag": "After",
+     "tid": "p3",
+     "side": "agent",
+     "kind": "project",
+     "family": "threaded-kv-service",
+     "cases_n": 12,
+     "cases_expected": 12,
+     "cases_pass": 12,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r510/evidence/windows/r510ab3/grade-After-p3.json",
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    },
+    "agentBefore/p3": {
+     "arm": "agentBefore",
+     "tag": "Before",
+     "tid": "p3",
+     "side": "agent",
+     "kind": "project",
+     "family": "threaded-kv-service",
+     "cases_n": 12,
+     "cases_expected": 12,
+     "cases_pass": 12,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r510/evidence/windows/r510ab3/grade-Before-p3.json",
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    }
+   }
+  }
+ },
+ "self_report_mismatch": [],
+ "claim_unmapped": [],
+ "blocked": [
+  "r510ab1/agentBefore/p3 rc=1 cases=11/12(expect 12) failed=restart_drops_expired",
+  "r510ab2/agentBefore/p3 rc=1 cases=1/12(expect 12) failed=put_get_json_api,missing_404,unknown_path_404,ttl_expire_and_count,incr_semantics_and_409,incr_concurrent_atomic,delete_flow,stats_live_count,wal_lines_jsonl,restart_recovery,restart_drops_expired"
+ ],
+ "blocked_scoped": [
+  "r510ab1/agentBefore/p3 rc=1 cases=11/12(expect 12) failed=restart_drops_expired",
+  "r510ab2/agentBefore/p3 rc=1 cases=1/12(expect 12) failed=put_get_json_api,missing_404,unknown_path_404,ttl_expire_and_count,incr_semantics_and_409,incr_concurrent_atomic,delete_flow,stats_live_count,wal_lines_jsonl,restart_recovery,restart_drops_expired"
+ ],
+ "nonrequired_arms": [],
+ "undeclared_arms": [],
+ "self_report_agrees": true,
+ "executable_and_correct": false,
+ "acceptable_scoped": false
+}

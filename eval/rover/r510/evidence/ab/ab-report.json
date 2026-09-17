@@ -1,0 +1,230 @@
+{
+ "run_dir": "/tmp/r510/ab",
+ "rows": [
+  {
+   "arm": "agentAfter",
+   "rep": 1,
+   "tid": "p3",
+   "all_pass": true,
+   "pass": 12,
+   "total": 12,
+   "fails": [],
+   "calls": 7,
+   "total_tokens": 90733,
+   "prompt_tokens": 80876,
+   "elapsed_s": 37.77,
+   "steps": 6,
+   "ledger_calls": 8
+  },
+  {
+   "arm": "agentAfter",
+   "rep": 2,
+   "tid": "p3",
+   "all_pass": true,
+   "pass": 12,
+   "total": 12,
+   "fails": [],
+   "calls": 7,
+   "total_tokens": 95963,
+   "prompt_tokens": 88822,
+   "elapsed_s": 41.86,
+   "steps": 6,
+   "ledger_calls": 9
+  },
+  {
+   "arm": "agentAfter",
+   "rep": 3,
+   "tid": "p3",
+   "all_pass": true,
+   "pass": 12,
+   "total": 12,
+   "fails": [],
+   "calls": 7,
+   "total_tokens": 74475,
+   "prompt_tokens": 67472,
+   "elapsed_s": 28.91,
+   "steps": 6,
+   "ledger_calls": 8
+  },
+  {
+   "arm": "agentBefore",
+   "rep": 1,
+   "tid": "p3",
+   "all_pass": false,
+   "pass": 11,
+   "total": 12,
+   "fails": [
+    "restart_drops_expired"
+   ],
+   "calls": 7,
+   "total_tokens": 81136,
+   "prompt_tokens": 72689,
+   "elapsed_s": 35.23,
+   "steps": 6,
+   "ledger_calls": 7
+  },
+  {
+   "arm": "agentBefore",
+   "rep": 2,
+   "tid": "p3",
+   "all_pass": false,
+   "pass": 1,
+   "total": 12,
+   "fails": [
+    "put_get_json_api",
+    "missing_404",
+    "unknown_path_404",
+    "ttl_expire_and_count",
+    "incr_semantics_and_409",
+    "incr_concurrent_atomic",
+    "delete_flow",
+    "stats_live_count",
+    "wal_lines_jsonl",
+    "restart_recovery",
+    "restart_drops_expired"
+   ],
+   "calls": 7,
+   "total_tokens": 96926,
+   "prompt_tokens": 89174,
+   "elapsed_s": 33.4,
+   "steps": 6,
+   "ledger_calls": 7
+  },
+  {
+   "arm": "agentBefore",
+   "rep": 3,
+   "tid": "p3",
+   "all_pass": true,
+   "pass": 12,
+   "total": 12,
+   "fails": [],
+   "calls": 7,
+   "total_tokens": 95694,
+   "prompt_tokens": 85505,
+   "elapsed_s": 38.23,
+   "steps": 6,
+   "ledger_calls": 8
+  }
+ ],
+ "summary": {
+  "agentAfter": {
+   "p3": {
+    "reps": 3,
+    "all_pass_reps": 3,
+    "pass_rates": "36/36",
+    "total_tokens": {
+     "n": 3,
+     "min": 74475,
+     "max": 95963,
+     "mean": 87057.0
+    },
+    "calls": {
+     "n": 3,
+     "min": 7,
+     "max": 7,
+     "mean": 7.0
+    },
+    "elapsed_s": {
+     "n": 3,
+     "min": 28.91,
+     "max": 41.86,
+     "mean": 36.2
+    },
+    "steps": {
+     "n": 3,
+     "min": 6,
+     "max": 6,
+     "mean": 6.0
+    }
+   }
+  },
+  "agentBefore": {
+   "p3": {
+    "reps": 3,
+    "all_pass_reps": 1,
+    "pass_rates": "24/36",
+    "total_tokens": {
+     "n": 3,
+     "min": 81136,
+     "max": 96926,
+     "mean": 91252.0
+    },
+    "calls": {
+     "n": 3,
+     "min": 7,
+     "max": 7,
+     "mean": 7.0
+    },
+    "elapsed_s": {
+     "n": 3,
+     "min": 33.4,
+     "max": 38.23,
+     "mean": 35.6
+    },
+    "steps": {
+     "n": 3,
+     "min": 6,
+     "max": 6,
+     "mean": 6.0
+    }
+   }
+  }
+ },
+ "unstable_cases": {
+  "agentBefore|p3|put_get_json_api": [
+   "PASS",
+   "FAIL",
+   "PASS"
+  ],
+  "agentBefore|p3|missing_404": [
+   "PASS",
+   "FAIL",
+   "PASS"
+  ],
+  "agentBefore|p3|unknown_path_404": [
+   "PASS",
+   "FAIL",
+   "PASS"
+  ],
+  "agentBefore|p3|ttl_expire_and_count": [
+   "PASS",
+   "FAIL",
+   "PASS"
+  ],
+  "agentBefore|p3|incr_semantics_and_409": [
+   "PASS",
+   "FAIL",
+   "PASS"
+  ],
+  "agentBefore|p3|incr_concurrent_atomic": [
+   "PASS",
+   "FAIL",
+   "PASS"
+  ],
+  "agentBefore|p3|delete_flow": [
+   "PASS",
+   "FAIL",
+   "PASS"
+  ],
+  "agentBefore|p3|stats_live_count": [
+   "PASS",
+   "FAIL",
+   "PASS"
+  ],
+  "agentBefore|p3|wal_lines_jsonl": [
+   "PASS",
+   "FAIL",
+   "PASS"
+  ],
+  "agentBefore|p3|restart_recovery": [
+   "PASS",
+   "FAIL",
+   "PASS"
+  ],
+  "agentBefore|p3|restart_drops_expired": [
+   "FAIL",
+   "FAIL",
+   "PASS"
+  ]
+ }
+}

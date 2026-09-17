@@ -10,6 +10,26 @@
 > 数据时效 (测试数/批号/评测口径)、版本引用一致性、死链检查; **禁止只改局部不做整体校验**。
 > 空间位置相邻但语义不同段的错挂 (如旧版本标题下挂新数据) 视同违例。
 
+## R510 · 2026-09-17 · 状态: **完成（链两端收口 + 主线单点 A/B；验收前置 rc=1 由对照臂造成 ⇒ token 读数标「参考」）** · 主题: **步进事件真发 + 审批通道闭环 + 自检契约泛化（靶点用例 1/3 → 3/3）**
+
+**因果链**：R509 留两处欠账 —— ① `task.progress` 只在 `FrontendTaskRegistry.Progress(...)` 登记, 全链无调用者（前端拿不到步进 = 封闭系统自证）；② `RequestOperationApprovalAsync` 是保守拒绝占位（前端批准/拒绝打不通）。主线（铁律 10）单点缺陷：p3 隐藏用例 `restart_drops_expired` 反复挂 —— 自治自测只覆盖 happy path。三件事同属「链的出站面 + 自治面」⇒ 同轮处理, 一次 AOT 发布（host sha12 `993d0fa548e9`）。
+
+**改动**：`src/agent.modelqueue/ActionProgressObserver.cs`（新, AsyncLocal 绑定出站面, 未绑定零开销）+ `ActionLoop.cs` 每次工具执行后 `ReportAsync`；`FrontendApiChatRouter.cs` chat.send 作用域 `BindProgress` → `task.progress` 事件 + registry；`ApprovalEnvelope.cs`（新）+ `FrontendPromptService` 真审批（requested → respond → responded 收口；超时/拒绝/取消/被覆盖一律不批准）+ `FrontendEventHub.IApprovalReplySink`/`AttachApproval` + 路由 `approval.respond` + `Program.cs` 同源挂接；`SessionBaseline.cs` 二.3 增「契约每条非功能语义（重启后状态/持久化重放/并发原子性/过期清理）要有独立用例」。
+
+**真机 E2E**（`bash eval/rover/r510/run_e2e_frontend_progress.sh`，AOT + frontend-api + 动作环开 + 真模型）→ `E2E_RC=0`，A1–A6 机械判分全绿：事件序 `task.started → task.progress×3 → task.completed`（R509 无 progress）；首条 `step_index=1/tool=write_file/ok=true`；工作区**真出现** `r510_progress.txt`（反伪造）；`state.snapshot.tasks[0]` = `done/step_index=3/current_action=run_command`；`approval.respond(apr-doesnotexist)` → `unknown_approval`（不静默当批准）。
+
+**A/B（同窗·同夹具 md5 `8d13fd53…`·同模型·每跑次独立 session, n=3/臂, 起手闸连续 2 PASS, 预注册于起臂前）**：agentBefore（旧 AOT `fe07205ba3b8`）**1/3** 全对（24/36 用例, 靶点 `restart_drops_expired` 1/3）vs agentAfter（新 AOT）**3/3** 全对（36/36, 靶点 **3/3**）；调用数 7.0 vs 7.0 持平；tokens/轮 91,252 vs 87,057（adapter relay 真值, **标「参考（未可验收）」**）。
+
+**机制归因（如实记，未成立）**：after 臂 2/3 跑次产物自带 `--selftest` 且含 restart 相关用例（`selftest.py` restart_hits=2/3），before 臂 1/3（ab1 hits=4）；**但 before-ab1 自带含 restart 自测仍挂靶点用例** ⇒ 1/3→3/3 只能记作「条款 + 采样」共同结果，**不归因该条款单独作用**（n=3，方差占优）；机制归因留 C3（n≥5 + 逐跑次自测覆盖度编码）。
+
+**验收前置（机器复跑, 非自报）**：`python3 eval/rover/r507pre/exec_precondition.py --round R510` → `SELF_REPORT_AGREES=True`；交付物臂三窗全 12/12 `rc=0 correct=True`；全局 `EXECUTABLE_AND_CORRECT=False / rc=1`，阻塞**全部来自对照臂**（r510ab1 点名 `restart_drops_expired`；r510ab2 点名 11 条）；`SCOPE_SOURCE=None`（prereg 未声明 `evidence_scope`）⇒ **不追溯补写**（禁事后补记），token/调用列按铁律 11 标「参考」。
+
+**门禁/套件**：全量单测 **1653/1653**；形式门禁 `VerificationForm|SkillGeneralization|DevPlanDocRef` **Failed 0 / Passed 14**；AOT `dotnet publish` rc=0、**IL 警告 0**、体积 **15,438,368 B**（+0.08%）；`bind_evidence --check` **R2E_R2F_EXIT=0**、`decl_sweep --check` **checked=30 drifted=0**；registry rows **223→225**、`updated_round=R510`。
+
+**诚实边界**：① 审批**真机**闭环未测到 —— 动作环声明工具只有 `list_dir/read_file/write_file/run_command`，删除类审批在真机不可达（只有单测闭环 + `unknown_approval` 负控）；② 断线重连时 `task.progress` 补发未测；③ A/B 各 3 轮、单题单模型（before rep2 大面积失败说明管道自身方差大），禁跨轮相减；④ 主线 token 判据（≥30%）**本轮未测**（无 codex 侧对照、不涉 R1 role 挂载轴）；⑤ `SessionBaseline` 前缀 **+74 字符**，既有前缀/缓存 KPI 期望需在下轮刷新。
+
+**下轮候选**：R511-C1 `delete_file` 工具（经审批）+ 审批真机闭环 E2E；C2 断线重连 `task.progress` 补发（按 `step_index` 去重）+ 断言；C3 `restart_recovery`/`incr_concurrent_atomic` 同类 A/B（n≥3）+ 前缀 KPI 期望刷新；C4 全表 `evidence_cmd` 可重放性普查 + 本地 3B 长原文回放。
+
 ## R507 补测 · 2026-09-17 · 状态: **完成（交互/人性化 KPI 对照；自检 SELFTEST=OK，NC `detect:NC_DETECTED`）** · 主题: **用户问「有对比过提问数量，人性化，等其他 kpi 么」⇒ 补齐三类 KPI 对照**
 
 **用户问（逐字）**：「有对比过提问数量，人性化，等其他 kpi 么」⇒ 先如实分栏（已对照 / 仅本侧 / 未测），再补器具 + 真读数（只读已落盘件，不重跑被测对象）。

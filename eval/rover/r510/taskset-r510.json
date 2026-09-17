@@ -1,0 +1,18 @@
+{
+ "round": "R510",
+ "kind": "project",
+ "frozen_at": "2026-09-17",
+ "note": "R510 单点攻坚面板: 只含 p3 (隐藏用例 restart_drops_expired); 夹具与 r508/r509 逐字节同 (md5 一致)",
+ "scoring": "整题全对 = 该题全部隐藏用例 PASS; 可验收前置 = 产物独立物化 + python3 -I -B 实跑 + 逐条用例机械判对",
+ "tasks": [
+  {
+   "tid": "p3",
+   "family": "threaded-kv-service",
+   "entry": "kvsvc/server.py",
+   "cases": "cases/p3_cases.py",
+   "ref": "ref/p3",
+   "hidden_cases": 12,
+   "prompt": "用 Python 3 标准库实现一个带过期时间的键值存储服务，工作区根目录下建成包结构（至少 3 个文件: kvsvc/__init__.py、kvsvc/store.py、kvsvc/server.py），入口命令必须是 python3 -m kvsvc.server。\n评测会按下列契约机械校验，必须严格遵守：\n1) 启动: python3 -m kvsvc.server --port {int} --wal {path}；就绪后 stdout 打印一行 READY 并 flush。\n2) 所有响应 Content-Type 必须是 application/json; charset=utf-8，body 为 UTF-8 JSON；服务必须能同时处理并发请求（threaded）。\n3) 路由:\n   PUT  /kv/{key}      体 {\"value\":任意JSON,\"ttl\":数字可选(秒)} -> 200 {\"key\":str,\"value\":任意,\"expires_in\":剩余秒数(数字,允许小数;无 ttl 时为 null)}\n   GET  /kv/{key}      -> 200 {\"key\":str,\"value\":任意}；键不存在或已过期 -> 404 {\"error\":\"not_found\"}\n   DELETE /kv/{key}    -> 200 {\"deleted\":true}；键不存在或已过期 -> 404 {\"error\":\"not_found\"}\n   POST /kv/{key}/incr 体 {\"by\":整数, 默认 1} -> 200 {\"key\":str,\"value\":整数}；键不存在按 0 起算；原值不是整数 -> 409 {\"error\":\"not_int\"}\n   GET  /stats         -> 200 {\"count\":int,\"expired\":int,\"uptime_ms\":int}（count=当前未过期键数，expired=累计因过期被清除的键数，uptime_ms=进程已运行毫秒）\n   其它任何路径/方法 -> 404 {\"error\":\"not_found\"}\n4) TTL: 设了 ttl 的键在 ttl 秒后必须不可见（允许惰性清除），并计入 expired。\n5) 并发正确性: 8 个并发客户端各做 20 次 incr 后，计数值必须恰好等于总增量（不得丢更新）。\n6) 持久化: 每次写操作（put/delete/incr）都要往 --wal 指定的文件追加一行 JSON 对象，该行至少含 \"op\" 字段（取值必须是 put、delete、incr 三者之一）与 \"key\" 字段；服务重启后必须从 WAL 重放恢复未过期的键值（含 incr 的累计值），已过期的键不得复活。\n7) 只允许标准库，不得联网。\n完成后用中文简要说明实现与自测结果。"
+  }
+ ]
+}

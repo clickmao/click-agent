@@ -283,6 +283,11 @@ public static class ActionLoopRunner
                     ArgsSha8 = Sha8(tc.ArgumentsJson ?? string.Empty),
                 });
                 onCall?.Invoke(outcome.Steps, tc, res);
+                // R510: 步进事件真发 —— 前端 task.progress 的**唯一**数据源 (未绑定观察者 ⇒ 零开销, 行为不变)。
+                // 只报事实 (步号/工具/成败/耗时), 文案面不出现在这里 (避免第二处实现)。
+                await ActionProgressObserver.ReportAsync(
+                    new ActionStepProgress(outcome.Steps, tc.Name ?? string.Empty, res.Ok, res.ElapsedMs))
+                    .ConfigureAwait(false);
                 var rendered = res.Render(MaxToolResultBytes);
                 // R462 召回-现实一致性闸 (工具回灌面): 结果里引用的路径若当前工作区不存在 ⇒ 显式标 ✗,
                 // 使「读了 A 文件, 里面说 B 文件已完成」这类陈旧引用在下游可见 (只打假 ⇒ 一致时零字节)。
