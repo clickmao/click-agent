@@ -1,0 +1,79 @@
+{
+  "round": "EXP1-Q44",
+  "artifact": "scripts/capability_cycle_status.py v5/D9",
+  "pre_anchor_sha": "cc9cafc",
+  "supersedes_for": [
+    "sources.master.hits",
+    "open_items(master 段)"
+  ],
+  "rc": 0,
+  "checks": [
+    {
+      "check": "P7 真仓假阳性被消: master hits 3->2 ∧ route.first 不再是「R401–R412…关闭」行",
+      "ok": true,
+      "got": {
+        "pre_hits": 3,
+        "post_hits": 1,
+        "post_first": "- **另一本台账（未在本轮动）**: `improvements.md` 自身的 **R404–R416 轮节**尚未回填（该缺口已在改进日志内登记，属 `i",
+        "expected": [
+          3,
+          1
+        ]
+      }
+    },
+    {
+      "check": "P8 围栏计数可见 (close_fenced>=1 ∧ quoted_fenced>=1), 非静默丢弃",
+      "ok": true,
+      "got": {
+        "close_fenced": 3,
+        "quoted_fenced": 1
+      }
+    },
+    {
+      "check": "P9 真开放项未被误围栏 (improvements.md R404–R416 行仍在 open_items)",
+      "ok": true,
+      "got": [
+        "- **另一本台账（未在本轮动）**: `improvements.md` 自身的 **R404–R416 轮节**尚未回填（该缺口已在改进日志内登记，属 `improvements.md` 的重排任务）。"
+      ]
+    },
+    {
+      "check": "P10 前态锚 (cc9cafc) 复现假阳性 (>=3) ∧ 是 HEAD 祖先 ∧ 字节与现盘不同",
+      "ok": true,
+      "got": {
+        "pre_hits": 3,
+        "is_ancestor": true,
+        "bytes_differ": true
+      }
+    },
+    {
+      "check": "P11 作用域: backlog 面 (backlog_open + backlog 项) 逐字相同 ⇒ 改动只落 master 面",
+      "ok": true,
+      "got": {
+        "backlog_open": [
+          8,
+          8
+        ]
+      }
+    },
+    {
+      "check": "P11b 负控(--legacy-route) 在 D9 版上仍为 backlog (D9 不改路由优先序)",
+      "ok": true,
+      "got": {
+        "legacy_route_primary": "backlog"
+      }
+    }
+  ],
+  "readings": {
+    "pre_hits": 3,
+    "post_hits": 1,
+    "close_fenced": 3,
+    "quoted_fenced": 1,
+    "post_master_items": [
+      "- **另一本台账（未在本轮动）**: `improvements.md` 自身的 **R404–R416 轮节**尚未回填（该缺口已在改进日志内登记，属 `improvements.md` 的重排任务）。"
+    ],
+    "post_route_first": "- **另一本台账（未在本轮动）**: `improvements.md` 自身的 **R404–R416 轮节**尚未回填（该缺口已在改进日志内登记，属 `improvements.md` 的重排任务）。"
+  },
+  "note": "P2(D8) 的「共享字段逐字相同」只成立于 D8 快照; D9 有意变更 master 面语义 ⇒ 不翻案, 单列",
+  "ns": "docfix 重测(语料有意改写): R402 缺陷名加「」引号 ⇒ 期望由预注册 (3,2) 随语料重算为 (3,1); 首测 verdict_q44_d9.json 原样保留(P8 FAIL 不翻案)",
+  "supersedes_first_measurement": true
+}

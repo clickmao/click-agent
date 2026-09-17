@@ -160,15 +160,32 @@ done
 > - **主线（用户 2026-09-17 钦定更正，宪法级见 `iteration-master-plan.md` §0-0 铁律 10）**: 用「随机游戏 / 数学难题 / 程序题」真实开发任务 + 外部真值（codex-cli，同模型）**同环境·同输入**对照 ⇒ 对本项目做质量自检；常态载体 `docs/external-reference-harness.md`（R455 入册）+ `eval/probe/*`（随机程序/数学题）+ `eval/capability/*`（自检循环）。
 > - **R413 KPI（该主线的判据之一，不是主线本身）**: 用户钦定「r1 真假判别 ⇒ 一轮任务总 token ↓≥30%（主要是不必要的 LLM API 请求少了）」。
 > - **版本（历史快照锚，保留原样）**: **v0.35.0 · R413 已交付（判过）**。
-> - **HEAD**: `19aff03`(R412 收口) ← `8094faf`(bge chore) ← `4d1bf90` ← `720bce3` ← `20bf988`(R411 主体)；其后本地新增 `cd3c951` + `b29e450`(R403 裁定, cron 轮) 与本轮 R413 提交。远端 `origin/main` = `740ddf2`，**未推**（推送暂停令在效，三道机械闸在位）。
+> - **最近一轮（R509，2026-09-17 08:09:10 提交）**: 前端任务事件域（`task.started` / `task.completed` / `task.failed` + `state.snapshot.tasks`）+ 同题重复臂（每跑次独立 session ⇒ 会话隔离）；HEAD `0b88277`。**块范围**: 本块承载「最新状态 + 历史锚（R401–R412 已回填，见下）」；R413 之后的逐轮明细在 `docs/improvements.md` 顶部各节 + `eval/rover/r4xx/`。
+> - **HEAD（EXP1-Q44 观测 2026-09-17 08:14）**: `0b88277`(R509 收口) ← `6bec98f`(R508) ← `e7b360b`(EXP1-Q43) ← `ac108e1`(R507 补测) …；远端 `origin/main` = `740ddf2`，**未推**（推送暂停令在效，三道机械闸在位）。
 > - **本轮判据读数（外部真值 = 桩侧逐请求落盘 + 驱动器观测）**: 臂 A（本地通道关）**12 调用 / 16,888 token** vs 臂 B（前置门开）**8 调用 / 7,007 token** ⇒ 调用 **-33.3%**、token **-58.5%**（阈值 30%）；门遥测 = 机械 Pass 3 + r1 判别 4（全 Skip）；**C1–C4 全 PASS ⇒ 判过**（`eval/rover/r413/verdict-r413.json`）。
 > - **前置门 v2**: 机械 Pass 前置（疑问句 / 新指令 / 纠正词 / 结构化实体 / 长文本 ⇒ 直接 Pass，不问 r1）+ 仅无信号短消息交 r1（二元 S/P、192 上限、只读思考块之后的结论区）+ 被跳过轮回复 = **非 LLM 模板**。
 > - **本轮两处空心根因（已修 + 已回归）**: ① 门判的是被追加过 role/计划块的 `prompt.UserMessage` ⇒ 恒 Pass、增益归零（修：判 `message.Content` + G29 源级钉死）；② 源码写入通道把尖括号字面量替换成 tokenizer 形态 ⇒ 解析器恒搜不到 = 空心降级（修：`ThinkOpen`/`ThinkClose` 字符码常量 + G24/G25 回归）。
 > - **机检 / AOT**: `LocalTurnGateTests` **46/46**；全量 **1158/0/0**（`TEST_EXIT=0`）；AOT 重发布 `PUBLISH_EXIT=0`、**IL 警告 0**、`agenthost` **15,138,848 B**。
+> - **机检（EXP1-Q44 真机复跑，2026-09-17 08:13）**: 全量 **1643 / 失败 0 / 跳过 0**（38 s，`FULLTEST_EXIT=0` —— 由**显式标记**取值，非管道末段）；`scripts/capability_cycle_status.py --selftest` **30/30**（v5/D8）。
+> - **器具取证（EXP1-Q44 · 对侧记录面假绿）**: `/tmp/r508_fulltest.log` 尾部同时含 `Failed: 1`（1636 中 1 条 `FrontendAskSameConnTests`）与 `TEST_RC=0` ⇒ 记录侧 rc 取自管道末段（`… | tail`）。检测器 `eval/capability/exp1-q44/scan_pipe_rc.py` 判 rc=1（FALSE_GREEN）；仓库自带 **251** 个 `.sh` 扫描 **0 命中**（缺陷在对侧**临时命令**，非仓内脚本）；本侧同轮真机复跑该用例**全绿**（1643/1643）⇒ 单条失败未重现、未定论（可能其后已修 / 可能网络型偶发），但**记录面 rc 不可信**已确证。**纪律**: rc 必须由发射点显式写标记，并在日志面加「正文 Failed/Passed vs 标记」矛盾闸。
 > - **cron（2026-09-14 现状 = 2 个）**: `9a97763d5fcd` 30m 节拍（本轮因全局推理配置漂移被 skip ⇒ 已 pin `custom/deepseek-flash` 恢复）+ `b15eb2f40a69` 60m 能力自检。删前备份 = `backups/cron-jobs-before-prune-2026-09-14.json`。
-> - **状态回填缺口（如实标注）**: 本快照自 R400 直接跳到 R413 —— **R401–R412 逐轮条目未回填**（读数分散在 `docs/improvements.md` 顶部各节 / `docs/plans/v0.3x.0-*.md` / `eval/rover/r4xx/`）；补齐属文档轮任务，不假装已同步。
+> - **R401–R412 逐轮回填（EXP1-Q44 机械 census，来源 `eval/capability/exp1-q44/census_401_412.py`）**: 本块此前自 R400 直跳 R413，该「未回填」缺口在本轮**关闭**（12/12 有来源，逐轮一行）:
+>   - **R401** · 能力自检循环常驻化（60 分钟检测机制，用户令）· `eval/rover/r401/`(3) + `docs/reports/r401/` + improvements R401 节
+>   - **R402** · 循环入口自检（探针 v2 三缺陷：完成标记覆盖「进行中」/ 状态列硬编码 / 零命中静默）· `eval/rover/r402/`(27)
+>   - **R403** · chat template 工具作用域 + RoPE 配对修复 · `eval/rover/r403/`(22) + `docs/reports/r403/chat-template-tool-scope.md`
+>   - **R404** · bge 融合对账 + G1 阈值修缺陷（旧阈值落「数学上不可能显著」区）· `eval/bge/train_adapter.py` R404 段 + `eval/bge/auto_cycle.py` ⑥（**无独立证据目录**，读数散在代码注释与后续计划交叉引用 ⇒ 如实标注）
+>   - **R405** · 本机增强 R1-Distill-1.5B · `docs/plans/v0.27.0-r405-r1-local-enhancement.md` + `eval/rover/r405/`(8)
+>   - **R406** · 模板驱动 chat template（Jinja 子集）与 R1 链归因 · `docs/plans/v0.28.0-r406-jinja-template-and-r1-chain.md`
+>   - **R407** · qwen2 前向对账：attn bias 层归属缺陷 · `docs/plans/v0.29.0-r407-qwen2-attn-bias-and-forward-parity.md` + `eval/rover/r407/`(14)
+>   - **R408** · 本地 GGUF 引擎整线退役 + llama.cpp 进程化（10,966 LOC + `agent.embedcpu` 退役）· `docs/plans/v0.30.0-r408-llamacpp-process-pivot.md` + `eval/rover/r408/`(3)
+>   - **R409** · 本地 prompt 模板闸门（结构性阻断）+ BOS 口径 · `docs/plans/v0.31.0-r409-local-prompt-template-gate.md` + `eval/rover/r409/`(19)
+>   - **R410** · 会话长前缀复用（K2b 落点）+ 生成口径分离 · `docs/plans/v0.32.0-r410-session-prefix-reuse.md` + `eval/rover/r410/`(8)
+>   - **R411** · 长驻生成端口 + 本地 K2b 台账 · `docs/plans/v0.33.0-r411-long-lived-generation-port.md` + `eval/rover/r411/`(20)
+>   - **R412** · 多会话 slot 争用（本地长驻生成的第二 regime）· `docs/plans/v0.34.0-r412-multi-session-slot-contention.md` + `eval/rover/r412/`(18)
+>   - **另一本台账（未在本轮动）**: `improvements.md` 自身的 **R404–R416 轮节**尚未回填（该缺口已在改进日志内登记，属 `improvements.md` 的重排任务）。
 > - **诚实边界**: 单脚本 / 单模型（r1-distill-1.5b-q4km）/ 单机单次读数；机械信号表是**穷举白名单**（未覆盖的短消息仍交 r1）；桩侧逐轮归属受「后续轮 prompt 含历史文本」干扰 ⇒ 只作参考、不作判据；轮7 的 0 主调用是链侧澄清拦截、非门行为。
 > - **文档同步（本轮）**: `docs/plans/v0.35.0-r413-r1-local-verdict-token-budget.md`（§7.3–§7.6）/ `docs/improvements.md`(+R413 节) / `eval/capability/kpi.jsonl`(+1 行, 8 行) / 本块。
+> - **文档同步（EXP1-Q44）**: `eval/capability/exp1-q44/`（prereg_q44.json / verdict_q44.json / verdict_q44_d9.json / selftest_v5.txt / selftest_v5d9.txt / status_v4.json / status_v5.json / status_v5_D8.json / status_v5d9.json / status_v5d9_legacyroute.json / fulltest_q44.raw.txt / scan_pipe_rc.py / census_401_412.py / backfill_401_412.json）+ `scripts/capability_cycle_status.py`(v5/D8+D9) + `eval/capability/kpi.jsonl`(+1 行) + 本块。**探针自检 34/34**；前态锚 = `cc9cafc`（已断言是 HEAD 祖先 ∧ 字节与现盘不同）；**D9 预注册 P8 被部分否证**（真仓只命中闭合围栏、引用围栏 0）—— 旧读数原样保留于 `verdict_q44_d9.json`，文档侧按「把引用写显式」加引号后的重测单列 `verdict_q44_d9_docfix.json`（不放宽判据）。
 >
 > ### 🗂 历史快照（2026-09-14 R400 — rover 生成链）（保留以追溯；最新状态见上方 R413 块）
 >

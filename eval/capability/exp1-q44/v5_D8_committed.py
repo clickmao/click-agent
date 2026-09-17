@@ -73,18 +73,6 @@ D8 **(路由口径与权威源错位: 推进对象取自「看板沉积面」而
    负控: `--legacy-route` 复现 v4 优先序(看板优先) ⇒ 同夹具上 primary 必为 `backlog`, 证明新优先序
    **有判别力**(不是「怎么改都绿」)。**可比性断点**: v5 起 `route.primary` 语义变更, 与 v4 及以前
    轮次的「推进对象」读数**不可直接相减**(`route.comparable_from` 字段显式登记)。
-
-D9 **(v5 自身引入的两条假阳性, 由本侧 §7 块增量改写后的真机读数当场暴露)**: D8 落地后主报告 §7 块被
-   本侧增量改写(EXP1-Q44 的 C3/C4), 探针随即在真机上报 `master hits=3`; 逐条取证: ①「本块此前自 R400
-   直跳 R413，该「未回填」缺口在本轮**关闭**」= **闭合陈述**被当成未完成项; ②「（完成标记覆盖「进行中」
-   / 状态列硬编码 / 零命中静默）= 缺陷名**引用**被当成状态陈述; ③ 仅 1 条为真(improvements.md 的
-   R404–R416 轮节未回填)。⇒ 补两条**非状态形态**围栏: `_closed_after`(标记后 30 字符内含
-   关闭/闭合/已回填/已补/不再/已修 ⇒ 记 `close_fenced`) 与 `_quoted`(标记落在成对 `` ` `` / 「」/『』
-   内 ⇒ 记 `quoted_fenced`); 两者均**计数可见**, 且命中被围栏后**继续检查后续 marker** ⇒ 同字段里的真
-   开放项仍会命中(不构成「凡含关闭词即绿」, 由 T25 夹具钉住)。前态口径臂(无这两道围栏)在同夹具上必报
-   假阳性 ⇒ 判别力可量化(N9)。**预注册陈述的影响登记**: P2「共享字段逐字相同」成立于 **D8 快照**
-   (`cc9cafc`); D9 起 `sources.master.hits` / `open_items` 语义**有意变更** ⇒ 该陈述不适用于 D9 之后,
-   如实登记(不翻案、不掩盖)。
 """
 from __future__ import annotations
 
@@ -160,25 +148,6 @@ def _status_block(txt: str):
 
 def _negated(text: str, pos: int) -> bool:
     return any(m in text[max(0, pos - NEG_WINDOW):pos] for m in NEG_MARKERS)
-
-
-# ── v5/D9: 两类**非状态**形态的围栏 (真实读数驱动: 本块改写后 master hits 3 条里 2 条假阳性) ──
-CLOSE_MARKERS = ("关闭", "闭合", "已回填", "已补齐", "已补", "不再", "已修", "已收口")
-CLOSE_WINDOW = 30
-QUOTE_PAIRS = (("`", "`"), ("「", "」"), ("『", "』"))
-
-
-def _closed_after(text: str, start: int) -> bool:
-    """标记之后 CLOSE_WINDOW 字符内出现闭合动词 ⇒ 该缺口**已关闭**, 不是未完成项。"""
-    return any(c in text[start:start + CLOSE_WINDOW] for c in CLOSE_MARKERS)
-
-
-def _quoted(text: str, pos: int, mlen: int) -> bool:
-    """标记落在成对的引号/反引号内 ⇒ 视为**引用** (缺陷名/条目名), 不是状态陈述。"""
-    for op, cl in QUOTE_PAIRS:
-        if text.rfind(op, 0, pos) > text.rfind(cl, 0, pos) and text.find(cl, pos + mlen) != -1:
-            return True
-    return False
 
 
 def read_text(path: str) -> str:
@@ -290,7 +259,7 @@ def master_opens(path: str, legacy: bool = False):
         return hits[:8], diag
 
     fields, bdiag = _status_block(txt)
-    hits, fenced, close_fenced, quoted_fenced = [], 0, 0, 0
+    hits, fenced = [], 0
     for f in fields:
         for marker in HINT_MARKERS:
             pos = f.find(marker)
@@ -298,17 +267,7 @@ def master_opens(path: str, legacy: bool = False):
                 continue
             if _negated(f, pos):          # 「说到但否定」⇒ 记 fenced, 不判 open (防凡含词面即 open)
                 fenced += 1
-                continue
-            if _closed_after(f, pos + len(marker)):
-                # v5/D9: 「缺口在本轮关闭」类**闭合陈述** ⇒ 不是未完成项 (先闭合再判, 但只对本项有效;
-                # 同字段内**后续**的真开放项仍会被后续 marker 命中 ⇒ 不构成「凡含关闭词即绿」)
-                close_fenced += 1
-                continue
-            if _quoted(f, pos, len(marker)):
-                # v5/D9: 标记被引号/反引号包裹 = **引用**某个缺陷/条目的名字, 不是状态陈述
-                # (与 R435「自指实例」同族: 记录缺陷的文本本身不得被当成实例)
-                quoted_fenced += 1
-                continue
+                break
             hits.append(f[:160])
             break
     # 后向兼容: **最新块内**若仍用历史版式(`**下轮候选**:` 类)则入账; 同样过否定围栏。
@@ -337,8 +296,6 @@ def master_opens(path: str, legacy: bool = False):
         "hits": len(hits),
         "open_matched": len(hits),
         "neg_fenced": fenced,
-        "close_fenced": close_fenced,
-        "quoted_fenced": quoted_fenced,
         "legacy_form_hits": len(legacy_hits),
         "block_field_texts": [f[:200] for f in fields[:BLOCK_FIELD_MAX]],
         "format_matched": bool(hits),     # 字段语义不变 (v2/D3: ≥1 机械命中)
@@ -515,41 +472,11 @@ FIXTURE_MASTER_LEGACY_FORM = """# fixture · 主报告
 > - **下轮候选**: R901 历史版式仍须入账（后向兼容用例）。
 """
 
-# ── v5/D9 夹具: ①闭合陈述(缺口已关闭) ②引用形态(标记被引号包裹) ③混合(闭合 + 真开放) ──
-FIXTURE_MASTER_D9_CLOSED = """# fixture · 主报告
-
-## 7. 迭代状态快照
-
-> ### ⏱ 最新状态
->
-> - **回填情况**: 本块此前自 R400 直跳 R413，该「未回填」缺口在本轮**关闭**（12/12 有来源）。
-"""
-
-FIXTURE_MASTER_D9_QUOTED = """# fixture · 主报告
-
-## 7. 迭代状态快照
-
-> ### ⏱ 最新状态
->
-> - **探针缺陷（引用形态）**: 三缺陷（完成标记覆盖「进行中」/ 状态列硬编码 / 零命中静默）见 D1–D4 记录。
-"""
-
-FIXTURE_MASTER_D9_MIXED = """# fixture · 主报告
-
-## 7. 迭代状态快照
-
-> ### ⏱ 最新状态
->
-> - **回填情况**: 本块此前「未回填」缺口在本轮**关闭**。
-> - **另一本台账**: R404–R416 轮节未回填。
-"""
-
 
 def selftest() -> int:
     """判定器自检 (夹具 + 负控; 旧逻辑必须判错, 否则用例无判别力)。
 
-    v1–v4: T1–T11 + N1–N4; v4/D7: T12–T17 + N5–N7; v5/D8: T18–T22 + N8; v5/D9: T23–T25 + N9
-    —— 共 34 条断言。
+    v1–v4: T1–T11 + N1–N4; v4/D7: T12–T17 + N5–N7; v5/D8: T18–T22 + N8 —— 共 30 条断言。
     """
     tmp = tempfile.mkdtemp(prefix="ccstatus-selftest-")
     bl = os.path.join(tmp, "backlog.md")
@@ -680,41 +607,6 @@ def selftest() -> int:
         o_new_lr["route"]["primary"] == "backlog"
         and o_all_lr["route"]["primary"] == "selfcheck",
         (o_new_lr["route"]["primary"], o_all_lr["route"]["primary"]))
-
-    # ── v5/D9 用例: 两类非状态形态围栏 (闭合陈述 / 引用形态) + 前态口径臂 (判别力量化) ──
-    p_d9c = _w("m_d9_closed.md", FIXTURE_MASTER_D9_CLOSED)
-    p_d9q = _w("m_d9_quoted.md", FIXTURE_MASTER_D9_QUOTED)
-    p_d9m = _w("m_d9_mixed.md", FIXTURE_MASTER_D9_MIXED)
-    o_d9c, _ = build_report(bl2, p_d9c)
-    o_d9q, _ = build_report(bl2, p_d9q)
-    o_d9m, _ = build_report(bl2, p_d9m)
-
-    def pre_d9_master_hits(path):
-        """**前态口径**复现 (D9 之前: 只有否定围栏, 无闭合/引用围栏) —— 仅用于负控 A/B。"""
-        fields, _ = _status_block(read_text(path))
-        n = 0
-        for f in fields:
-            for marker in HINT_MARKERS:
-                p = f.find(marker)
-                if p >= 0 and not _negated(f, p):
-                    n += 1
-                    break
-        return n
-
-    chk("T23 闭合陈述(缺口已关闭) 不判 open ∧ close_fenced 可见",
-        (not m_items(o_d9c)) and o_d9c["sources"]["master"]["close_fenced"] >= 1,
-        (m_items(o_d9c), o_d9c["sources"]["master"]["close_fenced"]))
-    chk("T24 引用形态(标记被「」包裹) 不判 open ∧ quoted_fenced 可见",
-        (not m_items(o_d9q)) and o_d9q["sources"]["master"]["quoted_fenced"] >= 1,
-        (m_items(o_d9q), o_d9q["sources"]["master"]["quoted_fenced"]))
-    chk("T25 混合夹具: 闭合项被围栏 ∧ 同块真开放项仍判 open (防「凡含关闭词即绿」)",
-        any("R404" in i for i in m_items(o_d9m)) and len(m_items(o_d9m)) == 1,
-        m_items(o_d9m))
-    chk("N9 前态口径臂: D9 之前的判定在同夹具上把闭合/引用项当 open (假阳性复现 ⇒ 证明 T23/T24 有判别力)",
-        pre_d9_master_hits(p_d9c) >= 1 and pre_d9_master_hits(p_d9q) >= 1
-        and not m_items(o_d9c) and not m_items(o_d9q),
-        {"pre_d9_closed": pre_d9_master_hits(p_d9c), "pre_d9_quoted": pre_d9_master_hits(p_d9q),
-         "d9_closed": len(m_items(o_d9c)), "d9_quoted": len(m_items(o_d9q))})
 
     for name, ok, got in checks:
         print(f"{'PASS' if ok else 'FAIL'}  {name}  got={json.dumps(got, ensure_ascii=False)[:160]}")

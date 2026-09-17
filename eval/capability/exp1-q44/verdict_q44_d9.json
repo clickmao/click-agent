@@ -1,0 +1,75 @@
+{
+  "round": "EXP1-Q44",
+  "artifact": "scripts/capability_cycle_status.py v5/D9",
+  "pre_anchor_sha": "cc9cafc",
+  "supersedes_for": [
+    "sources.master.hits",
+    "open_items(master 段)"
+  ],
+  "rc": 1,
+  "checks": [
+    {
+      "check": "P7 真仓假阳性被消: master hits 3->2 ∧ route.first 不再是「R401–R412…关闭」行",
+      "ok": true,
+      "got": {
+        "pre_hits": 3,
+        "post_hits": 2,
+        "post_first": "- **R402** · 循环入口自检（探针 v2：完成标记覆盖进行中 / 状态列硬编码 / 零命中静默 三缺陷）· `eval/rover/r402/`(27"
+      }
+    },
+    {
+      "check": "P8 围栏计数可见 (close_fenced>=1 ∧ quoted_fenced>=1), 非静默丢弃",
+      "ok": false,
+      "got": {
+        "close_fenced": 2,
+        "quoted_fenced": 0
+      }
+    },
+    {
+      "check": "P9 真开放项未被误围栏 (improvements.md R404–R416 行仍在 open_items)",
+      "ok": true,
+      "got": [
+        "- **R402** · 循环入口自检（探针 v2：完成标记覆盖进行中 / 状态列硬编码 / 零命中静默 三缺陷）· `eval/rover/r402/`(27)",
+        "- **另一本台账（未在本轮动）**: `improvements.md` 自身的 **R404–R416 轮节**尚未回填（该缺口已在改进日志内登记，属 `improvements.md` 的重排任务）。"
+      ]
+    },
+    {
+      "check": "P10 前态锚 (cc9cafc) 复现假阳性 (>=3) ∧ 是 HEAD 祖先 ∧ 字节与现盘不同",
+      "ok": true,
+      "got": {
+        "pre_hits": 3,
+        "is_ancestor": true,
+        "bytes_differ": true
+      }
+    },
+    {
+      "check": "P11 作用域: backlog 面 (backlog_open + backlog 项) 逐字相同 ⇒ 改动只落 master 面",
+      "ok": true,
+      "got": {
+        "backlog_open": [
+          8,
+          8
+        ]
+      }
+    },
+    {
+      "check": "P11b 负控(--legacy-route) 在 D9 版上仍为 backlog (D9 不改路由优先序)",
+      "ok": true,
+      "got": {
+        "legacy_route_primary": "backlog"
+      }
+    }
+  ],
+  "readings": {
+    "pre_hits": 3,
+    "post_hits": 2,
+    "close_fenced": 2,
+    "quoted_fenced": 0,
+    "post_master_items": [
+      "- **R402** · 循环入口自检（探针 v2：完成标记覆盖进行中 / 状态列硬编码 / 零命中静默 三缺陷）· `eval/rover/r402/`(27)",
+      "- **另一本台账（未在本轮动）**: `improvements.md` 自身的 **R404–R416 轮节**尚未回填（该缺口已在改进日志内登记，属 `improvements.md` 的重排任务）。"
+    ],
+    "post_route_first": "- **R402** · 循环入口自检（探针 v2：完成标记覆盖进行中 / 状态列硬编码 / 零命中静默 三缺陷）· `eval/rover/r402/`(27)"
+  },
+  "note": "P2(D8) 的「共享字段逐字相同」只成立于 D8 快照; D9 有意变更 master 面语义 ⇒ 不翻案, 单列"
+}
