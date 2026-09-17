@@ -5,12 +5,14 @@
 
 | 版本 | 计划 | KPI（实测/口径） | 证据 | 状态 |
 |---|---|---|---|---|
-| **RF0001** | `docs/plans/RF0001-fable-aligned-development-plan.md` | `RF0001/KPI.md`：缓存命中 **97.37%**（≥97% 达标）· 调用 Δ **93.9–97.1%** · token Δ **96.1–98.1%** · 前端条目事件 **0→4** | `RF0001/EVIDENCE.md`（E01–E13，逐条可复现命令） | 交付中（R541 起）；**未闭合**：`g1` 43/58 · codex 外侧列 rc=1 · role 无增益 · 上下文编排缺口（E13 §2/§7.6） |
+| **RF0001** | `docs/plans/RF0001-fable-aligned-development-plan.md` | `RF0001/KPI.md`：缓存命中 **97.37%**（≥97% 达标）· 调用 Δ **93.9–97.1%** · token Δ **96.1–98.1%** · 前端条目事件 **0→4** | `RF0001/EVIDENCE.md`（E01–E15，逐条可复现命令） | 交付中（R541 起）；**未闭合**：`g1` 43/58 · codex 外侧列 rc=1 · role 无增益 · 上下文编排缺口（E13 §2/§7.6） |
 | RF0002 | *待开（识别侧路：LFM2.5-VL-3B / 屏幕识别 / 视频学习 / 特征库快路径）* | — | — | 顺延（用户令：识别先不做） |
 
 ## 归档面（旧版本线）
 | 面 | 指针 | 读数 |
 |---|---|---|
+| 用例归档台账（机读） | `../archive/case-registry.json` | 791 条 `AC-####`：原路径/新路径/sha256/行数/一句话 |
+| 用例归档索引（人读） | `../../eval/archive/CASE-INDEX.md` | 791 行（capability 1249 / results 542 / rover 81 / dcr 10 / recall 8 / README.md 1 / analyze.py 1 / cross_validate.py 1 / explore_eval.py 1 / k1-behavior-cases.json 1 / k1_behavior.py 1 / k1_diff.py 1 / kpi 1 / multi_turn_driver.py 1 / phase_report.py 1 / probe 1 / recall_report.py 1 / tmp-link-audit.json 1 / token_report.py 1 / vulkan 1） |
 | 归档台账（机读） | `../archive/archive-registry.json` | 216 条 `AR-####`，含 `sha256_orig`/`sha256_now`/`keep_reason`/`base_commit` |
 | 归档索引（人读） | `../archive/ARCHIVE-INDEX.md` | 216 行（plans 110 / reports 93 / changelogs 13），21,282 行 |
 | 机检 | `python3 tools/archive/archive_docs.py --verify` | PASS：覆盖 100% · 无悬空引用 · DocRef 全解析 · 索引=台账 |

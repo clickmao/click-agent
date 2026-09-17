@@ -81,6 +81,7 @@
 4. 前端 api 利用（条目面事件、快照重连）。
 5. 文档/证据结构（本文件 §6）。
 6. 会话级**上下文编排**（参照面 `docs/external-reference/OPENCLAW-CONTEXT-ORCHESTRATION.md`）：缓存对齐压缩、运行期载体块、上下文记账面、缓存保温、子任务上下文白名单。
+7. 用例面**精简**：不需要的用例/器具/产物归档，只留经典用例（判定面 = 白名单 ∪ 可执行闭包 ∪ 通配扫描保护；装置 `tools/archive/archive_cases.py`，归档面 `eval/archive/cases/**`，机读台账 `eval/archive/case-registry.json`）。
 
 **排除（整体顺延 RF0002）**：LFM2.5-VL-3B 视觉侧路、屏幕识别、视频学习、区域特征库快路径。
 理由：CPU-only 2 vCPU ⇒ 图像 prefill 5.6 tok/s（351 s/帧）；且 v1 判据未包含识别面。
@@ -95,6 +96,7 @@
 | RF0001.2 | codex 同窗 reps≥3 + `g1` 归因（非同源 oracle） | `exec_precondition --round` rc=0 或逐条点名阻塞项 |
 | RF0001.3 | completion 压缩（步数/上限策略），同窗对照 | 新算 prompt/completion 双列不劣化 ∧ 质量不降 |
 | RF0001.5 | 上下文编排（参照 OpenClaw）：记账面 → 运行期载体 → 缓存对齐压缩 → 保温 | 记账面与 `PromptCacheKpi` 同源 ∧ 压缩条目写入即冻结（sha 断言）∧ 冷启动调用单列 ∧ 命中率 hold ≥97% |
+| RF0001.6 | 用例面精简（归档不需要用例，只留经典） | `archive_cases.py --verify` PASS ∧ 全量绿 ∧ 悬空引用 0 ∧ 保留面机检器（registry/kpi/起手闸/契约）全绿 |
 | RF0001.4 | 收口：仅当 RF0001.1–.5 全绿才收；否则如实标未闭合 | KPI 表全绿 ∧ API 面/结构闸绿 ∧ AOT 0 IL |
 
 ---
