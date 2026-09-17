@@ -221,6 +221,25 @@ public static class StructuredPrompt
         }
         return sb.ToString();
     }
+
+    /// <summary>
+    /// 公开用例回放证据回灌 (R544): 题面**公开用例**由管道机械抽取并独立回放后未通过时的修复指令。
+    /// 与 <see cref="ExecRepairMessage"/> 的分工: 那里是「计划里的 run 步骤实测不符」（期望可能来自模型自述）,
+    /// 这里是**管道自产的证据**（输入与期望均取自题面、判分器同语义回放）—— 模型自述不参与。
+    /// 同样明令: 不得改写期望值来迁就现状、不得删除验收步骤、不得用自然语言宣称完成。
+    /// </summary>
+    public static string PublicProbeRepairMessage(System.Collections.Generic.IReadOnlyList<string> evidence)
+    {
+        var sb = new StringBuilder();
+        sb.Append("[public_probe] 题面**公开用例**已由管道机械抽取并独立回放（期望取自题面, 非你的自述; 无模型裁判），"
+            + "下列用例未通过。依据这些**管道实测**证据修正实现，只输出修正后的 JSON"
+            + "（不要解释、不要 markdown 围栏）：不得改写期望值来迁就现状，不得删除验收步骤，不得用自然语言宣称完成。");
+        foreach (var e in evidence)
+        {
+            sb.Append("\\n- ").Append(e);
+        }
+        return sb.ToString();
+    }
 }
 """.replace("__NCHARS__", str(NCHARS)).replace("__SHA__", SHA).replace("__PREFIX__", PREFIX_V)
 

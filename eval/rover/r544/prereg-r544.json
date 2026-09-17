@@ -1,0 +1,70 @@
+{
+ "round": "r544",
+ "revision": 1,
+ "made_before_run": true,
+ "window_plan": {
+  "window": "w1",
+  "windows": ["w1"],
+  "arms": [
+   {"name": "P1a", "snapdir": "agentP1a-g1", "rep": "a", "env": {"AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK": "1", "AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR": 1}},
+   {"name": "P1b", "snapdir": "agentP1b-g1", "rep": "b", "env": {"AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK": "1", "AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR": 1}},
+   {"name": "P1c", "snapdir": "agentP1c-g1", "rep": "c", "env": {"AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK": "1", "AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR": 1}}
+  ],
+  "control_arms": [
+   {"name": "P0a", "snapdir": "agentP0a-g1", "rep": "a", "env": {"AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK": "unset (off)", "AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR": 1}},
+   {"name": "P0b", "snapdir": "agentP0b-g1", "rep": "b", "env": {"AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK": "unset (off)", "AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR": 1}},
+   {"name": "P0c", "snapdir": "agentP0c-g1", "rep": "c", "env": {"AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK": "unset (off)", "AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR": 1}},
+   {"name": "A1on", "snapdir": "agentA1on-g1", "rep": "-", "env": {"AGENTFRAMEWORK_R1_CONTRACT": "unset (旧路径)", "AGENTFRAMEWORK_ACTION_MAX_STEPS": 32}}
+  ],
+  "declaration_rule": "window_plan.arms = **交付面**(本轮宣称机制生效的臂, 全部进 evidence_scope.require, 故 scope 闸应为 rc=0); control_arms = off 负控列(机制真缺席) + A1on 旧路径基线(本轮测量列, 在 evidence_scope.nonrequired 逐条声明理由)。两支列表合起来 = 起臂清单 7 臂, 报告与 SUMMARY 必须逐臂列全, 禁只报交付面。",
+  "order": "rep 外层 / 开关内层 (a: off,on; b: off,on; c: off,on) 以抑时序漂移; A1on 最后"
+ },
+ "mainline": "真实开发任务(g1 随机游戏长任务, 58 隐藏用例)在本项目 r1 结构化契约管道上跑通, 并与外部真值/旧路径在同一窗口对照; 判据之一 = 同窗同题远端调用数与 token 下降(主要是不必要的远端调用少了)。R544 取该主线上的**产物正确性开口**: R542 实测 9 个 r1 臂中 rc=0 的 4 臂产物仅 43–55/58, 唯一 58/58 的 r1 臂 rc=5 ⇒ 「模型自述完成」(rc=0) 不是正确性证据。",
+ "question": "把题面**公开用例**由管道**机械抽取**(输入/期望取自题面, 非模型自撰 expect_stdout)并**独立回放**(与隐藏用例判分器同语义: rc=0 ∧ stdout 尾换行归一逐字节等), 不过则用**管道自产证据**回灌执行修复轮(预算 1)。问: ① 能否消解 rc=0 假成功(把可疑产物判出来, 并在预算内修回来)? ② 能否提高 g1 整题全对率(58/58 ∧ rc=0)? ③ 代价(calls/新算 prompt/completion)是否可控? ④ 同窗旧路径基线质量是否不降?",
+ "single_variable": "AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK ∈ {未设=off, 1=on}。其余全同: 同一 AOT 二进制 /tmp/pub_r544/agenthost(sha256 起臂时记录, 两列同物), 题面 g1 sha256=516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3, role 文件 md5=0b7186b4f7ef481b73624f60b111d3a6, AGENTFRAMEWORK_R1_MAX_REPAIR=1, AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR=1, 用例脚本 md5=ebf342682e307b6eec7d472b7bd296d5, 适配器端口/cfg 同源。**本轮改了产品源码(r1 新增公开用例探针) ⇒ 必重发布 AOT**(发布形态铁律; 不带 -p:PublishAot)。关闭态零行为变化由单测(R1PublicProbeTests.Probe_Off_Is_Byte_For_Byte_Old_Behavior_On_Same_Artifact)与本次 off 臂**双证**。",
+ "arms": {
+  "P1a/P1b/P1c": "AGENTFRAMEWORK_R1_CONTRACT=1 + ROLE_FILE + PUBLIC_SELFCHECK=1 + MAX_EXEC_REPAIR=1 (交付面; 3 次独立 session)",
+  "P0a/P0b/P0c": "同上但 PUBLIC_SELFCHECK 显式 unset (负控列: 机制真缺席; 其产物面 = 旧行为读数)",
+  "A1on": "eval/rover/r540/proj_run_side_r540.py --side agent --arm A1on (旧路径, 无 R1 契约, max-steps 32) (同窗基线)"
+ },
+ "reps": 3,
+ "reps_note": "开关两列各 3 次独立 session(R509 令)。结局为离散量(rc/用例数), n=3 只作一致性核查, 不作分布级宣称。",
+ "input_pins": {
+  "taskset": "eval/rover/r544/taskset-r544.json (g1 单题面, 装配时逐项 == r542)",
+  "g1_prompt_sha256": "516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3",
+  "role_file_md5": "0b7186b4f7ef481b73624f60b111d3a6",
+  "cases_script_md5": "ebf342682e307b6eec7d472b7bd296d5",
+  "cases_json_md5": "129ee844a09cf56db303c966786faddc",
+  "hidden_cases": 58,
+  "check": "run_r544.sh 起臂前逐项机检 sha256/md5 与上表一致, 不一致 ⇒ fail-closed rc=3 不起臂"
+ },
+ "evidence_scope": {
+  "require": ["w1/agentP1a-g1", "w1/agentP1b-g1", "w1/agentP1c-g1"],
+  "nonrequired": [
+   {"pattern": "w1/agentP0*-g1",
+    "reason": "off 负控列(= 机制真缺席的旧行为读数)。其结局正是本轮被测量的对象(假成功是否存在), 不是我方交付物缺陷 ⇒ 不阻塞验收面; 但必须逐臂单列, 禁沉默。"},
+   {"pattern": "w1/agentA1on-g1",
+    "reason": "旧路径基线臂。被测**基线自身**的质量摆动是它的读数, 不阻塞『产物可执行且正确』验收面; 若我方全绿而基线质量更高, 『质量不降』宣称必须改用保守口径(我方全绿 ∧ 基线 ≤ 我方), 禁沉默。"}
+  ],
+  "narrowing_note": "本条为**起臂前**落盘的验收面(R539 授权: 动 require 面须先写后跑并注明理由)。验收面语义 = 『**本轮交付面**(开臂三臂)的产物真的能跑且全对』; 负控列与旧路径基线是本轮**测量列**。交付面三臂仍全为 require(且要求 58/58 ∧ rc=0), 故本闸仍可红。"
+ },
+ "judgments": {
+  "J1_机制启用断言": "on 臂 transcript 必须 public_probe_ran=1 ∧ public_probe_total≥1; off 臂不得出现该字段(或为 null) ⇒ 机制真缺席。任一不符 ⇒ 该臂判 VOID 不入对照(『没触发』不得冒充『无效』, 也不得冒充『生效』)。",
+  "J2_假成功消解(主问)": "on 臂中「rc=0 ∧ 隐藏用例非全对」的臂数 vs off 臂; 逐臂报 rc/stage/cases/public_probe_failed。on 仍出现 rc=0 假成功 ⇒ 机制不足, 如实收窄, 不宣称消解。",
+  "J3_质量": "两列整题全对率(58/58 ∧ rc=0)逐臂 + 中位; n=3 不作分布宣称。",
+  "J4_代价": "逐臂 calls/prompt_tokens/completion_tokens/cache_hit_tokens 与 public_probe_failed; 报 on/off 中位倍率(调用 / 新算 prompt / completion 三列分列, 禁用名义总量)。",
+  "J5_同窗旧路径对照": "on 中位 vs A1on(同窗同题) 的调用/token 倍率与质量; 质量前提 = 我方全绿 ∧ 基线 ≤ 我方。",
+  "J6_探针非恒真门": "public_probe_failed 跨臂必须出现**非同一值**(既有 0 也有 >0), 否则该探针不可解释(确定性必须与非平凡性成对)。",
+  "J7_rc语义": "rc=8 public_probe_unmet = 公开用例回放未过且回灌预算耗尽 ⇒ 成对报『回放未达成 ∧ 产物可疑』, correctness_asserted=0, 不作正确性证据; 唯一正确性证据 = 隐藏用例实跑。"
+ },
+ "instrument_negative_control": [
+  "eval/rover/r507pre/prereg_scope_gate.py: 对本预注册正控必绿, 负控(声明不存在的臂)必红",
+  "eval/rover/r483/preflight_gate.py 起臂前连续 2 次 verdict=PASS(只读 --out JSON 的 verdict 字段, 禁 grep 锚)",
+  "off 列 = 机制缺席负控(必须无 public_probe_* 字段); on 列 = 启用正控(必须 ran=1)",
+  "单测 L2 负控: 错产物 + 关 ⇒ rc=0 done(旧行为); 同产物 + 开 ⇒ rc=8 public_probe_unmet(判别力)",
+  "L2 仪器缺陷自捕(本轮实测): 同秒同长度改写产物会让 pyc 的 mtime+size 校验失效 ⇒ 旧字节码被复用 ⇒ 回放误红; 修法 = 每次回放独立 PYTHONPYCACHEPREFIX 空目录 + PYTHONDONTWRITEBYTECODE=1(与判分器同语义)"
+ ],
+ "external_validity_floor": "外部真值(codex-cli, 同模型)**本轮不出场**: g1 的 codex 臂在 R523/R529 已判不可用(32 步上限 × 18 分钟未走完), R540 已记该缺 ⇒ 本轮是内部单变量对照 + 旧路径基线, 不构成主线『与外部真值同环境同输入对照』那一半 ⇒ 报告必须标注『外部对照面本轮未满足』。产物侧仍走仓外路径复核: exec_precondition 把快照独立物化到临时目录后用 `python3 -I -B` 真跑 58 条隐藏用例, 不吃 report.json 自报。只读本仓内部读数/自报 = 封闭系统自证 ⇒ 记未自检。",
+ "acceptance": "python3 eval/rover/r507pre/exec_precondition.py --round r544 ⇒ rc=0 才可验收; rc≠0 ⇒ 本轮一切 token/调用降幅/增益标『参考(未可验收)』",
+ "honest_note": "① 题面公开用例只有 8 条(4 族 × 2) ⇒ 回放是**必要非充分**自测(隐藏面错误仍需模型自身推理), 禁把『公开 8 条全过』当整题正确; ② n=3 离散结局 ⇒ 不作分布宣称; ③ A1on 单臂 1 次(超时 720s, 超时即记未走完, 不得当 0 分也不得当合格); ④ 探针**只在 exec.Rc==0 路径触发**(单变量最小改动) ⇒ 不覆盖 rc=5/8 路径, 与 R533 执行回灌修复是两条独立通道, 不得把两者效果互相归因; ⑤ 探针是**调用放大器**的可能要由 J4 读数判定, 不得先验假设它零成本。"
+}

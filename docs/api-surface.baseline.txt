@@ -3285,6 +3285,9 @@ agent|F:agent.memory.MemoryType.Semantic:agent.memory.MemoryType
 agent|F:agent.memory.MemoryType.ShortTerm:agent.memory.MemoryType
 agent|F:agent.memory.MemoryType.Working:agent.memory.MemoryType
 agent|F:agent.memory.MemoryType.value__:System.Int32
+agent|F:agent.r1.PublicExampleExtractor.MaxExamples:System.Int32
+agent|F:agent.r1.PublicExampleProbe.EvidenceChars:System.Int32
+agent|F:agent.r1.PublicExampleProbe.MaxFailureLines:System.Int32
 agent|F:agent.r1.R1Pipeline.SessionTag:System.String
 agent|F:agent.r1.R1RoleMount.MaxChars:System.Int32
 agent|F:agent.r1.R1Transcript.Schema:System.String
@@ -3569,6 +3572,7 @@ agent|M:agent.contract.StructuredContract.Validate(System.String):System.Collect
 agent|M:agent.contract.StructuredPrompt.BuildUserMessage(System.String,System.String):System.String
 agent|M:agent.contract.StructuredPrompt.ExecRepairMessage(System.Collections.Generic.IReadOnlyList<System.String>):System.String
 agent|M:agent.contract.StructuredPrompt.PrefixSha256():System.String
+agent|M:agent.contract.StructuredPrompt.PublicProbeRepairMessage(System.Collections.Generic.IReadOnlyList<System.String>):System.String
 agent|M:agent.contract.StructuredPrompt.RepairMessage(System.Collections.Generic.IReadOnlyList<System.String>):System.String
 agent|M:agent.critique.CriticPipeline.Assemble(System.Collections.Generic.IReadOnlyList<agent.critique.OutputCritic+Finding>,System.Collections.Generic.IReadOnlyList<agent.critique.SelfCritic+CandidateCritique>,agent.critique.FixMemory,System.String):System.ValueTuple<System.Collections.Generic.IReadOnlyList<agent.critique.CriticPipeline+AnchoredFinding>,System.Collections.Generic.IReadOnlyList<agent.critique.CriticPipeline+AnchoredFinding>>
 agent|M:agent.critique.CriticPipeline.Render(System.Collections.Generic.IReadOnlyList<agent.critique.CriticPipeline+AnchoredFinding>,System.Int32):System.String
@@ -3833,6 +3837,10 @@ agent|M:agent.pipeline.TaskPipeline.FailAsync(System.String,System.String):Syste
 agent|M:agent.pipeline.TaskPipeline.GetCompletedTasks():System.Collections.Generic.IEnumerable<agent.pipeline.PipelineTask>
 agent|M:agent.pipeline.TaskPipeline.GetPendingTasks():System.Collections.Generic.IEnumerable<agent.pipeline.PipelineTask>
 agent|M:agent.r1.PlanExecutor.RunAsync(System.Collections.Generic.IReadOnlyList<agent.contract.PlanStep>,agent.r1.R1Options,System.Threading.CancellationToken):System.Threading.Tasks.Task<agent.r1.PlanExecutorResult>
+agent|M:agent.r1.PublicExampleExtractor.TryExtract(System.String,agent.r1.PublicExampleSet&,System.String&):System.Boolean
+agent|M:agent.r1.PublicExampleProbe.RunAsync(agent.r1.PublicExampleSet,System.String,System.Int32,System.Threading.CancellationToken):System.Threading.Tasks.Task<agent.r1.PublicProbeResult>
+agent|M:agent.r1.PublicProbeResult.MarkerJson():System.String
+agent|M:agent.r1.PublicProbeResult.Skipped(System.String):agent.r1.PublicProbeResult
 agent|M:agent.r1.R1Hash.OfBytes(System.Byte[]):System.String
 agent|M:agent.r1.R1Hash.OfText(System.String):System.String
 agent|M:agent.r1.R1Json.Num(System.Double):System.String
@@ -4862,6 +4870,16 @@ agent|P:agent.r1.PlanExecutorResult.Rc:System.Int32
 agent|P:agent.r1.PlanExecutorResult.Reason:System.String
 agent|P:agent.r1.PlanExecutorResult.Stage:System.String
 agent|P:agent.r1.PlanExecutorResult.Steps:System.Collections.Generic.IReadOnlyList<agent.r1.StepOutcome>
+agent|P:agent.r1.PublicExample.Expected:System.String
+agent|P:agent.r1.PublicExample.GameId:System.String
+agent|P:agent.r1.PublicExample.Input:System.String
+agent|P:agent.r1.PublicExampleSet.CommandPrefix:System.String
+agent|P:agent.r1.PublicExampleSet.Examples:System.Collections.Generic.IReadOnlyList<agent.r1.PublicExample>
+agent|P:agent.r1.PublicProbeResult.Failed:System.Int32
+agent|P:agent.r1.PublicProbeResult.Failures:System.Collections.Generic.IReadOnlyList<System.String>
+agent|P:agent.r1.PublicProbeResult.Ran:System.Boolean
+agent|P:agent.r1.PublicProbeResult.Reason:System.String
+agent|P:agent.r1.PublicProbeResult.Total:System.Int32
 agent|P:agent.r1.R1CallStats.CacheHitTokens:System.Nullable<System.Int32>
 agent|P:agent.r1.R1CallStats.CacheMissTokens:System.Nullable<System.Int32>
 agent|P:agent.r1.R1CallStats.Calls:System.Int32
@@ -4874,6 +4892,7 @@ agent|P:agent.r1.R1CallStats.Total:System.Int32
 agent|P:agent.r1.R1ContractMode.IsEnabled:System.Boolean
 agent|P:agent.r1.R1Options.MaxExecRepair:System.Int32
 agent|P:agent.r1.R1Options.MaxRepair:System.Int32
+agent|P:agent.r1.R1Options.PublicSelfCheck:System.Boolean
 agent|P:agent.r1.R1Options.RoleNote:System.String
 agent|P:agent.r1.R1Options.SandboxRoot:System.String
 agent|P:agent.r1.R1Options.StepTimeoutSeconds:System.Int32
@@ -4882,6 +4901,7 @@ agent|P:agent.r1.R1Options.TranscriptPath:System.String
 agent|P:agent.r1.R1RunResult.Halted:System.Boolean
 agent|P:agent.r1.R1RunResult.PrefixChars:System.Int32
 agent|P:agent.r1.R1RunResult.PrefixSha256:System.String
+agent|P:agent.r1.R1RunResult.Probe:agent.r1.PublicProbeResult
 agent|P:agent.r1.R1RunResult.Rc:System.Int32
 agent|P:agent.r1.R1RunResult.Reason:System.String
 agent|P:agent.r1.R1RunResult.ReplyText:System.String
@@ -5640,6 +5660,11 @@ agent|T:agent.pipeline.TaskDecomposer
 agent|T:agent.pipeline.TaskPipeline
 agent|T:agent.r1.PlanExecutor
 agent|T:agent.r1.PlanExecutorResult
+agent|T:agent.r1.PublicExample
+agent|T:agent.r1.PublicExampleExtractor
+agent|T:agent.r1.PublicExampleProbe
+agent|T:agent.r1.PublicExampleSet
+agent|T:agent.r1.PublicProbeResult
 agent|T:agent.r1.R1CallStats
 agent|T:agent.r1.R1ContractMode
 agent|T:agent.r1.R1Hash

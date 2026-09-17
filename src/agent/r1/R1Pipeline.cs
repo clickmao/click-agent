@@ -11,7 +11,8 @@ namespace agent.r1;
 /// R1 管道总装（用户令 2026-09-17：结构化 prompt ⇄ 远程 LLM ⇄ 结构化结果 ⇒ 精准语义 ⇒ 管道）：
 ///
 ///   前缀恒定自检 → 结构化调用 → 契约校验 → (至多 N 轮**契约**修复) → 语义闸 → 计划执行
-///   → (实测不过 ⇒ 至多 M 轮**执行证据回灌**修复) → 台账
+///   → (实测不过 ⇒ 至多 M 轮**执行证据回灌**修复) → 产物侧公开用例独立回放 (R544, 默认关)
+///   → 台账
 ///
 /// **结构量（R533）**：本管道发出的 prompt 一律置 <see cref="Prompt.StructuredSurface"/> ⇒
 /// 模型侧无工具面、无动作环、无纪律尾块 ⇒ 实发 system 逐字节 = 恒定前缀 pin。
@@ -49,6 +50,14 @@ public static class R1Pipeline
         var execRepairs = 0;  // 执行证据回灌修复轮
         string? repairNote = null;
         var raw = string.Empty;
+
+        // R544 · 产物侧自检的**输入面**：题面公开用例的机械抽取（一次性，与调用无关）。
+        // 开关关闭或抽不出 ⇒ probeSet 为 null ⇒ 探针不参与，链逐位等于旧行为（零回归）。
+        PublicExampleSet? probeSet = null;
+        if (opt.PublicSelfCheck && PublicExampleExtractor.TryExtract(taskText, out var extracted, out _))
+        {
+            probeSet = extracted;
+        }
 
         while (true)
         {
@@ -142,6 +151,44 @@ public static class R1Pipeline
             }
 
             var exec = await PlanExecutor.RunAsync(sem.Plan, opt, ct).ConfigureAwait(false);
+
+            // R544 · 产物侧独立自检（用户审计口径的机件化）: **rc=0 只是链路自述跑通, 不是产物正确**
+            //   （R542 实测: rc=0 的 4 个 r1 臂产物仅 43–55/58）。故只在「声称完成」(exec.Rc==0) 时触发:
+            //   题面公开用例由管道**机械抽取**（输入/期望取自题面, 非模型自述）、**独立回放**（与隐藏用例
+            //   判分器同语义: rc=0 ∧ stdout 尾换行归一逐字节等）; 不过 ⇒ 用**管道自产**的证据回灌修复轮,
+            //   预算用尽 ⇒ rc=8 public_probe_unmet（成对报, rc 不作正确性证据）。
+            if (exec.Rc == 0 && probeSet is not null)
+            {
+                var probe = await PublicExampleProbe.RunAsync(probeSet, opt.SandboxRoot, opt.StepTimeoutSeconds, ct)
+                    .ConfigureAwait(false);
+                if (probe.Failed > 0)
+                {
+                    if (execRepairs < opt.MaxExecRepair)
+                    {
+                        execRepairs++;
+                        repairNote = StructuredPrompt.PublicProbeRepairMessage(probe.Failures);
+                        continue;
+                    }
+
+                    var probeUnmet = new R1RunResult(8, "public_probe_unmet",
+                        "题面公开用例回放未过 " + probe.Failed + "/" + probe.Total
+                        + " 例（期望取自题面、与隐藏用例判分器同语义），执行回灌修复预算 " + opt.MaxExecRepair
+                        + " 已用尽 ⇒ 成对报「回放未达成 ∧ 产物可疑」: rc=8 不作正确性证据 (correctness_asserted=0);"
+                        + " 首例: " + (probe.Failures.Count > 0 ? probe.Failures[0] : "(无)"),
+                        raw + "\nR1_PUBLIC_PROBE " + probe.MarkerJson(), statsAll,
+                        prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe);
+                    R1Transcript.Write(probeUnmet, opt, taskText ?? string.Empty);
+                    return probeUnmet;
+                }
+
+                var probed = new R1RunResult(0, "done",
+                    exec.Reason + " + 题面公开用例回放 " + probe.Total + "/" + probe.Total + " 过（管道自产证据）",
+                    raw + "\nR1_PUBLIC_PROBE " + probe.MarkerJson(), statsAll,
+                    prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe);
+                R1Transcript.Write(probed, opt, taskText ?? string.Empty);
+                return probed;
+            }
+
             if (exec.Rc == 0)
             {
                 var done = new R1RunResult(0, "done", exec.Reason, raw, statsAll,

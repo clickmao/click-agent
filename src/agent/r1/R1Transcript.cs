@@ -37,6 +37,13 @@ public static class R1Transcript
         //   禁止把 rc=8 当正确性证据（判分器只吃这个字段与外部用例，不吃 rc 等值）。
         sb.Append(",\"correctness_asserted\":").Append(R1Json.Num(CorrectnessAsserted(r)));
         sb.Append(",\"role_note_chars\":").Append(R1Json.Num(r.RoleNoteChars));
+        // R544: 产物侧公开用例回放（关闭/抽不出时不出现这两个字段 ⇒ 与旧台账逐字节同）。
+        if (r.Probe is not null)
+        {
+            sb.Append(",\"public_probe_ran\":").Append(R1Json.Num(r.Probe.Ran ? 1 : 0));
+            sb.Append(",\"public_probe_total\":").Append(R1Json.Num(r.Probe.Total));
+            sb.Append(",\"public_probe_failed\":").Append(R1Json.Num(r.Probe.Failed));
+        }
         sb.Append("}");
         return sb.ToString();
     }
@@ -71,6 +78,9 @@ public static class R1Transcript
         sb.Append("  \"steps_executed\": ").Append(R1Json.Num(r.Steps.Count)).Append(",\n");
         sb.Append("  \"self_test_unmet\": ").Append(R1Json.Num(SelfTestUnmet(r))).Append(",\n");
         sb.Append("  \"correctness_asserted\": ").Append(R1Json.Num(CorrectnessAsserted(r))).Append(",\n");
+        sb.Append("  \"public_probe_ran\": ").Append(r.Probe is null ? "null" : R1Json.Num(r.Probe.Ran ? 1 : 0)).Append(",\n");
+        sb.Append("  \"public_probe_total\": ").Append(r.Probe is null ? "null" : R1Json.Num(r.Probe.Total)).Append(",\n");
+        sb.Append("  \"public_probe_failed\": ").Append(r.Probe is null ? "null" : R1Json.Num(r.Probe.Failed)).Append(",\n");
 
         var sem = r.Semantics;
         sb.Append("  \"semantics\": ");

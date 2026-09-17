@@ -1,0 +1,579 @@
+{
+ "round": "r544",
+ "window": "w1",
+ "run_dir": "eval/rover/r544/run-w1",
+ "single_variable": "AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK",
+ "arms": {
+  "P0a": {
+   "side": "off",
+   "range": [
+    2,
+    3
+   ],
+   "rc": 5,
+   "stage": "expect_stdout_exhausted",
+   "reason_head": "",
+   "calls_dump": 2,
+   "calls_self": 2,
+   "prompt_tokens": 16476,
+   "cached_tokens": 15872,
+   "completion_tokens": 4049,
+   "total_tokens": 20525,
+   "unreported_usage": 0,
+   "plan_steps_total": 10,
+   "steps_executed": 7,
+   "exec_repairs": 1,
+   "repair_rounds": 0,
+   "correctness_asserted": 0,
+   "public_probe_ran": null,
+   "public_probe_total": null,
+   "public_probe_failed": null,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 58,
+   "cases_total": 58,
+   "cases_rc": 0,
+   "all_green": true,
+   "failed_cases": [],
+   "public_failed": [],
+   "reply_has_probe_marker": false
+  },
+  "P0b": {
+   "side": "off",
+   "range": [
+    6,
+    7
+   ],
+   "rc": 4,
+   "stage": "contract",
+   "reason_head": "",
+   "calls_dump": 2,
+   "calls_self": 2,
+   "prompt_tokens": 16240,
+   "cached_tokens": 15744,
+   "completion_tokens": 3999,
+   "total_tokens": 20239,
+   "unreported_usage": 0,
+   "plan_steps_total": 0,
+   "steps_executed": 0,
+   "exec_repairs": 0,
+   "repair_rounds": 1,
+   "correctness_asserted": 0,
+   "public_probe_ran": null,
+   "public_probe_total": null,
+   "public_probe_failed": null,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 0,
+   "cases_total": 58,
+   "cases_rc": 1,
+   "all_green": false,
+   "failed_cases": [
+    "life#00-public",
+    "life#01-public",
+    "life#02-hidden",
+    "life#03-hidden",
+    "life#04-hidden",
+    "life#05-hidden",
+    "life#06-hidden",
+    "life#07-hidden",
+    "life#08-hidden",
+    "life#09-hidden",
+    "life#10-hidden",
+    "life#11-hidden",
+    "life#12-hidden",
+    "life#13-hidden",
+    "sub#14-public",
+    "sub#15-public",
+    "sub#16-hidden",
+    "sub#17-hidden",
+    "sub#18-hidden",
+    "sub#19-hidden",
+    "sub#20-hidden",
+    "sub#21-hidden",
+    "sub#22-hidden",
+    "sub#23-hidden",
+    "sub#24-hidden",
+    "sub#25-hidden",
+    "sub#26-hidden",
+    "sub#27-hidden",
+    "nim#28-public",
+    "nim#29-public",
+    "nim#30-hidden",
+    "nim#31-hidden",
+    "nim#32-hidden",
+    "nim#33-hidden",
+    "nim#34-hidden",
+    "nim#35-hidden",
+    "nim#36-hidden",
+    "nim#37-hidden",
+    "nim#38-hidden",
+    "nim#39-hidden",
+    "nim#40-hidden",
+    "nim#41-hidden",
+    "nim#42-hidden",
+    "wythoff#43-public",
+    "wythoff#44-public",
+    "wythoff#45-hidden",
+    "wythoff#46-hidden",
+    "wythoff#47-hidden",
+    "wythoff#48-hidden",
+    "wythoff#49-hidden",
+    "wythoff#50-hidden",
+    "wythoff#51-hidden",
+    "wythoff#52-hidden",
+    "wythoff#53-hidden",
+    "wythoff#54-hidden",
+    "wythoff#55-hidden",
+    "wythoff#56-hidden",
+    "wythoff#57-hidden"
+   ],
+   "public_failed": [
+    "life#00-public",
+    "life#01-public",
+    "sub#14-public",
+    "sub#15-public",
+    "nim#28-public",
+    "nim#29-public",
+    "wythoff#43-public",
+    "wythoff#44-public"
+   ],
+   "reply_has_probe_marker": false
+  },
+  "P0c": {
+   "side": "off",
+   "range": [
+    9,
+    12
+   ],
+   "rc": 8,
+   "stage": "self_test_unmet",
+   "reason_head": "",
+   "calls_dump": 4,
+   "calls_self": 3,
+   "prompt_tokens": 32787,
+   "cached_tokens": 31616,
+   "completion_tokens": 7646,
+   "total_tokens": 40433,
+   "unreported_usage": 0,
+   "plan_steps_total": 7,
+   "steps_executed": 7,
+   "exec_repairs": 1,
+   "repair_rounds": 1,
+   "correctness_asserted": 0,
+   "public_probe_ran": null,
+   "public_probe_total": null,
+   "public_probe_failed": null,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 55,
+   "cases_total": 58,
+   "cases_rc": 1,
+   "all_green": false,
+   "failed_cases": [
+    "wythoff#44-public",
+    "wythoff#45-hidden",
+    "wythoff#49-hidden"
+   ],
+   "public_failed": [
+    "wythoff#44-public"
+   ],
+   "reply_has_probe_marker": false
+  },
+  "P1a": {
+   "side": "on",
+   "range": [
+    4,
+    5
+   ],
+   "rc": 5,
+   "stage": "expect_stdout_exhausted",
+   "reason_head": "",
+   "calls_dump": 2,
+   "calls_self": 2,
+   "prompt_tokens": 16473,
+   "cached_tokens": 15872,
+   "completion_tokens": 3966,
+   "total_tokens": 20439,
+   "unreported_usage": 0,
+   "plan_steps_total": 14,
+   "steps_executed": 7,
+   "exec_repairs": 1,
+   "repair_rounds": 0,
+   "correctness_asserted": 0,
+   "public_probe_ran": null,
+   "public_probe_total": null,
+   "public_probe_failed": null,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 58,
+   "cases_total": 58,
+   "cases_rc": 0,
+   "all_green": true,
+   "failed_cases": [],
+   "public_failed": [],
+   "reply_has_probe_marker": false
+  },
+  "P1b": {
+   "side": "on",
+   "range": [
+    8,
+    8
+   ],
+   "rc": 0,
+   "stage": "done",
+   "reason_head": "",
+   "calls_dump": 1,
+   "calls_self": 1,
+   "prompt_tokens": 8083,
+   "cached_tokens": 7936,
+   "completion_tokens": 2322,
+   "total_tokens": 10405,
+   "unreported_usage": 0,
+   "plan_steps_total": 14,
+   "steps_executed": 14,
+   "exec_repairs": 0,
+   "repair_rounds": 0,
+   "correctness_asserted": 1,
+   "public_probe_ran": 1,
+   "public_probe_total": 8,
+   "public_probe_failed": 0,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 58,
+   "cases_total": 58,
+   "cases_rc": 0,
+   "all_green": true,
+   "failed_cases": [],
+   "public_failed": [],
+   "reply_has_probe_marker": true
+  },
+  "P1c": {
+   "side": "on",
+   "range": [
+    13,
+    16
+   ],
+   "rc": 5,
+   "stage": "expect_stdout_exhausted",
+   "reason_head": "",
+   "calls_dump": 4,
+   "calls_self": 3,
+   "prompt_tokens": 32736,
+   "cached_tokens": 31488,
+   "completion_tokens": 7990,
+   "total_tokens": 40726,
+   "unreported_usage": 0,
+   "plan_steps_total": 10,
+   "steps_executed": 7,
+   "exec_repairs": 1,
+   "repair_rounds": 1,
+   "correctness_asserted": 0,
+   "public_probe_ran": null,
+   "public_probe_total": null,
+   "public_probe_failed": null,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 43,
+   "cases_total": 58,
+   "cases_rc": 1,
+   "all_green": false,
+   "failed_cases": [
+    "wythoff#43-public",
+    "wythoff#44-public",
+    "wythoff#45-hidden",
+    "wythoff#46-hidden",
+    "wythoff#47-hidden",
+    "wythoff#48-hidden",
+    "wythoff#49-hidden",
+    "wythoff#50-hidden",
+    "wythoff#51-hidden",
+    "wythoff#52-hidden",
+    "wythoff#53-hidden",
+    "wythoff#54-hidden",
+    "wythoff#55-hidden",
+    "wythoff#56-hidden",
+    "wythoff#57-hidden"
+   ],
+   "public_failed": [
+    "wythoff#43-public",
+    "wythoff#44-public"
+   ],
+   "reply_has_probe_marker": false
+  },
+  "A1on": {
+   "side": "legacy",
+   "range": [
+    17,
+    50
+   ],
+   "rc": null,
+   "stage": null,
+   "reason_head": "",
+   "calls_dump": 34,
+   "calls_self": null,
+   "prompt_tokens": 702146,
+   "cached_tokens": 678400,
+   "completion_tokens": 12141,
+   "total_tokens": 714287,
+   "unreported_usage": 0,
+   "plan_steps_total": null,
+   "steps_executed": null,
+   "exec_repairs": null,
+   "repair_rounds": null,
+   "correctness_asserted": null,
+   "public_probe_ran": null,
+   "public_probe_total": null,
+   "public_probe_failed": null,
+   "role_note_chars": null,
+   "prefix_sha256": null,
+   "cases_pass": 46,
+   "cases_total": 58,
+   "cases_rc": 1,
+   "all_green": false,
+   "failed_cases": [
+    "wythoff#43-public",
+    "wythoff#44-public",
+    "wythoff#45-hidden",
+    "wythoff#47-hidden",
+    "wythoff#48-hidden",
+    "wythoff#49-hidden",
+    "wythoff#50-hidden",
+    "wythoff#52-hidden",
+    "wythoff#53-hidden",
+    "wythoff#54-hidden",
+    "wythoff#55-hidden",
+    "wythoff#57-hidden"
+   ],
+   "public_failed": [
+    "wythoff#43-public",
+    "wythoff#44-public"
+   ],
+   "reply_has_probe_marker": null
+  }
+ },
+ "columns": {
+  "off": {
+   "arms": [
+    "P0a",
+    "P0b",
+    "P0c"
+   ],
+   "rc": [
+    5,
+    4,
+    8
+   ],
+   "cases_pass": [
+    58,
+    0,
+    55
+   ],
+   "all_green": [
+    true,
+    false,
+    false
+   ],
+   "all_green_n": 1,
+   "calls": [
+    2,
+    2,
+    4
+   ],
+   "prompt_tokens": [
+    16476,
+    16240,
+    32787
+   ],
+   "completion_tokens": [
+    4049,
+    3999,
+    7646
+   ],
+   "total_tokens": [
+    20525,
+    20239,
+    40433
+   ],
+   "calls_median": 2,
+   "prompt_median": 16476,
+   "completion_median": 4049,
+   "total_median": 20525,
+   "probe_failed": [
+    null,
+    null,
+    null
+   ],
+   "false_success_n": 0
+  },
+  "on": {
+   "arms": [
+    "P1a",
+    "P1b",
+    "P1c"
+   ],
+   "rc": [
+    5,
+    0,
+    5
+   ],
+   "cases_pass": [
+    58,
+    58,
+    43
+   ],
+   "all_green": [
+    true,
+    true,
+    false
+   ],
+   "all_green_n": 2,
+   "calls": [
+    2,
+    1,
+    4
+   ],
+   "prompt_tokens": [
+    16473,
+    8083,
+    32736
+   ],
+   "completion_tokens": [
+    3966,
+    2322,
+    7990
+   ],
+   "total_tokens": [
+    20439,
+    10405,
+    40726
+   ],
+   "calls_median": 2,
+   "prompt_median": 16473,
+   "completion_median": 3966,
+   "total_median": 20439,
+   "probe_failed": [
+    null,
+    0,
+    null
+   ],
+   "false_success_n": 0
+  },
+  "legacy": {
+   "arms": [
+    "A1on"
+   ],
+   "cases_pass": [
+    46
+   ],
+   "all_green_n": 0,
+   "calls": 34,
+   "prompt_tokens": 702146,
+   "completion_tokens": 12141,
+   "total_tokens": 714287
+  }
+ },
+ "invariants": {
+  "prefix_sha256_set": [
+   "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637"
+  ],
+  "prefix_identical": true,
+  "role_note_chars_set": [
+   326
+  ],
+  "role_mounted_all": true,
+  "cases_total_58_all": true,
+  "mechanism_on_arms_ran": false,
+  "mechanism_off_arms_absent": true,
+  "mechanism_off_no_marker": true
+ },
+ "judgments": {
+  "J1_机制启用断言": {
+   "on_ran": [
+    null,
+    1,
+    null
+   ],
+   "on_total": [
+    null,
+    8,
+    null
+   ],
+   "off_ran": [
+    null,
+    null,
+    null
+   ],
+   "verdict": "FAIL(臂判 VOID)"
+  },
+  "J2_假成功消解": {
+   "off_false_success_n": 0,
+   "on_false_success_n": 0,
+   "verdict": "未消解: 两列同为 0"
+  },
+  "J3_质量": {
+   "off_all_green": [
+    true,
+    false,
+    false
+   ],
+   "on_all_green": [
+    true,
+    true,
+    false
+   ],
+   "off_cases": [
+    58,
+    0,
+    55
+   ],
+   "on_cases": [
+    58,
+    58,
+    43
+   ],
+   "verdict": "不降"
+  },
+  "J4_代价": {
+   "calls": {
+    "off_median": 2,
+    "on_median": 2,
+    "ratio_on_off": 1.0
+   },
+   "prompt": {
+    "off_median": 16476,
+    "on_median": 16473,
+    "ratio_on_off": 1.0
+   },
+   "completion": {
+    "off_median": 4049,
+    "on_median": 3966,
+    "ratio_on_off": 0.98
+   },
+   "total": {
+    "off_median": 20525,
+    "on_median": 20439,
+    "ratio_on_off": 0.996
+   }
+  },
+  "J5_同窗旧路径对照": {
+   "A1on_calls": 34,
+   "A1on_total_tokens": 714287,
+   "A1on_cases": "46/58",
+   "on_calls_median": 2,
+   "on_total_median": 20439,
+   "call_ratio_on_vs_A1on": 0.059,
+   "token_ratio_on_vs_A1on": 0.029,
+   "quality_premise_ok": false
+  },
+  "J6_探针非平凡": {
+   "probe_failed_values": [
+    0
+   ],
+   "constant": true,
+   "note": "跨臂恒为同一值 ⇒ 臂级无可解释性; 判别力由 L2 成对单测(错产物⇒failed=1 / 对产物⇒failed=0)承担"
+  },
+  "J7_rc语义": "rc=8 public_probe_unmet = 公开用例回放未过 ∧ 回灌预算耗尽 ⇒ 成对报『回放未达成 ∧ 产物可疑』, correctness_asserted=0; 唯一正确性证据 = 隐藏用例实跑"
+ },
+ "notes": []
+}

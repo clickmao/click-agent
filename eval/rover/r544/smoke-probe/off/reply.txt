@@ -1,0 +1,9 @@
+AgentFramework CLI
+  /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit
+── 执行中 (turn 1) ──────────────────────────────
+  [01] 意图分析: code_generation
+  [02] 子任务: 用 Python 3 写一个多文件包 `sols/`（入口 `pytho...
+  [03] 管线执行 (上下文装配 → LLM → 后处理)…
+  [04] R1 结构化管道 (恒定前缀 → 契约校验 → 语义闸 → 管道执行)…
+{"schema_version":"r1.0","intent":"question","confidence":0.85,"entities":[{"kind":"language","value":"Python 3"},{"kind":"path","value":"sols/"},{"kind":"command","value":"python3 -m sols alpha"},{"kind":"value","value":"alpha"},{"kind":"value","value":"7"},{"kind":"value","value":"14"}],"constraints":["多文件包","入口 python3 -m sols <case_id>","case_id 取 alpha"],"missing_slots":["缺 alpha 的游戏规则（从输入到输出的变换/算法）——只有一对样例 7→14，无法唯一确定变换，导致 plan 中 write_file 的 content 无法写全"],"ambiguities":[],"plan":[],"done_when":[],"refusal":null}
+R1_STATS {"schema":"r1-run/1","rc":2,"stage":"semantics_incomplete","calls":1,"prompt_tokens":6770,"completion_tokens":5522,"cache_hit_tokens":6528,"cache_miss_tokens":242,"repair_rounds":0,"exec_repairs":0,"prefix_chars":14863,"prefix_sha256":"ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637","task_sha256":"6734cb30ce89cb43216a76ea7d5f98f5d85fb6706b7bea526b9d5a6e12ac8627","steps":0,"plan_steps_total":0,"steps_executed":0,"self_test_unmet":0,"correctness_asserted":0,"role_note_chars":0}

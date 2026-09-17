@@ -20,7 +20,8 @@ public sealed record R1Options(
     string? TranscriptPath,
     string? RoleNote,
     string Tag,
-    int MaxExecRepair = 1)
+    int MaxExecRepair = 1,
+    bool PublicSelfCheck = false)
 {
     public static R1Options FromEnvironment(string fallbackRoot)
     {
@@ -53,6 +54,17 @@ public sealed record R1Options(
         var transcript = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_R1_TRANSCRIPT");
         var tag = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_R1_TAG");
 
+        // R544: 产物侧独立自检（题面公开用例机械抽取 + 独立回放）。
+        // **默认关**（关闭态逐位等于旧行为 ⇒ 零回归可用单变量证明），环境轴显式开。
+        var publicSelfCheck = false;
+        var psc = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK");
+        if (!string.IsNullOrWhiteSpace(psc))
+        {
+            var v = psc.Trim();
+            publicSelfCheck = v == "1" || string.Equals(v, "on", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(v, "true", StringComparison.OrdinalIgnoreCase);
+        }
+
         return new R1Options(
             Path.GetFullPath(root),
             maxRepair,
@@ -60,6 +72,7 @@ public sealed record R1Options(
             string.IsNullOrWhiteSpace(transcript) ? null : transcript,
             R1RoleMount.ReadNote(),
             string.IsNullOrWhiteSpace(tag) ? "(untagged)" : tag,
-            maxExecRepair);
+            maxExecRepair,
+            publicSelfCheck);
     }
 }
