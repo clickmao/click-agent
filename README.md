@@ -1,4 +1,9 @@
-# click-agent (v0.21.0)
+# click-agent · RF0001
+
+> **版本线口径（RF0001 起）**：`RF####` = 版本号序列，从 **RF0001** 开始。
+> RF0001 = [对照 Claude-Fable-5.1 的重构开发计划](docs/plans/RF0001-fable-aligned-development-plan.md)（唯一活计划）。
+> 旧版本线（v0.13–v1.01，216 份计划/报告/变更日志）已归档 → [归档索引](docs/archive/ARCHIVE-INDEX.md)（`AR-####` 台账，机检 `tools/archive/archive_docs.py --verify`）。
+> 证据面从本版本起用新结构 → [docs/evidence/](docs/evidence/INDEX.md)（规范 / 索引 / 每版 KPI + EVIDENCE）；指标仍是 KPI。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)
@@ -58,7 +63,7 @@ net10.0 / NativeAOT 零 IL 警告 (13.75MB) / 730 单测全绿 / 迭代评测 52
 
 ### 📦 v0.14-v0.16.x 能力 (critic 自审 / 任务生命周期 / skills 引擎 / 性能) + v0.12-v0.13.x 能力 (思考链 / 探索 / 视觉 / 渲染插件 / 底座防护)
 
-已归档 → [CHANGELOG-v0.14-v0.16.x.md](docs/changelogs/CHANGELOG-v0.14-v0.16.x-R277-R336.md) · [CHANGELOG-v0.12-v0.13.x-R169-R268.md](docs/changelogs/CHANGELOG-v0.12-v0.13.x-R169-R268.md) · [CHANGELOG-v0.13.3-R249-R268.md](docs/changelogs/CHANGELOG-v0.13.3-R249-R268.md)
+已归档 → [CHANGELOG-v0.14-v0.16.x.md](docs/archive/changelogs/CHANGELOG-v0.14-v0.16.x-R277-R336.md) · [CHANGELOG-v0.12-v0.13.x-R169-R268.md](docs/archive/changelogs/CHANGELOG-v0.12-v0.13.x-R169-R268.md) · [CHANGELOG-v0.13.3-R249-R268.md](docs/archive/changelogs/CHANGELOG-v0.13.3-R249-R268.md)
 
 ### 📊 迭代评测统计 (打点对比数据驱动)
 
@@ -81,7 +86,7 @@ v0.16 skills 引擎 (CLI 外挂/动态过滤//skills 指令族, 批280 37/37) �
 R332 eval per-case 隔离 (C14 flake 根因, run_round 每 case 前清 sessions+rag) — 探索 +56pt 历史最高 (R310) —
 版本A 存档 tag v0.15.2-A (批272-273/277 验收)。
 
-归档: [42-78](docs/changelogs/CHANGELOG-v0.11.0-R143-R152.md) · [79-108](docs/changelogs/CHANGELOG-v0.11.0-R153-R168.md) · [109-138](docs/changelogs/CHANGELOG-v0.11.0-R169-R185.md) · [139-167](docs/changelogs/CHANGELOG-v0.11.0-R186-R204.md) · [168-177](docs/changelogs/CHANGELOG-v0.11.0-R205-R218.md) · [178-187](docs/changelogs/CHANGELOG-v0.11.0-R219-R228.md) · [188-217](docs/changelogs/CHANGELOG-v0.13.x-R229-R248.md) · [218-247](docs/changelogs/CHANGELOG-v0.13.3-R249-R268.md)。每 30 批滚动; 下一点≈批307。
+归档: [42-78](docs/archive/changelogs/CHANGELOG-v0.11.0-R143-R152.md) · [79-108](docs/archive/changelogs/CHANGELOG-v0.11.0-R153-R168.md) · [109-138](docs/archive/changelogs/CHANGELOG-v0.11.0-R169-R185.md) · [139-167](docs/archive/changelogs/CHANGELOG-v0.11.0-R186-R204.md) · [168-177](docs/archive/changelogs/CHANGELOG-v0.11.0-R205-R218.md) · [178-187](docs/archive/changelogs/CHANGELOG-v0.11.0-R219-R228.md) · [188-217](docs/archive/changelogs/CHANGELOG-v0.13.x-R229-R248.md) · [218-247](docs/archive/changelogs/CHANGELOG-v0.13.3-R249-R268.md)。每 30 批滚动; 下一点≈批307。
 
 ### 🧭 能力全景
 
@@ -194,8 +199,9 @@ python3 token_report.py                          # KPI-2 token 周报 (每 10 �
 - [**验证形式规范**](docs/验证形式规范.md) + [机读登记表](docs/verification-registry.json) — 证据阶梯 L0–L4 / 无登记=未验证 / 静态不得冒充运行 (R370 立, 机检 `VerificationFormTests`)
 - [主报告·动态打点与回滚](docs/reports/dynamic-telemetry-eval-rollback-strategy.md) — 状态层 (活文档, 每轮更新)
 - [改进记录](docs/improvements.md) — R309 起逐轮补录 (活文档, 顶部最新)
-- 版本计划: [v0.22.0 探索项 7 项](docs/plans/v0.22.0-exploration-index.md) · [v0.22.0 长期任务看板](docs/plans/v0.22.0-longterm-backlog.md) · [exp6 嵌入模型选型](docs/plans/v0.22.0-exp6-embedding-model-selection.md) · [exp7 bge 闲时训练闭环](docs/plans/v0.22.0-exp7-bge-idle-training-loop.md) · [v0.22.0 KPI 判定](docs/plans/v0.22.0-kpi-decision.md) · [v0.21.0 Role 系统](docs/plans/v0.21.0-role-system-plan.md) · [v0.17.2 活动+脚本协议](docs/plans/v0.17.2-activity-script-plan.md) · [v0.17.1 审批](docs/plans/v0.17.1-staged-approval-plan.md) · [v0.17.0 执行层](docs/plans/v0.17.0-executor-hardening-plan.md)
-- 历史: [CHANGELOGs](docs/changelogs/) · [测试维度总账](docs/reports/test-dimensions-ledger.md) · 千轮报告 §6 冻结版
+- **版本计划: [RF0001 · 对照 Claude-Fable-5.1 重构](docs/plans/RF0001-fable-aligned-development-plan.md)**（RF 版本线起点，唯一活计划）· [证据面](docs/evidence/INDEX.md)（规范 `docs/evidence/README.md` · 每版 KPI + EVIDENCE）
+- 旧版本计划（已归档, 见 `docs/archive/plans/`）: [v0.22.0 长期任务看板](docs/plans/v0.22.0-longterm-backlog.md)（cron 看板, 保留原位） · [exp6 嵌入模型选型](docs/plans/v0.22.0-exp6-embedding-model-selection.md) · [v0.17.2 活动+脚本协议](docs/plans/v0.17.2-activity-script-plan.md)
+- 历史: [CHANGELOGs](docs/archive/changelogs/) · [测试维度总账](docs/reports/test-dimensions-ledger.md) · [归档索引 AR-0001..AR-0216](docs/archive/ARCHIVE-INDEX.md)
 
 ## 下一步计划 (2026-09-10 核定)
 

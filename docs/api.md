@@ -1424,4 +1424,4 @@ RoleBinaryFile.Write("my-role.rbin", doc, key);
 - **错误语义**：非 `ARBL` 或版本不支持 → `InvalidDataException`；密钥错误/篡改 → `CryptographicException`（GCM 认证拒绝，绝不返回脏数据）。
 - **赏罚链**（无需用户显式操作）：`CorrectionDetector`（L1 规则 0 token / L2 微 prompt 单字母协议）→ `RoleGrowthLedger`（域级 Beta，confidence=(赏+1)/(总+2)）；`FailureClusters`（推理中止检测 → 问题指纹簇 → 罚分 ≥3 前置注入）。
 - **门禁**：未挂载 role（`GrowthLedger == null`）→ 整链失效：不起后台 Task / 不调 LLM（0 token）/ 不写盘 / 联想注入关闭。
-- 用户向说明见 `docs/Role使用说明.md`；设计对照见 `docs/plans/v0.21.0-role-system-plan.md` §0.1（原设计 vs 实施修订）。
+- 用户向说明见 `docs/Role使用说明.md`；设计对照见 `docs/archive/plans/v0.21.0-role-system-plan.md` §0.1（原设计 vs 实施修订）。

@@ -214,15 +214,15 @@
 
 - **R479（已收口并提交 `058bc77` + `e157deb`）**：Responses 真实 I/O 格式 + 内部精准语义单出口 + 工具声明面单一事实源。真读数：形式面 **1490/1490**；形式门 **10/10 × 3**；AOT sha16 `c8974f6b34dcc7b3`；台账 146→149 / 46→47 幂等。
 - **R480（在飞，未提交）**：独立工程 `src/agent.recall`（**不并入 `agent.sln`**，成熟后合回），15 个文件落盘（binary 格式 / LEB128 varint / postings 在线 delta + 每 128 文档 block-max / 词表二级跳表 / BM25 + WAND / 目录 mtime 剪枝 + 流式归并指纹 / 只重建脏文档 + tombstone），库编译 `rc=0 / 0 warning / 0 error`。
-- **R480-C（结论已落盘，`docs/reports/r480c-summary-vs-classification.md`）**：**摘要→分类当过滤器路线证伪** —— 一级分类当过滤器漏 **81.83%**（灾难）、二级分类漏 **5.83%**（不可恢复）；分类聚焦收益≈0（rankP50 92→90、r@10 36.67%→36.50%）；主凶是**候选截断**（top-10 漏 **63.33%**）。裁定：分类只能当排序特征/剪枝（**永不排除**），截断必须可回退；规模 5,747 文件 / 98 MB / 1,456 叶子目录 / 600 查询 / 19.1 s。
+- **R480-C（结论已落盘，`docs/archive/reports/r480c-summary-vs-classification.md`）**：**摘要→分类当过滤器路线证伪** —— 一级分类当过滤器漏 **81.83%**（灾难）、二级分类漏 **5.83%**（不可恢复）；分类聚焦收益≈0（rankP50 92→90、r@10 36.67%→36.50%）；主凶是**候选截断**（top-10 漏 **63.33%**）。裁定：分类只能当排序特征/剪枝（**永不排除**），截断必须可回退；规模 5,747 文件 / 98 MB / 1,456 叶子目录 / 600 查询 / 19.1 s。
 - **R481-A（基线已取，`eval/recall/prereg_r481a.json` 先于首跑落盘）**：【探索】跨文件/跨 URL 精度基线 —— 解析率 **0.8508**（目标 ≥0.90 ❌）、悬空 **0.1492** ✅、相对引用落地 **0.2718 = 309 条** ❌、地址覆盖 **p50=0 / 76.11% 文件零地址** ❌、跨 URL **2,720 条 = unreported**。规模 6,647 文件 / 20,155 条自带地址。
 - **R481-B（统计结案，用户授权「按统计学规律则优」）**：点号是否算词字符 —— 2,500 真实文件 × 300 真实查询（stem / 全名 / 相对路径 各 1/3），hit@5 差 **+0.67 pt**（p=0.856 不显著），而不算点号侧查询词数 **−16.05%**、postings **−0.254%** ⇒ 取成本更低者：**点号不算词字符**（`RecallTokenizer.cs:31` `WordSymbols="_/+#"`）。
 - **R481-C（本轮，测试面收口）**：`agent.recall.tests` **2/13 → 12/13**；`OutOfMemoryException` **16 → 0**；用例耗时 **2m12s → 391 ms**；库 `rc=0 / 0 warning`。7 处根因全为**读写契约不一致 / 越界 / 未 fail-closed**（F1 `RecallIndexMeta.Read` varint 错位 ⇒ OOM；F2 `RecallSegmentMeta.Read` 同类；F3 `RecallPostings.Flush` 记词表内偏移；F4 `RecallLinks.Read` 游标未推进；F5 `RecallUpdater` 首建硬 `Open`；F6 孤立 CJK 段零 token；F7 `RecallFormat.DocLength` lens 表头 12 B 被按 4 B 读 ⇒ BM25 分数漂移 `3.4674924292638662 vs 4.005845527737886`，修后与独立暴力打分逐位一致），**无一处改断言凑绿**。
 - **R481-D（本轮，D9 收口）**：`agent.recall.tests` **12/13 → 14/14**（Failed 0 / Skipped 0 / trx 结果行 14）。根因(承 R481-C 定位)：目录剪枝条件 `dir.mtime <= 上次 stamp` 对**纯内容改写**不可见(改写文件不改父目录 mtime) ⇒ 整目录被剪 ⇒ 文件级 `(size, mtime)` 比对根本没发生。修法 = **交替核验**：指纹头 stamp 低位记「上轮是否剪枝」，上轮剪过的目录本轮**强制核验**(readdir + stat，不读内容)，idle 轮仍剪枝；纯内容改写最多滞后 1 轮被捕获。语义变化单列：核验轮 `DirsPruned == 0` ∧ `VerifiedAllDirs == true`(不冒充「无变化」)。新增回归用例刻意用**等字节长度**改写(size 不变) ⇒ 逼出「文件级比对必须真的发生」，并锁「核验轮 DirsPruned 恒 0」「下一轮恢复剪枝」两条。器具 `eval/recall/r481/check_r481d9.py` 判 `verdict=PASS`：C1 源码派生(读写契约成对) + C2 真跑读数(trx 14 行) + C3 语义锁存 + 变异负控 **3/3**(NC1 反转剪枝门 / NC2 删 stamp 左移 / NC3 删标志位解码 ⇒ 全部翻红)。
-- **R481-E（本侧，独立复核 + 文档对账）**：D9 由 cron 兄弟会话（`cron:9a97763d5fcd`，07:42–07:45）实施；本侧**不采信对侧自述**，逐项自跑复核 —— `dotnet test src/agent.recall.tests` ⇒ **rc=0 / Passed 14 / Failed 0 / 576 ms**；`dotnet build src/agent.recall -c Release` ⇒ **rc=0 / 0 warning / 0 error**；`python3 eval/recall/r481/check_r481d9.py` ⇒ **rc=0 / verdict=PASS**。文档对账 4 处：本文件标题行去重（对侧写入时残留重复 `主题:` 片段）、`docs/plans/v0.97.0-r481-consolidation.md` 状态行/代码事实/A1 验收更新为 **14/14**、`docs/reports/iteration-master-plan.md` 的 R481 机取索引段由**空表（轮号 [] / rows=149）**修为实表（**轮号 ['R481'] / rows=150 / updated_round=R481**，`master_plan_round_index.py R481` rc=0 / 336 B 直接产出）。
+- **R481-E（本侧，独立复核 + 文档对账）**：D9 由 cron 兄弟会话（`cron:9a97763d5fcd`，07:42–07:45）实施；本侧**不采信对侧自述**，逐项自跑复核 —— `dotnet test src/agent.recall.tests` ⇒ **rc=0 / Passed 14 / Failed 0 / 576 ms**；`dotnet build src/agent.recall -c Release` ⇒ **rc=0 / 0 warning / 0 error**；`python3 eval/recall/r481/check_r481d9.py` ⇒ **rc=0 / verdict=PASS**。文档对账 4 处：本文件标题行去重（对侧写入时残留重复 `主题:` 片段）、`docs/archive/plans/v0.97.0-r481-consolidation.md` 状态行/代码事实/A1 验收更新为 **14/14**、`docs/reports/iteration-master-plan.md` 的 R481 机取索引段由**空表（轮号 [] / rows=149）**修为实表（**轮号 ['R481'] / rows=150 / updated_round=R481**，`master_plan_round_index.py R481` rc=0 / 336 B 直接产出）。
 - **基线(修后)**：`agent.recall.tests` **Failed 0 / Passed 14 / Total 14**（rc=0，`Duration 949 ms`，`Skipped 0`；R481-C 前为 **Failed 1 / Passed 12 / Total 13**）；库 `dotnet build src/agent.recall -c Release` = `0 warning / 0 error`。
 - **R481-E 增量（G2 产品面，本侧实施）**：`RecallLinks.ResolveReferrerRelative`（纯字符串代数）+ `RecallIndexWriter.cs:70` 传 `doc.Path` ⇒ `./`、`../` 显式相对引用按**引用方目录**解析为根相对；**越根 fail-closed 原值返回**；**根相对（主力通路 root-fallback 16,965/20,155）与绝对 URL 一律不改写**。新增用例 `Relative_References_Resolve_Against_Referrer_Directory`（含越根负例）⇒ **Failed 0 / Passed 15 / Total 15 / rc=0 / 455 ms**（14 项零回归）。**诚实边界**：G3 = 0.2718 是**语料侧 Python 代理面**读数，产品面本改动**尚未在语料上重测** ⇒ 不宣称 G3/G1 达标。
-- **R481-F（本轮，语料侧重测，承计划 §7）**：R481-A 的端口是**手写规则**（后缀白名单 + 裸名计入相对档 + `lstrip` 兜底），与产品已静默漂移 ⇒ 重建**源码派生端口** `eval/recall/links_port_r482.py`（7 组规则常量正则派生、任一派生失败 rc=3 弃权；期望值取产品自身断言的用例；6 条规则变异 **6/6** 被抓；唯一变量 = 抽取规则）。新口径真读数（6,658 文件 / `files_sha16 1000893f7926c08c`）：候选 **76,404**、解析率 **0.1450 ❌**、悬空 **0.8550 ❌**、显式相对引用 **660 条 → 落地 72 = 0.1091 ❌**、地址覆盖 **p50=5 ✅**、越根 fail-closed **2** 条、绝对路径形态 **7,462** 条单列。**按通路分解**：markdown **81.25%** 落地 / 裸 URL 全 `unreported` / 相对地址串 **14.43%**（悬空 64,004 = 99.98%）⇒ 判据在全候选档上**结构不可达**，相对引用改写可达面仅 **0.88%**（天花板 ≤ +0.88 pt）。旧端口同批对照 0.8504 / 0.1496 / 0.2650，**口径已变更 ⇒ 跨轮不可比**。台账 `docs/reports/r480-recall-test-ledger.md` R481-F 段。
+- **R481-F（本轮，语料侧重测，承计划 §7）**：R481-A 的端口是**手写规则**（后缀白名单 + 裸名计入相对档 + `lstrip` 兜底），与产品已静默漂移 ⇒ 重建**源码派生端口** `eval/recall/links_port_r482.py`（7 组规则常量正则派生、任一派生失败 rc=3 弃权；期望值取产品自身断言的用例；6 条规则变异 **6/6** 被抓；唯一变量 = 抽取规则）。新口径真读数（6,658 文件 / `files_sha16 1000893f7926c08c`）：候选 **76,404**、解析率 **0.1450 ❌**、悬空 **0.8550 ❌**、显式相对引用 **660 条 → 落地 72 = 0.1091 ❌**、地址覆盖 **p50=5 ✅**、越根 fail-closed **2** 条、绝对路径形态 **7,462** 条单列。**按通路分解**：markdown **81.25%** 落地 / 裸 URL 全 `unreported` / 相对地址串 **14.43%**（悬空 64,004 = 99.98%）⇒ 判据在全候选档上**结构不可达**，相对引用改写可达面仅 **0.88%**（天花板 ≤ +0.88 pt）。旧端口同批对照 0.8504 / 0.1496 / 0.2650，**口径已变更 ⇒ 跨轮不可比**。台账 `docs/archive/reports/r480-recall-test-ledger.md` R481-F 段。
 - **R481-G（本侧，语料钉 + 分档口径预注册）**：① 独立复核 R481-F ⇒ `links_port_r482.py --selftest` **rc=0**（6/6 变异被抓）、`--out` **rc=0**，读数同向同量级（G1 0.1449 / G2 0.8551 / G3 0.1086 / p50=5 达标）；`old_arm.match=false` 已自标**不可比（语料漂移）**。② **新发现（机制缺口）**：器具只绑定 `corpus.files_sha16`，不绑 commit/工作树 ⇒ 实测 **3 个不同语料钉**（`251b1c166eca7dbe`/6659、`1000893f7926c08c`/6658、`737b2cca752d55bc`/6683，`head=ccb132b`、`dirty=37`），而**规则钉恒定**（`9e9104ca601f8849`）⇒ R481-F 的「两次独立运行逐字节相同」**只在同一语料成立**，漂移无报警。③ 器具 `eval/recall/r481/check_corpus_pin.py`（三态 fail-closed：UNIFORM rc=0 / DRIFT rc=1 / MISSING rc=3），负控 N1/N2/N3 = **rc=3 / rc=1 / rc=0** 全中。④ 预注册 `eval/recall/prereg_r481g.json`：语料钉三元组 + 可比性规则 + **分档判据**（markdown ≥0.90、root_rel ≥0.90、explicit_rel ≥0.85、slash_token 不设门槛、url `unreported`）⇒ 全局 `resolved_rate`/`dangling_rate` 门槛在含 slash token 的候选面上**结构不可达**，判据收窄。**诚实边界**：分档读数**未取得**（器具需加 `by_subband`）；`files_sha16` 无文件清单 ⇒ 漂移**可判不可归因**；Python 代理面，不测产品面延迟/实现；未 push。
 - **诚实边界**：`agent.recall` **尚未并入 `agent.host`** ⇒ 本面无 AOT 重发布验证；`src/agent.recall*/` 仍 **untracked**；全程**未 push**（`PUSH_PAUSED`，ahead 196）；R480-C / R481-A 均为 **Python 代理面**，不测产品面延迟/实现；**LLM 生成摘要臂与 1e5 文件档均未测**；跨 URL 一律 `unreported` 不冒充 0。
 - **下轮候选**：① 内容级哈希兜底（`VerifyMode.Hash` 或周期全量核验：D9 只保证「最多滞后 1 轮」，**不保证**任意改写当轮可见）② 相对地址按引用方目录解析 ⇒ G3 0.2718↑、G1 ≥0.90 ③ 判据锁进 `prereg_r481a.json` ④ 1e5 规模臂 ⑤ R479 遗留（路由器接线 / 入链 prompt 正文槽位化）—— 注意：recall 模块**尚未入链**，R413 主线「用户一轮 tasks tokens −30%」在本面无贡献（本面只做模块正确性收口，不冒充主线 KPI）。
@@ -233,7 +233,7 @@
 - **输出效果（E2E 同夹具/同 7 轮/同适配器，唯一差异 = 二进制；判据预注册 4 项）**：P1 召回-现实一致性可见 **11 个实发消息带 `[核验✗ …]`**（`recall_stale_refs` 含 `report.md`）✅；P2 语言无关召回：`[工作区文件 logic.unit]` **进面**、`[工作区文件 blob.bin]` **不进面** ✅；P3 只打假（召回片段内 0 处 `[核验✓` ⇒ 一致时零字节）✅；P4 无回归（7 轮 ok、四产物正确、回复面 0 处契约声明）✅ ⇒ **E2E PASS 4/4**。负控（同判据跑 R461 实发面）P1/P2 = **false** ⇒ 判据有判别力。
 - **机制修复（5 项，非关键词/提示词补丁）**：① 新增 `src/agent.core/core/RecallRealityGate.cs` —— 逐子句抽**路径样 token**（结构判定、零后缀白名单）→ 用**文件系统**裁决并追加 `[核验✓ 现存 N B]`/`[核验✗ 当前不存在该文件]`/`[核验✗ 越界路径…]`；fail-safe、幂等、越界不探测、`failOnly` 一致时零字节；② 闸接入**工具回灌面**（`ActionLoop` 回灌前核验；`IActionPort` 增 `WorkspaceRoot` 端口，默认 null ⇒ fail-safe）；③ 召回片段同接 fail-only 核验；④ 删后缀白名单 ⇒ `WorkspaceTextProbe` 结构+内容探针（空/NUL/二进制 ⇒ 弃，后缀集只在 `AGENTFRAMEWORK_TEXT_SUFFIX_ALLOWLIST` 显式配置时生效）；⑤ 语言标签集外置为数据 `config/base/language-tags.txt`（判定器/机检只读数据，源码零硬编码）。
 - **判据修订留档（不粉饰）**：v1/v2/v3 的 false 全属**器具/口径缺陷**（召回窗口被运行期 `data/` 占满；P4 误把 system prompt 的契约说明当成「上前台」；P2 被 `list_dir` 工具结果污染；P1 通道未覆盖）⇒ 逐条留档 + 修机制；**P1 判据从未放宽**。
-- **r1 权重档位探针（用户问「现役 r1 参数权重够不够」）**：语料 = **产品实发**门判 prompt 逐位 28 条（14 负类真实驱动消息 / 14 正类 Ack），oracle = 网格 `expected[]`（机械，与 r1 无关）；调用面与产品一致（`/completion`、`samplers=[temperature]`、temp=0）。基线 **1.5B-Q4_K_M：准确率 0.321、假跳率 0.929（13/14 真实驱动消息被判「该跳」）、漏跳率 0.357、解析失败 1** ⇒ 该权重在判别面**不可承重**（现状靠机械守卫兜住，R452 `skip_rejected_nonack`）；四档对照臂（1.5B-Q8 / QwenPaw-Flash-2B-Q4 / 3B-Q4 / 3B-Q5）读数见 `docs/reports/recall-reality-gate-r462.md`。
+- **r1 权重档位探针（用户问「现役 r1 参数权重够不够」）**：语料 = **产品实发**门判 prompt 逐位 28 条（14 负类真实驱动消息 / 14 正类 Ack），oracle = 网格 `expected[]`（机械，与 r1 无关）；调用面与产品一致（`/completion`、`samplers=[temperature]`、temp=0）。基线 **1.5B-Q4_K_M：准确率 0.321、假跳率 0.929（13/14 真实驱动消息被判「该跳」）、漏跳率 0.357、解析失败 1** ⇒ 该权重在判别面**不可承重**（现状靠机械守卫兜住，R452 `skip_rejected_nonack`）；四档对照臂（1.5B-Q8 / QwenPaw-Flash-2B-Q4 / 3B-Q4 / 3B-Q5）读数见 `docs/archive/reports/recall-reality-gate-r462.md`。
 - **验证**：单测 `RecallRealityGateTests`+`ActionLoopTests` **32/32**（构建 0 Error）；AOT `/tmp/pub_r462/agenthost`（15,322,688 B）`env -i` 自启 rc=0。**未 push（推送暂停令）。**
 
 ## v0.80.0 · R461 · 2026-09-15 · 状态: 已完成 · 主题: 契约声明**不上前台** + 零字节产物可见 + 每轮注入预算收口
@@ -251,7 +251,7 @@
 - **tokens**：prompt ∑ **54,927 → 39,863（−27.4%）**，调用 **17 → 13（= codex 同数）**，每调用 prompt 均价 3,231 → 3,066。**命中率未达标**：总 90.4% → 85.1%、稳态 90.2%（miss 均价 301.9 tok/call，R458 310、codex 236）—— 根因 = 前缀被主动压小（分母 3,066）而新内容未同比压缩；实发全量文本归因显示 **`[SessionMemory]` 注入块逐轮膨胀 308→417→613→836 字符**，是 miss 主质量。
 - **机制（禁关键字/提示词补丁）**：① `MaxArtifacts` 8 → 3 + 紧凑两行块（`MaxBlockChars=200`，截断诚实标注保留）；② 新增 `BuildMenu`/`BuildAsk`，`ComposeFallback` 改调 `BuildAsk` ⇒ **门问句与兜底反问同源**（菜单必现，机检 `Assert.Equal(BuildMenu, Choices)`）；③ 空态不再给通用示例枚举；④ 人话承接句 78 → ≤48 字（`MaxNoticeChars`）；⑤ 器具面新增 `ADAPTER_DUMP_FULL=1`（实发全量消息落盘，禁重建）。
 - **本跑暴露的真实缺陷（R461 靶点）**：① **合同标记上前台** —— T4 裸 `clickproof/premise/goal` 5 行、T6 `no_formal: …` 1 行；② **空产物未接地 + 宣称即伪造** —— T4 无任何 tool_call 却回复「stats.txt 已写入 chars=15」（磁盘 0 B、真值 14），承接块过滤 0 B 文件使模型改用记忆假值 ⇒ 产物 3/4。
-- **交付**：`src/agent/context/ContinuationBrief.cs`、`src/agent/registry/EvidenceGate.cs`、`src/agent/intent/PlanResumeService.cs`、`src/agent/IndustrialAgentV2.cs`、`src/agent.tests/ContinuationBriefTests.cs`（**16/16 绿**）、`eval/rover/r460/*`、`docs/plans/v0.79.0-r460-brevity-menu-cache.md`、`docs/reports/brevity-menu-cache-r460.md`；registry `r460.brevity-menu-cache`（L2，5 条负控）。未 push。
+- **交付**：`src/agent/context/ContinuationBrief.cs`、`src/agent/registry/EvidenceGate.cs`、`src/agent/intent/PlanResumeService.cs`、`src/agent/IndustrialAgentV2.cs`、`src/agent.tests/ContinuationBriefTests.cs`（**16/16 绿**）、`eval/rover/r460/*`、`docs/archive/plans/v0.79.0-r460-brevity-menu-cache.md`、`docs/archive/reports/brevity-menu-cache-r460.md`；registry `r460.brevity-menu-cache`（L2，5 条负控）。未 push。
 
 ## v0.78.0 · R458 · 2026-09-15 · 状态: 已完成 · 主题: 承接轮**人性化**（像人一样先承接事实、再反问「继续什么」）
 
@@ -259,7 +259,7 @@
 - **输出效果（同夹具/同 6 轮/同模型，唯一差异 = 二进制）**：T5「继续」R456「『继续』没有指向明确动作」→ R457 承接 1 项 → **R458 逐项承接 4 项真实产物 + 「继续什么」反问 + 3 个具体可选项**（`count.txt=4`、`merged.txt=ALPHA/BETA/GAMMA`、`stats.txt=chars=14`、`notes.md`；固定示例菜单 `(如: 搜索/写文档…)` 消失）；T6 内部术语 **3 行 → 0 行**（一句人话 + 干净答案）；产物 **4/4 不回退**，磁盘伪造 0。
 - **机制（禁关键字/提示词补丁）**：① 判定面复用意图层既有分支**且与门同判据**（弱意图 且 置信 < 0.60）；② 接地面扫描工作区**真实**产物（名=首行 (字节)，噪声目录排除、有界、截断如实标注「共 11 项, 只列最近 8 项」）→ 本轮注入 `[承接状态 v1]`；③ 门问句由真实产物接地（无产物则明确写「还没有」且列不出文件名）；④ 收口面 fail-closed（回复既无问句又不含真实产物名 ⇒ 链自身用同一批事实组装反问）；⑤ 告知面把「落不到槽位」的内部判定改为一句人话（内部术语/理由只进遥测）。
 - **读数**：承接块遥测 1 次（仅 T5，state=grounded）、收口闸 1/1 true、调用 17（R457 15 / codex 冻结 13）、工具执行 12、缓存 90.4%。
-- **交付**：`src/agent/context/ContinuationBrief.cs`（新）、`src/agent/registry/EvidenceGate.cs`、`src/agent/intent/PlanResumeService.cs`、`src/agent/IndustrialAgentV2.cs`、`src/agent.tests/ContinuationBriefTests.cs`（15/15 绿）、`eval/rover/r458/*`、`docs/plans/v0.78.0-r458-humanized-continuation.md`、`docs/reports/humanized-continuation-r458.md`；registry `r458.humanized-continuation`（L2，5 条负控）。
+- **交付**：`src/agent/context/ContinuationBrief.cs`（新）、`src/agent/registry/EvidenceGate.cs`、`src/agent/intent/PlanResumeService.cs`、`src/agent/IndustrialAgentV2.cs`、`src/agent.tests/ContinuationBriefTests.cs`（15/15 绿）、`eval/rover/r458/*`、`docs/archive/plans/v0.78.0-r458-humanized-continuation.md`、`docs/archive/reports/humanized-continuation-r458.md`；registry `r458.humanized-continuation`（L2，5 条负控）。
 - **诚实边界**：调用数 17 > 15（模型自身多用工具，非承接机制成本；同输入跨轮波动 7→9→15→17，单轮不作趋势）；run1 曾误判「当前目录下有几个 .py 文件？」为承接轮并污染回复 ⇒ 已修 + 机检固化；构建脚本曾因无 `set -e` + `--no-build` 出现一次假绿（陈旧二进制 13/13 → 修后 15/15）；未 push。
 
 ## v0.77.0 · R457 · 2026-09-15 · 状态: 已完成 · 主题: 动作环**效果收口**（2/4 → 4/4）+ 三缺口机制修复 + 器具对称
@@ -268,7 +268,7 @@
 - **三缺口（机制修复，非关键字补丁）**：① 断言不执行 → 工具结果尾部**执行台账**（`[本轮已执行]`），命中 8 个实发请求，stats.txt 落地且值正确（R456 为口算 15+无文件）；② 吞并轮 → 检查点作废后**同轮转正常任务路径**（`AGENTFRAMEWORK_PLAN_RESUME_FALLTHROUGH` 默认 on），first.txt 落地；③ 缺 key 静默 → **可见失败**（`ContentIsUserFacing` + `model_unavailable` 遥测），真机负控 `len 0 → 83`，`empty_reply:false`；附带修遥测 JSONL BOM。
 - **器具对称**：我方 `tool_calls` 落盘（15/15 有值）、审计 `args_head` 命令原文、适配器 `prompt_sha8`+`tail_messages`；夹具两侧 md5 同 `fe1f5530446bd4ceb8be1b944c8ec005`。
 - **读数**：审计执行 4→8；调用 9→15（真干活回灌成本）；prompt ∑31,537→53,163；缓存总口径 84.8%→**89.8%**（稳态 91.8%）。
-- **交付**：`src/agent.modelqueue/ActionLoop.cs`、`src/agent/action/WorkspaceActionPort.cs`、`src/agent/IndustrialAgentV2.cs`、`src/agent.modelqueue/ModelQueueRouter.cs`、`src/agent.config/AgentTelemetry.cs`、`src/agent.tests/ActionLoopTests.cs`（52/52 绿）、`eval/rover/r457/*`、`docs/plans/v0.77.0-r457-effect-closure.md`、`docs/reports/effect-closure-r457.md`；registry `r457.effect-closure`（L3，含 5 条负控）。
+- **交付**：`src/agent.modelqueue/ActionLoop.cs`、`src/agent/action/WorkspaceActionPort.cs`、`src/agent/IndustrialAgentV2.cs`、`src/agent.modelqueue/ModelQueueRouter.cs`、`src/agent.config/AgentTelemetry.cs`、`src/agent.tests/ActionLoopTests.cs`（52/52 绿）、`eval/rover/r457/*`、`docs/archive/plans/v0.77.0-r457-effect-closure.md`、`docs/archive/reports/effect-closure-r457.md`；registry `r457.effect-closure`（L3，含 5 条负控）。
 - **诚实边界**：调用数上升属真执行成本；冷启动首调用读数受 provider 跨运行前缀缓存影响不可跨轮直接比；未 push。
 
 ## v0.66.0 · R446 · 2026-09-15 · 状态: 已完成 · 主题: 判官侧**确定性根因(H2)** + 消息面 0-token 结算**负结论** + 判官 prompt 瘦身**未过等价性** + 器具面并轨
@@ -305,7 +305,7 @@
 - **同轮机械件（① 候选，零测量）**: L2 器具验收面 `eval/capability/instruments.json` + `instruments_check.py`（9 条器具，每条正控+负控+口径四元组）；L3 单一审计面 `eval/capability/status_gen.py` → `docs/reports/status.json`（registry/kpi/计划状态/验收矩阵全派生）；L4 写者仲裁 `tools/hooks/pre-commit`（新鲜心跳 + 异写者 ⇒ 拒）+ `tools/round_claim.sh` + `tools/install_hooks.sh`（`core.hooksPath=tools/hooks`，推送暂停令随之并行生效）。
 - **诚实边界**: ① 本地 r1 只计 token 真值，未含时延/显存；② 判官侧本地成本未优化（两臂同 4738）；③ `MechanicalAck` 未放宽（不引入新跳过）；④ 短档 V2b/W8 含本地后不达标（结构性，非前置门失效）；⑤ W20 未测；⑥ 远端 tok 含 ±4 tok 路径混淆。
 - **下轮候选**: ① 判官侧同类前置（找 J 的机械不变量）；② W20 补列 + 真实 API 口径复核；③ 前置门在**多跳簇/早期跳**网格的行为（t2–t6 型「terse_new」是否可再压）；④ L2/L3 接线进 CI（`instruments_check` 作提交前闸）。
-- **计划/证据/登记**: `docs/plans/v0.64.0-r444-cheap-necessary-condition-prefilter.md`；`eval/rover/r444/README-evidence.md`；`docs/verification-registry.json` → `r444.*`（7 行）；`eval/capability/kpi.jsonl` → R444。
+- **计划/证据/登记**: `docs/archive/plans/v0.64.0-r444-cheap-necessary-condition-prefilter.md`；`eval/rover/r444/README-evidence.md`；`docs/verification-registry.json` → `r444.*`（7 行）；`eval/capability/kpi.jsonl` → R444。
 
 ## v0.63.0 · R443 · 2026-09-15 · 状态: 已完成 · 主题: 本地 r1 成本 **tokenizer 真值化** + 「被跳轮不回放」**同网格单变量消融**
 
@@ -320,12 +320,12 @@
 - **D4 预注册被证伪 + 收窄**: 跨 NS 逐位比较 Δ=+18（11 轮 +1~2）⇒ 判红；由两独立通道定位为**路径后缀混淆**（D2b: A 臂对 61230→61256 = **+1.04 tok/调用**，同二进制仅目录名不同；D4b: 无 NS 同名臂 vs R441 归档 **逐轮 0 差异 / 32950==32950**）⇒ 零回归成立（事后判据单列，不改写预注册）。
 - **诚实边界**: ① 真值只覆盖 M20 一列（短档/单跳档仍折算口径）；② 真值=该构建分词器，**不等于计费口径**（未测真实计费/时延）；③ `BRJRP` 是诊断臂非产品路径；④ D5 的 ±20% 预注册未命中，结论以「离线分解低估 26%」表述。
 - **下轮候选**: ① 零测量落地**验收矩阵 + status.json 生成器 + 器具闸**（见 `docs/reports/endpoint-and-audit-contract.md`）；② 真值口径补测短档(V2b)/单跳档(W8/W20)；③ **压低 c**：门前置筛选（只在可能 skip 的轮跑门）⇒ 低占比档转正；④ 写者心跳 + pre-commit 仲裁（R443 双写者实发）。
-- **计划/证据/登记**: `docs/plans/v0.63.0-r443-local-token-truth-and-replay-ablation.md`；`eval/rover/r443/README-evidence.md`；`docs/verification-registry.json` → `r443.local-token-truth-and-replay-ablation`；`eval/capability/kpi.jsonl` → R443；架构提案 `docs/reports/endpoint-and-audit-contract.md`。
+- **计划/证据/登记**: `docs/archive/plans/v0.63.0-r443-local-token-truth-and-replay-ablation.md`；`eval/rover/r443/README-evidence.md`；`docs/verification-registry.json` → `r443.local-token-truth-and-replay-ablation`；`eval/capability/kpi.jsonl` → R443；架构提案 `docs/reports/endpoint-and-audit-contract.md`。
 
 ## v0.62.0 · R442 · 2026-09-15 · 状态: 已完成 · 主题: **口径钉死**（本地 r1 入账）+ 两臂块不对称定量 + D7 分母断言
 
 - **背景**: R441（`40748e0`，4 网格 8 臂同网格实测）留下三条挂账 —— 降幅口径只算远端 G、A/B 两臂内联块不同源但幅度未定量、A 分母跨网格代理已复发两次。
-- **做法（纯离线, 零源码改动/零 dotnet/零新真机跑）**: 对 R441 已落盘档案复算。器具 `eval/rover/r442/{token_accounting.py,design_check_r442.py}`；预注册 = `docs/plans/v0.62.0-r442-accounting-and-asymmetry.md` §2。
+- **做法（纯离线, 零源码改动/零 dotnet/零新真机跑）**: 对 R441 已落盘档案复算。器具 `eval/rover/r442/{token_accounting.py,design_check_r442.py}`；预注册 = `docs/archive/plans/v0.62.0-r442-accounting-and-asymmetry.md` §2。
 - **读数 1 · 口径三档（同档案只换加项）**: ①远端-only W8 13.77 / W20 3.20 / M20 46.19（**逐位复现 R441**）②去块内容不对称 13.77 / 4.94 / 45.01 ③**含本地 r1**（门提示+门生成+本地判官，字符/2）**−2.06 / −10.92 / 33.26** ④最严 ②+③ −2.06 / −9.17 / **32.09**。
   ⇒ **「≥30%」只在远端 API token 口径下普适**；含本地成本后仅 7/20 中簇达标，单跳格（1/8、1/20）**转净亏**。KPI 必须携带口径标签，缺标签的 ≥30% 属空心宣称。
 - **读数 2 · 转正闭式（3/3 命中）**: 含本地口径转正 ⟺ `k/N > c_local_per_turn / s_per_skip`（c ≈ 341/383/396 tok·轮⁻¹ —— 门在**每个非机械轮**都跑 ⇒ 本地成本 ≈ 常数×N；s ≈ 2376/1736/4040 tok·跳⁻¹）。观测 12.5%<14.37% 亏、5%<22.09% 亏、35%>9.79% 盈。
@@ -345,7 +345,7 @@
 - 事后校核（checks_posthoc, 单列）: **δ ≡ 77 tok 常数**（5/5 网格逐轮一致）+ 同网格 A 臂分母 ⇒ 重锚模型 **5/5 ≤ 0.47 pt**; 二阶项 = 被跳轮「从未发出内联块」不再回放（散布 2227 tok, 晚簇 ≈0）。
 - 器具自捕: `design_check.py` 追回**本轮自身**的 expected 轮号偏移; `predict_r440.py` v1（逐文本匹配 A）自查废弃并留档。
 
-**基线**: HEAD `a0d1ba2` → 本轮提交（未 push, `.git/PUSH_PAUSED` 在位）。器具: `eval/rover/r440/*`。计划: `docs/plans/v0.60.0-r440-length-ladder-measurement.md`。
+**基线**: HEAD `a0d1ba2` → 本轮提交（未 push, `.git/PUSH_PAUSED` 在位）。器具: `eval/rover/r440/*`。计划: `docs/archive/plans/v0.60.0-r440-length-ladder-measurement.md`。
 
 ## EXP1-Q7 · 文档侧定点修复（改写失效路径 + 补退役标记）与「桶归零」的空心绿（60m 自检作业）
 
@@ -415,7 +415,7 @@
 
 **判决**：**前提为假**（机器判）。`ICapabilityPlugin` / `PluginExecutionResult` / `CapabilityPluginRegistry` 在当前 `src/**/*.cs` 出现 **0 次**（正控 `IResponseSegmentPlugin` 24 / `CapabilityScanner` 12 / `PythonArtifactPlugin` 19 证明计数器非恒 0）；`src/agent/registry/CapabilityPlugin.cs`（118 行）与 `src/agent.tests/CapabilityPluginTests.cs`（75 行）在 **af9856b**（2026-09-13, v0.23.0 R386/R387）被删除，且该提交是 HEAD 祖先。
 
-**根因**：exp1 §1.2/§1.3 是按 `docs/reports/r385/capability-inventory.md` 抄写的 r385 盘点，**早于** R386/R387（契约删除）与 **b00917c**（2026-09-14, R408「本地 GGUF 引擎整线退役」，70 文件 / −11,039 行，`BgeCpuEmbedder`+`src/agent.embedcpu/` 整条线）⇒ 整节承载实现已不存在或被重排（本仓并存 `src/agent.<模块>/` 与 `src/agent/<模块>/` 两种写法）。
+**根因**：exp1 §1.2/§1.3 是按 `docs/archive/reports/capability-inventory.md` 抄写的 r385 盘点，**早于** R386/R387（契约删除）与 **b00917c**（2026-09-14, R408「本地 GGUF 引擎整线退役」，70 文件 / −11,039 行，`BgeCpuEmbedder`+`src/agent.embedcpu/` 整条线）⇒ 整节承载实现已不存在或被重排（本仓并存 `src/agent.<模块>/` 与 `src/agent/<模块>/` 两种写法）。
 
 **修改**（零产品源码改动、零 dotnet）：新增 `eval/capability/exp1-q2/{probe_doc_ref_integrity.py(v2.1.0), selftest_doc_ref_integrity.py(21 项自证)}` + `result.json`/`citations.jsonl`/`selftest_result.json`/`git_deletion_evidence.txt`/`probe_stdout.txt`/`append_kpi.py`；计划文档补 附录 D + §1.2/§1.3 校正块 + §4.4 前提证伪块 + §8-Q2 行。
 
@@ -490,7 +490,7 @@
 | 真机两臂 | `eval/rover/r430/{verdict-C-k8r-r430post1.json,verdict-C-k8r-r430fix1.json}` | pre 4 种 raw / fix 4/4 同一；KPI 远端 2→1、token 2053→1996 |
 | 形态 | `/tmp/pub_r430b/agenthost` | IL 警告 **0**；15,180,528 B；sha `bb104dd7…`；V0 闸 AOT 原生 + IL 负控拒 |
 
-**判据（预注册，见 `docs/plans/v0.51.0-r430-input-fingerprint.md`）**：P1 串行同一 ∧ P2 并发可复现漂移
+**判据（预注册，见 `docs/archive/plans/v0.51.0-r430-input-fingerprint.md`）**：P1 串行同一 ∧ P2 并发可复现漂移
 ∧ P3 输入指纹恒定 ∧ P4 强制 `-np 1` 后同一 ∧ P5 判定与 KPI 不退化 ⇒ **PASS**（P3 前置在前，落在 H2 分支）。
 
 **诚实边界**：① 未测修法后判定/回复**质量**变化（只测可复现性与 KPI 计数）；② `-np 1` 的代价是本地通道真串行，
@@ -543,7 +543,7 @@
 - **闭式**: 同文组 `[probe-0914125816-p004, probe-0914125831-p005]` ⇒ 保留者**预测 = 观测 = `probe-0914125816-p004`**（Ordinal 较小）；折叠出 = `probe-0914125831-p005`。
 - **不变量**: 全部保留者分数与 N 臂**逐位相同**（含 `cli-6bf6dc8d` 0.2798）；`llm_call` 打点 = 0；每查询恰 1 条 `recall_query`；渲染声明命中数 == 实际命中行数；语料**逐字节未被改动**。
 - **诚实边界（不宣称）**: ① 证的是**去重层行为**，不是召回质量提升；② 被折叠会话的 **id 不可见**（只计数为 `同文副本+N`）⇒ 若需 id 级可追溯，须让 `Hit` 携带被折叠 id 列表（本轮刻意不做，避免改渲染契约）；③ 折叠在 `topK` **之前** ⇒ 会改变原可能进入 topK 末位的候选（对「列出全部相关会话 id」类需求是行为变更）；④ 未测：>3 文档的真实长库内存/时延、**近同文**（非逐字符相同）去重、`/recall` 之外的路径。
-- **产物**: `eval/capability/r428/{run_r428.py, verdict-r428.json, README-evidence.md, stdout-*}`；计划 `docs/plans/v0.49.0-r428-duplicate-collapse.md`。
+- **产物**: `eval/capability/r428/{run_r428.py, verdict-r428.json, README-evidence.md, stdout-*}`；计划 `docs/archive/plans/v0.49.0-r428-duplicate-collapse.md`。
 - **下轮候选**: ① 被折叠 id 可见化（渲染/打点）；② **近同文**去重（须先过 R427 skill 闸：并列先判同一性 + 可分性预检）；③ R426 遗留首要：门与判官**争用隔离**。
 
 ## R427 — 「词袋计数族并列」根因判定：并列对**同文**，且 R423 闭式基线取自呈现精度（零产品改动）
@@ -557,7 +557,7 @@
 - **仪器事故 2 起**: ① 首版 P0 用 5e-7 容差对比**呈现精度**已发布值 ⇒ 假红，修 = 容差按半 ulp + 单列 P0b 精确溯源；② 构造样本用「ASCII 词+空格」⇒ `Normalize` 剥空白致整段粘成单 token，`|d.Tokens|` 3 vs 2 ⇒ 前提不成立，修 = 改 CJK 二元组族 + `synthetic_valid` fail-closed。
 - **轮号碰撞（一等事件）**: R426 由并发执行体占用（`eval/rover/r426/budget-{A,B,C,D}-k6-r426b1.json` 17:54–17:58 仍在写入）⇒ 本侧**让号取 R427**，未触碰对侧产物。
 - **共享文档破坏（一等事件，已修）**: 本节的写入被并发写入者以「逐字符换行」形态落盘（1,512 行 × 1 字符）⇒ **行级判读全部假阴性**（`grep R427` = 0 而那两行文本其实都在）。修复 = 按「逐字符拼接等同性」机器证明后重排为正常行；⚠️ 后续任何写入 `improvements.md` 的轮次都必须做**行结构检测**（1 字符行连跑即判坏）。
-- **产物**: `eval/capability/r427/{precheck_position.py, precheck-r427.json, summarize_r427.py, README-evidence.md, detect_line_explosion.py}`；`docs/plans/v0.48.0-r427-duplicate-tie-precheck.md`。
+- **产物**: `eval/capability/r427/{precheck_position.py, precheck-r427.json, summarize_r427.py, README-evidence.md, detect_line_explosion.py}`；`docs/archive/plans/v0.48.0-r427-duplicate-tie-precheck.md`。
 - **下轮预注册（R428）**: 确定性 tie-break / 同文折叠（排序层），真机成对 AOT；判据 = 同分同文两条命中存在与输入列举顺序无关的全序 ∧ 非同文同分对误折叠 = 0（负控）∧ 命中集合与排序不变量成对机检。
 
 ## R426 · 关系判官（CorrectionDetector L2 微判定）本地化 —— 「每轮一次 ~45 tok 远端小调用」清零
@@ -577,7 +577,7 @@
 - **反例（必须记）**: k8 格出现**门判翻转**（B 6×Skip → C 5×Skip+1×Pass）⇒ +1 次主链调用（≈2524 tok）**超过**判官省下的量级，该格 token 反高于 R425 臂B（2586 vs 166）⇒ C6/C4 **FAIL**。
 - **未测到（不宣称）**: 本地判官 vs **真远端判官**的一致性（对手是桩 ⇒ 恒 Neutral，无判别力，判 UNDECIDABLE）；跨轮 +12 tok（0.09%）漂移不追因。
 - **下轮首要候选**: ① 门与判官**争用隔离**（同一 r1 端口下门判不稳，代价远超判官收益）；② 打点修复：规则层命中现被记为 `source=remote`（须单列 `rule` + 兜底原因）；③ `allowed_kinds` snake_case 永不命中的白名单静默失效；④ 本地判官人工金标（C/A/N 各 ≥20 条）。
-- **产物**: `eval/rover/r426/{run_arm.sh,run_grid.sh,analyze.py,prov_check.py,stub_openai.py,drive_task.py,analyze.py,c11.json,README-evidence.md,verdicts.json}`；`docs/plans/v0.47.0-r426-relation-judge-localization.md`。
+- **产物**: `eval/rover/r426/{run_arm.sh,run_grid.sh,analyze.py,prov_check.py,stub_openai.py,drive_task.py,analyze.py,c11.json,README-evidence.md,verdicts.json}`；`docs/archive/plans/v0.47.0-r426-relation-judge-localization.md`。
 - **轮号**: R426 由本支占用（17:48 占用闸空 ⇒ 起跑 17:54）；并发支已按铁律**让号取 R427**（对侧 `improvements.md` 已登记，本侧不改写对侧产物）。
 
 ## R425 — 「非实质轮占比 → 降幅」敏感性网格（零产品改动；判决 **PARTIAL**）
@@ -632,7 +632,7 @@
 - **★ 首跑预测输入纠错（已归档）**: `verdict-r423-run1-predictor-error.json` 保留 C4 **红** —— 红因是**预测输入人工复算错**（只读 `LongTermMemory` 段 ⇒ tf 算成 2，真值 4），实现行为符合闭式（隐含 tf 实测 4.000）。处置: 预检数字改**机检钉死**（单测 `R423_FrozenCorpus_FeatureVector_IsMachinePinned_NotHandCounted`）+ 新增"隐含 tf == 钉死值"子判据；**判据结构与阈值未改**（不放宽、不为变绿而动实现）。
 - **★ 语料目录污染事故（C0 由来）**: `eval/capability/r422/fixture-sessions/sessions/` 空子目录 —— 存储构造即 `Directory.CreateDirectory(<path>/sessions)`（`SessionMemoryStore.cs:19-20`），某次以**语料目录本身**作根构造就地建出。三份语料 sha256 **未变**（== R421 登记），`rmdir` 清除；harness 加固为只取文件 + 新增 C0（条目集纯净机检）。
 - **单测/形式校验**: `SessionHistorySearchTests` **26/26**；形式校验（VerificationForm|SkillGeneralization|DevPlanDocRef）**10/10**。
-- **登记**: `r423.recall-tf-saturation`(L4)；计划 `docs/plans/v0.44.0-r423-tf-saturation.md`；证据 `eval/capability/r423/{verdict-r423.json,README-evidence.md}`；台账 `eval/capability/kpi.jsonl`。
+- **登记**: `r423.recall-tf-saturation`(L4)；计划 `docs/archive/plans/v0.44.0-r423-tf-saturation.md`；证据 `eval/capability/r423/{verdict-r423.json,README-evidence.md}`；台账 `eval/capability/kpi.jsonl`。
 - **流程教训（语言无关，已抽为 skill）**: ①改进排序/打分类信号的**第一步是对已知并列样本做可分性预检**（信号在该对取值相等 ⇒ 改进恒为空操作 ⇒ 换族或登记边界，别投入实现）；②**预检/预测数字一律机检取值**，人工复算会漏口径（本轮 tf 手算 2 vs 真值 4，被闭式对账当场逮住）；③闭式对账（`比值 == 1+ln tf`）比"看起来分了档"强得多。
 - **诚实边界**: ①频次因子对「词元数与出现次数皆相同」者无区分度（不可分边界）；②收益面未量化（真实语料中该形态占比未知）；③`(1+ln tf)` 无参数口径**未做**变体网格/上界 oracle ⇒ 不宣称该靶点最优（BM25 `k1/b` 族未探）；④「整串命中兜底/加成」两条路径不带频次因子（常量赋值），口径局部不一致未评估；⑤`|d|` 仍取去重词元数（R422 §6-2 遗留未做 A/B）。
 
@@ -655,7 +655,7 @@
 
 ## R421 — 跨会话检索**否定极性**：`¬存在 ≠ 存在`（R420 真机缺陷闭合）
 
-**版本**: R421 · **日期**: 2026-09-14 · **状态**: 已实施（本地 commit，**未推**）· **回填标注**: 本节由 `docs/plans/v0.42.0-r421-polarity.md` + `eval/capability/r421/verdict-r421.json` 重建，**读数未改**。
+**版本**: R421 · **日期**: 2026-09-14 · **状态**: 已实施（本地 commit，**未推**）· **回填标注**: 本节由 `docs/archive/plans/v0.42.0-r421-polarity.md` + `eval/capability/r421/verdict-r421.json` 重建，**读数未改**。
 **主题**: R420 真机暴露「`存在`(2 字) 与 `不存在`(3 字) 命中**同一批**文档、分数同为 `1.5660`」⇒ 用户问「X 不存在吗」会收到「关于 X 的文档」，读起来像**肯定**。机理 = CJK 二元组「不存在」包含「存在」⇒ 词面子串重叠被当成同一命题。
 
 - **改动**: `SessionHistorySearch.Tokenize` 对**否定标记**（不/没/未/无/五）自身及**紧邻的 1 个二元组**加 `NegMark`(U+0001) 前缀 —— `Normalize` 丢弃全部控制字符 ⇒ 真实文本不可能产出该前缀 ⇒ **无碰撞**；查询侧与文档侧走**同一** `Tokenize`（**无查询侧特判**）。
@@ -680,34 +680,34 @@
 
 ## R419 — 探针多轮化：把「轮数 / 首次通过率」从恒等判据变成可分化判据（回填）
 
-**版本**: R419 · **日期**: 2026-09-14 · **状态**: 已收口（仪器侧达成；真机读数为**负结论**，如实登记）· **回填标注**: 本节由 `docs/plans/v0.40.0-r419-probe-multiturn.md` + 提交 `695d6ba`/`77a49bc`/`98339a8`/`05b8c94` 重建，**读数未改**。
+**版本**: R419 · **日期**: 2026-09-14 · **状态**: 已收口（仪器侧达成；真机读数为**负结论**，如实登记）· **回填标注**: 本节由 `docs/archive/plans/v0.40.0-r419-probe-multiturn.md` + 提交 `695d6ba`/`77a49bc`/`98339a8`/`05b8c94` 重建，**读数未改**。
 
 - **因果链**: R418 已把「过程/成本」维度落成仪器（`eval/probe/process_metrics.py`），但探针只有单轮 ⇒ 「轮数恒为 1」「首次通过率 ≡ 整题全对率」两个维度结构性不可分化。
 - **交付**: 探针多轮化仪器（成对正负控 + 7 态自证）；三个**仪器缺陷**闸：① 被测程序打印坏字节 ⇒ 判定器 `UnicodeDecodeError` 崩掉整臂（改字节捕获 + `errors="replace"` + `bad_encoding` 计数，`grade selftest` 29→31）；② **同命名空间重跑静默覆盖**既有读数 ⇒ `REFUSE_NS_COLLISION` 闸；③ 首轮失败在日志不可见 + `reply_chars` 恒 0（归档 11.9 KB 而摘要写 0）⇒ 首轮行原样打印 + 集中回填（`run_probe` 25→26）。
 - **真机读数（诚实结论）**: 4 次 `onfail` 跑 **3 次饱和 / 1 次分化** ⇒ 真机侧**未稳定复现分化**，本轮不作能力结论；决定性微实验 PASS（同 sid 跨进程 4271 命中）。
 - **口径坑入档**: `turn N` 是**进程内**轮次标记 ⇒ 轮数须取**归档文件数**（外部真值）。
-- **证据**: `docs/plans/v0.40.0-r419-probe-multiturn.md`、提交 `05b8c94`（收口）/`98339a8`（§4-§5 落地）/`77a49bc`（微实验）/`695d6ba`（起步存档）。
+- **证据**: `docs/archive/plans/v0.40.0-r419-probe-multiturn.md`、提交 `05b8c94`（收口）/`98339a8`（§4-§5 落地）/`77a49bc`（微实验）/`695d6ba`（起步存档）。
 
 ## R418 — 探针「过程/成本」维度 KPI：归属铁律 + 真机成本读数 + 成对负控（回填）
 
-**版本**: R418 · **日期**: 2026-09-14 · **状态**: 已收口（仪器 + 真机读数 + 登记齐；本地提交未推）· **回填标注**: 本节由 `docs/plans/v0.39.0-r418-process-kpi.md` + 提交 `737a45d`/`1f44c8b` 重建，**读数未改**。
+**版本**: R418 · **日期**: 2026-09-14 · **状态**: 已收口（仪器 + 真机读数 + 登记齐；本地提交未推）· **回填标注**: 本节由 `docs/archive/plans/v0.39.0-r418-process-kpi.md` + 提交 `737a45d`/`1f44c8b` 重建，**读数未改**。
 
 - **因果链**: R417 处理掉题集天花板（饱和）后，仍有分辨力的维度是**过程/成本**（每题 tokens / 轮数 / 首次通过率）⇒ 需独立仪器与归属规则。
 - **交付**: `eval/probe/process_metrics.py`（过程/成本维度 KPI 仪器）+ **归属三级降级**（精确名 → 时间窗 `[ts-elapsed-5s, ts+60s]` 内唯一候选 → `n/a` + 记因；**绝不任取第一个候选**）。
 - **成对负控**: 歧义/缺失样本必须落 `n/a`，且 **`n/a` 从均值分母剔除并单列计数**（`n/a ≠ 0`）——把缺读数按 0 摊会让「每题成本」假降。
 - **诚实边界**: 该轮成本读数取自单轮题集 ⇒ 「轮数」维度此时仍退化为恒等判据（由 R419 处理）。
-- **证据**: `docs/plans/v0.39.0-r418-process-kpi.md`（§3 实现结果 / §4 复验命令）、`eval/probe/process_metrics.py`、提交 `1f44c8b`。
+- **证据**: `docs/archive/plans/v0.39.0-r418-process-kpi.md`（§3 实现结果 / §4 复验命令）、`eval/probe/process_metrics.py`、提交 `1f44c8b`。
 
 ## R417 — 探针反饱和：3 个高判别力族 + 族级缺陷注入负控（回填）
 
-**版本**: R417 · **日期**: 2026-09-14 · **状态**: 已收口（判别力自证 PASS；**首个非饱和真机读数**）· **回填标注**: 本节由 `docs/plans/v0.38.0-r417-probe-anti-saturation.md` + `eval/rover/r417/README-evidence.md` + 提交 `0488017` 重建，**读数未改**。
+**版本**: R417 · **日期**: 2026-09-14 · **状态**: 已收口（判别力自证 PASS；**首个非饱和真机读数**）· **回填标注**: 本节由 `docs/archive/plans/v0.38.0-r417-probe-anti-saturation.md` + `eval/rover/r417/README-evidence.md` + 提交 `0488017` 重建，**读数未改**。
 
 - **因果链**: 原 7 族题集对当前链**已饱和**（agent 与 oracle 同为整题全对 1.0；同题复跑 seed 20260913 = 35/35）⇒ 天花板效应，「质量」无法从它读出 ⇒ 靶点是**判别力**，不是题量。
 - **交付**: 新增 3 个高判别力族 `topo_min`/`vm_run`/`json_mini` + `tight_gen` **每题强制「规格紧」隐藏用例** + **族级缺陷注入负控**（作弊/缺陷解必须整题全对 0，oracle 正控满分）。
 - **真机读数**: 整题全对 **1/3**、用例级 **47/54**（诚实登记：真机**仍饱和**，只有 JSON 族打成非饱和）。
 - **两处判定器真缺陷（测量层，已修 + 已配负控）**: ① 长回复里「报告式」候选片段顶掉完整可编译程序 ⇒ 候选提取分两轮 + 前缀长度下限；② `exit≠0` 顶掉正确 stdout ⇒ 分类改 **stdout 优先**（期望为空时崩溃仍判失败）。
 - **机检/登记**: `eval/probe/grade.py --selftest` **29/29**；全量 **1164/0/0**；形式校验 6/6；登记 `docs/verification-registry.json` → `r417.probe-anti-saturation`（L4）。
-- **证据**: `eval/rover/r417/README-evidence.md`、`docs/plans/v0.38.0-r417-probe-anti-saturation.md`、提交 `0488017`。
+- **证据**: `eval/rover/r417/README-evidence.md`、`docs/archive/plans/v0.38.0-r417-probe-anti-saturation.md`、提交 `0488017`。
 
 ## R416 — R371-D2 收口：发布产物自包含 config 的**仓库外 cwd 真机验收**（能力自检循环）
 
@@ -796,7 +796,7 @@
 - **产品侧缺陷（代码事实钉死，与上面结论独立）**: `LlamaCppTextGenerator` 旧 ceiling 取**实例级** `LastPromptTokens/LastGeneratedTokens`，而长驻端口是进程内单例 ⇒ 多会话交替/并发时 A 读到的「上一轮」可能是 B 的 ⇒ 台账分母 `carryOverCeiling` 被污染（判红/判绿都可能失真且外部看不出）。修复 = 新增 `LocalSessionTracker`（按 `sessionKey` 分桶；无键退回实例级 = **零回归**）+ 端口暴露 `Sessions` 计数。
 - **判据 J1a–J1h（含负控）**: 分桶（反例: 实例级会给 408）/ 首轮 0 / 无键兜底且不建桶 / 并发计数与租约归零 / **纯串行不得报争用**（`MaxConcurrentTurns==1 ∧ ConcurrentTurns==0`）/ 有界 / 夹紧 / 接线。单测 8 例。
 - **诚实边界**: ① 仅 n=2 会话（同机单 server）；② `-np 1 -c 4608` 实测 server RSS **2.39 GB**（本机 3.66 GB）⇒ 更大 n 或更长前缀受内存约束，**未测**；③ 前缀中段截断点分布（R410 候选 ③）仍未测；④ 墙钟不作判据（只报单次形态）。
-- **登记**: registry 新行 `llamacpp.session-ledger`（`updated_round=R412`）；TaskPlan 节点 `dev-multi-session-slot`；计划文档 `docs/plans/v0.34.0-r412-multi-session-slot-contention.md`；证据 `eval/rover/r412/`。
+- **登记**: registry 新行 `llamacpp.session-ledger`（`updated_round=R412`）；TaskPlan 节点 `dev-multi-session-slot`；计划文档 `docs/archive/plans/v0.34.0-r412-multi-session-slot-contention.md`；证据 `eval/rover/r412/`。
 - **下轮候选（R413）**: ① **接产品链路**：本地生成（r1/llama.cpp 长驻端口）作为**链管道精炼计划节点**接入 `ModelQueueRouter` 通道选择（可替换执行面端口 + 数值对账 + 被使用计数 + 无设备负控）—— **与 R351 无关**（R351 只移除旧的「本地 LLM 使用」路径；用户 2026-09-14 纠正 R412 报告里的误读）；② N>2 会话与内存上限下的复用；③ 前缀中段截断点分布；④ 微内核 A/B（15× 悬案）；⑤ R402–R407 台账回填。
 
 ## R411 — 长驻生成端口 + 本地 K2b 台账：「口径必须靠独立实现对账钉死」+ 双条件判据
@@ -831,7 +831,7 @@
 - **代码**：`CompletionReuse {Session, Reconciliation}`（`GenerateAsync` 默认 Session = 生产口径）；`CompletionProfiles.Build()` 收敛为「口径 → 参数」唯一映射点；`CompletionResult.CachedTokens`（服务端 `cache_n`，非估算）；`SessionReuseCalls`/`ReconciliationCalls`/`SessionCacheMisses`（静默失效可见化）；CLI 新增 `--reuse on|off` 与 `--system-file`（会话长前缀入口）。
 - **测试**：新增 `CompletionReuseTests` **4/4**；全量 **1076 / 0 / 0**（R409 基线 1072 + 4）。
 - **顺带修掉两个真缺陷**（均由全量回归暴露、非本轮引入，同属「拿墙钟当闸门」类）：① `SessionPerformanceTests` 的墙钟 3x 比值断言 ⇒ 改为「等价性作判据、计时只作信息」；② `LlmServiceStatusTests` 的 5 s 固定就绪截止 ⇒ 放宽到 30 s 并把实测等待写进失败信息。两者在争用下都产生假红（单独复跑全绿）。
-- **登记**：`docs/verification-registry.json` 新行 `llamacpp.session.prefix_reuse`（L4，45 行，`updated_round=R410`）；TaskPlan 节点 `dev-session-prefix-reuse`；计划文档 `docs/plans/v0.32.0-r410-session-prefix-reuse.md`；证据 `eval/rover/r410/`。
+- **登记**：`docs/verification-registry.json` 新行 `llamacpp.session.prefix_reuse`（L4，45 行，`updated_round=R410`）；TaskPlan 节点 `dev-session-prefix-reuse`；计划文档 `docs/archive/plans/v0.32.0-r410-session-prefix-reuse.md`；证据 `eval/rover/r410/`。
 
 **自错披露**：① 探针 v1 成本估小（单线程 prefill 实测 26 t/s ⇒ 4807 token 一遍 185 s）且只在末尾落盘 ⇒ 被掐断后零证据，v2 才改成分臂增量落盘；② 「会话内复用 99.88%」与「跨进程复用 0%」两条曾混在同一结论里，补跑 CLI 后才分清。
 
@@ -853,7 +853,7 @@
 - **机器验证**：`agenthost --llamacpp --verify-template`（退出码 6 = 未通过）⇒ `Verdict=gated_single_bos`、`RenderedBosCount=1`、`LiteralBosCount=2`、`IdsEquivalent=true`、exit 0。
 - **测试**：新增 `LlamaCppPromptGateTests` **9/9**（sha 锚点钉死 + 5 项注入缺陷负控 + 2 项防误拦反向控制）；全量回归 **1072/0/0**。
 - **AOT**：规范命令复跑 **exit 0 / 0 IL 警告 / 14,950,608 B**（政策 `release_tag_only` ⇒ 仅参考证据）。
-- **登记**：`docs/verification-registry.json` +`llamacpp.prompt.template_gate`（L4，44 行）；TaskPlan 节点 `dev-local-prompt-template-gate`；计划 `docs/plans/v0.31.0-r409-local-prompt-template-gate.md`；证据 `eval/rover/r409/`。
+- **登记**：`docs/verification-registry.json` +`llamacpp.prompt.template_gate`（L4，44 行）；TaskPlan 节点 `dev-local-prompt-template-gate`；计划 `docs/archive/plans/v0.31.0-r409-local-prompt-template-gate.md`；证据 `eval/rover/r409/`。
 
 **自错披露（3 处）**：① 首轮把 `2081`（字符）与 `2237`（UTF-8 字节）当成两个模板的长度，误报「差 156 B」（单位错）；② 闸门初版 EOS 规则会误拦合法多轮输入；③ R409 探针脚本内建裁决行问错对象（比较了 `96B/add_special=true`）故打印 False —— 正确等价对由 `--verify-template` 独立确认。
 
@@ -878,30 +878,30 @@
 
 ## R407 — qwen2 前向对账：attn bias 层归属缺陷（定位 + 修复 + 逐位验证）（回填）
 
-**版本**: R407 · **日期**: 2026-09-14 · **状态**: 已完成（V1–V6 全部真实读数；AOT 发布与全量回归已跑）· **回填标注**: 本节由 `docs/plans/v0.29.0-r407-qwen2-attn-bias-and-forward-parity.md` + 提交 `cd8feeb` 重建，**读数未改**。
+**版本**: R407 · **日期**: 2026-09-14 · **状态**: 已完成（V1–V6 全部真实读数；AOT 发布与全量回归已跑）· **回填标注**: 本节由 `docs/archive/plans/v0.29.0-r407-qwen2-attn-bias-and-forward-parity.md` + 提交 `cd8feeb` 重建，**读数未改**。
 
 - **因果链**: R406 把 chat template 升为「读 GGUF 模板 + Jinja 子集解释器」并 32/32 逐字节对齐 ⇒ 乱码**归因移出模板侧**；本轮把「引擎缺陷」推进到**具体张量与具体层**。
 - **缺陷**: `ForwardPass` 把 **`blk.0` 的 attn bias 喂给全部 28 层**（qwen2 每层 bias 逐字节不同）⇒ 静默数值错误（不报错、只降质量）。
 - **修法/验证**: 按层取 bias + 独立实现逐位对账（V1–V6）。
-- **证据**: `docs/plans/v0.29.0-r407-qwen2-attn-bias-and-forward-parity.md`、`eval/rover/r407/`、提交 `cd8feeb`（**R403–R407 工作区一并提交** ⇒ 该提交同时承载 R405/R406 产物）。
+- **证据**: `docs/archive/plans/v0.29.0-r407-qwen2-attn-bias-and-forward-parity.md`、`eval/rover/r407/`、提交 `cd8feeb`（**R403–R407 工作区一并提交** ⇒ 该提交同时承载 R405/R406 产物）。
 
 ## R406 — 模板驱动 chat template（Jinja 子集）与 R1 链归因（回填）
 
-**版本**: R406 · **日期**: 2026-09-14 · **状态**: 已完成（P0-2a 解释器 / P0-2b 生成路径接线）；P0-1（llama.cpp oracle 收尾）进行中 · **回填标注**: 本节由 `docs/plans/v0.28.0-r406-jinja-template-and-r1-chain.md` + 提交 `cd8feeb` 重建，**读数未改**；**无独立证据目录**（如实标注）。
+**版本**: R406 · **日期**: 2026-09-14 · **状态**: 已完成（P0-2a 解释器 / P0-2b 生成路径接线）；P0-1（llama.cpp oracle 收尾）进行中 · **回填标注**: 本节由 `docs/archive/plans/v0.28.0-r406-jinja-template-and-r1-chain.md` + 提交 `cd8feeb` 重建，**读数未改**；**无独立证据目录**（如实标注）。
 
 - **因果链**: chat template 原为「只为 DeepSeek 手写的专用渲染器」⇒ 换模型即失真。
 - **交付**: 从 GGUF 读 `tokenizer.chat_template` 原文 + **Jinja 子集解释器**；以 jinja2 3.1.6 渲染的三套金标夹具（32 例）做**逐字节**对账；生成路径切到模型自带模板。
 - **用途**: 用「prompt 已证明正确」这一事实，把 R1-Distill-1.5B 的乱码输出**归因从模板侧移出**（⇒ 交 R407 定位到引擎 attn bias 层归属）。
-- **证据**: `docs/plans/v0.28.0-r406-jinja-template-and-r1-chain.md`、提交 `cd8feeb`（与 R403/R405/R407 同批提交）。
+- **证据**: `docs/archive/plans/v0.28.0-r406-jinja-template-and-r1-chain.md`、提交 `cd8feeb`（与 R403/R405/R407 同批提交）。
 
 ## R405 — 本机增强 R1-Distill-1.5B 计划（四条线，不改权重）（回填）
 
-**版本**: R405 · **日期**: 2026-09-14 · **状态**: 计划已登记；P0/P1 待执行（P0-1 对账在后台）· **回填标注**: 本节由 `docs/plans/v0.27.0-r405-r1-local-enhancement.md` + 提交 `cd8feeb` 重建，**读数未改**；**未见该轮收口节**（状态按计划文档原文登记，不补写读数）。
+**版本**: R405 · **日期**: 2026-09-14 · **状态**: 计划已登记；P0/P1 待执行（P0-1 对账在后台）· **回填标注**: 本节由 `docs/archive/plans/v0.27.0-r405-r1-local-enhancement.md` + 提交 `cd8feeb` 重建，**读数未改**；**未见该轮收口节**（状态按计划文档原文登记，不补写读数）。
 
 - **用户令（逐字）**: 「请给我适合本机增强R1-Distill-1.5B的可落地方案」。
 - **上游**: R400 生成链（`9d2191a`）+ R403（RoPE 配对修复）+ R404（bge 融合对账）。
 - **形态**: §0 先列**本机硬约束**（实测值 + 出处，方案不许绕过它们）⇒ 四条线均不改权重。
-- **证据**: `docs/plans/v0.27.0-r405-r1-local-enhancement.md`、`eval/rover/r405/`。
+- **证据**: `docs/archive/plans/v0.27.0-r405-r1-local-enhancement.md`、`eval/rover/r405/`。
 
 ## R404 — bge 融合对账 + 产品口径订正（回填）
 
@@ -928,7 +928,7 @@
 - **裁定**: **R403 关闭**。① 自研 Jinja 子集扩展的对象随 R408 退役（R409 已证渲染归引擎、调用方无法手拼）；② 工具调用模板**无对象可验**（引擎自报不支持 ∧ 模板零工具位 ∧ 产品零消费方，三方一致）。
   「工具调用」转**待触发能力**，准入判据三条**全绿**才开工：(a) `caps.supports_tools == true`；(b) 同 messages ±tools 的 `prompt_tokens` 有差（**不得只看 HTTP 200**）；(c) 产品侧存在发出 tools 的调用点。
 - **诚实边界**: 仅现役模型 `r1-distill-qwen-1.5b-q4km` + 本机 build `b1-4df29be` 的单次读数；负控模板是**合成**的，只证探针判别力，不证任何真实模型支持工具调用；工具调用**出参解析**（`tool_calls` → OpenAI 格式）**未测**，属 (a) 之后的独立课题。
-- **证据**: `eval/rover/r403/tool-template-behavior.json`、`eval/rover/r403/probe_tool_template.py`、`docs/reports/r403/chat-template-tool-scope.md`。
+- **证据**: `eval/rover/r403/tool-template-behavior.json`、`eval/rover/r403/probe_tool_template.py`、`docs/archive/reports/chat-template-tool-scope.md`。
 - **运行纪律入档（两次同族事故）**: ① 测量前清掉 6 个 R412/R413 遗留长驻 server（pid 230833/230849/232136/232152/233614/233632，RSS 合计 ≈3.5 GB，本机共 3.66 GB）⇒ `MemAvailable` 1.14 GB → 2.99 GB；
   ② `pgrep -f "[4]1999"` **仍自杀**（同一命令行的 `curl …:41999` 含裸端口号）——括号技巧只保护**模式字面量**，不保护同一命令行**别处**出现的目标串（同族：`ps | grep "[l]lama-server"` 被自己的 `echo "no llama-server running"` 命中）⇒ 正解 = 被测进程自落 pid，或同进程内 Popen + `killpg` 收尾。
 
@@ -963,7 +963,7 @@
 
 ## R398 — 随机化能力自检探针 + 通用性 skill 沉淀（exp14 长期线首轮）
 
-**日期**: 2026-09-13 · **状态**: 完成（M1–M5 落地；M6 题集加硬列下轮）· **计划**: `docs/plans/v0.24.0-exp14-random-probe-selfcheck.md`
+**日期**: 2026-09-13 · **状态**: 完成（M1–M5 落地；M6 题集加硬列下轮）· **计划**: `docs/archive/plans/v0.24.0-exp14-random-probe-selfcheck.md`
 
 **用户令（逐字）**: 「使用本agent和py开发随机程序和解开随机数学难题用于本agent能力自检和总结通用性skill放入skills文件夹内」（长期任务，须纳入文档）。
 
@@ -995,7 +995,7 @@
 - **负控 7/7**(`dcr_align.py --selftest`): 含**解析 oracle**(400 次洗牌 DCR 均值 ≈ `(51²+94²)/145² = 0.5440`)、单点翻转 **Δ=1/145**、常量分类器基线(**全 allow 35.17% / 全 block 64.83%**)⇒ 100% 的信息量全在"同时拿到 51 allow + 94 block"。
 - **自捕 2 缺陷(已修)**: ① 自检计数写死 `6` 而实际 7 条 ⇒ 恒 rc=1("闸门自己恒假"的镜像缺陷); ② 敏感度表混用原始处置与二元值 ⇒ 崩(均被一轮 selftest 抓出)。
 - **文档收口(禁再"双口径并列")**: 本节 + `eval/dcr/README.md`(口径定稿注 + 清单加 `dcr_align.py`)、`docs/verification-registry.json`(`dcr.harness` 行)、`docs/plans/v0.23.0-exp12-*`(§S4 / §口径纪律)、R388 诚实边界段均改为**单一口径 + 敏感性**。
-- 机读产物 `docs/reports/dcr/dcr-single-metric.json`; 报告 `docs/reports/r397/r397-dcr-single-metric-recompute.md`。
+- 机读产物 `docs/archive/reports/dcr-single-metric.json`; 报告 `docs/archive/reports/r397-dcr-single-metric-recompute.md`。
 
 **诚实边界**: ① **题集饱和** —— 145/145、FP=FN=0 ⇒ 该数字对能力提升**零灵敏度**, 加硬用例(长轨迹/语义降层)是"达标断言"的唯一前置; ② **与 FAVA 90.5% 不可比**(801 例 aggregate × 三基准 × 含自然语言→IR 降层损失, 本仓 145 例受限片段、零 LLM、无降层)⇒ **"DCR=100%"≠"达到 90.5%±5pp"**; ③ 标签独立性有限(62/145 构造定义; 83/145 z3 推导, 但 z3 与内核共享整数语义 ⇒ 共同盲区不可自发现); ④ 口径映射是本轮工程裁定(可审可改, 改则数字变)。
 
@@ -1023,13 +1023,13 @@ Vulkan 只需 BCL 的 `NativeLibrary` + 函数指针即可自载, 第三方绑�
 
 **诚实边界**: ① 本轮只打通"加载器/实例/设备枚举"(Stage 1+2), **产品侧计算管线 (descriptor/pipeline/命令缓冲) 仍是引擎侧实现**, Stage 3 待做; ② 内存堆解析 (结构对齐) 未做, 只断言对账过的字段; ③ 本机唯一设备是 **lavapipe 软件 ICD** (显示设备为 QEMU 模拟 Cirrus GD 5446), **真 GPU 斜率需外部机器**, 复跑脚本已备; ④ oracle 溯源依赖本机 nuget 缓存, 缺失时显式 warn 而非静默。
 
-**报告**: `docs/reports/r396/r396-product-side-vulkan-loader-parity.md`。
+**报告**: `docs/archive/reports/r396-product-side-vulkan-loader-parity.md`。
 
 **附带解锁 (⑤ dcr-align)**: FAVA 正文 (arXiv `2607.27267v1`) 已抓到并落盘, DCR 口径取得权威原文 ——
 `DCR = (TP+TN)/(TP+TN+FP+FN)`, **无"弃权"项**, 不确定一律 **fail-closed 记 block**; aggregate = **单一二元矩阵**(非各集宏平均);
 trace-conditioned 100.0% 论文自陈为 *labeled diagnostic*, 须与 zero-shot 主表分开读; 论文**未给方差/置信区间** ⇒ ±5pp 仍是本仓自设工程裕度。
 由此解释本仓"合规 100.00% / 保守 69.66%"两面不矛盾(弃权处置不同); 对齐重算(=fail-closed 归并后单一口径)**已于 R397 完成**(见 R397 节): 单一口径 **145/145 = 100.00%**, 且**口径敏感度实测 30.34pp** ⇒ ±5pp 不够用的根因是**口径自由度本身**。
-取证件: `docs/reports/dcr/dcr-align-fava-source-2026-09-13.md`。
+取证件: `docs/archive/reports/dcr-align-fava-source-2026-09-13.md`。
 
 ---
 
@@ -1058,7 +1058,7 @@ trace-conditioned 100.0% 论文自陈为 *labeled diagnostic*, 须与 zero-shot 
 
 **教训归档 (通用化, Id/Pattern 无语言专名)**: 10.6 `gate.literal-true-is-hollow` / 10.7 `instrument.resolution-boundary` / 10.8 `control.injection-must-alter-observable` / 10.9 `assertion.must-be-provable`(见 `docs/plans/v0.22.0-exp5-lesson-table.md` §10.6–10.9)。
 
-**报告**: `docs/reports/r395/r395-bge-gate-fix-fusion-and-cron-stop.md`; 融合报告(脚本自写, 禁手抄) `docs/reports/bge/fusion-2026-09-13.md`。
+**报告**: `docs/archive/reports/r395-bge-gate-fix-fusion-and-cron-stop.md`; 融合报告(脚本自写, 禁手抄) `docs/reports/bge/fusion-2026-09-13.md`。
 
 ---
 
@@ -1072,7 +1072,7 @@ trace-conditioned 100.0% 论文自陈为 *labeled diagnostic*, 须与 zero-shot 
 
 **顺带更正陈年口径残留**: 文档原写"红线等价于每轮增量 ≤ 前缀/9" (90% 旧口径 `hit/(hit+miss)`, 增量进分母)。**R380 口径依 `min(本轮,上轮)` 后增量与判定无关**: 有效命中率 = 命中上限/上轮前缀 = `1 − (64+r)/P`; 只有 prompt **收缩**才换分母。
 
-**真机证据** (`docs/reports/r385/r394-cache-redline-97.md`):
+**真机证据** (`docs/archive/reports/r394-cache-redline-97.md`):
 - 聚焦 19/19 Passed (`Threshold = 0.97`)；全量 **1060/1060 Passed (33 s)**。
 - 新阈值下真遥测: 轮2 **0.9574** / 轮3 **0.9543** / 按会话 0.9311~0.9689 —— **全部越线** (旧口径下"看着达标")。
 - **结构性归因机检: 6/6 实测命中 == 结构上限 `(⌊P/64⌋−1)×64` ∧ 缺口 == 单元对齐损耗 `64+P%64`** ⇒ 越线 100% 归因**前缀厚度不足**, 装配侧缺陷 **0 例**。
@@ -1091,7 +1091,7 @@ trace-conditioned 100.0% 论文自陈为 *labeled diagnostic*, 须与 zero-shot 
 3. **内核**: `Kernels.MatMulBias` 4 绑定 (0=W 1=X 2=B 3=Y), `inDim/outDim` = 编译期常量(形状特化 ⇒ 内核内不用 ArrayLength 反推维度), 越界守卫 `i ≥ ArrayLength(Y)`; `Spv` 新增 `OpULessThan=176`/`OpUDiv=134`/`OpLoopMerge=246`/`ScFunction=7` + `LoopMerge()`/`FnVar()`(函数首块钩子 `Build(..., firstBlock)`), 全部经 `SpvRegistryAudit` 对权威 grammar 机检(新增 `ScFunction` 别名绑定, 否则审计红 —— 本轮真红过一次)。
 4. **真机入口**: `agent.rover embed [--backend cpu|vulkan] [--device I] [--repeat R] [--text T] [--compare] [--selftest]` —— 输出全机器可读行(`bgemodel/port/vkdevice/membase/emb/determinism/parity/portcheck/pool/mem/done`), 零 shell / 零 Console 直写。
 
-**真机证据**(`docs/reports/r385/r393-bge-vulkan-port.md`, 原始日志 `/tmp/r393/`):
+**真机证据**(`docs/archive/reports/r393-bge-vulkan-port.md`, 原始日志 `/tmp/r393/`):
 - **端口确实被使用(防空心)**: `portcheck{dispatch_calls=expected}` 在 72 / 216 / 864 三种规模下 `match=True`(期望 = 层 4 × 6 × 文本 3 × 重复 R)。
 - **数值对账**: Vulkan vs CPU `max_abs_diff ≤ 2.538E-007`, `cos=1.000000000`, `verdict=PASS`; CPU 档 `max_abs_diff=0.000E+000`(逐位相同)。舍入语义已写清: 内核**顺序**累加 vs CPU `TensorPrimitives.Dot`(**SIMD 多累加器**) ⇒ 不逐位相同, 故判据 = `≤1e-3 ∧ cos≥0.99999`(把"逐位一致"当判据会假红)。
 - **确定性**: `repeat=3` 三个 pass `identical=true`(逐位)。
@@ -1143,7 +1143,7 @@ trace-conditioned 100.0% 论文自陈为 *labeled diagnostic*, 须与 zero-shot 
 - **修复**: 由**仓库内产物**复跑并**直接覆盖仓库文件** —— 装配层 = **AOT 原生产物** `agenthost --formal-eval eval/dcr/dcr_cases.jsonl`; 内核层 = 重命名后 `agent.rover check <case>.assert --json` ×145; 随后 `scripts/kpi_dcr.py` 重生成 `eval/dcr/dcr_report.txt`。
 - **零漂移证明(两条独立腿, 各 145/145、0 差异)**: 新装配快照 vs R388 真装配快照 `field_diffs=0`; 新内核快照 vs R388 内核快照 `field_diffs=0`(**含 `note` 与反例变量取值**) ⇒ 重命名未改任何判定; 顺带 `ms` 由 R388 的 ~32.7 ms/条降到 **~0.18 ms/条**(AOT 免 JIT, 旁证)。
 - **刷新后权威结论**(R392 历史读数; **R397 起单一口径定稿**, 禁止再并列汇报): **DCR(弃权计合规) 145/145 = 100.00%** / **保守口径 101/145 = 69.66%**(= 可决断集上限) / 覆盖率 101/145 = 69.66%(Proceed 51 · Violation 50 · Abstained 19 · Malformed 25) / 六类一致率**全 100%** / **主动误判 0**; z3 独立审计重跑 `AUDIT_RESULT=SOUND`(**30/30 反例为真 · 33/33 Proved 确 unsat · 0 假**), 与题集自带 `expected_verdict` **145/145 一致**。
-- **文档同步**: `eval/dcr/README.md` §4.1/§4.2、`docs/reports/r385/dcr-s3-s4-results.md`(§4 标为 R387 留痕 + 新增 §8)。
+- **文档同步**: `eval/dcr/README.md` §4.1/§4.2、`docs/archive/reports/dcr-s3-s4-results.md`(§4 标为 R387 留痕 + 新增 §8)。
 - **新纪律**: 凡涉及仓库内 eval 快照的轮次, **必须用仓库内相对路径复跑并覆盖仓库文件**, 禁止只在 `/tmp` 留证。
 
 **诚实边界**:
@@ -1430,7 +1430,7 @@ trace-conditioned 100.0% 论文自陈为 *labeled diagnostic*, 须与 zero-shot 
 - **L5 运行级验证 (t8–t12)** 收口：默认关、零 shell、超时杀树、输出上限排空、结构化结果、插件接线；族内 20/20（含 300k 排空 / 路径含空格引号 / 闸门关不执行 / 相对路径回归）。
 - **exp5 教训表（role 模块）核心**：`LessonGeneralization`（通用化机检）/`LessonTable`（FNV-1a 指纹 + 去重归并 + 版本游标 + STJ 源生成 + 原子写）/`RoleLessons`（无 role 不落盘且显式回报）；11/11 机检（A8 负断言：`py_compile`/`C#`/`.cs` 一律拒收）。
 - **exp8 立项**（用户本轮新钦定）：[已验证产物 → skill 蒸馏 + skill 生命周期 + KPI A/B](./plans/v0.22.0-exp8-artifact-to-skill-and-kpi-ab.md)（设计文档，含 tokens/轮数/asked 率/质量 对照口径与 A1–A6 机检草案）。
-- **静默后台**：bge 闲时训练 cron 改为 `deliver=local`（只落盘不打扰）；探针全记录 `docs/plans/v0.22.0-r371-capability-probe-python-game.md`。
+- **静默后台**：bge 闲时训练 cron 改为 `deliver=local`（只落盘不打扰）；探针全记录 `docs/archive/plans/v0.22.0-r371-capability-probe-python-game.md`。
 - **真机 A/B（R372, 3 连跑）**: 产物命中 **1/3 → 2/3 → 3/3**；**有效产物 2/3**（RUN2 截断致 `compile_valid=false`）。
   **归因反转（诚实点）**: 3/3 全为 `origin=fenced` → 本轮命中率提升来自模型给围栏（D4 提示词纪律），**非** D4-b 启发式；若无 `origin` 字段会把功劳误记给启发式。
   **D7 真机首触发**: `completion=8192 / content_len=7510 / truncated=true / reasoning_len=20159` → 续写 `before=2735→after=7510 / still_truncated=true / recovered=false`（未救回，如实入库）。
@@ -1449,7 +1449,7 @@ trace-conditioned 100.0% 论文自陈为 *labeled diagnostic*, 须与 zero-shot 
   2. "收集未来可用于bge-small-zh-v1.5基座的数据，并加入闲时训练计划，本机若无任务再执行就自动执行数据收集，训练bge版本，统计KPI不断择优，请你以确定性的召回率为目标不断优化bge-small-zh-v1.5 并生成每个版本小报"
   3. (后续) "注意别忘验证形式…和 之前的5个开发计划的实施" + "你需要实测它们用于召回的能力后再最终确定用哪个嵌入模型"
 - **L1 验证形式入规范 (用户长期焦点, 本轮交付)**: 新增 [docs/验证形式规范.md](./验证形式规范.md) (证据阶梯 L0 未验证 → L1 静态 → L2 单测/组件行为 → L3 真机运行 → L4 对抗负向控制; 六条规则: 无登记=未验证 / 静态最高只能报 L1 / L≥2 必须负向控制 / 证据必须落盘可复查 / 表述纪律 / 登记表机检) + [docs/verification-registry.json](./verification-registry.json) (机读登记表, 含 `covers[]` 覆盖插件实现) + `src/agent.tests/VerificationFormTests.cs` **6/6 通过** —— 含**自检负向控制**: 注入 5 类缺陷 (缺负向控制/静态冒充运行/证据路径不存在/插件漏登记/等级越级) 全部被抓出。已挂 README + 总纲 §0-0 第 9 条。
-- **L2 自上下文能力差异 + 首批修复**: 新增 [docs/plans/v0.22.0-l2-capability-diff.md](./plans/v0.22.0-l2-capability-diff.md) (16 项逐条对位, 判定只用 `file:line` 实证; 缺口清单 G1–G9 入长期看板)。
+- **L2 自上下文能力差异 + 首批修复**: 新增 [docs/archive/plans/v0.22.0-l2-capability-diff.md](./plans/v0.22.0-l2-capability-diff.md) (16 项逐条对位, 判定只用 `file:line` 实证; 缺口清单 G1–G9 入长期看板)。
   - **F1 跨会话检索** `src/agent/session/SessionHistorySearch.cs`: 会话记忆已落盘却**无检索入口** (对位宿主侧 session_search) → 纯 stdlib/零 LLM/确定性打分 (CJK 二元组 + ASCII 词 + IDF + 子串加成), 命中词居中开窗截断; `SessionHistorySearchTests` **10/10** (含负向控制: 无关查询空结果 / IDF 判别力 / **只读保证**: 检索前后 mtime 不变 / 缺文件不抛)。
   - **F2 宣称纠偏**: `skills/critic-rules/SKILL.md` 写的"输出后机器侧静态扫描仍会复核 (双保险)"与代码事实矛盾 (**生产 0 消费**) → 改为真实状态 + 登记"接线"为待办 (诚实优先于好看)。
 - **L5 运行级验证 (t8–t12, 用户 5 项计划之一)**: `src/agent.skills/PythonRunVerifier.cs` + `PythonArtifactPlugin` 接线 —— 默认**关** (`AGENTFRAMEWORK_PY_RUN`), 开启后语法通过即真跑并回写 `Ran/RunExitCode/RunElapsedMs/RunTimedOut`; 零 shell (`ArgumentList`), 超时**杀进程树**, 输出上限**排空管道**(否则 300k 输出会假超时), 结构化结果不抛异常。`PythonRunVerifierTests` + 插件接线 **15/15** (含 300k 排空 / 路径含空格与引号 / 闸门关不执行 / 脚本不存在)。
@@ -1472,7 +1472,7 @@ trace-conditioned 100.0% 论文自陈为 *labeled diagnostic*, 须与 zero-shot 
 - **用户指令 (逐字, 两条)**:
   1. "同步github后继续下轮 并且 新增计划 1.grep本地关键词建索引建立缓存于加载校验能力（需惰性加载）…代码引用索引建立（插件增强服务，需要明确的API规范，要求怎样的数据），全部都建立再一个本质上不主动探索全量（文件索引机制建立插件 返回graph 或 由bge自动建立效果如何？） 2.LLM得到多方案不明确时向用户提出问题menu菜单选择后继续任务… 3. 逻辑校验，修改当前步 看下上一步修改规则对齐当前… 4. agent自动提出需要的工具与工具需求，输入与输出对接参数… 5. 上下文中同类教训/问题记录->应进入教训表…**新增任务全部先列为探索项查找相关数据设计最佳方案后再考虑开发**"
   2. "我需要你对比自身的上下文，并再运行项目agent内 尝试对话 看看再哪个环节 KPI不行，长任务断链，机器验证失败（如PY执行，**你需要自己先内置个PY和先加个PY执行插件**）导致用户某项任务不达预期…着重看看那步应该交给脚本完成agent却又扔给了llm处理"
-- **探索产出 (5 路并行只读侦察 + 真机实验 + 本机基准, 未改业务代码)**: [docs/plans/v0.22.0-exploration-index.md](./plans/v0.22.0-exploration-index.md) + exp1…exp5 五份独立文档 (含现状事实带行号 / 候选方案对比 / 推荐 / 关键约束 / 验收标准 / 排除项 / 待确认)。
+- **探索产出 (5 路并行只读侦察 + 真机实验 + 本机基准, 未改业务代码)**: [docs/archive/plans/v0.22.0-exploration-index.md](./plans/v0.22.0-exploration-index.md) + exp1…exp5 五份独立文档 (含现状事实带行号 / 候选方案对比 / 推荐 / 关键约束 / 验收标准 / 排除项 / 待确认)。
 - **关键发现 (5 条, 皆有代码证据)**:
   1. **头号断链: 框架内不存在"生成脚本"能力** — 两条脚本执行链 (skills `scripts/main.py` / `ScriptPluginRunner`) 都要求脚本**已存在于磁盘**; 任何"帮我写个 X"任务只能一段式由 LLM 在回复里吐代码, 不落盘/不执行/不校验/不可迭代。
   2. **"宣称≠实现"再添 3 例** (R365 同类): `OutputCritic`/`CriticPipeline`/`FormatRepairLoop` 已实现但生产 0 调用, 而 `skills/critic-rules/SKILL.md:82` 声称"机器侧静态扫描双保险"; `TaskCharter.AcceptanceCriteria` 0 消费方; CLI `(已路由插件)` 文案无对应校验动作 (**本轮删除该空话**)。
@@ -1611,7 +1611,7 @@ trace-conditioned 100.0% 论文自陈为 *labeled diagnostic*, 须与 zero-shot 
 
 ## R335 v0.17.1 离线变更 + 用户审批 (批285 quick-13 13/13)
 
-- **立项**: 用户钦定 (Q1-Q7: CLI 产出需审批/VS Code 编辑保护/不能停/落盘不占真实地址/下次打开恢复/过期周期/前端取得/多批合并) + plan docs/plans/v0.17.1-staged-approval-plan.md (逐问题设计)。
+- **立项**: 用户钦定 (Q1-Q7: CLI 产出需审批/VS Code 编辑保护/不能停/落盘不占真实地址/下次打开恢复/过期周期/前端取得/多批合并) + plan docs/archive/plans/v0.17.1-staged-approval-plan.md (逐问题设计)。
 - **存储**: src/agent/staging/ — StagedFileStore (批次 content 原样落 data/staged/<batch>/<n>.content **不占用真实文件地址**; index.json 原子写; 恢复=新实例读 index; 过期三阶段 TTL→expired(内容保留可取回)/TTL×2→reclaimable/显式 cleanup 物理删 — 不静默丢); ChangeBatch/StagedItem (基线 sha256 快照模型); StagingSha (IncrementalHash AOT)。
 - **审批**: ApprovalController.Apply = LockedFileWriter.WriteIf **锁内基线比对** — 用户/编辑器在批次创建后改过目标 → 冲突拒绝绝不覆盖 (Q1 VS Code 场景机械保证); 多批 approve all 按创建序, 后批基线过期 → partial 报告人工; 冲突教训入 ExecutorLessonMemory (staging-conflict:<file> 频率加权)。
 - **指令**: /staged [--json] /staged diff <id> /approve <id|all> /reject <id> /cleanup (Known+switch 臂+V2 特判渲染 0ms 本地拦截, /skills 族同款); --json 单行输出供前端 (Q5: 状态文件 data/staged/index.json 也可直读)。
@@ -1620,14 +1620,14 @@ trace-conditioned 100.0% 论文自陈为 *labeled diagnostic*, 须与 zero-shot 
 
 ## R334 v0.17.0 执行层稳固化 T1-T4 (批284 quick-13 13/13)
 
-- **立项**: 用户钦定 (2 agent 同时写 1 文件族问题 → 工业化 IO 防御) + plan docs/plans/v0.17.0-executor-hardening-plan.md。
+- **立项**: 用户钦定 (2 agent 同时写 1 文件族问题 → 工业化 IO 防御) + plan docs/archive/plans/v0.17.0-executor-hardening-plan.md。
 - **T1 跨进程锁**: src/agent/execution/FileLocking.cs — FileLock (.lock 文件 FileShare.None=Unix flock LOCK_EX, 持有者崩溃内核自动放锁, 锁文件含 pid); AtomicFileWriter (tmp+Flush(true)+Move overwrite 原子); 删除竞态防护 (释放后校验锁文件仍属自己 pid 才删)。
 - **T2 占用者检测**: OccupantDetector — 快路径读锁文件 pid; 主路径 /proc/locks (解析实证 Linux 6.8: "1: FLOCK ADVISORY WRITE <pid> <dev>:<inode> 0 EOF", pid 是含 inode 段前一项, 非固定 index); stale 判定 /proc/<pid> 不存在。
 - **T3 教训临时记忆**: ExecutorLessonMemory — 失败→原因→临时记忆, **频率加权增长** (count1 摘要/count≥3 补方案/count≥8 补上下文), 24h 降级 7d 移除 (时钟注入), 手写 JSON 持久化原子写 (踩坑: JsonEncodedText.ToString 带引号致双引号 JSON → 手写 Esc; Save 拼接缺引号 → Esc 包引号)。
 - **T4 接入**: TaskCharter.Save → WriteIf (同 Id 状态推进覆盖/异 Id 让位 — KeepExisting 会让 TaskCharterTests 失败: 自身 planning→done 被挡, 教训=自身生命周期推进 ≠ 异主冲突); GuardrailMemory.Save → 加锁 Overwrite; 冲突结构化 + Record 教训 + executor_write/executor_lesson 打点。LockedFileWriter.WriteIf (锁内条件覆盖, 无 TOCTOU)。
 - **设计踩坑 (FileShare)**: FileShare.Read 实测同进程第二 Open ReadWrite 仍成功 (不互斥, 测试实证) → 必须 FileShare.None; FileOptions.DeleteOnClose Unix=打开即 unlink → 破坏锁文件可见性。
 - 验收: **581 单测绿** (+11 ExecutorHardening: 双锁互斥/stale 接管/活锁不误删/占用者报告/原子写无残留/KeepExisting 让位/教训频率升级衰减/持久化往返/损坏容忍/8线程120行并发追加零丢失); AOT publish 0 IL 警告; 双进程 flock 竞争 smoke (60/60 全成功零交错 — smoke 判定假警报已诊: split 后段天然无分隔符); 批284 (round 511) quick-13 13/13 tok/case 1672。
-- 下轮: v0.17.1 离线变更+用户审批 (OOB 钦定, plan 已建 docs/plans/v0.17.1-staged-approval-plan.md)。
+- 下轮: v0.17.1 离线变更+用户审批 (OOB 钦定, plan 已建 docs/archive/plans/v0.17.1-staged-approval-plan.md)。
 
 ## R333 v0.16.4 P10 锚词提取 long-key 零分配 (批283 quick-13 13/13)
 
@@ -1796,7 +1796,7 @@ trace-conditioned 100.0% 论文自陈为 *labeled diagnostic*, 须与 zero-shot 
 
 ## 历史遗留 (v7.x — v0.x 前身版本号体系)
 
-> 以下为 v0.x 统一编号前的历史记录, 原文保留; 详情见 git log 与 docs/changelogs/CHANGELOG-v7.14.md。
+> 以下为 v0.x 统一编号前的历史记录, 原文保留; 详情见 git log 与 docs/archive/changelogs/CHANGELOG-v7.14.md。
 
 ### v7.15 (2026-09-05) — 十节点全落地
 十节点: ①Skill 调度 P1 ②模型队列与意图选模 ③日志四通道 ④上下文梯度压缩 ⑤影子计划 ⑥问询打通 ⑦会话恢复 ⑧公开配置读写 ⑨agent.io 协议库 ⑩能力插件接口。需求四项: ①官方通道混合调度 ②agent.io ③会话中断恢复 ④公开配置读写。基线: 276→325 测试全绿 / AOT 0 IL 警 / 双冒烟通过。
@@ -1871,12 +1871,12 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **诚实边界**: ① 本机 2 vCPU / ~2.2 GiB 可用内存 ⇒ 预算强度只覆盖"小到能触发驱逐"的量级，**未做长序列下的峰值 RSS 压测**；② 驱逐策略是 **LRU-on-tick**，热集晋升（`IsHot` 访问计数）**在前向里未作为驱逐豁免使用**（前向只在 `--no-pin`/默认 pin 两档间切换，未实装"访问计数晋升为常驻"）；③ `--reclaim-per-token` 后每 token 重物化 norm（`hits` 归 0），是**故意**的对照档，不是默认行为；④ 未做多线程/流水线下的驻留并发安全论证（前向当前单线程）。
 - 机检: `residency --selftest` **10/10**（真 7B + tiny 双夹具）；Vulkan/内核回归未受影响；全量测试 **1025/1025**。
 - **机检有判别力的当场实证（诚实记录）**: 本轮登记表条目**第一次写错**（把 `evidence_path` 写成"源文件 | 报告"两段式）⇒ `VerificationFormTests.Registry_Exists_And_HasNoViolations` **当场判红**（`evidence_path 不存在`）⇒ 改回单一存在路径 + 新增独立 `evidence_report` 字段复跑全绿。自查不是空断言，本轮由它挡下一次。
-- **证据报告（真机输出逐字，45 行）**: `docs/reports/r385/residency-evidence.md`（自证 10 例明细 + tiny/7B 对账 + `cmp` 逐位结果 + 复现命令）。
+- **证据报告（真机输出逐字，45 行）**: `docs/archive/reports/residency-evidence.md`（自证 10 例明细 + tiny/7B 对账 + `cmp` 逐位结果 + 复现命令）。
 
 ### R399 (2026-09-13) — 题集加硬(M6) + 跑测数据打点(KPI) + 本机 agent.rover 引擎读数
 
 - **靶点（用户令"用你的推荐方案…不用问询我 + 给 KPI 打点 + 我可以看到具体提升报告"）**: R398 的诚实边界写明"6 题 100% ⇒ 对能力提升零区分度"，且**作弊解仍拿 22.2% 用例级通过率** ⇒ 加硬必须作用在隐藏用例的对抗性上；同时"提升"必须可量化 ⇒ 需把每次真机运行的通过率/耗时/token/失败模式落成台账与前后对比报告。
-- **交付**: `eval/probe/tasks.py`(627→853，对抗用例机制 `HARD_INPUTS` + 新陷阱族 `pair_closest_abs_sum` + 见证型数学族)、`eval/probe/grade.py`(300→406，`_verify_witness` 独立验证见证 + `wrong_witness` 失败模式)、`eval/probe/run_probe.py`(380→440，族池接线 + `--families`/`--dump-tasks` + 题集 sha 单口径)、新件 `scripts/kpi_probe.py`(418，台账+对比报告+24 条负控)、`eval/probe/README.md`、`docs/plans/v0.25.0-r399-probe-hardening-and-kpi.md`。
+- **交付**: `eval/probe/tasks.py`(627→853，对抗用例机制 `HARD_INPUTS` + 新陷阱族 `pair_closest_abs_sum` + 见证型数学族)、`eval/probe/grade.py`(300→406，`_verify_witness` 独立验证见证 + `wrong_witness` 失败模式)、`eval/probe/run_probe.py`(380→440，族池接线 + `--families`/`--dump-tasks` + 题集 sha 单口径)、新件 `scripts/kpi_probe.py`(418，台账+对比报告+24 条负控)、`eval/probe/README.md`、`docs/archive/plans/v0.25.0-r399-probe-hardening-and-kpi.md`。
 - **加硬三层（可复核）**: ① 每程序族钉死 3–5 条边界输入（全负/单元素/10^9/并列/满字母表…）**只进隐藏集**，不足 3 条即**拒发题**；② 新陷阱族 = "两数之和绝对值最小"（朴素写法在同下标复用/并列取值上翻车）；③ 见证型数学题（`x²≡a mod p`、最小反例）⇒ 判定改为**独立验证见证语义**（最小反例还要复核 `∀m<n` 成立），不比对任何标签。
 - **真机读数（同题集 sha 内可比）**: agent 全量批 35/35 用例 = 1.0000、整题 6/6、**56.09s**、8 次 LLM 调用、prompt 21,530 / completion 4,845 / **4,396 tok/题**；定向批（新族）36/36、整题 6/6、215.01s、**11,215 tok/题**；**作弊解 22.2%→6.25% 用例级、整题全对恒 0/3**；`oracle` 0.71s 满分（管线正控）。**结论: 加硬只加硬了"对作弊解的判别力"，对 agent 仍饱和 ⇒ 下轮换维度（多步需落盘/缺信息反问/证明链）**。
 - **本轮 6 处真缺陷（含 2 处"口径假设错 ⇒ 空心指标"）**: ① 见证型族**从未被抽到**（题池只取 `MATH_FAMILIES` ⇒ 新功能不可达）② 题集 sha **双口径**（生成 vs `--tasks` 复用）③ KPI 时间窗锚点写反（`ts` 是**结束**时刻，写成 `[ts, ts+elapsed]`）④ 遥测 7 位小数时间戳解析失败被 `except: continue` **静默跳过**（token 全 None 且不报错）⑤ `grade_program` 无 `since` ⇒ 产物新鲜度负控从未跑到（假绿）⑥ **R398 漏下的登记表回归**: `evidence_path` 写成 `';'` 多路径 ⇒ `VerificationFormTests` 判红（全量回归当年跑在登记表改写**之前**）。
@@ -1912,7 +1912,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **通用教训（已落 skill）**: 两个自研实现可能**共享同一个约定误解** ⇒ 交叉验证长期绿灯而实际违规。`skills/independent-verification-before-claim` v1.1.0 新增判据 11「约定负控」：约定取值换成另一种合法值结果必须变；约定必须锚定**外部权威**并提取成存档 + 机检。
 - **附带产出**: `scripts/gguf_probe_remote.py` 远程 GGUF 兼容性预探（HTTP range 取头部 ~24 MB，判 arch/特性/量化可实现性，先探再下）。实测：`DeepSeek-R1-Distill-Qwen-1.5B` RUNNABLE；`Llama-3.2-1B` RUNNABLE；`Qwen2.5-0.5B`/`SmolLM2-360M` 含 **Q5_0** ⇒ BLOCKED（引擎缺内核）；`Qwen3-0.6B` 含 **56 个 qk_norm** ⇒ BLOCKED。
 - **诚实边界**: ① **qwen2 乱码仍未定性**（分词与 RoPE 均已排除 ⇒ 剩 tied 词表 / attn 偏置 / GQA 三条 7B 未覆盖路径；判别实验 `DeepSeek-R1-Distill-Qwen-1.5B`（qwen2 且 untied）已排队）；② 本轮仅重测「平凡续写」，prover7b 解法级重测未做；③ NORM/NEOX 表来自 vendored 上游快照，上游变更需重新提取。
-- **报告**: `docs/reports/r403/rope-pairing.md`。
+- **报告**: `docs/archive/reports/rope-pairing.md`。
 
 ### R417 (2026-09-14) — 探针反饱和：质量「分数」缺失的机制根因是**题集饱和**（天花板效应）
 
@@ -1925,7 +1925,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **仪器两处真缺陷（真机暴露，已修 + 4 条负控入 selftest 29/29）**: ① 提取器"首个可编译前缀"⇒ 长回复下 10 KB 程序被判成 46 字符注释残片；② `grade_program` 先看退出码 ⇒ stdout 正确但 `sys.exit(1)` 被判 runtime_error。修复 ⇒ `eval/probe/grade.py` 提取分两轮 + 前缀下限 64 字符、分类改 stdout 优先（`exit_nonzero_ok`）。
 - **证据卫生缺陷（本轮暴露，下轮修）**: `data/probe/replies/` 无臂命名空间 ⇒ 后一臂覆盖前一臂（topo/vm 臂 p001–p003 已被覆盖）。
 - **诚实结论**: 「加难族」这条路本轮**未打破天花板**（链在程序题上比预期强）；质量从「计数」变成「连续分数」仍需**换维度**（每题 tokens / 轮数 / 首次通过率——对饱和题集仍有区分度，且直接对齐用户 KPI 口径）。
-- **计划**: `docs/plans/v0.38.0-r417-probe-anti-saturation.md`；证据 `eval/rover/r417/`；登记 `docs/verification-registry.json` `r417.probe-anti-saturation`（L4）。
+- **计划**: `docs/archive/plans/v0.38.0-r417-probe-anti-saturation.md`；证据 `eval/rover/r417/`；登记 `docs/verification-registry.json` `r417.probe-anti-saturation`（L4）。
 - **文档缺口（如实登记）**: `docs/improvements.md` 的 **R404–R416 轮节未回填**；`docs/plans/v715_dev_plan.taskplan.json` 只登记到 R412（R413–R417 未登记）。 **R518 机检更正（2026-09-17）**：该登记**过宽** —— R408–R416 轮节实际在位；实测缺口 = R402 / R404 / R405 / R406 / R407 / R417 / R418 / R419（另 R403 排序违例），已于 R518 逐节回填。**旧口径作废**（原文保留留痕，不撤）。
 
 ### R418 (2026-09-14) — 探针「过程/成本」维度 KPI：成本读数的根因是**归属缺失**，不是缺字段
@@ -1936,7 +1936,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **读数（真机 AOT，`json_mini` n=3 seed=20260916）**: 整题全对 **2/3 = 0.6667**、用例级 **52/53 = 0.9811**、**tokens/题 = 9151.0**（prompt 侧）、tokens/满分题 9189.0、墙钟均 **77.7 s/题**、**turn≤1**（零多轮/零追问）、n/a 0、畸形 0。**成对负控**（`mutation:json_loose` n=4，同 seed）整题全对 **0/4**、用例级 0.7324 ⇒ 判别力仍在；该臂不走 LLM ⇒ 成本记 **4×n/a**（记 0 会伪造「零成本」）。
 - **诚实边界**: ① 链不落 `completionTokens` ⇒ 只有 **prompt 侧 + 墙钟**；② 探针为单轮 ⇒ 「轮数」目前主要作**异常检测**，首次通过率与整题全对率同分母（真正区分要等链路出现重试/追问）；③ 旧批次（R413–R417，无命名空间）成本**一律 n/a，不做回填**（回填 = 伪造归属）；④ n=3 小样本，非分布。
 - **仪器**: `process_metrics --selftest` **14/14**（含反张冠李戴负控、n/a 分母负控、歧义负控）；判定器 29/29；run_probe 18/18；tasks 45/45；kpi_probe 24/24。TaskPlan 已登记到 R418（**21 节点**，末条 `dev-probe-process-kpi`）。
-- **计划**: `docs/plans/v0.39.0-r418-process-kpi.md`；证据 `eval/rover/r418/`；登记 `docs/verification-registry.json` `r418.probe-process-kpi`（L4）。
+- **计划**: `docs/archive/plans/v0.39.0-r418-process-kpi.md`；证据 `eval/rover/r418/`；登记 `docs/verification-registry.json` `r418.probe-process-kpi`（L4）。
 
 ### R419 (2026-09-14) — 探针多轮化：轮数/首次通过率/修复率从「恒等判据」变「可分化」
 
@@ -1948,7 +1948,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **控制臂（判别力）**: `mutation:delayfix` **fix=1.0** / `mutation:nofix` **fix=0.0**（三批 n=3/6/6 全成立）；轮数**实到 == 期望**（3/3、6/6、12/12）；检查器 7 态自证（正常0/饱和2/混批3/负控误读2/缺字段3/回归2/NS不符3）。
 - **仪器**: run_probe **26/26** · grade **31/31** · process_metrics **22/22** · 检查器自证 **7/7** · tasks 45/45。
 - **诚实边界**: 真机侧**未稳定复现**分化 ⇒ 「仪器可用 + 存在分化」**不等于**「r1 链增益已确证」；n=6 单族非分布；`json_mini` 对该链近天花板（R417 的 1/3 读数系**旧提取器**退化所致，提取器修好后分数上移）。
-- **计划**: `docs/plans/v0.40.0-r419-probe-multiturn.md`；证据 `eval/rover/r419/README-evidence.md`；登记 `docs/verification-registry.json` → `r419.probe-multiturn`（L4）；TaskPlan **22 节点**（末条 `dev-probe-multiturn`）。
+- **计划**: `docs/archive/plans/v0.40.0-r419-probe-multiturn.md`；证据 `eval/rover/r419/README-evidence.md`；登记 `docs/verification-registry.json` → `r419.probe-multiturn`（L4）；TaskPlan **22 节点**（末条 `dev-probe-multiturn`）。
 
 ### R420 (2026-09-14) — 「API 落地 ≠ 已接线」：`/recall` 生产消费点（回填：本轮产物已 commit，轮节补记）
 
@@ -1956,7 +1956,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **交付**: `src/agent/registry/LocalCommandResult.cs`（`KnownCommands += /recall` + `TryRoute` 臂，四表同步）；`src/agent/IndustrialAgentV2.cs` 宿主 dispatch 特判渲染 + `recall_query` 通道级打点；`SessionHistorySearch.Render`（空命中显式文案，失败可见不静默）；测试 +`CommandRouteConsistencyTests` `/recall` 行 + `SessionHistorySearchTests` 3 条渲染断言（28/28）。
 - **真机两臂（L4）**: 治疗臂 `recall_query` 3 事件 / `llm_call` **0**；负控臂（**接线前** AOT 产物）同形输入 `recall_query` **0** / `llm_call` 1 且 stdout **无**渲染 ⇒ 「接线生效且本地指令零 LLM」。C4∧C5 合取才算成立（只有 C4 时，CLI 恒定打印的「意图分析/管线执行」进度行会让人误以为走了 LLM 主链）。
 - **诚实边界**: 负控是「接线前 AOT 产物」级而非源码回滚；真机查询 3+4 条非分布；**`hits=0/2` 的质量读数暴露词面重叠缺陷（`不存在`→2 命中）**，登记为下轮候选（→ R421）。
-- **计划/证据/登记**: `docs/plans/v0.41.0-r420-recall-wiring.md`；`eval/capability/r420/README-evidence.md`（L4）。
+- **计划/证据/登记**: `docs/archive/plans/v0.41.0-r420-recall-wiring.md`；`eval/capability/r420/README-evidence.md`（L4）。
 
 ### R421 (2026-09-14) — 跨会话检索的**否定极性**：`/recall 不存在` 不再召回到只断言「存在」的文档
 
@@ -1976,7 +1976,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **两个仪器缺陷（都是「读数不可信」类，不是被测不达标）**: ① `Render` 把命中行与片段**粘成一行** ⇒ 任何按行解析的读数**只能取到第 1 条**（本轮 harness 第一版就这么把治疗臂读成 1 命中）⇒ 补 `AppendLine` + 单测「行可寻址」；② R420 记录的「`存在`/`不存在` 分数同为 1.5660」**不可复现**（实测 0.5596 vs 0.3957；真正相同的是**命中集合**）⇒ 口径更正，结论不变。
 - **全量套件**: 1176/0/0（第 3 次跑）。**同一套件前两次各出 1 条顺序/并行相关假红**（`TelemetryPendingTests`；把本轮改动 stash 掉的**基线跑**里则是 `FrontendHandshakeTests`）⇒ 假红与 R421 无关，但「全量绿」这一读数目前**不可一次性复现**，登记为仪器候选。
 - **诚实边界**: 极性作用域仅「否定标记 + 紧邻 1 个二元组」（句中远距否定未测）；`别/勿/莫/甭` **有意排除**（`别` 与 `识别/区别/特别` 碰撞）；`无/非` 复合词（`无线/非常`）碰撞致召回损失**未量化**；**打分无长度归一 ⇒ 同一词元命中的所有文档同分（本轮三份同为 0.5596），命中集内无相关度区分度**（登记 R422）；样本 3 文档/4 查询非分布；**主线 KPI（r1 管道增益 / 一轮 token −30%）本轮未触碰**——`/recall` 是本地确定性指令，`llm_call==0` 恰说明它**不产生**远端调用（是不必要调用的抑制器，不是 token 下降的直接贡献者）。
-- **计划/证据/登记**: `docs/plans/v0.42.0-r421-polarity.md`；`eval/capability/r421/README-evidence.md`（L4）；`docs/verification-registry.json` → `r421.recall-negation-polarity`；TaskPlan **24 节点**（补登 `dev-recall-wiring` + `dev-recall-negation-polarity`）。
+- **计划/证据/登记**: `docs/archive/plans/v0.42.0-r421-polarity.md`；`eval/capability/r421/README-evidence.md`（L4）；`docs/verification-registry.json` → `r421.recall-negation-polarity`；TaskPlan **24 节点**（补登 `dev-recall-wiring` + `dev-recall-negation-polarity`）。
 
 
 ## R431 — role 额外数据（成长经历）挂载进 r1 门判：可机检 + 有界 + 无截断
@@ -1985,7 +1985,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 > 未在此补写（不凭记忆回填读数）。本轮起恢复逐轮追加。
 
 - **因果链**: 用户令「利用 r1 对真假信息判别（记得要挂载 role 的额外数据）」→ 前置机检发现真机角色 `skeptic.rbin` 解出键为 `['id','name','profile','tokens']`（**无 growth 键**）且调用点 `JudgeTurnAsync(content, roleSeed, **null**, ct)` → 挂载在真实负载上是**空操作**（管道本身早已支持：`BuildPrompt` 内 `Clip(growthBlock,300)`）→ 本轮把 null 换成 `GrowthLedger?.RenderForPrompt()`，并让「挂没挂」由遥测读数直接判定，而非「代码里有这行」。
-- **产出**: `src/agent/IndustrialAgentV2.cs`（挂载点 + 4 项形状遥测 + `role_growth_domains`）；`src/agent.modelqueue/ModelQueueRouter.cs`（prompt 只构造一次，形状取自实发文本）；`src/agent.modelqueue/LocalGenerationPort.cs`（`TurnGateCounters.LastPromptChars/LastRoleSeedChars/LastGrowthChars/LastGrowthLines`）；`src/agent.roles/RoleGrowthLedger.cs`（`DomainCount`）；`src/agent.tests/TurnGateGrowthMountTests.cs`（**9 条**机检）；`docs/plans/v0.52.0-r431-growth-mount.md`；`eval/rover/r431/`（precheck/frozen_baseline/settle_r431/make_evidence + 双臂读数）。
+- **产出**: `src/agent/IndustrialAgentV2.cs`（挂载点 + 4 项形状遥测 + `role_growth_domains`）；`src/agent.modelqueue/ModelQueueRouter.cs`（prompt 只构造一次，形状取自实发文本）；`src/agent.modelqueue/LocalGenerationPort.cs`（`TurnGateCounters.LastPromptChars/LastRoleSeedChars/LastGrowthChars/LastGrowthLines`）；`src/agent.roles/RoleGrowthLedger.cs`（`DomainCount`）；`src/agent.tests/TurnGateGrowthMountTests.cs`（**9 条**机检）；`docs/archive/plans/v0.52.0-r431-growth-mount.md`；`eval/rover/r431/`（precheck/frozen_baseline/settle_r431/make_evidence + 双臂读数）。
 - **基线对比**（同二进制 `sha256 ac62a739…`，字节 15,184,624，**IL 告警 0**，V0 形态闸 PASS）:
   | 臂 | 启动域数 | 门判 prompt_len | growth_chars(行) | 判定 | 远端调用 | 远端 tokens | 闭合/截断 |
   |---|---|---|---|---|---|---|---|
@@ -1996,11 +1996,11 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **关键读数**: prompt 长度差恒等于 `块长+1`（挂载追加一个换行）—— 单测不变量与真机读数一致（355+70+1=426）；对照臂第 2 次门判起出现 32 字符/1 行，来自链自产账本（`IndustrialAgentV2.cs:1684`）⇒ 接线消费的是**链自己积累的**角色数据。
 - **诚实边界**: **本轮不宣称 token 下降**（`k8r` 是重复认可族，本不产生额外远端调用；2030/1994/1996 同量级）—— ≥30% 验收需**真假信息判别网格**（假信息/纠错族），未跑；「有成长域时 r1 判得更准」**未测**（只测了生效/有界/不截断/判定不翻转）；`role_growth_domains` 仅启动配置行读一次，运行中新增域看 `growth_chars_seq`；对照臂 = 「角色无域」而非「代码不挂载」（干净对照是 R430 基线的 null 路径，已由引擎复算逐位证明）。
 - **下轮候选**: ① 真假信息判别网格（P 族假信息/纠错），量化挂载对判定准确率与远端调用数的影响（≥30% 验证主战场）；② 遥测补 `growth_sha16`，把未挂载臂「同长」升级为「同指纹」；③ `role_growth_domains` 逐轮携带。
-- **计划/证据/登记**: `docs/plans/v0.52.0-r431-growth-mount.md`；`eval/rover/r431/README-evidence.md`（L3）；`docs/verification-registry.json` → `r431.gate-role-growth-mount`。
+- **计划/证据/登记**: `docs/archive/plans/v0.52.0-r431-growth-mount.md`；`eval/rover/r431/README-evidence.md`（L3）；`docs/verification-registry.json` → `r431.gate-role-growth-mount`。
 
 ## R434 — 前置门质量硬线: 「真假判别网格」P 族 + r1-Skip 双条件结构修 (2026-09-14)
 
-- **因果链**（按文档走）: `docs/improvements.md` R431 节「下轮候选 ①」逐字指定「真假信息判别网格（P 族假信息/纠错），量化挂载对判定准确率与远端调用数的影响（≥30% 验证主战场）」 ⇒ 本轮预注册 `docs/plans/v0.55.0-r434-falseinfo-discrimination-grid.md`（判据 C1–C7）后执行。**机检前提**: 机械前置门把「?/问句词/诉求词/纠正词/数字/≥24 字符」全部结构性 Pass ⇒ r1 **只在残余带（无机械信号的短消息）判别** ⇒ P 族题集 8 个测量轮全部落在带内（机检 8/8 `MechanicalPass=false`）。
+- **因果链**（按文档走）: `docs/improvements.md` R431 节「下轮候选 ①」逐字指定「真假信息判别网格（P 族假信息/纠错），量化挂载对判定准确率与远端调用数的影响（≥30% 验证主战场）」 ⇒ 本轮预注册 `docs/archive/plans/v0.55.0-r434-falseinfo-discrimination-grid.md`（判据 C1–C7）后执行。**机检前提**: 机械前置门把「?/问句词/诉求词/纠正词/数字/≥24 字符」全部结构性 Pass ⇒ r1 **只在残余带（无机械信号的短消息）判别** ⇒ P 族题集 8 个测量轮全部落在带内（机检 8/8 `MechanicalPass=false`）。
 - **产出（分相）**:
   - Phase 1 基线（AOT `/tmp/pub_r434`, HEAD `69d405c`, IL=0）: 分母臂 A = 8 主答调用/**18493 tok**; 治疗臂 B(挂载域=3) = 2 主答调用/**4958 tok**（**降幅 73.2%**）; 对照臂 B0(域=0) 9535; 无设备臂 BP 19465（跳过 0）；复跑臂 B2 与 B **逐位一致**。
   - **质量硬线失守**: 4 个真诉求轮里 **3 个被 r1 判 Skip ⇒ 用户拿到空话**（`再讲一遍。`/`讲细一点。`/`从头再说。`）⇒ C2 ✗。
@@ -2023,7 +2023,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **诚实边界**: ① 单机单次（除 B 的两批复跑）；② **代价已披露**：质量硬线恢复使降幅由 73.2% 降到 33.3%（换掉「错跳真诉求」的省法）；③ C5 挂载贡献为负/无 ⇒ 本族**不宣称挂载增益**；④ 认可族白名单保守 ⇒ `好，按这个来。` 这类带内真·认可也会走远端（只多花 token）；⑤ **J 通道（更正）**: 关系判官本地优先，但 `local.relation_judge` **默认 false** ⇒ 默认远端（本轮臂全为 false，8 次判官全部 remote ≈341–375 tok）；单变量臂 **BRJ**(=true) 实测 8 次判官仅 **1 次 local 成功**、**6 次 remote_fallback**（字母取到桩文本）⇒ 「J 本地化」**未达成**；桩不产出合法字母 ⇒ J 的**收益**在本器具下不可测，只报开销；⑥ 轮 4（`好的，明白。`）在**全部臂**被产品澄清 ask 消费 ⇒ 测量轮 = 8 而非 9；⑦ 单族 8 轮，外推需另跑；⑧ 门判遥测 `basis` 已改为反映**最终判决**（修前会写 r1 原始判决 ⇒ R433 同类「读数自报假形态」风险消除）。
 - **候选推进台账（用户令: 所有候选无疑问则全推进）**: ① 双条件结构修 **达成**；② 门判示例带内不变量 **达成（结构）**；③ 挂载增益 **负结论**；④ J 本地化 **未达成**（local 1/7）；⑤ 门禁复位（对侧 R431 行）**达成**（全量 1266/0/0）；⑥ TaskPlan 回填 R430–R434 **达成**（30→35 节点）；⑦ 题集扩族（`task-p12`, 12 轮含带内假断言/带外假断言/纠错）**达成（含负结论）**: 质量判据全绿（假阴性 0 ∧ 假阳性 0 ∧ acc 1.000, 带内假断言被双条件救回）但 **降幅 27.8% < 30%** ⇒ 主判据在低认可占比题集上不成立（预注册 §14 已列风险）⇒ 宣称收窄「≥30% 依赖认可轮占比」，**未调题集凑数**；⑧ `code_source`/产物通道**达成（契约钉死）**: 生产端与判分端两侧机检测试（`script_artifact` 的 path/compile_valid/origin/sha8/exit + `grade.py` 消费点），防 R433 假红重生。
 - **下轮候选**: ① J 判官 prompt 可解析性（本地 1/7 的根因: 查 raw/error，或改判定形式/预算）——「不必要的 API 请求」最大残余；② 认可族白名单扩容（`好，按这个来。`/`照你说的办。` 等），须以**成对判据**（假阴性=0 ∧ 假阳性=0）为准；③ 题集扩族（假信息断言/多轮纠错/跨域）以检验外推；④ R433 遗留 `code_source`/产物通道写入产品侧遥测契约；⑤ 门禁/登记表复用（本轮已复位对侧 R431 行 `evidence_path`/`covers`）。
-- **计划/证据/登记**: `docs/plans/v0.55.0-r434-falseinfo-discrimination-grid.md`；`eval/rover/r434/README-evidence.md`（L3）；`docs/verification-registry.json` → `r434.turn-gate-double-condition`；`eval/capability/kpi.jsonl` 末行 R434。
+- **计划/证据/登记**: `docs/archive/plans/v0.55.0-r434-falseinfo-discrimination-grid.md`；`eval/rover/r434/README-evidence.md`（L3）；`docs/verification-registry.json` → `r434.turn-gate-double-condition`；`eval/capability/kpi.jsonl` 末行 R434。
 
 
 ### R435（2026-09-14）关系判官（J 通道）本地化：真机 1/7 → 5/6
@@ -2033,7 +2033,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **方法学要点**: ① 先取证: 产品遥测 8 条 + 忠实探针 A0 复现 1/7（**耗时逐例对齐** 18.09↔20.407s…9.76↔9.894s，pred=149=tokens=149）⇒ 器具可信后才改码；② 单变量六臂矩阵（prompt 形状 × 预算 × 解析层）；③ 反教考同一: v2 实例**不用 grid 原句**；④ prompt 单一构造点 `BuildJudgePrompt`（本地/远端同一输入面，结构上不可能两套提示）。
 - **自纠（必须披露）**: 探针 think 标记手打混入 **U+200B** ⇒ `close` 恒 False ⇒ 分类器读思考链 ⇒ 假阳性 8/9（与产品 1/7 冲突暴露）；改由**源码程序化派生 + 长度/码位断言**。另: 同会话覆盖未 commit 的计划案 ⇒ 原 pre-registered 阈值不可恢复，相关阈值改标 `checks_posthoc`。
 - **下轮候选**: ① **端到端 BRJ 网格重跑**（新 AOT 二进制）测 ≥30% token 判据（承重）；② turn9 类「思考链无界」（停发词/思考长度约束）；③ turn7 类 A/N 边界（同族实例）；④ 门+判官**合并单次本地调用**（省一次 prefill，性能向）。
-- **计划/证据/登记**: `docs/plans/v0.56.0-r435-relation-judge-localization.md`；`eval/rover/r435/`（probe_j1..j4 + reclass_j2 + probe-j{2,3,4}-classified.json）；`src/agent.tests/RelationJudgeParseTests.cs`（18/18）；`eval/capability/kpi.jsonl` → R435。
+- **计划/证据/登记**: `docs/archive/plans/v0.56.0-r435-relation-judge-localization.md`；`eval/rover/r435/`（probe_j1..j4 + reclass_j2 + probe-j{2,3,4}-classified.json）；`src/agent.tests/RelationJudgeParseTests.cs`（18/18）；`eval/capability/kpi.jsonl` → R435。
 
 ### R436（2026-09-15）端到端 BRJ 网格重跑：承重 token 降幅 29.28%（p12）/ 34.41%（p8）
 
@@ -2055,7 +2055,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **诚实边界**: ① 远端 token 为**桩侧估算**（非真实计费）; ② 未真机重放远端（桩返回固定话术 ⇒ 臂 B 的远端判官字母无意义, 故 B 的 acc 不代表真机）; ③ 本地判官 1301 tok（7 次）不计入 API token 但非零成本（串行 139 s）; ④ ≥30% **未**在 p12 达成 ⇒ 宣称收窄「≥30% 依赖可跳轮占比**与位置**（早簇最不利）」。
 - **对侧交叉（R437 模型, 不改他方产物）**: 对侧 R437 预测 J 修复 +1.1…+1.9 pt（p12 28.8–29.6）⇒ 本轮实测 +1.48 pt **落在该带内**。
 - **下轮候选**: ① V1–V5 长度分档实测（对侧 R437 §7 已预注册; 需先空出测量窗）; ② p12 型早簇构成下要 ≥30% ⇒ 降单次主答 prompt（上下文/记忆段按轮压缩 或 role 块瘦身）; ③ turn9 类「思考链无界」（R435 遗留）; ④ 门+判官合并为单次本地调用（省一次冷启动）。
-- **计划/证据/登记**: `docs/plans/v0.57.0-r436-e2e-brj-token-kpi.md`；`eval/rover/r436/README-evidence.md`；`docs/verification-registry.json` → `r436.e2e-brj-token-kpi`；`eval/capability/kpi.jsonl` → R436。
+- **计划/证据/登记**: `docs/archive/plans/v0.57.0-r436-e2e-brj-token-kpi.md`；`eval/rover/r436/README-evidence.md`；`docs/verification-registry.json` → `r436.e2e-brj-token-kpi`；`eval/capability/kpi.jsonl` → R436。
 
 ## R439 — 修复的域扩展验证：长任务 V20(20 轮) + p8 复测（零源码改动）
 
@@ -2091,7 +2091,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **自纠（必须披露）**: ① verify 首版 C6 过严（把「首轮无前序上下文 ⇒ 块为空」误判为缺块）⇒ 加首轮免检并用 R436 档案反证该豁免**先前就存在**（A 11/11、BRJ 7/7 首轮条目无块）; ② 首版 C7 要求逐调用读数全同（真机本地生成回复长度可变）⇒ 改「决策全同 + Δ≤0.5% + 残差可归因」。
 - **诚实边界**: ① 远端 token 为**桩侧估算**非真实计费; ② 未真机重放远端; ③ **本轮未跑 p8**（承重已由 p12 达成，p8 属外推）; ④ 前缀单调性只覆盖桩侧请求序列，**provider 真实命中率未测**; ⑤ 本地 r1 成本 1301 tok/139 s 串行不计入 API token 但非零。
 - **下轮候选**: ① p8 + 长度分档 V1–V5 复测（≥30% 的域扩展）; ② 排查其它零远端调用路径是否仍写 `SentContent`; ③ 门+判官合并为单次本地调用（省一次冷启动，R435 遗留）; ④ turn9 类「思考链无界」。
-- **计划/证据/登记**: `docs/plans/v0.58.0-r438-localskip-no-replay.md`；`eval/rover/r438/README-evidence.md`；`docs/verification-registry.json` → R438；`eval/capability/kpi.jsonl` → R438。
+- **计划/证据/登记**: `docs/archive/plans/v0.58.0-r438-localskip-no-replay.md`；`eval/rover/r438/README-evidence.md`；`docs/verification-registry.json` → R438；`eval/capability/kpi.jsonl` → R438。
 
 ## R441 收益窗口下界 + 位置曲线补点（2026-09-15，零源码改动，同网格实测 A 分母）
 
@@ -2114,7 +2114,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
   2. **R442：ρ 触发条件定位** — W20 型（末轮单跳）与 M20 型（中簇多跳）各跑 3 次，统计 ρ 分布与簇长/位置相关性。
   3. **R443：口径钉死** — 明确「用户一轮总 tokens」是否含本地 r1；若含须给折算规则，否则 ≥30% 宣称口径不成立。
   4. **R443：A 分母截断回归闸** — 把 `a_map_proxy` 的 N 截断写成 `design_check` 的机械断言 D7，防同类器具缺陷复发。
-- **计划/证据/登记**: `docs/plans/v0.61.0-r441-gain-window-floor-and-position-curve.md`；`eval/rover/r441/README-evidence.md`；`docs/verification-registry.json` → `r441.gain-window-floor-and-position-curve`；`eval/capability/kpi.jsonl` → R441。
+- **计划/证据/登记**: `docs/archive/plans/v0.61.0-r441-gain-window-floor-and-position-curve.md`；`eval/rover/r441/README-evidence.md`；`docs/verification-registry.json` → `r441.gain-window-floor-and-position-curve`；`eval/capability/kpi.jsonl` → R441。
 
 
 ## R445 — 判官侧机械前置：**可分性预检为负**（零测量轮）
@@ -2138,7 +2138,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - 事后判据: CH1 真错配 prev（8/8 真错配）把一致率从 **1.0 → 0.5** ⇒ 基线确实依赖 prev（器具非空心）；CH2 语法臂 vs 产品真值 0.5；**CH3 登记型发现**：J0 有 **1/18 触 512 上限**未吐字母（`从头再说。`）⇒ 现网预算 512 并非总是足够（白付 512 本地 tok 再 fallback）。
 - 机制结论: **思考是判官判决的承重结构**。强制首 token 后模型不再做判决、恒定吐 `A`（=其首 token 先验）⇒ 解码侧生成约束**不可用于判官**。
 - 诚实边界: ①单模型档/单容器；②语料 msg 全 ≤18 字符、prev 真值仅 3 种 ⇒ 等价性证据 **msg 面强、prev 面弱**；③C5 恒等式一项未测；④C4a 为判定项缺陷（**不得宣称预注册全绿**）；⑤门通道（同构，生成 ~130 tok/调用 ×7）未测；⑥无链跑 ⇒ **不写 kpi.jsonl**；零产品代码改动 ⇒ 无 AOT/测试对象。
-- 登记: `docs/verification-registry.json` → `r447.judge-decode-constraint-grammar`；证据 `eval/rover/r447/README-evidence.md`；计划 `docs/plans/v0.67.0-r447-judge-decode-constraint.md`。
+- 登记: `docs/verification-registry.json` → `r447.judge-decode-constraint-grammar`；证据 `eval/rover/r447/README-evidence.md`；计划 `docs/archive/plans/v0.67.0-r447-judge-decode-constraint.md`。
 
 ### 下轮候选（R448，按优先级）
 1. **判官 prompt 侧「限长思考」消融**（不取消思考：`思考不超过 2 句，随后另起一行只写一个字母` + `n_predict 128`）：靶 = 生成 178→≤64 / 与归档真值一致率 ≥0.9 / 消掉 1/18 截断（CH3）。
@@ -2157,7 +2157,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - 器具机械闸（承 R447 候选 4，新建立即生效）: G1 独立重建 18/18 与快照逐字节相同｜G1b 忠实性 9/9 产品实发原文｜G2 prev 面多样性下界（distinct=3、>25 字符 1 条——**只钉下界不宣称强**）｜**G3 负控真错配 8/8**（直接封死 R447 C4a 那类「判定项设计缺陷」）。
 - 自纠（必须披露）: ① 分析器 C6 判据写成 `(ag_NC or 1) <= 0.85`，`agree=0.0` 被 `or` 吞掉成 1.0 ⇒ 首版误判 FAIL；已修并重跑（C6 转 PASS）。② C7 预注册含「逐样本 prompt_n 跨臂相等」——但 T 臂 prompt 比 J0 长 28 字符（正是被消融的自变量）⇒ 该断言按定义不可能成立（0/18），属**判定项设计缺陷**；已按判据纪律**保留 C7 红、单列** CH6 修正口径（T2 vs T1 **18/18** 相等 + cache/恒等式/argv 全绿）。
 - 诚实边界: ① 单模型档（`r1-distill-1.5b-q4km`）+ 单容器（`-c 4608`）；② 语料 msg 全 ≤18 字符、prev 真值仅 3 种（**prev 面弱**，G2 只钉下界）；③ 口径 = 本地 llama-server 真值 token，**未转成**用户可见的远端 API 计费；④ 未做远端 A/B（等价已红 ⇒ 无必要）；⑤ 门通道（`local_turn_gate` ~130 tok/调用 ×7）**本轮未测**；⑥ 无链跑 ⇒ **不写 `eval/capability/kpi.jsonl`**；零产品代码改动 ⇒ 无 AOT/测试对象。
-- 登记: `docs/verification-registry.json` → `r448.judge-think-length-cap`；证据 `eval/rover/r448/README-evidence.md`；计划 `docs/plans/v0.68.0-r448-judge-think-length-cap.md`。
+- 登记: `docs/verification-registry.json` → `r448.judge-think-length-cap`；证据 `eval/rover/r448/README-evidence.md`；计划 `docs/archive/plans/v0.68.0-r448-judge-think-length-cap.md`。
 
 ### 下轮候选（R449，按优先级）
 1. **预填充侧压缩**（2764 tok/10 调用 = M20 判官成本的 58%）：判官 prompt head 含 3 条例式示例 → 逐条删减/改述的**等价性**真机消融（同臂 J0 对照 + 归档第三通道 + G3 真错配负控）。← 首选（本地降本仅剩的两条通道之一，且与生成侧无关）
@@ -2175,7 +2175,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **判官探针 VOID**（预注册判据 I1 3/7 < 5/7、I2 0/13 < 9/13）：产品同网格自身读数 7 Skip + 3 reject + 8 Pass、`raw_len 127..515`，探针 `gen=6` 无思考 ⇒ 生成形态失锚（seed sha16 逐位对齐 `0aa656fa7eafd93a`、模板源码 `git diff` 空）⇒ 真实流量判官读数一律 **n/a**（R380：没测到 ≠ 失败）。
 - **事后读数**（`checks_posthoc`，不得引用为产品结论）：D 类 S 63.3%（19/30）、S 53.8%、O 28.6%、加权 33.4%；退化率 D 45% / S 58.3% / O 25%。
 - **器具缺陷 3 处**（已修，登记于计划 §10）：`labels` 三元组误用 `dict()`；`csharp_unescape` 不解 `\uXXXX`（think 标记被派生成 15/16 字符 ⇒ 解析必走尾部窗口）；`POST /props` 误用（501，该端点仅 GET）。
-- **登记**：`docs/verification-registry.json` → `r449.think-memory-switch`(L2) / `r449.turn-gate-parse-crosslang-fixture`(L2) / `r449.real-traffic-external-validity`(L3)；证据 `eval/rover/r449/README-evidence.md` §6；计划 `docs/plans/v0.69.0-r449-think-memory-switch-and-external-truth-channel.md` §10–11。
+- **登记**：`docs/verification-registry.json` → `r449.think-memory-switch`(L2) / `r449.turn-gate-parse-crosslang-fixture`(L2) / `r449.real-traffic-external-validity`(L3)；证据 `eval/rover/r449/README-evidence.md` §6；计划 `docs/archive/plans/v0.69.0-r449-think-memory-switch-and-external-truth-channel.md` §10–11。
 - **诚实边界**：① 语料 = 用户↔Hermes agent 对话（≠ 产品终端分布，通道 A1 需部署端日志）；② 判官侧读数因失锚作废 ⇒ 本轮无真机远端 A/B；③ `real-corpus.jsonl`（21.6 MB，含真实文本）不入库；④ 无链跑 ⇒ 不写 `eval/capability/kpi.jsonl`。
 
 ### 下轮候选（R450，按优先级）
@@ -2193,7 +2193,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **默认档零变更（实机背书）**：开档跑 M20 ⇒ `tokens_total = 32968`（= R444 BRJ 原值）、`gate_r1_n = 7`、`r1_skips = 7`、`r1_passes = 0`、`accuracy = 1.0`、`repro_archive_ok = true`。
 - **AOT 两条硬教训（本轮实发）**：① STJ **反射**序列化在 AOT 被禁用（实测 `InvalidOperationException`）⇒ 仪器必须零反射；② `Encoding.UTF8` 建文件**写 BOM** ⇒ 下游 JSONL 解析器炸，必须 `new UTF8Encoding(false)`。两条都**由仪器自己在日志留告警 / 在 s1 首跑暴露**，否则会静默产出空证据（"没测到"伪装成"测过"）。
 - 器具：`GatePromptDumpTests` 4/4；全量 **1323/1325**（2 个**环境型偶发红**：① `ExecutorHardeningTests.FileLock_ConcurrentAppend_NoLoss_NoInterleave` 期望 120 实际 119，单跑 **3/3 绿**；② `TelemetryPendingTests.Emit_Before_Configure_Is_Flushed_On_Configure`，与已知「残留 host 进程写遥测 ⇒ 假红」同源。**两个均须在无在飞执行体时复跑定性**，不得当"已绿"报）。
-- 登记：`r450.gate-prompt-anchor`(L2)；计划 `docs/plans/v0.70.0-r450-gate-prompt-anchor.md` §6；证据 `eval/rover/r450/anchor-r450.json`、`dump-BRJ-M20-s2.jsonl`。
+- 登记：`r450.gate-prompt-anchor`(L2)；计划 `docs/archive/plans/v0.70.0-r450-gate-prompt-anchor.md` §6；证据 `eval/rover/r450/anchor-r450.json`、`dump-BRJ-M20-s2.jsonl`。
 
 ### R451（2026-09-15）· 真实流量探针重跑（器具锚修复后）：**再判 VOID，但失锚被逐出模板段**
 - 判决 `VOID_INSTRUMENT`（`eval/rover/r451/verdict-r451.json`）：I1 正控 **3/7**（需 ≥5/7）⇒ 真实流量读数一律 **n/a**（I4 闸，与 R449 同处置）。
@@ -2201,7 +2201,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **残余失锚（本轮新定位）= 调用/解码面**：同一份对齐文本下，产品同 7 条 = **7/7 Skip**，探针 = **3/7 S**；探针 ack 行两种形态（`gen=6` 裸字母 / `gen=512` 复读 prompt 自身结构「用户消息：…答案：S」）⇒ 模型处于**续写文档**而非**助手作答**模式。可疑差异：聊天模板应用方式/端点、采样与 `n_predict`/stop、上下文尺寸。
 - **反空心（两控成对直接兑现）**：I2 平凡通过（13 条非认可 11/13 判 P）**不构成证据** —— 同调用面下判官近似恒定 P（认可族也只 3/7 放行）⇒ 判别力不足，只有 I1 能拦下。
 - 器具：`real_gate_probe.py --ns r451`（NS 参数本轮新增，避免覆盖 R449 的 VOID 证据）；偏差声明：`MemAvailable 2587 < 2650` ⇒ **读数前**下修 `-c 3584`（探针 prompt<600tok、gen≤512，语义不变）。
-- 登记：`r451.real-traffic-reprobe`(L2)；计划 `docs/plans/v0.71.0-r451-real-traffic-reprobe.md` §6；证据 `eval/rover/r451/{verdict-r451.json,probe-real.jsonl}`。
+- 登记：`r451.real-traffic-reprobe`(L2)；计划 `docs/archive/plans/v0.71.0-r451-real-traffic-reprobe.md` §6；证据 `eval/rover/r451/{verdict-r451.json,probe-real.jsonl}`。
 
 ### R452（2026-09-15）· 弃重建、**产品自身跑真实语料**（零重建路线）：真实流量读数落定
 - **路线变更**：R449/R451 的「重建 prompt」探针两度 VOID ⇒ 改由**产品自身**发 prompt、做判决、写遥测（锚自动成立）。三臂：`RC`（M20 网格正控）/ `RP`（真实 51 轮·生产配置）/ `RJ`（真实 51 轮·前置门关=判官强制）。
@@ -2212,7 +2212,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **真实收益口径**：生产行为省下的是 14 次**本地**门判 r1 = 7,204 tok/51 轮 ≈ 141 tok/轮（本地算力，非远端 API token）。
 - **正控复现**：`RC-c2` **32,961** vs R450 `s2` **32,968**（Δ −7 tok = −0.02%，字符估算舍入级）、7/7 Skip、逐轮 `actual` 序列**逐位相同**。
 - **器具缺陷（本轮实发）**：`RC-c1` 的 39,364 = 我的「按前 64 字符前缀」匹配器**跨语料误命中**（网格短轮命中真实轮 ⇒ 桩吐 160 字符真实回复）⇒ 加 `R452_MATCH=0` 修正并重跑 ⇒ `-c1` 读数**作废**；教训 = 「按输入文本对齐的重放器具，匹配键必须限定本次语料，且必须有已知期望值的正控」。
-- 交付：`eval/rover/r452/{prereg-r452.json,summary-r452.json,verdict-RC-M20-c1/-c2,verdict-RP-REAL-p1,verdict-RJ-REAL-j1,dump-RJ-REAL-j1.jsonl}`；计划 `docs/plans/v0.72.0-r452-product-native-real-traffic.md`；登记 `r452.product-native-real-traffic`(L2)。零 `src/` 变更。
+- 交付：`eval/rover/r452/{prereg-r452.json,summary-r452.json,verdict-RC-M20-c1/-c2,verdict-RP-REAL-p1,verdict-RJ-REAL-j1,dump-RJ-REAL-j1.jsonl}`；计划 `docs/archive/plans/v0.72.0-r452-product-native-real-traffic.md`；登记 `r452.product-native-real-traffic`(L2)。零 `src/` 变更。
 
 ### R453（2026-09-15）· 真实分布 KPI 通道台账 + 「吞并轮」通道审计（**零产品变更**）
 - **问题**：R452 已定真实流量可跳面 = 0 ⇒ 必须（a）冻结真实 token 账，（b）找出真实分布上唯一有量级的省远端调用通道。
@@ -2229,7 +2229,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **归因**：codex 把能力放在**模型 + 工具面 + 沙箱**（宿主单一循环）；我们把能力做在**宿主**（plan/absorb/门判/判官），远端零工具面 ⇒ 宿主复杂度膨胀 = 「越做越精细」的根因；codex **不做**本地小模型判真假/Skip（与 R449/R452 实测一致）。
 - **本轮自我抓到的器具缺陷**：R453 收口的「形式门禁 13/13 绿」是**假绿** —— 过滤器 `FullyQualifiedName~FormalCheck` **匹配 0 个测试**而 `dotnet test` 仍 rc=0。真名 `VerificationFormTests`(+`DevPlanDocRefTests`) ⇒ 复跑 **Failed: 0, Passed: 9, Total: 9**。通用教训入 memory：**门禁必须断言执行数 > 0**。
 - **诚实边界**：codex 侧仅 1 次捕获（默认配置、无 AGENTS.md）；我方**未新抓包**（`MemAvailable 2477 < 2650` 内存闸禁起 llama-server）⇒ 已捕获读数 + 源码事实双证；只比请求面/接口面，**不比回答质量**（桩输出非模型输出）。
-- 交付：`eval/rover/r454/{compare_codex_clickagent.py,compare-r454.json,codex/*}`；计划 `docs/plans/v0.74.0-r454-codex-external-contrast.md`；报告 `docs/reports/codex-contrast-r454.md`；登记 `r454.codex-external-contrast`(L2)。零 `src/` 变更。
+- 交付：`eval/rover/r454/{compare_codex_clickagent.py,compare-r454.json,codex/*}`；计划 `docs/archive/plans/v0.74.0-r454-codex-external-contrast.md`；报告 `docs/archive/reports/codex-contrast-r454.md`；登记 `r454.codex-external-contrast`(L2)。零 `src/` 变更。
 
 ### 下轮（R455）
 1. **同题双跑回归**（用户钦定「对照相同输入的返回」）：`codex exec --json`（usage 真值 input/cached/output/reasoning）vs `agenthost`，同模型/同模板/同截断，逐项比 token/工具调用/轮数/成功率 —— 这是「避免无用功」的直接量尺；
@@ -2244,7 +2244,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **KPI 归因**：该缺陷是「一轮任务总 token ↓≥30%（不必要的 LLM 请求少了）」的**反向承重项**（无动作 ⇒ 澄清轮 ⇒ 轮数↑）；**问询次数**升为一等指标。
 - **器具修正（诚实）**：① `resume` 用**进程 cwd** 而非记录 cwd ⇒ 首跑 cwd 漂到仓库根（已修：进夹具目录再 resume）；② adapter `response.completed` 必须带 `input_tokens`/`output_tokens`（否则 codex 自连）；③ 判分器期望值须 `norm()` 归一（首判 `merged.txt` 假 FAIL，修 1 行后 codex 4/4）。
 - **常态流程入册**：`docs/external-reference-harness.md`（用户钦定「可以将对比流程加入开发文档内」）—— 同环境/同输入/同模型/零重试/单句不算/判分只读落盘/负控成对。
-- 交付：`eval/rover/r455/*`、`docs/plans/v0.75.0-r455-codex-capability-ab.md`、`docs/reports/agent-chain-diagnosis-r455.md`、`docs/external-reference-harness.md`；registry `r455.module-coverage-ab`（L2，含 5 条负控）。
+- 交付：`eval/rover/r455/*`、`docs/archive/plans/v0.75.0-r455-codex-capability-ab.md`、`docs/reports/agent-chain-diagnosis-r455.md`、`docs/external-reference-harness.md`；registry `r455.module-coverage-ab`（L2，含 5 条负控）。
 
 ### 下轮（R456）· 动作环（Action Loop）：链机制修复（用户钦定「不是关键字/补丁」）
 1. **声明面**：按能力注册表派生 `tools[]` 入远端请求（手写 JSON / STJ Source Generator，AOT 零反射），**会话内恒定**以保缓存前缀；
@@ -2280,7 +2280,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **质量**：7 臂 12/12 轮 ok、残余带/纠正轮零 Skip（quality_risk=0）。
 - **契约边界修订**：`FreeApiModelsTests.Yaml_Stripped_OfRemovedSources` 原「禁 `\nlocal:`」断言与 R351 口径澄清冲突 ⇒ 改为 `Yaml_LocalBlock_DiscriminatorOnly`（allow_general:false / 显式 turn_gate|relation_judge|model_path / 绝对 .gguf / 块内无 chat / 权重 >100 MB）。
 - **新发现（R464 候选）**：`ServiceCollectionExtensions.cs:300` —— 配置 `model_path` 指向不存在文件时**静默回退默认权重**（首跑 BP 负控因此 VOID）；缺模型虽 fail-open 但净亏 7.1%（重试开销）。
-- **证据**：`eval/rover/r463/{verdict-r463.json,run_arm.sh,settle_r463.py,calls-*.jsonl,turns-*.jsonl,deletion-ledger.json}`；`docs/reports/r463-3b-gate-adoption.md`；registry `r463.local-gate-model-switch` / `r463.model-cleanup`。
+- **证据**：`eval/rover/r463/{verdict-r463.json,run_arm.sh,settle_r463.py,calls-*.jsonl,turns-*.jsonl,deletion-ledger.json}`；`docs/archive/reports/r463-3b-gate-adoption.md`；registry `r463.local-gate-model-switch` / `r463.model-cleanup`。
 
 ### R464 (2026-09-15) · 本地判别通道「配置错配」fail-closed（消灭静默回退默认权重）
 
@@ -2295,7 +2295,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **判据纪律（C6 FAIL 保留）**：预注册 C6 写成「真缺模型 ⇒ gate_events==0」与产品语义不符（实测 12 条事件全 `Pass` + `gate:degraded:failed_or_empty→remote`）⇒ **C6 保留 FAIL 不改写**，正确形态单列 `checks_posthoc`（C6′ 双绿）。
 - **新发现（R465 首要候选）**：门控轮墙钟 **40.7/40.9/70.8/102.2 s**（门开臂总 256.0 s）vs 门关臂 0.04–0.08 s ⇒ token 降 38.5% 换来被门控轮 +40~100 s 延迟（3B CPU、`gpu_layers:0`、每次本地调用含服务启停）。下一轮做长驻/预热 + prompt cache 复用。
 - **单测诚实口径修正**：全量 **1387/1388**（此前轮次报的「132/132」是**过滤器跑**，不是全量）；唯一失败 `ExecutorHardeningTests.FileLock_ConcurrentAppend_NoLoss_NoInterleave` 满载 120 段得 119，**单跑 3/3 全绿** ⇒ 列 R465 候选（并发下可证，不用重试掩盖）。形式门禁 60/60 非假绿。
-- **证据**：`eval/rover/r464/{verdict-r464.json,run_arm.sh,settle_r464.py,calls-*.jsonl,turns-*.jsonl,host-*.log,prov-*.json}`；`docs/reports/r464-config-fail-closed.md`；registry `r464.local-channel-config-fail-closed`(L2) / `r464.settle-sentinel-and-cross-round-determinism`(L1)。
+- **证据**：`eval/rover/r464/{verdict-r464.json,run_arm.sh,settle_r464.py,calls-*.jsonl,turns-*.jsonl,host-*.log,prov-*.json}`；`docs/archive/reports/r464-config-fail-closed.md`；registry `r464.local-channel-config-fail-closed`(L2) / `r464.settle-sentinel-and-cross-round-determinism`(L1)。
 - **下轮候选（R465）**：① 本地门延迟（长驻/预热 + 缓存复用，目标 ≤10 s/门控轮）；② 真诉求轮可跳性（按需注入压前缀，97% 命中红线）；③ 并发偶发单测；④ 分母口径升级到真实供应商计费面；⑤ 同臂复跑把确定性升为预注册判据；⑥ bge 嵌入器侧同形接线机器核查。
 
 ## R465（2026-09-16）真诉求轮可跳面（纯复述族）+ 本地通道预热 + FileLock 释放不 unlink
@@ -2307,7 +2307,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **真实计费面（n=6 回放真实端点）**：桩侧估算器**系统性低估 18.1%**（`est/real` 均值 0.8192 ⇒ **k=1.221**）；真实侧出现 prompt cache 命中 640/2,304/2,816 ⇒ 真实成本降幅可能大于 token 降幅（未量化）。
 - **锁纪律**：确定性机理复现（删锁文件 ⇒ `both_inside=true`；不删 ⇒ 互斥成立）+ 跨进程真值 G43（子进程持 flock ⇒ 拒锁；退出 ⇒ 内核放锁、接管、锁文件全程保留）+ G44 剥注释结构门；`ExecutorHardeningTests` **10×13 全绿**。
 - **诚实边界**：C3 FAIL（t6 用户可见答复被 R458 承接反问覆盖：「本会话还没有产物。继续什么？」⇒ R466 候选①）、C6 FAIL（Δ+2 tok）；两者正确口径单列 `checks_posthoc`（C3p/C6p/C4b2）。全量单测 **1409/1409**；AOT **15,335,040 B** 0 IL。
-- **证据**：`eval/rover/r465/{verdict-r465.json,arm-*.json,run_arm.sh,run_all.sh,settle_r465.py,mech_unlink_race.{py,json},real_billing_probe.{py,json}}`；`docs/reports/r465-repeat-skip.md`；registry `r465.pure-repeat-skip`(L2) / `r465.filelock-release-no-unlink`(L2) / `r465.local-channel-warmup`(L1) / `r465.embedder-channel-three-state`(L1)。
+- **证据**：`eval/rover/r465/{verdict-r465.json,arm-*.json,run_arm.sh,run_all.sh,settle_r465.py,mech_unlink_race.{py,json},real_billing_probe.{py,json}}`；`docs/archive/reports/r465-repeat-skip.md`；registry `r465.pure-repeat-skip`(L2) / `r465.filelock-release-no-unlink`(L2) / `r465.local-channel-warmup`(L1) / `r465.embedder-channel-three-state`(L1)。
 - **下轮候选（R466）**：① 承接反问 vs 复述回放优先级（有指代 ⇒ 回放优先）② 真实成本口径（k=1.221 + cache 命中纳入结算）③ 门控轮稳态延迟（参数/门判输入瘦身，禁前缀缓存）④ 复跑口径固化（RUNDIR 名与臂名无关）⑤ 嵌入通道告警真实命中取证。
 
 ## R466（2026-09-16）复述回放 vs 承接反问优先级（修 R465 C3 FAIL）+ 结算类口径单源
@@ -2318,7 +2318,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **预注册判据 C1–C6 全绿**，另 posthoc：Δtok（本版 R vs R465-R）= **+0**；机制可证 = 两臂 skip 事件逐位同（同 msg_sha16 / 21 字回放），差异只在收口优先级遥测单源。
 - **单测**：全量 **1411/1411**（基线 1409 + 新增 2）；G37 强化「主链禁 `repeat_verbatim` 字面值」+ 新 G40（写入先于消费/开关可见/逐轮清零），负控实测（还原调用点 ⇒ G40 红，源文件 sha256 复原一致）。
 - **诚实边界**：Arole 分母跨轮漂移未消除（R465 21/33,323 vs R466 13/32,097），已定位 = 判官路由（R465 8 次 judge 走远端、R466 同 prompt 走本地 ⇒ 0 远端 token），故「Arole 为稳定分母」前提本轮被证伪；两种分母下降幅 56.40%/54.73% 均达标。未做真实流量复验、未测运行期内存。
-- **证据**：`eval/rover/r466/{verdict-r466.json,arm-*.json,calls-*.jsonl,turns-*.jsonl,run_arm.sh,settle_r466.py}`；`docs/reports/r466-repeat-priority.md`；registry `r466.repeat-replay-priority`(L2) / `r466.settle-kind-single-source`(L4)。
+- **证据**：`eval/rover/r466/{verdict-r466.json,arm-*.json,calls-*.jsonl,turns-*.jsonl,run_arm.sh,settle_r466.py}`；`docs/archive/reports/r466-repeat-priority.md`；registry `r466.repeat-replay-priority`(L2) / `r466.settle-kind-single-source`(L4)。
 - **下轮候选（R467）**：① 分母固化（判官强制本地 + 就绪门，消 13↔21 漂移）② 真实流量（state.db 1542 轮）复验 −54.7% 外部效度 ③ 门控轮稳态延迟（17.6 tok/s 下界）④ 真实计费口径（k=1.221 + cache 命中）纳入结算 ⑤ 嵌入通道告警真实命中取证。
 
 ## R467（2026-09-16）分母固化：远端调用分解台账 + 臂可比性闸 + 同二进制「判官标志」复现裁决
@@ -2330,7 +2330,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **闸实测**：自检 **3/3**（S1 = 用**真实历史** R465 台账当生产等价分母 ⇒ 判红，差异键恰为 `relation_judge`；S2 = 破坏恒等式 ⇒ 红；S3 = 只改器具 sha ⇒ 绿，不把二进制换代误判成分母漂移）；审计 **X1–X4**: 同名臂跨轮可比 ✅ / 同类分母跨轮异名可比 ✅ / 真实漂移负控判红 ✅。
 - **预注册判据 C1–C6 全绿**（C4 = H1 直接判决，精确等值）；`C7` 为**事后增补**（已标注，不作预注册强度）。
 - **诚实边界**：① 4 条 `prompt_len=0` 的判官短路（零请求）内部机制未查明，只按可观测口径计数；② 历史重建台账的 `repeat_priority`/`role_sha256` **不可核**（旧脚本未声明），只有 R467 起可核；③ 判官本地化把 8 次调用从 ~42 ms（远端）移到本地，实测 **40.0 → 126.6 s**（R466 实测 58.2 → 144.1 s，时序相关）⇒ **token 收益确定、延迟代价未优化**；④ 本轮**未改 `src/**`** ⇒ 无 AOT/IL 读数，被测二进制 = R466 产物（`sha256=9f5f9e69…`，`role sha=ecb75f53…` 均回算吻合）；⑤ 真实流量（state.db 1542 轮）**未复验**。
-- **证据**：`eval/rover/r467/{verdict-r467.json,ledger-*.json,arm-*.json,gate-selftest.json,gate-audit.json,flags-*.json,calls-*.jsonl,turns-*.jsonl,run_arm.sh,settle_r467.py,denominator_gate.py}`；`docs/reports/r467-denominator-pinned.md`；`docs/plans/v0.84.0-r467-denominator-pinning.md`；registry `r467.call-decomposition-ledger`(L2) / `r467.arm-flag-comparability-gate`(L4)。
+- **证据**：`eval/rover/r467/{verdict-r467.json,ledger-*.json,arm-*.json,gate-selftest.json,gate-audit.json,flags-*.json,calls-*.jsonl,turns-*.jsonl,run_arm.sh,settle_r467.py,denominator_gate.py}`；`docs/archive/reports/r467-denominator-pinned.md`；`docs/archive/plans/v0.84.0-r467-denominator-pinning.md`；registry `r467.call-decomposition-ledger`(L2) / `r467.arm-flag-comparability-gate`(L4)。
 - **执行证据**：形式门禁 9/9 绿（执行数 9>0）；全量首跑 1410/1411（1 例**既有 flake**：`TelemetryPendingTests` 依赖 `AgentTelemetry` 静态类 pending ring，对执行顺序敏感），该例隔离跑 2/2 绿、全量复跑 **1411/1411** 绿 —— 如实记录，**不以复跑代替修复**。
 - **下轮候选（R468）**：① 判官**延迟面**（judge 与门共用常驻端口的合并/优先级；判据 = `local_ms` 首末 + 门控轮稳态延迟，**禁以 token 面代替**）② 真实流量 1542 轮用 `calls_class` 分解复验（判定「守卫承重」承在哪类调用）③ 前缀按需注入（主调用 prompt 逐轮单调增 2,019→3,461 tok = 当前最大单项成本）④ 历史器具键回填 ⑤ `TelemetryPendingTests` 顺序隔离（判据 = 连续 3 次全量 1411/1411）。
 
@@ -2740,7 +2740,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 
 ### R503 (2026-09-17) — 题集扩面 v3 (游戏族 1→2 / 见证族 2→3) + 守卫**归因穷举** + 冻结行重钉裁定
 
-> 轮号说明: R499–R502 的轮志落在 `docs/reports/r500-paraphrase-channel-deadcode-rootcause.md` 与 `eval/rover/r50x/README.md` (本台账未逐轮追记)。
+> 轮号说明: R499–R502 的轮志落在 `docs/archive/reports/r500-paraphrase-channel-deadcode-rootcause.md` 与 `eval/rover/r50x/README.md` (本台账未逐轮追记)。
 
 - 因果链: R502 主线首跑 (6 题) 两面 6/6 全对, 但**游戏族只 1 个** ⇒ 主线「随机**游戏**」面覆盖不足, 判据外部效度受限 ⇒ 扩面必然改 `eval/probe/*` (声明器具) ⇒ 门禁立刻报 `R2E_R2F_EXIT=2` (两条冻结行器具哈希与现盘不符) ⇒ 冻结行重审与扩面被绑成同一轮。同时机检 R501 候选③ 的诊断: t8 遥测 `src_len=612 / msg_len=5` ⇒ 本地输出是 5 字反问, **长度带同样必拒**, 且本地提示第 4 条本就禁问号 ⇒ 「②误拒」**不成立** (真实病因 = 引擎退化 + 守卫 fail-fast 只报先撞上的一条)。
 - 产出①(扩面, 纯增量): `eval/probe/tasks.py` 新游戏族 `sub_game` (减法博弈: `ref`=正推 DP / `check`=记忆化递归极小极大, **双路径必一致才发题**; 输入 `n k` + 允许步集, **保证含 1** ⇒ 无死局无和棋; 输出**数值最小**必胜首取数或 `LOSE` ⇒ 唯一解可字节判分) + 新见证族 `witness_mod_inverse` (`ref`=朴素扫描 / `check`=`pow(a,-1,p)`); `grade.py` 新 `mod_inverse` 判定分支; `run_probe.py` 新 `REF_SRC["sub_game"]` + 负控 `mutation:sub_greedy` (恒取最大)。
@@ -2802,7 +2802,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 
 ---
 
-## R516 (2026-09-17) — 编排节点「成功」绑定磁盘证据 + 写范围契约 (轮志: `docs/reports/r516-node-artifact-scope-contract.md`)
+## R516 (2026-09-17) — 编排节点「成功」绑定磁盘证据 + 写范围契约 (轮志: `docs/archive/reports/r516-node-artifact-scope-contract.md`)
 
 - **问题 (R515 现场)**: 节点 `Completed` 可以**零产物** (n3 5 ms / n4 178 ms, 归档 `eval/rover/r515/evidence/report-orch-v2-12step.json`); 文件范围只写在提示词里 = 软约束, 越界写无任何拦阻; 同层两写者互相覆盖只能靠人工看提示词发现。
 - **改进**: ① 逐节点快照差**上收到编排器** (单一权威源), 宿主侧同名实现删除; ② `--scope` 范围契约文件 (尾部 `/` 目录前缀 / `*` 前缀通配 / **段边界**判定) ⇒ 违反即 `Failed` 并**点名路径** (越界 / 零范围内增改 = 假绿防护); ③ **同层范围重叠在建立 agent 之前拒收** (rc=2, 零 LLM 调用)。
@@ -2812,7 +2812,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **结转 (未静默丢失)**: R514/R515 **未**落 `improvements.md` 轮节 (R514 只落 master plan + 计划文档, R515 只落轮志); R404–R407 回填仍缺。
 
 
-## R518 (2026-09-17) — 编排节点预算自适应 + 生成器契约负控 + 双包规模面对照 (轮志: `docs/reports/r518-mainline-scale-arm-and-node-budget-escalation.md`)
+## R518 (2026-09-17) — 编排节点预算自适应 + 生成器契约负控 + 双包规模面对照 (轮志: `docs/archive/reports/r518-mainline-scale-arm-and-node-budget-escalation.md`)
 
 - **② 节点预算自适应 (链代码)**: 远端节点仅因「零产物」判 Failed 时自动翻倍重试 (上限 32 步 / 次数 0..3, **缺省 0 = 旧行为逐字不动**); 越界与异常**不**升预算 (不掩盖真失败); 遥测/报告新增 `budget_steps`/`escalations`/`attempts`/`budget_ceiling_effective`/`node_escalations_max`/`escalations_total`。**真机 liveness**: n3 `['6:Failed','12:Completed']` ⇒ 该次重试直接决定了 tasksvc 整包 12/12; 运行级预算上界 24→36。
 - **②′ 运行期缓存排除 (同轮真机自抓的链缺陷)**: 节点按题面「写自测并运行」⇒ 解释器自动落 `__pycache__/*.pyc` ⇒ 旧快照差判其越界 ⇒ 整链 fail-closed (真实产物 cli.py 尚未写就被判死)。现只排除字节码/缓存 (段名 `__pycache__`/`.pytest_cache`/`.mypy_cache`/`.ruff_cache`, 后缀 `.pyc`/`.pyo`); 源码/数据照旧入范围契约。
@@ -2835,7 +2835,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **诚实边界**: ① R413 判据无读数; ② 6.53× 为跨实现方向读数 (非同源消融); ③ 编排 31/58 单次; ④ 本轮**零产品源码改动** ⇒ 未重发布 AOT / 未跑单测; ⑤ w1 作废系**器具**缺陷非产品缺陷 (产品面在 w2 按预期工作)。
 - **下轮候选 (R522)**: ① (主线/R413) **同窗关闸单变量消融臂** ② 编排节点内置逐模块 I/O 契约自测 (承候选②定因) ③ 编排摆动 n≥3 量化出区间 ④ `evidence_scope` 支持窗口无关模式 (`*/agentO`) ⑤ 回执回显落点 (待 token 数据裁定)。
 
-## R522 (2026-09-17) — 动作环上下文纪律: 同窗单变量消融 (结果: 无增益, 如实收窄) (轮志: `docs/reports/r522-action-loop-context-discipline.md`)
+## R522 (2026-09-17) — 动作环上下文纪律: 同窗单变量消融 (结果: 无增益, 如实收窄) (轮志: `docs/archive/reports/r522-action-loop-context-discipline.md`)
 
 - **靶点**: 用户 2026-09-17 逐字质疑「新算token你仅是上下文用的没codex好」⇒ R521 逐调用定因: 19 调用里 20 步全在自测往返, 回读命令计数 0 ⇒ 病灶 = 验证回路粒度 + 收尾长度, 不是召回。
 - **产品改动**: `ActionLoopDiscipline.cs` (验证合并 / 探针不落盘 / 收尾从简), 只注入动作环 system 尾部, 环境轴 `AGENTFRAMEWORK_ACTION_DISCIPLINE` (缺省开); AOT `cc611646…` · IL 0 · 单测 1,733/1,733。
@@ -2844,7 +2844,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **同轮器具修复**: ① `mount_check_r522.py` M4 键缺失假红 ② 前置器 `acceptable_scoped` 绕过 `BLOCKED` 造 rc=0 假绿 (改 rc 前置 blocked 空)。
 - **诚实边界**: `--round r522` rc=1 ⇒ 读数标「参考 (未可验收)」; A1 末次调用 = 宿主机器闸门修复回路, 增量不可归因纪律。
 
-## R523 (2026-09-17) — n=3 同窗对照: 纪律无增益 (判为窗口方差) · 本侧不优于外部真值 · 验收面语义收窄 (轮志: `docs/reports/r523-n3-same-window-contrast.md`)
+## R523 (2026-09-17) — n=3 同窗对照: 纪律无增益 (判为窗口方差) · 本侧不优于外部真值 · 验收面语义收窄 (轮志: `docs/archive/reports/r523-n3-same-window-contrast.md`)
 
 - **主线读数 (三窗 × 三臂, 同二进制 `cc611646…`, 零产品源码改动, 单变量 = 纪律 env)**: `A1-on` 调用 17/4/12 · 新算 prompt 20,004/10,068/13,548 · 用例 58/58/58; `A0-off` 4/8/12 · 6,655/11,069/14,054 · 58/58/58; `C-codex` 7/9/5 · 3,824/6,133/3,506 · 58/**46**/58。
 - **裁决 (预注册 C1..C7)**: 中位比 A1/codex 调用 **1.71** · 新算 **3.54** · 有效 token **3.05** · 名义 **2.29** ⇒ 三条降幅判据**全否, 不宣称任何降幅**; 质量面 A1 三窗 58/58 ≥ A0 58/58 ⇒ 未降; A1/A0 调用中位比 **1.50** (4.25/0.50/1.00 符号翻转) ⇒ **R522「19→4」是窗口方差** (同臂跨同输入窗摆动 4.25 倍), 纪律**无增益**。
@@ -2861,7 +2861,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **裁决**: 结构修成立 (前缀不再漂移、首调用新算降 15×); **M6 未过** ⇒ v2 不宣称达标, 缺口定因 = 材料块硬编码进 user 轮 (`IndustrialAgentV2.cs:1308`) 绕过白名单 ⇒ 交 R525 修。
 - **诚实边界**: M3/M4 为 R524 预注册阈值; w1 质量 51/58 单窗不作结论; A0-off 双峰 ⇒ 纪律文本是工具面对齐的必要条件之一。
 
-## R525 (2026-09-17) — 提示词分区常量前缀重构 (外部真值 Fable 5.1 结构对齐 · 铁律 12 入宪) (轮志: `docs/reports/r525-prompt-partition-prefix.md`)
+## R525 (2026-09-17) — 提示词分区常量前缀重构 (外部真值 Fable 5.1 结构对齐 · 铁律 12 入宪) (轮志: `docs/archive/reports/r525-prompt-partition-prefix.md`)
 
 - **靶点**: 用户令「根据它的提示词重构我们当前 agent 系统, 并记入铁律」; 外部真值 = Fable 5.1 泄露 system (自测 274,608 字符 / 270 段 / 46 工具 schema / 一个逐字节恒定前缀)。
 - **产品改动**: `SessionBaseline.cs` 重写 Compose ⇒ **§1..§11 命名常量分区**(新增 §3 记忆与召回规则 / §7 技能菜单与按需加载; 修原编号跳七); `IndustrialAgentV2.cs` 把 `[技能知识参考]` 焊进首轮冻结常量前缀 (修 R524 M6 缺口); `R525PartitionStructureTests.cs`(7 例结构锁); `eval/rover/r525/structure_check_r525.py`(M1–M6 + S1–S5); 铁律 12 入宪。
@@ -2881,7 +2881,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **诚实边界**: `agent.core/{userinteraction,subagent}` 20 文件命名空间横跨两程序集**未收敛**（需跨程序集引用重写，逐条豁免锁住 ⇒ R527 候选）；`OnProcessAsync` 1662 行单方法**未拆**（语义变换，非机械重构）；`ModelQueueRouter`/`ContextAssembler`（1530/1513 行）未拆 partial；行数 +3.4% 是单类型单文件的文件头成本，非性能回归；期间 1 次 `FrontendAskSameConnTests` 偶发失败（隔离复跑 2 次 + 全量复跑均过，无因果）。
 - **下轮候选 (R527)**: ① `agent.core` 命名空间收敛（Roslyn 语义层改名 + 引用重写）② `OnProcessAsync` 方法级抽取（需等价性夹具）③ `ModelQueueRouter`/`ContextAssembler` partial 拆分 ④ `Directory.Packages.props` 中央包版本 ⑤ 不变式接入「新增文件」前置闸。
 
-## R527 (2026-09-17) — 结构收口: R526 五候选同轮闭合 (ns 收敛 / 巨类拆分 / CPM / 前置闸 / 有界抽取) (轮志: `docs/reports/r527-structural-closure.md`)
+## R527 (2026-09-17) — 结构收口: R526 五候选同轮闭合 (ns 收敛 / 巨类拆分 / CPM / 前置闸 / 有界抽取) (轮志: `docs/archive/reports/r527-structural-closure.md`)
 
 - **靶点**: R526 §6 五候选 + 结转遗留**同轮并推**（用户令 2026-09-16 禁单步）；判据预注册 `eval/rover/r527/prereg-r527.json`（先落盘后读数）。
 - **产品改动 (每步后构建+全量测试)**: ① 命名空间收敛 —— `src/agent.core/{userinteraction,subagent}` 20 文件声明改 `agent.core`（`tools/refactor/pipeline/09_converge_namespace.py`），`agent.core` 下残留 **0**；引用方 `using` 由**编译器驱动**伴随器补齐（`10_fix_moved_type_usings.py`，fail-closed：只按 CS0246/CS0103/CS0234 报点补 `using`；并修正对**未搬走**类型（`IsolatedTaskRunner`/`ILLMCallerForIsolated`）的误改写）；② `OnProcessAsync` 有界抽取 —— 轮起始清零+心跳 → `BeginTurn()`、reply 因果绑定+偏题状态推进 → `BindReplyAndAdvanceTopicState()`（**方法体 1600 → 1550 行**）；③ `ModelQueueRouter`/`ContextAssembler` partial 拆分（最大分片 **531 行**，源级钉死改 `SourcePin.Text/TextParts` partial-aware 读取）；④ CPM —— `src/Directory.Packages.props` 22 条目接管 41 处 `PackageReference`，内联 `Version=` **0**；⑤ `tools/refactor/new_file_gate.py`（G1..G7）接入**真实生效钩子** `tools/hooks/pre-commit`（`core.hooksPath` 指向，路径改仓根绝对路径）。
@@ -2892,7 +2892,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **下轮候选 (R528)**: ① ② 续: `OnProcessAsync` 余 1550 行按语义分层续抽（等价性夹具已就位）② 词表/豁免类判据改「所有者 vs 引用者」两段式口径（J1 教训）③ 主线对照窗重跑: 外部真值 codex 同窗 n≥3 + `exec_precondition` rc=0 才取 R413 判据读数 ④ `FrontendAskSameConnTests` 同族竞态是否同一收敛模板可修。
 
 
-## R529 (2026-09-17) — 主线扩面(第二题族, 非游戏) + 外部真值失败窗 `unreliable` 判据化 + completion 按类分解天花板算式 (轮志: `docs/reports/r529-second-family-and-unreliable-policy.md`)
+## R529 (2026-09-17) — 主线扩面(第二题族, 非游戏) + 外部真值失败窗 `unreliable` 判据化 + completion 按类分解天花板算式 (轮志: `docs/archive/reports/r529-second-family-and-unreliable-policy.md`)
 
 - **靶点**: R528 三候选同轮并推 —— ① 外部真值失败窗 `unreliable` 判据化 ② completion 2× 的下一个杠杆先做按类分解 ③ 题集扩面到非游戏族(保 58 例锚族作可比基线)。
 - **夹具 (新)**: `toolkit-multimodule-v1` = 多文件工具包(工作根 `toolkit/`, `python3 -m toolkit <vm|jsonmini>`), 生成自 `eval/probe/tasks.py` seed 20260917: `vm_run` 12 例 + `json_mini` 18 例 = **30 隐藏例**(公开 4); 判分两条**非同源**实现(前置器用例脚本 / 冻结期判分器), 各自正控 30/30 + 变异体全红(26/21/0)。
@@ -2905,7 +2905,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **诚实边界**: ① 闸 rc=1 ⇒ 不宣称降幅 ② 外部真值本身不稳(F2 三窗 calls 18/476/61, w2 单臂 896.6s / 128.6k new_prompt; 含 codex 自身 `rm -f` 被拒的重试伪影) ③ 用例名 `mod#i` 的 `i` 是全局 0 基序号(报告按内容引用, 不改器具) ④ 天花板是乐观界(每步下界取观测最小值) ⑤ w2 基线臂 3 例失败未逐个定因。
 - **下轮候选 (R530)**: ① **预注册 `require` 一次写全全部窗×臂**(本轮 rc=1 的唯一可控因)后重跑 ≥3 窗取 R413 判据 ② 降步数/合批(把调用数做成一等目标) ③ 定因 F1 锚族为何 A1-on 更贵(w1/w2 calls 3.7×/4.7×) ④ 真值侧伪影隔离(给 codex 夹具等价安全清理入口, 免 `rm -f` 拒绝导致抖动) ⑤ 第三题族 = 数学难题(带逐模块可测)。
 
-## R530 (2026-09-17) — R529 遗留闭合: 两处失败逐例定因 + 「调用数」按类分解 + 起臂前声明面闸 (轮志: `docs/reports/r530-r529-leftover-closure.md`)
+## R530 (2026-09-17) — R529 遗留闭合: 两处失败逐例定因 + 「调用数」按类分解 + 起臂前声明面闸 (轮志: `docs/archive/reports/r530-r529-leftover-closure.md`)
 
 - **靶点**: 只清 R529 的欠账, 零新 LLM 调用(全部结论来自 R529 冻结件重读: adapter 逐调用落盘 + 三臂快照树 + 冻结语料); 不含新臂/新窗/新阈值。
 - **定因 A1/A2 (逐例, 三臂同题实测 stdout)**: ① w2 基线臂 F1 三例失败 = **两堆互换的非法字典序着法**(`10 9`→`WIN 3 0` 应 `WIN 0 3`; `18 8`→`WIN 0 5` 应 `WIN 5 0`; `18 17`→`WIN 6 0` 应 `WIN 0 6`), 判据由题面明文「按字典序最小(先比 i 再比 j)」支撑, 且 **#44 就是题面公开用例**; ② w3 真值臂 `codex` 失败例 = 题面明文「uXXXX 码点必须 ≥0x20」而它输出裸 BEL(`ERR` 才对, 本侧两臂判对)。机检: `exclusive_fail_sides=['agentA0-off']`/`['codex']`、`both_sides_fail_any=false` ⇒ **`fixture_defect_suspected=false`**(非同败 ⇒ 不指向夹具); 同臂跨窗自证(同臂同题 w1/w3 58/58)。
@@ -2915,7 +2915,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **诚实边界**: ① 本轮无新能力读数(不产生任何新降幅/质量宣称) ② 类别判定只读请求结构, 「S3=0」= 未观察到 user 形态注入轮, 不排除 system 前缀形态 ③ codex 476 调用是环境伪影(其 `rm -f` 被拒后的重试), 只作「真值侧不稳」证据 ④ 闸只判声明面覆盖, 且 `--windows` 目前需调用方传参(预注册无机读窗列表 ⇒ 下轮补 `window_plan.windows[]`) ⑤ 本仓 mtime 不可作归属依据(观测到「内容已变而 mtime 未变」的并发写者)。
 - **下轮候选 (R531)**: ① 预注册补 `window_plan.windows[]` + 起臂前跑本闸(接进 run 脚本首步) ② 降步数/合批(唯一杠杆, 单变量开关, 同窗对照量 calls) ③ 第三题族 = 数学难题(逐模块可测) ④ 真值侧伪影隔离(安全清理入口) ⑤ 「F1 为何更贵」已收窄为步数问题 ⇒ 并入 ②。
 
-## R531 (2026-09-17) — 合批轴单变量臂(第 7 条纪律) + 第三族外部对照 (窗口 w1) — 结果: **合批轴质量不降且调用 −35%(vs 关)/−11.9%(vs 纪律开), 但单窗 + 前置器 rc=1 ⇒ 一律「参考(未可验收)」** (轮志: `docs/reports/r531-merge-axis-third-family.md` · prereg `eval/rover/r531/prereg-r531.json` · run `eval/rover/r531/run-0917-213234/`)
+## R531 (2026-09-17) — 合批轴单变量臂(第 7 条纪律) + 第三族外部对照 (窗口 w1) — 结果: **合批轴质量不降且调用 −35%(vs 关)/−11.9%(vs 纪律开), 但单窗 + 前置器 rc=1 ⇒ 一律「参考(未可验收)」** (轮志: `docs/archive/reports/r531-merge-axis-third-family.md` · prereg `eval/rover/r531/prereg-r531.json` · run `eval/rover/r531/run-0917-213234/`)
 
 - **靶点**: R530 候选①②同轮 —— ① 起臂前声明面闸接进 run 脚本首步(预注册补 `window_plan.windows[]`)② **降步数/合批**(R530 证成的唯一杠杆)做成单变量开关, 同窗量 calls。题集三族(F1 58 锚例 / F2 30 例 / F3 新族), 4 臂 × 3 题 = 12 跑次/窗。
 - **产品改动 (单变量)**: `ActionLoopDiscipline.cs` 新增 `MergeText`(第 7 条: 一次成型 / 合批工具调用) + env `AGENTFRAMEWORK_ACTION_MERGE`。**挂载实测**: A1-on system 9,968 → A2-merge **10,100** 字符, 差值 **逐字节等于 `MergeText`(132 字符, sha12 `9be41f32e862`)**, 前缀完全相同(A1-on 6 条块只追加)。
@@ -2933,7 +2933,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **下轮候选 (R532)**: ① 第 8 条纪律 = **着法/输出合法性自验**(靶点: `#43` 类非法着法在 4 臂 5 次复现, 含外部真值) ② 合批轴换靶: 从「降调用」改为「降 new_prompt/步数」或先修 `M1_system_constant=false` 再量(前缀不稳时成本读数无解释力) ③ 三窗外补 reps(现 3 窗极差已达 2.93×, ≥5 窗才可下结论) ④ codex 侧 token 计量 ⑤ 起手闸 mem 阈值与门限裕度问题(2,636 vs 2,650)固化为「起手前 build-server shutdown」既定步。
 
 
-## R532 (2026-09-17) — R1 结构化契约管道**接线**(用户 2026-09-17 方向令主线): 单调用计划 → 机械执行 — 结果: **接线生效(实发 prompt 机检 PASS) · 同窗调用 0.053× / token 0.024× · 质量 26/30 vs 30/30(未达标) · 读数标「参考(未可验收)」** (轮志: `docs/reports/r532-r1-contract-wiring.md` · 器具/证据 `eval/rover/r532/`)
+## R532 (2026-09-17) — R1 结构化契约管道**接线**(用户 2026-09-17 方向令主线): 单调用计划 → 机械执行 — 结果: **接线生效(实发 prompt 机检 PASS) · 同窗调用 0.053× / token 0.024× · 质量 26/30 vs 30/30(未达标) · 读数标「参考(未可验收)」** (轮志: `docs/archive/reports/r532-r1-contract-wiring.md` · 器具/证据 `eval/rover/r532/`)
 
 - **靶点**: 兄弟主线 R-N1(`af8c15b`) 的 `src/agent/contract/*` 自报「**有代码行 ≠ 生效(未接线)**」+ 用户令「结构化 prompt ⇄ 远程 LLM ⇄ 结构化结果 ⇒ 精准语义 ⇒ 管道」「利用 r1 判别真假信息(须挂 role 数据)把一轮总 token 降 ≥30%(主要是不必要的 llm api 请求少了)」 ⇒ 本轮 = **接线 + 生效证明**, 不加新器具。
 - **产品改动 (新增 `src/agent/r1/` 12 文件 + `src/agent.host/R1CliEntry.cs` + `Program.cs` 单点插入)**: env `AGENTFRAMEWORK_R1_CONTRACT=1` 时 `-q` 单条路径走 `R1Pipeline`(pin 自检 → **1 次**结构化调用 → 契约校验 → 语义闸 → 白名单 `write_file`/`run` 执行 → 手写 JSON 台账 + `R1_STATS` 标记); **缺省关** ⇒ 行为与既往一致。rc 域 0/2/3/4/5/6(pin 漂移与传输 fail-closed)。role 额外数据只进 user 轮尾块(禁入常量前缀, 与铁律 12 不冲突)。
@@ -2955,7 +2955,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **诚实边界**: ① **每臂 n=1 单窗**(R523「单窗=噪声」)⇒ 不作稳定增益结论 ② **codex 外部真值臂本窗未跑** ⇒ 主线四硬条件的「外侧对照」缺 ③ `m1/g1` 预注册声明为非交付面(跨族泛化读数) ④ R533/R534 未入册(封存令期的清理轮), 以 commit 为凭。
 - **下轮候选 (R536)**: ① `role 挂载 ⇒ "plan":[]` 定因与修, 修后**只重跑该臂**(2 调用)看质量是否恢复 ② `rc=5` 与产物 30/30 并存: 定「计划自测期望」与「执行器实测证据」的优先级(降级为告警?) ③ 同窗 reps≥3(`R1nr-t1` + `A1-on`)剥离单窗噪声 + 补 codex 外侧对照 ④ `a32c2b47 vs e65e0af7` AOT sha 差异源定位(同树两发对比)。
 
-## R536 (2026-09-18) — R1 契约**死路分支**闭合 + rc 域「自测期望 vs 执行器实测」分离 — 结果: **死路已闭(可推进) · 挂 role 臂 3 窗 0/30→30/30→30/30(摆动主导) · rc=8 在真机出现且产物 30/30 · 前置器仍 rc=1 ⇒ 成本读数「参考(未可验收)」** (轮志: `docs/reports/r536-contract-deadend-and-rc-split.md` · prereg `eval/rover/r536/prereg-r536.json` · 跑盘 `eval/rover/r536/{run-w1,run-reps}/`)
+## R536 (2026-09-18) — R1 契约**死路分支**闭合 + rc 域「自测期望 vs 执行器实测」分离 — 结果: **死路已闭(可推进) · 挂 role 臂 3 窗 0/30→30/30→30/30(摆动主导) · rc=8 在真机出现且产物 30/30 · 前置器仍 rc=1 ⇒ 成本读数「参考(未可验收)」** (轮志: `docs/archive/reports/r536-contract-deadend-and-rc-split.md` · prereg `eval/rover/r536/prereg-r536.json` · 跑盘 `eval/rover/r536/{run-w1,run-reps}/`)
 
 - **靶点**: 只清 R535 的两处未闭合项 —— ①`role 挂载 ⇒ "plan":[]`(rc=4 / 0-30) ②`rc=5` 与产物 30/30 并存。R536 定因: ①**不是 role 的负作用**, 而是契约**自身**的死路分支 (`有 missing_slots 或 ambiguities ⇒ plan 必空` ∧ `intent=code_task ⇒ plan 非空` ⇒ `code_task ∧ 任一歧义` **原理上不可满足**), role 里的 `prefer_clarify_first: true` 只是把模型推上去; ②两个语义(「链是否达成」vs「模型自述的自测期望」)被压进一个 rc 码。
 - **产品改动 (生成器单源, 机械重生成)**: `tools/r1gen/{contract.py,r1prompt.py,gen_csharp.py}`(生成器 **R536 从 /tmp 搬进仓**) ⇒ 契约段/校验器/准入闸三处同源改写: ambiguities 每条**必给 `chosen` ∈ options** 且**不再清空 plan**, 只有 `missing_slots` 停链(rc=2); rc 域新增 **8=`self_test_unmet`**(计划**已跑完** ∧ 仅 `expect_stdout` 不符 ⇒ 产物在盘; **不得读成链成功/链失败**), 执行 rc≠0 或计划没跑完仍 rc=5; 台账加 `plan_steps_total`/`steps_executed`/`self_test_unmet`/`ambiguities_chosen[]`。pin 上移 3,970/`03215758…` → **5,140/`936c315d…`**(由重生成产出)。
@@ -2969,7 +2969,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **诚实边界**: ① **J1/J3 按预注册字面皆证伪**, 成立部分全在 post-hoc(复跑窗/单测) ② **rc=8 不作产物正确性证据**(w1 的 R1r 即 rc=8 ∧ 0/30) ③ 每臂 n=1(w1)/n=2(reps) ⇒ 摆动(同臂 calls 1↔3 = 3.0×、质量 0/30↔30/30)**大于**臂间差 ⇒ 不作稳定结论 ④ **codex 外侧对照未跑** ⇒ 主线四硬条件缺外侧 ⑤ 前置器 rc=1 ⇒ 成本读数只作参考 ⑥ **本轮过程缺陷**: 写 prereg A1 增补时「序列化器逐字节复现」断言返回 False 仍写盘 ⇒ 该文件被重排(内容不变; 已在轮志 §6.7 入档, 修法列 R537 候选) ⑦ 同机有兄弟 cron 会话(02:20 跑过读同一 `StructuredPrompt.cs` 的 LLM A/B 探针, ~80 s 后退出) ⇒ 已确认窗口干净但该会话仍在(LSP 在)。
 - **下轮候选 (R537)**: ① role 轴 n≥3 独立窗 + **补 codex 外侧对照臂** ② rc=8 措辞/判据再收窄(成对报「自测未达成 ∧ 产物可疑」并机检「rc=8 不作正确性证据」) ③ `missing_slots` 停链(rc=2)路径首测 ④ 生成器 `--check` 挂进提交钩子 ⑤ 增补脚本 fail-closed。
 
-## R539 (2026-09-18) — 主线补**外侧对照臂**(codex 断链修复 + 首跑) + R537 五候选同轮闭合 — 结果: **外侧臂已能跑(3/3 窗可判分) · role 轴 3 独立窗 · 主 KPI 三窗 token Δ 95.7/98.1/98.0% 且质量 30/30 · 前置器仍 rc=1 ⇒ 降幅标「参考(未可验收)」** (轮志: `docs/reports/r539-mainline-outer-arm.md` · prereg/证据 `eval/rover/r539/`)
+## R539 (2026-09-18) — 主线补**外侧对照臂**(codex 断链修复 + 首跑) + R537 五候选同轮闭合 — 结果: **外侧臂已能跑(3/3 窗可判分) · role 轴 3 独立窗 · 主 KPI 三窗 token Δ 95.7/98.1/98.0% 且质量 30/30 · 前置器仍 rc=1 ⇒ 降幅标「参考(未可验收)」** (轮志: `docs/archive/reports/r539-mainline-outer-arm.md` · prereg/证据 `eval/rover/r539/`)
 
 - **同轮新发现(先修才谈「比」)**: `proj_run_side.py --side codex` 走 `load_codex_engine()` 加载 `eval/rover/r504/codex_solver_r504.py` —— 该文件已被 **`d7821b7`(R534 减法批 2)** 删除 ⇒ **外侧臂静默不可执行**(有代码行 ≠ 生效); 减法批只查 registry 引用、**未查跨轮调用点** ⇒ 本轮先修复(自 `22dd360` 复原为 `eval/rover/r539/codex_solver_r539.py` + 本地化引擎路径)并首跑, 中枢修复列 R540 候选①。
 - **主读数 (同题 t1 = 30 隐藏用例, 题面 sha 硬门, 起手闸 2/2 PASS × 3 窗, AOT `9c7dea180c0f52e7c62c5b6c` 15,778,672 B IL 警告 0)**: `R1r`(挂 role) **2/1/1 调用 · 22,109/12,398/11,017 tok · 30/30 ×3** vs `A1-on` **33/33/33 调用 · 519,925/658,847/559,074 tok · 26/30 · 30/30 · 30/30** ⇒ 调用 Δ **93.9/97.0/97.0%** · token Δ **95.7/98.1/98.0%**(逐窗极差 **[95.7, 98.1]**); 跨族 `m1`(仅 R1r) **30/30 ×3**; 不挂 role 臂 `R1nr` 30/30 · 30/30 · **28/30**。
@@ -2980,7 +2980,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **诚实边界**: ① **前置器 `--round r539` rc=1**(阻塞 = `w1/agentA1-on-t1` 26/30 · `w1/codex/t1` 29/30 · `w3/agentR1nr-t1` 28/30)⇒ **全部降幅标「参考(未可验收)」** ② **role「生效」未证实**: `role_note_chars=326` 只是管道自报, 实发 dump 机检三项全 False 且已核实是 `msgs_of()` 与 r539 dump 形状不匹配(**工具缺陷**)⇒ 记「未证实」, 双向都不得断言 ③ **外部列不可单窗读**: codex 调用 12↔347(29×)、token 0.126M↔25.0M(199×), 且 w1 也栽同一条 `jsonmini#14` ④ `ms1` 判分**三读数并列**(运行树 3/3 · 快照重判 0/3 · 前置器 3/3) ⑤ 未测: 全量测试(只聚焦 **21/21 绿**)、`g1` 族、role 轴在 codex 侧 ⑥ 起手核无在跑作业(唯一 dotnet 残留 = 02:49 idle MSBuild node, `build-server shutdown` 后 mem 2,663 MB 过闸); 兄弟会话 `b15eb2f40a69` 上次执行 02:05–02:32 已结束。
 - **下轮候选 (R540)**: ① **中枢修复外侧臂**(codex 引擎提稳定位置或加候选路径 + fail-closed 报错), 并把「减法批删除前必查跨轮调用点」做进机制 ② role 实发机检按真实 dump 形状修复并真验 ③ 三臂(含 codex)共同失败面 `jsonmini#14/#18/#22/#26` 归因(非同源 oracle) ④ 若要动验收面 `require` 面须**先写后跑**并注明收窄理由 ⑤ 全量测试基线 + `g1` 族补测。
 
-## R540 (2026-09-18) — 横切修复(codex 引擎提稳定位置 + 删除引用闸 + role 实发机检) + `g1` 跨族长任务首测 + 全量测试基线 — 结果: **R1 核心两窗 30/30 · 调用 Δ 93.9/97.1% · token Δ 96.1/98.1% · 但 `g1` 43/58·44/58 ⇒ 前置器 rc=1 ⇒ 全部降幅标「参考(未可验收)」** (轮志: `docs/reports/r540-crosscut-fix-and-g1-coverage.md` · prereg/证据 `eval/rover/r540/`)
+## R540 (2026-09-18) — 横切修复(codex 引擎提稳定位置 + 删除引用闸 + role 实发机检) + `g1` 跨族长任务首测 + 全量测试基线 — 结果: **R1 核心两窗 30/30 · 调用 Δ 93.9/97.1% · token Δ 96.1/98.1% · 但 `g1` 43/58·44/58 ⇒ 前置器 rc=1 ⇒ 全部降幅标「参考(未可验收)」** (轮志: `docs/archive/reports/r540-crosscut-fix-and-g1-coverage.md` · prereg/证据 `eval/rover/r540/`)
 
 - **候选① 中枢修复外侧臂 + 删除引用机制化**: 引擎提稳定位置 `eval/rover/lib/codex_solver.py` + fail-closed 加载器 `eval/rover/lib/codex_engine.py`(**覆盖具排他性**: 显式指定缺失 ⇒ `SolverMissing` rc=3, 禁静默回退; `--selftest` **6 正控 + 2 负控全绿**); `r508/r511/proj_run_side.py` 两处跨轮调用点改走加载器(`r509/proj_rep_run_side.py` 副本**未被 git 跟踪** ⇒ 记录在案不入提交) ⇒ `git grep -F codex_solver_r504 -- '*.py' '*.sh'` **残留 0**; 机制件 `tools/refactor/delete_ref_gate.py` + 提交钩子闸(默认开 / 旁路 `AGENTFRAMEWORK_DELREF_CHECK=0` / 只扫 `eval/ tools/ src/` 下 `.py .sh .cs .csproj .ps1`, **JSON·台账·文档明确不在扫描面** = 已知空洞) + `--selfcheck`(**1 正控 + 2 负控 + 历史回放**「真删被引用文件」⇒ 绿)。**自身缺陷留痕**: 加载器首跑负控抓到**我自己写错的 `REPO` 路径**(少一层 `dirname`)⇒ fail-closed 生效; 闸首版把**自己新写的注释**判成引用 ⇒ 收窄为「只认可执行引用点」(`.py` 走 AST 取字符串字面量并排除 docstring; `.sh/.cs` 行级扫描跳过注释行) 并加负控B 钉死。
 - **候选② role 实发机检修复并真验**: 根因 = agent 侧 `side-*.json` 的 `upstream_request` 存的是**摘要**(`n_messages/prompt_sha8/tail_messages[head 截断]`)⇒ 旧 `msgs_of()` 恒返空 ⇒ 三项恒 False(**工具缺陷**, 非 role 失效); 修法 = 优先读 `full-<side>-*.json`(裸 `list[dict]` 消息数组) 并带 `partial` 标; 负控自检(同一 dump: 旧读数器 **0 条** / 新读数器 **2 条**); 真机 `w1` **2/2** · `w2` **1/1** 的 user 轮含 role 段, `R1nr` **0/2 · 0/1**, 标记均**不在**前缀 ⇒ 「role 已按设计挂到发往上游的 user 轮」**成立**(质量增益仍无证据: 两窗两臂同 30/30)。
