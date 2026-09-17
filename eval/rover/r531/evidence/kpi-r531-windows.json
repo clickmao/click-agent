@@ -1,0 +1,163 @@
+{
+ "round": "R531",
+ "instrument": "eval/rover/r531/aggregate_r531.py",
+ "windows": [
+  "w1",
+  "w2"
+ ],
+ "window_count": 2,
+ "verdict": "provisional(窗数 2 < 3)",
+ "per_window": {
+  "w1": {
+   "rows": {
+    "A0-off": {
+     "tasks": 3,
+     "calls": 80,
+     "prompt_tokens": 1248032,
+     "cached_tokens": 1193344,
+     "new_prompt": 54688,
+     "completion_tokens": 28517,
+     "total_tokens": 1276549,
+     "hit_rate": 0.9562,
+     "cases_pass": 116,
+     "cases_total": 118
+    },
+    "A1-on": {
+     "tasks": 3,
+     "calls": 59,
+     "prompt_tokens": 986135,
+     "cached_tokens": 949248,
+     "new_prompt": 36887,
+     "completion_tokens": 24469,
+     "total_tokens": 1010604,
+     "hit_rate": 0.9626,
+     "cases_pass": 116,
+     "cases_total": 118
+    },
+    "A2-merge": {
+     "tasks": 3,
+     "calls": 52,
+     "prompt_tokens": 922286,
+     "cached_tokens": 890752,
+     "new_prompt": 31534,
+     "completion_tokens": 28385,
+     "total_tokens": 950671,
+     "hit_rate": 0.9658,
+     "cases_pass": 118,
+     "cases_total": 118
+    },
+    "C-codex": {
+     "tasks": 3,
+     "calls": 32,
+     "prompt_tokens": 323201,
+     "cached_tokens": 304896,
+     "new_prompt": 18305,
+     "completion_tokens": 14429,
+     "total_tokens": 337630,
+     "hit_rate": 0.9434,
+     "cases_pass": 118,
+     "cases_total": 118
+    }
+   },
+   "ratios": {
+    "merge_vs_on_calls": 0.881,
+    "merge_vs_off_calls": 0.65,
+    "on_vs_off_calls": 0.738,
+    "merge_vs_on_newprompt": 0.855,
+    "merge_vs_off_newprompt": 0.577
+   }
+  },
+  "w2": {
+   "rows": {
+    "A0-off": {
+     "tasks": 3,
+     "calls": 19,
+     "prompt_tokens": 211257,
+     "cached_tokens": 196992,
+     "new_prompt": 14265,
+     "completion_tokens": 14000,
+     "total_tokens": 225257,
+     "hit_rate": 0.9325,
+     "cases_pass": 105,
+     "cases_total": 118
+    },
+    "A1-on": {
+     "tasks": 3,
+     "calls": 42,
+     "prompt_tokens": 542126,
+     "cached_tokens": 512512,
+     "new_prompt": 29614,
+     "completion_tokens": 24859,
+     "total_tokens": 566985,
+     "hit_rate": 0.9454,
+     "cases_pass": 118,
+     "cases_total": 118
+    },
+    "A2-merge": {
+     "tasks": 3,
+     "calls": 60,
+     "prompt_tokens": 796303,
+     "cached_tokens": 752640,
+     "new_prompt": 43663,
+     "completion_tokens": 27129,
+     "total_tokens": 823432,
+     "hit_rate": 0.9452,
+     "cases_pass": 113,
+     "cases_total": 118
+    },
+    "C-codex": {
+     "tasks": 3,
+     "calls": 34,
+     "prompt_tokens": 375535,
+     "cached_tokens": 355712,
+     "new_prompt": 19823,
+     "completion_tokens": 15923,
+     "total_tokens": 391458,
+     "hit_rate": 0.9472,
+     "cases_pass": 116,
+     "cases_total": 118
+    }
+   },
+   "ratios": {
+    "merge_vs_on_calls": 1.429,
+    "merge_vs_off_calls": 3.158,
+    "on_vs_off_calls": 2.211,
+    "merge_vs_on_newprompt": 1.474,
+    "merge_vs_off_newprompt": 3.061
+   }
+  }
+ },
+ "spread": {
+  "merge_vs_on_calls": {
+   "n": 2,
+   "min": 0.881,
+   "max": 1.429,
+   "median": 1.429,
+   "values": [
+    0.881,
+    1.429
+   ]
+  },
+  "merge_vs_off_calls": {
+   "n": 2,
+   "min": 0.65,
+   "max": 3.158,
+   "median": 3.158,
+   "values": [
+    0.65,
+    3.158
+   ]
+  },
+  "on_vs_off_calls": {
+   "n": 2,
+   "min": 0.738,
+   "max": 2.211,
+   "median": 2.211,
+   "values": [
+    0.738,
+    2.211
+   ]
+  }
+ },
+ "note": "只做窗间对比, 禁跨轮相减; 单窗=噪声(R523)"
+}
