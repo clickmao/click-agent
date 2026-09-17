@@ -1,4 +1,4 @@
-namespace agent.userinteraction;
+namespace agent.core;
 
 /// <summary>
 /// 问询来源标识 —— 记录问题由谁发起、嵌套深度。

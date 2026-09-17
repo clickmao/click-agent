@@ -101,7 +101,7 @@ public abstract class AgentBase : IAgent
     /// <summary>
     /// 执行子任务
     /// </summary>
-    public virtual async Task<AgentResponse> ExecuteTaskAsync(subagent.SubAgentTask task, CancellationToken ct = default)
+    public virtual async Task<AgentResponse> ExecuteTaskAsync(SubAgentTask task, CancellationToken ct = default)
     {
         try
         {
@@ -170,7 +170,7 @@ public abstract class AgentBase : IAgent
     /// <summary>
     /// 子类任务执行钩子
     /// </summary>
-    protected virtual Task<AgentResponse> OnExecuteTaskAsync(subagent.SubAgentTask task, CancellationToken ct)
+    protected virtual Task<AgentResponse> OnExecuteTaskAsync(SubAgentTask task, CancellationToken ct)
     {
         return Task.FromResult(AgentResponse.ErrorResponse("Task execution not implemented"));
     }

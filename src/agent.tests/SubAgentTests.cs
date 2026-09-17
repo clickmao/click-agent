@@ -1,8 +1,8 @@
 using Xunit;
 using Moq;
 using Microsoft.Extensions.Logging;
-using agent.subagent;
 using agent.core;
+using agent.subagent;
 
 namespace agent.tests;
 

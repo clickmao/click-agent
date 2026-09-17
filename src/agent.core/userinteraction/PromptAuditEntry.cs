@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace agent.userinteraction;
+namespace agent.core;
 
 /// <summary>审计条目 (JSONL 一行): 记录每次问询由谁回答、是否批准。</summary>
 public class PromptAuditEntry

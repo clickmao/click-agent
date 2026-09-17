@@ -175,6 +175,48 @@ internal static class Program
         return false;
     }
 
+    /// <summary>R527: partial 分段会截断 #region/#endregion 配对 (原文件收尾花括号的前导 trivia 留在主文件,
+    /// 开头 #region 随成员移出) ⇒ 逐文件做配平: 前导多余的开区补齐收尾, 收尾多余的空 #endregion 删除。
+    /// 空指令纯装饰, 配平只恢复"每文件自带闭合"这一编译前提。</summary>
+    private static string RebalanceRegions(string text)
+    {
+        int open = 0, close = 0;
+        var closeIdx = new List<int>();
+        var lines = text.Split('\n');
+        for (int i = 0; i < lines.Length; i++)
+        {
+            string t = lines[i].TrimStart();
+            if (t.StartsWith("#region", StringComparison.Ordinal)) open++;
+            else if (t.StartsWith("#endregion", StringComparison.Ordinal)) { close++; closeIdx.Add(i); }
+        }
+        if (open == close) return text;
+
+        if (open > close)
+        {
+            // 补在最后一个 '}' 之前 (class 收尾花括号内侧; 块式命名空间下也仍在同一词法层)
+            var ls = new List<string>(text.TrimEnd('\r', '\n').Split('\n'));
+            int last = -1;
+            for (int i = ls.Count - 1; i >= 0; i--)
+            {
+                if (ls[i].Trim() == "}") { last = i; break; }
+            }
+            if (last < 0) last = ls.Count;
+            for (int i = 0; i < open - close; i++) ls.Insert(last, "    #endregion");
+            return string.Join("\n", ls) + "\n";
+        }
+
+        int drop = close - open;
+        var kill = new HashSet<int>();
+        for (int i = closeIdx.Count - 1; i >= 0 && drop > 0; i--, drop--) kill.Add(closeIdx[i]);
+        var keep = new List<string>();
+        for (int i = 0; i < lines.Length; i++)
+        {
+            if (kill.Contains(i)) continue;
+            keep.Add(lines[i]);
+        }
+        return string.Join("\n", keep);
+    }
+
     private static string BuildFile(SyntaxList<UsingDirectiveSyntax> usings, string nsForm, string nsText, string body)
     {
         var sb = new StringBuilder();
@@ -427,12 +469,13 @@ internal static class Program
         for (int k = 1; k < segs.Count; k++)
         {
             string body = string.Join("\n", segs[k].Select(m => m.ToFullString().TrimEnd('\r', '\n')));
-            string outText = BuildFile(root.Usings, nsForm, nsText, declText + "\n{\n" + body + "\n}");
+            string outText = RebalanceRegions(BuildFile(root.Usings, nsForm, nsText, declText + "\n{\n" + body + "\n}"));
             string dst = Path.Combine(dir, stem + "." + names[k] + ".cs");
             File.WriteAllText(dst, outText, new UTF8Encoding(false));
             written.Add(dst);
             Console.WriteLine("  写出 " + dst);
         }
+        primary = RebalanceRegions(primary);
         File.WriteAllText(file, primary, new UTF8Encoding(false));
         Console.WriteLine("  主文件 " + file);
         if (manifestPath is not null)

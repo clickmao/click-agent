@@ -21,8 +21,8 @@ public class ClarificationItem
     public List<string> SuggestedValues { get; set; } = new();
 
     /// <summary>答案数据类型约束 (v7.13): 回答必须通过 PromptDataValidator 校验</summary>
-    public agent.userinteraction.PromptDataType DataType { get; set; } =
-        agent.userinteraction.PromptDataType.String;
+    public agent.core.PromptDataType DataType { get; set; } =
+        agent.core.PromptDataType.String;
 
     /// <summary>Choice/MultiChoice 的完整选项列表 (选单选择必须给全所有选项)</summary>
     public List<string> Choices { get; set; } = new();

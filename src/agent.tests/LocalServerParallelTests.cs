@@ -133,7 +133,7 @@ public class LocalServerParallelTests
     [Fact]
     public void HostSource_DeclaresParallelUnconditionally()
     {
-        var src = File.ReadAllText(Path.Combine(FindRepoRoot(), "src", "agent.llamacpp", "LlamaServerHost.cs"));
+        var src = SourcePin.TextParts("src", "agent.llamacpp", "LlamaServerHost.cs");
         Assert.Contains("a.Add(\"-np\")", src);
         Assert.DoesNotContain("if (o.Parallel > 0)", src);
         Assert.DoesNotContain("if (Parallel > 0)", src);

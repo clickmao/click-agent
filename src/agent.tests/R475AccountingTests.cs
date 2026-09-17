@@ -26,7 +26,7 @@ public class R475AccountingTests
     }
 
     private static string Src(params string[] parts)
-        => File.ReadAllText(Path.Combine(new[] { RepoRoot() }.Concat(parts).ToArray()));
+        => SourcePin.TextParts(parts);
 
     // ---------- A. 回放守卫 ----------
 

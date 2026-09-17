@@ -1,4 +1,4 @@
-namespace agent.userinteraction;
+namespace agent.core;
 
 
 /// <summary>操作审批结果</summary>

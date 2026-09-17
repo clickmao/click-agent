@@ -1,0 +1,28 @@
+# R527 候选⑤ 前置闸 (新增 .cs) + 钩子接入 — 证据
+2026-09-17T18:57:35+08:00
+
+## gate --selfcheck (RED 判据负控 + G7 covers 判定正/负控 + G6 去字面量)
+SELFCHECK OK
+rc=0
+
+## gate 全仓 (新增文件逐条)
+闸门: 新增 .cs 11 个
+OK   agent.modelqueue/ModelQueueRouter.Call.cs  [告警] G7 无 covers 命中 (登记表 docs/verification-registry.json)
+OK   agent.modelqueue/ModelQueueRouter.Catalog.cs  [告警] G7 无 covers 命中 (登记表 docs/verification-registry.json)
+OK   agent.modelqueue/ModelQueueRouter.Failure.cs  [告警] G7 无 covers 命中 (登记表 docs/verification-registry.json)
+OK   agent.modelqueue/ModelQueueRouter.LocalChannel.cs  [告警] G7 无 covers 命中 (登记表 docs/verification-registry.json)
+OK   agent.modelqueue/ModelQueueRouter.Recovery.cs  [告警] G7 无 covers 命中 (登记表 docs/verification-registry.json)
+OK   agent.tests/SourcePin.cs  [告警] G7 无 covers 命中 (登记表 docs/verification-registry.json)
+OK   agent/contextassembler/ContextAssembler.Assemble.cs  [告警] G7 无 covers 命中 (登记表 docs/verification-registry.json)
+OK   agent/contextassembler/ContextAssembler.Compress.cs  [告警] G7 无 covers 命中 (登记表 docs/verification-registry.json)
+OK   agent/contextassembler/ContextAssembler.Prompt.cs  [告警] G7 无 covers 命中 (登记表 docs/verification-registry.json)
+OK   agent/contextassembler/ContextAssembler.Recall.cs  [告警] G7 无 covers 命中 (登记表 docs/verification-registry.json)
+OK   agent/contextassembler/ContextAssembler.Support.cs  [告警] G7 无 covers 命中 (登记表 docs/verification-registry.json)
+GATE 11 文件 / 红 0
+rc=0
+
+## 钩子接入 (core.hooksPath=tools/hooks) 负控/正控
+  处置: 修该文件结构后重提交; 关闸 (诊断): AGENTFRAMEWORK_NEW_FILE_GATE=0
+GATE 12 文件 / 红 1
+NC_rc=1 (注入违规新文件 ⇒ 拦截)
+PC_rc=0 (洁净树 ⇒ 放行)

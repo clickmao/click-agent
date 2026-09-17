@@ -116,7 +116,7 @@ public class EmptyBodyDiagnosisTests
     }
 
     private static string Flat(params string[] relative)
-        => string.Join(' ', File.ReadAllText(Path.Combine(new[] { RepoRoot() }.Concat(relative).ToArray()))
+        => string.Join(' ', SourcePin.TextParts(relative)
             .Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
 
     [Fact]

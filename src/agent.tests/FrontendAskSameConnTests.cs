@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using agent.core;
-using agent.userinteraction;
 using agent.frontendapi;
 namespace agent.tests;
 
@@ -29,7 +28,7 @@ public class FrontendAskSameConnTests : IDisposable
         public Task InitializeAsync(IAgentContext context, CancellationToken ct = default) => Task.CompletedTask;
         public Task<AgentResponse> ProcessAsync(Message message, CancellationToken ct = default) =>
             Task.FromResult(new AgentResponse { Content = "stub", Success = true });
-        public Task<AgentResponse> ExecuteTaskAsync(agent.subagent.SubAgentTask task, CancellationToken ct = default) =>
+        public Task<AgentResponse> ExecuteTaskAsync(agent.core.SubAgentTask task, CancellationToken ct = default) =>
             Task.FromResult(new AgentResponse { Content = "stub", Success = true });
         public Task<AgentResponse> RouteAsync(Message message, CancellationToken ct = default) =>
             Task.FromResult(new AgentResponse { Content = "stub", Success = true });

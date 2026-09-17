@@ -18,7 +18,7 @@ public class TaskDecomposer : ITaskDecomposer
         
         foreach (var subTask in subTasks.Take(options.MaxSubTasks))
         {
-            var subTaskObj = new subagent.SubAgentTask
+            var subTaskObj = new agent.core.SubAgentTask
             {
                 Name = subTask.Trim(),
                 Input = subTask.Trim(),

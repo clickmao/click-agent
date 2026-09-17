@@ -27,7 +27,7 @@ public sealed class R524PrefixStabilityTests
         return dir!.FullName;
     }
 
-    private static string Source(string relative) => File.ReadAllText(Path.Combine(RepoRoot(), relative));
+    private static string Source(string relative) => SourcePin.Text(relative.Replace(Path.DirectorySeparatorChar, '/'));
 
     [Fact]
     public void 工作区文件块不再视为会话静态()

@@ -136,7 +136,7 @@ public class PythonArtifactPluginTests : IDisposable
     public void 产物遥测键契约_生产端与判分端两侧钉死()
     {
         var root = FindRepoRoot434();
-        var prod = File.ReadAllText(Path.Combine(root, "src", "agent", "registry", "PythonArtifactPlugin.cs"));
+        var prod = SourcePin.TextParts("src", "agent", "registry", "PythonArtifactPlugin.cs");
         var flat = string.Join(' ', prod.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
         Assert.Contains("Emit(\"script_artifact\"", flat);
         foreach (var k in new[] { "(\"path\"", "(\"compile_valid\"", "(\"origin\"", "(\"sha8\"", "(\"exit\"" })

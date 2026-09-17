@@ -157,9 +157,13 @@ public sealed class DecisionCachePinTests
             if (File.ReadAllText(file).Contains("CacheReuse = false")) offenders.Add(file);
         }
         var names = offenders.Select(Path.GetFileName).Distinct().OrderBy(x => x, StringComparer.Ordinal).ToArray();
-        Assert.Equal(new[] { "ModelQueueRouter.cs" }, names);   // 只在调用方 (不是端口实现里) 钉死
+        // R527: 单一类型允许分片 (ModelQueueRouter.<Suffix>.cs) ⇒ 判「全部落在该类型的分片上」, 禁别的类型
+        Assert.All(names, n => Assert.True(
+            n == "ModelQueueRouter.cs" || n.StartsWith("ModelQueueRouter.", StringComparison.Ordinal),
+            $"缓存钉死泄漏到非决策路径文件: {n}"));
+        Assert.NotEmpty(names);
 
-        var routerSrc = File.ReadAllText(Path.Combine(root!, "src/agent.modelqueue/ModelQueueRouter.cs"));
+        var routerSrc = SourcePin.TextParts("src/agent.modelqueue/ModelQueueRouter.cs");
         Assert.Equal(2, routerSrc.Split("CacheReuse = false").Length - 1);  // 门判 + 关系判官
     }
 

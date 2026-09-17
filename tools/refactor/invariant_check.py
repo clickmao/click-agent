@@ -11,8 +11,7 @@ RX_TYPE = re.compile(r"^(?:(?:public|internal|private|protected|static|sealed|ab
 RX_NS_FILE = re.compile(r"^[ \t]*namespace\s+([\w.]+)\s*;", re.M)
 RX_NS_BLOCK = re.compile(r"^[ \t]*namespace\s+([\w.]+)\s*$", re.M)
 
-EXEMPT = {("agent.core/userinteraction", "agent.userinteraction"),
-          ("agent.core/subagent", "agent.subagent")}
+EXEMPT = set()   # R527 候选①: agent.core/{userinteraction,subagent} 已收敛为 agent.core ⇒ 豁免清单清空
 
 viol = collections.defaultdict(list)
 files = 0
@@ -39,13 +38,17 @@ for dp, dn, fn in os.walk("src"):
                 viol["I3a"].append(f"{rel}: 无命名空间")
         else:
             ns_in_dir[ns].append(rel)
+        o = sum(1 for l in t.split("\n") if l.strip().startswith("#region"))
+        c = sum(1 for l in t.split("\n") if l.strip().startswith("#endregion"))
+        if o != c:
+            viol["I4"].append(f"{rel}: region 不配对 {o}/{c}")
     for ns, fs in ns_in_dir.items():
         rel_dir = os.path.relpath(dp, "src").replace(os.sep, "/")
         if len(ns_in_dir) > 1 and (rel_dir, ns) not in EXEMPT:
             viol["I3b"].append(f"{rel_dir}: 混用命名空间 {list(ns_in_dir)} x{len(fs)}")
 
 print(f"扫描 {files} 个 .cs")
-for k in ("I1", "I2", "I3a", "I3b"):
+for k in ("I1", "I2", "I3a", "I3b", "I4"):
     print(f"{k}: {len(viol[k])}")
     for v in viol[k][:10]:
         print("   ", v)

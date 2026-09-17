@@ -1,6 +1,6 @@
 using System.Text.Json;
 using agent.intent;
-using agent.userinteraction;
+using agent.core;
 
 namespace agent.registry;
 

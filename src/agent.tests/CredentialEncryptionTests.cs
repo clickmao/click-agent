@@ -1,4 +1,4 @@
-using agent.userinteraction;
+using agent.core;
 using Xunit;
 
 namespace agent.tests;

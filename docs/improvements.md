@@ -2872,3 +2872,14 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **器具**: `tools/refactor/`（Roslyn reftool 四模式 + 不变式机检 + 七步流水线 + README 教训）；登记表 +4 行 / `covers` 修正 36 行；4 处源码路径钉死测试改目录级/片段级扫描（强度不降）。
 - **诚实边界**: `agent.core/{userinteraction,subagent}` 20 文件命名空间横跨两程序集**未收敛**（需跨程序集引用重写，逐条豁免锁住 ⇒ R527 候选）；`OnProcessAsync` 1662 行单方法**未拆**（语义变换，非机械重构）；`ModelQueueRouter`/`ContextAssembler`（1530/1513 行）未拆 partial；行数 +3.4% 是单类型单文件的文件头成本，非性能回归；期间 1 次 `FrontendAskSameConnTests` 偶发失败（隔离复跑 2 次 + 全量复跑均过，无因果）。
 - **下轮候选 (R527)**: ① `agent.core` 命名空间收敛（Roslyn 语义层改名 + 引用重写）② `OnProcessAsync` 方法级抽取（需等价性夹具）③ `ModelQueueRouter`/`ContextAssembler` partial 拆分 ④ `Directory.Packages.props` 中央包版本 ⑤ 不变式接入「新增文件」前置闸。
+
+## R527 (2026-09-17) — 结构收口: R526 五候选同轮闭合 (ns 收敛 / 巨类拆分 / CPM / 前置闸 / 有界抽取) (轮志: `docs/reports/r527-structural-closure.md`)
+
+- **靶点**: R526 §6 五候选 + 结转遗留**同轮并推**（用户令 2026-09-16 禁单步）；判据预注册 `eval/rover/r527/prereg-r527.json`（先落盘后读数）。
+- **产品改动 (每步后构建+全量测试)**: ① 命名空间收敛 —— `src/agent.core/{userinteraction,subagent}` 20 文件声明改 `agent.core`（`tools/refactor/pipeline/09_converge_namespace.py`），`agent.core` 下残留 **0**；引用方 `using` 由**编译器驱动**伴随器补齐（`10_fix_moved_type_usings.py`，fail-closed：只按 CS0246/CS0103/CS0234 报点补 `using`；并修正对**未搬走**类型（`IsolatedTaskRunner`/`ILLMCallerForIsolated`）的误改写）；② `OnProcessAsync` 有界抽取 —— 轮起始清零+心跳 → `BeginTurn()`、reply 因果绑定+偏题状态推进 → `BindReplyAndAdvanceTopicState()`（**方法体 1600 → 1550 行**）；③ `ModelQueueRouter`/`ContextAssembler` partial 拆分（最大分片 **531 行**，源级钉死改 `SourcePin.Text/TextParts` partial-aware 读取）；④ CPM —— `src/Directory.Packages.props` 22 条目接管 41 处 `PackageReference`，内联 `Version=` **0**；⑤ `tools/refactor/new_file_gate.py`（G1..G7）接入**真实生效钩子** `tools/hooks/pre-commit`（`core.hooksPath` 指向，路径改仓根绝对路径）。
+- **读数**: 全量测试 **1755/1755 绿**（RC=0）；构建 0 错误；AOT `/tmp/pub_r527/agenthost` **RC=0 · IL 警告 0** · 15,609,168 B（R526 15,617,360 B，**−8,192 B**）· sha `d70a9741…` · 冷启动冒烟 rc=0；等价性夹具 **10 臂逐字节全同**（pre=R526 AOT / post=R527 AOT：`out_sha256` + `err_sha256` + 文本）；不变式 I1–I4 = 0 违规；前置闸 `--selfcheck` OK + 全仓 11 新文件 / 红 0；登记表 **+6 行**（258 行）`bind_evidence --check` → `R2E_R2F_EXIT=0`。
+- **负控**: 前置闸注入违规文件 ⇒ 钩子判红（`GATE 12 文件 / 红 1`，`BLOCKED`）；CPM selfcheck 同包两版本必拒；源级钉死负控（只读主文件 ⇒ partial 断言红）。
+- **裁决 (预注册 J1–J5)**: J2/J3/J4 **达成**；J1 **收窄**（预注册「全 src = 0」过宽：`agent.core` 下 = 0 ✅，余 31 处为**合法命名空间所有者**自身声明/引用）；**J5 未达**（`OnProcessAsync` −50 行 vs 目标 ≥300 ⇒ 只完成有界抽取，全方法语义分层结转 R528）。**本轮无 LLM 对照窗 ⇒ 不宣称任何 token/调用降幅**；`exec_precondition --round R527` **rc=3**（无题集，fail-closed），故本轮读数一律不作 R413 判据依据。
+- **同轮修因**: `FrontendAskFlowTests` 隔离复现 `ClientCount` Expected 1/Actual 2 —— 与 R526 记录的偶发失败族同源（就绪探针连接的服务端注销异步收口竞态）⇒ 改**有界收敛后断言**（3s 内收敛到 1），非放宽断言。
+- **下轮候选 (R528)**: ① ② 续: `OnProcessAsync` 余 1550 行按语义分层续抽（等价性夹具已就位）② 词表/豁免类判据改「所有者 vs 引用者」两段式口径（J1 教训）③ 主线对照窗重跑: 外部真值 codex 同窗 n≥3 + `exec_precondition` rc=0 才取 R413 判据读数 ④ `FrontendAskSameConnTests` 同族竞态是否同一收敛模板可修。
+

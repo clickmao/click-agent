@@ -1,5 +1,4 @@
 using agent.core;
-using agent.userinteraction;
 
 namespace agent.frontendapi;
 

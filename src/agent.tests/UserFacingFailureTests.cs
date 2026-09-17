@@ -110,7 +110,7 @@ public class UserFacingFailureTests
     }
 
     private static string Flat(string relative)
-        => string.Join(' ', File.ReadAllText(Path.Combine(RepoRoot(), relative))
+        => string.Join(' ', SourcePin.Text(relative)
             .Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
 
     [Fact]

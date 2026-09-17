@@ -33,7 +33,7 @@ public interface IAgent
     /// <summary>
     /// 执行子任务
     /// </summary>
-    Task<AgentResponse> ExecuteTaskAsync(subagent.SubAgentTask task, CancellationToken ct = default);
+    Task<AgentResponse> ExecuteTaskAsync(SubAgentTask task, CancellationToken ct = default);
     
     /// <summary>
     /// 路由消息到合适的处理器

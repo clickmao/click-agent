@@ -1,0 +1,58 @@
+# R527 判据机检 (预注册 eval/rover/r527/prereg-r527.json / 计划 §1)
+2026-09-17T19:02:17+08:00
+
+## J1 命名空间收敛: src 下 (排除 obj/bin) 的 agent.userinteraction / agent.subagent 出现
+-- 逐目录计数 --
+     13 src/agent/userinteraction
+      5 src/agent/subagent
+      5 src/agent/extensions
+      4 src/agent
+      2 src/agent.tests
+      1 src/agent/modelqueue
+      1 src/agent/intent
+-- 总数 --
+31
+-- 其中 src/agent.core 下 (收敛目标, 应为 0) --
+0
+
+## J2 巨类体量 (候选③)
+   531  src/agent/contextassembler/ContextAssembler.Recall.cs
+   419  src/agent/contextassembler/ContextAssembler.Assemble.cs
+   387  src/agent.modelqueue/ModelQueueRouter.Recovery.cs
+   387  src/agent.modelqueue/ModelQueueRouter.Recovery.cs
+   339  src/agent.modelqueue/ModelQueueRouter.LocalChannel.cs
+   339  src/agent.modelqueue/ModelQueueRouter.LocalChannel.cs
+   305  src/agent.modelqueue/ModelQueueRouter.Failure.cs
+   305  src/agent.modelqueue/ModelQueueRouter.Failure.cs
+   286  src/agent.modelqueue/ModelQueueRouter.Call.cs
+   286  src/agent.modelqueue/ModelQueueRouter.Call.cs
+   271  src/agent/contextassembler/ContextAssembler.Prompt.cs
+   158  src/agent/contextassembler/ContextAssembler.Support.cs
+-- OnProcessAsync 体量 (候选②: 方法起止行) --
+方法体行数 = 1550  (520..2069)
+文件总行数 = 2280
+
+## J3 CPM
+src/*/*.csproj 内联 Version= 计数: 0
+Directory.Packages.props PackageVersion 条目数: 22
+src 下 PackageReference 总数: 41
+
+## J4 前置闸 / 不变式
+SELFCHECK OK
+OK   agent/contextassembler/ContextAssembler.Prompt.cs  [告警] G7 无 covers 命中 (登记表 docs/verification-registry.json)
+OK   agent/contextassembler/ContextAssembler.Recall.cs  [告警] G7 无 covers 命中 (登记表 docs/verification-registry.json)
+OK   agent/contextassembler/ContextAssembler.Support.cs  [告警] G7 无 covers 命中 (登记表 docs/verification-registry.json)
+GATE 11 文件 / 红 0
+I3b: 0
+I4: 0
+EXIT 0
+
+## J5 候选② 等价性 (夹具比对)
+/staged                  True       True       True    
+/status                  True       True       True    
+# 结论: 等价 (逐臂 sha256 与文本全同)
+
+## 全局: 全量测试 + AOT
+Passed!  - Failed:     0, Passed:  1755, Skipped:     0, Total:  1755, Duration: 44 s - agentframework.tests.dll (net10.0)
+RC=0
+AOT: RC=0 · IL 警告 0 · 体积 15609168 B (R526 15617360 B)

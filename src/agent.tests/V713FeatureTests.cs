@@ -1,7 +1,7 @@
 using agent.intent;
 using agent.output;
 using agent.registry;
-using agent.userinteraction;
+using agent.core;
 using Xunit;
 using IntentDecomposer = agent.intent.IntentDecomposer;
 

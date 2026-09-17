@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using agent.core;
-using agent.userinteraction;
 using agent.frontendapi;
 namespace agent.tests;
 
@@ -29,7 +28,7 @@ public class FrontendAskFlowTests : IDisposable
         public Task InitializeAsync(IAgentContext context, CancellationToken ct = default) => Task.CompletedTask;
         public Task<AgentResponse> ProcessAsync(Message message, CancellationToken ct = default) =>
             Task.FromResult(new AgentResponse { Content = "stub", Success = true });
-        public Task<AgentResponse> ExecuteTaskAsync(agent.subagent.SubAgentTask task, CancellationToken ct = default) =>
+        public Task<AgentResponse> ExecuteTaskAsync(agent.core.SubAgentTask task, CancellationToken ct = default) =>
             Task.FromResult(new AgentResponse { Content = "stub", Success = true });
         public Task<AgentResponse> RouteAsync(Message message, CancellationToken ct = default) =>
             Task.FromResult(new AgentResponse { Content = "stub", Success = true });
@@ -160,6 +159,14 @@ public class FrontendAskFlowTests : IDisposable
         var (s, st) = ConnectAndRegister();
         try
         {
+            // R527: 就绪探针连接 (ctor 里的 Connect 循环) 的注销在服务端异步读收口,
+            // 原「立即断言 =1」与探针注销存在竞态 (轮内复现: Expected 1 / Actual 2) ⇒ 改为有界收敛后断言。
+            var settle = DateTime.UtcNow.AddSeconds(3);
+            while (_server.ClientCount > 1 && DateTime.UtcNow < settle)
+            {
+                await Task.Delay(20);
+            }
+
             Assert.Equal(1, _server.ClientCount);
             var pending = _prompts.RequestCredentialsAsync(ChoiceRequest());
 

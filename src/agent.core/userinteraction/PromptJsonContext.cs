@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace agent.userinteraction;
+namespace agent.core;
 
 /// <summary>
 /// 问询持久化的 source-gen 序列化上下文 (AOT: 禁止反射序列化路径)。

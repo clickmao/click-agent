@@ -1,4 +1,4 @@
-namespace agent.userinteraction;
+namespace agent.core;
 
 
 /// <summary>回答来源 —— 审计与程序底层路由的关键 flag</summary>

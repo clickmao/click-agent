@@ -23,8 +23,7 @@ public sealed class R497FingerprintAndSynonymTests
         return dir?.FullName ?? ".";
     }
 
-    private static string ReadSrc(params string[] parts) =>
-        File.ReadAllText(Path.Combine(new[] { RepoRoot() }.Concat(parts).ToArray()));
+    private static string ReadSrc(params string[] parts) => SourcePin.TextParts(parts);
 
     // ── ① 打点面: 只留指纹 ─────────────────────────────────────────────────────
 

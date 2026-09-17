@@ -1,6 +1,6 @@
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using agent.userinteraction;
+using agent.core;
 
 namespace agent.search;
 

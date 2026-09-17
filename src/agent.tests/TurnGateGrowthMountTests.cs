@@ -235,7 +235,7 @@ public sealed class TurnGateGrowthMountTests
     [Fact]
     public void H8_链侧必须实际挂载成长块()
     {
-        var src = File.ReadAllText(Path.Combine(FindRepoRoot(), "src", "agent", "IndustrialAgentV2.cs"));
+        var src = SourcePin.TextParts("src", "agent", "IndustrialAgentV2.cs");
         var flat = string.Join(' ', src.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
         // 正向: 门判第三参必须来自账本渲染 (而不是字面量 null)
         Assert.Contains("gateGrowthBlock = GrowthLedger?.RenderForPrompt();", flat);

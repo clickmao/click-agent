@@ -1,4 +1,4 @@
-namespace agent.userinteraction;
+namespace agent.core;
 
 
 /// <summary>凭据问询中的单个条目</summary>

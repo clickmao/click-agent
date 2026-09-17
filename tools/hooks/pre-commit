@@ -123,4 +123,16 @@ if [ "${AGENTFRAMEWORK_TAIL_LF_GUARD:-1}" != "0" ] && [ -f eval/capability/exp1-
   fi
 fi
 
+# >>> R527 new-file-gate >>>  (新增 .cs 文件结构不变式前置闸; 只在**新增**文件上判, 存量违规不阻塞)
+#   关闸 (诊断/夹具): AGENTFRAMEWORK_NEW_FILE_GATE=0
+_NFG_ROOT="$(git rev-parse --show-toplevel)"
+if [ "${AGENTFRAMEWORK_NEW_FILE_GATE:-1}" != "0" ] && [ -f "$_NFG_ROOT/tools/refactor/new_file_gate.py" ]; then
+  if ! python3 "$_NFG_ROOT/tools/refactor/new_file_gate.py" >/tmp/new_file_gate_precommit.log 2>&1; then
+    echo "BLOCKED(R527 新增文件结构闸): 新增 .cs 违反单类型单文件/文件名=类型名/ns 与目录一致/括号或 region 配对。" >&2
+    echo "  处置: 修该文件结构后重提交; 关闸 (诊断): AGENTFRAMEWORK_NEW_FILE_GATE=0" >&2
+    tail -8 /tmp/new_file_gate_precommit.log >&2
+    exit 1
+  fi
+fi
+
 exit 0

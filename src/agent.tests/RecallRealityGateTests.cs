@@ -168,7 +168,7 @@ public sealed class RecallRealityGateTests
     public void RecallRealityGate_Source_HasNoLanguageSuffixLiteral()
     {
         // 语言无关令 (R447): 闸的判定源码不得出现语言特定后缀字面量 (标签集取自数据文件)。
-        var src = File.ReadAllText(Path.Combine(RepoRoot(), "src", "agent.core", "core", "RecallRealityGate.cs"), Encoding.UTF8);
+        var src = SourcePin.TextParts("src", "agent.core", "core", "RecallRealityGate.cs");
         foreach (var tag in LanguageTags())
             Assert.DoesNotContain("\"" + tag + "\"", src, StringComparison.Ordinal);
     }
@@ -213,7 +213,7 @@ public sealed class RecallRealityGateTests
     public void TextProbe_ContextAssemblerPipeline_HasNoSuffixWhitelistLiteral()
     {
         // 真缺陷回归锁 (R462): 工作区召回不得再逐字列语言后缀 (标签集取自数据文件)。
-        var src = File.ReadAllText(Path.Combine(RepoRoot(), "src", "agent", "contextassembler", "ContextAssembler.cs"), Encoding.UTF8);
+        var src = SourcePin.TextParts("src", "agent", "contextassembler", "ContextAssembler.cs");
         Assert.DoesNotContain("var extensions = new[]", src, StringComparison.Ordinal);
         foreach (var tag in LanguageTags())
             Assert.DoesNotContain("\"" + tag + "\"", src, StringComparison.Ordinal);

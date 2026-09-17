@@ -1,0 +1,16 @@
+# R527 等价性比对: eval/rover/r527/golden-pre.json vs eval/rover/r527/golden-post.json
+# pre binary=/tmp/pub_r526/agenthost  cmd_count=10
+# post binary=/tmp/pub_r527/agenthost  cmd_count=10
+# 臂数 pre=10 post=10  仅pre=[] 仅post=[]
+臂                        out_sha 同  err_sha 同  text 同  
+/activity                True       True       True    
+/forecast                True       True       True    
+/llm-service             True       True       True    
+/model                   True       True       True    
+/plan                    True       True       True    
+/rag                     True       True       True    
+/recall                  True       True       True    
+/skills                  True       True       True    
+/staged                  True       True       True    
+/status                  True       True       True    
+# 结论: 等价 (逐臂 sha256 与文本全同)

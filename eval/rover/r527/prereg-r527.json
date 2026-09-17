@@ -1,0 +1,50 @@
+{
+  "round": "R527",
+  "kind": "结构收口 (R526 §6 候选 + 结转遗留)",
+  "preregistered_at": "2026-09-17T18:5x+08:00",
+  "write_side": "先落盘判据与阈值, 后跑读数 (禁事后补记)",
+  "baseline": {
+    "source": "R526 commit 5a13da6 (HEAD, 工作树 src/ 无改动)",
+    "tests": "1755/1755 绿 (R526 evidence/tests-full-r526.txt)",
+    "aot": {"path": "/tmp/pub_r526/agenthost", "bytes": 15617360, "sha256_12": "6b565aa044b7"},
+    "invariant": {"files": 1054, "I1": 0, "I2": 0, "I3a": 0, "I3b": 0},
+    "OnProcessAsync_lines": 1661,
+    "ModelQueueRouter_lines": 1531,
+    "ContextAssembler_lines": 1514
+  },
+  "criteria": {
+    "J0_equivalence_fixture": {
+      "判据": "eval/rover/r527/equiv_local_commands.py 对 10 条确定性本地命令采集 pre/post 黄金摘要, 逐命令逐流 (stdout/stderr) sha256 与 rc 全等",
+      "阈值": "diffs==0",
+      "前置": "同二进制连跑两次必须 diffs==0 (夹具自身稳定) + --selfcheck 注入人造差异必须判红 (非恒绿)"
+    },
+    "J1_namespace_convergence": {
+      "判据": "src/agent.core/{userinteraction,subagent} 下 20 文件命名空间改为 agent.core.* ⇒ 同一命名空间不再横跨两程序集",
+      "阈值": "agent.core 下 agent.userinteraction / agent.subagent 声明数 = 0; 全仓 'agent.userinteraction' 引用只在 src/agent/userinteraction + 消费者; 构建 0 错误; 测试全绿; 豁免表两行删除后 I3b 仍 0"
+    },
+    "J2_method_extraction": {
+      "判据": "OnProcessAsync 的早退命令族 (确定性本地命令处理段) 抽为 partial 私有方法",
+      "阈值": "OnProcessAsync 行数 1661 → ≤ 1380 (降幅 ≥ 17%); J0 夹具全等; 全量测试绿"
+    },
+    "J3_partial_split": {
+      "判据": "ModelQueueRouter / ContextAssembler 按成员边界切 partial",
+      "阈值": "主文件 ≤ 900 行 (1531→≤900 / 1514→≤900); 字段/事件字段/嵌套类型留主文件; I1 仍 0"
+    },
+    "J4_central_package_versions": {
+      "判据": "src/Directory.Packages.props (CPM) 接管 22 个包 id",
+      "阈值": "25 个 csproj 内 PackageReference 的 Version= 出现次数 = 0; 构建 0 错误; AOT rc=0"
+    },
+    "J5_new_file_gate": {
+      "判据": "新增 .cs 文件前置闸 (结构不变式 + covers 同步提示) 在 pre-commit 触发",
+      "阈值": "负控 (新增违规文件) 判红 + 正控 (合法文件) 判绿"
+    },
+    "J_global": {
+      "阈值": "AOT publish rc=0 / IL 警告 0; 全量测试 ≥ 1755 且 0 失败; invariant_check I1..I3b 全 0; 结构不变式负控全红"
+    }
+  },
+  "not_claimed": [
+    "token/调用降幅 (铁律 11 前置器需同窗两侧对照产物; 本轮为结构轮, 无对照题集 ⇒ 不宣称)",
+    "任何能力增益 (本轮无能力面改动)"
+  ],
+  "posthoc_notes": []
+}

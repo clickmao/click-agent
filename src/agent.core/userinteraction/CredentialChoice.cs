@@ -1,4 +1,4 @@
-namespace agent.userinteraction;
+namespace agent.core;
 
 
 /// <summary>R375 (exp2 P0-3): 选项条目 —— 值与显示分离 (前端渲染 label, 回填 value)。</summary>

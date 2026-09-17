@@ -1,7 +1,7 @@
 using agent.core;
 using TaskStatus = agent.core.TaskStatus;
 
-namespace agent.subagent;
+namespace agent.core;
 
 /// <summary>
 /// SubAgent任务模型

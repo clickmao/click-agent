@@ -6,9 +6,7 @@ using agent.core;
 using agent.memory;
 using agent.templates;
 using agent.search;
-using agent.subagent;
 using agent.session;
-using agent.userinteraction;
 using agent.pipeline;
 using agent.tokencompression;
 using agent.context;
@@ -20,6 +18,8 @@ using agent.vectormemory;
 using agent.recovery;
 using agent.keywordannotation;
 using agent.tendency;
+using agent.subagent;
+using agent.userinteraction;
 
 namespace agent;
 

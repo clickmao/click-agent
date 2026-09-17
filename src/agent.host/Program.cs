@@ -304,7 +304,7 @@ if (args.Length >= 2 && args[0] == "--compression-audit")
         {
             // R375: frontend 模式下问询必须走**前端**通道 —— 后注册覆盖 AddAgentFramework 内的 Console 实现
             // (DI 单服务解析取最后注册者)。不覆盖 = ask 事件无人消费, 兜底行为打到服务端控制台 (接线缺口)。
-            services.AddSingleton<agent.userinteraction.IUserPromptService>(sp =>
+            services.AddSingleton<agent.core.IUserPromptService>(sp =>
                 new agent.frontendapi.FrontendPromptService(
                     sp.GetRequiredService<agent.frontendapi.FrontendEventHub>().EmitAsync));
         }
@@ -363,10 +363,10 @@ if (args.Length >= 2 && args[0] == "--frontend-api")
     var metaJson = "{\"version\":\"0.21.0\",\"contract\":1,\"domains\":[\"chat\",\"meta\",\"state\",\"plan\"]}";
     // R375 (exp2 P0-1): 挂接事件出站 + ask 应答面 (hub 为唯一出站口; 未挂接时事件丢弃并计数)
     var eventHub = provider.GetRequiredService<agent.frontendapi.FrontendEventHub>();
-    if (provider.GetRequiredService<agent.userinteraction.IUserPromptService>() is agent.frontendapi.IAskReplySink askSink)
+    if (provider.GetRequiredService<agent.core.IUserPromptService>() is agent.frontendapi.IAskReplySink askSink)
         eventHub.AttachAsk(askSink);
     // R510: 审批应答面同源挂接 (同一 PromptService; 未挂接 ⇒ approval.respond 回 channel_unavailable, 不伪造批准)
-    if (provider.GetRequiredService<agent.userinteraction.IUserPromptService>() is agent.frontendapi.IApprovalReplySink approvalSink)
+    if (provider.GetRequiredService<agent.core.IUserPromptService>() is agent.frontendapi.IApprovalReplySink approvalSink)
         eventHub.AttachApproval(approvalSink);
     // R509: 任务生命周期登记 (chat.send → task.started/completed 事件 + state.snapshot.tasks)
     var taskRegistry = new agent.frontendapi.FrontendTaskRegistry();

@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 using System.Text.RegularExpressions;
-using agent.userinteraction;
+using agent.core;
 
 namespace agent.workspace;
 

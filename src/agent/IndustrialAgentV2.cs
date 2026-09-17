@@ -7,9 +7,7 @@ using agent.vectormemory;
 using agent.memory;
 using agent.templates;
 using agent.search;
-using agent.subagent;
 using agent.session;
-using agent.userinteraction;
 using agent.context;
 using agent.rag;
 using agent.tendency;
@@ -21,6 +19,7 @@ using System.Text.Json.Serialization;
 using System.Text;
 
 using agent.intent;
+using agent.userinteraction;
 
 namespace agent;
 
@@ -63,7 +62,7 @@ public partial class IndustrialAgentV2 : AgentBase
     private readonly agent.registry.AgentRegistry _agentRegistry;
     private readonly agent.registry.ResponseSegmentRouter _segmentRouter;
     private readonly agent.registry.ClarificationService _clarificationService;
-    private readonly agent.userinteraction.IUserPromptService? _promptService; // v7.14: EvidenceGate→批量问询驱动 (null=静默跳过)
+    private readonly agent.core.IUserPromptService? _promptService; // v7.14: EvidenceGate→批量问询驱动 (null=静默跳过)
     private readonly string _dataStoragePath;
     private readonly IRecoverySystem _recoverySystem;
     private readonly IVectorStore _vectorStore;
@@ -400,7 +399,7 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
         agent.registry.ResponseSegmentRouter segmentRouter,
         agent.registry.ClarificationService clarificationService,
         string dataStoragePath = "./data",
-        agent.userinteraction.IUserPromptService? promptService = null,
+        agent.core.IUserPromptService? promptService = null,
         agent.subagent.IsolatedTaskRunner? isolatedTaskRunner = null,
         agent.modelqueue.ModelQueueRouter? modelRouter = null,
         agent.modelqueue.BalanceQueryService? balanceService = null,
@@ -520,17 +519,8 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
 
     protected override async Task<AgentResponse> OnProcessAsync(Message message, CancellationToken ct)
     {
-        var startTime = DateTime.UtcNow;
-        // R458: 承接轮状态逐轮清零 (早退路径也走这里 ⇒ 不会把上一轮的产物事实/原话带到别的轮)
-        _continuationFacts = null;
-        _continuationUserText = null;
-        // R466: 本地结算类同批清零 —— 上一轮的 repeat_verbatim 不得粘到本轮 (否则本轮承接反问被误抑制)
-        _localSettleKind = null;
-        _replyRequestId = "";
-        _replyFinishReason = "";
-        _replyEmptyBody = false;
-        // v0.17.2-a (R336): 活动心跳 — 每轮注册本进程活动 (任务摘要), 退出由 10s TTL 过期自清
-        try { Activity().Heartbeat(message.Content); } catch { /* 活动感知不阻塞主链 */ }
+        // R527 候选②: 有界抽取 —— 轮起始清零 + 活动心跳 (原位同序搬出, 行为等价; 夹具 eval/rover/r527/equiv_local_commands.py)
+        var startTime = BeginTurn(message);
         var response = new AgentResponse();
         
         try
@@ -1844,50 +1834,9 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     ("phase", "llm"), ("ms", llmSegSw.ElapsedMilliseconds), ("intent", intent));
             }
 
-            // R478: 因果绑定捕获 (R477 P4: 时间窗归属把 5 次调用判成"窗口外" ⇒ 改用同值 id join)
-            _replyRequestId = llmResponse.ResponseId ?? "";
-            _replyFinishReason = llmResponse.FinishReason ?? "";
-            _replyEmptyBody = string.IsNullOrEmpty(llmResponse.Content);
-
-            // 5.1 思考结束指令 (L.2.2 指令 2 — 前端关闭思考步骤显示并折叠)
-            _logRouter?.EmitThinkingEnd(llmResponse.Content.Length);
-
-            // R307 (L1 轻牵引): 连续 ≥2 轮偏题 → 回复尾追加一句衔接提示 (不改答案本体,
-            // 提示与核心主题的衔接点 — 消费 K1 画像偏置, 实现会话内牵引不偏离核心主题)。
-            _consecutiveDrift = isDrift ? _consecutiveDrift + 1 : 0;
-            // R315 (拉回率): clarify 已发 + 本轮回锚 (drift=false) → pulled_back 打点并撤防;
-            // 超过 2 轮未回锚 → 过期撤防 (不 emit false — 只度量成功回锚, 避免噪声)。
-            if (_clarifyArmed)
-            {
-                if (!isDrift && _clarifyTurnsLeft > 0)
-                {
-                    agent.config.AgentTelemetry.Emit("topic_clarify", "IndustrialAgentV2",
-                        ("pulled_back", true), ("turns_left", _clarifyTurnsLeft));
-                    _clarifyArmed = false;
-                }
-                else
-                {
-                    _clarifyTurnsLeft--;
-                    if (_clarifyTurnsLeft <= 0) _clarifyArmed = false;
-                }
-            }
-            // R309b: 牵引触发阈值 config 化 (env AGENTFRAMEWORK_TOPIC_STEER_THRESHOLD, 默认 2)
-            var _steerThreshold = int.TryParse(Environment.GetEnvironmentVariable("AGENTFRAMEWORK_TOPIC_STEER_THRESHOLD"), out var _st) && _st >= 1 ? _st : 2;
-            var steeringPending = _consecutiveDrift >= _steerThreshold && !string.IsNullOrEmpty(coreTopic);
-            // R314 (L3 主动澄清): 连续偏题达更高阈值 → 提示升级为二选一问句 (把"是否回锚"变显式对话状态)。
-            // 阈值 env AGENTFRAMEWORK_TOPIC_CLARIFY_THRESHOLD (默认 4); 开关 AGENTFRAMEWORK_TOPIC_CLARIFY=0 关闭。
-            var clarifyEnabled = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_TOPIC_CLARIFY") != "0";
-            var clarifyThreshold = int.TryParse(Environment.GetEnvironmentVariable("AGENTFRAMEWORK_TOPIC_CLARIFY_THRESHOLD"), out var _ct2) && _ct2 >= _steerThreshold ? _ct2 : _steerThreshold + 2;
-            var clarifyPending = clarifyEnabled && steeringPending && _consecutiveDrift >= clarifyThreshold;
-            if (steeringPending && topicVerdict is not null)
-            {
-                // R308b: steering 并入 topic_relevance 打点 (steering 标志位 — 不再独立点位)。
-                agent.config.AgentTelemetry.Emit("topic_relevance", "IndustrialAgentV2",
-                    ("verdict", "SteerHint"), ("core", coreTopic),
-                    ("consecutive", _consecutiveDrift),
-                    ("stage", clarifyPending ? "clarify" : "steering"));
-                if (clarifyPending) { _clarifyArmed = true; _clarifyTurnsLeft = 2; }  // R315
-            }
+            // R527 候选②: 有界抽取 —— 因果绑定 + 偏题/牵引/澄清状态推进 (原位同序搬出, 行为等价)
+            var (steeringPending, clarifyPending) =
+                BindReplyAndAdvanceTopicState(llmResponse, isDrift, coreTopic, topicVerdict);
             
             // 6. ✅ 将消息添加到会话
             await AddToSessionAsync(message, llmResponse, ct);
@@ -2229,6 +2178,73 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
     /// <summary>
     /// 1.6 影子计划 (v7.15 归拢接线 T.2-4 第一步):
     /// TaskPlanBuilder.Build + TaskPlanExecutor 以哑 nodeRunner 演练计划调度语义
+    /// <summary>R527 候选② 有界抽取: 轮起始状态清零 + 活动心跳 (自 OnProcessAsync 原位搬出, 语义不变)。</summary>
+    private DateTime BeginTurn(Message message)
+    {
+        var startTime = DateTime.UtcNow;
+        // R458: 承接轮状态逐轮清零 (早退路径也走这里 ⇒ 不会把上一轮的产物事实/原话带到别的轮)
+        _continuationFacts = null;
+        _continuationUserText = null;
+        // R466: 本地结算类同批清零 —— 上一轮的 repeat_verbatim 不得粘到本轮 (否则本轮承接反问被误抑制)
+        _localSettleKind = null;
+        _replyRequestId = "";
+        _replyFinishReason = "";
+        _replyEmptyBody = false;
+        // v0.17.2-a (R336): 活动心跳 — 每轮注册本进程活动 (任务摘要), 退出由 10s TTL 过期自清
+        try { Activity().Heartbeat(message.Content); } catch { /* 活动感知不阻塞主链 */ }
+        return startTime;
+    }
+    /// <summary>R527 候选② 有界抽取: 回复因果绑定 + 偏题计数/牵引/澄清状态推进 (自 OnProcessAsync 原位搬出, 语义不变)。</summary>
+    private (bool SteeringPending, bool ClarifyPending) BindReplyAndAdvanceTopicState(
+        LLMResponse llmResponse, bool isDrift, string coreTopic,
+        agent.intent.TopicRelevanceEvaluator.TopicRelevanceVerdict? topicVerdict)
+    {
+        // R478: 因果绑定捕获 (R477 P4: 时间窗归属把 5 次调用判成"窗口外" ⇒ 改用同值 id join)
+        _replyRequestId = llmResponse.ResponseId ?? "";
+        _replyFinishReason = llmResponse.FinishReason ?? "";
+        _replyEmptyBody = string.IsNullOrEmpty(llmResponse.Content);
+
+        // 5.1 思考结束指令 (L.2.2 指令 2 — 前端关闭思考步骤显示并折叠)
+        _logRouter?.EmitThinkingEnd(llmResponse.Content.Length);
+
+        // R307 (L1 轻牵引): 连续 ≥2 轮偏题 → 回复尾追加一句衔接提示 (不改答案本体,
+        // 提示与核心主题的衔接点 — 消费 K1 画像偏置, 实现会话内牵引不偏离核心主题)。
+        _consecutiveDrift = isDrift ? _consecutiveDrift + 1 : 0;
+        // R315 (拉回率): clarify 已发 + 本轮回锚 (drift=false) → pulled_back 打点并撤防;
+        // 超过 2 轮未回锚 → 过期撤防 (不 emit false — 只度量成功回锚, 避免噪声)。
+        if (_clarifyArmed)
+        {
+            if (!isDrift && _clarifyTurnsLeft > 0)
+            {
+                agent.config.AgentTelemetry.Emit("topic_clarify", "IndustrialAgentV2",
+                    ("pulled_back", true), ("turns_left", _clarifyTurnsLeft));
+                _clarifyArmed = false;
+            }
+            else
+            {
+                _clarifyTurnsLeft--;
+                if (_clarifyTurnsLeft <= 0) _clarifyArmed = false;
+            }
+        }
+        // R309b: 牵引触发阈值 config 化 (env AGENTFRAMEWORK_TOPIC_STEER_THRESHOLD, 默认 2)
+        var _steerThreshold = int.TryParse(Environment.GetEnvironmentVariable("AGENTFRAMEWORK_TOPIC_STEER_THRESHOLD"), out var _st) && _st >= 1 ? _st : 2;
+        var steeringPending = _consecutiveDrift >= _steerThreshold && !string.IsNullOrEmpty(coreTopic);
+        // R314 (L3 主动澄清): 连续偏题达更高阈值 → 提示升级为二选一问句 (把"是否回锚"变显式对话状态)。
+        // 阈值 env AGENTFRAMEWORK_TOPIC_CLARIFY_THRESHOLD (默认 4); 开关 AGENTFRAMEWORK_TOPIC_CLARIFY=0 关闭。
+        var clarifyEnabled = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_TOPIC_CLARIFY") != "0";
+        var clarifyThreshold = int.TryParse(Environment.GetEnvironmentVariable("AGENTFRAMEWORK_TOPIC_CLARIFY_THRESHOLD"), out var _ct2) && _ct2 >= _steerThreshold ? _ct2 : _steerThreshold + 2;
+        var clarifyPending = clarifyEnabled && steeringPending && _consecutiveDrift >= clarifyThreshold;
+        if (steeringPending && topicVerdict is not null)
+        {
+            // R308b: steering 并入 topic_relevance 打点 (steering 标志位 — 不再独立点位)。
+            agent.config.AgentTelemetry.Emit("topic_relevance", "IndustrialAgentV2",
+                ("verdict", "SteerHint"), ("core", coreTopic),
+                ("consecutive", _consecutiveDrift),
+                ("stage", clarifyPending ? "clarify" : "steering"));
+            if (clarifyPending) { _clarifyArmed = true; _clarifyTurnsLeft = 2; }  // R315
+        }
+        return (steeringPending, clarifyPending);
+    }
     /// (依赖拓扑/敏感审批/取消/问询需求), 只记录不采纳 — 主链行为不变。
     /// 演练结果: 日志摘要 (节点数/终态); /plan JSON 可读 TaskPlanRun。
     /// 影子一致性判据 (T.4-2 定案): 本阶段只验证"计划结构可执行+问询需求已知",

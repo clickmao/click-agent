@@ -1,5 +1,5 @@
 using agent.intent;
-using agent.userinteraction;
+using agent.core;
 using SubTask = agent.intent.IntentDecomposer.SubTask;
 using ConfidenceFlags = agent.intent.IntentDecomposer.ConfidenceFlags;
 

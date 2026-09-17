@@ -1,7 +1,6 @@
 using System.Text.Json;
 using agent.core;
 using agent.intent;
-using agent.userinteraction;
 using Xunit;
 using Xunit.Abstractions;
 

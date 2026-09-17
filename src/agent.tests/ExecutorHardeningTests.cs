@@ -254,7 +254,7 @@ public class ExecutorHardeningTests
     public void G44_锁实现不得删除锁文件()
     {
         var root = FindRepoRoot();
-        var src = File.ReadAllText(Path.Combine(root, "src", "agent", "execution", "OccupantDetector.cs"));
+        var src = SourcePin.TextParts("src", "agent", "execution", "OccupantDetector.cs");
         var kept = new System.Collections.Generic.List<string>();
         foreach (var l in src.Split('\n'))
         {

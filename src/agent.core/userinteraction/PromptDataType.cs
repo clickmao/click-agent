@@ -1,4 +1,4 @@
-namespace agent.userinteraction;
+namespace agent.core;
 
 /// <summary>
 /// 问询数据类型 (v7.13): 用户回答必须满足的类型约束。

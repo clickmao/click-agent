@@ -92,7 +92,7 @@ public class PromptCacheKpiTests
     [Fact]
     public void 接线_三处llm_call打点都带缓存KPI()
     {
-        var src = File.ReadAllText(Path.Combine(RepoRoot(), "src", "agent.modelqueue", "ModelQueueRouter.cs"));
+        var src = SourcePin.TextParts("src", "agent.modelqueue", "ModelQueueRouter.cs");
         // 按**打点块**配对断言 (R377 负向控制教训: 只数 `PromptCacheKpi.Fields(` 出现次数会漏掉
         // "算了但没铺进去" —— 变异 3 曾以 0 红通过, 即空心断言)。
         var blocks = src.Split("Emit(\"llm_call\"").Skip(1).ToArray();

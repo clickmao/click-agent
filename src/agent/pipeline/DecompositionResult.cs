@@ -6,7 +6,7 @@ namespace agent.pipeline;
 /// </summary>
 public class DecompositionResult
 {
-    public List<subagent.SubAgentTask> Tasks { get; set; } = new();
+    public List<agent.core.SubAgentTask> Tasks { get; set; } = new();
     public Dictionary<string, List<string>> Dependencies { get; set; } = new();
     public long EstimatedTotalTokens { get; set; }
     public TimeSpan EstimatedDuration { get; set; }

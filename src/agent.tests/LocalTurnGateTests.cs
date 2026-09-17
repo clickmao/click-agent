@@ -500,7 +500,7 @@ public sealed class LocalTurnGateTests
     [Fact]
     public void G29_链侧门入参必须是用户原文()
     {
-        var src = File.ReadAllText(Path.Combine(FindRepoRootG29(), "src", "agent", "IndustrialAgentV2.cs"));
+        var src = SourcePin.TextParts("src", "agent", "IndustrialAgentV2.cs");
         var flat = string.Join(' ', src.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
         // 正向: 机械门与 r1 判别都必须吃 message.Content (用户本轮原文)
         Assert.Contains("TurnGateJudge.MechanicalPass(message.Content)", flat);
@@ -557,7 +557,7 @@ public sealed class LocalTurnGateTests
     [Fact]
     public void G32_链侧必须接双条件()
     {
-        var src = File.ReadAllText(Path.Combine(FindRepoRootG29(), "src", "agent", "IndustrialAgentV2.cs"));
+        var src = SourcePin.TextParts("src", "agent", "IndustrialAgentV2.cs");
         var flat = string.Join(' ', src.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
         Assert.Contains("TurnGateJudge.MechanicalAck(message.Content)", flat);
         Assert.Contains("TurnGateVerdict.Pass, \"gate:skip_rejected_nonack\"", flat);
@@ -581,7 +581,7 @@ public sealed class LocalTurnGateTests
     [Fact]
     public void G34_链侧Ack必须前置在r1调用之前()
     {
-        var src = File.ReadAllText(Path.Combine(FindRepoRootG29(), "src", "agent", "IndustrialAgentV2.cs"));
+        var src = SourcePin.TextParts("src", "agent", "IndustrialAgentV2.cs");
         var flat = string.Join(' ', src.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
         // 正向: 前置门开关存在, 且默认值即「非 0 即开」(默认 = 被测行为)
         Assert.Contains("AGENTFRAMEWORK_GATE_PREFILTER", flat);
@@ -623,7 +623,7 @@ public sealed class LocalTurnGateTests
     [Fact]
     public void G36_复述前置门位置与窄面()
     {
-        var src = File.ReadAllText(Path.Combine(FindRepoRootG29(), "src", "agent", "IndustrialAgentV2.cs"));
+        var src = SourcePin.TextParts("src", "agent", "IndustrialAgentV2.cs");
         var flat = string.Join(' ', src.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
         // ① 复述分支必须存在, 且**在** MechanicalPass 之后 (Pass 优先 = 新诉求/疑问永不被复述规则吸收)
         var iPass = flat.IndexOf("TurnGateJudge.MechanicalPass(message.Content)", StringComparison.Ordinal);
@@ -651,14 +651,14 @@ public sealed class LocalTurnGateTests
     [Fact]
     public void G37_复述Skip必须回放上一条答复()
     {
-        var src = File.ReadAllText(Path.Combine(FindRepoRootG29(), "src", "agent", "IndustrialAgentV2.cs"));
+        var src = SourcePin.TextParts("src", "agent", "IndustrialAgentV2.cs");
         var code = StripLineComments(src);
         Assert.Contains("GetConversationHistoryAsync(message.SessionId, ct)", code);
         // R466 口径单源: 主链只准**引用常量** (字面值只准出现在 ContinuationBrief)
         // —— 两处各写一份字符串必漂移, 漂移后优先级规则静默失效 (R466 收口面读同一口径)
         Assert.Contains("ContinuationBrief.SettleRepeatVerbatim", code);
         Assert.DoesNotContain("\"repeat_verbatim\"", code);
-        var cb = StripLineComments(File.ReadAllText(Path.Combine(FindRepoRootG29(), "src", "agent", "context", "ContinuationBrief.cs")));
+        var cb = StripLineComments(SourcePin.TextParts("src", "agent", "context", "ContinuationBrief.cs"));
         Assert.Contains("public const string SettleRepeatVerbatim = \"repeat_verbatim\";", cb);
         Assert.Contains("MessageRole.Assistant", code);
         // 兜底必须仍在 (取不到上一条答复时不得抛、不得走远端)
@@ -704,7 +704,7 @@ public sealed class LocalTurnGateTests
     [Fact]
     public void G39_嵌入接线必须调用同形解析器()
     {
-        var src = File.ReadAllText(Path.Combine(FindRepoRootG29(), "src", "agent", "extensions", "ServiceCollectionExtensions.cs"));
+        var src = SourcePin.TextParts("src", "agent", "extensions", "ServiceCollectionExtensions.cs");
         var code = StripLineComments(src);
         var iEmb = code.IndexOf("ITextEmbedder", StringComparison.Ordinal);
         Assert.True(iEmb > 0, "嵌入注册缺失");
@@ -719,7 +719,7 @@ public sealed class LocalTurnGateTests
     [Fact]
     public void G40_复述结算优先于承接反问且单源()
     {
-        var src = File.ReadAllText(Path.Combine(FindRepoRootG29(), "src", "agent", "IndustrialAgentV2.cs"));
+        var src = SourcePin.TextParts("src", "agent", "IndustrialAgentV2.cs");
         var code = StripLineComments(src);
         var flat = string.Join(' ', code.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
 

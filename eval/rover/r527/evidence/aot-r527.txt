@@ -1,0 +1,26 @@
+# R527 AOT 重发布证据 (铁律: 改链代码后必 AOT + IL 警告 0)
+2026-09-17T19:00:42+08:00
+
+## 命令
+$HOME/.dotnet/dotnet publish src/agent.host/agent.host.csproj -c Release -r linux-x64 -o /tmp/pub_r527
+
+## 结果
+  agent.host -> /home/agentuser/AgentFramework/src/agent.host/bin/Release/net10.0/linux-x64/agenthost.dll
+  agent.host -> /tmp/pub_r527/
+RC=0
+IL 警告数: 0
+
+## 产物
+-rwxrwxr-x 1 agentuser agentuser 15609168 Sep 17 19:00 /tmp/pub_r527/agenthost
+d70a9741ea3c89b1049bc2a576ca8d3169a4c0a9953c69bac5f642b753f36052  /tmp/pub_r527/agenthost
+
+## 基线 (R526 AOT)
+-rwxrwxr-x 1 agentuser agentuser 15617360 Sep 17 18:34 /tmp/pub_r526/agenthost
+6b565aa044b722cc54ede898281594d20d0c3f56cf31ff4025334c8662fd89a2  /tmp/pub_r526/agenthost
+
+## smoke (-q /help, 冷启动)
+AgentFramework CLI
+  /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit
+── 执行中 (turn 1) ──────────────────────────────
+  [01] 意图分析: general
+smoke_rc=0

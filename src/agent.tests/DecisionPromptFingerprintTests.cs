@@ -197,12 +197,12 @@ public sealed class DecisionPromptFingerprintTests
         };
         foreach (var rel in layers)
         {
-            var src = File.ReadAllText(Path.Combine(root!, rel));
+            var src = SourcePin.Text(rel);   // R527: 按类型读全部 partial 分片
             Assert.True(src.Contains("Sha16") || src.Contains("PromptSha"), $"指纹未贯通: {rel}");
         }
 
         // ② 指纹实现不得含随机源/时钟 (有 ⇒ 同一输入不同值 ⇒ 指纹失效)
-        var impl = File.ReadAllText(Path.Combine(root!, "src/agent.modelqueue/LocalInputFingerprint.cs"));
+        var impl = SourcePin.TextParts("src/agent.modelqueue/LocalInputFingerprint.cs");
         Assert.DoesNotContain("Random", impl);
         Assert.DoesNotContain("Guid", impl);
         Assert.DoesNotContain("DateTime", impl);

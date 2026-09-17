@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using agent.core;
 using agent.userinteraction;   // R526: PromptJsonContext (agent.core/userinteraction)
 
 namespace agent;

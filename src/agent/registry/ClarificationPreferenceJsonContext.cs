@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 using agent.intent;
-using agent.userinteraction;
+using agent.core;
 
 namespace agent.registry;
 

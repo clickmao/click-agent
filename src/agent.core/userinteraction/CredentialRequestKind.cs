@@ -1,4 +1,4 @@
-namespace agent.userinteraction;
+namespace agent.core;
 
 
 /// <summary>问询类型 flag</summary>

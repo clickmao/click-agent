@@ -28,8 +28,7 @@ public class RefactorStructureTests
     /// <summary>豁免目录 (src 下相对路径) → 允许沿用的旧命名空间。逐条登记, 不得放行新违规。</summary>
     private static readonly Dictionary<string, string> NsExempt = new(StringComparer.Ordinal)
     {
-        ["agent.core/userinteraction"] = "agent.userinteraction",
-        ["agent.core/subagent"] = "agent.subagent",
+        // R527 候选①: agent.core/{userinteraction,subagent} 已收敛 ⇒ 不再需要目录→命名空间豁免
     };
 
     private static readonly string Root = FindRepoRoot();

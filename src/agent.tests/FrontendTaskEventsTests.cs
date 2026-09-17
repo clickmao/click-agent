@@ -28,7 +28,7 @@ public class FrontendTaskEventsTests
         public event EventHandler<Message>? MessageReceived { add { } remove { } }
         public Task InitializeAsync(IAgentContext context, CancellationToken ct = default) => Task.CompletedTask;
         public Task<AgentResponse> ProcessAsync(Message message, CancellationToken ct = default) => Task.FromResult(_resp());
-        public Task<AgentResponse> ExecuteTaskAsync(agent.subagent.SubAgentTask task, CancellationToken ct = default) => Task.FromResult(_resp());
+        public Task<AgentResponse> ExecuteTaskAsync(agent.core.SubAgentTask task, CancellationToken ct = default) => Task.FromResult(_resp());
         public Task<AgentResponse> RouteAsync(Message message, CancellationToken ct = default) => Task.FromResult(_resp());
         public Task ShutdownAsync(CancellationToken ct = default) => Task.CompletedTask;
     }
