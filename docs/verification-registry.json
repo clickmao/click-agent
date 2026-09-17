@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R528",
+ "updated_round": "R529",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -6075,9 +6075,9 @@
     "pin_reason": "archived-per-round",
     "artifact_sha12": "a7e08af7e126",
     "instrument": "eval/rover/r507pre/exec_precondition.py",
-    "instrument_sha12": "15cfaf2c0ac3",
+    "instrument_sha12": "350afbc61ecc",
     "binding": "audit-pin",
-    "audited_by_round": "R523"
+    "audited_by_round": "R529"
    },
    "negative_control": "过宽负控: 真产物树不受影响 —— w2 的 agentA/agentO/codex 三快照照常判分 (58/58 · 31/58 · 58/58), 即修复只把「空」判成不可验收, 不改变已有产物的判分结果",
    "owner_round": "R521"
@@ -6130,9 +6130,9 @@
     "pin_reason": "archived-per-round",
     "artifact_sha12": "308d9ba985ce",
     "instrument": "eval/rover/r507pre/exec_precondition.py",
-    "instrument_sha12": "15cfaf2c0ac3",
+    "instrument_sha12": "350afbc61ecc",
     "binding": "audit-pin",
-    "audited_by_round": "R523"
+    "audited_by_round": "R529"
    },
    "negative_control": "过宽负控: 真产物树不受影响 —— w2 的 agentA/agentO/codex 三快照照常判分 (58/58 · 31/58 · 58/58), 即修复只把「空」判成不可验收, 不改变已有产物的判分结果",
    "owner_round": "R522"
@@ -6187,10 +6187,10 @@
     "pin_status": "frozen",
     "pin_reason": "archived-per-round",
     "artifact_sha12": "90dbc07d0028",
-    "instrument": "eval/rover/r507pre/exec_precondition.py",
-    "instrument_sha12": "15cfaf2c0ac3",
+    "instrument": "eval/rover/r523/nc_semantics_r523.py",
+    "instrument_sha12": "693767974881",
     "binding": "audit-pin",
-    "audited_by_round": "R523"
+    "audited_by_round": "R529"
    },
    "negative_control": "过宽负控 (防放水): NC3 require 臂失败 ⇒ rc=1 且 BLOCKED 点名; NC4 未声明臂存在 ⇒ rc=1 UNDECLARED; NC5 验收面臂缺判据件 ⇒ rc=1; NC7 无预注册 ⇒ 全臂皆验收面 ⇒ rc=1。过窄负控 (防误伤): NC1 全对 ⇒ rc=0; NC2/NC6 非验收面失败 ⇒ rc=0 但读数列打印。同器重跑旧轮 (r521/r522) 判决不变, 证明只影响被声明为非验收面的臂。",
    "owner_round": "R523"
@@ -6607,6 +6607,91 @@
    },
    "negative_control": "① 正控: `layout_ok` 树在**树根**实跑必须 58/58 (防扫法恒假; 实测 22/26 全对, 4 棵真部分错 ⇒ 扫法可分辨); ② 同一棵树两种跑法读数不同 (R525 w3 agentA1: 树根 0/58 vs 漂移目录 58/58) ⇒ 分类不是恒值。",
    "owner_round": "R528"
+  },
+  {
+   "id": "internal.r529-unreliable-policy-precondition",
+   "level": "L4",
+   "capability": "**外部真值失败窗 `unreliable` 判据化 (R529)**: 预注册驱动的前置器策略分支 —— 当且仅当预注册含 `unreliable_policy`(rule=truth_arm_window_unavailable ∧ declared_before_run=true ∧ `policy_declared_ts` 不晚于该窗 artifacts.json mtime) 时, 该窗**外侧(外部真值)臂**未全对/缺席 ⇒ 该臂从验收面移出并记 `policy_demoted`/`unreliable_windows`(仍在全局 `blocked` 单列, 不隐藏); **本侧(agent*)臂失败一律不得被吞**(B1)。同时新增 `DECLARED_ARM_ABSENT` 硬闸(声明在 require 却无产物目录 ⇒ 阻塞)与 `UNDECLARED_SCOPE` 记账。无该 key ⇒ 分支不可达, 历史轮 rc/验收面逐字段不变(B3 实测 R528 rc 1→1, diffs=[])。真实数据首用: w3 codex 漏判 1 例(`\\u0007` 码点 <0x20 必须 ERR) ⇒ `policy_demoted=['w3/codex']`, removed_msgs=3, 本侧 30/30 不受影响。",
+   "covers": [
+    "eval/rover/r507pre/exec_precondition.py",
+    "eval/rover/r529/nc_policy_r529.py",
+    "eval/rover/r529/nc_historical_r529.py",
+    "eval/rover/r529/evidence/nc-policy-r529.json",
+    "eval/rover/r529/evidence/nc-historical-round-r529.json",
+    "eval/rover/r529/prereg-r529.json"
+   ],
+   "evidence_cmd": "python3 eval/rover/r529/nc_policy_r529.py && python3 eval/rover/r529/nc_historical_r529.py && python3 eval/rover/r507pre/exec_precondition.py --round r529 --out eval/rover/r507pre/precondition-r529.json",
+   "evidence_path": "eval/rover/r529/evidence/nc-policy-r529.json",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "96cd34eaa298",
+    "instrument": "eval/rover/r507pre/exec_precondition.py",
+    "instrument_sha12": "350afbc61ecc",
+    "binding": "audit-pin",
+    "audited_by_round": "R529"
+   },
+   "negative_control": "6/6 红绿对齐: NC1 外侧错+本侧对+有策略 ⇒ rc=0 且剔除; **NC2 本侧也错 ⇒ rc=1**(不放水); NC3 artifacts 背时序 ⇒ `windows_predate_policy` 策略整体拒绝; NC4 无 key ⇒ rc=1; NC5 外侧臂目录缺席 ⇒ rc=0 且 `declared_absent=[]` 不残留; **NC6 外侧臂未写进 require 的窗 ⇒ 仍剔除**(修 `seen` 键匹配 bug 的回归陷阱, 该 bug 由真实 w3 窗暴露: 臂键 `codex/t1` vs 臂级模式 `*/codex` 恒不匹配)。",
+   "owner_round": "R529"
+  },
+  {
+   "id": "internal.r529-second-family-toolkit-fixture",
+   "level": "L3",
+   "capability": "**第二题族(非游戏)夹具 + 双判分器 (R529)**: 从 `eval/probe/tasks.py`(seed 20260917) 生成多文件工具包题 `toolkit-multimodule-v1` —— 工作根下 `toolkit/`(vm.py/jsonmini.py/__main__.py/__init__.py), 验收形态 `python3 -m toolkit <vm|jsonmini>`; 家族 `vm_run`(12 例, 含 ERR 态) + `json_mini`(18 例, 含重复键/非法转义/`uXXXX` 码点 <0x20 ⇒ ERR)。判分两条**非同源**实现: 前置器用的用例脚本 `cases/run_cases_r529.py` 与冻结期判分器 `grade_f2_r529.py`(各自实跑同一题面形态)。",
+   "covers": [
+    "eval/rover/r529/build_fixture_r529.py",
+    "eval/rover/r529/j1b_grader_nc_r529.py",
+    "eval/rover/r529/cases/run_cases_r529.py",
+    "eval/rover/r529/cases/cases-r529-f2.json",
+    "eval/rover/r529/grade_f2_r529.py",
+    "eval/rover/r529/taskset-r529.json",
+    "eval/rover/r529/evidence/nc-fixture-r529.json",
+    "eval/rover/r529/evidence/nc-fixture-grader-r529.json"
+   ],
+   "evidence_cmd": "python3 eval/rover/r529/build_fixture_r529.py && python3 eval/rover/r529/j1b_grader_nc_r529.py",
+   "evidence_path": "eval/rover/r529/evidence/nc-fixture-r529.json",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "76bcd50b6ebd",
+    "instrument": "eval/rover/r529/build_fixture_r529.py",
+    "instrument_sha12": "5b7e29ded4bd",
+    "binding": "audit-pin",
+    "audited_by_round": "R529"
+   },
+   "negative_control": "oracle(生成器 ref+fmt) ⇒ 30/30 rc=0; 变异体 `vm_noerr`(非法态不报 ERR) 26/30、`json_desc`(对象键降序) 21/30、空树 0/30 —— **两套判分器各自跑出同一组红绿**; 另: 夹具构建期正控曾抓到真缺陷(`-I` 隔离模式忽略 PYTHONPATH ⇒ `no module named toolkit`), 已修并留痕。",
+   "owner_round": "R529"
+  },
+  {
+   "id": "internal.r529-window-face-and-completion-breakdown",
+   "level": "L3",
+   "capability": "**三窗对照面 + completion 按类分解 (R529)**: 3 窗 × 3 臂(A0-off 消融基线 / A1-on 处理 / C-codex 外部真值同模型) × 2 题族(58 例锚 F1 + 30 例新族 F2) = 18 格; 冻结进仓内不可变快照后判分; completion 分三类(末端正文 A / 工具调用骨架 C / 逐步叙述 B, 取自 `adapter/side-*.json` 的 response.usage+tool_calls)+ 天花板算式 `ceil = 首呼 + 末呼 + (n-2)×观测最小纯工具调用`。读数: F1 本侧 58/58×3 窗, F2 本侧 30/30×3 窗; F2 同窗 A1-on/A0-off calls 0.667/0.714/4.125 倍(**3 窗极差极大 ⇒ 本轮不宣称降幅**); headroom 79.2%/81.8%/67.8%, 叙述占比 14.3%/4.5%/18.5% ⇒ 支配项是 C(工具调用载荷)。",
+   "covers": [
+    "eval/rover/r529/run_r529.sh",
+    "eval/rover/r529/run_all_r529.sh",
+    "eval/rover/r529/freeze_r529.py",
+    "eval/rover/r529/kpi_r529.py",
+    "eval/rover/r529/structure_check_r529.py",
+    "eval/rover/r529/completion_breakdown_r529.py",
+    "eval/rover/r529/evidence/completion-breakdown-r529.json",
+    "eval/rover/r507pre/precondition-r529.json"
+   ],
+   "evidence_cmd": "bash eval/rover/r529/run_all_r529.sh 0917-2012 w1 w2 w3 && python3 eval/rover/r529/completion_breakdown_r529.py",
+   "evidence_path": "eval/rover/r529/evidence/completion-breakdown-r529.json",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "a6633b53fe72",
+    "instrument": "eval/rover/r529/completion_breakdown_r529.py",
+    "instrument_sha12": "18f2f59317cc",
+    "binding": "audit-pin",
+    "audited_by_round": "R529"
+   },
+   "negative_control": "① 基线臂 A0-off 在 w2/F1 实跑 55/58 ⇒ 前置器 rc=1 如实阻塞(不假绿); ② 外部真值臂 w3/F2 实跑 29/30 ⇒ `policy_demoted`, 但仍在全局 blocked 单列(不隐藏); ③ 起手闸 w1 两次采样不足(内存 2597<2650MB)被拒 ⇒ 该次运行作废、清 LSP 后重跑(不作读数)。",
+   "owner_round": "R529"
   }
  ],
  "aot_check_policy": "release_tag_only",

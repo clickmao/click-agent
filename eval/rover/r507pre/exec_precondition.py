@@ -256,6 +256,70 @@ def _early_scope(win, arm, key, what, scope, out):
     return {"scope": sc, "blocking": False}
 
 
+def _prereg_of(src):
+    """载入 prereg 全文（策略与 evidence_scope 同源; 缺 ⇒ {}）。"""
+    try:
+        return load(src) or {}
+    except Exception:
+        return {}
+
+
+def _policy_plan(prereg, prereg_src, opens):
+    """R529 J4: `unreliable_policy` 机检 (全部条目不满足 ⇒ 拒绝生效, fail-closed)。
+
+    `opens` = [(win, artifacts_path), ...]. 三条硬门:
+      A1 rule 匹配 ∧ declared_before_run is True;
+      A2 `policy_declared_ts` 可解析 ∧ prereg 文件自身 mtime >= 该 ts（时间戳不得是事后/虚构的）;
+      A3 该轮**每个窗**的 artifacts.json mtime >= policy_declared_ts（先声明再跑; 违反 ⇒ 整体拒绝）。
+    返回 {"active": bool, "reason": str, "excluded_windows": [...], "checks": {...}}。
+    """
+    info = {"active": False, "reason": "", "checks": {}, "declared_ts": None}
+    pol = prereg.get("unreliable_policy")
+    if not isinstance(pol, dict):
+        info["reason"] = "no_policy_key"
+        return info
+    if pol.get("rule") != "truth_arm_window_unavailable" or pol.get("declared_before_run") is not True:
+        info["reason"] = "rule_or_flag_mismatch"
+        return info
+    raw = pol.get("policy_declared_ts")
+    try:
+        from datetime import datetime, timezone
+        ts = datetime.fromisoformat(str(raw).replace("Z", "+00:00"))
+        if ts.tzinfo is None:
+            ts = ts.replace(tzinfo=timezone.utc)
+        epoch = ts.timestamp()
+    except Exception:
+        info["reason"] = "policy_ts_unparsable:%s" % raw
+        return info
+    info["declared_ts"] = raw
+    try:
+        p_epoch = os.path.getmtime(prereg_src)
+    except OSError:
+        info["reason"] = "prereg_unstattable"
+        return info
+    info["checks"]["A2_prereg_mtime_not_before_ts"] = bool(p_epoch >= epoch - 1.0)
+    if not info["checks"]["A2_prereg_mtime_not_before_ts"]:
+        info["reason"] = "prereg_mtime_predates_declared_ts"
+        return info
+    late = []
+    for win, apath in opens:
+        try:
+            if os.path.getmtime(apath) < epoch - 1.0:
+                late.append(win)
+        except OSError:
+            late.append(win + "(stat_fail)")
+    info["checks"]["A3_all_windows_after_ts"] = (not late)
+    info["checks"]["A3_late_windows"] = late
+    if late:
+        info["reason"] = "windows_predate_policy:" + ",".join(late)
+        return info
+    info["active"] = True
+    info["truth_arm_patterns"] = list(pol.get("truth_arm_patterns") or [])
+    info["effect"] = pol.get("effect")
+    info["bars"] = pol.get("bars")
+    return info
+
+
 def _resolve_scope(scope_arg, ts_path, rounds_dir=None):
     """验收面来源: 显式 `--scope`（事后）> 题集同目录 `prereg-<名>.json` 内的 `evidence_scope`（预注册）。
     返回 (scope_dict|None, source_path|None, is_prereg:bool)。**缺 = 全臂皆验收面**（不放水）。"""
@@ -280,6 +344,7 @@ def run_project(label, taskset_path, win_root, snap_root, wins, out_path, timeou
     out = {"label": label, "layout": "project", "taskset": rel(taskset_path),
            "snapshot_root": rel(snap_root), "tasks_n": len(tasks), "windows_n": len(wins),
            "rule": "可验收前置(project 布局): 仓内不可变快照 ⇒ 独立物化到全新临时目录 ⇒ python3 -I -B 实跑隐藏用例脚本 ⇒ 逐条机械判对; 自报 all_pass 只作对照不吃",
+           "declared_absent": [],
            "scope_source": (rel(scope_src) if scope_src else None),
            "scope_prereg": bool(scope_prereg),
            "scope_require": (scope or {}).get("require"),
@@ -360,6 +425,58 @@ def run_project(label, taskset_path, win_root, snap_root, wins, out_path, timeou
                         out["blocked_scoped"].append(msg)
                 wrec["arms"][key] = rec
         out["windows"][win] = wrec
+    # ---- R529 J4(a): 声明臂缺席 ⇒ fail-closed (缺臂不得被静默跳过而成假绿) ----
+    if scope is not None:
+        for win in wins:
+            for skey in [s for s in (scope.get("require") or []) if s.startswith(win + "/")]:
+                adir = os.path.join(snap_root, win, skey.split("/", 1)[1])
+                if not os.path.isdir(adir):
+                    out["declared_absent"].append(skey)
+                    out["blocked"].append("DECLARED_ARM_ABSENT %s (声明为验收面成员但快照缺失)" % skey)
+                    out["blocked_scoped"].append("DECLARED_ARM_ABSENT %s (声明为验收面成员但快照缺失)" % skey)
+    # ---- R529 J4(b): 外部真值失败窗 unreliable 判据化 (只能靠预注册驱动; 无 key ⇒ 本段完全不生效 ⇒ 历史轮 rc 不变) ----
+    _prereg_obj = _prereg_of(scope_src) if (scope_prereg and scope_src) else {}
+    pol = _policy_plan(_prereg_obj, scope_src, [(w, os.path.join(win_root, w, "artifacts.json")) for w in wins])
+    out["policy"] = pol
+    if pol.get("active"):
+        pats = [p for p in (pol.get("truth_arm_patterns") or []) if p]
+        demoted, unreli = [], []
+        for win in wins:
+            wrec2 = out["windows"].get(win) or {"arms": {}}
+            declared = [s.split("/", 1)[1] for s in (scope or {}).get("require") or []
+                        if s.startswith(win + "/") and any(fnmatch.fnmatch(s, p) for p in pats)]
+            # 臂键形如 "codex/t1"; 预注册模式是**臂级** "*/codex" ⇒ 必须用臂名 (去 tid) 去匹配
+            seen = sorted({k.split("/")[0] for k in wrec2["arms"]
+                           if any(fnmatch.fnmatch("%s/%s" % (win, k.split("/")[0]), p) for p in pats)})
+            cand = sorted(set(declared) | set(seen))
+            bad = []
+            for a in cand:
+                rows = {k: v for k, v in wrec2["arms"].items() if k.split("/")[0] == a}
+                ok = bool(rows) and all(v.get("correct") for v in rows.values())
+                if not ok:
+                    bad.append(a)
+            if not bad:
+                continue
+            unreli.append({"window": win, "truth_arms_unavailable": bad,
+                           "note": "外侧(外部真值)臂未全对/缺席 ⇒ 该窗对照列标 unreliable; 本侧臂失败不受本规则影响"})
+            for a in bad:
+                demoted.append((win, a))
+                for k, v in wrec2["arms"].items():
+                    if k.split("/")[0] == a:
+                        v["blocking"] = False
+                        v["policy"] = "unreliable_excluded"
+        if demoted:
+            ptid = tuple("%s/%s/" % (w, a) for w, a in demoted)
+            parm = tuple("DECLARED_ARM_ABSENT %s/%s" % (w, a) for w, a in demoted)
+            pund = tuple("UNDECLARED_SCOPE %s/%s" % (w, a) for w, a in demoted)
+            before_n = len(out["blocked_scoped"])
+            out["blocked_scoped"] = [m for m in out["blocked_scoped"]
+                                     if not (m.startswith(ptid) or m.startswith(parm) or m.startswith(pund))]
+            out["policy_demoted"] = sorted("%s/%s" % (w, a) for w, a in demoted)
+            out["policy_removed_msgs"] = before_n - len(out["blocked_scoped"])
+            for s in [x for x in list(out["declared_absent"]) if any(x.startswith("%s/%s" % (w, a)) for w, a in demoted)]:
+                out["declared_absent"].remove(s)
+        out["unreliable_windows"] = unreli
     out["self_report_agrees"] = not out["self_report_mismatch"]
     out["executable_and_correct"] = (not out["blocked"]) and out["self_report_agrees"]
     out["acceptable_scoped"] = ((not out["blocked_scoped"]) and out["self_report_agrees"]
@@ -376,6 +493,14 @@ def run_project(label, taskset_path, win_root, snap_root, wins, out_path, timeou
             print("   %-16s side=%-6s cases=%-6s rc=%-4s correct=%-5s claimed=%-5s %s" %
                   (key, v.get("side"), "%s/%s" % (v.get("cases_pass"), v.get("cases_n")), v.get("rc"),
                    v.get("correct"), v.get("claimed_all_pass"), ",".join(v.get("failed_cases") or [])))
+    print("DECLARED_ABSENT=%s" % (",".join(out["declared_absent"]) or "-"))
+    print("POLICY_ACTIVE=%s reason=%s ts=%s checks=%s" % ((out.get("policy") or {}).get("active"),
+          (out.get("policy") or {}).get("reason"), (out.get("policy") or {}).get("declared_ts"),
+          json.dumps((out.get("policy") or {}).get("checks"), ensure_ascii=False)))
+    if out.get("unreliable_windows"):
+        print("UNRELIABLE_WINDOWS=" + json.dumps(out["unreliable_windows"], ensure_ascii=False))
+    if out.get("policy_demoted"):
+        print("POLICY_DEMOTED=%s (从验收面移出 %d 条; 非本侧臂)" % (",".join(out["policy_demoted"]), out.get("policy_removed_msgs")))
     print("SELF_REPORT_AGREES=%s" % out["self_report_agrees"])
     print("EXECUTABLE_AND_CORRECT=%s (全局, 任一臂-题不许错)" % out["executable_and_correct"])
     print("SCOPE_SOURCE=%s PREREG=%s" % (out["scope_source"], out["scope_prereg"]))

@@ -1,0 +1,120 @@
+{
+ "round": "R529",
+ "instrument": "eval/rover/r507pre/exec_precondition.py",
+ "exec_sha256": "350afbc61eccc2ba1b302087c4d8a71eca54bf7a7e4efc70b7091fd594f9369c",
+ "cases": [
+  {
+   "nc": "NC1_truth_fail_demoted",
+   "rc": 0,
+   "expect_rc": 0,
+   "policy_active": true,
+   "expect_policy": true,
+   "demoted": [
+    "w1/codex"
+   ],
+   "blocked_scoped": 0,
+   "policy_reason": "",
+   "ok": true,
+   "unreliable_windows": [
+    {
+     "window": "w1",
+     "truth_arms_unavailable": [
+      "codex"
+     ],
+     "note": "外侧(外部真值)臂未全对/缺席 ⇒ 该窗对照列标 unreliable; 本侧臂失败不受本规则影响"
+    }
+   ]
+  },
+  {
+   "nc": "NC2_agent_fail_not_swallowed",
+   "rc": 1,
+   "expect_rc": 1,
+   "policy_active": true,
+   "expect_policy": true,
+   "demoted": [
+    "w1/codex"
+   ],
+   "blocked_scoped": 1,
+   "policy_reason": "",
+   "ok": true,
+   "unreliable_windows": [
+    {
+     "window": "w1",
+     "truth_arms_unavailable": [
+      "codex"
+     ],
+     "note": "外侧(外部真值)臂未全对/缺席 ⇒ 该窗对照列标 unreliable; 本侧臂失败不受本规则影响"
+    }
+   ]
+  },
+  {
+   "nc": "NC3_backdated_artifacts",
+   "rc": 1,
+   "expect_rc": 1,
+   "policy_active": false,
+   "expect_policy": false,
+   "demoted": [],
+   "blocked_scoped": 1,
+   "policy_reason": "windows_predate_policy:w1",
+   "ok": true,
+   "unreliable_windows": null
+  },
+  {
+   "nc": "NC4_no_policy_key",
+   "rc": 1,
+   "expect_rc": 1,
+   "policy_active": false,
+   "expect_policy": false,
+   "demoted": [],
+   "blocked_scoped": 1,
+   "policy_reason": "no_policy_key",
+   "ok": true,
+   "unreliable_windows": null
+  },
+  {
+   "nc": "NC5_absent_truth_arm",
+   "rc": 0,
+   "expect_rc": 0,
+   "policy_active": true,
+   "expect_policy": true,
+   "demoted": [
+    "w1/codex"
+   ],
+   "blocked_scoped": 0,
+   "policy_reason": "",
+   "ok": true,
+   "unreliable_windows": [
+    {
+     "window": "w1",
+     "truth_arms_unavailable": [
+      "codex"
+     ],
+     "note": "外侧(外部真值)臂未全对/缺席 ⇒ 该窗对照列标 unreliable; 本侧臂失败不受本规则影响"
+    }
+   ]
+  },
+  {
+   "nc": "NC6_truth_arm_undeclared_window",
+   "rc": 0,
+   "expect_rc": 0,
+   "policy_active": true,
+   "expect_policy": true,
+   "demoted": [
+    "w1/codex"
+   ],
+   "blocked_scoped": 0,
+   "policy_reason": "",
+   "ok": true,
+   "unreliable_windows": [
+    {
+     "window": "w1",
+     "truth_arms_unavailable": [
+      "codex"
+     ],
+     "note": "外侧(外部真值)臂未全对/缺席 ⇒ 该窗对照列标 unreliable; 本侧臂失败不受本规则影响"
+    }
+   ]
+  }
+ ],
+ "all_ok": true
+}

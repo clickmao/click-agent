@@ -1,0 +1,26 @@
+"""games 包 CLI 入口: python3 -m games <game_id>
+
+从标准输入读取全部文本, 调用对应游戏模块的 solve, 把返回值写到标准输出。
+"""
+import sys
+
+from . import life, sub, nim, wythoff
+
+_GAMES = {
+    'life': life.solve,
+    'sub': sub.solve,
+    'nim': nim.solve,
+    'wythoff': wythoff.solve,
+}
+
+
+def main(argv):
+    if len(argv) != 1 or argv[0] not in _GAMES:
+        return 2  # 静默失败: 不向 stderr 输出任何文字
+    text = sys.stdin.read()
+    sys.stdout.write(_GAMES[argv[0]](text))
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv[1:]))

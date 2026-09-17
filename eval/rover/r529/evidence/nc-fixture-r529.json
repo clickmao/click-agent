@@ -1,0 +1,94 @@
+{
+ "round": "R529",
+ "builder": "eval/rover/r529/build_fixture_r529.py",
+ "seed": 20260917,
+ "f1_prompt_sha256": "516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3",
+ "f2_prompt_sha256": "9fbfaeb3a17bea23ef87ce684561a01e7ae319ccc6005d37e812c7b910cac444",
+ "f2_cases_sha256": "3a52af3b76786488ee885a2bc16ddeab6565af84d8045ef252674614467aada9",
+ "src_tids": {
+  "vm_run": "p003",
+  "json_mini": "p014"
+ },
+ "controls": {
+  "oracle": {
+   "rc": 0,
+   "pass": 30,
+   "fail": 0,
+   "tail": [
+    "R529_CASES 30/30"
+   ]
+  },
+  "nc_vm_noerr": {
+   "rc": 1,
+   "pass": 26,
+   "fail": 4,
+   "tail": [
+    "R529_CASES 26/30"
+   ]
+  },
+  "nc_json_desc": {
+   "rc": 1,
+   "pass": 21,
+   "fail": 9,
+   "tail": [
+    "R529_CASES 21/30"
+   ]
+  },
+  "nc_empty": {
+   "rc": 1,
+   "pass": 0,
+   "fail": 30,
+   "tail": [
+    "R529_CASES 0/30"
+   ]
+  }
+ },
+ "verdict": {
+  "J1_positive_control_30of30": true,
+  "J1_negative_controls_all_red": true,
+  "J1_f1_prompt_sha_match": true,
+  "cases_total": 30,
+  "public_total": 4
+ },
+ "j1_pass": true,
+ "j1b_grader": {
+  "grader": "eval/rover/r529/grade_f2_r529.py",
+  "rows": [
+   {
+    "tree": "oracle",
+    "grader_rc": 0,
+    "passed": 30,
+    "total": 30,
+    "public": "0/0",
+    "hidden": "30/30"
+   },
+   {
+    "tree": "nc_vm_noerr",
+    "grader_rc": 1,
+    "passed": 26,
+    "total": 30,
+    "public": "0/0",
+    "hidden": "26/30"
+   },
+   {
+    "tree": "nc_json_desc",
+    "grader_rc": 1,
+    "passed": 21,
+    "total": 30,
+    "public": "0/0",
+    "hidden": "21/30"
+   },
+   {
+    "tree": "nc_empty",
+    "grader_rc": 1,
+    "passed": 0,
+    "total": 30,
+    "public": "0/0",
+    "hidden": "0/30"
+   }
+  ],
+  "all_ok": true,
+  "note": "第二判分器与前置器用例脚本为两条独立实现; oracle 绿 ∧ 三变异体红 ⇒ 有牙",
+  "grader_sha256": "2d13b779515499e7859cf72e29db7ce939eb6cbcb3577281e0cf32a72dae32e1"
+ }
+}

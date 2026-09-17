@@ -1,0 +1,128 @@
+{
+ "round": "R529",
+ "title": "主线扩面(第二题族, 非游戏) + 外部真值失败窗 unreliable 判据化(J4 收口) + completion 按类分解天花板算式",
+ "prereg_sealed_ts": "2026-09-17T12:09:15Z",
+ "sealed_note": "本文件在任何臂启动之前落盘; 下行的 policy_declared_ts 与各窗 artifacts.json 的 mtime 由前置器机检比对 (后者早于前者 ⇒ 本策略拒绝生效, rc 保持 1)",
+ "single_variable": "env AGENTFRAMEWORK_ACTION_DISCIPLINE (off/on) —— 仅 F1 锚臂用作消融; F2 只跑处理臂 A1-on 与外部真值 C-codex",
+ "families": {
+  "F1": {
+   "name": "games-longtask-v1",
+   "role": "可比锚 (58 隐藏用例族; 题面/R519-521 逐字节复用)",
+   "prompt_sha256_pin": "516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3",
+   "cases_sha256_pin_expected": "270128eb"
+  },
+  "F2": {
+   "name": "toolkit-multimodule-v1",
+   "role": "**新增第二题族 (不同族: 栈式虚拟机解释器 + 递归下降 JSON 规范化器, 非游戏)**",
+   "material_source": "eval/probe/tasks.py --kind program --seed 20260917 (双路径独立校验生成器; 每条用例由 ref/check 两条独立实现比对后才发题)",
+   "selection_rule": "pool = gen_program_task(1..40, seed=20260917); 取家族首个: vm_run (12 hidden) + json_mini (18 hidden) ⇒ 隐藏用例 30",
+   "task_shape": "多文件包 toolkit/ (vm.py + jsonmini.py + __main__.py), CLI = python3 -m toolkit <vm|jsonmini>, 工作根为验收形态"
+  }
+ },
+ "window_plan": {
+  "window": "w1",
+  "arms": [
+   {
+    "run": "A0-off",
+    "side": "agent",
+    "snapdir": "agentA0-off",
+    "tag": "A0-off",
+    "families": [
+     "F1",
+     "F2"
+    ],
+    "env": "AGENTFRAMEWORK_ACTION_DISCIPLINE=off"
+   },
+   {
+    "run": "A1-on",
+    "side": "agent",
+    "snapdir": "agentA1-on",
+    "tag": "A1-on",
+    "families": [
+     "F1",
+     "F2"
+    ],
+    "env": ""
+   },
+   {
+    "run": "C-codex",
+    "side": "codex",
+    "snapdir": "codex",
+    "tag": "C-codex",
+    "families": [
+     "F1",
+     "F2"
+    ]
+   }
+  ],
+  "tasks_per_arm": [
+   "g1(F1 锚, 58 隐藏用例)",
+   "t1(F2 新族, 30 隐藏用例)"
+  ],
+  "snapshot_layout": "snapshots/w1/<snapdir>/<tid>/**",
+  "note": "快照目录名 = 自报臂标签 (agentA0-off/agentA1-on/codex) ⇒ 前置器 _dir_to_tag 与 report.json 严格对齐, 消除 claim_unmapped 静默"
+ },
+ "evidence_scope": {
+  "require": [
+   "w1/agentA0-off",
+   "w1/agentA1-on",
+   "w1/codex"
+  ],
+  "nonrequired": []
+ },
+ "unreliable_policy": {
+  "rule": "truth_arm_window_unavailable",
+  "declared_before_run": true,
+  "policy_declared_ts": "2026-09-17T12:09:15Z",
+  "truth_arm_patterns": [
+   "*/codex"
+  ],
+  "effect": "该窗外侧(codex)臂未全对 ⇒ 该窗对照列标 unreliable 并**从验收面移出**, 只单列; 验收面剩余部分仍按 require ∪ 未声明 判定",
+  "bars": [
+   "B1 本侧(agent*)臂的任何失败一律不得被本规则吞掉 (始终进 blocked_scoped)",
+   "B2 策略须在起臂前声明: 任一窗 artifacts.json 的 mtime 早于 policy_declared_ts ⇒ 策略整体拒绝生效 rc 保持 1",
+   "B3 规则不得改变历史轮 rc (r521/r522/r523/r528 的 prereg 无本键 ⇒ 逐位不变)"
+  ],
+  "posthoc_forbidden": "不得事后收窄 evidence_scope / 不得事后追加本键"
+ },
+ "predictions": {
+  "P1_f2_quality": "本侧 F2 处理臂 30/30 (题族新增, 不预设)",
+  "P2_ceiling_formula": "completion 的下一杠杆可被按类分解为 收尾正文 + 工具回执回灌 + 逐步叙述 三类; 天花板 = 单步最小 = 一次计划 + 每次一个工具调用 + 收尾一次",
+  "calls_drop_pct_min": 30,
+  "new_prompt_drop_pct_min": 30,
+  "completion_drop_pct_min": 40
+ },
+ "criteria": {
+  "J1": "F2 夹具契约机检: 正控 (参考实现) 30/30 PASS ∧ 3 变异体全红 ⇒ 用例脚本有牙",
+  "J2": "unreliable 策略: B1/B2/B3 三条机检全过 (含负控)",
+  "J3": "铁律 11 前置器 --round r529 rc=0 (策略生效后验收面 = 本侧 2 臂 + 外侧窗; 外侧窗不可靠 ⇒ 移出并单列)",
+  "J4": "completion 按类分解出数 (三类 + 天花板算式), 只出记录列, 阈值留待下轮",
+  "J5": "F1 锚: 本侧 58/58 (不得低于锚)"
+ },
+ "kpi_columns": [
+  "calls",
+  "new_prompt(=prompt-cached)",
+  "cached",
+  "hit_pct",
+  "completion",
+  "cases_pass/total"
+ ],
+ "forbidden": [
+  "跨轮相减",
+  "模型裁判",
+  "事后补记",
+  "事后收窄验收面",
+  "push"
+ ],
+ "prereg_amendments": [
+  {
+   "ts": "2026-09-17T12:09:15Z",
+   "what": "window_plan 追加 A0-off 臂并改为两题族同臂 (--tasks g1,t1); evidence_scope.require 同步",
+   "why": "判据 calls/new_prompt/completion 降幅需要**同窗**基线; 跨轮相减是本轮明令禁止的口径 ⇒ 必须在本轮窗内跑 A0-off",
+   "still_before_arms": true,
+   "note": "修正: 原写 12:22:00Z 系笔误(超前于真实时钟 13 分钟) ⇒ 一律改用真实时钟取值"
+  }
+ ],
+ "taskset_sha256": "20e22e285bda51113ddc4d8ce92bd411a44647be3a5e7d6573a22d149d7147fe",
+ "prereg_self_sha256_note": "本文件 sha256 在 freeze 时记入 evidence/index-r529.json"
+}

@@ -1,0 +1,178 @@
+tid=g1 family=games-longtask-v1 prompt_sha256=516f3208963c6e66 declared=516f3208963c6e66 self_consistent=True anchor_pin_ok=True cases=58
+tid=t1 family=toolkit-multimodule-v1 prompt_sha256=9fbfaeb3a17bea23 declared=9fbfaeb3a17bea23 self_consistent=True anchor_pin_ok=True cases=30
+INPUT_PINS_OK=True
+[20:11:44] 同输入硬门 PASS (F1 钉锚 + F2 自述 sha 一致)
+[20:11:47] 起手闸 1: PASS
+[20:11:51] 起手闸 2: PASS
+[20:11:54] adapter 就绪 (pid=2981423, dump=/home/agentuser/AgentFramework/eval/rover/r529/run-0917-2012-w1/adapter, FULL=1)
+[20:12:47] 臂 A0-off rc=0 adapter_range=[1,19] ({"tid": "t1", "side": "agent", "arm": "A0-off", "rc": 0, "elapsed_s": 26.49, "ledger_calls": 10, "ledger_steps": 9, "reply_chars": 1669, "adapter_range": [8, 19]})
+[20:14:11] 臂 A1-on rc=0 adapter_range=[20,53] ({"tid": "t1", "side": "agent", "arm": "A1-on", "rc": 0, "elapsed_s": 25.18, "ledger_calls": 9, "ledger_steps": 7, "reply_chars": 1264, "adapter_range": [46, 53]})
+[20:15:12] 臂 C-codex rc=0 adapter_range=[1,23] ({"tid": "t1", "side": "codex", "arm": "C-codex", "rc": 0, "elapsed_s": 42.8, "ledger_calls": 0, "ledger_steps": 0, "reply_chars": 1157, "adapter_range": [6, 23]})
+处理臂=A1-on 调用=34 system 字符=9968 不同 system 段=2 (07d9496b,5d31d339)
+首调用: [{"run": "adapter", "system_chars": 9968, "cached": 7552, "fresh": 598, "prompt": 8150}]
+步间涨幅中位=473 p90=1804.2 新算中位=303.5 回执中位=315.0 p90=595.0 正文中位=None
+codex 参照: {"codex_calls": 23, "codex_first": {"system_chars": 14849, "cached": 5888, "fresh": 1669, "prompt": 7557}, "codex_step_growth_median": 313.0, "codex_receipt_chars_median": 147, "codex_body_median": null}
+verdict: {"M1_system_constant": false, "M2_no_telemetry_in_prompt": true, "M3_first_call_cache": true, "M4_step_growth": true, "M5_receipts_and_narration": true, "M6_user_turn_task_only": true, "S1_section_order": true, "S2_sections_constant": true, "S3_section_size_bound": true, "S4_prefix_declaration": true, "S5_tail_only_in_user": true}
+[20:15:12] 前缀机检 rc=1 (0=M1..M5 全过; 非 0 ⇒ 本轮不得宣称任何降幅) [range A0=1,19 A1=20,53 also=]
+冻结 agentA0-off/g1     side=agent  cases=58/58 calls=7 tok=70702
+冻结 agentA0-off/t1     side=agent  cases=30/30 calls=12 tok=119525
+冻结 agentA1-on/g1      side=agent  cases=58/58 calls=26 tok=450648
+冻结 agentA1-on/t1      side=agent  cases=30/30 calls=8 tok=84193
+冻结 codex/g1           side=codex  cases=58/58 calls=5 tok=42939
+冻结 codex/t1           side=codex  cases=30/30 calls=18 tok=198164
+WROTE eval/rover/r529/evidence/windows/w1
+[20:15:20] 冻结/汇总 rc=0
+arm      tid       cases       calls new_prompt     cached     hit% completion
+------------------------------------------------------------------------------
+A0-off   g1        58/58           7       2651      62464     95.9       5587
+A1-on    g1        58/58          26      11282     427520     97.4      11846
+C-codex  g1        58/58           5       3799      37376     90.8       1764
+A0-off   t1        30/30          12      10905     103168     90.4       5452
+A1-on    t1        30/30           8       4537      74112     94.2       5544
+C-codex  t1        30/30          18       8390     183808     95.6       5966
+F1(games-longtask-v1) ratios(A1/A0)={"calls": 3.714, "new_prompt": 4.256, "completion": 2.12} baseline_available=True
+   verdict={"quality_no_regression": true, "calls_drop_ge_30": false, "new_prompt_drop_ge_30": false, "completion_drop_ge_40": false, "external_truth_all_pass": true}
+F2(toolkit-multimodule-v1) ratios(A1/A0)={"calls": 0.667, "new_prompt": 0.416, "completion": 1.017} baseline_available=True
+   verdict={"quality_no_regression": true, "calls_drop_ge_30": true, "new_prompt_drop_ge_30": true, "completion_drop_ge_40": false, "external_truth_all_pass": true}
+KPI_F2_CORE_PASS=False (quality ∧ 三项降幅; external_truth_all_pass=True)
+F1_ANCHOR_QUALITY=58/58
+[20:15:20] KPI 分列判据 rc=1
+DISCOVER layout=project taskset=eval/rover/r529/taskset-r529.json windows=1 snapshot_root=eval/rover/r529/snapshots
+w1      arms=6 correct=6
+   agentA0-off/g1   side=agent  cases=58/58  rc=0    correct=True  claimed=True  
+   agentA0-off/t1   side=agent  cases=30/30  rc=0    correct=True  claimed=True  
+   agentA1-on/g1    side=agent  cases=58/58  rc=0    correct=True  claimed=True  
+   agentA1-on/t1    side=agent  cases=30/30  rc=0    correct=True  claimed=True  
+   codex/g1         side=codex  cases=58/58  rc=0    correct=True  claimed=True  
+   codex/t1         side=codex  cases=30/30  rc=0    correct=True  claimed=True  
+DECLARED_ABSENT=-
+POLICY_ACTIVE=True reason= ts=2026-09-17T12:09:15Z checks={"A2_prereg_mtime_not_before_ts": true, "A3_all_windows_after_ts": true, "A3_late_windows": []}
+SELF_REPORT_AGREES=True
+EXECUTABLE_AND_CORRECT=True (全局, 任一臂-题不许错)
+SCOPE_SOURCE=eval/rover/r529/prereg-r529.json PREREG=True
+ACCEPTABLE_SCOPED=True
+OUT=/home/agentuser/AgentFramework/eval/rover/r507pre/precondition-r529.json
+PRECOND_RC=0
+[20:15:29] PRECOND_RC=0 (0=可验收 / 1=未可验收 / 3=输入缺失)
+[20:15:30] 端口已释放
+[20:15:30] 完成: /home/agentuser/AgentFramework/eval/rover/r529/run-0917-2012-w1
+[driver] window=w1 rc=0 run=/home/agentuser/AgentFramework/eval/rover/r529/run-0917-2012-w1
+tid=g1 family=games-longtask-v1 prompt_sha256=516f3208963c6e66 declared=516f3208963c6e66 self_consistent=True anchor_pin_ok=True cases=58
+tid=t1 family=toolkit-multimodule-v1 prompt_sha256=9fbfaeb3a17bea23 declared=9fbfaeb3a17bea23 self_consistent=True anchor_pin_ok=True cases=30
+INPUT_PINS_OK=True
+[20:15:30] 同输入硬门 PASS (F1 钉锚 + F2 自述 sha 一致)
+[20:15:33] 起手闸 1: PASS
+[20:15:37] 起手闸 2: PASS
+[20:15:40] adapter 就绪 (pid=2985915, dump=/home/agentuser/AgentFramework/eval/rover/r529/run-0917-2012-w2/adapter, FULL=1)
+[20:16:44] 臂 A0-off rc=0 adapter_range=[1,21] ({"tid": "t1", "side": "agent", "arm": "A0-off", "rc": 0, "elapsed_s": 41.16, "ledger_calls": 16, "ledger_steps": 12, "reply_chars": 1769, "adapter_range": [8, 21]})
+[20:18:08] 臂 A1-on rc=0 adapter_range=[22,64] ({"tid": "t1", "side": "agent", "arm": "A1-on", "rc": 0, "elapsed_s": 28.27, "ledger_calls": 13, "ledger_steps": 9, "reply_chars": 1627, "adapter_range": [55, 64]})
+[20:34:39] 臂 C-codex rc=0 adapter_range=[1,518] ({"tid": "t1", "side": "codex", "arm": "C-codex", "rc": 0, "elapsed_s": 896.61, "ledger_calls": 0, "ledger_steps": 0, "reply_chars": 1403, "adapter_range": [43, 518]})
+处理臂=A1-on 调用=75 system 字符=9968 不同 system 段=2 (07d9496b,5d31d339)
+首调用: [{"run": "adapter", "system_chars": 9968, "cached": 7936, "fresh": 214, "prompt": 8150}]
+步间涨幅中位=471.5 p90=1557.5 新算中位=322 回执中位=373.0 p90=744.0 正文中位=None
+codex 参照: {"codex_calls": 541, "codex_first": {"system_chars": 14849, "cached": 6016, "fresh": 1541, "prompt": 7557}, "codex_step_growth_median": 317.0, "codex_receipt_chars_median": 142, "codex_body_median": null}
+verdict: {"M1_system_constant": false, "M2_no_telemetry_in_prompt": true, "M3_first_call_cache": true, "M4_step_growth": true, "M5_receipts_and_narration": true, "M6_user_turn_task_only": true, "S1_section_order": true, "S2_sections_constant": true, "S3_section_size_bound": true, "S4_prefix_declaration": true, "S5_tail_only_in_user": true}
+[20:34:40] 前缀机检 rc=1 (0=M1..M5 全过; 非 0 ⇒ 本轮不得宣称任何降幅) [range A0=1,21 A1=22,64 also= /home/agentuser/AgentFramework/eval/rover/r529/run-0917-2012-w1/adapter]
+冻结 agentA0-off/g1     side=agent  cases=55/58 calls=7 tok=68513
+冻结 agentA0-off/t1     side=agent  cases=30/30 calls=14 tok=198224
+冻结 agentA1-on/g1      side=agent  cases=58/58 calls=33 tok=587974
+冻结 agentA1-on/t1      side=agent  cases=30/30 calls=10 tok=125715
+冻结 codex/g1           side=codex  cases=58/58 calls=42 tok=819615
+冻结 codex/t1           side=codex  cases=30/30 calls=476 tok=47710311
+WROTE eval/rover/r529/evidence/windows/w2
+[20:34:48] 冻结/汇总 rc=0
+arm      tid       cases       calls new_prompt     cached     hit% completion
+------------------------------------------------------------------------------
+A0-off   g1        55/58           7       4384      58880     93.1       5249
+A1-on    g1        58/58          33      14280     562560     97.5      11134
+C-codex  g1        58/58          42      16520     790528     98.0      12567
+A0-off   t1        30/30          14      13175     174848     93.0      10201
+A1-on    t1        30/30          10       3148     115456     97.3       7111
+C-codex  t1        30/30         476     128567   47450240     99.7     131504
+F1(games-longtask-v1) ratios(A1/A0)={"calls": 4.714, "new_prompt": 3.257, "completion": 2.121} baseline_available=True
+   verdict={"quality_no_regression": true, "calls_drop_ge_30": false, "new_prompt_drop_ge_30": false, "completion_drop_ge_40": false, "external_truth_all_pass": true}
+F2(toolkit-multimodule-v1) ratios(A1/A0)={"calls": 0.714, "new_prompt": 0.239, "completion": 0.697} baseline_available=True
+   verdict={"quality_no_regression": true, "calls_drop_ge_30": false, "new_prompt_drop_ge_30": true, "completion_drop_ge_40": false, "external_truth_all_pass": true}
+KPI_F2_CORE_PASS=False (quality ∧ 三项降幅; external_truth_all_pass=True)
+F1_ANCHOR_QUALITY=58/58
+[20:34:48] KPI 分列判据 rc=1
+   agentA1-on/g1    side=agent  cases=58/58  rc=0    correct=True  claimed=True  
+   agentA1-on/t1    side=agent  cases=30/30  rc=0    correct=True  claimed=True  
+   codex/g1         side=codex  cases=58/58  rc=0    correct=True  claimed=True  
+   codex/t1         side=codex  cases=30/30  rc=0    correct=True  claimed=True  
+DECLARED_ABSENT=-
+POLICY_ACTIVE=True reason= ts=2026-09-17T12:09:15Z checks={"A2_prereg_mtime_not_before_ts": true, "A3_all_windows_after_ts": true, "A3_late_windows": []}
+SELF_REPORT_AGREES=True
+EXECUTABLE_AND_CORRECT=False (全局, 任一臂-题不许错)
+SCOPE_SOURCE=eval/rover/r529/prereg-r529.json PREREG=True
+ACCEPTABLE_SCOPED=False
+UNDECLARED: w2/agentA0-off | w2/agentA0-off | w2/agentA1-on | w2/agentA1-on | w2/codex | w2/codex
+BLOCKED: w2/agentA0-off/g1 rc=1 cases=55/58(expect 58) failed=wythoff#44-public,wythoff#45-hidden,wythoff#49-hidden
+OUT=/home/agentuser/AgentFramework/eval/rover/r507pre/precondition-r529.json
+VERDICT_BLOCKED ⇒ rc=1 (验收面 [require ∪ 未声明] 存在未执行/不正确臂 ⇒ 不得 rc=0 假绿)
+  (全局 blocked 1 项 > 验收面 blocked_scoped 7 项: 差额为非验收面读数, 已单列 NONREQUIRED)
+PRECOND_RC=1
+[20:35:04] PRECOND_RC=1 (0=可验收 / 1=未可验收 / 3=输入缺失)
+[20:35:05] 端口已释放
+[20:35:05] 完成: /home/agentuser/AgentFramework/eval/rover/r529/run-0917-2012-w2
+[driver] window=w2 rc=0 run=/home/agentuser/AgentFramework/eval/rover/r529/run-0917-2012-w2
+tid=g1 family=games-longtask-v1 prompt_sha256=516f3208963c6e66 declared=516f3208963c6e66 self_consistent=True anchor_pin_ok=True cases=58
+tid=t1 family=toolkit-multimodule-v1 prompt_sha256=9fbfaeb3a17bea23 declared=9fbfaeb3a17bea23 self_consistent=True anchor_pin_ok=True cases=30
+INPUT_PINS_OK=True
+[20:35:05] 同输入硬门 PASS (F1 钉锚 + F2 自述 sha 一致)
+[20:35:09] 起手闸 1: PASS
+[20:35:12] 起手闸 2: PASS
+[20:35:16] adapter 就绪 (pid=3006629, dump=/home/agentuser/AgentFramework/eval/rover/r529/run-0917-2012-w3/adapter, FULL=1)
+[20:36:12] 臂 A0-off rc=0 adapter_range=[1,20] ({"tid": "t1", "side": "agent", "arm": "A0-off", "rc": 0, "elapsed_s": 21.73, "ledger_calls": 14, "ledger_steps": 7, "reply_chars": 1906, "adapter_range": [13, 20]})
+[20:37:27] 臂 A1-on rc=0 adapter_range=[21,59] ({"tid": "t1", "side": "agent", "arm": "A1-on", "rc": 0, "elapsed_s": 51.86, "ledger_calls": 36, "ledger_steps": 32, "reply_chars": 926, "adapter_range": [27, 59]})
+[20:41:09] 臂 C-codex rc=0 adapter_range=[1,86] ({"tid": "t1", "side": "codex", "arm": "C-codex", "rc": 0, "elapsed_s": 109.9, "ledger_calls": 0, "ledger_steps": 0, "reply_chars": 1621, "adapter_range": [26, 86]})
+处理臂=A1-on 调用=111 system 字符=9968 不同 system 段=3 (07d9496b,51d586ed,5d31d339)
+首调用: [{"run": "adapter", "system_chars": 9968, "cached": 7936, "fresh": 214, "prompt": 8150}]
+步间涨幅中位=446 p90=1756.0 新算中位=334.5 回执中位=385.0 p90=877.0 正文中位=None
+codex 参照: {"codex_calls": 627, "codex_first": {"system_chars": 14849, "cached": 6016, "fresh": 1541, "prompt": 7557}, "codex_step_growth_median": 319.5, "codex_receipt_chars_median": 142, "codex_body_median": null}
+verdict: {"M1_system_constant": false, "M2_no_telemetry_in_prompt": true, "M3_first_call_cache": true, "M4_step_growth": true, "M5_receipts_and_narration": true, "M6_user_turn_task_only": true, "S1_section_order": true, "S2_sections_constant": true, "S3_section_size_bound": true, "S4_prefix_declaration": true, "S5_tail_only_in_user": true}
+[20:41:10] 前缀机检 rc=1 (0=M1..M5 全过; 非 0 ⇒ 本轮不得宣称任何降幅) [range A0=1,20 A1=21,59 also= /home/agentuser/AgentFramework/eval/rover/r529/run-0917-2012-w1/adapter /home/agentuser/AgentFramework/eval/rover/r529/run-0917-2012-w2/adapter]
+冻结 agentA0-off/g1     side=agent  cases=58/58 calls=12 tok=132059
+冻结 agentA0-off/t1     side=agent  cases=30/30 calls=8 tok=83375
+冻结 agentA1-on/g1      side=agent  cases=58/58 calls=6 tok=60840
+冻结 agentA1-on/t1      side=agent  cases=30/30 calls=33 tok=565267
+冻结 codex/g1           side=codex  cases=58/58 calls=25 tok=352809
+冻结 codex/t1           side=codex  cases=29/30 calls=61 tok=1216734
+WROTE eval/rover/r529/evidence/windows/w3
+[20:41:18] 冻结/汇总 rc=0
+arm      tid       cases       calls new_prompt     cached     hit% completion
+------------------------------------------------------------------------------
+A0-off   g1        58/58          12      10146     113920     91.8       7993
+A1-on    g1        58/58           6       3657      50560     93.3       6623
+C-codex  g1        58/58          25      15928     329600     95.4       7281
+A0-off   t1        30/30           8       5608      72960     92.9       4807
+A1-on    t1        30/30          33      13388     541952     97.6       9927
+C-codex  t1        29/30          61      19159    1182976     98.4      14599
+F1(games-longtask-v1) ratios(A1/A0)={"calls": 0.5, "new_prompt": 0.36, "completion": 0.829} baseline_available=True
+   verdict={"quality_no_regression": true, "calls_drop_ge_30": true, "new_prompt_drop_ge_30": true, "completion_drop_ge_40": false, "external_truth_all_pass": true}
+F2(toolkit-multimodule-v1) ratios(A1/A0)={"calls": 4.125, "new_prompt": 2.387, "completion": 2.065} baseline_available=True
+   verdict={"quality_no_regression": true, "calls_drop_ge_30": false, "new_prompt_drop_ge_30": false, "completion_drop_ge_40": false, "external_truth_all_pass": false}
+KPI_F2_CORE_PASS=False (quality ∧ 三项降幅; external_truth_all_pass=False)
+F1_ANCHOR_QUALITY=58/58
+[20:41:18] KPI 分列判据 rc=1
+   agentA1-on/g1    side=agent  cases=58/58  rc=0    correct=True  claimed=True  
+   agentA1-on/t1    side=agent  cases=30/30  rc=0    correct=True  claimed=True  
+   codex/g1         side=codex  cases=58/58  rc=0    correct=True  claimed=True  
+   codex/t1         side=codex  cases=29/30  rc=1    correct=False claimed=False jsonmini#27-hidden
+DECLARED_ABSENT=-
+POLICY_ACTIVE=True reason= ts=2026-09-17T12:09:15Z checks={"A2_prereg_mtime_not_before_ts": true, "A3_all_windows_after_ts": true, "A3_late_windows": []}
+SELF_REPORT_AGREES=True
+EXECUTABLE_AND_CORRECT=False (全局, 任一臂-题不许错)
+SCOPE_SOURCE=eval/rover/r529/prereg-r529.json PREREG=True
+ACCEPTABLE_SCOPED=False
+UNDECLARED: w2/agentA0-off | w2/agentA0-off | w2/agentA1-on | w2/agentA1-on | w2/codex | w2/codex | w3/agentA0-off | w3/agentA0-off | w3/agentA1-on | w3/agentA1-on | w3/codex | w3/codex
+BLOCKED: w2/agentA0-off/g1 rc=1 cases=55/58(expect 58) failed=wythoff#44-public,wythoff#45-hidden,wythoff#49-hidden | w3/codex/t1 rc=1 cases=29/30(expect 30) failed=jsonmini#27-hidden
+OUT=/home/agentuser/AgentFramework/eval/rover/r507pre/precondition-r529.json
+VERDICT_BLOCKED ⇒ rc=1 (验收面 [require ∪ 未声明] 存在未执行/不正确臂 ⇒ 不得 rc=0 假绿)
+  (全局 blocked 2 项 > 验收面 blocked_scoped 14 项: 差额为非验收面读数, 已单列 NONREQUIRED)
+PRECOND_RC=1
+[20:41:42] PRECOND_RC=1 (0=可验收 / 1=未可验收 / 3=输入缺失)
+[20:41:43] 端口已释放
+[20:41:43] 完成: /home/agentuser/AgentFramework/eval/rover/r529/run-0917-2012-w3
+[driver] window=w3 rc=0 run=/home/agentuser/AgentFramework/eval/rover/r529/run-0917-2012-w3
+[driver] ALL DONE ds=0917-2012

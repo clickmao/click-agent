@@ -1,0 +1,27 @@
+{
+ "round": "r528",
+ "old_rc": 1,
+ "new_rc": 1,
+ "old_exe": "/tmp/exe_pre_r529_HEAD.py",
+ "new_exe": "/home/agentuser/AgentFramework/eval/rover/r507pre/exec_precondition.py",
+ "fields_compared": [
+  "acceptable_scoped",
+  "accepted",
+  "arms_correct",
+  "blocked",
+  "blocked_scoped"
+ ],
+ "diffs": [],
+ "invariant_ok": true,
+ "new_policy_key": true,
+ "old_has_policy_key": false,
+ "new_declared_absent": [],
+ "new_tail": [
+  "VERDICT_BLOCKED ⇒ rc=1 (验收面 [require ∪ 未声明] 存在未执行/不正确臂 ⇒ 不得 rc=0 假绿)",
+  "  (全局 blocked 3 项 > 验收面 blocked_scoped 1 项: 差额为非验收面读数, 已单列 NONREQUIRED)"
+ ],
+ "old_tail": [
+  "VERDICT_BLOCKED ⇒ rc=1 (验收面 [require ∪ 未声明] 存在未执行/不正确臂 ⇒ 不得 rc=0 假绿)",
+  "  (全局 blocked 3 项 > 验收面 blocked_scoped 1 项: 差额为非验收面读数, 已单列 NONREQUIRED)"
+ ]
+}
