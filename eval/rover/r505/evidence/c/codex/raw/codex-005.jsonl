@@ -1,8 +1,0 @@
-{"type":"thread.started","thread_id":"01a0ac38-9ddb-7842-a611-197a1246a246"}
-{"type":"item.completed","item":{"id":"item_0","type":"error","message":"Model metadata for `deepseek-flash` not found. Defaulting to fallback metadata; this can degrade performance and cause issues."}}
-{"type":"turn.started"}
-{"type":"item.completed","item":{"id":"item_1","type":"agent_message","text":"```python\nimport sys, heapq\n\ndef main():\n    data = sys.stdin.buffer.read().split()\n    if not data:\n        return\n    it = iter(data)\n    n = int(next(it))\n    m = int(next(it))\n\n    adj = [[] for _ in range(n)]\n    indeg = [0] * n\n\n    for _ in range(m):\n        u = int(next(it))\n        v = int(next(it))\n        adj[u].append(v)\n        indeg[v] += 1\n\n    heap = [i for i in range(n) if indeg[i] == 0]\n    heapq.heapify(heap)\n\n    order = []\n    while heap:\n        u = heapq.heappop(heap)\n        order.append(u)\n        for v in adj[u]:\n            indeg[v] -= 1\n            if indeg[v] == 0:\n                heapq.heappush(heap, v)\n\n    if len(order) != n:\n        sys.stdout.write(\"-1\\n\")\n    else:\n        sys.stdout.write(\" \".join(map(str, order)) + \"\\n\")\n\nmain()\n```"}}
-{"type":"turn.completed","usage":{"input_tokens":6462,"cached_input_tokens":6144,"cache_write_input_tokens":0,"output_tokens":232,"reasoning_output_tokens":0}}
-
---- stderr ---
-Reading additional input from stdin...

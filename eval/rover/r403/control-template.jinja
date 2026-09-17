@@ -1,4 +1,0 @@
-{%- if tools %}[TOOLSDEF]{% for tool in tools %}{{ tool['function']['name'] }};{% endfor %}[/TOOLSDEF]{% endif %}
-{%- for message in messages %}{{ message['role'] }}: {{ message['content'] }}
-{% endfor -%}
-{%- if add_generation_prompt %}assistant:{% endif %}
