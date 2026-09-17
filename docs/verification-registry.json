@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R527",
+ "updated_round": "R528",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -6556,6 +6556,57 @@
    },
    "negative_control": "抽取前 (R526 AOT `/tmp/pub_r526/agenthost`) 与抽取后 (R527 AOT `/tmp/pub_r527/agenthost`) 跑同一夹具同一命令族, 逐臂 `out_sha256`/`err_sha256` 必须逐字节相同; 任一臂不同 ⇒ 抽取判为语义漂移 (不接受)。**夹具只覆盖确定性本地命令族** (进入 LLM 前的本地路由/早退分支), 不覆盖真实 LLM 路径 ⇒ 见诚实边界。",
    "owner_round": "R527"
+  },
+  {
+   "id": "internal.artifact-placement-selfverification-r528",
+   "level": "L4",
+   "capability": "**产物落位与自验纪律 (R528)**: 动作环纪律第 6 条 —— 产出物必须落在**工作根**并按题面给定**相对路径**命名; 收尾前必须在工作根按题面验收形态自验, rc≠0 不得收尾。依据 = R525 w3 定因: 同臂 8 调用/3 步把 `games/` 包写到 `<工作根>/sols/games_pkg/games/`, 并在该子目录 `python3 -m games life` 自验通过 (rc=0) 即自认完成; 而验收形态是**工作根**下 `python3 -m games <id>` ⇒ 前置器 0/58 (同一棵树以漂移目录为 cwd 实跑 58/58 ⇒ 代码本身正确)。R528 五窗同窗对照 (同一 AOT 二进制 `8f801491…`, 同一题面 sha `516f3208…`, 同一判据器): A1-on **5/5 窗整题全对 58/58**; 布局漂移 0/5; 挂载 5/5 (纪律块 sha `16efa2f0` 跨窗恒定); 铁律 11 前置器 rc=1 —— **失败在外部真值臂** (w2 codex 52/58), 非本侧。",
+   "covers": [
+    "eval/rover/r528/mount_check_r528.py",
+    "eval/rover/r528/layout_census.py",
+    "eval/rover/r528/prereg-r528.json",
+    "eval/rover/r528/run_r528.sh",
+    "eval/rover/r528/layout-census-r528.json",
+    "eval/rover/r507pre/precondition-r528.json",
+    "src/agent.modelqueue/ActionLoopDiscipline.cs"
+   ],
+   "evidence_cmd": "python3 eval/rover/r528/mount_check_r528.py --dir w1=eval/rover/r528/run-0917-r528-w1/adapter --range 'A0-off=1,2' --range 'A1-on=3,8' --out eval/rover/r528/evidence/mount-w1.json",
+   "evidence_path": "eval/rover/r528/evidence/mount-w1.json",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "22e4709a318d",
+    "instrument": "eval/rover/r528/mount_check_r528.py",
+    "instrument_sha12": "70402d75f1bf",
+    "binding": "audit-pin",
+    "audited_by_round": "R528"
+   },
+   "negative_control": "① 同一器具对 **R525 修前 dumps** 跑 ⇒ `MOUNT_VERDICT FAIL` (C1 锚缺失 / C4 仅 5 条), 反解纪律块 sha `cbc691bb` ≠ `16efa2f0` (器具有牙, 非恒真门); ② 对 R525 w3 agentA1 归档树跑普查 ⇒ 分类 `layout_drift_code_ok`, 以漂移目录为 cwd 实跑 58/58 (证伪『0/58 ⇒ 代码缺陷』归因)。",
+   "owner_round": "R528"
+  },
+  {
+   "id": "internal.artifact-layout-census-r528",
+   "level": "L3",
+   "capability": "**归档产物树布局漂移普查 (R528)**: 对 30 棵归档被判树(只读)四分类 —— `layout_ok` / `layout_drift_code_ok` / `layout_drift_code_bad` / `missing_artifacts`, 并对漂移树以反解出的可运行目录为 cwd 实跑同一隐藏用例脚本。读数: layout_ok 26 (其中 22 全对, 4 部分错 31/46/51/46) · layout_drift_code_ok 1 (R525 w3 agentA1) · layout_drift_code_bad 0 · missing_artifacts 3 (全为 A0-off 控制臂空产出) ⇒ 失败面按**成因**分列, 不再把布局漂移读成能力缺陷。",
+   "covers": [
+    "eval/rover/r528/layout_census.py",
+    "eval/rover/r528/layout-census.json"
+   ],
+   "evidence_cmd": "python3 eval/rover/r528/layout_census.py --out eval/rover/r528/layout-census.json",
+   "evidence_path": "eval/rover/r528/layout-census.json",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "4bdbadbfae6a",
+    "instrument": "eval/rover/r528/layout_census.py",
+    "instrument_sha12": "0b2b209d2f7a",
+    "binding": "audit-pin",
+    "audited_by_round": "R528"
+   },
+   "negative_control": "① 正控: `layout_ok` 树在**树根**实跑必须 58/58 (防扫法恒假; 实测 22/26 全对, 4 棵真部分错 ⇒ 扫法可分辨); ② 同一棵树两种跑法读数不同 (R525 w3 agentA1: 树根 0/58 vs 漂移目录 58/58) ⇒ 分类不是恒值。",
+   "owner_round": "R528"
   }
  ],
  "aot_check_policy": "release_tag_only",
