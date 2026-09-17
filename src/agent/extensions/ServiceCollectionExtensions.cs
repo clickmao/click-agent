@@ -338,8 +338,36 @@ public static class ServiceCollectionExtensions
         // R456 动作环: 执行面端口 (可替换)。默认实现 = 工作区受限文件/命令端口;
         //   AGENTFRAMEWORK_WORKSPACE 指定工作区根 (缺省 = 进程 cwd)。
         //   AGENTFRAMEWORK_ACTION_LOOP=off 可整体关闭 (关闭时请求体与旧版逐字节相同)。
-        services.AddSingleton<agent.modelqueue.IActionPort>(_ =>
-            agent.action.WorkspaceActionPort.FromEnvironment(Environment.CurrentDirectory));
+        services.AddSingleton<agent.modelqueue.IActionPort>(sp =>
+        {
+            // R511: 删除类工具的人工审批门 —— 复用问询服务 (frontend approval 通道)。
+            //   问询服务未注册 ⇒ gate 保持 null ⇒ 端口内 fail-closed 拒绝删除 (破坏性动作零兜底)。
+            var prompts = sp.GetService<IUserPromptService>();
+            Func<string, bool, CancellationToken, Task<bool>>? gate = null;
+            if (prompts is not null)
+            {
+                gate = async (rel, isDir, ct) =>
+                {
+                    var result = await prompts.RequestOperationApprovalAsync(new SensitiveOperationRequest
+                    {
+                        Kind = SensitiveOperationKind.DeleteFile,
+                        Summary = "删除" + (isDir ? "目录: " : "文件: ") + rel,
+                        Details = isDir
+                            ? "将递归删除工作区目录 " + rel + " 及其全部内容 (不可恢复)"
+                            : "将永久删除工作区文件 " + rel + " (不可恢复)",
+                        Initiator = "WorkspaceActionPort",
+                        Origin = new PromptOrigin
+                        {
+                            AskedByAgentId = "main",
+                            AskingDepth = 0,
+                            Authority = AnswerAuthority.RealUserOnly,
+                        },
+                    }, ct).ConfigureAwait(false);
+                    return result.Approved;
+                };
+            }
+            return agent.action.WorkspaceActionPort.FromEnvironment(Environment.CurrentDirectory, gate);
+        });
         services.AddSingleton<ModelQueueAdapter>();
         services.AddSingleton<ILLMCaller>(sp => sp.GetRequiredService<ModelQueueAdapter>());
         services.AddSingleton<agent.subagent.ILLMCallerForIsolated>(sp => sp.GetRequiredService<ModelQueueAdapter>());

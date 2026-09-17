@@ -57,7 +57,7 @@ public class ResponsesWireTests
         Assert.Equal("[SLOT:perm] fs=r,w; shell=none", root.GetProperty("instructions").GetString());
         Assert.Equal(2, root.GetProperty("input").GetArrayLength());
         Assert.Equal("user", root.GetProperty("input")[1].GetProperty("role").GetString());
-        Assert.Equal(4, root.GetProperty("tools").GetArrayLength());
+        Assert.Equal(agent.modelqueue.ActionToolDecl.Names.Length, root.GetProperty("tools").GetArrayLength());
         Assert.False(root.GetProperty("store").GetBoolean());
     }
 

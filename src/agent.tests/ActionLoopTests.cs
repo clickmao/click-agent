@@ -20,7 +20,7 @@ public sealed class ActionLoopTests
 {
     // ---------- 面 1: 声明面 ----------
     [Fact]
-    public void Decls_AreValidJson_AndDeclaredFourTools()
+    public void Decls_AreValidJson_AndDeclareEveryDeclaredTool()
     {
         using var doc = JsonDocument.Parse(ActionToolDecl.ToolsJson);
         Assert.Equal(JsonValueKind.Array, doc.RootElement.ValueKind);
@@ -33,7 +33,7 @@ public sealed class ActionLoopTests
             Assert.Equal("object", fn.GetProperty("parameters").GetProperty("type").GetString());
             names.Add(fn.GetProperty("name").GetString()!);
         }
-        Assert.Equal(4, names.Count);
+        Assert.Equal(ActionToolDecl.Names.Length, names.Count); // R511: 声明面与 Names 同源 (含 delete_file)
         foreach (var n in names) Assert.True(ActionToolDecl.IsDeclared(n), n);
         Assert.False(ActionToolDecl.IsDeclared("rm_rf_everything"));
     }
@@ -95,7 +95,7 @@ public sealed class ActionLoopTests
         var body = ModelQueueRouter.SerializeChatRequest(req);
         using var doc = JsonDocument.Parse(body);
         Assert.True(doc.RootElement.TryGetProperty("tools", out var tools));
-        Assert.Equal(4, tools.GetArrayLength());
+        Assert.Equal(ActionToolDecl.Names.Length, tools.GetArrayLength()); // R511: 含 delete_file
         var msgs = doc.RootElement.GetProperty("messages");
         Assert.Equal(4, msgs.GetArrayLength());
         Assert.Equal("assistant", msgs[2].GetProperty("role").GetString());

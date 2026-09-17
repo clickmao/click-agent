@@ -28,21 +28,31 @@ public sealed class WorkspaceActionPort : IActionPort
     public string? WorkspaceRoot => _root;
     private readonly string? _auditDir;
     private readonly int _defaultTimeoutMs;
+
+    /// <summary>
+    /// R511: 删除类操作的人工审批门 (由宿主注入)。签名 = (相对路径, 是否目录, ct) ⇒ 是否批准。
+    /// **缺省 null ⇒ 一律拒绝 (fail-closed)**: 破坏性动作没有审批通道时不允许执行。
+    /// </summary>
+    private readonly Func<string, bool, CancellationToken, Task<bool>>? _approveDelete;
+
     private static readonly object AuditLock = new();
     private const int MaxCommandOutputBytes = 64 * 1024;
 
     public string Name => "workspace";
 
-    public WorkspaceActionPort(string root, string? auditDir = null, int defaultTimeoutMs = 120_000)
+    public WorkspaceActionPort(string root, string? auditDir = null, int defaultTimeoutMs = 120_000,
+                               Func<string, bool, CancellationToken, Task<bool>>? approveDelete = null)
     {
         _root = Path.GetFullPath(root);
         _auditDir = string.IsNullOrWhiteSpace(auditDir) ? null : auditDir;
         _defaultTimeoutMs = defaultTimeoutMs <= 0 ? 120_000 : defaultTimeoutMs;
+        _approveDelete = approveDelete;
     }
 
-    public static WorkspaceActionPort FromEnvironment(string defaultRoot)
+    public static WorkspaceActionPort FromEnvironment(string defaultRoot,
+        Func<string, bool, CancellationToken, Task<bool>>? approveDelete = null)
         => new(Environment.GetEnvironmentVariable("AGENTFRAMEWORK_WORKSPACE") is { Length: > 0 } w ? w : defaultRoot,
-               Environment.GetEnvironmentVariable("AGENTFRAMEWORK_ACTION_AUDIT"));
+               Environment.GetEnvironmentVariable("AGENTFRAMEWORK_ACTION_AUDIT"), 120_000, approveDelete);
 
     public async Task<ActionExecutionResult> ExecuteAsync(ActionToolCall call, CancellationToken ct)
     {
@@ -56,6 +66,7 @@ public sealed class WorkspaceActionPort : IActionPort
                 ActionToolDecl.ReadFile => ReadFile(call.ArgumentsJson),
                 ActionToolDecl.WriteFile => WriteFile(call.ArgumentsJson),
                 ActionToolDecl.RunCommand => await RunCommandAsync(call.ArgumentsJson, ct).ConfigureAwait(false),
+                ActionToolDecl.DeleteFile => await DeleteFileAsync(call.ArgumentsJson, ct).ConfigureAwait(false),
                 _ => Fail($"未声明的工具: {call.Name}"),
             };
         }
@@ -165,6 +176,76 @@ public sealed class WorkspaceActionPort : IActionPort
         return new ActionExecutionResult { Ok = true, Output = "已写入 " + rel + " (" + Encoding.UTF8.GetByteCount(content) + " bytes)" };
     }
 
+    /// <summary>
+    /// R511: 删除工作区内文件/目录。破坏性动作必须过人工审批门:
+    ///   · 未接入审批通道 ⇒ 拒绝 (fail-closed, 报告 <see cref="ApprovalUnavailableExitCode"/>)。
+    ///   · 审批拒绝/超时/取消/异常 ⇒ 未执行 (报告 <see cref="ApprovalDeniedExitCode"/>)。
+    /// 边界与存在性检查一律前置于审批 (不把越界路径送进审批面)。
+    /// </summary>
+    private async Task<ActionExecutionResult> DeleteFileAsync(string argsJson, CancellationToken ct)
+    {
+        using var doc = ParseArgs(argsJson);
+        if (doc is null) return Fail("参数不是合法 JSON");
+        var rel = Arg(doc, "path", string.Empty);
+        if (string.IsNullOrWhiteSpace(rel)) return Fail("path 为空");
+        var path = Resolve(rel, out var err);
+        if (path is null) return Fail(err);
+        var isDir = Directory.Exists(path);
+        if (!isDir && !File.Exists(path)) return Fail("路径不存在: " + rel);
+
+        if (_approveDelete is null)
+        {
+            return new ActionExecutionResult
+            {
+                Ok = false,
+                ExitCode = ApprovalUnavailableExitCode,
+                Output = "[拒绝删除] 未接入人工审批通道 ⇒ fail-closed 不执行: " + rel,
+            };
+        }
+
+        bool approved;
+        try
+        {
+            approved = await _approveDelete(rel, isDir, ct).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            return new ActionExecutionResult
+            {
+                Ok = false,
+                ExitCode = ApprovalDeniedExitCode,
+                Output = "[拒绝删除] 审批被取消: " + rel,
+            };
+        }
+        catch (Exception ex)
+        {
+            return new ActionExecutionResult
+            {
+                Ok = false,
+                ExitCode = ApprovalDeniedExitCode,
+                Output = "[拒绝删除] 审批通道异常 ⇒ fail-closed: " + ex.GetType().Name,
+            };
+        }
+
+        if (!approved)
+        {
+            return new ActionExecutionResult
+            {
+                Ok = false,
+                ExitCode = ApprovalDeniedExitCode,
+                Output = "[拒绝删除] 未获批准, 未执行: " + rel,
+            };
+        }
+
+        if (isDir) Directory.Delete(path, recursive: true);
+        else File.Delete(path);
+        return new ActionExecutionResult
+        {
+            Ok = true,
+            Output = "已删除" + (isDir ? "目录 " : "文件 ") + rel + " (经审批)",
+        };
+    }
+
     private async Task<ActionExecutionResult> RunCommandAsync(string argsJson, CancellationToken ct)
     {
         using var doc = ParseArgs(argsJson);
@@ -236,6 +317,12 @@ public sealed class WorkspaceActionPort : IActionPort
 
     /// <summary>越界拒绝的退出码 (与「命令跑了但失败」在审计面上可区分)。</summary>
     public const int BoundaryRefusedExitCode = 126;
+
+    /// <summary>R511: 删除类操作未接入人工审批通道 ⇒ fail-closed 拒绝。</summary>
+    public const int ApprovalUnavailableExitCode = 125;
+
+    /// <summary>R511: 删除审批被拒绝/超时/取消/通道异常 ⇒ 未执行。</summary>
+    public const int ApprovalDeniedExitCode = 124;
 
     /// <summary>唯一例外: /dev/null (惯用法 `2>/dev/null`; 不含 /dev/zero、/proc、/etc…)。</summary>
     private static readonly string[] AllowedDevicePaths = { "/dev/null" };

@@ -37,6 +37,8 @@ public sealed class ActionToolSpec
             "{\"type\":\"object\",\"properties\":{\"path\":{\"type\":\"string\",\"description\":\"相对工作区根的文件路径\"},\"content\":{\"type\":\"string\",\"description\":\"文件内容\"}},\"required\":[\"path\",\"content\"]}"),
         new(ActionToolDecl.RunCommand, "在工作区根执行一条命令并返回 stdout/stderr/退出码",
             "{\"type\":\"object\",\"properties\":{\"command\":{\"type\":\"string\",\"description\":\"命令原文\"},\"timeout_ms\":{\"type\":\"integer\",\"description\":\"超时毫秒(默认120000, 上限600000)\"}},\"required\":[\"command\"]}"),
+        new(ActionToolDecl.DeleteFile, "删除工作区内的文件或目录(需人工审批; 未接入审批通道时一律拒绝)",
+            "{\"type\":\"object\",\"properties\":{\"path\":{\"type\":\"string\",\"description\":\"相对工作区根的文件/目录路径\"}},\"required\":[\"path\"]}"),
     };
 
     /// <summary>Chat Completions 线格式 (与 R456 常量逐字节相同)。</summary>

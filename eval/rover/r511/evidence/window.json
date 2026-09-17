@@ -1,0 +1,80 @@
+{
+  "round": "R511",
+  "generated_at": "2026-09-17T09:42:57+0800",
+  "adapter_dir": "/tmp/r511/run-w2/adapter",
+  "arms": [
+    {
+      "arm": "dflt-r1",
+      "budget_steps": 6,
+      "dump_range": [
+        1,
+        14
+      ],
+      "calls": 14,
+      "total_tokens": 137004,
+      "prompt_tokens": 118482,
+      "cached_tokens": 106880,
+      "unreported_usage": 0,
+      "models": [
+        "deepseek-chat"
+      ],
+      "empty_text_calls": 11,
+      "no_tool_calls": 0
+    },
+    {
+      "arm": "dflt-r2",
+      "budget_steps": 6,
+      "dump_range": [
+        15,
+        28
+      ],
+      "calls": 14,
+      "total_tokens": 133747,
+      "prompt_tokens": 120363,
+      "cached_tokens": 103296,
+      "unreported_usage": 0,
+      "models": [
+        "deepseek-chat"
+      ],
+      "empty_text_calls": 11,
+      "no_tool_calls": 0
+    },
+    {
+      "arm": "s12-r1",
+      "budget_steps": 12,
+      "dump_range": [
+        29,
+        42
+      ],
+      "calls": 14,
+      "total_tokens": 168237,
+      "prompt_tokens": 153800,
+      "cached_tokens": 139776,
+      "unreported_usage": 0,
+      "models": [
+        "deepseek-chat"
+      ],
+      "empty_text_calls": 9,
+      "no_tool_calls": 3
+    },
+    {
+      "arm": "s12-r2",
+      "budget_steps": 12,
+      "dump_range": [
+        43,
+        56
+      ],
+      "calls": 14,
+      "total_tokens": 169539,
+      "prompt_tokens": 152251,
+      "cached_tokens": 126464,
+      "unreported_usage": 0,
+      "models": [
+        "deepseek-chat"
+      ],
+      "empty_text_calls": 8,
+      "no_tool_calls": 2
+    }
+  ],
+  "note": "空正文=无 prose 的 tool_calls 轮 (正常); no_tool_calls 含终答轮 (正常) ⇒ 本窗上游体检: 无『空正文且无 tool_calls』异常调用"
+}

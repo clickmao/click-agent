@@ -1,0 +1,55 @@
+{
+  "verdict": "PASS",
+  "checks": [
+    {
+      "id": "A1_response_ok",
+      "ok": true,
+      "detail": "approve_ok=True deny_ok=True"
+    },
+    {
+      "id": "A2_approval_requested",
+      "ok": true,
+      "detail": "approval_id=apr-0fcb58e0 kind=DeleteFile summary=删除文件: victim.txt"
+    },
+    {
+      "id": "A8_approval_payload_human_readable",
+      "ok": true,
+      "detail": "kind=DeleteFile summary=删除文件: victim.txt"
+    },
+    {
+      "id": "A3_approval_responded_true",
+      "ok": true,
+      "detail": "responded={'approval_id': 'apr-0fcb58e0', 'approved': True, 'answered_by': 'RealUser', 'reason': 'r511-e2e'}"
+    },
+    {
+      "id": "A9_approval_id_roundtrip",
+      "ok": true,
+      "detail": "requested=apr-0fcb58e0 responded=apr-0fcb58e0"
+    },
+    {
+      "id": "A4_approved_deleted_on_disk",
+      "ok": true,
+      "detail": "victim=/tmp/r511/e2e/ws-approve/victim.txt exists=False"
+    },
+    {
+      "id": "A5_denied_file_intact",
+      "ok": true,
+      "detail": "victim=/tmp/r511/e2e/ws-deny/victim.txt exists=True"
+    },
+    {
+      "id": "A6_denied_no_true_approval",
+      "ok": true,
+      "detail": "deny_responded=[{'approval_id': 'apr-6490d329', 'approved': False, 'answered_by': 'Denied', 'reason': 'r511-e2e'}]"
+    },
+    {
+      "id": "A7_reply_is_real_answer",
+      "ok": true,
+      "detail": "secs=5.62 reply_len=15"
+    },
+    {
+      "id": "A10_task_event_order",
+      "ok": true,
+      "detail": "events=['task.started', 'plan.created', 'task.progress', 'approval.requested', 'probe.approval_reply_sent', 'approval.responded', 'task.progress', 'task.progress', 'plan.node', 'plan.finished', 'task.completed']"
+    }
+  ]
+}

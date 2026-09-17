@@ -1,0 +1,4 @@
+nc1_now_ignored    rc=1 fails=['add_creates_and_lists', 'id_monotonic_no_reuse', 'unicode_roundtrip', 'done_idempotent', 'done_unknown_id', 'ttl_expiry_uses_injected_clock', 'stats_counts_three_states', 'expire_removes_expired_tasks', 'persistence_across_processes', 'no_temp_residue', 'list_filter_and_order']
+nc2_non_atomic     rc=1 fails=['no_temp_residue']
+nc3_id_reuse       rc=1 fails=['expire_removes_expired_tasks', 'list_filter_and_order']
+NC_RC=0
