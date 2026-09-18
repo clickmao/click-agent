@@ -1,0 +1,55 @@
+{
+ "round": "R553",
+ "version": "v1",
+ "written_before_run": true,
+ "date": "2026-09-18",
+ "title": "判据重钉轮: VOID 规则改写 + 起手闸 C(契约面健康预检) + 同窗三臂 {0,1,2} 复跑 + 追溯回算 R552",
+ "target_source": "R552 §8 候选②(VOID 规则改写; R552 §4 已明文『判据与阈值改动在 R553 预注册中生效, 本轮不改』) + R552 §8 候选①(a)(起手闸侧契约面健康预检, 只改器具)",
+ "single_variable": "AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR ∈ {unset(=0),1,2} —— 与 R552 同轴、同 AOT 二进制; 本轮**不新增变量轴**",
+ "product_changes": "零。本轮两件改动全在本侧器具(eval/rov er/r553/): 判据分类器 + 起手闸 C。开工前声明: 二者改的读数是 ①『有效窗数』(分母) ②『调用/token』(起手闸 C 拦下的窗不烧远端调用) —— 不改质量与成本的定义式",
+ "cell_changed": {
+  "VOID规则改写": "『有效窗数』(分母) + 『质量中位/极差』。新规则: 仅『无产物(work_files=0)』或『无用例可判分(cases total=0)』判 VOID; rc、stage、上游退化率全部降为 hygiene 字段",
+  "起手闸C": "『有效窗数』+『调用/token 消耗』。逐窗起臂前 1 次最小契约调用, 不可解析 ⇒ 不起臂; 逐窗记录判决, 事后出混淆矩阵(判决 vs 实窗退化) — 只作 hygiene, 不作判据(单窗族样本小)"
+ },
+ "void_rule_r553": {
+  "rule": "VOID ⇔ (work_files == 0) or (cases.total == 0)",
+  "void_reasons": ["no_artifacts_on_disk", "no_cases_judgeable"],
+  "demoted_to_hygiene": ["rc", "stage", "upstream_unparseable_rate", "public_probe_failed"],
+  "evidence_predeclared": "R552 §4 已给反例: rc=4 的 w43=45/58 · w51=55/58 · w53=56/58 · w57=58/58; 退化率 0.3333 的 w38/w48/w55 均 58/58 ⇒ 旧规则把**已产出可判分产物**的窗判成 VOID 属过宽",
+  "old_rule_r552": "VOID ⇔ (rc==4) or (cases.total==0) or (work_files==0) or (upstream_rate>0.25) — 保留为本轮并列对照口径, 禁作替代"
+ },
+ "arms": {
+  "b0": {"env": "AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR unset(=0)", "windows": [60, 61, 62], "port": 49201, "tag": "R553b0", "tree": "/tmp/r553v1_b0"},
+  "b1": {"env": "AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR=1", "windows": [63, 64, 65], "port": 49211, "tag": "R553b1", "tree": "/tmp/r553v1_b1"},
+  "b2": {"env": "AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR=2", "windows": [66, 67, 68], "port": 49221, "tag": "R553b2", "tree": "/tmp/r553v1_b2"}
+ },
+ "fixed": {
+  "selfcheck": "AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK=1 (三臂恒开)",
+  "max_exec_repair": 1, "max_repair": 1,
+  "bin_sha256": "e2fdab87b03b3f9ddae1628471b30b6165c07923e5924d77fbf111d24dd5c27b",
+  "prompt_sha256": "516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3",
+  "role_file": "eval/rover/r542/role-r542.txt",
+  "cases": "eval/rover/r552/cases/run_cases_r521.py (+ 数据文件, 与 r542/r547 源逐字节同)"
+ },
+ "j_criteria": {
+  "J1": "两件器具**有牙**(机检): contract_precheck.py --selfcheck rc=0 且负控(JSON 后跟第二个对象 / 复读指令散文)判 BLOCKED ∧ 正控判 PASS; 分类器负控 3 条(无产物⇒VOID · rc=4 且有产物⇒非 VOID · rate=0.3333 且有产物⇒非 VOID) 全绿",
+  "J2": "剂量面**可判**: 新规则下三臂各 ≥3 有效窗 ⇒ 报逐窗+中位+极差; 任一臂 <3 ⇒ 该臂标『不可判』(按窗序取全部窗, 不挑选、不补窗、不删窗)",
+  "J3": "成本侧: 逐臂 调用Σ / 新算 promptΣ / completionΣ / 命中率(中继 dump 双口径 v_all·v_incr) 并列; 本轮含 codex 同窗真值列",
+  "J4": "质量不降: 报 b2 中位 vs b1 中位 vs b0 中位 + 极差; 样本 <3 的臂不进比较。禁跨轮/跨窗相减",
+  "J5": "铁律 11: exec_precondition.py --round r553 的 rc; rc≠0 ⇒ 本轮全部成本读数标『参考(未可验收)』, 禁宣称降幅",
+  "J6": "起手闸 C 判决力混淆矩阵(真阳/假阳/真阴/假阴) — hygiene 单列, 不作判据"
+ },
+ "evidence_scope": {
+  "require": ["*/agentR553b1-g1"],
+  "nonrequired": [
+   {"pattern": "*/agentR553b0-g1", "reason": "剂量 0 = 对照基线, 非交付配置"},
+   {"pattern": "*/agentR553b2-g1", "reason": "剂量 2 = 探索面"}
+  ],
+  "declared": "require 与 R552 同一配置(探针回灌修复预算=1), 便于同配置验收面并列; 新 VOID 规则下**无产物窗不建快照目录也不进 artifacts.json** ⇒ 自动落在验收面之外(不作废、不删除)"
+ },
+ "retro": {
+  "note": "追溯回算(零远端调用): 用新规则重读 R552 已落盘的 24 个窗(树 /tmp/r552v2_b{0,1,2}) ⇒ 两口径(旧/新)**并列**输出, 禁相减、禁以其替代 R552 报告已公布读数",
+  "old_rule_result_r552": "b0 有效窗 0 · b1 2 · b2 2 (n<3 ⇒ J2 不可判, R552 §2 原判)"
+ },
+ "post_hoc_policy": "任何事后口径只单列(键 checks_posthoc), 不进 J 判据、不进验收面; 判据/阈值一旦落盘不得事后放宽"
+}

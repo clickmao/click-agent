@@ -1,0 +1,283 @@
+{
+ "label": "R553",
+ "layout": "project",
+ "taskset": "eval/rover/r553/taskset-r553.json",
+ "snapshot_root": "eval/rover/r553/snapshots",
+ "tasks_n": 1,
+ "windows_n": 7,
+ "rule": "可验收前置(project 布局): 仓内不可变快照 ⇒ 独立物化到全新临时目录 ⇒ python3 -I -B 实跑隐藏用例脚本 ⇒ 逐条机械判对; 自报 all_pass 只作对照不吃",
+ "declared_absent": [],
+ "scope_source": "eval/rover/r553/prereg-r553.json",
+ "scope_prereg": true,
+ "scope_require": [
+  "*/agentR553b1-g1"
+ ],
+ "scope_nonrequired": [
+  {
+   "pattern": "*/agentR553b0-g1",
+   "reason": "剂量 0 = 对照基线, 非交付配置"
+  },
+  {
+   "pattern": "*/agentR553b2-g1",
+   "reason": "剂量 2 = 探索面"
+  }
+ ],
+ "windows": {
+  "w60": {
+   "dir": "eval/rover/r553/evidence/windows/w60",
+   "arms": {
+    "agentR553b0-g1/g1": {
+     "arm": "agentR553b0-g1",
+     "tag": "R553b0-g1",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 56,
+     "rc": 1,
+     "correct": false,
+     "work_dir": null,
+     "failed_cases": [
+      "wythoff#43-public",
+      "wythoff#57-hidden"
+     ],
+     "claimed_all_pass": false,
+     "claimed_src": "eval/rover/r553/evidence/windows/w60/report.json",
+     "stderr_tail": "",
+     "scope": "nonrequired",
+     "blocking": false
+    }
+   }
+  },
+  "w61": {
+   "dir": "eval/rover/r553/evidence/windows/w61",
+   "arms": {
+    "agentR553b0-g1/g1": {
+     "arm": "agentR553b0-g1",
+     "tag": "R553b0-g1",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 58,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r553/evidence/windows/w61/report.json",
+     "stderr_tail": "",
+     "scope": "nonrequired",
+     "blocking": false
+    }
+   }
+  },
+  "w62": {
+   "dir": "eval/rover/r553/evidence/windows/w62",
+   "arms": {
+    "agentR553b0-g1/g1": {
+     "arm": "agentR553b0-g1",
+     "tag": "R553b0-g1",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 54,
+     "rc": 1,
+     "correct": false,
+     "work_dir": null,
+     "failed_cases": [
+      "wythoff#45-hidden",
+      "wythoff#47-hidden",
+      "wythoff#48-hidden",
+      "wythoff#49-hidden"
+     ],
+     "claimed_all_pass": false,
+     "claimed_src": "eval/rover/r553/evidence/windows/w62/report.json",
+     "stderr_tail": "",
+     "scope": "nonrequired",
+     "blocking": false
+    }
+   }
+  },
+  "w63": {
+   "dir": "eval/rover/r553/evidence/windows/w63",
+   "arms": {
+    "agentR553b1-g1/g1": {
+     "arm": "agentR553b1-g1",
+     "tag": "R553b1-g1",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 55,
+     "rc": 1,
+     "correct": false,
+     "work_dir": null,
+     "failed_cases": [
+      "wythoff#44-public",
+      "wythoff#45-hidden",
+      "wythoff#49-hidden"
+     ],
+     "claimed_all_pass": false,
+     "claimed_src": "eval/rover/r553/evidence/windows/w63/report.json",
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    }
+   }
+  },
+  "w64": {
+   "dir": "eval/rover/r553/evidence/windows/w64",
+   "arms": {
+    "agentR553b1-g1/g1": {
+     "arm": "agentR553b1-g1",
+     "tag": "R553b1-g1",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 54,
+     "rc": 1,
+     "correct": false,
+     "work_dir": null,
+     "failed_cases": [
+      "wythoff#45-hidden",
+      "wythoff#47-hidden",
+      "wythoff#48-hidden",
+      "wythoff#49-hidden"
+     ],
+     "claimed_all_pass": false,
+     "claimed_src": "eval/rover/r553/evidence/windows/w64/report.json",
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    }
+   }
+  },
+  "w67": {
+   "dir": "eval/rover/r553/evidence/windows/w67",
+   "arms": {
+    "agentR553b2-g1/g1": {
+     "arm": "agentR553b2-g1",
+     "tag": "R553b2-g1",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 45,
+     "rc": 1,
+     "correct": false,
+     "work_dir": null,
+     "failed_cases": [
+      "wythoff#43-public",
+      "wythoff#44-public",
+      "wythoff#45-hidden",
+      "wythoff#47-hidden",
+      "wythoff#48-hidden",
+      "wythoff#49-hidden",
+      "wythoff#50-hidden",
+      "wythoff#52-hidden",
+      "wythoff#53-hidden",
+      "wythoff#54-hidden",
+      "wythoff#55-hidden",
+      "wythoff#56-hidden",
+      "wythoff#57-hidden"
+     ],
+     "claimed_all_pass": false,
+     "claimed_src": "eval/rover/r553/evidence/windows/w67/report.json",
+     "stderr_tail": "",
+     "scope": "nonrequired",
+     "blocking": false
+    }
+   }
+  },
+  "w68": {
+   "dir": "eval/rover/r553/evidence/windows/w68",
+   "arms": {
+    "agentR553b2-g1/g1": {
+     "arm": "agentR553b2-g1",
+     "tag": "R553b2-g1",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 58,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r553/evidence/windows/w68/report.json",
+     "stderr_tail": "",
+     "scope": "nonrequired",
+     "blocking": false
+    }
+   }
+  }
+ },
+ "self_report_mismatch": [],
+ "claim_unmapped": [],
+ "blocked": [
+  "w60/agentR553b0-g1/g1 rc=1 cases=56/58(expect 58) failed=wythoff#43-public,wythoff#57-hidden",
+  "w62/agentR553b0-g1/g1 rc=1 cases=54/58(expect 58) failed=wythoff#45-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden",
+  "w63/agentR553b1-g1/g1 rc=1 cases=55/58(expect 58) failed=wythoff#44-public,wythoff#45-hidden,wythoff#49-hidden",
+  "w64/agentR553b1-g1/g1 rc=1 cases=54/58(expect 58) failed=wythoff#45-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden",
+  "w67/agentR553b2-g1/g1 rc=1 cases=45/58(expect 58) failed=wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#55-hidden,wythoff#56-hidden,wythoff#57-hidden"
+ ],
+ "blocked_scoped": [
+  "w63/agentR553b1-g1/g1 rc=1 cases=55/58(expect 58) failed=wythoff#44-public,wythoff#45-hidden,wythoff#49-hidden",
+  "w64/agentR553b1-g1/g1 rc=1 cases=54/58(expect 58) failed=wythoff#45-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden"
+ ],
+ "nonrequired_arms": [
+  {
+   "arm": "w60/agentR553b0-g1",
+   "correct": false,
+   "detail": "w60/agentR553b0-g1/g1 rc=1 cases=56/58(expect 58) failed=wythoff#43-public,wythoff#57-hidden"
+  },
+  {
+   "arm": "w61/agentR553b0-g1",
+   "correct": true,
+   "detail": "w61/agentR553b0-g1/g1 rc=0 cases=58/58(expect 58) failed=-"
+  },
+  {
+   "arm": "w62/agentR553b0-g1",
+   "correct": false,
+   "detail": "w62/agentR553b0-g1/g1 rc=1 cases=54/58(expect 58) failed=wythoff#45-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden"
+  },
+  {
+   "arm": "w67/agentR553b2-g1",
+   "correct": false,
+   "detail": "w67/agentR553b2-g1/g1 rc=1 cases=45/58(expect 58) failed=wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#55-hidden,wythoff#56-hidden,wythoff#57-hidden"
+  },
+  {
+   "arm": "w68/agentR553b2-g1",
+   "correct": true,
+   "detail": "w68/agentR553b2-g1/g1 rc=0 cases=58/58(expect 58) failed=-"
+  }
+ ],
+ "undeclared_arms": [],
+ "policy": {
+  "active": false,
+  "reason": "no_policy_key",
+  "checks": {},
+  "declared_ts": null
+ },
+ "self_report_agrees": true,
+ "executable_and_correct": false,
+ "acceptable_scoped": false
+}

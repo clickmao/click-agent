@@ -1,0 +1,42 @@
+{
+ "rule_new": "VOID ⇔ (work_files==0) or (cases.total==0); rc/stage/上游退化率=hygiene",
+ "rule_old": "VOID ⇔ (rc==4) or (total==0) or (work_files==0) or (rate>0.25)",
+ "controls": {
+  "N1_no_artifacts": {
+   "want_new": true,
+   "got_new": true,
+   "got_old": true,
+   "ok": true
+  },
+  "N2_no_cases": {
+   "want_new": true,
+   "got_new": true,
+   "got_old": true,
+   "ok": true
+  },
+  "N3_rc4_with_artifacts(R552 w43)": {
+   "want_new": false,
+   "got_new": false,
+   "got_old": true,
+   "ok": true
+  },
+  "N4_rate0333_with_artifacts(R552 w38)": {
+   "want_new": false,
+   "got_new": false,
+   "got_old": true,
+   "ok": true
+  },
+  "P1_clean": {
+   "want_new": false,
+   "got_new": false,
+   "got_old": false,
+   "ok": true
+  }
+ },
+ "delta_cases": [
+  "N3_rc4_with_artifacts(R552 w43)",
+  "N4_rate0333_with_artifacts(R552 w38)"
+ ],
+ "has_teeth": true,
+ "delta_note": "旧规则在 ['N3_rc4_with_artifacts(R552 w43)', 'N4_rate0333_with_artifacts(R552 w38)'] 上把**已产出可判分产物**的窗判成 VOID(过宽); 新规则据此重钉 ⇒ 有效窗数分母改变 (用户令: 只改读数格, 不改质量定义式)"
+}

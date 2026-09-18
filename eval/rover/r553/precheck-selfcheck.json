@@ -1,0 +1,38 @@
+{
+ "tool": "contract_precheck.py",
+ "round": "R553",
+ "rule": "PASS ⇔ content 去空白后 json.loads 成功且为 dict",
+ "controls": {
+  "P1_legal_object": {
+   "want": "PASS",
+   "got": "PASS",
+   "ok": true
+  },
+  "N1_json_then_second_object": {
+   "want": "BLOCKED",
+   "got": "BLOCKED",
+   "ok": true
+  },
+  "N2_echo_instruction": {
+   "want": "BLOCKED",
+   "got": "BLOCKED",
+   "ok": true
+  },
+  "N3_truncated_json": {
+   "want": "BLOCKED",
+   "got": "BLOCKED",
+   "ok": true
+  },
+  "P2_live_upstream": {
+   "verdict": "PASS",
+   "rc": 0,
+   "note": "实时, 不计入 has_teeth"
+  }
+ },
+ "negative_controls_n": 3,
+ "positive_controls_n": 2,
+ "HAS_TEETH": true,
+ "verdict_counts_against_old_rule": {
+  "N1": "旧规则(仅判能否解析整段)同样红 ⇒ 本闸的判别力来自『整段单对象』而非宽松解析"
+ }
+}

@@ -1,0 +1,387 @@
+{
+ "round": "R553",
+ "hit_rule": "v_all=1-Smiss/Sprompt(中继 dump 时间轴, 逐窗平均) / v_incr=仅增量",
+ "rows": [
+  {
+   "arm": "R553b0",
+   "dose": "0",
+   "windows": [
+    "w60",
+    "w61",
+    "w62"
+   ],
+   "quality": [
+    "56/58",
+    "58/58",
+    "54/58"
+   ],
+   "median": 56,
+   "range": 4,
+   "n_valid": 3,
+   "n_valid_old_rule": 3,
+   "calls": 6,
+   "new_prompt": 25551,
+   "completion": 13718,
+   "v_all": 0.9741,
+   "v_incr": 0.9693999999999999,
+   "per_window": [
+    {
+     "win": "w60",
+     "cases": "56/58",
+     "void_new": false,
+     "void_old": false,
+     "rc": 5,
+     "calls": 2
+    },
+    {
+     "win": "w61",
+     "cases": "58/58",
+     "void_new": false,
+     "void_old": false,
+     "rc": 0,
+     "calls": 3
+    },
+    {
+     "win": "w62",
+     "cases": "54/58",
+     "void_new": false,
+     "void_old": false,
+     "rc": 0,
+     "calls": 1
+    }
+   ]
+  },
+  {
+   "arm": "R553b1",
+   "dose": "1",
+   "windows": [
+    "w63",
+    "w64",
+    "w65"
+   ],
+   "quality": [
+    "55/58",
+    "54/58"
+   ],
+   "median": 55,
+   "range": 1,
+   "n_valid": 2,
+   "n_valid_old_rule": 2,
+   "calls": 7,
+   "new_prompt": 42680,
+   "completion": 14493,
+   "v_all": 0.9658333333333333,
+   "v_incr": 0.9661666666666667,
+   "per_window": [
+    {
+     "win": "w63",
+     "cases": "55/58",
+     "void_new": false,
+     "void_old": false,
+     "rc": 5,
+     "calls": 3
+    },
+    {
+     "win": "w64",
+     "cases": "54/58",
+     "void_new": false,
+     "void_old": false,
+     "rc": 5,
+     "calls": 4
+    },
+    {
+     "win": "w65",
+     "cases": "0/58",
+     "void_new": true,
+     "void_old": true,
+     "rc": 4,
+     "calls": 2
+    }
+   ]
+  },
+  {
+   "arm": "R553b2",
+   "dose": "2",
+   "windows": [
+    "w66",
+    "w67",
+    "w68"
+   ],
+   "quality": [
+    "45/58",
+    "58/58"
+   ],
+   "median": 58,
+   "range": 13,
+   "n_valid": 2,
+   "n_valid_old_rule": 1,
+   "calls": 9,
+   "new_prompt": 59169,
+   "completion": 18734,
+   "v_all": 0.9713333333333334,
+   "v_incr": 0.9777999999999999,
+   "per_window": [
+    {
+     "win": "w66",
+     "cases": "0/58",
+     "void_new": true,
+     "void_old": true,
+     "rc": 4,
+     "calls": 2
+    },
+    {
+     "win": "w67",
+     "cases": "45/58",
+     "void_new": false,
+     "void_old": true,
+     "rc": 4,
+     "calls": 5
+    },
+    {
+     "win": "w68",
+     "cases": "58/58",
+     "void_new": false,
+     "void_old": false,
+     "rc": 5,
+     "calls": 4
+    }
+   ]
+  },
+  {
+   "arm": "codex(外部真值, R547 同题面同夹具)",
+   "win": 1,
+   "quality": "56/58",
+   "calls": 9,
+   "new_prompt": 7348,
+   "prompt": 93236,
+   "cached": 85888,
+   "completion": 4931,
+   "v_all": 0.9211892402076451
+  },
+  {
+   "arm": "codex(外部真值, R547 同题面同夹具)",
+   "win": 2,
+   "quality": "58/58",
+   "calls": 14,
+   "new_prompt": 11576,
+   "prompt": 135224,
+   "cached": 123648,
+   "completion": 7624,
+   "v_all": 0.9143938945749275
+  },
+  {
+   "arm": "codex(外部真值, R547 同题面同夹具)",
+   "win": 3,
+   "quality": "58/58",
+   "calls": 85,
+   "new_prompt": 36448,
+   "prompt": 1802336,
+   "cached": 1765888,
+   "completion": 25807,
+   "v_all": 0.9797773556096089
+  },
+  {
+   "arm": "R1@R547(与 codex 同窗)",
+   "win": 1,
+   "quality": "47/58",
+   "calls": 3,
+   "new_prompt": 929,
+   "prompt": 24609,
+   "cached": 23680,
+   "completion": 6056,
+   "v_all": 0.9622495834857167
+  },
+  {
+   "arm": "R1@R547(与 codex 同窗)",
+   "win": 2,
+   "quality": "47/58",
+   "calls": 5,
+   "new_prompt": 1671,
+   "prompt": 41095,
+   "cached": 39424,
+   "completion": 9715,
+   "v_all": 0.9593381189925781
+  },
+  {
+   "arm": "R1@R547(与 codex 同窗)",
+   "win": 3,
+   "quality": "58/58",
+   "calls": 7,
+   "new_prompt": 2285,
+   "prompt": 57581,
+   "cached": 55296,
+   "completion": 13634,
+   "v_all": 0.9603167711571525
+  },
+  {
+   "arm": "R552b0 (追溯回算, 零远端调用)",
+   "quality": [
+    "58/58",
+    "55/58"
+   ],
+   "median": 58,
+   "range": 3,
+   "n_valid": 2,
+   "n_valid_old_rule": 0,
+   "windows": [
+    "w30",
+    "w31",
+    "w32",
+    "w39",
+    "w40",
+    "w41",
+    "w49",
+    "w50",
+    "w51"
+   ]
+  },
+  {
+   "arm": "R552b1 (追溯回算, 零远端调用)",
+   "quality": [
+    "53/58",
+    "47/58",
+    "45/58",
+    "58/58",
+    "47/58",
+    "56/58"
+   ],
+   "median": 53,
+   "range": 13,
+   "n_valid": 6,
+   "n_valid_old_rule": 2,
+   "windows": [
+    "w33",
+    "w34",
+    "w35",
+    "w43",
+    "w44",
+    "w45",
+    "w52",
+    "w53",
+    "w54"
+   ]
+  },
+  {
+   "arm": "R552b2 (追溯回算, 零远端调用)",
+   "quality": [
+    "53/58",
+    "58/58",
+    "58/58",
+    "45/58",
+    "58/58",
+    "58/58",
+    "54/58",
+    "58/58"
+   ],
+   "median": 58,
+   "range": 13,
+   "n_valid": 8,
+   "n_valid_old_rule": 2,
+   "windows": [
+    "w36",
+    "w37",
+    "w38",
+    "w46",
+    "w47",
+    "w48",
+    "w55",
+    "w56",
+    "w57"
+   ]
+  }
+ ],
+ "precheck_confusion": {
+  "PASS": 9,
+  "BLOCKED": 0,
+  "details": [
+   {
+    "key": "R553b0/w60",
+    "verdict": "PASS",
+    "task": "PASS"
+   },
+   {
+    "key": "R553b0/w61",
+    "verdict": "PASS",
+    "task": "PASS"
+   },
+   {
+    "key": "R553b0/w62",
+    "verdict": "PASS",
+    "task": "PASS"
+   },
+   {
+    "key": "R553b1/w63",
+    "verdict": "PASS",
+    "task": "PASS"
+   },
+   {
+    "key": "R553b1/w64",
+    "verdict": "PASS",
+    "task": "PASS"
+   },
+   {
+    "key": "R553b1/w65",
+    "verdict": "PASS",
+    "task": "PASS"
+   },
+   {
+    "key": "R553b2/w66",
+    "verdict": "PASS",
+    "task": "PASS"
+   },
+   {
+    "key": "R553b2/w67",
+    "verdict": "PASS",
+    "task": "PASS"
+   },
+   {
+    "key": "R553b2/w68",
+    "verdict": "PASS",
+    "task": "PASS"
+   }
+  ]
+ },
+ "voidrule_selfcheck": {
+  "rule_new": "VOID ⇔ (work_files==0) or (cases.total==0); rc/stage/上游退化率=hygiene",
+  "rule_old": "VOID ⇔ (rc==4) or (total==0) or (work_files==0) or (rate>0.25)",
+  "controls": {
+   "N1_no_artifacts": {
+    "want_new": true,
+    "got_new": true,
+    "got_old": true,
+    "ok": true
+   },
+   "N2_no_cases": {
+    "want_new": true,
+    "got_new": true,
+    "got_old": true,
+    "ok": true
+   },
+   "N3_rc4_with_artifacts(R552 w43)": {
+    "want_new": false,
+    "got_new": false,
+    "got_old": true,
+    "ok": true
+   },
+   "N4_rate0333_with_artifacts(R552 w38)": {
+    "want_new": false,
+    "got_new": false,
+    "got_old": true,
+    "ok": true
+   },
+   "P1_clean": {
+    "want_new": false,
+    "got_new": false,
+    "got_old": false,
+    "ok": true
+   }
+  },
+  "delta_cases": [
+   "N3_rc4_with_artifacts(R552 w43)",
+   "N4_rate0333_with_artifacts(R552 w38)"
+  ],
+  "has_teeth": true,
+  "delta_note": "旧规则在 ['N3_rc4_with_artifacts(R552 w43)', 'N4_rate0333_with_artifacts(R552 w38)'] 上把**已产出可判分产物**的窗判成 VOID(过宽); 新规则据此重钉 ⇒ 有效窗数分母改变 (用户令: 只改读数格, 不改质量定义式)"
+ },
+ "codex_note": "codex 行 = R547 posthoc-codex-g1 落盘真值(同题面 g1 / 同 58 用例夹具); 非同窗 ⇒ 只作对照行, 跨轮禁相减"
+}
