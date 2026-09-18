@@ -1,0 +1,35 @@
+{
+ "round": "R552",
+ "written_before_run": true,
+ "author": "cron R552 (60min beat)",
+ "claim": "R551 定因（探针看见失败、预算也已花，产物仍以崩溃/非法形态交付）在**加了预算之后**依旧存在 ⇒ 本轮不再加预算，改问**剂量**：既有开关 AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR 在 {0,1,2} 三档上的**质量—成本**曲线（同二进制、同题面、同窗号族、各窗独立 session）。预注册期望方向 = 剂量↑质量不降且成本 ≤+1 调用/窗；若 b2 ≤ b1（中位）则如实收窄为「剂量面无增益」。另把 R551 事后人工判的『上游契约面退化 ⇒ 该窗 VOID』做成**起手/逐窗机检**（只改器具，不动产品）。",
+ "single_variable": "AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR ∈ {unset(=0, 对照基线), 1, 2}; 其余逐位同: 同一 AOT 二进制 sha256=e2fdab87b03b3f9ddae1628471b30b6165c07923e5924d77fbf111d24dd5c27b (/tmp/pub_r551/agenthost, 15,812,016 B) —— **无源码改动、无重发布**（用户令 2026-09-18: 提质只翻已有开关）; 同题面 sha256=516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3; 同 role(r542); 同用例脚本(r521); 同 AGENTFRAMEWORK_R1_MAX_REPAIR=1 / MAX_EXEC_REPAIR=1; SELFCHECK=1 在**三臂恒开**(非本轮变量); 同 adapter 中继; 每窗独立 session r552-b<轴值>-<窗号>。",
+ "arms": {
+  "b0": {"env": "AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR=unset", "role": "对照基线; 同时充任 R551 候选④『对照臂补窗』(R551 该臂仅 1 个有效窗)", "windows": [20, 21, 22], "port": 49041},
+  "b1": {"env": "AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR=1", "role": "R551 治疗臂配置复现(现行候选交付配置)", "windows": [23, 24, 25], "port": 49051},
+  "b2": {"env": "AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR=2", "role": "剂量加倍(本轮探针)", "windows": [26, 27, 28], "port": 49061}
+ },
+ "acceptance_rule": "铁律 11: 机检 = `python3 eval/rover/r507pre/exec_precondition.py --round r552`; rc 0 = 可验收 / 1 = 未可验收(逐条点名错题) / 3 = 输入缺失(fail-closed)。rc≠0 ⇒ 本轮一切 token/调用/质量降幅标「参考(未可验收)」。",
+ "evidence_scope": {
+  "require": ["w23/agentR552b1-g1", "w24/agentR552b1-g1", "w25/agentR552b1-g1"],
+  "nonrequired": [
+   {"pattern": "*/agentR552b0-g1", "reason": "对照臂 = 预算轴关(0), 作用是同窗 Δ 基线与候选④补窗, 不是交付配置 ⇒ 不作验收面, 读数单列。"},
+   {"pattern": "*/agentR552b2-g1", "reason": "剂量探针臂(2): 本轮为**探索面**, 未预注册为交付配置 ⇒ 不作验收面; 若其质量中位 > b1 且成本合规, 才在 R553 预注册为交付配置候选。"}
+  ],
+  "declared": "本声明落盘早于任何起臂（runner 第 0 步机检 prereg 存在=先写后跑闸）; VOID 窗按 R550 纪律原样保留、不进 require; 每臂按窗序取**前 3 个有效窗**收口, 不挑选; 追加窗须再次书面增补。"
+ },
+ "preregistered_expectations": {
+  "J1": "机制行使与覆盖: b1/b2 在**探针有失败证据**(public_probe_failed>0)的窗出现 probe_repairs≥1; b2 在**同一窗**若探针再失败且预算未尽的窗出现 probe_repairs=2 (剂量确实被行使, 非只改了个数)。",
+  "J2": "质量(主判据, 分档并列): 隐藏用例整题全对率与逐窗读数按臂分列; 期望方向 b2 ≥ b1 ≥ b0 (中位数比较)。**禁跨窗相减**; 单窗不作结论。",
+  "J3": "成本(分列): 逐臂 Σ调用数 / Σ新算 prompt(prompt_tokens−cached) / Σcompletion / 命中率(双口径) 并列; 期望 b2 相对 b1 的调用增量 ≤ +1/窗 (探针预算加大不应改变调用粒度)。",
+  "J4": "阴性对照: b0 的 transcript 无 probe_repairs / probe_repair_budget 字段 (轴关不入台账 ⇒ 与旧台账逐字节同)。",
+  "J5": "铁律 11: 前置器 rc=0 ⇒ 语义 = b1 三窗的**独立物化 + 真跑 + 逐用例正确**; rc=1 ⇒ 本轮一切降幅标『参考(未可验收)』并点名错题。",
+  "J6": "器具(候选③): 逐窗上游退化 fail-closed 生效 —— 每窗据 adapter dump 的 mtime 窗口算不可解析率, >25% ⇒ 该窗 void_upstream=true 且不进 require; 机检 = 该判据在**本轮的 VOID 窗**上确实触发(否则判恒真门), 并在非退化窗上不触发。",
+  "unregistered_candidate": "候选①『交付闸轴(probe_failed>0 ⇒ 拒交付/降级)』**本轮未做**: 机检全仓 env 开关清单（grep AGENTFRAMEWORK_* over src/）证明**不存在**任何交付闸开关 ⇒ 该候选字面上的『只翻既有开关』不可满足，须以一处新分支实现（改 rc/stage 分类与回执面, **不改质量/成本格**）⇒ 按用户令『要动代码须先说明它改哪一格读数』留待 R553 预注册, 不夹带进本轮。",
+  "failure_classification": "若 J2 不成立: 必须区分 (a)『剂量给了但没到位』(probe_repairs>0 而质量不动 ⇒ 归因模型能力/证据措辞) 与 (b)『剂量未被行使』(probe_repairs=0 ⇒ 归因触发面/预算接线); 并逐条点名失败用例族。质量分布若三臂全同 ⇒ 登记『剂量面饱和』并按 R523 极差判噪声。"
+ },
+ "same_input_gate": {"prompt_sha256": "516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3", "hidden_cases": 58,
+  "note": "三臂同一题面(g1)，起臂前硬门断言 sha 相符; 题面 sha 与 R542/R547/R549/R550/R551 五处既有登记一致 ⇒ 跨轮同题但**禁相减**。"},
+ "prior_round_note": "R551 判 rc=1(治疗臂 3 有效窗 56/58 中位、仅 1 窗满分; 对照臂仅 w7 有效 45/58; w8/w9 死于上游 rc=4)。本轮 rc 是**新一轮**读数, 与 R551 不可相减。",
+ "upstream_degradation_gate": {"rule": "逐窗: 该窗时间片内 adapter side-agent dump 的 response.text 不可解析率 > 0.25 ⇒ void_upstream", "basis": "R551 事后人工判 w8/w9 退化(3/11 不可解析); 本轮把它前置为逐窗机检(只改器具)", "fail_closed": "该窗 VOID ⇒ 不进 require、不进中位数, 但在 readings 里可见(不删不覆盖)"}
+}

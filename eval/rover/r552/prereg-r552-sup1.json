@@ -1,0 +1,29 @@
+{
+ "round": "R552",
+ "version": "sup1",
+ "written_before_run": true,
+ "applies_after": "prereg-r552-v2.json (v2 三臂 9 窗已跑完, 结果见 §v2_interim)",
+ "v2_interim": {
+  "b0": {"windows": {"w30": "rc=4 contract VOID", "w31": "rc=4 contract VOID", "w32": "rc=4 contract VOID"}, "valid_n": 0},
+  "b1": {"windows": {"w33": "rc=4 contract VOID", "w34": "53/58 rc=8 self_test_unmet, probe 1/8, probe_repairs=1; VOID(upstream rate 0.333)", "w35": "47/58 rc=5 probe 2/8 probe_repairs=1 VALID"}, "valid_n": 1},
+  "b2": {"windows": {"w36": "53/58 rc=4 VOID", "w37": "58/58 rc=0 probe 0/8 VALID", "w38": "58/58 rc=0; VOID(upstream rate 0.333)"}, "valid_n": 1},
+  "verdict_now": "三臂**无一臂**达 n≥3 有效窗 ⇒ J2(质量)在本窗族内**不可判**(单窗不作结论); J5(铁律11) 因 require 面仅 1 个有效窗 ⇒ 预期 rc=1。"
+ },
+ "why_extra_windows": "有效窗不足的成因是**上游契约面间歇退化**(9 窗中 5 窗 rc=4 或 dump 不可解析率 >0.25) —— 与环境/被测都无关的中继侧抖动; 预注册 v2 已写明『按窗序取前 3 个有效窗收口、追加窗须书面增补』⇒ 本增补即该条文的行使。",
+ "unchanged": "单变量(AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR ∈ {0,1,2})、二进制 sha(e2fdab87…)、题面 sha(516f3208…)、role/cases/mini 预算、**阈值与 J 判据**、VOID 规则(含逐窗上游闸 >0.25 阈值)**全部不变**。",
+ "arms": {
+  "b0": {"env": "unset(=0)", "windows": [39, 40, 41], "port": 49101},
+  "b1": {"env": "1", "windows": [43, 44, 45], "port": 49111},
+  "b2": {"env": "2", "windows": [46, 47, 48], "port": 49121}
+ },
+ "evidence_scope": {
+  "require": ["*/agentR552b1-g1"],
+  "nonrequired": [
+   {"pattern": "*/agentR552b0-g1", "reason": "对照基线, 非交付配置"},
+   {"pattern": "*/agentR552b2-g1", "reason": "剂量探针, 探索面"}
+  ],
+  "declared": "require 由 v2 的『逐窗点名』改为**臂级**『*/agentR552b1-g1』: 本臂在 v2+sup1 两个窗族内的**前 3 个有效窗**(按窗序, 不挑选) 即验收面; VOID 窗无快照 ⇒ 不进 artifacts.json ⇒ 自动落在验收面之外(不作废、不删除)。此改写**只扩窗族不改阈值**, 且发生在 sup1 起臂之前。"
+ },
+ "pooled_windows": {"b0": [30, 31, 32, 39, 40, 41], "b1": [33, 34, 35, 43, 44, 45], "b2": [36, 37, 38, 46, 47, 48]},
+ "post_hoc_note": "承 v2 实测: 预注册的上游 VOID 规则(rate>0.25)在 w34(53/58 rc=8) 与 w38(58/58 rc=0) 上触发, 而这两窗**已产出可判分产物**(非『链未走通』) ⇒ 判据过宽(把 hygiene 读数当 VOID 触发条件的风险已实测)。按纪律: 预注册判据**照原样判定**(J6 记『触发但过宽』), 修正形态只作 `checks_posthoc`, 且在下一轮(R553)预注册中改写为「仅 rc=4(链未走通) 判 VOID; dump 退化率单列 hygiene」。本轮**不改**该规则, 以免事后调判据。"
+}

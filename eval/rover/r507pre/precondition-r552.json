@@ -1,0 +1,585 @@
+{
+ "label": "R552",
+ "layout": "project",
+ "taskset": "eval/rover/r552/taskset-r552.json",
+ "snapshot_root": "eval/rover/r552/snapshots",
+ "tasks_n": 1,
+ "windows_n": 16,
+ "rule": "可验收前置(project 布局): 仓内不可变快照 ⇒ 独立物化到全新临时目录 ⇒ python3 -I -B 实跑隐藏用例脚本 ⇒ 逐条机械判对; 自报 all_pass 只作对照不吃",
+ "declared_absent": [],
+ "scope_source": "eval/rover/r552/prereg-r552-sup1.json",
+ "scope_prereg": false,
+ "scope_require": [
+  "*/agentR552b1-g1"
+ ],
+ "scope_nonrequired": [
+  {
+   "pattern": "*/agentR552b0-g1",
+   "reason": "对照基线, 非交付配置"
+  },
+  {
+   "pattern": "*/agentR552b2-g1",
+   "reason": "剂量探针, 探索面"
+  }
+ ],
+ "windows": {
+  "w34": {
+   "dir": "eval/rover/r552/evidence/windows/w34",
+   "arms": {
+    "agentR552b1-g1/g1": {
+     "arm": "agentR552b1-g1",
+     "tag": "R552b1-g1",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 53,
+     "rc": 1,
+     "correct": false,
+     "work_dir": null,
+     "failed_cases": [
+      "wythoff#43-public",
+      "wythoff#46-hidden",
+      "wythoff#50-hidden",
+      "wythoff#52-hidden",
+      "wythoff#56-hidden"
+     ],
+     "claimed_all_pass": false,
+     "claimed_src": "eval/rover/r552/evidence/windows/w34/report.json",
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    }
+   }
+  },
+  "w35": {
+   "dir": "eval/rover/r552/evidence/windows/w35",
+   "arms": {
+    "agentR552b1-g1/g1": {
+     "arm": "agentR552b1-g1",
+     "tag": "R552b1-g1",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 47,
+     "rc": 1,
+     "correct": false,
+     "work_dir": null,
+     "failed_cases": [
+      "wythoff#43-public",
+      "wythoff#44-public",
+      "wythoff#45-hidden",
+      "wythoff#47-hidden",
+      "wythoff#48-hidden",
+      "wythoff#49-hidden",
+      "wythoff#50-hidden",
+      "wythoff#52-hidden",
+      "wythoff#53-hidden",
+      "wythoff#54-hidden",
+      "wythoff#56-hidden"
+     ],
+     "claimed_all_pass": false,
+     "claimed_src": "eval/rover/r552/evidence/windows/w35/report.json",
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    }
+   }
+  },
+  "w36": {
+   "dir": "eval/rover/r552/evidence/windows/w36",
+   "arms": {
+    "agentR552b2-g1/g1": {
+     "arm": "agentR552b2-g1",
+     "tag": "R552b2-g1",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 53,
+     "rc": 1,
+     "correct": false,
+     "work_dir": null,
+     "failed_cases": [
+      "wythoff#43-public",
+      "wythoff#50-hidden",
+      "wythoff#55-hidden",
+      "wythoff#56-hidden",
+      "wythoff#57-hidden"
+     ],
+     "claimed_all_pass": false,
+     "claimed_src": "eval/rover/r552/evidence/windows/w36/report.json",
+     "stderr_tail": "",
+     "scope": "nonrequired",
+     "blocking": false
+    }
+   }
+  },
+  "w37": {
+   "dir": "eval/rover/r552/evidence/windows/w37",
+   "arms": {
+    "agentR552b2-g1/g1": {
+     "arm": "agentR552b2-g1",
+     "tag": "R552b2-g1",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 58,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r552/evidence/windows/w37/report.json",
+     "stderr_tail": "",
+     "scope": "nonrequired",
+     "blocking": false
+    }
+   }
+  },
+  "w38": {
+   "dir": "eval/rover/r552/evidence/windows/w38",
+   "arms": {
+    "agentR552b2-g1/g1": {
+     "arm": "agentR552b2-g1",
+     "tag": "R552b2-g1",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 58,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r552/evidence/windows/w38/report.json",
+     "stderr_tail": "",
+     "scope": "nonrequired",
+     "blocking": false
+    }
+   }
+  },
+  "w43": {
+   "dir": "eval/rover/r552/evidence/windows/w43",
+   "arms": {
+    "agentR552b1-g1/g1": {
+     "arm": "agentR552b1-g1",
+     "tag": "R552b1-g1",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 45,
+     "rc": 1,
+     "correct": false,
+     "work_dir": null,
+     "failed_cases": [
+      "wythoff#43-public",
+      "wythoff#44-public",
+      "wythoff#45-hidden",
+      "wythoff#46-hidden",
+      "wythoff#47-hidden",
+      "wythoff#48-hidden",
+      "wythoff#49-hidden",
+      "wythoff#50-hidden",
+      "wythoff#51-hidden",
+      "wythoff#52-hidden",
+      "wythoff#53-hidden",
+      "wythoff#54-hidden",
+      "wythoff#56-hidden"
+     ],
+     "claimed_all_pass": false,
+     "claimed_src": "eval/rover/r552/evidence/windows/w43/report.json",
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    }
+   }
+  },
+  "w45": {
+   "dir": "eval/rover/r552/evidence/windows/w45",
+   "arms": {
+    "agentR552b1-g1/g1": {
+     "arm": "agentR552b1-g1",
+     "tag": "R552b1-g1",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 58,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r552/evidence/windows/w45/report.json",
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    }
+   }
+  },
+  "w46": {
+   "dir": "eval/rover/r552/evidence/windows/w46",
+   "arms": {
+    "agentR552b2-g1/g1": {
+     "arm": "agentR552b2-g1",
+     "tag": "R552b2-g1",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 45,
+     "rc": 1,
+     "correct": false,
+     "work_dir": null,
+     "failed_cases": [
+      "wythoff#43-public",
+      "wythoff#44-public",
+      "wythoff#45-hidden",
+      "wythoff#46-hidden",
+      "wythoff#47-hidden",
+      "wythoff#48-hidden",
+      "wythoff#49-hidden",
+      "wythoff#50-hidden",
+      "wythoff#53-hidden",
+      "wythoff#54-hidden",
+      "wythoff#55-hidden",
+      "wythoff#56-hidden",
+      "wythoff#57-hidden"
+     ],
+     "claimed_all_pass": false,
+     "claimed_src": "eval/rover/r552/evidence/windows/w46/report.json",
+     "stderr_tail": "",
+     "scope": "nonrequired",
+     "blocking": false
+    }
+   }
+  },
+  "w48": {
+   "dir": "eval/rover/r552/evidence/windows/w48",
+   "arms": {
+    "agentR552b2-g1/g1": {
+     "arm": "agentR552b2-g1",
+     "tag": "R552b2-g1",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 58,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r552/evidence/windows/w48/report.json",
+     "stderr_tail": "",
+     "scope": "nonrequired",
+     "blocking": false
+    }
+   }
+  },
+  "w50": {
+   "dir": "eval/rover/r552/evidence/windows/w50",
+   "arms": {
+    "agentR552b0-g1/g1": {
+     "arm": "agentR552b0-g1",
+     "tag": "R552b0-g1",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 58,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r552/evidence/windows/w50/report.json",
+     "stderr_tail": "",
+     "scope": "nonrequired",
+     "blocking": false
+    }
+   }
+  },
+  "w51": {
+   "dir": "eval/rover/r552/evidence/windows/w51",
+   "arms": {
+    "agentR552b0-g1/g1": {
+     "arm": "agentR552b0-g1",
+     "tag": "R552b0-g1",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 55,
+     "rc": 1,
+     "correct": false,
+     "work_dir": null,
+     "failed_cases": [
+      "wythoff#43-public",
+      "wythoff#55-hidden",
+      "wythoff#57-hidden"
+     ],
+     "claimed_all_pass": false,
+     "claimed_src": "eval/rover/r552/evidence/windows/w51/report.json",
+     "stderr_tail": "",
+     "scope": "nonrequired",
+     "blocking": false
+    }
+   }
+  },
+  "w52": {
+   "dir": "eval/rover/r552/evidence/windows/w52",
+   "arms": {
+    "agentR552b1-g1/g1": {
+     "arm": "agentR552b1-g1",
+     "tag": "R552b1-g1",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 47,
+     "rc": 1,
+     "correct": false,
+     "work_dir": null,
+     "failed_cases": [
+      "wythoff#43-public",
+      "wythoff#44-public",
+      "wythoff#45-hidden",
+      "wythoff#47-hidden",
+      "wythoff#48-hidden",
+      "wythoff#49-hidden",
+      "wythoff#50-hidden",
+      "wythoff#52-hidden",
+      "wythoff#53-hidden",
+      "wythoff#54-hidden",
+      "wythoff#56-hidden"
+     ],
+     "claimed_all_pass": false,
+     "claimed_src": "eval/rover/r552/evidence/windows/w52/report.json",
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    }
+   }
+  },
+  "w53": {
+   "dir": "eval/rover/r552/evidence/windows/w53",
+   "arms": {
+    "agentR552b1-g1/g1": {
+     "arm": "agentR552b1-g1",
+     "tag": "R552b1-g1",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 56,
+     "rc": 1,
+     "correct": false,
+     "work_dir": null,
+     "failed_cases": [
+      "wythoff#55-hidden",
+      "wythoff#56-hidden"
+     ],
+     "claimed_all_pass": false,
+     "claimed_src": "eval/rover/r552/evidence/windows/w53/report.json",
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    }
+   }
+  },
+  "w55": {
+   "dir": "eval/rover/r552/evidence/windows/w55",
+   "arms": {
+    "agentR552b2-g1/g1": {
+     "arm": "agentR552b2-g1",
+     "tag": "R552b2-g1",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 58,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r552/evidence/windows/w55/report.json",
+     "stderr_tail": "",
+     "scope": "nonrequired",
+     "blocking": false
+    }
+   }
+  },
+  "w56": {
+   "dir": "eval/rover/r552/evidence/windows/w56",
+   "arms": {
+    "agentR552b2-g1/g1": {
+     "arm": "agentR552b2-g1",
+     "tag": "R552b2-g1",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 54,
+     "rc": 1,
+     "correct": false,
+     "work_dir": null,
+     "failed_cases": [
+      "wythoff#45-hidden",
+      "wythoff#47-hidden",
+      "wythoff#48-hidden",
+      "wythoff#49-hidden"
+     ],
+     "claimed_all_pass": false,
+     "claimed_src": "eval/rover/r552/evidence/windows/w56/report.json",
+     "stderr_tail": "",
+     "scope": "nonrequired",
+     "blocking": false
+    }
+   }
+  },
+  "w57": {
+   "dir": "eval/rover/r552/evidence/windows/w57",
+   "arms": {
+    "agentR552b2-g1/g1": {
+     "arm": "agentR552b2-g1",
+     "tag": "R552b2-g1",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 58,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": true,
+     "claimed_src": "eval/rover/r552/evidence/windows/w57/report.json",
+     "stderr_tail": "",
+     "scope": "nonrequired",
+     "blocking": false
+    }
+   }
+  }
+ },
+ "self_report_mismatch": [],
+ "claim_unmapped": [],
+ "blocked": [
+  "w34/agentR552b1-g1/g1 rc=1 cases=53/58(expect 58) failed=wythoff#43-public,wythoff#46-hidden,wythoff#50-hidden,wythoff#52-hidden,wythoff#56-hidden",
+  "w35/agentR552b1-g1/g1 rc=1 cases=47/58(expect 58) failed=wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#56-hidden",
+  "w36/agentR552b2-g1/g1 rc=1 cases=53/58(expect 58) failed=wythoff#43-public,wythoff#50-hidden,wythoff#55-hidden,wythoff#56-hidden,wythoff#57-hidden",
+  "w43/agentR552b1-g1/g1 rc=1 cases=45/58(expect 58) failed=wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#46-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#51-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#56-hidden",
+  "w46/agentR552b2-g1/g1 rc=1 cases=45/58(expect 58) failed=wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#46-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#55-hidden,wythoff#56-hidden,wythoff#57-hidden",
+  "w51/agentR552b0-g1/g1 rc=1 cases=55/58(expect 58) failed=wythoff#43-public,wythoff#55-hidden,wythoff#57-hidden",
+  "w52/agentR552b1-g1/g1 rc=1 cases=47/58(expect 58) failed=wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#56-hidden",
+  "w53/agentR552b1-g1/g1 rc=1 cases=56/58(expect 58) failed=wythoff#55-hidden,wythoff#56-hidden",
+  "w56/agentR552b2-g1/g1 rc=1 cases=54/58(expect 58) failed=wythoff#45-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden"
+ ],
+ "blocked_scoped": [
+  "w34/agentR552b1-g1/g1 rc=1 cases=53/58(expect 58) failed=wythoff#43-public,wythoff#46-hidden,wythoff#50-hidden,wythoff#52-hidden,wythoff#56-hidden",
+  "w35/agentR552b1-g1/g1 rc=1 cases=47/58(expect 58) failed=wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#56-hidden",
+  "w43/agentR552b1-g1/g1 rc=1 cases=45/58(expect 58) failed=wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#46-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#51-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#56-hidden",
+  "w52/agentR552b1-g1/g1 rc=1 cases=47/58(expect 58) failed=wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#56-hidden",
+  "w53/agentR552b1-g1/g1 rc=1 cases=56/58(expect 58) failed=wythoff#55-hidden,wythoff#56-hidden"
+ ],
+ "nonrequired_arms": [
+  {
+   "arm": "w36/agentR552b2-g1",
+   "correct": false,
+   "detail": "w36/agentR552b2-g1/g1 rc=1 cases=53/58(expect 58) failed=wythoff#43-public,wythoff#50-hidden,wythoff#55-hidden,wythoff#56-hidden,wythoff#57-hidden"
+  },
+  {
+   "arm": "w37/agentR552b2-g1",
+   "correct": true,
+   "detail": "w37/agentR552b2-g1/g1 rc=0 cases=58/58(expect 58) failed=-"
+  },
+  {
+   "arm": "w38/agentR552b2-g1",
+   "correct": true,
+   "detail": "w38/agentR552b2-g1/g1 rc=0 cases=58/58(expect 58) failed=-"
+  },
+  {
+   "arm": "w46/agentR552b2-g1",
+   "correct": false,
+   "detail": "w46/agentR552b2-g1/g1 rc=1 cases=45/58(expect 58) failed=wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#46-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#55-hidden,wythoff#56-hidden,wythoff#57-hidden"
+  },
+  {
+   "arm": "w48/agentR552b2-g1",
+   "correct": true,
+   "detail": "w48/agentR552b2-g1/g1 rc=0 cases=58/58(expect 58) failed=-"
+  },
+  {
+   "arm": "w50/agentR552b0-g1",
+   "correct": true,
+   "detail": "w50/agentR552b0-g1/g1 rc=0 cases=58/58(expect 58) failed=-"
+  },
+  {
+   "arm": "w51/agentR552b0-g1",
+   "correct": false,
+   "detail": "w51/agentR552b0-g1/g1 rc=1 cases=55/58(expect 58) failed=wythoff#43-public,wythoff#55-hidden,wythoff#57-hidden"
+  },
+  {
+   "arm": "w55/agentR552b2-g1",
+   "correct": true,
+   "detail": "w55/agentR552b2-g1/g1 rc=0 cases=58/58(expect 58) failed=-"
+  },
+  {
+   "arm": "w56/agentR552b2-g1",
+   "correct": false,
+   "detail": "w56/agentR552b2-g1/g1 rc=1 cases=54/58(expect 58) failed=wythoff#45-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden"
+  },
+  {
+   "arm": "w57/agentR552b2-g1",
+   "correct": true,
+   "detail": "w57/agentR552b2-g1/g1 rc=0 cases=58/58(expect 58) failed=-"
+  }
+ ],
+ "undeclared_arms": [],
+ "policy": {
+  "active": false,
+  "reason": "no_policy_key",
+  "checks": {},
+  "declared_ts": null
+ },
+ "self_report_agrees": true,
+ "executable_and_correct": false,
+ "acceptable_scoped": false
+}

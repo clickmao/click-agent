@@ -1,0 +1,32 @@
+{
+ "round": "R552",
+ "version": "sup2",
+ "written_before_run": true,
+ "applies_after": ["prereg-r552-v2.json", "prereg-r552-sup1.json"],
+ "status_before_this_supplement": {
+  "windows_run": 12,
+  "valid_per_arm": {"b0": 0, "b1": 2, "b2": 1},
+  "reading": "b0 w30-32 全 rc=4(契约面) ⇒ 对照臂仍零有效窗; b1 有效 = w35 47/58, w45 58/58; b2 有效 = w37 58/58 (w38/w48 均 58/58 但被预注册上游规则判 VOID)",
+  "dominant_obstacle": "上游中继间歇退化: 12 窗中 7 窗 rc=4(stage=contract)、6 窗 dump 不可解析率 ≥0.25 ⇒ 同窗对照被上游吃掉(与 R551 w8/w9 同源, 本轮更重)"
+ },
+ "why_extra_windows": "预注册(sup1)已声明『按窗序取前 3 个有效窗收口』, 该 n 尚未填满 ⇒ 本轮补齐**声明 n**, 判据/阈值/轴/二进制/题面**不变**。这是『填满声明样本量』, 不是『挑选有利窗』: 收口规则仍取窗序前 3 个有效窗, 与结果无关。",
+ "arms": {
+  "b0": {"env": "unset(=0)", "windows": [49, 50, 51], "port": 49131},
+  "b1": {"env": "1", "windows": [52, 53, 54], "port": 49141},
+  "b2": {"env": "2", "windows": [55, 56, 57], "port": 49151}
+ },
+ "pooled_windows_final": {"b0": [30, 31, 32, 39, 40, 41, 49, 50, 51], "b1": [33, 34, 35, 43, 44, 45, 52, 53, 54], "b2": [36, 37, 38, 46, 47, 48, 55, 56, 57]},
+ "unchanged": "单变量、二进制 sha(e2fdab87…)、题面 sha(516f3208…)、预算、VOID 规则(含 >0.25 逐窗上游闸)、J 判据、阈值 —— 全部不变。",
+ "instrument_defect_selfcaught": {
+  "what": "驱动器把臂级裁决件写成固定名 `summary.json` ⇒ sup1 调用**覆盖**了 v2 调用的 summary.json(承 unattended-job-reliability §10『派生件名必须由批次标签参数化』)。",
+  "impact": "仅派生件被覆盖; **原始读数(每窗 transcript.json / cases.txt / voidchk-*.json / adapter dumps)未受影响**, ingest 直接从原始件重算 ⇒ 无数据丢失。",
+  "fix": "本轮起 summary 文件名参数化: `summary-<TAG>-<WIN0>.json`; 被覆盖前的 v2 读数由原始件重算并列入 readings-r552.json。"
+ },
+ "evidence_scope": {
+  "require": ["*/agentR552b1-g1"],
+  "nonrequired": [
+   {"pattern": "*/agentR552b0-g1", "reason": "对照基线, 非交付配置"},
+   {"pattern": "*/agentR552b2-g1", "reason": "剂量探针, 探索面"}
+  ]
+ }
+}

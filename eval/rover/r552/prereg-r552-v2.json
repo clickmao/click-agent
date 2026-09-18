@@ -1,0 +1,46 @@
+{
+ "round": "R552",
+ "version": "v2",
+ "written_before_run": true,
+ "supersedes": {
+  "v1_aborted": true,
+  "v1_window_labels": ["b0: w20,w21,w22 (三条原始运行已完成但**判分脚本崩溃 ⇒ 0/0 ⇒ VOID(no_cases)**, 未产生任何能力读数)",
+                       "b1: 未起臂", "b2: 未起臂"],
+  "v1_run_dir": "/tmp/r552_b0-v1nocases (保留不删; 原 /tmp/r552_b0 改名标因)",
+  "v1_failure_items": [
+   "① 器具/夹具缺陷(本侧驱动器): 复制用例脚本 run_cases_r521.py 时**漏复制其数据文件** cases-r521.json ⇒ 每窗判分 FileNotFoundError ⇒ tot=0 ⇒ VOID。归因=本侧驱动器, 非被测对象。修: cp eval/rover/r542/cases/cases-r521.json eval/rover/r552/cases/ (sha 与 r542 源逐字节同, 6384 B)。",
+   "② 起手闸 A 连续两次未过: mem=2616MB / 2623MB < 阈值 2650MB ⇒ b1/b2 未起臂(正常 fail-closed 行为)。修: 停掉本会话两个 LSP 助手节点(pyright 285612?/bash-language-server, RSS 168MB+116MB) ⇒ MemAvailable 2637→2802MB(机检)。"
+  ],
+  "unchanged": "阈值、J 判据、单变量、二进制 sha、题面 sha、臂数**全部不变**; 只换窗号与运行树(避免覆盖 v1 证据, 承『崩批窗号报废登记·永不复用』)。"
+ },
+ "author": "cron R552 (60min beat)",
+ "claim": "R551 定因（探针看见失败、预算也已花，产物仍以崩溃/非法形态交付）在**加了预算之后**依旧存在 ⇒ 本轮不再加预算，改问**剂量**：既有开关 AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR 在 {0,1,2} 三档上的质量—成本曲线（同二进制、同题面、各窗独立 session）。预注册期望方向 = 剂量↑质量不降且成本 ≤+1 调用/窗；若 b2 ≤ b1（中位）则如实收窄为「剂量面无增益」。另把 R551 事后人工判的『上游契约面退化 ⇒ 该窗 VOID』做成逐窗机检（只改器具）。",
+ "single_variable": "AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR ∈ {unset(=0),1,2}; 其余逐位同: 同一 AOT 二进制 sha256=e2fdab87b03b3f9ddae1628471b30b6165c07923e5924d77fbf111d24dd5c27b (/tmp/pub_r551/agenthost, 15,812,016 B) —— 无源码改动、无重发布; 同题面 sha256=516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3; 同 role(r542); 同用例脚本+数据(r542/r521, 逐字节同); 同 MAX_REPAIR=1 / MAX_EXEC_REPAIR=1; SELFCHECK=1 三臂恒开; 同 adapter 中继; 每窗独立 session r552v2-b<轴值>-<窗号>。",
+ "arms": {
+  "b0": {"env": "AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR=unset", "role": "对照基线(兼 R551 候选④ 对照臂补窗)", "windows": [30, 31, 32], "port": 49071},
+  "b1": {"env": "AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR=1", "role": "R551 治疗臂配置复现", "windows": [33, 34, 35], "port": 49081},
+  "b2": {"env": "AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR=2", "role": "剂量加倍(本轮探针)", "windows": [36, 37, 38], "port": 49091}
+ },
+ "acceptance_rule": "铁律 11: 机检 = `python3 eval/rover/r507pre/exec_precondition.py --round r552`; rc 0 = 可验收 / 1 = 未可验收(逐条点名) / 3 = 输入缺失(fail-closed)。rc≠0 ⇒ 本轮一切 token/调用/质量降幅标「参考(未可验收)」。",
+ "evidence_scope": {
+  "require": ["w33/agentR552b1-g1", "w34/agentR552b1-g1", "w35/agentR552b1-g1"],
+  "nonrequired": [
+   {"pattern": "*/agentR552b0-g1", "reason": "对照臂 = 预算轴关(0): 同窗 Δ 基线与候选④补窗, 不是交付配置 ⇒ 不作验收面, 读数单列。"},
+   {"pattern": "*/agentR552b2-g1", "reason": "剂量探针臂(2): 探索面, 未预注册为交付配置 ⇒ 不作验收面; 其质量中位 > b1 且成本合规时才在 R553 预注册为候选。"}
+  ],
+  "declared": "本文件落盘早于 v2 任何起臂(runner 第 0 步机检 prereg 存在=先写后跑闸); VOID 窗按 R550 纪律原样保留、不进 require; 每臂按窗序取前 3 个有效窗收口, 不挑选; 追加窗须再次书面增补。"
+ },
+ "preregistered_expectations": {
+  "J1": "机制行使与覆盖: b1/b2 在探针有失败证据(public_probe_failed>0)的窗出现 probe_repairs≥1; b2 在探针再次失败且预算未尽的窗出现 probe_repairs=2。",
+  "J2": "质量(主判据, 分档并列): 隐藏用例整题全对率与逐窗读数按臂分列; 期望方向 b2 ≥ b1 ≥ b0(中位比较)。禁跨窗相减; 单窗不作结论。",
+  "J3": "成本(分列): 逐臂 Σ调用数 / Σ新算 prompt / Σcompletion / 命中率(双口径) 并列; 期望 b2 相对 b1 调用增量 ≤ +1/窗。",
+  "J4": "阴性对照: b0 transcript 无 probe_repairs / probe_repair_budget 字段(轴关不入台账 ⇒ 与旧台账逐字节同)。",
+  "J5": "铁律 11: 前置器 rc=0 ⇒ b1 三窗独立物化+真跑+逐用例正确; rc=1 ⇒ 一切降幅标『参考(未可验收)』并点名错题。",
+  "J6": "器具(候选③): 逐窗上游退化 fail-closed 生效 —— 每窗据 adapter dump mtime 窗口算不可解析率, >25% ⇒ void_upstream=true 且不进 require; 机检 = 该判据**自检有牙**(坏样本判红 ∧ 好样本判绿 ∧ 25% 不触发) ∧ 在真退化窗触发、在非退化窗不触发。",
+  "unregistered_candidate": "候选①『交付闸轴(probe_failed>0 ⇒ 拒交付/降级)』本轮未做: 机检全仓 env 开关(87 个)中**无任何**交付/拒绝/降级语义开关(eval/rover/r552/gate-switch-inventory.txt) ⇒ 字面『只翻既有开关』不可满足, 须以新分支实现(只改 rc/stage 分类与回执面, 不改质量/成本格) ⇒ 按用户令留 R553 预注册, 不夹带进本轮。",
+  "failure_classification": "若 J2 不成立: 区分 (a)『剂量给了但没到位』(probe_repairs>0 而质量不动) 与 (b)『剂量未被行使』(probe_repairs=0); 并逐条点名失败用例族。三臂分布全同 ⇒ 登记『剂量面饱和』并按 R523 极差判噪声。"
+ },
+ "same_input_gate": {"prompt_sha256": "516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3", "hidden_cases": 58,
+  "note": "三臂同一题面(g1), 起臂前硬门断言 sha; 与 R542/R547/R549/R550/R551 五处既有登记一致 ⇒ 跨轮同题但禁相减。"},
+ "upstream_degradation_gate": {"rule": "逐窗: 该窗时间片内 adapter side-agent dump 的 response.text 不可解析率 > 0.25 ⇒ void_upstream", "basis": "R551 事后人工判 w8/w9 退化(3/11 不可解析); 本轮前置为逐窗机检(只改器具)", "selfcheck": "eval/rover/r552/void_gate_selfcheck.json (由 ingest 生成: 坏样本红/好样本绿/25% 不触发)"}
+}

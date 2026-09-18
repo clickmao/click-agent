@@ -1,0 +1,18 @@
+# R552 器具证据: 开关清单机检（候选① 可行性判定）
+# 命令等价: grep -rho 'AGENTFRAMEWORK_[A-Z0-9_]*' src/ --include=*.cs | sort -u
+# 判定: 交付/拒绝/降级 语义开关命中数 = 0 ⇒ 候选①『只翻既有开关』字面不可满足
+# 全仓 env 开关总数 = 87
+# R1 面既有开关（本轮剂量面用的是第 4 项）:
+  AGENTFRAMEWORK_R1_CONTRACT
+  AGENTFRAMEWORK_R1_EARLY_STOP_PFAIL
+  AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR
+  AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR
+  AGENTFRAMEWORK_R1_MAX_REPAIR
+  AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK
+  AGENTFRAMEWORK_R1_ROLE_FILE
+  AGENTFRAMEWORK_R1_STEP_TIMEOUT
+  AGENTFRAMEWORK_R1_TAG
+  AGENTFRAMEWORK_R1_TRANSCRIPT
+# 语义命中项: (无)
+# 结论: 交付闸必须落在**新分支**（改 rc/stage 分类 + 回执面）⇒ 按用户令『要动代码须先说明它改哪一格读数』留 R553 预注册,
+#       不夹带进 R552（R552 只翻既有开关: MAX_PROBE_REPAIR 0/1/2）。
