@@ -1,0 +1,281 @@
+{
+ "round": "R570",
+ "instrument": "fingerprint_r570.py",
+ "selftest": {
+  "fixtures": [
+   {
+    "fixture": "good",
+    "expected": true,
+    "got": true,
+    "ok": true
+   },
+   {
+    "fixture": "hit_gt_prompt",
+    "expected": false,
+    "got": false,
+    "ok": true
+   },
+   {
+    "fixture": "total_lt_parts",
+    "expected": false,
+    "got": false,
+    "ok": true
+   },
+   {
+    "fixture": "miss_negative",
+    "expected": false,
+    "got": false,
+    "ok": true
+   }
+  ],
+  "n": 4,
+  "n_ok": 4,
+  "has_teeth": true
+ },
+ "checks": {
+  "C4-1_identity": {
+   "calls": 7,
+   "violations": 0,
+   "na_unreported": 0,
+   "pass": true
+  },
+  "C4-2_determinism": {
+   "windows_with_calls": 6,
+   "non_null_prompt_sha": 7,
+   "calls_total": 7,
+   "distinct_call1_prompt_sha8": [
+    "b9068f56"
+   ],
+   "distinct_task_sha256": [
+    "6fc12602d01e53996e0dcaca70d8cb613c5ca8ffae6dfebbc03d9f2b4d497cec"
+   ],
+   "distinct_prefix_sha256": [
+    "f1280f71e6fc74c1f14f64adab5a54c6e06083acb18bbf51eb7fdbed30cc4d4a"
+   ],
+   "pass": true
+  },
+  "C4-3_nontrivial": {
+   "sensitivity_call1_vs_call2": [
+    {
+     "win": "w146",
+     "call1": "b9068f56",
+     "call2": "64410834",
+     "differ": true
+    }
+   ],
+   "sensitivity_exercised": true,
+   "truth_fp_present": true,
+   "truth_fp_distinct": 1,
+   "pass": true
+  }
+ },
+ "violations": [],
+ "rc": 0,
+ "windows": [
+  "w143",
+  "w144",
+  "w145",
+  "w146",
+  "w147",
+  "w148"
+ ],
+ "per_window": {
+  "w143": {
+   "agent_calls": [
+    {
+     "idx": 3,
+     "prompt_sha8": "b9068f56",
+     "model": "deepseek-chat",
+     "n_messages": 2,
+     "prompt": 8343,
+     "hit": 8192,
+     "miss": 151,
+     "identity": true
+    }
+   ],
+   "transcript": {
+    "task_sha256": "6fc12602d01e53996e0dcaca70d8cb613c5ca8ffae6dfebbc03d9f2b4d497cec",
+    "prefix_sha256": "f1280f71e6fc74c1f14f64adab5a54c6e06083acb18bbf51eb7fdbed30cc4d4a",
+    "prefix_chars": 15291,
+    "calls": 1,
+    "max_repair": 1,
+    "max_exec_repair": 1,
+    "plan_steps_total": 14,
+    "steps_executed": 14,
+    "rc": 0,
+    "stage": "done"
+   },
+   "truth_fingerprint": {
+    "instructions_chars": 16979,
+    "input_items": 3,
+    "model": "deepseek-chat"
+   }
+  },
+  "w144": {
+   "agent_calls": [
+    {
+     "idx": 6,
+     "prompt_sha8": "b9068f56",
+     "model": "deepseek-chat",
+     "n_messages": 2,
+     "prompt": 8343,
+     "hit": 8192,
+     "miss": 151,
+     "identity": true
+    }
+   ],
+   "transcript": {
+    "task_sha256": "6fc12602d01e53996e0dcaca70d8cb613c5ca8ffae6dfebbc03d9f2b4d497cec",
+    "prefix_sha256": "f1280f71e6fc74c1f14f64adab5a54c6e06083acb18bbf51eb7fdbed30cc4d4a",
+    "prefix_chars": 15291,
+    "calls": 1,
+    "max_repair": 1,
+    "max_exec_repair": 1,
+    "plan_steps_total": 10,
+    "steps_executed": 7,
+    "rc": 5,
+    "stage": "run_rc"
+   },
+   "truth_fingerprint": {
+    "instructions_chars": 16979,
+    "input_items": 3,
+    "model": "deepseek-chat"
+   }
+  },
+  "w145": {
+   "agent_calls": [
+    {
+     "idx": 8,
+     "prompt_sha8": "b9068f56",
+     "model": "deepseek-chat",
+     "n_messages": 2,
+     "prompt": 8343,
+     "hit": 8192,
+     "miss": 151,
+     "identity": true
+    }
+   ],
+   "transcript": {
+    "task_sha256": "6fc12602d01e53996e0dcaca70d8cb613c5ca8ffae6dfebbc03d9f2b4d497cec",
+    "prefix_sha256": "f1280f71e6fc74c1f14f64adab5a54c6e06083acb18bbf51eb7fdbed30cc4d4a",
+    "prefix_chars": 15291,
+    "calls": 1,
+    "max_repair": 1,
+    "max_exec_repair": 1,
+    "plan_steps_total": 10,
+    "steps_executed": 7,
+    "rc": 5,
+    "stage": "expect_stdout"
+   },
+   "truth_fingerprint": {
+    "instructions_chars": 16979,
+    "input_items": 3,
+    "model": "deepseek-chat"
+   }
+  },
+  "w146": {
+   "agent_calls": [
+    {
+     "idx": 11,
+     "prompt_sha8": "b9068f56",
+     "model": "deepseek-chat",
+     "n_messages": 2,
+     "prompt": 8343,
+     "hit": 8192,
+     "miss": 151,
+     "identity": true
+    },
+    {
+     "idx": 12,
+     "prompt_sha8": "64410834",
+     "model": "deepseek-chat",
+     "n_messages": 2,
+     "prompt": 8709,
+     "hit": 8192,
+     "miss": 517,
+     "identity": true
+    }
+   ],
+   "transcript": {
+    "task_sha256": "6fc12602d01e53996e0dcaca70d8cb613c5ca8ffae6dfebbc03d9f2b4d497cec",
+    "prefix_sha256": "f1280f71e6fc74c1f14f64adab5a54c6e06083acb18bbf51eb7fdbed30cc4d4a",
+    "prefix_chars": 15291,
+    "calls": 2,
+    "max_repair": 1,
+    "max_exec_repair": 1,
+    "plan_steps_total": 8,
+    "steps_executed": 8,
+    "rc": 8,
+    "stage": "self_test_unmet"
+   },
+   "truth_fingerprint": {
+    "instructions_chars": 16979,
+    "input_items": 3,
+    "model": "deepseek-chat"
+   }
+  },
+  "w147": {
+   "agent_calls": [
+    {
+     "idx": 15,
+     "prompt_sha8": "b9068f56",
+     "model": "deepseek-chat",
+     "n_messages": 2,
+     "prompt": 8343,
+     "hit": 8192,
+     "miss": 151,
+     "identity": true
+    }
+   ],
+   "transcript": {
+    "task_sha256": "6fc12602d01e53996e0dcaca70d8cb613c5ca8ffae6dfebbc03d9f2b4d497cec",
+    "prefix_sha256": "f1280f71e6fc74c1f14f64adab5a54c6e06083acb18bbf51eb7fdbed30cc4d4a",
+    "prefix_chars": 15291,
+    "calls": 1,
+    "max_repair": 1,
+    "max_exec_repair": 1,
+    "plan_steps_total": 10,
+    "steps_executed": 7,
+    "rc": 5,
+    "stage": "expect_stdout"
+   },
+   "truth_fingerprint": {
+    "instructions_chars": 16979,
+    "input_items": 3,
+    "model": "deepseek-chat"
+   }
+  },
+  "w148": {
+   "agent_calls": [
+    {
+     "idx": 18,
+     "prompt_sha8": "b9068f56",
+     "model": "deepseek-chat",
+     "n_messages": 2,
+     "prompt": 8343,
+     "hit": 8192,
+     "miss": 151,
+     "identity": true
+    }
+   ],
+   "transcript": {
+    "task_sha256": "6fc12602d01e53996e0dcaca70d8cb613c5ca8ffae6dfebbc03d9f2b4d497cec",
+    "prefix_sha256": "f1280f71e6fc74c1f14f64adab5a54c6e06083acb18bbf51eb7fdbed30cc4d4a",
+    "prefix_chars": 15291,
+    "calls": 1,
+    "max_repair": 1,
+    "max_exec_repair": 1,
+    "plan_steps_total": 10,
+    "steps_executed": 7,
+    "rc": 5,
+    "stage": "expect_stdout"
+   },
+   "truth_fingerprint": {
+    "instructions_chars": 16979,
+    "input_items": 3,
+    "model": "deepseek-chat"
+   }
+  }
+ },
+ "honest_boundary": []
+}

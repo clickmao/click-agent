@@ -1,0 +1,119 @@
+{
+ "round": "R570",
+ "written_before_run": true,
+ "author": "cron-agent (60min tick, 2026-09-19)",
+ "claim": "**同窗零开发对照轮 (第四窗集)**: 既有开关 `AGENTFRAMEWORK_R1_EARLY_STOP_PFAIL` 的取值 **0 (默认关) vs 2** (同一枚二进制, 同题面/夹具/role/判分器逐字节复用) × 外部真值 codex, 6 新窗 w143..w148。承重问题 = R546/R547 明写未测的「早停对**质量**的影响」, 并同时量主线唯一成本杠杆面(探针已判产物不合格 ⇒ 省掉那次远端回灌修复请求) 的**成本-质量前沿**。零产品源码改动 / 零新增夹具 / 零新增开关。",
+ "one_time_context": "用户令 2026-09-19「继续下一轮」⇒ 走零开发臂 (既有开关); R569 §7 登记的两项须动契约/产品分支的候选 (g1 失分面修复 / 交付闸语义) **未放行**; 剂量轴已定案关闭, 本轮**不重开**。",
+ "candidates_ledger": {
+  "R570-① 剂量轴再开窗": "未做 —— 非承重变量、已定案关闭 (重开条件 = 换承重面或臂内机制改动)",
+  "R570-② g1/wythoff 失分面修复 (契约加厚 v3 / 产物落点自验)": "未做 —— 须动契约或产品分支 ⇒ **待放行**",
+  "R570-③ 交付闸语义 (rc=5/rc=8 仍交付)": "未做 —— 须新增产品分支 ⇒ **待放行** (只读取证亦无新数据面)",
+  "R570-④ 起手闸把本会话工具子进程纳入噪声面": "未做 —— 器具改版非本轮承重; 本轮以 pid 定向回收行使窗口 (R569 已立)",
+  "R570-⑤ 步数面回仓": "做 —— ingest/kpi 声明式增补 (读既有遥测字段 steps_executed/plan_steps_total)",
+  "R570-⑥ 早停轴同窗单变量 (承重)": "做 —— 6 新窗 w143..w148, 3 臂同窗 (既有开关, 零开发)"
+ },
+ "single_variable": "**仅一个 env 开关的值**: `AGENTFRAMEWORK_R1_EARLY_STOP_PFAIL` ∈ {0 (R570E0, 显式关), 2 (R570E2)}; `AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR` 两臂**均不设** ⇒ 取产品默认 (源码派生 `R1Options.MaxExecRepair = 1`, R568 已立, 与 R566B1 档同配置); 全臂共用同一枚 AOT 二进制 (sha 320d0eb17e709d15, runner 第 0 步机检), 题面/夹具/role/窗口逐字节同",
+ "arms": {
+  "C1": {
+   "side": "codex",
+   "desc": "外部真值 (另一套 agent 框架 CLI, 同模型, 同题面同夹具同窗)",
+   "env": {}
+  },
+  "R570E0": {
+   "side": "agent",
+   "desc": "早停轴 = 0 (关; 控制臂)",
+   "env": {
+    "AGENTFRAMEWORK_R1_EARLY_STOP_PFAIL": "0"
+   }
+  },
+  "R570E2": {
+   "side": "agent",
+   "desc": "早停轴 = 2 (探针已判产物不合格 pfail>=2 ⇒ 不再花一次远端回灌修复)",
+   "env": {
+    "AGENTFRAMEWORK_R1_EARLY_STOP_PFAIL": "2"
+   }
+  }
+ },
+ "arm_env_definition_note": "两臂早停键**都显式落盘**且只有这一个键取值不同 ⇒ 单变量由构造保证; runner 第 0 步机检。其余 env 全臂相同 (R1_CONTRACT / R1_MAX_REPAIR=1 / PUBLIC_SELFCHECK=1 / ROLE_FILE / TRANSCRIPT / WORKSPACE / TAG); MAX_EXEC_REPAIR 两臂均不设 (产品默认 1)。",
+ "scope_declaration": {
+  "windows": [
+   "w143",
+   "w144",
+   "w145",
+   "w146",
+   "w147",
+   "w148"
+  ],
+  "window_count": 6,
+  "task": "g1 (冻结题面; prompt sha256 与 R559/R560/R563/R565/R566/R567/R569 逐字节相同)",
+  "task_prompt_sha256_expected": "516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3",
+  "binary_sha256_expected": "320d0eb17e709d15ce7d149ceff45fc1cacff814ac01b9fbda67f702726cee48",
+  "hidden_cases": 58,
+  "grader_sha256": "a67215a792845cb4a3adec4553c8d06211fa3a7a1dc1ec258ed9dbf3f6e59109",
+  "cross_round_deltas_forbidden": "与 w104..w118 / w119..w124 / w125..w130 / w131..w136 / w137..w142 的读数**并列不相减** (新窗)"
+ },
+ "criterion_version": "v2 (逐窗并列 + 真值崩窗 unreliable[MARGIN=3] + 配对判据[n>=3, 无窗<=-3, 中位>=-2] + VOID 臂窗单列) —— 口径文本取自 docs/external-reference-harness.md §12, 本文件只引用不重定义; **本轮不改判据 v2**",
+ "acceptance_rule": {
+  "primary": "判据 v2 判决 (eval/rover/r561/verdict_r561.py 装置, adjudicate_r570.py 零逻辑复制复用); 每臂对**同窗真值**配对",
+  "rc": "0 全过 / 1 判据未过 (被测或前提) / 2 器具缺陷 / 3 缺侧或不可判",
+  "expected_direction": "**方向未预设** (该轴的成本方向明确: 省一次远端调用; 质量方向 R546/R547 未测 ⇒ 本轮作**前沿测量**, 不预设增益也不预设损失); 任何降幅宣称必须同时过 A1/A2/A3 三条成对判据",
+  "cross_check": "铁律 11 前置器 python3 eval/rover/r507pre/exec_precondition.py --round r570 (两侧产出物独立物化 + 真跑 + 逐用例判对); rc!=0 ⇒ 全部成本/降幅读数标「参考(未可验收)」"
+ },
+ "axis_criteria_R570": {
+  "note": "三条成对判据**先于本窗集落盘**; 缺任一条 ⇒ 不作任何成本/质量宣称 (只出读数)",
+  "A1 行使面 (机制启用断言)": "transcript.early_stop_skipped Σ >= 1 且 存在 skipped>=1 的窗数 >= 1; Σ == 0 ⇒ 记 `mechanism-not-engaged`, 成本对比作废 (不得据此说『无增益』)",
+  "A2 成本 (gain)": "同窗配对: Σcalls(E2)/Σcalls(E0) <= 0.70 ∧ Σnew_prompt(E2)/Σnew_prompt(E0) <= 0.70 (主线阈值 ≥30% 降幅; 调用数为主口径——无 tokenizer 口径争议, 与 token 双报)",
+  "A3 质量不降 (paired)": "逐窗配对 (E2 − E0) 用例数: 中位 >= -2 ∧ 无窗 <= -3 ∧ 有效窗 n >= 3",
+  "宣称规则": "A1 ∧ A2 ∧ A3 全过 ⇒ 方可宣称「早停轴 = 调用降幅达标且质量不降」; 只过 A2 不过 A3 ⇒ 如实写「成本降 / 质量降」前沿读数, **禁用收益动词**; A1 不过 ⇒ 整轴作未行使处理"
+ },
+ "candidate4": {
+  "name": "判定输入指纹 / 命中率双口径复核 (新窗)",
+  "exercise_arm": "R570E2",
+  "pre_registered_checks": {
+   "C4-1 恒等式": "每个中继 dump: prompt_tokens == hit + miss ∧ 0 <= hit <= prompt (违反 >0 ⇒ rc=2 器具/口径缺陷)",
+   "C4-2 确定性": "行使臂每窗**第 1 次调用**的 prompt sha8 全窗相同 ∧ transcript 任务/前缀 sha 全窗相同",
+   "C4-3 非平凡": "call1 vs call2 的 prompt sha 跨窗**互异** (确定性 ≠ 恒定输出); 该臂每窗调用数 <2 ⇒ 记未行使, 不记 0",
+   "C4-4 命中率双口径": "v_all(含冷启动) / v_incr(去冷启动) 逐窗出数; 未上报记哨兵不入比率"
+  },
+  "rc": "0 全过 / 2 违反 / 3 输入缺失; 未行使 ⇒ 记 honest_boundary, 不改判据"
+ },
+ "candidate5_gate_clause": {
+  "candidate": "起手闸振幅余量条款 (上界规则 R569 已落地) **本窗集行使**",
+  "rule": "MARGIN := min(max(FLOOR=60, prev_swing), ceiling_mb - GATE_MB); REQ = GATE_MB + MARGIN",
+  "derivation": "prev_postcheck = eval/rover/r569/gate-postcheck-r569.json (swing_mb=90) ⇒ want=90; cap = 本次起手前 3 次采样 max - 2650 ⇒ MARGIN = min(90, cap)",
+  "fail_closed": "cap < FLOOR ⇒ rc=2 (不静默放行); 派生失败/顶棚 < REQ ⇒ 不起臂",
+  "controls": {
+   "PC": "连续 2 次 preflight_gate --gate-mb REQ ⇒ 期望 PASS ×2",
+   "NC_hog": "400MB 占用 ⇒ 期望 GATE_BLOCKED",
+   "discriminating_pair": "把内存态压进判别带 [2650, REQ): --gate-mb 2650 ⇒ PASS ∧ --gate-mb REQ ⇒ GATE_BLOCKED; 带内不可达 ⇒ rc=3 如实登记"
+  }
+ },
+ "evidence_scope": {
+  "require": [
+   "w143/C1",
+   "w143/R570E0",
+   "w143/R570E2",
+   "w144/C1",
+   "w144/R570E0",
+   "w144/R570E2",
+   "w145/C1",
+   "w145/R570E0",
+   "w145/R570E2",
+   "w146/C1",
+   "w146/R570E0",
+   "w146/R570E2",
+   "w147/C1",
+   "w147/R570E0",
+   "w147/R570E2",
+   "w148/C1",
+   "w148/R570E0",
+   "w148/R570E2"
+  ]
+ },
+ "preregistered_expectations": {
+  "quality": "前沿测量 (不预设方向); 三臂同窗配对; 单窗禁作能力结论 (R523 已立)",
+  "cost": "调用数/新算 prompt/completion 三列分列 (禁名义总量); 早停省下的调用以 `early_stop_skipped` 归因",
+  "honest_boundary": "g1 族的 wythoff 失分已三次定因 (产物缺陷); 本轮不修 (未放行) ⇒ 铁律 11 rc=1 可能性高, 不得据此改写判据; 步数面本轮回仓 (R569 丢失项)"
+ },
+ "notes": "本文件先写后跑 (runner 第 0 步机检: round / 臂集 3 / require 18 / criterion_version v2 / 两臂早停键集与取值 0 vs 2)。判据 v2 口径不在本文件重定义, 只引用 docs/external-reference-harness.md §12。"
+}

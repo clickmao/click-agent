@@ -1,0 +1,175 @@
+{
+ "round": "R570",
+ "source_round": "R569",
+ "note": "派生件清单 (器具改 ⇒ 须重审 + 保形重钉): 每条给出源/目标 sha256 与替换计数",
+ "files": [
+  {
+   "src": "eval/rover/r569/run_r569.sh",
+   "dst": "eval/rover/r570/run_r570.sh",
+   "src_sha256": "afa76089769c79c581b9e50c37031c443598fc07a1d19fbb1bfd4036c44140b7",
+   "dst_sha256": "286b73a51980b79e69e3500f24856e2b8df6c38fd35eb42e9841e3afba5a8b14",
+   "substitutions": {
+    "w137": 3,
+    "w142": 3,
+    "WIN0=${WIN0:-137}": 1,
+    "R569B0": 12,
+    "R569B3": 11,
+    "agentB0": 4,
+    "agentB3": 4,
+    "R569": 8,
+    "r569": 21,
+    "49511": 3,
+    "eval/rover/r567/gate-postcheck-r567.json": 1,
+    "prev-postcheck = R567 件": 1,
+    "AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR": 6,
+    "AGENTFRAMEWORK_R1_EARLY_STOP_PFAIL\"]) == 3": 1,
+    "run_agent R570E2 \"$W\" agentE2 3": 1,
+    "EARLY_STOP_PFAIL 取值 **0 vs 3**": 1,
+    "(R570E0 =0 / R570E2 =3)": 1,
+    "(轴=3)": 1,
+    "R570E2 轴=3": 1,
+    "(候选④行使臂由 B0 换为 B3 —— R566 实测 B0 每窗恒 1 调用 ⇒ C4-3 敏感性不可判; 判据文本不变)。": 1,
+    "① 轮号命名空间 R567→R570 / r567→r570 (工作目录 /tmp/r570, 端口 49521); 起手闸 prev-postcheck = R569 件 (swing 103)": 1
+   },
+   "n_lines_src": 263,
+   "n_lines_dst": 263
+  },
+  {
+   "src": "eval/rover/r569/ingest_r569.py",
+   "dst": "eval/rover/r570/ingest_r570.py",
+   "src_sha256": "c1d2ed5ea9d2fdd7df6bf8efb6d398882975e28956ec3443a4e133227c19ae18",
+   "dst_sha256": "fe7ebfb9c6694f459134cf81c35601cefd3b6421a75fdeb4490ab241b9efd031",
+   "substitutions": {
+    "R569B0": 4,
+    "R569B3": 4,
+    "agentB0": 1,
+    "agentB3": 1,
+    "R569": 5,
+    "r569": 1,
+    "R570E0 (MAX_EXEC_REPAIR=0) + R570E2 (MAX_EXEC_REPAIR=3)": 1
+   },
+   "n_lines_src": 169,
+   "n_lines_dst": 169
+  },
+  {
+   "src": "eval/rover/r569/fingerprint_r569.py",
+   "dst": "eval/rover/r570/fingerprint_r570.py",
+   "src_sha256": "a0dd10a62503bcd59f4c2567e85dbca6972728a9c7f06e5df3dd939d09f1db64",
+   "dst_sha256": "e85220eecc7264b8a6dedc8efb6e8dc99bd3816df5a69ca6dcdaa5fa554fe8e5",
+   "substitutions": {
+    "agentB0": 1,
+    "agentB3": 2,
+    "R569": 2,
+    "r569": 2
+   },
+   "n_lines_src": 151,
+   "n_lines_dst": 151
+  },
+  {
+   "src": "eval/rover/r569/kpi_r569.py",
+   "dst": "eval/rover/r570/kpi_r570.py",
+   "src_sha256": "a9af6c2985b58b7926dae3a4fa2eebd3592799b617802ea9dd9a47327f6c32d5",
+   "dst_sha256": "e39ffe56a60144e3a60d897469317fe858554502a63fc0153902b8ed9871f235",
+   "substitutions": {
+    "R569B0": 1,
+    "R569B3": 1,
+    "R569": 2
+   },
+   "n_lines_src": 59,
+   "n_lines_dst": 59
+  },
+  {
+   "src": "eval/rover/r569/matrix_r569.py",
+   "dst": "eval/rover/r570/matrix_r570.py",
+   "src_sha256": "6150ba0cbb0aa61a8a46311b4d4be60a1d78386e58acb9a43bc8026d72a866fd",
+   "dst_sha256": "a620c7f8a1026e7bb53859fa715d4c1f91626d42fc58bdf094e377ff8a2e5e05",
+   "substitutions": {
+    "w137": 1,
+    "w138": 1,
+    "w139": 1,
+    "w140": 1,
+    "w141": 1,
+    "w142": 1,
+    "R569B0": 1,
+    "R569B3": 1,
+    "R569": 3,
+    "r569": 6
+   },
+   "n_lines_src": 115,
+   "n_lines_dst": 115
+  },
+  {
+   "src": "eval/rover/r569/adjudicate_r569.py",
+   "dst": "eval/rover/r570/adjudicate_r570.py",
+   "src_sha256": "a089787586a7c50e8a05282d81e621f23b428a4d392e3f65bfeb66121a972fcf",
+   "dst_sha256": "e3be08ce7673b6b0364034e104cd0805472f1df5cc02f60c100a66acd633a354",
+   "substitutions": {
+    "w137": 1,
+    "w138": 1,
+    "w139": 1,
+    "w140": 1,
+    "w141": 1,
+    "w142": 1,
+    "R569B0": 1,
+    "R569B3": 1,
+    "R569": 5,
+    "r569": 3
+   },
+   "n_lines_src": 104,
+   "n_lines_dst": 104
+  },
+  {
+   "src": "eval/rover/r569/gate_margin_r569.py",
+   "dst": "eval/rover/r570/gate_margin_r570.py",
+   "src_sha256": "e85f2dbc3c921bf2578e2dd636eb764ae6923f8f57dfc19cbf5881acee9734e4",
+   "dst_sha256": "8ef993183c3ab8aa4dbb2744637803771942dfd3cb8b7977e9eb74b2eaa50a68",
+   "substitutions": {
+    "R569": 3,
+    "r569": 1
+   },
+   "n_lines_src": 199,
+   "n_lines_dst": 199
+  },
+  {
+   "src": "eval/rover/r569/mem_sampler.py",
+   "dst": "eval/rover/r570/mem_sampler.py",
+   "src_sha256": "12fbbd9a2351d7d9d455c604879e4399aa0f89459d6a02f35aaba510f9f62006",
+   "dst_sha256": "12fbbd9a2351d7d9d455c604879e4399aa0f89459d6a02f35aaba510f9f62006",
+   "substitutions": {},
+   "n_lines_src": 26,
+   "n_lines_dst": 26
+  },
+  {
+   "src": "eval/rover/r569/mem_sample_once.py",
+   "dst": "eval/rover/r570/mem_sample_once.py",
+   "src_sha256": "13961c4d6d55c0efaf2e40cf67ca56d65b2a9df2fcb139f78a5a6f6ff03bedf1",
+   "dst_sha256": "13961c4d6d55c0efaf2e40cf67ca56d65b2a9df2fcb139f78a5a6f6ff03bedf1",
+   "substitutions": {},
+   "n_lines_src": 17,
+   "n_lines_dst": 17
+  }
+ ],
+ "source_unchanged": true,
+ "residual_check": {
+  "ok": true,
+  "hits": [],
+  "exempt_prev_round_refs": [
+   {
+    "file": "run_r570.sh",
+    "line": 8,
+    "tokens": [
+     "R569",
+     "r569"
+    ]
+   },
+   {
+    "file": "run_r570.sh",
+    "line": 123,
+    "tokens": [
+     "r569"
+    ]
+   }
+  ],
+  "note": "B0/B3 作为独立 token 残留即为漏替换 (臂名应已变 E0/E2); 命中即 fail-closed; prev-postcheck 引用行按设计豁免 (须 <=2 行)"
+ }
+}

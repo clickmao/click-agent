@@ -1,0 +1,168 @@
+{
+ "round": "R570",
+ "judge": "判据 v2 (adjudicate_r570.py 零逻辑复制自 r561 装置)",
+ "adjudication": {
+  "rc": 1,
+  "verdict": "FAIL(被测/前提)",
+  "blocked": [
+   "quality_paired_shortfall:R570E0,R570E2"
+  ],
+  "fail_arms": [
+   "R570E0",
+   "R570E2"
+  ],
+  "truth_median": 58.0,
+  "truth_range": 15,
+  "truth_status": {
+   "w143": "reliable",
+   "w144": "reliable",
+   "w145": "unreliable",
+   "w146": "reliable",
+   "w147": "reliable",
+   "w148": "reliable"
+  }
+ },
+ "iron11_precondition": {
+  "rc": 1,
+  "acceptable_scoped": false,
+  "executable_and_correct": false,
+  "blocked_n": 8,
+  "self_report_agrees": true,
+  "out": "eval/rover/r507pre/precondition-r570.json"
+ },
+ "fingerprint_rc": 0,
+ "fingerprint_checks": {
+  "C4-1_identity": true,
+  "C4-2_determinism": true,
+  "C4-3_nontrivial": true
+ },
+ "arms": {
+  "C1": {
+   "cases_windows": [
+    58,
+    58,
+    43,
+    56,
+    58,
+    58
+   ],
+   "median": 58.0,
+   "range": 15,
+   "calls": 57,
+   "new_prompt": 29019,
+   "completion": 26065,
+   "v_all_med": 0.9403,
+   "v_incr_med": 0.9544,
+   "rc_windows": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "stages": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ]
+  },
+  "R570E0": {
+   "cases_windows": [
+    58,
+    58,
+    58,
+    58,
+    52,
+    47
+   ],
+   "median": 58.0,
+   "range": 11,
+   "calls": 11,
+   "new_prompt": 3152,
+   "completion": 29475,
+   "v_all_med": 0.96715,
+   "v_incr_med": 0.9509,
+   "rc_windows": [
+    5,
+    5,
+    0,
+    0,
+    5,
+    5
+   ],
+   "stages": [
+    "expect_stdout_exhausted",
+    "expect_stdout_exhausted",
+    "done",
+    "done",
+    "expect_stdout_exhausted",
+    "expect_stdout_exhausted"
+   ]
+  },
+  "R570E2": {
+   "cases_windows": [
+    58,
+    47,
+    45,
+    58,
+    49,
+    45
+   ],
+   "median": 48.0,
+   "range": 13,
+   "calls": 7,
+   "new_prompt": 1423,
+   "completion": 15797,
+   "v_all_med": 0.9819,
+   "v_incr_med": 0.9406,
+   "rc_windows": [
+    0,
+    5,
+    5,
+    8,
+    5,
+    5
+   ],
+   "stages": [
+    "done",
+    "run_rc",
+    "expect_stdout",
+    "self_test_unmet",
+    "expect_stdout",
+    "expect_stdout"
+   ]
+  }
+ },
+ "axis_effect_paired": {
+  "deltas_B3_minus_B0": [
+   0,
+   -11,
+   -13,
+   0,
+   -3,
+   -2
+  ],
+  "median": -2.5,
+  "range": [
+   -13,
+   0
+  ],
+  "same_arm_cross_window_swing": {
+   "R570E0": 11,
+   "R570E2": 13
+  }
+ },
+ "rc": 1,
+ "cross_check": {
+  "paths": [
+   "evidence/windows/*/report.json",
+   "kpi-table-r570.json"
+  ],
+  "mismatch": [],
+  "agree": true
+ }
+}
