@@ -1,0 +1,37 @@
+{
+ "round": "R551",
+ "written_before_run": true,
+ "author": "cron R551 (30min beat)",
+ "claim": "把 R549/R550sc 定因的**机制缺口**（探针=题面公开用例回放的失败证据比模型自述更硬, 却在 w3 上**无预算可花**：唯一 exec 回灌预算已被 expect_stdout 路径用尽 ⇒ 发现得到、修复没发生）落地为一根**既有开关**：AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR 0→1 ⇒ 探针证据驱动的那次回灌修复自成预算, 不再与执行回灌挤占 ⇒ wythoff 族（落点未自验）获得基于**客观证据**的第二次修复机会 ⇒ 3 有效窗隐藏用例 → 58/58 ⇒ 铁律 11 前置器 rc=0 ⇒ 成本降幅首次可验收。",
+ "single_variable": "AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR ∈ {unset(=0, 对照), 1(治疗)}; 其余逐位同: 同一 AOT 二进制 sha256=e2fdab87b03b3f9ddae1628471b30b6165c07923e5924d77fbf111d24dd5c27b (/tmp/pub_r551/agenthost, 15,812,016 B, IL 警告 0)、同题面 sha256=516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3、同 role(r542)、同用例脚本(r521)、同预算 AGENTFRAMEWORK_R1_MAX_REPAIR=1 / MAX_EXEC_REPAIR=1、同 adapter 中继、同窗号 w7..w9 (各窗独立 session)。另: SELFCHECK=1 在**两臂恒开**（非本轮变量; R550sc 已证其单独不足以修 wythoff）。",
+ "binary_note": "二进制由 R548b(00d42dc1) 换为本轮 e2fdab87: 唯一源码差异 = 本轮单变量轴的实现（src/agent/r1/{R1Options,R1Pipeline,R1RunResult,R1Transcript}.cs, 由上一 tick 的兄弟会话写出、本轮接管收口, 见 round-collision-log.jsonl）。轴关(0) 时 `probeRepairs < 0 || execRepairs < MaxExecRepair` 退化为旧条件 ⇒ 期望与 R548b 逐位同；这是**声明**, 机器证据 = 轴关臂读数与 R550sc 同配置臂并列（禁跨窗相减）。",
+ "acceptance_rule": "铁律 11: 机检 = `python3 eval/rover/r507pre/exec_precondition.py --round r551`; rc 0 = 可验收 / 1 = 未可验收(逐条点名) / 3 = 输入缺失。rc≠0 ⇒ 本轮一切 token/调用降幅标「参考(未可验收)」。",
+ "evidence_scope": {
+  "require": [
+   "w7/agentR551b1-g1",
+   "w8/agentR551b1-g1",
+   "w9/agentR551b1-g1"
+  ],
+  "nonrequired": [
+   {
+    "pattern": "*/agentR551b0-g1",
+    "reason": "对照臂 = 预算轴关(0), 与 R550sc/R548b 同配置; 作用是同窗 Δ 基线, 不是交付配置 ⇒ 不作验收面, 读数单列。"
+   }
+  ],
+  "declared": "本声明落盘早于任何起臂; VOID 窗(rc=4 契约面 / 空产物)按 R550 纪律原样保留、不进 require, 并按**前 3 个有效窗**收口(按窗序取, 不挑选); 追加窗须再次书面增补。"
+ },
+ "preregistered_expectations": {
+  "J1": "治疗臂在**探针有失败证据**的窗出现 probe_repairs≥1（机制被行使; 对照臂同窗恒 0）—— 这是 R550sc 的机制缺口是否被补上的直接读数。",
+  "J2": "治疗臂 3 个有效窗隐藏用例 58/58（R550sc 同配置读数为 46/58, 失败 12 例全在 wythoff）⇒ 铁律 11 前置器 rc=0。",
+  "J3": "治疗臂远端调用数 > 对照臂, 且 Δ ≤ +1/窗（至多一次探针回灌修复; 早停轴关）。",
+  "J4": "阴性对照: 对照臂 transcript 无 probe_repairs / probe_repair_budget 字段（轴关不入台账 ⇒ 与旧台账逐字节同）。",
+  "J5": "质量不降: 治疗臂用例数 ≥ 对照臂（同窗两两比较, 禁跨窗相减）。",
+  "failure_classification": "若 J2 不成立: 必须区分「修复机会给了但没到位」（probe_repairs≥1 而质量不动 ⇒ 归因在模型能力/证据措辞）与「机制仍未行使」（probe_repairs=0 ⇒ 归因在触发面/预算接线）, 并逐条点名失败用例族。"
+ },
+ "same_input_gate": {
+  "prompt_sha256": "516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3",
+  "hidden_cases": 58,
+  "note": "两臂逐字节同题面(起臂前硬门断言); 题面 sha 与 R542/R547/R549/R550 四处既有登记一致。"
+ },
+ "prior_round_note": "R550sc 已判 rc=1(唯一有效窗 46/58, 失败 12 例全 wythoff); 本轮 rc 是**新一轮**读数, 不构成对其判决的翻案。R549 的『命中率行不可复现』结论仍有效 ⇒ 本轮回读一律用 hitrate_dual.py 双口径逐调用复算。"
+}

@@ -54,6 +54,12 @@ public static class R1Transcript
             sb.Append(",\"early_stop_pfail\":").Append(R1Json.Num(r.EarlyStopThreshold));
             sb.Append(",\"early_stop_skipped\":").Append(R1Json.Num(r.EarlyStopSkipped));
         }
+        // R550 探针修复独立预算轴：轴关 ⇒ ProbeRepairs 恒 0 ⇒ 字段不出现（与旧标记逐字节同）。
+        //   标记面（stdout）不带 opt ⇒ 只在**实际用过**探针修复轮时出现；预算本身在 Render 面可见。
+        if (r.ProbeRepairs > 0)
+        {
+            sb.Append(",\"probe_repairs\":").Append(R1Json.Num(r.ProbeRepairs));
+        }
         sb.Append("}");
         return sb.ToString();
     }
@@ -77,6 +83,11 @@ public static class R1Transcript
         {
             sb.Append("  \"early_stop_pfail\": ").Append(R1Json.Num(r.EarlyStopThreshold)).Append(",\n");
             sb.Append("  \"early_stop_skipped\": ").Append(R1Json.Num(r.EarlyStopSkipped)).Append(",\n");
+        }
+        if (opt.MaxProbeRepair > 0)
+        {
+            sb.Append("  \"probe_repair_budget\": ").Append(R1Json.Num(opt.MaxProbeRepair)).Append(",\n");
+            sb.Append("  \"probe_repairs\": ").Append(R1Json.Num(r.ProbeRepairs)).Append(",\n");
         }
         sb.Append("  \"step_timeout_s\": ").Append(R1Json.Num(opt.StepTimeoutSeconds)).Append(",\n");
         sb.Append("  \"rc\": ").Append(R1Json.Num(r.Rc)).Append(",\n");

@@ -29,7 +29,10 @@ public sealed record R1RunResult(
     // R546 早停轴（默认 0=关）：>0 表示轴的阈值（该臂的探针开关轴开）；EarlyStopSkipped>0 表示
     //   确有 1 次「回灌修复调用」被主动跳过（省下的正是那次不必要的远端请求）。
     int EarlyStopThreshold = 0,
-    int EarlyStopSkipped = 0)
+    int EarlyStopSkipped = 0,
+    // R550 探针修复独立预算轴（默认 0=关）：>0 表示该臂**实际**用掉的探针证据修复轮数
+    //   （由探针失败证据驱动、未挤占执行回灌预算）。轴关时不入台账 ⇒ 与旧台账逐字节同。
+    int ProbeRepairs = 0)
 {
     public bool Halted => Rc != 0;
 }

@@ -48,6 +48,8 @@ public static class R1Pipeline
         int? cacheMiss = null;
         var repairs = 0;      // 契约修复轮
         var execRepairs = 0;  // 执行证据回灌修复轮
+        // R550 · 探针证据回灌修复轮（独立预算, 默认关）。轴关 ⇒ 恒 0 ⇒ 逐位等于旧行为。
+        var probeRepairs = 0;
         string? repairNote = null;
         var raw = string.Empty;
 
@@ -187,9 +189,19 @@ public static class R1Pipeline
                     raw += "\nR1_EARLY_STOP {\"pfail\":" + probe.Failed + ",\"threshold\":" + opt.EarlyStopPfail
                         + ",\"repair_skipped\":1,\"calls_saved\":1,\"trigger\":\"public_probe\"}";
                 }
-                else if (execRepairs < opt.MaxExecRepair)
+                // R550: 探针失败证据（题面公开用例回放, **非模型自述**）驱动的修复自成预算:
+                //   轴关(0) ⇒ 条件退化为 `execRepairs < MaxExecRepair` ⇒ 与旧行为逐位同（零回归）;
+                //   轴开(>0) ⇒ 探针那次修复不再挤占执行回灌预算 ⇒ 客观证据与实测证据各得其一。
+                else if (probeRepairs < opt.MaxProbeRepair || execRepairs < opt.MaxExecRepair)
                 {
-                    execRepairs++;
+                    if (probeRepairs < opt.MaxProbeRepair)
+                    {
+                        probeRepairs++;
+                    }
+                    else
+                    {
+                        execRepairs++;
+                    }
                     repairNote = StructuredPrompt.PublicProbeRepairMessage(probe.Failures);
                     continue;
                 }
@@ -207,7 +219,7 @@ public static class R1Pipeline
                         + " 首例: " + (probe.Failures.Count > 0 ? probe.Failures[0] : "(无)"),
                         raw + "\nR1_PUBLIC_PROBE " + probe.MarkerJson(), statsAll,
                         prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe,
-                        opt.EarlyStopPfail, earlyStopSkips);
+                        opt.EarlyStopPfail, earlyStopSkips, probeRepairs);
                     R1Transcript.Write(probeUnmet, opt, taskText ?? string.Empty);
                     return probeUnmet;
                 }
@@ -224,7 +236,7 @@ public static class R1Pipeline
                 var done = new R1RunResult(0, "done", reason,
                     raw + (probe is not null ? "\nR1_PUBLIC_PROBE " + probe.MarkerJson() : string.Empty), statsAll,
                     prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe,
-                    opt.EarlyStopPfail, earlyStopSkips);
+                    opt.EarlyStopPfail, earlyStopSkips, probeRepairs);
                 R1Transcript.Write(done, opt, taskText ?? string.Empty);
                 return done;
             }
@@ -251,14 +263,14 @@ public static class R1Pipeline
                         + ",\"plan_steps_total\":" + sem.Plan.Count + ",\"detail\":\"expect_stdout 不符\""
                         + ",\"artifact\":\"suspect\",\"correctness_asserted\":0}" + probeMarker,
                         statsAll, prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe,
-                        opt.EarlyStopPfail, earlyStopSkips);
+                        opt.EarlyStopPfail, earlyStopSkips, probeRepairs);
                     R1Transcript.Write(unmet, opt, taskText ?? string.Empty);
                     return unmet;
                 }
-                var stage = execRepairs > 0 ? exec.Stage + "_exhausted" : exec.Stage;
+                var stage = (execRepairs > 0 || probeRepairs > 0) ? exec.Stage + "_exhausted" : exec.Stage;
                 var stuck = new R1RunResult(exec.Rc, stage, exec.Reason, raw + probeMarker, statsAll,
                     prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe,
-                    opt.EarlyStopPfail, earlyStopSkips);
+                    opt.EarlyStopPfail, earlyStopSkips, probeRepairs);
                 R1Transcript.Write(stuck, opt, taskText ?? string.Empty);
                 return stuck;
             }

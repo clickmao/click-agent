@@ -10,6 +10,9 @@ namespace agent.r1;
 ///   AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR 执行实测与期望不符时的最大回灌修复轮数（0..3，默认 1）
 ///   AGENTFRAMEWORK_R1_EARLY_STOP_PFAIL 早停阈值（0..10，默认 0=关）：产物公开用例回放已失败 ≥ 阈值
 ///                                     ⇒ 不再花一次调用做回灌修复（R546 轴；关闭态逐位等于旧行为）
+///   AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR 探针证据回灌修复的**独立**预算（0..3，默认 0=关）：
+///                                     0 ⇒ 探针失败仍只借「执行回灌」的预算（逐位等于旧行为）；
+///                                     >0 ⇒ 探针失败驱动的那次修复不再挤占执行回灌预算（R550 轴）
 ///   AGENTFRAMEWORK_R1_STEP_TIMEOUT 单步 run 超时秒（5..1800，默认 120）
 ///   AGENTFRAMEWORK_R1_TRANSCRIPT 落盘路径（缺省 = 不落盘，只打 stdout 标记）
 ///   AGENTFRAMEWORK_R1_ROLE_FILE  role 额外数据（明文 profile 文件；见 R1RoleMount）
@@ -24,7 +27,8 @@ public sealed record R1Options(
     string Tag,
     int MaxExecRepair = 1,
     bool PublicSelfCheck = false,
-    int EarlyStopPfail = 0)
+    int EarlyStopPfail = 0,
+    int MaxProbeRepair = 0)
 {
     public static R1Options FromEnvironment(string fallbackRoot)
     {
@@ -77,6 +81,16 @@ public sealed record R1Options(
             earlyStopPfail = esp;
         }
 
+        // R550: 探针证据回灌的**独立**预算（0..3，默认 0=关）。R549 定因: 探针（题面公开用例回放, 非模型自述）
+        //   已判定产物不合格时, 那次回灌修复与「执行实测回灌」**共用**同一预算 ⇒ 二者只能行使其一。
+        //   轴开 ⇒ 探针证据驱动的修复自成预算, 不与执行回灌挤占。关闭态逐位等于旧行为（新字段缺席可机检）。
+        var maxProbeRepair = 0;
+        if (int.TryParse(Environment.GetEnvironmentVariable("AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR"), out var pr)
+            && pr >= 0 && pr <= 3)
+        {
+            maxProbeRepair = pr;
+        }
+
         return new R1Options(
             Path.GetFullPath(root),
             maxRepair,
@@ -86,6 +100,7 @@ public sealed record R1Options(
             string.IsNullOrWhiteSpace(tag) ? "(untagged)" : tag,
             maxExecRepair,
             publicSelfCheck,
-            earlyStopPfail);
+            earlyStopPfail,
+            maxProbeRepair);
     }
 }

@@ -1,0 +1,45 @@
+{
+ "case": {
+  "stdin": "21 25",
+  "expected_stdout": "WIN 15 15"
+ },
+ "oracle": "x == floor((y-x)*phi) (Beatty), 非同源",
+ "rows": [
+  {
+   "win": "w7",
+   "arm": "agentR551b0-g1",
+   "stdout": "WIN 0 14",
+   "cli_rc": 0,
+   "class": "non_winning_move",
+   "ok": false,
+   "stderr_tail": ""
+  },
+  {
+   "win": "w7",
+   "arm": "agentR551b1-g1",
+   "stdout": "WIN 1 13",
+   "cli_rc": 0,
+   "class": "illegal_move",
+   "ok": false,
+   "stderr_tail": ""
+  },
+  {
+   "win": "w8",
+   "arm": "agentR551b1-g1",
+   "stdout": "WIN 15 15",
+   "cli_rc": 0,
+   "class": "OK_WIN",
+   "ok": true,
+   "stderr_tail": ""
+  },
+  {
+   "win": "w9",
+   "arm": "agentR551b1-g1",
+   "stdout": "",
+   "cli_rc": 1,
+   "class": "CRASH_or_empty",
+   "ok": false,
+   "stderr_tail": "pshots/w9/agentR551b1-g1/g1/games/wythoff.py\", line 34, in solve\n    return 'WIN ' + str(best[0]) + ' ' + str(best[1])\n                        ~~~~^^^\nTypeError: 'NoneType' object is not subscriptable"
+  }
+ ]
+}
