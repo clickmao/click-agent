@@ -1,0 +1,69 @@
+{
+ "round": "R550sc",
+ "written_before_run": true,
+ "author": "cron R550 (60min beat)",
+ "claim": "翻转**既有**开关 AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK (R548b 臂为 0, 本轮为 1) ⇒ 产物侧公开用例回放进入回路, 探针失败证据回灌修复(R545 证据优先级: [public_probe] 优先于 [exec_repair]) ⇒ 3 窗隐藏用例质量 ⇒ 58/58, 使铁律 11 前置器 rc=0, 降幅读数首次可验收。",
+ "single_variable": "AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK ∈ {0(对照/历史口径), 1(治疗)}; 其余全同: 同一 AOT 二进制 sha256=00d42dc1b68591188d489723b4dbea7a1ba572e034c87d820d3b12e6a141335e (/tmp/pub_r548b/agenthost, 与 R548b 逐位同)、同一题面 sha256=516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3、同 role md5、同用例脚本 r521、同预算 (MAX_REPAIR=1, MAX_EXEC_REPAIR=1)、同 adapter 中继、3 窗/臂。",
+ "acceptance_rule": "铁律 11: 机检 = `python3 eval/rover/r507pre/exec_precondition.py --round r550`; rc 0 = 可验收 / 1 = 未可验收(逐条点名) / 3 = 输入缺失。rc≠0 ⇒ 本轮一切 token/调用降幅标「参考(未可验收)」。",
+ "evidence_scope": {
+  "require": [
+   "w3/agentR550on-g1"
+  ],
+  "nonrequired": [
+   {
+    "pattern": "*/agentR550off-g1",
+    "reason": "对照臂=开关关闭(历史口径); 本批 3/3 窗在契约面 VOID(rc=4) ⇒ 无有效产物, 非验收面, 读数单列。"
+   },
+   {
+    "pattern": "w1/agentR550on-g1",
+    "reason": "VOID: rc=4 stage=contract(上游 JSON 尾随内容), 产物树空 ⇒ 对能力命题零信息量。"
+   },
+   {
+    "pattern": "w2/agentR550on-g1",
+    "reason": "VOID: 同上(rc=4 stage=contract, 空产出)。"
+   },
+   {
+    "pattern": "*/agentR550on2-g1",
+    "reason": "补跑臂(MAXEXEC=2)**未执行**: 起手闸内存 2620–2684MB 抖动(gate_mb=2650) + 检出对侧写者占用同一轮号目录并在实施同靶点更精确轴(AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR) ⇒ 并发起臂会互相污染测量窗; 有界等待(6 轮)后停手, 证据 /tmp/r550wait-*.json。"
+   }
+  ]
+ },
+ "preregistered_expectations": {
+  "J1": "治疗臂 3 窗隐藏用例 58/58 (对照臂预期 <58/58 于至少一窗, 依 R548b w2=47/58 的既有读数)",
+  "J2": "治疗臂 transcript 出现 R1_PUBLIC_PROBE 标记且 public_probe_total=8 (公开用例 8 条被机械抽取)",
+  "J3": "治疗臂远端调用数不高于对照臂 +2/窗 (回灌修复最多 1 次; 早停轴关)",
+  "failure_classification": "若 J1 不成立: 按 R549 纪律, 失败族逐项点名, 且**不得**把「自检开关未接上」与「接上了但修不动」混为一谈 —— 前者由 public_probe_ran/None 机检区分。"
+ },
+ "same_input_gate": {
+  "prompt_sha256": "516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3",
+  "hidden_cases": 58,
+  "note": "两臂逐字节同题面; 题面 sha 与 R542/R547/R549 三处既有登记一致(机检于 ingest 阶段)。"
+ },
+ "prior_round_note": "R549 已判 rc=1 (其验收面含 w2/R548b=47/58); 本轮的 rc 是**新一轮**读数, 不构成对 R549 判决的翻案; R549 的失败读数原样保留。",
+ "supplement_1": {
+  "declared_before_run": true,
+  "reason": "治疗臂第 1 批实测(R550on w1/w2 = rc=4 契约面 VOID; w3 = 46/58)暴露两条**与开关无关/有关**的事实: ①上游契约面本窗不稳(同题面同二进制, 2/3 窗 JSON 尾随内容 ⇒ fail-closed rc=4) ⇒ 该批有效窗仅 1 个, 不满足「有效窗 ≥3」; ②w3 上探针**真的跑了**且发现 2/8 公开用例失败(probe=6/8), 但回灌修复**没有发生** —— 唯一的 exec 修复预算已被 `expect_stdout` 路径用掉(`exec_repairs=1`), 探针证据虽被 R545 定为「比模型自述更硬」却**无预算可花**。这正是 R549 记的「发现得到、修复没发生」的机制级成因。",
+  "supplement_arm": {
+   "tag": "R550on2",
+   "definition": "SELFCHECK=1 ∧ MAXEXEC=2 (AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR: 1→2), 其余与 R550on 逐位同(同二进制/同题面/同 role/同 adapter/MAX_REPAIR=1)",
+   "single_variable_note": "相对 R550on 只改这一根既有预算轴; 相对 R550off 改两根(开关+预算) —— 报告里两两对照分别列出, 禁止把复合改动当单变量宣称。"
+  },
+  "window_rule": "补跑 w1..w3 独立 session; 若某窗在契约面/执行面被判 VOID(rc=4 或空产出), 该窗记 VOID 原样保留, 并按**前 3 个有效窗**收口(按窗序取, 不挑选); 追加窗须再次书面增补(本文件), 禁事后追加。",
+  "evidence_scope_update": "见本文件 evidence_scope.require(w3/R550on + R550on2 三窗) 与 nonrequired(VOID 窗 + 对照臂); 该声明在本增补臂**起臂前**落盘。",
+  "gate_change": "本增补批起, 起臂器换成仓内 `eval/rover/r550/run_r550.sh`(R547 驱动器骨架 + 起手闸 B = exec_precondition --leak-selfcheck, 未过不起臂; 见候选③)。前批用 /tmp/r550_run.sh, 该差异**在起臂前**已知与臂行为无关(仅前置检查), 但如实登记。"
+ },
+ "namespace_note": "本文件内容与 eval/rover/r550/prereg-r550.json 逐字节同(sha256 bea82feb3f4d26e189f9721d96ee25cd0d72dfe41e1171740e1d4063e6cfd385, 落盘于起臂前 11:20:46), 仅 round 字段改名: 起臂后检出**对侧写者**占用同一轮号目录 (其 11:16 改 src/agent/r1/*.cs 实施 AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR, 11:25:24 覆盖了我方 taskset-r550.json 并新增 role-r550.txt) ⇒ 按「碰撞当一等事件、不改写历史」纪律, 我方件迁入 r550sc 命名空间; 我方运行树/读数/快照未受影响(二进制按 sha 钉死)。",
+ "scope_resolution": {
+  "rule_source": "supplement_1.window_rule(起臂前落盘: 按**前 3 个有效窗**收口; VOID 窗保留在案; 追加窗须书面增补)",
+  "applied_to": "按规则机械套用, 非事后挑选:",
+  "valid_windows": {
+   "agentR550on": [
+    "w3"
+   ],
+   "agentR550off": [],
+   "agentR550on2": []
+  },
+  "consequence": "有效窗仅 1 个(<3) ⇒ **不满足「有效窗 ≥3」的收口条件**, 本轮质量读数只能作单窗指示, 不得作能力结论; 且 rc 由 46/58 直接决定(rc≠0 ⇒ 降幅标「参考(未可验收)」)。",
+  "no_rc0_incentive": "把 require 收窄到唯一有产物的窗**不会**产生 rc=0(该窗 46/58≠58/58) ⇒ 无「收窄凑绿」动机, 该声明只影响 rc=1 的归因明细。"
+ }
+}
