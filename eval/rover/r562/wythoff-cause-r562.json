@@ -1,0 +1,6763 @@
+{
+ "round": "R562",
+ "instrument": "wythoff_cause_r562.py",
+ "mode": "read_only (零产品改动 / 零新夹具 / 零远端; 快照副本上重放冻结语料)",
+ "corpus": {
+  "path": "/home/agentuser/AgentFramework/eval/rover/r560/cases/cases-r521.json",
+  "n_wythoff": 15
+ },
+ "windows": [
+  "w104",
+  "w105",
+  "w106",
+  "w107",
+  "w108",
+  "w109",
+  "w110",
+  "w111",
+  "w112"
+ ],
+ "arms": [
+  "C1",
+  "R559B0",
+  "R559B3",
+  "R560B0",
+  "R560B3"
+ ],
+ "primary_criterion": "逐字节比对 stdout (与 run_cases_r521.py 同口径); class = 语义定因 (仅对未匹配项)",
+ "oracle": {
+  "n_winning_moves_per_case": [
+   1,
+   2,
+   1,
+   1,
+   2,
+   1,
+   2,
+   1,
+   0,
+   0,
+   0,
+   0,
+   1,
+   1,
+   1
+  ],
+  "fixture_audit": [
+   {
+    "idx": 0,
+    "stdin": "21 25",
+    "expected": "WIN 15 15",
+    "oracle": "WIN 15 15",
+    "agrees": true,
+    "n_winning_moves": 1
+   },
+   {
+    "idx": 1,
+    "stdin": "10 9",
+    "expected": "WIN 0 3",
+    "oracle": "WIN 0 3",
+    "agrees": true,
+    "n_winning_moves": 2
+   },
+   {
+    "idx": 2,
+    "stdin": "18 8",
+    "expected": "WIN 5 0",
+    "oracle": "WIN 5 0",
+    "agrees": true,
+    "n_winning_moves": 1
+   },
+   {
+    "idx": 3,
+    "stdin": "1 5",
+    "expected": "WIN 0 3",
+    "oracle": "WIN 0 3",
+    "agrees": true,
+    "n_winning_moves": 1
+   },
+   {
+    "idx": 4,
+    "stdin": "12 18",
+    "expected": "WIN 1 0",
+    "oracle": "WIN 1 0",
+    "agrees": true,
+    "n_winning_moves": 2
+   },
+   {
+    "idx": 5,
+    "stdin": "11 25",
+    "expected": "WIN 0 7",
+    "oracle": "WIN 0 7",
+    "agrees": true,
+    "n_winning_moves": 1
+   },
+   {
+    "idx": 6,
+    "stdin": "18 17",
+    "expected": "WIN 0 6",
+    "oracle": "WIN 0 6",
+    "agrees": true,
+    "n_winning_moves": 2
+   },
+   {
+    "idx": 7,
+    "stdin": "7 21",
+    "expected": "WIN 0 17",
+    "oracle": "WIN 0 17",
+    "agrees": true,
+    "n_winning_moves": 1
+   },
+   {
+    "idx": 8,
+    "stdin": "1 2",
+    "expected": "LOSE",
+    "oracle": "LOSE",
+    "agrees": true,
+    "n_winning_moves": 0
+   },
+   {
+    "idx": 9,
+    "stdin": "3 5",
+    "expected": "LOSE",
+    "oracle": "LOSE",
+    "agrees": true,
+    "n_winning_moves": 0
+   },
+   {
+    "idx": 10,
+    "stdin": "4 7",
+    "expected": "LOSE",
+    "oracle": "LOSE",
+    "agrees": true,
+    "n_winning_moves": 0
+   },
+   {
+    "idx": 11,
+    "stdin": "6 10",
+    "expected": "LOSE",
+    "oracle": "LOSE",
+    "agrees": true,
+    "n_winning_moves": 0
+   },
+   {
+    "idx": 12,
+    "stdin": "1 1",
+    "expected": "WIN 1 1",
+    "oracle": "WIN 1 1",
+    "agrees": true,
+    "n_winning_moves": 1
+   },
+   {
+    "idx": 13,
+    "stdin": "2 25",
+    "expected": "WIN 0 24",
+    "oracle": "WIN 0 24",
+    "agrees": true,
+    "n_winning_moves": 1
+   },
+   {
+    "idx": 14,
+    "stdin": "25 25",
+    "expected": "WIN 25 25",
+    "oracle": "WIN 25 25",
+    "agrees": true,
+    "n_winning_moves": 1
+   }
+  ],
+  "note": "oracle 与被测零共享: 冷点集=暴力递推(按和递增序) ∧ phi 序交叉校验; 题面约束(单堆任意/双堆等量) + 字典序最小"
+ },
+ "classifier_selftest": {
+  "positive_ok": 15,
+  "positive_n": 15,
+  "positive_bad": [],
+  "mutants_n": 59,
+  "mutants_ok_wrongly": [],
+  "has_teeth": true,
+  "fixture_agrees_with_oracle": true,
+  "phi_vs_brute_equal": true
+ },
+ "errors": {},
+ "per_arm_window": {
+  "w104|C1": {
+   "classes": {},
+   "fail_idx": [],
+   "n_pass": 15,
+   "match_vs_class_disagree": []
+  },
+  "w104|R559B0": {
+   "classes": {
+    "LOSE_FOR_WIN": 11,
+    "LOSE_LABEL_MISMATCH": 4
+   },
+   "fail_idx": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14
+   ],
+   "n_pass": 0,
+   "match_vs_class_disagree": []
+  },
+  "w104|R559B3": {
+   "classes": {
+    "LOSE_FOR_WIN": 1,
+    "MOVE_NOT_LEXMIN": 1
+   },
+   "fail_idx": [
+    2,
+    4
+   ],
+   "n_pass": 13,
+   "match_vs_class_disagree": []
+  },
+  "w105|C1": {
+   "classes": {},
+   "fail_idx": [],
+   "n_pass": 15,
+   "match_vs_class_disagree": []
+  },
+  "w105|R559B0": {
+   "classes": {
+    "MOVE_NOT_COLD": 7,
+    "LOSE_FOR_WIN": 3,
+    "WIN_FOR_LOSE": 3
+   },
+   "fail_idx": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    13,
+    14
+   ],
+   "n_pass": 2,
+   "match_vs_class_disagree": []
+  },
+  "w105|R559B3": {
+   "classes": {},
+   "fail_idx": [],
+   "n_pass": 15,
+   "match_vs_class_disagree": []
+  },
+  "w106|C1": {
+   "classes": {},
+   "fail_idx": [],
+   "n_pass": 15,
+   "match_vs_class_disagree": []
+  },
+  "w106|R559B0": {
+   "classes": {
+    "LOSE_FOR_WIN": 3,
+    "MOVE_NOT_COLD": 7,
+    "WIN_FOR_LOSE": 2
+   },
+   "fail_idx": [
+    0,
+    1,
+    2,
+    4,
+    5,
+    6,
+    7,
+    10,
+    11,
+    12,
+    13,
+    14
+   ],
+   "n_pass": 3,
+   "match_vs_class_disagree": []
+  },
+  "w106|R559B3": {
+   "classes": {
+    "MOVE_ILLEGAL": 2
+   },
+   "fail_idx": [
+    0,
+    14
+   ],
+   "n_pass": 13,
+   "match_vs_class_disagree": []
+  },
+  "w107|C1": {
+   "classes": {
+    "MOVE_ILLEGAL": 2
+   },
+   "fail_idx": [
+    0,
+    14
+   ],
+   "n_pass": 13,
+   "match_vs_class_disagree": []
+  },
+  "w107|R560B0": {
+   "classes": {
+    "LOSE_FOR_WIN": 2
+   },
+   "fail_idx": [
+    12,
+    14
+   ],
+   "n_pass": 13,
+   "match_vs_class_disagree": []
+  },
+  "w107|R560B3": {
+   "classes": {
+    "MOVE_NOT_COLD": 7,
+    "LOSE_FOR_WIN": 1
+   },
+   "fail_idx": [
+    0,
+    2,
+    4,
+    5,
+    7,
+    12,
+    13,
+    14
+   ],
+   "n_pass": 7,
+   "match_vs_class_disagree": []
+  },
+  "w108|C1": {
+   "classes": {
+    "LOSE_FOR_WIN": 8,
+    "MOVE_NOT_COLD": 3
+   },
+   "fail_idx": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    12,
+    13,
+    14
+   ],
+   "n_pass": 4,
+   "match_vs_class_disagree": []
+  },
+  "w108|R560B0": {
+   "classes": {},
+   "fail_idx": [],
+   "n_pass": 15,
+   "match_vs_class_disagree": []
+  },
+  "w108|R560B3": {
+   "classes": {
+    "MOVE_NOT_COLD": 8,
+    "WIN_FOR_LOSE": 3
+   },
+   "fail_idx": [
+    0,
+    1,
+    2,
+    4,
+    5,
+    6,
+    7,
+    9,
+    10,
+    11,
+    13
+   ],
+   "n_pass": 4,
+   "match_vs_class_disagree": []
+  },
+  "w109|C1": {
+   "classes": {},
+   "fail_idx": [],
+   "n_pass": 15,
+   "match_vs_class_disagree": []
+  },
+  "w109|R560B0": {
+   "classes": {
+    "LOSE_FOR_WIN": 5,
+    "MOVE_NOT_COLD": 6,
+    "WIN_FOR_LOSE": 2
+   },
+   "fail_idx": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    11,
+    12,
+    13,
+    14
+   ],
+   "n_pass": 2,
+   "match_vs_class_disagree": []
+  },
+  "w109|R560B3": {
+   "classes": {},
+   "fail_idx": [],
+   "n_pass": 15,
+   "match_vs_class_disagree": []
+  },
+  "w110|C1": {
+   "classes": {},
+   "fail_idx": [],
+   "n_pass": 15,
+   "match_vs_class_disagree": []
+  },
+  "w110|R560B0": {
+   "classes": {
+    "MOVE_NOT_COLD": 8
+   },
+   "fail_idx": [
+    0,
+    4,
+    5,
+    6,
+    7,
+    12,
+    13,
+    14
+   ],
+   "n_pass": 7,
+   "match_vs_class_disagree": []
+  },
+  "w110|R560B3": {
+   "classes": {
+    "MOVE_NOT_COLD": 11,
+    "WIN_FOR_LOSE": 4
+   },
+   "fail_idx": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14
+   ],
+   "n_pass": 0,
+   "match_vs_class_disagree": []
+  },
+  "w111|C1": {
+   "classes": {},
+   "fail_idx": [],
+   "n_pass": 15,
+   "match_vs_class_disagree": []
+  },
+  "w111|R560B0": {
+   "classes": {
+    "MOVE_NOT_COLD": 3
+   },
+   "fail_idx": [
+    1,
+    2,
+    6
+   ],
+   "n_pass": 12,
+   "match_vs_class_disagree": []
+  },
+  "w111|R560B3": {
+   "classes": {},
+   "fail_idx": [],
+   "n_pass": 15,
+   "match_vs_class_disagree": []
+  },
+  "w112|C1": {
+   "classes": {
+    "MOVE_ILLEGAL": 2,
+    "WIN_FOR_LOSE": 4
+   },
+   "fail_idx": [
+    0,
+    8,
+    9,
+    10,
+    11,
+    14
+   ],
+   "n_pass": 9,
+   "match_vs_class_disagree": []
+  },
+  "w112|R560B0": {
+   "classes": {
+    "MOVE_NOT_COLD": 4,
+    "WIN_FOR_LOSE": 1
+   },
+   "fail_idx": [
+    3,
+    8,
+    12,
+    13,
+    14
+   ],
+   "n_pass": 10,
+   "match_vs_class_disagree": []
+  },
+  "w112|R560B3": {
+   "classes": {
+    "MOVE_NOT_COLD": 3
+   },
+   "fail_idx": [
+    1,
+    2,
+    6
+   ],
+   "n_pass": 12,
+   "match_vs_class_disagree": []
+  }
+ },
+ "per_case_oscillation": {
+  "C1#00": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106",
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "OK",
+    "MOVE_ILLEGAL",
+    "LOSE_FOR_WIN",
+    "OK",
+    "OK",
+    "OK",
+    "MOVE_ILLEGAL"
+   ],
+   "oscillates": true
+  },
+  "C1#01": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106",
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "MOVE_NOT_COLD",
+    "OK",
+    "OK",
+    "OK",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "C1#02": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106",
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "MOVE_NOT_COLD",
+    "OK",
+    "OK",
+    "OK",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "C1#03": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106",
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "LOSE_FOR_WIN",
+    "OK",
+    "OK",
+    "OK",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "C1#04": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106",
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "LOSE_FOR_WIN",
+    "OK",
+    "OK",
+    "OK",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "C1#05": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106",
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "LOSE_FOR_WIN",
+    "OK",
+    "OK",
+    "OK",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "C1#06": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106",
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "MOVE_NOT_COLD",
+    "OK",
+    "OK",
+    "OK",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "C1#07": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106",
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "LOSE_FOR_WIN",
+    "OK",
+    "OK",
+    "OK",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "C1#08": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106",
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "WIN_FOR_LOSE"
+   ],
+   "oscillates": true
+  },
+  "C1#09": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106",
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "WIN_FOR_LOSE"
+   ],
+   "oscillates": true
+  },
+  "C1#10": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106",
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "WIN_FOR_LOSE"
+   ],
+   "oscillates": true
+  },
+  "C1#11": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106",
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "WIN_FOR_LOSE"
+   ],
+   "oscillates": true
+  },
+  "C1#12": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106",
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "LOSE_FOR_WIN",
+    "OK",
+    "OK",
+    "OK",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "C1#13": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106",
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "LOSE_FOR_WIN",
+    "OK",
+    "OK",
+    "OK",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "C1#14": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106",
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "OK",
+    "MOVE_ILLEGAL",
+    "LOSE_FOR_WIN",
+    "OK",
+    "OK",
+    "OK",
+    "MOVE_ILLEGAL"
+   ],
+   "oscillates": true
+  },
+  "R559B0#00": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "states": [
+    "LOSE_FOR_WIN",
+    "MOVE_NOT_COLD",
+    "LOSE_FOR_WIN"
+   ],
+   "oscillates": false
+  },
+  "R559B0#01": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "states": [
+    "LOSE_FOR_WIN",
+    "LOSE_FOR_WIN",
+    "MOVE_NOT_COLD"
+   ],
+   "oscillates": false
+  },
+  "R559B0#02": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "states": [
+    "LOSE_FOR_WIN",
+    "MOVE_NOT_COLD",
+    "MOVE_NOT_COLD"
+   ],
+   "oscillates": false
+  },
+  "R559B0#03": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "states": [
+    "LOSE_FOR_WIN",
+    "MOVE_NOT_COLD",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "R559B0#04": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "states": [
+    "LOSE_FOR_WIN",
+    "MOVE_NOT_COLD",
+    "MOVE_NOT_COLD"
+   ],
+   "oscillates": false
+  },
+  "R559B0#05": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "states": [
+    "LOSE_FOR_WIN",
+    "MOVE_NOT_COLD",
+    "MOVE_NOT_COLD"
+   ],
+   "oscillates": false
+  },
+  "R559B0#06": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "states": [
+    "LOSE_FOR_WIN",
+    "LOSE_FOR_WIN",
+    "MOVE_NOT_COLD"
+   ],
+   "oscillates": false
+  },
+  "R559B0#07": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "states": [
+    "LOSE_FOR_WIN",
+    "MOVE_NOT_COLD",
+    "MOVE_NOT_COLD"
+   ],
+   "oscillates": false
+  },
+  "R559B0#08": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "states": [
+    "OK",
+    "WIN_FOR_LOSE",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "R559B0#09": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "states": [
+    "OK",
+    "WIN_FOR_LOSE",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "R559B0#10": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "WIN_FOR_LOSE"
+   ],
+   "oscillates": true
+  },
+  "R559B0#11": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "states": [
+    "OK",
+    "WIN_FOR_LOSE",
+    "WIN_FOR_LOSE"
+   ],
+   "oscillates": true
+  },
+  "R559B0#12": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "states": [
+    "LOSE_FOR_WIN",
+    "OK",
+    "LOSE_FOR_WIN"
+   ],
+   "oscillates": true
+  },
+  "R559B0#13": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "states": [
+    "LOSE_FOR_WIN",
+    "LOSE_FOR_WIN",
+    "MOVE_NOT_COLD"
+   ],
+   "oscillates": false
+  },
+  "R559B0#14": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "states": [
+    "LOSE_FOR_WIN",
+    "MOVE_NOT_COLD",
+    "LOSE_FOR_WIN"
+   ],
+   "oscillates": false
+  },
+  "R559B3#00": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "MOVE_ILLEGAL"
+   ],
+   "oscillates": true
+  },
+  "R559B3#01": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "OK"
+   ],
+   "oscillates": false
+  },
+  "R559B3#02": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "states": [
+    "LOSE_FOR_WIN",
+    "OK",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "R559B3#03": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "OK"
+   ],
+   "oscillates": false
+  },
+  "R559B3#04": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "states": [
+    "MOVE_NOT_LEXMIN",
+    "OK",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "R559B3#05": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "OK"
+   ],
+   "oscillates": false
+  },
+  "R559B3#06": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "OK"
+   ],
+   "oscillates": false
+  },
+  "R559B3#07": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "OK"
+   ],
+   "oscillates": false
+  },
+  "R559B3#08": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "OK"
+   ],
+   "oscillates": false
+  },
+  "R559B3#09": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "OK"
+   ],
+   "oscillates": false
+  },
+  "R559B3#10": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "OK"
+   ],
+   "oscillates": false
+  },
+  "R559B3#11": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "OK"
+   ],
+   "oscillates": false
+  },
+  "R559B3#12": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "OK"
+   ],
+   "oscillates": false
+  },
+  "R559B3#13": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "OK"
+   ],
+   "oscillates": false
+  },
+  "R559B3#14": {
+   "windows": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "MOVE_ILLEGAL"
+   ],
+   "oscillates": true
+  },
+  "R560B0#00": {
+   "windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "LOSE_FOR_WIN",
+    "MOVE_NOT_COLD",
+    "OK",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "R560B0#01": {
+   "windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "MOVE_NOT_COLD",
+    "OK",
+    "MOVE_NOT_COLD",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "R560B0#02": {
+   "windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "LOSE_FOR_WIN",
+    "OK",
+    "MOVE_NOT_COLD",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "R560B0#03": {
+   "windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "MOVE_NOT_COLD",
+    "OK",
+    "OK",
+    "MOVE_NOT_COLD"
+   ],
+   "oscillates": true
+  },
+  "R560B0#04": {
+   "windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "MOVE_NOT_COLD",
+    "MOVE_NOT_COLD",
+    "OK",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "R560B0#05": {
+   "windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "LOSE_FOR_WIN",
+    "MOVE_NOT_COLD",
+    "OK",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "R560B0#06": {
+   "windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "MOVE_NOT_COLD",
+    "MOVE_NOT_COLD",
+    "MOVE_NOT_COLD",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "R560B0#07": {
+   "windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "MOVE_NOT_COLD",
+    "MOVE_NOT_COLD",
+    "OK",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "R560B0#08": {
+   "windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "WIN_FOR_LOSE",
+    "OK",
+    "OK",
+    "WIN_FOR_LOSE"
+   ],
+   "oscillates": true
+  },
+  "R560B0#09": {
+   "windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "OK"
+   ],
+   "oscillates": false
+  },
+  "R560B0#10": {
+   "windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "OK",
+    "OK"
+   ],
+   "oscillates": false
+  },
+  "R560B0#11": {
+   "windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "WIN_FOR_LOSE",
+    "OK",
+    "OK",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "R560B0#12": {
+   "windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "LOSE_FOR_WIN",
+    "OK",
+    "MOVE_NOT_COLD",
+    "MOVE_NOT_COLD",
+    "OK",
+    "MOVE_NOT_COLD"
+   ],
+   "oscillates": true
+  },
+  "R560B0#13": {
+   "windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "LOSE_FOR_WIN",
+    "MOVE_NOT_COLD",
+    "OK",
+    "MOVE_NOT_COLD"
+   ],
+   "oscillates": true
+  },
+  "R560B0#14": {
+   "windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "LOSE_FOR_WIN",
+    "OK",
+    "LOSE_FOR_WIN",
+    "MOVE_NOT_COLD",
+    "OK",
+    "MOVE_NOT_COLD"
+   ],
+   "oscillates": true
+  },
+  "R560B3#00": {
+   "windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "MOVE_NOT_COLD",
+    "MOVE_NOT_COLD",
+    "OK",
+    "MOVE_NOT_COLD",
+    "OK",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "R560B3#01": {
+   "windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "MOVE_NOT_COLD",
+    "OK",
+    "MOVE_NOT_COLD",
+    "OK",
+    "MOVE_NOT_COLD"
+   ],
+   "oscillates": true
+  },
+  "R560B3#02": {
+   "windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "MOVE_NOT_COLD",
+    "MOVE_NOT_COLD",
+    "OK",
+    "MOVE_NOT_COLD",
+    "OK",
+    "MOVE_NOT_COLD"
+   ],
+   "oscillates": true
+  },
+  "R560B3#03": {
+   "windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "OK",
+    "MOVE_NOT_COLD",
+    "OK",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "R560B3#04": {
+   "windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "MOVE_NOT_COLD",
+    "MOVE_NOT_COLD",
+    "OK",
+    "MOVE_NOT_COLD",
+    "OK",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "R560B3#05": {
+   "windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "MOVE_NOT_COLD",
+    "MOVE_NOT_COLD",
+    "OK",
+    "MOVE_NOT_COLD",
+    "OK",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "R560B3#06": {
+   "windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "MOVE_NOT_COLD",
+    "OK",
+    "MOVE_NOT_COLD",
+    "OK",
+    "MOVE_NOT_COLD"
+   ],
+   "oscillates": true
+  },
+  "R560B3#07": {
+   "windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "MOVE_NOT_COLD",
+    "MOVE_NOT_COLD",
+    "OK",
+    "MOVE_NOT_COLD",
+    "OK",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "R560B3#08": {
+   "windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "OK",
+    "OK",
+    "WIN_FOR_LOSE",
+    "OK",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "R560B3#09": {
+   "windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "WIN_FOR_LOSE",
+    "OK",
+    "WIN_FOR_LOSE",
+    "OK",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "R560B3#10": {
+   "windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "WIN_FOR_LOSE",
+    "OK",
+    "WIN_FOR_LOSE",
+    "OK",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "R560B3#11": {
+   "windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "OK",
+    "WIN_FOR_LOSE",
+    "OK",
+    "WIN_FOR_LOSE",
+    "OK",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "R560B3#12": {
+   "windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "LOSE_FOR_WIN",
+    "OK",
+    "OK",
+    "MOVE_NOT_COLD",
+    "OK",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "R560B3#13": {
+   "windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "MOVE_NOT_COLD",
+    "MOVE_NOT_COLD",
+    "OK",
+    "MOVE_NOT_COLD",
+    "OK",
+    "OK"
+   ],
+   "oscillates": true
+  },
+  "R560B3#14": {
+   "windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "states": [
+    "MOVE_NOT_COLD",
+    "OK",
+    "OK",
+    "MOVE_NOT_COLD",
+    "OK",
+    "OK"
+   ],
+   "oscillates": true
+  }
+ },
+ "per_case_got_variants": {
+  "C1": {
+   "0": [
+    "LOSE",
+    "WIN 1 13",
+    "WIN 15 15"
+   ],
+   "1": [
+    "WIN 0 1",
+    "WIN 0 3"
+   ],
+   "2": [
+    "WIN 0 1",
+    "WIN 5 0"
+   ],
+   "3": [
+    "LOSE",
+    "WIN 0 3"
+   ],
+   "4": [
+    "LOSE",
+    "WIN 1 0"
+   ],
+   "5": [
+    "LOSE",
+    "WIN 0 7"
+   ],
+   "6": [
+    "WIN 0 1",
+    "WIN 0 6"
+   ],
+   "7": [
+    "LOSE",
+    "WIN 0 17"
+   ],
+   "8": [
+    "LOSE",
+    "WIN 1 2"
+   ],
+   "9": [
+    "LOSE",
+    "WIN 1 4"
+   ],
+   "10": [
+    "LOSE",
+    "WIN 1 2"
+   ],
+   "11": [
+    "LOSE",
+    "WIN 1 7"
+   ],
+   "12": [
+    "LOSE",
+    "WIN 1 1"
+   ],
+   "13": [
+    "LOSE",
+    "WIN 0 24"
+   ],
+   "14": [
+    "LOSE",
+    "WIN 2 11",
+    "WIN 25 25"
+   ]
+  },
+  "R559B0": {
+   "0": [
+    "21 25",
+    "LOSE",
+    "WIN 0 1"
+   ],
+   "1": [
+    "10 9",
+    "LOSE",
+    "WIN 0 4"
+   ],
+   "2": [
+    "18 8",
+    "WIN 0 1",
+    "WIN 2 0"
+   ],
+   "3": [
+    "1 5",
+    "WIN 0 3",
+    "WIN 1 1"
+   ],
+   "4": [
+    "12 18",
+    "WIN 0 1",
+    "WIN 0 12"
+   ],
+   "5": [
+    "11 25",
+    "WIN 0 1",
+    "WIN 0 3"
+   ],
+   "6": [
+    "18 17",
+    "LOSE",
+    "WIN 0 8"
+   ],
+   "7": [
+    "7 21",
+    "WIN 0 1",
+    "WIN 0 7"
+   ],
+   "8": [
+    "1 2",
+    "LOSE",
+    "WIN 1 0"
+   ],
+   "9": [
+    "3 5",
+    "LOSE",
+    "WIN 0 1"
+   ],
+   "10": [
+    "4 7",
+    "LOSE",
+    "WIN 0 5"
+   ],
+   "11": [
+    "6 10",
+    "WIN 0 1",
+    "WIN 0 7"
+   ],
+   "12": [
+    "1 1",
+    "LOSE",
+    "WIN 1 1"
+   ],
+   "13": [
+    "2 25",
+    "LOSE",
+    "WIN 0 21"
+   ],
+   "14": [
+    "25 25",
+    "LOSE",
+    "WIN 0 1"
+   ]
+  },
+  "R559B3": {
+   "0": [
+    "WIN 1 13",
+    "WIN 15 15"
+   ],
+   "1": [
+    "WIN 0 3"
+   ],
+   "2": [
+    "LOSE",
+    "WIN 5 0"
+   ],
+   "3": [
+    "WIN 0 3"
+   ],
+   "4": [
+    "WIN 1 0",
+    "WIN 3 3"
+   ],
+   "5": [
+    "WIN 0 7"
+   ],
+   "6": [
+    "WIN 0 6"
+   ],
+   "7": [
+    "WIN 0 17"
+   ],
+   "8": [
+    "LOSE"
+   ],
+   "9": [
+    "LOSE"
+   ],
+   "10": [
+    "LOSE"
+   ],
+   "11": [
+    "LOSE"
+   ],
+   "12": [
+    "WIN 1 1"
+   ],
+   "13": [
+    "WIN 0 24"
+   ],
+   "14": [
+    "WIN 2 11",
+    "WIN 25 25"
+   ]
+  },
+  "R560B0": {
+   "0": [
+    "LOSE",
+    "WIN 15 15",
+    "WIN 5 0"
+   ],
+   "1": [
+    "WIN 0 3",
+    "WIN 3 0"
+   ],
+   "2": [
+    "LOSE",
+    "WIN 0 5",
+    "WIN 5 0"
+   ],
+   "3": [
+    "WIN 0 3",
+    "WIN 0 5"
+   ],
+   "4": [
+    "WIN 0 8",
+    "WIN 1 0",
+    "WIN 1 1"
+   ],
+   "5": [
+    "LOSE",
+    "WIN 0 7",
+    "WIN 0 8"
+   ],
+   "6": [
+    "WIN 0 6",
+    "WIN 12 12",
+    "WIN 6 0",
+    "WIN 7 0"
+   ],
+   "7": [
+    "WIN 0 10",
+    "WIN 0 12",
+    "WIN 0 17"
+   ],
+   "8": [
+    "LOSE",
+    "WIN 0 2"
+   ],
+   "9": [
+    "LOSE"
+   ],
+   "10": [
+    "LOSE"
+   ],
+   "11": [
+    "LOSE",
+    "WIN 0 5"
+   ],
+   "12": [
+    "LOSE",
+    "WIN 0 1",
+    "WIN 1 1"
+   ],
+   "13": [
+    "LOSE",
+    "WIN 0 21",
+    "WIN 0 23",
+    "WIN 0 24"
+   ],
+   "14": [
+    "LOSE",
+    "WIN 0 9",
+    "WIN 23 23",
+    "WIN 25 25"
+   ]
+  },
+  "R560B3": {
+   "0": [
+    "WIN 0 12",
+    "WIN 0 25",
+    "WIN 15 15",
+    "WIN 17 17"
+   ],
+   "1": [
+    "WIN 0 3",
+    "WIN 0 4",
+    "WIN 0 9",
+    "WIN 3 0"
+   ],
+   "2": [
+    "WIN 0 5",
+    "WIN 0 8",
+    "WIN 2 0",
+    "WIN 4 0",
+    "WIN 5 0"
+   ],
+   "3": [
+    "WIN 0 3",
+    "WIN 0 5"
+   ],
+   "4": [
+    "WIN 0 11",
+    "WIN 0 12",
+    "WIN 0 18",
+    "WIN 1 0"
+   ],
+   "5": [
+    "WIN 0 25",
+    "WIN 0 3",
+    "WIN 0 6",
+    "WIN 0 7"
+   ],
+   "6": [
+    "WIN 0 17",
+    "WIN 0 6",
+    "WIN 0 8",
+    "WIN 6 0"
+   ],
+   "7": [
+    "WIN 0 17",
+    "WIN 0 21",
+    "WIN 0 7",
+    "WIN 0 9"
+   ],
+   "8": [
+    "LOSE",
+    "WIN 0 2"
+   ],
+   "9": [
+    "LOSE",
+    "WIN 0 5",
+    "WIN 1 1"
+   ],
+   "10": [
+    "LOSE",
+    "WIN 0 5",
+    "WIN 0 7"
+   ],
+   "11": [
+    "LOSE",
+    "WIN 0 10",
+    "WIN 0 7"
+   ],
+   "12": [
+    "LOSE",
+    "WIN 0 1",
+    "WIN 1 1"
+   ],
+   "13": [
+    "WIN 0 21",
+    "WIN 0 24",
+    "WIN 0 25"
+   ],
+   "14": [
+    "WIN 0 10",
+    "WIN 0 25",
+    "WIN 25 25"
+   ]
+  }
+ },
+ "not_cold_detail": {
+  "w105|R559B0": [
+   {
+    "idx": 0,
+    "got": "WIN 0 1",
+    "exp": "WIN 15 15",
+    "why": "target(24,21)"
+   },
+   {
+    "idx": 2,
+    "got": "WIN 0 1",
+    "exp": "WIN 5 0",
+    "why": "target(18,7)"
+   },
+   {
+    "idx": 3,
+    "got": "WIN 1 1",
+    "exp": "WIN 0 3",
+    "why": "target(4,0)"
+   },
+   {
+    "idx": 4,
+    "got": "WIN 0 1",
+    "exp": "WIN 1 0",
+    "why": "target(17,12)"
+   },
+   {
+    "idx": 5,
+    "got": "WIN 0 1",
+    "exp": "WIN 0 7",
+    "why": "target(24,11)"
+   },
+   {
+    "idx": 7,
+    "got": "WIN 0 1",
+    "exp": "WIN 0 17",
+    "why": "target(20,7)"
+   },
+   {
+    "idx": 14,
+    "got": "WIN 0 1",
+    "exp": "WIN 25 25",
+    "why": "target(25,24)"
+   }
+  ],
+  "w106|R559B0": [
+   {
+    "idx": 1,
+    "got": "WIN 0 4",
+    "exp": "WIN 0 3",
+    "why": "target(10,5)"
+   },
+   {
+    "idx": 2,
+    "got": "WIN 2 0",
+    "exp": "WIN 5 0",
+    "why": "target(16,8)"
+   },
+   {
+    "idx": 4,
+    "got": "WIN 0 12",
+    "exp": "WIN 1 0",
+    "why": "target(12,6)"
+   },
+   {
+    "idx": 5,
+    "got": "WIN 0 3",
+    "exp": "WIN 0 7",
+    "why": "target(22,11)"
+   },
+   {
+    "idx": 6,
+    "got": "WIN 0 8",
+    "exp": "WIN 0 6",
+    "why": "target(18,9)"
+   },
+   {
+    "idx": 7,
+    "got": "WIN 0 7",
+    "exp": "WIN 0 17",
+    "why": "target(14,7)"
+   },
+   {
+    "idx": 13,
+    "got": "WIN 0 21",
+    "exp": "WIN 0 24",
+    "why": "target(4,2)"
+   }
+  ],
+  "w107|R560B3": [
+   {
+    "idx": 0,
+    "got": "WIN 0 12",
+    "exp": "WIN 15 15",
+    "why": "target(21,13)"
+   },
+   {
+    "idx": 2,
+    "got": "WIN 4 0",
+    "exp": "WIN 5 0",
+    "why": "target(14,8)"
+   },
+   {
+    "idx": 4,
+    "got": "WIN 0 11",
+    "exp": "WIN 1 0",
+    "why": "target(12,7)"
+   },
+   {
+    "idx": 5,
+    "got": "WIN 0 6",
+    "exp": "WIN 0 7",
+    "why": "target(19,11)"
+   },
+   {
+    "idx": 7,
+    "got": "WIN 0 9",
+    "exp": "WIN 0 17",
+    "why": "target(12,7)"
+   },
+   {
+    "idx": 13,
+    "got": "WIN 0 21",
+    "exp": "WIN 0 24",
+    "why": "target(4,2)"
+   },
+   {
+    "idx": 14,
+    "got": "WIN 0 10",
+    "exp": "WIN 25 25",
+    "why": "target(25,15)"
+   }
+  ],
+  "w108|C1": [
+   {
+    "idx": 1,
+    "got": "WIN 0 1",
+    "exp": "WIN 0 3",
+    "why": "target(10,8)"
+   },
+   {
+    "idx": 2,
+    "got": "WIN 0 1",
+    "exp": "WIN 5 0",
+    "why": "target(18,7)"
+   },
+   {
+    "idx": 6,
+    "got": "WIN 0 1",
+    "exp": "WIN 0 6",
+    "why": "target(18,16)"
+   }
+  ],
+  "w108|R560B3": [
+   {
+    "idx": 0,
+    "got": "WIN 17 17",
+    "exp": "WIN 15 15",
+    "why": "target(8,4)"
+   },
+   {
+    "idx": 1,
+    "got": "WIN 0 4",
+    "exp": "WIN 0 3",
+    "why": "target(10,5)"
+   },
+   {
+    "idx": 2,
+    "got": "WIN 2 0",
+    "exp": "WIN 5 0",
+    "why": "target(16,8)"
+   },
+   {
+    "idx": 4,
+    "got": "WIN 0 12",
+    "exp": "WIN 1 0",
+    "why": "target(12,6)"
+   },
+   {
+    "idx": 5,
+    "got": "WIN 0 3",
+    "exp": "WIN 0 7",
+    "why": "target(22,11)"
+   },
+   {
+    "idx": 6,
+    "got": "WIN 0 8",
+    "exp": "WIN 0 6",
+    "why": "target(18,9)"
+   },
+   {
+    "idx": 7,
+    "got": "WIN 0 7",
+    "exp": "WIN 0 17",
+    "why": "target(14,7)"
+   },
+   {
+    "idx": 13,
+    "got": "WIN 0 21",
+    "exp": "WIN 0 24",
+    "why": "target(4,2)"
+   }
+  ],
+  "w109|R560B0": [
+   {
+    "idx": 1,
+    "got": "WIN 3 0",
+    "exp": "WIN 0 3",
+    "why": "target(9,7)"
+   },
+   {
+    "idx": 3,
+    "got": "WIN 0 5",
+    "exp": "WIN 0 3",
+    "why": "target(1,0)"
+   },
+   {
+    "idx": 4,
+    "got": "WIN 0 8",
+    "exp": "WIN 1 0",
+    "why": "target(12,10)"
+   },
+   {
+    "idx": 6,
+    "got": "WIN 12 12",
+    "exp": "WIN 0 6",
+    "why": "target(6,5)"
+   },
+   {
+    "idx": 7,
+    "got": "WIN 0 12",
+    "exp": "WIN 0 17",
+    "why": "target(9,7)"
+   },
+   {
+    "idx": 12,
+    "got": "WIN 0 1",
+    "exp": "WIN 1 1",
+    "why": "target(1,0)"
+   }
+  ],
+  "w110|R560B0": [
+   {
+    "idx": 0,
+    "got": "WIN 5 0",
+    "exp": "WIN 15 15",
+    "why": "target(25,16)"
+   },
+   {
+    "idx": 4,
+    "got": "WIN 1 1",
+    "exp": "WIN 1 0",
+    "why": "target(17,11)"
+   },
+   {
+    "idx": 5,
+    "got": "WIN 0 8",
+    "exp": "WIN 0 7",
+    "why": "target(17,11)"
+   },
+   {
+    "idx": 6,
+    "got": "WIN 7 0",
+    "exp": "WIN 0 6",
+    "why": "target(17,11)"
+   },
+   {
+    "idx": 7,
+    "got": "WIN 0 10",
+    "exp": "WIN 0 17",
+    "why": "target(11,7)"
+   },
+   {
+    "idx": 12,
+    "got": "WIN 0 1",
+    "exp": "WIN 1 1",
+    "why": "target(1,0)"
+   },
+   {
+    "idx": 13,
+    "got": "WIN 0 21",
+    "exp": "WIN 0 24",
+    "why": "target(4,2)"
+   },
+   {
+    "idx": 14,
+    "got": "WIN 0 9",
+    "exp": "WIN 25 25",
+    "why": "target(25,16)"
+   }
+  ],
+  "w110|R560B3": [
+   {
+    "idx": 0,
+    "got": "WIN 0 25",
+    "exp": "WIN 15 15",
+    "why": "target(21,0)"
+   },
+   {
+    "idx": 1,
+    "got": "WIN 0 9",
+    "exp": "WIN 0 3",
+    "why": "target(10,0)"
+   },
+   {
+    "idx": 2,
+    "got": "WIN 0 8",
+    "exp": "WIN 5 0",
+    "why": "target(18,0)"
+   },
+   {
+    "idx": 3,
+    "got": "WIN 0 5",
+    "exp": "WIN 0 3",
+    "why": "target(1,0)"
+   },
+   {
+    "idx": 4,
+    "got": "WIN 0 18",
+    "exp": "WIN 1 0",
+    "why": "target(12,0)"
+   },
+   {
+    "idx": 5,
+    "got": "WIN 0 25",
+    "exp": "WIN 0 7",
+    "why": "target(11,0)"
+   },
+   {
+    "idx": 6,
+    "got": "WIN 0 17",
+    "exp": "WIN 0 6",
+    "why": "target(18,0)"
+   },
+   {
+    "idx": 7,
+    "got": "WIN 0 21",
+    "exp": "WIN 0 17",
+    "why": "target(7,0)"
+   },
+   {
+    "idx": 12,
+    "got": "WIN 0 1",
+    "exp": "WIN 1 1",
+    "why": "target(1,0)"
+   },
+   {
+    "idx": 13,
+    "got": "WIN 0 25",
+    "exp": "WIN 0 24",
+    "why": "target(2,0)"
+   },
+   {
+    "idx": 14,
+    "got": "WIN 0 25",
+    "exp": "WIN 25 25",
+    "why": "target(25,0)"
+   }
+  ],
+  "w111|R560B0": [
+   {
+    "idx": 1,
+    "got": "WIN 3 0",
+    "exp": "WIN 0 3",
+    "why": "target(9,7)"
+   },
+   {
+    "idx": 2,
+    "got": "WIN 0 5",
+    "exp": "WIN 5 0",
+    "why": "target(18,3)"
+   },
+   {
+    "idx": 6,
+    "got": "WIN 6 0",
+    "exp": "WIN 0 6",
+    "why": "target(17,12)"
+   }
+  ],
+  "w112|R560B0": [
+   {
+    "idx": 3,
+    "got": "WIN 0 5",
+    "exp": "WIN 0 3",
+    "why": "target(1,0)"
+   },
+   {
+    "idx": 12,
+    "got": "WIN 0 1",
+    "exp": "WIN 1 1",
+    "why": "target(1,0)"
+   },
+   {
+    "idx": 13,
+    "got": "WIN 0 23",
+    "exp": "WIN 0 24",
+    "why": "target(2,2)"
+   },
+   {
+    "idx": 14,
+    "got": "WIN 23 23",
+    "exp": "WIN 25 25",
+    "why": "target(2,2)"
+   }
+  ],
+  "w112|R560B3": [
+   {
+    "idx": 1,
+    "got": "WIN 3 0",
+    "exp": "WIN 0 3",
+    "why": "target(9,7)"
+   },
+   {
+    "idx": 2,
+    "got": "WIN 0 5",
+    "exp": "WIN 5 0",
+    "why": "target(18,3)"
+   },
+   {
+    "idx": 6,
+    "got": "WIN 6 0",
+    "exp": "WIN 0 6",
+    "why": "target(17,12)"
+   }
+  ]
+ },
+ "raw_rows": {
+  "w104|C1": [
+   {
+    "idx": 0,
+    "name": "wythoff#00-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 15 15",
+    "exp": "WIN 15 15",
+    "rc": 0
+   },
+   {
+    "idx": 1,
+    "name": "wythoff#01-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 2,
+    "name": "wythoff#02-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(13,8)",
+    "got": "WIN 5 0",
+    "exp": "WIN 5 0",
+    "rc": 0
+   },
+   {
+    "idx": 3,
+    "name": "wythoff#03-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 4,
+    "name": "wythoff#04-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 1 0",
+    "exp": "WIN 1 0",
+    "rc": 0
+   },
+   {
+    "idx": 5,
+    "name": "wythoff#05-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 7",
+    "exp": "WIN 0 7",
+    "rc": 0
+   },
+   {
+    "idx": 6,
+    "name": "wythoff#06-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 6",
+    "exp": "WIN 0 6",
+    "rc": 0
+   },
+   {
+    "idx": 7,
+    "name": "wythoff#07-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(7,4)",
+    "got": "WIN 0 17",
+    "exp": "WIN 0 17",
+    "rc": 0
+   },
+   {
+    "idx": 8,
+    "name": "wythoff#08-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 9,
+    "name": "wythoff#09-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 10,
+    "name": "wythoff#10-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 11,
+    "name": "wythoff#11-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 12,
+    "name": "wythoff#12-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 1 1",
+    "exp": "WIN 1 1",
+    "rc": 0
+   },
+   {
+    "idx": 13,
+    "name": "wythoff#13-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 24",
+    "exp": "WIN 0 24",
+    "rc": 0
+   },
+   {
+    "idx": 14,
+    "name": "wythoff#14-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 25 25",
+    "exp": "WIN 25 25",
+    "rc": 0
+   }
+  ],
+  "w104|R559B0": [
+   {
+    "idx": 0,
+    "name": "wythoff#00-public",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "21 25",
+    "exp": "WIN 15 15",
+    "rc": 0
+   },
+   {
+    "idx": 1,
+    "name": "wythoff#01-public",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "10 9",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 2,
+    "name": "wythoff#02-hidden",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "18 8",
+    "exp": "WIN 5 0",
+    "rc": 0
+   },
+   {
+    "idx": 3,
+    "name": "wythoff#03-hidden",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "1 5",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 4,
+    "name": "wythoff#04-hidden",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "12 18",
+    "exp": "WIN 1 0",
+    "rc": 0
+   },
+   {
+    "idx": 5,
+    "name": "wythoff#05-hidden",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "11 25",
+    "exp": "WIN 0 7",
+    "rc": 0
+   },
+   {
+    "idx": 6,
+    "name": "wythoff#06-hidden",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "18 17",
+    "exp": "WIN 0 6",
+    "rc": 0
+   },
+   {
+    "idx": 7,
+    "name": "wythoff#07-hidden",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "7 21",
+    "exp": "WIN 0 17",
+    "rc": 0
+   },
+   {
+    "idx": 8,
+    "name": "wythoff#08-hidden",
+    "class": "LOSE_LABEL_MISMATCH",
+    "match": false,
+    "why": "got_text('1 2')",
+    "got": "1 2",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 9,
+    "name": "wythoff#09-hidden",
+    "class": "LOSE_LABEL_MISMATCH",
+    "match": false,
+    "why": "got_text('3 5')",
+    "got": "3 5",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 10,
+    "name": "wythoff#10-hidden",
+    "class": "LOSE_LABEL_MISMATCH",
+    "match": false,
+    "why": "got_text('4 7')",
+    "got": "4 7",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 11,
+    "name": "wythoff#11-hidden",
+    "class": "LOSE_LABEL_MISMATCH",
+    "match": false,
+    "why": "got_text('6 10')",
+    "got": "6 10",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 12,
+    "name": "wythoff#12-hidden",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "1 1",
+    "exp": "WIN 1 1",
+    "rc": 0
+   },
+   {
+    "idx": 13,
+    "name": "wythoff#13-hidden",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "2 25",
+    "exp": "WIN 0 24",
+    "rc": 0
+   },
+   {
+    "idx": 14,
+    "name": "wythoff#14-hidden",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "25 25",
+    "exp": "WIN 25 25",
+    "rc": 0
+   }
+  ],
+  "w104|R559B3": [
+   {
+    "idx": 0,
+    "name": "wythoff#00-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 15 15",
+    "exp": "WIN 15 15",
+    "rc": 0
+   },
+   {
+    "idx": 1,
+    "name": "wythoff#01-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 2,
+    "name": "wythoff#02-hidden",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "LOSE",
+    "exp": "WIN 5 0",
+    "rc": 0
+   },
+   {
+    "idx": 3,
+    "name": "wythoff#03-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 4,
+    "name": "wythoff#04-hidden",
+    "class": "MOVE_NOT_LEXMIN",
+    "match": false,
+    "why": "got(3,3) lexmin((1, 0))",
+    "got": "WIN 3 3",
+    "exp": "WIN 1 0",
+    "rc": 0
+   },
+   {
+    "idx": 5,
+    "name": "wythoff#05-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 7",
+    "exp": "WIN 0 7",
+    "rc": 0
+   },
+   {
+    "idx": 6,
+    "name": "wythoff#06-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 6",
+    "exp": "WIN 0 6",
+    "rc": 0
+   },
+   {
+    "idx": 7,
+    "name": "wythoff#07-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(7,4)",
+    "got": "WIN 0 17",
+    "exp": "WIN 0 17",
+    "rc": 0
+   },
+   {
+    "idx": 8,
+    "name": "wythoff#08-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 9,
+    "name": "wythoff#09-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 10,
+    "name": "wythoff#10-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 11,
+    "name": "wythoff#11-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 12,
+    "name": "wythoff#12-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 1 1",
+    "exp": "WIN 1 1",
+    "rc": 0
+   },
+   {
+    "idx": 13,
+    "name": "wythoff#13-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 24",
+    "exp": "WIN 0 24",
+    "rc": 0
+   },
+   {
+    "idx": 14,
+    "name": "wythoff#14-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 25 25",
+    "exp": "WIN 25 25",
+    "rc": 0
+   }
+  ],
+  "w105|C1": [
+   {
+    "idx": 0,
+    "name": "wythoff#00-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 15 15",
+    "exp": "WIN 15 15",
+    "rc": 0
+   },
+   {
+    "idx": 1,
+    "name": "wythoff#01-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 2,
+    "name": "wythoff#02-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(13,8)",
+    "got": "WIN 5 0",
+    "exp": "WIN 5 0",
+    "rc": 0
+   },
+   {
+    "idx": 3,
+    "name": "wythoff#03-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 4,
+    "name": "wythoff#04-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 1 0",
+    "exp": "WIN 1 0",
+    "rc": 0
+   },
+   {
+    "idx": 5,
+    "name": "wythoff#05-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 7",
+    "exp": "WIN 0 7",
+    "rc": 0
+   },
+   {
+    "idx": 6,
+    "name": "wythoff#06-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 6",
+    "exp": "WIN 0 6",
+    "rc": 0
+   },
+   {
+    "idx": 7,
+    "name": "wythoff#07-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(7,4)",
+    "got": "WIN 0 17",
+    "exp": "WIN 0 17",
+    "rc": 0
+   },
+   {
+    "idx": 8,
+    "name": "wythoff#08-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 9,
+    "name": "wythoff#09-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 10,
+    "name": "wythoff#10-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 11,
+    "name": "wythoff#11-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 12,
+    "name": "wythoff#12-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 1 1",
+    "exp": "WIN 1 1",
+    "rc": 0
+   },
+   {
+    "idx": 13,
+    "name": "wythoff#13-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 24",
+    "exp": "WIN 0 24",
+    "rc": 0
+   },
+   {
+    "idx": 14,
+    "name": "wythoff#14-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 25 25",
+    "exp": "WIN 25 25",
+    "rc": 0
+   }
+  ],
+  "w105|R559B0": [
+   {
+    "idx": 0,
+    "name": "wythoff#00-public",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(24,21)",
+    "got": "WIN 0 1",
+    "exp": "WIN 15 15",
+    "rc": 0
+   },
+   {
+    "idx": 1,
+    "name": "wythoff#01-public",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "LOSE",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 2,
+    "name": "wythoff#02-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(18,7)",
+    "got": "WIN 0 1",
+    "exp": "WIN 5 0",
+    "rc": 0
+   },
+   {
+    "idx": 3,
+    "name": "wythoff#03-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(4,0)",
+    "got": "WIN 1 1",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 4,
+    "name": "wythoff#04-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(17,12)",
+    "got": "WIN 0 1",
+    "exp": "WIN 1 0",
+    "rc": 0
+   },
+   {
+    "idx": 5,
+    "name": "wythoff#05-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(24,11)",
+    "got": "WIN 0 1",
+    "exp": "WIN 0 7",
+    "rc": 0
+   },
+   {
+    "idx": 6,
+    "name": "wythoff#06-hidden",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "LOSE",
+    "exp": "WIN 0 6",
+    "rc": 0
+   },
+   {
+    "idx": 7,
+    "name": "wythoff#07-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(20,7)",
+    "got": "WIN 0 1",
+    "exp": "WIN 0 17",
+    "rc": 0
+   },
+   {
+    "idx": 8,
+    "name": "wythoff#08-hidden",
+    "class": "WIN_FOR_LOSE",
+    "match": false,
+    "why": "",
+    "got": "WIN 1 0",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 9,
+    "name": "wythoff#09-hidden",
+    "class": "WIN_FOR_LOSE",
+    "match": false,
+    "why": "",
+    "got": "WIN 0 1",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 10,
+    "name": "wythoff#10-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 11,
+    "name": "wythoff#11-hidden",
+    "class": "WIN_FOR_LOSE",
+    "match": false,
+    "why": "",
+    "got": "WIN 0 1",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 12,
+    "name": "wythoff#12-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 1 1",
+    "exp": "WIN 1 1",
+    "rc": 0
+   },
+   {
+    "idx": 13,
+    "name": "wythoff#13-hidden",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "LOSE",
+    "exp": "WIN 0 24",
+    "rc": 0
+   },
+   {
+    "idx": 14,
+    "name": "wythoff#14-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(25,24)",
+    "got": "WIN 0 1",
+    "exp": "WIN 25 25",
+    "rc": 0
+   }
+  ],
+  "w105|R559B3": [
+   {
+    "idx": 0,
+    "name": "wythoff#00-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 15 15",
+    "exp": "WIN 15 15",
+    "rc": 0
+   },
+   {
+    "idx": 1,
+    "name": "wythoff#01-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 2,
+    "name": "wythoff#02-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(13,8)",
+    "got": "WIN 5 0",
+    "exp": "WIN 5 0",
+    "rc": 0
+   },
+   {
+    "idx": 3,
+    "name": "wythoff#03-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 4,
+    "name": "wythoff#04-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 1 0",
+    "exp": "WIN 1 0",
+    "rc": 0
+   },
+   {
+    "idx": 5,
+    "name": "wythoff#05-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 7",
+    "exp": "WIN 0 7",
+    "rc": 0
+   },
+   {
+    "idx": 6,
+    "name": "wythoff#06-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 6",
+    "exp": "WIN 0 6",
+    "rc": 0
+   },
+   {
+    "idx": 7,
+    "name": "wythoff#07-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(7,4)",
+    "got": "WIN 0 17",
+    "exp": "WIN 0 17",
+    "rc": 0
+   },
+   {
+    "idx": 8,
+    "name": "wythoff#08-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 9,
+    "name": "wythoff#09-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 10,
+    "name": "wythoff#10-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 11,
+    "name": "wythoff#11-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 12,
+    "name": "wythoff#12-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 1 1",
+    "exp": "WIN 1 1",
+    "rc": 0
+   },
+   {
+    "idx": 13,
+    "name": "wythoff#13-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 24",
+    "exp": "WIN 0 24",
+    "rc": 0
+   },
+   {
+    "idx": 14,
+    "name": "wythoff#14-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 25 25",
+    "exp": "WIN 25 25",
+    "rc": 0
+   }
+  ],
+  "w106|C1": [
+   {
+    "idx": 0,
+    "name": "wythoff#00-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 15 15",
+    "exp": "WIN 15 15",
+    "rc": 0
+   },
+   {
+    "idx": 1,
+    "name": "wythoff#01-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 2,
+    "name": "wythoff#02-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(13,8)",
+    "got": "WIN 5 0",
+    "exp": "WIN 5 0",
+    "rc": 0
+   },
+   {
+    "idx": 3,
+    "name": "wythoff#03-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 4,
+    "name": "wythoff#04-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 1 0",
+    "exp": "WIN 1 0",
+    "rc": 0
+   },
+   {
+    "idx": 5,
+    "name": "wythoff#05-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 7",
+    "exp": "WIN 0 7",
+    "rc": 0
+   },
+   {
+    "idx": 6,
+    "name": "wythoff#06-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 6",
+    "exp": "WIN 0 6",
+    "rc": 0
+   },
+   {
+    "idx": 7,
+    "name": "wythoff#07-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(7,4)",
+    "got": "WIN 0 17",
+    "exp": "WIN 0 17",
+    "rc": 0
+   },
+   {
+    "idx": 8,
+    "name": "wythoff#08-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 9,
+    "name": "wythoff#09-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 10,
+    "name": "wythoff#10-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 11,
+    "name": "wythoff#11-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 12,
+    "name": "wythoff#12-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 1 1",
+    "exp": "WIN 1 1",
+    "rc": 0
+   },
+   {
+    "idx": 13,
+    "name": "wythoff#13-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 24",
+    "exp": "WIN 0 24",
+    "rc": 0
+   },
+   {
+    "idx": 14,
+    "name": "wythoff#14-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 25 25",
+    "exp": "WIN 25 25",
+    "rc": 0
+   }
+  ],
+  "w106|R559B0": [
+   {
+    "idx": 0,
+    "name": "wythoff#00-public",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "LOSE",
+    "exp": "WIN 15 15",
+    "rc": 0
+   },
+   {
+    "idx": 1,
+    "name": "wythoff#01-public",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(10,5)",
+    "got": "WIN 0 4",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 2,
+    "name": "wythoff#02-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(16,8)",
+    "got": "WIN 2 0",
+    "exp": "WIN 5 0",
+    "rc": 0
+   },
+   {
+    "idx": 3,
+    "name": "wythoff#03-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 4,
+    "name": "wythoff#04-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(12,6)",
+    "got": "WIN 0 12",
+    "exp": "WIN 1 0",
+    "rc": 0
+   },
+   {
+    "idx": 5,
+    "name": "wythoff#05-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(22,11)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 7",
+    "rc": 0
+   },
+   {
+    "idx": 6,
+    "name": "wythoff#06-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(18,9)",
+    "got": "WIN 0 8",
+    "exp": "WIN 0 6",
+    "rc": 0
+   },
+   {
+    "idx": 7,
+    "name": "wythoff#07-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(14,7)",
+    "got": "WIN 0 7",
+    "exp": "WIN 0 17",
+    "rc": 0
+   },
+   {
+    "idx": 8,
+    "name": "wythoff#08-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 9,
+    "name": "wythoff#09-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 10,
+    "name": "wythoff#10-hidden",
+    "class": "WIN_FOR_LOSE",
+    "match": false,
+    "why": "",
+    "got": "WIN 0 5",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 11,
+    "name": "wythoff#11-hidden",
+    "class": "WIN_FOR_LOSE",
+    "match": false,
+    "why": "",
+    "got": "WIN 0 7",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 12,
+    "name": "wythoff#12-hidden",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "LOSE",
+    "exp": "WIN 1 1",
+    "rc": 0
+   },
+   {
+    "idx": 13,
+    "name": "wythoff#13-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(4,2)",
+    "got": "WIN 0 21",
+    "exp": "WIN 0 24",
+    "rc": 0
+   },
+   {
+    "idx": 14,
+    "name": "wythoff#14-hidden",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "LOSE",
+    "exp": "WIN 25 25",
+    "rc": 0
+   }
+  ],
+  "w106|R559B3": [
+   {
+    "idx": 0,
+    "name": "wythoff#00-public",
+    "class": "MOVE_ILLEGAL",
+    "match": false,
+    "why": "removals(1,13)",
+    "got": "WIN 1 13",
+    "exp": "WIN 15 15",
+    "rc": 0
+   },
+   {
+    "idx": 1,
+    "name": "wythoff#01-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 2,
+    "name": "wythoff#02-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(13,8)",
+    "got": "WIN 5 0",
+    "exp": "WIN 5 0",
+    "rc": 0
+   },
+   {
+    "idx": 3,
+    "name": "wythoff#03-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 4,
+    "name": "wythoff#04-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 1 0",
+    "exp": "WIN 1 0",
+    "rc": 0
+   },
+   {
+    "idx": 5,
+    "name": "wythoff#05-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 7",
+    "exp": "WIN 0 7",
+    "rc": 0
+   },
+   {
+    "idx": 6,
+    "name": "wythoff#06-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 6",
+    "exp": "WIN 0 6",
+    "rc": 0
+   },
+   {
+    "idx": 7,
+    "name": "wythoff#07-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(7,4)",
+    "got": "WIN 0 17",
+    "exp": "WIN 0 17",
+    "rc": 0
+   },
+   {
+    "idx": 8,
+    "name": "wythoff#08-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 9,
+    "name": "wythoff#09-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 10,
+    "name": "wythoff#10-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 11,
+    "name": "wythoff#11-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 12,
+    "name": "wythoff#12-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 1 1",
+    "exp": "WIN 1 1",
+    "rc": 0
+   },
+   {
+    "idx": 13,
+    "name": "wythoff#13-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 24",
+    "exp": "WIN 0 24",
+    "rc": 0
+   },
+   {
+    "idx": 14,
+    "name": "wythoff#14-hidden",
+    "class": "MOVE_ILLEGAL",
+    "match": false,
+    "why": "removals(2,11)",
+    "got": "WIN 2 11",
+    "exp": "WIN 25 25",
+    "rc": 0
+   }
+  ],
+  "w107|C1": [
+   {
+    "idx": 0,
+    "name": "wythoff#00-public",
+    "class": "MOVE_ILLEGAL",
+    "match": false,
+    "why": "removals(1,13)",
+    "got": "WIN 1 13",
+    "exp": "WIN 15 15",
+    "rc": 0
+   },
+   {
+    "idx": 1,
+    "name": "wythoff#01-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 2,
+    "name": "wythoff#02-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(13,8)",
+    "got": "WIN 5 0",
+    "exp": "WIN 5 0",
+    "rc": 0
+   },
+   {
+    "idx": 3,
+    "name": "wythoff#03-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 4,
+    "name": "wythoff#04-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 1 0",
+    "exp": "WIN 1 0",
+    "rc": 0
+   },
+   {
+    "idx": 5,
+    "name": "wythoff#05-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 7",
+    "exp": "WIN 0 7",
+    "rc": 0
+   },
+   {
+    "idx": 6,
+    "name": "wythoff#06-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 6",
+    "exp": "WIN 0 6",
+    "rc": 0
+   },
+   {
+    "idx": 7,
+    "name": "wythoff#07-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(7,4)",
+    "got": "WIN 0 17",
+    "exp": "WIN 0 17",
+    "rc": 0
+   },
+   {
+    "idx": 8,
+    "name": "wythoff#08-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 9,
+    "name": "wythoff#09-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 10,
+    "name": "wythoff#10-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 11,
+    "name": "wythoff#11-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 12,
+    "name": "wythoff#12-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 1 1",
+    "exp": "WIN 1 1",
+    "rc": 0
+   },
+   {
+    "idx": 13,
+    "name": "wythoff#13-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 24",
+    "exp": "WIN 0 24",
+    "rc": 0
+   },
+   {
+    "idx": 14,
+    "name": "wythoff#14-hidden",
+    "class": "MOVE_ILLEGAL",
+    "match": false,
+    "why": "removals(2,11)",
+    "got": "WIN 2 11",
+    "exp": "WIN 25 25",
+    "rc": 0
+   }
+  ],
+  "w107|R560B0": [
+   {
+    "idx": 0,
+    "name": "wythoff#00-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 15 15",
+    "exp": "WIN 15 15",
+    "rc": 0
+   },
+   {
+    "idx": 1,
+    "name": "wythoff#01-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 2,
+    "name": "wythoff#02-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(13,8)",
+    "got": "WIN 5 0",
+    "exp": "WIN 5 0",
+    "rc": 0
+   },
+   {
+    "idx": 3,
+    "name": "wythoff#03-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 4,
+    "name": "wythoff#04-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 1 0",
+    "exp": "WIN 1 0",
+    "rc": 0
+   },
+   {
+    "idx": 5,
+    "name": "wythoff#05-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 7",
+    "exp": "WIN 0 7",
+    "rc": 0
+   },
+   {
+    "idx": 6,
+    "name": "wythoff#06-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 6",
+    "exp": "WIN 0 6",
+    "rc": 0
+   },
+   {
+    "idx": 7,
+    "name": "wythoff#07-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(7,4)",
+    "got": "WIN 0 17",
+    "exp": "WIN 0 17",
+    "rc": 0
+   },
+   {
+    "idx": 8,
+    "name": "wythoff#08-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 9,
+    "name": "wythoff#09-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 10,
+    "name": "wythoff#10-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 11,
+    "name": "wythoff#11-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 12,
+    "name": "wythoff#12-hidden",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "LOSE",
+    "exp": "WIN 1 1",
+    "rc": 0
+   },
+   {
+    "idx": 13,
+    "name": "wythoff#13-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 24",
+    "exp": "WIN 0 24",
+    "rc": 0
+   },
+   {
+    "idx": 14,
+    "name": "wythoff#14-hidden",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "LOSE",
+    "exp": "WIN 25 25",
+    "rc": 0
+   }
+  ],
+  "w107|R560B3": [
+   {
+    "idx": 0,
+    "name": "wythoff#00-public",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(21,13)",
+    "got": "WIN 0 12",
+    "exp": "WIN 15 15",
+    "rc": 0
+   },
+   {
+    "idx": 1,
+    "name": "wythoff#01-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 2,
+    "name": "wythoff#02-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(14,8)",
+    "got": "WIN 4 0",
+    "exp": "WIN 5 0",
+    "rc": 0
+   },
+   {
+    "idx": 3,
+    "name": "wythoff#03-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 4,
+    "name": "wythoff#04-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(12,7)",
+    "got": "WIN 0 11",
+    "exp": "WIN 1 0",
+    "rc": 0
+   },
+   {
+    "idx": 5,
+    "name": "wythoff#05-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(19,11)",
+    "got": "WIN 0 6",
+    "exp": "WIN 0 7",
+    "rc": 0
+   },
+   {
+    "idx": 6,
+    "name": "wythoff#06-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 6",
+    "exp": "WIN 0 6",
+    "rc": 0
+   },
+   {
+    "idx": 7,
+    "name": "wythoff#07-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(12,7)",
+    "got": "WIN 0 9",
+    "exp": "WIN 0 17",
+    "rc": 0
+   },
+   {
+    "idx": 8,
+    "name": "wythoff#08-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 9,
+    "name": "wythoff#09-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 10,
+    "name": "wythoff#10-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 11,
+    "name": "wythoff#11-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 12,
+    "name": "wythoff#12-hidden",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "LOSE",
+    "exp": "WIN 1 1",
+    "rc": 0
+   },
+   {
+    "idx": 13,
+    "name": "wythoff#13-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(4,2)",
+    "got": "WIN 0 21",
+    "exp": "WIN 0 24",
+    "rc": 0
+   },
+   {
+    "idx": 14,
+    "name": "wythoff#14-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(25,15)",
+    "got": "WIN 0 10",
+    "exp": "WIN 25 25",
+    "rc": 0
+   }
+  ],
+  "w108|C1": [
+   {
+    "idx": 0,
+    "name": "wythoff#00-public",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "LOSE",
+    "exp": "WIN 15 15",
+    "rc": 0
+   },
+   {
+    "idx": 1,
+    "name": "wythoff#01-public",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(10,8)",
+    "got": "WIN 0 1",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 2,
+    "name": "wythoff#02-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(18,7)",
+    "got": "WIN 0 1",
+    "exp": "WIN 5 0",
+    "rc": 0
+   },
+   {
+    "idx": 3,
+    "name": "wythoff#03-hidden",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "LOSE",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 4,
+    "name": "wythoff#04-hidden",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "LOSE",
+    "exp": "WIN 1 0",
+    "rc": 0
+   },
+   {
+    "idx": 5,
+    "name": "wythoff#05-hidden",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "LOSE",
+    "exp": "WIN 0 7",
+    "rc": 0
+   },
+   {
+    "idx": 6,
+    "name": "wythoff#06-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(18,16)",
+    "got": "WIN 0 1",
+    "exp": "WIN 0 6",
+    "rc": 0
+   },
+   {
+    "idx": 7,
+    "name": "wythoff#07-hidden",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "LOSE",
+    "exp": "WIN 0 17",
+    "rc": 0
+   },
+   {
+    "idx": 8,
+    "name": "wythoff#08-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 9,
+    "name": "wythoff#09-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 10,
+    "name": "wythoff#10-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 11,
+    "name": "wythoff#11-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 12,
+    "name": "wythoff#12-hidden",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "LOSE",
+    "exp": "WIN 1 1",
+    "rc": 0
+   },
+   {
+    "idx": 13,
+    "name": "wythoff#13-hidden",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "LOSE",
+    "exp": "WIN 0 24",
+    "rc": 0
+   },
+   {
+    "idx": 14,
+    "name": "wythoff#14-hidden",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "LOSE",
+    "exp": "WIN 25 25",
+    "rc": 0
+   }
+  ],
+  "w108|R560B0": [
+   {
+    "idx": 0,
+    "name": "wythoff#00-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 15 15",
+    "exp": "WIN 15 15",
+    "rc": 0
+   },
+   {
+    "idx": 1,
+    "name": "wythoff#01-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 2,
+    "name": "wythoff#02-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(13,8)",
+    "got": "WIN 5 0",
+    "exp": "WIN 5 0",
+    "rc": 0
+   },
+   {
+    "idx": 3,
+    "name": "wythoff#03-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 4,
+    "name": "wythoff#04-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 1 0",
+    "exp": "WIN 1 0",
+    "rc": 0
+   },
+   {
+    "idx": 5,
+    "name": "wythoff#05-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 7",
+    "exp": "WIN 0 7",
+    "rc": 0
+   },
+   {
+    "idx": 6,
+    "name": "wythoff#06-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 6",
+    "exp": "WIN 0 6",
+    "rc": 0
+   },
+   {
+    "idx": 7,
+    "name": "wythoff#07-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(7,4)",
+    "got": "WIN 0 17",
+    "exp": "WIN 0 17",
+    "rc": 0
+   },
+   {
+    "idx": 8,
+    "name": "wythoff#08-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 9,
+    "name": "wythoff#09-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 10,
+    "name": "wythoff#10-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 11,
+    "name": "wythoff#11-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 12,
+    "name": "wythoff#12-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 1 1",
+    "exp": "WIN 1 1",
+    "rc": 0
+   },
+   {
+    "idx": 13,
+    "name": "wythoff#13-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 24",
+    "exp": "WIN 0 24",
+    "rc": 0
+   },
+   {
+    "idx": 14,
+    "name": "wythoff#14-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 25 25",
+    "exp": "WIN 25 25",
+    "rc": 0
+   }
+  ],
+  "w108|R560B3": [
+   {
+    "idx": 0,
+    "name": "wythoff#00-public",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(8,4)",
+    "got": "WIN 17 17",
+    "exp": "WIN 15 15",
+    "rc": 0
+   },
+   {
+    "idx": 1,
+    "name": "wythoff#01-public",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(10,5)",
+    "got": "WIN 0 4",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 2,
+    "name": "wythoff#02-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(16,8)",
+    "got": "WIN 2 0",
+    "exp": "WIN 5 0",
+    "rc": 0
+   },
+   {
+    "idx": 3,
+    "name": "wythoff#03-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 4,
+    "name": "wythoff#04-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(12,6)",
+    "got": "WIN 0 12",
+    "exp": "WIN 1 0",
+    "rc": 0
+   },
+   {
+    "idx": 5,
+    "name": "wythoff#05-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(22,11)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 7",
+    "rc": 0
+   },
+   {
+    "idx": 6,
+    "name": "wythoff#06-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(18,9)",
+    "got": "WIN 0 8",
+    "exp": "WIN 0 6",
+    "rc": 0
+   },
+   {
+    "idx": 7,
+    "name": "wythoff#07-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(14,7)",
+    "got": "WIN 0 7",
+    "exp": "WIN 0 17",
+    "rc": 0
+   },
+   {
+    "idx": 8,
+    "name": "wythoff#08-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 9,
+    "name": "wythoff#09-hidden",
+    "class": "WIN_FOR_LOSE",
+    "match": false,
+    "why": "",
+    "got": "WIN 1 1",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 10,
+    "name": "wythoff#10-hidden",
+    "class": "WIN_FOR_LOSE",
+    "match": false,
+    "why": "",
+    "got": "WIN 0 5",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 11,
+    "name": "wythoff#11-hidden",
+    "class": "WIN_FOR_LOSE",
+    "match": false,
+    "why": "",
+    "got": "WIN 0 7",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 12,
+    "name": "wythoff#12-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 1 1",
+    "exp": "WIN 1 1",
+    "rc": 0
+   },
+   {
+    "idx": 13,
+    "name": "wythoff#13-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(4,2)",
+    "got": "WIN 0 21",
+    "exp": "WIN 0 24",
+    "rc": 0
+   },
+   {
+    "idx": 14,
+    "name": "wythoff#14-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 25 25",
+    "exp": "WIN 25 25",
+    "rc": 0
+   }
+  ],
+  "w109|C1": [
+   {
+    "idx": 0,
+    "name": "wythoff#00-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 15 15",
+    "exp": "WIN 15 15",
+    "rc": 0
+   },
+   {
+    "idx": 1,
+    "name": "wythoff#01-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 2,
+    "name": "wythoff#02-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(13,8)",
+    "got": "WIN 5 0",
+    "exp": "WIN 5 0",
+    "rc": 0
+   },
+   {
+    "idx": 3,
+    "name": "wythoff#03-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 4,
+    "name": "wythoff#04-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 1 0",
+    "exp": "WIN 1 0",
+    "rc": 0
+   },
+   {
+    "idx": 5,
+    "name": "wythoff#05-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 7",
+    "exp": "WIN 0 7",
+    "rc": 0
+   },
+   {
+    "idx": 6,
+    "name": "wythoff#06-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 6",
+    "exp": "WIN 0 6",
+    "rc": 0
+   },
+   {
+    "idx": 7,
+    "name": "wythoff#07-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(7,4)",
+    "got": "WIN 0 17",
+    "exp": "WIN 0 17",
+    "rc": 0
+   },
+   {
+    "idx": 8,
+    "name": "wythoff#08-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 9,
+    "name": "wythoff#09-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 10,
+    "name": "wythoff#10-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 11,
+    "name": "wythoff#11-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 12,
+    "name": "wythoff#12-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 1 1",
+    "exp": "WIN 1 1",
+    "rc": 0
+   },
+   {
+    "idx": 13,
+    "name": "wythoff#13-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 24",
+    "exp": "WIN 0 24",
+    "rc": 0
+   },
+   {
+    "idx": 14,
+    "name": "wythoff#14-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 25 25",
+    "exp": "WIN 25 25",
+    "rc": 0
+   }
+  ],
+  "w109|R560B0": [
+   {
+    "idx": 0,
+    "name": "wythoff#00-public",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "LOSE",
+    "exp": "WIN 15 15",
+    "rc": 0
+   },
+   {
+    "idx": 1,
+    "name": "wythoff#01-public",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(9,7)",
+    "got": "WIN 3 0",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 2,
+    "name": "wythoff#02-hidden",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "LOSE",
+    "exp": "WIN 5 0",
+    "rc": 0
+   },
+   {
+    "idx": 3,
+    "name": "wythoff#03-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(1,0)",
+    "got": "WIN 0 5",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 4,
+    "name": "wythoff#04-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(12,10)",
+    "got": "WIN 0 8",
+    "exp": "WIN 1 0",
+    "rc": 0
+   },
+   {
+    "idx": 5,
+    "name": "wythoff#05-hidden",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "LOSE",
+    "exp": "WIN 0 7",
+    "rc": 0
+   },
+   {
+    "idx": 6,
+    "name": "wythoff#06-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(6,5)",
+    "got": "WIN 12 12",
+    "exp": "WIN 0 6",
+    "rc": 0
+   },
+   {
+    "idx": 7,
+    "name": "wythoff#07-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(9,7)",
+    "got": "WIN 0 12",
+    "exp": "WIN 0 17",
+    "rc": 0
+   },
+   {
+    "idx": 8,
+    "name": "wythoff#08-hidden",
+    "class": "WIN_FOR_LOSE",
+    "match": false,
+    "why": "",
+    "got": "WIN 0 2",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 9,
+    "name": "wythoff#09-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 10,
+    "name": "wythoff#10-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 11,
+    "name": "wythoff#11-hidden",
+    "class": "WIN_FOR_LOSE",
+    "match": false,
+    "why": "",
+    "got": "WIN 0 5",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 12,
+    "name": "wythoff#12-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(1,0)",
+    "got": "WIN 0 1",
+    "exp": "WIN 1 1",
+    "rc": 0
+   },
+   {
+    "idx": 13,
+    "name": "wythoff#13-hidden",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "LOSE",
+    "exp": "WIN 0 24",
+    "rc": 0
+   },
+   {
+    "idx": 14,
+    "name": "wythoff#14-hidden",
+    "class": "LOSE_FOR_WIN",
+    "match": false,
+    "why": "",
+    "got": "LOSE",
+    "exp": "WIN 25 25",
+    "rc": 0
+   }
+  ],
+  "w109|R560B3": [
+   {
+    "idx": 0,
+    "name": "wythoff#00-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 15 15",
+    "exp": "WIN 15 15",
+    "rc": 0
+   },
+   {
+    "idx": 1,
+    "name": "wythoff#01-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 2,
+    "name": "wythoff#02-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(13,8)",
+    "got": "WIN 5 0",
+    "exp": "WIN 5 0",
+    "rc": 0
+   },
+   {
+    "idx": 3,
+    "name": "wythoff#03-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 4,
+    "name": "wythoff#04-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 1 0",
+    "exp": "WIN 1 0",
+    "rc": 0
+   },
+   {
+    "idx": 5,
+    "name": "wythoff#05-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 7",
+    "exp": "WIN 0 7",
+    "rc": 0
+   },
+   {
+    "idx": 6,
+    "name": "wythoff#06-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 6",
+    "exp": "WIN 0 6",
+    "rc": 0
+   },
+   {
+    "idx": 7,
+    "name": "wythoff#07-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(7,4)",
+    "got": "WIN 0 17",
+    "exp": "WIN 0 17",
+    "rc": 0
+   },
+   {
+    "idx": 8,
+    "name": "wythoff#08-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 9,
+    "name": "wythoff#09-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 10,
+    "name": "wythoff#10-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 11,
+    "name": "wythoff#11-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 12,
+    "name": "wythoff#12-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 1 1",
+    "exp": "WIN 1 1",
+    "rc": 0
+   },
+   {
+    "idx": 13,
+    "name": "wythoff#13-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 24",
+    "exp": "WIN 0 24",
+    "rc": 0
+   },
+   {
+    "idx": 14,
+    "name": "wythoff#14-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 25 25",
+    "exp": "WIN 25 25",
+    "rc": 0
+   }
+  ],
+  "w110|C1": [
+   {
+    "idx": 0,
+    "name": "wythoff#00-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 15 15",
+    "exp": "WIN 15 15",
+    "rc": 0
+   },
+   {
+    "idx": 1,
+    "name": "wythoff#01-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 2,
+    "name": "wythoff#02-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(13,8)",
+    "got": "WIN 5 0",
+    "exp": "WIN 5 0",
+    "rc": 0
+   },
+   {
+    "idx": 3,
+    "name": "wythoff#03-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 4,
+    "name": "wythoff#04-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 1 0",
+    "exp": "WIN 1 0",
+    "rc": 0
+   },
+   {
+    "idx": 5,
+    "name": "wythoff#05-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 7",
+    "exp": "WIN 0 7",
+    "rc": 0
+   },
+   {
+    "idx": 6,
+    "name": "wythoff#06-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 6",
+    "exp": "WIN 0 6",
+    "rc": 0
+   },
+   {
+    "idx": 7,
+    "name": "wythoff#07-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(7,4)",
+    "got": "WIN 0 17",
+    "exp": "WIN 0 17",
+    "rc": 0
+   },
+   {
+    "idx": 8,
+    "name": "wythoff#08-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 9,
+    "name": "wythoff#09-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 10,
+    "name": "wythoff#10-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 11,
+    "name": "wythoff#11-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 12,
+    "name": "wythoff#12-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 1 1",
+    "exp": "WIN 1 1",
+    "rc": 0
+   },
+   {
+    "idx": 13,
+    "name": "wythoff#13-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 24",
+    "exp": "WIN 0 24",
+    "rc": 0
+   },
+   {
+    "idx": 14,
+    "name": "wythoff#14-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 25 25",
+    "exp": "WIN 25 25",
+    "rc": 0
+   }
+  ],
+  "w110|R560B0": [
+   {
+    "idx": 0,
+    "name": "wythoff#00-public",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(25,16)",
+    "got": "WIN 5 0",
+    "exp": "WIN 15 15",
+    "rc": 0
+   },
+   {
+    "idx": 1,
+    "name": "wythoff#01-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 2,
+    "name": "wythoff#02-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(13,8)",
+    "got": "WIN 5 0",
+    "exp": "WIN 5 0",
+    "rc": 0
+   },
+   {
+    "idx": 3,
+    "name": "wythoff#03-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 4,
+    "name": "wythoff#04-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(17,11)",
+    "got": "WIN 1 1",
+    "exp": "WIN 1 0",
+    "rc": 0
+   },
+   {
+    "idx": 5,
+    "name": "wythoff#05-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(17,11)",
+    "got": "WIN 0 8",
+    "exp": "WIN 0 7",
+    "rc": 0
+   },
+   {
+    "idx": 6,
+    "name": "wythoff#06-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(17,11)",
+    "got": "WIN 7 0",
+    "exp": "WIN 0 6",
+    "rc": 0
+   },
+   {
+    "idx": 7,
+    "name": "wythoff#07-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(11,7)",
+    "got": "WIN 0 10",
+    "exp": "WIN 0 17",
+    "rc": 0
+   },
+   {
+    "idx": 8,
+    "name": "wythoff#08-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 9,
+    "name": "wythoff#09-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 10,
+    "name": "wythoff#10-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 11,
+    "name": "wythoff#11-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 12,
+    "name": "wythoff#12-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(1,0)",
+    "got": "WIN 0 1",
+    "exp": "WIN 1 1",
+    "rc": 0
+   },
+   {
+    "idx": 13,
+    "name": "wythoff#13-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(4,2)",
+    "got": "WIN 0 21",
+    "exp": "WIN 0 24",
+    "rc": 0
+   },
+   {
+    "idx": 14,
+    "name": "wythoff#14-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(25,16)",
+    "got": "WIN 0 9",
+    "exp": "WIN 25 25",
+    "rc": 0
+   }
+  ],
+  "w110|R560B3": [
+   {
+    "idx": 0,
+    "name": "wythoff#00-public",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(21,0)",
+    "got": "WIN 0 25",
+    "exp": "WIN 15 15",
+    "rc": 0
+   },
+   {
+    "idx": 1,
+    "name": "wythoff#01-public",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(10,0)",
+    "got": "WIN 0 9",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 2,
+    "name": "wythoff#02-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(18,0)",
+    "got": "WIN 0 8",
+    "exp": "WIN 5 0",
+    "rc": 0
+   },
+   {
+    "idx": 3,
+    "name": "wythoff#03-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(1,0)",
+    "got": "WIN 0 5",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 4,
+    "name": "wythoff#04-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(12,0)",
+    "got": "WIN 0 18",
+    "exp": "WIN 1 0",
+    "rc": 0
+   },
+   {
+    "idx": 5,
+    "name": "wythoff#05-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(11,0)",
+    "got": "WIN 0 25",
+    "exp": "WIN 0 7",
+    "rc": 0
+   },
+   {
+    "idx": 6,
+    "name": "wythoff#06-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(18,0)",
+    "got": "WIN 0 17",
+    "exp": "WIN 0 6",
+    "rc": 0
+   },
+   {
+    "idx": 7,
+    "name": "wythoff#07-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(7,0)",
+    "got": "WIN 0 21",
+    "exp": "WIN 0 17",
+    "rc": 0
+   },
+   {
+    "idx": 8,
+    "name": "wythoff#08-hidden",
+    "class": "WIN_FOR_LOSE",
+    "match": false,
+    "why": "",
+    "got": "WIN 0 2",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 9,
+    "name": "wythoff#09-hidden",
+    "class": "WIN_FOR_LOSE",
+    "match": false,
+    "why": "",
+    "got": "WIN 0 5",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 10,
+    "name": "wythoff#10-hidden",
+    "class": "WIN_FOR_LOSE",
+    "match": false,
+    "why": "",
+    "got": "WIN 0 7",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 11,
+    "name": "wythoff#11-hidden",
+    "class": "WIN_FOR_LOSE",
+    "match": false,
+    "why": "",
+    "got": "WIN 0 10",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 12,
+    "name": "wythoff#12-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(1,0)",
+    "got": "WIN 0 1",
+    "exp": "WIN 1 1",
+    "rc": 0
+   },
+   {
+    "idx": 13,
+    "name": "wythoff#13-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(2,0)",
+    "got": "WIN 0 25",
+    "exp": "WIN 0 24",
+    "rc": 0
+   },
+   {
+    "idx": 14,
+    "name": "wythoff#14-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(25,0)",
+    "got": "WIN 0 25",
+    "exp": "WIN 25 25",
+    "rc": 0
+   }
+  ],
+  "w111|C1": [
+   {
+    "idx": 0,
+    "name": "wythoff#00-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 15 15",
+    "exp": "WIN 15 15",
+    "rc": 0
+   },
+   {
+    "idx": 1,
+    "name": "wythoff#01-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 2,
+    "name": "wythoff#02-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(13,8)",
+    "got": "WIN 5 0",
+    "exp": "WIN 5 0",
+    "rc": 0
+   },
+   {
+    "idx": 3,
+    "name": "wythoff#03-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 4,
+    "name": "wythoff#04-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 1 0",
+    "exp": "WIN 1 0",
+    "rc": 0
+   },
+   {
+    "idx": 5,
+    "name": "wythoff#05-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 7",
+    "exp": "WIN 0 7",
+    "rc": 0
+   },
+   {
+    "idx": 6,
+    "name": "wythoff#06-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 6",
+    "exp": "WIN 0 6",
+    "rc": 0
+   },
+   {
+    "idx": 7,
+    "name": "wythoff#07-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(7,4)",
+    "got": "WIN 0 17",
+    "exp": "WIN 0 17",
+    "rc": 0
+   },
+   {
+    "idx": 8,
+    "name": "wythoff#08-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 9,
+    "name": "wythoff#09-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 10,
+    "name": "wythoff#10-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 11,
+    "name": "wythoff#11-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 12,
+    "name": "wythoff#12-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 1 1",
+    "exp": "WIN 1 1",
+    "rc": 0
+   },
+   {
+    "idx": 13,
+    "name": "wythoff#13-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 24",
+    "exp": "WIN 0 24",
+    "rc": 0
+   },
+   {
+    "idx": 14,
+    "name": "wythoff#14-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 25 25",
+    "exp": "WIN 25 25",
+    "rc": 0
+   }
+  ],
+  "w111|R560B0": [
+   {
+    "idx": 0,
+    "name": "wythoff#00-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 15 15",
+    "exp": "WIN 15 15",
+    "rc": 0
+   },
+   {
+    "idx": 1,
+    "name": "wythoff#01-public",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(9,7)",
+    "got": "WIN 3 0",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 2,
+    "name": "wythoff#02-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(18,3)",
+    "got": "WIN 0 5",
+    "exp": "WIN 5 0",
+    "rc": 0
+   },
+   {
+    "idx": 3,
+    "name": "wythoff#03-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 4,
+    "name": "wythoff#04-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 1 0",
+    "exp": "WIN 1 0",
+    "rc": 0
+   },
+   {
+    "idx": 5,
+    "name": "wythoff#05-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 7",
+    "exp": "WIN 0 7",
+    "rc": 0
+   },
+   {
+    "idx": 6,
+    "name": "wythoff#06-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(17,12)",
+    "got": "WIN 6 0",
+    "exp": "WIN 0 6",
+    "rc": 0
+   },
+   {
+    "idx": 7,
+    "name": "wythoff#07-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(7,4)",
+    "got": "WIN 0 17",
+    "exp": "WIN 0 17",
+    "rc": 0
+   },
+   {
+    "idx": 8,
+    "name": "wythoff#08-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 9,
+    "name": "wythoff#09-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 10,
+    "name": "wythoff#10-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 11,
+    "name": "wythoff#11-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 12,
+    "name": "wythoff#12-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 1 1",
+    "exp": "WIN 1 1",
+    "rc": 0
+   },
+   {
+    "idx": 13,
+    "name": "wythoff#13-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 24",
+    "exp": "WIN 0 24",
+    "rc": 0
+   },
+   {
+    "idx": 14,
+    "name": "wythoff#14-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 25 25",
+    "exp": "WIN 25 25",
+    "rc": 0
+   }
+  ],
+  "w111|R560B3": [
+   {
+    "idx": 0,
+    "name": "wythoff#00-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 15 15",
+    "exp": "WIN 15 15",
+    "rc": 0
+   },
+   {
+    "idx": 1,
+    "name": "wythoff#01-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 2,
+    "name": "wythoff#02-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(13,8)",
+    "got": "WIN 5 0",
+    "exp": "WIN 5 0",
+    "rc": 0
+   },
+   {
+    "idx": 3,
+    "name": "wythoff#03-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 4,
+    "name": "wythoff#04-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 1 0",
+    "exp": "WIN 1 0",
+    "rc": 0
+   },
+   {
+    "idx": 5,
+    "name": "wythoff#05-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 7",
+    "exp": "WIN 0 7",
+    "rc": 0
+   },
+   {
+    "idx": 6,
+    "name": "wythoff#06-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 6",
+    "exp": "WIN 0 6",
+    "rc": 0
+   },
+   {
+    "idx": 7,
+    "name": "wythoff#07-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(7,4)",
+    "got": "WIN 0 17",
+    "exp": "WIN 0 17",
+    "rc": 0
+   },
+   {
+    "idx": 8,
+    "name": "wythoff#08-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 9,
+    "name": "wythoff#09-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 10,
+    "name": "wythoff#10-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 11,
+    "name": "wythoff#11-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 12,
+    "name": "wythoff#12-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 1 1",
+    "exp": "WIN 1 1",
+    "rc": 0
+   },
+   {
+    "idx": 13,
+    "name": "wythoff#13-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 24",
+    "exp": "WIN 0 24",
+    "rc": 0
+   },
+   {
+    "idx": 14,
+    "name": "wythoff#14-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 25 25",
+    "exp": "WIN 25 25",
+    "rc": 0
+   }
+  ],
+  "w112|C1": [
+   {
+    "idx": 0,
+    "name": "wythoff#00-public",
+    "class": "MOVE_ILLEGAL",
+    "match": false,
+    "why": "removals(1,13)",
+    "got": "WIN 1 13",
+    "exp": "WIN 15 15",
+    "rc": 0
+   },
+   {
+    "idx": 1,
+    "name": "wythoff#01-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 2,
+    "name": "wythoff#02-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(13,8)",
+    "got": "WIN 5 0",
+    "exp": "WIN 5 0",
+    "rc": 0
+   },
+   {
+    "idx": 3,
+    "name": "wythoff#03-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 4,
+    "name": "wythoff#04-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 1 0",
+    "exp": "WIN 1 0",
+    "rc": 0
+   },
+   {
+    "idx": 5,
+    "name": "wythoff#05-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 7",
+    "exp": "WIN 0 7",
+    "rc": 0
+   },
+   {
+    "idx": 6,
+    "name": "wythoff#06-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 6",
+    "exp": "WIN 0 6",
+    "rc": 0
+   },
+   {
+    "idx": 7,
+    "name": "wythoff#07-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(7,4)",
+    "got": "WIN 0 17",
+    "exp": "WIN 0 17",
+    "rc": 0
+   },
+   {
+    "idx": 8,
+    "name": "wythoff#08-hidden",
+    "class": "WIN_FOR_LOSE",
+    "match": false,
+    "why": "",
+    "got": "WIN 1 2",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 9,
+    "name": "wythoff#09-hidden",
+    "class": "WIN_FOR_LOSE",
+    "match": false,
+    "why": "",
+    "got": "WIN 1 4",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 10,
+    "name": "wythoff#10-hidden",
+    "class": "WIN_FOR_LOSE",
+    "match": false,
+    "why": "",
+    "got": "WIN 1 2",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 11,
+    "name": "wythoff#11-hidden",
+    "class": "WIN_FOR_LOSE",
+    "match": false,
+    "why": "",
+    "got": "WIN 1 7",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 12,
+    "name": "wythoff#12-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 1 1",
+    "exp": "WIN 1 1",
+    "rc": 0
+   },
+   {
+    "idx": 13,
+    "name": "wythoff#13-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 24",
+    "exp": "WIN 0 24",
+    "rc": 0
+   },
+   {
+    "idx": 14,
+    "name": "wythoff#14-hidden",
+    "class": "MOVE_ILLEGAL",
+    "match": false,
+    "why": "removals(2,11)",
+    "got": "WIN 2 11",
+    "exp": "WIN 25 25",
+    "rc": 0
+   }
+  ],
+  "w112|R560B0": [
+   {
+    "idx": 0,
+    "name": "wythoff#00-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 15 15",
+    "exp": "WIN 15 15",
+    "rc": 0
+   },
+   {
+    "idx": 1,
+    "name": "wythoff#01-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 2,
+    "name": "wythoff#02-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(13,8)",
+    "got": "WIN 5 0",
+    "exp": "WIN 5 0",
+    "rc": 0
+   },
+   {
+    "idx": 3,
+    "name": "wythoff#03-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(1,0)",
+    "got": "WIN 0 5",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 4,
+    "name": "wythoff#04-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 1 0",
+    "exp": "WIN 1 0",
+    "rc": 0
+   },
+   {
+    "idx": 5,
+    "name": "wythoff#05-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 7",
+    "exp": "WIN 0 7",
+    "rc": 0
+   },
+   {
+    "idx": 6,
+    "name": "wythoff#06-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 6",
+    "exp": "WIN 0 6",
+    "rc": 0
+   },
+   {
+    "idx": 7,
+    "name": "wythoff#07-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(7,4)",
+    "got": "WIN 0 17",
+    "exp": "WIN 0 17",
+    "rc": 0
+   },
+   {
+    "idx": 8,
+    "name": "wythoff#08-hidden",
+    "class": "WIN_FOR_LOSE",
+    "match": false,
+    "why": "",
+    "got": "WIN 0 2",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 9,
+    "name": "wythoff#09-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 10,
+    "name": "wythoff#10-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 11,
+    "name": "wythoff#11-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 12,
+    "name": "wythoff#12-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(1,0)",
+    "got": "WIN 0 1",
+    "exp": "WIN 1 1",
+    "rc": 0
+   },
+   {
+    "idx": 13,
+    "name": "wythoff#13-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(2,2)",
+    "got": "WIN 0 23",
+    "exp": "WIN 0 24",
+    "rc": 0
+   },
+   {
+    "idx": 14,
+    "name": "wythoff#14-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(2,2)",
+    "got": "WIN 23 23",
+    "exp": "WIN 25 25",
+    "rc": 0
+   }
+  ],
+  "w112|R560B3": [
+   {
+    "idx": 0,
+    "name": "wythoff#00-public",
+    "class": "OK",
+    "match": true,
+    "why": "target(10,6)",
+    "got": "WIN 15 15",
+    "exp": "WIN 15 15",
+    "rc": 0
+   },
+   {
+    "idx": 1,
+    "name": "wythoff#01-public",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(9,7)",
+    "got": "WIN 3 0",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 2,
+    "name": "wythoff#02-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(18,3)",
+    "got": "WIN 0 5",
+    "exp": "WIN 5 0",
+    "rc": 0
+   },
+   {
+    "idx": 3,
+    "name": "wythoff#03-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 3",
+    "exp": "WIN 0 3",
+    "rc": 0
+   },
+   {
+    "idx": 4,
+    "name": "wythoff#04-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 1 0",
+    "exp": "WIN 1 0",
+    "rc": 0
+   },
+   {
+    "idx": 5,
+    "name": "wythoff#05-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(18,11)",
+    "got": "WIN 0 7",
+    "exp": "WIN 0 7",
+    "rc": 0
+   },
+   {
+    "idx": 6,
+    "name": "wythoff#06-hidden",
+    "class": "MOVE_NOT_COLD",
+    "match": false,
+    "why": "target(17,12)",
+    "got": "WIN 6 0",
+    "exp": "WIN 0 6",
+    "rc": 0
+   },
+   {
+    "idx": 7,
+    "name": "wythoff#07-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(7,4)",
+    "got": "WIN 0 17",
+    "exp": "WIN 0 17",
+    "rc": 0
+   },
+   {
+    "idx": 8,
+    "name": "wythoff#08-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 9,
+    "name": "wythoff#09-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 10,
+    "name": "wythoff#10-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 11,
+    "name": "wythoff#11-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "",
+    "got": "LOSE",
+    "exp": "LOSE",
+    "rc": 0
+   },
+   {
+    "idx": 12,
+    "name": "wythoff#12-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 1 1",
+    "exp": "WIN 1 1",
+    "rc": 0
+   },
+   {
+    "idx": 13,
+    "name": "wythoff#13-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(2,1)",
+    "got": "WIN 0 24",
+    "exp": "WIN 0 24",
+    "rc": 0
+   },
+   {
+    "idx": 14,
+    "name": "wythoff#14-hidden",
+    "class": "OK",
+    "match": true,
+    "why": "target(0,0)",
+    "got": "WIN 25 25",
+    "exp": "WIN 25 25",
+    "rc": 0
+   }
+  ]
+ },
+ "reclassify": {
+  "n_class_changed": 4,
+  "note": "离线重判 (无被测执行); 判分主判据 = 逐字节"
+ }
+}

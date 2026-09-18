@@ -1,0 +1,234 @@
+{
+ "round": "R562",
+ "instrument": "collect_r562.py",
+ "E_fixture_vs_oracle": {
+  "fixture_agrees": true,
+  "cold_phi_eq_brute": true,
+  "judger_has_teeth": true,
+  "positive": "15/15",
+  "mutants": 59,
+  "mutants_wrongly_ok": 0
+ },
+ "A_judge_v2_rerun": {
+  "decision_field_diffs": {},
+  "identical": true,
+  "selftest_committed": 6,
+  "selftest_rerun": 6
+ },
+ "B_matrix_vs_report": {
+  "n": 27,
+  "n_ok": 27,
+  "bad": []
+ },
+ "C_causefinder_vs_iron11": {
+  "n": 27,
+  "n_ok": 27,
+  "bad": [],
+  "precond_rc": {
+   "r559": {
+    "rc": 1,
+    "blocked_n": 5
+   },
+   "r560": {
+    "rc": 1,
+    "blocked_n": 12
+   }
+  }
+ },
+ "D_gate_regression": {
+  "rc": 0,
+  "expectations_violated": [],
+  "runs": [
+   {
+    "tag": "pc",
+    "rc": 0,
+    "verdict": "PASS",
+    "mem_mb": 2694,
+    "gate_mb": 2650,
+    "shells_skipped_n": 0,
+    "legacy_self_only": false,
+    "blocker_causes": [],
+    "blocker_watch": [],
+    "own_tool_reaped": 0
+   },
+   {
+    "tag": "nc-block",
+    "rc": 2,
+    "verdict": "GATE_BLOCKED",
+    "mem_mb": 2712,
+    "gate_mb": 1000000,
+    "shells_skipped_n": 0,
+    "legacy_self_only": false,
+    "blocker_causes": [
+     "内存不足"
+    ],
+    "blocker_watch": [],
+    "own_tool_reaped": 0
+   },
+   {
+    "tag": "decoy-fixon",
+    "rc": 0,
+    "verdict": "PASS",
+    "mem_mb": 2823,
+    "gate_mb": 2650,
+    "shells_skipped_n": 1,
+    "legacy_self_only": false,
+    "blocker_causes": [],
+    "blocker_watch": [],
+    "own_tool_reaped": 1
+   },
+   {
+    "tag": "decoy-legacy",
+    "rc": 2,
+    "verdict": "GATE_BLOCKED",
+    "mem_mb": 2824,
+    "gate_mb": 2650,
+    "shells_skipped_n": 1,
+    "legacy_self_only": true,
+    "blocker_causes": [
+     "其他进程"
+    ],
+    "blocker_watch": [
+     "llama-server"
+    ],
+    "own_tool_reaped": 0
+   },
+   {
+    "tag": "decoy-both",
+    "rc": 2,
+    "verdict": "GATE_BLOCKED",
+    "mem_mb": 2823,
+    "gate_mb": 1000000,
+    "shells_skipped_n": 1,
+    "legacy_self_only": true,
+    "blocker_causes": [
+     "内存不足",
+     "其他进程"
+    ],
+    "blocker_watch": [
+     "llama-server"
+    ],
+    "own_tool_reaped": 0
+   }
+  ],
+  "decoy_premise": {
+   "pid": 547463,
+   "argv0": "bash",
+   "cmd_has_word": true,
+   "alive": true,
+   "reaped": true
+  }
+ },
+ "F_cause_distribution": {
+  "class_shares": {
+   "LOSE_FOR_WIN": 34,
+   "LOSE_LABEL_MISMATCH": 4,
+   "MOVE_NOT_LEXMIN": 1,
+   "MOVE_NOT_COLD": 67,
+   "WIN_FOR_LOSE": 19,
+   "MOVE_ILLEGAL": 6
+  },
+  "per_arm_wythoff_pass_of_15": {
+   "w104|C1": 15,
+   "w104|R559B0": 0,
+   "w104|R559B3": 13,
+   "w105|C1": 15,
+   "w105|R559B0": 2,
+   "w105|R559B3": 15,
+   "w106|C1": 15,
+   "w106|R559B0": 3,
+   "w106|R559B3": 13,
+   "w107|C1": 13,
+   "w107|R560B0": 13,
+   "w107|R560B3": 7,
+   "w108|C1": 4,
+   "w108|R560B0": 15,
+   "w108|R560B3": 4,
+   "w109|C1": 15,
+   "w109|R560B0": 2,
+   "w109|R560B3": 15,
+   "w110|C1": 15,
+   "w110|R560B0": 7,
+   "w110|R560B3": 0,
+   "w111|C1": 15,
+   "w111|R560B0": 12,
+   "w111|R560B3": 15,
+   "w112|C1": 9,
+   "w112|R560B0": 10,
+   "w112|R560B3": 12
+  },
+  "oscillating_cases": {
+   "C1": 15,
+   "R560B0": 13,
+   "R560B3": 15
+  }
+ },
+ "instrument_defects": [],
+ "iron11": {
+  "rounds": [
+   "r559",
+   "r560"
+  ],
+  "rc": 1,
+  "blocked_n": {
+   "r559": 5,
+   "r560": 12
+  },
+  "note": "本轮零新臂 ⇒ 该 rc 为 R559/R560 冻结件复跑读数 (同一前置器/同一快照), 非本轮新交付"
+ },
+ "rc": 1,
+ "verdict": "FAIL(被测/前提)",
+ "no_claim": {
+  "zero_new_arms": true,
+  "zero_product_change": true,
+  "zero_remote": true,
+  "desc": "本轮零新臂读数 ⇒ 无任何降幅/增益宣称; 质量读数沿用 R559/R560 冻结件"
+ },
+ "kpi_line": {
+  "replaced": 2,
+  "keys": [
+   "round",
+   "ts",
+   "kind",
+   "artifact",
+   "change",
+   "readings",
+   "honest_boundaries",
+   "owner_round",
+   "next"
+  ],
+  "superseded_stale_lines": [
+   {
+    "ts": "2026-09-18T21:50:25+08:00",
+    "round": "R562",
+    "kind": "harness-closure",
+    "tags": [
+     "r562",
+     "judge-v2-closure",
+     "gate-joint-regression",
+     "wythoff-cause"
+    ],
+    "change": "判据 v2 收口 + 起手闸/判据器/铁律11 三者同轮复跑 + wythoff 族只读定因",
+    "acceptance": "reference(未可验收)",
+    "rc": 2,
+    "iron11_rc": 1,
+    "readings": {
+     "A_judge_v2_identical": true,
+     "B_matrix_ok": "27/27",
+     "C_causefinder_ok": "10/27",
+     "D_gate_rc": 0,
+     "E_fixture_agrees": true,
+     "cause_shares": {
+      "LOSE_FOR_WIN": 34,
+      "LOSE_LABEL_MISMATCH": 4,
+      "MOVE_NOT_LEXMIN": 1,
+      "MOVE_NOT_COLD": 67,
+      "WIN_FOR_LOSE": 19,
+      "MOVE_ILLEGAL": 6
+     }
+    }
+   }
+  ],
+  "superseded_archive": "eval/rover/r562/superseded-kpi-line-r562.json"
+ }
+}

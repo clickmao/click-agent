@@ -221,3 +221,37 @@ R504 判分后被后续候选作业**静默覆盖** 9 个 adapter 文件（同�
 对照臂侧（外部真值）：`codex-cli 0.154.0` 持久路径 `~/.agentframework/tools/codex-env/node_modules/.bin/codex`；
 四臂脚本 `eval/rover/r531/run_r531.sh`（A0-off / A1-on / A2-merge / **C-codex**），侧驱动 `eval/rover/r511/proj_run_side.py --side codex`。
 **验收前置铁律（11）**：`python3 eval/rover/r507pre/exec_precondition.py --round <r>`；`r532` 实测 **rc=3（DISCOVER_FAIL: taskset/codex/agent 三侧皆 None）** ⇒ 该轮单侧读数一律「参考（未可验收）」。
+
+### 12. 质量判据 v2（正式口径 · R561 立 · R562 入册；**v1 声明作废**）
+
+**v1（作废）**：`臂中位 ≥ 真值中位 − 2 ∧ 极差 ≤ 5`。作废理由 = **结构性不可达，不是"未达标"**：外部真值（codex 同题同窗）自身在 w108 崩到 47/58、w112 52/58 ⇒ 真值极差 11 > 阈值 5 ⇒ 该门在真值身上必红。把判定缺陷读成能力读数即方向性错误。
+**作废登记（口径冲突显式作废，不改写历史轮志）**：仍带 v1 行的历史件 = `docs/reports/r557-replicate-distribution.md`（§判据 C2）、`docs/reports/r558-dose-exec-repair-budget.md`（§C2）、`docs/reports/r561-judge-v2-and-dose-axis-closure.md`（§1 引述）。这些行**只作历史读数**保留（当时的红是真红，但阈值本身不可达），**口径一律以本节为准**，不得再作判据引用。
+
+**v2（现行，逐窗并列）**
+1. **逐窗并列**：每窗 `(真值, 各臂)` 同列报 `cases/58`；禁用跨窗聚合替代逐窗。
+2. **真值可靠性**：`unreliable ⇔ truth_cases ≤ median(truth) − 3`；不可靠窗**不进配对**、单列。`MARGIN=3` 常数在判据头部，非事后调。
+3. **配对判据**（仅在可靠窗，n ≥ 3）：`无窗 ≤ −3 ∧ 配对中位 ≥ −2`。
+4. **VOID 臂窗单列**（`stage=contract` 或 `cases_pass=0`）：禁以 `−58` 混入配对（R561 自捕）。
+5. **判据键无条件计算**（缺项写 `None`/`informational`）；判决**只读** verdict JSON，禁 grep 文本锚。
+6. **影子自检** 6 夹具（必须判红 / 必须弃权 / 必须器具缺陷三态）⇒ 无牙即 `rc=2`。
+   `rc`：0 全过 / 1 红(被测或前提) / 2 器具缺陷 / 3 缺侧或不可判。
+
+**R562 复跑读数（本口径自身的一致性回归，零新臂）**：判决面 6 字段与已提交件逐字段相同；影子自检 6/6 绿；**27/27** 臂窗 `cases_pass` 与已落盘 `report.json` 逐窗相等；**27/27** 臂窗 wythoff 失败例集合与铁律 11 前置器逐条相同。
+复现：`python3 eval/rover/r561/verdict_r561.py --matrix eval/rover/r561/percase-matrix-r561.json --out <out>`；取证件 `eval/rover/r562/verdict-r562.json`。
+
+### 12.1 起手闸 / 共享机测量口径（联合回归 · R562）
+
+- **回归面（成对控制）**：mem 面（默认 vs `--nc-block`）｜shell 自匹配面（默认 vs `--nc-selfmatch`；前提 = 诱饵 shell `argv0=bash ∧ cmdline 含监视字串`，跑前经 `/proc/<pid>/cmdline` **核实前提成立**）｜多因并列（`--nc-both` 须 ≥2 条因，禁二选一）。
+- **R562 rc=0**：`PASS / GATE_BLOCKED / PASS / GATE_BLOCKED / GATE_BLOCKED`；诱饵在场时默认档 `shells_skipped_n=1`（假阳性被正确排除），修前开关档 blocker = `llama-server`；`--nc-both` 并列报 `[内存不足, 其他进程]`。器具：`eval/rover/r562/gate_regression_r562.py`（诱饵按 pid 杀，禁 `pkill -f`）。
+- **前提实现坑（本轮实测）**：`bash -c 'sleep 200' <字面量>` 形态**不成立** —— bash 会把自身 exec 替换成 `sleep`，`-c` 串与 `$0` 字面量随之消失 ⇒ 控制静默落空。诱饵必须用**不 exec 替换**的复合命令（如 `while true; do sleep 1; done`）。
+- **诚实边界**：本轮 PC `mem 2652` 对门槛 `2650`（余量 2 MB）⇒ **擦边 PASS 不算窗口**（窗口判据 = 阈值 + 观测振幅余量 + 连续 2 次 + 对侧无重进程）。
+
+### 12.2 wythoff 族只读定因（R562；零产品改动 / 零新夹具 / 零远端）
+
+- **面**：R559 + R560 共 **9 窗 × 3 臂 × 15 例 = 405 例次**，在**冻结快照副本**上重放冻结语料 `eval/rover/r560/cases/cases-r521.json`（判分对副本，不污染冻结树）。器具 `eval/rover/r562/wythoff_cause_r562.py`。
+- **夹具面（先判夹具再谈能力）**：独立 oracle（冷点集**暴力递推** ∧ phi 序交叉校验；按题面约束「单堆任意 / 双堆等量」+ 字典序最小）**复现全部 15 条期望值** ⇒ 夹具缺陷分支排除；判据器自检 15/15 正控 + 59 变异 0 误放行。
+- **失效份额**（405 例次中 131 例次未逐字节匹配）：`MOVE_NOT_COLD` **67** ｜ `LOSE_FOR_WIN` 34 ｜ `WIN_FOR_LOSE` 19 ｜ `MOVE_ILLEGAL` 6 ｜ `LOSE_LABEL_MISMATCH` 4 ｜ `MOVE_NOT_LEXMIN` 1。⇒ **主因是"胜负判对、落点非冷点"（51%）**，其次是冷集判定的双向错（41%）。
+- **逐窗读数（wythoff 通过数 /15，w104→w112）**：真值 `15/15/15/13/4/15/15/15/9`（w108=4 ⇒ 崩窗）｜R559B0 `0/2/3`｜R559B3 `13/15/13`｜R560B0 `13/15/2/7/12/10`｜R560B3 `7/4/15/0/15/12`。
+- **摆动是常态**：真值 `15/15` 例、R560B0 `13/15` 例、R560B3 `15/15` 例在窗间**既过又败**；同例**同输入不同输出**的例数分别为 15/13/15 ⇒ 「残余固定几例」推断被否证。
+- **诚实边界**：结论仅在 wythoff（15 例）成立，不得外推其它族；族内摆动 > 臂间效应 ⇒ 不得据单窗对该族下能力结论；`MOVE_ILLEGAL` 6 例**全在外部真值臂**（把「双堆不等量移除」当合法招法，而题面明禁）。
+

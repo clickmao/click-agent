@@ -1,0 +1,93 @@
+{
+ "round": "R562",
+ "instrument": "gate_regression_r562.py",
+ "gate": "/home/agentuser/AgentFramework/eval/rover/r483/preflight_gate.py",
+ "precondition_busy": [],
+ "runs": [
+  {
+   "tag": "pc",
+   "rc": 0,
+   "verdict": "PASS",
+   "mem_mb": 2694,
+   "gate_mb": 2650,
+   "shells_skipped_n": 0,
+   "legacy_self_only": false,
+   "blocker_causes": [],
+   "blocker_watch": [],
+   "own_tool_reaped": 0,
+   "out": "/home/agentuser/AgentFramework/eval/rover/r562/gate-pc.json"
+  },
+  {
+   "tag": "nc-block",
+   "rc": 2,
+   "verdict": "GATE_BLOCKED",
+   "mem_mb": 2712,
+   "gate_mb": 1000000,
+   "shells_skipped_n": 0,
+   "legacy_self_only": false,
+   "blocker_causes": [
+    "内存不足"
+   ],
+   "blocker_watch": [],
+   "own_tool_reaped": 0,
+   "out": "/home/agentuser/AgentFramework/eval/rover/r562/gate-nc-block.json"
+  },
+  {
+   "tag": "decoy-fixon",
+   "rc": 0,
+   "verdict": "PASS",
+   "mem_mb": 2823,
+   "gate_mb": 2650,
+   "shells_skipped_n": 1,
+   "legacy_self_only": false,
+   "blocker_causes": [],
+   "blocker_watch": [],
+   "own_tool_reaped": 1,
+   "out": "/home/agentuser/AgentFramework/eval/rover/r562/gate-decoy-fixon.json"
+  },
+  {
+   "tag": "decoy-legacy",
+   "rc": 2,
+   "verdict": "GATE_BLOCKED",
+   "mem_mb": 2824,
+   "gate_mb": 2650,
+   "shells_skipped_n": 1,
+   "legacy_self_only": true,
+   "blocker_causes": [
+    "其他进程"
+   ],
+   "blocker_watch": [
+    "llama-server"
+   ],
+   "own_tool_reaped": 0,
+   "out": "/home/agentuser/AgentFramework/eval/rover/r562/gate-decoy-legacy.json"
+  },
+  {
+   "tag": "decoy-both",
+   "rc": 2,
+   "verdict": "GATE_BLOCKED",
+   "mem_mb": 2823,
+   "gate_mb": 1000000,
+   "shells_skipped_n": 1,
+   "legacy_self_only": true,
+   "blocker_causes": [
+    "内存不足",
+    "其他进程"
+   ],
+   "blocker_watch": [
+    "llama-server"
+   ],
+   "own_tool_reaped": 0,
+   "out": "/home/agentuser/AgentFramework/eval/rover/r562/gate-decoy-both.json"
+  }
+ ],
+ "decoy": {
+  "pid": 547463,
+  "argv0": "bash",
+  "cmd_has_word": true,
+  "alive": true,
+  "reaped": true
+ },
+ "expectations_violated": [],
+ "rc": 0
+}

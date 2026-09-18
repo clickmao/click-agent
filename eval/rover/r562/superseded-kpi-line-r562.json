@@ -1,0 +1,36 @@
+{
+ "note": "R562 收官器首跑缺陷态台账行 (C=10/27 命名错位 ⇒ rc=2) 原样留档; 现行台账行见 kpi.jsonl 末行 (rc=1, instrument_defects=[]); 缺陷态不入统计、不撤不掩盖。",
+ "cause": "定因器按族内序编号 (0..14) vs 铁律11 前置器按题集全局序 (43..57) 的命名错位 ⇒ 收官器比对恒不成立 (器具缺陷, 非被测)",
+ "stale_lines": [
+  {
+   "ts": "2026-09-18T21:50:25+08:00",
+   "round": "R562",
+   "kind": "harness-closure",
+   "tags": [
+    "r562",
+    "judge-v2-closure",
+    "gate-joint-regression",
+    "wythoff-cause"
+   ],
+   "change": "判据 v2 收口 + 起手闸/判据器/铁律11 三者同轮复跑 + wythoff 族只读定因",
+   "acceptance": "reference(未可验收)",
+   "rc": 2,
+   "iron11_rc": 1,
+   "readings": {
+    "A_judge_v2_identical": true,
+    "B_matrix_ok": "27/27",
+    "C_causefinder_ok": "10/27",
+    "D_gate_rc": 0,
+    "E_fixture_agrees": true,
+    "cause_shares": {
+     "LOSE_FOR_WIN": 34,
+     "LOSE_LABEL_MISMATCH": 4,
+     "MOVE_NOT_LEXMIN": 1,
+     "MOVE_NOT_COLD": 67,
+     "WIN_FOR_LOSE": 19,
+     "MOVE_ILLEGAL": 6
+    }
+   }
+  }
+ ]
+}
