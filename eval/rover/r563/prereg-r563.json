@@ -1,0 +1,82 @@
+{
+ "round": "R563",
+ "written_before_run": true,
+ "author": "cron-agent (60min tick, 2026-09-18T23:0x)",
+ "claim": "**产品默认档 × 外部真值 (codex-cli 同模型) 同窗口对照** —— 判据 v2 **首次作为预注册验收判据**参与新判决 (R562 候选④), 并同轮行使起手闸**振幅余量条款** (R562 候选③, 反例=本轮实测擦边). 零产品源码改动 · 零新增夹具 · 零新增开关 (用户令 2026-09-18「开工, 不许新增夹具和额外开发了」)。",
+ "criterion_version": "v2 (逐窗并列 + 真值崩窗 unreliable[MARGIN=3] + 配对判据[无窗<=-3 且 配对中位>=-2, n>=3] + VOID 臂窗单列) —— 口径文本取自 docs/external-reference-harness.md §12 (R562 入册), 本文件只引用不重定义",
+ "single_variable": "无单变量 (非消融轮): 全臂共用同一枚二进制 sha 320d0eb1… (runner 第 0 步机检); 臂间唯一差异 = 臂身份本身 (C1 = 外部真值 codex; R563B0 = 产品默认档 AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR=0)。剂量轴按 R561「收口」不再复跑 (R561 已停用实验轴, 产品默认不改)。",
+ "arms": {
+  "C1": {
+   "side": "codex",
+   "desc": "外部真值 (另一套 agent 框架的 CLI, 同模型 deepseek-flash, 同题面同夹具同窗)",
+   "env": {}
+  },
+  "R563B0": {
+   "side": "agent",
+   "desc": "本侧产品默认档",
+   "env": {
+    "AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR": "0"
+   }
+  }
+ },
+ "scope_declaration": {
+  "windows": ["w113", "w114", "w115", "w116", "w117", "w118"],
+  "window_count": 6,
+  "task": "g1 (冻结题面, prompt sha256 与 R559/R560 逐字节相同)",
+  "task_prompt_sha256_expected": "516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3",
+  "binary_sha256_expected": "320d0eb17e709d15ce7d149ceff45fc1cacff814ac01b9fbda67f702726cee48",
+  "hidden_cases": 58,
+  "cross_round_deltas_forbidden": "与 R559(w104..w106)/R560(w107..w112) 的读数**并列不相减** (新窗, 非同一窗集的延续)"
+ },
+ "acceptance_rule": {
+  "primary": "判据 v2: 逐窗并列 cases/58; 真值不可靠窗 (truth <= median(truth)-3) 不进配对; 配对判据 = 无窗 <= -3 且 配对中位 >= -2 且 可靠窗数 >= 3; VOID 臂窗 (stage=contract 或 cases_pass=0) 单列不入配对",
+  "rc": "0 全过 / 1 判据未过 (被测或前提) / 2 器具缺陷 / 3 缺侧或不可判",
+  "expected_direction": "无增益预期 (零产品改动): 只把「产品默认档 vs 外部真值」在 v2 口径下**重新读数**; 预注册不得由本轮读数反推期望方向",
+  "cross_check": "铁律 11 前置器 python3 eval/rover/r507pre/exec_precondition.py --round r563 (两侧产出物独立物化 + 真跑 + 逐用例判对; rc!=0 ⇒ 全部读数标「参考(未可验收)」)"
+ },
+ "gate_clause": {
+  "candidate": "R562 候选③ (起手闸擦边 PASS 的振幅余量条款)",
+  "version": "v2 (本增补在**起臂前**落盘; v1 读数原样保留, 不作废、不翻案)",
+  "v1_reading_archived": {
+   "constant_mb": 200,
+   "derivation": "R562 跨区制振幅 197MB 取整",
+   "applied_at": "2026-09-18T23:01",
+   "ceiling_mb": 2610,
+   "required_mb": 2850,
+   "rc": 2,
+   "outcome": "条款拒 ⇒ 未起臂, 零臂运行",
+   "artifact": "/tmp/r563/logs/pre-samples.jsonl + eval/rover/r563/gate-margin-r563.json (首写)"
+  },
+  "v1_defect": "常量取自**另一区制**的振幅 ⇒ 在本宿主结构性不可达 (清残留后顶棚 2813 < 2850) —— 与 R561 v1 判据不可达同族; 属条款常量缺陷, 不归因被测/环境",
+  "v2_rule": "MARGIN = max(60MB, 上一轮**同一宿主运行中**实测振幅); REQ = GATE_MB(2650) + MARGIN; 且 起手前样本极差 <= 50MB 且 连续 2 次 且 blockers 空; 运行中 postcheck: min(mem) >= 2650, 否则该窗标 window_drift (读数不作验收依据)",
+  "v2_this_round": "首个采集轮 ⇒ MARGIN = 60 (下限) ⇒ REQ = 2710; 本轮运行中采样产出 swing ⇒ 下一轮 MARGIN 由实测派生 (数据先行, 不用未到期常量)",
+  "applied_via": "既有闸 --gate-mb (翻既有开关, 零新逻辑进闸)",
+  "paired_controls": "6 例 (2 正控 + 4 负控: 擦边 2652 / 抖动 / 低顶棚 / v1 常量不可达参数化) 逐例断言 rc; 缺负控不算落地",
+  "residue_finding": "本侧文件写入经 gateway 唤起共享语言服务器 (pyright, RSS 191MB) ⇒ 起手顶棚 2855→2670; 该进程**不在既有闸的 blocker 模式内** (沉默占用)。本轮按「闸红先查残留」按 pid 清本侧残留后复测 (非 pkill -f); 面在飞期间不再写 .py"
+ },
+ "evidence_scope": {
+  "require": [
+   "w113/C1", "w113/R563B0",
+   "w114/C1", "w114/R563B0",
+   "w115/C1", "w115/R563B0",
+   "w116/C1", "w116/R563B0",
+   "w117/C1", "w117/R563B0",
+   "w118/C1", "w118/R563B0"
+  ],
+  "artifacts": [
+   "eval/rover/r563/gate-margin-r563.json (条款派生 + 成对控制 + 运行中振幅)",
+   "eval/rover/r563/kpi-table-r563.json (三列 token 读数: 调用/新算 prompt/completion)",
+   "eval/rover/r563/matrix-r563.json (逐例矩阵, 判分对副本)",
+   "eval/rover/r563/verdict-r563.json (判据 v2 判决, 只读 verdict JSON)",
+   "/tmp/r563/gate-{1,2}.json (既有闸连续 2 次)",
+   "eval/rover/r563/snapshots/<win>/{C1,R563B0}/g1/** (冻结快照)"
+  ]
+ },
+ "preregistered_expectations": {
+  "quality": "无增益预期 (零产品改动 ⇒ 只作读数, 不作增益宣称)",
+  "cost": "调用数/新算 prompt/completion 三列分列 (禁名义总量); 命中率标口径 v_all/v_incr (中继 dump 时间轴)",
+  "gate": "条款必须在**本轮真实读数**上行使: 派生门槛 > 2650 (即擦边 PASS 被拒); 若顶棚不允许则必须登记 margin_low=true 并如实写「条款在当前宿主顶棚下不可满额落地」",
+  "unknown_risk": "上游空正文(锚定污染) 与 窗口漂移 是两个已知的异常源; 出现即按 KPI 线如实分类, 不改判据"
+ },
+ "notes": "本文件先写后跑 (runner 第 0 步机检: round/arms/require 计数/criterion_version)。判据 v2 的口径文本不在本文件重定义, 只引用 docs/external-reference-harness.md §12 —— 防「同一判据两份实现」漂移。"
+}

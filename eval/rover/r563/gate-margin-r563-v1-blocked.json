@@ -1,0 +1,51 @@
+{
+ "rc": 2,
+ "ceiling_mb": 2610.0,
+ "spread_mb": 7.0,
+ "margin_mb": 200,
+ "required_mb": 2850,
+ "margin_low": true,
+ "n_samples": 3,
+ "slack_mb": -240.0,
+ "why": "ceiling_below_required_margin",
+ "clause": "起手读数 >= GATE_MB(2650) + MARGIN(200, 由 R562 观测振幅 197MB 派生) 且 极差 <= 50 且 连续 2 次 且 blockers 空",
+ "round": "R563",
+ "instrument": "gate_margin_r563.py",
+ "samples": "/tmp/r563/logs/pre-samples.jsonl",
+ "mode": "derive",
+ "gate_mb": 2650,
+ "margin_cap_mb": 200,
+ "applied_via": "既有闸 --gate-mb (零新逻辑进闸)",
+ "selftest": {
+  "fixtures": [
+   {
+    "fixture": "PL_healthy_idle",
+    "expected_rc": 0,
+    "got_rc": 0,
+    "ok": true
+   },
+   {
+    "fixture": "NC_marginal_2652",
+    "expected_rc": 2,
+    "got_rc": 2,
+    "ok": true
+   },
+   {
+    "fixture": "NC_jitter",
+    "expected_rc": 2,
+    "got_rc": 2,
+    "ok": true
+   },
+   {
+    "fixture": "NC_low_ceiling",
+    "expected_rc": 2,
+    "got_rc": 2,
+    "ok": true
+   }
+  ],
+  "n": 4,
+  "n_ok": 4,
+  "has_teeth": true
+ },
+ "archived_as": "v1 条答案例读数 (条款 v1 MARGIN=200 恒定常量 ⇒ 未起臂); 原样保留, 不作废"
+}

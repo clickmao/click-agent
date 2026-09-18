@@ -239,12 +239,22 @@ R504 判分后被后续候选作业**静默覆盖** 9 个 adapter 文件（同�
 **R562 复跑读数（本口径自身的一致性回归，零新臂）**：判决面 6 字段与已提交件逐字段相同；影子自检 6/6 绿；**27/27** 臂窗 `cases_pass` 与已落盘 `report.json` 逐窗相等；**27/27** 臂窗 wythoff 失败例集合与铁律 11 前置器逐条相同。
 复现：`python3 eval/rover/r561/verdict_r561.py --matrix eval/rover/r561/percase-matrix-r561.json --out <out>`；取证件 `eval/rover/r562/verdict-r562.json`。
 
+**R563 首次作为预注册判据行使（新判决，非一致性回归）**：预注册件 `eval/rover/r563/prereg-r563.json` 只**引用**本节口径、不重定义；判决器 `eval/rover/r563/adjudicate_r563.py` 只把窗集/臂集喂给 R561 装置（**零逻辑复制**，`verdict_r561.py` 文件 sha 前后相同即证保形，且由 `adjudicate` 在输出里以 `device_file_sha_before/after` 记录）。读数：6 新窗 (w113..w118)、2 臂 (C1 真值 / R563B0 产品默认档)；真值 **6/6 窗全可靠**（median 58 / range 0 ⇒ 本轮 **unreliable 分支与 VOID 分支均未被行使**，是 v2 上线后首个「无崩窗」窗集）；产品默认档逐窗 `[50,58,43,58,58,55]`（median 56.5），配对中位 **−1.5**（过 ≥−2 门）但单窗 w115 **−15** ⇒ 命中 `PAIR_FLOOR` 点名 ⇒ `rc=1`（`fail_arms=[R563B0]`）。矩阵 xref **12/12** 与落盘 `report.json` 一致、器具缺陷 0 条、影子自检 **6/6**。
+
 ### 12.1 起手闸 / 共享机测量口径（联合回归 · R562）
 
 - **回归面（成对控制）**：mem 面（默认 vs `--nc-block`）｜shell 自匹配面（默认 vs `--nc-selfmatch`；前提 = 诱饵 shell `argv0=bash ∧ cmdline 含监视字串`，跑前经 `/proc/<pid>/cmdline` **核实前提成立**）｜多因并列（`--nc-both` 须 ≥2 条因，禁二选一）。
 - **R562 rc=0**：`PASS / GATE_BLOCKED / PASS / GATE_BLOCKED / GATE_BLOCKED`；诱饵在场时默认档 `shells_skipped_n=1`（假阳性被正确排除），修前开关档 blocker = `llama-server`；`--nc-both` 并列报 `[内存不足, 其他进程]`。器具：`eval/rover/r562/gate_regression_r562.py`（诱饵按 pid 杀，禁 `pkill -f`）。
 - **前提实现坑（本轮实测）**：`bash -c 'sleep 200' <字面量>` 形态**不成立** —— bash 会把自身 exec 替换成 `sleep`，`-c` 串与 `$0` 字面量随之消失 ⇒ 控制静默落空。诱饵必须用**不 exec 替换**的复合命令（如 `while true; do sleep 1; done`）。
 - **诚实边界**：本轮 PC `mem 2652` 对门槛 `2650`（余量 2 MB）⇒ **擦边 PASS 不算窗口**（窗口判据 = 阈值 + 观测振幅余量 + 连续 2 次 + 对侧无重进程）。
+
+#### 12.1.1 振幅余量条款落地（R563；候选③ 收口）
+
+- **条款（v2 现行）**：`MARGIN = max(60MB, 上一轮**同一宿主运行中**实测振幅)`，`REQ = GATE_MB(2650) + MARGIN`；且起手前样本 **极差 ≤ 50MB**、**连续 2 次 PASS**、**blockers 空**；运行中 `postcheck`：`min(mem) ≥ 2650`，否则该窗标 `window_drift`（读数不作验收依据）。**行使方式 = 既有闸的 `--gate-mb $REQ`**（翻既有开关，零新逻辑进闸）。
+- **v1 常量（200MB）**：取自 R562 **跨区制**振幅 197MB ⇒ 在本宿主 **结构性不可达**（清残留后顶棚 2808 < 2650+200=2850），首跑即 `rc=2` 拒起臂、**零臂运行**；该读数**原样留档**（`eval/rover/r563/gate-margin-r563-v1-blocked.json`）不作废、不翻案 —— 与 R561 v1 判据不可达**同族形态**：跨区制的数字当成了本区制的门槛。
+- **v2 首轮行使读数**：起手前 3 样本顶棚 2808 / 极差 3 ⇒ `REQ=2710`；闸 A1 `mem=2793` / A2 `mem=2798` 连续 2 次 PASS + `leak-selfcheck rc=0`；运行中 41 样本 `in_min=2734 / swing=64 / window_drift=false` ⇒ **下一轮 MARGIN = 64**（数据先行；不用未到期常量）。
+- **成对控制 6/6**（`gate_margin_r563.py --selftest`）：2 正控（下限档 / 自适应档）+ 4 负控（R562 擦边实测反例 2652 / 抖动 150 / 低顶棚 / **v1 常量不可达参数化复现**）。首版曾把余量「夹到下限」放行低顶棚 = **空心条款**，被负控 `NC_low_ceiling` 当场抓到 ⇒ 改 fail-closed（余量不缩水）。
+- **沉默占用（本轮新捕，仅登记未修）**：本侧 **.py/文件写入经 gateway 唤起共享语言服务器**（pyright，RSS **191MB**）⇒ 起手顶棚 2855→2670，而该进程**不在既有闸的 blocker 模式内** ⇒ 闸看到的是「内存莫名其妙少了 190MB」。处置顺序 = 先按 `/proc/<pid>` 核实归属，再按 pid 清本侧残留（**禁 `pkill -f`**），复测后才判「条款未过」。**面在飞期间不得写 .py**（改器具会再唤起它并吃掉余量）。
 
 ### 12.2 wythoff 族只读定因（R562；零产品改动 / 零新夹具 / 零远端）
 
