@@ -1,0 +1,38 @@
+{
+ "round": "R558",
+ "written_before_run": true,
+ "author": "cron-agent (30min tick, 2026-09-18T16:1x)",
+ "claim": "**执行面回灌修复预算的剂量面** (既有开关 AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR ∈ {0,1,2}, R1Options.cs:10 已声明合法域 0..3): **同一枚二进制** (R556 交付件 sha 320d0eb1…) 上只翻这一个 env ⇒ 单变量由构造保证; 同窗 4 臂 (codex 真值 + B0/B1/B2) 配对对照, 6 新窗 (w98..w103)。目的 = 回答 R557 遗留的唯一失败类别 (失分 100% 落 wythoff): 产物已由 pipeline 的 public probe 捕获 (R557 w96 实测 public_probe_failed=1/8, reason=public_examples_failed), exec 修复**被行使且已用尽** (exec_repairs=1 == MaxExecRepair=1) ⇒ 剂量 1→2 是否能把「自测未过仍交付」的产物拉回全对。本轮**零产品源码改动、零新增夹具、零新开关**; 若剂量在 2 处仍不被行使, 则按预注册判 B2 臂不可归因并据实收窄结论。",
+ "single_variable": "AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR ∈ {0,1,2} (三枚臂用同一二进制 sha 320d0eb1…, runner 第 0 步机检钉死; 其余 env 逐条相同: R1_CONTRACT=1 / R1_PUBLIC_SELFCHECK=1 / R1_MAX_REPAIR=1 / R1_MAX_PROBE_REPAIR 未设=停用)。",
+ "scope_declaration": {
+  "why_not_new_axis": "用户令 (2026-09-18): 「不许新增夹具和额外开发」⇒ 本轮不动产品源码, 只在既有开关上做剂量面。R553 判废的是 **探针轴** (AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR, R551-R553 三轮无单调增益, 且 R552 实测 1 vs 2 从未被行使); 本轮是**另一枚开关** (MAX_EXEC_REPAIR, 触发路径 = 执行实测与 expect_stdout 不符), 且 R557 已实测该路径**被行使且已用尽** ⇒ 剂量不存在「未被行使」的既证前提, 属可判轴。",
+  "probe_distribution": "候选① 「公开用例自验被行使」的分布本轮以**离线只读**方式量化 (eval/rover/r558/dist_probe_r558.py, 扫 /tmp/r555,r556,r557 的 transcript + cases.txt, 零远端调用): 统计 public_probe_ran/failed、exec_repairs、rc/stage、cases_pass 的联合分布 ⇒ 在起臂**之前**先看剂量是否被行使 (禁预言式修)。",
+  "root_cause_carryover": "R557 定因 (离线复判, 与夹具非同源): 失分窗解里 `_is_lose` 取 `k=int(phi*小堆)` 判必败点 (正解 = 两堆之差 k=y-x) ⇒ 必败点漏判; 夹具经 oracle 双验无缺陷, 错例含题面公开用例 ⇒ 缺口在「自测未过仍交付」。"
+ },
+ "acceptance_rule": {
+  "C1_cost": "B1 新算 prompt 逐窗 ≤ 30% × codex 同窗值, 且调用数逐窗 ≤ codex 同窗值; B2 同尺单列 (剂量代价)。",
+  "C2_quality": "各臂 6 新窗 cases_pass 与**同窗 codex 真值**比: 中位 ≥ 真值中位 − 2 且极差 ≤ 5 (R557 候选②的重钉判据)。",
+  "C3_dose": "B2 臂 transcript.exec_repairs 至少 1 窗取到 2 ⇒ 剂量 2 被行使; 若零窗行使 ⇒ B2 不可归因, 只作区间描述。",
+  "C4_exec": "python3 eval/rover/r507pre/exec_precondition.py --round r558 ⇒ rc (0 可验收 / 1 未可验收逐条点名 / 3 输入缺失); rc≠0 ⇒ 全部成本降幅标「参考 (未可验收)」。",
+  "C5_ledger": "调用账: 逐臂 transcript.calls vs adapter dump 区段计数, 差额如实登记 (R556/R557 已实测存在差额)。",
+  "verdict": "C1∧C2∧(rc==0) ⇒ 达标; 否则逐项点名。"
+ },
+ "preregistered_expectations": {
+  "dose_exercise": "预期 B0 零修复 (exec_repairs=0); B1 与 R557 同参 ⇒ 预期与 R557A1 同分布 (6 窗内 1..2 窗触发行使); B2 预期行使 1..2 窗。若 B2 全 6 窗 exec_repairs≤1 ⇒ 剂量 2 不可判。",
+  "quality": "R557 新 4 窗 A1 = 53/58/56/45 (中位 54.5, 极差 13) vs codex 58/58/56/58 (中位 58, 极差 2); 预注册预期: ① B1 中位 ≥ 53 ② 若 B2 剂量被行使 ⇒ B2 中位 ≥ B1 中位 ③ **诚实先验**: 修复轮用的是同一模型同一错法 (R551 已实测「探针看见失败且预算已花, 产物仍崩溃交付」), 故 B2 与 B1 无差 是**允许的结局**, 届时结论收窄为「执行面修复预算不是质量杠杆」并转生成面。",
+  "cost": "预期 B0 调用数最少 (无修复轮), B2 最多; 三臂均远低于 codex (R557 实测 A1 6 调用 vs codex 90)。",
+  "honesty": "6 窗若某臂出现 rc=4 (契约面退化) 的 VOID 窗 ⇒ 按 R553 重钉规则「仅无产物判 VOID」处理, 该窗不计入有效窗但**如实列入逐窗表**; 禁跨轮相减 (本轮 vs R557 一律标「异轮对照」)。"
+ },
+ "evidence_scope": {
+  "require": ["w98/C1", "w98/R558B0", "w98/R558B1", "w98/R558B2", "w99/C1", "w99/R558B0", "w99/R558B1", "w99/R558B2", "w100/C1", "w100/R558B0", "w100/R558B1", "w100/R558B2", "w101/C1", "w101/R558B0", "w101/R558B1", "w101/R558B2", "w102/C1", "w102/R558B0", "w102/R558B1", "w102/R558B2", "w103/C1", "w103/R558B0", "w103/R558B1", "w103/R558B2"],
+  "nonrequired": [],
+  "declared": "对照面 = 6 新窗 × 4 臂 全部进验收面 (不挑选/不删窗); 每窗内四臂同题面 (prompt sha 516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3, 逐字节复用 R556/R557 题集)/同夹具 (cases-r521.json, 58 隐藏用例)/同 adapter 会话。本声明落盘早于任何起臂 (runner 第 0 步机检)。"
+ },
+ "arms": {
+  "C1": {"label": "外部真值 codex-cli (同真实模型 deepseek-flash)", "side": "codex", "windows": ["w98", "w99", "w100", "w101", "w102", "w103"], "what": "经 eval/rover/r540/proj_run_side_r540.py --side codex --arm C1 打同一 adapter; 工作区空目录起步。", "truth": "外部真值 = 该 CLI 的真实产出物 (games/ 包), 不由本项目任何组件生成。"},
+  "R558B0": {"label": "本侧 R1 臂 · 执行面修复预算 0 (负控)", "side": "agent", "windows": ["w98", "w99", "w100", "w101", "w102", "w103"], "bin": "/tmp/pub_r556/agenthost/agenthost", "bin_sha256": "320d0eb17e709d15ce7d149ceff45fc1cacff814ac01b9fbda67f702726cee48", "expect_prefix_chars": 15291, "env": {"AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR": "0"}},
+  "R558B1": {"label": "本侧 R1 臂 · 执行面修复预算 1 (=R557 同参, 现状基线)", "side": "agent", "windows": ["w98", "w99", "w100", "w101", "w102", "w103"], "bin": "/tmp/pub_r556/agenthost/agenthost", "bin_sha256": "320d0eb17e709d15ce7d149ceff45fc1cacff814ac01b9fbda67f702726cee48", "expect_prefix_chars": 15291, "env": {"AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR": "1"}},
+  "R558B2": {"label": "本侧 R1 臂 · 执行面修复预算 2 (治疗)", "side": "agent", "windows": ["w98", "w99", "w100", "w101", "w102", "w103"], "bin": "/tmp/pub_r556/agenthost/agenthost", "bin_sha256": "320d0eb17e709d15ce7d149ceff45fc1cacff814ac01b9fbda67f702726cee48", "expect_prefix_chars": 15291, "env": {"AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR": "2"}}
+ },
+ "notes": "四臂同一二进制 ⇒ 无 AOT 重发布 (产品源码零改动)。所有读数落 eval/rover/r558/{evidence,readings-r558.jsonl}; KPI 行追加 eval/capability/kpi.jsonl。推送暂停令在效 (只允许本地 commit, 禁 push)。"
+}
