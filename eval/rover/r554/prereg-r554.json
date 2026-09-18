@@ -1,0 +1,44 @@
+{
+ "round": "R554",
+ "written_before_run": true,
+ "author": "cron-agent (30min tick, 2026-09-18T14:0x)",
+ "claim": "主线补齐 (R553 §9 候选③): 外部真值 codex-cli 与本侧 R1 臂在**同一 adapter 会话 / 同一窗**内对照 ⇒ 真值同窗性成立; 两侧计量取自**同一** adapter dump 时间轴, 按臂索引区段归属 (禁跨轮相减)。",
+ "single_variable": "无源码改动、无重发布 (AOT 件复用 R552 sha e2fdab87…)。唯一变量 = 外部真值臂与本侧臂**同窗** (R547/R553 的 codex 行为异窗取样, 本轮改为同窗)。",
+ "arms": {
+  "C1": {
+   "side": "codex",
+   "windows": ["w1", "w2", "w3"],
+   "what": "codex-cli 0.154.0 经 eval/rover/r540/proj_run_side_r540.py --side codex --arm C1 打**同一 adapter** (同真实模型 deepseek-flash); 工作区 = $D/w<i>/codex/g1/work (首次调用前为空)。",
+   "truth": "外部真值 = 该 CLI 的真实产出物 (games/ 包), 不由本项目任何组件生成。"
+  },
+  "R554": {
+   "side": "agent",
+   "windows": ["w1", "w2", "w3"],
+   "what": "本侧 AOT /tmp/pub_r551/agenthost (sha e2fdab87…), AGENTFRAMEWORK_R1_CONTRACT=1 + PUBLIC_SELFCHECK=1 + MAX_EXEC_REPAIR=1 + MAX_REPAIR=1; 工作区 = $D/w<i>/agent/g1/work。",
+   "switch_state": "探针证据回灌剂量轴 AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR 未设 (=关) —— 依候选②停用该轴; 起手闸 C 未使用 —— 依候选①(a) 判废。"
+  }
+ },
+ "acceptance_rule": {
+  "C1_cost": "R1 臂 逐窗调用数 ≤ codex 同窗调用数 且 新算 prompt 逐窗 ≤ 30% × codex 同窗值 (3/3 窗)。",
+  "C2_quality": "R1 臂 cases_pass **中位 ≥** codex 同窗中位, 且逐窗差值中位 ≥ -2 (C2 判据**不以 58/58 全绿为硬门**: 外部真值自身在 R547 也出现 56/58 ⇒ 全绿硬门对该分布为假归因)。",
+  "C3_exec": "python3 eval/rover/r507pre/exec_precondition.py --round r554 ⇒ rc (0=可验收/1=未可验收逐条点名/3=输入缺失); rc≠0 ⇒ 成本读数标『参考(未可验收)』。",
+  "verdict": "全部 C1∧C2∧(rc==0) ⇒ 本轮达标; 任一项不过 ⇒ 逐项点名, 禁合并陈述。"
+ },
+ "evidence_scope": {
+  "require": ["w1/agentR554", "w1/codex", "w2/agentR554", "w2/codex", "w3/agentR554", "w3/codex"],
+  "nonrequired": [],
+  "declared": "完整对照面 = 3 窗 × 2 臂 全部进验收面 (不挑选、不删窗); 本声明落盘早于任何起臂 (runner 第 0 步机检)."
+ },
+ "preregistered_expectations": {
+  "calls": "codex 9..85 调用/窗 (R547 观测); R1 3..7 调用/窗 ⇒ 调用降幅与 prompt 降幅应远超 30%。",
+  "quality": "R547 异窗读数 R1 47,47,58 vs codex 56,58,58 ⇒ 预注册预期: C2 **大概率不过** (2/3 窗低 9 分); 本轮目的即把该差值钉在**同窗**口径上。",
+  "risk": "codex 单窗成本高 (R547 w3 = 85 调用 / 1.8M prompt); 若单窗超时 ⇒ 该窗照原样落盘标 VOID, 不重掷、不换窗号。"
+ },
+ "same_input_gate": "prompt sha256 516f3208… 两侧同件 (硬门: 不符即 fail-closed 不起臂); 隐藏用例脚本 cases/run_cases_r521.py (sha a67215a7…) + cases-r521.json (sha 270128eb…) 两侧逐字节同; 判分 = 同一脚本对两侧产物树独立物化后 python3 -I -B 实跑。",
+ "prior_round_note": "R549 起源未定 / R552 起手闸C 真阳0假阴7 / R553 rc=1(5/7窗未全绿)。本轮不引用亦不改动 R547/R553 任何落盘读数; 并列展示, 禁相减。",
+ "retired_instruments": [
+  "起手闸 C (入口契约面单点预检): R553 §4 混淆矩阵 真阳0/假阴7/真阴2/假阳0 ⇒ 零判别力, 本轮不使用 (候选①)。",
+  "AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR 剂量轴 0..3: R552+R553 三轮无单调增益 ⇒ 停用 (候选②)。"
+ ],
+ "open_item": "A1 起手闸『自身工具子进程』自排除 (R553 §5 假阳性): 属**记账语义**改动 (把自身工具 RSS 从可用内存里剔除会掩盖真实不足) ⇒ 本轮不实现, 仅登记; 本轮以「闸未过 ⇒ 沉降后同参重试」处置并留痕。"
+}

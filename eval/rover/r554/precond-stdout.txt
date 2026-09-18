@@ -1,0 +1,19 @@
+DISCOVER layout=project taskset=eval/rover/r554/taskset-r554.json windows=3 snapshot_root=eval/rover/r554/snapshots
+w1      arms=2 correct=1
+   agentR554/g1     side=agent  cases=43/58  rc=1    correct=False claimed=False wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#46-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#51-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#55-hidden,wythoff#56-hidden,wythoff#57-hidden
+   codex/g1         side=codex  cases=58/58  rc=0    correct=True  claimed=True  
+w2      arms=2 correct=0
+   agentR554/g1     side=agent  cases=43/58  rc=1    correct=False claimed=False wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#46-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#51-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#55-hidden,wythoff#56-hidden,wythoff#57-hidden
+   codex/g1         side=codex  cases=56/58  rc=1    correct=False claimed=False wythoff#43-public,wythoff#57-hidden
+w3      arms=2 correct=1
+   agentR554/g1     side=agent  cases=58/58  rc=0    correct=True  claimed=True  
+   codex/g1         side=codex  cases=56/58  rc=1    correct=False claimed=False wythoff#43-public,wythoff#57-hidden
+DECLARED_ABSENT=-
+POLICY_ACTIVE=False reason=no_policy_key ts=None checks={}
+SELF_REPORT_AGREES=True
+EXECUTABLE_AND_CORRECT=False (全局, 任一臂-题不许错)
+SCOPE_SOURCE=eval/rover/r554/prereg-r554.json PREREG=True
+ACCEPTABLE_SCOPED=False
+BLOCKED: w1/agentR554/g1 rc=1 cases=43/58(expect 58) failed=wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#46-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#51-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#55-hidden,wythoff#56-hidden,wythoff#57-hidden | w2/agentR554/g1 rc=1 cases=43/58(expect 58) failed=wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#46-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#51-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#55-hidden,wythoff#56-hidden,wythoff#57-hidden | w2/codex/g1 rc=1 cases=56/58(expect 58) failed=wythoff#43-public,wythoff#57-hidden | w3/codex/g1 rc=1 cases=56/58(expect 58) failed=wythoff#43-public,wythoff#57-hidden
+OUT=/tmp/r554/precond-r554.json
+VERDICT_BLOCKED ⇒ rc=1 (验收面 [require ∪ 未声明] 存在未执行/不正确臂 ⇒ 不得 rc=0 假绿)
