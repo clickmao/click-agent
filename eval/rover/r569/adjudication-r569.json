@@ -1,0 +1,745 @@
+{
+ "round": "R569",
+ "instrument": "adjudicate_r569.py (复用 verdict_r561.py judge/decide/selftest; 零逻辑复制)",
+ "criterion_version": "v2 (逐窗并列 + 真值崩窗 unreliable[MARGIN=3] + 配对判据[n>=3, 无窗<=-3, 中位>=-2] + VOID 单列)",
+ "criterion_source": "docs/external-reference-harness.md §12",
+ "manipulation": {
+  "windows": [
+   "w137",
+   "w138",
+   "w139",
+   "w140",
+   "w141",
+   "w142"
+  ],
+  "arms": [
+   "C1",
+   "R569B0",
+   "R569B3"
+  ],
+  "device_runtime_extension": "V.REPORTS['R569'] (内存内; VOID 臂窗归属)",
+  "device_file_sha_before": "06e30c8ffcd718db",
+  "device_file_sha_after": "06e30c8ffcd718db",
+  "device_unchanged": true
+ },
+ "rc": 1,
+ "verdict": "FAIL(被测/前提)",
+ "blocked": [
+  "quality_paired_shortfall:R569B0,R569B3"
+ ],
+ "rowcount_bad": [],
+ "missing_truth_windows": [],
+ "truth_cases": {
+  "w137": 58,
+  "w138": 58,
+  "w139": 58,
+  "w140": 58,
+  "w141": 58,
+  "w142": 58
+ },
+ "truth_median": 58.0,
+ "truth_range": 0,
+ "truth_status": {
+  "w137": "reliable",
+  "w138": "reliable",
+  "w139": "reliable",
+  "w140": "reliable",
+  "w141": "reliable",
+  "w142": "reliable"
+ },
+ "unreliable_windows": [],
+ "reliable_windows": [
+  "w137",
+  "w138",
+  "w139",
+  "w140",
+  "w141",
+  "w142"
+ ],
+ "arms": {
+  "C1": {
+   "reliable_windows": 6,
+   "deltas": {
+    "w137": 0,
+    "w138": 0,
+    "w139": 0,
+    "w140": 0,
+    "w141": 0,
+    "w142": 0
+   },
+   "delta_median": 0.0,
+   "delta_min": 0,
+   "named_windows": [],
+   "arm_median_cases": 58.0,
+   "arm_range_cases": 0,
+   "pass": true,
+   "fail_reason": null
+  },
+  "R569B0": {
+   "reliable_windows": 6,
+   "deltas": {
+    "w137": -6,
+    "w138": 0,
+    "w139": -6,
+    "w140": -15,
+    "w141": 0,
+    "w142": -5
+   },
+   "delta_median": -5.5,
+   "delta_min": -15,
+   "named_windows": [
+    "w137",
+    "w139",
+    "w140",
+    "w142"
+   ],
+   "arm_median_cases": 52.5,
+   "arm_range_cases": 15,
+   "pass": false,
+   "fail_reason": {
+    "insufficient_windows": false,
+    "named_windows": [
+     "w137",
+     "w139",
+     "w140",
+     "w142"
+    ],
+    "median_below": true
+   }
+  },
+  "R569B3": {
+   "reliable_windows": 6,
+   "deltas": {
+    "w137": -5,
+    "w138": -12,
+    "w139": -14,
+    "w140": -15,
+    "w141": -3,
+    "w142": 0
+   },
+   "delta_median": -8.5,
+   "delta_min": -15,
+   "named_windows": [
+    "w137",
+    "w138",
+    "w139",
+    "w140",
+    "w141"
+   ],
+   "arm_median_cases": 49.5,
+   "arm_range_cases": 15,
+   "pass": false,
+   "fail_reason": {
+    "insufficient_windows": false,
+    "named_windows": [
+     "w137",
+     "w138",
+     "w139",
+     "w140",
+     "w141"
+    ],
+    "median_below": true
+   }
+  }
+ },
+ "fail_arms": [
+  "R569B0",
+  "R569B3"
+ ],
+ "void_arm_windows": {
+  "R559|w104|R559B0": "arm_void(rc=8 stage=public_probe_unmet cases=0)"
+ },
+ "selftest": {
+  "fixtures": [
+   {
+    "fixture": "S1_all_green",
+    "expected_rc": 0,
+    "got_rc": 0,
+    "ok": true,
+    "expected_fail_arm": null,
+    "fail_arms": [],
+    "unreliable_windows": []
+   },
+   {
+    "fixture": "S2_arm_shortfall",
+    "expected_rc": 1,
+    "got_rc": 1,
+    "ok": true,
+    "expected_fail_arm": "A0",
+    "fail_arms": [
+     "A0"
+    ],
+    "unreliable_windows": []
+   },
+   {
+    "fixture": "S3_truth_collapse_excluded",
+    "expected_rc": 0,
+    "got_rc": 0,
+    "ok": true,
+    "expected_fail_arm": null,
+    "fail_arms": [],
+    "unreliable_windows": [
+     "s3",
+     "s4"
+    ]
+   },
+   {
+    "fixture": "S4_truth_arm_absent",
+    "expected_rc": 3,
+    "got_rc": 3,
+    "ok": true,
+    "expected_fail_arm": null,
+    "fail_arms": [
+     "A0"
+    ],
+    "unreliable_windows": []
+   },
+   {
+    "fixture": "S5_truncated_rows",
+    "expected_rc": 2,
+    "got_rc": 2,
+    "ok": true,
+    "expected_fail_arm": null,
+    "fail_arms": [],
+    "unreliable_windows": []
+   },
+   {
+    "fixture": "S6_insufficient_reliable",
+    "expected_rc": 3,
+    "got_rc": 3,
+    "ok": true,
+    "expected_fail_arm": null,
+    "fail_arms": [
+     "A0"
+    ],
+    "unreliable_windows": []
+   }
+  ],
+  "n": 6,
+  "n_ok": 6,
+  "has_teeth": true
+ },
+ "family_distribution": {
+  "C1": {
+   "life": {
+    "w137": [
+     14,
+     14
+    ],
+    "w138": [
+     14,
+     14
+    ],
+    "w139": [
+     14,
+     14
+    ],
+    "w140": [
+     14,
+     14
+    ],
+    "w141": [
+     14,
+     14
+    ],
+    "w142": [
+     14,
+     14
+    ]
+   },
+   "sub": {
+    "w137": [
+     14,
+     14
+    ],
+    "w138": [
+     14,
+     14
+    ],
+    "w139": [
+     14,
+     14
+    ],
+    "w140": [
+     14,
+     14
+    ],
+    "w141": [
+     14,
+     14
+    ],
+    "w142": [
+     14,
+     14
+    ]
+   },
+   "nim": {
+    "w137": [
+     15,
+     15
+    ],
+    "w138": [
+     15,
+     15
+    ],
+    "w139": [
+     15,
+     15
+    ],
+    "w140": [
+     15,
+     15
+    ],
+    "w141": [
+     15,
+     15
+    ],
+    "w142": [
+     15,
+     15
+    ]
+   },
+   "wythoff": {
+    "w137": [
+     15,
+     15
+    ],
+    "w138": [
+     15,
+     15
+    ],
+    "w139": [
+     15,
+     15
+    ],
+    "w140": [
+     15,
+     15
+    ],
+    "w141": [
+     15,
+     15
+    ],
+    "w142": [
+     15,
+     15
+    ]
+   }
+  },
+  "R569B0": {
+   "life": {
+    "w137": [
+     14,
+     14
+    ],
+    "w138": [
+     14,
+     14
+    ],
+    "w139": [
+     14,
+     14
+    ],
+    "w140": [
+     14,
+     14
+    ],
+    "w141": [
+     14,
+     14
+    ],
+    "w142": [
+     14,
+     14
+    ]
+   },
+   "sub": {
+    "w137": [
+     14,
+     14
+    ],
+    "w138": [
+     14,
+     14
+    ],
+    "w139": [
+     14,
+     14
+    ],
+    "w140": [
+     14,
+     14
+    ],
+    "w141": [
+     14,
+     14
+    ],
+    "w142": [
+     9,
+     14
+    ]
+   },
+   "nim": {
+    "w137": [
+     15,
+     15
+    ],
+    "w138": [
+     15,
+     15
+    ],
+    "w139": [
+     15,
+     15
+    ],
+    "w140": [
+     15,
+     15
+    ],
+    "w141": [
+     15,
+     15
+    ],
+    "w142": [
+     15,
+     15
+    ]
+   },
+   "wythoff": {
+    "w137": [
+     9,
+     15
+    ],
+    "w138": [
+     15,
+     15
+    ],
+    "w139": [
+     9,
+     15
+    ],
+    "w140": [
+     0,
+     15
+    ],
+    "w141": [
+     15,
+     15
+    ],
+    "w142": [
+     15,
+     15
+    ]
+   }
+  },
+  "R569B3": {
+   "life": {
+    "w137": [
+     14,
+     14
+    ],
+    "w138": [
+     14,
+     14
+    ],
+    "w139": [
+     14,
+     14
+    ],
+    "w140": [
+     14,
+     14
+    ],
+    "w141": [
+     14,
+     14
+    ],
+    "w142": [
+     14,
+     14
+    ]
+   },
+   "sub": {
+    "w137": [
+     14,
+     14
+    ],
+    "w138": [
+     14,
+     14
+    ],
+    "w139": [
+     14,
+     14
+    ],
+    "w140": [
+     14,
+     14
+    ],
+    "w141": [
+     14,
+     14
+    ],
+    "w142": [
+     14,
+     14
+    ]
+   },
+   "nim": {
+    "w137": [
+     15,
+     15
+    ],
+    "w138": [
+     15,
+     15
+    ],
+    "w139": [
+     15,
+     15
+    ],
+    "w140": [
+     15,
+     15
+    ],
+    "w141": [
+     15,
+     15
+    ],
+    "w142": [
+     15,
+     15
+    ]
+   },
+   "wythoff": {
+    "w137": [
+     10,
+     15
+    ],
+    "w138": [
+     3,
+     15
+    ],
+    "w139": [
+     1,
+     15
+    ],
+    "w140": [
+     0,
+     15
+    ],
+    "w141": [
+     12,
+     15
+    ],
+    "w142": [
+     15,
+     15
+    ]
+   }
+  }
+ },
+ "per_case_stability": {
+  "C1": {
+   "always_pass": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57
+   ],
+   "always_fail": [],
+   "wobble": [],
+   "n_windows": 6
+  },
+  "R569B0": {
+   "always_pass": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    23,
+    25,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42
+   ],
+   "always_fail": [],
+   "wobble": [
+    14,
+    15,
+    22,
+    24,
+    26,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57
+   ],
+   "n_windows": 6
+  },
+  "R569B3": {
+   "always_pass": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42
+   ],
+   "always_fail": [],
+   "wobble": [
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57
+   ],
+   "n_windows": 6
+  }
+ },
+ "informational": {
+  "criterion_keys_unconditional": true,
+  "note": "红绿只由 arms[*].pass 决定; 中位/极差为信息项"
+ }
+}

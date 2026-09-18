@@ -1,0 +1,118 @@
+{
+ "round": "R569",
+ "written_before_run": true,
+ "author": "cron-agent (60min tick, 2026-09-19)",
+ "claim": "**同窗零开发对照轮 (第三窗集)**: 既有开关 `AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR` 的值 **0 vs 3** (同一枚二进制, 同题面/夹具/role/判分器逐字节复用) × 外部真值 codex, 6 新窗 w137..w142。承重问题 = R568 补记面给出的「剔拒收窗后 0v3 同窗配对 +4.31pp (p=0.0013)」在**新窗集**上是否复现, 并行使 R568 为其写下的两条新规则 (逐窗回退点名 / 拒收窗排除)。零产品源码改动 / 零新增夹具 / 零新增开关。",
+ "one_time_context": "用户令 2026-09-19「继续下一轮」⇒ 按 R568 登记的零开发路径执行 (候选③④⑤ 并轮); 不重开 exp1 backlog 器具线; 两项须动契约/产品分支的候选 (①②) 未放行。",
+ "candidates_ledger": {
+  "R569-① 契约加厚 v3 / 产物落点自验": "未做 —— 须动契约或产品分支 ⇒ **待放行** (用户令 2026-09-18 禁新增夹具与额外开发)",
+  "R569-② 交付闸/停止条件 (rc=5/rc=8 仍交付)": "未做 —— 须新增产品分支 ⇒ **待放行**; 本轮候选④ 只做**只读定因**",
+  "R569-③ 剂量轴新窗集单变量 0 vs 3 (承重)": "做 —— 6 新窗 w137..w142, 3 臂同窗; 预注册含「逐窗回退窗点名」+「拒收窗排除规则」",
+  "R569-④ 拒收窗 (R568 记『臂级崩溃窗』) 定因": "做 —— 零开发只读取既有日志/快照 (已完成, 见 readings)",
+  "R569-⑤ MARGIN 上界规则落地 + 条款行使": "做 —— 器具改版 (上界 + capped 可见) ⇒ 保形重钉 + 成对控制重跑"
+ },
+ "single_variable": "**仅一个 env 开关的值**: `AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR` ∈ {0 (R569B0), 3 (R569B3)}; 全臂共用同一枚 AOT 二进制 (sha 320d0eb17e709d15, runner 第 0 步机检), 题面/夹具/role/窗口逐字节同",
+ "arms": {
+  "C1": {
+   "side": "codex",
+   "desc": "外部真值 (另一套 agent 框架 CLI, 同模型, 同题面同夹具同窗)",
+   "env": {}
+  },
+  "R569B0": {
+   "side": "agent",
+   "desc": "执行回灌修复轴 = 0 (关)",
+   "env": {
+    "AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR": "0"
+   }
+  },
+  "R569B3": {
+   "side": "agent",
+   "desc": "执行回灌修复轴 = 3 (剂量档)",
+   "env": {
+    "AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR": "3"
+   }
+  }
+ },
+ "arm_env_definition_note": "两臂剂量键**都显式落盘**且只有这一个键取值不同 ⇒ 单变量由构造保证; runner 第 0 步机检。其余 env 全臂相同 (R1_CONTRACT / R1_MAX_REPAIR=1 / PUBLIC_SELFCHECK / ROLE_FILE / TRANSCRIPT / WORKSPACE / TAG)。",
+ "scope_declaration": {
+  "windows": [
+   "w137",
+   "w138",
+   "w139",
+   "w140",
+   "w141",
+   "w142"
+  ],
+  "window_count": 6,
+  "task": "g1 (冻结题面; prompt sha256 与 R559/R560/R563/R565/R566/R567 逐字节相同)",
+  "task_prompt_sha256_expected": "516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3",
+  "binary_sha256_expected": "320d0eb17e709d15ce7d149ceff45fc1cacff814ac01b9fbda67f702726cee48",
+  "hidden_cases": 58,
+  "grader_sha256": "a67215a792845cb4a3adec4553c8d06211fa3a7a1dc1ec258ed9dbf3f6e59109",
+  "cross_round_deltas_forbidden": "与 w104..w118 / w119..w124 / w125..w130 / w131..w136 的读数**并列不相减** (新窗, 非同一窗集延续)"
+ },
+ "criterion_version": "v2 (逐窗并列 + 真值崩窗 unreliable[MARGIN=3] + 配对判据[n>=3, 无窗<=-3, 中位>=-2] + VOID 臂窗单列) —— 口径文本取自 docs/external-reference-harness.md §12, 本文件只引用不重定义; **本轮不改判据 v2**",
+ "acceptance_rule": {
+  "primary": "判据 v2 判决 (eval/rover/r561/verdict_r561.py 装置, adjudicate_r569.py 零逻辑复制复用)",
+  "rc": "0 全过 / 1 判据未过 (被测或前提) / 2 器具缺陷 / 3 缺侧或不可判",
+  "expected_direction": "**无增益预期** (零产品改动): ①两档配对差若与 R566/R567 同向或更小 ⇒ 剂量档位不是承重变量; ②若三窗集 (w119..w142) 方向一致且效应 > 跨窗摆动 ⇒ 单列「剂量档位有平均增益」候选, 仍**不得**作增益宣称 (铁律 11)。",
+  "cross_check": "铁律 11 前置器 python3 eval/rover/r507pre/exec_precondition.py --round r569 (两侧产出物独立物化 + 真跑 + 逐用例判对); rc!=0 ⇒ 全部成本/降幅读数标「参考(未可验收)」"
+ },
+ "extra_prereg_rules_candidate3": {
+  "note": "承 R568 补记面; 两条规则**先于本窗集落盘** (防事后挑选)",
+  "E1 逐窗回退点名": "对每个臂给出「配对差 <= -3 例」的窗号点名 (逐窗并列, 不与其它窗集相减); 有回退窗 ⇒ 不得宣称「逐窗不回退」",
+  "E2 拒收窗排除规则": "若某臂窗满足 rc==8 ∧ cases_total==58 ∧ cases_pass==0 ∧ stage=='public_probe_unmet' ⇒ 记为「交付前自测闸**拒收窗**」(R568 曾称『臂级崩溃窗』; R569-④ 定因: 该窗产物已落盘且 58/58 `stdout_mismatch`, 属**产品 fail-closed 自测闸行使**而非运行级崩溃), 该窗从**配对均值**中剔除并**两个数并列报** (含 / 剔), 不作挑选; 剔除规则不得用于改变判据 v2 判决",
+  "E3 新实体的判据口径": "拒收窗的剔除**只影响补记面**, 判据 v2 判决 (主判据) 照原样判定, 不改阈值"
+ },
+ "candidate4": {
+  "name": "判定输入指纹 / 命中率双口径复核 (新窗)",
+  "exercise_arm": "R569B3",
+  "pre_registered_checks": {
+   "C4-1 恒等式": "每个中继 dump: prompt_tokens == hit + miss ∧ 0 <= hit <= prompt (违反 >0 ⇒ rc=2 器具/口径缺陷)",
+   "C4-2 确定性": "行使臂每窗**第 1 次调用**的 prompt sha8 全窗相同 ∧ transcript 任务/前缀 sha 全窗相同",
+   "C4-3 非平凡": "call1 vs call2 的 prompt sha 跨窗**互异** (确定性 ≠ 恒定输出)",
+   "C4-4 命中率双口径": "v_all(含冷启动) / v_incr(去冷启动) 逐窗出数; 未上报记哨兵不入比率"
+  },
+  "rc": "0 全过 / 2 违反 / 3 输入缺失; 未行使 ⇒ 记 honest_boundary, 不改判据"
+ },
+ "candidate5_gate_clause": {
+  "candidate": "R569-⑤ 起手闸振幅余量条款 **加上界** (R568 预注册的下一轮规则)",
+  "rule": "MARGIN := min(max(FLOOR=60, prev_swing), ceiling_mb - GATE_MB); REQ = GATE_MB + MARGIN",
+  "derivation": "prev_postcheck = eval/rover/r567/gate-postcheck-r567.json (swing_mb=103) ⇒ want=103; cap = 本次起手前 3 次采样的 max - 2650 ⇒ MARGIN = min(103, cap) (上界行使时 margin_capped=true)",
+  "fail_closed": "cap < FLOOR ⇒ rc=2 (顶棚连下限都装不下, 不静默放行); 派生失败/顶棚 < REQ ⇒ 不起臂",
+  "instrument_change_declaration": "关键器改版: eval/rover/r569/gate_margin_r569.py 相对 r567 件在 derive/why/clause/selftest 四处有声明式差异; 成对控制由 6 例改为 7 例 (正控 3 + 正控『旧 v1 常量被夹』1 + 负控 3), 断言逐例同时校验 rc **与** margin_capped",
+  "controls": {
+   "PC": "连续 2 次 preflight_gate --gate-mb REQ ⇒ 期望 PASS ×2",
+   "NC_hog": "400MB 占用 ⇒ 期望 GATE_BLOCKED",
+   "discriminating_pair": "把内存态压进判别带 [2650, REQ) 后: --gate-mb 2650 ⇒ PASS ∧ --gate-mb REQ ⇒ GATE_BLOCKED; 带内不可达 ⇒ rc=3 如实登记"
+  }
+ },
+ "evidence_scope": {
+  "require": [
+   "w137/C1",
+   "w137/R569B0",
+   "w137/R569B3",
+   "w138/C1",
+   "w138/R569B0",
+   "w138/R569B3",
+   "w139/C1",
+   "w139/R569B0",
+   "w139/R569B3",
+   "w140/C1",
+   "w140/R569B0",
+   "w140/R569B3",
+   "w141/C1",
+   "w141/R569B0",
+   "w141/R569B3",
+   "w142/C1",
+   "w142/R569B0",
+   "w142/R569B3"
+  ]
+ },
+ "preregistered_expectations": {
+  "quality": "无增益预期 (零产品改动 ⇒ 只作读数, 不作增益宣称); 三臂同窗配对",
+  "cost": "调用数/新算 prompt/completion 三列分列 (禁名义总量)",
+  "honest_boundary": "g1 族的 wythoff 失分已三次定因 (产物缺陷); 本轮不修 (未放行) ⇒ 铁律 11 rc=1 可能性高, 不得据此改写判据"
+ },
+ "notes": "本文件先写后跑 (runner 第 0 步机检: round / 臂集 3 / require 18 / criterion_version v2 / 两臂剂量键集与取值 0 vs 3)。判据 v2 口径不在本文件重定义, 只引用 docs/external-reference-harness.md §12。"
+}

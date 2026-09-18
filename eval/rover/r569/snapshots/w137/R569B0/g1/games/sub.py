@@ -1,0 +1,15 @@
+def solve(text: str) -> str:
+    lines = text.splitlines()
+    n, k = map(int, lines[0].split())
+    s = list(map(int, lines[1].split()))[:k]
+    win = [False] * (n + 1)
+    for i in range(1, n + 1):
+        for x in s:
+            if x <= i and not win[i - x]:
+                win[i] = True
+                break
+    if not win[n]:
+        return 'LOSE'
+    for x in sorted(s):
+        if not win[n - x]:
+            return 'WIN %d' % x

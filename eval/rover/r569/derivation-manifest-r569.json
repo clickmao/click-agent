@@ -1,0 +1,126 @@
+{
+ "round": "R569",
+ "source_round": "R567",
+ "note": "派生件清单 (器具改 ⇒ 须重审 + 保形重钉): 每条给出源/目标 sha256 与替换计数",
+ "files": [
+  {
+   "src": "eval/rover/r567/run_r567.sh",
+   "dst": "eval/rover/r569/run_r569.sh",
+   "src_sha256": "bd6e6a850a9b39ef7fee22357806b8daaecb793881f30592501fb6b6b2230187",
+   "dst_sha256": "0054df2fa0e53a728b5032611eefe205f59d156b6adfdc2e3b57fbe1c4bc6f56",
+   "substitutions": {
+    "w131": 3,
+    "w136": 3,
+    "w125..w130": 1,
+    "R567": 31,
+    "r567": 21,
+    "WIN0=${WIN0:-131}": 1,
+    "49447": 3
+   },
+   "n_lines_src": 263,
+   "n_lines_dst": 263
+  },
+  {
+   "src": "eval/rover/r567/ingest_r567.py",
+   "dst": "eval/rover/r569/ingest_r569.py",
+   "src_sha256": "89f9634aa7f07bddff0ffca7f3bc80d276f5f60145e42aa21028cc5a6178472e",
+   "dst_sha256": "c1d2ed5ea9d2fdd7df6bf8efb6d398882975e28956ec3443a4e133227c19ae18",
+   "substitutions": {
+    "R567": 13,
+    "r567": 1
+   },
+   "n_lines_src": 169,
+   "n_lines_dst": 169
+  },
+  {
+   "src": "eval/rover/r567/fingerprint_r567.py",
+   "dst": "eval/rover/r569/fingerprint_r569.py",
+   "src_sha256": "8ce21aeb9979ba24b1721056cf0b310a01945c84b45eca2a97fd2c15d04ee279",
+   "dst_sha256": "a0dd10a62503bcd59f4c2567e85dbca6972728a9c7f06e5df3dd939d09f1db64",
+   "substitutions": {
+    "R567": 2,
+    "r567": 2
+   },
+   "n_lines_src": 151,
+   "n_lines_dst": 151
+  },
+  {
+   "src": "eval/rover/r567/kpi_r567.py",
+   "dst": "eval/rover/r569/kpi_r569.py",
+   "src_sha256": "89fe42f298f59c255816e16db073ac3d040151cc9ec2305145ef4f3b2f3fb2c8",
+   "dst_sha256": "a9af6c2985b58b7926dae3a4fa2eebd3592799b617802ea9dd9a47327f6c32d5",
+   "substitutions": {
+    "R567": 4
+   },
+   "n_lines_src": 59,
+   "n_lines_dst": 59
+  },
+  {
+   "src": "eval/rover/r567/matrix_r567.py",
+   "dst": "eval/rover/r569/matrix_r569.py",
+   "src_sha256": "081b529943b3bc21a912f422669479eb7199bb89cbe0fa4c5b96eeaff37672bc",
+   "dst_sha256": "6150ba0cbb0aa61a8a46311b4d4be60a1d78386e58acb9a43bc8026d72a866fd",
+   "substitutions": {
+    "w131": 1,
+    "w132": 1,
+    "w133": 1,
+    "w134": 1,
+    "w135": 1,
+    "w136": 1,
+    "R567": 5,
+    "r567": 6
+   },
+   "n_lines_src": 115,
+   "n_lines_dst": 115
+  },
+  {
+   "src": "eval/rover/r567/adjudicate_r567.py",
+   "dst": "eval/rover/r569/adjudicate_r569.py",
+   "src_sha256": "70b1964b0379be9ae1f0ec3f53464994aeb1df1b4152f8a42d0809efe1d9699f",
+   "dst_sha256": "a089787586a7c50e8a05282d81e621f23b428a4d392e3f65bfeb66121a972fcf",
+   "substitutions": {
+    "w131": 1,
+    "w132": 1,
+    "w133": 1,
+    "w134": 1,
+    "w135": 1,
+    "w136": 1,
+    "R567": 7,
+    "r567": 3
+   },
+   "n_lines_src": 104,
+   "n_lines_dst": 104
+  },
+  {
+   "src": "eval/rover/r567/gate_margin_r567.py",
+   "dst": "eval/rover/r569/gate_margin_r569.py",
+   "src_sha256": "dc399dc0eb4d86af050a15556ce7d3647bc192ca6d40f6d520850b3f05a43003",
+   "dst_sha256": "038bc3533b98eab5df20f160baa68981be3c7503ef5d949a9aec02538208040f",
+   "substitutions": {
+    "R567": 3,
+    "r567": 1
+   },
+   "n_lines_src": 178,
+   "n_lines_dst": 178
+  },
+  {
+   "src": "eval/rover/r567/mem_sampler.py",
+   "dst": "eval/rover/r569/mem_sampler.py",
+   "src_sha256": "12fbbd9a2351d7d9d455c604879e4399aa0f89459d6a02f35aaba510f9f62006",
+   "dst_sha256": "12fbbd9a2351d7d9d455c604879e4399aa0f89459d6a02f35aaba510f9f62006",
+   "substitutions": {},
+   "n_lines_src": 26,
+   "n_lines_dst": 26
+  },
+  {
+   "src": "eval/rover/r567/mem_sample_once.py",
+   "dst": "eval/rover/r569/mem_sample_once.py",
+   "src_sha256": "13961c4d6d55c0efaf2e40cf67ca56d65b2a9df2fcb139f78a5a6f6ff03bedf1",
+   "dst_sha256": "13961c4d6d55c0efaf2e40cf67ca56d65b2a9df2fcb139f78a5a6f6ff03bedf1",
+   "substitutions": {},
+   "n_lines_src": 17,
+   "n_lines_dst": 17
+  }
+ ],
+ "source_unchanged": true
+}

@@ -1,0 +1,271 @@
+{
+ "round": "R569",
+ "candidate": "④ 拒收窗定因 (只读)",
+ "claim": "R568 所称『w104 型臂级崩溃窗』必须按 L1/L2/L3 三层判定; 本件给机读读数, 不给结论散文",
+ "L1_落盘层": {
+  "snapshot_dir": "eval/rover/r559/snapshots/w104/R559B0/g1",
+  "exists": true,
+  "files": [
+   {
+    "rel": "games/__init__.py",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+   },
+   {
+    "rel": "games/__main__.py",
+    "bytes": 227,
+    "sha256": "d2a41c8494c53376eab2d83a97854c3cbaebb64602cdc3cddf023248c6af9223"
+   },
+   {
+    "rel": "games/life.py",
+    "bytes": 866,
+    "sha256": "524f9cea5a7e23b02593ae405eb79500da0c04e510f05721fbf00737cdef02ab"
+   },
+   {
+    "rel": "games/nim.py",
+    "bytes": 359,
+    "sha256": "74ceac13c67199cb044f221b3012bc01620d8333f7b86b0ed94c97e35c9cc308"
+   },
+   {
+    "rel": "games/sub.py",
+    "bytes": 467,
+    "sha256": "4f1d83230b2e37061e37bd8fba24c499413c4b252f460f81f5385a891cabd8e0"
+   },
+   {
+    "rel": "games/wythoff.py",
+    "bytes": 875,
+    "sha256": "0abc974f598129f49216ffec3a34caab85aa0403f2cc8ac42312f0eba9137b04"
+   }
+  ],
+  "entry_kind": {
+   "path": "games/__main__.py",
+   "bytes": 227,
+   "sha256": "d2a41c8494c53376eab2d83a97854c3cbaebb64602cdc3cddf023248c6af9223",
+   "echo_markers_present": true,
+   "game_markers_absent": false,
+   "is_stdin_echo_stub": false,
+   "body_chars": 227
+  }
+ },
+ "L2_判定层": {
+  "grader": "eval/rover/r560/cases/run_cases_r521.py",
+  "grader_sha256": "a67215a792845cb4a3adec4553c8d06211fa3a7a1dc1ec258ed9dbf3f6e59109",
+  "replay_dir": "eval/rover/r569/pc/repro-w104-b0",
+  "rc": 1,
+  "cases_total": 58,
+  "cases_pass": 0,
+  "cases_fail": 58,
+  "fail_modes": {
+   "stdout_mismatch": 58
+  },
+  "stderr_tail": []
+ },
+ "L3_交付层": {
+  "transcript_src": "/tmp/r559/w104/agentB0/g1/transcript.json",
+  "available": true,
+  "report_row": {
+   "arm": "R559B0",
+   "tid": "g1",
+   "side": "agent",
+   "all_pass": false,
+   "cases_pass": 0,
+   "cases_total": 58,
+   "calls": 1,
+   "new_prompt": 151,
+   "prompt": 8343,
+   "completion": 1490,
+   "v_all": 0.9819,
+   "v_incr": null,
+   "rc": 8,
+   "stage": "public_probe_unmet",
+   "exec_repairs": 0,
+   "public_probe_failed": 8,
+   "public_probe_ran": 1,
+   "self_test_unmet": 1
+  },
+  "transcript": {
+   "rc": 8,
+   "stage": "public_probe_unmet",
+   "max_exec_repair": 0,
+   "exec_repairs": 0,
+   "public_probe_ran": 1,
+   "public_probe_reason": "public_examples_failed",
+   "public_probe_total": 8,
+   "public_probe_failed": 8,
+   "public_probe_trigger_rc": 0,
+   "self_test_unmet": 1,
+   "correctness_asserted": 0,
+   "calls": 1,
+   "plan_steps_total": 6,
+   "steps_executed": 6,
+   "repair_rounds": 0
+  },
+  "reason_head": "题面公开用例回放未过 8/8 例（期望取自题面、与隐藏用例判分器同语义），执行回灌修复预算 0 已用尽; ⇒ 成对报「回放未达成 ∧ 产物可疑」: rc=8 不作正确性证据 (correctness_asserted=0); 首例: 分组 life | 输入=`11 5 4⏎#....⏎.....⏎...#.⏎.#.#.⏎.....⏎.#..#⏎.#...⏎###.#⏎#.#.#⏎..#..⏎....#` | 期望=`.....⏎.....⏎.....⏎.###.⏎.....⏎.....⏎..#..⏎.#.#.⏎...#.⏎..#..⏎.....` | 实测 rc=0 stdout=`11 5 4⏎#....⏎.....⏎...#.⏎.#.#.⏎.....⏎.#..#⏎.#...⏎###.#⏎#.#.#⏎..#..⏎....#` stderr尾=``",
+  "transcript_archived": "eval/rover/r569/pc/evidence/transcript-w104-R559B0.json"
+ },
+ "L3b_同类普查": {
+  "agent_arm_windows": 171,
+  "cases_zero": {
+   "R557/w96/R557A0": {
+    "cases_pass": 0,
+    "cases_total": 58,
+    "rc": 4,
+    "stage": "contract",
+    "public_probe_failed": null,
+    "exec_repairs": null
+   },
+   "None/None/E0a-g1": {
+    "cases_pass": 0,
+    "cases_total": 58,
+    "rc": null,
+    "stage": null,
+    "public_probe_failed": null,
+    "exec_repairs": null
+   },
+   "None/None/D1d-g1": {
+    "cases_pass": 0,
+    "cases_total": 58,
+    "rc": null,
+    "stage": null,
+    "public_probe_failed": null,
+    "exec_repairs": null
+   },
+   "R556/w92/R556A0": {
+    "cases_pass": 0,
+    "cases_total": 58,
+    "rc": 4,
+    "stage": "contract",
+    "public_probe_failed": null,
+    "exec_repairs": null
+   },
+   "None/None/P0b-g1": {
+    "cases_pass": 0,
+    "cases_total": 58,
+    "rc": null,
+    "stage": null,
+    "public_probe_failed": null,
+    "exec_repairs": null
+   },
+   "R559/w104/R559B0": {
+    "cases_pass": 0,
+    "cases_total": 58,
+    "rc": 8,
+    "stage": "public_probe_unmet",
+    "public_probe_failed": 8,
+    "exec_repairs": 0
+   },
+   "None/None/R1ms-ms1": {
+    "cases_pass": 0,
+    "cases_total": 3,
+    "rc": null,
+    "stage": null,
+    "public_probe_failed": null,
+    "exec_repairs": null
+   },
+   "None/None/R1x2a-g1": {
+    "cases_pass": 0,
+    "cases_total": 58,
+    "rc": null,
+    "stage": null,
+    "public_probe_failed": null,
+    "exec_repairs": null
+   },
+   "R558/w101/R558B1": {
+    "cases_pass": 0,
+    "cases_total": 58,
+    "rc": 4,
+    "stage": "contract",
+    "public_probe_failed": null,
+    "exec_repairs": 0
+   },
+   "R555/w84/agentR555A0": {
+    "cases_pass": 0,
+    "cases_total": 58,
+    "rc": 4,
+    "stage": "contract",
+    "public_probe_failed": null,
+    "exec_repairs": 0
+   }
+  },
+  "rc8": {
+   "R560/w111/R560B0": {
+    "cases_pass": 55,
+    "stage": "self_test_unmet",
+    "public_probe_failed": 1,
+    "exec_repairs": 0
+   },
+   "R566/w128/R566B0": {
+    "cases_pass": 50,
+    "stage": "self_test_unmet",
+    "public_probe_failed": 1,
+    "exec_repairs": 0
+   },
+   "R567/w135/R567B3": {
+    "cases_pass": 51,
+    "stage": "self_test_unmet",
+    "public_probe_failed": 1,
+    "exec_repairs": 3
+   },
+   "R556/w93/R556A0": {
+    "cases_pass": 56,
+    "stage": "self_test_unmet",
+    "public_probe_failed": null,
+    "exec_repairs": null
+   },
+   "R559/w104/R559B0": {
+    "cases_pass": 0,
+    "stage": "public_probe_unmet",
+    "public_probe_failed": 8,
+    "exec_repairs": 0
+   },
+   "R565/w121/R565B0": {
+    "cases_pass": 43,
+    "stage": "self_test_unmet",
+    "public_probe_failed": 2,
+    "exec_repairs": 1
+   },
+   "R558/w101/R558B2": {
+    "cases_pass": 51,
+    "stage": "self_test_unmet",
+    "public_probe_failed": 2,
+    "exec_repairs": 2
+   },
+   "R563/w115/R563B0": {
+    "cases_pass": 43,
+    "stage": "self_test_unmet",
+    "public_probe_failed": 2,
+    "exec_repairs": 0
+   },
+   "R569/w137/R569B0": {
+    "cases_pass": 52,
+    "stage": "self_test_unmet",
+    "public_probe_failed": 1,
+    "exec_repairs": 0
+   },
+   "R569/w140/R569B3": {
+    "cases_pass": 43,
+    "stage": "public_probe_unmet",
+    "public_probe_failed": 2,
+    "exec_repairs": 3
+   }
+  },
+  "public_probe_unmet_windows": [
+   "R559/w104/R559B0",
+   "R569/w140/R569B3"
+  ]
+ },
+ "laters": {
+  "产物落盘": true,
+  "入口为 stdin 回显桩": false,
+  "判分复现 0/58": true,
+  "失败模式唯一": [
+   "stdout_mismatch"
+  ],
+  "产品自测闸报未过": "public_examples_failed",
+  "产品未宣称正确": true,
+  "rc": 8,
+  "stage": "public_probe_unmet"
+ },
+ "rc": 0,
+ "errors": []
+}

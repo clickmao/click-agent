@@ -1,0 +1,154 @@
+{
+ "round": "R569",
+ "windows": [
+  "w137",
+  "w138",
+  "w139",
+  "w140",
+  "w141",
+  "w142"
+ ],
+ "arms": {
+  "C1": {
+   "cases_windows": [
+    58,
+    58,
+    58,
+    58,
+    58,
+    58
+   ],
+   "median": 58.0,
+   "range": 0,
+   "calls": 148,
+   "new_prompt": 54414,
+   "completion": 44090,
+   "v_all_med": 0.9218500000000001,
+   "v_incr_med": 0.9430499999999999,
+   "rc_windows": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "stages": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ]
+  },
+  "R569B0": {
+   "cases_windows": [
+    52,
+    58,
+    52,
+    43,
+    58,
+    53
+   ],
+   "median": 52.5,
+   "range": 15,
+   "calls": 6,
+   "new_prompt": 906,
+   "completion": 15762,
+   "v_all_med": 0.9819,
+   "v_incr_med": null,
+   "rc_windows": [
+    8,
+    0,
+    5,
+    5,
+    0,
+    5
+   ],
+   "stages": [
+    "self_test_unmet",
+    "done",
+    "expect_stdout",
+    "expect_stdout",
+    "done",
+    "expect_stdout"
+   ]
+  },
+  "R569B3": {
+   "cases_windows": [
+    53,
+    46,
+    44,
+    43,
+    55,
+    58
+   ],
+   "median": 49.5,
+   "range": 15,
+   "calls": 21,
+   "new_prompt": 6200,
+   "completion": 45687,
+   "v_all_med": 0.9656,
+   "v_incr_med": 0.9556,
+   "rc_windows": [
+    0,
+    5,
+    5,
+    8,
+    5,
+    0
+   ],
+   "stages": [
+    "done",
+    "expect_stdout_exhausted",
+    "expect_stdout_exhausted",
+    "public_probe_unmet",
+    "expect_stdout_exhausted",
+    "done"
+   ]
+  }
+ },
+ "verdict": {
+  "rc": 1,
+  "judge": "FAIL(被测/前提)",
+  "blocked": [
+   "quality_paired_shortfall:R569B0,R569B3"
+  ],
+  "iron11_rc": 1
+ },
+ "axis_effect_paired": {
+  "deltas_B3_minus_B0": [
+   1,
+   -12,
+   -8,
+   0,
+   -3,
+   5
+  ],
+  "median": -1.5,
+  "range": [
+   -12,
+   5
+  ],
+  "same_arm_cross_window_swing": {
+   "R569B0": 15,
+   "R569B3": 15
+  }
+ },
+ "fingerprint": {
+  "rc": 0,
+  "C4-1_identity": true,
+  "C4-2_determinism": true,
+  "C4-3_nontrivial": true
+ },
+ "cross_check": {
+  "paths": [
+   "evidence/windows/*/report.json",
+   "kpi-table-r569.json"
+  ],
+  "mismatch": [],
+  "agree": true
+ },
+ "instrument_use_defect": "matrix_r569.py --work 误传运行根 ⇒ /tmp/r569 日志面被清 (结论面不依赖; 见 windows-r569.json 头)"
+}
