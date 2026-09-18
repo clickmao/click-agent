@@ -1,0 +1,63 @@
+{
+ "round": "R549",
+ "kind": "offline-replay",
+ "src_round": "r547",
+ "window": "w2",
+ "proj_timeout": 420.0,
+ "duration_s": 5.3,
+ "arms_n": 3,
+ "arms": [
+  {
+   "arm": "agentA1on-g1",
+   "cases_pass": 58,
+   "cases_n": 58,
+   "cases_expected": 58,
+   "rc": 0,
+   "correct": true,
+   "recorded_cases_pass": 58,
+   "same_as_recorded": true,
+   "failed_cases": [],
+   "stderr_tail": ""
+  },
+  {
+   "arm": "agentD1a-g1",
+   "cases_pass": 56,
+   "cases_n": 58,
+   "cases_expected": 58,
+   "rc": 1,
+   "correct": false,
+   "recorded_cases_pass": 56,
+   "same_as_recorded": true,
+   "failed_cases": [
+    "wythoff#43-public",
+    "wythoff#57-hidden"
+   ],
+   "stderr_tail": ""
+  },
+  {
+   "arm": "agentE0a-g1",
+   "cases_pass": 50,
+   "cases_n": 58,
+   "cases_expected": 58,
+   "rc": 1,
+   "correct": false,
+   "recorded_cases_pass": 50,
+   "same_as_recorded": true,
+   "failed_cases": [
+    "wythoff#44-public",
+    "wythoff#45-hidden",
+    "wythoff#46-hidden",
+    "wythoff#47-hidden",
+    "wythoff#48-hidden",
+    "wythoff#49-hidden",
+    "wythoff#50-hidden",
+    "wythoff#56-hidden"
+   ],
+   "stderr_tail": ""
+  }
+ ],
+ "failed_family_census": {
+  "wythoff": 10
+ },
+ "note": "只读仓内快照; 零远端调用; 保形可比性=仅当 proj_timeout 与源轮落盘口径一致"
+}

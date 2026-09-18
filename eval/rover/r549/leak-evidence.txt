@@ -1,0 +1,15 @@
+== 现场取证 2026-09-18T10:31:59+08:00 ==
+--- pid 203815
+/home/agentuser/.hermes/hermes-agent/venv/bin/python3 -B -m games wythoff 
+/tmp/precond-w1-agentE1c-g1-bk1jrfhu
+utime_ticks=566610 stime_ticks=809
+State:	R (running) PPid:	1140 VmRSS:	   14672 kB Threads:	1 
+--- pid 205078
+/home/agentuser/.hermes/hermes-agent/venv/bin/python3 -B -m games wythoff 
+/tmp/precond-w1-agentE1c-g1-fwn26s32
+utime_ticks=547683 stime_ticks=768
+State:	R (running) PPid:	1140 VmRSS:	   13112 kB Threads:	1 
+-- 父进程 (已死/被 systemd 收养):
+    PID    PPID COMMAND
+   1140       1 /usr/lib/systemd/systemd --user
+== 处置 2026-09-18T10:32:08+08:00: 两个僵死子进程为前置器 08:29/08:33 独立执行路径的泄漏子进程(父已亡, 被 systemd 收养), 各烧 CPU 77% 逾 2h ==

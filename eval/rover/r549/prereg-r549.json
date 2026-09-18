@@ -1,0 +1,37 @@
+{
+ "round": "R549",
+ "written_before_run": true,
+ "author": "cron R549 (30min beat)",
+ "claim": "R548 新契约(生成物 tools/r1gen/contract.py 加厚) 相对旧契约(R548base) 在**同一题面**上: ①停链窗→0 ②远端调用/token 不升 ③隐藏用例质量不回退; 单变量=契约文本。",
+ "acceptance_rule": "铁律11: 本 prereg 落盘**先于**机检跑; 机检 = `python3 eval/rover/r507pre/exec_precondition.py --round r549`; rc≠0 ⇒ R548/R549 一切 token/调用降幅标「参考(未可验收)」, 禁作验收依据。",
+ "evidence_scope": {
+  "require": [
+   "w1/agentR548b-g1",
+   "w1/agentR548base-g1",
+   "w2/agentR548b-g1",
+   "w2/agentR548base-g1",
+   "w3/agentR548b-g1",
+   "w3/agentR548base-g1"
+  ],
+  "nonrequired": []
+ },
+ "pre_registered_families": {
+  "expected_blocking_family": "wythoff",
+  "reason": "R548 自述残留失败 100% 落 wythoff 家族; 本轮机检要复核该断言"
+ },
+ "same_input_gate": {
+  "prompt_sha256": "516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3",
+  "cases_sha256": "a67215a792845cb4a3adec4553c8d06211fa3a7a1dc1ec258ed9dbf3f6e59109",
+  "note": "两臂逐字节同题面/同用例由 ingest 阶段断言(见 snapshot-manifest.json)"
+ },
+ "declaration_fix_log": [
+  {
+   "run": 1,
+   "written_before_run": "eval/rover/r549/prereg-r549.json(初版)",
+   "defect": "require 用**臂标签**(w1/R548b-g1), 前置器按**快照目录名**(w1/agentR548b-g1)匹配 ⇒ 6 条 DECLARED_ARM_ABSENT",
+   "gate_behavior": "fail-closed: rc=1 且逐条点名, 未因声明笔误放水(非假绿)",
+   "fix": "仅改声明字符串为目录名; 评分口径/用例/快照零改动",
+   "run1_output": "/tmp/precond-r549-run1.json"
+  }
+ ]
+}

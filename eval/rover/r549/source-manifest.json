@@ -1,0 +1,54 @@
+{
+ "round": "R549",
+ "purpose": "R548 运行树入仓 + 前置器机检/命中率复核 的源清单",
+ "ingested_at": "2026-09-18T10:37:26+08:00",
+ "note": "R548 原始运行树在仓外(/tmp), 本轮按字节复制入仓并把源 (bytes,sha256) 落盘, 供事后重算 R548 读数; 本轮一切机检读数来自前置器独立重跑, 不采信此处自报。",
+ "sources": {
+  "R548b": {
+   "w1": [
+    {
+     "file": "r548_c2/r1_1/transcript.json",
+     "bytes": 4307,
+     "sha256": "9450b4318b645ac6739f65a7d188b5bf30a6a4857a5ab9c1c041c89c3268462e"
+    }
+   ],
+   "w2": [
+    {
+     "file": "r548_c2/r1_2/transcript.json",
+     "bytes": 3869,
+     "sha256": "be8984e22554273c02f4b404cab1118c6cefc4365b69790db3aca7a392737fc9"
+    }
+   ],
+   "w3": [
+    {
+     "file": "r548_c2/r1_3/transcript.json",
+     "bytes": 4167,
+     "sha256": "882e34d3e0705bd00564109dff5e8ecd000232e48662f5c45783712160d4e0db"
+    }
+   ]
+  },
+  "R548base": {
+   "w1": [
+    {
+     "file": "r548_d/r1_1/transcript.json",
+     "bytes": 4109,
+     "sha256": "44620998ff616e3808ae18f385ea552c7637dde6e8a579cfae1bcccad9b46e8f"
+    }
+   ],
+   "w2": [
+    {
+     "file": "r548_d/r1_2/transcript.json",
+     "bytes": 4196,
+     "sha256": "b28f961c1e5121fc26068d853106230875a19c0d2e3b83dc3fe8baacde5e5455"
+    }
+   ],
+   "w3": [
+    {
+     "file": "r548_d/r1_3/transcript.json",
+     "bytes": 4185,
+     "sha256": "06b8a9ea78bb3c113551d027993f2c306b574f0d2c6ca6153a32a652ca17283f"
+    }
+   ]
+  }
+ }
+}

@@ -122,7 +122,7 @@ def compare(cases, wy, arms):
         if mine != exp:
             bad_fixture.append({"case": i, "stdin": row["stdin"], "expected": exp, "oracle": mine})
         for arm in arms:
-            wd = os.path.join(REPO, "eval/rover/r531/snapshots", SNAPWIN, arm, "g1")
+            wd = os.path.join(REPO, "eval/rover", SNAPROUND, "snapshots", SNAPWIN, arm, "g1")
             if not os.path.isdir(wd):
                 row["arms"][arm] = {"absent": True}
                 continue
@@ -176,19 +176,22 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--round", default=ROUND)
     ap.add_argument("--window", default="w1", help="冻结快照窗口 (snapshots/<win>)")
+    ap.add_argument("--arms", default=None, help="逗号分隔的臂目录名; 缺省= r531 冻结臂集(保形)")
+    ap.add_argument("--cases", default=None, help="用例JSON; 缺省= r531/cases/cases-r521.json(保形)")
     ap.add_argument("--json", default=None)
     ap.add_argument("--neg-control", action="store_true")
     a = ap.parse_args()
 
-    global P, SNAPWIN
+    global P, SNAPWIN, SNAPROUND
     P = p_positions(25)
     SNAPWIN = a.window
+    SNAPROUND = "r" + (a.round[1:] if a.round[:1] in ("r", "R") else a.round)
 
-    cases_path = os.path.join(REPO, "eval/rover/r531/cases/cases-r521.json")
+    cases_path = a.cases or os.path.join(REPO, "eval/rover/r531/cases/cases-r521.json")
     cases = json.load(open(cases_path, encoding="utf-8"))
     wy = [(i, c) for i, c in enumerate(cases) if c["game"] == "wythoff"]
 
-    arms = ["agentA0-off", "agentA1-on", "agentA2-merge", "codex"]
+    arms = a.arms.split(",") if a.arms else ["agentA0-off", "agentA1-on", "agentA2-merge", "codex"]
     if a.neg_control:
         return neg_control(cases, wy, arms)
 

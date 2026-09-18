@@ -6075,9 +6075,9 @@
     "pin_reason": "archived-per-round",
     "artifact_sha12": "a7e08af7e126",
     "instrument": "eval/rover/r507pre/exec_precondition.py",
-    "instrument_sha12": "350afbc61ecc",
+    "instrument_sha12": "2acf12be09d0",
     "binding": "audit-pin",
-    "audited_by_round": "R529"
+    "audited_by_round": "R549"
    },
    "negative_control": "过宽负控: 真产物树不受影响 —— w2 的 agentA/agentO/codex 三快照照常判分 (58/58 · 31/58 · 58/58), 即修复只把「空」判成不可验收, 不改变已有产物的判分结果",
    "owner_round": "R521"
@@ -6130,9 +6130,9 @@
     "pin_reason": "archived-per-round",
     "artifact_sha12": "308d9ba985ce",
     "instrument": "eval/rover/r507pre/exec_precondition.py",
-    "instrument_sha12": "350afbc61ecc",
+    "instrument_sha12": "2acf12be09d0",
     "binding": "audit-pin",
-    "audited_by_round": "R529"
+    "audited_by_round": "R549"
    },
    "negative_control": "过宽负控: 真产物树不受影响 —— w2 的 agentA/agentO/codex 三快照照常判分 (58/58 · 31/58 · 58/58), 即修复只把「空」判成不可验收, 不改变已有产物的判分结果",
    "owner_round": "R522"
@@ -6627,10 +6627,10 @@
     "pin_status": "frozen",
     "pin_reason": "archived-per-round",
     "artifact_sha12": "96cd34eaa298",
-    "instrument": "eval/rover/r507pre/exec_precondition.py",
-    "instrument_sha12": "350afbc61ecc",
+    "instrument": "eval/rover/r529/nc_policy_r529.py",
+    "instrument_sha12": "f44c869a7fff",
     "binding": "audit-pin",
-    "audited_by_round": "R529"
+    "audited_by_round": "R549"
    },
    "negative_control": "6/6 红绿对齐: NC1 外侧错+本侧对+有策略 ⇒ rc=0 且剔除; **NC2 本侧也错 ⇒ rc=1**(不放水); NC3 artifacts 背时序 ⇒ `windows_predate_policy` 策略整体拒绝; NC4 无 key ⇒ rc=1; NC5 外侧臂目录缺席 ⇒ rc=0 且 `declared_absent=[]` 不残留; **NC6 外侧臂未写进 require 的窗 ⇒ 仍剔除**(修 `seen` 键匹配 bug 的回归陷阱, 该 bug 由真实 w3 窗暴露: 臂键 `codex/t1` vs 臂级模式 `*/codex` 恒不匹配)。",
    "owner_round": "R529"
@@ -6711,9 +6711,9 @@
     "pin_reason": "archived-per-round",
     "artifact_sha12": "717fa6c2ee47",
     "instrument": "eval/rover/r531/oracle_wythoff_r531.py",
-    "instrument_sha12": "812a1422d491",
+    "instrument_sha12": "b014ab264613",
     "binding": "audit-pin",
-    "audited_by_round": "R531"
+    "audited_by_round": "R549"
    },
    "negative_control": "`--neg-control` rc=0 且两针皆响: ① NC1 把首条 wythoff 用例期望篡改为错值 ⇒ `fixture_agrees=False` (不一致被检出, disagreements=1); ② NC2 令 oracle 分类非法着法 `WIN 1 2` @(21,25) ⇒ 必须为 `illegal_move` (实测 True) ⇒ 判据器非恒真、非恒假。",
    "owner_round": "R531"

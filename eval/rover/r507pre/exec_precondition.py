@@ -37,6 +37,7 @@ import json
 import os
 import re
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
@@ -77,14 +78,87 @@ def materialize(code, path):
     return path
 
 
+def _kill_group(p):
+    """把**整个进程组**收口 (R549 缺陷修复: 只杀直接子进程会泄漏执行体)。
+
+    组号 = `p.pid`(Popen 时 `start_new_session=True` ⇒ 自带组长身份); **不能**用
+    `os.getpgid(p.pid)`: 直接子进程已退出时该调用抛 ProcessLookupError, 于是只剩
+    `p.kill()` 空操作 ⇒ 孙进程存活(自检 A 第二跑即抓到)。
+    """
+    try:
+        os.killpg(p.pid, signal.SIGKILL)
+    except Exception:
+        try:
+            p.kill()
+        except Exception:
+            pass
+    try:
+        p.wait(timeout=10)
+    except Exception:
+        pass
+
+
+def _run_group(cmd, cwd, timeout, text=True, stdin=None, env=None):
+    """在**独立进程组**里跑执行体, 超时与正常收尾都整组 SIGKILL。
+
+    R549 根因: 旧实现 `subprocess.run(timeout=...)` 只杀直接子进程; 用例脚本自己起的
+    子进程(如 `python3 -m games wythoff` 死循环)会变成孤儿继续烧 CPU —— 实测 2 例
+    各 77% CPU 逾 2h (cwd=`/tmp/precond-w1-agentE1c-g1-*`), 且污染后续窗的机器闸读数。
+
+    输出走**临时文件**而非管道: 子进程若继承管道并长活, 管道不 EOF ⇒ `communicate()`
+    会把「父已退出」误判成超时(自检 A 首跑即抓到该误判)。
+    """
+    fo = tempfile.TemporaryFile()
+    fe = tempfile.TemporaryFile()
+    p = subprocess.Popen(cmd, cwd=cwd, env=env,
+                         stdin=subprocess.PIPE if stdin is not None else subprocess.DEVNULL,
+                         stdout=fo, stderr=fe, start_new_session=True)
+    if stdin is not None and p.stdin is not None:
+        try:
+            p.stdin.write(stdin.encode("utf-8") if isinstance(stdin, str) else stdin)
+            p.stdin.close()
+        except Exception:
+            pass
+    timed_out = False
+    try:
+        p.wait(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        timed_out = True
+    _kill_group(p)
+    group_gone = _wait_group_gone(p.pid)
+    fo.seek(0)
+    fe.seek(0)
+    out, err = fo.read(), fe.read()
+    fo.close()
+    fe.close()
+    if text:
+        out = out.decode("utf-8", "replace")
+        err = err.decode("utf-8", "replace")
+    return {"rc": (124 if timed_out else p.returncode), "out": out, "err": err,
+            "timed_out": timed_out, "group_gone": group_gone}
+
+
+def _wait_group_gone(pgid, budget=3.0):
+    """SIGKILL 是异步的: 等到**进程组真的空**才返回(有界), 返回是否已空。"""
+    import time as _t
+    t0 = _t.time()
+    while _t.time() - t0 < budget:
+        try:
+            os.killpg(pgid, 0)
+        except ProcessLookupError:
+            return True
+        except Exception:
+            return True
+        _t.sleep(0.05)
+    return False
+
+
 def run_file(path, stdin_text, timeout=10.0):
     try:
-        p = subprocess.run([PY, "-I", "-B", path], input=(stdin_text or "").encode("utf-8"),
-                           capture_output=True, timeout=timeout, cwd=os.path.dirname(path))
-        return {"rc": p.returncode, "stdout": p.stdout.decode("utf-8", "replace"),
-                "stderr_tail": p.stderr.decode("utf-8", "replace")[-200:]}
-    except subprocess.TimeoutExpired:
-        return {"rc": 124, "stdout": "", "stderr_tail": "TIMEOUT"}
+        r = _run_group([PY, "-I", "-B", path], os.path.dirname(path), timeout, text=False,
+                       stdin=(stdin_text or "").encode("utf-8"))
+        return {"rc": r["rc"], "stdout": r["out"].decode("utf-8", "replace"),
+                "stderr_tail": ("TIMEOUT" if r["timed_out"] else r["err"].decode("utf-8", "replace")[-200:])}
     except Exception as e:  # pragma: no cover
         return {"rc": 125, "stdout": "", "stderr_tail": str(e)[:200]}
 
@@ -204,22 +278,24 @@ def _copy_tree(src, dst):
 
 
 def run_case_script(script, workdir, timeout=420):
-    """`python3 -I -B <用例脚本>`，cwd=独立物化目录；只解析 `CASE <name> PASS|FAIL`。"""
+    """`python3 -I -B <用例脚本>`，cwd=独立物化目录；只解析 `CASE <name> PASS|FAIL`。
+
+    执行在独立进程组, 超时/收尾整组 SIGKILL ⇒ 用例脚本自起的死循环子进程不留孤儿(R549)。
+    """
     env = dict(MIN_ENV)
     env["HOME"] = workdir
     try:
-        p = subprocess.run([PY, "-I", "-B", script], cwd=workdir, capture_output=True, text=True,
-                           timeout=timeout, env=env)
-    except subprocess.TimeoutExpired:
-        return {"rc": 124, "cases": [], "stderr_tail": "TIMEOUT"}
+        r = _run_group([PY, "-I", "-B", script], workdir, timeout, text=True, env=env)
     except Exception as e:  # pragma: no cover
-        return {"rc": 125, "cases": [], "stderr_tail": str(e)[:200]}
+        return {"rc": 125, "cases": [], "stderr_tail": str(e)[:200], "timed_out": False}
     cases = []
-    for ln in p.stdout.splitlines():
+    for ln in r["out"].splitlines():
         m = CASE_RE.match(ln.strip())
         if m:
             cases.append({"name": m.group(1), "status": m.group(2), "detail": (m.group(3) or "")[:200]})
-    return {"rc": p.returncode, "cases": cases, "stderr_tail": p.stderr[-200:]}
+    tail = "TIMEOUT" if r["timed_out"] else r["err"][-200:]
+    return {"rc": r["rc"], "cases": cases, "stderr_tail": tail, "timed_out": r["timed_out"],
+            "group_gone": r["group_gone"]}
 
 
 def _scope_of(skey, scope):
@@ -528,6 +604,79 @@ def run_project(label, taskset_path, win_root, snap_root, wins, out_path, timeou
     return 0 if out["acceptable_scoped"] else 1
 
 
+def _procs_under(prefix):
+    """扫 /proc: 返回 cwd 以 prefix 开头的活进程 (用于「无孤儿」断言)。"""
+    hits = []
+    for name in os.listdir("/proc"):
+        if not name.isdigit():
+            continue
+        try:
+            cwd = os.readlink("/proc/%s/cwd" % name)
+        except Exception:
+            continue
+        if cwd.startswith(prefix):
+            try:
+                cmd = io.open("/proc/%s/cmdline" % name, encoding="utf-8", errors="replace").read().replace("\0", " ").strip()
+            except Exception:
+                cmd = "?"
+            hits.append({"pid": int(name), "cwd": cwd, "cmd": cmd})
+    return hits
+
+
+def leak_selfcheck(out_path=None):
+    """R549 自检: 独立执行路径**禁泄漏**孤儿执行体。
+
+    A: 用例脚本正常退出但留死循环子进程 ⇒ 调用后组内零残留;
+    B: 用例脚本自身超时且带死循环子进程 ⇒ rc=124 且组内零残留;
+    NC: 手工起一个死循环子进程在自检目录里 ⇒ 扫描器**必须**看见它(防「恒绿」)。
+    """
+    tmp = tempfile.mkdtemp(prefix="precond-leakcheck-")
+    results = {}
+
+    def write_case(name, body):
+        p = os.path.join(tmp, name)
+        materialize(body, p)
+        return p
+
+    a = write_case("case_a.py", (
+        "import os, subprocess, sys\n"
+        "subprocess.Popen([sys.executable, '-c', 'while True: pass'],\n"
+        "                 cwd=os.path.dirname(os.path.abspath(__file__)))\n"
+        "print('CASE a PASS')\n"))
+    b = write_case("case_b.py", (
+        "import os, subprocess, sys, time\n"
+        "subprocess.Popen([sys.executable, '-c', 'while True: pass'],\n"
+        "                 cwd=os.path.dirname(os.path.abspath(__file__)))\n"
+        "time.sleep(3600)\n"))
+
+    ra = run_case_script(a, tmp, timeout=20)
+    la = _procs_under(tmp)
+    results["A_normal_exit_no_orphan"] = {"rc": ra["rc"], "cases": ra["cases"], "group_gone": ra.get("group_gone"),
+                                          "orphans": [h["pid"] for h in la],
+                                          "pass": ra["rc"] == 0 and ra.get("group_gone") is True and not la}
+    rb = run_case_script(b, tmp, timeout=3)
+    lb = _procs_under(tmp)
+    results["B_timeout_no_orphan"] = {"rc": rb["rc"], "timed_out": rb["timed_out"],
+                                      "group_gone": rb.get("group_gone"),
+                                      "orphans": [h["pid"] for h in lb],
+                                      "pass": rb["rc"] == 124 and rb["timed_out"] and rb.get("group_gone") is True and not lb}
+    # NC: 扫描器灵敏度
+    nc = subprocess.Popen([PY, "-c", "while True: pass"], cwd=tmp, start_new_session=True)
+    seen = _procs_under(tmp)
+    nc_seen = any(h["pid"] == nc.pid for h in seen)
+    _kill_group(nc)
+    results["NC_scanner_sees_orphan"] = {"orphan_pid": nc.pid, "seen": nc_seen, "pass": nc_seen}
+    results["LEAK_SELFCHECK_OK"] = all(v["pass"] for v in results.values() if isinstance(v, dict))
+    shutil.rmtree(tmp, ignore_errors=True)
+
+    if out_path:
+        with io.open(out_path, "w", encoding="utf-8") as fh:
+            fh.write(json.dumps({"round": "R549", "instrument": "eval/rover/r507pre/exec_precondition.py",
+                                 "mode": "leak-selfcheck", "results": results}, ensure_ascii=False, indent=1))
+    print(json.dumps(results, ensure_ascii=False, indent=1))
+    return 0 if results["LEAK_SELFCHECK_OK"] else 1
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--taskset")
@@ -540,7 +689,11 @@ def main():
     ap.add_argument("--proj-timeout", type=float, default=420.0, help="project 布局: 单题全部用例的总超时(s)")
     ap.add_argument("--layout", choices=["auto", "stdin", "project"], default="auto")
     ap.add_argument("--scope", help="臂级验收面声明(JSON, 键 evidence_scope); 缺省读题集同目录 prereg-<名>.json")
+    ap.add_argument("--leak-selfcheck", action="store_true",
+                    help="R549 自检: 独立执行路径禁泄漏孤儿执行体(A 正常退出带死循环子进程 / B 超时 / NC 扫描器灵敏度)")
     a = ap.parse_args()
+    if a.leak_selfcheck:
+        return leak_selfcheck(a.out or os.path.join(REPO, "eval/rover/r549/leak-selfcheck.json"))
     if a.layout == "project" and a.taskset:
         # 显式 project 面板（供 NC/沙盒: 目录自定, 不依赖 --round 命名约定）
         rdir = os.path.dirname(os.path.abspath(a.taskset))
