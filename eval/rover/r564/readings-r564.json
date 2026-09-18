@@ -1,0 +1,347 @@
+{
+ "round": "R564",
+ "candidate3_gate_clause": {
+  "derived": {
+   "margin_mb": 64.0,
+   "required_mb": 2714.0,
+   "margin_src": "prev_observed_swing",
+   "prev_swing_mb": 64.0,
+   "ceiling_mb": 2803.0,
+   "spread_mb": 3.0,
+   "slack_mb": 89.0,
+   "rc": 0,
+   "selftest": 6
+  },
+  "positive_control": [
+   {
+    "run": 1,
+    "verdict": "PASS",
+    "mem_mb": 2786,
+    "gate_mb": 2714,
+    "blockers": 0
+   },
+   {
+    "run": 2,
+    "verdict": "PASS",
+    "mem_mb": 2790,
+    "gate_mb": 2714,
+    "blockers": 0
+   }
+  ],
+  "negative_control_hog400": {
+   "verdict": "GATE_BLOCKED",
+   "mem_mb": 2392,
+   "gate_mb": 2714,
+   "causes": [
+    "内存不足"
+   ]
+  },
+  "discriminating_pair_same_state": {
+   "base_gate_mb": 2650,
+   "base_verdict": "PASS",
+   "base_mem_mb": 2680,
+   "clause_gate_mb": 2714,
+   "clause_verdict": "GATE_BLOCKED",
+   "clause_mem_mb": 2689,
+   "causes": [
+    "内存不足"
+   ]
+  },
+  "clause": "起手 >= 2650+max(60, 上轮实测振幅 64)=2714 ∧ 极差<=50 ∧ 连续 2 次 ∧ blockers 空",
+  "teeth": "擦边态(2680~2689) 在基础门槛 2650 判 PASS、在条款门槛 2714 判 GATE_BLOCKED ⇒ 条款相对基础门槛有判别力"
+ },
+ "candidate4_wythoff_cause": {
+  "reuse": {
+   "logic_source": "eval/rover/r562/wythoff_cause_r562.py",
+   "sha256": "df9dc5ce90f2a026d248c1b992f725ff74f42e584f6ce14c505d91a578ee11ce",
+   "replaced": [
+    "WINDOW_MAP",
+    "WINDOWS",
+    "ARMS"
+   ]
+  },
+  "selftest": {
+   "positive": "15/15",
+   "mutants_n": 59,
+   "mutants_hollow": 0,
+   "phi_vs_brute_equal": true,
+   "fixture_agrees_with_oracle": true,
+   "has_teeth": true
+  },
+  "per_arm_window": [
+   {
+    "k": "w113|C1",
+    "n_pass": 15,
+    "classes": {}
+   },
+   {
+    "k": "w113|R563B0",
+    "n_pass": 7,
+    "classes": {
+     "MOVE_NOT_COLD": 7,
+     "LOSE_FOR_WIN": 1
+    }
+   },
+   {
+    "k": "w114|C1",
+    "n_pass": 15,
+    "classes": {}
+   },
+   {
+    "k": "w114|R563B0",
+    "n_pass": 15,
+    "classes": {}
+   },
+   {
+    "k": "w115|C1",
+    "n_pass": 15,
+    "classes": {}
+   },
+   {
+    "k": "w115|R563B0",
+    "n_pass": 0,
+    "classes": {
+     "MOVE_NOT_COLD": 11,
+     "WIN_FOR_LOSE": 4
+    }
+   },
+   {
+    "k": "w116|C1",
+    "n_pass": 15,
+    "classes": {}
+   },
+   {
+    "k": "w116|R563B0",
+    "n_pass": 15,
+    "classes": {}
+   },
+   {
+    "k": "w117|C1",
+    "n_pass": 15,
+    "classes": {}
+   },
+   {
+    "k": "w117|R563B0",
+    "n_pass": 15,
+    "classes": {}
+   },
+   {
+    "k": "w118|C1",
+    "n_pass": 15,
+    "classes": {}
+   },
+   {
+    "k": "w118|R563B0",
+    "n_pass": 12,
+    "classes": {
+     "MOVE_SHAPE": 2,
+     "WIN_FOR_LOSE": 1
+    }
+   }
+  ],
+  "fail_classes_total": {
+   "MOVE_NOT_COLD": 18,
+   "LOSE_FOR_WIN": 1,
+   "WIN_FOR_LOSE": 5,
+   "MOVE_SHAPE": 2
+  },
+  "w115_collapse": {
+   "arm": "R563B0",
+   "pass": "0/15",
+   "classes": {
+    "MOVE_NOT_COLD": 11,
+    "WIN_FOR_LOSE": 4
+   }
+  },
+  "oscillation": {
+   "arm": "R563B0",
+   "n_oscillating_examples": 15,
+   "n_examples": 15,
+   "examples_with_multiple_distinct_outputs": 15
+  },
+  "cross_check_vs_verdict_r563": {
+   "arm_deltas": {
+    "w113": -8,
+    "w114": 0,
+    "w115": -15,
+    "w116": 0,
+    "w117": 0,
+    "w118": -3
+   },
+   "explained_by_wythoff_family_only": true,
+   "note": "逐窗失分 = 15 - wythoff_n_pass"
+  },
+  "xref_precond_blocked": {
+   "mapping": "族内序 i ↔ 题集全局序 43+i (机取: cases-r521.json 中 wythoff 全局索引 = 43..57)",
+   "per_window": {
+    "w113": {
+     "family_local_fail_idx": [
+      0,
+      2,
+      4,
+      5,
+      7,
+      12,
+      13,
+      14
+     ],
+     "global_fail_idx": [
+      43,
+      45,
+      47,
+      48,
+      50,
+      55,
+      56,
+      57
+     ],
+     "precond_blocked_global_idx": [
+      43,
+      45,
+      47,
+      48,
+      50,
+      55,
+      56,
+      57
+     ],
+     "match": true,
+     "precond_cases": "50/58"
+    },
+    "w114": {
+     "family_local_fail_idx": [],
+     "global_fail_idx": [],
+     "precond_blocked_global_idx": [],
+     "match": true,
+     "precond_cases": "58/58"
+    },
+    "w115": {
+     "family_local_fail_idx": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14
+     ],
+     "global_fail_idx": [
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57
+     ],
+     "precond_blocked_global_idx": [
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57
+     ],
+     "match": true,
+     "precond_cases": "43/58"
+    },
+    "w116": {
+     "family_local_fail_idx": [],
+     "global_fail_idx": [],
+     "precond_blocked_global_idx": [],
+     "match": true,
+     "precond_cases": "58/58"
+    },
+    "w117": {
+     "family_local_fail_idx": [],
+     "global_fail_idx": [],
+     "precond_blocked_global_idx": [],
+     "match": true,
+     "precond_cases": "58/58"
+    },
+    "w118": {
+     "family_local_fail_idx": [
+      2,
+      7,
+      10
+     ],
+     "global_fail_idx": [
+      45,
+      50,
+      53
+     ],
+     "precond_blocked_global_idx": [
+      45,
+      50,
+      53
+     ],
+     "match": true,
+     "precond_cases": "55/58"
+    }
+   },
+   "all_match": true,
+   "note": "独立两侧交叉校验: 复用器具 (族内序) 的失败集合 与 铁律11前置器 (全局序) 的 blocked 逐条相同"
+  }
+ },
+ "errors": {},
+ "precondition_r563_r564": {
+  "rc": 1,
+  "blocked_n": 3,
+  "blocked": [
+   "w113/R563B0/g1 rc=1 cases=50/58(expect 58) failed=wythoff#43-public,wythoff#45-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#50-hidden,wythoff#55-hidden,wythoff#56-hidden,wythoff#57-hidden",
+   "w115/R563B0/g1 rc=1 cases=43/58(expect 58) failed=wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#46-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#51-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#55-hidden,wythoff#56-hidden,wythoff#57-hidden",
+   "w118/R563B0/g1 rc=1 cases=55/58(expect 58) failed=wythoff#45-hidden,wythoff#50-hidden,wythoff#53-hidden"
+  ],
+  "executable_and_correct": false,
+  "scope_prereg": true,
+  "rc_source": "进程退出码 (log: /tmp/r564/logs/precond-run-r563.txt 'PRECOND_RUN_EXIT=1'; 落盘件本身不含 rc 键)",
+  "ruling": "rc=1 未可验收 ⇒ R563 的质量/成本读数继续标「参考(未可验收)」; 本轮零新臂, 无新侧可物化"
+ },
+ "leak_selfcheck": {
+  "rc": 0,
+  "LEAK_SELFCHECK_OK": true,
+  "artifact": "eval/rover/r564/leak-selfcheck-r564.json"
+ },
+ "candidate3_replay_lower_ceiling": {
+  "ns": "eval/rover/r564/replay (独立命名空间, 不覆盖首跑)",
+  "artifact": "eval/rover/r564/replay/gate-margin-r564.json",
+  "rc": 2,
+  "ceiling_mb": 2657.0,
+  "required_mb": 2714.0,
+  "slack_mb": -57.0,
+  "why": "ceiling_below_required_margin",
+  "selftest": {
+   "n": 6,
+   "n_ok": 6,
+   "has_teeth": true
+  },
+  "reading": "首跑时宿主空闲顶棚 2803MB ⇒ REQ=2714 可达 (真机正控连续2次 PASS / 判别力成对控制成立); 复跑时顶棚降至 2657MB ⇒ 派生步**自身 fail-closed rc=2** (slack=-57) ⇒ 闸根本不启用。",
+  "boundary": "**余量条款是顶棚依赖的**: 顶棚 < 2650+MARGIN 时窗口结构性不可开启 (fail-closed, 不静默放行)。⇒ 该条款产生的「等待窗口」在本宿主并非随时可得, 可用率随宿主负载区制变化 (本轮两次采样: 2803 / 2657)。",
+  "no_falsify": "复跑 rc=2 **不翻案**首跑读数; 两者按命名空间分列, 禁相减。"
+ }
+}

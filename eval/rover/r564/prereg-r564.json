@@ -1,0 +1,23 @@
+{
+ "round": "R564",
+ "written_before_run": true,
+ "author": "cron-agent (60min tick, 2026-09-19T00:2x)",
+ "claim": "承 R563 §下轮候选 ③④ 并轮 (全部可做候选): ① 起手闸振幅余量条款**按 R563 运行中实测 swing=64 派生行使** (REQ = GATE_MB(2650) + 64 = 2714; 翻既有闸 --gate-mb, 零新逻辑进闸) ② w115 单窗 −15 的**族级只读定因** (复用 eval/rover/r562/wythoff_cause_r562.py, 只换窗集; 零逻辑复制)。零产品源码改动 · 零新增夹具 · 零新增开关 · 零新臂 · 零远端调用 (用户令 2026-09-18「开工, 不许新增夹具和额外开发了」)。",
+ "not_done": {
+  "R563-①": "wythoff 族修复 —— 须动契约/产品分支 ⇒ **待放行** (用户令禁新增开发), 未做",
+  "R563-②": "交付闸/停止条件 (rc=8/rc=5 仍交付) —— 须新增产品分支 ⇒ **待放行**, 未做"
+ },
+ "single_variable": "无 (非消融轮; 零新臂)。条款行使的唯一变化量 = 既有闸参数 --gate-mb 2710→2714 (上一轮实测振幅派生), 由 R563 的 postcheck 落盘件 gate-postcheck-r563.json(samples=/tmp/r563/logs/run-samples.jsonl) 派生, 非拍数。",
+ "acceptance_rule": {
+  "candidate3": "条款: 起手读数 >= 2650+max(60, 上一轮实测振幅=64)=2714 ∧ 起手前样本极差 <= 50MB ∧ 连续 2 次 PASS ∧ blockers 空; 运行中 postcheck min(mem) >= 2650。成对控制 = 正控(空闲) 必 PASS + 负控(真实内存占用压低至 <2714) 必 GATE_BLOCKED。缺负控不算落地。",
+  "candidate4": "只读定因: 逐 (窗, 臂) 在**副本**上重放冻结语料 (eval/rover/r560/cases/cases-r521.json), 逐字节比对 stdout 为主判据; 分类为语义定因 (仅对未匹配项)。判据器正控/负控 (期望值全 OK ∧ 变异不得全 OK) + 独立 oracle (暴力递推 与 phi 序交叉校验) 全绿才允许出读数; 任一不绿 ⇒ rc=2 器具缺陷, 不出被测读数。",
+  "rc": "0 全过 / 1 判据未过 (被测或前提) / 2 器具缺陷 / 3 缺侧或不可判",
+  "expected_direction": "candidate3 无方向预期 (只行使派生读数; 若顶棚给不出 2714 则按条款 rc=2 且**不算窗口**, 如实登记不调参凑绿); candidate4 无能力宣称 (只读定因)。**预注册不得由本轮读数反推期望方向。**",
+  "cross_check": "铁律 11 前置器 python3 eval/rover/r507pre/exec_precondition.py --round r563 (R563 为最近真机对照轮; 零新臂 ⇒ 无新侧可物化; rc!=0 ⇒ 全部质量/成本读数标「参考(未可验收)」)"
+ },
+ "evidence_scope": {
+  "candidate3": ["eval/rover/r564/gate-margin-r564.json", "eval/rover/r564/gate-pc-1.json", "eval/rover/r564/gate-pc-2.json", "eval/rover/r564/gate-nc-hog.json", "eval/rover/r564/gate-clause-r564.json"],
+  "candidate4": ["eval/rover/r564/wythoff-cause-r564.json"]
+ },
+ "discipline": "先写后跑 (本文件落盘早于任何起臂/取数); 读数原样留档 (含缺陷态), 不因后续修复覆盖; 跨窗禁相减 (w113..w118 与 w104..w112 只并列); 面在飞期间不编辑本面会调用的器具; 共享登记表/文档只做增量。"
+}

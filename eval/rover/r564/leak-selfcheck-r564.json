@@ -1,0 +1,33 @@
+{
+ "round": "R549",
+ "instrument": "eval/rover/r507pre/exec_precondition.py",
+ "mode": "leak-selfcheck",
+ "results": {
+  "A_normal_exit_no_orphan": {
+   "rc": 0,
+   "cases": [
+    {
+     "name": "a",
+     "status": "PASS",
+     "detail": ""
+    }
+   ],
+   "group_gone": true,
+   "orphans": [],
+   "pass": true
+  },
+  "B_timeout_no_orphan": {
+   "rc": 124,
+   "timed_out": true,
+   "group_gone": true,
+   "orphans": [],
+   "pass": true
+  },
+  "NC_scanner_sees_orphan": {
+   "orphan_pid": 596796,
+   "seen": true,
+   "pass": true
+  },
+  "LEAK_SELFCHECK_OK": true
+ }
+}
