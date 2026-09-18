@@ -32,6 +32,23 @@ BUILD_NODE_WATCH = ("VBCSCompiler", "MSBuild")
 DRIVER_WORDS = ("run_arm_real_", "run_rest_", "dotnet test", "dotnet publish",
                 "agentframework.tests.csproj")
 
+# R557: 自身工具子进程 (宿主会话按需拉起的语言服务) —— 起手闸内存面的**自排除闭合**。
+# 背景 (R556 §4 已登记、R557 复现): 闸红给出 "内存不足", 而 MemAvailable 被压低的原因是本侧宿主
+#   (gateway) 按需拉起的 `bash-language-server` (实测 RSS 168 MB, 年龄 67 s)。
+#   它不是「对侧作业/未知竞争负载」, 而是本侧可停驻、按需自动重启的工具进程 ⇒ 与 build 节点收口同族
+#   (R491 ⑥: shutdown 不是收口面 ⇒ 需按只读 /proc 事实 fail-closed 收口)。
+#   **判据必须绑定血统**: 只收口「PPid 链可达本闸自身血统 (self_and_ancestors)」的进程 —— 别的作业
+#   拉起的同类服务不属于本闸的收口面 (拒收并逐条记因)。
+#   负控: `--keep-own-tools` ⇒ 复现修前行为 (有工具进程且内存不足时须仍 GATE_BLOCKED)。
+#   收口面刻意**不含**执行内核类进程 (hermes_kernel_*): 它们是本会话的执行面, 停驻会造成额外扰动;
+#   且实测不收起也已足够越过门槛 (168 MB ≫ 余量缺额 46 MB)。
+OWN_TOOL_WATCH = ("bash-language-server", "pyright", "pylsp", "typescript-language-server",
+                  "yaml-language-server", "json-language-server", "lua-language-server",
+                  "vscode-languageserver", "rust-analyzer", "gopls")
+# 解释器托管的语言服务 (实测: `node .../pyright-langserver --stdio` ⇒ argv0='node') ⇒ 词面在 argv[1..]。
+# 与「shell 只是提到字串」的旧假阳性不同: 此处 argv[1] **就是**工具本体路径, 且另有血统闸 (T2) 兜底。
+INTERP_ARGV0 = ("node", "nodejs", "python", "python3", "deno", "bun", "dotnet")
+
 
 def mem_available_mb():
     for line in Path("/proc/meminfo").read_text().splitlines():
@@ -252,6 +269,96 @@ def reap_stale_build_nodes(min_age_s=REAP_MIN_AGE_S, sample_s=REAP_IDLE_SAMPLE_S
             "reaped": reaped, "refused": refused}
 
 
+def _in_own_lineage(pid, own, max_hops=12):
+    """pid 的 PPid 链是否可达 `own` (本闸自身血统) —— 只认血统, 不认「同名同形」。"""
+    cur = pid
+    for _ in range(max_hops):
+        try:
+            ppid = int(_stat_after_comm(cur)[1])
+        except (OSError, IndexError, ValueError):
+            return False
+        if ppid <= 1:
+            return False
+        if ppid in own:
+            return True
+        cur = ppid
+    return False
+
+
+def reap_own_tool_children(min_age_s=REAP_MIN_AGE_S, sample_s=REAP_IDLE_SAMPLE_S):
+    """R557: 收口**本侧宿主**按需拉起的工具子进程 (语言服务), 使内存面判据不被自身工具压低。
+
+    判据 (任一不满足 ⇒ 拒收, 不杀 —— 与 build 节点收口同形, 原因逐条可审计):
+      T1 本体 ∈ OWN_TOOL_WATCH 且 argv0 非 shell;
+      T2 PPid 链可达本闸自身血统 (self_and_ancestors) ⇒ 属本侧工具, 非对侧作业;
+      T3 年龄 ≥ min_age_s; T4 采样窗内累计 CPU 零增量;
+      T5 不持有监听套接字; T6 PPid 链上无本轮作业驱动器。
+    """
+    listen = _listening_inodes()
+    me, anc = os.getpid(), self_and_ancestors()
+    cands, t0 = [], {}
+    for pe in Path("/proc").iterdir():
+        if not pe.name.isdigit():
+            continue
+        pid = int(pe.name)
+        if pid == me or pid in anc:
+            continue
+        try:
+            raw = (pe / "cmdline").read_bytes().decode("utf-8", "replace")
+        except OSError:
+            continue
+        if not raw:
+            continue
+        cmd = raw.replace("\x00", " ").strip()
+        argv0 = os.path.basename(raw.split("\x00")[0].strip())
+        if argv0 in SHELLS:
+            continue
+        tool = argv0 if argv0 in OWN_TOOL_WATCH else None
+        if tool is None and argv0 in INTERP_ARGV0:
+            tool = next((w for w in OWN_TOOL_WATCH if w in cmd), None)
+        if tool is None:
+            continue
+        if not _in_own_lineage(pid, anc):
+            continue
+        t0[pid] = _cpu_ticks(pid)
+        cands.append({"pid": pid, "tool": tool, "argv0": argv0, "cmd": cmd[:120], "age_s": _age_s(pid),
+                      "rss_mb": rss_of(pid), "listening": _pid_listening(pid, listen)})
+    time.sleep(sample_s)
+    reaped, refused = [], []
+    for c in cands:
+        pid = c["pid"]
+        c1, c0 = _cpu_ticks(pid), t0.get(pid)
+        reasons = []
+        if c0 is None or c1 is None:
+            reasons.append("T4_CPU读数不可得")
+        elif c1 != c0:
+            reasons.append("T4_CPU活跃(%d→%d)" % (c0, c1))
+        if c["age_s"] is None or c["age_s"] < min_age_s:
+            reasons.append("T3_年龄不足(%.0fs<%.0fs)" % (c["age_s"] or -1.0, min_age_s))
+        if c["listening"]:
+            reasons.append("T5_持有监听套接字")
+        if _has_live_driver_ancestor(pid):
+            reasons.append("T6_本轮驱动器在世")
+        if reasons:
+            refused.append(dict(c, reasons=reasons))
+            continue
+        try:
+            os.kill(pid, 15)
+            time.sleep(1.0)
+            try:
+                os.kill(pid, 0)
+                os.kill(pid, 9)
+                time.sleep(0.5)
+            except OSError:
+                pass
+            reaped.append(c)
+        except OSError as e:
+            refused.append(dict(c, reasons=["T7_信号失败:%s" % e]))
+    return {"min_age_s": min_age_s, "sample_s": sample_s, "candidates": len(cands),
+            "reaped": reaped, "refused": refused,
+            "note": "本侧工具进程可停驻, 宿主按需自动重启; 判据绑血统 (PPid 链达 self_and_ancestors)"}
+
+
 def recent_src_writes(window_s):
     now = time.time()
     n = 0
@@ -299,6 +406,9 @@ def main(argv=None) -> int:
     ap.add_argument("--round", default="R484", help="记录里的轮号标签")
     ap.add_argument("--keep-stale-nodes", action="store_true",
                     help="对照/负控(R491 ⑥): 不收口陈旧 build 节点 ⇒ 复现修前行为, 有残留时须 rc=2")
+    ap.add_argument("--keep-own-tools", action="store_true",
+                    help="对照/负控(R557): 不收口本侧工具子进程 (语言服务) ⇒ 复现修前行为, "
+                         "工具进程压低内存时须仍 GATE_BLOCKED")
     a = ap.parse_args(argv)
 
     dotnet = Path(os.environ.get("DOTNET_ROOT", Path.home() / ".dotnet")) / "dotnet"
@@ -325,6 +435,11 @@ def main(argv=None) -> int:
         rec["build_node_reap"] = reap_stale_build_nodes()
     else:
         rec["build_node_reap"] = {"skipped": True, "why": "--keep-stale-nodes (复现修前行为)"}
+    # R557: 本侧工具子进程收口 (语言服务) —— 与 build 节点收口同形, 先收口再判内存。
+    if not a.keep_own_tools:
+        rec["own_tool_reap"] = reap_own_tool_children()
+    else:
+        rec["own_tool_reap"] = {"skipped": True, "why": "--keep-own-tools (复现修前行为)"}
 
     t0 = time.time()
     while True:

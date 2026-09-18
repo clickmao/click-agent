@@ -1,0 +1,36 @@
+{
+ "round": "R557",
+ "written_before_run": true,
+ "author": "cron-agent (30min tick, 2026-09-18T15:5x)",
+ "claim": "**复跑分布轮** (承 R556 §5 候选②): 同一冻结对 = 未修复件 (R555 交付件, sha d2813218…) vs R556 修复件 (sha 320d0eb1…), 在**新增 4 窗** (w94..w97) 上各跑一次, 与 codex 外部真值同窗。目的 = 把 R556 的单轮 4 窗读数升级为**同冻结对的 8 窗分布** (契约面死亡率 + 质量中位/极差), 并顺带在 8 窗上核验调用账口径 (candidate ④)。本轮**不含任何产品源码改动**, 不含新夹具。",
+ "single_variable": "**无臂间单变量** (正是本轮的可比性前提): A0 与 A1 两枚二进制均与 R556 逐位相同, 由 runner 第 0 步的两枚 sha 机检钉死 (A0=d2813218… == R555 交付件; A1=320d0eb1… == R556 交付件)。跨轮比较禁相减: 本轮 4 新窗与 R556 4 旧窗**并列报告**, 不合并、不相减; 任何「本轮 vs R556」的差一律标**异轮对照 (禁相减)**。",
+ "scope_declaration": {
+  "why_not_fix_now": "R556 §5 候选③ (起手闸 A 自排除) 与候选① (wythoff 退化窗) 本轮**不开修**: ① 起手闸假阳性的前提条件 (常驻 LSP/工具子进程吃内存) 在本轮起手时**不可复现** (实测 MemAvailable=2780MB > 阈值 2650MB, 无 LSP 进程) ⇒ 按「禁预言式修复」只登记现状证据, 不预建机制; ② wythoff 失败已定因到**被测侧生成物** (见根因块), 其杠杆是生成/修复面而非本项目产品面, 本轮不猜修。",
+  "root_cause_of_wythoff": "R556 w91 窗 A1 的 7 条失分 (含**公开用例** wythoff#43 `21 25`→期望 `WIN 15 15` 实测 `LOSE`; #44 `10 9`→期望 `WIN 0 3` 实测 `WIN 8 8`) 由**离线复判**定因: 两枚快照逐窗回放 (r557 复判脚本) 得 58/58, 51/58, 58/58, 58/58 —— **与 R556 登记读数逐位一致** (复判器具正控); 失分窗的解里 `_is_lose` 用 `k=int(phi*小堆)` 判必败点 (正解 = 用两堆之差 k=y-x), 故必败点漏判 ⇒ 该窗输出落在「合法但不是字典序最小」/「该赢却报 LOSE」。⇒ 缺陷在**生成物**, 不在夹具 (公开用例本身可判该解不合格, 且 pipeline 的 exec 修复已捕获同一不符)。"
+ },
+ "acceptance_rule": {
+  "C1_cost": "R557A1 新算 prompt 逐窗 ≤ 30% × codex 同窗值, 且调用数逐窗 ≤ codex 同窗值 (4/4 新窗)。",
+  "C2_quality": "R557A1 新 4 窗 cases_pass 中位 ≥ codex 同窗中位 − 2; 另报**同冻结对 8 窗 (R556 4 + R557 4) 分布** (逐窗/中位/极差) 作分布读数, 标注为异轮并列。",
+  "C3_exec": "python3 eval/rover/r507pre/exec_precondition.py --round r557 ⇒ rc (0 可验收 / 1 未可验收逐条点名 / 3 输入缺失)。",
+  "C4_contract": "契约面死亡率 (transcript.stage=='contract' 的窗数/有效窗数) 新窗配对: R557A1 ≤ R557A0。",
+  "C5_calls_ledger": "调用账口径核验: 逐臂比对 adapter dump 区段计数 vs transcript.calls, 差额**如实登记** (R556 4 窗已实测 1 处差额: w92/A0 dump=3 vs transcript=2)。",
+  "verdict": "C1∧C2∧C4∧(rc==0) ⇒ 达标; 否则逐项点名。未过 ⇒ 成本读数标「参考 (未可验收)」, 禁作验收依据。"
+ },
+ "preregistered_expectations": {
+  "contract_death": "R556 修复件 0/4 (R555 异轮 2/6, R552 旧读数 62%) ⇒ 预期 R557A1 **≤1/4** 且 ≤ 同窗 A0; 若新窗 A1 ≥2/4 ⇒ 修复的分布不成立, 判未达标。",
+  "quality": "同冻结对既有读数: A1 = 58,51,58,58 (中位 58, 极差 7); codex = 58,58,58,58 ⇒ 预期新 4 窗 A1 中位 ≥56, 且**至少 1 窗低于 58** (wythoff 模块退化在 R554/R555/R556 每轮各出 1 窗 ⇒ 预期是分布特性而非单次意外)。",
+  "calls": "A1 调用数期望 ≤ codex 同窗 (R556 实测 7 vs 28)。",
+  "honesty": "若新 4 窗 A1 全 58/58 ⇒ 报告写明「8 窗内失分窗 = 1/8」并**不**据此宣称模块已稳; 若 ≥2 窗失分 ⇒ 登记为分布特性并把它列为下轮唯一靶点。"
+ },
+ "evidence_scope": {
+  "require": ["w94/C1", "w94/R557A0", "w94/R557A1", "w95/C1", "w95/R557A0", "w95/R557A1", "w96/C1", "w96/R557A0", "w96/R557A1", "w97/C1", "w97/R557A0", "w97/R557A1"],
+  "nonrequired": [],
+  "declared": "对照面 = 4 新窗 × 3 臂 全部进验收面 (不挑选/不删窗); 每窗内三臂同题面 (prompt sha 516f3208…, 逐字节复用 R556 题集)/同夹具/同 adapter 会话。本声明落盘早于任何起臂 (runner 第 0 步机检)。"
+ },
+ "arms": {
+  "C1": {"label": "外部真值 codex-cli 0.154.0", "side": "codex", "windows": ["w94", "w95", "w96", "w97"], "what": "经 eval/rover/r540/proj_run_side_r540.py --side codex --arm C1 打同一 adapter (同真实模型 deepseek-flash); 工作区空目录起步。", "truth": "外部真值 = 该 CLI 的真实产出物 (games/ 包), 不由本项目任何组件生成。"},
+  "R557A0": {"label": "本侧 R1 臂 (未修复 = R555 交付件)", "side": "agent", "windows": ["w94", "w95", "w96", "w97"], "bin": "/tmp/pub_r555/agenthost", "bin_sha256": "d28132182f43aa9e866824924865499086ca7ac9a9d35128dad5692488025f08", "bin_bytes": 15816112, "expect_prefix_chars": 15291, "what": "AGENTFRAMEWORK_R1_CONTRACT=1 + AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK=1 + MAX_EXEC_REPAIR=1 + MAX_REPAIR=1 (MAX_PROBE_REPAIR 保持未设 = 剂量轴停用 R551-R553 已判无增益)。"},
+  "R557A1": {"label": "本侧 R1 臂 (R556 修复件, 冻结)", "side": "agent", "windows": ["w94", "w95", "w96", "w97"], "bin": "/tmp/pub_r556/agenthost/agenthost", "bin_sha256": "320d0eb17e709d15ce7d149ceff45fc1cacff814ac01b9fbda67f702726cee48", "bin_bytes": 15820208, "expect_prefix_chars": 15291}
+ },
+ "notes": "本轮 = 纯复跑: 产品源码零改动、零新增夹具、零新开关。所有读数落 eval/rover/r557/{evidence,readings-r557.jsonl} 与本轮报告; KPI 行追加 eval/capability/kpi.jsonl。推送暂停令在效 (只允许本地 commit)。"
+}

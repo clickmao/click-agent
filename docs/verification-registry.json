@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R542",
+ "updated_round": "R557",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -3785,7 +3785,7 @@
    "capability": "真机测量**起手闸器具化** (修 R482 假归因): `build-server shutdown` → 沉降轮询 → 三态判定 (rc=0 PASS / rc=2 GATE_BLOCKED / rc=3 MISS)；实跑 rc=0 (2758 MB / shutdown_done=true)；占用源含本方编译服务器 (VBCSCompiler) 而非仅 llama-server ⇒ 真机测量起手前**必跑**。〔追溯登记 R485〕",
    "evidence_cmd": "python3 eval/rover/r483/preflight_gate.py",
    "evidence_path": "eval/rover/r483/preflight.json",
-   "negative_control": "负控 `--nc-block` ⇒ rc=2 ✔；自匹配假阳性 (bash wrapper cmd 含 `llama-server` 字面量) 由 R484 修复 = 排除自身+**全祖先链**+shell argv0，差分负控 `--nc-selfmatch` 修前 rc=2 → 修后 rc=0；`blocker_cause` 标签不精确单列为器具候选。〔追溯登记 R485〕",
+   "negative_control": "负控 `--nc-block` ⇒ rc=2 ✔；自匹配假阳性 (bash wrapper cmd 含 `llama-server` 字面量) 由 R484 修复 = 排除自身+**全祖先链**+shell argv0，差分负控 `--nc-selfmatch` 修前 rc=2 → 修后 rc=0；`blocker_cause` 标签不精确单列为器具候选。〔追溯登记 R485〕 〔R557 重审〕器具因新增「自身工具子进程收口」(reap_own_tool_children, 血统绑定 T1–T6) 而字节变更 ⇒ **按声明语义重跑既有控制面** (非放宽判据): `--nc-block` rc=2 ✔; `--nc-selfmatch` 差分 = 复现态 rc=2 (shell 提到 watch 词, blockers=['llama-server']) / 默认态 rc=0 ✔; build 节点诱饵 aged 110s ⇒ `--keep-stale-nodes` rc=2 (原因并列含 'build-server 残留') / 默认收口该诱饵 rc=0 ✔。**改前读数原样保留, 不作废** (修复前证据: eval/rover/r557/evidence/gate-nc.json)。",
    "covers": [
     "eval/rover/r483/preflight_gate.py",
     "eval/rover/r483/preflight.json"
@@ -3796,9 +3796,9 @@
     "pin_reason": "archived-per-round",
     "artifact_sha12": "c1a5b658bc8a",
     "instrument": "eval/rover/r483/preflight_gate.py",
-    "instrument_sha12": "04e207751c50",
+    "instrument_sha12": "a5024bdd6ad5",
     "binding": "audit-pin",
-    "audited_by_round": "EXP1-Q34"
+    "audited_by_round": "R557"
    }
   },
   {
@@ -4295,11 +4295,11 @@
     "pin_reason": "archived-per-round",
     "artifact_sha12": "545ed4e204d4",
     "instrument": "eval/rover/r483/preflight_gate.py",
-    "instrument_sha12": "04e207751c50",
+    "instrument_sha12": "a5024bdd6ad5",
     "binding": "audit-pin",
-    "audited_by_round": "R491"
+    "audited_by_round": "R557"
    },
-   "negative_control": "三态消融: 诱饵年轻态必须红且**未被杀**(B), `--keep-stale-nodes` 复现修前行为(A) ⇒ 放行是收口带来的而非阈值漂移; O5 防「正被本轮构建使用」的节点被误收; 拒收行逐条留 pid/年龄/RSS/reasons 可审计; 诱饵是**人工构造**的『名字像 build 节点』睡眠进程 (非真 MSBuild) ⇒ 判据按可读事实而非进程名一票通过。",
+   "negative_control": "三态消融: 诱饵年轻态必须红且**未被杀**(B), `--keep-stale-nodes` 复现修前行为(A) ⇒ 放行是收口带来的而非阈值漂移; O5 防「正被本轮构建使用」的节点被误收; 拒收行逐条留 pid/年龄/RSS/reasons 可审计; 诱饵是**人工构造**的『名字像 build 节点』睡眠进程 (非真 MSBuild) ⇒ 判据按可读事实而非进程名一票通过。 〔R557 重审〕器具因新增「自身工具子进程收口」(reap_own_tool_children, 血统绑定 T1–T6) 而字节变更 ⇒ **按声明语义重跑既有控制面** (非放宽判据): `--nc-block` rc=2 ✔; `--nc-selfmatch` 差分 = 复现态 rc=2 (shell 提到 watch 词, blockers=['llama-server']) / 默认态 rc=0 ✔; build 节点诱饵 aged 110s ⇒ `--keep-stale-nodes` rc=2 (原因并列含 'build-server 残留') / 默认收口该诱饵 rc=0 ✔。**改前读数原样保留, 不作废** (修复前证据: eval/rover/r557/evidence/gate-nc.json)。",
    "covers": [
     "eval/rover/r483/preflight_gate.py",
     "eval/rover/r491/reap_orphans.py",
@@ -6871,6 +6871,31 @@
    },
    "negative_control": "① 声明面闸自检 `prereg_scope_gate.py --selftest` 3/3（含「计划臂未声明 ⇒ rc=1」负控）；② 真数据负控：把未计划臂 `agentR1x9z-g1` 写进 `require` ⇒ `declared_not_planned` 非空（检出）；③ 正控：`A1-on` 臂同题同窗 58/58 ⇒ 题面/判分链自身可满足（非夹具缺陷）；④ 反单调正控：剂量 1 出现 58/58 而剂量 3 三臂 43–55/58 ⇒ 「剂量越高越好」被真读数否定；⑤ 前置器 fail-closed：rc=1（剂量 3 三臂未全绿）⇒ 成本读数不得作验收依据。",
    "owner_round": "R542"
+  },
+  {
+   "id": "r557.preflight-gate-own-tool-reap",
+   "level": "L2",
+   "owner_round": "R557",
+   "capability": "**起手闸内存面的自身工具子进程自排除闭合** (`eval/rover/r483/preflight_gate.py` 增 `reap_own_tool_children`)。真因实测 (R556 §4 登记、R557 复现): 闸红报「内存不足」而 `blockers=[]` (MemAvailable 2604/2515 < 阈值 2650), 压低内存的是**本侧宿主按需拉起的语言服务** (bash-language-server 164–168 MB + pyright-langserver 162 MB, 皆 PPid 链达本闸自身血统) ⇒ 「自身工具」被当成「环境不足」。收口判据 (只读 /proc, 任一不满足即拒收不杀): T1 本体 ∈ 工具清单 (解释器托管时词面取 argv[1..]) / T2 **PPid 链可达本闸自身血统** (只收自己的, 不收别家同形服务) / T3 年龄 ≥60 s / T4 静默采样窗零 CPU 增量 / T5 不持监听套接字 / T6 PPid 链无本轮驱动器。开关 `--keep-own-tools` 复现修前行为。",
+   "evidence_cmd": "python3 eval/rover/r483/preflight_gate.py --round R557 --out eval/rover/r557/evidence/gate-pc.json",
+   "evidence_path": "eval/rover/r557/evidence/gate-pc.json",
+   "negative_control": "**成对控制 (同环境同参只翻一个开关)**: `--keep-own-tools` ⇒ `GATE_BLOCKED` rc=2 (mem 2515, `own_tool_reap.skipped`) / 默认 ⇒ `PASS` rc=0 (mem 2769, 收口 164 MB + 162 MB, refused=0) ⇒ 放行是**收口**带来的而非阈值漂移。血统闸 (T2) 使「别家作业的同名服务」不进收口面。**旧控制面回归**: `--nc-block` rc=2 / `--nc-selfmatch` 差分 (A rc=2 / B rc=0) / build 节点诱饵 aged 110 s: `--keep-stale-nodes` rc=2 (原因并列) / 默认收口 rc=0。工具为可停驻、宿主按需自动重启的进程; 收口面**刻意不含**执行内核类进程。",
+   "covers": [
+    "eval/rover/r483/preflight_gate.py",
+    "eval/rover/r557/evidence/gate-pc.json",
+    "eval/rover/r557/evidence/gate-nc.json",
+    "eval/rover/r557/evidence/gate-decoy-d.json"
+   ],
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "5314751be6af",
+    "instrument": "eval/rover/r483/preflight_gate.py",
+    "instrument_sha12": "a5024bdd6ad5",
+    "binding": "audit-pin",
+    "audited_by_round": "R557"
+   }
   }
  ],
  "aot_check_policy": "release_tag_only",

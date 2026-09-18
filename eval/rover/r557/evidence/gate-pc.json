@@ -1,0 +1,55 @@
+{
+ "blocker_causes": [],
+ "blockers": [],
+ "build_node_reap": {
+  "candidates": 0,
+  "min_age_s": 60.0,
+  "reaped": [],
+  "refused": [],
+  "sample_s": 3.0
+ },
+ "gate_mb": 2650,
+ "legacy_self_only": false,
+ "mem_available_mb": 2769,
+ "own_tool_reap": {
+  "candidates": 2,
+  "min_age_s": 60.0,
+  "note": "本侧工具进程可停驻, 宿主按需自动重启; 判据绑血统 (PPid 链达 self_and_ancestors)",
+  "reaped": [
+   {
+    "age_s": 209.73979830741882,
+    "argv0": "node",
+    "cmd": "node /home/agentuser/.hermes/lsp/bin/bash-language-server start",
+    "listening": false,
+    "pid": 421277,
+    "rss_mb": 164,
+    "tool": "bash-language-server"
+   },
+   {
+    "age_s": 119.760098695755,
+    "argv0": "node",
+    "cmd": "node /home/agentuser/.hermes/lsp/bin/pyright-langserver --stdio",
+    "listening": false,
+    "pid": 422278,
+    "rss_mb": 162,
+    "tool": "pyright"
+   }
+  ],
+  "refused": [],
+  "sample_s": 3.0
+ },
+ "recent_src_writes_120s": 0,
+ "round": "R557",
+ "self_ancestors": [
+  1,
+  1140,
+  97891,
+  422943,
+  423140
+ ],
+ "settle_s": 0.0,
+ "shell_skip": true,
+ "shells_skipped_n": 0,
+ "shutdown_done": true,
+ "verdict": "PASS"
+}

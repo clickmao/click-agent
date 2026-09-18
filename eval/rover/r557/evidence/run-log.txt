@@ -1,0 +1,12 @@
+[15:31:46] 起手闸 A1: GATE_BLOCKED (mem=2604MB)
+[15:31:46] [致命] 起手闸 A1 未过 ⇒ 不起臂
+[15:35:20] 起手闸 A1: PASS (mem=2744MB)
+[15:35:27] 起手闸 A2: PASS (mem=2759MB)
+[15:35:30] 起手闸 B (leak-selfcheck): rc=0
+[15:35:31] adapter 就绪 port=49421 (w94..w97; 每窗 = codex + A0(未修复) + A1(修复))
+  [R557 w94] C1=58/58 calls=19 new=9355 rc=None stage=None R557A0=58/58 calls=3 new=726 rc=0 stage=done R557A1=53/58 calls=1 new=151 rc=0 stage=done
+  [R557 w95] C1=58/58 calls=57 new=30844 rc=None stage=None R557A0=53/58 calls=4 new=1063 rc=5 stage=expect_stdout_exhausted R557A1=58/58 calls=1 new=151 rc=0 stage=done
+  [R557 w96] C1=56/58 calls=6 new=2773 rc=None stage=None R557A0=0/58 calls=4 new=894 rc=4 stage=contract R557A1=56/58 calls=2 new=684 rc=5 stage=expect_stdout_exhausted
+  [R557 w97] C1=58/58 calls=8 new=4241 rc=None stage=None R557A0=58/58 calls=4 new=1057 rc=5 stage=expect_stdout_exhausted R557A1=45/58 calls=2 new=563 rc=5 stage=expect_stdout_exhausted
+[15:42:52] 铁律 11 前置器: rc=2
+[15:42:52] R557 完成
