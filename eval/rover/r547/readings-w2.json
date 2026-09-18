@@ -1,0 +1,1830 @@
+{
+ "round": "r547",
+ "window": "w2",
+ "run_dir": "eval/rover/r547/run-w2",
+ "single_variable": "AGENTFRAMEWORK_R1_EARLY_STOP_PFAIL ∈ {0(轴关),1,2,3} —— 触发面随阈值收窄, 省下的是那次回灌修复远端调用",
+ "arms": {
+  "E0a": {
+   "column": "d0",
+   "threshold": 0,
+   "range": [
+    2,
+    4
+   ],
+   "rc": 5,
+   "stage": "expect_stdout_exhausted",
+   "reason_head": "step s7 stdout 与 expect_stdout 不符 (rc=1, 期望=`.....\n.....\n.....\n.###.\n.....\n.....\n..#..\n.#.#.\n...#.\n..#..\n.....`, 实测=``)",
+   "calls_dump": 3,
+   "calls_self": 3,
+   "prompt_tokens": 24509,
+   "cached_tokens": 23680,
+   "completion_tokens": 6081,
+   "total_tokens": 30590,
+   "unreported_usage": 0,
+   "plan_steps_total": 10,
+   "steps_executed": 7,
+   "exec_repairs": 1,
+   "repair_rounds": 1,
+   "correctness_asserted": 0,
+   "public_probe_ran": 1,
+   "public_probe_total": 8,
+   "public_probe_failed": 1,
+   "public_probe_trigger_rc": 5,
+   "public_probe_reason": "public_examples_failed",
+   "early_stop_pfail": null,
+   "early_stop_skipped": null,
+   "artifact_files": 6,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 50,
+   "cases_total": 58,
+   "cases_rc": 1,
+   "all_green": false,
+   "failed_cases": [
+    "wythoff#44-public",
+    "wythoff#45-hidden",
+    "wythoff#46-hidden",
+    "wythoff#47-hidden",
+    "wythoff#48-hidden",
+    "wythoff#49-hidden",
+    "wythoff#50-hidden",
+    "wythoff#56-hidden"
+   ],
+   "public_failed": [
+    "wythoff#44-public"
+   ],
+   "reply_has_probe_marker": true,
+   "reply_has_early_stop_marker": false,
+   "reply_chars": 7938
+  },
+  "E0b": {
+   "column": "d0",
+   "threshold": 0,
+   "range": [
+    10,
+    13
+   ],
+   "rc": 8,
+   "stage": "self_test_unmet",
+   "reason_head": "step s7 stdout 与 expect_stdout 不符 (rc=1, 期望=`.....\n.....\n.....\n.###.\n.....\n.....\n..#..\n.#.#.\n...#.\n..#..\n.....`, 实测=``)（计划已跑完 7/7 步, 产物在盘 ⇒ 成对报「自测未达成 ∧ 产物可疑」: 期",
+   "calls_dump": 4,
+   "calls_self": 3,
+   "prompt_tokens": 32858,
+   "cached_tokens": 31616,
+   "completion_tokens": 7278,
+   "total_tokens": 40136,
+   "unreported_usage": 0,
+   "plan_steps_total": 7,
+   "steps_executed": 7,
+   "exec_repairs": 1,
+   "repair_rounds": 1,
+   "correctness_asserted": 0,
+   "public_probe_ran": 1,
+   "public_probe_total": 8,
+   "public_probe_failed": 0,
+   "public_probe_trigger_rc": 5,
+   "public_probe_reason": "public_examples_pass",
+   "early_stop_pfail": null,
+   "early_stop_skipped": null,
+   "artifact_files": 6,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 58,
+   "cases_total": 58,
+   "cases_rc": 0,
+   "all_green": true,
+   "failed_cases": [],
+   "public_failed": [],
+   "reply_has_probe_marker": true,
+   "reply_has_early_stop_marker": false,
+   "reply_chars": 6490
+  },
+  "E0c": {
+   "column": "d0",
+   "threshold": 0,
+   "range": [
+    18,
+    18
+   ],
+   "rc": 0,
+   "stage": "done",
+   "reason_head": "全部步骤执行完毕 (10 步) + 题面公开用例回放 8/8 过（管道自产证据）",
+   "calls_dump": 1,
+   "calls_self": 1,
+   "prompt_tokens": 8083,
+   "cached_tokens": 7936,
+   "completion_tokens": 2082,
+   "total_tokens": 10165,
+   "unreported_usage": 0,
+   "plan_steps_total": 10,
+   "steps_executed": 10,
+   "exec_repairs": 0,
+   "repair_rounds": 0,
+   "correctness_asserted": 1,
+   "public_probe_ran": 1,
+   "public_probe_total": 8,
+   "public_probe_failed": 0,
+   "public_probe_trigger_rc": 0,
+   "public_probe_reason": "public_examples_pass",
+   "early_stop_pfail": null,
+   "early_stop_skipped": null,
+   "artifact_files": 6,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 56,
+   "cases_total": 58,
+   "cases_rc": 1,
+   "all_green": false,
+   "failed_cases": [
+    "wythoff#55-hidden",
+    "wythoff#57-hidden"
+   ],
+   "public_failed": [],
+   "reply_has_probe_marker": true,
+   "reply_has_early_stop_marker": false,
+   "reply_chars": 7555
+  },
+  "E0d": {
+   "column": "d0",
+   "threshold": 0,
+   "range": [
+    24,
+    25
+   ],
+   "rc": 5,
+   "stage": "expect_stdout_exhausted",
+   "reason_head": "step s7 stdout 与 expect_stdout 不符 (rc=1, 期望=`.....\n.....\n.....\n.###.\n.....\n.....\n..#..\n.#.#.\n...#.\n..#..\n.....`, 实测=``)",
+   "calls_dump": 2,
+   "calls_self": 2,
+   "prompt_tokens": 16352,
+   "cached_tokens": 15872,
+   "completion_tokens": 3445,
+   "total_tokens": 19797,
+   "unreported_usage": 0,
+   "plan_steps_total": 10,
+   "steps_executed": 7,
+   "exec_repairs": 1,
+   "repair_rounds": 0,
+   "correctness_asserted": 0,
+   "public_probe_ran": 1,
+   "public_probe_total": 8,
+   "public_probe_failed": 1,
+   "public_probe_trigger_rc": 5,
+   "public_probe_reason": "public_examples_failed",
+   "early_stop_pfail": null,
+   "early_stop_skipped": null,
+   "artifact_files": 6,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 50,
+   "cases_total": 58,
+   "cases_rc": 1,
+   "all_green": false,
+   "failed_cases": [
+    "wythoff#43-public",
+    "wythoff#46-hidden",
+    "wythoff#50-hidden",
+    "wythoff#51-hidden",
+    "wythoff#52-hidden",
+    "wythoff#53-hidden",
+    "wythoff#54-hidden",
+    "wythoff#56-hidden"
+   ],
+   "public_failed": [
+    "wythoff#43-public"
+   ],
+   "reply_has_probe_marker": true,
+   "reply_has_early_stop_marker": false,
+   "reply_chars": 6811
+  },
+  "E0e": {
+   "column": "d0",
+   "threshold": 0,
+   "range": [
+    30,
+    32
+   ],
+   "rc": 0,
+   "stage": "done",
+   "reason_head": "全部步骤执行完毕 (14 步) + 题面公开用例回放 8/8 过（管道自产证据）",
+   "calls_dump": 3,
+   "calls_self": 2,
+   "prompt_tokens": 24393,
+   "cached_tokens": 23680,
+   "completion_tokens": 5255,
+   "total_tokens": 29648,
+   "unreported_usage": 0,
+   "plan_steps_total": 14,
+   "steps_executed": 14,
+   "exec_repairs": 0,
+   "repair_rounds": 1,
+   "correctness_asserted": 1,
+   "public_probe_ran": 1,
+   "public_probe_total": 8,
+   "public_probe_failed": 0,
+   "public_probe_trigger_rc": 0,
+   "public_probe_reason": "public_examples_pass",
+   "early_stop_pfail": null,
+   "early_stop_skipped": null,
+   "artifact_files": 14,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 58,
+   "cases_total": 58,
+   "cases_rc": 0,
+   "all_green": true,
+   "failed_cases": [],
+   "public_failed": [],
+   "reply_has_probe_marker": true,
+   "reply_has_early_stop_marker": false,
+   "reply_chars": 8831
+  },
+  "E1a": {
+   "column": "d2",
+   "threshold": 2,
+   "range": [
+    5,
+    5
+   ],
+   "rc": 0,
+   "stage": "done",
+   "reason_head": "全部步骤执行完毕 (11 步) + 题面公开用例回放 8/8 过（管道自产证据）",
+   "calls_dump": 1,
+   "calls_self": 1,
+   "prompt_tokens": 8083,
+   "cached_tokens": 7936,
+   "completion_tokens": 2023,
+   "total_tokens": 10106,
+   "unreported_usage": 0,
+   "plan_steps_total": 11,
+   "steps_executed": 11,
+   "exec_repairs": 0,
+   "repair_rounds": 0,
+   "correctness_asserted": 1,
+   "public_probe_ran": 1,
+   "public_probe_total": 8,
+   "public_probe_failed": 0,
+   "public_probe_trigger_rc": 0,
+   "public_probe_reason": "public_examples_pass",
+   "early_stop_pfail": 2,
+   "early_stop_skipped": 0,
+   "artifact_files": 6,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 58,
+   "cases_total": 58,
+   "cases_rc": 0,
+   "all_green": true,
+   "failed_cases": [],
+   "public_failed": [],
+   "reply_has_probe_marker": true,
+   "reply_has_early_stop_marker": false,
+   "reply_chars": 7492
+  },
+  "E1b": {
+   "column": "d2",
+   "threshold": 2,
+   "range": [
+    14,
+    14
+   ],
+   "rc": 5,
+   "stage": "expect_stdout",
+   "reason_head": "step s8 stdout 与 expect_stdout 不符 (rc=1, 期望=`WIN 2 8`, 实测=``)",
+   "calls_dump": 1,
+   "calls_self": 1,
+   "prompt_tokens": 8083,
+   "cached_tokens": 7936,
+   "completion_tokens": 2033,
+   "total_tokens": 10116,
+   "unreported_usage": 0,
+   "plan_steps_total": 9,
+   "steps_executed": 8,
+   "exec_repairs": 0,
+   "repair_rounds": 0,
+   "correctness_asserted": 0,
+   "public_probe_ran": 1,
+   "public_probe_total": 8,
+   "public_probe_failed": 2,
+   "public_probe_trigger_rc": 5,
+   "public_probe_reason": "public_examples_failed",
+   "early_stop_pfail": 2,
+   "early_stop_skipped": 1,
+   "artifact_files": 6,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 47,
+   "cases_total": 58,
+   "cases_rc": 1,
+   "all_green": false,
+   "failed_cases": [
+    "wythoff#43-public",
+    "wythoff#44-public",
+    "wythoff#45-hidden",
+    "wythoff#46-hidden",
+    "wythoff#47-hidden",
+    "wythoff#48-hidden",
+    "wythoff#49-hidden",
+    "wythoff#50-hidden",
+    "wythoff#52-hidden",
+    "wythoff#56-hidden",
+    "wythoff#57-hidden"
+   ],
+   "public_failed": [
+    "wythoff#43-public",
+    "wythoff#44-public"
+   ],
+   "reply_has_probe_marker": true,
+   "reply_has_early_stop_marker": true,
+   "reply_chars": 7828
+  },
+  "E1c": {
+   "column": "d2",
+   "threshold": 2,
+   "range": [
+    19,
+    20
+   ],
+   "rc": 0,
+   "stage": "done",
+   "reason_head": "全部步骤执行完毕 (14 步) + 题面公开用例回放 8/8 过（管道自产证据）",
+   "calls_dump": 2,
+   "calls_self": 2,
+   "prompt_tokens": 16551,
+   "cached_tokens": 15872,
+   "completion_tokens": 4806,
+   "total_tokens": 21357,
+   "unreported_usage": 0,
+   "plan_steps_total": 14,
+   "steps_executed": 14,
+   "exec_repairs": 1,
+   "repair_rounds": 0,
+   "correctness_asserted": 1,
+   "public_probe_ran": 1,
+   "public_probe_total": 8,
+   "public_probe_failed": 0,
+   "public_probe_trigger_rc": 0,
+   "public_probe_reason": "public_examples_pass",
+   "early_stop_pfail": 2,
+   "early_stop_skipped": 0,
+   "artifact_files": 6,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 58,
+   "cases_total": 58,
+   "cases_rc": 0,
+   "all_green": true,
+   "failed_cases": [],
+   "public_failed": [],
+   "reply_has_probe_marker": true,
+   "reply_has_early_stop_marker": false,
+   "reply_chars": 9784
+  },
+  "E1d": {
+   "column": "d2",
+   "threshold": 2,
+   "range": [
+    26,
+    28
+   ],
+   "rc": 5,
+   "stage": "expect_stdout_exhausted",
+   "reason_head": "step s7 stdout 与 expect_stdout 不符 (rc=1, 期望=`.....\\n.....\\n.....\\n.###.\\n.....\\n.....\\n..#..\\n.#.#.\\n...#.\\n..#..\\n.....`, 实测=``)",
+   "calls_dump": 3,
+   "calls_self": 3,
+   "prompt_tokens": 24686,
+   "cached_tokens": 23808,
+   "completion_tokens": 5782,
+   "total_tokens": 30468,
+   "unreported_usage": 0,
+   "plan_steps_total": 10,
+   "steps_executed": 7,
+   "exec_repairs": 1,
+   "repair_rounds": 1,
+   "correctness_asserted": 0,
+   "public_probe_ran": 1,
+   "public_probe_total": 8,
+   "public_probe_failed": 0,
+   "public_probe_trigger_rc": 5,
+   "public_probe_reason": "public_examples_pass",
+   "early_stop_pfail": 2,
+   "early_stop_skipped": 0,
+   "artifact_files": 6,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 58,
+   "cases_total": 58,
+   "cases_rc": 0,
+   "all_green": true,
+   "failed_cases": [],
+   "public_failed": [],
+   "reply_has_probe_marker": true,
+   "reply_has_early_stop_marker": false,
+   "reply_chars": 7557
+  },
+  "E1e": {
+   "column": "d2",
+   "threshold": 2,
+   "range": [
+    33,
+    34
+   ],
+   "rc": 5,
+   "stage": "expect_stdout_exhausted",
+   "reason_head": "step s7 stdout 与 expect_stdout 不符 (rc=1, 期望=`.....\n.....\n.....\n.###.\n.....\n.....\n..#..\n.#.#.\n...#.\n..#..\n.....`, 实测=``)",
+   "calls_dump": 2,
+   "calls_self": 2,
+   "prompt_tokens": 16546,
+   "cached_tokens": 16000,
+   "completion_tokens": 4089,
+   "total_tokens": 20635,
+   "unreported_usage": 0,
+   "plan_steps_total": 8,
+   "steps_executed": 7,
+   "exec_repairs": 1,
+   "repair_rounds": 0,
+   "correctness_asserted": 0,
+   "public_probe_ran": 1,
+   "public_probe_total": 8,
+   "public_probe_failed": 1,
+   "public_probe_trigger_rc": 5,
+   "public_probe_reason": "public_examples_failed",
+   "early_stop_pfail": 2,
+   "early_stop_skipped": 0,
+   "artifact_files": 6,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 53,
+   "cases_total": 58,
+   "cases_rc": 1,
+   "all_green": false,
+   "failed_cases": [
+    "wythoff#44-public",
+    "wythoff#45-hidden",
+    "wythoff#49-hidden",
+    "wythoff#55-hidden",
+    "wythoff#57-hidden"
+   ],
+   "public_failed": [
+    "wythoff#44-public"
+   ],
+   "reply_has_probe_marker": true,
+   "reply_has_early_stop_marker": false,
+   "reply_chars": 7971
+  },
+  "D1a": {
+   "column": "d1",
+   "threshold": 1,
+   "range": [
+    6,
+    9
+   ],
+   "rc": 8,
+   "stage": "self_test_unmet",
+   "reason_head": "step s7 stdout 与 expect_stdout 不符 (rc=1, 期望=`.....\n.....\n.....\n.###.\n.....\n.....\n..#..\n.#.#.\n...#.\n..#..\n.....`, 实测=``)（计划已跑完 7/7 步, 产物在盘 ⇒ 成对报「自测未达成 ∧ 产物可疑」: 期",
+   "calls_dump": 4,
+   "calls_self": 3,
+   "prompt_tokens": 32858,
+   "cached_tokens": 31616,
+   "completion_tokens": 7887,
+   "total_tokens": 40745,
+   "unreported_usage": 0,
+   "plan_steps_total": 7,
+   "steps_executed": 7,
+   "exec_repairs": 1,
+   "repair_rounds": 1,
+   "correctness_asserted": 0,
+   "public_probe_ran": 1,
+   "public_probe_total": 8,
+   "public_probe_failed": 1,
+   "public_probe_trigger_rc": 5,
+   "public_probe_reason": "public_examples_failed",
+   "early_stop_pfail": 1,
+   "early_stop_skipped": 1,
+   "artifact_files": 6,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 56,
+   "cases_total": 58,
+   "cases_rc": 1,
+   "all_green": false,
+   "failed_cases": [
+    "wythoff#43-public",
+    "wythoff#57-hidden"
+   ],
+   "public_failed": [
+    "wythoff#43-public"
+   ],
+   "reply_has_probe_marker": true,
+   "reply_has_early_stop_marker": true,
+   "reply_chars": 6985
+  },
+  "D1b": {
+   "column": "d1",
+   "threshold": 1,
+   "range": [
+    15,
+    17
+   ],
+   "rc": 5,
+   "stage": "run_rc",
+   "reason_head": "step s7 rc=1",
+   "calls_dump": 3,
+   "calls_self": 2,
+   "prompt_tokens": 24394,
+   "cached_tokens": 23680,
+   "completion_tokens": 5739,
+   "total_tokens": 30133,
+   "unreported_usage": 0,
+   "plan_steps_total": 7,
+   "steps_executed": 7,
+   "exec_repairs": 0,
+   "repair_rounds": 1,
+   "correctness_asserted": 0,
+   "public_probe_ran": 1,
+   "public_probe_total": 8,
+   "public_probe_failed": 1,
+   "public_probe_trigger_rc": 5,
+   "public_probe_reason": "public_examples_failed",
+   "early_stop_pfail": 1,
+   "early_stop_skipped": 1,
+   "artifact_files": 6,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 55,
+   "cases_total": 58,
+   "cases_rc": 1,
+   "all_green": false,
+   "failed_cases": [
+    "wythoff#44-public",
+    "wythoff#45-hidden",
+    "wythoff#49-hidden"
+   ],
+   "public_failed": [
+    "wythoff#44-public"
+   ],
+   "reply_has_probe_marker": true,
+   "reply_has_early_stop_marker": true,
+   "reply_chars": 7273
+  },
+  "D1c": {
+   "column": "d1",
+   "threshold": 1,
+   "range": [
+    21,
+    23
+   ],
+   "rc": 8,
+   "stage": "self_test_unmet",
+   "reason_head": "step s7 stdout 与 expect_stdout 不符 (rc=1, 期望=`.....\n.....\n.....\n.###.\n.....\n.....\n..#..\n.#.#.\n...#.\n..#..\n.....`, 实测=``)（计划已跑完 7/7 步, 产物在盘 ⇒ 成对报「自测未达成 ∧ 产物可疑」: 期",
+   "calls_dump": 3,
+   "calls_self": 2,
+   "prompt_tokens": 24394,
+   "cached_tokens": 23680,
+   "completion_tokens": 6350,
+   "total_tokens": 30744,
+   "unreported_usage": 0,
+   "plan_steps_total": 7,
+   "steps_executed": 7,
+   "exec_repairs": 0,
+   "repair_rounds": 1,
+   "correctness_asserted": 0,
+   "public_probe_ran": 1,
+   "public_probe_total": 8,
+   "public_probe_failed": 2,
+   "public_probe_trigger_rc": 5,
+   "public_probe_reason": "public_examples_failed",
+   "early_stop_pfail": 1,
+   "early_stop_skipped": 1,
+   "artifact_files": 6,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 47,
+   "cases_total": 58,
+   "cases_rc": 1,
+   "all_green": false,
+   "failed_cases": [
+    "wythoff#43-public",
+    "wythoff#44-public",
+    "wythoff#45-hidden",
+    "wythoff#47-hidden",
+    "wythoff#48-hidden",
+    "wythoff#49-hidden",
+    "wythoff#50-hidden",
+    "wythoff#52-hidden",
+    "wythoff#53-hidden",
+    "wythoff#54-hidden",
+    "wythoff#56-hidden"
+   ],
+   "public_failed": [
+    "wythoff#43-public",
+    "wythoff#44-public"
+   ],
+   "reply_has_probe_marker": true,
+   "reply_has_early_stop_marker": true,
+   "reply_chars": 7225
+  },
+  "D1d": {
+   "column": "d1",
+   "threshold": 1,
+   "range": [
+    29,
+    29
+   ],
+   "rc": 2,
+   "stage": "semantics_incomplete",
+   "reason_head": "缺信息 ⇒ 停下澄清",
+   "calls_dump": 1,
+   "calls_self": 1,
+   "prompt_tokens": 8083,
+   "cached_tokens": 7936,
+   "completion_tokens": 567,
+   "total_tokens": 8650,
+   "unreported_usage": 0,
+   "plan_steps_total": 0,
+   "steps_executed": 0,
+   "exec_repairs": 0,
+   "repair_rounds": 0,
+   "correctness_asserted": 0,
+   "public_probe_ran": null,
+   "public_probe_total": null,
+   "public_probe_failed": null,
+   "public_probe_trigger_rc": null,
+   "public_probe_reason": null,
+   "early_stop_pfail": null,
+   "early_stop_skipped": null,
+   "artifact_files": 0,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 0,
+   "cases_total": 58,
+   "cases_rc": 1,
+   "all_green": false,
+   "failed_cases": [
+    "life#00-public",
+    "life#01-public",
+    "life#02-hidden",
+    "life#03-hidden",
+    "life#04-hidden",
+    "life#05-hidden",
+    "life#06-hidden",
+    "life#07-hidden",
+    "life#08-hidden",
+    "life#09-hidden",
+    "life#10-hidden",
+    "life#11-hidden",
+    "life#12-hidden",
+    "life#13-hidden",
+    "sub#14-public",
+    "sub#15-public",
+    "sub#16-hidden",
+    "sub#17-hidden",
+    "sub#18-hidden",
+    "sub#19-hidden",
+    "sub#20-hidden",
+    "sub#21-hidden",
+    "sub#22-hidden",
+    "sub#23-hidden",
+    "sub#24-hidden",
+    "sub#25-hidden",
+    "sub#26-hidden",
+    "sub#27-hidden",
+    "nim#28-public",
+    "nim#29-public",
+    "nim#30-hidden",
+    "nim#31-hidden",
+    "nim#32-hidden",
+    "nim#33-hidden",
+    "nim#34-hidden",
+    "nim#35-hidden",
+    "nim#36-hidden",
+    "nim#37-hidden",
+    "nim#38-hidden",
+    "nim#39-hidden",
+    "nim#40-hidden",
+    "nim#41-hidden",
+    "nim#42-hidden",
+    "wythoff#43-public",
+    "wythoff#44-public",
+    "wythoff#45-hidden",
+    "wythoff#46-hidden",
+    "wythoff#47-hidden",
+    "wythoff#48-hidden",
+    "wythoff#49-hidden",
+    "wythoff#50-hidden",
+    "wythoff#51-hidden",
+    "wythoff#52-hidden",
+    "wythoff#53-hidden",
+    "wythoff#54-hidden",
+    "wythoff#55-hidden",
+    "wythoff#56-hidden",
+    "wythoff#57-hidden"
+   ],
+   "public_failed": [
+    "life#00-public",
+    "life#01-public",
+    "sub#14-public",
+    "sub#15-public",
+    "nim#28-public",
+    "nim#29-public",
+    "wythoff#43-public",
+    "wythoff#44-public"
+   ],
+   "reply_has_probe_marker": false,
+   "reply_has_early_stop_marker": false,
+   "reply_chars": 2919
+  },
+  "D1e": {
+   "column": "d1",
+   "threshold": 1,
+   "range": [
+    35,
+    35
+   ],
+   "rc": 5,
+   "stage": "expect_stdout",
+   "reason_head": "step s8 stdout 与 expect_stdout 不符 (rc=1, 期望=`.....\n.....\n.....\n.###.\n.....\n.....\n..#..\n.#.#.\n...#.\n..#..\n.....`, 实测=``)",
+   "calls_dump": 1,
+   "calls_self": 1,
+   "prompt_tokens": 8083,
+   "cached_tokens": 7936,
+   "completion_tokens": 2128,
+   "total_tokens": 10211,
+   "unreported_usage": 0,
+   "plan_steps_total": 11,
+   "steps_executed": 8,
+   "exec_repairs": 0,
+   "repair_rounds": 0,
+   "correctness_asserted": 0,
+   "public_probe_ran": 1,
+   "public_probe_total": 8,
+   "public_probe_failed": 1,
+   "public_probe_trigger_rc": 5,
+   "public_probe_reason": "public_examples_failed",
+   "early_stop_pfail": 1,
+   "early_stop_skipped": 1,
+   "artifact_files": 6,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 55,
+   "cases_total": 58,
+   "cases_rc": 1,
+   "all_green": false,
+   "failed_cases": [
+    "wythoff#44-public",
+    "wythoff#45-hidden",
+    "wythoff#49-hidden"
+   ],
+   "public_failed": [
+    "wythoff#44-public"
+   ],
+   "reply_has_probe_marker": true,
+   "reply_has_early_stop_marker": true,
+   "reply_chars": 8134
+  },
+  "D3a": {
+   "column": "d3",
+   "threshold": 3,
+   "range": [
+    36,
+    37
+   ],
+   "rc": 5,
+   "stage": "expect_stdout_exhausted",
+   "reason_head": "step s7 stdout 与 expect_stdout 不符 (rc=1, 期望=`.....\n.....\n.....\n.###.\n.....\n.....\n..#..\n.#.#.\n...#.\n..#..\n.....`, 实测=``)",
+   "calls_dump": 2,
+   "calls_self": 2,
+   "prompt_tokens": 16308,
+   "cached_tokens": 15872,
+   "completion_tokens": 3792,
+   "total_tokens": 20100,
+   "unreported_usage": 0,
+   "plan_steps_total": 10,
+   "steps_executed": 7,
+   "exec_repairs": 1,
+   "repair_rounds": 0,
+   "correctness_asserted": 0,
+   "public_probe_ran": 1,
+   "public_probe_total": 8,
+   "public_probe_failed": 0,
+   "public_probe_trigger_rc": 5,
+   "public_probe_reason": "public_examples_pass",
+   "early_stop_pfail": 3,
+   "early_stop_skipped": 0,
+   "artifact_files": 7,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 58,
+   "cases_total": 58,
+   "cases_rc": 0,
+   "all_green": true,
+   "failed_cases": [],
+   "public_failed": [],
+   "reply_has_probe_marker": true,
+   "reply_has_early_stop_marker": false,
+   "reply_chars": 7209
+  },
+  "D3b": {
+   "column": "d3",
+   "threshold": 3,
+   "range": [
+    38,
+    39
+   ],
+   "rc": 5,
+   "stage": "expect_stdout_exhausted",
+   "reason_head": "step s7 stdout 与 expect_stdout 不符 (rc=1, 期望=`.....\n.....\n.....\n.###.\n.....\n.....\n..#..\n.#.#.\n...#.\n..#..\n.....`, 实测=``)",
+   "calls_dump": 2,
+   "calls_self": 2,
+   "prompt_tokens": 16352,
+   "cached_tokens": 16000,
+   "completion_tokens": 4117,
+   "total_tokens": 20469,
+   "unreported_usage": 0,
+   "plan_steps_total": 14,
+   "steps_executed": 7,
+   "exec_repairs": 1,
+   "repair_rounds": 0,
+   "correctness_asserted": 0,
+   "public_probe_ran": 1,
+   "public_probe_total": 8,
+   "public_probe_failed": 1,
+   "public_probe_trigger_rc": 5,
+   "public_probe_reason": "public_examples_failed",
+   "early_stop_pfail": 3,
+   "early_stop_skipped": 0,
+   "artifact_files": 6,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 55,
+   "cases_total": 58,
+   "cases_rc": 1,
+   "all_green": false,
+   "failed_cases": [
+    "wythoff#44-public",
+    "wythoff#45-hidden",
+    "wythoff#49-hidden"
+   ],
+   "public_failed": [
+    "wythoff#44-public"
+   ],
+   "reply_has_probe_marker": true,
+   "reply_has_early_stop_marker": false,
+   "reply_chars": 7889
+  },
+  "D3c": {
+   "column": "d3",
+   "threshold": 3,
+   "range": [
+    40,
+    41
+   ],
+   "rc": 5,
+   "stage": "expect_stdout_exhausted",
+   "reason_head": "step s7 stdout 与 expect_stdout 不符 (rc=1, 期望=`WIN 15 15`, 实测=``)",
+   "calls_dump": 2,
+   "calls_self": 2,
+   "prompt_tokens": 16346,
+   "cached_tokens": 16000,
+   "completion_tokens": 3770,
+   "total_tokens": 20116,
+   "unreported_usage": 0,
+   "plan_steps_total": 11,
+   "steps_executed": 7,
+   "exec_repairs": 1,
+   "repair_rounds": 0,
+   "correctness_asserted": 0,
+   "public_probe_ran": 1,
+   "public_probe_total": 8,
+   "public_probe_failed": 0,
+   "public_probe_trigger_rc": 5,
+   "public_probe_reason": "public_examples_pass",
+   "early_stop_pfail": 3,
+   "early_stop_skipped": 0,
+   "artifact_files": 6,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 58,
+   "cases_total": 58,
+   "cases_rc": 0,
+   "all_green": true,
+   "failed_cases": [],
+   "public_failed": [],
+   "reply_has_probe_marker": true,
+   "reply_has_early_stop_marker": false,
+   "reply_chars": 7515
+  },
+  "A1on": {
+   "column": "legacy",
+   "threshold": null,
+   "range": [
+    42,
+    48
+   ],
+   "rc": null,
+   "stage": null,
+   "reason_head": "",
+   "calls_dump": 7,
+   "calls_self": null,
+   "prompt_tokens": 77844,
+   "cached_tokens": 73984,
+   "completion_tokens": 4851,
+   "total_tokens": 82695,
+   "unreported_usage": 0,
+   "plan_steps_total": null,
+   "steps_executed": null,
+   "exec_repairs": null,
+   "repair_rounds": null,
+   "correctness_asserted": null,
+   "public_probe_ran": null,
+   "public_probe_total": null,
+   "public_probe_failed": null,
+   "public_probe_trigger_rc": null,
+   "public_probe_reason": null,
+   "early_stop_pfail": null,
+   "early_stop_skipped": null,
+   "artifact_files": 7,
+   "role_note_chars": null,
+   "prefix_sha256": null,
+   "cases_pass": 58,
+   "cases_total": 58,
+   "cases_rc": 0,
+   "all_green": true,
+   "failed_cases": [],
+   "public_failed": [],
+   "reply_has_probe_marker": null,
+   "reply_has_early_stop_marker": null,
+   "reply_chars": null
+  },
+  "A1onb": {
+   "column": "legacy",
+   "threshold": null,
+   "range": [
+    49,
+    56
+   ],
+   "rc": null,
+   "stage": null,
+   "reason_head": "",
+   "calls_dump": 8,
+   "calls_self": null,
+   "prompt_tokens": 96539,
+   "cached_tokens": 91776,
+   "completion_tokens": 4169,
+   "total_tokens": 100708,
+   "unreported_usage": 0,
+   "plan_steps_total": null,
+   "steps_executed": null,
+   "exec_repairs": null,
+   "repair_rounds": null,
+   "correctness_asserted": null,
+   "public_probe_ran": null,
+   "public_probe_total": null,
+   "public_probe_failed": null,
+   "public_probe_trigger_rc": null,
+   "public_probe_reason": null,
+   "early_stop_pfail": null,
+   "early_stop_skipped": null,
+   "artifact_files": 6,
+   "role_note_chars": null,
+   "prefix_sha256": null,
+   "cases_pass": 58,
+   "cases_total": 58,
+   "cases_rc": 0,
+   "all_green": true,
+   "failed_cases": [],
+   "public_failed": [],
+   "reply_has_probe_marker": null,
+   "reply_has_early_stop_marker": null,
+   "reply_chars": null
+  },
+  "A1onc": {
+   "column": "legacy",
+   "threshold": null,
+   "range": [
+    57,
+    65
+   ],
+   "rc": null,
+   "stage": null,
+   "reason_head": "",
+   "calls_dump": 9,
+   "calls_self": null,
+   "prompt_tokens": 102418,
+   "cached_tokens": 96640,
+   "completion_tokens": 7719,
+   "total_tokens": 110137,
+   "unreported_usage": 0,
+   "plan_steps_total": null,
+   "steps_executed": null,
+   "exec_repairs": null,
+   "repair_rounds": null,
+   "correctness_asserted": null,
+   "public_probe_ran": null,
+   "public_probe_total": null,
+   "public_probe_failed": null,
+   "public_probe_trigger_rc": null,
+   "public_probe_reason": null,
+   "early_stop_pfail": null,
+   "early_stop_skipped": null,
+   "artifact_files": 6,
+   "role_note_chars": null,
+   "prefix_sha256": null,
+   "cases_pass": 58,
+   "cases_total": 58,
+   "cases_rc": 0,
+   "all_green": true,
+   "failed_cases": [],
+   "public_failed": [],
+   "reply_has_probe_marker": null,
+   "reply_has_early_stop_marker": null,
+   "reply_chars": null
+  }
+ },
+ "columns": {
+  "d0": {
+   "arms": [
+    "E0a",
+    "E0b",
+    "E0c",
+    "E0d",
+    "E0e"
+   ],
+   "threshold": 0,
+   "rc": [
+    5,
+    8,
+    0,
+    5,
+    0
+   ],
+   "cases_pass": [
+    50,
+    58,
+    56,
+    50,
+    58
+   ],
+   "all_green": [
+    false,
+    true,
+    false,
+    false,
+    true
+   ],
+   "all_green_n": 2,
+   "cases_median": 56,
+   "calls": [
+    3,
+    4,
+    1,
+    2,
+    3
+   ],
+   "calls_median": 3,
+   "calls_spread": {
+    "min": 1,
+    "max": 4,
+    "span": 3
+   },
+   "prompt_median": 24393,
+   "completion_median": 5255,
+   "total_median": 29648,
+   "total_spread": {
+    "min": 10165,
+    "max": 40136,
+    "span": 29971
+   },
+   "probe_failed": [
+    1,
+    0,
+    0,
+    1,
+    0
+   ],
+   "skipped": [
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "false_success_n": 1
+  },
+  "d1": {
+   "arms": [
+    "D1a",
+    "D1b",
+    "D1c",
+    "D1d",
+    "D1e"
+   ],
+   "threshold": 1,
+   "rc": [
+    8,
+    5,
+    8,
+    2,
+    5
+   ],
+   "cases_pass": [
+    56,
+    55,
+    47,
+    0,
+    55
+   ],
+   "all_green": [
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "all_green_n": 0,
+   "cases_median": 55,
+   "calls": [
+    4,
+    3,
+    3,
+    1,
+    1
+   ],
+   "calls_median": 3,
+   "calls_spread": {
+    "min": 1,
+    "max": 4,
+    "span": 3
+   },
+   "prompt_median": 24394,
+   "completion_median": 5739,
+   "total_median": 30133,
+   "total_spread": {
+    "min": 8650,
+    "max": 40745,
+    "span": 32095
+   },
+   "probe_failed": [
+    1,
+    1,
+    2,
+    null,
+    1
+   ],
+   "skipped": [
+    1,
+    1,
+    1,
+    null,
+    1
+   ],
+   "false_success_n": 0
+  },
+  "d2": {
+   "arms": [
+    "E1a",
+    "E1b",
+    "E1c",
+    "E1d",
+    "E1e"
+   ],
+   "threshold": 2,
+   "rc": [
+    0,
+    5,
+    0,
+    5,
+    5
+   ],
+   "cases_pass": [
+    58,
+    47,
+    58,
+    58,
+    53
+   ],
+   "all_green": [
+    true,
+    false,
+    true,
+    true,
+    false
+   ],
+   "all_green_n": 3,
+   "cases_median": 58,
+   "calls": [
+    1,
+    1,
+    2,
+    3,
+    2
+   ],
+   "calls_median": 2,
+   "calls_spread": {
+    "min": 1,
+    "max": 3,
+    "span": 2
+   },
+   "prompt_median": 16546,
+   "completion_median": 4089,
+   "total_median": 20635,
+   "total_spread": {
+    "min": 10106,
+    "max": 30468,
+    "span": 20362
+   },
+   "probe_failed": [
+    0,
+    2,
+    0,
+    0,
+    1
+   ],
+   "skipped": [
+    0,
+    1,
+    0,
+    0,
+    0
+   ],
+   "false_success_n": 0
+  },
+  "d3": {
+   "arms": [
+    "D3a",
+    "D3b",
+    "D3c"
+   ],
+   "threshold": 3,
+   "rc": [
+    5,
+    5,
+    5
+   ],
+   "cases_pass": [
+    58,
+    55,
+    58
+   ],
+   "all_green": [
+    true,
+    false,
+    true
+   ],
+   "all_green_n": 2,
+   "cases_median": 58,
+   "calls": [
+    2,
+    2,
+    2
+   ],
+   "calls_median": 2,
+   "calls_spread": {
+    "min": 2,
+    "max": 2,
+    "span": 0
+   },
+   "prompt_median": 16346,
+   "completion_median": 3792,
+   "total_median": 20116,
+   "total_spread": {
+    "min": 20100,
+    "max": 20469,
+    "span": 369
+   },
+   "probe_failed": [
+    0,
+    1,
+    0
+   ],
+   "skipped": [
+    0,
+    0,
+    0
+   ],
+   "false_success_n": 0
+  },
+  "legacy": {
+   "arms": [
+    "A1on",
+    "A1onb",
+    "A1onc"
+   ],
+   "threshold": null,
+   "cases_pass": [
+    58,
+    58,
+    58
+   ],
+   "all_green_n": 3,
+   "calls": [
+    7,
+    8,
+    9
+   ],
+   "calls_median": 8,
+   "calls_spread": {
+    "min": 7,
+    "max": 9,
+    "span": 2
+   },
+   "total_median": 100708,
+   "total_spread": {
+    "min": 82695,
+    "max": 110137,
+    "span": 27442
+   }
+  }
+ },
+ "invariants": {
+  "prefix_sha256_set": [
+   "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637"
+  ],
+  "prefix_identical": true,
+  "role_note_chars_set": [
+   326
+  ],
+  "role_mounted_all": true,
+  "cases_total_58_all": true,
+  "threshold_field_matches_column": true,
+  "d0_zero_regression_fields_absent": true,
+  "reachable_arms": [
+   "E0a",
+   "E0b",
+   "E0c",
+   "E0d",
+   "E0e",
+   "E1a",
+   "E1b",
+   "E1c",
+   "E1d",
+   "E1e",
+   "D1a",
+   "D1b",
+   "D1c",
+   "D1e",
+   "D3a",
+   "D3b",
+   "D3c",
+   "A1on",
+   "A1onb",
+   "A1onc"
+  ],
+  "probe_ran_on_reachable": true,
+  "nonzero_exit_covered": true
+ },
+ "judgments": {
+  "K1_剂量机制": {
+   "d1": {
+    "threshold": 1,
+    "fired": [
+     "D1a",
+     "D1b",
+     "D1c",
+     "D1e"
+    ],
+    "fired_n": 4,
+    "nonfired": [],
+    "nonfired_n": 0,
+    "void": [
+     "D1d"
+    ],
+    "violations": [
+     {
+      "arm": "D1a",
+      "pfail": 1,
+      "why": [
+       "exec_repairs!=0"
+      ]
+     }
+    ],
+    "verdict": "FAIL(1)"
+   },
+   "d2": {
+    "threshold": 2,
+    "fired": [
+     "E1b"
+    ],
+    "fired_n": 1,
+    "nonfired": [
+     "E1a",
+     "E1c",
+     "E1d",
+     "E1e"
+    ],
+    "nonfired_n": 4,
+    "void": [],
+    "violations": [],
+    "verdict": "PASS"
+   },
+   "d3": {
+    "threshold": 3,
+    "fired": [],
+    "fired_n": 0,
+    "nonfired": [
+     "D3a",
+     "D3b",
+     "D3c"
+    ],
+    "nonfired_n": 3,
+    "void": [],
+    "violations": [],
+    "verdict": "PASS"
+   }
+  },
+  "K2_剂量代价": {
+   "d0": {
+    "threshold": 0,
+    "n": 5,
+    "calls": [
+     3,
+     4,
+     1,
+     2,
+     3
+    ],
+    "calls_median": 3,
+    "calls_spread": {
+     "min": 1,
+     "max": 4,
+     "span": 3
+    },
+    "total_median": 29648,
+    "total_spread": {
+     "min": 10165,
+     "max": 40136,
+     "span": 29971
+    },
+    "prompt_median": 24393,
+    "completion_median": 5255,
+    "calls_ratio_vs_d0": 1.0,
+    "total_ratio_vs_d0": 1.0,
+    "skipped_n": 0
+   },
+   "d1": {
+    "threshold": 1,
+    "n": 5,
+    "calls": [
+     4,
+     3,
+     3,
+     1,
+     1
+    ],
+    "calls_median": 3,
+    "calls_spread": {
+     "min": 1,
+     "max": 4,
+     "span": 3
+    },
+    "total_median": 30133,
+    "total_spread": {
+     "min": 8650,
+     "max": 40745,
+     "span": 32095
+    },
+    "prompt_median": 24394,
+    "completion_median": 5739,
+    "calls_ratio_vs_d0": 1.0,
+    "total_ratio_vs_d0": 1.016,
+    "skipped_n": 4
+   },
+   "d2": {
+    "threshold": 2,
+    "n": 5,
+    "calls": [
+     1,
+     1,
+     2,
+     3,
+     2
+    ],
+    "calls_median": 2,
+    "calls_spread": {
+     "min": 1,
+     "max": 3,
+     "span": 2
+    },
+    "total_median": 20635,
+    "total_spread": {
+     "min": 10106,
+     "max": 30468,
+     "span": 20362
+    },
+    "prompt_median": 16546,
+    "completion_median": 4089,
+    "calls_ratio_vs_d0": 0.667,
+    "total_ratio_vs_d0": 0.696,
+    "skipped_n": 1
+   },
+   "d3": {
+    "threshold": 3,
+    "n": 3,
+    "calls": [
+     2,
+     2,
+     2
+    ],
+    "calls_median": 2,
+    "calls_spread": {
+     "min": 2,
+     "max": 2,
+     "span": 0
+    },
+    "total_median": 20116,
+    "total_spread": {
+     "min": 20100,
+     "max": 20469,
+     "span": 369
+    },
+    "prompt_median": 16346,
+    "completion_median": 3792,
+    "calls_ratio_vs_d0": 0.667,
+    "total_ratio_vs_d0": 0.678,
+    "skipped_n": 0
+   },
+   "point_estimates": {
+    "fired_n_monotone_d1_ge_d2_ge_d3": true,
+    "d3_equals_d0_on_calls": false,
+    "saved_calls_marginal = fired_n × 1": {
+     "d1": 4,
+     "d2": 1,
+     "d3": 0
+    }
+   }
+  },
+  "K3_配对反事实": {
+   "d1": {
+    "threshold": 1,
+    "treated_arms": [
+     "d1",
+     "d1",
+     "d1",
+     "d1"
+    ],
+    "treated_n": 4,
+    "control_arms_pfail_ge_th": [
+     "E0a",
+     "E0d"
+    ],
+    "control_n": 2,
+    "treated_calls_median": 3.0,
+    "control_calls_median": 2.5,
+    "treated_total_median": 30438.5,
+    "control_total_median": 25193.5,
+    "paired_by_pfail": {
+     "1": {
+      "treated": [
+       4,
+       3,
+       1
+      ],
+      "control": [
+       2,
+       2
+      ]
+     },
+     "2": {
+      "treated": [
+       3
+      ],
+      "control": []
+     }
+    },
+    "sample_sufficient": false,
+    "verdict": "样本不足(n_treated=4, n_control=2) ⇒ 不作降幅宣称"
+   },
+   "d2": {
+    "threshold": 2,
+    "treated_arms": [
+     "d2"
+    ],
+    "treated_n": 1,
+    "control_arms_pfail_ge_th": [],
+    "control_n": 0,
+    "treated_calls_median": 1,
+    "control_calls_median": null,
+    "treated_total_median": 10116,
+    "control_total_median": null,
+    "paired_by_pfail": {
+     "2": {
+      "treated": [
+       1
+      ],
+      "control": []
+     }
+    },
+    "sample_sufficient": false,
+    "verdict": "样本不足(n_treated=1, n_control=0) ⇒ 不作降幅宣称"
+   }
+  },
+  "K4_质量": {
+   "per_column": {
+    "d0": {
+     "all_green_n": 2,
+     "n": 5,
+     "cases_median": 56,
+     "cases": [
+      50,
+      58,
+      56,
+      50,
+      58
+     ]
+    },
+    "d1": {
+     "all_green_n": 0,
+     "n": 5,
+     "cases_median": 55,
+     "cases": [
+      56,
+      55,
+      47,
+      0,
+      55
+     ]
+    },
+    "d2": {
+     "all_green_n": 3,
+     "n": 5,
+     "cases_median": 58,
+     "cases": [
+      58,
+      47,
+      58,
+      58,
+      53
+     ]
+    },
+    "d3": {
+     "all_green_n": 2,
+     "n": 3,
+     "cases_median": 58,
+     "cases": [
+      58,
+      55,
+      58
+     ]
+    }
+   },
+   "fired_subset": {
+    "arms": [
+     "D1a",
+     "D1b",
+     "D1c",
+     "D1e",
+     "E1b"
+    ],
+    "all_green_n": 0,
+    "cases_median": 55
+   },
+   "nonfired_subset": {
+    "arms": [
+     "E1a",
+     "E1c",
+     "E1d",
+     "E1e",
+     "D3a",
+     "D3b",
+     "D3c"
+    ],
+    "all_green_n": 5,
+    "cases_median": 58
+   },
+   "not_worse_vs_d0": {
+    "d1": false,
+    "d2": true,
+    "d3": true
+   }
+  },
+  "K5_零回归": {
+   "d0_fields_absent": true,
+   "d0_reply_scan": {
+    "E0a": false,
+    "E0b": false,
+    "E0c": false,
+    "E0d": false,
+    "E0e": false
+   },
+   "note": "另外机检: 既有测试全绿 + AOT IL 警告 0 (产品源码本轮零改动 ⇒ 复用 R546 同一二进制 sha256)"
+  },
+  "K6_窗口面": {
+   "w2": {
+    "d0": {
+     "calls_median": 3,
+     "calls_spread": {
+      "min": 1,
+      "max": 4,
+      "span": 3
+     },
+     "cases_median": 56,
+     "all_green_n": 2
+    },
+    "d2": {
+     "calls_median": 2,
+     "calls_spread": {
+      "min": 1,
+      "max": 3,
+      "span": 2
+     },
+     "cases_median": 58,
+     "all_green_n": 3
+    }
+   },
+   "w1_source": "eval/rover/r546/readings-w1.json (R546 轮, 同臂清单/同输入)",
+   "w1": {
+    "off": {
+     "calls_median": 2,
+     "calls_spread": {
+      "min": 1,
+      "max": 4,
+      "span": 3
+     },
+     "cases_median": 56,
+     "all_green_n": 2,
+     "calls": [
+      2,
+      1,
+      4,
+      2,
+      2
+     ]
+    },
+    "on": {
+     "calls_median": 2,
+     "calls_spread": {
+      "min": 1,
+      "max": 4,
+      "span": 3
+     },
+     "cases_median": 58,
+     "all_green_n": 3,
+     "calls": [
+      2,
+      1,
+      2,
+      4,
+      2
+     ]
+    }
+   },
+   "w1_error": "KeyError",
+   "discipline": "窗间只并列读数与极差; **禁跨轮相减**(w1 属 R546 轮)"
+  },
+  "K7_旧路径列": {
+   "w2_samples": [
+    {
+     "arm": "A1on",
+     "calls": 7,
+     "total": 82695,
+     "cases": "58/58"
+    },
+    {
+     "arm": "A1onb",
+     "calls": 8,
+     "total": 100708,
+     "cases": "58/58"
+    },
+    {
+     "arm": "A1onc",
+     "calls": 9,
+     "total": 110137,
+     "cases": "58/58"
+    }
+   ],
+   "w2_calls_median": 8,
+   "w2_calls_spread": {
+    "min": 7,
+    "max": 9,
+    "span": 2
+   },
+   "w2_total_median": 100708,
+   "quality_premise": "旧路径满绿 ⇒ 比值只作参考, 不得当增益证据",
+   "leg_all_green_n": 3,
+   "w1_calls": [
+    12,
+    9,
+    4
+   ],
+   "w1_calls_median": 9,
+   "w1_calls_spread": {
+    "min": 4,
+    "max": 12,
+    "span": 8
+   },
+   "w1_all_green_n": 2,
+   "two_window_n": 6
+  },
+  "K8_收口": {
+   "gate": "eval/rover/r507pre/exec_precondition.py --round r547",
+   "precond_rc": 1,
+   "rule": "rc≠0 ⇒ 本轮一切降幅标「参考(未可验收)」, 禁作验收依据",
+   "acceptance_label": "参考(未可验收)"
+  }
+ },
+ "notes": [
+  "K3 样本不足的口径 = 未获得证据(≠获得证据); 与 R546 J10 同。",
+  "δ=3 是判别性阴控: 若实测 pfail 从未 ≥3 而 δ=3 列出现 skipped=1 ⇒ 阈值语义被证伪。"
+ ],
+ "precond_rc": 1
+}

@@ -1,0 +1,227 @@
+{
+ "round": "r547",
+ "title": "早停阈值**剂量面**单变量: AGENTFRAMEWORK_R1_EARLY_STOP_PFAIL ∈ {unset(0), 1, 2, 3}（g1 随机游戏长任务, 58 隐藏用例, 窗 w2）",
+ "revision": 1,
+ "supersedes": null,
+ "made_before_run": true,
+ "made_at": "2026-09-18T09:2x+08:00",
+ "single_variable": "AGENTFRAMEWORK_R1_EARLY_STOP_PFAIL ∈ {0(轴关), 1, 2, 3} —— 同一变量的 4 个水平; δ=1/2 各 5 独立 session, δ=3 阴控 3, δ=0 5; 其余(题面/用例/role/二进制/MAX_EXEC_REPAIR=1/MAX_REPAIR=1/PUBLIC_SELFCHECK=1)全同",
+ "mainline": "主线(用户 2026-09-17 钦定): 真实开发任务 × 机械判分(58 隐藏用例真跑, 非自报) 对本项目做质量自检; R413 的「一轮 token ↓≥30%(主要是不必要的远端调用少了)」是**该主线的判据之一**。本轮因果假设 = 探针已判产物不合格(pfail≥δ)时的那次回灌修复调用是**不必要请求**, 阈值 δ 决定其触发面。",
+ "why_revision": "R546 只做了 {0,2} 两点 ⇒ 只知「机制存在」, 不知「阈值-代价响应」。阈值是可配参数; δ=1 触发面最宽, δ=3 应在实测分布上从不触发 ⇒ 三点定曲线 + 一点判别性阴性对照。",
+ "window_plan": {
+  "window": "w2",
+  "windows": [
+   "w2"
+  ],
+  "reps_per_side": 5,
+  "arms": [
+   {
+    "snapdir": "agentE0a-g1",
+    "side": "agent",
+    "switch": "early_stop=0",
+    "column": "d0(轴关)",
+    "rep": "a"
+   },
+   {
+    "snapdir": "agentE0b-g1",
+    "side": "agent",
+    "switch": "early_stop=0",
+    "column": "d0(轴关)",
+    "rep": "b"
+   },
+   {
+    "snapdir": "agentE0c-g1",
+    "side": "agent",
+    "switch": "early_stop=0",
+    "column": "d0(轴关)",
+    "rep": "c"
+   },
+   {
+    "snapdir": "agentE0d-g1",
+    "side": "agent",
+    "switch": "early_stop=0",
+    "column": "d0(轴关)",
+    "rep": "d"
+   },
+   {
+    "snapdir": "agentE0e-g1",
+    "side": "agent",
+    "switch": "early_stop=0",
+    "column": "d0(轴关)",
+    "rep": "e"
+   },
+   {
+    "snapdir": "agentE1a-g1",
+    "side": "agent",
+    "switch": "early_stop=2",
+    "column": "d2",
+    "rep": "a"
+   },
+   {
+    "snapdir": "agentE1b-g1",
+    "side": "agent",
+    "switch": "early_stop=2",
+    "column": "d2",
+    "rep": "b"
+   },
+   {
+    "snapdir": "agentE1c-g1",
+    "side": "agent",
+    "switch": "early_stop=2",
+    "column": "d2",
+    "rep": "c"
+   },
+   {
+    "snapdir": "agentE1d-g1",
+    "side": "agent",
+    "switch": "early_stop=2",
+    "column": "d2",
+    "rep": "d"
+   },
+   {
+    "snapdir": "agentE1e-g1",
+    "side": "agent",
+    "switch": "early_stop=2",
+    "column": "d2",
+    "rep": "e"
+   },
+   {
+    "snapdir": "agentD1a-g1",
+    "side": "agent",
+    "switch": "early_stop=1",
+    "column": "d1",
+    "rep": "a"
+   },
+   {
+    "snapdir": "agentD1b-g1",
+    "side": "agent",
+    "switch": "early_stop=1",
+    "column": "d1",
+    "rep": "b"
+   },
+   {
+    "snapdir": "agentD1c-g1",
+    "side": "agent",
+    "switch": "early_stop=1",
+    "column": "d1",
+    "rep": "c"
+   },
+   {
+    "snapdir": "agentD1d-g1",
+    "side": "agent",
+    "switch": "early_stop=1",
+    "column": "d1",
+    "rep": "d"
+   },
+   {
+    "snapdir": "agentD1e-g1",
+    "side": "agent",
+    "switch": "early_stop=1",
+    "column": "d1",
+    "rep": "e"
+   },
+   {
+    "snapdir": "agentD3a-g1",
+    "side": "agent",
+    "switch": "early_stop=3",
+    "column": "d3(阴控)",
+    "rep": "a"
+   },
+   {
+    "snapdir": "agentD3b-g1",
+    "side": "agent",
+    "switch": "early_stop=3",
+    "column": "d3(阴控)",
+    "rep": "b"
+   },
+   {
+    "snapdir": "agentD3c-g1",
+    "side": "agent",
+    "switch": "early_stop=3",
+    "column": "d3(阴控)",
+    "rep": "c"
+   },
+   {
+    "snapdir": "agentA1on-g1",
+    "side": "agent",
+    "switch": "early_stop=0",
+    "column": "legacy-path",
+    "rep": "n"
+   },
+   {
+    "snapdir": "agentA1onb-g1",
+    "side": "agent",
+    "switch": "early_stop=0",
+    "column": "legacy-path",
+    "rep": "b"
+   },
+   {
+    "snapdir": "agentA1onc-g1",
+    "side": "agent",
+    "switch": "early_stop=0",
+    "column": "legacy-path",
+    "rep": "c"
+   }
+  ],
+  "windows_note": "w2 = R546 预注册 window_plan.windows=[w1,w2] 的第二窗(独立 session, 同臂清单/同输入); w1 读数属 R546 轮(run-w1), 本轮**只并列引用**(逐窗报 + 极差), 禁跨轮相减。",
+  "reason_of_extra_arms": "候选①(第二窗: 单窗=噪声) + 候选②(剂量曲线 δ=1/2/3) + 候选④(旧路径列 × 3/窗 ⇒ 两窗 n=6)。"
+ },
+ "evidence_scope": {
+  "require": [
+   "w2/agentE0a-g1",
+   "w2/agentE0b-g1",
+   "w2/agentE0c-g1",
+   "w2/agentE0d-g1",
+   "w2/agentE0e-g1",
+   "w2/agentE1a-g1",
+   "w2/agentE1b-g1",
+   "w2/agentE1c-g1",
+   "w2/agentE1d-g1",
+   "w2/agentE1e-g1",
+   "w2/agentD1a-g1",
+   "w2/agentD1b-g1",
+   "w2/agentD1c-g1",
+   "w2/agentD1d-g1",
+   "w2/agentD1e-g1",
+   "w2/agentD3a-g1",
+   "w2/agentD3b-g1",
+   "w2/agentD3c-g1",
+   "w2/agentA1on-g1",
+   "w2/agentA1onb-g1",
+   "w2/agentA1onc-g1"
+  ],
+  "nonrequired": [],
+  "grader": "eval/rover/r547/cases/run_cases_r521.py (58 隐藏用例, 独立进程真跑, 机械判分; 禁模型裁判)",
+  "scorer": "eval/rover/r547/snapshots/w2/*/g1/work (真实产物树快照)",
+  "silent_failure_checks": [
+   "rc==0 ∧ 用例未全过 = 假成功",
+   "产物树为空 ⇒ 警告 + 不得当绿",
+   "δ=0 臂台账出现 early_stop_* 字段或 reply 含 R1_EARLY_STOP ⇒ 零回归破(fail)",
+   "δ>0 臂 pfail≥δ 但 early_stop_skipped≠1 ⇒ 机制未行使(判据证伪, 不得宣称省调用)",
+   "δ=3 臂若出现 early_stop_skipped=1 ⇒ 阴控破(阈值语义被证伪, 须回前提)"
+  ]
+ },
+ "judgments": {
+  "K1_剂量机制(机械, 逐 δ)": "对 δ∈{1,2,3}: 臂 pfail ≥ δ ⇒ early_stop_skipped=1 ∧ exec_repairs=0 ∧ reply 含 R1_EARLY_STOP; pfail < δ ⇒ early_stop_skipped=0 ∧ 无 marker。pfail=None(探针未跑) ⇒ 该臂 VOID 单列, 不计入判据; 某类样本为空 ⇒ 标「该剂量未行使」。",
+  "K2_剂量-代价(同窗三列)": "列 δ∈{0,1,2,3}: calls / prompt / completion / total 中位 + 极差。点估计: 行使臂数 δ=1 ≥ δ=2 ≥ δ=3(=0); δ=3 应逐位等于 δ=0(阴控)。",
+  "K3_配对反事实(判据性)": "同窗内 pfail≥δ 子集, 按同 pfail 值配对 (δ 臂 vs δ=0 臂); 两类各 n≥5 ⇒ 报 calls 中位差 + total 比; 否则标「样本不足(n=..), 不作降幅宣称」(与 R546 J10 同口径: 未获得证据≠获得证据)。",
+  "K4_质量非劣": "两维: ① 全绿臂数(58/58) ② 用例通过数中位 —— 逐 δ vs δ=0, 且行使臂 vs 未行使臂分开报; 收窄 ⇒ 如实报为「代价换质量」, 不得当增益。",
+  "K5_零回归": "δ=0 臂台账无 early_stop_pfail/early_stop_skipped 字段 ∧ reply 无 R1_EARLY_STOP ⇒ 逐位旧行为; 既有测试全绿 ∧ AOT IL 警告 0。",
+  "K6_窗口面(候选①)": "w2 与 w1(R546 run-w1 已发布读数) 逐列并列报: 每列 calls/用例中位 + 极差; **只在窗内算比值, 窗间只并列读数, 不做相减**。",
+  "K7_旧路径列(候选④)": "逐窗 3 样本报极差, 两窗合计 n=6 并列; 质量前提不成立 ⇒ 比值只作参考。",
+  "K8_收口(铁律11)": "exec_precondition --round r547 rc 原样记录; rc≠0 ⇒ 本轮一切降幅标「参考(未可验收)」, 禁作验收依据。"
+ },
+ "instrument_negative_control": {
+  "what": "src/agent.tests/R1EarlyStopTests.cs —— 同沙盒/同脚本化 caller/同题面, 只翻 EARLY_STOP_PFAIL ∈ {0,1,5}: 0 ⇒ Calls=2(逐位旧行为); 1 ⇒ rc=8/public_probe_unmet ∧ Calls=1 ∧ 台账 early_stop_skipped=1; 5 ⇒ pfail=1<5 ⇒ 不触发(Calls=2) ⇒ 阈值语义负控。",
+  "why_not_model_judge": "全部断言是整数计数与字段缺席, 可机检; 无模型裁判。"
+ },
+ "acceptance": "① 链真跑通(起手闸 2×PASS + 冒烟 + 全臂 idx 区间非空) ② 同窗读数证明判据(K1 机制逐 δ 机械可判 + K3 配对读数 + K4 质量非劣) ③ exec_precondition --round r547: rc≠0 ⇒ 降幅一律标「参考(未可验收)」。",
+ "forbidden": [
+  "模型裁判",
+  "事后补记(判据/臂清单/阈值起臂后改)",
+  "跨轮相减",
+  "以链自报 rc 当正确性证据",
+  "以本仓内部读数自证(无外部判据时须标注)"
+ ],
+ "device_spec": "agenthost AOT (IL 警告 0, sha256=1224d3f4ec61d267…, 与 R546 同一二进制: 本轮**零产品源码改动**) + eval/rover/r455/adapter_tools.py 计量中继(FULL dump); 串行起臂(2 vCPU); 窗口超时 420s(旧路径 720s)。"
+}

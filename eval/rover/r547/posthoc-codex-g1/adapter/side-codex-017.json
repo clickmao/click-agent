@@ -1,0 +1,42 @@
+{
+ "side": "codex",
+ "request": {
+  "instructions_chars": 16979,
+  "tools_n": 9,
+  "passed_tools_n": 7,
+  "input_items": 7,
+  "upstream_request": {
+   "model": "deepseek-chat",
+   "n_messages": 8,
+   "tools": [
+    "exec_command",
+    "write_stdin",
+    "request_user_input",
+    "view_image",
+    "get_goal",
+    "create_goal",
+    "update_goal"
+   ]
+  }
+ },
+ "response": {
+  "tool_calls": [
+   {
+    "name": "exec_command",
+    "args": "{\"cmd\": \"ls games/\", \"workdir\": \"/tmp/r547_reps/codex3/g1/work\"}"
+   }
+  ],
+  "text": "",
+  "usage": {
+   "prompt_tokens": 7761,
+   "completion_tokens": 68,
+   "total_tokens": 7829,
+   "prompt_tokens_details": {
+    "cached_tokens": 7552
+   },
+   "prompt_cache_hit_tokens": 7552,
+   "prompt_cache_miss_tokens": 209
+  }
+ },
+ "extra": {}
+}

@@ -1,0 +1,17 @@
+"""Multi-pile Nim: smallest-index winning move."""
+
+
+def solve(text: str) -> str:
+    parts = text.split()
+    m = int(parts[0])
+    piles = [int(x) for x in parts[1:1 + m]]
+    x = 0
+    for a in piles:
+        x ^= a
+    if x == 0:
+        return 'LOSE'
+    for idx in range(m):
+        target = piles[idx] ^ x
+        if target < piles[idx]:
+            return 'WIN %d %d' % (idx + 1, piles[idx] - target)
+    return 'LOSE'
