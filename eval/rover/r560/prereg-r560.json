@@ -1,0 +1,83 @@
+{
+ "round": "R560",
+ "written_before_run": true,
+ "author": "cron-agent (60min tick, 2026-09-18T18:3x)",
+ "claim": "**剂量 3 扩窗复跑 (n=3→6) —— 把 R559 的「质量单臂 C2 首次达成」从 3 窗升级为 6 窗稳定性读数**。R559 已实测执行面修复预算上限档 3 是首个把管道走到 `stage=done` 的档位 (2/3 窗), 质量中位 56 / 极差 2 (真值 58/0) 且 C2 达成, 但 n=3 ⇒ 单窗摆动不可排除 (R523 纪律)。本轮**只加窗**: 同窗 3 臂 (codex 真值 + B0(exec=0) + B3(exec=3)) × **6 新窗 (w107..w112)**, 同一枚二进制 (R556 交付件 sha 320d0eb1…, runner 第 0 步机检) ⇒ 零产品源码改动、零 AOT 重发布、**零新增夹具、零新开关** (用户令 2026-09-18「开工，不许新增夹具和额外开发了」)。目的 = 把「剂量 3 质量达标」从单臂 n=3 升级为 n=6 中位/极差, 并复核铁律 11 rc 与 wythoff 残余稳定性 (候选③)。不引入任何新轴、不改任何阈值。",
+ "single_variable": "`AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR` ∈ {0, 3} (两枚本侧臂共用同一二进制 sha 320d0eb1…, runner 第 0 步机检钉死; 其余 env 逐条相同: R1_CONTRACT=1 / R1_PUBLIC_SELFCHECK=1 / R1_MAX_REPAIR=1 / R1_MAX_PROBE_REPAIR 未设=停用 / STEP_TIMEOUT 默认 120s)。",
+ "scope_declaration": {
+  "why_not_new_axis": "用户令 (2026-09-18): 「不许新增夹具和额外开发」「提质只能翻已有开关」。本轮**不翻任何新开关、不改任何器具行为**, 只把 R559 已跑通的那一枚开关的**窗数**从 3 扩到 6 (扩窗 = 样本量, 不是新自由度); 题集逐字节复用 (sha e0c667c2…), 二进制 sha 相同 ⇒ 跨轮窗**并列不相减**。三轮内已判废的轴 (探针轴 R551–R553) 不重复。",
+  "offline_first": "零远端调用的前置读数: R559 定因件 `eval/rover/r559/oracle-wythoff-w10{4,5,6}.json` (非同源 P/N 位 DP oracle) 已证 `fixture_agrees_with_oracle=true` ×3 窗 ⇒ 夹具自洽, 残余失分为**能力面**; R559 族级分布 (只读 R558 冻结件) 显示失分 100% 集中 wythoff ⇒ 本轮扩窗正是对该族做 n=6 稳定性读数, 不动夹具。",
+  "declaration_audit": "R559 报告 ④「B0/rc=8 public_probe_unmet 交付闸」需**新增一处产品分支** (全仓 87 个 env 开关中交付/拒绝/降级语义命中 0) ⇒ 属用户明令禁止的新增开发, **本轮不做**, 只如实登记为未做候选 (原因: 需新增开发, 未放行)。② 「铁律 11 验收面口径 (require 是否含对照臂)」属**待用户裁定**项, 本轮**保持现状口径** (三臂全进 require) 以维持 rc 语义可比, 不得由本循环自行变更 (记 1 次有效澄清)。",
+  "root_cause_carryover": "R557/R559 定因 (非同源 oracle 双验): wythoff 残余 4 例 = `illegal_move` 2 (含公开用例 #43) + `legal_but_not_canonical` 1 + `wrong_lose` 1; B0 面 = `malformed` 15 + `non_winning_move` 19 + `wrong_lose` 6。本轮用同一 oracle 在 6 新窗上复算 ⇒ 判「残余例集合是否跨窗稳定」(候选③), 集合逐例点名, 不出率值。",
+  "runner_diff": "run_r560.sh 与 run_r559.sh 的差异**仅 5 处**(轮号命名空间含 D/端口; WIN0 104→107; NWIN 3→6; 预注册 require 计数断言 9→18; 头部注释刷新), 已用 token 映射回比 (sed 反向还原后 diff 为空集) 机检 ⇒ 行为面除窗数与命名空间外零改动。"
+ },
+ "acceptance_rule": {
+  "C1_cost": "B0 新算 prompt 逐窗 ≤ 30% × codex 同窗值 且 调用数逐窗 ≤ codex 同窗值; B3 同尺单列 (剂量代价, 超 30% 逐窗点名)。",
+  "C2_quality": "各臂 6 新窗 cases_pass 与**同窗 codex 真值**比: 中位 ≥ 真值中位 − 2 (即 ≥56) 且极差 ≤ 5。**阈值与 R559 逐字相同, 不因扩窗放宽**。",
+  "C3_dose": "B3 臂 transcript.exec_repairs 至少 3/6 窗取到 3 (即达上限档) ⇒ 剂量上限被**稳定**行使; 只在 1 窗行使 ⇒ 仍算行使但记「不稳定」。",
+  "C4_exec": "python3 eval/rover/r507pre/exec_precondition.py --round r560 ⇒ rc (0 可验收 / 1 未可验收逐条点名 / 3 输入缺失); rc≠0 ⇒ 全部成本降幅标「参考 (未可验收)」。",
+  "C5_ledger": "调用账: 逐臂 transcript.calls vs adapter dump 区段计数, 差额如实登记 (R555/R558/R559 已实测; R559 为 0 差额)。",
+  "stage": "管道推进形态 (stage/rc 分布) 逐窗登记: `done` 窗数 / `expect_stdout*` 窗数 / `public_probe_unmet` 窗数 —— 与 R559 同口径, 不合成单一分数。",
+  "verdict": "C1 ∧ C2 ∧ (rc==0) ⇒ 达标; 否则逐项点名。C2 在 n=6 上仍过 ⇒ 「剂量 3 质量达标」升级为**稳定读数**; C2 不过 ⇒ 该结论回退为 n=3 单臂偶然, 如实收窄 (不调阈值、不删窗)。"
+ },
+ "preregistered_expectations": {
+  "quality": "诚实先验 (写在前): R559 的 3 窗 [56,58,56] 中位 56 恰在阈值线上 (≥56), 余量 = 0 ⇒ **预期方向: 扩窗后中位跌破 56 的概率不低** (真值自身也有 56 窗先例: R557 w96/C1 56/58)。若 6 窗中位 ≥56 且极差 ≤5 ⇒ 推翻该先验, 记为稳定达成; 若跌破 ⇒ 判「R559 的 C2 达成属 n=3 单臂偶然」并如实收窄。",
+  "dose_exercise": "预期 B0 恒 0; B3 至少 3/6 窗 exec_repairs=3 (R559 3 窗中 1 窗用尽, R558 剂量 2 在 6/6 窗被行使 ⇒ 行使性不是瓶颈)。",
+  "cost": "预期本侧两臂调用数远低于 codex 同窗 (R559: B0 3 / B3 9 vs codex 17); 不计名义总量, 只报 (调用, 新算 prompt, completion) 三列。",
+  "honesty": "n=6 ⇒ 出中位/极差; 新窗 w107..w112 与 R559 w104..w106、R558 w98..w103 **并列不相减**; 窗口体检 (空正文∧无 tool_calls / unreported usage) 先跑再解释臂间差; 任臂出现 rc=4/无产物按「仅无产物判 VOID」处理并如实列窗, 不静默删窗。",
+  "falsification": "本臂被自身机检证伪时的处置 (预先写死): 停臂 → **保留**该跑次目录 (改名标 `-v1<原因>`, 禁删) → 以阈值不变重注册并披露跑次/sha/失败项 → 重跑; **禁事后调阈值、禁跨题面版本相减**。"
+ },
+ "evidence_scope": {
+  "require": [
+   "w107/C1",
+   "w107/R560B0",
+   "w107/R560B3",
+   "w108/C1",
+   "w108/R560B0",
+   "w108/R560B3",
+   "w109/C1",
+   "w109/R560B0",
+   "w109/R560B3",
+   "w110/C1",
+   "w110/R560B0",
+   "w110/R560B3",
+   "w111/C1",
+   "w111/R560B0",
+   "w111/R560B3",
+   "w112/C1",
+   "w112/R560B0",
+   "w112/R560B3"
+  ],
+  "nonrequired": [],
+  "declared": "对照面 = **6 新窗 × 3 臂 全部进验收面** (不挑选/不删窗); 每窗内三臂同题面 (prompt sha256 516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3, taskset 逐字节复用 R558/R559, sha e0c667c2a313c04b2d87ac06fcba9f50166a4a0be5d5162cabdbf520d9d3927a ⇒ 同夹具 58 隐藏用例)/同 role/同 adapter 会话/同二进制。本声明落盘早于任何起臂 (runner 第 0 步机检)。",
+  "pending_user_ruling": "R558 候选④ / R559 候选② 「铁律 11 验收面口径: 对照组臂 (codex) 是否进 require」⇒ 本轮 require 保持**现状口径** (三臂全进, 含 codex) 以维持 rc 语义可比; 口径改动属**待用户裁定**项, 不得由本循环自行变更。"
+ },
+ "arms": {
+  "C1": {
+   "label": "外部真值 codex-cli (同真实模型 deepseek-flash)",
+   "side": "codex",
+   "windows": ["w107", "w108", "w109", "w110", "w111", "w112"],
+   "what": "经 eval/rover/r540/proj_run_side_r540.py --side codex --arm C1 打同一 adapter; 工作区空目录起步。",
+   "truth": "外部真值 = 该 CLI 的真实产出物 (games/ 包), 不由本项目任何组件生成。"
+  },
+  "R560B0": {
+   "label": "本侧 R1 臂 · 执行面修复预算 0 (最省档)",
+   "side": "agent",
+   "windows": ["w107", "w108", "w109", "w110", "w111", "w112"],
+   "bin": "/tmp/pub_r556/agenthost/agenthost",
+   "bin_sha256": "320d0eb17e709d15ce7d149ceff45fc1cacff814ac01b9fbda67f702726cee48",
+   "expect_prefix_chars": 15291,
+   "env": {"AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR": "0"}
+  },
+  "R560B3": {
+   "label": "本侧 R1 臂 · 执行面修复预算 3 (合法域上限; R559 首个走到 stage=done 的档位)",
+   "side": "agent",
+   "windows": ["w107", "w108", "w109", "w110", "w111", "w112"],
+   "bin": "/tmp/pub_r556/agenthost/agenthost",
+   "bin_sha256": "320d0eb17e709d15ce7d149ceff45fc1cacff814ac01b9fbda67f702726cee48",
+   "expect_prefix_chars": 15291,
+   "env": {"AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR": "3"}
+  }
+ },
+ "notes": "三臂同一二进制 ⇒ 无 AOT 重发布 (产品源码零改动)。读数落 eval/rover/r560/{evidence,readings-r560.jsonl,kpi-table-r560.json}; 轮读数追加 eval/capability/kpi.jsonl; wythoff 残余稳定性用 eval/rover/r531/oracle_wythoff_r531.py (非同源 oracle) 在 6 新窗上复算。推送暂停令在效 (只允许本地 commit, 禁 push)。"
+}

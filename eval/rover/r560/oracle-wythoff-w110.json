@@ -1,0 +1,437 @@
+{
+ "round": "r560",
+ "window": "w110",
+ "instrument": "eval/rover/r531/oracle_wythoff_r531.py",
+ "method": "独立手写 P/N 位 DP + 暴力枚举合法着法（与夹具生成器非同源）",
+ "cases_path": "eval/rover/r560/cases/cases-r521.json",
+ "wythoff_cases": 15,
+ "fixture_agrees_with_oracle": true,
+ "fixture_disagreements": [],
+ "per_arm_pass": {
+  "C1": "15/15",
+  "R560B0": "7/15",
+  "R560B3": "0/15"
+ },
+ "rows": [
+  {
+   "case": 43,
+   "vis": "public",
+   "stdin": "21 25",
+   "expected": "WIN 15 15",
+   "oracle": "WIN 15 15",
+   "oracle_agrees": true,
+   "arms": {
+    "C1": {
+     "rc": 0,
+     "out": "WIN 15 15",
+     "match": true,
+     "class": "canonical"
+    },
+    "R560B0": {
+     "rc": 0,
+     "out": "WIN 5 0",
+     "match": false,
+     "class": "non_winning_move"
+    },
+    "R560B3": {
+     "rc": 0,
+     "out": "WIN 0 25",
+     "match": false,
+     "class": "non_winning_move"
+    }
+   }
+  },
+  {
+   "case": 44,
+   "vis": "public",
+   "stdin": "10 9",
+   "expected": "WIN 0 3",
+   "oracle": "WIN 0 3",
+   "oracle_agrees": true,
+   "arms": {
+    "C1": {
+     "rc": 0,
+     "out": "WIN 0 3",
+     "match": true,
+     "class": "canonical"
+    },
+    "R560B0": {
+     "rc": 0,
+     "out": "WIN 0 3",
+     "match": true,
+     "class": "canonical"
+    },
+    "R560B3": {
+     "rc": 0,
+     "out": "WIN 0 9",
+     "match": false,
+     "class": "non_winning_move"
+    }
+   }
+  },
+  {
+   "case": 45,
+   "vis": "hidden",
+   "stdin": "18 8",
+   "expected": "WIN 5 0",
+   "oracle": "WIN 5 0",
+   "oracle_agrees": true,
+   "arms": {
+    "C1": {
+     "rc": 0,
+     "out": "WIN 5 0",
+     "match": true,
+     "class": "canonical"
+    },
+    "R560B0": {
+     "rc": 0,
+     "out": "WIN 5 0",
+     "match": true,
+     "class": "canonical"
+    },
+    "R560B3": {
+     "rc": 0,
+     "out": "WIN 0 8",
+     "match": false,
+     "class": "non_winning_move"
+    }
+   }
+  },
+  {
+   "case": 46,
+   "vis": "hidden",
+   "stdin": "1 5",
+   "expected": "WIN 0 3",
+   "oracle": "WIN 0 3",
+   "oracle_agrees": true,
+   "arms": {
+    "C1": {
+     "rc": 0,
+     "out": "WIN 0 3",
+     "match": true,
+     "class": "canonical"
+    },
+    "R560B0": {
+     "rc": 0,
+     "out": "WIN 0 3",
+     "match": true,
+     "class": "canonical"
+    },
+    "R560B3": {
+     "rc": 0,
+     "out": "WIN 0 5",
+     "match": false,
+     "class": "non_winning_move"
+    }
+   }
+  },
+  {
+   "case": 47,
+   "vis": "hidden",
+   "stdin": "12 18",
+   "expected": "WIN 1 0",
+   "oracle": "WIN 1 0",
+   "oracle_agrees": true,
+   "arms": {
+    "C1": {
+     "rc": 0,
+     "out": "WIN 1 0",
+     "match": true,
+     "class": "canonical"
+    },
+    "R560B0": {
+     "rc": 0,
+     "out": "WIN 1 1",
+     "match": false,
+     "class": "non_winning_move"
+    },
+    "R560B3": {
+     "rc": 0,
+     "out": "WIN 0 18",
+     "match": false,
+     "class": "non_winning_move"
+    }
+   }
+  },
+  {
+   "case": 48,
+   "vis": "hidden",
+   "stdin": "11 25",
+   "expected": "WIN 0 7",
+   "oracle": "WIN 0 7",
+   "oracle_agrees": true,
+   "arms": {
+    "C1": {
+     "rc": 0,
+     "out": "WIN 0 7",
+     "match": true,
+     "class": "canonical"
+    },
+    "R560B0": {
+     "rc": 0,
+     "out": "WIN 0 8",
+     "match": false,
+     "class": "non_winning_move"
+    },
+    "R560B3": {
+     "rc": 0,
+     "out": "WIN 0 25",
+     "match": false,
+     "class": "non_winning_move"
+    }
+   }
+  },
+  {
+   "case": 49,
+   "vis": "hidden",
+   "stdin": "18 17",
+   "expected": "WIN 0 6",
+   "oracle": "WIN 0 6",
+   "oracle_agrees": true,
+   "arms": {
+    "C1": {
+     "rc": 0,
+     "out": "WIN 0 6",
+     "match": true,
+     "class": "canonical"
+    },
+    "R560B0": {
+     "rc": 0,
+     "out": "WIN 7 0",
+     "match": false,
+     "class": "non_winning_move"
+    },
+    "R560B3": {
+     "rc": 0,
+     "out": "WIN 0 17",
+     "match": false,
+     "class": "non_winning_move"
+    }
+   }
+  },
+  {
+   "case": 50,
+   "vis": "hidden",
+   "stdin": "7 21",
+   "expected": "WIN 0 17",
+   "oracle": "WIN 0 17",
+   "oracle_agrees": true,
+   "arms": {
+    "C1": {
+     "rc": 0,
+     "out": "WIN 0 17",
+     "match": true,
+     "class": "canonical"
+    },
+    "R560B0": {
+     "rc": 0,
+     "out": "WIN 0 10",
+     "match": false,
+     "class": "non_winning_move"
+    },
+    "R560B3": {
+     "rc": 0,
+     "out": "WIN 0 21",
+     "match": false,
+     "class": "non_winning_move"
+    }
+   }
+  },
+  {
+   "case": 51,
+   "vis": "hidden",
+   "stdin": "1 2",
+   "expected": "LOSE",
+   "oracle": "LOSE",
+   "oracle_agrees": true,
+   "arms": {
+    "C1": {
+     "rc": 0,
+     "out": "LOSE",
+     "match": true,
+     "class": "canonical"
+    },
+    "R560B0": {
+     "rc": 0,
+     "out": "LOSE",
+     "match": true,
+     "class": "canonical"
+    },
+    "R560B3": {
+     "rc": 0,
+     "out": "WIN 0 2",
+     "match": false,
+     "class": "non_winning_move"
+    }
+   }
+  },
+  {
+   "case": 52,
+   "vis": "hidden",
+   "stdin": "3 5",
+   "expected": "LOSE",
+   "oracle": "LOSE",
+   "oracle_agrees": true,
+   "arms": {
+    "C1": {
+     "rc": 0,
+     "out": "LOSE",
+     "match": true,
+     "class": "canonical"
+    },
+    "R560B0": {
+     "rc": 0,
+     "out": "LOSE",
+     "match": true,
+     "class": "canonical"
+    },
+    "R560B3": {
+     "rc": 0,
+     "out": "WIN 0 5",
+     "match": false,
+     "class": "non_winning_move"
+    }
+   }
+  },
+  {
+   "case": 53,
+   "vis": "hidden",
+   "stdin": "4 7",
+   "expected": "LOSE",
+   "oracle": "LOSE",
+   "oracle_agrees": true,
+   "arms": {
+    "C1": {
+     "rc": 0,
+     "out": "LOSE",
+     "match": true,
+     "class": "canonical"
+    },
+    "R560B0": {
+     "rc": 0,
+     "out": "LOSE",
+     "match": true,
+     "class": "canonical"
+    },
+    "R560B3": {
+     "rc": 0,
+     "out": "WIN 0 7",
+     "match": false,
+     "class": "non_winning_move"
+    }
+   }
+  },
+  {
+   "case": 54,
+   "vis": "hidden",
+   "stdin": "6 10",
+   "expected": "LOSE",
+   "oracle": "LOSE",
+   "oracle_agrees": true,
+   "arms": {
+    "C1": {
+     "rc": 0,
+     "out": "LOSE",
+     "match": true,
+     "class": "canonical"
+    },
+    "R560B0": {
+     "rc": 0,
+     "out": "LOSE",
+     "match": true,
+     "class": "canonical"
+    },
+    "R560B3": {
+     "rc": 0,
+     "out": "WIN 0 10",
+     "match": false,
+     "class": "non_winning_move"
+    }
+   }
+  },
+  {
+   "case": 55,
+   "vis": "hidden",
+   "stdin": "1 1",
+   "expected": "WIN 1 1",
+   "oracle": "WIN 1 1",
+   "oracle_agrees": true,
+   "arms": {
+    "C1": {
+     "rc": 0,
+     "out": "WIN 1 1",
+     "match": true,
+     "class": "canonical"
+    },
+    "R560B0": {
+     "rc": 0,
+     "out": "WIN 0 1",
+     "match": false,
+     "class": "non_winning_move"
+    },
+    "R560B3": {
+     "rc": 0,
+     "out": "WIN 0 1",
+     "match": false,
+     "class": "non_winning_move"
+    }
+   }
+  },
+  {
+   "case": 56,
+   "vis": "hidden",
+   "stdin": "2 25",
+   "expected": "WIN 0 24",
+   "oracle": "WIN 0 24",
+   "oracle_agrees": true,
+   "arms": {
+    "C1": {
+     "rc": 0,
+     "out": "WIN 0 24",
+     "match": true,
+     "class": "canonical"
+    },
+    "R560B0": {
+     "rc": 0,
+     "out": "WIN 0 21",
+     "match": false,
+     "class": "non_winning_move"
+    },
+    "R560B3": {
+     "rc": 0,
+     "out": "WIN 0 25",
+     "match": false,
+     "class": "non_winning_move"
+    }
+   }
+  },
+  {
+   "case": 57,
+   "vis": "hidden",
+   "stdin": "25 25",
+   "expected": "WIN 25 25",
+   "oracle": "WIN 25 25",
+   "oracle_agrees": true,
+   "arms": {
+    "C1": {
+     "rc": 0,
+     "out": "WIN 25 25",
+     "match": true,
+     "class": "canonical"
+    },
+    "R560B0": {
+     "rc": 0,
+     "out": "WIN 0 9",
+     "match": false,
+     "class": "non_winning_move"
+    },
+    "R560B3": {
+     "rc": 0,
+     "out": "WIN 0 25",
+     "match": false,
+     "class": "non_winning_move"
+    }
+   }
+  }
+ ]
+}
