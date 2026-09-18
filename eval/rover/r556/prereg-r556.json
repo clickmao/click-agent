@@ -1,0 +1,35 @@
+{
+ "round": "R556",
+ "written_before_run": true,
+ "author": "cron-agent (30min tick, 2026-09-18T16:0x)",
+ "claim": "契约面退化的**定因 + 修复**轮 (承 R555 §8 候选①): R555 两窗 rc=4 stage=contract 的报错文本 = '… is invalid after a single JSON value' ⇒ 首个 JSON 值已完整解析, 尾随内容才是失败点; 中继 dump 给出机制 —— 续写触发判据只看末字符 ⇒ 白发一次全价调用; 严格解析器把「完整契约 + 尾随内容」整条判死 ⇒ 整窗作废。本轮 = 该缺陷的最小容错修复 (单变量), 同窗配对 (未修复 vs 已修复) + 外部真值同窗。",
+ "single_variable": "**两处修复 (同一缺陷的两个面)**: ① 契约面解析容错 (新增 ExtractLeadingValue: 取开头第一个完整值; Validate/TryParse 走同一 CanonicalJson 路径, 取不到 ⇒ fail-closed 保留原报错); ② 续写触发判据 LooksTruncated 对结构化正文 (首字符 { 或 [) 改为**配平闭合**判据 (闭合 ⇒ 非截断, 未闭合 ⇒ 截断)。产品其余面零改动; 契约前缀逐字节不变 (prefix_chars=15291, sha=f1280f71…)。单元证据: 契约面+续写面 36/36 通过 (含正控/负控)。",
+ "root_cause_evidence": {
+  "transcript_errors": ["A0_84: \"'\\\"' is invalid after a single JSON value. Expected end of data. LineNumber: 0 | BytePositionInLine: 5503.\"", "A1_82: \"'0xEF' is invalid after a single JSON value. Expected end of data. LineNumber: 0 | BytePositionInLine: 5851.\""],
+  "relay_dumps": "/tmp/r555/adapter/side-agent-0NN.json: 续写请求 (3 消息含 [系统] 续写提示) 的响应体是**片段** (首字节即无开头, 如 '\"path\":\"games/__init__.py\"' / '\"},{\"id\":\"s5\"'), 即续写回复本身非完整契约; 严格解析把 head+片段 判死。",
+  "kpi_undercount": "R555: 中继 dump 19 条 vs transcript Σcalls=14 ⇒ 续写调用未进 transcript 账; 本轮调用/命中一律按 dump 索引区段归属。"
+ },
+ "acceptance_rule": {
+  "C1_cost": "R1 臂 新算 prompt 逐窗 ≤ 30% × codex 同窗值, 且调用数逐窗 ≤ codex 同窗值 (4/4 窗)。",
+  "C2_quality": "R1 臂 (修复件) cases_pass 中位 ≥ codex 同窗中位 - 2; 且 ≥ 未修复臂同窗值 - 0 (不得因修复回退); 逐窗报读数。",
+  "C3_exec": "python3 eval/rover/r507pre/exec_precondition.py --round r556 ⇒ rc (0 可验收 / 1 未可验收逐条点名 / 3 输入缺失)。",
+  "C4_contract_death": "契约面死亡率 = transcript.stage=='contract' 的窗数/有效窗数; 同窗配对: 修复件 < 未修复件 ⇒ 修复生效; 与 R555 的 2/6 作异轮分布对照 (禁相减)。",
+  "verdict": "C1∧C2∧(C4 修复件不劣)∧(rc==0) ⇒ 达标; 否则逐项点名。"
+ },
+ "evidence_scope": {
+  "require": ["w90/C1", "w90/R556A0", "w90/R556A1", "w91/C1", "w91/R556A0", "w91/R556A1", "w92/C1", "w92/R556A0", "w92/R556A1", "w93/C1", "w93/R556A0", "w93/R556A1"],
+  "nonrequired": [],
+  "declared": "对照面 = 4 窗 × 3 臂 全部进验收面 (不挑选/不删窗); 每窗内三臂同题面/同夹具/同 adapter 会话。本声明落盘早于任何起臂 (runner 第 0 步机检)。"
+ },
+ "arms": {
+  "C1": {"label": "外部真值 codex-cli 0.154.0", "side": "codex", "windows": ["w90", "w91", "w92", "w93"], "what": "经 eval/rover/r540/proj_run_side_r540.py --side codex --arm C1 打同一 adapter (同真实模型 deepseek-flash); 工作区 $D/w<i>/codex/g1/work (首次调用前为空)。", "truth": "外部真值 = 该 CLI 的真实产出物 (games/ 包), 不由本项目任何组件生成。"},
+  "R556A0": {"label": "本侧 R1 臂 (未修复 = R555 交付件)", "side": "agent", "windows": ["w90", "w91", "w92", "w93"], "bin": "/tmp/pub_r555/agenthost", "bin_sha256": "d28132182f43aa9e866824924865499086ca7ac9a9d35128dad5692488025f08", "bin_bytes": 15816112, "expect_prefix_chars": 15291, "what": "AGENTFRAMEWORK_R1_CONTRACT=1 + PUBLIC_SELFCHECK=1 + MAX_EXEC_REPAIR=1 + MAX_REPAIR=1; 工作区 $D/w<i>/agentA0/g1/work。"},
+  "R556A1": {"label": "本侧 R1 臂 (R556 修复件)", "side": "agent", "windows": ["w90", "w91", "w92", "w93"], "what": "AOT /tmp/pub_r556/agenthost/agenthost; 同一环境变量组; 工作区 $D/w<i>/agentA1/g1/work。", "bin_sha256_recorded_in": "eval/rover/r556/bins-r556.json (runner 第 0 步落盘, 起臂之前)", "expect_prefix_chars": 15291}
+ },
+ "preregistered_expectations": {
+  "contract_death": "R555 实测 2/6 (33%) rc=4 stage=contract (R552 旧读数 62%) ⇒ 预注册预期: 修复件 4 窗内 stage=='contract' 期望 ≤1/4, 且**同窗 ≤** 未修复件; 若修复件仍 ≥ 未修复件 ⇒ 容错未覆盖真因, 判无效。",
+  "quality": "R555 有效窗 A1 = 58,58 (v2 契约); 预注册预期: 修复件有效窗 cases_pass 中位 ≥ 51, 且不得低于未修复件同窗值。",
+  "calls": "R555 A1 调用Σ=11 (dump 口径, 含续写) ⇒ 修复后同窗调用数期望**不升** (少掉白发续写)。"
+ },
+ "notes": "A0 件 = R555 交付件 (sha 已在 R555 prereg 钉过, 本轮再次校验); 两侧唯一差 = R556 的两处解析/续写判据修复 (前缀逐字节同, 由 status 硬门校验)。"
+}

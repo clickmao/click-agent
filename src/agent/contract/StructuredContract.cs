@@ -106,8 +106,17 @@ public static class StructuredContract
         }
         catch (JsonException ex)
         {
-            errs.Add("JSON 解析失败: " + ex.Message);
-            return errs;
+            // R556 容错 (真缺陷修复, 证据 = R555 两窗 rc=4 的报错文本):
+            // 首答常是「**完整**契约 JSON + 尾随内容」, 严格解析报 "… is invalid after a single JSON value"
+            // —— 该文本本身即证明**首个值已完整解析** (只有解析完一个值才会报"后面还有东西")。
+            // 规则 (确定性, 与模型无关): 只取**开头第一个完整值**; 取不到 / 取了仍非法 ⇒ 原样 fail-closed。
+            var salvaged = ExtractLeadingValue(json) is { } lead ? TryParseOrNull(lead) : null;
+            if (salvaged is null)
+            {
+                errs.Add("JSON 解析失败: " + ex.Message);
+                return errs;
+            }
+            doc = salvaged;
         }
 
         using (doc)
@@ -346,6 +355,89 @@ public static class StructuredContract
         return errs;
     }
 
+    /// <summary>R556: 取文本开头第一个**完整** JSON 值（字符串感知配平扫描；无完整值 ⇒ null）。</summary>
+    public static string? ExtractLeadingValue(string text)
+    {
+        var i = 0;
+        while (i < text.Length && char.IsWhiteSpace(text[i]))
+        {
+            i++;
+        }
+        if (i >= text.Length || (text[i] != '{' && text[i] != '['))
+        {
+            return null;
+        }
+        var depth = 0;
+        var inStr = false;
+        var esc = false;
+        for (var j = i; j < text.Length; j++)
+        {
+            var c = text[j];
+            if (inStr)
+            {
+                if (esc)
+                {
+                    esc = false;
+                }
+                else if (c == '\\')
+                {
+                    esc = true;
+                }
+                else if (c == '"')
+                {
+                    inStr = false;
+                }
+                continue;
+            }
+            if (c == '"')
+            {
+                inStr = true;
+            }
+            else if (c == '{' || c == '[')
+            {
+                depth++;
+            }
+            else if (c == '}' || c == ']')
+            {
+                depth--;
+                if (depth == 0)
+                {
+                    return text.Substring(i, j - i + 1);
+                }
+                if (depth < 0)
+                {
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
+
+    /// <summary>R556: 严格解析（失败 ⇒ null，不抛）。</summary>
+    public static JsonDocument? TryParseOrNull(string text)
+    {
+        try
+        {
+            return JsonDocument.Parse(text);
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
+    }
+
+    /// <summary>R556: 返回"可严格解析"的等价文本（整体非法 ⇒ 取开头第一个完整值，均非法 ⇒ 原样返回）。</summary>
+    public static string CanonicalJson(string json)
+    {
+        var ok = TryParseOrNull(json);
+        if (ok is not null)
+        {
+            ok.Dispose();
+            return json;
+        }
+        return ExtractLeadingValue(json) ?? json;
+    }
+
     /// <summary>解析为「精准语义」（校验不过 ⇒ 返回 null，错误经 errors 带出）。</summary>
     public static Semantics? TryParse(string json, out IReadOnlyList<string> errors)
     {
@@ -354,7 +446,7 @@ public static class StructuredContract
         {
             return null;
         }
-        using var doc = JsonDocument.Parse(json);
+        using var doc = JsonDocument.Parse(CanonicalJson(json));
         var root = doc.RootElement;
         var entities = new List<Entity>();
         foreach (var e in root.GetProperty("entities").EnumerateArray())

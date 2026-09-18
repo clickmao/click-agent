@@ -52,8 +52,24 @@ public class TruncatedReplyRecoveryTests
     [InlineData("```python\nprint(1)\n```\n", false)]              // 闭合围栏
     [InlineData("", false)]
     [InlineData(null, false)]
+    // ── R556 新增: JSON 本体已闭合时, 尾随内容**不是**截断证据 (R555 w82/w84 rc=4 实证) ──
+    [InlineData("{\"a\":1}\n\n说明: 以上为完整计划 (", false)]          // 完整对象 + 尾随散文
+    [InlineData("[1,2] 后记：", false)]                              // 完整数组 + 中文尾随
+    [InlineData("{\"steps\":[{\"id\":\"s1\"}]}\n```", false)]        // 完整对象 + 尾随围栏
+    [InlineData("{\"a\":[1,2,\n", true)]                            // 真截断 (值未配平) 仍判真
+    [InlineData("{\"a\":\"未闭合\n", true)]                          // 断在字符串内 仍判真
     public void 截断检测_语法未闭合判真_完整正文零误报(string? content, bool expected)
         => Assert.Equal(expected, ModelQueueRouter.LooksTruncated(content));
+
+    // ── ①b R556 回归: 完整契约 + 尾随内容 ⇒ 不触发续写 (省一次全价调用), 且原文不改写 ──
+    [Fact]
+    public void 契约已完整_尾随内容不触发续写_R555回归()
+    {
+        var complete = "{\"schema_version\":\"r1.0\",\"plan\":[{\"id\":\"s1\"}]}\n\n说明: 完整 (21 25)";
+        Assert.False(ModelQueueRouter.LooksTruncated(complete));
+        // 判别力: 同样"结尾带触发字符"但对象未闭合 ⇒ 仍判真 (新判据只豁免**已闭合**的对象)
+        Assert.True(ModelQueueRouter.LooksTruncated("{\"schema_version\":\"r1.0\" ("));
+    }
 
     // ── ② 续写去重 ──────────────────────────────────────────────────────────
     [Fact]

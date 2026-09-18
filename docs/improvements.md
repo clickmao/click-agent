@@ -3129,3 +3129,11 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - 【器具】起手闸 C 判废生效 (本轮未用); 剂量轴 MAX_PROBE_REPAIR 停用生效 (显式 unset); A1 内存闸自排除仍未闭合 (本 tick 首测 2514MB 未过, 沉降 150s 后 2682MB 同参起臂 PASS)。
 - 【诚实边界】铁律 11 rc=1 (验收面 6 项, 4 项 blocked) ⇒ 成本降幅标「参考(未可验收)」; SELF_REPORT_AGREES=True。
 - 【下轮候选】① **wythoff 模块修复验证**(最高优先, 只翻既有开关) ② 极差收敛 (15→≤5) ③ A1 闸自排除 (先写后跑) ④ 起手闸 C 判废登记落盘 ⑤ 剂量轴零件只读盘点。
+
+### R556 (2026-09-18) —— 契约面「完整值 + 尾随内容」容错修复 (定因 ⇒ 修; 同窗配对 + 外部真值同窗)
+- 【定因·真缺陷】R555 两窗 rc=4 的 STJ 报文 `… is invalid after a single JSON value` = **首个值已完整解析**; 中继 dump 进一步给出机制: 续写触发判据只看末字符 ⇒ 对"完整 JSON + 尾随内容"假阳性, 白发一次全价调用并把尾随段拼回原文 ⇒ 整窗作废 (R552 62% / R555 2/6)。
+- 【修复·单变量】`tools/r1gen/gen_csharp.py` (生成 `StructuredContract.cs`): `ExtractLeadingValue`/`CanonicalJson` 取开头第一个完整值, 取不到 ⇒ fail-closed; `ModelQueueRouter.Recovery.LooksTruncated`: 结构化正文改**配平闭合**判据。前缀逐字节不变 (15291 / f1280f71…); 同源闸 drift=0; 单测 36/36 (正控+负控); AOT IL 警告 0 (sha 320d0eb1…)。
+- 【KPI·同窗 4 窗×3 臂】契约面死亡 **1/4 (未修复) → 0/4 (修复)**, 配对证成 = w92 (A0 `rc=4 contract` 0/58 vs A1 `rc=0 done` 58/58, 1 次调用); 质量中位 A1 58 / A0 51.5 / codex 58; 成本 新算 prompt 1948 vs codex 15190 (**−87%**), 调用 7 vs 28 (**−75%**), 逐窗均 ≥30% 降幅。
+- 【诚实边界】precond `exec_precondition --round r556` **rc=1** (w91 A1 51/58 = wythoff 退化窗 + 对照组臂非全绿) ⇒ 成本读数标「参考(未可验收)」; R555 的 2/6 仅作异轮分布对照, 禁相减。
+- 【待办·器具】起手闸 A 首测 `GATE_BLOCKED (2519/2650MB)`: 释放两个 Hermes LSP 子进程后 PASS(2774MB) ⇒ 「闸缺自身工具子进程自排除」缺陷**仍未闭合** (本轮以释放内存绕过, 未改器具)。
+- 【下轮候选】① wythoff 模块退化窗 (最高优先, 只翻既有开关) ② 契约面死亡率加样本 (≥8 窗) + 容错触发可见化 ③ 起手闸 A 自排除闭合 (先写后跑) ④ transcript.calls 显式记账续写调用 (现依赖 dump 反推)。

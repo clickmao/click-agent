@@ -106,6 +106,38 @@ public sealed partial class ModelQueueRouter : IModelQueueCaller
         var t = content.TrimEnd();
         if (t.Length == 0) return false;
 
+        // R556 真缺陷修复 (证据 = R555 两窗 rc=4 + 中继 dump 请求面): 首答常是「**完整**契约 JSON + 尾随内容」。
+        // 旧启发式只看末字符 ⇒ 尾随散文/第二个值以 `(` `,` `:` `{` 收尾时判"截断" ⇒ ① 多发一次全价调用
+        // (~8.4k prompt, 属"不必要的 llm api 请求") ② 把续写段拼到已完整的 JSON 后面 ⇒ 严格解析在拼接点
+        // 失败 (R555 w82/w84 报 "… is invalid after a single JSON value") ⇒ 整窗作废。
+        // 判据 (确定性): 开头是对象/数组 ⇒ 截断证据 = **首个值是否配平闭合** (闭合 ⇒ 完整; 未闭合 ⇒ 真截断,
+        // 含"断在字符串中途"这类旧启发式漏判的情形)。非结构化正文 (代码/散文) 仍走下方原有启发式。
+        if (t[0] == '{' || t[0] == '[')
+        {
+            var depth = 0;
+            var inStr = false;
+            var esc = false;
+            var closed = false;
+            foreach (var c in t)
+            {
+                if (inStr)
+                {
+                    if (esc) esc = false;
+                    else if (c == '\\') esc = true;
+                    else if (c == '"') inStr = false;
+                    continue;
+                }
+                if (c == '"') inStr = true;
+                else if (c == '{' || c == '[') depth++;
+                else if (c == '}' || c == ']')
+                {
+                    depth--;
+                    if (depth <= 0) { closed = depth == 0; break; }
+                }
+            }
+            return !closed;
+        }
+
         // 尾部运算符 / 开括号 / 分隔符 → 语句未完 (中文全角标点不算: "说明如下：" 是完整句)
         if ("=([{,+-*/\\:".IndexOf(t[^1]) >= 0) return true;
 

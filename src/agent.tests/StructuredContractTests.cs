@@ -194,6 +194,53 @@ public sealed class StructuredContractTests
         Assert.NotEqual(StructuredPrompt.PrefixSha256Pinned, Mutate(mutated));
     }
 
+    [Fact]
+    public void Trailing_Content_After_Complete_Value_Is_Tolerated()
+    {
+        // R556 正控: 首答 = 完整契约 JSON + 尾随内容 (R555 w82/w84 两窗 rc=4 的报错文本 = 「… is invalid
+        // after a single JSON value」, 即首个值已完整解析) ⇒ 取开头第一个完整值, 尾随内容丢弃。
+        var sem = Parse(Kadane + "\n\n说明: 以上为完整计划 (21 25)");
+        Assert.Equal("code_task", sem.Intent);
+        Assert.Equal(2, sem.Plan.Count);
+        Assert.Equal("sols/kadane.py", sem.Plan[0].Path);
+    }
+
+    [Fact]
+    public void Second_Value_After_First_Is_Tolerated_But_First_Wins()
+    {
+        var sem = Parse(Kadane + "\n" + Kadane.Replace("kadane.py", "kadane2.py", StringComparison.Ordinal));
+        Assert.Equal("sols/kadane.py", sem.Plan[0].Path);
+    }
+
+    [Fact]
+    public void Truncated_Value_Is_Still_Rejected()
+    {
+        // 负控: 值未配平 (真截断) ⇒ 仍 fail-closed, 容错不得兜底。
+        var cut = Kadane.Substring(0, Kadane.Length - 12);
+        var sem = StructuredContract.TryParse(cut, out var errs);
+        Assert.Null(sem);
+        Assert.Contains(errs, e => e.Contains("JSON 解析失败", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void Non_Json_Prose_Is_Still_Rejected()
+    {
+        // 负控: 通篇不是 JSON ⇒ 拒绝 (容错只放行"首个完整值", 不兜底散文/半截对象)。
+        var sem = StructuredContract.TryParse("说明: 我先解释一下 (", out var errs);
+        Assert.Null(sem);
+        Assert.True(errs.Count > 0);
+        Assert.Null(StructuredContract.ExtractLeadingValue("说明: 我先解释一下 ("));
+    }
+
+    [Fact]
+    public void Brace_Inside_String_Does_Not_Break_Extraction()
+    {
+        // 负控: 字符串内的花括号不得扰乱配平扫描 (否则会截出非法片段)。
+        var withBrace = Kadane.Replace("print(1)", "print('{')", StringComparison.Ordinal);
+        var sem = Parse(withBrace + " 尾随");
+        Assert.Equal("print('{')", sem.Plan[0].Content);
+    }
+
     private static string Mutate(string text)
     {
         using var sha = System.Security.Cryptography.SHA256.Create();
