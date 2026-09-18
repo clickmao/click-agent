@@ -1,0 +1,1124 @@
+{
+ "round": "R566",
+ "windows": [
+  "w125",
+  "w126",
+  "w127",
+  "w128",
+  "w129",
+  "w130"
+ ],
+ "arms": {
+  "C1": {
+   "cases_windows": [
+    58,
+    58,
+    56,
+    56,
+    58,
+    58
+   ],
+   "median": 58.0,
+   "range": 2,
+   "calls": 135,
+   "calls_windows": [
+    68,
+    9,
+    8,
+    5,
+    26,
+    19
+   ],
+   "new_prompt": 65244,
+   "new_prompt_windows": [
+    27018,
+    5088,
+    4770,
+    3923,
+    17862,
+    6583
+   ],
+   "completion": 44293,
+   "completion_windows": [
+    16181,
+    4689,
+    3991,
+    2817,
+    10320,
+    6295
+   ],
+   "v_all_med": 0.9521999999999999,
+   "v_incr_med": 0.961,
+   "v_all_windows": [
+    0.9856,
+    0.9433,
+    0.9354,
+    0.9084,
+    0.9611,
+    0.967
+   ],
+   "v_incr_windows": [
+    0.9864,
+    0.9579,
+    0.9527,
+    0.9351,
+    0.9641,
+    0.9742
+   ],
+   "steps": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "rc_windows": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "stages": []
+  },
+  "R566B0": {
+   "cases_windows": [
+    58,
+    43,
+    45,
+    50,
+    50,
+    51
+   ],
+   "median": 50.0,
+   "range": 15,
+   "calls": 6,
+   "calls_windows": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "new_prompt": 906,
+   "new_prompt_windows": [
+    151,
+    151,
+    151,
+    151,
+    151,
+    151
+   ],
+   "completion": 13455,
+   "completion_windows": [
+    2478,
+    2560,
+    2399,
+    2062,
+    2081,
+    1875
+   ],
+   "v_all_med": 0.9819,
+   "v_incr_med": null,
+   "v_all_windows": [
+    0.9819,
+    0.9819,
+    0.9819,
+    0.9819,
+    0.9819,
+    0.9819
+   ],
+   "v_incr_windows": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "steps": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "rc_windows": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "stages": []
+  },
+  "R566B1": {
+   "cases_windows": [
+    58,
+    52,
+    43,
+    58,
+    58,
+    45
+   ],
+   "median": 55.0,
+   "range": 15,
+   "calls": 11,
+   "calls_windows": [
+    2,
+    2,
+    2,
+    1,
+    2,
+    2
+   ],
+   "new_prompt": 2113,
+   "new_prompt_windows": [
+    354,
+    360,
+    488,
+    151,
+    316,
+    444
+   ],
+   "completion": 27003,
+   "completion_windows": [
+    5491,
+    3560,
+    5285,
+    3228,
+    4383,
+    5056
+   ],
+   "v_all_med": 0.97885,
+   "v_incr_med": 0.9755,
+   "v_all_windows": [
+    0.979,
+    0.9787,
+    0.9711,
+    0.9819,
+    0.9812,
+    0.9736
+   ],
+   "v_incr_windows": [
+    0.9762,
+    0.9755,
+    0.9605,
+    null,
+    0.9806,
+    0.9655
+   ],
+   "steps": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "rc_windows": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "stages": []
+  }
+ },
+ "verdict": {
+  "round": "R566",
+  "instrument": "adjudicate_r566.py (复用 verdict_r561.py judge/decide/selftest; 零逻辑复制)",
+  "criterion_version": "v2 (逐窗并列 + 真值崩窗 unreliable[MARGIN=3] + 配对判据[n>=3, 无窗<=-3, 中位>=-2] + VOID 单列)",
+  "criterion_source": "docs/external-reference-harness.md §12",
+  "manipulation": {
+   "windows": [
+    "w125",
+    "w126",
+    "w127",
+    "w128",
+    "w129",
+    "w130"
+   ],
+   "arms": [
+    "C1",
+    "R566B0",
+    "R566B1"
+   ],
+   "device_runtime_extension": "V.REPORTS['R566'] (内存内; VOID 臂窗归属)",
+   "device_file_sha_before": "06e30c8ffcd718db",
+   "device_file_sha_after": "06e30c8ffcd718db",
+   "device_unchanged": true
+  },
+  "rc": 1,
+  "verdict": "FAIL(被测/前提)",
+  "blocked": [
+   "quality_paired_shortfall:R566B0,R566B1"
+  ],
+  "rowcount_bad": [],
+  "missing_truth_windows": [],
+  "truth_cases": {
+   "w125": 58,
+   "w126": 58,
+   "w127": 56,
+   "w128": 56,
+   "w129": 58,
+   "w130": 58
+  },
+  "truth_median": 58.0,
+  "truth_range": 2,
+  "truth_status": {
+   "w125": "reliable",
+   "w126": "reliable",
+   "w127": "reliable",
+   "w128": "reliable",
+   "w129": "reliable",
+   "w130": "reliable"
+  },
+  "unreliable_windows": [],
+  "reliable_windows": [
+   "w125",
+   "w126",
+   "w127",
+   "w128",
+   "w129",
+   "w130"
+  ],
+  "arms": {
+   "C1": {
+    "reliable_windows": 6,
+    "deltas": {
+     "w125": 0,
+     "w126": 0,
+     "w127": 0,
+     "w128": 0,
+     "w129": 0,
+     "w130": 0
+    },
+    "delta_median": 0.0,
+    "delta_min": 0,
+    "named_windows": [],
+    "arm_median_cases": 58.0,
+    "arm_range_cases": 2,
+    "pass": true,
+    "fail_reason": null
+   },
+   "R566B0": {
+    "reliable_windows": 6,
+    "deltas": {
+     "w125": 0,
+     "w126": -15,
+     "w127": -11,
+     "w128": -6,
+     "w129": -8,
+     "w130": -7
+    },
+    "delta_median": -7.5,
+    "delta_min": -15,
+    "named_windows": [
+     "w126",
+     "w127",
+     "w128",
+     "w129",
+     "w130"
+    ],
+    "arm_median_cases": 50.0,
+    "arm_range_cases": 15,
+    "pass": false,
+    "fail_reason": {
+     "insufficient_windows": false,
+     "named_windows": [
+      "w126",
+      "w127",
+      "w128",
+      "w129",
+      "w130"
+     ],
+     "median_below": true
+    }
+   },
+   "R566B1": {
+    "reliable_windows": 6,
+    "deltas": {
+     "w125": 0,
+     "w126": -6,
+     "w127": -13,
+     "w128": 2,
+     "w129": 0,
+     "w130": -13
+    },
+    "delta_median": -3.0,
+    "delta_min": -13,
+    "named_windows": [
+     "w126",
+     "w127",
+     "w130"
+    ],
+    "arm_median_cases": 55.0,
+    "arm_range_cases": 15,
+    "pass": false,
+    "fail_reason": {
+     "insufficient_windows": false,
+     "named_windows": [
+      "w126",
+      "w127",
+      "w130"
+     ],
+     "median_below": true
+    }
+   }
+  },
+  "fail_arms": [
+   "R566B0",
+   "R566B1"
+  ],
+  "void_arm_windows": {
+   "R559|w104|R559B0": "arm_void(rc=8 stage=public_probe_unmet cases=0)"
+  },
+  "selftest": {
+   "fixtures": [
+    {
+     "fixture": "S1_all_green",
+     "expected_rc": 0,
+     "got_rc": 0,
+     "ok": true,
+     "expected_fail_arm": null,
+     "fail_arms": [],
+     "unreliable_windows": []
+    },
+    {
+     "fixture": "S2_arm_shortfall",
+     "expected_rc": 1,
+     "got_rc": 1,
+     "ok": true,
+     "expected_fail_arm": "A0",
+     "fail_arms": [
+      "A0"
+     ],
+     "unreliable_windows": []
+    },
+    {
+     "fixture": "S3_truth_collapse_excluded",
+     "expected_rc": 0,
+     "got_rc": 0,
+     "ok": true,
+     "expected_fail_arm": null,
+     "fail_arms": [],
+     "unreliable_windows": [
+      "s3",
+      "s4"
+     ]
+    },
+    {
+     "fixture": "S4_truth_arm_absent",
+     "expected_rc": 3,
+     "got_rc": 3,
+     "ok": true,
+     "expected_fail_arm": null,
+     "fail_arms": [
+      "A0"
+     ],
+     "unreliable_windows": []
+    },
+    {
+     "fixture": "S5_truncated_rows",
+     "expected_rc": 2,
+     "got_rc": 2,
+     "ok": true,
+     "expected_fail_arm": null,
+     "fail_arms": [],
+     "unreliable_windows": []
+    },
+    {
+     "fixture": "S6_insufficient_reliable",
+     "expected_rc": 3,
+     "got_rc": 3,
+     "ok": true,
+     "expected_fail_arm": null,
+     "fail_arms": [
+      "A0"
+     ],
+     "unreliable_windows": []
+    }
+   ],
+   "n": 6,
+   "n_ok": 6,
+   "has_teeth": true
+  },
+  "family_distribution": {
+   "C1": {
+    "life": {
+     "w125": [
+      14,
+      14
+     ],
+     "w126": [
+      14,
+      14
+     ],
+     "w127": [
+      14,
+      14
+     ],
+     "w128": [
+      14,
+      14
+     ],
+     "w129": [
+      14,
+      14
+     ],
+     "w130": [
+      14,
+      14
+     ]
+    },
+    "sub": {
+     "w125": [
+      14,
+      14
+     ],
+     "w126": [
+      14,
+      14
+     ],
+     "w127": [
+      14,
+      14
+     ],
+     "w128": [
+      14,
+      14
+     ],
+     "w129": [
+      14,
+      14
+     ],
+     "w130": [
+      14,
+      14
+     ]
+    },
+    "nim": {
+     "w125": [
+      15,
+      15
+     ],
+     "w126": [
+      15,
+      15
+     ],
+     "w127": [
+      15,
+      15
+     ],
+     "w128": [
+      15,
+      15
+     ],
+     "w129": [
+      15,
+      15
+     ],
+     "w130": [
+      15,
+      15
+     ]
+    },
+    "wythoff": {
+     "w125": [
+      15,
+      15
+     ],
+     "w126": [
+      15,
+      15
+     ],
+     "w127": [
+      13,
+      15
+     ],
+     "w128": [
+      13,
+      15
+     ],
+     "w129": [
+      15,
+      15
+     ],
+     "w130": [
+      15,
+      15
+     ]
+    }
+   },
+   "R566B0": {
+    "life": {
+     "w125": [
+      14,
+      14
+     ],
+     "w126": [
+      14,
+      14
+     ],
+     "w127": [
+      14,
+      14
+     ],
+     "w128": [
+      14,
+      14
+     ],
+     "w129": [
+      14,
+      14
+     ],
+     "w130": [
+      14,
+      14
+     ]
+    },
+    "sub": {
+     "w125": [
+      14,
+      14
+     ],
+     "w126": [
+      14,
+      14
+     ],
+     "w127": [
+      14,
+      14
+     ],
+     "w128": [
+      14,
+      14
+     ],
+     "w129": [
+      14,
+      14
+     ],
+     "w130": [
+      14,
+      14
+     ]
+    },
+    "nim": {
+     "w125": [
+      15,
+      15
+     ],
+     "w126": [
+      15,
+      15
+     ],
+     "w127": [
+      15,
+      15
+     ],
+     "w128": [
+      15,
+      15
+     ],
+     "w129": [
+      15,
+      15
+     ],
+     "w130": [
+      15,
+      15
+     ]
+    },
+    "wythoff": {
+     "w125": [
+      15,
+      15
+     ],
+     "w126": [
+      0,
+      15
+     ],
+     "w127": [
+      2,
+      15
+     ],
+     "w128": [
+      7,
+      15
+     ],
+     "w129": [
+      7,
+      15
+     ],
+     "w130": [
+      8,
+      15
+     ]
+    }
+   },
+   "R566B1": {
+    "life": {
+     "w125": [
+      14,
+      14
+     ],
+     "w126": [
+      14,
+      14
+     ],
+     "w127": [
+      14,
+      14
+     ],
+     "w128": [
+      14,
+      14
+     ],
+     "w129": [
+      14,
+      14
+     ],
+     "w130": [
+      14,
+      14
+     ]
+    },
+    "sub": {
+     "w125": [
+      14,
+      14
+     ],
+     "w126": [
+      14,
+      14
+     ],
+     "w127": [
+      14,
+      14
+     ],
+     "w128": [
+      14,
+      14
+     ],
+     "w129": [
+      14,
+      14
+     ],
+     "w130": [
+      14,
+      14
+     ]
+    },
+    "nim": {
+     "w125": [
+      15,
+      15
+     ],
+     "w126": [
+      15,
+      15
+     ],
+     "w127": [
+      15,
+      15
+     ],
+     "w128": [
+      15,
+      15
+     ],
+     "w129": [
+      15,
+      15
+     ],
+     "w130": [
+      15,
+      15
+     ]
+    },
+    "wythoff": {
+     "w125": [
+      15,
+      15
+     ],
+     "w126": [
+      9,
+      15
+     ],
+     "w127": [
+      0,
+      15
+     ],
+     "w128": [
+      15,
+      15
+     ],
+     "w129": [
+      15,
+      15
+     ],
+     "w130": [
+      2,
+      15
+     ]
+    }
+   }
+  },
+  "per_case_stability": {
+   "C1": {
+    "always_pass": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18,
+     19,
+     20,
+     21,
+     22,
+     23,
+     24,
+     25,
+     26,
+     27,
+     28,
+     29,
+     30,
+     31,
+     32,
+     33,
+     34,
+     35,
+     36,
+     37,
+     38,
+     39,
+     40,
+     41,
+     42,
+     44,
+     45,
+     46,
+     47,
+     48,
+     49,
+     50,
+     51,
+     52,
+     53,
+     54,
+     55,
+     56
+    ],
+    "always_fail": [],
+    "wobble": [
+     43,
+     57
+    ],
+    "n_windows": 6
+   },
+   "R566B0": {
+    "always_pass": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18,
+     19,
+     20,
+     21,
+     22,
+     23,
+     24,
+     25,
+     26,
+     27,
+     28,
+     29,
+     30,
+     31,
+     32,
+     33,
+     34,
+     35,
+     36,
+     37,
+     38,
+     39,
+     40,
+     41,
+     42
+    ],
+    "always_fail": [],
+    "wobble": [
+     43,
+     44,
+     45,
+     46,
+     47,
+     48,
+     49,
+     50,
+     51,
+     52,
+     53,
+     54,
+     55,
+     56,
+     57
+    ],
+    "n_windows": 6
+   },
+   "R566B1": {
+    "always_pass": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18,
+     19,
+     20,
+     21,
+     22,
+     23,
+     24,
+     25,
+     26,
+     27,
+     28,
+     29,
+     30,
+     31,
+     32,
+     33,
+     34,
+     35,
+     36,
+     37,
+     38,
+     39,
+     40,
+     41,
+     42
+    ],
+    "always_fail": [],
+    "wobble": [
+     43,
+     44,
+     45,
+     46,
+     47,
+     48,
+     49,
+     50,
+     51,
+     52,
+     53,
+     54,
+     55,
+     56,
+     57
+    ],
+    "n_windows": 6
+   }
+  },
+  "informational": {
+   "criterion_keys_unconditional": true,
+   "note": "红绿只由 arms[*].pass 决定; 中位/极差为信息项"
+  }
+ },
+ "precond": {
+  "acceptable_scoped": false,
+  "blocked_n": 10,
+  "windows_n": 6,
+  "tasks_n": 1,
+  "scope_source": "eval/rover/r566/prereg-r566.json"
+ },
+ "fingerprint": {
+  "rc": 0,
+  "checks": {
+   "C4-1_identity": {
+    "calls": 6,
+    "violations": 0,
+    "na_unreported": 0,
+    "pass": true
+   },
+   "C4-2_determinism": {
+    "windows_with_calls": 6,
+    "non_null_prompt_sha": 6,
+    "calls_total": 6,
+    "distinct_call1_prompt_sha8": [
+     "b9068f56"
+    ],
+    "distinct_task_sha256": [
+     "6fc12602d01e53996e0dcaca70d8cb613c5ca8ffae6dfebbc03d9f2b4d497cec"
+    ],
+    "distinct_prefix_sha256": [
+     "f1280f71e6fc74c1f14f64adab5a54c6e06083acb18bbf51eb7fdbed30cc4d4a"
+    ],
+    "pass": true
+   },
+   "C4-3_nontrivial": {
+    "sensitivity_call1_vs_call2": [],
+    "sensitivity_exercised": false,
+    "truth_fp_present": true,
+    "truth_fp_distinct": 1,
+    "pass": true
+   }
+  },
+  "selftest": {
+   "fixtures": [
+    {
+     "fixture": "good",
+     "expected": true,
+     "got": true,
+     "ok": true
+    },
+    {
+     "fixture": "hit_gt_prompt",
+     "expected": false,
+     "got": false,
+     "ok": true
+    },
+    {
+     "fixture": "total_lt_parts",
+     "expected": false,
+     "got": false,
+     "ok": true
+    },
+    {
+     "fixture": "miss_negative",
+     "expected": false,
+     "got": false,
+     "ok": true
+    }
+   ],
+   "n": 4,
+   "n_ok": 4,
+   "has_teeth": true
+  }
+ },
+ "prev_round_R565": {
+  "R565B0": {
+   "cases_windows": [
+    53,
+    50,
+    43,
+    52,
+    56,
+    52
+   ],
+   "median": 52.0,
+   "range": 13,
+   "calls": 13,
+   "new_prompt": 3732,
+   "completion": 31071,
+   "v_all_med": 0.9637,
+   "v_incr_med": 0.9496
+  },
+  "C1": {
+   "cases_windows": [
+    58,
+    58,
+    58,
+    43,
+    58,
+    58
+   ],
+   "median": 58.0,
+   "range": 15,
+   "calls": 67,
+   "new_prompt": 36797,
+   "completion": 30872,
+   "v_all_med": 0.9329,
+   "v_incr_med": 0.9518
+  }
+ },
+ "prev_round_R560_dose_axis": {
+  "C1": {
+   "cases_windows": [
+    56,
+    47,
+    58,
+    58,
+    58,
+    52
+   ],
+   "median": 57.0,
+   "calls": 37
+  },
+  "R560B0": {
+   "cases_windows": [
+    56,
+    58,
+    45,
+    45,
+    55,
+    53
+   ],
+   "median": 54.0,
+   "calls": 6
+  },
+  "R560B3": {
+   "cases_windows": [
+    50,
+    47,
+    58,
+    43,
+    58,
+    55
+   ],
+   "median": 52.5,
+   "calls": 25
+  }
+ }
+}
