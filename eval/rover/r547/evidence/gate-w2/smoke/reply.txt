@@ -1,0 +1,10 @@
+AgentFramework CLI
+  /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit
+── 执行中 (turn 1) ──────────────────────────────
+  [01] 意图分析: code_generation 拆解 2 个子任务: code_generation → general
+  [02] 子任务: 在工作根下写一个 sols/hello.py：内容为 print(6*7...
+  [03] 子任务: 用 python3 运行它，期望 stdout 为 42
+  [04] 管线执行 (上下文装配 → LLM → 后处理)…
+  [05] R1 结构化管道 (恒定前缀 → 契约校验 → 语义闸 → 管道执行)…
+{"schema_version":"r1.0","intent":"code_task","confidence":0.95,"entities":[{"kind":"path","value":"sols/hello.py"},{"kind":"language","value":"python"},{"kind":"command","value":"python3 sols/hello.py"}],"constraints":["内容为 print(6*7)"],"missing_slots":[],"ambiguities":[],"plan":[{"id":"s1","tool":"write_file","args":{"path":"sols/hello.py","content":"print(6*7)\n"},"depends_on":[]},{"id":"s2","tool":"run","args":{"cmd":"python3 sols/hello.py","expect_stdout":"42"},"depends_on":["s1"]}],"done_when":["s1 的 path == sols/hello.py","s2 的 rc == 0","s2 的 stdout 去尾空白 == \"42\""],"refusal":null}
+R1_STATS {"schema":"r1-run/1","rc":0,"stage":"done","calls":1,"prompt_tokens":6710,"completion_tokens":210,"cache_hit_tokens":6528,"cache_miss_tokens":182,"repair_rounds":0,"exec_repairs":0,"prefix_chars":14863,"prefix_sha256":"ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637","task_sha256":"e46461bf40164fadfc21cc63df638e0e7d7cf876bbfdd25c25d16890207d80ec","steps":2,"plan_steps_total":2,"steps_executed":2,"self_test_unmet":0,"correctness_asserted":1,"role_note_chars":0}

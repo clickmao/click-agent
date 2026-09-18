@@ -1,0 +1,16 @@
+== R547 δ 剂量面 (w2) ==
+  δ=0  n=5 calls=[3, 4, 1, 2, 3](中位 3) total中位=29648 用例中位=56 全绿=2/5 行使=0
+  δ=1  n=5 calls=[4, 3, 3, 1, 1](中位 3) total中位=30133 用例中位=55 全绿=0/5 行使=4
+  δ=2  n=5 calls=[1, 1, 2, 3, 2](中位 2) total中位=20635 用例中位=58 全绿=3/5 行使=1
+  δ=3  n=3 calls=[2, 2, 2](中位 2) total中位=20116 用例中位=58 全绿=2/3 行使=0
+  K1 δ=1: FAIL(1) fired=['D1a', 'D1b', 'D1c', 'D1e'] nonfired=[] void=['D1d']
+     [违] {'arm': 'D1a', 'pfail': 1, 'why': ['exec_repairs!=0']}
+  K1 δ=2: PASS fired=['E1b'] nonfired=['E1a', 'E1c', 'E1d', 'E1e'] void=[]
+  K1 δ=3: PASS fired=[] nonfired=['D3a', 'D3b', 'D3c'] void=[]
+  K3 δ=1: 样本不足(n_treated=4, n_control=2) ⇒ 不作降幅宣称
+  K3 δ=2: 样本不足(n_treated=1, n_control=0) ⇒ 不作降幅宣称
+  K4 质量: δ0 全绿2/5 用例中位56 δ1 全绿0/5 用例中位55 δ2 全绿3/5 用例中位58 δ3 全绿2/3 用例中位58
+  K6 窗面: {}
+  K7 旧路径: w2=[7, 8, 9] (中位 8, 极差 {'min': 7, 'max': 9, 'span': 2}) | w1=[12, 9, 4] (中位 9)
+  不变量: prefix同=True role挂载=True 阈值字段对齐=True d0零回归=True
+读数落盘: eval/rover/r547/readings-w2.json
