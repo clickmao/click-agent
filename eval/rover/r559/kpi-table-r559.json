@@ -1,0 +1,246 @@
+{
+ "round": "R559",
+ "windows": [
+  "w104",
+  "w105",
+  "w106"
+ ],
+ "arms": {
+  "C1": {
+   "windows": [
+    {
+     "win": "w104",
+     "calls": 7,
+     "new_prompt": 4678,
+     "completion": 3081,
+     "v_all": 0.9286,
+     "v_incr": 0.9474,
+     "cases_pass": 58,
+     "cases_total": 58,
+     "rc": null,
+     "stage": null,
+     "max_exec_repair": null,
+     "exec_repairs": null,
+     "public_probe_ran": null,
+     "public_probe_failed": null
+    },
+    {
+     "win": "w105",
+     "calls": 6,
+     "new_prompt": 3798,
+     "completion": 3159,
+     "v_all": 0.9265,
+     "v_incr": 0.9509,
+     "cases_pass": 58,
+     "cases_total": 58,
+     "rc": null,
+     "stage": null,
+     "max_exec_repair": null,
+     "exec_repairs": null,
+     "public_probe_ran": null,
+     "public_probe_failed": null
+    },
+    {
+     "win": "w106",
+     "calls": 4,
+     "new_prompt": 3377,
+     "completion": 2394,
+     "v_all": 0.8979,
+     "v_incr": 0.9317,
+     "cases_pass": 58,
+     "cases_total": 58,
+     "rc": null,
+     "stage": null,
+     "max_exec_repair": null,
+     "exec_repairs": null,
+     "public_probe_ran": null,
+     "public_probe_failed": null
+    }
+   ],
+   "calls": 17,
+   "new_prompt": 11853,
+   "prompt": 150221,
+   "hit": 138368,
+   "completion": 8634,
+   "cases_total": 0,
+   "median_cases": 58,
+   "range_cases": 0,
+   "max_exec_repair_observed": [],
+   "exec_repairs_max": 0
+  },
+  "R559B0": {
+   "windows": [
+    {
+     "win": "w104",
+     "calls": 1,
+     "new_prompt": 151,
+     "completion": 1490,
+     "v_all": 0.9819,
+     "v_incr": null,
+     "cases_pass": 0,
+     "cases_total": 58,
+     "rc": 8,
+     "stage": "public_probe_unmet",
+     "max_exec_repair": 0,
+     "exec_repairs": 0,
+     "public_probe_ran": 1,
+     "public_probe_failed": 8
+    },
+    {
+     "win": "w105",
+     "calls": 1,
+     "new_prompt": 151,
+     "completion": 2547,
+     "v_all": 0.9819,
+     "v_incr": null,
+     "cases_pass": 45,
+     "cases_total": 58,
+     "rc": 5,
+     "stage": "expect_stdout",
+     "max_exec_repair": 0,
+     "exec_repairs": 0,
+     "public_probe_ran": 1,
+     "public_probe_failed": 2
+    },
+    {
+     "win": "w106",
+     "calls": 1,
+     "new_prompt": 151,
+     "completion": 2154,
+     "v_all": 0.9819,
+     "v_incr": null,
+     "cases_pass": 46,
+     "cases_total": 58,
+     "rc": 5,
+     "stage": "expect_stdout",
+     "max_exec_repair": 0,
+     "exec_repairs": 0,
+     "public_probe_ran": 1,
+     "public_probe_failed": 2
+    }
+   ],
+   "calls": 3,
+   "new_prompt": 453,
+   "prompt": 25029,
+   "hit": 24576,
+   "completion": 6191,
+   "cases_total": 0,
+   "median_cases": 45,
+   "range_cases": 46,
+   "max_exec_repair_observed": [
+    0
+   ],
+   "exec_repairs_max": 0
+  },
+  "R559B3": {
+   "windows": [
+    {
+     "win": "w104",
+     "calls": 2,
+     "new_prompt": 688,
+     "completion": 4091,
+     "v_all": 0.9597,
+     "v_incr": 0.9385,
+     "cases_pass": 56,
+     "cases_total": 58,
+     "rc": 0,
+     "stage": "done",
+     "max_exec_repair": 3,
+     "exec_repairs": 1,
+     "public_probe_ran": 1,
+     "public_probe_failed": 0
+    },
+    {
+     "win": "w105",
+     "calls": 3,
+     "new_prompt": 961,
+     "completion": 7574,
+     "v_all": 0.9624,
+     "v_incr": 0.9529,
+     "cases_pass": 58,
+     "cases_total": 58,
+     "rc": 0,
+     "stage": "done",
+     "max_exec_repair": 3,
+     "exec_repairs": 2,
+     "public_probe_ran": 1,
+     "public_probe_failed": 0
+    },
+    {
+     "win": "w106",
+     "calls": 4,
+     "new_prompt": 1284,
+     "completion": 8034,
+     "v_all": 0.9623,
+     "v_incr": 0.9559,
+     "cases_pass": 56,
+     "cases_total": 58,
+     "rc": 5,
+     "stage": "expect_stdout_exhausted",
+     "max_exec_repair": 3,
+     "exec_repairs": 3,
+     "public_probe_ran": 1,
+     "public_probe_failed": 1
+    }
+   ],
+   "calls": 9,
+   "new_prompt": 2933,
+   "prompt": 76661,
+   "hit": 73728,
+   "completion": 19699,
+   "cases_total": 0,
+   "median_cases": 56,
+   "range_cases": 2,
+   "max_exec_repair_observed": [
+    3
+   ],
+   "exec_repairs_max": 3
+  }
+ },
+ "ledger_check": [
+  {
+   "win": "w104",
+   "arm": "R559B0",
+   "dump_calls": 1,
+   "transcript_calls": 1,
+   "diff": 0
+  },
+  {
+   "win": "w104",
+   "arm": "R559B3",
+   "dump_calls": 2,
+   "transcript_calls": 2,
+   "diff": 0
+  },
+  {
+   "win": "w105",
+   "arm": "R559B0",
+   "dump_calls": 1,
+   "transcript_calls": 1,
+   "diff": 0
+  },
+  {
+   "win": "w105",
+   "arm": "R559B3",
+   "dump_calls": 3,
+   "transcript_calls": 3,
+   "diff": 0
+  },
+  {
+   "win": "w106",
+   "arm": "R559B0",
+   "dump_calls": 1,
+   "transcript_calls": 1,
+   "diff": 0
+  },
+  {
+   "win": "w106",
+   "arm": "R559B3",
+   "dump_calls": 4,
+   "transcript_calls": 4,
+   "diff": 0
+  }
+ ],
+ "ledger_diff_nonzero": [],
+ "rule": "调用/新算 prompt/命中率 取中继 dump 索引区段; 命中率双口径 v_all(含冷启动)/v_incr(去冷启动); 中位/极差按窗 (n=3) 不出率值"
+}

@@ -1136,3 +1136,15 @@ python3 eval/run_round.py <新轮号> "revert-verify <原commit>" --quick   # �
 - **器具**: `dist_probe_r558.py` 输出路径写死 ⇒ pre-arm 读数被 post 重跑静默覆盖 (已 `--out` 参数化 + 确定性重算恢复 + 落 provenance); `transcript` 缺 `max_exec_repair` 字段待收口。
 - **轮志**: `docs/reports/r558-dose-exec-repair-budget.md` · 器具 `eval/rover/r558/`。
 - **下轮候选 (R559)**: ① 修复预算轴裁定 ② wythoff 生成面靶点 (先量分布) ③ 极差收敛 ≤5 ④ 铁律 11 验收面口径待裁 (对照组臂是否进 require) ⑤ 调用账收口。
+
+## R559 (2026-09-18) — 执行面回灌修复预算轴的**上限档 (3)** 补扫 (既有开关 `AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR` 0 vs 3, 同一枚二进制 ⇒ 单变量) · 同窗 3 臂 × 3 新窗 · **质量判据首次被单臂达成 (中位 56 / 极差 2); 铁律 11 rc=1 ⇒ 未可验收**
+- **主旨·承上**: 承 R558 候选①(2)——R558 只扫 0/1/2 即建议「冻结为 0」, 其「0..3 全扫」前提未成立; 本轮只补**唯一未测档 3** (合法域上限)。
+- **KPI·同窗 3 窗 (w104–w106)**: 质量 codex 58/58/58 (中位 58 / 极差 0) · B0 0/45/46 (45/46) · B3 **56/58/56 (56/2)**; 调用 17/3/9, 新算 prompt 11853/453/2933, completion 8634/6191/19699, 命中 v_all 0.8979–0.9286 / 0.9819 恒 / 0.9597–0.9623。
+- **判据裁定**: C1 成本 **过** (B0 逐窗 ≤4.5% 新算 / ≤25% 调用; B3 同尺 14.7/25.3/**38.0**% ⇒ w106 超 30% 点名); C2 质量 **过 (B3 单臂)**; C3 剂量 **过** (`max_exec_repair=3` 9/9 臂窗在位, w106 `exec_repairs=3` 用尽); C4 铁律 11 **rc=1** (blocked 5: B0×3 + B3 w104/w106; 全对臂窗 1 = w105/B3; codex 3/3 全绿); C5 调用账 **0 差额 (9/9)** ⇒ 裁决 **未达标**, 成本读数标「参考(未可验收)」。
+- **机制读数**: 剂量 3 是首个把管道走到 `stage=done` 的档位 (2/3 窗完成整份计划), R558 的 0/1/2 全停在 `expect_stdout(_exhausted)` ⇒ **R558「冻结为 0」的外推被证伪**, 该裁定改列 R560 复跑。
+- **定因 (非同源 oracle)**: wythoff 15 例 per-arm C1 15/15×3 · B0 0/2/3 · B3 13/15/13 —— `fixture_agrees_with_oracle=true` ×3 窗 ⇒ 残余 4 例为**合规面** (`illegal_move` 2 含公开用例 #43 / `legal_but_not_canonical` 1 / `wrong_lose` 1), B0 面为 `malformed` 15 (整窗回显输入) + `non_winning_move` 19 + `wrong_lose` 6。
+- **声明纠错 (本轮自捕)**: R558 候选⑤「`transcript` 缺 `max_exec_repair` (全 18 臂 None)」经 18/18 机检**为假** (字段全在位且与臂 env 一致) ⇒ 真因是**聚合件**未带该字段; 本轮 ingest 已加进取数表 ⇒ 剂量归属自证。
+- **分布 (只读 R558 冻结件)**: 族级失败 wythoff 138 / nim 15 / sub 14 / life 14; **计划未完成 16/18 臂**; codex 6 窗 0 失败。
+- **轮志**: `docs/reports/r559-dose3-first-quality-pass.md` · 器具 `eval/rover/r559/` (prereg/run/ingest/kpi/dist, 派生件按 `assert 命中==1` + 写回逐字节校验生成)。
+- **下轮候选 (R560)**: ① 剂量 3 扩窗复跑 (n=3→6, 同窗含 B0 + codex) ② 铁律 11 验收面口径**待用户裁定** (require 是否含对照臂) ③ wythoff 残余 4 例稳定性 (契约加厚 v3 属新增开发, 须放行) ④ B0/`rc=8 public_probe_unmet` 交付闸 ⑤ 调用账再复验一轮。
+

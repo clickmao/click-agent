@@ -1,0 +1,13 @@
+[18:00:28] 起手闸 A1: PASS (mem=2800MB)
+[18:00:35] 起手闸 A2: PASS (mem=2797MB)
+[18:00:38] 起手闸 B (leak-selfcheck): rc=0
+[18:00:39] adapter 就绪 port=49441 (w104..w106; 每窗 = codex + B0(exec=0) + B3(exec=3))
+  [R559 w104] C1=58/58 calls=7 new=4678 rc=None stage=None xrep=None R559B0=0/58 calls=1 new=151 rc=8 stage=public_probe_unmet xrep=0 R559B3=56/58 calls=2 new=688 rc=0 stage=done xrep=1
+  [R559 w105] C1=58/58 calls=6 new=3798 rc=None stage=None xrep=None R559B0=45/58 calls=1 new=151 rc=5 stage=expect_stdout xrep=0 R559B3=58/58 calls=3 new=961 rc=0 stage=done xrep=2
+  [R559 w106] C1=58/58 calls=4 new=3377 rc=None stage=None xrep=None R559B0=46/58 calls=1 new=151 rc=5 stage=expect_stdout xrep=0 R559B3=56/58 calls=4 new=1284 rc=5 stage=expect_stdout_exhausted xrep=3
+  [KPI C1] calls=17 new=11853 completion=8634 med=58 rng=0 max_exec_repair=[] exec_max=0
+  [KPI R559B0] calls=3 new=453 completion=6191 med=45 rng=46 max_exec_repair=[0] exec_max=0
+  [KPI R559B3] calls=9 new=2933 completion=19699 med=56 rng=2 max_exec_repair=[3] exec_max=3
+  [KPI] ledger 非零差额 0 条
+[18:03:59] 铁律 11 前置器: rc=1
+[18:03:59] R559 完成
