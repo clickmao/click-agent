@@ -1,0 +1,26 @@
+DISCOVER layout=project taskset=eval/rover/r555/taskset-r555.json windows=6 snapshot_root=eval/rover/r555/snapshots
+w80     arms=1 correct=1
+   agentR555A1/g1   side=agent  cases=58/58  rc=0    correct=True  claimed=None  
+w81     arms=1 correct=1
+   agentR555A1/g1   side=agent  cases=58/58  rc=0    correct=True  claimed=None  
+w82     arms=1 correct=0
+   agentR555A1/g1   side=agent  cases=51/58  rc=1    correct=False claimed=None  wythoff#44-public,wythoff#45-hidden,wythoff#46-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#56-hidden
+w83     arms=1 correct=0
+   agentR555A0/g1   side=agent  cases=47/58  rc=1    correct=False claimed=None  wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#56-hidden
+w84     arms=1 correct=0
+   agentR555A0/g1   side=agent  cases=0/58   rc=1    correct=False claimed=None  life#00-public,life#01-public,life#02-hidden,life#03-hidden,life#04-hidden,life#05-hidden,life#06-hidden,life#07-hidden,life#08-hidden,life#09-hidden,life#10-hidden,life#11-hidden,life#12-hidden,life#13-hidden,sub#14-public,sub#15-public,sub#16-hidden,sub#17-hidden,sub#18-hidden,sub#19-hidden,sub#20-hidden,sub#21-hidden,sub#22-hidden,sub#23-hidden,sub#24-hidden,sub#25-hidden,sub#26-hidden,sub#27-hidden,nim#28-public,nim#29-public,nim#30-hidden,nim#31-hidden,nim#32-hidden,nim#33-hidden,nim#34-hidden,nim#35-hidden,nim#36-hidden,nim#37-hidden,nim#38-hidden,nim#39-hidden,nim#40-hidden,nim#41-hidden,nim#42-hidden,wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#46-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#51-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#55-hidden,wythoff#56-hidden,wythoff#57-hidden
+w85     arms=1 correct=1
+   agentR555A0/g1   side=agent  cases=58/58  rc=0    correct=True  claimed=None  
+DECLARED_ABSENT=-
+POLICY_ACTIVE=False reason=no_policy_key ts=None checks={}
+SELF_REPORT_AGREES=True
+EXECUTABLE_AND_CORRECT=False (全局, 任一臂-题不许错)
+SCOPE_SOURCE=eval/rover/r555/scope-r555.json PREREG=False
+SCOPE_POSTHOC=1 (事后声明, 非预注册 ⇒ 只可作参考, 不得当验收依据)
+ACCEPTABLE_SCOPED=False
+NONREQUIRED w83/agentR555A0 correct=False :: w83/agentR555A0/g1 rc=1 cases=47/58(expect 58) failed=wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#56-hidden
+NONREQUIRED w84/agentR555A0 correct=False :: w84/agentR555A0/g1 rc=1 cases=0/58(expect 58) failed=life#00-public,life#01-public,life#02-hidden,life#03-hidden,life#04-hidden,life#05-hidden,life#06-hidden,life#07-hidden,life#08-hidden,life#09-hidden,life#10-hidden,life#11-hidden,life#12-hidden,life#13-hidden,sub#14-public,sub#15-public,sub#16-hidden,sub#17-hidden,sub#18-hidden,sub#19-hidden,sub#20-hidden,sub#21-hidden,sub#22-hidden,sub#23-hidden,sub#24-hidden,sub#25-hidden,sub#26-hidden,sub#27-hidden,nim#28-public,nim#29-public,nim#30-hidden,nim#31-hidden,nim#32-hidden,nim#33-hidden,nim#34-hidden,nim#35-hidden,nim#36-hidden,nim#37-hidden,nim#38-hidden,nim#39-hidden,nim#40-hidden,nim#41-hidden,nim#42-hidden,wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#46-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#51-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#55-hidden,wythoff#56-hidden,wythoff#57-hidden
+UNDECLARED: w85/agentR555A0
+BLOCKED: w82/agentR555A1/g1 rc=1 cases=51/58(expect 58) failed=wythoff#44-public,wythoff#45-hidden,wythoff#46-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#56-hidden | w83/agentR555A0/g1 rc=1 cases=47/58(expect 58) failed=wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#56-hidden | w84/agentR555A0/g1 rc=1 cases=0/58(expect 58) failed=life#00-public,life#01-public,life#02-hidden,life#03-hidden,life#04-hidden,life#05-hidden,life#06-hidden,life#07-hidden,life#08-hidden,life#09-hidden,life#10-hidden,life#11-hidden,life#12-hidden,life#13-hidden,sub#14-public,sub#15-public,sub#16-hidden,sub#17-hidden,sub#18-hidden,sub#19-hidden,sub#20-hidden,sub#21-hidden,sub#22-hidden,sub#23-hidden,sub#24-hidden,sub#25-hidden,sub#26-hidden,sub#27-hidden,nim#28-public,nim#29-public,nim#30-hidden,nim#31-hidden,nim#32-hidden,nim#33-hidden,nim#34-hidden,nim#35-hidden,nim#36-hidden,nim#37-hidden,nim#38-hidden,nim#39-hidden,nim#40-hidden,nim#41-hidden,nim#42-hidden,wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#46-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#51-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#55-hidden,wythoff#56-hidden,wythoff#57-hidden
+OUT=/home/agentuser/AgentFramework/eval/rover/r507pre/precondition-r555.json
+VERDICT_POSTHOC_ONLY ⇒ rc=1 (事后声明不构成验收面)

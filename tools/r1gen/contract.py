@@ -44,8 +44,8 @@ _HINT = {
     "intent": "code_task=要写/改可执行代码并跑验证; question=只要信息; ops_task=对已有环境做操作; refusal=应拒绝（仅当请求本身不可接受: 有害/越权/需真实凭据, 或**在任何解读下都无法推进**）。**交付形态差异不构成 refusal**: 请求若要求把代码放在单个围栏代码块/直接粘贴, 仍按本契约产出 plan(含 write_file 写出全部文件), 产物落入沙箱即满足其意图 —— 不得因「输出形态与请求写法不一致」而拒答",
     "missing_slots": "推进管道**必需**但请求未给出的信息（不要臆造；没有就空数组）。**自包含任务**（请求已含全部输入, 如「按下面规格写出完整程序」）不得以「缺少验证用例/测试数据/环境细节」为由填入——这些细节按请求给定的规格自行合理实现, 并在产物内写明你的约定",
     "ambiguities": "指代不明/多种合理解读的片段。span=原文片段; options=2-4 个互斥选项; chosen=采用的解读（必填，取 options 之一）—— **不停链**：按 chosen 解读继续",
-    "plan": "可执行步骤; tool 仅 write_file|run; args: write_file={path,content} run={cmd,expect_stdout?}; depends_on 引用先前的 id",
-    "done_when": "机械可判的完成条件（供外部校验，不是给你的自述）",
+    "plan": "可执行步骤; tool 仅 write_file|run; args: write_file={path,content} run={cmd,expect_stdout?}; depends_on 引用先前的 id；**规格保真**: 规格里列出的每种可选动作/分支都要有对应步骤, 且实现与候选集合不得含规格未列出的动作（规格未写 ⇒ 不许做）",
+    "done_when": "机械可判的完成条件（供外部校验，不是给你的自述）；**逐条自验**: 规格里每条输出与取值约定（单位/方向/顺序/字典序/取值域/合法性）各给一条可机械判定的检查项; 请求内含公开用例时必须含「逐字节比对公开用例」条目",
     "confidence": "0-1; <0.5 应改用 missing_slots/ambiguities 而不是猜",
 }
 
@@ -89,7 +89,7 @@ def render_schema_text() -> str:
             extra += "；子字段取值: " + "; ".join(ne)
         lines.append("- %s (%s%s): %s" % (k, t, extra, _HINT.get(k, "")))
     lines.append("")
-    lines.append("互斥与优先级（违反即无效）: refusal≠null ⇒ plan 必空; missing_slots 非空 ⇒ plan 必空（管道停在澄清）; "
+    lines.append("互斥与优先级（违反即无效）: refusal≠null ⇒ plan 必空; missing_slots 非空 ⇒ plan 必空（管道停在澄清）; 规格未列出的动作不得出现在实现或候选中; "
                  "ambiguities **不阻塞** ⇒ 每条必须给 chosen（取 options 之一）并按 chosen 继续; "
                  "intent=code_task|ops_task 且 missing_slots 空 且 refusal=null ⇒ plan 必非空; "
                  "depends_on 只能引用先前步骤的 id。")

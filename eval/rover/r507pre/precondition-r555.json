@@ -1,0 +1,300 @@
+{
+ "label": "R555",
+ "layout": "project",
+ "taskset": "eval/rover/r555/taskset-r555.json",
+ "snapshot_root": "eval/rover/r555/snapshots",
+ "tasks_n": 1,
+ "windows_n": 6,
+ "rule": "可验收前置(project 布局): 仓内不可变快照 ⇒ 独立物化到全新临时目录 ⇒ python3 -I -B 实跑隐藏用例脚本 ⇒ 逐条机械判对; 自报 all_pass 只作对照不吃",
+ "declared_absent": [],
+ "scope_source": "eval/rover/r555/scope-r555.json",
+ "scope_prereg": false,
+ "scope_require": [
+  "w80/agentR555A1",
+  "w81/agentR555A1",
+  "w82/agentR555A1"
+ ],
+ "scope_nonrequired": [
+  {
+   "pattern": "w83/agentR555A0",
+   "reason": "契约 v1 = 对照基线, 非交付配置"
+  },
+  {
+   "pattern": "w84/agentR555A0",
+   "reason": "契约 v1 = 对照基线, 非交付配置"
+  }
+ ],
+ "windows": {
+  "w80": {
+   "dir": "eval/rover/r555/evidence/windows/w80",
+   "arms": {
+    "agentR555A1/g1": {
+     "arm": "agentR555A1",
+     "tag": "R555A1",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 58,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": null,
+     "claimed_src": null,
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    }
+   }
+  },
+  "w81": {
+   "dir": "eval/rover/r555/evidence/windows/w81",
+   "arms": {
+    "agentR555A1/g1": {
+     "arm": "agentR555A1",
+     "tag": "R555A1",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 58,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": null,
+     "claimed_src": null,
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    }
+   }
+  },
+  "w82": {
+   "dir": "eval/rover/r555/evidence/windows/w82",
+   "arms": {
+    "agentR555A1/g1": {
+     "arm": "agentR555A1",
+     "tag": "R555A1",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 51,
+     "rc": 1,
+     "correct": false,
+     "work_dir": null,
+     "failed_cases": [
+      "wythoff#44-public",
+      "wythoff#45-hidden",
+      "wythoff#46-hidden",
+      "wythoff#48-hidden",
+      "wythoff#49-hidden",
+      "wythoff#50-hidden",
+      "wythoff#56-hidden"
+     ],
+     "claimed_all_pass": null,
+     "claimed_src": null,
+     "stderr_tail": "",
+     "scope": "require",
+     "blocking": true
+    }
+   }
+  },
+  "w83": {
+   "dir": "eval/rover/r555/evidence/windows/w83",
+   "arms": {
+    "agentR555A0/g1": {
+     "arm": "agentR555A0",
+     "tag": "R555A0",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 47,
+     "rc": 1,
+     "correct": false,
+     "work_dir": null,
+     "failed_cases": [
+      "wythoff#43-public",
+      "wythoff#44-public",
+      "wythoff#45-hidden",
+      "wythoff#47-hidden",
+      "wythoff#48-hidden",
+      "wythoff#49-hidden",
+      "wythoff#50-hidden",
+      "wythoff#52-hidden",
+      "wythoff#53-hidden",
+      "wythoff#54-hidden",
+      "wythoff#56-hidden"
+     ],
+     "claimed_all_pass": null,
+     "claimed_src": null,
+     "stderr_tail": "",
+     "scope": "nonrequired",
+     "blocking": false
+    }
+   }
+  },
+  "w84": {
+   "dir": "eval/rover/r555/evidence/windows/w84",
+   "arms": {
+    "agentR555A0/g1": {
+     "arm": "agentR555A0",
+     "tag": "R555A0",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 0,
+     "rc": 1,
+     "correct": false,
+     "work_dir": null,
+     "failed_cases": [
+      "life#00-public",
+      "life#01-public",
+      "life#02-hidden",
+      "life#03-hidden",
+      "life#04-hidden",
+      "life#05-hidden",
+      "life#06-hidden",
+      "life#07-hidden",
+      "life#08-hidden",
+      "life#09-hidden",
+      "life#10-hidden",
+      "life#11-hidden",
+      "life#12-hidden",
+      "life#13-hidden",
+      "sub#14-public",
+      "sub#15-public",
+      "sub#16-hidden",
+      "sub#17-hidden",
+      "sub#18-hidden",
+      "sub#19-hidden",
+      "sub#20-hidden",
+      "sub#21-hidden",
+      "sub#22-hidden",
+      "sub#23-hidden",
+      "sub#24-hidden",
+      "sub#25-hidden",
+      "sub#26-hidden",
+      "sub#27-hidden",
+      "nim#28-public",
+      "nim#29-public",
+      "nim#30-hidden",
+      "nim#31-hidden",
+      "nim#32-hidden",
+      "nim#33-hidden",
+      "nim#34-hidden",
+      "nim#35-hidden",
+      "nim#36-hidden",
+      "nim#37-hidden",
+      "nim#38-hidden",
+      "nim#39-hidden",
+      "nim#40-hidden",
+      "nim#41-hidden",
+      "nim#42-hidden",
+      "wythoff#43-public",
+      "wythoff#44-public",
+      "wythoff#45-hidden",
+      "wythoff#46-hidden",
+      "wythoff#47-hidden",
+      "wythoff#48-hidden",
+      "wythoff#49-hidden",
+      "wythoff#50-hidden",
+      "wythoff#51-hidden",
+      "wythoff#52-hidden",
+      "wythoff#53-hidden",
+      "wythoff#54-hidden",
+      "wythoff#55-hidden",
+      "wythoff#56-hidden",
+      "wythoff#57-hidden"
+     ],
+     "claimed_all_pass": null,
+     "claimed_src": null,
+     "stderr_tail": "",
+     "scope": "nonrequired",
+     "blocking": false
+    }
+   }
+  },
+  "w85": {
+   "dir": "eval/rover/r555/evidence/windows/w85",
+   "arms": {
+    "agentR555A0/g1": {
+     "arm": "agentR555A0",
+     "tag": "R555A0",
+     "tid": "g1",
+     "side": "agent",
+     "kind": "project",
+     "family": "games-longtask-v1",
+     "cases_n": 58,
+     "cases_expected": 58,
+     "cases_pass": 58,
+     "rc": 0,
+     "correct": true,
+     "work_dir": null,
+     "failed_cases": [],
+     "claimed_all_pass": null,
+     "claimed_src": null,
+     "stderr_tail": "",
+     "scope": "undeclared",
+     "blocking": true
+    }
+   }
+  }
+ },
+ "self_report_mismatch": [],
+ "claim_unmapped": [
+  "w80/agentR555A1/g1 tag=R555A1 无自报行(对照不可用, 不影响实测判定)",
+  "w81/agentR555A1/g1 tag=R555A1 无自报行(对照不可用, 不影响实测判定)",
+  "w82/agentR555A1/g1 tag=R555A1 无自报行(对照不可用, 不影响实测判定)",
+  "w83/agentR555A0/g1 tag=R555A0 无自报行(对照不可用, 不影响实测判定)",
+  "w84/agentR555A0/g1 tag=R555A0 无自报行(对照不可用, 不影响实测判定)",
+  "w85/agentR555A0/g1 tag=R555A0 无自报行(对照不可用, 不影响实测判定)"
+ ],
+ "blocked": [
+  "w82/agentR555A1/g1 rc=1 cases=51/58(expect 58) failed=wythoff#44-public,wythoff#45-hidden,wythoff#46-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#56-hidden",
+  "w83/agentR555A0/g1 rc=1 cases=47/58(expect 58) failed=wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#56-hidden",
+  "w84/agentR555A0/g1 rc=1 cases=0/58(expect 58) failed=life#00-public,life#01-public,life#02-hidden,life#03-hidden,life#04-hidden,life#05-hidden,life#06-hidden,life#07-hidden,life#08-hidden,life#09-hidden,life#10-hidden,life#11-hidden,life#12-hidden,life#13-hidden,sub#14-public,sub#15-public,sub#16-hidden,sub#17-hidden,sub#18-hidden,sub#19-hidden,sub#20-hidden,sub#21-hidden,sub#22-hidden,sub#23-hidden,sub#24-hidden,sub#25-hidden,sub#26-hidden,sub#27-hidden,nim#28-public,nim#29-public,nim#30-hidden,nim#31-hidden,nim#32-hidden,nim#33-hidden,nim#34-hidden,nim#35-hidden,nim#36-hidden,nim#37-hidden,nim#38-hidden,nim#39-hidden,nim#40-hidden,nim#41-hidden,nim#42-hidden,wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#46-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#51-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#55-hidden,wythoff#56-hidden,wythoff#57-hidden"
+ ],
+ "blocked_scoped": [
+  "w82/agentR555A1/g1 rc=1 cases=51/58(expect 58) failed=wythoff#44-public,wythoff#45-hidden,wythoff#46-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#56-hidden",
+  "UNDECLARED_SCOPE w85/agentR555A0"
+ ],
+ "nonrequired_arms": [
+  {
+   "arm": "w83/agentR555A0",
+   "correct": false,
+   "detail": "w83/agentR555A0/g1 rc=1 cases=47/58(expect 58) failed=wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#56-hidden"
+  },
+  {
+   "arm": "w84/agentR555A0",
+   "correct": false,
+   "detail": "w84/agentR555A0/g1 rc=1 cases=0/58(expect 58) failed=life#00-public,life#01-public,life#02-hidden,life#03-hidden,life#04-hidden,life#05-hidden,life#06-hidden,life#07-hidden,life#08-hidden,life#09-hidden,life#10-hidden,life#11-hidden,life#12-hidden,life#13-hidden,sub#14-public,sub#15-public,sub#16-hidden,sub#17-hidden,sub#18-hidden,sub#19-hidden,sub#20-hidden,sub#21-hidden,sub#22-hidden,sub#23-hidden,sub#24-hidden,sub#25-hidden,sub#26-hidden,sub#27-hidden,nim#28-public,nim#29-public,nim#30-hidden,nim#31-hidden,nim#32-hidden,nim#33-hidden,nim#34-hidden,nim#35-hidden,nim#36-hidden,nim#37-hidden,nim#38-hidden,nim#39-hidden,nim#40-hidden,nim#41-hidden,nim#42-hidden,wythoff#43-public,wythoff#44-public,wythoff#45-hidden,wythoff#46-hidden,wythoff#47-hidden,wythoff#48-hidden,wythoff#49-hidden,wythoff#50-hidden,wythoff#51-hidden,wythoff#52-hidden,wythoff#53-hidden,wythoff#54-hidden,wythoff#55-hidden,wythoff#56-hidden,wythoff#57-hidden"
+  }
+ ],
+ "undeclared_arms": [
+  "w85/agentR555A0"
+ ],
+ "policy": {
+  "active": false,
+  "reason": "no_policy_key",
+  "checks": {},
+  "declared_ts": null
+ },
+ "self_report_agrees": true,
+ "executable_and_correct": false,
+ "acceptable_scoped": false
+}

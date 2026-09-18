@@ -1,0 +1,49 @@
+{
+ "round": "R555",
+ "written_before_run": true,
+ "date": "2026-09-18",
+ "mainline": "外部真值对照自检 (铁律 11 可验收前置)",
+ "axis": "契约版本 (tools/r1gen/contract.py 第二次语义加厚) — 单变量: 同一题面/夹具/role/预算, 仅契约前缀不同",
+ "arms": {
+  "A0": {
+   "label": "契约 v1 (旧, 逐字节 = R553 基线)",
+   "windows": [
+    83,
+    84,
+    85
+   ],
+   "bin": "/tmp/pub_r551/agenthost",
+   "bin_sha256": "e2fdab87b03b3f9ddae1628471b30b6165c07923e5924d77fbf111d24dd5c27b",
+   "expect_prefix_chars": 15119
+  },
+  "A1": {
+   "label": "契约 v2 (加厚: 规格保真 + 逐条自验)",
+   "windows": [
+    80,
+    81,
+    82
+   ],
+   "bin": "/tmp/pub_r555/agenthost",
+   "bin_sha256": "d28132182f43aa9e866824924865499086ca7ac9a9d35128dad5692488025f08",
+   "expect_prefix_chars": 15291,
+   "bin_bytes": 15816112,
+   "bin_sha_recorded_before_arm_start": true
+  }
+ },
+ "added_contract_bytes": 172,
+ "hypotheses": {
+  "H1_quality": "A1 中位 ≥ A0 中位 且 A1 至少一窗 cases=58/58 ⇒ 契约加厚有效; A1 中位 < A0 ⇒ 无增益, 如实收窄",
+  "H2_cost": "A1 新算 prompt ≤ A0 新算 prompt × 1.20 (加厚前缀 +172 字符 ⇒ 允许小幅上升)",
+  "H3_acceptance": "exec_precondition --round r555 rc=0 ⇒ 该轮可验收; rc≠0 ⇒ 一切成本读数标『参考(未可验收)』"
+ },
+ "mount_check": "A1 prefix_chars − A0 prefix_chars == 172 且 prefix_sha256 两侧不同 (否则判契约未生效 = 挂载失败 ⇒ 无增益)",
+ "negative_controls": {
+  "A0_arm": "旧契约 + 同一二进制族 ⇒ 若 A1 与 A0 逐窗同分则契约无作用",
+  "C_gate_off": "起手闸 C 判废 (依 R553 §4: 真阳 0 / 假阴 7) ⇒ 本轮不起该闸; 口径变更: 每窗少 1 次契约面调用 (与 R553 b0 不可相减)"
+ },
+ "stop_rule": "剂量/早停/探针修复三轴已在 R551-R553 判无增益 ⇒ 本轮不再重跑; 只推契约轴",
+ "no_push": true,
+ "axes": [
+  "contract_version"
+ ]
+}
