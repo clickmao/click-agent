@@ -1,0 +1,46 @@
+{
+ "round": "R561",
+ "ts": "@TS@",
+ "written_before_run": true,
+ "kind": "离线判定/收口轮 —— 零远端调用 · 零产品源码改动 · 零新增夹具 · 零新开关 · 零新臂",
+ "hypothesis": [
+  "H1 (判据口径缺陷): R557–R560 的成本/质量判据里, 质量判据 (C2) 写成「臂中位 >= 真值中位-2 且 极差<=5」, 而同窗真值自身极差即 11 (w108 真值 47/58, w112 52/58) ⇒ 该判据在真值崩窗上结构性不可达, 属判据缺陷, 不是被测缺陷。",
+  "H2 (口径修订方向): 换成「逐窗并列 + 真值崩窗标 unreliable」两栏读法后, 判据应在真值崩窗上不再出红, 而真值正常窗上仍对被测缺分判红 (成对负控)。",
+  "H3 (剂量面收口前提): 剂量轴的已落盘读数支持「冻结」: 剂量>0 被行使 (R559 9/9 臂窗、R560 6/6 窗 exec_repairs=3) 但质量无增益 (质量中位 B0 54.0 >= B3 52.5; R558 B0 49.5 >= B1 47.5 > B2 50.0 同向), 且 B3 成本尺 6/6 窗超 30% 门槛 ⇒ 该轴作为开发轴应封存, 不产生新臂。",
+  "H4 (族分布): wythoff 是残余失分主族且逐例不稳 (R560: 15/15 例在 6 窗内每例至少出现一次) ⇒ 逐例/逐族分布必须机制化落盘, 才能谈靶点 (禁预言式修)。",
+  "H5 (产品默认不动): 铁律 11 rc=1 (未可验收) ⇒ 不能宣称「剂量 0 与剂量 1 质量等价」⇒ 本轮**不改产品默认值** (R1Options 默认 1 保持), 只封存实验轴并写死重开条件。"
+ ],
+ "data_source": {
+  "note": "复用已冻结的两轮快照 (零远端复算): 判分器 R521 与题集为两轮逐字节同一件 ⇒ 单一判分器语义可覆盖 9 窗。",
+  "sets": [
+   {"round": "R559", "windows": ["w104", "w105", "w106"], "arms": ["C1", "R559B0", "R559B3"], "snap_root": "eval/rover/r559/snapshots", "cases": "eval/rover/r559/cases/cases-r521.json"},
+   {"round": "R560", "windows": ["w107", "w108", "w109", "w110", "w111", "w112"], "arms": ["C1", "R560B0", "R560B3"], "snap_root": "eval/rover/r560/snapshots", "cases": "eval/rover/r560/cases/cases-r521.json"}
+  ],
+  "grader": {"path": "eval/rover/r560/cases/run_cases_r521.py", "sha256": "a67215a792845cb4a3adec4553c8d06211fa3a7a1dc1ec258ed9dbf3f6e59109", "invocation": "python3 -I -B <grader>, cwd = 被测树独立物化副本", "per_case_lines": 58},
+  "cases_sha256": "270128eb85c7afc07244c10c8845a22a541a7a60587a870125089e93422fccd7",
+  "arm_kind": {"C1": "codex 外部真值", "B0": "AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR=0", "B3": "=3"},
+  "judging_on_copies": "/tmp/r561/pc/<round>-<win>-<arm> (判分器会写文件 ⇒ 一律对副本判, 冻结快照零写入)"
+ },
+ "criteria": {
+  "C1_judge_shadow_selftest": {"desc": "判定器 v2 上线前影子自检: 合成矩阵 6 例夹具回放, 逐例断言预期 rc/判决 (含 unreliable 排除、缺臂弃权、缺字段器具缺陷、真值全崩不可判)", "pass": "6/6 预期命中"},
+  "C2_truth_reliability_three_state": {"desc": "真值窗三态分类 (reliable / unreliable / 弃权缺失)", "rule": "unreliable <=> truth_cases <= median(全部真值窗读数) - 3; 缺读数 => 弃权(单列); 键无条件计算 (每窗都出 status)", "negative_control": "合成崩窗 (median-3 以下) 必须标 unreliable; 合成全绿窗必须标 reliable"},
+  "C3_quality_paired_two_column": {"desc": "质量主判据 v2 = 只在 reliable 窗上逐窗配对 (本侧臂 cases - 同窗真值 cases)", "pass": "每臂: reliable 窗 n >= 3 ∧ 无任何窗差值 <= -3 ∧ 差值中位 >= -2", "informational_only": "臂/真值极差 (不参与红绿; R560 真值自身极差 11 曾令旧判据结构性不可达)", "negative_control": "构造「本侧臂崩一窗 (真值 58 / 臂 50)」的合成输入必须判红"},
+  "C4_axis_freeze_premise": {"desc": "封存裁定的前提机检 (只读已落盘读数)", "asserts": ["剂量>0 被行使: R560 B3 exec_repairs==3 的窗数 == 6", "质量无增益: median(B0) >= median(B3) 在两轮同时成立", "成本劣化: B3 逐窗新算比 > 30% 的窗数 >= 1 (R560 为 6)"], "on_fail": "前提不成立 => 判 rc=1 且不得封存 (回退为『待再测』)"},
+  "C5_iron11": {"desc": "铁律 11 口径裁定 + 最近同窗对照 rc 记录", "decision": "require 必须含对照臂 (宪法铁律 11 原文: 两侧产出物必须可实际执行且正确; 任一侧不可执行或有错题 => 未可验收) => 保守口径三臂全进 require, 不留待裁", "rc_record": "exec_precondition --round r560 (R561 无新臂)"},
+  "C6_family_and_case_distribution": {"desc": "族 × 窗 × 臂 逐例分布 (离线复算) + 逐例稳定性三类计数 (恒过/恒败/摆动)", "informational": true},
+  "C7_no_claim": {"desc": "本轮零新臂读数 => 不宣称任何成本/质量降幅; 收口裁定只引用已落盘读数", "pass": "报告与台账中无一降幅宣称"}
+ },
+ "negative_controls": [
+  "判定器影子自检 6 例 (C1): 每条 rc 分支至少一例, 且含一条「必须判红」的被测缺分例",
+  "真值分类器成对 (C2): 崩窗标 unreliable ∧ 正常窗标 reliable",
+  "质量判据成对 (C3): 真值崩窗不出红 ∧ 被测真崩必红",
+  "复算一致性: 本轮回放的 9 窗逐窗 cases 计数必须与 R559/R560 已落盘 report.json 逐窗相等 (不等 => rc=2 器具/语义漂移, 不进判决)"
+ ],
+ "rc_semantics": {
+  "0": "全部判据过 (含判据器自检与复算一致性)",
+  "1": "被测/裁定前提不满足 (真红)",
+  "2": "器具缺陷 (自检不过 / 复算不一致 / 缺字段)",
+  "3": "缺侧或不可判 (如 reliable 窗数 < 3 或快照缺失)"
+ },
+ "claim_policy": "pre-defined false => 报表只写『无增益, 如实收窄/封存』, 不得宣称任何降幅; 禁事后调阈值; 本轮与 R559/R560 的窗**并列不相减**。"
+}

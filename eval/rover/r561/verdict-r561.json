@@ -1,0 +1,633 @@
+{
+ "round": "R561",
+ "instrument": "verdict_r561.py",
+ "criterion_version": "v2 (逐窗并列 + 真值崩窗 unreliable; 旧 v1 = 绝对中位/极差 <=5 结构性不可达)",
+ "rc": 1,
+ "verdict": "FAIL(被测/前提)",
+ "blocked": [
+  "quality_paired_shortfall:R560B0,R560B3"
+ ],
+ "rowcount_bad": [],
+ "missing_truth_windows": [],
+ "void_arm_windows": {
+  "R559|w104|R559B0": "arm_void(rc=8 stage=public_probe_unmet cases=0)"
+ },
+ "checks": {
+  "C1_judge_shadow_selftest": {
+   "fixtures": [
+    {
+     "fixture": "S1_all_green",
+     "expected_rc": 0,
+     "got_rc": 0,
+     "ok": true,
+     "expected_fail_arm": null,
+     "fail_arms": [],
+     "unreliable_windows": []
+    },
+    {
+     "fixture": "S2_arm_shortfall",
+     "expected_rc": 1,
+     "got_rc": 1,
+     "ok": true,
+     "expected_fail_arm": "A0",
+     "fail_arms": [
+      "A0"
+     ],
+     "unreliable_windows": []
+    },
+    {
+     "fixture": "S3_truth_collapse_excluded",
+     "expected_rc": 0,
+     "got_rc": 0,
+     "ok": true,
+     "expected_fail_arm": null,
+     "fail_arms": [],
+     "unreliable_windows": [
+      "s3",
+      "s4"
+     ]
+    },
+    {
+     "fixture": "S4_truth_arm_absent",
+     "expected_rc": 3,
+     "got_rc": 3,
+     "ok": true,
+     "expected_fail_arm": null,
+     "fail_arms": [
+      "A0"
+     ],
+     "unreliable_windows": []
+    },
+    {
+     "fixture": "S5_truncated_rows",
+     "expected_rc": 2,
+     "got_rc": 2,
+     "ok": true,
+     "expected_fail_arm": null,
+     "fail_arms": [],
+     "unreliable_windows": []
+    },
+    {
+     "fixture": "S6_insufficient_reliable",
+     "expected_rc": 3,
+     "got_rc": 3,
+     "ok": true,
+     "expected_fail_arm": null,
+     "fail_arms": [
+      "A0"
+     ],
+     "unreliable_windows": []
+    }
+   ],
+   "n": 6,
+   "n_ok": 6,
+   "has_teeth": true
+  },
+  "C2_truth_reliability": {
+   "rule": "unreliable <=> truth_cases <= median(truth) - 3",
+   "truth_median": 58,
+   "truth_range": 11,
+   "status": {
+    "w104": "reliable",
+    "w105": "reliable",
+    "w106": "reliable",
+    "w107": "reliable",
+    "w108": "unreliable",
+    "w109": "reliable",
+    "w110": "reliable",
+    "w111": "reliable",
+    "w112": "unreliable"
+   },
+   "unreliable": [
+    "w108",
+    "w112"
+   ],
+   "negative_control": [
+    {
+     "fixture": "S3_truth_collapse_excluded",
+     "expected_rc": 0,
+     "got_rc": 0,
+     "ok": true,
+     "expected_fail_arm": null,
+     "fail_arms": [],
+     "unreliable_windows": [
+      "s3",
+      "s4"
+     ]
+    }
+   ],
+   "informational": true
+  },
+  "C3_quality_paired_two_column": {
+   "primary_windows": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "reliable_windows": [
+    "w107",
+    "w109",
+    "w110",
+    "w111"
+   ],
+   "arms": {
+    "R560B0": {
+     "reliable_windows": 4,
+     "deltas": {
+      "w107": 0,
+      "w109": -13,
+      "w110": -13,
+      "w111": -3
+     },
+     "delta_median": -8.0,
+     "delta_min": -13,
+     "named_windows": [
+      "w109",
+      "w110",
+      "w111"
+     ],
+     "arm_median_cases": 54.0,
+     "arm_range_cases": 13,
+     "pass": false,
+     "fail_reason": {
+      "insufficient_windows": false,
+      "named_windows": [
+       "w109",
+       "w110",
+       "w111"
+      ],
+      "median_below": true
+     }
+    },
+    "R560B3": {
+     "reliable_windows": 4,
+     "deltas": {
+      "w107": -6,
+      "w109": 0,
+      "w110": -15,
+      "w111": 0
+     },
+     "delta_median": -3.0,
+     "delta_min": -15,
+     "named_windows": [
+      "w107",
+      "w110"
+     ],
+     "arm_median_cases": 52.5,
+     "arm_range_cases": 15,
+     "pass": false,
+     "fail_reason": {
+      "insufficient_windows": false,
+      "named_windows": [
+       "w107",
+       "w110"
+      ],
+      "median_below": true
+     }
+    }
+   },
+   "fail_arms": [
+    "R560B0",
+    "R560B3"
+   ],
+   "views": {
+    "R560": {
+     "fail_arms": [
+      "R560B0",
+      "R560B3"
+     ],
+     "arm_detail": {
+      "R560B0": {
+       "reliable_windows": 4,
+       "delta_median": -8.0,
+       "delta_min": -13,
+       "named_windows": [
+        "w109",
+        "w110",
+        "w111"
+       ],
+       "pass": false
+      },
+      "R560B3": {
+       "reliable_windows": 4,
+       "delta_median": -3.0,
+       "delta_min": -15,
+       "named_windows": [
+        "w107",
+        "w110"
+       ],
+       "pass": false
+      }
+     }
+    },
+    "R559": {
+     "fail_arms": [
+      "R559B0"
+     ],
+     "arm_detail": {
+      "R559B0": {
+       "reliable_windows": 2,
+       "delta_median": -12.5,
+       "delta_min": -13,
+       "named_windows": [
+        "w105",
+        "w106"
+       ],
+       "pass": false
+      },
+      "R559B3": {
+       "reliable_windows": 3,
+       "delta_median": -2,
+       "delta_min": -2,
+       "named_windows": [],
+       "pass": true
+      }
+     }
+    }
+   },
+   "informational_deltas_9w": {
+    "R560B0": {
+     "w104": null,
+     "w105": null,
+     "w106": null,
+     "w107": 0,
+     "w109": -13,
+     "w110": -13,
+     "w111": -3
+    },
+    "R560B3": {
+     "w104": null,
+     "w105": null,
+     "w106": null,
+     "w107": -6,
+     "w109": 0,
+     "w110": -15,
+     "w111": 0
+    }
+   }
+  },
+  "C4_axis_freeze_premise": "见 freeze_premise (由 readings 侧机检)",
+  "C5_iron11": {
+   "decision": "require 含对照臂 (宪法铁律 11 原文: 两侧产出物必须可实际执行且正确)",
+   "rc_record_of_reference_round": "见 report (exec_precondition --round r560)"
+  },
+  "C6_family_and_case_distribution": {
+   "family_distribution": {
+    "R560B0": {
+     "life": {
+      "w107": [
+       14,
+       14
+      ],
+      "w108": [
+       14,
+       14
+      ],
+      "w109": [
+       14,
+       14
+      ],
+      "w110": [
+       14,
+       14
+      ],
+      "w111": [
+       14,
+       14
+      ],
+      "w112": [
+       14,
+       14
+      ]
+     },
+     "sub": {
+      "w107": [
+       14,
+       14
+      ],
+      "w108": [
+       14,
+       14
+      ],
+      "w109": [
+       14,
+       14
+      ],
+      "w110": [
+       9,
+       14
+      ],
+      "w111": [
+       14,
+       14
+      ],
+      "w112": [
+       14,
+       14
+      ]
+     },
+     "nim": {
+      "w107": [
+       15,
+       15
+      ],
+      "w108": [
+       15,
+       15
+      ],
+      "w109": [
+       15,
+       15
+      ],
+      "w110": [
+       15,
+       15
+      ],
+      "w111": [
+       15,
+       15
+      ],
+      "w112": [
+       15,
+       15
+      ]
+     },
+     "wythoff": {
+      "w107": [
+       13,
+       15
+      ],
+      "w108": [
+       15,
+       15
+      ],
+      "w109": [
+       2,
+       15
+      ],
+      "w110": [
+       7,
+       15
+      ],
+      "w111": [
+       12,
+       15
+      ],
+      "w112": [
+       10,
+       15
+      ]
+     }
+    },
+    "R560B3": {
+     "life": {
+      "w107": [
+       14,
+       14
+      ],
+      "w108": [
+       14,
+       14
+      ],
+      "w109": [
+       14,
+       14
+      ],
+      "w110": [
+       14,
+       14
+      ],
+      "w111": [
+       14,
+       14
+      ],
+      "w112": [
+       14,
+       14
+      ]
+     },
+     "sub": {
+      "w107": [
+       14,
+       14
+      ],
+      "w108": [
+       14,
+       14
+      ],
+      "w109": [
+       14,
+       14
+      ],
+      "w110": [
+       14,
+       14
+      ],
+      "w111": [
+       14,
+       14
+      ],
+      "w112": [
+       14,
+       14
+      ]
+     },
+     "nim": {
+      "w107": [
+       15,
+       15
+      ],
+      "w108": [
+       15,
+       15
+      ],
+      "w109": [
+       15,
+       15
+      ],
+      "w110": [
+       15,
+       15
+      ],
+      "w111": [
+       15,
+       15
+      ],
+      "w112": [
+       15,
+       15
+      ]
+     },
+     "wythoff": {
+      "w107": [
+       7,
+       15
+      ],
+      "w108": [
+       4,
+       15
+      ],
+      "w109": [
+       15,
+       15
+      ],
+      "w110": [
+       0,
+       15
+      ],
+      "w111": [
+       15,
+       15
+      ],
+      "w112": [
+       12,
+       15
+      ]
+     }
+    }
+   },
+   "per_case_stability": {
+    "R560B0": {
+     "always_pass": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      23,
+      25,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      52,
+      53
+     ],
+     "always_fail": [],
+     "wobble": [
+      14,
+      15,
+      22,
+      24,
+      26,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      54,
+      55,
+      56,
+      57
+     ],
+     "n_windows": 9
+    },
+    "R560B3": {
+     "always_pass": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42
+     ],
+     "always_fail": [],
+     "wobble": [
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57
+     ],
+     "n_windows": 9
+    }
+   },
+   "informational": true
+  },
+  "C7_no_claim": {
+   "pass": true,
+   "desc": "本轮零新臂读数 ⇒ 无任何降幅宣称"
+  }
+ }
+}

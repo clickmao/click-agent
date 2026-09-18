@@ -1,0 +1,70 @@
+{
+ "round": "R561",
+ "kind": "离线判定/收口轮 (零远端调用 · 零产品源码改动 · 零新增夹具/开关 · 零新臂) —— 复用 R559/R560 冻结快照做 9 窗 × 3 臂离线复算",
+ "criterion_version": "v2 (逐窗并列 + 真值崩窗 unreliable + VOID 臂窗单列); 旧 v1 = 绝对「臂中位 >= 真值中位-2 且 极差<=5」",
+ "wins_primary": ["w107", "w108", "w109", "w110", "w111", "w112"],
+ "arms": {
+  "C1_codex": {"cases": [56, 47, 58, 58, 58, 52], "median": 57.0, "range": 11,
+               "calls": 37, "new_prompt": 22303, "completion": 18837,
+               "hitrate_v_all": "0.8943-0.9537", "hitrate_v_incr": "0.9420-0.9839", "steps": "未测",
+               "truth_status": "w108/w112 unreliable (崩窗)", "rc": "真值臂自身 w107 56/58 · w108 47/58 · w112 52/58 ⇒ 铁律 11 亦 blocked"},
+  "R560B0_exec0": {"cases": [56, 58, 45, 45, 55, 53], "median": 54.0, "range": 13,
+                   "calls": 6, "new_prompt": 906, "completion": 14576,
+                   "hitrate_v_all": "0.9819", "hitrate_v_incr": "0.9819", "steps": "67/87",
+                   "new_ratio_vs_codex": "4.06%", "judge_v2": "未过 (配对 med -8.0, 点名 w109/w110/w111)", "rc": "5 x5 · 8 x1"},
+  "R560B3_exec3": {"cases": [50, 47, 58, 43, 58, 55], "median": 52.5, "range": 15,
+                   "calls": 25, "new_prompt": 8874, "completion": 51912,
+                   "hitrate_v_all": "0.9443-0.9701", "hitrate_v_incr": "0.8540-0.9605", "steps": "41/55",
+                   "new_ratio_vs_codex": "31.9-53.7% (6/6 窗 >30%)", "judge_v2": "未过 (配对 med -3.0, 点名 w107/w110)", "rc": "5 x5 · 0 x1",
+                   "dose_exercised": "exec_repairs=3 6/6 窗"}
+ },
+ "secondary_view_R559": {
+  "wins": ["w104", "w105", "w106"],
+  "C1_codex": {"cases": [58, 58, 58], "median": 58, "range": 0, "calls": 17, "new_prompt": 11853, "completion": 8634,
+               "hitrate_v_all": "0.9286/0.9265/0.8979", "hitrate_v_incr": "0.9474/0.9509/0.9317"},
+  "R559B0_exec0": {"cases": [0, 45, 46], "median": 45, "range": 46, "calls": 3, "new_prompt": 453, "completion": 6191,
+                   "w104_arm_void": "rc=8 stage=public_probe_unmet cases=0 (VOID 臂窗, 不入配对)",
+                   "judge_v2": "未过 (n=2 有效窗, 配对 med -12.5, 点名 w105/w106)"},
+  "R559B3_exec3": {"cases": [56, 58, 56], "median": 56, "range": 2, "calls": 9, "new_prompt": 2933, "completion": 19699,
+                   "hitrate_v_all": "0.9597/0.9624/0.9623", "hitrate_v_incr": "0.9385/0.9529/0.9559",
+                   "judge_v2": "**过** (n=3, 配对 med -2.0, 无点名窗) —— 与旧判据在本轮的结论一致"}
+ },
+ "judge_v2_verdict": {
+  "rc": 1, "verdict": "FAIL(被测/前提)", "blocked": ["quality_paired_shortfall:R560B0,R560B3"],
+  "shadow_selftest": "6/6 (S1 全绿 rc0 / S2 被测崩窗 rc1 / S3 真值崩窗排除 rc0 / S4 缺真值臂 rc3 / S5 行数不足 rc2 / S6 有效窗<3 rc3) ⇒ has_teeth=true",
+  "truth_reliability_rule": "unreliable <=> truth_cases <= median(truth 9 窗) - 3 (= 55) ⇒ w108(47) / w112(52)",
+  "void_arm_windows": {"R559|w104|R559B0": "arm_void(rc=8 stage=public_probe_unmet cases=0)"},
+  "recompute_xref": "27/27 臂窗的 cases_pass 与已落盘 report.json 逐窗相等 (复算一致性负控)"
+ },
+ "C4_axis_freeze_premise": {
+  "asserts": [
+   {"assert": "R560 B3 exec_repairs==3 的窗数 == 6", "ok": true},
+   {"assert": "median(B0) >= median(B3) 在 R559 与 R560 同时成立", "ok": false,
+    "value": "R559 B0 45 vs B3 56 (B3 更优); R560 B0 54.0 vs B3 52.5 (B0 更优)"},
+   {"assert": "B3 逐窗新算比 > 30% 的窗数 >= 1", "ok": true, "value": "R560 6/6 窗 (31.9-53.8%)"}
+  ],
+  "premise_ok": false,
+  "on_fail": "预注册写死: 前提不成立 ⇒ 判 rc=1 且**不得封存为「已证无增益」** ⇒ 本轮裁定自降为「停用该实验轴(不再产新臂) + 产品默认不动 + 写死重开条件」"
+ },
+ "family_summary_9w": {
+  "R560B0": {"wythoff": "59/90 (31 失分)", "life": "84/84", "nim": "90/90", "sub": "79/84"},
+  "R560B3": {"wythoff": "53/90 (37 失分)", "life": "84/84", "nim": "90/90", "sub": "84/84"},
+  "R559B3": {"wythoff": "41/45", "life": "42/42", "nim": "45/45", "sub": "42/42"},
+  "R559B0": {"wythoff": "5/45 (含 1 VOID 窗)", "life": "28/42", "nim": "30/45", "sub": "28/42"}
+ },
+ "per_case_stability": {
+  "R560B0_wythoff": "15 例中 13 摆动 / 2 恒过 / 0 恒败",
+  "R560B3_wythoff": "15 例中 15 摆动 / 0 恒过 / 0 恒败",
+  "R560B0_sub": "14 例中 5 摆动 (w110 单窗失 sub 5 例)",
+  "R559B0_wythoff": "15 例中 10 恒败 (VOID 窗驱动) / 5 摆动"
+ },
+ "pooled_9w_paired_vs_truth": {"R559B3": "n=3 med -2 (min -2 max 0)", "R559B0": "n=2 med -12.5 (w104 VOID 排除)",
+                               "R560B0": "n=6 med -1.5 (min -13 max +11)", "R560B3": "n=6 med 0.0 (min -15 max +3)"},
+ "round_cost": {"remote_calls": 0, "new_prompt": 0, "completion": 0, "note": "离线轮: 无远端调用, 全部读数来自已冻结落盘"},
+ "instruments_self_caught": [
+  "① 影子自检: 首版 decide() 从 r['selftest'] 读自检结论 ⇒ 夹具回放 6/6 全 rc=2 (fail-closed 生效, 挡住首跑) ⇒ 改显式入参, 断言不放宽",
+  "② 臂作用域: side_arms 从全部 9 窗收集而主判窗只取 R560 ⇒ R559 臂 n=0 被记成「质量未过」(伪红) ⇒ 改为按主判窗收集",
+  "③ VOID 臂窗: R559 w104/B0 (rc=8 无有效产物) 曾作为 -58 配对进入读数 ⇒ 改为单列排除 (与两轮既有惯例一致)"
+ ],
+ "rule": "质量红绿只由 arms[*].judge_v2 决定; 极差/中位/hitrate 为信息项; 跨轮窗并列不相减; 成本/降幅读数一律标「参考 (未可验收)」(铁律 11 rc=1)。"
+}
