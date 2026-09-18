@@ -51,12 +51,24 @@ def main() -> int:
                 allarms[(w, a)] = d["arms"][a]
 
     # 前置器实跑 (铁律 11)
-    pr = subprocess.run([sys.executable, "eval/rover/r507pre/exec_precondition.py", "--round", "r546"],
-                        cwd=REPO, capture_output=True, text=True)
-    pout = (pr.stdout or "") + (pr.stderr or "")
+    # 前置器判决（铁律 11）: 优先读**本轮 runner 已实跑**的判决件（同工具/同轮/同窗, 免重复 7 分钟执行）;
+    # 缺失才自己实跑。判决来源与 rc 一并落到轮志, 便于复核。
+    prej = os.path.join(REPO, "eval/rover/r507pre/precondition-r546.json")
+    pretxt = os.path.join(R, "run-%s/logs/precond.txt" % wins[0])
+    if os.path.exists(prej) and os.path.exists(pretxt):
+        pout = io.open(pretxt, encoding="utf-8", errors="replace").read()
+        mp = re.search(r"PRECOND_RC=(\d+)", pout)
+        prc = int(mp.group(1)) if mp else -1
+        src = "本轮 runner step-9 实跑(eval/rover/r546/run-%s/logs/precond.txt + eval/rover/r507pre/precondition-r546.json)" % wins[0]
+    else:
+        pr = subprocess.run([sys.executable, "eval/rover/r507pre/exec_precondition.py", "--round", "r546"],
+                            cwd=REPO, capture_output=True, text=True)
+        pout = (pr.stdout or "") + (pr.stderr or "")
+        prc = pr.returncode
+        src = "本收口器实跑"
     blocked = sorted(set(re.findall(r"([wW]\d/agent\w+-g1)", pout)))
-    acc = {"rc": pr.returncode, "blocked_arms": blocked,
-           "verdict": {0: "可验收", 1: "未可验收(BLOCKED 逐条点名)", 3: "输入缺失 fail-closed"}.get(pr.returncode, "?")}
+    acc = {"rc": prc, "blocked_arms": blocked, "source": src,
+           "verdict": {0: "可验收", 1: "未可验收(BLOCKED 逐条点名)", 3: "输入缺失 fail-closed"}.get(prc, "?")}
 
     # ---- 统计 -------------------------------------------------------------
     def col(win, arms):
@@ -94,9 +106,9 @@ def main() -> int:
     # ---- post-hoc(非预注册; 预注册 J10 的「同终态 pfail 配对」在本窗为空 ⇒ 收窄, 不改预注册口径) ----
     fired = dict(j10.get("fired_arms_on") or {})
     off_same = dict(j10.get("same_pfail_off_arms") or {})
-    off_repaired = {k: {"exec_repairs": r["exec_repairs"], "calls": r["calls_dump"], "pfail_final": r["public_probe_failed"],
-                        "cases": r["cases_pass"]}
-                    for k, r in allarms.items() if isinstance(k, tuple) and k[1] in OFF and (r["exec_repairs"] or 0) >= 1}
+    off_repaired = {"%s/%s" % (k[0], k[1]): {"exec_repairs": r["exec_repairs"], "calls": r["calls_dump"],
+                                             "pfail_final": r["public_probe_failed"], "cases": r["cases_pass"]}
+                    for k, r in allarms.items() if k[1] in OFF and (r["exec_repairs"] or 0) >= 1}
     posthoc = {
         "name": "J10 反事实缺口的收窄读数(非预注册)",
         "why": "预注册 J10 要求「轴关列存在同**终态** pfail≥2 臂」作配对反事实; 本窗轴关列 5/5 臂终态 pfail ≤ 1"
@@ -110,12 +122,11 @@ def main() -> int:
         "posthoc_side_effect": "轴关列被修复回 pfail≤1 而同列隐藏用例 %s; 轴开行使臂终态 pfail=2, 隐藏用例 %s"
                                "—— 方向与「修复有效」一致但样本 n=%d/%d, **不足以下结论**(预注册未声明质量非劣的配对检验)。"
                                % (sorted(v["cases"] for v in off_repaired.values()),
-                                  sorted(v["cases"] for v in fired.values()), len(off_repaired), len(fired)),
+                                  sorted(allarms[(w, k)]["cases_pass"] for (w, k) in allarms if k in fired),
+                                  len(off_repaired), len(fired)),
     }
 
     AOT = None
-    for line in io.open("/tmp/r546-publish.log", encoding="utf-8", errors="ignore").read().splitlines()[::-1]:
-        m = re.search(r"agenthost\s*\|?\s*(\d+)", line)
     import hashlib
     binp = "/tmp/pub_r546/agenthost"
     if os.path.exists(binp):
@@ -177,10 +188,12 @@ def main() -> int:
                     s["calls_median"], "{:,}".format(s["total_median"] or 0), s["rcs"], s["fake_success"]))
     L.append("")
     L.append("## 4 判据(本轮预注册 = J10/J11/J12)\n")
-    L.append("- **J10 机制(轴真生效)**: `%s` —— 轴开臂 pfail≥2 的臂 %s ⇒ 全部 `early_stop_skipped=1` ∧ `exec_repairs=0` ∧ reply 含 "
-             "`R1_EARLY_STOP`; 同窗轴关同 pfail 臂 %s ⇒ `exec_repairs≥1`(回灌真发生) ⇒ **成对反事实成立**。"
+    L.append("- **J10 机制(轴真生效)**: `%s` —— 轴开臂 pfail≥2 的臂 %s ⇒ 全部 `early_stop_skipped=1` ∧ reply 含 `R1_EARLY_STOP`; "
+             "同窗轴关同 pfail 臂 %s ⇒ %s"
              % (j10.get("verdict"), json.dumps(j10.get("fired_arms_on"), ensure_ascii=False),
-                json.dumps(j10.get("same_pfail_off_arms"), ensure_ascii=False)))
+                json.dumps(j10.get("same_pfail_off_arms"), ensure_ascii=False),
+                "**成对反事实成立**(轴关同 pfail 臂真做了回灌修复)" if off_same else
+                "**反事实类为空** ⇒ 预注册的「同终态 pfail 配对」在本窗不可构造(轴关列被修复回 pfail≤1) ⇒ 省调用宣称收窄为「器具级成对单测 + 行使臂实测」, 见 §4b"))
     L.append("- **J11 代价(配对)**: pfail≥2 子集调用 off %s → on %s(合计 %s → %s, **省 %s 次**); 全臂调用中位 %s → %s; "
              "**判别性阴性对照** pfail<2 子集 off %s / on %s。%s"
              % (j11["pfail_ge2_calls"]["median_off"], j11["pfail_ge2_calls"]["median_on"],
@@ -215,7 +228,7 @@ def main() -> int:
 
     # ---- improvements 条 --------------------------------------------------
     imp = ["", "## R546 (2026-09-18) — 早停轴单变量对照(探针已判产物不合格 ⇒ 省掉那次回灌修复请求) — 结果: %s" % (
-        "轴真生效且省调用" if j10.get("verdict") == "PASS" else ("机制未被行使" if "未行使" in str(j10.get("verdict")) else "判据证伪")),
+        "轴真生效且省调用" if j10.get("verdict") == "PASS" else ("机制已行使但配对反事实为空(收窄, 见轮志 §4b)" if "未被行使" in str(j10.get("verdict")) else "判据证伪")),
         "", ]
     imp.append("(轮志: `docs/reports/r546-early-stop-axis.md` · prereg/证据 `eval/rover/r546/`)\n")
     imp.append("- **靶点来源**: R545 候选① + 用户 R413 判据「一轮 token ↓≥30%, 主要是不必要的 LLM API 请求少了」; "
@@ -237,11 +250,13 @@ def main() -> int:
     imp.append("- **测试基线**: 新增 `R1EarlyStopTests` 4/4(含成对 `Calls=2 vs 1` + 阈值负控); 全量 1876/1876(0 failed); "
                "API 基线显式重生(**差异仅本轮** 3 行)。")
     imp.append("- **诚实边界**: ① 窗口数 %d ⇒ %s ② 前置器 rc=%s ⇒ 成本读数标「参考(未可验收)」 ③ 外部真值(codex-cli)未安装 ⇒ "
-               "主线四硬条件缺外侧 ④ pfail≥2 子集样本数少(n=%d/%d) ⇒ 省调用数按「配对子集」报, 不外推全臂 ⑤ 未测: 早停阈值 1/3 的剂量响应、"
-               "早停对**质量**的影响(轴开臂 pfail≥2 子集 %s vs 轴关同 pfail %s, 样本过少不下结论)。"
+               "主线四硬条件缺外侧 ④ **预注册 J10 的配对反事实类为空**(轴关 5/5 臂终态 pfail≤1) ⇒ 省调用数**不在窗内宣**, "
+               "只留器具级成对单测(同输入 轴关 Calls=2 / 轴开 Calls=1)与行使臂实测调用数, post-hoc 单列于轮志 §4b ⑤ 未测: "
+               "早停阈值 1/3 的剂量响应、早停对**质量**的影响(行使臂隐藏用例 %s vs 轴关已修复臂 %s, n=%d/%d 不下结论)。"
                % (len(data), "单窗 ⇒ 逐窗极差不可估, 采样方差只在窗内" if len(data) == 1 else "两窗 ⇒ 已报逐窗+极差",
-                  acc["rc"], len(pf_on), len(pf_off),
-                  j11["pfail_ge2_calls"]["median_on"], j11["pfail_ge2_calls"]["median_off"]))
+                  acc["rc"],
+                  sorted(allarms[(w, k)]["cases_pass"] for (w, k) in allarms if k in fired),
+                  sorted(v["cases"] for v in off_repaired.values()), len(fired), len(off_repaired)))
     imp.append("- **下轮候选 (R547)**: ① 第二窗(w2)—— 单窗=噪声, 且本轮前置器在窗口面仍 rc=%s, 需按逐窗+极差重报 ② 早停阈值剂量(1/2/3)响应曲线 "
                "(现在只有 2 一个点) ③ pfail≥2 子集上「省调用 vs 质量」的配对样本扩到 n≥5(现 n=%d) ④ R545 候选②/③ 仍未闭合(on 中位 < off 定因; 旧路径列本期 n=%d) "
                "⑤ 前置器臂级口径(先写后跑)。" % (acc["rc"], min(len(pf_on), len(pf_off)), S["legacy"]["n"]))
@@ -249,6 +264,7 @@ def main() -> int:
     imppath = os.path.join(REPO, "docs/improvements.md")
     txt = io.open(imppath, encoding="utf-8").read()
     txt = re.sub(r"\n?<!-- R546-INFLIGHT:.*?-->\n?", "\n", txt)   # 收口即摘掉在跑标记
+    txt = re.sub(r"\n## R546 \(.*?(?=\n## R5\d\d \(|\Z)", "", txt, flags=re.S)  # 幂等: 重跑不重复追加
     io.open(imppath, "w", encoding="utf-8").write(txt)
     io.open(imppath, "a", encoding="utf-8").write("\n".join(imp))
 
