@@ -1,0 +1,1219 @@
+{
+ "round": "r546",
+ "window": "w1",
+ "run_dir": "eval/rover/r546/run-w1",
+ "single_variable": "AGENTFRAMEWORK_R1_EARLY_STOP_PFAIL (0=轴关 / 2=pfail≥2 时省略那次回灌修复调用)",
+ "arms": {
+  "E0a": {
+   "side": "off",
+   "range": [
+    2,
+    3
+   ],
+   "rc": 4,
+   "stage": "contract",
+   "reason_head": "",
+   "calls_dump": 2,
+   "calls_self": 2,
+   "prompt_tokens": 16237,
+   "cached_tokens": 15744,
+   "completion_tokens": 2507,
+   "total_tokens": 18744,
+   "unreported_usage": 0,
+   "plan_steps_total": 0,
+   "steps_executed": 0,
+   "exec_repairs": 0,
+   "repair_rounds": 1,
+   "correctness_asserted": 0,
+   "public_probe_ran": null,
+   "public_probe_total": null,
+   "public_probe_failed": null,
+   "public_probe_trigger_rc": null,
+   "public_probe_reason": null,
+   "early_stop_pfail": null,
+   "early_stop_skipped": null,
+   "artifact_files": 0,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 0,
+   "cases_total": 58,
+   "cases_rc": 1,
+   "all_green": false,
+   "failed_cases": [
+    "life#00-public",
+    "life#01-public",
+    "life#02-hidden",
+    "life#03-hidden",
+    "life#04-hidden",
+    "life#05-hidden",
+    "life#06-hidden",
+    "life#07-hidden",
+    "life#08-hidden",
+    "life#09-hidden",
+    "life#10-hidden",
+    "life#11-hidden",
+    "life#12-hidden",
+    "life#13-hidden",
+    "sub#14-public",
+    "sub#15-public",
+    "sub#16-hidden",
+    "sub#17-hidden",
+    "sub#18-hidden",
+    "sub#19-hidden",
+    "sub#20-hidden",
+    "sub#21-hidden",
+    "sub#22-hidden",
+    "sub#23-hidden",
+    "sub#24-hidden",
+    "sub#25-hidden",
+    "sub#26-hidden",
+    "sub#27-hidden",
+    "nim#28-public",
+    "nim#29-public",
+    "nim#30-hidden",
+    "nim#31-hidden",
+    "nim#32-hidden",
+    "nim#33-hidden",
+    "nim#34-hidden",
+    "nim#35-hidden",
+    "nim#36-hidden",
+    "nim#37-hidden",
+    "nim#38-hidden",
+    "nim#39-hidden",
+    "nim#40-hidden",
+    "nim#41-hidden",
+    "nim#42-hidden",
+    "wythoff#43-public",
+    "wythoff#44-public",
+    "wythoff#45-hidden",
+    "wythoff#46-hidden",
+    "wythoff#47-hidden",
+    "wythoff#48-hidden",
+    "wythoff#49-hidden",
+    "wythoff#50-hidden",
+    "wythoff#51-hidden",
+    "wythoff#52-hidden",
+    "wythoff#53-hidden",
+    "wythoff#54-hidden",
+    "wythoff#55-hidden",
+    "wythoff#56-hidden",
+    "wythoff#57-hidden"
+   ],
+   "public_failed": [
+    "life#00-public",
+    "life#01-public",
+    "sub#14-public",
+    "sub#15-public",
+    "nim#28-public",
+    "nim#29-public",
+    "wythoff#43-public",
+    "wythoff#44-public"
+   ],
+   "reply_has_probe_marker": false,
+   "reply_has_early_stop_marker": false
+  },
+  "E0b": {
+   "side": "off",
+   "range": [
+    6,
+    6
+   ],
+   "rc": 0,
+   "stage": "done",
+   "reason_head": "",
+   "calls_dump": 1,
+   "calls_self": 1,
+   "prompt_tokens": 8083,
+   "cached_tokens": 7936,
+   "completion_tokens": 2441,
+   "total_tokens": 10524,
+   "unreported_usage": 0,
+   "plan_steps_total": 14,
+   "steps_executed": 14,
+   "exec_repairs": 0,
+   "repair_rounds": 0,
+   "correctness_asserted": 1,
+   "public_probe_ran": 1,
+   "public_probe_total": 8,
+   "public_probe_failed": 0,
+   "public_probe_trigger_rc": 0,
+   "public_probe_reason": "public_examples_pass",
+   "early_stop_pfail": null,
+   "early_stop_skipped": null,
+   "artifact_files": 6,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 56,
+   "cases_total": 58,
+   "cases_rc": 1,
+   "all_green": false,
+   "failed_cases": [
+    "wythoff#55-hidden",
+    "wythoff#57-hidden"
+   ],
+   "public_failed": [],
+   "reply_has_probe_marker": true,
+   "reply_has_early_stop_marker": false
+  },
+  "E0c": {
+   "side": "off",
+   "range": [
+    8,
+    11
+   ],
+   "rc": 5,
+   "stage": "expect_stdout_exhausted",
+   "reason_head": "",
+   "calls_dump": 4,
+   "calls_self": 3,
+   "prompt_tokens": 32767,
+   "cached_tokens": 31616,
+   "completion_tokens": 5852,
+   "total_tokens": 38619,
+   "unreported_usage": 0,
+   "plan_steps_total": 10,
+   "steps_executed": 7,
+   "exec_repairs": 1,
+   "repair_rounds": 1,
+   "correctness_asserted": 0,
+   "public_probe_ran": 1,
+   "public_probe_total": 8,
+   "public_probe_failed": 0,
+   "public_probe_trigger_rc": 5,
+   "public_probe_reason": "public_examples_pass",
+   "early_stop_pfail": null,
+   "early_stop_skipped": null,
+   "artifact_files": 6,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 58,
+   "cases_total": 58,
+   "cases_rc": 0,
+   "all_green": true,
+   "failed_cases": [],
+   "public_failed": [],
+   "reply_has_probe_marker": true,
+   "reply_has_early_stop_marker": false
+  },
+  "E0d": {
+   "side": "off",
+   "range": [
+    14,
+    15
+   ],
+   "rc": 8,
+   "stage": "self_test_unmet",
+   "reason_head": "",
+   "calls_dump": 2,
+   "calls_self": 2,
+   "prompt_tokens": 16548,
+   "cached_tokens": 16000,
+   "completion_tokens": 3966,
+   "total_tokens": 20514,
+   "unreported_usage": 0,
+   "plan_steps_total": 7,
+   "steps_executed": 7,
+   "exec_repairs": 1,
+   "repair_rounds": 0,
+   "correctness_asserted": 0,
+   "public_probe_ran": 1,
+   "public_probe_total": 8,
+   "public_probe_failed": 0,
+   "public_probe_trigger_rc": 5,
+   "public_probe_reason": "public_examples_pass",
+   "early_stop_pfail": null,
+   "early_stop_skipped": null,
+   "artifact_files": 6,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 58,
+   "cases_total": 58,
+   "cases_rc": 0,
+   "all_green": true,
+   "failed_cases": [],
+   "public_failed": [],
+   "reply_has_probe_marker": true,
+   "reply_has_early_stop_marker": false
+  },
+  "E0e": {
+   "side": "off",
+   "range": [
+    20,
+    21
+   ],
+   "rc": 8,
+   "stage": "self_test_unmet",
+   "reason_head": "",
+   "calls_dump": 2,
+   "calls_self": 2,
+   "prompt_tokens": 16308,
+   "cached_tokens": 16000,
+   "completion_tokens": 4249,
+   "total_tokens": 20557,
+   "unreported_usage": 0,
+   "plan_steps_total": 7,
+   "steps_executed": 7,
+   "exec_repairs": 1,
+   "repair_rounds": 0,
+   "correctness_asserted": 0,
+   "public_probe_ran": 1,
+   "public_probe_total": 8,
+   "public_probe_failed": 1,
+   "public_probe_trigger_rc": 5,
+   "public_probe_reason": "public_examples_failed",
+   "early_stop_pfail": null,
+   "early_stop_skipped": null,
+   "artifact_files": 6,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 50,
+   "cases_total": 58,
+   "cases_rc": 1,
+   "all_green": false,
+   "failed_cases": [
+    "wythoff#43-public",
+    "wythoff#45-hidden",
+    "wythoff#47-hidden",
+    "wythoff#48-hidden",
+    "wythoff#50-hidden",
+    "wythoff#55-hidden",
+    "wythoff#56-hidden",
+    "wythoff#57-hidden"
+   ],
+   "public_failed": [
+    "wythoff#43-public"
+   ],
+   "reply_has_probe_marker": true,
+   "reply_has_early_stop_marker": false
+  },
+  "E1a": {
+   "side": "on",
+   "range": [
+    4,
+    5
+   ],
+   "rc": 0,
+   "stage": "done",
+   "reason_head": "",
+   "calls_dump": 2,
+   "calls_self": 2,
+   "prompt_tokens": 16308,
+   "cached_tokens": 15744,
+   "completion_tokens": 4285,
+   "total_tokens": 20593,
+   "unreported_usage": 0,
+   "plan_steps_total": 14,
+   "steps_executed": 14,
+   "exec_repairs": 1,
+   "repair_rounds": 0,
+   "correctness_asserted": 1,
+   "public_probe_ran": 1,
+   "public_probe_total": 8,
+   "public_probe_failed": 0,
+   "public_probe_trigger_rc": 0,
+   "public_probe_reason": "public_examples_pass",
+   "early_stop_pfail": 2,
+   "early_stop_skipped": 0,
+   "artifact_files": 6,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 58,
+   "cases_total": 58,
+   "cases_rc": 0,
+   "all_green": true,
+   "failed_cases": [],
+   "public_failed": [],
+   "reply_has_probe_marker": true,
+   "reply_has_early_stop_marker": false
+  },
+  "E1b": {
+   "side": "on",
+   "range": [
+    7,
+    7
+   ],
+   "rc": 5,
+   "stage": "expect_stdout",
+   "reason_head": "",
+   "calls_dump": 1,
+   "calls_self": 1,
+   "prompt_tokens": 8083,
+   "cached_tokens": 7936,
+   "completion_tokens": 1912,
+   "total_tokens": 9995,
+   "unreported_usage": 0,
+   "plan_steps_total": 10,
+   "steps_executed": 7,
+   "exec_repairs": 0,
+   "repair_rounds": 0,
+   "correctness_asserted": 0,
+   "public_probe_ran": 1,
+   "public_probe_total": 8,
+   "public_probe_failed": 2,
+   "public_probe_trigger_rc": 5,
+   "public_probe_reason": "public_examples_failed",
+   "early_stop_pfail": 2,
+   "early_stop_skipped": 1,
+   "artifact_files": 6,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 43,
+   "cases_total": 58,
+   "cases_rc": 1,
+   "all_green": false,
+   "failed_cases": [
+    "wythoff#43-public",
+    "wythoff#44-public",
+    "wythoff#45-hidden",
+    "wythoff#46-hidden",
+    "wythoff#47-hidden",
+    "wythoff#48-hidden",
+    "wythoff#49-hidden",
+    "wythoff#50-hidden",
+    "wythoff#51-hidden",
+    "wythoff#52-hidden",
+    "wythoff#53-hidden",
+    "wythoff#54-hidden",
+    "wythoff#55-hidden",
+    "wythoff#56-hidden",
+    "wythoff#57-hidden"
+   ],
+   "public_failed": [
+    "wythoff#43-public",
+    "wythoff#44-public"
+   ],
+   "reply_has_probe_marker": true,
+   "reply_has_early_stop_marker": true
+  },
+  "E1c": {
+   "side": "on",
+   "range": [
+    12,
+    13
+   ],
+   "rc": 8,
+   "stage": "self_test_unmet",
+   "reason_head": "",
+   "calls_dump": 2,
+   "calls_self": 2,
+   "prompt_tokens": 16547,
+   "cached_tokens": 15872,
+   "completion_tokens": 3729,
+   "total_tokens": 20276,
+   "unreported_usage": 0,
+   "plan_steps_total": 7,
+   "steps_executed": 7,
+   "exec_repairs": 1,
+   "repair_rounds": 0,
+   "correctness_asserted": 0,
+   "public_probe_ran": 1,
+   "public_probe_total": 8,
+   "public_probe_failed": 2,
+   "public_probe_trigger_rc": 5,
+   "public_probe_reason": "public_examples_failed",
+   "early_stop_pfail": 2,
+   "early_stop_skipped": 1,
+   "artifact_files": 6,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 44,
+   "cases_total": 58,
+   "cases_rc": 1,
+   "all_green": false,
+   "failed_cases": [
+    "wythoff#43-public",
+    "wythoff#44-public",
+    "wythoff#45-hidden",
+    "wythoff#46-hidden",
+    "wythoff#47-hidden",
+    "wythoff#48-hidden",
+    "wythoff#49-hidden",
+    "wythoff#50-hidden",
+    "wythoff#52-hidden",
+    "wythoff#53-hidden",
+    "wythoff#54-hidden",
+    "wythoff#55-hidden",
+    "wythoff#56-hidden",
+    "wythoff#57-hidden"
+   ],
+   "public_failed": [
+    "wythoff#43-public",
+    "wythoff#44-public"
+   ],
+   "reply_has_probe_marker": true,
+   "reply_has_early_stop_marker": true
+  },
+  "E1d": {
+   "side": "on",
+   "range": [
+    16,
+    19
+   ],
+   "rc": 5,
+   "stage": "expect_stdout_exhausted",
+   "reason_head": "",
+   "calls_dump": 4,
+   "calls_self": 3,
+   "prompt_tokens": 32859,
+   "cached_tokens": 31616,
+   "completion_tokens": 8220,
+   "total_tokens": 41079,
+   "unreported_usage": 0,
+   "plan_steps_total": 16,
+   "steps_executed": 15,
+   "exec_repairs": 1,
+   "repair_rounds": 1,
+   "correctness_asserted": 0,
+   "public_probe_ran": 1,
+   "public_probe_total": 8,
+   "public_probe_failed": 0,
+   "public_probe_trigger_rc": 5,
+   "public_probe_reason": "public_examples_pass",
+   "early_stop_pfail": 2,
+   "early_stop_skipped": 0,
+   "artifact_files": 6,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 58,
+   "cases_total": 58,
+   "cases_rc": 0,
+   "all_green": true,
+   "failed_cases": [],
+   "public_failed": [],
+   "reply_has_probe_marker": true,
+   "reply_has_early_stop_marker": false
+  },
+  "E1e": {
+   "side": "on",
+   "range": [
+    22,
+    23
+   ],
+   "rc": 0,
+   "stage": "done",
+   "reason_head": "",
+   "calls_dump": 2,
+   "calls_self": 2,
+   "prompt_tokens": 16308,
+   "cached_tokens": 15872,
+   "completion_tokens": 5127,
+   "total_tokens": 21435,
+   "unreported_usage": 0,
+   "plan_steps_total": 14,
+   "steps_executed": 14,
+   "exec_repairs": 1,
+   "repair_rounds": 0,
+   "correctness_asserted": 1,
+   "public_probe_ran": 1,
+   "public_probe_total": 8,
+   "public_probe_failed": 0,
+   "public_probe_trigger_rc": 0,
+   "public_probe_reason": "public_examples_pass",
+   "early_stop_pfail": 2,
+   "early_stop_skipped": 0,
+   "artifact_files": 6,
+   "role_note_chars": 326,
+   "prefix_sha256": "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637",
+   "cases_pass": 58,
+   "cases_total": 58,
+   "cases_rc": 0,
+   "all_green": true,
+   "failed_cases": [],
+   "public_failed": [],
+   "reply_has_probe_marker": true,
+   "reply_has_early_stop_marker": false
+  },
+  "A1on": {
+   "side": "legacy",
+   "range": [
+    24,
+    35
+   ],
+   "rc": null,
+   "stage": null,
+   "reason_head": "",
+   "calls_dump": 12,
+   "calls_self": null,
+   "prompt_tokens": 151561,
+   "cached_tokens": 143616,
+   "completion_tokens": 13320,
+   "total_tokens": 164881,
+   "unreported_usage": 0,
+   "plan_steps_total": null,
+   "steps_executed": null,
+   "exec_repairs": null,
+   "repair_rounds": null,
+   "correctness_asserted": null,
+   "public_probe_ran": null,
+   "public_probe_total": null,
+   "public_probe_failed": null,
+   "public_probe_trigger_rc": null,
+   "public_probe_reason": null,
+   "early_stop_pfail": null,
+   "early_stop_skipped": null,
+   "artifact_files": 6,
+   "role_note_chars": null,
+   "prefix_sha256": null,
+   "cases_pass": 58,
+   "cases_total": 58,
+   "cases_rc": 0,
+   "all_green": true,
+   "failed_cases": [],
+   "public_failed": [],
+   "reply_has_probe_marker": null,
+   "reply_has_early_stop_marker": null
+  },
+  "A1onb": {
+   "side": "legacy",
+   "range": [
+    36,
+    44
+   ],
+   "rc": null,
+   "stage": null,
+   "reason_head": "",
+   "calls_dump": 9,
+   "calls_self": null,
+   "prompt_tokens": 90525,
+   "cached_tokens": 85248,
+   "completion_tokens": 7316,
+   "total_tokens": 97841,
+   "unreported_usage": 0,
+   "plan_steps_total": null,
+   "steps_executed": null,
+   "exec_repairs": null,
+   "repair_rounds": null,
+   "correctness_asserted": null,
+   "public_probe_ran": null,
+   "public_probe_total": null,
+   "public_probe_failed": null,
+   "public_probe_trigger_rc": null,
+   "public_probe_reason": null,
+   "early_stop_pfail": null,
+   "early_stop_skipped": null,
+   "artifact_files": 8,
+   "role_note_chars": null,
+   "prefix_sha256": null,
+   "cases_pass": 58,
+   "cases_total": 58,
+   "cases_rc": 0,
+   "all_green": true,
+   "failed_cases": [],
+   "public_failed": [],
+   "reply_has_probe_marker": null,
+   "reply_has_early_stop_marker": null
+  },
+  "A1onc": {
+   "side": "legacy",
+   "range": [
+    45,
+    48
+   ],
+   "rc": null,
+   "stage": null,
+   "reason_head": "",
+   "calls_dump": 4,
+   "calls_self": null,
+   "prompt_tokens": 33036,
+   "cached_tokens": 30848,
+   "completion_tokens": 4593,
+   "total_tokens": 37629,
+   "unreported_usage": 0,
+   "plan_steps_total": null,
+   "steps_executed": null,
+   "exec_repairs": null,
+   "repair_rounds": null,
+   "correctness_asserted": null,
+   "public_probe_ran": null,
+   "public_probe_total": null,
+   "public_probe_failed": null,
+   "public_probe_trigger_rc": null,
+   "public_probe_reason": null,
+   "early_stop_pfail": null,
+   "early_stop_skipped": null,
+   "artifact_files": 6,
+   "role_note_chars": null,
+   "prefix_sha256": null,
+   "cases_pass": 56,
+   "cases_total": 58,
+   "cases_rc": 1,
+   "all_green": false,
+   "failed_cases": [
+    "wythoff#55-hidden",
+    "wythoff#57-hidden"
+   ],
+   "public_failed": [],
+   "reply_has_probe_marker": null,
+   "reply_has_early_stop_marker": null
+  }
+ },
+ "columns": {
+  "off": {
+   "arms": [
+    "E0a",
+    "E0b",
+    "E0c",
+    "E0d",
+    "E0e"
+   ],
+   "rc": [
+    4,
+    0,
+    5,
+    8,
+    8
+   ],
+   "cases_pass": [
+    0,
+    56,
+    58,
+    58,
+    50
+   ],
+   "all_green": [
+    false,
+    false,
+    true,
+    true,
+    false
+   ],
+   "all_green_n": 2,
+   "cases_median": 56,
+   "calls": [
+    2,
+    1,
+    4,
+    2,
+    2
+   ],
+   "prompt_tokens": [
+    16237,
+    8083,
+    32767,
+    16548,
+    16308
+   ],
+   "completion_tokens": [
+    2507,
+    2441,
+    5852,
+    3966,
+    4249
+   ],
+   "total_tokens": [
+    18744,
+    10524,
+    38619,
+    20514,
+    20557
+   ],
+   "calls_median": 2,
+   "prompt_median": 16308,
+   "completion_median": 3966,
+   "total_median": 20514,
+   "calls_spread": {
+    "min": 1,
+    "max": 4,
+    "span": 3
+   },
+   "total_spread": {
+    "min": 10524,
+    "max": 38619,
+    "span": 28095
+   },
+   "probe_failed": [
+    null,
+    0,
+    0,
+    0,
+    1
+   ],
+   "trigger_rc": [
+    null,
+    0,
+    5,
+    5,
+    5
+   ],
+   "false_success_n": 1
+  },
+  "on": {
+   "arms": [
+    "E1a",
+    "E1b",
+    "E1c",
+    "E1d",
+    "E1e"
+   ],
+   "rc": [
+    0,
+    5,
+    8,
+    5,
+    0
+   ],
+   "cases_pass": [
+    58,
+    43,
+    44,
+    58,
+    58
+   ],
+   "all_green": [
+    true,
+    false,
+    false,
+    true,
+    true
+   ],
+   "all_green_n": 3,
+   "cases_median": 58,
+   "calls": [
+    2,
+    1,
+    2,
+    4,
+    2
+   ],
+   "prompt_tokens": [
+    16308,
+    8083,
+    16547,
+    32859,
+    16308
+   ],
+   "completion_tokens": [
+    4285,
+    1912,
+    3729,
+    8220,
+    5127
+   ],
+   "total_tokens": [
+    20593,
+    9995,
+    20276,
+    41079,
+    21435
+   ],
+   "calls_median": 2,
+   "prompt_median": 16308,
+   "completion_median": 4285,
+   "total_median": 20593,
+   "calls_spread": {
+    "min": 1,
+    "max": 4,
+    "span": 3
+   },
+   "total_spread": {
+    "min": 9995,
+    "max": 41079,
+    "span": 31084
+   },
+   "probe_failed": [
+    0,
+    2,
+    2,
+    0,
+    0
+   ],
+   "trigger_rc": [
+    0,
+    5,
+    5,
+    5,
+    0
+   ],
+   "false_success_n": 0
+  },
+  "legacy": {
+   "arms": [
+    "A1on",
+    "A1onb",
+    "A1onc"
+   ],
+   "cases_pass": [
+    58,
+    58,
+    56
+   ],
+   "all_green_n": 2,
+   "calls": [
+    12,
+    9,
+    4
+   ],
+   "total_tokens": [
+    164881,
+    97841,
+    37629
+   ],
+   "calls_median": 9,
+   "total_median": 97841,
+   "calls_spread": {
+    "min": 4,
+    "max": 12,
+    "span": 8
+   },
+   "total_spread": {
+    "min": 37629,
+    "max": 164881,
+    "span": 127252
+   }
+  }
+ },
+ "invariants": {
+  "prefix_sha256_set": [
+   "ed13dd23577db89323b5263def755512baf4e640e0783b4ee2df32dcc8fa7637"
+  ],
+  "prefix_identical": true,
+  "role_note_chars_set": [
+   326
+  ],
+  "role_mounted_all": true,
+  "cases_total_58_all": true,
+  "reachable_arms": [
+   "E1a",
+   "E1b",
+   "E1c",
+   "E1d",
+   "E1e",
+   "E0b",
+   "E0c",
+   "E0d",
+   "E0e"
+  ],
+  "reachable_on_arms": [
+   "E1a",
+   "E1b",
+   "E1c",
+   "E1d",
+   "E1e"
+  ],
+  "mechanism_on_arms_ran": true,
+  "mechanism_on_arms_ran_all": true,
+  "mechanism_off_arms_absent": false,
+  "mechanism_off_no_marker": false,
+  "on_trigger_rc": {
+   "E1a": 0,
+   "E1b": 5,
+   "E1c": 5,
+   "E1d": 5,
+   "E1e": 0
+  },
+  "nonzero_exit_covered": true,
+  "early_stop_off_fields_absent": true,
+  "early_stop_on_threshold_all2": true
+ },
+ "judgments": {
+  "J1v2_机制启用(触发面修正)": {
+   "scope": "on 臂中**产物在盘**(work 文件数>0, 非自报)的臂 ⇒ 必须 public_probe_ran=1",
+   "reachable_on_arms": [
+    "E1a",
+    "E1b",
+    "E1c",
+    "E1d",
+    "E1e"
+   ],
+   "on_ran": [
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "on_artifact_files": [
+    6,
+    6,
+    6,
+    6,
+    6
+   ],
+   "off_ran": [
+    null,
+    1,
+    1,
+    1,
+    1
+   ],
+   "verdict": "FAIL(臂判 VOID)"
+  },
+  "J8_出口覆盖": {
+   "trigger_rc_set_on": [
+    0,
+    5
+   ],
+   "nonzero_exit_covered": true,
+   "note": "v1 的触发面只有 rc=0 ⇒ 该集合必为 {0}; v2 若出现 ≠0 值 ⇒ 旧触发面外的出口真被覆盖"
+  },
+  "J2_假成功消解": {
+   "off_false_success_n": 1,
+   "on_false_success_n": 0,
+   "verdict": "支持"
+  },
+  "J3_质量": {
+   "off_all_green": [
+    false,
+    false,
+    true,
+    true,
+    false
+   ],
+   "on_all_green": [
+    true,
+    false,
+    false,
+    true,
+    true
+   ],
+   "off_cases": [
+    0,
+    56,
+    58,
+    58,
+    50
+   ],
+   "on_cases": [
+    58,
+    43,
+    44,
+    58,
+    58
+   ],
+   "off_all_green_n": 2,
+   "on_all_green_n": 3,
+   "off_cases_median": 56,
+   "on_cases_median": 58,
+   "all_green_not_worse": true,
+   "cases_median_not_worse": true,
+   "verdict": "不降"
+  },
+  "J4_代价": {
+   "calls": {
+    "off_median": 2,
+    "on_median": 2,
+    "ratio_on_off": 1.0
+   },
+   "prompt": {
+    "off_median": 16308,
+    "on_median": 16308,
+    "ratio_on_off": 1.0
+   },
+   "completion": {
+    "off_median": 3966,
+    "on_median": 4285,
+    "ratio_on_off": 1.08
+   },
+   "total": {
+    "off_median": 20514,
+    "on_median": 20593,
+    "ratio_on_off": 1.004
+   }
+  },
+  "J5_同窗旧路径对照": {
+   "A1on_samples": [
+    {
+     "arm": "A1on",
+     "calls": 12,
+     "total": 164881,
+     "cases": "58/58"
+    },
+    {
+     "arm": "A1onb",
+     "calls": 9,
+     "total": 97841,
+     "cases": "58/58"
+    },
+    {
+     "arm": "A1onc",
+     "calls": 4,
+     "total": 37629,
+     "cases": "56/58"
+    }
+   ],
+   "A1on_calls_median": 9,
+   "A1on_calls_spread": {
+    "min": 4,
+    "max": 12,
+    "span": 8
+   },
+   "A1on_total_spread": {
+    "min": 37629,
+    "max": 164881,
+    "span": 127252
+   },
+   "on_calls_median": 2,
+   "on_total_median": 20593,
+   "call_ratio_on_vs_A1on": 0.222,
+   "token_ratio_on_vs_A1on": 0.21,
+   "quality_premise_ok": false,
+   "quality_premise_note": "前提不成立 ⇒ 本列的 calls/token 比值**只作参考**, 不得当增益证据 (质量前提 = 我方全绿臂数达满 ∧ 旧路径无满绿; 本窗旧路径 2/3 满绿 ⇒ 假)",
+   "leg_quality_all_green_n": 2,
+   "leg_cases_median": 58
+  },
+  "J6_探针非平凡": {
+   "probe_failed_values": [
+    0,
+    2
+   ],
+   "constant": false,
+   "note": "跨臂恒为同一值 ⇒ 臂级无可解释性(判别力另由 L2 成对单测承担); 另: v2 的 no_artifacts_on_disk 明确**不是**失败, 不得当 0 分"
+  },
+  "J7_rc语义": "rc=8 有两种 stage: self_test_unmet(模型自撰期望不符) / public_probe_unmet(管道自产证据不符); 两者都 correctness_asserted=0, 不作正确性证据; 唯一正确性证据 = 隐藏用例实跑。",
+  "J9_采样方差": {
+   "off_calls_spread": {
+    "min": 1,
+    "max": 4,
+    "span": 3
+   },
+   "on_calls_spread": {
+    "min": 1,
+    "max": 4,
+    "span": 3
+   },
+   "off_total_spread": {
+    "min": 10524,
+    "max": 38619,
+    "span": 28095
+   },
+   "on_total_spread": {
+    "min": 9995,
+    "max": 41079,
+    "span": 31084
+   },
+   "legacy_calls_spread": {
+    "min": 4,
+    "max": 12,
+    "span": 8
+   },
+   "note": "离散结局(rc/用例数)主导方差; 报极差与逐窗读数, 禁以单臂定轴。"
+  },
+  "posthoc_公开用例回放对隐藏用例的预测力": {
+   "label": "**事后(post-hoc) 单列**, 非预注册闸; 只报读数与单调性, 不作验收依据",
+   "pairs": [
+    {
+     "arm": "E1a",
+     "public_probe_failed": 0,
+     "cases_pass": 58
+    },
+    {
+     "arm": "E1b",
+     "public_probe_failed": 2,
+     "cases_pass": 43
+    },
+    {
+     "arm": "E1c",
+     "public_probe_failed": 2,
+     "cases_pass": 44
+    },
+    {
+     "arm": "E1d",
+     "public_probe_failed": 0,
+     "cases_pass": 58
+    },
+    {
+     "arm": "E1e",
+     "public_probe_failed": 0,
+     "cases_pass": 58
+    }
+   ],
+   "mean_hidden_by_public_failed": {
+    "0": 58.0,
+    "2": 43.5
+   },
+   "monotone_less_hidden_as_public_fail_rises": true,
+   "note": "公开面回放**零远端调用**(纯本地进程内执行) ⇒ 若其与隐藏分单调相关, 则可作「少发远端请求」的替代信号(主线判据抓手)。"
+  },
+  "J10_早停机制(轴真生效)": {
+   "scope": "轴开臂 pfail≥2 ⇒ early_stop_skipped=1 ∧ exec_repairs=0 ∧ reply 含 R1_EARLY_STOP; 同窗轴关同 pfail 臂 ⇒ exec_repairs≥1(回灌真发生)",
+   "fired_arms_on": {
+    "E1b": {
+     "pfail": 2,
+     "skipped": 1,
+     "exec_repairs": 0,
+     "calls": 1,
+     "reply_marker": true
+    },
+    "E1c": {
+     "pfail": 2,
+     "skipped": 1,
+     "exec_repairs": 1,
+     "calls": 2,
+     "reply_marker": true
+    }
+   },
+   "same_pfail_off_arms": {},
+   "on_fired_all_skipped": true,
+   "on_fired_no_repair": false,
+   "on_fired_marker": true,
+   "off_same_repaired": true,
+   "samples_present": false,
+   "verdict": "机制未被行使(某类样本为空, 禁宣称省调用)"
+  },
+  "J11_代价(配对)": {
+   "pair_rule": "按同 pfail 值配对; 预注册点估计 = 每臂省 1 次调用(那次回灌修复)",
+   "all_arms_calls_median": {
+    "axis_off": 2,
+    "axis_on": 2,
+    "ratio_on_off": 1.0
+   },
+   "pfail_ge2_calls": {
+    "axis_off": [],
+    "axis_on": [
+     1,
+     2
+    ],
+    "median_off": null,
+    "median_on": 1.5,
+    "ratio_on_off": null,
+    "call_sum_off": 0,
+    "call_sum_on": 3,
+    "calls_saved_total": null
+   },
+   "pfail_lt2_calls_negative_control": {
+    "axis_off": [
+     1,
+     2,
+     2,
+     2,
+     4
+    ],
+    "axis_on": [
+     2,
+     2,
+     4
+    ],
+    "note": "判别性阴性对照: 轴**不应**改变这一子集的调用数(除非修复预算本来就没被用)"
+   },
+   "tokens_pfail_ge2": {
+    "prompt_median": {
+     "off": null,
+     "on": 12315.0
+    },
+    "completion_median": {
+     "off": null,
+     "on": 2820.5
+    },
+    "total_median": {
+     "off": null,
+     "on": 15135.5
+    }
+   }
+  },
+  "J12_零回归(字段缺席)": {
+   "scope": "轴关(E0)臂: 台账无 early_stop_* 字段 ∧ reply 无 R1_EARLY_STOP ⇒ 逐位旧行为; 轴开臂: 字段在",
+   "off_fields_absent": true,
+   "on_threshold_all2": true,
+   "off_early_stop_pfail_values": [
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "suite_evidence": "1876/1876 全绿 + AOT IL 警告 0 + 器具级成对单测(R1EarlyStopTests: 轴关 Calls=2 / 轴开 Calls=1) —— 见轮报告, 非本读数器自报",
+   "verdict": "PASS"
+  }
+ },
+ "notes": []
+}

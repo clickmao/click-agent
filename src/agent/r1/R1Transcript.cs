@@ -48,6 +48,12 @@ public static class R1Transcript
             sb.Append(",\"public_probe_failed\":").Append(R1Json.Num(r.Probe.Failed));
             sb.Append(",\"public_probe_trigger_rc\":").Append(R1Json.Num(r.Probe.TriggerRc));
         }
+        // R546 早停轴：轴关(0) ⇒ 这两个字段不出现 ⇒ 与旧台账逐字节同（零回归由字段缺席机检）。
+        if (r.EarlyStopThreshold > 0)
+        {
+            sb.Append(",\"early_stop_pfail\":").Append(R1Json.Num(r.EarlyStopThreshold));
+            sb.Append(",\"early_stop_skipped\":").Append(R1Json.Num(r.EarlyStopSkipped));
+        }
         sb.Append("}");
         return sb.ToString();
     }
@@ -67,6 +73,11 @@ public static class R1Transcript
         sb.Append("  \"role_note_chars\": ").Append(R1Json.Num(r.RoleNoteChars)).Append(",\n");
         sb.Append("  \"max_repair\": ").Append(R1Json.Num(opt.MaxRepair)).Append(",\n");
         sb.Append("  \"max_exec_repair\": ").Append(R1Json.Num(opt.MaxExecRepair)).Append(",\n");
+        if (r.EarlyStopThreshold > 0)
+        {
+            sb.Append("  \"early_stop_pfail\": ").Append(R1Json.Num(r.EarlyStopThreshold)).Append(",\n");
+            sb.Append("  \"early_stop_skipped\": ").Append(R1Json.Num(r.EarlyStopSkipped)).Append(",\n");
+        }
         sb.Append("  \"step_timeout_s\": ").Append(R1Json.Num(opt.StepTimeoutSeconds)).Append(",\n");
         sb.Append("  \"rc\": ").Append(R1Json.Num(r.Rc)).Append(",\n");
         sb.Append("  \"stage\": ").Append(R1Json.Quote(r.Stage)).Append(",\n");

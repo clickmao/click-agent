@@ -59,6 +59,12 @@ public static class R1Pipeline
             probeSet = extracted;
         }
 
+        // R546 · 早停轴（**默认关**）: 产物公开用例回放**已经**判定产物在多条题面用例上不符
+        //   (pfail ≥ 阈值) 时,「再要一次远端调用做回灌修复」的边际价值被质疑 ⇒ 做成单变量可证伪。
+        //   轴开 ⇒ 跳过该次修复调用、直接走**既有**终端分类(rc/stage 语义不变, correctness_asserted 不变);
+        //   关闭(0) ⇒ 逐位等于旧行为(零回归由同一批臂的 off 列 + 既有单测钉住)。
+        var earlyStopSkips = 0;
+
         while (true)
         {
             Semantics? sem = null;
@@ -173,7 +179,15 @@ public static class R1Pipeline
 
             if (probe is not null && probe.Ran && probe.Failed > 0)
             {
-                if (execRepairs < opt.MaxExecRepair)
+                // R546: 早停判据是**机械的**(探针自产计数 ≥ 阈值), 在链内、起臂前已入代码 ⇒ 非事后补记。
+                var earlyStop = opt.EarlyStopPfail > 0 && probe.Failed >= opt.EarlyStopPfail;
+                if (earlyStop)
+                {
+                    earlyStopSkips++;
+                    raw += "\nR1_EARLY_STOP {\"pfail\":" + probe.Failed + ",\"threshold\":" + opt.EarlyStopPfail
+                        + ",\"repair_skipped\":1,\"calls_saved\":1,\"trigger\":\"public_probe\"}";
+                }
+                else if (execRepairs < opt.MaxExecRepair)
                 {
                     execRepairs++;
                     repairNote = StructuredPrompt.PublicProbeRepairMessage(probe.Failures);
@@ -182,13 +196,18 @@ public static class R1Pipeline
 
                 if (exec.Rc == 0)
                 {
+                    var budgetClause = earlyStopSkips > 0
+                        ? "早停轴开(pfail≥" + opt.EarlyStopPfail + ", 实测 pfail=" + probe.Failed
+                          + ") ⇒ 主动跳过回灌修复调用(省 1 次远端请求), 预算 " + opt.MaxExecRepair + " 未动;"
+                        : "执行回灌修复预算 " + opt.MaxExecRepair + " 已用尽;";
                     var probeUnmet = new R1RunResult(8, "public_probe_unmet",
                         "题面公开用例回放未过 " + probe.Failed + "/" + probe.Total
-                        + " 例（期望取自题面、与隐藏用例判分器同语义），执行回灌修复预算 " + opt.MaxExecRepair
-                        + " 已用尽 ⇒ 成对报「回放未达成 ∧ 产物可疑」: rc=8 不作正确性证据 (correctness_asserted=0);"
+                        + " 例（期望取自题面、与隐藏用例判分器同语义），" + budgetClause
+                        + " ⇒ 成对报「回放未达成 ∧ 产物可疑」: rc=8 不作正确性证据 (correctness_asserted=0);"
                         + " 首例: " + (probe.Failures.Count > 0 ? probe.Failures[0] : "(无)"),
                         raw + "\nR1_PUBLIC_PROBE " + probe.MarkerJson(), statsAll,
-                        prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe);
+                        prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe,
+                        opt.EarlyStopPfail, earlyStopSkips);
                     R1Transcript.Write(probeUnmet, opt, taskText ?? string.Empty);
                     return probeUnmet;
                 }
@@ -204,12 +223,13 @@ public static class R1Pipeline
                     : exec.Reason;
                 var done = new R1RunResult(0, "done", reason,
                     raw + (probe is not null ? "\nR1_PUBLIC_PROBE " + probe.MarkerJson() : string.Empty), statsAll,
-                    prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe);
+                    prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe,
+                    opt.EarlyStopPfail, earlyStopSkips);
                 R1Transcript.Write(done, opt, taskText ?? string.Empty);
                 return done;
             }
 
-            if (execRepairs >= opt.MaxExecRepair)
+            if (execRepairs >= opt.MaxExecRepair || earlyStopSkips > 0)
             {
                 // R533: 不再「产物已落盘却直接停机」—— 先回灌真证据重发起; 预算耗尽才停机,
                 // steps 原样带上 (产物在盘上, 判分器可继续核), 阶段名标 _exhausted 可机检。
@@ -230,13 +250,15 @@ public static class R1Pipeline
                         raw + "\nR1_SELF_TEST_UNMET {\"steps_executed\":" + exec.Steps.Count
                         + ",\"plan_steps_total\":" + sem.Plan.Count + ",\"detail\":\"expect_stdout 不符\""
                         + ",\"artifact\":\"suspect\",\"correctness_asserted\":0}" + probeMarker,
-                        statsAll, prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe);
+                        statsAll, prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe,
+                        opt.EarlyStopPfail, earlyStopSkips);
                     R1Transcript.Write(unmet, opt, taskText ?? string.Empty);
                     return unmet;
                 }
                 var stage = execRepairs > 0 ? exec.Stage + "_exhausted" : exec.Stage;
                 var stuck = new R1RunResult(exec.Rc, stage, exec.Reason, raw + probeMarker, statsAll,
-                    prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe);
+                    prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe,
+                    opt.EarlyStopPfail, earlyStopSkips);
                 R1Transcript.Write(stuck, opt, taskText ?? string.Empty);
                 return stuck;
             }

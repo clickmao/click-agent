@@ -25,7 +25,11 @@ public sealed record R1RunResult(
     int RoleNoteChars,
     string? TranscriptPath,
     IReadOnlyList<StepOutcome> Steps,
-    PublicProbeResult? Probe = null)
+    PublicProbeResult? Probe = null,
+    // R546 早停轴（默认 0=关）：>0 表示轴的阈值（该臂的探针开关轴开）；EarlyStopSkipped>0 表示
+    //   确有 1 次「回灌修复调用」被主动跳过（省下的正是那次不必要的远端请求）。
+    int EarlyStopThreshold = 0,
+    int EarlyStopSkipped = 0)
 {
     public bool Halted => Rc != 0;
 }

@@ -1,0 +1,165 @@
+{
+ "round": "r546",
+ "title": "早停轴单变量对照: AGENTFRAMEWORK_R1_EARLY_STOP_PFAIL ∈ {unset(0), 2}（g1 随机游戏长任务, 58 隐藏用例）",
+ "revision": 1,
+ "supersedes": null,
+ "made_before_run": true,
+ "made_at": "2026-09-18T08:1x+08:00",
+ "single_variable": "AGENTFRAMEWORK_R1_EARLY_STOP_PFAIL ∈ {unset(=0 轴关), 2(轴开)} —— 5 独立 session × 2 列 × 2 窗; 其余(题面/用例/role/二进制/预算 MAX_EXEC_REPAIR=1/探针开关 PUBLIC_SELFCHECK=1)全同",
+ "mainline": "主线(用户 2026-09-17 钦定): 真实开发任务 × 机械判分(58 隐藏用例真跑, 非自报) 对本项目做质量自检; R413 的「一轮 token ↓≥30%(主要是不必要的远端调用少了)」是**该主线的判据之一**。本轮的因果假设 = 探针已判产物不合格时的那次回灌修复调用是**不必要请求**。",
+ "why_revision": "R545 已把触发面 v2(产物在盘的全部出口)落地 ⇒ 探针在 pfail≥2 的臂上必然可见; 但「再花一次调用修复」的边际价值从未被单变量检验 ⇒ 本轮把「省掉它」做成可证伪轴(而非直接改动默认行为)。",
+ "disclosure": [
+  "早停轴**默认关**: 只有显式设 EARLY_STOP_PFAIL>0 才生效 ⇒ 轴关臂逐位等于 R545 行为(台账字段缺席可机检)。",
+  "早停只跳过「探针证据回灌」的那一次调用; 执行实测(exec)证据回灌预算在轴开臂上同样被终止 —— 这是轴的定义, 不是副作用。",
+  "rc 语义不变: 仍由既有终端分类给出; 早停只在 reason 里标注 + 台账新增 early_stop_pfail/early_stop_skipped。",
+  "本窗**无外部模型侧(codex-cli 未安装/未起)**: 判分器是题面衍生的 58 条隐藏用例(独立进程真跑), 属机械判分, 但不等于跨模型对照。"
+ ],
+ "window_plan": {
+  "window": "w1",
+  "windows": [
+   "w1",
+   "w2"
+  ],
+  "reps_per_side": 5,
+  "arms": [
+   {
+    "snapdir": "agentE0a-g1",
+    "side": "agent",
+    "switch": "early_stop=0(轴关)",
+    "rep": "a"
+   },
+   {
+    "snapdir": "agentE0b-g1",
+    "side": "agent",
+    "switch": "early_stop=0(轴关)",
+    "rep": "b"
+   },
+   {
+    "snapdir": "agentE0c-g1",
+    "side": "agent",
+    "switch": "early_stop=0(轴关)",
+    "rep": "c"
+   },
+   {
+    "snapdir": "agentE0d-g1",
+    "side": "agent",
+    "switch": "early_stop=0(轴关)",
+    "rep": "d"
+   },
+   {
+    "snapdir": "agentE0e-g1",
+    "side": "agent",
+    "switch": "early_stop=0(轴关)",
+    "rep": "e"
+   },
+   {
+    "snapdir": "agentE1a-g1",
+    "side": "agent",
+    "switch": "early_stop=2(轴开)",
+    "rep": "a"
+   },
+   {
+    "snapdir": "agentE1b-g1",
+    "side": "agent",
+    "switch": "early_stop=2(轴开)",
+    "rep": "b"
+   },
+   {
+    "snapdir": "agentE1c-g1",
+    "side": "agent",
+    "switch": "early_stop=2(轴开)",
+    "rep": "c"
+   },
+   {
+    "snapdir": "agentE1d-g1",
+    "side": "agent",
+    "switch": "early_stop=2(轴开)",
+    "rep": "d"
+   },
+   {
+    "snapdir": "agentE1e-g1",
+    "side": "agent",
+    "switch": "early_stop=2(轴开)",
+    "rep": "e"
+   },
+   {
+    "snapdir": "agentA1on-g1",
+    "side": "agent",
+    "switch": "legacy-path",
+    "rep": "1"
+   },
+   {
+    "snapdir": "agentA1onb-g1",
+    "side": "agent",
+    "switch": "legacy-path",
+    "rep": "2"
+   },
+   {
+    "snapdir": "agentA1onc-g1",
+    "side": "agent",
+    "switch": "legacy-path",
+    "rep": "3"
+   }
+  ],
+  "reason_of_extra_arms": "候选②(采样方差: 5 次/列单窗不够 ⇒ 两窗独立 session, 逐窗 + 极差); 候选③(旧路径列 R542=4 调用/R544=34 调用 8.5× 摆动 ⇒ 每窗 3 样本, 两窗合计 6)。"
+ },
+ "evidence_scope": {
+  "require": [
+   "w1/agentE0a-g1",
+   "w1/agentE0b-g1",
+   "w1/agentE0c-g1",
+   "w1/agentE0d-g1",
+   "w1/agentE0e-g1",
+   "w1/agentE1a-g1",
+   "w1/agentE1b-g1",
+   "w1/agentE1c-g1",
+   "w1/agentE1d-g1",
+   "w1/agentE1e-g1",
+   "w1/agentA1on-g1",
+   "w1/agentA1onb-g1",
+   "w1/agentA1onc-g1",
+   "w2/agentE0a-g1",
+   "w2/agentE0b-g1",
+   "w2/agentE0c-g1",
+   "w2/agentE0d-g1",
+   "w2/agentE0e-g1",
+   "w2/agentE1a-g1",
+   "w2/agentE1b-g1",
+   "w2/agentE1c-g1",
+   "w2/agentE1d-g1",
+   "w2/agentE1e-g1",
+   "w2/agentA1on-g1",
+   "w2/agentA1onb-g1",
+   "w2/agentA1onc-g1"
+  ],
+  "nonrequired": [],
+  "grader": "eval/rover/r546/cases/run_cases_r521.py (58 隐藏用例, 独立进程真跑, 机械判分; 禁模型裁判)",
+  "scorer": "eval/rover/r546/snapshots/<w>/*/g1/work (真实产物树快照)",
+  "silent_failure_checks": [
+   "rc==0 ∧ 用例未全过 = 假成功(计入 J2)",
+   "产物树为空 ⇒ 警告 + 不得当绿",
+   "轴关(E0)臂台账出现 early_stop_* 字段或 reply 含 R1_EARLY_STOP ⇒ 零回归破(fail)",
+   "轴开(E1)臂 public_probe_failed≥2 但 exec_repairs>0 ⇒ 机制未生效(判据证伪, 不得宣称省调用)"
+  ]
+ },
+ "judgments": {
+  "J1_机制(轴真生效, 机械+成对反事实)": "轴开臂中 public_probe_failed ≥ 2 的臂 ⇒ early_stop_skipped=1 ∧ exec_repairs=0 ∧ reply 含 R1_EARLY_STOP; 同窗轴关臂中同 pfail 的臂 ⇒ exec_repairs≥1(回灌真发生) ⇒ 成对反事实成立。两类样本都有臂才判; 某类为空 ⇒ 标「机制未被行使」。",
+  "J2_代价(主线判据之一)": "配对比较(pfail≥2 子集, 按同 pfail 值配对): 轴开臂远端调用数 / prompt / completion / total 中位 vs 轴关臂; 预注册点估计 = 每臂少 1 次调用。判别性阴性对照 = pfail<2 子集(轴不应改变其调用数)。",
+  "J3_质量(不得降)": "两维非劣: ① 全绿臂数(58/58) ② 用例通过数中位; 收窄 ⇒ 如实报为「代价换来的质量代价」, 不得当增益。",
+  "J4_零回归": "轴关臂台账无 early_stop_* 字段 ∧ reply 无 R1_EARLY_STOP ∧ 既有测试 1876 全绿 ∧ AOT IL 警告 0; 另: 器具级成对单测(同输入: 轴关 Calls=2 / 轴开 Calls=1)。",
+  "J5_旧路径列": "逐窗 3 样本报极差; **禁跨轮相减**; 质量前提不成立 ⇒ 比值只作参考。"
+ },
+ "instrument_negative_control": {
+  "what": "src/agent.tests/R1EarlyStopTests.cs —— 同一沙盒/同一脚本化 caller/同一题面, 只翻 EARLY_STOP_PFAIL ∈ {0,1,5}: 0 ⇒ Calls=2(修复真发生, 逐位旧行为); 1 ⇒ rc=8/public_probe_unmet ∧ Calls=1 ∧ exec_repairs=0 ∧ 台账含 early_stop_skipped=1; 5 ⇒ pfail=1<5 ⇒ 不触发(Calls=2) ⇒ 负控(阈值语义)。",
+  "why_not_model_judge": "全部断言是整数计数与字段缺席, 可机检; 无模型裁判。"
+ },
+ "acceptance": "① 链真跑通(起手闸 2×PASS + 冒烟 + 全臂 idx 区间非空) ② 同窗读数证明判据(调用数/prompt/completion/total 配对读数 + 质量非劣) ③ 前置器 eval/rover/r507pre/exec_precondition.py --round r546: rc≠0 ⇒ 本轮的降幅一律标「参考(未可验收)」, 禁作验收依据。",
+ "forbidden": [
+  "模型裁判",
+  "事后补记(判据/臂清单/阈值起臂后改)",
+  "跨轮相减",
+  "以链自报 rc 当正确性证据",
+  "以本仓内部读数自证(无外部判据时须标注)"
+ ],
+ "device_spec": "agenthost AOT (IL 警告 0) + eval/rover/r455/adapter_tools.py 计量中继(FULL dump); 串行起臂(2 vCPU); 窗口超时 420s(旧路径 720s)。"
+}

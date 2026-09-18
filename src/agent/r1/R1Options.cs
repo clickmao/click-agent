@@ -8,6 +8,8 @@ namespace agent.r1;
 ///   AGENTFRAMEWORK_WORKSPACE     沙箱根（缺省 = 传入的 fallback）
 ///   AGENTFRAMEWORK_R1_MAX_REPAIR 契约不过时的最大修复轮数（0..3，默认 1）
 ///   AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR 执行实测与期望不符时的最大回灌修复轮数（0..3，默认 1）
+///   AGENTFRAMEWORK_R1_EARLY_STOP_PFAIL 早停阈值（0..10，默认 0=关）：产物公开用例回放已失败 ≥ 阈值
+///                                     ⇒ 不再花一次调用做回灌修复（R546 轴；关闭态逐位等于旧行为）
 ///   AGENTFRAMEWORK_R1_STEP_TIMEOUT 单步 run 超时秒（5..1800，默认 120）
 ///   AGENTFRAMEWORK_R1_TRANSCRIPT 落盘路径（缺省 = 不落盘，只打 stdout 标记）
 ///   AGENTFRAMEWORK_R1_ROLE_FILE  role 额外数据（明文 profile 文件；见 R1RoleMount）
@@ -21,7 +23,8 @@ public sealed record R1Options(
     string? RoleNote,
     string Tag,
     int MaxExecRepair = 1,
-    bool PublicSelfCheck = false)
+    bool PublicSelfCheck = false,
+    int EarlyStopPfail = 0)
 {
     public static R1Options FromEnvironment(string fallbackRoot)
     {
@@ -65,6 +68,15 @@ public sealed record R1Options(
                 || string.Equals(v, "true", StringComparison.OrdinalIgnoreCase);
         }
 
+        // R546: 早停轴（0..10，默认 0=关）。>0 ⇒ 探针已判定产物不合格(pfail ≥ 阈值)时不再花一次
+        // 远端调用做回灌修复。关闭态逐位等于旧行为（新台账字段缺席可机检）。
+        var earlyStopPfail = 0;
+        if (int.TryParse(Environment.GetEnvironmentVariable("AGENTFRAMEWORK_R1_EARLY_STOP_PFAIL"), out var esp)
+            && esp >= 0 && esp <= 10)
+        {
+            earlyStopPfail = esp;
+        }
+
         return new R1Options(
             Path.GetFullPath(root),
             maxRepair,
@@ -73,6 +85,7 @@ public sealed record R1Options(
             R1RoleMount.ReadNote(),
             string.IsNullOrWhiteSpace(tag) ? "(untagged)" : tag,
             maxExecRepair,
-            publicSelfCheck);
+            publicSelfCheck,
+            earlyStopPfail);
     }
 }
