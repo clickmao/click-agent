@@ -1,0 +1,118 @@
+{
+ "round": "R565",
+ "written_before_run": true,
+ "author": "cron-agent (60min tick, 2026-09-19T01:2x)",
+ "claim": "**真机对照轮**: 产品默认档 × 外部真值 (codex-cli 同模型) 同窗对照 + 起手闸**振幅余量条款按实测振幅派生行使** (候选③) + **判定输入指纹 / 命中率双口径在新窗复核** (候选④)。零产品源码改动 · 零新增夹具 · 零新增开关 (用户令 2026-09-18「开工, 不许新增夹具和额外开发了」)。",
+ "candidates_ledger": {
+  "R564-① wythoff 族修复": "未做 —— 须动契约/产品分支 ⇒ 用户令未放行",
+  "R564-② 交付闸/停止条件": "未做 —— 须新增产品分支 ⇒ 未放行",
+  "R564-③ 下一轮条款派生行使": "做 (本文件 gate_clause)",
+  "R564-④ 判定输入指纹/命中率双口径新窗复核": "做 (本文件 candidate4)",
+  "R564-⑤ 铁律 11 验收面口径": "无动作 (R561 已按宪法原文落档)"
+ },
+ "single_variable": "无单变量 (非消融轮, 复跑分布轮): 全臂共用同一枚二进制 sha 320d0eb1… (runner 第 0 步机检); 臂间唯一差异 = 臂身份 (C1 = 外部真值 codex; R565B0 = 本侧产品默认档, **不设任何剂量 env**)。",
+ "arm_env_definition_note": "R565B0 的『产品默认档』= 不设 AGENTFRAMEWORK_R1_MAX_REPAIR / MAX_EXEC_REPAIR / MAX_PROBE_REPAIR / EARLY_STOP_PFAIL (取 R1Options 默认: 1 / 1 / 0 / 0), 只设 CONTRACT=1 ∧ PUBLIC_SELFCHECK=1 ∧ ROLE_FILE ∧ TRANSCRIPT ∧ WORKSPACE ∧ TAG。**与 R563B0 显式设 MAX_EXEC_REPAIR=0 而自称『产品默认档』不同** —— 该差异属定义澄清, 不改 R563 读数, 两轮并列入档禁相减。",
+ "arms": {
+  "C1": {
+   "side": "codex",
+   "desc": "外部真值 (另一套 agent 框架 CLI, 同模型 deepseek-flash, 同题面同夹具同窗)",
+   "env": {}
+  },
+  "R565B0": {
+   "side": "agent",
+   "desc": "本侧产品默认档 (剂量 env 全不设)",
+   "env": {
+    "(unset)": "R1Options defaults"
+   }
+  }
+ },
+ "scope_declaration": {
+  "windows": [
+   "w119",
+   "w120",
+   "w121",
+   "w122",
+   "w123",
+   "w124"
+  ],
+  "window_count": 6,
+  "task": "g1 (冻结题面; prompt sha256 与 R559/R560/R563 逐字节相同)",
+  "task_prompt_sha256_expected": "516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3",
+  "binary_sha256_expected": "320d0eb17e709d15ce7d149ceff45fc1cacff814ac01b9fbda67f702726cee48",
+  "hidden_cases": 58,
+  "cross_round_deltas_forbidden": "与 w104..w118 的读数**并列不相减** (新窗, 非同一窗集延续)"
+ },
+ "criterion_version": "v2 (逐窗并列 + 真值崩窗 unreliable[MARGIN=3] + 配对判据[无窗<=-3 且 配对中位>=-2, n>=3] + VOID 臂窗单列) —— 口径文本取自 docs/external-reference-harness.md §12 (R562 入册), 本文件只引用不重定义",
+ "acceptance_rule": {
+  "primary": "判据 v2 判决 (eval/rover/r561/verdict_r561.py 装置, 零逻辑复制); 红绿只由 arms[*].pass 决定, 中位/极差为信息项",
+  "rc": "0 全过 / 1 判据未过 (被测或前提) / 2 器具缺陷 / 3 缺侧或不可判",
+  "expected_direction": "无增益预期 (零产品改动 / 无单变量): 只把「产品默认档 vs 外部真值」在 v2 口径与新窗上重新读数; 预注册不得由本轮读数反推期望方向",
+  "cross_check": "铁律 11 前置器 python3 eval/rover/r507pre/exec_precondition.py --round r565 (两侧产出物独立物化 + 真跑 + 逐用例判对); rc!=0 ⇒ 全部成本/降幅读数标「参考(未可验收)」"
+ },
+ "gate_clause": {
+  "candidate": "R564 候选③ (起手闸振幅余量条款: MARGIN = max(60MB, 上一轮**实测振幅**))",
+  "derivation": "prev_postcheck = eval/rover/r563/gate-postcheck-r563.json (swing_mb=64, R563 运行窗口 41 样本) ⇒ MARGIN=64 / REQ=2714 (只翻既有闸 --gate-mb, 零新逻辑进闸)",
+  "consecutive": 2,
+  "controls": {
+   "PC": "连续 2 次 preflight_gate --gate-mb 2714 ⇒ 期望 PASS ×2",
+   "NC_hog": "400MB 占用 ⇒ 期望 GATE_BLOCKED",
+   "discriminating_pair": "同一内存态下 --gate-mb 2650 vs 2714 ⇒ 期望给出**不同**裁决 (证据: 条款比基础门槛更严; 若同判 ⇒ 条款无判别力, 记 FAIL)"
+  },
+  "fail_closed": "REQ 派生失败或顶棚 < REQ ⇒ rc=2 不起臂 (不静默放行)"
+ },
+ "candidate4": {
+  "name": "判定输入指纹 / 命中率双口径复核 (新窗)",
+  "pre_registered_checks": {
+   "C4-1 恒等式": "每个中继 dump: prompt_tokens == hit + miss ∧ 0 <= hit <= prompt ∧ 0 <= miss (违反 >0 ⇒ rc=2 器具/口径缺陷, 不进被测读数); 附合成坏口径负控 (hit>prompt / 总量<分量) 必须判红",
+   "C4-2 确定性": "R565B0 每窗**第 1 次调用**的 request.upstream_request.prompt_sha8 全窗相同 ∧ transcript.task_sha256 全窗相同 ∧ transcript.prefix_sha256 全窗相同 (同题面同前缀同渲染 ⇒ 输入逐位恒定)",
+   "C4-3 非平凡": "本侧指纹 ≠ 外部真值侧指纹 (跨臂互异) ⇒ 指纹不是恒真门",
+   "C4-4 命中率双口径": "v_all(含冷启动) / v_incr(去冷启动) 逐窗出数; 未上报记哨兵不入比率"
+  },
+  "rc": "0 全过 / 2 违反 / 3 输入缺失"
+ },
+ "artifacts": [
+  "eval/rover/r565/prereg-r565.json (本件, 先写后跑)",
+  "eval/rover/r565/gate-margin-r565.json (条款派生 + 成对控制 + 运行中振幅)",
+  "eval/rover/r565/fingerprint-r565.json (候选④)",
+  "eval/rover/r565/kpi-table-r565.json (调用/新算 prompt/completion/命中率双口径)",
+  "eval/rover/r565/verdict-r565.json (判据 v2 判决)",
+  "eval/rover/r565/percase-matrix-r565.json (逐例矩阵, 判分对副本)",
+  "eval/rover/r565/precond-r565.json (铁律 11 前置器)",
+  "eval/rover/r565/snapshots/<win>/{C1,R565B0}/g1/** (冻结快照)"
+ ],
+ "preregistered_expectations": {
+  "quality": "无增益预期 (零产品改动 ⇒ 只作读数, 不作增益宣称)",
+  "cost": "调用数/新算 prompt/completion 三列分列 (禁名义总量)",
+  "honest_boundary": "g1 族的 wythoff 系统性失分在 R562/R564 已两次定因; 本轮**不修** (未放行) ⇒ 预期 铁律 11 rc=1 的可能性高, 不得据此改写判据"
+ },
+ "notes": "本文件先写后跑 (runner 第 0 步机检: round/arms/require 计数/criterion_version)。判据 v2 口径不在本文件重定义, 只引用 docs/external-reference-harness.md §12 —— 防「同一判据两份实现」漂移。",
+ "evidence_scope": {
+  "require": [
+   "w119/C1",
+   "w119/R565B0",
+   "w120/C1",
+   "w120/R565B0",
+   "w121/C1",
+   "w121/R565B0",
+   "w122/C1",
+   "w122/R565B0",
+   "w123/C1",
+   "w123/R565B0",
+   "w124/C1",
+   "w124/R565B0"
+  ],
+  "artifacts": [
+   "eval/rover/r565/prereg-r565.json (本件, 先写后跑)",
+   "eval/rover/r565/gate-margin-r565.json (条款派生 + 成对控制 + 运行中振幅)",
+   "eval/rover/r565/fingerprint-r565.json (候选④)",
+   "eval/rover/r565/kpi-table-r565.json (调用/新算 prompt/completion/命中率双口径)",
+   "eval/rover/r565/verdict-r565.json (判据 v2 判决)",
+   "eval/rover/r565/percase-matrix-r565.json (逐例矩阵, 判分对副本)",
+   "eval/rover/r565/precond-r565.json (铁律 11 前置器)",
+   "eval/rover/r565/snapshots/<win>/{C1,R565B0}/g1/** (冻结快照)"
+  ]
+ },
+ "arm_env_check": {
+  "rule": "R565B0 的 env **不得含任何剂量键** (MAX_REPAIR/MAX_EXEC_REPAIR/MAX_PROBE_REPAIR/EARLY_STOP_PFAIL); 出现即视为『自称默认档而实为剂量臂』 ⇒ runner fail-closed"
+ }
+}

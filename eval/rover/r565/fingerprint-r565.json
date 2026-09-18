@@ -1,0 +1,371 @@
+{
+ "round": "R565",
+ "instrument": "fingerprint_r565.py",
+ "selftest": {
+  "fixtures": [
+   {
+    "fixture": "good",
+    "expected": true,
+    "got": true,
+    "ok": true
+   },
+   {
+    "fixture": "hit_gt_prompt",
+    "expected": false,
+    "got": false,
+    "ok": true
+   },
+   {
+    "fixture": "total_lt_parts",
+    "expected": false,
+    "got": false,
+    "ok": true
+   },
+   {
+    "fixture": "miss_negative",
+    "expected": false,
+    "got": false,
+    "ok": true
+   }
+  ],
+  "n": 4,
+  "n_ok": 4,
+  "has_teeth": true
+ },
+ "checks": {
+  "C4-1_identity": {
+   "calls": 13,
+   "violations": 0,
+   "na_unreported": 0,
+   "pass": true
+  },
+  "C4-2_determinism": {
+   "windows_with_calls": 6,
+   "non_null_prompt_sha": 13,
+   "calls_total": 13,
+   "distinct_call1_prompt_sha8": [
+    "b9068f56"
+   ],
+   "distinct_task_sha256": [
+    "6fc12602d01e53996e0dcaca70d8cb613c5ca8ffae6dfebbc03d9f2b4d497cec"
+   ],
+   "distinct_prefix_sha256": [
+    "f1280f71e6fc74c1f14f64adab5a54c6e06083acb18bbf51eb7fdbed30cc4d4a"
+   ],
+   "pass": true
+  },
+  "C4-3_nontrivial": {
+   "sensitivity_call1_vs_call2": [
+    {
+     "win": "w119",
+     "call1": "b9068f56",
+     "call2": "1928d4b0",
+     "differ": true
+    },
+    {
+     "win": "w120",
+     "call1": "b9068f56",
+     "call2": "4b3fe826",
+     "differ": true
+    },
+    {
+     "win": "w121",
+     "call1": "b9068f56",
+     "call2": "2398261c",
+     "differ": true
+    },
+    {
+     "win": "w122",
+     "call1": "b9068f56",
+     "call2": "9b5bf96e",
+     "differ": true
+    },
+    {
+     "win": "w123",
+     "call1": "b9068f56",
+     "call2": "51600ce5",
+     "differ": true
+    },
+    {
+     "win": "w124",
+     "call1": "b9068f56",
+     "call2": "b5e44ee3",
+     "differ": true
+    }
+   ],
+   "sensitivity_exercised": true,
+   "truth_fp_present": true,
+   "truth_fp_distinct": 1,
+   "pass": true
+  }
+ },
+ "violations": [],
+ "rc": 0,
+ "windows": [
+  "w119",
+  "w120",
+  "w121",
+  "w122",
+  "w123",
+  "w124"
+ ],
+ "per_window": {
+  "w119": {
+   "agent_calls": [
+    {
+     "idx": 1,
+     "prompt_sha8": "b9068f56",
+     "model": "deepseek-chat",
+     "n_messages": 2,
+     "prompt": 8343,
+     "hit": 8192,
+     "miss": 151,
+     "identity": true
+    },
+    {
+     "idx": 2,
+     "prompt_sha8": "1928d4b0",
+     "model": "deepseek-chat",
+     "n_messages": 2,
+     "prompt": 8726,
+     "hit": 8192,
+     "miss": 534,
+     "identity": true
+    }
+   ],
+   "transcript": {
+    "task_sha256": "6fc12602d01e53996e0dcaca70d8cb613c5ca8ffae6dfebbc03d9f2b4d497cec",
+    "prefix_sha256": "f1280f71e6fc74c1f14f64adab5a54c6e06083acb18bbf51eb7fdbed30cc4d4a",
+    "prefix_chars": 15291,
+    "calls": 2,
+    "max_repair": 1,
+    "max_exec_repair": 1,
+    "plan_steps_total": 14,
+    "steps_executed": 7,
+    "rc": 5,
+    "stage": "expect_stdout_exhausted"
+   },
+   "truth_fingerprint": {
+    "instructions_chars": 16979,
+    "input_items": 3,
+    "model": "deepseek-chat"
+   }
+  },
+  "w120": {
+   "agent_calls": [
+    {
+     "idx": 3,
+     "prompt_sha8": "b9068f56",
+     "model": "deepseek-chat",
+     "n_messages": 2,
+     "prompt": 8343,
+     "hit": 8192,
+     "miss": 151,
+     "identity": true
+    },
+    {
+     "idx": 4,
+     "prompt_sha8": "4b3fe826",
+     "model": "deepseek-chat",
+     "n_messages": 2,
+     "prompt": 8529,
+     "hit": 8320,
+     "miss": 209,
+     "identity": true
+    }
+   ],
+   "transcript": {
+    "task_sha256": "6fc12602d01e53996e0dcaca70d8cb613c5ca8ffae6dfebbc03d9f2b4d497cec",
+    "prefix_sha256": "f1280f71e6fc74c1f14f64adab5a54c6e06083acb18bbf51eb7fdbed30cc4d4a",
+    "prefix_chars": 15291,
+    "calls": 2,
+    "max_repair": 1,
+    "max_exec_repair": 1,
+    "plan_steps_total": 11,
+    "steps_executed": 7,
+    "rc": 5,
+    "stage": "expect_stdout_exhausted"
+   },
+   "truth_fingerprint": {
+    "instructions_chars": 16979,
+    "input_items": 3,
+    "model": "deepseek-chat"
+   }
+  },
+  "w121": {
+   "agent_calls": [
+    {
+     "idx": 5,
+     "prompt_sha8": "b9068f56",
+     "model": "deepseek-chat",
+     "n_messages": 2,
+     "prompt": 8343,
+     "hit": 8192,
+     "miss": 151,
+     "identity": true
+    },
+    {
+     "idx": 6,
+     "prompt_sha8": "2398261c",
+     "model": "deepseek-chat",
+     "n_messages": 2,
+     "prompt": 8720,
+     "hit": 8192,
+     "miss": 528,
+     "identity": true
+    }
+   ],
+   "transcript": {
+    "task_sha256": "6fc12602d01e53996e0dcaca70d8cb613c5ca8ffae6dfebbc03d9f2b4d497cec",
+    "prefix_sha256": "f1280f71e6fc74c1f14f64adab5a54c6e06083acb18bbf51eb7fdbed30cc4d4a",
+    "prefix_chars": 15291,
+    "calls": 2,
+    "max_repair": 1,
+    "max_exec_repair": 1,
+    "plan_steps_total": 7,
+    "steps_executed": 7,
+    "rc": 8,
+    "stage": "self_test_unmet"
+   },
+   "truth_fingerprint": {
+    "instructions_chars": 16979,
+    "input_items": 3,
+    "model": "deepseek-chat"
+   }
+  },
+  "w122": {
+   "agent_calls": [
+    {
+     "idx": 7,
+     "prompt_sha8": "b9068f56",
+     "model": "deepseek-chat",
+     "n_messages": 2,
+     "prompt": 8343,
+     "hit": 8192,
+     "miss": 151,
+     "identity": true
+    },
+    {
+     "idx": 8,
+     "prompt_sha8": "9b5bf96e",
+     "model": "deepseek-chat",
+     "n_messages": 2,
+     "prompt": 8529,
+     "hit": 8192,
+     "miss": 337,
+     "identity": true
+    }
+   ],
+   "transcript": {
+    "task_sha256": "6fc12602d01e53996e0dcaca70d8cb613c5ca8ffae6dfebbc03d9f2b4d497cec",
+    "prefix_sha256": "f1280f71e6fc74c1f14f64adab5a54c6e06083acb18bbf51eb7fdbed30cc4d4a",
+    "prefix_chars": 15291,
+    "calls": 2,
+    "max_repair": 1,
+    "max_exec_repair": 1,
+    "plan_steps_total": 10,
+    "steps_executed": 7,
+    "rc": 5,
+    "stage": "expect_stdout_exhausted"
+   },
+   "truth_fingerprint": {
+    "instructions_chars": 16979,
+    "input_items": 3,
+    "model": "deepseek-chat"
+   }
+  },
+  "w123": {
+   "agent_calls": [
+    {
+     "idx": 9,
+     "prompt_sha8": "b9068f56",
+     "model": "deepseek-chat",
+     "n_messages": 2,
+     "prompt": 8343,
+     "hit": 8192,
+     "miss": 151,
+     "identity": true
+    },
+    {
+     "idx": 10,
+     "prompt_sha8": "51600ce5",
+     "model": "deepseek-chat",
+     "n_messages": 2,
+     "prompt": 8728,
+     "hit": 8192,
+     "miss": 536,
+     "identity": true
+    }
+   ],
+   "transcript": {
+    "task_sha256": "6fc12602d01e53996e0dcaca70d8cb613c5ca8ffae6dfebbc03d9f2b4d497cec",
+    "prefix_sha256": "f1280f71e6fc74c1f14f64adab5a54c6e06083acb18bbf51eb7fdbed30cc4d4a",
+    "prefix_chars": 15291,
+    "calls": 2,
+    "max_repair": 1,
+    "max_exec_repair": 1,
+    "plan_steps_total": 14,
+    "steps_executed": 13,
+    "rc": 5,
+    "stage": "expect_stdout_exhausted"
+   },
+   "truth_fingerprint": {
+    "instructions_chars": 16979,
+    "input_items": 3,
+    "model": "deepseek-chat"
+   }
+  },
+  "w124": {
+   "agent_calls": [
+    {
+     "idx": 11,
+     "prompt_sha8": "b9068f56",
+     "model": "deepseek-chat",
+     "n_messages": 2,
+     "prompt": 8343,
+     "hit": 8192,
+     "miss": 151,
+     "identity": true
+    },
+    {
+     "idx": 12,
+     "prompt_sha8": "b5e44ee3",
+     "model": "deepseek-chat",
+     "n_messages": 2,
+     "prompt": 8526,
+     "hit": 8192,
+     "miss": 334,
+     "identity": true
+    },
+    {
+     "idx": 13,
+     "prompt_sha8": "b2dfa4c5",
+     "model": "deepseek-chat",
+     "n_messages": 2,
+     "prompt": 8412,
+     "hit": 8064,
+     "miss": 348,
+     "identity": true
+    }
+   ],
+   "transcript": {
+    "task_sha256": "6fc12602d01e53996e0dcaca70d8cb613c5ca8ffae6dfebbc03d9f2b4d497cec",
+    "prefix_sha256": "f1280f71e6fc74c1f14f64adab5a54c6e06083acb18bbf51eb7fdbed30cc4d4a",
+    "prefix_chars": 15291,
+    "calls": 3,
+    "max_repair": 1,
+    "max_exec_repair": 1,
+    "plan_steps_total": 14,
+    "steps_executed": 7,
+    "rc": 5,
+    "stage": "expect_stdout_exhausted"
+   },
+   "truth_fingerprint": {
+    "instructions_chars": 16979,
+    "input_items": 3,
+    "model": "deepseek-chat"
+   }
+  }
+ },
+ "honest_boundary": []
+}

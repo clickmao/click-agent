@@ -1,0 +1,20 @@
+"""Nim: find a winning move."""
+
+
+def solve(text: str) -> str:
+    tokens = text.split()
+    m = int(tokens[0])
+    piles = [int(t) for t in tokens[1:1 + m]]
+
+    x = 0
+    for a in piles:
+        x ^= a
+
+    if x == 0:
+        return "LOSE"
+
+    for p, a in enumerate(piles):
+        target = a ^ x
+        if target < a:
+            return "WIN %d %d" % (p + 1, a - target)
+    return "LOSE"
