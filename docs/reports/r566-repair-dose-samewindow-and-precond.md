@@ -23,6 +23,7 @@
 | C1 真值 | 135（68/9/8/5/26/19） | 65,244 | 44,293 | 0.9522 | 0.9610 | 全部 0（codex 侧无本侧 rc 语义） |
 | R566B0 | 6（1/窗） | 906（151/窗） | 13,455 | 0.9819 | 未行使（单调用无「增量」轮） | 0,5,5,8,5,5（stage: `expect_stdout` ×5 / `self_test_unmet` ×1） |
 | R566B1 | 11（2,2,2,1,2,2） | 2,113 | 27,003 | 0.9789 | 0.9755 | 0,5,5,0,0,5 |
+| 步数（每任务 `steps_executed/plan_steps_total`） | B0: 7/10, 13/14, 7/14, 7/7, 7/14, 7/9（中位 7/12）；B1: 7/11, 7/10, 13/14, 14/14, 15/19, 7/14（中位 10/13.5）；真值侧(codex)无 `plan_steps` 面 ⇒ **未测** | | | | | 终止：B0 = `expect_stdout`×5 + `self_test_unmet`×1（w128 rc=8）；B1 = `expect_stdout_exhausted`×5 + `done`×1（w128 rc=0，该窗未耗修复轮） |
 
 `C4` 判定输入指纹（`fingerprint-r566.json`，rc=0，夹具 `has_teeth` 4/4）：恒等式 6 调用 0 违反 / 0 未上报；确定性 = B0 每窗第 1 次调用 prompt sha8 全窗**单一值 `b9068f56`** ∧ 任务 sha ∧ 前缀 sha 全窗相同；**非平凡判据未行使**（B0 每窗仅 1 调用 ⇒ 无 call2 可比，工具如实记 `sensitivity_exercised=false`，不采信其为证据）。
 
@@ -56,7 +57,8 @@
 - **自捕 #1（器具读法缺陷）**：端口脚本漏替换**窗口名**（`WINS` 仍为 w119..w124）⇒ `matrix_r566.py` 首跑 `arm_windows=18 errors=18`、`adjudicate` 首跑 `rc=2 INSTRUMENT_DEFECT`。处置按纪律「裁决器报 RED 第一假设 = 器具读法错」：修窗口名（`adjudicate_r566.py:23`、`matrix_r566.py:30`）后 `errors=0 / xref=18/18 agree`、判决 rc=1。**首跑读数不采信**，器具差异已在 `prereg-r566.json` 与本节登记。
 - **起手闸（振幅余量条款，只翻既有闸 `--gate-mb`）**：`prev_swing_mb=68`（R565 实测）⇒ `MARGIN=68 / REQ=2718`；真机 `ceiling=2800 / spread=1 / slack=+82` rc=0；`selftest 6/6 has_teeth`；正控连续 2 次 PASS；**判别力成对控制** rc=0（把内存态压进带 [2650,2718) ⇒ 同一态 2650 判 PASS / 2718 判 `GATE_BLOCKED`，`true_discrimination=true`）；`leak-selfcheck` rc=0；后置 `postcheck rc=0`（`in_min=2725 ≥ 2650`，`swing_mb=70` ⇒ **下一轮 MARGIN=70 / REQ=2720**）。
 - **新边界（起手闸结构性阻塞）**：起臂前 `MemAvailable=2641` < REQ，唯一可回收项 = **本会话自身的只读语言服务器**（`pyright-langserver`，RSS 179 MB，由 gateway 派生）；**有界等待 ~5 min 无效**后按 **pid 定向**（非 `pkill -f`）回收 ⇒ 顶棚 2802。登记：该类常驻进程是起手闸的**常态化阻塞源**（R564 已记「沉默占用仅登记未修」），本轮记录处置路径与其代价（重索引）。
-- **铁律 11 前置器**：`exec_precondition.py --round r566` ⇒ `acceptable_scoped=false`、`blocked=10`（18 臂窗中 10 项未过）、`scope_source=eval/rover/r566/prereg-r566.json` ⇒ **rc=1（未可验收）**；`eval/rover/r507pre/precondition-r566.json`。
+- **铁律 11 前置器**：`exec_precondition.py --round r566` ⇒ `acceptable_scoped=false`、`blocked=10`（18 臂窗中 10 项未过）、`scope_source=eval/rover/r566/prereg-r566.json` ⇒ **rc=1（未可验收）**；件 `eval/rover/r507pre/precondition-r566.json`。
+- **形式校验（当轮跑）**：`env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR dotnet test … --filter "VerificationForm|SkillGeneralization|DevPlanDocRef"` ⇒ **rc=0 / 14 通过 / 0 失败 / 1 s**（`FORM_TEST_RC=0`，取值自显式标记非管道末段）；提交时声明一致性钩子 `DECL_SWEEP=OK`（0 处漂移）。本轮**未改** `docs/verification-registry.json`。
 
 ## 7. 候选台账（本轮**全部**候选与遗留，禁挑选式汇报）
 
