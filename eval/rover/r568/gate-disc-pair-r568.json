@@ -1,0 +1,31 @@
+{
+ "round": "R568",
+ "candidate": "④ 起手闸 REQ 行使 (零开发)",
+ "gate_base_mb": 2650,
+ "gate_clause_mb": 2753.0,
+ "derive_rc": 2,
+ "ceiling_mb": 2704.0,
+ "margin_mb": 103.0,
+ "prev_swing_mb": 103.0,
+ "spread_mb": 3.0,
+ "clause_satisfiable": false,
+ "discrimination": {
+  "state_mb_at_base_call": 2840,
+  "state_mb_at_clause_call": 2848,
+  "base_verdict": "PASS",
+  "clause_verdict": "PASS",
+  "state_in_band": false,
+  "true_discrimination": false,
+  "why": "未落在判别带内 ⇒ 本轮未行使真判别 (不得据此刻度)"
+ },
+ "reachability_defect": {
+  "headroom_mb": 54.0,
+  "clause_margin_used_mb": 103.0,
+  "verdict": "自适应余量 (>可支配余量) ⇒ 条款**不可满足**: 顶棚 2704.0MB < REQ 2753.0MB; 与 v1 常数(200⇒2850)同一缺陷族 — 只是把「常数拍脑袋」换成「数据派生但未夹上界」",
+  "implied_margin_cap_mb": 54.0,
+  "implied_req_mb": 2704.0,
+  "rule_next": "MARGIN := min(上一轮观测振幅, 顶棚 − GATE − 安全地板); 本宿主 ⇒ min(103, 54) = 54 ⇒ REQ=2704"
+ },
+ "rc": 2,
+ "rc_semantics": "0 条款可行使且判别力为真 / 2 条款当前不可行使 (判别力已证, 缺陷入档) 或 判别力未行使 / 3 输入缺失"
+}

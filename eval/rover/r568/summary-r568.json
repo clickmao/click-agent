@@ -1,0 +1,115 @@
+{
+ "round": "R568",
+ "kind": "只读并池轮 (零新臂 / 零新窗口 / 零远端 / 零产品源码改动 / 零新增夹具 / 零新增开关)",
+ "一·候选③ 剂量轴并池只读复核": {
+  "prereg": "eval/rover/r568/prereg-r568.json (判据跑前落盘; amendments 内各条为跑后自捕登记)",
+  "prereg_sha256": "a9a91fe40285211c77ddfeadb99ea8eb1709f733f4a4d70e246c5b0ad1147a65",
+  "instrument": "eval/rover/r568/pool_r568.py (sha256 0c19b9423737cc0a)",
+  "输入冻结件(只读, 未改动)": {
+   "matrices": ["eval/rover/r561/percase-matrix-r561.json (w104..w112)",
+                "eval/rover/r563/percase-matrix-r563.json (w113..w118)",
+                "eval/rover/r565/percase-matrix-r565.json (w119..w124)",
+                "eval/rover/r566/percase-matrix-r566.json (w125..w130)",
+                "eval/rover/r567/percase-matrix-r567.json (w131..w136)"],
+   "grader_sha": "a67215a792845cb4a3adec4553c8d06211fa3a7a1dc1ec258ed9dbf3f6e59109",
+   "cases_sha": "270128eb85c7afc07244c10c8845a22a541a7a60587a870125089e93422fccd7",
+   "binary_sha": "320d0eb17e709d15ce7d149ceff45fc1cacff814ac01b9fbda67f702726cee48",
+   "windows_total": 33,
+   "cases_per_window": 58
+  },
+  "P1_join": "PASS — 判分器 sha / 题集 sha / 全部 agent 臂二进制 sha 各唯一 ⇒ 并池合法",
+  "池构成(机取, 含关键纠正)": {
+   "dose0": {"arms": ["R559B0", "R560B0", "R563B0", "R566B0", "R567B0"], "arm_windows": 27, "case_windows": 1566, "pass": 1326, "fail_rate": 0.1533},
+   "dose1": {"arms": ["R565B0", "R566B1"], "arm_windows": 12, "case_windows": 696, "pass": 620, "fail_rate": 0.1092},
+   "dose3": {"arms": ["R559B3", "R560B3", "R567B3"], "arm_windows": 15, "case_windows": 870, "pass": 798, "fail_rate": 0.0828},
+   "codex_C1": {"arm_windows": 33, "case_windows": 1914, "pass": 1872, "fail_rate": 0.0219},
+   "关键纠正": "R565 的臂名 B0 是环境标签(env 未设键)而非剂量 0; 产品默认档由源码派生 (src/agent/r1/R1Options.cs: MaxExecRepair = 1) ⇒ R565B0 属剂量 1。若按臂名当剂量 0, 池构成与逐例读数全错。"
+  },
+  "判据判决(预注册原样, 未改写阈值)": {
+   "P0_non_trivial": "PASS — dose0 族级读数集合大小 3 (wythoff 0.5383 / sub 0.9365 / life=nim 0.963), 逐例读数互异",
+   "P2_逐例稳定": "FAIL — 三个剂量的混合例数均超阈值 6 (58/58, 15/58, 15/58); 根因 = 阈值本身与池规模/失败率数学上不相容 (自捕: 均匀模型下 dose0 期望全过例 53.68 ⇒ 期望混合例约 4.3, 阈值 6 仅在失败率 <1% 时可达) ⇒ 属判据标定缺陷, 非被测缺陷; 修正形态(下轮预注册) = 观测全过例数 >= 均匀模型期望 − 2σ",
+   "P3_逐例剂量敏感(Fisher 双侧 0.05)": "PASS — n_sensitive 0v3=0 且 0v1=0; 但该面不可判: Δ_min 约 29~39pp (n=27 vs 15/12) ⇒ 未检出 ≠ 无差异",
+   "逐例弥漫性(对 P2 的定量替代读数)": "dose0 观测全过例 0/58 vs 均匀模型期望 53.68 (z=−26.84); dose1 43/58 (z=−11.78); dose3 43/58 (z=−12.26) ⇒ 过分散: 失败几乎覆盖每一例, 单窗逐例读数不稳定 (与既往跨窗摆动 > 臂间效应一致)"
+  },
+  "补记面(事后增补, 明示事后性; 预注册判决不变)": {
+   "why": "逐例面 Δ_min 29~39pp 不可判 ⇒ 补两个有分辨率的面: 同窗配对 + 族级池化",
+   "配对面(无窗混淆; 同窗同题臂对臂, McNemar 精确双侧)": {
+    "0v3": {"windows": 15, "pairs": 870, "rate0": 0.8126, "rate3": 0.9172, "delta_pp": 10.46, "p": "约 0",
+            "per_window_delta": [56, 13, 10, -6, -11, 13, -2, 3, 2, -5, 0, 5, 3, -4, 14], "median": 3,
+            "regress_ge3_windows": ["w107", "w108", "w131", "w135"]},
+    "0v1": {"windows": 6, "pairs": 348, "rate0": 0.8534, "rate1": 0.9023, "delta_pp": 4.89, "p": 0.004551,
+            "per_window_delta": [0, 9, -2, 8, 8, -6], "regress_ge3_windows": ["w130"]},
+    "family_0v3": {"life": "+6.67pp p=1.2e-4", "sub": "+11.43pp p≈0", "nim": "+6.67pp p=6.1e-5", "wythoff": "+16.89pp p=5.3e-4"},
+    "family_0v1": {"life": "+0.00pp p=1.0", "sub": "+0.00pp p=1.0", "nim": "+0.00pp p=1.0", "wythoff": "+18.89pp p=0.0046"},
+    "vs_external_truth_same_windows": {
+     "set_0v3": {"arm_dose0_vs_codex": "我方独败 158 / codex 独败 18 ⇒ 差 140 例窗",
+                 "arm_dose3_vs_codex": "我方独败 58 / codex 独败 9 ⇒ 差 49 例窗 ⇒ 差距收窄 65%"},
+     "set_0v1": {"arm_dose0_gap": 47, "arm_dose1_gap": 30}
+    }
+   },
+   "稳健面(剔臂级崩溃窗 = 该窗该臂通过数 <= 5%x58; 规则跑后才表述 ⇒ 两数并列不挑选)": {
+    "dropped": ["w104 剂量0臂 0/58 (剂量3臂 56/58) — 运行级崩溃, 非能力读数"],
+    "0v3": {"pairs": 812, "delta_pp": 4.31, "p": 0.001278, "family": {"sub": "+5.10pp p=0.001953", "wythoff": "+11.90pp p=0.017609", "life": "0", "nim": "0"}},
+    "0v1": {"pairs": 348, "delta_pp": 4.89, "p": 0.004551, "family": {"wythoff": "+18.89pp p=0.004551", "life": "0", "nim": "0", "sub": "0"}}
+   }
+  },
+  "归属(夹具 vs 能力)": {
+   "same_fail_cases": [], "same_fail_n": 0,
+   "ours_only_fail_cases": [45, 47, 48, 49, 50, 56], "ours_only_fail_n": 6,
+   "codex_only_fail_n": 0,
+   "结论": "并池面无同败证据 ⇒ 夹具嫌疑分支排除; 6 例独败全在 wythoff ⇒ 能力侧, 与既往轮次一致"
+  },
+  "本轮结论(候选③)": [
+   "① 逐例面在单窗粒度上不可作读数 (过分散 + Δ_min 29~39pp) ⇒ 既往单窗 52/58 vs 58/58 类读数的摆动应归因共存的逐例抖动, 而非少数硬例。",
+   "② 配对面(无窗混淆)显示剂量档有平均增益: 0v3 +10.46pp (剔崩溃窗 +4.31pp, p=0.0013); 0v1 +4.89pp (p=0.0046)。",
+   "③ 与 R566/R567 的单窗判决不矛盾: 那些判据是逐窗不回退 (0v3 有 4/15 窗回退 >=3 例; 0v1 有 1/6) ⇒ 平均增益 ≠ 逐窗不回退; 两读数并列, 禁相减。",
+   "④ 剂量档分工不同: 剂量3 的增益跨族 (剔崩溃窗后仍见 sub +5.10pp / wythoff +11.90pp); 剂量1 的增益只在 wythoff。",
+   "⑤ 对 codex 的差距在同窗配对下由 140 例窗收窄到 49 例窗 (剂量3), 仍余 5.6% 例窗差 ⇒ 未闭合。"
+  ],
+  "rc": 2,
+  "rc_semantics": "P2 (预注册原样) 判红 + 该阈值被判据标定缺陷定性 ⇒ 预注册面 rc=2; 补记面读数单独成立"
+ },
+ "二·候选④ 起手闸 REQ 行使(零开发)": {
+  "条款": "起手读数 >= GATE_MB(2650) + MARGIN(max(60, 上一轮观测振幅)) 且 极差 <= 50 且 连续 2 次 且 blockers 空",
+  "派生": {"prev_swing_mb": 103, "margin_mb": 103, "required_mb": 2753,
+          "source": "eval/rover/r567/gate-postcheck-r567.json 的运行中实测振幅",
+          "instrument": "eval/rover/r567/gate_margin_r567.py (sha256 dc399dc0eb4d86af, 未改动)"},
+  "行使读数": {
+   "S0_existing_gate_settle": "mem 2697MB, blockers 空, reap=0",
+   "S1_pre_samples": "[2704, 2703, 2701] 顶棚 2704MB 极差 3MB (极差判据满足)",
+   "S2_derive": "rc=2 — 条款在当前宿主不可行使: 顶棚 2704 < REQ 2753 (slack −49MB), fail-closed 不放行",
+   "S3_discrimination_pair": {"state_before": 2681, "base_2650": "PASS (读到 2685MB)",
+                              "clause_2753": "GATE_BLOCKED (读到 2694MB)",
+                              "true_discrimination": true, "rc": 0,
+                              "meaning": "同一内存态下基础门槛放行而条款拦下 ⇒ 条款确实有牙, 只是当前不可满足"}
+  },
+  "缺陷归因": {
+   "family": "与 R564 的 v1 常数 MARGIN=200 ⇒ REQ 2850 不可达属同一缺陷族 — 只把拍脑袋常数换成了数据派生但未夹上界",
+   "measured": "清残留后顶棚 2704MB; 可支配余量 = 2704 − 2650 = 54MB; 而上一轮运行振幅 103MB ⇒ 余量大于可支配空间",
+   "next_rule": "MARGIN := min(上一轮观测振幅, 顶棚 − GATE_MB − 安全地板) ⇒ 本宿主 min(103, 54) = 54 ⇒ REQ = 2704",
+   "residual_load": "常驻语言服务器 (pyright 197MB + bash-language-server 171MB) 沉默占用约 370MB; 闸只回收年龄 >60s 者 ⇒ 顶棚随宿主负载区制变化 (本轮 2704, R567 轮 2861)",
+   "R567_leftover": "R567 运行窗口内实测 min 2751MB < 本轮 REQ 2753MB ⇒ REQ 已进入上一轮自身运行振幅覆盖区 (登记在案, 未翻案)"
+  },
+  "rc": 0,
+  "rc_semantics": "0 = 判别力为真 (条款有牙); 条款当前不可行使作为缺陷单列, 不混入 rc"
+ },
+ "三·铁律 11(对照可验收前置)": {
+  "本轮": "零新臂 ⇒ 无新对照读数 ⇒ 不适用 (本轮不宣称任何质量/成本降幅)",
+  "R567_recheck": "python3 eval/rover/r507pre/exec_precondition.py --round r567 ⇒ VERDICT_BLOCKED / ACCEPTABLE_SCOPED=False (多窗 wythoff#43..#57 未达 58/58) ⇒ R567 的 token/调用读数继续标参考(未可验收), 本轮未翻案",
+  "落盘": "eval/rover/r507pre/precondition-r567.json"
+ },
+ "四·零变化面(本轮未触碰)": {
+  "产品源码": "零改动", "夹具/开关": "零新增", "远端": "零调用",
+  "计划看板_exp1_exp8": "未动 (与用户 2026-09-17 方向逆转冲突的器具类候选, 只登记)",
+  "待放行候选": ["契约加厚 v3 / 产物落点自验 (须动契约或产品分支)",
+                "交付闸/停止条件 rc=5/rc=8 静默降级 (须新增产品分支)"]
+ },
+ "五·下轮候选(R569)": [
+  "① 契约加厚 v3 / 产物落点自验 (wythoff 唯一直接面; 须动契约或产品分支 ⇒ 待放行)",
+  "② 交付闸/停止条件 (rc=5/rc=8 仍交付 = 静默降级 ⇒ 新增产品分支 ⇒ 待放行)",
+  "③ 剂量轴新窗集单变量 (0 vs 3) 并把两件事写进预注册: 逐窗回退窗点名 + 臂级崩溃窗(<=5%)排除规则 ⇒ 检验本轮 +4.31pp 是否可复现 (需跑新窗口, 复用既有夹具/开关)",
+  "④ w104 型臂级崩溃定因 (剂量0臂 0/58 而剂量3臂 56/58): 查执行体崩溃/落盘/判定哪一层, 零开发查既有日志",
+  "⑤ MARGIN 上界规则落地 (min(prev swing, ceiling − GATE − floor)) + 条款行使 (零产品改动; 器具改 ⇒ 须重审 + 保形重钉)",
+  "⑥ 已闭合: R567-③ 剂量轴并池只读复核 (本轮)、R567-④ 起手闸 REQ 行使 (本轮)"
+ ]
+}

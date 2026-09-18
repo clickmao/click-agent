@@ -1,0 +1,28 @@
+{
+ "round": "R568",
+ "candidate": "④ 起手闸判别带成对控制 (确定性压制)",
+ "planned_band": [
+  2650,
+  2753.0
+ ],
+ "sample_before_hog_mb": null,
+ "state_after_pressure_mb": 2681.0,
+ "state_after_release_mb": 2737.0,
+ "base": {
+  "gate_mb": 2650,
+  "mem_mb": 2685,
+  "verdict": "PASS",
+  "blockers": []
+ },
+ "clause": {
+  "gate_mb": 2753.0,
+  "mem_mb": 2694,
+  "verdict": "GATE_BLOCKED",
+  "blockers": []
+ },
+ "state_in_band": true,
+ "true_discrimination": true,
+ "teeth": "同一内存态 (base 调用读到 2685MB): 基础门槛 PASS ∧ 条款 GATE_BLOCKED ⇒ 条款严格更严 (有牙)",
+ "rc": 0,
+ "rc_semantics": "0 判别力为真 / 2 未行使 / 3 输入缺失"
+}

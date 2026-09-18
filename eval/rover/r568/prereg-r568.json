@@ -1,0 +1,324 @@
+{
+ "round": "R568",
+ "written_before_run": true,
+ "author": "cron-agent (60min tick, 2026-09-19)",
+ "mode": "readonly_pooled_review + gate_clause_exercise (零新臂 / 零新窗口 / 零远端)",
+ "claim": "**只读并池轮**: ① 候选③ 剂量轴并池只读复核 —— 把已落盘的逐例矩阵按臂→剂量并池 (同题面重复窗池), 回答「跨窗摆动是否逐例弥漫」与「剂量档 0/1/3 是否有逐例显著差异」; ② 候选④ 起手闸 MARGIN=上一轮实测振幅 (R567 postcheck) ⇒ REQ 派生并**真实行使** (既有闸 --gate-mb + 判别带成对控制 + 成对控制自检)。零产品源码改动 / 零新增夹具 / 零新增开关 (用户令 2026-09-18「开工, 不许新增夹具和额外开发了」)。",
+ "one_time_context": "用户令 2026-09-19「继续下一轮」⇒ 按 R567 收口登记的两条零开发候选执行; 不重开器具/文档线。",
+ "candidates_ledger": {
+  "R568-① 剂量轴并池只读复核 (R559∪R560∪R563∪R565∪R566∪R567)": "做 —— 承重候选 (纯只读)",
+  "R568-② 起手闸 REQ 行使 (零开发)": "做 —— MARGIN 由 R567 postcheck 振幅派生",
+  "R568-③ 契约加厚 v3 / 产物落点自验": "未做 —— 须动契约/产品分支 ⇒ 未放行",
+  "R568-④ 交付闸/停止条件 (rc=5/8)": "未做 —— 新增产品分支 ⇒ 未放行",
+  "R568-⑤ exp1 backlog 器具类剩余候选": "未做 —— 与用户 2026-09-17 方向逆转 (器具/登记判封存) 冲突 ⇒ 只登记"
+ },
+ "derived_from": {
+  "matrices": [
+   {
+    "path": "eval/rover/r561/percase-matrix-r561.json",
+    "sha256": "aeb7baad3062c1c75c5d13d4488c49641b9a6a38e15bbb1ceb4a448b3bbf1062"
+   },
+   {
+    "path": "eval/rover/r563/percase-matrix-r563.json",
+    "sha256": "7fa89da19475f6dbf6d3fd8da83f469da0265e5c609dd2fced37fd8281a2ab19"
+   },
+   {
+    "path": "eval/rover/r565/percase-matrix-r565.json",
+    "sha256": "5ee31a072053ab5a62bc0749951c2bfebc59e8c3fc09202b2cfaff3acffd620d"
+   },
+   {
+    "path": "eval/rover/r566/percase-matrix-r566.json",
+    "sha256": "f1de9a3971172491571a819dc012988a8937e9bedf85b007aac4890a39eca82a"
+   },
+   {
+    "path": "eval/rover/r567/percase-matrix-r567.json",
+    "sha256": "f2c19c4f0174f763c8709a875c60a51c933ba9244e9f4428fc91e78795fe4faf"
+   }
+  ],
+  "rounds": [
+   "R559",
+   "R560",
+   "R563",
+   "R565",
+   "R566",
+   "R567"
+  ],
+  "windows_per_round": {
+   "R559": [
+    "w104",
+    "w105",
+    "w106"
+   ],
+   "R560": [
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112"
+   ],
+   "R563": [
+    "w113",
+    "w114",
+    "w115",
+    "w116",
+    "w117",
+    "w118"
+   ],
+   "R565": [
+    "w119",
+    "w120",
+    "w121",
+    "w122",
+    "w123",
+    "w124"
+   ],
+   "R566": [
+    "w125",
+    "w126",
+    "w127",
+    "w128",
+    "w129",
+    "w130"
+   ],
+   "R567": [
+    "w131",
+    "w132",
+    "w133",
+    "w134",
+    "w135",
+    "w136"
+   ]
+  },
+  "arms_per_round": {
+   "R559": [
+    "C1",
+    "R559B0",
+    "R559B3"
+   ],
+   "R560": [
+    "C1",
+    "R560B0",
+    "R560B3"
+   ],
+   "R563": [
+    "C1",
+    "R563B0"
+   ],
+   "R565": [
+    "C1",
+    "R565B0"
+   ],
+   "R566": [
+    "C1",
+    "R566B0",
+    "R566B1"
+   ],
+   "R567": [
+    "C1",
+    "R567B0",
+    "R567B3"
+   ]
+  },
+  "grader_sha_set": [
+   "a67215a792845cb4a3adec4553c8d06211fa3a7a1dc1ec258ed9dbf3f6e59109"
+  ],
+  "cases_sha_set": [
+   "270128eb85c7afc07244c10c8845a22a541a7a60587a870125089e93422fccd7"
+  ],
+  "arm_dose": {
+   "C1": null,
+   "R559B0": 0,
+   "R559B3": 3,
+   "R560B0": 0,
+   "R560B3": 3,
+   "R563B0": 0,
+   "R565B0": 1,
+   "R566B0": 0,
+   "R566B1": 1,
+   "R567B0": 0,
+   "R567B3": 3
+  },
+  "arm_dose_shape": {
+   "C1": "external_truth",
+   "R559B0": "env_explicit",
+   "R559B3": "env_explicit",
+   "R560B0": "env_explicit",
+   "R560B3": "env_explicit",
+   "R563B0": "env_explicit",
+   "R565B0": "product_default",
+   "R566B0": "env_explicit",
+   "R566B1": "env_explicit",
+   "R567B0": "env_explicit",
+   "R567B3": "env_explicit"
+  },
+  "arm_bin_sha": {
+   "C1": "320d0eb17e709d15ce7d149ceff45fc1cacff814ac01b9fbda67f702726cee48",
+   "R559B0": "320d0eb17e709d15ce7d149ceff45fc1cacff814ac01b9fbda67f702726cee48",
+   "R559B3": "320d0eb17e709d15ce7d149ceff45fc1cacff814ac01b9fbda67f702726cee48",
+   "R560B0": "320d0eb17e709d15ce7d149ceff45fc1cacff814ac01b9fbda67f702726cee48",
+   "R560B3": "320d0eb17e709d15ce7d149ceff45fc1cacff814ac01b9fbda67f702726cee48",
+   "R563B0": "320d0eb17e709d15ce7d149ceff45fc1cacff814ac01b9fbda67f702726cee48",
+   "R565B0": "320d0eb17e709d15ce7d149ceff45fc1cacff814ac01b9fbda67f702726cee48",
+   "R566B0": "320d0eb17e709d15ce7d149ceff45fc1cacff814ac01b9fbda67f702726cee48",
+   "R566B1": "320d0eb17e709d15ce7d149ceff45fc1cacff814ac01b9fbda67f702726cee48",
+   "R567B0": "320d0eb17e709d15ce7d149ceff45fc1cacff814ac01b9fbda67f702726cee48",
+   "R567B3": "320d0eb17e709d15ce7d149ceff45fc1cacff814ac01b9fbda67f702726cee48"
+  },
+  "dose_window_counts": {
+   "0": 27,
+   "1": 12,
+   "3": 15
+  },
+  "dose_windows": {
+   "0": [
+    "w104",
+    "w105",
+    "w106",
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112",
+    "w113",
+    "w114",
+    "w115",
+    "w116",
+    "w117",
+    "w118",
+    "w125",
+    "w126",
+    "w127",
+    "w128",
+    "w129",
+    "w130",
+    "w131",
+    "w132",
+    "w133",
+    "w134",
+    "w135",
+    "w136"
+   ],
+   "1": [
+    "w119",
+    "w120",
+    "w121",
+    "w122",
+    "w123",
+    "w124",
+    "w125",
+    "w126",
+    "w127",
+    "w128",
+    "w129",
+    "w130"
+   ],
+   "3": [
+    "w104",
+    "w105",
+    "w106",
+    "w107",
+    "w108",
+    "w109",
+    "w110",
+    "w111",
+    "w112",
+    "w131",
+    "w132",
+    "w133",
+    "w134",
+    "w135",
+    "w136"
+   ]
+  },
+  "all_windows": [
+   "w104",
+   "w105",
+   "w106",
+   "w107",
+   "w108",
+   "w109",
+   "w110",
+   "w111",
+   "w112",
+   "w113",
+   "w114",
+   "w115",
+   "w116",
+   "w117",
+   "w118",
+   "w119",
+   "w120",
+   "w121",
+   "w122",
+   "w123",
+   "w124",
+   "w125",
+   "w126",
+   "w127",
+   "w128",
+   "w129",
+   "w130",
+   "w131",
+   "w132",
+   "w133",
+   "w134",
+   "w135",
+   "w136"
+  ],
+  "all_windows_n": 33,
+  "source_default": {
+   "file": "src/agent/r1/R1Options.cs",
+   "sha256": "4891dbf9a06923f16570df9febfaad8b334b4e67e54f867a0fdd9a4223717bfb",
+   "max_exec_repair_default": 1,
+   "why": "臂名里的 'B0' 是执行体侧标签, 不等于 env 取值: env 未给键的轮次走的是**产品默认档**; 该取值只许从产品源码派生 (本文件机械读出) ⇒ 把默认档记成 0 会把该窗池错并到剂量 0"
+  }
+ },
+ "join_rules": [
+  "P1 池化合法性: 全部矩阵 grader_sha 唯一 ∧ cases_sha 唯一 ∧ 全部 agent 臂的二进制 sha 唯一 ∧ 矩阵 sha 与该登记表逐条相符; 任一不符 ⇒ rc=3 (输入/器具缺陷, 不出判决)",
+  "臂→剂量映射由各轮 prereg 的 env 机取 (env 未给键 ⇒ 取**源码派生**的产品默认档; 禁手抄); C1 = 外部真值 (codex), 无剂量、不入剂量比较",
+  "跨轮并池的前提是「同题面 ∧ 同判分器 ∧ 同二进制」逐条机检通过 (本登记表 derived_from 即证据)"
+ ],
+ "criteria": {
+  "P2 逐例稳定 (dose0 池 n=0 / dose1 n=0 / dose3 n=0 窗): 各池混合例数 <= 6": "混合例 = 在同一剂量池内既有 PASS 又有 FAIL 的用例 (#idx); 阈值 6 ≈ 58 例的 10%; 超阈值 ⇒ 「跨窗摆动逐例弥漫」, 逐窗单点读数不得作能力结论 (承 R413/R417 纪律)",
+  "P3 剂量无显著差: 逐例 Fisher 精确双侧 p<0.05 的例数 (0 vs 3 与 0 vs 1) 均 <= 2": "每例 = 2×2 表 (通过数/失败数 × 两剂量); 效应分辨率下限 (Δ_min) 由同一表反解并落盘 —— 阈值必须大于该下限, 否则判据在数学上放行噪声 (R404 形态)",
+  "P4 失分归属 (dose0 池 × codex 池 n=33 窗): 同败例集 (两侧失败率均 >=0.5) 单独计数并列名": "同败例多 ⇒ 先疑夹具/契约 (R512 形态: 两侧失败集合逐字相同); 仅我方失败的例 ⇒ 能力面; 两类分列不混算",
+  "P0 非平凡 (成对判据另一半): 族级通过率集合大小 >= 2 ∧ codex 与 agent 的逐例全败集合不相同": "恒定的逐例读数 = 判据退化 (与「确定性 ∧ 非平凡」同族)"
+ },
+ "negative_controls": {
+  "NC1 sha 失配": "把任一矩阵的 grader/cases sha 改成异值 ⇒ 判据器必须 rc=3 (fail-closed, 不出判决)",
+  "NC2 稳定性判据有牙": "合成注入 1 例「窗间翻转」⇒ 混合例数必须 +1 并反映在读数里",
+  "NC3 剂量判据有牙": "合成注入 1 例「dose0 全过 / dose3 全败」⇒ 敏感性例数必须 +1 且 rc=2",
+  "NC4 闸判别力": "内存态压进判别带 [2650, REQ) ⇒ 基础门槛 PASS ∧ 条款 GATE_BLOCKED (真判别行使)"
+ },
+ "gate_clause": {
+  "source": "eval/rover/r567/gate_margin_r567.py (既有器具, 零改动)",
+  "prev_postcheck": "eval/rover/r567/gate-postcheck-r567.json",
+  "prev_swing_mb": 103.0,
+  "margin_mb": 103.0,
+  "required_mb": 2753.0,
+  "applied_via": "既有闸 eval/rover/r483/preflight_gate.py --gate-mb",
+  "honest_note": "R567 运行窗口内实测 min=2751.0 MB 低于本轮派生 REQ=2753.0 MB ⇒ 若本轮起手读数也低于 REQ, 闸应 BLOCKED 而非放行 (fail-closed); 该读数本身就是条款判别力的证据"
+ },
+ "exclusions": {
+  "产品源码": "零改动",
+  "夹具/开关": "零新增",
+  "远端": "零调用",
+  "新臂/新窗口": "零 (纯复用冻结件)"
+ },
+ "write_disclosure": "判据主体 (criteria / negative_controls / gate_clause) 在**开跑前**落盘; amendments 内各条为**跑后**自捕登记 (派生缺陷 / 阈值标定), 判据文本**未被改写**, 本轮判决按原判据出 (禁事后调阈值)。",
+ "amendments": [
+  {
+   "stage": "v1→v2 (机取修正, 判据文本零改动)",
+   "what": "派生表 v1 未把外部真值臂 C1 排除出剂量映射 ⇒ 剂量 1 池混入 codex 行 (臂窗 24 != 12, 例窗 1392 != 696)。**算术自检抓到** (臂窗数 != 窗数 × 该剂量臂数)。修法 = C1 记 dose=None / shape=external_truth; 池只统计**该剂量自己的臂**。v1 读数 (dose0 例窗 2784 = 48 臂窗) 作废并按器具缺陷登记, 不写入结论。",
+   "criteria_unchanged": true
+  },
+  {
+   "stage": "P2 阈值标定 (自捕, 事后)",
+   "what": "P2「各池混合例 <= 6」在池规模/失败率下**数学上不相容**: 均匀失败模型下全过例数 ≈ 58·(1−q)^n (dose0: q≈0.15, n=27 ⇒ 期望 ~54 例全过 ⇒ 混合例期望 ~4) —— 但实测全过例=0 (z≈−27), 即**过分散**: 失败几乎覆盖每一例。阈值形态应是「观测全过例数 vs 均匀模型期望 ±2σ」而非固定例数。预注册判决**照原样保留**, 修正形态入 checks_posthoc",
+   "criteria_unchanged": false,
+   "why_not_rewritten": "禁事后调阈值; 本轮按原判据判 (rc=2), 修正形态只作下一轮预注册输入"
+  }
+ ]
+}

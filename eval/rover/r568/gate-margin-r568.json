@@ -1,0 +1,68 @@
+{
+ "rc": 2,
+ "ceiling_mb": 2704.0,
+ "spread_mb": 3.0,
+ "margin_mb": 103.0,
+ "required_mb": 2753.0,
+ "margin_low": true,
+ "n_samples": 3,
+ "margin_src": "prev_observed_swing",
+ "prev_swing_mb": 103.0,
+ "v1_constant_unreachable": {
+  "constant": 200,
+  "why": "本宿主清残留后顶棚 2813 < 2650+200=2850 ⇒ v1 恒 rc=2"
+ },
+ "slack_mb": -49.0,
+ "why": "ceiling_below_required_margin",
+ "clause": "起手读数 >= GATE_MB(2650) + MARGIN(max(60, 上一轮观测振幅)) 且 极差 <= 50 且 连续 2 次 且 blockers 空",
+ "round": "R567",
+ "instrument": "gate_margin_r567.py",
+ "samples": "/tmp/r568/logs/pre-samples-b.jsonl",
+ "mode": "derive",
+ "gate_mb": 2650,
+ "margin_floor_mb": 60,
+ "applied_via": "既有闸 --gate-mb (零新逻辑进闸)",
+ "selftest": {
+  "fixtures": [
+   {
+    "fixture": "PL_floor_healthy",
+    "expected_rc": 0,
+    "got_rc": 0,
+    "ok": true
+   },
+   {
+    "fixture": "PL_adaptive_prev110",
+    "expected_rc": 0,
+    "got_rc": 0,
+    "ok": true
+   },
+   {
+    "fixture": "NC_marginal_2652",
+    "expected_rc": 2,
+    "got_rc": 2,
+    "ok": true
+   },
+   {
+    "fixture": "NC_jitter",
+    "expected_rc": 2,
+    "got_rc": 2,
+    "ok": true
+   },
+   {
+    "fixture": "NC_low_ceiling",
+    "expected_rc": 2,
+    "got_rc": 2,
+    "ok": true
+   },
+   {
+    "fixture": "NC_v1_constant_unreachable",
+    "expected_rc": 2,
+    "got_rc": 2,
+    "ok": true
+   }
+  ],
+  "n": 6,
+  "n_ok": 6,
+  "has_teeth": true
+ }
+}

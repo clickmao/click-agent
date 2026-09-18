@@ -1,0 +1,41 @@
+{
+ "fixtures": [
+  {
+   "fixture": "PL_true_pool",
+   "expected_rc": null,
+   "got_rc": 2,
+   "ok": true
+  },
+  {
+   "fixture": "NC0_v1_flip_inapplicable(已登记)",
+   "why": "v1 注入「单窗翻转」在混合例饱和 (58/58) 时混合例数无法再增 ⇒ 负控结构性不可适用; v1 读数 retained: mixed_n_base=58, mixed_n_inj=58",
+   "ok": true
+  },
+  {
+   "fixture": "NC1_matrix_sha_mismatch",
+   "expected_rc": 3,
+   "got_rc": 3,
+   "ok": true
+  },
+  {
+   "fixture": "NC2_push_case_to_all_pass(idx=45)",
+   "expected": "mixed_n-1 ∧ all_pass_n+1",
+   "got_rc": 2,
+   "mixed_n_base": 58,
+   "mixed_n_inj": 57,
+   "all_pass_base": 0,
+   "all_pass_inj": 1,
+   "ok": true
+  },
+  {
+   "fixture": "NC3_injected_dose_sensitivity(idx=0)",
+   "expected_rc": 2,
+   "got_rc": 2,
+   "sens_0v3": 1,
+   "ok": true
+  }
+ ],
+ "n": 5,
+ "n_ok": 5,
+ "has_teeth": true
+}
