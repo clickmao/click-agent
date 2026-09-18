@@ -66,13 +66,17 @@ R568 把 `w104/R559B0` 记为「臂级崩溃窗」——**该定名错误**，�
 | 项 | attempt1 | attempt2 |
 |---|---|---|
 | 观测振幅 | — | 90 MB（`run-samples.jsonl` 182 采样，drift=false） |
-| ceiling / REQ | 2640 / 2753 ⇒ **拒跑** | 2803 / 2753 ⇒ 放行 |
-| margin | — | want 103 / cap 153，`margin_capped=false` |
+| ceiling / REQ | 2640 / — ⇒ **拒跑** | 2803 / 2753 ⇒ 放行 |
+| margin | want 70 / cap **−10** / `margin_capped=true` / `floor_unreachable=true`（`why=margin_floor_unreachable_at_ceiling`）⇒ rc=2 | want 103 / cap 153 / `margin_capped=false` ⇒ rc=0 |
 | 产物 | `gate-margin-r569-attempt1-blocked.json`（**保留**，未覆盖） | `gate-margin-r569.json`（rc=0）+ `gate-postcheck-r569.json`（rc=0） |
 
+**上界规则（R568 派生的 `MARGIN := min(prev swing, ceiling − GATE − floor)`）本轮两个分支都被真实行使**：
+attempt1 走上界分支（cap −10 < floor 60 ⇒ 顶棚不可支配 ⇒ 拒绝起臂，rc=2），attempt2 走无上界分支（cap 153 > want 103）。
 attempt1 的拒跑是**真实拒跑**：ceiling 被 `pyright-langserver`（≈250 MB，由本轮 .py 写入拉起）压低
-⇒ 按纪律回收 LSP 后 `MemAvailable` 2692→2878 MB，attempt2 放行。**上界规则（cap）未被行使**（`margin_capped=false`）
-已如实登记，不得宣称行使。
+⇒ 按纪律回收 LSP 后 `MemAvailable` 2692→2878 MB，attempt2 放行。两次运行**同一 REQ 口径、不同顶棚**，
+构成「上界分支 ⇒ 拒跑 / 无上界 ⇒ 放行」的成对读数（不是事后调阈值：阈值未改，改的是环境占用）。
+附带结论：**LSP/编辑器类工具子进程仍是本闸的主要噪声源**（R556/R557 修过「自身工具子进程自排除」，
+但本轮 LSP 是**本会话**为写 .py 拉起的，不在闸的血统链内 ⇒ 闸看不见它）。
 
 ## 5. 本轮自捕：器具**使用**缺陷（非产品、非被测）
 
