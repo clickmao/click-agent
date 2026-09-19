@@ -1,0 +1,191 @@
+{
+  "round": "R574-tick",
+  "ts": "2026-09-19T11:45+0800",
+  "kind": "只读复核轮 (cron 60min tick, 零产品源码改动 / 零新增夹具 / 零新增开关 / 零远端调用)",
+  "dgv_first": {
+    "intent": "主线提醒 + 推进计划看板最前未闭合项; 同仓在飞写者(R572/R573 未提交) ⇒ 并行节点限只读、禁重算 src",
+    "nodes": [
+      "N1 只读: 检测在飞写者 + 读 §7/improvements/计划文档",
+      "N2 只读: 读计划看板最前项 exp1 的剩余候选 (AN.11)",
+      "N3 测量: 同一条命令在工作区/提交态两侧各跑一次全量回归 (自跑复核, 非对侧自报)",
+      "N4 收尾: 落盘读数; 不写 kpi.jsonl (单次测量非 KPI 序列, 与 Q39-Q42 器具轮同例)"
+    ],
+    "parallel_face": "无 (同仓在飞写者 => 不开并行子 agent)",
+    "restart_edge": "N3 若被对侧 build/test 污染 (dll_mtime < newest_src_mtime) ⇒ 只重启 N3, 不重跑 N1/N2"
+  },
+  "provenance": {
+    "work_dir_dll_mtime": "2026-09-19 11:29:29.729983129 +0800",
+    "work_dir_newest_src_mtime": "2026-09-19 11:29:00 (src/agent.roles/CorrectionDetector.cs)",
+    "dll_newer_than_src": true,
+    "head_sha": "c308068 (R571, 提交态基线; 工作区 R572/R573 未提交)",
+    "cmd_work": "dotnet test src/agent.tests/agentframework.tests.csproj --no-build --nologo -v n  (cwd = 工作区)",
+    "cmd_head": "git worktree add --detach /tmp/r574head HEAD && dotnet test src/agent.tests/agentframework.tests.csproj --nologo -v n  (cwd = /tmp/r574head)",
+    "log_work": "/tmp/r574/tests-r574.log",
+    "log_head": "/tmp/r574/tests-head.log"
+  },
+  "readings": {
+    "worktree_now": {
+      "passed": 1866,
+      "failed": 33,
+      "total": 1899,
+      "rc": 1
+    },
+    "head_committed": {
+      "passed": 1890,
+      "failed": 3,
+      "total": 1893,
+      "rc": 1,
+      "head_3_red_are_artifacts": true,
+      "why": "worktree 检出缺未入库件(untracked) => 该 3 条在完整树里全绿(逐条复核 work_passed=1): VerificationFormTests.Registry_Exists_And_HasNoViolations / RagFusionTests.FrozenFixture_RoutesAndFusion_MatchPythonBitForBit / PublicApiSurfaceTests.I_公共API面与基线逐行相等"
+    }
+  },
+  "finding_1": {
+    "claim": "工作区 33 红 = 11 个测试方法 / 4 个测试类; 与 docs/evidence/RF0001/R573-33red-conversion.md 台账「剩余 11 (记录 33)」逐族逐条一致",
+    "by_method": {
+      "R498LocalParaphraseTests.改写族_吸收": 8,
+      "R497FingerprintAndSynonymTests.R497D_SynonymRepeat_Face": 7,
+      "LocalTurnGateTests.G35_纯复述族结构确认": 6,
+      "R497FingerprintAndSynonymTests.R497D_AbsorbedFace_MechanicalPassWins": 4,
+      "LocalTurnGateTests.G26_机械前置门_信号族": 2,
+      "LocalTurnGateTests.G20_只看结论区_正文噪声不得穿透": 1,
+      "R498LocalParaphraseTests.闸关_必须零吸收_零改写": 1,
+      "R498LocalParaphraseTests.守卫_动作声明禁增": 1,
+      "R497FingerprintAndSynonymTests.R497D_NewMarkers_OnlyWhitelistedChars": 1,
+      "R497FingerprintAndSynonymTests.R497D_OldFamily_NotNarrowed": 1,
+      "GateRulesPortDiffTests.Port_Corpus_Labels_Match_Product_Judges": 1
+    },
+    "sum": 33
+  },
+  "finding_2": {
+    "claim": "33 红相对提交态 R571 是净回归 (由未提交产品改动引入), 不是提交基线里的存量红",
+    "evidence": {
+      "R497FingerprintAndSynonymTests": {
+        "head": "28 passed / 0 failed",
+        "work": "15 passed / 13 failed"
+      },
+      "R498LocalParaphraseTests": {
+        "head": "33 passed / 0 failed",
+        "work": "23 passed / 10 failed"
+      },
+      "LocalTurnGateTests": {
+        "head": "83 passed / 0 failed",
+        "work": "74 passed / 9 failed"
+      },
+      "GateRulesPortDiffTests": {
+        "head": "3 passed / 0 failed",
+        "work": "2 passed / 1 failed"
+      }
+    },
+    "test_files_unmodified": [
+      "src/agent.tests/R497FingerprintAndSynonymTests.cs",
+      "src/agent.tests/R498LocalParaphraseTests.cs",
+      "src/agent.tests/LocalTurnGateTests.cs",
+      "src/agent.tests/GateRulesPortDiffTests.cs"
+    ],
+    "modified_product_deps": {
+      "src/agent.roles/CorrectionDetector.cs": "-50/+?",
+      "src/agent.modelqueue/TurnGateJudge.cs": "-27/+?",
+      "src/agent.modelqueue/LocalParaphraseChannel.cs": "-13/+?",
+      "total": "3 files changed, 18 insertions(+), 72 deletions(-)"
+    },
+    "disposition": "台账把这 33 条记为「剩余未转换」并给出去路(下一轮回补机制); 实测两者并存时须分列: ①台账口径(待转换) ②对提交基线的净回归(本轮改造引入) => 用户令「33红全部要改为现有机制」当前未达成(红=33 未清零)"
+  },
+  "finding_3": {
+    "claim": "计划看板最前未闭合项 = exp1 (本地索引/代码引用图, 探索项, 零产品代码); 其 6 条剩余候选全部为阻塞/结转态, 本轮无法推进",
+    "candidates": [
+      {
+        "id": "exp1-AN.11-1",
+        "item": "登记表序列化形态统一 (indent=1 vs indent=2)",
+        "status": "未做",
+        "reason": "需独立预注册轮 (5305 行形态 diff 会改前后可比性)"
+      },
+      {
+        "id": "exp1-AN.11-2",
+        "item": "H6 漂移通知件在真实提交面上的 >0 现场事件",
+        "status": "未做",
+        "reason": "真仓干净态不产生该事件; 夹具读数不得顶替现场读数"
+      },
+      {
+        "id": "exp1-AN.11-3",
+        "item": "写侧运行时探针 (写入器规范) 运行时读数",
+        "status": "未做",
+        "reason": "重开条件 = 出现可观测真实写入路径"
+      },
+      {
+        "id": "exp1-AN.11-4",
+        "item": "对侧 r494.capability-face-readonly-audit P1 闭合",
+        "status": "未做",
+        "reason": "属对侧 (不代写)"
+      },
+      {
+        "id": "exp1-AN.11-5",
+        "item": "产物件缺尾 LF (1154 .json + 237 .jsonl)",
+        "status": "未做",
+        "reason": "扩面否决的重开条件未成立"
+      },
+      {
+        "id": "exp1-AN.11-6",
+        "item": "新器具进器具面 (instruments.json 29 件)",
+        "status": "未做",
+        "reason": "需 kpi_quad + 负控对, 属扩面候选 (用户 09-18 令: 不许新增夹具与额外开发)"
+      },
+      {
+        "id": "R571-① ",
+        "item": "g1/wythoff 失分面修复 (唯一质量杠杆)",
+        "status": "未做",
+        "reason": "须动契约/产品分支 => 待放行"
+      },
+      {
+        "id": "R571-② ",
+        "item": "契约修复预算轴第二窗集并抬重复数 (≥25 跑次/臂)",
+        "status": "未做",
+        "reason": "在飞写者占机 + 本轮零远端 (只读轮)"
+      },
+      {
+        "id": "R571-③ ",
+        "item": "起手闸噪声面把会话工具子进程并入判据",
+        "status": "未做",
+        "reason": "器具改需先写后跑 + 保形重钉; 本轮只读复核占用"
+      },
+      {
+        "id": "R572/R573",
+        "item": "精排 KPI 真值 (ndcg/mrr/p@k/recall@N) + 33 红收口",
+        "status": "在飞 (前台会话)",
+        "reason": "工作区未提交; 本侧只读复核, 不代写"
+      }
+    ]
+  },
+  "concurrency": {
+    "sibling_writers_detected": true,
+    "evidence": "工作区 28 tracked 文件 M + 未入库 src/agent.rag/6 新件 + src/agent.nlp/ + docs/evidence/RF0001/{KPI.md,R573-33red-conversion.md}; 最后写 11:31:57; 本 tick 观测窗 50s 内零新写 (对侧处于动作间隙)",
+    "policy": "本 tick 零写入被占用面: 未碰 src/ 未碰 docs/evidence/RF0001/ 未碰 kpi.jsonl; 仅落本目录 + /tmp/r574/*; worktree 已回收"
+  },
+  "process": {
+    "questions_effective_clarification": 0,
+    "questions_wasted": 0,
+    "missed_questions": 0
+  },
+  "finding_3_prerequisite_audit": {
+    "target": "台账 R573 §剩余 11 的『出路 = 回补机制』前提核验 (先核前提再开发)",
+    "mechanism_exists": true,
+    "mechanism": "src/agent.nlp/NlpGate.cs (199 行): PatchPath 可注入 / Extract(语言+token数+关键词签名) / Decide(text,anchor)->GateDecision(local: learned-patch | lang+token-overlap; else escalate) / Observe(text,success) 学签名并落盘 data/nlp/gate-patches.txt / Counters(LocalHits,Escalations,Learned) / MaxPatches=4096 / 行式文本零反射(AOT 安全)",
+    "wiring_state": "○ 已实现·零消费者·零单测: 全仓(含 tests) 唯一提及 = src/agent/intent/TaskRelevanceChecker.cs:90 注释; grep -rn 'NlpGate' 消费者命中 0",
+    "current_gate_state": "TurnGateJudge.IsPureRepeat 的 RepeatMarkers = [] 属【未提交态】(git diff: +5/−22; HEAD 仍含 17 标记 + R497 新增 4 条) => 白名单校验通过后遍历空表 => IsPureRepeat ≡ false (恒假门)",
+    "real_machine_evidence": "定向跑 4 类 32 红, 失败集合恰为 expectRepeat:true 正例(再说一遍/从头再说/重复一遍吧...), expectRepeat:false 负例全绿 => 形态=安全方向保留(交远端) ∧ 本地吸收面归零(能力净损失), 即 33 红的直接机理 = 表清空 + 替代机制未接线",
+    "conclusion": "前提成立且工作量前移: NlpGate 无需新建 => 下一轮 = 接线复用(符合 2026-09-18 用户令『不许新增夹具和额外开发; 只能翻已有开关/复用既有组件』)",
+    "next_round_scope": [
+      "W1 TurnGateJudge.IsPureRepeat 首支改判 NlpGate.Decide(learned-patch) (空标记表保持为空, 零词表)",
+      "W2 LLM 成功轮后 NlpGate.Observe 学习签名(使用中自动升级, 无开发期预制规则)",
+      "W3 33 例改为双边断言: 喂补丁=>本地命中 ∧ 无补丁=>交远端 (不放宽断言)"
+    ],
+    "kpi_cell_touched": "token 格: 复述/改写族不必要的远端主调用数 ↓ (本地吸收面从 0 恢复)"
+  },
+  "disposition_no_write": {
+    "what": "本轮未实施 W1-W3 接线实现",
+    "why": [
+      "工作区已有 28 个未提交产品改动(同面: TurnGateJudge/LocalParaphraseChannel/CorrectionDetector 等), 接线会与之同面混写",
+      "用户令『要动代码须先说明它改哪一格读数』=> 说明已落盘(见 kpi_cell_touched), 实施放下一轮"
+    ],
+    "untouched": "产品源码 / 测试 / 夹具 / 开关 零改动 (本轮只新增 eval/rover/r574-tick/ 读数件)"
+  }
+}
