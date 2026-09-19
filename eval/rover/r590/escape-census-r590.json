@@ -1,0 +1,1755 @@
+{
+ "round": "R590",
+ "criterion": "C1",
+ "mode": "read_only census (零写入 runs/ · 零产品源码改动 · 零远端)",
+ "instrument": "eval/rover/r590/escape_form_census_r590.py",
+ "instrument_sha12": "44e786f719d7",
+ "device_read_contract": {
+  "contract_span": "import eval/rover/r589/charlevel_bisect_r589.py::contract_span（同口径，禁重写第二份）",
+  "device_sha12": "e1a8c9ddb828",
+  "cases_txt": "<runs>/<round>/<win>/<arm>/g1/cases.txt",
+  "work_files": "os.walk(<g1>/work) 文件数"
+ },
+ "form_definition": "契约块内出现「双反斜杠 + 字母 n」（正则 \\\\\\\\n）",
+ "scope": {
+  "rounds": [
+   "r585",
+   "r586",
+   "r587",
+   "r588"
+  ],
+  "windows": [
+   "w154",
+   "w155",
+   "w156",
+   "w157",
+   "w158",
+   "w159",
+   "w160",
+   "w161",
+   "w162",
+   "w163",
+   "w164",
+   "w165"
+  ],
+  "product_runs": 36
+ },
+ "occurrence": {
+  "n_product_runs": 36,
+  "n_form_present": 35,
+  "rate": 0.9722222222222222,
+  "named": [
+   "r585/w154/agentD-r1",
+   "r585/w154/agentD-r2",
+   "r585/w154/agentD-r3",
+   "r585/w155/agentD-r1",
+   "r585/w155/agentD-r2",
+   "r585/w155/agentD-r3",
+   "r585/w156/agentD-r1",
+   "r585/w156/agentD-r2",
+   "r585/w156/agentD-r3",
+   "r586/w157/agentD-r1",
+   "r586/w157/agentD-r2",
+   "r586/w157/agentD-r3",
+   "r586/w158/agentD-r1",
+   "r586/w158/agentD-r2",
+   "r586/w158/agentD-r3",
+   "r586/w159/agentD-r1",
+   "r586/w159/agentD-r3",
+   "r587/w160/agentD-r1",
+   "r587/w160/agentD-r2",
+   "r587/w160/agentD-r3",
+   "r587/w161/agentD-r1",
+   "r587/w161/agentD-r2",
+   "r587/w161/agentD-r3",
+   "r587/w162/agentD-r1",
+   "r587/w162/agentD-r2",
+   "r587/w162/agentD-r3",
+   "r588/w163/agentD-r1",
+   "r588/w163/agentD-r2",
+   "r588/w163/agentD-r3",
+   "r588/w164/agentD-r1",
+   "r588/w164/agentD-r2",
+   "r588/w164/agentD-r3",
+   "r588/w165/agentD-r1",
+   "r588/w165/agentD-r2",
+   "r588/w165/agentD-r3"
+  ]
+ },
+ "correlation_wythoff_allpass": {
+  "n_form": 35,
+  "n_noform": 1,
+  "rate_form": 0.4,
+  "rate_noform": 0.0,
+  "delta": 0.4,
+  "note": null
+ },
+ "correlation_delivery_absent": {
+  "n_form": 35,
+  "n_noform": 1,
+  "rate_form": 0.02857142857142857,
+  "rate_noform": 0.0,
+  "delta": 0.02857142857142857,
+  "note": null
+ },
+ "threshold": {
+  "name": "FAMILY_GAP (R589 实测族间落差 0.9722 − 0.3889)",
+  "value": 0.5832999999999999
+ },
+ "decision": "NOT_LOAD_BEARING:Δ_allpass 0.4000 < 阈值 0.5833 ⇒ 形态与整族塌陷非承重",
+ "parse_status": {
+  "parse_ok": 34,
+  "parse_fail": 2,
+  "span_not_found": 2,
+  "fail_named": [
+   "r586/w159/agentD-r2 :: contract_span_not_found",
+   "r587/w162/agentD-r3 :: JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 6322 (char 6321)"
+  ]
+ },
+ "posthoc": {
+  "post_hoc": true,
+  "note": "以下为读数后增补（明示事后性），**不改写**预注册判决；仅用于给「转记落点主因」提供证据面。",
+  "form_prevalence_across_all_runs": 0.9722222222222222,
+  "form_prevalence_among_wythoff_allpass": 0.4,
+  "discrimination_check": {
+   "question": "该形态能否区分「wythoff 整族全对」与「未全对」？",
+   "rate_form_allpass": 0.4,
+   "rate_form_all": 0.9722222222222222,
+   "verdict": "SEPARATING: 出现率有可分差"
+  },
+  "failure_reason_census_by_family": {
+   "life": {
+    "rc=1": 14
+   },
+   "nim": {
+    "rc=1": 15
+   },
+   "sub": {
+    "rc=1": 14
+   },
+   "wythoff": {
+    "stdout_mismatch": 174,
+    "rc=1": 58,
+    "TimeoutExpired": 8
+   }
+  }
+ },
+ "delivery": {
+  "n_absent": 1,
+  "named": [
+   "r587/w162/agentD-r3"
+  ]
+ },
+ "controls": {
+  "POS_r587_w162_agentD-r3": {
+   "expect": "form_present=true",
+   "got": true,
+   "n": 59
+  },
+  "NEG1_synthetic_correct_escape": {
+   "expect": "form_present=false",
+   "got": false,
+   "span_balanced": true,
+   "json_ok": true
+  },
+  "NEG2_synthetic_injected_form": {
+   "expect": "form_present=true",
+   "got": true,
+   "span_balanced": true,
+   "json_ok": true
+  },
+  "has_teeth": true
+ },
+ "checks": {
+  "C1a_has_teeth": true,
+  "C1b_neg3_nonconstant_false_exists": true,
+  "C1c_occurrence_estimable": true
+ },
+ "rows": [
+  {
+   "round": "r585",
+   "win": "w154",
+   "arm": "agentD-r1",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r585/w154/agentD-r1/g1",
+   "exists": true,
+   "reply_chars": 8808,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 7016,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 61,
+   "form_present": true,
+   "esc_n": 211,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    }
+   },
+   "all_pass": true,
+   "work_files": 13,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": true
+  },
+  {
+   "round": "r585",
+   "win": "w154",
+   "arm": "agentD-r2",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r585/w154/agentD-r2/g1",
+   "exists": true,
+   "reply_chars": 9077,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 7281,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 77,
+   "form_present": true,
+   "esc_n": 232,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    }
+   },
+   "all_pass": true,
+   "work_files": 20,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": true
+  },
+  {
+   "round": "r585",
+   "win": "w154",
+   "arm": "agentD-r3",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r585/w154/agentD-r3/g1",
+   "exists": true,
+   "reply_chars": 7005,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 5192,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 12,
+   "form_present": true,
+   "esc_n": 133,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    }
+   },
+   "all_pass": true,
+   "work_files": 12,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": true
+  },
+  {
+   "round": "r585",
+   "win": "w155",
+   "arm": "agentD-r1",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r585/w155/agentD-r1/g1",
+   "exists": true,
+   "reply_chars": 8754,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 6805,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 50,
+   "form_present": true,
+   "esc_n": 178,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 10,
+     "all_pass": false
+    }
+   },
+   "all_pass": false,
+   "work_files": 12,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": false
+  },
+  {
+   "round": "r585",
+   "win": "w155",
+   "arm": "agentD-r2",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r585/w155/agentD-r2/g1",
+   "exists": true,
+   "reply_chars": 8801,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 6984,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 15,
+   "form_present": true,
+   "esc_n": 198,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 7,
+     "all_pass": false
+    }
+   },
+   "all_pass": false,
+   "work_files": 12,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": false
+  },
+  {
+   "round": "r585",
+   "win": "w155",
+   "arm": "agentD-r3",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r585/w155/agentD-r3/g1",
+   "exists": true,
+   "reply_chars": 7706,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 5889,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 6,
+   "form_present": true,
+   "esc_n": 132,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 4,
+     "all_pass": false
+    }
+   },
+   "all_pass": false,
+   "work_files": 12,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": false
+  },
+  {
+   "round": "r585",
+   "win": "w156",
+   "arm": "agentD-r1",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r585/w156/agentD-r1/g1",
+   "exists": true,
+   "reply_chars": 8313,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 6500,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 4,
+   "form_present": true,
+   "esc_n": 173,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    }
+   },
+   "all_pass": true,
+   "work_files": 12,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": true
+  },
+  {
+   "round": "r585",
+   "win": "w156",
+   "arm": "agentD-r2",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r585/w156/agentD-r2/g1",
+   "exists": true,
+   "reply_chars": 11032,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 9215,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 15,
+   "form_present": true,
+   "esc_n": 224,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 5,
+     "all_pass": false
+    }
+   },
+   "all_pass": false,
+   "work_files": 18,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": false
+  },
+  {
+   "round": "r585",
+   "win": "w156",
+   "arm": "agentD-r3",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r585/w156/agentD-r3/g1",
+   "exists": true,
+   "reply_chars": 7015,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 5198,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 11,
+   "form_present": true,
+   "esc_n": 126,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 12,
+     "all_pass": false
+    }
+   },
+   "all_pass": false,
+   "work_files": 12,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": false
+  },
+  {
+   "round": "r586",
+   "win": "w157",
+   "arm": "agentD-r1",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r586/w157/agentD-r1/g1",
+   "exists": true,
+   "reply_chars": 7660,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 5843,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 14,
+   "form_present": true,
+   "esc_n": 123,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 4,
+     "all_pass": false
+    }
+   },
+   "all_pass": false,
+   "work_files": 12,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": false
+  },
+  {
+   "round": "r586",
+   "win": "w157",
+   "arm": "agentD-r2",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r586/w157/agentD-r2/g1",
+   "exists": true,
+   "reply_chars": 7143,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 5330,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 4,
+   "form_present": true,
+   "esc_n": 116,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    }
+   },
+   "all_pass": true,
+   "work_files": 12,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": true
+  },
+  {
+   "round": "r586",
+   "win": "w157",
+   "arm": "agentD-r3",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r586/w157/agentD-r3/g1",
+   "exists": true,
+   "reply_chars": 9734,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 7921,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 24,
+   "form_present": true,
+   "esc_n": 223,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    }
+   },
+   "all_pass": true,
+   "work_files": 12,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": true
+  },
+  {
+   "round": "r586",
+   "win": "w158",
+   "arm": "agentD-r1",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r586/w158/agentD-r1/g1",
+   "exists": true,
+   "reply_chars": 9010,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 7191,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 56,
+   "form_present": true,
+   "esc_n": 222,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 12,
+     "all_pass": false
+    }
+   },
+   "all_pass": false,
+   "work_files": 13,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": false
+  },
+  {
+   "round": "r586",
+   "win": "w158",
+   "arm": "agentD-r2",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r586/w158/agentD-r2/g1",
+   "exists": true,
+   "reply_chars": 8397,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 6585,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 6,
+   "form_present": true,
+   "esc_n": 163,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    }
+   },
+   "all_pass": true,
+   "work_files": 12,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": true
+  },
+  {
+   "round": "r586",
+   "win": "w158",
+   "arm": "agentD-r3",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r586/w158/agentD-r3/g1",
+   "exists": true,
+   "reply_chars": 7118,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 5301,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 12,
+   "form_present": true,
+   "esc_n": 136,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 6,
+     "all_pass": false
+    }
+   },
+   "all_pass": false,
+   "work_files": 12,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": false
+  },
+  {
+   "round": "r586",
+   "win": "w159",
+   "arm": "agentD-r1",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r586/w159/agentD-r1/g1",
+   "exists": true,
+   "reply_chars": 7712,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 5895,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 1,
+   "form_present": true,
+   "esc_n": 154,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 5,
+     "all_pass": false
+    }
+   },
+   "all_pass": false,
+   "work_files": 12,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": false
+  },
+  {
+   "round": "r586",
+   "win": "w159",
+   "arm": "agentD-r2",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r586/w159/agentD-r2/g1",
+   "exists": true,
+   "reply_chars": 9252,
+   "span_found": false,
+   "span_balanced": false,
+   "span_chars": 0,
+   "parse_ok": false,
+   "parse_err": "contract_span_not_found",
+   "form_n": 0,
+   "form_present": false,
+   "esc_n": 0,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 0,
+     "all_pass": false
+    }
+   },
+   "all_pass": false,
+   "work_files": 12,
+   "delivery_absent": false,
+   "span_start": -1,
+   "_wythoff_all": false
+  },
+  {
+   "round": "r586",
+   "win": "w159",
+   "arm": "agentD-r3",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r586/w159/agentD-r3/g1",
+   "exists": true,
+   "reply_chars": 7817,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 6000,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 14,
+   "form_present": true,
+   "esc_n": 147,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 0,
+     "all_pass": false
+    }
+   },
+   "all_pass": false,
+   "work_files": 12,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": false
+  },
+  {
+   "round": "r587",
+   "win": "w160",
+   "arm": "agentD-r1",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r587/w160/agentD-r1/g1",
+   "exists": true,
+   "reply_chars": 9645,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 7850,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 47,
+   "form_present": true,
+   "esc_n": 212,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    }
+   },
+   "all_pass": true,
+   "work_files": 12,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": true
+  },
+  {
+   "round": "r587",
+   "win": "w160",
+   "arm": "agentD-r2",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r587/w160/agentD-r2/g1",
+   "exists": true,
+   "reply_chars": 7540,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 5727,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 8,
+   "form_present": true,
+   "esc_n": 149,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    }
+   },
+   "all_pass": true,
+   "work_files": 12,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": true
+  },
+  {
+   "round": "r587",
+   "win": "w160",
+   "arm": "agentD-r3",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r587/w160/agentD-r3/g1",
+   "exists": true,
+   "reply_chars": 6979,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 5166,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 14,
+   "form_present": true,
+   "esc_n": 126,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    }
+   },
+   "all_pass": true,
+   "work_files": 12,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": true
+  },
+  {
+   "round": "r587",
+   "win": "w161",
+   "arm": "agentD-r1",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r587/w161/agentD-r1/g1",
+   "exists": true,
+   "reply_chars": 8859,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 7050,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 80,
+   "form_present": true,
+   "esc_n": 245,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 7,
+     "all_pass": false
+    }
+   },
+   "all_pass": false,
+   "work_files": 13,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": false
+  },
+  {
+   "round": "r587",
+   "win": "w161",
+   "arm": "agentD-r2",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r587/w161/agentD-r2/g1",
+   "exists": true,
+   "reply_chars": 7918,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 5975,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 14,
+   "form_present": true,
+   "esc_n": 187,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 0,
+     "all_pass": false
+    }
+   },
+   "all_pass": false,
+   "work_files": 12,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": false
+  },
+  {
+   "round": "r587",
+   "win": "w161",
+   "arm": "agentD-r3",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r587/w161/agentD-r3/g1",
+   "exists": true,
+   "reply_chars": 7044,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 5105,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 11,
+   "form_present": true,
+   "esc_n": 125,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    }
+   },
+   "all_pass": true,
+   "work_files": 12,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": true
+  },
+  {
+   "round": "r587",
+   "win": "w162",
+   "arm": "agentD-r1",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r587/w162/agentD-r1/g1",
+   "exists": true,
+   "reply_chars": 8734,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 6915,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 47,
+   "form_present": true,
+   "esc_n": 173,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 2,
+     "all_pass": false
+    }
+   },
+   "all_pass": false,
+   "work_files": 12,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": false
+  },
+  {
+   "round": "r587",
+   "win": "w162",
+   "arm": "agentD-r2",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r587/w162/agentD-r2/g1",
+   "exists": true,
+   "reply_chars": 9115,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 7320,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 58,
+   "form_present": true,
+   "esc_n": 202,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    }
+   },
+   "all_pass": true,
+   "work_files": 12,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": true
+  },
+  {
+   "round": "r587",
+   "win": "w162",
+   "arm": "agentD-r3",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r587/w162/agentD-r3/g1",
+   "exists": true,
+   "reply_chars": 17257,
+   "span_found": false,
+   "span_balanced": false,
+   "span_chars": 16223,
+   "parse_ok": false,
+   "parse_err": "JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 6322 (char 6321)",
+   "form_n": 59,
+   "form_present": true,
+   "esc_n": 397,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 0,
+     "all_pass": false
+    },
+    "nim": {
+     "n": 15,
+     "pass": 0,
+     "all_pass": false
+    },
+    "sub": {
+     "n": 14,
+     "pass": 0,
+     "all_pass": false
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 0,
+     "all_pass": false
+    }
+   },
+   "all_pass": false,
+   "work_files": 0,
+   "delivery_absent": true,
+   "span_start": 1034,
+   "_wythoff_all": false
+  },
+  {
+   "round": "r588",
+   "win": "w163",
+   "arm": "agentD-r1",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r588/w163/agentD-r1/g1",
+   "exists": true,
+   "reply_chars": 8307,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 6488,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 47,
+   "form_present": true,
+   "esc_n": 179,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 8,
+     "all_pass": false
+    }
+   },
+   "all_pass": false,
+   "work_files": 12,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": false
+  },
+  {
+   "round": "r588",
+   "win": "w163",
+   "arm": "agentD-r2",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r588/w163/agentD-r2/g1",
+   "exists": true,
+   "reply_chars": 6665,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 4848,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 11,
+   "form_present": true,
+   "esc_n": 116,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 0,
+     "all_pass": false
+    }
+   },
+   "all_pass": false,
+   "work_files": 19,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": false
+  },
+  {
+   "round": "r588",
+   "win": "w163",
+   "arm": "agentD-r3",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r588/w163/agentD-r3/g1",
+   "exists": true,
+   "reply_chars": 9161,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 7365,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 56,
+   "form_present": true,
+   "esc_n": 182,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    }
+   },
+   "all_pass": true,
+   "work_files": 12,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": true
+  },
+  {
+   "round": "r588",
+   "win": "w164",
+   "arm": "agentD-r1",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r588/w164/agentD-r1/g1",
+   "exists": true,
+   "reply_chars": 9446,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 7627,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 59,
+   "form_present": true,
+   "esc_n": 246,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 0,
+     "all_pass": false
+    }
+   },
+   "all_pass": false,
+   "work_files": 12,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": false
+  },
+  {
+   "round": "r588",
+   "win": "w164",
+   "arm": "agentD-r2",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r588/w164/agentD-r2/g1",
+   "exists": true,
+   "reply_chars": 8867,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 7054,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 15,
+   "form_present": true,
+   "esc_n": 156,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    }
+   },
+   "all_pass": true,
+   "work_files": 12,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": true
+  },
+  {
+   "round": "r588",
+   "win": "w164",
+   "arm": "agentD-r3",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r588/w164/agentD-r3/g1",
+   "exists": true,
+   "reply_chars": 7397,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 5580,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 5,
+   "form_present": true,
+   "esc_n": 128,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 4,
+     "all_pass": false
+    }
+   },
+   "all_pass": false,
+   "work_files": 12,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": false
+  },
+  {
+   "round": "r588",
+   "win": "w165",
+   "arm": "agentD-r1",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r588/w165/agentD-r1/g1",
+   "exists": true,
+   "reply_chars": 9157,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 7340,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 2,
+   "form_present": true,
+   "esc_n": 180,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 1,
+     "all_pass": false
+    }
+   },
+   "all_pass": false,
+   "work_files": 12,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": false
+  },
+  {
+   "round": "r588",
+   "win": "w165",
+   "arm": "agentD-r2",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r588/w165/agentD-r2/g1",
+   "exists": true,
+   "reply_chars": 6310,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 4367,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 11,
+   "form_present": true,
+   "esc_n": 103,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 3,
+     "all_pass": false
+    }
+   },
+   "all_pass": false,
+   "work_files": 12,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": false
+  },
+  {
+   "round": "r588",
+   "win": "w165",
+   "arm": "agentD-r3",
+   "g1": "/home/agentuser/.agentframework/harness/runs/r588/w165/agentD-r3/g1",
+   "exists": true,
+   "reply_chars": 7058,
+   "span_found": true,
+   "span_balanced": true,
+   "span_chars": 5241,
+   "parse_ok": true,
+   "parse_err": null,
+   "form_n": 14,
+   "form_present": true,
+   "esc_n": 115,
+   "cases_n": 58,
+   "family_pass": {
+    "life": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "nim": {
+     "n": 15,
+     "pass": 15,
+     "all_pass": true
+    },
+    "sub": {
+     "n": 14,
+     "pass": 14,
+     "all_pass": true
+    },
+    "wythoff": {
+     "n": 15,
+     "pass": 0,
+     "all_pass": false
+    }
+   },
+   "all_pass": false,
+   "work_files": 12,
+   "delivery_absent": false,
+   "span_start": 1034,
+   "_wythoff_all": false
+  }
+ ],
+ "rc": 0
+}

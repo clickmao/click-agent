@@ -1,0 +1,129 @@
+{
+ "round": "R590",
+ "criterion": "C2",
+ "mode": "read_only margin re-derivation (零写入 runs/ · 零产品改动 · 零远端)",
+ "clause_v2_text": "MARGIN = max(60MB, 上一轮同一宿主运行中实测振幅)；REQ = GATE_MB + MARGIN",
+ "clause_v2_defect": "「只读轮（零臂）」无在飞窗 ⇒ prev_swing 取值未定义（条款缺分支，非数值问题）",
+ "derived_clause": "prev_swing_effective = max(在飞窗振幅, 起手前采样振幅)；MARGIN := clamp(prev_swing_effective, floor, cap)；cap = CEIL − GATE_MB − floor；REQ = GATE_MB + MARGIN",
+ "sources": {
+  "in_run": {
+   "path": "/home/agentuser/.agentframework/harness/runs/r589/logs/run-samples.jsonl",
+   "n": 0,
+   "swing": null,
+   "note": "文件不存在（结构性缺测）"
+  },
+  "pre_sample": {
+   "path": "/home/agentuser/.agentframework/harness/runs/r589/logs/pre-samples.jsonl",
+   "n": 2,
+   "min": 2494.0,
+   "max": 2855.0,
+   "swing": 361
+  }
+ },
+ "prev_swing_effective": 361,
+ "prev_swing_source": "/home/agentuser/.agentframework/harness/runs/r589/logs/pre-samples.jsonl",
+ "branch_taken": "pre_sample_only",
+ "gate_mb": 2650,
+ "floor_mb": 60,
+ "rc": 0,
+ "source_admissibility": {
+  "rule": "只读轮分支的振幅源须同态（样本极差 ≤ 50MB）",
+  "source_file": "/home/agentuser/.agentframework/harness/runs/r589/logs/pre-samples.jsonl",
+  "source_n": 2,
+  "source_spread_mb": 361,
+  "admissible": false,
+  "reason_if_not": "极差 361MB > 50MB ⇒ 跨态（R589 的两个起手前样本分别落在清本会话工具子进程**之前/之后**，差 361MB = 清场跳变，非宿主振幅）",
+  "recommended_rollback_source": "最近一次**同态在飞窗**振幅 = r588 run-samples（n=189, swing 314）"
+ },
+ "robustness_table": [
+  {
+   "ceiling": 2748,
+   "margin_source": "contaminated_r589_pre(361)",
+   "cap": 38,
+   "margin": null,
+   "req": null,
+   "openable": false,
+   "cap_binding": true
+  },
+  {
+   "ceiling": 2748,
+   "margin_source": "rollback_r588_inrun(314)",
+   "cap": 38,
+   "margin": null,
+   "req": null,
+   "openable": false,
+   "cap_binding": true
+  },
+  {
+   "ceiling": 2855,
+   "margin_source": "contaminated_r589_pre(361)",
+   "cap": 145,
+   "margin": 145,
+   "req": 2795,
+   "openable": true,
+   "cap_binding": true
+  },
+  {
+   "ceiling": 2855,
+   "margin_source": "rollback_r588_inrun(314)",
+   "cap": 145,
+   "margin": 145,
+   "req": 2795,
+   "openable": true,
+   "cap_binding": true
+  }
+ ],
+ "robustness_note": "两源在当前顶棚（2748）下**结论相同**（cap 38 < floor 60 ⇒ 窗口不可开）⇒ 本轮读数对受污染源**不敏感**；但在高顶棚（2855）下两源都受 cap 夹取 ⇒ **振幅项恒不承重**（条款退化）。",
+ "cap_binding_table": [
+  {
+   "ceiling": 2494,
+   "cap": -216,
+   "margin_raw": 361,
+   "margin_clamped": null,
+   "cap_binding": true,
+   "openable": false
+  },
+  {
+   "ceiling": 2650,
+   "cap": -60,
+   "margin_raw": 361,
+   "margin_clamped": null,
+   "cap_binding": true,
+   "openable": false
+  },
+  {
+   "ceiling": 2710,
+   "cap": 0,
+   "margin_raw": 361,
+   "margin_clamped": null,
+   "cap_binding": true,
+   "openable": false
+  },
+  {
+   "ceiling": 2803,
+   "cap": 93,
+   "margin_raw": 361,
+   "margin_clamped": 93,
+   "cap_binding": true,
+   "openable": true
+  },
+  {
+   "ceiling": 2855,
+   "cap": 145,
+   "margin_raw": 361,
+   "margin_clamped": 145,
+   "cap_binding": true,
+   "openable": true
+  },
+  {
+   "ceiling": 2900,
+   "cap": 190,
+   "margin_raw": 361,
+   "margin_clamped": 190,
+   "cap_binding": true,
+   "openable": true
+  }
+ ],
+ "cap_binding_note": "在当前顶棚量级（≈2.8–2.9GB）上 cap 恒 < prev_swing_effective ⇒ 振幅项被 cap 吃掉 = **条款退化**（收紧了上界、未收紧下界）；只有 CEIL ≥ GATE_MB + floor + eff 时振幅项才承重。",
+ "live_ceiling_mb": 2580
+}

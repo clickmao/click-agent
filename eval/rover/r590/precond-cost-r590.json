@@ -1,0 +1,119 @@
+{
+ "round": "R590",
+ "criterion": "C3",
+ "mode": "read_only cost/口径 derivation (零写入 runs/ · 零产品改动 · 零远端)",
+ "predeclared_conflict": {
+  "claim_A": "R589 轮志 C3 行: 本轮重跑「完成 4/4」",
+  "claim_B": "R589 轮志 诚实边界行 + master R590 候选⑤: 「4 轮重跑未跑完」",
+  "adjudication": "以在盘证据为准：4 份 log + 4 份 JSON 齐备、每份含完整判决字段与终态（executable_and_correct / acceptable_scoped / blocked），完成时刻单调推进 ⇒ 判 **4/4 完成**；claim_B 不成立。"
+ },
+ "rows": [
+  {
+   "round": "r585",
+   "rerun_log": "/home/agentuser/AgentFramework/eval/rover/r589/logs/precond-r585.log",
+   "rerun_json": "/home/agentuser/AgentFramework/eval/rover/r589/precond-r585.json",
+   "rerun_done_epoch": 1789849829,
+   "own_registered_rc": 1,
+   "rerun_rc": 1,
+   "consistent": true,
+   "label": "R585",
+   "windows_n": 3,
+   "blocked_n": 6,
+   "executable_and_correct": false,
+   "acceptable_scoped": false,
+   "self_report_agrees": true
+  },
+  {
+   "round": "r586",
+   "rerun_log": "/home/agentuser/AgentFramework/eval/rover/r589/logs/precond-r586.log",
+   "rerun_json": "/home/agentuser/AgentFramework/eval/rover/r589/precond-r586.json",
+   "rerun_done_epoch": 1789849851,
+   "own_registered_rc": 1,
+   "rerun_rc": 1,
+   "consistent": true,
+   "label": "R586",
+   "windows_n": 3,
+   "blocked_n": 6,
+   "executable_and_correct": false,
+   "acceptable_scoped": false,
+   "self_report_agrees": true
+  },
+  {
+   "round": "r587",
+   "rerun_log": "/home/agentuser/AgentFramework/eval/rover/r589/logs/precond-r587.log",
+   "rerun_json": "/home/agentuser/AgentFramework/eval/rover/r589/precond-r587.json",
+   "rerun_done_epoch": 1789849871,
+   "own_registered_rc": 1,
+   "rerun_rc": 1,
+   "consistent": true,
+   "label": "R587",
+   "windows_n": 3,
+   "blocked_n": 5,
+   "executable_and_correct": false,
+   "acceptable_scoped": false,
+   "self_report_agrees": true
+  },
+  {
+   "round": "r588",
+   "rerun_log": "/home/agentuser/AgentFramework/eval/rover/r589/logs/precond-r588.log",
+   "rerun_json": "/home/agentuser/AgentFramework/eval/rover/r589/precond-r588.json",
+   "rerun_done_epoch": 1789849892,
+   "own_registered_rc": 1,
+   "rerun_rc": 1,
+   "consistent": true,
+   "label": "R588",
+   "windows_n": 3,
+   "blocked_n": 8,
+   "executable_and_correct": false,
+   "acceptable_scoped": false,
+   "self_report_agrees": true
+  }
+ ],
+ "n_rerun_completed": 4,
+ "n_rounds": 4,
+ "durations_s_informational_only": {
+  "note": "第 1 轮的起点无锚（只有完成时刻）⇒ 只可测 2..4 轮的**相邻完成间隔**；墙钟一律信息字段，不进任何红绿判据。",
+  "intervals": [
+   22,
+   20,
+   21
+  ],
+  "total_window_s": 63,
+  "per_round_upper_bound_s": 22,
+  "n_intervals": 3
+ },
+ "consistency_check": {
+  "rule": "复跑结论 == 该轮自身已登记结论（runs/<r>/precond.rc）",
+  "all_consistent": true,
+  "pairs": [
+   {
+    "round": "r585",
+    "own": 1,
+    "rerun": 1
+   },
+   {
+    "round": "r586",
+    "own": 1,
+    "rerun": 1
+   },
+   {
+    "round": "r587",
+    "own": 1,
+    "rerun": 1
+   },
+   {
+    "round": "r588",
+    "own": 1,
+    "rerun": 1
+   }
+  ]
+ },
+ "sampling_substitution_protocol": {
+  "applies_to": "只读轮（零新臂）复算铁律 11 验收面",
+  "rule": "抽样 ≥1 轮**真跑** + 其余取各轮**自身已登记**读数；抽样轮须满足 「复跑结论 == 自身已登记结论」守恒判据",
+  "fail_closed": "任一抽样轮不一致 ⇒ 判数据面异常 ⇒ 放弃抽样、全量重跑（不得用抽样读数下结论）",
+  "why_not_free": "全量复跑实测 ≈ 20–22 s/轮（project 布局，4 轮 ≈ 63 s 窗口）；只读轮以「各轮自身已登记读数」为主可把该成本降到 1 轮",
+  "precondition": "各轮自身已登记读数必须在盘（`runs/<r>/precond.rc`）；缺失的轮必须真跑，不得跳过"
+ },
+ "rc": 0
+}

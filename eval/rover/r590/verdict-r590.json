@@ -1,0 +1,94 @@
+{
+ "round": "R590",
+ "mode": "只读定因/入册轮（候选 ②③④⑤ 并轮）；零新臂 / 零远端 / 零产品源码改动 / 零新增夹具 / 零新增开关",
+ "criteria": {
+  "C1": {
+   "criterion": "C1 候选② 形态普查",
+   "rc": 0,
+   "decision": "NOT_LOAD_BEARING:Δ_allpass 0.4000 < 阈值 0.5833 ⇒ 形态与整族塌陷非承重",
+   "occurrence_rate": 0.9722222222222222,
+   "delta_wythoff_allpass": 0.4,
+   "threshold": 0.5832999999999999,
+   "verdict_text": "**否证**：目标形态（契约块内双反斜杠 + n）出现率 0.9722（35/36，近乎普遍），Δ_allpass 0.4000 < 阈值 0.5833 ⇒ 与整族塌陷**非承重**；唯一缺档跑次同时是「契约块未闭合」跑次 ⇒ 该轴与「解析失败」**共线**、无独立可分面。依预注册决策树**转记落点非冷点主因**。"
+  },
+  "C2": {
+   "criterion": "C2 候选④ 起手闸余量条款重派生",
+   "rc": 0,
+   "branch_taken": "pre_sample_only",
+   "source_admissible": false,
+   "cap_binding": true,
+   "live_gate": {
+    "rc": 2,
+    "reason": "起手前采样同态（n=3, 顶棚 2748, 极差 3）但 cap = 2748 − 2650 − 60 = 38 < floor 60 ⇒ 窗口不可开 (fail-closed 早退)",
+    "A1_A2": "未行使",
+    "disc_pair": "未行使"
+   },
+   "verdict_text": "**条款三处缺陷一次收口**：① 只读轮（零臂）无在飞窗 ⇒ `prev_swing` **取值未定义**（缺分支，非数值问题）；② 条款写了「起手前样本极差 ≤ 50MB」而 r589 实现**未落**（r589 实测极差 361MB 仍被放行）⇒ 本轮落成 fail-closed 闸并行使（本轮 n=3 极差 3MB ⇒ 过）；③ R589 的 361MB 是**清场跳变**（清本会话工具子进程前后各取一样本）⇒ 非同态、**不可采**；稳健性表证明换用回退源 314MB 结论不变；**cap 恒 binding ⇒ 振幅项退化**。"
+  },
+  "C3": {
+   "criterion": "C3 候选⑤ 前置器耗时/口径",
+   "rc": 0,
+   "n_rerun_completed": 4,
+   "consistency_all": true,
+   "intervals_s_informational": [
+    22,
+    20,
+    21
+   ],
+   "conflict_adjudication": "R589 轮志**内部矛盾**（C3 行「完成 4/4」vs 诚实边界行「未全数完成」），`docs/improvements.md` R589 条写「in_flight（完成 0/4）」，master R590 候选⑤ 沿用该版本；**在盘证据（4 log + 4 JSON 齐备、终态判决字段完整、完成时刻单调推进、且复跑结论与各轮自身 `precond.rc` 逐轮一致）⇒ 判 4/4 完成**。**定因（本轮只读定位）**：`eval/rover/r589/finish_r589.py` 的两处打印（:252 / :361）读的是它**自己的收集字典** `pre_rc`，该字典从未被回填 ⇒ 写「in_flight / 0/4」；而同一份报告另一处（读另一收集支）写「4/4」⇒ **同一轮两处读数来自两个不同来源，且都不是「回读磁盘归档」** —— 与「计数类读数取外部真值（归档文件数）不采信内存账本」同族。本轮的 C3 器具改从**在盘件 + 各轮自身 `precond.rc`** 取数，故得 4/4。R589 的「0/4 / 未全数完成」读数**不翻案**（原样留档），只作口径修正登记。"
+  },
+  "C4": {
+   "criterion": "C4 候选③ 判据面入册",
+   "rc": 0,
+   "target": "docs/external-reference-harness.md §12.3",
+   "checks": {
+    "v3_heading": true,
+    "v2_heading_kept": true,
+    "task_face_58_58": true,
+    "by_family": true,
+    "cross_version_no_subtract": true,
+    "v2_decision_face_deprecated": true,
+    "post_hoc_disclosed": true
+   }
+  },
+  "C5": {
+   "criterion": "C5 只读性",
+   "rc": 0,
+   "files": 2210,
+   "cross_round_invariant": true
+  },
+  "C6": {
+   "criterion": "C6 形式门禁（保形核对：本轮零 src/ 改动、零登记表改动）",
+   "rc": 0,
+   "form_gate": {
+    "log": "eval/rover/r590/logs/form-gate-r590.txt",
+    "exit": 0,
+    "passed": true,
+    "tail": [
+     "",
+     "Passed!  - Failed:     0, Passed:    14, Skipped:     0, Total:    14, Duration: 1 s - agentframework.tests.dll (net10.0)",
+     "FORM_GATE_EXIT=0"
+    ]
+   }
+  }
+ },
+ "rc_components": [
+  0,
+  0,
+  0,
+  0,
+  0,
+  0
+ ],
+ "rc": 0,
+ "honest_boundaries": [
+  "零新跑次 ⇒ **不宣称任何质量或成本降幅/增益**；所有读数与 R585–R588 各轮单窗读数并列、不相减。",
+  "候选②为**否证**结论（形态非承重且与解析失败共线）；相关性为只读相关，不构成因果。",
+  "候选④ 起手闸真机 **rc=2 fail-closed（窗口不可开）** ⇒ A1/A2 与判别力成对控制**未行使**；「窗口不可开」是 fail-closed 的**正确行为**，不记缺陷，但也因此本轮未取得闸 PASS 读数。",
+  "候选⑤ 的耗时（20–22 s/轮）为**墙钟信息字段**，不进任何红绿判据；只测 2..4 轮相邻完成间隔（第 1 轮起点无锚）。",
+  "候选③ 为**事后入册**（R589 已先行使），不得回写成「预注册」。",
+  "候选①（直进产品侧修复 / 换更长题面）**待用户放行**，本轮未推进、零交付物。",
+  "本轮为只读轮 ⇒ 依 R588/R589 同处置，**不造** `owner_round=R590` 的 capability 登记行；登记表未改动，形式门禁只作保形核对。"
+ ],
+ "artifacts": "eval/rover/r590/{prereg-r590.json,dag-r590.md,escape-census-r590.json,escape-census-r590-v1spanpath.json,gate-margin-r590.json,gate_r590.sh,precond-cost-r590.json,readonly-fingerprint-r590.json,verdict-r590.json,kpi-table-r590.json,report-r590.md}"
+}

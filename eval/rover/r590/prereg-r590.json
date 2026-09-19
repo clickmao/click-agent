@@ -1,0 +1,85 @@
+{
+  "round": "R590",
+  "written_before_run": true,
+  "written_at": "2026-09-20T05:00+08:00",
+  "author": "cron tick (b15eb2f40a69) · 常驻能力自检循环执行体",
+  "claim": "只读定因/入册轮：候选 ②③④⑤ 并轮收口；零新臂 / 零远端 / 零产品源码改动 / 零新增夹具 / 零新增开关。",
+  "one_time_context": {
+    "in_scope_rounds": ["r585", "r586", "r587", "r588"],
+    "windows": ["w154","w155","w156","w157","w158","w159","w160","w161","w162","w163","w164","w165"],
+    "product_runs": 36,
+    "truth_runs": 12,
+    "truth_arm": "codex",
+    "cases_per_run": 58,
+    "taskset_sha": "e0c667c2a313c04b",
+    "bin_sha12": "4b70fd7cdb39",
+    "r589_reference": {
+      "valid_windows": 9,
+      "unreliable_truth_self_fail": ["w154","w161","w165"],
+      "task_face_median": -0.6667,
+      "family_all_pass_rate": {"life": 0.9722, "nim": 0.9722, "sub": 0.9722, "wythoff": 0.3889}
+    }
+  },
+  "single_variable": "本轮无自变量（零新臂）。所有读数 = 在盘件的重算与只读定因；跨轮禁相减，只并列。",
+  "criteria": {
+    "C1 候选② 形态普查（主判据）": {
+      "form_definition": "**过度转义** = 契约块（`{\"schema_version\"` 起的第一段平衡 `{...}`）内出现「双反斜杠 + 字母 n」（正则 `\\\\\\\\n`，即 2 个反斜杠后接 n）。判据：正确契约在 JSON 字符串内只应发单反斜杠 + n（`\\\\n`）。该形态由 R589 C8 的字符级最小化复现定位（最小删除集 = `plan` 数组元素 idx 6，其 `args.cmd` 内即该形态）派生，非本轮新造。",
+      "occurrence_metric": "form_present 的产品跑次数 / 36",
+      "correlation_primary": "Δ_allpass = P(wythoff 整族全对 | form_present) − P(wythoff 整族全对 | ¬form_present)",
+      "threshold_derivation": "阈值 = R589 实测**族间落差** 0.9722 − 0.3889 = **0.5833**（形态若要解释整族塌陷，其可分度至少须与族间落差同尺度）。",
+      "decision_rule": [
+        "出现率 = 0 ⇒ 判「本候选自证无价值」⇒ 依 R590 候选② 原文转记「应改查落点非冷点主因」。",
+        "出现率 > 0 且 Δ_allpass ≥ 0.5833 ⇒ 判「形态可解释整族塌陷」（仍只作只读相关，不作因果宣称）。",
+        "出现率 > 0 且 Δ_allpass < 0.5833 ⇒ 判「形态与整族塌陷**非承重**」，并须附次相关读数。"
+      ],
+      "correlation_secondary": "Δ_absent = P(交付缺席 work_files==0 | form_present) − P(交付缺席 | ¬form_present)：判「形态与交付缺席是否同源」（R588 已定因 NO_ARTIFACT 单例的机理 = 契约块结构不闭合）。",
+      "negative_controls": [
+        "POS（真机正控）: `r587/w162/agentD-r3`（R588 单例 NO_ARTIFACT、R589 C8 对象）必须 form_present=true。",
+        "NEG1（合成负控）: 合成契约（JSON 字符串内只发 `\\n` 单反斜杠 + n）必须 form_present=false。",
+        "NEG2（判别力/防恒假）: 合成 reply（注入双反斜杠 + n）必须 form_present=true（证明检测器非恒假）。",
+        "NEG3（防恒真）: 真语料中须存在 form_present=false 的跑次（否则判据退化为恒真门）。"
+      ]
+    },
+    "C2 候选④ 起手闸余量条款重派生": {
+      "finding_predeclared": "R589 为**只读并池轮（零臂）** ⇒ 其 `~/.agentframework/harness/runs/r589/logs/run-samples.jsonl` **结构性不存在** ⇒ 条款 v2 的 `prev_swing = 上一轮同一宿主运行中实测振幅` 在「只读轮」上**取值未定义**（不是 0、不是继承）。这是一处**条款缺分支**，而非数值问题。",
+      "derived_clause": "`prev_swing_effective = max(在飞窗振幅, 起手前采样振幅)`；`MARGIN := clamp(prev_swing_effective, floor=60, cap = CEIL − GATE_MB − floor)`；`REQ = GATE_MB + MARGIN`。只读轮走「起手前采样振幅」支。",
+      "required_report": ["prev_swing_effective 的来源与样本数", "cap 是否 binding（binding ⇒ 振幅项当前不承重 ⇒ 记「条款退化」）", "起手闸真机 A1/A2 + 判别力成对控制 + leak-selfcheck"],
+      "decision_rule": "rc=0 ⇔ 派生值有唯一可复算来源 ∧ 起手闸真机连续 2 次 PASS ∧ 判别力成对控制两支都翻面 ∧ leak-selfcheck rc=0。"
+    },
+    "C3 候选⑤ 前置器耗时口径": {
+      "scope": "`eval/rover/r589/precond-r585..r588.json`（铁律 11 前置器在 project 布局下的重跑）",
+      "predeclared_conflict": "R589 轮志**内部自相矛盾**：C3 行写「完成 4/4」、诚实边界行写「本轮重跑未全数完成」；master R590 候选⑤ 沿用后者。**以在盘证据为准**（4 份 JSON + 4 份 log + 终态判决行均在盘、时间戳单调推进）⇒ 判 **4/4 完成**，冲突如实记一行。",
+      "deliverable": "只读时间戳复算每轮耗时（**墙钟一律只作信息字段，不作红绿判据**）+ 「只读轮抽样复跑」替代口径（抽样 ≥1 轮真跑 ∧ 其余取各轮自身已登记读数）+ fail-closed 条件（抽样轮 rc 与已登记 rc 不符 ⇒ 判数据面异常，全量重跑）。"
+    },
+    "C4 候选③ 判据面入册（文档）": {
+      "target": "`docs/external-reference-harness.md` §12（v2 章节保留不动）新增 §12.3「质量判据 v3」",
+      "machine_checks": [
+        "文档含 v3 标题 ∧ v2 标题仍在",
+        "v3 章节写明「整题全对率（58/58）」+「按族分列」两面",
+        "写入「跨版本禁相减（只并列）」字样",
+        "v2 的**判决面作废登记**显式（v2 仍可引用为用例级参照，但不再作主判据）"
+      ],
+      "honest_boundary_required": "v3 的首次行使 = R589（已发生）⇒ 本节为**事后入册**，不得回写成「预注册」；跨版本禁相减。"
+    },
+    "C5 只读性": {
+      "metric": "`~/.agentframework/harness/runs/{r585..r588}` 全树文件 sha256 清单，本轮前后一致",
+      "decision_rule": "before==after ⇒ PASS 否则 rc=2（器具缺陷：本器写到了只读面）"
+    },
+    "C6 形式门禁（若动登记表/证据则必跑）": {
+      "cmd": "env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR dotnet test src/agent.tests/agentframework.tests.csproj --filter \"FullyQualifiedName~VerificationForm|FullyQualifiedName~SkillGeneralization|FullyQualifiedName~DevPlanDocRef\" --nologo -v q",
+      "note": "本轮预期**零 src/ 改动、零登记表改动** ⇒ 依 R588/R589 同处置，不为只读轮造 `owner_round=R590` 的 capability 登记行；登记表若未动则该门为**保形核对**，仍跑一次。"
+    }
+  },
+  "evidence_scope": {
+    "write_face": ["eval/rover/r590/", "eval/capability/kpi.jsonl", "docs/reports/", "docs/external-reference-harness.md", "docs/improvements.md"],
+    "readonly_face": ["~/.agentframework/harness/runs/{r585..r588}/**", "eval/rover/r585..r588/**", "eval/rover/r589/**"]
+  },
+  "criterion_version": "质量判据 v3（本轮入册）/ v2（保留，判决面作废登记）",
+  "honest_boundaries_predeclared": [
+    "零新跑次 ⇒ **不宣称任何质量或成本降幅/增益**；所有读数与 R585–R588 各轮单窗读数**并列不相减**。",
+    "形态相关性为**只读相关**，不构成因果；样本 36，若为一侧全有/全无则相关系数不可估，须如实记「不可估」而非报 0。",
+    "候选①（直进产品侧修复 / 换更长题面）**待用户放行**，本轮不推进、不产出交付物。",
+    "墙钟/耗时只作信息字段，不作判据。",
+    "R589 的 C8/NO_ARTIFACT 单例结论**不翻案**；本轮只做出现率普查（扩大样本面）。"
+  ]
+}
