@@ -1,0 +1,138 @@
+{
+ "round": "R589",
+ "criterion": "C9",
+ "mode": "read-only codex adapter per-call classification",
+ "instrument": "eval/rover/r589/codex_cost_cause_r589.py",
+ "rounds": [
+  {
+   "round": "r587",
+   "dump": true,
+   "dump_files": 17,
+   "runs_tagged": 3,
+   "calls_total": 17,
+   "tool_hist": {
+    "exec_command": 13,
+    "write_stdin": 1
+   },
+   "calls_without_tool": 3,
+   "write_stdin_calls": 1,
+   "write_stdin_share_of_calls": 0.0588,
+   "write_stdin_segments_n": 1,
+   "write_stdin_segment_lens": [
+    1
+   ],
+   "write_stdin_max_segment": 1,
+   "tokens": {
+    "prompt_total": 150360,
+    "cache_hit_total": 139776,
+    "cache_miss_total": 10584,
+    "completion_total": 8364,
+    "prompt_median_per_call": 8781
+   },
+   "write_stdin_tokens": {
+    "prompt_total": 10831,
+    "cache_hit_total": 10624,
+    "completion_total": 61,
+    "share_of_prompt": 0.072,
+    "share_of_completion": 0.0073
+   },
+   "per_window_calls": {
+    "w160#1": {
+     "calls": 7,
+     "prompt": 63642,
+     "completion": 2994
+    },
+    "w161#1": {
+     "calls": 5,
+     "prompt": 44171,
+     "completion": 2825
+    },
+    "w162#1": {
+     "calls": 4,
+     "prompt": 33529,
+     "completion": 1583
+    },
+    "None#None": {
+     "calls": 1,
+     "prompt": 9018,
+     "completion": 962
+    }
+   },
+   "completion_const_probe": {
+    "write_stdin_completion_values": [
+     61
+    ],
+    "note": "同一值反复出现 = yield 轮询（每次只取一条 yield，输出极短）"
+   }
+  },
+  {
+   "round": "r588",
+   "dump": true,
+   "dump_files": 68,
+   "runs_tagged": 3,
+   "calls_total": 68,
+   "tool_hist": {
+    "exec_command": 64,
+    "write_stdin": 6
+   },
+   "calls_without_tool": 2,
+   "write_stdin_calls": 6,
+   "write_stdin_share_of_calls": 0.0882,
+   "write_stdin_segments_n": 1,
+   "write_stdin_segment_lens": [
+    6
+   ],
+   "write_stdin_max_segment": 6,
+   "tokens": {
+    "prompt_total": 1261783,
+    "cache_hit_total": 1230592,
+    "cache_miss_total": 31191,
+    "completion_total": 37470,
+    "prompt_median_per_call": 14800.5
+   },
+   "write_stdin_tokens": {
+    "prompt_total": 76756,
+    "cache_hit_total": 75648,
+    "completion_total": 385,
+    "share_of_prompt": 0.0608,
+    "share_of_completion": 0.0103
+   },
+   "per_window_calls": {
+    "w163#1": {
+     "calls": 14,
+     "prompt": 147713,
+     "completion": 4547
+    },
+    "None#None": {
+     "calls": 3,
+     "prompt": 67602,
+     "completion": 590
+    },
+    "w164#1": {
+     "calls": 11,
+     "prompt": 120965,
+     "completion": 4509
+    },
+    "w165#1": {
+     "calls": 40,
+     "prompt": 925503,
+     "completion": 27824
+    }
+   },
+   "completion_const_probe": {
+    "write_stdin_completion_values": [
+     61,
+     80
+    ],
+    "note": "同一值反复出现 = yield 轮询（每次只取一条 yield，输出极短）"
+   }
+  }
+ ],
+ "ratio_r588_over_r587": {
+  "calls": 4.0,
+  "prompt_total": 8.392,
+  "completion_total": 4.48
+ },
+ "verdict": "写侧定因：两轮真值臂均**单一工具族**（exec_command + write_stdin），差异全部落在**调用数**（17 → 68，×4.00），而 write_stdin（yield 轮询）占比 5.9% → 8.8%；命名口径提示该增量来自**长命令 yield 轮询**，非模型侧生成量（completion ×4.48）。",
+ "rc": 0
+}

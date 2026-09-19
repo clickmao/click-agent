@@ -1,0 +1,69 @@
+{
+ "round": "R589",
+ "criterion": "C8",
+ "mode": "read-only charlevel element-delete bisect",
+ "target": "r587/w162/agentD-r3",
+ "instrument": "eval/rover/r589/charlevel_bisect_r589.py",
+ "span": {
+  "start_char": 1034,
+  "block_chars": 16223,
+  "balanced": false,
+  "r588_ledger_span": [
+   1034,
+   16223,
+   false
+  ],
+  "span_matches_r588": true
+ },
+ "parse": {
+  "ok": false,
+  "fail_char_in_block": 6321,
+  "err": "Expecting property name enclosed in double quotes: line 1 column 6322 (char 6321)",
+  "r588_fail_char": 6321,
+  "fail_char_matches_r588": true
+ },
+ "elements_top_n": 6,
+ "elements_truncated": true,
+ "bisect_log": [
+  {
+   "depth": 0,
+   "elems_n": 6,
+   "truncated": true,
+   "fail_char": 6321,
+   "err": "Expecting property name enclosed in double quotes: line 1 column 6322 (char 6321)",
+   "singles_ok": 0
+  },
+  {
+   "nc_far_elem_keeps_failing": true,
+   "far_span": [
+    75,
+    601
+   ]
+  },
+  {
+   "depth": 1,
+   "elems_n": 0,
+   "truncated": true,
+   "fail_char": 5541,
+   "err": "Expecting property name enclosed in double quotes: line 1 column 5542 (char 5541)",
+   "singles_ok": 0
+  }
+ ],
+ "single_delete_candidates_n": 0,
+ "single_delete_candidates": [],
+ "minimal_delete_set": [],
+ "minimal_delete_set_cardinality": 0,
+ "minimal_delete_set_labels": [],
+ "minimal_ok": false,
+ "controls": {
+  "positive_single_delete_recovers": false,
+  "negative_far_delete_still_fails": [
+   true
+  ],
+  "has_teeth": false,
+  "source_untouched_after": true
+ },
+ "source_sha256_before_after_equal": true,
+ "claim": "仅定位块内元素，不宣称产品能力；不改判据、不改产品源码。",
+ "rc": 1
+}

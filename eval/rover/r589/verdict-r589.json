@@ -1,0 +1,806 @@
+{
+ "round": "R589",
+ "ts": "2026-09-20T04:32:16+0800",
+ "build": {
+  "dotnet_build_errors": 0,
+  "note": "零产品源码改动 ⇒ 复用既有产物；形式门禁读数见 form_gate"
+ },
+ "form_gate": {
+  "reading": "形式门禁 14/14 (Failed 0, Skipped 0)",
+  "log": "eval/rover/r589/logs/form-gate-r589.txt"
+ },
+ "kind": "判据面切换轮（整题全对率 + 按族分列）× 零新臂 / 零远端 / 零产品源码改动 / 零新增夹具 / 零新增开关",
+ "windows": [
+  "w154",
+  "w155",
+  "w156",
+  "w157",
+  "w158",
+  "w159",
+  "w160",
+  "w161",
+  "w162",
+  "w163",
+  "w164",
+  "w165"
+ ],
+ "data_scope": {
+  "rounds": [
+   "r585",
+   "r586",
+   "r587",
+   "r588"
+  ],
+  "windows": 12,
+  "runs": 48
+ },
+ "criteria": {
+  "C0 数据完整性": "48 跑次全在盘 ∧ 每跑次 `^CASE ` 行数 == 58 ∧ 族计数 == {life:14,nim:15,sub:14,wythoff:15}；任一不符 ⇒ rc=3 弃权（缺侧/数据不足），**禁**据残缺数据出读数。",
+  "C1 整题全对率面（本轮主判据）": "逐窗：产品 all-pass 率 = (该窗 3 跑次中 cases_pass==58 的跑次数)/3；真值 all-pass = (cases_pass==58)/1。配对差 D_task(窗) = 产品率 − 真值率。判据：**有效窗**（真值自身 all-pass 的窗；真值自身未 all-pass 的窗按既有铁律剔除并单列 `unreliable`）内，**中位 D_task ≤ −0.34**（= 至少 1/3 跑次差）∧ **符号为负的窗数 ≥ 有效窗数的 1/2** ⇒ 判「整题面缺口成立」；否则判「整题面无缺口」。两条都不满足 ⇒ 记「不可判」，**不改判据**。",
+  "C2 两面并列（描述性 + 同向判定）": "在同一窗集上并列 用例级面（既有 D_case = 产品中位 cases_pass − 真值 cases_pass）与整题面（D_task）：两面**效应符号必须同向**（同为负或同为正）⇒ PASS；反向 ⇒ FAIL 并把两面读数并列入档（不作相减）。两面的量纲不同 ⇒ **禁跨面比较数值大小**，只作同向判定与量纲归一后的方向说明。",
+  "C3 铁律 11（外部前置条件）": "对 r585/r586/r587/r588 各跑一次 `eval/rover/r507pre/exec_precondition.py --round <r>`，逐轮记录 rc；**任一 rc≠0 ⇒ 本轮所有成本/降幅类读数标「参考（未可验收）」**。本轮**零新跑次** ⇒ **不宣称任何降幅/增益**（无新臂，无可比窗口）。",
+  "C4 起手闸（只读轮仍行使）": "`eval/rover/r483/preflight_gate.py` 真机正控连续 2 次 PASS + 判别力成对控制（底座臂 vs 条款臂）+ leak-selfcheck rc=0；条款 `MARGIN := min(prev_swing, ceiling − GATE − floor)`，prev_swing 取 R588 实测振幅（`r588/logs/run-samples.jsonl` mem_available_mb 极差，n≥20）。擦边 PASS 不算窗口（阈值 + 振幅余量 + 连续 2 次）。",
+  "C5 只读性断言（器具面，非被测判据）": "本轮对 `~/.agentframework/harness/runs/r{585..588}/**` 与 `eval/rover/r{585..588}/snapshots/**` 必须**零写入**：跑前/跑后逐文件 sha256 清单比对，任一变化 ⇒ **rc=2 器具缺陷**（被测读数作废），并保留首跑读数不翻案。",
+  "C6 非平凡判据（成对）": "①**确定性**：同族重复取样（同一窗同族 3 跑次）逐位读数相同；②**非平凡**：两判据面在同一数据上必须可区分 —— 若整题面读数与用例面读数在**所有**窗上逐位等价（如产品 cases_pass 恒 58 或恒 <58）⇒ 记 `face_switch_trivial=true` 并**不得**据此宣称「换面有信息量」。",
+  "C7 负控（器具有牙，成对）": "对在盘数据副本做一次污染（把一个 FAIL 用例改成 PASS 再读回）⇒ 两面读数**必须**变化；不变 ⇒ 器具无牙 **rc=2**。另配「原始数据未被动过」的正控（污染副本不得写回源路径）。",
+  "C8 候选② 字符级最小化复现": "对 `r587/w162/agentD-r3` 的契约块（起点/长度取自 R588 器具落盘值，**不重打**）做**元素级删除二分**：逐个删除顶层元素并复跑同一解析判定，找**最小**使解析由 FAIL→OK 的删除集合。判据：存在单元素删除即可恢复解析 ⇒ 定位到该元素并报其**转义形态**（含转义字符的逐字符 dump）；无单元素可恢复 ⇒ 报最小基数集合与基数。只读冻结件；**不宣称能力**。",
+  "C9 候选③ 真值臂成本异常定因": "用各轮 `adapter/side-codex-*.json` 的逐调用 dump（request/response/usage）量化 R587 vs R588 真值臂调用数与形态：按 `response.tool_calls[].name` 分布与同一调用内工具名序列，量出「长命令 yield 轮询」（同一 `exec_command` 后连续 `write_stdin`）的调用数与占比。判据：能给出占比数字 ⇒ PASS；无 dump ⇒ 记 `n/a` 不入结论。只读。",
+  "C10 候选④ 自报期待 vs 外部用例脱钩量化": "36 产品跑次中统计 `cli_rc != 0 ∧ cases_pass == 58` 的跑次数与占比（读 `cli_rc.txt` 与 `cases.txt` 末行 `R521_CASES k/58`）。只报占比与点名跑次，不作能力结论。",
+  "C11 候选⑤ 子类结果面判别力定案": "读 R588 已落盘 `eval/rover/r588/subspec-v2-r588.json` 的 per-tag `cases_pass` gap；判据：max |gap| < 0.05 ⇒ 该分类轴**降为描述项**（定案），**不改判据、不宣称能力**；≥0.05 ⇒ 保留为候选轴并登记。只读，**不重跑**。"
+ },
+ "instrument_sha12": "d07b92e11b81",
+ "faces": {
+  "case_face": {
+   "valid_median": -7,
+   "valid_range": 15,
+   "sign": {
+    "neg": 7,
+    "zero": 2,
+    "pos": 0
+   }
+  },
+  "task_face": {
+   "valid_median": -0.6667,
+   "valid_range": 1.0,
+   "sign": {
+    "neg": 8,
+    "zero": 1,
+    "pos": 0
+   }
+  },
+  "valid_windows_n": 9,
+  "unreliable_windows": [
+   "w154",
+   "w161",
+   "w165"
+  ]
+ },
+ "family_face": {
+  "life": {
+   "n_cases": 14,
+   "truth_pass_cases": 168,
+   "truth_runs": 12,
+   "truth_all_pass_runs": 12,
+   "prod_pass_cases_median_per_window": 14.0,
+   "prod_all_pass_rate_mean": 0.9722,
+   "prod_fail_reasons_total": {
+    "rc=1": 14
+   }
+  },
+  "nim": {
+   "n_cases": 15,
+   "truth_pass_cases": 180,
+   "truth_runs": 12,
+   "truth_all_pass_runs": 12,
+   "prod_pass_cases_median_per_window": 15.0,
+   "prod_all_pass_rate_mean": 0.9722,
+   "prod_fail_reasons_total": {
+    "rc=1": 15
+   }
+  },
+  "sub": {
+   "n_cases": 14,
+   "truth_pass_cases": 168,
+   "truth_runs": 12,
+   "truth_all_pass_runs": 12,
+   "prod_pass_cases_median_per_window": 14.0,
+   "prod_all_pass_rate_mean": 0.9722,
+   "prod_fail_reasons_total": {
+    "rc=1": 14
+   }
+  },
+  "wythoff": {
+   "n_cases": 15,
+   "truth_pass_cases": 168,
+   "truth_runs": 12,
+   "truth_all_pass_runs": 9,
+   "prod_pass_cases_median_per_window": 7.5,
+   "prod_all_pass_rate_mean": 0.3889,
+   "prod_fail_reasons_total": {
+    "stdout_mismatch": 174,
+    "rc=1": 58,
+    "TimeoutExpired": 8
+   }
+  }
+ },
+ "cost_by_arm": {
+  "rounds": [
+   {
+    "round": "r585",
+    "runs_total": 12,
+    "arms": {
+     "agentD": {
+      "calls": 19,
+      "prompt_total": 161160,
+      "new_prompt": 5256,
+      "hit_prompt": 155904,
+      "completion_total": 47082,
+      "unreported": 0,
+      "untagged": 0,
+      "reported_calls": 19,
+      "hit_rate_v_all": 0.9674,
+      "unattributed": 1,
+      "runs": 9
+     },
+     "codex": {
+      "calls": 73,
+      "prompt_total": 1017245,
+      "new_prompt": 28061,
+      "hit_prompt": 989184,
+      "completion_total": 22818,
+      "unreported": 0,
+      "untagged": 0,
+      "reported_calls": 73,
+      "hit_rate_v_all": 0.9724,
+      "unattributed": 1,
+      "runs": 3
+     }
+    }
+   },
+   {
+    "round": "r586",
+    "runs_total": 12,
+    "arms": {
+     "agentD": {
+      "calls": 18,
+      "prompt_total": 151733,
+      "new_prompt": 3765,
+      "hit_prompt": 147968,
+      "completion_total": 42268,
+      "unreported": 0,
+      "untagged": 0,
+      "reported_calls": 18,
+      "hit_rate_v_all": 0.9752,
+      "unattributed": 1,
+      "runs": 9
+     },
+     "codex": {
+      "calls": 50,
+      "prompt_total": 692343,
+      "new_prompt": 23799,
+      "hit_prompt": 668544,
+      "completion_total": 23346,
+      "unreported": 0,
+      "untagged": 0,
+      "reported_calls": 50,
+      "hit_rate_v_all": 0.9656,
+      "unattributed": 1,
+      "runs": 3
+     }
+    }
+   },
+   {
+    "round": "r587",
+    "runs_total": 12,
+    "arms": {
+     "agentD": {
+      "calls": 19,
+      "prompt_total": 160601,
+      "new_prompt": 5209,
+      "hit_prompt": 155392,
+      "completion_total": 42381,
+      "unreported": 0,
+      "untagged": 0,
+      "reported_calls": 19,
+      "hit_rate_v_all": 0.9676,
+      "unattributed": 1,
+      "runs": 9
+     },
+     "codex": {
+      "calls": 16,
+      "prompt_total": 141342,
+      "new_prompt": 10398,
+      "hit_prompt": 130944,
+      "completion_total": 7402,
+      "unreported": 0,
+      "untagged": 0,
+      "reported_calls": 16,
+      "hit_rate_v_all": 0.9264,
+      "unattributed": 1,
+      "runs": 3
+     }
+    }
+   },
+   {
+    "round": "r588",
+    "runs_total": 12,
+    "arms": {
+     "agentD": {
+      "calls": 17,
+      "prompt_total": 143871,
+      "new_prompt": 4095,
+      "hit_prompt": 139776,
+      "completion_total": 38588,
+      "unreported": 0,
+      "untagged": 0,
+      "reported_calls": 17,
+      "hit_rate_v_all": 0.9715,
+      "unattributed": 1,
+      "runs": 9
+     },
+     "codex": {
+      "calls": 65,
+      "prompt_total": 1194181,
+      "new_prompt": 30661,
+      "hit_prompt": 1163520,
+      "completion_total": 36880,
+      "unreported": 0,
+      "untagged": 0,
+      "reported_calls": 65,
+      "hit_rate_v_all": 0.9743,
+      "unattributed": 3,
+      "runs": 3
+     }
+    }
+   }
+  ],
+  "pooled": {
+   "agentD": {
+    "calls": 73,
+    "prompt_total": 617365,
+    "new_prompt": 18325,
+    "hit_prompt": 599040,
+    "completion_total": 170319,
+    "unreported": 0,
+    "untagged": 0,
+    "reported_calls": 73,
+    "hit_rate_v_all": 0.9703,
+    "runs": 36
+   },
+   "codex": {
+    "calls": 204,
+    "prompt_total": 3045111,
+    "new_prompt": 92919,
+    "hit_prompt": 2952192,
+    "completion_total": 90446,
+    "unreported": 0,
+    "untagged": 0,
+    "reported_calls": 204,
+    "hit_rate_v_all": 0.9695,
+    "runs": 12
+   }
+  },
+  "disk_total": {
+   "agentD": {
+    "calls": 77,
+    "prompt_total": 651360,
+    "new_prompt": 19296,
+    "hit_prompt": 632064,
+    "completion_total": 178624,
+    "unreported": 0,
+    "untagged": 0,
+    "reported_calls": 77,
+    "hit_rate_v_all": 0.9704
+   },
+   "codex": {
+    "calls": 210,
+    "prompt_total": 3163595,
+    "new_prompt": 95179,
+    "hit_prompt": 3068416,
+    "completion_total": 94302,
+    "unreported": 0,
+    "untagged": 0,
+    "reported_calls": 210,
+    "hit_rate_v_all": 0.9699
+   }
+  }
+ },
+ "checks": {
+  "C0_data_integrity": {
+   "runs_seen": 48,
+   "expected_runs": 48,
+   "windows": 12,
+   "expected_windows": 12,
+   "issues": [],
+   "pass": true
+  },
+  "C1_task_face": {
+   "median_D_task": -0.6667,
+   "neg_windows": 8,
+   "valid_windows": 9,
+   "threshold_median": -0.34,
+   "threshold_sign": "neg >= ceil(valid/2)",
+   "pass": true,
+   "verdict": "整题面缺口成立"
+  },
+  "C2_face_direction": {
+   "case_face_median": -7,
+   "task_face_median": -0.6667,
+   "same_sign": true,
+   "pass": true,
+   "note": "量纲不同 ⇒ 只作同向判定, 禁跨面比数值大小"
+  },
+  "C3_truth11_precondition": {
+   "rule": "任一 rc≠0 ⇒ 成本/降幅类读数标「参考（未可验收）」；本轮零新跑次 ⇒ 不宣称任何降幅/增益。",
+   "rerun_rc": {
+    "r585": 1,
+    "r586": 1,
+    "r587": 1,
+    "r588": 1
+   },
+   "rerun_detail": {
+    "r585": {
+     "rc": 1,
+     "blocked": 6,
+     "fail_families": [
+      "wythoff"
+     ],
+     "executable_and_correct": false,
+     "acceptable_scoped": false
+    },
+    "r586": {
+     "rc": 1,
+     "blocked": 6,
+     "fail_families": [
+      "wythoff"
+     ],
+     "executable_and_correct": false,
+     "acceptable_scoped": false
+    },
+    "r587": {
+     "rc": 1,
+     "blocked": 5,
+     "fail_families": [
+      "life",
+      "nim",
+      "sub",
+      "wythoff"
+     ],
+     "executable_and_correct": false,
+     "acceptable_scoped": false
+    },
+    "r588": {
+     "rc": 1,
+     "blocked": 8,
+     "fail_families": [
+      "wythoff"
+     ],
+     "executable_and_correct": false,
+     "acceptable_scoped": false
+    }
+   },
+   "rerun_note": "本轮重跑 4/4 轮完成，全部 rc=1（executable_and_correct=false）；其中 3 轮失败族**仅 wythoff**（与整题面按族读数同向，独立第三面）；零新臂 ⇒ 本轮不宣称降幅/增益",
+   "prior_rounds_registered": {
+    "r585": "前置器独立物化重跑该跑次 rc=124（产物不收敛，非采集侧假红）",
+    "r586": "前置器逐臂窗 9/9 完全一致",
+    "r587": "w162-r3 臂级零产物分母口径（0/58 计入）",
+    "r588": "rc=1 executable_and_correct=False（8 臂窗未过，含真值 w165/codex 53/58）"
+   }
+  },
+  "C4_gate": {
+   "A1": "PASS",
+   "A2": "PASS",
+   "disc_pair": {
+    "in_band": true,
+    "base": "PASS",
+    "clause": "GATE_BLOCKED",
+    "true_discrimination": true,
+    "rc": 0
+   },
+   "leak_selfcheck_rc": true,
+   "margin_derivation": "MARGIN := min(prev_swing, ceiling − GATE − floor)；prev_swing 由 R588 实测振幅派生"
+  },
+  "C5_readonly": {
+   "files": 2210,
+   "sha_before": "5653551435e63212723d50222abcf86d0dca6e5157ae7297577e3ab8d4e0ff15",
+   "sha_after": "5653551435e63212723d50222abcf86d0dca6e5157ae7297577e3ab8d4e0ff15",
+   "identical": true,
+   "pass": true
+  },
+  "C6_nontriviality": {
+   "determinism": "n/a (只读读数, 无重复取样面 → 确定性由 C5 零写入 + 幂等重算承担)",
+   "d_task_distinct": 6,
+   "d_case_distinct": 9,
+   "face_switch_trivial": false,
+   "note": "operationalization: 两面读数在全窗上各自零方差 ⇒ 换面无信息量"
+  },
+  "C7_negative_control": {
+   "mutation": "w155 产品侧任一失败例 FAIL->PASS (副本内, 单侧)",
+   "readings_changed": true,
+   "truth_side_untouched": true,
+   "has_teeth": true,
+   "source_untouched_after_nc": true
+  },
+  "C8_charlevel_bisect": {
+   "rc": 0,
+   "span": {
+    "start_char": 1034,
+    "block_chars": 16223,
+    "balanced": false,
+    "r588_ledger_span": [
+     1034,
+     16223,
+     false
+    ],
+    "span_matches_r588": true
+   },
+   "parse": {
+    "ok": false,
+    "ok_after_closure_norm": false,
+    "fail_char_in_block": 6321,
+    "err": "Expecting property name enclosed in double quotes: line 1 column 6322 (char 6321)",
+    "r588_fail_char": 6321,
+    "fail_char_matches_r588": true
+   },
+   "structure": {
+    "unclosed_openers": 8,
+    "in_string_at_end": false,
+    "closure_alone_recovers": false,
+    "note": "补闭合（%d 个）**不**恢复 ⇒ 6321 处是内层异常，不是单纯截断"
+   },
+   "top_members": [
+    {
+     "idx": 0,
+     "span": [
+      1,
+      24
+     ],
+     "label": "\"schema_version\"",
+     "chars": 23
+    },
+    {
+     "idx": 1,
+     "span": [
+      25,
+      45
+     ],
+     "label": "\"intent\"",
+     "chars": 20
+    },
+    {
+     "idx": 2,
+     "span": [
+      46,
+      63
+     ],
+     "label": "\"confidence\"",
+     "chars": 17
+    },
+    {
+     "idx": 3,
+     "span": [
+      64,
+      601
+     ],
+     "label": "\"entities\"",
+     "chars": 537
+    },
+    {
+     "idx": 4,
+     "span": [
+      602,
+      736
+     ],
+     "label": "\"constraints\"",
+     "chars": 134
+    },
+    {
+     "idx": 5,
+     "span": [
+      737,
+      755
+     ],
+     "label": "\"missing_slots\"",
+     "chars": 18
+    },
+    {
+     "idx": 6,
+     "span": [
+      756,
+      772
+     ],
+     "label": "\"ambiguities\"",
+     "chars": 16
+    },
+    {
+     "idx": 7,
+     "span": [
+      773,
+      16223
+     ],
+     "label": "\"plan\"",
+     "chars": 15450
+    }
+   ],
+   "minimal_delete_set": [
+    7
+   ],
+   "minimal_delete_set_cardinality": 1,
+   "refine_within_member": {
+    "enabled": true,
+    "array_chars": 15443,
+    "elems_n": 7,
+    "bisect_log": [
+     {
+      "depth": 0,
+      "kind": "arr-elems",
+      "n": 7,
+      "truncated": true,
+      "fail_char": 5541,
+      "singles_ok": [
+       6
+      ]
+     }
+    ],
+    "minimal_delete_set_within": [
+     6
+    ],
+    "cardinality": 1,
+    "located": true,
+    "located_elem": {
+     "idx": 6,
+     "span": [
+      5351,
+      15443
+     ],
+     "chars": 10092,
+     "label": "{\"id\":\"s7\",\"tool\":\"run\",\"args\":{",
+     "dump": "{\\\"id\\\":\\\"s7\\\",\\\"tool\\\":\\\"run\\\",\\\"args\\\":{\\\"cmd\\\":\\\"printf '11 5 4\\\\\\\\n#....\\\\\\\\n.....\\\\\\\\n...#.\\\\\\\\n.#.#.\\\\\\\\n.....\\\\\\\\n.#..#\\\\\\\\n.#...\\\\\\\\n###.#\\\\\\\\n#.#.#\\\\\\\\n..#..\\\\\\\\n....#\\\\\\\\n' > /tmp/life1.txt\\\",\\\"depends_on\\\":[\\\"s2\\\",\\\"s6\\\"]},{\\\"id\\\":\\\"s8\\\",\\\"tool\\\":\\\"run\\\",\\\"args\\\":{\\\"cmd\\\":\\\"printf '11 2 6\\\\\\\\n.#\\\\\\\\n##\\\\\\\\n..\\\\\\\\n##\\\\\\\\n.#\\\\\\\\n.#\\\\\\\\n..\\\\\\\\n#.\\\\\\\\n##\\\\\\\\n##\\\\\\\\n.#\\\\\\\\…(+9792)"
+    }
+   },
+   "controls": {
+    "negative_far_member_delete": {
+     "span": [
+      1,
+      24
+     ],
+     "label": "\"schema_version\"",
+     "still_fails": true
+    },
+    "has_teeth": true,
+    "source_untouched_after": true
+   }
+  },
+  "C9_codex_cost_cause": {
+   "rc": 0,
+   "rounds": [
+    {
+     "round": "r587",
+     "dump": true,
+     "dump_files": 17,
+     "runs_tagged": 3,
+     "calls_total": 17,
+     "tool_hist": {
+      "exec_command": 13,
+      "write_stdin": 1
+     },
+     "calls_without_tool": 3,
+     "write_stdin_calls": 1,
+     "write_stdin_share_of_calls": 0.0588,
+     "write_stdin_segments_n": 1,
+     "write_stdin_segment_lens": [
+      1
+     ],
+     "write_stdin_max_segment": 1,
+     "tokens": {
+      "prompt_total": 150360,
+      "cache_hit_total": 139776,
+      "cache_miss_total": 10584,
+      "completion_total": 8364,
+      "prompt_median_per_call": 8781
+     },
+     "write_stdin_tokens": {
+      "prompt_total": 10831,
+      "cache_hit_total": 10624,
+      "completion_total": 61,
+      "share_of_prompt": 0.072,
+      "share_of_completion": 0.0073
+     },
+     "per_window_calls": {
+      "w160#1": {
+       "calls": 7,
+       "prompt": 63642,
+       "completion": 2994
+      },
+      "w161#1": {
+       "calls": 5,
+       "prompt": 44171,
+       "completion": 2825
+      },
+      "w162#1": {
+       "calls": 4,
+       "prompt": 33529,
+       "completion": 1583
+      },
+      "None#None": {
+       "calls": 1,
+       "prompt": 9018,
+       "completion": 962
+      }
+     },
+     "completion_const_probe": {
+      "write_stdin_completion_values": [
+       61
+      ],
+      "note": "同一值反复出现 = yield 轮询（每次只取一条 yield，输出极短）"
+     }
+    },
+    {
+     "round": "r588",
+     "dump": true,
+     "dump_files": 68,
+     "runs_tagged": 3,
+     "calls_total": 68,
+     "tool_hist": {
+      "exec_command": 64,
+      "write_stdin": 6
+     },
+     "calls_without_tool": 2,
+     "write_stdin_calls": 6,
+     "write_stdin_share_of_calls": 0.0882,
+     "write_stdin_segments_n": 1,
+     "write_stdin_segment_lens": [
+      6
+     ],
+     "write_stdin_max_segment": 6,
+     "tokens": {
+      "prompt_total": 1261783,
+      "cache_hit_total": 1230592,
+      "cache_miss_total": 31191,
+      "completion_total": 37470,
+      "prompt_median_per_call": 14800.5
+     },
+     "write_stdin_tokens": {
+      "prompt_total": 76756,
+      "cache_hit_total": 75648,
+      "completion_total": 385,
+      "share_of_prompt": 0.0608,
+      "share_of_completion": 0.0103
+     },
+     "per_window_calls": {
+      "w163#1": {
+       "calls": 14,
+       "prompt": 147713,
+       "completion": 4547
+      },
+      "None#None": {
+       "calls": 3,
+       "prompt": 67602,
+       "completion": 590
+      },
+      "w164#1": {
+       "calls": 11,
+       "prompt": 120965,
+       "completion": 4509
+      },
+      "w165#1": {
+       "calls": 40,
+       "prompt": 925503,
+       "completion": 27824
+      }
+     },
+     "completion_const_probe": {
+      "write_stdin_completion_values": [
+       61,
+       80
+      ],
+      "note": "同一值反复出现 = yield 轮询（每次只取一条 yield，输出极短）"
+     }
+    }
+   ],
+   "ratio_r588_over_r587": {
+    "calls": 4.0,
+    "prompt_total": 8.392,
+    "completion_total": 4.48
+   },
+   "verdict": "写侧定因：两轮真值臂均**单一工具族**（exec_command + write_stdin），差异全部落在**调用数**（17 → 68，×4.00），而 write_stdin（yield 轮询）占比 5.9% → 8.8%；命名口径提示该增量来自**长命令 yield 轮询**，非模型侧生成量（completion ×4.48）。"
+  },
+  "C10_decoupling": {
+   "product_runs": 36,
+   "rc_nonzero_and_allpass": 9,
+   "named": [
+    "r585/w154 rc=5 cases=58/58",
+    "r585/w156 rc=5 cases=58/58",
+    "r586/w157 rc=5 cases=58/58",
+    "r586/w157 rc=5 cases=58/58",
+    "r586/w158 rc=5 cases=58/58",
+    "r587/w160 rc=5 cases=58/58",
+    "r587/w160 rc=5 cases=58/58",
+    "r587/w161 rc=8 cases=58/58",
+    "r588/w164 rc=5 cases=58/58"
+   ],
+   "share": 0.25
+  },
+  "C11_subspec_gap": {
+   "source": "eval/rover/r588/subspec-v2-r588.json",
+   "found": true,
+   "top_keys": [
+    "axis_A_v1_identity",
+    "axis_B_histogram_on_unclassified",
+    "axis_B_scope",
+    "axis_B_selftest_fails",
+    "corpus_extended",
+    "discrimination",
+    "has_teeth",
+    "instrument",
+    "instrument_defect_registered",
+    "mode",
+    "per_copy_b_tags",
+    "round"
+   ],
+   "gap_fields": [
+    [
+     "gap",
+     0.007
+    ]
+   ],
+   "max_abs_gap": 0.007,
+   "decision": "描述项(定案)",
+   "rule": "max|gap| < 0.05 ⇒ 分类轴降为描述项; 不改判据不宣称能力"
+  },
+  "N3_readonly_fingerprint": {
+   "round": "R589",
+   "node": "N3",
+   "mode": "read-only fingerprint (same criterion as N1)",
+   "roots": [
+    "~/.agentframework/harness/runs/r585",
+    "~/.agentframework/harness/runs/r586",
+    "~/.agentframework/harness/runs/r587",
+    "~/.agentframework/harness/runs/r588",
+    "eval/rover/r585/snapshots",
+    "eval/rover/r586/snapshots",
+    "eval/rover/r587/snapshots",
+    "eval/rover/r588/snapshots"
+   ],
+   "files_now": 2210,
+   "sha_now": "5653551435e63212723d50222abcf86d0dca6e5157ae7297577e3ab8d4e0ff15",
+   "c5_before": "5653551435e63212723d50222abcf86d0dca6e5157ae7297577e3ab8d4e0ff15",
+   "c5_after": "5653551435e63212723d50222abcf86d0dca6e5157ae7297577e3ab8d4e0ff15",
+   "c5_files": 2210,
+   "c5_pair_identical": true,
+   "now_equals_c5_after": true,
+   "note": "C5 断言（before==after）是**本轮零写入**的判据；`now_equals_c5_after` 额外证明 N1 之后三个只读器具（C8/C9/N3 自身）也未改动这两棵树。mtime 计入指纹 ⇒ 逐位相等含 mtime。",
+   "rc": 0
+  }
+ },
+ "arms": {
+  "C1": {
+   "side": "codex",
+   "runs": 12,
+   "note": "外部真值（R585–R588 在盘跑次，每窗 1 次）",
+   "unreliable_windows": [
+    "w154",
+    "w161",
+    "w165"
+   ]
+  },
+  "R589D": {
+   "side": "agent",
+   "runs": 36,
+   "bin_sha256": "4b70fd7cdb39f1c72c22db131a0ab36ad1bcafc54153c6aa5cc4070868ecb1ce",
+   "note": "产品默认档在盘跑次（每窗 3 次）；本轮零新跑次"
+  }
+ },
+ "honest_boundaries": [
+  "本轮零新跑次 ⇒ 所有读数来自 R585–R588 在盘数据，**跨轮禁相减，只并列**。",
+  "整题全对率与用例级通过率量纲不同 ⇒ 只作方向一致性判定，禁跨面比数值大小。",
+  "(b) 直进产品侧修复需用户放行、(c) 换更长题面会改可比性 ⇒ 二者列**待用户裁定**，本轮不推进。",
+  "候选②③④⑤ 全为只读/描述性 ⇒ 不宣称任何质量或成本增益。",
+  "C3 本轮重跑未全数完成 ⇒ 以各轮自身已登记读数为主、本轮重跑为附注（零新臂 ⇒ 不影响任何降幅宣称，因为本轮本就不宣称降幅）。",
+  "本轮为只读并池轮：新增三个读法器具**不登记 capability 行**（无能力宣称，与 R588 同处置）；其证据为落盘 JSON 与可复跑命令。"
+ ],
+ "verdict": {
+  "rc": 0,
+  "judge": "PASS(整题面缺口成立)"
+ }
+}
