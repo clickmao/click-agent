@@ -1,0 +1,14 @@
+[0] 插件: native-local-file-service available=True
+[1 初始] 盘上 sha=ea7b8c2813027b53 文本="1 alpha\n2 beta\n3 gamma\n"
+[2] agent 读: sha=ea7b8c2813027b53 bytes=23
+[3] 用户改第2行: sha=53df65b517eb00a8
+[4] agent 提交(重叠): outcome=Conflict 冲突=1 盘上 sha 未变=True 备份=<无>
+    冲突块 base[1..2) ours="2 USER" theirs="2 AGENT"
+[5] agent 提交(非重叠): outcome=MergedAuto 盘上="1 USERX\n2 USER\n3 AGENT\n4 appended\n"
+    merged 文本回执="1 USERX\n2 USER\n3 AGENT\n4 appended\n"
+[6] 备份链 1 条:
+    sha=e3b5326f13614afc bytes=34 source=demo-merge blob=e3b5326f13614afc
+[7] 还原最早备份: outcome=Applied 还原前盘上="1 USERX\n2 USER\n3 gamma\n4 appended\n" 逐位等于备份内容=True 还原后备份链=2 条
+[8] 负控 越界路径: outcome=Rejected note=路径越界（超出工作区根），拒绝访问
+[9] 备份库根: .filedb 索引行数=2
+DEMO_DONE root=/tmp/rf0003demo-ecb049bb336944b496eac5e54875f845

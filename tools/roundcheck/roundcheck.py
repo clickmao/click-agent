@@ -278,6 +278,41 @@ def mem_available_mb():
     return -1
 
 
+def busy_procs(patterns):
+    """在飞执行体探测 (P5)。
+
+    按 **argv[0]** 匹配而不是 `pgrep -f` 的整行匹配: 后者会把**调用者自己**的命令行算进去
+    —— 命令串里出现 `agenthost` 字面量就自匹配 ⇒ 假 WARN (R584 实测踩到)。
+    argv[0] 是脚本解释器 (dotnet/python3/mono/java) 时再看 argv[1] (被执行的 dll/脚本路径),
+    这样 `bash -c "... agenthost ..."` 这类包装命令行不会被误判。
+    """
+    me = os.getpid()
+    interpreters = ("dotnet", "python3", "python", "mono", "java")
+    hits = []
+    for name in os.listdir("/proc"):
+        if not name.isdigit():
+            continue
+        pid = int(name)
+        if pid == me:
+            continue
+        try:
+            with io.open("/proc/%d/cmdline" % pid, "rb") as fh:
+                argv = fh.read().decode("utf-8", "replace").split("\0")
+        except OSError:
+            continue
+        argv = [a for a in argv if a.strip()]
+        if not argv:
+            continue
+        targets = [os.path.basename(argv[0])]
+        if os.path.basename(argv[0]).split(".")[0] in interpreters and len(argv) > 1:
+            targets.append(argv[1])
+        for pat in patterns:
+            if any(pat in t for t in targets):
+                hits.append("%s(pid=%d)" % (pat, pid))
+                break
+    return hits
+
+
 def disk_free_gb(path):
     try:
         st = os.statvfs(path)
@@ -306,11 +341,7 @@ def preflight(repo, need_keys, min_avail_mb, min_disk_gb, round_id):
     free = disk_free_gb(repo)
     rep.add("P4_disk_free", "PASS" if free >= min_disk_gb else "FAIL",
             "free=%dGB (闸 %dGB)" % (free, min_disk_gb))
-    busy = []
-    for pat in ("agenthost", "llama-server"):
-        rc, out, _ = sh(["pgrep", "-c", "-f", pat])
-        if out.isdigit() and int(out) > 0:
-            busy.append("%s×%s" % (pat, out))
+    busy = busy_procs(("agenthost", "llama-server"))
     rep.add("P5_no_sibling_load", "WARN" if busy else "PASS",
             ("在飞执行体: %s ⇒ 按同仓并发纪律让行/勿写" % busy) if busy else "无在飞执行体")
     _, claim, _ = sh(["bash", "tools/round_claim.sh", "status"], cwd=repo)
@@ -400,6 +431,11 @@ def selftest():
     if scan_secrets(benign):
         fails.append("假红控制失败: 正常 task- 标识符被误判为 key 面")
 
+    # 假红控制2: P5 在飞执行体探测不得自匹配 —— 调用者自己的命令行里就含 `agenthost` 字面量,
+    # 旧实现 `pgrep -f` 会把自己数进去 (R584 实测假 WARN) ⇒ 必须为 0 命中。
+    if busy_procs(("agenthost", "llama-server")):
+        fails.append("假红控制2失败: P5 自匹配 (调用者自身 cmdline 被当成在飞执行体)")
+
     print(r_bad.render("负控1 错 pin"))
     print(r_ok.render("正控 修 pin"))
     print(r_leak.render("负控2 提交内 key 面"))
@@ -407,7 +443,7 @@ def selftest():
     if fails:
         print("SELFTEST FAIL: " + " | ".join(fails))
         return 1
-    print("SELFTEST PASS (负控 3/3 有牙 + 正控 1/1)")
+    print("SELFTEST PASS (负控 3/3 有牙 + 正控 1/1 + 假红控制 2/2)")
     return 0
 
 

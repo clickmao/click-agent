@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R583",
+ "updated_round": "R584",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -7005,11 +7005,11 @@
     "pin_reason": "archived-per-round",
     "artifact_sha12": "c5d82feffad0",
     "instrument": "tools/roundcheck/roundcheck.py",
-    "instrument_sha12": "0d7cae2c8ae4",
+    "instrument_sha12": "477d53280507",
     "binding": "audit-pin",
     "audited_by_round": "R582"
    },
-   "negative_control": "器具内建 selftest 3 负控: 错 pin ⇒ R4 红 / 提交内 key 面 ⇒ R7 红 / 无提交轮号 ⇒ R2 红;另 1 假红控制: 正常 `task-*` 标识符不得误判为 `sk-` key。"
+   "negative_control": "器具内建 selftest 3 负控: 错 pin ⇒ R4 红 / 提交内 key 面 ⇒ R7 红 / 无提交轮号 ⇒ R2 红;另 2 假红控制: 正常 `task-*` 标识符不得误判为 `sk-` key; P5 在飞执行体探测不得自匹配(旧 `pgrep -c -f` 把调用者自己含 `agenthost` 的命令行算成在飞执行体 ⇒ 假 WARN; R584 起改扫 /proc 按 argv[0]/解释器 argv[1] 匹配)。"
   },
   {
    "id": "r583.shape-face-plane-split",
@@ -7029,6 +7029,25 @@
     "audited_by_round": "R583"
    },
    "negative_control": "① extract_r583.py 内建 3 负控(合成窗口)且全部**有牙**: 命中轮注入 1 条 agent 面调用 ⇒ P1/P2 判红; 把 S0 轮2 伪造成 local_skip ⇒ P4 判红; 抹掉 D 的 degrade 事件 ⇒ P3a/P3b 判红 ⇒ 判据非恒真门; ② 真读数与三个合成窗口的判决形状不同 ⇒ 非恒假; ③ 分层判定的两条独立路径(agent_session 非空 / turn>=1)逐调用一致 ⇒ cross_check_fail=0, 不符即 rc=2 fail-closed(禁当绿)。自捕(同轮登记, 非本行能力面): 形状库**内存剔除不落盘**(degrade 点 ReportOutcome 只改内存 + 同轮重新学习 ⇒ 追加行) ⇒ 库 1→2 行(sha 04ad26a8…), 同源解释 R581 重复行异常; 本轮零产品改动 ⇒ 只登记。"
+  },
+  {
+   "id": "r584.file-plugin-service",
+   "level": "L3",
+   "owner_round": "R584",
+   "capability": "RF0003 文件处理插件服务（用户令逐字: 文件处理也要做成一个插件服务 / 修改前必须备份 / 文件修改竞争(用户再改,agent也在改,diff合并)）。新增 src/agent.files/ 19 文件 1,244 行: LocalFileService(乐观并发 expected_sha + 写前二次核对(TOCTOU) + tmp→File.Move 原子替换 + 进程内 per-path 互斥 + 工作区沙盒(越界拒)) + FileBackupStore(内容寻址 blob + append-only jsonl 索引 + 保留淘汰 + 还原前也备份=可逆) + ThreeWayLineMerge(LCS 锚点⇒双侧 hunk⇒base 坐标归并; 相交且两侧文本相同取一份, 不同⇒冲突块且不写盘) + 插件面(IFileServicePlugin/NativeFileServicePlugin/FileServicePluginRegistry, 与 IImageRenderPlugin 同构; 无可用插件即诚实不可用, 禁止回落无备份裸写)。判据 16/16 绿: 备份必在且=前态 / 备份失败拒写 / 重叠竞争冲突且盘上 sha 未变 / 非重叠自动合并 / 缺基线 StaleBase / 被删不复活 / 关合并拒 / 非文本拒 / 沙盒拒 / 超上限拒 / 保留淘汰+内容寻址去重 / 还原逐位相等 / 并发不丢写 / 合并器结构断言。真机 E2E(真实 FS + 走插件注册表取服务; 日志 eval/rover/r584/r584_e2e_file_service.txt sha12=bafa3dc6a8ba): 重叠⇒Conflict 盘上未变; 非重叠⇒MergedAuto「1 USERX\\n2 USER\\n3 AGENT\\n4 appended\\n」; 还原逐位等于 blob=True; 越界⇒Rejected。闸: build 0 error · 定向 16/16 · 全量 1936/1936(前态 1920+16) · 形式 14/14 · API 基线 +115/−0(115 行全部属 agent.Files, 既有面零改动) · sln 已挂。诚实边界: 只做进程内互斥(跨进程无锁, 靠二次核对+原子替换, 不会静默覆盖但无排队); TOCTOU 窗口无注入式测试; 合并上限 2000 行(超限拒自动合并不降级覆盖); 插入点严格落在改动区内部⇒判冲突(保守); 非 UTF-8 拒改; 尚未接产品路径(Workspace/Orchestrate 写盘点未改)⇒ 不宣称产品行为变更。",
+   "evidence_cmd": "dotnet test src/agent.tests -c Release --filter \"FullyQualifiedName~FileServiceTests\" && cp -r eval/rover/r584/rf0003demo /tmp/rf0003demo && dotnet run -c Release --project /tmp/rf0003demo",
+   "evidence_path": "docs/evidence/RF0001/R584-file-plugin-service.md",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "b30bede559ef",
+    "instrument": "eval/rover/r584/rf0003demo/Program.cs",
+    "instrument_sha12": "dbad5982d6bc",
+    "binding": "audit-pin",
+    "audited_by_round": "R584"
+   },
+   "negative_control": "① 备份失败负控: BackupRoot 指向「文件」下的子目录 ⇒ 备份必失败 ⇒ RequireBackup 判 Rejected 且盘上字节零改动(证明 fail-closed 有牙, 不是「备份可选」); ② 沙盒负控: ../escape.txt ⇒ Rejected(越界有牙); ③ 关合并负控: AllowMerge=false 且现盘变更 ⇒ StaleBase 不写(证明自动合并是显式开关, 非默认静默); ④ 并发负控: 同 ExpectedSha 两次 Apply ⇒ 恰 1 Applied + 1 MergedAuto, 两侧改动都在且备份链 2 条 —— 该判据首跑抓出真缺陷(ApplyAsync 先释放信号量再跑核心 ⇒ 互斥形同虚设, 两次都走快路径), 修复后 16/16; ⑤ 假红控制: 文件服务测试不依赖网络/模型/系统时间窗口 ⇒ 无外部抖动面; ⑥ 本轮器具自捕: roundcheck P5 在飞执行体探测旧实现 `pgrep -c -f` 把调用者自己命令行(含 agenthost 字面量)算成在飞执行体 ⇒ 假 WARN; 改按 /proc argv[0](解释器看 argv[1]) 匹配后 P5 PASS, 并加 selftest 假红控制2(P5 不得自匹配) ⇒ SELFTEST PASS(负控 3/3 + 正控 1/1 + 假红 2/2)。"
   }
  ],
  "aot_check_policy": "release_tag_only",
