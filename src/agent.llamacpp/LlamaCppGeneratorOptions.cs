@@ -30,12 +30,14 @@ public sealed class LlamaCppGeneratorOptions
 
     public static LlamaCppGeneratorOptions FromEnvironment()
     {
-        // R463 (用户钦定改用 3B): 默认权重 = Qwen2.5-3B-Instruct-Q4_K_M —— R462-W 权重档位探针实证
-        //   1.5B-Q4 对「继续下一轮」恒判 S (假跳 14/14) 不承重; 3B 假跳 0/14 且 gen 2 token/次
-        //   (docs/reports/r462-weight-probe.md)。仍可用 AGENTFRAMEWORK_LLM_MODEL 覆盖。
+        // R577 (用户令「用 r1 / 删 3b」): 默认权重 = DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M。
+        //   同源校验: 1,117,320,800 B / sha256 1741e5b2…(= HF LFS oid, 与 r463.deletion-ledger 同值);
+        //   R462-W 同语料同器具复算与旧档逐指标相同 (acc 0.5 / 假跳 14/14 / gen 4418 tok)
+        //   ⇒ 口径 = F2 回退, 不是升级 (eval/rover/r577/arm-r1-requal.json, registry r577.local-gate-model-revert)。
+        //   3B 权重已按令删除, 故此处不再指向它。仍可用 AGENTFRAMEWORK_LLM_MODEL 覆盖。
         var modelPath = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_LLM_MODEL")
             ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                            ".agentframework", "models", "qwen2.5-3b-instruct-q4km.gguf");
+                            ".agentframework", "models", "r1-distill-qwen-1.5b-q4km.gguf");
         var bin = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_LLAMA_BIN");
         return new LlamaCppGeneratorOptions
         {
