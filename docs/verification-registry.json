@@ -6897,25 +6897,44 @@
     "audited_by_round": "R557"
    }
   },
- {
-  "id": "r577.local-gate-model-revert",
-  "level": "L2",
-  "owner_round": "R577",
-  "capability": "本地判别通道权重置换 (用户令「用r1 删3b」, 推翻 R463 选型): 现役 Qwen2.5-3B-Q4 → DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M。① 同源校验: 重下权重 1,117,320,800 B / sha256 1741e5b2d062b07acf048bf0d2c514da = HF LFS oid (R403 探针 registry 读回) 与 r463.deletion-ledger.json 同值 ⇒ 与 R462-W 被测档同源; ② 复算 (同语料 28 条产品实发 prompt / 同器具 bench_r462_w.py / 同权重): acc 0.5 / 假跳 14/14 / 漏跳 0/14 / 未判定 0 / gen 4418 tok / 530.9 s ⇒ 与 R462-W「1.5b-q4」臂逐指标相同 (acc 0.5, false_skip_n 14, miss_skip_n 0, undecided_n 0, unparsed_n 0, gen_truth_sum 4418), 唯一差异 elapsed 530.9 vs 490.5 (+8.2%, 期间并发下载/IO); ③ 起臂前器具前置闸 selftest_r462_w.py 过 28/28 (语料↔产品 dump 逐位命中); ④ 3B 权重 (2,104,932,768 B / sha256 626b4a66…) 已按令删除 ⇒ 本地判别通道无回退档 (若 r1 判错仅剩 skip_rejected_nonack 机械守卫 + 未判定降级远端)。诚实边界: 本置换 = F2 回退 (回到已测不合格档), 不是升级; 生产 config 已改, 生效需下一次构建。",
-  "evidence_cmd": "python3 eval/rover/r462/selftest_r462_w.py && python3 eval/rover/r462/bench_r462_w.py --model ~/.agentframework/models/r1-distill-qwen-1.5b-q4km.gguf --tag r577-r1-requal --port 48790 --ctx 1024 --out eval/rover/r577/arm-r1-requal.json",
-  "evidence_path": "eval/rover/r577/arm-r1-requal.json",
-  "evidence_generated_with": {
-   "evidence_kind": "artifact",
-   "pin_status": "frozen",
-   "pin_reason": "archived-per-round",
-   "artifact_sha12": "9ef4cedcb6e0",
-   "instrument": "eval/rover/r462/bench_r462_w.py",
-   "instrument_sha12": "8a8b895d27dd",
-   "binding": "audit-pin",
-   "audited_by_round": "R577"
+  {
+   "id": "r577.local-gate-model-revert",
+   "level": "L2",
+   "owner_round": "R577",
+   "capability": "本地判别通道权重置换 (用户令「用r1 删3b」, 推翻 R463 选型): 现役 Qwen2.5-3B-Q4 → DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M。① 同源校验: 重下权重 1,117,320,800 B / sha256 1741e5b2d062b07acf048bf0d2c514da = HF LFS oid (R403 探针 registry 读回) 与 r463.deletion-ledger.json 同值 ⇒ 与 R462-W 被测档同源; ② 复算 (同语料 28 条产品实发 prompt / 同器具 bench_r462_w.py / 同权重): acc 0.5 / 假跳 14/14 / 漏跳 0/14 / 未判定 0 / gen 4418 tok / 530.9 s ⇒ 与 R462-W「1.5b-q4」臂逐指标相同 (acc 0.5, false_skip_n 14, miss_skip_n 0, undecided_n 0, unparsed_n 0, gen_truth_sum 4418), 唯一差异 elapsed 530.9 vs 490.5 (+8.2%, 期间并发下载/IO); ③ 起臂前器具前置闸 selftest_r462_w.py 过 28/28 (语料↔产品 dump 逐位命中); ④ 3B 权重 (2,104,932,768 B / sha256 626b4a66…) 已按令删除 ⇒ 本地判别通道无回退档 (若 r1 判错仅剩 skip_rejected_nonack 机械守卫 + 未判定降级远端)。诚实边界: 本置换 = F2 回退 (回到已测不合格档), 不是升级; 生产 config 已改, 生效需下一次构建。",
+   "evidence_cmd": "python3 eval/rover/r462/selftest_r462_w.py && python3 eval/rover/r462/bench_r462_w.py --model ~/.agentframework/models/r1-distill-qwen-1.5b-q4km.gguf --tag r577-r1-requal --port 48790 --ctx 1024 --out eval/rover/r577/arm-r1-requal.json",
+   "evidence_path": "eval/rover/r577/arm-r1-requal.json",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "9ef4cedcb6e0",
+    "instrument": "eval/rover/r462/bench_r462_w.py",
+    "instrument_sha12": "8a8b895d27dd",
+    "binding": "audit-pin",
+    "audited_by_round": "R577"
+   },
+   "negative_control": "先过自检才起臂 (selftest sha12 f7ccbdab615f, 语料 sha12 cd075177be5b, 28/28 逐位命中); 若复算与 R462-W 同级读数不一致, 则换装不同源或器具/语料漂移 —— 本次 6/6 指标逐位相同 ⇒ 器具与语料可复现, 换装同源"
   },
-  "negative_control": "先过自检才起臂 (selftest sha12 f7ccbdab615f, 语料 sha12 cd075177be5b, 28/28 逐位命中); 若复算与 R462-W 同级读数不一致, 则换装不同源或器具/语料漂移 —— 本次 6/6 指标逐位相同 ⇒ 器具与语料可复现, 换装同源"
- }
+  {
+   "id": "r577.gate-model-candidate-probe",
+   "level": "L2",
+   "owner_round": "R577",
+   "capability": "本地判别位候选档探针 (答用户问「有推荐能力达标的模型么, 要求推理够快」): 同器具 (bench_r462_w.py sha12 8a8b895d27dd) / 同语料 (28 条产品实发 prompt, sha12 cd075177be5b) / 同 ctx=1024 / 同 greedy+关 cache_prompt 口径, 跨权重读数 ⇒ ① Qwen2.5-1.5B-Instruct-Q4_K_M (1,117,320,736 B, 本地 sha256 6a1a2eb6… = HF x-linked-etag, x-linked-size 同值 ⇒ 同源) acc 0.5357 / 假跳 13/14 / 漏跳 0/14 / 未判定 0 / gen 2 token 每次 / 255.5 s (9.1 s 每轮) ⇒ 不达标, 且失败模式与 r1 同族同尺寸同形 (恒判 S); ② LFM2.5-VL-3B-Q4_K_M (已在盘 lfm25vl3b/, 零下载, arch lfm2 本运行期支持) acc 1.000 / 假跳 0/14 / 漏跳 0/14 / 未判定 0 / S 精度 1.0 / S 召回 1.0 / gen 2 token 每次 / 442.2 s (15.8 s 每轮) ⇒ 达标; ③ 与 r1 (acc 0.500 / 假跳 14/14) 同窗对比 ⇒ 该判别位能力门槛落 **3B 档** (1.5B 两个形态 — instruct 与 reasoning-distill — 皆 13~14/14 假跳, 3B 两个形态皆 0/14); ④ 「关思考救 r1」结构性无效: `--reasoning-budget 0` / env LLAMA_ARG_THINK_BUDGET 只对 template_supports_thinking=true 的模板挂载 (server-context.cpp:1463), 而 r1 模板 (2,081 字符) 中 enable_thinking / reasoning_effort / reasoning_content 出现 **0 次** ⇒ 预算查询不生效; 实跑佐证: 该 env 下 gen 仍为 146/58/120/70 token (CoT 未关, 4 条后终止) ⇒ 要关 CoT 只能改 prompt 前缀 (R1 的 ` thinking\\n\\n\\n\\n` 空思维块) 或 --chat-template-file, 不是改 flag。",
+   "evidence_cmd": "python3 eval/rover/r462/selftest_r462_w.py && python3 eval/rover/r462/bench_r462_w.py --model ~/.agentframework/models/lfm25vl3b/LFM2.5-VL-3B-Q4_K_M.gguf --tag r577-lfm3b-q4 --port 48791 --ctx 1024 --out eval/rover/r577/arm-lfm3b-requal.json && python3 eval/rover/r462/bench_r462_w.py --model ~/.agentframework/models/qwen2.5-1.5b-instruct-q4km.gguf --tag r577-qwen15b-instruct --port 48793 --ctx 1024 --out eval/rover/r577/arm-qwen15b-instruct-requal.json",
+   "evidence_path": "eval/rover/r577/arm-lfm3b-requal.json",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "a4495ab00584",
+    "instrument": "eval/rover/r462/bench_r462_w.py",
+    "instrument_sha12": "8a8b895d27dd",
+    "binding": "audit-pin",
+    "audited_by_round": "R577"
+   },
+   "negative_control": "同器具同语料跨权重, 非恒绿: 1.5B-instruct 在同位得 13/14 假跳 (器具对该失败模式有牙) 而 LFM2.5-3B 得 0/14, 且与 R463 期 3B 读数 (假跳 0/14 / gen 2 每次) 一致 ⇒ 读数由权重决定而非器具/语料漂移; 诚实边界: ① n=28 单臂单窗 (假跳 0/14 的 Wilson 95% 上界 ≈ 20%), 优胜臂复现 n≥3 未做; ② 15.8 s 每轮 = 器具无缓存口径 (cache_prompt=false), 生产会话档 CompletionProfiles 走 CachePrompt=true ⇒ 真机每轮 ≈ 生成 2 token 的时延; ③ 许可证 = LFM Open License v1.0 (年营收 <$10M 免费商用, 超阈需购), 非 Apache-2.0。"
+  }
  ],
  "aot_check_policy": "release_tag_only",
  "aot_check_policy_note": "AOT 编译校验(NativeAOT 发布/0 IL 警告/发布体积)仅在【发布 tag】时执行并登记;非发布轮次的 AOT 结果只作参考证据, 不构成该轮能力的登记依据或等级判定(用户口径 2026-09-13)"
