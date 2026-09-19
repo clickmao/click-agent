@@ -6,7 +6,12 @@
   "mem_available_mb": 2340,
   "gate_mb": 2650,
   "verdict": "RED",
-  "rule_src": "docs/external-reference-harness.md:253 (REQ = GATE_MB 2650 + MARGIN); 连续 2 次 PASS + 极差 ≤50MB + blockers 空"
+  "rule_src": "docs/external-reference-harness.md:253 (REQ = GATE_MB 2650 + MARGIN); 连续 2 次 PASS + 极差 ≤50MB + blockers 空",
+  "mem_observed_range_mb": [
+   2131,
+   2340
+  ],
+  "note": "两处独立采样: 17:38 前=2131MB, 落记录时=2340MB; 均 < 2650 ⇒ 判 RED (摆动不改判)"
  },
  "in_flight_writer": {
   "ownership": "未定 (本 tick 与对侧同时落在 R580 命名空间)",
@@ -87,5 +92,74 @@
   "docs/reports/round-collision-log.jsonl",
   "eval/capability/kpi.jsonl"
  ],
- "next": "R580 (归属者): ①形状通道真机首验 → 闸放行 + 无在飞写者时起测; 本作业下一 tick (18:31) 先读 §7 判 ① 是否已落盘"
+ "next": "R580 (归属者): ①形状通道真机首验 → 闸放行 + 无在飞写者时起测; 本作业下一 tick (18:31) 先读 §7 判 ① 是否已落盘",
+ "dag": {
+  "intent": "本 tick (17:31 触发) 判定主线推进面并推进可无冲突的节点",
+  "nodes": [
+   {
+    "n": "N0 状态读",
+    "edges": [],
+    "parallel": true,
+    "result": "done: §7 尾块=R579-tick / kpi 120 行 / 任务 store=1 作业 interval 60m enabled"
+   },
+   {
+    "n": "N1 写者归属取证",
+    "edges": [
+     "N0"
+    ],
+    "parallel": true,
+    "result": "done: 第二写者会话 snap-6a45f539 (17:32 起) + 7 产品源码未提交 + /tmp/r580* + eval/rover/r580/ + RF0001 补充投递证据"
+   },
+   {
+    "n": "N2 起手闸采样",
+    "edges": [
+     "N0"
+    ],
+    "parallel": true,
+    "result": "done: MemAvailable 2131→2340MB < 2650 ⇒ RED"
+   },
+   {
+    "n": "N3 真机臂 (①/②)",
+    "edges": [
+     "N1 无在飞写者",
+     "N2 闸 PASS"
+    ],
+    "parallel": false,
+    "result": "skipped(前置双红)"
+   },
+   {
+    "n": "N4 契约轴 (③)",
+    "edges": [
+     "N1"
+    ],
+    "parallel": false,
+    "result": "skipped(对侧拥有)"
+   },
+   {
+    "n": "N5 器具 (④)",
+    "edges": [
+     "N1 无在飞写者",
+     "N2 无 dotnet test 在跑"
+    ],
+    "parallel": false,
+    "result": "skipped(器具编辑禁令: 面在飞不可改)"
+   },
+   {
+    "n": "N6 台账落盘 + 提交",
+    "edges": [
+     "N1",
+     "N2"
+    ],
+    "parallel": false,
+    "result": "done: tick 记录 + kpi 行 + 冲突行 (772ffb5, 3 文件 93 行)"
+   }
+  ],
+  "restart_edges": [
+   "N3 (①形状通道真机首验): 闸 PASS ∧ 无在飞写者 ⇒ 下 tick 重取",
+   "N5 (④器具): 需无在飞写者窗口"
+  ],
+  "not_restarted": [
+   "N0/N1/N2 已闭合, 不重跑"
+  ]
+ }
 }
