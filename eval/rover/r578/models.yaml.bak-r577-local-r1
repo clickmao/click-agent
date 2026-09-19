@@ -64,28 +64,22 @@ balance_schemes:
     note: GET + Bearer; 返回 balance_infos[].currency(CNY)/total_balance (实测, 非 USD)
 
 # ==============================================
-# 本地判别通道 (R578, 用户钦定「那就用lfm2.5」)
+# 本地判别通道 (R577, 用户钦定: 换 r1 / 删 3B)
 # 口径: 这不是 R351 移除的「本地加载 LLM 推理/对话」; 而是计划节点 —— 用本地小模型对
 #       真假信息判别 (挂载 role 额外数据), 把「无新增诉求」的轮次挡在远端 API 之外。
 #       主指标 = 每轮任务总 token 下降 (主要是不必要的 LLM API 请求少了)。
-# 依据(本轮): 同器具 (eval/rover/r462/bench_r462_w.py sha12 8a8b895d27dd) / 同 28 条产品
-#       实发 prompt (sha12 cd075177be5b) / 同 ctx=1024 跨权重复算 —— LFM2.5-VL-3B-Q4_K_M
-#       acc 1.000 / 假跳 0/14 / 漏跳 0/14 / gen 2 token·次 / 15.8 s·次 (442 s 全量);
-#       同窗对照: Qwen2.5-1.5B-Instruct 假跳 13/14 (acc 0.5357)、r1-1.5B 假跳 14/14
-#       (acc 0.500) ⇒ 该判别位能力门槛落 3B 档 (1.5B 两形态皆不达标)。
-#       证据: eval/rover/r577/arm-lfm3b-requal.json、arm-qwen15b-instruct-requal.json;
-#       台账: docs/verification-registry.json#r578.local-gate-model-lfm25
-# 同源: 1,674,455,072 B / sha256 2436cf4b…8884 (= 目录内官方 SHA256SUMS 同值;
-#       HF LFS x-linked-etag + x-linked-size 同值, 经 hf-mirror 取回)
-# 产品形状: 产品档参数 (ctx=4608 / -t 2 / f32 KV / --jinja) 装载 6 s / health ok /
-#       RSS 2,643 MB (available 1,620 MB) ⇒ 3.6 GiB 机器可装载; chat 路径 content 直接
-#       回字母 (2 token), 不落 reasoning_content (R577 r1 的 content 为空即此位缺陷)。
-# 权重文件: ~/.agentframework/models/lfm25vl3b/LFM2.5-VL-3B-Q4_K_M.gguf
-#       (R577 装回的 r1 权重 1,117,320,800 B 留在盘上未删 —— 用户本轮未令删除)
+# 依据(历史): R462-W 权重档位探针 (docs/reports/r462-weight-probe.md) 曾判此 1.5B-Q4 不合格
+#       (「继续下一轮」恒判 S, 假跳 14/14, acc 0.500) ⇒ R463 用户令改用 3B。
+# R577: 用户重申「用 r1 删 3B」⇒ 按 R463 台账 sha 重下并校验同源
+#       (1,117,320,800 B / sha256 1741e5b2…) 后换回; 同语料同器具复算读数落
+#       eval/rover/r577/arm-r1-requal.json (口径 = F2 回退, 已声明)。
+# 权重文件: ~/.agentframework/models/r1-distill-qwen-1.5b-q4km.gguf
+#       (原 3B 权重 2,104,932,768 B / sha256 626b4a66… 已按用户令删除, 见
+#        eval/verification-registry.json#r577.local-gate-model-revert)
 # ==============================================
 local:
-  model_path: /home/agentuser/.agentframework/models/lfm25vl3b/LFM2.5-VL-3B-Q4_K_M.gguf
-  context_size: 4608     # K2b 复用需 ≥4224 前缀; LFM2.5-VL-3B (arch lfm2, 文本塔) 实测 RSS 2,643 MB @4608
+  model_path: /home/agentuser/.agentframework/models/r1-distill-qwen-1.5b-q4km.gguf
+  context_size: 4608     # K2b 复用需 ≥4224 前缀; r1 1.5B f32 KV ≈ 170 MB @4608
   parallel: 1            # R430: 显式 1 (禁多 slot)
   gpu_layers: 0
   max_tokens: 512        # 与门判 LocalGenerationRequest.MaxTokens 对齐

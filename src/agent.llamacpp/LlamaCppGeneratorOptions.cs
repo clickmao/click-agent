@@ -30,14 +30,16 @@ public sealed class LlamaCppGeneratorOptions
 
     public static LlamaCppGeneratorOptions FromEnvironment()
     {
-        // R577 (用户令「用 r1 / 删 3b」): 默认权重 = DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M。
-        //   同源校验: 1,117,320,800 B / sha256 1741e5b2…(= HF LFS oid, 与 r463.deletion-ledger 同值);
-        //   R462-W 同语料同器具复算与旧档逐指标相同 (acc 0.5 / 假跳 14/14 / gen 4418 tok)
-        //   ⇒ 口径 = F2 回退, 不是升级 (eval/rover/r577/arm-r1-requal.json, registry r577.local-gate-model-revert)。
-        //   3B 权重已按令删除, 故此处不再指向它。仍可用 AGENTFRAMEWORK_LLM_MODEL 覆盖。
+        // R578 (用户令「那就用lfm2.5」): 默认权重 = LFM2.5-VL-3B-Q4_K_M (arch lfm2, 此处只用文本塔)。
+        //   同源校验: 1,674,455,072 B / sha256 2436cf4b…8884 (= 目录内官方 SHA256SUMS;
+        //   HF LFS x-linked-etag / x-linked-size 同值) ⇒ 已核, 非同名换装。
+        //   选型依据 (同器具 8a8b895d27dd / 同 28 条产品实发 prompt): acc 1.000 / 假跳 0/14 /
+        //   漏跳 0/14 / gen 2 token·次; 同窗对照 1.5B-instruct 13/14 假跳、r1 14/14 假跳
+        //   (eval/rover/r577/arm-lfm3b-requal.json, registry r578.local-gate-model-lfm25)。
+        //   R577 装回的 r1 权重仍在盘上未删 (用户本轮未令删除), 可用 AGENTFRAMEWORK_LLM_MODEL 覆盖。
         var modelPath = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_LLM_MODEL")
             ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                            ".agentframework", "models", "r1-distill-qwen-1.5b-q4km.gguf");
+                            ".agentframework", "models", "lfm25vl3b", "LFM2.5-VL-3B-Q4_K_M.gguf");
         var bin = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_LLAMA_BIN");
         return new LlamaCppGeneratorOptions
         {

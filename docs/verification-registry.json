@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R577",
+ "updated_round": "R578",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -6934,6 +6934,25 @@
     "audited_by_round": "R577"
    },
    "negative_control": "同器具同语料跨权重, 非恒绿: 1.5B-instruct 在同位得 13/14 假跳 (器具对该失败模式有牙) 而 LFM2.5-3B 得 0/14, 且与 R463 期 3B 读数 (假跳 0/14 / gen 2 每次) 一致 ⇒ 读数由权重决定而非器具/语料漂移; 诚实边界: ① n=28 单臂单窗 (假跳 0/14 的 Wilson 95% 上界 ≈ 20%), 优胜臂复现 n≥3 未做; ② 15.8 s 每轮 = 器具无缓存口径 (cache_prompt=false), 生产会话档 CompletionProfiles 走 CachePrompt=true ⇒ 真机每轮 ≈ 生成 2 token 的时延; ③ 许可证 = LFM Open License v1.0 (年营收 <$10M 免费商用, 超阈需购), 非 Apache-2.0。"
+  },
+  {
+   "id": "r578.local-gate-model-lfm25",
+   "level": "L2",
+   "owner_round": "R578",
+   "capability": "本地判别通道权重换装 (用户令「那就用lfm2.5」, 承 R577 的 r1 档): 现役 r1-distill-1.5B-Q4 → LFM2.5-VL-3B-Q4_K_M (arch lfm2, 本处只用文本塔; 在盘零下载)。接线面两处 = config/base/models.yaml 的 local.model_path + src/agent.llamacpp/LlamaCppGeneratorOptions.cs 默认权重 (从环境覆盖 AGENTFRAMEWORK_LLM_MODEL 不变)。选型依据 (同器具 sha12 8a8b895d27dd / 同 28 条产品实发 prompt sha12 cd075177be5b / ctx=1024): LFM2.5-VL-3B acc 1.000 / 假跳 0/14 / 漏跳 0/14 / 未判定 0 / gen 2 token·次 / 15.8 s·次 (442 s 全量); 同窗对照 Qwen2.5-1.5B-Instruct 假跳 13/14 (acc 0.5357, 9.1 s·次) 与 r1-1.5B 假跳 14/14 (acc 0.500, gen 158) ⇒ 该判别位能力门槛 落 3B 档, 1.5B 两形态皆不达标。产品形状复核 (产品档参数 ctx=4608 / -t 2 / f32 KV / --jinja / -b 512 -ub 512): 装载 6 s / health ok / RSS 2,643 MB (available 1,620 MB, 3.6 GiB 机器可装载); 同一 453 字 verbatim prompt 走双路径 4/4 正确 (/completion 与产品真实调用形态 /v1/chat/completions 各 4/4), 其中 msg='继续下一轮' 在 chat 路径判 P (正是 R577 r1 恒判 S 的那一类); chat 路径 content 直接回字母、2 token, 不落 reasoning_content (r1 该位 content 为空)。",
+   "evidence_cmd": "python3 eval/rover/r462/selftest_r462_w.py && python3 eval/rover/r462/bench_r462_w.py --model ~/.agentframework/models/lfm25vl3b/LFM2.5-VL-3B-Q4_K_M.gguf --tag r577-lfm3b-q4 --port 48791 --ctx 1024 --out eval/rover/r577/arm-lfm3b-requal.json && bash eval/rover/r578/r578_hf_probe.sh && bash eval/rover/r578/r578_prod_ctx4608_smoke_lfm.sh && bash eval/rover/r578/r578_prod_shape.sh",
+   "evidence_path": "eval/rover/r577/arm-lfm3b-requal.json",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "a4495ab00584",
+    "instrument": "eval/rover/r462/bench_r462_w.py",
+    "instrument_sha12": "8a8b895d27dd",
+    "binding": "audit-pin",
+    "audited_by_round": "R578"
+   },
+   "negative_control": "同源非同名: 1,674,455,072 B / sha256 2436cf4bbac9a16e5dfc7799a140e583c2bc15958f4b24a391f8a8b10ecb8884 = 目录内官方 SHA256SUMS 同值 = HF LFS x-linked-etag, x-linked-size 同值 (hf-mirror 取回; 直连 huggingface.co 本机不可达 http=000) ⇒ 是换装不是同名替换。器具负控: 同器具同语料下 1.5B-instruct 得 13/14 假跳 (非恒绿 ⇒ 器具对该失败模式有牙)。诚实边界: ① n=28 单臂单窗 (假跳 0/14 的 Wilson 95% 上界 ≈ 20%), 优胜臂复现 n≥3 未做; ② 产品形状复核只取 4 条 (2 S + 2 P), 非 28 条全量; ③ 仍无回退档等价物 —— r1 权重留在盘上未删 (用户本轮未令删除) 但实测不达标, 真回退只能回 Qwen2.5-3B (需重下 2.0 GB); ④ 15.8 s·次 是无缓存口径 (cache_prompt=false), 生产会话档 CompletionProfiles 走 CachePrompt=true。"
   }
  ],
  "aot_check_policy": "release_tag_only",
