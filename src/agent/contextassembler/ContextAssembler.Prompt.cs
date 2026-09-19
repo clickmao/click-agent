@@ -241,12 +241,7 @@ public partial class ContextAssembler : IContextAssembler
     /// </summary>
     private bool ShouldSearchWeb(string message)
     {
-        var searchIndicators = new[] 
-        { 
-            "最新", "今天", "当前", "now", "latest", "recent",
-            "搜索", "search", "查找", "find",
-            "什么是", "what is", "how to", "怎么", "如何"
-        };
+        var searchIndicators = Array.Empty<string>();
         
         return searchIndicators.Any(i => 
             message.Contains(i, StringComparison.OrdinalIgnoreCase));

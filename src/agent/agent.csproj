@@ -50,6 +50,9 @@
          本地推理由 agent.llamacpp 提供 —— 零 P/Invoke 的「进程 + loopback HTTP」边界 (跨平台)。
          原 ../agent.embedcpu (纯托管 BERT 前向) 退役。 -->
     <ProjectReference Include="../agent.llamacpp/agent.llamacpp.csproj" />
+    <!-- 闸族系重建 (用户令 2026-09-19): nlp -> 结构化数据 -> 闸族系 -> 本地执行。
+         判定依据一律走 agent.nlp (fastText 语言标签 + o200k 分词), 不再有中文词表。 -->
+    <ProjectReference Include="../agent.nlp/agent.nlp.csproj" />
   </ItemGroup>
 
   <ItemGroup>

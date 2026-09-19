@@ -10,6 +10,19 @@
 > 数据时效 (测试数/批号/评测口径)、版本引用一致性、死链检查; **禁止只改局部不做整体校验**。
 > 空间位置相邻但语义不同段的错挂 (如旧版本标题下挂新数据) 视同违例。
 
+## R575 · 2026-09-19 · 状态: **完成（33 红收口: 全量套件 1900/1900 绿; 起点 11 方法/33 例红）** · 主题: **回补机制接线（W1/W2/W3）—— 判定面「结构护栏 + `agent.nlp.NlpGate` 回补库」零词表收口 + 端口/语料重生成**
+
+- 承接: R573（foreground, 22/33 转换, 未提交产品改动）· R574-tick（read-only 复核: 工作区 33 例红 × 提交态 5 例红, `NlpGate` 已实现零消费者）。用户令（R573 引, 逐字）: 「33红全部要改为现有机制，否则你这么多天的努力全白费了」。
+- **W1 判定面**: `TurnGateJudge.IsPureRepeat` = `IsRepeatShape`（长度/白名单字符集/无问号）∧ **回补库命中**；`LocalParaphraseChannel.IsPureParaphrase` = `IsParaphraseShape` ∧ ¬复述(⑤) ∧ 回补命中；守卫 ⑥ 动作声明面 = 回补库 `claim` 面（按 token 学习）；`NlpGate` 补丁**按面隔离**（`<face>\t<signature>`；面 = gate/repeat/para/claim）。
+- **W2 生产回补点**（防孤岛）: 远端轮成功 ⇒ `TurnGateJudge.LearnOnSuccess(message.Content, llmResponse.Success)`（唯一写入点; Skip 轮不回补; 族外输入不登记 ⇒ 回补只在白名单族内生效）。
+- **W3 判据**: 11 个方法改**双侧断言**（无补丁 ⇒ 交远端 ∧ 回补命中 ⇒ 本地面成立）; 「无补丁」= **显式空集**（不读进程级回补库 ⇒ 与执行顺序无关）。3 行期望值语义变更已逐行登记（`重来一遍/再来一次` 由「表外不吸收」改为「回补即吸收」，语义仍正确）。
+- **真机读数**: 聚焦面（4 类 148 例）**Failed 0/Passed 148**; 全量 **Failed 0/Passed 1900**; 端口 `--selftest` PASS（ack 13 / repeat 15 / para 8）; API 基线 **+16 行 / −0 行**（纯增，复跑绿）。
+- **真实流量组成（state.db 只读复算, 规则变更 ⇒ 强制重生成语料）**: 机械放行占比 0.7549 → **0.6509**（−10.4 pt，删词面信号的代价 ⇒ 该部分轮改走本地 r1 字母判官）; 残余 0.1467 → 0.2545; **真实可跳面仍 0.0000**（未变）; 真实轮「形状上可被回补」计数 **0**（反事实上界 = 0）。
+- 器具自捕: R468 端口源路径 `LocalGenerationPort.cs` 已不存在（文件改名 ⇒ 端口**静默失效**，`--selftest` 即 `FileNotFoundError`）⇒ 重钉真源 + 增**零词表 fail-closed 断言**（源码重现词表 ⇒ 端口停）。
+- 【诚实边界】① 守卫 ⑥ 无回补时**不覆盖**（只钉不误杀，不冒充有覆盖）; ② `MechanicalPass` 覆盖面 −10.4 pt 未补偿; ③ 本轮零真机远端调用 ⇒ **不宣称任何 token 降幅**; ④ 回补库默认路径 `data/nlp/gate-patches.txt`，单测不写该文件。
+- 【下轮候选 (R576)】① 守卫 ⑥ 动作声明面回补点（从 LLM 轮/评审学习声明词面）② R571-② 契约修复预算轴第二窗集（≥25 跑次/臂）或按天花板冻结 + 写死重开条件 ③ R572-③ 起手闸把会话工具子进程并入判据。
+- 证据: `docs/evidence/RF0001/R575-replenish-wiring.md` · 台账行 `eval/capability/kpi.jsonl`（R575）· 器具 `eval/rover/r468/{gate_rules.py,real_traffic_classify.py,real-traffic-corpus.jsonl}`。
+
 ## R570 · 2026-09-19 · 状态: **未达成（铁律 11 前置器 rc=1；预注册 A3「质量不降」实测 FAIL）· 收口已落地** · 主题: **早停轴（既有开关 `AGENTFRAMEWORK_R1_EARLY_STOP_PFAIL` 0 vs 2）同窗单变量前沿读数 · 步数面回仓 · 器具面自捕两件（派生件语法门落地）**
 
 - 窗口/臂: 6 新窗 `w143..w148` × 3 臂（codex 真值 `C1` / 轴=0 `R570E0` / 轴=2 `R570E2`）× 58 例；零产品源码改动、零新增夹具、零新增开关；冻结件同枚 AOT 二进制 sha `320d0eb17e709d15` + 题集 sha `e0c667c2a313c04b`。

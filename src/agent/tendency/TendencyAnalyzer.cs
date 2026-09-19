@@ -33,10 +33,10 @@ public class TendencyAnalyzer : ITendencyAnalyzer
     // 预定义风格
     private static readonly Dictionary<string, string[]> StyleKeywords = new()
     {
-        { "detailed", new[] { "详细", "完整", "说明", "explain", "documentation" } },
-        { "concise", new[] { "简洁", "简短", "精炼", "concise", "brief" } },
-        { "with_docs", new[] { "注释", "文档", "comment", "xml", "md" } },
-        { "code_only", new[] { "代码", "实现", "code", "only" } },
+        { "detailed", Array.Empty<string>() },
+        { "concise", Array.Empty<string>() },
+        { "with_docs", Array.Empty<string>() },
+        { "code_only", Array.Empty<string>() },
     };
     
     public TendencyAnalyzer() : this("data/tendency") { }

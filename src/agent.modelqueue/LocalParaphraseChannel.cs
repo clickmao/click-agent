@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Threading;
+using agent.nlp;
 
 namespace agent.modelqueue;
 
@@ -48,7 +49,11 @@ public static class LocalParaphraseChannel
     /// 否则「闸关了不会吸收」只是接线处的口头承诺, 不可机检。
     /// </summary>
     public static bool ShouldAbsorb(string? userMessage, bool enabled)
-        => enabled && IsPureParaphrase(userMessage);
+        => ShouldAbsorb(userMessage, enabled, null);
+
+    /// <summary>带补丁集合的纯函数形态 (机检/差分器具注入; 空 ⇒ 读回补库)。</summary>
+    public static bool ShouldAbsorb(string? userMessage, bool enabled, IReadOnlyCollection<string>? patches)
+        => enabled && IsPureParaphrase(userMessage, patches);
 
     // ─────────────────────────────────────────────────────────────────────────
     // ① 族判据: 「同义改写族」= 只要求把上一条答复**换一种表达**, 不含新诉求
@@ -58,18 +63,9 @@ public static class LocalParaphraseChannel
     /// 改写族白名单字符集 (改写标记 + 指代词的全部用字)。任何集合外字符 ⇒ 不是纯改写。
     /// 纪律 (承 R465): 白名单**只含表达方式用字**, 不含任何内容字 ⇒ 内容字一律落到远端。
     /// 注: 与 <see cref="TurnGateJudge"/> 的复述族字符集存在字面重叠 (说/讲/一/遍/来) —
-    /// 两族的**区分靠标记 + 互斥判据**, 不靠字符集互斥 (见 <see cref="IsPureParaphrase"/> 内注释)。
+    /// 两族的**区分靠回补面 + 互斥判据**, 不靠字符集互斥 (见 <see cref="IsPureParaphrase"/> 内注释)。
     /// </summary>
     private const string FamilyChars = "换个种法说讲表述措辞方式别另其不同把这一遍句话来用写的给我吧下了呢啊呀哦重新";
-
-    /// <summary>完整改写标记 (穷举; 表外一律不吸收)。</summary>
-    private static readonly string[] Markers =
-    {
-        "换个说法", "换一个说法", "换一种说法", "换种说法",
-        "换个表述", "换一种表述", "换种表述", "另一种说法", "另一种表述",
-        "换个讲法", "换一种讲法", "换个方式说", "换种方式说", "用别的方式说",
-        "重新表述", "改个说法", "换个措辞", "换一种措辞",
-    };
 
     /// <summary>
     /// R498: 「同义改写族」结构确认 —— 用户只要求把上一条答复**换一种说法**重新表述。
@@ -77,14 +73,28 @@ public static class LocalParaphraseChannel
     ///   ① 归一化 (去标点/空白/符号) 后长度 ≤16 ⇒ 长句必然携带新信息, 不吸收;
     ///   ② 无问号 ⇒ 疑问句永远走远端;
     ///   ③ 每字符都属 <see cref="FamilyChars"/> ⇒ 任何内容字/数字/ASCII 字母立即 false;
-    ///   ④ 归一化串含**完整改写标记** (表外不吸收);
+    ///   ④ 归一化串**命中回补库** (R575: 由 LLM 成功轮回补, 零词表; 表外 ⇒ 交远端);
     ///   ⑤ **与复述族互斥** —— <see cref="TurnGateJudge.IsPureRepeat"/> 为真 ⇒ 本判 false。
     ///      (两族语义不同: 复述 = 原样重来, 改写 = 换表达。互斥由**判据**保证, 不依赖字符集巧合;
-    ///       调用方也以「复述判据在前」保证优先级, 本条件是双保险。)
+    ///       调用方也以「复述判据在前」保证优先级, 本条件是双保险; 补丁按面隔离 ⇒ 同一形状不会两面同真。)
     /// 用途限制: 本判只允许**前置门直接 Skip**, 且本地消化必须是**受 <see cref="Guard"/> 约束的本地生成**;
     /// 调用方必须让 <see cref="TurnGateJudge.MechanicalPass"/> 优先于本判 (新诉求/疑问/长文本永不被吸收)。
     /// </summary>
-    public static bool IsPureParaphrase(string? userMessage)
+    public static bool IsPureParaphrase(string? userMessage) => IsPureParaphrase(userMessage, null);
+
+    /// <inheritdoc cref="IsPureParaphrase(string?)"/>
+    /// <param name="patches">机检/差分器具注入的补丁集合 (空 ⇒ 读回补库)。</param>
+    public static bool IsPureParaphrase(string? userMessage, IReadOnlyCollection<string>? patches)
+        => IsParaphraseShape(userMessage)
+           && !TurnGateJudge.IsPureRepeat((userMessage ?? string.Empty).Trim(), patches)   // ⑤ 族互斥
+           && NlpGate.IsPatched((userMessage ?? string.Empty).Trim(),
+                                NlpGate.FaceParaphrase, patches);                          // ④ 回补库命中
+
+    /// <summary>
+    /// 结构面 (与回补无关): 长度 ≤32 ∧ 去标点后 ≤16 字且**每字符都属改写白名单** ∧ 无问号。
+    /// 回补面只能在**族内**加强 (与复述族同形; R575 回补点按本判决定登记哪一面)。
+    /// </summary>
+    public static bool IsParaphraseShape(string? userMessage)
     {
         var m = (userMessage ?? string.Empty).Trim();
         if (m.Length == 0 || m.Length > 32) return false;
@@ -99,10 +109,7 @@ public static class LocalParaphraseChannel
         if (n.Length is 0 or > 16) return false;                                    // ① 有界
         foreach (var ch in n)                                                        // ③ 白名单字符集
             if (FamilyChars.IndexOf(ch) < 0) return false;
-        if (TurnGateJudge.IsPureRepeat(m)) return false;                             // ⑤ 族互斥
-        foreach (var marker in Markers)                                              // ④ 完整改写标记
-            if (n.Contains(marker, StringComparison.Ordinal)) return true;
-        return false;
+        return true;
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -150,15 +157,12 @@ public static class LocalParaphraseChannel
     public const double MaxLengthRatio = 2.5;
 
     /// <summary>
-    /// 动作声明词 (本地改写轮**没有做任何工作** ⇒ 原文没有的动作声明不得凭空出现; R489 同源教训)。
-    /// 只查「原文没有而输出有」的方向 ⇒ 原文本身的声明不受影响。
+    /// 动作声明面 (R575): 原为 19 条中文/英文声明词的**静态表**, 词表删除后改由**回补库**承担
+    /// (`NlpGate` 的 `claim` 面, 按 token 学习): 输出里出现「回补为动作声明的 token」且原文没有 ⇒ 拒。
+    /// 零词表 = 无开发期预制规则; 无补丁 ⇒ 本面不覆盖 (诚实边界: 该面只由回补驱动, 见报告)。
+    /// 扫描窗口 (输出侧 token 数上限)。
     /// </summary>
-    private static readonly string[] ClaimWords =
-    {
-        "已完成", "已部署", "已提交", "已运行", "已测试", "已验证", "已修改", "已删除",
-        "已写入", "已执行", "已安装", "已推送", "已发布", "已启动", "已停止", "已创建",
-        "搞定了", "处理好了", "已经做了",
-    };
+    private const int ClaimTokenScan = 64;
 
     /// <summary>
     /// R498 改写守卫 (纯函数, 可机检)。逐条穷举 (R503 修归因: **破几条报几条**, 语义不变 —— 任一条破即拒):
@@ -167,12 +171,16 @@ public static class LocalParaphraseChannel
     ///   ③ 输出无思考链/代码围栏泄漏 —— r1 会把推理写进 content (R413 实测, 直接回显 = 泄漏推理);
     ///   ④ **标识符守恒**: 原文里的标识符必须逐个出现在输出中 (大小写不敏感), 少一个即拒;
     ///   ⑤ **标识符禁增**: 输出里的标识符必须都来自原文, 多一个即拒 (凭空造出 = 幻觉);
-    ///   ⑥ **动作声明禁增**: 原文没有的动作声明词出现在输出里即拒;
+    ///   ⑥ **动作声明禁增**: 原文没有的动作声明词出现在输出里即拒 (词面 = 回补库 `claim` 面, 零静态表);
     ///   ⑦ **长度带** [0.4, 2.5]。
     /// 诚实边界 (写进报告, 不冒充「语义等价已证明」): 本守卫检的是**结构不变量** (标识符/声明词/长度),
     /// 不是语义等价 —— 语义改写正确性**未被本守卫覆盖**, 只由「同网格人工质量细读」取证。
     /// </summary>
-    public static ParaphraseVerdict Guard(string? sourceReply, string? output)
+    public static ParaphraseVerdict Guard(string? sourceReply, string? output) => Guard(sourceReply, output, null);
+
+    /// <inheritdoc cref="Guard(string?, string?)"/>
+    /// <param name="claimPatches">⑥ 的动作声明词面补丁集合 (空 ⇒ 读回补库; 机检/差分器具注入用)。</param>
+    public static ParaphraseVerdict Guard(string? sourceReply, string? output, IReadOnlyCollection<string>? claimPatches)
     {
         var src = (sourceReply ?? string.Empty).Trim();
         if (src.Length == 0) return Reject("source_empty");                          // ① 前置: 原文空 ⇒ 余下各条均不可判
@@ -205,10 +213,10 @@ public static class LocalParaphraseChannel
                 added.Add(tok);
         if (added.Count > 0) faults.Add("identifier_added:" + JoinBounded(added));
 
-        var claims = new List<string>();                                             // ⑥ 动作声明禁增
-        foreach (var claim in ClaimWords)
-            if (text.Contains(claim, StringComparison.Ordinal) && !src.Contains(claim, StringComparison.Ordinal))
-                claims.Add(claim);
+        var claims = new List<string>();                                             // ⑥ 动作声明禁增 (回补面)
+        foreach (var token in TextSignal.KeyTokens(text, ClaimTokenScan))
+            if (NlpGate.IsPatched(token, NlpGate.FaceClaim, claimPatches) && !src.Contains(token, StringComparison.Ordinal))
+                claims.Add(token);
         if (claims.Count > 0) faults.Add("claim_added:" + JoinBounded(claims));
 
         var ratio = (double)text.Length / src.Length;                                // ⑦ 长度带

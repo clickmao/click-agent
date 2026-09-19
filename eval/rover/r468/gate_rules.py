@@ -2,25 +2,39 @@
 # -*- coding: utf-8 -*-
 """R468 器具: 门判规则 **源码派生** Python 端口 (禁手抄) + 产品测试期望值自检。
 
-派生源 (单一权威): src/agent.modelqueue/LocalGenerationPort.cs (TurnGateJudge)
-  - AckFamilyChars / RepeatFamilyChars / RepeatMarkers / SubstantiveLengthThreshold
-  - QuestionSignals / RequestSignals / CorrectionSignals
-期望值源 (第二源): src/agent.tests/LocalTurnGateTests.cs 的 InlineData (G31 认可族 / G35 纯复述族)
+派生源 (单一权威): `src/agent.modelqueue/TurnGateJudge.cs` (TurnGateJudge)
+                   `src/agent.modelqueue/LocalParaphraseChannel.cs` (改写族 + 守卫面)
+  - AckFamilyChars / RepeatFamilyChars / FamilyChars / SubstantiveLengthThreshold
+  - **零词表断言**: 若产品源码里重新出现标记/信号词表 (RepeatMarkers / QuestionSignals /
+    RequestSignals / CorrectionSignals / ClaimWords) ⇒ 端口 fail-closed (SystemExit) ⇒
+    强制同步 (R575: 判定面已改为「结构护栏 + 回补库 (`agent.nlp.NlpGate`)」, 端口必须同构)。
+期望值源 (第二源): `src/agent.tests/LocalTurnGateTests.cs` 的 InlineData (G31 认可族 / G35 纯复述族),
+                   以及 `src/agent.tests/R498LocalParaphraseTests.cs` 的改写族 InlineData。
 ⇒ 任一源改变而端口未同步 ⇒ `--selftest` 必红 (防静默漂移)。
+
+补丁面 (回补库) 不在本端口内建模 (签名 = o200k BPE, 只在 C# 侧): 语料行自带 `patch` 声明
+(repeat/para), 端口与 C# 双方**都按该声明**判定 ⇒ 结构护栏两侧同源派生, 补丁面由语料声明注入
+(见 R575 证据文档「差分口径」一节)。
 
 用法: python3 gate_rules.py --selftest            # 双源自检, PASS/FAIL + rc
       from gate_rules import classify, mechanical_ack, is_pure_repeat, mechanical_pass, RULES_META
 """
-import hashlib, io, json, os, re, sys
+import hashlib, io, json, os, re, sys, unicodedata
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-SRC_GATE = os.path.join(ROOT, "src", "agent.modelqueue", "LocalGenerationPort.cs")
+SRC_GATE = os.path.join(ROOT, "src", "agent.modelqueue", "TurnGateJudge.cs")
+SRC_PARA = os.path.join(ROOT, "src", "agent.modelqueue", "LocalParaphraseChannel.cs")
 SRC_TEST = os.path.join(ROOT, "src", "agent.tests", "LocalTurnGateTests.cs")
+SRC_TEST_PARA = os.path.join(ROOT, "src", "agent.tests", "R498LocalParaphraseTests.cs")
+
+# R575 零词表断言: 这些**词表/标记表**符号一旦在产品源码里重现, 端口必须停 (不是静默错判)。
+FORBIDDEN_TABLES = ("RepeatMarkers", "QuestionSignals", "RequestSignals", "CorrectionSignals", "ClaimWords")
 
 
 def _read(p):
+    if not os.path.exists(p):
+        raise SystemExit("派生失败: 源文件不存在 %s" % p)
     return io.open(p, encoding="utf-8").read()
-
 
 
 _ESC = {"n": "\n", "t": "\t", "r": "\r", "\\": "\\", '"': '"', "'": "'"}
@@ -59,15 +73,14 @@ def _int_const(src, name):
     return int(m.group(1))
 
 
-def _array_of_strings(src, name):
-    m = re.search(r'string\[\]\s+%s\s*=\s*\{(.*?)\};' % re.escape(name), src, re.S)
-    if not m:
-        raise SystemExit("派生失败: 找不到数组 %s" % name)
-    return [_unesc(s) for s in re.findall(r'"((?:[^"\\]|\\.)*)"', m.group(1))]
+def _table_symbols(src):
+    """源码里出现的**词表符号** (字段声明面; 注释/字符串不算)。"""
+    body = re.sub(r"///[^\n]*", "", src)
+    return [t for t in FORBIDDEN_TABLES if re.search(r"(?:string\[\]|string\s*\[)\s*%s\s*=" % t, body)]
 
 
 def _inline_cases(test_src, method):
-    """取 LocalTurnGateTests 里指定 Theory 方法的 InlineData("msg", expected) 对。
+    """取指定 Theory 方法的 InlineData("msg", expected) 对。
     边界 = 上一个 [Theory]/[Fact]/public void ⇒ 只取本方法自带的用例块。"""
     m = re.search(r'public void %s\(string msg, bool expect\w*\)' % re.escape(method), test_src)
     if not m:
@@ -79,29 +92,86 @@ def _inline_cases(test_src, method):
             for mm in re.finditer(r'\[InlineData\("((?:[^"\\]|\\.)*)",\s*(true|false)\)\]', region)]
 
 
+def _inline_cases_one(test_src, method):
+    """取单参 Theory (全部期望 True) 的 InlineData("msg") 串。"""
+    m = re.search(r'public void %s\(string msg\)' % re.escape(method), test_src)
+    if not m:
+        raise SystemExit("派生失败: 找不到测试方法 %s" % method)
+    head = test_src[:m.start()]
+    b = max(head.rfind("[Theory]"), head.rfind("[Fact]"), head.rfind("public void "))
+    region = head[b:]
+    return [_unesc(mm.group(1)) for mm in re.finditer(r'\[InlineData\("((?:[^"\\]|\\.)*)"\)\]', region)]
+
+
 _gate_src = _read(SRC_GATE)
+_para_src = _read(SRC_PARA)
 _test_src = _read(SRC_TEST)
+_test_para_src = _read(SRC_TEST_PARA)
+
+for _src, _name in ((_gate_src, SRC_GATE), (_para_src, SRC_PARA)):
+    _found = _table_symbols(_src)
+    if _found:
+        raise SystemExit("派生失败: %s 里重现词表 %s ⇒ 端口与产品判定面已不同构 (先同步本脚本)" % (_name, _found))
 
 ACK_CHARS = _str_const(_gate_src, "AckFamilyChars")
 REPEAT_CHARS = _str_const(_gate_src, "RepeatFamilyChars")
+PARA_CHARS = _str_const(_para_src, "FamilyChars")
 SUBSTANTIVE_LEN = _int_const(_gate_src, "SubstantiveLengthThreshold")
-_m = re.search(r'string\[\]\s+RepeatMarkers\s*=\s*\{(.*?)\};', _gate_src, re.S)
-REPEAT_MARKERS = [_unesc(s) for s in re.findall(r'"((?:[^"\\]|\\.)*)"', _m.group(1))]
-QUESTION_SIGNALS = _array_of_strings(_gate_src, "QuestionSignals")
-REQUEST_SIGNALS = _array_of_strings(_gate_src, "RequestSignals")
-CORRECTION_SIGNALS = _array_of_strings(_gate_src, "CorrectionSignals")
 
 RULES_META = {
-    "gate_source": "src/agent.modelqueue/LocalGenerationPort.cs",
+    "gate_source": "src/agent.modelqueue/TurnGateJudge.cs",
     "gate_source_sha256": hashlib.sha256(_gate_src.encode()).hexdigest(),
+    "para_source": "src/agent.modelqueue/LocalParaphraseChannel.cs",
+    "para_source_sha256": hashlib.sha256(_para_src.encode()).hexdigest(),
     "test_source": "src/agent.tests/LocalTurnGateTests.cs",
     "test_source_sha256": hashlib.sha256(_test_src.encode()).hexdigest(),
-    "repeat_markers_n": len(REPEAT_MARKERS),
-    "question_signals_n": len(QUESTION_SIGNALS),
-    "request_signals_n": len(REQUEST_SIGNALS),
-    "correction_signals_n": len(CORRECTION_SIGNALS),
+    "test_source_para": "src/agent.tests/R498LocalParaphraseTests.cs",
+    "test_source_para_sha256": hashlib.sha256(_test_para_src.encode()).hexdigest(),
+    "zero_word_tables": list(FORBIDDEN_TABLES),
+    "ack_chars_n": len(ACK_CHARS),
+    "repeat_chars_n": len(REPEAT_CHARS),
+    "para_chars_n": len(PARA_CHARS),
     "substantive_len": SUBSTANTIVE_LEN,
+    "patch_faces": ["repeat", "para"],
 }
+
+
+def _is_punct(ch):
+    return unicodedata.category(ch).startswith("P")
+
+
+def _is_symbol(ch):
+    return unicodedata.category(ch).startswith("S")
+
+
+def _normalize(msg, max_raw, max_norm, chars):
+    """C# 结构面共同部分: 去标点/空白/符号 + 问号否决 + 两级长度 + 白名单字符集。"""
+    m = (msg or "").strip()
+    if not m or len(m) > max_raw:
+        return None
+    buf = []
+    for ch in m:
+        if ch in "?？":
+            return None
+        if _is_punct(ch) or ch.isspace() or _is_symbol(ch):
+            continue
+        if ch not in chars:
+            return None
+        buf.append(ch)
+    n = "".join(buf)
+    if len(n) == 0 or len(n) > max_norm:
+        return None
+    return n
+
+
+def is_repeat_shape(msg):
+    """C# IsRepeatShape: len<=24 ∧ 去标点 <=14 字 ∧ 全属复述白名单 ∧ 无问号。"""
+    return _normalize(msg, 24, 14, REPEAT_CHARS) is not None
+
+
+def is_paraphrase_shape(msg):
+    """C# IsParaphraseShape: len<=32 ∧ 去标点 <=16 字 ∧ 全属改写白名单 ∧ 无问号。"""
+    return _normalize(msg, 32, 16, PARA_CHARS) is not None
 
 
 def mechanical_ack(msg):
@@ -121,37 +191,13 @@ def mechanical_ack(msg):
     return n > 0
 
 
-def is_pure_repeat(msg):
-    """C# IsPureRepeat 逐行移植: ① 完整复述标记 ② 去标点后 ≤14 字且字符全属白名单 ③ 无问号。"""
-    m = (msg or "").strip()
-    if not m or len(m) > 24:
-        return False
-    buf = []
-    for ch in m:
-        if ch in "?？":
-            return False
-        if _is_punct(ch) or ch.isspace() or _is_symbol(ch):
-            continue
-        buf.append(ch)
-    n = "".join(buf)
-    if len(n) == 0 or len(n) > 14:
-        return False
-    for ch in n:
-        if ch not in REPEAT_CHARS:
-            return False
-    return any(mk in n for mk in REPEAT_MARKERS)
-
-
 def mechanical_pass(msg):
-    """C# MechanicalPass 逐行移植: 任何疑问/指令/纠正/代码/数字/长文本 ⇒ True (保守走远端)。"""
+    """C# MechanicalPass 逐行移植 (**零词表**): 问号 / 代码或路径符 / 数字 / 长度 ≥ 阈值 ⇒ True (保守走远端)。"""
     if msg is None or msg.strip() == "":
         return True
     m = msg.strip()
     if "?" in m or "？" in m:
         return True
-    for w in QUESTION_SIGNALS + REQUEST_SIGNALS + CORRECTION_SIGNALS:
-        if w in m:
-            return True
     if "`" in m or "/" in m or "\\" in m:
         return True
     if any(ch.isdigit() for ch in m):
@@ -159,25 +205,31 @@ def mechanical_pass(msg):
     return len(m) >= SUBSTANTIVE_LEN
 
 
-def classify(msg):
-    """与产品前置门链同序: MechanicalPass 优先 ⇒ 纯复述 ⇒ 认可族 ⇒ 其余 (非认可短句)。"""
+def is_pure_repeat(msg, patched=False):
+    """C# IsPureRepeat: 结构面 ∧ (**回补库命中**)。零词表 ⇒ 未回补一律 False (交远端)。"""
+    return is_repeat_shape(msg) and bool(patched)
+
+
+def is_pure_paraphrase(msg, faces=()):
+    """C# IsPureParaphrase: 结构面 ∧ ¬复述族(⑤ 互斥) ∧ (**回补库命中** para 面)。"""
+    if not is_paraphrase_shape(msg):
+        return False
+    if is_pure_repeat(msg, "repeat" in (faces or ())):
+        return False
+    return "para" in (faces or ())
+
+
+def classify(msg, faces=()):
+    """与产品前置门链同序: MechanicalPass 优先 ⇒ 纯复述 ⇒ 同义改写 ⇒ 认可族 ⇒ 其余。"""
     if mechanical_pass(msg):
         return "pass"
-    if is_pure_repeat(msg):
+    if is_pure_repeat(msg, "repeat" in (faces or ())):
         return "repeat"
+    if is_pure_paraphrase(msg, faces):
+        return "para"
     if mechanical_ack(msg):
         return "ack"
     return "other"
-
-
-def _is_punct(ch):
-    import unicodedata
-    return unicodedata.category(ch).startswith("P")
-
-
-def _is_symbol(ch):
-    import unicodedata
-    return unicodedata.category(ch).startswith("S")
 
 
 # ---------------- 双源自检 ----------------
@@ -185,24 +237,40 @@ def selftest():
     ok, fails = True, []
     ack_cases = _inline_cases(_test_src, "G31_认可族结构确认")
     rep_cases = _inline_cases(_test_src, "G35_纯复述族结构确认")
+    para_cases = _inline_cases_one(_test_para_src, "改写族_吸收")
     if len(ack_cases) < 5:
         ok = False
         fails.append("G31 InlineData 派生不足 (%d)" % len(ack_cases))
     if len(rep_cases) < 5:
         ok = False
         fails.append("G35 InlineData 派生不足 (%d)" % len(rep_cases))
+    if len(para_cases) < 5:
+        ok = False
+        fails.append("改写族 InlineData 派生不足 (%d)" % len(para_cases))
     for msg, exp in ack_cases:
         got = mechanical_ack(msg)
         if got != exp:
             ok = False
             fails.append("ack(%r) 端口=%s 期望=%s" % (msg, got, exp))
     for msg, exp in rep_cases:
-        got = is_pure_repeat(msg)
+        # 复述族的期望值只有在**回补命中**时才可能为真 (R575 双侧语义) ⇒ 按行期望注入补丁面。
+        got = is_pure_repeat(msg, patched=exp)
         if got != exp:
             ok = False
             fails.append("repeat(%r) 端口=%s 期望=%s" % (msg, got, exp))
+        if is_pure_repeat(msg, patched=False):
+            ok = False
+            fails.append("repeat(%r) 无补丁却判真 (安全方向被破)" % msg)
+    for msg in para_cases:
+        if not is_pure_paraphrase(msg, ("para",)):
+            ok = False
+            fails.append("para(%r) 回补命中却未吸收" % msg)
+        if is_pure_paraphrase(msg, ()):
+            ok = False
+            fails.append("para(%r) 无补丁却吸收 (安全方向被破)" % msg)
     out = {"selftest": "PASS" if ok else "FAIL", "fails": fails,
-           "ack_cases": len(ack_cases), "repeat_cases": len(rep_cases), "rules": RULES_META}
+           "ack_cases": len(ack_cases), "repeat_cases": len(rep_cases),
+           "para_cases": len(para_cases), "rules": RULES_META}
     print(json.dumps(out, ensure_ascii=False, indent=1))
     return 0 if ok else 1
 

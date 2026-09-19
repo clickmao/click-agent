@@ -75,14 +75,32 @@ public static class TurnGateJudge
     /// <summary>
     /// R465: 「纯复述族」结构确认 —— 用户只要求把**上一条答复原样重来**, 不含任何新诉求。
     /// 机械判据 (三道全过才算, 任一道不过 ⇒ false):
-    ///   ① 归一化 (去标点/空白/符号) 后必须含**完整复述标记** (再讲一遍 / 从头再说 / 重复一遍 ...);
-    ///      只含「再讲」「继续」「详细」这类不完整词的**不算** (它们可能要求新内容 ⇒ 走远端)。
+    ///   ① 归一化后的形状必须**命中回补库** (R575: 由 LLM 成功轮回补, 零词表; 表外 ⇒ 交远端);
+    ///      结构面 (字符白名单/长度/无问号) 先于回补面 ⇒ 含内容字的形状永不被吸收。
     ///   ② 归一化后长度 ≤14 且**每个字符都属复述白名单字符集** ⇒ 任何内容字 (细/换/法/增加/命令...) 立即 false。
     ///   ③ 无问号 ⇒ 疑问句永远走远端。
     /// 用途限制: 本判只允许**前置门直接 Skip** (本地消化 = 回放上一条答复原文, 零远端调用);
     /// 调用方必须让 <see cref="MechanicalPass"/> 优先于本判 (新诉求/疑问/长文本永不被吸收)。
     /// </summary>
-    public static bool IsPureRepeat(string? userMessage)
+    public static bool IsPureRepeat(string? userMessage) => IsPureRepeat(userMessage, null);
+
+    /// <summary>
+    /// R575 回补面 (既有机制 `agent.nlp.NlpGate` 接线, 零词表): 结构面通过 ∧ 该形状已被 LLM 成功轮
+    /// 回补过 (签名入库) ⇒ 判为纯复述 ⇒ 本地回放上一条答复 (零远端调用)。
+    /// 白名单字符集 (②) 仍在 ⇒ 回补**不能**把含内容字的形状吃进来 (R434 硬线保持:
+    /// 「重做一遍」即便被误回补也仍为 false)。<paramref name="patches"/> = 机检/差分器具注入的补丁集合
+    /// (空 ⇒ 读回补库); 无补丁 ⇒ 一律交远端 (安全方向不变)。
+    /// </summary>
+    public static bool IsPureRepeat(string? userMessage, IReadOnlyCollection<string>? patches)
+        => IsRepeatShape(userMessage)
+           && agent.nlp.NlpGate.IsPatched((userMessage ?? string.Empty).Trim(),
+                                          agent.nlp.NlpGate.FaceRepeat, patches);   // ① 回补库命中
+
+    /// <summary>
+    /// 结构面 (与回补无关): 长度 ≤24 ∧ 去标点后 ≤14 字且**每字符都属复述白名单** ∧ 无问号。
+    /// 回补面只能在**族内**加强 (「谁属于复述族」由回补决定, 「能不能吸收」仍由本判决定)。
+    /// </summary>
+    public static bool IsRepeatShape(string? userMessage)
     {
         var m = (userMessage ?? string.Empty).Trim();
         if (m.Length == 0 || m.Length > 24) return false;
@@ -97,26 +115,31 @@ public static class TurnGateJudge
         if (n.Length is 0 or > 14) return false;
         foreach (var ch in n)                                                      // ② 白名单字符集
             if (RepeatFamilyChars.IndexOf(ch) < 0) return false;
-        foreach (var marker in RepeatMarkers)                                       // ① 完整复述标记
-            if (n.Contains(marker, StringComparison.Ordinal)) return true;
-        return false;
+        return true;
     }
 
-    /// <summary>R465: 复述族白名单字符集 (复述标记 + 指代词的全部用字; 任何集合外字符 ⇒ 不是纯复述)。</summary>
-    private const string RepeatFamilyChars = "再讲遍次重复述从头说要你上面那条这句话的来回新下念看给把一吧哦嗯啊呀啦哇";
-
-    /// <summary>R465: 完整复述标记 (穷举; 表外一律不吸收) —— 语义 = 「把上一条答复原样给我」。
-    /// R497 候选④ (同义重复轮扩面): 补 4 个**语义等价**的复述同义式 —— 只加标记, **不动白名单字符集**
-    /// (加字符会连带吸收「重来一遍」「重做一遍」这类**真诉求**(重做), 破 R434 硬线)。
-    /// 新增标记全部由既有白名单字符组成 ⇒ 吸收面只增这 4 式, 其余判定逐位不变。</summary>
-    private static readonly string[] RepeatMarkers =
+    /// <summary>
+    /// R575 回补点 (W2 — 「LLM 返回后回补闸数据」的唯一写入点): 远端轮**成功**后由链侧调用,
+    /// 按输入所属**结构面**登记回补签名 ⇒ 下次同形状输入可在本地面成立 (使用中自动升级)。
+    /// 族外输入 (含内容字/问号/数字/长文) 一律不登记 ⇒ 回补不会把内容诉求吃进本地面。
+    /// </summary>
+    public static void LearnOnSuccess(string? userMessage, bool success)
     {
-        "再讲一遍", "再说一遍", "再讲一次", "再说一次", "重复一遍", "重复一次", "复述一遍",
-        "从头再说", "从头再讲", "重新说一遍", "重新讲一遍", "再来一遍", "再念一遍", "再看一遍",
-        "再说下", "再讲下",
-        // R497 候选④:
-        "复述一次", "说一遍", "讲一遍", "念一遍",
-    };
+        if (!success) return;
+        var m = (userMessage ?? string.Empty).Trim();
+        if (m.Length == 0) return;
+        if (IsRepeatShape(m))
+        {
+            agent.nlp.NlpGate.Observe(m, true, agent.nlp.NlpGate.FaceRepeat);
+            return;
+        }
+        if (LocalParaphraseChannel.IsParaphraseShape(m))
+            agent.nlp.NlpGate.Observe(m, true, agent.nlp.NlpGate.FaceParaphrase);
+    }
+
+    /// <summary>R465: 复述族白名单字符集 (复述标记 + 指代词的全部用字; 任何集合外字符 ⇒ 不是纯复述)。
+    /// R575: 吸收面由**回补库**承担 (零标记表) —— 字符集是**结构护栏**, 顺序上先于回补判定。</summary>
+    private const string RepeatFamilyChars = "再讲遍次重复述从头说要你上面那条这句话的来回新下念看给把一吧哦嗯啊呀啦哇";
 
     public static string Clip(string s, int max)
     {
@@ -168,27 +191,23 @@ public static class TurnGateJudge
             if (skip) { if (idx > lastSkip) lastSkip = idx; }
             else if (idx > lastPass) lastPass = idx;
         }
+        // R575 (零词表): 结论区只认**字母标记** S/P (前后不得是字母, 防 "Send"/"Python" 误命中);
+        // 中文/英文词面标记不再作判 ⇒ 模型答词面时落 no_marker 交远端 (fail-safe, 不猜)。
         foreach (System.Text.RegularExpressions.Match m in
                  System.Text.RegularExpressions.Regex.Matches(conclusion, @"(?<![A-Za-z])([SsPp])(?![A-Za-z])"))
         {
             Note(m.Groups[1].Value == "S" || m.Groups[1].Value == "s", m.Index);
-        }
-        foreach (var pat in new[] { "无新增", "无新", "无需", "跳过", "认可", "采纳", "有新增", "新要求", "新问题", "纠正", "继续", "需要" })
-        {
-            var k = conclusion.LastIndexOf(pat, StringComparison.Ordinal);
-            if (k < 0) continue;
-            Note(pat is "无新增" or "无新" or "无需" or "跳过" or "认可" or "采纳", k);
         }
         if (lastSkip < 0 && lastPass < 0) return TurnGateOutcome.Undecided("no_marker", text);
         return TurnGateOutcome.Decide(lastSkip > lastPass ? TurnGateVerdict.Skip : TurnGateVerdict.Pass, text);
     }
 
     /// <summary>
-    /// R413 机械前置门 (零 token, 确定性): 只要消息里有任何「必须走远端」的机械信号 ⇒
+    /// R413 机械前置门 (零 token, 确定性): 只要消息里有任何「必须走远端」的**结构信号** ⇒
     /// 直接 Pass, **根本不问 r1**。目的 = 把假阴性 (新诉求/纠正被误跳) 结构性消掉,
-    /// 而不是靠小模型判对。表是穷举的、可机检的; 表未覆盖的短消息才交给 r1。
-    /// 依据 (真机负控, 2026-09-14): 纯 r1 判别时「另外，测试命令是什么？」「不对，你上一条不准确」
-    /// 被判 Skip ⇒ 用户拿到空话。这两条现在有机械信号 (问号/另外/不对/重新) ⇒ 结构性 Pass。
+    /// 而不是靠小模型判对。R575: 信号面 = 问号 / 代码或路径符 / 数字 / 长度 ≥ 阈值 (零词表);
+    /// 词面信号 (疑问词/请求词/纠正词) 已删 —— 无结构信号的短消息交 r1, 且 r1 判 Skip 时还要过
+    /// 认可族结构确认 (见链侧后置否决) ⇒ 真诉求不被跳成空话。
     /// </summary>
     public static bool MechanicalPass(string? userMessage)
     {
@@ -196,12 +215,6 @@ public static class TurnGateJudge
         var m = userMessage.Trim();
         foreach (var ch in "?？")
             if (m.Contains(ch)) return true;
-        foreach (var w in QuestionSignals)
-            if (m.Contains(w, StringComparison.Ordinal)) return true;
-        foreach (var w in RequestSignals)
-            if (m.Contains(w, StringComparison.Ordinal)) return true;
-        foreach (var w in CorrectionSignals)
-            if (m.Contains(w, StringComparison.Ordinal)) return true;
         foreach (var ch in "`/\\")
             if (m.Contains(ch)) return true;
         for (var i = 0; i < m.Length; i++)
@@ -211,29 +224,6 @@ public static class TurnGateJudge
 
     /// <summary>长度阈值: ≥ 该长度视为有实质内容 (保守走远端; 宁可少省, 不可误跳)。</summary>
     private const int SubstantiveLengthThreshold = 24;
-
-    /// <summary>疑问信号 (问询 ⇒ 必须远端)。</summary>
-    private static readonly string[] QuestionSignals =
-    {
-        "什么", "怎么", "如何", "为什么", "为何", "哪个", "哪一", "谁", "何时", "多少",
-        "是否", "能不能", "可以吗", "行吗", "吗", "呢", "请问", "请教",
-        "解释", "说明", "介绍", "对比", "区别", "分析",
-    };
-
-    /// <summary>新诉求/指令信号 (要做事 ⇒ 必须远端)。</summary>
-    private static readonly string[] RequestSignals =
-    {
-        "请", "帮我", "帮忙", "给我", "我要", "需要", "另外", "还有", "补充", "新增",
-        "加", "删", "改", "修", "写", "生成", "创建", "新建", "执行", "运行", "跑",
-        "测试", "部署", "提交", "回滚", "优化", "重构", "继续做", "下一步", "现在", "把",
-    };
-
-    /// <summary>纠正/失败信号 (用户指出问题 ⇒ 必须远端)。</summary>
-    private static readonly string[] CorrectionSignals =
-    {
-        "不对", "错了", "不正确", "不准确", "有问题", "漏", "缺", "重新", "再确认",
-        "纠正", "不是", "没对", "失败", "报错", "异常", "崩溃", "不生效",
-    };
 
     /// <summary>思考链标记 (转义写: 尖括号字面量会被写入通道吃掉, 只有转义可靠)。</summary>
         public const string ThinkClose = "\u003c/think\u003e";

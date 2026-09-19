@@ -13,6 +13,9 @@ public class RAGConfig
     public string? PersistPathOverride { get; set; }
 
     public int MaxRecallResults { get; set; } = 10;
+
+    /// <summary>精排段开关 (用户钦定 KPI 2026-09-19)。关 = 退回纯粗排 (RRF 融合) 序; 开 = 召回池经精排重排。</summary>
+    public bool RerankEnabled { get; set; } = true;
     public double MinSimilarityScore { get; set; } = 0.3;
 
     // v0.11.0 R101: 本地向量召回 (bge) — null=纯词面 (默认, AOT 安全);

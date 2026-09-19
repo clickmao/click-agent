@@ -71,13 +71,9 @@ public static class NextTurnForecast
     /// </summary>
     private static ForecastRecord BuildRecord(string agentUid, string taskText, string intent)
     {
-        // 未完成信号: 迭代词/续作词/待办词 → 大概率继续
-        var continuationMarkers = new[]
-        {
-            "先", "然后", "接着", "下一步", "首先", "之后", "待", "继续",
-            "阶段", "第一步", "第二步", "草稿", "初版",
-        };
-        var likelyContinues = continuationMarkers.Any(taskText.Contains);
+        // 未完成信号 — 中文词表 (迭代词/续作词/待办词) 已移除 ⇒ 改由**任务类别结构**判定 (语言无关):
+        // 迭代型类别默认"未完待续"; 词面猜测在其它语言/新梗上必然漏判。
+        var likelyContinues = intent is "code_generation" or "test_generation" or "code_review" or "search";
 
         var tendency = intent switch
         {

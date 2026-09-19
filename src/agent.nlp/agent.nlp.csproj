@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- NLP 基座 (2026-09-19 user 钦定): 词表删除后, 语言/分词/关键词一律取成熟 NLP 库输出。
+       选型 = fastText lid.176 (176 语言, meta 官方模型) + Microsoft.ML.Tokenizers 2.0.0 (o200k_base 多语言 BPE)。
+       两者均已 NativeAOT + env -i 实测 (见 /tmp/nlpsmoke 冒烟: 8 语言识别 + 分词全对)。 -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ML.Tokenizers" />
+    <PackageReference Include="Microsoft.ML.Tokenizers.Data.O200kBase" />
+    <PackageReference Include="Panlingo.LanguageIdentification.FastText" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+
+</Project>

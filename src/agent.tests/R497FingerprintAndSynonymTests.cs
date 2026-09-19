@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -105,13 +106,17 @@ public sealed class R497FingerprintAndSynonymTests
 
     private const string R465FamilyChars = "再讲遍次重复述从头说要你上面那条这句话的来回新下念看给把一吧哦嗯啊呀啦哇";
 
-    private static string[] RepeatMarkersOfProduct()
+    /// <summary>R575: 回补集合 (单条) —— 面标 + 签名, 与判定侧 (<c>NlpGate.IsPatched</c>) 看同一个键。</summary>
+    private static HashSet<string> Patches(string face, params string[] texts)
     {
-        var src = ReadSrc("src", "agent.modelqueue", "TurnGateJudge.cs");
-        var m = Regex.Match(src, @"string\[\]\s+RepeatMarkers\s*=\s*\{(.*?)\};", RegexOptions.Singleline);
-        Assert.True(m.Success, "RepeatMarkers 未找到");
-        return Regex.Matches(m.Groups[1].Value, "\"((?:[^\"\\\\]|\\\\.)*)\"").Select(x => x.Groups[1].Value).ToArray();
+        var set = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var t in texts)
+            set.Add(agent.nlp.NlpGate.Key(face, agent.nlp.NlpGate.SignatureOf(t)));
+        return set;
     }
+
+    /// <summary>「无补丁」的**确定性**形态 (显式空集, 不读进程级回补库 ⇒ 与执行顺序无关)。</summary>
+    private static readonly HashSet<string> NoPatches = new(StringComparer.Ordinal);
 
     [Fact]
     public void R497D_WhitelistChars_Unchanged()
@@ -119,18 +124,26 @@ public sealed class R497FingerprintAndSynonymTests
         var src = ReadSrc("src", "agent.modelqueue", "TurnGateJudge.cs");
         var m = Regex.Match(src, @"RepeatFamilyChars\s*=\s*""([^""]*)"";");
         Assert.True(m.Success, "RepeatFamilyChars 未找到");
-        Assert.Equal(R465FamilyChars, m.Groups[1].Value);   // R465 逐字节不变 ⇒ 吸收面只增标记
+        Assert.Equal(R465FamilyChars, m.Groups[1].Value);   // R465 逐字节不变 ⇒ 字符集是**结构护栏**, 不变
     }
 
     [Fact]
     public void R497D_NewMarkers_OnlyWhitelistedChars()
     {
-        foreach (var mk in new[] { "复述一次", "说一遍", "讲一遍", "念一遍" })
+        // R575: 标记表已删 (零词表, 吸收面 = `agent.nlp.NlpGate` 回补库) ⇒ 本用例改为钉**同一不变式**的两侧:
+        //   ① 产品侧不再有复述标记表 (旧断言「新标记的用字必须都在白名单里」失去对象);
+        //   ② 回补**不能越过**白名单字符集 —— 含内容字的形状即便被回补也仍不吸收 (R434 硬线);
+        //   ③ 反向: 白名单内的形状被回补 ⇒ 必须吸收 (表删了不等于机制没了)。
+        var src = ReadSrc("src", "agent.modelqueue", "TurnGateJudge.cs");
+        Assert.DoesNotContain("RepeatMarkers", src, StringComparison.Ordinal);
+        foreach (var mk in new[] { "重做一遍。", "讲细一点。", "继续下一轮", "把代码再讲一遍。" })
         {
-            Assert.Contains(mk, RepeatMarkersOfProduct());
-            foreach (var ch in mk)
-                Assert.True(R465FamilyChars.IndexOf(ch) >= 0, $"标记 {mk} 用字 {ch} 不在 R465 白名单内 ⇒ 必须改白名单");
+            Assert.False(TurnGateJudge.IsRepeatShape(mk), $"结构面本应否决 (含内容字): {mk}");
+            Assert.False(TurnGateJudge.IsPureRepeat(mk, Patches(agent.nlp.NlpGate.FaceRepeat, mk)),
+                $"回补越过了白名单 ⇒ 吸收了含内容字的形状: {mk}");
         }
+        Assert.True(TurnGateJudge.IsPureRepeat("念一遍", Patches(agent.nlp.NlpGate.FaceRepeat, "念一遍")),
+            "白名单内的形状被回补后必须吸收 (否则回补面是死代码)");
     }
 
     [Theory]
@@ -144,35 +157,48 @@ public sealed class R497FingerprintAndSynonymTests
     //   「重念一遍」被吸收 —— 语义正确 (原样再来一遍 ⇒ 本地回放即所需), 把它从负控改为正控。
     [InlineData("重念一遍。", true)]
     [InlineData("重说一遍", true)]
-    // R434 硬线 + 白名单纪律: 一律不吸收 (真诉求 / 重做 / 新内容)
+    // R575 语义变更 (如实登记, 不是放宽): 旧判据靠**标记表**排除这两句 (表外 ⇒ 不吸收);
+    //   标记表删除后判据 = 白名单结构面 ∧ 回补命中 —— 两句都属白名单内形状 ⇒ **一旦被回补即吸收**
+    //   (语义仍正确: 「重来一遍/再来一次」= 原样重来 ⇒ 本地回放即所需)。
+    [InlineData("重来一遍。", true)]
+    [InlineData("再来一次。", true)]
+    // R434 硬线 + 白名单纪律: 一律不吸收 (含内容字/超族)
     [InlineData("讲细一点。", false)]
     [InlineData("换个说法。", false)]
-    [InlineData("重来一遍。", false)]            // 标记表内无「重来一遍」⇒ 不因白名单而误吸收
-    [InlineData("重做一遍。", false)]
-    [InlineData("再来一次。", false)]
+    [InlineData("重做一遍。", false)]            // 含「做」(内容字, 不在白名单) ⇒ 结构面先否决
     [InlineData("把上一条说一遍，顺便改下代码", false)]
     [InlineData("继续下一轮", false)]
     public void R497D_SynonymRepeat_Face(string msg, bool expectRepeat)
-        => Assert.Equal(expectRepeat, TurnGateJudge.IsPureRepeat(msg));
+    {
+        // R575 (零词表): 吸收面 = 回补库 ⇒ 双侧断言 (无补丁 ⇒ 交远端 / 回补命中 ⇒ 吸收)。
+        Assert.False(TurnGateJudge.IsPureRepeat(msg, NoPatches), "无补丁 ⇒ 必须交远端: " + msg);
+        Assert.Equal(expectRepeat, TurnGateJudge.IsPureRepeat(msg, Patches(agent.nlp.NlpGate.FaceRepeat, msg)));
+    }
 
     [Theory]
-    // 优先级铁律 (R497 自抓): 前置门链是 MechanicalPass **先**、复述吸收**后** ⇒ 含请求信号(把/说/请/给我…)、
-    //   数字、问号、`/`、反引号、≥24 字的复述同义句**不会**被本地消化, 照旧走远端。
-    //   ⇒ ④「同义重复轮本地生成扩面」的**可用**吸收面 = 不含上述信号的复述句 (下面的 true 行)。
+    // 优先级铁律: 前置门链是 MechanicalPass **先**、复述吸收**后**。
+    // R575 (零词表): Pass 信号只剩**结构信号** (问号 / 路径符或反引号 / 数字 / ≥24 字) ⇒ 用这些构造。
     [InlineData("从头念一遍。", true)]
     [InlineData("念一遍。", true)]
     [InlineData("复述一次。", true)]
     [InlineData("重复一遍。", true)]
-    [InlineData("把上一条说一遍。", false)]     // 「把」= 请求信号 ⇒ 机械放行抢先 (初版 t17 就踩在这上面)
-    [InlineData("把上一句讲一遍", false)]
-    [InlineData("从头再说一遍，顺便看下第 2 点", false)]
+    [InlineData("把上面那句说一遍/", false)]              // 路径符 ⇒ 机械放行抢先 (白名单形状也吸不走)
+    [InlineData("从头再说一遍，顺便看下第 2 点", false)]   // 数字 ⇒ 机械放行抢先
+    [InlineData("换个说法，为什么？", false)]             // 问号 ⇒ 机械放行抢先
     public void R497D_AbsorbedFace_MechanicalPassWins(string msg, bool expectAbsorbed)
-        => Assert.Equal(expectAbsorbed, !TurnGateJudge.MechanicalPass(msg) && TurnGateJudge.IsPureRepeat(msg));
+    {
+        var patches = Patches(agent.nlp.NlpGate.FaceRepeat, msg);
+        Assert.Equal(expectAbsorbed, !TurnGateJudge.MechanicalPass(msg) && TurnGateJudge.IsPureRepeat(msg, patches));
+    }
 
     [Fact]
     public void R497D_OldFamily_NotNarrowed()
     {
+        // R575: 旧族 7 句在**回补命中**时仍全部可吸收 (吸收面不因机制换代而收窄); 无补丁时一律交远端。
         foreach (var msg in new[] { "再讲一遍。", "从头再说。", "再说一遍", "重复一遍吧", "你再说一遍。", "重新讲一遍", "再说下" })
-            Assert.True(TurnGateJudge.IsPureRepeat(msg), "旧族被收窄: " + msg);
+        {
+            Assert.False(TurnGateJudge.IsPureRepeat(msg, NoPatches), "无补丁 ⇒ 交远端: " + msg);
+            Assert.True(TurnGateJudge.IsPureRepeat(msg, Patches(agent.nlp.NlpGate.FaceRepeat, msg)), "旧族被收窄: " + msg);
+        }
     }
 }

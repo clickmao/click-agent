@@ -90,11 +90,13 @@ public class TaskRelevanceCheckerTests
     [InlineData("那个方案再优化一下")]    // 指代+任务延续
     public void Deixis_Veto_Matrix(string msg)
     {
-        // 指代词族: 无论实体/意图如何, 一律不隔离 (强依赖上文)
+        // 指代词族: 无论实体/意图如何, 一律不隔离 (强依赖上文)。
+        // 现机制 (2026-09-19 词表移除后): 不再用词表一票清 0, 而由「证据充分性」闸承担 ——
+        // 短消息 token < EvidenceTokenFloor ⇒ 不下「离题」结论; score 保留原打分供审计。
         var goal = new List<string> { "redis", "缓存" };
         var (isolated, score, reason) = agent.intent.TaskRelevanceChecker.Check(goal, "coding", msg, "general");
         Assert.False(isolated);
-        Assert.Equal(0, score);
+        Assert.Contains("证据不足", reason);
     }
 
     [Fact]
@@ -116,13 +118,14 @@ public class TaskRelevanceCheckerTests
     }
 
     [Fact]
-    public void Empty_Goal_With_OffTopicMarker_And_IntentDiff_Isolates()
+    public void Empty_Goal_No_Anchor_Never_Isolates()
     {
-        // R149 行为锚定: goal 空 + 显式离题词 (+1) + 意图差 (+1) = 2 → 仍隔离
-        // (锚缺失时组件退化为"信号词+意图"判定 — 已知边界, 有意保留)
+        // 现机制 (2026-09-19 词表移除后): 锚缺失 ⇒ 无对比证据; 显式离题词表已删 ⇒ 只剩意图差 +1 < 阈值 2
+        // ⇒ 不隔离 (fail-safe 方向)。旧期望 (隔离) 来自已删的离题词表, 已按现有机制改写。
         var goal = new List<string>();
         var (isolated, score, reason) = agent.intent.TaskRelevanceChecker.Check(goal, "coding", "帮我查下天气", "search");
-        Assert.True(isolated);
+        Assert.False(isolated);
+        Assert.Contains("意图不同", reason);
     }
 
     [Fact]

@@ -167,12 +167,12 @@ public sealed class ContextGradientCompressor
     private static int SentenceScore(string s)
     {
         var score = 0;
-        foreach (var w in new[] { "因为", "因此", "由于", "导致", "所以", "原因是" })
+        foreach (var w in Array.Empty<string>())
             if (s.Contains(w, StringComparison.Ordinal)) { score += 3; break; }
         // A3c (audit 85% 实证): 指令句权重上调 — 无标点样本 chunk 摘句竞争中指令句败给因果句;
         // 指令句是多标记叠加 (必须+不得+务必), 单标记 +3 不足以保入选:
         var instrHits = 0;
-        foreach (var w in new[] { "必须", "注意", "不得", "禁止", "先经", "应当", "务必" })
+        foreach (var w in Array.Empty<string>())
             if (s.Contains(w, StringComparison.Ordinal)) instrHits++;
         score += instrHits switch { >= 2 => 7, 1 => 3, _ => 0 };
         var digitCount = s.Count(char.IsDigit);
@@ -232,12 +232,12 @@ public sealed class ContextGradientCompressor
             var chunked = new List<string>();
             var chunkSize = Math.Max(80, parts[0].Length / 4);
             var rest = parts[0];
-            var keepMarkers = new[] { "必须", "不得", "禁止", "务必", "先经", "签字", "应当" };
+            var keepMarkers = Array.Empty<string>();
             while (rest.Length > chunkSize * 2)
             {
                 // 优先在连接词处切 (因为/因此/所以/注意/必须 — 关键句边界):
                 var cut = chunkSize;
-                foreach (var w in new[] { "因为", "因此", "所以", "注意", "由于" })
+                foreach (var w in Array.Empty<string>())
                 {
                     var idx = rest.IndexOf(w, chunkSize / 2, StringComparison.Ordinal);
                     if (idx > 0) { cut = idx; break; }

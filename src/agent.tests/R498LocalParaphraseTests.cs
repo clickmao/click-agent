@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using agent.context;
 using agent.modelqueue;
@@ -20,6 +21,18 @@ public sealed class R498LocalParaphraseTests
 {
     private const string Src = "本地通道 r1 已接入链管道: 命中率 = 1−新/前缀, 配置文件 agent.host.csproj 未改动。";
 
+    /// <summary>R575: 回补集合 (面标 + 签名) —— 与判定侧 (<c>NlpGate.IsPatched</c>) 看同一个键。</summary>
+    private static HashSet<string> Patches(string face, params string[] texts)
+    {
+        var set = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var t in texts)
+            set.Add(agent.nlp.NlpGate.Key(face, agent.nlp.NlpGate.SignatureOf(t)));
+        return set;
+    }
+
+    /// <summary>「无补丁」的**确定性**形态 (显式空集, 不读进程级回补库 ⇒ 与执行顺序无关)。</summary>
+    private static readonly HashSet<string> NoPatches = new(StringComparer.Ordinal);
+
     // ── ① 族判据 ────────────────────────────────────────────────────────────
     [Theory]
     [InlineData("换个说法")]
@@ -30,7 +43,14 @@ public sealed class R498LocalParaphraseTests
     [InlineData("重新表述一下")]
     [InlineData("换种表述")]
     [InlineData("换个方式说")]
-    public void 改写族_吸收(string msg) => Assert.True(LocalParaphraseChannel.IsPureParaphrase(msg), msg);
+    public void 改写族_吸收(string msg)
+    {
+        // R575 (零词表): 族吸收面 = 回补库 (LLM 成功轮登记的**改写族**形状) ⇒ 双侧断言:
+        //   · 无补丁 ⇒ 不吸收 (交远端, 保守方向);
+        //   · 该形状被回补 ⇒ 必吸收 (证回补机制真的接进了判定面, 不是孤岛)。
+        Assert.False(LocalParaphraseChannel.IsPureParaphrase(msg, NoPatches), "无补丁 ⇒ 交远端: " + msg);
+        Assert.True(LocalParaphraseChannel.IsPureParaphrase(msg, Patches(agent.nlp.NlpGate.FaceParaphrase, msg)), msg);
+    }
 
     [Theory]
     [InlineData("换个说法说下部署进度")]                 // 含内容字 (部/署/进/度) ⇒ 新诉求 ⇒ 不吸收
@@ -41,7 +61,12 @@ public sealed class R498LocalParaphraseTests
     [InlineData("")]
     [InlineData("   ")]
     [InlineData(null)]
-    public void 改写族_不吸收(string? msg) => Assert.False(LocalParaphraseChannel.IsPureParaphrase(msg), msg);
+    public void 改写族_不吸收(string? msg)
+    {
+        Assert.False(LocalParaphraseChannel.IsPureParaphrase(msg, NoPatches), msg);
+        // R575: 即便该形状被回补, 结构护栏 (白名单/长度/问号) 仍先否决 —— 回补只能在族内生效。
+        Assert.False(LocalParaphraseChannel.IsPureParaphrase(msg, Patches(agent.nlp.NlpGate.FaceParaphrase, msg ?? string.Empty)), msg);
+    }
 
     [Fact]
     public void 两族不得有交集_且复述族优先()
@@ -53,11 +78,20 @@ public sealed class R498LocalParaphraseTests
             "用别的方式说一遍", "重新表述", "再讲一遍吧", "换个说法吧",
         };
         foreach (var p in probes)
-            Assert.False(TurnGateJudge.IsPureRepeat(p) && LocalParaphraseChannel.IsPureParaphrase(p),
-                $"两族同时判真: {p}");
+            Assert.False(TurnGateJudge.IsPureRepeat(p, NoPatches) && LocalParaphraseChannel.IsPureParaphrase(p, NoPatches),
+                $"两族同时判真 (无补丁): {p}");
+        // R575: 同一形状被**两面同时**回补 (只有注入面/差分器具造得出) ⇒ 复述族优先 + ⑤ 互斥仍成立。
+        //   用**两族形状都成立**的串 (两族字符集有字面重叠) ⇒ 这里否决改写族的只能是 ⑤, 不是字符集。
+        foreach (var p in new[] { "再讲一遍吧", "再说一遍" })
+        {
+            var both = Patches(agent.nlp.NlpGate.FaceRepeat, p);
+            foreach (var k in Patches(agent.nlp.NlpGate.FaceParaphrase, p)) both.Add(k);
+            Assert.True(TurnGateJudge.IsPureRepeat(p, both), "两面回补 ⇒ 复述族优先: " + p);
+            Assert.False(LocalParaphraseChannel.IsPureParaphrase(p, both), "两面回补后改写族仍不得判真 (⑤): " + p);
+        }
         // 显式: 改写族的合法输入不得被判为复述族 (否则走回放, 不是改写)
-        Assert.False(TurnGateJudge.IsPureRepeat("换个说法"));
-        Assert.False(TurnGateJudge.IsPureRepeat("用别的方式说一遍"));
+        Assert.False(TurnGateJudge.IsPureRepeat("换个说法", NoPatches));
+        Assert.False(TurnGateJudge.IsPureRepeat("用别的方式说一遍", NoPatches));
     }
 
     // ── ② 闸 (单源组合 ShouldAbsorb) ────────────────────────────────────────
@@ -77,11 +111,14 @@ public sealed class R498LocalParaphraseTests
     public void 闸关_必须零吸收_零改写()
     {
         // 默认关的**机检**形态: 接线处与测试读同一个 ShouldAbsorb, 故这里绿 ⇒ 「闸关 ⇒ 全链逐位不变」不是口头承诺。
-        Assert.False(LocalParaphraseChannel.ShouldAbsorb("换个说法", enabled: false));
-        Assert.False(LocalParaphraseChannel.ShouldAbsorb("换个说法", enabled: false));
-        Assert.False(LocalParaphraseChannel.ShouldAbsorb(null, enabled: true));
-        Assert.True(LocalParaphraseChannel.ShouldAbsorb("换个说法", enabled: true));
-        Assert.False(LocalParaphraseChannel.ShouldAbsorb("换个说法说下部署进度", enabled: true));
+        var paraPatch = Patches(agent.nlp.NlpGate.FaceParaphrase, "换个说法");
+        Assert.False(LocalParaphraseChannel.ShouldAbsorb("换个说法", enabled: false, paraPatch));  // 闸关 ⇒ 有补丁也不吸收
+        Assert.False(LocalParaphraseChannel.ShouldAbsorb(null, enabled: true, NoPatches));
+        // R575: 两条同时成立才开面 —— 闸开 ∧ 回补命中
+        Assert.True(LocalParaphraseChannel.ShouldAbsorb("换个说法", enabled: true, paraPatch));
+        Assert.False(LocalParaphraseChannel.ShouldAbsorb("换个说法", enabled: true, NoPatches));   // 无补丁 ⇒ 交远端
+        Assert.False(LocalParaphraseChannel.ShouldAbsorb("换个说法说下部署进度", enabled: true,        // 结构护栏仍拦
+            Patches(agent.nlp.NlpGate.FaceParaphrase, "换个说法说下部署进度")));
     }
 
     // ── ③ 机检守卫 ──────────────────────────────────────────────────────────
@@ -115,11 +152,23 @@ public sealed class R498LocalParaphraseTests
     [Fact]
     public void 守卫_动作声明禁增()
     {
-        var v = LocalParaphraseChannel.Guard(Src, "本地通道 r1 已接入链管道, 命中率统计已完成, agent.host.csproj 未改动。");
+        // R575: 19 条静态词表删除后, ⑥ 动作声明面 = **回补库** (`NlpGate` 的 claim 面, 按 token 学习)。
+        //   ① 回补命中「输出里有、原文没有」的 token ⇒ 必拒 (claim_added);
+        //   ② 反向: 原文本来就有的声明不受影响 (不得把合法改写误杀);
+        //   ③ 诚实边界: 无回补时本面**不覆盖** (零词表) —— 这里只钉「不误杀」, 不冒充有覆盖。
+        var outText = "本地通道 r1 已接入链管道, 命中率统计已完成, agent.host.csproj 未改动。";
+        var claim = agent.nlp.TextSignal.KeyTokens(outText, 128)
+            .First(t => !Src.Contains(t, StringComparison.Ordinal) && t.Any(c => c > 127));
+        var v = LocalParaphraseChannel.Guard(Src, outText, Patches(agent.nlp.NlpGate.FaceClaim, claim));
         Assert.False(v.Ok);
         Assert.StartsWith("claim_added:", v.Reason, StringComparison.Ordinal);
+        Assert.Contains(claim, v.Reason, StringComparison.Ordinal);
+
+        var noFeed = LocalParaphraseChannel.Guard(Src, outText, NoPatches);
+        Assert.True(noFeed.Ok, noFeed.Reason);      // 无回补 ⇒ ⑥ 不作判 (其余五面由本类其他用例钉住)
+
         // 反向: 原文本来就有的声明不受影响 (不得把合法改写误杀)
-        var ok = LocalParaphraseChannel.Guard("部署已完成。", "这次部署已完成。");
+        var ok = LocalParaphraseChannel.Guard("部署已完成。", "这次部署已完成。", Patches(agent.nlp.NlpGate.FaceClaim, "已完成"));
         Assert.True(ok.Ok, ok.Reason);
     }
 

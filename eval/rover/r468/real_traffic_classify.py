@@ -25,6 +25,28 @@ GRID = ["把构建命令写成一行。", "谢谢，收到。", "好的，明白
         "讲细一点。", "换个说法。", "从头再说。", "你上一条说 3 加 5 等于 9，对吧？", "讲详细些。", "你上一条说的那个。"]
 
 
+def faces_of(text):
+    """R575 语料声明: 该行形状属于哪个**回补面** (repeat/para) ⇒ 生成时按面注入补丁。
+
+    口径: 回补 = 「LLM 成功轮登记的形状」⇒ 网格/InlineData 这类**已被使用过**的形状按面声明;
+    形状不符 (含内容字/数字/问号) 的行不声明 ⇒ 与产品「未回补 ⇒ 交远端」一致。
+    """
+    if G.is_repeat_shape(text):
+        return ("repeat",)
+    if G.is_paraphrase_shape(text):
+        return ("para",)
+    return ()
+
+
+def corpus_row(text, src, driver=False):
+    """R575: 语料行构造 (单源) —— class 与 patch 声明必须同批产出 (两侧判定同构的前提)。"""
+    f = faces_of(text)
+    r = {"text": text, "class": G.classify(text, f), "driver": driver, "src": src}
+    if f:
+        r["patch"] = f[0]
+    return r
+
+
 def genuine(msg):
     if not msg:
         return False
@@ -103,8 +125,7 @@ def main():
     n = stat["genuine_user_turns"] or 1
     grid = collections.Counter()
     for t in GRID:
-        c = G.classify(t)
-        grid["driver" if DRIVER_PAT.match(t) else c] += 1
+        grid["driver" if DRIVER_PAT.match(t) else G.classify(t, faces_of(t))] += 1
     skipface = stat["ack"] + stat["repeat"]
     sessions_with = len([s for s, v in per_session.items() if v["ack"] + v["repeat"] > 0])
     out = {
@@ -128,16 +149,24 @@ def main():
     io.open(os.path.join(HERE, "real-traffic.json"), "w", encoding="utf-8").write(
         json.dumps(out, ensure_ascii=False, indent=1))
     # 差分语料 = 真实轮 + 网格 p12 + 产品测试 InlineData 用例族 (高信号覆盖, 供 C# 差分校验)
+    # R575: 网格/InlineData 行按**回补面**声明 patch (repeat/para) —— 两侧判定按同一批面注入。
     seen = {r["text"] for r in corpus}
     for t in GRID:
         if t not in seen:
-            corpus.append({"text": t, "class": G.classify(t), "driver": False, "src": "grid_p12"})
+            corpus.append(corpus_row(t, "grid_p12"))
             seen.add(t)
-    for meth, fn in (("G31_认可族结构确认", G.mechanical_ack), ("G35_纯复述族结构确认", G.is_pure_repeat)):
+    for meth in ("G31_认可族结构确认", "G35_纯复述族结构确认"):
         for msg, _exp in G._inline_cases(G._test_src, meth):
             if msg not in seen:
-                corpus.append({"text": msg, "class": G.classify(msg), "driver": False, "src": "test_inlinedata"})
+                corpus.append(corpus_row(msg, "test_inlinedata"))
                 seen.add(msg)
+    for msg in G._inline_cases_one(G._test_para_src, "改写族_吸收"):
+        if msg not in seen:
+            corpus.append(corpus_row(msg, "test_inlinedata_para"))
+            seen.add(msg)
+    # 反事实读数 (只登记, 不进 class): 真实轮里「形状上可被回补」的数量 —— 回补生效后的可跳面上界。
+    out["real_shape_reachable"] = sum(
+        1 for r in corpus if "src" not in r and faces_of(r["text"]))
     with io.open(os.path.join(HERE, "real-traffic-corpus.jsonl"), "w", encoding="utf-8") as f:
         for r in corpus:
             f.write(json.dumps(r, ensure_ascii=False) + "\n")

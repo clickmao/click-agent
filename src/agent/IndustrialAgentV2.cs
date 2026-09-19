@@ -107,10 +107,7 @@ public partial class IndustrialAgentV2 : AgentBase
         private static bool _clarifyArmed;
         // R326 (R-1 收敛): pivot/转向词表单一来源 (原 3 份拷贝已发散 — "不管之前" 仅 1.4 有)。
         private static readonly string[] PivotMarkers =
-        {
-            "不要之前", "不用之前", "放弃", "重新开始", "取消之前", "先不做", "不管之前",
-            "算了", "改成", "改为", "换成", "不要了", "还是做", "换一个",
-        };
+        [];
         // v0.14.0 T2d: 修法记忆 (进程级单例, data/fix-memory.json 持久化)
         private static agent.critique.FixMemory? _fixMemory;
         // v0.15.2: 警告/铁律记忆 (guardrails.json 持久化) + 同会话去重集 (habituation 防护)
@@ -480,11 +477,7 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
     
     private void InitializeCapabilities()
     {
-        _capabilities.AddRange(new[]
-        {
-            "多数据源上下文注入", "意图识别", "代码生成/修改/审查",
-            "任务规划", "记忆召回", "网络搜索", "错误恢复"
-        });
+        _capabilities.AddRange(Array.Empty<string>());
     }
     
     /// <summary>
@@ -500,20 +493,14 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
         // R306 (L1 GoalText 锚定修复): 复合句 "做一个X项目, 记住这个背景" — 任务标记在场时
         // 任务优先 (记忆注记只是附带), 不被 memoryMarkers 误杀 (牵引实验轮1 实证 GoalText 空)。
         string[] taskMarkersPre =
-        {
-            "帮我", "请帮我", "需要你", "做一个", "开发一个", "实现一个", "项目目标", "项目需求",
-            "这个项目", "目标是", "计划", "写一个", "修复", "重构", "部署", "上线", "排查", "设计一个",
-        };
+        [];
         if (taskMarkersPre.Any(m => content.Contains(m, StringComparison.Ordinal)))
             return true;
-        string[] memoryMarkers = { "记住", "记一下", "记着", "我喜欢", "我的名字", "我叫" };
+        string[] memoryMarkers = [];
         if (memoryMarkers.Any(m => content.Contains(m, StringComparison.Ordinal)))
             return false;
         string[] taskMarkers =
-        {
-            "帮我", "请帮我", "需要你", "做一个", "开发一个", "实现一个", "项目目标", "项目需求",
-            "这个项目", "目标是", "计划", "任务", "写一个", "修复", "重构", "部署", "上线", "排查", "设计一个",
-        };
+        [];
         return taskMarkers.Any(m => content.Contains(m, StringComparison.Ordinal));
     }
 
@@ -964,7 +951,7 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             // 规则先行 (词表), LLM 辅助解析待标定 (plan 待确认项)。域锚 = GoalText (既有锚定)。
             try
             {
-                var warningMarkers = new[] { "不要", "禁止", "别再", "不要再", "警告你", "记住了", "以后别", "禁止再" };
+                var warningMarkers = Array.Empty<string>();
                 var hitMarker = warningMarkers.FirstOrDefault(w => message.Content.Contains(w, StringComparison.Ordinal));
                 if (hitMarker != null && message.Content.Length >= 8)
                 {
@@ -1837,6 +1824,12 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             // R527 候选②: 有界抽取 —— 因果绑定 + 偏题/牵引/澄清状态推进 (原位同序搬出, 行为等价)
             var (steeringPending, clarifyPending) =
                 BindReplyAndAdvanceTopicState(llmResponse, isDrift, coreTopic, topicVerdict);
+
+            // R575 回补点 (W2): 「LLM 返回后回补闸数据」的唯一调用点 —— 本轮**真走了远端**且成功 ⇒
+            // 按输入所属结构面登记回补签名 (agent.nlp.NlpGate) ⇒ 下次同形状输入可在本地面成立。
+            // 本地消化轮 (Skip) 无需回补; 族外输入不登记 (回补只在白名单族内生效)。
+            if (!(gateOutcome.Decided && gateOutcome.Verdict == agent.modelqueue.TurnGateVerdict.Skip))
+                agent.modelqueue.TurnGateJudge.LearnOnSuccess(message.Content, llmResponse.Success);
             
             // 6. ✅ 将消息添加到会话
             await AddToSessionAsync(message, llmResponse, ct);
@@ -2137,8 +2130,30 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
     {
         var constraints = new List<string>();
         if (string.IsNullOrWhiteSpace(text)) return constraints;
-        // 冒号显式标记: "约束：..." / "限制：..." 整段
-        var markers = new[] { "约束", "限制", "要求" };
+
+        // 显式槽位结构 (语言无关, **无词表**) — 原「约束/限制」标记表 + 「只能/不许/必须/避免」助动词表
+        // 已随中文词表一并移除。现只认「短头 + 冒号」结构信号: X：Y ⇒ Y 段为显式槽位;
+        // 其余约束由结构化槽位链 (LLM 回执 → 槽位) 承担, 机械面不再凭词面猜。
+        for (var i = 0; i < text.Length; i++)
+        {
+            var ch = text[i];
+            if (ch != '：' && ch != ':') continue;
+            if (i + 1 < text.Length && text[i + 1] == '/') continue;   // "https://" 协议头不是槽位
+            var head = text[..i].TrimEnd();
+            var cut = head.LastIndexOfAny(['，', ',', '。', '；', ';', '\n', ' ', '\u3000']);
+            var label = (cut >= 0 ? head[(cut + 1)..] : head).Trim();
+            if (label.Length == 0 || label.Length > 6) continue;
+            var slotSeg = text[(i + 1)..];
+            var slotEnd = slotSeg.IndexOfAny(['。', '；', ';', '\n']);
+            var slotText = (slotEnd > 0 ? slotSeg[..slotEnd] : slotSeg).Trim();
+            if (slotText.Length > 1 && !constraints.Any(c => slotText.Contains(c) || c.Contains(slotText)))
+                constraints.Add(slotText.Length > 60 ? slotText[..60] + "…" : slotText);
+            if (constraints.Count >= 8) break;
+        }
+
+        // 以下两段为词表时代的遗留结构 (标记表/助动词表均已为空 ⇒ 不产出), 保留是因为它们
+        // 的「去重 + 60 字截断」口径已由上方结构面等价承担。
+        var markers = Array.Empty<string>();
         foreach (var m in markers)
         {
             var idx = text.IndexOf(m + "：", StringComparison.Ordinal);
@@ -2153,7 +2168,7 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             }
         }
         // 助动词模式: "只能/不许/不准/必须/避免" + 分隔
-        string[] auxMarkers = { "只能", "不许", "不准", "必须", "避免" };
+        string[] auxMarkers = [];
         foreach (var aux in auxMarkers)
         {
             var idx = text.IndexOf(aux, StringComparison.Ordinal);

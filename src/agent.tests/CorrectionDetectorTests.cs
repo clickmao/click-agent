@@ -9,22 +9,23 @@ public class CorrectionDetectorTests
     private static CorrectionDetector.CorrectionVerdict? Rule(string user)
         => CorrectionDetector.RuleJudge(user, "上一轮回复");
 
-    // ── 判罚正例 (L1) ──
+    // ── 判罚正例 (L1 → 交 L2; 2026-09-19 词表移除后 L1 不再判罚) ──
     [Theory]
     [InlineData("不对，应该先 stop 再 rm")]
     [InlineData("错了，-v 要用绝对路径")]
     [InlineData("你理解错了，我说的是上游仓库")]
     [InlineData("Not what i meant, use rebase")]
-    public void L1_纠正正例_判Correct(string user)
-        => Assert.Equal(CorrectionDetector.CorrectionKind.Correct, Rule(user)!.Kind);
+    public void L1_纠正正例_交L2判官(string user)
+        // 无词表 ⇒ L1 一律返回 null (模糊), 判罚由 L2 字母判官 (C/A/N) 承担 —— 见 L2_* 用例。
+        => Assert.Null(Rule(user));
 
-    // ── 判赏正例 (L1) ──
+    // ── 判赏正例 (L1 → 交 L2) ──
     [Theory]
     [InlineData("好的，明白了")]
     [InlineData("没错，就是要这个效果")]
     [InlineData("Got it, thanks")]
-    public void L1_采纳正例_判Adopt(string user)
-        => Assert.Equal(CorrectionDetector.CorrectionKind.Adopt, Rule(user)!.Kind);
+    public void L1_采纳正例_交L2判官(string user)
+        => Assert.Null(Rule(user));
 
     // ── 误杀陷阱 (对抗实证: 首轮 L1 错 3 例, 语境豁免后转 Neutral/进 L2) ──
     [Theory]
@@ -38,10 +39,10 @@ public class CorrectionDetectorTests
             $"误杀: {user}");
     }
 
-    // ── 求证句: L1 判 Adopt (短含"对"), 不应判罚 ✓ ──
+    // ── 求证句: L1 不再自行裁决 (词表已删) ⇒ 交 L2, 绝不误判罚 ✓ ──
     [Fact]
     public void L1_求证句_不判罚()
-        => Assert.Equal(CorrectionDetector.CorrectionKind.Adopt, Rule("这个配置是对的吧？我有点不确定")!.Kind);
+        => Assert.Null(Rule("这个配置是对的吧？我有点不确定"));
 
     // ── L2 协议 (mock: 单字母/全词/空 content 重试语义) ──
     [Fact]

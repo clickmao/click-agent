@@ -18,8 +18,9 @@ public class TendencyPersistenceTests
                 UserId = "u1",
                 Timestamp = DateTime.UtcNow,
             };
-            foreach (var kv in agent.tendency.TendencyAnalyzer.ExtractSignals("用 C# 写代码，回答简洁"))
-                d.TopicScores[kv.Key] = kv.Value;
+            // 词表移除后 (2026-09-19): ExtractSignals 的中文信号表已删 ⇒ 本测试不再依赖它。
+            // 持久化层契约 = UpdateTendencyAsync 落盘 ∧ 按 userId 回读 ⇒ 直接喂结构化倾向数据。
+            d.TopicScores["csharp"] = 1.0;
 
             a.UpdateTendencyAsync(d.UserId, d).Wait();
 

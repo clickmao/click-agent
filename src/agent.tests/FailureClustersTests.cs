@@ -63,6 +63,8 @@ public class FailureClustersTests : IDisposable
                      FailureClusters.ClusterKey("复现某崩溃问题") + "|" +
                      FailureClusters.ClusterKey("git rebase 的正确流程是什么");
         // 期望值由独立实现 (Python FNV-1a/序数排序) 交叉验证得出 — 非"抄实现输出"。
-        Assert.Equal("F04057D8|35C534E9|C837EB65", actual);
+        // 2026-09-19 中文词表移除后重算: 停用词表已删 ⇒ 指纹纳入全部汉字
+        // ("git rebase 的正确流程是什么" 由 C837EB65 → DC044030; 前两条不含停用字, 值不变)。
+        Assert.Equal("F04057D8|35C534E9|DC044030", actual);
     }
 }

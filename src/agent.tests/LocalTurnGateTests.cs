@@ -21,6 +21,18 @@ public sealed class LocalTurnGateTests
     private const string KeyEnv = "R413_GATE_FAKE_KEY";
     static LocalTurnGateTests() => Environment.SetEnvironmentVariable(KeyEnv, "k");
 
+    /// <summary>R575: 回补集合 (单条) —— 面标 + 签名, 与判定侧 (<c>NlpGate.IsPatched</c>) 看同一个键。</summary>
+    private static HashSet<string> Patches(string face, params string[] texts)
+    {
+        var set = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var t in texts)
+            set.Add(agent.nlp.NlpGate.Key(face, agent.nlp.NlpGate.SignatureOf(t)));
+        return set;
+    }
+
+    /// <summary>「无补丁」的**确定性**形态 (显式空集, 不读进程级回补库 ⇒ 与执行顺序无关)。</summary>
+    private static readonly HashSet<string> NoPatches = new(StringComparer.Ordinal);
+
     // ---------- 假端口 ----------
     private sealed class FakePort : ILocalGenerationPort
     {
@@ -391,9 +403,16 @@ public sealed class LocalTurnGateTests
     [Fact]
     public void G20_只看结论区_正文噪声不得穿透()
     {
-        var skip = TurnGateJudge.Parse(TurnGateJudge.ThinkOpen + "\n分析了半天\n" + TurnGateJudge.ThinkClose + "\n无新增");
+        // R575 (零词表): 结论区只认**字母标记** S/P (Parse 内的中文词标记已删) ⇒ 三侧都要钉:
+        //   ① 结论区字母标记生效; ② 词面回答 ⇒ no_marker (交远端, fail-safe — 不得猜);
+        //   ③ 正文里的推理在思考链未闭合时一律不得穿透。
+        var skip = TurnGateJudge.Parse(TurnGateJudge.ThinkOpen + "\n分析了半天\n" + TurnGateJudge.ThinkClose + "\nS");
         Assert.True(skip.Decided);
         Assert.Equal(TurnGateVerdict.Skip, skip.Verdict);
+
+        var worded = TurnGateJudge.Parse(TurnGateJudge.ThinkOpen + "\n分析了半天\n" + TurnGateJudge.ThinkClose + "\n无新增");
+        Assert.False(worded.Decided);                        // 词面 ⇒ 交远端 (R575: 零词表后不再认词面)
+        Assert.Equal("no_marker", worded.Error);
 
         // 正文说「有新增」但思考链没闭合 (被截断) ⇒ 必须降级, 绝不把正文当结论
         var noise = TurnGateJudge.Parse(TurnGateJudge.ThinkOpen + "\n这条是有新增的诉求，应该是 P\n" + new string('x', 40) + "\n\n");
@@ -450,19 +469,37 @@ public sealed class LocalTurnGateTests
 
     // ---------- 判据 6: 机械前置门 (零 token; 结构性消掉假阴性) ----------
     [Theory]
-    [InlineData("另外，测试命令是什么？", true)]                    // 真机被误跳的那条
-    [InlineData("不对，你上一条回答不准确，请重新确认后再回答一次。", true)]  // 真机被误跳的那条
-    [InlineData("用一句话说明这个仓库的构建命令是什么。", true)]
-    [InlineData("现在把结论压缩成一行给我。", true)]
-    [InlineData("帮我加一个 R413 的验收用例", true)]
-    [InlineData("路径 src/agent.tools 下有个报错", true)]
+    // R575 (零词表): 机械门的信号面只剩**结构信号** —— 问号 / 代码或路径符 / 数字 / 长度 ≥24。
+    //   词面信号 (疑问词/请求词/纠正词) 已删 ⇒ 无结构信号的中长句落 r1 字母判官 (不是本地吸收),
+    //   由下面的 G26b 钉死「这类真诉求必被认可族否决」。
+    [InlineData("另外，测试命令是什么？", true)]                    // 真机被误跳的那条 (问号 ⇒ 结构性 Pass)
+    [InlineData("不对，你上一条回答不准确，请重新确认后再回答一次。", true)]  // ≥24 字 ⇒ 结构性 Pass
+    [InlineData("帮我加一个 R413 的验收用例", true)]                // 数字
+    [InlineData("路径 src/agent.tools 下有个报错", true)]           // 路径符
     [InlineData("跑一下 3 个用例", true)]
+    [InlineData("用一句话说明这个仓库的构建命令是什么。", false)]   // 无结构信号 ⇒ 交 r1 (G26b 兜底)
+    [InlineData("现在把结论压缩成一行给我。", false)]
     [InlineData("好，按这个来。", false)]                    // 无信号 + 短 ⇒ 才交给 r1
     [InlineData("嗯。", false)]
     [InlineData("收到，谢谢。", false)]
     [InlineData("好，知道了。", false)]
     public void G26_机械前置门_信号族(string msg, bool expectPass)
         => Assert.Equal(expectPass, TurnGateJudge.MechanicalPass(msg));
+
+    [Fact]
+    public void G26b_无结构信号的真诉求_必被认可族否决()
+    {
+        // R575 安全方向 (零词表后**更强**, 不是放宽): 机械门不再用词面拦真诉求 ⇒ 这些句子会落到 r1,
+        // 若 r1 误判 Skip, 后置否决 (认可族结构确认) 必须把它翻回 Pass —— 否则用户拿到空话 (R434 事故)。
+        foreach (var msg in new[] { "用一句话说明这个仓库的构建命令是什么。", "现在把结论压缩成一行给我。" })
+        {
+            Assert.False(TurnGateJudge.MechanicalPass(msg), $"该走 r1 的句子: {msg}");
+            Assert.False(TurnGateJudge.MechanicalAck(msg), $"认可族必须否决: {msg}");
+        }
+        // 反向 (否决面不得被误扩成「什么都否决」): 真正的认可短句仍走本地面
+        Assert.True(TurnGateJudge.MechanicalAck("好，知道了。"));
+        Assert.True(TurnGateJudge.MechanicalAck("收到，谢谢。"));
+    }
 
     [Fact]
     public void G27_机械门_空或不认识的消息保守走远端()
@@ -599,15 +636,15 @@ public sealed class LocalTurnGateTests
 
     // ================= R465: 纯复述族可跳面 + 嵌入通道三态 =================
 
-    // ---------- 判据 R465-A: 纯复述族结构确认 (机械; 白名单字符集 + 完整标记) ----------
+    // ---------- 判据 R465-A: 纯复述族结构确认 (机械; 白名单字符集 + 回补面) ----------
     [Theory]
-    [InlineData("再讲一遍。", true)]           // R434 曾判「真诉求」⇒ 本轮起为合法 Skip 面 (回放原文)
+    [InlineData("再讲一遍。", true)]           // R434 曾判「真诉求」⇒ R465 起为合法 Skip 面 (回放原文)
     [InlineData("从头再说。", true)]
     [InlineData("再说一遍", true)]
     [InlineData("重复一遍吧", true)]
     [InlineData("你再说一遍。", true)]
     [InlineData("重新讲一遍", true)]
-    [InlineData("讲细一点。", false)]          // 要新内容 ⇒ 必须走远端
+    [InlineData("讲细一点。", false)]          // 要新内容 ⇒ 必须走远端 (且不在白名单字符集内)
     [InlineData("换个说法。", false)]          // 要新内容 ⇒ 必须走远端
     [InlineData("继续", false)]               // 驱动类: 既不 Ack 也不复述 (R449 教训: 不得当采纳)
     [InlineData("继续下一轮", false)]
@@ -617,7 +654,14 @@ public sealed class LocalTurnGateTests
     [InlineData("", false)]
     [InlineData("   ", false)]
     public void G35_纯复述族结构确认(string msg, bool expectRepeat)
-        => Assert.Equal(expectRepeat, TurnGateJudge.IsPureRepeat(msg));
+    {
+        // R575 (零词表): 吸收面 = **回补库** (LLM 成功轮登记的形状) ⇒ 每行都双侧断言:
+        //   · 无补丁 ⇒ 一律交远端 (保守方向; 不猜);
+        //   · 该行形状被回补 ⇒ 阳性行必须吸收 (证回补机制**真的接进了判定面**, 不是孤岛)。
+        var patches = Patches(agent.nlp.NlpGate.FaceRepeat, msg);
+        Assert.False(TurnGateJudge.IsPureRepeat(msg, NoPatches), "无补丁 ⇒ 交远端: " + msg);
+        Assert.Equal(expectRepeat, TurnGateJudge.IsPureRepeat(msg, patches));
+    }
 
     // ---------- 判据 R465-B: 复述 Skip 的面必须窄于 Ack 面, 且两道前置都早于 r1 ----------
     [Fact]

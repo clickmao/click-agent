@@ -76,7 +76,7 @@ public sealed class FailureClusters
     /// <summary>问题指纹: 归一化 + 关键字排序 hash (停用词去除; 中文按字, 英文按词)。</summary>
     internal static string ClusterKey(string question)
     {
-        var stop = new HashSet<string> { "的", "了", "吗", "呢", "怎么", "如何", "什么", "请", "帮我", "the", "a", "is", "how", "to" };
+        var stop = new HashSet<string> ();
         var chars = new List<string>();
         foreach (var raw in question.ToLowerInvariant().Split(' ', StringSplitOptions.RemoveEmptyEntries))
             if (!stop.Contains(raw)) chars.Add(raw);

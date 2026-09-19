@@ -1,3 +1,5 @@
+using agent.nlp;
+
 namespace agent.intent;
 
 /// <summary>
@@ -7,52 +9,26 @@ namespace agent.intent;
 /// </summary>
 public static class TaskRelevanceChecker
 {
-    /// <summary>指代词表 — 新消息依赖上文, 必然相关 (强信号, 一票否决无关判定)</summary>
-    private static readonly string[] DeixisWords =
-    {
-        "它", "他们", "这个", "那个", "刚才", "继续", "上面", "刚才说的", "前面的", "再", "接着", "然后",
-        // R182 (真缺陷 61): 记忆回指词 — "还记得/上一条/上次/之前" 必然依赖上文 (deixis 定义),
-        // 缺失导致 C07 repl 轮2 被误隔离 (批130 实证 score=2, "[隔离任务] 不记得")。
-        "记得", "上一条", "上一句", "上次", "之前说的", "之前", "刚才那条", "你说过",
-    };
-
-    /// <summary>显式无关信号词 — "顺便/另外/帮我查" 提出新话题</summary>
-    private static readonly string[] OffTopicMarkers = { "顺便", "另外", "帮我查", "查一下", "问一下", "帮我算", "帮我写" };
+    /// <summary>
+    /// 证据充分性下限 (token 数, o200k 口径实测校准) — 无词表后「离题」结论必须建立在充分文本证据上:
+    /// 短消息一律不下结论 (fail-safe, 防指代/追问/新语言被错杀)。校准点: 指代/追问短句 2..11 token
+    /// (须不隔离) vs 长离题句 14/26 token (须隔离)。
+    /// 已知边界 (诚实记录): 短句且确属无关新任务 (如 "帮我查一下明天天气") 也不再隔离 —
+    /// 它与指代追问在 token 口径上不可分, 按 fail-safe 方向让位。
+    /// </summary>
+    public const int EvidenceTokenFloor = 12;
 
     /// <summary>无关判定阈值 (无关分 ≥ 此值且无指代词 → 隔离任务)</summary>
     public const int DefaultIsolationThreshold = 2;
 
-    /// <summary>简单中文实体抽取 (规则版): 去停用词后取 2-4 字词块 — 与 GoalProfile 抽取口径一致</summary>
-    public static List<string> ExtractEntities(string text)
-    {
-        if (string.IsNullOrWhiteSpace(text))
-            return new List<string>();
-        var cleaned = new string(text.Where(c => !char.IsWhiteSpace(c) && !char.IsPunctuation(c)).ToArray());
-        // 规则版: 抽英文词与数字串 + 2-4 字中文滑窗 (去常见虚词开头)
-        var entities = new List<string>();
-        var sb = new System.Text.StringBuilder();
-        foreach (var ch in cleaned)
-        {
-            if (char.IsAsciiLetterOrDigit(ch))
-                sb.Append(ch);
-            else
-            {
-                if (sb.Length > 0) { entities.Add(sb.ToString()); sb.Clear(); }
-            }
-        }
-        if (sb.Length > 0) entities.Add(sb.ToString());
-        for (var i = 0; i < cleaned.Length - 1; i++)
-        {
-            foreach (var len in new[] { 4, 3, 2 })
-            {
-                if (i + len > cleaned.Length) continue;
-                var w = cleaned.Substring(i, len);
-                if (w.All(c => c >= 0x4e00 && c <= 0x9fff) && !IsStopword(w))
-                    entities.Add(w);
-            }
-        }
-        return entities.Distinct().ToList();
-    }
+    /// <summary>简单中文实体抽取 — 已改为**现有机制** `agent.nlp.TextSignal.KeyTokens` (fastText 语言标签 + o200k BPE 分词)。
+    /// 原实现只认 ASCII 字母数字 + CJK 0x4E00-0x9FFF 码点区间 (词表时代): 对俄语/日语/阿拉伯语/新梗抽取为空 ⇒ 判定停摆。</summary>
+    public static List<string> ExtractEntities(string text) =>
+        TextSignal.KeyTokens(text)
+            // 单字 token 无区分度 (o200k 会把中文切成单字), 会造成字面假重叠 ⇒ 污染「零重叠」判据
+            .Where(t => t.Length >= 2)
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
 
     /// <summary>v0.11.0 R39b: 两 token 是否共享 ascii 4-gram (连写技术名交叉匹配, 忽略大小写)。</summary>
     private static bool SharesAsciiGram(string a, string b)
@@ -70,13 +46,7 @@ public static class TaskRelevanceChecker
         return false;
     }
 
-    private static bool IsStopword(string w) =>
-        w is "可以" or "这个" or "那个" or "什么" or "怎么" or "如果" or "但是" or "或者" or "需要" or "帮我";
-
-    private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, string> _normCache = new();
-
-    /// <summary>词表项归一化 (缓存) — 词表项本身无空白, 主要吞全角/大小写。</summary>
-    private static string NormCache(string w) => _normCache.GetOrAdd(w, Normalize);
+    // (原 IsStopword / NormCache 随中文词表一并移除 — 现机制不再需要停用词与词表归一化缓存)
 
     /// <summary>
     /// R183 归一化: 去空白/标点/符号 + 全角→半角 + 小写。
@@ -108,20 +78,18 @@ public static class TaskRelevanceChecker
         if (string.IsNullOrWhiteSpace(incomingMessage))
             return (false, 0, "空消息");
 
-        // R183 (泛化改造, 用户质疑: 空格/标点插入漏匹配 + 其他语言/新词覆盖不足):
-        // 归一化层 — 去空白/标点/符号 + 全角→半角 + 小写。词表/标记匹配全部在归一化文本上:
-        // "刚 才 那个"/"记，得"/全角"？" 机械免疫; 简繁/新词由短问句结构信号兜底。
+        // R183 归一化层保留 (仅服务长度/结构信号; 词表匹配已全部移除)。
         var normalized = Normalize(incomingMessage);
 
-        // 强信号: 指代词 → 相关 (一票否决; 归一化文本上匹配)
-        if (DeixisWords.Any(w => normalized.Contains(NormCache(w), StringComparison.Ordinal)))
-            return (false, 0, "含指代词, 依赖上文");
-
-        // v0.11.0 R39c (真缺陷 26): 技术细节追问 ("用 X 怎么写/怎么实现") 实体上常与任务标题零重叠
-        // (requests vs 爬虫标题) — 但语义上强依赖上文。实现询问标记 + 短消息 → 一票否决。
-        string[] howToMarkers = { "怎么写", "怎么实现", "怎么做", "怎么配", "如何写", "如何实现", "如何做", "怎么用", "如何用" };
-        if (normalized.Length <= 30 && howToMarkers.Any(w => normalized.Contains(NormCache(w), StringComparison.Ordinal)))
-            return (false, 0, "实现询问, 依赖上文任务");
+        // 原四张中文词表 (指代词/离题词/实现询问词/纯疑问词) 已移除 ⇒ 词表槽位由**证据充分性**承担:
+        // 有锚时, 短消息 (token 数 < EvidenceTokenFloor) 或跨语言 (语义不可比) ⇒ 一律不下「离题」结论。
+        // fail-safe: 宁可交 LLM 也不用无证据的规则错杀; 依据 = agent.nlp 的语言标签 + 分词 (语言无关)。
+        var anchorText = string.Join(" ", goalKeyEntities);
+        var msgTokens = TextSignal.TokenCount(incomingMessage);
+        var floorReasons = new List<string>();
+        // 跨语言**不**参与本否决 (换一种语言的新任务照样该隔离; 语言只服务于 NlpGate 的"本地消化 vs 升级"面)。
+        if (goalKeyEntities.Count > 0 && anchorText.Length > 0 && msgTokens > 0 && msgTokens < EvidenceTokenFloor)
+            floorReasons.Add($"短消息证据不足 token={msgTokens}<{EvidenceTokenFloor}");
 
         var score = 0;
         var reasons = new List<string>();
@@ -156,25 +124,24 @@ public static class TaskRelevanceChecker
             reasons.Add($"意图不同 {goalIntent}→{incomingIntent}");
         }
 
-        // 显式离题词 → +1 (归一化文本)
-        if (OffTopicMarkers.Any(w => normalized.Contains(NormCache(w), StringComparison.Ordinal)))
-        {
-            score += 1;
-            reasons.Add("显式离题信号词");
-        }
+        // (原「显式离题词表 +1」已移除 — 离题证据现由 实体零重叠 +2 / 意图不同 +1 承担,
+        //  且必须通过上方的「证据充分性」闸: 短消息/跨语言一律不下结论)
 
         // R183 结构信号 (语言无关): 归一化后极短 + 以问号结尾 = 元问询 (对历史的追问),
         // 不是新任务 → 减 1。对任何语言/新词生效 (不依赖词表); 长任务句不受影响。
         var isQuestion = incomingMessage.TrimEnd().EndsWith("?", StringComparison.Ordinal)
                       || incomingMessage.TrimEnd().EndsWith("？", StringComparison.Ordinal);
-        var interrogative = new[] { "为什么", "怎么", "什么", "哪", "吗", "么", "是否", "能不能", "会不会" };
-        // 纯疑问短语 (归一化 ≤4 字且由疑问词构成) → 不含任何任务信息, 一票否决 (deixis 同级)
-        if (normalized.Length <= 4 && interrogative.Any(w => normalized == w))
-            return (false, 0, "纯疑问短语, 无任务信息");
-        if ((isQuestion && normalized.Length <= 12) || (normalized.Length <= 8 && interrogative.Any(w => normalized.Contains(w))))
+        if (isQuestion && normalized.Length <= 12)
         {
             score -= 1;
             reasons.Add("短问句元问询信号");
+        }
+
+        // 证据不足 (短消息/跨语言) ⇒ 不下「离题」结论 (score 保留供审计, 只否决 isolated)
+        if (floorReasons.Count > 0)
+        {
+            reasons.AddRange(floorReasons);
+            return (false, score, string.Join("; ", reasons));
         }
 
         var isolated = score >= threshold;

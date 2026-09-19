@@ -65,30 +65,18 @@ public static class TopicRelevanceEvaluator
         // 依赖上文的追问不是话题漂移 (R301 语义: drift 是"新输入离开核心主题", 追问本来就贴着上文)。
         // R308 修正 (结构): Check 的短询问一票否决会**跳过实体重叠检查** — 偏题新话题 ("红烧肉怎么做?")
         // 被误判追问。evaluator 补算重叠事实: goalEntities 与消息无 4-gram/包含重叠 → 真离题, veto 不生效。
-        var deixisVeto = signals.Any(sg => sg.Contains("指代词"));
-        var howToVeto = signals.Any(sg => sg.Contains("实现询问"));
-        var noOverlapFact = HasNoEntityOverlap(incomingMessage, goalKeyEntities);
-        // R312: 无锚模式 (goalKeyEntities 空) — noOverlapFact 无法判定 (恒 false), 短询问 veto
-        // 会把真离题新话题 ("红烧肉怎么做?") 误判追问 → 词面偏离本身充当 novelty 事实:
-        // 指代词 veto 保留 (绝对), 短询问 veto 仅在"有锚且重叠"时生效。
-        var anchorlessMode = goalKeyEntities.Count == 0;
+        // 词表移除后 (2026-09-19): 原「指代词 / 实现询问」词表否决 → 改为**证据充分性**否决。
+        // TaskRelevanceChecker 的「证据不足 (短消息) / 跨语言」理由即"依赖上文 / 语义不可比"的机制化表达:
+        // 证据不足 ⇒ 既不算隔离, 也不算漂移 (追问不被牵引; fail-safe 方向)。
+        var evidenceVeto = signals.Any(sg => sg.Contains("证据不足") || sg.Contains("跨语言"));
         // R313: 单字衔接副词精修 — Check 词表含 "再" (单字), "再讲一个糖醋排骨" 这类
         // 衔接副词 + 全新话题实体 会被误判指代 (绝对 veto → drift 恒 false, L1 牵引失效)。
         // 判据: 消息仅以单字副词 ("再"/"然后"/"接着") 开头衔接 + 词面偏离已成立 (isDrift 原始值 true)
         // → 该"指代"只是句式衔接, 不构成上文依赖, veto 不适用。
         // 复合指代 ("再说说刚才那个") 因同时命中复合词 (刚才/那个) 不受此修影响 (Check 归一化
         // Contains 命中任意复合词 → 仍绝对 veto — 真回指安全)。
-        var conjunctionPrefix = incomingMessage.TrimStart().StartsWith("再") ||
-                                incomingMessage.TrimStart().StartsWith("然后") ||
-                                incomingMessage.TrimStart().StartsWith("接着");
-        var complexDeixisPresent = new[] { "它", "他们", "这个", "那个", "刚才", "上面", "前面", "记得",
-            "上一条", "上一句", "上次", "之前", "你说过" }
-            .Any(w => incomingMessage.Contains(w, StringComparison.Ordinal));
-        var deixisVetoEffective = deixisVeto && !(conjunctionPrefix && !complexDeixisPresent && isDrift);
-        // R308 分级: 指代词 → 绝对追问 (无条件 veto — "那个/刚才" 必然指上文);
-        // 短询问 → 零重叠事实在场时不 veto ("红烧肉怎么做?" 是真离题新话题, "怎么优化" 才是追问):
-        var vetoed = deixisVetoEffective || (howToVeto && !anchorlessMode && !noOverlapFact);
-        if (vetoed) isDrift = false;
+        // (词表时代的中文衔接副词精修 已移除 — 产品码内不再有任何中文词面判据)
+        if (evidenceVeto) isDrift = false;
 
         if (isDrift && !isIsolated)
             signals.Add("画像词面偏离 (未达隔离阈值)");

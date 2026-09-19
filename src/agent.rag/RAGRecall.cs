@@ -15,6 +15,9 @@ public class RAGRecall : IRAGRecall
     private readonly object _lock = new();
     // R404: 融合召回 (bge-base 语义路 + 词法路 + RRF); null = 关闭 ⇒ 完全走旧路径
     private readonly FusionRecall? _fusion;
+
+    /// <summary>精排打分器 (第二级相关性模型)。默认零依赖词法基线; 换本地 cross-encoder / 本地 LLM 打分即升级精排。</summary>
+    private readonly IRerankScorer _rerank = new LexicalRerankScorer(0.5);
     // R404: 文档二元组记忆化 — 按 (Id, UpdatedAt) 校验, 内容变了自动失效 (不脏读);
     // 无它则每次召回对全库重切二元组 (O(库大小) 字符操作)。
     private readonly Dictionary<string, (DateTime Stamp, string[] Grams)> _bigramMemo = new(StringComparer.Ordinal);
@@ -487,12 +490,52 @@ public class RAGRecall : IRAGRecall
             .OrderByDescending(r => r.Score)
             .ToList();
         for (int i = 0; i < parentMapped.Count; i++) parentMapped[i].Rank = i + 1;
-        
+
+        // ── 精排段 (用户钦定 KPI 2026-09-19; 口径 docs/evidence/RF0001/KPI.md §5) ──
+        // 漏斗: 召回 → 粗排(RRF 融合, 上方已做) → **精排(此处)** → 装配。
+        // 铁律: ① 只重排池内候选 (不扩召回); ② 产物只影响顺序 ⇒ 恒前缀不受影响 (命中率 ≥97% 不得破);
+        //       ③ 遥测: RerankApplied / LastRerankSwaps 非零才算"生效" (有代码行 ≠ 生效)。
+        parentMapped = ApplyRerank(parentMapped, request.Query);
+
         _logger.LogInformation("Recall returned {Count} results for query: {Query}", parentMapped.Count, request.Query);
         
         return Task.FromResult(parentMapped);
     }
     
+    /// <summary>精排段真正执行的次数 (生效证据; 恒 0 ⇒ 该段是孤岛)。</summary>
+    public int RerankApplied { get; private set; }
+
+    /// <summary>最近一次精排相对粗排序的错位数 (0 = 精排未改变顺序 ⇒ 打分器未生效)。</summary>
+    public int LastRerankSwaps { get; private set; }
+
+    /// <summary>
+    /// 精排段: 对**已召回池**重排序 (只重排, 不扩召回), 稳定确定 (同分按粗排序), 并写回 Rank。
+    /// 精排只作用于 prompt 的可变区 ⇒ 恒前缀与缓存命中率不受影响。
+    /// </summary>
+    private List<RecallResult> ApplyRerank(List<RecallResult> coarse, string query)
+    {
+        LastRerankSwaps = 0;
+        if (!_config.RerankEnabled || coarse.Count < 2) return coarse;
+        var pool = new RerankCandidate[coarse.Count];
+        for (var i = 0; i < coarse.Count; i++)
+        {
+            pool[i] = new RerankCandidate(
+                coarse[i].Document?.Id ?? string.Empty,
+                coarse[i].Document?.Content ?? string.Empty,
+                coarse[i].Score);
+        }
+        var idx = RerankStage.OrderIndices(pool, query, _rerank);
+        var ordered = new List<RecallResult>(coarse.Count);
+        for (var i = 0; i < idx.Length; i++)
+        {
+            if (idx[i] != i) LastRerankSwaps++;
+            ordered.Add(coarse[idx[i]]);
+        }
+        for (var i = 0; i < ordered.Count; i++) ordered[i].Rank = i + 1;
+        RerankApplied++;
+        return ordered;
+    }
+
     public Task<RAGDocument?> GetAsync(string id)
     {
         lock (_lock)

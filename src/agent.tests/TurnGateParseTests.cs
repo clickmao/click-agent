@@ -46,8 +46,10 @@ public class TurnGateParseTests
     [Fact]
     public void WordMarkers()
     {
-        Case("word_ack", TO + "分析" + TC + "\n纯认可", "Skip", "ok");
-        Case("word_new", TO + "分析" + TC + "\n有新增诉求", "Pass", "ok");
+        // 词表移除后 (2026-09-19): 本地裁决只认**字母标记** (S/P/A/C/N) — 中文词标记不再本地裁决,
+        // 一律 no_marker ⇒ 交 LLM (本地不做词面猜测)。旧期望 (词面 ⇒ Skip/Pass) 来自已删词表。
+        Case("word_ack", TO + "分析" + TC + "\n纯认可", null, "no_marker");
+        Case("word_new", TO + "分析" + TC + "\n有新增诉求", null, "no_marker");
     }
 
     [Fact]
@@ -60,7 +62,7 @@ public class TurnGateParseTests
     [Fact]
     public void TailWindowWithoutThinkBlock()
     {
-        Case("tail64_no_think", "纯认可", "Skip", "ok");
+        Case("tail64_no_think", "纯认可", null, "no_marker");   // 词表已删: 无字母标记 ⇒ 不本地裁决
         Case("empty_conclusion", TO + "分析" + TC, null, "empty_conclusion");
         Case("no_marker", TO + "分析" + TC + "\n没有标记", null, "no_marker");
     }

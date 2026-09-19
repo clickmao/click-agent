@@ -39,11 +39,29 @@ public class GateRulesPortDiffTests
         return rows;
     }
 
-    /// <summary>产品侧标签: 与前置门链同序 (MechanicalPass → 纯复述 → 认可族 → 残余带)。</summary>
-    private static string ProductLabel(string text)
+    /// <summary>语料声明的补丁面 ⇒ C# 侧补丁集合 (签名只在 C# 侧算; 端口按行内 `patch` 声明同构判定)。</summary>
+    private static HashSet<string> PatchesOf(IEnumerable<JsonElement> rows)
+    {
+        var set = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var r in rows)
+        {
+            if (!r.TryGetProperty("patch", out var p)) continue;
+            var face = p.GetString() ?? "";
+            if (face.Length == 0) continue;
+            set.Add(agent.nlp.NlpGate.Key(face, agent.nlp.NlpGate.SignatureOf(r.GetProperty("text").GetString() ?? "")));
+        }
+        return set;
+    }
+
+    /// <summary>「无补丁」的确定性形态 (显式空集, 不读进程级回补库 ⇒ 与执行顺序无关)。</summary>
+    private static readonly HashSet<string> NoPatches = new(StringComparer.Ordinal);
+
+    /// <summary>产品侧标签: 与前置门链同序 (MechanicalPass → 纯复述 → 同义改写 → 认可族 → 残余带)。</summary>
+    private static string ProductLabel(string text, IReadOnlyCollection<string> patches)
     {
         if (TurnGateJudge.MechanicalPass(text)) return "pass";
-        if (TurnGateJudge.IsPureRepeat(text)) return "repeat";
+        if (TurnGateJudge.IsPureRepeat(text, patches)) return "repeat";
+        if (LocalParaphraseChannel.IsPureParaphrase(text, patches)) return "para";
         if (TurnGateJudge.MechanicalAck(text)) return "ack";
         return "other";
     }
@@ -53,17 +71,21 @@ public class GateRulesPortDiffTests
     {
         var rows = LoadCorpus();
         Assert.True(rows.Count >= 300, $"语料过窄: {rows.Count} 行 (<300)");
+        var patches = PatchesOf(rows);                      // R575: 补丁面由语料声明 (repeat/para)
         var mismatch = new List<string>();
+        var patched = 0;
         foreach (var r in rows)
         {
             var text = r.GetProperty("text").GetString() ?? "";
             var portLabel = r.GetProperty("class").GetString();
-            var prodLabel = ProductLabel(text);
+            if (r.TryGetProperty("patch", out _)) patched++;
+            var prodLabel = ProductLabel(text, patches);
             if (portLabel != prodLabel)
                 mismatch.Add($"[{portLabel}≠{prodLabel}] {text.Substring(0, Math.Min(40, text.Length))}");
         }
+        Assert.True(patched >= 8, $"补丁面覆盖不足 ({patched} 行) ⇒ 回补面未被差分校验覆盖");
         Assert.True(mismatch.Count == 0,
-            $"端口与产品判据不一致 {mismatch.Count}/{rows.Count} 条 (前 8): {string.Join(" | ", mismatch.GetRange(0, Math.Min(8, mismatch.Count)))}");
+            $"端口与产品判据不一致 {mismatch.Count}/{rows.Count} 条 (前 8): " + string.Join(" | ", mismatch.GetRange(0, Math.Min(8, mismatch.Count))));
     }
 
     [Fact]
@@ -72,7 +94,7 @@ public class GateRulesPortDiffTests
         var rows = LoadCorpus();
         var classes = new HashSet<string>();
         foreach (var r in rows) classes.Add(r.GetProperty("class").GetString() ?? "");
-        foreach (var need in new[] { "pass", "ack", "repeat", "other" })
+        foreach (var need in new[] { "pass", "ack", "repeat", "para", "other" })
             Assert.Contains(need, classes);
     }
 
@@ -91,7 +113,7 @@ public class GateRulesPortDiffTests
             real++;
             var text = r.GetProperty("text").GetString() ?? "";
             if (TurnGateJudge.MechanicalPass(text)) continue;
-            if (TurnGateJudge.IsPureRepeat(text) || TurnGateJudge.MechanicalAck(text)) skipFace++;
+            if (TurnGateJudge.IsPureRepeat(text, NoPatches) || TurnGateJudge.MechanicalAck(text)) skipFace++;
         }
         Assert.True(real >= 300, $"真实语料过窄: {real}");
         Assert.Equal(0, skipFace);

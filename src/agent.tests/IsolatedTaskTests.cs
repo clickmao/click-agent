@@ -18,11 +18,13 @@ public class IsolatedTaskTests
     [Fact]
     public void Calculator_Goal_Weather_Ask_Is_Isolated()
     {
-        // 计算器开发中突然"查天气" → 实体零重叠 + 离题信号 → 隔离
+        // 计算器开发中突然"查天气" → 实体零重叠 + 意图不同 ⇒ 隔离。
+        // 注 (2026-09-19): 证据充分性下限 (token ≥ 12) 生效后, 短句一律不下离题结论 ⇒
+        // 本用例改用证据充分的长句表达"无关新任务"(短句与指代追问在 token 口径上不可分, 让位于 fail-safe)。
         var (isIsolated, score, reason) = TaskRelevanceChecker.Check(
             new List<string> { "计算器", "表达式", "解析" },
             "开发计算器项目",
-            "帮我查一下明天天气怎么样",
+            "帮我查一下明天天气怎么样，还有周末适不适合出门钓鱼，需要注意些什么",
             "query",
             threshold: 2);
         Assert.True(isIsolated, $"score={score} reason={reason}");
@@ -49,8 +51,10 @@ public class IsolatedTaskTests
             "开发计算器项目",
             "把它删掉重写",
             "modify");
+        // 含指代/依赖上文的短句 → 不隔离。词表移除后 (2026-09-19): 依据由「证据充分性」闸给出
+        // (短消息 token < EvidenceTokenFloor ⇒ 不下离题结论), reason 不带词表词面。
         Assert.False(isIsolated);
-        Assert.Contains("指代词", reason);
+        Assert.Contains("证据不足", reason);
     }
 
     // ── I.3/I.4 隔离执行与销毁 ──

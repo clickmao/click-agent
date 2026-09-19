@@ -26,26 +26,17 @@ public static class CorrectionDetector
 
     public enum CorrectionKind { Neutral = 0, Adopt = 1, Correct = 2 }
 
-    // ── L1 规则词面 (中文为主; 命中强模式即结算) ──
+    // ── L1 规则词面 — 已按用户令全部移除 (2026-09-19 中文词表清零) ──
+    // 判罚/采纳不再有词表捷径: RuleJudge 一律返回 null ⇒ 交 L2 字母判官 (C/A/N, 现有机制)。
+    // 保留这三个空数组仅为签名兼容 (RuleJudge 的遍历与豁免前置循环仍在, 空表即恒不命中)。
     private static readonly string[] CorrectMarkers =
-    {
-        "不对", "错了", "不是这样", "你说错", "理解错了", "搞错了", "不对吧",
-        "重新", "应该是", "我说的是", "你理解成", "纠正", "不是这个意思",
-        "wrong", "incorrect", "no,", "not what i meant", "you misunderstood",
-    };
+    [];
     private static readonly string[] AdoptMarkers =
-    {
-        "好的", "明白了", "懂了", "收到", "谢谢", "没错", "对", "正是",
-        "thanks", "got it", "correct", "exactly",
-    };
+    [];
 
-    // R361 对抗修正: 语境豁免 — 否定词出现在转述他人/假设/历史语境时不判罚 (L1 误杀 3 例实证)
+    // R361 语境豁免 — 随词表一并移除 (无词面判罚 ⇒ 无需豁免表; 语境判断交 L2)
     private static readonly string[] ContextExemptions =
-    {
-        "同事说", "别人说", "他们说", "据说",        // 转述他人
-        "如果我说错", "如果我理解", "假如",          // 假设句
-        "上次", "之前那个", "历史", "昨天",          // 历史对照
-    };
+    [];
 
     /// <summary>L1 规则判定。返回 null = 模糊 (需 L2)。</summary>
     public static CorrectionVerdict? RuleJudge(string userMessage, string previousReply)
@@ -60,30 +51,11 @@ public static class CorrectionDetector
             if (lower.Contains(ex))
                 return null;
 
-        // 强纠正: 纠正词 + (指代词 或 短消息 — 短否定几乎必然针对上一轮)
-        foreach (var m in CorrectMarkers)
-        {
-            if (!lower.Contains(m)) continue;
-            var isEnglishMarker = m.All(c => c < 0x80); // 英文标记自带指代 ("not what i meant" 必指上一轮)
-            var referential = isEnglishMarker || ContainsReference(lower) || msg.Length <= 24;
-            if (referential)
-                return new CorrectionVerdict { Kind = CorrectionKind.Correct, Confidence = 0.9, Signal = $"marker:{m}" };
-        }
-
-        // 强采纳: 肯定词 + 短消息 (长消息即使含"对"也可能是新话题的转折, 不判)
-        foreach (var m in AdoptMarkers)
-        {
-            if (!lower.Contains(m)) continue;
-            if (msg.Length <= 16)
-                return new CorrectionVerdict { Kind = CorrectionKind.Adopt, Confidence = 0.85, Signal = $"marker:{m}" };
-        }
-
-        return null; // 模糊 → L2
+        // 判罚/采纳一律交 L2 字母判官 (C/A/N — 现有机制); 无词表 ⇒ L1 不凭词面猜。
+        // (原「强纠正: 纠正词 + 指代词/短消息」与「强采纳: 肯定词 + 短消息」两段已按用户令删除:
+        //  词面对其它语言/新梗必然漏判, 且短否定/肯定词在转述与假设语境下误杀 — R361 三例实证。)
+        return null; // 一律模糊 → L2 判官
     }
-
-    private static bool ContainsReference(string lower) =>
-        lower.Contains("你") || lower.Contains("它") || lower.Contains("这") ||
-        lower.Contains("that") || lower.Contains("you") || lower.Contains("it ");
 
     /// <summary>
     /// R435: J 判官 prompt **单一构造点**（本地与远端由同一函数产出 ⇒ 结构上不可能两套提示；

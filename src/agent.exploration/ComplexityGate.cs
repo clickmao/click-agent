@@ -22,7 +22,7 @@ public static class ComplexityGate
         { v.Score += 2; v.Triggers.Add("path_like"); }
         if (msg.Length > 200)
         { v.Score += 1; v.Triggers.Add("long_input"); }
-        foreach (var w in new[] { "对比", "比较", "哪个更好", "区别", "compare", "versus", " vs " })
+        foreach (var w in Array.Empty<string>())
             if (msg.Contains(w))
             { v.Score += 1; v.Triggers.Add("comparison"); break; }
         v.IsComplex = v.Score >= threshold;
