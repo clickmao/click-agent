@@ -1,0 +1,82 @@
+Build started 9/19/2026 2:13:46 PM.
+Test run for /tmp/r576wt3/src/agent.tests/bin/Debug/net10.0/agentframework.tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.0+00ab0a9ec4 (64-bit .NET 10.0.11)
+[xUnit.net 00:00:00.14]   Discovering: agentframework.tests
+[xUnit.net 00:00:00.47]   Discovered:  agentframework.tests
+[xUnit.net 00:00:00.50]   Starting:    agentframework.tests
+[xUnit.net 00:00:00.88]     agent.tests.VerificationFormTests.Registry_Exists_And_HasNoViolations [FAIL]
+[xUnit.net 00:00:00.88]       登记表违规:
+[xUnit.net 00:00:00.88]         r417.probe-anti-saturation: covers 登记的路径不存在 'data/probe/taskset-r417-json.json' (R2c)
+[xUnit.net 00:00:00.88]         r418.probe-process-kpi: covers 登记的路径不存在 'data/probe/process-metrics-r418.json' (R2c)
+[xUnit.net 00:00:00.88]         r418.probe-process-kpi: covers 登记的路径不存在 'data/probe/probe-r418-agent.json' (R2c)
+[xUnit.net 00:00:00.88]         r418.probe-process-kpi: covers 登记的路径不存在 'data/probe/probe-r418-json-mut.json' (R2c)
+[xUnit.net 00:00:00.88]         r418.probe-process-kpi: covers 登记的路径不存在 'data/probe/replies/agents20260916-p001.txt' (R2c)
+[xUnit.net 00:00:00.88]         r418.probe-process-kpi: covers 登记的路径不存在 'data/probe/replies/agents20260916-p002.txt' (R2c)
+[xUnit.net 00:00:00.88]         r418.probe-process-kpi: covers 登记的路径不存在 'data/probe/replies/agents20260916-p003.txt' (R2c)
+[xUnit.net 00:00:00.88]         r419.probe-multiturn: covers 登记的路径不存在 'data/probe/probe-agent-seed419-r419bagent-b4095015-t2.json' (R2c)
+[xUnit.net 00:00:00.88]         r419.probe-multiturn: covers 登记的路径不存在 'data/probe/probe-agent-seed419-r419dagent-b3092030-t2.json' (R2c)
+[xUnit.net 00:00:00.88]         r468.gate-rules-port-diff: evidence_path 不存在 'eval/rover/r468/difftest_r468.log' (R2)
+[xUnit.net 00:00:00.88]         r468.gate-rules-port-diff: covers 登记的路径不存在 'eval/rover/r468/difftest_r468.log' (R2c)
+[xUnit.net 00:00:00.88]         r487.three-arm-realand-kpi-negative: covers 登记的路径不存在 'eval/rover/r487/both_r487.log' (R2c)
+[xUnit.net 00:00:00.88]         r488.two-by-two-ablation-kpi-first-pass: covers 登记的路径不存在 'eval/rover/r488/both_r488.log' (R2c)
+[xUnit.net 00:00:00.88]         r488.r486-invitro-first-run-and-empty-base-rate: covers 登记的路径不存在 'eval/rover/r486/diff_r486.log' (R2c)
+[xUnit.net 00:00:00.88]         external.contrast-orchestrator-vs-codex-r517: evidence_path 不存在 'eval/rover/r517/run-0917-121736/summary.txt' (R2)
+[xUnit.net 00:00:00.88]         external.contrast-orch-arm-r520: covers 登记的路径不存在 'eval/rover/r520/run-0917-145837/orch/report.json' (R2c)
+[xUnit.net 00:00:00.88]         internal.single-type-per-file-r526: covers 登记的路径不存在 'eval/rover/r526/evidence/type-extraction.log' (R2c)
+[xUnit.net 00:00:00.88]         internal.artifact-placement-selfverification-r528: evidence_cmd 引用不存在的路径 'eval/rover/r528/run-0917-r528-w1/adapter' (R2b 命令不可执行 —— 退役/反证场景须登记 cmd_expect_absent)
+[xUnit.net 00:00:00.88]         internal.merge-axis-mount-r531: evidence_cmd 引用不存在的路径 'eval/rover/r531/run-0917-213234' (R2b 命令不可执行 —— 退役/反证场景须登记 cmd_expect_absent)
+[xUnit.net 00:00:00.88]         internal.merge-axis-mount-r531: covers 登记的路径不存在 'eval/rover/r531/run-0917-213234/adapter/' (R2c)
+[xUnit.net 00:00:00.88]         internal.r536-r1-contract-deadend-and-rc-split: evidence_path 不存在 'eval/rover/r536/run-w1/logs/analysis-w1.json' (R2)
+[xUnit.net 00:00:00.88]         internal.r536-r1-contract-deadend-and-rc-split: frozen 但证据文件不可读 'eval/rover/r536/run-w1/logs/analysis-w1.json' (R2e)
+[xUnit.net 00:00:00.88]         internal.r542-g1-repair-budget-ablation-rc-decoupling: evidence_cmd 引用不存在的路径 'eval/rover/r542/run-w1' (R2b 命令不可执行 —— 退役/反证场景须登记 cmd_expect_absent)
+[xUnit.net 00:00:00.88]       Stack Trace:
+[xUnit.net 00:00:00.88]         /tmp/r576wt3/src/agent.tests/VerificationFormTests.cs(639,0): at agent.tests.VerificationFormTests.Registry_Exists_And_HasNoViolations()
+[xUnit.net 00:00:00.88]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.88]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.90]   Finished:    agentframework.tests
+  Failed agent.tests.VerificationFormTests.Registry_Exists_And_HasNoViolations [314 ms]
+  Error Message:
+   登记表违规:
+  r417.probe-anti-saturation: covers 登记的路径不存在 'data/probe/taskset-r417-json.json' (R2c)
+  r418.probe-process-kpi: covers 登记的路径不存在 'data/probe/process-metrics-r418.json' (R2c)
+  r418.probe-process-kpi: covers 登记的路径不存在 'data/probe/probe-r418-agent.json' (R2c)
+  r418.probe-process-kpi: covers 登记的路径不存在 'data/probe/probe-r418-json-mut.json' (R2c)
+  r418.probe-process-kpi: covers 登记的路径不存在 'data/probe/replies/agents20260916-p001.txt' (R2c)
+  r418.probe-process-kpi: covers 登记的路径不存在 'data/probe/replies/agents20260916-p002.txt' (R2c)
+  r418.probe-process-kpi: covers 登记的路径不存在 'data/probe/replies/agents20260916-p003.txt' (R2c)
+  r419.probe-multiturn: covers 登记的路径不存在 'data/probe/probe-agent-seed419-r419bagent-b4095015-t2.json' (R2c)
+  r419.probe-multiturn: covers 登记的路径不存在 'data/probe/probe-agent-seed419-r419dagent-b3092030-t2.json' (R2c)
+  r468.gate-rules-port-diff: evidence_path 不存在 'eval/rover/r468/difftest_r468.log' (R2)
+  r468.gate-rules-port-diff: covers 登记的路径不存在 'eval/rover/r468/difftest_r468.log' (R2c)
+  r487.three-arm-realand-kpi-negative: covers 登记的路径不存在 'eval/rover/r487/both_r487.log' (R2c)
+  r488.two-by-two-ablation-kpi-first-pass: covers 登记的路径不存在 'eval/rover/r488/both_r488.log' (R2c)
+  r488.r486-invitro-first-run-and-empty-base-rate: covers 登记的路径不存在 'eval/rover/r486/diff_r486.log' (R2c)
+  external.contrast-orchestrator-vs-codex-r517: evidence_path 不存在 'eval/rover/r517/run-0917-121736/summary.txt' (R2)
+  external.contrast-orch-arm-r520: covers 登记的路径不存在 'eval/rover/r520/run-0917-145837/orch/report.json' (R2c)
+  internal.single-type-per-file-r526: covers 登记的路径不存在 'eval/rover/r526/evidence/type-extraction.log' (R2c)
+  internal.artifact-placement-selfverification-r528: evidence_cmd 引用不存在的路径 'eval/rover/r528/run-0917-r528-w1/adapter' (R2b 命令不可执行 —— 退役/反证场景须登记 cmd_expect_absent)
+  internal.merge-axis-mount-r531: evidence_cmd 引用不存在的路径 'eval/rover/r531/run-0917-213234' (R2b 命令不可执行 —— 退役/反证场景须登记 cmd_expect_absent)
+  internal.merge-axis-mount-r531: covers 登记的路径不存在 'eval/rover/r531/run-0917-213234/adapter/' (R2c)
+  internal.r536-r1-contract-deadend-and-rc-split: evidence_path 不存在 'eval/rover/r536/run-w1/logs/analysis-w1.json' (R2)
+  internal.r536-r1-contract-deadend-and-rc-split: frozen 但证据文件不可读 'eval/rover/r536/run-w1/logs/analysis-w1.json' (R2e)
+  internal.r542-g1-repair-budget-ablation-rc-decoupling: evidence_cmd 引用不存在的路径 'eval/rover/r542/run-w1' (R2b 命令不可执行 —— 退役/反证场景须登记 cmd_expect_absent)
+  Stack Trace:
+     at agent.tests.VerificationFormTests.Registry_Exists_And_HasNoViolations() in /tmp/r576wt3/src/agent.tests/VerificationFormTests.cs:line 639
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Test Run Failed.
+Total tests: 1
+     Failed: 1
+ Total time: 1.6627 Seconds
+     1>Project "/tmp/r576wt3/src/agent.tests/agentframework.tests.csproj" on node 1 (VSTest target(s)).
+     1>_VSTestConsole:
+         MSB4181: The "VSTestTask" task returned false but did not log an error.
+     1>Done Building Project "/tmp/r576wt3/src/agent.tests/agentframework.tests.csproj" (VSTest target(s)) -- FAILED.
+
+Build FAILED.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.36

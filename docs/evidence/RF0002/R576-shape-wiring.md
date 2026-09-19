@@ -52,6 +52,12 @@
 4b. **API 基线重生是设计行为**：新增公共成员 ⇒ `PublicApiSurfaceTests` 必红（本轮首跑 2 例红即此因）；重生差异 **+12/−0** 已逐行核对为 `agent.nlp` 新增面（含 §1 前台会话的 `LearnedShape`/`ShapeCounters`/`LearnFromRemote`/`ReportOutcome` 与 §2 的 `IsLearned(...,bool)`），**不得把此类红读成回归**。
 5. 本轮的 `IsLearned` 库模式开关把「注入模式」定义为**不读库**；生产（`patches == null`）才读库 ⇒ 两态分离，但两态**未做跨进程持久化真机验证**（`gate-shapes.txt` 装载路径由单测覆盖）。
 
+### 4d · committed-state 机检抓出的**既有**结构性缺口（非本轮引入）
+
+- 读数: 在 `git worktree add --detach HEAD` 的**干净检出树**里跑 `VerificationFormTests.Registry_Exists_And_HasNoViolations` ⇒ **1 例红**，报 **22 项违规**，形态全为 `covers 登记的路径不存在` / `evidence_path 不存在` / `evidence_cmd 引用不存在的路径`，指向 `data/probe/**`、`eval/rover/**` 产物（权威清单全文落 `R576-committed-state-registry-vf.txt`）。
+- 机理: 这些产物**未跟踪**（本机在场 ⇒ 主树判定绿）⇒ 登记表的证据面**不可从提交复现**。
+- 定级: **既有缺陷**（本轮未改登记表；`git ls-files` 缺档可证）；同属「判据只在主树成立」的假绿形态。
+- 处置: 本轮**不修**（属「证据是否随提交」的裁定 + 用户令「不许新增夹具和额外开发」）⇒ 落 R577 候选。
 ## 5. 归属与自捕
 
 - **归属**：`src/agent.nlp/{NlpGate.cs,LearnedShape.cs}`、`src/agent.tests/NlpGateLearnTests.cs` §1 五条、`docs/plans/RF0002-*.md` §1 由**前台会话**（qqbot，13:42–13:49）实施；本 tick 实施 §2 接线（A–F）并**代为落盘提交**（该批产物此前未提交，避免唯一副本长期悬空）。提交信息与本文均显式区分两侧产出。
@@ -66,3 +72,4 @@
 ④ R572-③ 起手闸把会话工具子进程并入判据（**器具改 ⇒ 须先落预注册**）。
 ⑤ R572-① g1/`wythoff` 失分面修复 与 R572-④ 交付闸语义（`rc=5`/`rc=8`）仍**待放行**。
 ⑥ **补跑 R571 的可验收前置**（`python3 eval/rover/r507pre/exec_precondition.py --round r571`）并把断链指针修实——铁律 11 的收口件缺失会让上一对照轮的降幅永久停在「参考（未可验收）」。
+⑦ **裁定「登记表证据是否随提交」**（4d）：随提交归档 / 显式声明不随提交 / 改 `cmd_expect_absent` 三选一，并给「干净检出树跑登记表机检」配成对控制（主树绿 ∧ 检出树红=现状）。
