@@ -1,0 +1,30 @@
+{
+  "round": "R581",
+  "kind": "RF0002 §3 验收面 ②③④ 真机首验 (形状通道 >=1 事件)",
+  "written_before_any_arm": true,
+  "binary": "src/agent.host/bin/Release/net10.0/agenthost (git HEAD adbe56d 建; 运行前登记 sha256)",
+  "cwd": "/home/agentuser/AgentFramework",
+  "preconditions": [
+    "命令面: agenthost --role ./skeptic.rbin --session-id <id>  经 stdin REPL 逐轮投递",
+    "闸前置: 遥测 local_turn_gate_config.turn_gate_enabled=true 且 role != '(null)' —— 否则闸块被跳过 ⇒ 本轮判 VOID (机制未挂载)",
+    "形状库前置: data/nlp 不存在 (生产默认路径 <cwd>/data/nlp/gate-shapes.txt 由本轮首验创建, 收尾复原为不存在)"
+  ],
+  "arms": [
+    {"id": "A", "session": "r581a", "turns": ["再来一遍", "再来一遍", "重新来一遍"], "note": "轮1 学 (远端成功轮回补形状) / 轮2 同文命中 / 轮3 同面邻带**不同措辞**命中 (泛化)"},
+    {"id": "B", "session": "r581b", "turns": ["再来一遍"], "note": "全新会话但同库: 命中形状却无上一条可回放答复 ⇒ 淘汰路径"},
+    {"id": "N", "session": "r581n", "turns": ["请用一句话说明 wythoff 游戏的三堆必胜条件是什么？"], "note": "负控: 族外长文本 (含问号/数字面) ⇒ 不学不命中"}
+  ],
+  "predictions": [
+    {"id": "P1", "name": "② 行使面 (形状命中即本地消化)", "expect": "Arm A 出现 >=1 条 nlp_shape 事件满足 shape=1 ∧ route=local_skip ∧ face=repeat", "observed": null, "verdict": null},
+    {"id": "P2", "name": "④ 命中面不增远端调用", "expect": "Arm A 中 shape=1 的那一轮零 llm_call (逐轮切窗, 非整臂总数)", "observed": null, "verdict": null},
+    {"id": "P3", "name": "③ 存量/淘汰", "expect": "学习轮后 shapes>=1; Arm B 出现 repeat_degrade_remote(reason=no_replayable_prev) 且该轮 hits>=1。**预注册写明**: 存量净下降在「同轮远端成功 ⇒ 立刻重新学到」形态下**不可观测** ⇒ 该不可观测分支不作失败, 只记「未测到」", "observed": null, "verdict": null},
+    {"id": "P4", "name": "泛化 (学的是形状不是字符串)", "expect": "Arm A 轮3 (不同措辞) 同样 shape=1 ∧ route=local_skip (重放的是轮2 的答复)", "observed": null, "verdict": null},
+    {"id": "P5", "name": "负控 (族外输入不入库)", "expect": "Arm N 该轮 learned 增量=0 ∧ shape=0 ∧ shapes 不增 (与 Arm A 学习轮成对)", "observed": null, "verdict": null}
+  ],
+  "fail_closed": [
+    "Arm A 无 shape=1 ⇒ 记「未测到」, 不宣称机制失效; 单边重跑 (r581a2) 后方可再判",
+    "远端调用不成功 (llm_call.success=false 或空正文) ⇒ 学习前提不成立 ⇒ 该臂 VOID, 不判缺陷",
+    "闸前置不过 (role=(null) 或 turn_gate_enabled=false) ⇒ 全轮 VOID"
+  ],
+  "not_claimed": ["本轮零产品源码改动 ⇒ 不宣称任何质量/成本降幅", "单轮 n=1 每臂 ⇒ 只作机制存在性证据, 不作分布结论"]
+}

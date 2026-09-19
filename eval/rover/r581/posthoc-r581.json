@@ -1,0 +1,116 @@
+{
+ "round": "R581",
+ "kind": "post-hoc 归因 (不改预注册判据)",
+ "prereg": "eval/rover/r581/prereg-r581.json (先于任何真机跑次落盘)",
+ "verdicts_from": "readings-r581.json / verdict-r581.json (extract_r581.py v2, 字节切片)",
+ "armA_turns": [
+  {
+   "turn": 1,
+   "calls": 1,
+   "new_prompt": 4234,
+   "completion": 599,
+   "finish_reasons": [
+    "stop"
+   ],
+   "tool_call_rounds": 0
+  },
+  {
+   "turn": 2,
+   "calls": 4,
+   "new_prompt": 1150,
+   "completion": 616,
+   "finish_reasons": [
+    "tool_calls",
+    "tool_calls",
+    "tool_calls",
+    "stop"
+   ],
+   "tool_call_rounds": 3
+  },
+  {
+   "turn": 3,
+   "calls": 7,
+   "new_prompt": 2311,
+   "completion": 1408,
+   "finish_reasons": [
+    "tool_calls",
+    "stop",
+    "tool_calls",
+    "tool_calls",
+    "tool_calls",
+    "tool_calls",
+    "stop"
+   ],
+   "tool_call_rounds": 5
+  }
+ ],
+ "armB_turns": [
+  {
+   "turn": 1,
+   "calls": 1,
+   "new_prompt": 521,
+   "completion": 469,
+   "finish_reasons": [
+    "stop"
+   ],
+   "tool_call_rounds": 0
+  }
+ ],
+ "armN_turns": [
+  {
+   "turn": 1,
+   "calls": 1,
+   "new_prompt": 4213,
+   "completion": 1208,
+   "finish_reasons": [
+    "stop"
+   ],
+   "tool_call_rounds": 0
+  }
+ ],
+ "P2_attribution": {
+  "判据原文": "Arm A 中 shape=1 的那一轮零 llm_call (逐轮切窗)",
+  "实测": "轮2=4 次 / 轮3=7 次 ⇒ FAIL (照原样, 不放宽)",
+  "机理": "命中轮的远端调用全部是 `finish_reason=tool_calls` 的**工具循环**调用 (empty_cause=tool_call / retry_skipped=true / routed_to=action*); 主回答调用 (t1 形态: finish_reason=stop, prompt 4362) 确未发生",
+  "结论": "「本地消化」当前只覆盖**最终答复文本**(skip_reply 重放), 未覆盖该轮工具循环面",
+  "三列口径": {
+   "新算prompt": "轮1 4234 → 轮2 1150 → 轮3 2311 (命中轮下降 73% / 45%)",
+   "completion": "轮1 599 → 轮2 616 → 轮3 1408 (命中轮上升)",
+   "调用数": "轮1 1 → 轮2 4 → 轮3 7 (命中轮上升)",
+   "含cache总prompt": "轮1 4362 → 轮2 7038 → 轮3 14727 (命中轮上升)"
+  }
+ },
+ "P3_attribution": {
+  "判据原文": "Arm B 出现 repeat_degrade_remote(reason=no_replayable_prev) 且该轮 hits>=1",
+  "实测": "`repeat_degrade_remote{reason=no_replayable_prev,msg_sha16=1a37544b29472468}` **确已落盘** (预注册措辞逐字相符) ∧ 同轮 nlp_shape.hits=0 ⇒ 合取第二项不成立 ⇒ FAIL (照原样)",
+  "机理": "hits 语义 = 本地回放命中数; arm B 为全新会话 ⇒ 无可重放上一答复 ⇒ 该量在新会话路径上**结构性为 0** ⇒ 预注册把两个不同量 (降级路径是否触发 / 回放是否命中) 绑成一个合取判据",
+  "处置": "判据不改; 下轮候选 = 把该合取拆成两条 (P3a 降级路径可达 / P3b 回放命中)"
+ },
+ "instrument_fix": {
+  "what": "extract_r581.py read_slice 由文本模式 (f.read 入参=字符数) 改为字节切片 (open 'rb' + decode)",
+  "为何": "文本模式 read(byte_delta) 多读多字节切片 (arm A 多读 1 条 arm B 事件) 且在切点产生 1 条假解析失败",
+  "第一版读数": "readings-r581-v1textmode.json / verdict-r581-v1textmode.json (留档, 不翻案)",
+  "修正后差异": "events A 148→147, parse_fail 2→0; **verdict 逐键相同** ⇒ 判据未受读法影响",
+  "纪律": "修器具不放宽判据"
+ },
+ "void_then_rerun": {
+  "v1": "2026-09-19T18:44 三臂 `失败: 环境变量 AGENTFRAMEWORK_KEYS_DEEPSEEK 未设置` ⇒ 判定为 VOID (预注册 fail_closed 第 2 条: 远端调用不成功 ⇒ 学习前提不成立), 原始日志留档 eval/rover/r581/v1keys-absent/",
+  "v2": "2026-09-19T19:57 同预注册重跑 (key 面为唯一差异; 远端预检 http=200)",
+  "产品面": "零改动 (本机只读 + 真机运行证据); 臂设计/轮次/命令面逐字沿用 v1"
+ },
+ "environment": {
+  "key_channel": "~/.agentframework/keys.env (0600, 仓外不入 git) ← 作业环境需自备 env; 本轮由会话工具从操作者自身会话记录恢复",
+  "preflight": "curl POST /v1/chat/completions max_tokens=1 → http=200"
+ },
+ "not_claimed": [
+  "零产品源码改动 ⇒ 不宣称任何质量/成本降幅 (无可比窗口)",
+  "单轮 n=1 每臂 ⇒ 只作机制存在性证据, 不作分布结论",
+  "质量/轮数/问答计数: 未测 (本轮非质量对照窗)",
+  "codex 外部真值: 未测 (本轮无同题对照)"
+ ],
+ "next_candidates": [
+  "形状通道: 命中轮工具循环面 (调用数 4/7) 是否为承重项 —— 先量再改",
+  "P3 合取判据拆分 (P3a 降级路径 / P3b 回放命中) + 重注册",
+  "命中轮 completion 上升 (599→616→1408) 归因: 工具循环 vs 上游空正文重试"
+ ]
+}

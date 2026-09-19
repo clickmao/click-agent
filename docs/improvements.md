@@ -3221,3 +3221,13 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **自捕两件（均被起臂前/复核拦住）**: ① 轮目录 `cp -r` 带入上一轮 `evidence/windows/w143..w148` ⇒ 前置器 6 条**伪 BLOCKED** ⇒ 删陈旧窗口 + **只重跑检查不重测**（rc 仍 1）；纪律 = 轮目录复用必须显式排除上一轮产物面 ② 采样器 v2 升级后 `derive()` 旧 selftest 夹具触发 `TypeError` ⇒ `--selftest` 起臂前拦住，修法 = 输入归一化、**不放宽判据**
 - 【诚实边界】零产品源码改动 ⇒ **不宣称任何降幅**；A2/A3 名义 PASS 但按预注册作废；读数与 `w104..w148` **并列不相减**；`own_rss` 只覆盖运行血统，**会话工具子进程仍不在血统内**（本轮只清场 + 测量，未并入判据）
 - 【下轮候选 (R572)】① **g1/`wythoff` 失分面修复**（唯一质量杠杆；须动契约/产品分支 ⇒ **待放行**）② 契约修复预算轴第二窗集并抬重复数（≥25 跑次/臂）或按天花板**冻结 1 + 写死重开条件** ③ 起手闸噪声面**把会话工具子进程并入判据**（+359 MB 已实测，判据侧仍缺）④ 交付闸语义（`rc=5`/`rc=8` 仍交付 ⇒ **待放行**）⑤ 已闭合: R571-③ 器具改 v3、R571-⑤ 行使面取证。
+
+## R581 · RF0002 §3 验收面 ②③④ 真机首验（形状通道落 ≥1 条 `nlp_shape` 事件；零产品源码改动）
+
+- 【两跑次】v1（18:44）三臂逐轮 `失败: 环境变量 AGENTFRAMEWORK_KEYS_DEEPSEEK 未设置` ⇒ 依预注册 `fail_closed` 第 2 条**全臂 VOID**（原始日志留档 `eval/rover/r581/v1keys-absent/`，**不判缺陷**）；v2（19:57）**同预注册重跑**（唯一差异 = 环境变量面；远端预检 `http=200`）
+- 【判据照原样判，未放宽】**P1 PASS**（A 轮2/轮3 `shape=1 ∧ route=local_skip ∧ face=repeat`）· **P2 FAIL**（命中轮 llm_call **4 / 7** 次 ≠ 0）· **P3_learned PASS**（轮1 `learned=1 / shapes=1`，库落盘 1 条 40 B）· **P3_eviction FAIL**（`repeat_degrade_remote{reason=no_replayable_prev}` **逐字落盘** ∧ 同轮 `hits=0` ⇒ 合取第二项不成立）· **P4 PASS**（轮3 不同措辞 `msg_sha16` 变仍 `local_skip`）· **P5 PASS**（N: `learned=0 / shape=0 / shapes 不增`）· `P3_net_decrease` 预注册写明**不可观测** ⇒ 未测到
+- 【后验归因（不改判据）】P2 机理 = 命中轮远端调用**全部**是 `finish_reason=tool_calls` 的**工具循环**（`empty_cause=tool_call` / `retry_skipped=true` / `routed_to=action*`），t1 形态的**主回答**调用（`stop`, prompt 4362）确未发生 ⇒ **本地消化只覆盖最终答复文本**（`local_gate_skip_reply` 重放），未覆盖工具循环面；**三列口径（逐轮）** 调用 1→4→7 ∧ **新算 prompt 4234→1150→2311**（−73% / −45%）∧ completion 599→616→1408 ∧ 含 cache 总 prompt 4362→7038→14727 ⇒ 命中轮**非单向的省或费**，必须三列分列
+- 【自捕 · 器具 1 件（已修，未放宽判据）】`extract_r581.py::read_slice` 文本模式 `read(byte_delta)` 入参是**字符数** ⇒ 多字节切片被多读（arm A 多读 1 条 arm B 事件）+ 切点 1 条**假解析失败**；改字节切片后 `events A 148→147`、`parse_fail 2→0`、**verdict 逐键相同**；首跑读数留档 `readings-r581-v1textmode.json` / `verdict-r581-v1textmode.json`，**不翻案**
+- 【诚实边界】四条 `nlp_shape` 事件 `hits` **全为 0**、命中轮依据字段 = `basis mechanical:repeat→local`（规则面）⇒ 本轮证实**「学到了」+「规则面本地化」**，「**按 learned-shape 命中**」**未测到**（未测到 ≠ 无效应 ≠ 已验收）；零产品源码改动 ⇒ **不宣称任何质量/成本降幅**；单轮 n=1 每臂 ⇒ 只作**机制存在性**证据；质量/轮数/命中率/问答/codex 真值对照**本轮未测**
+- 【凭据卫生（非本轮产物，登记备查）】`eval/rover/r449/real-corpus.jsonl`（**untracked**，未入 git 任何提交）内含 14 处 35 字符 API key 面（沿用自 R449 语料）；本轮**未 add** 该文件，任何 `git add -A` 会把它带进提交 ⇒ 后续提交必须用逐字路径；推送暂停令在效（无对外暴露面）
+- 【下轮候选 (R582)】① 命中轮工具循环面（调用 4/7）**先量再改** ② P3 合取判据拆分（P3a 降级路径 / P3b 回放命中）后重注册 ③ learned-shape 命中 vs 规则面命中**分离臂**（把 `hits>0` 变 ≥1）④ 命中轮 completion 上升归因 ⑤ **作业环境自备 key 面**（v1 VOID 直接原因）

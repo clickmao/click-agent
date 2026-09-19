@@ -1,0 +1,17 @@
+{
+  "round": "R581",
+  "ts": "2026-09-19T18:5x+0800",
+  "intent": "RF0002 §3 验收面 ②③④ 真机首验: 形状通道在生产链路落 >=1 条 nlp_shape{shape:1} 事件 (R579-tick 候选① / R580 候选① 的直接面)",
+  "nodes": [
+    {"id": "N1", "name": "起手闸 + 碰撞检查", "deps": [], "parallel": false, "criterion": "mem 采样连续 2 次 >= REQ 且 blocker=0 且 ps 无对侧执行体"},
+    {"id": "N2", "name": "预注册落盘 (prereg)", "deps": ["N1"], "parallel": false, "criterion": "prereg-r581.json 落盘时间早于任何真机跑次"},
+    {"id": "N3", "name": "Arm A 真机 (学习 -> 命中 -> 泛化; session r581a, 3 轮)", "deps": ["N2"], "parallel": false, "criterion": "3 轮结束 + 遥测切片落盘"},
+    {"id": "N4", "name": "Arm B 真机 (淘汰路径; session r581b 全新会话)", "deps": ["N2", "N3"], "parallel": false, "criterion": "1 轮结束 + 该轮 hits>=1 且 repeat_degrade_remote 落盘"},
+    {"id": "N5", "name": "Arm N 负控 (族外长文本: 不学不命中; session r581n)", "deps": ["N2"], "parallel": false, "criterion": "该轮 learned 增量 0 且 shape=0"},
+    {"id": "N6", "name": "读数抽取 + 判据裁定", "deps": ["N3", "N4", "N5"], "parallel": false, "criterion": "readings-r581.json + verdict-r581.json 落盘 (逐判据 PASS/FAIL/未测)"},
+    {"id": "N7", "name": "收尾: 环境复原 + kpi 行 + 计划文档 + 形式校验 + 本地 commit", "deps": ["N6"], "parallel": false, "criterion": "data/nlp 复原为不存在 + kpi.jsonl 追加 1 行 + git 本地 commit"}
+  ],
+  "parallel_face": "无 —— 三臂共用同一遥测面 (data/telemetry/host.jsonl) / 同一形状库 (data/nlp/gate-shapes.txt) / 同一工作树 ⇒ 起臂严格串行 (同仓写者纪律)",
+  "restart_criteria": "N3 无 shape=1 事件 ⇒ 只重启该边 (单臂重跑 Arm A, 换命名空间 r581a2 不覆盖首跑), 不重跑全轮; N1 红 ⇒ 全轮不起臂",
+  "product_change": "零 (本机只读 + 真机运行证据; 不改产品源码/不改器具/不新增夹具)"
+}

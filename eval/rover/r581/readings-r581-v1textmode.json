@@ -1,0 +1,433 @@
+{
+ "round": "R581",
+ "arms": {
+  "A": {
+   "turns": [
+    {
+     "n": 1,
+     "nlp_shape": {
+      "route": "remote",
+      "shape": "0",
+      "face": "none",
+      "basis": "mechanical:nonack→remote",
+      "hits": 0,
+      "learned": 1,
+      "shapes": 1,
+      "msg_sha16": "1a37544b29472468"
+     },
+     "llm_call_n": 1,
+     "llm_calls": [
+      {
+       "model": "deepseek-flash",
+       "turn": 1,
+       "prompt_tokens": 4362,
+       "completion_tokens": 599,
+       "success": true,
+       "content_len": 315,
+       "cache_hit_tokens": 128,
+       "cache_miss_tokens": 4234,
+       "cache_hit_rate": 0.0293,
+       "agent_session": "r581a",
+       "ms": 3379
+      }
+     ],
+     "gate": [
+      {
+       "verdict": "Pass",
+       "basis": "mechanical:nonack→remote",
+       "decided": "true",
+       "prefilter": "1",
+       "prefilter_repeat": "0",
+       "prefilter_repeat_degrade": "0",
+       "prefilter_nonack": "1",
+       "role": "skeptic"
+      }
+     ],
+     "gate_cfg": [
+      {
+       "turn_gate_enabled": "True",
+       "local_channel_ready": "True",
+       "repeat_skip": "on",
+       "role": "skeptic"
+      }
+     ],
+     "degrade_remote": [],
+     "gate_reject": [],
+     "loop_turn": []
+    },
+    {
+     "n": 2,
+     "nlp_shape": {
+      "route": "local_skip",
+      "shape": "1",
+      "face": "repeat",
+      "basis": "mechanical:repeat→local",
+      "hits": 0,
+      "learned": 1,
+      "shapes": 1,
+      "msg_sha16": "1a37544b29472468"
+     },
+     "llm_call_n": 4,
+     "llm_calls": [
+      {
+       "model": "deepseek-flash",
+       "turn": 0,
+       "prompt_tokens": 1149,
+       "completion_tokens": 172,
+       "success": true,
+       "content_len": 0,
+       "cache_hit_tokens": 896,
+       "cache_miss_tokens": 253,
+       "cache_hit_rate": 0.7798,
+       "agent_session": "",
+       "ms": 1032
+      },
+      {
+       "model": "deepseek-flash",
+       "turn": 0,
+       "prompt_tokens": 1487,
+       "completion_tokens": 207,
+       "success": true,
+       "content_len": 0,
+       "cache_hit_tokens": 1280,
+       "cache_miss_tokens": 207,
+       "cache_hit_rate": 0.8608,
+       "agent_session": "",
+       "ms": 1404
+      },
+      {
+       "model": "deepseek-flash",
+       "turn": 0,
+       "prompt_tokens": 2094,
+       "completion_tokens": 127,
+       "success": true,
+       "content_len": 0,
+       "cache_hit_tokens": 1664,
+       "cache_miss_tokens": 430,
+       "cache_hit_rate": 0.7947,
+       "agent_session": "",
+       "ms": 1215
+      },
+      {
+       "model": "deepseek-flash",
+       "turn": 0,
+       "prompt_tokens": 2308,
+       "completion_tokens": 110,
+       "success": true,
+       "content_len": 142,
+       "cache_hit_tokens": 2048,
+       "cache_miss_tokens": 260,
+       "cache_hit_rate": 0.8873,
+       "agent_session": "",
+       "ms": 1077
+      }
+     ],
+     "gate": [
+      {
+       "verdict": "Skip",
+       "basis": "mechanical:repeat→local",
+       "decided": "true",
+       "prefilter": "1",
+       "prefilter_repeat": "1",
+       "prefilter_repeat_degrade": "0",
+       "prefilter_nonack": "1",
+       "role": "skeptic"
+      }
+     ],
+     "gate_cfg": [],
+     "degrade_remote": [],
+     "gate_reject": [],
+     "loop_turn": [
+      {
+       "success": true,
+       "reply_chars": 283,
+       "intent": null
+      }
+     ]
+    },
+    {
+     "n": 3,
+     "nlp_shape": {
+      "route": "local_skip",
+      "shape": "1",
+      "face": "repeat",
+      "basis": "mechanical:repeat→local",
+      "hits": 0,
+      "learned": 1,
+      "shapes": 1,
+      "msg_sha16": "147757f75f39bd44"
+     },
+     "llm_call_n": 7,
+     "llm_calls": [
+      {
+       "model": "deepseek-flash",
+       "turn": 0,
+       "prompt_tokens": 1150,
+       "completion_tokens": 105,
+       "success": true,
+       "content_len": 0,
+       "cache_hit_tokens": 896,
+       "cache_miss_tokens": 254,
+       "cache_hit_rate": 0.7791,
+       "agent_session": "",
+       "ms": 1149
+      },
+      {
+       "model": "deepseek-flash",
+       "turn": 0,
+       "prompt_tokens": 303,
+       "completion_tokens": 323,
+       "success": true,
+       "content_len": 1,
+       "cache_hit_tokens": 0,
+       "cache_miss_tokens": 303,
+       "cache_hit_rate": 0,
+       "agent_session": "",
+       "ms": 2231
+      },
+      {
+       "model": "deepseek-flash",
+       "turn": 0,
+       "prompt_tokens": 1421,
+       "completion_tokens": 342,
+       "success": true,
+       "content_len": 0,
+       "cache_hit_tokens": 1152,
+       "cache_miss_tokens": 269,
+       "cache_hit_rate": 0.8107,
+       "agent_session": "",
+       "ms": 1977
+      },
+      {
+       "model": "deepseek-flash",
+       "turn": 0,
+       "prompt_tokens": 2358,
+       "completion_tokens": 116,
+       "success": true,
+       "content_len": 0,
+       "cache_hit_tokens": 1664,
+       "cache_miss_tokens": 694,
+       "cache_hit_rate": 0.7057,
+       "agent_session": "",
+       "ms": 1091
+      },
+      {
+       "model": "deepseek-flash",
+       "turn": 0,
+       "prompt_tokens": 2865,
+       "completion_tokens": 164,
+       "success": true,
+       "content_len": 0,
+       "cache_hit_tokens": 2432,
+       "cache_miss_tokens": 433,
+       "cache_hit_rate": 0.8489,
+       "agent_session": "",
+       "ms": 1141
+      },
+      {
+       "model": "deepseek-flash",
+       "turn": 0,
+       "prompt_tokens": 3134,
+       "completion_tokens": 236,
+       "success": true,
+       "content_len": 0,
+       "cache_hit_tokens": 2944,
+       "cache_miss_tokens": 190,
+       "cache_hit_rate": 0.9394,
+       "agent_session": "",
+       "ms": 1445
+      },
+      {
+       "model": "deepseek-flash",
+       "turn": 0,
+       "prompt_tokens": 3496,
+       "completion_tokens": 122,
+       "success": true,
+       "content_len": 235,
+       "cache_hit_tokens": 3328,
+       "cache_miss_tokens": 168,
+       "cache_hit_rate": 0.9519,
+       "agent_session": "",
+       "ms": 1037
+      }
+     ],
+     "gate": [
+      {
+       "verdict": "Skip",
+       "basis": "mechanical:repeat→local",
+       "decided": "true",
+       "prefilter": "1",
+       "prefilter_repeat": "2",
+       "prefilter_repeat_degrade": "0",
+       "prefilter_nonack": "1",
+       "role": "skeptic"
+      }
+     ],
+     "gate_cfg": [],
+     "degrade_remote": [],
+     "gate_reject": [],
+     "loop_turn": [
+      {
+       "success": true,
+       "reply_chars": 370,
+       "intent": null
+      }
+     ]
+    }
+   ],
+   "events": 148,
+   "parse_fail": 1
+  },
+  "B": {
+   "turns": [
+    {
+     "n": 1,
+     "nlp_shape": {
+      "route": "remote",
+      "shape": "1",
+      "face": "repeat",
+      "basis": "gate:repeat_no_replayable_prev→remote",
+      "hits": 0,
+      "learned": 1,
+      "shapes": 1,
+      "msg_sha16": "1a37544b29472468"
+     },
+     "llm_call_n": 1,
+     "llm_calls": [
+      {
+       "model": "deepseek-flash",
+       "turn": 1,
+       "prompt_tokens": 4361,
+       "completion_tokens": 469,
+       "success": true,
+       "content_len": 221,
+       "cache_hit_tokens": 3840,
+       "cache_miss_tokens": 521,
+       "cache_hit_rate": 0.8805,
+       "agent_session": "r581b",
+       "ms": 2889
+      }
+     ],
+     "gate": [
+      {
+       "verdict": "Pass",
+       "basis": "gate:repeat_no_replayable_prev→remote",
+       "decided": "true",
+       "prefilter": "1",
+       "prefilter_repeat": "1",
+       "prefilter_repeat_degrade": "1",
+       "prefilter_nonack": "0",
+       "role": "skeptic"
+      }
+     ],
+     "gate_cfg": [
+      {
+       "turn_gate_enabled": "True",
+       "local_channel_ready": "True",
+       "repeat_skip": "on",
+       "role": "skeptic"
+      }
+     ],
+     "degrade_remote": [
+      {
+       "reason": "no_replayable_prev",
+       "msg_sha16": "1a37544b29472468"
+      }
+     ],
+     "gate_reject": [],
+     "loop_turn": []
+    }
+   ],
+   "events": 41,
+   "parse_fail": 1
+  },
+  "N": {
+   "turns": [
+    {
+     "n": 1,
+     "nlp_shape": {
+      "route": "remote",
+      "shape": "0",
+      "face": "none",
+      "basis": "mechanical:pass→remote",
+      "hits": 0,
+      "learned": 0,
+      "shapes": 1,
+      "msg_sha16": "536628bd8a66d215"
+     },
+     "llm_call_n": 1,
+     "llm_calls": [
+      {
+       "model": "deepseek-flash",
+       "turn": 1,
+       "prompt_tokens": 4213,
+       "completion_tokens": 1208,
+       "success": true,
+       "content_len": 425,
+       "cache_hit_tokens": 0,
+       "cache_miss_tokens": 4213,
+       "cache_hit_rate": 0,
+       "agent_session": "r581n",
+       "ms": 6392
+      }
+     ],
+     "gate": [
+      {
+       "verdict": "Pass",
+       "basis": "mechanical:pass→remote",
+       "decided": "true",
+       "prefilter": "1",
+       "prefilter_repeat": "0",
+       "prefilter_repeat_degrade": "0",
+       "prefilter_nonack": "0",
+       "role": "skeptic"
+      }
+     ],
+     "gate_cfg": [
+      {
+       "turn_gate_enabled": "True",
+       "local_channel_ready": "True",
+       "repeat_skip": "on",
+       "role": "skeptic"
+      }
+     ],
+     "degrade_remote": [],
+     "gate_reject": [],
+     "loop_turn": []
+    }
+   ],
+   "events": 41,
+   "parse_fail": 0
+  }
+ },
+ "parse_fail_total": 2,
+ "verdict": {
+  "mech_engaged": true,
+  "P1_shape_hit_local": "PASS",
+  "P1_turns": [
+   2,
+   3
+  ],
+  "P2_no_remote_on_hit": "FAIL",
+  "P2_detail": [
+   {
+    "turn": 2,
+    "llm_call_n": 4
+   },
+   {
+    "turn": 3,
+    "llm_call_n": 7
+   }
+  ],
+  "P3_learned": "PASS",
+  "P3_eviction_invoked": "FAIL",
+  "P3_net_decrease": "未测到 (同轮远端成功即重新学到, 预注册已写明该分支不可观测)",
+  "P4_generalization": "PASS",
+  "P5_negative_control": "PASS",
+  "cost_armA": {
+   "calls": 12,
+   "new_prompt": 7695,
+   "completion": 2623
+  }
+ }
+}
