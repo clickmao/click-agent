@@ -1,0 +1,324 @@
+{
+ "round": "R588",
+ "windows": [
+  "w163",
+  "w164",
+  "w165"
+ ],
+ "criteria": {
+  "note": "判据**先于本窗集落盘**；缺任一条 ⇒ 不作任何质量宣称（只出读数）。",
+  "C0 真值可靠性": "每窗 codex 跑次 `all_pass` 全真才计入配对；某窗真值自身失败 ⇒ 该窗标 `unreliable` 并从配对中剔除（两侧同败优先怀疑夹具/题面，非能力）。",
+  "C1 质量配对（主）": "逐窗配对差 D = median_reps(R588D) − codex_truth；判据 = 有效窗 n >= 2 ∧ 中位(D) >= -2 ∧ 无窗 D <= -15。判据**原样判**，不因读数改阈值。",
+  "C2 成本三列（信息项，不判红绿）": "调用数 / 新算 prompt / completion **三列分列**（禁合并成名义总量）+ 命中率双口径 v_all / v_incr（中继 dump 时间轴）；缺 usage 记 unreported，**禁按 0 计入**。",
+  "C3 铁律 11（外部前置条件）": "`python3 eval/rover/r507pre/exec_precondition.py --round r588`；rc!=0 ⇒ 全部质量/成本读数标「**参考（未可验收）**」并逐条点名错题。",
+  "C4 起手闸": "内存裕量条款（阈值 + 观测振幅余量 + 连续 2 次）∧ leak-selfcheck rc=0 ∧ 判别力成对控制（行使则 rc=0；未行使如实登记 rc=3，**不得读成闸已行使**）。余量按 R587 实测振幅派生：`MARGIN = min(prev_swing, ceiling − GATE − floor)`（R587 实测 swing=65 ⇒ 本轮 PREV_SWING=65，仍受 cap 夹取）。",
+  "C5 缺口跨窗复现（禁相减）": "本轮有效窗 D 集与**紧邻上一个窗集**（`eval/rover/r587/verdict-r587.json` 的 D 集）**同号** ∧ 两集极差区间**有重叠** ⇒ 报「缺口跨窗复现」；同号但区间不重叠 ⇒「方向一致、量级漂移」；异号 ⇒「未复现（单窗集摆动）」。**四窗集并列清单**（r585/r586/r587/r588 各自 D 集与中位）只并列，**跨轮禁相减**。",
+  "C5b 摆动 vs 效应分离（本轮主新增）": "把四窗集 D 池化为一个 10 有效窗样本：报 ① 池化中位（= 效应量的估计）② 池化极差与逐窗偏离中位 max（= 摆动估计）③ 符号检验（负号窗数 vs 总窗数，精确二项 p，双侧）。判定三态：摆动 > 效应 ⇒ 「该轴非承重变量、定案关闭」；摆动 <= 效应 ∧ 符号检验 p < 0.05 ⇒ 「缺口方向稳定，可作能力结论（仍限于本件本题集）」；其余 ⇒ 「不可分离，需更多窗」。",
+  "C6 步数列面（读数面收口，非被测判据）": "产品跑次 `steps_executed` 非空计数须 == 9/9；<9 ⇒ 判**器具/读数面缺陷 (rc=2，不计入被测读数)**。",
+  "C7 超时例分离（信息项）": "本轮 `TimeoutExpired` 例数如实报；与 R585 的 8 例并列，**不得因某轮为 0 而读成「已修复」**。",
+  "C8 成本按跑次归一（口径入册）": "两侧跑次数不等时，**禁比总量**；必须并报 `total` 与 `per_run = total / n_runs`（`n_runs` = `logs/runs.jsonl` 行数）。三个分量各自给 total 与 per_run 双列。",
+  "C9 有效窗下限的显式二选一（承接 R587 条款）": "「真值自身失分窗」口径**显式二选一后固定为**：**从配对中剔除 ∧ 单列该窗错例 ∧ 不记我方缺陷**；并给该类窗的历史读数并列清单（只列已登记读数，跨轮禁相减、禁重算）。",
+  "C10 审计器作用域（器具面，非被测判据）": "`tools/roundcheck/roundcheck.py audit --round R588` 对「零产品源码改动对照轮」的 R1/R6/R8 结构性 FAIL，走**显式 scope 声明**分支（`audit_scope.kind = contrast_zero_product_change`，分支实现见 R587）。三条同时成立才生效（声明在位 ∧ 不触碰 `src/**` ∧ 读数件数 == `evidence_scope.require` 数）；缺任一条 ⇒ 回旧行为。**禁改判据凑绿、禁补假登记行**。",
+  "C11 臂级零产物窗的分母口径（候选⑤，本轮只给写法不改器具）": "对本轮出现的「臂级未交付产物」窗（工作区零文件 ∧ 答复非空，如 R587 `w162-r3`），分母口径**显式登记两栏**：① `cases_pass = 0/58`（**计入**配对，因为它是我方跑次的真实零分，剔除即抬高我方读数）② 同窗另记 `denominator_class = NO_ARTIFACT` 并单列点名。**禁**把它静默剔除、**禁**按 `unreliable` 处理（`unreliable` 只保留给「真值自身失分窗」）。写法先落本预注册；器具侧（前置器）改动需另立轮次 + 保形重钉。"
+ },
+ "arms": {
+  "C1": {
+   "runs": 3,
+   "cases_per_run": [
+    58,
+    58,
+    53
+   ],
+   "per_window_median": {
+    "w163": 58,
+    "w164": 58,
+    "w165": 53
+   },
+   "median": 58,
+   "min": 53,
+   "max": 58,
+   "calls": 66,
+   "new_prompt": 30790,
+   "completion": 37046,
+   "v_all_med": 0.96,
+   "v_incr_med": 0.97,
+   "repair_rounds": [
+    null,
+    null,
+    null
+   ],
+   "rc": [
+    null,
+    null,
+    null
+   ],
+   "stages": [
+    null,
+    null,
+    null
+   ],
+   "steps": [
+    null,
+    null,
+    null
+   ]
+  },
+  "R588D": {
+   "runs": 9,
+   "cases_per_run": [
+    51,
+    43,
+    58,
+    43,
+    58,
+    47,
+    44,
+    46,
+    43
+   ],
+   "per_window_median": {
+    "w163": 51,
+    "w164": 47,
+    "w165": 44
+   },
+   "median": 46,
+   "min": 43,
+   "max": 58,
+   "calls": 18,
+   "new_prompt": 4260,
+   "completion": 40447,
+   "v_all_med": 0.98,
+   "v_incr_med": 0.98,
+   "repair_rounds": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "rc": [
+    5,
+    5,
+    0,
+    5,
+    5,
+    5,
+    5,
+    8,
+    5
+   ],
+   "stages": [
+    "expect_stdout_exhausted",
+    "expect_stdout_exhausted",
+    "done",
+    "expect_stdout_exhausted",
+    "expect_stdout_exhausted",
+    "expect_stdout_exhausted",
+    "expect_stdout_exhausted",
+    "self_test_unmet",
+    "expect_stdout_exhausted"
+   ],
+   "steps": [
+    13,
+    7,
+    14,
+    13,
+    7,
+    7,
+    7,
+    7,
+    7
+   ]
+  }
+ },
+ "paired": {
+  "D_product_minus_truth_per_window": [
+   -7,
+   -11
+  ],
+  "D_median": -9.0,
+  "valid_windows": 2,
+  "unreliable_windows_truth_self_fail": [
+   "w165"
+  ],
+  "missing_windows": [],
+  "truth_per_window": {
+   "w163": 58,
+   "w164": 58,
+   "w165": 53
+  },
+  "product_per_window": {
+   "w163": 51,
+   "w164": 47,
+   "w165": 44
+  }
+ },
+ "C0_truth_reliability": {
+  "pass": false,
+  "unreliable": [
+   "w165"
+  ],
+  "truth_all_pass": {
+   "w163": [
+    true
+   ],
+   "w164": [
+    true
+   ],
+   "w165": [
+    false
+   ]
+  }
+ },
+ "C1_quality_paired": {
+  "pass": false,
+  "D_list": [
+   -7,
+   -11
+  ],
+  "D_median": -9.0,
+  "valid_windows": 2,
+  "floor": -15,
+  "median_floor": -2
+ },
+ "C2_cost_three_columns": {
+  "calls": {
+   "product": 18,
+   "truth": 66
+  },
+  "new_prompt": {
+   "product": 4260,
+   "truth": 30790
+  },
+  "completion": {
+   "product": 40447,
+   "truth": 37046
+  },
+  "hit_rate_v_all": {
+   "product": 0.98,
+   "truth": 0.96
+  },
+  "hit_rate_v_incr": {
+   "product": 0.98,
+   "truth": 0.97
+  },
+  "note": "信息项, 不判红绿 (禁合并成名义总量; 命中率口径 = 中继 dump 时间轴)"
+ },
+ "C5_gap_reproduction": {
+  "prev_path": "/home/agentuser/AgentFramework/eval/rover/r587/verdict-r587.json",
+  "prev_D": [
+   0,
+   -13
+  ],
+  "prev_median": -6.5,
+  "state": "缺口跨窗复现",
+  "prev_sha16": "30e2d71722bf987d",
+  "this_D": [
+   -7,
+   -11
+  ],
+  "this_median": -9.0,
+  "same_sign": true,
+  "interval_overlap": true
+ },
+ "C5b_swing_vs_effect": {
+  "per_set": {
+   "R585": {
+    "D": [
+     -8,
+     -3
+    ],
+    "median": -5.5,
+    "sha16": "ac0bf588b0afcd1b"
+   },
+   "R586": {
+    "D": [
+     0,
+     -3,
+     -15
+    ],
+    "median": -3,
+    "sha16": "2794e27d26642a0b"
+   },
+   "R587": {
+    "D": [
+     0,
+     -13
+    ],
+    "median": -6.5,
+    "sha16": "30e2d71722bf987d"
+   },
+   "R588": {
+    "D": [
+     -7,
+     -11
+    ],
+    "median": -9.0,
+    "sha16": "322ad8dc40fd0d9e"
+   }
+  },
+  "pooled_n_valid_windows": 9,
+  "pooled_D": [
+   -8,
+   -3,
+   0,
+   -3,
+   -15,
+   0,
+   -13,
+   -7,
+   -11
+  ],
+  "pooled_median_effect": -7,
+  "pooled_range_swing": 15,
+  "max_dev_from_median": 8,
+  "sign_count": {
+   "neg": 7,
+   "pos": 0,
+   "zero": 2
+  },
+  "sign_test_p_two_sided": 0.0156,
+  "note": "跨轮禁相减: 各集只并列; 池化仅用于摆动/效应分离估计",
+  "state": "摆动 > 效应 ⇒ 该轴非承重变量、定案关闭"
+ },
+ "C6_steps_face": {
+  "nonnull": 9,
+  "runs": 9,
+  "pass": true,
+  "steps": [
+   13,
+   7,
+   14,
+   13,
+   7,
+   7,
+   7,
+   7,
+   7
+  ],
+  "plan_steps_total": [
+   14,
+   10,
+   14,
+   14,
+   10,
+   10,
+   10,
+   7,
+   10
+  ],
+  "note": "R585 纠偏: 同列本就在档 (verdict-r585.json::arms.R585D.steps=[8,15,7,14,7,7,7,7,7]), 而 R585 报告与 §7 块写「未测(adapter 未取该字段)」= 报告面与自己的读数不一致; 首跑读数不撤。"
+ },
+ "verdict": {
+  "rc": 1,
+  "judge": "FAIL(质量配对未过)",
+  "blocked": [
+   "C1_quality_paired:R588D"
+  ],
+  "iron11": "见 eval/rover/r507pre/precondition-r588.json"
+ }
+}

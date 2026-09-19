@@ -1,0 +1,190 @@
+{
+ "round": "R588",
+ "instrument": "eval/rover/r588/subspec_v2_r588.py",
+ "mode": "read_only (零产品改动 / 零新夹具 / 零远端)",
+ "axis_A_v1_identity": {
+  "registered_histogram": {
+   "AND_MEMO": 1,
+   "EQUAL_ONLY": 1,
+   "PHI_DIFF": 15,
+   "PHI_WINDOW": 1,
+   "SHAPE_OTHER": 2,
+   "UNCLASSIFIED": 18
+  },
+  "recomputed_histogram": {
+   "PHI_DIFF": 15,
+   "UNCLASSIFIED": 18,
+   "AND_MEMO": 1,
+   "SHAPE_OTHER": 2,
+   "PHI_WINDOW": 1,
+   "EQUAL_ONLY": 1
+  },
+  "fails": {},
+  "identical": true
+ },
+ "axis_B_scope": "only v1-UNCLASSIFIED (v1 已分类者不重贴标签) ⇒ 判据零变化",
+ "axis_B_histogram_on_unclassified": {
+  "B1_BEATTY_FLOAT": 8,
+  "B7_LEX_TIEBREAK": 4,
+  "B9_PAIR_SET": 6,
+  "B4_COVER_RULE": 1,
+  "B5_NORMALIZE_SWAP": 3,
+  "B6_NEGATIVE_GUARD": 3,
+  "B8_GRUNDY_MEX": 1,
+  "B2_DP_TABLE": 4,
+  "B3_LIMIT_CONST": 3
+ },
+ "unclassified_before": 18,
+ "unclassified_after_residual": 2,
+ "unclassified_tagged": 16,
+ "per_copy_b_tags": {
+  "r585/w154/agentD-r2": [
+   "B1_BEATTY_FLOAT",
+   "B7_LEX_TIEBREAK",
+   "B9_PAIR_SET"
+  ],
+  "r585/w155/agentD-r3": [
+   "B4_COVER_RULE",
+   "B5_NORMALIZE_SWAP",
+   "B6_NEGATIVE_GUARD",
+   "B7_LEX_TIEBREAK",
+   "B8_GRUNDY_MEX",
+   "B9_PAIR_SET"
+  ],
+  "r585/w155/codex": [
+   "B2_DP_TABLE",
+   "B3_LIMIT_CONST",
+   "B6_NEGATIVE_GUARD"
+  ],
+  "r585/w156/agentD-r1": [
+   "B3_LIMIT_CONST",
+   "B9_PAIR_SET"
+  ],
+  "r585/w156/agentD-r3": [
+   "B1_BEATTY_FLOAT"
+  ],
+  "r585/w156/codex": [
+   "B1_BEATTY_FLOAT"
+  ],
+  "r586/w157/codex": [],
+  "r586/w158/agentD-r1": [],
+  "r586/w158/agentD-r3": [
+   "B1_BEATTY_FLOAT"
+  ],
+  "r586/w158/codex": [
+   "B5_NORMALIZE_SWAP",
+   "B9_PAIR_SET"
+  ],
+  "r586/w159/agentD-r2": [
+   "B3_LIMIT_CONST",
+   "B9_PAIR_SET"
+  ],
+  "r586/w159/codex": [
+   "B1_BEATTY_FLOAT",
+   "B9_PAIR_SET"
+  ],
+  "r587/w160/agentD-r1": [
+   "B2_DP_TABLE",
+   "B6_NEGATIVE_GUARD"
+  ],
+  "r587/w160/agentD-r3": [
+   "B1_BEATTY_FLOAT",
+   "B5_NORMALIZE_SWAP"
+  ],
+  "r587/w160/codex": [
+   "B1_BEATTY_FLOAT"
+  ],
+  "r587/w161/agentD-r3": [
+   "B2_DP_TABLE",
+   "B7_LEX_TIEBREAK"
+  ],
+  "r587/w162/agentD-r2": [
+   "B2_DP_TABLE",
+   "B7_LEX_TIEBREAK"
+  ],
+  "r587/w162/codex": [
+   "B1_BEATTY_FLOAT"
+  ]
+ },
+ "scope_violations": [],
+ "discrimination": {
+  "rate_tagged_on_v1_unclassified": 0.889,
+  "rate_tagged_on_v1_classified_control": 0.882,
+  "gap": 0.007,
+  "control_tagged_examples": [
+   [
+    "r585/w154/agentD-r1",
+    [
+     "PHI_DIFF"
+    ],
+    [
+     "B1_BEATTY_FLOAT",
+     "B7_LEX_TIEBREAK",
+     "B9_PAIR_SET"
+    ]
+   ],
+   [
+    "r585/w154/agentD-r3",
+    [
+     "PHI_DIFF"
+    ],
+    [
+     "B1_BEATTY_FLOAT",
+     "B7_LEX_TIEBREAK",
+     "B9_PAIR_SET"
+    ]
+   ],
+   [
+    "r585/w154/codex",
+    [
+     "PHI_DIFF"
+    ],
+    [
+     "B1_BEATTY_FLOAT",
+     "B9_PAIR_SET"
+    ]
+   ],
+   [
+    "r585/w155/agentD-r1",
+    [
+     "PHI_DIFF"
+    ],
+    [
+     "B7_LEX_TIEBREAK",
+     "B9_PAIR_SET"
+    ]
+   ],
+   [
+    "r585/w155/agentD-r2",
+    [
+     "AND_MEMO",
+     "SHAPE_OTHER"
+    ],
+    [
+     "B6_NEGATIVE_GUARD"
+    ]
+   ]
+  ],
+  "note": "B 为**加厚候选登记**, 非判据; 对照组命中率高 ⇒ 子类判别力弱, 只能作描述性登记, 不得据此改判据/宣称能力。"
+ },
+ "axis_B_selftest_fails": [],
+ "has_teeth": true,
+ "instrument_defect_registered": {
+  "field": "missing_wythoff_py",
+  "v1_reported_count": 36,
+  "true_missing_count": 1,
+  "true_missing": [
+   "r587/w162/agentD-r3"
+  ],
+  "cause": "R587 用 `c.get('wythoff_py','')` 判缺失, 而记录仅在**缺件时**建该键 ⇒ 键不存在被读成缺 ⇒ 36/36 全列; 口径修正为「键存在性」, R587 读数不翻案(只加注)。"
+ },
+ "corpus_extended": {
+  "n_copies": 36,
+  "rounds": [
+   "r585",
+   "r586",
+   "r587",
+   "r588"
+  ]
+ }
+}

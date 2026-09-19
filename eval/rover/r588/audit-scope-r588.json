@@ -1,0 +1,59 @@
+{
+ "round": "R588",
+ "declared_at": "2026-09-20T03:12+08:00",
+ "declared_after_run": true,
+ "declared_note": "本声明件在**起臂之后**落盘（沿用 R587 已登记的作用域机制 `tools/roundcheck::read_audit_scope`，本轮**未改器具**，只是为该类轮次提供本轮的声明件 ⇒ 无器具身份漂移）。声明内容只含「零 src/ 改动 + 读数面清单 + 提交面形状」，**不含**任何臂/判据/阈值改动；冻结预注册 `eval/rover/r588/prereg-r588.json`（先写后跑闸所用）**未被触碰**，其 sha 可复核。",
+ "audit_scope": {
+  "kind": "contrast_zero_product_change",
+  "reason": "R588 是**同件扩窗对照轮**（第四窗集）：被测件与 R585/R586/R587 同 sha(4b70fd7c…)、题集同 sha(e0c667c2…)，零产品源码改动、零新能力 ⇒ 依「验证登记表(rows) 缺负控即为门禁真红」的纪律，本项目**本就不该**为其造 `owner_round` 登记行；R1(无登记行即红)/R6(裸计数 > 40)/R8(build 0 error · 14/14) 三条在对照轮上结构性不可达。免检只能由**显式声明 ∧ 提交面零 src/ ∧ 声明面可机检**三者共同支撑，任一条不成立即回到旧行为判红。",
+  "readings": [
+   "eval/rover/r588/verdict-r588.json",
+   "eval/rover/r588/kpi-table-r588.json",
+   "eval/rover/r588/report-r588.md",
+   "eval/rover/r588/noartifact-cause-r588.json",
+   "eval/rover/r588/timeout-cause-r588.json",
+   "eval/rover/r588/subspec-v2-r588.json",
+   "eval/rover/r588/noartifact-denominator-spec-r588.md",
+   "eval/rover/r588/dag-r588.md"
+  ],
+  "allowed_faces": [
+   "eval/rover/r588/",
+   "eval/capability/",
+   "docs/reports/",
+   "docs/improvements.md"
+  ],
+  "require_form_gate": true,
+  "form_gate_cmd": "env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR dotnet test src/agent.tests/agentframework.tests.csproj --filter \"FullyQualifiedName~VerificationForm|FullyQualifiedName~SkillGeneralization|FullyQualifiedName~DevPlanDocRef\" --nologo -v q",
+  "form_gate_result": "14/14 绿 (Failed 0, Passed 14, Skipped 0; env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR; rc=0)"
+ },
+ "negative_controls": {
+  "instrument": "tools/roundcheck/roundcheck.py --selftest",
+  "contrast_branch": [
+   {
+    "case": "正控: 声明齐 ∧ 提交面零 src/",
+    "expect": "rc=0 (R1 P / R6 P / R8 P)"
+   },
+   {
+    "case": "负控a: 声明了却提交触碰 src/",
+    "expect": "rc=1, R1 红 (分支不适用)"
+   },
+   {
+    "case": "负控b: 无声明 (旧行为)",
+    "expect": "rc=1, R1 红"
+   },
+   {
+    "case": "负控c: 声明非法 (读数件缺/空)",
+    "expect": "rc=1, R1 红且明细出声「声明无效」"
+   },
+   {
+    "case": "负控d: 声明面缺「形式门禁」读数",
+    "expect": "rc=1, R8 红 (豁免 ≠ 什么都免)"
+   },
+   {
+    "case": "负控e: 提交面越界 (未声明路径)",
+    "expect": "rc=1, R6 红 (面形状判据, 非裸计数)"
+   }
+  ],
+  "this_round_rerun": "本轮复用同一器具（未改）；--selftest 6 夹具读数见提交后 audit 段"
+ }
+}
