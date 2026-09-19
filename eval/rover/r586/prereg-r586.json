@@ -1,0 +1,71 @@
+{
+ "round": "R586",
+ "written_before_run": true,
+ "author": "cron tick (AgentFramework 常驻能力自检循环), 用户令 2026-09-19 DAG 先行",
+ "claim": "主线**同件复跑轮**：被测件与 R585 **同 sha**（`pub_r585/agenthost` = HEAD 发布件，sha 4b70fd7c…，零产品源码改动）、题集**同 sha**（e0c667c2…），只换**新窗集** `w157..w159` ⇒ 判 R585 的质量缺口（配对中位 −5.5）**跨窗是否复现**；并收口三处读数面缺口（轮数列回表 · 超时例分离 · 前置器分母）。",
+ "one_time_context": {
+  "被测件": "$HOME/.agentframework/artifacts/pub_r586/agenthost —— **与 R585 同一枚二进制**（sha 由 runner 第 0 步落盘 + 起跑前后一致性断言），符号链接/复制均可，sha 必须 == 4b70fd7cdb39f1c72c22db131a0ab36ad1bcafc54153c6aa5cc4070868ecb1ce",
+  "夹具配置": "$HOME/.agentframework/harness/agent/cfg（R585 已恢复并落稳定路径；本轮 cfg 文件 sha 逐文件落盘）",
+  "题集": "eval/rover/r586/taskset-r586.json = R585 件**逐字节复制**（sha e0c667c2a313c04b…，与 w104..w156 同件）",
+  "判分器": "eval/rover/r586/cases/run_cases_r521.py（冻结件逐字节复制；隐藏 58 例）"
+ },
+ "arm_identity": {
+  "note": "全臂共用**同一枚**二进制（sha 断言）；同题面 / 同夹具 / 同窗 / 同模型（deepseek-flash）。本轮**不换件** ⇒ 与 R585 读数**同件跨窗并列**（不相减、不因轮次推进而重标定）。"
+ },
+ "single_variable": "本轮**无剂量轴**：`R586D` = 产品默认档 —— 三枚剂量键 `AGENTFRAMEWORK_R1_MAX_REPAIR` / `AGENTFRAMEWORK_R1_EARLY_STOP_PFAIL` / `AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR` **两臂均显式 unset 且 runner 断言未设**（防继承）；其余 env 逐项相同（`R1_CONTRACT=1` / `R1_PUBLIC_SELFCHECK=1` / `R1_ROLE_FILE` / `R1_TRANSCRIPT` / `R1_WORKSPACE` / `R1_TAG`）。`C1` = 外部真值 codex（无 env）。",
+ "arms": {
+  "C1": {
+   "side": "codex",
+   "desc": "外部真值（另一套 agent 框架 CLI，同真实模型 deepseek-flash，同题面同夹具同窗；每窗 1 跑次）",
+   "env": {}
+  },
+  "R586D": {
+   "side": "agent",
+   "desc": "产品默认档（无剂量键；主线质量列的对照主体）",
+   "env": {}
+  }
+ },
+ "repeat_arm_design": {
+  "reps_per_window": 3,
+  "note": "每跑次**独立会话**（session-id = arm-win-sub）；质量按每窗重复跑次的**中位**报并报极差；单跑次禁作结论。"
+ },
+ "resolution_bound": "3 新窗 × 3 跑次/臂 对「单跑次质量摆动（历史 43–58）」的分辨率仅足给出**逐窗区间**；本轮结论**不得**外推为总体能力宣称。",
+ "criterion_version": "v2（逐窗并列 + 真值崩窗 unreliable + 配对判据 + VOID 臂窗单列）—— 口径文本取自 docs/external-reference-harness.md §12，本文件只引用不重定义；本轮**不改判据 v2**。",
+ "axis_criteria_R586": {
+  "note": "判据**先于本窗集落盘**；缺任一条 ⇒ 不作任何质量宣称（只出读数）。",
+  "C0 真值可靠性": "每窗 codex 跑次 `all_pass` 全真才计入配对；某窗真值自身失败 ⇒ 该窗标 `unreliable` 并**从配对中剔除**（两侧同败优先怀疑夹具/题面，非能力）。",
+  "C1 质量配对（主）": "逐窗配对差 D = median_reps(R586D) − codex_truth；判据 = 有效窗 n >= 2 ∧ 中位(D) >= -2 ∧ 无窗 D <= -15。判据**原样判**，不因读数改阈值。",
+  "C2 成本三列（信息项，不判红绿）": "调用数 / 新算 prompt / completion **三列分列**（禁合并成名义总量）+ 命中率双口径 v_all / v_incr（中继 dump 时间轴）；缺 usage 记 unreported，**禁按 0 计入**。",
+  "C3 铁律 11（外部前置条件）": "`python3 eval/rover/r507pre/exec_precondition.py --round r586`；rc!=0 ⇒ 全部质量/成本读数标「**参考（未可验收）**」并逐条点名错题。",
+  "C4 起手闸": "内存裕量条款（阈值 + 观测振幅余量 + 连续 2 次）∧ leak-selfcheck rc=0 ∧ 判别力成对控制 rc=0。",
+  "C5 缺口复现判据（本轮主新增，跨窗并列不相减）": "本轮有效窗 D 集与 R585 的 D 集（[−8, −3]，中位 −5.5）**同号** ∧ 两集极差区间**有重叠** ⇒ 报「缺口跨窗复现」；同号但区间不重叠 ⇒ 报「方向一致、量级漂移」；异号 ⇒ 报「未复现（单窗集摆动，禁据单窗下能力结论）」。**禁相减**。",
+  "C6 步数列面（读数面收口，非被测判据）": "产品跑次 `steps_executed` 非空计数须 == 9/9；<9 ⇒ 判**器具/读数面缺陷 (rc=2，不计入被测读数)**。附 R585 纠偏：`verdict-r585.json::arms.R585D.steps` = [8,15,7,14,7,7,7,7,7] **本就在档**，而 R585 报告与 §7 块写「未测（adapter 未取该字段）」= **报告面与自己的读数不一致**；R585 首跑读数不撤，只更正措辞。",
+  "C7 超时例分离（信息项 + 判据）": "对本轮 `TimeoutExpired` 例：在**冻结快照副本**上以放宽截止（300s）复跑 ⇒ 全过 ⇒ 判「**慢**（不收敛为假）」；仍不过 ⇒ 判「**不收敛**」。本轮 ≤1 超时例 ⇒ 只出读数、不作宣称。"
+ },
+ "evidence_scope": {
+  "require": [
+   "w157/codex",
+   "w157/agentD-r1",
+   "w157/agentD-r2",
+   "w157/agentD-r3",
+   "w158/codex",
+   "w158/agentD-r1",
+   "w158/agentD-r2",
+   "w158/agentD-r3",
+   "w159/codex",
+   "w159/agentD-r1",
+   "w159/agentD-r2",
+   "w159/agentD-r3"
+  ],
+  "note": "12 = 3 窗 × 4 目录（codex ×1 + 产品默认档重复 ×3）；臂标签 = 快照目录名（前置器按目录名归属，codex 目录名固定 `codex`）"
+ },
+ "fail_closed": {
+  "说明": "预注册机检不过 / 稳定路径缺件 / 二进制 sha 不符 ⇒ runner exit 3，**不起臂**；缺 key ⇒ 远端臂全 VOID（R581 v1 事故），作业环境自备 key。"
+ },
+ "cross_round_deltas_forbidden": "与历轮窗集**并列不相减**（w104..w159 全为同一冻结题集，但窗集/臂集逐轮不同）；本轮与 R585 为**同件的两个窗集** ⇒ 只作「复现/未复现」判定，不作差值宣称。",
+ "preregistered_expectations": {
+  "方向": "**不预注册方向**：本轮是「缺口是否复现」的判定轮，非治疗臂；只报逐窗区间、配对中位与 C5 三态之一。",
+  "预期量级": "参考 R585 同件读数：产品默认档逐窗中位 58/50/55（区间 47–58）、真值 56/58/58。若本轮 D 集与 R585 同号且区间重叠 ⇒ C5 报「复现」。"
+ },
+ "notes": "零产品源码改动（被测件同 sha）；器具面改动 = 本轮新增读数件（run_r586.sh / kpi_r586.py，均声明派生来源）+ 步数列进汇总打印面。"
+}

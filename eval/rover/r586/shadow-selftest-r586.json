@@ -1,0 +1,142 @@
+{
+ "round": "R586",
+ "instrument": "shadow_selftest_r586.py",
+ "mode": "零被测执行 (合成/历史读数直喂 judge())",
+ "cases": {
+  "POS_ok": {
+   "rc": 0,
+   "want": 0,
+   "C1_pass": true,
+   "D_list": [
+    0,
+    0,
+    0
+   ],
+   "D_median": 0,
+   "valid_windows": 3,
+   "C0_pass": true,
+   "C6_pass": true,
+   "C5_state": "未复现(单窗集摆动)",
+   "blocked": [],
+   "agree": true
+  },
+  "HIST_r585_foreign_arm": {
+   "rc": 3,
+   "want": 3,
+   "C1_pass": false,
+   "D_list": [],
+   "D_median": null,
+   "valid_windows": 0,
+   "C0_pass": false,
+   "C6_pass": false,
+   "C5_state": null,
+   "blocked": [
+    "missing:w154,w155,w156"
+   ],
+   "agree": true
+  },
+  "HIST_r585_projected": {
+   "rc": 1,
+   "want": 1,
+   "C1_pass": false,
+   "D_list": [
+    -8,
+    -3
+   ],
+   "D_median": -5.5,
+   "valid_windows": 2,
+   "C0_pass": false,
+   "C6_pass": true,
+   "C5_state": "缺口跨窗复现",
+   "blocked": [
+    "C1_quality_paired:R586D"
+   ],
+   "agree": true,
+   "reproduces_r585": true
+  },
+  "NEG_floor": {
+   "rc": 1,
+   "want": 1,
+   "C1_pass": false,
+   "D_list": [
+    0,
+    0,
+    -16
+   ],
+   "D_median": 0,
+   "valid_windows": 3,
+   "C0_pass": true,
+   "C6_pass": true,
+   "C5_state": "未复现(单窗集摆动)",
+   "blocked": [
+    "C1_quality_paired:R586D"
+   ],
+   "agree": true
+  },
+  "NEG_validwin": {
+   "rc": 1,
+   "want": 1,
+   "C1_pass": false,
+   "D_list": [
+    0
+   ],
+   "D_median": 0,
+   "valid_windows": 1,
+   "C0_pass": false,
+   "C6_pass": true,
+   "C5_state": "未复现(单窗集摆动)",
+   "blocked": [
+    "C1_quality_paired:R586D"
+   ],
+   "agree": true
+  },
+  "NEG_steps": {
+   "rc": 2,
+   "want": 2,
+   "C1_pass": true,
+   "D_list": [
+    0,
+    0,
+    0
+   ],
+   "D_median": 0,
+   "valid_windows": 3,
+   "C0_pass": true,
+   "C6_pass": false,
+   "C5_state": "未复现(单窗集摆动)",
+   "blocked": [
+    "steps_face:0/9"
+   ],
+   "agree": true
+  },
+  "NEG_baddumps": {
+   "rc": 2,
+   "want": 2,
+   "C1_pass": true,
+   "D_list": [
+    0,
+    0,
+    0
+   ],
+   "D_median": 0,
+   "valid_windows": 3,
+   "C0_pass": true,
+   "C6_pass": true,
+   "C5_state": "未复现(单窗集摆动)",
+   "blocked": [
+    "shadow",
+    "shadow",
+    "shadow",
+    "shadow",
+    "shadow",
+    "shadow",
+    "shadow",
+    "shadow",
+    "shadow"
+   ],
+   "agree": true
+  }
+ },
+ "all_agree": true,
+ "note": "HIST_r585 = R585 原始读数 (跨轮数据) ⇒ 判据器须复现 R585 自己的 D=[-8,-3]/rc=1, 以证判定按判据面计算而非硬编码本轮数字。"
+}
