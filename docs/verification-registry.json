@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R580",
+ "updated_round": "R582",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -6991,6 +6991,25 @@
     "audited_by_round": "R580"
    },
    "negative_control": "① 前态锚有牙（承重）: 同一契约在前态提交字节上判红（has_point=false, sha16 699008bc63e83379）而现盘判绿 ⇒ 判据非恒真门；② 器具自捕留档: 键集扫描窗口含点位名字面量 ⇒ 首跑 extra=['nlp_shape'] rc=1 假红，定因=器具读法错（非被测不符），修器具**不放宽判据**，首跑读数留档不翻案。"
+  },
+  {
+   "id": "r582.round-validity-auditor",
+   "level": "L2",
+   "owner_round": "R582",
+   "capability": "每轮有效性校对 + 起臂前置闸器具（用户令：需要额外调试工具校对每轮有效性和验证方案可行性）。`tools/roundcheck/roundcheck.py audit --round <R>` 审 10 条：登记行/提交唯一(轮号重号)/证据在位/**冻结 pin 与现盘字节一致**/文档结构(诚实边界)/提交面卫生(疑 `git add -A` 代理判据)/**提交内无 key 面**/读数有档/暂存面卫生/工作区 key 面提醒; `preflight` 审 8 条：依赖 key 面 set-unset(**绝不回显值**)/权重在盘/内存·磁盘余量/在飞执行体/轮号占用仲裁/目标轮号空闲/PUSH_PAUSED。读数: 器具自检 `--selftest` **PASS（负控 3/3 有牙 + 假红控制 1/1 + 正控 1/1）**;真机实跑 `audit R580` **rc=0（10 条无 FAIL）**、`audit R581` **rc=1（R1 无登记行 ∧ R8 读数缺档）**、`preflight R582` **rc=1（FRONTEND_TOKEN unset ∧ MemAvailable 2467MB < 2650MB ∧ 磁盘 free 2GB < 5GB）**（三条 FAIL 正是该器具要提前拦下的三类翻车, 非缺陷）。**诚实边界: 只审台账/证据/提交面一致性, 不判产品能力; R580 首跑 R7 曾因 `sk-` 正则误吃 `task-plan-*`判红(假红), 已加左边界 + 假红控制; R6 的 40 文件阈值是 `git add -A` 的代理判据, 不是证明; 无 CI 接线。**",
+   "evidence_cmd": "python3 tools/roundcheck/roundcheck.py --selftest; python3 tools/roundcheck/roundcheck.py audit --round R580",
+   "evidence_path": "docs/evidence/RF0001/R582-roundcheck.md",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "c5d82feffad0",
+    "instrument": "tools/roundcheck/roundcheck.py",
+    "instrument_sha12": "0d7cae2c8ae4",
+    "binding": "audit-pin",
+    "audited_by_round": "R582"
+   },
+   "negative_control": "器具内建 selftest 3 负控: 错 pin ⇒ R4 红 / 提交内 key 面 ⇒ R7 红 / 无提交轮号 ⇒ R2 红;另 1 假红控制: 正常 `task-*` 标识符不得误判为 `sk-` key。"
   }
  ],
  "aot_check_policy": "release_tag_only",
