@@ -1,0 +1,20 @@
+"""Multi-pile Nim."""
+
+
+def solve(text: str) -> str:
+    lines = text.splitlines()
+    idx = 0
+    while idx < len(lines) and lines[idx].strip() == "":
+        idx += 1
+    m = int(lines[idx].split()[0])
+    piles = [int(x) for x in lines[idx + 1].split()][:m]
+    x = 0
+    for a in piles:
+        x ^= a
+    if x == 0:
+        return "LOSE"
+    for i in range(m):
+        target = piles[i] ^ x
+        if target < piles[i]:
+            return "WIN %d %d" % (i + 1, piles[i] - target)
+    return "LOSE"

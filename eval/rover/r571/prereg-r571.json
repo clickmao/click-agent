@@ -1,0 +1,76 @@
+{
+ "round": "R571",
+ "written_before_run": true,
+ "author": "cron-agent (60min tick, 2026-09-19)",
+ "claim": "**同窗零开发对照轮 (第五窗集 + 重复臂)**: 既有开关 `AGENTFRAMEWORK_R1_MAX_REPAIR`(**契约不过时的最大修复轮数**, 源码默认 1) 取值 **1 (控制臂) vs 3 (治疗臂)** × 外部真值 codex, 3 新窗 w149..w151 × 每窗每臂 4 个独立会话 (重复臂)。承重问题 = 既有 env 开关清单里**唯一从未被单变量化**的一个; 先量分布 (96 份归档 transcript) 得靶人群 = `stage=contract` rc=4 的 5/96 = 5.2% (修复轮用尽仍不过契约 ⇒ 预算加厚是唯一直面手段, 且是**既有开关的取值**、零产品源码改动)。",
+ "one_time_context": "用户令 2026-09-19「继续下一轮」⇒ 只走零开发臂 (既有开关); R571 候选①②④ (早停有界替代 / g1-wythoff 失分面修复 / 交付闸语义) 均须动产品分支 ⇒ **未放行**, 本轮不碰。剂量轴/早停轴/执行回灌轴/预算轴/探针轴均已定案或已判, 本轮不重开。",
+ "candidates_ledger": {
+  "R571-① 早停轴「有界替代」(替代路径或分族阈值)": "未做 —— 须动产品分支 ⇒ **待放行**。本轮**只读取证**其可行性: 按源码 `R1Pipeline.cs:185-207` 判 `earlyStop ⇒ 跳过该次修复`(与任何预算轴无关), 而 `probe.Failed` 在本语料恒为 2 ⇒ `EARLY_STOP_PFAIL=3` 将零行使 ⇒ **既有开关无法构成替代** (码面结论, 零改动)。",
+  "R571-② g1/wythoff 失分面修复 (契约加厚 v3 / 产物落点自验)": "未做 —— 须动契约或产品分支 ⇒ **待放行** (第三次定因仍为产物缺陷)",
+  "R571-③ 起手闸把本会话工具子进程纳入噪声面": "**做** —— 器具改版 v3: 采样器 v2 逐样本落**本运行血统** RSS (`own_rss_mb`), postcheck 出 v1(原始)/v2(自体归因) 双栏 + 5 例成对控制; R570 的 `in_min=2539` 经时间轴取证为**阶跃且与本运行最长窗 (w144, 672s) 边界对齐** ⇒ 第一嫌疑是自体成本而非外来压力。先写后跑 (本件落盘先于起臂)",
+  "R571-④ 交付闸语义 (rc=5/rc=8 仍交付)": "未做 —— 须新增产品分支 ⇒ **待放行**; 本轮归档 transcript 只读取证 (rc 分布 rc=0:41 / 5:29 / 8:17 / 4:5 / 2:3 / 3:1) 已并入本轴靶人群算式, 不另开动作",
+  "R571-⑤ 契约修复预算轴 (承重)": "做 —— 3 新窗 w149..w151 × 每窗每臂 4 独立会话 (共 24 跑次/臂, 4 跑次 vs codex ×1), 既有开关零开发"
+ },
+ "single_variable": "**仅一个 env 开关的值**: `AGENTFRAMEWORK_R1_MAX_REPAIR` ∈ {1 (R571M1, 显式=产品默认), 3 (R571M3)}; 其余 env 两臂**逐项相同** (`AGENTFRAMEWORK_R1_CONTRACT=1` / `R1_PUBLIC_SELFCHECK=1` / `R1_ROLE_FILE` / `R1_TRANSCRIPT` / `R1_WORKSPACE` / `R1_TAG`); `AGENTFRAMEWORK_R1_EARLY_STOP_PFAIL` 两臂**显式 unset** (R570 轴, 产品默认 0=关); `AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR` 两臂 unset (剂量轴停用)。全臂共用同一枚 AOT 二进制 (sha 320d0eb17e709d15, runner 第 0 步机检), 题面/题集/role/判分器逐字节同。",
+ "arms": {
+  "C1": {"side": "codex", "desc": "外部真值 (另一套 agent 框架 CLI, 同真实模型 deepseek-flash, 同题面同夹具同窗; 每窗 1 跑次)", "env": {}},
+  "R571M1": {"side": "agent", "desc": "契约修复轮 = 1 (产品默认源码值; 控制臂)", "env": {"AGENTFRAMEWORK_R1_MAX_REPAIR": "1"}},
+  "R571M3": {"side": "agent", "desc": "契约修复轮 = 3 (契约不过时最多再修 3 轮); 治疗臂", "env": {"AGENTFRAMEWORK_R1_MAX_REPAIR": "3"}}
+ },
+ "arm_env_definition_note": "两臂的变量键**都显式落盘**且只有这一个键取值不同 (runner 第 0 步机检: 剂量键集 == {AGENTFRAMEWORK_R1_MAX_REPAIR} 且取值 1 / 3) ⇒ 单变量由构造保证。全局 export 里**不得**出现该键 (避免「继承值 + 显式值并存」的歧义)。",
+ "repeat_arm_design": {
+  "why": "本轴效应是**运行级**的 (修复预算用尽 ⇒ 整次运行在契约阶段死, 不是逐用例效应) ⇒ 「每臂每窗 1 跑次」的分辨率 = 1 × 5.2% = 0.05/窗, 结构性测不到",
+  "how": "每窗每臂 4 个**独立会话** (同窗、同题面、同 env, 仅 session-id 不同); codex 真值每窗 1 跑次 (真值只作同窗参照, 不进重复臂)",
+  "unit": "跑次 (外部真值 = `$D/logs/runs.jsonl` 的行数, 不靠进程内计数); 每跑次独立 `transcript.json` / `cases.txt` / adapter dump 索引区段",
+  "window_count": 3,
+  "runs_per_arm": 12,
+  "runs_total": 27
+ },
+ "resolution_bound": {
+  "target_population": "归档 96 份 transcript: `repair_rounds=1` 23 (24.0%); 其中 `stage=contract` ∧ rc=4 **5** (5.2%) = 修复预算用尽的硬靶",
+  "ceiling": "运行级天花板 = 5.2% (预算加厚只能作用在这个人群上; 其余 94.8% 的运行两臂**逐位相同**是预期行为)",
+  "expected_target_runs_per_arm": "12 × 0.052 = 0.62",
+  "resolution_statement": "**本轮分辨率不足以判定 5.2% 的运行级效应**: 12 跑次/臂下, 靶运行期望 0.62 例。因此本轴的**主判据是「行使面 + 逐位相同面」而不是分数差**: ① 若 M3 臂出现 `repair_rounds>=2` 或出现「同窗 M1 契约死而 M3 非契约死」⇒ 行使;**② 若两臂 24 跑次逐位相同 (rc/stage/repair_rounds/cases 全同) ⇒ 记 `axis-inert-at-observed-population`, 并**不得**据此宣称无效应, 只能宣称「在本语料人群下未行使」**。",
+  "reopen_condition": "重开条件 = 语料出现 ≥1 例「修复轮用尽仍契约死且第 3 轮能过」的**机制证据** (单测或真机), 或靶人群占比 ≥ N/12 使单轮可分辨"
+ },
+ "criterion_version": "v2 (逐窗并列 + 真值崩窗 unreliable + 配对判据[n>=3, 无窗<=-3, 中位>=-2] + VOID 臂窗单列) —— 口径文本取自 docs/external-reference-harness.md §12, 本文件只引用不重定义; 本轮不改判据 v2",
+ "acceptance_rule": {
+  "primary": "本轴三判据 A1/A2/A3 (先于本窗集落盘) + 逐窗对同窗真值并列",
+  "rc": "0 全过 / 1 判据未过 (被测或前提) / 2 器具缺陷 / 3 缺侧或不可判",
+  "expected_direction": "**质量方向: M3 >= M1 (加厚契约修复预算只能减少契约死)**; 成本方向: M3 >= M1 (允许变贵, 上界 1.25×)。**方向是预注册的**, 与 R570 前沿测量不同",
+  "cross_check": "铁律 11 前置器 python3 eval/rover/r507pre/exec_precondition.py --round r571 (两侧产出物独立物化 + 真跑 + 逐用例判对); rc!=0 ⇒ 全部质量/成本读数标「参考(未可验收)」"
+ },
+ "axis_criteria_R571": {
+  "note": "三条成对判据**先于本窗集落盘**; 缺任一条 ⇒ 不作任何增益宣称 (只出读数)",
+  "A1 行使面 (机制启用断言)": "M3 臂出现 `repair_rounds>=2` 的跑次数 >= 1 ∨ 出现「同窗 M1 该跑次 rc=4 ∧ M3 非 rc=4」; A1 不过 ⇒ 记 `mechanism-not-engaged`, **质量/成本对比作废**, 并按 resolution_bound 的 ② 定性",
+  "A2 质量不降 (paired)": "逐窗配对 (median_reps(M3) − codex_truth) vs (median_reps(M1) − codex_truth) 不劣化: 定义 D = [median_reps(M3) − median_reps(M1)]; 判据 = 中位(D) >= 0 ∧ 无窗 D <= -3 ∧ 有效窗 n >= 3",
+  "A3 成本上界": "Σcalls(M3)/Σcalls(M1) <= 1.25 ∧ Σnew_prompt(M3)/Σnew_prompt(M1) <= 1.25 (加厚预算的代价必须可见且有界; 调用数为主口径, 无 tokenizer 口径争议)",
+  "宣称规则": "A1 ∧ A2 ∧ A3 全过 ⇒ 方可宣称「契约修复预算加厚 = 质量不降且成本有界」; A3 不过 ⇒ 如实写「质量不降但成本超界」, 禁用收益动词; A1 不过 ⇒ 整轴作未行使处理 (禁称无效应)"
+ },
+ "gate_instrument_v3": {
+  "candidate": "起手闸**自体归因**器具改版 (候选③, 承重)",
+  "evidence": "R570 postcheck: in_min=2539 < GATE 2650, swing 290; 逐样本时间轴显示下降是**阶跃** (t≈120s 起 −230MB, 持续至 t≈780s) 且与**本运行最长窗 w144 (672s) 边界对齐** (前后窗口 41-106s) ⇒ 自体嫌疑",
+  "change": "mem_sampler v2 逐样本落 `mem_available_mb` + `own_rss_mb` (血统 = 采样器父进程全部后代 ∪ 命令行含本运行根/端口的进程); postcheck 出 v1(原始, 逐字保留) / v2(自体加回) 双栏, 顶层 rc 取 v2 并同落 `rc_v1_raw`",
+  "backward_compat": "旧样本无 `own_rss_mb` ⇒ 按 0 消费 ⇒ v2 ≡ v1 ⇒ **R570 旧判决 rc=2 不被翻案** (单列, 不改写)",
+  "controls": "5 例成对控制 (`--selftest`): 自体完全解释⇒v1 红∧v2 绿 / own=0 真外来⇒v2 红 / 部分归因(2630<2650)⇒**必红** / R570 形状无字段⇒rc=2 保持 / 无越线⇒双绿",
+  "fail_closed": "器具自检无牙 ⇒ rc=2 (不起臂)"
+ },
+ "evidence_scope": {
+  "require": [
+   "w149/codex", "w149/agentM1-r1", "w149/agentM1-r2", "w149/agentM1-r3", "w149/agentM1-r4",
+   "w149/agentM3-r1", "w149/agentM3-r2", "w149/agentM3-r3", "w149/agentM3-r4",
+   "w150/codex", "w150/agentM1-r1", "w150/agentM1-r2", "w150/agentM1-r3", "w150/agentM1-r4",
+   "w150/agentM3-r1", "w150/agentM3-r2", "w150/agentM3-r3", "w150/agentM3-r4",
+   "w151/codex", "w151/agentM1-r1", "w151/agentM1-r2", "w151/agentM1-r3", "w151/agentM1-r4",
+   "w151/agentM3-r1", "w151/agentM3-r2", "w151/agentM3-r3", "w151/agentM3-r4"
+  ],
+  "note": "27 = 3 窗 × 9 目录 (codex ×1 + M1 重复 ×4 + M3 重复 ×4); 臂标签 = 快照目录名 (前置器按目录名归属, codex 目录名固定为 `codex` 以取 side=codex)"
+ },
+ "cross_round_deltas_forbidden": "与 w104..w148 全部历轮窗集**并列不相减** (新窗 + 新臂结构)",
+ "preregistered_expectations": {
+  "quality": "M3 >= M1 (目标人群 = 契约死运行); 单窗禁作能力结论; 每窗取重复中位",
+  "cost": "调用数/新算 prompt/completion 三列分列 (禁名义总量); 行使以 `repair_rounds` 归因",
+  "honest_boundary": "g1 族的 wythoff 失分已三次定因 (产物缺陷); 本轮不修 (未放行) ⇒ 铁律 11 rc=1 可能性高, 不得据此改写判据; 本轴分辨率不足 (见 resolution_bound) 必须写进结论"
+ },
+ "notes": "本文件先写后跑 (runner 第 0 步机检: round / 臂集 3 / require 27 / criterion_version v2 / 两臂变量键集与取值 1 vs 3)。判据 v2 口径不在本文件重定义, 只引用 docs/external-reference-harness.md §12。"
+}

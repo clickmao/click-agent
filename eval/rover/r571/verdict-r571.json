@@ -1,0 +1,273 @@
+{
+ "round": "R571",
+ "windows": [
+  "w149",
+  "w150",
+  "w151"
+ ],
+ "criteria": {
+  "note": "三条成对判据**先于本窗集落盘**; 缺任一条 ⇒ 不作任何增益宣称 (只出读数)",
+  "A1 行使面 (机制启用断言)": "M3 臂出现 `repair_rounds>=2` 的跑次数 >= 1 ∨ 出现「同窗 M1 该跑次 rc=4 ∧ M3 非 rc=4」; A1 不过 ⇒ 记 `mechanism-not-engaged`, **质量/成本对比作废**, 并按 resolution_bound 的 ② 定性",
+  "A2 质量不降 (paired)": "逐窗配对 (median_reps(M3) − codex_truth) vs (median_reps(M1) − codex_truth) 不劣化: 定义 D = [median_reps(M3) − median_reps(M1)]; 判据 = 中位(D) >= 0 ∧ 无窗 D <= -3 ∧ 有效窗 n >= 3",
+  "A3 成本上界": "Σcalls(M3)/Σcalls(M1) <= 1.25 ∧ Σnew_prompt(M3)/Σnew_prompt(M1) <= 1.25 (加厚预算的代价必须可见且有界; 调用数为主口径, 无 tokenizer 口径争议)",
+  "宣称规则": "A1 ∧ A2 ∧ A3 全过 ⇒ 方可宣称「契约修复预算加厚 = 质量不降且成本有界」; A3 不过 ⇒ 如实写「质量不降但成本超界」, 禁用收益动词; A1 不过 ⇒ 整轴作未行使处理 (禁称无效应)"
+ },
+ "arms": {
+  "C1": {
+   "runs": 3,
+   "cases_per_run": [
+    54,
+    58,
+    58
+   ],
+   "per_window_median": {
+    "w149": 54,
+    "w150": 58,
+    "w151": 58
+   },
+   "median": 58,
+   "min": 54,
+   "max": 58,
+   "calls": 279,
+   "new_prompt": 72506,
+   "completion": 52919,
+   "v_all_med": 0.96,
+   "v_incr_med": 0.97,
+   "repair_rounds": [
+    null,
+    null,
+    null
+   ],
+   "rc": [
+    null,
+    null,
+    null
+   ],
+   "stages": [
+    null,
+    null,
+    null
+   ],
+   "steps": [
+    null,
+    null,
+    null
+   ]
+  },
+  "R571M1": {
+   "runs": 12,
+   "cases_per_run": [
+    58,
+    51,
+    47,
+    52,
+    44,
+    58,
+    58,
+    58,
+    58,
+    58,
+    46,
+    44
+   ],
+   "per_window_median": {
+    "w149": 51.5,
+    "w150": 58.0,
+    "w151": 52.0
+   },
+   "median": 55.0,
+   "min": 44,
+   "max": 58,
+   "calls": 24,
+   "new_prompt": 5381,
+   "completion": 55624,
+   "v_all_med": 0.98,
+   "v_incr_med": 0.97,
+   "repair_rounds": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "rc": [
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    0,
+    0,
+    5,
+    5,
+    5
+   ],
+   "stages": [
+    "expect_stdout_exhausted",
+    "expect_stdout_exhausted",
+    "expect_stdout_exhausted",
+    "expect_stdout_exhausted",
+    "expect_stdout_exhausted",
+    "expect_stdout_exhausted",
+    "expect_stdout_exhausted",
+    "done",
+    "done",
+    "expect_stdout_exhausted",
+    "expect_stdout_exhausted",
+    "expect_stdout_exhausted"
+   ],
+   "steps": [
+    7,
+    13,
+    7,
+    13,
+    7,
+    7,
+    7,
+    14,
+    14,
+    7,
+    7,
+    7
+   ]
+  },
+  "R571M3": {
+   "runs": 12,
+   "cases_per_run": [
+    51,
+    56,
+    58,
+    55,
+    58,
+    58,
+    58,
+    51,
+    47,
+    43,
+    56,
+    58
+   ],
+   "per_window_median": {
+    "w149": 55.5,
+    "w150": 58.0,
+    "w151": 51.5
+   },
+   "median": 56.0,
+   "min": 43,
+   "max": 58,
+   "calls": 24,
+   "new_prompt": 5712,
+   "completion": 57182,
+   "v_all_med": 0.97,
+   "v_incr_med": 0.96,
+   "repair_rounds": [
+    0,
+    0,
+    0,
+    1,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "rc": [
+    5,
+    0,
+    0,
+    0,
+    5,
+    5,
+    0,
+    5,
+    5,
+    5,
+    5,
+    0
+   ],
+   "stages": [
+    "expect_stdout_exhausted",
+    "done",
+    "done",
+    "done",
+    "expect_stdout_exhausted",
+    "expect_stdout_exhausted",
+    "done",
+    "expect_stdout_exhausted",
+    "expect_stdout_exhausted",
+    "expect_stdout_exhausted",
+    "expect_stdout_exhausted",
+    "done"
+   ],
+   "steps": [
+    13,
+    14,
+    22,
+    14,
+    7,
+    7,
+    10,
+    7,
+    7,
+    7,
+    11,
+    14
+   ]
+  }
+ },
+ "paired": {
+  "D_m3_minus_m1_per_window": [
+   4.0,
+   0.0,
+   -0.5
+  ],
+  "D_median": 0.0,
+  "valid_windows": 3
+ },
+ "ratio_m3_over_m1": {
+  "calls": 1.0,
+  "new_prompt": 1.0615
+ },
+ "A1_exercised": {
+  "pass": false,
+  "repair_rounds_ge2_on_M3": [],
+  "cross_windows_contract_death_M1": []
+ },
+ "A2_quality_not_worse": {
+  "pass": true,
+  "D_list": [
+   4.0,
+   0.0,
+   -0.5
+  ],
+  "D_median": 0.0,
+  "valid_windows": 3
+ },
+ "A3_cost_bounded": {
+  "pass": true,
+  "calls": 1.0,
+  "new_prompt": 1.0615,
+  "bound": 1.25
+ },
+ "verdict": {
+  "rc": 1,
+  "judge": "mechanism-not-engaged",
+  "blocked": [
+   "A1_exercise_face"
+  ],
+  "note": "按预注册: 质量/成本对比作废; 不得据此宣称无效应 (见 resolution_bound)",
+  "iron11": "见 eval/rover/r507pre/precondition-r571.json"
+ }
+}
