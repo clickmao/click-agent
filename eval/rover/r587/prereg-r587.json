@@ -1,0 +1,83 @@
+{
+ "round": "R587",
+ "written_before_run": true,
+ "author": "cron tick (AgentFramework 常驻能力自检循环), 用户令 2026-09-19 DAG 先行",
+ "claim": "主线**同件扩窗轮**：被测件与 R585/R586 **同 sha**（sha 4b70fd7c…，零产品源码改动）、题集**同 sha**（e0c667c2…），本轮新增 3 窗 `w160..w162` 与 R586 的 `w157..w159` **并列**（禁相减）合成 **6 窗**摆动估计；并收口 R586 登记的全部 6 项候选（① wythoff 同子规格定因 ② EMPTY_OR_ERROR 定因 ③ 有效窗下限口径显式二选一 ④ 成本按跑次归一入册 ⑤ 扩窗 ⑥ 审计器作用域分支）。",
+ "one_time_context": {
+  "被测件": "$HOME/.agentframework/artifacts/pub_r587/agenthost —— **与 R585/R586 同一枚二进制**（sha 由 runner 第 0 步落盘 + 起跑前后一致性断言），sha 必须 == 4b70fd7cdb39f1c72c22db131a0ab36ad1bcafc54153c6aa5cc4070868ecb1ce",
+  "夹具配置": "$HOME/.agentframework/harness/agent/cfg（R585 已恢复并落稳定路径；本轮 cfg 文件 sha 逐文件落盘）",
+  "题集": "eval/rover/r587/taskset-r587.json = R586 件**逐字节复制**（sha e0c667c2a313c04b…，与 w104..w159 同件）",
+  "判分器": "eval/rover/r587/cases/run_cases_r521.py（冻结件逐字节复制；隐藏 58 例）"
+ },
+ "arm_identity": {
+  "note": "全臂共用**同一枚**二进制（sha 断言）；同题面 / 同夹具 / 同窗 / 同模型（deepseek-flash）。本轮**不换件** ⇒ 与 R585/R586 读数**同件跨窗并列**（不相减、不因轮次推进而重标定）。"
+ },
+ "single_variable": "本轮**无剂量轴**：`R587D` = 产品默认档 —— 三枚剂量键 `AGENTFRAMEWORK_R1_MAX_REPAIR` / `AGENTFRAMEWORK_R1_EARLY_STOP_PFAIL` / `AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR` **两臂均显式 unset 且 runner 断言未设**（防继承）；其余 env 逐项相同（`R1_CONTRACT=1` / `R1_PUBLIC_SELFCHECK=1` / `R1_ROLE_FILE` / `R1_TRANSCRIPT` / `R1_WORKSPACE` / `R1_TAG`）。`C1` = 外部真值 codex（无 env）。",
+ "arms": {
+  "C1": {
+   "side": "codex",
+   "desc": "外部真值（另一套 agent 框架 CLI，同真实模型 deepseek-flash，同题面同夹具同窗；每窗 1 跑次）",
+   "env": {}
+  },
+  "R587D": {
+   "side": "agent",
+   "desc": "产品默认档（无剂量键；主线质量列的对照主体）",
+   "env": {}
+  }
+ },
+ "repeat_arm_design": {
+  "reps_per_window": 3,
+  "note": "每跑次**独立会话**（session-id = arm-win-sub）；质量按每窗重复跑次的**中位**报并报极差；单跑次禁作结论；跑次数取 `logs/runs.jsonl` 行数（外部真值，进程内计数不作数）。"
+ },
+ "resolution_bound": "6 窗（本轮 3 新 + R586 3 旧并列）× 3 跑次/臂 才允许给**跨窗摆动**估计；仍不得外推为总体能力宣称（历史摆动 15/15 ≥ 臂效应）。",
+ "criterion_version": "v2（逐窗并列 + 真值崩窗 unreliable + 配对判据 + VOID 臂窗单列）—— 口径文本取自 docs/external-reference-harness.md §12，本文件只引用不重定义；本轮**不改判据 v2 的核心阈值**（C1 下限/中位下限与 R585/R586 逐字相同）。",
+ "axis_criteria_R587": {
+  "note": "判据**先于本窗集落盘**；缺任一条 ⇒ 不作任何质量宣称（只出读数）。",
+  "C0 真值可靠性": "每窗 codex 跑次 `all_pass` 全真才计入配对；某窗真值自身失败 ⇒ 该窗标 `unreliable` 并从配对中剔除（两侧同败优先怀疑夹具/题面，非能力）。",
+  "C1 质量配对（主）": "逐窗配对差 D = median_reps(R587D) − codex_truth；判据 = 有效窗 n >= 2 ∧ 中位(D) >= -2 ∧ 无窗 D <= -15。判据**原样判**，不因读数改阈值。",
+  "C2 成本三列（信息项，不判红绿）": "调用数 / 新算 prompt / completion **三列分列**（禁合并成名义总量）+ 命中率双口径 v_all / v_incr（中继 dump 时间轴）；缺 usage 记 unreported，**禁按 0 计入**。",
+  "C3 铁律 11（外部前置条件）": "`python3 eval/rover/r507pre/exec_precondition.py --round r587`；rc!=0 ⇒ 全部质量/成本读数标「**参考（未可验收）**」并逐条点名错题。",
+  "C4 起手闸": "内存裕量条款（阈值 + 观测振幅余量 + 连续 2 次）∧ leak-selfcheck rc=0 ∧ 判别力成对控制（行使则 rc=0；未行使如实登记 rc=3，**不得读成闸已行使**）。",
+  "C5 六窗并列摆动判据（本轮主新增，禁相减）": "R587 有效窗 D 集与 R586 D 集 **同号** ∧ 两集极差区间**有重叠** ⇒ 报「缺口跨窗复现」；同号但区间不重叠 ⇒ 「方向一致、量级漂移」；异号 ⇒ 「未复现（单窗集摆动）」。**并列摆动估计** = 6 窗 D 集（w157..w162，R586 三窗取 `verdict-r586.json` 已登记读数，**不重算**）的极差与逐窗偏离中位量；若摆动 >= 本轮臂效应量 ⇒ 明文写「摆动 ≥ 效应 ⇒ 单窗不作能力结论，需更多窗」。",
+  "C6 步数列面（读数面收口，非被测判据）": "产品跑次 `steps_executed` 非空计数须 == 9/9；<9 ⇒ 判**器具/读数面缺陷 (rc=2，不计入被测读数)**。",
+  "C7 超时例分离（信息项）": "本轮 `TimeoutExpired` 例数如实报；≤1 例只出读数，不作宣称；不得因 R586 为 0 而读成「已修复」。",
+  "C8 成本按跑次归一（口径入册，本轮新增）": "两侧跑次数不等时，**禁比总量**；必须并报 `total` 与 `per_run = total / n_runs`（`n_runs` = `logs/runs.jsonl` 行数）。三个分量（调用 / 新算 prompt / completion）各自给 total 与 per_run 双列，并写入 `eval/capability/kpi.jsonl` 本轮行的 `per_run` 子键（口径入册）。",
+  "C9 有效窗下限的显式二选一（判据面收口，本轮新增）": "「真值自身失分窗」（如 R585 的 `w154`）口径**显式二选一后固定为**：**从配对中剔除 ∧ 单列该窗错例 ∧ 不记我方缺陷**（与 R585/R586 实际做法一致，本轮写成明文条款，非事后解释）。并给 `w154` 类窗的**历史读数并列清单**（只列已登记读数，跨轮禁相减、禁重算）。",
+  "C10 审计器作用域（器具面，非被测判据）": "`tools/roundcheck/roundcheck.py audit --round R587` 对「零产品源码改动对照轮」的 R1/R6/R8 结构性 FAIL，走**显式 scope 声明**分支（`audit_scope.kind = contrast_zero_product_change`）。分支**只有在**：① 预注册声明在位且 kind 合法且 reason 非空；② 本轮提交**不触碰 `src/**`**；③ 本轮读数件在位且逐窗 report.json 数 == `evidence_scope.require` 数 三条同时成立时才生效；缺任一条 ⇒ 回到旧行为（R1/R8 按登记行判）。**禁改判据凑绿、禁补假登记行**；`--selftest` 必含四负控（见 N6）。"
+ },
+ "evidence_scope": {
+  "require": [
+   "w160/codex",
+   "w160/agentD-r1",
+   "w160/agentD-r2",
+   "w160/agentD-r3",
+   "w161/codex",
+   "w161/agentD-r1",
+   "w161/agentD-r2",
+   "w161/agentD-r3",
+   "w162/codex",
+   "w162/agentD-r1",
+   "w162/agentD-r2",
+   "w162/agentD-r3"
+  ],
+  "note": "12 = 3 窗 × 4 目录（codex ×1 + 产品默认档重复 ×3）；臂标签 = 快照目录名（前置器按目录名归属，codex 目录名固定 `codex`）"
+ },
+ "audit_scope": {
+  "kind": "contrast_zero_product_change",
+  "reason": "本轮为「同件扩窗」对照轮：零产品源码改动（被测件 sha 与 R585/R586 同件）、无新能力 ⇒ 无 verification-registry 登记行的正当理由；读数面落在 eval/rover/r587 判决件与逐窗 report.json。",
+  "readings": ["eval/rover/r587/verdict-r587.json", "eval/rover/r587/kpi-table-r587.json"],
+  "windows_evidence": "eval/rover/r587/evidence/windows/*/report.json",
+  "src_must_be_untouched": true
+ },
+ "fail_closed": {
+  "说明": "预注册机检不过 / 稳定路径缺件 / 二进制 sha 不符 ⇒ runner exit 3，**不起臂**；缺 key ⇒ 远端臂全 VOID（R581 v1 事故），作业环境自备 key；审计器 scope 分支三条件缺一 ⇒ 回旧行为（不作 scope 放行）。"
+ },
+ "cross_round_deltas_forbidden": "与历轮窗集**并列不相减**（w104..w162 全为同一冻结题集，但窗集/臂集逐轮不同）；本轮与 R585/R586 为**同件的三个窗集** ⇒ 只作「复现/未复现」判定与 6 窗并列摆动估计，不作差值宣称。",
+ "preregistered_expectations": {
+  "方向": "**不预注册方向**：本轮是「扩窗 + 读数面收口」轮，非治疗臂；只报逐窗区间、配对中位与 C5 三态之一 + 6 窗摆动估计。",
+  "预期量级": "参考同件历史：产品默认档逐窗中位 58/50/55/55/43（R585/R586）、真值 56/58/58/58/58/58。若 6 窗 D 集极差 >= 6 ⇒ 摆动与缺口同量级，须明文标注。",
+  "① 预期": "同族失败的落点**不落到同一子规格**——预期待判：9 份产物快照的 `games/wythoff.py` sha 各不相同（独立生成 ⇒ 各自规则），故「同子规格」命题应被证伪，真轴是**产物级实现差异**。",
+  "② 预期": "`EMPTY_OR_ERROR` 集中出现的跑次，其产物在**合法输入下崩溃或返回空**（如空候选表取首元素）；判据 = 冻结副本重放捕获非零 rc + stderr 首行。"
+ },
+ "notes": "零产品源码改动（被测件同 sha）；器具面改动 = 本轮新增读数件（run_r587.sh / kpi_r587.py，均声明派生来源）+ 只读定因件两枚 + `tools/roundcheck` 作用域分支（纯新增分支，旧行为不变）。"
+}

@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R584",
+ "updated_round": "R587",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -6996,7 +6996,7 @@
    "id": "r582.round-validity-auditor",
    "level": "L2",
    "owner_round": "R582",
-   "capability": "每轮有效性校对 + 起臂前置闸器具（用户令：需要额外调试工具校对每轮有效性和验证方案可行性）。`tools/roundcheck/roundcheck.py audit --round <R>` 审 10 条：登记行/提交唯一(轮号重号)/证据在位/**冻结 pin 与现盘字节一致**/文档结构(诚实边界)/提交面卫生(疑 `git add -A` 代理判据)/**提交内无 key 面**/读数有档/暂存面卫生/工作区 key 面提醒; `preflight` 审 8 条：依赖 key 面 set-unset(**绝不回显值**)/权重在盘/内存·磁盘余量/在飞执行体/轮号占用仲裁/目标轮号空闲/PUSH_PAUSED。读数: 器具自检 `--selftest` **PASS（负控 3/3 有牙 + 假红控制 1/1 + 正控 1/1）**;真机实跑 `audit R580` **rc=0（10 条无 FAIL）**、`audit R581` **rc=1（R1 无登记行 ∧ R8 读数缺档）**、`preflight R582` **rc=1（FRONTEND_TOKEN unset ∧ MemAvailable 2467MB < 2650MB ∧ 磁盘 free 2GB < 5GB）**（三条 FAIL 正是该器具要提前拦下的三类翻车, 非缺陷）。**诚实边界: 只审台账/证据/提交面一致性, 不判产品能力; R580 首跑 R7 曾因 `sk-` 正则误吃 `task-plan-*`判红(假红), 已加左边界 + 假红控制; R6 的 40 文件阈值是 `git add -A` 的代理判据, 不是证明; 无 CI 接线。**",
+   "capability": "每轮有效性校对 + 起臂前置闸器具（用户令：需要额外调试工具校对每轮有效性和验证方案可行性）。`tools/roundcheck/roundcheck.py audit --round <R>` 审 10 条：登记行/提交唯一(轮号重号)/证据在位/**冻结 pin 与现盘字节一致**/文档结构(诚实边界)/提交面卫生(疑 `git add -A` 代理判据)/**提交内无 key 面**/读数有档/暂存面卫生/工作区 key 面提醒; `preflight` 审 8 条：依赖 key 面 set-unset(**绝不回显值**)/权重在盘/内存·磁盘余量/在飞执行体/轮号占用仲裁/目标轮号空闲/PUSH_PAUSED。读数: 器具自检 `--selftest` **PASS（负控 3/3 有牙 + 假红控制 1/1 + 正控 1/1）**;真机实跑 `audit R580` **rc=0（10 条无 FAIL）**、`audit R581` **rc=1（R1 无登记行 ∧ R8 读数缺档）**、`preflight R582` **rc=1（FRONTEND_TOKEN unset ∧ MemAvailable 2467MB < 2650MB ∧ 磁盘 free 2GB < 5GB）**（三条 FAIL 正是该器具要提前拦下的三类翻车, 非缺陷）。**诚实边界: 只审台账/证据/提交面一致性, 不判产品能力; R580 首跑 R7 曾因 `sk-` 正则误吃 `task-plan-*`判红(假红), 已加左边界 + 假红控制; R6 的 40 文件阈值是 `git add -A` 的代理判据, 不是证明; 无 CI 接线。** 【R587 重审】器具在本轮新增「零产品源码改动对照轮」作用域分支（声明件 `audit-scope-<rid>.json`；R1 N/A / R6 改面形状判据 / R8 读声明读数面）+ 6 夹具（正控 1 + 负控 5）。重审取证 = 现盘字节重跑历史轮: `audit R580` rc=0、`audit R586` rc=1 且**同三条**（R1 无登记行 / R6 124 文件 > 40 / R8 读数缺档）⇒ 纯增量、历史判决中性、判据未放宽；首跑读数不撤。新行见 `r587.roundcheck-contrast-scope`。",
    "evidence_cmd": "python3 tools/roundcheck/roundcheck.py --selftest; python3 tools/roundcheck/roundcheck.py audit --round R580",
    "evidence_path": "docs/evidence/RF0001/R582-roundcheck.md",
    "evidence_generated_with": {
@@ -7005,9 +7005,9 @@
     "pin_reason": "archived-per-round",
     "artifact_sha12": "c5d82feffad0",
     "instrument": "tools/roundcheck/roundcheck.py",
-    "instrument_sha12": "477d53280507",
+    "instrument_sha12": "b348eff8dd63",
     "binding": "audit-pin",
-    "audited_by_round": "R582"
+    "audited_by_round": "R587"
    },
    "negative_control": "器具内建 selftest 3 负控: 错 pin ⇒ R4 红 / 提交内 key 面 ⇒ R7 红 / 无提交轮号 ⇒ R2 红;另 2 假红控制: 正常 `task-*` 标识符不得误判为 `sk-` key; P5 在飞执行体探测不得自匹配(旧 `pgrep -c -f` 把调用者自己含 `agenthost` 的命令行算成在飞执行体 ⇒ 假 WARN; R584 起改扫 /proc 按 argv[0]/解释器 argv[1] 匹配)。"
   },
@@ -7048,6 +7048,25 @@
     "audited_by_round": "R584"
    },
    "negative_control": "① 备份失败负控: BackupRoot 指向「文件」下的子目录 ⇒ 备份必失败 ⇒ RequireBackup 判 Rejected 且盘上字节零改动(证明 fail-closed 有牙, 不是「备份可选」); ② 沙盒负控: ../escape.txt ⇒ Rejected(越界有牙); ③ 关合并负控: AllowMerge=false 且现盘变更 ⇒ StaleBase 不写(证明自动合并是显式开关, 非默认静默); ④ 并发负控: 同 ExpectedSha 两次 Apply ⇒ 恰 1 Applied + 1 MergedAuto, 两侧改动都在且备份链 2 条 —— 该判据首跑抓出真缺陷(ApplyAsync 先释放信号量再跑核心 ⇒ 互斥形同虚设, 两次都走快路径), 修复后 16/16; ⑤ 假红控制: 文件服务测试不依赖网络/模型/系统时间窗口 ⇒ 无外部抖动面; ⑥ 本轮器具自捕: roundcheck P5 在飞执行体探测旧实现 `pgrep -c -f` 把调用者自己命令行(含 agenthost 字面量)算成在飞执行体 ⇒ 假 WARN; 改按 /proc argv[0](解释器看 argv[1]) 匹配后 P5 PASS, 并加 selftest 假红控制2(P5 不得自匹配) ⇒ SELFTEST PASS(负控 3/3 + 正控 1/1 + 假红 2/2)。"
+  },
+  {
+   "id": "r587.roundcheck-contrast-scope",
+   "level": "L2",
+   "owner_round": "R587",
+   "capability": "审计器对「零产品源码改动对照轮」的作用域分支（R585/R586 同形三连红的收口; 用户令 2026-09-19「全部候选并轮」）。声明件 `eval/rover/<rid>/audit-scope-<rid>.json`: kind=contrast_zero_product_change ∧ reason≥20 字符 ∧ readings 逐个在位非空 ∧ allowed_faces 非空；**且提交面零 `src/`** ⇒ R1 判 `PASS(N/A, 明细带声明件与 reason)` / R6 改**面形状**判据（提交面每个文件须落在声明的面内; 垃圾面判据不变）/ R8 改读**声明的读数面**（须含 verdict.rc ∧ `x/y` 通过率 ∧（require_form_gate 时）`形式门禁`读数）。缺声明 ⇒ **旧行为逐字节不变**；声明非法 ⇒ **出声不豁免**。读数: `--selftest` 对照轮 正控 1/1 + 负控 5/5 全绿；历史判决中性 = 现盘器具重跑 `audit R580` rc=0 ∧ `audit R586` rc=1 且三条红逐条相同。**诚实边界: R6 的面形状判据是「提交面落在声明面内」的代理判据（声明错则判据跟着错）; R8 的「形式门禁」要求是本轮主动保留的牙; 本器具只审台账/证据/提交面一致性, 不判产品能力; 声明件在 R587 为跑后落盘（declared_after_run=true, 冻结预注册未触碰）; 无 CI 接线。**",
+   "evidence_cmd": "python3 tools/roundcheck/roundcheck.py --selftest",
+   "evidence_path": "docs/evidence/RF0001/R587-roundcheck-contrast-scope.md",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "cab29c315a06",
+    "instrument": "tools/roundcheck/roundcheck.py",
+    "instrument_sha12": "b348eff8dd63",
+    "binding": "audit-pin",
+    "audited_by_round": "R587"
+   },
+   "negative_control": "6 夹具（正控 1 + 负控 5）: 声明了却提交触碰 `src/` ⇒ R1 红（分支不适用）; 无声明 ⇒ R1 红（旧行为未被改坏）; 声明非法（读数件缺/空）⇒ R1 红且明细出声; 声明面缺「形式门禁」⇒ R8 红; 提交面越界（未声明路径）⇒ R6 红; 还原后 rc=0。（夹具自身首跑假红 —— `allowed_faces` 漏 `docs/` 使正控 R6 红 —— 由自检当场抓出: 修声明完整性, 未放宽判据。）"
   }
  ],
  "aot_check_policy": "release_tag_only",

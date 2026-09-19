@@ -82,6 +82,59 @@ def rows_for(reg, round_id):
     return [r for r in reg.get("rows", []) if str(r.get("owner_round", "")).strip() == round_id]
 
 
+CONTRAST_SCOPE_KIND = "contrast_zero_product_change"
+
+
+def read_audit_scope(repo, round_id):
+    """读本轮**独立声明件** `eval/rover/<rid>/audit-scope-<rid>.json` 的 `audit_scope` 段（R587 新增）。
+
+    动机（R586 登记候选 ⑥）: 存在一类**零产品源码改动**的对照轮 —— 只跑外部真值 × 产品默认档、
+    不新增能力 ⇒ 依据「验证登记表**缺少负控**」的通用纪律, 它**本就不该**有 `owner_round` 登记行,
+    而旧 `R1` 会把「无登记行」一律判红; `R6` 的「> 40 文件」与 `R8` 的「build 0 error / 14/14」
+    在对照轮上也是结构性不可达。旧处理方式（补一行假登记行 / 放宽阈值）都是**改判据凑绿**。
+
+    本函数的纪律 = **免检只能由预注册显式声明, 且必须可机检、fail-closed**:
+      · 声明缺失 ⇒ 返回 None（**旧行为逐字节不变**）;
+      · 声明非法（kind 不符 / reason 过短 / readings 缺失或为空文件 / allowed_faces 为空）⇒
+        返回 {"ok": False, "why": ...} 而**不是** None —— 让调用方把它写进 R1 的明细（出声, 不静默豁免）;
+      · 调用方（audit）另需核「提交面**零** `src/` 文件」, 声明了却动了产品源码 ⇒ 分支不适用。
+    """
+    path = os.path.join(repo, "eval", "rover", round_id.lower(), "audit-scope-%s.json" % round_id.lower())
+    rel = os.path.relpath(path, repo)
+    if not os.path.isfile(path):
+        return None
+    try:
+        d = json.loads(io.open(path, "r", encoding="utf-8").read())
+    except (ValueError, OSError):
+        return {"ok": False, "why": "声明件非法 JSON: %s" % rel, "path": rel}
+    sc = d.get("audit_scope")
+    if sc is None:
+        return None
+    if not isinstance(sc, dict):
+        return {"ok": False, "why": "audit_scope 非对象", "path": rel}
+    kind = str(sc.get("kind", "")).strip()
+    reason = str(sc.get("reason", "")).strip()
+    readings = sc.get("readings") or []
+    faces = sc.get("allowed_faces") or []
+    if kind != CONTRAST_SCOPE_KIND:
+        return {"ok": False, "why": "kind=%r 非 %s" % (kind, CONTRAST_SCOPE_KIND), "path": rel}
+    if len(reason) < 20:
+        return {"ok": False, "why": "reason 缺失或过短(<20 字符)", "path": rel}
+    if not isinstance(readings, list) or not readings:
+        return {"ok": False, "why": "readings 为空（必须显式列出本轮读数面）", "path": rel}
+    bad = [p for p in readings
+           if not os.path.isfile(os.path.join(repo, p)) or os.path.getsize(os.path.join(repo, p)) == 0]
+    if bad:
+        return {"ok": False, "why": "读数件缺/为空: %s" % bad, "path": rel}
+    if not isinstance(faces, list) or not [f for f in faces if str(f).strip()]:
+        return {"ok": False, "why": "allowed_faces 为空（提交面必须显式声明, 不接受省略）", "path": rel}
+    return {"ok": True, "path": rel, "kind": kind, "reason": reason,
+            "readings": [str(p) for p in readings], "allowed_faces": [str(f) for f in faces],
+            "require_form_gate": bool(sc.get("require_form_gate", True)),
+            "declared_at": str(d.get("declared_at", "")).strip(),
+            "declared_after_run": bool(d.get("declared_after_run", False))}
+
+
 def commits_for(repo, round_id):
     out = git(repo, "log", "--format=%H\t%s", "-n", "400")
     hits = []
@@ -132,12 +185,32 @@ def audit(repo, round_id):
         return rep
     rows = rows_for(reg, round_id)
 
-    # R1 登记行
-    rep.add("R1_registry_row", "PASS" if rows else "FAIL",
-            ("%d 行 owner_round=%s" % (len(rows), round_id)) if rows else ("登记表无 owner_round=%s 的行" % round_id))
+    # 提交面一次性取（供 R1 对照轮分支 / R2 / R6 / R7 复用）
+    commits = commits_for(repo, round_id)
+    commit_files = []
+    if commits:
+        commit_files = [f for f in git(repo, "show", "--name-only", "--pretty=format:",
+                                       commits[0][0]).splitlines() if f.strip()]
+    scope = read_audit_scope(repo, round_id)
+    src_touched = [f for f in commit_files if f.startswith("src/")]
+    scope_ok = bool(scope and scope.get("ok")) and not src_touched
+
+    # R1 登记行（对照轮分支: 只在「显式声明 ∧ 提交面零 src/」时可 N/A）
+    if scope_ok and scope is not None:
+        rep.add("R1_registry_row", "PASS",
+                "N/A: 零产品源码改动对照轮（声明件 %s, kind=%s, reason=%s…）⇒ 无新能力, "
+                "本就不该有登记行（免检由预注册显式声明, 非放宽判据）"
+                % (scope["path"], scope["kind"], scope["reason"][:32]))
+    else:
+        _d = ("%d 行 owner_round=%s" % (len(rows), round_id)) if rows else \
+             ("登记表无 owner_round=%s 的行" % round_id)
+        if not rows and scope and not scope.get("ok"):
+            _d += "（audit_scope 声明无效: %s ⇒ 不豁免）" % scope.get("why")
+        if not rows and src_touched:
+            _d += "（提交触碰 src/: %s ⇒ 对照轮分支不适用）" % src_touched[:3]
+        rep.add("R1_registry_row", "PASS" if rows else "FAIL", _d)
 
     # R2 提交唯一
-    commits = commits_for(repo, round_id)
     if len(commits) == 1:
         rep.add("R2_commit_unique", "PASS", "1 个提交 %s" % commits[0][0][:9])
     elif not commits:
@@ -198,15 +271,26 @@ def audit(repo, round_id):
 
     # R6 提交面卫生
     if commits:
-        files = git(repo, "show", "--name-only", "--pretty=format:", commits[0][0]).splitlines()
-        files = [f for f in files if f.strip()]
+        files = commit_files
         junk = [f for f in files if JUNK_RE.search(f)]
-        detail = "%d 文件" % len(files)
-        status = "PASS"
-        if len(files) > 40:
-            status, detail = "FAIL", detail + " > 40（疑 `git add -A` 面）"
-        if junk:
-            status, detail = "FAIL", detail + " 含垃圾面: %s" % junk[:5]
+        if scope_ok and scope is not None:
+            # 对照轮分支: 面形状判据（「全部落在声明的面」）替代**裸计数阈值** ——
+            # 逐窗归档面天然 > 40 文件, 而裸计数既不表达「是不是 git add -A 面」也不表达「面是否被声明」。
+            faces = scope["allowed_faces"]
+            out_of_face = [f for f in files if not any(f.startswith(p) for p in faces)]
+            status = "PASS"
+            detail = "%d 文件; 全部落在声明的面 %s" % (len(files), faces)
+            if out_of_face:
+                status, detail = "FAIL", detail + " 越界面: %s" % out_of_face[:5]
+            if junk:
+                status, detail = "FAIL", detail + " 含垃圾面: %s" % junk[:5]
+        else:
+            detail = "%d 文件" % len(files)
+            status = "PASS"
+            if len(files) > 40:
+                status, detail = "FAIL", detail + " > 40（疑 `git add -A` 面）"
+            if junk:
+                status, detail = "FAIL", detail + " 含垃圾面: %s" % junk[:5]
         rep.add("R6_commit_hygiene", status, detail)
 
         # R7 提交内无 key 面
@@ -224,22 +308,37 @@ def audit(repo, round_id):
         rep.add("R6_commit_hygiene", "FAIL", "无提交可查")
         rep.add("R7_no_secret_in_commit", "FAIL", "无提交可查")
 
-    # R8 读数有档
-    blob = ""
-    for r in rows:
-        blob += json.dumps(r, ensure_ascii=False) + "\n"
-        ev = str(r.get("evidence_path", "")).strip()
-        t = read_text(os.path.join(repo, ev)) if ev else None
-        blob += (t or "") + "\n"
-    lacks = []
-    if "0 error" not in blob and "0 Error" not in blob:
-        lacks.append("build 读数(0 error)")
-    if "14/14" not in blob:
-        lacks.append("形式门禁 14/14")
-    if not re.search(r"\b\d{2,4}\s*/\s*\d{2,4}\b", blob):
-        lacks.append("通过率 x/y")
-    rep.add("R8_readings_backed", "FAIL" if lacks else "PASS",
-            ("缺: %s" % ",".join(lacks)) if lacks else "build/形式/通过率读数在档")
+    # R8 读数有档（对照轮分支: 读**声明的读数面**）
+    if scope_ok and scope is not None:
+        blob = ""
+        for p in scope["readings"]:
+            blob += (read_text(os.path.join(repo, p)) or "") + "\n"
+        lacks = []
+        if not re.search(r"\"rc\"\s*[:=]|rc\s*[:=]\s*-?\d", blob):
+            lacks.append("判决件 verdict.rc")
+        if not re.search(r"\b\d{2,4}\s*/\s*\d{2,4}\b", blob):
+            lacks.append("通过率 x/y")
+        if scope.get("require_form_gate", True) and "形式门禁" not in blob:
+            lacks.append("形式门禁读数（require_form_gate=true）")
+        rep.add("R8_readings_backed", "FAIL" if lacks else "PASS",
+                ("缺: %s（声明面 %s）" % (", ".join(lacks), scope["readings"])) if lacks else
+                ("对照轮读数面齐（声明件）: %s" % scope["readings"]))
+    else:
+        blob = ""
+        for r in rows:
+            blob += json.dumps(r, ensure_ascii=False) + "\n"
+            ev = str(r.get("evidence_path", "")).strip()
+            t = read_text(os.path.join(repo, ev)) if ev else None
+            blob += (t or "") + "\n"
+        lacks = []
+        if "0 error" not in blob and "0 Error" not in blob:
+            lacks.append("build 读数(0 error)")
+        if "14/14" not in blob:
+            lacks.append("形式门禁 14/14")
+        if not re.search(r"\b\d{2,4}\s*/\s*\d{2,4}\b", blob):
+            lacks.append("通过率 x/y")
+        rep.add("R8_readings_backed", "FAIL" if lacks else "PASS",
+                ("缺: %s" % ", ".join(lacks)) if lacks else "build/形式/通过率读数在档")
 
     # R9 暂存面卫生（提交前用）
     staged = [f for f in git(repo, "diff", "--cached", "--name-only").splitlines() if f.strip()]
@@ -436,6 +535,116 @@ def selftest():
     if busy_procs(("agenthost", "llama-server")):
         fails.append("假红控制2失败: P5 自匹配 (调用者自身 cmdline 被当成在飞执行体)")
 
+    # ── 对照轮分支（R587 候选 ⑥）: 正控 1 + 负控 5 ─────────────────────────────
+    # 免检「无登记行」必须由**显式声明 ∧ 提交面零 src/ ∧ 声明面可机检**三者共同支撑;
+    # 任一条不成立都要回到旧行为(判红) —— 否则这个分支就是「改判据凑绿」。
+    repo2 = os.path.join(tmp, "repo2")
+    d100 = os.path.join(repo2, "eval", "rover", "rf100")
+    os.makedirs(d100)
+    os.makedirs(os.path.join(repo2, "docs"))
+    sh(["git", "init", "-q", repo2])
+    git(repo2, "config", "user.email", "selftest@example.invalid")
+    git(repo2, "config", "user.name", "selftest")
+    sp = os.path.join(d100, "audit-scope-rf100.json")
+    io.open(os.path.join(d100, "verdict-rf100.json"), "w", encoding="utf-8").write(json.dumps(
+        {"round": "RF100", "arms": {"P": {"cases_per_run": [58, 58]}},
+         "verdict": {"rc": 1, "judge": "FAIL(演示)"}}, ensure_ascii=False))
+    rep_doc = os.path.join(d100, "report-rf100.md")
+
+    def write_report(include_form_gate=True):
+        body = "# RF100 报告\n读数: 58/58。\n诚实边界: 单窗 n=1。\n" + ("填充。" * 60)
+        if include_form_gate:
+            body = "# RF100 报告\n读数: 58/58 · 形式门禁 13/13。\n诚实边界: 单窗 n=1。\n" + ("填充。" * 60)
+        io.open(rep_doc, "w", encoding="utf-8").write(body)
+
+    write_report()
+    io.open(os.path.join(repo2, "docs", "verification-registry.json"), "w", encoding="utf-8").write(
+        json.dumps({"updated_round": "RF100", "rows": []}, ensure_ascii=False, indent=1))
+
+    def write_scope(**over):
+        sc = {"kind": CONTRAST_SCOPE_KIND,
+              "reason": "本轮零产品源码改动: 只跑外部真值 × 产品默认档, 无新能力 ⇒ 本就不该有登记行",
+              "readings": ["eval/rover/rf100/verdict-rf100.json", "eval/rover/rf100/report-rf100.md"],
+              "allowed_faces": ["eval/rover/rf100/", "docs/"]}
+        sc.update(over)
+        io.open(sp, "w", encoding="utf-8").write(json.dumps(
+            {"declared_at": "selftest", "declared_after_run": True, "audit_scope": sc},
+            ensure_ascii=False, indent=1))
+
+    def commit2(msg, extra=None, first=False):
+        if extra:
+            for p, body in extra:
+                full = os.path.join(repo2, p)
+                os.makedirs(os.path.dirname(full), exist_ok=True)
+                io.open(full, "w", encoding="utf-8").write(body)
+        git(repo2, "add", "-A")
+        if first:
+            git(repo2, "commit", "-q", "-m", msg)
+        else:
+            git(repo2, "commit", "-q", "--amend", "-m", msg)
+
+    def hit(rep, cid, status):
+        return any(i["id"] == cid and i["status"] == status for i in rep.items)
+
+    write_scope()
+    commit2("RF100: 对照轮", first=True)
+    r_scope = audit(repo2, "RF100")
+    if r_scope.rc() != 0 or not hit(r_scope, "R1_registry_row", "PASS") or \
+       not hit(r_scope, "R8_readings_backed", "PASS"):
+        fails.append("对照轮正控失败: 声明齐+零 src/ 应全绿 -> %s" % [(i["id"], i["status"]) for i in r_scope.fails()])
+
+    # 负控 a: 声明了却动了产品源码 ⇒ 分支不适用, R1 必红
+    commit2("RF100: 动了产品源码", extra=[("src/demo.cs", "// demo\n")])
+    r_a = audit(repo2, "RF100")
+    if not hit(r_a, "R1_registry_row", "FAIL"):
+        fails.append("对照轮负控a失败: 触碰 src/ 仍被豁免登记行")
+    # 还原(去掉 src/ 文件)
+    os.remove(os.path.join(repo2, "src", "demo.cs"))
+    os.rmdir(os.path.join(repo2, "src"))
+    commit2("RF100: 对照轮")
+
+    # 负控 b: 无声明 ⇒ 旧行为（R1 必红）
+    os.rename(sp, sp + ".off")
+    r_b = audit(repo2, "RF100")
+    if not hit(r_b, "R1_registry_row", "FAIL"):
+        fails.append("对照轮负控b失败: 无声明仍免检（旧行为被改坏）")
+    os.rename(sp + ".off", sp)
+
+    # 负控 c: 声明非法（读数件缺）⇒ 出声且不豁免
+    write_scope(readings=["eval/rover/rf100/verdict-rf100.json", "eval/rover/rf100/does-not-exist.json"])
+    r_c = audit(repo2, "RF100")
+    if not hit(r_c, "R1_registry_row", "FAIL") or "声明无效" not in \
+            " ".join(i["detail"] for i in r_c.items if i["id"] == "R1_registry_row"):
+        fails.append("对照轮负控c失败: 非法声明未被拦下/未出声")
+
+    # 负控 d: 声明合法但读数面缺「形式门禁」⇒ R8 必红（豁免不是「什么都免」）
+    write_scope()
+    write_report(include_form_gate=False)
+    r_d = audit(repo2, "RF100")
+    if not hit(r_d, "R8_readings_backed", "FAIL"):
+        fails.append("对照轮负控d失败: 声明面缺形式门禁读数仍判绿")
+    write_report()
+
+    # 负控 e: 提交面越界（未声明的路径）⇒ R6 必红（面形状判据, 不是裸计数）
+    commit2("RF100: 越界面", extra=[("notes/extra.md", "out-of-face\n")])
+    r_e = audit(repo2, "RF100")
+    if not hit(r_e, "R6_commit_hygiene", "FAIL"):
+        fails.append("对照轮负控e失败: 越界面未判红")
+    os.remove(os.path.join(repo2, "notes", "extra.md"))
+    os.rmdir(os.path.join(repo2, "notes"))
+    commit2("RF100: 对照轮")
+    r_scope2 = audit(repo2, "RF100")
+    if r_scope2.rc() != 0:
+        fails.append("对照轮还原后应全绿 -> %s" % [(i["id"], i["status"]) for i in r_scope2.fails()])
+
+    print(r_scope.render("对照轮正控（声明齐 + 零 src/）"))
+    print(r_a.render("对照轮负控a（触碰 src/）"))
+    print(r_b.render("对照轮负控b（无声明）"))
+    print(r_c.render("对照轮负控c（声明非法: 读数件缺）"))
+    print(r_d.render("对照轮负控d（声明面缺形式门禁）"))
+    print(r_e.render("对照轮负控e（提交面越界）"))
+    print(r_scope2.render("对照轮还原后"))
+
     print(r_bad.render("负控1 错 pin"))
     print(r_ok.render("正控 修 pin"))
     print(r_leak.render("负控2 提交内 key 面"))
@@ -443,7 +652,7 @@ def selftest():
     if fails:
         print("SELFTEST FAIL: " + " | ".join(fails))
         return 1
-    print("SELFTEST PASS (负控 3/3 有牙 + 正控 1/1 + 假红控制 2/2)")
+    print("SELFTEST PASS (负控 3/3 有牙 + 正控 1/1 + 假红控制 2/2 + 对照轮分支 正控 1/1 + 负控 5/5)")
     return 0
 
 

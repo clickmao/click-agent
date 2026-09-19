@@ -1,0 +1,25 @@
+{
+ "round": "R587",
+ "what": "起臂**首次尝试 (v1) 被起手闸 fail-closed 拦下**; 处置 = 按已登记工序清「会话端残留」后重试 (非放宽阈值)。",
+ "attempt_v1": {
+  "ts": "2026-09-20T01:25:38Z(本地 01:25)",
+  "reach": "驱动器已过「先写后跑闸」(prereg ok: arms=['C1','R587D'] require=12 criterion=v2) 与 [钉死] bin=4b70fd7cdb39f1c7",
+  "blocked_reason": "顶棚 2585MB 装不下下限 2650+60 ⇒ 窗口不可开 (fail-closed, 驱动器 exit 2)",
+  "gate_terms": {"GATE_MB": 2650, "测点": "$HOME/.agentframework/harness/runs/r587/logs/pre-samples.jsonl (mem_sample_once.py)"},
+  "classification": "器具有牙的正确行为; 非被测面问题"
+ },
+ "residue_attribution": {
+  "kind": "会话端工具子进程 (LSP) 残留 —— 不在起手闸的 own_n 匹配面 (dotnet|agenthost|run_r5|vstest|MSBuild|testhost|nodeReuse) 内, 但吃 MemAvailable",
+  "pids": [{"pid": 1297287, "rss_mb": 220, "cmd": "node .hermes/lsp/bin/pyright-langserver --stdio", "ppid": 1145246, "note": "gateway 子进程(本会话工具面)"},
+           {"pid": 1299130, "rss_mb": 145, "cmd": "node .hermes/lsp/bin/bash-language-server start", "ppid": 1145246}],
+  "mem_available_mb": {"before": 2621, "after": 2839, "delta": 218},
+  "kill_method": "按已核实 pid kill (禁 pkill -f: 命令行自匹配会自杀)"
+ },
+ "retry_terms": {
+  "PREV_SWING": 130,
+  "swing_basis": "max(130(r585 实测), 79(r586 实测)) —— 余量随最近两窗观测摆动收紧 (每条可由 run-samples.jsonl 的 mem_available_mb 极差复核)",
+  "GATE_MB": 2650,
+  "expected_REQ_formula": "REQ = GATE_MB + min(PREV_SWING, CEIL-GATE_MB-60)"
+ },
+ "honesty": "v1 的拦截读数不作废、不覆盖; 重试为独立 attempt (v2), 两 attempt 的闸输入/输出均留档。判据未变 (GATE_MB 2650 / PREV_SWING 收至 130)。"
+}

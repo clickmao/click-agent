@@ -1,0 +1,40 @@
+{
+ "round": "R587",
+ "declared_at": "2026-09-20T02:15+08:00",
+ "declared_after_run": true,
+ "declared_note": "本声明件在**起臂之后**落盘 —— 候选 ⑥（审计器对照轮作用域分支）的器具改动与其**首个真实使用**在同一轮实施, 顺序上无法先于起臂。声明内容只含「零 src/ 改动 + 读数面清单 + 提交面形状」, **不含**任何臂/判据/阈值改动; 冻结预注册 `eval/rover/r587/prereg-r587.json`（先写后跑闸所用）**未被触碰**, 其 sha 可复核。器具分支自带 6 夹具（正控 1 + 负控 5）自证有牙。",
+ "audit_scope": {
+  "kind": "contrast_zero_product_change",
+  "reason": "R587 是**同件对照轮**: 被测件与 R585/R586 同 sha(4b70fd7c…)、题集同 sha(e0c667c2…), 零产品源码改动、零新能力 ⇒ 依「验证登记表(rows)缺负控即为门禁真红」的纪律, 本项目**本就不该**为其造 `owner_round` 登记行; 而旧 R1(无登记行即红)/R6(裸计数 > 40)/R8(build 0 error · 14/14) 三条在对照轮上结构性不可达。免检只能由**显式声明 ∧ 提交面零 src/ ∧ 声明面可机检**三者共同支撑, 任一条不成立即回到旧行为判红。",
+  "readings": [
+   "eval/rover/r587/verdict-r587.json",
+   "eval/rover/r587/kpi-table-r587.json",
+   "eval/rover/r587/report-r587.md",
+   "eval/rover/r587/sixwindow-pool-r587.json",
+   "eval/rover/r587/empty-error-cause-r587.json",
+   "eval/rover/r587/wythoff-subspec-r587.json"
+  ],
+  "allowed_faces": [
+   "eval/rover/r587/",
+   "eval/capability/",
+   "tools/roundcheck/",
+   "docs/reports/",
+   "docs/improvements.md",
+   "docs/evidence/RF0001/R587-roundcheck-contrast-scope.md",
+   "docs/verification-registry.json"
+  ],
+  "require_form_gate": true,
+  "form_gate_cmd": "env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR dotnet test src/agent.tests/agentframework.tests.csproj --filter \"FullyQualifiedName~VerificationForm|FullyQualifiedName~SkillGeneralization|FullyQualifiedName~DevPlanDocRef\" --nologo -v q"
+ },
+ "negative_controls": {
+  "instrument": "tools/roundcheck/roundcheck.py --selftest",
+  "contrast_branch": [
+   {"case": "正控: 声明齐 ∧ 提交面零 src/", "expect": "rc=0 (R1 P / R6 P / R8 P)"},
+   {"case": "负控a: 声明了却提交触碰 src/", "expect": "rc=1, R1 红 (分支不适用)"},
+   {"case": "负控b: 无声明 (旧行为)", "expect": "rc=1, R1 红"},
+   {"case": "负控c: 声明非法 (读数件缺/空)", "expect": "rc=1, R1 红且明细出声「声明无效」"},
+   {"case": "负控d: 声明面缺「形式门禁」读数", "expect": "rc=1, R8 红 (豁免 ≠ 什么都免)"},
+   {"case": "负控e: 提交面越界 (未声明路径)", "expect": "rc=1, R6 红 (面形状判据, 非裸计数)"}
+  ]
+ }
+}

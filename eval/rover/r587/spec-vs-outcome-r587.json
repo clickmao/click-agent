@@ -1,0 +1,626 @@
+{
+ "round": "R587",
+ "instrument": "eval/rover/r587/arm_spec_vs_outcome_r587.py",
+ "question": "wythoff 单族失败是否落在同一子规格？",
+ "n_copies": 36,
+ "n_distinct_programs": 35,
+ "n_distinct_sem": 35,
+ "shas_shared_by_multiple_runs": {},
+ "n_shas_shared": 0,
+ "same_subspec_supported": false,
+ "tag_vs_outcome": {
+  "PHI_DIFF": {
+   "copies": 15,
+   "family_hits": 4,
+   "pass_like_copies": 13
+  },
+  "UNCLASSIFIED": {
+   "copies": 18,
+   "family_hits": 12,
+   "pass_like_copies": 16
+  },
+  "AND_MEMO": {
+   "copies": 1,
+   "family_hits": 8,
+   "pass_like_copies": 0
+  },
+  "SHAPE_OTHER": {
+   "copies": 2,
+   "family_hits": 8,
+   "pass_like_copies": 1
+  },
+  "PHI_WINDOW": {
+   "copies": 1,
+   "family_hits": 0,
+   "pass_like_copies": 1
+  },
+  "EQUAL_ONLY": {
+   "copies": 1,
+   "family_hits": 0,
+   "pass_like_copies": 1
+  },
+  "(none)": {
+   "copies": 1,
+   "family_hits": 0,
+   "pass_like_copies": 1
+  }
+ },
+ "landing_diversity": {
+  "idx00": {
+   "distinct_got": 4,
+   "n_products": 8,
+   "values": [
+    "MOVE_NOT_COLD->WIN 0 10",
+    "MOVE_NOT_COLD->WIN 0 12",
+    "MOVE_NOT_COLD->WIN 5 0",
+    "OK->WIN 15 15"
+   ]
+  },
+  "idx01": {
+   "distinct_got": 4,
+   "n_products": 9,
+   "values": [
+    "MOVE_NOT_COLD->WIN 0 2",
+    "MOVE_NOT_COLD->WIN 4 0",
+    "MOVE_NOT_COLD->WIN 9 9",
+    "OK->WIN 0 3"
+   ]
+  },
+  "idx06": {
+   "distinct_got": 4,
+   "n_products": 9,
+   "values": [
+    "MOVE_NOT_COLD->WIN 0 4",
+    "MOVE_NOT_COLD->WIN 17 17",
+    "MOVE_NOT_COLD->WIN 7 0",
+    "OK->WIN 0 6"
+   ]
+  },
+  "idx07": {
+   "distinct_got": 4,
+   "n_products": 7,
+   "values": [
+    "MOVE_NOT_COLD->WIN 0 10",
+    "MOVE_NOT_COLD->WIN 0 11",
+    "MOVE_NOT_COLD->WIN 0 8",
+    "OK->WIN 0 17"
+   ]
+  },
+  "idx08": {
+   "distinct_got": 1,
+   "n_products": 7,
+   "values": [
+    "OK->LOSE"
+   ]
+  },
+  "idx10": {
+   "distinct_got": 1,
+   "n_products": 6,
+   "values": [
+    "OK->LOSE"
+   ]
+  },
+  "idx11": {
+   "distinct_got": 1,
+   "n_products": 7,
+   "values": [
+    "OK->LOSE"
+   ]
+  },
+  "idx12": {
+   "distinct_got": 2,
+   "n_products": 6,
+   "values": [
+    "MOVE_NOT_COLD->WIN 0 1",
+    "OK->WIN 1 1"
+   ]
+  },
+  "idx13": {
+   "distinct_got": 3,
+   "n_products": 8,
+   "values": [
+    "MOVE_NOT_COLD->WIN 0 20",
+    "MOVE_NOT_COLD->WIN 0 22",
+    "OK->WIN 0 24"
+   ]
+  },
+  "idx14": {
+   "distinct_got": 4,
+   "n_products": 8,
+   "values": [
+    "MOVE_NOT_COLD->WIN 0 7",
+    "MOVE_NOT_COLD->WIN 0 9",
+    "MOVE_NOT_COLD->WIN 9 0",
+    "OK->WIN 25 25"
+   ]
+  },
+  "idx02": {
+   "distinct_got": 3,
+   "n_products": 7,
+   "values": [
+    "MOVE_NOT_COLD->WIN 4 0",
+    "MOVE_NOT_COLD->WIN 6 0",
+    "OK->WIN 5 0"
+   ]
+  },
+  "idx03": {
+   "distinct_got": 4,
+   "n_products": 8,
+   "values": [
+    "MOVE_NOT_COLD->WIN 0 2",
+    "MOVE_NOT_COLD->WIN 0 4",
+    "MOVE_NOT_COLD->WIN 0 5",
+    "OK->WIN 0 3"
+   ]
+  },
+  "idx04": {
+   "distinct_got": 2,
+   "n_products": 7,
+   "values": [
+    "MOVE_NOT_COLD->WIN 0 10",
+    "OK->WIN 1 0"
+   ]
+  },
+  "idx05": {
+   "distinct_got": 3,
+   "n_products": 7,
+   "values": [
+    "MOVE_NOT_COLD->WIN 0 6",
+    "MOVE_NOT_COLD->WIN 0 8",
+    "OK->WIN 0 7"
+   ]
+  },
+  "idx09": {
+   "distinct_got": 1,
+   "n_products": 6,
+   "values": [
+    "OK->LOSE"
+   ]
+  }
+ },
+ "rows": [
+  {
+   "copy": "r585|w154|agentD-r1",
+   "sha12": "ecfe6f41b5b7",
+   "sem12": "5887b212c408",
+   "tags": [
+    "PHI_DIFF"
+   ],
+   "classified": true,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 15
+   }
+  },
+  {
+   "copy": "r585|w154|agentD-r2",
+   "sha12": "e70c853589bc",
+   "sem12": "5c88456303ff",
+   "tags": [
+    "UNCLASSIFIED"
+   ],
+   "classified": false,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 15
+   }
+  },
+  {
+   "copy": "r585|w154|agentD-r3",
+   "sha12": "c3da13c070d6",
+   "sem12": "c08ade1bb2f5",
+   "tags": [
+    "PHI_DIFF"
+   ],
+   "classified": true,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 15
+   }
+  },
+  {
+   "copy": "r585|w154|codex",
+   "sha12": "7410fa2e2e1b",
+   "sem12": "45ad89dd0862",
+   "tags": [
+    "PHI_DIFF"
+   ],
+   "classified": true,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 15
+   }
+  },
+  {
+   "copy": "r585|w155|agentD-r1",
+   "sha12": "b3e0587bb011",
+   "sem12": "00d34247bcc4",
+   "tags": [
+    "PHI_DIFF"
+   ],
+   "classified": true,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 13,
+    "TRACEBACK_TypeError": 2
+   }
+  },
+  {
+   "copy": "r585|w155|agentD-r2",
+   "sha12": "9c69b8c9837c",
+   "sem12": "4bed26e40ab5",
+   "tags": [
+    "AND_MEMO",
+    "SHAPE_OTHER"
+   ],
+   "classified": true,
+   "outcome": {
+    "TIMEOUT": 8,
+    "NONEMPTY_RC0_FAIL": 7
+   }
+  },
+  {
+   "copy": "r585|w155|agentD-r3",
+   "sha12": "8caae479d936",
+   "sem12": "5325c546cff8",
+   "tags": [
+    "UNCLASSIFIED"
+   ],
+   "classified": false,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 15
+   }
+  },
+  {
+   "copy": "r585|w155|codex",
+   "sha12": "2e403fdfbe40",
+   "sem12": "44c5f6a847b2",
+   "tags": [
+    "UNCLASSIFIED"
+   ],
+   "classified": false,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 15
+   }
+  },
+  {
+   "copy": "r585|w156|agentD-r1",
+   "sha12": "fcb8b47b9d39",
+   "sem12": "569eba969601",
+   "tags": [
+    "UNCLASSIFIED"
+   ],
+   "classified": false,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 15
+   }
+  },
+  {
+   "copy": "r585|w156|agentD-r2",
+   "sha12": "46e77826eb58",
+   "sem12": "ea4a9bebb8ed",
+   "tags": [
+    "PHI_DIFF"
+   ],
+   "classified": true,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 15
+   }
+  },
+  {
+   "copy": "r585|w156|agentD-r3",
+   "sha12": "86ef676cf7ba",
+   "sem12": "3422dc5fa161",
+   "tags": [
+    "UNCLASSIFIED"
+   ],
+   "classified": false,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 15
+   }
+  },
+  {
+   "copy": "r585|w156|codex",
+   "sha12": "dbb52d6e8294",
+   "sem12": "5cb46369e7a1",
+   "tags": [
+    "UNCLASSIFIED"
+   ],
+   "classified": false,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 15
+   }
+  },
+  {
+   "copy": "r586|w157|agentD-r1",
+   "sha12": "3c464e8d91cb",
+   "sem12": "b6adc3fa06bf",
+   "tags": [
+    "PHI_DIFF"
+   ],
+   "classified": true,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 15
+   }
+  },
+  {
+   "copy": "r586|w157|agentD-r2",
+   "sha12": "7de5343f32a0",
+   "sem12": "3a4f99682d29",
+   "tags": [
+    "PHI_DIFF"
+   ],
+   "classified": true,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 15
+   }
+  },
+  {
+   "copy": "r586|w157|agentD-r3",
+   "sha12": "2aa5a214cf89",
+   "sem12": "91ad33eec6f9",
+   "tags": [
+    "PHI_DIFF"
+   ],
+   "classified": true,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 15
+   }
+  },
+  {
+   "copy": "r586|w157|codex",
+   "sha12": "c16eca673ea0",
+   "sem12": "ed627f83897f",
+   "tags": [
+    "UNCLASSIFIED"
+   ],
+   "classified": false,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 15
+   }
+  },
+  {
+   "copy": "r586|w158|agentD-r1",
+   "sha12": "d65bc7fc7970",
+   "sem12": "0ff46ed1eb6e",
+   "tags": [
+    "UNCLASSIFIED"
+   ],
+   "classified": false,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 13,
+    "TRACEBACK_TypeError": 2
+   }
+  },
+  {
+   "copy": "r586|w158|agentD-r2",
+   "sha12": "4c0c368c3740",
+   "sem12": "e986810422fe",
+   "tags": [
+    "PHI_DIFF"
+   ],
+   "classified": true,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 15
+   }
+  },
+  {
+   "copy": "r586|w158|agentD-r3",
+   "sha12": "89948342f18f",
+   "sem12": "b19df5a9867c",
+   "tags": [
+    "UNCLASSIFIED"
+   ],
+   "classified": false,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 15
+   }
+  },
+  {
+   "copy": "r586|w158|codex",
+   "sha12": "3c7921bbbc6d",
+   "sem12": "eded40abb903",
+   "tags": [
+    "UNCLASSIFIED"
+   ],
+   "classified": false,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 15
+   }
+  },
+  {
+   "copy": "r586|w159|agentD-r1",
+   "sha12": "bb761bc67978",
+   "sem12": "ef563598121e",
+   "tags": [
+    "PHI_DIFF",
+    "PHI_WINDOW"
+   ],
+   "classified": true,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 15
+   }
+  },
+  {
+   "copy": "r586|w159|agentD-r2",
+   "sha12": "1168066c8046",
+   "sem12": "4d8d581828a6",
+   "tags": [
+    "UNCLASSIFIED"
+   ],
+   "classified": false,
+   "outcome": {
+    "TRACEBACK_IndexError": 10,
+    "NONEMPTY_RC0_FAIL": 5
+   }
+  },
+  {
+   "copy": "r586|w159|agentD-r3",
+   "sha12": "ad60c76a1715",
+   "sem12": "831e4f77e3cf",
+   "tags": [
+    "PHI_DIFF"
+   ],
+   "classified": true,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 15
+   }
+  },
+  {
+   "copy": "r586|w159|codex",
+   "sha12": "188176bb6641",
+   "sem12": "04571ef9fafa",
+   "tags": [
+    "UNCLASSIFIED"
+   ],
+   "classified": false,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 15
+   }
+  },
+  {
+   "copy": "r587|w160|agentD-r1",
+   "sha12": "aa6c68ac2293",
+   "sem12": "a5e8394446b1",
+   "tags": [
+    "UNCLASSIFIED"
+   ],
+   "classified": false,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 15
+   }
+  },
+  {
+   "copy": "r587|w160|agentD-r2",
+   "sha12": "34fb819eb290",
+   "sem12": "fdfef96df20f",
+   "tags": [
+    "PHI_DIFF"
+   ],
+   "classified": true,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 15
+   }
+  },
+  {
+   "copy": "r587|w160|agentD-r3",
+   "sha12": "eb7220ac67f1",
+   "sem12": "1aac2ac10d0c",
+   "tags": [
+    "UNCLASSIFIED"
+   ],
+   "classified": false,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 15
+   }
+  },
+  {
+   "copy": "r587|w160|codex",
+   "sha12": "c8610ffcaa20",
+   "sem12": "aa5f4e8afd8a",
+   "tags": [
+    "UNCLASSIFIED"
+   ],
+   "classified": false,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 15
+   }
+  },
+  {
+   "copy": "r587|w161|agentD-r1",
+   "sha12": "9ab022cc4cab",
+   "sem12": "97ceb1d95290",
+   "tags": [
+    "PHI_DIFF"
+   ],
+   "classified": true,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 15
+   }
+  },
+  {
+   "copy": "r587|w161|agentD-r2",
+   "sha12": "a6154d653ad6",
+   "sem12": "089a0fe1faa0",
+   "tags": [
+    "EQUAL_ONLY",
+    "SHAPE_OTHER"
+   ],
+   "classified": true,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 15
+   }
+  },
+  {
+   "copy": "r587|w161|agentD-r3",
+   "sha12": "ce397be7650a",
+   "sem12": "f5c09e02452f",
+   "tags": [
+    "UNCLASSIFIED"
+   ],
+   "classified": false,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 15
+   }
+  },
+  {
+   "copy": "r587|w161|codex",
+   "sha12": "1e71931b0a5d",
+   "sem12": "7a85b6cd8974",
+   "tags": [
+    "PHI_DIFF"
+   ],
+   "classified": true,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 15
+   }
+  },
+  {
+   "copy": "r587|w162|agentD-r1",
+   "sha12": "e9ab084cab94",
+   "sem12": "3e37a6f6b285",
+   "tags": [
+    "PHI_DIFF"
+   ],
+   "classified": true,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 13,
+    "TRACEBACK_TypeError": 2
+   }
+  },
+  {
+   "copy": "r587|w162|agentD-r2",
+   "sha12": "34a53c45a880",
+   "sem12": "3b866789e611",
+   "tags": [
+    "UNCLASSIFIED"
+   ],
+   "classified": false,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 15
+   }
+  },
+  {
+   "copy": "r587|w162|agentD-r3",
+   "sha12": null,
+   "sem12": null,
+   "tags": null,
+   "classified": null,
+   "outcome": {
+    "arm_level": "NO_ARTIFACT(臂级: 工作区无 games/ ⇒ 未交付产物; 由产物面数落盘数另行断言)"
+   }
+  },
+  {
+   "copy": "r587|w162|codex",
+   "sha12": "eccaea55c45d",
+   "sem12": "3a01b910339a",
+   "tags": [
+    "UNCLASSIFIED"
+   ],
+   "classified": false,
+   "outcome": {
+    "NONEMPTY_RC0_FAIL": 15
+   }
+  }
+ ],
+ "verdict_lines": [
+  "① 产物身份: 36 跑次产出 35 份在盘产物, 两两不同（sem 骨架亦两两不同）⇒ 「同一子规格」在**产物层为假**；共享 sha 的跑次 = 0。",
+  "② 落点多样性: 同一输入在不同产物下落点取值数 max=4 ⇒ 排除「一条固定错法解释全族」。",
+  "③ 可识别形态分布见 tag_vs_outcome（PHI_DIFF 骨架最普遍, 但通过/失败的分野在其**边界处理**，即同一骨架的不同边界处理各自是一次独立采样）。"
+ ]
+}

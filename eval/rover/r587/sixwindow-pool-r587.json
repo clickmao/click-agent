@@ -1,0 +1,334 @@
+{
+ "round": "R587",
+ "instrument": "eval/rover/r587/sixwindow_pool_r587.py",
+ "mode": "read_only（读已登记判决件；跨轮禁相减, 只并列）",
+ "pooled_6w": {
+  "per_window": [
+   {
+    "round": "r585",
+    "win": "w154",
+    "D": null,
+    "unreliable": true,
+    "truth": 56,
+    "product": 58
+   },
+   {
+    "round": "r585",
+    "win": "w155",
+    "D": -8,
+    "unreliable": false,
+    "truth": 58,
+    "product": 50
+   },
+   {
+    "round": "r585",
+    "win": "w156",
+    "D": -3,
+    "unreliable": false,
+    "truth": 58,
+    "product": 55
+   },
+   {
+    "round": "r586",
+    "win": "w157",
+    "D": 0,
+    "unreliable": false,
+    "truth": 58,
+    "product": 58
+   },
+   {
+    "round": "r586",
+    "win": "w158",
+    "D": -3,
+    "unreliable": false,
+    "truth": 58,
+    "product": 55
+   },
+   {
+    "round": "r586",
+    "win": "w159",
+    "D": -15,
+    "unreliable": false,
+    "truth": 58,
+    "product": 43
+   },
+   {
+    "round": "r587",
+    "win": "w160",
+    "D": 0,
+    "unreliable": false,
+    "truth": 58,
+    "product": 58
+   },
+   {
+    "round": "r587",
+    "win": "w161",
+    "D": null,
+    "unreliable": true,
+    "truth": 53,
+    "product": 50
+   },
+   {
+    "round": "r587",
+    "win": "w162",
+    "D": -13,
+    "unreliable": false,
+    "truth": 58,
+    "product": 45
+   }
+  ],
+  "D_values": [
+   -8,
+   -3,
+   0,
+   -3,
+   -15,
+   0,
+   -13
+  ],
+  "median": -3,
+  "min": -15,
+  "max": 0,
+  "spread": 15,
+  "deviation_from_pool_median": [
+   -5,
+   0,
+   3,
+   0,
+   -12,
+   3,
+   -10
+  ],
+  "max_abs_deviation": 12,
+  "note": "D = median_reps(产品) − codex 真值, 同轮内算; 跨轮只并列。"
+ },
+ "per_round_sets": {
+  "r585": {
+   "D_set": [
+    -8,
+    -3
+   ],
+   "median": -5.5,
+   "valid_windows": 2,
+   "unreliable": [
+    "w154"
+   ]
+  },
+  "r586": {
+   "D_set": [
+    0,
+    -3,
+    -15
+   ],
+   "median": -3,
+   "valid_windows": 3,
+   "unreliable": []
+  },
+  "r587": {
+   "D_set": [
+    0,
+    -13
+   ],
+   "median": -6.5,
+   "valid_windows": 2,
+   "unreliable": [
+    "w161"
+   ]
+  }
+ },
+ "swing_vs_effect": {
+  "this_round_window_set": "w160..w162",
+  "prev_round_window_set": "w157..w159",
+  "prev_median": -3,
+  "this_median": -6.5,
+  "effect_vs_prev_set": -3.5,
+  "swing_over_pooled_6w": 15,
+  "max_abs_deviation": 12,
+  "same_sign": true,
+  "interval_overlap": true,
+  "state": "缺口跨窗复现",
+  "rule": "摆动 >= 效应 ⇒ 明文写「摆动 ≥ 效应 ⇒ 单窗不作能力结论，需更多窗」（预注册 C5 原文）",
+  "call": "摆动 ≥ 效应 ⇒ 单窗不作能力结论，需更多窗"
+ },
+ "cost_per_run": {
+  "C1": {
+   "r585": {
+    "runs": 3,
+    "runs_jsonl_lines": 12,
+    "runs_jsonl_consistent": true,
+    "calls": 74,
+    "new_prompt": 28392,
+    "completion": 23907,
+    "calls_per_run": 24.67,
+    "new_prompt_per_run": 9464.0,
+    "completion_per_run": 7969.0,
+    "v_all_med": 0.97,
+    "v_incr_med": 0.97,
+    "cases_per_run": [
+     56,
+     58,
+     58
+    ]
+   },
+   "r586": {
+    "runs": 3,
+    "runs_jsonl_lines": 12,
+    "runs_jsonl_consistent": true,
+    "calls": 51,
+    "new_prompt": 25012,
+    "completion": 24561,
+    "calls_per_run": 17.0,
+    "new_prompt_per_run": 8337.3,
+    "completion_per_run": 8187.0,
+    "v_all_med": 0.95,
+    "v_incr_med": 0.96,
+    "cases_per_run": [
+     58,
+     58,
+     58
+    ]
+   },
+   "r587": {
+    "runs": 3,
+    "runs_jsonl_lines": 12,
+    "runs_jsonl_consistent": true,
+    "calls": 17,
+    "new_prompt": 10584,
+    "completion": 8364,
+    "calls_per_run": 5.67,
+    "new_prompt_per_run": 3528.0,
+    "completion_per_run": 2788.0,
+    "v_all_med": 0.91,
+    "v_incr_med": 0.94,
+    "cases_per_run": [
+     58,
+     53,
+     58
+    ]
+   }
+  },
+  "PROD": {
+   "r585": {
+    "runs": 9,
+    "runs_jsonl_lines": 12,
+    "runs_jsonl_consistent": true,
+    "calls": 20,
+    "new_prompt": 5601,
+    "completion": 48941,
+    "calls_per_run": 2.22,
+    "new_prompt_per_run": 622.3,
+    "completion_per_run": 5437.9,
+    "v_all_med": 0.97,
+    "v_incr_med": 0.96,
+    "cases_per_run": [
+     58,
+     58,
+     58,
+     53,
+     50,
+     47,
+     58,
+     48,
+     55
+    ]
+   },
+   "r586": {
+    "runs": 9,
+    "runs_jsonl_lines": 12,
+    "runs_jsonl_consistent": true,
+    "calls": 19,
+    "new_prompt": 4058,
+    "completion": 44380,
+    "calls_per_run": 2.11,
+    "new_prompt_per_run": 450.9,
+    "completion_per_run": 4931.1,
+    "v_all_med": 0.97,
+    "v_incr_med": 0.97,
+    "cases_per_run": [
+     47,
+     58,
+     58,
+     55,
+     58,
+     49,
+     48,
+     43,
+     43
+    ]
+   },
+   "r587": {
+    "runs": 9,
+    "runs_jsonl_lines": 12,
+    "runs_jsonl_consistent": true,
+    "calls": 20,
+    "new_prompt": 5377,
+    "completion": 44856,
+    "calls_per_run": 2.22,
+    "new_prompt_per_run": 597.4,
+    "completion_per_run": 4984.0,
+    "v_all_med": 0.97,
+    "v_incr_med": 0.95,
+    "cases_per_run": [
+     58,
+     58,
+     58,
+     50,
+     43,
+     58,
+     45,
+     58,
+     0
+    ]
+   }
+  },
+  "note": "两侧跑次不等（C1=3/轮, 产品=9/轮）⇒ **禁比总量**; per_run = total / 本臂跑次数; runs_jsonl_consistent 为成对断言（文件行数 == 两侧跑次之和）。"
+ },
+ "valid_window_floor": {
+  "decision_key": "真值自身失分窗（truth_cases 未达满分的窗）如何计入",
+  "explicit_choice": "剔除出配对 ∧ 单列该窗读数 ∧ 不记我方缺陷",
+  "why_fixed": "两种解释会产出不同交付物（剔除 vs 单列并计入 D）⇒ 预注册里显式二选一后**固定**，非事后解释",
+  "applied_this_round": [
+   "w161"
+  ],
+  "historical_parallel_readings": [
+   {
+    "round": "r585",
+    "unreliable": [
+     "w154"
+    ],
+    "D_set": [
+     -8,
+     -3
+    ],
+    "median": -5.5,
+    "truth_per_window": {
+     "w154": 56,
+     "w155": 58,
+     "w156": 58
+    },
+    "note": "w154 类窗（真值自身失分）历史读数**并列**, 不重算、不相减"
+   },
+   {
+    "round": "r586",
+    "unreliable": [],
+    "D_set": [
+     0,
+     -3,
+     -15
+    ],
+    "median": -3
+   },
+   {
+    "round": "r587",
+    "unreliable": [
+     "w161"
+    ],
+    "D_set": [
+     0,
+     -13
+    ],
+    "median": -6.5
+   }
+  ]
+ }
+}
