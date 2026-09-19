@@ -1,0 +1,100 @@
+{
+ "round": "R579-tick",
+ "pre_sha": "1536b2ca61dd713a8401daacd158a3537c911c2d",
+ "_out": "eval/rover/r579-tick/readings-r579tick.json",
+ "head": "1536b2ca61dd713a8401daacd158a3537c911c2d",
+ "note_prestate_equals_head": "前态锚 == HEAD (对照物会随提交前进而失效; 本轮 pre 提交即改动前)",
+ "P1_shape_consumers": {
+  "production_n_prestate": 1,
+  "production_n": 3,
+  "test_n": 2,
+  "production_prestate": [
+   "src/agent.nlp/NlpGate.cs:216: public static (long ShapeHits, long ShapeLearned, int Shapes) ShapeCounters"
+  ],
+  "production": [
+   "src/agent/IndustrialAgentV2.cs:1851: // 是否被消费」的唯一可判面。根因: `NlpGate.ShapeCounters` 在生产面**零消费者** (只被测试读) ⇒",
+   "src/agent/IndustrialAgentV2.cs:1861: var shapeCounters = agent.nlp.NlpGate.ShapeCounters;",
+   "src/agent.nlp/NlpGate.cs:216: public static (long ShapeHits, long ShapeLearned, int Shapes) ShapeCounters"
+  ],
+  "tests": [
+   "src/agent.tests/NlpGateLearnTests.cs:27: Assert.True(NlpGate.ShapeCounters.ShapeLearned >= 1);",
+   "src/agent.tests/NlpGateLearnTests.cs:76: Assert.True(NlpGate.ShapeCounters.ShapeLearned >= 1);"
+  ],
+  "source": "src/**/*.cs (排除 bin/obj), substring ShapeCounters; 前态面 = 目标文件前态字节 + 其余现盘"
+ },
+ "P2_prestate_teeth": {
+  "pre_has_point": false,
+  "now_has_point": true,
+  "pre_sha256": "699008bc63e83379",
+  "now_sha256": "4e9453b915626b45",
+  "pass": true
+ },
+ "P3_emission_contract": {
+  "required_keys": [
+   "basis",
+   "face",
+   "hits",
+   "learned",
+   "msg_sha16",
+   "route",
+   "shape",
+   "shapes"
+  ],
+  "present_keys": [
+   "basis",
+   "face",
+   "hits",
+   "learned",
+   "msg_sha16",
+   "route",
+   "shape",
+   "shapes"
+  ],
+  "missing": [],
+  "extra": [],
+  "position_after_learn": true,
+  "learn_at": 108106,
+  "point_at": 109084
+ },
+ "P4_zero_behavior_change": {
+  "frozen_chain": {
+   "src/agent.nlp/NlpGate.cs": {
+    "exists": true,
+    "identical": true
+   },
+   "src/agent.modelqueue/TurnGateJudge.cs": {
+    "exists": true,
+    "identical": true
+   },
+   "src/agent.modelqueue/LocalParaphraseChannel.cs": {
+    "exists": true,
+    "identical": true
+   },
+   "src/agent.modelqueue/ModelQueueRouter.cs": {
+    "exists": true,
+    "identical": true
+   },
+   "src/agent.modelqueue/ModelQueueRouter.Call.cs": {
+    "exists": true,
+    "identical": true
+   },
+   "src/agent.modelqueue/ModelQueueRouter.Catalog.cs": {
+    "exists": true,
+    "identical": true
+   },
+   "src/agent.modelqueue/ModelQueueRouter.LocalChannel.cs": {
+    "exists": true,
+    "identical": true
+   },
+   "src/agent.modelqueue/TurnGateCounters.cs": {
+    "exists": true,
+    "identical": true
+   }
+  },
+  "frozen_all_identical": true,
+  "target_added": 24,
+  "target_removed": 0
+ },
+ "rc": 0,
+ "verdict": "P1..P4 PASS (P5 由 dotnet 定向+形式校验承担; P6 诚实体界)"
+}

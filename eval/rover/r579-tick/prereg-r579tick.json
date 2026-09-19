@@ -1,0 +1,36 @@
+{
+  "round": "R579-tick",
+  "ts_local": "2026-09-19T17:0x+0800",
+  "kind": "cron tick (60m) 轮: RF0002 §3 验收面 ②③④ 的**可测化**(度量面接线) —— 零行为改动(只读既有状态 + 一处通道级打点) / 零远端调用 / 零新增夹具 / 零新增开关",
+  "owner": "本作业 (60m 能力自检循环 tick); 主线轮号 R579 未占用 (留给前台), 本 tick 用 R579-tick 命名空间",
+  "mainline_reminder": "主线 = 随机程序/数学题/游戏真实开发任务 × 外部真值(codex-cli, 同模型) 同环境同输入对照 (铁律 10)。判据之一 = 一轮任务总 token ↓≥30%; 铁律 11 前置器 (eval/rover/r507pre/exec_precondition.py) rc≠0 ⇒ 降幅一律标「参考(未可验收)」。",
+  "scope": {
+    "writes": "eval/rover/r579-tick/** + src/agent/IndustrialAgentV2.cs (一处 Emit, 零判定链改动) + src/agent.tests/LocalTurnGateTests.cs (既有文件追加机检) + docs/plans/RF0002-nlp-self-improvement.md(§3 验收面口径) + docs/evidence/RF0002/R579-tick-shape-kpi-face.md + docs/reports/iteration-master-plan.md(§7 状态块最近一轮字段, 增量) + eval/capability/kpi.jsonl 一行 + 一处本地 commit",
+    "no_write": ["src/agent.nlp/** (纯函数语义一字不改: IsLearned 仍「不计数」)", "config/base/models.yaml", "src/agent.llamacpp/**", "src/agent.modelqueue/**"],
+    "frozen_inputs": ["src/agent/IndustrialAgentV2.cs@pre (git show <pre_sha>:src/agent/IndustrialAgentV2.cs) —— 前态锚(不可变提交号)"]
+  },
+  "claimed_findings": [
+    "F1 (度量盲区/孤岛): RF0002 §3 验收②③④ 依赖 `NlpGate.ShapeCounters`, 而该属性在**生产面零消费者** —— 全仓非测试命中 = 0 (仅 src/agent.nlp/NlpGate.cs:216 定义 + 2 处测试断言) ⇒ 「未接出」与「零命中」在生产上不可分 (R576 诚实边界①的成因层)。",
+    "F2 (计数语义不覆盖生产命中路径): `NlpGate.IsLearned` 注释与实现明确「形状命中 (不计数)」; `_shapeHits` 只在 `NlpGate.Decide(...)`(FaceGate) 与 `IsLearned` 的 gate 分支内自增 ⇒ 即便接出遥测, repeat/paraphrase 面 (生产上形状通道的主要消费面, TurnGateJudge.IsPureRepeat / LocalParaphraseChannel.IsPureParaphrase) 的命中**结构性恒 0**。",
+    "F3 (归因缺口): 既有闸打点 (`local_gate_skip_full` 族: `local_gate_skip_history` / `local_gate_skip_reply` / `repeat_degrade_remote` / `paraphrase_degrade_remote`) 均**不带 basis 与形状状态** ⇒ 验收④「命中面不增加远端调用数」在同轮内不可归因 (无法区分「形状命中吸收」与「模板兜底/逐字补丁」)。"
+  ],
+  "predicates": {
+    "P1_readonly_counts_reproducible": "机检器 (read-only) 在生产面统计 `ShapeCounters` 消费者数, 必须复现 0 (非测试) / 2 (测试), 并给出文件:行号清单; 不符 ⇒ rc=2 (器具读法错, 非被测)。",
+    "P2_prestate_has_teeth": "同一机检器对**前态锚** (git show <pre_sha>:src/agent/IndustrialAgentV2.cs + 本次改动前的 nlp/modelqueue 源) 必须判**红** (打点点位缺失)、对现盘必须判**绿** ⇒ 判据有牙 (禁只测现盘)。前态 sha 必须 != 现盘 sha 且为 HEAD 祖先。",
+    "P3_emission_contract": "新增打点 `nlp_shape` 的键集必须**恰好**含 {route, shape, face, basis, hits, learned, shapes, msg_sha16} 且点位在 `TurnGateJudge.LearnOnSuccess` 调用之后 (回补后读数, 与 R475/R433 位置纪律同族); 键集/位置任一不符 ⇒ rc=1。",
+    "P4_zero_behavior_change": "改动只增打点: 判定链源 (TurnGateJudge / LocalParaphraseChannel / NlpGate / ModelQueueRouter / R1*) 的字节 sha 必须**逐位不变**; 任一改变 ⇒ rc=1 (越界)。",
+    "P5_regression": "定向机检 (NlpGateLearnTests|LocalTurnGateTests|R497Fingerprint|R498LocalParaphrase|R498TelemetryRing|GateRulesPortDiff|TelemetryPending) Failed 0; 形式校验 (VerificationForm|SkillGeneralization|DevPlanDocRef) Failed 0 / rc=0; 全量套件 Failed 0 (若内存闸允许)。",
+    "P6_honest_boundary": "本 tick **不跑真机链路** (本地判别位 LFM2.5-VL-3B 装载 RSS 2643MB > 当前 MemAvailable, 且同仓有在飞写者) ⇒ 生产 `nlp_shape` 事件数 = **未测到** (不是 0 命中); 本轮的产出是「把②③④ 从不可测变为可测」, **不宣称**任何质量/token 降幅。"
+  },
+  "rc_semantics": {
+    "0": "P1..P5 全过 (P6 为诚实边界条款, 不参与红绿)",
+    "1": "被测/契约面不符 (键集/位置/零回归越界)",
+    "2": "器具缺陷 (机检器自身读法错, fail-closed)",
+    "3": "输入缺失 (前态锚不可取 / 目标文件不存在)"
+  },
+  "honest_boundary_preregistered": [
+    "本 tick 无臂间对照 ⇒ 不产生质量/成本读数; 报告里的主线读数一律沿用**已落盘**的最近一轮, 标「参考(未可验收)」。",
+    "「形状通道真机首验」(R577 候选①) 本轮**未做** (真机链路需装载 2.6GB 本地判别位, 当前 MemAvailable 2418MB < 起手闸 2650MB; 同仓前台写者活跃 ⇒ 不抢内存/不动共享编译服务)。",
+    "打点接线 ≠ 管线命中: 本轮只证「事件出口存在且契约正确」, 不证「生产真会走到」。"
+  ]
+}

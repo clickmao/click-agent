@@ -1846,6 +1846,30 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
             // 本地消化轮 (Skip) 无需回补; 族外输入不登记 (回补只在白名单族内生效)。
             if (!(gateOutcome.Decided && gateOutcome.Verdict == agent.modelqueue.TurnGateVerdict.Skip))
                 agent.modelqueue.TurnGateJudge.LearnOnSuccess(message.Content, llmResponse.Success);
+
+            // R579-tick (RF0002 §3 验收面 ②③④ 可测化): 形状通道的**通道级打点** —— 本点位是「本轮形状通道
+            // 是否被消费」的唯一可判面。根因: `NlpGate.ShapeCounters` 在生产面**零消费者** (只被测试读) ⇒
+            // 「未接出」与「零命中」在读数上不可分; 且 `IsLearned` 明确「不计数」⇒ 模块计数对
+            // repeat/paraphrase 面结构性恒 0。本点位只**读**既有状态 (不入判定链 ⇒ 零行为改动):
+            //   ② 形状命中 = 本点位 shape=1 的事件数; ③ 存量 = shapes 逐轮读数 (淘汰发生在 ReportOutcome 处);
+            //   ④ 不增远端 = route=local_skip ∧ shape=1 ⇒ 该轮零远端调用 (与同轮 llm_call 按 msg_sha16 join)。
+            {
+                var shapeFace = repeatTurnFlag ? agent.nlp.NlpGate.FaceRepeat
+                    : paraphraseTurnFlag ? agent.nlp.NlpGate.FaceParaphrase
+                    : string.Empty;
+                var shapeUsed = shapeFace.Length > 0 && agent.nlp.NlpGate.IsLearned(message.Content, shapeFace);
+                var shapeCounters = agent.nlp.NlpGate.ShapeCounters;
+                agent.config.AgentTelemetry.Emit("nlp_shape", "IndustrialAgentV2",
+                    ("route", gateOutcome.Decided && gateOutcome.Verdict == agent.modelqueue.TurnGateVerdict.Skip
+                        ? "local_skip" : "remote"),
+                    ("shape", shapeUsed ? "1" : "0"),
+                    ("face", shapeFace.Length > 0 ? shapeFace : "none"),
+                    ("basis", _modelRouter?.TurnGate.LastBasis ?? string.Empty),
+                    ("hits", shapeCounters.ShapeHits),
+                    ("learned", shapeCounters.ShapeLearned),
+                    ("shapes", (long)shapeCounters.Shapes),
+                    ("msg_sha16", agent.modelqueue.LocalInputFingerprint.Sha16(message.Content)));
+            }
             
             // 6. ✅ 将消息添加到会话
             await AddToSessionAsync(message, llmResponse, ct);

@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R578",
+ "updated_round": "R579-tick",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -6953,6 +6953,25 @@
     "audited_by_round": "R578"
    },
    "negative_control": "同源非同名: 1,674,455,072 B / sha256 2436cf4bbac9a16e5dfc7799a140e583c2bc15958f4b24a391f8a8b10ecb8884 = 目录内官方 SHA256SUMS 同值 = HF LFS x-linked-etag, x-linked-size 同值 (hf-mirror 取回; 直连 huggingface.co 本机不可达 http=000) ⇒ 是换装不是同名替换。器具负控: 同器具同语料下 1.5B-instruct 得 13/14 假跳 (非恒绿 ⇒ 器具对该失败模式有牙)。诚实边界: ① n=28 单臂单窗 (假跳 0/14 的 Wilson 95% 上界 ≈ 20%), 优胜臂复现 n≥3 未做; ② 产品形状复核只取 4 条 (2 S + 2 P), 非 28 条全量; ③ 仍无回退档等价物 —— r1 权重留在盘上未删 (用户本轮未令删除) 但实测不达标, 真回退只能回 Qwen2.5-3B (需重下 2.0 GB); ④ 15.8 s·次 是无缓存口径 (cache_prompt=false), 生产会话档 CompletionProfiles 走 CachePrompt=true。"
+  },
+  {
+   "id": "r579tick.nlp-shape-kpi-face",
+   "level": "L2",
+   "owner_round": "R579-tick",
+   "capability": "RF0002 §3 验收面 ②③④ 的**可测化**（度量面接线，零行为改动）: 通道级打点 `nlp_shape`（8 键 {route, shape, face, basis, hits, learned, shapes, msg_sha16}，点位在既有回补点 TurnGateJudge.LearnOnSuccess 之后，只读既有状态、不入判定分支）+ 机检器 P1–P5。根因 F1: 前态 `ShapeCounters` 在生产面**零消费者**（仅定义 src/agent.nlp/NlpGate.cs:216）⇒「未接出」与「零命中」在读数上不可分。读数: 机检 rc=0（P2 前态锚有牙 / P3 键集恰好 / P4 判定链 8 文件逐位不变 ∧ 目标 +24/−0）；编译 0 error；定向 7 类 Failed 0 / Passed 114（逐类加总 == 合并跑）；形式校验 14/14。**诚实边界: 生产侧 ≥1 事件未测到**（零远端调用 ⇒ 点位分支不可达）⇒ ②③④ 记「未测」，不记「无效应」。",
+   "evidence_cmd": "python3 eval/rover/r579-tick/shape_kpi_face_check.py --pre-sha 1536b2ca61dd713a8401daacd158a3537c911c2d",
+   "evidence_path": "docs/evidence/RF0002/R579tick-shape-kpi-face.md",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "fc47f6fa7782",
+    "instrument": "eval/rover/r579-tick/shape_kpi_face_check.py",
+    "instrument_sha12": "4a35599a97f7",
+    "binding": "audit-pin",
+    "audited_by_round": "R579"
+   },
+   "negative_control": "① 前态锚有牙（承重）: 同一契约在前态提交字节上判红（has_point=false, sha16 699008bc63e83379）而现盘判绿 ⇒ 判据非恒真门；② 器具自捕留档: 键集扫描窗口含点位名字面量 ⇒ 首跑 extra=['nlp_shape'] rc=1 假红，定因=器具读法错（非被测不符），修器具**不放宽判据**，首跑读数留档不翻案。"
   }
  ],
  "aot_check_policy": "release_tag_only",

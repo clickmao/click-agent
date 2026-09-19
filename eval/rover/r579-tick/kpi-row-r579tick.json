@@ -1,0 +1,36 @@
+{
+ "round": "R579-tick",
+ "ts": "2026-09-19T17:12:00+0800",
+ "kind": "RF0002 §3 验收面 ②③④ 可测化 (度量面接线): 形状通道通道级打点 nlp_shape + 机检器 P1-P5 (零行为改动 / 零远端调用 / 零新增夹具 / 零新增开关)",
+ "artifact": "src/agent/IndustrialAgentV2.cs + eval/rover/r579-tick/{prereg-r579tick.json,shape_kpi_face_check.py,readings-r579tick.json} + docs/evidence/RF0002/R579tick-shape-kpi-face.md + docs/reports/iteration-master-plan.md + docs/plans/RF0002-nlp-self-improvement.md + docs/verification-registry.json",
+ "change": "一处通道级打点 (点位名 nlp_shape, 插在既有回补点 TurnGateJudge.LearnOnSuccess 之后, +24/-0), 键集 8 枚 {route, shape, face, basis, hits, learned, shapes, msg_sha16}; 只读既有状态 (repeatTurnFlag/paraphraseTurnFlag/IsLearned/ShapeCounters/既有 LastBasis), 不入任何判定分支; LastBasis 为既有字段消费 (无产品源码改动)",
+ "readings": {
+  "F1_prestate_production_consumers_of_ShapeCounters": 1,
+  "F1_prestate_note": "前态生产面仅定义 src/agent.nlp/NlpGate.cs:216, 零真实消费者; 测试面 2 (NlpGateLearnTests:27,76) => 未接出 与 零命中 在读数上不可分",
+  "F1_now_production_consumers": 3,
+  "P1_test_consumers": 2,
+  "P2_prestate_teeth": "has_point=false -> true (sha16 699008bc63e83379 -> 4e9453b915626b45)",
+  "P3_key_set_exact": "missing 0 / extra 0; position_after_learn=true",
+  "P4_frozen_chain_identical": "8/8; target +24/-0",
+  "P5_build_errors": 0,
+  "P5_targeted_failed": 0,
+  "P5_targeted_passed": 114,
+  "P5_per_class": "NlpGateLearn 10 / LocalTurnGate 85 / TelemetryPending 2 / GateRulesPortDiff 3 / VerificationForm 7 / SkillGeneralization 4 / DevPlanDocRef 3 (逐类复跑加总 114 == 合并跑 114)",
+  "P5_form_check": "Failed 0 / Passed 14 (VerificationForm 7 + SkillGeneralization 4 + DevPlanDocRef 3)",
+  "P5_instrument_rc": 0,
+  "P6_production_events_observed": 0,
+  "self_catch_n": 2,
+  "registry_rows": "274 -> 275 (新增 r579tick.nlp-shape-kpi-face, level=L2)",
+  "self_catch_2": "audited_by_round 首写 R579-tick 违反 R2e ^(?:R\\d+|EXP1-Q\\d+)$ => 形式校验当轮判红; 修法 = 词汇表内写 R579 (tick 身份保留 owner_round/capability/updated_round), 判据未放宽"
+ },
+ "honest_boundaries": [
+  "②③④ 现在可测 但 未测到 >=1 事件: 本 tick 零远端调用 => 点位所在分支 (远端轮后的回补点) 结构性不可达; 未测到 不得读成 无效应, 也不得读成 已验收",
+  "现有测试类无一同时 配置遥测目录 且 驱动 IndustrialAgentV2 轮次 (遥测仅 Program.cs:293 + 3 个遥测类自身 Configure); 真机 host 无 FAKE_LLM 类开关; 本地判别位 3B 档 RSS 2643MB > 起手前 MemAvailable 2398MB => 本轮不起本地档",
+  "零行为改动 => 不宣称任何质量/成本降幅 (无可比窗口, 本 tick 无质量读数)",
+  "P4 冻结面按本轮变量范围枚举 (判定链 + 闸计数), 非全仓零改动",
+  "自捕: 键集扫描窗口含点位名字面量 => P3 把 Emit 形参 nlp_shape 当 kv 键 => 首跑 rc=1 假红; 定因=器具读法错, 修器具不放宽判据 (首跑读数留档不翻案)",
+  "登记表不支持 tick 后缀: R579-tick 在该面压缩为 R579, 与将来可能的 R579 正轮同 token => 轮次身份权威面 = §7 块 + 证据件"
+ ],
+ "owner_round": "R579-tick (本作业) — 打点点位 + 机检器 + 证据件; agent.nlp 形状库/ShapeCounters 与 §2 接线属 R575/R576 (前台会话 + R576-tick, 已提交)",
+ "next": "R580: 形状通道真机首验 (= R577-①): 使 nlp_shape{shape:1} 落盘 >=1 事件 + 成对断言 shape=1 的轮 >=1 且该轮远端调用数不增; 前置 = 远端调用放行 或 内存闸放行本地判别位档, 二者取一"
+}
