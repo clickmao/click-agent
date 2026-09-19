@@ -1,0 +1,211 @@
+{
+ "round": "R585",
+ "windows": [
+  "w154",
+  "w155",
+  "w156"
+ ],
+ "criteria": {
+  "note": "三条成对判据**先于本窗集落盘**；缺任一条 ⇒ 不作任何质量宣称（只出读数）。",
+  "C0 真值可靠性": "每窗 codex 跑次 `all_pass` 全真才计入配对；某窗真值自身失败 ⇒ 该窗标 `unreliable` 并**从配对中剔除**（两侧同败优先怀疑夹具/题面，非能力）。",
+  "C1 质量配对（主）": "逐窗配对差 D = median_reps(R585D) − codex_truth；判据 = 有效窗 n >= 2 ∧ 中位(D) >= -2 ∧ 无窗 D <= -15（口径同判据 v2 的 PAIR_FLOOR）。判据**原样判**，不因读数改阈值。",
+  "C2 成本三列（信息项，不判红绿）": "调用数 / 新算 prompt / completion **三列分列**（禁合并成名义总量）+ 命中率双口径 v_all / v_incr（中继 dump 时间轴）；缺 usage 记 unreported，**禁按 0 计入**。",
+  "C3 铁律 11（外部前置条件）": "`python3 eval/rover/r507pre/exec_precondition.py --round r585`；rc!=0 ⇒ 全部质量/成本读数标「**参考（未可验收）**」并逐条点名错题。",
+  "C4 起手闸": "内存裕量条款（阈值 + 观测振幅余量 + 连续 2 次）∧ leak-selfcheck rc=0 ∧ 判别力成对控制 rc!=2。"
+ },
+ "arms": {
+  "C1": {
+   "runs": 3,
+   "cases_per_run": [
+    56,
+    58,
+    58
+   ],
+   "per_window_median": {
+    "w154": 56,
+    "w155": 58,
+    "w156": 58
+   },
+   "median": 58,
+   "min": 56,
+   "max": 58,
+   "calls": 74,
+   "new_prompt": 28392,
+   "completion": 23907,
+   "v_all_med": 0.97,
+   "v_incr_med": 0.97,
+   "repair_rounds": [
+    null,
+    null,
+    null
+   ],
+   "rc": [
+    null,
+    null,
+    null
+   ],
+   "stages": [
+    null,
+    null,
+    null
+   ],
+   "steps": [
+    null,
+    null,
+    null
+   ]
+  },
+  "R585D": {
+   "runs": 9,
+   "cases_per_run": [
+    58,
+    58,
+    58,
+    53,
+    50,
+    47,
+    58,
+    48,
+    55
+   ],
+   "per_window_median": {
+    "w154": 58,
+    "w155": 50,
+    "w156": 55
+   },
+   "median": 55,
+   "min": 47,
+   "max": 58,
+   "calls": 20,
+   "new_prompt": 5601,
+   "completion": 48941,
+   "v_all_med": 0.97,
+   "v_incr_med": 0.96,
+   "repair_rounds": [
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    1,
+    0,
+    0
+   ],
+   "rc": [
+    0,
+    0,
+    5,
+    8,
+    5,
+    5,
+    5,
+    5,
+    5
+   ],
+   "stages": [
+    "done",
+    "done",
+    "expect_stdout_exhausted",
+    "self_test_unmet",
+    "expect_stdout_exhausted",
+    "expect_stdout_exhausted",
+    "expect_stdout_exhausted",
+    "expect_stdout_exhausted",
+    "expect_stdout_exhausted"
+   ],
+   "steps": [
+    8,
+    15,
+    7,
+    14,
+    7,
+    7,
+    7,
+    7,
+    7
+   ]
+  }
+ },
+ "paired": {
+  "D_product_minus_truth_per_window": [
+   -8,
+   -3
+  ],
+  "D_median": -5.5,
+  "valid_windows": 2,
+  "unreliable_windows_truth_self_fail": [
+   "w154"
+  ],
+  "missing_windows": [],
+  "truth_per_window": {
+   "w154": 56,
+   "w155": 58,
+   "w156": 58
+  },
+  "product_per_window": {
+   "w154": 58,
+   "w155": 50,
+   "w156": 55
+  }
+ },
+ "C0_truth_reliability": {
+  "pass": false,
+  "unreliable": [
+   "w154"
+  ],
+  "truth_all_pass": {
+   "w154": [
+    false
+   ],
+   "w155": [
+    true
+   ],
+   "w156": [
+    true
+   ]
+  }
+ },
+ "C1_quality_paired": {
+  "pass": false,
+  "D_list": [
+   -8,
+   -3
+  ],
+  "D_median": -5.5,
+  "valid_windows": 2,
+  "floor": -15,
+  "median_floor": -2
+ },
+ "C2_cost_three_columns": {
+  "calls": {
+   "product": 20,
+   "truth": 74
+  },
+  "new_prompt": {
+   "product": 5601,
+   "truth": 28392
+  },
+  "completion": {
+   "product": 48941,
+   "truth": 23907
+  },
+  "hit_rate_v_all": {
+   "product": 0.97,
+   "truth": 0.97
+  },
+  "hit_rate_v_incr": {
+   "product": 0.96,
+   "truth": 0.97
+  },
+  "note": "信息项, 不判红绿 (禁合并成名义总量; 命中率口径 = 中继 dump 时间轴)"
+ },
+ "verdict": {
+  "rc": 1,
+  "judge": "FAIL(质量配对未过)",
+  "blocked": [
+   "C1_quality_paired:R585D"
+  ],
+  "iron11": "见 eval/rover/r507pre/precondition-r585.json"
+ }
+}

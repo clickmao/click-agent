@@ -1,0 +1,107 @@
+{
+ "arms": {
+  "C1": {
+   "runs": 3,
+   "per_window_median": {
+    "w154": 56,
+    "w155": 58,
+    "w156": 58
+   },
+   "median": 58,
+   "calls": 74,
+   "new_prompt": 28392,
+   "completion": 23907,
+   "v_all_med": 0.97,
+   "v_incr_med": 0.97,
+   "rc": [
+    null,
+    null,
+    null
+   ]
+  },
+  "R585D": {
+   "runs": 9,
+   "per_window_median": {
+    "w154": 58,
+    "w155": 50,
+    "w156": 55
+   },
+   "median": 55,
+   "calls": 20,
+   "new_prompt": 5601,
+   "completion": 48941,
+   "v_all_med": 0.97,
+   "v_incr_med": 0.96,
+   "rc": [
+    0,
+    0,
+    5,
+    8,
+    5,
+    5,
+    5,
+    5,
+    5
+   ]
+  }
+ },
+ "C0": {
+  "pass": false,
+  "unreliable": [
+   "w154"
+  ],
+  "truth_all_pass": {
+   "w154": [
+    false
+   ],
+   "w155": [
+    true
+   ],
+   "w156": [
+    true
+   ]
+  }
+ },
+ "C1": {
+  "pass": false,
+  "D_list": [
+   -8,
+   -3
+  ],
+  "D_median": -5.5,
+  "valid_windows": 2,
+  "floor": -15,
+  "median_floor": -2
+ },
+ "C2": {
+  "calls": {
+   "product": 20,
+   "truth": 74
+  },
+  "new_prompt": {
+   "product": 5601,
+   "truth": 28392
+  },
+  "completion": {
+   "product": 48941,
+   "truth": 23907
+  },
+  "hit_rate_v_all": {
+   "product": 0.97,
+   "truth": 0.97
+  },
+  "hit_rate_v_incr": {
+   "product": 0.96,
+   "truth": 0.97
+  },
+  "note": "信息项, 不判红绿 (禁合并成名义总量; 命中率口径 = 中继 dump 时间轴)"
+ },
+ "verdict": {
+  "rc": 1,
+  "judge": "FAIL(质量配对未过)",
+  "blocked": [
+   "C1_quality_paired:R585D"
+  ],
+  "iron11": "见 eval/rover/r507pre/precondition-r585.json"
+ }
+}
