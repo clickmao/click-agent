@@ -1,0 +1,20 @@
+AgentFramework CLI
+  /status [agent_uid]  /session <agent_uid> [index]  /plan  /stop  /reset  /exit
+
+❯ (输入任务, /exit 退出)
+  
+── 执行中 (turn 1) ──────────────────────────────
+  [01] 意图分析: general
+  [02] 子任务: 重新来一遍
+  [03] 管线执行 (上下文装配 → LLM → 后处理)…
+[2026-09-19T13:10:27.6823992Z] info thinking IndustrialAgentV2: prompt 构建完成: ~4787 tokens, 意图=general
+@chatbox:{"Type":"thinking_page_switch","Seq":1,"SummaryLength":0}
+@chatbox:{"Type":"thinking_end","Seq":0,"SummaryLength":79}
+
+── 回复 ────────────────────────────────────────────
+⚠ 模型未产出正文: 上游请求执行工具动作 (finish_reason=tool_calls) — 当前链路未启用工具执行。请重试, 或改用不带工具的模型。
+  · intent=general  promptTokens=4787  contextSnippets=3  llmModel=deepseek-flash  forecastTendency=提出新任务  forecastAgentUid=main
+  (23373ms, intent=general)
+
+❯ (输入任务, /exit 退出)
+  

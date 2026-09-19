@@ -1,0 +1,95 @@
+{
+ "round": "R583",
+ "verdict": {
+  "P1_shape_face_exercised": "PASS",
+  "P1_detail": {
+   "turn2": {
+    "route": "local_skip",
+    "shape": "1",
+    "face": "repeat",
+    "basis": "mechanical:repeat→local",
+    "hits": 0,
+    "learned": 0,
+    "shapes": 1,
+    "msg_sha16": "147757f75f39bd44"
+   },
+   "turn2_agent_calls": 0,
+   "turn2_host_calls": 0,
+   "turn2_skip_reply": [
+    "repeat_verbatim"
+   ]
+  },
+  "P2_agent_plane_not_increased": "PASS",
+  "P2_detail": {
+   "turn1_agent": 1,
+   "turn2_agent": 0,
+   "turn2_agent_completion": 0,
+   "host_plane_excluded": 0
+  },
+  "P3a_degrade_reachable": "PASS",
+  "P3b_shape_reported": "PASS",
+  "P3b_detail": {
+   "D_nlp_shape": {
+    "route": "remote",
+    "shape": "1",
+    "face": "repeat",
+    "basis": "gate:repeat_no_replayable_prev→remote",
+    "hits": 0,
+    "learned": 1,
+    "shapes": 1,
+    "msg_sha16": "147757f75f39bd44"
+   },
+   "D_degrade": [
+    {
+     "reason": "no_replayable_prev",
+     "msg_sha16": "147757f75f39bd44"
+    }
+   ]
+  },
+  "P4_library_is_only_variable": "PASS",
+  "P4_out_of_family": "PASS",
+  "cross_check_fail_total": 0,
+  "hit_turns": [
+   2
+  ],
+  "rc_plan": {
+   "2": null,
+   "1": null,
+   "0": "全达标"
+  }
+ },
+ "negative_controls": {
+  "NC1_inject_agent_call_on_hit_turn": {
+   "P1": "FAIL",
+   "P2": "FAIL",
+   "expected": "P1=FAIL,P2=FAIL",
+   "has_teeth": true
+  },
+  "NC2_fake_s0_hit": {
+   "P4": "FAIL",
+   "expected": "P4=FAIL",
+   "has_teeth": true
+  },
+  "NC3_strip_degrade": {
+   "P3a": "FAIL",
+   "P3b": "FAIL",
+   "expected": "P3a=FAIL,P3b=FAIL",
+   "has_teeth": true
+  }
+ },
+ "rc": 0,
+ "gates": {
+  "build": "dotnet build src/agent.host/agent.host.csproj -c Release ⇒ 10 Warning(s) / **0 Error(s)** (重建于跑臂之后; 二进制 sha256 逐位不变 fe1fb720…)",
+  "form": "dotnet test --filter VerificationForm|SkillGeneralization|DevPlanDocRef ⇒ Failed 0 / Passed 14 ⇒ **14/14**",
+  "run_arms": "4 臂 rc=0 (S0 44s / S1 12s / D 24s / N 10s); 远端预检 http=200"
+ },
+ "诚实边界": [
+  "零产品源码改动 ⇒ 本轮不宣称任何质量/成本降幅 (无可比窗口)。",
+  "单轮 n=1 每臂 ⇒ 只作机制存在性证据, 不作分布结论 (跨窗摆动常大于臂间效应)。",
+  "codex 外部真值同题对照 / 回复质量 / 轮数 / 问答计数: 本轮**未测** (非质量对照窗) ⇒ 记未测, 不记无效应。",
+  "R581 的 P2 FAIL 与 P3_eviction FAIL **保留不翻案**; 本轮 agent 面口径是**新注册**(与 R432「先分通道再汇总」同族), 不是对原判据的放宽。",
+  "P6 按预注册照原样判: 「行数 1→2」成立, 但「两行逐字相同」子项不成立, 且预注册给出的候选机理(Same 未拦住)与真机理(内存剔除后重新学习)不符 ⇒ 机理修正单列 posthoc, 判据不改。",
+  "自捕缺陷: 形状库内存剔除不落盘 (ReportOutcome 只改内存) ⇒ 库行数不能当形状数; 本轮零产品改动 ⇒ 只登记不定因修复。",
+  "宿主面调用与轮闸无关, 本轮判据一律排除; 「宿主面是否可省」本轮未测。"
+ ]
+}

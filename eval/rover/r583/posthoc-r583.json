@@ -1,0 +1,47 @@
+{
+ "round": "R583",
+ "kind": "post-hoc 归因 (不改预注册判据; R581 判决不翻案)",
+ "prereg": "eval/rover/r583/prereg-r583.json (先于任何真机跑次落盘; P6 于起臂前追加)",
+ "verdicts_from": "eval/rover/r583/{readings-r583.json,verdict-r583.json} (extract_r583.py, rc=0, 负控 3/3 有牙)",
+ "P2_plane_split": {
+  "data": "eval/rover/r583/plane-split-r583.json (由 R581 归档字节偏移切片, 未重跑)",
+  "R581_原口径": "命中轮窗口内 llm_call = 4 (轮2) / 7 (轮3) ⇒ P2 FAIL",
+  "分层后": "agent 面 (llm_call.agent_session 非空 ∧ turn>=1) = 轮1:1 / 轮2:0 / 轮3:0；宿主面 (session 空 ∧ turn=0) = 轮1:0 / 轮2:4 / 轮3:7；臂A 宿主面占比 11/12 = 91.67%",
+  "交叉校验": "两条独立路径 (agent_session 非空 / turn>=1) 逐调用一致 ⇒ cross_check_fail=0 (不符即 rc=2 fail-closed)",
+  "结论": "命中轮「零远端调用」在**窗口口径**下结构性不可达: 窗口把会话外循环的调用计入本轮; R581 的 4/7 全部是宿主面。**R581 的 P2 FAIL 保留** (判据未放宽); 本轮的 agent 面口径是新注册 (与 R432「先分通道再汇总」同族)。",
+  "天花板算式": "可省面 = agent 面应答调用 (本机制唯一能省的类); 宿主面占比 91.67% 与机制无关 ⇒ 若判据绑定窗口口径, 无论机制如何都恒 FAIL。分层后可省面 = 3 轮中 1 次应答调用 (命中轮 2 次已省: agent 面 new_prompt=0 / completion=0)。"
+ },
+ "completion_attribution": {
+  "R581_读数": "命中轮 completion 616 (轮2) / 1408 (轮3)",
+  "分层": "命中轮 completion 100% 来自宿主面 (agent 面 completion = 0) ⇒ **不是**本地消化导致回答变长; R581 posthoc 说「工具循环面」方向正确, 但未把它与会话应答面分开 ⇒ 本轮给出面别归属。"
+ },
+ "P3b_counter_zero_consumer": {
+  "静态": "`_shapeHits++` 唯一写点 = src/agent.nlp/NlpGate.cs:129 (Decide 内 learned-shape 分支); `NlpGate.Decide` 在 src 生产代码的调用点 = 0 (调用方只调 IsPatched / IsLearned / ReportOutcome / ShapeCounters / LearnFromRemote) ⇒ 该计数器在生产面结构性恒 0",
+  "真机配对": "R581 臂A 轮2/轮3 同事件 shape=1 ∧ hits=0; 本轮 S1 轮2 同形 (shape=1 ∧ hits=0) ⇒ 「形状命中」与 hits 计数在生产面解耦",
+  "处置": "P3b 判据面由 `hits>=1` 改为 `shape=1` (IsLearned 呈报); 本轮臂 D 实测 shape=1 (route=remote) ⇒ PASS。R581 的 P3_eviction FAIL 保留 (原判据不改)。"
+ },
+ "library_persistence_defect": {
+  "finding": "形状库**内存剔除不落盘**: degrade 点调 ReportOutcome(useful=false) 只从内存 Shapes 移除, 不重写 gate-shapes.txt; 同轮远端成功后 LearnFromRemote 的 Same(face/lang/band) 去重因内存已空而未拦住 ⇒ **追加重复面行**, 文件行数单调增长并可跨进程「复活」被剔除的形状",
+  "真机证据": "臂 D: 预置 fixture 1 行 (sha c98f8ab3e8a49acb…) → 跑后 2 行 (sha 04ad26a82030fe9e…); 逐行 sha 反解 = 第1行 fixture `repeat\\tzh\\t1\\t一|再|来|遍` + 第2行 `repeat\\tzh\\t1\\t一|新|来|遍|重` (face/lang/band 三元组相同 ⇒ Same 本应拦住)",
+  "R581_异常同源": "R581 `shapes-r581.txt` 的两行逐字相同 = 同一机理 (臂 B 与臂 A 输入同文 ⇒ 追加行逐字相同); R581 登记为「机理未定因」的异常在本轮定因",
+  "口径诚实": "P6 按预注册照原样判: 「行数 1→2」分支成立; 「两行 sha 相同」子项**不成立** (两行来自不同文本: `再来一遍` vs `重新来一遍`), 且预注册给出的候选机理 (Same 未拦住) 与真机理不符 (真机理 = 内存剔除后重新学习) ⇒ 判据不改, 机理在此修正",
+  "影响面": "本轮零产品源码改动 ⇒ 只登记不定因修复; 影响 = 库行数不能当形状数 (内存 Shapes=1 而文件 2 行), 库膨胀面上限 MaxPatches=4096 只对内存生效",
+  "候选": "下轮 (R584) 若放行产品改动: ReportOutcome 剔除须落盘 (重写库文件或落墓碑行), 并配「行数守恒/去重」成对判据"
+ },
+ "environment": {
+  "key_channel": "~/.agentframework/keys.env (0600, 仓外) ← 作业环境自备; 本轮已把自备步骤写入常驻作业 prompt (候选⑤)",
+  "gate_pre": "http_code=200 / mem 2738MB / disk 15GB avail / 对侧 0 在飞"
+ },
+ "not_claimed": [
+  "零产品源码改动 ⇒ 不宣称任何质量/成本降幅",
+  "单轮 n=1 每臂 ⇒ 只作机制存在性证据",
+  "codex 外部真值同题对照 / 回复质量 / 轮数 / 问答计数: 未测",
+  "R581 判决 (P2 FAIL / P3_eviction FAIL) 不翻案"
+ ],
+ "next_candidates": [
+  "库落盘一致性修复 (剔除落盘 + 去重成对判据) —— 需产品改动放行",
+  "命中轮调用面: agent 面已 0 ⇒ 收窄面转向「宿主面调用是否可省」(先量: 宿主面调用的触发谓词与占比)",
+  "P2/P3 分层判据并入 RF0002 §3 验收面正文 (计划文档同步)",
+  "codex 外部真值同题对照轮 (主线质量列, 本轮未测)"
+ ]
+}

@@ -1,0 +1,128 @@
+{
+  "round": "R583",
+  "kind": "RF0002 §3 验收面: P2 判据面收窄 (调用面分层) + P3 合取拆分 (P3a/P3b) 重注册; 真机臂 = 单变量 (形状库有无)",
+  "written_before_any_arm": true,
+  "binary": {
+    "path": "src/agent.host/bin/Release/net10.0/agenthost",
+    "sha256": "fe1fb720fb5eedb044014b1c27cd18352e851960102f93920bfb2f57e0820dd3",
+    "git_head": "8c14da6c706198c461a0e462e2c12a4d3e9da323",
+    "note": "R582 后未重建; 本轮零产品源码改动 (只跑既有二进制)"
+  },
+  "cwd": "/home/agentuser/AgentFramework",
+  "disclosure_previous_rounds": {
+    "R581_P2": "FAIL 保持不改 (原判据: Arm A 中 shape=1 的那一轮**窗口内全部 llm_call** = 0; 实测 4/7)。本份是新注册的**分层口径**, 不回写 R581 判决。",
+    "R581_P3_eviction": "FAIL 保持不改 (原判据: degrade 落盘 ∧ 同轮 hits>=1)。本份按 N2 的静态+真机证据拆为 P3a/P3b。",
+    "纪律": "与 R432 (多通道端点归因) 同族: 预注册判据被证伪时不改判据, 分离结论单列; 下一轮预注册改为「先分层, 再汇总」。"
+  },
+  "preconditions": [
+    "命令面: agenthost --role ./skeptic.rbin --session-id <id> 经 stdin REPL 逐轮投递 (与 R581 逐字同)",
+    "闸前置: 遥测 local_turn_gate_config.turn_gate_enabled=true 且 role != '(null)' —— 否则本轮判 VOID",
+    "库前置: data/nlp 不存在 (起手实测 absent) ⇒ 单变量可造 (只在本轮 fixture 步骤创建, 收尾复原为不存在)"
+  ],
+  "fixture": {
+    "file": "data/nlp/gate-shapes.txt (仅 S1/D/N 臂预置)",
+    "content": "repeat\\tzh\\t1\\t一|再|来|遍",
+    "sha256_line": "c98f8ab3e8a49acb5363ae62920fca9174b25dced7a8430dcb1870347cb05a8d",
+    "source": "eval/rover/r581/shapes-r581.txt 第 1 行 (sha256 1507cf56792b737ad246548e04955dc787b0807fae3a86633e96c96c56e5fe31, 56B)",
+    "same_origin": "该行 = R581 真机 (Arm A 轮1 远端成功轮回补) 学到的形状; 本轮逐字复用, 不重造、不换等价件",
+    "anomaly_registered": "同文件第 2 行与第 1 行逐字相同 (R581 落盘重复行, 机理未定因) ⇒ 本轮以第 1 行为 fixture, 并把该文件行数异常登记为候选 (P5 守恒面)"
+  },
+  "arms": [
+    {
+      "id": "S0",
+      "session": "r583s0",
+      "library": "absent",
+      "turns": ["请用一句话说明 wythoff 游戏的三堆必胜条件是什么？", "重新来一遍"],
+      "role": "负控: 同输入无库 ⇒ 结构面单独不命中 (证明 S1 的命中来自形状库, 不是输入结构)"
+    },
+    {
+      "id": "S1",
+      "session": "r583s1",
+      "library": "fixture 1 行",
+      "turns": ["请用一句话说明 wythoff 游戏的三堆必胜条件是什么？", "重新来一遍"],
+      "role": "治疗臂: 与 S0 唯一差异 = 形状库有无 (单变量); 轮2 预期形状面命中 ⇒ 本地回放"
+    },
+    {
+      "id": "D",
+      "session": "r583d",
+      "library": "fixture 1 行",
+      "turns": ["重新来一遍"],
+      "role": "降级路径: 命中形状但全新会话无上一条可回放答复 ⇒ 应落 repeat_degrade_remote"
+    },
+    {
+      "id": "N",
+      "session": "r583n",
+      "library": "fixture 1 行",
+      "turns": ["请用一句话说明 wythoff 游戏的三堆必胜条件是什么？"],
+      "role": "族外负控: 长问句 ⇒ 不入库、不命中"
+    }
+  ],
+  "predictions": [
+    {
+      "id": "P1",
+      "name": "形状面行使 (分层)",
+      "expect": "S1 轮2: nlp_shape{shape=1 ∧ face=repeat ∧ route=local_skip} ∧ 该轮 **agent 面调用数 = 0** (agent 面 = llm_call.agent_session 非空)",
+      "observed": null,
+      "verdict": null
+    },
+    {
+      "id": "P2",
+      "name": "命中面不增远端调用 (分层: 只判 agent 面)",
+      "expect": "S1 轮2 agent 面调用数 (0) < S1 轮1 agent 面调用数 (1); 宿主面 (agent_session 为空) 调用数单列、**不参与判据**",
+      "observed": null,
+      "verdict": null
+    },
+    {
+      "id": "P3a",
+      "name": "降级路径可达",
+      "expect": "臂 D 落盘 repeat_degrade_remote{reason=no_replayable_prev}",
+      "observed": null,
+      "verdict": null
+    },
+    {
+      "id": "P3b",
+      "name": "形状命中呈报 (取代 hits>=1)",
+      "expect": "臂 D 该轮 nlp_shape.shape=1 (route=remote); 依据 = hits 计数器在生产面零消费者 (只在 NlpGate.Decide 自增, 生产链只调 IsPatched/IsLearned/ReportOutcome) ⇒ 结构性恒 0",
+      "observed": null,
+      "verdict": null
+    },
+    {
+      "id": "P4",
+      "name": "负控有牙 (库有无是唯一变量)",
+      "expect": "臂 S0 轮2 route=remote ∧ shape=0; 臂 N shape=0 ∧ learned 不增 ∧ shapes 不增",
+      "observed": null,
+      "verdict": null
+    },
+    {
+      "id": "P5",
+      "name": "形状库落盘守恒 (改写语料类守恒式)",
+      "expect": "逐臂 gate-shapes.txt 行数可见; 预置后 S1/N 全程保持 1 行; 学习轮只会由重复族远端成功触发",
+      "observed": null,
+      "verdict": null
+    },
+    {
+      "id": "P6",
+      "name": "库装载/去重面 (R581 重复行异常的复现测试)",
+      "expect": "臂 D = 「命中形状 ⇒ 无上一条可回放 ⇒ 降级远端 ⇒ 远端成功 ⇒ 重新学到同一形状」: 若 Same(face/lang/band) 拦住 ⇒ learned 不增 ∧ 行数 1 (分支 A); 若未拦住 ⇒ learned +1 ∧ 行数 1→2 且两行逐字相同 ⇒ 与 R581 shapes-r581.txt 的两行逐字相同同源 (分支 B, 库去重/装载缺口成立)",
+      "branches": {"A_blocked": "learned 不增 ∧ shapes_lines 恒 1", "B_not_blocked": "learned +1 ∧ shapes_lines=2 且两行 sha 相同"},
+      "observed": null,
+      "verdict": null
+    }
+  ],
+  "instrument_gate": {
+    "declared_before_arm": true,
+    "负控有牙": "判据器 extract_r583.py 内置负控: ①合成窗口 = S1 轮2 注入 1 条 agent 面 llm_call ⇒ P1/P2 必须判红; ②合成窗口 = 无库同输入 ⇒ route 必须 remote; ③真读数上判据逐键与合成负控不同 (非恒真亦非恒假)",
+    "rc语义": "0 = 全判据达标 / 1 = 有判据不达标 (被测不满足) / 2 = 器具缺陷 (字段缺失/读空 fail-closed) / 3 = 输入缺失"
+  },
+  "fail_closed": [
+    "key 缺失或远端预检 http != 200 ⇒ 所有臂 VOID (R581 v1 同类: 学习前提不成立)",
+    "S1 轮2 无 local_skip ⇒ 记「未测到」并单边重跑 (r583s1b); 禁改阈值, 禁事后放宽",
+    "闸前置不过 (turn_gate_enabled=false / role=(null)) ⇒ 全轮 VOID"
+  ],
+  "not_claimed": [
+    "零产品源码改动 ⇒ 本轮不宣称任何质量/成本降幅 (无可比窗口)",
+    "单轮 n=1 每臂 ⇒ 只作机制存在性证据, 不作分布结论",
+    "codex 外部真值同题对照 / 回复质量 / 轮数 / 问答计数: 本轮未测 (非质量对照窗)",
+    "本轮的判据分层是**新注册**; R581 的 P2/P3_eviction FAIL 不翻案"
+  ]
+}

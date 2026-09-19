@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R582",
+ "updated_round": "R583",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -7010,6 +7010,25 @@
     "audited_by_round": "R582"
    },
    "negative_control": "器具内建 selftest 3 负控: 错 pin ⇒ R4 红 / 提交内 key 面 ⇒ R7 红 / 无提交轮号 ⇒ R2 红;另 1 假红控制: 正常 `task-*` 标识符不得误判为 `sk-` key。"
+  },
+  {
+   "id": "r583.shape-face-plane-split",
+   "level": "L3",
+   "owner_round": "R583",
+   "capability": "RF0002 §3 验收面 ②③④ 的**判据面收窄与重注册**(零产品源码改动): ① 调用面分层 —— 命中轮「零远端调用」在**窗口口径**下结构性不可达(R581 臂A 命中轮 4/7 次调用全部 `agent_session` 空 ∧ `turn=0` = 会话外面, agent 面 = 0; 臂A 宿主面占比 11/12 = 91.67%; 命中轮 completion 616/1408 100% 来自宿主面) ⇒ 判据面改为 agent 面(两条独立路径交叉校验 agent_session/turn, 不符即 rc=2); ② P3 合取拆 P3a(降级路径可达)/P3b(形状命中呈报) —— `hits` 生产面结构性恒 0 (`_shapeHits++` 唯一写点 = src/agent.nlp/NlpGate.cs:129 在 `Decide` 内, 而 `NlpGate.Decide` 生产调用点 = 0) ⇒ P3b 改判 `shape=1`; ③ 真机臂**单变量=形状库有无**(fixture 逐字复用 R581 真机产物 sha256 c98f8ab3…): S1 轮2 `local_skip`(shape=1/face=repeat/basis=mechanical:repeat→local/agent 面与宿主面调用均 0/completion 0/kind=repeat_verbatim) vs S0 同输入无库 = `remote`(shape=0); D 臂 `repeat_degrade_remote{no_replayable_prev}` 可达 ∧ 同轮 shape=1; N 族外 shape=0/learned=0。判据 rc=0 (6/6 PASS), 器具负控 3/3 有牙。**诚实边界**: 零产品改动 ⇒ 不宣称质量/成本降幅; 单轮 n=1 每臂 ⇒ 只作机制存在性; codex 外部真值对照未测。R581 判决(P2/P3_eviction FAIL)不翻案。",
+   "evidence_cmd": "python3 eval/rover/r583/extract_r583.py",
+   "evidence_path": "eval/rover/r583/verdict-r583.json",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "6cfba744e443",
+    "instrument": "eval/rover/r583/extract_r583.py",
+    "instrument_sha12": "2f0c540c7505",
+    "binding": "audit-pin",
+    "audited_by_round": "R583"
+   },
+   "negative_control": "① extract_r583.py 内建 3 负控(合成窗口)且全部**有牙**: 命中轮注入 1 条 agent 面调用 ⇒ P1/P2 判红; 把 S0 轮2 伪造成 local_skip ⇒ P4 判红; 抹掉 D 的 degrade 事件 ⇒ P3a/P3b 判红 ⇒ 判据非恒真门; ② 真读数与三个合成窗口的判决形状不同 ⇒ 非恒假; ③ 分层判定的两条独立路径(agent_session 非空 / turn>=1)逐调用一致 ⇒ cross_check_fail=0, 不符即 rc=2 fail-closed(禁当绿)。自捕(同轮登记, 非本行能力面): 形状库**内存剔除不落盘**(degrade 点 ReportOutcome 只改内存 + 同轮重新学习 ⇒ 追加行) ⇒ 库 1→2 行(sha 04ad26a8…), 同源解释 R581 重复行异常; 本轮零产品改动 ⇒ 只登记。"
   }
  ],
  "aot_check_policy": "release_tag_only",

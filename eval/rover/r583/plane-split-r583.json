@@ -1,0 +1,244 @@
+{
+ "round": "R583",
+ "node": "N2",
+ "source_round": "R581",
+ "source": "eval/rover/r581/telemetry-offset-*.txt 切片 (归档字节偏移, 未重跑)",
+ "arms": {
+  "A": {
+   "events": 147,
+   "parse_fail": 0,
+   "turns": [
+    {
+     "turn": 1,
+     "nlp_shape": {
+      "route": "remote",
+      "shape": "0",
+      "face": "none",
+      "basis": "mechanical:nonack→remote",
+      "hits": 0,
+      "learned": 1,
+      "shapes": 1,
+      "msg_sha16": "1a37544b29472468"
+     },
+     "agent_plane": {
+      "n": 1,
+      "new_prompt": 4234,
+      "prompt_total": 4362,
+      "completion": 599,
+      "calls": [
+       {
+        "prompt_total": 4362,
+        "cache_hit": 128,
+        "new_prompt": 4234,
+        "completion": 599,
+        "finish_reason": "stop",
+        "content_len": 315,
+        "agent_session": "r581a",
+        "turn": 1
+       }
+      ]
+     },
+     "host_plane": {
+      "n": 0,
+      "new_prompt": 0,
+      "prompt_total": 0,
+      "completion": 0,
+      "finish_reasons": []
+     },
+     "window_calls_raw": 1,
+     "cross_check_fail": 0
+    },
+    {
+     "turn": 2,
+     "nlp_shape": {
+      "route": "local_skip",
+      "shape": "1",
+      "face": "repeat",
+      "basis": "mechanical:repeat→local",
+      "hits": 0,
+      "learned": 1,
+      "shapes": 1,
+      "msg_sha16": "1a37544b29472468"
+     },
+     "agent_plane": {
+      "n": 0,
+      "new_prompt": 0,
+      "prompt_total": 0,
+      "completion": 0,
+      "calls": []
+     },
+     "host_plane": {
+      "n": 4,
+      "new_prompt": 1150,
+      "prompt_total": 7038,
+      "completion": 616,
+      "finish_reasons": [
+       "tool_calls",
+       "tool_calls",
+       "tool_calls",
+       "stop"
+      ]
+     },
+     "window_calls_raw": 4,
+     "cross_check_fail": 0
+    },
+    {
+     "turn": 3,
+     "nlp_shape": {
+      "route": "local_skip",
+      "shape": "1",
+      "face": "repeat",
+      "basis": "mechanical:repeat→local",
+      "hits": 0,
+      "learned": 1,
+      "shapes": 1,
+      "msg_sha16": "147757f75f39bd44"
+     },
+     "agent_plane": {
+      "n": 0,
+      "new_prompt": 0,
+      "prompt_total": 0,
+      "completion": 0,
+      "calls": []
+     },
+     "host_plane": {
+      "n": 7,
+      "new_prompt": 2311,
+      "prompt_total": 14727,
+      "completion": 1408,
+      "finish_reasons": [
+       "tool_calls",
+       "stop",
+       "tool_calls",
+       "tool_calls",
+       "tool_calls",
+       "tool_calls",
+       "stop"
+      ]
+     },
+     "window_calls_raw": 7,
+     "cross_check_fail": 0
+    }
+   ]
+  },
+  "B": {
+   "events": 41,
+   "parse_fail": 0,
+   "turns": [
+    {
+     "turn": 1,
+     "nlp_shape": {
+      "route": "remote",
+      "shape": "1",
+      "face": "repeat",
+      "basis": "gate:repeat_no_replayable_prev→remote",
+      "hits": 0,
+      "learned": 1,
+      "shapes": 1,
+      "msg_sha16": "1a37544b29472468"
+     },
+     "agent_plane": {
+      "n": 1,
+      "new_prompt": 521,
+      "prompt_total": 4361,
+      "completion": 469,
+      "calls": [
+       {
+        "prompt_total": 4361,
+        "cache_hit": 3840,
+        "new_prompt": 521,
+        "completion": 469,
+        "finish_reason": "stop",
+        "content_len": 221,
+        "agent_session": "r581b",
+        "turn": 1
+       }
+      ]
+     },
+     "host_plane": {
+      "n": 0,
+      "new_prompt": 0,
+      "prompt_total": 0,
+      "completion": 0,
+      "finish_reasons": []
+     },
+     "window_calls_raw": 1,
+     "cross_check_fail": 0
+    }
+   ]
+  },
+  "N": {
+   "events": 41,
+   "parse_fail": 0,
+   "turns": [
+    {
+     "turn": 1,
+     "nlp_shape": {
+      "route": "remote",
+      "shape": "0",
+      "face": "none",
+      "basis": "mechanical:pass→remote",
+      "hits": 0,
+      "learned": 0,
+      "shapes": 1,
+      "msg_sha16": "536628bd8a66d215"
+     },
+     "agent_plane": {
+      "n": 1,
+      "new_prompt": 4213,
+      "prompt_total": 4213,
+      "completion": 1208,
+      "calls": [
+       {
+        "prompt_total": 4213,
+        "cache_hit": 0,
+        "new_prompt": 4213,
+        "completion": 1208,
+        "finish_reason": "stop",
+        "content_len": 425,
+        "agent_session": "r581n",
+        "turn": 1
+       }
+      ]
+     },
+     "host_plane": {
+      "n": 0,
+      "new_prompt": 0,
+      "prompt_total": 0,
+      "completion": 0,
+      "finish_reasons": []
+     },
+     "window_calls_raw": 1,
+     "cross_check_fail": 0
+    }
+   ]
+  }
+ },
+ "parse_fail_total": 0,
+ "cross_check_fail": 0,
+ "ceiling": {
+  "armA_total_calls_raw": 12,
+  "armA_agent_plane_calls": 1,
+  "armA_host_plane_calls": 11,
+  "host_plane_share": 0.9167,
+  "hit_turns": [
+   2,
+   3
+  ],
+  "hit_turns_agent_calls": 0,
+  "hit_turns_host_calls": 11,
+  "hit_turns_completion_agent": 0,
+  "hit_turns_completion_host": 2024,
+  "算式": "命中轮「零远端调用」在**窗口口径**下结构性不可达: 可省面 = agent 面应答调用 (本机制唯一能省的类); 宿主面调用不由本机制产生, 也不由本机制消除 ⇒ 占比 = host_plane_share; 若判据绑定窗口口径, 则无论机制如何都恒 FAIL (R581 的 4/7 即此)",
+  "分层后可省面": "agent 面应答调用 3 轮中 1 次 (轮1); 命中轮 2 次已省 (0 次 agent 面) ⇒ 命中轮 agent 面 new_prompt=0 / completion=0",
+  "不可归因面": "宿主面 (finish_reason=tool_calls/stop, agent_session 空, turn=0) 与轮闸无关"
+ },
+ "completion_attribution": {
+  "R581_原口径命中轮 completion": [
+   4,
+   7
+  ],
+  "分层: 命中轮 completion 全部来自宿主面": true,
+  "结论": "命中轮 completion 上升 (616/1408) = 宿主面循环长度; agent 面 completion = 0 ⇒ 不是本地消化的副作用"
+ }
+}

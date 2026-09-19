@@ -1,0 +1,385 @@
+{
+ "round": "R583",
+ "arms": {
+  "S0": {
+   "events": 87,
+   "parse_fail": 0,
+   "turns": [
+    {
+     "turn": 1,
+     "nlp_shape": {
+      "route": "remote",
+      "shape": "0",
+      "face": "none",
+      "basis": "mechanical:pass→remote",
+      "hits": 0,
+      "learned": 0,
+      "shapes": 0,
+      "msg_sha16": "536628bd8a66d215"
+     },
+     "agent_calls": 1,
+     "host_calls": 0,
+     "cross_check_fail": 0,
+     "agent_new_prompt": 444,
+     "agent_completion": 4412,
+     "host_finish_reasons": [],
+     "gate": [
+      {
+       "verdict": "Pass",
+       "basis": "mechanical:pass→remote"
+      }
+     ],
+     "gate_cfg": [
+      {
+       "turn_gate_enabled": "True",
+       "role": "skeptic",
+       "repeat_skip": "on"
+      }
+     ],
+     "degrade": [],
+     "skip_reply": [],
+     "loop_turn": []
+    },
+    {
+     "turn": 2,
+     "nlp_shape": {
+      "route": "remote",
+      "shape": "0",
+      "face": "none",
+      "basis": "mechanical:nonack→remote",
+      "hits": 0,
+      "learned": 1,
+      "shapes": 1,
+      "msg_sha16": "147757f75f39bd44"
+     },
+     "agent_calls": 2,
+     "host_calls": 2,
+     "cross_check_fail": 0,
+     "agent_new_prompt": 1327,
+     "agent_completion": 3980,
+     "host_finish_reasons": [
+      "tool_calls",
+      "stop"
+     ],
+     "gate": [
+      {
+       "verdict": "Pass",
+       "basis": "mechanical:nonack→remote"
+      }
+     ],
+     "gate_cfg": [],
+     "degrade": [],
+     "skip_reply": [],
+     "loop_turn": [
+      {
+       "success": true,
+       "reply_chars": 417
+      }
+     ]
+    }
+   ]
+  },
+  "S1": {
+   "events": 78,
+   "parse_fail": 0,
+   "turns": [
+    {
+     "turn": 1,
+     "nlp_shape": {
+      "route": "remote",
+      "shape": "0",
+      "face": "none",
+      "basis": "mechanical:pass→remote",
+      "hits": 0,
+      "learned": 0,
+      "shapes": 1,
+      "msg_sha16": "536628bd8a66d215"
+     },
+     "agent_calls": 1,
+     "host_calls": 0,
+     "cross_check_fail": 0,
+     "agent_new_prompt": 340,
+     "agent_completion": 1953,
+     "host_finish_reasons": [],
+     "gate": [
+      {
+       "verdict": "Pass",
+       "basis": "mechanical:pass→remote"
+      }
+     ],
+     "gate_cfg": [
+      {
+       "turn_gate_enabled": "True",
+       "role": "skeptic",
+       "repeat_skip": "on"
+      }
+     ],
+     "degrade": [],
+     "skip_reply": [],
+     "loop_turn": []
+    },
+    {
+     "turn": 2,
+     "nlp_shape": {
+      "route": "local_skip",
+      "shape": "1",
+      "face": "repeat",
+      "basis": "mechanical:repeat→local",
+      "hits": 0,
+      "learned": 0,
+      "shapes": 1,
+      "msg_sha16": "147757f75f39bd44"
+     },
+     "agent_calls": 0,
+     "host_calls": 0,
+     "cross_check_fail": 0,
+     "agent_new_prompt": 0,
+     "agent_completion": 0,
+     "host_finish_reasons": [],
+     "gate": [
+      {
+       "verdict": "Skip",
+       "basis": "mechanical:repeat→local"
+      }
+     ],
+     "gate_cfg": [],
+     "degrade": [],
+     "skip_reply": [
+      "repeat_verbatim"
+     ],
+     "loop_turn": [
+      {
+       "success": true,
+       "reply_chars": 263
+      }
+     ]
+    }
+   ]
+  },
+  "D": {
+   "events": 59,
+   "parse_fail": 0,
+   "turns": [
+    {
+     "turn": 1,
+     "nlp_shape": {
+      "route": "remote",
+      "shape": "1",
+      "face": "repeat",
+      "basis": "gate:repeat_no_replayable_prev→remote",
+      "hits": 0,
+      "learned": 1,
+      "shapes": 1,
+      "msg_sha16": "147757f75f39bd44"
+     },
+     "agent_calls": 7,
+     "host_calls": 0,
+     "cross_check_fail": 0,
+     "agent_new_prompt": 5974,
+     "agent_completion": 2255,
+     "host_finish_reasons": [],
+     "gate": [
+      {
+       "verdict": "Pass",
+       "basis": "gate:repeat_no_replayable_prev→remote"
+      }
+     ],
+     "gate_cfg": [
+      {
+       "turn_gate_enabled": "True",
+       "role": "skeptic",
+       "repeat_skip": "on"
+      }
+     ],
+     "degrade": [
+      {
+       "reason": "no_replayable_prev",
+       "msg_sha16": "147757f75f39bd44"
+      }
+     ],
+     "skip_reply": [],
+     "loop_turn": []
+    }
+   ]
+  },
+  "N": {
+   "events": 42,
+   "parse_fail": 0,
+   "turns": [
+    {
+     "turn": 1,
+     "nlp_shape": {
+      "route": "remote",
+      "shape": "0",
+      "face": "none",
+      "basis": "mechanical:pass→remote",
+      "hits": 0,
+      "learned": 0,
+      "shapes": 1,
+      "msg_sha16": "536628bd8a66d215"
+     },
+     "agent_calls": 1,
+     "host_calls": 0,
+     "cross_check_fail": 0,
+     "agent_new_prompt": 317,
+     "agent_completion": 1442,
+     "host_finish_reasons": [],
+     "gate": [
+      {
+       "verdict": "Pass",
+       "basis": "mechanical:pass→remote"
+      }
+     ],
+     "gate_cfg": [
+      {
+       "turn_gate_enabled": "True",
+       "role": "skeptic",
+       "repeat_skip": "on"
+      }
+     ],
+     "degrade": [],
+     "skip_reply": [],
+     "loop_turn": []
+    }
+   ]
+  }
+ },
+ "parse_fail_total": 0,
+ "arm_meta": {
+  "arm": [
+   "S0 session=r583s0 rc=0 secs=44",
+   "S1 session=r583s1 rc=0 secs=12",
+   "D session=r583d rc=0 secs=24",
+   "N session=r583n rc=0 secs=10"
+  ],
+  "mem_after": [
+   "2724MB",
+   "2745MB",
+   "2724MB",
+   "2737MB"
+  ],
+  "log_bytes": [
+   "4044",
+   "3224",
+   "1144",
+   "1780"
+  ],
+  "nlp_dir_after": [
+   "present",
+   "present",
+   "present",
+   "present"
+  ],
+  "shapes_lines": [
+   "1",
+   "1",
+   "2",
+   "2"
+  ],
+  "shapes_sha256": [
+   "cbecfe157ca8b7cadd06b062fe0b637432aec1f7817235dbd98cdd665c5f5e1a",
+   "c98f8ab3e8a49acb5363ae62920fca9174b25dced7a8430dcb1870347cb05a8d",
+   "04ad26a82030fe9e95a7eacaf1bf5b341d2d982edf12637ef0d740f54b1ae04f",
+   "04ad26a82030fe9e95a7eacaf1bf5b341d2d982edf12637ef0d740f54b1ae04f"
+  ],
+  "post_fixture_sha256": [
+   "c98f8ab3e8a49acb5363ae62920fca9174b25dced7a8430dcb1870347cb05a8d"
+  ],
+  "ts_end": [
+   "2026-09-19T21:11:00+08:00"
+  ],
+  "nlp_dir_restored": [
+   "absent"
+  ],
+  "host_jsonl_bytes_after": [
+   "9173111"
+  ],
+  "leftover_proc": [
+   "0"
+  ],
+  "leftover_llama": [
+   "0"
+  ],
+  "mem_end": [
+   "2737MB"
+  ]
+ },
+ "negative_controls": {
+  "NC1_inject_agent_call_on_hit_turn": {
+   "P1": "FAIL",
+   "P2": "FAIL",
+   "expected": "P1=FAIL,P2=FAIL",
+   "has_teeth": true
+  },
+  "NC2_fake_s0_hit": {
+   "P4": "FAIL",
+   "expected": "P4=FAIL",
+   "has_teeth": true
+  },
+  "NC3_strip_degrade": {
+   "P3a": "FAIL",
+   "P3b": "FAIL",
+   "expected": "P3a=FAIL,P3b=FAIL",
+   "has_teeth": true
+  }
+ },
+ "verdict": {
+  "P1_shape_face_exercised": "PASS",
+  "P1_detail": {
+   "turn2": {
+    "route": "local_skip",
+    "shape": "1",
+    "face": "repeat",
+    "basis": "mechanical:repeat→local",
+    "hits": 0,
+    "learned": 0,
+    "shapes": 1,
+    "msg_sha16": "147757f75f39bd44"
+   },
+   "turn2_agent_calls": 0,
+   "turn2_host_calls": 0,
+   "turn2_skip_reply": [
+    "repeat_verbatim"
+   ]
+  },
+  "P2_agent_plane_not_increased": "PASS",
+  "P2_detail": {
+   "turn1_agent": 1,
+   "turn2_agent": 0,
+   "turn2_agent_completion": 0,
+   "host_plane_excluded": 0
+  },
+  "P3a_degrade_reachable": "PASS",
+  "P3b_shape_reported": "PASS",
+  "P3b_detail": {
+   "D_nlp_shape": {
+    "route": "remote",
+    "shape": "1",
+    "face": "repeat",
+    "basis": "gate:repeat_no_replayable_prev→remote",
+    "hits": 0,
+    "learned": 1,
+    "shapes": 1,
+    "msg_sha16": "147757f75f39bd44"
+   },
+   "D_degrade": [
+    {
+     "reason": "no_replayable_prev",
+     "msg_sha16": "147757f75f39bd44"
+    }
+   ]
+  },
+  "P4_library_is_only_variable": "PASS",
+  "P4_out_of_family": "PASS",
+  "cross_check_fail_total": 0,
+  "hit_turns": [
+   2
+  ],
+  "rc_plan": {
+   "2": null,
+   "1": null,
+   "0": "全达标"
+  }
+ },
+ "rc": 0
+}

@@ -1,0 +1,69 @@
+{
+  "round": "R583",
+  "kind": "RF0002 §3 验收面 P2/P3 判据收窄与重注册 (真机臂 + 归档数据分层量化; 零产品源码改动)",
+  "intent": "把 R581 的两处 FAIL (P2 命中面不增远端调用 / P3 合取) 收窄到「可判面」: 先量 (调用面分层) 再重注册 (P3a/P3b 拆分), 并以真机臂证明形状面命中驱动 local_skip。",
+  "written_before_execution": true,
+  "nodes": [
+    {
+      "id": "N0",
+      "what": "闸与清场: 起手闸 (内存/磁盘/key/对侧占用) + /tmp 陈旧产物回收",
+      "deps": [],
+      "parallel_ok": true,
+      "evidence": ["tools/roundcheck preflight --round R583 (rc=0, 8/8 PASS)", "df -h / (3.0GB → 15GB free)"]
+    },
+    {
+      "id": "N1",
+      "what": "主线提醒 + 候选台账 (只读 docs/reports/iteration-master-plan.md §7 + docs/improvements.md + docs/plans/)",
+      "deps": [],
+      "parallel_ok": true,
+      "readonly": true,
+      "evidence": ["报告结论行"]
+    },
+    {
+      "id": "N2",
+      "what": "量: R581 归档 telemetry 逐调用分层 (agent_session 非空 = agent 面 / 空 = 宿主面) + 天花板算式 + completion 上升归因",
+      "deps": ["N0"],
+      "parallel_ok": true,
+      "readonly": true,
+      "evidence": ["eval/rover/r583/plane-split-r583.json"]
+    },
+    {
+      "id": "N3",
+      "what": "重注册: P2 分层 (agent 面判据) + P3 拆 P3a/P3b + 负控声明; R581 判据不改、FAIL 保持",
+      "deps": ["N2"],
+      "parallel_ok": false,
+      "evidence": ["eval/rover/r583/prereg-r583.json"]
+    },
+    {
+      "id": "N4",
+      "what": "真机臂 (单变量: 形状库有无): S0 负控(无库) / S1 治疗(预置库, sha256 同源 R581 产物) / D 降级路径 / N 族外",
+      "deps": ["N3", "N0"],
+      "parallel_ok": false,
+      "evidence": ["eval/rover/r583/arm-{S0,S1,D,N}.log", "readings-r583.json", "verdict-r583.json"]
+    },
+    {
+      "id": "N5",
+      "what": "作业环境自备 key 面: 常驻作业 prompt 补 key 自备步骤 (备份+指纹+回读断言); 不写本仓",
+      "deps": [],
+      "parallel_ok": true,
+      "evidence": ["eval/rover/r583/cron-prompt-keyface-r583.json"]
+    },
+    {
+      "id": "N6",
+      "what": "收口: kpi.jsonl 台账行 + 轮志 + 手册块 + 形式校验 (VerificationForm|SkillGeneralization|DevPlanDocRef) + 本地 commit",
+      "deps": ["N2", "N3", "N4", "N5"],
+      "parallel_ok": false,
+      "evidence": ["eval/capability/kpi.jsonl", "docs/evidence/RF0002/R583-*.md"]
+    }
+  ],
+  "restart_policy": {
+    "S1 无 local_skip": "只重启 N4 的 S1 边 (单边重跑, 命名空间 r583s1b); 禁重跑全轮, 禁改阈值",
+    "preflight 红": "重启 N0 (闸面), 不进入 N4",
+    "N2 与 N5 无共享写面": "可同一轮并行 (N5 写仓外, N2 只读)"
+  },
+  "not_claimed": [
+    "零产品源码改动 ⇒ 本轮不宣称任何质量/成本降幅",
+    "单轮 n=1 每臂 ⇒ 只作机制存在性证据, 不作分布结论",
+    "codex 外部真值同题对照: 本轮未测 (非质量对照窗)"
+  ]
+}
