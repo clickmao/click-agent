@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R579-tick",
+ "updated_round": "R580",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -6970,6 +6970,25 @@
     "instrument_sha12": "4a35599a97f7",
     "binding": "audit-pin",
     "audited_by_round": "R579"
+   },
+   "negative_control": "① 前态锚有牙（承重）: 同一契约在前态提交字节上判红（has_point=false, sha16 699008bc63e83379）而现盘判绿 ⇒ 判据非恒真门；② 器具自捕留档: 键集扫描窗口含点位名字面量 ⇒ 首跑 extra=['nlp_shape'] rc=1 假红，定因=器具读法错（非被测不符），修器具**不放宽判据**，首跑读数留档不翻案。"
+  },
+  {
+   "id": "r580.supplement-injection-timing",
+   "level": "L2",
+   "owner_round": "R580",
+   "capability": "长任务「用户补充在合理时机插入」落地: 远端返回后收割 / 下一次调用前插入**可变区**(契约面 user 轮 <supplement> 块 = R1Pipeline; 长任务面节点提示尾部【用户补充】块 = OrchestrateCommand), 恒前缀字节不变 ⇒ 前缀缓存不破。台账 SupplementInbox(去重/阈值拒收/一次性消费记账) + SupplementBlock(尾块渲染, 无补充⇒空串)。读数: 真机 A/B 同计划单变量(投递文件有无) prompt 构建 tokens 7011 vs 6954 (+57 = 补充块增量) ⇒ 补充确进发往模型的 prompt; 落点台账 csv `n1 | injected=1`; 远端调用 1:1 不增。闸: build 0 error; 全量 1920/1920; 形式 14/14; API 基线 +17/−2(仅本轮成员); r1gen 同源闸 DRIFT=0, 前缀 chars=15291 sha=f1280f71…d4a 未变。**诚实边界: 真机 A/B 各 n=1 单窗未跑 reps≥3; llm 打分实现未接(接口已留 IRerankScorer); 同一条分发多节点未做; 契约面无真机端到端。**",
+   "evidence_cmd": "agenthost --orchestrate eval/rover/r580/plan.txt --node-steps 1 --max-nodes 1 (A=有投递文件 / B=无) && python3 tools/r1gen/gen_csharp.py --check",
+   "evidence_path": "docs/evidence/RF0001/R580-supplement-injection.md",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "b2da9e8fd123",
+    "instrument": "tools/r1gen/gen_csharp.py",
+    "instrument_sha12": "4272751e1861",
+    "binding": "audit-pin",
+    "audited_by_round": "R580"
    },
    "negative_control": "① 前态锚有牙（承重）: 同一契约在前态提交字节上判红（has_point=false, sha16 699008bc63e83379）而现盘判绿 ⇒ 判据非恒真门；② 器具自捕留档: 键集扫描窗口含点位名字面量 ⇒ 首跑 extra=['nlp_shape'] rc=1 假红，定因=器具读法错（非被测不符），修器具**不放宽判据**，首跑读数留档不翻案。"
   }

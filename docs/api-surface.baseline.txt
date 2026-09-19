@@ -3377,6 +3377,8 @@ agent|F:agent.r1.PublicExampleProbe.MaxFailureLines:System.Int32
 agent|F:agent.r1.R1Pipeline.SessionTag:System.String
 agent|F:agent.r1.R1RoleMount.MaxChars:System.Int32
 agent|F:agent.r1.R1Transcript.Schema:System.String
+agent|F:agent.r1.SupplementBlock.Footer:System.String
+agent|F:agent.r1.SupplementBlock.Header:System.String
 agent|F:agent.registry.ArtifactRepairPolicy.EnableEnvName:System.String
 agent|F:agent.registry.ArtifactRepairPolicy.MaxAttempts:System.Int32
 agent|F:agent.registry.ArtifactRepairPolicy.MaxCodeChars:System.Int32
@@ -3658,7 +3660,7 @@ agent|M:agent.contract.StructuredContract.ExtractLeadingValue(System.String):Sys
 agent|M:agent.contract.StructuredContract.TryParse(System.String,System.Collections.Generic.IReadOnlyList<System.String>&):agent.contract.Semantics
 agent|M:agent.contract.StructuredContract.TryParseOrNull(System.String):System.Text.Json.JsonDocument
 agent|M:agent.contract.StructuredContract.Validate(System.String):System.Collections.Generic.IReadOnlyList<System.String>
-agent|M:agent.contract.StructuredPrompt.BuildUserMessage(System.String,System.String):System.String
+agent|M:agent.contract.StructuredPrompt.BuildUserMessage(System.String,System.String,System.Collections.Generic.IReadOnlyList<System.String>):System.String
 agent|M:agent.contract.StructuredPrompt.ExecRepairMessage(System.Collections.Generic.IReadOnlyList<System.String>):System.String
 agent|M:agent.contract.StructuredPrompt.PrefixSha256():System.String
 agent|M:agent.contract.StructuredPrompt.PublicProbePassedNote(System.Int32):System.String
@@ -3939,7 +3941,7 @@ agent|M:agent.r1.R1Json.Num(System.Int64):System.String
 agent|M:agent.r1.R1Json.NumOrNull(System.Nullable<System.Int32>):System.String
 agent|M:agent.r1.R1Json.Quote(System.String):System.String
 agent|M:agent.r1.R1Options.FromEnvironment(System.String):agent.r1.R1Options
-agent|M:agent.r1.R1Pipeline.RunAsync(agent.ILLMCaller,System.String,agent.r1.R1Options,System.Threading.CancellationToken):System.Threading.Tasks.Task<agent.r1.R1RunResult>
+agent|M:agent.r1.R1Pipeline.RunAsync(agent.ILLMCaller,System.String,agent.r1.R1Options,System.Threading.CancellationToken,agent.r1.SupplementInbox):System.Threading.Tasks.Task<agent.r1.R1RunResult>
 agent|M:agent.r1.R1RoleMount.AppendTo(System.String,System.String):System.String
 agent|M:agent.r1.R1RoleMount.ReadNote(System.Int32):System.String
 agent|M:agent.r1.R1Text.Tail(System.String,System.Int32):System.String
@@ -3950,6 +3952,13 @@ agent|M:agent.r1.R1Transcript.Write(agent.r1.R1RunResult,agent.r1.R1Options,Syst
 agent|M:agent.r1.StepOutcome.None(System.String):agent.r1.StepOutcome
 agent|M:agent.r1.StepOutcome.Run(System.String,System.Int32,System.String,System.String,System.Int32):agent.r1.StepOutcome
 agent|M:agent.r1.StepOutcome.Write(System.String,System.String,System.String,System.Int64):agent.r1.StepOutcome
+agent|M:agent.r1.SupplementBlock.Render(System.Collections.Generic.IReadOnlyList<System.String>):System.String
+agent|M:agent.r1.SupplementInbox.DropFileSource(System.String):System.Func<System.Collections.Generic.IReadOnlyList<System.String>>
+agent|M:agent.r1.SupplementInbox.Enqueue(System.String):System.Boolean
+agent|M:agent.r1.SupplementInbox.Harvest():System.Int32
+agent|M:agent.r1.SupplementInbox.MarkConsumed(System.Collections.Generic.IReadOnlyList<System.String>):System.Int32
+agent|M:agent.r1.SupplementInbox.SelectFor(System.String,System.Int32):System.Collections.Generic.IReadOnlyList<System.String>
+agent|M:agent.r1.SupplementInbox.ThresholdFromEnvironment(System.String,System.Double):System.Double
 agent|M:agent.registry.AgentProfile.RecordTaskOutcome(System.String,System.Boolean,System.String):System.Void
 agent|M:agent.registry.AgentProfile.RenderForPrompt():System.String
 agent|M:agent.registry.AgentProfile.SuccessRateFor(System.String):System.Nullable<System.Double>
@@ -5017,6 +5026,10 @@ agent|P:agent.r1.StepOutcome.Sha256:System.String
 agent|P:agent.r1.StepOutcome.StderrTail:System.String
 agent|P:agent.r1.StepOutcome.StdoutTail:System.String
 agent|P:agent.r1.StepOutcome.Tool:System.String
+agent|P:agent.r1.SupplementInbox.Consumed:System.Collections.Generic.IReadOnlyList<System.String>
+agent|P:agent.r1.SupplementInbox.ConsumedCount:System.Int32
+agent|P:agent.r1.SupplementInbox.Pending:System.Collections.Generic.IReadOnlyList<System.String>
+agent|P:agent.r1.SupplementInbox.PendingCount:System.Int32
 agent|P:agent.registry.AgentIdentity.CreatedAt:System.DateTime
 agent|P:agent.registry.AgentIdentity.Depth:System.Int32
 agent|P:agent.registry.AgentIdentity.Name:System.String
@@ -5772,6 +5785,8 @@ agent|T:agent.r1.R1RunResult
 agent|T:agent.r1.R1Text
 agent|T:agent.r1.R1Transcript
 agent|T:agent.r1.StepOutcome
+agent|T:agent.r1.SupplementBlock
+agent|T:agent.r1.SupplementInbox
 agent|T:agent.registry.AgentIdentity
 agent|T:agent.registry.AgentProfile
 agent|T:agent.registry.AgentProfileFile

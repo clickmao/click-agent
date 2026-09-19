@@ -181,10 +181,19 @@ public static class StructuredPrompt
         return sb.ToString();
     }
 
-    /// <summary>user 轮 = 尾部易变块（任务正文 + 可选修复指令）。前缀不动。</summary>
-    public static string BuildUserMessage(string taskText, string? repairNote = null)
+    /// <summary>user 轮 = 尾部易变块（任务正文 + 可选补充块 + 可选修复指令）。前缀不动。</summary>
+    public static string BuildUserMessage(string taskText, string? repairNote = null, System.Collections.Generic.IReadOnlyList<string>? supplements = null)
     {
         var user = "<task>\\n" + (taskText ?? string.Empty).Trim() + "\\n</task>";
+        if (supplements != null)
+        {
+            for (var i = 0; i < supplements.Count; i++)
+            {
+                var s = supplements[i];
+                if (string.IsNullOrWhiteSpace(s)) continue;
+                user += "\\n\\n<supplement>\\n" + s.Trim() + "\\n</supplement>";
+            }
+        }
         if (!string.IsNullOrEmpty(repairNote))
         {
             user += "\\n\\n<repair>\\n" + repairNote + "\\n</repair>";
@@ -1091,6 +1100,40 @@ public sealed class StructuredContractTests
         var withBrace = Kadane.Replace("print(1)", "print('{')", StringComparison.Ordinal);
         var sem = Parse(withBrace + " 尾随");
         Assert.Equal("print('{')", sem.Plan[0].Content);
+    }
+
+    [Fact]
+    public void Supplements_Land_After_Task_Before_Repair()
+    {
+        // 补充是**尾部可变区**块: 顺序 = <task> → <supplement>… → <repair> (确定性)。
+        var msg = StructuredPrompt.BuildUserMessage("做 A", "修 B", new[] { "补充 c", "补充 d" });
+        var iTask = msg.IndexOf("</task>", StringComparison.Ordinal);
+        var iSup = msg.IndexOf("<supplement>", StringComparison.Ordinal);
+        var iRep = msg.IndexOf("<repair>", StringComparison.Ordinal);
+        Assert.True(iTask >= 0, "缺 </task>");
+        Assert.True(iSup > iTask, "补充块必须在任务正文之后");
+        Assert.True(iRep > iSup, "补充块必须在修复块之前");
+        Assert.Contains("补充 c", msg, StringComparison.Ordinal);
+        Assert.Contains("补充 d", msg, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void No_Supplements_Keeps_Legacy_User_Message()
+    {
+        // 零回归: 不传补充 (null / 空集) ⇒ user 轮逐位等于旧行为。
+        Assert.Equal(StructuredPrompt.BuildUserMessage("做 A", "修 B"),
+            StructuredPrompt.BuildUserMessage("做 A", "修 B", null));
+        Assert.Equal(StructuredPrompt.BuildUserMessage("做 A", null),
+            StructuredPrompt.BuildUserMessage("做 A", null, new string[0]));
+    }
+
+    [Fact]
+    public void Supplements_Do_Not_Touch_Pinned_Prefix()
+    {
+        // 缓存安全: 补充只进 user 轮 ⇒ 恒定前缀字节不变 (前缀命中率 ≥97% 不得破)。
+        _ = StructuredPrompt.BuildUserMessage("做 A", null, new[] { "补充 c" });
+        Assert.Equal(StructuredPrompt.PrefixChars, StructuredPrompt.Prefix.Length);
+        Assert.Equal(StructuredPrompt.PrefixSha256Pinned, StructuredPrompt.PrefixSha256());
     }
 
     private static string Mutate(string text)

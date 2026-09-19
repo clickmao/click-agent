@@ -321,10 +321,19 @@ N10 兄弟步骤互相 depends_on（a 依赖 b 且 b 依赖 a）⇒ 错在 DAG�
         return sb.ToString();
     }
 
-    /// <summary>user 轮 = 尾部易变块（任务正文 + 可选修复指令）。前缀不动。</summary>
-    public static string BuildUserMessage(string taskText, string? repairNote = null)
+    /// <summary>user 轮 = 尾部易变块（任务正文 + 可选补充块 + 可选修复指令）。前缀不动。</summary>
+    public static string BuildUserMessage(string taskText, string? repairNote = null, System.Collections.Generic.IReadOnlyList<string>? supplements = null)
     {
         var user = "<task>\n" + (taskText ?? string.Empty).Trim() + "\n</task>";
+        if (supplements != null)
+        {
+            for (var i = 0; i < supplements.Count; i++)
+            {
+                var s = supplements[i];
+                if (string.IsNullOrWhiteSpace(s)) continue;
+                user += "\n\n<supplement>\n" + s.Trim() + "\n</supplement>";
+            }
+        }
         if (!string.IsNullOrEmpty(repairNote))
         {
             user += "\n\n<repair>\n" + repairNote + "\n</repair>";

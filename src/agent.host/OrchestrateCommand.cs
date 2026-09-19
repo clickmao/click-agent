@@ -37,6 +37,7 @@ public static class OrchestrateCommand
         var reportPath = "";
         var upstreamChars = UpstreamCharsDefault;
         var scopePath = "";
+        var supplementsPath = "";   // R580: 用户补充投递文件 (一行一条; 运行中追加即投递)
         var nodeEscalations = 1;   // R518: 零产物 ⇒ 升预算重试次数上限 (默认开 1; 0 = 关)
 
         for (var i = 0; i < args.Length; i++)
@@ -75,6 +76,10 @@ public static class OrchestrateCommand
                     if (i + 1 >= args.Length || !int.TryParse(args[++i], NumberStyles.Integer, CultureInfo.InvariantCulture, out upstreamChars))
                     { errp.WriteLine("orchestrate: --upstream-chars 需整数"); return 2; }
                     break;
+                case "--supplements":
+                    if (i + 1 >= args.Length) { errp.WriteLine("orchestrate: --supplements 缺参"); return 2; }
+                    supplementsPath = args[++i];
+                    break;
                 default:
                     if (planPath.Length == 0 && !args[i].StartsWith("--", StringComparison.Ordinal)) planPath = args[i];
                     else { errp.WriteLine($"orchestrate: 未知参数 {args[i]}"); return 2; }
@@ -82,7 +87,7 @@ public static class OrchestrateCommand
             }
         }
 
-        if (planPath.Length == 0) { errp.WriteLine("用法: --orchestrate <计划文件> [--scope <范围文件>] [--workspace DIR] [--node-steps N] [--max-nodes N]"); return 2; }
+        if (planPath.Length == 0) { errp.WriteLine("用法: --orchestrate <计划文件> [--scope <范围文件>] [--workspace DIR] [--node-steps N] [--max-nodes N] [--supplements <投递文件>]"); return 2; }
         if (nodeSteps < 1 || nodeSteps > MaxNodeSteps) { errp.WriteLine($"orchestrate: --node-steps 越界 1..{MaxNodeSteps}"); return 2; }
 
         var (plan, problems) = TaskPlanFile.Load(planPath);
@@ -126,6 +131,13 @@ public static class OrchestrateCommand
         if (!Directory.Exists(workspace)) { errp.WriteLine($"orchestrate: 工作区不存在 {workspace}"); return 2; }
         workspace = Path.GetFullPath(workspace);
         var nodeDir = Path.Combine(workspace, ".orchestrator");
+        if (supplementsPath.Length == 0) supplementsPath = planPath + ".supplements.txt";
+        var suppInbox = new global::agent.r1.SupplementInbox(
+            new global::agent.rag.LexicalRerankScorer(0.0),
+            global::agent.r1.SupplementInbox.ThresholdFromEnvironment("AGENTFRAMEWORK_ORCH_SUPPLEMENT_MIN_SCORE", 0.05),
+            global::agent.r1.SupplementInbox.DropFileSource(supplementsPath));
+        var supplementPlacements = new List<string>();
+        outp.WriteLine("[orchestrate] 用户补充投递文件: " + supplementsPath + " (运行中追加一行即投递; 在下一个节点边界插入, 尾部可变区不破前缀缓存)");
         Directory.CreateDirectory(nodeDir);
         if (reportPath.Length == 0) reportPath = Path.Combine(nodeDir, "orchestrate-report.json");
 
@@ -175,7 +187,19 @@ public static class OrchestrateCommand
         Task<NodeExecutionResult> Remote(PlanNode node, IReadOnlyDictionary<string, string> upstream, int steps, CancellationToken ct)
         {
             Environment.SetEnvironmentVariable("AGENTFRAMEWORK_ACTION_MAX_STEPS", steps.ToString(CultureInfo.InvariantCulture));
-            var prompt = BuildNodePrompt(plan, node, upstream, upstreamChars, workspace, steps);
+            // 时机锚: 上一个节点返回之后(此刻)收割投递的补充, 按本节点文本打分后插到提示**尾部**(可变区)。
+            suppInbox.Harvest();
+            var injectedSupplements = suppInbox.SelectFor(node.Text);
+            if (injectedSupplements.Count > 0)
+            {
+                suppInbox.MarkConsumed(injectedSupplements);
+                lock (supplementPlacements)
+                {
+                    supplementPlacements.Add(node.Id + " | injected=" + injectedSupplements.Count.ToString(CultureInfo.InvariantCulture));
+                }
+            }
+
+            var prompt = BuildNodePrompt(plan, node, upstream, upstreamChars, workspace, steps, injectedSupplements);
             var msg = new Message
             {
                 Role = MessageRole.User,
@@ -221,6 +245,11 @@ public static class OrchestrateCommand
             outp.WriteLine($"范围机检: {orchestrator.ScopeViolations.Count} 条违规 (节点已判 Failed)");
             foreach (var v in orchestrator.ScopeViolations) outp.WriteLine($"  · {v.NodeId} [{v.Kind}] {(v.Path.Length == 0 ? "(零产物)" : v.Path)}");
         }
+        if (supplementPlacements.Count > 0)
+        {
+            File.WriteAllLines(Path.Combine(nodeDir, "orchestrate-supplements.csv"), supplementPlacements, new UTF8Encoding(false));
+        }
+
 
         WriteReport(reportPath, plan, orchestrator, run, scopes, scopePath, workspace, nodeSteps);
         outp.WriteLine($"报告: {reportPath}");
@@ -280,7 +309,8 @@ public static class OrchestrateCommand
         IReadOnlyDictionary<string, string> upstream,
         int upstreamChars,
         string workspace,
-        int steps)
+        int steps,
+        IReadOnlyList<string> supplements)
     {
         var sb = new StringBuilder(1024);
         sb.Append("你是长任务编排器驱动的一次**节点执行体**。整条长任务被切成 ")
@@ -307,6 +337,8 @@ public static class OrchestrateCommand
           .Append("4) 结束前用工具核对文件确实存在。\n")
           .Append("5) 工具 path 一律写**工作区相对**路径 (如 games/life.py); **禁止**把工作区绝对路径裁成仓根相对路径")
           .Append(" —— 那会在工作区内生成影子副本 (被边界闸拒绝), 且你读回的会是另一份文件。\n");
+        sb.Append(global::agent.r1.SupplementBlock.Render(supplements));
+
         return sb.ToString();
     }
 

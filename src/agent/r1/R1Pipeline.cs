@@ -26,7 +26,7 @@ public static class R1Pipeline
 {
     public const string SessionTag = "r1-oneshot";
 
-    public static async Task<R1RunResult> RunAsync(ILLMCaller caller, string taskText, R1Options opt, CancellationToken ct)
+    public static async Task<R1RunResult> RunAsync(ILLMCaller caller, string taskText, R1Options opt, CancellationToken ct, SupplementInbox? supplements = null)
     {
         var prefixChars = StructuredPrompt.Prefix.Length;
         var prefixSha = StructuredPrompt.PrefixSha256();
@@ -74,11 +74,17 @@ public static class R1Pipeline
 
             while (true)
             {
+                // 时机锚①: 本步骤开跑前, 从台账取该插的补充 (低于阈值的不插, 继续等更匹配的步骤)。
+                var injectedSupplements = supplements is null ? (IReadOnlyList<string>)Array.Empty<string>() : supplements.SelectFor(taskText);
+                if (injectedSupplements.Count > 0 && supplements is not null)
+                {
+                    supplements.MarkConsumed(injectedSupplements);
+                }
                 var prompt = new Prompt
                 {
                     SystemPrompt = StructuredPrompt.Prefix,
                     UserMessage = R1RoleMount.AppendTo(
-                        StructuredPrompt.BuildUserMessage(taskText ?? string.Empty, repairNote), opt.RoleNote),
+                        StructuredPrompt.BuildUserMessage(taskText ?? string.Empty, repairNote, injectedSupplements), opt.RoleNote),
                     SessionId = SessionTag,
                     TurnIndex = 1,
                     Intent = "code_task",
@@ -99,6 +105,9 @@ public static class R1Pipeline
                     cacheMiss = resp.CacheMissTokens;
                 }
                 raw = resp.Content ?? string.Empty;
+
+                // 时机锚②: 远端返回后收割用户在运行中补充进来的信息 (随下一次调用进入 user 轮可变区)。
+                supplements?.Harvest();
 
                 if (!resp.Success)
                 {
