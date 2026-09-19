@@ -1652,6 +1652,8 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                                 ("msg_sha16", agent.modelqueue.LocalInputFingerprint.Sha16(message.Content)),
                                 ("msg_len", message.Content.Length.ToString()),
                                 ("reason", "no_replayable_prev"));
+                            // RF0002 §2.2 评分回执: 形状命中却仍需远端 ⇒ 该形状无用 ⇒ 剔除 (用户令「没用就扔掉」)。
+                            agent.nlp.NlpGate.ReportOutcome(message.Content, agent.nlp.NlpGate.FaceRepeat, useful: false);
                             gateOutcome = agent.modelqueue.TurnGateOutcome.Decide(
                                 agent.modelqueue.TurnGateVerdict.Pass, "gate:repeat_no_replayable_prev");
                         }
@@ -1662,6 +1664,8 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                                 ("msg_sha16", agent.modelqueue.LocalInputFingerprint.Sha16(message.Content)),
                                 ("msg_len", message.Content.Length.ToString()),
                                 ("reason", "no_replayable_prev"));
+                            // RF0002 §2.2 评分回执: 形状命中却仍需远端 ⇒ 该形状无用 ⇒ 剔除。
+                            agent.nlp.NlpGate.ReportOutcome(message.Content, agent.nlp.NlpGate.FaceParaphrase, useful: false);
                             gateOutcome = agent.modelqueue.TurnGateOutcome.Decide(
                                 agent.modelqueue.TurnGateVerdict.Pass, "gate:paraphrase_no_replayable_prev");
                         }
@@ -1679,6 +1683,8 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                                 ("msg_len", message.Content.Length.ToString()),
                                 ("reason", _modelRouter.LocalParaphrase.LastRejectReason ?? "engine_degrade"),
                                 ("src_len", repeatPrevReply.Length.ToString()));
+                            // RF0002 §2.2 评分回执: 形状命中却仍需远端 (本地改写被守卫拒) ⇒ 该形状无用 ⇒ 剔除。
+                            agent.nlp.NlpGate.ReportOutcome(message.Content, agent.nlp.NlpGate.FaceParaphrase, useful: false);
                             gateOutcome = agent.modelqueue.TurnGateOutcome.Decide(
                                 agent.modelqueue.TurnGateVerdict.Pass, "gate:paraphrase_guard_rejected");
                             repeatPrevReply = null;
@@ -1792,6 +1798,16 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     : repeatPrevReply is not null ? agent.context.ContinuationBrief.SettleRepeatVerbatim
                     : (repeatTurnFlag ? "repeat_no_prev" : "template");
                 _localSettleKind = replyKind;
+                // RF0002 §2.2 评分回执 (用户令「下次使用时有用就留, 没用就扔掉」): 形状命中且**本地消化真成立**
+                // ⇒ 该形状有用 ⇒ 保留并加分 (上限 +4); 无用分支在各降级点剔除。
+                if (repeatTurnFlag || paraphraseTurnFlag)
+                {
+                    var shapeUseful = replyKind == agent.context.ContinuationBrief.SettleRepeatVerbatim
+                                      || replyKind == agent.context.ContinuationBrief.SettleLocalParaphrase;
+                    agent.nlp.NlpGate.ReportOutcome(message.Content,
+                        repeatTurnFlag ? agent.nlp.NlpGate.FaceRepeat : agent.nlp.NlpGate.FaceParaphrase,
+                        useful: shapeUseful);
+                }
                 agent.config.AgentTelemetry.Emit("local_gate_skip_reply", "IndustrialAgentV2",
                     ("kind", replyKind),
                     ("chars", (long)localReply.Length),

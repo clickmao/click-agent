@@ -85,10 +85,13 @@ public static class LocalParaphraseChannel
     /// <inheritdoc cref="IsPureParaphrase(string?)"/>
     /// <param name="patches">机检/差分器具注入的补丁集合 (空 ⇒ 读回补库)。</param>
     public static bool IsPureParaphrase(string? userMessage, IReadOnlyCollection<string>? patches)
-        => IsParaphraseShape(userMessage)
-           && !TurnGateJudge.IsPureRepeat((userMessage ?? string.Empty).Trim(), patches)   // ⑤ 族互斥
-           && NlpGate.IsPatched((userMessage ?? string.Empty).Trim(),
-                                NlpGate.FaceParaphrase, patches);                          // ④ 回补库命中
+    {
+        var m = (userMessage ?? string.Empty).Trim();
+        return IsParaphraseShape(userMessage)
+               && !TurnGateJudge.IsPureRepeat(m, patches)                                   // ⑤ 族互斥
+               && (NlpGate.IsPatched(m, NlpGate.FaceParaphrase, patches)                    // ④ 逐字补丁 (历史库, 只读)
+                   || NlpGate.IsLearned(m, NlpGate.FaceParaphrase, patches == null));       // ④' 形状通道 (实库模式)
+    }
 
     /// <summary>
     /// 结构面 (与回补无关): 长度 ≤32 ∧ 去标点后 ≤16 字且**每字符都属改写白名单** ∧ 无问号。

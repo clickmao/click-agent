@@ -10,6 +10,19 @@
 > 数据时效 (测试数/批号/评测口径)、版本引用一致性、死链检查; **禁止只改局部不做整体校验**。
 > 空间位置相邻但语义不同段的错挂 (如旧版本标题下挂新数据) 视同违例。
 
+## R576 · 2026-09-19 · 状态: **完成（定向 158/158 · 全量 1910/1910 · 形式校验 14/14 绿 · 生产库空 ⇒ 真机零命中未测到）** · 主题: **RF0002 §2 形状通道接线 —— 远端回执学形状 → 生产判定面消费 → 有用留/无用扔**
+
+- 用户令（逐字）: 「不补回，加入远端返回后可以优化 nlp 能力的机制，直接开始真正的主线」/「下次使用时有用就留、没用就扔掉」；载体 `docs/plans/RF0002-nlp-self-improvement.md`。
+- 起手核验（**先判写了没有，再判生效没有**）: `LearnFromRemote`/`ReportOutcome` 全仓 **零生产消费者** ⇒ §1 是孤岛（纯函数测绿 ≠ 接线通）；`LearnOnSuccess` 仍走逐字 `Observe` ⇒ 与「不补回」相反。
+- 修改点（A–F）: `TurnGateJudge.LearnOnSuccess` → `LearnFromRemote(..., localizable: true)`（写入通道）；`TurnGateJudge.IsPureRepeat` / `LocalParaphraseChannel.IsPureParaphrase` = 结构面 ∧ (`IsPatched` ∨ `IsLearned`)（消费通道）；`NlpGate.IsLearned(text, face, libraryMode)` 新重载 ⇒ `patches != null` 的注入路径**逐位不变**（R575 11 条双侧断言不被污染）；`IndustrialAgentV2` 4 处评分回执（本地消化 → useful:true；`*_no_replayable_prev` / `paraphrase_guard_rejected` → useful:false）。
+- 接线自证: 正控 `LearnOnSuccess("再讲一遍。",true)` ⇒ `IsPureRepeat("再说一遍。")` = true（**同面不同措辞**被**生产判定面**吸收）；负控三项（不学 / 注入补丁模式 / 跨面）+ 远端失败不学。
+- 真机读数: 定向 `NlpGateLearnTests|LocalTurnGateTests|R498LocalParaphrase|R497Fingerprint|GateRulesPortDiff` ⇒ **Failed 0 / Passed 158**；形式校验（`VerificationForm|SkillGeneralization|DevPlanDocRef`）⇒ **Failed 0 / Passed 14**，rc=0。
+- 真机读数·全量: `dotnet test src/agent.tests/agentframework.tests.csproj` 首跑 **Failed 2 / Passed 1908**；2 例红 = `PublicApiSurfaceTests` **全部两条** ⇒ 根因 = **新增公共成员未重生 API 基线**（设计行为）⇒ `AGENTFRAMEWORK_API_BASELINE_WRITE=1` 重生 `docs/api-surface.baseline.txt`：**+12 / −0**（逐行核对 12 行全为 `agent.nlp` 新增面，无重排）⇒ 复跑 **Failed 0 / Passed 1910**，rc=0。
+- 诚实边界: 生产库 `data/nlp/` **不存在** ⇒ 真机链路当前**零命中（未测到，不得读成无效）**；本轮**零远端调用 ⇒ 不宣称任何 token/调用降幅**；误命中率与淘汰曲线均未在真实分布观测。
+- 自捕: 「有实现 + 有测试 + 零生产消费者」若按「§1 已 5/5 绿」收口，会把孤岛记成机制生效。
+- 证据: `docs/evidence/RF0002/R576-shape-wiring.md` · 台账 `eval/capability/kpi.jsonl`（R576）· 计划 `docs/plans/RF0002-nlp-self-improvement.md` §2。
+- 【下轮候选 (R577)】形状通道**真机首验**（ShapeLearned/ShapeHits ≥1 事件）· 淘汰曲线观测 · R571-② 第二窗集 · R572-③ 起手闸并入会话工具子进程 · R572-①/④ 待放行。
+
 ## R575 · 2026-09-19 · 状态: **完成（33 红收口: 全量套件 1900/1900 绿; 起点 11 方法/33 例红）** · 主题: **回补机制接线（W1/W2/W3）—— 判定面「结构护栏 + `agent.nlp.NlpGate` 回补库」零词表收口 + 端口/语料重生成**
 
 - 承接: R573（foreground, 22/33 转换, 未提交产品改动）· R574-tick（read-only 复核: 工作区 33 例红 × 提交态 5 例红, `NlpGate` 已实现零消费者）。用户令（R573 引, 逐字）: 「33红全部要改为现有机制，否则你这么多天的努力全白费了」。

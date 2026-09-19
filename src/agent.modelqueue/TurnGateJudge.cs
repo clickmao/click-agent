@@ -92,9 +92,12 @@ public static class TurnGateJudge
     /// (空 ⇒ 读回补库); 无补丁 ⇒ 一律交远端 (安全方向不变)。
     /// </summary>
     public static bool IsPureRepeat(string? userMessage, IReadOnlyCollection<string>? patches)
-        => IsRepeatShape(userMessage)
-           && agent.nlp.NlpGate.IsPatched((userMessage ?? string.Empty).Trim(),
-                                          agent.nlp.NlpGate.FaceRepeat, patches);   // ① 回补库命中
+    {
+        var m = (userMessage ?? string.Empty).Trim();
+        return IsRepeatShape(userMessage)
+               && (agent.nlp.NlpGate.IsPatched(m, agent.nlp.NlpGate.FaceRepeat, patches)      // ① 逐字补丁 (历史库, 只读)
+                   || agent.nlp.NlpGate.IsLearned(m, agent.nlp.NlpGate.FaceRepeat, patches == null));  // ①' 形状通道 (实库模式)
+    }
 
     /// <summary>
     /// 结构面 (与回补无关): 长度 ≤24 ∧ 去标点后 ≤14 字且**每字符都属复述白名单** ∧ 无问号。
@@ -128,13 +131,15 @@ public static class TurnGateJudge
         if (!success) return;
         var m = (userMessage ?? string.Empty).Trim();
         if (m.Length == 0) return;
+        // RF0002 §2.1 (用户令 2026-09-19「不补回」): 写入通道由**逐字补丁**换成**形状** ——
+        // 学到的是能力 (面/长度带/字符集), 同面不同措辞的下一句也能本地命中; 逐字字符串不再写库。
         if (IsRepeatShape(m))
         {
-            agent.nlp.NlpGate.Observe(m, true, agent.nlp.NlpGate.FaceRepeat);
+            agent.nlp.NlpGate.LearnFromRemote(m, agent.nlp.NlpGate.FaceRepeat, localizable: true);
             return;
         }
         if (LocalParaphraseChannel.IsParaphraseShape(m))
-            agent.nlp.NlpGate.Observe(m, true, agent.nlp.NlpGate.FaceParaphrase);
+            agent.nlp.NlpGate.LearnFromRemote(m, agent.nlp.NlpGate.FaceParaphrase, localizable: true);
     }
 
     /// <summary>R465: 复述族白名单字符集 (复述标记 + 指代词的全部用字; 任何集合外字符 ⇒ 不是纯复述)。
