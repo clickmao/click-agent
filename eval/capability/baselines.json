@@ -1,0 +1,266 @@
+{
+ "entries": [
+  {
+   "check_cmd": "python3 -c \"import io,json;d=json.load(io.open('eval/rover/r605/checks-r605.json'));print(d['L2_prefix_invariance']['prefix_chars_values'])\"",
+   "face": "F_env",
+   "ground_rule": "跨轮禁相减；前缀是常量，只核对不变性",
+   "id": "F_env.prefix.chars",
+   "kind": "frozen_invariant",
+   "metric": "冻结恒前缀字符数",
+   "negative_control": "eval/rover/r603/checks-r603-negctl.json（负控：前缀被改写 ⇒ 该检查应判红）",
+   "source_path": "eval/rover/r605/checks-r605.json",
+   "source_sha12": "7daf4759f4fa",
+   "threshold": "前 15291 字符逐位不变（只许加厚，禁改写）∧ 缓存命中 ≥97%",
+   "threshold_source": "eval/rover/r605/checks-r605.json:L2_prefix_invariance",
+   "unit": "chars",
+   "value": 15291
+  },
+  {
+   "check_cmd": "python3 -c \"import io,json;d=json.load(io.open('eval/rover/r566/fingerprint-r566.json'));print(sorted({w['transcript']['prefix_sha256'] for w in d['per_window'].values()}))\"",
+   "face": "F_env",
+   "ground_rule": "任何「前缀加厚」改动后必须重取该 sha 并重钉",
+   "id": "F_env.prefix.sha256",
+   "kind": "frozen_invariant",
+   "metric": "冻结恒前缀 sha256",
+   "negative_control": "同上（改写前缀即应失配）",
+   "source_path": "eval/rover/r566/fingerprint-r566.json",
+   "source_sha12": "e6c070dd2326",
+   "threshold": "逐位相等（门 A1/A2/gate-disc 三处同值）",
+   "threshold_source": "eval/rover/r566/fingerprint-r566.json",
+   "unit": "hex",
+   "value": "f1280f71e6fc74c1f14f64adab5a54c6e06083acb18bbf51eb7fdbed30cc4d4a"
+  },
+  {
+   "check_cmd": "python3 -c \"import io,json;d=json.load(io.open('eval/rover/r606/gate-margin-r606.json'));print(d['prev_swing_effective'],d['ceiling_min_of_3'],d['margin'])\"",
+   "face": "F_env",
+   "ground_rule": "每轮起臂前重采样；禁挪阈值；不足先清场再采",
+   "id": "F_env.gate.prev_swing_mb",
+   "kind": "env_gate",
+   "metric": "起手闸余量源（前窗在飞窗 swing 有效值）",
+   "negative_control": "同窗跑 dotnet test/publish 会把它抬到千 MB 级（r605=1,091 MB）⇒ 该读数即污染证据",
+   "source_path": "eval/rover/r606/gate-margin-r606.json",
+   "source_sha12": "994fd5bc45ed",
+   "threshold": "MARGIN=clamp(prev_swing, floor=60, cap=CEIL-GATE-floor)；同窗预采极差 ≤50 MB；不足即 fail-closed",
+   "threshold_source": "eval/rover/r606/gate-margin-r606.json:clause",
+   "unit": "MB",
+   "value": 285
+  },
+  {
+   "check_cmd": "python3 -c \"import io,json;d=json.load(io.open('eval/rover/r606/gate-margin-r606.json'));print(d['ceiling_min_of_3'],d['req'],d['margin'])\"",
+   "face": "F_env",
+   "ground_rule": "MemTotal 3,659 MB 下的实测值；换机/换窗必重采",
+   "id": "F_env.gate.ceiling_mb",
+   "kind": "env_gate",
+   "metric": "起手闸内存天花板（三取样最小值）",
+   "negative_control": "—（环境读数，无对照臂）",
+   "source_path": "eval/rover/r606/gate-margin-r606.json",
+   "source_sha12": "994fd5bc45ed",
+   "threshold": "REQ = GATE + MARGIN（R606: REQ 2823 / margin 173）",
+   "threshold_source": "eval/rover/r606/gate-margin-r606.json",
+   "unit": "MB",
+   "value": 2883
+  },
+  {
+   "check_cmd": "python3 -c \"import io,json;d=json.load(io.open('eval/rover/r606/kpi-table-r606.json'));print([r['用例通过中位'] for r in d['rows']])\"",
+   "face": "F_merge",
+   "ground_rule": "同窗同题集才可比；缺窗/剔除窗须在判据器 W_floor 面登记",
+   "id": "F_merge.quality.cases_median_truth",
+   "kind": "external_truth",
+   "metric": "codex 真值臂逐窗用例通过中位",
+   "negative_control": "真值自身失分窗（wythoff 族）按 truthdrop 单列，不作硬上限",
+   "source_path": "eval/rover/r606/kpi-table-r606.json",
+   "source_sha12": "21ac9338c681",
+   "threshold": "主判据 C1 v3: 逐窗 D ≥ -15 ∧ D 中位 ≥ -2（D = 产品 − 真值）",
+   "threshold_source": "eval/rover/r606/prereg-r606.json",
+   "unit": "cases",
+   "value": 58
+  },
+  {
+   "check_cmd": "python3 -c \"import io,json;d=json.load(io.open('eval/rover/r606/kpi-table-r606.json'));print([(r['臂'],r['整题全对(逐窗/池化)']) for r in d['rows']])\"",
+   "face": "F_merge",
+   "ground_rule": "单窗=噪声 ⇒ reps≥3 报逐窗 + 极差；跨轮禁相减；C1 臂每窗 1 跑次 ⇒ 满窗=3/3；T/C 每窗 3 跑次 ⇒ 满窗=3/3",
+   "id": "F_merge.quality.allpass",
+   "kind": "contrast_arm",
+   "metric": "整题全对（逐窗 3/3 计数）",
+   "negative_control": "C 臂（轴关 = 旧行为）",
+   "source_path": "eval/rover/r606/kpi-table-r606.json",
+   "source_sha12": "21ac9338c681",
+   "threshold": "J4: T_all_pass ≥ C_all_pass + 1 ∧ 无窗下降（次级读数，欠功率 n=9/档）",
+   "threshold_source": "eval/rover/r606/prereg-r606.json",
+   "unit": "fully-passed windows",
+   "value": {
+    "C": 1,
+    "C1": 3,
+    "T": 2
+   }
+  },
+  {
+   "check_cmd": "python3 -c \"import io,json;d=json.load(io.open('eval/rover/r606/kpi-table-r606.json'));print({r['臂']:sum(r['调用']) for r in d['rows']})\"",
+   "face": "F_orch",
+   "ground_rule": "口径 = 中继 dump 时间轴聚合（非 transcript.calls）；调用数按 request_id 去重；禁跨轮相减",
+   "id": "F_orch.cost.calls_sum",
+   "kind": "contrast_arm",
+   "metric": "调用数合计（同窗）",
+   "negative_control": "C 臂（轴关）",
+   "source_path": "eval/rover/r606/kpi-table-r606.json",
+   "source_sha12": "21ac9338c681",
+   "threshold": "J3v2（a1∧a2∧b1）: Σcalls T ≤ C ∧ 逐窗 ≤ C ∧ 单位调用新算 prompt ≤ C",
+   "threshold_source": "eval/rover/r606/prereg-r606.json",
+   "unit": "calls",
+   "value": {
+    "C": 15,
+    "T": 21
+   }
+  },
+  {
+   "check_cmd": "python3 -c \"import io,json;d=json.load(io.open('eval/rover/r606/kpi-table-r606.json'));print({r['臂']:sum(r['新算prompt']) for r in d['rows']})\"",
+   "face": "F_merge",
+   "ground_rule": "口径 = 中继 dump 时间轴聚合（非 transcript.calls）；分母=字符口径见 v_prefix_chars；禁跨轮相减",
+   "id": "F_merge.cost.new_prompt_sum",
+   "kind": "contrast_arm",
+   "metric": "新算 prompt tokens 合计（同窗）",
+   "negative_control": "C 臂（轴关）",
+   "source_path": "eval/rover/r606/kpi-table-r606.json",
+   "source_sha12": "21ac9338c681",
+   "threshold": "同窗对照（T ≤ C 为 J3 v2 的 b1 项；对机制结构性不利，是否降级须裁定）",
+   "threshold_source": "eval/rover/r606/prereg-r606.json",
+   "unit": "tokens",
+   "value": {
+    "C": 11139,
+    "C1": 32189,
+    "T": 18201
+   }
+  },
+  {
+   "check_cmd": "python3 -c \"import io,json;d=json.load(io.open('eval/rover/r606/kpi-table-r606.json'));print({r['臂']:round(sum(r['命中率(v_all/v_incr)'])/len(r['命中率(v_all/v_incr)']),4) for r in d['rows']})\"",
+   "face": "F_merge",
+   "ground_rule": "双口径 v_all/v_incr 并列；cache_* 取末次值；禁与名义总量混算",
+   "id": "F_merge.cache.hit_v_all",
+   "kind": "contrast_arm",
+   "metric": "缓存命中率（v_all 均值，同窗）",
+   "negative_control": "C 臂（轴关）",
+   "source_path": "eval/rover/r606/kpi-table-r606.json",
+   "source_sha12": "21ac9338c681",
+   "threshold": "硬门：恒前缀命中 ≥97%（生产面口径见前端/中继两列，命中率取中继 dump 时间轴）",
+   "threshold_source": "eval/rover/r606/prereg-r606.json",
+   "unit": "ratio",
+   "value": {
+    "C": 0.9288,
+    "C1": 0.9525,
+    "T": 0.9167
+   }
+  },
+  {
+   "check_cmd": "ls -l $HOME/.agentframework/harness/runs/r606/precond.rc && cat $HOME/.agentframework/harness/runs/r606/precond.rc",
+   "face": "F_merge",
+   "ground_rule": "原始件在飞窗目录（仓外 $HOME/.agentframework/harness/runs/<round>/），仓内只留聚合读数",
+   "id": "F_merge.gate.precondition_rc",
+   "kind": "env_gate",
+   "metric": "铁律 11 可验收前置器 rc",
+   "negative_control": "—（前置器自身的负控在 eval/rover/r507pre/exec_precondition.py --leak-selfcheck）",
+   "source_path": "eval/rover/r606/kpi-table-r606.json",
+   "source_sha12": "21ac9338c681",
+   "threshold": "rc==0 才可验收；rc≠0 ⇒ 成本列标「参考·未可验收」",
+   "threshold_source": "铁律 11（可验收前置）",
+   "unit": "rc",
+   "value": 1
+  },
+  {
+   "check_cmd": "python3 -c \"import io,json;v=json.load(io.open('eval/rover/r606/verdict-r606.json'));print(v['J1_mechanism']['by_arm']['C'])\"",
+   "face": "F_merge",
+   "ground_rule": "治疗臂 >0 ∧ 对照臂 ==0 才允许宣称机制生效（R600 三件套）",
+   "id": "F_merge.zero_regression.C_probe_repairs",
+   "kind": "negative_control",
+   "metric": "对照臂（轴关）探针修复触发次数",
+   "negative_control": "即本条自身（对照臂恒零 = 探针未生效的反证）",
+   "source_path": "eval/rover/r606/verdict-r606.json",
+   "source_sha12": "796b76e67dbd",
+   "threshold": "轴关 ⇒ 逐位等于旧行为（0/9 触发，且逐次读数字段与旧臂一致）",
+   "threshold_source": "eval/rover/r606/prereg-r606.json:arms",
+   "unit": "count",
+   "value": {
+    "runs": 9,
+    "runs_with_trigger": 0
+   }
+  },
+  {
+   "check_cmd": "python3 -c \"import io,json;v=json.load(io.open('eval/rover/r606/verdict-r606.json'));print({a:v['J4_capability_secondary']['by_arm'][a]['families']['wythoff'] for a in ['T','C']})\"",
+   "face": "F_orch",
+   "ground_rule": "逐例读数只可与同窗并列；跨轮（换窗集）禁相减",
+   "id": "F_orch.wythoff.pass_r606",
+   "kind": "contrast_arm",
+   "metric": "wythoff 族逐例通过（缺口族，R606 窗集）",
+   "negative_control": "C 臂（轴关）",
+   "source_path": "eval/rover/r606/verdict-r606.json",
+   "source_sha12": "796b76e67dbd",
+   "threshold": "无独立阈值（诊断面）：缺口 100% 集中该族 ⇒ 质量达标宣称前必须先处置",
+   "threshold_source": "eval/rover/r606/verdict-r606.json:honest_bounds",
+   "unit": "cases",
+   "value": {
+    "C": 118,
+    "T": 111,
+    "total": 135
+   }
+  },
+  {
+   "check_cmd": "python3 -c \"import io,json;v=json.load(io.open('eval/rover/r605/verdict-r605.json'));print({a:v['J4_capability_secondary']['by_arm'][a]['families']['wythoff'] for a in ['T','C']})\"",
+   "face": "F_orch",
+   "ground_rule": "与 R606 行并列展示：R605 方向为正、R606 为负 ⇒ 该族摆动 ≥ 效应（in-window），禁止单窗归因",
+   "id": "F_orch.wythoff.pass_r605",
+   "kind": "contrast_arm",
+   "metric": "wythoff 族逐例通过（缺口族，R605 窗集）",
+   "negative_control": "C 臂（轴关）",
+   "source_path": "eval/rover/r605/verdict-r605.json",
+   "source_sha12": "1be49633229b",
+   "threshold": "无独立阈值（诊断面）",
+   "threshold_source": "eval/rover/r605/verdict-r605.json",
+   "unit": "cases",
+   "value": {
+    "C": 75,
+    "T": 108,
+    "total": 135
+   }
+  },
+  {
+   "check_cmd": "python3 -c \"import io,json;v=json.load(io.open('eval/rover/r606/verdict-r606.json'));print(v['LD_low_discrimination']['frozen_list'])\"",
+   "face": "F_merge",
+   "ground_rule": "冻结例集合只可扩大不可缩小；缩小须重新普查（truthcase census）",
+   "id": "F_merge.ld.frozen_list",
+   "kind": "diagnostic",
+   "metric": "低判别力冻结例列表",
+   "negative_control": "v3_ex_LD 对照列（剔除后 D_list 对比，仍 PASS）",
+   "source_path": "eval/rover/r606/verdict-r606.json",
+   "source_sha12": "796b76e67dbd",
+   "threshold": "不作判据、不进 rc（主判据 v3 不剔除这两例以保持跨轮可比）",
+   "threshold_source": "eval/rover/r606/verdict-r606.json:LD_low_discrimination",
+   "unit": "case_ids",
+   "value": [
+    "wythoff#43-public",
+    "wythoff#57-hidden"
+   ]
+  }
+ ],
+ "faces": {
+  "F_env": "环境与缓存不变量（恒前缀 / 起手闸）",
+  "F_gen": "生成类",
+  "F_merge": "合并面（质量 / 成本 / 缓存命中 / 前置器）",
+  "F_orch": "多轮工具编排",
+  "F_recog": "开放域识别"
+ },
+ "purpose": "KPI 检验数据面：每条基准都是现盘可核对（source_path+source_sha12）、可复跑（check_cmd）的观测读数；轮 KPI 行须按 RF0004 §4.1 引用基准 id，不得只写叙述性数字。",
+ "rules": {
+  "kind_semantics": {
+   "contrast_arm": "同窗对照臂读数（禁跨轮相减）",
+   "diagnostic": "诊断列（不作判据、不进 rc）",
+   "env_gate": "环境/起手闸读数（起臂前采样，fail-closed 用）",
+   "external_truth": "外部真值（codex 同窗同题）读数",
+   "frozen_invariant": "冻结不变量（只许加厚/不变，禁改）",
+   "negative_control": "负控基线（对照臂应恒等于旧行为）"
+  },
+  "no_cross_round_subtract": "同题集/同 sha 之外禁跨轮相减（成本面尤其）；跨轮读数只可并列展示。",
+  "pin_freshness": "source_path 的 sha256 前 12 位必须等于 source_sha12；`python3 eval/capability/status_gen.py --check` 逐条核对，漂移即 FAIL（改源必重算 pin）。",
+  "threshold_provenance": "threshold 只能引预注册件（prereg-*.json）或已落盘条款件；history 类基准禁作达标阈值。",
+  "truth_not_ceiling": "kind=external_truth 的基准不得当硬上限：真值自身失分窗（wythoff 族）按 truthdrop 单列。"
+ },
+ "schema": "kpi-baselines/1"
+}

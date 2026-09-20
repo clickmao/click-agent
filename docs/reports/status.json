@@ -66,7 +66,36 @@
    "W20(本轮排除)"
   ]
  },
+ "baselines": {
+  "by_face": {
+   "F_env": 4,
+   "F_merge": 7,
+   "F_orch": 3
+  },
+  "by_kind": {
+   "contrast_arm": 6,
+   "diagnostic": 1,
+   "env_gate": 3,
+   "external_truth": 1,
+   "frozen_invariant": 2,
+   "negative_control": 1
+  },
+  "entries": 14,
+  "file": "eval/capability/baselines.json",
+  "file_sha12": "831828f3081d",
+  "missing_sources": [],
+  "rules": [
+   "kind_semantics",
+   "no_cross_round_subtract",
+   "pin_freshness",
+   "threshold_provenance",
+   "truth_not_ceiling"
+  ],
+  "schema": "kpi-baselines/1",
+  "stale": []
+ },
  "derived_from": {
+  "baselines": "eval/capability/baselines.json",
   "kpi": "eval/capability/kpi.jsonl",
   "registry": "verification-registry.json"
  },
@@ -74,19 +103,119 @@
   "latest": {
    "bin_sha": "",
    "grid": null,
-   "kind": null,
+   "kind": "放行后产品侧单变量轮（第十二窗集 w196..w198）：单变量 = 产品档 AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR 缺省翻档(1) vs 显式 0；判决阴性（机制生效但预注册判负）⇒ 按预注册收窄该轴为观测项 + 撤回缺省翻档（产品树已回退，净产品改动 = 0）",
    "readouts": null,
-   "ts": "2026-09-14T03:03:23+0800"
+   "ts": "2026-09-21T04:47:11+0800"
   },
-  "lines": 52,
+  "latest_round": "R606",
+  "lines": 144,
+  "non_round_rows": [
+   "EXP1-Q1",
+   "EXP1-Q10",
+   "EXP1-Q11",
+   "EXP1-Q12",
+   "EXP1-Q13",
+   "EXP1-Q14",
+   "EXP1-Q15",
+   "EXP1-Q16",
+   "EXP1-Q17",
+   "EXP1-Q18",
+   "EXP1-Q19",
+   "EXP1-Q2",
+   "EXP1-Q20",
+   "EXP1-Q21",
+   "EXP1-Q22",
+   "EXP1-Q23",
+   "EXP1-Q25",
+   "EXP1-Q26",
+   "EXP1-Q27",
+   "EXP1-Q28",
+   "EXP1-Q29",
+   "EXP1-Q3",
+   "EXP1-Q30",
+   "EXP1-Q31",
+   "EXP1-Q32",
+   "EXP1-Q33",
+   "EXP1-Q34",
+   "EXP1-Q35",
+   "EXP1-Q36",
+   "EXP1-Q37",
+   "EXP1-Q38",
+   "EXP1-Q38 (收口)",
+   "EXP1-Q3b",
+   "EXP1-Q4",
+   "EXP1-Q43",
+   "EXP1-Q44",
+   "EXP1-Q45",
+   "EXP1-Q46",
+   "EXP1-Q47",
+   "EXP1-Q48",
+   "EXP1-Q49",
+   "EXP1-Q5",
+   "EXP1-Q50",
+   "EXP1-Q51",
+   "EXP1-Q6",
+   "EXP1-Q7",
+   "EXP1-Q8",
+   "EXP1-Q9",
+   "R403-scope",
+   "R411-V",
+   "R428-hold",
+   "R434b",
+   "R434c",
+   "R435b",
+   "R435c",
+   "R437-task-length-stratification",
+   "R579-tick",
+   "R580-tick",
+   "loop-mechanism",
+   "unknown"
+  ],
   "rounds": [
    "EXP1-Q1",
    "EXP1-Q10",
+   "EXP1-Q11",
+   "EXP1-Q12",
+   "EXP1-Q13",
+   "EXP1-Q14",
+   "EXP1-Q15",
+   "EXP1-Q16",
+   "EXP1-Q17",
+   "EXP1-Q18",
+   "EXP1-Q19",
    "EXP1-Q2",
+   "EXP1-Q20",
+   "EXP1-Q21",
+   "EXP1-Q22",
+   "EXP1-Q23",
+   "EXP1-Q25",
+   "EXP1-Q26",
+   "EXP1-Q27",
+   "EXP1-Q28",
+   "EXP1-Q29",
    "EXP1-Q3",
+   "EXP1-Q30",
+   "EXP1-Q31",
+   "EXP1-Q32",
+   "EXP1-Q33",
+   "EXP1-Q34",
+   "EXP1-Q35",
+   "EXP1-Q36",
+   "EXP1-Q37",
+   "EXP1-Q38",
+   "EXP1-Q38 (收口)",
    "EXP1-Q3b",
    "EXP1-Q4",
+   "EXP1-Q43",
+   "EXP1-Q44",
+   "EXP1-Q45",
+   "EXP1-Q46",
+   "EXP1-Q47",
+   "EXP1-Q48",
+   "EXP1-Q49",
    "EXP1-Q5",
+   "EXP1-Q50",
+   "EXP1-Q51",
    "EXP1-Q6",
    "EXP1-Q7",
    "EXP1-Q8",
@@ -128,58 +257,79 @@
    "R442",
    "R443",
    "R444",
+   "R445",
+   "R446",
+   "R474",
+   "R475",
+   "R476",
+   "R478",
+   "R544",
+   "R545",
+   "R546",
+   "R547",
+   "R548",
+   "R549",
+   "R557",
+   "R558",
+   "R559",
+   "R560",
+   "R561",
+   "R562",
+   "R563",
+   "R564",
+   "R565",
+   "R566",
+   "R567",
+   "R569",
+   "R570",
+   "R575",
+   "R576",
+   "R579-tick",
+   "R580-tick",
+   "R581",
+   "R583",
+   "R585",
+   "R586",
+   "R587",
+   "R588",
+   "R589",
+   "R590",
+   "R591",
+   "R592",
+   "R593",
+   "R594",
+   "R595",
+   "R596",
+   "R597",
+   "R598",
+   "R599",
+   "R600",
+   "R602",
+   "R603",
+   "R604",
+   "R605",
+   "R606",
    "loop-mechanism",
    "unknown"
   ],
-  "sha12": "3a30c1995662"
+  "rows_missing_kind": 19,
+  "sha12": "4fbb83493465"
  },
  "plans": [
   {
-   "plan": "skill-extraction-assessment.md",
+   "plan": "RF0001-fable-aligned-development-plan.md",
+   "status": "**活计划**（每轮更新「已落地/待做」列，不改历史结论） ｜ 建立轮次：R541 ｜ 对照面：`docs/external-reference/`"
+  },
+  {
+   "plan": "RF0002-nlp-self-improvement.md",
    "status": "n/a"
   },
   {
-   "plan": "v0.13.3-topic-clarify-l3-plan.md",
+   "plan": "RF0003-file-plugin-service.md",
    "status": "n/a"
   },
   {
-   "plan": "v0.14.0-master-plan.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.14.0-t2-llm-selfcritic-plan.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.14.0-thinkchain-self-critique-plan.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.15.0-task-lifecycle-plan.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.15.2-guardrail-persistence-plan.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.15.3-perf-memory-plan.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.16.1-hash-unify-plan.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.16.3-rag-prune-amortize-plan.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.17.0-executor-hardening-plan.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.17.1-staged-approval-plan.md",
+   "plan": "RF0004-three-capability-development-plan.md",
    "status": "n/a"
   },
   {
@@ -187,43 +337,7 @@
    "status": "n/a"
   },
   {
-   "plan": "v0.17.3-collision-detection-plan.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.18.0-command-route-hardening-plan.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.19.0-frontend-api-plan.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.20.0-llm-service-plan.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.20.1-llm-service-integration-plan.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.21.0-role-system-plan.md",
-   "status": "n/a"
-  },
-  {
    "plan": "v0.22.0-exp1-local-index-and-code-graph.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.22.0-exp2-multi-option-ask-menu-protocol.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.22.0-exp3-step-alignment-validation.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.22.0-exp4-tool-request-and-local-script.md",
    "status": "n/a"
   },
   {
@@ -235,229 +349,33 @@
    "status": "n/a"
   },
   {
-   "plan": "v0.22.0-exp7-bge-idle-training-loop.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.22.0-exp8-artifact-to-skill-and-kpi-ab.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.22.0-exp9-subtask-plan-routing-and-local-first.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.22.0-exploration-index.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.22.0-kpi-decision.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.22.0-l2-capability-diff.md",
-   "status": "n/a"
-  },
-  {
    "plan": "v0.22.0-longterm-backlog.md",
    "status": "n/a"
-  },
-  {
-   "plan": "v0.22.0-r371-capability-probe-python-game.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.23.0-exp10-agent.rover-local-prover-engine.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.23.0-exp11-formal-verification-agent-augmentation.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.23.0-exp12-agent-chain-dcr-90p5-feasibility.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.23.0-exp13-r385-tail-hardening.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.24.0-exp14-random-probe-selfcheck.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.25.0-r399-probe-hardening-and-kpi.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.26.0-r400-rover-generation-chain.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.27.0-r405-r1-local-enhancement.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.28.0-r406-jinja-template-and-r1-chain.md",
-   "status": "已完成 (P0-2a 解释器 / P0-2b 生成路径接线)；进行中 (P0-1 llama.cpp oracle 收尾)"
-  },
-  {
-   "plan": "v0.29.0-r407-qwen2-attn-bias-and-forward-parity.md",
-   "status": "已完成 (V1–V6 全部真实读数；AOT 发布与全量回归已跑)"
-  },
-  {
-   "plan": "v0.30.0-r408-llamacpp-process-pivot.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.31.0-r409-local-prompt-template-gate.md",
-   "status": "已实施（R409，2026-09-14）"
-  },
-  {
-   "plan": "v0.32.0-r410-session-prefix-reuse.md",
-   "status": "已实施（R410，2026-09-14）"
-  },
-  {
-   "plan": "v0.33.0-r411-long-lived-generation-port.md",
-   "status": "已实施（R411，2026-09-14）"
-  },
-  {
-   "plan": "v0.34.0-r412-multi-session-slot-contention.md",
-   "status": "判据预注册（2026-09-14，R411 收口后自动续轮）"
   },
   {
    "plan": "v0.35.0-r413-r1-local-verdict-token-budget.md",
    "status": "进行中（端口层已落地并通过机检；判据未开测）"
   },
   {
-   "plan": "v0.36.0-r414-failure-visibility.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.37.0-r415-gate-input-chain-pin.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.38.0-r417-probe-anti-saturation.md",
-   "status": "已收口（判别力自证 PASS；**首个非饱和真机读数**：整题全对 1/3、用例级 47/54；仪器两处真缺陷已修）"
-  },
-  {
-   "plan": "v0.39.0-r418-process-kpi.md",
-   "status": "已收口（2026-09-14；仪器 + 真机读数 + 登记齐；本地提交未推）"
-  },
-  {
-   "plan": "v0.40.0-r419-probe-multiturn.md",
-   "status": "已收口（2026-09-14）—— 仪器侧达成（成对正负控 + 7 态自证 + 三缺陷闸）；真机侧**未稳定复现分化**（4 次 onfail 跑 3 次饱和 1 次分化）⇒ 本轮不判通过，下轮反饱和（见 §7）"
-  },
-  {
-   "plan": "v0.41.0-r420-recall-wiring.md",
-   "status": "已实施（本地 commit，**未推** —— 推送暂停令在效）"
-  },
-  {
-   "plan": "v0.42.0-r421-polarity.md",
-   "status": "已实施（本地 commit 37d6997，**未推** —— 推送暂停令在效）"
-  },
-  {
-   "plan": "v0.43.0-r422-scoring-normalization.md",
-   "status": "已收口（PARTIAL —— 预注册全称判据被证伪，宣称按证据收窄登记；另含**附带修复**一项，见 §8）"
-  },
-  {
-   "plan": "v0.44.0-r423-tf-saturation.md",
-   "status": "已收口（PASS —— 主判据 10/10 绿；**含一次预测输入纠错与一次语料目录污染事故**，见 §6/§7；边界登记见 §5）"
-  },
-  {
    "plan": "v0.45.0-r424-aot-mainline-replication.md",
    "status": "判据预注册（本文件 §3–§5 于跑测前落盘：**17:05:36**，首臂产物 `budget-A.json` mtime 17:06:23 ⇒ 判据先于读数）"
   },
   {
-   "plan": "v0.46.0-r425-ratio-sensitivity-grid.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.47.0-r426-relation-judge-localization.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.48.0-r427-duplicate-tie-precheck.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.49.0-r428-duplicate-collapse.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.50.0-r429-decision-cache-pin.md",
-   "status": "进行中（T0 预注册：判据先冻结，后跑测）"
-  },
-  {
-   "plan": "v0.51.0-r430-input-fingerprint.md",
-   "status": "已完成 (PASS; 证据 eval/rover/r430/README-evidence.md)（T0 预注册；本文件在读取本轮任何读数**之前**写入，器具代码与判据同批冻结）"
-  },
-  {
-   "plan": "v0.52.0-r431-growth-mount.md",
-   "status": "已完成（对侧 R431，本地提交 `f319198`）"
-  },
-  {
-   "plan": "v0.53.0-r432-gate-discrimination.md",
-   "status": "已完成 (FAIL; 证据 eval/rover/r432/README-evidence.md)"
-  },
-  {
-   "plan": "v0.54.0-r433-doc-driven-probe-rerun.md",
-   "status": "已完成（本地提交 `6be1f35` + `69d405c`）"
-  },
-  {
-   "plan": "v0.55.0-r434-falseinfo-discrimination-grid.md",
-   "status": "进行中（预注册先于跑测；本文件 mtime 必须先于首臂产物）"
-  },
-  {
-   "plan": "v0.56.0-r435-relation-judge-localization.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.57.0-r436-e2e-brj-token-kpi.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.58.0-r438-localskip-no-replay.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.59.0-r439-domain-extension.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.60.0-r440-length-ladder-measurement.md",
-   "status": "已完成（结果见 §5bis / §7；判据机判见 `eval/rover/r440/compare-r440.json`）"
-  },
-  {
-   "plan": "v0.61.0-r441-gain-window-floor-and-position-curve.md",
-   "status": "n/a"
-  },
-  {
-   "plan": "v0.62.0-r442-accounting-and-asymmetry.md",
-   "status": "已完成"
-  },
-  {
-   "plan": "v0.63.0-r443-local-token-truth-and-replay-ablation.md",
-   "status": "已完成"
-  },
-  {
-   "plan": "v0.64.0-r444-cheap-necessary-condition-prefilter.md",
-   "status": "已完成（判据于测量前预注册；结果见文末 §9）"
+   "plan": "v0.96.0-r480-recall-module.md",
+   "status": "进行中"
   }
  ],
  "registry": {
   "by_level": {
    "L0": 2,
-   "L1": 4,
-   "L2": 16,
-   "L3": 31,
-   "L4": 28
+   "L1": 18,
+   "L2": 137,
+   "L3": 79,
+   "L4": 46
   },
-  "rows": 81,
-  "sha12": "700e78033687",
-  "updated_round": "R444",
+  "rows": 282,
+  "sha12": "9a744dd08c0e",
+  "updated_round": "R606",
   "violations": [],
   "warnings": [
    {
@@ -486,6 +404,66 @@
    },
    {
     "id": "r425.gate-ratio-sensitivity",
+    "why": "L>=2 未登记 covers[] (形式规范未强制, 记为告警)"
+   },
+   {
+    "id": "r500.paraphrase-channel-real-4arms",
+    "why": "L>=2 未登记 covers[] (形式规范未强制, 记为告警)"
+   },
+   {
+    "id": "r500.paraphrase-channel-deadcode-rootcause",
+    "why": "L>=2 未登记 covers[] (形式规范未强制, 记为告警)"
+   },
+   {
+    "id": "r500.arm-runner-arg-mismatch",
+    "why": "L>=2 未登记 covers[] (形式规范未强制, 记为告警)"
+   },
+   {
+    "id": "r500.nc-pending-not-judgeable",
+    "why": "L>=2 未登记 covers[] (形式规范未强制, 记为告警)"
+   },
+   {
+    "id": "r577.local-gate-model-revert",
+    "why": "L>=2 未登记 covers[] (形式规范未强制, 记为告警)"
+   },
+   {
+    "id": "r577.gate-model-candidate-probe",
+    "why": "L>=2 未登记 covers[] (形式规范未强制, 记为告警)"
+   },
+   {
+    "id": "r578.local-gate-model-lfm25",
+    "why": "L>=2 未登记 covers[] (形式规范未强制, 记为告警)"
+   },
+   {
+    "id": "r579tick.nlp-shape-kpi-face",
+    "why": "L>=2 未登记 covers[] (形式规范未强制, 记为告警)"
+   },
+   {
+    "id": "r580.supplement-injection-timing",
+    "why": "L>=2 未登记 covers[] (形式规范未强制, 记为告警)"
+   },
+   {
+    "id": "r582.round-validity-auditor",
+    "why": "L>=2 未登记 covers[] (形式规范未强制, 记为告警)"
+   },
+   {
+    "id": "r583.shape-face-plane-split",
+    "why": "L>=2 未登记 covers[] (形式规范未强制, 记为告警)"
+   },
+   {
+    "id": "r584.file-plugin-service",
+    "why": "L>=2 未登记 covers[] (形式规范未强制, 记为告警)"
+   },
+   {
+    "id": "r587.roundcheck-contrast-scope",
+    "why": "L>=2 未登记 covers[] (形式规范未强制, 记为告警)"
+   },
+   {
+    "id": "r600.repair-carryover",
+    "why": "L>=2 未登记 covers[] (形式规范未强制, 记为告警)"
+   },
+   {
+    "id": "r606.probe-repair-budget-default",
     "why": "L>=2 未登记 covers[] (形式规范未强制, 记为告警)"
    }
   ]

@@ -96,6 +96,18 @@ DAG（箭头=依赖；【并行面】=可同时推进的节点集合；重启判
 | 多轮工具编排 | **调用数**（request_id 去重）∧ 质量（逐窗整题全对） | 对照臂 = 旧自由文本动作环（同窗） | 步数/步骤总数两列并列；恒前缀命中 ≥97% 为硬门 |
 | 合并 | 原四判据（质量 / token / 前缀缓存 / 前端 api）**不降** | `truthdrop`（真值自身失分窗单列）· 铁律 11 rc=0 | 成本**两形态并列**（v1 逐位 / v2），禁跨轮相减；单窗=噪声 ⇒ reps≥3 报逐窗+极差 |
 
+### 4.1 检验数据：可观测基准台账（`eval/capability/baselines.json`）
+
+> 令（2026-09-21）：**「将某些可观测基准融入 kpi 作为检验数据」** ⇒ KPI 不只报读数，还须逐条挂上**现盘可核对**的基准（外部真值 / 对照臂 / 冻结不变量 / 环境闸 / 负控）。
+
+- **唯一权威面** = `eval/capability/baselines.json`（schema `kpi-baselines/1`，`indent=1` 保形，尾 LF）。**禁手改读数**：改 `value`/`source_path` 必须重算 `source_sha12`。
+- **每条基准四要素**：① `value` 读数（+`unit`）② `source_path` + `source_sha12`（现盘 pin；**改源必重算**）③ `check_cmd`（单行可复跑，实测 14/14 rc=0）④ `threshold` + `threshold_source`（阈值只能引**预注册件**或冻结声明件，**禁引历史读数**）。
+- **判绿命令** = `python3 eval/capability/status_gen.py --check` ⇒ 登记表 0 违规 **∧ 基准 0 漂移 ∧ 0 缺源**。**有牙证明（负控）**：改任一 `source_sha12` ⇒ rc=1 并打印 `declared -> disk`；删源 ⇒ rc=1；正控 ⇒ rc=0。
+- **机器可读硬规则**（`rules` 字段）：① 成本/质量基准**禁跨轮相减**（只许同窗同题集对照）；② 外部真值（codex）**不得当硬上限**（`truthdrop` 证），失分窗单列 unreliable；③ `kind=history` 只可并列展示，**不得充当阈值**。
+- **引用义务**：每轮 `eval/capability/kpi.jsonl` 行须带 `baselines`（本轮**实际用到的**基准 id 列表）；未引用的面**不得声称「已检验」**。行 schema = `round/ts/kind/change/readings/honesty/artifacts/baselines`；`artifacts` 一律**仓内相对路径**（运行目录产物须注明非仓内）。
+- **现状（2026-09-21，R606 后）**：基准 **14 条**（`frozen_invariant` 2 / `env_gate` 3 / `external_truth` 1 / `contrast_arm` 6 / `negative_control` 1 / `diagnostic` 1），**0 漂移 0 缺源**；台账 sha12 以 `docs/reports/status.json` → `.baselines.file_sha12` 为准。
+- **已暴露的台账卫生缺口（不粉饰）**：`kpi.jsonl` 144 行中 **19 行缺 `kind`**、**60 个非轮 tag**（`EXP1-Q*` / `R403-scope` / `loop-mechanism` / `unknown` 等）⇒ 仅 `round` 匹配 `^R\d+$` **且有 `kind`** 的行可作「检验数据」被引用，其余一律按**观测列**处理。
+
 ---
 
 ## 5. 每轮固定小步与开销（承袭现行纪律）
