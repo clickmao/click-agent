@@ -1,0 +1,355 @@
+{
+ "round": "R591",
+ "windows": [
+  "w166",
+  "w167",
+  "w168"
+ ],
+ "criteria": {
+  "note": "主判据 = 判据 v3（整题全对率 + 按族分列，器具 pool_taskface_r591.py 复用 R589 逻辑源）。kpi_r591.py 的 C1（用例级配对）**只作同向参照**：v2 判决面已在 docs/external-reference-harness.md §12.3 作废。",
+  "C0 真值可靠性": "真值跑次 58/58 不成立 ⇒ 该窗 unreliable，不进配对、单列（禁筛窗）。",
+  "C1 用例级配对（参照）": "有效窗 ≥2 ∧ 配对中位 ≥ −2 ∧ 无窗 ≤ −15（v2 阈值照旧，仅作同向参照，不出判决）。",
+  "C2 成本三列": "调用数 / 新算 prompt / completion **分列**（禁合并名义总量）；命中率标口径（中继 dump 时间轴 v_all/v_incr）。信息项，不判红绿。",
+  "C3 起手闸余量条款": "prev_swing_effective = 同态在飞窗振幅 = 314MB（r588 run-samples n=189）；起手前 3 样本 CEIL=min 且极差 ≤50MB（fail-closed）；MARGIN = clamp(314, 60, CEIL−2650−60)；REQ = 2650+MARGIN。报 cap_binding。",
+  "C5 缺口复现": "与 R588 窗集的 D 集比：同号 ∧ 区间重叠 ⇒ 缺口跨窗复现；并列**不相减**。",
+  "C6 步数列": "steps_executed / plan_steps_total 非空率 = 100% 才过（缺档 ⇒ rc=2 器具缺陷）。",
+  "C7 判据 v3 第二窗集（**主判据**）": {
+   "judge": "有效窗 中位 ≤ −0.34 ∧ 负号窗 ≥ 半数 ⇒ PASS（缺口成立）；否则 FAIL。阈值 −0.34 写死，非事后调。",
+   "secondary": "按族分列（life/nim/sub/wythoff 的 all-pass 率 + 失败原因直方图），与第一窗集**并列**。",
+   "third_face": "铁律 11 前置器 rc（executable_and_correct ∧ acceptable_scoped）；rc≠0 ⇒ 全部成本读数标「参考（未可验收）」。"
+  },
+  "C8 候选② 落点谓词 vs 冷集构造（只读定因）": {
+   "claim": "从 §12.2 的 MOVE_NOT_COLD 份额（67/131 = 51%）出发，机械区分两种机理：(a) **落点/选择谓词层**（产物冷集正确，但选出的落点非冷点）(b) **冷集构造错**（产物自身声明的 P-位置集合与真值冷集不同）。",
+   "method": "对每个产品跑次快照**副本**：(i) 重放 15 条 wythoff 冻结用例 → 例级 got/exp；(ii) 全网格探针（0≤a≤b≤25）取产物自报 LOSE 的位置 = 产物声明冷集；与独立 oracle 冷集（暴力递推 ∧ phi 序双实现交叉）比。",
+   "decision_rule": [
+    "P-集与真值一致 ∧ 该跑次 wythoff 有失分 ⇒ 记 (a) 落点/选择谓词层",
+    "P-集不一致 ⇒ 记 (b) 冷集构造错",
+    "两类的份额（占该跑次失分例次）作为主因裁定输入；份额 ≥50% 者记主因"
+   ],
+   "negative_controls": [
+    "POS: 合成 fixture（正确冷集 + 故意选非冷落点）⇒ 必须判 (a)",
+    "NEG: 合成 fixture（冷集被改一个位置）⇒ 必须判 (b)",
+    "零反例: 产物自报冷集必须非常数（防恒真门）"
+   ],
+   "honest_boundary": "全网格探针是**行为探针**（不是读产物内部函数）；结论只在 wythoff 15 例 × 本轮在盘跑次上成立，禁外推。"
+  },
+  "C9 候选③ 起手闸只读轮分支入册（文档）": {
+   "target": "docs/external-reference-harness.md §12.1.1 增「余量来源分支 + 极差条款 + cap binding 记法」",
+   "machine_checks": [
+    "含『在飞窗优先 / 只读轮回退』字样",
+    "含『极差 ≤ 50MB』fail-closed 字样",
+    "含『cap binding ⇒ 振幅项退化』字样",
+    "R590 派生件路径被引（gate-margin-r590.json）"
+   ]
+  },
+  "C10 候选④ 前置器抽样复跑口径入册（文档）": {
+   "target": "docs/external-reference-harness.md §12.4（新增）",
+   "machine_checks": [
+    "含『抽样复跑口径』标题",
+    "含守恒判据『复跑结论 == 该轮自身已登记 rc』",
+    "含 fail-closed 条件（不符 ⇒ 全量重跑）",
+    "含『耗时只作信息字段』字样"
+   ]
+  },
+  "C11 只读性": "非本轮真机臂面（R585–R588 快照树、冻结夹具、产品源码）的 sha256 清单前后一致 ⇒ PASS。"
+ },
+ "arms": {
+  "C1": {
+   "runs": 3,
+   "cases_per_run": [
+    58,
+    47,
+    56
+   ],
+   "per_window_median": {
+    "w166": 58,
+    "w167": 47,
+    "w168": 56
+   },
+   "median": 56,
+   "min": 47,
+   "max": 58,
+   "calls": 59,
+   "new_prompt": 16367,
+   "completion": 18694,
+   "v_all_med": 0.99,
+   "v_incr_med": 0.99,
+   "repair_rounds": [
+    null,
+    null,
+    null
+   ],
+   "rc": [
+    null,
+    null,
+    null
+   ],
+   "stages": [
+    null,
+    null,
+    null
+   ],
+   "steps": [
+    null,
+    null,
+    null
+   ]
+  },
+  "R591D": {
+   "runs": 9,
+   "cases_per_run": [
+    57,
+    43,
+    58,
+    46,
+    46,
+    58,
+    58,
+    58,
+    44
+   ],
+   "per_window_median": {
+    "w166": 57,
+    "w167": 46,
+    "w168": 58
+   },
+   "median": 57,
+   "min": 43,
+   "max": 58,
+   "calls": 12,
+   "new_prompt": 3189,
+   "completion": 29727,
+   "v_all_med": 0.97,
+   "v_incr_med": 0.94,
+   "repair_rounds": [
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "rc": [
+    4,
+    5,
+    0,
+    5,
+    8,
+    5,
+    0,
+    0,
+    5
+   ],
+   "stages": [
+    "contract",
+    "expect_stdout_exhausted",
+    "done",
+    "expect_stdout_exhausted",
+    "self_test_unmet",
+    "expect_stdout_exhausted",
+    "done",
+    "done",
+    "expect_stdout_exhausted"
+   ],
+   "steps": [
+    0,
+    7,
+    8,
+    13,
+    7,
+    7,
+    14,
+    14,
+    7
+   ]
+  }
+ },
+ "paired": {
+  "D_product_minus_truth_per_window": [
+   -1
+  ],
+  "D_median": -1,
+  "valid_windows": 1,
+  "unreliable_windows_truth_self_fail": [
+   "w167",
+   "w168"
+  ],
+  "missing_windows": [],
+  "truth_per_window": {
+   "w166": 58,
+   "w167": 47,
+   "w168": 56
+  },
+  "product_per_window": {
+   "w166": 57,
+   "w167": 46,
+   "w168": 58
+  }
+ },
+ "C0_truth_reliability": {
+  "pass": false,
+  "unreliable": [
+   "w167",
+   "w168"
+  ],
+  "truth_all_pass": {
+   "w166": [
+    true
+   ],
+   "w167": [
+    false
+   ],
+   "w168": [
+    false
+   ]
+  }
+ },
+ "C1_quality_paired": {
+  "pass": false,
+  "D_list": [
+   -1
+  ],
+  "D_median": -1,
+  "valid_windows": 1,
+  "floor": -15,
+  "median_floor": -2
+ },
+ "C2_cost_three_columns": {
+  "calls": {
+   "product": 12,
+   "truth": 59
+  },
+  "new_prompt": {
+   "product": 3189,
+   "truth": 16367
+  },
+  "completion": {
+   "product": 29727,
+   "truth": 18694
+  },
+  "hit_rate_v_all": {
+   "product": 0.97,
+   "truth": 0.99
+  },
+  "hit_rate_v_incr": {
+   "product": 0.94,
+   "truth": 0.99
+  },
+  "note": "信息项, 不判红绿 (禁合并成名义总量; 命中率口径 = 中继 dump 时间轴)"
+ },
+ "C5_gap_reproduction": {
+  "prev_path": "/home/agentuser/AgentFramework/eval/rover/r588/verdict-r588.json",
+  "prev_D": [
+   -7,
+   -11
+  ],
+  "prev_median": -9.0,
+  "state": "方向一致、量级漂移",
+  "prev_sha16": "96505c778ce60bc5",
+  "this_D": [
+   -1
+  ],
+  "this_median": -1,
+  "same_sign": true,
+  "interval_overlap": false
+ },
+ "C5b_swing_vs_effect": {
+  "per_set": {
+   "R585": {
+    "D": [
+     -8,
+     -3
+    ],
+    "median": -5.5,
+    "sha16": "ac0bf588b0afcd1b"
+   },
+   "R586": {
+    "D": [
+     0,
+     -3,
+     -15
+    ],
+    "median": -3,
+    "sha16": "2794e27d26642a0b"
+   },
+   "R587": {
+    "D": [
+     0,
+     -13
+    ],
+    "median": -6.5,
+    "sha16": "30e2d71722bf987d"
+   },
+   "R588": {
+    "D": [
+     -7,
+     -11
+    ],
+    "median": -9.0,
+    "sha16": "96505c778ce60bc5"
+   }
+  },
+  "pooled_n_valid_windows": 9,
+  "pooled_D": [
+   -8,
+   -3,
+   0,
+   -3,
+   -15,
+   0,
+   -13,
+   -7,
+   -11
+  ],
+  "pooled_median_effect": -7,
+  "pooled_range_swing": 15,
+  "max_dev_from_median": 8,
+  "sign_count": {
+   "neg": 7,
+   "pos": 0,
+   "zero": 2
+  },
+  "sign_test_p_two_sided": 0.0156,
+  "note": "跨轮禁相减: 各集只并列; 池化仅用于摆动/效应分离估计",
+  "state": "摆动 > 效应 ⇒ 该轴非承重变量、定案关闭"
+ },
+ "C6_steps_face": {
+  "nonnull": 9,
+  "runs": 9,
+  "pass": true,
+  "steps": [
+   0,
+   7,
+   8,
+   13,
+   7,
+   7,
+   14,
+   14,
+   7
+  ],
+  "plan_steps_total": [
+   0,
+   10,
+   8,
+   14,
+   7,
+   10,
+   14,
+   14,
+   10
+  ],
+  "note": "R585 纠偏: 同列本就在档 (verdict-r585.json::arms.R585D.steps=[8,15,7,14,7,7,7,7,7]), 而 R585 报告与 §7 块写「未测(adapter 未取该字段)」= 报告面与自己的读数不一致; 首跑读数不撤。"
+ },
+ "verdict": {
+  "rc": 1,
+  "judge": "FAIL(质量配对未过)",
+  "blocked": [
+   "C1_quality_paired:R591D"
+  ],
+  "iron11": "见 eval/rover/r507pre/precondition-r591.json"
+ }
+}

@@ -1,0 +1,15 @@
+{
+ "round": "R591",
+ "criterion": "C3 起手闸余量条款（R590 派生版 + 只读轮分支以外之在飞窗分支）",
+ "clause": "MARGIN := clamp(prev_swing_effective, floor=60, cap=CEIL-GATE-floor); REQ=GATE+MARGIN",
+ "prev_swing_effective": 314,
+ "prev_swing_source": "r588/logs/run-samples.jsonl (同态在飞窗, n=189, swing=314)",
+ "ceiling_min_of_3": 2788,
+ "pre_sample_spread_mb": 0,
+ "spread_clause": "<=50MB else fail-closed",
+ "margin": 78,
+ "req": 2728,
+ "cap": 78,
+ "cap_binding": true,
+ "note": "cap_binding=true ⇒ 振幅项退化（收紧的是上界而非下界，R590 已登记）"
+}

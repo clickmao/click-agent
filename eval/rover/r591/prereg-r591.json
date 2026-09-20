@@ -1,0 +1,126 @@
+{
+ "round": "R591",
+ "written_before_run": true,
+ "written_at": "2026-09-20T06:20+08:00",
+ "author": "cron tick (b15eb2f40a69) · 常驻能力自检循环执行体",
+ "claim": "主线真机对照轮：**判据 v3 第二窗集行使**（同被测件 + 同冻结题集、只换窗集 w166..w168）× 外部真值 codex；并轮收口 R590 候选 ②③④。零产品源码改动 / 零新增夹具语义 / 零新增开关。",
+ "one_time_context": {
+  "in_scope_rounds_prev": ["r585", "r586", "r587", "r588", "r591"],
+  "taskset_sha": "e0c667c2a313c04b",
+  "bin_sha12_expected": "4b70fd7cdb39",
+  "cases_per_run": 58,
+  "families": {"life": 14, "nim": 15, "sub": 14, "wythoff": 15},
+  "windows": ["w166", "w167", "w168"],
+  "reps_per_window": {"C1": 1, "R591D": 3},
+  "first_window_set_v3_reference": {
+   "round": "R589",
+   "artifact": "eval/rover/r589/taskface-pool-r589.json",
+   "task_face_median": -0.6667, "range": 1.0, "sign": {"neg": 8, "zero": 1, "pos": 0},
+   "family_all_pass_rate": {"life": 0.9722, "nim": 0.9722, "sub": 0.9722, "wythoff": 0.3889},
+   "note": "跨窗集**禁相减**，只并列（§12.3）"
+  }
+ },
+ "single_variable": "本轮自变量 = 窗集（真机臂轮，新窗 w166..w168）。被测件、题集、判据、夹具与 R585–R588 同 sha ⇒ 与第一窗集（R585–R588）构成 **判据 v3 的第二窗集**，用于检验阈值 -0.34 的分辨率是否可跨窗集复现。",
+ "criterion_version": "v3",
+ "arms": {
+  "C1": {"side": "codex", "bin": "$HOME/.agentframework/tools/codex-env/node_modules/.bin/codex", "model": "deepseek-flash", "reps": 1, "role": "外部真值（同环境·同输入·同模型）"},
+  "R591D": {"side": "agent", "bin": "$HOME/.agentframework/artifacts/pub_r588/agenthost", "env": {"AGENTFRAMEWORK_R1_CONTRACT": "1", "dose_keys": "全部显式 unset（产品默认档）"}, "reps": 3}
+ },
+ "axis_criteria_R591": {
+  "note": "主判据 = 判据 v3（整题全对率 + 按族分列，器具 pool_taskface_r591.py 复用 R589 逻辑源）。kpi_r591.py 的 C1（用例级配对）**只作同向参照**：v2 判决面已在 docs/external-reference-harness.md §12.3 作废。",
+  "C0 真值可靠性": "真值跑次 58/58 不成立 ⇒ 该窗 unreliable，不进配对、单列（禁筛窗）。",
+  "C1 用例级配对（参照）": "有效窗 ≥2 ∧ 配对中位 ≥ −2 ∧ 无窗 ≤ −15（v2 阈值照旧，仅作同向参照，不出判决）。",
+  "C2 成本三列": "调用数 / 新算 prompt / completion **分列**（禁合并名义总量）；命中率标口径（中继 dump 时间轴 v_all/v_incr）。信息项，不判红绿。",
+  "C3 起手闸余量条款": "prev_swing_effective = 同态在飞窗振幅 = 314MB（r588 run-samples n=189）；起手前 3 样本 CEIL=min 且极差 ≤50MB（fail-closed）；MARGIN = clamp(314, 60, CEIL−2650−60)；REQ = 2650+MARGIN。报 cap_binding。",
+  "C5 缺口复现": "与 R588 窗集的 D 集比：同号 ∧ 区间重叠 ⇒ 缺口跨窗复现；并列**不相减**。",
+  "C6 步数列": "steps_executed / plan_steps_total 非空率 = 100% 才过（缺档 ⇒ rc=2 器具缺陷）。",
+  "C7 判据 v3 第二窗集（**主判据**）": {
+   "judge": "有效窗 中位 ≤ −0.34 ∧ 负号窗 ≥ 半数 ⇒ PASS（缺口成立）；否则 FAIL。阈值 −0.34 写死，非事后调。",
+   "secondary": "按族分列（life/nim/sub/wythoff 的 all-pass 率 + 失败原因直方图），与第一窗集**并列**。",
+   "third_face": "铁律 11 前置器 rc（executable_and_correct ∧ acceptable_scoped）；rc≠0 ⇒ 全部成本读数标「参考（未可验收）」。"
+  },
+  "C8 候选② 落点谓词 vs 冷集构造（只读定因）": {
+   "claim": "从 §12.2 的 MOVE_NOT_COLD 份额（67/131 = 51%）出发，机械区分两种机理：(a) **落点/选择谓词层**（产物冷集正确，但选出的落点非冷点）(b) **冷集构造错**（产物自身声明的 P-位置集合与真值冷集不同）。",
+   "method": "对每个产品跑次快照**副本**：(i) 重放 15 条 wythoff 冻结用例 → 例级 got/exp；(ii) 全网格探针（0≤a≤b≤25）取产物自报 LOSE 的位置 = 产物声明冷集；与独立 oracle 冷集（暴力递推 ∧ phi 序双实现交叉）比。",
+   "decision_rule": ["P-集与真值一致 ∧ 该跑次 wythoff 有失分 ⇒ 记 (a) 落点/选择谓词层", "P-集不一致 ⇒ 记 (b) 冷集构造错", "两类的份额（占该跑次失分例次）作为主因裁定输入；份额 ≥50% 者记主因"],
+   "negative_controls": ["POS: 合成 fixture（正确冷集 + 故意选非冷落点）⇒ 必须判 (a)", "NEG: 合成 fixture（冷集被改一个位置）⇒ 必须判 (b)", "零反例: 产物自报冷集必须非常数（防恒真门）"],
+   "honest_boundary": "全网格探针是**行为探针**（不是读产物内部函数）；结论只在 wythoff 15 例 × 本轮在盘跑次上成立，禁外推。"
+  },
+  "C9 候选③ 起手闸只读轮分支入册（文档）": {
+   "target": "docs/external-reference-harness.md §12.1.1 增「余量来源分支 + 极差条款 + cap binding 记法」",
+   "machine_checks": ["含『在飞窗优先 / 只读轮回退』字样", "含『极差 ≤ 50MB』fail-closed 字样", "含『cap binding ⇒ 振幅项退化』字样", "R590 派生件路径被引（gate-margin-r590.json）"]
+  },
+  "C10 候选④ 前置器抽样复跑口径入册（文档）": {
+   "target": "docs/external-reference-harness.md §12.4（新增）",
+   "machine_checks": ["含『抽样复跑口径』标题", "含守恒判据『复跑结论 == 该轮自身已登记 rc』", "含 fail-closed 条件（不符 ⇒ 全量重跑）", "含『耗时只作信息字段』字样"]
+  },
+  "C11 只读性": "非本轮真机臂面（R585–R588 快照树、冻结夹具、产品源码）的 sha256 清单前后一致 ⇒ PASS。"
+ },
+ "evidence_scope": {
+  "require": [
+   "eval/rover/r591/prereg-r591.json (先写后跑)",
+   "eval/rover/r591/run_r591.sh (派生件 + 逐条声明的差异)",
+   "eval/rover/r591/gate-margin-r591.json (余量条款派生读数)",
+   "$HARNESS/runs/r591/logs/run.txt (起手闸 A1/A2 + 判别力成对控制 + leak-selfcheck)",
+   "$HARNESS/runs/r591/logs/runs.jsonl (臂×窗×跑次 外部真值计数)",
+   "eval/rover/r591/verdict-r591.json (kpi 判决 + C5/C6)",
+   "eval/rover/r591/taskface-pool-r591-set2.json (判据 v3 第二窗集, 主判据)",
+   "eval/rover/r591/taskface-pool-r591-set1.json (第一窗集复算, 并列件)",
+   "eval/rover/r591/landing-predicate-r591.json (候选② 只读定因)",
+   "eval/rover/r507pre/precondition-r591.json (铁律 11 rc)",
+   "$HARNESS/runs/r591/bin-sha-check.json (臂身份: 二进制前后一致)",
+   "eval/rover/r591/snapshots/w16{6,7,8}/ (逐窗快照归档)"
+  ]
+ },
+ "fail_closed": [
+  "起手闸 A1/A2 任一未过 ⇒ 不起臂 (exit 2), 零污染; 读数原样留档不翻案。",
+  "起手前 3 样本极差 > 50MB ⇒ 窗口不可开 (exit 2)。",
+  "缺 AGENTFRAMEWORK_KEYS_DEEPSEEK ⇒ 远端臂结构性 VOID (不记缺陷, 留档)。",
+  "二进制 sha 运行前后不一致 ⇒ 臂身份不成立, 该轮只读。",
+  "缺侧 (某窗缺 codex 或 R591D) ⇒ rc=3, 不出质量判决。"
+ ],
+ "predeclared_expectation": {
+  "direction": "承 R585–R588 四窗集：整题面有效窗中位 −0.6667、符号 8 负 1 零 0 正 ⇒ **预期第二窗集同向（负号）**；若第二窗集翻正或落在 ±0.34 带内 ⇒ 判「阈值分辨率未跨窗集复现」，该轴上报告只出区间不出点估计。",
+  "quality_claim_rule": "本轮**不宣称任何降幅/增益**；成本三列只作读数，铁律 11 rc≠0 时一律标「参考（未可验收）」。"
+ },
+ "version": "v2",
+ "v2_disclosure": {
+  "written_before_rerun": true,
+  "written_at": "2026-09-20T07:50+08:00",
+  "supersedes": "v1 (同一 prereg 文件, 未改任何判据/阈值/臂参数/题集)",
+  "v1_aborted_facts": {
+   "bin_sha12": "4b70fd7cdb39",
+   "gate": "A1 PASS(mem=2814,REQ=2736) / A2 PASS(mem=2812) / B leak-selfcheck rc=0 / 判别力成对控制 rc=0",
+   "arms_run_w166": {"codex": "rc=0", "agentD-r1": "rc=124 (AMAXT 超时, reply 1760B)", "agentD-r2": "rc=8", "agentD-r3": "rc=0 (58/58 用例通过)"},
+   "abort_stage": "w166 逐用例判分 (派生的后处理步骤), 非臂面",
+   "abort_cause": "器具成本缺陷: 60s/用例 × 58 用例 = 58min/树, 而在 rc=124 留下的部分树上**每例都挂满超时** ⇒ 单窗判分无界 (~34min 仍在 r1 树上), 全轮 3 窗不可在 tick 内收口",
+   "arm_reading_lost": false,
+   "kept_evidence": ["$HARNESS/runs/r591/logs/v1-partial-cases-r1.txt (35 行, 全 TimeoutExpired)", "$HARNESS/runs/r591/logs/runs-v1.jsonl", "$HARNESS/runs/r591/logs/run-samples-v1.jsonl"],
+   "note": "v1 判决**不作为读数**留档; 不入任何判决面。v1 未产出任何窗级 KPI ⇒ 不翻案、不并列。"
+  },
+  "device_diff_v2": {
+   "file": "eval/rover/r591/cases/run_cases_r521.py (本轮自有副本; 冻结题集 cases-r521.json 一字未改, sha 270128eb…)",
+   "change_1": "逐用例超时改为 env 可覆盖: AGENTFRAMEWORK_GRADE_TIMEOUT (默认 60 ⇒ 不设时与 R519 同源行为)",
+   "change_2": "CASE 行 why 字段追加 `@<秒>` 耗时 token (kpi 取 token[1] 为用例名 + 查 PASS 子串 ⇒ 判读不受影响)",
+   "round_value": "10",
+   "zero_regression_control": {
+    "tree": "w166/agentD-r3 (rc=0 树) 的副本 /tmp/regr-r3",
+    "result_10s": "rc=0, R521_CASES 58/58",
+    "result_60s": "rc=0, R521_CASES 58/58",
+    "verdict_diff": "空 (逐用例 PASS/FAIL 逐位一致)",
+    "duration_control": "该树最大单例耗时 0.03s ⇒ 10000ms 阈值对良构树完全非绑定 (无案例落在 (10s, 60s] 区间)",
+    "honest_boundary": "对**良构树**已证零回归; 对挂死树 10s 与 60s 同为 FAIL(TimeoutExpired), 仅耗时不同。若某树存在 >10s 且 ≤60s 的合法慢例, 本轮会把它判 FAIL — 该形态在本轮语料中未观测到 (逐窗 duration token 留档可查)。"
+   }
+  },
+  "unchanged_vs_v1": ["所有判据/阈值 (含 −0.34)", "臂集合与 reps (C1×1 + R591D×3)", "题集与用例集 sha", "被测二进制", "窗集 w166..w168", "起手闸条款"],
+  "v2_restart_2": {
+   "written_before_rerun": true,
+   "written_at": "2026-09-20T07:52+08:00",
+   "cause": "臂面污染（器具缺陷, 非判据变更）: 逐跑次工作区只 mkdir 不清理 ⇒ v1 在 w166 留下的产物树被 v2 跑次『续写』⇒ 三跑次 76s 内 rc=5 收工, 判分读出 58/58 · 58/58 · 43/58, 读数不可归因 (窗口 secs=76 亦与真机臂面不符)。",
+   "device_diff_8": "run_r591.sh 的 run_agent(): 起臂前 `rm -rf $D/$win/$sub/g1` (逐跑次洁净工作区) ⇒ 与 R588 单轮新目录语义对齐; 该差异只影响隔离性, 不改任何判据/参数。",
+   "discarded_runs": ["w166-contaminated-v2/ (窗口 76s, 三跑次 rc=5)", "w167-partial-v2/ (未产出任何 rc/cases)"],
+   "kept_evidence": ["$HARNESS/runs/r591/logs/windows-contaminated-v2.jsonl", "$HARNESS/runs/r591/logs/run-contaminated-v2.txt"],
+   "note": "两次被污染的跑次均**不作读数**、不入任何判决面, 原件保留可查。"
+  }
+ }
+}
