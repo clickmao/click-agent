@@ -1,0 +1,108 @@
+{
+ "round": "R603",
+ "written_before_run": true,
+ "written_at": "2026-09-21T01:15:00+08:00",
+ "author": "cron tick (60min) · 常驻能力自检循环执行体",
+ "claim": "主线同件扩窗轮：**同被测件 + 同冻结题集、只换窗集**（第十窗集 w190..w192）的第三次复跑 —— 分辨 R600（J2 PASS，T 3/9 vs C 1/9）与 R602（J2 FAIL，T 1/9 vs C 2/9）的**符号翻转**属「轴效应」还是「窗集摆动」；同一窗集同时报告判据 v3（与同窗 codex 配对）。零产品源码改动 / 零新增夹具语义 / 零新增开关。",
+ "why_now": "R602 的主判据 v3 在 set9 判「不达」（D_median −6.0 vs 阈值 −2，由单窗 w189 的 −12 拖累），而 set1..set8 的历史读数多在阈值附近摆动；J2 在两窗集间符号翻转（PASS→FAIL）。同件同题集下，扩窗集是唯一能把「摆动」与「效应」分开的自由度（R587 教训：同臂跨窗摆动常大于臂间效应）。",
+ "single_variable": "AGENTFRAMEWORK_R1_ARTIFACT_CARRYOVER（1=治疗档·缺省 on / 0=对照档 ⇒ 逐位等于旧行为）。其余全同：被测件（$HOME/.agentframework/artifacts/pub_r600/agenthost，AOT 原生 ELF，sha256 8c3ade04d542…，**本轮未重发布 ⇒ 零产品源码改动**）、题集（cases-r521 冻结件逐字节复制件，sha e0c667c2a313c04b，与 R559–R602 同源）、剂量键（R1_CONTRACT=1 + R1_PUBLIC_SELFCHECK=1，MAX_REPAIR/MAX_EXEC_REPAIR/MAX_PROBE_REPAIR/EARLY_STOP_PFAIL 全部显式 unset）。",
+ "arms": {
+  "T": {
+   "side": "agent",
+   "bin": "$HOME/.agentframework/artifacts/pub_r600/agenthost",
+   "env": {
+    "AGENTFRAMEWORK_R1_CONTRACT": "1",
+    "AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK": "1",
+    "AGENTFRAMEWORK_R1_ARTIFACT_CARRYOVER": "1"
+   },
+   "reps": 3,
+   "role": "治疗档（缺省轴 = on）"
+  },
+  "C": {
+   "side": "agent",
+   "bin": "$HOME/.agentframework/artifacts/pub_r600/agenthost",
+   "env": {
+    "AGENTFRAMEWORK_R1_CONTRACT": "1",
+    "AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK": "1",
+    "AGENTFRAMEWORK_R1_ARTIFACT_CARRYOVER": "0"
+   },
+   "reps": 3,
+   "role": "对照档（轴关 ⇒ 逐位等于 R599D 行为）· 负控：器具不得无差别触发"
+  },
+  "C1": {
+   "side": "codex",
+   "bin": "$HOME/.agentframework/tools/codex-env/node_modules/.bin/codex",
+   "model": "deepseek-flash",
+   "reps": 1,
+   "role": "外部真值（同环境·同输入·同模型）· 次级读数·同窗配对基准"
+  }
+ },
+ "criterion_version": "v3",
+ "windows": [
+  "w190",
+  "w191",
+  "w192"
+ ],
+ "window_set_index": 10,
+ "definitions": {
+  "unmet_run": "探针 ran ∧ failed>0 ，或执行器终态 Rc≠0",
+  "converged_run": "该跑次终态满足 探针 failed==0 ∧ 执行器 Rc==0（即从「不合格」变成「合格」）",
+  "unreliable_window": "同窗 codex 真值自身失败（整题全对率 < 全例）⇒ 该窗不进配对（C0 条款；禁筛窗）"
+ },
+ "judge": {
+  "J1": {
+   "kind": "mechanism",
+   "assertion": "治疗档每条回灌修复轮的 user 轮含 `[artifact]` 块且 transcript 出现 R1_ARTIFACT_CARRYOVER 打点；对照档该打点计数 == 0（负控：器具不得无差别触发）",
+   "pass_if": "T打点>0 ∧ C打点==0"
+  },
+  "J2": {
+   "kind": "primary",
+   "assertion": "同窗集池化（9 跑次/档）converged_run 数：治疗档 ≥ 对照档 + 1（**阈值与 R600/R602 一字未改**）",
+   "lower_bound": "T_converged >= C_converged + 1",
+   "report": "逐档 converged/9 + Wilson 95% 区间 + 逐窗三分表；**跨窗集禁相减，只与 R600/R602 并列**"
+  },
+  "J3": {
+   "kind": "cost",
+   "assertion": "治疗档 calls 不增（T_max_calls <= C_max_calls）；prompt token 增量只出现在发生修复的跑次",
+   "lower_bound": "n/a（不破即过）"
+  },
+  "J4": {
+   "kind": "secondary_capability",
+   "assertion": "判据 v3 池化整题全对率：治疗档 ≥ 对照档 + 1 跑次/9 ∧ 无窗下降（阈值同 R600）",
+   "power_note": "n=9/档 ⇒ 摆动≥效应风险；单窗集不作能力结论（R587 教训）"
+  },
+  "J5": {
+   "kind": "cross_windowset_replication",
+   "assertion": "同向性：set10 的 sign(D_T_minus_C) 逐窗分布 与 set9（R602 w187..w189）**并列**呈现（禁相减、禁并池）；同向窗数 ≥ ceil(有效窗/2) 记「方向可复现」，否则记「未复现」",
+   "note": "本条只在两侧各自有效窗上判；无效窗（真值自败）单列"
+  }
+ },
+ "falsification": "① 若 set10 的 D 方向与 set9 相反 ⇒ 判「窗集依赖（欠功率）」、禁作能力结论，并把该轴降为观测项；② 若 set10 与 set9 同向且三窗集并列后 J2 仍无稳定符号 ⇒ 按「效应 < 摆动」收窄该轴为观测项 + 写死重开条件（reps ≥25/档）；③ 若 set10 上 T 与 C 逐位同形（携随附数 = 0）⇒ 判 mechanism-not-engaged、该窗集作废并如实登记。",
+ "l1_scope_declaration": {
+  "statement": "本轮**不含** L1 的 `BR`(盲重采样) / `P`(同形无关内容安慰剂) 两臂；本轮**不重测**该可构造性结论。",
+  "reason_pre_registered": "R602 已由 `eval/rover/r602/l1_axis_probe_r602.py` 机检证伪「零产品改动加 BR/P 两臂」的可构造性（`axis_states=2`：`AGENTFRAMEWORK_R1_ARTIFACT_CARRYOVER` 的解析是二值，src/agent/r1/R1Options.cs:100-108；修复轮随附内容由 ArtifactCarryover.Render 唯一决定，src/agent/r1/R1Pipeline.cs:313-330）⇒ BR/P 属产品侧端口扩展，**须用户放行**。",
+  "disclosure": "本轮 T-vs-C 只隔离「随附内容」；「额外一次尝试」在两臂同权（论文 retry-vs-no-retry 混淆不在本设计内）；「同形无关内容」混淆**仍未测**，已在轮志与 §7 如实登记。"
+ },
+ "evidence_scope": {
+  "require": [
+   "eval/rover/r603/dag-r603.md",
+   "eval/rover/r603/prereg-r603.json",
+   "eval/rover/r603/taskset-r603.json",
+   "eval/rover/r603/report-r603.md",
+   "eval/rover/r603/verdict-r603.json",
+   "eval/rover/r603/kpi-table-r603.json",
+   "eval/rover/r603/gate-margin-r603.json"
+  ],
+  "note": "缺任一 ⇒ 该轮不得宣称「可验收」"
+ },
+ "gate_clause": {
+  "criterion": "C3 起手闸余量条款（R590 派生版）",
+  "prev_swing_source": "r602/logs/run-samples.jsonl（同态在飞窗实测，n=74，min=2611 / max=2863 ⇒ swing=252MB）",
+  "prev_swing_mb": 252,
+  "clause": "MARGIN := clamp(prev_swing_effective, floor=60, cap=CEIL-GATE-floor); REQ=GATE+MARGIN；连续 2 次 + 极差 ≤50MB"
+ },
+ "no_product_change": {
+  "src_touched": [],
+  "statement": "本轮零 src/ 改动；被测件 = R600 已放行发布件（sha 8c3ade04d542），臂身份由构造（env）单变量保证。"
+ }
+}

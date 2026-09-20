@@ -1,0 +1,14 @@
+def solve(text):
+    lines = text.split('\n')
+    m = int(lines[0].split()[0])
+    piles = list(map(int, lines[1].split()))[:m]
+    x = 0
+    for p in piles:
+        x ^= p
+    if x == 0:
+        return 'LOSE'
+    for idx in range(m):
+        target = piles[idx] ^ x
+        if target < piles[idx]:
+            return 'WIN {} {}'.format(idx + 1, piles[idx] - target)
+    return 'LOSE'

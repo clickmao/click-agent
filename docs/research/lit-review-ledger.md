@@ -115,3 +115,32 @@
 - 语义：从 `src/agent/r1/R1Options.cs` 派生该轴的**可取值集** = `{on(缺省), off}`（布尔 + 否定串白名单形态）⇒ `BR`(盲重采样) / `P`(安慰剂) **不是该轴的取值**，必须新造机制（= 产品代码改动）。
 - 三控制（器具有牙）：① 同输入两次取值集**逐位相同**（确定性）；② 同文件里 int+区间轴（`AGENTFRAMEWORK_R1_MAX_REPAIR`）被识别为**多值**（正控 ⇒ 提取器不恒 2）；③ 对布尔块的**扰动副本**（追加两串）立刻翻成多值（负控 ⇒ 判据非恒真）。
 - **收窄（证伪即收窄，不硬凑）**：台账 §3.1 的「L1 零产品改动可加两臂」判为**不可行**；L1 现状降级为**观测项**，重开条件 = 产品侧放行「修复策略」轴（三态）否则不做。
+
+## 6. R603 增量（2026-09-21；同轮并轮小步）
+
+### 6.1 检索（本轮 3 式，≤3 上限内；检索间隔 ≥4s；全文抓取 2 篇 = 上限）
+
+| # | 检索式 | 命令面 | 结果 |
+|---|---|---|---|
+| Q1 | `"execution feedback" repair` | `--max 6 --sort date` | 2 条与修复环同族（下表行 1） |
+| Q2 | `verification gate false rejection agent` | `--max 6 --sort date` | 0 条新增采信（与本仓判定卫生同族，去重） |
+| Q3 | `"cache-aware" scheduling LLM agent` | `--max 6 --sort date` | 1 条直击本仓**判据形态**（下表行 2） |
+
+### 6.2 台账（8 列，本轮追加 2 行）
+
+| 日期 | 检索式 | 出处(含版本) | 逐字引文(≤2 句) | 机制假设 | 改哪一格 KPI(预期方向) | 单变量轴 + 判据(阈值/可证伪点) | 状态 |
+|---|---|---|---|---|---|---|---|
+| 2026-09-21 | `"execution feedback" repair` | arXiv:2609.20455**v1**（2026-09-17；comment/journal-ref 皆空 ⇒ 权威性仅由摘要面支撑，非同行评审） | "existing methods often edit skills directly from failed rollouts without structured routing from an observed failure to an editable location" / "allowing the same structure to support skill selection, attribution-guided repair, and update validation" | 失败回灌的收益取决于**「失败 → 可编辑位置」的结构化路由**与**范围化验证 + 回滚**，而非回灌内容总量 | 质量（J2 修复收敛率）↑；成本（回灌体积）↓ | 轴 = 修复回灌**粒度**（整份产物 vs 按失败用例定位的片段）+ **回滚**（失败则还原上一版）；判据 = `T_定位 ≥ T_整份` ∧ 回滚态下整题全对率不下降 | **候选（须产品放行**：现轴 env 面仅 on/off（R602 §5.3 机检）⇒ 三态须改 `src/`） |
+| 2026-09-21 | `"cache-aware" scheduling LLM agent` | arXiv:2609.20804**v1**（2026-09-17；comment: 43 pages；无 journal-ref） | "existing work typically evaluates harnesses as monolithic systems, leaving the effectiveness of individual components unclear. To enable component-level comparisons, we study this question with a lightweight coding harness whose execution loop is fixed while three components are varied: planning, action space, and context management." / "we evaluate 176 matched settings spanning five context-management strategies, four context-window budgets, and targeted ablations of planning and action" | 评测应**固定执行环、只变一个组件**做配对消融；整体式读数无法归因到组件 | 口径（**判据形态**，非直接收益）：本仓判据 v3「同件同题集 + 单变量轴 + 同窗配对」= 该形态的本仓实现 | 轴 = 无（口径支持，零新产品机制）；判据 = 每轮预注册必须写明「本轮唯一自由度」且**同件 sha / 题集 sha / 执行环逐字节不变**（本仓 R602/R603 已按此落盘） | **采信（口径支持，已实施）**：R602/R603 预注册 `single_variable` + 同件 sha 8c3ade04d542 逐字节同 |
+
+- **顺延计数**：本轮 1 项（N4④ `V_int` 分布扩展 —— 器具 `landing_predicate_r593.py` 壁钟 >15min 未完成、零输出 ⇒ 零读数入库、进程已按 pid 清场，挪 R604；**禁静默跳过**）。
+
+采集日：2026-09-21（CST）。引用数：Semantic Scholar 无 key 时 HTTP 429 ⇒ **不可用**（如实写，不编造）。
+版本号逐字取自 `export.arxiv.org/api/query?id_list=` 的 `a:id` 字段（含 `v1`）。
+
+### 6.3 本轮器具产出（真值掉线面机检，只读）
+
+- 器具：`eval/rover/r603/truthdrop_r603.py`（只读 `precond-<round>.json` 的逐用例两侧 pass/fail 面；零子进程、零远端调用、零产品改动；三态 rc = 0 已算 / 2 器具缺陷 / 3 输入缺失）。
+- 四桶定义：S1 两侧过 · S2 我方独败（真值可作 oracle）· **S3 我方过 ∧ 真值败（反相面）** · S4 两侧同败（题面/夹具同难候选）。
+- 控制：POS = 取「两侧都过」用例把真值伪改为失败 ⇒ 该窗 S3 必须 +n_prod 且归属全 `L_truth_only`（实测 rows=6=expect）；身份不符（窗集/`failed_cases` 越域）⇒ rc=2；四桶全零 ⇒ rc=2（防退化为恒真门）。
+- 读数见 `eval/rover/r603/truthdrop-r603.json`（r602 面已落）。**纪律含义**：codex 真值不得当**硬上限**（J4/J5 的隐含假设）；S3 非零 ⇒ 该类用例只作并列描述，不作「我方收益」证据。
