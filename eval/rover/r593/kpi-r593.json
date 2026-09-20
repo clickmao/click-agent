@@ -1,0 +1,872 @@
+{
+ "round": "R593",
+ "source": "/home/agentuser/AgentFramework/eval/rover/r593/landing-predicate-r593.json",
+ "agent": {
+  "runs": 44,
+  "n_cases": 15,
+  "pass_each": [
+   15,
+   15,
+   15,
+   10,
+   7,
+   4,
+   15,
+   5,
+   12,
+   4,
+   15,
+   15,
+   12,
+   15,
+   6,
+   5,
+   0,
+   0,
+   15,
+   15,
+   15,
+   7,
+   0,
+   15,
+   2,
+   15,
+   8,
+   0,
+   15,
+   0,
+   15,
+   4,
+   1,
+   3,
+   0,
+   14,
+   0,
+   15,
+   3,
+   3,
+   15,
+   15,
+   15,
+   1
+  ],
+  "median": 9.0,
+  "min": 0,
+  "max": 15,
+  "all_correct_runs": 18,
+  "all_correct_rate": 0.4091,
+  "coldset_layer_run_rate": 0.5,
+  "d_share": 0.2473
+ },
+ "codex": {
+  "runs": 15,
+  "n_cases": 15,
+  "pass_each": [
+   13,
+   15,
+   15,
+   15,
+   15,
+   15,
+   15,
+   10,
+   15,
+   15,
+   15,
+   10,
+   15,
+   4,
+   13
+  ],
+  "median": 15,
+  "min": 4,
+  "max": 15,
+  "all_correct_runs": 10,
+  "all_correct_rate": 0.6667,
+  "coldset_layer_run_rate": 0.2667,
+  "d_share": 0.12
+ },
+ "windows": [
+  {
+   "win": "r585/w154",
+   "n_agent": 3,
+   "agent_pass": [
+    15,
+    15,
+    15
+   ],
+   "agent_median": 15,
+   "agent_range": 0,
+   "codex_pass": 13,
+   "codex_layer": "(b) 冷集构造层",
+   "agent_layer": [
+    "(c) 本轴外",
+    "(c) 本轴外",
+    "(c) 本轴外"
+   ],
+   "codex_failset": [
+    12,
+    14
+   ],
+   "agent_failsets": [
+    [],
+    [],
+    []
+   ],
+   "paired_med_minus_codex": 2,
+   "co_fail_coldset": false
+  },
+  {
+   "win": "r585/w155",
+   "n_agent": 3,
+   "agent_pass": [
+    10,
+    7,
+    4
+   ],
+   "agent_median": 7,
+   "agent_range": 6,
+   "codex_pass": 15,
+   "codex_layer": "(c) 本轴外",
+   "agent_layer": [
+    "(b) 冷集构造层",
+    "(b) 冷集构造层",
+    "(b) 冷集构造层"
+   ],
+   "codex_failset": [],
+   "agent_failsets": [
+    [
+     1,
+     2,
+     6,
+     12,
+     14
+    ],
+    [
+     0,
+     2,
+     4,
+     5,
+     6,
+     7,
+     13,
+     14
+    ],
+    [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     12,
+     13,
+     14
+    ]
+   ],
+   "paired_med_minus_codex": -8,
+   "co_fail_coldset": false
+  },
+  {
+   "win": "r585/w156",
+   "n_agent": 3,
+   "agent_pass": [
+    15,
+    5,
+    12
+   ],
+   "agent_median": 12,
+   "agent_range": 10,
+   "codex_pass": 15,
+   "codex_layer": "(c) 本轴外",
+   "agent_layer": [
+    "(c) 本轴外",
+    "(a) 落点/选择谓词层",
+    "(b) 冷集构造层"
+   ],
+   "codex_failset": [],
+   "agent_failsets": [
+    [],
+    [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     9,
+     13
+    ],
+    [
+     0,
+     12,
+     14
+    ]
+   ],
+   "paired_med_minus_codex": -3,
+   "co_fail_coldset": false
+  },
+  {
+   "win": "r586/w157",
+   "n_agent": 3,
+   "agent_pass": [
+    4,
+    15,
+    15
+   ],
+   "agent_median": 15,
+   "agent_range": 11,
+   "codex_pass": 15,
+   "codex_layer": "(c) 本轴外",
+   "agent_layer": [
+    "(a) 落点/选择谓词层",
+    "(c) 本轴外",
+    "(c) 本轴外"
+   ],
+   "codex_failset": [],
+   "agent_failsets": [
+    [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     9,
+     13,
+     14
+    ],
+    [],
+    []
+   ],
+   "paired_med_minus_codex": 0,
+   "co_fail_coldset": false
+  },
+  {
+   "win": "r586/w158",
+   "n_agent": 3,
+   "agent_pass": [
+    12,
+    15,
+    6
+   ],
+   "agent_median": 12,
+   "agent_range": 9,
+   "codex_pass": 15,
+   "codex_layer": "(c) 本轴外",
+   "agent_layer": [
+    "(b) 冷集构造层",
+    "(c) 本轴外",
+    "(b) 冷集构造层"
+   ],
+   "codex_failset": [],
+   "agent_failsets": [
+    [
+     0,
+     7,
+     10
+    ],
+    [],
+    [
+     0,
+     2,
+     3,
+     4,
+     5,
+     7,
+     12,
+     13,
+     14
+    ]
+   ],
+   "paired_med_minus_codex": -3,
+   "co_fail_coldset": false
+  },
+  {
+   "win": "r586/w159",
+   "n_agent": 3,
+   "agent_pass": [
+    5,
+    0,
+    0
+   ],
+   "agent_median": 0,
+   "agent_range": 5,
+   "codex_pass": 15,
+   "codex_layer": "(c) 本轴外",
+   "agent_layer": [
+    "(b) 冷集构造层",
+    "(b) 冷集构造层",
+    "(b) 冷集构造层"
+   ],
+   "codex_failset": [],
+   "agent_failsets": [
+    [
+     0,
+     1,
+     2,
+     3,
+     5,
+     6,
+     7,
+     12,
+     13,
+     14
+    ],
+    [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14
+    ],
+    [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14
+    ]
+   ],
+   "paired_med_minus_codex": -15,
+   "co_fail_coldset": false
+  },
+  {
+   "win": "r587/w160",
+   "n_agent": 3,
+   "agent_pass": [
+    15,
+    15,
+    15
+   ],
+   "agent_median": 15,
+   "agent_range": 0,
+   "codex_pass": 15,
+   "codex_layer": "(c) 本轴外",
+   "agent_layer": [
+    "(c) 本轴外",
+    "(c) 本轴外",
+    "(c) 本轴外"
+   ],
+   "codex_failset": [],
+   "agent_failsets": [
+    [],
+    [],
+    []
+   ],
+   "paired_med_minus_codex": 0,
+   "co_fail_coldset": false
+  },
+  {
+   "win": "r587/w161",
+   "n_agent": 3,
+   "agent_pass": [
+    7,
+    0,
+    15
+   ],
+   "agent_median": 7,
+   "agent_range": 15,
+   "codex_pass": 10,
+   "codex_layer": "(b) 冷集构造层",
+   "agent_layer": [
+    "(b) 冷集构造层",
+    "(b) 冷集构造层",
+    "(c) 本轴外"
+   ],
+   "codex_failset": [
+    0,
+    7,
+    12,
+    13,
+    14
+   ],
+   "agent_failsets": [
+    [
+     0,
+     2,
+     4,
+     5,
+     7,
+     12,
+     13,
+     14
+    ],
+    [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14
+    ],
+    []
+   ],
+   "paired_med_minus_codex": -3,
+   "co_fail_coldset": true,
+   "failset_identical": false,
+   "co_fail_n_agent_b": 2
+  },
+  {
+   "win": "r587/w162",
+   "n_agent": 2,
+   "agent_pass": [
+    2,
+    15
+   ],
+   "agent_median": 8.5,
+   "agent_range": 13,
+   "codex_pass": 15,
+   "codex_layer": "(c) 本轴外",
+   "agent_layer": [
+    "(b) 冷集构造层",
+    "(c) 本轴外"
+   ],
+   "codex_failset": [],
+   "agent_failsets": [
+    [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     9,
+     10,
+     11,
+     12,
+     14
+    ],
+    []
+   ],
+   "paired_med_minus_codex": -6.5,
+   "co_fail_coldset": false
+  },
+  {
+   "win": "r588/w163",
+   "n_agent": 3,
+   "agent_pass": [
+    8,
+    0,
+    15
+   ],
+   "agent_median": 8,
+   "agent_range": 15,
+   "codex_pass": 15,
+   "codex_layer": "(c) 本轴外",
+   "agent_layer": [
+    "(b) 冷集构造层",
+    "(b) 冷集构造层",
+    "(c) 本轴外"
+   ],
+   "codex_failset": [],
+   "agent_failsets": [
+    [
+     0,
+     1,
+     2,
+     4,
+     5,
+     6,
+     11
+    ],
+    [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14
+    ],
+    []
+   ],
+   "paired_med_minus_codex": -7,
+   "co_fail_coldset": false
+  },
+  {
+   "win": "r588/w164",
+   "n_agent": 3,
+   "agent_pass": [
+    0,
+    15,
+    4
+   ],
+   "agent_median": 4,
+   "agent_range": 15,
+   "codex_pass": 15,
+   "codex_layer": "(c) 本轴外",
+   "agent_layer": [
+    "(a) 落点/选择谓词层",
+    "(c) 本轴外",
+    "(b) 冷集构造层"
+   ],
+   "codex_failset": [],
+   "agent_failsets": [
+    [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14
+    ],
+    [],
+    [
+     0,
+     1,
+     2,
+     4,
+     5,
+     6,
+     7,
+     9,
+     10,
+     11,
+     13
+    ]
+   ],
+   "paired_med_minus_codex": -11,
+   "co_fail_coldset": false
+  },
+  {
+   "win": "r588/w165",
+   "n_agent": 3,
+   "agent_pass": [
+    1,
+    3,
+    0
+   ],
+   "agent_median": 1,
+   "agent_range": 3,
+   "codex_pass": 10,
+   "codex_layer": "(b) 冷集构造层",
+   "agent_layer": [
+    "(b) 冷集构造层",
+    "(b) 冷集构造层",
+    "(b) 冷集构造层"
+   ],
+   "codex_failset": [
+    3,
+    8,
+    12,
+    13,
+    14
+   ],
+   "agent_failsets": [
+    [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13
+    ],
+    [
+     0,
+     1,
+     2,
+     4,
+     5,
+     6,
+     7,
+     9,
+     11,
+     12,
+     13,
+     14
+    ],
+    [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14
+    ]
+   ],
+   "paired_med_minus_codex": -9,
+   "co_fail_coldset": true,
+   "failset_identical": false,
+   "co_fail_n_agent_b": 3
+  },
+  {
+   "win": "r591/w166",
+   "n_agent": 3,
+   "agent_pass": [
+    14,
+    0,
+    15
+   ],
+   "agent_median": 14,
+   "agent_range": 15,
+   "codex_pass": 15,
+   "codex_layer": "(c) 本轴外",
+   "agent_layer": [
+    "(c) 本轴外",
+    "(b) 冷集构造层",
+    "(c) 本轴外"
+   ],
+   "codex_failset": [],
+   "agent_failsets": [
+    [
+     0
+    ],
+    [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14
+    ],
+    []
+   ],
+   "paired_med_minus_codex": -1,
+   "co_fail_coldset": false
+  },
+  {
+   "win": "r591/w167",
+   "n_agent": 3,
+   "agent_pass": [
+    3,
+    3,
+    15
+   ],
+   "agent_median": 3,
+   "agent_range": 12,
+   "codex_pass": 4,
+   "codex_layer": "(b) 冷集构造层",
+   "agent_layer": [
+    "(b) 冷集构造层",
+    "(b) 冷集构造层",
+    "(c) 本轴外"
+   ],
+   "codex_failset": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    12,
+    13,
+    14
+   ],
+   "agent_failsets": [
+    [
+     0,
+     1,
+     2,
+     4,
+     5,
+     6,
+     7,
+     9,
+     10,
+     11,
+     13,
+     14
+    ],
+    [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     9,
+     10,
+     11,
+     13
+    ],
+    []
+   ],
+   "paired_med_minus_codex": -1,
+   "co_fail_coldset": true,
+   "failset_identical": false,
+   "co_fail_n_agent_b": 2
+  },
+  {
+   "win": "r591/w168",
+   "n_agent": 3,
+   "agent_pass": [
+    15,
+    15,
+    1
+   ],
+   "agent_median": 15,
+   "agent_range": 14,
+   "codex_pass": 13,
+   "codex_layer": "(c) 本轴外",
+   "agent_layer": [
+    "(c) 本轴外",
+    "(c) 本轴外",
+    "(b) 冷集构造层"
+   ],
+   "codex_failset": [
+    0,
+    14
+   ],
+   "agent_failsets": [
+    [],
+    [],
+    [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     10,
+     11,
+     12,
+     13,
+     14
+    ]
+   ],
+   "paired_med_minus_codex": 2,
+   "co_fail_coldset": false
+  }
+ ],
+ "paired": [
+  2,
+  -8,
+  -3,
+  0,
+  -3,
+  -15,
+  0,
+  -3,
+  -6.5,
+  -7,
+  -11,
+  -9,
+  -1,
+  -1,
+  2
+ ],
+ "paired_median": -3,
+ "paired_range": 17,
+ "co_fail_coldset_windows": [
+  "r587/w161",
+  "r588/w165",
+  "r591/w167"
+ ],
+ "co_fail_failset_identical": {
+  "r587/w161": false,
+  "r588/w165": false,
+  "r591/w167": false
+ },
+ "agent_only_coldset_windows": [
+  "r585/w155",
+  "r585/w156",
+  "r586/w158",
+  "r586/w159",
+  "r587/w162",
+  "r588/w163",
+  "r588/w164",
+  "r591/w166",
+  "r591/w168"
+ ],
+ "codex_only_coldset_windows": [
+  "r585/w154"
+ ],
+ "d1_reason": {
+  "nonzero_rc": 66
+ },
+ "d_subs": {
+  "D1_empty_or_error": 66,
+  "D3_move_illegal": 3
+ },
+ "codex_d_subs": {
+  "D3_move_illegal": 3
+ }
+}

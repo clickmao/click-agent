@@ -1,0 +1,314 @@
+{
+ "round": "R593",
+ "ts": "2026-09-20T11:39:38+0800",
+ "kind": "只读定因并轮（候选 ②③④）：D 桶机械细分 / codex 侧同口径对照 / V_int 先落分布；零新臂 / 零远端 / 零产品源码改动",
+ "instrument": {
+  "v3": "eval/rover/r593/landing_predicate_r593.py",
+  "probe": "eval/rover/r593/d1_stderr_probe_r593.py",
+  "imports_from": [
+   "eval/rover/r592/landing_predicate_r592.py",
+   "eval/rover/r562/wythoff_cause_r562.py"
+  ],
+  "runs_analysed": {
+   "agent": 44,
+   "codex": 15,
+   "err": 0
+  },
+  "readonly": true,
+  "strays": [
+   0,
+   0
+  ],
+  "has_teeth": true,
+  "teeth_signatures": {
+   "OK": [
+    "LAYER",
+    "(c) 本轴外"
+   ],
+   "POS": [
+    "LAYER",
+    "(a) 落点/选择谓词层"
+   ],
+   "NEG": [
+    "LAYER",
+    "(b) 冷集构造层"
+   ],
+   "D_EMPTY": [
+    "D",
+    "D1_empty_or_error",
+    "empty_body"
+   ],
+   "D_RC": [
+    "D",
+    "D1_empty_or_error",
+    "nonzero_rc"
+   ],
+   "D_SHAPE": [
+    "D",
+    "D2_move_shape",
+    null
+   ],
+   "D_ILLEGAL": [
+    "D",
+    "D3_move_illegal",
+    null
+   ],
+   "D_LABEL": [
+    "D",
+    "D4_label_mismatch",
+    null
+   ]
+  },
+  "old_granularity_distinct_buckets": 1,
+  "old_granularity_has_teeth": false,
+  "conservation": true,
+  "zero_regression_vs_R592": true,
+  "rc": 0
+ },
+ "candidate2_D_subdivision": {
+  "D_total": 69,
+  "D_share": 0.2473,
+  "subs": {
+   "D1_empty_or_error": 66,
+   "D3_move_illegal": 3
+  },
+  "sub_shares": {
+   "D1_empty_or_error": 0.9565,
+   "D3_move_illegal": 0.0435
+  },
+  "d1_reason": {
+   "nonzero_rc": 66
+  },
+  "probe_replayed": 66,
+  "probe_rc_hist": {
+   "1": 58,
+   "124": 8
+  },
+  "probe_family_rank": [
+   [
+    "AttributeError|module 'games.wythoff' h",
+    30
+   ],
+   [
+    "IndexError|list index out of range",
+    15
+   ],
+   [
+    "TypeError|'NoneType' object is not",
+    11
+   ],
+   [
+    "TIMEOUT_60s",
+    8
+   ],
+   [
+    "TypeError|%d format: a real number",
+    2
+   ]
+  ],
+  "probe_mismatch": {
+   "mismatch": 0,
+   "rc_equal": true
+  },
+  "decision": "D 桶 95.65% 为进程非零退出（执行/交付形态面），非非法着法/词标/畸形输出；最大单一形态 = 交付物未暴露入口 `solve`（30 例 = 2 整跑次全灭），其次 IndexError 15 / NoneType 下标 11 / 挂死 8 / %d 2"
+ },
+ "candidate3_codex_face": {
+  "codex_runs": 15,
+  "agent_runs": 44,
+  "coldset_run_rate": {
+   "agent": 0.5,
+   "codex": 0.2667
+  },
+  "d_share": {
+   "agent": 0.2473,
+   "codex": 0.12
+  },
+  "co_fail_windows": [
+   "r587/w161",
+   "r588/w165",
+   "r591/w167"
+  ],
+  "co_fail_failset_identical": {
+   "r587/w161": false,
+   "r588/w165": false,
+   "r591/w167": false
+  },
+  "agent_only_coldset_windows": [
+   "r585/w155",
+   "r585/w156",
+   "r586/w158",
+   "r586/w159",
+   "r587/w162",
+   "r588/w163",
+   "r588/w164",
+   "r591/w166",
+   "r591/w168"
+  ],
+  "codex_only_coldset_windows": [
+   "r585/w154"
+  ],
+  "decision": "同败强判据（两侧同败 ∧ 失败集合逐字相同）不成立 ⇒ 不判夹具/题面缺陷；登记「系统性同踩点 3/15」"
+ },
+ "candidate4_v_int": {
+  "agent_hist": {
+   "0": 25,
+   "350": 1,
+   "235": 1,
+   "94": 1,
+   "115": 1,
+   "4": 1,
+   "48": 2,
+   "10": 1,
+   "29": 1,
+   "13": 1,
+   "11": 2,
+   "1": 1,
+   "6": 2,
+   "5": 2,
+   "25": 1,
+   "169": 1
+  },
+  "codex_hist": {
+   "50": 1,
+   "0": 11,
+   "19": 1,
+   "2": 1,
+   "350": 1
+  },
+  "crosscheck_equal_and_positive": 0,
+  "decision": "只落分布，不设阈值/不作触发（预注册禁止）"
+ },
+ "quality_same_window_pairing": {
+  "all_correct_rate": {
+   "agent": 0.4091,
+   "codex": 0.6667
+  },
+  "pass_median": {
+   "agent": 9.0,
+   "codex": 15
+  },
+  "pass_range": {
+   "agent": 15,
+   "codex": 11
+  },
+  "paired_windows": [
+   2,
+   -8,
+   -3,
+   0,
+   -3,
+   -15,
+   0,
+   -3,
+   -6.5,
+   -7,
+   -11,
+   -9,
+   -1,
+   -1,
+   2
+  ],
+  "paired_median": -3,
+  "paired_range": 17,
+  "cost_columns": "未测（零远端调用 / 只读轮）",
+  "steps": "未测（无新跑次）"
+ },
+ "iron11": {
+  "cmd": "python3 eval/rover/r507pre/exec_precondition.py --round r593",
+  "rc": 3,
+  "reason": "DISCOVER_FAIL 无两侧产出物 ⇒ 前置器不适用（零新臂）",
+  "claim_limit": "不宣称任何降幅/增益；tokens 三列未测"
+ },
+ "verdict": {
+  "rc": 0,
+  "c2_rc": 0,
+  "main_cause": "B_coldset（第一主因，份额 0.6595，未变）；D 桶（0.2473）细分后主因 = 执行面非零退出 0.9565",
+  "next": "候选① 待用户放行（产品侧修复）；候选②③④ 已并轮闭合",
+  "quality_gap": {
+   "all_correct_rate": {
+    "agent": 0.4091,
+    "codex": 0.6667
+   },
+   "paired_median": -3,
+   "paired_range": 17
+  }
+ },
+ "honest_bounds": [
+  "只读产物诊断 ⇒ 不构成能力验收，不得回写成「产品已修」",
+  "D1 的 66 例次来自 44 跑次（横跨 5 窗集），非独立样本",
+  "同败窗 3/15 只登记为系统性踩点，强判据不成立 ⇒ 不据此改题面/夹具",
+  "质量面为同快照重算（非新跑次）⇒ 与真机成本面不可混用",
+  "跨轮禁相减：R592 读数只用于零回归对照臂的逐位复现",
+  "V_int 只作诊断，不作分层触发"
+ ],
+ "prereg_compliance": {
+  "C1_teeth": {
+   "declared": "7 件控制落点唯一",
+   "actual": "8 件落点唯一（含 D_RC）",
+   "pass": true
+  },
+  "C2_non_trivial": {
+   "pass": true,
+   "ctrl_forms": {
+    "equal|v_land>0=False": 3,
+    "diff|v_land>0=True": 2,
+    "diff|v_land>0=False": 3
+   },
+   "run_forms": {
+    "equal|v_land>0=False": 30,
+    "diff|v_land>0=False": 26,
+    "diff|v_land>0=True": 3
+   }
+  },
+  "C3_conservation": {
+   "pass": true
+  },
+  "C4_zero_regression": {
+   "pass": true
+  },
+  "C5_two_sides": {
+   "B_coldset_share": {
+    "agent": 0.6595,
+    "codex": 0.88
+   },
+   "share_gap": 0.2205,
+   "prereg_rule": "差 < 0.10 ⇒ 转判题面/夹具嫌疑",
+   "rule_result": "差 0.2205 ≥ 0.10 ⇒ **按预注册规则不转判题面/夹具**；附加（强形态）同败判据：3 窗同层但失败集合非逐字相同 ⇒ 亦不成立"
+  },
+  "C6_v_int_no_threshold": {
+   "pass": true
+  },
+  "C7_strays": {
+   "pass": true
+  },
+  "C8_readonly": {
+   "pass": true
+  }
+ },
+ "predeclared_expectation_result": {
+  "candidate_2": {
+   "predicted": "D1 或 D2 主导 ∧ ≥2 子类非零才作主因排序",
+   "actual": "D1 0.9565 主导（D2=0）、D3 0.0435 非零 ⇒ 细分有分辨率",
+   "verdict": "方向命中（D1）；细分分辨率成立 ⇒ 可作主因排序"
+  },
+  "candidate_3": {
+   "predicted": "codex 侧 B_coldset 份额**显著低于**我方",
+   "actual": "codex 失败组成份额 0.8800 **高于**我方 0.6595（跑次率才是我方更高：0.5000 vs 0.2667）",
+   "verdict": "**预注册方向被实测否证**（如实登记，不修饰）；正确陈述 = 跑次率我方高、失败组成 codex 更集中于同层"
+  }
+ },
+ "prereg_deltas": [
+  "增补：第 8 件控制 `D_RC`（同桶不同**原因**：`nonzero_rc`）在**器具实现期**加入并先跑 `--controls-only` 自检，但**未回写预注册文件**（预注册只写 7 件）⇒ 披露；增补方向为**收紧**（多一件必须落点唯一），未放宽任何阈值",
+  "C3 的第二半（Σ 全部桶 == 失败例次总数）在本器具里由 `fail_total = Σ buckets` 定义式满足 ⇒ 未作独立断言（如实说明）"
+ ],
+ "form_gate": {
+  "cmd": "env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR dotnet test src/agent.tests/agentframework.tests.csproj --filter VerifiedForm|SkillGeneralization|DevPlanDocRef",
+  "result": "Failed 0 / Passed 14 / Skipped 0",
+  "rc": 0
+ },
+ "self_caught": [
+  "controls-only 模式下守恒判据取自**空轮次面** ⇒ 自检恒红（rc=2 假红）⇒ 改以**控制面守恒**为准 + `zero_regression` 在该模式标「不评」，**未放宽任何阈值**",
+  "探针首版未处理 `TimeoutExpired` ⇒ 一个挂死例把整个探针进程打断（未落盘）⇒ 改为 `v2.run_one` **同语义变体**（超时同判 rc=124）后可逐例对账",
+  "HINT：`build_oracle` 的 oracle 只覆盖冻结用例族；网格面 `C_true` 由 oracle 冷集截断到 L ⇒ 声明面/扫描面差异已随 R592 处置"
+ ]
+}

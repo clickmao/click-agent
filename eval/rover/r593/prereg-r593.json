@@ -1,0 +1,67 @@
+{
+ "round": "R593",
+ "written_before_run": true,
+ "written_at": "2026-09-20T10:55+08:00",
+ "author": "cron tick (60min) · 常驻能力自检循环执行体",
+ "claim": "只读定因并轮：推进 §7 R592 块点名的 R593 候选 ②③④ —— ② `D_delivery_or_shape`（69 例次 / 0.2473，第二大项）机械细分定因；③ 同器具扩到 codex 侧跑次（`--codex-too`），判「冷集构造错」是我方缺陷还是题面歧义；④ `V_int` 先落分布（不设阈值）。零产品源码改动 / 零新臂 / 零远端调用 / 零新增夹具语义（被测对象 = 在盘快照树 + 冻结用例，逐字节不变）。",
+ "single_variable": "仅器具面：新增只读定因器 v3 `eval/rover/r593/landing_predicate_r593.py`（**import** r592 器具的 helpers 与 r562 独立 oracle，禁重写第二份）。被测对象（15 窗在盘快照树）、冻结用例集 `cases-r521.json`、oracle（r562）与 A/B 级判据桶定义**逐字不变**。",
+ "scope": {
+  "agent_side_runs": "44（r585 w154–w156 / r586 w157–w159 / r587 w160–w162 / r588 w163–w165 / r591 w166–w168，每窗 ×3 agentD-r1..r3；r587 缺 1）",
+  "codex_side_runs": "15（同 15 窗 ×1 codex）",
+  "note": "两侧**并列不相同减**（跑次数不等 44 vs 15；分母一律用各自侧例次总数）"
+ },
+ "criteria_R593": {
+  "C1 控制有牙（成对、行为可分）": {
+   "reused_from_r592": {
+    "OK": "正确实现 ⇒ 期望 `C_prod==C_true` ∧ V_land==0 ∧ 例 15/15",
+    "POS": "真值冷集 + 落点谓词取反 ⇒ 期望层 (a)",
+    "NEG": "Nim 式信念（对角冷集 + 单堆着法）⇒ 期望层 (b)"
+   },
+   "new_for_d_subdivision": {
+    "D_EMPTY": "OK 实现但恒返回空串 ⇒ 期望 D 子桶 = `D1_empty_or_error`",
+    "D_SHAPE": "OK 实现但 WIN 支返回裸词标 `WIN`（无可解析对）⇒ 期望 = `D2_move_shape`",
+    "D_ILLEGAL": "OK 实现但 WIN 支返回非法着法 `WIN 1 2`（既不单堆也不等量）⇒ 期望 = `D3_move_illegal`",
+    "D_LABEL": "OK 实现但 LOSE 支返回 `NONE`（非 WIN 词标、与期望不符）⇒ 期望 = `D4_label_mismatch`"
+   },
+   "判据": "7 件控制**全部落点唯一**（4 个 D 控制各落各的子桶、互不串桶）⇒ `has_teeth=true`；任一不中 ⇒ rc=2（器具缺陷，D 细分与两侧对照结论**不入结论**）"
+  },
+  "C2 非平凡（防恒真门）": "控制面 7 件形态读数需 ≥2 个互异；且真实跑次的 (冷集集合, V_land>0) 形态 ≥2 个互异；全同 ⇒ rc=2",
+  "C3 守恒（细分不吞并）": "`Σ D1..D6 == D_total`（D_total 与 r592 登记的 `D_delivery_or_shape` 同定义）∧ `Σ 全部桶 == 失败例次总数`；不等 ⇒ rc=2（细分把条目弄丢）",
+  "C4 零回归（对照臂逐位复现）": "同器具跑同 44 个 `agentD` 跑次，A/B 级桶计数与层分布必须与此前登记值**逐位复现**：`B_coldset 184 / A_landing_loose 20 / A_selection_order 6`、层 `(b) 22 / (c) 19 / (a) 3`；对不上 ⇒ 先查器具/环境（不入结论）",
+  "C5 两侧对照口径": "agent 面与 codex 面**并列不相同减**；各侧分母 = 该侧失败例次总数；题面-判据一致性判别：两侧 B_coldset 份额同尺度（差 < 0.10）⇒ 先怀疑题面/夹具，不归因能力",
+  "C6 V_int 落分布": "`V_int` 只出直方图（含两侧），**本轮不设阈值、不分层、不作触发**（预注册禁止）",
+  "C7 残留进程": "跑完宿主 `-B -m games` 残留 == 0（fail-closed: >0 ⇒ rc=2 + 按 pid 清场留痕）",
+  "C8 只读性": "59 份快照树 + 冻结用例 + `src/` 源码 sha256 前后一致（含逐文件 mtime 不变式）"
+ },
+ "gate_R593": {
+  "mode": "只读轮（无在飞真机臂窗）⇒ 余量来源分支 = 起手前采样振幅（R590 派生条款）",
+  "samples_MB": [2858, 2866, 2865],
+  "swing_MB": 8,
+  "swing_rule": "起手前极差 ≤ 50MB fail-closed",
+  "ceiling_min_of_3_MB": 2858,
+  "REQ_MB": 2748,
+  "strays_before": 0,
+  "cap_binding": true,
+  "cap_note": "cap = ceiling_min_of_3 − REQ − 60 = 50 < 起手前振幅 8? 否 ⇒ 上界约束生效、振幅项未退化；条款按 R590 派生原样行使"
+ },
+ "predeclared_expectation": {
+  "candidate_2_d_sub": "方向：D 桶为「交付/形状面」⇒ 预期主导子类落在 `D1_empty_or_error` 或 `D2_move_shape`（与 C8 已定位的「契约块内过度转义 ⇒ 解析失败」同向）；**分辨率前置**：若某单一子类 == D_total ⇒ 记「细分无分辨率、该子类与 D 桶等价」（如实收窄，不宣称细分收益）；若 D 子类 ≥2 类非零 ⇒ 细分有分辨率，方对主因排序作结论。",
+  "candidate_3_codex": "方向：预期 codex 侧 B_coldset 份额**显著低于**我方侧（真值侧通过率高）；若两侧份额差 < 0.10 ⇒ 依题面-判据一致性纪律转判「题面/夹具嫌疑」，不归因我方能力（两侧同败 ⇒ 先怀疑夹具）。",
+  "candidate_4_v_int": "只落分布，无方向断言（预注册禁止阈值）。",
+  "no_gain_claim": "本轮零产品源码改动、零远端调用 ⇒ 不宣称任何质量/成本降幅；D 细分与 codex 对照只对 wythoff 15 例 × 在盘跑次成立，禁外推。"
+ },
+ "negative_control_instrument": {
+  "purpose": "D 细分判据的「修前/旧粒度」臂：**旧粒度**（r592 的 `D_delivery_or_shape` 单一 catch-all）必须把 4 个新 D 控制**全部折进同一桶** ⇒ 无牙（证明细分有分辨率、非装饰）。",
+  "declared_before_run": true,
+  "old_granularity_expectation": "4 个 D 控制（D_EMPTY / D_SHAPE / D_ILLEGAL / D_LABEL）在旧粒度下全部落 `D_delivery_or_shape` ⇒ 互异桶数 = 1 ⇒ `has_teeth=false`",
+  "new_granularity_expectation": "同 4 控制在新粒度下互异桶数 = 4 ⇒ `has_teeth=true`"
+ },
+ "fail_closed": [
+  "控制不过（任一控制不中 / D 控制串桶）⇒ rc=2, D 细分与两侧对照**不入结论**",
+  "守恒式不成立（Σ D_sub != D_total 或 Σ 桶 != 例次总数）⇒ rc=2",
+  "残留进程 >0 ⇒ rc=2 + 清场留痕",
+  "快照树/冻结用例缺失 ⇒ rc=3"
+ ],
+ "round_class": "只读定因（零产品改动）⇒ 不造 capability 登记行（与 R588–R592 同处置）",
+ "version": "v1"
+}
