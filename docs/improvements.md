@@ -3313,7 +3313,7 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - **只读并轮**：L2 前缀连续性 PASS · L3 判定卫生 PASS（18/18 外部用例套件判）· **Q1 假信心率 0.0556（1/18）**、反向「rc≠0 ∧ 外部满分」**7 例**（自判过度保守方向）· 负控有牙
 - 【形式门禁】**14/14**（Failed 0 / Passed 14 / Skipped 0）
 - 【铁律 11】`exec_precondition.py --round r605` ⇒ **rc=1**（blocked 10 条，全落 `wythoff`）⇒ 成本/质量读数标「参考（未可验收）」
-- 【诚实边界】① J4 欠功率只并列；② 与 R585–R599 冻结件轮禁相减；③ rc 语义分层 + `mechanism_rc` 为**首跑后补记**（`checks_posthoc`）⇒ 与 r603 rc 列不可直接并列；④ `b1` 降级须用户裁定；⑤ V_int 第六窗集**已取读数**（21/21 跑次 / oracle 一致 / 控制三值互异 / 守恒 True；agent 桶 B_coldset 48 · A_landing_loose 27 · D 9 · A 3；`v_int_hist` {0:14,3:1,29:1,32:1,118:1}），但**器具 rc=2 两项 False**：零回归=False（已知 scope 伪影）+ 只读=False（**本侧并发跑 `dotnet test` 改写 `src/obj|bin`** ⇒ 违反互斥纪律，非器具缺陷；快照树零改动）⇒ 按「参考」登记，R606 无并发构建重跑
+- 【诚实边界】① J4 欠功率只并列；② 与 R585–R599 冻结件轮禁相减；③ rc 语义分层 + `mechanism_rc` 为**首跑后补记**（`checks_posthoc`）⇒ 与 r603 rc 列不可直接并列；④ `b1` 降级须用户裁定；⑤ V_int 第六窗集**已取读数**（21/21 跑次 / oracle 一致 / 控制三值互异 / 守恒 True；agent 桶 B_coldset 48 · A_landing_loose 27 · D 9 · A 3；`v_int_hist` {0:14,3:1,29:1,32:1,118:1}），但**器具 rc=2 两项 False**：零回归=False（已知 scope 伪影）+ 只读=False（**两个不可区分候选因**：本侧并发 `dotnet test` 写 `src/obj|bin` ∧ 对侧写者在飞（`ROUND_CLAIM`=R606 @04:31:28，未提交 `src/` 改动 2 文件）；快照树零改动 ⇒ 被测面未被改，非器具缺陷）⇒ 按「参考」登记，R606（对侧已开）后在无并发条件下重跑
 - 【下轮候选 (R606)】① 产品侧处置裁定（待放行；缺口 100% 集中在 `wythoff` 冷集构造层）② b1 列口径裁定（先预注册再改）③ J2/J4 欠功率面扩 reps（≥25/档，须先写预算与判据）④ 起手闸判别力成对控制改操作顺序（先压低 CEIL 再行使）⑤ V_int 第六窗集（分段落盘）⑥ 文献候选 L4 落为分布先行项
 
 
