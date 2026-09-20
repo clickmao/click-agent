@@ -1,0 +1,114 @@
+{
+ "round": "R606",
+ "written_before_run": true,
+ "written_at": "2026-09-21T04:40:00+08:00",
+ "author": "常驻会话执行体（用户令「全部放行」后首个产品侧单变量轮）",
+ "claim": "放行落地轮：**产品源码改动 + AOT 重发布**，单变量 = `AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR` 产品档缺省 0→1（硬证据驱动的修复轮**自成预算**）。同冻结题集、只换窗集（第十二窗集 w196..w198）。被测件变更 ⇒ 与 R585–R605 冻结件轮**禁相减**，只与同窗 codex 真值配对。",
+ "why_now": "① 用户「全部放行」；② R604 定因：缺口 100% 集中 `wythoff` 冷集构造层，且该族属「题面公开例即失败」（硬证据可得）；③ R605 的 J1 证明随附轴在 T 档恒生效（8/9 跑次随附）而 J2 仍 1/9 ⇒ 修复轮**有产物但只有一轮**；④ R551–R553 判「探针预算轴无增益」时修复轮**看不到盘上产物**（carryover 未落地）⇒ 「随附产物 + 硬证据再一轮」是**未被测过的新格**，本次为交互项复测（非翻案）。",
+ "single_variable": "AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR（产品档 FromEnvironment 缺省 1=开 / 显式 0=对照档 ⇒ 逐位等于旧行为）。其余全同：题集（cases-r521 冻结件逐字节复制件，sha e0c667c2a313c04b，`cmp` 零差异）、carryover 轴两侧皆**缺省 on**（不再是被测变量）、剂量键 R1_CONTRACT=1 + R1_PUBLIC_SELFCHECK=1。被测件 = 本改动 AOT 重发布件（bins-r606.json 记 sha）。",
+ "arms": {
+  "T": {
+   "side": "agent",
+   "bin": "$HOME/.agentframework/artifacts/pub_r606/agenthost",
+   "env": {
+    "AGENTFRAMEWORK_R1_CONTRACT": "1",
+    "AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK": "1"
+   },
+   "reps": 3,
+   "role": "产品新缺省档（MAX_PROBE_REPAIR 未设 ⇒ 1；carryover 亦未设 ⇒ 缺省 on）"
+  },
+  "C": {
+   "side": "agent",
+   "bin": "$HOME/.agentframework/artifacts/pub_r606/agenthost",
+   "env": {
+    "AGENTFRAMEWORK_R1_CONTRACT": "1",
+    "AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK": "1",
+    "AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR": "0"
+   },
+   "reps": 3,
+   "role": "对照档（硬证据修复预算轴关 ⇒ 逐位旧行为）· 负控：器具不得无差别触发"
+  },
+  "C1": {
+   "side": "codex",
+   "bin": "$HOME/.agentframework/tools/codex-env/node_modules/.bin/codex",
+   "model": "deepseek-flash",
+   "reps": 1,
+   "role": "外部真值（同环境·同输入·同模型）· 次级读数·同窗配对基准"
+  }
+ },
+ "criterion_version": "v3",
+ "windows": [
+  "w196",
+  "w197",
+  "w198"
+ ],
+ "window_set_index": 12,
+ "definitions": {
+  "unmet_run": "探针 ran ∧ failed>0 ，或执行器终态 Rc≠0",
+  "converged_run": "该跑次终态满足 探针 failed==0 ∧ 执行器 Rc==0（即从「不合格」变成「合格」）",
+  "unreliable_window": "同窗 codex 真值自身失败（整题全对率 < 全例）⇒ 该窗不进配对（C0 条款；禁筛窗）",
+  "valid_window": "同窗 codex 真值 58/58 全过 ⇒ 该窗进入 v3 配对与有效窗计数"
+ },
+ "judge": {
+  "J1": {
+   "kind": "mechanism",
+   "assertion": "T 档 `probe_repairs` > 0 的跑次 > 0 ∧ C 档 == 0（负控：轴关时打点恒 0）",
+   "pass_if": "T打点>0 ∧ C打点==0"
+  },
+  "J2": {
+   "kind": "primary",
+   "assertion": "同窗集池化（9 跑次/档）converged_run 数：T ≥ C + 1（**阈值与 R600/R602/R603/R605 一字未改**）",
+   "report": "逐档 converged/9 + Wilson 95% + 逐窗三分表；跨轮禁相减"
+  },
+  "J3": {
+   "kind": "cost",
+   "assertion": "v2 形态（a1∧a2∧b1，承 R604 公式模块）+ v1 照原样并列（不翻案）；v2'(a1∧a2) 报告列",
+   "note": "**本轮成本面对机制结构性不利**（多一轮硬证据修复必然抬高调用与新算 prompt）⇒ 预期红，如实并列"
+  },
+  "J4": {
+   "kind": "secondary_capability",
+   "assertion": "判据 v3 池化整题全对率：T ≥ C + 1 跑次/9 ∧ 无窗下降",
+   "power_note": "n=9/档 欠功率 ⇒ 只作并列，不作能力结论"
+  },
+  "J5": {
+   "kind": "cross_windowset_replication",
+   "assertion": "同向性：set12 的 sign(D_T_minus_C) 逐窗分布 与 set11（R605 w193..w195）**并列**（禁相减）",
+   "note": "本条只在两侧各自有效窗上判；无效窗单列"
+  }
+ },
+ "falsification": "① 若 T 档 `probe_repairs>0` 的跑次收敛率 ≤ C 档 ⇒ 判该轴在随附基线上**仍无增益**，降为观测项并写死重开条件（reps ≥25/档）—— 即 R551–R553 的判决在新基线被确认；② 若 T 档 `probe_repairs` 恒 0（轴不生效）⇒ 判 mechanism-not-engaged，轮次作废并如实登记；③ 若 T 档调用数爆炸（> C + 1）且质量面无分离 ⇒ 按「成本不可接受」收窄。",
+ "product_change": {
+  "src_touched": [
+   "src/agent/r1/R1Options.cs",
+   "src/agent.tests/R1ProbeRepairBudgetTests.cs"
+  ],
+  "statement": "产品档缺省翻档（FromEnvironment 缺省 maxProbeRepair 0→1）+ 单测两条（产品档缺省 on / 显式 0 与未设的区别）；库内显式构造缺省保持 0 = 旧行为 ⇒ 零回归可机检。AOT 重发布（禁 -p:PublishAot）。"
+ },
+ "evidence_scope": {
+  "require": [
+   "eval/rover/r606/dag-r606.md",
+   "eval/rover/r606/prereg-r606.json",
+   "eval/rover/r606/taskset-r606.json",
+   "eval/rover/r606/report-r606.md",
+   "eval/rover/r606/verdict-r606.json",
+   "eval/rover/r606/kpi-table-r606.json",
+   "eval/rover/r606/gate-margin-r606.json"
+  ],
+  "note": "缺任一 ⇒ 该轮不得宣称「可验收」"
+ },
+ "gate_clause": {
+  "criterion": "C3 起手闸余量条款（R590 派生版）",
+  "prev_swing_source": "r603/logs/run-samples.jsonl（最近一次**洁净**同态在飞窗，n=146，min=2584 / max=2869 ⇒ swing=285MB）；r605 样本因与本侧构建同窗在飞而**污染**（swing=1091MB ⇒ 弃用，见 contaminated_samples）",
+  "prev_swing_mb": 285,
+  "contaminated_samples": {
+   "round": "R605",
+   "n": 87,
+   "min": 1757,
+   "max": 2848,
+   "swing": 1091,
+   "verdict": "CONTAMINATED_BY_SIBLING_BUILD",
+   "note": "同窗内本侧 dotnet test + AOT publish 在飞 ⇒ 内存振幅暴走，不作余量源"
+  },
+  "clause": "MARGIN := clamp(prev_swing_effective, floor=60, cap=CEIL-GATE-floor); REQ=GATE+MARGIN；连续 2 次 + 极差 ≤50MB"
+ }
+}
