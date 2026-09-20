@@ -98,3 +98,24 @@ $ ./llama-cli -m <out.gguf> -st -p "<probe>" -n 16~20 --temp 0 -c 512 -t 2 --no-
 ## R6 · 本轮器具落点（临时件，不入仓）
 
 `/tmp/llamatq/` 3.9 G（上游解包 + 6 件产物体）· `/tmp/probe/` 532 M（raw 探针输出）· 清理命令：`rm -rf /tmp/llamatq /tmp/probe`。
+
+---
+
+## R7 · QR1 冒烟：原生三值件 `Ternary-Bonsai-4B-Q2_0_g64`
+
+```
+$ curl -sSL -C - -o tb4b-Q2_0_g64.gguf \
+    https://hf-mirror.com/prism-ml/Ternary-Bonsai-4B-gguf/resolve/main/Ternary-Bonsai-4B-Q2_0_g64.gguf
+$ ls -l  → 1,137,806,656 B        # 与镜像 API 原值逐字节一致
+$ sha256sum → 9d968b04a3c9a794897bcc744c8072fb6a061c0e42efd03c989401ddf8baef0c
+              （镜像 API 未暴露 LFS sha256 ⇒ 上游摘要核对「待确认」；现有完整性证据 = 尺寸一致）
+$ /usr/bin/time -v ./llama-cli -m tb4b-Q2_0_g64.gguf -st -p "<probe>" -n 24 --temp 0 -c 1024 -t 2 --no-display-prompt
+```
+| 探针 | 响应（逐字） | 判定 |
+|---|---|---|
+| P1「2+3*4=」n=24 | `Let's solve the expression step by step:` | 连贯（被 token 上限截断） |
+| P1 加长 n=64 | `2 + 3 * 4` / `### Step 1: Follow the order of operations (PEMDAS/BODMAS)` / `- **P**arentheses - **E**xponents - **M**ultiplication and **D**iv` | **连贯、结构化**；n=64 内未收敛出终值 ⇒ **不主张「算对」** |
+| P2「判断：'1 大于 2'」 | `不成立` | **正确** ✓ |
+| P3「中译英：今天天气很好」 | `The weather is great today.` | **正确** ✓ |
+| 峰值 RSS | 1,331,108 kB / 1,331,836 kB（两次运行）≈ **1.27 GiB** | 现役件记忆读数 ~2,643 MB ⇒ **−50%** |
+| 速度 | `[ Prompt: 0.5 t/s | Generation: 0.4 t/s ]` | 同 build 1.5B-Q4_K_M 实测 2.3 t/s ⇒ **慢 ~5.7×** |
