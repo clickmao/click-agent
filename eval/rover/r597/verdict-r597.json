@@ -1,0 +1,369 @@
+{
+ "round": "R597",
+ "windows": [
+  "w175",
+  "w176",
+  "w177"
+ ],
+ "criteria": {
+  "note": "主判据 = 判据 v3（整题全对率 + 按族分列，器具 pool_taskface_r597.py 复用 R589 逻辑源）。kpi_r597.py 的 C1（用例级配对）只作**同向参照**：v2 判决面已在 docs/external-reference-harness.md §12.3 作废。",
+  "C0 真值可靠性": "真值跑次 58/58 不成立 ⇒ 该窗 unreliable，不进配对、单列（禁筛窗）。",
+  "C1 用例级配对（参照）": "有效窗 ≥2 ∧ 配对中位 ≥ −2 ∧ 无窗 ≤ −15（v2 阈值照旧，仅作同向参照，不出判决）。",
+  "C2 成本三列": "调用数 / 新算 prompt / completion **分列**（禁合并名义总量）；命中率标口径（中继 dump 时间轴 v_all/v_incr）。信息项，不判红绿。",
+  "C3 起手闸余量条款（候选⑤ 行使面）": {
+   "prev_swing_source_rule": "只取**同态在飞窗**的运行期采样（R590-C2）；只读轮无运行期采样器 ⇒ 不可作源。",
+   "prev_swing_effective": 168,
+   "prev_swing_evidence": "~/.agentframework/harness/runs/r596/logs/run-samples.jsonl （n=61, min=2454MB, max=2622MB, swing=168MB；同态在飞窗）",
+   "clause": "MARGIN := clamp(prev_swing_effective, floor=60, cap=CEIL−GATE−floor); REQ = GATE(2650)+MARGIN；起手前 3 样本 CEIL=min 且极差 ≤50MB（fail-closed）；报 cap_binding。",
+   "discrimination_control": "同内存态下 基础门槛 PASS ∧ 条款 GATE_BLOCKED（压制量>0 时行使；量 0 ⇒ 如实记未行使）。"
+  },
+  "C5 缺口复现": "与 set1/set2/set3 并列比：同号 ∧ 区间重叠 ⇒ 缺口跨窗集复现；**禁相减**。",
+  "C6 步数列": "steps_executed / plan_steps_total 非空率 = 100% 才过（缺档 ⇒ rc=2 器具缺陷）。",
+  "C7 判据 v3 第四窗集（**主判据**）": {
+   "judge": "有效窗 中位 ≤ −0.34 ∧ 负号窗 ≥ 半数 ⇒ PASS（缺口成立）；否则 FAIL。阈值 −0.34 写死，非事后调。",
+   "secondary": "按族分列（life/nim/sub/wythoff 的 all-pass 率 + 失败原因直方图），与 set1/set2/set3 **并列**。",
+   "third_face": "铁律 11 前置器 rc（executable_and_correct ∧ acceptable_scoped）；rc≠0 ⇒ 全部成本读数标「参考（未可验收）」。",
+   "resolution_bound": "set3 仅 2 有效窗 ⇒ 中位与摆动均不可分离；本轮增量把有效窗推高，**仍不足以单独作能力结论**（摆动 ≥ 效应纪律）。"
+  },
+  "C8 候选② 铁律 11 阻塞臂**逐例归因**（只读, 零子进程）": {
+   "claim": "R595 铁律 11 rc=1 的 6 个臂窗全在 wythoff 族。把「阻塞」量化到**例级**，并把「我方独败」拆成可归因（A）与交付形态（D）两栏 ⇒ A 类份额 = **加厚 prompt / 契约类改动的收益上界**（口径: 上界，非预测）。",
+   "input": "在盘 `cases.txt`（冻结判分器产物，逐例 PASS/FAIL + 原因）——两侧（真值 ×1 / 产品 ×3）同窗同例。",
+   "buckets": {
+    "A_我方独败": "真值 PASS ∧ 产品 3/3 全败 ⇒ 可归因我方（上界来源）",
+    "A2_摆动带": "真值 PASS ∧ 产品 1..2/3 败 ⇒ 摆动带（禁作能力结论）",
+    "B_真值独败": "真值 FAIL ∧ 产品 3/3 过 ⇒ 真值侧（单列）",
+    "C_两侧同败": "真值 FAIL ∧ 产品 3/3 败 ⇒ 同时报「失败集合是否逐字相同」；相同 ⇒ 登记题面/夹具嫌疑（**只登记，不改题面/夹具**）",
+    "D_交付形态": "产品失败原因为 rc≠0 / 异常 / TimeoutExpired（与 A 可交叠，单独报）"
+   },
+   "scope": "R595 阻塞 6 臂窗（w169 r1/r2、w170 r1/r2/codex、w171 r2）+ 本轮 w175..w177 全窗（同一批读数）。",
+   "negative_controls": [
+    "POS: 在副本上把某 A 类例的产品结果强制翻 PASS ⇒ 该例必须离开 A 桶且 A 计数 −1（证明桶绑定真实数据）",
+    "NEG: 原样输入重跑两次 ⇒ 逐位相同（确定性；与 POS 成对 ⇒ 非「凡改即变」）",
+    "非平凡性: 4 桶分布不得退化（A 与 D 的按族/按窗分布必须互异）"
+   ],
+   "honest_boundary": "只读诊断 ⇒ 不构成能力验收、不得回写成「产品已修」；A 类份额是**上界**，不是预期收益。"
+  },
+  "C9 候选③ 交付物**行为面**契约普查（只读；替代 R595 静态面无牙版）": {
+   "claim": "R595 静态属性普查在交付物 `importlib` 动态派发下**结构性无牙**（POS 控制不翻面）。本轮改**行为面**口径: 对每个跑次快照**实跑**其入口契约 `python3 -B -m games <family>`（4 族），记录 rc + stderr 类别。",
+   "classes": {
+    "ENTRY_FAIL": "stderr ∈ {ModuleNotFoundError, ImportError, AttributeError('module … has no attribute …')} ⇒ 交付面/契约面不自治",
+    "INTERNAL": "stderr ∈ {IndexError, TypeError, ValueError, RecursionError, …} ⇒ 产物内部错（执行面，非契约面）",
+    "TIMEOUT": "超 10s 未退出（有界）",
+    "OK": "rc=0"
+   },
+   "criterion": "报「跑次级 ENTRY_FAIL 计数」与两侧分列；与 R594 的 `solve` 单键面、R595 静态面**并列**（不相减）。",
+   "negative_controls": [
+    "POS: 在副本上把 `games/<family>.py` 改名 ⇒ 普查必须判该族 ENTRY_FAIL",
+    "NEG: 同一副本原样 ⇒ 普查必须判 OK",
+    "有界性: 全部子进程带 10s 超时 + 进程组收口（防孤儿，承 R592 教训）"
+   ],
+   "honest_boundary": "行为面普查 ≠ 能力验收；跑次面横跨 6 轮窗集 ⇒ 非独立样本。"
+  },
+  "C10 候选④ V_int 第三窗集分布（真机臂轮）": {
+   "量": "对 r597 新窗快照，用与 r593 **同一件定因器**（`landing_predicate_r593.py`，`--rounds r597 --codex-too`）出 `V_int` 直方图 + `cold_set_equal` 交叉校验 + 2×2 列联（两侧分列）；判据 = 不设阈值、不作触发，只报「分布面已扩到第四窗集」",
+   "判据": "**不设阈值、不作触发**（承 R593/R594/R595 预注册禁止）；只报「分布面已扩到第三窗集」，阈值化仍记**未测**",
+   "零回归": "对 r585–r591 面复算，须与 R593/R594 登记值**逐位复现**（同一在盘 JSON）；不复现 ⇒ rc=2，本项不入结论"
+  },
+  "C11 只读性": "非本轮真机臂面（历史快照树、冻结夹具、产品源码）的 sha256 清单前后一致 ⇒ PASS；`git diff --stat src/` 为空。",
+  "C12 铁律 11 前置器": "`exec_precondition.py --round r597` 逐跑次产出物独立物化 + 真跑 + 逐用例判对；rc≠0 ⇒ 全部成本/质量降幅读数标「参考（未可验收）」，禁作验收依据。"
+ },
+ "arms": {
+  "C1": {
+   "runs": 3,
+   "cases_per_run": [
+    56,
+    56,
+    58
+   ],
+   "per_window_median": {
+    "w175": 56,
+    "w176": 56,
+    "w177": 58
+   },
+   "median": 56,
+   "min": 56,
+   "max": 58,
+   "calls": 17,
+   "new_prompt": 12446,
+   "completion": 9536,
+   "v_all_med": 0.92,
+   "v_incr_med": 0.94,
+   "repair_rounds": [
+    null,
+    null,
+    null
+   ],
+   "rc": [
+    null,
+    null,
+    null
+   ],
+   "stages": [
+    null,
+    null,
+    null
+   ],
+   "steps": [
+    null,
+    null,
+    null
+   ]
+  },
+  "R597D": {
+   "runs": 9,
+   "cases_per_run": [
+    58,
+    58,
+    58,
+    58,
+    58,
+    56,
+    58,
+    58,
+    43
+   ],
+   "per_window_median": {
+    "w175": 58,
+    "w176": 58,
+    "w177": 58
+   },
+   "median": 58,
+   "min": 43,
+   "max": 58,
+   "calls": 18,
+   "new_prompt": 3719,
+   "completion": 39146,
+   "v_all_med": 0.98,
+   "v_incr_med": 0.97,
+   "repair_rounds": [
+    1,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0
+   ],
+   "rc": [
+    5,
+    5,
+    0,
+    5,
+    5,
+    5,
+    0,
+    5,
+    5
+   ],
+   "stages": [
+    "expect_stdout_exhausted",
+    "expect_stdout_exhausted",
+    "done",
+    "expect_stdout_exhausted",
+    "expect_stdout_exhausted",
+    "expect_stdout_exhausted",
+    "done",
+    "expect_stdout_exhausted",
+    "run_rc_exhausted"
+   ],
+   "steps": [
+    7,
+    7,
+    14,
+    7,
+    8,
+    7,
+    14,
+    7,
+    7
+   ]
+  }
+ },
+ "paired": {
+  "D_product_minus_truth_per_window": [
+   0
+  ],
+  "D_median": 0,
+  "valid_windows": 1,
+  "unreliable_windows_truth_self_fail": [
+   "w175",
+   "w176"
+  ],
+  "missing_windows": [],
+  "truth_per_window": {
+   "w175": 56,
+   "w176": 56,
+   "w177": 58
+  },
+  "product_per_window": {
+   "w175": 58,
+   "w176": 58,
+   "w177": 58
+  }
+ },
+ "C0_truth_reliability": {
+  "pass": false,
+  "unreliable": [
+   "w175",
+   "w176"
+  ],
+  "truth_all_pass": {
+   "w175": [
+    false
+   ],
+   "w176": [
+    false
+   ],
+   "w177": [
+    true
+   ]
+  }
+ },
+ "C1_quality_paired": {
+  "pass": false,
+  "D_list": [
+   0
+  ],
+  "D_median": 0,
+  "valid_windows": 1,
+  "floor": -15,
+  "median_floor": -2
+ },
+ "C2_cost_three_columns": {
+  "calls": {
+   "product": 18,
+   "truth": 17
+  },
+  "new_prompt": {
+   "product": 3719,
+   "truth": 12446
+  },
+  "completion": {
+   "product": 39146,
+   "truth": 9536
+  },
+  "hit_rate_v_all": {
+   "product": 0.98,
+   "truth": 0.92
+  },
+  "hit_rate_v_incr": {
+   "product": 0.97,
+   "truth": 0.94
+  },
+  "note": "信息项, 不判红绿 (禁合并成名义总量; 命中率口径 = 中继 dump 时间轴)"
+ },
+ "C5_gap_reproduction": {
+  "prev_path": "/home/agentuser/AgentFramework/eval/rover/r588/verdict-r588.json",
+  "prev_D": [
+   -7,
+   -11
+  ],
+  "prev_median": -9.0,
+  "state": "未复现(单窗集摆动)",
+  "prev_sha16": "96505c778ce60bc5",
+  "this_D": [
+   0
+  ],
+  "this_median": 0,
+  "same_sign": false,
+  "interval_overlap": false
+ },
+ "C5b_swing_vs_effect": {
+  "per_set": {
+   "R585": {
+    "D": [
+     -8,
+     -3
+    ],
+    "median": -5.5,
+    "sha16": "ac0bf588b0afcd1b"
+   },
+   "R586": {
+    "D": [
+     0,
+     -3,
+     -15
+    ],
+    "median": -3,
+    "sha16": "2794e27d26642a0b"
+   },
+   "R587": {
+    "D": [
+     0,
+     -13
+    ],
+    "median": -6.5,
+    "sha16": "30e2d71722bf987d"
+   },
+   "R588": {
+    "D": [
+     -7,
+     -11
+    ],
+    "median": -9.0,
+    "sha16": "96505c778ce60bc5"
+   }
+  },
+  "pooled_n_valid_windows": 9,
+  "pooled_D": [
+   -8,
+   -3,
+   0,
+   -3,
+   -15,
+   0,
+   -13,
+   -7,
+   -11
+  ],
+  "pooled_median_effect": -7,
+  "pooled_range_swing": 15,
+  "max_dev_from_median": 8,
+  "sign_count": {
+   "neg": 7,
+   "pos": 0,
+   "zero": 2
+  },
+  "sign_test_p_two_sided": 0.0156,
+  "note": "跨轮禁相减: 各集只并列; 池化仅用于摆动/效应分离估计",
+  "state": "摆动 > 效应 ⇒ 该轴非承重变量、定案关闭"
+ },
+ "C6_steps_face": {
+  "nonnull": 9,
+  "runs": 9,
+  "pass": true,
+  "steps": [
+   7,
+   7,
+   14,
+   7,
+   8,
+   7,
+   14,
+   7,
+   7
+  ],
+  "plan_steps_total": [
+   10,
+   10,
+   14,
+   10,
+   11,
+   10,
+   14,
+   10,
+   8
+  ],
+  "note": "R585 纠偏: 同列本就在档 (verdict-r585.json::arms.R585D.steps=[8,15,7,14,7,7,7,7,7]), 而 R585 报告与 §7 块写「未测(adapter 未取该字段)」= 报告面与自己的读数不一致; 首跑读数不撤。"
+ },
+ "verdict": {
+  "rc": 1,
+  "judge": "FAIL(质量配对未过)",
+  "blocked": [
+   "C1_quality_paired:R597D"
+  ],
+  "iron11": "见 eval/rover/r507pre/precondition-r597.json"
+ }
+}
