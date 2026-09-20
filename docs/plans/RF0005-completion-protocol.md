@@ -22,7 +22,7 @@
 | 3 | **恒前缀缓存** | 前缀 chars/sha256 冻结（只许加厚）+ 命中率 | ≥0.97（`cache-hit-floor`）· 冻结 `fp-constants`（chars=15291 / `f1280f71…d4a`） | 命中 v_all：T 0.9167 / C 0.9288 / 真值 0.9525；前缀未破 | **未达标** |
 | 4 | **上下文精排** | NDCG@k（主）· MRR · Precision@k · Recall@N=1.0 + 负控 `LexicalRerankScorer` | NDCG@k ≥0.8 / MRR ≥0.6 / P@k ≥0.8 / R@N=1.0（`rerank-four`） | **未测** | **未测** |
 | 5 | **判据分辨率** | 有效窗数（预注册判定可判） | ≥2 有效窗，否则 rc=3 ⇒ 判据不可判（`res-min-windows`） | R606 有效窗 3；R603 曾 valid=1 ⇒ 不可判 | **临界** |
-| 6 | **工程面** | AOT 0 IL · 全量测试 · 零反射 · API 基线 · 结构不变式 | 全绿（`eng-aot-zero-il`·`eng-full-tests`） | AOT rc=0 / 19,735,472 B；全量 1942/1943（1 已知前置红）；形式门禁 21/21 | **临界**（1 前置红） |
+| 6 | **工程面** | AOT 0 IL · 全量测试 · 零反射 · API 基线 · 结构不变式 | 全绿（`eng-aot-zero-il`·`eng-full-tests`） | AOT rc=0 / 19,735,472 B；全量 1942/1943（1 已知前置红）；形式门禁 **14/14**（Debug 过滤集现读；R606 那次 21/21 系另一配置读数，已按现读改正） | **临界**（1 前置红） |
 | 7 | **对外与自升级** | 三能力出口闸（RF0004）+ `frontendapi` 对外 + `LearnedShape` 补丁生效 | 见 RF0004 五格出口闸（`cap-recog`·`cap-orch`·`cap-gen`·`cap-selfup`） | 三面**均未接线**（`NlpGate` 无统一出口 · `TaskKindHint` 5 档无 Generation · `ModelQueueAdapter.cs:154` 旧文本动作环） | **未达标** |
 
 > **口径警告**：早前汇报的「≈33%（旧 v1 四条判据等权）」**已随范围扩展失效**，不得再引用——本表才是进度唯一权威面；
@@ -135,6 +135,7 @@
 | 器具漂移拦截提交 | 改了被 pin 的器具而未重钉 | `decl_sweep --apply` + registry 重钉 + 负控（R6）| 本轮（`status_gen.py`）|
 | 台账/证据假路径 | `artifacts` 写了不存在/仓外路径 | 只许仓内相对路径且存在；发现即更正并留痕 | R606 kpi 行 |
 | 起手闸余量虚高 | 同窗构建抬高 PREV_SWING | 排轮期禁 build/publish | r605 1091 MB vs r603 285 MB |
+| 起手闸**拒开**（rc=2，轮未开跑）| 顶棚装不下下限 ⇒ 闸 `fail-closed` | 清 LSP（`VBCSCompiler`/`MSBuild`/`pyright`）后**重取 ceiling**（禁降标准强开）；**rc=2 ⇒ 不算轮**，不得当轮读数 | R606 首启 04:30:29 `顶棚 2735 装不下下限 60MB`；清场后 04:31–04:41 跑完 |
 | 全绿但没进步 | 机制 PASS 掩盖能力 FAIL | 机制/能力**分判**（§1.6）| R600 |
 | 汇报膨胀 | 细节写进回复 | 细节只落盘；回复 ≤3 行 + 六格 | 用户令 2026-09-17 |
 
