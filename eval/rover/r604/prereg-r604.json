@@ -1,0 +1,72 @@
+{
+ "round": "R604",
+ "written_before_run": true,
+ "written_at": "2026-09-21T03:40:00+08:00",
+ "author": "cron tick (60min) · 常驻能力自检循环执行体",
+ "claim": "只读/器具轮：把 R603 的五项候选 + 一项遗留并轮收口 —— C1 起手闸余量按 r603 实测振幅重派生；C2 J3 成本判据**形态收口**（max-of-9 单点极值 ⇒ 池化 ∧ 逐窗池化 ∧ 单位调用新算 prompt，无自由参数）；C3 真值掉线面**跨轮 census**（13 轮 × 3 窗）；C4 有效窗下限判据面入册；C5 文献小步；N7 `V_int` 分布扩展（遗留顺延项）。零新臂 / 零远端调用 / 零产品源码改动 / 零新增夹具语义 / 零新增开关。",
+ "why_now": "R603 登记两项器具面欠账：① J3 判据取 `max-of-9` 单点极值（一轮跑次的极值决定整轮成本判决，R603 即因此翻号）；② 真值掉线面（S3）只在 r602/r603 两轮上算过，`wythoff#43-public` / `wythoff#57-hidden` 两例跨 4 轮逐字复现（R596–R599）却**无跨轮全窗集读数** ⇒ 无法判断「低区分度用例」还是「真值臂自身漂移」。两者都是**器具面**（非产品面），可在零真机臂下收口。",
+ "scope": {
+  "new_arms": 0,
+  "remote_calls": 0,
+  "product_src_changes": 0,
+  "new_fixture_semantics": 0,
+  "new_switches": 0
+ },
+ "criteria": {
+  "C1_gate_margin_rederive": {
+   "kind": "instrument",
+   "assertion": "MARGIN := clamp(prev_swing_effective, floor=60, cap=CEIL-GATE-floor)；REQ = GATE + MARGIN；起手前 3 样本取 min 且极差 ≤50MB（fail-closed）",
+   "source": "runs/r603/logs/run-samples.jsonl（同态在飞窗实测：n / min / max ⇒ swing）",
+   "expect_declared": "swing ≈ 285MB（r603 实测 2584–2869），较 r602 源（252MB）**收紧**；cap 在 2494–2900 全档恒 binding ⇒ 振幅项退化（承 R590 登记），故本轮只报派生件，**不宣称条款已收紧生效**",
+   "discrimination": "纯函数两门槛反判：同一内存态下 基础门槛 GATE_MB 判 PASS ∧ 条款 REQ 判 GATE_BLOCKED ⇒ 条款严于基础门槛；本轮**零真机臂** ⇒ 条款未真机行使（记「未测」）",
+   "rc": "0 已派生 / 2 器具缺陷（顶棚低于下限 ⇒ 窗口结构性不可开）/ 3 输入缺失"
+  },
+  "C2_J3_form_v2": {
+   "kind": "instrument",
+   "assertion_v1": "【留档·不改】T_max_calls <= C_max_calls（单点极值）",
+   "assertion_v2": "【本轮新注册】合取三条：a1 池化调用数 Σ_T <= Σ_C；a2 逐窗池化（每窗 3 跑次之和）T_w <= C_w 对全部窗成立；b1 单位调用新算 prompt：Σ_T new_prompt / Σ_T calls <= Σ_C new_prompt / Σ_C calls（分母 >0，否则该轮撤权）",
+   "why_form_change": "v1 的判决由**单个跑次的极值**决定（R603：T 9 跑次里 1 次 `calls=4` 即判 FAIL），无分辨率也无分布信息；v2 保留「调用数不增」的原文精神（池化 + 逐窗 + 极差容差以分布形式表达），并**恢复 prereg 里写明却未实现的第二条款**（prompt 增量）为可判列",
+   "no_free_parameter": "v2 三条**不含任何拍出来的阈值**（容差/系数为 0）⇒ 不存在「事后调阈值凑绿」的空间",
+   "expect_declared": "先写后跑，逐条预声明：a1 预期三轮（r600/r602/r603）全过；a2 预期 **r603 至少一窗越线**（T 的 Σ 被 w191 的极值驱动）；b1 预期 **三轮全越线**（随附盘上产物必然抬高单次调用的新算 prompt）⇒ 声明「即使 v2 判决与 v1 不同，也**不得**回写为「R603 成本 PASS」」",
+   "no_regression": "v1 形态在 r600/r602/r603 上**逐位复现**各轮已登记值（r600 T_max 4 / C_max 4 PASS；r602 2 / 3 PASS；r603 4 / 3 FAIL）；不符即 rc=2",
+   "two_path_check": "每跑次 调用/新算/completion 由 **run root adapter dump**（`kpi_r599.arm_stats`）重算，并与各轮 `kpi-table-r*.json` 的逐臂数组**逐位比对**；不符即 rc=2（器具读法错优先假设，禁计入被测读数）",
+   "controls": "POS：注入一条 T 跑次 `calls += 2` ⇒ v2 必须判红且**点名** a1/a2；NEG：无注入 ⇒ 与 base 逐位同；非平凡：三轮 (Σ_T calls, Σ_C calls) 读数**互异**",
+   "verdict_hygiene": "R603 登记的 J3 FAIL **原样保留、不翻案**；v2 读数**并列**呈现，只作后续轮次口径；本轮零新跑次 ⇒ 不宣称任何降幅"
+  },
+  "C3_truthcase_census": {
+   "kind": "readonly_description",
+   "domain": "13 轮（r585,r586,r587,r588,r591,r595,r596,r597,r598,r599,r600,r602,r603）× 3 窗 ×（3 产品跑次 + 1 真值）的 `cases.txt`（统一源 = run roots；解析口径与 `judge_r603.read_cases` 同源）",
+   "assertion": "对**聚焦用例**（`wythoff#43-public` / `wythoff#57-hidden`，R603 登记的 S3 恒为这两条）统计：真值失败窗数 / 真值失败轮数 / 同窗产品 3 跑次通过计数分布",
+   "thresholds": {
+    "T1_truth_dropout_case": "真值失败窗数 >= 3 且跨 >= 2 轮 ⇒ 登记「真值侧掉线用例」",
+    "T2_our_side_stable": "同窗 3 产品跑次中 >= 2 通过 ⇒ 记「我方稳定通过（真值孤立失败）」；<=1 通过 ⇒ 记「两侧摆动带」",
+    "T3_low_discrimination": "若该类用例占某窗 58 例的 >= 1/2 ⇒ 该窗判「低区分度窗」⇒ 剔除配对并单列",
+    "explicit_writing": "含该类用例的窗 ⇒ (i) 配对前把该例单列（不进率分子）(ii) **禁**据此判我方缺陷或我方收益 (iii) 剔除动作须**逐窗点名**并跨轮登记"
+   },
+   "controls": "POS：取一条「真值 0 失败 ∧ 产品全过」的用例伪改真值失败 ⇒ census 必计数 +1 窗且轮数非空；NEG：用例 id 越域 ⇒ rc=2；非平凡：全库真值失败用例集合的基数 >=1 且非单一常量（单类/全零/全同一窗 ⇒ rc=2）；守恒：逐窗处理记录数 == 58 ×（产品跑次数 + 真值数）",
+   "rc": "0 已算 / 2 器具缺陷 / 3 输入缺失"
+  },
+  "C4_effective_window_lower_bound": {
+   "kind": "documentation",
+   "assertion": "把「真值自败窗 ⇒ 剔除配对 ∧ 单列 ∧ 不记我方缺陷」的**显式二选一**写法入册 `docs/external-reference-harness.md`（新节 §12.6，只做增量、禁整段覆盖）",
+   "machine_check": "追加后：新节关键词计数 > 0 ∧ 上一节标题行仍在（未被覆盖）"
+  },
+  "C5_literature": {
+   "kind": "fixed_small_step",
+   "budget": "arXiv <=3 检索式 / 全文 <=2 篇 / 单次 <=120s / 间隔 >=4s",
+   "assertion": "每条引用给 出处（arXiv ID 含版本）+ 逐字引文（<=2 句）+ 采集日；抓不到原文 ⇒ 记「未取到原文 ⇒ 不采信」",
+   "fallback": "预算被主线吃满 ⇒ 报告写「文献小步顺延(<一行原因>)」，禁静默跳过"
+  },
+  "N7_legacy_vint": {
+   "kind": "readonly_carryover",
+   "assertion": "`landing_predicate_r593.py --rounds r602,r603`（上轮壁钟 >15min 零输出 ⇒ 顺延）本轮后台重跑；完成 ⇒ 读数入册；未完成 ⇒ 只读超时、按 pid 清场并**如实记顺延**（禁把未测到读成无效应）"
+  }
+ },
+ "honest_boundaries": [
+  "零真机臂 / 零远端调用 ⇒ 不宣称任何质量·成本降幅；起手闸条款本轮未真机行使（记「未测」）。",
+  "C2 v2 为**形态收口**：R603 登记的 J3 FAIL 不翻案，v2 与 v1 判决**并列**呈现。",
+  "C3 为只读描述，不构成能力验收；「真值掉线用例」不得写回质量结论。",
+  "跨轮/跨窗集**禁相减**，只并列。"
+ ],
+ "rc_semantics": {"0": "全部已计算", "2": "器具缺陷（读法/身份/控制无牙/非平凡失败）", "3": "输入缺失（fail-closed）"}
+}

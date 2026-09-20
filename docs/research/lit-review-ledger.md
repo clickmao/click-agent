@@ -144,3 +144,30 @@
 - 四桶定义：S1 两侧过 · S2 我方独败（真值可作 oracle）· **S3 我方过 ∧ 真值败（反相面）** · S4 两侧同败（题面/夹具同难候选）。
 - 控制：POS = 取「两侧都过」用例把真值伪改为失败 ⇒ 该窗 S3 必须 +n_prod 且归属全 `L_truth_only`（实测 rows=6=expect）；身份不符（窗集/`failed_cases` 越域）⇒ rc=2；四桶全零 ⇒ rc=2（防退化为恒真门）。
 - 读数见 `eval/rover/r603/truthdrop-r603.json`（r602 面已落）。**纪律含义**：codex 真值不得当**硬上限**（J4/J5 的隐含假设）；S3 非零 ⇒ 该类用例只作并列描述，不作「我方收益」证据。
+
+## 7. R604 增量（2026-09-21；同轮并轮小步 · 只读/器具轮）
+
+### 7.1 检索（本轮 3 式 = 上限；检索间隔 ≥4s）
+
+| # | 检索式 | 命令面 | 逐条判（结果数不是判据） |
+|---|---|---|---|
+| Q1 | `"discriminative" items benchmark` | `--max 6 --sort date` | `Found 202679` ⇒ 检索式**过宽**（`items`/`benchmark` 为高频词，AND 语义下近乎全库）⇒ top6 全为无关（4D 基础模型 / 泼溅液体重建 / 图像上色 / 逆问题基准 / 生态模型 / 机器人蒸馏） |
+| Q2 | `agent harness component ablation variance` | `--max 6 --sort date` | `Found 311100` ⇒ 同上过宽；top6 中 2 条已登记（2609.20812 过度宣称 / 2609.20804 harness 组件消融）⇒ **去重**；1 条新面（2609.20822 障碍感知 harness）⇒ 见表 |
+| Q3 | `"execution feedback" cost accounting agent` | `--max 6 --sort date` | `Found 321189` ⇒ 过宽；top6 与 Q1/Q2 高度重叠 ⇒ **0 条新增** |
+
+**工具面提示（本轮实测，供后续轮参考，不改脚本）**：`--sort date` 与宽检索式叠加时，返回的是「最新提交」而非「最相关」⇒ **逐条判必须按摘要相关性，不看条数与排序**；带引号的短语**不能**单独承担选择性（Q1 已证）。
+
+### 7.2 台账（8 列，本轮追加 2 行）
+
+| 日期 | 检索式 | 出处(含版本) | 逐字引文(≤2 句) | 机制假设 | 改哪一格 KPI(预期方向) | 单变量轴 + 判据(阈值/可证伪点) | 状态 |
+|---|---|---|---|---|---|---|---|
+| 2026-09-21 | `agent harness component ablation variance` | arXiv:2609.20794**v1**（2026-09-17；cs.LG/cs.CE；comment: 32 pages, 10 figures, 21 tables；公开代码 `github.com/neuraloperator/PosteriorBench`；无 journal-ref ⇒ 非同行评审） | "existing evaluations still focus primarily on whether a method can produce a single plausible reconstruction. This is insufficient for ill-posed problems, where multiple solutions may be consistent with the same sparse or noisy observations." / "enabling direct assessment of whether solvers recover the full set of solutions rather than the single best sample" | **欠定/多解问题的评测不能只收「单点期望解」**，否则合法非期望解被系统性判红（= 判据僵硬面） | 质量（判据面：失败归因须先过「解集 oracle」再计我方缺陷；预期方向 = 我方缺陷份额**下降**，若下降则原读数含口径产物） | 轴 = 判据粒度（单点期望 vs **独立实现 oracle 的解集复核**）；判据 = 我方失败例中「合法但非期望解」份额 `<= 0.10` 才可把剩余按能力缺陷计 | **采信（口径支持·已实施）**：本仓已有独立 oracle 复核 —— `eval/rover/r592/landing_predicate_r592.py`（`canon`/`legal_moves`/`probe_grid`，与被测零共享实现）；R593 分桶实测 `A_landing_loose 0.0717` / `B_coldset 0.6595` ⇒ **判据僵硬非主因**（份额已达阈值内），主因仍为冷集构造层 |
+| 2026-09-21 | `agent harness component ablation variance` | arXiv:2609.20822**v1**（2026-09-17；cs.RO/cs.AI/cs.CL/cs.CV；comment/journal-ref 皆空 ⇒ 权威性仅由摘要面支撑） | "The agent reasons about the obstacle in its traces, and the prompt already forbids touching it, so neither perception nor instruction is at fault; the fault lies in the planning, where the stated constraint never becomes a priority." / "The agent then plans a route in advance, verifies it, replans when necessary, and only then executes it." | **声明式约束（写在提示词里）不等于承重**；须把约束转成**可执行的前置步骤（先规划→先验证→必要时重规划→再执行）** | 质量（交付面：约束违反率↓）；轮数（前置验证省掉无效整轮） | 轴 = 约束形态（提示词声明 vs **前置结构化校验步骤**）；判据 = 前置校验存在时约束违反率 `== 0`，且**消融臂**（关掉前置校验）违反率 `> 0`（否则前置步骤非承重） | **采信（口径支持·已实施）**：本仓 = `src/agent/r1/R1Pipeline.cs:192`（`probe = PublicSelfCheck ∧ probeSet` 前置回放）→ `src/agent/r1/R1RunResult.cs:12`（`rc=8 / public_probe_unmet` = **非模型自述**的题面公开用例未过）+ `eval/rover/r507pre/exec_precondition.py`（独立物化 + 逐用例判对 = 铁律 11）；消融面的「关掉前置即违反率>0」由 J2 对照档（轴关）承担。**观察边界**：机器人域具体件（route/contact）不可移植，只取机制 |
+
+### 7.3 本轮器具产出（只读/器具轮；零新臂、零远端调用、零产品源码改动）
+
+- **C1 起手闸余量按 r603 实测重派生**：源 `runs/r603/logs/run-samples.jsonl`（n=146, min=2584, max=2869）⇒ `prev_swing_effective=285`（较 r602 源 252 **收紧**）；起手前 3 样本 `ceiling=2577 / spread=0`（同日重采样序列 **2599 → 2577**，随本机负载浮动；两值同判） ⇒ `cap = 2577−2650−60 = −133 < floor 60` ⇒ **`WINDOW_UNOPENABLE`（rc=2，fail-closed 正确行为，承 R590 先例不记缺陷）**；判别力（**纯函数**同态两门槛反判）`basic 2650 → PASS ∧ clause 2710 → GATE_BLOCKED` ⇒ **条款仍严于基础门槛**。**纪律含义**：本轮零真机臂 ⇒ 条款**未真机行使**（未测），且**不得**把「窗口不可开」读成「条款已收紧生效」。读数 `eval/rover/r604/gate-margin-r604.json`。
+- **C2 J3 成本判据形态收口（v2）**：v1 形态在 r600/r602/r603 **逐位复现**登记值（`4/4` PASS · `2/3` PASS · `4/3` FAIL，`agree=True`）；v2（合取 a1 池化调用数 ∧ a2 逐窗池化 ∧ b1 单位调用新算 prompt；**无自由参数**）实测：r600 `a1=True, a2 破于 w186, b1 破（734.05 vs 197.35 = 3.72×）`；r602 `a2 破于 w189, b1 破（770.59 vs 247.78 = 3.11×）`；r603 `a2 破于 w191, b1 破（598.50 vs 232.29 = 2.58×）` ⇒ **v2 三轮全判红**。**含义**：v1 的「成本 PASS」是**不完整形态**（只看调用数极值，未看单次调用的新算 prompt）；v2 **不是放宽而是收紧**（把 r600/r602 的 PASS 也翻成红）。两路径交叉校验 `two_path_ok=True`（adapter dump 重算 == kpi-table 数组，逐臂逐列）；控制 `POS 有牙 ∧ NEG 同底 ∧ 非平凡（三轮读数互异）`。**本轮回写边界**：R603 登记的 J3 `FAIL` **原样保留、不翻案**；v2 只作后续轮口径。读数 `eval/rover/r604/j3v2-r604.json`。
+- **C3 真值掉线面跨轮 census**：39 窗（r585–r603 的 13 轮 × 3 窗）、4–7 臂/窗；守恒 `10614/10614`；真值失败用例 **13 条**（**全部 `wythoff` 族**）、失败窗次 **57**、涉及 17 窗；头两名 `wythoff#57-hidden`（17 窗 / 12 轮 / 我方通过率 0.5833）与 `wythoff#43-public`（13 窗 / 9 轮 / 0.5）⇒ **T1 成立（真值侧掉线用例）**，但 **T2 = 两侧摆动带**（我方通过率约 0.5–0.58，**不是**「我方稳定通过」）⇒ R603 的「S3 恒为这两条」只说明**反相面的位置集中**，**不能**读成我方在该例上稳定获益；**T3 低区分度窗 = 0**（未触发剔除）。控制 `POS 有牙（+1 窗）/ NEG 身份闸翻红 / 非平凡（13 类非常量）/ 守恒成立`。**口径提示（已入册 §12.6 B）**：本 census 的 S3 = **窗级**（全部产品跑次通过），与 R603 `truthdrop` 的**跑次级** S3 粒度不同 ⇒ 并列，禁互相换算（实测 `r603/w190` 跑次级 S3 非零而窗级为空）。读数 `eval/rover/r604/truthcase-census-r604.json`。
+- **C4 入册**：`docs/external-reference-harness.md` **§12.6**（有效窗下限显式二选一 + 两级 S3 口径 + 「真值掉线用例」登记与写法；只做增量，未覆盖既有节）。
+
