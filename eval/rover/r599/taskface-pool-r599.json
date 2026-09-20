@@ -1,0 +1,3127 @@
+{
+ "round": "R599",
+ "rc_semantics_C11": {
+  "rule": "rc=0 iff (C0.pass ∧ C7.has_teeth ∧ C1_task_face_v3.pass)；否则 3(数据/真值) > 2(器具缺陷) > 1(验收面未达) 取首因",
+  "source": "R598 checks_posthoc: rc 未编码验收面（v2 set5/set6 rc=0 而验收面 pass=False）",
+  "audit": "eval/rover/r599/rc_semantics_audit_r599.py（历史逐件 + 单调性 + 三例影子负控）"
+ },
+ "set_verdicts_C11": {
+  "rule": "逐窗集落盘 C11 三元素 + rc（审计器据此独立复算，禁靠器件自证）",
+  "sets": {
+   "set1": {
+    "set_name": "set1_first_window_set",
+    "c0_pass": true,
+    "c7_has_teeth": true,
+    "c1_face_pass": true,
+    "rc": 0,
+    "acceptance_face_encoded": true,
+    "blocked": [],
+    "judge": "PASS"
+   },
+   "set2": {
+    "set_name": "set2_second_window_set",
+    "c0_pass": true,
+    "c7_has_teeth": true,
+    "c1_face_pass": true,
+    "rc": 0,
+    "acceptance_face_encoded": true,
+    "blocked": [],
+    "judge": "PASS"
+   },
+   "set3": {
+    "set_name": "set3_third_window_set",
+    "c0_pass": true,
+    "c7_has_teeth": true,
+    "c1_face_pass": true,
+    "rc": 0,
+    "acceptance_face_encoded": true,
+    "blocked": [],
+    "judge": "PASS"
+   },
+   "set4": {
+    "set_name": "set4_fourth_window_set",
+    "c0_pass": true,
+    "c7_has_teeth": true,
+    "c1_face_pass": true,
+    "rc": 0,
+    "acceptance_face_encoded": true,
+    "blocked": [],
+    "judge": "PASS"
+   },
+   "set5": {
+    "set_name": "set5_fifth_window_set",
+    "c0_pass": true,
+    "c7_has_teeth": true,
+    "c1_face_pass": false,
+    "rc": 1,
+    "acceptance_face_encoded": true,
+    "blocked": [
+     "C1_task_face_v3_acceptance"
+    ],
+    "judge": "FAIL(验收面未达: 质量缺口未成立)"
+   },
+   "set6": {
+    "set_name": "set6_sixth_window_set",
+    "c0_pass": true,
+    "c7_has_teeth": true,
+    "c1_face_pass": false,
+    "rc": 1,
+    "acceptance_face_encoded": true,
+    "blocked": [
+     "C1_task_face_v3_acceptance"
+    ],
+    "judge": "FAIL(验收面未达: 质量缺口未成立)"
+   },
+   "set7": {
+    "set_name": "set7_seventh_window_set",
+    "c0_pass": true,
+    "c7_has_teeth": true,
+    "c1_face_pass": false,
+    "rc": 1,
+    "acceptance_face_encoded": true,
+    "blocked": [
+     "C1_task_face_v3_acceptance"
+    ],
+    "judge": "FAIL(验收面未达: 质量缺口未成立)"
+   }
+  }
+ },
+ "mode": "判据 v3 第七窗集行使（真机臂轮）；set1..set6 复算作并列件（跨窗集禁相减）",
+ "instrument_logic_source": {
+  "path": "/home/agentuser/AgentFramework/eval/rover/r589/pool_taskface_r589.py",
+  "sha12": "d07b92e11b81",
+  "driver_sha12": "e68eade103da"
+ },
+ "set1_first_window_set": {
+  "rounds": [
+   "r585",
+   "r586",
+   "r587",
+   "r588"
+  ],
+  "data_scope": {
+   "windows": 12,
+   "runs": 48,
+   "products": 36
+  },
+  "C0": {
+   "runs_seen": 48,
+   "expected_runs": 48,
+   "windows": 12,
+   "expected_windows": 12,
+   "issues": [],
+   "pass": true
+  },
+  "C1_task_face_v3": {
+   "median_D_task": -0.6667,
+   "neg_windows": 8,
+   "valid_windows": 9,
+   "threshold_median": -0.34,
+   "threshold_sign": "neg >= ceil(valid/2)",
+   "pass": true,
+   "verdict": "整题面缺口成立"
+  },
+  "C2_face_direction": {
+   "case_face_median": -7,
+   "task_face_median": -0.6667,
+   "same_sign": true,
+   "pass": true
+  },
+  "C5_readonly": {
+   "files": 2210,
+   "sha": "5653551435e63212723d50222abcf86d0dca6e5157ae7297577e3ab8d4e0ff15",
+   "pass": true,
+   "note": "只读面指纹（读数自身不写入）"
+  },
+  "C7_negative_control": {
+   "mutation": "w155 产品侧任一失败例 FAIL->PASS (副本内, 单侧)",
+   "target_window": "w155",
+   "readings_changed": true,
+   "truth_side_untouched": true,
+   "selection_face": "all product runs (agentD-r1..r3) × current window set",
+   "no_target": false,
+   "has_teeth": true
+  },
+  "C10_decoupling": {
+   "product_runs": 36,
+   "rc_nonzero_and_allpass": 9,
+   "named": [
+    "r585/w154 rc=5 cases=58/58",
+    "r585/w156 rc=5 cases=58/58",
+    "r586/w157 rc=5 cases=58/58",
+    "r586/w157 rc=5 cases=58/58",
+    "r586/w158 rc=5 cases=58/58",
+    "r587/w160 rc=5 cases=58/58",
+    "r587/w160 rc=5 cases=58/58",
+    "r587/w161 rc=8 cases=58/58",
+    "r588/w164 rc=5 cases=58/58"
+   ],
+   "share": 0.25
+  },
+  "summary": {
+   "valid_windows": 9,
+   "unreliable_windows_truth_self_fail": [
+    "w154",
+    "w161",
+    "w165"
+   ],
+   "all_windows": {
+    "n": 12
+   },
+   "case_face_valid": {
+    "n": 9,
+    "median": -7,
+    "min": -15,
+    "max": 0,
+    "range": 15,
+    "sign": {
+     "neg": 7,
+     "zero": 2,
+     "pos": 0
+    }
+   },
+   "case_face_all": {
+    "n": 12,
+    "median": -5.0,
+    "min": -15,
+    "max": 2,
+    "range": 17,
+    "sign": {
+     "neg": 9,
+     "zero": 2,
+     "pos": 1
+    }
+   },
+   "task_face_valid": {
+    "n": 9,
+    "median": -0.6667,
+    "min": -1.0,
+    "max": 0.0,
+    "range": 1.0,
+    "sign": {
+     "neg": 8,
+     "zero": 1,
+     "pos": 0
+    }
+   },
+   "task_face_all": {
+    "n": 12,
+    "median": -0.6667,
+    "min": -1.0,
+    "max": 1.0,
+    "range": 2.0,
+    "sign": {
+     "neg": 8,
+     "zero": 2,
+     "pos": 2
+    }
+   },
+   "case_face_all_median": -5.0,
+   "task_face_all_median": -0.6667
+  },
+  "family_aggregate": {
+   "life": {
+    "n_cases": 14,
+    "truth_pass_cases": 168,
+    "truth_runs": 12,
+    "truth_all_pass_runs": 12,
+    "truth_all_pass_rate": 1.0,
+    "prod_pass_cases_median_per_window": 14.0,
+    "prod_all_pass_rate_mean": 0.9722,
+    "prod_fail_reasons_total": {
+     "rc=1": 14
+    }
+   },
+   "nim": {
+    "n_cases": 15,
+    "truth_pass_cases": 180,
+    "truth_runs": 12,
+    "truth_all_pass_runs": 12,
+    "truth_all_pass_rate": 1.0,
+    "prod_pass_cases_median_per_window": 15.0,
+    "prod_all_pass_rate_mean": 0.9722,
+    "prod_fail_reasons_total": {
+     "rc=1": 15
+    }
+   },
+   "sub": {
+    "n_cases": 14,
+    "truth_pass_cases": 168,
+    "truth_runs": 12,
+    "truth_all_pass_runs": 12,
+    "truth_all_pass_rate": 1.0,
+    "prod_pass_cases_median_per_window": 14.0,
+    "prod_all_pass_rate_mean": 0.9722,
+    "prod_fail_reasons_total": {
+     "rc=1": 14
+    }
+   },
+   "wythoff": {
+    "n_cases": 15,
+    "truth_pass_cases": 168,
+    "truth_runs": 12,
+    "truth_all_pass_runs": 9,
+    "truth_all_pass_rate": 0.75,
+    "prod_pass_cases_median_per_window": 7.5,
+    "prod_all_pass_rate_mean": 0.3889,
+    "prod_fail_reasons_total": {
+     "stdout_mismatch": 174,
+     "rc=1": 58,
+     "TimeoutExpired": 8
+    }
+   }
+  },
+  "per_window": [
+   {
+    "round": "r585",
+    "win": "w154",
+    "truth_pass": 56,
+    "truth_all_pass": 0,
+    "truth_rc": null,
+    "prod_pass": [
+     58,
+     58,
+     58
+    ],
+    "prod_rc": [
+     "0",
+     "0",
+     "5"
+    ],
+    "prod_rate_task": 1.0,
+    "D_case": 2,
+    "D_task": 1.0,
+    "valid_task": false,
+    "families": {
+     "life": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "nim": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "sub": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "wythoff": {
+      "n": 15,
+      "truth_pass": 13,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 0.0,
+      "prod_fail_reasons": {}
+     }
+    }
+   },
+   {
+    "round": "r585",
+    "win": "w155",
+    "truth_pass": 58,
+    "truth_all_pass": 1,
+    "truth_rc": null,
+    "prod_pass": [
+     53,
+     50,
+     47
+    ],
+    "prod_rc": [
+     "8",
+     "5",
+     "5"
+    ],
+    "prod_rate_task": 0.0,
+    "D_case": -8,
+    "D_task": -1.0,
+    "valid_task": true,
+    "families": {
+     "life": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "nim": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "sub": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "wythoff": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 7,
+      "prod_all_pass_rate": 0.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {
+       "stdout_mismatch": 14,
+       "rc=1": 2,
+       "TimeoutExpired": 8
+      }
+     }
+    }
+   },
+   {
+    "round": "r585",
+    "win": "w156",
+    "truth_pass": 58,
+    "truth_all_pass": 1,
+    "truth_rc": null,
+    "prod_pass": [
+     58,
+     48,
+     55
+    ],
+    "prod_rc": [
+     "5",
+     "5",
+     "5"
+    ],
+    "prod_rate_task": 0.3333333333333333,
+    "D_case": -3,
+    "D_task": -0.6667,
+    "valid_task": true,
+    "families": {
+     "life": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "nim": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "sub": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "wythoff": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 12,
+      "prod_all_pass_rate": 0.3333333333333333,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {
+       "stdout_mismatch": 13
+      }
+     }
+    }
+   },
+   {
+    "round": "r586",
+    "win": "w157",
+    "truth_pass": 58,
+    "truth_all_pass": 1,
+    "truth_rc": null,
+    "prod_pass": [
+     47,
+     58,
+     58
+    ],
+    "prod_rc": [
+     "5",
+     "5",
+     "5"
+    ],
+    "prod_rate_task": 0.6666666666666666,
+    "D_case": 0,
+    "D_task": -0.3333,
+    "valid_task": true,
+    "families": {
+     "life": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "nim": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "sub": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "wythoff": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 0.6666666666666666,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {
+       "stdout_mismatch": 11
+      }
+     }
+    }
+   },
+   {
+    "round": "r586",
+    "win": "w158",
+    "truth_pass": 58,
+    "truth_all_pass": 1,
+    "truth_rc": null,
+    "prod_pass": [
+     55,
+     58,
+     49
+    ],
+    "prod_rc": [
+     "5",
+     "5",
+     "5"
+    ],
+    "prod_rate_task": 0.3333333333333333,
+    "D_case": -3,
+    "D_task": -0.6667,
+    "valid_task": true,
+    "families": {
+     "life": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "nim": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "sub": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "wythoff": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 12,
+      "prod_all_pass_rate": 0.3333333333333333,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {
+       "stdout_mismatch": 10,
+       "rc=1": 2
+      }
+     }
+    }
+   },
+   {
+    "round": "r586",
+    "win": "w159",
+    "truth_pass": 58,
+    "truth_all_pass": 1,
+    "truth_rc": null,
+    "prod_pass": [
+     48,
+     43,
+     43
+    ],
+    "prod_rc": [
+     "5",
+     "5",
+     "5"
+    ],
+    "prod_rate_task": 0.0,
+    "D_case": -15,
+    "D_task": -1.0,
+    "valid_task": true,
+    "families": {
+     "life": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "nim": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "sub": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "wythoff": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 0,
+      "prod_all_pass_rate": 0.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {
+       "stdout_mismatch": 30,
+       "rc=1": 10
+      }
+     }
+    }
+   },
+   {
+    "round": "r587",
+    "win": "w160",
+    "truth_pass": 58,
+    "truth_all_pass": 1,
+    "truth_rc": null,
+    "prod_pass": [
+     58,
+     58,
+     58
+    ],
+    "prod_rc": [
+     "0",
+     "5",
+     "5"
+    ],
+    "prod_rate_task": 1.0,
+    "D_case": 0,
+    "D_task": 0.0,
+    "valid_task": true,
+    "families": {
+     "life": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "nim": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "sub": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "wythoff": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     }
+    }
+   },
+   {
+    "round": "r587",
+    "win": "w161",
+    "truth_pass": 53,
+    "truth_all_pass": 0,
+    "truth_rc": null,
+    "prod_pass": [
+     50,
+     43,
+     58
+    ],
+    "prod_rc": [
+     "5",
+     "8",
+     "8"
+    ],
+    "prod_rate_task": 0.3333333333333333,
+    "D_case": -3,
+    "D_task": 0.3333,
+    "valid_task": false,
+    "families": {
+     "life": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "nim": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "sub": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "wythoff": {
+      "n": 15,
+      "truth_pass": 10,
+      "prod_pass_med": 7,
+      "prod_all_pass_rate": 0.3333333333333333,
+      "truth_all_pass": 0.0,
+      "prod_fail_reasons": {
+       "stdout_mismatch": 23
+      }
+     }
+    }
+   },
+   {
+    "round": "r587",
+    "win": "w162",
+    "truth_pass": 58,
+    "truth_all_pass": 1,
+    "truth_rc": null,
+    "prod_pass": [
+     45,
+     58,
+     0
+    ],
+    "prod_rc": [
+     "5",
+     "0",
+     "4"
+    ],
+    "prod_rate_task": 0.3333333333333333,
+    "D_case": -13,
+    "D_task": -0.6667,
+    "valid_task": true,
+    "families": {
+     "life": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 0.6666666666666666,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {
+       "rc=1": 14
+      }
+     },
+     "nim": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 0.6666666666666666,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {
+       "rc=1": 15
+      }
+     },
+     "sub": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 0.6666666666666666,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {
+       "rc=1": 14
+      }
+     },
+     "wythoff": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 2,
+      "prod_all_pass_rate": 0.3333333333333333,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {
+       "stdout_mismatch": 11,
+       "rc=1": 17
+      }
+     }
+    }
+   },
+   {
+    "round": "r588",
+    "win": "w163",
+    "truth_pass": 58,
+    "truth_all_pass": 1,
+    "truth_rc": null,
+    "prod_pass": [
+     51,
+     43,
+     58
+    ],
+    "prod_rc": [
+     "5",
+     "5",
+     "0"
+    ],
+    "prod_rate_task": 0.3333333333333333,
+    "D_case": -7,
+    "D_task": -0.6667,
+    "valid_task": true,
+    "families": {
+     "life": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "nim": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "sub": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "wythoff": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 8,
+      "prod_all_pass_rate": 0.3333333333333333,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {
+       "rc=1": 20,
+       "stdout_mismatch": 2
+      }
+     }
+    }
+   },
+   {
+    "round": "r588",
+    "win": "w164",
+    "truth_pass": 58,
+    "truth_all_pass": 1,
+    "truth_rc": null,
+    "prod_pass": [
+     43,
+     58,
+     47
+    ],
+    "prod_rc": [
+     "5",
+     "5",
+     "5"
+    ],
+    "prod_rate_task": 0.3333333333333333,
+    "D_case": -11,
+    "D_task": -0.6667,
+    "valid_task": true,
+    "families": {
+     "life": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "nim": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "sub": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "wythoff": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 4,
+      "prod_all_pass_rate": 0.3333333333333333,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {
+       "stdout_mismatch": 26
+      }
+     }
+    }
+   },
+   {
+    "round": "r588",
+    "win": "w165",
+    "truth_pass": 53,
+    "truth_all_pass": 0,
+    "truth_rc": null,
+    "prod_pass": [
+     44,
+     46,
+     43
+    ],
+    "prod_rc": [
+     "5",
+     "8",
+     "5"
+    ],
+    "prod_rate_task": 0.0,
+    "D_case": -9,
+    "D_task": 0.0,
+    "valid_task": false,
+    "families": {
+     "life": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "nim": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "sub": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "wythoff": {
+      "n": 15,
+      "truth_pass": 10,
+      "prod_pass_med": 1,
+      "prod_all_pass_rate": 0.0,
+      "truth_all_pass": 0.0,
+      "prod_fail_reasons": {
+       "stdout_mismatch": 34,
+       "rc=1": 7
+      }
+     }
+    }
+   }
+  ],
+  "verdict": {
+   "rc": 0,
+   "acceptance_face_encoded": true,
+   "blocked": [],
+   "judge": "PASS"
+  }
+ },
+ "set2_second_window_set": {
+  "rounds": [
+   "r591"
+  ],
+  "data_scope": {
+   "windows": 3,
+   "runs": 12,
+   "products": 9
+  },
+  "C0": {
+   "runs_seen": 12,
+   "expected_runs": 12,
+   "windows": 3,
+   "expected_windows": 3,
+   "issues": [],
+   "pass": true
+  },
+  "C1_task_face_v3": {
+   "median_D_task": -0.6667,
+   "neg_windows": 1,
+   "valid_windows": 1,
+   "threshold_median": -0.34,
+   "threshold_sign": "neg >= ceil(valid/2)",
+   "pass": true,
+   "verdict": "整题面缺口成立"
+  },
+  "C2_face_direction": {
+   "case_face_median": -1,
+   "task_face_median": -0.6667,
+   "same_sign": true,
+   "pass": true
+  },
+  "C5_readonly": {
+   "files": 868,
+   "sha": "5f19869562f4e835b223e5c02d7e74f0ece65aaa74a5b077cdb4fb9832840462",
+   "pass": true,
+   "note": "只读面指纹（读数自身不写入）"
+  },
+  "C7_negative_control": {
+   "mutation": "w166 产品侧任一失败例 FAIL->PASS (副本内, 单侧)",
+   "target_window": "w166",
+   "readings_changed": true,
+   "truth_side_untouched": true,
+   "selection_face": "all product runs (agentD-r1..r3) × current window set",
+   "no_target": false,
+   "has_teeth": true
+  },
+  "C10_decoupling": {
+   "product_runs": 9,
+   "rc_nonzero_and_allpass": 1,
+   "named": [
+    "r591/w167 rc=5 cases=58/58"
+   ],
+   "share": 0.1111
+  },
+  "summary": {
+   "valid_windows": 1,
+   "unreliable_windows_truth_self_fail": [
+    "w167",
+    "w168"
+   ],
+   "all_windows": {
+    "n": 3
+   },
+   "case_face_valid": {
+    "n": 1,
+    "median": -1,
+    "min": -1,
+    "max": -1,
+    "range": 0,
+    "sign": {
+     "neg": 1,
+     "zero": 0,
+     "pos": 0
+    }
+   },
+   "case_face_all": {
+    "n": 3,
+    "median": -1,
+    "min": -1,
+    "max": 2,
+    "range": 3,
+    "sign": {
+     "neg": 2,
+     "zero": 0,
+     "pos": 1
+    }
+   },
+   "task_face_valid": {
+    "n": 1,
+    "median": -0.6667,
+    "min": -0.6667,
+    "max": -0.6667,
+    "range": 0.0,
+    "sign": {
+     "neg": 1,
+     "zero": 0,
+     "pos": 0
+    }
+   },
+   "task_face_all": {
+    "n": 3,
+    "median": 0.3333,
+    "min": -0.6667,
+    "max": 0.6667,
+    "range": 1.3334,
+    "sign": {
+     "neg": 1,
+     "zero": 0,
+     "pos": 2
+    }
+   },
+   "case_face_all_median": -1,
+   "task_face_all_median": 0.3333
+  },
+  "family_aggregate": {
+   "life": {
+    "n_cases": 14,
+    "truth_pass_cases": 42,
+    "truth_runs": 3,
+    "truth_all_pass_runs": 3,
+    "truth_all_pass_rate": 1.0,
+    "prod_pass_cases_median_per_window": 14,
+    "prod_all_pass_rate_mean": 1.0,
+    "prod_fail_reasons_total": {}
+   },
+   "nim": {
+    "n_cases": 15,
+    "truth_pass_cases": 45,
+    "truth_runs": 3,
+    "truth_all_pass_runs": 3,
+    "truth_all_pass_rate": 1.0,
+    "prod_pass_cases_median_per_window": 15,
+    "prod_all_pass_rate_mean": 1.0,
+    "prod_fail_reasons_total": {}
+   },
+   "sub": {
+    "n_cases": 14,
+    "truth_pass_cases": 42,
+    "truth_runs": 3,
+    "truth_all_pass_runs": 3,
+    "truth_all_pass_rate": 1.0,
+    "prod_pass_cases_median_per_window": 14,
+    "prod_all_pass_rate_mean": 1.0,
+    "prod_fail_reasons_total": {}
+   },
+   "wythoff": {
+    "n_cases": 15,
+    "truth_pass_cases": 32,
+    "truth_runs": 3,
+    "truth_all_pass_runs": 1,
+    "truth_all_pass_rate": 0.3333,
+    "prod_pass_cases_median_per_window": 14,
+    "prod_all_pass_rate_mean": 0.4444,
+    "prod_fail_reasons_total": {
+     "stdout_mismatch@0.04s": 3,
+     "rc=1@0.03s": 10,
+     "rc=1@0.04s": 3,
+     "rc=1@0.07s": 2,
+     "stdout_mismatch@0.03s": 36
+    }
+   }
+  },
+  "per_window": [
+   {
+    "round": "r591",
+    "win": "w166",
+    "truth_pass": 58,
+    "truth_all_pass": 1,
+    "truth_rc": null,
+    "prod_pass": [
+     57,
+     43,
+     58
+    ],
+    "prod_rc": [
+     "4",
+     "5",
+     "0"
+    ],
+    "prod_rate_task": 0.3333333333333333,
+    "D_case": -1,
+    "D_task": -0.6667,
+    "valid_task": true,
+    "families": {
+     "life": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "nim": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "sub": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "wythoff": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 0.3333333333333333,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {
+       "stdout_mismatch@0.04s": 1,
+       "rc=1@0.03s": 10,
+       "rc=1@0.04s": 3,
+       "rc=1@0.07s": 2
+      }
+     }
+    }
+   },
+   {
+    "round": "r591",
+    "win": "w167",
+    "truth_pass": 47,
+    "truth_all_pass": 0,
+    "truth_rc": null,
+    "prod_pass": [
+     46,
+     46,
+     58
+    ],
+    "prod_rc": [
+     "5",
+     "8",
+     "5"
+    ],
+    "prod_rate_task": 0.3333333333333333,
+    "D_case": -1,
+    "D_task": 0.3333,
+    "valid_task": false,
+    "families": {
+     "life": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "nim": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "sub": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "wythoff": {
+      "n": 15,
+      "truth_pass": 4,
+      "prod_pass_med": 3,
+      "prod_all_pass_rate": 0.3333333333333333,
+      "truth_all_pass": 0.0,
+      "prod_fail_reasons": {
+       "stdout_mismatch@0.03s": 22,
+       "stdout_mismatch@0.04s": 2
+      }
+     }
+    }
+   },
+   {
+    "round": "r591",
+    "win": "w168",
+    "truth_pass": 56,
+    "truth_all_pass": 0,
+    "truth_rc": null,
+    "prod_pass": [
+     58,
+     58,
+     44
+    ],
+    "prod_rc": [
+     "0",
+     "0",
+     "5"
+    ],
+    "prod_rate_task": 0.6666666666666666,
+    "D_case": 2,
+    "D_task": 0.6667,
+    "valid_task": false,
+    "families": {
+     "life": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "nim": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "sub": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "wythoff": {
+      "n": 15,
+      "truth_pass": 13,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 0.6666666666666666,
+      "truth_all_pass": 0.0,
+      "prod_fail_reasons": {
+       "stdout_mismatch@0.03s": 14
+      }
+     }
+    }
+   }
+  ],
+  "verdict": {
+   "rc": 0,
+   "acceptance_face_encoded": true,
+   "blocked": [],
+   "judge": "PASS"
+  }
+ },
+ "set3_third_window_set": {
+  "rounds": [
+   "r595"
+  ],
+  "data_scope": {
+   "windows": 3,
+   "runs": 12,
+   "products": 9
+  },
+  "C0": {
+   "runs_seen": 12,
+   "expected_runs": 12,
+   "windows": 3,
+   "expected_windows": 3,
+   "issues": [],
+   "pass": true
+  },
+  "C1_task_face_v3": {
+   "median_D_task": -0.5,
+   "neg_windows": 2,
+   "valid_windows": 2,
+   "threshold_median": -0.34,
+   "threshold_sign": "neg >= ceil(valid/2)",
+   "pass": true,
+   "verdict": "整题面缺口成立"
+  },
+  "C2_face_direction": {
+   "case_face_median": -3.0,
+   "task_face_median": -0.5,
+   "same_sign": true,
+   "pass": true
+  },
+  "C5_readonly": {
+   "files": 551,
+   "sha": "2a2be9e457f127ebd26d47f30428db84e96c3f37742e9656c8b9bfe62843bc4c",
+   "pass": true,
+   "note": "只读面指纹（读数自身不写入）"
+  },
+  "C7_negative_control": {
+   "mutation": "w169 产品侧任一失败例 FAIL->PASS (副本内, 单侧)",
+   "target_window": "w169",
+   "readings_changed": true,
+   "truth_side_untouched": true,
+   "selection_face": "all product runs (agentD-r1..r3) × current window set",
+   "no_target": false,
+   "has_teeth": true
+  },
+  "C10_decoupling": {
+   "product_runs": 9,
+   "rc_nonzero_and_allpass": 3,
+   "named": [
+    "r595/w169 rc=5 cases=58/58",
+    "r595/w171 rc=5 cases=58/58",
+    "r595/w171 rc=5 cases=58/58"
+   ],
+   "share": 0.3333
+  },
+  "summary": {
+   "valid_windows": 2,
+   "unreliable_windows_truth_self_fail": [
+    "w170"
+   ],
+   "all_windows": {
+    "n": 3
+   },
+   "case_face_valid": {
+    "n": 2,
+    "median": -3.0,
+    "min": -6,
+    "max": 0,
+    "range": 6,
+    "sign": {
+     "neg": 1,
+     "zero": 1,
+     "pos": 0
+    }
+   },
+   "case_face_all": {
+    "n": 3,
+    "median": -2,
+    "min": -6,
+    "max": 0,
+    "range": 6,
+    "sign": {
+     "neg": 2,
+     "zero": 1,
+     "pos": 0
+    }
+   },
+   "task_face_valid": {
+    "n": 2,
+    "median": -0.5,
+    "min": -0.6667,
+    "max": -0.3333,
+    "range": 0.3334,
+    "sign": {
+     "neg": 2,
+     "zero": 0,
+     "pos": 0
+    }
+   },
+   "task_face_all": {
+    "n": 3,
+    "median": -0.3333,
+    "min": -0.6667,
+    "max": 0.3333,
+    "range": 1.0,
+    "sign": {
+     "neg": 2,
+     "zero": 0,
+     "pos": 1
+    }
+   },
+   "case_face_all_median": -2,
+   "task_face_all_median": -0.3333
+  },
+  "family_aggregate": {
+   "life": {
+    "n_cases": 14,
+    "truth_pass_cases": 42,
+    "truth_runs": 3,
+    "truth_all_pass_runs": 3,
+    "truth_all_pass_rate": 1.0,
+    "prod_pass_cases_median_per_window": 14,
+    "prod_all_pass_rate_mean": 1.0,
+    "prod_fail_reasons_total": {}
+   },
+   "nim": {
+    "n_cases": 15,
+    "truth_pass_cases": 45,
+    "truth_runs": 3,
+    "truth_all_pass_runs": 3,
+    "truth_all_pass_rate": 1.0,
+    "prod_pass_cases_median_per_window": 15,
+    "prod_all_pass_rate_mean": 1.0,
+    "prod_fail_reasons_total": {}
+   },
+   "sub": {
+    "n_cases": 14,
+    "truth_pass_cases": 42,
+    "truth_runs": 3,
+    "truth_all_pass_runs": 3,
+    "truth_all_pass_rate": 1.0,
+    "prod_pass_cases_median_per_window": 14,
+    "prod_all_pass_rate_mean": 1.0,
+    "prod_fail_reasons_total": {}
+   },
+   "wythoff": {
+    "n_cases": 15,
+    "truth_pass_cases": 40,
+    "truth_runs": 3,
+    "truth_all_pass_runs": 2,
+    "truth_all_pass_rate": 0.6667,
+    "prod_pass_cases_median_per_window": 9,
+    "prod_all_pass_rate_mean": 0.4444,
+    "prod_fail_reasons_total": {
+     "rc=1@0.03s": 19,
+     "rc=1@0.04s": 1,
+     "stdout_mismatch@0.03s": 15,
+     "stdout_mismatch@0.02s": 6,
+     "rc=1@0.02s": 4
+    }
+   }
+  },
+  "per_window": [
+   {
+    "round": "r595",
+    "win": "w169",
+    "truth_pass": 58,
+    "truth_all_pass": 1,
+    "truth_rc": null,
+    "prod_pass": [
+     52,
+     45,
+     58
+    ],
+    "prod_rc": [
+     "5",
+     "5",
+     "5"
+    ],
+    "prod_rate_task": 0.3333333333333333,
+    "D_case": -6,
+    "D_task": -0.6667,
+    "valid_task": true,
+    "families": {
+     "life": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "nim": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "sub": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "wythoff": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 9,
+      "prod_all_pass_rate": 0.3333333333333333,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {
+       "rc=1@0.03s": 5,
+       "rc=1@0.04s": 1,
+       "stdout_mismatch@0.03s": 10,
+       "stdout_mismatch@0.02s": 3
+      }
+     }
+    }
+   },
+   {
+    "round": "r595",
+    "win": "w170",
+    "truth_pass": 53,
+    "truth_all_pass": 0,
+    "truth_rc": null,
+    "prod_pass": [
+     51,
+     43,
+     58
+    ],
+    "prod_rc": [
+     "5",
+     "8",
+     "0"
+    ],
+    "prod_rate_task": 0.3333333333333333,
+    "D_case": -2,
+    "D_task": 0.3333,
+    "valid_task": false,
+    "families": {
+     "life": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "nim": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "sub": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "wythoff": {
+      "n": 15,
+      "truth_pass": 10,
+      "prod_pass_med": 8,
+      "prod_all_pass_rate": 0.3333333333333333,
+      "truth_all_pass": 0.0,
+      "prod_fail_reasons": {
+       "stdout_mismatch@0.03s": 5,
+       "stdout_mismatch@0.02s": 2,
+       "rc=1@0.03s": 13,
+       "rc=1@0.02s": 2
+      }
+     }
+    }
+   },
+   {
+    "round": "r595",
+    "win": "w171",
+    "truth_pass": 58,
+    "truth_all_pass": 1,
+    "truth_rc": null,
+    "prod_pass": [
+     58,
+     54,
+     58
+    ],
+    "prod_rc": [
+     "5",
+     "0",
+     "5"
+    ],
+    "prod_rate_task": 0.6666666666666666,
+    "D_case": 0,
+    "D_task": -0.3333,
+    "valid_task": true,
+    "families": {
+     "life": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "nim": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "sub": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "wythoff": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 0.6666666666666666,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {
+       "rc=1@0.03s": 1,
+       "rc=1@0.02s": 2,
+       "stdout_mismatch@0.02s": 1
+      }
+     }
+    }
+   }
+  ],
+  "verdict": {
+   "rc": 0,
+   "acceptance_face_encoded": true,
+   "blocked": [],
+   "judge": "PASS"
+  }
+ },
+ "set4_fourth_window_set": {
+  "rounds": [
+   "r596"
+  ],
+  "data_scope": {
+   "windows": 3,
+   "runs": 12,
+   "products": 9
+  },
+  "C0": {
+   "runs_seen": 12,
+   "expected_runs": 12,
+   "windows": 3,
+   "expected_windows": 3,
+   "issues": [],
+   "pass": true
+  },
+  "C1_task_face_v3": {
+   "median_D_task": -0.5,
+   "neg_windows": 2,
+   "valid_windows": 2,
+   "threshold_median": -0.34,
+   "threshold_sign": "neg >= ceil(valid/2)",
+   "pass": true,
+   "verdict": "整题面缺口成立"
+  },
+  "C2_face_direction": {
+   "case_face_median": -7.5,
+   "task_face_median": -0.5,
+   "same_sign": true,
+   "pass": true
+  },
+  "C5_readonly": {
+   "files": 566,
+   "sha": "79f4947be04d4e0771e491780838d98970c3cc2a9e92eedf3f25632ed24b44e0",
+   "pass": true,
+   "note": "只读面指纹（读数自身不写入）"
+  },
+  "C7_negative_control": {
+   "mutation": "w172 产品侧任一失败例 FAIL->PASS (副本内, 单侧)",
+   "target_window": "w172",
+   "readings_changed": true,
+   "truth_side_untouched": true,
+   "selection_face": "all product runs (agentD-r1..r3) × current window set",
+   "no_target": false,
+   "has_teeth": true
+  },
+  "C10_decoupling": {
+   "product_runs": 9,
+   "rc_nonzero_and_allpass": 3,
+   "named": [
+    "r596/w172 rc=5 cases=58/58",
+    "r596/w173 rc=5 cases=58/58",
+    "r596/w174 rc=5 cases=58/58"
+   ],
+   "share": 0.3333
+  },
+  "summary": {
+   "valid_windows": 2,
+   "unreliable_windows_truth_self_fail": [
+    "w173"
+   ],
+   "all_windows": {
+    "n": 3
+   },
+   "case_face_valid": {
+    "n": 2,
+    "median": -7.5,
+    "min": -15,
+    "max": 0,
+    "range": 15,
+    "sign": {
+     "neg": 1,
+     "zero": 1,
+     "pos": 0
+    }
+   },
+   "case_face_all": {
+    "n": 3,
+    "median": 0,
+    "min": -15,
+    "max": 2,
+    "range": 17,
+    "sign": {
+     "neg": 1,
+     "zero": 1,
+     "pos": 1
+    }
+   },
+   "task_face_valid": {
+    "n": 2,
+    "median": -0.5,
+    "min": -0.6667,
+    "max": -0.3333,
+    "range": 0.3334,
+    "sign": {
+     "neg": 2,
+     "zero": 0,
+     "pos": 0
+    }
+   },
+   "task_face_all": {
+    "n": 3,
+    "median": -0.3333,
+    "min": -0.6667,
+    "max": 0.6667,
+    "range": 1.3334,
+    "sign": {
+     "neg": 2,
+     "zero": 0,
+     "pos": 1
+    }
+   },
+   "case_face_all_median": 0,
+   "task_face_all_median": -0.3333
+  },
+  "family_aggregate": {
+   "life": {
+    "n_cases": 14,
+    "truth_pass_cases": 42,
+    "truth_runs": 3,
+    "truth_all_pass_runs": 3,
+    "truth_all_pass_rate": 1.0,
+    "prod_pass_cases_median_per_window": 14,
+    "prod_all_pass_rate_mean": 1.0,
+    "prod_fail_reasons_total": {}
+   },
+   "nim": {
+    "n_cases": 15,
+    "truth_pass_cases": 45,
+    "truth_runs": 3,
+    "truth_all_pass_runs": 3,
+    "truth_all_pass_rate": 1.0,
+    "prod_pass_cases_median_per_window": 15,
+    "prod_all_pass_rate_mean": 1.0,
+    "prod_fail_reasons_total": {}
+   },
+   "sub": {
+    "n_cases": 14,
+    "truth_pass_cases": 42,
+    "truth_runs": 3,
+    "truth_all_pass_runs": 3,
+    "truth_all_pass_rate": 1.0,
+    "prod_pass_cases_median_per_window": 14,
+    "prod_all_pass_rate_mean": 1.0,
+    "prod_fail_reasons_total": {}
+   },
+   "wythoff": {
+    "n_cases": 15,
+    "truth_pass_cases": 43,
+    "truth_runs": 3,
+    "truth_all_pass_runs": 2,
+    "truth_all_pass_rate": 0.6667,
+    "prod_pass_cases_median_per_window": 15,
+    "prod_all_pass_rate_mean": 0.5556,
+    "prod_fail_reasons_total": {
+     "stdout_mismatch@0.03s": 26,
+     "stdout_mismatch@0.02s": 12,
+     "rc=1@0.02s": 6
+    }
+   }
+  },
+  "per_window": [
+   {
+    "round": "r596",
+    "win": "w172",
+    "truth_pass": 58,
+    "truth_all_pass": 1,
+    "truth_rc": null,
+    "prod_pass": [
+     58,
+     58,
+     47
+    ],
+    "prod_rc": [
+     "5",
+     "0",
+     "8"
+    ],
+    "prod_rate_task": 0.6666666666666666,
+    "D_case": 0,
+    "D_task": -0.3333,
+    "valid_task": true,
+    "families": {
+     "life": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "nim": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "sub": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "wythoff": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 0.6666666666666666,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {
+       "stdout_mismatch@0.03s": 11
+      }
+     }
+    }
+   },
+   {
+    "round": "r596",
+    "win": "w173",
+    "truth_pass": 56,
+    "truth_all_pass": 0,
+    "truth_rc": null,
+    "prod_pass": [
+     55,
+     58,
+     58
+    ],
+    "prod_rc": [
+     "8",
+     "0",
+     "5"
+    ],
+    "prod_rate_task": 0.6666666666666666,
+    "D_case": 2,
+    "D_task": 0.6667,
+    "valid_task": false,
+    "families": {
+     "life": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "nim": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "sub": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "wythoff": {
+      "n": 15,
+      "truth_pass": 13,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 0.6666666666666666,
+      "truth_all_pass": 0.0,
+      "prod_fail_reasons": {
+       "stdout_mismatch@0.02s": 3
+      }
+     }
+    }
+   },
+   {
+    "round": "r596",
+    "win": "w174",
+    "truth_pass": 58,
+    "truth_all_pass": 1,
+    "truth_rc": null,
+    "prod_pass": [
+     58,
+     43,
+     43
+    ],
+    "prod_rc": [
+     "5",
+     "5",
+     "5"
+    ],
+    "prod_rate_task": 0.3333333333333333,
+    "D_case": -15,
+    "D_task": -0.6667,
+    "valid_task": true,
+    "families": {
+     "life": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "nim": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "sub": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "wythoff": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 0,
+      "prod_all_pass_rate": 0.3333333333333333,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {
+       "stdout_mismatch@0.03s": 15,
+       "stdout_mismatch@0.02s": 9,
+       "rc=1@0.02s": 6
+      }
+     }
+    }
+   }
+  ],
+  "verdict": {
+   "rc": 0,
+   "acceptance_face_encoded": true,
+   "blocked": [],
+   "judge": "PASS"
+  }
+ },
+ "set5_fifth_window_set": {
+  "rounds": [
+   "r597"
+  ],
+  "data_scope": {
+   "windows": 3,
+   "runs": 12,
+   "products": 9
+  },
+  "C0": {
+   "runs_seen": 12,
+   "expected_runs": 12,
+   "windows": 3,
+   "expected_windows": 3,
+   "issues": [],
+   "pass": true
+  },
+  "C1_task_face_v3": {
+   "median_D_task": -0.3333,
+   "neg_windows": 1,
+   "valid_windows": 1,
+   "threshold_median": -0.34,
+   "threshold_sign": "neg >= ceil(valid/2)",
+   "pass": false,
+   "verdict": "整题面无缺口"
+  },
+  "C2_face_direction": {
+   "case_face_median": 0,
+   "task_face_median": -0.3333,
+   "same_sign": false,
+   "pass": false
+  },
+  "C5_readonly": {
+   "files": 476,
+   "sha": "425576a8d1419a637be1f7cdd9035ee87a221161b3ec291e356e13526c38ccf3",
+   "pass": true,
+   "note": "只读面指纹（读数自身不写入）"
+  },
+  "C7_negative_control": {
+   "mutation": "w176 产品侧任一失败例 FAIL->PASS (副本内, 单侧)",
+   "target_window": "w176",
+   "readings_changed": true,
+   "truth_side_untouched": true,
+   "selection_face": "all product runs (agentD-r1..r3) × current window set",
+   "no_target": false,
+   "has_teeth": true
+  },
+  "C10_decoupling": {
+   "product_runs": 9,
+   "rc_nonzero_and_allpass": 5,
+   "named": [
+    "r597/w175 rc=5 cases=58/58",
+    "r597/w175 rc=5 cases=58/58",
+    "r597/w176 rc=5 cases=58/58",
+    "r597/w176 rc=5 cases=58/58",
+    "r597/w177 rc=5 cases=58/58"
+   ],
+   "share": 0.5556
+  },
+  "summary": {
+   "valid_windows": 1,
+   "unreliable_windows_truth_self_fail": [
+    "w175",
+    "w176"
+   ],
+   "all_windows": {
+    "n": 3
+   },
+   "case_face_valid": {
+    "n": 1,
+    "median": 0,
+    "min": 0,
+    "max": 0,
+    "range": 0,
+    "sign": {
+     "neg": 0,
+     "zero": 1,
+     "pos": 0
+    }
+   },
+   "case_face_all": {
+    "n": 3,
+    "median": 2,
+    "min": 0,
+    "max": 2,
+    "range": 2,
+    "sign": {
+     "neg": 0,
+     "zero": 1,
+     "pos": 2
+    }
+   },
+   "task_face_valid": {
+    "n": 1,
+    "median": -0.3333,
+    "min": -0.3333,
+    "max": -0.3333,
+    "range": 0.0,
+    "sign": {
+     "neg": 1,
+     "zero": 0,
+     "pos": 0
+    }
+   },
+   "task_face_all": {
+    "n": 3,
+    "median": 0.6667,
+    "min": -0.3333,
+    "max": 1.0,
+    "range": 1.3333,
+    "sign": {
+     "neg": 1,
+     "zero": 0,
+     "pos": 2
+    }
+   },
+   "case_face_all_median": 2,
+   "task_face_all_median": 0.6667
+  },
+  "family_aggregate": {
+   "life": {
+    "n_cases": 14,
+    "truth_pass_cases": 42,
+    "truth_runs": 3,
+    "truth_all_pass_runs": 3,
+    "truth_all_pass_rate": 1.0,
+    "prod_pass_cases_median_per_window": 14,
+    "prod_all_pass_rate_mean": 1.0,
+    "prod_fail_reasons_total": {}
+   },
+   "nim": {
+    "n_cases": 15,
+    "truth_pass_cases": 45,
+    "truth_runs": 3,
+    "truth_all_pass_runs": 3,
+    "truth_all_pass_rate": 1.0,
+    "prod_pass_cases_median_per_window": 15,
+    "prod_all_pass_rate_mean": 1.0,
+    "prod_fail_reasons_total": {}
+   },
+   "sub": {
+    "n_cases": 14,
+    "truth_pass_cases": 42,
+    "truth_runs": 3,
+    "truth_all_pass_runs": 3,
+    "truth_all_pass_rate": 1.0,
+    "prod_pass_cases_median_per_window": 14,
+    "prod_all_pass_rate_mean": 1.0,
+    "prod_fail_reasons_total": {}
+   },
+   "wythoff": {
+    "n_cases": 15,
+    "truth_pass_cases": 41,
+    "truth_runs": 3,
+    "truth_all_pass_runs": 1,
+    "truth_all_pass_rate": 0.3333,
+    "prod_pass_cases_median_per_window": 15,
+    "prod_all_pass_rate_mean": 0.7778,
+    "prod_fail_reasons_total": {
+     "stdout_mismatch@0.02s": 11,
+     "stdout_mismatch@0.03s": 6
+    }
+   }
+  },
+  "per_window": [
+   {
+    "round": "r597",
+    "win": "w175",
+    "truth_pass": 56,
+    "truth_all_pass": 0,
+    "truth_rc": null,
+    "prod_pass": [
+     58,
+     58,
+     58
+    ],
+    "prod_rc": [
+     "5",
+     "5",
+     "0"
+    ],
+    "prod_rate_task": 1.0,
+    "D_case": 2,
+    "D_task": 1.0,
+    "valid_task": false,
+    "families": {
+     "life": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "nim": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "sub": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "wythoff": {
+      "n": 15,
+      "truth_pass": 13,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 0.0,
+      "prod_fail_reasons": {}
+     }
+    }
+   },
+   {
+    "round": "r597",
+    "win": "w176",
+    "truth_pass": 56,
+    "truth_all_pass": 0,
+    "truth_rc": null,
+    "prod_pass": [
+     58,
+     58,
+     56
+    ],
+    "prod_rc": [
+     "5",
+     "5",
+     "5"
+    ],
+    "prod_rate_task": 0.6666666666666666,
+    "D_case": 2,
+    "D_task": 0.6667,
+    "valid_task": false,
+    "families": {
+     "life": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "nim": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "sub": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "wythoff": {
+      "n": 15,
+      "truth_pass": 13,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 0.6666666666666666,
+      "truth_all_pass": 0.0,
+      "prod_fail_reasons": {
+       "stdout_mismatch@0.02s": 2
+      }
+     }
+    }
+   },
+   {
+    "round": "r597",
+    "win": "w177",
+    "truth_pass": 58,
+    "truth_all_pass": 1,
+    "truth_rc": null,
+    "prod_pass": [
+     58,
+     58,
+     43
+    ],
+    "prod_rc": [
+     "0",
+     "5",
+     "5"
+    ],
+    "prod_rate_task": 0.6666666666666666,
+    "D_case": 0,
+    "D_task": -0.3333,
+    "valid_task": true,
+    "families": {
+     "life": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "nim": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "sub": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "wythoff": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 0.6666666666666666,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {
+       "stdout_mismatch@0.02s": 9,
+       "stdout_mismatch@0.03s": 6
+      }
+     }
+    }
+   }
+  ],
+  "verdict": {
+   "rc": 1,
+   "acceptance_face_encoded": true,
+   "blocked": [
+    "C1_task_face_v3_acceptance"
+   ],
+   "judge": "FAIL(验收面未达: 质量缺口未成立)"
+  }
+ },
+ "set6_sixth_window_set": {
+  "rounds": [
+   "r598"
+  ],
+  "data_scope": {
+   "windows": 3,
+   "runs": 12,
+   "products": 9
+  },
+  "C0": {
+   "runs_seen": 12,
+   "expected_runs": 12,
+   "windows": 3,
+   "expected_windows": 3,
+   "issues": [],
+   "pass": true
+  },
+  "C1_task_face_v3": {
+   "median_D_task": -0.3333,
+   "neg_windows": 2,
+   "valid_windows": 2,
+   "threshold_median": -0.34,
+   "threshold_sign": "neg >= ceil(valid/2)",
+   "pass": false,
+   "verdict": "整题面无缺口"
+  },
+  "C2_face_direction": {
+   "case_face_median": 0.0,
+   "task_face_median": -0.3333,
+   "same_sign": false,
+   "pass": false
+  },
+  "C5_readonly": {
+   "files": 514,
+   "sha": "c772759cad753aaeb4bdf0905daac1620c830de81e41d8663e63285c129348ba",
+   "pass": true,
+   "note": "只读面指纹（读数自身不写入）"
+  },
+  "C7_negative_control": {
+   "mutation": "w178 产品侧任一失败例 FAIL->PASS (副本内, 单侧)",
+   "target_window": "w178",
+   "readings_changed": true,
+   "truth_side_untouched": true,
+   "selection_face": "all product runs (agentD-r1..r3) × current window set",
+   "no_target": false,
+   "has_teeth": true
+  },
+  "C10_decoupling": {
+   "product_runs": 9,
+   "rc_nonzero_and_allpass": 3,
+   "named": [
+    "r598/w179 rc=5 cases=58/58",
+    "r598/w179 rc=5 cases=58/58",
+    "r598/w180 rc=5 cases=58/58"
+   ],
+   "share": 0.3333
+  },
+  "summary": {
+   "valid_windows": 2,
+   "unreliable_windows_truth_self_fail": [
+    "w178"
+   ],
+   "all_windows": {
+    "n": 3
+   },
+   "case_face_valid": {
+    "n": 2,
+    "median": 0.0,
+    "min": 0,
+    "max": 0,
+    "range": 0,
+    "sign": {
+     "neg": 0,
+     "zero": 2,
+     "pos": 0
+    }
+   },
+   "case_face_all": {
+    "n": 3,
+    "median": 0,
+    "min": -5,
+    "max": 0,
+    "range": 5,
+    "sign": {
+     "neg": 1,
+     "zero": 2,
+     "pos": 0
+    }
+   },
+   "task_face_valid": {
+    "n": 2,
+    "median": -0.3333,
+    "min": -0.3333,
+    "max": -0.3333,
+    "range": 0.0,
+    "sign": {
+     "neg": 2,
+     "zero": 0,
+     "pos": 0
+    }
+   },
+   "task_face_all": {
+    "n": 3,
+    "median": -0.3333,
+    "min": -0.3333,
+    "max": 0.3333,
+    "range": 0.6666,
+    "sign": {
+     "neg": 2,
+     "zero": 0,
+     "pos": 1
+    }
+   },
+   "case_face_all_median": 0,
+   "task_face_all_median": -0.3333
+  },
+  "family_aggregate": {
+   "life": {
+    "n_cases": 14,
+    "truth_pass_cases": 42,
+    "truth_runs": 3,
+    "truth_all_pass_runs": 3,
+    "truth_all_pass_rate": 1.0,
+    "prod_pass_cases_median_per_window": 14,
+    "prod_all_pass_rate_mean": 1.0,
+    "prod_fail_reasons_total": {}
+   },
+   "nim": {
+    "n_cases": 15,
+    "truth_pass_cases": 45,
+    "truth_runs": 3,
+    "truth_all_pass_runs": 3,
+    "truth_all_pass_rate": 1.0,
+    "prod_pass_cases_median_per_window": 15,
+    "prod_all_pass_rate_mean": 1.0,
+    "prod_fail_reasons_total": {}
+   },
+   "sub": {
+    "n_cases": 14,
+    "truth_pass_cases": 42,
+    "truth_runs": 3,
+    "truth_all_pass_runs": 3,
+    "truth_all_pass_rate": 1.0,
+    "prod_pass_cases_median_per_window": 14,
+    "prod_all_pass_rate_mean": 1.0,
+    "prod_fail_reasons_total": {}
+   },
+   "wythoff": {
+    "n_cases": 15,
+    "truth_pass_cases": 43,
+    "truth_runs": 3,
+    "truth_all_pass_runs": 2,
+    "truth_all_pass_rate": 0.6667,
+    "prod_pass_cases_median_per_window": 15,
+    "prod_all_pass_rate_mean": 0.5556,
+    "prod_fail_reasons_total": {
+     "stdout_mismatch@0.03s": 10,
+     "stdout_mismatch@0.02s": 22
+    }
+   }
+  },
+  "per_window": [
+   {
+    "round": "r598",
+    "win": "w178",
+    "truth_pass": 56,
+    "truth_all_pass": 0,
+    "truth_rc": null,
+    "prod_pass": [
+     58,
+     47,
+     51
+    ],
+    "prod_rc": [
+     "0",
+     "8",
+     "5"
+    ],
+    "prod_rate_task": 0.3333333333333333,
+    "D_case": -5,
+    "D_task": 0.3333,
+    "valid_task": false,
+    "families": {
+     "life": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "nim": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "sub": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "wythoff": {
+      "n": 15,
+      "truth_pass": 13,
+      "prod_pass_med": 8,
+      "prod_all_pass_rate": 0.3333333333333333,
+      "truth_all_pass": 0.0,
+      "prod_fail_reasons": {
+       "stdout_mismatch@0.03s": 9,
+       "stdout_mismatch@0.02s": 9
+      }
+     }
+    }
+   },
+   {
+    "round": "r598",
+    "win": "w179",
+    "truth_pass": 58,
+    "truth_all_pass": 1,
+    "truth_rc": null,
+    "prod_pass": [
+     58,
+     58,
+     46
+    ],
+    "prod_rc": [
+     "5",
+     "5",
+     "5"
+    ],
+    "prod_rate_task": 0.6666666666666666,
+    "D_case": 0,
+    "D_task": -0.3333,
+    "valid_task": true,
+    "families": {
+     "life": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "nim": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "sub": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "wythoff": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 0.6666666666666666,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {
+       "stdout_mismatch@0.02s": 11,
+       "stdout_mismatch@0.03s": 1
+      }
+     }
+    }
+   },
+   {
+    "round": "r598",
+    "win": "w180",
+    "truth_pass": 58,
+    "truth_all_pass": 1,
+    "truth_rc": null,
+    "prod_pass": [
+     58,
+     56,
+     58
+    ],
+    "prod_rc": [
+     "5",
+     "5",
+     "0"
+    ],
+    "prod_rate_task": 0.6666666666666666,
+    "D_case": 0,
+    "D_task": -0.3333,
+    "valid_task": true,
+    "families": {
+     "life": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "nim": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "sub": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "wythoff": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 0.6666666666666666,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {
+       "stdout_mismatch@0.02s": 2
+      }
+     }
+    }
+   }
+  ],
+  "verdict": {
+   "rc": 1,
+   "acceptance_face_encoded": true,
+   "blocked": [
+    "C1_task_face_v3_acceptance"
+   ],
+   "judge": "FAIL(验收面未达: 质量缺口未成立)"
+  }
+ },
+ "set7_seventh_window_set": {
+  "rounds": [
+   "r599"
+  ],
+  "data_scope": {
+   "windows": 3,
+   "runs": 12,
+   "products": 9
+  },
+  "C0": {
+   "runs_seen": 12,
+   "expected_runs": 12,
+   "windows": 3,
+   "expected_windows": 3,
+   "issues": [],
+   "pass": true
+  },
+  "C1_task_face_v3": {
+   "median_D_task": null,
+   "neg_windows": 0,
+   "valid_windows": 0,
+   "threshold_median": -0.34,
+   "threshold_sign": "neg >= ceil(valid/2)",
+   "pass": false,
+   "verdict": "不可判"
+  },
+  "C2_face_direction": {
+   "case_face_median": null,
+   "task_face_median": null,
+   "same_sign": false,
+   "pass": false
+  },
+  "C5_readonly": {
+   "files": 476,
+   "sha": "c30efefd16c41d64a65619adb9b02466cd39081480f1bededb3543ae6164927d",
+   "pass": true,
+   "note": "只读面指纹（读数自身不写入）"
+  },
+  "C7_negative_control": {
+   "mutation": "w181 产品侧任一失败例 FAIL->PASS (副本内, 单侧)",
+   "target_window": "w181",
+   "readings_changed": true,
+   "truth_side_untouched": true,
+   "selection_face": "all product runs (agentD-r1..r3) × current window set",
+   "no_target": false,
+   "has_teeth": true
+  },
+  "C10_decoupling": {
+   "product_runs": 9,
+   "rc_nonzero_and_allpass": 4,
+   "named": [
+    "r599/w181 rc=5 cases=58/58",
+    "r599/w181 rc=5 cases=58/58",
+    "r599/w183 rc=5 cases=58/58",
+    "r599/w183 rc=5 cases=58/58"
+   ],
+   "share": 0.4444
+  },
+  "summary": {
+   "valid_windows": 0,
+   "unreliable_windows_truth_self_fail": [
+    "w181",
+    "w182",
+    "w183"
+   ],
+   "all_windows": {
+    "n": 3
+   },
+   "case_face_valid": {
+    "n": 0
+   },
+   "case_face_all": {
+    "n": 3,
+    "median": 2,
+    "min": 2,
+    "max": 5,
+    "range": 3,
+    "sign": {
+     "neg": 0,
+     "zero": 0,
+     "pos": 3
+    }
+   },
+   "task_face_valid": {
+    "n": 0
+   },
+   "task_face_all": {
+    "n": 3,
+    "median": 0.6667,
+    "min": 0.3333,
+    "max": 0.6667,
+    "range": 0.3334,
+    "sign": {
+     "neg": 0,
+     "zero": 0,
+     "pos": 3
+    }
+   },
+   "case_face_all_median": 2,
+   "task_face_all_median": 0.6667
+  },
+  "family_aggregate": {
+   "life": {
+    "n_cases": 14,
+    "truth_pass_cases": 42,
+    "truth_runs": 3,
+    "truth_all_pass_runs": 3,
+    "truth_all_pass_rate": 1.0,
+    "prod_pass_cases_median_per_window": 14,
+    "prod_all_pass_rate_mean": 1.0,
+    "prod_fail_reasons_total": {}
+   },
+   "nim": {
+    "n_cases": 15,
+    "truth_pass_cases": 45,
+    "truth_runs": 3,
+    "truth_all_pass_runs": 3,
+    "truth_all_pass_rate": 1.0,
+    "prod_pass_cases_median_per_window": 15,
+    "prod_all_pass_rate_mean": 1.0,
+    "prod_fail_reasons_total": {}
+   },
+   "sub": {
+    "n_cases": 14,
+    "truth_pass_cases": 42,
+    "truth_runs": 3,
+    "truth_all_pass_runs": 3,
+    "truth_all_pass_rate": 1.0,
+    "prod_pass_cases_median_per_window": 14,
+    "prod_all_pass_rate_mean": 1.0,
+    "prod_fail_reasons_total": {}
+   },
+   "wythoff": {
+    "n_cases": 15,
+    "truth_pass_cases": 34,
+    "truth_runs": 3,
+    "truth_all_pass_runs": 0,
+    "truth_all_pass_rate": 0.0,
+    "prod_pass_cases_median_per_window": 15,
+    "prod_all_pass_rate_mean": 0.5556,
+    "prod_fail_reasons_total": {
+     "stdout_mismatch@0.02s": 21,
+     "stdout_mismatch@0.03s": 15
+    }
+   }
+  },
+  "per_window": [
+   {
+    "round": "r599",
+    "win": "w181",
+    "truth_pass": 56,
+    "truth_all_pass": 0,
+    "truth_rc": null,
+    "prod_pass": [
+     58,
+     58,
+     47
+    ],
+    "prod_rc": [
+     "5",
+     "5",
+     "5"
+    ],
+    "prod_rate_task": 0.6666666666666666,
+    "D_case": 2,
+    "D_task": 0.6667,
+    "valid_task": false,
+    "families": {
+     "life": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "nim": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "sub": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "wythoff": {
+      "n": 15,
+      "truth_pass": 13,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 0.6666666666666666,
+      "truth_all_pass": 0.0,
+      "prod_fail_reasons": {
+       "stdout_mismatch@0.02s": 10,
+       "stdout_mismatch@0.03s": 1
+      }
+     }
+    }
+   },
+   {
+    "round": "r599",
+    "win": "w182",
+    "truth_pass": 51,
+    "truth_all_pass": 0,
+    "truth_rc": null,
+    "prod_pass": [
+     58,
+     56,
+     47
+    ],
+    "prod_rc": [
+     "0",
+     "5",
+     "8"
+    ],
+    "prod_rate_task": 0.3333333333333333,
+    "D_case": 5,
+    "D_task": 0.3333,
+    "valid_task": false,
+    "families": {
+     "life": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "nim": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "sub": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "wythoff": {
+      "n": 15,
+      "truth_pass": 8,
+      "prod_pass_med": 13,
+      "prod_all_pass_rate": 0.3333333333333333,
+      "truth_all_pass": 0.0,
+      "prod_fail_reasons": {
+       "stdout_mismatch@0.03s": 13
+      }
+     }
+    }
+   },
+   {
+    "round": "r599",
+    "win": "w183",
+    "truth_pass": 56,
+    "truth_all_pass": 0,
+    "truth_rc": null,
+    "prod_pass": [
+     58,
+     58,
+     46
+    ],
+    "prod_rc": [
+     "5",
+     "5",
+     "5"
+    ],
+    "prod_rate_task": 0.6666666666666666,
+    "D_case": 2,
+    "D_task": 0.6667,
+    "valid_task": false,
+    "families": {
+     "life": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "nim": {
+      "n": 15,
+      "truth_pass": 15,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "sub": {
+      "n": 14,
+      "truth_pass": 14,
+      "prod_pass_med": 14,
+      "prod_all_pass_rate": 1.0,
+      "truth_all_pass": 1.0,
+      "prod_fail_reasons": {}
+     },
+     "wythoff": {
+      "n": 15,
+      "truth_pass": 13,
+      "prod_pass_med": 15,
+      "prod_all_pass_rate": 0.6666666666666666,
+      "truth_all_pass": 0.0,
+      "prod_fail_reasons": {
+       "stdout_mismatch@0.02s": 11,
+       "stdout_mismatch@0.03s": 1
+      }
+     }
+    }
+   }
+  ],
+  "verdict": {
+   "rc": 1,
+   "acceptance_face_encoded": true,
+   "blocked": [
+    "C1_task_face_v3_acceptance"
+   ],
+   "judge": "FAIL(验收面未达: 质量缺口未成立)"
+  }
+ },
+ "juxtaposition": {
+  "rule": "跨窗集**禁相减**，只并列（§12.3）；阈值 -0.34 同一件、非事后调。",
+  "set1": {
+   "valid": 9,
+   "median": -0.6667,
+   "neg": 8,
+   "pass": true
+  },
+  "set2": {
+   "valid": 1,
+   "median": -0.6667,
+   "neg": 1,
+   "pass": true
+  },
+  "set3": {
+   "valid": 2,
+   "median": -0.5,
+   "neg": 2,
+   "pass": true
+  },
+  "set4": {
+   "valid": 2,
+   "median": -0.5,
+   "neg": 2,
+   "pass": true
+  },
+  "set5": {
+   "valid": 1,
+   "median": -0.3333,
+   "neg": 1,
+   "pass": false
+  },
+  "set6": {
+   "valid": 2,
+   "median": -0.3333,
+   "neg": 2,
+   "pass": false
+  },
+  "set7": {
+   "valid": 0,
+   "median": null,
+   "neg": 0,
+   "pass": false
+  },
+  "family_all_pass_rate": {
+   "life": {
+    "set1": 0.9722,
+    "set2": 1.0,
+    "set5": 1.0,
+    "set6": 1.0,
+    "set7": 1.0
+   },
+   "nim": {
+    "set1": 0.9722,
+    "set2": 1.0,
+    "set5": 1.0,
+    "set6": 1.0,
+    "set7": 1.0
+   },
+   "sub": {
+    "set1": 0.9722,
+    "set2": 1.0,
+    "set5": 1.0,
+    "set6": 1.0,
+    "set7": 1.0
+   },
+   "wythoff": {
+    "set1": 0.3889,
+    "set2": 0.4444,
+    "set5": 0.7778,
+    "set6": 0.5556,
+    "set7": 0.5556
+   }
+  },
+  "reproduced_first_set": {
+   "registered_r589": {
+    "median": -0.6667,
+    "neg": 8,
+    "valid": 9
+   },
+   "recomputed_here": {
+    "median": -0.6667,
+    "neg": 8,
+    "valid": 9
+   },
+   "consistent": true
+  }
+ }
+}

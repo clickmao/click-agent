@@ -1,0 +1,1901 @@
+{
+ "round": "R593",
+ "instrument": {
+  "path": "/home/agentuser/AgentFramework/eval/rover/r593/landing_predicate_r593.py",
+  "version": "v3",
+  "supersedes_criterion_readings": false,
+  "note": "A/B 级桶定义与 R592 逐字不变（零回归对照臂 C4）；只加 D 细分 / codex 面 / V_int 分布",
+  "imports": {
+   "helpers_from": "/home/agentuser/AgentFramework/eval/rover/r592/landing_predicate_r592.py",
+   "oracle_and_classify": "/home/agentuser/AgentFramework/eval/rover/r562/wythoff_cause_r562.py",
+   "cases": "/home/agentuser/AgentFramework/eval/rover/r591/cases/cases-r521.json"
+  },
+  "v2_profile": true
+ },
+ "scope": {
+  "rounds": [
+   "r599"
+  ],
+  "codex_too": true,
+  "runs_total": 12,
+  "runs_ok": 12,
+  "grid_L": 25,
+  "positions": 351,
+  "oracle": {
+   "fixture_agrees": true
+  }
+ },
+ "controls": {
+  "OK": {
+   "layer": "(c) 本轴外",
+   "cold_set_equal": true,
+   "v_land_n": 0,
+   "v_int_n": 0,
+   "declared_cold_n": 10,
+   "grid_err_n": 0,
+   "cases_pass_wythoff": 15,
+   "cases_n": 15,
+   "buckets": {},
+   "d_subs": {},
+   "d1_reason": {},
+   "fail_total": 0
+  },
+  "POS": {
+   "layer": "(a) 落点/选择谓词层",
+   "cold_set_equal": false,
+   "v_land_n": 347,
+   "v_int_n": 1,
+   "declared_cold_n": 2,
+   "grid_err_n": 0,
+   "cases_pass_wythoff": 0,
+   "cases_n": 15,
+   "buckets": {
+    "A_landing_loose": 14,
+    "B_coldset": 1
+   },
+   "d_subs": {},
+   "d1_reason": {},
+   "fail_total": 15
+  },
+  "NEG": {
+   "layer": "(b) 冷集构造层",
+   "cold_set_equal": false,
+   "v_land_n": 0,
+   "v_int_n": 25,
+   "declared_cold_n": 26,
+   "grid_err_n": 0,
+   "cases_pass_wythoff": 0,
+   "cases_n": 15,
+   "buckets": {
+    "B_coldset": 15
+   },
+   "d_subs": {},
+   "d1_reason": {},
+   "fail_total": 15
+  },
+  "D_EMPTY": {
+   "layer": "(b) 冷集构造层",
+   "cold_set_equal": false,
+   "v_land_n": 0,
+   "v_int_n": 0,
+   "declared_cold_n": 0,
+   "grid_err_n": 351,
+   "cases_pass_wythoff": 0,
+   "cases_n": 15,
+   "buckets": {
+    "D_delivery_or_shape": 15
+   },
+   "d_subs": {
+    "D1_empty_or_error": 15
+   },
+   "d1_reason": {
+    "empty_body": 15
+   },
+   "fail_total": 15
+  },
+  "D_RC": {
+   "layer": "(b) 冷集构造层",
+   "cold_set_equal": false,
+   "v_land_n": 0,
+   "v_int_n": 0,
+   "declared_cold_n": 0,
+   "grid_err_n": 351,
+   "cases_pass_wythoff": 0,
+   "cases_n": 15,
+   "buckets": {
+    "D_delivery_or_shape": 15
+   },
+   "d_subs": {
+    "D1_empty_or_error": 15
+   },
+   "d1_reason": {
+    "nonzero_rc": 15
+   },
+   "fail_total": 15
+  },
+  "D_SHAPE": {
+   "layer": "(c) 本轴外",
+   "cold_set_equal": true,
+   "v_land_n": 0,
+   "v_int_n": 0,
+   "declared_cold_n": 10,
+   "grid_err_n": 341,
+   "cases_pass_wythoff": 4,
+   "cases_n": 15,
+   "buckets": {
+    "D_delivery_or_shape": 11
+   },
+   "d_subs": {
+    "D2_move_shape": 11
+   },
+   "d1_reason": {},
+   "fail_total": 11
+  },
+  "D_ILLEGAL": {
+   "layer": "(c) 本轴外",
+   "cold_set_equal": true,
+   "v_land_n": 0,
+   "v_int_n": 0,
+   "declared_cold_n": 10,
+   "grid_err_n": 0,
+   "cases_pass_wythoff": 4,
+   "cases_n": 15,
+   "buckets": {
+    "D_delivery_or_shape": 11
+   },
+   "d_subs": {
+    "D3_move_illegal": 11
+   },
+   "d1_reason": {},
+   "fail_total": 11
+  },
+  "D_LABEL": {
+   "layer": "(a) 落点/选择谓词层",
+   "cold_set_equal": false,
+   "v_land_n": 341,
+   "v_int_n": 0,
+   "declared_cold_n": 0,
+   "grid_err_n": 10,
+   "cases_pass_wythoff": 11,
+   "cases_n": 15,
+   "buckets": {
+    "D_delivery_or_shape": 4
+   },
+   "d_subs": {
+    "D4_label_mismatch": 4
+   },
+   "d1_reason": {},
+   "fail_total": 4
+  }
+ },
+ "teeth": {
+  "has_teeth": true,
+  "OK_ok": true,
+  "POS_layer_a": true,
+  "NEG_layer_b": true,
+  "d_unique_landing": true,
+  "d_single_sub": true,
+  "declared_ok": true,
+  "sigs_new": {
+   "OK": [
+    "LAYER",
+    "(c) 本轴外"
+   ],
+   "POS": [
+    "LAYER",
+    "(a) 落点/选择谓词层"
+   ],
+   "NEG": [
+    "LAYER",
+    "(b) 冷集构造层"
+   ],
+   "D_EMPTY": [
+    "D",
+    "D1_empty_or_error",
+    "empty_body"
+   ],
+   "D_RC": [
+    "D",
+    "D1_empty_or_error",
+    "nonzero_rc"
+   ],
+   "D_SHAPE": [
+    "D",
+    "D2_move_shape",
+    null
+   ],
+   "D_ILLEGAL": [
+    "D",
+    "D3_move_illegal",
+    null
+   ],
+   "D_LABEL": [
+    "D",
+    "D4_label_mismatch",
+    null
+   ]
+  },
+  "old_granularity": {
+   "sigs": {
+    "D_EMPTY": [
+     "D",
+     "D_delivery_or_shape"
+    ],
+    "D_RC": [
+     "D",
+     "D_delivery_or_shape"
+    ],
+    "D_SHAPE": [
+     "D",
+     "D_delivery_or_shape"
+    ],
+    "D_ILLEGAL": [
+     "D",
+     "D_delivery_or_shape"
+    ],
+    "D_LABEL": [
+     "D",
+     "D_delivery_or_shape"
+    ]
+   },
+   "distinct": 1,
+   "has_teeth": false
+  }
+ },
+ "non_trivial": {
+  "ctrl_forms": {
+   "equal|v_land>0=False": 3,
+   "diff|v_land>0=True": 2,
+   "diff|v_land>0=False": 3
+  },
+  "run_forms": {
+   "equal|v_land>0=False": 8,
+   "diff|v_land>0=False": 3,
+   "equal|v_land>0=True": 1
+  },
+  "ctrl_ok": true,
+  "runs_ok": true
+ },
+ "strays": {
+  "before": [],
+  "after": []
+ },
+ "readonly": {
+  "pre": {
+   "r599/w181/agentD-r1": "8fc6a378e33288c5d888117023e18e7156d10d7059f954677d71c1e95e6a0843",
+   "r599/w181/agentD-r2": "5449629de3234291ae49fdd0cdb9c1a750fbd93161be7e6ddd906e6001de9517",
+   "r599/w181/agentD-r3": "56a21816508f6be75670a03ce801cbd19494bfe492e1422140093ca157f063b0",
+   "r599/w181/codex": "a75664546d6a67eddb5a30383c13d7d784f495e08f48ce4b75d2a44d847ff65c",
+   "r599/w182/agentD-r1": "5f34fdd82422554be7f334527df747797c43caec354a6ba67bc70cd09d6b527a",
+   "r599/w182/agentD-r2": "a6e25cf3b21c175e2e044c377b9aaab93bda76bfba8ada2b9aadf68a6e8d6aed",
+   "r599/w182/agentD-r3": "60e61e9acc4ae4b981478954cc738bbb99499080cd7bcd8cea517e3fc2d0472d",
+   "r599/w182/codex": "f7baf6ddf131059cf408b0245a54a7e8f18e06c574b808756f59284875f31b8f",
+   "r599/w183/agentD-r1": "c6aaf4ca3e2310af20bff88394d089a13972589214209ab72a761d50c80d1e57",
+   "r599/w183/agentD-r2": "128e8aac62c0a128d809f84c64d4d1c7d96ad5d9a3bf0b377df20c5d2db7bf26",
+   "r599/w183/agentD-r3": "f482d41519a923a33e24a8efbae564f8b73e0c9fb081f6b3c3864bb450bbcf4c",
+   "r599/w183/codex": "f3d5be3699bba1bf88b4620e53f2feda16d8c0ae1d2cb7baaa99502b5d166d74",
+   "cases-r521.json": "270128eb85c7afc07244c10c8845a22a541a7a60587a870125089e93422fccd7"
+  },
+  "post": {
+   "r599/w181/agentD-r1": "8fc6a378e33288c5d888117023e18e7156d10d7059f954677d71c1e95e6a0843",
+   "r599/w181/agentD-r2": "5449629de3234291ae49fdd0cdb9c1a750fbd93161be7e6ddd906e6001de9517",
+   "r599/w181/agentD-r3": "56a21816508f6be75670a03ce801cbd19494bfe492e1422140093ca157f063b0",
+   "r599/w181/codex": "a75664546d6a67eddb5a30383c13d7d784f495e08f48ce4b75d2a44d847ff65c",
+   "r599/w182/agentD-r1": "5f34fdd82422554be7f334527df747797c43caec354a6ba67bc70cd09d6b527a",
+   "r599/w182/agentD-r2": "a6e25cf3b21c175e2e044c377b9aaab93bda76bfba8ada2b9aadf68a6e8d6aed",
+   "r599/w182/agentD-r3": "60e61e9acc4ae4b981478954cc738bbb99499080cd7bcd8cea517e3fc2d0472d",
+   "r599/w182/codex": "f7baf6ddf131059cf408b0245a54a7e8f18e06c574b808756f59284875f31b8f",
+   "r599/w183/agentD-r1": "c6aaf4ca3e2310af20bff88394d089a13972589214209ab72a761d50c80d1e57",
+   "r599/w183/agentD-r2": "128e8aac62c0a128d809f84c64d4d1c7d96ad5d9a3bf0b377df20c5d2db7bf26",
+   "r599/w183/agentD-r3": "f482d41519a923a33e24a8efbae564f8b73e0c9fb081f6b3c3864bb450bbcf4c",
+   "r599/w183/codex": "f3d5be3699bba1bf88b4620e53f2feda16d8c0ae1d2cb7baaa99502b5d166d74",
+   "cases-r521.json": "270128eb85c7afc07244c10c8845a22a541a7a60587a870125089e93422fccd7"
+  },
+  "src_pre": "4a1ed22793f157874a9a94b4f5cc1ba35a9b2b98e8c2559ec6f2dfe1b74ab0bc",
+  "src_post": "4a1ed22793f157874a9a94b4f5cc1ba35a9b2b98e8c2559ec6f2dfe1b74ab0bc",
+  "ok": true
+ },
+ "conservation": true,
+ "zero_regression": {
+  "registered_from": "/home/agentuser/AgentFramework/eval/rover/r592/landing-predicate-r592.json",
+  "match": false,
+  "expected": {
+   "buckets": {
+    "A_landing_loose": 20,
+    "A_selection_order": 6,
+    "B_coldset": 184
+   },
+   "layer": {
+    "(c) 本轴外": 19,
+    "(b) 冷集构造层": 22,
+    "(a) 落点/选择谓词层": 3
+   }
+  },
+  "actual": {
+   "buckets": {
+    "A_landing_loose": 11,
+    "A_selection_order": 0,
+    "B_coldset": 21
+   },
+   "layer": {
+    "(c) 本轴外": 6,
+    "(b) 冷集构造层": 2,
+    "(a) 落点/选择谓词层": 1
+   }
+  },
+  "note": "controls-only 模式轮次面为空 ⇒ 不评（不得读成失败）"
+ },
+ "agent": {
+  "runs": 9,
+  "cases_pass": 99,
+  "cases_n": 135,
+  "fail_total": 36,
+  "buckets": {
+   "B_coldset": 21,
+   "D_delivery_or_shape": 4,
+   "A_landing_loose": 11
+  },
+  "bucket_shares": {
+   "B_coldset": 0.5833,
+   "D_delivery_or_shape": 0.1111,
+   "A_landing_loose": 0.3056
+  },
+  "d_subs": {
+   "D3_move_illegal": 4
+  },
+  "d_sub_shares": {
+   "D3_move_illegal": 1.0
+  },
+  "d1_reason": {},
+  "layer": {
+   "(c) 本轴外": 6,
+   "(b) 冷集构造层": 2,
+   "(a) 落点/选择谓词层": 1
+  },
+  "v_int_hist": {
+   "0": 7,
+   "118": 1,
+   "6": 1
+  },
+  "d_total": 4,
+  "conservation": true
+ },
+ "codex": {
+  "runs": 3,
+  "cases_pass": 34,
+  "cases_n": 45,
+  "fail_total": 11,
+  "buckets": {
+   "D_delivery_or_shape": 8,
+   "A_landing_loose": 2,
+   "B_coldset": 1
+  },
+  "bucket_shares": {
+   "D_delivery_or_shape": 0.7273,
+   "A_landing_loose": 0.1818,
+   "B_coldset": 0.0909
+  },
+  "d_subs": {
+   "D3_move_illegal": 8
+  },
+  "d_sub_shares": {
+   "D3_move_illegal": 1.0
+  },
+  "d1_reason": {},
+  "layer": {
+   "(c) 本轴外": 2,
+   "(b) 冷集构造层": 1
+  },
+  "v_int_hist": {
+   "0": 3
+  },
+  "d_total": 8,
+  "conservation": true
+ },
+ "compare": {
+  "note": "两侧并列不相同减；分母 = 各自侧失败例次",
+  "bucket_share_diff": {
+   "A_landing_loose": 0.1238,
+   "B_coldset": 0.4924,
+   "D_delivery_or_shape": -0.6162
+  },
+  "d_sub_share_diff": {
+   "D3_move_illegal": 0.0
+  }
+ },
+ "runs": [
+  {
+   "round": "r599",
+   "win": "w181",
+   "sub": "agentD-r1",
+   "side": "agent",
+   "cases_pass_wythoff": 15,
+   "cases_n": 15,
+   "cases_rc_nonzero": 0,
+   "declared_cold_n": 10,
+   "grid_win_n": 341,
+   "grid_err_n": 0,
+   "cold_set_equal": true,
+   "cold_only_prod": [],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(c) 本轴外",
+   "buckets": {},
+   "d_subs": {},
+   "d1_reason": {},
+   "fail_total": 0,
+   "d_total": 0,
+   "conservation": true,
+   "failures": []
+  },
+  {
+   "round": "r599",
+   "win": "w181",
+   "sub": "agentD-r2",
+   "side": "agent",
+   "cases_pass_wythoff": 15,
+   "cases_n": 15,
+   "cases_rc_nonzero": 0,
+   "declared_cold_n": 10,
+   "grid_win_n": 341,
+   "grid_err_n": 0,
+   "cold_set_equal": true,
+   "cold_only_prod": [],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(c) 本轴外",
+   "buckets": {},
+   "d_subs": {},
+   "d1_reason": {},
+   "fail_total": 0,
+   "d_total": 0,
+   "conservation": true,
+   "failures": []
+  },
+  {
+   "round": "r599",
+   "win": "w181",
+   "sub": "agentD-r3",
+   "side": "agent",
+   "cases_pass_wythoff": 4,
+   "cases_n": 15,
+   "cases_rc_nonzero": 0,
+   "declared_cold_n": 120,
+   "grid_win_n": 231,
+   "grid_err_n": 0,
+   "cold_set_equal": false,
+   "cold_only_prod": [
+    [
+     1,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     1,
+     5
+    ],
+    [
+     1,
+     6
+    ],
+    [
+     1,
+     7
+    ],
+    [
+     1,
+     8
+    ],
+    [
+     1,
+     9
+    ],
+    [
+     1,
+     10
+    ],
+    [
+     1,
+     11
+    ],
+    [
+     1,
+     12
+    ],
+    [
+     1,
+     13
+    ],
+    [
+     1,
+     14
+    ],
+    [
+     1,
+     15
+    ],
+    [
+     1,
+     16
+    ],
+    [
+     1,
+     17
+    ],
+    [
+     1,
+     18
+    ],
+    [
+     1,
+     19
+    ],
+    [
+     1,
+     20
+    ],
+    [
+     1,
+     21
+    ],
+    [
+     1,
+     22
+    ],
+    [
+     1,
+     23
+    ],
+    [
+     1,
+     24
+    ],
+    [
+     1,
+     25
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     4,
+     6
+    ],
+    [
+     4,
+     8
+    ],
+    [
+     4,
+     9
+    ],
+    [
+     4,
+     10
+    ],
+    [
+     4,
+     11
+    ],
+    [
+     4,
+     12
+    ],
+    [
+     4,
+     13
+    ],
+    [
+     4,
+     14
+    ],
+    [
+     4,
+     15
+    ],
+    [
+     4,
+     16
+    ],
+    [
+     4,
+     17
+    ],
+    [
+     4,
+     18
+    ],
+    [
+     4,
+     19
+    ],
+    [
+     4,
+     20
+    ],
+    [
+     4,
+     21
+    ],
+    [
+     4,
+     22
+    ],
+    [
+     4,
+     23
+    ],
+    [
+     4,
+     24
+    ],
+    [
+     4,
+     25
+    ],
+    [
+     5,
+     7
+    ],
+    [
+     6,
+     9
+    ],
+    [
+     6,
+     11
+    ],
+    [
+     6,
+     12
+    ],
+    [
+     6,
+     13
+    ],
+    [
+     6,
+     14
+    ],
+    [
+     6,
+     15
+    ],
+    [
+     6,
+     16
+    ],
+    [
+     6,
+     17
+    ],
+    [
+     6,
+     18
+    ],
+    [
+     6,
+     19
+    ],
+    [
+     6,
+     20
+    ],
+    [
+     6,
+     21
+    ],
+    [
+     6,
+     22
+    ],
+    [
+     6,
+     23
+    ],
+    [
+     6,
+     24
+    ],
+    [
+     6,
+     25
+    ],
+    [
+     7,
+     10
+    ],
+    [
+     8,
+     12
+    ],
+    [
+     8,
+     14
+    ],
+    [
+     8,
+     15
+    ],
+    [
+     8,
+     16
+    ],
+    [
+     8,
+     17
+    ],
+    [
+     8,
+     18
+    ],
+    [
+     8,
+     19
+    ],
+    [
+     8,
+     20
+    ],
+    [
+     8,
+     21
+    ],
+    [
+     8,
+     22
+    ],
+    [
+     8,
+     23
+    ],
+    [
+     8,
+     24
+    ],
+    [
+     8,
+     25
+    ],
+    [
+     9,
+     13
+    ],
+    [
+     9,
+     14
+    ],
+    [
+     9,
+     16
+    ],
+    [
+     9,
+     17
+    ],
+    [
+     9,
+     18
+    ],
+    [
+     9,
+     19
+    ],
+    [
+     9,
+     20
+    ],
+    [
+     9,
+     21
+    ],
+    [
+     9,
+     22
+    ],
+    [
+     9,
+     23
+    ],
+    [
+     9,
+     24
+    ],
+    [
+     9,
+     25
+    ],
+    [
+     10,
+     14
+    ],
+    [
+     11,
+     16
+    ],
+    [
+     11,
+     17
+    ],
+    [
+     11,
+     19
+    ],
+    [
+     11,
+     20
+    ],
+    [
+     11,
+     21
+    ],
+    [
+     11,
+     22
+    ],
+    [
+     11,
+     23
+    ],
+    [
+     11,
+     24
+    ],
+    [
+     11,
+     25
+    ],
+    [
+     12,
+     17
+    ],
+    [
+     12,
+     18
+    ],
+    [
+     12,
+     19
+    ],
+    [
+     12,
+     21
+    ],
+    [
+     12,
+     22
+    ],
+    [
+     12,
+     23
+    ],
+    [
+     12,
+     24
+    ],
+    [
+     12,
+     25
+    ],
+    [
+     13,
+     18
+    ],
+    [
+     15,
+     21
+    ],
+    [
+     16,
+     23
+    ],
+    [
+     16,
+     24
+    ],
+    [
+     16,
+     25
+    ],
+    [
+     17,
+     24
+    ],
+    [
+     17,
+     25
+    ],
+    [
+     18,
+     25
+    ]
+   ],
+   "cold_only_true": [
+    [
+     3,
+     5
+    ],
+    [
+     14,
+     23
+    ]
+   ],
+   "v_land_n": 0,
+   "v_int_n": 118,
+   "v_int_samples": [
+    {
+     "pos": [
+      1,
+      3
+     ],
+     "target": [
+      1,
+      2
+     ]
+    },
+    {
+     "pos": [
+      1,
+      4
+     ],
+     "target": [
+      1,
+      3
+     ]
+    },
+    {
+     "pos": [
+      1,
+      5
+     ],
+     "target": [
+      1,
+      4
+     ]
+    },
+    {
+     "pos": [
+      1,
+      6
+     ],
+     "target": [
+      1,
+      5
+     ]
+    },
+    {
+     "pos": [
+      1,
+      7
+     ],
+     "target": [
+      1,
+      6
+     ]
+    }
+   ],
+   "layer": "(b) 冷集构造层",
+   "buckets": {
+    "B_coldset": 11
+   },
+   "d_subs": {},
+   "d1_reason": {},
+   "fail_total": 11,
+   "d_total": 0,
+   "conservation": true,
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "WIN 0 10",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(21,15)",
+     "rc": 0,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 1,
+     "stdin": "10 9",
+     "exp": "WIN 0 3",
+     "got": "WIN 0 2",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(10,7)",
+     "rc": 0,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 2,
+     "stdin": "18 8",
+     "exp": "WIN 5 0",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "rc": 0,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 3,
+     "stdin": "1 5",
+     "exp": "WIN 0 3",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "rc": 0,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 4,
+     "stdin": "12 18",
+     "exp": "WIN 1 0",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "rc": 0,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 5,
+     "stdin": "11 25",
+     "exp": "WIN 0 7",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "rc": 0,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 6,
+     "stdin": "18 17",
+     "exp": "WIN 0 6",
+     "got": "WIN 0 4",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(18,13)",
+     "rc": 0,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 7,
+     "stdin": "7 21",
+     "exp": "WIN 0 17",
+     "got": "WIN 0 11",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(10,7)",
+     "rc": 0,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 9,
+     "stdin": "3 5",
+     "exp": "LOSE",
+     "got": "WIN 0 3",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "rc": 0,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 13,
+     "stdin": "2 25",
+     "exp": "WIN 0 24",
+     "got": "WIN 0 22",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(3,2)",
+     "rc": 0,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 14,
+     "stdin": "25 25",
+     "exp": "WIN 25 25",
+     "got": "WIN 0 7",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(25,18)",
+     "rc": 0,
+     "bucket": "B_coldset"
+    }
+   ]
+  },
+  {
+   "round": "r599",
+   "win": "w181",
+   "sub": "codex",
+   "side": "codex",
+   "cases_pass_wythoff": 13,
+   "cases_n": 15,
+   "cases_rc_nonzero": 0,
+   "declared_cold_n": 10,
+   "grid_win_n": 341,
+   "grid_err_n": 0,
+   "cold_set_equal": true,
+   "cold_only_prod": [],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(c) 本轴外",
+   "buckets": {
+    "D_delivery_or_shape": 2
+   },
+   "d_subs": {
+    "D3_move_illegal": 2
+   },
+   "d1_reason": {},
+   "fail_total": 2,
+   "d_total": 2,
+   "conservation": true,
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "WIN 1 13",
+     "class": "MOVE_ILLEGAL",
+     "detail": "removals(1,13)",
+     "rc": 0,
+     "bucket": "D_delivery_or_shape",
+     "d_sub": "D3_move_illegal"
+    },
+    {
+     "idx": 14,
+     "stdin": "25 25",
+     "exp": "WIN 25 25",
+     "got": "WIN 2 11",
+     "class": "MOVE_ILLEGAL",
+     "detail": "removals(2,11)",
+     "rc": 0,
+     "bucket": "D_delivery_or_shape",
+     "d_sub": "D3_move_illegal"
+    }
+   ]
+  },
+  {
+   "round": "r599",
+   "win": "w182",
+   "sub": "agentD-r1",
+   "side": "agent",
+   "cases_pass_wythoff": 15,
+   "cases_n": 15,
+   "cases_rc_nonzero": 0,
+   "declared_cold_n": 10,
+   "grid_win_n": 341,
+   "grid_err_n": 0,
+   "cold_set_equal": true,
+   "cold_only_prod": [],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(c) 本轴外",
+   "buckets": {},
+   "d_subs": {},
+   "d1_reason": {},
+   "fail_total": 0,
+   "d_total": 0,
+   "conservation": true,
+   "failures": []
+  },
+  {
+   "round": "r599",
+   "win": "w182",
+   "sub": "agentD-r2",
+   "side": "agent",
+   "cases_pass_wythoff": 13,
+   "cases_n": 15,
+   "cases_rc_nonzero": 0,
+   "declared_cold_n": 10,
+   "grid_win_n": 341,
+   "grid_err_n": 0,
+   "cold_set_equal": true,
+   "cold_only_prod": [],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(c) 本轴外",
+   "buckets": {
+    "D_delivery_or_shape": 2
+   },
+   "d_subs": {
+    "D3_move_illegal": 2
+   },
+   "d1_reason": {},
+   "fail_total": 2,
+   "d_total": 2,
+   "conservation": true,
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "WIN 1 13",
+     "class": "MOVE_ILLEGAL",
+     "detail": "removals(1,13)",
+     "rc": 0,
+     "bucket": "D_delivery_or_shape",
+     "d_sub": "D3_move_illegal"
+    },
+    {
+     "idx": 14,
+     "stdin": "25 25",
+     "exp": "WIN 25 25",
+     "got": "WIN 2 11",
+     "class": "MOVE_ILLEGAL",
+     "detail": "removals(2,11)",
+     "rc": 0,
+     "bucket": "D_delivery_or_shape",
+     "d_sub": "D3_move_illegal"
+    }
+   ]
+  },
+  {
+   "round": "r599",
+   "win": "w182",
+   "sub": "agentD-r3",
+   "side": "agent",
+   "cases_pass_wythoff": 4,
+   "cases_n": 15,
+   "cases_rc_nonzero": 0,
+   "declared_cold_n": 10,
+   "grid_win_n": 340,
+   "grid_err_n": 1,
+   "cold_set_equal": true,
+   "cold_only_prod": [],
+   "cold_only_true": [],
+   "v_land_n": 340,
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(a) 落点/选择谓词层",
+   "buckets": {
+    "A_landing_loose": 11
+   },
+   "d_subs": {},
+   "d1_reason": {},
+   "fail_total": 11,
+   "d_total": 0,
+   "conservation": true,
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "WIN 0 1",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(24,21)",
+     "rc": 0,
+     "bucket": "A_landing_loose"
+    },
+    {
+     "idx": 1,
+     "stdin": "10 9",
+     "exp": "WIN 0 3",
+     "got": "WIN 0 1",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(10,8)",
+     "rc": 0,
+     "bucket": "A_landing_loose"
+    },
+    {
+     "idx": 2,
+     "stdin": "18 8",
+     "exp": "WIN 5 0",
+     "got": "WIN 0 1",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(18,7)",
+     "rc": 0,
+     "bucket": "A_landing_loose"
+    },
+    {
+     "idx": 3,
+     "stdin": "1 5",
+     "exp": "WIN 0 3",
+     "got": "WIN 0 1",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(4,1)",
+     "rc": 0,
+     "bucket": "A_landing_loose"
+    },
+    {
+     "idx": 4,
+     "stdin": "12 18",
+     "exp": "WIN 1 0",
+     "got": "WIN 0 1",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(17,12)",
+     "rc": 0,
+     "bucket": "A_landing_loose"
+    },
+    {
+     "idx": 5,
+     "stdin": "11 25",
+     "exp": "WIN 0 7",
+     "got": "WIN 0 1",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(24,11)",
+     "rc": 0,
+     "bucket": "A_landing_loose"
+    },
+    {
+     "idx": 6,
+     "stdin": "18 17",
+     "exp": "WIN 0 6",
+     "got": "WIN 0 1",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(18,16)",
+     "rc": 0,
+     "bucket": "A_landing_loose"
+    },
+    {
+     "idx": 7,
+     "stdin": "7 21",
+     "exp": "WIN 0 17",
+     "got": "WIN 0 1",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(20,7)",
+     "rc": 0,
+     "bucket": "A_landing_loose"
+    },
+    {
+     "idx": 12,
+     "stdin": "1 1",
+     "exp": "WIN 1 1",
+     "got": "WIN 0 1",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(1,0)",
+     "rc": 0,
+     "bucket": "A_landing_loose"
+    },
+    {
+     "idx": 13,
+     "stdin": "2 25",
+     "exp": "WIN 0 24",
+     "got": "WIN 0 1",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(24,2)",
+     "rc": 0,
+     "bucket": "A_landing_loose"
+    },
+    {
+     "idx": 14,
+     "stdin": "25 25",
+     "exp": "WIN 25 25",
+     "got": "WIN 0 1",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(25,24)",
+     "rc": 0,
+     "bucket": "A_landing_loose"
+    }
+   ]
+  },
+  {
+   "round": "r599",
+   "win": "w182",
+   "sub": "codex",
+   "side": "codex",
+   "cases_pass_wythoff": 8,
+   "cases_n": 15,
+   "cases_rc_nonzero": 0,
+   "declared_cold_n": 5,
+   "grid_win_n": 346,
+   "grid_err_n": 0,
+   "cold_set_equal": false,
+   "cold_only_prod": [],
+   "cold_only_true": [
+    [
+     4,
+     7
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     9,
+     15
+    ],
+    [
+     12,
+     20
+    ],
+    [
+     14,
+     23
+    ]
+   ],
+   "v_land_n": 0,
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(b) 冷集构造层",
+   "buckets": {
+    "D_delivery_or_shape": 4,
+    "A_landing_loose": 2,
+    "B_coldset": 1
+   },
+   "d_subs": {
+    "D3_move_illegal": 4
+   },
+   "d1_reason": {},
+   "fail_total": 7,
+   "d_total": 4,
+   "conservation": true,
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "WIN 3 14",
+     "class": "MOVE_ILLEGAL",
+     "detail": "removals(3,14)",
+     "rc": 0,
+     "bucket": "D_delivery_or_shape",
+     "d_sub": "D3_move_illegal"
+    },
+    {
+     "idx": 1,
+     "stdin": "10 9",
+     "exp": "WIN 0 3",
+     "got": "WIN 3 0",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(9,7)",
+     "rc": 0,
+     "bucket": "A_landing_loose"
+    },
+    {
+     "idx": 2,
+     "stdin": "18 8",
+     "exp": "WIN 5 0",
+     "got": "WIN 2 8",
+     "class": "MOVE_ILLEGAL",
+     "detail": "removals(2,8)",
+     "rc": 0,
+     "bucket": "D_delivery_or_shape",
+     "d_sub": "D3_move_illegal"
+    },
+    {
+     "idx": 6,
+     "stdin": "18 17",
+     "exp": "WIN 0 6",
+     "got": "WIN 6 0",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(17,12)",
+     "rc": 0,
+     "bucket": "A_landing_loose"
+    },
+    {
+     "idx": 7,
+     "stdin": "7 21",
+     "exp": "WIN 0 17",
+     "got": "WIN 1 11",
+     "class": "MOVE_ILLEGAL",
+     "detail": "removals(1,11)",
+     "rc": 0,
+     "bucket": "D_delivery_or_shape",
+     "d_sub": "D3_move_illegal"
+    },
+    {
+     "idx": 10,
+     "stdin": "4 7",
+     "exp": "LOSE",
+     "got": "WIN 1 2",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "rc": 0,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 14,
+     "stdin": "25 25",
+     "exp": "WIN 25 25",
+     "got": "WIN 7 14",
+     "class": "MOVE_ILLEGAL",
+     "detail": "removals(7,14)",
+     "rc": 0,
+     "bucket": "D_delivery_or_shape",
+     "d_sub": "D3_move_illegal"
+    }
+   ]
+  },
+  {
+   "round": "r599",
+   "win": "w183",
+   "sub": "agentD-r1",
+   "side": "agent",
+   "cases_pass_wythoff": 15,
+   "cases_n": 15,
+   "cases_rc_nonzero": 0,
+   "declared_cold_n": 10,
+   "grid_win_n": 341,
+   "grid_err_n": 0,
+   "cold_set_equal": true,
+   "cold_only_prod": [],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(c) 本轴外",
+   "buckets": {},
+   "d_subs": {},
+   "d1_reason": {},
+   "fail_total": 0,
+   "d_total": 0,
+   "conservation": true,
+   "failures": []
+  },
+  {
+   "round": "r599",
+   "win": "w183",
+   "sub": "agentD-r2",
+   "side": "agent",
+   "cases_pass_wythoff": 15,
+   "cases_n": 15,
+   "cases_rc_nonzero": 0,
+   "declared_cold_n": 10,
+   "grid_win_n": 341,
+   "grid_err_n": 0,
+   "cold_set_equal": true,
+   "cold_only_prod": [],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(c) 本轴外",
+   "buckets": {},
+   "d_subs": {},
+   "d1_reason": {},
+   "fail_total": 0,
+   "d_total": 0,
+   "conservation": true,
+   "failures": []
+  },
+  {
+   "round": "r599",
+   "win": "w183",
+   "sub": "agentD-r3",
+   "side": "agent",
+   "cases_pass_wythoff": 3,
+   "cases_n": 15,
+   "cases_rc_nonzero": 0,
+   "declared_cold_n": 13,
+   "grid_win_n": 338,
+   "grid_err_n": 0,
+   "cold_set_equal": false,
+   "cold_only_prod": [
+    [
+     2,
+     4
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     4,
+     8
+    ],
+    [
+     5,
+     10
+    ],
+    [
+     6,
+     12
+    ],
+    [
+     7,
+     14
+    ],
+    [
+     8,
+     16
+    ],
+    [
+     9,
+     18
+    ],
+    [
+     10,
+     20
+    ],
+    [
+     11,
+     22
+    ],
+    [
+     12,
+     24
+    ]
+   ],
+   "cold_only_true": [
+    [
+     3,
+     5
+    ],
+    [
+     4,
+     7
+    ],
+    [
+     6,
+     10
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     9,
+     15
+    ],
+    [
+     11,
+     18
+    ],
+    [
+     12,
+     20
+    ],
+    [
+     14,
+     23
+    ]
+   ],
+   "v_land_n": 0,
+   "v_int_n": 6,
+   "v_int_samples": [
+    {
+     "pos": [
+      2,
+      4
+     ],
+     "target": [
+      1,
+      2
+     ]
+    },
+    {
+     "pos": [
+      4,
+      8
+     ],
+     "target": [
+      2,
+      4
+     ]
+    },
+    {
+     "pos": [
+      6,
+      12
+     ],
+     "target": [
+      3,
+      6
+     ]
+    },
+    {
+     "pos": [
+      8,
+      16
+     ],
+     "target": [
+      4,
+      8
+     ]
+    },
+    {
+     "pos": [
+      10,
+      20
+     ],
+     "target": [
+      5,
+      10
+     ]
+    }
+   ],
+   "layer": "(b) 冷集构造层",
+   "buckets": {
+    "D_delivery_or_shape": 2,
+    "B_coldset": 10
+   },
+   "d_subs": {
+    "D3_move_illegal": 2
+   },
+   "d1_reason": {},
+   "fail_total": 12,
+   "d_total": 2,
+   "conservation": true,
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "WIN 1 15",
+     "class": "MOVE_ILLEGAL",
+     "detail": "removals(1,15)",
+     "rc": 0,
+     "bucket": "D_delivery_or_shape",
+     "d_sub": "D3_move_illegal"
+    },
+    {
+     "idx": 1,
+     "stdin": "10 9",
+     "exp": "WIN 0 3",
+     "got": "WIN 0 4",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(10,5)",
+     "rc": 0,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 2,
+     "stdin": "18 8",
+     "exp": "WIN 5 0",
+     "got": "WIN 2 0",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(16,8)",
+     "rc": 0,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 4,
+     "stdin": "12 18",
+     "exp": "WIN 1 0",
+     "got": "WIN 0 12",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(12,6)",
+     "rc": 0,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 5,
+     "stdin": "11 25",
+     "exp": "WIN 0 7",
+     "got": "WIN 0 3",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(22,11)",
+     "rc": 0,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 6,
+     "stdin": "18 17",
+     "exp": "WIN 0 6",
+     "got": "WIN 0 8",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(18,9)",
+     "rc": 0,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 7,
+     "stdin": "7 21",
+     "exp": "WIN 0 17",
+     "got": "WIN 0 7",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(14,7)",
+     "rc": 0,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 9,
+     "stdin": "3 5",
+     "exp": "LOSE",
+     "got": "WIN 1 1",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "rc": 0,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 10,
+     "stdin": "4 7",
+     "exp": "LOSE",
+     "got": "WIN 0 5",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "rc": 0,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 11,
+     "stdin": "6 10",
+     "exp": "LOSE",
+     "got": "WIN 0 7",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "rc": 0,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 13,
+     "stdin": "2 25",
+     "exp": "WIN 0 24",
+     "got": "WIN 0 21",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(4,2)",
+     "rc": 0,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 14,
+     "stdin": "25 25",
+     "exp": "WIN 25 25",
+     "got": "WIN 1 13",
+     "class": "MOVE_ILLEGAL",
+     "detail": "removals(1,13)",
+     "rc": 0,
+     "bucket": "D_delivery_or_shape",
+     "d_sub": "D3_move_illegal"
+    }
+   ]
+  },
+  {
+   "round": "r599",
+   "win": "w183",
+   "sub": "codex",
+   "side": "codex",
+   "cases_pass_wythoff": 13,
+   "cases_n": 15,
+   "cases_rc_nonzero": 0,
+   "declared_cold_n": 10,
+   "grid_win_n": 341,
+   "grid_err_n": 0,
+   "cold_set_equal": true,
+   "cold_only_prod": [],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(c) 本轴外",
+   "buckets": {
+    "D_delivery_or_shape": 2
+   },
+   "d_subs": {
+    "D3_move_illegal": 2
+   },
+   "d1_reason": {},
+   "fail_total": 2,
+   "d_total": 2,
+   "conservation": true,
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "WIN 1 13",
+     "class": "MOVE_ILLEGAL",
+     "detail": "removals(1,13)",
+     "rc": 0,
+     "bucket": "D_delivery_or_shape",
+     "d_sub": "D3_move_illegal"
+    },
+    {
+     "idx": 14,
+     "stdin": "25 25",
+     "exp": "WIN 25 25",
+     "got": "WIN 2 11",
+     "class": "MOVE_ILLEGAL",
+     "detail": "removals(2,11)",
+     "rc": 0,
+     "bucket": "D_delivery_or_shape",
+     "d_sub": "D3_move_illegal"
+    }
+   ]
+  }
+ ],
+ "verdict": {
+  "rc": 2,
+  "d_main_sub": "D3_move_illegal",
+  "d_sub_resolution": 1,
+  "layer_rule": "(a) v_land>0 / (b) v_land==0 ∧ C_prod!=C_true / (c) 两者皆无"
+ }
+}

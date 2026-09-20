@@ -1,0 +1,19 @@
+{
+ "round": "R599",
+ "claim": "面在飞冻结: 起臂期间未编辑该面会调用/校验的器具与登记件（unattended-job-reliability §B）。",
+ "sampled_at_start_of_flight": "2026-09-20T20:48 前后（起臂前落盘）",
+ "files_sha256_inflight": {
+  "run_r599.sh": "d3e1ce5de713d0103eea8d5fb3295b189dbf307c4d000800c8cbd0026c33b791",
+  "kpi_r599.py": "204d7ad72cbd141eb66769d70065bd834d1e232899b8ad1ef589fb72030f08d5",
+  "prereg-r599.json": "4a288a3b8e2a059a21fa34eec6cbdd159b74f98bc99d4885c3ba89871194bb0d"
+ },
+ "post_flight_check": "收轮后 sha256sum 三件与上表逐字节相同 ⇒ 在飞面未被编辑（证据: /tmp/r599-inflight-shas.txt vs /tmp/r599-post4.txt）",
+ "edited_after_flight_only": {
+  "pool_taskface_r599.py": "收轮后注入 set_verdicts_C11（C11 逐窗集读数落盘）⇒ 该件非在飞面（臂轮不调用它）",
+  "behav_census_r599.py / percase_attrib_r599.py": "收轮后残差归位（r596/r598 错标修正）"
+ },
+ "residual_selfcatch": [
+  "pool 回填 juxtaposition 覆盖原块 ⇒ 首跑 rc=1（未落盘 out）⇒ 改 twin 拼接 + 双键断言后重跑 rc=0",
+  "harness 侧 pgrep -f 'pyright-langserver' 自匹配 ⇒ 命令被 SIGTERM；改括号技巧重取"
+ ]
+}

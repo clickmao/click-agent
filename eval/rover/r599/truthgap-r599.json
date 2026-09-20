@@ -1,0 +1,1543 @@
+{
+ "round": "R599",
+ "purpose": "候选③ 真值侧（codex）wythoff 两例文本级定因（只读 + 副本内复现）",
+ "instrument": {
+  "path": "/home/agentuser/AgentFramework/eval/rover/r599/truthgap2_r599.py",
+  "sha12": "fa22f87a7425",
+  "cases_sha12": "270128eb85c7",
+  "case_names": [
+   "wythoff#43-public",
+   "wythoff#57-hidden"
+  ],
+  "case_contract": "用例名 = <game>#00-<vis>（与 cases/run_cases_r521.py 同源派生，禁手打）"
+ },
+ "scope": {
+  "rounds": [
+   "r596",
+   "r597",
+   "r598",
+   "r599"
+  ],
+  "missing_roots": [],
+  "instances_with_repro": 40,
+  "codex": 14,
+  "product": 26
+ },
+ "controls": {
+  "NC-D_determinism": true,
+  "NC-T_nontrivial": true,
+  "POS_flip": true
+ },
+ "codex_class_hist": {
+  "match": 0,
+  "format": 0,
+  "semantic": 14
+ },
+ "rows": [
+  {
+   "round": "r596",
+   "win": "w172",
+   "side": "codex",
+   "case": "wythoff#43-public",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r596",
+   "win": "w172",
+   "side": "codex",
+   "case": "wythoff#57-hidden",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r596",
+   "win": "w172",
+   "side": "agentD-r1",
+   "case": "wythoff#43-public",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r596",
+   "win": "w172",
+   "side": "agentD-r1",
+   "case": "wythoff#57-hidden",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r596",
+   "win": "w172",
+   "side": "agentD-r2",
+   "case": "wythoff#43-public",
+   "judge": "PASS",
+   "why": "ok@0.04s",
+   "reproduced": null
+  },
+  {
+   "round": "r596",
+   "win": "w172",
+   "side": "agentD-r2",
+   "case": "wythoff#57-hidden",
+   "judge": "PASS",
+   "why": "ok@0.05s",
+   "reproduced": null
+  },
+  {
+   "round": "r596",
+   "win": "w172",
+   "side": "agentD-r3",
+   "case": "wythoff#43-public",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.03s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "LOSE",
+     "expected": "WIN 15 15"
+    }
+   },
+   "produced_stdout": "LOSE",
+   "expected_stdout": "WIN 15 15",
+   "stdout_sha12": "7c3ff96178b4",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: \"\"\"CLI entry: python3 -m games <game_id> reads stdin, writes solve() output.\"\"\"\n\nimport sys\n\n\ndef main(argv):\n    if len(argv) < 2:\n        return 1\n    game = argv[1]\n    if game == 'life':\n        from games.life import solve\n    elif game == 'sub':\n        from games.sub import solve\n    elif game == 'nim':\n        ",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r596",
+   "win": "w172",
+   "side": "agentD-r3",
+   "case": "wythoff#57-hidden",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.03s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "LOSE",
+     "expected": "WIN 25 25"
+    }
+   },
+   "produced_stdout": "LOSE",
+   "expected_stdout": "WIN 25 25",
+   "stdout_sha12": "7c3ff96178b4",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: \"\"\"CLI entry: python3 -m games <game_id> reads stdin, writes solve() output.\"\"\"\n\nimport sys\n\n\ndef main(argv):\n    if len(argv) < 2:\n        return 1\n    game = argv[1]\n    if game == 'life':\n        from games.life import solve\n    elif game == 'sub':\n        from games.sub import solve\n    elif game == 'nim':\n        ",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r596",
+   "win": "w173",
+   "side": "codex",
+   "case": "wythoff#43-public",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.03s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 1 13",
+     "expected": "WIN 15 15"
+    }
+   },
+   "produced_stdout": "WIN 1 13",
+   "expected_stdout": "WIN 15 15",
+   "stdout_sha12": "49059c1b3178",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: import sys\n\nfrom . import life, nim, sub, wythoff\n\n_GAMES = {\n    \"life\": life.solve,\n    \"sub\": sub.solve,\n    \"nim\": nim.solve,\n    \"wythoff\": wythoff.solve,\n}\n\n\ndef main() -> int:\n    if len(sys.argv) != 2 or sys.argv[1] not in _GAMES:\n        return 1\n    text = sys.stdin.read()\n    sys.stdout.write(_GAMES[sys.argv",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r596",
+   "win": "w173",
+   "side": "codex",
+   "case": "wythoff#57-hidden",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.03s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 2 11",
+     "expected": "WIN 25 25"
+    }
+   },
+   "produced_stdout": "WIN 2 11",
+   "expected_stdout": "WIN 25 25",
+   "stdout_sha12": "5e00896f5003",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: import sys\n\nfrom . import life, nim, sub, wythoff\n\n_GAMES = {\n    \"life\": life.solve,\n    \"sub\": sub.solve,\n    \"nim\": nim.solve,\n    \"wythoff\": wythoff.solve,\n}\n\n\ndef main() -> int:\n    if len(sys.argv) != 2 or sys.argv[1] not in _GAMES:\n        return 1\n    text = sys.stdin.read()\n    sys.stdout.write(_GAMES[sys.argv",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r596",
+   "win": "w173",
+   "side": "agentD-r1",
+   "case": "wythoff#43-public",
+   "judge": "PASS",
+   "why": "ok@0.03s",
+   "reproduced": null
+  },
+  {
+   "round": "r596",
+   "win": "w173",
+   "side": "agentD-r1",
+   "case": "wythoff#57-hidden",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.02s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "LOSE",
+     "expected": "WIN 25 25"
+    }
+   },
+   "produced_stdout": "LOSE",
+   "expected_stdout": "WIN 25 25",
+   "stdout_sha12": "7c3ff96178b4",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: \"\"\"CLI entry point: python3 -m games <game_id>.\"\"\"\n\nimport sys\n\n\ndef main() -> int:\n    if len(sys.argv) < 2:\n        return 1\n    game = sys.argv[1]\n    mods = {\n        \"life\": \"games.life\",\n        \"sub\": \"games.sub\",\n        \"nim\": \"games.nim\",\n        \"wythoff\": \"games.wythoff\",\n    }\n    name = mods.get(game)\n   ",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r596",
+   "win": "w173",
+   "side": "agentD-r2",
+   "case": "wythoff#43-public",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r596",
+   "win": "w173",
+   "side": "agentD-r2",
+   "case": "wythoff#57-hidden",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r596",
+   "win": "w173",
+   "side": "agentD-r3",
+   "case": "wythoff#43-public",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r596",
+   "win": "w173",
+   "side": "agentD-r3",
+   "case": "wythoff#57-hidden",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r596",
+   "win": "w174",
+   "side": "codex",
+   "case": "wythoff#43-public",
+   "judge": "PASS",
+   "why": "ok@0.03s",
+   "reproduced": null
+  },
+  {
+   "round": "r596",
+   "win": "w174",
+   "side": "codex",
+   "case": "wythoff#57-hidden",
+   "judge": "PASS",
+   "why": "ok@0.03s",
+   "reproduced": null
+  },
+  {
+   "round": "r596",
+   "win": "w174",
+   "side": "agentD-r1",
+   "case": "wythoff#43-public",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r596",
+   "win": "w174",
+   "side": "agentD-r1",
+   "case": "wythoff#57-hidden",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r596",
+   "win": "w174",
+   "side": "agentD-r2",
+   "case": "wythoff#43-public",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.03s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 0 25",
+     "expected": "WIN 15 15"
+    }
+   },
+   "produced_stdout": "WIN 0 25",
+   "expected_stdout": "WIN 15 15",
+   "stdout_sha12": "822d7e0e4ff4",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "check.py :: \"\"\"逐字节比对公开用例: python3 check.py。\"\"\"\nimport subprocess\nimport sys\n\nCASES = [\n    ('life', 'cases/life_1.txt'),\n    ('life', 'cases/life_2.txt'),\n    ('sub', 'cases/sub_1.txt'),\n    ('sub', 'cases/sub_2.txt'),\n    ('nim', 'cases/nim_1.txt'),\n    ('nim', 'cases/nim_2.txt'),\n    ('wythoff', 'cases/wythoff_1.txt'),\n    ('wyt",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r596",
+   "win": "w174",
+   "side": "agentD-r2",
+   "case": "wythoff#57-hidden",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.03s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 0 25",
+     "expected": "WIN 25 25"
+    }
+   },
+   "produced_stdout": "WIN 0 25",
+   "expected_stdout": "WIN 25 25",
+   "stdout_sha12": "822d7e0e4ff4",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "check.py :: \"\"\"逐字节比对公开用例: python3 check.py。\"\"\"\nimport subprocess\nimport sys\n\nCASES = [\n    ('life', 'cases/life_1.txt'),\n    ('life', 'cases/life_2.txt'),\n    ('sub', 'cases/sub_1.txt'),\n    ('sub', 'cases/sub_2.txt'),\n    ('nim', 'cases/nim_1.txt'),\n    ('nim', 'cases/nim_2.txt'),\n    ('wythoff', 'cases/wythoff_1.txt'),\n    ('wyt",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r596",
+   "win": "w174",
+   "side": "agentD-r3",
+   "case": "wythoff#43-public",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.02s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 0 5",
+     "expected": "WIN 15 15"
+    }
+   },
+   "produced_stdout": "WIN 0 5",
+   "expected_stdout": "WIN 15 15",
+   "stdout_sha12": "d867397eb7d3",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: import sys\n\nfrom games import life, sub, nim, wythoff\n\nMODULES = {\n    'life': life,\n    'sub': sub,\n    'nim': nim,\n    'wythoff': wythoff,\n}\n\n\ndef main():\n    game = sys.argv[1]\n    text = sys.stdin.read()\n    sys.stdout.write(MODULES[game].solve(text))\n\n\nif __name__ == '__main__':\n    main()\n",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r596",
+   "win": "w174",
+   "side": "agentD-r3",
+   "case": "wythoff#57-hidden",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.03s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 0 1",
+     "expected": "WIN 25 25"
+    }
+   },
+   "produced_stdout": "WIN 0 1",
+   "expected_stdout": "WIN 25 25",
+   "stdout_sha12": "1782c31cbfe4",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: import sys\n\nfrom games import life, sub, nim, wythoff\n\nMODULES = {\n    'life': life,\n    'sub': sub,\n    'nim': nim,\n    'wythoff': wythoff,\n}\n\n\ndef main():\n    game = sys.argv[1]\n    text = sys.stdin.read()\n    sys.stdout.write(MODULES[game].solve(text))\n\n\nif __name__ == '__main__':\n    main()\n",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r597",
+   "win": "w175",
+   "side": "codex",
+   "case": "wythoff#43-public",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.02s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 1 13",
+     "expected": "WIN 15 15"
+    }
+   },
+   "produced_stdout": "WIN 1 13",
+   "expected_stdout": "WIN 15 15",
+   "stdout_sha12": "49059c1b3178",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: import sys\n\nfrom . import life, sub, nim, wythoff\n\n_MODULES = {\n    'life': life,\n    'sub': sub,\n    'nim': nim,\n    'wythoff': wythoff,\n}\n\n\ndef main() -> None:\n    if len(sys.argv) < 2:\n        return\n    module = _MODULES.get(sys.argv[1])\n    if module is None:\n        return\n    text = sys.stdin.read()\n    sys.stdo",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r597",
+   "win": "w175",
+   "side": "codex",
+   "case": "wythoff#57-hidden",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.02s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 2 11",
+     "expected": "WIN 25 25"
+    }
+   },
+   "produced_stdout": "WIN 2 11",
+   "expected_stdout": "WIN 25 25",
+   "stdout_sha12": "5e00896f5003",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: import sys\n\nfrom . import life, sub, nim, wythoff\n\n_MODULES = {\n    'life': life,\n    'sub': sub,\n    'nim': nim,\n    'wythoff': wythoff,\n}\n\n\ndef main() -> None:\n    if len(sys.argv) < 2:\n        return\n    module = _MODULES.get(sys.argv[1])\n    if module is None:\n        return\n    text = sys.stdin.read()\n    sys.stdo",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r597",
+   "win": "w175",
+   "side": "agentD-r1",
+   "case": "wythoff#43-public",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r597",
+   "win": "w175",
+   "side": "agentD-r1",
+   "case": "wythoff#57-hidden",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r597",
+   "win": "w175",
+   "side": "agentD-r2",
+   "case": "wythoff#43-public",
+   "judge": "PASS",
+   "why": "ok@0.03s",
+   "reproduced": null
+  },
+  {
+   "round": "r597",
+   "win": "w175",
+   "side": "agentD-r2",
+   "case": "wythoff#57-hidden",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r597",
+   "win": "w175",
+   "side": "agentD-r3",
+   "case": "wythoff#43-public",
+   "judge": "PASS",
+   "why": "ok@0.03s",
+   "reproduced": null
+  },
+  {
+   "round": "r597",
+   "win": "w175",
+   "side": "agentD-r3",
+   "case": "wythoff#57-hidden",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r597",
+   "win": "w176",
+   "side": "codex",
+   "case": "wythoff#43-public",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.03s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 1 13",
+     "expected": "WIN 15 15"
+    }
+   },
+   "produced_stdout": "WIN 1 13",
+   "expected_stdout": "WIN 15 15",
+   "stdout_sha12": "49059c1b3178",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: import sys\n\nfrom . import life, nim, sub, wythoff\n\n_MODULES = {\n    \"life\": life,\n    \"sub\": sub,\n    \"nim\": nim,\n    \"wythoff\": wythoff,\n}\n\n\ndef main(argv):\n    if len(argv) != 2 or argv[1] not in _MODULES:\n        return 1\n    text = sys.stdin.read()\n    out = _MODULES[argv[1]].solve(text)\n    sys.stdout.write(out)\n ",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r597",
+   "win": "w176",
+   "side": "codex",
+   "case": "wythoff#57-hidden",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.03s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 2 11",
+     "expected": "WIN 25 25"
+    }
+   },
+   "produced_stdout": "WIN 2 11",
+   "expected_stdout": "WIN 25 25",
+   "stdout_sha12": "5e00896f5003",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: import sys\n\nfrom . import life, nim, sub, wythoff\n\n_MODULES = {\n    \"life\": life,\n    \"sub\": sub,\n    \"nim\": nim,\n    \"wythoff\": wythoff,\n}\n\n\ndef main(argv):\n    if len(argv) != 2 or argv[1] not in _MODULES:\n        return 1\n    text = sys.stdin.read()\n    out = _MODULES[argv[1]].solve(text)\n    sys.stdout.write(out)\n ",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r597",
+   "win": "w176",
+   "side": "agentD-r1",
+   "case": "wythoff#43-public",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r597",
+   "win": "w176",
+   "side": "agentD-r1",
+   "case": "wythoff#57-hidden",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r597",
+   "win": "w176",
+   "side": "agentD-r2",
+   "case": "wythoff#43-public",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r597",
+   "win": "w176",
+   "side": "agentD-r2",
+   "case": "wythoff#57-hidden",
+   "judge": "PASS",
+   "why": "ok@0.03s",
+   "reproduced": null
+  },
+  {
+   "round": "r597",
+   "win": "w176",
+   "side": "agentD-r3",
+   "case": "wythoff#43-public",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.02s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 1 13",
+     "expected": "WIN 15 15"
+    }
+   },
+   "produced_stdout": "WIN 1 13",
+   "expected_stdout": "WIN 15 15",
+   "stdout_sha12": "49059c1b3178",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: \"\"\"CLI 入口：python3 -m games <game_id>\"\"\"\nimport sys\n\n\ndef main():\n    game = sys.argv[1]\n    data = sys.stdin.read()\n    if game == 'life':\n        from games.life import solve\n    elif game == 'sub':\n        from games.sub import solve\n    elif game == 'nim':\n        from games.nim import solve\n    elif game == 'wythof",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r597",
+   "win": "w176",
+   "side": "agentD-r3",
+   "case": "wythoff#57-hidden",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.02s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 2 11",
+     "expected": "WIN 25 25"
+    }
+   },
+   "produced_stdout": "WIN 2 11",
+   "expected_stdout": "WIN 25 25",
+   "stdout_sha12": "5e00896f5003",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: \"\"\"CLI 入口：python3 -m games <game_id>\"\"\"\nimport sys\n\n\ndef main():\n    game = sys.argv[1]\n    data = sys.stdin.read()\n    if game == 'life':\n        from games.life import solve\n    elif game == 'sub':\n        from games.sub import solve\n    elif game == 'nim':\n        from games.nim import solve\n    elif game == 'wythof",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r597",
+   "win": "w177",
+   "side": "codex",
+   "case": "wythoff#43-public",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r597",
+   "win": "w177",
+   "side": "codex",
+   "case": "wythoff#57-hidden",
+   "judge": "PASS",
+   "why": "ok@0.03s",
+   "reproduced": null
+  },
+  {
+   "round": "r597",
+   "win": "w177",
+   "side": "agentD-r1",
+   "case": "wythoff#43-public",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r597",
+   "win": "w177",
+   "side": "agentD-r1",
+   "case": "wythoff#57-hidden",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r597",
+   "win": "w177",
+   "side": "agentD-r2",
+   "case": "wythoff#43-public",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r597",
+   "win": "w177",
+   "side": "agentD-r2",
+   "case": "wythoff#57-hidden",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r597",
+   "win": "w177",
+   "side": "agentD-r3",
+   "case": "wythoff#43-public",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.02s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 0 12",
+     "expected": "WIN 15 15"
+    }
+   },
+   "produced_stdout": "WIN 0 12",
+   "expected_stdout": "WIN 15 15",
+   "stdout_sha12": "fd2b4c28f364",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: import sys\n\nfrom games import life, sub, nim, wythoff\n\nMODULES = {\n    'life': life,\n    'sub': sub,\n    'nim': nim,\n    'wythoff': wythoff,\n}\n\n\ndef main():\n    game_id = sys.argv[1]\n    text = sys.stdin.read()\n    out = MODULES[game_id].solve(text)\n    sys.stdout.write(out)\n\n\nif __name__ == '__main__':\n    main()\n",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r597",
+   "win": "w177",
+   "side": "agentD-r3",
+   "case": "wythoff#57-hidden",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.02s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 0 9",
+     "expected": "WIN 25 25"
+    }
+   },
+   "produced_stdout": "WIN 0 9",
+   "expected_stdout": "WIN 25 25",
+   "stdout_sha12": "fd7874f77c97",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: import sys\n\nfrom games import life, sub, nim, wythoff\n\nMODULES = {\n    'life': life,\n    'sub': sub,\n    'nim': nim,\n    'wythoff': wythoff,\n}\n\n\ndef main():\n    game_id = sys.argv[1]\n    text = sys.stdin.read()\n    out = MODULES[game_id].solve(text)\n    sys.stdout.write(out)\n\n\nif __name__ == '__main__':\n    main()\n",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r598",
+   "win": "w178",
+   "side": "codex",
+   "case": "wythoff#43-public",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.03s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 1 13",
+     "expected": "WIN 15 15"
+    }
+   },
+   "produced_stdout": "WIN 1 13",
+   "expected_stdout": "WIN 15 15",
+   "stdout_sha12": "49059c1b3178",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: import sys\n\nfrom . import life, nim, sub, wythoff\n\nGAMES = {\n    'life': life,\n    'sub': sub,\n    'nim': nim,\n    'wythoff': wythoff,\n}\n\n\ndef main() -> None:\n    game_id = sys.argv[1]\n    text = sys.stdin.read()\n    sys.stdout.write(GAMES[game_id].solve(text))\n\n\nif __name__ == '__main__':\n    main()\n",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r598",
+   "win": "w178",
+   "side": "codex",
+   "case": "wythoff#57-hidden",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.02s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 2 11",
+     "expected": "WIN 25 25"
+    }
+   },
+   "produced_stdout": "WIN 2 11",
+   "expected_stdout": "WIN 25 25",
+   "stdout_sha12": "5e00896f5003",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: import sys\n\nfrom . import life, nim, sub, wythoff\n\nGAMES = {\n    'life': life,\n    'sub': sub,\n    'nim': nim,\n    'wythoff': wythoff,\n}\n\n\ndef main() -> None:\n    game_id = sys.argv[1]\n    text = sys.stdin.read()\n    sys.stdout.write(GAMES[game_id].solve(text))\n\n\nif __name__ == '__main__':\n    main()\n",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r598",
+   "win": "w178",
+   "side": "agentD-r1",
+   "case": "wythoff#43-public",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r598",
+   "win": "w178",
+   "side": "agentD-r1",
+   "case": "wythoff#57-hidden",
+   "judge": "PASS",
+   "why": "ok@0.03s",
+   "reproduced": null
+  },
+  {
+   "round": "r598",
+   "win": "w178",
+   "side": "agentD-r2",
+   "case": "wythoff#43-public",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.03s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 19 24",
+     "expected": "WIN 15 15"
+    }
+   },
+   "produced_stdout": "WIN 19 24",
+   "expected_stdout": "WIN 15 15",
+   "stdout_sha12": "2dbb0c06d50e",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: import sys\n\n\ndef main():\n    game = sys.argv[1]\n    text = sys.stdin.read()\n    if game == \"life\":\n        from games import life as mod\n    elif game == \"sub\":\n        from games import sub as mod\n    elif game == \"nim\":\n        from games import nim as mod\n    elif game == \"wythoff\":\n        from games import wythoff",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r598",
+   "win": "w178",
+   "side": "agentD-r2",
+   "case": "wythoff#57-hidden",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.03s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 23 24",
+     "expected": "WIN 25 25"
+    }
+   },
+   "produced_stdout": "WIN 23 24",
+   "expected_stdout": "WIN 25 25",
+   "stdout_sha12": "58659a7e7b18",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: import sys\n\n\ndef main():\n    game = sys.argv[1]\n    text = sys.stdin.read()\n    if game == \"life\":\n        from games import life as mod\n    elif game == \"sub\":\n        from games import sub as mod\n    elif game == \"nim\":\n        from games import nim as mod\n    elif game == \"wythoff\":\n        from games import wythoff",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r598",
+   "win": "w178",
+   "side": "agentD-r3",
+   "case": "wythoff#43-public",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.02s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 7 2",
+     "expected": "WIN 15 15"
+    }
+   },
+   "produced_stdout": "WIN 7 2",
+   "expected_stdout": "WIN 15 15",
+   "stdout_sha12": "418c397a8d59",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r598",
+   "win": "w178",
+   "side": "agentD-r3",
+   "case": "wythoff#57-hidden",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.02s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 11 2",
+     "expected": "WIN 25 25"
+    }
+   },
+   "produced_stdout": "WIN 11 2",
+   "expected_stdout": "WIN 25 25",
+   "stdout_sha12": "3e803e19a596",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r598",
+   "win": "w179",
+   "side": "codex",
+   "case": "wythoff#43-public",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r598",
+   "win": "w179",
+   "side": "codex",
+   "case": "wythoff#57-hidden",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r598",
+   "win": "w179",
+   "side": "agentD-r1",
+   "case": "wythoff#43-public",
+   "judge": "PASS",
+   "why": "ok@0.03s",
+   "reproduced": null
+  },
+  {
+   "round": "r598",
+   "win": "w179",
+   "side": "agentD-r1",
+   "case": "wythoff#57-hidden",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r598",
+   "win": "w179",
+   "side": "agentD-r2",
+   "case": "wythoff#43-public",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r598",
+   "win": "w179",
+   "side": "agentD-r2",
+   "case": "wythoff#57-hidden",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r598",
+   "win": "w179",
+   "side": "agentD-r3",
+   "case": "wythoff#43-public",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.02s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 0 17",
+     "expected": "WIN 15 15"
+    }
+   },
+   "produced_stdout": "WIN 0 17",
+   "expected_stdout": "WIN 15 15",
+   "stdout_sha12": "c5a1cffd71c0",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: import sys\n\nfrom games import life, sub, nim, wythoff\n\nMODULES = {\n    \"life\": life,\n    \"sub\": sub,\n    \"nim\": nim,\n    \"wythoff\": wythoff,\n}\n\n\ndef main():\n    game_id = sys.argv[1] if len(sys.argv) > 1 else \"\"\n    text = sys.stdin.read()\n    game = MODULES.get(game_id)\n    if game is None:\n        sys.exit(1)\n    sys",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r598",
+   "win": "w179",
+   "side": "agentD-r3",
+   "case": "wythoff#57-hidden",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r598",
+   "win": "w180",
+   "side": "codex",
+   "case": "wythoff#43-public",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r598",
+   "win": "w180",
+   "side": "codex",
+   "case": "wythoff#57-hidden",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r598",
+   "win": "w180",
+   "side": "agentD-r1",
+   "case": "wythoff#43-public",
+   "judge": "PASS",
+   "why": "ok@0.03s",
+   "reproduced": null
+  },
+  {
+   "round": "r598",
+   "win": "w180",
+   "side": "agentD-r1",
+   "case": "wythoff#57-hidden",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r598",
+   "win": "w180",
+   "side": "agentD-r2",
+   "case": "wythoff#43-public",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.02s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 1 13",
+     "expected": "WIN 15 15"
+    }
+   },
+   "produced_stdout": "WIN 1 13",
+   "expected_stdout": "WIN 15 15",
+   "stdout_sha12": "49059c1b3178",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: import sys\n\nfrom games import life, sub, nim, wythoff\n\nMODS = {'life': life, 'sub': sub, 'nim': nim, 'wythoff': wythoff}\n\n\ndef main():\n    game = sys.argv[1]\n    text = sys.stdin.read()\n    out = MODS[game].solve(text)\n    sys.stdout.write(out)\n\n\nif __name__ == '__main__':\n    main()\n",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r598",
+   "win": "w180",
+   "side": "agentD-r2",
+   "case": "wythoff#57-hidden",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.02s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 2 11",
+     "expected": "WIN 25 25"
+    }
+   },
+   "produced_stdout": "WIN 2 11",
+   "expected_stdout": "WIN 25 25",
+   "stdout_sha12": "5e00896f5003",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: import sys\n\nfrom games import life, sub, nim, wythoff\n\nMODS = {'life': life, 'sub': sub, 'nim': nim, 'wythoff': wythoff}\n\n\ndef main():\n    game = sys.argv[1]\n    text = sys.stdin.read()\n    out = MODS[game].solve(text)\n    sys.stdout.write(out)\n\n\nif __name__ == '__main__':\n    main()\n",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r598",
+   "win": "w180",
+   "side": "agentD-r3",
+   "case": "wythoff#43-public",
+   "judge": "PASS",
+   "why": "ok@0.03s",
+   "reproduced": null
+  },
+  {
+   "round": "r598",
+   "win": "w180",
+   "side": "agentD-r3",
+   "case": "wythoff#57-hidden",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r599",
+   "win": "w181",
+   "side": "codex",
+   "case": "wythoff#43-public",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.02s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 1 13",
+     "expected": "WIN 15 15"
+    }
+   },
+   "produced_stdout": "WIN 1 13",
+   "expected_stdout": "WIN 15 15",
+   "stdout_sha12": "49059c1b3178",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: \"\"\"CLI entry point: python3 -m games <game_id>\"\"\"\n\nimport sys\n\nfrom games import life, nim, sub, wythoff\n\nMODULES = {\n    'life': life,\n    'sub': sub,\n    'nim': nim,\n    'wythoff': wythoff,\n}\n\n\ndef main() -> None:\n    game_id = sys.argv[1]\n    data = sys.stdin.read()\n    sys.stdout.write(MODULES[game_id].solve(data))",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r599",
+   "win": "w181",
+   "side": "codex",
+   "case": "wythoff#57-hidden",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.02s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 2 11",
+     "expected": "WIN 25 25"
+    }
+   },
+   "produced_stdout": "WIN 2 11",
+   "expected_stdout": "WIN 25 25",
+   "stdout_sha12": "5e00896f5003",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: \"\"\"CLI entry point: python3 -m games <game_id>\"\"\"\n\nimport sys\n\nfrom games import life, nim, sub, wythoff\n\nMODULES = {\n    'life': life,\n    'sub': sub,\n    'nim': nim,\n    'wythoff': wythoff,\n}\n\n\ndef main() -> None:\n    game_id = sys.argv[1]\n    data = sys.stdin.read()\n    sys.stdout.write(MODULES[game_id].solve(data))",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r599",
+   "win": "w181",
+   "side": "agentD-r1",
+   "case": "wythoff#43-public",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r599",
+   "win": "w181",
+   "side": "agentD-r1",
+   "case": "wythoff#57-hidden",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r599",
+   "win": "w181",
+   "side": "agentD-r2",
+   "case": "wythoff#43-public",
+   "judge": "PASS",
+   "why": "ok@0.03s",
+   "reproduced": null
+  },
+  {
+   "round": "r599",
+   "win": "w181",
+   "side": "agentD-r2",
+   "case": "wythoff#57-hidden",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r599",
+   "win": "w181",
+   "side": "agentD-r3",
+   "case": "wythoff#43-public",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.02s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 0 10",
+     "expected": "WIN 15 15"
+    }
+   },
+   "produced_stdout": "WIN 0 10",
+   "expected_stdout": "WIN 15 15",
+   "stdout_sha12": "20cf540fa2a3",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: import sys\n\nfrom . import life, sub, nim, wythoff\n\nMODULES = {'life': life, 'sub': sub, 'nim': nim, 'wythoff': wythoff}\n\n\ndef main():\n    game = sys.argv[1]\n    text = sys.stdin.read()\n    sys.stdout.write(MODULES[game].solve(text))\n\n\nif __name__ == '__main__':\n    main()\n",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r599",
+   "win": "w181",
+   "side": "agentD-r3",
+   "case": "wythoff#57-hidden",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.02s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 0 7",
+     "expected": "WIN 25 25"
+    }
+   },
+   "produced_stdout": "WIN 0 7",
+   "expected_stdout": "WIN 25 25",
+   "stdout_sha12": "974adb7d0500",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: import sys\n\nfrom . import life, sub, nim, wythoff\n\nMODULES = {'life': life, 'sub': sub, 'nim': nim, 'wythoff': wythoff}\n\n\ndef main():\n    game = sys.argv[1]\n    text = sys.stdin.read()\n    sys.stdout.write(MODULES[game].solve(text))\n\n\nif __name__ == '__main__':\n    main()\n",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r599",
+   "win": "w182",
+   "side": "codex",
+   "case": "wythoff#43-public",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.02s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 3 14",
+     "expected": "WIN 15 15"
+    }
+   },
+   "produced_stdout": "WIN 3 14",
+   "expected_stdout": "WIN 15 15",
+   "stdout_sha12": "9e44e863b58e",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: import sys\n\nfrom . import life, nim, sub, wythoff\n\nGAMES = {\n    'life': life,\n    'sub': sub,\n    'nim': nim,\n    'wythoff': wythoff,\n}\n\n\ndef main():\n    game = sys.argv[1]\n    text = sys.stdin.read()\n    out = GAMES[game].solve(text)\n    if out:\n        sys.stdout.write(out)\n\n\nif __name__ == '__main__':\n    main()\n",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r599",
+   "win": "w182",
+   "side": "codex",
+   "case": "wythoff#57-hidden",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.02s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 7 14",
+     "expected": "WIN 25 25"
+    }
+   },
+   "produced_stdout": "WIN 7 14",
+   "expected_stdout": "WIN 25 25",
+   "stdout_sha12": "4631968807a6",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: import sys\n\nfrom . import life, nim, sub, wythoff\n\nGAMES = {\n    'life': life,\n    'sub': sub,\n    'nim': nim,\n    'wythoff': wythoff,\n}\n\n\ndef main():\n    game = sys.argv[1]\n    text = sys.stdin.read()\n    out = GAMES[game].solve(text)\n    if out:\n        sys.stdout.write(out)\n\n\nif __name__ == '__main__':\n    main()\n",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r599",
+   "win": "w182",
+   "side": "agentD-r1",
+   "case": "wythoff#43-public",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r599",
+   "win": "w182",
+   "side": "agentD-r1",
+   "case": "wythoff#57-hidden",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r599",
+   "win": "w182",
+   "side": "agentD-r2",
+   "case": "wythoff#43-public",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.03s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 1 13",
+     "expected": "WIN 15 15"
+    }
+   },
+   "produced_stdout": "WIN 1 13",
+   "expected_stdout": "WIN 15 15",
+   "stdout_sha12": "49059c1b3178",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: \"\"\"CLI 入口: python3 -m games <game_id>, game_id 取 life/sub/nim/wythoff。\"\"\"\nimport sys\n\nfrom games import life, nim, sub, wythoff\n\nMODULES = {\n    'life': life,\n    'sub': sub,\n    'nim': nim,\n    'wythoff': wythoff,\n}\n\n\ndef main(argv=None):\n    argv = sys.argv[1:] if argv is None else argv\n    game_id = argv[0] if argv ",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r599",
+   "win": "w182",
+   "side": "agentD-r2",
+   "case": "wythoff#57-hidden",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.03s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 2 11",
+     "expected": "WIN 25 25"
+    }
+   },
+   "produced_stdout": "WIN 2 11",
+   "expected_stdout": "WIN 25 25",
+   "stdout_sha12": "5e00896f5003",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: \"\"\"CLI 入口: python3 -m games <game_id>, game_id 取 life/sub/nim/wythoff。\"\"\"\nimport sys\n\nfrom games import life, nim, sub, wythoff\n\nMODULES = {\n    'life': life,\n    'sub': sub,\n    'nim': nim,\n    'wythoff': wythoff,\n}\n\n\ndef main(argv=None):\n    argv = sys.argv[1:] if argv is None else argv\n    game_id = argv[0] if argv ",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r599",
+   "win": "w182",
+   "side": "agentD-r3",
+   "case": "wythoff#43-public",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.03s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 0 1",
+     "expected": "WIN 15 15"
+    }
+   },
+   "produced_stdout": "WIN 0 1",
+   "expected_stdout": "WIN 15 15",
+   "stdout_sha12": "1782c31cbfe4",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r599",
+   "win": "w182",
+   "side": "agentD-r3",
+   "case": "wythoff#57-hidden",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.03s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 0 1",
+     "expected": "WIN 25 25"
+    }
+   },
+   "produced_stdout": "WIN 0 1",
+   "expected_stdout": "WIN 25 25",
+   "stdout_sha12": "1782c31cbfe4",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r599",
+   "win": "w183",
+   "side": "codex",
+   "case": "wythoff#43-public",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.02s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 1 13",
+     "expected": "WIN 15 15"
+    }
+   },
+   "produced_stdout": "WIN 1 13",
+   "expected_stdout": "WIN 15 15",
+   "stdout_sha12": "49059c1b3178",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: import sys\n\nfrom . import life, nim, sub, wythoff\n\nMODULES = {\n    \"life\": life,\n    \"sub\": sub,\n    \"nim\": nim,\n    \"wythoff\": wythoff,\n}\n\n\ndef main() -> None:\n    game_id = sys.argv[1]\n    text = sys.stdin.read()\n    sys.stdout.write(MODULES[game_id].solve(text))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r599",
+   "win": "w183",
+   "side": "codex",
+   "case": "wythoff#57-hidden",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.03s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 2 11",
+     "expected": "WIN 25 25"
+    }
+   },
+   "produced_stdout": "WIN 2 11",
+   "expected_stdout": "WIN 25 25",
+   "stdout_sha12": "5e00896f5003",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: import sys\n\nfrom . import life, nim, sub, wythoff\n\nMODULES = {\n    \"life\": life,\n    \"sub\": sub,\n    \"nim\": nim,\n    \"wythoff\": wythoff,\n}\n\n\ndef main() -> None:\n    game_id = sys.argv[1]\n    text = sys.stdin.read()\n    sys.stdout.write(MODULES[game_id].solve(text))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r599",
+   "win": "w183",
+   "side": "agentD-r1",
+   "case": "wythoff#43-public",
+   "judge": "PASS",
+   "why": "ok@0.03s",
+   "reproduced": null
+  },
+  {
+   "round": "r599",
+   "win": "w183",
+   "side": "agentD-r1",
+   "case": "wythoff#57-hidden",
+   "judge": "PASS",
+   "why": "ok@0.03s",
+   "reproduced": null
+  },
+  {
+   "round": "r599",
+   "win": "w183",
+   "side": "agentD-r2",
+   "case": "wythoff#43-public",
+   "judge": "PASS",
+   "why": "ok@0.02s",
+   "reproduced": null
+  },
+  {
+   "round": "r599",
+   "win": "w183",
+   "side": "agentD-r2",
+   "case": "wythoff#57-hidden",
+   "judge": "PASS",
+   "why": "ok@0.03s",
+   "reproduced": null
+  },
+  {
+   "round": "r599",
+   "win": "w183",
+   "side": "agentD-r3",
+   "case": "wythoff#43-public",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.02s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 1 15",
+     "expected": "WIN 15 15"
+    }
+   },
+   "produced_stdout": "WIN 1 15",
+   "expected_stdout": "WIN 15 15",
+   "stdout_sha12": "9c39802dc91a",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: import sys\n\nfrom games import life, sub, nim, wythoff\n\nMODULES = {'life': life, 'sub': sub, 'nim': nim, 'wythoff': wythoff}\n\n\ndef main():\n    game_id = sys.argv[1]\n    data = sys.stdin.read()\n    out = MODULES[game_id].solve(data)\n    sys.stdout.write(out)\n\n\nmain()\n",
+   "pos_flip_to_match": true
+  },
+  {
+   "round": "r599",
+   "win": "w183",
+   "side": "agentD-r3",
+   "case": "wythoff#57-hidden",
+   "judge": "FAIL",
+   "why": "stdout_mismatch@0.02s",
+   "reproduced": true,
+   "rc": 0,
+   "class": "semantic",
+   "detail": {
+    "diff": {
+     "line": 0,
+     "actual": "WIN 1 13",
+     "expected": "WIN 25 25"
+    }
+   },
+   "produced_stdout": "WIN 1 13",
+   "expected_stdout": "WIN 25 25",
+   "stdout_sha12": "49059c1b3178",
+   "stderr_tail": "",
+   "deterministic": true,
+   "solver_excerpt": "games/__main__.py :: import sys\n\nfrom games import life, sub, nim, wythoff\n\nMODULES = {'life': life, 'sub': sub, 'nim': nim, 'wythoff': wythoff}\n\n\ndef main():\n    game_id = sys.argv[1]\n    data = sys.stdin.read()\n    out = MODULES[game_id].solve(data)\n    sys.stdout.write(out)\n\n\nmain()\n",
+   "pos_flip_to_match": true
+  }
+ ],
+ "rc": 0
+}

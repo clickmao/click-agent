@@ -1,0 +1,200 @@
+{
+ "round": "R599",
+ "purpose": "候选④-b landing 零回归面 scope 绑定机检（读法伪影消除）",
+ "instrument": {
+  "path": "/home/agentuser/AgentFramework/eval/rover/r599/scope_bind_r599.py",
+  "registry": "/home/agentuser/AgentFramework/eval/rover/r592/landing-predicate-r592.json",
+  "registered_scope": [
+   "r585",
+   "r586",
+   "r587",
+   "r588",
+   "r591"
+  ],
+  "shared_predicate_edited": false
+ },
+ "landing_scope": {
+  "rounds": [
+   "r599"
+  ],
+  "codex_too": true,
+  "runs_total": 12,
+  "runs_ok": 12,
+  "grid_L": 25,
+  "positions": 351,
+  "oracle": {
+   "fixture_agrees": true
+  }
+ },
+ "controls": {
+  "partial_must_not_apply": true,
+  "full_must_apply": true,
+  "unregistered_must_block": true,
+  "drift_must_report_mismatch": true,
+  "all_pass": true
+ },
+ "full_scope_recompute": {
+  "source": "eval/rover/r599/landing-full-r599.json",
+  "device_internal_match": true,
+  "actual": {
+   "buckets": {
+    "A_landing_loose": 20,
+    "A_selection_order": 6,
+    "B_coldset": 184
+   },
+   "layer": {
+    "(c) 本轴外": 19,
+    "(b) 冷集构造层": 22,
+    "(a) 落点/选择谓词层": 3
+   }
+  },
+  "cross_check_against_r598_hist": {
+   "path": "eval/rover/r598/landing-hist-r598.json",
+   "match": true,
+   "hist_actual": {
+    "buckets": {
+     "A_landing_loose": 20,
+     "A_selection_order": 6,
+     "B_coldset": 184
+    },
+    "layer": {
+     "(c) 本轴外": 19,
+     "(b) 冷集构造层": 22,
+     "(a) 落点/选择谓词层": 3
+    }
+   }
+  },
+  "scope": {
+   "rounds": [
+    "r585",
+    "r586",
+    "r587",
+    "r588",
+    "r591"
+   ],
+   "codex_too": true,
+   "runs_total": 59,
+   "runs_ok": 59,
+   "grid_L": 25,
+   "positions": 351,
+   "oracle": {
+    "fixture_agrees": true
+   }
+  }
+ },
+ "checks_posthoc": {
+  "note": "预注册 C13 分类面缺「新轮集（与登记 scope **不相交**）」一类 ⇒ 本轮按预注册原样判 BLOCKED(rc=3)；正确形态单列于此，留 R600 预注册（判据不得事后改）。",
+  "corrected_classification": "request ⊂ registry ⇒ not_applicable(partial_scope) ; request ∩ registry = ∅（新轮集） ⇒ not_applicable(out_of_registered_scope) ; request 混合已登记与未登记轮 ⇒ blocked(mixed_scope) rc=3",
+  "instrument_read_defect": "首版读法把登记件（r592）当含 `expected` 键 ⇒ 读到空 dict ⇒ 中性证明恒否（假红）。修正 = 读器具自身 `zero_regression.match` + 与 R598 在盘件 `actual` 交叉比对。"
+ },
+ "judgment": {
+  "requested_rounds": [
+   "r599"
+  ],
+  "registered_scope": [
+   "r585",
+   "r586",
+   "r587",
+   "r588",
+   "r591"
+  ],
+  "relation": "unregistered",
+  "zero_regression_applicable": false,
+  "landing_reading": {
+   "match": false,
+   "expected": {
+    "buckets": {
+     "A_landing_loose": 20,
+     "A_selection_order": 6,
+     "B_coldset": 184
+    },
+    "layer": {
+     "(c) 本轴外": 19,
+     "(b) 冷集构造层": 22,
+     "(a) 落点/选择谓词层": 3
+    }
+   },
+   "actual": {
+    "buckets": {
+     "A_landing_loose": 11,
+     "A_selection_order": 0,
+     "B_coldset": 21
+    },
+    "layer": {
+     "(c) 本轴外": 6,
+     "(b) 冷集构造层": 2,
+     "(a) 落点/选择谓词层": 1
+    }
+   }
+  },
+  "registry_readings": null,
+  "zero_regression_verdict": "blocked(unregistered_scope)",
+  "full_scope_recompute": {
+   "match": false,
+   "expected": {},
+   "actual": {
+    "buckets": {
+     "A_landing_loose": 20,
+     "A_selection_order": 6,
+     "B_coldset": 184
+    },
+    "layer": {
+     "(c) 本轴外": 19,
+     "(b) 冷集构造层": 22,
+     "(a) 落点/选择谓词层": 3
+    }
+   },
+   "reads": {
+    "source": "eval/rover/r599/landing-full-r599.json",
+    "device_internal_match": true,
+    "actual": {
+     "buckets": {
+      "A_landing_loose": 20,
+      "A_selection_order": 6,
+      "B_coldset": 184
+     },
+     "layer": {
+      "(c) 本轴外": 19,
+      "(b) 冷集构造层": 22,
+      "(a) 落点/选择谓词层": 3
+     }
+    },
+    "cross_check_against_r598_hist": {
+     "path": "eval/rover/r598/landing-hist-r598.json",
+     "match": true,
+     "hist_actual": {
+      "buckets": {
+       "A_landing_loose": 20,
+       "A_selection_order": 6,
+       "B_coldset": 184
+      },
+      "layer": {
+       "(c) 本轴外": 19,
+       "(b) 冷集构造层": 22,
+       "(a) 落点/选择谓词层": 3
+      }
+     }
+    },
+    "scope": {
+     "rounds": [
+      "r585",
+      "r586",
+      "r587",
+      "r588",
+      "r591"
+     ],
+     "codex_too": true,
+     "runs_total": 59,
+     "runs_ok": 59,
+     "grid_L": 25,
+     "positions": 351,
+     "oracle": {
+      "fixture_agrees": true
+     }
+    }
+   }
+  },
+  "rc": 3
+ },
+ "rc": 3
+}
