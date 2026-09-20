@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R587",
+ "updated_round": "R600",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -7067,6 +7067,25 @@
     "audited_by_round": "R587"
    },
    "negative_control": "6 夹具（正控 1 + 负控 5）: 声明了却提交触碰 `src/` ⇒ R1 红（分支不适用）; 无声明 ⇒ R1 红（旧行为未被改坏）; 声明非法（读数件缺/空）⇒ R1 红且明细出声; 声明面缺「形式门禁」⇒ R8 红; 提交面越界（未声明路径）⇒ R6 红; 还原后 rc=0。（夹具自身首跑假红 —— `allowed_faces` 漏 `docs/` 使正控 R6 红 —— 由自检当场抓出: 修声明完整性, 未放宽判据。）"
+  },
+  {
+   "id": "r600.repair-carryover",
+   "level": "L3",
+   "owner_round": "R600",
+   "capability": "R1 管道回灌修复环「带现状」（用户令 2026-09-20「放行」；定因 = R585–R599 缺口 100% 集中 wythoff 族、失败臂产物在**题面公开用例**上即失败而管道已回放已回灌修复仍同错类 ⇒ 无状态管道下修复为「盲修」）。新增 `src/agent/r1/ArtifactCarryover.cs`（**只做字节搬运**：按执行器 write_file 步骤重读盘上原文, 单文件 4096B/总量 16384 字符预算, 超限截断留显式标记, 越界/盘上缺失/含 NUL 二进制不随附但显式列出, `__` 前缀生成物目录静默跳过; 语言无关, 不解析语义不识别后缀）+ `R1Options` 新轴 `AGENTFRAMEWORK_R1_ARTIFACT_CARRYOVER`（**缺省 on** = 产品默认档即治疗档; =0/off/false ⇒ 关且 user 轮逐位等于旧行为）+ `R1Pipeline` 两处回灌修复点（探针证据修复 / 执行证据修复）接线 + 台账字段 `artifact_carryover_rounds/chars`（轴关恒 0 ⇒ 字段不出现 ⇒ 旧台账逐字节同）。**真机单变量 A/B**（同二进制 sha12 8c3ade04d542 / 同题集 e0c667c2a313c04b / 同剂量键 / 窗集 w184–w186 × T3+C3+C1 1）: J1 机制 **PASS**（T 8/9 跑次随附轮数≥1, C 0/9）· J2 修复收敛（主）**PASS**（T 3/9 Wilson[0.1206,0.6458] vs C 1/9 Wilson[0.0199,0.435]）· J3 成本 **PASS**（T max calls 4 = C max calls 4, 增量只在修复轮）· J4 能力（次级/欠功率）**FAIL**（T 4/9 vs C 3/9, 逐窗 2/3·0/3·2/3 vs 1/3·2/3·0/3 ⇒ w185 窗下降）。闸: 定向 7/7 · 全量 1943/1943（前态 1936+7）· 形式门禁 14/14 · API 基线 +8/−0 · AOT rc=0 IL 警告 0 原生 ELF 19,735,472 B。",
+   "evidence_cmd": "python3 eval/rover/r600/judge_r600.py --D $HOME/.agentframework/harness/runs/r600 --pd eval/rover/r600 && dotnet test src/agent.tests -c Release --filter \"FullyQualifiedName~ArtifactCarryoverTests\"",
+   "evidence_path": "docs/evidence/RF0001/R600-repair-carryover.md",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "b7268d75450d",
+    "instrument": "eval/rover/r600/judge_r600.py",
+    "instrument_sha12": "550fd85fcd2f",
+    "binding": "audit-pin",
+    "audited_by_round": "R600"
+   },
+   "negative_control": "① 判别性负控（真机同窗同二进制）: 对照档 C = 同二进制 + `AGENTFRAMEWORK_R1_ARTIFACT_CARRYOVER=0` ⇒ 9/9 跑次台账**无** artifact_carryover_rounds 字段（机制不得无差别触发）; ② 单测级负控: 一次即过的跑次**不产生**随附块与字段（机制只在回灌修复轮挂上）; ③ 零回归（逐位前缀）: 同场景轴关 vs 轴开 ⇒ 去掉 `</repair>` 闭合标记后轴开消息 = 轴关消息 + 追加块（只增不改, 调用数同为 2 ⇒ 同预算）; ④ 边界负控（有牙）: 越界路径 `../x` / 盘上缺失 / `__pycache__` 生成物 / 含 NUL 二进制 —— 前二只列名不搬内容、生成物静默跳过（不入任何列表）、二进制只报大小; ⑤ 预算负控: 单文件超限必留显式截断标记、总量超限必落「未随附」尾注（不静默丢弃）。"
   }
  ],
  "aot_check_policy": "release_tag_only",

@@ -13,6 +13,9 @@ namespace agent.r1;
 ///   AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR 探针证据回灌修复的**独立**预算（0..3，默认 0=关）：
 ///                                     0 ⇒ 探针失败仍只借「执行回灌」的预算（逐位等于旧行为）；
 ///                                     >0 ⇒ 探针失败驱动的那次修复不再挤占执行回灌预算（R550 轴）
+///   AGENTFRAMEWORK_R1_ARTIFACT_CARRYOVER 修复轮「带现状」轴（默认 **1=开**）：修复指令随附管道
+///                                     自己写入的盘上产物原文（R600；=0/off/false ⇒ 关，修复轮
+///                                     user 轮逐位等于旧行为）
 ///   AGENTFRAMEWORK_R1_STEP_TIMEOUT 单步 run 超时秒（5..1800，默认 120）
 ///   AGENTFRAMEWORK_R1_TRANSCRIPT 落盘路径（缺省 = 不落盘，只打 stdout 标记）
 ///   AGENTFRAMEWORK_R1_ROLE_FILE  role 额外数据（明文 profile 文件；见 R1RoleMount）
@@ -28,7 +31,8 @@ public sealed record R1Options(
     int MaxExecRepair = 1,
     bool PublicSelfCheck = false,
     int EarlyStopPfail = 0,
-    int MaxProbeRepair = 0)
+    int MaxProbeRepair = 0,
+    bool ArtifactCarryoverEnabled = true)
 {
     public static R1Options FromEnvironment(string fallbackRoot)
     {
@@ -91,6 +95,18 @@ public sealed record R1Options(
             maxProbeRepair = pr;
         }
 
+        // R600: 修复环「带现状」轴（默认 **开**）。关(=0/off/false) ⇒ 修复轮 user 轮逐位等于旧行为,
+        //   零回归由 R1ArtifactCarryoverTests 的 off 列 + 同单测的正/负控钉住。
+        var artifactCarryover = true;
+        var ac = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_R1_ARTIFACT_CARRYOVER");
+        if (!string.IsNullOrWhiteSpace(ac))
+        {
+            var av = ac.Trim();
+            artifactCarryover = !(av == "0"
+                || string.Equals(av, "off", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(av, "false", StringComparison.OrdinalIgnoreCase));
+        }
+
         return new R1Options(
             Path.GetFullPath(root),
             maxRepair,
@@ -101,6 +117,7 @@ public sealed record R1Options(
             maxExecRepair,
             publicSelfCheck,
             earlyStopPfail,
-            maxProbeRepair);
+            maxProbeRepair,
+            artifactCarryover);
     }
 }

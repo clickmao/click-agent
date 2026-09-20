@@ -1318,3 +1318,11 @@ python3 eval/run_round.py <新轮号> "revert-verify <原commit>" --quick   # �
 - 候选④ `V_int` 第六窗集 agent {"0":7,"118":1,"6":1} / codex {"0":3}（阈值化未测）；landing scope 绑定机检 rc=0（请求 ⊊ 登记全 scope ⇒ 零回归面 not_applicable）。
 - 候选⑤ 起手闸余量 swing 83→**264**（r598 同态在飞窗实测），ceiling 2889 / margin 179(cap_binding) / REQ 2829 ⇒ A1/A2 PASS。
 - 铁律 11: `exec_precondition.py --round r599` rc=**1** ⇒ 全部成本/质量读数标「参考（未可验收）」；轮志 `eval/rover/r599/report-r599.md`。
+
+
+- **R600（产品侧修复轮 · 用户令 2026-09-20「放行」）**: **回灌修复环「带现状」** —— 修复指令随附**管道自己写入的盘上产物原文**（只做字节搬运，语言无关；越界/缺失/二进制不随附但显式列出）。**定因**：R585–R599 缺口 100% 集中 `wythoff` 族（主桶冷集构造层），R600 只读定因实测失败臂产物在**题面公开用例**上即失败（`21 25`⇒`WIN 0 10` / `WIN 0 1` / `WIN 1 15` 非法着法），而管道**已**机械回放该用例并**已**花掉一次回灌修复 ⇒ 病灶 = 无状态管道下的**盲修**。
+**单变量** `AGENTFRAMEWORK_R1_ARTIFACT_CARRYOVER`（T=缺省 on / C=显式 0，同二进制同剂量键）· 窗集 w184–w186 · 7 跑次/窗。
+**读数**：J1 机制 **PASS**（T 8/9 跑次有随附、轮数 [1, 1, 1, 1, 1, 1, 0, 1, 1]；C 0/9）· J2 修复收敛（主）**PASS**（T 3/9 Wilson [0.1206, 0.6458] vs C 1/9 Wilson [0.0199, 0.435]）· J3 成本 **PASS**（T max calls 4 vs C max 4）· J4 能力（次级/欠功率）**FAIL**（T 4/9 vs C 3/9 vs C1 2/3）；同窗配对 D(T−C) 逐窗 {"w184": 0.3333, "w185": -0.6667, "w186": 0.6667}。
+**门禁**：定向 7/7 · 全量 **1943/1943** · 形式门禁 **14/14** · API 基线 **+8/−0** · AOT `rc=0` **IL 警告 0** 原生 ELF 19,735,472 B sha12 8c3ade04d542（禁 `-p:PublishAot`）· 起手闸 A1/A2 PASS（cap_binding=true）+ 判别力成对控制真判别行使 + leak-selfcheck rc=0 · 铁律 11 前置器 rc=1（⇒ 成本列参考（未可验收））。
+**诚实边界**：① J4 n=9/档 欠功率 ⇒ 只并列不作能力结论；② 被测件按设计变更（改源码 ⇒ 重发布 AOT）⇒ 与 R585–R599 冻结件轮**禁相减**；③ 本轮**零新增夹具语义**（真机臂 runner 由 run_r599.sh 逐条声明派生）；④ `bins-r600.json` 未在起臂前落盘（派生缺漏 `KeyError: 'R600D'`）⇒ 跑后同算法补生成，臂身份由 BIN_SHA_BEFORE/AFTER + 逐跑次 `arm_env.txt` 双证；⑤ 对照档与被测件同 sha ⇒ 单变量由 env 构造保证。
+**artifacts**: `eval/rover/r600/{report-r600.md,prereg-r600.json,dag-r600.md,kpi-table-r600.json,verdict-r600.json,gate-margin-r600.json,run_r600.sh,judge_r600.py}` · `docs/evidence/RF0001/R600-repair-carryover.md` · `src/agent/r1/{ArtifactCarryover.cs,R1Options.cs,R1Pipeline.cs,R1RunResult.cs,R1Transcript.cs}` · `src/agent.tests/ArtifactCarryoverTests.cs`

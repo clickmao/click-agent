@@ -32,7 +32,11 @@ public sealed record R1RunResult(
     int EarlyStopSkipped = 0,
     // R550 探针修复独立预算轴（默认 0=关）：>0 表示该臂**实际**用掉的探针证据修复轮数
     //   （由探针失败证据驱动、未挤占执行回灌预算）。轴关时不入台账 ⇒ 与旧台账逐字节同。
-    int ProbeRepairs = 0)
+    int ProbeRepairs = 0,
+    // R600 修复环「带现状」轴（AGENTFRAMEWORK_R1_ARTIFACT_CARRYOVER，默认开）：>0 表示该跑次实际
+    //   随附过盘上产物原文的回灌修复轮数，Chars = 随附块字符数。轴关 ⇒ 恒 0 ⇒ 台账与旧逐字节同。
+    int ArtifactCarryoverRounds = 0,
+    int ArtifactCarryoverChars = 0)
 {
     public bool Halted => Rc != 0;
 }

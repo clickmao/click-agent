@@ -1,0 +1,98 @@
+{
+ "round": "R600",
+ "written_before_run": true,
+ "written_at": "2026-09-20T22:16:00+08:00",
+ "author": "交互会话（用户令 2026-09-20「放行」）",
+ "claim": "产品侧处置（用户放行）= 回灌修复环「带现状」：把**管道自己写入的盘上产物原文**（执行器 write_file 步骤的 path，重读盘上字节）按预算随附进回灌修复指令，使 wythoff 冷集构造层的修复从「盲修」变「带现状修」。",
+ "why_now": "R585–R599 连续未达标，失败例次 100% 集中 wythoff 族（主桶=冷集构造层 0.6595）。R600 只读定因（先于本文件）实测：失败臂的产物在**题面公开用例**上就已失败（w181-r3 `21 25`⇒`WIN 0 10`；w182-r3⇒`WIN 0 1`；w183-r3⇒`WIN 1 15` 非法着法），而管道**已**机械抽取并独立回放这些用例（public_probe_failed=2/8）并**已**花掉 1 次回灌修复，修复后仍以同错类交付。根因（代码级）：R1 管道无状态（模型只产契约、执行在管道），修复轮的 user 轮**只带实测证据与题面**，不带模型上次写下的产物 ⇒ 模型须凭记忆重写整份计划 ⇒ 盲修。",
+ "single_variable": "AGENTFRAMEWORK_R1_ARTIFACT_CARRYOVER（1=治疗档·缺省, 0=对照档 ⇒ 逐位等于旧行为）。其余全同：被测件（$HOME/.agentframework/artifacts/pub_r600/agenthost）、题集（cases-r521 冻结件；g1 题面 sha 516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3）、窗集 w184..w186、reps、剂量键（R1_CONTRACT=1 + R1_PUBLIC_SELFCHECK=1，MAX_REPAIR/MAX_EXEC_REPAIR/MAX_PROBE_REPAIR/EARLY_STOP_PFAIL 全部显式 unset 的产品默认档），探针与判分器均同 sha。",
+ "criterion_version": "v3",
+ "windows": [
+  "w184",
+  "w185",
+  "w186"
+ ],
+ "arms": {
+  "T": {
+   "side": "agent",
+   "bin": "$HOME/.agentframework/artifacts/pub_r600/agenthost",
+   "env": {
+    "AGENTFRAMEWORK_R1_CONTRACT": "1",
+    "AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK": "1",
+    "AGENTFRAMEWORK_R1_ARTIFACT_CARRYOVER": "1"
+   },
+   "reps": 3,
+   "role": "治疗档（缺省轴 = on）"
+  },
+  "C": {
+   "side": "agent",
+   "bin": "$HOME/.agentframework/artifacts/pub_r600/agenthost",
+   "env": {
+    "AGENTFRAMEWORK_R1_CONTRACT": "1",
+    "AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK": "1",
+    "AGENTFRAMEWORK_R1_ARTIFACT_CARRYOVER": "0"
+   },
+   "reps": 3,
+   "role": "对照档（轴关 ⇒ 应逐位等于 R599D 行为）"
+  },
+  "C1": {
+   "side": "codex",
+   "bin": "$HOME/.agentframework/tools/codex-env/node_modules/.bin/codex",
+   "model": "deepseek-flash",
+   "reps": 1,
+   "role": "外部真值（同环境·同输入·同模型）· 次级读数"
+  }
+ },
+ "definitions": {
+  "unmet_run": "探针 ran ∧ failed>0 ，或执行器终态 Rc≠0",
+  "converged_run": "该跑次终态满足 探针 failed==0 ∧ 执行器 Rc==0（即从「不合格」变成「合格」）"
+ },
+ "judge": {
+  "J1": {
+   "kind": "mechanism",
+   "assertion": "治疗档每条回灌修复轮的 user 轮含 `[artifact]` 块且 transcript 出现 R1_ARTIFACT_CARRYOVER 打点；对照档该打点计数 == 0（负控：器具不得无差别触发）",
+   "pass_if": "T打点>0 ∧ C打点==0"
+  },
+  "J2": {
+   "kind": "primary",
+   "assertion": "同窗集池化（9 跑次/档）converged_run 数：治疗档 ≥ 对照档 + 1",
+   "lower_bound": "T_converged >= C_converged + 1",
+   "report": "逐档 converged/9 + Wilson 95% 下界 + 逐窗三分表"
+  },
+  "J3": {
+   "kind": "cost",
+   "assertion": "治疗档 calls 不增（T_max_calls <= C_max_calls）；prompt token 增量只出现在发生修复的跑次，且单修复轮增量 <= 8,000 token",
+   "lower_bound": "n/a（不破即过）"
+  },
+  "J4": {
+   "kind": "secondary_capability",
+   "assertion": "判据 v3 池化整题全对率：治疗档 ≥ 对照档 + 1 跑次/9 ∧ 无窗下降；同窗 codex 并列只做参考",
+   "power_note": "n=9/档 ⇒ 摆动≥效应风险；单窗集不作能力结论（R587 教训）"
+  }
+ },
+ "falsification": "若 T_converged <= C_converged ∧ J4 池化 all-pass 无提升 ⇒ 「盲修」假设被证伪 ⇒ 收窄宣称（carryover 不用于救治 wythoff 冷集类），记录负结论；下一轮改走 R592/R594 候选（落点谓词静态面 / 产物契约自洽）。",
+ "prereg_amendments": [
+  {
+   "ts": "2026-09-20T22:19:41+0800",
+   "field": "bin_sha12_measured / arms.T.bin / arms.C.bin",
+   "change": "被测件实测 = artifacts/pub_r600/agenthost, sha256 8c3ade04d542c0915fd77863…, 19735472 B, AOT 原生 ELF (env -i 冒烟 rc=0, IL 警告 0)",
+   "reason": "发布件 sha 只能在 AOT 发布后测得 ⇒ 跑前回填; 臂集合 / 单变量 / 判据一字未动（先写后跑闸仍在位: written_before_run=true, 本项只补「发布后可得」的读数）"
+  }
+ ],
+ "evidence_scope": {
+  "require": [
+   "eval/rover/r600/dag-r600.md",
+   "eval/rover/r600/prereg-r600.json",
+   "eval/rover/r600/taskset-r600.json",
+   "eval/rover/r600/kpi-table-r600.json",
+   "eval/rover/r600/verdict-r600.json",
+   "eval/rover/r600/report-r600.md",
+   "eval/rover/r600/snapshots"
+  ],
+  "note": "缺件 ⇒ 该面记未完成，不入结论；snapshots = 3 窗 × 7 跑次（T×3 + C×3 + C1×1）的 g1 树逐字节归档"
+ },
+ "bin_freeze_note": "被测件按设计**变了**（产品源码改动 ⇒ 必须重发布 AOT）：区别于 R585–R599 的「同件换窗」。因此本轮**不与前序窗集相减**，只并列（docs/external-reference-harness.md §12.3）；pub_r600 sha 发布后回填 bin_sha12_measured。",
+ "bin_sha12_measured": "8c3ade04d542",
+ "bin_sha256_measured": "8c3ade04d542c0915fd77863cab903e11cbeecdc901c832e10460a199f2f6f9e",
+ "bin_bytes_measured": 19735472
+}

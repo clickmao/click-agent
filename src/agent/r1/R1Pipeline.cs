@@ -14,6 +14,10 @@ namespace agent.r1;
 ///   → (实测不过 ⇒ 至多 M 轮**执行证据回灌**修复) → 产物侧公开用例独立回放 (R544, 默认关)
 ///   → 台账
 ///
+/// **R600 · 修复环「带现状」（默认开）**：回灌修复轮的 user 轮随附**管道自己写入的盘上产物原文**
+/// （<see cref="ArtifactCarryover"/>）—— 本管道无状态（模型只产契约、执行在管道），不带现状 ⇒
+/// 修复实为「盲修」（模型须凭记忆重写整份计划）。轴 = AGENTFRAMEWORK_R1_ARTIFACT_CARRYOVER。
+///
 /// **结构量（R533）**：本管道发出的 prompt 一律置 <see cref="Prompt.StructuredSurface"/> ⇒
 /// 模型侧无工具面、无动作环、无纪律尾块 ⇒ 实发 system 逐字节 = 恒定前缀 pin。
 ///
@@ -50,6 +54,10 @@ public static class R1Pipeline
         var execRepairs = 0;  // 执行证据回灌修复轮
         // R550 · 探针证据回灌修复轮（独立预算, 默认关）。轴关 ⇒ 恒 0 ⇒ 逐位等于旧行为。
         var probeRepairs = 0;
+        // R600 · 修复环「带现状」打点（机械可判：治疗档 >0, 对照档 ==0）。
+        var carryoverRounds = 0;
+        var carryoverFiles = 0;
+        var carryoverChars = 0;
         string? repairNote = null;
         var raw = string.Empty;
 
@@ -211,7 +219,8 @@ public static class R1Pipeline
                     {
                         execRepairs++;
                     }
-                    repairNote = StructuredPrompt.PublicProbeRepairMessage(probe.Failures);
+                    repairNote = WithArtifacts(StructuredPrompt.PublicProbeRepairMessage(probe.Failures),
+                        opt, exec.Steps, ref carryoverRounds, ref carryoverFiles, ref carryoverChars);
                     continue;
                 }
 
@@ -228,7 +237,7 @@ public static class R1Pipeline
                         + " 首例: " + (probe.Failures.Count > 0 ? probe.Failures[0] : "(无)"),
                         raw + "\nR1_PUBLIC_PROBE " + probe.MarkerJson(), statsAll,
                         prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe,
-                        opt.EarlyStopPfail, earlyStopSkips, probeRepairs);
+                        opt.EarlyStopPfail, earlyStopSkips, probeRepairs, carryoverRounds, carryoverChars);
                     R1Transcript.Write(probeUnmet, opt, taskText ?? string.Empty);
                     return probeUnmet;
                 }
@@ -245,7 +254,7 @@ public static class R1Pipeline
                 var done = new R1RunResult(0, "done", reason,
                     raw + (probe is not null ? "\nR1_PUBLIC_PROBE " + probe.MarkerJson() : string.Empty), statsAll,
                     prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe,
-                    opt.EarlyStopPfail, earlyStopSkips, probeRepairs);
+                    opt.EarlyStopPfail, earlyStopSkips, probeRepairs, carryoverRounds, carryoverChars);
                 R1Transcript.Write(done, opt, taskText ?? string.Empty);
                 return done;
             }
@@ -272,14 +281,14 @@ public static class R1Pipeline
                         + ",\"plan_steps_total\":" + sem.Plan.Count + ",\"detail\":\"expect_stdout 不符\""
                         + ",\"artifact\":\"suspect\",\"correctness_asserted\":0}" + probeMarker,
                         statsAll, prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe,
-                        opt.EarlyStopPfail, earlyStopSkips, probeRepairs);
+                        opt.EarlyStopPfail, earlyStopSkips, probeRepairs, carryoverRounds, carryoverChars);
                     R1Transcript.Write(unmet, opt, taskText ?? string.Empty);
                     return unmet;
                 }
                 var stage = (execRepairs > 0 || probeRepairs > 0) ? exec.Stage + "_exhausted" : exec.Stage;
                 var stuck = new R1RunResult(exec.Rc, stage, exec.Reason, raw + probeMarker, statsAll,
                     prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe,
-                    opt.EarlyStopPfail, earlyStopSkips, probeRepairs);
+                    opt.EarlyStopPfail, earlyStopSkips, probeRepairs, carryoverRounds, carryoverChars);
                 R1Transcript.Write(stuck, opt, taskText ?? string.Empty);
                 return stuck;
             }
@@ -292,8 +301,39 @@ public static class R1Pipeline
                 withProbe.AddRange(evidence);
                 evidence = withProbe;
             }
-            repairNote = StructuredPrompt.ExecRepairMessage(evidence);
+            repairNote = WithArtifacts(StructuredPrompt.ExecRepairMessage(evidence),
+                opt, exec.Steps, ref carryoverRounds, ref carryoverFiles, ref carryoverChars);
         }
+    }
+
+    /// <summary>
+    /// R600 · 修复环「带现状」：把**盘上产物原文**随附进修复指令（轴关 ⇒ 原样返回 = 逐位等于旧行为）。
+    /// 只做字节搬运（见 <see cref="ArtifactCarryover"/>）；累计轮数/字符数进台账字段
+    /// （artifact_carryover_rounds/chars），使「机制是否真挂上」可机械判（治疗档 >0 / 对照档缺席）。
+    /// </summary>
+    private static string WithArtifacts(string repairNote, R1Options opt, IReadOnlyList<StepOutcome> steps,
+        ref int rounds, ref int files, ref int chars)
+    {
+        if (!opt.ArtifactCarryoverEnabled)
+        {
+            return repairNote;
+        }
+        var carry = ArtifactCarryover.Render(opt.SandboxRoot, steps);
+        if (carry.Count == 0)
+        {
+            return repairNote;
+        }
+        foreach (var ln in carry)
+        {
+            if (ln.StartsWith("--- ", StringComparison.Ordinal) && !ln.StartsWith("--- end", StringComparison.Ordinal))
+            {
+                files++;
+            }
+        }
+        var text = string.Join("\n", carry);
+        rounds++;
+        chars += text.Length;
+        return repairNote + "\n\n" + text;
     }
 
     /// <summary>

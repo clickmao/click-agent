@@ -60,6 +60,12 @@ public static class R1Transcript
         {
             sb.Append(",\"probe_repairs\":").Append(R1Json.Num(r.ProbeRepairs));
         }
+        // R600 修复环「带现状」轴：轴关 ⇒ 恒 0 ⇒ 字段不出现（与旧标记逐字节同）。
+        if (r.ArtifactCarryoverRounds > 0)
+        {
+            sb.Append(",\"artifact_carryover_rounds\":").Append(R1Json.Num(r.ArtifactCarryoverRounds));
+            sb.Append(",\"artifact_carryover_chars\":").Append(R1Json.Num(r.ArtifactCarryoverChars));
+        }
         sb.Append("}");
         return sb.ToString();
     }
@@ -88,6 +94,13 @@ public static class R1Transcript
         {
             sb.Append("  \"probe_repair_budget\": ").Append(R1Json.Num(opt.MaxProbeRepair)).Append(",\n");
             sb.Append("  \"probe_repairs\": ").Append(R1Json.Num(r.ProbeRepairs)).Append(",\n");
+        }
+        // R600 修复环「带现状」轴：轴关且未用过 ⇒ 字段不出现 ⇒ 与旧台账逐字节同（零回归可机检）。
+        if (r.ArtifactCarryoverRounds > 0 || opt.ArtifactCarryoverEnabled)
+        {
+            sb.Append("  \"artifact_carryover_enabled\": ").Append(opt.ArtifactCarryoverEnabled ? "1" : "0").Append(",\n");
+            sb.Append("  \"artifact_carryover_rounds\": ").Append(R1Json.Num(r.ArtifactCarryoverRounds)).Append(",\n");
+            sb.Append("  \"artifact_carryover_chars\": ").Append(R1Json.Num(r.ArtifactCarryoverChars)).Append(",\n");
         }
         sb.Append("  \"step_timeout_s\": ").Append(R1Json.Num(opt.StepTimeoutSeconds)).Append(",\n");
         sb.Append("  \"rc\": ").Append(R1Json.Num(r.Rc)).Append(",\n");

@@ -1,0 +1,40 @@
+{
+ "note": "runner 第 0 步落盘 (先写后跑闸之后, 起臂之前); 全臂共用同一枚二进制 ⇒ 臂身份单变量由构造保证。**本件为跑后补生成**: 首跑时 runner 内联 heredoc 的臂名未随派生替换 ⇒ KeyError('R600D'), 起臂前那份缺档（如实登记于 report-r600.md）；补生成用同算法同输入, 并由 bin-sha-check.json (BIN_SHA_BEFORE==AFTER) + 逐跑次 arm_env.txt 双证臂身份。",
+ "generated_after_run": true,
+ "generated_at": "2026-09-20T22:30:23+0800",
+ "bin_all_arms": {
+  "path": "/home/agentuser/.agentframework/artifacts/pub_r600/agenthost",
+  "sha256": "8c3ade04d542c0915fd77863cab903e11cbeecdc901c832e10460a199f2f6f9e",
+  "bytes": 19735472
+ },
+ "codex": {
+  "path": "/home/agentuser/.agentframework/tools/codex-env/node_modules/.bin/codex",
+  "sha256": "61b0194f3bb6534439c8d26a3ed57d0805f84b884588b761795323eeb92fcf70",
+  "bytes": 8790
+ },
+ "cfg_src": {
+  "path": "/home/agentuser/.agentframework/harness/agent/cfg",
+  "files": {
+   "base/core.yaml": "671d95b6290deed89561270477e26ac16d9d05a7503173e99778c27db7ed5d70",
+   "base/models.yaml": "993699e113dc2eb1fbed8b21024de0be41f2a11cb1b712b6f54deb23abd172e2",
+   "base/skill.yaml": "e814a553b15b9676e3bdb29facf42d7a83291c555b7844f0f987c5039d522aed"
+  }
+ },
+ "arm_env": {
+  "C1": null,
+  "T": {
+   "AGENTFRAMEWORK_R1_CONTRACT": "1",
+   "AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK": "1",
+   "AGENTFRAMEWORK_R1_ARTIFACT_CARRYOVER": "1"
+  },
+  "C": {
+   "AGENTFRAMEWORK_R1_CONTRACT": "1",
+   "AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK": "1",
+   "AGENTFRAMEWORK_R1_ARTIFACT_CARRYOVER": "0"
+  }
+ },
+ "bin_sha_before_after": {
+  "bin_sha_stable": true,
+  "sha": "8c3ade04d542c0915fd77863cab903e11cbeecdc901c832e10460a199f2f6f9e"
+ }
+}
