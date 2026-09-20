@@ -1,0 +1,10524 @@
+{
+ "round": "R592",
+ "instrument": {
+  "path": "/home/agentuser/AgentFramework/eval/rover/r592/landing_predicate_r592.py",
+  "version": "v2",
+  "supersedes_criterion_readings": true,
+  "v1": {
+   "path": "/home/agentuser/AgentFramework/eval/rover/r591/landing_predicate_r591.py",
+   "verdict_rc": 2,
+   "has_teeth": false,
+   "note": "v1 判定原样保留不翻案（器具缺陷: D1 序约定错配 / D2 分层单条件 / D3 错误并入冷集）"
+  }
+ },
+ "scope": {
+  "rounds": [
+   "r585",
+   "r586",
+   "r587",
+   "r588",
+   "r591"
+  ],
+  "runs_analysed": 44,
+  "runs_total": 44,
+  "grid_L": 25,
+  "positions": 351,
+  "oracle": {
+   "phi_vs_brute_equal": true,
+   "fixture_agrees": true
+  }
+ },
+ "controls": {
+  "OK": {
+   "layer": "(c) 本轴外",
+   "cold_set_equal": true,
+   "v_land_n": 0,
+   "v_int_n": 0,
+   "declared_cold_n": 10,
+   "grid_err_n": 0,
+   "cases_pass_wythoff": 15,
+   "cases_n": 15,
+   "buckets": {}
+  },
+  "POS": {
+   "layer": "(a) 落点/选择谓词层",
+   "cold_set_equal": false,
+   "v_land_n": 347,
+   "v_int_n": 1,
+   "declared_cold_n": 2,
+   "grid_err_n": 0,
+   "cases_pass_wythoff": 0,
+   "cases_n": 15,
+   "buckets": {
+    "A_landing_loose": 14,
+    "B_coldset": 1
+   }
+  },
+  "NEG": {
+   "layer": "(b) 冷集构造层",
+   "cold_set_equal": false,
+   "v_land_n": 0,
+   "v_int_n": 25,
+   "declared_cold_n": 26,
+   "grid_err_n": 0,
+   "cases_pass_wythoff": 0,
+   "cases_n": 15,
+   "buckets": {
+    "B_coldset": 15
+   }
+  }
+ },
+ "negative_control": {
+  "OK_ok": true,
+  "POS_layer_a": true,
+  "NEG_layer_b": true,
+  "has_teeth": true,
+  "non_trivial_forms": true,
+  "forms": {
+   "equal|v_land>0=False": 19,
+   "diff|v_land>0=False": 22,
+   "diff|v_land>0=True": 3
+  }
+ },
+ "strays": {
+  "before": [],
+  "after": []
+ },
+ "readonly": {
+  "pre": {
+   "r585/w154/agentD-r1": "e7d09b9f5ccf0587e3db95c9cc3e2a5f66496b7f10680f645db9568e68f618ef",
+   "r585/w154/agentD-r2": "7674b3814852782f3ce77142b74448cd35ce37e503f3ba95452d2efbe6ae823d",
+   "r585/w154/agentD-r3": "8c8542f33744d0a532215d2f4085804c4a83b9d0ace4856b9dcdc6bce4905dca",
+   "r585/w155/agentD-r1": "2d8e8ef332d0ae1ed98df053cc1d433c1e4871f0d768cfaad6f9a2b332a65276",
+   "r585/w155/agentD-r2": "97e7512ed6804638afaf0051bb400549818673d45ea1b16e9302e560c1869ac1",
+   "r585/w155/agentD-r3": "49d797951b631a94b08be98e0abef36ef3804ba0c75de797d968380123e3b743",
+   "r585/w156/agentD-r1": "1365a4eff6992ed7bd8a3e255e170e7fb058e3ce2388169c65525fd7abf75aa1",
+   "r585/w156/agentD-r2": "32f315efa51dd7b7637e6b71c4d62b7bbeff04d73c597c1745c1068a0671f4f8",
+   "r585/w156/agentD-r3": "9b662f579683696edc4397fd7ce99e2151842910306f0219b244425f4a264b60",
+   "r586/w157/agentD-r1": "9bbaa36e47039be62999dee741f7c64f6600d5d6e2d2bb9eb23d5e4427dc8760",
+   "r586/w157/agentD-r2": "187e2285a4c82dd6463a2312113f0a43ba3ce876738ef391b3527ae7a040fdf5",
+   "r586/w157/agentD-r3": "9a4283e03577cfe9d666eb6f1b12eb7777f2dc4ffd56cc2c2c99a4fb613afa80",
+   "r586/w158/agentD-r1": "4836e0a57e803727f751a8e2a01ccdc6c0c037057db2de9572c2364e2b2632e7",
+   "r586/w158/agentD-r2": "cd1e002e50fddeb43ab130e6c7fd7f5926c094fface476905a546816ceedd537",
+   "r586/w158/agentD-r3": "3eff7bb6de7e4d41086663a04f3ff35f1bf8948b63effc3ccc296e40a2b0cc33",
+   "r586/w159/agentD-r1": "4756e30076bd56c418a58a54fcfbaf490a08ac9a3ab4a662b6c5bf732221864f",
+   "r586/w159/agentD-r2": "b89e2dcad7f3b379952a30b616f74949ddc28b4a8b784b2a985c9230c3594149",
+   "r586/w159/agentD-r3": "0a4a0c7947918254a19eb47997619da2c9de21471f89e686744870a348d8bb7e",
+   "r587/w160/agentD-r1": "4b423fd3998e787eee1a9f734cbf9b56c1b3e427f27e91c43da1163f312b9ee3",
+   "r587/w160/agentD-r2": "115230124ae162c81f16b84ff7513507dc3f96f464d325437107112e6623ace2",
+   "r587/w160/agentD-r3": "fd5ed4367735038a659cd7d4f5ad9ed4265c91bdd96f3c8ca173754b47f035f9",
+   "r587/w161/agentD-r1": "fe0752c2f39239c71c18ce54d435341ea158449b631f3606a704a13ebea495c6",
+   "r587/w161/agentD-r2": "c095e3fbc1e4a8a93e9e1305922de1fb30f4d07e072d88d1e84816f60a02458a",
+   "r587/w161/agentD-r3": "8e9a20d62285bbb888a34a84344b998e5932673ba186681d1aab63d44468967e",
+   "r587/w162/agentD-r1": "b6fc5c16e977f36050be8d86b85ce5b542df8e8642db8c0b77087836c5225829",
+   "r587/w162/agentD-r2": "0e9e9dfe8906aaef876b32a929402343603e91e8f8669ae01e9fd95329290372",
+   "r588/w163/agentD-r1": "eb416fa9a4e469cf8e3cdf7b8f9716aef04e2d0697b9b6bc8b89705230948e4f",
+   "r588/w163/agentD-r2": "889bc5f49d81794a43dea2c89403242101b1a99ad3dd4c21c6bced0345fdb900",
+   "r588/w163/agentD-r3": "a5a8b6993321972a77bd67224b9831d596ee06ae084080b95d6e706ae9ecab65",
+   "r588/w164/agentD-r1": "5c33ffd87c96a5fadfca9295a37f6183fe0db5a4ef6814e7e4368c64048f0ae8",
+   "r588/w164/agentD-r2": "ec7c6a2ee4e0c36340b39d9849ec2a4842667115584ee02581ea6b8c9b0246aa",
+   "r588/w164/agentD-r3": "1935cbb1da3291797c475ee3f809dbb13d13c5e4afabd0bd63b785165d075af2",
+   "r588/w165/agentD-r1": "2e5a84f1e0777f61ace047bf3c231d383ba4dcfc07da4acbc99c7d22e2716f62",
+   "r588/w165/agentD-r2": "6ec733b5b9c258ef6bf3731d68056e0225dc9f143078b35af3d10a39ead9ed56",
+   "r588/w165/agentD-r3": "b39bbedb8303af91c9ffd4fff938c4283ec662b558d492951a536d74a3ede18e",
+   "r591/w166/agentD-r1": "00aad8e641e7a24115e995ecd7e29b0bac448388a0a25edbd9bf0c6db5f51959",
+   "r591/w166/agentD-r2": "8ea46c328767516375f702f1923cde027455bdbb9175fecb3626c5eacb9129f6",
+   "r591/w166/agentD-r3": "705150604ccd1612b504a09a3816e7694db8284bf6e7a2f292d509c09254e990",
+   "r591/w167/agentD-r1": "651fb6873649ac1b8ed9563f799f55ef5c05e2cafed55b6b3faef71c64f76462",
+   "r591/w167/agentD-r2": "cb4f1107a469455923232b10d0cfbd2c34808017c88dbf073d2f88e783ff7bf4",
+   "r591/w167/agentD-r3": "d2c95bf710acd16778b0e02fada6f4e654d85aae50918ddb13c779ec1595b1cc",
+   "r591/w168/agentD-r1": "ab9ec5eb25c5f6eef484900614aec6004260e75e7b6f1a00802d139c7b8b7c76",
+   "r591/w168/agentD-r2": "ae614c573613c9eb6f8d4425461d2ef57866816abf39cbfe7b2e8083b61a8dbf",
+   "r591/w168/agentD-r3": "d7f9af40c23bd6a0fbde45365e7f006eaf55638da8e053d313b350a9d876545a",
+   "cases-r521.json": "270128eb85c7afc07244c10c8845a22a541a7a60587a870125089e93422fccd7"
+  },
+  "post": {
+   "r585/w154/agentD-r1": "e7d09b9f5ccf0587e3db95c9cc3e2a5f66496b7f10680f645db9568e68f618ef",
+   "r585/w154/agentD-r2": "7674b3814852782f3ce77142b74448cd35ce37e503f3ba95452d2efbe6ae823d",
+   "r585/w154/agentD-r3": "8c8542f33744d0a532215d2f4085804c4a83b9d0ace4856b9dcdc6bce4905dca",
+   "r585/w155/agentD-r1": "2d8e8ef332d0ae1ed98df053cc1d433c1e4871f0d768cfaad6f9a2b332a65276",
+   "r585/w155/agentD-r2": "97e7512ed6804638afaf0051bb400549818673d45ea1b16e9302e560c1869ac1",
+   "r585/w155/agentD-r3": "49d797951b631a94b08be98e0abef36ef3804ba0c75de797d968380123e3b743",
+   "r585/w156/agentD-r1": "1365a4eff6992ed7bd8a3e255e170e7fb058e3ce2388169c65525fd7abf75aa1",
+   "r585/w156/agentD-r2": "32f315efa51dd7b7637e6b71c4d62b7bbeff04d73c597c1745c1068a0671f4f8",
+   "r585/w156/agentD-r3": "9b662f579683696edc4397fd7ce99e2151842910306f0219b244425f4a264b60",
+   "r586/w157/agentD-r1": "9bbaa36e47039be62999dee741f7c64f6600d5d6e2d2bb9eb23d5e4427dc8760",
+   "r586/w157/agentD-r2": "187e2285a4c82dd6463a2312113f0a43ba3ce876738ef391b3527ae7a040fdf5",
+   "r586/w157/agentD-r3": "9a4283e03577cfe9d666eb6f1b12eb7777f2dc4ffd56cc2c2c99a4fb613afa80",
+   "r586/w158/agentD-r1": "4836e0a57e803727f751a8e2a01ccdc6c0c037057db2de9572c2364e2b2632e7",
+   "r586/w158/agentD-r2": "cd1e002e50fddeb43ab130e6c7fd7f5926c094fface476905a546816ceedd537",
+   "r586/w158/agentD-r3": "3eff7bb6de7e4d41086663a04f3ff35f1bf8948b63effc3ccc296e40a2b0cc33",
+   "r586/w159/agentD-r1": "4756e30076bd56c418a58a54fcfbaf490a08ac9a3ab4a662b6c5bf732221864f",
+   "r586/w159/agentD-r2": "b89e2dcad7f3b379952a30b616f74949ddc28b4a8b784b2a985c9230c3594149",
+   "r586/w159/agentD-r3": "0a4a0c7947918254a19eb47997619da2c9de21471f89e686744870a348d8bb7e",
+   "r587/w160/agentD-r1": "4b423fd3998e787eee1a9f734cbf9b56c1b3e427f27e91c43da1163f312b9ee3",
+   "r587/w160/agentD-r2": "115230124ae162c81f16b84ff7513507dc3f96f464d325437107112e6623ace2",
+   "r587/w160/agentD-r3": "fd5ed4367735038a659cd7d4f5ad9ed4265c91bdd96f3c8ca173754b47f035f9",
+   "r587/w161/agentD-r1": "fe0752c2f39239c71c18ce54d435341ea158449b631f3606a704a13ebea495c6",
+   "r587/w161/agentD-r2": "c095e3fbc1e4a8a93e9e1305922de1fb30f4d07e072d88d1e84816f60a02458a",
+   "r587/w161/agentD-r3": "8e9a20d62285bbb888a34a84344b998e5932673ba186681d1aab63d44468967e",
+   "r587/w162/agentD-r1": "b6fc5c16e977f36050be8d86b85ce5b542df8e8642db8c0b77087836c5225829",
+   "r587/w162/agentD-r2": "0e9e9dfe8906aaef876b32a929402343603e91e8f8669ae01e9fd95329290372",
+   "r588/w163/agentD-r1": "eb416fa9a4e469cf8e3cdf7b8f9716aef04e2d0697b9b6bc8b89705230948e4f",
+   "r588/w163/agentD-r2": "889bc5f49d81794a43dea2c89403242101b1a99ad3dd4c21c6bced0345fdb900",
+   "r588/w163/agentD-r3": "a5a8b6993321972a77bd67224b9831d596ee06ae084080b95d6e706ae9ecab65",
+   "r588/w164/agentD-r1": "5c33ffd87c96a5fadfca9295a37f6183fe0db5a4ef6814e7e4368c64048f0ae8",
+   "r588/w164/agentD-r2": "ec7c6a2ee4e0c36340b39d9849ec2a4842667115584ee02581ea6b8c9b0246aa",
+   "r588/w164/agentD-r3": "1935cbb1da3291797c475ee3f809dbb13d13c5e4afabd0bd63b785165d075af2",
+   "r588/w165/agentD-r1": "2e5a84f1e0777f61ace047bf3c231d383ba4dcfc07da4acbc99c7d22e2716f62",
+   "r588/w165/agentD-r2": "6ec733b5b9c258ef6bf3731d68056e0225dc9f143078b35af3d10a39ead9ed56",
+   "r588/w165/agentD-r3": "b39bbedb8303af91c9ffd4fff938c4283ec662b558d492951a536d74a3ede18e",
+   "r591/w166/agentD-r1": "00aad8e641e7a24115e995ecd7e29b0bac448388a0a25edbd9bf0c6db5f51959",
+   "r591/w166/agentD-r2": "8ea46c328767516375f702f1923cde027455bdbb9175fecb3626c5eacb9129f6",
+   "r591/w166/agentD-r3": "705150604ccd1612b504a09a3816e7694db8284bf6e7a2f292d509c09254e990",
+   "r591/w167/agentD-r1": "651fb6873649ac1b8ed9563f799f55ef5c05e2cafed55b6b3faef71c64f76462",
+   "r591/w167/agentD-r2": "cb4f1107a469455923232b10d0cfbd2c34808017c88dbf073d2f88e783ff7bf4",
+   "r591/w167/agentD-r3": "d2c95bf710acd16778b0e02fada6f4e654d85aae50918ddb13c779ec1595b1cc",
+   "r591/w168/agentD-r1": "ab9ec5eb25c5f6eef484900614aec6004260e75e7b6f1a00802d139c7b8b7c76",
+   "r591/w168/agentD-r2": "ae614c573613c9eb6f8d4425461d2ef57866816abf39cbfe7b2e8083b61a8dbf",
+   "r591/w168/agentD-r3": "d7f9af40c23bd6a0fbde45365e7f006eaf55638da8e053d313b350a9d876545a",
+   "cases-r521.json": "270128eb85c7afc07244c10c8845a22a541a7a60587a870125089e93422fccd7"
+  },
+  "ok": true
+ },
+ "layer_by_run": {
+  "(c) 本轴外": 19,
+  "(b) 冷集构造层": 22,
+  "(a) 落点/选择谓词层": 3
+ },
+ "bucket_totals": {
+  "A_landing_loose": 20,
+  "D_delivery_or_shape": 69,
+  "B_coldset": 184,
+  "A_selection_order": 6
+ },
+ "bucket_shares": {
+  "A_landing_loose": 0.0717,
+  "D_delivery_or_shape": 0.2473,
+  "B_coldset": 0.6595,
+  "A_selection_order": 0.0215
+ },
+ "runs": [
+  {
+   "round": "r585",
+   "win": "w154",
+   "sub": "agentD-r1",
+   "cases_pass_wythoff": 15,
+   "cases_n": 15,
+   "declared_cold_n": 10,
+   "grid_lose_n": 10,
+   "grid_win_n": 341,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": true,
+   "cold_only_prod": [],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(c) 本轴外",
+   "buckets": {},
+   "failures": []
+  },
+  {
+   "round": "r585",
+   "win": "w154",
+   "sub": "agentD-r2",
+   "cases_pass_wythoff": 15,
+   "cases_n": 15,
+   "declared_cold_n": 10,
+   "grid_lose_n": 10,
+   "grid_win_n": 341,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": true,
+   "cold_only_prod": [],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(c) 本轴外",
+   "buckets": {},
+   "failures": []
+  },
+  {
+   "round": "r585",
+   "win": "w154",
+   "sub": "agentD-r3",
+   "cases_pass_wythoff": 15,
+   "cases_n": 15,
+   "declared_cold_n": 10,
+   "grid_lose_n": 10,
+   "grid_win_n": 341,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": true,
+   "cold_only_prod": [],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(c) 本轴外",
+   "buckets": {},
+   "failures": []
+  },
+  {
+   "round": "r585",
+   "win": "w155",
+   "sub": "agentD-r1",
+   "cases_pass_wythoff": 10,
+   "cases_n": 15,
+   "declared_cold_n": 9,
+   "grid_lose_n": 9,
+   "grid_win_n": 300,
+   "grid_err_n": 42,
+   "grid_err_samples": [
+    {
+     "pos": [
+      0,
+      0
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      0,
+      1
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      0,
+      2
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      0,
+      3
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      0,
+      4
+     ],
+     "raw": "",
+     "rc": 1
+    }
+   ],
+   "cold_set_equal": false,
+   "cold_only_prod": [],
+   "cold_only_true": [
+    [
+     0,
+     0
+    ]
+   ],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(b) 冷集构造层",
+   "buckets": {
+    "A_landing_loose": 3,
+    "D_delivery_or_shape": 2
+   },
+   "failures": [
+    {
+     "idx": 1,
+     "stdin": "10 9",
+     "exp": "WIN 0 3",
+     "got": "WIN 3 0",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(9,7)",
+     "bucket": "A_landing_loose"
+    },
+    {
+     "idx": 2,
+     "stdin": "18 8",
+     "exp": "WIN 5 0",
+     "got": "WIN 0 5",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(18,3)",
+     "bucket": "A_landing_loose"
+    },
+    {
+     "idx": 6,
+     "stdin": "18 17",
+     "exp": "WIN 0 6",
+     "got": "WIN 6 0",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(17,12)",
+     "bucket": "A_landing_loose"
+    },
+    {
+     "idx": 12,
+     "stdin": "1 1",
+     "exp": "WIN 1 1",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 14,
+     "stdin": "25 25",
+     "exp": "WIN 25 25",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    }
+   ]
+  },
+  {
+   "round": "r585",
+   "win": "w155",
+   "sub": "agentD-r2",
+   "cases_pass_wythoff": 7,
+   "cases_n": 15,
+   "declared_cold_n": 5,
+   "grid_lose_n": 5,
+   "grid_win_n": 92,
+   "grid_err_n": 254,
+   "grid_err_samples": [
+    {
+     "pos": [
+      0,
+      23
+     ],
+     "raw": "",
+     "rc": 124
+    },
+    {
+     "pos": [
+      0,
+      24
+     ],
+     "raw": "",
+     "rc": 124
+    },
+    {
+     "pos": [
+      0,
+      25
+     ],
+     "raw": "",
+     "rc": 124
+    },
+    {
+     "pos": [
+      1,
+      20
+     ],
+     "raw": "",
+     "rc": 124
+    },
+    {
+     "pos": [
+      1,
+      21
+     ],
+     "raw": "",
+     "rc": 124
+    }
+   ],
+   "cold_set_equal": false,
+   "cold_only_prod": [],
+   "cold_only_true": [
+    [
+     8,
+     13
+    ],
+    [
+     9,
+     15
+    ],
+    [
+     11,
+     18
+    ],
+    [
+     12,
+     20
+    ],
+    [
+     14,
+     23
+    ]
+   ],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(b) 冷集构造层",
+   "buckets": {
+    "D_delivery_or_shape": 8
+   },
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 2,
+     "stdin": "18 8",
+     "exp": "WIN 5 0",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 4,
+     "stdin": "12 18",
+     "exp": "WIN 1 0",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 5,
+     "stdin": "11 25",
+     "exp": "WIN 0 7",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 6,
+     "stdin": "18 17",
+     "exp": "WIN 0 6",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 7,
+     "stdin": "7 21",
+     "exp": "WIN 0 17",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 13,
+     "stdin": "2 25",
+     "exp": "WIN 0 24",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 14,
+     "stdin": "25 25",
+     "exp": "WIN 25 25",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    }
+   ]
+  },
+  {
+   "round": "r585",
+   "win": "w155",
+   "sub": "agentD-r3",
+   "cases_pass_wythoff": 4,
+   "cases_n": 15,
+   "declared_cold_n": 351,
+   "grid_lose_n": 351,
+   "grid_win_n": 0,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": false,
+   "cold_only_prod": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     0,
+     3
+    ],
+    [
+     0,
+     4
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     0,
+     6
+    ],
+    [
+     0,
+     7
+    ],
+    [
+     0,
+     8
+    ],
+    [
+     0,
+     9
+    ],
+    [
+     0,
+     10
+    ],
+    [
+     0,
+     11
+    ],
+    [
+     0,
+     12
+    ],
+    [
+     0,
+     13
+    ],
+    [
+     0,
+     14
+    ],
+    [
+     0,
+     15
+    ],
+    [
+     0,
+     16
+    ],
+    [
+     0,
+     17
+    ],
+    [
+     0,
+     18
+    ],
+    [
+     0,
+     19
+    ],
+    [
+     0,
+     20
+    ],
+    [
+     0,
+     21
+    ],
+    [
+     0,
+     22
+    ],
+    [
+     0,
+     23
+    ],
+    [
+     0,
+     24
+    ],
+    [
+     0,
+     25
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     1,
+     5
+    ],
+    [
+     1,
+     6
+    ],
+    [
+     1,
+     7
+    ],
+    [
+     1,
+     8
+    ],
+    [
+     1,
+     9
+    ],
+    [
+     1,
+     10
+    ],
+    [
+     1,
+     11
+    ],
+    [
+     1,
+     12
+    ],
+    [
+     1,
+     13
+    ],
+    [
+     1,
+     14
+    ],
+    [
+     1,
+     15
+    ],
+    [
+     1,
+     16
+    ],
+    [
+     1,
+     17
+    ],
+    [
+     1,
+     18
+    ],
+    [
+     1,
+     19
+    ],
+    [
+     1,
+     20
+    ],
+    [
+     1,
+     21
+    ],
+    [
+     1,
+     22
+    ],
+    [
+     1,
+     23
+    ],
+    [
+     1,
+     24
+    ],
+    [
+     1,
+     25
+    ],
+    [
+     2,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     2,
+     7
+    ],
+    [
+     2,
+     8
+    ],
+    [
+     2,
+     9
+    ],
+    [
+     2,
+     10
+    ],
+    [
+     2,
+     11
+    ],
+    [
+     2,
+     12
+    ],
+    [
+     2,
+     13
+    ],
+    [
+     2,
+     14
+    ],
+    [
+     2,
+     15
+    ],
+    [
+     2,
+     16
+    ],
+    [
+     2,
+     17
+    ],
+    [
+     2,
+     18
+    ],
+    [
+     2,
+     19
+    ],
+    [
+     2,
+     20
+    ],
+    [
+     2,
+     21
+    ],
+    [
+     2,
+     22
+    ],
+    [
+     2,
+     23
+    ],
+    [
+     2,
+     24
+    ],
+    [
+     2,
+     25
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     3,
+     7
+    ],
+    [
+     3,
+     8
+    ],
+    [
+     3,
+     9
+    ],
+    [
+     3,
+     10
+    ],
+    [
+     3,
+     11
+    ],
+    [
+     3,
+     12
+    ],
+    [
+     3,
+     13
+    ],
+    [
+     3,
+     14
+    ],
+    [
+     3,
+     15
+    ],
+    [
+     3,
+     16
+    ],
+    [
+     3,
+     17
+    ],
+    [
+     3,
+     18
+    ],
+    [
+     3,
+     19
+    ],
+    [
+     3,
+     20
+    ],
+    [
+     3,
+     21
+    ],
+    [
+     3,
+     22
+    ],
+    [
+     3,
+     23
+    ],
+    [
+     3,
+     24
+    ],
+    [
+     3,
+     25
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     4,
+     6
+    ],
+    [
+     4,
+     8
+    ],
+    [
+     4,
+     9
+    ],
+    [
+     4,
+     10
+    ],
+    [
+     4,
+     11
+    ],
+    [
+     4,
+     12
+    ],
+    [
+     4,
+     13
+    ],
+    [
+     4,
+     14
+    ],
+    [
+     4,
+     15
+    ],
+    [
+     4,
+     16
+    ],
+    [
+     4,
+     17
+    ],
+    [
+     4,
+     18
+    ],
+    [
+     4,
+     19
+    ],
+    [
+     4,
+     20
+    ],
+    [
+     4,
+     21
+    ],
+    [
+     4,
+     22
+    ],
+    [
+     4,
+     23
+    ],
+    [
+     4,
+     24
+    ],
+    [
+     4,
+     25
+    ],
+    [
+     5,
+     5
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     5,
+     7
+    ],
+    [
+     5,
+     8
+    ],
+    [
+     5,
+     9
+    ],
+    [
+     5,
+     10
+    ],
+    [
+     5,
+     11
+    ],
+    [
+     5,
+     12
+    ],
+    [
+     5,
+     13
+    ],
+    [
+     5,
+     14
+    ],
+    [
+     5,
+     15
+    ],
+    [
+     5,
+     16
+    ],
+    [
+     5,
+     17
+    ],
+    [
+     5,
+     18
+    ],
+    [
+     5,
+     19
+    ],
+    [
+     5,
+     20
+    ],
+    [
+     5,
+     21
+    ],
+    [
+     5,
+     22
+    ],
+    [
+     5,
+     23
+    ],
+    [
+     5,
+     24
+    ],
+    [
+     5,
+     25
+    ],
+    [
+     6,
+     6
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     6,
+     8
+    ],
+    [
+     6,
+     9
+    ],
+    [
+     6,
+     11
+    ],
+    [
+     6,
+     12
+    ],
+    [
+     6,
+     13
+    ],
+    [
+     6,
+     14
+    ],
+    [
+     6,
+     15
+    ],
+    [
+     6,
+     16
+    ],
+    [
+     6,
+     17
+    ],
+    [
+     6,
+     18
+    ],
+    [
+     6,
+     19
+    ],
+    [
+     6,
+     20
+    ],
+    [
+     6,
+     21
+    ],
+    [
+     6,
+     22
+    ],
+    [
+     6,
+     23
+    ],
+    [
+     6,
+     24
+    ],
+    [
+     6,
+     25
+    ],
+    [
+     7,
+     7
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     7,
+     9
+    ],
+    [
+     7,
+     10
+    ],
+    [
+     7,
+     11
+    ],
+    [
+     7,
+     12
+    ],
+    [
+     7,
+     13
+    ],
+    [
+     7,
+     14
+    ],
+    [
+     7,
+     15
+    ],
+    [
+     7,
+     16
+    ],
+    [
+     7,
+     17
+    ],
+    [
+     7,
+     18
+    ],
+    [
+     7,
+     19
+    ],
+    [
+     7,
+     20
+    ],
+    [
+     7,
+     21
+    ],
+    [
+     7,
+     22
+    ],
+    [
+     7,
+     23
+    ],
+    [
+     7,
+     24
+    ],
+    [
+     7,
+     25
+    ],
+    [
+     8,
+     8
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     8,
+     10
+    ],
+    [
+     8,
+     11
+    ],
+    [
+     8,
+     12
+    ],
+    [
+     8,
+     14
+    ],
+    [
+     8,
+     15
+    ],
+    [
+     8,
+     16
+    ],
+    [
+     8,
+     17
+    ],
+    [
+     8,
+     18
+    ],
+    [
+     8,
+     19
+    ],
+    [
+     8,
+     20
+    ],
+    [
+     8,
+     21
+    ],
+    [
+     8,
+     22
+    ],
+    [
+     8,
+     23
+    ],
+    [
+     8,
+     24
+    ],
+    [
+     8,
+     25
+    ],
+    [
+     9,
+     9
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     9,
+     11
+    ],
+    [
+     9,
+     12
+    ],
+    [
+     9,
+     13
+    ],
+    [
+     9,
+     14
+    ],
+    [
+     9,
+     16
+    ],
+    [
+     9,
+     17
+    ],
+    [
+     9,
+     18
+    ],
+    [
+     9,
+     19
+    ],
+    [
+     9,
+     20
+    ],
+    [
+     9,
+     21
+    ],
+    [
+     9,
+     22
+    ],
+    [
+     9,
+     23
+    ],
+    [
+     9,
+     24
+    ],
+    [
+     9,
+     25
+    ],
+    [
+     10,
+     10
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     10,
+     12
+    ],
+    [
+     10,
+     13
+    ],
+    [
+     10,
+     14
+    ],
+    [
+     10,
+     15
+    ],
+    [
+     10,
+     16
+    ],
+    [
+     10,
+     17
+    ],
+    [
+     10,
+     18
+    ],
+    [
+     10,
+     19
+    ],
+    [
+     10,
+     20
+    ],
+    [
+     10,
+     21
+    ],
+    [
+     10,
+     22
+    ],
+    [
+     10,
+     23
+    ],
+    [
+     10,
+     24
+    ],
+    [
+     10,
+     25
+    ],
+    [
+     11,
+     11
+    ],
+    [
+     11,
+     12
+    ],
+    [
+     11,
+     13
+    ],
+    [
+     11,
+     14
+    ],
+    [
+     11,
+     15
+    ],
+    [
+     11,
+     16
+    ],
+    [
+     11,
+     17
+    ],
+    [
+     11,
+     19
+    ],
+    [
+     11,
+     20
+    ],
+    [
+     11,
+     21
+    ],
+    [
+     11,
+     22
+    ],
+    [
+     11,
+     23
+    ],
+    [
+     11,
+     24
+    ],
+    [
+     11,
+     25
+    ],
+    [
+     12,
+     12
+    ],
+    [
+     12,
+     13
+    ],
+    [
+     12,
+     14
+    ],
+    [
+     12,
+     15
+    ],
+    [
+     12,
+     16
+    ],
+    [
+     12,
+     17
+    ],
+    [
+     12,
+     18
+    ],
+    [
+     12,
+     19
+    ],
+    [
+     12,
+     21
+    ],
+    [
+     12,
+     22
+    ],
+    [
+     12,
+     23
+    ],
+    [
+     12,
+     24
+    ],
+    [
+     12,
+     25
+    ],
+    [
+     13,
+     13
+    ],
+    [
+     13,
+     14
+    ],
+    [
+     13,
+     15
+    ],
+    [
+     13,
+     16
+    ],
+    [
+     13,
+     17
+    ],
+    [
+     13,
+     18
+    ],
+    [
+     13,
+     19
+    ],
+    [
+     13,
+     20
+    ],
+    [
+     13,
+     21
+    ],
+    [
+     13,
+     22
+    ],
+    [
+     13,
+     23
+    ],
+    [
+     13,
+     24
+    ],
+    [
+     13,
+     25
+    ],
+    [
+     14,
+     14
+    ],
+    [
+     14,
+     15
+    ],
+    [
+     14,
+     16
+    ],
+    [
+     14,
+     17
+    ],
+    [
+     14,
+     18
+    ],
+    [
+     14,
+     19
+    ],
+    [
+     14,
+     20
+    ],
+    [
+     14,
+     21
+    ],
+    [
+     14,
+     22
+    ],
+    [
+     14,
+     24
+    ],
+    [
+     14,
+     25
+    ],
+    [
+     15,
+     15
+    ],
+    [
+     15,
+     16
+    ],
+    [
+     15,
+     17
+    ],
+    [
+     15,
+     18
+    ],
+    [
+     15,
+     19
+    ],
+    [
+     15,
+     20
+    ],
+    [
+     15,
+     21
+    ],
+    [
+     15,
+     22
+    ],
+    [
+     15,
+     23
+    ],
+    [
+     15,
+     24
+    ],
+    [
+     15,
+     25
+    ],
+    [
+     16,
+     16
+    ],
+    [
+     16,
+     17
+    ],
+    [
+     16,
+     18
+    ],
+    [
+     16,
+     19
+    ],
+    [
+     16,
+     20
+    ],
+    [
+     16,
+     21
+    ],
+    [
+     16,
+     22
+    ],
+    [
+     16,
+     23
+    ],
+    [
+     16,
+     24
+    ],
+    [
+     16,
+     25
+    ],
+    [
+     17,
+     17
+    ],
+    [
+     17,
+     18
+    ],
+    [
+     17,
+     19
+    ],
+    [
+     17,
+     20
+    ],
+    [
+     17,
+     21
+    ],
+    [
+     17,
+     22
+    ],
+    [
+     17,
+     23
+    ],
+    [
+     17,
+     24
+    ],
+    [
+     17,
+     25
+    ],
+    [
+     18,
+     18
+    ],
+    [
+     18,
+     19
+    ],
+    [
+     18,
+     20
+    ],
+    [
+     18,
+     21
+    ],
+    [
+     18,
+     22
+    ],
+    [
+     18,
+     23
+    ],
+    [
+     18,
+     24
+    ],
+    [
+     18,
+     25
+    ],
+    [
+     19,
+     19
+    ],
+    [
+     19,
+     20
+    ],
+    [
+     19,
+     21
+    ],
+    [
+     19,
+     22
+    ],
+    [
+     19,
+     23
+    ],
+    [
+     19,
+     24
+    ],
+    [
+     19,
+     25
+    ],
+    [
+     20,
+     20
+    ],
+    [
+     20,
+     21
+    ],
+    [
+     20,
+     22
+    ],
+    [
+     20,
+     23
+    ],
+    [
+     20,
+     24
+    ],
+    [
+     20,
+     25
+    ],
+    [
+     21,
+     21
+    ],
+    [
+     21,
+     22
+    ],
+    [
+     21,
+     23
+    ],
+    [
+     21,
+     24
+    ],
+    [
+     21,
+     25
+    ],
+    [
+     22,
+     22
+    ],
+    [
+     22,
+     23
+    ],
+    [
+     22,
+     24
+    ],
+    [
+     22,
+     25
+    ],
+    [
+     23,
+     23
+    ],
+    [
+     23,
+     24
+    ],
+    [
+     23,
+     25
+    ],
+    [
+     24,
+     24
+    ],
+    [
+     24,
+     25
+    ],
+    [
+     25,
+     25
+    ]
+   ],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 350,
+   "v_int_samples": [
+    {
+     "pos": [
+      0,
+      1
+     ],
+     "target": [
+      0,
+      0
+     ]
+    },
+    {
+     "pos": [
+      0,
+      2
+     ],
+     "target": [
+      0,
+      1
+     ]
+    },
+    {
+     "pos": [
+      0,
+      3
+     ],
+     "target": [
+      0,
+      2
+     ]
+    },
+    {
+     "pos": [
+      0,
+      4
+     ],
+     "target": [
+      0,
+      3
+     ]
+    },
+    {
+     "pos": [
+      0,
+      5
+     ],
+     "target": [
+      0,
+      4
+     ]
+    }
+   ],
+   "layer": "(b) 冷集构造层",
+   "buckets": {
+    "B_coldset": 11
+   },
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 1,
+     "stdin": "10 9",
+     "exp": "WIN 0 3",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 2,
+     "stdin": "18 8",
+     "exp": "WIN 5 0",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 3,
+     "stdin": "1 5",
+     "exp": "WIN 0 3",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 4,
+     "stdin": "12 18",
+     "exp": "WIN 1 0",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 5,
+     "stdin": "11 25",
+     "exp": "WIN 0 7",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 6,
+     "stdin": "18 17",
+     "exp": "WIN 0 6",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 7,
+     "stdin": "7 21",
+     "exp": "WIN 0 17",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 12,
+     "stdin": "1 1",
+     "exp": "WIN 1 1",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 13,
+     "stdin": "2 25",
+     "exp": "WIN 0 24",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 14,
+     "stdin": "25 25",
+     "exp": "WIN 25 25",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    }
+   ]
+  },
+  {
+   "round": "r585",
+   "win": "w156",
+   "sub": "agentD-r1",
+   "cases_pass_wythoff": 15,
+   "cases_n": 15,
+   "declared_cold_n": 10,
+   "grid_lose_n": 10,
+   "grid_win_n": 341,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": true,
+   "cold_only_prod": [],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(c) 本轴外",
+   "buckets": {},
+   "failures": []
+  },
+  {
+   "round": "r585",
+   "win": "w156",
+   "sub": "agentD-r2",
+   "cases_pass_wythoff": 5,
+   "cases_n": 15,
+   "declared_cold_n": 236,
+   "grid_lose_n": 236,
+   "grid_win_n": 115,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": false,
+   "cold_only_prod": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     3
+    ],
+    [
+     0,
+     4
+    ],
+    [
+     0,
+     6
+    ],
+    [
+     0,
+     7
+    ],
+    [
+     0,
+     8
+    ],
+    [
+     0,
+     9
+    ],
+    [
+     0,
+     10
+    ],
+    [
+     0,
+     12
+    ],
+    [
+     0,
+     13
+    ],
+    [
+     0,
+     14
+    ],
+    [
+     0,
+     15
+    ],
+    [
+     0,
+     16
+    ],
+    [
+     0,
+     17
+    ],
+    [
+     0,
+     18
+    ],
+    [
+     0,
+     19
+    ],
+    [
+     0,
+     20
+    ],
+    [
+     0,
+     21
+    ],
+    [
+     0,
+     22
+    ],
+    [
+     0,
+     24
+    ],
+    [
+     0,
+     25
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     1,
+     6
+    ],
+    [
+     1,
+     7
+    ],
+    [
+     1,
+     8
+    ],
+    [
+     1,
+     9
+    ],
+    [
+     1,
+     10
+    ],
+    [
+     1,
+     12
+    ],
+    [
+     1,
+     13
+    ],
+    [
+     1,
+     14
+    ],
+    [
+     1,
+     15
+    ],
+    [
+     1,
+     16
+    ],
+    [
+     1,
+     17
+    ],
+    [
+     1,
+     18
+    ],
+    [
+     1,
+     19
+    ],
+    [
+     1,
+     20
+    ],
+    [
+     1,
+     21
+    ],
+    [
+     1,
+     22
+    ],
+    [
+     1,
+     24
+    ],
+    [
+     1,
+     25
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     3,
+     7
+    ],
+    [
+     3,
+     8
+    ],
+    [
+     3,
+     9
+    ],
+    [
+     3,
+     10
+    ],
+    [
+     3,
+     12
+    ],
+    [
+     3,
+     13
+    ],
+    [
+     3,
+     14
+    ],
+    [
+     3,
+     15
+    ],
+    [
+     3,
+     16
+    ],
+    [
+     3,
+     17
+    ],
+    [
+     3,
+     18
+    ],
+    [
+     3,
+     19
+    ],
+    [
+     3,
+     20
+    ],
+    [
+     3,
+     21
+    ],
+    [
+     3,
+     22
+    ],
+    [
+     3,
+     24
+    ],
+    [
+     3,
+     25
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     4,
+     6
+    ],
+    [
+     4,
+     8
+    ],
+    [
+     4,
+     9
+    ],
+    [
+     4,
+     10
+    ],
+    [
+     4,
+     12
+    ],
+    [
+     4,
+     13
+    ],
+    [
+     4,
+     14
+    ],
+    [
+     4,
+     15
+    ],
+    [
+     4,
+     16
+    ],
+    [
+     4,
+     17
+    ],
+    [
+     4,
+     18
+    ],
+    [
+     4,
+     19
+    ],
+    [
+     4,
+     20
+    ],
+    [
+     4,
+     21
+    ],
+    [
+     4,
+     22
+    ],
+    [
+     4,
+     24
+    ],
+    [
+     4,
+     25
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     6,
+     8
+    ],
+    [
+     6,
+     9
+    ],
+    [
+     6,
+     12
+    ],
+    [
+     6,
+     13
+    ],
+    [
+     6,
+     14
+    ],
+    [
+     6,
+     15
+    ],
+    [
+     6,
+     16
+    ],
+    [
+     6,
+     17
+    ],
+    [
+     6,
+     18
+    ],
+    [
+     6,
+     19
+    ],
+    [
+     6,
+     20
+    ],
+    [
+     6,
+     21
+    ],
+    [
+     6,
+     22
+    ],
+    [
+     6,
+     24
+    ],
+    [
+     6,
+     25
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     7,
+     9
+    ],
+    [
+     7,
+     10
+    ],
+    [
+     7,
+     12
+    ],
+    [
+     7,
+     13
+    ],
+    [
+     7,
+     14
+    ],
+    [
+     7,
+     15
+    ],
+    [
+     7,
+     16
+    ],
+    [
+     7,
+     17
+    ],
+    [
+     7,
+     18
+    ],
+    [
+     7,
+     19
+    ],
+    [
+     7,
+     20
+    ],
+    [
+     7,
+     21
+    ],
+    [
+     7,
+     22
+    ],
+    [
+     7,
+     24
+    ],
+    [
+     7,
+     25
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     8,
+     10
+    ],
+    [
+     8,
+     12
+    ],
+    [
+     8,
+     14
+    ],
+    [
+     8,
+     15
+    ],
+    [
+     8,
+     16
+    ],
+    [
+     8,
+     17
+    ],
+    [
+     8,
+     18
+    ],
+    [
+     8,
+     19
+    ],
+    [
+     8,
+     20
+    ],
+    [
+     8,
+     21
+    ],
+    [
+     8,
+     22
+    ],
+    [
+     8,
+     24
+    ],
+    [
+     8,
+     25
+    ],
+    [
+     9,
+     10
+    ],
+    [
+     9,
+     12
+    ],
+    [
+     9,
+     13
+    ],
+    [
+     9,
+     14
+    ],
+    [
+     9,
+     16
+    ],
+    [
+     9,
+     17
+    ],
+    [
+     9,
+     18
+    ],
+    [
+     9,
+     19
+    ],
+    [
+     9,
+     20
+    ],
+    [
+     9,
+     21
+    ],
+    [
+     9,
+     22
+    ],
+    [
+     9,
+     24
+    ],
+    [
+     9,
+     25
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     10,
+     12
+    ],
+    [
+     10,
+     13
+    ],
+    [
+     10,
+     14
+    ],
+    [
+     10,
+     15
+    ],
+    [
+     10,
+     16
+    ],
+    [
+     10,
+     17
+    ],
+    [
+     10,
+     18
+    ],
+    [
+     10,
+     19
+    ],
+    [
+     10,
+     20
+    ],
+    [
+     10,
+     21
+    ],
+    [
+     10,
+     22
+    ],
+    [
+     10,
+     24
+    ],
+    [
+     10,
+     25
+    ],
+    [
+     12,
+     13
+    ],
+    [
+     12,
+     14
+    ],
+    [
+     12,
+     15
+    ],
+    [
+     12,
+     16
+    ],
+    [
+     12,
+     17
+    ],
+    [
+     12,
+     18
+    ],
+    [
+     12,
+     19
+    ],
+    [
+     12,
+     21
+    ],
+    [
+     12,
+     22
+    ],
+    [
+     12,
+     24
+    ],
+    [
+     12,
+     25
+    ],
+    [
+     13,
+     14
+    ],
+    [
+     13,
+     15
+    ],
+    [
+     13,
+     16
+    ],
+    [
+     13,
+     17
+    ],
+    [
+     13,
+     18
+    ],
+    [
+     13,
+     19
+    ],
+    [
+     13,
+     20
+    ],
+    [
+     13,
+     21
+    ],
+    [
+     13,
+     22
+    ],
+    [
+     13,
+     24
+    ],
+    [
+     13,
+     25
+    ],
+    [
+     14,
+     15
+    ],
+    [
+     14,
+     16
+    ],
+    [
+     14,
+     17
+    ],
+    [
+     14,
+     18
+    ],
+    [
+     14,
+     19
+    ],
+    [
+     14,
+     20
+    ],
+    [
+     14,
+     21
+    ],
+    [
+     14,
+     22
+    ],
+    [
+     14,
+     24
+    ],
+    [
+     14,
+     25
+    ],
+    [
+     15,
+     16
+    ],
+    [
+     15,
+     17
+    ],
+    [
+     15,
+     18
+    ],
+    [
+     15,
+     19
+    ],
+    [
+     15,
+     20
+    ],
+    [
+     15,
+     21
+    ],
+    [
+     15,
+     22
+    ],
+    [
+     15,
+     24
+    ],
+    [
+     15,
+     25
+    ],
+    [
+     16,
+     17
+    ],
+    [
+     16,
+     18
+    ],
+    [
+     16,
+     19
+    ],
+    [
+     16,
+     20
+    ],
+    [
+     16,
+     21
+    ],
+    [
+     16,
+     22
+    ],
+    [
+     16,
+     24
+    ],
+    [
+     16,
+     25
+    ],
+    [
+     17,
+     18
+    ],
+    [
+     17,
+     19
+    ],
+    [
+     17,
+     20
+    ],
+    [
+     17,
+     21
+    ],
+    [
+     17,
+     22
+    ],
+    [
+     17,
+     24
+    ],
+    [
+     17,
+     25
+    ],
+    [
+     18,
+     19
+    ],
+    [
+     18,
+     20
+    ],
+    [
+     18,
+     21
+    ],
+    [
+     18,
+     22
+    ],
+    [
+     18,
+     24
+    ],
+    [
+     18,
+     25
+    ],
+    [
+     19,
+     20
+    ],
+    [
+     19,
+     21
+    ],
+    [
+     19,
+     22
+    ],
+    [
+     19,
+     24
+    ],
+    [
+     19,
+     25
+    ],
+    [
+     20,
+     21
+    ],
+    [
+     20,
+     22
+    ],
+    [
+     20,
+     24
+    ],
+    [
+     20,
+     25
+    ],
+    [
+     21,
+     22
+    ],
+    [
+     21,
+     24
+    ],
+    [
+     21,
+     25
+    ],
+    [
+     22,
+     23
+    ],
+    [
+     22,
+     24
+    ],
+    [
+     22,
+     25
+    ],
+    [
+     24,
+     25
+    ]
+   ],
+   "cold_only_true": [
+    [
+     3,
+     5
+    ],
+    [
+     11,
+     18
+    ],
+    [
+     14,
+     23
+    ]
+   ],
+   "v_land_n": 6,
+   "v_land_samples": [
+    {
+     "pos": [
+      2,
+      5
+     ],
+     "move": [
+      1,
+      0
+     ],
+     "target": [
+      1,
+      5
+     ]
+    },
+    {
+     "pos": [
+      2,
+      11
+     ],
+     "move": [
+      1,
+      0
+     ],
+     "target": [
+      1,
+      11
+     ]
+    },
+    {
+     "pos": [
+      2,
+      23
+     ],
+     "move": [
+      1,
+      0
+     ],
+     "target": [
+      1,
+      23
+     ]
+    },
+    {
+     "pos": [
+      5,
+      11
+     ],
+     "move": [
+      1,
+      0
+     ],
+     "target": [
+      4,
+      11
+     ]
+    },
+    {
+     "pos": [
+      5,
+      23
+     ],
+     "move": [
+      1,
+      0
+     ],
+     "target": [
+      4,
+      23
+     ]
+    }
+   ],
+   "v_int_n": 235,
+   "v_int_samples": [
+    {
+     "pos": [
+      0,
+      1
+     ],
+     "target": [
+      0,
+      0
+     ]
+    },
+    {
+     "pos": [
+      0,
+      3
+     ],
+     "target": [
+      0,
+      1
+     ]
+    },
+    {
+     "pos": [
+      0,
+      4
+     ],
+     "target": [
+      0,
+      3
+     ]
+    },
+    {
+     "pos": [
+      0,
+      6
+     ],
+     "target": [
+      0,
+      4
+     ]
+    },
+    {
+     "pos": [
+      0,
+      7
+     ],
+     "target": [
+      0,
+      6
+     ]
+    }
+   ],
+   "layer": "(a) 落点/选择谓词层",
+   "buckets": {
+    "B_coldset": 10
+   },
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 1,
+     "stdin": "10 9",
+     "exp": "WIN 0 3",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 2,
+     "stdin": "18 8",
+     "exp": "WIN 5 0",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 3,
+     "stdin": "1 5",
+     "exp": "WIN 0 3",
+     "got": "WIN 0 1",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(4,1)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 4,
+     "stdin": "12 18",
+     "exp": "WIN 1 0",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 5,
+     "stdin": "11 25",
+     "exp": "WIN 0 7",
+     "got": "WIN 1 0",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(25,10)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 6,
+     "stdin": "18 17",
+     "exp": "WIN 0 6",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 7,
+     "stdin": "7 21",
+     "exp": "WIN 0 17",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 9,
+     "stdin": "3 5",
+     "exp": "LOSE",
+     "got": "WIN 0 1",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 13,
+     "stdin": "2 25",
+     "exp": "WIN 0 24",
+     "got": "WIN 1 0",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(25,1)",
+     "bucket": "B_coldset"
+    }
+   ]
+  },
+  {
+   "round": "r585",
+   "win": "w156",
+   "sub": "agentD-r3",
+   "cases_pass_wythoff": 12,
+   "cases_n": 15,
+   "declared_cold_n": 95,
+   "grid_lose_n": 95,
+   "grid_win_n": 256,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": false,
+   "cold_only_prod": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     0,
+     3
+    ],
+    [
+     0,
+     4
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     0,
+     6
+    ],
+    [
+     0,
+     7
+    ],
+    [
+     0,
+     8
+    ],
+    [
+     0,
+     9
+    ],
+    [
+     0,
+     10
+    ],
+    [
+     0,
+     11
+    ],
+    [
+     0,
+     12
+    ],
+    [
+     0,
+     13
+    ],
+    [
+     0,
+     14
+    ],
+    [
+     0,
+     15
+    ],
+    [
+     0,
+     16
+    ],
+    [
+     0,
+     17
+    ],
+    [
+     0,
+     18
+    ],
+    [
+     0,
+     19
+    ],
+    [
+     0,
+     20
+    ],
+    [
+     0,
+     21
+    ],
+    [
+     0,
+     22
+    ],
+    [
+     0,
+     23
+    ],
+    [
+     0,
+     24
+    ],
+    [
+     0,
+     25
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     4,
+     6
+    ],
+    [
+     6,
+     6
+    ],
+    [
+     6,
+     8
+    ],
+    [
+     6,
+     9
+    ],
+    [
+     8,
+     8
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     8,
+     11
+    ],
+    [
+     8,
+     12
+    ],
+    [
+     9,
+     9
+    ],
+    [
+     9,
+     11
+    ],
+    [
+     9,
+     12
+    ],
+    [
+     9,
+     14
+    ],
+    [
+     11,
+     11
+    ],
+    [
+     11,
+     12
+    ],
+    [
+     11,
+     14
+    ],
+    [
+     11,
+     16
+    ],
+    [
+     11,
+     17
+    ],
+    [
+     12,
+     12
+    ],
+    [
+     12,
+     14
+    ],
+    [
+     12,
+     16
+    ],
+    [
+     12,
+     17
+    ],
+    [
+     12,
+     19
+    ],
+    [
+     14,
+     14
+    ],
+    [
+     14,
+     16
+    ],
+    [
+     14,
+     17
+    ],
+    [
+     14,
+     19
+    ],
+    [
+     14,
+     21
+    ],
+    [
+     14,
+     22
+    ],
+    [
+     16,
+     16
+    ],
+    [
+     16,
+     17
+    ],
+    [
+     16,
+     19
+    ],
+    [
+     16,
+     21
+    ],
+    [
+     16,
+     22
+    ],
+    [
+     16,
+     24
+    ],
+    [
+     16,
+     25
+    ],
+    [
+     17,
+     17
+    ],
+    [
+     17,
+     19
+    ],
+    [
+     17,
+     21
+    ],
+    [
+     17,
+     22
+    ],
+    [
+     17,
+     24
+    ],
+    [
+     17,
+     25
+    ],
+    [
+     19,
+     19
+    ],
+    [
+     19,
+     21
+    ],
+    [
+     19,
+     22
+    ],
+    [
+     19,
+     24
+    ],
+    [
+     19,
+     25
+    ],
+    [
+     21,
+     21
+    ],
+    [
+     21,
+     22
+    ],
+    [
+     21,
+     24
+    ],
+    [
+     21,
+     25
+    ],
+    [
+     22,
+     22
+    ],
+    [
+     22,
+     24
+    ],
+    [
+     22,
+     25
+    ],
+    [
+     24,
+     24
+    ],
+    [
+     24,
+     25
+    ],
+    [
+     25,
+     25
+    ]
+   ],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 94,
+   "v_int_samples": [
+    {
+     "pos": [
+      0,
+      1
+     ],
+     "target": [
+      0,
+      0
+     ]
+    },
+    {
+     "pos": [
+      0,
+      2
+     ],
+     "target": [
+      0,
+      1
+     ]
+    },
+    {
+     "pos": [
+      0,
+      3
+     ],
+     "target": [
+      0,
+      2
+     ]
+    },
+    {
+     "pos": [
+      0,
+      4
+     ],
+     "target": [
+      0,
+      3
+     ]
+    },
+    {
+     "pos": [
+      0,
+      5
+     ],
+     "target": [
+      0,
+      4
+     ]
+    }
+   ],
+   "layer": "(b) 冷集构造层",
+   "buckets": {
+    "B_coldset": 3
+   },
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 12,
+     "stdin": "1 1",
+     "exp": "WIN 1 1",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 14,
+     "stdin": "25 25",
+     "exp": "WIN 25 25",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    }
+   ]
+  },
+  {
+   "round": "r586",
+   "win": "w157",
+   "sub": "agentD-r1",
+   "cases_pass_wythoff": 4,
+   "cases_n": 15,
+   "declared_cold_n": 117,
+   "grid_lose_n": 117,
+   "grid_win_n": 234,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": false,
+   "cold_only_prod": [
+    [
+     1,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     1,
+     5
+    ],
+    [
+     1,
+     6
+    ],
+    [
+     1,
+     7
+    ],
+    [
+     1,
+     8
+    ],
+    [
+     1,
+     9
+    ],
+    [
+     1,
+     10
+    ],
+    [
+     1,
+     11
+    ],
+    [
+     1,
+     12
+    ],
+    [
+     1,
+     13
+    ],
+    [
+     1,
+     14
+    ],
+    [
+     1,
+     15
+    ],
+    [
+     1,
+     16
+    ],
+    [
+     1,
+     17
+    ],
+    [
+     1,
+     18
+    ],
+    [
+     1,
+     19
+    ],
+    [
+     1,
+     20
+    ],
+    [
+     1,
+     21
+    ],
+    [
+     1,
+     22
+    ],
+    [
+     1,
+     23
+    ],
+    [
+     1,
+     24
+    ],
+    [
+     1,
+     25
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     4,
+     6
+    ],
+    [
+     4,
+     8
+    ],
+    [
+     4,
+     9
+    ],
+    [
+     4,
+     10
+    ],
+    [
+     4,
+     11
+    ],
+    [
+     4,
+     12
+    ],
+    [
+     4,
+     13
+    ],
+    [
+     4,
+     14
+    ],
+    [
+     4,
+     15
+    ],
+    [
+     4,
+     16
+    ],
+    [
+     4,
+     17
+    ],
+    [
+     4,
+     18
+    ],
+    [
+     4,
+     19
+    ],
+    [
+     4,
+     20
+    ],
+    [
+     4,
+     21
+    ],
+    [
+     4,
+     22
+    ],
+    [
+     4,
+     23
+    ],
+    [
+     4,
+     24
+    ],
+    [
+     4,
+     25
+    ],
+    [
+     5,
+     7
+    ],
+    [
+     6,
+     9
+    ],
+    [
+     6,
+     11
+    ],
+    [
+     6,
+     12
+    ],
+    [
+     6,
+     13
+    ],
+    [
+     6,
+     14
+    ],
+    [
+     6,
+     15
+    ],
+    [
+     6,
+     16
+    ],
+    [
+     6,
+     17
+    ],
+    [
+     6,
+     18
+    ],
+    [
+     6,
+     19
+    ],
+    [
+     6,
+     20
+    ],
+    [
+     6,
+     21
+    ],
+    [
+     6,
+     22
+    ],
+    [
+     6,
+     23
+    ],
+    [
+     6,
+     24
+    ],
+    [
+     6,
+     25
+    ],
+    [
+     8,
+     12
+    ],
+    [
+     8,
+     14
+    ],
+    [
+     8,
+     15
+    ],
+    [
+     8,
+     16
+    ],
+    [
+     8,
+     17
+    ],
+    [
+     8,
+     18
+    ],
+    [
+     8,
+     19
+    ],
+    [
+     8,
+     20
+    ],
+    [
+     8,
+     21
+    ],
+    [
+     8,
+     22
+    ],
+    [
+     8,
+     23
+    ],
+    [
+     8,
+     24
+    ],
+    [
+     8,
+     25
+    ],
+    [
+     9,
+     13
+    ],
+    [
+     9,
+     14
+    ],
+    [
+     9,
+     16
+    ],
+    [
+     9,
+     17
+    ],
+    [
+     9,
+     18
+    ],
+    [
+     9,
+     19
+    ],
+    [
+     9,
+     20
+    ],
+    [
+     9,
+     21
+    ],
+    [
+     9,
+     22
+    ],
+    [
+     9,
+     23
+    ],
+    [
+     9,
+     24
+    ],
+    [
+     9,
+     25
+    ],
+    [
+     11,
+     16
+    ],
+    [
+     11,
+     17
+    ],
+    [
+     11,
+     19
+    ],
+    [
+     11,
+     20
+    ],
+    [
+     11,
+     21
+    ],
+    [
+     11,
+     22
+    ],
+    [
+     11,
+     23
+    ],
+    [
+     11,
+     24
+    ],
+    [
+     11,
+     25
+    ],
+    [
+     12,
+     17
+    ],
+    [
+     12,
+     18
+    ],
+    [
+     12,
+     19
+    ],
+    [
+     12,
+     21
+    ],
+    [
+     12,
+     22
+    ],
+    [
+     12,
+     23
+    ],
+    [
+     12,
+     24
+    ],
+    [
+     12,
+     25
+    ],
+    [
+     13,
+     18
+    ],
+    [
+     15,
+     21
+    ],
+    [
+     16,
+     23
+    ],
+    [
+     16,
+     24
+    ],
+    [
+     16,
+     25
+    ],
+    [
+     17,
+     24
+    ],
+    [
+     17,
+     25
+    ]
+   ],
+   "cold_only_true": [
+    [
+     3,
+     5
+    ],
+    [
+     14,
+     23
+    ]
+   ],
+   "v_land_n": 69,
+   "v_land_samples": [
+    {
+     "pos": [
+      7,
+      11
+     ],
+     "move": [
+      0,
+      1
+     ],
+     "target": [
+      7,
+      10
+     ]
+    },
+    {
+     "pos": [
+      7,
+      12
+     ],
+     "move": [
+      0,
+      2
+     ],
+     "target": [
+      7,
+      10
+     ]
+    },
+    {
+     "pos": [
+      7,
+      13
+     ],
+     "move": [
+      0,
+      3
+     ],
+     "target": [
+      7,
+      10
+     ]
+    },
+    {
+     "pos": [
+      7,
+      14
+     ],
+     "move": [
+      0,
+      4
+     ],
+     "target": [
+      7,
+      10
+     ]
+    },
+    {
+     "pos": [
+      7,
+      15
+     ],
+     "move": [
+      0,
+      5
+     ],
+     "target": [
+      7,
+      10
+     ]
+    }
+   ],
+   "v_int_n": 115,
+   "v_int_samples": [
+    {
+     "pos": [
+      1,
+      3
+     ],
+     "target": [
+      1,
+      2
+     ]
+    },
+    {
+     "pos": [
+      1,
+      4
+     ],
+     "target": [
+      1,
+      3
+     ]
+    },
+    {
+     "pos": [
+      1,
+      5
+     ],
+     "target": [
+      1,
+      4
+     ]
+    },
+    {
+     "pos": [
+      1,
+      6
+     ],
+     "target": [
+      1,
+      5
+     ]
+    },
+    {
+     "pos": [
+      1,
+      7
+     ],
+     "target": [
+      1,
+      6
+     ]
+    }
+   ],
+   "layer": "(a) 落点/选择谓词层",
+   "buckets": {
+    "B_coldset": 8,
+    "A_landing_loose": 3
+   },
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "WIN 0 10",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(21,15)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 1,
+     "stdin": "10 9",
+     "exp": "WIN 0 3",
+     "got": "WIN 0 2",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(10,7)",
+     "bucket": "A_landing_loose"
+    },
+    {
+     "idx": 2,
+     "stdin": "18 8",
+     "exp": "WIN 5 0",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 3,
+     "stdin": "1 5",
+     "exp": "WIN 0 3",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 4,
+     "stdin": "12 18",
+     "exp": "WIN 1 0",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 5,
+     "stdin": "11 25",
+     "exp": "WIN 0 7",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 6,
+     "stdin": "18 17",
+     "exp": "WIN 0 6",
+     "got": "WIN 0 4",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(18,13)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 7,
+     "stdin": "7 21",
+     "exp": "WIN 0 17",
+     "got": "WIN 0 11",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(10,7)",
+     "bucket": "A_landing_loose"
+    },
+    {
+     "idx": 9,
+     "stdin": "3 5",
+     "exp": "LOSE",
+     "got": "WIN 0 3",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 13,
+     "stdin": "2 25",
+     "exp": "WIN 0 24",
+     "got": "WIN 0 22",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(3,2)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 14,
+     "stdin": "25 25",
+     "exp": "WIN 25 25",
+     "got": "WIN 0 7",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(25,18)",
+     "bucket": "A_landing_loose"
+    }
+   ]
+  },
+  {
+   "round": "r586",
+   "win": "w157",
+   "sub": "agentD-r2",
+   "cases_pass_wythoff": 15,
+   "cases_n": 15,
+   "declared_cold_n": 10,
+   "grid_lose_n": 10,
+   "grid_win_n": 341,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": true,
+   "cold_only_prod": [],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(c) 本轴外",
+   "buckets": {},
+   "failures": []
+  },
+  {
+   "round": "r586",
+   "win": "w157",
+   "sub": "agentD-r3",
+   "cases_pass_wythoff": 15,
+   "cases_n": 15,
+   "declared_cold_n": 10,
+   "grid_lose_n": 10,
+   "grid_win_n": 341,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": true,
+   "cold_only_prod": [],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(c) 本轴外",
+   "buckets": {},
+   "failures": []
+  },
+  {
+   "round": "r586",
+   "win": "w158",
+   "sub": "agentD-r1",
+   "cases_pass_wythoff": 12,
+   "cases_n": 15,
+   "declared_cold_n": 10,
+   "grid_lose_n": 10,
+   "grid_win_n": 288,
+   "grid_err_n": 53,
+   "grid_err_samples": [
+    {
+     "pos": [
+      4,
+      7
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      4,
+      8
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      4,
+      9
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      4,
+      10
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      4,
+      11
+     ],
+     "raw": "",
+     "rc": 1
+    }
+   ],
+   "cold_set_equal": false,
+   "cold_only_prod": [
+    [
+     5,
+     8
+    ],
+    [
+     10,
+     16
+    ],
+    [
+     13,
+     21
+    ],
+    [
+     15,
+     24
+    ]
+   ],
+   "cold_only_true": [
+    [
+     4,
+     7
+    ],
+    [
+     9,
+     15
+    ],
+    [
+     12,
+     20
+    ],
+    [
+     14,
+     23
+    ]
+   ],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 4,
+   "v_int_samples": [
+    {
+     "pos": [
+      5,
+      8
+     ],
+     "target": [
+      3,
+      5
+     ]
+    },
+    {
+     "pos": [
+      8,
+      13
+     ],
+     "target": [
+      5,
+      8
+     ]
+    },
+    {
+     "pos": [
+      10,
+      16
+     ],
+     "target": [
+      6,
+      10
+     ]
+    },
+    {
+     "pos": [
+      13,
+      21
+     ],
+     "target": [
+      8,
+      13
+     ]
+    }
+   ],
+   "layer": "(b) 冷集构造层",
+   "buckets": {
+    "B_coldset": 1,
+    "D_delivery_or_shape": 2
+   },
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "WIN 0 12",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(21,13)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 7,
+     "stdin": "7 21",
+     "exp": "WIN 0 17",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 10,
+     "stdin": "4 7",
+     "exp": "LOSE",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    }
+   ]
+  },
+  {
+   "round": "r586",
+   "win": "w158",
+   "sub": "agentD-r2",
+   "cases_pass_wythoff": 15,
+   "cases_n": 15,
+   "declared_cold_n": 10,
+   "grid_lose_n": 10,
+   "grid_win_n": 341,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": true,
+   "cold_only_prod": [],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(c) 本轴外",
+   "buckets": {},
+   "failures": []
+  },
+  {
+   "round": "r586",
+   "win": "w158",
+   "sub": "agentD-r3",
+   "cases_pass_wythoff": 6,
+   "cases_n": 15,
+   "declared_cold_n": 49,
+   "grid_lose_n": 49,
+   "grid_win_n": 302,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": false,
+   "cold_only_prod": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     2,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     4,
+     6
+    ],
+    [
+     4,
+     8
+    ],
+    [
+     5,
+     7
+    ],
+    [
+     5,
+     8
+    ],
+    [
+     5,
+     9
+    ],
+    [
+     6,
+     9
+    ],
+    [
+     6,
+     11
+    ],
+    [
+     7,
+     11
+    ],
+    [
+     7,
+     12
+    ],
+    [
+     7,
+     13
+    ],
+    [
+     8,
+     12
+    ],
+    [
+     8,
+     14
+    ],
+    [
+     9,
+     14
+    ],
+    [
+     9,
+     16
+    ],
+    [
+     10,
+     15
+    ],
+    [
+     10,
+     16
+    ],
+    [
+     10,
+     17
+    ],
+    [
+     10,
+     18
+    ],
+    [
+     11,
+     17
+    ],
+    [
+     11,
+     19
+    ],
+    [
+     12,
+     19
+    ],
+    [
+     12,
+     21
+    ],
+    [
+     13,
+     20
+    ],
+    [
+     13,
+     21
+    ],
+    [
+     13,
+     22
+    ],
+    [
+     14,
+     22
+    ],
+    [
+     14,
+     24
+    ],
+    [
+     15,
+     24
+    ],
+    [
+     15,
+     25
+    ],
+    [
+     16,
+     25
+    ]
+   ],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 48,
+   "v_int_samples": [
+    {
+     "pos": [
+      0,
+      1
+     ],
+     "target": [
+      0,
+      0
+     ]
+    },
+    {
+     "pos": [
+      1,
+      1
+     ],
+     "target": [
+      0,
+      1
+     ]
+    },
+    {
+     "pos": [
+      1,
+      2
+     ],
+     "target": [
+      1,
+      1
+     ]
+    },
+    {
+     "pos": [
+      1,
+      3
+     ],
+     "target": [
+      1,
+      2
+     ]
+    },
+    {
+     "pos": [
+      2,
+      2
+     ],
+     "target": [
+      1,
+      2
+     ]
+    }
+   ],
+   "layer": "(b) 冷集构造层",
+   "buckets": {
+    "B_coldset": 9
+   },
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "WIN 0 12",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(21,13)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 2,
+     "stdin": "18 8",
+     "exp": "WIN 5 0",
+     "got": "WIN 4 0",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(14,8)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 3,
+     "stdin": "1 5",
+     "exp": "WIN 0 3",
+     "got": "WIN 0 2",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(3,1)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 4,
+     "stdin": "12 18",
+     "exp": "WIN 1 0",
+     "got": "WIN 0 10",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(12,8)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 5,
+     "stdin": "11 25",
+     "exp": "WIN 0 7",
+     "got": "WIN 0 6",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(19,11)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 7,
+     "stdin": "7 21",
+     "exp": "WIN 0 17",
+     "got": "WIN 0 8",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(13,7)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 12,
+     "stdin": "1 1",
+     "exp": "WIN 1 1",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 13,
+     "stdin": "2 25",
+     "exp": "WIN 0 24",
+     "got": "WIN 0 20",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(5,2)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 14,
+     "stdin": "25 25",
+     "exp": "WIN 25 25",
+     "got": "WIN 0 9",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(25,16)",
+     "bucket": "B_coldset"
+    }
+   ]
+  },
+  {
+   "round": "r586",
+   "win": "w159",
+   "sub": "agentD-r1",
+   "cases_pass_wythoff": 5,
+   "cases_n": 15,
+   "declared_cold_n": 49,
+   "grid_lose_n": 49,
+   "grid_win_n": 302,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": false,
+   "cold_only_prod": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     2,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     4,
+     6
+    ],
+    [
+     4,
+     8
+    ],
+    [
+     5,
+     7
+    ],
+    [
+     5,
+     8
+    ],
+    [
+     5,
+     9
+    ],
+    [
+     6,
+     9
+    ],
+    [
+     6,
+     11
+    ],
+    [
+     7,
+     11
+    ],
+    [
+     7,
+     12
+    ],
+    [
+     7,
+     13
+    ],
+    [
+     8,
+     12
+    ],
+    [
+     8,
+     14
+    ],
+    [
+     9,
+     14
+    ],
+    [
+     9,
+     16
+    ],
+    [
+     10,
+     15
+    ],
+    [
+     10,
+     16
+    ],
+    [
+     10,
+     17
+    ],
+    [
+     10,
+     18
+    ],
+    [
+     11,
+     17
+    ],
+    [
+     11,
+     19
+    ],
+    [
+     12,
+     19
+    ],
+    [
+     12,
+     21
+    ],
+    [
+     13,
+     20
+    ],
+    [
+     13,
+     21
+    ],
+    [
+     13,
+     22
+    ],
+    [
+     14,
+     22
+    ],
+    [
+     14,
+     24
+    ],
+    [
+     15,
+     24
+    ],
+    [
+     15,
+     25
+    ],
+    [
+     16,
+     25
+    ]
+   ],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 48,
+   "v_int_samples": [
+    {
+     "pos": [
+      0,
+      1
+     ],
+     "target": [
+      0,
+      0
+     ]
+    },
+    {
+     "pos": [
+      1,
+      1
+     ],
+     "target": [
+      0,
+      1
+     ]
+    },
+    {
+     "pos": [
+      1,
+      2
+     ],
+     "target": [
+      1,
+      1
+     ]
+    },
+    {
+     "pos": [
+      1,
+      3
+     ],
+     "target": [
+      1,
+      2
+     ]
+    },
+    {
+     "pos": [
+      2,
+      2
+     ],
+     "target": [
+      1,
+      2
+     ]
+    }
+   ],
+   "layer": "(b) 冷集构造层",
+   "buckets": {
+    "B_coldset": 10
+   },
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "WIN 5 0",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(25,16)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 1,
+     "stdin": "10 9",
+     "exp": "WIN 0 3",
+     "got": "WIN 4 0",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(9,6)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 2,
+     "stdin": "18 8",
+     "exp": "WIN 5 0",
+     "got": "WIN 4 0",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(14,8)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 3,
+     "stdin": "1 5",
+     "exp": "WIN 0 3",
+     "got": "WIN 0 2",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(3,1)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 5,
+     "stdin": "11 25",
+     "exp": "WIN 0 7",
+     "got": "WIN 0 6",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(19,11)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 6,
+     "stdin": "18 17",
+     "exp": "WIN 0 6",
+     "got": "WIN 7 0",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(17,11)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 7,
+     "stdin": "7 21",
+     "exp": "WIN 0 17",
+     "got": "WIN 0 8",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(13,7)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 12,
+     "stdin": "1 1",
+     "exp": "WIN 1 1",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 13,
+     "stdin": "2 25",
+     "exp": "WIN 0 24",
+     "got": "WIN 0 20",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(5,2)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 14,
+     "stdin": "25 25",
+     "exp": "WIN 25 25",
+     "got": "WIN 9 0",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(25,16)",
+     "bucket": "B_coldset"
+    }
+   ]
+  },
+  {
+   "round": "r586",
+   "win": "w159",
+   "sub": "agentD-r2",
+   "cases_pass_wythoff": 0,
+   "cases_n": 15,
+   "declared_cold_n": 1,
+   "grid_lose_n": 1,
+   "grid_win_n": 72,
+   "grid_err_n": 278,
+   "grid_err_samples": [
+    {
+     "pos": [
+      0,
+      0
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      2,
+      2
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      2,
+      4
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      2,
+      5
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      2,
+      6
+     ],
+     "raw": "",
+     "rc": 1
+    }
+   ],
+   "cold_set_equal": false,
+   "cold_only_prod": [
+    [
+     0,
+     1
+    ]
+   ],
+   "cold_only_true": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     3,
+     5
+    ],
+    [
+     4,
+     7
+    ],
+    [
+     6,
+     10
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     9,
+     15
+    ],
+    [
+     11,
+     18
+    ],
+    [
+     12,
+     20
+    ],
+    [
+     14,
+     23
+    ]
+   ],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(b) 冷集构造层",
+   "buckets": {
+    "D_delivery_or_shape": 10,
+    "B_coldset": 5
+   },
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 1,
+     "stdin": "10 9",
+     "exp": "WIN 0 3",
+     "got": "WIN 9 9",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(1,0)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 2,
+     "stdin": "18 8",
+     "exp": "WIN 5 0",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 3,
+     "stdin": "1 5",
+     "exp": "WIN 0 3",
+     "got": "WIN 0 5",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(1,0)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 4,
+     "stdin": "12 18",
+     "exp": "WIN 1 0",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 5,
+     "stdin": "11 25",
+     "exp": "WIN 0 7",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 6,
+     "stdin": "18 17",
+     "exp": "WIN 0 6",
+     "got": "WIN 17 17",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(1,0)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 7,
+     "stdin": "7 21",
+     "exp": "WIN 0 17",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 8,
+     "stdin": "1 2",
+     "exp": "LOSE",
+     "got": "WIN 0 2",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 9,
+     "stdin": "3 5",
+     "exp": "LOSE",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 10,
+     "stdin": "4 7",
+     "exp": "LOSE",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 11,
+     "stdin": "6 10",
+     "exp": "LOSE",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 12,
+     "stdin": "1 1",
+     "exp": "WIN 1 1",
+     "got": "WIN 0 1",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(1,0)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 13,
+     "stdin": "2 25",
+     "exp": "WIN 0 24",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 14,
+     "stdin": "25 25",
+     "exp": "WIN 25 25",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    }
+   ]
+  },
+  {
+   "round": "r586",
+   "win": "w159",
+   "sub": "agentD-r3",
+   "cases_pass_wythoff": 0,
+   "cases_n": 15,
+   "declared_cold_n": 17,
+   "grid_lose_n": 17,
+   "grid_win_n": 334,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": false,
+   "cold_only_prod": [
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     6
+    ],
+    [
+     5,
+     8
+    ],
+    [
+     6,
+     9
+    ],
+    [
+     7,
+     11
+    ],
+    [
+     8,
+     12
+    ],
+    [
+     9,
+     14
+    ],
+    [
+     10,
+     16
+    ],
+    [
+     11,
+     17
+    ],
+    [
+     12,
+     19
+    ],
+    [
+     13,
+     21
+    ],
+    [
+     14,
+     22
+    ],
+    [
+     15,
+     24
+    ],
+    [
+     16,
+     25
+    ]
+   ],
+   "cold_only_true": [
+    [
+     1,
+     2
+    ],
+    [
+     3,
+     5
+    ],
+    [
+     4,
+     7
+    ],
+    [
+     6,
+     10
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     9,
+     15
+    ],
+    [
+     11,
+     18
+    ],
+    [
+     12,
+     20
+    ],
+    [
+     14,
+     23
+    ]
+   ],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 10,
+   "v_int_samples": [
+    {
+     "pos": [
+      1,
+      1
+     ],
+     "target": [
+      0,
+      0
+     ]
+    },
+    {
+     "pos": [
+      3,
+      4
+     ],
+     "target": [
+      2,
+      3
+     ]
+    },
+    {
+     "pos": [
+      4,
+      6
+     ],
+     "target": [
+      3,
+      4
+     ]
+    },
+    {
+     "pos": [
+      6,
+      9
+     ],
+     "target": [
+      4,
+      6
+     ]
+    },
+    {
+     "pos": [
+      8,
+      12
+     ],
+     "target": [
+      5,
+      8
+     ]
+    }
+   ],
+   "layer": "(b) 冷集构造层",
+   "buckets": {
+    "B_coldset": 15
+   },
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "WIN 0 12",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(21,13)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 1,
+     "stdin": "10 9",
+     "exp": "WIN 0 3",
+     "got": "WIN 4 0",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(9,6)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 2,
+     "stdin": "18 8",
+     "exp": "WIN 5 0",
+     "got": "WIN 6 0",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(12,8)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 3,
+     "stdin": "1 5",
+     "exp": "WIN 0 3",
+     "got": "WIN 0 4",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(1,1)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 4,
+     "stdin": "12 18",
+     "exp": "WIN 1 0",
+     "got": "WIN 0 10",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(12,8)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 5,
+     "stdin": "11 25",
+     "exp": "WIN 0 7",
+     "got": "WIN 0 8",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(17,11)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 6,
+     "stdin": "18 17",
+     "exp": "WIN 0 6",
+     "got": "WIN 7 0",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(17,11)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 7,
+     "stdin": "7 21",
+     "exp": "WIN 0 17",
+     "got": "WIN 0 10",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(11,7)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 8,
+     "stdin": "1 2",
+     "exp": "LOSE",
+     "got": "WIN 0 1",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 9,
+     "stdin": "3 5",
+     "exp": "LOSE",
+     "got": "WIN 0 1",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 10,
+     "stdin": "4 7",
+     "exp": "LOSE",
+     "got": "WIN 0 1",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 11,
+     "stdin": "6 10",
+     "exp": "LOSE",
+     "got": "WIN 0 1",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 12,
+     "stdin": "1 1",
+     "exp": "WIN 1 1",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 13,
+     "stdin": "2 25",
+     "exp": "WIN 0 24",
+     "got": "WIN 0 22",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(3,2)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 14,
+     "stdin": "25 25",
+     "exp": "WIN 25 25",
+     "got": "WIN 0 9",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(25,16)",
+     "bucket": "B_coldset"
+    }
+   ]
+  },
+  {
+   "round": "r587",
+   "win": "w160",
+   "sub": "agentD-r1",
+   "cases_pass_wythoff": 15,
+   "cases_n": 15,
+   "declared_cold_n": 10,
+   "grid_lose_n": 10,
+   "grid_win_n": 341,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": true,
+   "cold_only_prod": [],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(c) 本轴外",
+   "buckets": {},
+   "failures": []
+  },
+  {
+   "round": "r587",
+   "win": "w160",
+   "sub": "agentD-r2",
+   "cases_pass_wythoff": 15,
+   "cases_n": 15,
+   "declared_cold_n": 10,
+   "grid_lose_n": 10,
+   "grid_win_n": 341,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": true,
+   "cold_only_prod": [],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(c) 本轴外",
+   "buckets": {},
+   "failures": []
+  },
+  {
+   "round": "r587",
+   "win": "w160",
+   "sub": "agentD-r3",
+   "cases_pass_wythoff": 15,
+   "cases_n": 15,
+   "declared_cold_n": 10,
+   "grid_lose_n": 10,
+   "grid_win_n": 341,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": true,
+   "cold_only_prod": [],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(c) 本轴外",
+   "buckets": {},
+   "failures": []
+  },
+  {
+   "round": "r587",
+   "win": "w161",
+   "sub": "agentD-r1",
+   "cases_pass_wythoff": 7,
+   "cases_n": 15,
+   "declared_cold_n": 30,
+   "grid_lose_n": 30,
+   "grid_win_n": 321,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": false,
+   "cold_only_prod": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     4,
+     6
+    ],
+    [
+     5,
+     8
+    ],
+    [
+     5,
+     9
+    ],
+    [
+     7,
+     11
+    ],
+    [
+     7,
+     12
+    ],
+    [
+     8,
+     14
+    ],
+    [
+     9,
+     14
+    ],
+    [
+     10,
+     16
+    ],
+    [
+     10,
+     17
+    ],
+    [
+     11,
+     19
+    ],
+    [
+     12,
+     19
+    ],
+    [
+     13,
+     21
+    ],
+    [
+     13,
+     22
+    ],
+    [
+     15,
+     24
+    ],
+    [
+     15,
+     25
+    ]
+   ],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 29,
+   "v_int_samples": [
+    {
+     "pos": [
+      0,
+      1
+     ],
+     "target": [
+      0,
+      0
+     ]
+    },
+    {
+     "pos": [
+      1,
+      1
+     ],
+     "target": [
+      0,
+      1
+     ]
+    },
+    {
+     "pos": [
+      1,
+      2
+     ],
+     "target": [
+      1,
+      1
+     ]
+    },
+    {
+     "pos": [
+      2,
+      3
+     ],
+     "target": [
+      1,
+      2
+     ]
+    },
+    {
+     "pos": [
+      2,
+      4
+     ],
+     "target": [
+      2,
+      3
+     ]
+    }
+   ],
+   "layer": "(b) 冷集构造层",
+   "buckets": {
+    "B_coldset": 8
+   },
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "WIN 0 12",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(21,13)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 2,
+     "stdin": "18 8",
+     "exp": "WIN 5 0",
+     "got": "WIN 4 0",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(14,8)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 4,
+     "stdin": "12 18",
+     "exp": "WIN 1 0",
+     "got": "WIN 0 11",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(12,7)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 5,
+     "stdin": "11 25",
+     "exp": "WIN 0 7",
+     "got": "WIN 0 6",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(19,11)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 7,
+     "stdin": "7 21",
+     "exp": "WIN 0 17",
+     "got": "WIN 0 9",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(12,7)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 12,
+     "stdin": "1 1",
+     "exp": "WIN 1 1",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 13,
+     "stdin": "2 25",
+     "exp": "WIN 0 24",
+     "got": "WIN 0 21",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(4,2)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 14,
+     "stdin": "25 25",
+     "exp": "WIN 25 25",
+     "got": "WIN 0 10",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(25,15)",
+     "bucket": "B_coldset"
+    }
+   ]
+  },
+  {
+   "round": "r587",
+   "win": "w161",
+   "sub": "agentD-r2",
+   "cases_pass_wythoff": 0,
+   "cases_n": 15,
+   "declared_cold_n": 17,
+   "grid_lose_n": 17,
+   "grid_win_n": 334,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": false,
+   "cold_only_prod": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     3,
+     8
+    ],
+    [
+     3,
+     9
+    ],
+    [
+     4,
+     11
+    ],
+    [
+     4,
+     12
+    ],
+    [
+     5,
+     14
+    ],
+    [
+     6,
+     16
+    ],
+    [
+     6,
+     17
+    ],
+    [
+     7,
+     19
+    ],
+    [
+     8,
+     21
+    ],
+    [
+     8,
+     22
+    ],
+    [
+     9,
+     24
+    ],
+    [
+     9,
+     25
+    ]
+   ],
+   "cold_only_true": [
+    [
+     1,
+     2
+    ],
+    [
+     3,
+     5
+    ],
+    [
+     4,
+     7
+    ],
+    [
+     6,
+     10
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     9,
+     15
+    ],
+    [
+     11,
+     18
+    ],
+    [
+     12,
+     20
+    ],
+    [
+     14,
+     23
+    ]
+   ],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 13,
+   "v_int_samples": [
+    {
+     "pos": [
+      0,
+      1
+     ],
+     "target": [
+      0,
+      0
+     ]
+    },
+    {
+     "pos": [
+      1,
+      3
+     ],
+     "target": [
+      0,
+      1
+     ]
+    },
+    {
+     "pos": [
+      1,
+      4
+     ],
+     "target": [
+      1,
+      3
+     ]
+    },
+    {
+     "pos": [
+      3,
+      8
+     ],
+     "target": [
+      1,
+      3
+     ]
+    },
+    {
+     "pos": [
+      3,
+      9
+     ],
+     "target": [
+      3,
+      8
+     ]
+    }
+   ],
+   "layer": "(b) 冷集构造层",
+   "buckets": {
+    "B_coldset": 15
+   },
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "WIN 0 17",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(21,8)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 1,
+     "stdin": "10 9",
+     "exp": "WIN 0 3",
+     "got": "WIN 7 0",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(9,3)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 2,
+     "stdin": "18 8",
+     "exp": "WIN 5 0",
+     "got": "WIN 2 2",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(16,6)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 3,
+     "stdin": "1 5",
+     "exp": "WIN 0 3",
+     "got": "WIN 0 1",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(4,1)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 4,
+     "stdin": "12 18",
+     "exp": "WIN 1 0",
+     "got": "WIN 0 14",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(12,4)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 5,
+     "stdin": "11 25",
+     "exp": "WIN 0 7",
+     "got": "WIN 0 21",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(11,4)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 6,
+     "stdin": "18 17",
+     "exp": "WIN 0 6",
+     "got": "WIN 12 0",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(17,6)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 7,
+     "stdin": "7 21",
+     "exp": "WIN 0 17",
+     "got": "WIN 0 2",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(19,7)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 8,
+     "stdin": "1 2",
+     "exp": "LOSE",
+     "got": "WIN 0 2",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 9,
+     "stdin": "3 5",
+     "exp": "LOSE",
+     "got": "WIN 0 4",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 10,
+     "stdin": "4 7",
+     "exp": "LOSE",
+     "got": "WIN 0 6",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 11,
+     "stdin": "6 10",
+     "exp": "LOSE",
+     "got": "WIN 0 8",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 12,
+     "stdin": "1 1",
+     "exp": "WIN 1 1",
+     "got": "WIN 0 1",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(1,0)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 13,
+     "stdin": "2 25",
+     "exp": "WIN 0 24",
+     "got": "WIN 0 19",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(6,2)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 14,
+     "stdin": "25 25",
+     "exp": "WIN 25 25",
+     "got": "WIN 0 16",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(25,9)",
+     "bucket": "B_coldset"
+    }
+   ]
+  },
+  {
+   "round": "r587",
+   "win": "w161",
+   "sub": "agentD-r3",
+   "cases_pass_wythoff": 15,
+   "cases_n": 15,
+   "declared_cold_n": 10,
+   "grid_lose_n": 10,
+   "grid_win_n": 341,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": true,
+   "cold_only_prod": [],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(c) 本轴外",
+   "buckets": {},
+   "failures": []
+  },
+  {
+   "round": "r587",
+   "win": "w162",
+   "sub": "agentD-r1",
+   "cases_pass_wythoff": 2,
+   "cases_n": 15,
+   "declared_cold_n": 12,
+   "grid_lose_n": 12,
+   "grid_win_n": 273,
+   "grid_err_n": 66,
+   "grid_err_samples": [
+    {
+     "pos": [
+      8,
+      15
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      8,
+      16
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      8,
+      17
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      8,
+      18
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      8,
+      19
+     ],
+     "raw": "",
+     "rc": 1
+    }
+   ],
+   "cold_set_equal": false,
+   "cold_only_prod": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     0,
+     3
+    ],
+    [
+     0,
+     4
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     1,
+     5
+    ],
+    [
+     1,
+     6
+    ],
+    [
+     1,
+     7
+    ]
+   ],
+   "cold_only_true": [
+    [
+     3,
+     5
+    ],
+    [
+     4,
+     7
+    ],
+    [
+     6,
+     10
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     9,
+     15
+    ],
+    [
+     11,
+     18
+    ],
+    [
+     12,
+     20
+    ],
+    [
+     14,
+     23
+    ]
+   ],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 11,
+   "v_int_samples": [
+    {
+     "pos": [
+      0,
+      1
+     ],
+     "target": [
+      0,
+      0
+     ]
+    },
+    {
+     "pos": [
+      0,
+      2
+     ],
+     "target": [
+      0,
+      1
+     ]
+    },
+    {
+     "pos": [
+      0,
+      3
+     ],
+     "target": [
+      0,
+      2
+     ]
+    },
+    {
+     "pos": [
+      0,
+      4
+     ],
+     "target": [
+      0,
+      3
+     ]
+    },
+    {
+     "pos": [
+      1,
+      1
+     ],
+     "target": [
+      0,
+      1
+     ]
+    }
+   ],
+   "layer": "(b) 冷集构造层",
+   "buckets": {
+    "B_coldset": 9,
+    "A_selection_order": 2,
+    "D_delivery_or_shape": 2
+   },
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "WIN 20 20",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(5,1)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 1,
+     "stdin": "10 9",
+     "exp": "WIN 0 3",
+     "got": "WIN 8 8",
+     "class": "MOVE_NOT_LEXMIN",
+     "detail": "got(8,8) lexmin((0, 3))",
+     "bucket": "A_selection_order"
+    },
+    {
+     "idx": 2,
+     "stdin": "18 8",
+     "exp": "WIN 5 0",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 3,
+     "stdin": "1 5",
+     "exp": "WIN 0 3",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 4,
+     "stdin": "12 18",
+     "exp": "WIN 1 0",
+     "got": "WIN 11 11",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(7,1)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 5,
+     "stdin": "11 25",
+     "exp": "WIN 0 7",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 6,
+     "stdin": "18 17",
+     "exp": "WIN 0 6",
+     "got": "WIN 16 16",
+     "class": "MOVE_NOT_LEXMIN",
+     "detail": "got(16,16) lexmin((0, 6))",
+     "bucket": "A_selection_order"
+    },
+    {
+     "idx": 7,
+     "stdin": "7 21",
+     "exp": "WIN 0 17",
+     "got": "WIN 0 20",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(7,1)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 9,
+     "stdin": "3 5",
+     "exp": "LOSE",
+     "got": "WIN 0 4",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 10,
+     "stdin": "4 7",
+     "exp": "LOSE",
+     "got": "WIN 0 6",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 11,
+     "stdin": "6 10",
+     "exp": "LOSE",
+     "got": "WIN 0 9",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 12,
+     "stdin": "1 1",
+     "exp": "WIN 1 1",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 14,
+     "stdin": "25 25",
+     "exp": "WIN 25 25",
+     "got": "WIN 24 24",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(1,1)",
+     "bucket": "B_coldset"
+    }
+   ]
+  },
+  {
+   "round": "r587",
+   "win": "w162",
+   "sub": "agentD-r2",
+   "cases_pass_wythoff": 15,
+   "cases_n": 15,
+   "declared_cold_n": 10,
+   "grid_lose_n": 10,
+   "grid_win_n": 341,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": true,
+   "cold_only_prod": [],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(c) 本轴外",
+   "buckets": {},
+   "failures": []
+  },
+  {
+   "round": "r588",
+   "win": "w163",
+   "sub": "agentD-r1",
+   "cases_pass_wythoff": 8,
+   "cases_n": 15,
+   "declared_cold_n": 4,
+   "grid_lose_n": 4,
+   "grid_win_n": 226,
+   "grid_err_n": 121,
+   "grid_err_samples": [
+    {
+     "pos": [
+      6,
+      10
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      6,
+      11
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      6,
+      12
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      6,
+      13
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      6,
+      14
+     ],
+     "raw": "",
+     "rc": 1
+    }
+   ],
+   "cold_set_equal": false,
+   "cold_only_prod": [],
+   "cold_only_true": [
+    [
+     6,
+     10
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     9,
+     15
+    ],
+    [
+     11,
+     18
+    ],
+    [
+     12,
+     20
+    ],
+    [
+     14,
+     23
+    ]
+   ],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(b) 冷集构造层",
+   "buckets": {
+    "D_delivery_or_shape": 5,
+    "A_selection_order": 2
+   },
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 1,
+     "stdin": "10 9",
+     "exp": "WIN 0 3",
+     "got": "WIN 8 8",
+     "class": "MOVE_NOT_LEXMIN",
+     "detail": "got(8,8) lexmin((0, 3))",
+     "bucket": "A_selection_order"
+    },
+    {
+     "idx": 2,
+     "stdin": "18 8",
+     "exp": "WIN 5 0",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 4,
+     "stdin": "12 18",
+     "exp": "WIN 1 0",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 5,
+     "stdin": "11 25",
+     "exp": "WIN 0 7",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 6,
+     "stdin": "18 17",
+     "exp": "WIN 0 6",
+     "got": "WIN 16 16",
+     "class": "MOVE_NOT_LEXMIN",
+     "detail": "got(16,16) lexmin((0, 6))",
+     "bucket": "A_selection_order"
+    },
+    {
+     "idx": 11,
+     "stdin": "6 10",
+     "exp": "LOSE",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    }
+   ]
+  },
+  {
+   "round": "r588",
+   "win": "w163",
+   "sub": "agentD-r2",
+   "cases_pass_wythoff": 0,
+   "cases_n": 15,
+   "declared_cold_n": 0,
+   "grid_lose_n": 0,
+   "grid_win_n": 0,
+   "grid_err_n": 351,
+   "grid_err_samples": [
+    {
+     "pos": [
+      0,
+      0
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      0,
+      1
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      0,
+      2
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      0,
+      3
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      0,
+      4
+     ],
+     "raw": "",
+     "rc": 1
+    }
+   ],
+   "cold_set_equal": false,
+   "cold_only_prod": [],
+   "cold_only_true": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     3,
+     5
+    ],
+    [
+     4,
+     7
+    ],
+    [
+     6,
+     10
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     9,
+     15
+    ],
+    [
+     11,
+     18
+    ],
+    [
+     12,
+     20
+    ],
+    [
+     14,
+     23
+    ]
+   ],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(b) 冷集构造层",
+   "buckets": {
+    "D_delivery_or_shape": 15
+   },
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 1,
+     "stdin": "10 9",
+     "exp": "WIN 0 3",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 2,
+     "stdin": "18 8",
+     "exp": "WIN 5 0",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 3,
+     "stdin": "1 5",
+     "exp": "WIN 0 3",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 4,
+     "stdin": "12 18",
+     "exp": "WIN 1 0",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 5,
+     "stdin": "11 25",
+     "exp": "WIN 0 7",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 6,
+     "stdin": "18 17",
+     "exp": "WIN 0 6",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 7,
+     "stdin": "7 21",
+     "exp": "WIN 0 17",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 8,
+     "stdin": "1 2",
+     "exp": "LOSE",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 9,
+     "stdin": "3 5",
+     "exp": "LOSE",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 10,
+     "stdin": "4 7",
+     "exp": "LOSE",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 11,
+     "stdin": "6 10",
+     "exp": "LOSE",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 12,
+     "stdin": "1 1",
+     "exp": "WIN 1 1",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 13,
+     "stdin": "2 25",
+     "exp": "WIN 0 24",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 14,
+     "stdin": "25 25",
+     "exp": "WIN 25 25",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    }
+   ]
+  },
+  {
+   "round": "r588",
+   "win": "w163",
+   "sub": "agentD-r3",
+   "cases_pass_wythoff": 15,
+   "cases_n": 15,
+   "declared_cold_n": 10,
+   "grid_lose_n": 10,
+   "grid_win_n": 341,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": true,
+   "cold_only_prod": [],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(c) 本轴外",
+   "buckets": {},
+   "failures": []
+  },
+  {
+   "round": "r588",
+   "win": "w164",
+   "sub": "agentD-r1",
+   "cases_pass_wythoff": 0,
+   "cases_n": 15,
+   "declared_cold_n": 2,
+   "grid_lose_n": 2,
+   "grid_win_n": 349,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": false,
+   "cold_only_prod": [
+    [
+     0,
+     1
+    ]
+   ],
+   "cold_only_true": [
+    [
+     1,
+     2
+    ],
+    [
+     3,
+     5
+    ],
+    [
+     4,
+     7
+    ],
+    [
+     6,
+     10
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     9,
+     15
+    ],
+    [
+     11,
+     18
+    ],
+    [
+     12,
+     20
+    ],
+    [
+     14,
+     23
+    ]
+   ],
+   "v_land_n": 347,
+   "v_land_samples": [
+    {
+     "pos": [
+      0,
+      3
+     ],
+     "move": [
+      0,
+      1
+     ],
+     "target": [
+      0,
+      2
+     ]
+    },
+    {
+     "pos": [
+      0,
+      4
+     ],
+     "move": [
+      0,
+      1
+     ],
+     "target": [
+      0,
+      3
+     ]
+    },
+    {
+     "pos": [
+      0,
+      5
+     ],
+     "move": [
+      0,
+      1
+     ],
+     "target": [
+      0,
+      4
+     ]
+    },
+    {
+     "pos": [
+      0,
+      6
+     ],
+     "move": [
+      0,
+      1
+     ],
+     "target": [
+      0,
+      5
+     ]
+    },
+    {
+     "pos": [
+      0,
+      7
+     ],
+     "move": [
+      0,
+      1
+     ],
+     "target": [
+      0,
+      6
+     ]
+    }
+   ],
+   "v_int_n": 1,
+   "v_int_samples": [
+    {
+     "pos": [
+      0,
+      1
+     ],
+     "target": [
+      0,
+      0
+     ]
+    }
+   ],
+   "layer": "(a) 落点/选择谓词层",
+   "buckets": {
+    "A_landing_loose": 14,
+    "B_coldset": 1
+   },
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "WIN 0 1",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(24,21)",
+     "bucket": "A_landing_loose"
+    },
+    {
+     "idx": 1,
+     "stdin": "10 9",
+     "exp": "WIN 0 3",
+     "got": "WIN 0 1",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(10,8)",
+     "bucket": "A_landing_loose"
+    },
+    {
+     "idx": 2,
+     "stdin": "18 8",
+     "exp": "WIN 5 0",
+     "got": "WIN 0 1",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(18,7)",
+     "bucket": "A_landing_loose"
+    },
+    {
+     "idx": 3,
+     "stdin": "1 5",
+     "exp": "WIN 0 3",
+     "got": "WIN 0 1",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(4,1)",
+     "bucket": "A_landing_loose"
+    },
+    {
+     "idx": 4,
+     "stdin": "12 18",
+     "exp": "WIN 1 0",
+     "got": "WIN 0 1",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(17,12)",
+     "bucket": "A_landing_loose"
+    },
+    {
+     "idx": 5,
+     "stdin": "11 25",
+     "exp": "WIN 0 7",
+     "got": "WIN 0 1",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(24,11)",
+     "bucket": "A_landing_loose"
+    },
+    {
+     "idx": 6,
+     "stdin": "18 17",
+     "exp": "WIN 0 6",
+     "got": "WIN 0 1",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(18,16)",
+     "bucket": "A_landing_loose"
+    },
+    {
+     "idx": 7,
+     "stdin": "7 21",
+     "exp": "WIN 0 17",
+     "got": "WIN 0 1",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(20,7)",
+     "bucket": "A_landing_loose"
+    },
+    {
+     "idx": 8,
+     "stdin": "1 2",
+     "exp": "LOSE",
+     "got": "WIN 0 1",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "A_landing_loose"
+    },
+    {
+     "idx": 9,
+     "stdin": "3 5",
+     "exp": "LOSE",
+     "got": "WIN 0 1",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "A_landing_loose"
+    },
+    {
+     "idx": 10,
+     "stdin": "4 7",
+     "exp": "LOSE",
+     "got": "WIN 0 1",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "A_landing_loose"
+    },
+    {
+     "idx": 11,
+     "stdin": "6 10",
+     "exp": "LOSE",
+     "got": "WIN 0 1",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "A_landing_loose"
+    },
+    {
+     "idx": 12,
+     "stdin": "1 1",
+     "exp": "WIN 1 1",
+     "got": "WIN 0 1",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(1,0)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 13,
+     "stdin": "2 25",
+     "exp": "WIN 0 24",
+     "got": "WIN 0 1",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(24,2)",
+     "bucket": "A_landing_loose"
+    },
+    {
+     "idx": 14,
+     "stdin": "25 25",
+     "exp": "WIN 25 25",
+     "got": "WIN 0 1",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(25,24)",
+     "bucket": "A_landing_loose"
+    }
+   ]
+  },
+  {
+   "round": "r588",
+   "win": "w164",
+   "sub": "agentD-r2",
+   "cases_pass_wythoff": 15,
+   "cases_n": 15,
+   "declared_cold_n": 10,
+   "grid_lose_n": 10,
+   "grid_win_n": 341,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": true,
+   "cold_only_prod": [],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(c) 本轴外",
+   "buckets": {},
+   "failures": []
+  },
+  {
+   "round": "r588",
+   "win": "w164",
+   "sub": "agentD-r3",
+   "cases_pass_wythoff": 4,
+   "cases_n": 15,
+   "declared_cold_n": 13,
+   "grid_lose_n": 13,
+   "grid_win_n": 338,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": false,
+   "cold_only_prod": [
+    [
+     2,
+     4
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     4,
+     8
+    ],
+    [
+     5,
+     10
+    ],
+    [
+     6,
+     12
+    ],
+    [
+     7,
+     14
+    ],
+    [
+     8,
+     16
+    ],
+    [
+     9,
+     18
+    ],
+    [
+     10,
+     20
+    ],
+    [
+     11,
+     22
+    ],
+    [
+     12,
+     24
+    ]
+   ],
+   "cold_only_true": [
+    [
+     3,
+     5
+    ],
+    [
+     4,
+     7
+    ],
+    [
+     6,
+     10
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     9,
+     15
+    ],
+    [
+     11,
+     18
+    ],
+    [
+     12,
+     20
+    ],
+    [
+     14,
+     23
+    ]
+   ],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 6,
+   "v_int_samples": [
+    {
+     "pos": [
+      2,
+      4
+     ],
+     "target": [
+      1,
+      2
+     ]
+    },
+    {
+     "pos": [
+      4,
+      8
+     ],
+     "target": [
+      2,
+      4
+     ]
+    },
+    {
+     "pos": [
+      6,
+      12
+     ],
+     "target": [
+      3,
+      6
+     ]
+    },
+    {
+     "pos": [
+      8,
+      16
+     ],
+     "target": [
+      4,
+      8
+     ]
+    },
+    {
+     "pos": [
+      10,
+      20
+     ],
+     "target": [
+      5,
+      10
+     ]
+    }
+   ],
+   "layer": "(b) 冷集构造层",
+   "buckets": {
+    "B_coldset": 11
+   },
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "WIN 17 17",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(8,4)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 1,
+     "stdin": "10 9",
+     "exp": "WIN 0 3",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 2,
+     "stdin": "18 8",
+     "exp": "WIN 5 0",
+     "got": "WIN 14 0",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(8,4)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 4,
+     "stdin": "12 18",
+     "exp": "WIN 1 0",
+     "got": "WIN 3 0",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(18,9)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 5,
+     "stdin": "11 25",
+     "exp": "WIN 0 7",
+     "got": "WIN 0 3",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(22,11)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 6,
+     "stdin": "18 17",
+     "exp": "WIN 0 6",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 7,
+     "stdin": "7 21",
+     "exp": "WIN 0 17",
+     "got": "WIN 0 7",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(14,7)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 9,
+     "stdin": "3 5",
+     "exp": "LOSE",
+     "got": "WIN 1 1",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 10,
+     "stdin": "4 7",
+     "exp": "LOSE",
+     "got": "WIN 1 1",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 11,
+     "stdin": "6 10",
+     "exp": "LOSE",
+     "got": "WIN 1 0",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 13,
+     "stdin": "2 25",
+     "exp": "WIN 0 24",
+     "got": "WIN 0 21",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(4,2)",
+     "bucket": "B_coldset"
+    }
+   ]
+  },
+  {
+   "round": "r588",
+   "win": "w165",
+   "sub": "agentD-r1",
+   "cases_pass_wythoff": 1,
+   "cases_n": 15,
+   "declared_cold_n": 11,
+   "grid_lose_n": 11,
+   "grid_win_n": 314,
+   "grid_err_n": 26,
+   "grid_err_samples": [
+    {
+     "pos": [
+      2,
+      5
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      4,
+      7
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      4,
+      10
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      5,
+      13
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      7,
+      10
+     ],
+     "raw": "",
+     "rc": 1
+    }
+   ],
+   "cold_set_equal": false,
+   "cold_only_prod": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     2,
+     6
+    ],
+    [
+     3,
+     8
+    ],
+    [
+     4,
+     11
+    ],
+    [
+     5,
+     14
+    ],
+    [
+     6,
+     16
+    ],
+    [
+     7,
+     19
+    ],
+    [
+     8,
+     21
+    ],
+    [
+     9,
+     24
+    ]
+   ],
+   "cold_only_true": [
+    [
+     1,
+     2
+    ],
+    [
+     3,
+     5
+    ],
+    [
+     4,
+     7
+    ],
+    [
+     6,
+     10
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     9,
+     15
+    ],
+    [
+     11,
+     18
+    ],
+    [
+     12,
+     20
+    ],
+    [
+     14,
+     23
+    ]
+   ],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 5,
+   "v_int_samples": [
+    {
+     "pos": [
+      0,
+      1
+     ],
+     "target": [
+      0,
+      0
+     ]
+    },
+    {
+     "pos": [
+      1,
+      3
+     ],
+     "target": [
+      0,
+      1
+     ]
+    },
+    {
+     "pos": [
+      3,
+      8
+     ],
+     "target": [
+      1,
+      3
+     ]
+    },
+    {
+     "pos": [
+      6,
+      16
+     ],
+     "target": [
+      2,
+      6
+     ]
+    },
+    {
+     "pos": [
+      8,
+      21
+     ],
+     "target": [
+      3,
+      8
+     ]
+    }
+   ],
+   "layer": "(b) 冷集构造层",
+   "buckets": {
+    "B_coldset": 12,
+    "D_delivery_or_shape": 2
+   },
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "WIN 0 17",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(21,8)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 1,
+     "stdin": "10 9",
+     "exp": "WIN 0 3",
+     "got": "WIN 9 9",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(1,0)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 2,
+     "stdin": "18 8",
+     "exp": "WIN 5 0",
+     "got": "WIN 2 2",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(16,6)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 3,
+     "stdin": "1 5",
+     "exp": "WIN 0 3",
+     "got": "WIN 0 2",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(3,1)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 4,
+     "stdin": "12 18",
+     "exp": "WIN 1 0",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 5,
+     "stdin": "11 25",
+     "exp": "WIN 0 7",
+     "got": "WIN 0 21",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(11,4)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 6,
+     "stdin": "18 17",
+     "exp": "WIN 0 6",
+     "got": "WIN 17 17",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(1,0)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 7,
+     "stdin": "7 21",
+     "exp": "WIN 0 17",
+     "got": "WIN 0 2",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(19,7)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 8,
+     "stdin": "1 2",
+     "exp": "LOSE",
+     "got": "WIN 0 2",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 9,
+     "stdin": "3 5",
+     "exp": "LOSE",
+     "got": "WIN 0 4",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 10,
+     "stdin": "4 7",
+     "exp": "LOSE",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 11,
+     "stdin": "6 10",
+     "exp": "LOSE",
+     "got": "WIN 0 8",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 12,
+     "stdin": "1 1",
+     "exp": "WIN 1 1",
+     "got": "WIN 0 1",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(1,0)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 13,
+     "stdin": "2 25",
+     "exp": "WIN 0 24",
+     "got": "WIN 0 19",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(6,2)",
+     "bucket": "B_coldset"
+    }
+   ]
+  },
+  {
+   "round": "r588",
+   "win": "w165",
+   "sub": "agentD-r2",
+   "cases_pass_wythoff": 3,
+   "cases_n": 15,
+   "declared_cold_n": 6,
+   "grid_lose_n": 6,
+   "grid_win_n": 199,
+   "grid_err_n": 146,
+   "grid_err_samples": [
+    {
+     "pos": [
+      0,
+      0
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      3,
+      3
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      3,
+      6
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      3,
+      7
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      3,
+      8
+     ],
+     "raw": "",
+     "rc": 1
+    }
+   ],
+   "cold_set_equal": false,
+   "cold_only_prod": [
+    [
+     0,
+     1
+    ],
+    [
+     2,
+     4
+    ],
+    [
+     7,
+     12
+    ]
+   ],
+   "cold_only_true": [
+    [
+     0,
+     0
+    ],
+    [
+     3,
+     5
+    ],
+    [
+     6,
+     10
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     9,
+     15
+    ],
+    [
+     11,
+     18
+    ],
+    [
+     14,
+     23
+    ]
+   ],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 5,
+   "v_int_samples": [
+    {
+     "pos": [
+      1,
+      2
+     ],
+     "target": [
+      0,
+      1
+     ]
+    },
+    {
+     "pos": [
+      2,
+      4
+     ],
+     "target": [
+      1,
+      2
+     ]
+    },
+    {
+     "pos": [
+      4,
+      7
+     ],
+     "target": [
+      2,
+      4
+     ]
+    },
+    {
+     "pos": [
+      7,
+      12
+     ],
+     "target": [
+      4,
+      7
+     ]
+    },
+    {
+     "pos": [
+      12,
+      20
+     ],
+     "target": [
+      7,
+      12
+     ]
+    }
+   ],
+   "layer": "(b) 冷集构造层",
+   "buckets": {
+    "D_delivery_or_shape": 5,
+    "A_selection_order": 2,
+    "B_coldset": 5
+   },
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 1,
+     "stdin": "10 9",
+     "exp": "WIN 0 3",
+     "got": "WIN 8 8",
+     "class": "MOVE_NOT_LEXMIN",
+     "detail": "got(8,8) lexmin((0, 3))",
+     "bucket": "A_selection_order"
+    },
+    {
+     "idx": 2,
+     "stdin": "18 8",
+     "exp": "WIN 5 0",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 4,
+     "stdin": "12 18",
+     "exp": "WIN 1 0",
+     "got": "WIN 0 11",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(12,7)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 5,
+     "stdin": "11 25",
+     "exp": "WIN 0 7",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 6,
+     "stdin": "18 17",
+     "exp": "WIN 0 6",
+     "got": "WIN 16 16",
+     "class": "MOVE_NOT_LEXMIN",
+     "detail": "got(16,16) lexmin((0, 6))",
+     "bucket": "A_selection_order"
+    },
+    {
+     "idx": 7,
+     "stdin": "7 21",
+     "exp": "WIN 0 17",
+     "got": "WIN 0 9",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(12,7)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 9,
+     "stdin": "3 5",
+     "exp": "LOSE",
+     "got": "WIN 1 1",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 11,
+     "stdin": "6 10",
+     "exp": "LOSE",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 12,
+     "stdin": "1 1",
+     "exp": "WIN 1 1",
+     "got": "WIN 0 1",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(1,0)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 13,
+     "stdin": "2 25",
+     "exp": "WIN 0 24",
+     "got": "WIN 0 21",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(4,2)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 14,
+     "stdin": "25 25",
+     "exp": "WIN 25 25",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    }
+   ]
+  },
+  {
+   "round": "r588",
+   "win": "w165",
+   "sub": "agentD-r3",
+   "cases_pass_wythoff": 0,
+   "cases_n": 15,
+   "declared_cold_n": 26,
+   "grid_lose_n": 26,
+   "grid_win_n": 325,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": false,
+   "cold_only_prod": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     0,
+     3
+    ],
+    [
+     0,
+     4
+    ],
+    [
+     0,
+     5
+    ],
+    [
+     0,
+     6
+    ],
+    [
+     0,
+     7
+    ],
+    [
+     0,
+     8
+    ],
+    [
+     0,
+     9
+    ],
+    [
+     0,
+     10
+    ],
+    [
+     0,
+     11
+    ],
+    [
+     0,
+     12
+    ],
+    [
+     0,
+     13
+    ],
+    [
+     0,
+     14
+    ],
+    [
+     0,
+     15
+    ],
+    [
+     0,
+     16
+    ],
+    [
+     0,
+     17
+    ],
+    [
+     0,
+     18
+    ],
+    [
+     0,
+     19
+    ],
+    [
+     0,
+     20
+    ],
+    [
+     0,
+     21
+    ],
+    [
+     0,
+     22
+    ],
+    [
+     0,
+     23
+    ],
+    [
+     0,
+     24
+    ],
+    [
+     0,
+     25
+    ]
+   ],
+   "cold_only_true": [
+    [
+     1,
+     2
+    ],
+    [
+     3,
+     5
+    ],
+    [
+     4,
+     7
+    ],
+    [
+     6,
+     10
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     9,
+     15
+    ],
+    [
+     11,
+     18
+    ],
+    [
+     12,
+     20
+    ],
+    [
+     14,
+     23
+    ]
+   ],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 25,
+   "v_int_samples": [
+    {
+     "pos": [
+      0,
+      1
+     ],
+     "target": [
+      0,
+      0
+     ]
+    },
+    {
+     "pos": [
+      0,
+      2
+     ],
+     "target": [
+      0,
+      1
+     ]
+    },
+    {
+     "pos": [
+      0,
+      3
+     ],
+     "target": [
+      0,
+      2
+     ]
+    },
+    {
+     "pos": [
+      0,
+      4
+     ],
+     "target": [
+      0,
+      3
+     ]
+    },
+    {
+     "pos": [
+      0,
+      5
+     ],
+     "target": [
+      0,
+      4
+     ]
+    }
+   ],
+   "layer": "(b) 冷集构造层",
+   "buckets": {
+    "B_coldset": 15
+   },
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "WIN 0 25",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(21,0)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 1,
+     "stdin": "10 9",
+     "exp": "WIN 0 3",
+     "got": "WIN 0 9",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(10,0)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 2,
+     "stdin": "18 8",
+     "exp": "WIN 5 0",
+     "got": "WIN 0 8",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(18,0)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 3,
+     "stdin": "1 5",
+     "exp": "WIN 0 3",
+     "got": "WIN 0 5",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(1,0)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 4,
+     "stdin": "12 18",
+     "exp": "WIN 1 0",
+     "got": "WIN 0 18",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(12,0)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 5,
+     "stdin": "11 25",
+     "exp": "WIN 0 7",
+     "got": "WIN 0 25",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(11,0)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 6,
+     "stdin": "18 17",
+     "exp": "WIN 0 6",
+     "got": "WIN 0 17",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(18,0)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 7,
+     "stdin": "7 21",
+     "exp": "WIN 0 17",
+     "got": "WIN 0 21",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(7,0)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 8,
+     "stdin": "1 2",
+     "exp": "LOSE",
+     "got": "WIN 0 2",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 9,
+     "stdin": "3 5",
+     "exp": "LOSE",
+     "got": "WIN 0 5",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 10,
+     "stdin": "4 7",
+     "exp": "LOSE",
+     "got": "WIN 0 7",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 11,
+     "stdin": "6 10",
+     "exp": "LOSE",
+     "got": "WIN 0 10",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 12,
+     "stdin": "1 1",
+     "exp": "WIN 1 1",
+     "got": "WIN 0 1",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(1,0)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 13,
+     "stdin": "2 25",
+     "exp": "WIN 0 24",
+     "got": "WIN 0 25",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(2,0)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 14,
+     "stdin": "25 25",
+     "exp": "WIN 25 25",
+     "got": "WIN 0 25",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(25,0)",
+     "bucket": "B_coldset"
+    }
+   ]
+  },
+  {
+   "round": "r591",
+   "win": "w166",
+   "sub": "agentD-r1",
+   "cases_pass_wythoff": 14,
+   "cases_n": 15,
+   "declared_cold_n": 10,
+   "grid_lose_n": 10,
+   "grid_win_n": 341,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": true,
+   "cold_only_prod": [],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(c) 本轴外",
+   "buckets": {
+    "D_delivery_or_shape": 1
+   },
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "WIN 21 25",
+     "class": "MOVE_ILLEGAL",
+     "detail": "removals(21,25)",
+     "bucket": "D_delivery_or_shape"
+    }
+   ]
+  },
+  {
+   "round": "r591",
+   "win": "w166",
+   "sub": "agentD-r2",
+   "cases_pass_wythoff": 0,
+   "cases_n": 15,
+   "declared_cold_n": 0,
+   "grid_lose_n": 0,
+   "grid_win_n": 0,
+   "grid_err_n": 351,
+   "grid_err_samples": [
+    {
+     "pos": [
+      0,
+      0
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      0,
+      1
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      0,
+      2
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      0,
+      3
+     ],
+     "raw": "",
+     "rc": 1
+    },
+    {
+     "pos": [
+      0,
+      4
+     ],
+     "raw": "",
+     "rc": 1
+    }
+   ],
+   "cold_set_equal": false,
+   "cold_only_prod": [],
+   "cold_only_true": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     3,
+     5
+    ],
+    [
+     4,
+     7
+    ],
+    [
+     6,
+     10
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     9,
+     15
+    ],
+    [
+     11,
+     18
+    ],
+    [
+     12,
+     20
+    ],
+    [
+     14,
+     23
+    ]
+   ],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(b) 冷集构造层",
+   "buckets": {
+    "D_delivery_or_shape": 15
+   },
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 1,
+     "stdin": "10 9",
+     "exp": "WIN 0 3",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 2,
+     "stdin": "18 8",
+     "exp": "WIN 5 0",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 3,
+     "stdin": "1 5",
+     "exp": "WIN 0 3",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 4,
+     "stdin": "12 18",
+     "exp": "WIN 1 0",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 5,
+     "stdin": "11 25",
+     "exp": "WIN 0 7",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 6,
+     "stdin": "18 17",
+     "exp": "WIN 0 6",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 7,
+     "stdin": "7 21",
+     "exp": "WIN 0 17",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 8,
+     "stdin": "1 2",
+     "exp": "LOSE",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 9,
+     "stdin": "3 5",
+     "exp": "LOSE",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 10,
+     "stdin": "4 7",
+     "exp": "LOSE",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 11,
+     "stdin": "6 10",
+     "exp": "LOSE",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 12,
+     "stdin": "1 1",
+     "exp": "WIN 1 1",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 13,
+     "stdin": "2 25",
+     "exp": "WIN 0 24",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 14,
+     "stdin": "25 25",
+     "exp": "WIN 25 25",
+     "got": "",
+     "class": "EMPTY_OR_ERROR",
+     "detail": null,
+     "bucket": "D_delivery_or_shape"
+    }
+   ]
+  },
+  {
+   "round": "r591",
+   "win": "w166",
+   "sub": "agentD-r3",
+   "cases_pass_wythoff": 15,
+   "cases_n": 15,
+   "declared_cold_n": 10,
+   "grid_lose_n": 10,
+   "grid_win_n": 341,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": true,
+   "cold_only_prod": [],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(c) 本轴外",
+   "buckets": {},
+   "failures": []
+  },
+  {
+   "round": "r591",
+   "win": "w167",
+   "sub": "agentD-r1",
+   "cases_pass_wythoff": 3,
+   "cases_n": 15,
+   "declared_cold_n": 13,
+   "grid_lose_n": 13,
+   "grid_win_n": 338,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": false,
+   "cold_only_prod": [
+    [
+     2,
+     4
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     4,
+     8
+    ],
+    [
+     5,
+     10
+    ],
+    [
+     6,
+     12
+    ],
+    [
+     7,
+     14
+    ],
+    [
+     8,
+     16
+    ],
+    [
+     9,
+     18
+    ],
+    [
+     10,
+     20
+    ],
+    [
+     11,
+     22
+    ],
+    [
+     12,
+     24
+    ]
+   ],
+   "cold_only_true": [
+    [
+     3,
+     5
+    ],
+    [
+     4,
+     7
+    ],
+    [
+     6,
+     10
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     9,
+     15
+    ],
+    [
+     11,
+     18
+    ],
+    [
+     12,
+     20
+    ],
+    [
+     14,
+     23
+    ]
+   ],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 6,
+   "v_int_samples": [
+    {
+     "pos": [
+      2,
+      4
+     ],
+     "target": [
+      1,
+      2
+     ]
+    },
+    {
+     "pos": [
+      4,
+      8
+     ],
+     "target": [
+      2,
+      4
+     ]
+    },
+    {
+     "pos": [
+      6,
+      12
+     ],
+     "target": [
+      3,
+      6
+     ]
+    },
+    {
+     "pos": [
+      8,
+      16
+     ],
+     "target": [
+      4,
+      8
+     ]
+    },
+    {
+     "pos": [
+      10,
+      20
+     ],
+     "target": [
+      5,
+      10
+     ]
+    }
+   ],
+   "layer": "(b) 冷集构造层",
+   "buckets": {
+    "D_delivery_or_shape": 2,
+    "B_coldset": 10
+   },
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "WIN 1 15",
+     "class": "MOVE_ILLEGAL",
+     "detail": "removals(1,15)",
+     "bucket": "D_delivery_or_shape"
+    },
+    {
+     "idx": 1,
+     "stdin": "10 9",
+     "exp": "WIN 0 3",
+     "got": "WIN 0 4",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(10,5)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 2,
+     "stdin": "18 8",
+     "exp": "WIN 5 0",
+     "got": "WIN 2 0",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(16,8)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 4,
+     "stdin": "12 18",
+     "exp": "WIN 1 0",
+     "got": "WIN 0 12",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(12,6)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 5,
+     "stdin": "11 25",
+     "exp": "WIN 0 7",
+     "got": "WIN 0 3",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(22,11)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 6,
+     "stdin": "18 17",
+     "exp": "WIN 0 6",
+     "got": "WIN 0 8",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(18,9)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 7,
+     "stdin": "7 21",
+     "exp": "WIN 0 17",
+     "got": "WIN 0 7",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(14,7)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 9,
+     "stdin": "3 5",
+     "exp": "LOSE",
+     "got": "WIN 1 1",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 10,
+     "stdin": "4 7",
+     "exp": "LOSE",
+     "got": "WIN 0 5",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 11,
+     "stdin": "6 10",
+     "exp": "LOSE",
+     "got": "WIN 0 7",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 13,
+     "stdin": "2 25",
+     "exp": "WIN 0 24",
+     "got": "WIN 0 21",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(4,2)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 14,
+     "stdin": "25 25",
+     "exp": "WIN 25 25",
+     "got": "WIN 1 13",
+     "class": "MOVE_ILLEGAL",
+     "detail": "removals(1,13)",
+     "bucket": "D_delivery_or_shape"
+    }
+   ]
+  },
+  {
+   "round": "r591",
+   "win": "w167",
+   "sub": "agentD-r2",
+   "cases_pass_wythoff": 3,
+   "cases_n": 15,
+   "declared_cold_n": 16,
+   "grid_lose_n": 16,
+   "grid_win_n": 335,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": false,
+   "cold_only_prod": [
+    [
+     1,
+     3
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     3,
+     7
+    ],
+    [
+     3,
+     8
+    ],
+    [
+     4,
+     10
+    ],
+    [
+     4,
+     11
+    ],
+    [
+     5,
+     13
+    ],
+    [
+     6,
+     15
+    ],
+    [
+     6,
+     16
+    ],
+    [
+     7,
+     18
+    ],
+    [
+     8,
+     20
+    ],
+    [
+     8,
+     21
+    ],
+    [
+     9,
+     23
+    ],
+    [
+     9,
+     24
+    ]
+   ],
+   "cold_only_true": [
+    [
+     3,
+     5
+    ],
+    [
+     4,
+     7
+    ],
+    [
+     6,
+     10
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     9,
+     15
+    ],
+    [
+     11,
+     18
+    ],
+    [
+     12,
+     20
+    ],
+    [
+     14,
+     23
+    ]
+   ],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 11,
+   "v_int_samples": [
+    {
+     "pos": [
+      1,
+      3
+     ],
+     "target": [
+      1,
+      2
+     ]
+    },
+    {
+     "pos": [
+      2,
+      5
+     ],
+     "target": [
+      1,
+      2
+     ]
+    },
+    {
+     "pos": [
+      3,
+      7
+     ],
+     "target": [
+      1,
+      3
+     ]
+    },
+    {
+     "pos": [
+      3,
+      8
+     ],
+     "target": [
+      3,
+      7
+     ]
+    },
+    {
+     "pos": [
+      4,
+      11
+     ],
+     "target": [
+      4,
+      10
+     ]
+    }
+   ],
+   "layer": "(b) 冷集构造层",
+   "buckets": {
+    "B_coldset": 12
+   },
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "WIN 0 17",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(21,8)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 1,
+     "stdin": "10 9",
+     "exp": "WIN 0 3",
+     "got": "WIN 0 5",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(10,4)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 2,
+     "stdin": "18 8",
+     "exp": "WIN 5 0",
+     "got": "WIN 0 1",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(18,7)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 3,
+     "stdin": "1 5",
+     "exp": "WIN 0 3",
+     "got": "WIN 0 2",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(3,1)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 4,
+     "stdin": "12 18",
+     "exp": "WIN 1 0",
+     "got": "WIN 5 0",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(18,7)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 5,
+     "stdin": "11 25",
+     "exp": "WIN 0 7",
+     "got": "WIN 0 21",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(11,4)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 6,
+     "stdin": "18 17",
+     "exp": "WIN 0 6",
+     "got": "WIN 0 10",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(18,7)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 7,
+     "stdin": "7 21",
+     "exp": "WIN 0 17",
+     "got": "WIN 0 3",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(18,7)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 9,
+     "stdin": "3 5",
+     "exp": "LOSE",
+     "got": "WIN 0 4",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 10,
+     "stdin": "4 7",
+     "exp": "LOSE",
+     "got": "WIN 1 0",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 11,
+     "stdin": "6 10",
+     "exp": "LOSE",
+     "got": "WIN 2 0",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 13,
+     "stdin": "2 25",
+     "exp": "WIN 0 24",
+     "got": "WIN 0 20",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(5,2)",
+     "bucket": "B_coldset"
+    }
+   ]
+  },
+  {
+   "round": "r591",
+   "win": "w167",
+   "sub": "agentD-r3",
+   "cases_pass_wythoff": 15,
+   "cases_n": 15,
+   "declared_cold_n": 10,
+   "grid_lose_n": 10,
+   "grid_win_n": 341,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": true,
+   "cold_only_prod": [],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(c) 本轴外",
+   "buckets": {},
+   "failures": []
+  },
+  {
+   "round": "r591",
+   "win": "w168",
+   "sub": "agentD-r1",
+   "cases_pass_wythoff": 15,
+   "cases_n": 15,
+   "declared_cold_n": 10,
+   "grid_lose_n": 10,
+   "grid_win_n": 341,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": true,
+   "cold_only_prod": [],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(c) 本轴外",
+   "buckets": {},
+   "failures": []
+  },
+  {
+   "round": "r591",
+   "win": "w168",
+   "sub": "agentD-r2",
+   "cases_pass_wythoff": 15,
+   "cases_n": 15,
+   "declared_cold_n": 10,
+   "grid_lose_n": 10,
+   "grid_win_n": 341,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": true,
+   "cold_only_prod": [],
+   "cold_only_true": [],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 0,
+   "v_int_samples": [],
+   "layer": "(c) 本轴外",
+   "buckets": {},
+   "failures": []
+  },
+  {
+   "round": "r591",
+   "win": "w168",
+   "sub": "agentD-r3",
+   "cases_pass_wythoff": 1,
+   "cases_n": 15,
+   "declared_cold_n": 170,
+   "grid_lose_n": 170,
+   "grid_win_n": 181,
+   "grid_err_n": 0,
+   "grid_err_samples": [],
+   "cold_set_equal": false,
+   "cold_only_prod": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     1,
+     5
+    ],
+    [
+     1,
+     6
+    ],
+    [
+     1,
+     7
+    ],
+    [
+     1,
+     8
+    ],
+    [
+     1,
+     9
+    ],
+    [
+     1,
+     10
+    ],
+    [
+     1,
+     11
+    ],
+    [
+     1,
+     12
+    ],
+    [
+     1,
+     13
+    ],
+    [
+     1,
+     14
+    ],
+    [
+     1,
+     15
+    ],
+    [
+     1,
+     16
+    ],
+    [
+     1,
+     17
+    ],
+    [
+     1,
+     18
+    ],
+    [
+     1,
+     19
+    ],
+    [
+     1,
+     20
+    ],
+    [
+     1,
+     21
+    ],
+    [
+     1,
+     22
+    ],
+    [
+     1,
+     23
+    ],
+    [
+     1,
+     24
+    ],
+    [
+     1,
+     25
+    ],
+    [
+     2,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     6
+    ],
+    [
+     3,
+     7
+    ],
+    [
+     3,
+     8
+    ],
+    [
+     3,
+     9
+    ],
+    [
+     3,
+     10
+    ],
+    [
+     3,
+     11
+    ],
+    [
+     3,
+     12
+    ],
+    [
+     3,
+     13
+    ],
+    [
+     3,
+     14
+    ],
+    [
+     3,
+     15
+    ],
+    [
+     3,
+     16
+    ],
+    [
+     3,
+     17
+    ],
+    [
+     3,
+     18
+    ],
+    [
+     3,
+     19
+    ],
+    [
+     3,
+     20
+    ],
+    [
+     3,
+     21
+    ],
+    [
+     3,
+     22
+    ],
+    [
+     3,
+     23
+    ],
+    [
+     3,
+     24
+    ],
+    [
+     3,
+     25
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     5,
+     7
+    ],
+    [
+     5,
+     8
+    ],
+    [
+     5,
+     9
+    ],
+    [
+     5,
+     10
+    ],
+    [
+     5,
+     11
+    ],
+    [
+     5,
+     12
+    ],
+    [
+     5,
+     13
+    ],
+    [
+     5,
+     14
+    ],
+    [
+     5,
+     15
+    ],
+    [
+     5,
+     16
+    ],
+    [
+     5,
+     17
+    ],
+    [
+     5,
+     18
+    ],
+    [
+     5,
+     19
+    ],
+    [
+     5,
+     20
+    ],
+    [
+     5,
+     21
+    ],
+    [
+     5,
+     22
+    ],
+    [
+     5,
+     23
+    ],
+    [
+     5,
+     24
+    ],
+    [
+     5,
+     25
+    ],
+    [
+     6,
+     6
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     7,
+     9
+    ],
+    [
+     7,
+     10
+    ],
+    [
+     7,
+     11
+    ],
+    [
+     7,
+     12
+    ],
+    [
+     7,
+     13
+    ],
+    [
+     7,
+     14
+    ],
+    [
+     7,
+     15
+    ],
+    [
+     7,
+     16
+    ],
+    [
+     7,
+     17
+    ],
+    [
+     7,
+     18
+    ],
+    [
+     7,
+     19
+    ],
+    [
+     7,
+     20
+    ],
+    [
+     7,
+     21
+    ],
+    [
+     7,
+     22
+    ],
+    [
+     7,
+     23
+    ],
+    [
+     7,
+     24
+    ],
+    [
+     7,
+     25
+    ],
+    [
+     8,
+     8
+    ],
+    [
+     8,
+     9
+    ],
+    [
+     9,
+     11
+    ],
+    [
+     9,
+     12
+    ],
+    [
+     9,
+     13
+    ],
+    [
+     9,
+     14
+    ],
+    [
+     9,
+     16
+    ],
+    [
+     9,
+     17
+    ],
+    [
+     9,
+     18
+    ],
+    [
+     9,
+     19
+    ],
+    [
+     9,
+     20
+    ],
+    [
+     9,
+     21
+    ],
+    [
+     9,
+     22
+    ],
+    [
+     9,
+     23
+    ],
+    [
+     9,
+     24
+    ],
+    [
+     9,
+     25
+    ],
+    [
+     10,
+     10
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     11,
+     13
+    ],
+    [
+     11,
+     14
+    ],
+    [
+     11,
+     15
+    ],
+    [
+     11,
+     16
+    ],
+    [
+     11,
+     17
+    ],
+    [
+     11,
+     19
+    ],
+    [
+     11,
+     20
+    ],
+    [
+     11,
+     21
+    ],
+    [
+     11,
+     22
+    ],
+    [
+     11,
+     23
+    ],
+    [
+     11,
+     24
+    ],
+    [
+     11,
+     25
+    ],
+    [
+     12,
+     12
+    ],
+    [
+     12,
+     13
+    ],
+    [
+     13,
+     15
+    ],
+    [
+     13,
+     16
+    ],
+    [
+     13,
+     17
+    ],
+    [
+     13,
+     18
+    ],
+    [
+     13,
+     19
+    ],
+    [
+     13,
+     20
+    ],
+    [
+     13,
+     21
+    ],
+    [
+     13,
+     22
+    ],
+    [
+     13,
+     23
+    ],
+    [
+     13,
+     24
+    ],
+    [
+     13,
+     25
+    ],
+    [
+     14,
+     14
+    ],
+    [
+     14,
+     15
+    ],
+    [
+     15,
+     17
+    ],
+    [
+     15,
+     18
+    ],
+    [
+     15,
+     19
+    ],
+    [
+     15,
+     20
+    ],
+    [
+     15,
+     21
+    ],
+    [
+     15,
+     22
+    ],
+    [
+     15,
+     23
+    ],
+    [
+     15,
+     24
+    ],
+    [
+     15,
+     25
+    ],
+    [
+     16,
+     16
+    ],
+    [
+     16,
+     17
+    ],
+    [
+     17,
+     19
+    ],
+    [
+     17,
+     20
+    ],
+    [
+     17,
+     21
+    ],
+    [
+     17,
+     22
+    ],
+    [
+     17,
+     23
+    ],
+    [
+     17,
+     24
+    ],
+    [
+     17,
+     25
+    ],
+    [
+     18,
+     18
+    ],
+    [
+     18,
+     19
+    ],
+    [
+     19,
+     21
+    ],
+    [
+     19,
+     22
+    ],
+    [
+     19,
+     23
+    ],
+    [
+     19,
+     24
+    ],
+    [
+     19,
+     25
+    ],
+    [
+     20,
+     20
+    ],
+    [
+     20,
+     21
+    ],
+    [
+     21,
+     23
+    ],
+    [
+     21,
+     24
+    ],
+    [
+     21,
+     25
+    ],
+    [
+     22,
+     22
+    ],
+    [
+     22,
+     23
+    ],
+    [
+     23,
+     25
+    ],
+    [
+     24,
+     24
+    ],
+    [
+     24,
+     25
+    ]
+   ],
+   "cold_only_true": [
+    [
+     1,
+     2
+    ],
+    [
+     4,
+     7
+    ],
+    [
+     6,
+     10
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     12,
+     20
+    ],
+    [
+     14,
+     23
+    ]
+   ],
+   "v_land_n": 0,
+   "v_land_samples": [],
+   "v_int_n": 169,
+   "v_int_samples": [
+    {
+     "pos": [
+      0,
+      1
+     ],
+     "target": [
+      0,
+      0
+     ]
+    },
+    {
+     "pos": [
+      1,
+      3
+     ],
+     "target": [
+      0,
+      1
+     ]
+    },
+    {
+     "pos": [
+      1,
+      4
+     ],
+     "target": [
+      1,
+      3
+     ]
+    },
+    {
+     "pos": [
+      1,
+      5
+     ],
+     "target": [
+      1,
+      4
+     ]
+    },
+    {
+     "pos": [
+      1,
+      6
+     ],
+     "target": [
+      1,
+      5
+     ]
+    }
+   ],
+   "layer": "(b) 冷集构造层",
+   "buckets": {
+    "B_coldset": 14
+   },
+   "failures": [
+    {
+     "idx": 0,
+     "stdin": "21 25",
+     "exp": "WIN 15 15",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 1,
+     "stdin": "10 9",
+     "exp": "WIN 0 3",
+     "got": "WIN 2 0",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(9,8)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 2,
+     "stdin": "18 8",
+     "exp": "WIN 5 0",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 3,
+     "stdin": "1 5",
+     "exp": "WIN 0 3",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 4,
+     "stdin": "12 18",
+     "exp": "WIN 1 0",
+     "got": "WIN 0 5",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(13,12)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 5,
+     "stdin": "11 25",
+     "exp": "WIN 0 7",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 6,
+     "stdin": "18 17",
+     "exp": "WIN 0 6",
+     "got": "WIN 2 0",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(17,16)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 7,
+     "stdin": "7 21",
+     "exp": "WIN 0 17",
+     "got": "LOSE",
+     "class": "LOSE_FOR_WIN",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 8,
+     "stdin": "1 2",
+     "exp": "LOSE",
+     "got": "WIN 1 1",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 10,
+     "stdin": "4 7",
+     "exp": "LOSE",
+     "got": "WIN 0 2",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 11,
+     "stdin": "6 10",
+     "exp": "LOSE",
+     "got": "WIN 0 3",
+     "class": "WIN_FOR_LOSE",
+     "detail": null,
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 12,
+     "stdin": "1 1",
+     "exp": "WIN 1 1",
+     "got": "WIN 1 0",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(1,0)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 13,
+     "stdin": "2 25",
+     "exp": "WIN 0 24",
+     "got": "WIN 0 22",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(3,2)",
+     "bucket": "B_coldset"
+    },
+    {
+     "idx": 14,
+     "stdin": "25 25",
+     "exp": "WIN 25 25",
+     "got": "WIN 1 0",
+     "class": "MOVE_NOT_COLD",
+     "detail": "target(25,24)",
+     "bucket": "B_coldset"
+    }
+   ]
+  }
+ ],
+ "verdict": {
+  "main_cause": "B_coldset",
+  "main_cause_rule": "份额 ≥50% 记主因, 否则记『无单主因』",
+  "layer_rule": "(a) v_land>0 / (b) v_land==0 ∧ C_prod!=C_true / (c) 两者皆无",
+  "rc": 0
+ }
+}
