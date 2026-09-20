@@ -1,0 +1,281 @@
+{
+ "round": "R594",
+ "ts": "2026-09-20T13:05+08:00",
+ "kind": "入口契约面只读定因（候选②）+ 面读数并轮（候选③④⑤）；零新臂 / 零远端调用 / 零产品源码改动 / 零新增夹具语义 / 零新增开关",
+ "instrument": {
+  "entry_contract": "eval/rover/r594/entry_contract_r594.py",
+  "face_readings": "eval/rover/r594/face_readings_r594.py",
+  "imports_from": [
+   "eval/rover/r592/landing_predicate_r592.py",
+   "eval/rover/r593/landing_predicate_r593.py"
+  ],
+  "runs_analysed": {
+   "agent": 44,
+   "codex": 15
+  },
+  "readonly": true,
+  "readonly_sha": {
+   "pre": "411434e5f8939c3b",
+   "post": "411434e5f8939c3b"
+  },
+  "has_teeth": true,
+  "non_trivial": {
+   "entry_contract": {
+    "present_slots": 236,
+    "has_solve_slots": 234,
+    "ok": true
+   },
+   "face_readings": {
+    "distinct_layers": 3,
+    "distinct_families": 5,
+    "ok": true
+   }
+  }
+ },
+ "rc": 0,
+ "candidate2_entry_contract": {
+  "verdict": {
+   "branch_fixture_defect": false,
+   "branch_product_contract": true,
+   "two_sided_strong_criterion_holds": false,
+   "rule": "题面已写明入口名 ∧ 判分路径与题面同源 ∧ 判分器无直接导入 ⇒ 题面/夹具分支被否证，定因归于产物侧契约自相矛盾"
+  },
+  "statement_entry_name_required": true,
+  "statement_grade_path_count": 2,
+  "judge_argv_tokens": [
+   "-B",
+   "-m",
+   "games"
+  ],
+  "judge_form_is_module_games": true,
+  "judge_uses_direct_import": false,
+  "same_source": true,
+  "census": {
+   "agent_missing_runs": "2/44",
+   "agent_module_slots_missing": "2/176",
+   "codex_missing_runs": "0/15",
+   "codex_module_slots_missing": "0/60"
+  },
+  "missing_runs": [
+   {
+    "run": "r588/w163/agentD-r2",
+    "side": "agent",
+    "missing": [
+     "wythoff"
+    ],
+    "main_calls_solve": true
+   },
+   {
+    "run": "r591/w166/agentD-r2",
+    "side": "agent",
+    "missing": [
+     "wythoff"
+    ],
+    "main_calls_solve": true
+   }
+  ],
+  "replay": [
+   {
+    "run": "r588/w163/agentD-r2",
+    "kind": "expect_attrerror",
+    "rc": 1,
+    "out_len": 0,
+    "stderr_tail": "AttributeError: module 'games.wythoff' has no attribute 'solve'"
+   },
+   {
+    "run": "r591/w166/agentD-r2",
+    "kind": "expect_attrerror",
+    "rc": 1,
+    "out_len": 0,
+    "stderr_tail": "AttributeError: module 'games.wythoff' has no attribute 'solve'"
+   },
+   {
+    "run": "r585/w154/agentD-r1",
+    "kind": "expect_ok",
+    "rc": 0,
+    "out_len": 9,
+    "stderr_tail": ""
+   }
+  ],
+  "conservation": true
+ },
+ "candidate3_v_int": {
+  "window_sets": 15,
+  "cross_check": {
+   "cold_equal_and_vint_pos_runs": 0,
+   "total_runs": 59,
+   "rule": "真冷集对任何合法着法封闭 ⇒ 该组合应为 0；本轮不设阈值"
+  },
+  "contingency_2x2": {
+   "agent": {
+    "cold_eq_T_vint_pos": 0,
+    "cold_eq_T_vint_zero": 19,
+    "cold_eq_F_vint_pos": 19,
+    "cold_eq_F_vint_zero": 6,
+    "n": 44
+   },
+   "codex": {
+    "cold_eq_T_vint_pos": 0,
+    "cold_eq_T_vint_zero": 11,
+    "cold_eq_F_vint_pos": 4,
+    "cold_eq_F_vint_zero": 0,
+    "n": 15
+   }
+  },
+  "threshold_status": "未测：阈值化需新跑次（扩窗/扩 reps）；本轮零新臂，只报分布面"
+ },
+ "candidate4_codex_only_window": {
+  "win": "r585/w154",
+  "codex_layer": "(b) 冷集构造层",
+  "codex_declared_cold_n": 51,
+  "codex_cases_pass": 13,
+  "codex_cases_n": 15,
+  "agent_layers": {
+   "agentD-r1": "(c) 本轴外",
+   "agentD-r2": "(c) 本轴外",
+   "agentD-r3": "(c) 本轴外"
+  },
+  "codex_only_b_holds": true
+ },
+ "candidate5_family_concentration": {
+  "rule": "top-run 份额 ≥ 0.5 ⇒ 集中在单一跑次，否则散布（预注册机械规则）",
+  "families": {
+   "AttributeError|module 'games.wythoff' h": {
+    "n": 30,
+    "runs": 2,
+    "top_run": "r588/w163/agentD-r2",
+    "top_share": 0.5,
+    "concentration": "集中在单一跑次"
+   },
+   "IndexError|list index out of range": {
+    "n": 15,
+    "runs": 2,
+    "top_run": "r586/w159/agentD-r2",
+    "top_share": 0.6667,
+    "concentration": "集中在单一跑次"
+   },
+   "TypeError|'NoneType' object is not": {
+    "n": 11,
+    "runs": 4,
+    "top_run": "r588/w165/agentD-r2",
+    "top_share": 0.4545,
+    "concentration": "散布"
+   },
+   "TIMEOUT_60s": {
+    "n": 8,
+    "runs": 1,
+    "top_run": "r585/w155/agentD-r2",
+    "top_share": 1.0,
+    "concentration": "集中在单一跑次"
+   },
+   "TypeError|%d format: a real number": {
+    "n": 2,
+    "runs": 1,
+    "top_run": "r586/w158/agentD-r1",
+    "top_share": 1.0,
+    "concentration": "集中在单一跑次"
+   }
+  },
+  "concentrated_n": "4/5"
+ },
+ "zero_regression": {
+  "match": true,
+  "mismatch": {},
+  "registered_from": "R593",
+  "d_bucket_eq_d_total": true,
+  "d_bucket": 69,
+  "d_total": 69
+ },
+ "determinism_x2": true,
+ "quality_same_window_pairing": {
+  "rounds_side_by_side": [
+   "R593",
+   "R594"
+  ],
+  "note": "跨轮并列、禁相减；R594 零新跑次 ⇒ 质量行取上一同窗快照的登记值并经本器具逐位复现",
+  "r593_registered": {
+   "all_correct_rate": {
+    "agent": 0.4091,
+    "codex": 0.6667
+   },
+   "pass_median": {
+    "agent": 9.0,
+    "codex": 15
+   },
+   "pass_range": {
+    "agent": 15,
+    "codex": 11
+   },
+   "paired_windows": [
+    2,
+    -8,
+    -3,
+    0,
+    -3,
+    -15,
+    0,
+    -3,
+    -6.5,
+    -7,
+    -11,
+    -9,
+    -1,
+    -1,
+    2
+   ],
+   "paired_median": -3,
+   "paired_range": 17,
+   "cost_columns": "未测（零远端调用 / 只读轮）",
+   "steps": "未测（无新跑次）"
+  },
+  "r594": "无新跑次 ⇒ 未重测（本轮只读定因）",
+  "cost_columns": "未测（零远端调用 / 只读轮）",
+  "steps": "未测（无新跑次）"
+ },
+ "iron11": {
+  "cmd": "python3 eval/rover/r507pre/exec_precondition.py --round r594",
+  "rc": 3,
+  "reason": "DISCOVER_FAIL 无两侧新产出物 ⇒ 前置器不适用（零新臂）",
+  "claim_limit": "不宣称任何降幅/增益；tokens 三列未测"
+ },
+ "form_gate": {
+  "cmd": "env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR dotnet test src/agent.tests/agentframework.tests.csproj --filter \"FullyQualifiedName~VerificationForm|FullyQualifiedName~SkillGeneralization|FullyQualifiedName~DevPlanDocRef\" --nologo -v q",
+  "result": "Failed 0 / Passed 14 / Skipped 0",
+  "gate_reading": "形式门禁 14/14（Failed 0 / Passed 14 / Skipped 0）",
+  "rc": 0
+ },
+ "predeclared_expectation_result": {
+  "candidate_2": {
+   "predicted": "题面/夹具分支 vs 产物侧契约分支二择一，由 census 两侧分列 + 实测复现判定",
+   "actual": "题面要求入口名 ∧ 判分器 argv 同源 ∧ 无直接导入（题面/夹具分支否证）；agent 2/44 跑次缺 solve（codex 0/15），两跑次自调 .solve 而自身模块无 solve",
+   "verdict": "方向命中（产物侧契约自相矛盾）；两侧同败强判据不成立"
+  },
+  "candidate_3": {
+   "predicted": "V_int 先落分布（本轮不设阈值）",
+   "actual": "15 窗集 × 两侧直方图 + 2×2 列联落盘；cold_set_equal ∧ V_int>0 = 0/59",
+   "verdict": "命中（分布面成立；阈值化未测）"
+  },
+  "candidate_4": {
+   "predicted": "codex 独有 (b) 窗逐字段复算后按 R592 层规则重算层归属",
+   "actual": "w154 codex 声明冷集 51 vs 真值 10（13/15）⇒ 层 (b)；同窗 agent 3 跑次全 15/15 且层 (c)",
+   "verdict": "命中（缺口属 codex 侧）"
+  },
+  "candidate_5": {
+   "predicted": "形态族 × 跑次集中度（top-run 份额 ≥0.5 ⇒ 集中）",
+   "actual": "5 族中 4 族集中（AttributeError 30=2 跑次 / TIMEOUT 8=1 / %d 2=1 / IndexError 15=2）；TypeError 族 0.4545 散布",
+   "verdict": "命中（崩溃/挂死按跑次成簇）"
+  }
+ },
+ "self_caught": [
+  "entry_contract_r594 v1 **路径层级错**（census 传 g1 而非 g1/games）⇒ 全跑次「全 missing」，与同轮 POS 控制直接矛盾；修法 = 单点路径构造 + 非平凡性机检（全跑次面须有 present 模块）；留档 entry-contract-r594-v1pathbug.json，判据未放宽",
+  "face_readings_r594 首跑**打印面 KeyError**（读数面/打印面键名分叉）⇒ 修打印面、读数面不变；留档 face-readings-r594-v1printbug.json + 中间版 face-readings-r594-v2.json"
+ ],
+ "honest_bounds": [
+  "只读产物诊断 ⇒ 不构成能力验收，不得回写成「产品已修」",
+  "候选② 两跑次属产物侧契约自相矛盾，但产品侧修复仍待用户放行（候选①）",
+  "V_int 阈值化未测（需新跑次），本轮只出分布与列联",
+  "形态族集中度为跑次级统计（44 agent 跑次横跨 5 窗集）⇒ 非独立样本",
+  "跨轮禁相减：R593 读数只用于零回归对照臂的逐位复现",
+  "w154 的 (b) 属 codex 侧 ⇒ 不计入我方缺陷份额"
+ ]
+}

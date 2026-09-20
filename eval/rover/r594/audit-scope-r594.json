@@ -1,0 +1,50 @@
+{
+ "round": "R594",
+ "declared_at": "2026-09-20T13:05+08:00",
+ "declared_after_run": true,
+ "declared_note": "本声明件在**本轮读数生成之后**落盘：R594 为**零新臂只读定因并轮**，读数面（入口契约 census / 面读数聚合 / 零回归对照臂）在跑动中才逐件成型，声明无法先于起跑。声明内容只含「零 src/ 改动 + 读数面清单 + 提交面形状」，**不含**任何臂/判据/阈值改动；冻结预注册 `eval/rover/r594/prereg-r594.json`（先写后跑闸所用）未被触碰。",
+ "audit_scope": {
+  "kind": "contrast_zero_product_change",
+  "reason": "R594 是**只读定因轮**：无真机臂、零产品源码改动、零新开关、零新夹具语义，全部读数来自 59 个在盘跑次快照 （g1 子树）+ 冻结用例集 cases-r521.json 的重算与只读定因 ⇒ 依「验证登记表缺负控即为门禁真红」的纪律，本项目**本就不该**为其造 owner_round=R594 的 capability 登记行；旧 R1(无登记行即红) / R8(build 0 error · 14/14) 在该形态上结构性不可达。免检只能由**显式声明 ∧ 提交面零 src/ ∧ 声明面可机检**三者共同支撑，任一条不成立即判红。",
+  "readings": [
+   "eval/rover/r594/verdict-r594.json",
+   "eval/rover/r594/kpi-table-r594.json",
+   "eval/rover/r594/report-r594.md",
+   "eval/rover/r594/finish-r594.json",
+   "eval/rover/r594/entry-contract-r594.json",
+   "eval/rover/r594/face-readings-r594.json",
+   "eval/rover/r594/entry-contract-r594-v1pathbug.json",
+   "eval/rover/r594/face-readings-r594-v1printbug.json",
+   "eval/rover/r594/face-readings-r594-v2.json"
+  ],
+  "allowed_faces": [
+   "eval/rover/r594/",
+   "eval/capability/",
+   "docs/reports/",
+   "docs/improvements.md"
+  ],
+  "require_form_gate": true,
+  "form_gate_cmd": "env -u AGENTFRAMEWORK_PY_RUN -u AGENTFRAMEWORK_ARTIFACT_REPAIR dotnet test src/agent.tests/agentframework.tests.csproj --filter \"FullyQualifiedName~VerificationForm|FullyQualifiedName~SkillGeneralization|FullyQualifiedName~DevPlanDocRef\" --nologo -v q"
+ },
+ "negative_controls": {
+  "instrument": "tools/roundcheck/roundcheck.py --selftest",
+  "contrast_branch": [
+   {
+    "case": "正控: 声明齐 ∧ 提交面零 src/",
+    "expect": "rc=0 (R1 P / R6 P / R8 P)"
+   },
+   {
+    "case": "负控: 声明了却提交触碰 src/",
+    "expect": "rc=1, R1 红 (分支不适用)"
+   },
+   {
+    "case": "负控: 无声明 (旧行为)",
+    "expect": "rc=1, R1 红"
+   },
+   {
+    "case": "负控: 声明面缺「形式门禁」读数",
+    "expect": "rc=1, R8 红"
+   }
+  ]
+ }
+}

@@ -1,0 +1,110 @@
+{
+ "round": "R594",
+ "instrument": "entry_contract_r594",
+ "rc": 0,
+ "notes": [],
+ "face_statement_vs_judge": {
+  "prompt_sha256": "516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3",
+  "statement_entry_name_required": true,
+  "statement_grade_path_required": true,
+  "statement_grade_path_count": 2,
+  "judge_argv_snippet": "[sys.executable, \"-B\", \"-m\", \"games\", c[\"game\"]], input=c[\"stdin\"], capture_output=True, text=True, timeout=TMO, cwd=wd, env=env",
+  "judge_argv_tokens": [
+   "-B",
+   "-m",
+   "games"
+  ],
+  "judge_form_is_module_games": true,
+  "judge_uses_direct_import": false,
+  "same_source": true
+ },
+ "cases_n": 58,
+ "run_face_n": 59,
+ "census_entries": 59,
+ "census_conservation": true,
+ "non_trivial": {
+  "present_slots": 236,
+  "has_solve_slots": 234,
+  "ok": true
+ },
+ "sides": {
+  "agent": {
+   "runs": 44,
+   "runs_missing": 2,
+   "module_slots": 176,
+   "module_missing": 2
+  },
+  "codex": {
+   "runs": 15,
+   "runs_missing": 0,
+   "module_slots": 60,
+   "module_missing": 0
+  }
+ },
+ "missing_runs": [
+  {
+   "run": "r588/w163/agentD-r2",
+   "side": "agent",
+   "missing": [
+    "wythoff"
+   ],
+   "main_calls_solve": true
+  },
+  {
+   "run": "r591/w166/agentD-r2",
+   "side": "agent",
+   "missing": [
+    "wythoff"
+   ],
+   "main_calls_solve": true
+  }
+ ],
+ "missing_runs_n": 2,
+ "controls": {
+  "POS": [],
+  "NEG": [
+   "wythoff"
+  ]
+ },
+ "teeth": {
+  "has_teeth": true,
+  "pos_expect": [],
+  "neg_expect": [
+   "wythoff"
+  ]
+ },
+ "replay": [
+  {
+   "run": "r588/w163/agentD-r2",
+   "kind": "expect_attrerror",
+   "rc": 1,
+   "out_len": 0,
+   "stderr_tail": "AttributeError: module 'games.wythoff' has no attribute 'solve'"
+  },
+  {
+   "run": "r591/w166/agentD-r2",
+   "kind": "expect_attrerror",
+   "rc": 1,
+   "out_len": 0,
+   "stderr_tail": "AttributeError: module 'games.wythoff' has no attribute 'solve'"
+  },
+  {
+   "run": "r585/w154/agentD-r1",
+   "kind": "expect_ok",
+   "rc": 0,
+   "out_len": 9,
+   "stderr_tail": ""
+  }
+ ],
+ "readonly": {
+  "pre": "411434e5f8939c3b",
+  "post": "411434e5f8939c3b",
+  "ok": true
+ },
+ "verdict": {
+  "branch_fixture_defect": false,
+  "branch_product_contract": true,
+  "two_sided_strong_criterion_holds": false,
+  "rule": "题面已写明入口名 ∧ 判分路径与题面同源 ∧ 判分器无直接导入 ⇒ 题面/夹具分支被否证，定因归于产物侧契约自相矛盾"
+ }
+}
