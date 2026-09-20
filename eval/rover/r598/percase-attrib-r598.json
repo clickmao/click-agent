@@ -1,0 +1,1198 @@
+{
+ "round": "R598",
+ "candidate": "② 铁律 11 阻塞臂逐例归因（只读）",
+ "instrument_sha12": "2d197d5fc41c",
+ "sources": {
+  "precond": {
+   "r585": {
+    "file": "runs/r585/precond-r585.json",
+    "sha12": "20352630f575"
+   },
+   "r586": {
+    "file": "runs/r586/precond-r586.json",
+    "sha12": "0ebfa484e92c"
+   },
+   "r587": {
+    "file": "runs/r587/precond-r587.json",
+    "sha12": "64d167478252"
+   },
+   "r588": {
+    "file": "runs/r588/precond-r588.json",
+    "sha12": "cb546d37e8fd"
+   },
+   "r591": {
+    "file": "runs/r591/precond-r591.json",
+    "sha12": "ebb62096cff0"
+   },
+   "r595": {
+    "file": "runs/r595/precond-r595-v2.json",
+    "sha12": "8bb35369f12a"
+   },
+   "r596": {
+    "file": "runs/r596/precond-r596.json",
+    "sha12": "b7f98d7ee405"
+   },
+   "r597": {
+    "file": "runs/r597/precond-r597.json",
+    "sha12": "d6e955d28c96"
+   },
+   "r598": {
+    "file": "runs/r598/precond-r598.json",
+    "sha12": "c6769baf44ae"
+   }
+  },
+  "cases_txt": {}
+ },
+ "void_precond_single_listed": {
+  "r595": "precond-r595.json"
+ },
+ "buckets_legend": {
+  "A_我方独败": "真值过 ∧ 产品 3/3 败（可归因我方; **上界**）",
+  "A2_摆动带": "真值过 ∧ 产品 1..2/3 败",
+  "B_真值独败": "真值败 ∧ 产品 3/3 过",
+  "C_两侧同败": "真值败 ∧ 产品 3/3 败",
+  "E_真值败_我方部分": "真值败 ∧ 产品 ≤2/3 败",
+  "OK_两侧全过": "真值过 ∧ 产品 3/3 过"
+ },
+ "cross_check": {
+  "equal": 6262,
+  "mismatch": 0,
+  "mismatch_explained_partial": 2,
+  "missing_side": 0
+ },
+ "issues": [
+  {
+   "why": "xcheck_mismatch",
+   "round": "r585",
+   "win": "w155",
+   "case": "wythoff#56-hidden",
+   "arm": "agentD-r2",
+   "precond_rc": 124,
+   "precond_selfconsistent": false,
+   "txt_fail": true,
+   "precond_fail": false,
+   "disposition": "器具部分读数(前置器 cases_pass+failed ≠ 用例数)"
+  },
+  {
+   "why": "xcheck_mismatch",
+   "round": "r585",
+   "win": "w155",
+   "case": "wythoff#57-hidden",
+   "arm": "agentD-r2",
+   "precond_rc": 124,
+   "precond_selfconsistent": false,
+   "txt_fail": true,
+   "precond_fail": false,
+   "disposition": "器具部分读数(前置器 cases_pass+failed ≠ 用例数)"
+  }
+ ],
+ "per_window": {
+  "r585/w154": {
+   "n_cases": 58,
+   "buckets": {
+    "OK_两侧全过": 56,
+    "B_真值独败": 2
+   },
+   "family_buckets": {
+    "life": {
+     "OK_两侧全过": 14
+    },
+    "nim": {
+     "OK_两侧全过": 15
+    },
+    "sub": {
+     "OK_两侧全过": 14
+    },
+    "wythoff": {
+     "OK_两侧全过": 13,
+     "B_真值独败": 2
+    }
+   },
+   "A_named": [],
+   "C_named": [],
+   "D_named": [],
+   "A_share": 0.0,
+   "A_subset_of_D": false,
+   "C_failset_identical_to_truth": null,
+   "reason_hist": {}
+  },
+  "r585/w155": {
+   "n_cases": 58,
+   "buckets": {
+    "OK_两侧全过": 47,
+    "A2_摆动带": 8,
+    "A_我方独败": 3
+   },
+   "family_buckets": {
+    "life": {
+     "OK_两侧全过": 14
+    },
+    "nim": {
+     "OK_两侧全过": 15
+    },
+    "sub": {
+     "OK_两侧全过": 14
+    },
+    "wythoff": {
+     "A2_摆动带": 8,
+     "OK_两侧全过": 4,
+     "A_我方独败": 3
+    }
+   },
+   "A_named": [
+    "wythoff#45-hidden",
+    "wythoff#49-hidden",
+    "wythoff#57-hidden"
+   ],
+   "C_named": [],
+   "D_named": [
+    "wythoff#43-public",
+    "wythoff#45-hidden",
+    "wythoff#47-hidden",
+    "wythoff#48-hidden",
+    "wythoff#49-hidden",
+    "wythoff#50-hidden",
+    "wythoff#55-hidden",
+    "wythoff#56-hidden",
+    "wythoff#57-hidden"
+   ],
+   "A_share": 0.0517,
+   "A_subset_of_D": true,
+   "C_failset_identical_to_truth": null,
+   "reason_hist": {
+    "stdout_mismatch": 14,
+    "TimeoutExpired": 8,
+    "rc=1": 2
+   }
+  },
+  "r585/w156": {
+   "n_cases": 58,
+   "buckets": {
+    "OK_两侧全过": 46,
+    "A2_摆动带": 12
+   },
+   "family_buckets": {
+    "life": {
+     "OK_两侧全过": 14
+    },
+    "nim": {
+     "OK_两侧全过": 15
+    },
+    "sub": {
+     "OK_两侧全过": 14
+    },
+    "wythoff": {
+     "A2_摆动带": 12,
+     "OK_两侧全过": 3
+    }
+   },
+   "A_named": [],
+   "C_named": [],
+   "D_named": [],
+   "A_share": 0.0,
+   "A_subset_of_D": false,
+   "C_failset_identical_to_truth": null,
+   "reason_hist": {
+    "stdout_mismatch": 13
+   }
+  },
+  "r586/w157": {
+   "n_cases": 58,
+   "buckets": {
+    "OK_两侧全过": 47,
+    "A2_摆动带": 11
+   },
+   "family_buckets": {
+    "life": {
+     "OK_两侧全过": 14
+    },
+    "nim": {
+     "OK_两侧全过": 15
+    },
+    "sub": {
+     "OK_两侧全过": 14
+    },
+    "wythoff": {
+     "A2_摆动带": 11,
+     "OK_两侧全过": 4
+    }
+   },
+   "A_named": [],
+   "C_named": [],
+   "D_named": [],
+   "A_share": 0.0,
+   "A_subset_of_D": false,
+   "C_failset_identical_to_truth": null,
+   "reason_hist": {
+    "stdout_mismatch": 11
+   }
+  },
+  "r586/w158": {
+   "n_cases": 58,
+   "buckets": {
+    "OK_两侧全过": 48,
+    "A2_摆动带": 10
+   },
+   "family_buckets": {
+    "life": {
+     "OK_两侧全过": 14
+    },
+    "nim": {
+     "OK_两侧全过": 15
+    },
+    "sub": {
+     "OK_两侧全过": 14
+    },
+    "wythoff": {
+     "A2_摆动带": 10,
+     "OK_两侧全过": 5
+    }
+   },
+   "A_named": [],
+   "C_named": [],
+   "D_named": [
+    "wythoff#50-hidden",
+    "wythoff#53-hidden"
+   ],
+   "A_share": 0.0,
+   "A_subset_of_D": false,
+   "C_failset_identical_to_truth": null,
+   "reason_hist": {
+    "stdout_mismatch": 10,
+    "rc=1": 2
+   }
+  },
+  "r586/w159": {
+   "n_cases": 58,
+   "buckets": {
+    "OK_两侧全过": 43,
+    "A_我方独败": 10,
+    "A2_摆动带": 5
+   },
+   "family_buckets": {
+    "life": {
+     "OK_两侧全过": 14
+    },
+    "nim": {
+     "OK_两侧全过": 15
+    },
+    "sub": {
+     "OK_两侧全过": 14
+    },
+    "wythoff": {
+     "A_我方独败": 10,
+     "A2_摆动带": 5
+    }
+   },
+   "A_named": [
+    "wythoff#43-public",
+    "wythoff#44-public",
+    "wythoff#45-hidden",
+    "wythoff#46-hidden",
+    "wythoff#48-hidden",
+    "wythoff#49-hidden",
+    "wythoff#50-hidden",
+    "wythoff#55-hidden",
+    "wythoff#56-hidden",
+    "wythoff#57-hidden"
+   ],
+   "C_named": [],
+   "D_named": [
+    "wythoff#43-public",
+    "wythoff#45-hidden",
+    "wythoff#47-hidden",
+    "wythoff#48-hidden",
+    "wythoff#50-hidden",
+    "wythoff#52-hidden",
+    "wythoff#53-hidden",
+    "wythoff#54-hidden",
+    "wythoff#56-hidden",
+    "wythoff#57-hidden"
+   ],
+   "A_share": 0.1724,
+   "A_subset_of_D": false,
+   "C_failset_identical_to_truth": null,
+   "reason_hist": {
+    "stdout_mismatch": 30,
+    "rc=1": 10
+   }
+  },
+  "r587/w160": {
+   "n_cases": 58,
+   "buckets": {
+    "OK_两侧全过": 58
+   },
+   "family_buckets": {
+    "life": {
+     "OK_两侧全过": 14
+    },
+    "nim": {
+     "OK_两侧全过": 15
+    },
+    "sub": {
+     "OK_两侧全过": 14
+    },
+    "wythoff": {
+     "OK_两侧全过": 15
+    }
+   },
+   "A_named": [],
+   "C_named": [],
+   "D_named": [],
+   "A_share": 0.0,
+   "A_subset_of_D": false,
+   "C_failset_identical_to_truth": null,
+   "reason_hist": {}
+  },
+  "r587/w161": {
+   "n_cases": 58,
+   "buckets": {
+    "OK_两侧全过": 43,
+    "A2_摆动带": 10,
+    "E_真值败_我方部分": 5
+   },
+   "family_buckets": {
+    "life": {
+     "OK_两侧全过": 14
+    },
+    "nim": {
+     "OK_两侧全过": 15
+    },
+    "sub": {
+     "OK_两侧全过": 14
+    },
+    "wythoff": {
+     "A2_摆动带": 10,
+     "E_真值败_我方部分": 5
+    }
+   },
+   "A_named": [],
+   "C_named": [],
+   "D_named": [],
+   "A_share": 0.0,
+   "A_subset_of_D": false,
+   "C_failset_identical_to_truth": null,
+   "reason_hist": {
+    "stdout_mismatch": 23
+   }
+  },
+  "r587/w162": {
+   "n_cases": 58,
+   "buckets": {
+    "A2_摆动带": 58
+   },
+   "family_buckets": {
+    "life": {
+     "A2_摆动带": 14
+    },
+    "nim": {
+     "A2_摆动带": 15
+    },
+    "sub": {
+     "A2_摆动带": 14
+    },
+    "wythoff": {
+     "A2_摆动带": 15
+    }
+   },
+   "A_named": [],
+   "C_named": [],
+   "D_named": [
+    "life#00-public",
+    "life#01-public",
+    "life#02-hidden",
+    "life#03-hidden",
+    "life#04-hidden",
+    "life#05-hidden",
+    "life#06-hidden",
+    "life#07-hidden",
+    "life#08-hidden",
+    "life#09-hidden",
+    "life#10-hidden",
+    "life#11-hidden",
+    "life#12-hidden",
+    "life#13-hidden",
+    "nim#28-public",
+    "nim#29-public",
+    "nim#30-hidden",
+    "nim#31-hidden",
+    "nim#32-hidden",
+    "nim#33-hidden",
+    "nim#34-hidden",
+    "nim#35-hidden",
+    "nim#36-hidden",
+    "nim#37-hidden",
+    "nim#38-hidden",
+    "nim#39-hidden",
+    "nim#40-hidden",
+    "nim#41-hidden",
+    "nim#42-hidden",
+    "sub#14-public",
+    "sub#15-public",
+    "sub#16-hidden",
+    "sub#17-hidden",
+    "sub#18-hidden",
+    "sub#19-hidden",
+    "sub#20-hidden",
+    "sub#21-hidden",
+    "sub#22-hidden",
+    "sub#23-hidden",
+    "sub#24-hidden",
+    "sub#25-hidden",
+    "sub#26-hidden",
+    "sub#27-hidden",
+    "wythoff#43-public",
+    "wythoff#44-public",
+    "wythoff#45-hidden",
+    "wythoff#46-hidden",
+    "wythoff#47-hidden",
+    "wythoff#48-hidden",
+    "wythoff#49-hidden",
+    "wythoff#50-hidden",
+    "wythoff#51-hidden",
+    "wythoff#52-hidden",
+    "wythoff#53-hidden",
+    "wythoff#54-hidden",
+    "wythoff#55-hidden",
+    "wythoff#56-hidden",
+    "wythoff#57-hidden"
+   ],
+   "A_share": 0.0,
+   "A_subset_of_D": false,
+   "C_failset_identical_to_truth": null,
+   "reason_hist": {
+    "rc=1": 60,
+    "stdout_mismatch": 11
+   }
+  },
+  "r588/w163": {
+   "n_cases": 58,
+   "buckets": {
+    "OK_两侧全过": 43,
+    "A2_摆动带": 15
+   },
+   "family_buckets": {
+    "life": {
+     "OK_两侧全过": 14
+    },
+    "nim": {
+     "OK_两侧全过": 15
+    },
+    "sub": {
+     "OK_两侧全过": 14
+    },
+    "wythoff": {
+     "A2_摆动带": 15
+    }
+   },
+   "A_named": [],
+   "C_named": [],
+   "D_named": [
+    "wythoff#43-public",
+    "wythoff#44-public",
+    "wythoff#45-hidden",
+    "wythoff#46-hidden",
+    "wythoff#47-hidden",
+    "wythoff#48-hidden",
+    "wythoff#49-hidden",
+    "wythoff#50-hidden",
+    "wythoff#51-hidden",
+    "wythoff#52-hidden",
+    "wythoff#53-hidden",
+    "wythoff#54-hidden",
+    "wythoff#55-hidden",
+    "wythoff#56-hidden",
+    "wythoff#57-hidden"
+   ],
+   "A_share": 0.0,
+   "A_subset_of_D": false,
+   "C_failset_identical_to_truth": null,
+   "reason_hist": {
+    "rc=1": 20,
+    "stdout_mismatch": 2
+   }
+  },
+  "r588/w164": {
+   "n_cases": 58,
+   "buckets": {
+    "OK_两侧全过": 43,
+    "A2_摆动带": 15
+   },
+   "family_buckets": {
+    "life": {
+     "OK_两侧全过": 14
+    },
+    "nim": {
+     "OK_两侧全过": 15
+    },
+    "sub": {
+     "OK_两侧全过": 14
+    },
+    "wythoff": {
+     "A2_摆动带": 15
+    }
+   },
+   "A_named": [],
+   "C_named": [],
+   "D_named": [],
+   "A_share": 0.0,
+   "A_subset_of_D": false,
+   "C_failset_identical_to_truth": null,
+   "reason_hist": {
+    "stdout_mismatch": 26
+   }
+  },
+  "r588/w165": {
+   "n_cases": 58,
+   "buckets": {
+    "OK_两侧全过": 43,
+    "A_我方独败": 9,
+    "E_真值败_我方部分": 3,
+    "C_两侧同败": 2,
+    "A2_摆动带": 1
+   },
+   "family_buckets": {
+    "life": {
+     "OK_两侧全过": 14
+    },
+    "nim": {
+     "OK_两侧全过": 15
+    },
+    "sub": {
+     "OK_两侧全过": 14
+    },
+    "wythoff": {
+     "A_我方独败": 9,
+     "E_真值败_我方部分": 3,
+     "C_两侧同败": 2,
+     "A2_摆动带": 1
+    }
+   },
+   "A_named": [
+    "wythoff#43-public",
+    "wythoff#44-public",
+    "wythoff#45-hidden",
+    "wythoff#47-hidden",
+    "wythoff#48-hidden",
+    "wythoff#49-hidden",
+    "wythoff#50-hidden",
+    "wythoff#52-hidden",
+    "wythoff#54-hidden"
+   ],
+   "C_named": [
+    "wythoff#55-hidden",
+    "wythoff#56-hidden"
+   ],
+   "D_named": [
+    "wythoff#43-public",
+    "wythoff#45-hidden",
+    "wythoff#47-hidden",
+    "wythoff#48-hidden",
+    "wythoff#53-hidden",
+    "wythoff#54-hidden",
+    "wythoff#57-hidden"
+   ],
+   "A_share": 0.1552,
+   "A_subset_of_D": false,
+   "C_failset_identical_to_truth": false,
+   "reason_hist": {
+    "stdout_mismatch": 34,
+    "rc=1": 7
+   }
+  },
+  "r591/w166": {
+   "n_cases": 58,
+   "buckets": {
+    "OK_两侧全过": 43,
+    "A2_摆动带": 15
+   },
+   "family_buckets": {
+    "life": {
+     "OK_两侧全过": 14
+    },
+    "nim": {
+     "OK_两侧全过": 15
+    },
+    "sub": {
+     "OK_两侧全过": 14
+    },
+    "wythoff": {
+     "A2_摆动带": 15
+    }
+   },
+   "A_named": [],
+   "C_named": [],
+   "D_named": [
+    "wythoff#43-public",
+    "wythoff#44-public",
+    "wythoff#45-hidden",
+    "wythoff#46-hidden",
+    "wythoff#47-hidden",
+    "wythoff#48-hidden",
+    "wythoff#49-hidden",
+    "wythoff#50-hidden",
+    "wythoff#51-hidden",
+    "wythoff#52-hidden",
+    "wythoff#53-hidden",
+    "wythoff#54-hidden",
+    "wythoff#55-hidden",
+    "wythoff#56-hidden",
+    "wythoff#57-hidden"
+   ],
+   "A_share": 0.0,
+   "A_subset_of_D": false,
+   "C_failset_identical_to_truth": null,
+   "reason_hist": {
+    "rc=1": 15,
+    "stdout_mismatch": 1
+   }
+  },
+  "r591/w167": {
+   "n_cases": 58,
+   "buckets": {
+    "OK_两侧全过": 44,
+    "E_真值败_我方部分": 10,
+    "A2_摆动带": 3,
+    "B_真值独败": 1
+   },
+   "family_buckets": {
+    "life": {
+     "OK_两侧全过": 14
+    },
+    "nim": {
+     "OK_两侧全过": 15
+    },
+    "sub": {
+     "OK_两侧全过": 14
+    },
+    "wythoff": {
+     "E_真值败_我方部分": 10,
+     "A2_摆动带": 3,
+     "B_真值独败": 1,
+     "OK_两侧全过": 1
+    }
+   },
+   "A_named": [],
+   "C_named": [],
+   "D_named": [],
+   "A_share": 0.0,
+   "A_subset_of_D": false,
+   "C_failset_identical_to_truth": null,
+   "reason_hist": {
+    "stdout_mismatch": 24
+   }
+  },
+  "r591/w168": {
+   "n_cases": 58,
+   "buckets": {
+    "OK_两侧全过": 44,
+    "A2_摆动带": 12,
+    "E_真值败_我方部分": 2
+   },
+   "family_buckets": {
+    "life": {
+     "OK_两侧全过": 14
+    },
+    "nim": {
+     "OK_两侧全过": 15
+    },
+    "sub": {
+     "OK_两侧全过": 14
+    },
+    "wythoff": {
+     "A2_摆动带": 12,
+     "E_真值败_我方部分": 2,
+     "OK_两侧全过": 1
+    }
+   },
+   "A_named": [],
+   "C_named": [],
+   "D_named": [],
+   "A_share": 0.0,
+   "A_subset_of_D": false,
+   "C_failset_identical_to_truth": null,
+   "reason_hist": {
+    "stdout_mismatch": 14
+   }
+  },
+  "r595/w169": {
+   "n_cases": 58,
+   "buckets": {
+    "OK_两侧全过": 44,
+    "A2_摆动带": 14
+   },
+   "family_buckets": {
+    "life": {
+     "OK_两侧全过": 14
+    },
+    "nim": {
+     "OK_两侧全过": 15
+    },
+    "sub": {
+     "OK_两侧全过": 14
+    },
+    "wythoff": {
+     "A2_摆动带": 14,
+     "OK_两侧全过": 1
+    }
+   },
+   "A_named": [],
+   "C_named": [],
+   "D_named": [
+    "wythoff#44-public",
+    "wythoff#45-hidden",
+    "wythoff#49-hidden",
+    "wythoff#50-hidden",
+    "wythoff#53-hidden",
+    "wythoff#56-hidden"
+   ],
+   "A_share": 0.0,
+   "A_subset_of_D": false,
+   "C_failset_identical_to_truth": null,
+   "reason_hist": {
+    "stdout_mismatch": 13,
+    "rc=1": 6
+   }
+  },
+  "r595/w170": {
+   "n_cases": 58,
+   "buckets": {
+    "OK_两侧全过": 43,
+    "A2_摆动带": 10,
+    "E_真值败_我方部分": 5
+   },
+   "family_buckets": {
+    "life": {
+     "OK_两侧全过": 14
+    },
+    "nim": {
+     "OK_两侧全过": 15
+    },
+    "sub": {
+     "OK_两侧全过": 14
+    },
+    "wythoff": {
+     "A2_摆动带": 10,
+     "E_真值败_我方部分": 5
+    }
+   },
+   "A_named": [],
+   "C_named": [],
+   "D_named": [
+    "wythoff#43-public",
+    "wythoff#44-public",
+    "wythoff#45-hidden",
+    "wythoff#46-hidden",
+    "wythoff#47-hidden",
+    "wythoff#48-hidden",
+    "wythoff#49-hidden",
+    "wythoff#50-hidden",
+    "wythoff#51-hidden",
+    "wythoff#52-hidden",
+    "wythoff#53-hidden",
+    "wythoff#54-hidden",
+    "wythoff#55-hidden",
+    "wythoff#56-hidden",
+    "wythoff#57-hidden"
+   ],
+   "A_share": 0.0,
+   "A_subset_of_D": false,
+   "C_failset_identical_to_truth": null,
+   "reason_hist": {
+    "rc=1": 15,
+    "stdout_mismatch": 7
+   }
+  },
+  "r595/w171": {
+   "n_cases": 58,
+   "buckets": {
+    "OK_两侧全过": 54,
+    "A2_摆动带": 4
+   },
+   "family_buckets": {
+    "life": {
+     "OK_两侧全过": 14
+    },
+    "nim": {
+     "OK_两侧全过": 15
+    },
+    "sub": {
+     "OK_两侧全过": 14
+    },
+    "wythoff": {
+     "OK_两侧全过": 11,
+     "A2_摆动带": 4
+    }
+   },
+   "A_named": [],
+   "C_named": [],
+   "D_named": [
+    "wythoff#45-hidden",
+    "wythoff#47-hidden",
+    "wythoff#48-hidden"
+   ],
+   "A_share": 0.0,
+   "A_subset_of_D": false,
+   "C_failset_identical_to_truth": null,
+   "reason_hist": {
+    "rc=1": 3,
+    "stdout_mismatch": 1
+   }
+  },
+  "r596/w172": {
+   "n_cases": 58,
+   "buckets": {
+    "OK_两侧全过": 47,
+    "A2_摆动带": 11
+   },
+   "family_buckets": {
+    "life": {
+     "OK_两侧全过": 14
+    },
+    "nim": {
+     "OK_两侧全过": 15
+    },
+    "sub": {
+     "OK_两侧全过": 14
+    },
+    "wythoff": {
+     "A2_摆动带": 11,
+     "OK_两侧全过": 4
+    }
+   },
+   "A_named": [],
+   "C_named": [],
+   "D_named": [],
+   "A_share": 0.0,
+   "A_subset_of_D": false,
+   "C_failset_identical_to_truth": null,
+   "reason_hist": {
+    "stdout_mismatch": 11
+   }
+  },
+  "r596/w173": {
+   "n_cases": 58,
+   "buckets": {
+    "OK_两侧全过": 54,
+    "A2_摆动带": 2,
+    "B_真值独败": 1,
+    "E_真值败_我方部分": 1
+   },
+   "family_buckets": {
+    "life": {
+     "OK_两侧全过": 14
+    },
+    "nim": {
+     "OK_两侧全过": 15
+    },
+    "sub": {
+     "OK_两侧全过": 14
+    },
+    "wythoff": {
+     "OK_两侧全过": 11,
+     "A2_摆动带": 2,
+     "B_真值独败": 1,
+     "E_真值败_我方部分": 1
+    }
+   },
+   "A_named": [],
+   "C_named": [],
+   "D_named": [],
+   "A_share": 0.0,
+   "A_subset_of_D": false,
+   "C_failset_identical_to_truth": null,
+   "reason_hist": {
+    "stdout_mismatch": 3
+   }
+  },
+  "r596/w174": {
+   "n_cases": 58,
+   "buckets": {
+    "OK_两侧全过": 43,
+    "A2_摆动带": 15
+   },
+   "family_buckets": {
+    "life": {
+     "OK_两侧全过": 14
+    },
+    "nim": {
+     "OK_两侧全过": 15
+    },
+    "sub": {
+     "OK_两侧全过": 14
+    },
+    "wythoff": {
+     "A2_摆动带": 15
+    }
+   },
+   "A_named": [],
+   "C_named": [],
+   "D_named": [
+    "wythoff#44-public",
+    "wythoff#45-hidden",
+    "wythoff#47-hidden",
+    "wythoff#49-hidden",
+    "wythoff#51-hidden",
+    "wythoff#54-hidden"
+   ],
+   "A_share": 0.0,
+   "A_subset_of_D": false,
+   "C_failset_identical_to_truth": null,
+   "reason_hist": {
+    "stdout_mismatch": 24,
+    "rc=1": 6
+   }
+  },
+  "r597/w175": {
+   "n_cases": 58,
+   "buckets": {
+    "OK_两侧全过": 56,
+    "B_真值独败": 2
+   },
+   "family_buckets": {
+    "life": {
+     "OK_两侧全过": 14
+    },
+    "nim": {
+     "OK_两侧全过": 15
+    },
+    "sub": {
+     "OK_两侧全过": 14
+    },
+    "wythoff": {
+     "OK_两侧全过": 13,
+     "B_真值独败": 2
+    }
+   },
+   "A_named": [],
+   "C_named": [],
+   "D_named": [],
+   "A_share": 0.0,
+   "A_subset_of_D": false,
+   "C_failset_identical_to_truth": null,
+   "reason_hist": {}
+  },
+  "r597/w176": {
+   "n_cases": 58,
+   "buckets": {
+    "OK_两侧全过": 56,
+    "E_真值败_我方部分": 2
+   },
+   "family_buckets": {
+    "life": {
+     "OK_两侧全过": 14
+    },
+    "nim": {
+     "OK_两侧全过": 15
+    },
+    "sub": {
+     "OK_两侧全过": 14
+    },
+    "wythoff": {
+     "OK_两侧全过": 13,
+     "E_真值败_我方部分": 2
+    }
+   },
+   "A_named": [],
+   "C_named": [],
+   "D_named": [],
+   "A_share": 0.0,
+   "A_subset_of_D": false,
+   "C_failset_identical_to_truth": null,
+   "reason_hist": {
+    "stdout_mismatch": 2
+   }
+  },
+  "r597/w177": {
+   "n_cases": 58,
+   "buckets": {
+    "OK_两侧全过": 43,
+    "A2_摆动带": 15
+   },
+   "family_buckets": {
+    "life": {
+     "OK_两侧全过": 14
+    },
+    "nim": {
+     "OK_两侧全过": 15
+    },
+    "sub": {
+     "OK_两侧全过": 14
+    },
+    "wythoff": {
+     "A2_摆动带": 15
+    }
+   },
+   "A_named": [],
+   "C_named": [],
+   "D_named": [],
+   "A_share": 0.0,
+   "A_subset_of_D": false,
+   "C_failset_identical_to_truth": null,
+   "reason_hist": {
+    "stdout_mismatch": 15
+   }
+  },
+  "r598/w178": {
+   "n_cases": 58,
+   "buckets": {
+    "OK_两侧全过": 45,
+    "A2_摆动带": 11,
+    "E_真值败_我方部分": 2
+   },
+   "family_buckets": {
+    "life": {
+     "OK_两侧全过": 14
+    },
+    "nim": {
+     "OK_两侧全过": 15
+    },
+    "sub": {
+     "OK_两侧全过": 14
+    },
+    "wythoff": {
+     "A2_摆动带": 11,
+     "E_真值败_我方部分": 2,
+     "OK_两侧全过": 2
+    }
+   },
+   "A_named": [],
+   "C_named": [],
+   "D_named": [],
+   "A_share": 0.0,
+   "A_subset_of_D": false,
+   "C_failset_identical_to_truth": null,
+   "reason_hist": {
+    "stdout_mismatch": 18
+   }
+  },
+  "r598/w179": {
+   "n_cases": 58,
+   "buckets": {
+    "OK_两侧全过": 46,
+    "A2_摆动带": 12
+   },
+   "family_buckets": {
+    "life": {
+     "OK_两侧全过": 14
+    },
+    "nim": {
+     "OK_两侧全过": 15
+    },
+    "sub": {
+     "OK_两侧全过": 14
+    },
+    "wythoff": {
+     "A2_摆动带": 12,
+     "OK_两侧全过": 3
+    }
+   },
+   "A_named": [],
+   "C_named": [],
+   "D_named": [],
+   "A_share": 0.0,
+   "A_subset_of_D": false,
+   "C_failset_identical_to_truth": null,
+   "reason_hist": {
+    "stdout_mismatch": 12
+   }
+  },
+  "r598/w180": {
+   "n_cases": 58,
+   "buckets": {
+    "OK_两侧全过": 56,
+    "A2_摆动带": 2
+   },
+   "family_buckets": {
+    "life": {
+     "OK_两侧全过": 14
+    },
+    "nim": {
+     "OK_两侧全过": 15
+    },
+    "sub": {
+     "OK_两侧全过": 14
+    },
+    "wythoff": {
+     "OK_两侧全过": 13,
+     "A2_摆动带": 2
+    }
+   },
+   "A_named": [],
+   "C_named": [],
+   "D_named": [],
+   "A_share": 0.0,
+   "A_subset_of_D": false,
+   "C_failset_identical_to_truth": null,
+   "reason_hist": {
+    "stdout_mismatch": 2
+   }
+  }
+ },
+ "pooled_buckets": {
+  "OK_两侧全过": 1235,
+  "A2_摆动带": 271,
+  "E_真值败_我方部分": 30,
+  "A_我方独败": 22,
+  "B_真值独败": 6,
+  "C_两侧同败": 2
+ },
+ "pooled_family_buckets": {
+  "life": {
+   "OK_两侧全过": 364,
+   "A2_摆动带": 14
+  },
+  "nim": {
+   "OK_两侧全过": 390,
+   "A2_摆动带": 15
+  },
+  "sub": {
+   "OK_两侧全过": 364,
+   "A2_摆动带": 14
+  },
+  "wythoff": {
+   "A2_摆动带": 228,
+   "OK_两侧全过": 117,
+   "E_真值败_我方部分": 30,
+   "A_我方独败": 22,
+   "B_真值独败": 6,
+   "C_两侧同败": 2
+  }
+ },
+ "A_bearing_windows": [
+  "r585/w155",
+  "r586/w159",
+  "r588/w165"
+ ],
+ "controls": {
+  "pos": {
+   "target_window": "r585/w155",
+   "flipped_case": "wythoff#45-hidden",
+   "A_before": 3,
+   "A_after": 2,
+   "has_teeth": true
+  },
+  "neg": {
+   "determinism_byte_identical": true,
+   "sha12": "86a522a04881",
+   "note": "同一输入两次装配 ⇒ 逐位相同（与 POS 成对 ⇒ 非「凡改即变」）"
+  },
+  "non_trivial": {
+   "pooled_buckets": {
+    "OK_两侧全过": 1235,
+    "A2_摆动带": 271,
+    "E_真值败_我方部分": 30,
+    "A_我方独败": 22,
+    "B_真值独败": 6,
+    "C_两侧同败": 2
+   },
+   "distinct_family_signatures": 3,
+   "pass": true
+  }
+ },
+ "verdict": {
+  "rc": 0,
+  "A_share_pooled": 0.014,
+  "note": "A 份额 = 加厚 prompt/契约类改动的**收益上界**（上界口径, 非预测）；C 份额登记题面/夹具嫌疑（只登记, 不改题面/夹具）"
+ }
+}

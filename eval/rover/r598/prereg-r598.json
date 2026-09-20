@@ -1,0 +1,183 @@
+{
+ "round": "R598",
+ "written_before_run": true,
+ "written_at": "2026-09-20T19:10+08:00",
+ "author": "cron tick (b15eb2f40a69) · 常驻能力自检循环执行体",
+ "claim": "主线真机对照轮 = **判据 v3 第六窗集行使**（同被测件 + 同冻结题集、只换窗集 w178..w180）× 外部真值 codex；并轮推进 R597 §7 候选 ②（真值侧 wythoff 缺口归因: 对 r585..r597 真值失败集合做只读普查, 判「题面对两侧同难」vs「真值臂自身漂移」）/ ③（C7 负控选择面改制: 先预注册、后重算, 禁手改判据凑绿）/ ④（V_int 第五窗集分布, 随本轮真机臂轮）/ ⑤（起手闸余量按 r597 实测振幅 83MB 重派生）。候选①（产品侧处置）**待用户放行** ⇒ 本轮不动产品源码。零产品源码改动 / 零新增夹具语义 / 零新增开关。",
+ "environment_note": "本 tick 首次起手闸采样 CEIL≈2765MB ⇒ CAP = CEIL−2650−60 = 55MB < floor 60MB ⇒ 条款 fail-closed（窗口不可开, 如实登记）。处置 = 起手前清场 sync + drop_caches（page cache 回收, 无数据/状态改动）⇒ CEIL≈3017MB ⇒ 窗口开启。影响面仅 MemAvailable 读数；被测量（真值/产品产出物与判分）不受影响。",
+ "one_time_context": {
+  "in_scope_rounds_prev": [
+   "r585",
+   "r586",
+   "r587",
+   "r588",
+   "r591",
+   "r595",
+   "r596",
+   "r597"
+  ],
+  "taskset_sha": "e0c667c2a313c04b",
+  "g1_prompt_sha256": "516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3",
+  "bin_sha12_expected": "4b70fd7cdb39",
+  "bin_path": "$HOME/.agentframework/artifacts/pub_r591/agenthost",
+  "cases_per_run": 58,
+  "families": {
+   "life": 14,
+   "nim": 15,
+   "sub": 14,
+   "wythoff": 15
+  },
+  "windows": [
+   "w178",
+   "w179",
+   "w180"
+  ],
+  "reps_per_window": {
+   "C1": 1,
+   "R598D": 3
+  },
+  "prior_window_sets": {
+   "set1": {
+    "rounds": [
+     "r585",
+     "r586",
+     "r587",
+     "r588"
+    ],
+    "rounds_label": "w154-w165",
+    "median_D_task": -0.6667,
+    "neg_windows": 8,
+    "valid_windows": 9
+   },
+   "set2": {
+    "rounds": [
+     "r591"
+    ],
+    "rounds_label": "w166-w168",
+    "note": "登记件 eval/rover/r591/taskface-pool-r591.json"
+   },
+   "set3": {
+    "rounds": [
+     "r595"
+    ],
+    "rounds_label": "w169-w171",
+    "median_D_task": -0.5,
+    "neg_windows": 2,
+    "valid_windows": 2
+   },
+   "set4": {
+    "rounds": [
+     "r596"
+    ],
+    "rounds_label": "w172-w174",
+    "median_D_task": -0.5,
+    "neg_windows": 2,
+    "valid_windows": 2
+   },
+   "set5": {
+    "rounds": [
+     "r597"
+    ],
+    "rounds_label": "w175-w177",
+    "median_D_task": -0.3333,
+    "neg_windows": 1,
+    "valid_windows": 1,
+    "note": "登记件 eval/rover/r597/taskface-pool-r597.json；真值 w175/w176 自败 56/58 ⇒ 按 C0 标 unreliable 剔除 ⇒ 有效窗仅 1 ⇒ 判据无分辨率，不作能力结论"
+   },
+   "rule": "跨窗集**禁相减**，只并列（docs/external-reference-harness.md §12.3）；阈值 -0.34 同一件、非事后调"
+  },
+  "g1_prompt_chars": 2182
+ },
+ "single_variable": "本轮自变量 = 窗集（真机臂轮，新窗 w178..w180）。被测件（bin sha 4b70fd7cdb39）、题集（逐字节复用，g1 题面 sha 已钉）、判据（v3）、夹具（cases-r521 冻结件）与 R585–R597 同 sha ⇒ 构成判据 v3 的**第六窗集**，继续累积有效窗。",
+ "criterion_version": "v3",
+ "arms": {
+  "C1": {
+   "side": "codex",
+   "bin": "$HOME/.agentframework/tools/codex-env/node_modules/.bin/codex",
+   "model": "deepseek-flash",
+   "reps": 1,
+   "role": "外部真值（同环境·同输入·同模型）"
+  },
+  "R598D": {
+   "side": "agent",
+   "bin": "$HOME/.agentframework/artifacts/pub_r591/agenthost",
+   "env": {
+    "AGENTFRAMEWORK_R1_CONTRACT": "1",
+    "dose_keys": "全部显式 unset（产品默认档）"
+   },
+   "reps": 3
+  }
+ },
+ "evidence_scope": {
+  "require": [
+   "eval/rover/r598/dag-r598.md",
+   "eval/rover/r598/prereg-r598.json",
+   "eval/rover/r598/taskset-r598.json",
+   "eval/rover/r598/percase-attrib-r598.json",
+   "eval/rover/r598/behav-census-r598.json",
+   "eval/rover/r598/gate-margin-r598.json",
+   "eval/rover/r598/kpi-table-r598.json",
+   "eval/rover/r598/verdict-r598.json",
+   "eval/rover/r598/taskface-pool-r598.json",
+   "eval/rover/r598/landing-predicate-r598.json",
+   "eval/rover/r598/report-r598.md",
+   "eval/rover/r598/snapshots"
+  ],
+  "note": "12 件（与本文件 C1–C12 判据一一对应；缺件 ⇒ 该判据面记未完成，不入结论）。snapshots 面 = 3 窗 × 4 跑次的 g1 快照树（逐字节归档，供铁律 11 前置器 project 布局发现）。",
+  "out_of_scope": [
+   "src/**（候选① 待放行 ⇒ 零产品改动）",
+   "cases-r521 冻结件（逐字节不变）",
+   "R585–R597 在盘读数（只作零回归对照臂 / 并列件，禁相减）"
+  ]
+ },
+ "axis_criteria_R598": {
+  "note": "主判据 = 判据 v3（整题全对率 + 按族分列，器具 pool_taskface_r598.py 复用 R589 逻辑源）。kpi_r598.py 的 C1（用例级配对）只作**同向参照**：v2 判决面已在 docs/external-reference-harness.md §12.3 作废。",
+  "C0 真值可靠性": "真值跑次 58/58 不成立 ⇒ 该窗 unreliable，不进配对、单列（禁筛窗）。",
+  "C1 用例级配对（参照）": "有效窗 ≥2 ∧ 配对中位 ≥ −2 ∧ 无窗 ≤ −15（v2 阈值照旧，仅作同向参照，不出判决）。",
+  "C2 成本三列": "调用数 / 新算 prompt / completion **分列**（禁合并名义总量）；命中率标口径（中继 dump 时间轴 v_all/v_incr）。信息项，不判红绿。",
+  "C3 起手闸余量条款（候选⑤ 行使面）": {
+   "prev_swing_source_rule": "只取**同态在飞窗**的运行期采样（R590-C2）；只读轮无运行期采样器 ⇒ 不可作源。",
+   "prev_swing_effective": 83,
+   "prev_swing_evidence": "~/.agentframework/harness/runs/r597/logs/run-samples.jsonl （n=46, min=2723MB, max=2806MB, swing=83MB；同态在飞窗）",
+   "clause": "MARGIN := clamp(prev_swing_effective, floor=60, cap=CEIL−GATE−floor); REQ = GATE(2650)+MARGIN；起手前 3 样本 CEIL=min 且极差 ≤50MB（fail-closed）；报 cap_binding。",
+   "discrimination_control": "同内存态下 基础门槛 PASS ∧ 条款 GATE_BLOCKED（压制量>0 时行使；量 0 ⇒ 如实记未行使）。"
+  },
+  "C5 缺口复现": "与 set1/set2/set3 **同件**的两个窗集并列比：同号 ∧ 区间重叠 ⇒ 缺口跨窗集复现；**禁相减**。",
+  "C6 步数列": "steps_executed / plan_steps_total 非空率 = 100% 才过（缺档 ⇒ rc=2 器具缺陷）。",
+  "C7 判据 v3 第六窗集（**主判据**）": {
+   "judge": "有效窗 中位 ≤ −0.34 ∧ 负号窗 ≥ 半数 ⇒ PASS（缺口成立）；否则 FAIL。阈值 −0.34 写死，非事后调。",
+   "secondary": "按族分列（life/nim/sub/wythoff 的 all-pass 率 + 失败原因直方图），与 set1..set5 **并列**。",
+   "third_face": "铁律 11 前置器 rc（executable_and_correct ∧ acceptable_scoped）；rc≠0 ⇒ 全部成本读数标「参考（未可验收）」。",
+   "resolution_bound": "set5 仅 1 有效窗（真值自败 2 窗被剔） ⇒ 中位与摆动均不可分离；本轮增量把有效窗推高，**仍不足以单独作能力结论**（摆动 ≥ 效应纪律）。"
+  },
+  "C8 候选② 真值侧 wythoff 缺口归因（只读, 零子进程）": {
+   "claim": "w175/w176 真值（codex）自败 56/58 且失败例同为 wythoff 公开例 + wythoff 隐藏例。本项对 r585..r598 全部真值跑次做只读普查: 逐窗列「真值失败例集合」与「两侧失败集合是否逐字相同」。",
+   "judge": "三态: ①真值失败集合跨窗逐字相同 ∧ 与本侧全臂相同 ⇒ 登记 **题面/夹具嫌疑（只登记，不改题面/夹具）**; ②真值失败集合逐窗漂移 ⇒ **真值臂自身漂移**; ③真值全绿窗 ⇒ 无缺口。",
+   "negative_controls": [
+    "NEG: 原样输入重跑两次 ⇒ 逐位相同（确定性）",
+    "非平凡性: 失败集合不得退化为恒定（不得恒为同一集合或恒为空）"
+   ],
+   "honest_boundary": "只读诊断 ⇒ 不构成能力验收；也不改题面/夹具（改动须用户放行）。"
+  },
+  "C9 候选③ C7 负控选择面改制（器具缺陷修法, 先预注册后重算）": {
+   "claim": "R597 的 C7 负控无靶 ⇒ rc=2（选择面 = agentD-r1 单臂 × set5 的 r1 零失败例）。本项**预注册选面规则**后重算, 目标 = 负控有靶且不翻正案。",
+   "rule_prereg": "选面 = ① 取当前窗集**全部**产品跑次（不限单臂）② 取**至少 1 例失败**的跑次（r1 零失败跑次无靶, 不计入）③ 若全体零失败 ⇒ 记**无靶**并 fail-closed（rc=2, 不伪绿）。",
+   "judge": "负控须「注入翻面」(POS) 与「原样不翻」(NEG) 成对; 无靶时 rc=2 如实登记。",
+   "honest_boundary": "器具缺陷修法 ≠ 判据放宽；阈值与判据文本一字不动。"
+  },
+  "C10 候选④ V_int 第五窗集分布（真机臂轮）": {
+   "量": "对 r598 新窗快照，用与 r593 **同一件定因器**（`landing_predicate_r593.py`，`--rounds r598 --codex-too`）出 `V_int` 直方图 + `cold_set_equal` 交叉校验 + 2×2 列联（两侧分列）",
+   "判据": "**不设阈值、不作触发**（承 R593/R594/R595 预注册禁止）；只报「分布面已扩到第五窗集」，阈值化仍记**未测**",
+   "零回归": "对 r585–r591 面复算，须与 R593/R594 登记值**逐位复现**（同一在盘 JSON）；不复现 ⇒ rc=2，本项不入结论"
+  },
+  "C11 只读性": "非本轮真机臂面（历史快照树、冻结夹具、产品源码）的 sha256 清单前后一致 ⇒ PASS；`git diff --stat src/` 为空。",
+  "C12 铁律 11 前置器": "`exec_precondition.py --round r598` 逐跑次产出物独立物化 + 真跑 + 逐用例判对；rc≠0 ⇒ 全部成本/质量降幅读数标「参考（未可验收）」，禁作验收依据。"
+ },
+ "candidate_ledger_R598": {
+  "① 产品侧处置裁定（wythoff 冷集构造层 / 交付面修复）": "**未做（待用户放行）**：动 `src/` 或题面外契约面 ⇒ 本 tick 无放行令 ⇒ 零产品源码改动（与 R593–R597 同处置）",
+  "② 真值侧 wythoff 缺口归因（只读普查）": "本轮做（C8：r585..r598 真值失败集合逐窗普查 + 两侧同败判定）",
+  "③ C7 负控选择面改制（器具缺陷修法）": "本轮做（C9：预注册选面规则后重算，禁手改判据凑绿）",
+  "④ V_int 第五窗集分布": "本轮做（C10，随真机臂轮出）",
+  "⑤ 起手闸余量按 r597 实测振幅重派生": "本轮做（C3：swing 168→83）"
+ }
+}
