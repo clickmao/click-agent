@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R600",
+ "updated_round": "R606",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -7086,6 +7086,26 @@
     "audited_by_round": "R600"
    },
    "negative_control": "① 判别性负控（真机同窗同二进制）: 对照档 C = 同二进制 + `AGENTFRAMEWORK_R1_ARTIFACT_CARRYOVER=0` ⇒ 9/9 跑次台账**无** artifact_carryover_rounds 字段（机制不得无差别触发）; ② 单测级负控: 一次即过的跑次**不产生**随附块与字段（机制只在回灌修复轮挂上）; ③ 零回归（逐位前缀）: 同场景轴关 vs 轴开 ⇒ 去掉 `</repair>` 闭合标记后轴开消息 = 轴关消息 + 追加块（只增不改, 调用数同为 2 ⇒ 同预算）; ④ 边界负控（有牙）: 越界路径 `../x` / 盘上缺失 / `__pycache__` 生成物 / 含 NUL 二进制 —— 前二只列名不搬内容、生成物静默跳过（不入任何列表）、二进制只报大小; ⑤ 预算负控: 单文件超限必留显式截断标记、总量超限必落「未随附」尾注（不静默丢弃）。"
+  },
+  {
+   "id": "r606.probe-repair-budget-default",
+   "level": "L3",
+   "owner_round": "R606",
+   "capability": "R1 管道**探针修复预算轴**产品档缺省（`AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR` 0→1）真机单变量 A/B ⇒ **判负并撤回**（预注册 falsification ① 命中）。单变量只在 `R1Options.FromEnvironment`；record 缺省保持 0（= 旧行为逐位）⇒ 零回归可机检。真机（同题集 `e0c667c2` · 同剂量键 · 第十二窗集 w196..w198，T=缺省档 ×3 窗 + C=显式 0 ×3 窗 + C1=codex 真值 ×1）: **J1 机制面 PASS**（T 档 `probe_repairs>0` 跑次存在、C 档 ==0 ⇒ 产品档翻档真机生效，机制不被静默吞掉）· **J2 修复收敛（主）反向 FAIL**（T 2/9 vs C 6/9）· **J3 成本 FAIL（v1/v2 并列）**（调用 Σ 21 vs 15、新算 prompt Σ 18,201 vs 11,139、completion Σ 44,586 vs 38,226）· **J4 能力 FAIL**（池化整题全对 0.7778 = 0.7778、用例中位 58 = 58、命中 v_all 0.9167 vs 0.9288）· **J5 FAIL**（方向翻号）· **主判据 v3 PASS**（D 逐窗 [−11,0,0]、中位 0、有效窗 3；剔除 LD 后 [−12,0,0]）⇒ 汇总 rc=0 但**预注册判负**。处置: 该轴降**观测项**（重开条件 `reps ≥25/档` + 新证据面，须以同一反事实重建被测件）+ 撤回缺省翻档（`git checkout` ⇒ 提交面零 `src/`，产物 `pub_r606` sha12 `f564dd8c3d78` 保留为反事实证据）。门禁: build 0 error · 形式门禁 14/14 · 全量 1942/1943（1 红 = `PromptCacheChannelTests.溯源` 遥测上游错误行缺 `prompt_tokens`，与本轮零产品改动无关）· AOT rc=0 IL 警告 0 原生 ELF 19,735,472 B。",
+   "evidence_cmd": "python3 eval/rover/r606/judge_r606.py --D $HOME/.agentframework/harness/runs/r606 --pd eval/rover/r606 && python3 tools/roundcheck/roundcheck.py audit --round R606",
+   "evidence_path": "docs/evidence/RF0001/R606-probe-repair-default.md",
+   "negative_control": "① **判别性负控（真机同窗同二进制）**: 对照档 C = 同二进制 + `AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR=0` ⇒ 9/9 跑次 `probe_repairs==0`（机制不得无差别触发；打点机检 = 治疗面 >0 ∧ 对照面 ==0）; ② **零回归（逐位）**: 库内显式构造 `R1Options` record 缺省保持 0 ⇒ 轴关面逐位等于旧行为; ③ **外部真值臂** C1 = codex-cli `0.154.0`（同环境同模型 `deepseek-chat`）⇒ 主判据 v3 的 D 由真值配对给出，非自证; ④ **反事实保留**: 判决后回退 `src/`，被测件 `pub_r606` 与产品树**不同源** ⇒ 只作反事实证据，禁与冻结件轮相减（R605/R603）; ⑤ **铁律 11 rc=1**（`w198/agentC-r1` blocked，`cases=43/58`）⇒ 成本/质量列标「参考·未可验收」，不得据此宣称达标。",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "4464d98a0d56",
+    "instrument": "eval/rover/r606/judge_r606.py",
+    "instrument_sha12": "5a30d2084907",
+    "binding": "audit-pin",
+    "audited_by_round": "R606"
+   },
+   "covers": null
   }
  ],
  "aot_check_policy": "release_tag_only",
