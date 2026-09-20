@@ -1,0 +1,82 @@
+{
+ "round": "R607",
+ "kind": "RF0004.0 盘点+打点（零产品改动：三面打点齐全 + 打点面判别力真机行使）",
+ "written_before_run": true,
+ "written_at": "2026-09-21T05:2x+08:00",
+ "milestone_source": "docs/plans/RF0004-three-capability-development-plan.md §3 表行「RF0004.0 盘点+打点 | R607 | 零产品改动：识别出口/生成档/编排面打点齐全」；出口闸 = 打点面治疗 >0 且对照 ==0 ∧ 全量绿 ∧ 恒前缀 ≥97% ∧ 起手闸 rc=0",
+ "protocol": "docs/plans/RF0005-completion-protocol.md §2 固定环 0–9",
+
+ "single_variable": {
+  "axis": "AGENTFRAMEWORK_GATE_REPEAT_SKIP",
+  "definition": "src/agent/IndustrialAgentV2.cs:83-84（static readonly，进程级：!= \"off\" ⇒ on）",
+  "treatment": "T = 未设（产品缺省 = on）",
+  "control": "C = 显式 \"off\"",
+  "why_this_axis": "三面之中只有「开放域识别/门」面在现盘有**可区分**的打点（编排面 ActionLoopRunner Emit 数 = 0；生成档 TaskKindHint.Generation 不存在 ⇒ 无打点可行使）。本轴是识别/门面唯一既有、零产品改动的开/关轴，用来证明**打点面本身有判别力**（治疗 >0 ∧ 对照 ==0）——这是 RF0004.0 的出口闸要求，也是后续 M1（R608–R609）能机检治疗>0 的前提。",
+  "not_tested": "本轴**不是**收益轴：本轮不宣称任何 tokens/质量增益（零产品改动、无 C1 质量对照臂）。"
+ },
+
+ "arms": {
+  "T": {"side": "agent", "env": {}, "reps": 3, "sessions": ["r607t1", "r607t2", "r607t3"],
+        "role": "治疗：缺省档（repeat_skip on）⇒ 轮2「重新来一遍」应走机械复述前置门 ⇒ Skip ⇒ 本地回放"},
+  "C": {"side": "agent", "env": {"AGENTFRAMEWORK_GATE_REPEAT_SKIP": "off"}, "reps": 3,
+        "sessions": ["r607c1", "r607c2", "r607c3"],
+        "role": "对照：同库同输入、轴显式关 ⇒ 轮2 落 ¬Ack 前置 Pass ⇒ 远端；三个打点键必须 ==0"}
+ },
+ "arm_table_deviation": {
+  "C1_codex": "跳步：§1.2 要求 C1（外部真值 codex）臂。本轮为**打点面盘点轮**（零产品改动、无质量对照项、无成本判据），codex 臂在该面上无对应读数（codex CLI 不产本仓打点）⇒ 如实标「未行使」，不进 KPI 表。",
+  "reason_rule": "协议 §2 允许跳步，但必须写「跳步 <名称> <一行原因>」；本条目即该声明。"
+ },
+
+ "fixture": {
+  "library_file": "data/nlp/gate-shapes.txt",
+  "pre_state": "data/nlp 目录不存在（起手实测 ABSENT）",
+  "content_source": "eval/rover/r583/fixture-shapes-line1.txt（逐字复用，不重造、不换等价件）",
+  "content_sha256": "c98f8ab3e8a49acb5363ae62920fca9174b25dced7a8430dcb1870347cb05a8d",
+  "upstream": "该行源自 eval/rover/r581/shapes-r581.txt 第 1 行（R581 真机回补学到），同一行已在 R583 预注册登记",
+  "restore": "全部臂跑完 ⇒ 删除 data/nlp 目录，复原为「不存在」；复原后回读断言",
+  "turns_file": "eval/rover/r583/turns-S0.txt（2 轮，逐字复用）",
+  "turns": ["请用一句话说明 wythoff 游戏的三堆必胜条件是什么？", "重新来一遍"]
+ },
+
+ "deliverables": [
+  "eval/rover/r607/dag-r607.json",
+  "eval/rover/r607/telemetry-inventory-r607.json（三面 15 键：发射点 file:line + 现读数 + 主链消费 + 缺口）",
+  "eval/rover/r607/inventory_r607.py（--write/--check，含有牙负控）",
+  "eval/rover/r607/prereg-r607.json（本件）",
+  "eval/rover/r607/run_r607.sh + offsets-r607.json + arm-*.log + arm-meta.txt",
+  "eval/rover/r607/judge_r607.py + verdict-r607.json",
+  "docs/evidence/R607/EVIDENCE.md + registry 行 + kpi.jsonl 行"
+ ],
+
+ "criteria": [
+  {"id": "P1", "name": "打点面·治疗 >0", "rule": "每个 T 跑次：`local_turn_gate{verdict=Skip}` ≥1 ∧ `nlp_shape{shape=1 ∧ face=repeat ∧ route=local_skip}` ≥1 ∧ `local_gate_skip_reply{kind=repeat_verbatim}` ≥1",
+   "threshold_source": "口径源 = eval/rover/r583/prereg-r583.json P1（分层口径，同族键集）；对照面零触发口径源 = baselines `F_merge.zero_regression.C_probe_repairs`",
+   "baselines": ["F_merge.zero_regression.C_probe_repairs"]},
+  {"id": "P2", "name": "打点面·对照 ==0", "rule": "每个 C 跑次：P1 的三个键**逐一 ==0**（任一 >0 ⇒ 轴不净）",
+   "threshold_source": "同上（控制面零触发）", "baselines": ["F_merge.zero_regression.C_probe_repairs"]},
+  {"id": "P3", "name": "闸前置（VOID 判据）", "rule": "每个跑次 `local_turn_gate_config{turn_gate_enabled=true ∧ role != '(null)'}` ≥1；不过 ⇒ 该跑次 VOID 单列，不进 P1/P2 分母",
+   "threshold_source": "eval/rover/r583/prereg-r583.json preconditions", "baselines": []},
+  {"id": "P4", "name": "恒前缀未破（只许加厚）", "rule": "冻结恒前缀 chars == 15291 ∧ 前缀 sha256 == f1280f71e6fc74c1f14f64adab5a54…（现盘重算，非引历史读数）；命中率 ≥0.97 项在 REPL 面上**无口径**（无中继 dump）⇒ 如实记未测",
+   "threshold_source": "baselines `F_env.prefix.chars` / `F_env.prefix.sha256`",
+   "baselines": ["F_env.prefix.chars", "F_env.prefix.sha256"]},
+  {"id": "P5", "name": "器具自检（有牙）", "rule": "① 负控：把 C 臂切片里注入一条 `local_turn_gate{verdict=Skip}` ⇒ P2 必须判红；② 非平凡：T/C 两臂读数必须互异（不得两臂全同）",
+   "threshold_source": "skill kpi-eval-harness-design「负控先证明器具有牙」+ 确定性必须与非平凡性成对",
+   "baselines": []}
+ ],
+
+ "falsification": [
+  {"id": "F1", "cond": "T 臂三个打点键全 0", "action": "记「变量在本管道不可生效」⇒ 轴降为观测项，如实报 FAIL，禁强跑下一层"},
+  {"id": "F2", "cond": "C 臂三键任一 >0", "action": "记「轴不净」⇒ 本轮 P2 FAIL，回 N5 换轴；**禁下调阈值**"},
+  {"id": "F3", "cond": "任一跑次 P3 不过（turn_gate_enabled != true 或 role == '(null)'）", "action": "该跑次 VOID 单列；若有效跑次 <2 ⇒ rc=3 停链（协议 §3 R3）"}
+ ],
+
+ "baselines_used": ["F_env.prefix.chars", "F_env.prefix.sha256", "F_env.gate.prev_swing_mb",
+                    "F_merge.zero_regression.C_probe_repairs", "F_orch.cost.calls_sum"],
+
+ "zero_regression": {
+  "claim": "净产品改动 = 0（本轮不改任何 src 文件）",
+  "machine_check": "git status --porcelain src/ 为空 ∧ 判据器断言本轮提交的 src/*.cs 逐字节 == 上一提交"
+ },
+
+ "gate": {"preflight_rc": 0, "mem_avail_mb": 2870, "prev_swing_mb": 285, "gated_by": "tools/roundcheck/roundcheck.py preflight --round R607 --min-avail-mb 285"}
+}

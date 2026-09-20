@@ -1,0 +1,448 @@
+{
+ "round": "R607",
+ "kind": "RF0004.0 打点面判别力判决",
+ "judge_version": "v2",
+ "checks": {
+  "P3_gate_precondition": {
+   "ok": true,
+   "valid_reps": {
+    "T": [
+     1,
+     2,
+     3
+    ],
+    "C": [
+     1,
+     2,
+     3
+    ]
+   },
+   "void_reps": [],
+   "detail": {
+    "T": [
+     {
+      "config_rows": 1,
+      "turn_gate_enabled": "True",
+      "role": "skeptic"
+     },
+     {
+      "config_rows": 1,
+      "turn_gate_enabled": "True",
+      "role": "skeptic"
+     },
+     {
+      "config_rows": 1,
+      "turn_gate_enabled": "True",
+      "role": "skeptic"
+     }
+    ],
+    "C": [
+     {
+      "config_rows": 1,
+      "turn_gate_enabled": "True",
+      "role": "skeptic"
+     },
+     {
+      "config_rows": 1,
+      "turn_gate_enabled": "True",
+      "role": "skeptic"
+     },
+     {
+      "config_rows": 1,
+      "turn_gate_enabled": "True",
+      "role": "skeptic"
+     }
+    ]
+   }
+  },
+  "P1_treatment_positive": {
+   "ok": true,
+   "counts_per_rep": {
+    "gate_skip": [
+     1,
+     1,
+     1
+    ],
+    "shape_hit": [
+     1,
+     1,
+     1
+    ],
+    "skip_reply": [
+     1,
+     1,
+     1
+    ]
+   },
+   "rule": "每个 T 跑次三键各 ≥1（reps≥3）"
+  },
+  "P2_control_zero": {
+   "ok": true,
+   "counts_per_rep": {
+    "gate_skip": [
+     0,
+     0,
+     0
+    ],
+    "shape_hit": [
+     0,
+     0,
+     0
+    ],
+    "skip_reply": [
+     0,
+     0,
+     0
+    ]
+   },
+   "rule": "每个 C 跑次三键逐一 ==0"
+  },
+  "P4_frozen_prefix": {
+   "ok": true,
+   "prefix_chars_declared": 15291,
+   "prefix_chars_check_rc": 0,
+   "prefix_chars_observed": "[15291]",
+   "prefix_sha256_declared": "f1280f71e6fc74c1f14f64adab5a54c6e06083acb18bbf51eb7fdbed30cc4d4a",
+   "hit_rate_ge_097": "未测（REPL 面不产恒前缀命中口径：无中继 dump）",
+   "rule": "冻结恒前缀只许加厚：chars/sha 现盘核对；命中率项如实记未测"
+  },
+  "P5_instrument_has_teeth": {
+   "ok": true,
+   "negative_control_injected_skip_count": 1,
+   "negative_control_expect_rc": 1,
+   "nontrivial_T_vs_C_differ": true,
+   "rule": "负控：注入一条 Skip 行 ⇒ P2 必须判红；非平凡：T/C 读数必须互异"
+  }
+ },
+ "defects": [],
+ "binary_sha256": "fe1fb720fb5eedb044014b1c27cd18352e851960102f93920bfb2f57e0820dd3",
+ "checks_posthoc": {
+  "axis_attribution_same_input_fingerprint": {
+   "T_basis_by_msg_sha16": {
+    "null": [
+     "mechanical:pass→remote",
+     "mechanical:repeat→local"
+    ],
+    "536628bd8a66d215": [
+     "mechanical:pass→remote"
+    ],
+    "147757f75f39bd44": [
+     "mechanical:repeat→local"
+    ]
+   },
+   "C_basis_by_msg_sha16": {
+    "null": [
+     "mechanical:nonack→remote",
+     "mechanical:pass→remote"
+    ],
+    "536628bd8a66d215": [
+     "mechanical:pass→remote"
+    ],
+    "147757f75f39bd44": [
+     "mechanical:nonack→remote"
+    ]
+   },
+   "ok_posthoc": true,
+   "note": "事后新增观测（不入预注册判据、不入 verdict）：同 msg_sha16 下 basis 互斥 ⇒ 单变量净"
+  },
+  "v1_disclosure": {
+   "v1_file": "eval/rover/r607/verdict-r607-v1-RED-boolexact.json",
+   "v1_verdict": "VOID(rc=3)",
+   "v1_failed_items": [
+    "P3_gate_precondition",
+    "P1_treatment_positive",
+    "P2_control_zero",
+    "P5_instrument_has_teeth"
+   ],
+   "v1_root_cause": "读数口径错：turn_gate_enabled 以 .NET 'True' 落盘，判据器按字面 'true' 比较 ⇒ 前置判 False ⇒ 有效跑次 0 ⇒ P1/P2/P5 连带失败",
+   "v2_change": "只修读数归一（_boolish），**阈值与判据集不变**；原始遥测与字节偏移未变 ⇒ 同一跑次复判，非重跑（无新臂、无新窗）",
+   "bin_sha256": "fe1fb720fb5eedb044014b1c27cd18352e851960102f93920bfb2f57e0820dd3"
+  }
+ },
+ "verdict": "PASS",
+ "mechanism_face": "P1/P2/P3 = 打点面（机制面）：打点是否可区分治疗与对照",
+ "capability_face": "未行使 —— 本轮零产品改动、无质量对照臂（C1 codex 跳步，见 prereg.arm_table_deviation）",
+ "arms_raw": {
+  "T": [
+   {
+    "counts": {
+     "gate_skip": 1,
+     "shape_hit": 1,
+     "skip_reply": 1
+    },
+    "precondition": {
+     "config_rows": 1,
+     "turn_gate_enabled": "True",
+     "role": "skeptic"
+    },
+    "fp": {
+     "null": [
+      "mechanical:pass→remote",
+      "mechanical:repeat→local"
+     ],
+     "536628bd8a66d215": [
+      "mechanical:pass→remote"
+     ],
+     "147757f75f39bd44": [
+      "mechanical:repeat→local"
+     ]
+    },
+    "points": {
+     "phase_timing": 8,
+     "topic_relevance": 5,
+     "tendency_bias": 4,
+     "tool_decl_gate": 3,
+     "llm_call": 3,
+     "plan_formal_gate": 3,
+     "plan_node": 3,
+     "boot": 2,
+     "skill_scan": 2,
+     "skill_trigger": 2,
+     "skill": 2,
+     "intent": 2,
+     "evidence_gate": 2,
+     "plan_route": 2
+    },
+    "rep": 1,
+    "session": "r607t1",
+    "rc": 0,
+    "bytes": 23017,
+    "rows": 86,
+    "precondition_ok": true
+   },
+   {
+    "counts": {
+     "gate_skip": 1,
+     "shape_hit": 1,
+     "skip_reply": 1
+    },
+    "precondition": {
+     "config_rows": 1,
+     "turn_gate_enabled": "True",
+     "role": "skeptic"
+    },
+    "fp": {
+     "null": [
+      "mechanical:pass→remote",
+      "mechanical:repeat→local"
+     ],
+     "536628bd8a66d215": [
+      "mechanical:pass→remote"
+     ],
+     "147757f75f39bd44": [
+      "mechanical:repeat→local"
+     ]
+    },
+    "points": {
+     "phase_timing": 8,
+     "topic_relevance": 5,
+     "tendency_bias": 4,
+     "plan_formal_gate": 3,
+     "plan_node": 3,
+     "boot": 2,
+     "skill_scan": 2,
+     "skill_trigger": 2,
+     "skill": 2,
+     "intent": 2,
+     "evidence_gate": 2,
+     "plan_route": 2,
+     "plan_local_first": 2,
+     "plan_ablate": 2
+    },
+    "rep": 2,
+    "session": "r607t2",
+    "rc": 0,
+    "bytes": 21314,
+    "rows": 83,
+    "precondition_ok": true
+   },
+   {
+    "counts": {
+     "gate_skip": 1,
+     "shape_hit": 1,
+     "skip_reply": 1
+    },
+    "precondition": {
+     "config_rows": 1,
+     "turn_gate_enabled": "True",
+     "role": "skeptic"
+    },
+    "fp": {
+     "null": [
+      "mechanical:pass→remote",
+      "mechanical:repeat→local"
+     ],
+     "536628bd8a66d215": [
+      "mechanical:pass→remote"
+     ],
+     "147757f75f39bd44": [
+      "mechanical:repeat→local"
+     ]
+    },
+    "points": {
+     "phase_timing": 8,
+     "topic_relevance": 5,
+     "tendency_bias": 4,
+     "tool_decl_gate": 3,
+     "llm_call": 3,
+     "plan_formal_gate": 3,
+     "plan_node": 3,
+     "boot": 2,
+     "skill_scan": 2,
+     "skill_trigger": 2,
+     "skill": 2,
+     "intent": 2,
+     "evidence_gate": 2,
+     "plan_route": 2
+    },
+    "rep": 3,
+    "session": "r607t3",
+    "rc": 0,
+    "bytes": 23010,
+    "rows": 86,
+    "precondition_ok": true
+   }
+  ],
+  "C": [
+   {
+    "counts": {
+     "gate_skip": 0,
+     "shape_hit": 0,
+     "skip_reply": 0
+    },
+    "precondition": {
+     "config_rows": 1,
+     "turn_gate_enabled": "True",
+     "role": "skeptic"
+    },
+    "fp": {
+     "null": [
+      "mechanical:nonack→remote",
+      "mechanical:pass→remote"
+     ],
+     "536628bd8a66d215": [
+      "mechanical:pass→remote"
+     ],
+     "147757f75f39bd44": [
+      "mechanical:nonack→remote"
+     ]
+    },
+    "points": {
+     "phase_timing": 8,
+     "topic_relevance": 5,
+     "tendency_bias": 4,
+     "tool_decl_gate": 4,
+     "llm_call": 4,
+     "plan_formal_gate": 3,
+     "plan_node": 3,
+     "boot": 2,
+     "skill_scan": 2,
+     "skill_trigger": 2,
+     "skill": 2,
+     "intent": 2,
+     "evidence_gate": 2,
+     "plan_route": 2
+    },
+    "rep": 1,
+    "session": "r607c1",
+    "rc": 0,
+    "bytes": 23807,
+    "rows": 85,
+    "precondition_ok": true
+   },
+   {
+    "counts": {
+     "gate_skip": 0,
+     "shape_hit": 0,
+     "skip_reply": 0
+    },
+    "precondition": {
+     "config_rows": 1,
+     "turn_gate_enabled": "True",
+     "role": "skeptic"
+    },
+    "fp": {
+     "null": [
+      "mechanical:nonack→remote",
+      "mechanical:pass→remote"
+     ],
+     "536628bd8a66d215": [
+      "mechanical:pass→remote"
+     ],
+     "147757f75f39bd44": [
+      "mechanical:nonack→remote"
+     ]
+    },
+    "points": {
+     "phase_timing": 8,
+     "topic_relevance": 5,
+     "tendency_bias": 4,
+     "plan_formal_gate": 3,
+     "plan_node": 3,
+     "boot": 2,
+     "skill_scan": 2,
+     "skill_trigger": 2,
+     "skill": 2,
+     "intent": 2,
+     "evidence_gate": 2,
+     "plan_route": 2,
+     "plan_local_first": 2,
+     "plan_ablate": 2
+    },
+    "rep": 2,
+    "session": "r607c2",
+    "rc": 0,
+    "bytes": 20364,
+    "rows": 78,
+    "precondition_ok": true
+   },
+   {
+    "counts": {
+     "gate_skip": 0,
+     "shape_hit": 0,
+     "skip_reply": 0
+    },
+    "precondition": {
+     "config_rows": 1,
+     "turn_gate_enabled": "True",
+     "role": "skeptic"
+    },
+    "fp": {
+     "null": [
+      "mechanical:nonack→remote",
+      "mechanical:pass→remote"
+     ],
+     "536628bd8a66d215": [
+      "mechanical:pass→remote"
+     ],
+     "147757f75f39bd44": [
+      "mechanical:nonack→remote"
+     ]
+    },
+    "points": {
+     "phase_timing": 8,
+     "tool_decl_gate": 8,
+     "llm_call": 8,
+     "topic_relevance": 5,
+     "llm_call_empty_body": 5,
+     "tendency_bias": 4,
+     "plan_formal_gate": 3,
+     "plan_node": 3,
+     "skill_scan": 2,
+     "skill_trigger": 2,
+     "skill": 2,
+     "intent": 2,
+     "evidence_gate": 2,
+     "plan_route": 2
+    },
+    "rep": 3,
+    "session": "r607c3",
+    "rc": 0,
+    "bytes": 30873,
+    "rows": 97,
+    "precondition_ok": true
+   }
+  ]
+ },
+ "rc": 0
+}

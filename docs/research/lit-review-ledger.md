@@ -198,3 +198,34 @@
 - **候选② J3 v2 首次在新窗集行使**：a1（池化 21 vs 19）/ a2（w193 10 vs 5）/ b1（665.81 vs 287.89 = 2.31×）**三条全破** ⇒ 形态收口后**仍不达标**（与 R604 三轮全红同号）。读数 `verdict-r605.json::J3_cost`。
 - **候选⑥ 起手前清场**：按 pid 收口会话端 LSP 子进程（R604 反事实栏预测 249MB，实测 **+177MB**）⇒ 起手闸 A1/A2 PASS、窗口可开。
 - **V_int 第六窗集（顺延项回执）**：`landing_predicate_r593.py --rounds r605 --codex-too` **已完成**（rc=2）：21/21 跑次、oracle 一致、控制 OK/POS/NEG 落点唯一（新粒度 has_teeth=True / 旧粒度 False）、守恒 True；agent 桶 {B_coldset 48 / A_landing_loose 27 / D_delivery_or_shape 9 / A_selection_order 3}（D 子桶 D1 5 / D3 4）、codex 桶 {}（3 跑次全过）；`v_int_hist` agent {0:14, 3:1, 29:1, 32:1, 118:1} / codex {0:3}；层 agent {(c) 12, (b) 4, (a) 2} / codex {(c) 3}。**rc=2 两项 False 均为测量层**：① 零回归=False = 已知单窗集 scope 伪影（同器具对历史全集复算 match=True）；② 只读=False = **两个不可区分的候选因**：**（a）本侧**在器具运行期间并发跑了 `dotnet test`（器具以 `src/` 树 sha 前后比对作只读判据 ⇒ 构建写 `src/*/obj|bin` 即破）；**（b）对侧写者在飞** —— `.git/ROUND_CLAIM` = `R606 … 2026-09-21T04:31:28`，且工作区有**未提交** `src/` 改动（`R1Options.cs` + `R1ProbeRepairBudgetTests.cs`，共 +59/−4）⇒ 同一判据被破。快照树 `-newermt 04:26` 改动文件数 = **0** ⇒ **被测面（r605 快照）未被改**；两因不可区分（禁单选归因）。**纪律含义**：违反的是本侧的「批测/单测/build 三者互斥」，不是器具；R606 在无并发构建条件下重跑取纯净读数。读数 `eval/rover/r605/vint-r605.json` + 日志 `vint-r605.log`。
+
+## 9. R607 增量（2026-09-21；盘点+打点轮 · 零产品改动 · 主线 = RF0004.0）
+
+### 9.1 检索（本轮 2 式，≤3 上限内；间隔 ≥4s）
+
+| # | 检索式 | 说明 |
+|---|---|---|
+| Q1 | `"tool call orchestration" agent`（cat cs.CL, sort=submittedDate, max 5） | 命中 10,476 条；逐条读标题/摘要后取 1 条相关 |
+| Q2 | `"structured action space" "tool calling" agent`（cat cs.CL, sort=submittedDate, max 5） | 命中 12,156 条；top 命与 Q1 重叠 ⇒ 只作交叉确认，不新增条目 |
+
+**结果数不是判据**：Q1/Q2 的 `Found N results` 与相关性无关（去引号式检索会命中上万条）；本轮采信仅凭逐条读摘要。
+**权威性代理（逐条写明）**：2609.20804v1 = **纯预印本**（arXiv comment 仅 "43 pages"、无 journal-ref、无 DOI、无同行评审 venue）；未取到公开代码仓链接 ⇒ 按「纯预印本」档，**只作机制来源，不得当收益证据**。
+**引用数不可用**：Semantic Scholar 无 key ⇒ HTTP 429；OpenAlex 对近月预印本 `cited_by_count = 0` ⇒ 本轮**如实记「引用数不可用」**，不以引用量作权威性背书。
+**全文抓取**：0 篇（本轮只读 API 逐字摘要；未抓 PDF ⇒ 不宣称已读全文）。
+
+### 9.2 台账（8 列，本轮追加 1 行）
+
+| 日期 | 检索式 | 出处（含版本） | 逐字引文（≤2 句） | 机制假设 | 改哪一格 KPI（预期方向） | 单变量轴 + 判据（阈值/可证伪点） | 状态 |
+|---|---|---|---|---|---|---|---|
+| 2026-09-21 | `"tool call orchestration" agent` | arXiv:2609.20804v1（2026-09-17 · cs.AI/cs.CL/cs.LG/cs.SE · 预印本） | "To enable component-level comparisons, we study this question with a lightweight coding harness whose execution loop is fixed while three components are varied: planning, action space, and context management." / "Predefined tools improve performance for models with weaker bash proficiency, whereas bash-capable models can operate effectively with a bash-only interface and achieve substantially lower cost, especially on command-line-centric tasks." | **动作空间粒度是可单变量消融的轴**：固定执行环，只换「工具面粒度」（预定义工具集 ↔ 纯命令行面）⇒ 成本随模型能力而反转 | ②执行面（调用数按 request_id 去重）+ ⑤tokens（预期：粒度变粗 ⇒ 调用数↓、completion↓；质量持平） | 轴 = 动作空间粒度（两侧同一执行环，唯一差异 = 工具声明面）；判据 = 同窗 reps≥3：调用数 ≤ 旧臂 50% ∧ 质量（整题全对）≥ 旧臂 ∧ 恒前缀 ≥97% ∧ 打点面治疗>0/对照==0（**先证变量可生效**，否则 VOID） | **候选**（未实施：需先过 RF0004.2 R610–R612 的前置 = 编排面打点落地，见 §9.3） |
+
+### 9.3 本轮与本仓现状的代码证据对照（有代码行 ≠ 生效）
+
+| 面 | 代码事实（现盘） | 判据 |
+|---|---|---|
+| 多轮工具编排 | `src/agent/modelqueue/ModelQueueAdapter.cs:154`（`_actionPort != null && ActionLoopRunner.IsEnabled()` ⇒ 进旧动作环）；`ActionLoopRunner.cs` **Emit 数 = 0**（`grep -c "Emit(" ⇒ 0`） | 编排面**无专用打点** ⇒ 论文的「动作空间粒度」轴在本仓**当前不可机检**（打点缺失）⇒ 该候选的前置 = 先落编排面打点（RF0004.2） |
+| 生成类 | `src/agent.modelqueue/TaskKindHint.cs` 五档（General/ContextCompression/KeywordTagging/TendencyAnalysis/IntentClassification），**无 Generation** | 论文的「component 消融」范式要求被消融件有独立可选档 ⇒ 生成档不存在 ⇒ RF0004.3 前置成立 |
+| 开放域识别 | `src/agent/IndustrialAgentV2.cs:1862`（`nlp_shape`，现读数 19/27572 行） | 唯一**已在现盘可区分**的面（本轮真机行使对象） |
+
+**候选实施状态**：`候选`（未实施）——按 skill `external-reference-adoption`，实施一律走单变量真机对照（同窗 / reps≥3 / 预注册判据），**论文只提供机制假设**。
+**顺延计数**：本轮文献小步**未顺延**（2 式检索 + 台账追加均在本轮完成）。

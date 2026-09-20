@@ -1,0 +1,222 @@
+{
+ "faces": {
+  "多轮工具编排": {
+   "gaps": [
+    "ActionLoopRunner 专用打点键（现盘该文件 Emit 数 == 0）",
+    "结构化编排字段（动作候选进 R1 契约）的生效打点键"
+   ],
+   "gaps_missing_confirmed": true,
+   "keys": [
+    {
+     "consumer": "src/agent.modelqueue/ModelQueueRouter.Recovery.cs",
+     "emit_count_sites": 1,
+     "emit_sites": [
+      {
+       "file": "src/agent.modelqueue/ModelQueueRouter.Recovery.cs",
+       "line": 284
+      }
+     ],
+     "key": "tool_decl_gate",
+     "reading_total": 3460
+    },
+    {
+     "consumer": "",
+     "emit_count_sites": 1,
+     "emit_sites": [
+      {
+       "file": "src/agent/intent/PythonSelfTestExecutor.cs",
+       "line": 47
+      }
+     ],
+     "key": "plan_local_gated",
+     "reading_total": 0
+    }
+   ],
+   "question": "编排决策面是否有专用打点（不是自由文本动作环）？"
+  },
+  "开放域识别": {
+   "gaps": [
+    "统一出口结构 RecognitionVerdict{label|abstain,evidence} 的打点键",
+    "abstain ⇒ 远端 ⇒ 补丁 ⇒ 下次命中的闭环打点键"
+   ],
+   "gaps_missing_confirmed": true,
+   "keys": [
+    {
+     "consumer": "eval/rover/r579-tick/shape_kpi_face_check.py",
+     "emit_count_sites": 1,
+     "emit_sites": [
+      {
+       "file": "src/agent/IndustrialAgentV2.cs",
+       "line": 1862
+      }
+     ],
+     "key": "nlp_shape",
+     "reading_total": 31
+    },
+    {
+     "consumer": "eval/rover/r583/plane_split_r583.py",
+     "emit_count_sites": 1,
+     "emit_sites": [
+      {
+       "file": "src/agent/IndustrialAgentV2.cs",
+       "line": 1701
+      }
+     ],
+     "key": "local_turn_gate",
+     "reading_total": 28
+    },
+    {
+     "consumer": "",
+     "emit_count_sites": 1,
+     "emit_sites": [
+      {
+       "file": "src/agent/IndustrialAgentV2.cs",
+       "line": 1509
+      }
+     ],
+     "key": "local_turn_gate_config",
+     "reading_total": 325
+    },
+    {
+     "consumer": "",
+     "emit_count_sites": 1,
+     "emit_sites": [
+      {
+       "file": "src/agent/IndustrialAgentV2.cs",
+       "line": 1613
+      }
+     ],
+     "key": "local_turn_gate_reject",
+     "reading_total": 0
+    },
+    {
+     "consumer": "",
+     "emit_count_sites": 1,
+     "emit_sites": [
+      {
+       "file": "src/agent/IndustrialAgentV2.cs",
+       "line": 1811
+      }
+     ],
+     "key": "local_gate_skip_reply",
+     "reading_total": 6
+    },
+    {
+     "consumer": "",
+     "emit_count_sites": 1,
+     "emit_sites": [
+      {
+       "file": "src/agent/IndustrialAgentV2.cs",
+       "line": 1784
+      }
+     ],
+     "key": "local_gate_skip_history",
+     "reading_total": 6
+    },
+    {
+     "consumer": "",
+     "emit_count_sites": 1,
+     "emit_sites": [
+      {
+       "file": "src/agent/IndustrialAgentV2.cs",
+       "line": 1651
+      }
+     ],
+     "key": "repeat_degrade_remote",
+     "reading_total": 2
+    },
+    {
+     "consumer": "",
+     "emit_count_sites": 2,
+     "emit_sites": [
+      {
+       "file": "src/agent/IndustrialAgentV2.cs",
+       "line": 1663
+      },
+      {
+       "file": "src/agent/IndustrialAgentV2.cs",
+       "line": 1681
+      }
+     ],
+     "key": "paraphrase_degrade_remote",
+     "reading_total": 0
+    },
+    {
+     "consumer": "",
+     "emit_count_sites": 1,
+     "emit_sites": [
+      {
+       "file": "src/agent/IndustrialAgentV2.cs",
+       "line": 1754
+      }
+     ],
+     "key": "local_decision_ledger",
+     "reading_total": 338
+    }
+   ],
+   "question": "输入任意域文本 ⇒ {标签|abstain, 依据} 的统一出口是否存在可机检打点？"
+  },
+  "生成类": {
+   "gaps": [
+    "TaskKindHint.Generation 枚举档（现盘不存在）",
+    "生成类产物的独立验收器打点键（产物回放通过率）"
+   ],
+   "gaps_missing_confirmed": true,
+   "keys": [
+    {
+     "consumer": "",
+     "emit_count_sites": 1,
+     "emit_sites": [
+      {
+       "file": "src/agent.host/Program.cs",
+       "line": 354
+      }
+     ],
+     "key": "local_channel_warmup",
+     "reading_total": 0
+    },
+    {
+     "consumer": "src/agent.modelqueue/LocalSvgRenderer.cs",
+     "emit_count_sites": 1,
+     "emit_sites": [
+      {
+       "file": "src/agent.modelqueue/LocalSvgRenderer.cs",
+       "line": 109
+      }
+     ],
+     "key": "render_call",
+     "reading_total": 0
+    },
+    {
+     "consumer": "",
+     "emit_count_sites": 1,
+     "emit_sites": [
+      {
+       "file": "src/agent/IndustrialAgentV2.cs",
+       "line": 2124
+      }
+     ],
+     "key": "contract_declaration_hidden",
+     "reading_total": 158
+    },
+    {
+     "consumer": "",
+     "emit_count_sites": 1,
+     "emit_sites": [
+      {
+       "file": "src/agent/registry/ArtifactRepairLoop.cs",
+       "line": 98
+      }
+     ],
+     "key": "artifact_feedback",
+     "reading_total": 62
+    }
+   ],
+   "question": "TaskKindHint 是否有 Generation 档，且该档有独立打点？"
+  }
+ },
+ "host_jsonl_rows": 28082,
+ "kind": "RF0004.0 三面打点盘点（现盘派生）",
+ "round": "R607",
+ "telemetry_source": "data/telemetry/host.jsonl"
+}

@@ -1,0 +1,27 @@
+{
+ "round": "R607",
+ "milestone": "RF0004.0 盘点+打点（零产品改动：识别出口/生成档/编排面 打点齐全）",
+ "intent": "把「三面打点是否齐全、是否可机检治疗>0∧对照==0」从口头盘点变成现盘可核对的机检件 + 一次真机行使；不改产品源码。",
+ "nodes": [
+  {"id": "N1", "act": "起手闸 preflight", "kind": "read-only", "state": "DONE rc=0 (MemAvailable 2870MB / 闸 285MB / R607 空闲)"},
+  {"id": "N2", "act": "主线提醒（读 §7 最新块 + RF0004 §3 + 上轮 verdict）", "kind": "read-only", "state": "DONE"},
+  {"id": "N3", "act": "打点盘点：三面 × 既有打点键 × 发射点 file:line × 主链消费 × 现读数", "kind": "read-only", "writes": "eval/rover/r607/telemetry-inventory-r607.json"},
+  {"id": "N4", "act": "文献小步（arXiv ≤3 query；台账追加）", "kind": "read-only", "writes": "docs/research/lit-review-ledger.md (append)"},
+  {"id": "N5", "act": "预注册 prereg-r607.json（阈值引 baselines id + 证伪条目）", "kind": "write", "dep": ["N3"]},
+  {"id": "N6", "act": "构建：JIT Release 重钉（binary ↔ HEAD src 同源）+ 形式门禁", "kind": "write", "dep": ["N5"]},
+  {"id": "N7", "act": "真机跑：单变量 AGENTFRAMEWORK_GATE_REPEAT_SKIP 缺省 on(T) vs 显式 off(C)，各 3 reps", "kind": "write", "dep": ["N5", "N6"]},
+  {"id": "N8", "act": "判决 judge_r607.py：打点面治疗>0 ∧ 对照==0 ∧ 闸前置 ∧ 恒前缀冻结 ∧ 负控有牙", "kind": "write", "dep": ["N7"]},
+  {"id": "N9", "act": "收口：证据文档 + registry 行 + kpi 行(带 baselines) + status_gen --check PASS + 逐名列名 commit", "kind": "write", "dep": ["N8"]}
+ ],
+ "edges": [["N3", "N5"], ["N5", "N6"], ["N6", "N7"], ["N7", "N8"], ["N8", "N9"]],
+ "parallel_faces": [["N3", "N4"]],
+ "parallel_gate": "N3 与 N4 均只读且不写同仓 ⇒ 可并行；N6 起写同仓 ⇒ 其后严格串行（同仓在飞写者纪律）",
+ "restart_criteria": [
+  "① N7 出现任一臂 `local_turn_gate_config.turn_gate_enabled!=true` 或 role=='(null)' ⇒ 该轮判 VOID ⇒ 回 N5 重定臂（禁改判据）",
+  "② N8 对照臂 >0（轴不净）⇒ 回 N5 换轴（禁下调阈值）",
+  "③ N8 治疗臂全 0（变量 inert）⇒ 如实记「变量不可生效」，回 N5 换既有开关，禁强跑",
+  "④ 起手闸 fail-closed ⇒ 清场重采，禁挪阈值（协议 §3 R3/R5）"
+ ],
+ "budget": {"levers": "零产品源码改动；复用既有 turns（r583）+ 既有 shapes fixture（r581 第 1 行）+ 既有二进制构建路径；零新增夹具语义"},
+ "changed_kpi_cell": "本轮改 ③回执面（打点可机检性）与 ⑥回复质量的前置可判性；不改 tokens/命中率数值（零产品改动）"
+}
