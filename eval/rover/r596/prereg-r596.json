@@ -1,0 +1,128 @@
+{
+ "round": "R596",
+ "written_before_run": true,
+ "written_at": "2026-09-20T15:40+08:00",
+ "author": "cron tick (b15eb2f40a69) · 常驻能力自检循环执行体",
+ "claim": "主线真机对照轮 = **判据 v3 第四窗集行使**（同被测件 + 同冻结题集、只换窗集 w172..w174）× 外部真值 codex；并轮推进候选 ②（铁律 11 可验收化: 阻塞臂逐例归因）/ ③（交付物**行为面**契约普查，替代 R595 静态面无牙版）/ ④（V_int 第三窗集分布）/ ⑤（起手闸余量按 r595 实测振幅重派生）。候选①（本轴处置裁定 / 产品侧修复）**待用户放行** ⇒ 本轮不动产品源码。零产品源码改动 / 零新增夹具语义 / 零新增开关。",
+ "one_time_context": {
+  "in_scope_rounds_prev": ["r585", "r586", "r587", "r588", "r591", "r595"],
+  "taskset_sha": "e0c667c2a313c04b",
+  "g1_prompt_sha256": "516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3",
+  "bin_sha12_expected": "4b70fd7cdb39",
+  "bin_path": "$HOME/.agentframework/artifacts/pub_r591/agenthost",
+  "cases_per_run": 58,
+  "families": {"life": 14, "nim": 15, "sub": 14, "wythoff": 15},
+  "windows": ["w172", "w173", "w174"],
+  "reps_per_window": {"C1": 1, "R596D": 3},
+  "prior_window_sets": {
+   "set1": {"rounds": ["r585", "r586", "r587", "r588"], "rounds_label": "w154-w165",
+            "median_D_task": -0.6667, "neg_windows": 8, "valid_windows": 9},
+   "set2": {"rounds": ["r591"], "rounds_label": "w166-w168",
+            "note": "登记件 eval/rover/r591/taskface-pool-r591.json"},
+   "set3": {"rounds": ["r595"], "rounds_label": "w169-w171", "median_D_task": -0.5,
+            "neg_windows": 2, "valid_windows": 2,
+            "note": "登记件 eval/rover/r595/taskface-pool-r595.json；有效窗仅 2 ⇒ 趋势不作能力结论"},
+   "rule": "跨窗集**禁相减**，只并列（docs/external-reference-harness.md §12.3）；阈值 -0.34 同一件、非事后调"
+  },
+  "g1_prompt_chars": 2182
+ },
+ "single_variable": "本轮自变量 = 窗集（真机臂轮，新窗 w172..w174）。被测件（bin sha 4b70fd7cdb39）、题集（逐字节复用，g1 题面 sha 已钉）、判据（v3）、夹具（cases-r521 冻结件）与 R585–R595 同 sha ⇒ 构成判据 v3 的**第四窗集**，用于继续累积有效窗（set3 仅 2 有效窗 ⇒ 摆动与效应尚未分离）。",
+ "criterion_version": "v3",
+ "arms": {
+  "C1": {"side": "codex", "bin": "$HOME/.agentframework/tools/codex-env/node_modules/.bin/codex",
+         "model": "deepseek-flash", "reps": 1, "role": "外部真值（同环境·同输入·同模型）"},
+  "R596D": {"side": "agent", "bin": "$HOME/.agentframework/artifacts/pub_r591/agenthost",
+            "env": {"AGENTFRAMEWORK_R1_CONTRACT": "1", "dose_keys": "全部显式 unset（产品默认档）"}, "reps": 3}
+ },
+ "axis_criteria_R596": {
+  "note": "主判据 = 判据 v3（整题全对率 + 按族分列，器具 pool_taskface_r596.py 复用 R589 逻辑源）。kpi_r596.py 的 C1（用例级配对）只作**同向参照**：v2 判决面已在 docs/external-reference-harness.md §12.3 作废。",
+  "C0 真值可靠性": "真值跑次 58/58 不成立 ⇒ 该窗 unreliable，不进配对、单列（禁筛窗）。",
+  "C1 用例级配对（参照）": "有效窗 ≥2 ∧ 配对中位 ≥ −2 ∧ 无窗 ≤ −15（v2 阈值照旧，仅作同向参照，不出判决）。",
+  "C2 成本三列": "调用数 / 新算 prompt / completion **分列**（禁合并名义总量）；命中率标口径（中继 dump 时间轴 v_all/v_incr）。信息项，不判红绿。",
+  "C3 起手闸余量条款（候选⑤ 行使面）": {
+   "prev_swing_source_rule": "只取**同态在飞窗**的运行期采样（R590-C2）；只读轮无运行期采样器 ⇒ 不可作源。",
+   "prev_swing_effective": 133,
+   "prev_swing_evidence": "~/.agentframework/harness/runs/r595/logs/run-samples.jsonl （n=81, min=2542MB, max=2675MB, swing=133MB；同态在飞窗）",
+   "clause": "MARGIN := clamp(prev_swing_effective, floor=60, cap=CEIL−GATE−floor); REQ = GATE(2650)+MARGIN；起手前 3 样本 CEIL=min 且极差 ≤50MB（fail-closed）；报 cap_binding。",
+   "discrimination_control": "同内存态下 基础门槛 PASS ∧ 条款 GATE_BLOCKED（压制量>0 时行使；量 0 ⇒ 如实记未行使）。"
+  },
+  "C5 缺口复现": "与 set1/set2/set3 并列比：同号 ∧ 区间重叠 ⇒ 缺口跨窗集复现；**禁相减**。",
+  "C6 步数列": "steps_executed / plan_steps_total 非空率 = 100% 才过（缺档 ⇒ rc=2 器具缺陷）。",
+  "C7 判据 v3 第四窗集（**主判据**）": {
+   "judge": "有效窗 中位 ≤ −0.34 ∧ 负号窗 ≥ 半数 ⇒ PASS（缺口成立）；否则 FAIL。阈值 −0.34 写死，非事后调。",
+   "secondary": "按族分列（life/nim/sub/wythoff 的 all-pass 率 + 失败原因直方图），与 set1/set2/set3 **并列**。",
+   "third_face": "铁律 11 前置器 rc（executable_and_correct ∧ acceptable_scoped）；rc≠0 ⇒ 全部成本读数标「参考（未可验收）」。",
+   "resolution_bound": "set3 仅 2 有效窗 ⇒ 中位与摆动均不可分离；本轮增量把有效窗推高，**仍不足以单独作能力结论**（摆动 ≥ 效应纪律）。"
+  },
+  "C8 候选② 铁律 11 阻塞臂**逐例归因**（只读, 零子进程）": {
+   "claim": "R595 铁律 11 rc=1 的 6 个臂窗全在 wythoff 族。把「阻塞」量化到**例级**，并把「我方独败」拆成可归因（A）与交付形态（D）两栏 ⇒ A 类份额 = **加厚 prompt / 契约类改动的收益上界**（口径: 上界，非预测）。",
+   "input": "在盘 `cases.txt`（冻结判分器产物，逐例 PASS/FAIL + 原因）——两侧（真值 ×1 / 产品 ×3）同窗同例。",
+   "buckets": {
+    "A_我方独败": "真值 PASS ∧ 产品 3/3 全败 ⇒ 可归因我方（上界来源）",
+    "A2_摆动带": "真值 PASS ∧ 产品 1..2/3 败 ⇒ 摆动带（禁作能力结论）",
+    "B_真值独败": "真值 FAIL ∧ 产品 3/3 过 ⇒ 真值侧（单列）",
+    "C_两侧同败": "真值 FAIL ∧ 产品 3/3 败 ⇒ 同时报「失败集合是否逐字相同」；相同 ⇒ 登记题面/夹具嫌疑（**只登记，不改题面/夹具**）",
+    "D_交付形态": "产品失败原因为 rc≠0 / 异常 / TimeoutExpired（与 A 可交叠，单独报）"
+   },
+   "scope": "R595 阻塞 6 臂窗（w169 r1/r2、w170 r1/r2/codex、w171 r2）+ 本轮 w172..w174 全窗（同一批读数）。",
+   "negative_controls": [
+    "POS: 在副本上把某 A 类例的产品结果强制翻 PASS ⇒ 该例必须离开 A 桶且 A 计数 −1（证明桶绑定真实数据）",
+    "NEG: 原样输入重跑两次 ⇒ 逐位相同（确定性；与 POS 成对 ⇒ 非「凡改即变」）",
+    "非平凡性: 4 桶分布不得退化（A 与 D 的按族/按窗分布必须互异）"
+   ],
+   "honest_boundary": "只读诊断 ⇒ 不构成能力验收、不得回写成「产品已修」；A 类份额是**上界**，不是预期收益。"
+  },
+  "C9 候选③ 交付物**行为面**契约普查（只读；替代 R595 静态面无牙版）": {
+   "claim": "R595 静态属性普查在交付物 `importlib` 动态派发下**结构性无牙**（POS 控制不翻面）。本轮改**行为面**口径: 对每个跑次快照**实跑**其入口契约 `python3 -B -m games <family>`（4 族），记录 rc + stderr 类别。",
+   "classes": {
+    "ENTRY_FAIL": "stderr ∈ {ModuleNotFoundError, ImportError, AttributeError('module … has no attribute …')} ⇒ 交付面/契约面不自治",
+    "INTERNAL": "stderr ∈ {IndexError, TypeError, ValueError, RecursionError, …} ⇒ 产物内部错（执行面，非契约面）",
+    "TIMEOUT": "超 10s 未退出（有界）",
+    "OK": "rc=0"
+   },
+   "criterion": "报「跑次级 ENTRY_FAIL 计数」与两侧分列；与 R594 的 `solve` 单键面、R595 静态面**并列**（不相减）。",
+   "negative_controls": [
+    "POS: 在副本上把 `games/<family>.py` 改名 ⇒ 普查必须判该族 ENTRY_FAIL",
+    "NEG: 同一副本原样 ⇒ 普查必须判 OK",
+    "有界性: 全部子进程带 10s 超时 + 进程组收口（防孤儿，承 R592 教训）"
+   ],
+   "honest_boundary": "行为面普查 ≠ 能力验收；跑次面横跨 6 轮窗集 ⇒ 非独立样本。"
+  },
+  "C10 候选④ V_int 第三窗集分布（真机臂轮）": {
+   "量": "对 r596 新窗快照，用与 r593 **同一件定因器**（`landing_predicate_r593.py`，`--rounds r596 --codex-too`）出 `V_int` 直方图 + `cold_set_equal` 交叉校验 + 2×2 列联（两侧分列）",
+   "判据": "**不设阈值、不作触发**（承 R593/R594/R595 预注册禁止）；只报「分布面已扩到第三窗集」，阈值化仍记**未测**",
+   "零回归": "对 r585–r591 面复算，须与 R593/R594 登记值**逐位复现**（同一在盘 JSON）；不复现 ⇒ rc=2，本项不入结论"
+  },
+  "C11 只读性": "非本轮真机臂面（历史快照树、冻结夹具、产品源码）的 sha256 清单前后一致 ⇒ PASS；`git diff --stat src/` 为空。",
+  "C12 铁律 11 前置器": "`exec_precondition.py --round r596` 逐跑次产出物独立物化 + 真跑 + 逐用例判对；rc≠0 ⇒ 全部成本/质量降幅读数标「参考（未可验收）」，禁作验收依据。"
+ },
+ "candidate_ledger_R596": {
+  "① 产品侧处置裁定（wythoff 冷集构造层 / 交付面修复）": "**未做（待用户放行）**：动 `src/` 或题面外契约面 ⇒ 本 tick 无放行令 ⇒ 零产品源码改动（与 R593–R595 同处置）",
+  "② 铁律 11 可验收化（阻塞臂逐例归因）": "本轮做（C8）",
+  "③ 交付物自洽性普查改制为行为面口径": "本轮做（C9）",
+  "④ V_int 第三窗集分布": "本轮做（C10，随真机臂轮出）",
+  "⑤ 起手闸余量按 r595 实测振幅重派生": "本轮做（C3）"
+ },
+ "evidence_scope": {
+  "require": [
+   "eval/rover/r596/dag-r596.md",
+   "eval/rover/r596/prereg-r596.json",
+   "eval/rover/r596/taskset-r596.json",
+   "eval/rover/r596/percase-attrib-r596.json",
+   "eval/rover/r596/behav-census-r596.json",
+   "eval/rover/r596/gate-margin-r596.json",
+   "eval/rover/r596/kpi-table-r596.json",
+   "eval/rover/r596/verdict-r596.json",
+   "eval/rover/r596/taskface-pool-r596.json",
+   "eval/rover/r596/landing-predicate-r596.json",
+   "eval/rover/r596/report-r596.md",
+   "eval/rover/r596/snapshots"
+  ],
+  "note": "12 件（与本文件 C1–C12 判据一一对应；缺件 ⇒ 该判据面记未完成，不入结论）。snapshots 面 = 3 窗 × 4 跑次的 g1 快照树（逐字节归档，供铁律 11 前置器 project 布局发现）。",
+  "out_of_scope": [
+   "src/**（候选① 待放行 ⇒ 零产品改动）",
+   "cases-r521 冻结件（逐字节不变）",
+   "R585–R595 在盘读数（只作零回归对照臂 / 并列件，禁相减）"
+  ]
+ }
+}

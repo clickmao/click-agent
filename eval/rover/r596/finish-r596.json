@@ -1,0 +1,129 @@
+{
+ "round": "R596",
+ "summary": {
+  "judge_v3_set4": {
+   "valid": 2,
+   "median": -0.5,
+   "neg": 2,
+   "pass": true
+  },
+  "family_all_pass_rate": {
+   "life": {
+    "set1": 0.9722,
+    "set2": 1.0,
+    "set4": 1.0
+   },
+   "nim": {
+    "set1": 0.9722,
+    "set2": 1.0,
+    "set4": 1.0
+   },
+   "sub": {
+    "set1": 0.9722,
+    "set2": 1.0,
+    "set4": 1.0
+   },
+   "wythoff": {
+    "set1": 0.3889,
+    "set2": 0.4444,
+    "set4": 0.5556
+   }
+  },
+  "cost_three_columns": {
+   "product": {
+    "calls": 19,
+    "new_prompt": 4190,
+    "completion": 46389,
+    "v_all_med": 0.98,
+    "v_incr_med": 0.98
+   },
+   "truth": {
+    "calls": 38,
+    "new_prompt": 24802,
+    "completion": 16819,
+    "v_all_med": 0.94,
+    "v_incr_med": 0.96
+   }
+  },
+  "paired_case_face": {
+   "median": -7.5,
+   "range": [
+    -15,
+    0
+   ],
+   "valid_windows": 2,
+   "unreliable_windows": [
+    "w173"
+   ]
+  },
+  "gate": {
+   "prev_swing_effective": 133,
+   "ceiling_min_of_3": 2781,
+   "margin": 71,
+   "req": 2721,
+   "cap": 71,
+   "cap_binding": true
+  },
+  "iron11": {
+   "rc": 1,
+   "blocked_n": 5,
+   "executable_and_correct": false,
+   "acceptable_scoped": false
+  },
+  "candidate2_buckets": {
+   "OK_两侧全过": 933,
+   "A2_摆动带": 231,
+   "E_真值败_我方部分": 26,
+   "A_我方独败": 22,
+   "B_真值独败": 4,
+   "C_两侧同败": 2
+  },
+  "candidate2_pos_teeth": true,
+  "candidate3_agent": {
+   "runs": 63,
+   "ENTRY_FAIL": 2,
+   "INTERNAL": 4,
+   "TIMEOUT": 1,
+   "OK": 55,
+   "OTHER": 1
+  },
+  "candidate3_codex": {
+   "runs": 21,
+   "ENTRY_FAIL": 0,
+   "INTERNAL": 0,
+   "TIMEOUT": 0,
+   "OK": 21,
+   "OTHER": 0
+  },
+  "candidate3_pos_teeth": true,
+  "candidate4_agent_buckets": {
+   "B_coldset": 31,
+   "A_landing_loose": 7,
+   "D_delivery_or_shape": 6
+  },
+  "candidate4_layer": {
+   "(c) 本轴外": 5,
+   "(b) 冷集构造层": 3,
+   "(a) 落点/选择谓词层": 1
+  },
+  "candidate4_v_int": {
+   "0": 6,
+   "350": 1,
+   "102": 1,
+   "25": 1
+  },
+  "candidate4_zero_regression": "5 窗集零回归臂未收口（本 tick 时间预算内未跑完 ⇒ 不伪造 match）；r596 单窗集那次 match=False 属**结构性不适用**（登记基准 = 44 跑次，单窗集只有 12 跑次）⇒ 该次 rc=2 由零回归面产生，其余面（守恒/只读/无残留/控制 POS(a)·NEG(b)/oracle 一致）全绿；固有成员零漂移由 pool `reproduced_first_set` 复算承担",
+  "candidate4_landing_file": "eval/rover/r596/landing-third-r596.json",
+  "bin_sha_stable": true,
+  "bin_sha12": "4b70fd7cdb39"
+ },
+ "report": "eval/rover/r596/report-r596.md",
+ "ledger": {
+  "lines_before": 135,
+  "lines_after": 135,
+  "replaced": true
+ },
+ "master_appended": true,
+ "snapshot_updated": true,
+ "improvements_updated": true
+}
