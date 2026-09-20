@@ -1,0 +1,160 @@
+{
+ "round": "R605",
+ "written_before_run": true,
+ "written_at": "2026-09-21T04:25:00+08:00",
+ "author": "cron tick (60min) · 常驻能力自检循环执行体",
+ "claim": "主线同件扩窗轮：**同被测件 + 同冻结题集、只换窗集**（第十一窗集 w193..w195）的第四次复跑；同时把 R604 只读轮产出的三项器具面收口**首次在新窗集上行使**：候选② J3 成本判据 v2（池化 ∧ 逐窗池化 ∧ 单位调用新算 prompt）· 候选④ 有效窗下限判据面（真值自败窗 ⇒ 剔除配对 + 单列我方读数；有效窗 = 0/1 ⇒ 判「无分辨率」，禁记 FAIL/PASS）· 候选⑤ 低区分度用例冻结名单（只加报诊断列，主判据不剔除）。零产品源码改动 / 零新增夹具语义 / 零新增开关。",
+ "why_now": "R603 的 J3 用 v1 形态（`max-of-9` 单点极值）判 FAIL、R600/R602 判 PASS，同一批数据在 v2 形态下三轮全红（R604 已登记）⇒ 形态收口须在**尚未使用过的窗集**上按 v2 重跑才算行使（拿 R603 数据翻案属事后调口径，禁）。同时 R605 是被测件不变量（sha 8c3ade04d542）下的第四个窗集，可直接检验 v3 主判据在 set11 上的方向是否与 set9/set10 一致（并列，禁相减）。",
+ "single_variable": "AGENTFRAMEWORK_R1_ARTIFACT_CARRYOVER（1=治疗档·缺省 on / 0=对照档 ⇒ 逐位等于旧行为）。其余全同：被测件（$HOME/.agentframework/artifacts/pub_r600/agenthost，AOT 原生 ELF，sha256 8c3ade04d542…，**本轮未重发布 ⇒ 零产品源码改动**）、题集（cases-r521 冻结件逐字节复制件，sha e0c667c2a313c04b，与 R559–R603 同源，`cmp` 零差异）、剂量键（R1_CONTRACT=1 + R1_PUBLIC_SELFCHECK=1，MAX_REPAIR/MAX_EXEC_REPAIR/MAX_PROBE_REPAIR/EARLY_STOP_PFAIL 全部显式 unset）。",
+ "arms": {
+  "T": {
+   "side": "agent",
+   "bin": "$HOME/.agentframework/artifacts/pub_r600/agenthost",
+   "env": {
+    "AGENTFRAMEWORK_R1_CONTRACT": "1",
+    "AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK": "1",
+    "AGENTFRAMEWORK_R1_ARTIFACT_CARRYOVER": "1"
+   },
+   "reps": 3,
+   "role": "治疗档（缺省轴 = on）"
+  },
+  "C": {
+   "side": "agent",
+   "bin": "$HOME/.agentframework/artifacts/pub_r600/agenthost",
+   "env": {
+    "AGENTFRAMEWORK_R1_CONTRACT": "1",
+    "AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK": "1",
+    "AGENTFRAMEWORK_R1_ARTIFACT_CARRYOVER": "0"
+   },
+   "reps": 3,
+   "role": "对照档（轴关 ⇒ 逐位等于 R599D 行为）· 负控：器具不得无差别触发"
+  },
+  "C1": {
+   "side": "codex",
+   "bin": "$HOME/.agentframework/tools/codex-env/node_modules/.bin/codex",
+   "model": "deepseek-flash",
+   "reps": 1,
+   "role": "外部真值（同环境·同输入·同模型）· 次级读数·同窗配对基准"
+  }
+ },
+ "criterion_version": "v3",
+ "windows": [
+  "w193",
+  "w194",
+  "w195"
+ ],
+ "window_set_index": 11,
+ "definitions": {
+  "unmet_run": "探针 ran ∧ failed>0 ，或执行器终态 Rc≠0",
+  "converged_run": "该跑次终态满足 探针 failed==0 ∧ 执行器 Rc==0（即从「不合格」变成「合格」）",
+  "unreliable_window": "同窗 codex 真值自身失败（整题全对率 < 全例）⇒ 该窗不进配对（C0 条款；禁筛窗）",
+  "valid_window": "同窗 codex 真值 58/58 全过 ⇒ 该窗进入 v3 配对与有效窗计数"
+ },
+ "judge": {
+  "J1": {
+   "kind": "mechanism",
+   "assertion": "治疗档每条回灌修复轮的 user 轮含 `[artifact]` 块且 transcript 出现 R1_ARTIFACT_CARRYOVER 打点；对照档该打点计数 == 0（负控：器具不得无差别触发）",
+   "pass_if": "T打点>0 ∧ C打点==0"
+  },
+  "J2": {
+   "kind": "primary",
+   "assertion": "同窗集池化（9 跑次/档）converged_run 数：治疗档 ≥ 对照档 + 1（**阈值与 R600/R602/R603 一字未改**）",
+   "lower_bound": "T_converged >= C_converged + 1",
+   "report": "逐档 converged/9 + Wilson 95% 区间 + 逐窗三分表；**跨窗集禁相减，只与 R600/R602/R603 并列**"
+  },
+  "J3": {
+   "kind": "cost",
+   "form_v2": {
+    "status": "**本轮主成本判据（候选② 首次在新窗集上行使）**；三条**不含拍出来的阈值**（无自由参数）",
+    "a1": "池化 Σcalls(T) ≤ Σcalls(C)",
+    "a2": "逐窗 Σcalls(T) ≤ Σcalls(C)",
+    "b1": "单位调用新算 prompt（Σnew_prompt/Σcalls）T ≤ C",
+    "pass_if": "a1 ∧ a2 ∧ b1",
+    "formula_source": "eval/rover/r604/judge_j3v2_r604.py::v2_form（**import 复用，禁重写第二份**）",
+    "controls": "POS（注入一条 T 跑次 calls+=2 ⇒ 必判红且点名 a1/a2）· NEG（无注入 ≡ base）· 非平凡（各轮 (ΣT,ΣC) 读数互异）"
+   },
+   "form_v1_retained": {
+    "status": "照原样并列重算，**不翻案**任何已登记判决（r600 PASS / r602 PASS / r603 FAIL）",
+    "a": "T_max_calls <= C_max_calls"
+   },
+   "form_v2prime_report_only": {
+    "status": "**只作报告列，不作判据**（b1 对机制结构性不利：随附产物必然抬高修复轮单次新算 prompt ⇒ 是否降为报告列须用户裁定，候选③ 列 R606）",
+    "pass_if": "a1 ∧ a2",
+    "historical_neutrality": "r600/r602/r603 在 v1 / v2 / v2' 三形态下裁定一致（全为红或全为绿）⇒ 降级 b1 不改写任何已登记判决；本轮读数亦照此三形态并列落盘"
+   },
+   "report": "池化调用 / 新算 prompt / completion 三列 + 逐窗池化表；跨窗集禁相减"
+  },
+  "J4": {
+   "kind": "secondary_capability",
+   "assertion": "判据 v3 池化整题全对率：治疗档 ≥ 对照档 + 1 跑次/9 ∧ 无窗下降（阈值同 R600）",
+   "power_note": "n=9/档 ⇒ 摆动≥效应风险；单窗集不作能力结论（R587 教训）"
+  },
+  "J5": {
+   "kind": "cross_windowset_replication",
+   "assertion": "同向性：set11 的 sign(D_T_minus_C) 逐窗分布 与 set10（r603 w190..w192）**并列**呈现（禁相减、禁并池）；同向窗数 ≥ ceil(有效窗/2) 记「方向可复现」，否则记「未复现」",
+   "note": "本条只在两侧各自有效窗上判；无效窗（真值自败）单列"
+  },
+  "W_floor": {
+   "kind": "criterion_resolution_floor",
+   "status": "候选④ 首次落到判据器（R604 仅入册文档 §12.6 A 条）",
+   "assertion": "v3 主判据只在**有效窗 ≥ 2** 时行使；有效窗 ∈ {0,1} ⇒ 判决标签记 `NO_RESOLUTION`（判据**无分辨率**：不作能力结论，亦**不记** 不达/失败）；真值自败窗一律**剔除配对 ∧ 单列我方读数 ∧ 不记我方缺陷**（禁筛窗）",
+   "negative_control": "对 r585..r603 历史轮次按本条重算 ⇒ 标签必须与台账登记一致（r599 set7 有效窗 0 / r603 set10 有效窗 1 原样记「无分辨率」；r585..r588/r591/r595/r596/r598 有判定的窗集标签不变）"
+  },
+  "LD": {
+   "kind": "low_discrimination_frozen_list",
+   "status": "候选⑤ 首次落到判据器（R604 仅出 census）",
+   "frozen_list": [
+    "wythoff#43-public",
+    "wythoff#57-hidden"
+   ],
+   "freeze_source": "r604 truthcase census：真值失败 13 例次 / 57 窗次 / 17 窗（全部 wythoff 族）；Top2 = #57-hidden（17 窗/12 轮，我方通过率 0.5833）· #43-public（13 窗/9 轮，0.5）⇒ T1「真值侧掉线用例」成立、T2「我方稳定通过」不成立 ⇒ 判「低区分度候选」，**不作我方收益**",
+   "criterion": "主判据 v3 **不剔除**该两例（保持跨轮可比）；**加报**诊断列 `v3_ex_LD`（剔两例后的 D_median / valid_windows），**不作判据、不进 rc**",
+   "controls": "POS（LD 名单置空 ⇒ `v3_ex_LD` 必须逐位等于 v3，证明剔除路径真实生效）· NEG（LD 名单含未知 id ⇒ 身份闸 rc=2）· 非平凡（两列在含失败例的窗上必须互异）"
+  },
+  "J3_v2": {
+   "kind": "cost",
+   "assertion": "见 J3.form_v2（本轮**主成本判据**：a1 ∧ a2 ∧ b1，无自由参数）",
+   "lower_bound": "n/a（不破即过）"
+  }
+ },
+ "falsification": "① 若 set11 上 J3 v2 仍为红（a2 或 b1 不过）⇒ 记「成本判据形态收口后仍不达标」，并在报告中写明该轴对机制结构性不利（候选③ 待裁定），**不调阈值**；② 若 set11 的 D 方向与 set10 相反 ⇒ 判「窗集依赖（欠功率）」、禁作能力结论，并把该轴降为观测项；③ 若有效窗 ≤1 ⇒ 按 W_floor 记 `NO_RESOLUTION`（禁记 PASS/不达）；④ 若 T 与 C 逐位同形（携随附数 = 0）⇒ 判 mechanism-not-engaged、该窗集作废并如实登记。",
+ "l1_scope_declaration": {
+  "statement": "本轮**不含** L1 的 `BR`(盲重采样) / `P`(同形无关内容安慰剂) 两臂；本轮**不重测**该可构造性结论。",
+  "reason_pre_registered": "R602 已由 `eval/rover/r602/l1_axis_probe_r602.py` 机检证伪「零产品改动加 BR/P 两臂」的可构造性（`axis_states=2`：`AGENTFRAMEWORK_R1_ARTIFACT_CARRYOVER` 的解析是二值，src/agent/r1/R1Options.cs:100-108；修复轮随附内容由 ArtifactCarryover.Render 唯一决定，src/agent/r1/R1Pipeline.cs:313-330）⇒ BR/P 属产品侧端口扩展，**须用户放行**。",
+  "disclosure": "本轮 T-vs-C 只隔离「随附内容」；「额外一次尝试」在两臂同权；「同形无关内容」混淆**仍未测**，已在轮志与 §7 如实登记。"
+ },
+ "candidate_ledger": {
+  "note": "用户令：每轮推进**全部候选**；未做的必须写原因（禁静默消失）",
+  "items": [
+   {"id": "R605-①", "action": "产品侧处置裁定（wythoff 冷集构造层修复）", "status": "未做", "reason": "改 src/ ⇒ 须用户放行；本作业无用户在场，禁自行放行"},
+   {"id": "R605-②", "action": "J3 形态 v2 起效（新窗集预注册后跑）", "status": "做", "reason": "本轮主成本判据"},
+   {"id": "R605-③", "action": "b1 列口径裁定（报告列 vs 当闸）", "status": "部分", "reason": "已按预注册并列 v2'（报告列），**降级 b1 本身须用户裁定** ⇒ 列 R606"},
+   {"id": "R605-④", "action": "有效窗下限判据面落到判据器", "status": "做", "reason": "W_floor + 历史零回归重算"},
+   {"id": "R605-⑤", "action": "低区分度用例冻结名单与负控落到判据器", "status": "做", "reason": "LD 列 + 三控制"},
+   {"id": "R605-⑥", "action": "起手闸清场后重派生", "status": "做", "reason": "PREV_SWING 285（r603 同态在飞窗 n=146）"}
+  ]
+ },
+ "evidence_scope": {
+  "require": [
+   "eval/rover/r605/dag-r605.md",
+   "eval/rover/r605/prereg-r605.json",
+   "eval/rover/r605/taskset-r605.json",
+   "eval/rover/r605/report-r605.md",
+   "eval/rover/r605/verdict-r605.json",
+   "eval/rover/r605/kpi-table-r605.json",
+   "eval/rover/r605/gate-margin-r605.json"
+  ],
+  "note": "缺任一 ⇒ 该轮不得宣称「可验收」"
+ },
+ "gate_clause": {
+  "criterion": "C3 起手闸余量条款（R590 派生版）",
+  "prev_swing_source": "r603/logs/run-samples.jsonl（同态在飞窗实测，n=146，min=2584 / max=2869 ⇒ swing=285MB）",
+  "prev_swing_mb": 285,
+  "clause": "MARGIN := clamp(prev_swing_effective, floor=60, cap=CEIL-GATE-floor); REQ=GATE+MARGIN；连续 2 次 + 极差 ≤50MB",
+  "own_tool_cleanup": "起手前按 pid 收口本会话工具子进程（R604 实测 LSP 249MB 压低 MemAvailable；本轮起手前后各记一次 MemAvailable 差）"
+ },
+ "no_product_change": {
+  "src_touched": [],
+  "statement": "本轮零 src/ 改动；被测件 = R600 已放行发布件（sha 8c3ade04d542），臂身份由构造（env）单变量保证。"
+ }
+}
