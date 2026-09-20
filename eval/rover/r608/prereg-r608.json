@@ -1,0 +1,44 @@
+{
+ "round": "R608",
+ "written_before_run": true,
+ "milestone": "RF0004.1 开工（开放域识别统一出口）",
+ "kind": "出口落地轮：打点面判别力（治疗>0 ∧ 对照==0）+ 只读零回归消融 + abstain 基线读数",
+ "single_variable": {
+  "name": "AGENTFRAMEWORK_RECOGNITION_VERDICT",
+  "T": "未设（产品缺省 on = 出口打点落地）",
+  "C": "显式 off（该面打点不发 = 旧行为）",
+  "why_single": "出口渲染器 RecognitionOutlet 只读（不调 Decide/Extract/Observe、不递增计数）⇒ 该轴只影响『该面打点是否发射』这一件事，判定链不受影响；故 T/C 的判定面读数须逐位等价（P2 即此断言）"
+ },
+ "arms": {
+  "T": {"env": {}, "reps": 3},
+  "C": {"env": {"AGENTFRAMEWORK_RECOGNITION_VERDICT": "off"}, "reps": 3}
+ },
+ "fixture": {
+  "fixture_shapes": "eval/rover/r583/fixture-shapes-line1.txt",
+  "fixture_shapes_sha256": "c98f8ab3e8a49acb5363ae62920fca9174b25dced7a8430dcb1870347cb05a8d",
+  "turns": "eval/rover/r583/turns-S0.txt",
+  "turns_sha256": "9dc9511f1cb170820beaa661652207e9d75ee1e89b5282954a4fc735e991ba10",
+  "turns_per_arm": 2,
+  "role": "./skeptic.rbin",
+  "note": "夹具/轮序逐字复用 R583（R607 同源），库在两侧都预置（非被测变量）"
+ },
+ "bin_source": "src 现盘重建（JIT Release）⇒ sha 落 bins-r608.json；相对 R607 的差 = 本轮 2 新件 + 1 打点点位（逐条见 report）",
+ "criteria": [
+  {"id": "P1_treatment_positive", "desc": "T×3 每 rep `recognition_verdict` 事件数 ≥1 ∧ C×3 全部 ==0", "threshold_source": "eval/rover/r607/prereg-r607.json criteria P1/P2（同形，阈值不变）", "baselines": ["F_merge.zero_regression.C_probe_repairs"]},
+  {"id": "P2_ablation_bitwise_equivalent", "desc": "T/C 判定面读数逐位等价：逐 rep 的 local_turn_gate.{decided,verdict,basis} 序列相同 ∧ local_gate_skip_reply.kind 序列相同 ∧ 每臂远端调用数（llm_call）相同", "threshold_source": "eval/rover/r607/prereg-r607.json（轴关=旧行为逐位等价形态）", "baselines": ["F_merge.zero_regression.C_probe_repairs"]},
+  {"id": "P3_outlet_coverage", "desc": "出口覆盖全轮：T×3 每 rep 事件数 == 轮数（2）⇒ 口径可用；abstain 率与 coverage-risk 操作点作首读基线（无阈值，R609 出口闸判据面）", "threshold_source": "本轮预注册（覆盖数=轮数为可机检下界；比率阈值留给 R609）", "baselines": []},
+  {"id": "P4_prefix_invariant", "desc": "恒前缀冻结不变量：prefix chars == 15291 ∧ sha256 == f1280f71…4d4a（只许加厚，禁改写）；命中率 REPL 面无口径 ⇒ 记未测", "threshold_source": "eval/capability/baselines.json F_env.prefix.chars / F_env.prefix.sha256", "baselines": ["F_env.prefix.chars", "F_env.prefix.sha256"]},
+  {"id": "P5_judge_has_teeth", "desc": "负控：judge --negctl 把 T/C 数据互换后 P1 必翻红（否则判据无牙 ⇒ 本轮读数作废）", "threshold_source": "eval/rover/r607/prereg-r607.json P5（有牙形态）", "baselines": []}
+ ],
+ "falsification": [
+  {"id": "F1_axis_inert", "cond": "C 臂也出现 `recognition_verdict` 事件（>0）", "action": "轴无效（缺省翻档/开关未生效）⇒ 撤回产品改动，净产品改动 = 0，改写为观测项"},
+  {"id": "F2_outlet_not_readonly", "cond": "T/C 判定面读数不逐位等价（P2 红）", "action": "出口非只读（有副作用）⇒ 撤回出口打点改动（保留纯函数件），一轮内收窄"},
+  {"id": "F3_outlet_not_wired", "cond": "T 臂事件数 < 轮数（覆盖不足）", "action": "出口未覆盖全轮 ⇒ 如实记「部分接线」，不宣称出口落地；重启 N4（点位）"}
+ ],
+ "budgets": {"arxiv_queries": 3, "arxiv_fulltext": 2, "reply_lines": 3},
+ "honest_bounds_pre": [
+  "本轮无质量对照臂（codex）⇒ 不宣称任何质量/成本降幅（跳步已在 dag-r608.md 声明）",
+  "abstain 率为首读基线（无历史值可比）⇒ 出口闸「abstain 率↓」本轮到 R609 才可判",
+  "命中率（缓存）在 REPL 面无口径 ⇒ 记未测"
+ ]
+}

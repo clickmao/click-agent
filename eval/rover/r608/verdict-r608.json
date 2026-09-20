@@ -1,0 +1,414 @@
+{
+ "round": "R608",
+ "kind": "RF0004.1 识别出口落地判决（打点面判别力 + 只读消融）",
+ "judge_version": "v1.1",
+ "mode": "main",
+ "checks": {
+  "P1_treatment_positive": {
+   "ok": true,
+   "counts_per_rep": {
+    "outlet_emit": [
+     2,
+     2,
+     2
+    ],
+    "outlet_abstain": [
+     1,
+     1,
+     1
+    ],
+    "outlet_local": [
+     1,
+     1,
+     1
+    ]
+   },
+   "rule": "每个治疗跑次 `recognition_verdict` 事件数 ≥1（reps≥3，三键齐）"
+  },
+  "P2_control_zero": {
+   "ok": true,
+   "counts_per_rep": {
+    "outlet_emit": [
+     0,
+     0,
+     0
+    ],
+    "outlet_abstain": [
+     0,
+     0,
+     0
+    ],
+    "outlet_local": [
+     0,
+     0,
+     0
+    ]
+   },
+   "rule": "每个对照跑次 `recognition_verdict` 事件数 ==0（轴关=旧行为）"
+  },
+  "P3_outlet_coverage": {
+   "ok": true,
+   "coverage_per_rep": [
+    2,
+    2,
+    2
+   ],
+   "turns_per_arm": 2,
+   "abstain_per_rep": [
+    1,
+    1,
+    1
+   ],
+   "abstain_rate": 0.5,
+   "rule": "治疗跑次覆盖数 == 轮数（口径可用）；abstain 率作首读基线（无阈值，R609 出口闸判据面）"
+  },
+  "P4_frozen_prefix": {
+   "ok": true,
+   "prefix_chars_declared": 15291,
+   "prefix_chars_check_rc": 0,
+   "prefix_chars_observed": "[15291]",
+   "prefix_sha256_declared": "f1280f71e6fc74c1f14f64adab5a54c6e06083acb18bbf51eb7fdbed30cc4d4a",
+   "hit_rate_ge_097": "未测（REPL 面不产恒前缀命中口径：无中继 dump）",
+   "rule": "冻结恒前缀 chars/sha 现盘核对；命中率项如实记未测"
+  },
+  "P5_instrument_has_teeth": {
+   "ok": true,
+   "negative_control_expect_rc": 1,
+   "nontrivial_T_vs_C_differ": true,
+   "rule": "非平凡：T/C 读数必须互异；有牙由 --negctl 交换臂读数复判（P1 必须翻红，见 verdict-r608-negctl.json）"
+  },
+  "P2_ablation_bitwise_equivalent": {
+   "ok": false,
+   "per_rep": {
+    "rep1": {
+     "equal": true,
+     "T_calls": 3,
+     "C_calls": 2
+    },
+    "rep2": {
+     "equal": false,
+     "T_calls": 1,
+     "C_calls": 8
+    },
+    "rep3": {
+     "equal": true,
+     "T_calls": 2,
+     "C_calls": 3
+    }
+   },
+   "rule": "预注册原样：逐 rep 判定面序列（gate/nlp_shape/skip_reply 三元机械读数）逐位相同"
+  }
+ },
+ "defects": [
+  "P2_ablation_bitwise_equivalent"
+ ],
+ "judge_revision": "v1→v1.1 只改 checks_posthoc 的可比域算法（预注册判据集与阈值一字未改；P2 仍按原样判 FAIL）",
+ "binary_sha256": "fe1fb720fb5eedb044014b1c27cd18352e851960102f93920bfb2f57e0820dd3",
+ "fixture_sha256": "c98f8ab3e8a49acb5363ae62920fca9174b25dced7a8430dcb1870347cb05a8d",
+ "single_variable": {
+  "name": "AGENTFRAMEWORK_RECOGNITION_VERDICT",
+  "T": "未设（产品缺省 on = 出口打点落地）",
+  "C": "显式 off（该面打点不发 = 旧行为）",
+  "why_single": "出口渲染器 RecognitionOutlet 只读（不调 Decide/Extract/Observe、不递增计数）⇒ 该轴只影响『该面打点是否发射』这一件事，判定链不受影响；故 T/C 的判定面读数须逐位等价（P2 即此断言）"
+ },
+ "negctl_swapped": false,
+ "checks_posthoc": {
+  "comparable_domain_form_of_P2": {
+   "ok_posthoc": true,
+   "per_rep_bitwise_equal": [
+    "rep1",
+    "rep3"
+   ],
+   "rep_equal_count_of_3": 2,
+   "turn1_reading_all_six_arms": {
+    "r608t1": [
+     "local_turn_gate",
+     "true",
+     "Pass",
+     "None",
+     "None",
+     "None",
+     "mechanical:pass→remote"
+    ],
+    "r608t2": [
+     "local_turn_gate",
+     "true",
+     "Pass",
+     "None",
+     "None",
+     "None",
+     "mechanical:pass→remote"
+    ],
+    "r608t3": [
+     "local_turn_gate",
+     "true",
+     "Pass",
+     "None",
+     "None",
+     "None",
+     "mechanical:pass→remote"
+    ],
+    "r608c1": [
+     "local_turn_gate",
+     "true",
+     "Pass",
+     "None",
+     "None",
+     "None",
+     "mechanical:pass→remote"
+    ],
+    "r608c2": [
+     "local_turn_gate",
+     "true",
+     "Pass",
+     "None",
+     "None",
+     "None",
+     "mechanical:pass→remote"
+    ],
+    "r608c3": [
+     "local_turn_gate",
+     "true",
+     "Pass",
+     "None",
+     "None",
+     "None",
+     "mechanical:pass→remote"
+    ]
+   },
+   "turn1_unique_signatures": 1,
+   "comparable_msg_sha16": [
+    "536628bd8a66d215"
+   ],
+   "common_msg_sha16": [
+    "147757f75f39bd44",
+    "536628bd8a66d215",
+    "None"
+   ],
+   "T_by_msg": {
+    "147757f75f39bd44": [
+     "None|mechanical:repeat→local"
+    ],
+    "536628bd8a66d215": [
+     "None|mechanical:pass→remote"
+    ],
+    "None": [
+     "Pass|mechanical:pass→remote",
+     "Skip|mechanical:repeat→local"
+    ]
+   },
+   "C_by_msg": {
+    "147757f75f39bd44": [
+     "None|gate:repeat_no_replayable_prev→remote",
+     "None|mechanical:repeat→local"
+    ],
+    "536628bd8a66d215": [
+     "None|mechanical:pass→remote"
+    ],
+    "None": [
+     "Pass|gate:repeat_no_replayable_prev→remote",
+     "Pass|mechanical:pass→remote",
+     "Skip|mechanical:repeat→local"
+    ]
+   },
+   "note": "正确形态（事后单列、不入 verdict）：①逐 rep 逐位等价（2/3：rep1/rep3 同）②turn1 读数在 6/6 臂唯一（机械 `mechanical:pass→remote`，与模型无关）③不可比轮 = rep2（见 upstream_swing）。预注册判据过强（把执行面摆动轮纳入比较域），下一轮预注册改为分层（可比域）判据；阈值与判据集本轮不变"
+  },
+  "upstream_swing": {
+   "rep2": {
+    "T_calls": [
+     {
+      "calls": 1,
+      "prompt_new": 4228,
+      "completion": 866,
+      "unreported": 0
+     }
+    ],
+    "C_calls": [
+     {
+      "calls": 8,
+      "prompt_new": 62041,
+      "completion": 5721,
+      "unreported": 0
+     }
+    ],
+    "basis_diff": "C r2 turn2 basis = gate:repeat_no_replayable_prev→remote（上游回复形态不同 ⇒ 无回放源）⇒ 非轴效应"
+   },
+   "attribution_rule": "摆动 ≥ 效应 ⇒ 加 reps/扩窗（禁调阈值），不回撤产品改动（P1/P3/P4/P5 全过）"
+  },
+  "outlet_shape_samples": {
+   "T": {
+    "label": "abstain",
+    "abstain": "1",
+    "evidence": "basis=mechanical:pass→remote;face=gate;len=29;sha16=536628bd8a66d215",
+    "render": "abstain|basis=mechanical:pass→remote;face=gate;len=29;sha16=536628bd8a66d215",
+    "route": "remote",
+    "face": "gate",
+    "msg_sha16": "536628bd8a66d215"
+   }
+  },
+  "cost_three_columns": {
+   "T": [
+    {
+     "calls": 3,
+     "prompt_new": 6818,
+     "completion": 2481,
+     "unreported": 0
+    },
+    {
+     "calls": 1,
+     "prompt_new": 4228,
+     "completion": 866,
+     "unreported": 0
+    },
+    {
+     "calls": 2,
+     "prompt_new": 5295,
+     "completion": 1200,
+     "unreported": 0
+    }
+   ],
+   "C": [
+    {
+     "calls": 2,
+     "prompt_new": 5378,
+     "completion": 2593,
+     "unreported": 0
+    },
+    {
+     "calls": 8,
+     "prompt_new": 62041,
+     "completion": 5721,
+     "unreported": 0
+    },
+    {
+     "calls": 3,
+     "prompt_new": 6895,
+     "completion": 1533,
+     "unreported": 0
+    }
+   ]
+  },
+  "v1_disclosure": {
+   "v1_file": null,
+   "note": "本轮 v1 首跑即用；无重注册"
+  }
+ },
+ "verdict": "FAIL",
+ "mechanism_face": "P1/P2/P3/P4 = 出口落地与判别力（机制面）：治疗发出 `recognition_verdict` ∧ 对照 0 ∧ 覆盖全轮 ∧ 前缀不破；P2_ablation 逐位等价 = 只读性（消融面）",
+ "capability_face": "未行使 —— 无质量对照臂（C1 codex 跳步，见 dag-r608.md）；abstain 率仅首读基线",
+ "arms_raw": {
+  "T": [
+   {
+    "counts": {
+     "outlet_emit": 2,
+     "outlet_abstain": 1,
+     "outlet_local": 1
+    },
+    "costs": {
+     "calls": 3,
+     "prompt_new": 6818,
+     "completion": 2481,
+     "unreported": 0
+    },
+    "rep": 1,
+    "session": "r608t1",
+    "rc": 0,
+    "bytes": 23619,
+    "rows": 87
+   },
+   {
+    "counts": {
+     "outlet_emit": 2,
+     "outlet_abstain": 1,
+     "outlet_local": 1
+    },
+    "costs": {
+     "calls": 1,
+     "prompt_new": 4228,
+     "completion": 866,
+     "unreported": 0
+    },
+    "rep": 2,
+    "session": "r608t2",
+    "rc": 0,
+    "bytes": 19980,
+    "rows": 79
+   },
+   {
+    "counts": {
+     "outlet_emit": 2,
+     "outlet_abstain": 1,
+     "outlet_local": 1
+    },
+    "costs": {
+     "calls": 2,
+     "prompt_new": 5295,
+     "completion": 1200,
+     "unreported": 0
+    },
+    "rep": 3,
+    "session": "r608t3",
+    "rc": 0,
+    "bytes": 22111,
+    "rows": 85
+   }
+  ],
+  "C": [
+   {
+    "counts": {
+     "outlet_emit": 0,
+     "outlet_abstain": 0,
+     "outlet_local": 0
+    },
+    "costs": {
+     "calls": 2,
+     "prompt_new": 5378,
+     "completion": 2593,
+     "unreported": 0
+    },
+    "rep": 1,
+    "session": "r608c1",
+    "rc": 0,
+    "bytes": 21127,
+    "rows": 82
+   },
+   {
+    "counts": {
+     "outlet_emit": 0,
+     "outlet_abstain": 0,
+     "outlet_local": 0
+    },
+    "costs": {
+     "calls": 8,
+     "prompt_new": 62041,
+     "completion": 5721,
+     "unreported": 0
+    },
+    "rep": 2,
+    "session": "r608c2",
+    "rc": 0,
+    "bytes": 32621,
+    "rows": 100
+   },
+   {
+    "counts": {
+     "outlet_emit": 0,
+     "outlet_abstain": 0,
+     "outlet_local": 0
+    },
+    "costs": {
+     "calls": 3,
+     "prompt_new": 6895,
+     "completion": 1533,
+     "unreported": 0
+    },
+    "rep": 3,
+    "session": "r608c3",
+    "rc": 0,
+    "bytes": 23012,
+    "rows": 85
+   }
+  ]
+ },
+ "rc": 1
+}

@@ -1870,6 +1870,36 @@ private static bool IsSimpleIntentForReasoning(string intent, string userMessage
                     ("shapes", (long)shapeCounters.Shapes),
                     ("msg_sha16", agent.modelqueue.LocalInputFingerprint.Sha16(message.Content)));
             }
+
+            // ── RF0004.1 (M1) 开放域识别出口: 统一 `{标签|abstain, 依据}` 打点 ──
+            // R607 盘点确证缺口: 识别面**无**统一出口结构 (只有分散的 local_turn_gate/nlp_shape 等)。
+            // 本点位把**既有判定面事实**渲染成统一出口 (只读 ⇒ 判定链零改动; 渲染器纯函数见 RecognitionOutlet):
+            //   ① 标签 = 命中面 (repeat/para/gate); abstain = 无本地消化依据 (交远端, 依据里带机制原因);
+            //   ② 逐轮一行, 供「abstain 率 / coverage-risk 操作点」两列读数 (RF0004 §4 出口闸 R609 判据面)。
+            // 开关 `AGENTFRAMEWORK_RECOGNITION_VERDICT` 缺省 on (出口落地); 显式 off/0 ⇒ 不发该面打点 (消融臂)。
+            if (agent.nlp.RecognitionOutlet.IsEnabled())
+            {
+                var recFace = repeatTurnFlag ? agent.nlp.NlpGate.FaceRepeat
+                    : paraphraseTurnFlag ? agent.nlp.NlpGate.FaceParaphrase
+                    : string.Empty;
+                var recLocal = gateOutcome.Decided
+                    && gateOutcome.Verdict == agent.modelqueue.TurnGateVerdict.Skip;
+                var recVerdict = agent.nlp.RecognitionOutlet.Render(
+                    recLocal,
+                    _modelRouter?.TurnGate.LastBasis,
+                    recFace,
+                    message.Content.Length,
+                    agent.modelqueue.LocalInputFingerprint.Sha16(message.Content));
+                agent.config.AgentTelemetry.Emit("recognition_verdict", "IndustrialAgentV2",
+                    ("label", recVerdict.Label),
+                    ("abstain", recVerdict.Abstain ? "1" : "0"),
+                    ("evidence", recVerdict.Evidence),
+                    ("render", recVerdict.Render()),
+                    ("route", recLocal ? "local" : "remote"),
+                    ("face", recFace.Length > 0 ? recFace : agent.nlp.RecognitionOutlet.DefaultFace),
+                    ("msg_sha16", agent.modelqueue.LocalInputFingerprint.Sha16(message.Content)));
+            }
+
             
             // 6. ✅ 将消息添加到会话
             await AddToSessionAsync(message, llmResponse, ct);
