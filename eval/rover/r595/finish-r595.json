@@ -1,0 +1,81 @@
+{
+ "round": "R595",
+ "ts": "2026-09-20T14:12+08:00",
+ "inputs": {
+  "pool": true,
+  "coldset_rc": 0,
+  "census_rc": 2,
+  "lp_rc": 2,
+  "precond_rc": 1
+ },
+ "summary": {
+  "criterion_v3_third_window_set": "valid=2 median=-0.5 neg=2 ⇒ PASS",
+  "criterion_v3_set1_reproduced": true,
+  "family_all_pass": {
+   "life": {
+    "set1": 0.9722,
+    "set2": 1.0,
+    "set3": 1.0
+   },
+   "nim": {
+    "set1": 0.9722,
+    "set2": 1.0,
+    "set3": 1.0
+   },
+   "sub": {
+    "set1": 0.9722,
+    "set2": 1.0,
+    "set3": 1.0
+   },
+   "wythoff": {
+    "set1": 0.3889,
+    "set2": 0.4444,
+    "set3": 0.4444
+   }
+  },
+  "gate_clause": "prev_swing=102 margin=78 REQ=2728 cap_binding=True",
+  "gate_attempts": 4,
+  "candidate2_coldset": {
+   "agent": {
+    "CONSISTENT": 19,
+    "B2": 1,
+    "B3": 9,
+    "B1": 15
+   },
+   "codex": {
+    "B3": 3,
+    "CONSISTENT": 11,
+    "B1": 1
+   }
+  },
+  "candidate3_census": {
+   "agent": 0,
+   "codex": 0,
+   "rc": 2
+  },
+  "iron11_arms": {},
+  "iron11_blocked_scoped": 18,
+  "candidate4_v_int_second_set": {
+   "runs": 12,
+   "v_int_hist": {
+    "0": 7,
+    "38": 1,
+    "26": 1
+   },
+   "layer": {
+    "(b) 冷集构造层": 5,
+    "(c) 本轴外": 4
+   }
+  },
+  "iron_law_11": "rc=1 ⇒ 全部质量/成本读数标「参考（未可验收）」",
+  "tokens": "调用 18 / 新算 prompt 4180 / completion 39526（产品侧；真值 45 / 23709 / 21140）"
+ },
+ "ledger": {
+  "rows_before": 134,
+  "rows_after": 134,
+  "replaced_same_round": 1
+ },
+ "master_appended": true,
+ "rollback_updated": true,
+ "improvements_updated": true
+}

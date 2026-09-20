@@ -1,0 +1,3122 @@
+{
+ "round": "R595",
+ "part": "coldset",
+ "source": "eval/rover/r593/landing-predicate-r593.json",
+ "oracle": "独立 Wythoff 公式 (floor(k*phi), a+k)，与被测零共享代码；网格 L=25 ⇒ |T|=10",
+ "rebuild_rule": "D = (T \\ M) ∪ U，断言 |D| == declared_cold_n（守恒；U=declared\\true, M=true\\declared）",
+ "conservation_violations": [],
+ "agg": {
+  "agent": {
+   "runs": 44,
+   "class_hist": {
+    "CONSISTENT": 19,
+    "B2": 1,
+    "B3": 9,
+    "B1": 15
+   },
+   "mech_hist": {
+    "fit:floor_k1": 1,
+    "missing_only:其他": 4,
+    "excess_only:散布": 5,
+    "both:U散布": 12,
+    "both:U整行族": 3
+   },
+   "cold_set_equal_n": 19,
+   "U_pos_total": 1150,
+   "M_pos_total": 141,
+   "U_runs": 20,
+   "M_runs": 20,
+   "both_runs": 15,
+   "only_U_runs": 5,
+   "only_M_runs": 5,
+   "border_only_runs": 1,
+   "conservation_all": true
+  },
+  "codex": {
+   "runs": 15,
+   "class_hist": {
+    "B3": 3,
+    "CONSISTENT": 11,
+    "B1": 1
+   },
+   "mech_hist": {
+    "excess_only:散布": 3,
+    "both:U散布": 1
+   },
+   "cold_set_equal_n": 11,
+   "U_pos_total": 394,
+   "M_pos_total": 1,
+   "U_runs": 4,
+   "M_runs": 1,
+   "both_runs": 1,
+   "only_U_runs": 3,
+   "only_M_runs": 0,
+   "border_only_runs": 0,
+   "conservation_all": true
+  }
+ },
+ "per_run_n": 59,
+ "controls": {
+  "OK": {
+   "want": "CONSISTENT",
+   "got": "CONSISTENT",
+   "ok": true,
+   "U_n": 0,
+   "M_n": 0
+  },
+  "POS_border_row": {
+   "want": "B2",
+   "got": "B2",
+   "ok": true,
+   "U_n": 25,
+   "M_n": 0
+  },
+  "NEG_beatty_round": {
+   "want": "B1",
+   "got": "B1",
+   "ok": true,
+   "U_n": 5,
+   "M_n": 5
+  },
+  "NEG_missing_only": {
+   "want": "B3",
+   "got": "B3",
+   "ok": true,
+   "U_n": 0,
+   "M_n": 1
+  }
+ },
+ "controls_ok": true,
+ "classifier_distinct_values": 4,
+ "runs": [
+  {
+   "round": "r585",
+   "win": "w154",
+   "sub": "agentD-r1",
+   "side": "agent",
+   "declared_cold_n": 10,
+   "cold_set_equal": true,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": true,
+   "class": "CONSISTENT",
+   "mechanism_sub": "fit:floor",
+   "conservation": true,
+   "layer": "(c) 本轴外"
+  },
+  {
+   "round": "r585",
+   "win": "w154",
+   "sub": "agentD-r2",
+   "side": "agent",
+   "declared_cold_n": 10,
+   "cold_set_equal": true,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": true,
+   "class": "CONSISTENT",
+   "mechanism_sub": "fit:floor",
+   "conservation": true,
+   "layer": "(c) 本轴外"
+  },
+  {
+   "round": "r585",
+   "win": "w154",
+   "sub": "agentD-r3",
+   "side": "agent",
+   "declared_cold_n": 10,
+   "cold_set_equal": true,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": true,
+   "class": "CONSISTENT",
+   "mechanism_sub": "fit:floor",
+   "conservation": true,
+   "layer": "(c) 本轴外"
+  },
+  {
+   "round": "r585",
+   "win": "w154",
+   "sub": "codex",
+   "side": "codex",
+   "declared_cold_n": 51,
+   "cold_set_equal": false,
+   "U": {
+    "n": 41,
+    "distinct_rows": 17,
+    "distinct_cols": 25,
+    "distinct_diags": 26,
+    "edge_n": 26,
+    "interior_n": 15,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      0,
+      1
+     ],
+     [
+      0,
+      2
+     ],
+     [
+      0,
+      3
+     ],
+     [
+      0,
+      4
+     ],
+     [
+      0,
+      5
+     ],
+     [
+      0,
+      6
+     ],
+     [
+      0,
+      7
+     ],
+     [
+      0,
+      8
+     ]
+    ]
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": true,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": false,
+   "class": "B3",
+   "mechanism_sub": "excess_only:散布",
+   "conservation": true,
+   "layer": "(b) 冷集构造层"
+  },
+  {
+   "round": "r585",
+   "win": "w155",
+   "sub": "agentD-r1",
+   "side": "agent",
+   "declared_cold_n": 9,
+   "cold_set_equal": false,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 1,
+    "distinct_rows": 1,
+    "distinct_cols": 1,
+    "distinct_diags": 1,
+    "edge_n": 1,
+    "interior_n": 0,
+    "row1d": true,
+    "col1d": true,
+    "diag1d": true,
+    "edge_only": true,
+    "samples": [
+     [
+      0,
+      0
+     ]
+    ]
+   },
+   "only_U": false,
+   "only_M": true,
+   "both": false,
+   "border_only": true,
+   "interior_equal": true,
+   "class": "B2",
+   "mechanism_sub": "fit:floor_k1",
+   "conservation": true,
+   "layer": "(b) 冷集构造层"
+  },
+  {
+   "round": "r585",
+   "win": "w155",
+   "sub": "agentD-r2",
+   "side": "agent",
+   "declared_cold_n": 5,
+   "cold_set_equal": false,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 5,
+    "distinct_rows": 5,
+    "distinct_cols": 5,
+    "distinct_diags": 5,
+    "edge_n": 0,
+    "interior_n": 5,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      8,
+      13
+     ],
+     [
+      9,
+      15
+     ],
+     [
+      11,
+      18
+     ],
+     [
+      12,
+      20
+     ],
+     [
+      14,
+      23
+     ]
+    ]
+   },
+   "only_U": false,
+   "only_M": true,
+   "both": false,
+   "border_only": false,
+   "interior_equal": false,
+   "class": "B3",
+   "mechanism_sub": "missing_only:其他",
+   "conservation": true,
+   "layer": "(b) 冷集构造层"
+  },
+  {
+   "round": "r585",
+   "win": "w155",
+   "sub": "agentD-r3",
+   "side": "agent",
+   "declared_cold_n": 351,
+   "cold_set_equal": false,
+   "U": {
+    "n": 341,
+    "distinct_rows": 26,
+    "distinct_cols": 25,
+    "distinct_diags": 26,
+    "edge_n": 50,
+    "interior_n": 291,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      0,
+      1
+     ],
+     [
+      0,
+      2
+     ],
+     [
+      0,
+      3
+     ],
+     [
+      0,
+      4
+     ],
+     [
+      0,
+      5
+     ],
+     [
+      0,
+      6
+     ],
+     [
+      0,
+      7
+     ],
+     [
+      0,
+      8
+     ]
+    ]
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": true,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": false,
+   "class": "B3",
+   "mechanism_sub": "excess_only:散布",
+   "conservation": true,
+   "layer": "(b) 冷集构造层"
+  },
+  {
+   "round": "r585",
+   "win": "w155",
+   "sub": "codex",
+   "side": "codex",
+   "declared_cold_n": 10,
+   "cold_set_equal": true,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": true,
+   "class": "CONSISTENT",
+   "mechanism_sub": "fit:floor",
+   "conservation": true,
+   "layer": "(c) 本轴外"
+  },
+  {
+   "round": "r585",
+   "win": "w156",
+   "sub": "agentD-r1",
+   "side": "agent",
+   "declared_cold_n": 10,
+   "cold_set_equal": true,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": true,
+   "class": "CONSISTENT",
+   "mechanism_sub": "fit:floor",
+   "conservation": true,
+   "layer": "(c) 本轴外"
+  },
+  {
+   "round": "r585",
+   "win": "w156",
+   "sub": "agentD-r2",
+   "side": "agent",
+   "declared_cold_n": 236,
+   "cold_set_equal": false,
+   "U": {
+    "n": 229,
+    "distinct_rows": 21,
+    "distinct_cols": 24,
+    "distinct_diags": 25,
+    "edge_n": 41,
+    "interior_n": 188,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      0,
+      1
+     ],
+     [
+      0,
+      3
+     ],
+     [
+      0,
+      4
+     ],
+     [
+      0,
+      6
+     ],
+     [
+      0,
+      7
+     ],
+     [
+      0,
+      8
+     ],
+     [
+      0,
+      9
+     ],
+     [
+      0,
+      10
+     ]
+    ]
+   },
+   "M": {
+    "n": 3,
+    "distinct_rows": 3,
+    "distinct_cols": 3,
+    "distinct_diags": 3,
+    "edge_n": 0,
+    "interior_n": 3,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      3,
+      5
+     ],
+     [
+      11,
+      18
+     ],
+     [
+      14,
+      23
+     ]
+    ]
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": true,
+   "border_only": false,
+   "interior_equal": false,
+   "class": "B1",
+   "mechanism_sub": "both:U散布",
+   "conservation": true,
+   "layer": "(a) 落点/选择谓词层"
+  },
+  {
+   "round": "r585",
+   "win": "w156",
+   "sub": "agentD-r3",
+   "side": "agent",
+   "declared_cold_n": 95,
+   "cold_set_equal": false,
+   "U": {
+    "n": 85,
+    "distinct_rows": 17,
+    "distinct_cols": 25,
+    "distinct_diags": 26,
+    "edge_n": 32,
+    "interior_n": 53,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      0,
+      1
+     ],
+     [
+      0,
+      2
+     ],
+     [
+      0,
+      3
+     ],
+     [
+      0,
+      4
+     ],
+     [
+      0,
+      5
+     ],
+     [
+      0,
+      6
+     ],
+     [
+      0,
+      7
+     ],
+     [
+      0,
+      8
+     ]
+    ]
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": true,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": false,
+   "class": "B3",
+   "mechanism_sub": "excess_only:散布",
+   "conservation": true,
+   "layer": "(b) 冷集构造层"
+  },
+  {
+   "round": "r585",
+   "win": "w156",
+   "sub": "codex",
+   "side": "codex",
+   "declared_cold_n": 10,
+   "cold_set_equal": true,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": true,
+   "class": "CONSISTENT",
+   "mechanism_sub": "fit:floor",
+   "conservation": true,
+   "layer": "(c) 本轴外"
+  },
+  {
+   "round": "r586",
+   "win": "w157",
+   "sub": "agentD-r1",
+   "side": "agent",
+   "declared_cold_n": 117,
+   "cold_set_equal": false,
+   "U": {
+    "n": 109,
+    "distinct_rows": 13,
+    "distinct_cols": 23,
+    "distinct_diags": 24,
+    "edge_n": 9,
+    "interior_n": 100,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      1,
+      3
+     ],
+     [
+      1,
+      4
+     ],
+     [
+      1,
+      5
+     ],
+     [
+      1,
+      6
+     ],
+     [
+      1,
+      7
+     ],
+     [
+      1,
+      8
+     ],
+     [
+      1,
+      9
+     ],
+     [
+      1,
+      10
+     ]
+    ]
+   },
+   "M": {
+    "n": 2,
+    "distinct_rows": 2,
+    "distinct_cols": 2,
+    "distinct_diags": 2,
+    "edge_n": 0,
+    "interior_n": 2,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      3,
+      5
+     ],
+     [
+      14,
+      23
+     ]
+    ]
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": true,
+   "border_only": false,
+   "interior_equal": false,
+   "class": "B1",
+   "mechanism_sub": "both:U散布",
+   "conservation": true,
+   "layer": "(a) 落点/选择谓词层"
+  },
+  {
+   "round": "r586",
+   "win": "w157",
+   "sub": "agentD-r2",
+   "side": "agent",
+   "declared_cold_n": 10,
+   "cold_set_equal": true,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": true,
+   "class": "CONSISTENT",
+   "mechanism_sub": "fit:floor",
+   "conservation": true,
+   "layer": "(c) 本轴外"
+  },
+  {
+   "round": "r586",
+   "win": "w157",
+   "sub": "agentD-r3",
+   "side": "agent",
+   "declared_cold_n": 10,
+   "cold_set_equal": true,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": true,
+   "class": "CONSISTENT",
+   "mechanism_sub": "fit:floor",
+   "conservation": true,
+   "layer": "(c) 本轴外"
+  },
+  {
+   "round": "r586",
+   "win": "w157",
+   "sub": "codex",
+   "side": "codex",
+   "declared_cold_n": 10,
+   "cold_set_equal": true,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": true,
+   "class": "CONSISTENT",
+   "mechanism_sub": "fit:floor",
+   "conservation": true,
+   "layer": "(c) 本轴外"
+  },
+  {
+   "round": "r586",
+   "win": "w158",
+   "sub": "agentD-r1",
+   "side": "agent",
+   "declared_cold_n": 10,
+   "cold_set_equal": false,
+   "U": {
+    "n": 4,
+    "distinct_rows": 4,
+    "distinct_cols": 4,
+    "distinct_diags": 4,
+    "edge_n": 0,
+    "interior_n": 4,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      5,
+      8
+     ],
+     [
+      10,
+      16
+     ],
+     [
+      13,
+      21
+     ],
+     [
+      15,
+      24
+     ]
+    ]
+   },
+   "M": {
+    "n": 4,
+    "distinct_rows": 4,
+    "distinct_cols": 4,
+    "distinct_diags": 4,
+    "edge_n": 0,
+    "interior_n": 4,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      4,
+      7
+     ],
+     [
+      9,
+      15
+     ],
+     [
+      12,
+      20
+     ],
+     [
+      14,
+      23
+     ]
+    ]
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": true,
+   "border_only": false,
+   "interior_equal": false,
+   "class": "B1",
+   "mechanism_sub": "both:U散布",
+   "conservation": true,
+   "layer": "(b) 冷集构造层"
+  },
+  {
+   "round": "r586",
+   "win": "w158",
+   "sub": "agentD-r2",
+   "side": "agent",
+   "declared_cold_n": 10,
+   "cold_set_equal": true,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": true,
+   "class": "CONSISTENT",
+   "mechanism_sub": "fit:floor",
+   "conservation": true,
+   "layer": "(c) 本轴外"
+  },
+  {
+   "round": "r586",
+   "win": "w158",
+   "sub": "agentD-r3",
+   "side": "agent",
+   "declared_cold_n": 49,
+   "cold_set_equal": false,
+   "U": {
+    "n": 39,
+    "distinct_rows": 17,
+    "distinct_cols": 23,
+    "distinct_diags": 11,
+    "edge_n": 3,
+    "interior_n": 36,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      0,
+      1
+     ],
+     [
+      1,
+      1
+     ],
+     [
+      1,
+      3
+     ],
+     [
+      2,
+      2
+     ],
+     [
+      2,
+      3
+     ],
+     [
+      2,
+      4
+     ],
+     [
+      2,
+      5
+     ],
+     [
+      3,
+      4
+     ]
+    ]
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": true,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": false,
+   "class": "B3",
+   "mechanism_sub": "excess_only:散布",
+   "conservation": true,
+   "layer": "(b) 冷集构造层"
+  },
+  {
+   "round": "r586",
+   "win": "w158",
+   "sub": "codex",
+   "side": "codex",
+   "declared_cold_n": 10,
+   "cold_set_equal": true,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": true,
+   "class": "CONSISTENT",
+   "mechanism_sub": "fit:floor",
+   "conservation": true,
+   "layer": "(c) 本轴外"
+  },
+  {
+   "round": "r586",
+   "win": "w159",
+   "sub": "agentD-r1",
+   "side": "agent",
+   "declared_cold_n": 49,
+   "cold_set_equal": false,
+   "U": {
+    "n": 39,
+    "distinct_rows": 17,
+    "distinct_cols": 23,
+    "distinct_diags": 11,
+    "edge_n": 3,
+    "interior_n": 36,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      0,
+      1
+     ],
+     [
+      1,
+      1
+     ],
+     [
+      1,
+      3
+     ],
+     [
+      2,
+      2
+     ],
+     [
+      2,
+      3
+     ],
+     [
+      2,
+      4
+     ],
+     [
+      2,
+      5
+     ],
+     [
+      3,
+      4
+     ]
+    ]
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": true,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": false,
+   "class": "B3",
+   "mechanism_sub": "excess_only:散布",
+   "conservation": true,
+   "layer": "(b) 冷集构造层"
+  },
+  {
+   "round": "r586",
+   "win": "w159",
+   "sub": "agentD-r2",
+   "side": "agent",
+   "declared_cold_n": 1,
+   "cold_set_equal": false,
+   "U": {
+    "n": 1,
+    "distinct_rows": 1,
+    "distinct_cols": 1,
+    "distinct_diags": 1,
+    "edge_n": 1,
+    "interior_n": 0,
+    "row1d": true,
+    "col1d": true,
+    "diag1d": true,
+    "edge_only": true,
+    "samples": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   "M": {
+    "n": 10,
+    "distinct_rows": 10,
+    "distinct_cols": 10,
+    "distinct_diags": 10,
+    "edge_n": 1,
+    "interior_n": 9,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      2
+     ],
+     [
+      3,
+      5
+     ],
+     [
+      4,
+      7
+     ],
+     [
+      6,
+      10
+     ],
+     [
+      8,
+      13
+     ],
+     [
+      9,
+      15
+     ],
+     [
+      11,
+      18
+     ]
+    ]
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": true,
+   "border_only": false,
+   "interior_equal": false,
+   "class": "B1",
+   "mechanism_sub": "both:U整行族",
+   "conservation": true,
+   "layer": "(b) 冷集构造层"
+  },
+  {
+   "round": "r586",
+   "win": "w159",
+   "sub": "agentD-r3",
+   "side": "agent",
+   "declared_cold_n": 17,
+   "cold_set_equal": false,
+   "U": {
+    "n": 16,
+    "distinct_rows": 16,
+    "distinct_cols": 16,
+    "distinct_diags": 10,
+    "edge_n": 1,
+    "interior_n": 15,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      1,
+      1
+     ],
+     [
+      2,
+      3
+     ],
+     [
+      3,
+      4
+     ],
+     [
+      4,
+      6
+     ],
+     [
+      5,
+      8
+     ],
+     [
+      6,
+      9
+     ],
+     [
+      7,
+      11
+     ],
+     [
+      8,
+      12
+     ]
+    ]
+   },
+   "M": {
+    "n": 9,
+    "distinct_rows": 9,
+    "distinct_cols": 9,
+    "distinct_diags": 9,
+    "edge_n": 0,
+    "interior_n": 9,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      1,
+      2
+     ],
+     [
+      3,
+      5
+     ],
+     [
+      4,
+      7
+     ],
+     [
+      6,
+      10
+     ],
+     [
+      8,
+      13
+     ],
+     [
+      9,
+      15
+     ],
+     [
+      11,
+      18
+     ],
+     [
+      12,
+      20
+     ]
+    ]
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": true,
+   "border_only": false,
+   "interior_equal": false,
+   "class": "B1",
+   "mechanism_sub": "both:U散布",
+   "conservation": true,
+   "layer": "(b) 冷集构造层"
+  },
+  {
+   "round": "r586",
+   "win": "w159",
+   "sub": "codex",
+   "side": "codex",
+   "declared_cold_n": 10,
+   "cold_set_equal": true,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": true,
+   "class": "CONSISTENT",
+   "mechanism_sub": "fit:floor",
+   "conservation": true,
+   "layer": "(c) 本轴外"
+  },
+  {
+   "round": "r587",
+   "win": "w160",
+   "sub": "agentD-r1",
+   "side": "agent",
+   "declared_cold_n": 10,
+   "cold_set_equal": true,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": true,
+   "class": "CONSISTENT",
+   "mechanism_sub": "fit:floor",
+   "conservation": true,
+   "layer": "(c) 本轴外"
+  },
+  {
+   "round": "r587",
+   "win": "w160",
+   "sub": "agentD-r2",
+   "side": "agent",
+   "declared_cold_n": 10,
+   "cold_set_equal": true,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": true,
+   "class": "CONSISTENT",
+   "mechanism_sub": "fit:floor",
+   "conservation": true,
+   "layer": "(c) 本轴外"
+  },
+  {
+   "round": "r587",
+   "win": "w160",
+   "sub": "agentD-r3",
+   "side": "agent",
+   "declared_cold_n": 10,
+   "cold_set_equal": true,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": true,
+   "class": "CONSISTENT",
+   "mechanism_sub": "fit:floor",
+   "conservation": true,
+   "layer": "(c) 本轴外"
+  },
+  {
+   "round": "r587",
+   "win": "w160",
+   "sub": "codex",
+   "side": "codex",
+   "declared_cold_n": 10,
+   "cold_set_equal": true,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": true,
+   "class": "CONSISTENT",
+   "mechanism_sub": "fit:floor",
+   "conservation": true,
+   "layer": "(c) 本轴外"
+  },
+  {
+   "round": "r587",
+   "win": "w161",
+   "sub": "agentD-r1",
+   "side": "agent",
+   "declared_cold_n": 30,
+   "cold_set_equal": false,
+   "U": {
+    "n": 20,
+    "distinct_rows": 14,
+    "distinct_cols": 16,
+    "distinct_diags": 11,
+    "edge_n": 2,
+    "interior_n": 18,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      0,
+      1
+     ],
+     [
+      1,
+      1
+     ],
+     [
+      2,
+      3
+     ],
+     [
+      2,
+      4
+     ],
+     [
+      3,
+      6
+     ],
+     [
+      4,
+      6
+     ],
+     [
+      5,
+      8
+     ],
+     [
+      5,
+      9
+     ]
+    ]
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": true,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": false,
+   "class": "B3",
+   "mechanism_sub": "excess_only:散布",
+   "conservation": true,
+   "layer": "(b) 冷集构造层"
+  },
+  {
+   "round": "r587",
+   "win": "w161",
+   "sub": "agentD-r2",
+   "side": "agent",
+   "declared_cold_n": 17,
+   "cold_set_equal": false,
+   "U": {
+    "n": 16,
+    "distinct_rows": 10,
+    "distinct_cols": 16,
+    "distinct_diags": 16,
+    "edge_n": 2,
+    "interior_n": 14,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      0,
+      1
+     ],
+     [
+      1,
+      3
+     ],
+     [
+      1,
+      4
+     ],
+     [
+      2,
+      6
+     ],
+     [
+      3,
+      8
+     ],
+     [
+      3,
+      9
+     ],
+     [
+      4,
+      11
+     ],
+     [
+      4,
+      12
+     ]
+    ]
+   },
+   "M": {
+    "n": 9,
+    "distinct_rows": 9,
+    "distinct_cols": 9,
+    "distinct_diags": 9,
+    "edge_n": 0,
+    "interior_n": 9,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      1,
+      2
+     ],
+     [
+      3,
+      5
+     ],
+     [
+      4,
+      7
+     ],
+     [
+      6,
+      10
+     ],
+     [
+      8,
+      13
+     ],
+     [
+      9,
+      15
+     ],
+     [
+      11,
+      18
+     ],
+     [
+      12,
+      20
+     ]
+    ]
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": true,
+   "border_only": false,
+   "interior_equal": false,
+   "class": "B1",
+   "mechanism_sub": "both:U散布",
+   "conservation": true,
+   "layer": "(b) 冷集构造层"
+  },
+  {
+   "round": "r587",
+   "win": "w161",
+   "sub": "agentD-r3",
+   "side": "agent",
+   "declared_cold_n": 10,
+   "cold_set_equal": true,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": true,
+   "class": "CONSISTENT",
+   "mechanism_sub": "fit:floor",
+   "conservation": true,
+   "layer": "(c) 本轴外"
+  },
+  {
+   "round": "r587",
+   "win": "w161",
+   "sub": "codex",
+   "side": "codex",
+   "declared_cold_n": 20,
+   "cold_set_equal": false,
+   "U": {
+    "n": 10,
+    "distinct_rows": 10,
+    "distinct_cols": 10,
+    "distinct_diags": 10,
+    "edge_n": 0,
+    "interior_n": 10,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      1,
+      1
+     ],
+     [
+      2,
+      3
+     ],
+     [
+      4,
+      6
+     ],
+     [
+      5,
+      8
+     ],
+     [
+      7,
+      11
+     ],
+     [
+      9,
+      14
+     ],
+     [
+      10,
+      16
+     ],
+     [
+      12,
+      19
+     ]
+    ]
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": true,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": false,
+   "class": "B3",
+   "mechanism_sub": "excess_only:散布",
+   "conservation": true,
+   "layer": "(b) 冷集构造层"
+  },
+  {
+   "round": "r587",
+   "win": "w162",
+   "sub": "agentD-r1",
+   "side": "agent",
+   "declared_cold_n": 12,
+   "cold_set_equal": false,
+   "U": {
+    "n": 10,
+    "distinct_rows": 2,
+    "distinct_cols": 7,
+    "distinct_diags": 7,
+    "edge_n": 4,
+    "interior_n": 6,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      0,
+      1
+     ],
+     [
+      0,
+      2
+     ],
+     [
+      0,
+      3
+     ],
+     [
+      0,
+      4
+     ],
+     [
+      1,
+      1
+     ],
+     [
+      1,
+      3
+     ],
+     [
+      1,
+      4
+     ],
+     [
+      1,
+      5
+     ]
+    ]
+   },
+   "M": {
+    "n": 8,
+    "distinct_rows": 8,
+    "distinct_cols": 8,
+    "distinct_diags": 8,
+    "edge_n": 0,
+    "interior_n": 8,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      3,
+      5
+     ],
+     [
+      4,
+      7
+     ],
+     [
+      6,
+      10
+     ],
+     [
+      8,
+      13
+     ],
+     [
+      9,
+      15
+     ],
+     [
+      11,
+      18
+     ],
+     [
+      12,
+      20
+     ],
+     [
+      14,
+      23
+     ]
+    ]
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": true,
+   "border_only": false,
+   "interior_equal": false,
+   "class": "B1",
+   "mechanism_sub": "both:U散布",
+   "conservation": true,
+   "layer": "(b) 冷集构造层"
+  },
+  {
+   "round": "r587",
+   "win": "w162",
+   "sub": "agentD-r2",
+   "side": "agent",
+   "declared_cold_n": 10,
+   "cold_set_equal": true,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": true,
+   "class": "CONSISTENT",
+   "mechanism_sub": "fit:floor",
+   "conservation": true,
+   "layer": "(c) 本轴外"
+  },
+  {
+   "round": "r587",
+   "win": "w162",
+   "sub": "codex",
+   "side": "codex",
+   "declared_cold_n": 10,
+   "cold_set_equal": true,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": true,
+   "class": "CONSISTENT",
+   "mechanism_sub": "fit:floor",
+   "conservation": true,
+   "layer": "(c) 本轴外"
+  },
+  {
+   "round": "r588",
+   "win": "w163",
+   "sub": "agentD-r1",
+   "side": "agent",
+   "declared_cold_n": 4,
+   "cold_set_equal": false,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 6,
+    "distinct_rows": 6,
+    "distinct_cols": 6,
+    "distinct_diags": 6,
+    "edge_n": 0,
+    "interior_n": 6,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      6,
+      10
+     ],
+     [
+      8,
+      13
+     ],
+     [
+      9,
+      15
+     ],
+     [
+      11,
+      18
+     ],
+     [
+      12,
+      20
+     ],
+     [
+      14,
+      23
+     ]
+    ]
+   },
+   "only_U": false,
+   "only_M": true,
+   "both": false,
+   "border_only": false,
+   "interior_equal": false,
+   "class": "B3",
+   "mechanism_sub": "missing_only:其他",
+   "conservation": true,
+   "layer": "(b) 冷集构造层"
+  },
+  {
+   "round": "r588",
+   "win": "w163",
+   "sub": "agentD-r2",
+   "side": "agent",
+   "declared_cold_n": 0,
+   "cold_set_equal": false,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 10,
+    "distinct_rows": 10,
+    "distinct_cols": 10,
+    "distinct_diags": 10,
+    "edge_n": 1,
+    "interior_n": 9,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      2
+     ],
+     [
+      3,
+      5
+     ],
+     [
+      4,
+      7
+     ],
+     [
+      6,
+      10
+     ],
+     [
+      8,
+      13
+     ],
+     [
+      9,
+      15
+     ],
+     [
+      11,
+      18
+     ]
+    ]
+   },
+   "only_U": false,
+   "only_M": true,
+   "both": false,
+   "border_only": false,
+   "interior_equal": false,
+   "class": "B3",
+   "mechanism_sub": "missing_only:其他",
+   "conservation": true,
+   "layer": "(b) 冷集构造层"
+  },
+  {
+   "round": "r588",
+   "win": "w163",
+   "sub": "agentD-r3",
+   "side": "agent",
+   "declared_cold_n": 10,
+   "cold_set_equal": true,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": true,
+   "class": "CONSISTENT",
+   "mechanism_sub": "fit:floor",
+   "conservation": true,
+   "layer": "(c) 本轴外"
+  },
+  {
+   "round": "r588",
+   "win": "w163",
+   "sub": "codex",
+   "side": "codex",
+   "declared_cold_n": 10,
+   "cold_set_equal": true,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": true,
+   "class": "CONSISTENT",
+   "mechanism_sub": "fit:floor",
+   "conservation": true,
+   "layer": "(c) 本轴外"
+  },
+  {
+   "round": "r588",
+   "win": "w164",
+   "sub": "agentD-r1",
+   "side": "agent",
+   "declared_cold_n": 2,
+   "cold_set_equal": false,
+   "U": {
+    "n": 1,
+    "distinct_rows": 1,
+    "distinct_cols": 1,
+    "distinct_diags": 1,
+    "edge_n": 1,
+    "interior_n": 0,
+    "row1d": true,
+    "col1d": true,
+    "diag1d": true,
+    "edge_only": true,
+    "samples": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   "M": {
+    "n": 9,
+    "distinct_rows": 9,
+    "distinct_cols": 9,
+    "distinct_diags": 9,
+    "edge_n": 0,
+    "interior_n": 9,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      1,
+      2
+     ],
+     [
+      3,
+      5
+     ],
+     [
+      4,
+      7
+     ],
+     [
+      6,
+      10
+     ],
+     [
+      8,
+      13
+     ],
+     [
+      9,
+      15
+     ],
+     [
+      11,
+      18
+     ],
+     [
+      12,
+      20
+     ]
+    ]
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": true,
+   "border_only": false,
+   "interior_equal": false,
+   "class": "B1",
+   "mechanism_sub": "both:U整行族",
+   "conservation": true,
+   "layer": "(a) 落点/选择谓词层"
+  },
+  {
+   "round": "r588",
+   "win": "w164",
+   "sub": "agentD-r2",
+   "side": "agent",
+   "declared_cold_n": 10,
+   "cold_set_equal": true,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": true,
+   "class": "CONSISTENT",
+   "mechanism_sub": "fit:floor",
+   "conservation": true,
+   "layer": "(c) 本轴外"
+  },
+  {
+   "round": "r588",
+   "win": "w164",
+   "sub": "agentD-r3",
+   "side": "agent",
+   "declared_cold_n": 13,
+   "cold_set_equal": false,
+   "U": {
+    "n": 11,
+    "distinct_rows": 11,
+    "distinct_cols": 11,
+    "distinct_diags": 11,
+    "edge_n": 0,
+    "interior_n": 11,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      2,
+      4
+     ],
+     [
+      3,
+      6
+     ],
+     [
+      4,
+      8
+     ],
+     [
+      5,
+      10
+     ],
+     [
+      6,
+      12
+     ],
+     [
+      7,
+      14
+     ],
+     [
+      8,
+      16
+     ],
+     [
+      9,
+      18
+     ]
+    ]
+   },
+   "M": {
+    "n": 8,
+    "distinct_rows": 8,
+    "distinct_cols": 8,
+    "distinct_diags": 8,
+    "edge_n": 0,
+    "interior_n": 8,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      3,
+      5
+     ],
+     [
+      4,
+      7
+     ],
+     [
+      6,
+      10
+     ],
+     [
+      8,
+      13
+     ],
+     [
+      9,
+      15
+     ],
+     [
+      11,
+      18
+     ],
+     [
+      12,
+      20
+     ],
+     [
+      14,
+      23
+     ]
+    ]
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": true,
+   "border_only": false,
+   "interior_equal": false,
+   "class": "B1",
+   "mechanism_sub": "both:U散布",
+   "conservation": true,
+   "layer": "(b) 冷集构造层"
+  },
+  {
+   "round": "r588",
+   "win": "w164",
+   "sub": "codex",
+   "side": "codex",
+   "declared_cold_n": 10,
+   "cold_set_equal": true,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": true,
+   "class": "CONSISTENT",
+   "mechanism_sub": "fit:floor",
+   "conservation": true,
+   "layer": "(c) 本轴外"
+  },
+  {
+   "round": "r588",
+   "win": "w165",
+   "sub": "agentD-r1",
+   "side": "agent",
+   "declared_cold_n": 11,
+   "cold_set_equal": false,
+   "U": {
+    "n": 10,
+    "distinct_rows": 10,
+    "distinct_cols": 10,
+    "distinct_diags": 10,
+    "edge_n": 1,
+    "interior_n": 9,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      0,
+      1
+     ],
+     [
+      1,
+      3
+     ],
+     [
+      2,
+      6
+     ],
+     [
+      3,
+      8
+     ],
+     [
+      4,
+      11
+     ],
+     [
+      5,
+      14
+     ],
+     [
+      6,
+      16
+     ],
+     [
+      7,
+      19
+     ]
+    ]
+   },
+   "M": {
+    "n": 9,
+    "distinct_rows": 9,
+    "distinct_cols": 9,
+    "distinct_diags": 9,
+    "edge_n": 0,
+    "interior_n": 9,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      1,
+      2
+     ],
+     [
+      3,
+      5
+     ],
+     [
+      4,
+      7
+     ],
+     [
+      6,
+      10
+     ],
+     [
+      8,
+      13
+     ],
+     [
+      9,
+      15
+     ],
+     [
+      11,
+      18
+     ],
+     [
+      12,
+      20
+     ]
+    ]
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": true,
+   "border_only": false,
+   "interior_equal": false,
+   "class": "B1",
+   "mechanism_sub": "both:U散布",
+   "conservation": true,
+   "layer": "(b) 冷集构造层"
+  },
+  {
+   "round": "r588",
+   "win": "w165",
+   "sub": "agentD-r2",
+   "side": "agent",
+   "declared_cold_n": 6,
+   "cold_set_equal": false,
+   "U": {
+    "n": 3,
+    "distinct_rows": 3,
+    "distinct_cols": 3,
+    "distinct_diags": 3,
+    "edge_n": 1,
+    "interior_n": 2,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      0,
+      1
+     ],
+     [
+      2,
+      4
+     ],
+     [
+      7,
+      12
+     ]
+    ]
+   },
+   "M": {
+    "n": 7,
+    "distinct_rows": 7,
+    "distinct_cols": 7,
+    "distinct_diags": 7,
+    "edge_n": 1,
+    "interior_n": 6,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      0,
+      0
+     ],
+     [
+      3,
+      5
+     ],
+     [
+      6,
+      10
+     ],
+     [
+      8,
+      13
+     ],
+     [
+      9,
+      15
+     ],
+     [
+      11,
+      18
+     ],
+     [
+      14,
+      23
+     ]
+    ]
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": true,
+   "border_only": false,
+   "interior_equal": false,
+   "class": "B1",
+   "mechanism_sub": "both:U散布",
+   "conservation": true,
+   "layer": "(b) 冷集构造层"
+  },
+  {
+   "round": "r588",
+   "win": "w165",
+   "sub": "agentD-r3",
+   "side": "agent",
+   "declared_cold_n": 26,
+   "cold_set_equal": false,
+   "U": {
+    "n": 25,
+    "distinct_rows": 1,
+    "distinct_cols": 25,
+    "distinct_diags": 25,
+    "edge_n": 25,
+    "interior_n": 0,
+    "row1d": true,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": true,
+    "samples": [
+     [
+      0,
+      1
+     ],
+     [
+      0,
+      2
+     ],
+     [
+      0,
+      3
+     ],
+     [
+      0,
+      4
+     ],
+     [
+      0,
+      5
+     ],
+     [
+      0,
+      6
+     ],
+     [
+      0,
+      7
+     ],
+     [
+      0,
+      8
+     ]
+    ]
+   },
+   "M": {
+    "n": 9,
+    "distinct_rows": 9,
+    "distinct_cols": 9,
+    "distinct_diags": 9,
+    "edge_n": 0,
+    "interior_n": 9,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      1,
+      2
+     ],
+     [
+      3,
+      5
+     ],
+     [
+      4,
+      7
+     ],
+     [
+      6,
+      10
+     ],
+     [
+      8,
+      13
+     ],
+     [
+      9,
+      15
+     ],
+     [
+      11,
+      18
+     ],
+     [
+      12,
+      20
+     ]
+    ]
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": true,
+   "border_only": false,
+   "interior_equal": false,
+   "class": "B1",
+   "mechanism_sub": "both:U整行族",
+   "conservation": true,
+   "layer": "(b) 冷集构造层"
+  },
+  {
+   "round": "r588",
+   "win": "w165",
+   "sub": "codex",
+   "side": "codex",
+   "declared_cold_n": 11,
+   "cold_set_equal": false,
+   "U": {
+    "n": 2,
+    "distinct_rows": 2,
+    "distinct_cols": 2,
+    "distinct_diags": 2,
+    "edge_n": 1,
+    "interior_n": 1,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      0,
+      1
+     ],
+     [
+      2,
+      2
+     ]
+    ]
+   },
+   "M": {
+    "n": 1,
+    "distinct_rows": 1,
+    "distinct_cols": 1,
+    "distinct_diags": 1,
+    "edge_n": 0,
+    "interior_n": 1,
+    "row1d": true,
+    "col1d": true,
+    "diag1d": true,
+    "edge_only": false,
+    "samples": [
+     [
+      1,
+      2
+     ]
+    ]
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": true,
+   "border_only": false,
+   "interior_equal": false,
+   "class": "B1",
+   "mechanism_sub": "both:U散布",
+   "conservation": true,
+   "layer": "(b) 冷集构造层"
+  },
+  {
+   "round": "r591",
+   "win": "w166",
+   "sub": "agentD-r1",
+   "side": "agent",
+   "declared_cold_n": 10,
+   "cold_set_equal": true,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": true,
+   "class": "CONSISTENT",
+   "mechanism_sub": "fit:floor",
+   "conservation": true,
+   "layer": "(c) 本轴外"
+  },
+  {
+   "round": "r591",
+   "win": "w166",
+   "sub": "agentD-r2",
+   "side": "agent",
+   "declared_cold_n": 0,
+   "cold_set_equal": false,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 10,
+    "distinct_rows": 10,
+    "distinct_cols": 10,
+    "distinct_diags": 10,
+    "edge_n": 1,
+    "interior_n": 9,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      2
+     ],
+     [
+      3,
+      5
+     ],
+     [
+      4,
+      7
+     ],
+     [
+      6,
+      10
+     ],
+     [
+      8,
+      13
+     ],
+     [
+      9,
+      15
+     ],
+     [
+      11,
+      18
+     ]
+    ]
+   },
+   "only_U": false,
+   "only_M": true,
+   "both": false,
+   "border_only": false,
+   "interior_equal": false,
+   "class": "B3",
+   "mechanism_sub": "missing_only:其他",
+   "conservation": true,
+   "layer": "(b) 冷集构造层"
+  },
+  {
+   "round": "r591",
+   "win": "w166",
+   "sub": "agentD-r3",
+   "side": "agent",
+   "declared_cold_n": 10,
+   "cold_set_equal": true,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": true,
+   "class": "CONSISTENT",
+   "mechanism_sub": "fit:floor",
+   "conservation": true,
+   "layer": "(c) 本轴外"
+  },
+  {
+   "round": "r591",
+   "win": "w166",
+   "sub": "codex",
+   "side": "codex",
+   "declared_cold_n": 10,
+   "cold_set_equal": true,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": true,
+   "class": "CONSISTENT",
+   "mechanism_sub": "fit:floor",
+   "conservation": true,
+   "layer": "(c) 本轴外"
+  },
+  {
+   "round": "r591",
+   "win": "w167",
+   "sub": "agentD-r1",
+   "side": "agent",
+   "declared_cold_n": 13,
+   "cold_set_equal": false,
+   "U": {
+    "n": 11,
+    "distinct_rows": 11,
+    "distinct_cols": 11,
+    "distinct_diags": 11,
+    "edge_n": 0,
+    "interior_n": 11,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      2,
+      4
+     ],
+     [
+      3,
+      6
+     ],
+     [
+      4,
+      8
+     ],
+     [
+      5,
+      10
+     ],
+     [
+      6,
+      12
+     ],
+     [
+      7,
+      14
+     ],
+     [
+      8,
+      16
+     ],
+     [
+      9,
+      18
+     ]
+    ]
+   },
+   "M": {
+    "n": 8,
+    "distinct_rows": 8,
+    "distinct_cols": 8,
+    "distinct_diags": 8,
+    "edge_n": 0,
+    "interior_n": 8,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      3,
+      5
+     ],
+     [
+      4,
+      7
+     ],
+     [
+      6,
+      10
+     ],
+     [
+      8,
+      13
+     ],
+     [
+      9,
+      15
+     ],
+     [
+      11,
+      18
+     ],
+     [
+      12,
+      20
+     ],
+     [
+      14,
+      23
+     ]
+    ]
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": true,
+   "border_only": false,
+   "interior_equal": false,
+   "class": "B1",
+   "mechanism_sub": "both:U散布",
+   "conservation": true,
+   "layer": "(b) 冷集构造层"
+  },
+  {
+   "round": "r591",
+   "win": "w167",
+   "sub": "agentD-r2",
+   "side": "agent",
+   "declared_cold_n": 16,
+   "cold_set_equal": false,
+   "U": {
+    "n": 14,
+    "distinct_rows": 9,
+    "distinct_cols": 14,
+    "distinct_diags": 14,
+    "edge_n": 0,
+    "interior_n": 14,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      1,
+      3
+     ],
+     [
+      2,
+      5
+     ],
+     [
+      3,
+      7
+     ],
+     [
+      3,
+      8
+     ],
+     [
+      4,
+      10
+     ],
+     [
+      4,
+      11
+     ],
+     [
+      5,
+      13
+     ],
+     [
+      6,
+      15
+     ]
+    ]
+   },
+   "M": {
+    "n": 8,
+    "distinct_rows": 8,
+    "distinct_cols": 8,
+    "distinct_diags": 8,
+    "edge_n": 0,
+    "interior_n": 8,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      3,
+      5
+     ],
+     [
+      4,
+      7
+     ],
+     [
+      6,
+      10
+     ],
+     [
+      8,
+      13
+     ],
+     [
+      9,
+      15
+     ],
+     [
+      11,
+      18
+     ],
+     [
+      12,
+      20
+     ],
+     [
+      14,
+      23
+     ]
+    ]
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": true,
+   "border_only": false,
+   "interior_equal": false,
+   "class": "B1",
+   "mechanism_sub": "both:U散布",
+   "conservation": true,
+   "layer": "(b) 冷集构造层"
+  },
+  {
+   "round": "r591",
+   "win": "w167",
+   "sub": "agentD-r3",
+   "side": "agent",
+   "declared_cold_n": 10,
+   "cold_set_equal": true,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": true,
+   "class": "CONSISTENT",
+   "mechanism_sub": "fit:floor",
+   "conservation": true,
+   "layer": "(c) 本轴外"
+  },
+  {
+   "round": "r591",
+   "win": "w167",
+   "sub": "codex",
+   "side": "codex",
+   "declared_cold_n": 351,
+   "cold_set_equal": false,
+   "U": {
+    "n": 341,
+    "distinct_rows": 26,
+    "distinct_cols": 25,
+    "distinct_diags": 26,
+    "edge_n": 50,
+    "interior_n": 291,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      0,
+      1
+     ],
+     [
+      0,
+      2
+     ],
+     [
+      0,
+      3
+     ],
+     [
+      0,
+      4
+     ],
+     [
+      0,
+      5
+     ],
+     [
+      0,
+      6
+     ],
+     [
+      0,
+      7
+     ],
+     [
+      0,
+      8
+     ]
+    ]
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": true,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": false,
+   "class": "B3",
+   "mechanism_sub": "excess_only:散布",
+   "conservation": true,
+   "layer": "(b) 冷集构造层"
+  },
+  {
+   "round": "r591",
+   "win": "w168",
+   "sub": "agentD-r1",
+   "side": "agent",
+   "declared_cold_n": 10,
+   "cold_set_equal": true,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": true,
+   "class": "CONSISTENT",
+   "mechanism_sub": "fit:floor",
+   "conservation": true,
+   "layer": "(c) 本轴外"
+  },
+  {
+   "round": "r591",
+   "win": "w168",
+   "sub": "agentD-r2",
+   "side": "agent",
+   "declared_cold_n": 10,
+   "cold_set_equal": true,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": true,
+   "class": "CONSISTENT",
+   "mechanism_sub": "fit:floor",
+   "conservation": true,
+   "layer": "(c) 本轴外"
+  },
+  {
+   "round": "r591",
+   "win": "w168",
+   "sub": "agentD-r3",
+   "side": "agent",
+   "declared_cold_n": 170,
+   "cold_set_equal": false,
+   "U": {
+    "n": 166,
+    "distinct_rows": 25,
+    "distinct_cols": 25,
+    "distinct_diags": 25,
+    "edge_n": 14,
+    "interior_n": 152,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      0,
+      1
+     ],
+     [
+      1,
+      3
+     ],
+     [
+      1,
+      4
+     ],
+     [
+      1,
+      5
+     ],
+     [
+      1,
+      6
+     ],
+     [
+      1,
+      7
+     ],
+     [
+      1,
+      8
+     ],
+     [
+      1,
+      9
+     ]
+    ]
+   },
+   "M": {
+    "n": 6,
+    "distinct_rows": 6,
+    "distinct_cols": 6,
+    "distinct_diags": 6,
+    "edge_n": 0,
+    "interior_n": 6,
+    "row1d": false,
+    "col1d": false,
+    "diag1d": false,
+    "edge_only": false,
+    "samples": [
+     [
+      1,
+      2
+     ],
+     [
+      4,
+      7
+     ],
+     [
+      6,
+      10
+     ],
+     [
+      8,
+      13
+     ],
+     [
+      12,
+      20
+     ],
+     [
+      14,
+      23
+     ]
+    ]
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": true,
+   "border_only": false,
+   "interior_equal": false,
+   "class": "B1",
+   "mechanism_sub": "both:U散布",
+   "conservation": true,
+   "layer": "(b) 冷集构造层"
+  },
+  {
+   "round": "r591",
+   "win": "w168",
+   "sub": "codex",
+   "side": "codex",
+   "declared_cold_n": 10,
+   "cold_set_equal": true,
+   "U": {
+    "n": 0
+   },
+   "M": {
+    "n": 0
+   },
+   "only_U": false,
+   "only_M": false,
+   "both": false,
+   "border_only": false,
+   "interior_equal": true,
+   "class": "CONSISTENT",
+   "mechanism_sub": "fit:floor",
+   "conservation": true,
+   "layer": "(c) 本轴外"
+  }
+ ],
+ "rc": 0
+}

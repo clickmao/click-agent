@@ -1,0 +1,43 @@
+{
+ "round": "R595",
+ "part": "census",
+ "r594_baseline": "R594 只查 solve 单键（2/44 agent 跑次缺 solve、0/15 codex）；本轮扩到**全属性**面",
+ "agg": {
+  "agent": {
+   "runs": 44,
+   "inconsistent_runs": 0,
+   "faces": [],
+   "refs_total": 8
+  },
+  "codex": {
+   "runs": 15,
+   "inconsistent_runs": 0,
+   "faces": [],
+   "refs_total": 12
+  }
+ },
+ "per_run_n": 59,
+ "inconsistent": [],
+ "repro": [],
+ "controls": {
+  "NEG_原样副本": {
+   "missing": [],
+   "consistent": true,
+   "ok": true,
+   "source": "eval/rover/r585/snapshots/w154/agentD-r1/g1/games",
+   "note": "被删属性 = solve"
+  },
+  "POS_删被引属性": {
+   "missing": [],
+   "consistent": true,
+   "ok": false,
+   "source": "eval/rover/r585/snapshots/w154/agentD-r1/g1/games",
+   "note": "被删属性 = solve"
+  }
+ },
+ "controls_ok": false,
+ "readonly_face_sha_pre": "97c304f077ea4fe2",
+ "readonly_face_sha_post": "97c304f077ea4fe2",
+ "readonly_ok": true,
+ "rc": 2
+}

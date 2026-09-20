@@ -1,0 +1,66 @@
+{
+ "round": "R595",
+ "part": "census",
+ "r594_baseline": "R594 只查 solve 单键（2/44 agent 跑次缺 solve、0/15 codex）；本轮扩到**全属性**面",
+ "agg": {
+  "agent": {
+   "runs": 44,
+   "inconsistent_runs": 1,
+   "faces": [
+    "wythoff"
+   ],
+   "refs_total": 9
+  },
+  "codex": {
+   "runs": 15,
+   "inconsistent_runs": 0,
+   "faces": [],
+   "refs_total": 12
+  }
+ },
+ "per_run_n": 59,
+ "inconsistent": [
+  {
+   "run": "r585/w156/agentD-r2",
+   "side": "agent",
+   "missing": {
+    "wythoff": [
+     "Reads"
+    ]
+   }
+  }
+ ],
+ "repro": [
+  {
+   "run": "r585/w156/agentD-r2",
+   "game": "wythoff",
+   "attr": "Reads",
+   "rc": 0,
+   "stderr_tail": "",
+   "reproduced": false
+  }
+ ],
+ "controls": {
+  "NEG_原样": {
+   "missing": [
+    "Reads"
+   ],
+   "consistent": false,
+   "ok": false,
+   "note": "属性 Reads 被移除"
+  },
+  "POS_删属性": {
+   "missing": [
+    "Reads"
+   ],
+   "consistent": false,
+   "ok": true,
+   "note": "属性 Reads 被移除"
+  }
+ },
+ "controls_ok": false,
+ "readonly_face_sha_pre": "97c304f077ea4fe2",
+ "readonly_face_sha_post": "97c304f077ea4fe2",
+ "readonly_ok": true,
+ "rc": 2
+}

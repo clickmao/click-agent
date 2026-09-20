@@ -1,0 +1,153 @@
+{
+ "round": "R595",
+ "written_before_run": true,
+ "written_at": "2026-09-20T14:20+08:00",
+ "author": "cron tick (b15eb2f40a69) · 常驻能力自检循环执行体",
+ "claim": "主线真机对照轮 = **判据 v3 第三窗集行使**（同被测件 + 同冻结题集、只换窗集 w169..w171）× 外部真值 codex；并轮推进候选 ②③⑤（只读）与候选④（V_int 第二窗集分布，随本轮真机臂轮出）。候选①（本轴处置裁定 / 产品侧修复）**待用户放行** ⇒ 本轮不动产品源码。零产品源码改动 / 零新增夹具语义 / 零新增开关。",
+ "one_time_context": {
+  "in_scope_rounds_prev": [
+   "r585",
+   "r586",
+   "r587",
+   "r588",
+   "r591"
+  ],
+  "taskset_sha": "e0c667c2a313c04b",
+  "g1_prompt_sha256": "516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3",
+  "bin_sha12_expected": "4b70fd7cdb39",
+  "bin_path": "$HOME/.agentframework/artifacts/pub_r591/agenthost",
+  "cases_per_run": 58,
+  "families": {
+   "life": 14,
+   "nim": 15,
+   "sub": 14,
+   "wythoff": 15
+  },
+  "windows": [
+   "w169",
+   "w170",
+   "w171"
+  ],
+  "reps_per_window": {
+   "C1": 1,
+   "R595D": 3
+  },
+  "prior_window_sets": {
+   "set1": {
+    "rounds": [
+     "r585",
+     "r586",
+     "r587",
+     "r588"
+    ],
+    "rounds_label": "w154-w165",
+    "median_D_task": -0.6667,
+    "neg_windows": 8,
+    "valid_windows": 9
+   },
+   "set2": {
+    "rounds": [
+     "r591"
+    ],
+    "rounds_label": "w166-w168",
+    "note": "登记件 eval/rover/r591/taskface-pool-r591.json"
+   },
+   "rule": "跨窗集**禁相减**，只并列（docs/external-reference-harness.md §12.3）；阈值 -0.34 同一件、非事后调"
+  },
+  "g1_prompt_chars": 2182
+ },
+ "single_variable": "本轮自变量 = 窗集（真机臂轮，新窗 w169..w171）。被测件（bin sha 4b70fd7cdb39）、题集（逐字节复用，g1 题面 sha 已钉）、判据（v3）、夹具（cases-r521 冻结件）与 R585–R591 同 sha ⇒ 构成判据 v3 的**第三窗集**，用于检验阈值 -0.34 与族分布是否可跨窗集复现。",
+ "criterion_version": "v3",
+ "arms": {
+  "C1": {
+   "side": "codex",
+   "bin": "$HOME/.agentframework/tools/codex-env/node_modules/.bin/codex",
+   "model": "deepseek-flash",
+   "reps": 1,
+   "role": "外部真值（同环境·同输入·同模型）"
+  },
+  "R595D": {
+   "side": "agent",
+   "bin": "$HOME/.agentframework/artifacts/pub_r591/agenthost",
+   "env": {
+    "AGENTFRAMEWORK_R1_CONTRACT": "1",
+    "dose_keys": "全部显式 unset（产品默认档）"
+   },
+   "reps": 3
+  }
+ },
+ "axis_criteria_R595": {
+  "note": "主判据 = 判据 v3（整题全对率 + 按族分列，器具 pool_taskface_r595.py 复用 R589 逻辑源）。kpi_r595.py 的 C1（用例级配对）只作**同向参照**：v2 判决面已在 docs/external-reference-harness.md §12.3 作废。",
+  "C0 真值可靠性": "真值跑次 58/58 不成立 ⇒ 该窗 unreliable，不进配对、单列（禁筛窗）。",
+  "C1 用例级配对（参照）": "有效窗 ≥2 ∧ 配对中位 ≥ −2 ∧ 无窗 ≤ −15（v2 阈值照旧，仅作同向参照，不出判决）。",
+  "C2 成本三列": "调用数 / 新算 prompt / completion **分列**（禁合并名义总量）；命中率标口径（中继 dump 时间轴 v_all/v_incr）。信息项，不判红绿。",
+  "C3 起手闸余量条款（候选⑤ 行使面）": {
+   "prev_swing_source_rule": "只取**同态在飞窗**的运行期采样（R590-C2）；R594 为**只读轮、无运行期采样器** ⇒ 不可作源，回退到最近同态在飞窗 r591。",
+   "prev_swing_effective": 102,
+   "prev_swing_evidence": "~/.agentframework/harness/runs/r591/logs/run-samples.jsonl （n=97, min=2713MB, max=2815MB, swing=102MB）",
+   "clause": "MARGIN := clamp(prev_swing_effective, floor=60, cap=CEIL−GATE−floor); REQ = GATE(2650)+MARGIN；起手前 3 样本 CEIL=min 且极差 ≤50MB（fail-closed）；报 cap_binding。",
+   "discrimination_control": "同内存态下 基础门槛 PASS ∧ 条款 GATE_BLOCKED（压制量>0 时行使；量 0 ⇒ 如实记未行使）。"
+  },
+  "C5 缺口复现": "与 set1/set2 并列比：同号 ∧ 区间重叠 ⇒ 缺口跨窗集复现；**禁相减**。",
+  "C6 步数列": "steps_executed / plan_steps_total 非空率 = 100% 才过（缺档 ⇒ rc=2 器具缺陷）。",
+  "C7 判据 v3 第三窗集（**主判据**）": {
+   "judge": "有效窗 中位 ≤ −0.34 ∧ 负号窗 ≥ 半数 ⇒ PASS（缺口成立）；否则 FAIL。阈值 −0.34 写死，非事后调。",
+   "secondary": "按族分列（life/nim/sub/wythoff 的 all-pass 率 + 失败原因直方图），与 set1/set2 **并列**。",
+   "third_face": "铁律 11 前置器 rc（executable_and_correct ∧ acceptable_scoped）；rc≠0 ⇒ 全部成本读数标「参考（未可验收）」。"
+  },
+  "C8 候选② 冷集差结构（只读定因下沉）": {
+   "claim": "从 set1..set2 的 B_coldset 份额（R592: 184/279 = 0.6595）出发，把「声明冷集 vs 真值冷集」的**集合差结构**量化，机械区分 (B1) **Beatty 判定错**（差集形态可由 phi/Beatty 公式的确定性变形复现）与 (B2) **边界处理错**（差集只落在边界带 / 网格边缘，内部不差）。",
+   "method": "逐跑次：D = 产物自报 LOSE 集合（全网格行为探针），T = 独立 oracle 冷集（暴力递推 ∧ phi 序双实现交叉）；U = D\\T（超出）、M = T\\D（缺失）。形态量：U/M 的 (行,列) 一维性、是否落在网格边（a==0 ∨ b==L）、是否与 (a,b) 的 |b−a| 或 a 的分辨率相关、U/M 与 Wythoff 对邻域的距离分布。",
+   "decision_rule": [
+    "U/M 双空 ⇒ 该跑次冷集一致（不计入 (b)）",
+    "U≠∅ ∧ M≠∅ 且 U/M 均**非**边界局限 ⇒ 记 (B1) Beatty 判定错（含方向）",
+    "差集**只**落在边界带（a==0 ∨ b==L ∨ |b−a| 极值）且内部逐点等于 T ⇒ 记 (B2) 边界处理错",
+    "其余 ⇒ 记 (B3) 其他/未分类（**单列，禁折进 B1/B2**）"
+   ],
+   "negative_controls": [
+    "POS: 合成 fixture（正确冷集但边界行整行误判）⇒ 必须判 (B2)",
+    "NEG: 合成 fixture（Beatty 变形：用 round 替 int）⇒ 必须判 (B1)",
+    "零反例: 产物自报冷集不得为常数（防恒真门）；U/M 分类器**优先级置换必须改变分布**（否则顺序只是装饰）"
+   ],
+   "honest_boundary": "行为探针（非读产物内部函数）；结论只在 wythoff 15 例 × 在盘跑次面成立，禁外推。"
+  },
+  "C9 候选③ 交付物自洽性普查（只读）": {
+   "claim": "R594 只查了 `solve` 单键。本轮普查：对 4 模块 × 59 跑次，机械比对 `games/__main__.py` 对每个模块的**属性引用集合** vs 该模块自身的**导出集合**（`def`/`class`/顶层赋值），出「不自洽跑次 × 面」清单。",
+   "criterion": "自洽 = 每个被引用属性 ∈ 导出集合；不自洽跑次必须能被**实测复现**（`python3 -m games <id>` rc≠0 ∧ stderr 含该属性名）才计；不可复现者单列（静态面与行为面不符）。",
+   "negative_controls": [
+    "POS: 在副本上把某模块的 `life` 导入名改掉 ⇒ 普查须判该模块不自洽",
+    "NEG: 原样副本 ⇒ 普查须判自洽"
+   ],
+   "honest_boundary": "静态面普查 ≠ 运行面验收；与 R594 的 `solve` 面**并列**（不相减）。"
+  },
+  "C10 候选④ V_int 第二窗集分布（真机臂轮）": {
+   "量": "对 r595 新窗快照，用与 r593 **同一件定因器**（`landing_predicate_r593.py`，ROUNDS=[r595]）出 `V_int` 直方图 + `cold_set_equal` 交叉校验 + 2×2 列联（两侧分列）",
+   "判据": "**不设阈值、不作触发**（承 R593/R594 预注册禁止）；只报「分布面已扩到第二窗集」，阈值化仍记**未测**",
+   "零回归": "对 r585–r591 面复算，须与 R593/R594 登记值**逐位复现**（同一在盘 JSON）；不复现 ⇒ rc=2，本项不入结论"
+  },
+  "C11 只读性": "非本轮真机臂面（R585–R591 快照树、冻结夹具、产品源码）的 sha256 清单前后一致 ⇒ PASS；`git diff --stat src/` 为空。",
+  "C12 铁律 11 前置器": "`exec_precondition.py --round r595` 逐跑次产出物独立物化 + 真跑 + 逐用例判对；rc≠0 ⇒ 全部成本/质量降幅读数标「参考（未可验收）」，禁作验收依据。"
+ },
+ "evidence_scope": {
+  "require": [
+   "eval/rover/r595/dag-r595.md",
+   "eval/rover/r595/prereg-r595.json",
+   "eval/rover/r595/taskset-r595.json",
+   "eval/rover/r595/face-r595.json",
+   "eval/rover/r595/gate-margin-r595.json",
+   "eval/rover/r595/kpi-table-r595.json",
+   "eval/rover/r595/verdict-r595.json",
+   "eval/rover/r595/taskface-pool-r595.json",
+   "eval/rover/r595/landing-predicate-r595.json",
+   "eval/rover/r595/report-r595.md",
+   "eval/rover/r595/bins-r595.json",
+   "eval/rover/r595/snapshots"
+  ],
+  "note": "12 件（与本文件 C1–C12 判据一一对应；缺件 ⇒ 该判据面记未完成，不入结论）。snapshots 面 = 3 窗 × 4 跑次的 g1 快照树（逐字节归档，供铁律 11 前置器 project 布局发现）。",
+  "out_of_scope": [
+   "src/**（候选① 待放行 ⇒ 零产品改动）",
+   "cases-r521 冻结件（逐字节不变）",
+   "R585–R591 在盘读数（只作零回归对照臂）"
+  ]
+ }
+}

@@ -1,0 +1,63 @@
+{
+ "round": "R595",
+ "part": "gate",
+ "criterion": "候选⑤ 起手闸余量按同态在飞窗实测派生（R594 只读轮无运行期采样器 ⇒ 不可作源）",
+ "prev_swing_source": "~/.agentframework/harness/runs/r591/logs/run-samples.jsonl",
+ "prev_swing_n": 97,
+ "prev_swing_min_mb": 2713,
+ "prev_swing_max_mb": 2815,
+ "prev_swing_effective": 102,
+ "gate_mb": 2650,
+ "floor_mb": 60,
+ "r595_observed": {
+  "round": "R595",
+  "criterion": "C3 起手闸余量条款（R590 派生版；候选⑤ 余量源按 R591 在同一飞窗实测重派生）",
+  "clause": "MARGIN := clamp(prev_swing_effective, floor=60, cap=CEIL-GATE-floor); REQ=GATE+MARGIN",
+  "prev_swing_effective": 102,
+  "prev_swing_source": "r591/logs/run-samples.jsonl (同态在飞窗, n=97, swing=102)",
+  "ceiling_min_of_3": 2788,
+  "pre_sample_spread_mb": 4,
+  "spread_clause": "<=50MB else fail-closed",
+  "margin": 78,
+  "req": 2728,
+  "cap": 78,
+  "cap_binding": true,
+  "note": "cap_binding=true ⇒ 振幅项退化（收紧的是上界而非下界，R590 已登记）"
+ },
+ "attempts": [
+  {
+   "kind": "pre_sample",
+   "ceiling_mb": 2683,
+   "spread_mb": 1,
+   "line": "[13:56:19] 起手前采样: ceiling(min of 3)=2683 spread=1MB"
+  },
+  {
+   "kind": "gate_clause",
+   "outcome": "FAIL_CLOSED",
+   "line": "[13:56:19] [致命] 顶棚 2683 装不下下限 60MB ⇒ 窗口不可开 (fail-closed)"
+  },
+  {
+   "kind": "pre_sample",
+   "ceiling_mb": 2788,
+   "spread_mb": 4,
+   "line": "[13:57:59] 起手前采样: ceiling(min of 3)=2788 spread=4MB"
+  },
+  {
+   "kind": "gate_A1",
+   "outcome": "PASS",
+   "line": "[13:58:05] 起手闸 A1: PASS (mem=2810MB, REQ=2728MB)"
+  }
+ ],
+ "derived": {
+  "ceiling_mb": 2788,
+  "cap_mb": 78,
+  "margin_mb": 78,
+  "REQ_mb": 2728,
+  "cap_binding": true,
+  "runner_margin_mb": 78,
+  "runner_req_mb": 2728,
+  "agree": true
+ },
+ "honest_boundary": "余量只覆盖**同态**（agent 三臂 + codex 一臂）在飞窗的观测振幅；异态负载（构建/发布）不在覆盖面。",
+ "discrimination": "同条款下 attempt#1 (FAIL_CLOSED) 与 attempt#2 (PASS) 分别出现 ⇒ 条款有牙、非恒真门"
+}
