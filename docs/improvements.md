@@ -3304,6 +3304,19 @@ EvidenceGate→ClarificationBatch 接入 V2 主链 / vulkan setenv 双写 / Sess
 - 【凭据卫生（非本轮产物，登记备查）】`eval/rover/r449/real-corpus.jsonl`（**untracked**，未入 git 任何提交）内含 14 处 35 字符 API key 面（沿用自 R449 语料）；本轮**未 add** 该文件，任何 `git add -A` 会把它带进提交 ⇒ 后续提交必须用逐字路径；推送暂停令在效（无对外暴露面）
 - 【下轮候选 (R582)】① 命中轮工具循环面（调用 4/7）**先量再改** ② P3 合取判据拆分（P3a 降级路径 / P3b 回放命中）后重注册 ③ learned-shape 命中 vs 规则面命中**分离臂**（把 `hits>0` 变 ≥1）④ 命中轮 completion 上升归因 ⑤ **作业环境自备 key 面**（v1 VOID 直接原因）
 
+## R605 (2026-09-21) — 同件扩窗轮（第十一窗集 w193..w195）· 单变量 `AGENTFRAMEWORK_R1_ARTIFACT_CARRYOVER`（T=缺省 on / C=显式 0）+ 外部真值 codex 同窗 — 结果: **主判据 v3 PASS（valid=3 / D_median 0，三窗真值全 58/58 = 首例）· J1 机制 PASS · J2 修复收敛 FAIL（T 1/9 vs C 1/9）· J3 成本 v2（本轮主判据）FAIL（a1/a2/b1 三条全破）· J3 v1 并列 FAIL（不翻案）· J4 能力（次级/欠功率）FAIL（T 4 vs C 4 vs C1 3）· J5 跨窗集同向 FAIL（set10 +0.3334 / set11 0.0）**（轮志: `eval/rover/r605/report-r605.md` · 器具 `eval/rover/r605/`）
+
+- 轮类型: **零产品源码改动 / 零新增夹具语义 / 零新增开关**（同件 sha `8c3ade04d542` = R600/R602/R603 同一枚，本侧 `sha256sum` 独立复核；同冻结题集 sha256 `e0c667c2a313c04b`、`cmp` 零差异 ⇒ 唯一自由度 = 窗集）
+- **器具面收口首次在新窗集行使**：候选② J3 v2（公式 import 自 r604 模块，禁重写第二份）+ 候选④ W_floor（有效窗下限落到判据器 + 11 轮零回归）＋候选⑤ LD 冻结名单（只作诊断列）＋候选⑥ 起手闸余量重派生（285MB）
+- **W_floor 零回归**：11 轮 ⇒ 翻号 3（全 `不达→NO_RESOLUTION`：r591/r597/r599，皆有效窗 ≤1）；`NO_RESOLUTION→PASS` 0、`PASS→任何` 0 ⇒ **纯标签语义收口、非阈值改动**；主 rc 不进该标签（读 `wfloor-regression-r605.json`，rc=0）
+- **候选⑥ 落实**：起手前按 pid 收口本会话 LSP 子进程（R604 反事实栏预测 249MB，实测 **+177MB**）⇒ 起手闸 A1/A2 PASS（ceiling 2775 / margin 65 / REQ 2715，cap_binding=True）
+- **只读并轮**：L2 前缀连续性 PASS · L3 判定卫生 PASS（18/18 外部用例套件判）· **Q1 假信心率 0.0556（1/18）**、反向「rc≠0 ∧ 外部满分」**7 例**（自判过度保守方向）· 负控有牙
+- 【形式门禁】**14/14**（Failed 0 / Passed 14 / Skipped 0）
+- 【铁律 11】`exec_precondition.py --round r605` ⇒ **rc=1**（blocked 10 条，全落 `wythoff`）⇒ 成本/质量读数标「参考（未可验收）」
+- 【诚实边界】① J4 欠功率只并列；② 与 R585–R599 冻结件轮禁相减；③ rc 语义分层 + `mechanism_rc` 为**首跑后补记**（`checks_posthoc`）⇒ 与 r603 rc 列不可直接并列；④ `b1` 降级须用户裁定；⑤ V_int 第六窗集**已取读数**（21/21 跑次 / oracle 一致 / 控制三值互异 / 守恒 True；agent 桶 B_coldset 48 · A_landing_loose 27 · D 9 · A 3；`v_int_hist` {0:14,3:1,29:1,32:1,118:1}），但**器具 rc=2 两项 False**：零回归=False（已知 scope 伪影）+ 只读=False（**本侧并发跑 `dotnet test` 改写 `src/obj|bin`** ⇒ 违反互斥纪律，非器具缺陷；快照树零改动）⇒ 按「参考」登记，R606 无并发构建重跑
+- 【下轮候选 (R606)】① 产品侧处置裁定（待放行；缺口 100% 集中在 `wythoff` 冷集构造层）② b1 列口径裁定（先预注册再改）③ J2/J4 欠功率面扩 reps（≥25/档，须先写预算与判据）④ 起手闸判别力成对控制改操作顺序（先压低 CEIL 再行使）⑤ V_int 第六窗集（分段落盘）⑥ 文献候选 L4 落为分布先行项
+
+
 ## R603 (2026-09-21) — 同件扩窗轮（第十窗集 w190..w192）· 单变量 `AGENTFRAMEWORK_R1_ARTIFACT_CARRYOVER`（T=缺省 on / C=显式 0）+ 外部真值 codex 同窗 — 结果: **J1 机制 PASS · J2 修复收敛 PASS（T 4/9 vs C 2/9）· J3 成本 FAIL（`max_calls` T 4 vs C 3，判据取 max-of-9 单点极值 ⇒ 照原样 FAIL 不翻案）· J4 能力（次级/欠功率）PASS（整题全对 T 6 vs C 3 vs C1 1）· J5 跨窗集同向 PASS（set9 0.1111 / set10 0.3334 同号）**（轮志: `eval/rover/r603/report-r603.md` · 器具 `eval/rover/r603/`）
 
 - 轮类型: **零产品源码改动 / 零新增夹具语义 / 零新增开关**（同件 sha `8c3ade04d542` = R600/R602 同一枚，本侧 `sha256sum` 独立复核；同冻结题集 sha256 `e0c667c2a313c04b`、`cmp` 零差异 ⇒ 唯一自由度 = 窗集）

@@ -421,9 +421,16 @@ def main():
         "paired_vs_codex": paired,
         "instrument_defects": defects,
         "verdict": {"rc": rc,
+                    "rc_semantics": "分层：0 器具可用 / 2 器具缺陷（禁作被测结论） / 3 输入缺失；"
+                                    "机制面结论见 mechanism_rc 与 label（承 R604 分层 rc 先例，本轮为**事后补记字段** checks_posthoc）",
+                    "mechanism_rc": 0 if (j1_pass and j2_pass and j3_v2_pass) else 1,
                     "label": ("机制达标（J1∧J2∧J3v2）" if (j1_pass and j2_pass and j3_v2_pass) else "机制未达标")
                              if rc == 0 else "器具缺陷（rc=2，禁作被测结论）",
                     "capability_claim": "仅并列（J4 次级、欠功率）；跨轮禁相减（被测件按设计变更）"},
+        "checks_posthoc": [
+            "本轮 rc 语义分层（0 器具可用 / 2 器具缺陷 / 3 输入缺失）＋新增 mechanism_rc 字段：**首跑后补记**、"
+            "不改任何判据与读数（r603 判据器把机制面编进 rc=1 ⇒ 两轮 rc 列不可直接并列，须按 mechanism_rc 对比）",
+        ],
         "honest_bounds": [
             "J4 为 n=9/档 的欠功率读数 ⇒ 只作并列，不作能力结论",
             "被测件按设计变更（产品源码改动 ⇒ 重发布 AOT）⇒ 与 R585–R599 冻结件轮**禁相减**",

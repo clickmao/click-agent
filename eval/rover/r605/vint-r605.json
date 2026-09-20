@@ -1,0 +1,61 @@
+{
+ "round": "R605 · 顺延项回执（N4④ V_int 第六窗集）",
+ "tool": "eval/rover/r593/landing_predicate_r593.py --rounds r605 --codex-too（同件同口径，未改一字）",
+ "raw_log": "eval/rover/r605/vint-r605.log",
+ "readings": {
+  "runs": "21/21 (err=0)",
+  "oracle_consistent": true,
+  "codex_too": true,
+  "controls": {
+   "OK": "(c) 本轴外",
+   "POS": "(a) 落点/选择谓词层",
+   "NEG": "(b) 冷集构造层",
+   "D_control_uniqueness": true,
+   "old_granularity_has_teeth": false,
+   "new_granularity_has_teeth": true
+  },
+  "conservation": true,
+  "buckets_agent": {
+   "B_coldset": 48,
+   "A_landing_loose": 27,
+   "D_delivery_or_shape": 9,
+   "A_selection_order": 3
+  },
+  "d_subbuckets_agent": {
+   "D1_empty_or_error": 5,
+   "D3_move_illegal": 4
+  },
+  "buckets_codex": {},
+  "share_diff_agent_minus_codex": {
+   "A_landing_loose": 0.3103,
+   "A_selection_order": 0.0345,
+   "B_coldset": 0.5517,
+   "D_delivery_or_shape": 0.1034
+  },
+  "v_int_hist_agent": {
+   "0": 14,
+   "3": 1,
+   "29": 1,
+   "32": 1,
+   "118": 1
+  },
+  "v_int_hist_codex": {
+   "0": 3
+  },
+  "layer_agent": {
+   "(c) 本轴外": 12,
+   "(b) 冷集构造层": 4,
+   "(a) 落点/选择谓词层": 2
+  },
+  "layer_codex": {
+   "(c) 本轴外": 3
+  },
+  "rc": 2
+ },
+ "defect_attribution": {
+  "zero_regression_false": "已知 scope 伪影（R597/R598 已定因：单窗集重算与 r592 登记值的比较域不同 ⇒ match=False；同器具对历史全集复算 match=True ⇒ 器具完好）⇒ 单列、不翻案",
+  "readonly_false": "本轮自捕的流程违反：器具把 src/ 树 sha 前后比对作只读判据（src_probe = REPO/src），而本侧在器具运行期间并发跑了 dotnet test（构建写 src/*/obj|bin）⇒ 前后 hash 不同。违反「批测/单测/build 三者互斥」纪律的是本侧流程，不是器具（快照树 find -newermt 04:26 = 0 文件改动 ⇒ 被测面未被改）",
+  "action": "R606 以「无并发构建」重跑同器具取纯净读数；本轮 V_int 读数按「参考（器具 rc=2）」登记，不入主线结论",
+  "mainline_impact": "无：V_int 是诊断项（预注册禁止阈值化），本轮不参与 v3/J1–J5 任何判定"
+ }
+}

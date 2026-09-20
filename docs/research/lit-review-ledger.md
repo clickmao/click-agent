@@ -171,3 +171,30 @@
 - **C3 真值掉线面跨轮 census**：39 窗（r585–r603 的 13 轮 × 3 窗）、4–7 臂/窗；守恒 `10614/10614`；真值失败用例 **13 条**（**全部 `wythoff` 族**）、失败窗次 **57**、涉及 17 窗；头两名 `wythoff#57-hidden`（17 窗 / 12 轮 / 我方通过率 0.5833）与 `wythoff#43-public`（13 窗 / 9 轮 / 0.5）⇒ **T1 成立（真值侧掉线用例）**，但 **T2 = 两侧摆动带**（我方通过率约 0.5–0.58，**不是**「我方稳定通过」）⇒ R603 的「S3 恒为这两条」只说明**反相面的位置集中**，**不能**读成我方在该例上稳定获益；**T3 低区分度窗 = 0**（未触发剔除）。控制 `POS 有牙（+1 窗）/ NEG 身份闸翻红 / 非平凡（13 类非常量）/ 守恒成立`。**口径提示（已入册 §12.6 B）**：本 census 的 S3 = **窗级**（全部产品跑次通过），与 R603 `truthdrop` 的**跑次级** S3 粒度不同 ⇒ 并列，禁互相换算（实测 `r603/w190` 跑次级 S3 非零而窗级为空）。读数 `eval/rover/r604/truthcase-census-r604.json`。
 - **C4 入册**：`docs/external-reference-harness.md` **§12.6**（有效窗下限显式二选一 + 两级 S3 口径 + 「真值掉线用例」登记与写法；只做增量，未覆盖既有节）。
 
+
+## 8. R605 增量（2026-09-21；真机臂轮 · 并轮小步）
+
+### 8.1 检索（本轮 3 式 = 上限；检索间隔 ≥4s）
+
+| # | 检索式 | 命令面 | 逐条判（结果数不是判据） |
+|---|---|---|---|
+| Q1 | `"repair loop" token overhead agents` | `--category cs.CL --max 6 --sort date` | `Found 68596` ⇒ **过宽**；top6 中 2 条**已登记**（2609.20822 / 2609.20804）⇒ 去重；其余 4 条与管线无关（扩散 LM / 视频生成 / 蒸馏 / 机器人记忆）⇒ **0 条新增** |
+| Q2 | `"item-level" filtering discriminative power benchmark` | `--max 6 --sort date` | `Found 466571` ⇒ **过宽**；top6 全为 CV/数学面，含 1 条已登记（2609.20794）⇒ **0 条新增** |
+| Q3 | `"token budget" trajectory agent evaluation` | `--category cs.SE --max 6 --sort date` | `Found 144610` ⇒ **过宽**；top6 中 3 条已登记（20822 / 20812 / 20804）⇒ 去重；2 条新面（2609.20789 / 2609.20791）⇒ 见表 |
+
+**工具面提示（第三轮复核，仍不改脚本）**：`--sort date` 与宽检索式叠加时返回「最新提交」而非「最相关」；带引号的短语**不能**单独承担选择性（Q1/Q2 已二度证实）⇒ 逐条判必须按摘要相关性。**预算内已用满 3 式 ⇒ 本轮不再追加**（反空转：若下轮仍 0 采信则降频为每 3 轮一次）。
+
+### 8.2 台账（8 列，本轮追加 2 行）
+
+| 日期 | 检索式 | 出处(含版本) | 逐字引文(≤2 句) | 机制假设 | 改哪一格 KPI(预期方向) | 单变量轴 + 判据(阈值/可证伪点) | 状态 |
+|---|---|---|---|---|---|---|---|
+| 2026-09-21 | `"token budget" trajectory agent evaluation` | arXiv:2609.20789**v1**（2026-09-17；cs.GT/cs.IT；comment: 13 pages. Lean 4 formalization: `github.com/zrobertson466920/mutual-evaluation`；无 journal-ref ⇒ **非同行评审**；权威性代理 = **公开形式化代码** > 纯预印本） | "The critic chooses a finite-valued rule that induces an evaluation score on joint report laws." / "implementations are shown that produce unbiased Pearson and Shannon information scores without requiring peers, a ground-truth reference, or likelihood-ratio estimation."（附限定："One runtime restriction is that the number of required replicas is random and can depend on the critic rule."） | 无真值参照时，用**同任务独立复本**（replication-loop）的「类型一致」回报即可给出无偏的相互评价 ⇒ 「自报成功」与「外部真值」之间还可插一层**复本一致性** | 质量（判据面）：把「同题同臂 k 次独立复本的整题全对率一致性」作为**自判可靠性上界**（本仓现有 Q1 假信心率 + codex 真值两个面，缺这一格） | 轴 = 复本数 k（同题同臂 k 次独立会话，k∈{1,3}）；判据 = k=3 的「复本间不一致率」与 Q1 假信心率**同号且不一致率 ≤ 假信心率** ⇒ 复本面足够；**先落分布、禁预建阈值** | **候选（分布先行）**：本仓现状 = `eval/rover/r605/checks_r605.py::Q1_false_confidence`（rc0 ∧ 外部未满分 **1/18**；反向 7 例）；R605 尚未构造复本臂 ⇒ 触发条件 = 用户放行新臂面 |
+| 2026-09-21 | `"token budget" trajectory agent evaluation` | arXiv:2609.20791**v1**（2026-09-17；cs.RO；comment: 8 pages, 2 figures；无 journal-ref ⇒ 非同行评审） | "Existing approaches often rely on pre-designed completion signal checkers that are hard to obtain in real-world execution." / "their decision boundaries are not inherently aligned with task completion criteria" | **阶段推进/完成判定**应由独立检查器判（可学），不靠策略自述与本域手工写死的完成信号 | 轮数（`steps_executed`：误推进 ⇒ 返工轮）＋质量（阶段已过而目标未达成） | 轴 = 阶段推进判据形态（写死顶层流程 vs 独立检查器产出的结构化完成信号）；判据 = 误推进率 `== 0` ∧ **消融臂**（关掉检查器）该率 `> 0`（否则检查器非承重） | **观测项**（机器人域具体件不可移植，只取机制；引入检查器属**新组件 ⇒ 须用户放行**，本轮不动） |
+
+### 8.3 本轮器具面产出（与主线同轮，零新增夹具语义）
+
+- **候选④ W_floor 落到判据器 + 零回归**：有效窗 ∈{0,1} ⇒ `NO_RESOLUTION`；回放 11 轮 ⇒ 翻号 **3**（全 `不达→NO_RESOLUTION`：r591/r597/r599，皆有效窗 ≤1），`NO_RESOLUTION→PASS` **0**、`PASS→任何` **0** ⇒ **纯标签语义收口、非阈值改动**。读数 `eval/rover/r605/wfloor-regression-r605.json`（rc=0）。
+- **候选⑤ LD 冻结名单**（`wythoff#43-public` / `wythoff#57-hidden`）只作诊断列 `v3_ex_LD`=[0, −4, 0]，**不作判据、不进 rc**；控制 POS（空名单 ≡ v3）/ NEG（未知 id 拒）/ 非平凡 三件齐。读数 `verdict-r605.json::LD_low_discrimination`。
+- **候选② J3 v2 首次在新窗集行使**：a1（池化 21 vs 19）/ a2（w193 10 vs 5）/ b1（665.81 vs 287.89 = 2.31×）**三条全破** ⇒ 形态收口后**仍不达标**（与 R604 三轮全红同号）。读数 `verdict-r605.json::J3_cost`。
+- **候选⑥ 起手前清场**：按 pid 收口会话端 LSP 子进程（R604 反事实栏预测 249MB，实测 **+177MB**）⇒ 起手闸 A1/A2 PASS、窗口可开。
+- **V_int 第六窗集（顺延项回执）**：`landing_predicate_r593.py --rounds r605 --codex-too` **已完成**（rc=2）：21/21 跑次、oracle 一致、控制 OK/POS/NEG 落点唯一（新粒度 has_teeth=True / 旧粒度 False）、守恒 True；agent 桶 {B_coldset 48 / A_landing_loose 27 / D_delivery_or_shape 9 / A_selection_order 3}（D 子桶 D1 5 / D3 4）、codex 桶 {}（3 跑次全过）；`v_int_hist` agent {0:14, 3:1, 29:1, 32:1, 118:1} / codex {0:3}；层 agent {(c) 12, (b) 4, (a) 2} / codex {(c) 3}。**rc=2 两项 False 均为测量层**：① 零回归=False = 已知单窗集 scope 伪影（同器具对历史全集复算 match=True）；② 只读=False = **本侧在器具运行期间并发跑了 `dotnet test`**（器具以 `src/` 树 sha 前后比对作只读判据 ⇒ 构建写 `src/*/obj|bin` 即破；快照树 `-newermt 04:26` 改动文件数 = **0** ⇒ 被测面未被改）。**纪律含义**：违反的是本侧的「批测/单测/build 三者互斥」，不是器具；R606 在无并发构建条件下重跑取纯净读数。读数 `eval/rover/r605/vint-r605.json` + 日志 `vint-r605.log`。

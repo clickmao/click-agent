@@ -1,0 +1,219 @@
+{
+ "round": "R605",
+ "tool": "wfloor_regression_r605",
+ "criterion": "W_floor：有效窗 ≥2 ⇒ 判据行使；有效窗 ∈{0,1} ⇒ NO_RESOLUTION（阈值不动）",
+ "rows": [
+  {
+   "round": "r585",
+   "valid_windows": 2,
+   "D_list": [
+    -8,
+    -3
+   ],
+   "old_label": "不达",
+   "new_label": "不达",
+   "label_flip": false,
+   "main_rc": 1,
+   "J_passes": [],
+   "rc_explained_by_J": false,
+   "label_is_not_input_to_rc": true,
+   "main_rc_would_change": false
+  },
+  {
+   "round": "r586",
+   "valid_windows": 3,
+   "D_list": [
+    0,
+    -3,
+    -15
+   ],
+   "old_label": "不达",
+   "new_label": "不达",
+   "label_flip": false,
+   "main_rc": 1,
+   "J_passes": [],
+   "rc_explained_by_J": false,
+   "label_is_not_input_to_rc": true,
+   "main_rc_would_change": false
+  },
+  {
+   "round": "r587",
+   "valid_windows": 2,
+   "D_list": [
+    0,
+    -13
+   ],
+   "old_label": "不达",
+   "new_label": "不达",
+   "label_flip": false,
+   "main_rc": 1,
+   "J_passes": [],
+   "rc_explained_by_J": false,
+   "label_is_not_input_to_rc": true,
+   "main_rc_would_change": false
+  },
+  {
+   "round": "r588",
+   "valid_windows": 2,
+   "D_list": [
+    -7,
+    -11
+   ],
+   "old_label": "不达",
+   "new_label": "不达",
+   "label_flip": false,
+   "main_rc": 1,
+   "J_passes": [],
+   "rc_explained_by_J": false,
+   "label_is_not_input_to_rc": true,
+   "main_rc_would_change": false
+  },
+  {
+   "round": "r591",
+   "valid_windows": 1,
+   "D_list": [
+    -1
+   ],
+   "old_label": "不达",
+   "new_label": "NO_RESOLUTION",
+   "label_flip": true,
+   "main_rc": 1,
+   "J_passes": [],
+   "rc_explained_by_J": false,
+   "label_is_not_input_to_rc": true,
+   "main_rc_would_change": false
+  },
+  {
+   "round": "r595",
+   "valid_windows": 2,
+   "D_list": [
+    -6,
+    0
+   ],
+   "old_label": "不达",
+   "new_label": "不达",
+   "label_flip": false,
+   "main_rc": 1,
+   "J_passes": [],
+   "rc_explained_by_J": false,
+   "label_is_not_input_to_rc": true,
+   "main_rc_would_change": false
+  },
+  {
+   "round": "r596",
+   "valid_windows": 2,
+   "D_list": [
+    0,
+    -15
+   ],
+   "old_label": "不达",
+   "new_label": "不达",
+   "label_flip": false,
+   "main_rc": 1,
+   "J_passes": [],
+   "rc_explained_by_J": false,
+   "label_is_not_input_to_rc": true,
+   "main_rc_would_change": false
+  },
+  {
+   "round": "r597",
+   "valid_windows": 1,
+   "D_list": [
+    0
+   ],
+   "old_label": "不达",
+   "new_label": "NO_RESOLUTION",
+   "label_flip": true,
+   "main_rc": 1,
+   "J_passes": [],
+   "rc_explained_by_J": false,
+   "label_is_not_input_to_rc": true,
+   "main_rc_would_change": false
+  },
+  {
+   "round": "r598",
+   "valid_windows": 2,
+   "D_list": [
+    0,
+    0
+   ],
+   "old_label": "PASS",
+   "new_label": "PASS",
+   "label_flip": false,
+   "main_rc": 0,
+   "J_passes": [],
+   "rc_explained_by_J": false,
+   "label_is_not_input_to_rc": true,
+   "main_rc_would_change": false
+  },
+  {
+   "round": "r599",
+   "valid_windows": 0,
+   "D_list": [],
+   "old_label": "不达",
+   "new_label": "NO_RESOLUTION",
+   "label_flip": true,
+   "main_rc": 1,
+   "J_passes": [],
+   "rc_explained_by_J": false,
+   "label_is_not_input_to_rc": true,
+   "main_rc_would_change": false
+  },
+  {
+   "round": "r605",
+   "valid_windows": 3,
+   "D_list": [
+    0,
+    -2,
+    0
+   ],
+   "old_label": "PASS",
+   "new_label": "PASS",
+   "label_flip": false,
+   "main_rc": 0,
+   "J_passes": [
+    true,
+    false,
+    false
+   ],
+   "rc_explained_by_J": false,
+   "label_is_not_input_to_rc": true,
+   "main_rc_would_change": false
+  }
+ ],
+ "rounds_checked": 11,
+ "rounds_missing": [
+  "r602",
+  "r603"
+ ],
+ "label_flips": [
+  {
+   "round": "r591",
+   "old": "不达",
+   "new": "NO_RESOLUTION",
+   "valid": 1
+  },
+  {
+   "round": "r597",
+   "old": "不达",
+   "new": "NO_RESOLUTION",
+   "valid": 1
+  },
+  {
+   "round": "r599",
+   "old": "不达",
+   "new": "NO_RESOLUTION",
+   "valid": 0
+  }
+ ],
+ "flip_count": 3,
+ "flip_direction": {
+  "不达→NO_RESOLUTION": 3,
+  "NO_RESOLUTION→PASS": 0,
+  "PASS→任何": 0
+ },
+ "neutrality": "本条款只把「有效窗 ≤1 的 不达」改写为 NO_RESOLUTION（不作能力结论）；PASS 标签与主 rc（J1∧J2∧J3）均不受影响 ⇒ 纯标签语义收口，非阈值改动",
+ "defects": [],
+ "verdict": "COMPUTED",
+ "rc": 0
+}

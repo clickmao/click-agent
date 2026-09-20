@@ -65,9 +65,17 @@ def main():
                % (v3["D_list"], v3["D_median"], v3["valid_windows"], v3["label"]))
     rep.append("- 真值自败窗（剔除配对，**禁筛窗**）：%s\n" % (v3["unreliable_windows"] or "无"))
     rep.append("- 本窗集**三窗真值全 58/58**（首例）：全部窗进配对 ⇒ 主判据**第一次具备完整分辨率**（承 W_floor 条款）。\n")
-    rep.append("- LD 诊断列（**不作判据**）：`v3_ex_LD` D_list=%s / median=%s（冻结名单 %s；非平凡=%s）\n\n"
+    rep.append("- LD 诊断列（**不作判据**）：`v3_ex_LD` D_list=%s / median=%s（冻结名单 %s；非平凡=%s）\n"
                % (ld["v3_ex_LD"]["D_list"], ld["v3_ex_LD"]["D_median"], ld["frozen_list"],
                   ld["controls"]["non_trivial"]["ok"]))
+    wfr = j(os.path.join(PD, "wfloor-regression-r605.json"))
+    if wfr:
+        rep.append("- **W_floor 零回归（候选④ 负控）**：回放 %d 轮 ⇒ 标签翻号 %d（全为 `不达→NO_RESOLUTION`：%s）；"
+                   "`NO_RESOLUTION→PASS` **0**、`PASS→任何` **0** ⇒ **纯标签语义收口、非阈值改动**；"
+                   "主 rc 不由该标签决定（机制面结论见 `mechanism_rc`）。\n"
+                   % (wfr["rounds_checked"], wfr["flip_count"],
+                      ", ".join("%s(valid=%d)" % (x["round"], x["valid"]) for x in wfr["label_flips"]) or "无"))
+    rep.append("\n")
 
     rep.append("## 2. 机制/成本/能力（J1–J5 取自 `verdict-r605.json`）\n\n")
     rep.append("| 判据 | 结果 | 读数 |\n|---|---|---|\n")
@@ -146,7 +154,21 @@ def main():
                                              len(q1["rc_non0_but_external_full"])))
     rep.append("- **负控有牙**：注入前缀漂移 ⇒ L2 翻红（`rc=%s, negctl_teeth=%s, l2_violated=%s`）\n"
                % (ckn["rc"], ckn["negctl_teeth"], ckn["l2_violated"]))
-    rep.append("- V_int 第六窗集：`vint-r605.json`（顺延项，见 §4）\n")
+    vi = j(os.path.join(PD, "vint-r605.json"))
+    if vi:
+        r = vi["readings"]
+        rep.append("- **V_int 第六窗集**（`vint-r605.json`；同件同口径，未改一字）：跑次 %s · oracle 一致 %s · 控制 OK/POS/NEG 落点唯一"
+                   "（新粒度 has_teeth=%s，旧粒度 =%s）· 守恒 %s；agent 桶 `%s` / codex 桶 `%s`；"
+                   "`v_int_hist` agent `%s` / codex `%s`；层 agent `%s`\n"
+                   % (r["runs"], r["oracle_consistent"], r["controls"]["new_granularity_has_teeth"],
+                      r["controls"]["old_granularity_has_teeth"], r["conservation"],
+                      json.dumps(r["buckets_agent"], ensure_ascii=False), json.dumps(r["buckets_codex"], ensure_ascii=False),
+                      json.dumps(r["v_int_hist_agent"], ensure_ascii=False), json.dumps(r["v_int_hist_codex"], ensure_ascii=False),
+                      json.dumps(r["layer_agent"], ensure_ascii=False)))
+        rep.append("- **V_int 器具 rc=2（两项 False，均已定因、不翻案）**：① `零回归=False` = **已知 scope 伪影**（单窗集重算 vs r592 登记值比较域不同；"
+                   "同器具对历史全集复算 match=True ⇒ 器具完好）② `只读=False` = **本侧流程违反**（器具以 `src/` 树 sha 前后比对作只读判据，"
+                   "而本侧在器具运行期间并发跑了 `dotnet test` ⇒ 构建写 `src/*/obj|bin`；快照树 `-newermt 04:26` 文件数 = 0 ⇒ 被测面未被改）。"
+                   "R606 以「无并发构建」重跑取纯净读数；本轮 V_int 读数按「参考（器具 rc=2）」登记，**不入主线结论**（V_int 为诊断项，预注册禁止阈值化）。\n")
 
     rep.append("\n## 4. 铁律 11 可验收前置\n\n")
     if pc:
@@ -198,7 +220,9 @@ def main():
     json.dump(ev, io.open(os.path.join(PD, "evidence-r605.json"), "w", encoding="utf-8"),
               ensure_ascii=False, indent=1)
     print("[finish-r605] report + evidence 落盘；v3=%s(J3=%s) precond_rc=%s"
-          % (v3["label"], j3["pass"], (pc or {}).get("rc")))
+          % (v3["label"], j3["pass"],
+             (io.open(os.path.join(D, "precond.rc"), encoding="utf-8").read().strip()
+              if os.path.isfile(os.path.join(D, "precond.rc")) else None)))
     return 0
 
 

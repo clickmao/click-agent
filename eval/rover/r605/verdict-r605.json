@@ -5,7 +5,7 @@
   "helper": "/home/agentuser/AgentFramework/eval/rover/r599/kpi_r599.py",
   "helper_sha12": "204d7ad72cbd",
   "j3v2_module": "/home/agentuser/AgentFramework/eval/rover/r604/judge_j3v2_r604.py",
-  "driver_sha12": "39ae223e609f"
+  "driver_sha12": "ba3faa0c3746"
  },
  "J1_mechanism": {
   "pass": true,
@@ -852,9 +852,14 @@
  "instrument_defects": [],
  "verdict": {
   "rc": 0,
+  "rc_semantics": "分层：0 器具可用 / 2 器具缺陷（禁作被测结论） / 3 输入缺失；机制面结论见 mechanism_rc 与 label（承 R604 分层 rc 先例，本轮为**事后补记字段** checks_posthoc）",
+  "mechanism_rc": 1,
   "label": "机制未达标",
   "capability_claim": "仅并列（J4 次级、欠功率）；跨轮禁相减（被测件按设计变更）"
  },
+ "checks_posthoc": [
+  "本轮 rc 语义分层（0 器具可用 / 2 器具缺陷 / 3 输入缺失）＋新增 mechanism_rc 字段：**首跑后补记**、不改任何判据与读数（r603 判据器把机制面编进 rc=1 ⇒ 两轮 rc 列不可直接并列，须按 mechanism_rc 对比）"
+ ],
  "honest_bounds": [
   "J4 为 n=9/档 的欠功率读数 ⇒ 只作并列，不作能力结论",
   "被测件按设计变更（产品源码改动 ⇒ 重发布 AOT）⇒ 与 R585–R599 冻结件轮**禁相减**",

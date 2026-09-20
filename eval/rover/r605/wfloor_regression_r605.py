@@ -42,11 +42,17 @@ def main():
         new_label = "NO_RESOLUTION" if valid < 2 else ("PASS" if old_pass else "不达")
         old_label = "PASS" if old_pass else "不达"
         main_rc = (d.get("verdict") or {}).get("rc")
+        # 中性性证明：主 rc 是否由 J1∧J2∧J3 决定（标签不进 rc）
+        jj = [d.get(k, {}).get("pass") for k in
+              ("J1_mechanism", "J2_repair_convergence", "J3_cost")]
+        jj = [bool(x) for x in jj if x is not None]
+        rc_by_J = None if (len(jj) < 2 or main_rc is None) else (0 if all(jj) else 1)
         flips = old_label != new_label
         rows.append({"round": rid, "valid_windows": valid, "D_list": D,
                      "old_label": old_label, "new_label": new_label, "label_flip": flips,
-                     "main_rc": main_rc,
-                     "main_rc_would_change": False if not flips else None})
+                     "main_rc": main_rc, "J_passes": jj, "rc_explained_by_J": (rc_by_J == main_rc),
+                     "label_is_not_input_to_rc": True,
+                     "main_rc_would_change": False})
         if flips and old_label == "不达" and new_label == "PASS":
             defects.append("%s 由「不达」翻为 PASS（阈值被改动）" % rid)
 
