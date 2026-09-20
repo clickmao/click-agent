@@ -87,3 +87,31 @@
 - 检索式 3 条（`"prompt cache"`+cs.CL / `"self-repair"`+cs.SE / `"execution feedback"`+cs.SE）；命中 15 / 24 / 120 条。
 - 逐条读判：采信 **3**（L1/L2/L3）· 观察 **5** · 证伪 **0** · 未取到原文 **0** · 静默跳过 **0**。
 - 工具面缺陷 **1**（`quote()`/超时/无限流退避）⇒ 已修 skill 脚本，并把修后的命令形态写进自检作业定义。
+
+
+## 5. R602 增量（2026-09-20 第 2 段；同轮并轮小步）
+
+### 5.1 检索（本轮 2 式，≤3 上限内；检索间隔 ≥4s）
+
+| # | 检索式 | 命令面 | 逐条读判 |
+|---|---|---|---|
+| Q1 | `"blind resampling"` | `--category cs.SE --max 6 --sort date` | 1 条直击本仓修复环（见下表行 1） |
+| Q2 | `"feedback ablation" placebo` | `--max 6 --sort date` | 0 条新增采信（与 Q1 行 1 同族，去重） |
+
+### 5.2 台账（8 列，本轮追加 2 行）
+
+| 日期 | 检索式 | 出处(含版本) | 逐字引文(≤2 句) | 机制假设 | 改哪一格 KPI(预期方向) | 单变量轴 + 判据(阈值/可证伪点) | 状态 |
+|---|---|---|---|---|---|---|---|
+| 2026-09-20 | `"blind resampling"` | arXiv:2609.00854**v1**（2026-09-01；comment/journal-ref 皆空 ⇒ 权威性仅由「预注册 + 安慰剂对照 + 488 例/4 模型」支撑，非同行评审） | "We separate these explanations with three arms applied to the same failed candidate: blind whole-solution resampling, spectrum-based localization followed by suspect-span infilling, and same-length infilling at a disjoint random code span." / "among the 177 candidates localizable from a strong suite, localized infilling loses decisively to blind resampling at a matched attempt" | 「定位后精准改」未必优于「盲重采样」；**同长度、无关跨度**的安慰剂臂是分离「定位有用」与「改得小」的必要对照 | 质量（修复收敛率）↑；轮数（盲臂 1 调用 vs 定位臂 2 调用）↓ | 轴 = 修复策略（盲重采样/定位内填/安慰剂内填）；判据 = 修复后整题全对率 `T_盲 ≥ T_定位` ∧ `T_盲 ≥ T_安慰剂` ⇒ 否则「定位」非承重 | **被本轮 L1 机检阻挡**：本仓该轴 env 面仅 **2 态**（on/off）⇒ 第 3 臂无法由配置构造；台账 §3.1「零产品改动」经机检**证伪**（见 5.3） |
+| 2026-09-20 | `"feedback ablation" placebo` | arXiv:2609.20812**v1**（2026-09-17；comment: 7 figures, 6 tables） | "An agent overclaims when its final response contradicts information in its context. This definition requires no inference about intent and is independent of task success." / "agents do not read all the files they were asked to review in 67.9\% of runs" | 「产物自报达成 ∧ 外部真值未达成」可**机检**（= 本仓 `rc==0 ∧ 外部用例未全过`），且定义不依赖意图推断 ⇒ 可作独立 KPI 列 | 质量（overclaim 率**独立成列**，禁并入正确率；预期方向 ↓） | 轴 = 判定卫生（自报/外部真值冲突计数）；判据 = 冲突率 `== 0`（可证伪点：任一跑次 rc=0 而外部用例 < 全 即翻红） | **采信（已实施）**：`eval/rover/r602/checks_r602.py` Q1 字段已落盘；本轮实测 `den=18 / rate=0.0 / conflicts=0` |
+
+采集日：2026-09-20（CST）。引用数：Semantic Scholar 无 key 时 HTTP 429 ⇒ **不可用**（如实写，不编造）。
+两个版本号均为**逐字取自** `export.arxiv.org/api/query?id_list=` 的 `a:id` 字段（含 `v1`）。
+
+### 5.3 L1「零产品改动」声称被机检证伪（本轮器具产出，非耳闻）
+
+- 器具：`eval/rover/r602/l1_axis_probe_r602.py`（**只读**，零远端调用，零产品改动）。
+- 读数：`{"rc": 0, "axis_states": 2, "controls": {"determinism": true, "POS_multi_valued_recognized": true, "NEG_perturbation_flips_to_multi": true}, "verdict": false}`
+- 语义：从 `src/agent/r1/R1Options.cs` 派生该轴的**可取值集** = `{on(缺省), off}`（布尔 + 否定串白名单形态）⇒ `BR`(盲重采样) / `P`(安慰剂) **不是该轴的取值**，必须新造机制（= 产品代码改动）。
+- 三控制（器具有牙）：① 同输入两次取值集**逐位相同**（确定性）；② 同文件里 int+区间轴（`AGENTFRAMEWORK_R1_MAX_REPAIR`）被识别为**多值**（正控 ⇒ 提取器不恒 2）；③ 对布尔块的**扰动副本**（追加两串）立刻翻成多值（负控 ⇒ 判据非恒真）。
+- **收窄（证伪即收窄，不硬凑）**：台账 §3.1 的「L1 零产品改动可加两臂」判为**不可行**；L1 现状降级为**观测项**，重开条件 = 产品侧放行「修复策略」轴（三态）否则不做。

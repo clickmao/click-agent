@@ -1,0 +1,72 @@
+{
+ "round": "R602",
+ "kind": "只读机检（L2 前缀不变 / L3 判定卫生 / 假信心率）",
+ "negctl_teeth": true,
+ "D": "/tmp/r602neg-ct624oh3/r602",
+ "instrument": {
+  "driver_sha12": "67bd6ea0fd53"
+ },
+ "L2_prefix_invariance": {
+  "pass": false,
+  "prefix_chars_distinct": 1,
+  "prefix_chars_values": [
+   15291
+  ],
+  "prefix_sha256_distinct": 2,
+  "prefix_sha256_values": [
+   "deadbeefe6fc74c1…",
+   "f1280f71e6fc74c1…"
+  ],
+  "task_sha256_distinct": 1,
+  "task_sha256_values": [
+   "6fc12602d01e5399…"
+  ],
+  "transcript_missing": [],
+  "assertion": "同轮内 prefix_chars ∧ prefix_sha256 ∧ task_sha256 各唯一（恒前缀 + 同输入）"
+ },
+ "L3_judgment_hygiene": {
+  "runs_total": 18,
+  "with_external_suite": 18,
+  "with_public_probe": 17,
+  "self_source_only": [],
+  "neither": [],
+  "pass": true,
+  "assertion": "失败判定必须由产物之外给出（题面公开用例探针 ∧/∨ 外部用例套件）；self_source_only 目标 0"
+ },
+ "Q1_false_confidence": {
+  "rc0_but_external_unmet": [],
+  "rc_non0_but_external_full": [
+   {
+    "run": "w187/agentDT-r2",
+    "rc": 8
+   },
+   {
+    "run": "w188/agentDT-r1",
+    "rc": 5
+   },
+   {
+    "run": "w188/agentDT-r3",
+    "rc": 8
+   },
+   {
+    "run": "w189/agentDC-r3",
+    "rc": 8
+   }
+  ],
+  "skip_no_external": 0,
+  "rate": 0.0,
+  "denominator": 18,
+  "assertion": "rc==0（链路自判达成）∧ 外部用例 < 满分 ⇒ 自判与外部真值冲突；反向同列"
+ },
+ "overclaim_heuristic": {
+  "hits": [
+   "w187/agentDC-r3",
+   "w188/agentDC-r1"
+  ],
+  "note": "文本形状启发式 —— 仅参考，不作对外口径、不入 rc"
+ },
+ "rc": 0,
+ "rc_semantics": "0 全过 / 2 器具或读数异常 / 3 输入缺失（弃权）",
+ "negctl": true,
+ "l2_violated": true
+}

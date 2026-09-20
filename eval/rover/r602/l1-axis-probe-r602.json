@@ -1,0 +1,43 @@
+{
+ "round": "R602",
+ "kind": "只读定因（L1 对照臂可构造性）",
+ "source": {
+  "R1Options.cs": "4cfce7da0768a3b3",
+  "R1Pipeline.cs": "55c7a59eaa60fb7c",
+  "ArtifactCarryover.cs": "d600c7c728abeb44"
+ },
+ "axis": "AGENTFRAMEWORK_R1_ARTIFACT_CARRYOVER",
+ "derived": {
+  "axis_states": 2,
+  "neg_literals": 3,
+  "multi_valued_axes": [
+   "AGENTFRAMEWORK_R1_MAX_REPAIR",
+   "AGENTFRAMEWORK_R1_STEP_TIMEOUT",
+   "AGENTFRAMEWORK_R1_MAX_EXEC_REPAIR",
+   "AGENTFRAMEWORK_R1_EARLY_STOP_PFAIL",
+   "AGENTFRAMEWORK_R1_MAX_PROBE_REPAIR"
+  ],
+  "carryover_render_definitions": 2,
+  "carryover_render_call_sites": 1,
+  "line_R1Options_axis_parse": 101,
+  "line_R1Pipeline_attach": 321,
+  "line_R1Options_default_on": 100
+ },
+ "controls": {
+  "determinism": true,
+  "POS_multi_valued_recognized": true,
+  "NEG_perturbation_flips_to_multi": true
+ },
+ "verdict": {
+  "br_p_env_constructible": false,
+  "ledger_claim_zero_product_change": false,
+  "conclusion": "BR/P 不可由 env 构造 ⇒ 台账 §2 的「零产品代码改动」声称被证伪；L1 需产品侧轴放行（新增取值或新轴）"
+ },
+ "rc": 0,
+ "rc_semantics": "0 定因成立且控制全过 / 2 器具缺陷 / 3 输入缺失",
+ "honest_bounds": [
+  "本器判的是**可构造性**（env 取值面），不是「BR/P 是否有效」",
+  "随附内容入口唯一性由 Render 定义/调用点计数给出（第二条独立路径）",
+  "本器零产品源码改动、零远端调用；不构成能力验收"
+ ]
+}
