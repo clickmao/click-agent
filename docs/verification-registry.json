@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R621",
+ "updated_round": "R622",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -7570,6 +7570,35 @@
    "runs": 39,
    "verdict": "机制面见 mechanism_rc=0 · rc=0（v4 分层：低 1 档于 R620 的 rc=2 码位不同，二者**不可直接并列**）· J6=NO_RESOLUTION · precond rc=1",
    "aot": "未重发布（本轮零产品源码改动 ⇒ 复用 R619 AOT 件逐字节，bins-r621.json 钉 sha）"
+  },
+  {
+   "id": "r622.wythoff-attribution-and-mechanism",
+   "round": "R622",
+   "owner_round": "R622",
+   "level": "L3",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "1b6f052d6fa0",
+    "instrument": "eval/rover/r622/closeout_r622.py",
+    "instrument_sha12": "1030488ca94e",
+    "binding": "audit-pin",
+    "audited_by_round": "R622"
+   },
+   "capability": "RF0004.2 · M3 **承重缺口定因（只读轮）**：R621 已把 wythoff 族定位为承重缺口（T 223/270 · C 158/270 · codex 真值 45/45），但未定「失败落在哪一层」。本轮以**与被测零共享代码**的独立 oracle（来源 = 冻结题面逐字规格，路线 = 按 a+b 升序的定义式 DP，非被测/生成器可能用的冷点公式）对 R621 冻结产物**只读复算** 39 跑次 × 15 例，做逐例四分 + 行为式机制归因。**读数**：J0 oracle 正控 15/15 · J1 变异负控 v2 逐例对应 mismatch 0/45 · J2 复算 == 冻结裁决（期望从 verdict-r621.json 派生）· J3 四分覆盖 100%（无残留桶）· J4 目标子型 71.1% ≥50% · J5 真值全对（非夹具缺陷、非两侧同败）。**机制**：判定层 = 113(COLD_PRED_WRONG) + 31(CRASH，同源) = **144/159 = 90.6%**；选点层 9 · 枚举序 2 · 未分类 4；`LEGAL_NONMIN` 仅 2/159 ⇒ 判据僵硬非主因。**硬崩取证**：产物树副本上 `python3 -B -m games wythoff` ⇒ rc=1 / stdout 空 / `games/wythoff.py:48` `i, j = best` 上 `TypeError: cannot unpack non-iterable NoneType`（谓词全否 ⇒ best=None ⇒ 未自验即交付）。**未成立/未判明**：① precond（铁律 11）rc=1 ⇒ 质量/成本面一律**参考（未可验收）**；② 预注册 J1 v1 判据（变异体非 OK == 15/15）**首跑即证伪**（实得 4/15 · 12/15），原样入档不翻案，修正判据为 post-hoc；③ 夹具判别力缺口登记（「字典序最小」子型仅 3/15 例被行使，退化解 M2 拿 12/15=80%）——受「禁新增夹具」令约束，须用户放行；④ 判定层与选点层的因果顺序未判明。",
+   "evidence_path": "eval/rover/r622/report-r622.md",
+   "evidence_cmd": "python3 -B eval/rover/r622/attrib_r622.py --negctl && python3 -B eval/rover/r622/aux_r622.py && python3 -B eval/rover/r622/closeout_r622.py && python3 eval/capability/status_gen.py --check",
+   "negative_control": "① 变异负控三分支（`attrib_r622.py --negctl`）：M1 恒判必败 4/15 · M2 取字典序最大 12/15 · M3 与 oracle 同解 15/15 ⇒ 判据器**逐例对应**（tag==OK ⟺ 该例字节等于期望，mismatch 0/45）；② oracle 正控（J0）：独立 oracle 复现冻结期望字节 15/15，否则归因不可采信；③ 真值臂（J5）：codex 45/45 全对 ⇒ 排除「两侧同败＝夹具缺陷」（R512 教训）；④ 复算确定性：同一产物两次独立跑次 sha256 同值（344ffa22…）。",
+   "covers": [
+    "F_merge.quality.allpass",
+    "F_merge.quality.cases_median_truth",
+    "F_merge.gate.precondition_rc",
+    "F_orch.wythoff.pass_r606"
+   ],
+   "runs": 39,
+   "verdict": "定因成立（判定层 90.6%）· rc=0（仅表本轮判据全绿）· 零产品改动 ⇒ 无降幅可宣称 · precond rc=1",
+   "aot": "未重发布（本轮零产品源码改动、零新臂 ⇒ 复用 R621 冻结产物逐字节；AOT 面不适用本轮）"
   }
  ],
  "aot_check_policy": "release_tag_only",

@@ -403,3 +403,21 @@ R607 = 采信 1（arXiv:2609.20804v1 组件级消融口径等）⇒ **本 R608 =
 **对照本仓现状（代码证据，现盘）**：① **合取（最弱环）判据已实施** —— `eval/capability/status_gen.py:41-69` 收集 `violations`（负控缺失 / covers 含冒号 / 缺 owner_round / 缺 evidence_path / 分号串联 / 路径不存在），`:103-122` 逐条以 `source_sha12` 核对现盘（漂移入 `stale`、缺源入 `missing`）⇒ 收口 PASS = 三项全 0，**无任何加权平均**；② **进度面无均值口径** —— `git grep -n "progress_pct\|score_avg\|mean_score" -- docs eval tools` **命中 0 条**进度聚合（旧「≈33%」均值口径按 §0 DoD 七面作废，见 iteration-master-plan.md §0）；③ 本轮 R621 判据本身即「最弱环 + 口径声明」落地 = 逐窗极差（摆动）作**分辨率下限**（效应 < 摆动 ⇒ `NO_RESOLUTION` 不可读作等价）、`delta_median_C_minus_T` **把符号约定写进字段名**（R620 影子自检抓到「比较变量写反」，本轮已修并新增两例控制，见 `eval/rover/r621/judge_r621.py` 的 J6 状态机）；④ 「有效期」形态 = 跨轮禁相减 / 只并列 + 口径断点登记（R620 §17 已采信为机制）。
 
 **红线**：本采编 = 机制假设 + 证据面采编，不改 RF0004 三能力路径、不改铁律 10（外部真值对照）/ 铁律 14（器件路径）；零新增依赖、零新增夹具；检索在主线臂轮在飞期间**只读**执行（网络只读，未占真机预算）。
+
+## 19. R622 文献小步（2026-09-21；检索面 = 「impartial 组合博弈的胜负态刻画 / 判定」；预算 = 4 query / 1 摘要取件，未开子 agent）
+
+### 19.1 检索（超上限 1 式，如实登记原因）
+- 前三式（`"self-verification" program artifact LLM agent` / `"Nim" "game" theory LLM reasoning benchmark` / `"P-position" combinatorial game language model`）的**输出在本次上下文压缩中丢失** ⇒ 无法取证；按新检索计入 ⇒ 本轮累计 **4 式 > 3 上限**。纪律动作：该超额如实登记，不假装在预算内。
+- 其间观测到**检索退化**（另计入 §19.2 不采信行）：引号短语被拆散 ⇒ 结果数虚高（179,869 / 1,046,258 / 1,323,028）、返回「当日最新」而非相关件。
+- 有效式（1 条，命中相关件）：`impartial combinatorial game solver verifier agent`（cs.GT / math.CO 混排，max 6）⇒ 取件第 5 条。
+
+### 19.2 台账（8 列，本轮追加 2 行）
+
+| 日期 | 检索式 | 出处（含版本/取件） | 逐字引文（≤2 句） | 机制假设 | 改哪一格 KPI（预期方向） | 单变量轴 + 判据（阈值/可证伪点） | 状态 |
+|---|---|---|---|---|---|---|---|
+| 2026-09-21 | `impartial combinatorial game solver verifier agent`（max 6；命中 225,679 ⇒ 短语未收紧，逐条读标题/摘要筛） | arXiv **2606.25276v1**（cs.GT，2026-06-24）· comment = `19 pages, 1 table, 3 algorithms` · journal-ref = **N/A** ⇒ **纯预印本（权威代理最低档）**；近月预印本 cited_by_count 不可用（Semantic Scholar 无 key ⇒ 429）· 采集日 2026-09-21 | `We also show that deciding whether an LIA formula exactly characterizes the set of winning, losing, or draw states of an LIA-definable ICG is undecidable in general and decidable for terminating LIA-definable ICGs.` | 「某公式是否**恰好刻画**胜负态集合」在一般情形**不可判**、在**终止**情形可判 ⇒ 用谓词判 P 位必须先固定**终止性前提**（着法严格降序）并给**可判定的刻画校验**，否则谓词错没有上界保证 | ② 质量（族分列通过率 ↑） | 轴 = **该族判定位实现**（模型/学习谓词 → 构造性可判定过程：枚举 DP / SG 表 + 终止性前提显式化）；判据 = wythoff 用例级通过率 **0.585 → ≥0.80** ∧ `COLD_PRED_WRONG` 占比 **≥71% → ≤10%**；可证伪点 = 提升 **<10pt** 即机制假设证伪。**本仓现状代码证据**：`src/agent/r1/ArtifactCarryover.cs:9-19`（R600 修复环「带现状」）+ 同行注释 `产品默认档失败例次 100% 集中 wythoff 族，主桶 = 冷集构造层`；R622 实测把该桶**量化**到判定层 90.6%（`eval/rover/r622/verdict-r622.json`）⇒ 「有代码行 ≠ 生效」已由真机读数背书，但**机制未被替换**（谓词仍由模型产出） | **候选（L4 采信为机制假设，未实施）** |
+| 2026-09-21 | `"self-verification" program artifact LLM agent`（cs.CL, sort=date, max 5）等三式 | **未取到原文 ⇒ 不采信**（结果数 179,869 / 1,046,258 / 1,323,028 = 引号短语被拆散信号；返回件为「Designer-RSI / CodeMidas / MintAct / 中子星」等当日最新，非本面机制） | — | — | — | — | 不采纳 |
+
+### 19.3 连续 0 采信计数
+- 本轮采信 1 条（L4，纯预印本、**仅机制假设**）⇒ 反空转计数归零，**检索不降频**（仍每轮一次）。
+- 「引号短语退化」为**工具面**问题（非检索面零结果）⇒ 下轮改 `ti:`/`abs:` 前缀 + 复测同式，并把「结果数」继续当**非判据**。

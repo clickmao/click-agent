@@ -1,0 +1,120 @@
+{
+ "n_cases": 15,
+ "n_losing_cases": 4,
+ "n_single_winning_move": 8,
+ "n_multi_winning_move": 3,
+ "rows": [
+  {
+   "in": "21 25",
+   "vis": "public",
+   "losing": false,
+   "n_winning_moves": 1,
+   "expect": "WIN 15 15"
+  },
+  {
+   "in": "10 9",
+   "vis": "public",
+   "losing": false,
+   "n_winning_moves": 2,
+   "expect": "WIN 0 3"
+  },
+  {
+   "in": "18 8",
+   "vis": "hidden",
+   "losing": false,
+   "n_winning_moves": 1,
+   "expect": "WIN 5 0"
+  },
+  {
+   "in": "1 5",
+   "vis": "hidden",
+   "losing": false,
+   "n_winning_moves": 1,
+   "expect": "WIN 0 3"
+  },
+  {
+   "in": "12 18",
+   "vis": "hidden",
+   "losing": false,
+   "n_winning_moves": 2,
+   "expect": "WIN 1 0"
+  },
+  {
+   "in": "11 25",
+   "vis": "hidden",
+   "losing": false,
+   "n_winning_moves": 1,
+   "expect": "WIN 0 7"
+  },
+  {
+   "in": "18 17",
+   "vis": "hidden",
+   "losing": false,
+   "n_winning_moves": 2,
+   "expect": "WIN 0 6"
+  },
+  {
+   "in": "7 21",
+   "vis": "hidden",
+   "losing": false,
+   "n_winning_moves": 1,
+   "expect": "WIN 0 17"
+  },
+  {
+   "in": "1 2",
+   "vis": "hidden",
+   "losing": true,
+   "n_winning_moves": 0,
+   "expect": "LOSE"
+  },
+  {
+   "in": "3 5",
+   "vis": "hidden",
+   "losing": true,
+   "n_winning_moves": 0,
+   "expect": "LOSE"
+  },
+  {
+   "in": "4 7",
+   "vis": "hidden",
+   "losing": true,
+   "n_winning_moves": 0,
+   "expect": "LOSE"
+  },
+  {
+   "in": "6 10",
+   "vis": "hidden",
+   "losing": true,
+   "n_winning_moves": 0,
+   "expect": "LOSE"
+  },
+  {
+   "in": "1 1",
+   "vis": "hidden",
+   "losing": false,
+   "n_winning_moves": 1,
+   "expect": "WIN 1 1"
+  },
+  {
+   "in": "2 25",
+   "vis": "hidden",
+   "losing": false,
+   "n_winning_moves": 1,
+   "expect": "WIN 0 24"
+  },
+  {
+   "in": "25 25",
+   "vis": "hidden",
+   "losing": false,
+   "n_winning_moves": 1,
+   "expect": "WIN 25 25"
+  }
+ ],
+ "discriminating_power": {
+  "M1_always_lose_correct": "4/15",
+  "M2_max_win_correct": "12/15",
+  "min_subtype_exercised": "3/15",
+  "note": "「取任意必胜着法」与「取字典序最小」仅在后者的多解例上分叉 ⇒ 该子型判别力 = n - n_losing - n_single。M2 正确例 = 必败例(4) + 单解例(8) = 12，与变异负控实测 12/15 逐位吻合。"
+ },
+ "rule": "判别力 = 需要该子型才能正确的用例数 / 总用例数（退化解得分越低 ⇒ 判别力越强）"
+}

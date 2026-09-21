@@ -103,12 +103,12 @@
   "latest": {
    "bin_sha": "",
    "grid": null,
-   "kind": "RF0004.2 · M3 **第五刀 = 等价面分辨率取证（reps 3→6/窗）+ 判据分级**：R620 的 J6「回退面 == 轴关面」在逐跑次用例数摆动 48..58 下**无分辨率**，且被编码进 `instrument_defects` ⇒ 整轮标「禁作被测结论」。本轮只做 R620 登记的两件补救：① 判据分级（v4：J6 移出 instrument_defects ⇒ rc 0/1/2/3 分层）；② reps 3→6/窗。**零产品源码改动**（复用 pub_r619 逐字节同件，sha a184d731…），唯一变量与 R620 同轴同档位。真机 39 跑次（T×18 / C×18 / C1×3，窗集 w217..w219 与历史不相交）。读数：J0=True（两臂前缀 == legacy 锚）· J1=True（回退行使 18/18）· J6=False（state=NO_RESOLUTION）· rc=0 / mechanism_rc=0 · 铁律11 precond rc=1。",
+   "kind": "RF0004.2 · M3 **承重缺口定因轮（只读）**：R621 定位「wythoff 族 = 承重缺口（T 223/270 · C 158/270 · 真值 45/45）」后，本轮按 skill「逐例归因」节做**独立 oracle 复算 + 四分归因 + 行为式机制归因**。零产品源码改动 / 零新臂 / 零远端调用 / 零新增夹具语义（oracle 与被测零共享代码，来源 = 冻结题面逐字规格）。读数：J0 oracle 正控 15/15 · J1 变异负控（v2 逐例对应 mismatch 0/45；**v1 判据首跑即证伪，原样入档不翻案**）· J2 复算 == R621 冻结裁决（期望从 `verdict-r621.json` **派生**，非写死）· J3 四分覆盖 100% · J4 目标子型 71.1% ≥50% · J5 真值 45/45 全对（非夹具缺陷、非两侧同败）。机制：**判定层 = 113(COLD_PRED_WRONG) + 31(CRASH 同源) = 144/159 = 90.6%**；选点层 9、枚举序 2、未分类 4。CRASH 有代码级证据（`games/wythoff.py:48` `i, j = best` 上 `TypeError`：谓词全否 ⇒ `best=None` ⇒ 未自验即交付）。rc=0（仅表本轮判据全绿）。",
    "readouts": null,
-   "ts": "2026-09-21T21:56:28+0800"
+   "ts": "2026-09-21T23:09:15+0800"
   },
-  "latest_round": "R621",
-  "lines": 155,
+  "latest_round": "R622",
+  "lines": 156,
   "non_round_rows": [
    "EXP1-Q1",
    "EXP1-Q10",
@@ -320,11 +320,12 @@
    "R619",
    "R620",
    "R621",
+   "R622",
    "loop-mechanism",
    "unknown"
   ],
   "rows_missing_kind": 19,
-  "sha12": "b95ac08bf795"
+  "sha12": "2ee56233dba9"
  },
  "plans": [
   {
@@ -389,12 +390,12 @@
    "L0": 2,
    "L1": 20,
    "L2": 138,
-   "L3": 88,
+   "L3": 89,
    "L4": 48
   },
-  "rows": 296,
-  "sha12": "ca99004815dc",
-  "updated_round": "R621",
+  "rows": 297,
+  "sha12": "57bb37876c88",
+  "updated_round": "R622",
   "violations": [],
   "warnings": [
    {

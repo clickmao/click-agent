@@ -1,0 +1,34 @@
+{
+ "round": "R622",
+ "kind": "read-only-per-case-attribution",
+ "written_before_run": true,
+ "note": "预注册在**正式复算跑次之前**落盘。起手前有一次**探索性 dry run**（用于写本文件的判据与分型定义），其读数原样留档 out/dryrun-percase-r622.json 与 out/dryrun-mech-r622.json，**不翻案**；正式跑次独立命名空间重跑（复算为确定性纯读操作, 零写入, 无产品面副作用）。",
+ "hypothesis_source": "R621 轮志 §10 候选 C1（该句在本轮之前已落盘）：『wythoff 族决策语义：定位失败子型（lexicographic-min 选点 vs WIN/LOSE 判定）』",
+ "single_variable": "无（零产品源码改动 / 零新臂 / 零远端调用 / 零新增夹具语义）——本轮是**定因面**而非对照面；不宣称任何降幅或能力提升。",
+ "input": {
+  "snapshots": "eval/rover/r621/snapshots/w{217,218,219}/{agentT,agentC}-r{1..6}/g1 + codex/g1（R621 冻结产物, 只读）",
+  "cases": "eval/rover/r610/cases/cases-r521.json（冻结隐藏用例 58 例；wythoff 15 例）",
+  "recompute_reps": 39,
+  "arms": ["T", "C", "C1"]
+ },
+ "oracle": {
+  "file": "eval/rover/r622/wythoff_oracle.py",
+  "independence": "与判定器/生成器零共享代码；由 R621 冻结题集里 wythoff 的**题面规格逐字**直接定义实现（按 a+b 升序的定义式 DP 求 P 位 + 枚举三族着法取字典序最小）；不使用任何期望输出、不读 cases。"
+ },
+ "criteria": [
+  {"id": "J0", "name": "oracle 正控", "cmd": "python3 -B eval/rover/r622/attrib_r622.py", "expect": "oracle 复现期望字节 15/15", "baselines": ["F_merge.quality.cases_median_truth"], "falsify_if": "<15/15 ⇒ 归因不可采信（夹具或 oracle 有问题）, 停判"},
+  {"id": "J1", "name": "变异负控（判据器判别力自证, 三分支）", "cmd": "python3 -B eval/rover/r622/attrib_r622.py --negctl", "expect": "M1_always_lose 非OK 15/15 ∧ M2_max_win 非OK 15/15 ∧ M3_good OK 15/15", "falsify_if": "任一分支不符 ⇒ 判据器无判别力, 停判"},
+  {"id": "J2", "name": "复算与 R621 冻结报告逐位一致", "expect": "wythoff 例次 T 223/270 (82.6%) ∧ C 158/270 (58.5%) ∧ C1 45/45", "baselines": ["F_orch.wythoff.pass_r606"], "falsify_if": "任一不符 ⇒ 器具缺陷（rc=2 层）, 先修器具"},
+  {"id": "J3", "name": "失败例四分归因**覆盖率**", "expect": "159 个非 OK 实例 100% 落入四分（OK/HARD_CRASH/FORMAT/STATE_FLIP/LEGAL_NONMIN/TRUE_WRONG 之一）, 无残留桶"},
+  {"id": "J4", "name": "目标子型占比（主判据）", "expect": "行为式机制归因里 **COLD_PRED_WRONG（判定层）** 占非 OK 实例 ≥50%", "falsify_if": "<50% ⇒ 收窄为『缺口分布于多子型』, 不得宣称单点机制"},
+  {"id": "J5", "name": "外部真值不参与分母", "expect": "C1(codex) 45/45 全对 ⇒ 非夹具缺陷、非两侧同败（R512 教训）", "baselines": ["F_merge.quality.allpass"]}
+ ],
+ "falsifications": [
+  "① oracle 正控 <15/15 ⇒ 归因不可采信, 停判并先修 oracle/夹具。",
+  "② 复算与 R621 报告不符 ⇒ 判为器具缺陷（rc=2）, 不产出能力结论。",
+  "③ 目标子型 <50% ⇒ 只报分布, 不宣称单点机制; 主判据 FAIL 如实写。",
+  "④ 若 codex 真值出现失败例 ⇒ 先判题面/夹具（R512 双侧同败优先怀疑夹具）, 不当能力缺口。"
+ ],
+ "scale_caveat": "baselines 的 wythoff 项是 135 例次（9 跑次×15）口径, 本轮复算是 270 例次（18 跑次×15）⇒ **只比通过率, 禁比总和**, 且与 R605/R606 冻结件轮禁相减。",
+ "no_claim_scope": ["质量降幅", "成本降幅", "能力达标", "三档终局目标读数（32ms/快50×/−95%/−85~91%）"]
+}

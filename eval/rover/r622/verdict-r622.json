@@ -1,0 +1,341 @@
+{
+ "round": "R622",
+ "kind": "read-only-per-case-attribution（零产品源码改动 / 零新臂 / 零远端）",
+ "verdict": {
+  "label": "定因轮：wythoff 族缺口主因 = 冷点(P 位)判定层错",
+  "J0_oracle_positive_control": true,
+  "J1_negctl": true,
+  "J2_recompute_matches_R621_frozen": true,
+  "J3_four_way_coverage": true,
+  "J4_target_subtype_ge_50pct": true,
+  "J5_external_truth_full_pass": true,
+  "mechanism_tally": {
+   "COLD_PRED_WRONG": 113,
+   "UNCLASSIFIED": 4,
+   "ENUM_ORDER": 2,
+   "CRASH": 31,
+   "ILLEGAL_MOVE": 9
+  },
+  "mechanism_share": {
+   "COLD_PRED_WRONG": 0.7107,
+   "UNCLASSIFIED": 0.0252,
+   "ENUM_ORDER": 0.0126,
+   "CRASH": 0.195,
+   "ILLEGAL_MOVE": 0.0566
+  },
+  "judgment_family_share": 0.9057
+ },
+ "readings": {
+  "per_arm": {
+   "C": {
+    "n": 270,
+    "ok": 158,
+    "rate": 0.5852,
+    "tags": {
+     "TRUE_WRONG": 46,
+     "STATE_FLIP": 35,
+     "OK": 158,
+     "HARD_CRASH": 29,
+     "LEGAL_NONMIN": 2
+    }
+   },
+   "T": {
+    "n": 270,
+    "ok": 223,
+    "rate": 0.8259,
+    "tags": {
+     "OK": 223,
+     "TRUE_WRONG": 28,
+     "STATE_FLIP": 17,
+     "HARD_CRASH": 2
+    }
+   },
+   "C1": {
+    "n": 45,
+    "ok": 45,
+    "rate": 1.0,
+    "tags": {
+     "OK": 45
+    }
+   }
+  },
+  "oracle_positive_control": {
+   "n": 15,
+   "match": 15,
+   "mismatch": [],
+   "pass": true
+  },
+  "negctl_v2": {
+   "M1_always_lose": {
+    "n": 15,
+    "ok": 4,
+    "correspondence_mismatch": 0,
+    "verdict": "PASS"
+   },
+   "M2_max_win": {
+    "n": 15,
+    "ok": 12,
+    "correspondence_mismatch": 0,
+    "verdict": "PASS"
+   },
+   "M3_good": {
+    "n": 15,
+    "ok": 15,
+    "correspondence_mismatch": 0,
+    "verdict": "PASS"
+   },
+   "pass": true,
+   "criteria": "① 逐例对应 mismatch == 0（判据器无假红/无误放行）② fixture_discriminating_power = 各变异体正确例数/15（退化解得分越低判别力越强）",
+   "fixture_discriminating_power": {
+    "M1_always_lose": "4/15",
+    "M2_max_win": "12/15",
+    "M3_good": "15/15"
+   }
+  },
+  "negctl_v1_falsified": {
+   "M1_always_lose": {
+    "n": 15,
+    "ok": 4,
+    "verdict": "FAIL"
+   },
+   "M2_max_win": {
+    "n": 15,
+    "ok": 12,
+    "verdict": "FAIL"
+   },
+   "M3_good": {
+    "n": 15,
+    "ok": 15,
+    "verdict": "PASS"
+   },
+   "pass": false
+  },
+  "fixture_census": {
+   "n_cases": 15,
+   "n_losing_cases": 4,
+   "n_single_winning_move": 8,
+   "n_multi_winning_move": 3,
+   "rows": [
+    {
+     "in": "21 25",
+     "vis": "public",
+     "losing": false,
+     "n_winning_moves": 1,
+     "expect": "WIN 15 15"
+    },
+    {
+     "in": "10 9",
+     "vis": "public",
+     "losing": false,
+     "n_winning_moves": 2,
+     "expect": "WIN 0 3"
+    },
+    {
+     "in": "18 8",
+     "vis": "hidden",
+     "losing": false,
+     "n_winning_moves": 1,
+     "expect": "WIN 5 0"
+    },
+    {
+     "in": "1 5",
+     "vis": "hidden",
+     "losing": false,
+     "n_winning_moves": 1,
+     "expect": "WIN 0 3"
+    },
+    {
+     "in": "12 18",
+     "vis": "hidden",
+     "losing": false,
+     "n_winning_moves": 2,
+     "expect": "WIN 1 0"
+    },
+    {
+     "in": "11 25",
+     "vis": "hidden",
+     "losing": false,
+     "n_winning_moves": 1,
+     "expect": "WIN 0 7"
+    },
+    {
+     "in": "18 17",
+     "vis": "hidden",
+     "losing": false,
+     "n_winning_moves": 2,
+     "expect": "WIN 0 6"
+    },
+    {
+     "in": "7 21",
+     "vis": "hidden",
+     "losing": false,
+     "n_winning_moves": 1,
+     "expect": "WIN 0 17"
+    },
+    {
+     "in": "1 2",
+     "vis": "hidden",
+     "losing": true,
+     "n_winning_moves": 0,
+     "expect": "LOSE"
+    },
+    {
+     "in": "3 5",
+     "vis": "hidden",
+     "losing": true,
+     "n_winning_moves": 0,
+     "expect": "LOSE"
+    },
+    {
+     "in": "4 7",
+     "vis": "hidden",
+     "losing": true,
+     "n_winning_moves": 0,
+     "expect": "LOSE"
+    },
+    {
+     "in": "6 10",
+     "vis": "hidden",
+     "losing": true,
+     "n_winning_moves": 0,
+     "expect": "LOSE"
+    },
+    {
+     "in": "1 1",
+     "vis": "hidden",
+     "losing": false,
+     "n_winning_moves": 1,
+     "expect": "WIN 1 1"
+    },
+    {
+     "in": "2 25",
+     "vis": "hidden",
+     "losing": false,
+     "n_winning_moves": 1,
+     "expect": "WIN 0 24"
+    },
+    {
+     "in": "25 25",
+     "vis": "hidden",
+     "losing": false,
+     "n_winning_moves": 1,
+     "expect": "WIN 25 25"
+    }
+   ],
+   "discriminating_power": {
+    "M1_always_lose_correct": "4/15",
+    "M2_max_win_correct": "12/15",
+    "min_subtype_exercised": "3/15",
+    "note": "「取任意必胜着法」与「取字典序最小」仅在后者的多解例上分叉 ⇒ 该子型判别力 = n - n_losing - n_single。M2 正确例 = 必败例(4) + 单解例(8) = 12，与变异负控实测 12/15 逐位吻合。"
+   },
+   "rule": "判别力 = 需要该子型才能正确的用例数 / 总用例数（退化解得分越低 ⇒ 判别力越强）"
+  },
+  "crash_mechanism": {
+   "n_crash_rows": 31,
+   "crash_by_arm": {
+    "C": 29,
+    "T": 2
+   },
+   "probe_row": {
+    "win": "w217",
+    "arm": "C",
+    "arm_id": "agentC-r5",
+    "rep": "5",
+    "case": "wythoff#00-public",
+    "a": 21,
+    "b": 25,
+    "rc": 1
+   },
+   "source": "/home/agentuser/AgentFramework/eval/rover/r621/snapshots/w217/agentC-r5/g1/games/wythoff.py",
+   "invocation": "python3 -B -m games wythoff (cwd=tree, PYTHONPATH=tree)",
+   "rc": 1,
+   "stdout": "",
+   "stderr_tail": "    out = GAMES[game_id](text)\n          ^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/r622crash-q53zkeic/t/games/wythoff.py\", line 48, in solve\n    i, j = best\n    ^^^^\nTypeError: cannot unpack non-iterable NoneType object",
+   "error_site": {
+    "file": "wythoff.py",
+    "line": 48
+   },
+   "error_source_line": "i, j = best",
+   "reproduced": true
+  },
+  "cost_j3_decomposition": {
+   "sum_newprompt_T": 29871,
+   "sum_newprompt_C": 28939,
+   "sum_calls_T": 35,
+   "sum_calls_C": 34,
+   "sign_convention": "delta = 对照臂C - 治疗臂T（>0 ⇒ C 花得更多）",
+   "net_newprompt_delta": -932,
+   "abs_newprompt_delta_sum": 10952,
+   "net_over_abs": 0.0851,
+   "top1_abs_delta": 1536,
+   "top1_abs_delta_sign": "-",
+   "top1_share_of_abs_sum": 0.1402,
+   "concentration_ge_50pct": false,
+   "per_slot_newprompt_delta": [
+    -1185,
+    192,
+    -123,
+    -1536,
+    -44,
+    1334,
+    1221,
+    -719,
+    -103,
+    -1441,
+    104,
+    -174,
+    1533,
+    -487,
+    64,
+    119,
+    -130,
+    443
+   ],
+   "per_slot_call_delta": [
+    0,
+    0,
+    0,
+    -1,
+    0,
+    0,
+    1,
+    0,
+    0,
+    -1,
+    0,
+    0,
+    1,
+    -1,
+    0,
+    0,
+    0,
+    0
+   ],
+   "net_call_delta": -1,
+   "call_delta_signs": {
+    "neg": 3,
+    "pos": 2
+   },
+   "rule": "集中度 = 单档最大 |Δ| / Σ|Δ|；另看 净差/Σ|Δ|。两者都 < 0.5 ⇒ 差额是摆动残差 ⇒ 不可归因到轴",
+   "verdict": "NO_CONCENTRATED_SOURCE"
+  }
+ },
+ "rc": 0,
+ "rc_note": "rc=0 仅表示**定因轮自身**的判据全绿；不代表能力/成本面达标（无臂、无产品改动 ⇒ 无收益可宣称）。",
+ "honest_bounds": [
+  "本轮**无对照臂、无产品源码改动、无远端调用** ⇒ 不产出任何降幅/能力达标读数；质量/成本面沿用 R621「参考（未可验收）」。",
+  "预注册 v1 的 J1 判据（M1/M2 非 OK == 15/15）**首跑即证伪**（实测 4/15、12/15）⇒ 原样入档 FAIL、不翻案；修正判据（逐例对应）为 post-hoc（`checks_posthoc`），其价值是**暴露夹具判别力**：字典序最小子型仅 3/15 例被行使，退化解「取最大必胜着法」得 12/15 = 80.0%。",
+  "探索性 dry run（写预注册前的分型定义用）读数留档 `out/dryrun-*.json`，不翻案；正式跑次独立重跑。",
+  "机制归因基于**行为式谓词**（问产物自己的接口）⇒ 只能判「产物是否自认该落点为必败位」，不判其内部实现（源码层未逐树审计）。",
+  "CRASH（31/159）与 COLD_PRED_WRONG 同源（stderr: `i, j = best` 上 `TypeError: cannot unpack non-iterable NoneType`：谓词全否 ⇒ best=None ⇒ 未自验即交付）⇒ 判定层族合计 144/159 = 90.6%；两桶仍分列，不合并成一个数。",
+  "复算**确定性**：`percase-r622.json` 两次独立跑次 sha256 同值（344ffa227f07…）⇒ 逐例分类可复现（非一次读数）。",
+  "cost 差额方向（签名约定 delta = C − T）：新算 prompt T 29,871 vs C 28,939 ⇒ **T 多花 932**（+3.2%，伴随 +24pt 质量）；净差 / Σ|Δ| = 0.0851、单档最大 |Δ| 占比 = 0.1402（<0.5）⇒ **无集中来源**，差额是对称摆动残差 ⇒ 该差额不可归因到轴（与 R621 J6 同族结论：摆动 ≥ 效应）。",
+  "跨轮禁相减：本轮复算 = R621 冻结件同窗集，与 R585–R619 冻结件轮不可相减；baselines 的 wythoff 项为 135 例次（9 跑次）口径，本轮 270 例次（18 跑次）**只可比率、禁比总和**。"
+ ],
+ "checks_posthoc": [
+  "negctl v2（逐例对应 mismatch==0）为**事后**修正版判据；v1 FAIL 保留。",
+  "cost J3 逐档分解（cost-decomp-r622.json）为事后诊断列，不作判据。",
+  "fixture census（3/15 字典序子型判别力）为 v1 判据证伪的副产物，登记为**夹具面缺口候选**，需用户放行才可加隐藏用例（禁新增夹具令）。"
+ ],
+ "next_candidates": "见 report-r622.md §下轮候选"
+}

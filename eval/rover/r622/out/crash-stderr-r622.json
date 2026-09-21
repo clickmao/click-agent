@@ -1,0 +1,28 @@
+{
+ "n_crash_rows": 31,
+ "crash_by_arm": {
+  "C": 29,
+  "T": 2
+ },
+ "probe_row": {
+  "win": "w217",
+  "arm": "C",
+  "arm_id": "agentC-r5",
+  "rep": "5",
+  "case": "wythoff#00-public",
+  "a": 21,
+  "b": 25,
+  "rc": 1
+ },
+ "source": "/home/agentuser/AgentFramework/eval/rover/r621/snapshots/w217/agentC-r5/g1/games/wythoff.py",
+ "invocation": "python3 -B -m games wythoff (cwd=tree, PYTHONPATH=tree)",
+ "rc": 1,
+ "stdout": "",
+ "stderr_tail": "    out = GAMES[game_id](text)\n          ^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/r622crash-q53zkeic/t/games/wythoff.py\", line 48, in solve\n    i, j = best\n    ^^^^\nTypeError: cannot unpack non-iterable NoneType object",
+ "error_site": {
+  "file": "wythoff.py",
+  "line": 48
+ },
+ "error_source_line": "i, j = best",
+ "reproduced": true
+}
