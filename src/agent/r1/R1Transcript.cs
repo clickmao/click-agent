@@ -87,6 +87,11 @@ public static class R1Transcript
             sb.Append(",\"action_candidates_executed\":").Append(R1Json.Num(r.ActionCandidatesExecuted));
             sb.Append(",\"action_candidates_unmapped\":").Append(R1Json.Num(r.ActionCandidatesUnmapped));
             sb.Append(",\"action_candidates_expect_inherited\":").Append(R1Json.Num(r.ActionCandidatesExpectInherited));
+            // R619 (M3 第三刀): 回退原因码 —— 只在回退发生时落（未回退 ⇒ 字段不出现 ⇒ 与 R618 逐字节同）。
+            if (!string.IsNullOrEmpty(r.ExecFallback))
+            {
+                sb.Append(",\"exec_fallback\":").Append(R1Json.Quote(r.ExecFallback));
+            }
         }
         sb.Append("}");
         return sb.ToString();
@@ -142,6 +147,11 @@ public static class R1Transcript
             sb.Append("  \"action_candidates_executed\": ").Append(R1Json.Num(r.ActionCandidatesExecuted)).Append(",\n");
             sb.Append("  \"action_candidates_unmapped\": ").Append(R1Json.Num(r.ActionCandidatesUnmapped)).Append(",\n");
             sb.Append("  \"action_candidates_expect_inherited\": ").Append(R1Json.Num(r.ActionCandidatesExpectInherited)).Append(",\n");
+            // R619 (M3 第三刀): 回退原因码 —— 只在回退发生时落（未回退 ⇒ 字段不出现 ⇒ 与 R618 逐字节同）。
+            if (!string.IsNullOrEmpty(r.ExecFallback))
+            {
+                sb.Append("  \"exec_fallback\": ").Append(R1Json.Quote(r.ExecFallback)).Append(",\n");
+            }
         }
         sb.Append("  \"step_timeout_s\": ").Append(R1Json.Num(opt.StepTimeoutSeconds)).Append(",\n");
         sb.Append("  \"rc\": ").Append(R1Json.Num(r.Rc)).Append(",\n");

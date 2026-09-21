@@ -1,0 +1,1532 @@
+{
+ "round": "R619",
+ "kind": "M3 第三刀（RF0004.2）：空执行面**回退**（采纳集映射出空执行面 ∧ plan 非空 ⇒ 执行面回退读 plan + 原因码入台账）；窗集 w211..w213（与历史 w184..w210 不相交）",
+ "instrument_source": {
+  "helper": "/home/agentuser/AgentFramework/eval/rover/r599/kpi_r599.py",
+  "helper_sha12": "204d7ad72cbd",
+  "j3v2_module": "/home/agentuser/AgentFramework/eval/rover/r604/judge_j3v2_r604.py",
+  "driver_sha12": "4ff1989d8c8b",
+  "prereg": "/home/agentuser/AgentFramework/eval/rover/r619/prereg-r619.json",
+  "prereg_sha256": "81fa3505948c4cf04c55aaa42123b10d051db772a520d6ca836f3afc7af7593e"
+ },
+ "J0_arm_axis_effective": {
+  "pass": true,
+  "need": "T 档逐跑次 exec_source 全 == candidates ∧ C 档四新字段全缺席 ∧ 两臂前缀同源 ∧ 每臂非全缺席",
+  "cross_round_anchor": {
+   "R617_T_PIN": "25c97befa2124549b52991c0338324ceee7f7702a6348641ed917d3b7b658052",
+   "pass": true,
+   "note": "跨轮前缀锚（R617 契约/前缀零改动之宣称面）⇒ 属**宣称面**不入 j0_pass，不成立时记 claims_violated 并在报告订正该宣称（不影响同轮可归因性）"
+  },
+  "by_arm": {
+   "T": {
+    "runs": 9,
+    "sha_set": [
+     "25c97befa2124549b52991c0338324ceee7f7702a6348641ed917d3b7b658052"
+    ],
+    "missing": 0,
+    "exec_source": [
+     "candidates",
+     "candidates",
+     "candidates",
+     "candidates",
+     "candidates",
+     "candidates",
+     "candidates",
+     "candidates",
+     "candidates"
+    ],
+    "new_fields_present": 9
+   },
+   "C": {
+    "runs": 9,
+    "sha_set": [
+     "25c97befa2124549b52991c0338324ceee7f7702a6348641ed917d3b7b658052"
+    ],
+    "missing": 0,
+    "exec_source": [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "new_fields_present": 0
+   },
+   "C1": {
+    "runs": 3,
+    "sha_set": [
+     "∅"
+    ],
+    "missing": 3,
+    "exec_source": [
+     null,
+     null,
+     null
+    ],
+    "new_fields_present": 0
+   },
+   "A_T_exec_source_in_allowed_faces": true,
+   "A_T_face_set": [
+    "candidates"
+   ],
+   "B_C_new_fields_absent": true,
+   "C_prefix_shared": true,
+   "D_cross_round_pin": true,
+   "D_note": "跨轮前缀锚（R617 契约/前缀零改动之宣称面）⇒ 属**宣称面**不入 j0_pass，不成立时记 claims_violated 并在报告订正该宣称（不影响同轮可归因性）",
+   "E_telemetry_coverage": true,
+   "instrument_gap": [],
+   "E_C1_out_of_scope": true
+  }
+ },
+ "J1_exec_face_consumed": {
+  "pass": true,
+  "J1a_exec_face_driven": true,
+  "J1b_conservation_non_vacuous": true,
+  "J1c_arms_distinguishable": true,
+  "J1d_exec_face_forms_zeroed": true,
+  "J1e_fallback_three_state": "NOT_EXERCISED",
+  "J1e_red_only_on_empty": true,
+  "need": "T 有 exec_source=candidates ∧ 有跑次 executed>0 ∧ 逐跑次 unmapped<=accepted ∧ executed<=accepted-unmapped ∧ inherited<=accepted-unmapped（违例 0）∧ 非真空 ∧ 无『candidates ∧ executed==0』跑次（J1d）∧ 回退若行使则 executed>0（J1e，未行使记 NOT_EXERCISED 不判 PASS 不判红）",
+  "vacuous_reason": null,
+  "note": "T: exec_source=candidates 9/9, executed>0 9/9, 守恒 9/9 (违例 0, 四字段齐备 9); unmapped 合计 0, 自述期望继承合计 39; R619 回退面: face=['candidates'], candidates∧executed==0 0, plan_fallback 0, 回退且 executed>0 0, 三态 NOT_EXERCISED, 原因码 []",
+  "by_arm": {
+   "T": {
+    "runs": 9,
+    "runs_exec_source_candidates": 9,
+    "runs_executed_positive": 9,
+    "runs_plan_fallback": 0,
+    "runs_candidates_executed_zero": 0,
+    "runs_fallback_executed_positive": 0,
+    "fallback_reason_set": [],
+    "runs_four_fields": 9,
+    "runs_conserved": 9,
+    "conservation_violations": 0,
+    "unmapped_total": 0,
+    "inherited_total": 39,
+    "per_run": [
+     {
+      "win": "w211",
+      "rep": 1,
+      "src": "candidates",
+      "fallback": null,
+      "declared": 22,
+      "accepted": 21,
+      "unmapped": 0,
+      "executed": 21,
+      "inherited": 8,
+      "steps_executed": 21,
+      "plan_steps_total": 22,
+      "conserved": true
+     },
+     {
+      "win": "w211",
+      "rep": 2,
+      "src": "candidates",
+      "fallback": null,
+      "declared": 14,
+      "accepted": 13,
+      "unmapped": 0,
+      "executed": 6,
+      "inherited": 0,
+      "steps_executed": 6,
+      "plan_steps_total": 14,
+      "conserved": true
+     },
+     {
+      "win": "w211",
+      "rep": 3,
+      "src": "candidates",
+      "fallback": null,
+      "declared": 10,
+      "accepted": 9,
+      "unmapped": 0,
+      "executed": 6,
+      "inherited": 4,
+      "steps_executed": 6,
+      "plan_steps_total": 10,
+      "conserved": true
+     },
+     {
+      "win": "w212",
+      "rep": 1,
+      "src": "candidates",
+      "fallback": null,
+      "declared": 11,
+      "accepted": 10,
+      "unmapped": 0,
+      "executed": 6,
+      "inherited": 5,
+      "steps_executed": 6,
+      "plan_steps_total": 11,
+      "conserved": true
+     },
+     {
+      "win": "w212",
+      "rep": 2,
+      "src": "candidates",
+      "fallback": null,
+      "declared": 12,
+      "accepted": 11,
+      "unmapped": 0,
+      "executed": 6,
+      "inherited": 6,
+      "steps_executed": 6,
+      "plan_steps_total": 12,
+      "conserved": true
+     },
+     {
+      "win": "w212",
+      "rep": 3,
+      "src": "candidates",
+      "fallback": null,
+      "declared": 14,
+      "accepted": 13,
+      "unmapped": 0,
+      "executed": 12,
+      "inherited": 8,
+      "steps_executed": 12,
+      "plan_steps_total": 14,
+      "conserved": true
+     },
+     {
+      "win": "w213",
+      "rep": 1,
+      "src": "candidates",
+      "fallback": null,
+      "declared": 14,
+      "accepted": 13,
+      "unmapped": 0,
+      "executed": 13,
+      "inherited": 8,
+      "steps_executed": 13,
+      "plan_steps_total": 14,
+      "conserved": true
+     },
+     {
+      "win": "w213",
+      "rep": 2,
+      "src": "candidates",
+      "fallback": null,
+      "declared": 7,
+      "accepted": 6,
+      "unmapped": 0,
+      "executed": 6,
+      "inherited": 0,
+      "steps_executed": 6,
+      "plan_steps_total": 7,
+      "conserved": true
+     },
+     {
+      "win": "w213",
+      "rep": 3,
+      "src": "candidates",
+      "fallback": null,
+      "declared": 7,
+      "accepted": 7,
+      "unmapped": 0,
+      "executed": 7,
+      "inherited": 0,
+      "steps_executed": 7,
+      "plan_steps_total": 7,
+      "conserved": true
+     }
+    ]
+   },
+   "C": {
+    "runs": 9,
+    "runs_exec_source_candidates": 0,
+    "runs_executed_positive": 0,
+    "runs_plan_fallback": 0,
+    "runs_candidates_executed_zero": 0,
+    "runs_fallback_executed_positive": 0,
+    "fallback_reason_set": [],
+    "runs_four_fields": 0,
+    "runs_conserved": 0,
+    "conservation_violations": 0,
+    "unmapped_total": 0,
+    "inherited_total": 0,
+    "per_run": [
+     {
+      "win": "w211",
+      "rep": 1,
+      "src": null,
+      "fallback": null,
+      "declared": 10,
+      "accepted": 9,
+      "unmapped": null,
+      "executed": null,
+      "inherited": null,
+      "steps_executed": 7,
+      "plan_steps_total": 10,
+      "conserved": null
+     },
+     {
+      "win": "w211",
+      "rep": 2,
+      "src": null,
+      "fallback": null,
+      "declared": 14,
+      "accepted": 13,
+      "unmapped": null,
+      "executed": null,
+      "inherited": null,
+      "steps_executed": 14,
+      "plan_steps_total": 14,
+      "conserved": null
+     },
+     {
+      "win": "w211",
+      "rep": 3,
+      "src": null,
+      "fallback": null,
+      "declared": null,
+      "accepted": null,
+      "unmapped": null,
+      "executed": null,
+      "inherited": null,
+      "steps_executed": 0,
+      "plan_steps_total": 0,
+      "conserved": null
+     },
+     {
+      "win": "w212",
+      "rep": 1,
+      "src": null,
+      "fallback": null,
+      "declared": 10,
+      "accepted": 9,
+      "unmapped": null,
+      "executed": null,
+      "inherited": null,
+      "steps_executed": 7,
+      "plan_steps_total": 10,
+      "conserved": null
+     },
+     {
+      "win": "w212",
+      "rep": 2,
+      "src": null,
+      "fallback": null,
+      "declared": 11,
+      "accepted": 11,
+      "unmapped": null,
+      "executed": null,
+      "inherited": null,
+      "steps_executed": 10,
+      "plan_steps_total": 11,
+      "conserved": null
+     },
+     {
+      "win": "w212",
+      "rep": 3,
+      "src": null,
+      "fallback": null,
+      "declared": 10,
+      "accepted": 10,
+      "unmapped": null,
+      "executed": null,
+      "inherited": null,
+      "steps_executed": 7,
+      "plan_steps_total": 10,
+      "conserved": null
+     },
+     {
+      "win": "w213",
+      "rep": 1,
+      "src": null,
+      "fallback": null,
+      "declared": 16,
+      "accepted": 16,
+      "unmapped": null,
+      "executed": null,
+      "inherited": null,
+      "steps_executed": 2,
+      "plan_steps_total": 16,
+      "conserved": null
+     },
+     {
+      "win": "w213",
+      "rep": 2,
+      "src": null,
+      "fallback": null,
+      "declared": null,
+      "accepted": null,
+      "unmapped": null,
+      "executed": null,
+      "inherited": null,
+      "steps_executed": 7,
+      "plan_steps_total": 7,
+      "conserved": null
+     },
+     {
+      "win": "w213",
+      "rep": 3,
+      "src": null,
+      "fallback": null,
+      "declared": 8,
+      "accepted": 7,
+      "unmapped": null,
+      "executed": null,
+      "inherited": null,
+      "steps_executed": 7,
+      "plan_steps_total": 8,
+      "conserved": null
+     }
+    ]
+   },
+   "C1": {
+    "runs": 3,
+    "runs_exec_source_candidates": 0,
+    "runs_executed_positive": 0,
+    "runs_plan_fallback": 0,
+    "runs_candidates_executed_zero": 0,
+    "runs_fallback_executed_positive": 0,
+    "fallback_reason_set": [],
+    "runs_four_fields": 0,
+    "runs_conserved": 0,
+    "conservation_violations": 0,
+    "unmapped_total": 0,
+    "inherited_total": 0,
+    "per_run": [
+     {
+      "win": "w211",
+      "rep": 1,
+      "src": null,
+      "fallback": null,
+      "declared": null,
+      "accepted": null,
+      "unmapped": null,
+      "executed": null,
+      "inherited": null,
+      "steps_executed": null,
+      "plan_steps_total": null,
+      "conserved": null
+     },
+     {
+      "win": "w212",
+      "rep": 1,
+      "src": null,
+      "fallback": null,
+      "declared": null,
+      "accepted": null,
+      "unmapped": null,
+      "executed": null,
+      "inherited": null,
+      "steps_executed": null,
+      "plan_steps_total": null,
+      "conserved": null
+     },
+     {
+      "win": "w213",
+      "rep": 1,
+      "src": null,
+      "fallback": null,
+      "declared": null,
+      "accepted": null,
+      "unmapped": null,
+      "executed": null,
+      "inherited": null,
+      "steps_executed": null,
+      "plan_steps_total": null,
+      "conserved": null
+     }
+    ]
+   },
+   "exec_vs_plan_diag": {
+    "T": [
+     {
+      "win": "w211",
+      "rep": 1,
+      "executed": 21,
+      "plan_steps": 22,
+      "exec_face_steps": 21
+     },
+     {
+      "win": "w211",
+      "rep": 2,
+      "executed": 6,
+      "plan_steps": 14,
+      "exec_face_steps": 6
+     },
+     {
+      "win": "w211",
+      "rep": 3,
+      "executed": 6,
+      "plan_steps": 10,
+      "exec_face_steps": 6
+     },
+     {
+      "win": "w212",
+      "rep": 1,
+      "executed": 6,
+      "plan_steps": 11,
+      "exec_face_steps": 6
+     },
+     {
+      "win": "w212",
+      "rep": 2,
+      "executed": 6,
+      "plan_steps": 12,
+      "exec_face_steps": 6
+     },
+     {
+      "win": "w212",
+      "rep": 3,
+      "executed": 12,
+      "plan_steps": 14,
+      "exec_face_steps": 12
+     },
+     {
+      "win": "w213",
+      "rep": 1,
+      "executed": 13,
+      "plan_steps": 14,
+      "exec_face_steps": 13
+     },
+     {
+      "win": "w213",
+      "rep": 2,
+      "executed": 6,
+      "plan_steps": 7,
+      "exec_face_steps": 6
+     },
+     {
+      "win": "w213",
+      "rep": 3,
+      "executed": 7,
+      "plan_steps": 7,
+      "exec_face_steps": 7
+     }
+    ],
+    "C": [
+     {
+      "win": "w211",
+      "rep": 1,
+      "executed": 7,
+      "plan_steps": 10,
+      "exec_face_steps": null
+     },
+     {
+      "win": "w211",
+      "rep": 2,
+      "executed": 14,
+      "plan_steps": 14,
+      "exec_face_steps": null
+     },
+     {
+      "win": "w211",
+      "rep": 3,
+      "executed": 0,
+      "plan_steps": 0,
+      "exec_face_steps": null
+     },
+     {
+      "win": "w212",
+      "rep": 1,
+      "executed": 7,
+      "plan_steps": 10,
+      "exec_face_steps": null
+     },
+     {
+      "win": "w212",
+      "rep": 2,
+      "executed": 10,
+      "plan_steps": 11,
+      "exec_face_steps": null
+     },
+     {
+      "win": "w212",
+      "rep": 3,
+      "executed": 7,
+      "plan_steps": 10,
+      "exec_face_steps": null
+     },
+     {
+      "win": "w213",
+      "rep": 1,
+      "executed": 2,
+      "plan_steps": 16,
+      "exec_face_steps": null
+     },
+     {
+      "win": "w213",
+      "rep": 2,
+      "executed": 7,
+      "plan_steps": 7,
+      "exec_face_steps": null
+     },
+     {
+      "win": "w213",
+      "rep": 3,
+      "executed": 7,
+      "plan_steps": 8,
+      "exec_face_steps": null
+     }
+    ]
+   }
+  }
+ },
+ "J2b_selection_conservation": {
+  "pass": true,
+  "reason": null,
+  "vacuous_green_closed_by": "R614（v2 判据：无声明 ⇒ fail-closed 不可判）",
+  "need": "T 档有声明跑次 > 0 ∧ 逐跑次 accepted+rejected==declared（无未裁定项）",
+  "by_arm": {
+   "T": {
+    "runs": 9,
+    "runs_with_declaration": 9,
+    "conservation_violations": 0,
+    "per_run": [
+     {
+      "win": "w211",
+      "rep": 1,
+      "declared": 22,
+      "accepted": 21,
+      "rejected": 1,
+      "conserved": true
+     },
+     {
+      "win": "w211",
+      "rep": 2,
+      "declared": 14,
+      "accepted": 13,
+      "rejected": 1,
+      "conserved": true
+     },
+     {
+      "win": "w211",
+      "rep": 3,
+      "declared": 10,
+      "accepted": 9,
+      "rejected": 1,
+      "conserved": true
+     },
+     {
+      "win": "w212",
+      "rep": 1,
+      "declared": 11,
+      "accepted": 10,
+      "rejected": 1,
+      "conserved": true
+     },
+     {
+      "win": "w212",
+      "rep": 2,
+      "declared": 12,
+      "accepted": 11,
+      "rejected": 1,
+      "conserved": true
+     },
+     {
+      "win": "w212",
+      "rep": 3,
+      "declared": 14,
+      "accepted": 13,
+      "rejected": 1,
+      "conserved": true
+     },
+     {
+      "win": "w213",
+      "rep": 1,
+      "declared": 14,
+      "accepted": 13,
+      "rejected": 1,
+      "conserved": true
+     },
+     {
+      "win": "w213",
+      "rep": 2,
+      "declared": 7,
+      "accepted": 6,
+      "rejected": 1,
+      "conserved": true
+     },
+     {
+      "win": "w213",
+      "rep": 3,
+      "declared": 7,
+      "accepted": 7,
+      "rejected": 0,
+      "conserved": true
+     }
+    ]
+   },
+   "C": {
+    "runs": 9,
+    "runs_with_declaration": 7,
+    "conservation_violations": 0,
+    "per_run": [
+     {
+      "win": "w211",
+      "rep": 1,
+      "declared": 10,
+      "accepted": 9,
+      "rejected": 1,
+      "conserved": true
+     },
+     {
+      "win": "w211",
+      "rep": 2,
+      "declared": 14,
+      "accepted": 13,
+      "rejected": 1,
+      "conserved": true
+     },
+     {
+      "win": "w211",
+      "rep": 3,
+      "declared": 0,
+      "accepted": null,
+      "rejected": null,
+      "conserved": null
+     },
+     {
+      "win": "w212",
+      "rep": 1,
+      "declared": 10,
+      "accepted": 9,
+      "rejected": 1,
+      "conserved": true
+     },
+     {
+      "win": "w212",
+      "rep": 2,
+      "declared": 11,
+      "accepted": 11,
+      "rejected": 0,
+      "conserved": true
+     },
+     {
+      "win": "w212",
+      "rep": 3,
+      "declared": 10,
+      "accepted": 10,
+      "rejected": 0,
+      "conserved": true
+     },
+     {
+      "win": "w213",
+      "rep": 1,
+      "declared": 16,
+      "accepted": 16,
+      "rejected": 0,
+      "conserved": true
+     },
+     {
+      "win": "w213",
+      "rep": 2,
+      "declared": 0,
+      "accepted": null,
+      "rejected": null,
+      "conserved": null
+     },
+     {
+      "win": "w213",
+      "rep": 3,
+      "declared": 8,
+      "accepted": 7,
+      "rejected": 1,
+      "conserved": true
+     }
+    ]
+   }
+  }
+ },
+ "J2_repair_convergence": {
+  "pass": true,
+  "need": "T_converged >= C_converged + 1",
+  "by_arm": {
+   "T": {
+    "runs": 9,
+    "converged": 3,
+    "rate": 0.3333,
+    "wilson95": [
+     0.1206,
+     0.6458
+    ],
+    "unmet_after": 6,
+    "per_run": [
+     {
+      "win": "w211",
+      "rep": 1,
+      "unmet": false,
+      "converged": true,
+      "probe_ran": 1,
+      "probe_failed": 0,
+      "rc": 0,
+      "stage": "done"
+     },
+     {
+      "win": "w211",
+      "rep": 2,
+      "unmet": true,
+      "converged": false,
+      "probe_ran": 1,
+      "probe_failed": 0,
+      "rc": 5,
+      "stage": "run_rc_exhausted"
+     },
+     {
+      "win": "w211",
+      "rep": 3,
+      "unmet": true,
+      "converged": false,
+      "probe_ran": 1,
+      "probe_failed": 0,
+      "rc": 5,
+      "stage": "expect_stdout_exhausted"
+     },
+     {
+      "win": "w212",
+      "rep": 1,
+      "unmet": true,
+      "converged": false,
+      "probe_ran": 1,
+      "probe_failed": 1,
+      "rc": 5,
+      "stage": "expect_stdout_exhausted"
+     },
+     {
+      "win": "w212",
+      "rep": 2,
+      "unmet": true,
+      "converged": false,
+      "probe_ran": 1,
+      "probe_failed": 1,
+      "rc": 5,
+      "stage": "expect_stdout_exhausted"
+     },
+     {
+      "win": "w212",
+      "rep": 3,
+      "unmet": true,
+      "converged": false,
+      "probe_ran": 1,
+      "probe_failed": 2,
+      "rc": 5,
+      "stage": "expect_stdout_exhausted"
+     },
+     {
+      "win": "w213",
+      "rep": 1,
+      "unmet": false,
+      "converged": true,
+      "probe_ran": 1,
+      "probe_failed": 0,
+      "rc": 0,
+      "stage": "done"
+     },
+     {
+      "win": "w213",
+      "rep": 2,
+      "unmet": false,
+      "converged": true,
+      "probe_ran": 1,
+      "probe_failed": 0,
+      "rc": 0,
+      "stage": "done"
+     },
+     {
+      "win": "w213",
+      "rep": 3,
+      "unmet": true,
+      "converged": false,
+      "probe_ran": 1,
+      "probe_failed": 0,
+      "rc": 5,
+      "stage": "run_rc_exhausted"
+     }
+    ]
+   },
+   "C": {
+    "runs": 9,
+    "converged": 2,
+    "rate": 0.2222,
+    "wilson95": [
+     0.0632,
+     0.5474
+    ],
+    "unmet_after": 7,
+    "per_run": [
+     {
+      "win": "w211",
+      "rep": 1,
+      "unmet": true,
+      "converged": false,
+      "probe_ran": 1,
+      "probe_failed": 0,
+      "rc": 5,
+      "stage": "expect_stdout_exhausted"
+     },
+     {
+      "win": "w211",
+      "rep": 2,
+      "unmet": false,
+      "converged": true,
+      "probe_ran": 1,
+      "probe_failed": 0,
+      "rc": 0,
+      "stage": "done"
+     },
+     {
+      "win": "w211",
+      "rep": 3,
+      "unmet": true,
+      "converged": false,
+      "probe_ran": null,
+      "probe_failed": null,
+      "rc": 4,
+      "stage": "contract"
+     },
+     {
+      "win": "w212",
+      "rep": 1,
+      "unmet": true,
+      "converged": false,
+      "probe_ran": 1,
+      "probe_failed": 0,
+      "rc": 5,
+      "stage": "expect_stdout_exhausted"
+     },
+     {
+      "win": "w212",
+      "rep": 2,
+      "unmet": true,
+      "converged": false,
+      "probe_ran": 1,
+      "probe_failed": 1,
+      "rc": 5,
+      "stage": "expect_stdout_exhausted"
+     },
+     {
+      "win": "w212",
+      "rep": 3,
+      "unmet": true,
+      "converged": false,
+      "probe_ran": 1,
+      "probe_failed": 0,
+      "rc": 5,
+      "stage": "expect_stdout_exhausted"
+     },
+     {
+      "win": "w213",
+      "rep": 1,
+      "unmet": true,
+      "converged": false,
+      "probe_ran": 1,
+      "probe_failed": 0,
+      "rc": 5,
+      "stage": "expect_stdout_exhausted"
+     },
+     {
+      "win": "w213",
+      "rep": 2,
+      "unmet": false,
+      "converged": true,
+      "probe_ran": 1,
+      "probe_failed": 0,
+      "rc": 0,
+      "stage": "done"
+     },
+     {
+      "win": "w213",
+      "rep": 3,
+      "unmet": true,
+      "converged": false,
+      "probe_ran": 1,
+      "probe_failed": 1,
+      "rc": 5,
+      "stage": "expect_stdout_exhausted"
+     }
+    ]
+   }
+  }
+ },
+ "J3_cost": {
+  "pass": false,
+  "form_in_force": "v2 (a1∧a2∧b1)",
+  "need": "Σcalls T ≤ C ∧ 逐窗 Σcalls T ≤ C ∧ 单位调用新算 prompt T ≤ C",
+  "by_arm": {
+   "T": {
+    "max_calls": 3,
+    "calls": [
+     2,
+     2,
+     2,
+     2,
+     3,
+     2,
+     2,
+     1,
+     2
+    ],
+    "prompt_tokens": [
+     18972,
+     18695,
+     18838,
+     18294,
+     26860,
+     17898,
+     18441,
+     8569,
+     18838
+    ],
+    "new_prompt_tokens": [
+     2204,
+     1927,
+     2070,
+     1526,
+     1900,
+     1258,
+     1673,
+     249,
+     2070
+    ],
+    "completion_tokens": [
+     11328,
+     8087,
+     7609,
+     6825,
+     10368,
+     6277,
+     7167,
+     4146,
+     8559
+    ],
+    "v_all": [
+     0.8838,
+     0.8969,
+     0.8901,
+     0.9166,
+     0.9293,
+     0.9297,
+     0.9093,
+     0.9709,
+     0.8901
+    ],
+    "v_incr": [
+     0.8121,
+     0.8343,
+     0.8227,
+     0.8687,
+     0.9097,
+     0.8918,
+     0.8558,
+     null,
+     0.8227
+    ],
+    "bad_dumps": 0
+   },
+   "C": {
+    "max_calls": 5,
+    "calls": [
+     2,
+     1,
+     5,
+     2,
+     2,
+     2,
+     2,
+     1,
+     2
+    ],
+    "prompt_tokens": [
+     18243,
+     8569,
+     45849,
+     18407,
+     18399,
+     18741,
+     18695,
+     8569,
+     18509
+    ],
+    "new_prompt_tokens": [
+     1603,
+     249,
+     2713,
+     1767,
+     1631,
+     1973,
+     1927,
+     249,
+     1869
+    ],
+    "completion_tokens": [
+     6766,
+     4294,
+     14961,
+     7274,
+     8101,
+     7732,
+     6767,
+     2812,
+     7263
+    ],
+    "v_all": [
+     0.9121,
+     0.9709,
+     0.9408,
+     0.904,
+     0.9114,
+     0.8947,
+     0.8969,
+     0.9709,
+     0.899
+    ],
+    "v_incr": [
+     0.86,
+     null,
+     0.9339,
+     0.8457,
+     0.8594,
+     0.8305,
+     0.8343,
+     null,
+     0.837
+    ],
+    "bad_dumps": 0
+   }
+  },
+  "v1_retained": {
+   "pass": true,
+   "need": "T_max_calls <= C_max_calls"
+  },
+  "v2": {
+   "form": {
+    "a1": true,
+    "a2": false,
+    "b1": false,
+    "pass": false,
+    "sum_calls": {
+     "T": 18,
+     "C": 19
+    },
+    "sum_new_prompt": {
+     "T": 14877,
+     "C": 13981
+    },
+    "unit_new_prompt_per_call": {
+     "T": 826.5,
+     "C": 735.8421
+    },
+    "per_window_calls": {
+     "w211": {
+      "T": 6,
+      "C": 8,
+      "ok": true
+     },
+     "w212": {
+      "T": 7,
+      "C": 6,
+      "ok": false
+     },
+     "w213": {
+      "T": 5,
+      "C": 5,
+      "ok": true
+     }
+    },
+    "failed_clauses": [
+     "a2_per_window_calls:w212",
+     "b1_unit_new_prompt"
+    ]
+   },
+   "v2prime": {
+    "pass": false,
+    "note": "b1 降级为报告列（须用户裁定，候选③）"
+   },
+   "controls": {
+    "POS": {
+     "pass": true,
+     "failed_clauses": [
+      "a1_pooled_calls",
+      "a2_per_window_calls:w212",
+      "b1_unit_new_prompt"
+     ]
+    },
+    "NEG_equals_base": true,
+    "non_trivial": true
+   },
+   "formula_source": "/home/agentuser/AgentFramework/eval/rover/r604/judge_j3v2_r604.py",
+   "runs": {
+    "runs": 21
+   }
+  }
+ },
+ "J5_cross_windowset_same_direction": {
+  "pass": true,
+  "note": "并列项, 不改主 rc",
+  "need": "两窗集的 (T-C) 方向一致 ⇒ 轴效应不随窗集翻号；符号相反 ⇒ 窗集依赖(欠功率)，如实登记",
+  "prev_table": "/home/agentuser/AgentFramework/eval/rover/r617/kpi-table-r617.json",
+  "prev_present": true,
+  "cur_pooled_T_minus_C": 0.1111,
+  "cur_counts_T_minus_C": 1,
+  "unit": "rate(池化全对率) 两侧同源",
+  "prev_pooled_T_minus_C": 0.3334,
+  "sign_consistent": true,
+  "side_by_side_by_window": {
+   "r610_set13": {
+    "w205": {
+     "T_rate": 0.3333333333333333,
+     "C_rate": 0.3333333333333333,
+     "C1_rate": 1.0,
+     "D_T_minus_C": 0.0,
+     "D_T_minus_C1": -0.6667,
+     "D_C_minus_C1": -0.6667,
+     "C1_all_pass": [
+      58
+     ]
+    },
+    "w206": {
+     "T_rate": 1.0,
+     "C_rate": 0.3333333333333333,
+     "C1_rate": 1.0,
+     "D_T_minus_C": 0.6667,
+     "D_T_minus_C1": 0.0,
+     "D_C_minus_C1": -0.6667,
+     "C1_all_pass": [
+      58
+     ]
+    },
+    "w207": {
+     "T_rate": 0.6666666666666666,
+     "C_rate": 0.3333333333333333,
+     "C1_rate": 1.0,
+     "D_T_minus_C": 0.3333,
+     "D_T_minus_C1": -0.3333,
+     "D_C_minus_C1": -0.6667,
+     "C1_all_pass": [
+      58
+     ]
+    }
+   },
+   "r617_set14": {
+    "w211": {
+     "T_rate": 1.0,
+     "C_rate": 0.6666666666666666,
+     "C1_rate": 1.0,
+     "D_T_minus_C": 0.3333,
+     "D_T_minus_C1": 0.0,
+     "D_C_minus_C1": -0.3333,
+     "C1_all_pass": [
+      58
+     ]
+    },
+    "w212": {
+     "T_rate": 0.0,
+     "C_rate": 0.6666666666666666,
+     "C1_rate": 1.0,
+     "D_T_minus_C": -0.6667,
+     "D_T_minus_C1": -1.0,
+     "D_C_minus_C1": -0.3333,
+     "C1_all_pass": [
+      58
+     ]
+    },
+    "w213": {
+     "T_rate": 1.0,
+     "C_rate": 0.3333333333333333,
+     "C1_rate": 1.0,
+     "D_T_minus_C": 0.6667,
+     "D_T_minus_C1": 0.0,
+     "D_C_minus_C1": -0.6667,
+     "C1_all_pass": [
+      58
+     ]
+    }
+   }
+  }
+ },
+ "J4_capability_secondary": {
+  "pass": false,
+  "need": "T_all_pass >= C_all_pass + 1 ∧ 无窗下降",
+  "by_arm": {
+   "T": {
+    "runs": 9,
+    "all_pass": 6,
+    "rate": 0.6667,
+    "wilson95": [
+     0.3542,
+     0.8794
+    ],
+    "cases_pass": [
+     58,
+     58,
+     58,
+     54,
+     55,
+     43,
+     58,
+     58,
+     58
+    ],
+    "per_window": {
+     "w211": 3,
+     "w212": 0,
+     "w213": 3
+    },
+    "per_window_n": {
+     "w211": 3,
+     "w212": 3,
+     "w213": 3
+    },
+    "families": {
+     "life": {
+      "total": 126,
+      "pass": 126
+     },
+     "sub": {
+      "total": 126,
+      "pass": 126
+     },
+     "nim": {
+      "total": 135,
+      "pass": 135
+     },
+     "wythoff": {
+      "total": 135,
+      "pass": 113
+     }
+    }
+   },
+   "C": {
+    "runs": 9,
+    "all_pass": 5,
+    "rate": 0.5556,
+    "wilson95": [
+     0.2666,
+     0.8112
+    ],
+    "cases_pass": [
+     58,
+     58,
+     51,
+     58,
+     51,
+     58,
+     58,
+     56,
+     56
+    ],
+    "per_window": {
+     "w211": 2,
+     "w212": 2,
+     "w213": 1
+    },
+    "per_window_n": {
+     "w211": 3,
+     "w212": 3,
+     "w213": 3
+    },
+    "families": {
+     "life": {
+      "total": 126,
+      "pass": 126
+     },
+     "sub": {
+      "total": 126,
+      "pass": 126
+     },
+     "nim": {
+      "total": 135,
+      "pass": 135
+     },
+     "wythoff": {
+      "total": 135,
+      "pass": 117
+     }
+    }
+   },
+   "C1": {
+    "runs": 3,
+    "all_pass": 3,
+    "rate": 1.0,
+    "wilson95": [
+     0.4385,
+     1.0
+    ],
+    "cases_pass": [
+     58,
+     58,
+     58
+    ],
+    "per_window": {
+     "w211": 1,
+     "w212": 1,
+     "w213": 1
+    },
+    "per_window_n": {
+     "w211": 1,
+     "w212": 1,
+     "w213": 1
+    },
+    "families": {
+     "life": {
+      "total": 42,
+      "pass": 42
+     },
+     "sub": {
+      "total": 42,
+      "pass": 42
+     },
+     "nim": {
+      "total": 45,
+      "pass": 45
+     },
+     "wythoff": {
+      "total": 45,
+      "pass": 45
+     }
+    }
+   }
+  },
+  "power_note": "n=9/档 ⇒ 欠功率；单窗集不作能力结论（R587 教训）"
+ },
+ "C1_task_face_v3": {
+  "pass": true,
+  "label": "PASS",
+  "D_list": [
+   0,
+   -4,
+   0
+  ],
+  "D_median": 0,
+  "valid_windows": 3,
+  "floor": -15,
+  "median_floor": -2,
+  "unreliable_windows": [],
+  "missing_windows": [],
+  "truth_per_window": {
+   "w211": 58,
+   "w212": 58,
+   "w213": 58
+  },
+  "product_per_window": {
+   "w211": 58,
+   "w212": 54,
+   "w213": 58
+  }
+ },
+ "W_floor_resolution_floor": {
+  "criterion": "有效窗 ≥2 ⇒ 判据行使；有效窗 ∈{0,1} ⇒ NO_RESOLUTION（不作能力结论、不记不达；真值自败窗剔除配对 + 单列我方读数 + 不记我方缺陷）",
+  "valid_windows": 3,
+  "label": "PASS",
+  "truth_self_fail_windows": [],
+  "own_readings_single_column": {
+   "w211": 58,
+   "w212": 54,
+   "w213": 58
+  },
+  "note": "NO_RESOLUTION 既非通过亦非失败（R604 §12.6 A 条首次落到判据器）"
+ },
+ "LD_low_discrimination": {
+  "frozen_list": [
+   "wythoff#43-public",
+   "wythoff#57-hidden"
+  ],
+  "freeze_source": "r604 truthcase census（13 例次 / 57 窗次 / 17 窗；全 wythoff 族）",
+  "role": "诊断列，**不作判据、不进 rc**（主判据 v3 不剔除这两例以保持跨轮可比）",
+  "v3_ex_LD": {
+   "D_list": [
+    0,
+    -5,
+    0
+   ],
+   "D_median": 0,
+   "valid_windows": 3,
+   "floor": -15,
+   "median_floor": -2,
+   "pass": true,
+   "unreliable_windows": [],
+   "missing_windows": [],
+   "truth_per_window": {
+    "w211": 58,
+    "w212": 58,
+    "w213": 58
+   },
+   "product_per_window": {
+    "w211": 58,
+    "w212": 53,
+    "w213": 58
+   }
+  },
+  "runs_with_LD_fail": 5,
+  "controls": {
+   "POS_empty_list_equals_v3": {
+    "ok": true
+   },
+   "NEG_unknown_id_rejected": {
+    "ok": true
+   },
+   "non_trivial": {
+    "ok": true
+   }
+  }
+ },
+ "paired_vs_codex": {
+  "w211": {
+   "T_rate": 1.0,
+   "C_rate": 0.6666666666666666,
+   "C1_rate": 1.0,
+   "D_T_minus_C": 0.3333,
+   "D_T_minus_C1": 0.0,
+   "D_C_minus_C1": -0.3333,
+   "C1_all_pass": [
+    58
+   ]
+  },
+  "w212": {
+   "T_rate": 0.0,
+   "C_rate": 0.6666666666666666,
+   "C1_rate": 1.0,
+   "D_T_minus_C": -0.6667,
+   "D_T_minus_C1": -1.0,
+   "D_C_minus_C1": -0.3333,
+   "C1_all_pass": [
+    58
+   ]
+  },
+  "w213": {
+   "T_rate": 1.0,
+   "C_rate": 0.3333333333333333,
+   "C1_rate": 1.0,
+   "D_T_minus_C": 0.6667,
+   "D_T_minus_C1": 0.0,
+   "D_C_minus_C1": -0.6667,
+   "C1_all_pass": [
+    58
+   ]
+  }
+ },
+ "instrument_defects": [],
+ "claims_violated": [],
+ "verdict": {
+  "rc": 0,
+  "rc_semantics": "分层：0 器具可用 / 2 器具缺陷（禁作被测结论） / 3 输入缺失；机制面结论见 mechanism_rc 与 label",
+  "mechanism_rc": 0,
+  "label": "机制达标（J0∧J1a∧J1b∧J1c∧J1d∧J1e∧J2b：臂轴生效 + 执行面被采纳集驱动 + 条目守恒 + 空执行面形态清零 + 回退三态不红 + 逐条裁定守恒）",
+  "capability_claim": "仅并列（J4 次级、欠功率）；跨轮禁相减（被测件按设计变更）；M3 出口闸（调用数按 request_id 去重 ≤ 旧臂 50%）本轮**只作读数**：R1 链每任务 1–2 次调用，旧「自由文本动作环」为跨轮形态 ⇒ 分母不同源，禁跨形态相减（引 R544 历史件）"
+ },
+ "checks_posthoc": [
+  "rc 语义分层（0/2/3）＋ mechanism_rc 字段：承 R614/R617，本轮沿用（两轮 rc 列不可直接并列，按 mechanism_rc 对比）",
+  "precond（铁律 11）rc 单独落 precond-r619.json；rc≠0 ⇒ 成本/质量降幅标「参考（未可验收）」"
+ ],
+ "honest_bounds": [
+  "J4 为 n=9/档 的欠功率读数 ⇒ 只作并列，不作能力结论",
+  "被测件按设计变更（产品源码改动 ⇒ 重发布 AOT）⇒ 与 R585–R617 冻结件轮**禁相减**；窗集 w208..w210 与历史窗集不相交",
+  "成本三列取中继 dump 时间轴；铁律 11 前置器 rc 见 precond-r619.json（rc≠0 ⇒ 标参考·未可验收）",
+  "M3 出口闸（调用数 ≤ 旧臂 50%）本轮**只作读数**：R1 链每任务 1–2 次调用；「旧臂」= 跨轮自由文本动作环，形态不同源 ⇒ 禁相减",
+  "第二刀只接**动作面**（write_file / run_command）；read_file / list_dir / delete_file 在 R1 窄腰无节点 ⇒ 计 unmapped 单列（第三刀 = 信息类工具）",
+  "候选 schema 不含 expect_stdout ⇒ 自述期望由 plan 里 (工具,参数) 逐字命中节点**继承**；继承数落台账 ⇒ 「换载体是否丢自检」可机检",
+  "J2/J2b/J3 为本轮继承面（修复收敛 / 裁选守恒 / 成本形态）⇒ 机制面定义 = J0∧J1∧J2b",
+  "有效窗 ∈{0,1} ⇒ NO_RESOLUTION（禁记 PASS/不达）；真值自败窗剔除配对但单列我方读数",
+  "LD 两例只作诊断列，不作收益/缺陷证据（主判据不剔除以保跨轮可比）",
+  "R619 第三刀 = 空执行面**回退**：回退判据为**三态**；若本窗集回退零行使 ⇒ 记 NOT_EXERCISED （如实未测），禁读作通过，且不得据此宣称回退机制有效",
+  "起手闸首试 RUN_EXIT=2（ceiling 2687 - GATE 2650 = 37MB < 60MB 下限，fail-closed 拒绝开窗，零臂起跑 ⇒ 该次无任何测量读数、不入对账）；清场后 ceiling 2903 重跑首跑"
+ ]
+}

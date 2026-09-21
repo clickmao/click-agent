@@ -1,0 +1,134 @@
+{
+ "round": "R619",
+ "written_before_run": true,
+ "written_at": "2026-09-21 18:43:15+0800",
+ "author": "cron 60min tick (capability self-check loop)",
+ "protocol": "docs/plans/RF0005-completion-protocol.md §1/§2/§3",
+ "claim": "RF0004.2 · M3 **第三刀 = 空执行面回退**。第二刀（R618）把采纳集接到执行面后，实测出 D1 形态: 候选键未到达 ⇒ 采纳面为空 ⇒ 执行面零节点 ⇒ 该跑次**什么都没跑**（`w210/agentT-r1`，而同题对照档会跑 `plan` 的 10 步）。本轮把「空执行面」从「什么都不做」改成**退回 `plan`**，触发面 = 复用既有空面条件（`mapped==0 ∧ plan≠0`），判定抽成纯函数 `ActionExecPlan.Decide`。",
+ "single_variable": {
+  "axis": "AGENTFRAMEWORK_R1_ACTION_EXEC",
+  "T": "1 ⇒ 执行面 = 采纳候选映射出的节点；**映射为空而 `plan` 非空 ⇒ 回退读 `plan`**（`exec_source` 三态: candidates / plan_fallback）",
+  "C": "unset ⇒ 产品缺省 off（执行面 = `plan`，**逐位**等于 R617/R618 旧行为；台账不出现新字段）",
+  "C1": "codex-cli 外部真值（同题面/同夹具/同窗）",
+  "why_only_one": "唯一改变「执行面读谁」的自由度；映射器零语义判断（工具名同源 ActionToolDecl、参数逐字节搬运），回退判定只读既有台账字段（present/accepted/mapped 计数），前缀零改动（tools/r1gen 未动 ⇒ 恒前缀 chars/sha 与 R617/R618 同值）。",
+  "third_anchor": "无第三档（本轴只有 on/off 两态）。",
+  "arm_convention_note": "与 R617 约定相反是**故意的**：本轴缺省 off ⇒ 「轴关 = 旧行为」的臂就是产品缺省臂（C = unset）。两臂在候选轴/提示尾块上皆取产品缺省 ⇒ 声明面同源。"
+ },
+ "arms": {
+  "T": {
+   "side": "agent",
+   "env": {
+    "AGENTFRAMEWORK_R1_ACTION_EXEC": "1"
+   },
+   "reps": 3
+  },
+  "C": {
+   "side": "agent",
+   "env": {},
+   "reps": 3
+  },
+  "C1": {
+   "side": "codex",
+   "env": {},
+   "reps": 1
+  }
+ },
+ "windows": {
+  "set": [
+   "w211",
+   "w212",
+   "w213"
+  ],
+  "disjoint_from_history": true,
+  "history_up_to": "w210（R618 用 w208..w210；本轮起 w211，与历史窗集不相交）"
+ },
+ "criterion_version": "v3",
+ "thresholds_cite_baselines": [
+  "F_env.prefix.sha256",
+  "F_env.prefix.chars",
+  "F_merge.quality.cases_median_truth",
+  "F_merge.cache.hit_v_all",
+  "F_merge.cost.new_prompt_sum",
+  "F_orch.cost.calls_sum",
+  "F_orch.wythoff.pass_r606"
+ ],
+ "criteria": {
+  "J0_arm_axis_effective": {
+   "need": "T 档逐跑次 `exec_source` ∈ {candidates, plan_fallback}（9/9）∧ C 档五个执行面字段全缺席（0/9）∧ 两臂 prefix_sha256 同源（25c97bef…）∧ 每臂非全缺席",
+   "kind": "mechanism",
+   "fail_action": "rc=2 整轮 VOID（先修臂）"
+  },
+  "J1_exec_face_and_fallback": {
+   "kind": "mechanism",
+   "primary": true,
+   "a1": "T `exec_source` ∈ {candidates, plan_fallback} 跑次 = 9/9（执行面接线生效）",
+   "a2": "T `exec_source == candidates` 跑次 ≥ 1（候选面真被驱动，非「全回退」退化）",
+   "a3": "**D1 形态清零**: count(T: exec_source==candidates ∧ action_candidates_executed==0) == 0（R618 实测 1/9）",
+   "a4": "守恒: candidates 档逐跑次 unmapped<=accepted ∧ executed<=accepted-unmapped ∧ inherited<=accepted-unmapped（违例 0）",
+   "a5": "回退行使三态: 回退跑次=0 ⇒ NOT_EXERCISED（如实记未测，不判 PASS 也不判 FAIL）；回退跑次>0 而 executed==0 ⇒ FAIL（回退未生效）；回退跑次>0 且 executed>0 全部 ⇒ PASS",
+   "pass": "a1 ∧ a2 ∧ a3 ∧ a4 ∧ (a5 != FAIL)"
+  },
+  "J2b_ledger_conservation": {
+   "kind": "mechanism",
+   "need": "T 档有声明跑次 > 0 ∧ 逐跑次 accepted+rejected==declared（无未裁定项）"
+  },
+  "J2_repair_convergence": {
+   "kind": "capability_secondary",
+   "need": "converged 跑次 T vs C（并列；n=9/档 欠功率 ⇒ 不作能力结论）"
+  },
+  "J3_cost": {
+   "kind": "cost",
+   "caveat": "铁律 11 rc≠0 ⇒ 一律标「参考（未可验收）」",
+   "v1": "max_calls（R618 形态，并列不翻案）",
+   "v2": "Σ调用数 T ≤ Σ调用数 C ∧ 逐窗 Σ T ≤ Σ C ∧ 单位调用新算 prompt T ≤ C（承 r604 J3 v2 公式）"
+  },
+  "J4_capability": {
+   "kind": "capability_secondary",
+   "need": "整题全对 T vs C vs C1（同窗 codex 真值）+ 逐窗 + 池化 + Wilson95；欠功率 ⇒ 并列"
+  },
+  "J5_m3_exit_gate_read": {
+   "kind": "report_only",
+   "need": "M3 出口闸「调用数按 request_id 去重 ≤ 旧臂 50%」**只作读数不作验收**（R1 链每任务 1–2 次调用 ⇒ 分母不同源）"
+  },
+  "W_floor": {
+   "kind": "resolution",
+   "need": "有效窗 = 真值未自败且配对可判的窗数；∈{0,1} ⇒ 标签 NO_RESOLUTION（不作能力结论、不记不达）"
+  },
+  "LD_low_discrimination": {
+   "kind": "diagnostic_only",
+   "frozen": [
+    "wythoff#43-public",
+    "wythoff#57-hidden"
+   ],
+   "need": "只作诊断列 v3_ex_LD，**不作判据、不进 rc**"
+  },
+  "ironlaw11": {
+   "kind": "acceptance_precondition",
+   "need": "`python3 eval/rover/r507pre/exec_precondition.py --round r619` rc == 0 ⇒ 可验收；rc≠0 ⇒ 一切成本/质量读数标「参考（未可验收）」"
+  }
+ },
+ "falsification": [
+  "① J1 未过（T 档零 `exec_source ∈ {candidates, plan_fallback}` 跑次）⇒ 执行面接线未挂上 ⇒ 撤回未提交 `src/` 改动（净产品改动 = 0），只记机制面失败与重开条件。",
+  "② J0 未过（两臂 `exec_source` 不可区分）⇒ 整轮 VOID（rc=2，禁作被测结论），先修臂再谈读数。",
+  "③ a3 未清零（T 仍有 `candidates ∧ executed==0` 跑次）⇒ 回退触发面不足 ⇒ J1 判 FAIL，**禁改判据凑绿**；修法候选入下轮（禁同轮调阈值）。",
+  "④ 守恒违例 > 0（`executed + unmapped != accepted` 口径）⇒ 映射器丢声明 ⇒ rc=2 器具缺陷。",
+  "⑤ 有效窗 < 2（真值自败窗剔除后）⇒ rc=3 停链、先造窗集，**禁下调阈值**。"
+ ],
+ "evidence_scope": {
+  "require": [
+   "prereg-r619.json（先写后跑闸）",
+   "bins-r619.json（全臂同一枚二进制 + codex 指纹）",
+   "gate-margin-r619.json（起手闸余量条款）",
+   "logs/run-samples.jsonl（运行期内存采样，供下轮 swing 重派生）",
+   "kpi-table-r619.json（KPI 表）",
+   "verdict-r619.json（判决件）",
+   "report-r619.md（轮志）"
+  ],
+  "note": "缺任一项 ⇒ 该轮不可收口（收口五件 = 轮工件/证据文档/registry 行/kpi 行带 baselines/逐名列名提交）"
+ },
+ "supersedes": {
+  "note": "本轴的首版（R618）读数不翻案；本轮为**被测件变更轮**（src/ 改动 ⇒ AOT 重发布）⇒ 与 R585–R618 冻结件轮**禁相减、只并列**",
+  "prior_round_same_axis": "R618（无回退形态）"
+ },
+ "revision": "v1（首版；臂前落盘，无事后修订）"
+}

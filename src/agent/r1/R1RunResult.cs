@@ -50,6 +50,10 @@ public sealed record R1RunResult(
     //   轴关 ⇒ ExecSource 恒 "plan" 且三计数恒 0 ⇒ 台账不出现新字段 ⇒ 与旧台账逐字节同。
     //   ExecSource = "candidates" 表示本跑次的执行面节点**来自采纳候选**（不是 plan）。
     string ExecSource = "plan",
+    // R619（RF0004.2 · M3 第三刀）**空执行面回退**：轴开而采纳面映射出的执行面为空 ∧ `plan` 非空 ⇒
+    //   执行面回退读 `plan`（ExecSource="plan_fallback"），回退原因落本字段。
+    //   轴关 / 未回退 ⇒ 恒 \"\" ⇒ 台账不出现该字段（零回归不变）。
+    string ExecFallback = "",
     int ActionCandidatesExecuted = 0,
     int ActionCandidatesUnmapped = 0,
     int ActionCandidatesExpectInherited = 0)

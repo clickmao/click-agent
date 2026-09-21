@@ -168,16 +168,28 @@ public static class R1Pipeline
             //   轴开 ⇒ execPlan = 采纳候选映射出的执行面节点（窄腰 write_file/run）。映射不进窄腰的
             //   声明（read_file/list_dir/delete_file）与自述期望继承数两枚计数落台账 ⇒ 缺项可见、不静默丢。
             var execSource = "plan";
+            var execFallback = "";
             var acUnmapped = 0;
             var acExpect = 0;
             var execPlan = sem.Plan;
             if (ActionExecPlan.IsEnabled())
             {
                 var map = ActionExecPlan.Build(ac.AcceptedActions, sem.Plan);
-                execSource = "candidates";
                 acUnmapped = map.Unmapped;
                 acExpect = map.ExpectInherited;
                 execPlan = map.Steps;
+                // R619 (RF0004.2 · M3 第三刀): **空执行面回退** —— 判定全部落在纯函数
+                //   <see cref="ActionExecPlan.Decide"/>（可单测）；本处只做「按判定装配」，
+                //   不在管线里写分支条件（判据绑组件真实行为）。
+                var face = ActionExecPlan.Decide(map.Steps.Count, sem.Plan.Count, ac.Present, ac.Accepted);
+                execSource = face.Source;
+                execFallback = face.Fallback;
+                if (face.UsePlan)
+                {
+                    acUnmapped = 0;
+                    acExpect = 0;
+                    execPlan = sem.Plan;
+                }
             }
             var execPlanTotal = execPlan.Count;
 
@@ -188,7 +200,7 @@ public static class R1Pipeline
                     prefixChars, prefixSha, taskSha, sem, roleChars, null, new List<StepOutcome>(),
                     ActionCandidatesDeclared: ac.Declared, ActionCandidatesAccepted: ac.Accepted,
                     ActionCandidatesRejected: ac.Rejected, ActionCandidatesPresent: ac.Present,
-                    ExecSource: execSource, ActionCandidatesUnmapped: acUnmapped,
+                    ExecSource: execSource, ExecFallback: execFallback, ActionCandidatesUnmapped: acUnmapped,
                     ActionCandidatesExpectInherited: acExpect);
                 R1Transcript.Write(halted, opt, taskText ?? string.Empty);
                 return halted;
@@ -197,14 +209,18 @@ public static class R1Pipeline
             if (execPlanTotal == 0)
             {
                 // 轴关 ⇒ 文案逐字不变（"plan 空"）；轴开 ⇒ 点名「采纳候选的可执行面为空」（两臂可区分）。
+                // R619: 三态文案（plan / candidates / plan_fallback）—— 两臂之外新增回退档，
+                //   三态互异 ⇒ 「执行面为空」的三种成因在回执文本上可区分（机检用台账字段，不靠文本）。
                 var emptyNote = execSource == "plan"
                     ? " (plan 空 ⇒ 不执行)"
-                    : " (采纳候选可执行面为空 ⇒ 不执行)";
+                    : (execSource == "candidates"
+                        ? " (采纳候选可执行面为空 ⇒ 不执行)"
+                        : " (回退 plan 后执行面仍空 ⇒ 不执行)");
                 var noExec = new R1RunResult(0, gate.Stage, gate.Reason + emptyNote, raw, statsAll,
                     prefixChars, prefixSha, taskSha, sem, roleChars, null, new List<StepOutcome>(),
                     ActionCandidatesDeclared: ac.Declared, ActionCandidatesAccepted: ac.Accepted,
                     ActionCandidatesRejected: ac.Rejected, ActionCandidatesPresent: ac.Present,
-                    ExecSource: execSource, ActionCandidatesUnmapped: acUnmapped,
+                    ExecSource: execSource, ExecFallback: execFallback, ActionCandidatesUnmapped: acUnmapped,
                     ActionCandidatesExpectInherited: acExpect);
                 R1Transcript.Write(noExec, opt, taskText ?? string.Empty);
                 return noExec;
@@ -275,7 +291,7 @@ public static class R1Pipeline
                         opt.EarlyStopPfail, earlyStopSkips, probeRepairs, carryoverRounds, carryoverChars,
                     ActionCandidatesDeclared: ac.Declared, ActionCandidatesAccepted: ac.Accepted,
                     ActionCandidatesRejected: ac.Rejected, ActionCandidatesPresent: ac.Present,
-                    ExecSource: execSource, ActionCandidatesExecuted: exec.Steps.Count,
+                    ExecSource: execSource, ExecFallback: execFallback, ActionCandidatesExecuted: exec.Steps.Count,
                     ActionCandidatesUnmapped: acUnmapped, ActionCandidatesExpectInherited: acExpect);
                     R1Transcript.Write(probeUnmet, opt, taskText ?? string.Empty);
                     return probeUnmet;
@@ -296,7 +312,7 @@ public static class R1Pipeline
                     opt.EarlyStopPfail, earlyStopSkips, probeRepairs, carryoverRounds, carryoverChars,
                     ActionCandidatesDeclared: ac.Declared, ActionCandidatesAccepted: ac.Accepted,
                     ActionCandidatesRejected: ac.Rejected, ActionCandidatesPresent: ac.Present,
-                    ExecSource: execSource, ActionCandidatesExecuted: exec.Steps.Count,
+                    ExecSource: execSource, ExecFallback: execFallback, ActionCandidatesExecuted: exec.Steps.Count,
                     ActionCandidatesUnmapped: acUnmapped, ActionCandidatesExpectInherited: acExpect);
                 R1Transcript.Write(done, opt, taskText ?? string.Empty);
                 return done;
@@ -328,7 +344,7 @@ public static class R1Pipeline
                         opt.EarlyStopPfail, earlyStopSkips, probeRepairs, carryoverRounds, carryoverChars,
                     ActionCandidatesDeclared: ac.Declared, ActionCandidatesAccepted: ac.Accepted,
                     ActionCandidatesRejected: ac.Rejected, ActionCandidatesPresent: ac.Present,
-                    ExecSource: execSource, ActionCandidatesExecuted: exec.Steps.Count,
+                    ExecSource: execSource, ExecFallback: execFallback, ActionCandidatesExecuted: exec.Steps.Count,
                     ActionCandidatesUnmapped: acUnmapped, ActionCandidatesExpectInherited: acExpect);
                     R1Transcript.Write(unmet, opt, taskText ?? string.Empty);
                     return unmet;
@@ -339,7 +355,7 @@ public static class R1Pipeline
                     opt.EarlyStopPfail, earlyStopSkips, probeRepairs, carryoverRounds, carryoverChars,
                     ActionCandidatesDeclared: ac.Declared, ActionCandidatesAccepted: ac.Accepted,
                     ActionCandidatesRejected: ac.Rejected, ActionCandidatesPresent: ac.Present,
-                    ExecSource: execSource, ActionCandidatesExecuted: exec.Steps.Count,
+                    ExecSource: execSource, ExecFallback: execFallback, ActionCandidatesExecuted: exec.Steps.Count,
                     ActionCandidatesUnmapped: acUnmapped, ActionCandidatesExpectInherited: acExpect);
                 R1Transcript.Write(stuck, opt, taskText ?? string.Empty);
                 return stuck;

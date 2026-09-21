@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R618",
+ "updated_round": "R619",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -7462,6 +7462,51 @@
     "instrument_sha12": "72b0b7ada871",
     "binding": "audit-pin",
     "audited_by_round": "R618"
+   }
+  },
+  {
+   "id": "r619.exec-face-fallback",
+   "capability": "RF0004.2 · M3 **第三刀 = 空执行面回退**：把「采纳集映射出的执行面为空 ∧ plan 非空」这一**前提**显式判定出来（纯函数 `ActionExecPlan.Decide`：mapped/plan/present/accepted ⇒ Source·Fallback·UsePlan），回退读 `plan` 并把**原因码**（`candidates_absent` / `accepted_empty` / `unmapped_all`）落台账 `exec_fallback`；`ExecSource=plan_fallback`。真机（w211..w213，21 跑次，被测件 sha256 `a184d7317b6e3c5e2190c792c88da265fdb86da594dde959a2a8389c546424af`，`bin_sha_stable=true`）：① **J0 臂轴生效 PASS** —— T 档面集合 `['candidates']`（⊆ 允许面）∧ C 档**五个受闸字段全缺席 9/9** ∧ 两臂前缀 `prefix_sha256` 同源 `25c97bef…`（= R617 pin，跨轮锚成立，`claims_violated=[]`）；② **J1（主判据）PASS** —— 面=candidates 9/9 ∧ `executed>0` 9/9 ∧ 条目守恒**违例 0** ∧ `unmapped` 合计 0 / 期望继承合计 39；③ **J1d PASS（本轮新增）**：`candidates ∧ executed==0` 的「空转形态」跑次 **0/9**（R618 实测该形态 1/9）；④ **J1e = `NOT_EXERCISED`**：`plan_fallback` 跑次 **0/9** ⇒ **回退分支本轮零行使、机制「未测到」**，三态**不判红也不判 PASS**（禁把未测读成通过）；⑤ J2b PASS（有声明跑次逐条 `accepted+rejected==declared`，违例 0）；⑥ 能力面**并列·欠功率**：整题全对 T 6/9=0.6667 vs C 5/9=0.5556 vs codex 真值 **3/3=1.0000**，逐窗配对差 T−C +0.3333/−0.6667/+0.6667（**极差 1.333 ≫ 池化效应 0.1111**）⇒ 该轴非承重；⑦ J3 v1 PASS / **J3 v2 FAIL**（`a2_per_window_calls:w212` ∧ `b1_unit_new_prompt`）⇒ **成本面无收益**；⑧ **铁律 11 rc=1（未可验收）**：`executable_and_correct=false`，blocked 全局 7 / 验收面 28（用例级失败，如 `w211/agentC-r3 51/58`）⇒ 一切质量/成本读数标「参考（未可验收）」。**可宣称范围仅 = J0 ∧ J1a ∧ J1b ∧ J1c ∧ J1d ∧ J2b；不可宣称回退机制有效（未行使）亦不可宣称无效。**",
+   "level": "L3",
+   "evidence_cmd": "bash eval/rover/r619/run_r619.sh   # 21 跑次（T×9 / C×9 / C1×3），落 $HOME/.agentframework/harness/runs/r619/；判据器影子自检 8 态: python3 eval/rover/r619/selftest_judge_r619.py（rc=0/checks_failed=[]）；后处理重算: python3 eval/rover/r619/judge_r619.py --D $HOME/.agentframework/harness/runs/r619 --pd eval/rover/r619；AOT: bash eval/rover/r619/aot_r619.sh；铁律 11: python3 eval/rover/r507pre/exec_precondition.py --round r619",
+   "evidence_path": "eval/rover/r619/report-r619.md",
+   "negative_control": "① **判据器影子自检 8 态**（`eval/rover/r619/selftest_judge_r619.py`，合成台账，`checks_failed=[]`）：A 正常 / B **两臂不可区分**（C 档也带受闸字段 ⇒ J0 判红且 defects 点名）/ C **真空**（T 全缺席 ⇒ J1 fail-closed 不可判）/ D **守恒违例**（`executed>accepted−unmapped` ⇒ J1b 红且非真空）/ E **跨轮锚不成立**（只记 `claims_violated`，钉住「判据面 vs 宣称面」分离）/ **F 回退行使且真干活 ⇒ 必须绿（`EXERCISED_OK`）/ G 回退命中而执行面仍空 ⇒ 必须红（`EXERCISED_EMPTY`）/ H D1 形态 ⇒ 必须红**（三态均保留 rep1 = candidates ∧ executed>0 ⇒ 被隔离的是 J1d/J1e 本身，非 J1a）；② **同轮轴关负控**：C 档（`AGENTFRAMEWORK_R1_ACTION_EXEC` unset）逐跑次**五个受闸字段缺席 9/9** ⇒ 「轴关 = 旧行为」由机检保证；③ **AOT 生产档装载冒烟两档**（轴 off / 轴 on）各 rc=0，轴 on 档可见 `exec_source=candidates` 而 `exec_fallback` **缺席** ⇒ 零回归不变式在冒烟面成立；④ **单测零回归条**：`ActionFallbackTests.零回归`（轴关 ⇒ 两字段皆不落）；⑤ **铁律 11 fail-closed**：blocked 非空 ⇒ rc=1（不得 rc=0 假绿）；⑥ **器具自捕缺陷 I1**（由影子自检 F 态当场抓到）：新键只进 `EXEC_FIELDS` 未进读取契约 `TR_FIELDS` ⇒ 白名单外键静默读空 ⇒ `reason_set=[]` 假红；两处并入后 8 态全绿。",
+   "covers": [
+    "eval/rover/r619/dag-r619.md",
+    "eval/rover/r619/prereg-r619.json",
+    "eval/rover/r619/report-r619.md",
+    "eval/rover/r619/run_r619.sh",
+    "eval/rover/r619/judge_r619.py",
+    "eval/rover/r619/selftest_judge_r619.py",
+    "eval/rover/r619/derive_judge_r619.py",
+    "eval/rover/r619/derive_selftest_r619.py",
+    "eval/rover/r619/aot_r619.sh",
+    "eval/rover/r619/repin_api_r619.sh",
+    "eval/rover/r619/taskset-r619.json",
+    "eval/rover/r619/bins-r619.json",
+    "eval/rover/r619/gate-margin-r619.json",
+    "eval/rover/r619/kpi-table-r619.json",
+    "eval/rover/r619/verdict-r619.json",
+    "eval/rover/r619/cases/run_cases_r521.py",
+    "eval/rover/r619/cases/cases-r521.json",
+    "src/agent/r1/ActionExecPlan.cs",
+    "src/agent/r1/R1Pipeline.cs",
+    "src/agent/r1/R1Transcript.cs",
+    "src/agent/r1/R1RunResult.cs",
+    "src/agent.tests/ActionFallbackTests.cs"
+   ],
+   "owner_round": "R619",
+   "updated_round": "R619",
+   "note": "轴**默认 off、未放行**（关闭态由逐跑次字段缺席 9/9 + 单测逐位双钉）。第三刀的**回退分支本轮零行使**（`plan_fallback` 0/9，`NOT_EXERCISED`）——9/9 治疗档跑次均映射出非空执行面 ⇒ 回退前提从未成立；下轮须先造「映射面为空 ∧ plan 非空」的可命中窗（**禁改判据阈值**）。铁律 11 首跑 `missing_case_script` 21 臂为**假阻断**（证据布局缺件：本轮 `cases/` 未随派生器复制，runner 取的正本是 `eval/rover/r610/cases/`）⇒ 逐字节补齐后**只重跑后处理**（零重测），原读数保留于 `precond-r619.layout-gap.json`。M3 出口闸（调用数去重 ≤ 旧臂 50%）只作读数（分母跨形态不同源，禁相减）。",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "963432dee7a8",
+    "instrument": "eval/rover/r619/judge_r619.py",
+    "instrument_sha12": "4ff1989d8c8b",
+    "binding": "audit-pin",
+    "audited_by_round": "R619"
    }
   }
  ],

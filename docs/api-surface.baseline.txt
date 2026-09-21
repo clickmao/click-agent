@@ -4089,6 +4089,7 @@ agent|M:agent.r1.ActionCandidates.RequiredArgsOf(System.String):System.Collectio
 agent|M:agent.r1.ActionCandidates.Select(System.String):agent.r1.ActionCandidates+Selection
 agent|M:agent.r1.ActionCandidates.Select(System.Text.Json.JsonElement):agent.r1.ActionCandidates+Selection
 agent|M:agent.r1.ActionExecPlan.Build(System.Collections.Generic.IReadOnlyList<agent.r1.AcceptedAction>,System.Collections.Generic.IReadOnlyList<agent.contract.PlanStep>):agent.r1.ActionExecPlan+Mapping
+agent|M:agent.r1.ActionExecPlan.Decide(System.Int32,System.Int32,System.Boolean,System.Int32):agent.r1.ActionExecPlan+ExecFace
 agent|M:agent.r1.ActionExecPlan.IsEnabled():System.Boolean
 agent|M:agent.r1.ArtifactCarryover.Render(System.String,System.Collections.Generic.IReadOnlyList<agent.r1.StepOutcome>):System.Collections.Generic.IReadOnlyList<System.String>
 agent|M:agent.r1.ArtifactCarryover.Render(System.String,System.Collections.Generic.IReadOnlyList<agent.r1.StepOutcome>,System.Int32,System.Int32):System.Collections.Generic.IReadOnlyList<System.String>
@@ -5140,6 +5141,9 @@ agent|P:agent.r1.ActionCandidates+Selection.Declared:System.Int32
 agent|P:agent.r1.ActionCandidates+Selection.Present:System.Boolean
 agent|P:agent.r1.ActionCandidates+Selection.RejectReasons:System.Collections.Generic.IReadOnlyList<System.String>
 agent|P:agent.r1.ActionCandidates+Selection.Rejected:System.Int32
+agent|P:agent.r1.ActionExecPlan+ExecFace.Fallback:System.String
+agent|P:agent.r1.ActionExecPlan+ExecFace.Source:System.String
+agent|P:agent.r1.ActionExecPlan+ExecFace.UsePlan:System.Boolean
 agent|P:agent.r1.ActionExecPlan+Mapping.ExpectInherited:System.Int32
 agent|P:agent.r1.ActionExecPlan+Mapping.Reasons:System.Collections.Generic.IReadOnlyList<System.String>
 agent|P:agent.r1.ActionExecPlan+Mapping.Steps:System.Collections.Generic.IReadOnlyList<agent.contract.PlanStep>
@@ -5191,6 +5195,7 @@ agent|P:agent.r1.R1RunResult.ArtifactCarryoverChars:System.Int32
 agent|P:agent.r1.R1RunResult.ArtifactCarryoverRounds:System.Int32
 agent|P:agent.r1.R1RunResult.EarlyStopSkipped:System.Int32
 agent|P:agent.r1.R1RunResult.EarlyStopThreshold:System.Int32
+agent|P:agent.r1.R1RunResult.ExecFallback:System.String
 agent|P:agent.r1.R1RunResult.ExecSource:System.String
 agent|P:agent.r1.R1RunResult.Halted:System.Boolean
 agent|P:agent.r1.R1RunResult.PrefixChars:System.Int32
@@ -5961,6 +5966,7 @@ agent|T:agent.r1.AcceptedAction
 agent|T:agent.r1.ActionCandidates
 agent|T:agent.r1.ActionCandidates+Selection
 agent|T:agent.r1.ActionExecPlan
+agent|T:agent.r1.ActionExecPlan+ExecFace
 agent|T:agent.r1.ActionExecPlan+Mapping
 agent|T:agent.r1.ArtifactCarryover
 agent|T:agent.r1.PlanExecutor

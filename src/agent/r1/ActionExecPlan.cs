@@ -42,6 +42,32 @@ public static class ActionExecPlan
                || v.Equals("true", StringComparison.OrdinalIgnoreCase);
     }
 
+    /// <summary>
+    /// R619（RF0004.2 · M3 第三刀）—— **空执行面回退的纯判定**（无副作用 ⇒ 可单测，且判据绑组件真实行为）。
+    ///
+    /// 动因 = R618 D1 形态实测: `w210/agentT-r1` 候选键未到达 ⇒ 采纳面为空 ⇒ 执行面为零节点 ⇒
+    ///   该跑次**什么都没跑**（而同题对照档会跑 `plan` 的 10 步）。换载体不得把「有活可干」变成
+    ///   「什么都没跑」⇒ 采纳面映射不出节点而 `plan` 非空时，执行面**退回** `plan`。
+    ///
+    /// 触发面 = 复用**既有**空面条件（`mappedSteps == 0`），不是新增预言分支；回退原因码由
+    ///   既有台账字段派生，便于逐跑次归因（键未到达 / 到达但空 / 到达但全不可映射 —— 三态可分）。
+    /// </summary>
+    /// <param name="mappedSteps">采纳候选映射出的执行面节点数</param>
+    /// <param name="planSteps">`plan` 的节点数</param>
+    /// <param name="candidatesPresent">候选键是否**到达**（空数组也算到达）</param>
+    /// <param name="accepted">采纳数</param>
+    public static ExecFace Decide(int mappedSteps, int planSteps, bool candidatesPresent, int accepted)
+    {
+        if (mappedSteps > 0 || planSteps == 0)
+        {
+            return new ExecFace("candidates", string.Empty, false);
+        }
+        var reason = !candidatesPresent
+            ? "candidates_absent"
+            : (accepted == 0 ? "accepted_empty" : "unmapped_all");
+        return new ExecFace("plan_fallback", reason, true);
+    }
+
     /// <summary>映射结果（计数与原因都可机检 ⇒ 不是「搬了多少条」而是「逐条判定了什么」）。</summary>
     public sealed record Mapping(
         IReadOnlyList<PlanStep> Steps,
@@ -51,6 +77,9 @@ public static class ActionExecPlan
 
     public static readonly Mapping Empty =
         new(new List<PlanStep>(), 0, 0, new List<string>());
+
+    /// <summary>执行面判定结果: 载体来源 / 回退原因码 / 是否使用 `plan`。</summary>
+    public sealed record ExecFace(string Source, string Fallback, bool UsePlan);
 
     /// <summary>
     /// 采纳集 ⇒ 执行面节点。`plan` 只用于**继承自述期望值**（不用于取动作）。

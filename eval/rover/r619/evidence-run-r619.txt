@@ -1,0 +1,29 @@
+[先写后跑闸] prereg ok: arms=['C', 'C1', 'T'] require=7 criterion=v3 windows=['w211', 'w212', 'w213']
+[钉死] bin=a184d7317b6e3c5e cfg_files=3
+prompt_sha256 516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3 chars=2182
+[18:46:06] 起手前采样: ceiling(min of 3)=2888 spread=0MB
+[18:46:06] 起手闸条款: ceiling=2888 prev_swing=125 margin=125 REQ=2775 (cap=178 cap_binding=false spread=0MB)
+[条款] 派生件落盘 /home/agentuser/AgentFramework/eval/rover/r619/gate-margin-r619.json
+[18:46:12] 起手闸 A1: PASS (mem=2905MB, REQ=2775MB)
+[18:46:19] 起手闸 A2: PASS (mem=2909MB, REQ=2775MB)
+{"rc": 3, "mem": 2724.0, "base": "GATE_BLOCKED", "clause": "GATE_BLOCKED", "truth": false}
+[18:47:55] 判别力成对控制 rc=0 (0 真判别行使 / 3 未行使已如实登记)
+[18:47:59] 起手闸 B (leak-selfcheck): rc=0
+[18:48:00] adapter 就绪 port=49793 (w211..213; 每窗 = codex 真值 ×1 + 产品默认档 ×3)
+[evidence] windows/w211 落盘 rows=7
+[evidence] windows/w212 落盘 rows=7
+[evidence] windows/w213 落盘 rows=7
+{"rc": 0, "J0": true, "J1": true, "J1a": true, "J1b": true, "J1c": true, "J2b": true, "J2": {"T": 3, "C": 2}, "J3v2": false, "J3v1": true, "J4": false, "J5": true, "exec_source_T": ["candidates", "candidates", "candidates", "candidates", "candidates", "candidates", "candidates", "candidates", "candidates"], "exec_source_C": [null, null, null, null, null, null, null, null, null], "v3": {"label": "PASS", "D_list": [0, -4, 0], "median": 0, "valid": 3}, "v3_ex_LD": {"D_list": [0, -5, 0], "median": 0}, "defects": [], "claims_violated": [], "T_all_pass": 6, "C_all_pass": 5, "C1_all_pass": 3}
+[18:56:56] 铁律 11 前置器: rc=1
+DECLARED_ABSENT=-
+POLICY_ACTIVE=False reason=no_policy_key ts=None checks={}
+SELF_REPORT_AGREES=True
+EXECUTABLE_AND_CORRECT=False (全局, 任一臂-题不许错)
+SCOPE_SOURCE=eval/rover/r619/prereg-r619.json PREREG=True
+ACCEPTABLE_SCOPED=False
+UNDECLARED: w211/agentC-r1 | w211/agentC-r2 | w211/agentC-r3 | w211/agentT-r1 | w211/agentT-r2 | w211/agentT-r3 | w211/codex | w212/agentC-r1 | w212/agentC-r2 | w212/agentC-r3 | w212/agentT-r1 | w212/agentT-r2 | w212/agentT-r3 | w212/codex | w213/agentC-r1 | w213/agentC-r2 | w213/agentC-r3 | w213/agentT-r1 | w213/agentT-r2 | w213/agentT-r3 | w213/codex
+BLOCKED: w211/agentC-r1/g1 missing_case_script cases/run_cases_r521.py | w211/agentC-r2/g1 missing_case_script cases/run_cases_r521.py | w211/agentC-r3/g1 missing_case_script cases/run_cases_r521.py | w211/agentT-r1/g1 missing_case_script cases/run_cases_r521.py | w211/agentT-r2/g1 missing_case_script cases/run_cases_r521.py | w211/agentT-r3/g1 missing_case_script cases/run_cases_r521.py | w211/codex/g1 missing_case_script cases/run_cases_r521.py | w212/agentC-r1/g1 missing_case_script cases/run_cases_r521.py | w212/agentC-r2/g1 missing_case_script cases/run_cases_r521.py | w212/agentC-r3/g1 missing_case_script cases/run_cases_r521.py | w212/agentT-r1/g1 missing_case_script cases/run_cases_r521.py | w212/agentT-r2/g1 missing_case_script cases/run_cases_r521.py | w212/agentT-r3/g1 missing_case_script cases/run_cases_r521.py | w212/codex/g1 missing_case_script cases/run_cases_r521.py | w213/agentC-r1/g1 missing_case_script cases/run_cases_r521.py | w213/agentC-r2/g1 missing_case_script cases/run_cases_r521.py | w213/agentC-r3/g1 missing_case_script cases/run_cases_r521.py | w213/agentT-r1/g1 missing_case_script cases/run_cases_r521.py | w213/agentT-r2/g1 missing_case_script cases/run_cases_r521.py | w213/agentT-r3/g1 missing_case_script cases/run_cases_r521.py | w213/codex/g1 missing_case_script cases/run_cases_r521.py
+OUT=/home/agentuser/.agentframework/harness/runs/r619/precond-r619.json
+VERDICT_BLOCKED ⇒ rc=1 (验收面 [require ∪ 未声明] 存在未执行/不正确臂 ⇒ 不得 rc=0 假绿)
+[18:56:56] R619 完成
+RUN_EXIT=0

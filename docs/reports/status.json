@@ -68,7 +68,7 @@
  },
  "baselines": {
   "by_face": {
-   "F_env": 5,
+   "F_env": 6,
    "F_merge": 7,
    "F_orch": 3
   },
@@ -77,12 +77,12 @@
    "diagnostic": 1,
    "env_gate": 3,
    "external_truth": 1,
-   "frozen_invariant": 3,
+   "frozen_invariant": 4,
    "negative_control": 1
   },
-  "entries": 15,
+  "entries": 16,
   "file": "eval/capability/baselines.json",
-  "file_sha12": "0713b82c3833",
+  "file_sha12": "32df6e746716",
   "missing_sources": [],
   "rules": [
    "kind_semantics",
@@ -103,12 +103,12 @@
   "latest": {
    "bin_sha": "",
    "grid": null,
-   "kind": "J1 测量面修复 + 提示尾块单变量重测（真机臂 w202..w204）：机制面 **PASS**（键到达 T 8/9 vs C 0/9，6/8 为空数组到达）、能力面无增益（T 5/9 vs C 6/9 vs codex 0/3）、任务面 v3 NO_RESOLUTION、铁律 11 rc=1 ⇒ 成本列**参考（未可验收）**",
+   "kind": "RF0004.2 · M3 第三刀 = 空执行面回退 真机臂 w211..w213（21 跑次）：机制面 **PASS**（rc=0/mechanism_rc=0：J0 两臂可区分 ∧ 前缀与 R617 pin 逐位同 ∧ J1a 面=candidates 9/9 ∧ J1b 守恒违例 0 ∧ J1d 空转形态 0/9），**但 J1e=NOT_EXERCISED：回退分支本轮零行使 ⇒ 机制「未测到」**；能力面并列·欠功率（整题全对 T 6/9 vs C 5/9 vs 真值 3/3，逐窗 +0.333/−0.667/+0.667，极差 1.33）；成本面无收益（J3 v2 FAIL）；铁律 11 rc=1 ⇒ 一切读数**参考（未可验收）**",
    "readouts": null,
-   "ts": "2026-09-21T13:50:00+08:00"
+   "ts": "2026-09-21T18:59:28+0800"
   },
-  "latest_round": "R615",
-  "lines": 150,
+  "latest_round": "R619",
+  "lines": 153,
   "non_round_rows": [
    "EXP1-Q1",
    "EXP1-Q10",
@@ -315,11 +315,14 @@
    "R610",
    "R614",
    "R615",
+   "R617",
+   "R618",
+   "R619",
    "loop-mechanism",
    "unknown"
   ],
   "rows_missing_kind": 19,
-  "sha12": "053e7dfe71f6"
+  "sha12": "bcb5bd604fa1"
  },
  "plans": [
   {
@@ -384,12 +387,12 @@
    "L0": 2,
    "L1": 20,
    "L2": 138,
-   "L3": 85,
+   "L3": 88,
    "L4": 46
   },
-  "rows": 291,
-  "sha12": "d94bfd9fc553",
-  "updated_round": "R615",
+  "rows": 294,
+  "sha12": "327d203ba2a5",
+  "updated_round": "R619",
   "violations": [],
   "warnings": [
    {
