@@ -46,10 +46,14 @@ public static class ActionCandidates
         IReadOnlyList<string> RejectReasons,
         // R615：**键到达**（字段存在且为数组，**空数组合法**）——与「声明非空」(Declared>0) 是两个读数。
         //   动因：只在 Declared>0 时落台账 ⇒「模型给了空数组」结构性不可见（arXiv:2608.04355v1 的抽取边界假象）。
-        bool Present = false);
+        bool Present = false,
+        // R618（M3 第二刀）：**采纳集原文**（id/工具/args 原文/理由）——执行面的载体。
+        //   第一刀只落计数 ⇒ accepted 无消费者；本字段使「声明 ⇒ 裁选 ⇒ 执行」可接。
+        //   轴关 / 无候选 ⇒ 空表（不得为 null，调用方无需判空）。
+        IReadOnlyList<AcceptedAction>? AcceptedActions = null);
 
     public static readonly Selection Empty =
-        new(0, 0, 0, new List<string>(), new List<string>());
+        new(0, 0, 0, new List<string>(), new List<string>(), false, new List<AcceptedAction>());
 
     /// <summary>从模型回复正文抽 `action_candidates` 并逐条裁选。非 JSON / 无该字段 ⇒ 声明数 0（不作判据）。</summary>
     public static Selection Select(string? replyText)
@@ -84,6 +88,7 @@ public static class ActionCandidates
         // R615：走到这里 = 键**到达**（数组形态，含空数组）⇒ Present 与「声明非空」解耦。
         const bool present = true;
         var accepted = new List<string>();
+        var acceptedActions = new List<AcceptedAction>();
         var reasons = new List<string>();
         var seen = new HashSet<string>(StringComparer.Ordinal);
         var declared = 0;
@@ -124,8 +129,9 @@ public static class ActionCandidates
                 continue;
             }
             accepted.Add(id);
+            acceptedActions.Add(new AcceptedAction(id, tool, args.GetRawText(), why));
         }
-        return new Selection(declared, accepted.Count, reasons.Count, accepted, reasons, present);
+        return new Selection(declared, accepted.Count, reasons.Count, accepted, reasons, present, acceptedActions);
     }
 
     private static string Str(JsonElement o, string key)

@@ -45,7 +45,14 @@ public sealed record R1RunResult(
     int ActionCandidatesRejected = 0,
     // R615：键到达面（字段存在且为数组，**空数组合法**）。与 Declared 分开落台账 ⇒
     //   「模型给了空数组」不再是不可见状态；轴关 ⇒ 恒 false ⇒ 字段缺席（零回归不变）。
-    bool ActionCandidatesPresent = false)
+    bool ActionCandidatesPresent = false,
+    // R618（RF0004.2 · M3 第二刀）**执行面载体**（AGENTFRAMEWORK_R1_ACTION_EXEC，默认 off）：
+    //   轴关 ⇒ ExecSource 恒 "plan" 且三计数恒 0 ⇒ 台账不出现新字段 ⇒ 与旧台账逐字节同。
+    //   ExecSource = "candidates" 表示本跑次的执行面节点**来自采纳候选**（不是 plan）。
+    string ExecSource = "plan",
+    int ActionCandidatesExecuted = 0,
+    int ActionCandidatesUnmapped = 0,
+    int ActionCandidatesExpectInherited = 0)
 {
     public bool Halted => Rc != 0;
 }

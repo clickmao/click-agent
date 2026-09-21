@@ -1,0 +1,111 @@
+{
+ "round": "R618",
+ "written_before_run": true,
+ "written_at": "2026-09-21T17:05:00+08:00",
+ "author": "cron capability-cycle (R618)",
+ "protocol": "docs/plans/RF0005-completion-protocol.md §2 固定环 0–9 / §1 迭代单元七硬约束",
+ "claim": "R610 第一刀让远端**只做声明**、本地机械裁选（`accepted`），但执行面仍读 `plan` ⇒ 编排决策事实上还停在远端自由文本里（R617 实测声明到岸 9/9 而 accepted 消费者数 **0**）。本轮把**采纳集接到执行面**（窄腰 write_file/run），使「执行什么」与「声明什么」同源。",
+ "single_variable": {
+  "axis": "AGENTFRAMEWORK_R1_ACTION_EXEC",
+  "T": "1 ⇒ 执行面 = 采纳候选映射出的节点（`exec_source=candidates`）",
+  "C": "unset ⇒ 产品缺省 off（执行面 = `plan`，**逐位**等于 R617 行为；台账不出现四个新字段）",
+  "C1": "codex-cli 外部真值（同题面/同夹具/同窗）",
+  "why_only_one": "本轴是唯一改变「执行面读谁」的自由度；映射器零语义判断（工具名同源 `ActionToolDecl`、参数逐字节搬运），前缀零改动（`tools/r1gen` 未动 ⇒ 恒前缀 chars/sha 与 R617 同值）。",
+  "third_anchor": "无第三档（本轴只有 on/off 两态；候选的 legacy 锚不适用）。",
+  "arm_convention_note": "与 R617 约定相反是**故意的**：R617 的轴缺省 on（旧值需显式取回），本轮新轴缺省 **off** ⇒ 「轴关 = 旧行为」的臂就是**产品缺省臂**（C = unset）。两臂在候选轴/提示尾块上皆取产品缺省 ⇒ 声明面同源。"
+ },
+ "arms": {
+  "C1": {
+   "side": "codex",
+   "reps": 1,
+   "env": {}
+  },
+  "T": {
+   "side": "agent",
+   "reps": 3,
+   "env": {
+    "AGENTFRAMEWORK_R1_ACTION_EXEC": "1"
+   }
+  },
+  "C": {
+   "side": "agent",
+   "reps": 3,
+   "env": {}
+  }
+ },
+ "windows": {
+  "set": [
+   "w208",
+   "w209",
+   "w210"
+  ],
+  "disjoint_from_history": true,
+  "history_up_to": "w207（R617 用 w205..w207；本轮起 w208，与历史窗集不相交）"
+ },
+ "criterion_version": "v3",
+ "thresholds_cite_baselines": [
+  "F_env.prefix.sha256",
+  "F_env.prefix.chars",
+  "F_merge.quality.cases_median_truth",
+  "F_merge.cache.hit_v_all",
+  "F_merge.cost.new_prompt_sum",
+  "cost-calls"
+ ],
+ "criteria": {
+  "J0_arm_axis_effective": {
+   "need": "逐跑次台账：T 档 exec_source 全 == \"candidates\" ∧ C 档**四新字段全缺席**（产品缺省 off ⇒ 逐字节同旧） ∧ 两臂前缀 sha 同源 ∧ 每臂非全缺席（缺席跑次单列 instrument_gap）；跨轮前缀锚（==R617 pin）只作宣称面",
+   "why": "臂未净 ⇒ 读数不可归因；两臂可区分是判据成立的前提（R375 三级命题：接线面 ≠ 生产侧命中）。",
+   "fail_closed": "违反 ⇒ defects ⇒ rc=2（器具/臂无效，禁作被测结论）；缺席跑次单列 `instrument_gap`（不判红、也不吞掉）",
+   "teeth": "影子自检 eval/rover/r618/selftest_judge_r618.py 五态回放：正常/两臂不可区分/真空/守恒违例/跨轮锚不成立（rc=0 全态符合）"
+  },
+  "J1_exec_face_consumed": {
+   "need": "① T 档出现 exec_source=\"candidates\" 且有跑次 action_candidates_executed>0 ∧ ② 逐跑次**条目守恒**：unmapped<=accepted ∧ executed<=accepted-unmapped ∧ expect_inherited<=accepted-unmapped（违例 0）∧ ③ 两臂可区分（C 档 exec_source 缺席）",
+   "why": "**主判据**：第一刀之后 accepted 无消费者 ⇒ 声明到岸而无人执行。守恒式是本轮唯一的「条目总数守恒」不变量（防映射器静默丢声明：Q7 教训「目标桶归零而条目消失」）。不变量只保「没弄丢」，不证明改对（改对由能力面 J4/隐藏用例判）。",
+   "forbidden_reading": "禁用「字段出现」直接当能力面达标（能力面看 J4；M3 出口闸看 J5）。",
+   "conservation_form": "unmapped<=accepted ∧ executed<=accepted-unmapped ∧ expect_inherited<=accepted-unmapped；**非等式**：计划执行器可在任一步早退（rc=5/rc=8）⇒ executed<mapped 合法",
+   "vacuous_gate": "T 档「四字段齐备跑次 = 0」⇒ 守恒式真空成立 ⇒ fail-closed 不可判（禁读作通过，承 R614 v2）"
+  },
+  "J2_axis_off_zero_regression": {
+   "need": "C 档台账不出现 `exec_source` / `action_candidates_executed` / `action_candidates_unmapped` / `action_candidates_expect_inherited` 四字段（逐跑次机检）",
+   "why": "轴关 = 旧行为逐位等价；字段缺席即旧形态（R546/R550/R600/R610/R615 同一纪律，由 `ActionExecPlanTests.零回归` 单测 + 台账机检双钉）。",
+   "fail_closed": "违反 ⇒ rc=2"
+  },
+  "J3_cost": {
+   "form_in_force": "v2 (a1 ∧ a2 ∧ b1)",
+   "unit": "调用数 / 新算 prompt / completion 三列分列，禁用名义总量",
+   "cross_round": "与被测件变更的历史轮**禁相减**，只并列"
+  },
+  "J4_capability": {
+   "need": "整题全对率 T vs C（并列）∧ 与同窗 codex 真值并列",
+   "power": "n=9/档 ⇒ 欠功率，只作并列（禁作结论）",
+   "external_truth": "codex-cli 同题面同夹具同窗"
+  },
+  "J5_m3_exit_gate_read": {
+   "note": "M3 出口闸三条件（调用数按 request_id 去重 ≤ 旧臂 50% ∧ 质量 ≥ 旧臂 ∧ 命中 ≥97%）本轮**只作读数**：铁律 11 未过 ⇒ 不作验收；且「≤50%」的分母语义在单轮内不成立（R1 链每任务 1–2 次调用，旧自由文本动作环是跨轮形态），其对照读数引 R544 历史件、**禁跨形态相减**。"
+  },
+  "ironlaw11": "收口前必跑 eval/rover/r507pre/exec_precondition.py --round r618；rc≠0 ⇒ 本轮成本/质量降幅一律标「参考（未可验收）」。"
+ },
+ "falsification": [
+  "① J1 未过（T 档零 `exec_source=candidates` 跑次）⇒ 执行面接线未挂上 ⇒ 撤回未提交 `src/` 改动（净产品改动 = 0），只记机制面失败与重开条件。",
+  "② J0 未过（两臂 `exec_source` 不可区分）⇒ 整轮 VOID（rc=2，禁作被测结论），先修臂再谈读数。",
+  "③ 守恒违例 > 0（`executed + unmapped != accepted`）⇒ 映射器丢声明 ⇒ rc=2 器具缺陷，禁改判据凑绿。",
+  "④ 有效窗 < 2（真值自败窗剔除后）⇒ rc=3 停链、先造窗集，**禁下调阈值**。"
+ ],
+ "evidence_scope": {
+  "require": [
+   "prereg-r618.json（先写后跑闸）",
+   "bins-r618.json（全臂同一枚二进制 + codex 指纹）",
+   "gate-margin-r618.json（起手闸余量条款）",
+   "logs/run-samples.jsonl（运行期内存采样，供下轮 swing 重派生）",
+   "kpi-table-r618.json（KPI 表）",
+   "verdict-r618.json（判决件）",
+   "report-r618.md（轮志）"
+  ],
+  "note": "缺任一项 ⇒ 该轮不可收口（收口五件 = 轮工件/证据文档/registry 行/kpi 行带 baselines/逐名列名提交）"
+ },
+ "supersedes": "无（R615/R617 读数并列在档，不相减）",
+ "revision": {
+  "v2": "起臂前修订（**零读数时**）：① 守恒式由等式改为不等式（原因 = 计划执行器可早退，等式会把合法早退记成器具缺陷）；② 明示 J0 = 两臂**可区分**（T 出现 exec_source ∧ C 四字段缺席）+ 前缀同源，跨轮前缀锚（==R617 pin）降为**宣称面**（不进 rc，不成立则记 claims_violated 并订正宣称）。除此之外判据/臂/窗集/阈值一律未改。",
+  "written_before_run_still_true": true
+ }
+}

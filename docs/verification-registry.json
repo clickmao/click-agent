@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R617",
+ "updated_round": "R618",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -7417,6 +7417,51 @@
     "instrument_sha12": "8414972a6b82",
     "binding": "audit-pin",
     "audited_by_round": "R617"
+   }
+  },
+  {
+   "id": "r618.exec-face-wiring",
+   "capability": "RF0004.2 · M3 **第二刀 = 执行面接线**：把 R610 第一刀产出的 `accepted` 采纳集接到执行面（窄腰 `write_file`/`run_command`），使「执行什么」与「声明什么」同源。真机（w208..w210，21 跑次，被测件 sha256 `886db888d744a6196dbdefd6aa482c8fc0b966eaab16fac7e6c3add44a0f3ca6`，`bin_sha_stable=true`）：① **J0 臂轴生效 PASS** —— T 档 `exec_source=candidates` **9/9** vs C 档四新字段**全缺席 9/9**（轴关 = 旧行为逐字节同），两臂前缀 `prefix_sha256` 均为 `25c97bef…`（= R617 pin 逐位 ⇒ r1gen 零改动，跨轮锚成立）；② **J1（主判据）PASS** —— 有 `executed>0` 跑次 **8/9**、四字段齐备 8/9、**守恒违例 0**（`unmapped<=accepted ∧ executed<=accepted−unmapped ∧ inherited<=accepted−unmapped`），`unmapped` 合计 0 / 自述期望继承合计 26 ⇒ 换载体未丢自检面；③ J2b PASS（8/9 跑次 accepted+rejected==declared，违例 0）；④ **能力面负向**：整题全对 T **4/9=0.444** vs C **6/9=0.667** vs codex 真值 2/3，逐窗配对差 +0.333/−0.667/−0.333 ⇒ **J5 跨窗集方向不一致**（R617 +0.3334 vs 本轮 −0.2223）⇒ 该轴在能力面**非承重、不构成提升**；⑤ J3 v2 FAIL（`a2_per_window_calls:w209` ∧ `b1_unit_new_prompt`），J3 v1 PASS；⑥ **铁律 11 rc=1（未可验收）**：blocked 9 臂（T 5 / C 3 / codex 1），含两枚 0/58（`w209/agentT-r1` 探针未达成、`w210/agentT-r1` 零步执行面）⇒ 一切质量/成本读数标「参考（未可验收）」。**只证「执行面被采纳集驱动 + 条目守恒」；不证能力或成本收益，且实测为负向。**",
+   "level": "L3",
+   "evidence_cmd": "bash eval/rover/r618/run_r618.sh   # 21 跑次（T×9 / C×9 / C1×3），落 $HOME/.agentframework/harness/runs/r618/；判据器影子自检: python3 eval/rover/r618/selftest_judge_r618.py（5 态）；后处理重算: python3 eval/rover/r618/judge_r618.py --D $HOME/.agentframework/harness/runs/r618 --pd eval/rover/r618；AOT: bash eval/rover/r618/aot_r618.sh；铁律 11: python3 eval/rover/r507pre/exec_precondition.py --round r618",
+   "evidence_path": "eval/rover/r618/report-r618.md",
+   "negative_control": "① **判据器影子自检五态**（`eval/rover/r618/selftest_judge_r618.py`，合成台账，rc=0 全态符合）：正常 / **两臂不可区分**（C 档也带四字段 ⇒ J0 判红 + defects 点名） / **真空**（T 档四字段全缺席 ⇒ J1 fail-closed不可判、`vacuous_reason=VACUOUS`） / **守恒违例**（`executed>accepted−unmapped` ⇒ J1b 判红且非真空） / **跨轮锚不成立**（两臂同源但与 R617 pin 不同 ⇒ J0 仍 True、只记 `claims_violated`，钉住「判据面 vs 宣称面」分离）；② **同轮轴关负控**：C 档（`AGENTFRAMEWORK_R1_ACTION_EXEC` unset）逐跑次四字段缺席 9/9 ⇒ 「轴关 = 旧行为」由机检而非叙述保证；③ **单测零回归条**：`ActionExecPlanTests.零回归`（轴关时执行面与 `sem.Plan` 逐位相等 + 台账字段不出现）＋映射守恒条（坏参数/窄腰外工具计 `unmapped`、不静默丢）；④ **铁律 11 fail-closed**：blocked 非空 ⇒ rc=1（不得 rc=0 假绿）。",
+   "covers": [
+    "eval/rover/r618/dag-r618.md",
+    "eval/rover/r618/prereg-r618.json",
+    "eval/rover/r618/report-r618.md",
+    "eval/rover/r618/run_r618.sh",
+    "eval/rover/r618/judge_r618.py",
+    "eval/rover/r618/selftest_judge_r618.py",
+    "eval/rover/r618/aot_r618.sh",
+    "eval/rover/r618/repin_api_r618.sh",
+    "eval/rover/r618/taskset-r618.json",
+    "eval/rover/r618/bins-r618.json",
+    "eval/rover/r618/gate-margin-r618.json",
+    "eval/rover/r618/kpi-table-r618.json",
+    "eval/rover/r618/verdict-r618.json",
+    "eval/rover/r618/cases/run_cases_r521.py",
+    "eval/rover/r618/cases/cases-r521.json",
+    "src/agent/r1/ActionExecPlan.cs",
+    "src/agent/r1/AcceptedAction.cs",
+    "src/agent/r1/ActionCandidates.cs",
+    "src/agent/r1/R1Pipeline.cs",
+    "src/agent/r1/R1Transcript.cs",
+    "src/agent/r1/R1RunResult.cs",
+    "src/agent.tests/ActionExecPlanTests.cs"
+   ],
+   "owner_round": "R618",
+   "updated_round": "R618",
+   "note": "轴**默认 off、未放行**（关闭态由逐跑次字段缺席 + 单测逐位双钉）；第二刀只接动作面，信息类工具（read_file/list_dir/delete_file）属第三刀；能力面负向的两个可机检来源 = 无候选⇒空执行面（1/9 跑次）与早退更早（6/9 跑次 executed=6<mapped），**未定因**（候选序 vs plan 序差异未证，禁无证据归因）；M3 出口闸（调用数去重 ≤ 旧臂 50%）本轮只作读数不作验收（分母形态不同源）。 读数面：build 0 error（`dotnet build` 无 error；AOT `PUBLISH_RC=0 / IL_WARNINGS=0 / ERRORS=0`，ELF 19,834,064 B）· 形式门禁 14/14（`VerificationForm|SkillGeneralization|DevPlanDocRef`）· 定向单测 41/41 · 判据器影子自检 5 态 rc=0 · `status_gen.py --check` PASS（违规 0 / 基准漂移 0 / 缺源 0）。",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "277ce4128407",
+    "instrument": "eval/rover/r618/judge_r618.py",
+    "instrument_sha12": "72b0b7ada871",
+    "binding": "audit-pin",
+    "audited_by_round": "R618"
    }
   }
  ],

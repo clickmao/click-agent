@@ -164,28 +164,53 @@ public static class R1Pipeline
             //   本轴只落「声明/采纳/拒绝」三个**机制面**计数; 裁定本身不改变 rc/stage（能力面由后续窗集轮判）。
             var ac = ActionCandidates.IsEnabled() ? ActionCandidates.Select(raw) : ActionCandidates.Empty;
 
+            // R618 (RF0004.2 · M3 第二刀): **执行面载体**。轴关 ⇒ execPlan 就是 sem.Plan（逐位等于旧行为）;
+            //   轴开 ⇒ execPlan = 采纳候选映射出的执行面节点（窄腰 write_file/run）。映射不进窄腰的
+            //   声明（read_file/list_dir/delete_file）与自述期望继承数两枚计数落台账 ⇒ 缺项可见、不静默丢。
+            var execSource = "plan";
+            var acUnmapped = 0;
+            var acExpect = 0;
+            var execPlan = sem.Plan;
+            if (ActionExecPlan.IsEnabled())
+            {
+                var map = ActionExecPlan.Build(ac.AcceptedActions, sem.Plan);
+                execSource = "candidates";
+                acUnmapped = map.Unmapped;
+                acExpect = map.ExpectInherited;
+                execPlan = map.Steps;
+            }
+            var execPlanTotal = execPlan.Count;
+
             var gate = SemanticsPipeline.Gate(sem, opt.SandboxRoot);
             if (gate.Halted)
             {
                 var halted = new R1RunResult(gate.Rc, gate.Stage, gate.Reason, raw, statsAll,
                     prefixChars, prefixSha, taskSha, sem, roleChars, null, new List<StepOutcome>(),
                     ActionCandidatesDeclared: ac.Declared, ActionCandidatesAccepted: ac.Accepted,
-                    ActionCandidatesRejected: ac.Rejected, ActionCandidatesPresent: ac.Present);
+                    ActionCandidatesRejected: ac.Rejected, ActionCandidatesPresent: ac.Present,
+                    ExecSource: execSource, ActionCandidatesUnmapped: acUnmapped,
+                    ActionCandidatesExpectInherited: acExpect);
                 R1Transcript.Write(halted, opt, taskText ?? string.Empty);
                 return halted;
             }
 
-            if (sem.Plan.Count == 0)
+            if (execPlanTotal == 0)
             {
-                var noExec = new R1RunResult(0, gate.Stage, gate.Reason + " (plan 空 ⇒ 不执行)", raw, statsAll,
+                // 轴关 ⇒ 文案逐字不变（"plan 空"）；轴开 ⇒ 点名「采纳候选的可执行面为空」（两臂可区分）。
+                var emptyNote = execSource == "plan"
+                    ? " (plan 空 ⇒ 不执行)"
+                    : " (采纳候选可执行面为空 ⇒ 不执行)";
+                var noExec = new R1RunResult(0, gate.Stage, gate.Reason + emptyNote, raw, statsAll,
                     prefixChars, prefixSha, taskSha, sem, roleChars, null, new List<StepOutcome>(),
                     ActionCandidatesDeclared: ac.Declared, ActionCandidatesAccepted: ac.Accepted,
-                    ActionCandidatesRejected: ac.Rejected, ActionCandidatesPresent: ac.Present);
+                    ActionCandidatesRejected: ac.Rejected, ActionCandidatesPresent: ac.Present,
+                    ExecSource: execSource, ActionCandidatesUnmapped: acUnmapped,
+                    ActionCandidatesExpectInherited: acExpect);
                 R1Transcript.Write(noExec, opt, taskText ?? string.Empty);
                 return noExec;
             }
 
-            var exec = await PlanExecutor.RunAsync(sem.Plan, opt, ct).ConfigureAwait(false);
+            var exec = await PlanExecutor.RunAsync(execPlan, opt, ct).ConfigureAwait(false);
 
             // R544 · 产物侧独立自检（用户审计口径的机件化）: **rc=0 只是链路自述跑通, 不是产物正确**
             //   （R542 实测: rc=0 的 4 个 r1 臂产物仅 43–55/58）。
@@ -249,7 +274,9 @@ public static class R1Pipeline
                         prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe,
                         opt.EarlyStopPfail, earlyStopSkips, probeRepairs, carryoverRounds, carryoverChars,
                     ActionCandidatesDeclared: ac.Declared, ActionCandidatesAccepted: ac.Accepted,
-                    ActionCandidatesRejected: ac.Rejected, ActionCandidatesPresent: ac.Present);
+                    ActionCandidatesRejected: ac.Rejected, ActionCandidatesPresent: ac.Present,
+                    ExecSource: execSource, ActionCandidatesExecuted: exec.Steps.Count,
+                    ActionCandidatesUnmapped: acUnmapped, ActionCandidatesExpectInherited: acExpect);
                     R1Transcript.Write(probeUnmet, opt, taskText ?? string.Empty);
                     return probeUnmet;
                 }
@@ -268,7 +295,9 @@ public static class R1Pipeline
                     prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe,
                     opt.EarlyStopPfail, earlyStopSkips, probeRepairs, carryoverRounds, carryoverChars,
                     ActionCandidatesDeclared: ac.Declared, ActionCandidatesAccepted: ac.Accepted,
-                    ActionCandidatesRejected: ac.Rejected, ActionCandidatesPresent: ac.Present);
+                    ActionCandidatesRejected: ac.Rejected, ActionCandidatesPresent: ac.Present,
+                    ExecSource: execSource, ActionCandidatesExecuted: exec.Steps.Count,
+                    ActionCandidatesUnmapped: acUnmapped, ActionCandidatesExpectInherited: acExpect);
                 R1Transcript.Write(done, opt, taskText ?? string.Empty);
                 return done;
             }
@@ -282,12 +311,13 @@ public static class R1Pipeline
                 //   两者冲突且**计划已跑完**（无剩余步骤 ⇒ 产物齐）⇒ rc=8 self_test_unmet:
                 //   既不算链成功、也不算链失败, 两个数都可见（reply 带标记 + 台账 steps_executed/plan_steps_total）。
                 //   其余情形（执行 rc≠0、或计划没跑完 ⇒ 产物不齐）⇒ 保留 rc=5「链未达成」。
-                var planComplete = exec.Steps.Count >= sem.Plan.Count;
+                var planComplete = exec.Steps.Count >= execPlanTotal;
                 var probeMarker = probe is not null ? "\nR1_PUBLIC_PROBE " + probe.MarkerJson() : string.Empty;
                 if (exec.Stage == "expect_stdout" && planComplete)
                 {
+                    var completeWord = execSource == "plan" ? "计划已跑完" : "执行面已跑完";
                     var unmet = new R1RunResult(8, "self_test_unmet",
-                        exec.Reason + "（计划已跑完 " + exec.Steps.Count + "/" + sem.Plan.Count
+                        exec.Reason + "（" + completeWord + " " + exec.Steps.Count + "/" + execPlanTotal
                         + " 步, 产物在盘 ⇒ 成对报「自测未达成 ∧ 产物可疑」: 期望是模型自述, 判分以执行器实测/外部用例为准;"
                         + " rc=8 不作正确性证据 (correctness_asserted=0), 产物对错只能由外部门禁/隐藏用例判）"
                         + (probe is not null && probe.Ran ? "; 题面公开用例回放 " + (probe.Total - probe.Failed) + "/" + probe.Total + " 过（同一面, 不改变本分类）" : string.Empty),
@@ -297,7 +327,9 @@ public static class R1Pipeline
                         statsAll, prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe,
                         opt.EarlyStopPfail, earlyStopSkips, probeRepairs, carryoverRounds, carryoverChars,
                     ActionCandidatesDeclared: ac.Declared, ActionCandidatesAccepted: ac.Accepted,
-                    ActionCandidatesRejected: ac.Rejected, ActionCandidatesPresent: ac.Present);
+                    ActionCandidatesRejected: ac.Rejected, ActionCandidatesPresent: ac.Present,
+                    ExecSource: execSource, ActionCandidatesExecuted: exec.Steps.Count,
+                    ActionCandidatesUnmapped: acUnmapped, ActionCandidatesExpectInherited: acExpect);
                     R1Transcript.Write(unmet, opt, taskText ?? string.Empty);
                     return unmet;
                 }
@@ -306,7 +338,9 @@ public static class R1Pipeline
                     prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe,
                     opt.EarlyStopPfail, earlyStopSkips, probeRepairs, carryoverRounds, carryoverChars,
                     ActionCandidatesDeclared: ac.Declared, ActionCandidatesAccepted: ac.Accepted,
-                    ActionCandidatesRejected: ac.Rejected, ActionCandidatesPresent: ac.Present);
+                    ActionCandidatesRejected: ac.Rejected, ActionCandidatesPresent: ac.Present,
+                    ExecSource: execSource, ActionCandidatesExecuted: exec.Steps.Count,
+                    ActionCandidatesUnmapped: acUnmapped, ActionCandidatesExpectInherited: acExpect);
                 R1Transcript.Write(stuck, opt, taskText ?? string.Empty);
                 return stuck;
             }

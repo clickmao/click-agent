@@ -80,6 +80,14 @@ public static class R1Transcript
             sb.Append(",\"action_candidates_accepted\":").Append(R1Json.Num(r.ActionCandidatesAccepted));
             sb.Append(",\"action_candidates_rejected\":").Append(R1Json.Num(r.ActionCandidatesRejected));
         }
+        // R618（M3 第二刀）执行面载体：轴关 ⇒ ExecSource 恒 "plan" ⇒ 四字段不出现 ⇒ 与旧标记逐字节同。
+        if (r.ExecSource != "plan")
+        {
+            sb.Append(",\"exec_source\":").Append(R1Json.Quote(r.ExecSource));
+            sb.Append(",\"action_candidates_executed\":").Append(R1Json.Num(r.ActionCandidatesExecuted));
+            sb.Append(",\"action_candidates_unmapped\":").Append(R1Json.Num(r.ActionCandidatesUnmapped));
+            sb.Append(",\"action_candidates_expect_inherited\":").Append(R1Json.Num(r.ActionCandidatesExpectInherited));
+        }
         sb.Append("}");
         return sb.ToString();
     }
@@ -126,6 +134,14 @@ public static class R1Transcript
             sb.Append("  \"action_candidates_declared\": ").Append(R1Json.Num(r.ActionCandidatesDeclared)).Append(",\n");
             sb.Append("  \"action_candidates_accepted\": ").Append(R1Json.Num(r.ActionCandidatesAccepted)).Append(",\n");
             sb.Append("  \"action_candidates_rejected\": ").Append(R1Json.Num(r.ActionCandidatesRejected)).Append(",\n");
+        }
+        // R618（M3 第二刀）执行面载体：轴关 ⇒ 字段不出现 ⇒ 与旧台账逐字节同。
+        if (r.ExecSource != "plan")
+        {
+            sb.Append("  \"exec_source\": ").Append(R1Json.Quote(r.ExecSource)).Append(",\n");
+            sb.Append("  \"action_candidates_executed\": ").Append(R1Json.Num(r.ActionCandidatesExecuted)).Append(",\n");
+            sb.Append("  \"action_candidates_unmapped\": ").Append(R1Json.Num(r.ActionCandidatesUnmapped)).Append(",\n");
+            sb.Append("  \"action_candidates_expect_inherited\": ").Append(R1Json.Num(r.ActionCandidatesExpectInherited)).Append(",\n");
         }
         sb.Append("  \"step_timeout_s\": ").Append(R1Json.Num(opt.StepTimeoutSeconds)).Append(",\n");
         sb.Append("  \"rc\": ").Append(R1Json.Num(r.Rc)).Append(",\n");
