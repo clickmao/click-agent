@@ -7214,6 +7214,32 @@
     "audited_by_round": "R609"
    },
    "covers_extra": "非产品面轮：净 src/ 改动 0 ⇒ 无单测/AOT 等级主张；能力面（判别位夹具）未行使"
+  },
+  {
+   "id": "rf0006.qr2-probe-ab-r462",
+   "level": "L3",
+   "owner_round": "R609",
+   "capability": "RF0006 QR2 判别位 A/B：现役件 LFM2.5-VL-3B-Q4_K_M（主线 b11065 / 厂商 fork prism-b10709）× 原生三值件 Ternary-Bonsai-8B/4B-PQ2_0（fork）—— 同一 R462 夹具 28 例（ctx 1024）acc/假跳/漏跳/壁钟",
+   "evidence_cmd": "TAG=<tag> BIN=<llama-server> MODEL=<gguf> PORT=<port> bash eval/rf0006/qr2-ab/run-ab.sh",
+   "evidence_path": "docs/evidence/RF0006/probe-ab-r462.md",
+   "negative_control": "夹具分辨率两侧：低档 1.5B 件在同族判别位夹具上假跳 13–14/14（判红，历史读数）vs 现役 3B 0/14（判绿）⇒ 夹具对「假跳」有牙；本条主判据仍取本窗四臂。天花板效应（现役已 0/14 ⇒ 无剩余分辨率）已披露。",
+   "covers": [
+    "eval/rf0006/qr2-ab/run-ab.sh",
+    "eval/rf0006/qr2-ab/README.md",
+    "eval/rover/r462/bench_r462_w.py",
+    "eval/rover/r462/corpus-r462-w.json"
+   ],
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "99be4d0964e7",
+    "instrument": "eval/rf0006/qr2-ab/run-ab.sh",
+    "instrument_sha12": "502a2975fca8",
+    "binding": "audit-pin",
+    "audited_by_round": "R609"
+   },
+   "covers_extra": "非产品面：净 src/ 改动 0 ⇒ 无单测/AOT 等级主张；八件读数含「同件换运行时」配对臂（主线 vs fork）。"
   }
  ],
  "aot_check_policy": "release_tag_only",
