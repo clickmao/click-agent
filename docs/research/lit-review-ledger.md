@@ -326,3 +326,21 @@ R607 = 采信 1（arXiv:2609.20804v1 组件级消融口径等）⇒ **本 R608 =
 **反空转计数**：R615 新增采信 **0**（上一段 R615 首段的 2 条采信发生在同一轮内、已登记）⇒ 连续 0 采信**第 1 轮**（未达「连续 3 轮 ⇒ 降频每 3 轮一次」门槛，阈值不动）。
 **口径修正（append-only，不改上文）**：上文 §13 段落头写「单变量 = `AGENTFRAMEWORK_R1_ACTION_CANDIDATES`」，**实际定稿的单变量 = 提示尾块轴 `AGENTFRAMEWORK_R1_ACTION_PROMPT`**（新块 vs `legacy` 旧块逐位）；动作候选轴两臂同开（遥测器具，非被测变量）。差异原因：本轮被测目标是「**措辞**能否抬升键到达率」，而轴关动作候选会同时关掉抽取面 ⇒ 会把两种改动混在一个自由度里。
 **代码证据（对照本仓现状，file:line 现盘）**：`src/agent/r1/R1Transcript.cs:75`（到达面落字段，`Present` 驱动）· `:77`（`declared>0` 才落三计数）· `src/agent/r1/R1Pipeline.cs:165`（唯一抽取消费点）· `src/agent/contract/StructuredPrompt.cs:615`（轴判定键）/`:618`（生效前缀）· 轴关逐位锚 = `a9792fdbe5b22f394a3149ca1bf3c1ba70927c1e537adabf36bbaed23f9dbc4e`（= R610–R614 冻结 pin，与 `eval/capability/baselines.json#F_env.prefix.sha256` 同值）。
+
+## 15. R616 外部方案采编（2026-09-21；用户令「按需采纳 zcode 的方案和进行你的下轮计划…只要不偏离主线」；采集源 = GitHub 只读源码，非 arXiv）
+
+采编口径：`github.com/zai-org/ZCode` 只读源码（GitHub API 取树 + `raw` 逐件，**46 件**快照；`git clone --depth 1` 300s 超时 ⇒ 改 API+raw）。**未 clone 全库 / 未编译其 TS / 未跑其测试 ⇒ 全部为机制假设**，不作实测结论引用。逐条机制取证与 file:line 逐字：`docs/external-reference/ZCODE-AGENT-HARNESS.md`（96 行）。
+
+| 日期 | 出处（含版本/取件） | 逐字出处 | 机制假设 | 改哪一格 KPI（方向） | 单变量轴 + 判据（阈值/可证伪点） | 状态 |
+|---|---|---|---|---|---|---|
+| 2026-09-21 | `zai-org/ZCode` · `scripts/architecture/architecture-check.mjs` + `.architecture-baseline.json` | `process.exit(result.newViolations.length > 0 ? 1 : 0)`；子命令含 `baseline:update`（非 CI 自动路径）；`rule-catalog.md` 含 `disable-count` | 违例基线 + **只对新增报红** + 例外带过期 + 抑制计数 | ② 执行面（闸的可操作性；**不直接产增益**） | 轴 = 基线机制；判据 = ①无基线 ⇒ 旧行为逐字节不变 ②在册 ⇒ 降 `BASELINED` 且 rc 不受影响 ③过期 ⇒ 红 ④`entries>max` ⇒ 红 ⑤同一基线跨轮 0 吸收 | **采信（R616 已实施 + 真机验证）**；代码证据 `tools/roundcheck/roundcheck.py`（R10/R11/R12 + `baseline` 子命令）· `tools/roundcheck/baseline.json` |
+| 2026-09-21 | 同上 · `context/sections/cli-prefix.ts`（125 行）· `context/dynamic-sections.ts` · `context/builder.ts` | `{name:"CLI Prefix", source:"cli_prefix", injectionTarget:"system", cacheHint:"stable", chars, tokens: estimateTokens(content), content, preview}` | 段级**声明契约**（`source`/`injectionTarget`/`cacheHint`）+ 默认按易变处理 + 前缀白名单 | ⑤ tokens / ⑥ 质量（**命中率不破前提下的插入安全落点** = 用户焦点令） | 轴 = 段声明面（只声明 + 打点，不重排）；判据 = 前缀 sha 不变 ∧ 命中率不降 ∧ 段级账目可与 `PrefixChars` 对账 ∧ 负控（改一段 ⇒ 账目同步变） | **未实施（队列 C1）**：需 `src/` ⇒ 先与 R615 落定解耦 |
+| 2026-09-21 | 同上 · `runtime/methods/usage-observability.ts`（426 行） | `contributors` 逐类带 `kind: context_section\|tool_schema\|skill\|message_role` + `chars/tokens/tokenMethod/confidence/tokenizer` | **段级用量账目**（tokens·chars·tokenMethod·confidence 四列） | ⑤ tokens（可解释性；**不降 token 本身**） | 轴 = 归因面打点；判据 = 四列齐 ∧ 与发往模型的 prompt 对账 ∧ 负控（改一区块 ⇒ 只该区块读数变） | **未实施（队列 C2）** |
+| 2026-09-21 | 同上 · `compact/policy.ts` · `compact/microcompact.ts` · `system-reminder/source.ts` | 压缩策略 / 微压缩 / 系统提醒注入源 | 压缩进主链 + 提醒注入时机 | ⑤ tokens（↓） | 轴 = 压缩开关；判据 = tokens ↓ ∧ 配对质量中位 ≥ −2 ∧ 恒前缀不破 | **未实施（队列 C3）** |
+| 2026-09-21 | 同上 · `runtime/methods/runtime-command-queue.ts` | 队列丢弃字段 `overflow / backpressure / capacity / maxQueue / reason` | 工具回执面**背压与丢弃可见化**；大回执落盘只回摘要 + 引用 | ⑤ tokens（↓）/ ② 执行面 | 轴 = 大回执落盘阈值；判据 = tokens ↓ ∧ 引用可回读 ∧ 丢弃/背压计数可见 | **未实施（队列 C5）** |
+| 2026-09-21 | 同上 · `subagent/runner.ts`（2,142 行）+ 根 `AGENTS.md`（107 行） | trace 层级（trace > session > turn > message > toolCall）+「无法关联即视为不可观测」 | traceId 树（治「`transcript.calls` 低估重试」） | ④ 轮数 / 口径修正 | 轴 = trace 面；判据 = 重试归属可机检 ∧ 与中继 dump 口径对账 | **未实施（队列 C6）** |
+| 2026-09-21 | 同上 · `architecture:check --changed` | `changedFilesFromGit(cwd)` + 树级结构规则族（max-file-lines / domain-io / cycle） | 差量扫描 + 树级规则 | ② 执行面 | — | **不采纳（本轮）**：本器判据本就按轮作用域 ⇒ **不假装有牙**（缺面已如实标注） |
+
+**反空转计数**：R616 = 采信 **1**（已实施 + 真机验证）/ 未实施队列 **5** / 不采纳 **1** / 证伪 0。
+**对照本仓现状（代码证据）**：`grep -rn 'cacheHint\|injectionTarget' src/ \| wc -l` = **0** ⇒ 本仓**无段声明面**（C1 是真空缺）；旧 `R8` 判据含魔法常量 `"14/14"`（R616 已改**结构判定**，避免「闸真不是 14/14」时逼出假读数）。
+**红线**：本采编为**器具面 / 采编面**，不改 RF0004 三能力路径、不改铁律 10 外部真值对照、不改铁律 14 器件路径；零 `src/` · 零夹具 · 不占主线轮次。

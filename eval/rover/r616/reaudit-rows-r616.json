@@ -1,0 +1,27 @@
+{
+ "schema": "r2e-reaudit/v1",
+ "round": "R616",
+ "date": "2026-09-21",
+ "instrument": "tools/roundcheck/roundcheck.py",
+ "instrument_sha12_new": "e0cb84aa86ae",
+ "selftest_cmd": "python3 tools/roundcheck/roundcheck.py --selftest",
+ "neutrality_evidence": "旧 10 条判据行为逐行未变（R580/R582/R587 三点重跑 diff 仅多出 R10/R11/R12 三行 PASS） + --selftest 全绿；对照轮作用域分支未触碰",
+ "rows": [
+  {
+   "id": "r582.round-validity-auditor",
+   "declared_before": "b348eff8dd63",
+   "declared_after": "e0cb84aa86ae",
+   "audited_by_round_before": "R587",
+   "audited_by_round_after": "R616",
+   "artifact_sha12": "c5d82feffad0"
+  },
+  {
+   "id": "r587.roundcheck-contrast-scope",
+   "declared_before": "b348eff8dd63",
+   "declared_after": "e0cb84aa86ae",
+   "audited_by_round_before": "R587",
+   "audited_by_round_after": "R616",
+   "artifact_sha12": "cab29c315a06"
+  }
+ ]
+}

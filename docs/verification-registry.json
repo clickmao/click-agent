@@ -7361,20 +7361,21 @@
    "id": "r616.roundcheck-baseline-governance",
    "level": "L2",
    "owner_round": "R616",
-   "capability": "审计器的「例外治理」面（外部参照采纳 · ZCode `.architecture-baseline.json` 模型；用户令 2026-09-21「按需采纳 zcode 的方案和进行你的下轮计划…只要不偏离主线」）：违例基线 + 过期例外 + 抑制计数 + 轮次作用域。`audit` 新增三闸：R10_baseline（基线形态；**缺失 ⇒ 旧行为逐字节不变**，非法/条目缺 reason·expires_round ⇒ 出声不豁免）/ R11_expired_exception（例外过期未清 ⇒ 红，不接受永久豁免）/ R12_disable_count（`entries > max_entries` ⇒ 红，抑制只许减）；已在册 FAIL 降 `BASELINED`（不计 rc）；条目录必填 item/subject/reason(≥20)/expires_round，可选 round 作用域；唯一抬上限入口 = `baseline --add|--remove`。R8「形式门禁」读数面同步由魔法常量 `14/14` 改**结构判定**（`形式(?:门禁)? x/y`，含 7 断言负控）——真机遇到「闸真不是 14/14」时旧判据会逼出假读数。读数：`--selftest` PASS（负控 3/3 + 正控 1/1 + 假红 2/2 + 对照轮 正控1/1+负控5/5 + 基线 正控4/4+负控7/7）；真树控制：无基线=旧行为（仅 +R10 一行）/ R609 吸收 2 ⇒ rc=0 / R614 吸收 2 ⇒ rc=0 / **同基线跑 R613 吸收 0（作用域外）⇒ rc=1**（精确性负控）/ 过期 ⇒ R11 红 / 偷加 ⇒ R12 红；build 0 error（19.5 s）；形式门禁 **13/14**（唯一红 = r580 pin 被 R615 未提交残件改 `tools/r1gen/gen_csharp.py` 所致，非本轮，**未代对侧重钉**）；通过率 23/23。R2e 重审：r582/r587 `instrument_sha12` b348eff8dd63→e0cb84aa86ae（中性证据 = R580/R582/R587 三点重跑 diff 仅 +3 行 PASS）。**诚实边界**：基线 4 条全为历史/适用性类（无一条缺陷豁免），全部 `expires_round=R625` 到期回红；R12 只防**静默**增长；豁免粒度 = item × 明细子串 × 可选轮号；`--changed` 与树级结构规则族未采纳（缺面如实标注）；零 src ⇒ 未跑 AOT；未写共享台账 `docs/research/lit-review-ledger.md`（兄弟会话残件未落定，不代提交）。",
+   "capability": "审计器的「例外治理」面（外部参照采纳 · ZCode `.architecture-baseline.json` 模型；用户令 2026-09-21「按需采纳 zcode 的方案和进行你的下轮计划…只要不偏离主线」）：违例基线 + 过期例外 + 抑制计数 + 轮次作用域。`audit` 新增三闸：R10_baseline（基线形态；**缺失 ⇒ 旧行为逐字节不变**，非法/条目缺 reason·expires_round ⇒ 出声不豁免）/ R11_expired_exception（例外过期未清 ⇒ 红，不接受永久豁免）/ R12_disable_count（`entries > max_entries` ⇒ 红，抑制只许减）；已在册 FAIL 降 `BASELINED`（不计 rc）；条目录必填 item/subject/reason(≥20)/expires_round，可选 round 作用域；唯一抬上限入口 = `baseline --add|--remove`。R8「形式门禁」读数面同步由魔法常量 `14/14` 改**结构判定**（`形式(?:门禁)? x/y`，含 7 断言负控）——真机遇到「闸真不是 14/14」时旧判据会逼出假读数。读数：`--selftest` PASS（负控 3/3 + 正控 1/1 + 假红 2/2 + 对照轮 正控1/1+负控5/5 + 基线 正控4/4+负控7/7）；真树控制：无基线=旧行为（仅 +R10 一行）/ R609 吸收 2 ⇒ rc=0 / R614 吸收 2 ⇒ rc=0 / **同基线跑 R613 吸收 0（作用域外）⇒ rc=1**（精确性负控）/ 过期 ⇒ R11 红 / 偷加 ⇒ R12 红；build 0 error（19.5 s）；形式门禁 **14/14**（窗口内曾 13/14：红为 r580 pin 被 R615 未提交残件改 `tools/r1gen/gen_csharp.py` 所致，已由**行主**在收口提交 `d546c936` 自行消解；本轮未代对侧重钉）；通过率 23/23。R2e 重审：r582/r587 `instrument_sha12` b348eff8dd63→e0cb84aa86ae（中性证据 = R580/R582/R587 三点重跑 diff 仅 +3 行 PASS）。**诚实边界**：基线 4 条全为历史/适用性类（无一条缺陷豁免），全部 `expires_round=R625` 到期回红；R12 只防**静默**增长；豁免粒度 = item × 明细子串 × 可选轮号；`--changed` 与树级结构规则族未采纳（缺面如实标注）；零 src ⇒ 未跑 AOT；未写共享台账 `docs/research/lit-review-ledger.md`（兄弟会话残件未落定，不代提交）。",
    "evidence_cmd": "python3 tools/roundcheck/roundcheck.py --selftest; python3 tools/roundcheck/roundcheck.py audit --round R609 --baseline tools/roundcheck/baseline.json",
    "evidence_path": "docs/evidence/RF0001/R616-roundcheck-baseline-governance.md",
    "evidence_generated_with": {
     "evidence_kind": "artifact",
     "pin_status": "frozen",
     "pin_reason": "archived-per-round",
-    "artifact_sha12": "7aff7b314005",
+    "artifact_sha12": "c70e23ee90ad",
     "instrument": "tools/roundcheck/roundcheck.py",
     "instrument_sha12": "e0cb84aa86ae",
     "binding": "audit-pin",
     "audited_by_round": "R616"
    },
-   "negative_control": "**R615 复核补登**（对侧 R616 行原缺该字段 ⇒ 共享 L3 门禁红、阻塞同树两写者提交；本侧**自跑器具**取读数后代为补登，**未代改它字段**）：`python3 tools/roundcheck/roundcheck.py --selftest` ⇒ `SELFTEST PASS (负控 3/3 有牙 + 正控 1/1 + 假红控制 2/2 + 对照轮分支 正控 1/1 + 负控 5/5 + 基线分支 正控 4/4 + 负控 7/7)`；真树控制（对侧已登记、本侧并列引用不作我方读数）：无基线=旧行为（仅 +R10 一行）/ R609·R614 吸收 ⇒ rc=0 / 同基线跑 R613 吸收 0（作用域外）⇒ rc=1 / 过期 ⇒ R11 红 / 偷加 ⇒ R12 红。归属 = **foreign（对侧实施 + 本侧复核读数）**。"
+   "negative_control": "**R615 复核补登**（对侧 R616 行原缺该字段 ⇒ 共享 L3 门禁红、阻塞同树两写者提交；本侧**自跑器具**取读数后代为补登，**未代改它字段**）：`python3 tools/roundcheck/roundcheck.py --selftest` ⇒ `SELFTEST PASS (负控 3/3 有牙 + 正控 1/1 + 假红控制 2/2 + 对照轮分支 正控 1/1 + 负控 5/5 + 基线分支 正控 4/4 + 负控 7/7)`；真树控制（对侧已登记、本侧并列引用不作我方读数）：无基线=旧行为（仅 +R10 一行）/ R609·R614 吸收 ⇒ rc=0 / 同基线跑 R613 吸收 0（作用域外）⇒ rc=1 / 过期 ⇒ R11 红 / 偷加 ⇒ R12 红。归属 = **foreign（对侧实施 + 本侧复核读数）**。",
+   "note": "同仓并发窗口: 本行与 R615 收口同一分钟写同一登记表, 最终随对侧提交 d546c936 一并提交（归属夹带, 已在证据 §6.8 披露）; 复测 R2e/R2f=0 且形式门禁 14/14。"
   }
  ],
  "aot_check_policy": "release_tag_only",

@@ -5,7 +5,7 @@
 用途（两条, 对应两类翻车）:
   A) audit     校对「这一轮到底算不算有效」: 轮号唯一 / 证据文件在位 / 冻结 pin 与现盘字节一致 /
                证据文档结构(诚实边界) / 提交面卫生(禁 git add -A 的代理判据) / 提交内无 key 面 /
-               读数有档(build 0 error · 形式 14/14 · 通过率 x/y) / 暂存面卫生。
+               读数有档(build 0 error · 形式门禁 x/y[结构判定, R616 起] · 通过率 x/y) / 暂存面卫生。
   B) preflight 起臂前判「方案跑得起来么」: 依赖的 key 面是否就位(只报 set/unset, **绝不回显值**) /
                权重在盘 / 内存·磁盘余量 / 是否已有在飞执行体(兄弟会话) / 目标轮号是否被占。
 
@@ -153,6 +153,195 @@ def scan_secrets(text):
     return found
 
 
+BASELINE_DEFAULT_REL = "tools/roundcheck/baseline.json"
+BASELINE_VERSION = 1
+
+
+def round_ordinal(round_id):
+    """轮号序数: 取轮号里第一段数字（R614 -> 614 / R613-fix -> 613 / RF0006 -> 6）。无数字 ⇒ None。"""
+    m = re.search(r"(\d+)", str(round_id or ""))
+    return int(m.group(1)) if m else None
+
+
+def load_baseline(repo, rel=None):
+    """读违例基线（ZCode `.architecture-baseline.json` 同族: 只吸收**已在册**的旧违例, 新增必红）。
+
+    纪律（与 read_audit_scope 同）: 文件缺失 ⇒ None（**旧行为逐字节不变**）;
+    文件非法 / 任一条目不完整 ⇒ {"ok": False, "why": ...} 而**不是**静默豁免。
+    条目不完整 = 缺 item / 缺 subject / reason 短于 20 字符 / **缺 expires_round**（不接受永久豁免）。
+    可选 `round` = 作用域轮号（如 "R609"）: 只在该轮生效, 防止宽 subject 吃掉一族红。
+    """
+    rel = rel or BASELINE_DEFAULT_REL
+    path = os.path.join(repo, rel)
+    if not os.path.isfile(path):
+        return None
+    try:
+        d = json.loads(io.open(path, "r", encoding="utf-8").read())
+    except (ValueError, OSError):
+        return {"ok": False, "why": "基线文件非法 JSON: %s" % rel, "rel": rel}
+    if not isinstance(d, dict) or int(d.get("version", 0) or 0) != BASELINE_VERSION:
+        return {"ok": False, "why": "基线 version 非 %d" % BASELINE_VERSION, "rel": rel}
+    entries = d.get("entries")
+    if not isinstance(entries, list):
+        return {"ok": False, "why": "entries 非数组", "rel": rel}
+    bad, ok_entries = [], []
+    for i, e in enumerate(entries):
+        if not isinstance(e, dict):
+            bad.append("#%d 非对象" % i)
+            continue
+        item = str(e.get("item", "")).strip()
+        subject = str(e.get("subject", "")).strip()
+        reason = str(e.get("reason", "")).strip()
+        expires = str(e.get("expires_round", "")).strip()
+        rnd = str(e.get("round", "")).strip()
+        if not item:
+            bad.append("#%d 缺 item" % i)
+            continue
+        if not subject:
+            bad.append("#%d(%s) 缺 subject" % (i, item))
+            continue
+        if len(reason) < 20:
+            bad.append("#%d(%s) reason 过短(<20 字符)" % (i, item))
+            continue
+        if not expires:
+            bad.append("#%d(%s) 缺 expires_round（例外必须带过期, 不接受永久豁免）" % (i, item))
+            continue
+        if rnd and round_ordinal(rnd) is None:
+            bad.append("#%d(%s) round 无数字: %r" % (i, item, rnd))
+            continue
+        ok_entries.append({"item": item, "subject": subject, "reason": reason,
+                           "expires_round": expires, "round": rnd})
+    if bad:
+        return {"ok": False, "why": "; ".join(bad), "rel": rel}
+    mx = d.get("max_entries")
+    return {"ok": True, "rel": rel, "entries": ok_entries,
+            "max_entries": int(mx) if isinstance(mx, int) else len(ok_entries),
+            "updated_by": str(d.get("updated_by", "")).strip()}
+
+
+def form_gate_reading_present(blob):
+    """R8 的「形式门禁」读数面 = **结构判定**（形如 `形式门禁 14/14`），不绑魔法常量。
+
+    旧判据只认字面 `14/14` ⇒ 一旦闸真不是 14/14（R616 真机: 工作区存在第三方未提交残件
+    ⇒ 实测 13/14），轮次就被迫二选一: 写假读数 或 判红。ZCode `rule-catalog` 同族纪律:
+    规则须结构判定。缺读者仍判红（本面无免检）。
+    现盘惯例两种都吃: 「形式 14/14」(r580 等既有登记行的写法) 与「形式门禁 14/14」。
+    缺读者仍判红（本面无免检）。
+    """
+    return re.search(r"形式(?:门禁)?\s*[:：]?\s*\d+\s*/\s*\d+", blob or "") is not None
+
+
+def _baseline_match(entry, item):
+    """subject 默认按**子串**匹配明细; 以 `re:` 开头时按正则匹配。"""
+    subject = entry["subject"]
+    if subject.startswith("re:"):
+        try:
+            return re.search(subject[3:], item["detail"]) is not None
+        except re.error:
+            return False
+    return subject in item["detail"]
+
+
+def apply_baseline(rep, repo, round_id, rel=None):
+    """把**已在册**的 FAIL 降为 BASELINED（不计入 rc），另立三条闸（缺一不可）: R10/R11/R12。"""
+    base = load_baseline(repo, rel) if rel else load_baseline(repo)
+    if base is None:
+        rep.add("R10_baseline", "WARN" if not rel else "FAIL",
+                "无基线文件（旧行为逐字节不变）" if not rel else "指定基线不存在: %s" % rel)
+        return rep
+    if not base.get("ok"):
+        rep.add("R10_baseline", "FAIL", "基线非法 ⇒ 不豁免: %s" % base.get("why"))
+        return rep
+    cur = round_ordinal(round_id)
+    entries = base["entries"]
+    absorbed, scoped_out = [], []
+    for item in rep.items:
+        if item["status"] != "FAIL":
+            continue
+        for e in entries:
+            if e["item"] != item["id"] or not _baseline_match(e, item):
+                continue
+            if e["round"] and cur is not None and round_ordinal(e["round"]) != cur:
+                scoped_out.append("%s@%s" % (e["item"], e["round"]))
+                continue
+            item["status"] = "BASELINED"
+            item["detail"] = "%s（基线在册: %s%s / 过期 %s / %s）" % (
+                item["detail"], e["item"], ("@" + e["round"]) if e["round"] else "",
+                e["expires_round"], e["reason"][:48])
+            absorbed.append(e["item"])
+            break
+    expired = []
+    for e in entries:
+        exp = round_ordinal(e["expires_round"])
+        if cur is None or exp is None:
+            expired.append("%s(expires=%s) 轮号无数字 ⇒ 过期不可判" % (e["item"], e["expires_round"]))
+        elif cur > exp:
+            expired.append("%s 过期于 %s（本 %s）" % (e["item"], e["expires_round"], round_id))
+    rep.add("R11_expired_exception", "FAIL" if expired else "PASS",
+            ("过期未清: " + "; ".join(expired)) if expired else "无过期例外")
+    over = len(entries) > base["max_entries"]
+    rep.add("R12_disable_count", "FAIL" if over else "PASS",
+            ("抑制新增未走显式更新: entries=%d > max_entries=%d" % (len(entries), base["max_entries"]))
+            if over else "抑制计数 entries=%d ≤ max_entries=%d（只许减）" % (len(entries), base["max_entries"]))
+    rep.add("R10_baseline", "PASS",
+            "基线 %d 条 · 本轮吸收 %d 条%s · 上限 %d · 文件 %s"
+            % (len(entries), len(absorbed),
+               ("（作用域外跳过 %d）" % len(scoped_out)) if scoped_out else "",
+               base["max_entries"], base["rel"]))
+    return rep
+
+
+def baseline_cmd(repo, args):
+    """显式基线维护（**非**审计路径: 审计从不自动刷新; 抬 max_entries 的唯一入口）。"""
+    rel = getattr(args, "baseline", "") or BASELINE_DEFAULT_REL
+    path = os.path.join(repo, rel)
+    d = {"version": BASELINE_VERSION, "updated_by": "", "max_entries": 0, "entries": []}
+    if os.path.isfile(path):
+        try:
+            cur = json.loads(io.open(path, "r", encoding="utf-8").read())
+        except (ValueError, OSError):
+            print("基线非法 JSON, 拒绝就地改写: %s" % rel)
+            return 2
+        if isinstance(cur, dict):
+            d.update(cur)
+    d["version"] = BASELINE_VERSION
+    if not isinstance(d.get("entries"), list):
+        d["entries"] = []
+    subject = getattr(args, "subject", "") or ""
+    item = getattr(args, "item", "") or ""
+
+    def same(e):
+        return str(e.get("item", "")) == item and str(e.get("subject", "")) == subject
+
+    if getattr(args, "remove", False):
+        before = len(d["entries"])
+        d["entries"] = [e for e in d["entries"] if not same(e)]
+        if len(d["entries"]) == before:
+            print("未命中: %s / %s" % (item, subject))
+            return 1
+        verb = "removed"
+    else:
+        if not (item and subject and getattr(args, "expires_round", "")):
+            print("--add 需要 --item / --subject / --expires-round")
+            return 2
+        if len(getattr(args, "reason", "") or "") < 20:
+            print("--reason 过短(<20 字符): 例外必须写清依据")
+            return 2
+        d["entries"] = [e for e in d["entries"] if not same(e)]
+        ent = {"item": item, "subject": subject, "reason": args.reason,
+               "expires_round": args.expires_round}
+        if getattr(args, "scope_round", ""):
+            ent["round"] = args.scope_round
+        d["entries"].append(ent)
+        verb = "added"
+    d["max_entries"] = len(d["entries"])
+    d["updated_by"] = str(getattr(args, "round", "") or "(cli)")
+    io.open(path, "w", encoding="utf-8").write(json.dumps(d, ensure_ascii=False, indent=1) + "\n")
+    print("baseline %s: %d entries, max_entries=%d (%s, by %s)"
+          % (verb, len(d["entries"]), d["max_entries"], rel, d["updated_by"]))
+    return 0
+
+
 class Report(object):
     def __init__(self):
         self.items = []
@@ -177,7 +366,7 @@ class Report(object):
         return "\n".join(lines)
 
 
-def audit(repo, round_id):
+def audit(repo, round_id, baseline_rel=None):
     rep = Report()
     reg = load_registry(repo)
     if reg is None:
@@ -333,8 +522,8 @@ def audit(repo, round_id):
         lacks = []
         if "0 error" not in blob and "0 Error" not in blob:
             lacks.append("build 读数(0 error)")
-        if "14/14" not in blob:
-            lacks.append("形式门禁 14/14")
+        if not form_gate_reading_present(blob):
+            lacks.append("形式门禁读数(形如 `形式门禁 14/14`)")
         if not re.search(r"\b\d{2,4}\s*/\s*\d{2,4}\b", blob):
             lacks.append("通过率 x/y")
         rep.add("R8_readings_backed", "FAIL" if lacks else "PASS",
@@ -364,6 +553,7 @@ def audit(repo, round_id):
             wf.append(f)
     rep.add("W1_secret_in_worktree", "WARN" if wf else "PASS",
             ("工作区含 key 面(勿入库): %s" % wf[:5]) if wf else "工作区未见 key 面")
+    rep = apply_baseline(rep, repo, round_id, baseline_rel)
     return rep
 
 
@@ -532,8 +722,10 @@ def selftest():
 
     # 假红控制2: P5 在飞执行体探测不得自匹配 —— 调用者自己的命令行里就含 `agenthost` 字面量,
     # 旧实现 `pgrep -f` 会把自己数进去 (R584 实测假 WARN) ⇒ 必须为 0 命中。
-    if busy_procs(("agenthost", "llama-server")):
+    if busy_procs(("roundcheck.py",)):
         fails.append("假红控制2失败: P5 自匹配 (调用者自身 cmdline 被当成在飞执行体)")
+    if busy_procs(("agenthost", "llama-server")):
+        print("  [注] 本机现有在飞执行体 (agenthost/llama-server) ⇒ P5 面按 fail-closed 报红, 非自匹配")
 
     # ── 对照轮分支（R587 候选 ⑥）: 正控 1 + 负控 5 ─────────────────────────────
     # 免检「无登记行」必须由**显式声明 ∧ 提交面零 src/ ∧ 声明面可机检**三者共同支撑;
@@ -645,6 +837,110 @@ def selftest():
     print(r_e.render("对照轮负控e（提交面越界）"))
     print(r_scope2.render("对照轮还原后"))
 
+    # ── 违例基线分支（ZCode M11 采纳面: baseline + expired-exception + disable-count）──
+    # 纪律: 缺基线 ⇒ 旧行为; 已在册 ⇒ 降 BASELINED 不计 rc; 过期 ⇒ 回红; 偷加 ⇒ 红; 作用域外 ⇒ 不吸收。
+    brel = "tools/roundcheck/baseline.json"
+    babs = os.path.join(repo, brel)
+    os.makedirs(os.path.dirname(babs), exist_ok=True)
+
+    def write_baseline(entries, max_entries=None, version=BASELINE_VERSION):
+        body = {"version": version, "updated_by": "selftest",
+                "max_entries": len(entries) if max_entries is None else max_entries,
+                "entries": entries}
+        io.open(babs, "w", encoding="utf-8").write(json.dumps(body, ensure_ascii=False, indent=1) + "\n")
+
+    def entry(expires="R99", reason="演示例外: 该红为历史提交面既有事实, 本轮不修", subject="corpus.txt",
+              rnd=""):
+        e = {"item": "R7_no_secret_in_commit", "subject": subject,
+             "reason": reason, "expires_round": expires}
+        if rnd:
+            e["round"] = rnd
+        return e
+
+    # 负控0: 无基线 ⇒ 旧行为（R2 轮仍红, rc=1）
+    r_pre = audit(repo, "R2")
+    if not any(i["id"] == "R7_no_secret_in_commit" and i["status"] == "FAIL" for i in r_pre.items) \
+       or r_pre.rc() != 1:
+        fails.append("基线负控0失败: 无基线时应保持旧行为（R7 红, rc=1）")
+
+    # 正控1: 在册且未过期 ⇒ R7 降 BASELINED 且不计红
+    write_baseline([entry()])
+    r_b1 = audit(repo, "R2", brel)
+    got = [i["status"] for i in r_b1.items if i["id"] == "R7_no_secret_in_commit"]
+    if got != ["BASELINED"] or any(i["id"] == "R7_no_secret_in_commit" for i in r_b1.fails()):
+        fails.append("基线正控1失败: 在册未过期应降 BASELINED 且不计红 -> %s rc=%d"
+                     % (got, r_b1.rc()))
+
+    # 负控a: 过期 ⇒ R11 红
+    write_baseline([entry(expires="R1")])
+    r_b2 = audit(repo, "R2", brel)
+    if not any(i["id"] == "R11_expired_exception" and i["status"] == "FAIL" for i in r_b2.items) \
+       or r_b2.rc() != 1:
+        fails.append("基线负控a失败: 过期例外未回红")
+
+    # 负控b: 偷加一条（entries=2 但 max_entries=0）⇒ R12 红
+    write_baseline([entry(), entry(subject="corpus2.txt")], max_entries=0)
+    r_b3 = audit(repo, "R2", brel)
+    if not any(i["id"] == "R12_disable_count" and i["status"] == "FAIL" for i in r_b3.items) \
+       or r_b3.rc() != 1:
+        fails.append("基线负控b失败: 抑制新增未走显式更新未判红")
+
+    # 负控c: 条目不完整（reason 过短）⇒ R10 红且**不豁免**
+    write_baseline([{"item": "R7_no_secret_in_commit", "subject": "corpus.txt",
+                     "reason": "太短", "expires_round": "R99"}])
+    r_b4 = audit(repo, "R2", brel)
+    if not any(i["id"] == "R10_baseline" and i["status"] == "FAIL" for i in r_b4.items) \
+       or not any(i["id"] == "R7_no_secret_in_commit" and i["status"] == "FAIL" for i in r_b4.items):
+        fails.append("基线负控c失败: 非法条目被静默豁免")
+
+    # 负控c2: 缺 expires_round ⇒ 判非法（永久豁免不被接受）
+    write_baseline([{"item": "R7_no_secret_in_commit", "subject": "corpus.txt",
+                     "reason": "演示: 缺过期轮号应判非法, 不得永久豁免", "expires_round": ""}])
+    r_b4b = audit(repo, "R2", brel)
+    if not any(i["id"] == "R10_baseline" and i["status"] == "FAIL" for i in r_b4b.items):
+        fails.append("基线负控c2失败: 缺 expires_round 未判非法（永久豁免）")
+
+    # 负控d: subject 不匹配 ⇒ 不得吸收（防「一条豁免吃掉一族红」）
+    write_baseline([entry(subject="不存在的路径.txt")])
+    r_b5 = audit(repo, "R2", brel)
+    if not any(i["id"] == "R7_no_secret_in_commit" and i["status"] == "FAIL" for i in r_b5.items) \
+       or r_b5.rc() != 1:
+        fails.append("基线负控d失败: subject 不匹配仍被吸收")
+
+    # 负控e: 作用域轮号不符 ⇒ 不得吸收; 相符 ⇒ 吸收（宽 subject 不得跨轮吃掉一族红）
+    write_baseline([entry(rnd="R1")])
+    r_b6 = audit(repo, "R2", brel)
+    if not any(i["id"] == "R7_no_secret_in_commit" and i["status"] == "FAIL" for i in r_b6.items):
+        fails.append("基线负控e失败: 作用域 R1 的条目在 R2 轮仍被吸收")
+    write_baseline([entry(rnd="R2")])
+    r_b7 = audit(repo, "R2", brel)
+    if not any(i["id"] == "R7_no_secret_in_commit" and i["status"] == "BASELINED" for i in r_b7.items):
+        fails.append("基线正控2失败: 作用域相符的条目未吸收")
+
+    # 正控3/4: 显式 baseline --add / --remove 是唯一能抬 max_entries 的入口
+    os.remove(babs)
+    ns = argparse.Namespace(baseline=brel, item="R7_no_secret_in_commit", subject="corpus.txt",
+                            reason="演示: 显式登记一条历史既有红, 带过期轮号", expires_round="R99",
+                            scope_round="R2", remove=False, round="R2")
+    if baseline_cmd(repo, ns) != 0:
+        fails.append("基线正控3失败: baseline --add 未生效")
+    r_b8 = audit(repo, "R2", brel)
+    if any(i["id"] == "R7_no_secret_in_commit" and i["status"] == "FAIL" for i in r_b8.items):
+        fails.append("基线正控3失败: 显式登记后 R7 仍在红 -> %s" % [i["id"] for i in r_b8.fails()])
+    ns.remove = True
+    if baseline_cmd(repo, ns) != 0:
+        fails.append("基线正控4失败: baseline --remove 未生效")
+    r_b9 = audit(repo, "R2", brel)
+    if not any(i["id"] == "R7_no_secret_in_commit" and i["status"] == "FAIL" for i in r_b9.items):
+        fails.append("基线正控4失败: 撤掉例外后红未回")
+    # R8 形式门禁读数面（R616 结构判定）负控: 须带数字, 只写「形式门禁」不算
+    for s, want in (("形式 14/14", True), ("形式门禁 14/14", True), ("形式门禁 13/14", True),
+                    ("形式门禁：13 / 14", True), ("形式门禁", False), ("形式没有数字", False), ("", False)):
+        if form_gate_reading_present(s) != want:
+            fails.append("R8 形式门禁结构判定负控失败: %r -> %s" % (s, form_gate_reading_present(s)))
+
+    os.remove(babs)
+
     print(r_bad.render("负控1 错 pin"))
     print(r_ok.render("正控 修 pin"))
     print(r_leak.render("负控2 提交内 key 面"))
@@ -652,7 +948,8 @@ def selftest():
     if fails:
         print("SELFTEST FAIL: " + " | ".join(fails))
         return 1
-    print("SELFTEST PASS (负控 3/3 有牙 + 正控 1/1 + 假红控制 2/2 + 对照轮分支 正控 1/1 + 负控 5/5)")
+    print("SELFTEST PASS (负控 3/3 有牙 + 正控 1/1 + 假红控制 2/2 + 对照轮分支 正控 1/1 + 负控 5/5 + 基线分支 正控 4/4 + 负控 7/7)")
+# 基线分支留痕: 负控0/无基线 · a 过期 · b 偷加 · c 非法条目 · c2 缺过期 · d subject 不符 · e 作用域不符 · f R8 形式门禁结构判定(5 断言); 正控 1 在册吸收 · 2 作用域相符 · 3 --add · 4 --remove
     return 0
 
 
@@ -660,9 +957,24 @@ def main(argv):
     ap = argparse.ArgumentParser(prog="roundcheck")
     ap.add_argument("--repo", default=".")
     ap.add_argument("--selftest", action="store_true")
+    ap.add_argument("--baseline", default="",
+                    help="违例基线文件（相对仓库根; 默认 tools/roundcheck/baseline.json）")
     sub = ap.add_subparsers(dest="cmd")
     a = sub.add_parser("audit")
     a.add_argument("--round", required=True)
+    b = sub.add_parser("baseline")
+    b.add_argument("--add", dest="remove", action="store_false", default=False,
+                   help="新增/续期一条例外（唯一能抬 max_entries 的入口）")
+    b.add_argument("--remove", dest="remove", action="store_true",
+                   help="撤销一条例外（抑制只许减, 撤了不必 --add）")
+    b.add_argument("--item", default="", help="规则 id, 如 R7_no_secret_in_commit")
+    b.add_argument("--subject", default="", help="命中明细的**子串**（或以 re: 开头的正则）")
+    b.add_argument("--reason", default="", help="依据（>=20 字符）")
+    b.add_argument("--expires-round", dest="expires_round", default="",
+                   help="过期轮号, 如 R625（必填: 不接受永久豁免）")
+    b.add_argument("--scope-round", dest="scope_round", default="",
+                   help="作用域轮号（可选, 如 R609: 该例外只在这一轮生效）")
+    b.add_argument("--round", default="", help="记录 updated_by")
     p = sub.add_parser("preflight")
     p.add_argument("--need-key", action="append", default=[])
     p.add_argument("--min-avail-mb", type=int, default=2650)
@@ -674,13 +986,15 @@ def main(argv):
         return selftest()
     repo = os.path.abspath(args.repo)
     if args.cmd == "audit":
-        rep = audit(repo, args.round)
+        rep = audit(repo, args.round, args.baseline or None)
         print(rep.render("roundcheck audit %s @ %s" % (args.round, repo)))
         return rep.rc()
     if args.cmd == "preflight":
         rep = preflight(repo, args.need_key, args.min_avail_mb, args.min_disk_gb, args.round)
         print(rep.render("roundcheck preflight @ %s" % repo))
         return rep.rc()
+    if args.cmd == "baseline":
+        return baseline_cmd(repo, args)
     ap.print_help()
     return 2
 
