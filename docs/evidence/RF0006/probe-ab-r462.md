@@ -80,3 +80,40 @@
 - **运行时未复测主线拒载**：`PQ2_0` 在主线 `b11065` 上拒载系厂商逐字（§3.3 F.1），本窗未复测。
 - **旧打包件读数归因**：旧 `Q2_0_g64` 在 fork 上可载但 0.2–0.3 t/s，属「加载不留警告但退化」，与本轮 `PQ2_0` 读数不可混用。
 
+
+## 7. 产品档落地判定（fork 运行时 / 8B 权重 / 4B 权重）
+
+口径：`agenthost --llamacpp`（产品自身 CLI：真实 llama-server 子进程 + loopback HTTP + 模板闸），
+运行时 = 厂商 fork `~/.agentframework/bin/llama-prism-b10709-9a9394a/llama-server`（sha256 `e5c4211999de5b789b980626…`），
+权重 = `~/.agentframework/models/`（LFM 3B 与 `Ternary-Bonsai-8B-PQ2_0.gguf` / sha256 `1376f942aa90e60f7b570c1d…`）。
+
+| 面 | 命令（产品 CLI） | 真实读数 | 判定 |
+|---|---|---|---|
+| fork × LFM2.5-VL-3B · 模板闸 | `--llamacpp --verify-template --chat-text …` | `Verdict=gated_single_bos` · RenderedBosCount=1 · RenderedTokens=15 · rc=0 | **通过** |
+| fork × LFM2.5-VL-3B · chat 生成 | `--chat-text <判别位题> --reuse on --context 4608 --max-tokens 24` | Content=`P`（正确） · PromptGateRejections=0 · TokensEvaluated=46 · pp **17.19** / tg **10.27** t/s · rc=0 | **通过**（无空正文） |
+| fork × Ternary-Bonsai-8B-PQ2_0 · 模板闸 | 同模板闸命令 | `Verdict=gated_bos_count_0` · RenderedBosCount=**0** · RenderedHeadIds=[151644,872,198,…] · rc=**6** | **拒绝**（Qwen3 模板零 BOS） |
+| fork × Ternary-Bonsai-8B-PQ2_0 · 装载（产品档） | ctx 4608 / f32-KV / `-t 2` / `-np 1` | 峰值 RSS **3,139 MB** · MemAvailable 2,124→169 MB · 装载 ~65 s · 健康 ok | **边缘可用**（余量 ~169 MB） |
+| fork × Ternary-Bonsai-4B-PQ2_0 · 判别位 | 同夹具 28 例（§2） | acc **0.5357** · 假跳 **13/14** · 漏跳 0/14 | **不达标**（预注册 `acc 1.000 ∧ 假跳 0/14`） |
+
+结论三条：
+1. **fork 运行时可直接落地**：同件 1.80× 提速（§3），产品 chat 通路模板闸绿、答案正确、无空正文 ⇒ 已接为默认二进制解析（`LlamaCppGeneratorOptions.FromEnvironment()`，env `AGENTFRAMEWORK_LLAMA_BIN` 仍优先）。
+2. **8B 权重不能直接落地**：判别位能力达标（§2）但产品 chat 通路被 R409 模板闸拒（`LlamaCppCommand.cs:327` 硬编码 `RenderedBosCount == 1`；Qwen3 模板结构性零 BOS）。放宽该闸 = 改已验收不变式 ⇒ **须放行后才做**；备选 = 给 8B 注入单 BOS 的覆盖模板。
+3. **4B 档不达标** ⇒ 体积收益（现役 64.2%）当前不可用。
+
+### 诚实边界
+- 4B 的 13/14 假跳**可能掺入模板/格式因素**：该包 BOS 元数据 = `,`(id 11) 而非 Qwen3 惯用 151643，本窗未做模板消融 ⇒ 「4B 能力不足」与「4B 打包件模板不适配」**不可区分**，不作单向归因。
+- 判别位夹具对「更好」无分辨率（现役 3B 已 1.0000 / 0·14 / 0·14）⇒ 本条**不作**「8B 更强」的证据；8B 的 `gated_bos_count_0` 是**产品闸读数**，不是模型能力读数。
+- 产品档装载读数取自**单次**装载（ctx 4608 / f32-KV），未重复；余量 ~169 MB 为机器级读数，受同窗其它进程影响。
+- 本步 **src 语义改动仅一处**：默认二进制解析（盘上无 fork ⇒ 回落 `null` ⇒ PATH）；默认权重仍为 LFM2.5-VL-3B，未改。
+- `Ternary-Bonsai-8B-PQ2_0` 已落 `~/.agentframework/models/tb8b-pq2_0/`（2,182,184,672 B，sha256 与镜像原值一致），但**未接产品默认**。
+
+### 7.1 默认二进制解析真机证据（AOT 产品档 · 无 `AGENTFRAMEWORK_LLAMA_BIN`）
+
+| 证据面 | 命令 / 位置 | 读数 |
+|---|---|---|
+| 子进程实名 | `env -u AGENTFRAMEWORK_LLAMA_BIN AGENTFRAMEWORK_LOCAL_WARMUP=1 agenthost --frontend-api 4399` 后 `pgrep -af llama-server` | `~/.agentframework/bin/llama-prism-b10709-9a9394a/llama-server -m ~/.agentframework/models/lfm25vl3b/LFM2.5-VL-3B-Q4_K_M.gguf …` ⇒ 默认解析命中 fork |
+| 本地通道预热 | `data/telemetry/host.jsonl` 事件 `local_channel_warmup` | `ok=true` · `warm_ms=3770` · `wall_ms=3770` · `error=""` |
+| 模板闸（AOT） | `/tmp/pub_r609ab/agenthost --llamacpp --verify-template` | `gated_single_bos` · RenderedBosCount=1 · rc=0 |
+| chat 生成（AOT） | 同上 `--chat-text` 判别位题 `--reuse on --context 4608` | Content=`P` · PromptGateRejections=0 · TokensEvaluated=46 · pp 17.19 / tg 10.27 t/s · rc=0 |
+
+AOT 产物：`/tmp/pub_r609ab/agenthost` 19,751,936 B · sha256 `dfa0ded88405e8dc014b…` · publish rc=0（`Generating native code`）。

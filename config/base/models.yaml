@@ -86,6 +86,11 @@ balance_schemes:
 local:
   model_path: /home/agentuser/.agentframework/models/lfm25vl3b/LFM2.5-VL-3B-Q4_K_M.gguf
   context_size: 4608     # K2b 复用需 ≥4224 前缀; LFM2.5-VL-3B (arch lfm2, 文本塔) 实测 RSS 2,643 MB @4608
+                         # R609-AB: Ternary-Bonsai-8B-PQ2_0 (Qwen3-8B 三值) 判别位达标但被 R409 模板闸拒
+                         #   (RenderedBosCount=0 ⇒ gated_bos_count_0, exit 6); 产品档 RSS 峰值 3,139 MB
+                         #   ⇒ 余量 ~169 MB。运行时已默认 PrismML fork (同件 1.80× 提速)。
+                        # 运行时须厂商 fork (PrismML prism-b10709): 主线 llama.cpp 拒载 PQ2_0 (unknown type)
+                        # 二进制经 AGENTFRAMEWORK_LLAMA_BIN 或 PATH 解析 ⇒ 指向 ~/.agentframework/bin/llama-prism-b10709-9a9394a/llama-server
   parallel: 1            # R430: 显式 1 (禁多 slot)
   gpu_layers: 0
   max_tokens: 512        # 与门判 LocalGenerationRequest.MaxTokens 对齐
