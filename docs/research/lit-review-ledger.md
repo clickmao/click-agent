@@ -276,3 +276,24 @@ R607 = 采信 1（arXiv:2609.20804v1 组件级消融口径等）⇒ **本 R608 =
 
 `~/.hermes/skills/research/arxiv/scripts/search_arxiv.py` 的**引号短语被退化**：同一检索式 `all:"speculative tool execution"`（引号短语）脚本报 **85,883** 条（返回通用 cs.CL 近期列表，非短语命中），直连 `export.arxiv.org` API 报 **total=2**（命中 SPORK/B-PASTE）⇒ 判**检索侧器具缺陷**（非「无文献」）。本轮检索改走**直连 curl**；该脚本修复归入工具面（不改本轮判据）。
 **对照记忆**：`lit-review-ledger` §历史条亦记「零命中多半是自写 grep 的解析错」——同族缺陷第二次出现 ⇒ 检索面凡「结果数异常大（≥10⁴）」先判**检索式退化**，禁据此下「无相关文献」。
+
+## 12. R614 增量（2026-09-21；R610 顺延边 N8→N9 重启轮 · 真机臂 · M3 第一刀读数）
+
+### 12.1 检索（本式 1 条；arXiv 面本轮**不可用**，见 §12.3；改用「最新方案第二来源」= 官方工程文档 2 件）
+| 日期 (轮) | 检索式 | 出处(含版本) | 逐字引文 | 机制假设 | 改哪一格 KPI | 单变量轴 + 判据 | 状态 |
+|---|---|---|---|---|---|---|---|
+| 2026-09-21 (R614) | 检索式：`all:"grammar-constrained decoding" AND all:"tool calls"`（直连 API ⇒ 429/超时；见 §12.3）→ 第二来源：官方工程文档（采集日 2026-09-21，URL 逐字）| llguidance README `https://raw.githubusercontent.com/guidance-ai/llguidance/main/README.md`（v1.0.0，2025-06-23；集成 vLLM 0.8.2 / SGLang 0.4.4 / llama.cpp b4613 / Chromium / OpenAI Structured Outputs ⇒ 权威性代理 = **官方工程文档 + 被生产采用**，非同行评审）| 「This library implements constrained decoding (also called constrained sampling or structured outputs) for Large Language Models (LLMs). It can enforce arbitrary context-free grammar on the output of LLM and is fast - on the order of 50μs of CPU time per token (for 128k tokenizer) with negligible startup costs.」 | **合法性约束前置到生成期**（解码掩码）⇒ 「非法输出」在原理上不可能到达下游执行面；对照本仓：远端 API 无采样器控制面 ⇒ 同语义的本地形态 = **远端只声明候选 + 本地机械裁选**（=`ActionCandidates.Select`），把「合法性从生成后校验/重试」搬到**生成后的确定性裁选** | 轮数（↓：消除格式失败重发）/ 调用数（↓） | 轴 = 已落盘单变量 `AGENTFRAMEWORK_R1_ACTION_CANDIDATES`（声明面常驻、裁选器单变量）；判据 = 被裁选数 `accepted+rejected == declared` ∧ 声明到岸率 > 0 ∧ 质量不降（**不引其 50μs/token 为本仓读数**——那是其栈 CPU 掩码开销） | **观察**（机制支持 M3 设计；非新候选，不进实施队列） |
+| 2026-09-21 (R614) | 同上（第二来源：官方工程文档） | vLLM 前缀缓存设计文档 `https://raw.githubusercontent.com/vllm-project/vllm/main/docs/design/prefix_caching.md`（采集日 2026-09-21；官方仓库文档） | 「we hash each kv-cache block by the tokens in the block and the tokens in the prefix before the block」「We only cache full blocks.」「As of v0.11, the default hashing algorithm is `sha256`」 | 前缀复用的**分辨率下限 = 一个块**（只缓存整块 + 哈希含父哈希 ⇒ 前缀内任一可变块会使其后全部块失效）；⇒ 命中率是**块粒度**量，小差（如 0.9477 vs 0.9315）可能只等于**一个块**的位移 ⇒ 报告须并给**绝对长度/块数**，不得只给比率 | 命中率（**口径注记**，不改值）+ 新算 prompt（绝对值列） | 轴 = 稳定前缀长度档（+Δ 块）；判据 = 合取〔命中率增量 ≥ 一个块的比例（由现盘 `PrefixMinCharsForCache97=14863` 档位机检）∧ 新算 prompt 绝对量 ↓ ≥ 门槛〕；配负控 = 可变块**前**置（应使增量归零/转负） | **观察**（口径注记；候选队列不加项） |
+
+### 12.2 本仓现状代码证据对照（「有代码行 ≠ 生效」；R610 第一刀落地后）
+| 面 | 代码证据（现盘） | 判读 |
+|---|---|---|
+| 契约声明面 | `src/agent/contract/StructuredPrompt.cs:311-316` `<action_candidates>` 块位于**常量前缀内**（`PrefixChars=15675` / `PrefixSha256Pinned=a9792fdb…`） | **已生效且两臂逐位同** ⇒ 前缀 sha 不随轴变（对命中率无扰动；R608→R610 之间前缀曾加厚，属跨轮不可比断点，已登记） |
+| 本地裁选器 | `src/agent/r1/ActionCandidates.cs`（`Select` 由 `ActionCandidates.IsEnabled()` 门控）唯一消费点 = `src/agent/r1/R1Pipeline.cs:164` | 单变量轴真实存在（关 ⇒ `ActionCandidates.Empty`） |
+| 机制面计数落盘 | `R1Pipeline.cs:171,181,250,269,298,307`（`R1RunResult` 六处构造点）→ `R1Transcript.cs:71-75,114-118` | `declared/accepted/rejected` 三枚 **机制面**计数可机取（判 J1） |
+| **执行面消费点** | `git grep -n 'ActionCandidatesAccepted\|action_candidates_accepted' --src` 除 tests / `R1Transcript` / `R1RunResult` / `R1Pipeline` 外**为空** | **未接线**（accepted 只进台账，无执行器读它）⇒ M3 出口闸「调用数 ≤ 旧臂 50%」在接线前**按构造不可达**；本轮只判机制面 + 收集面，禁作能力面宣称 |
+
+### 12.3 面级异常（如实登记，非产品缺陷）
+- arXiv 面本轮**不可用**：`export.arxiv.org` 直连 `curl -m 60` 超时、脚本退避 3 次后 `HTTP 429`、`web_extract` 走网关 `Gateway timeout` ⇒ 本轮检索式**未取到原文**，按反幻觉硬闸记「未取到原文 ⇒ 不采信」，**不写任何论文结论**；改用官方工程文档 2 件（已给 URL + 采集日 + 逐字引文）。
+- 检索预算：arXiv query 记 **1 式**（未成功），全文抓取 2 件（≤2 上限内）；429 后**未重试同端点**（消耗窗口未恢复），符合纪律。
+- 反空转计数：R608 = 连续 0 采信第 1 轮；R609/R610 = 采信；**R614 = 采信 0 条（2 条观察）⇒ 连续 0 采信第 0 轮起算**（观察项不计入采信）。

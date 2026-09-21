@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R613",
+ "updated_round": "R614",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -7276,6 +7276,42 @@
    "updated_round": "R613",
    "note": "R613 文档修订轮：src/ 改动 = 0、未跑构建（同窗禁构建）⇒ 本轮无 build / 形式门禁读数（R8 未满足，如实报）。evidence_cmd 当轮收紧为「四文件逐文件三串合取」（铁律 14 ∧ 目标读数 ∧ 不采用 Laya）：首版单串存在性判定在 RF0002 出现两处「铁律 14」后负控 4→4 未红（无牙，已留档），收紧后两变体负控均 4→3 判红。",
    "gap_note": "本行**不含** evidence_generated_with：无独立生成器具（证据由本人在文档轮直写），且 evidence_path 不在 R2f 强制面（`eval/` / `docs/reports/`）；若将来有人补器具脚本生成该证据，再按 R2e 补「artifact/frozen + instrument_sha12」三键绑定，不在此之前声称绑定强度。"
+  },
+  {
+   "id": "r614.m3-cut1-realmachine-readings",
+   "capability": "M3 第一刀（动作候选进 R1 契约 + 本地机械裁选）**真机读数**（R610 顺延边 N8→N9 的重启）：机制面**未行使**（声明到岸率 0/18 跑次：T 9/9 ∧ C 9/9 ∧ C1 3/3）、任务面 v3 PASS（T−codex 同窗率差中位 0，有效窗 2）、铁律 11 rc=1（未可验收）；附两件自捕器具缺陷的修法与两侧样例。**仅证「该轴在真机未被远端声明驱动」，不证任何成本/能力收益**（成本列因机制未行使一律不可归因）。",
+   "level": "L3",
+   "evidence_cmd": "bash eval/rover/r610/run_r610.sh   # 21 跑次（T×9 / C×9 / C1×3），落 $HOME/.agentframework/harness/runs/r610/；后处理重算: python3 eval/rover/r610/judge_r610.py --D $HOME/.agentframework/harness/runs/r610 --pd eval/rover/r610 --json eval/rover/r610/verdict-r610-v2.json；铁律 11: python3 eval/rover/r507pre/exec_precondition.py --round r610",
+   "evidence_path": "eval/rover/r614/report-r614.md",
+   "negative_control": "① J2b 判据负控（有牙证明）：`python3 eval/rover/r614/j2b_teeth_r614.py` 正控 rc=0（门表达式源派生 + 真空⇒不可判 / 守恒⇒通过 / 不守恒⇒判红 三例）∧ 前态负控 rc=2 GATE_MISSING（前态判据器 sha256 cbc98163980d… **= v1 首跑所用件逐位同源**）；② 声明面归因两侧：实发请求体（AGENTFRAMEWORK_DUMP_REQUEST）system 15,675 字符**含** `<action_candidates>` 块 ∧ `prefix_pinned=true` 18/18 ⇒ 接线正确；21 条回复全文 grep `action_candidates` **0 命中** ⇒ 远端零遵守（非接线缺口、非抽取器读空）。",
+   "covers": [
+    "eval/rover/r614/dag-r614.md",
+    "eval/rover/r614/prereg-r614.json",
+    "eval/rover/r614/report-r614.md",
+    "eval/rover/r614/j2b_teeth_r614.py",
+    "eval/rover/r614/j2b-teeth-r614.json",
+    "eval/rover/r614/j2b-teeth-r614-precontrol.json",
+    "eval/rover/r610/verdict-r610-v2.json",
+    "eval/rover/r610/verdict-r610-v1.json",
+    "eval/rover/r610/kpi-table-r610.json",
+    "eval/rover/r610/run_r610.sh",
+    "eval/rover/r610/judge_r610.py",
+    "eval/rover/r614/pretest/eval/rover/r610/judge_r610.py",
+    "eval/rover/r614/aot_r614.sh"
+   ],
+   "owner_round": "R614",
+   "updated_round": "R614",
+   "note": "R610 已登记「真机臂顺延」；本轮为该边的**首跑**（prereg 未被窥视）。首跑判决 v1（judge sha12 cbc98163980d，J2b 真空绿）原样保留，v2（sha12 66fa17ad3d42，J2b fail-closed）为后处理幂等重算，读数未重测、阈值未改。",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "df7a4b3673d8",
+    "instrument": "eval/rover/r610/judge_r610.py",
+    "instrument_sha12": "66fa17ad3d42",
+    "binding": "audit-pin",
+    "audited_by_round": "R614"
+   }
   }
  ],
  "aot_check_policy": "release_tag_only",

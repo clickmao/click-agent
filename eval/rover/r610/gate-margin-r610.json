@@ -1,0 +1,15 @@
+{
+ "round": "R610",
+ "criterion": "C3 起手闸余量条款（R590 派生版；候选⑤ 余量源按 R591 在同一飞窗实测重派生）",
+ "clause": "MARGIN := clamp(prev_swing_effective, floor=60, cap=CEIL-GATE-floor); REQ=GATE+MARGIN",
+ "prev_swing_effective": 170,
+ "prev_swing_source": "前窗r603/logs/run-samples.jsonl (同态在飞窗, n=146, swing=285)",
+ "ceiling_min_of_3": 2952,
+ "pre_sample_spread_mb": 2,
+ "spread_clause": "<=50MB else fail-closed",
+ "margin": 170,
+ "req": 2820,
+ "cap": 242,
+ "cap_binding": false,
+ "note": "cap_binding=true ⇒ 振幅项退化（收紧的是上界而非下界，R590 已登记）"
+}

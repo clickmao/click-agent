@@ -1,0 +1,25 @@
+{
+ "instrument": "eval/rover/r614/pretest/eval/rover/r610/judge_r610.py",
+ "instrument_sha12": "cbc98163980d",
+ "gate_expr": "j2b[\"T\"][\"conservation_violations\"] == 0",
+ "gate_source_derived": false,
+ "cases": {
+  "vacuum_zero_declaration_must_not_pass": true,
+  "declared_and_conserved_must_pass": true,
+  "non_conserved_must_fail": true
+ },
+ "vacuum_reading": {
+  "runs_with_declaration": 0,
+  "conservation_violations": 0,
+  "pass": false
+ },
+ "negative_control": {
+  "runs_with_declaration": 1,
+  "conservation_violations": 1,
+  "pass": false
+ },
+ "defects": [
+  "GATE_MISSING：判据器门表达式不含 runs_with_declaration > 0（真空绿可复发）"
+ ],
+ "rc": 2
+}

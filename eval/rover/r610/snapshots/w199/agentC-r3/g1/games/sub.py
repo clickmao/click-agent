@@ -1,0 +1,20 @@
+"""Subtraction game: WIN m (smallest winning first move) or LOSE."""
+
+
+def solve(text):
+    lines = text.splitlines()
+    n, k = (int(x) for x in lines[0].split())
+    moves = sorted(int(x) for x in lines[1].split())
+    win = [False] * (n + 1)
+    for i in range(1, n + 1):
+        for s in moves:
+            if s > i:
+                break
+            if not win[i - s]:
+                win[i] = True
+                break
+    if win[n]:
+        for s in moves:
+            if s <= n and not win[n - s]:
+                return 'WIN %d' % s
+    return 'LOSE'

@@ -1,0 +1,34 @@
+{
+ "round": "R614",
+ "written_before_run": true,
+ "written_at": "2026-09-21T11:12:00+08:00",
+ "author": "常驻会话执行体（cron 60min tick；R610 顺延边 N8→N9 重启）",
+ "prereg_authority": {
+  "path": "eval/rover/r610/prereg-r610.json",
+  "written_at": "2026-09-21T10:05:00+08:00",
+  "relation": "本文件是**引用件**：单变量 / 臂表 / 窗集 / 判据 / 阈值 / 证伪条目**一字未改**，全部以 r610 件为准。R614 只登记「重启该边」这一事实与 R614 专属面（起手闸读数、被测件 sha、前置器命令）。",
+  "threshold_changes": 0,
+  "peek_disclosure": "无窥视：r610 臂从未跑过（无任何臂读数存在）⇒ 本轮为该 prereg 的**首跑**，非确认性统计。"
+ },
+ "single_variable": "AGENTFRAMEWORK_R1_ACTION_CANDIDATES（缺省 on / 显式 0 = 旧行为逐位）—— 承 prereg-r610.json",
+ "arms": {
+  "T": {"side": "agent", "bin": "$HOME/.agentframework/artifacts/pub_r610/agenthost", "reps": 3, "role": "产品默认档（轴键未设）"},
+  "C": {"side": "agent", "bin": "$HOME/.agentframework/artifacts/pub_r610/agenthost", "reps": 3, "role": "对照档（轴显式关）"},
+  "C1": {"side": "codex", "reps": 1, "role": "外部真值（同环境·同输入·同模型 deepseek-flash）"}
+ },
+ "windows": ["w199", "w200", "w201"],
+ "window_set_index": "第十三窗集（与 R585–R608 历史窗集不相交）",
+ "criterion_version": "v3（承 r610；标为主，禁调）",
+ "baselines": ["truth-vs-t-arm", "truth-whole-task", "cost-calls", "cost-newprompt", "cache-hit-floor", "res-min-windows", "fp-constants"],
+ "falsification": "承 prereg-r610.json 四条，一字未改",
+ "evidence_scope": {
+  "require": ["eval/rover/r614/dag-r614.md", "eval/rover/r614/prereg-r614.json", "eval/rover/r610/taskset-r610.json", "eval/rover/r614/report-r614.md", "eval/rover/r610/verdict-r610.json", "eval/rover/r610/kpi-table-r610.json", "eval/rover/r610/gate-margin-r610.json"],
+  "note": "缺任一 ⇒ 该轮不得宣称「可验收」"
+ },
+ "precond_command": "python3 eval/rover/r507pre/exec_precondition.py --round r610",
+ "gate_clause": "MARGIN := clamp(prev_swing_effective, floor=60, cap=CEIL-GATE-60); REQ = 2650 + MARGIN（承 run_r610.sh，禁调）",
+ "jump_steps": [
+  "产品侧最小改动：跳过 —— 本轮零产品改动（src/tools 与 R610 提交 bc6a74de 零 diff，已机检），单变量为已提交的 R610 件",
+  "预注册重写：跳过 —— 权威 prereg = r610 件（臂前已落盘）；本文件只作引用与登记"
+ ]
+}

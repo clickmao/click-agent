@@ -213,7 +213,12 @@ def main():
         j2b[arm] = {"runs": len(rs), "runs_with_declaration": sum(1 for x in rows if x["declared"] > 0),
                     "conservation_violations": sum(1 for x in rows if x["conserved"] is False),
                     "per_run": rows}
-    j2b_pass = (j2b["T"]["conservation_violations"] == 0)
+    # R614 修复（自捕器具缺陷：真空绿）—— 守恒式在「声明数 0」时真空成立 ⇒ 判据不可判，须 fail-closed。
+    #   判据 + 两侧样例（负控有牙）见 eval/rover/r614/j2b_teeth_r614.py；阈值未改（0 违例）。
+    j2b_declared_runs = j2b["T"]["runs_with_declaration"]
+    j2b_pass = (j2b_declared_runs > 0 and j2b["T"]["conservation_violations"] == 0)
+    j2b_reason = (None if j2b_declared_runs > 0
+                  else "NO_DECLARATION_VACUOUS：T 档 0 个有声明跑次 ⇒ 守恒式真空成立、**不可判**（禁读作通过）")
 
     # --- J2 修复收敛（主判据）：不合格跑次 → 合格跑次 ---
     def state(r):
@@ -429,6 +434,8 @@ def main():
                               "driver_sha12": hashlib.sha256(io.open(__file__, "rb").read()).hexdigest()[:12]},
         "J1_mechanism": {"pass": bool(j1_pass), "by_arm": j1},
         "J2b_selection_conservation": {"pass": bool(j2b_pass),
+                                       "reason": j2b_reason,
+                                       "vacuous_green_closed_by": "R614（v2 判据：无声明 ⇒ fail-closed 不可判）",
                                        "need": "T 档有声明跑次 > 0 ∧ 逐跑次 accepted+rejected==declared（无未裁定项）",
                                        "by_arm": j2b},
         "J2_repair_convergence": {"pass": bool(j2_pass), "need": "T_converged >= C_converged + 1", "by_arm": j2},
