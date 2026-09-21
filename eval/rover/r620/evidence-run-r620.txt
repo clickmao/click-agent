@@ -1,0 +1,17 @@
+== R620 运行证据（R620）==
+[起手闸] {  "round": "R620",  "criterion": "C3 起手闸余量条款（R590 派生版；候选⑤ 余量源按 R591 在同一飞窗实测重派生）",  "clause": "MARGIN := clamp(prev_swing_effective, floor=60, cap=CEIL-GATE-floor); REQ=GATE+MARGIN",  "prev_swing_effective": 125,  "prev_swing_source": "前窗r617/logs/run-samples.jsonl (同态在飞窗, n=377, swing=81; 口径 = 本轮起手闸 2775 − 产品门槛 2650)",  "ceiling_min_of_3": 2829,  "pre_sample_spread_mb": 2,  "spread_clause": "<=50
+[前提闸] rc=0 exec_source=plan_fallback exec_fallback=candidates_absent prefix==legacy_anchor=True plan_steps=11
+[run.txt] [20:07:19] 前提闸 PASS: 回退触发面成立 (plan_fallback / candidates_absent)
+[run.txt] [evidence] windows/w214 落盘 rows=7
+[run.txt] [evidence] windows/w215 落盘 rows=7
+[run.txt] [evidence] windows/w216 落盘 rows=7
+[run.txt] [20:22:53] KPI 汇总 rc=2 (见下)
+[run.txt] [20:23:21] 铁律 11 前置器: rc=1
+[run.txt] [20:23:21] R620 完成
+[判决] rc=2 mechanism_rc=0 label=器具缺陷（rc=2，禁作被测结论）
+[J0] pass=True faces_T=['plan_fallback'] prefix_shared=True legacy_block=True cross_round_pin=False
+[J1] pass=True a1_face_covered=9 a2_fallback_runs=9 a3_fallback_executed_positive=9 d1_zero=0 three_state=EXERCISED_OK reasons=candidates_absent
+[J6] pass=False per_window={"w214": {"rc_T": [0, 0, 5], "rc_C": [0, 5, 5], "cases_pass_T": [58, 58, 58], "cases_pass_C": [58, 58, 58], "equal": false}, "w215": {"rc_T": [5, 5, 8], "rc_C": [5, 5, 8], "cases_pass_T": [48, 58, 58], "cases_pass_C": [50, 56, 58], "equal": false}, "w216": {"rc_T": [0, 0, 5], "rc_C": [0, 5, 8], "cases_pass_T": [52, 58, 58], "cases_pass_C": [55, 58, 58], "equal": false}}
+[J3] pass=True form={"a1": true, "a2": true, "b1": true, "pass": true, "sum_calls": {"T": 14, "C": 16}, "sum_new_prompt": {"T": 9340, "C": 13349}, "unit_new_prompt_per_call": {"T": 667.1429, "C": 834.3125}, "per_window_calls": {"w214": {"T": 4, "C": 5, "ok": true}, "w215": {"T": 6, "C": 6, "ok": true}, "w216": {"T": 4, "C": 5, "ok": true}}, "failed_clauses": []}
+[铁律11] precond rc=None (未可验收错题: {"w214": {"dir": "eval/rover/r620/evidence/windows/w214", "arms": {"agentC-r1/g1": {"arm": "agentC-r1", "tag": "C-r1", "tid": "g1", "side": "agent", "kind": "project", "family": "games-longtask-v1", "cases_n": 58, "cases_expected": 58, "cases_pass": 58, "rc": 0, "correct": true, "work_dir": null, "f)
+[臂rc] {"T": {"rc": [[5, "expect_stdout_exhausted"], [0, "done"], [0, "done"], [5, "expect_stdout_exhausted"], [8, "self_test_unmet"], [5, "expect_stdout_exhausted"], [0, "done"], [5, "expect_stdout_exhausted"], [0, "done"]]}, "C": {"rc": [[5, "expect_stdout_exhausted"], [0, "done"], [5, "run_rc_exhausted"], [5, "expect_stdout_exhausted"], [8, "self_test_unmet"], [5, "expect_stdout_exhausted"], [0, "done"], [8, "self_test_unmet"], [5, "expect_stdout_exhausted"]]}, "C1": {"rc": [[null, null], [null, null], [null, null]]}}

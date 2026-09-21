@@ -375,3 +375,16 @@ R607 = 采信 1（arXiv:2609.20804v1 组件级消融口径等）⇒ **本 R608 =
 **反空转计数**：R619 = 采信 **1**（已实施；1 条独立出处）/ 观察 **4** / 未实施队列 **0** / 不采纳 **0** / 证伪 **0** / 顺延 **0**。
 **对照本仓现状（代码证据，现盘）**：① `eval/rover/r444/precheck_prefilter.py` 存在且 registry 行 L4 `pin` 与现盘/HEAD 三方同一（`569e9a0af06b`）⇒ 可分性预检**已入登记面**；② `git grep -ln "route_break\|RouteBreak" -- src` = **1 文件**（`IndustrialAgentV2.cs`）⇒ 假执行硬闸在 src 面存在；③ `tools/r1gen/{contract.py,gen_csharp.py,r1prompt.py}` 齐备；④ `eval/rover/r507pre/exec_precondition.py` 存在（39 888 B）。**有代码行 ≠ 生效**：②③④ 的生效性由各自登记行/前置器 rc 判，不由本采编判。
 **红线**：本采编为**机制假设 + 证据面采编**，不改 RF0004 三能力路径、不改铁律 10 外部真值对照、不改铁律 14 器件路径；零新增夹具、零额外开发、检索在臂轮在飞期间只读执行（每轮预算 3 query / 1 摘要，未开子 agent）。
+
+## R620（2026-09-21）· 缓存前缀面（主线：M3 第四刀 = 回退分支真机行使；文献小步与臂轮并行、只读）
+
+| 日期 | 检索式 | 出处（含版本） | 逐字引文（≤2 句） | 机制假设 | 改哪一格 KPI（预期方向） | 单变量轴 + 判据（阈值/可证伪点） | 状态 |
+|---|---|---|---|---|---|---|---|
+| 2026-09-21 | `"prompt cache" agent cost latency`（cs.CL, sort=relevance, max 6） | arXiv **2601.06007v2**（cs.CL）· comment「16 pages, 9 figures」· **无 venue comment / 无 journal-ref ⇒ 纯预印本** · 采集日 2026-09-21 | `We present a comprehensive evaluation of prompt caching across three major LLM providers (OpenAI, Anthropic, and Google) and compare three caching strategies, including full context caching, system prompt only caching, and caching that excludes dynamic tool results.` | 多轮 agentic 任务中「把**动态工具结果**排除出被复用前缀」的缓存策略可降成本/延迟；反之动态段落进前缀即破坏复用 | 命中率（v_all/v_incr）↑ · 新算 prompt ↓ | 轴 = **装配序**（动态块位置：前缀内 vs 后置），其余不变；判据 = 同窗 reps≥3 的 v_all 中位提升 ∧ 质量不降（同题真值对照）∧ **先量增量段占比得天花板**（`可省 ≤ 该类占比 × 可消除比例`） | **观察（未实施**：本轮主线预算占满；须先量天花板） |
+| 2026-09-21 | `"graceful degradation" LLM agent tool fallback`（max 6） | **未取到原文 ⇒ 不采信**（命中 2606.20023v2 / 2401.07324v3 / 2512.21309v2，均非本面机制） | — | — | — | — | 不采纳 |
+
+**反空转计数**：R620 = 采信 **0** / 观察 **1** / 未实施队列 **1** / 不采纳 **1**（未取到原文）/ 证伪 0 / 顺延 0 ⇒ 连续 0 采信**第 1 轮**（未达「连续 3 轮 ⇒ 降频」门槛，阈值不动）。本轮检索 3 次（预算内）；其中 1 次短语被拆散/过宽（返回 20 万条无关）⇒ 只采信**逐条读过标题+摘要**的条目。
+
+**对照本仓现状（代码证据，现盘）**：① **稳定前缀已是结构事实** —— 前缀为**编译期常量 + 逐位 pin**：`src/agent/contract/StructuredPrompt.cs:325-327`（`PrefixLegacyChars=15675` / `PrefixLegacySha256Pinned=a9792fdb…`）、`:616-618`（r615 档 15794 / `8b8be6b8…`），档位由 `AxisEnvKey`（`:909`）在 `:932` 选择 ⇒ 论文第三种策略（系统提示缓存 / 排除动态工具结果）≈ **本仓现状**，剩余空间只在**增量段占比**，故该候选降为「观察 + 先量天花板」。② **命中率格已有既有打点消费**（`src/agent.modelqueue/PromptCacheKpi.cs` · `PromptCacheRedline.cs` · `ModelQueueRouter.Call.cs` / `.Failure.cs` / `.Recovery.cs`）⇒ 若实施该轴，**不需新增夹具**（用户令：禁新增夹具）。
+
+**红线**：本采编 = 机制假设 + 证据面采编，不改 RF0004 三能力路径、不改铁律 10（外部真值对照）/ 铁律 14（器件路径）；零新增依赖（arXiv 检索为只读网络）；检索在主线臂轮在飞期间只读执行。

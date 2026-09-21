@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R619",
+ "updated_round": "R620",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -7507,6 +7507,37 @@
     "instrument_sha12": "4ff1989d8c8b",
     "binding": "audit-pin",
     "audited_by_round": "R619"
+   }
+  },
+  {
+   "id": "r620.exec-fallback-exercised",
+   "round": "R620",
+   "level": "L4",
+   "capability": "RF0004.2 · M3 **第四刀 = 回退分支真机行使**（触发面 = held-constant 提示尾块 `legacy`）：R619 建立了「映射面为空 ∧ plan 非空 ⇒ 回退读 plan」的判定与接线，但其触发前提在 R619 的 9 个治疗跑次里从未成立（J1e=NOT_EXERCISED）⇒ 修复代码从未被真机行使。本轮把前提造出来：两臂同值 `legacy` 尾块 ⇒ 模型不给候选字段 ⇒ 采纳面为空 ⇒ 回退支。真机 21 跑次（T×9 / C×9 / C1×3，窗集 w214..w216），被测件与 R619 逐字节同件（零产品源码改动）。**读数**：前提闸 rc=0（exec_source=plan_fallback / exec_fallback=candidates_absent / 前缀 == legacy 锚 a9792fdb…）；**回退行使 9/9**（T: runs_plan_fallback=9 ∧ runs_fallback_executed_positive=9 ∧ 三态 EXERCISED_OK ∧ candidates∧executed==0 = 0）⇒ R619 的 NOT_EXERCISED 闭合；J0 PASS（两臂前缀同源 ∧ == legacy 锚 ⇒ held-constant 真生效）；**J1 PASS（mechanism_rc=0）**；J3 成本 v2 三条款全过（14 vs 16 调用 / 9,340 vs 13,349 新算 / 单位 667 vs 834）；J4 并列·欠功率（整题全对 T 7/9 vs C 6/9 vs 真值 2/3；真值自败窗 w216 剔除配对 ⇒ 有效窗 2）。**未成立/未判明**：① rc=2 —— 判据器把 J6「等价面」不成立计入 `instrument_defects`（`rc = 2 if defects else 0`）⇒ 本轮 rc 落在「器具缺陷」层，如实保留（禁事后改判据）；② J6 本身在逐跑次摆动（用例 48..58）下无分辨率 ⇒ 「回退面 vs 轴关面」差异**未判明**，下轮以加 reps/扩窗处置（禁下调阈值）；③ claims_violated：「前缀零改动」宣称作废（本轮 held-constant 换成 legacy 档，跨轮 pin 不再成立，同轮两臂可比性不受影响）；④ 铁律 11 precond rc=1 ⇒ 质量/成本一律**参考（未可验收）**。",
+   "evidence_path": "eval/rover/r620/report-r620.md",
+   "evidence_cmd": "python3 eval/rover/r620/closeout_r620.py --check && python3 eval/capability/status_gen.py --check",
+   "negative_control": "① 前提闸：起臂前 1 跑次必须证「legacy ⇒ 候选键未到达 ∧ exec_source=plan_fallback ∧ 前缀 == legacy 锚」，否则零臂起跑（rc=5，premise-r620.json）；② 判据器影子自检 selftest_judge_r620.py（多态合成日志，逐条预期 rc）；③ J6 判据内含对照组（轴关面 C 逐窗 rc/用例数），两臂同窗 ⇒ 摆动可辨。",
+   "covers": [
+    "F_env.gate.ceiling_mb",
+    "F_merge.gate.precondition_rc",
+    "F_orch.cost.calls_sum",
+    "F_merge.cost.new_prompt_sum",
+    "F_merge.cache.hit_v_all",
+    "F_merge.quality.allpass"
+   ],
+   "runs": 21,
+   "verdict": "机制面 PASS（J0∧J1，回退行使 9/9）· rc=2（J6 计入 instrument_defects）· precond rc=1（参考·未可验收）",
+   "aot": "未重发布（本轮零产品源码改动 ⇒ 复用 R619 AOT 件逐字节，bins-r620.json 钉 sha）",
+   "owner_round": "R620",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "bd43d6712a49",
+    "instrument": "eval/rover/r620/judge_r620.py",
+    "instrument_sha12": "83618afc2fc0",
+    "binding": "audit-pin",
+    "audited_by_round": "R620"
    }
   }
  ],

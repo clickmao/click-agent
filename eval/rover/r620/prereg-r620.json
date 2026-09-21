@@ -1,0 +1,140 @@
+{
+ "round": "R620",
+ "written_before_run": true,
+ "written_at": "2026-09-21 20:05:00+0800",
+ "author": "cron 60min tick (capability self-check loop)",
+ "protocol": "docs/plans/RF0005-completion-protocol.md §1/§2/§3",
+ "claim": "RF0004.2 · M3 **第四刀 = 回退分支真机行使**。R619 第三刀把「映射面为空 ∧ plan 非空」改成**回退读 plan**，但其触发前提（候选键未到达 ⇒ 采纳面为空）在 R619 的 9 个治疗跑次里**从未成立**（J1e=NOT_EXERCISED）⇒ 该修复**未被真机行使过**。本轮把前提**造出来**：提示尾块档 `AGENTFRAMEWORK_R1_ACTION_PROMPT=legacy` 在**两臂同值**（held-constant 上下文，非被测变量）⇒ 该档自带「可选 + 不声明 ⇒ 本地只按 plan 执行」的豁免句 ⇒ 模型不给候选字段（R615 实测到达 0/9）⇒ `Decide` 应走回退支。零产品源码改动（复用 R619 AOT 件逐字节）。",
+ "single_variable": {
+  "axis": "AGENTFRAMEWORK_R1_ACTION_EXEC",
+  "T": "1 ⇒ 执行面 = 采纳候选映射出的节点；映射面为空 ∧ plan 非空 ⇒ **回退读 plan**（exec_source=plan_fallback）",
+  "C": "unset ⇒ 产品缺省 off（执行面 = plan，台账不出现执行面字段）",
+  "C1": "codex-cli 外部真值（同题面/同夹具/同窗）",
+  "why_only_one": "唯一改变「执行面是否按判定装配」的自由度；held-constant 上下文只有提示尾块档一项，且**两臂同值**（机检断言）⇒ 不构成第二自由度。",
+  "held_constant": {
+   "key": "AGENTFRAMEWORK_R1_ACTION_PROMPT",
+   "value": "legacy",
+   "why": "把回退的触发前提（候选键未到达）从「低频自然事件」变成**确定性可命中**（R619 U1 的实质缺口）。R615 实测该档到达 0/9。",
+   "machine_check": "两臂 prefix_sha256 均须 == F_env.prefix.legacy_anchor（a9792fdbe5b2…，chars 15675）",
+   "scope": "held-constant 只影响**输入面**（模型看不看得到候选字段契约）；不改判据、不改阈值、不改执行面语义"
+  },
+  "third_anchor": "无第三档（本轴只有 on/off 两态）。",
+  "arm_convention_note": "与 R617 约定相反是**故意的**：本轴缺省 off ⇒「轴关 = 旧行为」的臂就是产品缺省臂（C = unset）。"
+ },
+ "arms": {
+  "T": {
+   "side": "agent",
+   "env": {
+    "AGENTFRAMEWORK_R1_ACTION_EXEC": "1",
+    "AGENTFRAMEWORK_R1_ACTION_PROMPT": "legacy"
+   },
+   "reps": 3
+  },
+  "C": {
+   "side": "agent",
+   "env": {
+    "AGENTFRAMEWORK_R1_ACTION_PROMPT": "legacy"
+   },
+   "reps": 3
+  },
+  "C1": {
+   "side": "codex",
+   "env": {},
+   "reps": 1
+  }
+ },
+ "windows": {
+  "set": [
+   "w214",
+   "w215",
+   "w216"
+  ],
+  "disjoint_from_history": true,
+  "history_up_to": "w213（R619 用 w211..w213；本轮起 w214，与历史窗集不相交）"
+ },
+ "criterion_version": "v3",
+ "thresholds_cite_baselines": [
+  "F_env.prefix.legacy_anchor",
+  "F_env.prefix.chars",
+  "F_env.prefix.sha256",
+  "F_merge.quality.cases_median_truth",
+  "F_merge.quality.allpass",
+  "F_merge.cache.hit_v_all",
+  "F_merge.cost.new_prompt_sum",
+  "F_orch.cost.calls_sum"
+ ],
+ "criteria": {
+  "J0_arm_axis_effective": {
+   "need": "T 逐跑次 exec_source ∈ {candidates, plan_fallback}（9/9）∧ C 五字段全缺席（9/9）∧ 两臂 prefix_sha256 同源 ∧ **两臂前缀 == legacy 锚**（held-constant 真生效）∧ 每臂非全缺席",
+   "kind": "mechanism",
+   "fail_action": "rc=2 整轮 VOID（先修臂/前提）"
+  },
+  "J1_fallback_exercised": {
+   "kind": "mechanism",
+   "primary": true,
+   "a1": "面覆盖: T 的 (exec_source==candidates) + (exec_source==plan_fallback) == 总跑次 9/9",
+   "a2": "**回退跑次 ≥ 1**（R619 = 0/9 ⇒ NOT_EXERCISED；本轮核心判据）",
+   "a3": "回退跑次中 executed>0 **全部**（回退真把活干起来 ⇒ R618 D1「映射空 ⇒ 什么都跑」形态清零）",
+   "a4": "守恒: 仅 candidates 源跑次有定义；候选源为 0 ⇒ 记 **N/A**（不判红、不判 PASS ⇒ 未测到 ≠ 已验收）",
+   "pass": "a1 ∧ a2 ∧ a3 ∧ (a4 != FAIL)"
+  },
+  "J6_zero_regression_equivalence": {
+   "kind": "mechanism_secondary",
+   "need": "逐窗 rc 多重集 T == C ∧ 逐窗用例通过数 T == C（回退 ⇒ 执行面 == plan == 轴关面 ⇒ 行为等价）",
+   "note": "次级，不改主 rc；不成立 ⇒ 回退**不是**零回归（必须单列并撤回未提交改动）"
+  },
+  "J2b_ledger_conservation": {
+   "kind": "mechanism",
+   "need": "T 档有声明跑次 > 0 ∧ 逐跑次 accepted+rejected==declared；legacy 档声明面**结构性为空** ⇒ 记 N/A（不可读作通过）"
+  },
+  "J3_cost": {
+   "kind": "cost",
+   "need": "v1（max_calls T<=C）+ v2（Σ调用 ≤ ∧ 逐窗 ≤ ∧ 单位调用新算 ≤）逐字沿用 r604 模块"
+  },
+  "J4_capability_secondary": {
+   "kind": "capability_secondary",
+   "need": "整题全对 T vs C vs C1（并列；n=9/档 欠功率 ⇒ 不作能力结论）"
+  },
+  "J5_cross_windowset_same_direction": {
+   "kind": "diagnostic",
+   "need": "与 R617 面并列、禁相减"
+  },
+  "W_floor_resolution_floor": {
+   "kind": "resolution",
+   "need": "有效窗 <2 ⇒ rc=3 停链（禁下调阈值）"
+  }
+ },
+ "falsification": [
+  "① **前提闸未过**（legacy 档仍给出候选字段 / 前缀 ≠ legacy 锚）⇒ 零臂起跑（rc=5，起臂前机检），本轮**不产生任何被测读数**，如实记前提不成立并换触发面。",
+  "② J0 未过（两臂 exec 面不可区分 或 前缀不同源）⇒ 整轮 VOID（rc=2，禁作被测结论），先修臂再谈读数。",
+  "③ a2 未达（回退跑次 = 0）⇒ R619 的回退仍**未测到** ⇒ J1 判 FAIL，**禁改判据凑绿**；下轮换触发面（候选面冗余布置）。",
+  "④ a3 未达（回退跑次仍 executed==0）⇒ 回退**未生效**（R618 D1 形态未消除）⇒ J1 判 FAIL，撤回未提交改动（本轮净产品改动 = 0）。",
+  "⑤ J6 未过（逐窗 rc/用例数与轴关面不一致）⇒ 回退**非零回归** ⇒ 单列并作下轮第一优先，禁宣称「修复无副作用」。",
+  "⑥ 有效窗 < 2（真值自败窗剔除后）⇒ rc=3 停链、先造窗集，**禁下调阈值**。"
+ ],
+ "evidence_scope": {
+  "require": [
+   "prereg-r620.json（先写后跑闸）",
+   "bins-r620.json（全臂同一枚二进制 + codex 指纹）",
+   "gate-margin-r620.json（起手闸余量条款）",
+   "logs/run-samples.jsonl（运行期内存采样，供下轮 swing 重派生）",
+   "kpi-table-r620.json（KPI 表）",
+   "verdict-r620.json（判决件）",
+   "report-r620.md（轮志）"
+  ],
+  "note": "缺任一项 ⇒ 该轮不可收口（收口五件 = 轮工件/证据文档/registry 行/kpi 行带 baselines/逐名列名提交）"
+ },
+ "supersedes": "R619（第三刀落地但回退 NOT_EXERCISED）：本轮不翻案其读数，只补「触发前提成立时回退是否真生效」这一未测面。",
+ "revision": [
+  {
+   "v": 1,
+   "t": "2026-09-21 20:05",
+   "why": "首版；written_before_run=true（先写后跑闸）"
+  },
+  {
+   "v": 2,
+   "t": "2026-09-21 20:05",
+   "why": "补 held_constant 段（两臂同值 legacy 的机检口径）+ J6 等价面 + J2b N/A 语义（起臂前）"
+  }
+ ]
+}
