@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R611",
+ "updated_round": "R613",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -7243,7 +7243,7 @@
   },
   {
    "id": "r611.ironrule14-task-device-selection",
-   "capability": "**铁律 14「任务类型-器件选型」落库**（用户 2026-09-21 令，逐字：「得做到这种程度，请记录在主线和开发文档铁律里」）：① **分类/路由/评分/意图识别 ⇒ 直接用 Laya 或 XGBoost**（32 ms 级、零 API 成本）；② **需文本理解但输出空间有限 ⇒ 微调 BERT/RoBERTa**（精度持平 LLM、快 50×）；③ **需生成开放文本 ⇒ 传统 NLP 做不到，必须用 LLM 或扩散模型**；④ 用户附口径「延迟降低 95%、成本降低 85-91%、任务成功率不变」= **外部出处**（TabAgent arXiv 2602.16429；Laya 自报 32.8 ms 单 GPU 中位）**禁直引为本仓结论**。落点四处 + 一处作业面：`iteration-master-plan.md` §0-0 铁律 14（宪法条款）· 主线 `RF0001` §2.1 · `RF0004` §0.4（唯一权威定义面）· `RF0002` §3（判别器形态约束）· cron `b15eb2f40a69` 作业 prompt。**本仓档位现状（代码事实）**：③ 形态正确（远端 LLM = skill 插件，`allow_general: false`）；①/② **档位错** —— 判别位现由本地 3B LLM 承担（R609-AB 真机 17.2 s/例，2 vCPU/无 GPU）⇒ 落点 RF0002/RF0004.1。**瓶颈不在选型**：R444 判 `NOT_SEPARABLE`（99 次问模型里 71 次=71.7% 本可规则化）⇒ 前提/标签可分性问题，换器件不解决。**四条选型前提（缺一不得宣称达标）**：标签可分 · AOT 可用（树须导纯 C# 打分器；pip 件须 ONNX 化）· 本机可跑（「32 ms」是单 GPU 读数）· 跨语言（Khmer 0% 准确率却报 95.2% 置信度 ⇒ 置信度不得单独放行）。",
+   "capability": "**铁律 14「三档任务目标读数」落库（R611）+ R613 按用户令修订**（原令 2026-09-21 逐字：「得做到这种程度，请记录在主线和开发文档铁律里：…」＋「实测效果：延迟降低95%，成本降低85-91%，任务成功率不变」；**修订令同日逐字：「不用laya还是我们现在方案，仅是最后达到那个数据，请修正文档」**）：① **器件路径不变 —— 不采用 Laya**，也不以「换器件」当进度判据（决策主体 = `src/agent.nlp/` 形态/账本规则 + 闸族系；本地模型只在残余带出有界「是/否 | 标签」；开放生成走远端 LLM）。② **三档数值降级为终局目标读数（待达成）**：32 ms 级 · 零 API 成本／精度持平 LLM · 快 50×／**延迟 −95% · 成本 −85~91% · 成功率不变**。③ 该组数字 = **外部出处**（TabAgent arXiv 2602.16429 + 其自报 32.8 ms 单 GPU 中位），**本仓未复现** ⇒ 禁直引为本仓结论、禁记作已达标（本仓对照读数：省 token 26% · 缓存命中 0.9477 vs 0.9315 · 质量轴 R602–R606 多未达标 · R612 门判 42 次全机械族/守卫、真问本地 0）。落点五处已同步：`iteration-master-plan.md` §0-0 铁律 14 · RF0001 §2.1 · RF0004 §0.4（唯一权威定义面）· RF0002 §3 · cron `b15eb2f40a69` prompt。**外部器件否决清单（保留备查；本轮路径不涉及）**：标签可分（R444：99 次问模型 71 次=71.7% 本可规则化却判 `NOT_SEPARABLE` ⇒ 前提/数据问题，换器件不解决）· AOT 可用（须导纯 C# 打分器 / ONNX）· 本机可跑（「32 ms」是单 GPU 读数）· 跨语言（英文档在非拉丁脚本 Khmer 0% 准确率却报 95.2% 置信度 ⇒ 置信度不得单独放行）。",
    "level": "L1",
    "evidence_cmd": "python3 -c \"import pathlib;p=['docs/reports/iteration-master-plan.md','docs/plans/RF0001-fable-aligned-development-plan.md','docs/plans/RF0004-three-capability-development-plan.md','docs/plans/RF0002-nlp-self-improvement.md'];n=[f for f in p if '铁律 14' in pathlib.Path(f).read_text(encoding='utf-8')];print(len(n),n);assert len(n)==4\"",
    "evidence_path": "docs/evidence/RF0001/R611-ironrule14-device-selection.md",
@@ -7255,7 +7255,27 @@
     "docs/plans/RF0002-nlp-self-improvement.md",
     "docs/evidence/RF0001/R611-ironrule14-device-selection.md"
    ],
-   "owner_round": "R611"
+   "owner_round": "R611",
+   "updated_round": "R613",
+   "note": "R613 按用户令修订：条文语义由「器件选型令」改为「终局目标读数 + 现方案不变（不采用 Laya）」；`evidence_cmd` 与负控不变（仍以「铁律 14」串证四文件同含该条）；证据文件同轮追加 §8 修订记录（逐项可复核）。"
+  },
+  {
+   "id": "r613.ironrule14-goal-metric-revision",
+   "capability": "铁律 14 语义修订（R613 按用户令「不用laya还是我们现在方案，仅是最后达到那个数据，请修正文档」）：三档数值降级为「终局目标读数（待达成）」、器件路径不变且不采用 Laya；落点五处同轮同步（master-plan §0-0 铁律 14 / RF0001 §2.1 / RF0004 §0.4 唯一权威 / RF0002 §3 / cron `b15eb2f40a69` prompt）；证据文件同轮追加 §8「R613 修订记录」逐项对照表。**仅证「文本已按修订令改写」，不证任何器件已接入、不证任何性能/成本达标**（该组数字 = 外部出处 TabAgent arXiv 2602.16429，本仓未复现）。",
+   "level": "L1",
+   "evidence_cmd": "python3 -c \"import pathlib;p=['docs/reports/iteration-master-plan.md','docs/plans/RF0001-fable-aligned-development-plan.md','docs/plans/RF0004-three-capability-development-plan.md','docs/plans/RF0002-nlp-self-improvement.md'];n=[f for f in p if '铁律 14' in pathlib.Path(f).read_text(encoding='utf-8')];print(len(n),n);assert len(n)==4\"",
+   "evidence_path": "docs/evidence/RF0001/R611-ironrule14-device-selection.md",
+   "negative_control": "把四文件任一中的「铁律 14」改一个字 ⇒ 命中数 4→3 ⇒ assert 失败、rc≠0（R611 轮已按此实测：4→3 判红，证明该行读数由文件内容派生）",
+   "covers": [
+    "docs/reports/iteration-master-plan.md",
+    "docs/plans/RF0001-fable-aligned-development-plan.md",
+    "docs/plans/RF0004-three-capability-development-plan.md",
+    "docs/plans/RF0002-nlp-self-improvement.md"
+   ],
+   "owner_round": "R613",
+   "updated_round": "R613",
+   "note": "R613 = 文档修订轮：src/ 改动 = 0、未构建（同仓并发纪律：兄弟写者在飞时禁构建）⇒ 本轮**无** build / 形式门禁 14/14 / 通过率三档读数，audit R8 未满足，如实报不凑绿。",
+   "gap_note": "本行**不含** evidence_generated_with：无独立生成器具（证据由本人在文档轮直写），且 evidence_path 不在 R2f 强制面（`eval/` / `docs/reports/`）；若将来有人补器具脚本生成该证据，再按 R2e 补「artifact/frozen + instrument_sha12」三键绑定，不在此之前声称绑定强度。"
   }
  ],
  "aot_check_policy": "release_tag_only",
