@@ -1,0 +1,165 @@
+{
+ "round": "R628",
+ "written_before_run": true,
+ "written_at": "2026-09-22T06:34+08:00",
+ "author": "cron tick · 常驻能力自检循环执行体",
+ "claim": "主线真机对照轮 = **判据 v3 第五窗集行使**（真机臂轮 w220..w222：每窗 外部真值 codex ×1 ＋ 产品默认档 ×3）× **当前件**（pub_r619，bin sha12 `a184d7317b6e`，= 现盘 src 最后一次提交 081a9b29 的发布件）＋ 只读并轮（R627 候选 ②/⑤/⑥ 的零产品改动面）。R627 候选 ①（面 4 达标路径处置裁定）**待用户放行** ⇒ 本轮零 `src/` 改动 / 零新增夹具语义 / 零新增开关。",
+ "one_time_context": {
+  "in_scope_rounds_prev": [
+   "r585",
+   "r586",
+   "r587",
+   "r588",
+   "r591",
+   "r595",
+   "r596"
+  ],
+  "taskset_sha": "e0c667c2a313c04b",
+  "g1_prompt_sha256": "516f3208963c6e66fac1d2da516b9116f1409080bfd25cf50c61480d5ef3aca3",
+  "bin_sha12_expected": "a184d7317b6e",
+  "bin_path": "$HOME/.agentframework/artifacts/pub_r619/agenthost",
+  "bin_change_note": "前四窗集（set1..set4）被测件 = `4b70fd7cdb39`（pub_r591）；本轮被测件 = `a184d7317b6e`（pub_r619，含已提交产品改动 R600/R608/R610/R618/R619）⇒ **与 set1..set4 禁相减、只并列**；本窗集内部（3 窗 × 4 跑次）逐字节同件。",
+  "cases_per_run": 58,
+  "families": {
+   "life": 14,
+   "nim": 15,
+   "sub": 14,
+   "wythoff": 15
+  },
+  "windows": [
+   "w220",
+   "w221",
+   "w222"
+  ],
+  "reps_per_window": {
+   "C1": 1,
+   "R628D": 3
+  },
+  "prior_window_sets": {
+   "set1": {
+    "rounds": [
+     "r585",
+     "r586",
+     "r587",
+     "r588"
+    ],
+    "median_D_task": -0.6667,
+    "neg_windows": 8,
+    "valid_windows": 9
+   },
+   "set2": {
+    "rounds": [
+     "r591"
+    ]
+   },
+   "set3": {
+    "rounds": [
+     "r595"
+    ]
+   },
+   "set4": {
+    "rounds": [
+     "r596"
+    ],
+    "median_D_task": -0.5,
+    "neg_windows": 2,
+    "valid_windows": 2
+   },
+   "rule": "跨窗集**禁相减**，只并列（docs/external-reference-harness.md §12.3）；阈值 −0.34 同一件、非事后调。"
+  },
+  "g1_prompt_chars": 2182
+ },
+ "single_variable": "本轮自变量 = **窗集**（真机臂轮，新窗 w220..w222）。题集（逐字节复用，g1 题面 sha256 已钉）、夹具（`cases-r521` 冻结件）、判据（v3，逻辑源 = `eval/rover/r589/pool_taskface_r589.py` import）、臂配置（产品默认档：剂量键全部显式 unset）在本轮 12 跑次内恒等 ⇒ 构成判据 v3 的**第五窗集**，用于在**当前件**上刷新「质量 vs 外部真值」面并继续累积有效窗（DoD 面 5）。\n跳步 §1.2 三臂表（T/C/C1）：本轴为**同件扩窗**（无 env 轴 ⇒ 无「轴关 = 旧行为」臂），与 R585–R596 同处置；替代物 = 历史窗集并列件 + 同件 4 跑次逐字节同 sha。",
+ "criterion_version": "v3",
+ "arms": {
+  "C1": {
+   "side": "codex",
+   "bin": "$HOME/.agentframework/tools/codex-env/node_modules/.bin/codex",
+   "model": "deepseek-flash",
+   "reps": 1,
+   "role": "外部真值（同环境·同输入·同模型）"
+  },
+  "R628D": {
+   "side": "agent",
+   "bin": "$HOME/.agentframework/artifacts/pub_r619/agenthost",
+   "env": {
+    "AGENTFRAMEWORK_R1_CONTRACT": "1",
+    "dose_keys": "全部显式 unset（产品默认档）"
+   },
+   "reps": 3
+  }
+ },
+ "axis_criteria_R628": {
+  "note": "主判据 = 判据 v3（整题全对率 + 按族分列；器具 `pool_taskface_r628.py` 复用 r589 逻辑源）。`kpi_r628.py` 的 C1（用例级配对）只作**同向参照**（v2 判决面已在 docs/external-reference-harness.md §12.3 作废）。",
+  "C0 真值可靠性": "真值跑次 58/58 不成立 ⇒ 该窗 unreliable，不进配对、单列（禁筛窗）。",
+  "C1 用例级配对（参照）": "有效窗 ≥2 ∧ 配对中位 ≥ −2 ∧ 无窗 ≤ −15（阈值照旧，仅作同向参照，不出判决）。",
+  "C2 成本三列": "调用数 / 新算 prompt / completion **分列**（禁合并名义总量）；命中率标口径（中继 dump 时间轴 v_all/v_incr；未上报 ⇒ 单列，禁当 0）。信息项，不判红绿。",
+  "C3 起手闸余量条款": {
+   "prev_swing_source_rule": "只取**同态在飞窗**的运行期采样（R590-C2）；只读轮无运行期采样器 ⇒ 不可作源。",
+   "prev_swing_effective": 224,
+   "prev_swing_evidence": "~/.agentframework/harness/runs/r621/logs/run-samples.jsonl（n=197, min 2630MB, max 2854MB, swing 224MB；同态在飞窗）",
+   "clause": "MARGIN := clamp(prev_swing_effective, floor=60, cap=CEIL−GATE−floor); REQ = GATE(2650)+MARGIN；起手前 3 样本 CEIL=min 且极差 ≤50MB（fail-closed）；报 cap_binding。",
+   "discrimination_control": "同内存态下 基础门槛 PASS ∧ 条款 GATE_BLOCKED（压制量>0 时行使；量 0 ⇒ 如实记未行使）。"
+  },
+  "C5 缺口复现": "与 set1/set2/set3/set4 并列比：同号 ∧ 区间重叠 ⇒ 缺口跨窗集复现；**禁相减**。",
+  "C6 步数列": "steps_executed / plan_steps_total 非空率 = 100% 才过（缺档 ⇒ rc=2 器具缺陷）。",
+  "C7 判据 v3 第五窗集（**主判据**）": {
+   "judge": "有效窗 中位 ≤ −0.34 ∧ 负号窗 ≥ 半数 ⇒ PASS（缺口成立）；否则 FAIL。阈值 −0.34 写死，非事后调。",
+   "secondary": "按族分列（life/nim/sub/wythoff 的 all-pass 率 + 失败原因直方图），与 set1..set4 **并列**。",
+   "third_face": "铁律 11 前置器 rc（executable_and_correct ∧ acceptable_scoped）；rc≠0 ⇒ 全部质量/成本读数标「参考（未可验收）」。",
+   "resolution_bound": "set3/set4 各仅 2 有效窗 ⇒ 中位与摆动未分离；本轮把有效窗推高，**仍不足以单独作能力结论**（摆动 ≥ 效应纪律）。"
+  },
+  "C11 只读性": "非本轮真机臂面（历史快照树、冻结夹具、产品源码）的 sha256 清单前后一致 ⇒ PASS；`git diff --stat src/` 为空。",
+  "C12 铁律 11 前置器": "`exec_precondition.py --round r628` 逐跑次产物独立物化 + 真跑 + 逐用例判对；rc≠0 ⇒ 全部质量/成本降级读数标「参考（未可验收）」。",
+  "C13 器具面负控纪律（承 R627 候选 ②）": "本轮所有负控/控制判据**禁用 `agreement(臂, 产品)` 形态**（R627 自捕：分子含产品自身 miss ⇒ 无牙），一律用**臂间差异量**（symdiff / 命中数差）；阈值出处 = `baselines#rerank-oracle-form`。本面本轮**无精排臂** ⇒ 记「不适用（无该形态判据）」。"
+ },
+ "baselines_ref": [
+  "F_merge.quality.cases_median_truth",
+  "F_merge.quality.allpass",
+  "F_orch.cost.calls_sum",
+  "F_merge.cost.new_prompt_sum",
+  "F_merge.cache.hit_v_all",
+  "F_merge.gate.precondition_rc",
+  "F_env.gate.prev_swing_mb",
+  "F_env.gate.ceiling_mb",
+  "F_orch.wythoff.pass_r606",
+  "F_merge.zero_regression.C_probe_repairs"
+ ],
+ "falsification": [
+  "证伪①：若本窗集「有效窗 ≥2 ∧ 中位 ≤ −0.34 ∧ 负号窗 ≥ 半数」**不成立**（即缺口不在当前件复现）⇒ 「wythoff 族质量缺口为跨窗集稳定缺口」的假设被证伪 ⇒ 该缺口按 §3 R2 降为观察项并换杠杆。",
+  "证伪②：若按族分列中 wythoff 族 all-pass 率 **≥0.9**（前四窗集为 0.389/0.444/0.556）⇒ 「缺口 100% 集中单族」被证伪（缺口散布到其它族）⇒ 处置面需重定。",
+  "证伪③：若真值臂出现 58/58 不成立的窗 ⇒ 判 unreliable 剔除后重算，若剩余有效窗 <2 ⇒ rc=3 停链（禁下调阈值）。",
+  "证伪④：若成本三列中产品**调用数**低于真值但 completion 反而高于 set 内中位 >50% ⇒ 「默认档成本同向」假设不确定，按 R5 记摆动带。"
+ ],
+ "candidate_ledger_R628": {
+  "① 面 4 达标路径处置裁定": "**未做（待用户放行）**：R627 已把缺口收束为「并集天花板 0.7917 < 目标 0.9」，三种续法产出不同交付物 ⇒ 属三类升级中的「放行/方向裁定」。",
+  "② 负控指标形态转正（R627 自捕）": "已实施（C13：本轮判据面一律引 `baselines#rerank-oracle-form` 的**臂间差异量**口径；本轮无该形态判据 ⇒ 记不适用）。",
+  "③ 归并/截断次序轴": "**已证伪关闭**（R627：gain 0/120）⇒ 本轮不再开同类候选（一问题不吃多轮）。",
+  "④ 面 4 器具面剩余候选": "无新增（R627 已判「同形 oracle 禁升级为能力面上界」）。",
+  "⑤ 文献小步": "本轮做（N6，出口前置探针 + ≤3 式 + 台账追加）。",
+  "⑥ wythoff 族质量缺口（RF0005 §4 并行面）": "本轮做（真机臂轮 w220..w222 出族分列读数 = 复现/非复现判决）。",
+  "⑦ R624 轮块 §7 未同步": "**不单独开轮**（只增量追加、不补写历史轮）。"
+ },
+ "evidence_scope": {
+  "require": [
+   "eval/rover/r628/dag-r628.md",
+   "eval/rover/r628/prereg-r628.json",
+   "eval/rover/r628/taskset-r628.json",
+   "eval/rover/r628/gate-margin-r628.json",
+   "eval/rover/r628/kpi-table-r628.json",
+   "eval/rover/r628/verdict-r628.json",
+   "eval/rover/r628/taskface-pool-r628.json",
+   "eval/rover/r628/bins-r628.json",
+   "eval/rover/r628/report-r628.md",
+   "eval/rover/r628/run_r628.sh",
+   "eval/rover/r628/snapshots",
+   "eval/rover/r628/evidence/windows"
+  ],
+  "note": "12 件（与 C0–C13 判据面一一对应；缺件 ⇒ 该判据面记未完成、不入结论）。`snapshots` 面 = 3 窗 × 4 跑次的 g1 快照树（逐字节归档，供铁律 11 前置器 project 布局发现）。",
+  "out_of_scope": [
+   "src/**（候选① 待放行 ⇒ 零产品改动）",
+   "cases-r521 冻结件（逐字节不变）",
+   "R585–R627 在盘读数（只作并列件/零回归对照臂，禁相减）"
+  ]
+ }
+}

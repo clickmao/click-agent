@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R627",
+ "updated_round": "R628",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -7720,6 +7720,32 @@
    "runs": 1,
    "verdict": "面 4 = 器具面判据形态**修法完成 · 仍未达标**（rc=1，`defects=[P3-negctl-metric-form]`）。主判据（同形口径正控）**PASS**：agreement 1.0000 ≥ 0.90，且逐例复现产品（88/88、差异 0）⇒ R626 的 0.8409 全部由**比较形态**解释。器具层另 1 条缺陷（负控指标形态）**未闭合**⇒ rc=1；**零产品源码改动 ⇒ 无任何能力/成本增益宣称**；生产口径 R@N 0.7333 < 0.9 的达标路径**待用户放行**。",
    "aot": "未跑（本面为零远端 / 纯 Python 器具轮，未构建、未发布产品件）⇒ 证据阶梯按实定级 **L2**，不升级；AOT 校验按 registry `aot_check_policy` 仅在【发布 tag】时执行。"
+  },
+  {
+   "id": "r628.contrast-v3-primary-criterion-missing",
+   "owner_round": "R628",
+   "level": "L2",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "fc979f69471f",
+    "instrument": "eval/rover/r628/run_r628.sh",
+    "instrument_sha12": "ebf4b77bc8ea",
+    "binding": "audit-pin",
+    "audited_by_round": "R628"
+   },
+   "capability": "RF0005 §0 DoD **质量轴**第五窗集（w220–w222）对照轮的**测量层缺陷登记**：`criteria` 声明「C7 判据 v3 第五窗集（**主判据**）」（阈值 −0.34 写死），而 `verdict-r628.json` **顶层无 C7 键** ⇒ 判决 `rc=1/FAIL(质量配对未过)` 实由 **C1（用例级配对）** 出，而 C1 自述「仅作同向参照、不出判决」（`verdict-r628.json` sha12 **e37fd98429da**；v2 判决面已于 docs/external-reference-harness.md §12.3 作废）。同轮第二件：`verdict.iron11` 指针 `eval/rover/r507pre/precondition-r628.json` **不存在**，实际落盘 `~/.agentframework/harness/runs/r628/precond-r628.json`（轮目录之外）。**处置**：预注册与已记录判决**均不改写**；主判据读数记「未落盘（不可判）」，本轮质量面**不得**据此宣称达标/降级。",
+   "evidence_path": "eval/rover/r628/evidence/instrument-defects-r628.json",
+   "evidence_cmd": "python3 -c \"import io,json;v=json.load(io.open('eval/rover/r628/verdict-r628.json'));print('C7' in v, [k for k in v['criteria'] if k.startswith('C7')])\"",
+   "negative_control": "成对：正控 = 现盘 verdict（`'C7' in v == False` ∧ criteria 声明主判据 ⇒ 判「缺陷存在」= True）；负控 = 注入 `C7` 键的副本 /tmp/verdict-r628-nc.json（⇒ 判 False）⇒ 判据有牙（正控 True / 负控 False，见 evidence 文件 teeth 字段）。",
+   "covers": [
+    "主判据键落盘与否可机判（判决面 == 预注册主判据面）",
+    "铁律 11 证据指针可复核性（指针存在性）"
+   ],
+   "runs": 9,
+   "verdict": "器具缺陷（测量层）：主判据键缺失 ⇒ 判决面 ≠ 预注册主判据面；质量面按主判据不可判，成本/质量降幅标「参考（未可验收）」（铁律 11 rc=1，9 跑次中 7 blocked，失败用例 100% 集中 wythoff 族；w221 真值臂 56/58 自败 ⇒ 该窗 unreliable 单列）",
+   "aot": "未跑（对照读轮：产品源码零改动、未构建未发布新产物）⇒ 证据阶梯按实定级 **L2**，不升级；AOT 校验按 registry `aot_check_policy` 仅在【发布 tag】时执行。"
   }
  ],
  "aot_check_policy": "release_tag_only",

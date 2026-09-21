@@ -1,0 +1,16 @@
+{
+ "round": "R628",
+ "instrument_defect": "C7-primary-criterion-key-missing",
+ "declared": "criteria 键「C7 判据 v3 第五窗集（**主判据**）」明写主判据；verdict-r628.json 顶层无 C7 键",
+ "verdict_source": "C1（用例级配对）——criteria 自称「仅作同向参照, 不出判决」+ v2 判决面已作废",
+ "positive_control_live": true,
+ "negative_control_injected_key": false,
+ "teeth": true,
+ "evidence_cmd": "python3 -c \"import io,json;v=json.load(io.open('eval/rover/r628/verdict-r628.json'));print('C7' in v, [k for k in v['criteria'] if k.startswith('C7')])\"",
+ "iron11_pointer": {
+  "declared_in_verdict": "eval/rover/r507pre/precondition-r628.json",
+  "declared_exists": false,
+  "actual": "~/.agentframework/harness/runs/r628/precond-r628.json",
+  "actual_exists": true
+ }
+}
