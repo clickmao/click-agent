@@ -497,3 +497,13 @@ R607 = 采信 1（arXiv:2609.20804v1 组件级消融口径等）⇒ **本 R608 =
 
 - 本轮**采信 1 条**（2505.14432v1，机制支持档）⇒ 连续 0 采信计数**归零**（`lit-review-ledger §21` 记「第 1 轮」），**检索不降频**。
 - 近月预印本 cited_by_count：Semantic Scholar 需 key，本轮**未取**⇒ 引用数「不可用」，不编造。
+
+### 23. R626 文献小步（2026-09-22）· **顺延**
+
+| 日期 | 检索式 | 出处（含版本） | 逐字引文 | 机制假设 | 改哪一格 KPI | 单变量轴 + 判据 | 状态 |
+|---|---|---|---|---|---|---|---|
+| 2026-09-22 | `"dense retrieval recall failure analysis"` / `"reranking candidate pool recall"` / `"retrieval augmented generation chunk granularity"`（cat cs.CL, max 6, sort date） | — | — | — | — | — | **未取到原文 ⇒ 不采信**；本轮 **3 式全 0 结果** ⇒ **顺延**（顺延计数 +1） |
+
+- **顺延原因（1 行）**：arXiv 出口本轮不可达 —— 直探 `curl -sS -m 30 'https://export.arxiv.org/api/query?...'` 返回 **HTTP 000 / `curl: (28) Connection timed out after 30002 ms`**，故 3 式「0 结果」**并非检索无命中**。
+- **器具备注（非文献，入档）**：`search_arxiv.py` 在**网络失败**与**检索无命中**两种情形下**同形输出**（rc 0 + `No results found.`）⇒ 单看脚本回显会把「网络不可达」读成「该检索式无命中」，并据此误判「连续 0 采信 ⇒ 检索降频」。**正解 = 降频判定必须绑定出口可用性证据（直探 HTTP 码/超时）**，出口不可达的轮次不计入「连续 0 采信」计数。本条与 skill「测量层故障必须可见」同族。
+- 本轮**采信 0 条**（出口不可达）⇒ 按上条口径，**不计入连续 0 采信**，检索**不降频**；下轮恢复检索。

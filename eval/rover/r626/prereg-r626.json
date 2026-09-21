@@ -1,0 +1,112 @@
+{
+ "round": "R626",
+ "kind": "read-only-attribution",
+ "face": "RF0005 §0 DoD 面 4 · 上下文精排 —— **召回面逐例归因**（R625 主判据未达标来源分层）",
+ "written_before_run": true,
+ "written_at": "2026-09-22T04:20+0800",
+ "lever_switch_reason": "R625 收口后面 4 生产口径 R@N=0.7333（88/120）未达标，且 R625 下轮候选①明文要求「须先只读定位 88/120 之外的 32 例」⇒ 本轮 = RF0005 §2 步 2「选靶（缺口归因）」，题目是**归属层**而非第 4 次读数。分档依据 = 前 3 轮（R623 四值 / R624 形态对齐 / R625 口径对齐）各有**改判**（非同一读数重复），满足 §1-硬约束 2 的『唯一单变量』前提之外：本轮为定因轮（无臂），按 R622/R593/R594 先例形态执行。",
+ "premise_readonly": {
+  "F1_missed_set": {
+   "claim": "生产口径（vec × K=10 = B10）未召回集 = 32 例",
+   "evidence": "eval/rover/r625/out/B10.json 逐例 gold_in_pool（冻结件，本轮只读）",
+   "class": "读数（非缺陷）"
+  },
+  "F2_no_structural_for_vec_form": {
+   "claim": "vec 形态下「结构性不可召回」= 0（全池 K=1299 时 gold_in_pool 120/120）",
+   "evidence": "eval/rover/r624/verdict-r624.json readings.B3 = {k: 1299, gated: 120, rate: 1.0}",
+   "implication": "⇒ 32 例缺口全部落在**排序/单元粒度/池宽**面，不在「gold 不可得」面（与 R625 在 hash 形态下测得的 structural=22 不同源，禁混用）",
+   "class": "读数（非缺陷）"
+  },
+  "F3_truncation_window": {
+   "claim": "生产 dense 路实收输入 = text[..440]（首块向量只覆盖前 440 单元），>440 单元的后文只以**独立 chunk 文档**形式入索引（Id = base#cN）",
+   "evidence": [
+    "src/agent.rag/RAGRecall.cs:196  document.Embedding = GenerateEmbedding(document.Content)",
+    "src/agent.rag/RAGRecall.cs:203-219  if (document.Content.Length > 440) ⇒ 逐 440 单元切块，块 Id = $\"{document.Id}#c{chunkIdx}\"",
+    "src/agent.rag/RAGRecall.cs:604  const int maxEmbedChars = 440;  embedInput = text[..440]",
+    "eval/rover/r624/vec/manifest-r624.json  n_docs_gt_440 = 643 / 1299"
+   ],
+   "implication": "① 单元粒度与文档粒度**不同**（chunk 是独立 id）⇒ 判据（doc 级 gold_in_pool 精确 id 匹配）与交付（chunk 文本）可能口径不一致；② 440 单元截断使首块向量对长文档的信号被截",
+   "class": "待本轮量化（不预设结论）"
+  }
+ },
+ "single_variable": {
+  "axis": "无（定因轮，非臂轮）——唯一自由度 = 独立 oracle 的**实现**（与被测 C# 零共享代码）",
+  "held_constant": [
+   "冻结件逐字节复用：eval/bge/fixtures（corpus sha12 fa7c448c505d / queries sha12 b37fbe564e23）",
+   "向量件逐字节复用：eval/rover/r624/vec/*（corpus-trunc440 sha256 345cf52c0784 / chunks e0ab8cd5d088）",
+   "产品源码零改动（本轮不构建、不重发布、不重跑臂）"
+  ],
+  "note": "本轮**不产生新臂读数** ⇒ 与 R623/R624/R625 的读数**只并列派生、禁跨轮相减**；62 例五桶守恒沿用 R625 的 A10 基线并在本轮对 **vec/B10** 基线重算。"
+ },
+ "arms": {
+  "无臂": "定因轮：输入 = 冻结读数件 + 冻结向量件 + 冻结语料/查询；输出 = 逐例归属表 + 分层计数 + 判决"
+ },
+ "independent_oracle": {
+  "what": "Python（stdlib only，array 模块）独立实现：①cos 相似度 + 全序 argsort（dense 面）②BM25（k1=1.2,b=0.75，**全文不截断**，词法面）",
+  "shared_code_with_sut": "0（被测为 C#；oracle 不 import 任何本仓模块；向量件为输入而非代码）",
+  "independence_boundary": "**向量源不独立**（用被测侧产出的冻结 f32）；该源的同源性已由 R624 G0（权重 sha256 同值 + 同基座 min cos 0.99990 + 另一基座 768 维 max cos 0.102 有牙）覆盖 ⇒ 本轮只主张**排序实现**与**单元映射**独立。",
+  "unit_universe": "head 1299（= 每文档 text[..440] 向量）∪ chunk 641（= i≥1 块向量，父文档由切块规则重放映射）⇒ 1940 单元",
+  "anchoring": "重放切块（UTF-16 code unit 单位，承 R624 单位纪律）产出的块文本必须与 keys-chunks.jsonl **逐位一致**（641/641）"
+ },
+ "criteria": [
+  {
+   "id": "P1",
+   "name": "秩带分层（从**已在盘**冻结臂派生，禁重跑）",
+   "expect": "32 例按 gold_in_pool 逐档划分：band1 = |M10 \\ M50|（rank ∈ (10,50]）· band2 = |M50 \\ M200|（(50,200]）· band3 = |M200 \\ M1299|（(200,1299]）；守恒 = band1+band2+band3 == 32 == |M10|",
+   "sources": ["eval/rover/r625/out/B10.json", "eval/rover/r625/out/B50.json", "eval/rover/r624/out/B2.json", "eval/rover/r624/out/B3.json"],
+   "baseline_id": "rerank-recall-shape",
+   "falsify_if": "band 之和 != 32（⇒ 冻结件不同源/口径漂移 ⇒ rc=3）"
+  },
+  {
+   "id": "P2",
+   "name": "主判据 · 逐例四分（独立 oracle）",
+   "expect": "对 32 例逐例求：rank_doc（gold 首块在被测同源向量下、仅 head 单元的独立 dense 秩）· rank_any（gold 首块 ∪ 其 641 块中最佳单元、在 1940 单元并集下的独立 dense 秩）· rank_lex（BM25 全文独立秩）。分类：L-A 单元粒度面（rank_any ≤ 10 ∧ rank_doc > 10）· L-B 排序信号面（rank_any > 10）· L-C 索引面（gold 无任何单元）。",
+   "threshold": "守恒 |M10| == 32 == L-A + L-B + L-C ∧ L-C == 0；**L-A 占比 ≥ 0.30 ⇒ 采信「单元粒度面是承重层之一」**；< 0.30 ⇒ 该假设证伪（登记，不加轮）",
+   "baseline_id": "rerank-production-caliber",
+   "falsify_if": "① L-C > 0 ⇒ F2 证伪（全池 1.0 不成立）⇒ 达标路径须先修索引面；② L-A 占比 < 0.30"
+  },
+  {
+   "id": "P3",
+   "name": "截断 / 全文字面信号面（量化 + 阈值）",
+   "expect": "① 交叉表：miss(32) vs hit(88) 的 gold 文档「UTF-16 单元长度 > 440」占比（Fisher 精确检验双侧 p）② 独立 BM25 全文秩 ≤ 10 的占比，miss 侧 vs hit 侧",
+   "threshold": "miss 侧「rank_lex ≤ 10」占比 ≥ 0.30 ⇒ 采信「字面信号在全文而不在 440 窗（或不在融合输出）」；≤ 0.10 ⇒ 证伪；0.10–0.30 之间 ⇒ 记「无定论」"
+  },
+  {
+   "id": "P4",
+   "name": "oracle 自证（正控 / 负控 / 锚定）",
+   "expect": "正控 = hit(88) 的 rank_any ≤ 10 占比 ≥ 0.90（度量敏感）· 负控 = query 向量循环移位 1 后 hit 占比 ≤ 0.20（崩塌）· 锚定 = chunk 映射逐位一致 641/641",
+   "falsify_if": "负控不崩塌（> 0.20）或锚定 < 641 ⇒ **器具缺陷 ⇒ rc=3**，读数作废、不判被测（R410 假红纪律）"
+  },
+  {
+   "id": "P5",
+   "name": "零回归 / 冻结",
+   "expect": "`git status --porcelain -- src/` == 0 ∧ 本轮不改任何被 pin 器具（status_gen.py / roundcheck.py 未动）∧ fixtures sha12 与 R625 记录一致",
+   "baseline_id": "frozen-corpus-and-arm-hygiene"
+  }
+ ],
+ "falsification_entries": [
+  {"id": "F-a", "if": "L-C > 0", "then": "「vec 形态结构性不可召回 = 0」被证伪 ⇒ 面 4 达标路径改框定为索引面（登记，不加轮）"},
+  {"id": "F-b", "if": "L-A 占比 < 0.30", "then": "「单元粒度（chunk vs doc）口径差是承重层」被证伪 ⇒ 该候选移出下轮清单"},
+  {"id": "F-c", "if": "miss 侧 rank_lex ≤ 10 占比 ≤ 0.10", "then": "「截断/字面信号是缺口来源」被证伪 ⇒ 440 截断候选关闭"},
+  {"id": "F-d", "if": "负控 hit 占比 > 0.20", "then": "oracle 无牙 ⇒ rc=3（器具缺陷；禁据此判被测）"}
+ ],
+ "predeclared_expected": [
+  "|M10| == 32",
+  "L-C == 0（承 F2）",
+  "rank_doc > 10 的例占比 = 1.00（因产品 K=10 池内无 gold）",
+  "L-A 占比 **未知**（本轮待测；若不 ≥0.30 则按 F-b 证伪）"
+ ],
+ "budget": {
+  "remote_llm_calls": 0,
+  "new_fixtures": 0,
+  "product_source_change": 0,
+  "arxiv_queries": 6,
+  "arxiv_note": "首 3 式为长短语（逐字引号）= 0 结果；后 3 式为短短语（1 式命中 1896 条噪声、1 式 0 结果、1 式 15 条相关）⇒ 台账如实记 6 式（含首次器具连通性验证）"
+ },
+ "verdict_policy": {
+  "rc0": "判据全绿（含 P2/P3 采信或证伪均如实登记）",
+  "rc1": "器具可用 ∧ 主判据未达标 / 缺口归属落到未放行的 src 面（阻塞登记）",
+  "rc2": "判据实现缺陷（须单列 checks_posthoc，原判据不翻案）",
+  "rc3": "输入缺失 / 冻结件不同源 / 器具无牙 ⇒ 停链（禁下调阈值）"
+ }
+}
