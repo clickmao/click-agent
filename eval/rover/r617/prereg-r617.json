@@ -1,0 +1,109 @@
+{
+ "round": "R617",
+ "written_before_run": true,
+ "written_at": "2026-09-21T14:41:46+08:00",
+ "author": "cron capability-cycle (R617)",
+ "protocol": "docs/plans/RF0005-completion-protocol.md §2 固定环 0–9 / §1 迭代单元七硬约束",
+ "claim": "R615 的 J1 显示键到达 8/9 但**有声明**仅 2/9（6/8 为「到达但空数组」），首要嫌疑 = 尾块里的**豁免句**「plan 已表达的写文件/执行步骤**不要**在本字段里重复声明」。本轮把该句改成**必声明句**（执行面只读本字段），单变量重测「有声明跑次率」。",
+ "single_variable": {
+  "axis": "AGENTFRAMEWORK_R1_ACTION_PROMPT",
+  "T": "unset ⇒ 产品新缺省（R617 尾块：豁免句 → 「执行面**只读本字段**；plan 里需要工具执行的动作必须逐条重复声明」）",
+  "C": "r615 ⇒ R615 现盘尾块（**逐位**：前缀 sha256 == 8b8be6b8070e92a9d5d5bef697759c186c93b8ccafe47d55540b3393d95d351b）",
+  "C1": "codex-cli 外部真值（同题面/同夹具/同窗）",
+  "why_only_one": "尾块措辞是唯一会改变远端输入字节的自由度；到达面遥测与轴解析不改变决策（单测钉住）。",
+  "third_anchor": "legacy（R610–R614 冻结块 a9792fdbe5b2…）仍在册，本轮不作臂（第二锚只保轴历史档可复现）。"
+ },
+ "arms": {
+  "C1": {
+   "side": "codex",
+   "reps": 1,
+   "env": {}
+  },
+  "T": {
+   "side": "agent",
+   "reps": 3,
+   "env": {}
+  },
+  "C": {
+   "side": "agent",
+   "reps": 3,
+   "env": {
+    "AGENTFRAMEWORK_R1_ACTION_PROMPT": "r615"
+   }
+  }
+ },
+ "windows": {
+  "set": [
+   "w205",
+   "w206",
+   "w207"
+  ],
+  "disjoint_from_history": true,
+  "history_up_to": "w204（R615 用 w202..w204；本轮起 w205，与历史窗集不相交）"
+ },
+ "criterion_version": "v3",
+ "thresholds_cite_baselines": [
+  "F_env.prefix.sha256",
+  "F_env.prefix.chars",
+  "F_env.prefix.r615_anchor",
+  "F_merge.quality.cases_median_truth",
+  "F_merge.cache.hit_v_all",
+  "F_merge.cost.new_prompt_sum"
+ ],
+ "criteria": {
+  "J0_arm_axis_effective": {
+   "need": "逐跑次 `prefix_sha256`：T 档全 == 25c97befa2124549… ∧ C 档全 == 8b8be6b8070e92a9…（两档集合互斥）",
+   "why": "**臂未净 ⇒ 闸假阴性**：若轴未生效（两档同 sha），J1 的任何差异都不是被测变量的效果。",
+   "fail_closed": "违反 ⇒ defects ⇒ rc=2（器具/臂无效，禁作被测结论）"
+  },
+  "J1a_declaration_lift": {
+   "need": "T 有声明跑次 ≥ C 有声明跑次 + 2 ∧ T 有声明跑次 ≥ 2（R615 T 档为 2/9 ⇒ 预期 ≥4/9）",
+   "why": "预注册的**方向性**判据：删/改豁免句须抬高声明面；不到 +2 即无效应，如实收窄（不得改口径凑绿）。",
+   "forbidden_reading": "禁用「到达率上升」直接当能力面达标；能力面看 J4。"
+  },
+  "J1b_arrival_non_vacuous": {
+   "need": "T 键到达跑次 ≥ 1 ∧ present 字段无 0 值（渲染漂移 ⇒ rc=2）",
+   "inherited_from": "R615 一字未改"
+  },
+  "J2b_selection_conservation": {
+   "need": "有声明跑次 > 0 ∧ 逐跑次 accepted + rejected == declared（违例 0）",
+   "vacuous_green_guard": "声明数为 0 时守恒式真空成立 ⇒ 必须要求有声明跑次 > 0，否则判 NO_DECLARATION_VACUOUS"
+  },
+  "J2_repair_convergence": {
+   "need": "T_converged >= C_converged + 1",
+   "inherited_from": "R610 一字未改"
+  },
+  "J3_cost": {
+   "form_in_force": "v2 (a1 ∧ a2 ∧ b1)",
+   "unit": "调用数 / 新算 prompt / completion 三列分列，禁用名义总量",
+   "cross_round": "与被测件变更的历史轮**禁相减**，只并列"
+  },
+  "J4_capability": {
+   "need": "整题全对率 T >= C ∧ 与同窗 codex 配对",
+   "power": "n=9/档 ⇒ 欠功率，只作并列",
+   "external_truth": "codex-cli 同题面同夹具同窗"
+  },
+  "J5_cross_windowset": {
+   "note": "并列项，不改主 rc；判据器改版 ⇒ 跨轮禁相减"
+  },
+  "ironlaw11": "收口前必跑 eval/rover/r507pre/exec_precondition.py --round r617；rc≠0 ⇒ 本轮降幅一律标「参考（未可验收）」。"
+ },
+ "falsification": [
+  "① J1a 未过（T 有声明跑次 < C+2）⇒ 该措辞轴降为**观测项**、写死重开条件、**不宣称任何收益**（净产品改动保留但只在报告里登记为「无效应」）。",
+  "② J0 未过（两档 prefix_sha256 相同或与 pin 不符）⇒ 整轮 VOID（rc=2，禁作被测结论），先修臂再谈读数。",
+  "③ 有效窗 < 2（真值自败窗剔除后）⇒ rc=3 停链、先造窗集，**禁下调阈值**。"
+ ],
+ "evidence_scope": {
+  "require": [
+   "prereg-r617.json（先写后跑闸）",
+   "bins-r617.json（全臂同一枚二进制 + codex 指纹）",
+   "prefix-r617.json（只加厚不变量 + 三档轴锚）",
+   "gate-margin-r617.json（起手闸余量条款）",
+   "logs/run-samples.jsonl（运行期内存采样，供下轮 swing 重派生）",
+   "kpi-table-r617.json（KPI 表）",
+   "verdict-r617.json（判决件）"
+  ],
+  "note": "缺任一项 ⇒ 该轮不可收口（收口五件 = 轮工件/证据文档/registry 行/kpi 行带 baselines/逐名列名提交）"
+ },
+ "supersedes": "无（R615 读数并列在档，不相减）"
+}

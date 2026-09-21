@@ -1,0 +1,1 @@
+"""games: multi-game package."""

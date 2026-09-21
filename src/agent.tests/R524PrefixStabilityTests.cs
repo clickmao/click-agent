@@ -203,4 +203,64 @@ public sealed class R524PrefixStabilityTests
         Assert.False(f(""));
         Assert.False(f(null));
     }
+
+    // ---- R617 单变量轴第二档 `r615`（对照臂 = R615 现盘块**逐位等价**） -------------------------------
+    private const string R615FrozenPrefixSha =
+        "8b8be6b8070e92a9d5d5bef697759c186c93b8ccafe47d55540b3393d95d351b";
+
+    [Fact]
+    public void R617_轴r615档_逐位等于R615冻结pin()
+    {
+        var r615 = agent.contract.StructuredPrompt.PrefixForCode(1);
+        Assert.Equal(15794, r615.Length);
+        Assert.Equal(agent.contract.StructuredPrompt.PrefixR615Chars, r615.Length);
+        Assert.Equal(R615FrozenPrefixSha, agent.contract.StructuredPrompt.Sha256Of(r615));
+        Assert.Equal(R615FrozenPrefixSha, agent.contract.StructuredPrompt.PrefixR615Sha256Pinned);
+        Assert.Equal(agent.contract.StructuredPrompt.Sha256PinnedForCode(1), agent.contract.StructuredPrompt.Sha256Of(r615));
+        Assert.Equal(agent.contract.StructuredPrompt.CharsForCode(1), r615.Length);
+        // 三档互异（负控：任何两档不得同 sha）
+        var cur = agent.contract.StructuredPrompt.PrefixForCode(0);
+        var lg = agent.contract.StructuredPrompt.PrefixForCode(2);
+        var shas = new[] { agent.contract.StructuredPrompt.Sha256Of(cur), agent.contract.StructuredPrompt.Sha256Of(r615), agent.contract.StructuredPrompt.Sha256Of(lg) };
+        Assert.Equal(3, System.Linq.Enumerable.Distinct(shas).Count());
+    }
+
+    [Fact]
+    public void R617_轴判定_仅r615字样翻档_近似拼写落缺省档()
+    {
+        var f = agent.contract.StructuredPrompt.IsR615Value;
+        Assert.True(f("r615"));
+        Assert.True(f(" r615 "));
+        Assert.True(f("R615"));
+        // 负控：近似但不等于 ⇒ 缺省档（不得把拼写错误读成对照臂）
+        Assert.False(f("r6150"));
+        Assert.False(f("r61"));
+        Assert.False(f("legacy"));
+        Assert.False(f(""));
+        Assert.False(f(null));
+        // 轴编码三档映射（纯函数）
+        Assert.Equal(0, agent.contract.StructuredPrompt.AxisCode("r6150"));
+        Assert.Equal(1, agent.contract.StructuredPrompt.AxisCode("R615"));
+        Assert.Equal(2, agent.contract.StructuredPrompt.AxisCode("legacy"));
+    }
+
+    [Fact]
+    public void R617_新档_只加厚_尾块置换且前后段逐位不变()
+    {
+        var r615 = agent.contract.StructuredPrompt.PrefixForCode(1);
+        var neu = agent.contract.StructuredPrompt.PrefixForCode(0);
+        var tailStart = r615.IndexOf("<action_candidates>", StringComparison.Ordinal);
+        Assert.True(tailStart > 0);
+        Assert.Equal(r615[..tailStart], neu[..tailStart]);
+        var closeOld = r615.IndexOf("\n\n</prefix>", tailStart, StringComparison.Ordinal);
+        var closeNew = neu.IndexOf("\n\n</prefix>", tailStart, StringComparison.Ordinal);
+        Assert.True(closeOld > 0 && closeNew > 0);
+        Assert.Equal(r615[closeOld..], neu[closeNew..]);
+        Assert.NotEqual(r615[tailStart..closeOld], neu[tailStart..closeNew]);
+        // 只加厚：新块严格不短于旧块，且整体前缀仍在 97% 缓存下限之上
+        Assert.True(closeNew - tailStart >= closeOld - tailStart);
+        Assert.True(neu.Length >= agent.contract.StructuredPrompt.PrefixMinCharsForCache97);
+        // 负控：新块**必须仍含**「顶层必填」句（措辞轴真正的承重句），否则本轴改的不是被登记的自由度
+        Assert.Contains("回复顶层必填字段", neu, StringComparison.Ordinal);
+    }
 }

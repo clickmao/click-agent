@@ -298,7 +298,7 @@ ACTION_CANDIDATES = """<action_candidates>
 args 取该工具的必填参数（write_file={path,content} / run_command={command} / read_file={path} / list_dir={path} / delete_file={path}）;
 why 一句话说明该动作在整条计划里的作用。
 该字段**必须出现**在回复顶层: 有动作则逐条列出; **确实没有动作时给空数组 `[]`**（字段缺席 = 契约不完整）。
-本字段与 plan 是**两条并行通路**: plan 已表达的写文件/执行步骤由管道执行面负责, **不要**在本字段里重复声明;
+执行面**只读本字段**: plan 里需要工具执行的动作必须在本字段**逐条重复声明**一遍（只写在 plan 里 = 不会被执行）;
 声明**不得**含请求未要求的动作。
 </action_candidates>"""
 
@@ -311,6 +311,18 @@ args 取该工具的必填参数（write_file={path,content} / run_command={comm
 why 一句话说明该动作在整条计划里的作用。声明**不得**含请求未要求的动作; 不声明 ⇒ 本地只按 plan 执行。
 </action_candidates>"""
 
+# R617 对照臂载体（**逐字节 = R615 现盘块**，由 `git show HEAD:tools/r1gen/r1prompt.py` 派生、禁手抄）：
+# 单变量对照用 —— 环境开关 `AGENTFRAMEWORK_R1_ACTION_PROMPT=r615` ⇒ 用本块重建前缀（sha 必须 = R615 冻结 pin）。
+ACTION_CANDIDATES_R615 = """<action_candidates>
+**动作候选**（**回复顶层必填字段**; **远端只做声明, 不决定执行**）: 你要做的多步工具动作**逐条声明**;
+每条 = {id, tool, args, why}; tool \u2208 delete_file|list_dir|read_file|run_command|write_file（与执行面声明同源）;
+args 取该工具的必填参数（write_file={path,content} / run_command={command} / read_file={path} / list_dir={path} / delete_file={path}）;
+why 一句话说明该动作在整条计划里的作用。
+该字段**必须出现**在回复顶层: 有动作则逐条列出; **确实没有动作时给空数组 `[]`**（字段缺席 = 契约不完整）。
+本字段与 plan 是**两条并行通路**: plan 已表达的写文件/执行步骤由管道执行面负责, **不要**在本字段里重复声明;
+声明**不得**含请求未要求的动作。
+</action_candidates>"""
+
 PREFIX = "\n\n".join([
     "<prefix version=\"%s\">" % R1_VERSION,
     # 段序（R536 与现盘逐字节对齐）：hard_gates 紧跟 role，位于契约段**之前** —— 安全前置优先，
@@ -321,12 +333,24 @@ PREFIX = "\n\n".join([
     "</prefix>",
 ])
 
+PREFIX_R615 = "\n\n".join([
+    "<prefix version=\"%s\">" % R1_VERSION,
+    ROLE, HARD_GATES + OUTPUT_CONTRACT, SEMANTICS_DICT, TOOL_MENU, ENVIRONMENT, EXAMPLES,
+    SPEC_APPENDIX, ACTION_CANDIDATES_R615,
+    "</prefix>",
+])
+
+
 PREFIX_LEGACY = "\n\n".join([
     "<prefix version=\"%s\">" % R1_VERSION,
     ROLE, HARD_GATES + OUTPUT_CONTRACT, SEMANTICS_DICT, TOOL_MENU, ENVIRONMENT, EXAMPLES,
     SPEC_APPENDIX, ACTION_CANDIDATES_LEGACY,
     "</prefix>",
 ])
+
+
+def prefix_sha_r615():
+    return hashlib.sha256(PREFIX_R615.encode("utf-8")).hexdigest()
 
 
 def prefix_sha_legacy():

@@ -1,0 +1,1143 @@
+{
+ "round": "R617",
+ "kind": "M3 第一刀（RF0004.2 R617–R612 首轮）：动作候选进 R1 契约（前缀**只加厚**）+ 本地机械裁选器 + 三计数打点；第十三窗集 w199..w201",
+ "instrument_source": {
+  "helper": "/home/agentuser/AgentFramework/eval/rover/r599/kpi_r599.py",
+  "helper_sha12": "204d7ad72cbd",
+  "j3v2_module": "/home/agentuser/AgentFramework/eval/rover/r604/judge_j3v2_r604.py",
+  "driver_sha12": "8414972a6b82"
+ },
+ "J0_arm_axis_effective": {
+  "pass": true,
+  "v1_crash_disclosed": "v1 判决件在 J0 sorted({None,str}) 处 TypeError 崩整轮汇总（15:14 日志 Traceback 在案）；v2 = 缺测哨兵 + 覆盖度列，读数面未改",
+  "need": "逐跑次 prefix_sha256（有遥测者）：T 全 == R617 pin ∧ C 全 == R615 pin ∧ 两集合互斥 ∧ 每臂非全缺席；缺席跑次单列 instrument_gap",
+  "by_arm": {
+   "T": {
+    "runs": 9,
+    "sha_set": [
+     "25c97befa2124549b52991c0338324ceee7f7702a6348641ed917d3b7b658052"
+    ],
+    "missing": 0
+   },
+   "C": {
+    "runs": 9,
+    "sha_set": [
+     "8b8be6b8070e92a9d5d5bef697759c186c93b8ccafe47d55540b3393d95d351b",
+     "∅"
+    ],
+    "missing": 1
+   },
+   "C1": {
+    "runs": 3,
+    "sha_set": [
+     "∅"
+    ],
+    "missing": 3
+   },
+   "A_T_pinned_to_R617_block": true,
+   "B_C_pinned_to_R615_block": true,
+   "C_disjoint": true,
+   "D_telemetry_coverage": true,
+   "instrument_gap": [
+    [
+     "C",
+     "w207",
+     3
+    ]
+   ],
+   "E_C1_out_of_scope": true
+  }
+ },
+ "J1_mechanism": {
+  "pass": true,
+  "J1a_declaration_lift": true,
+  "J1b_arrival_non_vacuous": true,
+  "need": "T 有声明跑次 >= C+2 ∧ T >= 2（∧ 到达 >= 1 ∧ present 无 0 值）",
+  "note": "有声明跑次 T=9/9 vs C=2/9（判据 T>=C+2 ∧ T>=2）；到达 T=9 空到达=0；空到达(旧台账不可见)=T 0 / C 5",
+  "by_arm": {
+   "T": {
+    "runs": 9,
+    "arrival_runs": 9,
+    "absent_runs": 0,
+    "empty_arrival_runs": 0,
+    "runs_with_declaration": 9,
+    "present": [
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1
+    ],
+    "declared": [
+     10,
+     14,
+     9,
+     14,
+     18,
+     10,
+     10,
+     15,
+     8
+    ],
+    "accepted": [
+     9,
+     14,
+     9,
+     14,
+     17,
+     10,
+     10,
+     14,
+     8
+    ],
+    "rejected": [
+     1,
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     1,
+     0
+    ],
+    "fallback_note": "present 字段缺席(None) ⇔ 顶层键未到达；present==1 ∧ declared 缺席/0 ⇔ 到达但空数组"
+   },
+   "C": {
+    "runs": 9,
+    "arrival_runs": 7,
+    "absent_runs": 2,
+    "empty_arrival_runs": 5,
+    "runs_with_declaration": 2,
+    "present": [
+     null,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     null
+    ],
+    "declared": [
+     null,
+     2,
+     null,
+     null,
+     6,
+     null,
+     null,
+     null,
+     null
+    ],
+    "accepted": [
+     null,
+     2,
+     null,
+     null,
+     5,
+     null,
+     null,
+     null,
+     null
+    ],
+    "rejected": [
+     null,
+     0,
+     null,
+     null,
+     1,
+     null,
+     null,
+     null,
+     null
+    ],
+    "fallback_note": "present 字段缺席(None) ⇔ 顶层键未到达；present==1 ∧ declared 缺席/0 ⇔ 到达但空数组"
+   },
+   "C1": {
+    "runs": 3,
+    "arrival_runs": 0,
+    "absent_runs": 3,
+    "empty_arrival_runs": 0,
+    "runs_with_declaration": 0,
+    "present": [
+     null,
+     null,
+     null
+    ],
+    "declared": [
+     null,
+     null,
+     null
+    ],
+    "accepted": [
+     null,
+     null,
+     null
+    ],
+    "rejected": [
+     null,
+     null,
+     null
+    ],
+    "fallback_note": "present 字段缺席(None) ⇔ 顶层键未到达；present==1 ∧ declared 缺席/0 ⇔ 到达但空数组"
+   }
+  }
+ },
+ "J2b_selection_conservation": {
+  "pass": true,
+  "reason": null,
+  "vacuous_green_closed_by": "R614（v2 判据：无声明 ⇒ fail-closed 不可判）",
+  "need": "T 档有声明跑次 > 0 ∧ 逐跑次 accepted+rejected==declared（无未裁定项）",
+  "by_arm": {
+   "T": {
+    "runs": 9,
+    "runs_with_declaration": 9,
+    "conservation_violations": 0,
+    "per_run": [
+     {
+      "win": "w205",
+      "rep": 1,
+      "declared": 10,
+      "accepted": 9,
+      "rejected": 1,
+      "conserved": true
+     },
+     {
+      "win": "w205",
+      "rep": 2,
+      "declared": 14,
+      "accepted": 14,
+      "rejected": 0,
+      "conserved": true
+     },
+     {
+      "win": "w205",
+      "rep": 3,
+      "declared": 9,
+      "accepted": 9,
+      "rejected": 0,
+      "conserved": true
+     },
+     {
+      "win": "w206",
+      "rep": 1,
+      "declared": 14,
+      "accepted": 14,
+      "rejected": 0,
+      "conserved": true
+     },
+     {
+      "win": "w206",
+      "rep": 2,
+      "declared": 18,
+      "accepted": 17,
+      "rejected": 1,
+      "conserved": true
+     },
+     {
+      "win": "w206",
+      "rep": 3,
+      "declared": 10,
+      "accepted": 10,
+      "rejected": 0,
+      "conserved": true
+     },
+     {
+      "win": "w207",
+      "rep": 1,
+      "declared": 10,
+      "accepted": 10,
+      "rejected": 0,
+      "conserved": true
+     },
+     {
+      "win": "w207",
+      "rep": 2,
+      "declared": 15,
+      "accepted": 14,
+      "rejected": 1,
+      "conserved": true
+     },
+     {
+      "win": "w207",
+      "rep": 3,
+      "declared": 8,
+      "accepted": 8,
+      "rejected": 0,
+      "conserved": true
+     }
+    ]
+   },
+   "C": {
+    "runs": 9,
+    "runs_with_declaration": 2,
+    "conservation_violations": 0,
+    "per_run": [
+     {
+      "win": "w205",
+      "rep": 1,
+      "declared": 0,
+      "accepted": null,
+      "rejected": null,
+      "conserved": null
+     },
+     {
+      "win": "w205",
+      "rep": 2,
+      "declared": 2,
+      "accepted": 2,
+      "rejected": 0,
+      "conserved": true
+     },
+     {
+      "win": "w205",
+      "rep": 3,
+      "declared": 0,
+      "accepted": null,
+      "rejected": null,
+      "conserved": null
+     },
+     {
+      "win": "w206",
+      "rep": 1,
+      "declared": 0,
+      "accepted": null,
+      "rejected": null,
+      "conserved": null
+     },
+     {
+      "win": "w206",
+      "rep": 2,
+      "declared": 6,
+      "accepted": 5,
+      "rejected": 1,
+      "conserved": true
+     },
+     {
+      "win": "w206",
+      "rep": 3,
+      "declared": 0,
+      "accepted": null,
+      "rejected": null,
+      "conserved": null
+     },
+     {
+      "win": "w207",
+      "rep": 1,
+      "declared": 0,
+      "accepted": null,
+      "rejected": null,
+      "conserved": null
+     },
+     {
+      "win": "w207",
+      "rep": 2,
+      "declared": 0,
+      "accepted": null,
+      "rejected": null,
+      "conserved": null
+     },
+     {
+      "win": "w207",
+      "rep": 3,
+      "declared": 0,
+      "accepted": null,
+      "rejected": null,
+      "conserved": null
+     }
+    ]
+   }
+  }
+ },
+ "J2_repair_convergence": {
+  "pass": true,
+  "need": "T_converged >= C_converged + 1",
+  "by_arm": {
+   "T": {
+    "runs": 9,
+    "converged": 5,
+    "rate": 0.5556,
+    "wilson95": [
+     0.2666,
+     0.8112
+    ],
+    "unmet_after": 4,
+    "per_run": [
+     {
+      "win": "w205",
+      "rep": 1,
+      "unmet": true,
+      "converged": false,
+      "probe_ran": 1,
+      "probe_failed": 2,
+      "rc": 5,
+      "stage": "expect_stdout_exhausted"
+     },
+     {
+      "win": "w205",
+      "rep": 2,
+      "unmet": false,
+      "converged": true,
+      "probe_ran": 1,
+      "probe_failed": 0,
+      "rc": 0,
+      "stage": "done"
+     },
+     {
+      "win": "w205",
+      "rep": 3,
+      "unmet": true,
+      "converged": false,
+      "probe_ran": 1,
+      "probe_failed": 1,
+      "rc": 5,
+      "stage": "expect_stdout_exhausted"
+     },
+     {
+      "win": "w206",
+      "rep": 1,
+      "unmet": false,
+      "converged": true,
+      "probe_ran": 1,
+      "probe_failed": 0,
+      "rc": 0,
+      "stage": "done"
+     },
+     {
+      "win": "w206",
+      "rep": 2,
+      "unmet": false,
+      "converged": true,
+      "probe_ran": 1,
+      "probe_failed": 0,
+      "rc": 0,
+      "stage": "done"
+     },
+     {
+      "win": "w206",
+      "rep": 3,
+      "unmet": true,
+      "converged": false,
+      "probe_ran": 1,
+      "probe_failed": 0,
+      "rc": 5,
+      "stage": "expect_stdout_exhausted"
+     },
+     {
+      "win": "w207",
+      "rep": 1,
+      "unmet": true,
+      "converged": false,
+      "probe_ran": 1,
+      "probe_failed": 1,
+      "rc": 5,
+      "stage": "run_rc_exhausted"
+     },
+     {
+      "win": "w207",
+      "rep": 2,
+      "unmet": false,
+      "converged": true,
+      "probe_ran": 1,
+      "probe_failed": 0,
+      "rc": 0,
+      "stage": "done"
+     },
+     {
+      "win": "w207",
+      "rep": 3,
+      "unmet": false,
+      "converged": true,
+      "probe_ran": 1,
+      "probe_failed": 0,
+      "rc": 0,
+      "stage": "done"
+     }
+    ]
+   },
+   "C": {
+    "runs": 9,
+    "converged": 1,
+    "rate": 0.1111,
+    "wilson95": [
+     0.0199,
+     0.435
+    ],
+    "unmet_after": 7,
+    "per_run": [
+     {
+      "win": "w205",
+      "rep": 1,
+      "unmet": true,
+      "converged": false,
+      "probe_ran": 1,
+      "probe_failed": 0,
+      "rc": 5,
+      "stage": "expect_stdout_exhausted"
+     },
+     {
+      "win": "w205",
+      "rep": 2,
+      "unmet": true,
+      "converged": false,
+      "probe_ran": 1,
+      "probe_failed": 1,
+      "rc": 8,
+      "stage": "self_test_unmet"
+     },
+     {
+      "win": "w205",
+      "rep": 3,
+      "unmet": true,
+      "converged": false,
+      "probe_ran": 1,
+      "probe_failed": 2,
+      "rc": 8,
+      "stage": "self_test_unmet"
+     },
+     {
+      "win": "w206",
+      "rep": 1,
+      "unmet": true,
+      "converged": false,
+      "probe_ran": 1,
+      "probe_failed": 2,
+      "rc": 5,
+      "stage": "expect_stdout_exhausted"
+     },
+     {
+      "win": "w206",
+      "rep": 2,
+      "unmet": true,
+      "converged": false,
+      "probe_ran": 1,
+      "probe_failed": 1,
+      "rc": 5,
+      "stage": "expect_stdout_exhausted"
+     },
+     {
+      "win": "w206",
+      "rep": 3,
+      "unmet": true,
+      "converged": false,
+      "probe_ran": 1,
+      "probe_failed": 0,
+      "rc": 5,
+      "stage": "expect_stdout_exhausted"
+     },
+     {
+      "win": "w207",
+      "rep": 1,
+      "unmet": true,
+      "converged": false,
+      "probe_ran": 1,
+      "probe_failed": 1,
+      "rc": 5,
+      "stage": "expect_stdout_exhausted"
+     },
+     {
+      "win": "w207",
+      "rep": 2,
+      "unmet": false,
+      "converged": true,
+      "probe_ran": 1,
+      "probe_failed": 0,
+      "rc": 0,
+      "stage": "done"
+     },
+     {
+      "win": "w207",
+      "rep": 3,
+      "unmet": false,
+      "converged": false,
+      "probe_ran": null,
+      "probe_failed": null,
+      "rc": null,
+      "stage": null
+     }
+    ]
+   }
+  }
+ },
+ "J3_cost": {
+  "pass": false,
+  "form_in_force": "v2 (a1∧a2∧b1)",
+  "need": "Σcalls T ≤ C ∧ 逐窗 Σcalls T ≤ C ∧ 单位调用新算 prompt T ≤ C",
+  "by_arm": {
+   "T": {
+    "max_calls": 2,
+    "calls": [
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     1,
+     1
+    ],
+    "prompt_tokens": [
+     18328,
+     18292,
+     19440,
+     18682,
+     18446,
+     18420,
+     18524,
+     8569,
+     8569
+    ],
+    "new_prompt_tokens": [
+     3224,
+     1652,
+     2800,
+     1914,
+     1678,
+     1780,
+     1884,
+     249,
+     249
+    ],
+    "completion_tokens": [
+     6571,
+     7873,
+     11746,
+     8268,
+     6324,
+     7423,
+     9201,
+     4794,
+     4309
+    ],
+    "v_all": [
+     0.8241,
+     0.9097,
+     0.856,
+     0.8975,
+     0.909,
+     0.9034,
+     0.8983,
+     0.9709,
+     0.9709
+    ],
+    "v_incr": [
+     0.8394,
+     0.8557,
+     0.7653,
+     0.8354,
+     0.8553,
+     0.8446,
+     0.8358,
+     null,
+     null
+    ],
+    "bad_dumps": 0
+   },
+   "C": {
+    "max_calls": 2,
+    "calls": [
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     1
+    ],
+    "prompt_tokens": [
+     18702,
+     18754,
+     18329,
+     18474,
+     18431,
+     18866,
+     19050,
+     18496,
+     8567
+    ],
+    "new_prompt_tokens": [
+     1934,
+     2114,
+     1689,
+     1834,
+     1791,
+     2098,
+     2410,
+     1728,
+     247
+    ],
+    "completion_tokens": [
+     7797,
+     7271,
+     3410,
+     4611,
+     6019,
+     4569,
+     4643,
+     5339,
+     4057
+    ],
+    "v_all": [
+     0.8966,
+     0.8873,
+     0.9079,
+     0.9007,
+     0.9028,
+     0.8888,
+     0.8735,
+     0.9066,
+     0.9712
+    ],
+    "v_incr": [
+     0.8335,
+     0.8167,
+     0.8523,
+     0.8398,
+     0.8435,
+     0.8203,
+     0.7937,
+     0.8508,
+     null
+    ],
+    "bad_dumps": 0
+   }
+  },
+  "v1_retained": {
+   "pass": true,
+   "need": "T_max_calls <= C_max_calls"
+  },
+  "v2": {
+   "form": {
+    "a1": true,
+    "a2": true,
+    "b1": false,
+    "pass": false,
+    "sum_calls": {
+     "T": 16,
+     "C": 17
+    },
+    "sum_new_prompt": {
+     "T": 15430,
+     "C": 15845
+    },
+    "unit_new_prompt_per_call": {
+     "T": 964.375,
+     "C": 932.0588
+    },
+    "per_window_calls": {
+     "w205": {
+      "T": 6,
+      "C": 6,
+      "ok": true
+     },
+     "w206": {
+      "T": 6,
+      "C": 6,
+      "ok": true
+     },
+     "w207": {
+      "T": 4,
+      "C": 5,
+      "ok": true
+     }
+    },
+    "failed_clauses": [
+     "b1_unit_new_prompt"
+    ]
+   },
+   "v2prime": {
+    "pass": true,
+    "note": "b1 降级为报告列（须用户裁定，候选③）"
+   },
+   "controls": {
+    "POS": {
+     "pass": true,
+     "failed_clauses": [
+      "a1_pooled_calls",
+      "a2_per_window_calls:w205"
+     ]
+    },
+    "NEG_equals_base": true,
+    "non_trivial": true
+   },
+   "formula_source": "/home/agentuser/AgentFramework/eval/rover/r604/judge_j3v2_r604.py",
+   "runs": {
+    "runs": 21
+   }
+  }
+ },
+ "J5_cross_windowset_same_direction": {
+  "pass": false,
+  "note": "并列项, 不改主 rc",
+  "need": "两窗集的 (T-C) 方向一致 ⇒ 轴效应不随窗集翻号；符号相反 ⇒ 窗集依赖(欠功率)，如实登记",
+  "prev_table": "/home/agentuser/AgentFramework/eval/rover/r615/kpi-table-r615.json",
+  "prev_present": true,
+  "cur_pooled_T_minus_C": 0.3334,
+  "cur_counts_T_minus_C": 3,
+  "unit": "rate(池化全对率) 两侧同源",
+  "prev_pooled_T_minus_C": -0.1111,
+  "sign_consistent": false,
+  "side_by_side_by_window": {
+   "r610_set13": {
+    "w202": {
+     "T_rate": 1.0,
+     "C_rate": 0.3333333333333333,
+     "C1_rate": 0.0,
+     "D_T_minus_C": 0.6667,
+     "D_T_minus_C1": 1.0,
+     "D_C_minus_C1": 0.3333,
+     "C1_all_pass": [
+      56
+     ]
+    },
+    "w203": {
+     "T_rate": 0.6666666666666666,
+     "C_rate": 1.0,
+     "C1_rate": 0.0,
+     "D_T_minus_C": -0.3333,
+     "D_T_minus_C1": 0.6667,
+     "D_C_minus_C1": 1.0,
+     "C1_all_pass": [
+      43
+     ]
+    },
+    "w204": {
+     "T_rate": 0.0,
+     "C_rate": 0.6666666666666666,
+     "C1_rate": 0.0,
+     "D_T_minus_C": -0.6667,
+     "D_T_minus_C1": 0.0,
+     "D_C_minus_C1": 0.6667,
+     "C1_all_pass": [
+      56
+     ]
+    }
+   },
+   "r617_set14": {
+    "w205": {
+     "T_rate": 0.3333333333333333,
+     "C_rate": 0.3333333333333333,
+     "C1_rate": 1.0,
+     "D_T_minus_C": 0.0,
+     "D_T_minus_C1": -0.6667,
+     "D_C_minus_C1": -0.6667,
+     "C1_all_pass": [
+      58
+     ]
+    },
+    "w206": {
+     "T_rate": 1.0,
+     "C_rate": 0.3333333333333333,
+     "C1_rate": 1.0,
+     "D_T_minus_C": 0.6667,
+     "D_T_minus_C1": 0.0,
+     "D_C_minus_C1": -0.6667,
+     "C1_all_pass": [
+      58
+     ]
+    },
+    "w207": {
+     "T_rate": 0.6666666666666666,
+     "C_rate": 0.3333333333333333,
+     "C1_rate": 1.0,
+     "D_T_minus_C": 0.3333,
+     "D_T_minus_C1": -0.3333,
+     "D_C_minus_C1": -0.6667,
+     "C1_all_pass": [
+      58
+     ]
+    }
+   }
+  }
+ },
+ "J4_capability_secondary": {
+  "pass": true,
+  "need": "T_all_pass >= C_all_pass + 1 ∧ 无窗下降",
+  "by_arm": {
+   "T": {
+    "runs": 9,
+    "all_pass": 6,
+    "rate": 0.6667,
+    "wilson95": [
+     0.3542,
+     0.8794
+    ],
+    "cases_pass": [
+     48,
+     58,
+     52,
+     58,
+     58,
+     58,
+     50,
+     58,
+     58
+    ],
+    "per_window": {
+     "w205": 1,
+     "w206": 3,
+     "w207": 2
+    },
+    "per_window_n": {
+     "w205": 3,
+     "w206": 3,
+     "w207": 3
+    },
+    "families": {
+     "life": {
+      "total": 126,
+      "pass": 126
+     },
+     "sub": {
+      "total": 126,
+      "pass": 126
+     },
+     "nim": {
+      "total": 135,
+      "pass": 135
+     },
+     "wythoff": {
+      "total": 135,
+      "pass": 111
+     }
+    }
+   },
+   "C": {
+    "runs": 9,
+    "all_pass": 3,
+    "rate": 0.3333,
+    "wilson95": [
+     0.1206,
+     0.6458
+    ],
+    "cases_pass": [
+     58,
+     47,
+     44,
+     47,
+     56,
+     58,
+     56,
+     58,
+     0
+    ],
+    "per_window": {
+     "w205": 1,
+     "w206": 1,
+     "w207": 1
+    },
+    "per_window_n": {
+     "w205": 3,
+     "w206": 3,
+     "w207": 3
+    },
+    "families": {
+     "life": {
+      "total": 126,
+      "pass": 112
+     },
+     "sub": {
+      "total": 126,
+      "pass": 112
+     },
+     "nim": {
+      "total": 135,
+      "pass": 120
+     },
+     "wythoff": {
+      "total": 135,
+      "pass": 80
+     }
+    }
+   },
+   "C1": {
+    "runs": 3,
+    "all_pass": 3,
+    "rate": 1.0,
+    "wilson95": [
+     0.4385,
+     1.0
+    ],
+    "cases_pass": [
+     58,
+     58,
+     58
+    ],
+    "per_window": {
+     "w205": 1,
+     "w206": 1,
+     "w207": 1
+    },
+    "per_window_n": {
+     "w205": 1,
+     "w206": 1,
+     "w207": 1
+    },
+    "families": {
+     "life": {
+      "total": 42,
+      "pass": 42
+     },
+     "sub": {
+      "total": 42,
+      "pass": 42
+     },
+     "nim": {
+      "total": 45,
+      "pass": 45
+     },
+     "wythoff": {
+      "total": 45,
+      "pass": 45
+     }
+    }
+   }
+  },
+  "power_note": "n=9/档 ⇒ 欠功率；单窗集不作能力结论（R587 教训）"
+ },
+ "C1_task_face_v3": {
+  "pass": true,
+  "label": "PASS",
+  "D_list": [
+   -6,
+   0,
+   0
+  ],
+  "D_median": 0,
+  "valid_windows": 3,
+  "floor": -15,
+  "median_floor": -2,
+  "unreliable_windows": [],
+  "missing_windows": [],
+  "truth_per_window": {
+   "w205": 58,
+   "w206": 58,
+   "w207": 58
+  },
+  "product_per_window": {
+   "w205": 52,
+   "w206": 58,
+   "w207": 58
+  }
+ },
+ "W_floor_resolution_floor": {
+  "criterion": "有效窗 ≥2 ⇒ 判据行使；有效窗 ∈{0,1} ⇒ NO_RESOLUTION（不作能力结论、不记不达；真值自败窗剔除配对 + 单列我方读数 + 不记我方缺陷）",
+  "valid_windows": 3,
+  "label": "PASS",
+  "truth_self_fail_windows": [],
+  "own_readings_single_column": {
+   "w205": 52,
+   "w206": 58,
+   "w207": 58
+  },
+  "note": "NO_RESOLUTION 既非通过亦非失败（R604 §12.6 A 条首次落到判据器）"
+ },
+ "LD_low_discrimination": {
+  "frozen_list": [
+   "wythoff#43-public",
+   "wythoff#57-hidden"
+  ],
+  "freeze_source": "r604 truthcase census（13 例次 / 57 窗次 / 17 窗；全 wythoff 族）",
+  "role": "诊断列，**不作判据、不进 rc**（主判据 v3 不剔除这两例以保持跨轮可比）",
+  "v3_ex_LD": {
+   "D_list": [
+    -8,
+    0,
+    0
+   ],
+   "D_median": 0,
+   "valid_windows": 3,
+   "floor": -15,
+   "median_floor": -2,
+   "pass": true,
+   "unreliable_windows": [],
+   "missing_windows": [],
+   "truth_per_window": {
+    "w205": 58,
+    "w206": 58,
+    "w207": 58
+   },
+   "product_per_window": {
+    "w205": 50,
+    "w206": 58,
+    "w207": 58
+   }
+  },
+  "runs_with_LD_fail": 9,
+  "controls": {
+   "POS_empty_list_equals_v3": {
+    "ok": true
+   },
+   "NEG_unknown_id_rejected": {
+    "ok": true
+   },
+   "non_trivial": {
+    "ok": true
+   }
+  }
+ },
+ "paired_vs_codex": {
+  "w205": {
+   "T_rate": 0.3333333333333333,
+   "C_rate": 0.3333333333333333,
+   "C1_rate": 1.0,
+   "D_T_minus_C": 0.0,
+   "D_T_minus_C1": -0.6667,
+   "D_C_minus_C1": -0.6667,
+   "C1_all_pass": [
+    58
+   ]
+  },
+  "w206": {
+   "T_rate": 1.0,
+   "C_rate": 0.3333333333333333,
+   "C1_rate": 1.0,
+   "D_T_minus_C": 0.6667,
+   "D_T_minus_C1": 0.0,
+   "D_C_minus_C1": -0.6667,
+   "C1_all_pass": [
+    58
+   ]
+  },
+  "w207": {
+   "T_rate": 0.6666666666666666,
+   "C_rate": 0.3333333333333333,
+   "C1_rate": 1.0,
+   "D_T_minus_C": 0.3333,
+   "D_T_minus_C1": -0.3333,
+   "D_C_minus_C1": -0.6667,
+   "C1_all_pass": [
+    58
+   ]
+  }
+ },
+ "instrument_defects": [],
+ "verdict": {
+  "rc": 0,
+  "rc_semantics": "分层：0 器具可用 / 2 器具缺陷（禁作被测结论） / 3 输入缺失；机制面结论见 mechanism_rc 与 label（承 R604 分层 rc 先例，本轮为**事后补记字段** checks_posthoc）",
+  "mechanism_rc": 0,
+  "label": "机制达标（J0∧J1a∧J1b∧J2b：臂轴生效 + 声明面抬升 + 逐条裁定守恒）",
+  "capability_claim": "仅并列（J4 次级、欠功率）；跨轮禁相减（被测件按设计变更）；M3 出口闸（调用数 ≤ 旧臂 50%）**本轮不判**——执行接线属第二刀（R611）"
+ },
+ "checks_posthoc": [
+  "本轮 rc 语义分层（0 器具可用 / 2 器具缺陷 / 3 输入缺失）＋新增 mechanism_rc 字段：**首跑后补记**、不改任何判据与读数（r614 判据器把机制面编进 rc=1 ⇒ 两轮 rc 列不可直接并列，须按 mechanism_rc 对比）"
+ ],
+ "honest_bounds": [
+  "J4 为 n=9/档 的欠功率读数 ⇒ 只作并列，不作能力结论",
+  "被测件按设计变更（产品源码改动 ⇒ 重发布 AOT）⇒ 与 R585–R606 冻结件轮**禁相减**",
+  "成本三列取中继 dump 时间轴；铁律 11 前置器 rc 见 precond-r617.json（rc≠0 ⇒ 标参考·未可验收）",
+  "M3 出口闸（调用数按 request_id 去重 ≤ 旧臂 50%）本轮**不判**：远端动作只有声明没有执行接线 ⇒ 调用面按构造无分离",
+  "J2/J3 为本轮继承面（修复收敛 / 成本形态）⇒ 只作并列，不进 mechanism_rc（机制面定义已收窄为 J1∧J2b）",
+  "有效窗 ∈{0,1} ⇒ NO_RESOLUTION（禁记 PASS/不达）；真值自败窗剔除配对但单列我方读数",
+  "LD 两例只作诊断列，不作收益/缺陷证据（主判据不剔除以保跨轮可比）"
+ ]
+}
