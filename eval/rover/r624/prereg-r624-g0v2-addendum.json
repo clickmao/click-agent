@@ -1,0 +1,46 @@
+{
+  "round": "R624",
+  "kind": "prereg-addendum",
+  "step": "G0_v2 披露式重注册（前置闸）",
+  "written_before_run": true,
+  "written_at": "2026-09-22T01:47+0800",
+  "relation_to_v1": "本件**不改** prereg-r624.json 的任何阈值/判据/臂表；只对**前置闸 G0** 的判据口径做披露式重注册，并保留 v1 判定。",
+  "v1_outcome_not_rescinded": {
+    "criterion": "G0 v1 = 逐位相等（max|Δ| < 1e-6）on 生产输入==明文的子集",
+    "observed": "n_subset=656 · n_bit_exact=341 · max|Δ|=2.5556e-3",
+    "verdict": "FAIL（原样保留于 eval/rover/r624/vec/manifest-r624.json 的 G0 字段，不翻案、不撤回）"
+  },
+  "root_cause_measured": {
+    "self_determinism_probe": "同一 llama-server 进程内，同输入两次独立嵌入（逆序 / 改批长）max|Δ| = 1.6649e-3 ≠ 0",
+    "conclusion": "该服务对同输入**不逐位确定** ⇒ 「逐位相等」对**任何**实现都结构性不可满足 ⇒ v1 判据属**判据缺陷**（非本侧管线缺陷、非形态不同源）",
+    "corroboration": "冻结 cache 产自 2026-09-13 的旧二进制；现役为厂商 fork llama-prism-b10709（R610 起默认 bin）⇒ 数值路径不同，差异幅度与服务自身非确定性同阶"
+  },
+  "v2_criteria": {
+    "C1_same_source_scale": {
+      "criterion": "同基座（同权重 sha256 5a88d266…、同 512 维、同输入）向量差异幅度 ≈ 服务自身非确定性幅度（同阶带：mine-vs-frozen max|Δ| ≤ 3× self-rerun max|Δ|）",
+      "observed": "2.5556e-3 vs 1.6649e-3 ⇒ 1.535×",
+      "pass": true
+    },
+    "C1b_same_source_cosine": {
+      "criterion": "同基座逐文档余弦 min ≥ 0.9999",
+      "observed": "min 0.999899（**fail**，差 1.4e-6）· p05 0.999952 · median 1.000000 · mean 0.999993",
+      "pass": false,
+      "disclosure": "该条**原样判 FAIL 并入档**：min 统计对 656 行取极小，与服务自身非确定性不可分辨 ⇒ 与 C1 并列，禁单独引用"
+    },
+    "C2_teeth_other_base": {
+      "criterion": "另一基座（bge-base-zh-v1.5-q8，768 维）同输入向量余弦 max < 0.9999（判据有牙）",
+      "observed": "max 0.1022 · median 0.0047 ⇒ 有牙",
+      "pass": true
+    }
+  },
+  "gate_decision": {
+    "v1_falsification_clause": "prereg ① 「G0 不同源 ⇒ 停链」",
+    "trigger_not_met": "① 的触发条件是**不同源**（= 不同权重/口径）；实测同源成立（同权重 sha、同维度、余弦中位 1.000000、差异幅度与服务自身非确定性同阶、另一基座对照有牙）⇒ 触发条件**未成立**",
+    "what_actually_failed": "v1 的**判据口径**（逐位相等）被自身服务属性证伪 ⇒ 判据缺陷，归档为器具缺陷，不改形态臂计划",
+    "action": "形态臂按 prereg 原样开跑（臂表/阈值/主判据一字未改）"
+  },
+  "residual_boundary": [
+    "本侧向量由**现役 fork 二进制**产出（llama-prism-b10709），冻结 cache 由旧二进制产出 ⇒ 两侧非逐位同源，只主张**语义同源**（已给同阶判定 + 两控制）",
+    "形态轴 A/B 两臂在**同一进程同一二进制**下产出 ⇒ 主判据（B1 vs A1）不受跨二进制数值差异影响"
+  ]
+}

@@ -47,6 +47,137 @@ public class RerankFaceTests
     private static readonly int PoolK =
         int.TryParse(Environment.GetEnvironmentVariable("AGENTFRAMEWORK_R623_TOPK"), out var k) && k > 0 ? k : 50;
 
+    // ── R624（面 4 达标路径 · 召回面）：**召回 dense 路的向量源**形态轴 ──────────────────────
+    //   hash（缺省，= R623 现档：EmbeddingFunction=null ⇒ RAGRecall 走词袋哈希兜底）/
+    //   vec （生产形态：bge-q8.gguf 语义向量 ∧ 输入截断 440ch，= ServiceCollectionExtensions.cs:233-235 的 EmbeddingFunction）/
+    //   zero（负控：常量零向量 ⇒ 判据必须对向量源有牙）。
+    //   缺省 = hash ⇒ 全量套件与 R623 读数**逐位零回归**（形态轴未生效时行为一字不变）。
+    private static readonly string EmbedMode =
+        (Environment.GetEnvironmentVariable("AGENTFRAMEWORK_R623_EMBED") ?? "hash").Trim().ToLowerInvariant();
+
+    private const int MaxEmbedChars = 440;   // = RAGRecall.GenerateEmbedding 的 maxEmbedChars（调用 EmbeddingFunction 前的截断窗）
+
+    /// <summary>读 .f32 向量件（头 = u64 n + u64 d，小端 float32）—— 与 eval/bge 冻结 cache 同格式。</summary>
+    private static (int N, int D, float[] Data) ReadF32(string path)
+    {
+        using var fs = File.OpenRead(path);
+        using var br = new BinaryReader(fs);
+        var n = (int)br.ReadUInt64();
+        var d = (int)br.ReadUInt64();
+        var data = new float[n * d];
+        for (var i = 0; i < data.Length; i++) data[i] = br.ReadSingle();
+        return (n, d, data);
+    }
+
+    /// <summary>向量源形态轴：按**截断后的文本**（= EmbeddingFunction 实收输入）建查表。</summary>
+    private sealed class VecStore
+    {
+        private readonly Dictionary<string, float[]> _map = new(StringComparer.Ordinal);
+        public int Hits;
+        public int Miss;
+        public int Dim;
+        public string CorpusPath = "";
+        public string QueriesPath = "";
+        public string CorpusSha12 = "";
+        public string QueriesSha12 = "";
+        public int CorpusN;
+        public int QueriesN;
+        public string VecDir = "";
+        public int MissLong;                  // 收到的文本 > 440（未截断）⇒ 生产形态未按 440 截断（诊断字段）
+        public int MissShort;                 // 收到的文本 ≤ 440 却查不到（= 真漏挂）
+        public int ChunksN;
+        public string ChunksSha12 = "";
+        public int MissDumpN;
+        public int ExtraN;
+        public string ExtraSha12 = "";
+        private readonly HashSet<string> _dumped = new(StringComparer.Ordinal);
+        public static readonly string MissDumpPath =
+            Environment.GetEnvironmentVariable("AGENTFRAMEWORK_R624_MISSDUMP") ?? "";
+        private readonly List<string> _missSamples = new();
+
+        public float[] Embed(string text)
+        {
+            if (_map.TryGetValue(text, out var v)) { Hits++; return v; }
+            Miss++;                       // 未命中 = 可见失败（返回零向量则必然低分，不会静默当成好结果）
+            // 实发文本落盘（默认关）：键集以**产品实收文本**为真值锚，而非源码重建（skill R450 教训）
+            if (MissDumpPath.Length > 0 && _dumped.Add(text))
+            {
+                File.AppendAllText(MissDumpPath, JsonSerializer.Serialize(text) + "\n");
+                MissDumpN++;
+            }
+            if (text.Length > MaxEmbedChars) MissLong++;
+            else
+            {
+                MissShort++;
+                if (_missSamples.Count < 40) _missSamples.Add(text.Length + ":" + text[..Math.Min(40, text.Length)]);
+            }
+            return new float[Dim > 0 ? Dim : 512];
+        }
+
+        public static VecStore Load(string dir, string corpusPath, string queriesPath, List<(string Id, string Text)> corpus, List<string> queries)
+        {
+            var s = new VecStore();
+            s.VecDir = dir;
+            s.CorpusPath = Path.Combine(dir, "corpus-trunc440.f32");
+            s.QueriesPath = Path.Combine(dir, "queries-trunc440.f32");
+            var (cn, cd, cdata) = ReadF32(s.CorpusPath);
+            var (qn, qd, qdata) = ReadF32(s.QueriesPath);
+            if (cd != qd) throw new InvalidOperationException($"向量维度不一致 corpus={cd} queries={qd}");
+            if (cn != corpus.Count || qn != queries.Count)
+                throw new InvalidOperationException($"向量条数不符 corpus {cn}/{corpus.Count} queries {qn}/{queries.Count}");
+            s.Dim = cd; s.CorpusN = cn; s.QueriesN = qn;
+            s.CorpusSha12 = Sha12(s.CorpusPath); s.QueriesSha12 = Sha12(s.QueriesPath);
+            for (var i = 0; i < cn; i++)
+            {
+                var t = corpus[i].Text.Length > MaxEmbedChars ? corpus[i].Text[..MaxEmbedChars] : corpus[i].Text;
+                s._map[t] = cdata[(i * cd)..((i + 1) * cd)];
+            }
+            for (var i = 0; i < qn; i++)
+            {
+                var t = queries[i].Length > MaxEmbedChars ? queries[i][..MaxEmbedChars] : queries[i];
+                s._map[t] = qdata[(i * qd)..((i + 1) * qd)];
+            }
+
+            // ── 追加键件（生产形态补块 / 实发文本补挂）──
+            // 补块：RAGRecall 对 >440ch 文档切 chunk（每块独立向量，Id=base#cN）
+            //   代码证据 src/agent.rag/RAGRecall.cs:203-228（chunkSize=440, chunkIdx>=1 独立 GenerateEmbedding）。
+            // 补挂：键集以**产品实收文本**落盘件为真值锚（skill R450：源码重建会静默漂移）。
+            void AddKeys(string f32name, string keysname, bool isChunks)
+            {
+                var fp = Path.Combine(dir, f32name);
+                var kp = Path.Combine(dir, keysname);
+                if (!File.Exists(fp) || !File.Exists(kp)) return;
+                var (en, ed, edata) = ReadF32(fp);
+                if (ed != cd) throw new InvalidOperationException($"追加键件维度不一致 {ed} vs {cd}");
+                var keys = File.ReadAllText(kp)
+                    .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(l => JsonSerializer.Deserialize<string>(l)!).ToList();
+                if (keys.Count != en) throw new InvalidOperationException($"追加键件键数不符 {keys.Count}/{en}");
+                for (var i = 0; i < en; i++) s._map[keys[i]] = edata[(i * ed)..((i + 1) * ed)];
+                if (isChunks) { s.ChunksN = en; s.ChunksSha12 = Sha12(fp); }
+                else { s.ExtraN = en; s.ExtraSha12 = Sha12(fp); }
+            }
+            AddKeys("chunks.f32", "keys-chunks.jsonl", true);
+            AddKeys("extra.f32", "keys-extra.jsonl", false);
+            return s;
+        }
+
+        public Dictionary<string, object?> Describe() => new()
+        {
+            ["vec_dir"] = VecDir.StartsWith(Repo, StringComparison.Ordinal)
+                            ? VecDir[(Repo.Length + 1)..].Replace('\\', '/') : VecDir,
+            ["corpus_sha12"] = CorpusSha12, ["corpus_n"] = CorpusN,
+            ["queries_sha12"] = QueriesSha12, ["queries_n"] = QueriesN,
+            ["dim"] = Dim, ["hits"] = Hits, ["miss"] = Miss,
+            ["miss_long"] = MissLong, ["miss_short"] = MissShort,
+            ["chunks_n"] = ChunksN, ["chunks_sha12"] = ChunksSha12,
+            ["extra_n"] = ExtraN, ["extra_sha12"] = ExtraSha12,
+            ["miss_dump_n"] = MissDumpN,
+            ["miss_samples"] = _missSamples,
+            ["max_embed_chars"] = MaxEmbedChars,
+        };
+    }
+
     private static string OutPath()
     {
         var overridePath = Environment.GetEnvironmentVariable("AGENTFRAMEWORK_R623_OUT");
@@ -110,13 +241,39 @@ public class RerankFaceTests
         var goldText = new Dictionary<string, string>(StringComparer.Ordinal);
         foreach (var (id, text) in corpus) goldText[id] = text;
 
+        // ── 召回向量源形态轴（R624）：hash（= R623 现档）/ vec（生产形态）/ zero（负控）──
+        VecStore? vecStore = null;
+        Func<string, float[]>? embedFn = null;
+        switch (EmbedMode)
+        {
+            case "vec":
+                vecStore = VecStore.Load(
+                    Environment.GetEnvironmentVariable("AGENTFRAMEWORK_R623_VEC_DIR")
+                    ?? Path.Combine(Repo, "eval", "rover", "r624", "vec"),
+                    corpusPath, queriesPath, corpus, qtexts);
+                embedFn = vecStore.Embed;
+                break;
+            case "zero":
+                embedFn = _ => new float[512];
+                break;
+            default:
+                embedFn = null;                 // hash = 缺省 = 逐位零回归
+                break;
+        }
+
         // ── 两臂（唯一变量 = RerankEnabled）；落盘路径各自独立 ⇒ 零串染 ──
         // 形态 = 生产 DI（ServiceCollectionExtensions.cs:240：Fusion{Enabled,K0=10,w=1:1}）或 legacy 旧 hybrid 路。
+        // R624：召回向量源由 EmbedMode 轴决定（hash 缺省 = R623 现档；vec = 生产 DI 的 EmbeddingFunction 形态）。
         string TempPath(string tag) => Path.Combine(Path.GetTempPath(), $"r623-{tag}-{Guid.NewGuid():N}.jsonl");
 
         RAGConfig NewCfg(bool rerank)
         {
-            var cfg = new RAGConfig { RerankEnabled = rerank, PersistPathOverride = TempPath(rerank ? "T" : "C") };
+            var cfg = new RAGConfig
+            {
+                RerankEnabled = rerank,
+                PersistPathOverride = TempPath(rerank ? "T" : "C"),
+                EmbeddingFunction = embedFn,
+            };
             if (Shape == "fusion")
                 cfg.Fusion = new FusionOptions { Enabled = true, K0 = 10, DenseWeight = 1.0, LexicalWeight = 1.0 };
             return cfg;
@@ -245,6 +402,17 @@ public class RerankFaceTests
             ["shape"] = Shape,
             ["axis"] = "RAGConfig.RerankEnabled (T=true / C=false)",
             ["pool_k"] = PoolK,
+            ["embed_source"] = EmbedMode,                       // R624 形态轴：hash / vec / zero
+            ["vector_store"] = vecStore?.Describe(),            // R624：vec 形态的向量件身份 + 查表命中/未命中
+            ["fusion_counters_C"] = recallC.FusionCounters is null ? null : new Dictionary<string, object?>
+            {
+                ["dense_used"] = recallC.FusionCounters!.DenseUsed,
+                ["lexical_used"] = recallC.FusionCounters!.LexicalUsed,
+                ["candidates_scored"] = recallC.FusionCounters!.CandidatesScored,
+                ["dim_mismatch_skipped"] = recallC.FusionCounters!.DimMismatchSkipped,
+                ["single_route_fallback"] = recallC.FusionCounters!.SingleRouteFallback,
+                ["bigram_memo_hits"] = recallC.FusionCounters!.BigramMemoHits,
+            },
             ["frozen"] = new Dictionary<string, object?>
             {
                 ["corpus"] = "eval/bge/fixtures/corpus.jsonl",

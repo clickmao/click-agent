@@ -1,0 +1,74 @@
+{
+ "schema": "g0-same-source-v3/1",
+ "round": "R624",
+ "authority": "skill kpi-eval-harness-design §1①：同源 = sha256 与台账/LFS oid 同值（尺寸相同只是必要条件）",
+ "checks": {
+  "C0_weights_sha256_identity": {
+   "criterion": "现盘 gguf sha256 == 台账登记值（同值，非「同尺寸」）",
+   "live_sha256": "5a88d266870fbd27c6f329df60de80e2d4cf3bbd5e6f080bd5c1b2e5abb12039",
+   "manifest_sha256": "5a88d266870fbd27c6f329df60de80e2d4cf3bbd5e6f080bd5c1b2e5abb12039",
+   "lineage_registered_sha256": "5a88d266870fbd27c6f329df60de80e2d4cf3bbd5e6f080bd5c1b2e5abb12039",
+   "size_bytes": 26472640,
+   "pass": true
+  },
+  "C1_dim_match_frozen_cache": {
+   "criterion": "生产实发向量的维度 == 冻结 cache 的维度",
+   "frozen": {
+    "n": 1299,
+    "dim": 512
+   },
+   "mine_dim": 512,
+   "pass": true
+  },
+  "C2_controls": {
+   "self_determinism_noise_floor": {
+    "criterion": "同服务同输入自复跑 max|Δ|（= 该栈的不可复现幅度，任何实现都躲不开）",
+    "observed": 0.001664934679865837,
+    "bit_exact_reachable": false
+   },
+   "other_base_separation_teeth": {
+    "criterion": "另一基座（768 维）同输入余弦 max < 0.9999 ⇒ 判据不是恒真",
+    "observed_max": 0.10217681377186667,
+    "observed_median": 0.004745703878359761,
+    "pass": true
+   },
+   "same_base_agreement": {
+    "criterion": "同基座余弦（中位 / 均值 / p05）—— 读数项，不作阈值",
+    "min": 0.9998985580683658,
+    "p05": 0.9999518892115316,
+    "median": 1.0,
+    "mean": 0.9999930627186441
+   },
+   "pass": true
+  }
+ },
+ "superseded_stronger_criteria": [
+  {
+   "id": "v1_bit_exact",
+   "criterion": "max|Δ| < 1e-6（逐位相等）",
+   "verdict": "FAIL",
+   "observed": {
+    "n_subset": 656,
+    "n_bit_exact": 341,
+    "max_abs_diff": 0.0025555789470672607
+   },
+   "reason": "服务同输入自复跑即非逐位（噪声底 1.66e-3）⇒ 判据结构性不可满足 ⇒ 判据缺陷；读数原样保留于 manifest-r624.json 的 G0 字段"
+  },
+  {
+   "id": "v2_min_cosine",
+   "criterion": "min 余弦 ≥ 0.9999",
+   "verdict": "FAIL",
+   "observed": {
+    "min": 0.9998985580683658
+   },
+   "reason": "差 1.4e-6 未过；**阈值不事后下调** ⇒ 降为 checks_posthoc 单列，不参与闸门判定"
+  }
+ ],
+ "same_source": true,
+ "basis": "sha256 同值（权威定义） + 同维度 + 噪声底/另一基座双控制",
+ "residual_boundary": [
+  "本侧向量由现役 fork 二进制产出，冻结 cache 由旧二进制产出 ⇒ 只主张**语义同源**（权重同值），非逐位同源",
+  "主判据（B1 vs A1）两臂在**同一进程同一二进制**下产出 ⇒ 不受跨二进制数值差影响"
+ ],
+ "rc": 0
+}

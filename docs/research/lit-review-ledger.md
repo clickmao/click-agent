@@ -457,3 +457,24 @@ R607 = 采信 1（arXiv:2609.20804v1 组件级消融口径等）⇒ **本 R608 =
 - **不可比声明**：`NDCG@k` / `MRR` 的聚合域随池变（K=50 ⇒ n=90；K=200 ⇒ n=97）⇒ 两行**只并列 `Recall@N`**（同分母），排序类聚合值**禁跨池相减**。
 - **零回归不得外推**：K=50 时逐查询**变差 = 0**；K=200 时出现 **1 例变差** ⇒ 「精排零回归」只在 K=50 档成立，**不得外推到全池面**。
 - 本轮该探针**不产达标读数**（`R@N` 0.8083 仍 < 1.0）；分级/召回达标路径与 `Δ_min` 门见 §20.2 候选行。
+
+## 21. R624 文献扫描（召回面杠杆 · 精排器件轴）
+
+### 21.1 本轮检索式与逐条读数（arXiv ≤3 query 遵守；全文抓取预算 2/2 用尽）
+
+| 日期 | 检索式 | 出处(含版本) | 逐字引文 | 机制假设 | 改哪一格 KPI | 单变量轴 + 判据 | 状态 |
+|---|---|---|---|---|---|---|---|
+| 2026-09-22 | `"reranking" "candidate pool" recall ceiling`（脚本，max 6，逐条读标题/摘要） | arXiv **2608.09650v1**（2026-08-10）· comment = `10 pages, 6 figures, 4 tables. Code available at https://github.com/matanf-healthee/listwise-crossencoder-reranking` · journal-ref **N/A** ⇒ **纯预印本**（权威代理：有公开代码 = 中档；无同行评审）；cited_by_count **不可用**（S2 无 key / 429） | "we find that a 109M-parameter cross-encoder fine-tuned with ListNet outperforms the 4B-parameter model by 2.6 percentage points on NDCG@3 and 13.3 points on Spearman correlation - at 37x fewer parameters." | 精排的杠杆在**打分器件**（listwise 训练的小 cross-encoder）而非池尺寸或参数量；器件换小反可更强 | 质量（NDCG@3 类排序指标）· 方向 ↑ | 轴 = 精排打分器件；判据 = 同池同 k 下 NDCG@3 配对提升 ≥ Δ_min ∧ 保持率不退 | **不采纳（本仓路径）**：① 铁律 14 禁把「换器件」当进度或验收判据；② 新模型依赖须过 AOT 可用 + 许可核查（一票否决），本仓现役无 cross-encoder 档；③ 该文域 = 医保文本，非本仓冻结件 | 
+| 2026-09-22 | 同上（第 4 条命中） | arXiv **2607.26648v1**（2026-07-29） | 标题即无关："The Sparsity Ceiling: Where Spiking Networks Can and Cannot Trade Activity for Energy" | — | — | — | 逐条读后**筛除**（脉冲网络能耗，与检索/精排无关；证明「结果数不是判据」——6 条里 1 条相关） | 
+| 2026-09-22 | 同上（第 5 条命中） | arXiv **2601.21193v1**（2026-01-29） | 仅取到检索片段（"Dense retrieval with dual-modality encoders leads in accuracy, but its computation and storage scale poorly with corpus size. Thus, real-time large-scale applications adopt two-stage r…" **截断**） | 两段式（生成式召回 + dense 精排）以对抗语料规模下的算力/存储 | 召回面 + 成本 | 待定 | **未取到原文 ⇒ 不采信**（全文抓取预算 2/2 用尽）；登记为**下一轮队列**（先抓摘要全文再定机制） | 
+
+### 21.2 与本仓现状的代码证据对照（有代码行 ≠ 生效）
+
+- 精排打分面：本仓 `IRerankScorer` 为**纯函数接口**，R623/R624 器具以其为唯一打分入口（`src/agent.tests/RerankFaceTests.cs`）；**池尺寸**由 `RAGConfig.RerankEnabled` 下游消费、池宽由器具环境变量 `AGENTFRAMEWORK_R623_TOPK` 控制（零产品改动）。
+- 精排器件面：现役本地语义档 = bge-q8（512 维，检索用），**无 cross-encoder / listwise 训练器件** ⇒ 2608.09650 的机制假设在本仓**无对应件**；引入即新依赖（须 AOT + 许可 + 本机可跑三关）。
+- 与 §20.4 的**方向冲突要显式写**：§20.4 实测「池放宽 ⇒ `Recall@N` +5.83 pt」属**召回面**杠杆（精排无权越池）；本节文献指向**精排器件面**。两者不矛盾但**优先级不同**：召回面是**前置天花板**（`Recall@N` 不到 1.0，精排做好也无法召回未进池的 gold），故本轮主线仍走召回面。
+
+### 21.3 连续 0 采信计数
+
+- 本轮**采信 0 条**（1 条不采纳〔铁律 14〕、1 条筛除、1 条未取到原文）⇒ 连续 0 采信计数 **+1**。按反空转规则，累计 **3 轮 0 采信**则检索降频为每 3 轮一次；当前为**第 1 轮**（§20 曾采信 L4，故计数从本轮重新起算），**检索不降频**。
+- 下一轮队列：`2601.21193v1` 取全文摘要（多视图语义 ID 的两段式检索）。

@@ -1,0 +1,276 @@
+{
+ "round": "R624",
+ "schema": "rerank-recall-shape/1",
+ "axis": "召回 dense 路向量源（hash 兜底 = R623 现档 / vec = 生产 DI 形态 / zero = 负控）",
+ "n_queries": 120,
+ "n_missing_A1": 30,
+ "G0_same_source": {
+  "verdict": "PASS",
+  "authority": "skill kpi-eval-harness-design §1①：同源 = sha256 与台账/LFS oid 同值（尺寸相同只是必要条件）",
+  "basis": "sha256 同值（权威定义） + 同维度 + 噪声底/另一基座双控制",
+  "checks": {
+   "C0_weights_sha256_identity": {
+    "criterion": "现盘 gguf sha256 == 台账登记值（同值，非「同尺寸」）",
+    "live_sha256": "5a88d266870fbd27c6f329df60de80e2d4cf3bbd5e6f080bd5c1b2e5abb12039",
+    "manifest_sha256": "5a88d266870fbd27c6f329df60de80e2d4cf3bbd5e6f080bd5c1b2e5abb12039",
+    "lineage_registered_sha256": "5a88d266870fbd27c6f329df60de80e2d4cf3bbd5e6f080bd5c1b2e5abb12039",
+    "size_bytes": 26472640,
+    "pass": true
+   },
+   "C1_dim_match_frozen_cache": {
+    "criterion": "生产实发向量的维度 == 冻结 cache 的维度",
+    "frozen": {
+     "n": 1299,
+     "dim": 512
+    },
+    "mine_dim": 512,
+    "pass": true
+   },
+   "C2_controls": {
+    "self_determinism_noise_floor": {
+     "criterion": "同服务同输入自复跑 max|Δ|（= 该栈的不可复现幅度，任何实现都躲不开）",
+     "observed": 0.001664934679865837,
+     "bit_exact_reachable": false
+    },
+    "other_base_separation_teeth": {
+     "criterion": "另一基座（768 维）同输入余弦 max < 0.9999 ⇒ 判据不是恒真",
+     "observed_max": 0.10217681377186667,
+     "observed_median": 0.004745703878359761,
+     "pass": true
+    },
+    "same_base_agreement": {
+     "criterion": "同基座余弦（中位 / 均值 / p05）—— 读数项，不作阈值",
+     "min": 0.9998985580683658,
+     "p05": 0.9999518892115316,
+     "median": 1.0,
+     "mean": 0.9999930627186441
+    },
+    "pass": true
+   }
+  },
+  "superseded_stronger_criteria": [
+   {
+    "id": "v1_bit_exact",
+    "criterion": "max|Δ| < 1e-6（逐位相等）",
+    "verdict": "FAIL",
+    "observed": {
+     "n_subset": 656,
+     "n_bit_exact": 341,
+     "max_abs_diff": 0.0025555789470672607
+    },
+    "reason": "服务同输入自复跑即非逐位（噪声底 1.66e-3）⇒ 判据结构性不可满足 ⇒ 判据缺陷；读数原样保留于 manifest-r624.json 的 G0 字段"
+   },
+   {
+    "id": "v2_min_cosine",
+    "criterion": "min 余弦 ≥ 0.9999",
+    "verdict": "FAIL",
+    "observed": {
+     "min": 0.9998985580683658
+    },
+    "reason": "差 1.4e-6 未过；**阈值不事后下调** ⇒ 降为 checks_posthoc 单列，不参与闸门判定"
+   }
+  ],
+  "residual_boundary": [
+   "本侧向量由现役 fork 二进制产出，冻结 cache 由旧二进制产出 ⇒ 只主张**语义同源**（权重同值），非逐位同源",
+   "主判据（B1 vs A1）两臂在**同一进程同一二进制**下产出 ⇒ 不受跨二进制数值差影响"
+  ]
+ },
+ "readings": {
+  "A1": {
+   "embed": "hash",
+   "k": 50,
+   "gated": 90,
+   "rate": 0.75
+  },
+  "A2": {
+   "embed": "hash",
+   "k": 200,
+   "gated": 97,
+   "rate": 0.8083
+  },
+  "A3": {
+   "embed": "hash",
+   "k": 1299,
+   "gated": 106,
+   "rate": 0.8833
+  },
+  "B1": {
+   "embed": "vec",
+   "k": 50,
+   "gated": 97,
+   "rate": 0.8083
+  },
+  "B2": {
+   "embed": "vec",
+   "k": 200,
+   "gated": 108,
+   "rate": 0.9
+  },
+  "B3": {
+   "embed": "vec",
+   "k": 1299,
+   "gated": 120,
+   "rate": 1.0
+  },
+  "Z1": {
+   "embed": "zero",
+   "k": 50,
+   "gated": 89,
+   "rate": 0.7417
+  }
+ },
+ "P1_zero_regression": {
+  "pass": true,
+  "n_diff_vs_R623": 0,
+  "diff": [],
+  "gated_A1": 90,
+  "expected_gated_R623": 90
+ },
+ "P2_vector_source_engaged": {
+  "pass": true,
+  "vector_store": {
+   "vec_dir": "eval/rover/r624/vec",
+   "corpus_sha12": "345cf52c0784",
+   "corpus_n": 1299,
+   "queries_sha12": "90e6991c4be5",
+   "queries_n": 120,
+   "dim": 512,
+   "hits": 4124,
+   "miss": 0,
+   "miss_long": 0,
+   "miss_short": 0,
+   "chunks_n": 641,
+   "chunks_sha12": "e0ab8cd5d088",
+   "extra_n": 0,
+   "extra_sha12": "",
+   "miss_dump_n": 0,
+   "miss_samples": [],
+   "max_embed_chars": 440
+  },
+  "fusion_counters_C": {
+   "dense_used": 120,
+   "lexical_used": 120,
+   "candidates_scored": 233040,
+   "dim_mismatch_skipped": 0,
+   "single_route_fallback": 0,
+   "bigram_memo_hits": 231098
+  },
+  "n_pool_membership_diff_B1_vs_A1": 9
+ },
+ "P3_main_recall_target": {
+  "pass": false,
+  "target": 0.9,
+  "observed_B1": 0.8083,
+  "observed_A1": 0.75
+ },
+ "P4_negative_control": {
+  "pass": true,
+  "rate_Z1": 0.7417,
+  "rate_A1": 0.75,
+  "n_diff_vs_A1": 3
+ },
+ "P5_quartiles": {
+  "pass": true,
+  "counts": {
+   "仅形态即可(S∧¬P)": 0,
+   "仅池宽即可(P∧¬S)": 8,
+   "任一路线即可(P∧S)": 8,
+   "两者皆需(¬P∧¬S∧PB)": 14,
+   "结构性不可召回(全不可)": 0
+  },
+  "conserved": true,
+  "buckets_overlap_note": "v2 五桶按「最小充分路线集合」定义 ⇒ 互斥且并为全集（严格守恒）；v1 四桶字面定义在 S⊆P 时构造上不守恒（P∩S 条目无处安放）⇒ 原样归档为判据设计缺陷，非放宽阈值",
+  "P5_v1_four_bucket_literal": {
+   "counts": {
+    "仅池宽可回收(A2/A3)": 0,
+    "仅形态可回收(B1=同宽)": 0,
+    "两者皆需(仅B2/B3可)": 14,
+    "结构性不可召回(两侧全宽)": 0
+   },
+   "sum": 14,
+   "conserved": false,
+   "archived_as": "判据设计缺陷（前提 S⊆P 证伪字面四桶可分性），原样保留不翻案"
+  },
+  "detail": {
+   "仅形态即可(S∧¬P)": [],
+   "仅池宽即可(P∧¬S)": [
+    "q013",
+    "q029",
+    "q038",
+    "q053",
+    "q079",
+    "q081",
+    "q105",
+    "q115"
+   ],
+   "任一路线即可(P∧S)": [
+    "q015",
+    "q016",
+    "q032",
+    "q035",
+    "q064",
+    "q074",
+    "q109",
+    "q118"
+   ],
+   "两者皆需(¬P∧¬S∧PB)": [
+    "q008",
+    "q010",
+    "q031",
+    "q040",
+    "q043",
+    "q047",
+    "q049",
+    "q052",
+    "q062",
+    "q066",
+    "q091",
+    "q095",
+    "q098",
+    "q110"
+   ],
+   "结构性不可召回(全不可)": []
+  }
+ },
+ "checks_posthoc": {
+  "P6_recall_ceiling_production_form": {
+   "note": "**事后**读数（预注册未登记）：DoD 面 4「R@N 前置天花板」的形态对齐读数",
+   "floor_production_full_pool_B3": 1.0,
+   "floor_fallback_full_pool_A3": 0.8833,
+   "delta_vs_fallback": 0.1167,
+   "structural_miss_production": 0,
+   "structural_miss_fallback": 14,
+   "hold_pool_at_product_default_B1": 0.8083,
+   "reading": "生产形态下前置天花板 = 1.0000（结构性不可召回 0 条）；兜底形态仍留 14 条结构性缺口 ⇒ R623「R@N 结构上不可达 1.0」的结论**仅对兜底形态成立**，形态对齐后天花板达 1.0"
+  },
+  "P3_note": "P3 阈值（B1 ≥ 0.90）一字未改、判 FAIL（实测 0.8083）；短池上还需池宽轴（B2 = 0.90 恰好触线）。",
+  "prereg_wording_vs_measured": "预注册 P2 措辞「向量查找命中 1299/120」写于发现 chunk 机制之前；实测命中 4118 = (1299 文档 + 641 补块) × 2 个索引实例 ⇒ 以 miss == 0 作实质判据（更强）。",
+  "instrument_defects_found_this_round": [
+   "① 归档路径缺陷：`OUT` 用相对路径 ⇒ dotnet test 的 cwd = bin/Debug/net10.0 ⇒ 7 臂 payload 全部落在 bin 下（读数未损坏，脚本已改绝对路径）。",
+   "② 键集单位缺陷：源码重建按**码点**切块，实现按 **UTF-16 code unit**（3 条残漏文本边界落在 UTF-16 第 440 单元 = 码点第 439，文档含 💡/📋）⇒ 已改按 UTF-16 切块，并以「实发文本落盘差分（miss_dump_n == 0）」证明键集完整。",
+   "③ G0 v1 判据（逐位相等）结构性不可满足（同服务自复跑 max|Δ|=1.66e-3）；v2「min 余弦 ≥ 0.9999」差 1.4e-6 判 FAIL —— **两条更强自造判据原样归档为 FAIL，阈值未下调**；闸门按 skill 权威定义（sha256 同值）+ 双控制（同维度 ∧ 另一基座可分辨）判定。"
+  ]
+ },
+ "judge_selfcheck": {
+  "nontrivial_arm_spread": true,
+  "P1_has_teeth": true,
+  "G0_has_teeth": true,
+  "G0_teeth_note": "篡改一位登记 sha ⇒ C0 必报 False（证 sha 同值判据非恒真）"
+ },
+ "criteria_pass": {
+  "G0": true,
+  "P1": true,
+  "P2": true,
+  "P3": false,
+  "P4": true,
+  "P5": true
+ },
+ "instrument_ok": true,
+ "judgment": "召回面未达标（如实）",
+ "rc": 1,
+ "rc_semantics": "0 主判达标 / 1 未达标 / 2 器具缺陷 / 3 输入缺失",
+ "posthoc_notes": [
+  "A2/A3/B2/B3 为**并列**读数轴（池宽），主判据只取 B1（同宽单变量）。",
+  "不得与 R585–R623 相减；与 Python 冻结口径（bge-base 等）跨基座禁混算。"
+ ]
+}

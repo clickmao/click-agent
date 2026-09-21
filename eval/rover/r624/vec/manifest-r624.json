@@ -1,0 +1,36 @@
+{
+ "round": "R624",
+ "max_embed_chars": 440,
+ "model": "/home/agentuser/.agentframework/models/bge-q8.gguf",
+ "model_sha256": "5a88d266870fbd27c6f329df60de80e2d4cf3bbd5e6f080bd5c1b2e5abb12039",
+ "n_corpus": 1299,
+ "n_queries": 120,
+ "n_docs_gt_440": 643,
+ "server_start_s": 1.01,
+ "embed_s": 104.4,
+ "dim": 512,
+ "G0": {
+  "subset": "docs with len(text) <= max_embed_chars (生产输入 == 明文)",
+  "n_subset": 656,
+  "n_bit_exact": 341,
+  "max_abs_diff": 0.0025555789470672607,
+  "threshold": 1e-06,
+  "verdict": "FAIL",
+  "note": "截断输入与明文输入**相同**的子集上，本侧管线与冻结 bge 口径必须逐位一致"
+ },
+ "info_truncated_subset_max_abs_diff_sample200": 0.03341310191899538,
+ "files": {
+  "corpus_trunc440": {
+   "path": "eval/rover/r624/vec/corpus-trunc440.f32",
+   "sha256": "345cf52c078469ec9b614bb354ffe072b922e00bfe7d6c673d17ba46dec168c0",
+   "n": 1299,
+   "d": 512
+  },
+  "queries_trunc440": {
+   "path": "eval/rover/r624/vec/queries-trunc440.f32",
+   "sha256": "90e6991c4be50cf56fd7fd4c241e27f38cf25142d04ae4bec0f389f5042004a8",
+   "n": 120,
+   "d": 512
+  }
+ }
+}

@@ -1,0 +1,48 @@
+{
+ "schema": "g0-same-source-v2/1",
+ "round": "R624",
+ "step": "G0_v2",
+ "v1_verdict": {
+  "criterion": "max|Δ| < 1e-6 (逐位相等)",
+  "n_subset": 656,
+  "n_bit_exact": 341,
+  "max_abs_diff": 0.0025555789470672607,
+  "verdict": "FAIL",
+  "disclosure": "v1 判定原样保留、不翻案、不撤回"
+ },
+ "v2_criteria": {
+  "C1_same_source_semantic": {
+   "criterion": "min cosine ≥ 0.9999 on the same-input subset",
+   "observed_min": 0.9998985580683658,
+   "pass": false
+  },
+  "C2_teeth_other_base": {
+   "criterion": "other-base cosine must be clearly lower (max < 0.9999)",
+   "observed_max": 0.10217681377186667,
+   "pass": true
+  }
+ },
+ "cosine_same_base_bge_q8": {
+  "n": 656,
+  "min": 0.9998985580683658,
+  "p05": 0.9999518892115316,
+  "median": 1.0,
+  "max": 1.000000000000001,
+  "mean": 0.9999930627186441
+ },
+ "cosine_other_base_bge_base": {
+  "n": 656,
+  "min": -0.10808941144097876,
+  "p05": -0.05361160901420374,
+  "median": 0.004745703878359761,
+  "max": 0.10217681377186667,
+  "mean": 0.0014507532542021083
+ },
+ "self_determinism_probe": {
+  "probe_n": 16,
+  "max_abs_diff_reordered_same_batch_len": 0.001664934679865837,
+  "max_abs_diff_different_batch_len": 0.001664934679865837,
+  "verdict_bit_exact_reachable": false
+ },
+ "verdict": "FAIL"
+}

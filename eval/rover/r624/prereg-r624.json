@@ -1,0 +1,67 @@
+{
+  "round": "R624",
+  "kind": "face-measurement-recall",
+  "face": "RF0005 §0 DoD 面 4 · 上下文精排 —— **召回面**（R@N 前置天花板）+ RF0004 §4『DoD 缺口（并行面）· 精排四项实测』残余缺口 = 召回面",
+  "written_before_run": true,
+  "written_at": "2026-09-22T01:35+0800",
+  "lever_switch_reason": "R623 收口后 next-candidate ①（面 4 达标路径 · 召回面，零产品改动）。且只读机检发现 R623 的形态申报与实发不一致（见 premise），必须先做同源性修复再谈达标。",
+  "premise_readonly": {
+    "F1_shape_mismatch": {
+      "declared_in_R623": "形态 = 生产 DI（ServiceCollectionExtensions.cs:240）",
+      "actual": "src/agent.tests/RerankFaceTests.cs:117-123 只复制了 FusionOptions，**未设 RAGConfig.EmbeddingFunction** ⇒ RAGRecall.GenerateEmbedding 走词袋哈希兜底（src/agent.rag/RAGRecall.cs:602-607）",
+      "production": "src/agent/extensions/ServiceCollectionExtensions.cs:233-235 显式设 cfg.EmbeddingFunction = EmbeddingRouter(ITextEmbedder).Embed ⇒ dense 路喂的是链上真身 bge（25.2MB bge-q8.gguf）",
+      "class": "器具缺陷（形态泄漏 / 申报≠实发），非被测缺陷 —— R623 的面 4 读数只在**兜底形态**上成立"
+    },
+    "frozen_python_口径_same_fixtures": {
+      "file": "eval/bge/results/fusion-lex-small-2026-09-14.json",
+      "singles": {"lex": {"miss@50": 0.2}, "dense-small": {"miss@50": 0.2333}, "dense-base": {"miss@50": 0.1083}},
+      "control_lex_base_k10_w11": {"r@10": 0.85, "hits": 102},
+      "note": "同 fixtures（1299/120，sha 与 R623 件同源）的 Python 冻结口径 ⇒ 可作**并列**参照，禁与本轮 C# 读数相减"
+    }
+  },
+  "single_variable": {
+    "axis": "召回 dense 路的**向量源**（形态度量轴，非产品开关）",
+    "A_hash": "EmbeddingFunction = null ⇒ 词袋哈希兜底（= R623 现档，逐位零回归闸）",
+    "B_bge": "EmbeddingFunction = 生产形态（bge-q8.gguf 语义向量 ∧ 输入截断 440ch，与 RAGRecall.GenerateEmbedding 的调用契约逐字一致）",
+    "Z_zero": "EmbeddingFunction = 常量零向量（负控：判据必须对向量源有牙）",
+    "held_constant": ["shape=fusion（Fusion{Enabled,K0=10,w=1:1}）", "fixtures（逐字节冻结）", "判据器（只加读取字段，不改阈值）", "K 轴为并列读数，不做单变量归因"]
+  },
+  "arms": {
+    "A1": "hash × K=50（零回归闸：per_query gold_in_pool 集合必须与 R623 件逐位相同 ∧ gated_ratio == 0.75）",
+    "A2": "hash × K=200（复现 R623 的池宽探针：0.75 → 0.8083）",
+    "A3": "hash × K=1299（兜底形态天花板 = 全语料）",
+    "B1": "bge × K=50（**主判据**）",
+    "B2": "bge × K=200",
+    "B3": "bge × K=1299（生产形态天花板）",
+    "Z1": "zero × K=50（负控）"
+  },
+  "same_source_gate": {
+    "id": "G0 向量源同源闸（必须先跑，失败即停链）",
+    "expect": "自算的 text[:440] 向量，对**全部 ≤440ch 的文档**（生产输入 == 明文 ⇒ 与冻结 cache 同一输入）必须与 data/bge/cache/bge-q8__fuse_corpus_*.f32 对应行**逐位相等**（最大绝对差 < 1e-6）",
+    "falsify_if": "不逐位相等 ⇒ 本侧向量管线与冻结 bge 口径**不同源** ⇒ 判 rc=2 器具缺陷，形态臂不得开跑"
+  },
+  "criteria": [
+    {"id": "P1", "name": "零回归（现档复算）", "expect": "A1 per_query 的 gold_in_pool 序列与 R623 件（recall 90/120）逐位相同", "falsify_if": "任一查询 membership 不同 ⇒ 器具被本轮改动污染（rc=2）"},
+    {"id": "P2", "name": "形态生效 ∧ 非平凡", "expect": "B 臂 dim_mismatch_skipped == 0 ∧ dense 路被使用（向量查找命中 1299/120）∧ B1 池集合 ≠ A1 池集合", "falsify_if": "B1 池集合 == A1 池集合 且 读数相同 ⇒ 向量源未生效（rc=2）"},
+    {"id": "P3", "name": "主判据 · 召回面达标位", "expect": "B1 的 R@N(K=50) ≥ 0.90（本轮自定**进度位**；DoD 登记阈值 R@N=1.0 结构上不可达，见 R623 P5）", "baselines": ["rerank-four", "rerank-recall-shape"], "falsify_if": "B1 < A1（形态反而更差）⇒ 如实报负向，禁调阈值"},
+    {"id": "P4", "name": "负控有牙", "expect": "Z1 的 R@N ≤ A1 且池集合与 A1 不同 ⇒ 判据对向量源敏感", "falsify_if": "Z1 == A1 ⇒ 空心闸（rc=2）"},
+    {"id": "P5", "name": "逐例四分（失败层定位）", "expect": "对 A1 未召回的查询集合，按 (A2,A3) × (B1,B2,B3) membership 四分：{仅池宽可回收 / 仅形态可回收 / 两者皆需 / 结构性不可召回}；四类之和 == |未召回|（守恒）", "falsify_if": "分类不守恒 ⇒ 器具缺陷（rc=2）"}
+  ],
+  "falsifications": [
+    "① G0 不同源 ⇒ 停链（rc=2），形态臂全部不开跑。",
+    "② P1 零回归失败 ⇒ 本轮全部读数作废（器具被改坏）。",
+    "③ B1 < A1 ⇒ 生产形态在召回面上**负向**，如实报负向并撤回达标路径提案。",
+    "④ Z1 == A1 ⇒ 判据无判别力，rc=2。"
+  ],
+  "no_claim_scope": [
+    "**零产品源码改动**（`src/agent.rag`、`src/agent.extensions` 未动）；被测面 = 既有产品真身 RAGRecall 路径",
+    "本面**零远端 LLM 调用** ⇒ tokens（调用数/新算 prompt/completion）与命中率**未测**，不得补记",
+    "不得宣称「精排/召回带来端到端质量提升」；端到端质量仍取主线 codex 对照面",
+    "与 R585–R623 **禁相减、只并列**；与 Python 冻结口径（dense-base 等）跨基座禁混算",
+    "三档终局目标读数（32ms / 快 50× / 延迟 −95% / 成本 −85~91%）本轮不动不宣称"
+  ],
+  "environment_gate": {
+    "preflight": "python3 tools/roundcheck/roundcheck.py preflight --round R624 --min-avail-mb 168 --min-disk-gb 1 --need-key AGENTFRAMEWORK_KEYS_DEEPSEEK ⇒ rc=0 (P1..P8 全 PASS)"
+  },
+  "scope_caveat": "单 gold 分级 ⇒ P@k 上界 = 1/k（R623 已登记）⇒ 本面**只**推进 R@N 召回面；分级加厚须用户放行（R624 候选②）"
+}

@@ -301,7 +301,44 @@
    "source_sha12": "90e849708e2d",
    "ground_rule": "唯一单变量轴 = RAGConfig.RerankEnabled（T=true 精排 / C=false 旧行为）；两侧共用同一召回池（pool_set_identical 断言）；跨轮禁相减（与 R585–R622 冻结件轮只可并列）；改器具（src/agent.tests/RerankFaceTests.cs）或重跑读数件（ts 变）⇒ 必须重取本 pin 并重钉；形态必须为生产 DI（fusion：ServiceCollectionExtensions.cs:240），legacy 路只作诊断列。",
    "check_cmd": "python3 -c \"import io,json;d=json.load(io.open('eval/rover/r623/rerank-face-readings-fusion-k50.json'));print(round(d['aggregates']['T']['median_ndcg@10'],4), round(d['aggregates']['C']['median_ndcg@10'],4))\"",
-   "negative_control": "① 轴关臂 = 旧行为（C：RerankApplied 必须恒 0，实测 0/120）；② 退化打分器 NEG（-coarseScore）必须不优于 C（实测中位 NDCG@10 0.0 ≤ C 中位 0.5 + 0.02）；③ oracle 置顶打分器 POS 必须近满分（实测 1.0）⇒ 度量对「把 gold 置顶」敏感；④ 确定性 ∧ 非平凡成对：同二进制复跑 n=3 payload（去 ts）逐字节同一 ∧ 跨臂读数互异；证据件 eval/rover/r623/report-r623.md §3/§4/§5。"
+   "negative_control": "① 轴关臂 = 旧行为（C：RerankApplied 必须恒 0，实测 0/120）；② 退化打分器 NEG（-coarseScore）必须不优于 C（实测中位 NDCG@10 0.0 ≤ C 中位 0.5 + 0.02）；③ oracle 置顶打分器 POS 必须近满分（实测 1.0）⇒ 度量对「把 gold 置顶」敏感；④ 确定性 ∧ 非平凡成对：同二进制复跑 n=3 payload（去 ts）逐字节同一 ∧ 跨臂读数互异；证据件 eval/rover/r623/report-r623.md §3/§4/§5。",
+   "form_caveat": "**口径冲突显式作废（新读覆盖旧读，旧读数保留不撤）**：`rerank-four` 的 `recall_at_N = 0.75` 与形态声明（ground_rule 写「形态必须为生产 DI」）经 R624 机检**证伪** —— R623 器具只复制 FusionOptions、**未设 RAGConfig.EmbeddingFunction** ⇒ dense 路走词袋哈希兜底，那 0.75 是**兜底档**读数。`rerank-four` 的 R@N 字段自此**只作兜底档锚**，不得再被当作生产形态读数引用；生产档读数以本条目为准。"
+  },
+  {
+   "id": "rerank-recall-shape",
+   "face": "F_merge",
+   "kind": "face_measurement",
+   "metric": "召回面 **R@N 前置天花板**：gold 是否落在**被消费的召回池内**（精排只重排不补召回 ⇒ 只作天花板）。形态轴 = 召回 dense 路的向量源（兜底哈希 / 生产 bge 语义向量 / 常量零向量负控）",
+   "unit": "queries",
+   "value": {
+    "n_queries": 120,
+    "fallback_k50": 0.75,
+    "fallback_k200": 0.8083,
+    "fallback_full": 0.8833,
+    "production_k50": 0.8083,
+    "production_k200": 0.9,
+    "production_full": 1.0,
+    "neg_zero_k50": 0.7417,
+    "structural_miss_production": 0,
+    "structural_miss_fallback": 14,
+    "shape_axis_gain_k50": 0.0583,
+    "buckets_30_misses": {
+     "仅形态即可(S∧¬P)": 0,
+     "仅池宽即可(P∧¬S)": 8,
+     "任一路线即可(P∧S)": 8,
+     "两者皆需(¬P∧¬S∧PB)": 14,
+     "结构性不可召回(全不可)": 0
+    },
+    "g0_basis": "sha256 同值（权威定义） + 同维度 + 噪声底/另一基座双控制"
+   },
+   "threshold": "① **DoD 目标（生产形态全池，已达成结构面）**：R@N = 1.0（实测 1.0000，结构性不可召回 0 条）；② 形态轴可判门（同池宽 K=50 单变量）：净增 ≥ 6 条（配对精确检验 p<0.05 @n=120 反解）∧ 兜底档 membership **零回归**（逐位相同）；③ 负控必须严格更差（zero 臂 < 兜底臂 ∧ membership 有异）；④ 分辨率外声明（禁据此下结论）：池宽轴是**成本轴**且本轮未测其成本；单变量结论只在**同池宽**成立；兜底形态天花板 0.8833 含 14 条结构性缺口 ⇒ 不可与前形态读数比「达标」。",
+   "threshold_source": "eval/rover/r624/prereg-r624.json + eval/rover/r624/prereg-r624-g0v2-addendum.json",
+   "source_path": "eval/rover/r624/verdict-r624.json",
+   "source_sha12": "b22ca6569cb8",
+   "ground_rule": "形态必须按**产品实发**取证：EmbeddingFunction = 链上真身 bge-q8.gguf（sha256 5a88d266…2039，与台账同值），文档切块按**实现单位 UTF-16 code unit**（src/agent.rag/RAGRecall.cs:203-228）；键集完整性由「实发文本落盘差分」断言（miss_dump_n == 0）。cross-round: 与 R585–R623 禁相减、只并列；改器具或重跑读数件 ⇒ 必须重钉本 pin。",
+   "check_cmd": "python3 -c \"import io,json;v=json.load(io.open('eval/rover/r624/verdict-r624.json'));print(v['readings']['B1']['rate'], v['readings']['B3']['rate'], v['rc'])\"",
+   "negative_control": "① 常量零向量臂（Z1）必须严格更差：实测 0.7417 < 兜底 0.7500 ∧ membership 有异（P4 PASS）；② G0 闸自证有牙：篡改一位登记 sha ⇒ C0 必报 False；③ P1 自证有牙：用生产臂 membership 冒充兜底臂 ⇒ 零回归判据必报 False；④ 形态生效以 miss == 0 表达（命中 4118 = (1299 + 641 块) × 2 索引实例）⇒ 无静默兜底；证据件 eval/rover/r624/report-r624.md §1/§2/§4。",
+   "form_caveat_rerank_four": "**口径冲突显式作废（新读覆盖旧读，旧读数保留不撤）**：`rerank-four` 的 `recall_at_N = 0.75` 与形态声明（ground_rule 写「形态必须为生产 DI」）经 R624 机检**证伪** —— R623 器具只复制 FusionOptions、**未设 RAGConfig.EmbeddingFunction** ⇒ dense 路走词袋哈希兜底，那 0.75 是**兜底档**读数。`rerank-four` 的 R@N 字段自此**只作兜底档锚**，不得再被当作生产形态读数引用；生产档读数以本条目为准。"
   }
  ],
  "faces": {
