@@ -69,20 +69,20 @@
  "baselines": {
   "by_face": {
    "F_env": 6,
-   "F_merge": 7,
+   "F_merge": 8,
    "F_orch": 3
   },
   "by_kind": {
-   "contrast_arm": 6,
+   "contrast_arm": 7,
    "diagnostic": 1,
    "env_gate": 3,
    "external_truth": 1,
    "frozen_invariant": 4,
    "negative_control": 1
   },
-  "entries": 16,
+  "entries": 17,
   "file": "eval/capability/baselines.json",
-  "file_sha12": "32df6e746716",
+  "file_sha12": "330722b7b473",
   "missing_sources": [],
   "rules": [
    "kind_semantics",
@@ -103,12 +103,12 @@
   "latest": {
    "bin_sha": "",
    "grid": null,
-   "kind": "RF0004.2 · M3 **承重缺口定因轮（只读）**：R621 定位「wythoff 族 = 承重缺口（T 223/270 · C 158/270 · 真值 45/45）」后，本轮按 skill「逐例归因」节做**独立 oracle 复算 + 四分归因 + 行为式机制归因**。零产品源码改动 / 零新臂 / 零远端调用 / 零新增夹具语义（oracle 与被测零共享代码，来源 = 冻结题面逐字规格）。读数：J0 oracle 正控 15/15 · J1 变异负控（v2 逐例对应 mismatch 0/45；**v1 判据首跑即证伪，原样入档不翻案**）· J2 复算 == R621 冻结裁决（期望从 `verdict-r621.json` **派生**，非写死）· J3 四分覆盖 100% · J4 目标子型 71.1% ≥50% · J5 真值 45/45 全对（非夹具缺陷、非两侧同败）。机制：**判定层 = 113(COLD_PRED_WRONG) + 31(CRASH 同源) = 144/159 = 90.6%**；选点层 9、枚举序 2、未分类 4。CRASH 有代码级证据（`games/wythoff.py:48` `i, j = best` 上 `TypeError`：谓词全否 ⇒ `best=None` ⇒ 未自验即交付）。rc=0（仅表本轮判据全绿）。",
+   "kind": "RF0005 §0 DoD **面 4 · 上下文精排**从「未测」推进为「有读数」（NDCG@k / MRR / Precision@k / Recall@N）+ 生效遥测。零产品源码改动（既有开关 RAGConfig.RerankEnabled 单变量轴）/ 零远端调用 / 零新增夹具（复用 eval/bge/fixtures 冻结件）。",
    "readouts": null,
-   "ts": "2026-09-21T23:09:15+0800"
+   "ts": "2026-09-22T00:22:38+0800"
   },
-  "latest_round": "R622",
-  "lines": 156,
+  "latest_round": "R623",
+  "lines": 157,
   "non_round_rows": [
    "EXP1-Q1",
    "EXP1-Q10",
@@ -321,11 +321,12 @@
    "R620",
    "R621",
    "R622",
+   "R623",
    "loop-mechanism",
    "unknown"
   ],
   "rows_missing_kind": 19,
-  "sha12": "2ee56233dba9"
+  "sha12": "6f4af4462b90"
  },
  "plans": [
   {
@@ -389,13 +390,13 @@
   "by_level": {
    "L0": 2,
    "L1": 20,
-   "L2": 138,
+   "L2": 139,
    "L3": 89,
    "L4": 48
   },
-  "rows": 297,
-  "sha12": "57bb37876c88",
-  "updated_round": "R622",
+  "rows": 298,
+  "sha12": "9e80d7014485",
+  "updated_round": "R623",
   "violations": [],
   "warnings": [
    {

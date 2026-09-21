@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R622",
+ "updated_round": "R623",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -7599,6 +7599,35 @@
    "runs": 39,
    "verdict": "定因成立（判定层 90.6%）· rc=0（仅表本轮判据全绿）· 零产品改动 ⇒ 无降幅可宣称 · precond rc=1",
    "aot": "未重发布（本轮零产品源码改动、零新臂 ⇒ 复用 R621 冻结产物逐字节；AOT 面不适用本轮）"
+  },
+  {
+   "id": "r623.rerank-four-metrics",
+   "round": "R623",
+   "owner_round": "R623",
+   "level": "L2",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "ef25e4effe27",
+    "instrument": "eval/rover/r623/closeout_r623.py",
+    "instrument_sha12": "b854e3a35876",
+    "binding": "audit-pin",
+    "audited_by_round": "R623"
+   },
+   "capability": "RF0005 §0 DoD **面 4 · 上下文精排**：把四项指标（NDCG@k / MRR / Precision@k / Recall@N）从「未测」推进为「有读数」，并在**产品真身**召回路径（`RAGRecall.RecallAsync` → `ApplyRerank`）上取数。口径：唯一单变量轴 = `RAGConfig.RerankEnabled`（T=精排开 / C=轴关=旧行为）；形态 = 生产 DI（`Fusion{Enabled=true,K0=10,DenseWeight=1.0,LexicalWeight=1.0}`，`ServiceCollectionExtensions.cs:240`）；测量池 K=50（代码事实：精排在 `Take(TopK)` **之后**执行 ⇒ 池尺寸 = 精排可重排空间）；冻结件 = `eval/bge/fixtures`（语料 1299 篇 sha12 fa7c448c505d / 查询 120 条 sha12 b37fbe564e23，单 gold 分级，**零新增夹具**）。**读数**（聚合域 = Recall@N==1 的 90/120 查询）：C 与 T 的 NDCG@10 中位同为 0.5000（63/90 并列 ⇒ 中位被钳制）；MRR 均值 C 0.4772 → T **0.4929**；**逐查询配对 27 升 / 0 降 / 63 平（零回归）**；Recall@N = **0.75**（前置天花板：精排只重排不补召回）；生效遥测 T `RerankApplied` **120/120**、C 恒 0、错位查询 120/120 ⇒ **非孤岛**；池集合逐条相同 120/120。**DoD 阈值对照（不下调）**：NDCG@k ≥0.8 ✗ · MRR ≥0.6 ✗ · P@k ≥0.8 ✗（单 gold ⇒ 上界 = 1/k，k≥2 **结构性不可达**）· R@N =1.0 ✗。**两侧控制**：NEG 退化打分器中位 NDCG@10 = 0.0000 ≤ C+0.02（有牙）· POS oracle 置顶 = 1.0000（度量敏感）。**未测**：tokens（调用数 / 新算 prompt / completion）与缓存命中率（本面零远端 / 零 LLM）。",
+   "evidence_path": "eval/rover/r623/report-r623.md",
+   "evidence_cmd": "bash eval/rover/r623/repro-r623.sh && python3 eval/rover/r623/closeout_r623.py && python3 eval/capability/status_gen.py --check",
+   "negative_control": "① **轴关臂 = 旧行为**：C 臂 `RerankApplied` 必须恒 0（实测 0/120），且 T/C 共用同一召回池（池集合逐条相同 120/120）⇒ 差异只可能来自精排段；② **退化打分器 NEG**（`-coarseScore`，stage 层同池重排）必须不优于 C（实测中位 NDCG@10 0.0000 ≤ 0.5+0.02；MRR 均值 0.0278）⇒ 判据对「坏精排」有牙；③ **oracle 置顶打分器 POS** 必须近满分（实测中位 NDCG@1/@5/@10 = 1.0）⇒ 度量对「把 gold 置顶」敏感，非恒真门；④ **确定性 ∧ 非平凡成对**：同二进制 `--no-build` 复跑 n=3，payload（去 `ts`）逐字节同一（sha12 9272c0b6da2d）∧ 跨臂读数互异；⑤ **两处器具缺陷原样入档不翻案**：v1（legacy 形态 × 池 10 ⇒ R@N==1 仅 22/120 ⇒ 触发预注册证伪条目② rc=3 不可判）与 v2a（池同一性判据写成「id 序列逐位相同」⇒ 与「精排就是重排序」的轴语义自相矛盾，0/120 恒红）⇒ 修正形态（集合相同）单列 checks_posthoc；证据 `eval/rover/r623/out-v1-legacy-k10/run-v1-console.txt` / `rerank-face-readings-v2a-poolseqbug.json`。",
+   "covers": [
+    "rerank-four",
+    "src/agent.tests/RerankFaceTests.cs",
+    "eval/rover/r623/report-r623.md",
+    "eval/capability/baselines.json"
+   ],
+   "runs": 3,
+   "verdict": "面 4 = **有读数（未达标）** · 精排段接线通且真机生效 · 相对轴关臂零回归（27↑/0↓/63=）· MRR 均值 +0.0157（+3.3% rel）· rc=0（仅表本轮判据全绿）· 零产品源码改动 ⇒ 无降幅可宣称 · 禁下调阈值 / 禁改 K 凑数",
+   "aot": "未跑。本面为**组件级 JIT 测试路径**读数（xUnit 驱动产品真身召回路径 + 冻结语料）⇒ 证据阶梯按实定级 **L2**，不升级；AOT/CLI E2E 未行使（该组件未接 CLI 直通路径）⇒ 不得据此宣称「发布形态已验收」。"
   }
  ],
  "aot_check_policy": "release_tag_only",

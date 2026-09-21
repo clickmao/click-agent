@@ -1,0 +1,43 @@
+{
+ "round": "R623",
+ "kind": "prereg-addendum",
+ "written_before_run": true,
+ "supersedes_nothing": true,
+ "written_at": "2026-09-22T00:58+0800",
+ "base_prereg": "eval/rover/r623/prereg-r623.json",
+ "base_prereg_written_at": "2026-09-22T00:40+0800",
+ "disclosure": {
+  "v1_arm": "首跑（`AGENTFRAMEWORK_R623_SHAPE` / `AGENTFRAMEWORK_R623_TOPK` 尚未引入时的首版器具）：形态 = **legacy 旧 hybrid 路**（`Fusion = null`，非生产 DI 形状）、池 = `TopK 10`。",
+  "v1_readings": "判据 P3 **FAIL**：`R@N==1` 的查询数 = **22/120**（0.1833）⇒ 按预注册证伪条目 ② 判『rc=3 不可判』。器具在断言**之前**崩溃 ⇒ **未落盘读数件**（首版缺『先落盘后断言』）；首跑证据 = 控制台断言报文，原样归档 `eval/rover/r623/out-v1-legacy-k10/run-v1-console.txt`。**首跑读数保留、不翻案。**",
+  "v1_root_cause": "**器具读法错，不是被测缺陷**。两处器件缺陷：① 未按**生产 DI 形状**驱动 ⇒ `Fusion` 未开，走的是 legacy hybrid 路，而生产 DI 在 `src/agent/extensions/ServiceCollectionExtensions.cs:240` 显式开启 `Fusion{Enabled=true,K0=10,DenseWeight=1.0,LexicalWeight=1.0}`；② 池尺寸 = 10 太窄 —— **代码事实**：精排段在 `Take(request.TopK)` **之后**执行（`src/agent.rag/RAGRecall.cs:440` Take → `:498` ApplyRerank）⇒ 池尺寸即精排的**可重排空间**，K=10 时精排结构性几无空间。",
+  "v1_also_a_finding": "legacy 旧 hybrid 路在该冻结件上的 R@10 = **0.1833**（22/120）—— 作**诊断列**单独登记，不作能力结论（生产形状不是它）。",
+  "v2a_arm": "第二跑：形态 = fusion（生产 DI 形状）× 池 K=50；预注册件 `prereg-r623.json` 的 `frozen_inputs.pool_discipline` 写的是『两侧池 **id 序列逐位相同**（pool_identical）』。",
+  "v2a_readings": "该判据 **FAIL**：`pool_identical = 0/120`（全部命中失配）。读数件保留 `eval/rover/r623/rerank-face-readings-v2a-poolseqbug.json`（其余判据 P1/P2/P3/P4 均 true）。",
+  "v2a_root_cause": "**判据与单变量轴自相矛盾**：本面唯一轴的语义就是「精排对池内候选**重排序**」⇒ T 臂 id **序列**必然不同于 C 臂（实测错位 120/120）。用『序列逐位相同』当不变量 ⇒ 该判据在原理上恒红。正确不变量 = **候选集合相同**（精排只重排，不扩召回、不丢候选）。",
+  "v2a_disposition": "按 skill『判据实现缺陷导致的红：预注册判据照原样 FAIL（不翻案），正确形态单列 `checks_posthoc`』执行：`prereg-r623.json` 的该条**保留原样**（其 FAIL 读数入档），修正形态在 v2b 以 `pool_set_identical` 单列。"
+ },
+ "v2_changes": [
+  "形态（v2）：`AGENTFRAMEWORK_R623_SHAPE=fusion`（缺省）= 生产 DI 形状（Fusion 超参**逐字**取自 ServiceCollectionExtensions.cs:240）",
+  "池（v2）：`AGENTFRAMEWORK_R623_TOPK=50`（缺省）⇒ 声明为**测量池尺寸**（不是阈值）",
+  "池同一性判据（v2a→v2b）：**id 序列逐位相同** ⇒ **候选集合相同**（`pool_set_identical`）；仅改比较形态，阈值未动",
+  "器具时序（v2）：**先落盘读数件再断言**（v1 崩溃吞掉读数的缺陷）"
+ ],
+ "unchanged": [
+  "唯一单变量轴：`RAGConfig.RerankEnabled`（T=true / C=false）",
+  "冻结件：eval/bge/fixtures（零新增夹具）",
+  "四值口径：NDCG@1/@5/@10 · MRR · P@1/@5/@10 · R@N，k=10 位次折扣，单 gold 分级（grade 2/0）",
+  "两侧控制阈值：POS 中位 NDCG@10 ≥0.99 ∧ NEG 中位 ≤ C 中位 + 0.02（**未下调**）",
+  "前置天花板门：`R@N==1` 的查询数 ≥ 60（**未下调**；禁改 K 凑数）",
+  "不宣称面：零远端/零 LLM ⇒ tokens 与命中率未测；不宣称质量提升"
+ ],
+ "post_run_record": {
+  "v2b_result": "全判据 PASS。读数件 `eval/rover/r623/rerank-face-readings-fusion-k50.json`；证据文档 `eval/rover/r623/report-r623.md`。",
+  "determinism": "同二进制 `--no-build` 复跑 n=3，payload（去 `ts`）逐字节同一 ⇒ `sha12=9272c0b6da2d`；非平凡性由跨臂互异（C / T / NEG / POS）保证。",
+  "threshold_verdict": "DoD 四项阈值按现冻结件**全部未达标**（NDCG@10 0.5 / MRR 中位 0.3333 / P@k 上界 1/k / R@N 0.75）；**禁下调阈值、禁改 K**。",
+  "checks_posthoc": [
+   "v2a 的池同一性判据修正形态（集合相同）在本轮为**事后校核**，不翻案其 FAIL 判决",
+   "P@k ≥0.8 在单 gold 分级下结构性不可达（上界 1/k）—— 分级加厚属新增夹具，须用户放行"
+  ]
+ },
+ "threshold_provenance": "本文件 + `prereg-r623.json` 即 `rerank-four` 基准的 `threshold_source`（DoD §0 面 4 引用的 `rerank-four` 在 `eval/capability/baselines.json` 中**不存在**，经机检 0 命中，本轮登记补齐）。"
+}

@@ -268,6 +268,40 @@
    "ground_rule": "该锚是 R617「轴关 = 旧行为逐位等价」的判据面；只许随**新**冻结 pin 一起改（禁单独漂移）",
    "check_cmd": "python3 -c \"import io,json;d=json.load(io.open('eval/rover/r617/prefix-r617.json'));print(d['pin_r615_anchor']['sha256'])\"",
    "negative_control": "单测 R617_轴判定_仅r615字样翻档_近似拼写落缺省档（r6150/r61 等近似值必须落缺省档）+ 三档互异断言"
+  },
+  {
+   "id": "rerank-four",
+   "face": "F_merge",
+   "kind": "contrast_arm",
+   "metric": "精排四值（NDCG@k / MRR / Precision@k / Recall@N），k=10，单 gold 分级（grade 2/0）；聚合域 = Recall@N==1 的查询（gold 在召回池内）",
+   "unit": "queries",
+   "value": {
+    "gated_n": 90,
+    "pool_k": 50,
+    "shape": "fusion",
+    "recall_at_N": 0.75,
+    "ndcg10_median_T": 0.5,
+    "ndcg10_median_C": 0.5,
+    "mrr_median_T": 0.3333,
+    "mrr_mean_T": 0.4929,
+    "mrr_mean_C": 0.4772,
+    "paired_better": 27,
+    "paired_worse": 0,
+    "paired_same": 63,
+    "rerank_applied_T": 120,
+    "rerank_applied_C": 0,
+    "swaps_positive_queries": 120,
+    "pool_set_identical": 120,
+    "pos_median_ndcg10": 1,
+    "neg_median_ndcg10": 0
+   },
+   "threshold": "① DoD 目标（RF0005 §0 面 4，**本轮未达标、不下调**）：NDCG@k ≥0.8 ∧ MRR ≥0.6 ∧ P@k ≥0.8 ∧ R@N =1.0；② 本基准可判门（有分辨率的形态）：变好查询数 ≥ 6（配对精确检验 p<0.05 反解 @n=90）∧ 变差查询数 = 0（零回归）∧ MRR 均值 ≥ 轴关臂（粗排 / 旧行为）；③ 分辨率外声明（禁据此下结论）：单 gold ⇒ P@k 上界 = 1/k（k≥2 时 ≥0.8 结构性不可达）；63/90 并列 ⇒ 中位数被钳制，禁以「中位持平」判精排无效；④ 补召回不在本面（精排只重排已召回池）⇒ R@N 只作前置天花板。",
+   "threshold_source": "eval/rover/r623/prereg-r623.json + eval/rover/r623/prereg-r623-v2addendum.json",
+   "source_path": "eval/rover/r623/rerank-face-readings-fusion-k50.json",
+   "source_sha12": "90e849708e2d",
+   "ground_rule": "唯一单变量轴 = RAGConfig.RerankEnabled（T=true 精排 / C=false 旧行为）；两侧共用同一召回池（pool_set_identical 断言）；跨轮禁相减（与 R585–R622 冻结件轮只可并列）；改器具（src/agent.tests/RerankFaceTests.cs）或重跑读数件（ts 变）⇒ 必须重取本 pin 并重钉；形态必须为生产 DI（fusion：ServiceCollectionExtensions.cs:240），legacy 路只作诊断列。",
+   "check_cmd": "python3 -c \"import io,json;d=json.load(io.open('eval/rover/r623/rerank-face-readings-fusion-k50.json'));print(round(d['aggregates']['T']['median_ndcg@10'],4), round(d['aggregates']['C']['median_ndcg@10'],4))\"",
+   "negative_control": "① 轴关臂 = 旧行为（C：RerankApplied 必须恒 0，实测 0/120）；② 退化打分器 NEG（-coarseScore）必须不优于 C（实测中位 NDCG@10 0.0 ≤ C 中位 0.5 + 0.02）；③ oracle 置顶打分器 POS 必须近满分（实测 1.0）⇒ 度量对「把 gold 置顶」敏感；④ 确定性 ∧ 非平凡成对：同二进制复跑 n=3 payload（去 ts）逐字节同一 ∧ 跨臂读数互异；证据件 eval/rover/r623/report-r623.md §3/§4/§5。"
   }
  ],
  "faces": {

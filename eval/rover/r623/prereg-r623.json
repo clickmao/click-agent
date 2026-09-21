@@ -1,0 +1,62 @@
+{
+ "round": "R623",
+ "kind": "face-measurement",
+ "face": "RF0005 §0 DoD 面 4 · 上下文精排（NDCG@k / MRR / Precision@k / Recall@N）+ RF0004 §4『DoD 缺口（并行面）· 精排四项实测』",
+ "written_before_run": true,
+ "written_at": "2026-09-22T00:40+0800",
+ "lever_switch_reason": "RF0005 §3 规则 R2（一问题不吃多轮）：同一缺口（wythoff 族）连续 3 轮（R620/R621/R622）无改判，且 R621 已定案关闭等价面、R622 已定案关闭成本三条款『禁再加轮』 ⇒ 本轮**换面**：把 DoD 七面里唯一仍为『未测』的面 4 变为有读数。",
+ "single_variable": {
+  "axis": "RAGConfig.RerankEnabled",
+  "T": "true = 精排段执行（LexicalRerankScorer(0.5)，产品默认值）",
+  "C": "false = 旧行为（纯粗排序，RerankApplied 必须恒 0）",
+  "note": "既有开关，零新增开关；两臂其余配置逐字相同（PersistPathOverride 各自独立临时路径 ⇒ 零落盘串染）。"
+ },
+ "frozen_inputs": {
+  "corpus": {"path": "eval/bge/fixtures/corpus.jsonl", "sha12": "fa7c448c505d", "docs_declared": 1299, "kind_counts": {"cs": 908, "md": 391}},
+  "queries": {"path": "eval/bge/fixtures/queries.jsonl", "sha12": "b37fbe564e23", "n": 120, "gold_in_corpus": "120/120"},
+  "grading": "每查询 1 枚 gold（视为 grade 2 = 必需证据），其余候选 grade 0。既有冻结件，**本轮零新增夹具/零新增用例语义**。",
+  "topk": 10,
+  "pool_discipline": "四路读数共用**同一**召回池（C 臂粗排序），并断言两侧池 id 序列逐位相同（pool_identical）。"
+ },
+ "arms": [
+  "C  = 粗排序（池原序）",
+  "T  = 产品真身精排（RAGRecall.RecallAsync + ApplyRerank，LexicalRerankScorer(0.5)）",
+  "NEG= 退化打分器（-coarseScore ⇒ 反向），stage 层同池重排",
+  "POS= oracle 打分器（gold 置顶），stage 层同池重排"
+ ],
+ "criteria": [
+  {"id": "P1", "name": "生效遥测 / 接线证明（前置闸）",
+   "expect": "T 臂 RerankApplied == 120（每查询一次）∧ C 臂 RerankApplied == 0 ∧ T 臂 LastRerankSwaps>0 的查询数 ≥ 1",
+   "falsify_if": "T 臂 RerankApplied == 0 ⇒ 精排段是孤岛（有代码行 ≠ 生效）⇒ **四值读数全部作废**，本轮只报『未接线』"},
+  {"id": "P2", "name": "四值有读数（判据器读到非空）",
+   "expect": "NDCG@1/@5/@10 · MRR · P@1/@5/@10 · R@N(k=10) 均落盘为有限数；status 字段逐查询可见（不以 0/空白代替『未测』）",
+   "baselines": ["rerank-four"],
+   "falsify_if": "任一字段缺失或全 0 而 R@N==1 的查询 >0 ⇒ 判器具缺陷（rc=2），先修读取契约"},
+  {"id": "P3", "name": "前置天花板（Recall@N）",
+   "expect": "精排读数**只**在 R@N == 1.0（gold 在召回池内）的查询上聚合；R@N < 1 的查询单列（只重排不补召回）",
+   "falsify_if": "R@N==1 的查询数 < 60（半数）⇒ 判 **rc=3 不可判**（语料/召回面不足以测精排）⇒ 禁下调阈值、禁改 K 凑数"},
+  {"id": "P4", "name": "两侧控制分离（判据器判别力自证）",
+   "expect": "POS 打分器 NDCG@10 中位 ≥ 0.99（度量对『把 gold 置顶』敏感）∧ NEG 打分器 NDCG@10 中位 ≤ C 臂中位 + 0.02（退化器不得优于粗排）",
+   "falsify_if": "NEG > C + 0.02 ⇒ 判据无判别力（rc=2 器具层）；POS < 0.99 ⇒ 度量不敏感（rc=2）"},
+  {"id": "P5", "name": "阈值可判性审计（只读机检，登记缺口）",
+   "expect": "① DoD §0 面 4 引用的 baselines id `rerank-four` 在 `eval/capability/baselines.json` 中**不存在**（0 命中，机检证据） ⇒ 本轮以本预注册件为 `threshold_source` 登记该 id；② 单 gold 分级下 P@k 的上界 = 1/k ⇒ DoD 写的『P@k ≥ 0.8』在现冻结件上**结构性不可达**（k≥2 时），如实单列，不倒推阈值",
+   "falsify_if": "若 `rerank-four` 已存在 ⇒ 该条不成立，如实改写并撤回『登记缺口』措辞"}
+ ],
+ "falsifications": [
+  "① T 臂 RerankApplied == 0（或 <120）⇒ 精排段未接线/部分接线 ⇒ 四值一律不得作为能力读数报出。",
+  "② R@N==1 的查询数 < 60 ⇒ rc=3 不可判，停链先造面（禁下调阈值、禁改 K）。",
+  "③ NEG 打分器 NDCG@10 中位 > C 臂中位 + 0.02 ⇒ 判据器无判别力（rc=2）。",
+  "④ T 臂 NDCG@10 中位 ≤ C 臂中位 − 0.02 ⇒ 精排段在该语料上**负向**，如实报负向（禁以「未测」掩护，禁调阈值）。"
+ ],
+ "scale_caveat": "单 gold 分级 ⇒ NDCG/P 的分辨率天然粗（P@k 上界 = 1/k）；本仓既有冻结件如此，加厚分级标注 = 新增夹具 ⇒ **须用户放行**，本轮只登记候选。",
+ "no_claim_scope": [
+  "本轮**零远端调用 / 零 LLM** ⇒ tokens（调用数 / 新算 prompt / completion）与命中率**未测**，不得以任何形式补记",
+  "不得宣称『精排带来质量提升』——本面只报四值读数与两侧控制分离；端到端质量仍取主线 codex 对照面",
+  "三档终局目标读数（32 ms / 快 50× / 延迟 −95% / 成本 −85~91%）本轮不动不宣称",
+  "与 R585–R622 冻结件轮**禁相减、只并列**"
+ ],
+ "environment_gate": {
+  "preflight": "python3 tools/roundcheck/roundcheck.py preflight --round R623 --min-avail-mb 119 --min-disk-gb 1 --need-key AGENTFRAMEWORK_KEYS_DEEPSEEK",
+  "expected": "rc=0（FAIL=0 WARN=0）"
+ }
+}

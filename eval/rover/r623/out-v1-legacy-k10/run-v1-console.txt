@@ -1,0 +1,19 @@
+v1 首跑（器具面，形态 = legacy 旧 hybrid 路 / 池 TopK=10）—— 原始控制台证据，原样归档，不翻案
+采集时刻：2026-09-22 00:52 +0800
+命令：dotnet test src/agent.tests/agentframework.tests.csproj --no-build --filter "FullyQualifiedName~RerankFaceTests" --nologo -v n
+
+[xUnit.net 00:00:09.60]     agent.tests.RerankFaceTests.FrozenFixture_RerankFourMetrics_OnProductPath [FAIL]
+[xUnit.net 00:00:09.60]       P3：R@N==1 的查询数 22 < 60 ⇒ 不可判（rc=3）
+[xUnit.net 00:00:09.60]       Stack Trace:
+[xUnit.net 00:00:09.60]         /home/agentuser/AgentFramework/src/agent.tests/RerankFaceTests.cs(203,0): at agent.tests.RerankFaceTests.FrozenFixture_RerankFourMetrics_OnProductPath()
+  Failed agent.tests.RerankFaceTests.FrozenFixture_RerankFourMetrics_OnProductPath [9 s]
+  Error Message:
+   P3：R@N==1 的查询数 22 < 60 ⇒ 不可判（rc=3）
+  Stack Trace:
+     at agent.tests.RerankFaceTests.FrozenFixture_RerankFourMetrics_OnProductPath() in /home/agentuser/AgentFramework/src/agent.tests/RerankFaceTests.cs:line 203
+Test Run Failed. Total tests: 1 / Failed: 1 / Total time: 10.1276 Seconds
+
+定性（写入 prereg-r623-v2addendum.json §disclosure.v1_root_cause）：
+  器具读法错（形态未按生产 DI 驱动 + 池尺寸 10 窄于精排可重排空间），非被测缺陷。
+  副产物读数（诊断列，不作能力结论）：legacy 旧 hybrid 路该冻结件 R@10 = 22/120 = 0.1833。
+  器具在断言前崩溃 ⇒ 未落盘读数件；v2 已改为「先落盘读数件再断言」。

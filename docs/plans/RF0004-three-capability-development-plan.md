@@ -150,7 +150,7 @@ DAG（箭头=依赖；【并行面】=可同时推进的节点集合；重启判
 ## 7. 未闭合项（不粉饰）
 
 1. `wythoff` 冷集构造层（缺口 100% 集中族）**仍未修** ⇒ 质量面任何「达标」宣称前必须先处置它（否则 J4 整题全对恒 4-7/9）。
-2. 精排四项真值（NDCG@k / Recall@N / MRR / Precision@k）**仍「未测」** ⇒ 原四判据之一在 RF0004 收口前必须有真值。
+2. 精排四项真值（NDCG@k / Recall@N / MRR / Precision@k）：**R623 已由「未测」推进为「有读数」**（`eval/rover/r623/report-r623.md`；读数 `rerank-face-readings-fusion-k50.json`；registry 行 `r623.rerank-four-metrics`；基准 `rerank-four`）。**但四阈值全未达标**（NDCG@10 中位 0.5 / MRR 中位 0.3333·均值 0.4929 / P@k 上界 = 1/k / R@N 0.75）⇒ 残余缺口 = ①**分级加厚**（单 gold ⇒ P@k ≥0.8 结构性不可达，属**新增夹具**，须用户放行）②**召回面**（R@N = 0.75 是前置天花板，精排无权越池）③精排器升级位 `IRerankScorer`（换交叉编码器/本地 LLM 打分，属 `src/` 改动 ⇒ 未放行不动）。
 3. `agent.files`（R584 文件插件）**未接产品写盘路径** ⇒ M2 生成类写盘前必须接线，否则生成类产物无三保证。
 4. `AGENTFRAMEWORK_ACTION_ADAPTIVE_BUDGET` 是否真生效 **待确认**（消融前必先证变量可生效）。
 5. 运行期自升级（M4）依赖 `LearnedShape` 落盘与补丁库只读语义 ⇒ 与「同窗在飞窗」纪律的交互**未验**。
