@@ -1,0 +1,97 @@
+{
+  "round": "R625",
+  "kind": "face-measurement-caliber-alignment",
+  "face": "RF0005 §0 DoD 面 4 · 上下文精排 —— **生产口径对齐（召回池宽 K=10）** + R623 候选④（面 4 成本列）",
+  "written_before_run": true,
+  "written_at": "2026-09-22T03:05+0800",
+  "lever_switch_reason": "R624 收口后，只读机检发现 R623/R624 的测量口径 K=50 与**生产口径 K=10** 不一致（代码事实见 premise），且 R623 候选④「面 4 成本列」仍为『未测』。换杆依据 = RF0005 §3 规则 R2（一问题不吃多轮：面 4 前两轮 R623/R624 各换了一个子面 ⇒ 本轮为**口径收口轮**，非同一缺口重复）。",
+  "premise_readonly": {
+    "F1_production_pool_width": {
+      "claim": "生产链路调用 RAG 召回时 TopK = 10",
+      "evidence": [
+        "src/agent/contextassembler/ContextAssembler.Recall.cs:216  TopK = 10,",
+        "src/agent.rag/RAGConfig.cs:15  public int MaxRecallResults { get; set; } = 10;",
+        "src/agent.rag/RAGRecall.cs:448  .Take(request.TopK > 0 ? request.TopK : _config.MaxRecallResults)",
+        "src/agent.rag/RAGRecall.cs:498  ApplyRerank(...)  ⇒ 精排在 Take 之后 ⇒ 精排可重排空间 = TopK"
+      ],
+      "implication": "R623/R624 的面 4 读数（K=50）取自**产品不会使用的池宽**（生产 10）⇒ 该读数只作**并列对照**，不可当产品口径结论。",
+      "class": "器具/口径缺陷（测量口径 ≠ 生产口径），非被测缺陷",
+      "grep_command": "git grep -n 'TopK = 10' -- 'src/**/*.cs'"
+    },
+    "F2_cost_column_untested": {
+      "claim": "面 4 成本列（精排段耗时 / 装配面上下文规模）从未测",
+      "evidence": "R623 report §5「未测」；R624 report §5「池宽轴是成本轴 …… 本轮未测其成本」"
+    }
+  },
+  "single_variable": {
+    "axis": "召回池宽 K（口径轴，非产品开关）",
+    "A10": "K=10 = **生产口径**（ContextAssembler.Recall.cs:216）",
+    "A50": "K=50 = R623/R624 测量口径（并列对照）",
+    "held_constant": [
+      "shape = fusion（Fusion{Enabled,K0=10,DenseWeight=1.0,LexicalWeight=1.0}）",
+      "embed 形态 = vec（生产 DI 形态，承 R624）（非本轴）",
+      "fixtures 逐字节冻结（eval/bge/fixtures）",
+      "判据器阈值一字不改；四值阈值引 baselines id `rerank-four`"
+    ],
+    "note": "embed 形态与 K 两条读数轴在本轮**分别报告、不交叉归因**；主判据只取 vec × K 轴。"
+  },
+  "arms": {
+    "B10": "vec × K=10（**主判据**：生产形态 × 生产口径）",
+    "B50": "vec × K=50（零回归闸：per_query gold_in_pool 必须与 R624 B1 件逐位相同 ∧ gated==97）",
+    "A10": "hash × K=10（兜底形态同口径）",
+    "A50": "hash × K=50（零回归闸：必须与 R624 A1 件逐位相同 ∧ gated==90）",
+    "Z10": "zero × K=10（负控：判据必须对向量源有牙）"
+  },
+  "criteria": [
+    {
+      "id": "P1",
+      "name": "零回归（现档复算）",
+      "expect": "A50 的 per_query gold_in_pool 序列与 R624 A1 逐位相同 ∧ gated(A50)==90；B50 与 R624 B1 逐位相同 ∧ gated(B50)==97",
+      "baseline_id": "rerank-recall-shape"
+    },
+    {
+      "id": "P2",
+      "name": "口径生效",
+      "expect": "pool_len_median(K=10) <= 10 ∧ pool_len_median(K=50) == R624 同值；两档 readings 互异",
+      "falsify_if": "K=10 与 K=50 的 pool_len_median 相同 ⇒ 口径轴未生效 ⇒ rc=2"
+    },
+    {
+      "id": "P3",
+      "name": "主判据（生产口径四值读数 + 阈值对照）",
+      "expect": "在 K=10 上采集 NDCG@10 / MRR / P@10 / R@N 四值，并按 baselines id `rerank-four` 的阈值逐条对照（NDCG@k>=0.8 / MRR>=0.6 / P@k>=0.8 / R@N=1.0）。本轮形态为**读数轮**：判定 = 四阈值在生产口径下的逐条达标情况；**阈值禁下调、禁改 K**。",
+      "baseline_id": "rerank-four",
+      "falsify_if": "R@N(K=10) >= R@N(K=50)（0.8083）⇒ 「池宽=可回收来源」假设在该冻结件上**证伪** ⇒ 面 4 达标路径须换杆（登记，不加轮）"
+    },
+    {
+      "id": "P4",
+      "name": "成本列采集完整（信息项，**不入红绿**）",
+      "expect": "每臂具备：配对耗时（T含精排 − C纯召回）中位/极差（单位入字段名 `*_us`）∧ 打分候选数 ∧ 精排输出集合字符数 ∧ 声明估算器下的 token 估计（估算器名入字段）",
+      "ground_rule": "R410：墙钟只作信息字段，不作断言；缺项记 n/a 不记 0",
+      "falsify_if": "同臂复跑耗时摆动 >= 档间效应 ⇒ 该列标 informational-not-usable"
+    },
+    {
+      "id": "P5",
+      "name": "负控有牙",
+      "expect": "Z10 的 R@N <= A10 的 R@N ∧ Z10 与 A10 的 membership 有异（n_diff > 0）",
+      "falsify_if": "Z10 membership 与 A10 完全相同 ⇒ 判据对向量源无牙 ⇒ rc=2 器具缺陷"
+    },
+    {
+      "id": "P6",
+      "name": "守恒",
+      "expect": "五桶（仅形态/仅池宽/任一路线/两者皆需/结构性不可召回）合计 == 未召回查询数（承 R624 五桶形态，严格守恒）"
+    }
+  ],
+  "rc_semantics": {
+    "0": "全部判据绿",
+    "1": "判据成立但主判据（P3 阈值）未达标",
+    "2": "器具缺陷（口径未生效 / 负控无牙 / 键缺失）",
+    "3": "输入缺失或不可判（如有效读数档 < 2）"
+  },
+  "honest_bounds_predeclared": [
+    "本面零远端 LLM 调用 ⇒ 调用数/新算 prompt/completion/缓存命中率 = 未测，不得补记",
+    "K=10 与 K=50 **只并列、禁相减**（口径轴不同）；与 R585–R624 冻结件轮一并禁相减",
+    "成本列为信息项，不得作收益/损失宣称",
+    "单 gold 分级 ⇒ P@k 上界 = 1/k（k>=2 时 >=0.8 结构性不可达），如实登记",
+    "三档终局目标读数（32 ms / 快 50× / −95% / −85~91%）本轮不动不宣称"
+  ]
+}

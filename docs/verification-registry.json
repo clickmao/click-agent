@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R624",
+ "updated_round": "R625",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -7658,6 +7658,37 @@
    "runs": 1,
    "verdict": "面 4 召回面 = **形态对齐完成 · 主判据未达标**（预注册 P3 0.8083 < 0.90，阈值不下调；rc=1）。形态轴单变量 +5.83 pt（+7 条 ≥ Δ_min 6）∧ 兜底档零回归（membership 逐位相同）⇒ 修正形态本身有可判增益；**生产形态全池天花板 = 1.0000（结构性不可召回 0）**，兜底形态 0.8833（14 条结构性缺口）⇒ R623「R@N 结构上不可达 1.0」**只对兜底形态成立**。零产品源码改动 ⇒ 无降幅可宣称；池宽轴成本未测。",
    "aot": "未跑。本面为**组件级 JIT 测试路径**读数（xUnit 驱动产品真身召回路径 + 冻结语料）⇒ 证据阶梯按实定级 **L2**，不升级；AOT/CLI E2E 未行使（该组件未接 CLI 直通路径）⇒ 不得据此宣称「发布形态已验收」。"
+  },
+  {
+   "id": "r625.rerank-production-caliber",
+   "round": "R625",
+   "owner_round": "R625",
+   "level": "L2",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "5827a587f6da",
+    "instrument": "eval/rover/r625/closeout_r625.py",
+    "instrument_sha12": "66c2e8bface2",
+    "binding": "audit-pin",
+    "audited_by_round": "R625"
+   },
+   "capability": "RF0005 §0 DoD **面 4 · 上下文精排** 的**口径收口**轮：R623/R624 的四值读数取自测量池 K=50，而生产链路的召回池宽为 **TopK = 10**（代码事实 `src/agent/contextassembler/ContextAssembler.Recall.cs:216` ∧ `RAGConfig.cs:15 MaxRecallResults = 10`；精排在 `RAGRecall.cs:448` Take 之后执行 ⇒ 池尺寸 = 精排可重排空间）⇒ 本轮把口径对齐到生产档，并首次采集精排段**成本列**。口径：唯一单变量轴 = 召回池宽 K（口径轴）；形态 = fusion ∧ embed = vec（生产 DI，承 R624）；冻结件 = `eval/bge/fixtures`（语料 1299 / 查询 120，单 gold，零新增夹具）；产品源码改动 = **零**。**读数**：R@N 生产档 K=10 **0.7333**（gated 88）vs 旧测量档 K=50 0.8083（gated 97）· 兜底档 K=10 0.6333（gated 76）· K=50 0.7500（gated 90）· 零向量负控 K=10 0.5417。**生产口径四值 vs DoD 阈值（不下调）**：NDCG@10 中位 **1.0000** ✓（**饱和**：池宽 == k）· MRR 中位 **1.0000** ✓（**饱和**）· P@10 中位 **0.1000** ✗（= 1/k，**算术不可达 0.8**）· R@N **0.7333** ✗ ⇒ 名义 **2/4**，**禁读作能力达标**。**成本列（信息项）**：精排段配对耗时中位 K=10 **69.0 µs** vs K=50 **1,942.7 µs**（≈28×）；装配面候选集合字符和 498,318 vs 2,420,739（≈4.9×）；`candidates_scored` 跨池宽**恒等**（233,040）⇒ 显式判为**非**精排成本代理。**零回归**：A50/B50 对 R624 `A1`/`B1` 的 per_query membership 差异 **0**、gated 90/97 同值 ⇒ 器具改动（只加信息字段）未动判据路径。**守恒**：A10 未召回 44 条五桶合计 44（仅池宽 4 · 仅形态 3 · 任一路线 10 · 两者皆需 5 · 结构性 22）。**未测**：tokens / 缓存命中率（本面零远端）· codex 外部真值臂（本地检索面无远端题面）。",
+   "evidence_path": "eval/rover/r625/report-r625.md",
+   "evidence_cmd": "python3 tools/roundcheck/roundcheck.py preflight --round R625 --min-avail-mb 2769 --min-disk-gb 1 --need-key AGENTFRAMEWORK_KEYS_DEEPSEEK && bash eval/rover/r625/run_r625.sh && python3 eval/rover/r625/judge_r625.py && python3 eval/rover/r625/closeout_r625.py && python3 eval/capability/status_gen.py --check",
+   "negative_control": "① **零向量负控臂（有牙）**：Z10 R@N 0.5417 ≤ 兜底 A10 0.6333 ∧ per_query membership 差异 13 条；② **零回归自证**：A50/B50 对 R624 `A1`/`B1` per_query 集合差异 **0**；③ **口径自证**：K=10 池宽中位 10 vs K=50 中位 48（口径未生效即判 rc=2）；④ **成本列空心防护**：`candidates_scored` 跨池宽恒等 ⇒ 显式排除其作精排成本代理（防按字段名读成本的假结论）；⑤ **守恒**：五桶合计 == 未召回 44 条；⑥ **预注册证伪条目**：`R@N(K=10) ≥ R@N(K=50)` ⇒ 未命中（0.7333 < 0.8083）⇒ 池宽假设未被证伪（同向）。",
+   "covers": [
+    "rerank-production-caliber",
+    "rerank-four",
+    "rerank-recall-shape",
+    "src/agent.tests/RerankFaceTests.cs",
+    "eval/rover/r625/report-r625.md",
+    "eval/capability/baselines.json"
+   ],
+   "runs": 5,
+   "verdict": "面 4 = **口径收口完成 · 仍未达标**（rc=1，`defects=[]`）。生产口径（K=10）R@N **0.7333** < 旧测量档 (K=50) 0.8083 ⇒ 前两轮的读数取自产品不使用的池宽，只作并列对照。生产口径四值名义 2/4，但 NDCG@10/MRR 在 K=10 上**饱和**（池宽 == k ⇒ 分辨率失效），真正有分辨率的两项（P@10 = 1/k 算术不可达 · R@N 0.7333）**双双未达** ⇒ **禁读作能力达标**。成本列首测：精排配对耗时 69 µs(K=10) vs 1,943 µs(K=50)（≈28×）⇒ 池宽轴的成本是真实的（不得当免费收益）。零产品源码改动 ⇒ 无降幅可宣称。",
+   "aot": "未跑。本面为**组件级 JIT 测试路径**读数（xUnit 驱动产品真身召回路径 + 冻结语料）⇒ 证据阶梯按实定级 **L2**，不升级；AOT/CLI E2E 未行使（该组件未接 CLI 直通路径）。"
   }
  ],
  "aot_check_policy": "release_tag_only",

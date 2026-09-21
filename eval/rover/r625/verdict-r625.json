@@ -1,0 +1,367 @@
+{
+ "arms": {
+  "A10": {
+   "criteria": {
+    "P1_C_rerank_applied": 0,
+    "P1_T_rerank_applied": 120,
+    "P1_T_swaps_positive_queries": 98,
+    "P1_telemetry": true,
+    "P2_four_metrics_present": true,
+    "P3_gate_gated_ge_60": true,
+    "P4_cost_column_present": true,
+    "P4_neg_not_better_than_C": true,
+    "P4_pos_median_ge_099": true
+   },
+   "embed": "hash",
+   "gated": 76,
+   "k": 10,
+   "pool_len_median": 10,
+   "rate": 0.6333
+  },
+  "A50": {
+   "criteria": {
+    "P1_C_rerank_applied": 0,
+    "P1_T_rerank_applied": 120,
+    "P1_T_swaps_positive_queries": 120,
+    "P1_telemetry": true,
+    "P2_four_metrics_present": true,
+    "P3_gate_gated_ge_60": true,
+    "P4_cost_column_present": true,
+    "P4_neg_not_better_than_C": true,
+    "P4_pos_median_ge_099": true
+   },
+   "embed": "hash",
+   "gated": 90,
+   "k": 50,
+   "pool_len_median": 48,
+   "rate": 0.75
+  },
+  "B10": {
+   "criteria": {
+    "P1_C_rerank_applied": 0,
+    "P1_T_rerank_applied": 120,
+    "P1_T_swaps_positive_queries": 75,
+    "P1_telemetry": true,
+    "P2_four_metrics_present": true,
+    "P3_gate_gated_ge_60": true,
+    "P4_cost_column_present": true,
+    "P4_neg_not_better_than_C": true,
+    "P4_pos_median_ge_099": true
+   },
+   "embed": "vec",
+   "gated": 88,
+   "k": 10,
+   "pool_len_median": 10,
+   "rate": 0.7333
+  },
+  "B50": {
+   "criteria": {
+    "P1_C_rerank_applied": 0,
+    "P1_T_rerank_applied": 120,
+    "P1_T_swaps_positive_queries": 120,
+    "P1_telemetry": true,
+    "P2_four_metrics_present": true,
+    "P3_gate_gated_ge_60": true,
+    "P4_cost_column_present": true,
+    "P4_neg_not_better_than_C": true,
+    "P4_pos_median_ge_099": true
+   },
+   "embed": "vec",
+   "gated": 97,
+   "k": 50,
+   "pool_len_median": 49,
+   "rate": 0.8083
+  },
+  "Z10": {
+   "criteria": {
+    "P1_C_rerank_applied": 0,
+    "P1_T_rerank_applied": 120,
+    "P1_T_swaps_positive_queries": 75,
+    "P1_telemetry": true,
+    "P2_four_metrics_present": true,
+    "P3_gate_gated_ge_60": true,
+    "P4_cost_column_present": true,
+    "P4_neg_not_better_than_C": true,
+    "P4_pos_median_ge_099": true
+   },
+   "embed": "zero",
+   "gated": 65,
+   "k": 10,
+   "pool_len_median": 8,
+   "rate": 0.5417
+  }
+ },
+ "axis": "召回池宽 K（口径轴）：K=10 = 生产口径 / K=50 = R623–R624 测量口径",
+ "checks": {
+  "P1_zero_regression": {
+   "detail": {
+    "A50": {
+     "gated_now": 90,
+     "gated_ref": 90,
+     "n_membership_diff": 0,
+     "pass": true,
+     "pool_len_median_now": 48,
+     "pool_len_median_ref": 48,
+     "ref": "R624/A1"
+    },
+    "B50": {
+     "gated_now": 97,
+     "gated_ref": 97,
+     "n_membership_diff": 0,
+     "pass": true,
+     "pool_len_median_now": 49,
+     "pool_len_median_ref": 49,
+     "ref": "R624/B1"
+    }
+   },
+   "pass": true
+  },
+  "P2_caliber_engaged": {
+   "pass": true,
+   "pool_len_median_K10": 10,
+   "pool_len_median_K50": 48,
+   "readings_differ": true
+  },
+  "P3_production_caliber_four_metrics": {
+   "all_pass": false,
+   "baseline_id": "rerank-four",
+   "domain_K10": "R@N==1 的查询（gold 在 K=10 池内）",
+   "falsifier_pool_width_hypothesis": {
+    "falsified": false,
+    "r_at_N_K10": 0.7333,
+    "r_at_N_K50": 0.8083,
+    "rule": "R@N(K=10) >= R@N(K=50) ⇒ 「池宽=可回收来源」证伪"
+   },
+   "four": {
+    "mrr": 1,
+    "mrr_mean": 0.7524,
+    "ndcg@10": 1,
+    "p@10": 0.1,
+    "recall@N": 0.7333
+   },
+   "gated_n_K10": 88,
+   "n_thresholds_met": 2,
+   "threshold_source": "eval/capability/baselines.json#rerank-four + RF0005 §0 面 4",
+   "thresholds": {
+    "mrr": {
+     "observed": 1,
+     "pass": true,
+     "threshold": 0.6
+    },
+    "ndcg@10": {
+     "observed": 1,
+     "pass": true,
+     "threshold": 0.8
+    },
+    "p@10": {
+     "observed": 0.1,
+     "pass": false,
+     "threshold": 0.8
+    },
+    "recall@N": {
+     "observed": 0.7333,
+     "pass": false,
+     "threshold": 1.0
+    }
+   }
+  },
+  "P4_cost_column": {
+   "complete": true,
+   "ground_rule": "R410：墙钟只作信息字段，不作红绿判据",
+   "informational_only": true,
+   "rows": {
+    "A10": {
+     "assembled_chars_T_sum": 502347,
+     "candidates_scored_C": 233040,
+     "flag_present": true,
+     "latency_us_C_median": 17431.700000000004,
+     "latency_us_T_median": 17434.800000000003,
+     "latency_us_pair_diff_median": 334.54999999999836,
+     "latency_us_pair_diff_p90": 1839.0999999999985,
+     "remote_calls": 0,
+     "token_est_T": 167449,
+     "token_estimator": "chars/3（同源：src/agent/contextassembler/ContextAssembler.Recall.cs 的 approx = Length/3）"
+    },
+    "A50": {
+     "assembled_chars_T_sum": 2420739,
+     "candidates_scored_C": 233040,
+     "flag_present": true,
+     "latency_us_C_median": 20608.050000000003,
+     "latency_us_T_median": 23194.550000000003,
+     "latency_us_pair_diff_median": 1942.6500000000033,
+     "latency_us_pair_diff_p90": 4904.700000000001,
+     "remote_calls": 0,
+     "token_est_T": 806913,
+     "token_estimator": "chars/3（同源：src/agent/contextassembler/ContextAssembler.Recall.cs 的 approx = Length/3）"
+    },
+    "B10": {
+     "assembled_chars_T_sum": 498318,
+     "candidates_scored_C": 233040,
+     "flag_present": true,
+     "latency_us_C_median": 18787.7,
+     "latency_us_T_median": 18807.2,
+     "latency_us_pair_diff_median": 69.04999999999745,
+     "latency_us_pair_diff_p90": 1484.7000000000007,
+     "remote_calls": 0,
+     "token_est_T": 166106,
+     "token_estimator": "chars/3（同源：src/agent/contextassembler/ContextAssembler.Recall.cs 的 approx = Length/3）"
+    },
+    "B50": {
+     "assembled_chars_T_sum": 2398745,
+     "candidates_scored_C": 233040,
+     "flag_present": true,
+     "latency_us_C_median": 18638.05,
+     "latency_us_T_median": 20209.75,
+     "latency_us_pair_diff_median": 1306.75,
+     "latency_us_pair_diff_p90": 2790.100000000002,
+     "remote_calls": 0,
+     "token_est_T": 799581.7,
+     "token_estimator": "chars/3（同源：src/agent/contextassembler/ContextAssembler.Recall.cs 的 approx = Length/3）"
+    },
+    "Z10": {
+     "assembled_chars_T_sum": 416776,
+     "candidates_scored_C": 233040,
+     "flag_present": true,
+     "latency_us_C_median": 19071.95,
+     "latency_us_T_median": 19302.75,
+     "latency_us_pair_diff_median": 237.5,
+     "latency_us_pair_diff_p90": 1818.4000000000015,
+     "remote_calls": 0,
+     "token_est_T": 138925.3,
+     "token_estimator": "chars/3（同源：src/agent/contextassembler/ContextAssembler.Recall.cs 的 approx = Length/3）"
+    }
+   }
+  },
+  "P5_negative_control": {
+   "n_membership_diff": 13,
+   "pass": true,
+   "rate_A10": 0.6333,
+   "rate_Z10": 0.5417
+  },
+  "P6_conservation": {
+   "base": "A10 未召回集（生产口径 × 兜底形态）",
+   "buckets": {
+    "both_needed": 5,
+    "either": 10,
+    "only_pool": 4,
+    "only_shape": 3,
+    "structural": 22
+   },
+   "n_missing_base": 44,
+   "pass": true,
+   "sum": 44
+  }
+ },
+ "cost_informational": {
+  "A10": {
+   "assembled_chars_T_sum": 502347,
+   "candidates_scored_C": 233040,
+   "flag_present": true,
+   "latency_us_C_median": 17431.700000000004,
+   "latency_us_T_median": 17434.800000000003,
+   "latency_us_pair_diff_median": 334.54999999999836,
+   "latency_us_pair_diff_p90": 1839.0999999999985,
+   "remote_calls": 0,
+   "token_est_T": 167449,
+   "token_estimator": "chars/3（同源：src/agent/contextassembler/ContextAssembler.Recall.cs 的 approx = Length/3）"
+  },
+  "A50": {
+   "assembled_chars_T_sum": 2420739,
+   "candidates_scored_C": 233040,
+   "flag_present": true,
+   "latency_us_C_median": 20608.050000000003,
+   "latency_us_T_median": 23194.550000000003,
+   "latency_us_pair_diff_median": 1942.6500000000033,
+   "latency_us_pair_diff_p90": 4904.700000000001,
+   "remote_calls": 0,
+   "token_est_T": 806913,
+   "token_estimator": "chars/3（同源：src/agent/contextassembler/ContextAssembler.Recall.cs 的 approx = Length/3）"
+  },
+  "B10": {
+   "assembled_chars_T_sum": 498318,
+   "candidates_scored_C": 233040,
+   "flag_present": true,
+   "latency_us_C_median": 18787.7,
+   "latency_us_T_median": 18807.2,
+   "latency_us_pair_diff_median": 69.04999999999745,
+   "latency_us_pair_diff_p90": 1484.7000000000007,
+   "remote_calls": 0,
+   "token_est_T": 166106,
+   "token_estimator": "chars/3（同源：src/agent/contextassembler/ContextAssembler.Recall.cs 的 approx = Length/3）"
+  },
+  "B50": {
+   "assembled_chars_T_sum": 2398745,
+   "candidates_scored_C": 233040,
+   "flag_present": true,
+   "latency_us_C_median": 18638.05,
+   "latency_us_T_median": 20209.75,
+   "latency_us_pair_diff_median": 1306.75,
+   "latency_us_pair_diff_p90": 2790.100000000002,
+   "remote_calls": 0,
+   "token_est_T": 799581.7,
+   "token_estimator": "chars/3（同源：src/agent/contextassembler/ContextAssembler.Recall.cs 的 approx = Length/3）"
+  },
+  "Z10": {
+   "assembled_chars_T_sum": 416776,
+   "candidates_scored_C": 233040,
+   "flag_present": true,
+   "latency_us_C_median": 19071.95,
+   "latency_us_T_median": 19302.75,
+   "latency_us_pair_diff_median": 237.5,
+   "latency_us_pair_diff_p90": 1818.4000000000015,
+   "remote_calls": 0,
+   "token_est_T": 138925.3,
+   "token_estimator": "chars/3（同源：src/agent/contextassembler/ContextAssembler.Recall.cs 的 approx = Length/3）"
+  }
+ },
+ "defects": [],
+ "main_criterion": {
+  "baseline_id": "rerank-four",
+  "detail": "生产口径 K=10 四值达标 2/4",
+  "id": "P3",
+  "pass": false
+ },
+ "mech_secondary": [],
+ "product_source_change": 0,
+ "rc": 1,
+ "rc_reason": "判据成立但主判据未达标（生产口径四值 2/4）",
+ "readings": {
+  "A10": {
+   "embed": "hash",
+   "gated": 76,
+   "k": 10,
+   "pool_len_median": 10,
+   "rate": 0.6333
+  },
+  "A50": {
+   "embed": "hash",
+   "gated": 90,
+   "k": 50,
+   "pool_len_median": 48,
+   "rate": 0.75
+  },
+  "B10": {
+   "embed": "vec",
+   "gated": 88,
+   "k": 10,
+   "pool_len_median": 10,
+   "rate": 0.7333
+  },
+  "B50": {
+   "embed": "vec",
+   "gated": 97,
+   "k": 50,
+   "pool_len_median": 49,
+   "rate": 0.8083
+  },
+  "Z10": {
+   "embed": "zero",
+   "gated": 65,
+   "k": 10,
+   "pool_len_median": 8,
+   "rate": 0.5417
+  }
+ },
+ "round": "R625",
+ "schema": "rerank-production-caliber/1"
+}

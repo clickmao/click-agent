@@ -202,6 +202,16 @@ public class RerankFaceTests
         return n % 2 == 1 ? s[n / 2] : (s[n / 2 - 1] + s[n / 2]) / 2.0;
     }
 
+    /// <summary>R625 成本列：分位数（最近秩法）。仅用于信息字段，不作红绿判据（R410）。</summary>
+    private static double Pct(List<double> xs, double p)
+    {
+        if (xs.Count == 0) return double.NaN;
+        var s = new List<double>(xs);
+        s.Sort();
+        var idx = (int)Math.Min(s.Count - 1, Math.Max(0, Math.Round(p * (s.Count - 1))));
+        return s[idx];
+    }
+
     [Fact]
     public void FrozenFixture_RerankFourMetrics_OnProductPath()
     {
@@ -298,14 +308,31 @@ public class RerankFaceTests
         var poolIdentical = 0;
         var poolMismatch = new List<string>();
         var poolLens = new List<double>();
+        var latencyUsC = new List<double>();          // R625 成本列：纯召回（C 档）逐查询耗时
+        var latencyUsT = new List<double>();          // R625 成本列：召回 + 精排（T 档）逐查询耗时
+        var latencyUsPairDiff = new List<double>();   // R625 成本列：配对差 = 精排段成本（T − C）
+        var consumedCharsC = new List<double>();      // R625 成本列：装配面候选集合字符数（C 档）
+        var consumedCharsT = new List<double>();      // R625 成本列：装配面候选集合字符数（T 档）
+
 
         foreach (var qi in Enumerable.Range(0, qtexts.Count))
         {
             var q = qtexts[qi];
             var gold = golds[qi];
 
-            var resC = recallC.RecallAsync(new RecallRequest { Query = q, TopK = PoolK }).GetAwaiter().GetResult();
-            var resT = recallT.RecallAsync(new RecallRequest { Query = q, TopK = PoolK }).GetAwaiter().GetResult();
+                // 组装后的**精排段成本列**（R410：墙钟只作信息字段，不作红绿判据）
+                var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+                var resC = recallC.RecallAsync(new RecallRequest { Query = q, TopK = PoolK }).GetAwaiter().GetResult();
+                stopwatch.Stop();
+                var cUsQuery = stopwatch.Elapsed.TotalMilliseconds * 1000.0;
+                stopwatch.Restart();
+                var resT = recallT.RecallAsync(new RecallRequest { Query = q, TopK = PoolK }).GetAwaiter().GetResult();
+                stopwatch.Stop();
+                var tUsQuery = stopwatch.Elapsed.TotalMilliseconds * 1000.0;
+                latencyUsC.Add(cUsQuery); latencyUsT.Add(tUsQuery); latencyUsPairDiff.Add(tUsQuery - cUsQuery);
+                consumedCharsC.Add(resC.Sum(r => (double)(r.Document?.Content ?? "").Length));
+                consumedCharsT.Add(resT.Sum(r => (double)(r.Document?.Content ?? "").Length));
+
             swapsTotal += recallT.LastRerankSwaps;
             if (recallT.LastRerankSwaps > 0) swapsPositive++;
 
@@ -389,6 +416,8 @@ public class RerankFaceTests
             ["P1_T_swaps_positive_queries"] = swapsPositive,
             ["P2_four_metrics_present"] = rows.Count > 0 && Col("T", "ndcg@10").Count > 0,
             ["P3_gate_gated_ge_60"] = gated >= 60,
+            ["P4_cost_column_present"] = latencyUsC.Count == rows.Count && latencyUsT.Count == rows.Count
+                                         && latencyUsPairDiff.Count == rows.Count && consumedCharsT.Count == rows.Count,
             ["P4_pos_median_ge_099"] = agg["POS"]["median_ndcg@10"] >= 0.99,
             ["P4_neg_not_better_than_C"] = agg["NEG"]["median_ndcg@10"] <= agg["C"]["median_ndcg@10"] + 0.02,
         };
@@ -431,6 +460,25 @@ public class RerankFaceTests
                 ["gated_recall_at_N_eq_1"] = gated,
                 ["gated_ratio"] = Math.Round((double)gated / qtexts.Count, 4),
             },
+            ["cost_informational"] = new Dictionary<string, object?>
+            {
+                ["ground_rule"] = "R410：墙钟只作信息字段，不作红绿判据；单位入字段名",
+                ["unit_latency_us"] = "microseconds",
+                ["latency_us_C_median"] = Median(latencyUsC),
+                ["latency_us_T_median"] = Median(latencyUsT),
+                ["latency_us_pair_diff_median"] = Median(latencyUsPairDiff),
+                ["latency_us_pair_diff_p90"] = Pct(latencyUsPairDiff, 0.90),
+                ["latency_us_pair_diff_min"] = latencyUsPairDiff.Count == 0 ? double.NaN : latencyUsPairDiff.Min(),
+                ["latency_us_pair_diff_max"] = latencyUsPairDiff.Count == 0 ? double.NaN : latencyUsPairDiff.Max(),
+                ["candidates_scored_C"] = recallC.FusionCounters?.CandidatesScored,
+                ["assembled_chars_T_sum"] = consumedCharsT.Sum(),
+                ["assembled_chars_C_sum"] = consumedCharsC.Sum(),
+                ["token_estimator"] = "chars/3（同源：src/agent/contextassembler/ContextAssembler.Recall.cs 的 approx = Length/3）",
+                ["token_est_T"] = Math.Round(consumedCharsT.Sum() / 3.0, 1),
+                ["token_est_C"] = Math.Round(consumedCharsC.Sum() / 3.0, 1),
+                ["remote_calls"] = 0,
+            },
+
             ["criteria"] = criteria,
             ["aggregates"] = agg,
             ["per_query"] = rows,
