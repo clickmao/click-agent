@@ -1,0 +1,51 @@
+{
+ "schema": "rerank-instrument-posthoc/1",
+ "round": "R627",
+ "discriminative_power_audit": {
+  "POS": {
+   "agreement_vs_product": 1.0,
+   "n_hits": 88,
+   "hits_delta_vs_product": 0,
+   "symdiff_hits_vs_product": 0,
+   "symdiff_fraction": 0.0
+  },
+  "N1": {
+   "agreement_vs_product": 0.875,
+   "n_hits": 75,
+   "hits_delta_vs_product": -13,
+   "symdiff_hits_vs_product": 15,
+   "symdiff_fraction": 0.125
+  },
+  "N2": {
+   "agreement_vs_product": 0.8333,
+   "n_hits": 68,
+   "hits_delta_vs_product": -20,
+   "symdiff_hits_vs_product": 20,
+   "symdiff_fraction": 0.1667
+  },
+  "N3": {
+   "agreement_vs_product": 0.7583,
+   "n_hits": 59,
+   "hits_delta_vs_product": -29,
+   "symdiff_hits_vs_product": 29,
+   "symdiff_fraction": 0.2417
+  },
+  "_note": "**旧形态（agreement vs 产品）判别力不足**：产品自身 miss 32 条是白送的一致来源 ⇒ 配错臂 agreement 仍 0.8333。**正确形态 = 臂间差异量**（symdiff_hits_vs_产品 / 命中数差）；本轮 POS symdiff=0（逐例复现），N1=13 / N2=20 / N3=29 ⇒ 三臂差异量单调可辨。"
+ },
+ "merge_order_diagnostic": {
+  "form_early_merge_take_units": {
+   "n_hits": 88,
+   "rate": 0.7333
+  },
+  "form_late_merge_take_parents": {
+   "n_hits": 88,
+   "rate": 0.7333
+  },
+  "gain_hits": 0,
+  "pool_len_delta_median": 0,
+  "metric_defect_note": "`pool_len_delta_median` **退化**（两种形态都恰好取 10 个父文档 ⇒ 恒为 0）⇒ 该字段无判别力；有判别力的等价量 = 早归并形态下**池内父文档数 < 10 的查询数**（= 同父多块白占槽位的次数）。",
+  "pool_len_early_lt_10_n": 23,
+  "role": "**信息项**（事后诊断）：不参与判据红绿、不翻案 R625/R626 读数；仅作下轮候选的预注册输入"
+ },
+ "n_queries": 120
+}

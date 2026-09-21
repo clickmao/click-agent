@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R625",
+ "updated_round": "R627",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -7689,6 +7689,37 @@
    "runs": 5,
    "verdict": "面 4 = **口径收口完成 · 仍未达标**（rc=1，`defects=[]`）。生产口径（K=10）R@N **0.7333** < 旧测量档 (K=50) 0.8083 ⇒ 前两轮的读数取自产品不使用的池宽，只作并列对照。生产口径四值名义 2/4，但 NDCG@10/MRR 在 K=10 上**饱和**（池宽 == k ⇒ 分辨率失效），真正有分辨率的两项（P@10 = 1/k 算术不可达 · R@N 0.7333）**双双未达** ⇒ **禁读作能力达标**。成本列首测：精排配对耗时 69 µs(K=10) vs 1,943 µs(K=50)（≈28×）⇒ 池宽轴的成本是真实的（不得当免费收益）。零产品源码改动 ⇒ 无降幅可宣称。",
    "aot": "未跑。本面为**组件级 JIT 测试路径**读数（xUnit 驱动产品真身召回路径 + 冻结语料）⇒ 证据阶梯按实定级 **L2**，不升级；AOT/CLI E2E 未行使（该组件未接 CLI 直通路径）。"
+  },
+  {
+   "id": "r627.rerank-instrument-form",
+   "owner_round": "R627",
+   "level": "L2",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "5c14b5f9fd62",
+    "instrument": "eval/rover/r627/closeout_r627.py",
+    "instrument_sha12": "2d82afeadc63",
+    "binding": "audit-pin",
+    "audited_by_round": "R627"
+   },
+   "capability": "RF0005 §0 DoD **面 4 · 上下文精排** 的**器具面判据形态修法**轮（承 R626 单列缺陷 `P4-pos-prereg-form`）：R626 的正控用**单路**（dense-only）口径对**融合池**读数判 FAIL（0.8409 < 0.90），本轮定位为**比较形态失配**——产品池 = dense 与 lexical 的 **RRF 融合** top-10（代码事实 `RAGRecall.cs:316-353` + `RrfFuser.cs:22` k0=10、双权重 1.0），单路与融合池本不必一致。本轮加**同形（RRF 融合）**独立 oracle（stdlib 纯 Python、零 import 本仓）对 `B10` 冻结产品读数逐例复算：**agreement 1.0000（120/120）· 命中 88/88 · 逐例差异 0**；前置锚 = 块映射重放 **641/641 逐字节命中**；非平凡 = 四形态归属向量**互异** ∧ 命中 88/75/68/59 单调可辨。**同时自捕第二件同类器具缺陷**：负控指标 `agreement(臂, 产品)` 分子含产品自身 miss 的 32 条白送一致 ⇒ 配错臂仍 0.8333 ⇒ **该形态对坏臂无牙**（照原样 FAIL、阈值不下调），正确形态 = **臂间差异量**（symdiff 0/15/20/29 · 命中数差 0/−13/−20/−29，单调可辨）。**事后诊断（不进 rc）**：归并/截断次序（早归并 Take 单元 vs 晚归并 Take 父文档）**gain 0/120 ⇒ 该轴被否证**，「同父多块白占槽位」存在（23/120）但不承重 ⇒ 不开实现。**未测**：tokens / 缓存命中率 / 轮数（本面零远端）· codex 外部真值臂（本地检索面无远端题面）。",
+   "evidence_path": "eval/rover/r627/report-r627.md",
+   "evidence_cmd": "python3 -B -u eval/rover/r627/oracle_fusion_r627.py && python3 -B -u eval/rover/r627/posthoc_r627.py && python3 -B eval/rover/r627/judge_r627.py && python3 eval/rover/r627/closeout_r627.py && python3 eval/capability/status_gen.py --check",
+   "negative_control": "① **形态敏感负控（有牙）**：把 oracle 退化为**单路**（= R626 旧判据形态）⇒ agreement 掉到 **0.8750**、命中 88→75、symdiff 15 ⇒ 判据对「形态被破坏」有牙；② **配错负控**：查询**向量**移位一格（文本不变，两路同时被打乱）⇒ 命中 88→68 ⇒ **旧指标形态无牙已被取证**（agreement 仅 0.8333 ≫ 阈值 0.25）；③ **零向量负控**：查询向量置零 ⇒ 命中 88→59；④ **非平凡成对**：四形态 per-query 归属向量**互异**（防「恒定输出」冒充可复现）；⑤ **前置锚**：块映射重放 641/641 逐字节；⑥ **POS 逐例复现**：symdiff=0 ∧ 逐例差异 0 ⇒ 主判据不是「分数巧合」。",
+   "covers": [
+    "rerank-oracle-form",
+    "rerank-production-caliber",
+    "rerank-four",
+    "rerank-recall-shape",
+    "src/agent.tests/RerankFaceTests.cs",
+    "eval/rover/r627/report-r627.md",
+    "eval/capability/baselines.json"
+   ],
+   "runs": 1,
+   "verdict": "面 4 = 器具面判据形态**修法完成 · 仍未达标**（rc=1，`defects=[P3-negctl-metric-form]`）。主判据（同形口径正控）**PASS**：agreement 1.0000 ≥ 0.90，且逐例复现产品（88/88、差异 0）⇒ R626 的 0.8409 全部由**比较形态**解释。器具层另 1 条缺陷（负控指标形态）**未闭合**⇒ rc=1；**零产品源码改动 ⇒ 无任何能力/成本增益宣称**；生产口径 R@N 0.7333 < 0.9 的达标路径**待用户放行**。",
+   "aot": "未跑（本面为零远端 / 纯 Python 器具轮，未构建、未发布产品件）⇒ 证据阶梯按实定级 **L2**，不升级；AOT 校验按 registry `aot_check_policy` 仅在【发布 tag】时执行。"
   }
  ],
  "aot_check_policy": "release_tag_only",

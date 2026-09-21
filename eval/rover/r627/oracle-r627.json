@@ -1,0 +1,1133 @@
+{
+ "schema": "rerank-recall-instrument-form/1",
+ "round": "R627",
+ "ts": "2026-09-22T05:07:49+0800",
+ "axis": "无（器具轮）· 唯一自由度 = 判据比较形态（单路 → 同形融合）",
+ "oracle": {
+  "independence": "排序实现 / 单元映射 / 比较形态独立（stdlib 纯 Python，零 import 本仓）；**向量源不独立**（冻结件，同源性由 R624 G0 覆盖）",
+  "unit_universe": {
+   "n_units": 1942,
+   "n_head": 1299,
+   "n_chunk": 643
+  },
+  "anchor_chunk_mapping_bitexact": {
+   "n_total_chunks": 643,
+   "n_unique_replay": 641,
+   "n_keys": 641,
+   "n_deduped": 2,
+   "n_bitexact": 641,
+   "pass": true
+  },
+  "corpus_dup_text_docs": 0,
+  "params_from_source": {
+   "k0": 10,
+   "w_dense": 1.0,
+   "w_lexical": 1.0,
+   "topk": 10,
+   "max_embed_chars": 440
+  }
+ },
+ "readings": {
+  "agreement_vs_product_B10": {
+   "POS": 1.0,
+   "N1": 0.875,
+   "N2": 0.8333333333333334,
+   "N3": 0.7583333333333333
+  },
+  "oracle_hits": {
+   "POS": 88,
+   "N1": 75,
+   "N2": 68,
+   "N3": 59
+  },
+  "product_hits": 88,
+  "product_hits_gated": 88,
+  "n_queries": 120,
+  "pool_len_POS_median": 10
+ },
+ "per_query": {
+  "q001": {
+   "gold": "8d92669a1ab4",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q002": {
+   "gold": "a2d620aebfc4",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": false,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q003": {
+   "gold": "72f29cb44252",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q004": {
+   "gold": "5494e2e11443",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q005": {
+   "gold": "ccf37cbd34ea",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 9
+  },
+  "q006": {
+   "gold": "ca688a176973",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": false,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 9
+  },
+  "q007": {
+   "gold": "b3695984e3dc",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q008": {
+   "gold": "1d4209d45d63",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 9
+  },
+  "q009": {
+   "gold": "20694a1bb441",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": false,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 9
+  },
+  "q010": {
+   "gold": "5a24ddc7862c",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q011": {
+   "gold": "b78a40214f20",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q012": {
+   "gold": "7cb4c4461b45",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": false,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q013": {
+   "gold": "5ca6c0bdda76",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q014": {
+   "gold": "342ac01f75a7",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q015": {
+   "gold": "b8f643058c46",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 9
+  },
+  "q016": {
+   "gold": "628a0179f9fd",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q017": {
+   "gold": "c3ef1a4129ce",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q018": {
+   "gold": "0d7412cf8164",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q019": {
+   "gold": "183a5ea75a63",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 9
+  },
+  "q020": {
+   "gold": "6b012aa9acdb",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q021": {
+   "gold": "f0f5c8d26121",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q022": {
+   "gold": "68b90714dea6",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 9
+  },
+  "q023": {
+   "gold": "3ea30899c9ce",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q024": {
+   "gold": "5d53d075b4bd",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": false,
+   "N2_in_pool": true,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q025": {
+   "gold": "581808d0ccaa",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q026": {
+   "gold": "1867af1c9d47",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 9
+  },
+  "q027": {
+   "gold": "ac9b0b73fbce",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q028": {
+   "gold": "22557096fb24",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 9
+  },
+  "q029": {
+   "gold": "07e0f6cbe187",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q030": {
+   "gold": "8295b58753a3",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q031": {
+   "gold": "39c486febab0",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 9
+  },
+  "q032": {
+   "gold": "e6bf14392eef",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": true,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q033": {
+   "gold": "d8a41253a9cb",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q034": {
+   "gold": "d189c162ff62",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q035": {
+   "gold": "9dffa48ce758",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q036": {
+   "gold": "0ee1733d2d2d",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q037": {
+   "gold": "6b4ee8ee5ce8",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 9
+  },
+  "q038": {
+   "gold": "b01cb8c48aa6",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q039": {
+   "gold": "b79b83d9b027",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q040": {
+   "gold": "51ceda88132d",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q041": {
+   "gold": "2e2fcee8b712",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q042": {
+   "gold": "3534d717dae7",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 9
+  },
+  "q043": {
+   "gold": "9f5ed754c4f8",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 9
+  },
+  "q044": {
+   "gold": "f79b551a98a6",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q045": {
+   "gold": "04f0a7bce877",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q046": {
+   "gold": "480c4f8c7bcc",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 8
+  },
+  "q047": {
+   "gold": "6c441e86379d",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q048": {
+   "gold": "60b59a6f2253",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q049": {
+   "gold": "c2003fe0b8df",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 9
+  },
+  "q050": {
+   "gold": "06be784beec2",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q051": {
+   "gold": "f7020df786a7",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q052": {
+   "gold": "4dfb16cd8878",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q053": {
+   "gold": "04b98996f54d",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q054": {
+   "gold": "83582b02d4b3",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 9
+  },
+  "q055": {
+   "gold": "b6c4171c953f",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": false,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 9
+  },
+  "q056": {
+   "gold": "a38f0c806b1d",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": false,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q057": {
+   "gold": "1b2f65d1bc3f",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q058": {
+   "gold": "1645ca7d519e",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q059": {
+   "gold": "6bd5b9f545b6",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q060": {
+   "gold": "3d0d7036f72a",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q061": {
+   "gold": "1942e64a55c3",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q062": {
+   "gold": "0a7af16ebeae",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q063": {
+   "gold": "72789093f9fa",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q064": {
+   "gold": "e76a5ac0f8f3",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q065": {
+   "gold": "ca9ad7550ff8",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q066": {
+   "gold": "7cdc95f44f1f",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q067": {
+   "gold": "8a99c4acd4fd",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q068": {
+   "gold": "f73d2c5f2b0e",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q069": {
+   "gold": "416bda0c9070",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 9
+  },
+  "q070": {
+   "gold": "fdcad244f00d",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q071": {
+   "gold": "2635928d451a",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q072": {
+   "gold": "f6194acde3cc",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 9
+  },
+  "q073": {
+   "gold": "9af0b66d3e76",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q074": {
+   "gold": "b40f1c697b82",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q075": {
+   "gold": "c455a4362004",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q076": {
+   "gold": "832fe31354ea",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q077": {
+   "gold": "4d9d6f70f167",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q078": {
+   "gold": "4237fe3af1da",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q079": {
+   "gold": "9d0209036936",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q080": {
+   "gold": "4b0a557aed9f",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q081": {
+   "gold": "f30046fe1fcc",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q082": {
+   "gold": "bf7ae84661a3",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q083": {
+   "gold": "831899e006b6",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q084": {
+   "gold": "87c823efcc72",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": false,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q085": {
+   "gold": "5101e0691036",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q086": {
+   "gold": "53594beb76d6",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q087": {
+   "gold": "e1bc6ae8b3ac",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q088": {
+   "gold": "6edb9a1a9d8f",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q089": {
+   "gold": "926b404e62f2",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": false,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q090": {
+   "gold": "b1be53f87cbc",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q091": {
+   "gold": "8eb0f11adb37",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q092": {
+   "gold": "0503afa97651",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": false,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q093": {
+   "gold": "0e50a98b3e58",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 9
+  },
+  "q094": {
+   "gold": "c836ed01d1d8",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": false,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q095": {
+   "gold": "3d42bddb0b18",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q096": {
+   "gold": "03c10261bbc2",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q097": {
+   "gold": "c127d4bb0124",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q098": {
+   "gold": "874b742991a9",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q099": {
+   "gold": "34f42f63c64e",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q100": {
+   "gold": "5eef0e98fc6c",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q101": {
+   "gold": "728203f05500",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": false,
+   "pool_len_POS": 9
+  },
+  "q102": {
+   "gold": "1172ebb65191",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q103": {
+   "gold": "9d39888c04c4",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q104": {
+   "gold": "34b6e03864d8",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q105": {
+   "gold": "c5c65c31b207",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q106": {
+   "gold": "3da957cf4af5",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": false,
+   "pool_len_POS": 9
+  },
+  "q107": {
+   "gold": "9c1af4093359",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q108": {
+   "gold": "46f5dfa80197",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 9
+  },
+  "q109": {
+   "gold": "73fa77ef8f14",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q110": {
+   "gold": "082adff07dae",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q111": {
+   "gold": "acf7f11032c3",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q112": {
+   "gold": "40116955538e",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q113": {
+   "gold": "40c504b65ca5",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q114": {
+   "gold": "4edd2dace8ac",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q115": {
+   "gold": "1b529c590bd0",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q116": {
+   "gold": "bfa17c21c56a",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q117": {
+   "gold": "b428607b735b",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": false,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q118": {
+   "gold": "ca711fb2fb6f",
+   "product_in_pool": false,
+   "POS_in_pool": false,
+   "N1_in_pool": false,
+   "N2_in_pool": false,
+   "N3_in_pool": false,
+   "pool_len_POS": 10
+  },
+  "q119": {
+   "gold": "f0c5d688fe18",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  },
+  "q120": {
+   "gold": "ac94891bf2e8",
+   "product_in_pool": true,
+   "POS_in_pool": true,
+   "N1_in_pool": true,
+   "N2_in_pool": true,
+   "N3_in_pool": true,
+   "pool_len_POS": 10
+  }
+ },
+ "disagree_POS_vs_product": [],
+ "non_trivial_four_arms_distinct": true,
+ "elapsed_s": 9.77909803390503
+}

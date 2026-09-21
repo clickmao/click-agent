@@ -1,0 +1,145 @@
+{
+ "round": "R627",
+ "schema": "rerank-instrument-form-verdict/1",
+ "rc": 1,
+ "rc_layers": {
+  "主判据": 0,
+  "机制·归属": 0,
+  "器具": 1,
+  "输入": 0
+ },
+ "rc_reason": "同形口径正控**逐例复现产品池 face**（agreement 1.0000 = 120/120、命中 88/88、逐例差异 0）⇒ R626 的 P4-pos-prereg-form（单路 0.8409）被判定为**比较形态失配**，R626 读数不翻案；本轮自捕第 2 件同类器具缺陷 = 负控指标形态（agreement 形态对坏臂不敏感）⇒ 照原样 FAIL 并单列。",
+ "main_criterion": {
+  "id": "P1",
+  "pass": true,
+  "detail": "agreement(POS, 产品 B10) = 1.0000 ≥ 0.90"
+ },
+ "checks": {
+  "P0_anchor": {
+   "pass": true,
+   "n_total_chunks": 643,
+   "n_bitexact": 641,
+   "n_keys": 641
+  },
+  "P1_positive_control_sameform": {
+   "pass": true,
+   "as_written": "agreement(POS 同形融合, 产品 B10) >= 0.90",
+   "observed": 1.0,
+   "n_agree": 120,
+   "n_queries": 120,
+   "oracle_hits": 88,
+   "product_hits": 88,
+   "per_query_disagreement_n": 0
+  },
+  "P2_form_sensitivity": {
+   "pass": true,
+   "as_written": "agreement(N1 单路) < agreement(POS) 且 agreement(N1) <= 0.90",
+   "observed": {
+    "N1": 0.875,
+    "POS": 1.0
+   },
+   "explains_r626": "R626 旧正控用**单路**口径对**融合池**读数 ⇒ 0.8409 是形态失配；同形口径下 agreement=1.0 ⇒ 该缺口全部由比较形态解释，非 oracle 能力缺陷"
+  },
+  "P3_mispair_control": {
+   "pass": false,
+   "as_written": "agreement(N2 配错) <= 0.25",
+   "observed": 0.8333333333333334
+  },
+  "P4_zero_vector_control": {
+   "pass": true,
+   "observed": {
+    "N3": 0.7583333333333333,
+    "POS": 1.0
+   },
+   "role": "信息项"
+  },
+  "P5_zero_regression": {
+   "pass": true,
+   "observed": "git status --porcelain src/ == 0（零产品源码改动）"
+  },
+  "P6_nontriviality": {
+   "pass": true,
+   "observed": "四形态 per-query 归属向量互异 = True ∧ 命中数 88/75/68/59 单调可辨"
+  }
+ },
+ "defects": [
+  {
+   "id": "P3-negctl-metric-form",
+   "class": "器具层判据形态缺陷（**本轮自捕**，与 R626 同族）",
+   "as_written": "负控指标 = agreement(臂, 产品) ≤ 0.25",
+   "observed": 0.8333333333333334,
+   "cause": "`agreement(臂, 产品)` 的分子含**产品自身 miss 的 32 条**：任何 miss 集合 ⊇ 产品 miss 集合的坏臂都在那 32 条上白拿一致 ⇒ 该指标对被破坏的臂不敏感（配错臂 0.8333）。",
+   "disposition": "照原样 FAIL、阈值不下调；正确形态单列 checks_posthoc 并作下轮预注册输入"
+  }
+ ],
+ "checks_posthoc": {
+  "discriminative_power_audit": {
+   "POS": {
+    "agreement_vs_product": 1.0,
+    "n_hits": 88,
+    "hits_delta_vs_product": 0,
+    "symdiff_hits_vs_product": 0,
+    "symdiff_fraction": 0.0
+   },
+   "N1": {
+    "agreement_vs_product": 0.875,
+    "n_hits": 75,
+    "hits_delta_vs_product": -13,
+    "symdiff_hits_vs_product": 15,
+    "symdiff_fraction": 0.125
+   },
+   "N2": {
+    "agreement_vs_product": 0.8333,
+    "n_hits": 68,
+    "hits_delta_vs_product": -20,
+    "symdiff_hits_vs_product": 20,
+    "symdiff_fraction": 0.1667
+   },
+   "N3": {
+    "agreement_vs_product": 0.7583,
+    "n_hits": 59,
+    "hits_delta_vs_product": -29,
+    "symdiff_hits_vs_product": 29,
+    "symdiff_fraction": 0.2417
+   },
+   "_note": "**旧形态（agreement vs 产品）判别力不足**：产品自身 miss 32 条是白送的一致来源 ⇒ 配错臂 agreement 仍 0.8333。**正确形态 = 臂间差异量**（symdiff_hits_vs_产品 / 命中数差）；本轮 POS symdiff=0（逐例复现），N1=13 / N2=20 / N3=29 ⇒ 三臂差异量单调可辨。"
+  },
+  "merge_order_diagnostic": {
+   "form_early_merge_take_units": {
+    "n_hits": 88,
+    "rate": 0.7333
+   },
+   "form_late_merge_take_parents": {
+    "n_hits": 88,
+    "rate": 0.7333
+   },
+   "gain_hits": 0,
+   "pool_len_delta_median": 0,
+   "metric_defect_note": "`pool_len_delta_median` **退化**（两种形态都恰好取 10 个父文档 ⇒ 恒为 0）⇒ 该字段无判别力；有判别力的等价量 = 早归并形态下**池内父文档数 < 10 的查询数**（= 同父多块白占槽位的次数）。",
+   "pool_len_early_lt_10_n": 23,
+   "role": "**信息项**（事后诊断）：不参与判据红绿、不翻案 R625/R626 读数；仅作下轮候选的预注册输入"
+  },
+  "note": "两件均为**事后**读数：不进 rc、不翻案预注册判决；前者给出负控的**正确形态**（臂间差异量），后者给出下轮候选的预注册输入（归并次序 **gain 0/120 ⇒ 该轴被否证**）。"
+ },
+ "honest_bounds": [
+  "本轮 = **器具轮**：零产品源码改动、零远端 LLM、零真机臂、零新增夹具 ⇒ **无任何能力/成本增益宣称**。",
+  "`agreement = 1.0` 是**器具自证**（同形复现），**不可读作能力达标**：该 oracle 与产品同形 ⇒ 同时使用它就等于回声产品，不能当能力面的独立 oracle（R626 的能力面上界 oracle 用的是**异形**信号 BM25 + 块粒度 dense，两者用途不同、禁混用）。",
+  "tokens（调用/新算/completion）与缓存命中率**未测**；codex 外部真值臂**未跑**（本地检索面无远端题面）。",
+  "与 R623/R624/R625/R626 **禁相减、只并列**（判据器改版禁相减）。",
+  "面 4 仍未达标（生产口径 R@N 0.7333 < 0.9）⇒ 达标路径处置**待用户放行**。",
+  "三档终局目标读数（32 ms / 快 50× / −95% / −85~91%）本轮不动不宣称。"
+ ],
+ "artifacts": [
+  "eval/rover/r627/dag-r627.md",
+  "eval/rover/r627/prereg-r627.json",
+  "eval/rover/r627/oracle_fusion_r627.py",
+  "eval/rover/r627/oracle-r627.json",
+  "eval/rover/r627/oracle-run.log",
+  "eval/rover/r627/posthoc_r627.py",
+  "eval/rover/r627/posthoc-r627.json",
+  "eval/rover/r627/judge_r627.py",
+  "eval/rover/r627/lit-r627.txt",
+  "eval/rover/r627/verdict-r627.json",
+  "eval/rover/r627/report-r627.md"
+ ]
+}

@@ -1,0 +1,117 @@
+{
+  "round": "R627",
+  "kind": "instrument-criteria-form-repair",
+  "face": "RF0005 §0 DoD 面 4 · 上下文精排 —— 器具面判据形态修法（承 R626 单列缺陷 P4-pos-prereg-form）",
+  "written_before_run": true,
+  "written_at": "2026-09-22T04:35+0800",
+  "lever_switch_reason": "R626 单列 1 条器具层判据形态缺陷：正控 =「hit 侧独立 dense（单路）rank_any@10 >= 0.90」实测 0.8409，出题前提隐含「产品池 ≈ 独立 dense top-10」，而产品池是 dense 与 lexical 的 RRF 融合 top-10 ⇒ 单路与融合池本不必一致。按纪律 R626 照原样 FAIL、阈值不下调；本轮按 R626 下轮候选② 的明文修法执行：改为**与产品同形口径**，并配两侧样例（正控 = 真融合形态取源码右值 / 负控 = 单路形态必报、配错必报）。",
+  "premise_readonly": {
+    "F1_product_pool_form": {
+      "claim": "产品召回池 = 全候选（1299 主文档 + 643 块文档 = 1942 单元）上 RRF(dense, lexical) 排序 → GroupBy(unit id) → Take(TopK=10) → chunk→parent 归并 ⇒ 池 = 前 10 单元的父 Id 集合",
+      "evidence": [
+        "src/agent.rag/RAGRecall.cs:316-353 融合分支：pool 取全候选，_fusion.Rank 打分，按 ranked 顺序 results.Add",
+        "src/agent.rag/FusionRecall.cs:28-73 Rank：dense/lexical 两路 rankLists + 权重 ⇒ RrfFuser.Scores，Array.Sort 按 (分降, 索引升)",
+        "src/agent.rag/RrfFuser.cs:22 score += w/(k0+rl[d]+1)；FusionOptions.K0=10 / DenseWeight=LexicalWeight=1.0",
+        "src/agent.rag/RAGRecall.cs:442-447 GroupBy(Document.Id) → OrderByDescending(Score) → Take(TopK)",
+        "src/agent.rag/RAGRecall.cs:459-490 bestByParent：'#c' 前缀归并到父 Id，取同父最高分，再 OrderByDescending(Score)",
+        "src/agent.rag/RAGRecall.cs:203-228 块文档 Id = \"{base}#c{chunkIdx}\"（chunkIdx>=1），单位 = .NET String.Length = UTF-16 code unit",
+        "src/agent.rag/DenseRoute.cs:26-33 cos；src/agent.rag/LexicalRoute.cs:20-22 字符二元组 Jaccard"
+      ],
+      "class": "代码事实（只读取证）"
+    },
+    "F2_defect_not_overturned": {
+      "claim": "R626 的 P4 as-written FAIL（0.8409 < 0.90）**不翻案**；本轮只新增同形口径判据并另立读数",
+      "evidence": "eval/rover/r626/verdict-r626.json checks.P4-pos-prereg-form.as_written == FAIL",
+      "class": "纪律（判据器改版禁相减 / 照原样 FAIL）"
+    },
+    "F3_frozen_inputs": {
+      "claim": "冻结件逐字节复用，本轮不重生成语料 / 向量 / 查询",
+      "evidence": [
+        "eval/bge/fixtures/corpus.jsonl sha12 fa7c448c505d（1299 文档）",
+        "eval/bge/fixtures/queries.jsonl sha12 b37fbe564e23（120 查询，单 gold）",
+        "eval/rover/r624/vec/*（corpus-trunc440 / queries-trunc440 / chunks + keys-chunks）",
+        "eval/rover/r625/out/B10.json（产品生产口径读数，只读）"
+      ],
+      "class": "冻结输入"
+    }
+  },
+  "single_variable": {
+    "axis": "无（器具轮，非臂轮）——唯一自由度 = 判据的**比较形态**（单路 → 同形融合）",
+    "held_constant": [
+      "产品源码零改动（不构建、不重发布、不跑真机臂；只读 B10 冻结读数）",
+      "冻结件逐字节复用（语料 / 查询 / 向量 / keys）",
+      "oracle 独立性：stdlib 纯 Python、零 import 本仓；向量源不独立（冻结件，同源性由 R624 G0 覆盖）"
+    ],
+    "note": "本轮**不产生新臂读数** ⇒ 与 R623/R624/R625/R626 只并列派生、禁跨轮相减。"
+  },
+  "arms": {
+    "无真机臂": "输入 = 冻结读数件 + 冻结向量件 + 冻结语料/查询；输出 = 三形态 oracle 的逐查询 gold 归属 + 一致度",
+    "POS": "同形（RRF 融合）oracle —— 正控",
+    "N1": "单路（dense-only）oracle —— 形态敏感负控（= R626 旧判据所用形态）",
+    "N2": "配错负控：查询**向量**移位一格（文本不变）⇒ 两路信号同时被打乱",
+    "N3": "零向量负控：查询向量置零（dense 路退化为文档序）"
+  },
+  "oracle": {
+    "what": "独立实现：①dense 路 = cos 余弦 + 全序名次（同分按索引降序，复刻 AssignRanks 的 tie-break）②lexical 路 = 去空白字符二元组 Jaccard（同分按索引降序）③RRF：score = Σ w/(k0+rank+1)，k0=10，w_d=w_l=1.0 ④排序 (分降, 索引升)（复刻 FusionRecall 的 tie-break，与 AssignRanks **故意不同**）⑤前 10 单元 → 父 Id 集合（'#c' 归并）",
+    "shared_code_with_sut": "0（被测为 C#；oracle 不 import 任何本仓模块；向量/语料为输入而非代码）",
+    "independence_boundary": "**向量源不独立**（用被测侧产出的冻结 f32；同源性由 R624 G0 覆盖）⇒ 只主张排序实现、单元映射与比较形态的独立。",
+    "unit_universe": "head 1299（Id = 文档 Id，Text = 全文，Vec = corpus-trunc440 行）∪ chunk 643（Id = base#cN，Text = 440 单元块，Vec = keys-chunks 映射；块文本去重后 641 键）⇒ **1942 单元**（与产品 _documents 同量；R626 曾用 1940 去重口径，本轮取产品同形口径并**并列**报告）",
+    "anchoring": "重放切块（UTF-16 code unit 单位）产出的块文本必须与 keys-chunks.jsonl 逐位一致（641/641），且 n_total_chunks == 643"
+  },
+  "criteria": [
+    {
+      "id": "P0",
+      "name": "锚定（单元映射可证）",
+      "expect": "块重放 n_total == 643 ∧ 去重后与 keys-chunks 逐位一致 641/641",
+      "fail_action": "rc=2（器具缺陷，整轮读数作废）"
+    },
+    {
+      "id": "P1",
+      "name": "正控（**同形**口径）· 主判据",
+      "expect": "agreement(POS 同形融合 oracle, 产品 B10) >= 0.90",
+      "note": "agreement = 120 查询中 (oracle_gold_in_pool == product_gold_in_pool) 的占比"
+    },
+    {
+      "id": "P2",
+      "name": "形态敏感负控（单路形态）",
+      "expect": "agreement(N1 dense-only) < agreement(POS)（严格更低） ∧ agreement(N1) <= 0.90",
+      "note": "此条成立即证明：R626 旧判据的 0.8409 是**比较形态失配**，不是 oracle 能力缺陷"
+    },
+    {
+      "id": "P3",
+      "name": "配错负控（有牙）",
+      "expect": "agreement(N2 向量移位) <= 0.25"
+    },
+    {
+      "id": "P4",
+      "name": "零向量负控",
+      "expect": "agreement(N3) <= 0.90 ∧ 明显低于 POS（信息项，不作独立红绿）"
+    },
+    {
+      "id": "P5",
+      "name": "零回归",
+      "expect": "git diff --stat src/ == 0（零产品源码改动）"
+    },
+    {
+      "id": "P6",
+      "name": "非平凡性（防恒定输出）",
+      "expect": "三形态 oracle 的 per-query gold 归属向量**互异**（POS != N1 != N2），且 POS 命中数 != 产品命中数 时逐例可列名"
+    }
+  ],
+  "falsification_entries": [
+    {
+      "claim": "同形口径 oracle 可复现产品池 face（agreement >= 0.90）",
+      "falsified_if": "agreement(POS) < 0.90 ⇒ 判据形态修法未成功 ⇒ 新增器具缺陷单列，**R626 读数不翻案**，并按 DAG 只重启 N1 边"
+    },
+    {
+      "claim": "形态是失配主因（单路 < 融合）",
+      "falsified_if": "agreement(N1) >= agreement(POS) ⇒ 形态假设证伪 ⇒ 须另找单路口径下的真实成因"
+    }
+  ],
+  "budget": {
+    "remote_llm_calls": 0,
+    "product_src_changes": 0,
+    "new_fixtures": 0,
+    "literature": "arXiv <=3 query / 全文 <=2 篇 / 单次 <=120s / 间隔 >=4s；采集前先跑出口可用性探针（承 R626 自捕：网络失败与无命中同形输出）"
+  }
+}

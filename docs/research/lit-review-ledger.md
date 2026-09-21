@@ -507,3 +507,19 @@ R607 = 采信 1（arXiv:2609.20804v1 组件级消融口径等）⇒ **本 R608 =
 - **顺延原因（1 行）**：arXiv 出口本轮不可达 —— 直探 `curl -sS -m 30 'https://export.arxiv.org/api/query?...'` 返回 **HTTP 000 / `curl: (28) Connection timed out after 30002 ms`**，故 3 式「0 结果」**并非检索无命中**。
 - **器具备注（非文献，入档）**：`search_arxiv.py` 在**网络失败**与**检索无命中**两种情形下**同形输出**（rc 0 + `No results found.`）⇒ 单看脚本回显会把「网络不可达」读成「该检索式无命中」，并据此误判「连续 0 采信 ⇒ 检索降频」。**正解 = 降频判定必须绑定出口可用性证据（直探 HTTP 码/超时）**，出口不可达的轮次不计入「连续 0 采信」计数。本条与 skill「测量层故障必须可见」同族。
 - 本轮**采信 0 条**（出口不可达）⇒ 按上条口径，**不计入连续 0 采信**，检索**不降频**；下轮恢复检索。
+
+### 24. R627 文献小步（2026-09-22）· 出口恢复 + 采信 2 条
+
+**出口可用性前置探针（承 §23 器具纪律）**：`curl -sS -m 30 'https://export.arxiv.org/api/query?search_query=all:test&max_results=1'` ⇒ **HTTP 200 / t=0.44s** ⇒ 本轮出口**可达**，「0 结果」方可解释为检索面事实。
+
+| 日期 | 检索式 | 出处（含版本） | 逐字引文 | 机制假设 | 改哪一格 KPI | 单变量轴 + 判据 | 状态 |
+|---|---|---|---|---|---|---|---|
+| 2026-09-22 | `"hybrid retrieval"`（cat cs.IR, max 6, sort date; 132 命中） | arXiv **2609.06964v1**（cs.IR；**无 comment / 无 journal-ref ⇒ 纯预印本，权威代理最低档**） | 「Route overlap can hide effects from one-at-a-time ablations, while freezing downstream stages produces counterfactuals inconsistent with serving behavior.」 | **多路融合漏斗中，「单路消融」会被路间重叠掩盖** ⇒ 归因与判据必须在**同形**（同融合形态）下做；跨形态比较会产出与在线行为不一致的反事实 | **质量**（诊断假红率，预期 ↓） | 轴 = 判据**比较形态**（单路 vs 同形融合）；判据 = 同形 agreement ≥0.90 ∧ 单路 < 同形（形态敏感） | **已实施（R627）**：同形 agreement **1.0000（120/120）** vs 单路 **0.8750** ⇒ 机制方向被本仓读数支承，且直接解释 R626 的 0.8409 为形态失配 |
+| 2026-09-22 | `"rank fusion"`（cat cs.IR, max 6, sort date; 76 命中） | arXiv **2609.15143v1**（cs.IR；comment「5 pages, 2 figures, 3 tables. Code: https://github.com/ln-one/top-k-is-not-a-budget」⇒ **有公开代码，可复现；无 venue**） | 「a fixed truncation depth may not transfer across changing queries and corpora. Exact fusion removes the dependence on a fixed depth」 | **固定截断深度是召回面的可调瓶颈**；对全表做精确融合可去掉该依赖 | **质量**（`R@N` 预期 ↑） | 轴 = 截断**次序**（先取 TopK 单元再归并父文档 vs 先归并父文档再取 TopK）；判据 = `R@N` 提升 ≥ Δ_min 6 ∧ 成本列不破 | **已证伪（本仓形态，R627 事后诊断）**：两种次序 **gain 0/120**（槽位白占确实存在 23/120，但不承重）⇒ 本仓对应假设被否证，**不开实现**（见 R627 `checks_posthoc.merge_order_diagnostic`） |
+| 2026-09-22 | `"code retrieval"`（cat cs.SE, max 6, sort date; 76 命中） | arXiv **2609.01865v1**（cs.SE/cs.AI/cs.CL/cs.IR；comment「**Accepted to EMNLP 2026 (Main Conference)**」⇒ **同行评审 venue，权威代理最高档**；17 pages） | 「retrieving correct code matters more than retrieving lexically similar code」 | 代码检索的**功能正确性**与**字面相似度**是两条不同轴 ⇒ 以字面信号为主的召回会系统性漏掉功能等价但词汇不同的目标 | **质量**（召回归因口径） | 轴 = 判据所用信号族（字面 vs 功能）；判据 = 两路信号并集天花板相对目标的差值 | **候选**（本仓同向旁证：R626 实测 miss 侧独立词法 0.1875 vs hit 侧 0.9886 ⇒ 本仓召回近乎字面驱动） |
+| 2026-09-22 | `"hybrid retrieval"`（同上） | arXiv **2609.14579v1**（cs.IR；comment「**Accepted at CIKM 2026** ... as a Short Research Paper」⇒ 同行评审 venue） | 「Synthetic generation spreads questions evenly across the corpus, formulating long, detailed queries; real users put most of their traffic on a few administrative and procedural topics in short queries」 | **合成题集与真实查询分布结构性不同**（长度 / 主题集中度）⇒ 合成面增益不得直接外推到真实面 | **质量**（外部效度，口径面） | 轴 = 语料分布（合成 vs 真实）；判据 = 两分布组成对照必报（长度中位 / 主题集中度） | **候选**（与本仓「合成网格上的增益必须附网格组成 vs 真实分布组成对照」同向） |
+
+- 本轮**采信 2 条**（2609.06964v1 已实施 / 2609.15143v1 已证伪），**观察 2 条**（2609.01865v1 / 2609.14579v1）⇒ 「连续 0 采信」计数**归零**，检索**不降频**。
+- 检索计 6 式（首轮 3 式 `"hybrid sparse dense retrieval fusion"` / `"code search natural language query"` / `"recall upper bound candidate generation"` **全 0 命中**；改用更宽短语后 3 式命中 132/76/76）。
+- **器具备注（非文献，入档；承 §23 补第 2 形态）**：出口**可达**时「0 结果」仍可能由**检索式自身过窄**产生（长引号短语 ∧ `cat:` 约束 ⇒ 0 命中），而脚本对「网络失败」与「无命中」同形输出 ⇒ **0 结果必须先与更宽检索式交叉复核**（本轮实测：同主题从 0 → 132 命中），不得直接记「该主题无文献」。
+- 近月预印本 `cited_by_count`：Semantic Scholar 需 key，本轮**未取** ⇒ 引用数**不可用，不编造**。
