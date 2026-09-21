@@ -16,8 +16,8 @@
 | # | 判据 | 阈值 | 现读数 | 状态 |
 |---|---|---|---|---|
 | 1 | 目标模型体积 | ≤ 现役 `LFM2.5-VL-3B-Q4_K_M` 的 **70%**（≤1,117.8 MiB；现役 1,674,455,072 B = 1,596.88 MiB） | **QR1 实测达：下载件 1,137,806,656 B = 68.0%**（逐字节 = 镜像 API 原值）；R3-Q2_K 投影 1,036.03 MiB（64.9%） | **① 达** |
-| 2 | 判别位能力 | `acc = 1.000` ∧ `假跳 0/14`（R577 判据，**不得放宽**） | 现役件 1.000 / 0/14；三值 PTQ 件 **探针全乱码** | **未达标** |
-| 3 | 产品可加载 | 本地推理 pin 支持该 ggml 类型；AOT/零反射面不受影响 | 上游 b11065 具 Q2_0/Q1_0；产品 pin **待确认** | **待确认** |
+| 2 | 判别位能力 | `acc = 1.000` ∧ `假跳 0/14`（R577 判据，**不得放宽**） | 现役件 1.000 / 0/14；三值 PTQ 件 **探针全乱码**；原生件 QR1 冒烟（**主线运行时**）**证据已降级** ⇒ 待 QR1b/QR2 用厂商 fork 重验 | **未达标（待 QR2）** |
+| 3 | 产品可加载 | 本地推理 pin 支持该 ggml 类型；AOT/零反射面不受影响 | **上游 b11065 不含 Hadamard 运行时**（vendor：`PQ2_0`/`PTQ1_0` 被拒为未知类型、`Q2_0` 静默乱码）⇒ **产品 pin 必须换厂商 fork 二进制** | **否（须换运行时）** |
 | 4 | 可复跑 | 每条读数三段绑定：`source_path` + `source_sha12/尺寸` + `check_cmd` | 见 §6 | **已绑定** |
 
 ---
@@ -74,15 +74,120 @@
 
 `LFM2.5-VL-3B-Q4_K_M`（1,596.88 MiB）⇒ Q1_0 532.61（−66.6%）· TQ1_0 695.87（−56.4%）· TQ2_0 804.71（−49.6%）· Q2_0 859.14（−46.2%）· **Q2_K 1,036.03（−35.1%）** · Q3_K_M 1,295.67（−18.9%）。
 
-**视觉塔不可压（硬失败）**：`mmproj`（Q8_0, 556.10 MiB）→ Q1_0 报 `v.blk.0.ffn_down.weight - ncols 4304`（非 64 整除）⇒ **556.10 MiB 为不可压底座**，压缩率上界由它约束。
+**视觉塔不可压（硬失败）**：`mmproj`（Q8_0, 556.10 MiB）→ Q1_0 报 `v.blk.0.ffd_down.weight - ncols 4304`（非 64 整除）⇒ **556.10 MiB 为不可压底座**，压缩率上界由它约束。
+
+### 3.3 体积 ⇒ 显存论（Bonsai 家族 · **Bonsai 2 27B**）｜用户令 2026-09-21
+
+> 本节回答「三值化为何能有效缩减体积、并因此减少 GPU 显存」。**Bonsai 2 27B 全部数据引自 `prism-ml/Ternary-Bonsai-2-27B-gguf` 模型卡（2026-09-21 经 hf-mirror 取，逐字来源见证据件 R8）**；显存/吞吐是 vendor 表读数，本机**无 GPU** ⇒ 一律「引用/投影」，不得当本机实测。
+
+**A. 位宽 ⇒ 体积 ⇒ 显存（真值链）**
+
+| 表示 | 真实 bits/weight | 体积 | 相对 FP16 |
+|---|---|---|---|
+| FP16（基线） | 16.0 | ~54 GB | 1.0× |
+| 三值 g128（理想） | 1.72 | 5.8 GB | ~9.3× |
+| **GGUF `PTQ1_0`**（稠密 trits） | **1.75** | **5.95 GB** | **~9.0×** |
+| **GGUF `PQ2_0`**（2-bit 槽） | **2.13** | **7.21 GB** | **~7.5×** |
+
+- 原理：权重 ∈ {−1,0,+1}，每 **128** 权重共享一个 FP16 scale ⇒ 承载 `log₂3 ≈ 1.585` bit 信息 ⇒ 有效 ~1.71 bpw；矩阵先做**分块 Hadamard 旋转**（block 1024，固定 ±1 符号）再取三值，运行期对激活做同变换（= ITQ3_S 那条「旋转域压离群」机制的真机落地）。
+- **「低位宽标签」对比（vendor 明确指出）**：常规 `IQ2_XXS` 标称 2-bit，**真实 2.8 bpw / 9.4 GB**；`UD-Q4_K_XL` 标称 4-bit，真实 5.2 bpw / 17.6 GB。三值件是**端到端**低位宽（embeddings / attention / MLP / LM head 全覆盖，无高精度逃生舱）——与本仓 §3.1 的对照一致：K 系因保留 embedding/output 高精，标称 1.125 bpw 实测 **1.84 bpw**。
+- 显存 = **权重 + KV cache + 计算缓冲 + CUDA 上下文**。权重压到 1/9 后，**KV 与上下文成为主导项** ⇒ 必须并列 KV 量化与上下文档位预算（下表）。
+
+**B. 显存预算（Bonsai 2 27B；真实 arch：64 层 = 16 全注意力 + 48 线性；全注意力 4 KV heads × head_dim 256 ⇒ 32,768 elem/token）**
+
+| 上下文 | KV fp16 | KV q8_0 | KV q4_0 | PTQ1_0 + q8_0-KV | PTQ1_0 + fp16-KV | PQ2_0 + q8_0-KV |
+|---|---|---|---|---|---|---|
+| 4K | 0.27 GB | 0.14 GB | 0.08 GB | **6.1 GB** | 6.2 GB | 7.4 GB |
+| 32K | 2.15 GB | 1.14 GB | 0.60 GB | **7.1 GB** | 8.1 GB | 8.4 GB |
+| 128K | 8.59 GB | 4.56 GB | 2.42 GB | **10.5 GB** | 14.5 GB | 11.8 GB |
+| 256K | 17.18 GB | 9.13 GB | 4.83 GB | **15.1 GB** | 23.1 GB | 16.3 GB |
+
+- 262K 上下文可落地，靠的是 **75% 线性注意力层**：KV 只由 16/64 层产生，线性层状态 ~75.5 MB 且**与上下文无关**。即便如此，fp16-KV 在 256K 仍达 17.18 GB ⇒ **长上下文时 KV 主导**（q8_0-KV 降到 9.13 GB）。
+- **未计入**：CUDA 上下文 + 计算缓冲（~0.3–1.5 GB，随 batch/ubatch）；vision tower 0.63 GB（Q8_0，仅图像输入时驻留）。
+- **「端到端低位宽」的诚实边界**（vendor 原文）：**26.2M 参数（占语言模型 0.0976%）仍以高精度保存**——线性注意力层的循环态通路 + 归一化权重；vendor 称这部分**已计入** 1.72 bpw 口径。即三值覆盖的是 embeddings / attention / MLP / LM head，而非「全部张量」。
+
+**C. 卡型分级（vendor 实测 `tg128 / pp512` tok/s，batch 1 · depth 0 · 无视觉塔；**非本机读数**）**
+
+| 平台 | PQ2_0 TG128 | PQ2_0 PP512 | PTQ1_0 TG128 | PTQ1_0 PP512 | 判读 |
+|---|---|---|---|---|---|
+| RTX 5090 (32 GB) | **129.9** | 3893 | 120.5 | 1805 | 256K 上下文 + 大 batch 有余量 |
+| RTX PRO 6000 Blackwell | 124.8 | **4020** | 117.9 | 1972 | 同上 |
+| H100 SXM (80 GB) | 113.9 | 2830 | 86.9 | 1237 | 多并发服务 |
+| RTX 6000 Ada (48 GB) | 82.8 | 2431 | **90.4** | 1657 | Ada 代 PTQ1_0 更快 |
+| RTX 4090 (24 GB) | 81.2 | 3124 | **91.1** | 1645 | 单卡 256K（q8_0-KV 15.1 GB） |
+| L40S (48 GB) | 74.4 | 2868 | **81.8** | 1543 | 同上 |
+| A100 SXM (80 GB) | 73.9 | 1328 | 54.7 | 706 | 提示处理弱 |
+| L4 (24 GB, 72 W) | 29.8 | 777 | **32.1** | 467 | 8 GB 级预算实际落点 |
+| Apple M5 Pro (Metal) | 28.1 | 387 | — | — | 7.2 GB 驻留 |
+| Apple M5 Max (Metal) | 47.0 | 765 | — | — | 27B 在笔记本可交互 |
+
+- **8 GB 档判读**：4K–32K 上下文（PTQ1_0 + q8_0-KV ⇒ **6.1–7.1 GB**）在 8 GB 卡上可行；128K 需 12–16 GB；256K 需 24 GB。
+- `PTQ1_0` 在 **Ada 代与 L4** 解码更快（内存是瓶颈时），`PQ2_0` 在 H100/A100/Blackwell 与**所有**平台的提示处理上更快；能耗 2.0–4.3 J/tok（M5 Pro 解码 27.5 W GPU rail，对照 NVIDIA 板功 300–455 W）。
+- 运行配方（vendor 原文）：`-ngl 99 -fa on -c 32768 --temp 1.0 --top-p 0.95 --top-k 20`；`-c` 最大 **262144**。
+
+**D. 质量-体积前沿（vendor 自报 14 个 thinking 基准平均；**不当本仓读数**）**
+
+| 变体 | 真实 bpw | 体积 | 基准均分 | vs FP16 | 智能密度 D=log₂(...)/GB |
+|---|---|---|---|---|---|
+| Qwen3.8-27B FP16 | 16.0 | 54 GB | 86.32 | 100% | 0.053 /GB |
+| UD-Q4_K_XL（"4-bit"） | 5.2 | 17.6 GB | 85.18 | 98.7% | 0.156 /GB |
+| IQ2_XXS（"2-bit"） | 2.8 | 9.4 GB | 72.59 | 84.1% | 0.199 /GB |
+| **Bonsai 2 27B** | **1.72** | **5.9 GB** | **84.78** | **98.2%** | **0.460 /GB** |
+
+⇒ 三值的价值不在「同尺寸更省」，而在**同等能力下更省**：1.72 bpw 拿到 FP16 的 98.2%，比常规 2-bit 件高 **12.19 分**而体积只有其 63%；比 4-bit 件小 **3 倍**、只差 0.4 分。智能密度 **2.3×** 于最强的常规低比特件。
+
+**E. 与本项目判决的关系（一致性）**
+
+- 常规低比特（Q2_K/Q3_K）＝ PTQ：能保能力，但到不了 1.7 bpw；三值要到 1.7 bpw **必须原生训练**（§3.1 已证：对现有件直接三值 = 乱码；文献 HGF 2602.05269 亦报 1.58-bit 需选择性低秩修正才稳定）。
+- 故本项目结论为：**「三值压现有件」= 否；「三值换原生件」= 是**——收益 9× 体积 / 98.2% 能力（vendor 自报，本仓待 QR2 判据验证）。
+
+**F. 边界与风险（不得省略）**
+
+1. **运行时是硬约束（vendor 逐字）**：「**Stock llama.cpp will not run these files. It rejects `PQ2_0` and `PTQ1_0` as unknown types, and it loads `Q2_0` without any warning and produces garbage, because it has no Hadamard activation runtime. Use a binary from the fork.**」⇒ ①本仓 QR1 在主线上游 `b11065` 上跑的 `Ternary-Bonsai-4B-Q2_0_g64` 3/3 冒烟**正落在这条「静默劣化」路径**（缺 Hadamard 激活变换）⇒ **该冒烟的能力部分证据降级**：体积/内存读数仍有效（与运行时无关），**能力读数无效**；②凡涉及能力（判别位判据 QR2、混精对照 QR3）**必须用厂商 fork 二进制**；③fork 亦发布 **linux x64 CPU 构建** `llama-prism-b10709-9a9394a-bin-ubuntu-x64.tar.gz`（17.1 MB）⇒ **本机无 GPU 也可执行 QR1b/QR2**（已起 QR1b 成对对照：fork vs mainline）。
+2. 本机**无 GPU**（MemTotal 3.57 GiB）：上表显存/吞吐全为**引用/投影**，不得当本机实测；本机唯一有效实测 = 体积（逐字节：4B `1,137,806,656 B`）+ 峰值 RSS **1.27 GiB**。
+3. 质量数字为 vendor 自报 + 其 fork 运行时实测；本仓仅 3 探针冒烟（QR1，且已降级）⇒ 判别位判据（QR2）未跑，**不得声称能力等价**。
+4. KV 不随权重压缩 ⇒ 长上下文必须同时开 KV 量化（q8_0/q4_0）并做档位预算，否则收益被 KV 吃掉。
+5. 许可 Apache-2.0；vision tower 单独 0.63 GB（仅图像输入时驻留）。
+6. **可复跑来源**：模型卡 `hf-mirror.com/prism-ml/Ternary-Bonsai-2-27B-gguf`（README 全文 + 逐字节文件表见证据件 §R8）；fork `github.com/PrismML-Eng/llama.cpp`（release tag **`prism-b10709-9a9394a`**，2026-09-18）；`github.com/PrismML-Eng/Bonsai-demo`（whitepaper / 运行脚本，vendor 声明的唯一权威运行源）；基座配置 `hf-mirror.com/Qwen/Qwen3.8-27B/raw/main/config.json`（64 层 = 16 全 + 48 线性、4 KV heads、head_dim 256、max_position 262144、vocab 248320）。
 
 ---
 
-## §4 四路线与判定
+### 3.4 它的「重训练」方案是什么 · 本地可行性判定｜用户令 2026-09-21
 
+**A. 方案定性（逐字出处，禁推断）**
+
+| 命题 | 证据（逐字/出处） |
+|---|---|
+| **不是从头预训练** | 旧版白皮书 §2.3：「BitNet and its 1.58-bit successor … avoids the quality collapse only by **pretraining the network from scratch** directly in the low-bit regime … discards every existing pretrained model」；「Bonsai takes the opposite path from BitNet: it **starts from an off-the-shelf pretrained model and moves it into a binary or ternary representation**」 |
+| **架构不变，只换表示** | Bonsai 2 27B 白皮书 §1：「uses the **same hybrid-attention architecture as Qwen3.8-27B**」；Ternary-Bonsai-27B 模型卡：「Derived from Qwen3.6-27B … (**architecture unchanged**)」 |
+| **表示 = 固定旋转基三值 + 分组 FP16 scale** | 每 128 权重共享 1 个 FP16 scale；`w_i = s_g·t_i`，`t_i ∈ {−1,0,+1}` ⇒ 理论 1.71 bpw；**blockwise Hadamard 旋转（block 1024，固定 ±1 符号）**，运行时在**激活侧**做对应变换 |
+| **≈99.9% 参数入低位宽** | 仅 **0.0976%（26.2 M 参数，bf16 52 MB）** 保高精：线性注意力 `in_proj_a/in_proj_b/conv1d/A_log/dt_bias/norm` + 各 layernorm；1.71 → **1.72 bpw**（含高精张量） |
+| **算法本体未公开** | 1-bit 白皮书 §3：「This foundation comes from **proprietary Caltech intellectual property**」；三份 techreport（`bonsai-2-27b` / `bonsai-27b` / `1-bit-bonsai-8b`）只披露**格式 / 体积 / 吞吐 / 评测**，**无数据集、无优化步骤、无算力**；引用仅 `prismml.com`（无 arXiv） |
+| **发布工件 = 权重 + 推理运行时** | `PrismML-Eng/llama.cpp`（fork，CUDA/Metal/HIP/CPU）+ MLX 包；`Bonsai-demo/scripts/` 全为 build / download / run / server / KV-bias / MLX 生成脚本，**无任何权重转换或训练脚本** |
+
+**B. 本地可行性判定（本机实测规格 vs 需求）**
+
+| 面 | 需求（由公开数字推） | 本机（2026-09-21 实测） | 判定 |
+|---|---|---|---|
+| 教师件 | Qwen3.8-27B FP16 = **53.8 GB** | RAM 3.57 GiB · 磁盘空 7.5 GB | **装不下（差 ≥7×）** |
+| 若含梯度的转换/恢复 | 权重+梯度+Adam ≈ **215 GB**（fp32 master 53.8 + m 53.8 + v 53.8 + grad 53.8） | 无 GPU · 2 vCPU | **不可及（10^4–10^5）** |
+| 复现入口 | 算法未公开（专有 IP） | — | **无入口** |
+| 使用其结果（推理） | 4B PQ2_0 **1.00 GiB** · 8B PQ2_0 2.03 GiB · 27B PQ2_0 6.67 GiB | RAM 3.57 GiB | **4B/8B 可跑；27B 不可（超 RAM）** |
+
+⇒ **两句话结论**：①**复现其 27B 转换/重训练 ⇒ 本地不可行**（算法未公开 + 工件装不下 + 算力差数量级）；②**使用其结果 ⇒ 4B/8B 档本地可行，27B 档本地不可行**（本机无 GPU、RAM 3.57 GiB）。
+
+**C. 唯一有意义的本地切片（可执行替代，非复现其 IP）**
+
+- 用公开小模型（≤0.3B）在 CPU 上做**玩具级机制复现**：blockwise Hadamard 旋转 → g128 三值 → 无梯度 scale 拟合（或小步恢复），与「**不旋转直接三值**」构成对照臂。
+- 判据：同体积下「旋转臂 vs 裸三值臂」判别位 acc/连贯性差；用以**自证**「旋转是保能力关键」这一 vendor 论断，而非采信。
+- 明确不做：27B 级训练/微调；27B 工件下载（超 RAM）；任何以「重训练」为名的算力承诺。
+
+**D. 与我们已有真机证据的关系**：§3.1 的「PTQ 直接三值 = 乱码」与 vendor 的「无旋转运行时 = 静默劣化」**同向**；因此 C 的对照臂是本项目唯一能**独立**验证「旋转域三值」是否真有效的路径（不依赖厂商二进制）。
+
+## §4 四路线与判定
 | 路线 | 内容 | 体积/内存（实测） | 状态 | 风险 |
 |---|---|---|---|---|
-| **R1 换原生三值件** | 用**原生三值训练**的 gguf 替换现役判别位件（唯一真三值可行路径） | `Ternary-Bonsai-4B-Q2_0_g64` **1,085.10 MiB = 现役 68.0%（达 §0 ①）**；**QR1 冒烟 3/3 连贯正确**、峰值 RSS **1.27 GiB** | **推荐 · 首选（QR1 PASS）** | 能力需 QR2 判别位真验；**速度 0.4 t/s**（壁钟风险）；产品 pin 待确认 |
+| **R1 换原生三值件** | 用**原生三值训练**的 gguf 替换现役判别位件（唯一真三值可行路径） | `Ternary-Bonsai-4B-Q2_0_g64` **1,085.10 MiB = 现役 68.0%（达 §0 ①）**；峰值 RSS **1.27 GiB（−50%）**；**能力读数待 QR1b/QR2（须厂商 fork 运行时）** | **推荐 · 首选（体积达；能力待验）** | 能力须 QR2 真验；**须换 llama.cpp 运行时（厂商 fork）**；**速度 0.4 t/s**（壁钟风险）；产品 pin 待确认 |
 | R2 混精 PTQ | 现有件：attn/embedding/output 保 Q4_K+，仅 FFN 三值（imatrix 只作用于 K 系） | 预期空间 **< Q2_K**（三值件本身即不可用 ⇒ 只能「少三值」） | 备选 | 文献 PTQ 三值要么需可学习调制（CAT-Q），要么旋转域格式（ITQ3_S）——llama.cpp 无此类型 |
 | **R3 同族低比特（兜底）** | 不做三值，走 K 系低比特 | 现役件 Q2_K 投影 1,036.03 MiB（−35.1%）· Q3_K_M −18.9%；1.5B 件上 Q2_K/Q3_K_M **实测保能力** | 兜底 · **立即可用** | 现役件需另测判别位（1.5B 件的保能力不可外推） |
 | R4 视觉塔 | 压 `mmproj` | **否决** | — | `ncols 4304` 非 64 整除 ⇒ 分块量化硬失败 |
@@ -120,6 +225,10 @@
 - **磁盘**：下载 1,085 MiB（可选 8B 2,203 MiB）；现 free 9.6 G（本轮器具已占 `/tmp/llamatq` 3.9 G + `/tmp/probe` 532 M，可清）。
 - **时间**：量化实测 1.1 GB / **16.7 s** ⇒ 4B 级 <2 min；生成 ~2.3 t/s（2 核）。
 - **网络闸（实测）**：`huggingface.co` **HTTP 000（不可达）** · `hf-mirror.com` 200 · `modelscope` 302 · `github` 200 · `pypi` 200 ⇒ 下载**必须** `HF_ENDPOINT=https://hf-mirror.com`；HF 直连不可用不得当「候选不存在」。
+
+- **GitHub release 通道（实测 2026-09-21）**：`github.com` 直连 **000（不可达）** ⇒ 用镜像 `https://gh-proxy.com/<原始URL>`（实测 17,108,139 B / **1.3 s**）；`api.github.com` 直连 **通**（release 资产清单可读）。
+- **厂商运行时件（本条新增）**：`llama-prism-b10709-9a9394a-bin-ubuntu-x64.tar.gz` **17,108,139 B**（sha256 `48b487f00fd2b27bc3ef77c7…`，经 gh-proxy 取）；**frozen legacy 线** = `prism-b9601`（支持旧 `Q2_0` id42 打包）。
+- **磁盘回收**：fork 加载旧打包时主线/分支产出的 49 MB 转轮日志已删，仅留 3.2 KB 切片（`/tmp/forkr/legacy_load_head.txt`）。
 - **器具闸**：产品 `AGENTFRAMEWORK_LLAMA_BIN` 现盘未设 / `llama-server` 不在盘 ⇒ 判别位夹具复跑前须先钉本地 build（**待确认**，属阻断项）。
 - **可复跑绑定**（三段式）：
   - 投影：`llama-quantize --dry-run --allow-requantize <src.gguf> <TYPE>`
@@ -134,9 +243,12 @@
 
 | 步 | 内容 | 出口（真机读数） | 状态 |
 |---|---|---|---|
-| QR1 | ~~下载 + 冒烟~~ **已完成 2026-09-21** | 1,137,806,656 B（逐字节 = 镜像 API 原值，本地 sha256 `9d968b04…ef0c`）· **3/3 探针连贯**（P2 `不成立` ✓ / P3 `The weather is great today.` ✓）· 峰值 RSS **1.27 GiB**（−50%） | **PASS** |
-| QR2 | 判别位夹具重跑（现役件 vs 4B 三值件） | §0 ② 达（acc 1.000 ∧ 假跳 0/14）；**先算壁钟预算**：0.4 t/s ⇒ 14 例 × 2 臂 @ ~12 tok 已 ≥15 min 量级 | 未开 |
+| QR1 | 下载 + 冒烟（**主线运行时**）**已完成 2026-09-21** | 1,137,806,656 B（逐字节 = 镜像 API 原值，本地 sha256 `9d968b04…ef0c`）· 峰值 RSS **1.27 GiB**（−50%）· 3/3 探针连贯（P2 `不成立` ✓ / P3 `The weather is great today.` ✓） | **部分 PASS（体积/内存）· 能力读数已降级**（vendor：主线缺 Hadamard 运行时 ⇒ `Q2_0` 静默劣化） |
+| QR1b | **厂商 fork（`prism-b10709-9a9394a`）重跑冒烟，同件同 prompt 成对对照（fork vs mainline）** | fork 二进制可执行 ∧ 输出与主线**成对可比**；若 fork 输出亦不连贯 ⇒ 三值方向出局 | **PASS（2026-09-21 R609）**：fork 可执行 `rc=0` ∧ 3/3 探针连贯（P2 `不成立` ✓ / P3 `The weather is great today.` ✓ / P1 逐步展开被 `-n 32` 截断）。**诚实边界**：两侧在 P1–P3 上**皆连贯 ⇒ 该探针组无分辨力**，厂商所述「主线缺 Hadamard ⇒ `Q2_0` 静默劣化」**未被本探针证**；须换更强探针（多步算术终值 + QR2 判别位夹具 14 例） |
+| QR1c | **厂商 fork × 新打包件（`Ternary-Bonsai-4B-PQ2_0.gguf` 1,074,969,344 B, 2.13 bpw group128）**：冒烟 + 速度/上下文标度实测 | 加载成功（`ftype: PQ2_0`）∧ 输出连贯 ∧ 给出**本机 fork 实测 pp/tg** 与 pp-vs-上下文曲线（回答「是否指数级」） | **PASS（2026-09-21 R609）**：`ftype: PQ2_0 - 2.13 bpw (group 128)` ✓ ∧ 输出连贯（含 `The capital of France is Paris.`）∧ 本机 **pp 5.2–6.3 t/s / tg 2.4 t/s** ∧ pp 标度 256→2048 **线性**（wall 56/95/178/369 s，边际 5.4–6.6 t/s ⇒ **非指数**）· 峰值 RSS **1.75–1.81 GiB 恒定**。器具事故（v1 REPL 空转 1.74 GB）与判据假阳性修正见 `docs/evidence/RF0006/ternary-recon-readings.md` §R10.1/10.5 |
+| QR5 | **玩具级旋转对照臂**（≤0.3B，CPU 上自实现 blockwise Hadamard + g128 三值；对照「裸三值」） | 同体积下旋转臂 vs 裸三值臂的判别位 acc 差 > 0 ⇒ 独立自证「旋转域」机制（不依赖厂商二进制） | 未开（§3.4 C） |
+| QR2 | 判别位夹具重跑（现役件 vs 4B 三值件，**须 fork 运行时**） | §0 ② 达（acc 1.000 ∧ 假跳 0/14）；**先算壁钟预算**：0.4 t/s ⇒ 14 例 × 2 臂 @ ~12 tok 已 ≥15 min 量级 | 未开（阻塞于 QR1b：运行时口径未定 ⇒ 先验运行时） |
 | QR3 | R1 若不过 ⇒ R2 混精单变量（对照臂 = 同尺寸 Q2_K） | 增益 > Q2_K 才留 | 未开 |
-| QR4 | 产品侧接线（本地推理 pin 换件） | **须用户放行** |
+| QR4 | 产品侧接线（本地推理 pin 换件 **+ 换运行时**） | **须用户放行** | 未开（**新增前置：运行时依赖，非仅换件**） |
 
 **停机判据**：R1 在判别位判据上不达，且 R2 增益 < Q2_K ⇒ **停止三值方向**，落 R3，并把「三值对现有件不可用」写成结论（本轮已具 3.1 真机证据）。

@@ -1,0 +1,74 @@
+{
+  "round": "R609",
+  "track": "RF0006 并行研判轨（非产品侧单变量轮 ⇒ 无「轴关等价臂」与 codex 真值臂，见 honest_notes）",
+  "ts_written": "2026-09-21T08:47:00+0800",
+  "arm_started": "2026-09-21T08:28:50+0800",
+  "prereg_lag": "本文件在臂后落盘；判据本身先于臂 = 计划行 docs/plans/RF0006-ternary-gguf-compression.md:248（QR1c 出口，R609 之前已存在，未改一字）。如实标注时序缺陷，禁事后调阈值。",
+  "criteria_source": {
+    "file": "docs/plans/RF0006-ternary-gguf-compression.md",
+    "lines": "246-248",
+    "qr1b_exit_verbatim": "fork 二进制可执行 ∧ 输出与主线成对可比；若 fork 输出亦不连贯 ⇒ 三值方向出局",
+    "qr1c_exit_verbatim": "加载成功（`ftype: PQ2_0`）∧ 输出连贯 ∧ 给出本机 fork 实测 pp/tg 与 pp-vs-上下文曲线（回答「是否指数级」）"
+  },
+  "arms": [
+    {
+      "id": "A_fork_b10709_qr1b",
+      "binary": "/tmp/tb2fork/llama-prism-b10709-9a9394a/llama-cli",
+      "model": "Ternary-Bonsai-4B-Q2_0_g64.gguf 1137806656 B",
+      "probes": [
+        "2+3*4=",
+        "判断：\"1 大于 2\"",
+        "中译英：今天天气很好。"
+      ],
+      "n": 32,
+      "c": 512,
+      "t": 2,
+      "temp": 0
+    },
+    {
+      "id": "B_fork_b10709_qr1c",
+      "binary": "same",
+      "model": "Ternary-Bonsai-4B-PQ2_0.gguf 1074969344 B",
+      "probes": [
+        "depth0 连贯",
+        "pp256/512/1024/2048"
+      ],
+      "c": "N+256",
+      "t": 2,
+      "temp": 0
+    },
+    {
+      "id": "C_legacy_on_fork",
+      "binary": "same",
+      "model": "tb4b-Q2_0_g64.gguf",
+      "purpose": "证伪 v1 假定的「fork 拒载旧件」"
+    }
+  ],
+  "readings_expected": {
+    "A": "fork 可执行（rc=0）∧ 三探针输出连贯",
+    "B": "日志含 ftype: PQ2_0 ∧ 输出连贯 ∧ pp/tg 数值 ∧ 256→2048 wall 线性（非指数）",
+    "C": "加载判定行（load 成功 或 明确 error/unknown/unsupported）"
+  },
+  "instrument_v2": {
+    "path": "/tmp/forkrun2.sh",
+    "sha256": "24d78cb560e016868f5e746c6244dc803160c0e044f55d84fe3ffbd3142044fe",
+    "fixes_vs_v1": [
+      "每档 head -c 4MiB 物理上限",
+      "全档 -st",
+      "df 前置闸 <2000MB ⇒ ABORT_DISK",
+      "模式检测（判据见 evidence §10.5 修正后版本）",
+      "按 pid 采样 RSS（禁 pkill -f）"
+    ],
+    "known_v1_defect": "stage[2]/[3] 缺 -st + 无输出上限 ⇒ REPL 空转写 1,744,793,711 B / 581,597,563 行（08:19→08:26:52）"
+  },
+  "baselines": [
+    "RF0006.plan.QR1.exit",
+    "RF0006.evidence.R7.readings"
+  ],
+  "honest_notes": [
+    "两处仪器缺陷于本轮首次真机跑暴露：失控放大（测量层）、mode 判据假阳性（判据层）；均已在 v2 修正并留两侧样例。",
+    "QR1（主线×legacy）与 QR1c（fork×PQ2_0）两因子同变 ⇒ 禁相减、禁归因到单个因子。",
+    "P1–P3 探针两侧皆连贯 ⇒ 对「主线静默劣化」无分辨力；该结论仍只由厂商文档支撑。",
+    "4096/8192 档未跑（预算 + 兄弟臂在飞），不外推。"
+  ]
+}

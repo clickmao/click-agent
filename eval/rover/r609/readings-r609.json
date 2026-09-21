@@ -1,0 +1,107 @@
+{
+  "round": "R609",
+  "track": "RF0006",
+  "arm": "A/B/C fork prism-b10709-9a9394a (CPU, -t 2, temp 0) vs QR1 mainline×legacy",
+  "stages": [
+    {
+      "stage": "tg128",
+      "wall_s": 18,
+      "log_bytes": 1209,
+      "peak_rss_mb": 1640,
+      "prompt_tps": 5.2,
+      "gen_tps": 2.4
+    },
+    {
+      "stage": "pp256",
+      "wall_s": 56,
+      "log_bytes": 1701,
+      "peak_rss_mb": 1814,
+      "prompt_tps": 6.3,
+      "gen_tps": 0.0
+    },
+    {
+      "stage": "pp512",
+      "wall_s": 95,
+      "log_bytes": 1677,
+      "peak_rss_mb": 1753,
+      "prompt_tps": 6.0,
+      "gen_tps": 0.0
+    },
+    {
+      "stage": "pp1024",
+      "wall_s": 178,
+      "log_bytes": 1717,
+      "peak_rss_mb": 1812,
+      "prompt_tps": 6.0,
+      "gen_tps": 0.0
+    },
+    {
+      "stage": "pp2048",
+      "wall_s": 369,
+      "log_bytes": 1685,
+      "peak_rss_mb": 1812,
+      "prompt_tps": 5.5,
+      "gen_tps": 0.0
+    }
+  ],
+  "pp_scaling": {
+    "marginal_tps": {
+      "256": 6.56,
+      "512": 6.17,
+      "1024": 5.36
+    },
+    "shape": "linear_no_exponential_degradation",
+    "rss_flat_mb": [
+      1753,
+      1814
+    ]
+  },
+  "coherence": {
+    "P1": "step-by-step (truncated by n=32)",
+    "P2": "不成立 (正确)",
+    "P3": "The weather is great today. (正确)",
+    "depth0": "The capital of France is Paris."
+  },
+  "legacy_on_fork": {
+    "loaded": true,
+    "ftype": "Q2_0",
+    "log_lines": 22,
+    "log_bytes": 920,
+    "rejection_lines": 0,
+    "verdict": "v1 假定的「fork 拒载旧件」证伪"
+  },
+  "instrument_defects": [
+    {
+      "id": "runaway_amplification",
+      "bytes": 1744793711,
+      "lines": 581597563,
+      "window": "08:19→08:26:52",
+      "root_cause": "stage[2]/[3] 缺 -st ∨ 无输出上限",
+      "class": "测量层",
+      "arm_readings": "LOG_OVERFLOW 不入对账"
+    },
+    {
+      "id": "mode_predicate_false_positive",
+      "observed": "5/5 REPL_INVALID",
+      "root_cause": "判据绑词面出现（单轮模式也打印横幅）",
+      "class": "判据层",
+      "fix": "bytes≥4MiB ∨ ≥20 连续 '> ' ∨ rc=124",
+      "recomputed_zero_rerun": true,
+      "two_sided_samples": {
+        "red": "v1 溢出件",
+        "green": "v2 五档"
+      }
+    }
+  ],
+  "verdict": {
+    "qr1b": "PASS(可执行 ∧ 3/3 连贯; 探针组无分辨力→敌手面靠厂商文档)",
+    "qr1c": "PASS(四合一全满足)",
+    "rc": 0
+  },
+  "not_measured": [
+    "pp4096/8192(不外推)",
+    "QR2 判别位夹具 14 例",
+    "stock×PQ2_0 本机对照"
+  ],
+  "evidence": "docs/evidence/RF0006/ternary-recon-readings.md §R10"
+}
